@@ -47,10 +47,6 @@ NEWSYM copy640x480x16bwin
     mov esi,[vidbuffer]
     mov edi,[WinVidMemStart]
     add esi,16*2+256*2+32*2
-    cmp word[resolutn],239
-    jne .not239
-    add esi,288*2
-.not239
     xor eax,eax
     ; Check if interpolation mode
     cmp byte[FilteredGUI],0

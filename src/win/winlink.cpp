@@ -125,6 +125,7 @@ DWORD                   SurfaceY=0;
 
 BYTE                    IsActivated = 1;
 BYTE                    AltTimer = 0;
+WORD                    PrevRes = 0;
 RECT                    BlitArea;
 
 extern "C" {
@@ -1488,6 +1489,7 @@ extern unsigned char cvidmode;
 DWORD FirstVid=1;
 DWORD FirstFull=1;
 extern BYTE GUIWFVID[];
+extern unsigned short resolutn;
 void clearwin();
 
 char WinName[]={"ZSNESW\0"};
@@ -1529,7 +1531,7 @@ void initwinvideo(void)
          WindowWidth=512;
          WindowHeight=448;
          SurfaceX=512;
-         SurfaceY=464;
+         SurfaceY=480;
          break;
       case 4:
          WindowWidth=640;
@@ -1539,7 +1541,7 @@ void initwinvideo(void)
          WindowWidth=640;
          WindowHeight=480;
          SurfaceX=512;
-         SurfaceY=464;
+         SurfaceY=448;
          break;
       case 6:
          WindowWidth=640;
@@ -1551,7 +1553,7 @@ void initwinvideo(void)
          WindowWidth=640;
          WindowHeight=480;
          SurfaceX=512;
-         SurfaceY=464;
+         SurfaceY=448;
          break;
       case 8:
          WindowWidth=640;
@@ -1565,7 +1567,7 @@ void initwinvideo(void)
          WindowWidth=768;
          WindowHeight=672;
          SurfaceX=512;
-         SurfaceY=464;
+         SurfaceY=480;
          break;
       case 11:
          WindowWidth=800;
@@ -1575,7 +1577,7 @@ void initwinvideo(void)
          WindowWidth=800;
          WindowHeight=600;
          SurfaceX=512;
-         SurfaceY=464;
+         SurfaceY=448;
          break;
       case 13:
          WindowWidth=800;
@@ -1591,7 +1593,7 @@ void initwinvideo(void)
          WindowWidth=800;
          WindowHeight=600;
          SurfaceX=512;
-         SurfaceY=464;
+         SurfaceY=448;
          break;
       case 16:
          WindowWidth=1024;
@@ -1601,7 +1603,7 @@ void initwinvideo(void)
          WindowWidth=1024;
          WindowHeight=768;
          SurfaceX=512;
-         SurfaceY=464;
+         SurfaceY=448;
          break;
       case 18:
          WindowWidth=1024;
@@ -1617,7 +1619,7 @@ void initwinvideo(void)
          WindowWidth=1024;
          WindowHeight=768;
          SurfaceX=512;
-         SurfaceY=464;
+         SurfaceY=448;
          break;
       case 21:
          WindowWidth=1024;
@@ -1627,7 +1629,7 @@ void initwinvideo(void)
          WindowWidth=1024;
          WindowHeight=896;
          SurfaceX=512;
-         SurfaceY=464;
+         SurfaceY=480;
          break;
       case 23:
          WindowWidth=1280;
@@ -1637,7 +1639,7 @@ void initwinvideo(void)
          WindowWidth=1280;
          WindowHeight=960;
          SurfaceX=512;
-         SurfaceY=464;
+         SurfaceY=448;
          break;
       case 25:
          WindowWidth=1280;
@@ -1653,7 +1655,7 @@ void initwinvideo(void)
          WindowWidth=1280;
          WindowHeight=960;
          SurfaceX=512;
-         SurfaceY=464;
+         SurfaceY=448;
          break;
       case 28:
          WindowWidth=1280;
@@ -1663,7 +1665,7 @@ void initwinvideo(void)
          WindowWidth=1280;
          WindowHeight=1024;
          SurfaceX=512;
-         SurfaceY=464;
+         SurfaceY=448;
          break;
       case 30:
          WindowWidth=1280;
@@ -1679,7 +1681,7 @@ void initwinvideo(void)
          WindowWidth=1280;
          WindowHeight=1024;
          SurfaceX=512;
-         SurfaceY=464;
+         SurfaceY=448;
          break;
       default:
          WindowWidth=256;
@@ -1688,9 +1690,15 @@ void initwinvideo(void)
       }
 
       BlitArea.top = 0;
-      BlitArea.left=0;
-      BlitArea.bottom=SurfaceY;
-      BlitArea.right=SurfaceX;
+      BlitArea.left = 0;
+      BlitArea.right = SurfaceX;
+
+      if (FullScreen == 0)
+         BlitArea.bottom = (SurfaceY/240)*resolutn;
+      else
+         BlitArea.bottom = (SurfaceY/224)*resolutn;
+
+      if (PrevRes == 0) PrevRes = resolutn;
 
    }
 
@@ -1798,7 +1806,6 @@ extern int DSPBuffer;
 int * DSPBuffer1;
 DWORD ScreenPtr;
 DWORD ScreenPtr2;
-extern unsigned short resolutn;
 extern GUI36hzcall(void);
 extern Game60hzcall(void);
 extern int packettimeleft[256];
@@ -2077,8 +2084,21 @@ void drawscreenwin(void)
    ScreenPtr=vidbuffer;
    ScreenPtr+=16*2+32*2+256*2;
 
-   if (resolutn == 224 && FullScreen == 0) BlitArea.bottom = SurfaceY-16;
-   if (resolutn == 239 && FullScreen == 0) BlitArea.bottom = SurfaceY-16;
+   if (resolutn == 224 && FullScreen == 0 && PrevRes != resolutn)
+   {
+      BlitArea.bottom = (SurfaceY/240)*224;
+      WindowHeight = (WindowHeight/239)*224;
+      initwinvideo();
+      PrevRes = resolutn;
+   }
+
+   if (resolutn == 239 && FullScreen == 0 && PrevRes != resolutn)
+   {
+      BlitArea.bottom = (SurfaceY/240)*239;
+      WindowHeight = (WindowHeight/224)*239;
+      initwinvideo();
+      PrevRes = resolutn;
+   }
 
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
@@ -2385,7 +2405,7 @@ void drawscreenwin(void)
       }
    }
 
-   if (SurfaceX==512&&SurfaceY==464)
+   if (SurfaceX==512&&SurfaceY==448||SurfaceY==480)
    {
       switch (BitDepth)
       {
