@@ -4807,7 +4807,7 @@ GUIGUIAboutText4 db '    _DEMO_',0
 GUIGUIAboutText5 db 'ASSISTANT CODERS :  ',0
 GUIGUIAboutText6 db '    PHAROS',0
 GUIGUIAboutText6b db '    TEUF',0
-GUIGUIAboutText7 db 'WIN PORT V0.86',0
+GUIGUIAboutText7 db 'WIN PORT V0.88',0
 GUIGUIAboutText8 db 'HOMEPAGE',0
 
 DisplayGUIMovies:
