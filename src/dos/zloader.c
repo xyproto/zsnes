@@ -321,7 +321,7 @@ int pccmdline(void)
             autoloadstate=my_atoi(argv[p+1]) + 1;
             p++;
           }
-          else StereoSound=1;
+          else StereoSound=0;
           // FIX STATMAT
           break;
         }

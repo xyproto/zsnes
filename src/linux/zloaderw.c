@@ -325,7 +325,7 @@ printf("Hello the gui should now be off.");
 //					p++;
 //				}
 
-				StereoSound=1;
+				StereoSound=0;
 
 				// FIX STATMAT
 				break;

@@ -1146,7 +1146,7 @@ SECTION .data
 %ifdef __MSDOS__
           db '  -3      Enable triple buffering (disables vsync)',13,10
 %endif
-          db '  -z      Enable Stereo Sound',13,10
+          db '  -z      Disable Stereo Sound',13,10
 ; FIX STATMAT
 %ifdef __WIN32__
           db '  -zs #   Auto load specified save state slot on startup ',13,10
