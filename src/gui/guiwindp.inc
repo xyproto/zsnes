@@ -4987,29 +4987,29 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,6,16,GUIGUIAboutText1
     GUIOuttextwin2 11,6,36,GUIGUIAboutText3
     GUIOuttextwin2 11,6,46,GUIGUIAboutText4
-    GUIOuttextwin2 11,6,66,GUIGUIAboutText6
-    GUIOuttextwin2 11,6,76,GUIGUIAboutText6b
-    GUIOuttextwin2 11,6,86,GUIGUIAboutText6c
+    GUIOuttextwin2 11,6,56,GUIGUIAboutText6c
+    GUIOuttextwin2 11,6,76,GUIGUIAboutText6
+    GUIOuttextwin2 11,6,86,GUIGUIAboutText6b
     GUIOuttextwin2 11,6,96,GUIGUIAboutText6d
     add byte[GUItextcolor],15
     GUIOuttextwin2 11,5,15,GUIGUIAboutText1
     GUIOuttextwin2 11,5,35,GUIGUIAboutText3
     GUIOuttextwin2 11,5,45,GUIGUIAboutText4
-    GUIOuttextwin2 11,5,65,GUIGUIAboutText6
-    GUIOuttextwin2 11,5,75,GUIGUIAboutText6b
-    GUIOuttextwin2 11,5,85,GUIGUIAboutText6c
+    GUIOuttextwin2 11,5,55,GUIGUIAboutText6c
+    GUIOuttextwin2 11,5,75,GUIGUIAboutText6
+    GUIOuttextwin2 11,5,85,GUIGUIAboutText6b
     GUIOuttextwin2 11,5,95,GUIGUIAboutText6d
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 11,6,26,GUIGUIAboutText2
-    GUIOuttextwin2 11,6,56,GUIGUIAboutText5
+    GUIOuttextwin2 11,6,66,GUIGUIAboutText5
     mov byte[GUItextcolor],163
     cmp byte[GUIWincoladd],0
     je .zero
     mov byte[GUItextcolor],164
 .zero
     GUIOuttextwin2 11,5,25,GUIGUIAboutText2
-    GUIOuttextwin2 11,5,55,GUIGUIAboutText5
+    GUIOuttextwin2 11,5,65,GUIGUIAboutText5
     ret
 %else
     DrawGUIButton 11,5,117,74,128,GUIGUIAboutText8,65,0,0
@@ -5018,30 +5018,30 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,6,26,GUIGUIAboutText7
     GUIOuttextwin2 11,6,46,GUIGUIAboutText3
     GUIOuttextwin2 11,6,56,GUIGUIAboutText4
-    GUIOuttextwin2 11,6,76,GUIGUIAboutText6
-    GUIOuttextwin2 11,6,86,GUIGUIAboutText6b
-    GUIOuttextwin2 11,6,96,GUIGUIAboutText6c
+    GUIOuttextwin2 11,6,66,GUIGUIAboutText6c
+    GUIOuttextwin2 11,6,86,GUIGUIAboutText6
+    GUIOuttextwin2 11,6,96,GUIGUIAboutText6b
     GUIOuttextwin2 11,6,106,GUIGUIAboutText6d
     add byte[GUItextcolor],15
     GUIOuttextwin2 11,5,15,GUIGUIAboutText1
     GUIOuttextwin2 11,5,25,GUIGUIAboutText7
     GUIOuttextwin2 11,5,45,GUIGUIAboutText3
     GUIOuttextwin2 11,5,55,GUIGUIAboutText4
-    GUIOuttextwin2 11,5,75,GUIGUIAboutText6
-    GUIOuttextwin2 11,5,85,GUIGUIAboutText6b
-    GUIOuttextwin2 11,5,95,GUIGUIAboutText6c
+    GUIOuttextwin2 11,5,65,GUIGUIAboutText6c
+    GUIOuttextwin2 11,5,85,GUIGUIAboutText6
+    GUIOuttextwin2 11,5,95,GUIGUIAboutText6b
     GUIOuttextwin2 11,5,105,GUIGUIAboutText6d
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 11,6,36,GUIGUIAboutText2
-    GUIOuttextwin2 11,6,66,GUIGUIAboutText5
+    GUIOuttextwin2 11,6,76,GUIGUIAboutText5
     mov byte[GUItextcolor],163
     cmp byte[GUIWincoladd],0
     je .zero2b
     mov byte[GUItextcolor],164
 .zero2b
     GUIOuttextwin2 11,5,35,GUIGUIAboutText2
-    GUIOuttextwin2 11,5,65,GUIGUIAboutText5
+    GUIOuttextwin2 11,5,75,GUIGUIAboutText5
     ret
 %endif 
 
