@@ -1977,6 +1977,9 @@ NEWSYM cpuover
     call ReadInputDevice
 .noinputread
 
+    cmp byte[EMUPause],1
+    je .nonewgfx
+    
     call UpdateRewind
 
     mov byte[NetQuit],0

@@ -168,6 +168,7 @@ EXTSYM firstsaveinc
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord,MovieInsertChapter
 EXTSYM MovieSeekAhead,MovieSeekBehind
+EXTSYM EMUPause
 
 %ifdef __LINUX__
 EXTSYM numlockptr
