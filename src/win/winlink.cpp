@@ -2376,68 +2376,54 @@ void WinUpdateDevices()
          {
             for (int i2=0; i2<NumPOV[i]; i++)
             {
-               if (js[i].rgdwPOV[i2] == -1)
+               switch (js[i].rgdwPOV[i2])
                {
+               case -1:
                   keys[0x100 + i * 32 + 0] = 0;
                   keys[0x100 + i * 32 + 1] = 0;
                   keys[0x100 + i * 32 + 2] = 0;
                   keys[0x100 + i * 32 + 3] = 0;
-               }
-
-               if (js[i].rgdwPOV[i2] == 0)
-               {
+                  break;
+               case 0:
                   keys[0x100 + i * 32 + 2] = 0;
                   keys[0x100 + i * 32 + 3] = 1;
-               }
-
-               if (js[i].rgdwPOV[i2] == 4500)
-               {
+                  break;
+               case 4500:
                   keys[0x100 + i * 32 + 0] = 1;
                   keys[0x100 + i * 32 + 1] = 0;
                   keys[0x100 + i * 32 + 2] = 0;
                   keys[0x100 + i * 32 + 3] = 1;
-               }
-
-               if (js[i].rgdwPOV[i2] == 9000)
-               {
+                  break; 
+               case 9000:
                   keys[0x100 + i * 32 + 0] = 1;
                   keys[0x100 + i * 32 + 1] = 0;
-               }
-
-               if (js[i].rgdwPOV[i2] == 13500)
-               {
+                  break;
+               case 13500:
                   keys[0x100 + i * 32 + 0] = 1;
                   keys[0x100 + i * 32 + 1] = 0;
                   keys[0x100 + i * 32 + 2] = 1;
                   keys[0x100 + i * 32 + 3] = 0;
-               }
-
-               if (js[i].rgdwPOV[i2] == 18000)
-               {
+                  break;
+               case 18000:
                   keys[0x100 + i * 32 + 2] = 1;
                   keys[0x100 + i * 32 + 3] = 0;
-               }
-
-               if (js[i].rgdwPOV[i2] == 22500)
-               {
+                  break;
+               case 22500:
                   keys[0x100 + i * 32 + 0] = 0;
                   keys[0x100 + i * 32 + 1] = 1;
                   keys[0x100 + i * 32 + 2] = 1;
                   keys[0x100 + i * 32 + 3] = 0;
-               }
-
-               if (js[i].rgdwPOV[i2] == 27000)
-               {
+                  break;
+               case 27000:
                   keys[0x100 + i * 32 + 0] = 0;
                   keys[0x100 + i * 32 + 1] = 1;
-               }
-
-               if (js[i].rgdwPOV[i2] == 31500)
-               {
+                  break;
+               case 31500:
                   keys[0x100 + i * 32 + 0] = 0;
                   keys[0x100 + i * 32 + 1] = 1;
                   keys[0x100 + i * 32 + 2] = 0;
                   keys[0x100 + i * 32 + 3] = 1;
+                  break;
                }
             }
          }
