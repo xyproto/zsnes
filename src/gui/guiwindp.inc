@@ -1058,7 +1058,7 @@ DisplayGUIInput:
     GUIOuttextwin2 3,75,141,GUIInputTextB
     GUIOuttextwin2 3,75,151,GUIInputTextC
 %ifdef __MSDOS__
-    GUIOuttextwin2 3,20,167,GUIInputTextW
+    GUIOuttextwin2 3,19,166,GUIInputTextW
 %endif
     GUIOuttextwin2 3,155,101,GUIInputText7
     GUIOuttextwin2 3,155,111,GUIInputText8
