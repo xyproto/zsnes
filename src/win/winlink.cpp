@@ -447,7 +447,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 int RegisterWinClass(void)
 {
-	WNDCLASS wcl;
+   WNDCLASS wcl;
 
    wcl.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_NOCLOSE ;
 	wcl.cbClsExtra		= 0;
@@ -460,9 +460,9 @@ int RegisterWinClass(void)
    wcl.lpszMenuName     = NULL;
    wcl.lpszClassName    = "ZSNESWIN";
 
-	if (RegisterClass(&wcl)  == 0) return FALSE;
+   if (RegisterClass(&wcl) == 0) return FALSE;
 
-	return TRUE;
+   return TRUE;
 }
 
 InitSound()
@@ -474,8 +474,8 @@ InitSound()
    PrevSoundQuality=SoundQuality;
    PrevStereoSound=StereoSound;
 
-	if(DS_OK == DirectSoundCreate8(NULL, &lpDirectSound,NULL))
-	{
+      if(DS_OK == DirectSoundCreate8(NULL, &lpDirectSound,NULL))
+      {
           if (ExclusiveSound == 0)
           {
              if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL))
@@ -495,11 +495,11 @@ InitSound()
                 return FALSE;
              }
           }
-	}
-	else 
-	{
+      }
+      else 
+      {
           SoundEnabled=0; return FALSE;
-	}
+      }
 
    wfx.wFormatTag = WAVE_FORMAT_PCM;
 
