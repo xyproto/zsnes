@@ -1,4 +1,4 @@
-#Copyright (C) 1997-2001 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
+#Copyright (C) 1997-2003 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
 #
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
@@ -23,6 +23,7 @@ VIDEODIR=video
 WINDIR=linux
 OBJDIR=obj
 ZIPDIR=zip
+EFFECTSDIR=effects
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
 	 ${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
@@ -57,9 +58,11 @@ WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/modemrtn.o ${DOSDIR}/vesa2
 
 ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
-MAINOBJ=cfgload.o endmem.o fixsin.o init.o initc.o uic.o patch.o ui.o vcache.o water.o smoke.o burn.o version.o
+EFFECTSOBJ=${EFFECTSDIR}/burn.o ${EFFECTSDIR}/water.o ${EFFECTSDIR}/smoke.o
 
-OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ}
+MAINOBJ=cfgload.o endmem.o init.o initc.o uic.o patch.o ui.o vcache.o version.o
+
+OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${ZIPOBJ} ${EFFECTSOBJ}
 
 .SUFFIXES: .c .asm 
 
@@ -77,10 +80,9 @@ ALL:	@ZSNESEXE@
 ${ZIPDIR}/zpng.o: ${ZIPDIR}/zpng.c ${ZIPDIR}/zpng.h
 ${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/zunzip.h
 ${ZIPDIR}/zzip.o: ${ZIPDIR}/zzip.c ${ZIPDIR}/zunzip.h
-fixsin.o: fixsin.c
-water.o: water.c
-smoke.o: smoke.c
-burn.o: burn.c
+${EFFECTSDIR}/water.o: ${EFFECTSDIR}/water.c ${EFFECTSDIR}/fixsin.h gblhdr.h
+${EFFECTSDIR}/smoke.o: ${EFFECTSDIR}/smoke.c
+${EFFECTSDIR}/burn.o: ${EFFECTSDIR}/burn.c
 ${VIDEODIR}/procvid.o: ${VIDEODIR}/procvid.asm macros.mac ${VIDEODIR}/copyvid.inc ${VIDEODIR}/2xsaimmx.inc
 ${VIDEODIR}/sw_draw.obj: ${VIDEODIR}/sw_draw.asm macros.mac
 ${VIDEODIR}/hq3x16.obj: ${VIDEODIR}/hq3x16.asm macros.mac
@@ -188,10 +190,10 @@ uninstall:
 	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man5/zsnes.5
 
 clean:
-	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  *.o  @ZSNESEXE@
+	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  ${EFFECTSDIR}/*.o  *.o  @ZSNESEXE@
 
 distclean:
-	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  *.o  @ZSNESEXE@ Makefile config.cache config.log config.status config.h
+	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  ${EFFECTSDIR}/*.o  *.o  @ZSNESEXE@ Makefile config.cache config.log config.status config.h
 
 
 

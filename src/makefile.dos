@@ -1,4 +1,4 @@
-#Copyright (C) 1997-2001 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
+#Copyright (C) 1997-2003 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
 #
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
@@ -23,6 +23,7 @@ VIDEODIR=video
 WINDIR=win
 OBJDIR=obj
 ZIPDIR=zip
+EFFECTSDIR=effects
 
 CHIPSOBJ=${CHIPDIR}/dsp1emu.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/sfxproc.o\
 	${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
@@ -55,10 +56,12 @@ PREOBJ=${OBJDIR}/dosbuff.o ${OBJDIR}/ipx.o ${OBJDIR}/zipx.o
 
 ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
-MAINOBJ=cfgload.o endmem.o fixsin.o init.o initc.o uic.o patch.o ui.o vcache.o water.o smoke.o burn.o version.o
+EFFECTSOBJ=${EFFECTSDIR}/burn.o ${EFFECTSDIR}/water.o ${EFFECTSDIR}/smoke.o
+
+MAINOBJ=cfgload.o endmem.o init.o initc.o uic.o patch.o ui.o vcache.o version.o
 
 
-OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${ZIPOBJ}
+OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${ZIPOBJ} ${EFFECTSOBJ}
 LIBS=-lz -lm -lpng
 #CFLAGS=-O2 -Wall -Wno-unused -D__MSDOS__
 CFLAGS=-O3 -march=i586 -fno-exceptions -ffast-math\
@@ -91,10 +94,10 @@ zsnesd.exe: ${OBJS}
 	${CC} -Ws -o zsnesd.exe ${OBJS}  ${LIBS}
 
 ${DOSDIR}/zloader.o: ${DOSDIR}/zloader.c
-fixsin.o: fixsin.c
-water.o: water.c
-smoke.o: smoke.c
-burn.o: burn.c
+
+${EFFECTSDIR}/water.o: ${EFFECTSDIR}/water.c ${EFFECTSDIR}/fixsin.h
+${EFFECTSDIR}/smoke.o: ${EFFECTSDIR}/smoke.c
+${EFFECTSDIR}/burn.o: ${EFFECTSDIR}/burn.c
 ${DOSDIR}/zfile.o: ${DOSDIR}/zfile.c
 ${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/zunzip.h
 ${ZIPDIR}/zzip.o: ${ZIPDIR}/zzip.c ${ZIPDIR}/zunzip.h
@@ -202,6 +205,7 @@ clean:
 	del ${GUIDIR}\*.o
 	del ${DOSDIR}\*.o
 	del ${ZIPDIR}\*.o
+	del ${EFFECTSDIR}\*.o
 	del zsnes.exe
 
 

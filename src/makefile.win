@@ -1,4 +1,4 @@
-#Copyright (C) 1997-2001 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
+#Copyright (C) 1997-2003 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
 #
 #This program is free software; you can redistribute it and/or
 #modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@ VIDEODIR=video
 WINDIR=win
 OBJDIR=obj
 ZIPDIR=zip
+EFFECTSDIR=effects
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.obj ${CHIPDIR}/fxemu2.obj ${CHIPDIR}/dsp1proc.obj\
 	 ${CHIPDIR}/fxemu2b.obj ${CHIPDIR}/fxemu2c.obj ${CHIPDIR}/fxtable.obj\
@@ -64,9 +65,12 @@ PREOBJ=
 
 ZIPOBJ=${ZIPDIR}/zzip.obj ${ZIPDIR}/unzip.obj ${ZIPDIR}/zpng.obj
 
-MAINOBJ=cfgload.obj endmem.obj fixsin.obj init.obj initc.obj uic.obj patch.obj ui.obj vcache.obj water.obj smoke.obj burn.obj version.obj
+EFFECTSOBJ=${EFFECTSDIR}/burn.obj ${EFFECTSDIR}/water.obj ${EFFECTSDIR}/smoke.obj
 
-OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ} ${WINDOSOBJ}
+MAINOBJ=cfgload.obj endmem.obj init.obj initc.obj uic.obj patch.obj ui.obj vcache.obj version.obj
+
+
+OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ} ${WINDOSOBJ} ${EFFECTSOBJ}
 LIBS=
 CFLAGS=/Ox /G6 /c /D__WIN32__
 ASM=nasm
@@ -110,10 +114,9 @@ ${DOSDIR}/vesa2.obj: ${DOSDIR}/vesa2.asm macros.mac
 ${DOSDIR}/gppro.o: ${DOSDIR}/gppro.asm macros.mac
 ${DOSDIR}/sw.o: ${DOSDIR}/sw.asm macros.mac
 ${DOSDIR}/vesa12.o: ${DOSDIR}/vesa12.asm macros.mac
-fixsin.obj: fixsin.c
-water.obj: water.c
-smoke.obj: smoke.c
-burn.obj: burn.c
+${EFFECTSDIR}/water.obj: ${EFFECTSDIR}/water.c ${EFFECTSDIR}/fixsin.h
+${EFFECTSDIR}/smoke.obj: ${EFFECTSDIR}/smoke.c
+${EFFECTSDIR}/burn.obj: ${EFFECTSDIR}/burn.c
 ${VIDEODIR}/2xsaiw.obj: ${VIDEODIR}/2xsaiw.asm macros.mac
 ${VIDEODIR}/procvid.obj: ${VIDEODIR}/procvid.asm macros.mac ${VIDEODIR}/copyvid.inc ${VIDEODIR}/2xSaImmx.inc
 ${VIDEODIR}/sw_draw.obj: ${VIDEODIR}/sw_draw.asm macros.mac
@@ -225,6 +228,7 @@ clean:
 	del ${WINDIR}\zsnes.res
 	del ${ZIPDIR}\*.obj
 	del ${DOSDIR}\*.obj
+	del ${EFFECTSDIR}\*.o
 	del zsnesw.exe
 	
 
