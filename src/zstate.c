@@ -666,9 +666,9 @@ void ResetOffset()
   Curtableaddr += (unsigned int)tableA;
 }
 
-void zst_save(FILE *fhandle, bool Thumbnail)
+void zst_save(FILE *fp, bool Thumbnail)
 {
-  fwrite(zst_header_cur, 1, sizeof(zst_header_cur)-1, fhandle); //-1 for null
+  fwrite(zst_header_cur, 1, sizeof(zst_header_cur)-1, fp); //-1 for null
 
   PrepareOffset();
   PrepareSaveState();
@@ -684,7 +684,8 @@ void zst_save(FILE *fhandle, bool Thumbnail)
   {
     SaveSA1(); //Convert SA-1 stuff to standard, non displacement format
   }
-     
+  
+  fhandle = fp; //Set global file handle
   copy_state_data(0, write_save_state_data, false);
 
   if (SFXEnable)
@@ -701,7 +702,7 @@ void zst_save(FILE *fhandle, bool Thumbnail)
   if (Thumbnail)
   {
     CapturePicture();
-    fwrite(PrevPicture, 1, 64*56*sizeof(unsigned short), fhandle);
+    fwrite(PrevPicture, 1, 64*56*sizeof(unsigned short), fp);
   }
     
   ResetOffset();
@@ -888,12 +889,12 @@ static void read_save_state_data(unsigned char **dest, void *data, size_t len)
   load_save_size += fread(data, 1, len, fhandle);
 }
 
-bool zst_load(FILE *fhandle)
+bool zst_load(FILE *fp)
 {
   char zst_header_check[sizeof(zst_header_cur)-1];
   zst_version = 0;
     
-  Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fhandle);
+  Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fp);
   if (!memcmp(zst_header_check, zst_header_cur, sizeof(zst_header_check)-2))
   {
     zst_version = 143; //v1.43+
@@ -906,6 +907,7 @@ bool zst_load(FILE *fhandle)
   if (!zst_version) { return(false); } //Pre v0.60 saves are no longer loaded
  
   load_save_size = 0;
+  fhandle = fp; //Set global file handle
   copy_state_data(0, read_save_state_data, true);
   Totalbyteloaded += load_save_size;
       
