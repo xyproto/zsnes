@@ -482,12 +482,20 @@ NEWSYM Get_TimeDate
 
 NEWSYM Get_Date
     ; dl = day, dh = month, cx = year
-    mov dx,0
-    mov cx,0
-;    mov ah,2Ah
-;    int 21h
+    pushad
+    call GetDate
+    mov [TempVarSeek],eax
+    popad
+    mov eax,[TempVarSeek]
+    movzx edx,al ;Move day into edx, day is in BCD
+    shr edx,4    ;Chop off the second digit 
+    imul edx,10  ;Multiply first digit by 10, since we want decimal
+    and al,0xF   ;Remove first BCD digit
+    add dl,al    ;Add second digit to first*10
+    mov dh,ah    ;Copy month
+    ;Year still isn't done yet, although I don't think we use it anywhere -Nach
     ret
-
+    
 NEWSYM Get_File_Date
     mov [ZFFTimeFName],edx
     pushad
