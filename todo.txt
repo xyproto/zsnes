@@ -12,5 +12,5 @@ Compatibility
 - Graphics Glitches - Uniracers (2p mode), Killer Instinct (couple stages,
     black background), FF3 (some sprite clipping probs), Metal Combat,
     Tactic Ogre (Menus?)
-- Special Chips - DSP1 (60% done), DSP2 (0% done), SA-1 (95% done),
+- Special Chips - DSP1 (95% done), DSP2 (0% done), SA-1 (95% done),
                   SDD-1 (decompression left), and others                       
