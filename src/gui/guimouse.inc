@@ -2121,9 +2121,7 @@ DisplayGUIOptionClick:
     jne near .invalidng
     GUIClickCButton2 11,36,byte[newengen],byte[cfgnewgfx],1
 .invalidng
-%ifndef __LINUX__
-    GUIClickCButton2 11,46,byte[vsyncon],byte[cfgvsync],1
-%endif
+;    GUIClickCButton2 11,46,byte[vsyncon],byte[cfgvsync],1
     GUIClickCButton2 11,56,byte[FPUCopy],byte[cfgcopymethod],2
     GUIClickCButtonM 11,66,byte[pl12s34]
 %ifdef __MSDOS__
@@ -2188,6 +2186,9 @@ DisplayGUIVideoClick:
 %ifndef __MSDOS__
     GUIClickCButton 11,183,byte[GrayscaleMode]
 %endif
+%ifndef __LINUX__
+    GUIClickCButton2 115,183,byte[vsyncon],byte[cfgvsync],1
+%endif
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUIM7VID+ebx],0
@@ -2202,7 +2203,14 @@ DisplayGUIVideoClick:
     GUIClickCButton4 61,114,byte[scanlines],byte[cfgscanline],3
     GUIClickCButton4 101,114,byte[scanlines],byte[cfgscanline],2
 .nohsline
+%ifdef __WIN32__
+    xor ebx,ebx
+    mov bl,[cvidmode]
+    cmp byte[GUITBWVID+ebx],0
+    je near .notriplebufferwin
     GUIClickCButton 11,123,byte[TripleBufferWin]
+.notriplebufferwin
+%endif
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUI2xVID+ebx],0

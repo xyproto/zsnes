@@ -1350,9 +1350,7 @@ DisplayGUIOption:
     GUIOuttextwin2 4,6,16,[GUITemp]
     GUIOuttextwin2u 4,26,31,GUIOptionText2,0
     GUIOuttextwin2u 4,26,41,GUIOptionText4,0
-%ifndef __LINUX__
-    GUIOuttextwin2u 4,26,51,GUIOptionText5,0
-%endif
+;    GUIOuttextwin2u 4,26,51,GUIOptionText5,0
 %ifdef __WIN32__
     GUIOuttextwin2u 4,26,191,GUIOptionTextL,1
 %endif
@@ -1381,9 +1379,7 @@ DisplayGUIOption:
     GUIOuttextwin2 4,5,15,[GUITemp]
     GUIOuttextwin2 4,25,30,GUIOptionText2
     GUIOuttextwin2 4,25,40,GUIOptionText4
-%ifndef __LINUX__
-    GUIOuttextwin2 4,25,50,GUIOptionText5
-%endif
+;    GUIOuttextwin2 4,25,50,GUIOptionText5
     GUIOuttextwin2 4,25,60,GUIOptionText6
     GUIOuttextwin2 4,25,70,GUIOptionText7
 %ifdef __MSDOS__
@@ -1424,14 +1420,12 @@ DisplayGUIOption:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
     GUIDisplayIconWin 4,11,36,[GUITemp]
-%ifndef __LINUX__
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[vsyncon],0
-    je .nocheckbox2
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox2
-    GUIDisplayIconWin 4,11,46,[GUITemp]
-%endif
+;    mov dword[GUITemp],GUIIconDataCheckBoxUC
+;    cmp byte[vsyncon],0
+;    je .nocheckbox2
+;    mov dword[GUITemp],GUIIconDataCheckBoxC
+;.nocheckbox2
+;    GUIDisplayIconWin 4,11,46,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[FPUCopy],2
     jne .nocheckbox3
@@ -1570,7 +1564,7 @@ GUIOptionText1 db 'FRAME RATE',0
 GUIOptionText2 db 'AUTO FRAME RATE',0
 GUIOptionText3 db 'MAX FRAME SKIP',0
 GUIOptionText4 db 'NEW GFX ENGINE',0
-GUIOptionText5 db 'VSYNC',0
+;GUIOptionText5 db 'VSYNC',0
 GUIOptionText6 db 'MMX SUPPORT',0
 GUIOptionText7 db 'USE PL3/4 AS PL1/2',0
 GUIOptionTextA db 'SIDEWINDER FIX',0
@@ -1714,6 +1708,7 @@ DisplayGUIVideo:
 %ifndef __MSDOS__
     GUIOuttextwin2 5,26,188,GUIVideoText8c
 %endif
+    GUIOuttextwin2 5,130,188,GUIVideoText9
     add byte[GUItextcolor],15
 
 ;    cmp byte[OSPort],3
@@ -1808,6 +1803,7 @@ DisplayGUIVideo:
 %ifndef __MSDOS__
     GUIOuttextwin2 5,25,187,GUIVideoText8c
 %endif
+    GUIOuttextwin2 5,129,187,GUIVideoText9
     DrawGUIButton 5,128,60,164,71,GUIVideoText8,4,0,0
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
@@ -1818,7 +1814,6 @@ DisplayGUIVideo:
     mov byte[GUItextcolor],164
 .zero3
     GUIOuttextwin2 5,5,15,GUIVideoText1
-
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHSVID+eax],0
@@ -1843,7 +1838,6 @@ DisplayGUIVideo:
 .nocheckboxv2
     GUIDisplayIconWin 5,101,114,[GUITemp]
 .nocheckboxw
-
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUITBWVID+eax],0
@@ -1855,7 +1849,6 @@ DisplayGUIVideo:
 .nocheckboxslw
     GUIDisplayIconWin 5,11,123,[GUITemp]
 .nocheckboxslw2
-
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUI2xVID+eax],0
@@ -1891,7 +1884,6 @@ DisplayGUIVideo:
 .nocheckbox1i2
     GUIDisplayIconWin 5,11,163,[GUITemp]
 .nocheckboxi2
-
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIBIFIL+eax],0
@@ -1903,7 +1895,6 @@ DisplayGUIVideo:
 .nocheckbox1bf
     GUIDisplayIconWin 5,11,163,[GUITemp]
 .nocheckboxbf
-
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUITBVID+eax],0
@@ -1917,7 +1908,6 @@ DisplayGUIVideo:
 .nocheckboxtb
     GUIDisplayIconWin 5,11,163,[GUITemp]
 .nocheckboxtbb
-
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIM7VID+eax],0
@@ -1939,6 +1929,14 @@ DisplayGUIVideo:
 .nocheckboxm73
     GUIDisplayIconWin 5,11,183,[GUITemp]
 %endif
+%ifndef __LINUX__
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[vsyncon],0
+    je .nocheckboxm74
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckboxm74
+    GUIDisplayIconWin 5,115,183,[GUITemp]
+%endif
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIIEVID+eax],0
@@ -1950,7 +1948,6 @@ DisplayGUIVideo:
 .nocheckbox1
     GUIDisplayIconWin 5,11,78,[GUITemp]
 .nocheckbox1b
-
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIFSVID+eax],0
@@ -1962,7 +1959,6 @@ DisplayGUIVideo:
 .nocheckbox2
     GUIDisplayIconWin 5,11,88,[GUITemp]
 .nocheckbox2b
-
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUISSVID+eax],0
@@ -1974,7 +1970,6 @@ DisplayGUIVideo:
 .nocheckbox3
     GUIDisplayIconWin 5,11,98,[GUITemp]
 .nocheckbox3b
-
     DrawGUIWinBox 5,5,26,115,69,167
     DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],5,28,GUIVStA
     cmp byte[GUICHold],5
@@ -2099,6 +2094,7 @@ GUIVideoText7 db 'TRIPLE BUFFERING',0       ; -c
 GUIVideoText8b db 'HI-RESOLUTION MODE7',0       ; -c
 GUIVideoText8c db 'GRAYSCALE MODE',0       ; -c
 GUIVideoText8 db 'SET',0                ; set button
+GUIVideoText9 db 'VSYNC',0       ; -c
 GUIVideoTextH db 'MODE : ',0
 GUIVideoTextw0 db 'LEGEND:',0
 GUIVideoTextw1 db ' S = SCALED TO FIT SCREEN',0

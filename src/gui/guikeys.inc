@@ -812,14 +812,12 @@ GUIOptionKeys:
     mov [cfgnewgfx],al
 .invalidng
 .nonewgfx
-%ifndef __LINUX__
-    cmp dh,'V'
-    jne .novsync
-    xor byte[vsyncon],1
-    mov al,[vsyncon]
-    mov [cfgvsync],al
-.novsync
-%endif
+;    cmp dh,'V'
+;    jne .novsync
+;    xor byte[vsyncon],1
+;    mov al,[vsyncon]
+;    mov [cfgvsync],al
+;.novsync
     cmp dh,'M'
     jne .nommxcopy
     xor byte[FPUCopy],2
