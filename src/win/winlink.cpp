@@ -1539,7 +1539,7 @@ void initwinvideo(void)
          WindowWidth=640;
          WindowHeight=480;
          SurfaceX=512;
-         SurfaceY=448+16;
+         SurfaceY=464;
          break;
       case 6:
          WindowWidth=640;
@@ -2076,8 +2076,8 @@ void drawscreenwin(void)
    ScreenPtr=vidbuffer;
    ScreenPtr+=16*2+32*2+256*2;
 
-   if (resolutn == 239) BlitArea.bottom = 239;
-   if (resolutn == 224) BlitArea.bottom = 223;
+   if (resolutn == 224 && FullScreen == 0) BlitArea.bottom = SurfaceY+16;
+   if (resolutn == 239 && FullScreen == 0) BlitArea.bottom = SurfaceY+16;
 
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
@@ -2095,6 +2095,8 @@ void drawscreenwin(void)
                      xor eax,eax
                      mov esi,ScreenPtr
                      mov edi,SurfBufD
+                     movsx edx,resolutn
+                     sub edx,2
                   Copying3:
                      mov ecx,32
                   CopyLoop:
@@ -2111,7 +2113,7 @@ void drawscreenwin(void)
                      sub edi,512
                      sub esi,512
                      add esi,576
-                     cmp eax,239
+                     cmp eax,edx
                      jne Copying3
                      xor eax,eax
                      mov ecx,128
@@ -2127,6 +2129,8 @@ void drawscreenwin(void)
                      xor eax,eax
                      mov esi,ScreenPtr
                      mov edi,SurfBufD
+                     movsx edx,resolutn
+                     sub edx,2
                   Copying:
                      mov ecx,128
                      rep movsd
@@ -2137,7 +2141,7 @@ void drawscreenwin(void)
                      add esi,576
                      cmp eax,239
                      jne Copying
-                     xor eax,eax
+                     xor eax,edx
                      mov ecx,128
                      rep stosd
                      pop es
@@ -2176,7 +2180,7 @@ void drawscreenwin(void)
                      pop es
                   }
 
-            SURFDW=(DWORD *) &SurfBuf[238*Temp1];
+            SURFDW=(DWORD *) &SurfBuf[(resolutn-1)*Temp1];
             color32=0x7F000000;
             
                for(i=0;i<256;i++)
@@ -2184,7 +2188,7 @@ void drawscreenwin(void)
                   SURFDW[i]=color32;
                }
 
-            SURFDW=(DWORD *) &SurfBuf[239*Temp1];
+            SURFDW=(DWORD *) &SurfBuf[resolutn*Temp1];
             color32=0x7F000000;
          
                for(i=0;i<256;i++)
@@ -2224,6 +2228,8 @@ void drawscreenwin(void)
                      xor ebx,ebx
                      mov esi,ScreenPtr
                      mov edi,SurfBufD
+                     movsx edx,resolutn
+                     sub edx,2
                   Blank1MMX:
                      xor eax,eax
                      mov ecx,160
@@ -2265,7 +2271,7 @@ void drawscreenwin(void)
                      sub edi,640
                      sub esi,512
                      add esi,576
-                     cmp ebx,239
+                     cmp ebx,edx
                      jne Copying2MMX
                      xor eax,eax
                      mov ecx,128
@@ -2282,6 +2288,8 @@ void drawscreenwin(void)
                      xor ebx,ebx
                      mov esi,ScreenPtr
                      mov edi,SurfBufD
+                     movsx edx,resolutn
+                     sub edx,2
                   Blank1:
                      xor eax,eax
                      mov ecx,160
@@ -2306,7 +2314,7 @@ void drawscreenwin(void)
                      sub edi,640
                      sub esi,512
                      add esi,576
-                     cmp ebx,239
+                     cmp ebx,edx
                      jne Copying2
                      xor eax,eax
                      mov ecx,128
@@ -2327,7 +2335,7 @@ void drawscreenwin(void)
                }
             }
 
-            for(j=8;j<223+8;j++)
+            for(j=8;j<(resolutn-1)+8;j++)
             {
                color32=0x7F000000;
                for(i=0;i<32;i++)
@@ -2354,7 +2362,7 @@ void drawscreenwin(void)
                SURFDW=(DWORD *) &SurfBuf[(j)*Temp1];
             }
    
-            for(j=(223+8);j<240;j++)
+            for(j=((resolutn-1)+8);j<240;j++)
             {
                SURFDW=(DWORD *) &SurfBuf[j*Temp1];
 
