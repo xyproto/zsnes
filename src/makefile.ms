@@ -21,8 +21,9 @@
 #Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-ASM=nasm
 DELETECOMMAND=rm
+SLASH=/
+ASM=nasm
 ASMFLAGSORIG=-O1
 CFLAGSORIG=-O3 -march=i586 -ffast-math -fomit-frame-pointer -fno-unroll-loops -Wall -Wno-unused
 LIBSORIG=-lz -lpng
@@ -35,22 +36,23 @@ endif
 ifeq ($(PLATFORM),dos)
   CC = gcc
   CPPC = gpp
-  DELETECOMMAND = del
   OS=__MSDOS__
+  CROSS=no
 endif
 
 ifeq ($(PLATFORM),win32)
   CC = gcc
   CPPC = g++
-  DELETECOMMAND = del
   WINDRES = windres
   OS=__WIN32__
+  CROSS=no
 endif
 
 ifeq ($(PLATFORM),dos-cross)
   CC = i386-pc-msdosdjgpp-gcc
   CPPC = i386-pc-msdosdjgpp-g++
   OS=__MSDOS__
+  CROSS=yes
 endif
 
 ifeq ($(PLATFORM),win32-cross)
@@ -58,6 +60,12 @@ ifeq ($(PLATFORM),win32-cross)
   CPPC = i586-mingw32msvc-g++
   WINDRES = i586-mingw32msvc-windres
   OS=__WIN32__
+  CROSS=yes
+endif
+
+ifeq (${CROSS},no)
+  DELETECOMMAND = del
+  SLASH=\
 endif
 
 ifeq (${OS},__MSDOS__)
@@ -138,7 +146,7 @@ DOSOBJORIG=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/modemrtn.o ${DOSDIR}/vesa
        ${DOSDIR}/zsipx.o
 
 
-OBJSORIG=${CHIPSOBJ} ${CPUOBJ} ${GUIOBJ} ${VIDEOBJ}  ${MAINOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
+OBJSORIG=${CHIPSOBJ} ${CPUOBJ} ${GUIOBJ} ${VIDEOBJ} {MAINOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
 
 ifeq (${OS},__MSDOS__)
 DOSOBJ=${DOSOBJORIG} ${DOSDIR}/dosintrf.o ${DOSDIR}/sound.o ${DOSDIR}/zloader.o ${DOSDIR}/zfile.o
@@ -238,6 +246,11 @@ ${CHIPSDIR}/fxemu2c.o: $< macros.mac ${CHIPDIR}/fxemu2.mac ${CHIPDIR}/fxemu2b.ma
 ${CHIPDIR}/fxtable.o: $< macros.mac
 ${CHIPDIR}/sa1proc.o: $< macros.mac
 
+${GUIDIR}/gui.o: $< ${GUIDIR}/guitools.inc ${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc\ 
+	${GUIDIR}/guiwindp.inc ${GUIDIR}/guinetpl.inc ${GUIDIR}/guikeys.inc ${GUIDIR}/guicheat.inc\
+	${GUIDIR}/guicombo.inc ${GUIDIR}/guiload.inc macros.mac
+${GUIDIR}/menu.o: ${GUIDIR}/menu.asm macros.mac
+
 ${EFFECTSDIR}/water.o: $< ${EFFECTSDIR}/fixsin.h
 ${EFFECTSDIR}/smoke.o: $<
 ${EFFECTSDIR}/burn.o: $<
@@ -278,7 +291,17 @@ ${WINDIR}/winlink.o: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
 	${CPPC} ${CFLAGS} -masm=intel -O0 -o $@ -c ${WINDIR}/winlink.cpp
 
 clean: 
-	${DELETECOMMAND} ${EXE} zsnesd.exe ${DELETEOBJS}
+	${DELETECOMMAND} ${EXE} zsnesd.exe
+	${DELETECOMMAND} *.o
+	${DELETECOMMAND} ${CPUDIR}${SLASH}*.o
+	${DELETECOMMAND} ${VIDEODIR}${SLASH}*.o
+	${DELETECOMMAND} ${CHIPDIR}${SLASH}*.o
+	${DELETECOMMAND} ${EFFECTSDIR}${SLASH}*.o
+	${DELETECOMMAND} ${ZIPDIR}${SLASH}*.o
+	${DELETECOMMAND} ${JMADIR}${SLASH}*.o
+	${DELETECOMMAND} ${DOSDIR}${SLASH}*.o
+	${DELETECOMMAND} ${WINDIR}${SLASH}*.o
+	${DELETECOMMAND} ${GUIDIR}${SLASH}*.o
 
 help:
 	@echo Please specify which platform to compile for with PLATFORM=platform_name
