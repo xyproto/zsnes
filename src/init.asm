@@ -5311,7 +5311,7 @@ NEWSYM showinfogui
     mov dword[CSStatus+25],'NRM '
     cmp byte[SA1Enable],0
     je .nosa1
-    mov dword[CSStatus+25],'SA1 '
+    mov dword[CSStatus+25],'SA-1'
 .nosa1
     cmp byte[RTCEnable],0
     je .nortc
@@ -5319,7 +5319,7 @@ NEWSYM showinfogui
 .nortc
     cmp byte[SPC7110Enable],0
     je .nospc7110
-    mov dword[CSStatus+25],'SP7 '
+    mov dword[CSStatus+25],'SPC7'
 .nospc7110
     cmp byte[SFXEnable],0
     je .nosfx
@@ -5329,18 +5329,38 @@ NEWSYM showinfogui
     je .noc4
     mov dword[CSStatus+25],'C4  '
 .noc4
-    cmp byte[DSP1Type],0
+    cmp byte[DSP1Enable],0
     je .nodsp1
-    mov dword[CSStatus+25],'DSP '
+    mov dword[CSStatus+25],'DSP1'
 .nodsp1
+    cmp byte[DSP2Enable],0
+    je .nodsp2
+    mov dword[CSStatus+25],'DSP2'
+.nodsp2
+    cmp byte[DSP3Enable],0
+    je .nodsp3
+    mov dword[CSStatus+25],'DSP3'
+.nodsp3
+    cmp byte[DSP4Enable],0
+    je .nodsp4
+    mov dword[CSStatus+25],'DSP4'
+.nodsp4
     cmp byte[SDD1Enable],0
     je .nosdd1
-    mov dword[CSStatus+25],'SDD '
+    mov dword[CSStatus+25],'SDD1'
 .nosdd1
     cmp byte[OBCEnable],0
     je .noobc
-    mov dword[CSStatus+25],'OBC '
+    mov dword[CSStatus+25],'OBC1'
 .noobc
+    cmp byte[SETAEnable],0
+    je .noseta
+    mov dword[CSStatus+25],'SETA'
+.noseta
+    cmp byte[SGBEnable],0
+    je .nosgb
+    mov dword[CSStatus+25],'SGB '
+.nosgb
     mov esi,[romdata]
     add esi,7FDCh+2
     cmp byte[romtype],2
@@ -5355,12 +5375,6 @@ NEWSYM showinfogui
     jmp .passed
 .failed
     mov ax,[Checksumvalue2]
-    cmp byte[SPC7110Enable],1
-    jne .nospc7110en
-    cmp byte[NumofBanks],96
-    jne .nospc7110en
-    shl ax,1
-.nospc7110en
     cmp ax,[esi]
     je .passed2
     mov dword[CSStatus+36],'FAIL'
@@ -6116,29 +6130,6 @@ NEWSYM CheckROMType
     jne .nospcdis
     mov byte[disablespcclr],1
 .nospcdis
-    mov eax,[esi]
-    mov byte[DSP1Type],0
-    mov esi,[romdata]
-    add esi,32704+22
-    cmp byte[romtype],2
-    jne .nohirom2
-    add esi,8000h
-.nohirom2
-    mov al,[esi]
-    cmp al,3
-    je .dsp1
-    cmp al,4
-    je .dsp1
-    cmp al,5
-    je .dsp1
-    jmp .nodsp1
-.dsp1
-    call InitDSP
-    mov byte[DSP1Type],1
-    cmp byte[romtype],2
-    jne .nodsp1
-    mov byte[DSP1Type],2
-.nodsp1
     ; banks 0-3Fh
     mov dword[memtabler8+3Fh*4],regaccessbankr8
     mov dword[memtablew8+3Fh*4],regaccessbankw8
@@ -6173,12 +6164,9 @@ NEWSYM CheckROMType
     mov dword[memtabler16+79h*4],memaccessbankr16
     mov dword[memtablew16+79h*4],memaccessbankw16
 
-    mov esi,[romdata]
-    add esi,32704+22
-    cmp byte[romtype],2
-    jne .nohirom2b
-    add esi,8000h
-.nohirom2b
+
+
+    ;Chip Detection
     mov byte[SFXEnable],0
     mov byte[C4Enable],0
     mov byte[SPC7110Enable],0
@@ -6187,58 +6175,176 @@ NEWSYM CheckROMType
     mov byte[SDD1Enable],0
     mov byte[SFXSRAM],0
     mov byte[OBCEnable],0
-    mov al,[esi]
-    cmp al,055h
-    jne .noRTC
-    mov byte[RTCEnable],1
-.noRTC
-    cmp al,0F5h
-    je .yesSPC7110
-    cmp al,0F9h
-    jne .noSPC7110
-.yesSPC7110
-    mov byte[SPC7110Enable],1
-    jmp .nosfx
-.noSPC7110
-    cmp al,0F3h
-    jne .noc4chip
+    mov byte[CHIPSRAM],0
+    mov byte[SGBEnable],0
+    mov byte[SETAEnable],0
+    mov byte[DSP1Enable],0
+    mov byte[DSP2Enable],0
+    mov byte[DSP3Enable],0
+    mov byte[DSP4Enable],0
+
+    mov esi,[romdata]
+    mov eax,NumofBanks
+    cmp eax,128             ;32Mbit/4MB
+    jbe .notEHi             ;Next line, only if greater
+    mov ah,[esi + 040FFDFh]    
+    mov al,[esi + 040FFDEh]
+    xor ah,[esi + 040FFDDh]    
+    xor al,[esi + 040FFDCh]
+    cmp ax,0FFFFh
+    jne  .notEHi
+    add esi,040FFD5h
+    jmp .cntnchpdtct
+.notEHi
+    cmp byte[romtype],2     ;HiROM?
+    jne .nohirom2b
+    add esi,0FFD5h  
+    jmp .cntnchpdtct
+.nohirom2b
+    add esi,07FD5h     
+.cntnchpdtct
+    mov ax,[esi]
+    cmp ax,02530h
+    jne .notOBC1
+    mov byte[OBCEnable],1
+    mov byte[CHIPSRAM],1
+    jmp .endchpdtct
+.notOBC1      
+    cmp ax,04532h
+    jne .notSDD1A
+    mov byte[SDD1Enable],1
+    mov byte[CHIPSRAM],1
+    jmp .endchpdtct
+.notSDD1A
+    cmp ax,04332h
+    jne .notSDD1B
+    mov byte[SDD1Enable],1
+    jmp .endchpdtct
+.notSDD1B
+    cmp ax,0E320h
+    jne .notSGB
+    mov byte[SGBEnable],1
+    jmp .endchpdtct
+.notSGB
+    cmp ax,0F320h
+    jne .notC4
     mov byte[C4Enable],1
-    jmp .nosfx
-.noc4chip
-    and al,0F0h
-    cmp al,10h
-    je .yessfx
-    cmp al,20h
-    je .yesobc
-    cmp al,30h
-    je near .yessa1
-    cmp al,40h
-    je near .yessdd1
-    jmp .nosfx
-.yessfx
-    mov al,[esi]
-    and al,0Fh
-    cmp al,5
-    je .sram
-    cmp al,6
-    jne .nosram
-.sram
-    mov byte[SFXSRAM],1
-.nosram
+    jmp .endchpdtct
+.notC4
+    cmp ax,03523h
+    jne .notSA1A
+    mov byte[SA1Enable],1
+    mov byte[CHIPSRAM],1
+    jmp .endchpdtct
+.notSA1A
+    cmp ax,03423h
+    jne .notSA1B
+    mov byte[SA1Enable],1
+    jmp .endchpdtct
+.notSA1B
+    cmp ax,0F530h
+    jne .notSETAA
+    mov byte[SETAEnable],1
+    mov byte[CHIPSRAM],1
+    jmp .endchpdtct
+.notSETAA
+    cmp ax,0F630h
+    jne .notSETAB
+    mov byte[SETAEnable],1
+    jmp .endchpdtct
+.notSETAB
+    cmp ax,01320h
+    jne .notSFXA
+    mov byte[SFXEnable],1
+    mov byte[SFXSRAM],1 ;Check later if this should be removed
+    jmp .endchpdtct
+.notSFXA
+    cmp ax,01420h
+    jne .notSFXB
+    mov byte[SFXEnable],1
+    mov byte[SFXSRAM],1 ;Check later if this should be removed
+    jmp .endchpdtct
+.notSFXB
+    cmp ax,01520h
+    jne .notSFXC
+    mov byte[SFXEnable],1
+    mov byte[SFXSRAM],1 ;Check later if this should be removed
+    jmp .endchpdtct
+.notSFXC
+    cmp ax,01A20h
+    jne .notSFXD
+    mov byte[SFXEnable],1
+    mov byte[SFXSRAM],1 ;Check later if this should be removed
+    jmp .endchpdtct
+.notSFXD
+    cmp ax,05535h
+    jne .notRTCplain
+    mov byte[RTCEnable],1
+    mov byte[CHIPSRAM],1
+    jmp .endchpdtct
+.notRTCplain
+    cmp ax,0F93Ah
+    jne .notSPC7A
+    mov byte[SPC7110Enable],1
+    mov byte[RTCEnable],1
+    mov byte[CHIPSRAM],1
+    jmp .endchpdtct
+.notSPC7A
+    cmp ax,0F53Ah
+    jne .notSPC7B
+    mov byte[SPC7110Enable],1
+    mov byte[CHIPSRAM],1
+    jmp .endchpdtct
+.notSPC7B
+    cmp ax,00520h
+    jne .notDSP2  
+    mov byte[DSP2Enable],1
+    mov byte[CHIPSRAM],1
+    jmp .endchpdtct
+.notDSP2 
+    cmp ax,00330h
+    jne .notDSP4  
+    mov byte[DSP4Enable],1
+    jmp .endchpdtct
+.notDSP4
+    cmp ax,00530h
+    jne .notDSP3  
+    cmp byte[esi+4],0B2h ;Bandai only
+    jne .notDSP3  
+    mov byte[DSP3Enable],1
+    mov byte[CHIPSRAM],1
+    jmp .endchpdtct
+.notDSP3
+    cmp ah,3
+    jne .notDSP1A  
+    mov byte[DSP1Enable],1
+    jmp .endchpdtct
+.notDSP1A
+    cmp ah,5
+    jne .notDSP1B
+    mov byte[DSP1Enable],1
+    mov byte[CHIPSRAM],1
+    jmp .endchpdtct
+.notDSP1B
+.endchpdtct
+
+    cmp byte[DSP1Enable],1
+    jne .notDSP1Hi
+    call InitDSP
+    mov byte[DSP1Type],1
+    cmp byte[romtype],2
+    jne .notDSP1Hi
+    mov byte[DSP1Type],2
+.notDSP1Hi
+
+  ;Setup Super FX related stuff
+    cmp byte[SFXEnable],1
+    jne near .nosfx
     cmp byte[Sup48mbit],1
     je .sfxokay
     mov byte[yesoutofmemory],1
     jmp .nosfx
 .sfxokay
-    mov esi,[romdata]
-    add esi,32704
-    cmp dword[esi],'META'
-    jne .notsfx
-.yesobc
-    mov byte[OBCEnable],1
-    jmp .nosfx
-.notsfx
-    mov byte[SFXEnable],1
     mov dword[memtabler8+70h*4],sfxaccessbankr8
     mov dword[memtablew8+70h*4],sfxaccessbankw8
     mov dword[memtabler16+70h*4],sfxaccessbankr16
@@ -6287,13 +6393,8 @@ NEWSYM CheckROMType
 .nosramsfx
     call InitFxTables
 .nosfx
-    jmp .nosa1
-.yessdd1
-    mov byte[SDD1Enable],1
-    jmp .nosa1
-.yessa1
-    mov byte[SA1Enable],1
-.nosa1
+    
+    ;General Stuff all mixed together
     mov dword[SfxSFR],0
     mov byte[SfxSCMR],0
     call initregr
@@ -6336,6 +6437,7 @@ NEWSYM CheckROMType
     ret
 
 SECTION .bss
+NEWSYM CHIPSRAM, resb 1
 NEWSYM SFXEnable, resb 1
 NEWSYM C4Enable, resb 1
 NEWSYM SPC7110Enable, resb 1
@@ -6343,6 +6445,12 @@ NEWSYM RTCEnable, resb 1
 NEWSYM SA1Enable, resb 1
 NEWSYM SDD1Enable, resb 1
 NEWSYM OBCEnable, resb 1
+NEWSYM SETAEnable, resb 1
+NEWSYM SGBEnable, resb 1
+NEWSYM DSP1Enable, resb 1
+NEWSYM DSP2Enable, resb 1
+NEWSYM DSP3Enable, resb 1
+NEWSYM DSP4Enable, resb 1
 NEWSYM C4RamR,   resd 1
 NEWSYM C4RamW,   resd 1
 NEWSYM C4Ram,   resd 1
