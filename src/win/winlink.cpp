@@ -1698,7 +1698,7 @@ void initwinvideo(void)
 
       hMainWindow = CreateWindow( "ZSNESWIN", WinName, WS_VISIBLE|WS_POPUP,X,Y,  //WS_OVERLAPPED "ZSNESWIN"
                                  WindowWidth,WindowHeight,NULL,NULL,hInst,NULL);
-      
+
       CheckPriority();
       CheckAlwaysOnTop();
       CheckScreenSaver();
