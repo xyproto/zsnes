@@ -246,12 +246,10 @@ extern "C" void CheckAlwaysOnTop()
       else SetWindowPos(hMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 }
 
-BOOL IsMinimized = FALSE;
-
 extern "C" void MinimizeWindow()
 {
    ShowWindow(hMainWindow, SW_MINIMIZE);
-   IsMinimized = TRUE;
+   IsActivated = 0;
 }
 
 extern "C" BYTE MouseWheel;
@@ -438,10 +436,8 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          IsActivated = 1;
          if(LOWORD(wParam) != WA_INACTIVE)
             if(!FirstActivate) initwinvideo(); 
-         if(FullScreen == 0)
-            if(IsMinimized == TRUE && AlwaysOnTop == 1) CheckAlwaysOnTop();              
          InputAcquire();
-         if(FirstActivate) FirstActivate = 0;
+         if(FirstActivate == 1) FirstActivate = 0;
          break;
       case WM_SETFOCUS:
          if(FullScreen == 0) ShowWindow(hMainWindow, SW_SHOWNORMAL);
