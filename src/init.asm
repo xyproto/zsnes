@@ -4498,14 +4498,12 @@ NEWSYM CheckROMType
 ;Super FX has SRAM, but only a battery to save it on the latter two
     cmp ax,01320h
     jne .notSFXA
-int 3h
     mov byte[SFXEnable],1
     jmp .endchpdtct
 .notSFXA
     cmp ax,01420h
     jne .notSFXB
     mov byte[SFXEnable],1
-int 3h
     jmp .endchpdtct
 .notSFXB
     cmp ax,01520h
