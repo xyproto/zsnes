@@ -1625,6 +1625,7 @@ void CheckTimers(void)
 //         popad
 //         }
 	      GUI36hzcall();
+	      DTimerCheck = 1;
          start += update_ticks_pc;
       }
    }
