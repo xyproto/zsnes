@@ -1663,6 +1663,18 @@ NEWSYM headerhack
     mov byte[opexec358cph],47
 .notclocktower
 
+    mov esi,[romdata]
+    add esi,07FC0h
+    cmp dword[esi],'EQUI'
+    jne .notequinox
+    cmp dword[esi+4],'NOX '
+    jne .notequinox
+    mov byte[opexec268],243
+    mov byte[opexec358],234
+    mov byte[opexec268cph],58
+    mov byte[opexec358cph],58
+.notequinox
+
     ; Lamborgini Challenge - -p 110
     mov esi,[romdata]
     add esi,07FC0h
