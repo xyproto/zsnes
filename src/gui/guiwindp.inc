@@ -774,16 +774,16 @@ DisplayGUILoad:
     DrawGUIWinBox 1,160,135,228,135,dl
 
     mov dl,[GUIWincol]
-    DrawGUIWinBox 1,5,144,228,144,dl
+    DrawGUIWinBox 1,5,144,227,144,dl
     mov dl,[GUIWincol]
     add dl,1
-    DrawGUIWinBox 1,4,144,3,152,dl
+    DrawGUIWinBox 1,4,145,3,152,dl
     mov dl,[GUIWincol]
     add dl,4
-    DrawGUIWinBox 1,5,153,228,153,dl
+    DrawGUIWinBox 1,5,153,227,153,dl
     mov dl,[GUIWincol]
     add dl,3
-    DrawGUIWinBox 1,229,144,228,152,dl
+    DrawGUIWinBox 1,229,145,228,152,dl
     ret
 
 SECTION .data
@@ -1539,13 +1539,13 @@ DisplayGUIOption:
     mov dword[GUIWincol],148
 .nozero3
     mov dl,[GUIWincol]
-    DrawGUIWinBox 4,74,11,94,11,dl
+    DrawGUIWinBox 4,75,11,93,11,dl
     mov dl,[GUIWincol]
     add dl,1
-    DrawGUIWinBox 4,73,11,73,19,dl
+    DrawGUIWinBox 4,74,12,74,19,dl
     mov dl,[GUIWincol]
     add dl,4
-    DrawGUIWinBox 4,74,20,94,20,dl
+    DrawGUIWinBox 4,75,20,93,20,dl
     mov dl,[GUIWincol]
     add dl,3
     DrawGUIWinBox 4,95,12,94,19,dl
@@ -1583,13 +1583,13 @@ DisplayGUIOption:
     mov dword[GUIWincol],148
 .nozero2
     mov dl,[GUIWincol]
-    DrawGUIWinBox 4,95,11,115,11,dl
+    DrawGUIWinBox 4,96,11,114,11,dl
     mov dl,[GUIWincol]
     add dl,1
-    DrawGUIWinBox 4,94,11,93,19,dl
+    DrawGUIWinBox 4,95,12,94,19,dl
     mov dl,[GUIWincol]
     add dl,4
-    DrawGUIWinBox 4,95,20,115,20,dl
+    DrawGUIWinBox 4,96,20,114,20,dl
     mov dl,[GUIWincol]
     add dl,3
     DrawGUIWinBox 4,115,12,115,19,dl
@@ -2465,6 +2465,30 @@ DisplayGUISound:
 .nocheckbox12
     GUIDisplayIconWin 6,111,183,[GUITemp]
 %endif
+   
+    ; Draw borders
+    mov dword[GUIWincol],148+10
+    cmp byte[cwindrawn],1
+    jne .noone3
+    mov dword[GUIWincol],148+5
+.noone3
+    cmp byte[cwindrawn],0
+    jne .nozero3
+    mov dword[GUIWincol],148
+.nozero3
+    mov dl,[GUIWincol]
+    DrawGUIWinBox 6,15,60,69,60,dl ;top
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 6,14,61,13,69,dl ;left
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 6,15,70,69,70,dl ;bottom
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 6,71,61,70,69,dl ;right
+    ; End draw borders  
+    
     DrawGUIWinBox 6,15,61,69,69,167
     mov dword[GUITemp],GUISoundText7
     xor eax,eax
