@@ -133,6 +133,14 @@ VOID *blur_temp=0;
 VOID *blur_buffer=0;
 }
 
+HANDLE hLock, hThread;
+DWORD dwThreadId, dwThreadParam, semaphore_run;
+
+extern "C" int SemaphoreMax = 5;
+
+extern "C" void InitSemaphore();
+extern "C" void ShutdownSemaphore();
+
 static char dinput8_dll[] = {"dinput8.dll\0"};
 static char dinput8_imp[] = {"DirectInput8Create\0"};
 
@@ -1431,36 +1439,64 @@ extern "C" {
 
 void WinUpdateDevices();
 
-DWORD NeedBuffer=1;
 short Buffer[1800*2];
-int Running=0;
 
-unsigned char Noise[]={ 27,232,234,138,187,246,176,81,25,241,1,127,154,190,195,103,231,165,220,238,
-232,189,57,201,123,75,63,143,145,159,13,236,191,142,56,164,222,80,88,13,
-148,118,162,212,157,146,176,0,241,88,244,238,51,235,149,50,77,212,186,241,
-88,32,23,206,1,24,48,244,248,210,253,77,19,100,83,222,108,68,11,58,
-152,161,223,245,4,105,3,82,15,130,171,242,141,2,172,218,152,97,223,157,
-93,75,83,238,104,238,131,70,22,252,180,82,110,123,106,133,183,209,48,230,
-157,205,27,21,107,63,85,164};
-
-   int X, Y;
-   DWORD pitch;
-	MSG msg;
-   DWORD SurfBufD;
-   int count, x,count2;
-   HRESULT hr;
-	int i;
-	short *Sound;
-	DWORD CurrentPos;
-	DWORD WritePos;
-   DWORD SoundBufD;
-   DWORD SoundBufD2;
-
+int X, Y;
+DWORD pitch;
+MSG msg;
+DWORD SurfBufD;
+int count, x,count2;
+HRESULT hr;
+int i;
+short *Sound;
+DWORD CurrentPos;
+DWORD WritePos;
 DWORD T60HZEnabled=0;
 DWORD T36HZEnabled=0;
 
+DWORD WINAPI SemaphoreThread( LPVOID lpParam )
+{
+   while(semaphore_run)
+   {
+      if (T60HZEnabled)
+      {
+         ReleaseSemaphore(hLock, 1, NULL);
+         Sleep(1);
+      }
+      else
+         Sleep(20);
+   }
+   return 0;
+}
+
+void InitSemaphore()
+{
+   if (hLock) return;
+
+   hLock = CreateSemaphore(NULL, 1, SemaphoreMax, NULL);
+
+   semaphore_run = 1;
+
+   hThread = CreateThread(NULL, 0, SemaphoreThread, &dwThreadParam, 0, &dwThreadId);
+}
+
+void ShutdownSemaphore()
+{
+   if (!hLock) return;
+
+   semaphore_run = 0;
+
+   WaitForSingleObject(hThread, INFINITE);
+   CloseHandle(hThread);
+
+   CloseHandle(hLock);
+
+   hLock = NULL;
+}
+
 extern unsigned int pressed;
 extern unsigned char romispal;
+
 void Start60HZ(void)
 {
    update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000;
@@ -1479,11 +1515,15 @@ void Start60HZ(void)
 
    T36HZEnabled=0;
    T60HZEnabled=1;
+
+   InitSemaphore();
+
 }
 
 void Stop60HZ(void)
 {
    T60HZEnabled=0;
+   ShutdownSemaphore();
 }
 
 void Start36HZ(void)
@@ -2053,6 +2093,7 @@ extern void DrawWin256x224x16MB();
 extern void DrawWin256x224x32();
 extern void DrawWin256x224x32MB();
 extern void DrawWin320x240x16();
+extern BYTE blah;
 
 extern _int64 copymaskRB = 0x001FF800001FF800;
 extern _int64 copymaskG = 0x0000FC000000FC00;
@@ -2306,12 +2347,9 @@ void WinUpdateDevices()
    if (keys2[0x38] != 0 && keys2[0x3E] != 0) exit(0);
    if (keys2[0xB8] != 0 && keys2[0x1C] != 0 || keys2[0x38] != 0 && keys2[0x1C] != 0)
    {
-      _asm
-      {
-         pushad
-         call SwitchFullScreen
-         popad
-      }
+char buf[50];
+sprintf(buf, "%b", blah);
+MessageBox(NULL, buf, buf, MB_OK);
       return;
    }
 
@@ -2623,6 +2661,20 @@ void SetMouseX(int X)
 void SetMouseY(int Y)
 {
    MouseY = Y;
+}
+
+void FrameSemaphore()
+{
+   if (T60HZEnabled == 1)
+   {
+      int delay;
+      QueryPerformanceCounter((LARGE_INTEGER*)&end);
+
+      delay = ((update_ticks_pc - (end - start)) * 1000 / freq) - 3;
+   
+      if (delay>0) WaitForSingleObject(hLock, delay);
+
+   }
 }
 
 void ZsnesPage()

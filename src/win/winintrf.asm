@@ -133,7 +133,7 @@ EXTSYM V8Mode,GrayscaleMode
 EXTSYM PrevWinMode,PrevFSMode
 EXTSYM _imp__GetLocalTime@4
 
-;EXTSYM FrameSemaphore
+EXTSYM FrameSemaphore
 
 %ifdef __MINGW__
 NEWSYM WinIntRFAsmStart
@@ -1556,7 +1556,7 @@ NEWSYM Check60hz
     ; Call the timer update function here
     pushad
     call CheckTimers
-;    call FrameSemaphore
+    call FrameSemaphore
     popad
     ret
 
