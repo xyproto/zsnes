@@ -1809,6 +1809,11 @@ extern unsigned int spcnumread, spchalted;
 extern unsigned char NextLineCache, sramsavedis, sndrot, regsbackup[3019];
 extern unsigned char yesoutofmemory;
 
+void SetupROM();
+void initsnes();
+void outofmemfix();
+void GUIDoReset();
+
 void powercycle()
 {
   memset(sram, 0xFF, 8192*4);

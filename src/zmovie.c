@@ -46,15 +46,16 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define mkdir(path) mkdir(path, (S_IRWXU|S_IRWXG|S_IRWXO)) //0777
 #endif
 
-extern unsigned int versionNumber;
-extern unsigned int CRC32;
-extern unsigned int cur_zst_size;
-extern bool romispal;
+extern unsigned int versionNumber, CRC32, cur_zst_size;
 extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
-extern unsigned char MovieStartMethod;
-void powercycle();
+extern unsigned int MsgCount, MessageOn;
+extern unsigned char MovieStartMethod, GUIReset, ReturnFromSPCStall;
+extern unsigned char MovieProcessing, *Msgptr;
+extern bool romispal;
 bool firstloop;
 
+void GUIDoReset();
+void powercycle();
 void zst_save(FILE *, bool);
 bool zst_load(FILE *);
 
@@ -558,7 +559,9 @@ static void zmv_create(char *filename)
         powercycle();
         break;
       case zmv_sm_reset:
-        //resetcycle(); // not done yet
+        GUIReset = 1;
+        asm_call(GUIDoReset);
+        ReturnFromSPCStall = 0;
         break;
     }    
 
@@ -712,7 +715,7 @@ static bool zmv_open(char *filename)
     if (zmv_vars.header.zsnes_version != (versionNumber & 0xFFFF))
     {
       zst_load(zmv_vars.fp);
-      //Also need to display a warning of some sort
+      Msgptr = "MOVIE VERSION MISMATCH - MAY DESYNC.";
     }
     else
     {
@@ -726,10 +729,14 @@ static bool zmv_open(char *filename)
           fseek(zmv_vars.fp, zmv_vars.header.zst_size, SEEK_CUR);
           break;
         case zmv_sm_reset:
-          //resetcycle(); // not done yet
-          //fseek(zmv_vars.fp, zmv_vars.header.zst_size, SEEK_CUR);
+          GUIReset = 1;
+          asm_call(GUIDoReset);
+          ReturnFromSPCStall = 0;
+          fseek(zmv_vars.fp, zmv_vars.header.zst_size, SEEK_CUR);
           break;
       }
+
+      Msgptr = "MOVIE STARTED.";
     }
     
     firstloop = true;
@@ -1383,9 +1390,6 @@ MovieProcessing
 
 */
 
-extern unsigned int MsgCount, MessageOn;
-extern unsigned char MovieProcessing, *Msgptr;
-
 void MovieInsertChapter()
 {
   switch (MovieProcessing)
@@ -1528,15 +1532,11 @@ void MovieStop()
   else { firstloop = false; }
 }
 
-extern unsigned int MovieCounter, statefileloc, Totalbyteloaded, curexecstate;
-extern unsigned int nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
-extern unsigned char GUIQuit, fnamest[512], CMovieExt, RecData[16], soundon;
-extern unsigned char NextLineCache, sramsavedis, UseRemoteSRAMData;
-extern unsigned char UnableMovie2[24], UnableMovie3[23];
+extern unsigned int statefileloc;
+extern unsigned char GUIQuit, fnamest[512], CMovieExt;
 extern unsigned char RewindStates;
 
 void SRAMChdir();
-void loadstate2();
 void ChangetoLOADdir();
 
 void MoviePlay()
@@ -1562,7 +1562,6 @@ void MoviePlay()
       memcpy(&fnamest[statefileloc-3], ".sub", 4);
       if (isdigit(CMovieExt)) { fnamest[statefileloc] = CMovieExt; }
       MovieSub_Open(fnamest+1);
-      Msgptr = "MOVIE STARTED.";
       MessageOn = MsgCount;
     }
     else
