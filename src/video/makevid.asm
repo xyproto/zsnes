@@ -51,8 +51,10 @@ NEWSYM MakeVidAsmStart
 
 ;drawspritesprio
 
-NEWSYM bgcoloradder, db 0
-NEWSYM res512switch, db 0
+SECTION .bss
+NEWSYM bgcoloradder, resb 1
+NEWSYM res512switch, resb 1
+SECTION .text
 
 ;    mov cl,[bshifter]
 ;*******************************************************
@@ -175,18 +177,22 @@ NEWSYM res512switch, db 0
     call drawmode7extbg2
 %endmacro
 
+SECTION .data
 NEWSYM MosaicYAdder, dw 0,0,0,1,0,2,1,0,0,4,2,2,3,1,0,7
 
-NEWSYM pwinbgenab, db 0
-NEWSYM pwinbgtype, dd 0
-NEWSYM winonbtype, db 0
-NEWSYM dualwinbg,  db 0
-NEWSYM pwinspenab, db 0
-NEWSYM pwinsptype, dd 0
-NEWSYM winonstype, db 0
-NEWSYM dualwinsp,  db 0
 NEWSYM cwinptr,    dd winbgdata
-NEWSYM dwinptrproc, dd 0
+
+SECTION .bss
+NEWSYM pwinbgenab, resb 1
+NEWSYM pwinbgtype, resd 1
+NEWSYM winonbtype, resb 1
+NEWSYM dualwinbg,  resb 1
+NEWSYM pwinspenab, resb 1
+NEWSYM pwinsptype, resd 1
+NEWSYM winonstype, resb 1
+NEWSYM dualwinsp,  resb 1
+NEWSYM dwinptrproc, resd 1
+SECTION .text
 
 ; is this macro even used?
 %macro ClearWindowData 0
@@ -731,11 +737,13 @@ NEWSYM dualwinxnor
     jnz .loopxor2
     ret
 
+SECTION .bss
 ;pwinspenab db 0
 ;pwinsptype dd 0
 ;winonstype db 0
 ;dualwinsp  db 0
-NEWSYM winonsp, db 0
+NEWSYM winonsp, resb 1
+SECTION .text
 
 NEWSYM makewindowsp
     mov al,[winobjen]
@@ -890,11 +898,13 @@ NEWSYM makedualwinsp
     jmp dualstartprocess
 
 ; window logic data
-NEWSYM windowdata, times 16 db 0
-NEWSYM numwin, db 0
-NEWSYM multiwin, db 0
-NEWSYM multiclip, db 0
-NEWSYM multitype, db 0
+SECTION .bss
+NEWSYM windowdata, resb 16
+NEWSYM numwin, resb 1
+NEWSYM multiwin, resb 1
+NEWSYM multiclip, resb 1
+NEWSYM multitype, resb 1
+SECTION .text
 
 ;    jmp .finishwin
 %macro procwindow 1
@@ -1069,7 +1079,9 @@ NEWSYM procspritesmain
 .nosprites
     ret
 
-NEWSYM curbgnum, db 0
+SECTION .bss
+NEWSYM curbgnum, resb 1
+SECTION .text
 
 NEWSYM drawbackgrndsub
     mov esi,[colormodeofs]
@@ -1294,39 +1306,41 @@ NEWSYM procbackgrnd
 .noback
     ret
 
-NEWSYM nextprimode, db 0
-NEWSYM cursprloc,   dd 0
-NEWSYM curcolor,    db 0
-NEWSYM curtileptr,  dw 0
+SECTION .bss
+NEWSYM nextprimode, resb 1
+NEWSYM cursprloc,   resd 1
+NEWSYM curcolor,    resb 1
+NEWSYM curtileptr,  resw 1
 ; esi = pointer to video buffer
 ; edi = pointer to tile data
 ; ebx = cached memory
 ; al = current x position
-NEWSYM bg1vbufloc,  dd 0
-NEWSYM bg2vbufloc,  dd 0
-NEWSYM bg3vbufloc,  dd 0
-NEWSYM bg4vbufloc,  dd 0
-NEWSYM bg1tdatloc,  dd 0
-NEWSYM bg2tdatloc,  dd 0
-NEWSYM bg3tdatloc,  dd 0
-NEWSYM bg4tdatloc,  dd 0
-NEWSYM bg1tdabloc,  dd 0
-NEWSYM bg2tdabloc,  dd 0
-NEWSYM bg3tdabloc,  dd 0
-NEWSYM bg4tdabloc,  dd 0
-NEWSYM bg1cachloc,  dd 0
-NEWSYM bg2cachloc,  dd 0
-NEWSYM bg3cachloc,  dd 0
-NEWSYM bg4cachloc,  dd 0
-NEWSYM bg1yaddval,  dd 0
-NEWSYM bg2yaddval,  dd 0
-NEWSYM bg3yaddval,  dd 0
-NEWSYM bg4yaddval,  dd 0
-NEWSYM bg1xposloc,  dd 0
-NEWSYM bg2xposloc,  dd 0
-NEWSYM bg3xposloc,  dd 0
-NEWSYM bg4xposloc,  dd 0
-NEWSYM alreadydrawn, db 0
+NEWSYM bg1vbufloc,  resd 1
+NEWSYM bg2vbufloc,  resd 1
+NEWSYM bg3vbufloc,  resd 1
+NEWSYM bg4vbufloc,  resd 1
+NEWSYM bg1tdatloc,  resd 1
+NEWSYM bg2tdatloc,  resd 1
+NEWSYM bg3tdatloc,  resd 1
+NEWSYM bg4tdatloc,  resd 1
+NEWSYM bg1tdabloc,  resd 1
+NEWSYM bg2tdabloc,  resd 1
+NEWSYM bg3tdabloc,  resd 1
+NEWSYM bg4tdabloc,  resd 1
+NEWSYM bg1cachloc,  resd 1
+NEWSYM bg2cachloc,  resd 1
+NEWSYM bg3cachloc,  resd 1
+NEWSYM bg4cachloc,  resd 1
+NEWSYM bg1yaddval,  resd 1
+NEWSYM bg2yaddval,  resd 1
+NEWSYM bg3yaddval,  resd 1
+NEWSYM bg4yaddval,  resd 1
+NEWSYM bg1xposloc,  resd 1
+NEWSYM bg2xposloc,  resd 1
+NEWSYM bg3xposloc,  resd 1
+NEWSYM bg4xposloc,  resd 1
+NEWSYM alreadydrawn, resb 1
+SECTION .text
 
 NEWSYM fillwithnothing
     push edi
@@ -1340,8 +1354,11 @@ NEWSYM fillwithnothing
     pop edi
     ret
 
-NEWSYM bg3draw, db 0
-NEWSYM maxbr,   db 0
+SECTION .bss
+NEWSYM bg3draw, resb 1
+NEWSYM maxbr,   resb 1
+SECTION .text
+
 NEWSYM blanker
     ; calculate current video offset
     push ebx
@@ -1365,9 +1382,11 @@ NEWSYM blanker
     ret
 
 ALIGN32
-NEWSYM bg3high2, dd 0
-NEWSYM newengen, dd 0
-NEWSYM cwinenabm, dd 0
+SECTION .bss
+NEWSYM bg3high2, resd 1
+NEWSYM newengen, resd 1
+NEWSYM cwinenabm, resd 1
+SECTION .text
 
 NEWSYM drawline
     mov al,[winenabs]
@@ -1678,10 +1697,12 @@ NEWSYM priority2
     ret
 
 ALIGN32
-NEWSYM tempbuffer, times 33 dd 0
-NEWSYM currentobjptr, dd 0
-NEWSYM curmosaicsz,   dd 0
-NEWSYM extbgdone, db 0
+SECTION .bss
+NEWSYM tempbuffer, resd 33
+NEWSYM currentobjptr, resd 1
+NEWSYM curmosaicsz,   resd 1
+NEWSYM extbgdone, resb 1
+SECTION .text
 
 
 NEWSYM processmode7
@@ -2415,9 +2436,11 @@ NEWSYM drawspritespriowinon
     jnz near .loopobj2
     ret
 
+SECTION .data
 NEWSYM prfixobjl, db 0
 NEWSYM csprbit, db 1
 NEWSYM csprprlft, db 0
+SECTION .text
 ;*******************************************************
 ; Processes & Draws 8x8 tiles in 2, 4, & 8 bit mode
 ;*******************************************************
@@ -2626,8 +2649,10 @@ NEWSYM proc16x8
     ; al = current x position
     ret
 
-NEWSYM drawn, db 0
-NEWSYM curbgpr, db 0    ; 00h = low priority, 20h = high priority
+SECTION .bss
+NEWSYM drawn, resb 1
+NEWSYM curbgpr, resb 1    ; 00h = low priority, 20h = high priority
+SECTION .text
 
 %macro drawpixel8b8x8 3
     or %1,%1
@@ -2647,7 +2672,9 @@ NEWSYM curbgpr, db 0    ; 00h = low priority, 20h = high priority
 %2
 %endmacro
 
-NEWSYM winptrref, dd 0
+SECTION .bss
+NEWSYM winptrref, resd 1
+SECTION .text
 
 NEWSYM draw8x8
     cmp byte[osm2dis],1
@@ -2917,8 +2944,10 @@ NEWSYM draw8x8winon
     jnz near .loopa
     ret
 
-NEWSYM alttile, db 0
-NEWSYM hirestiledat, times 256 db 0
+SECTION .bss
+NEWSYM alttile, resb 1
+NEWSYM hirestiledat, resb 256
+SECTION .text
 
 NEWSYM draw16x8
     push eax
@@ -3498,7 +3527,9 @@ NEWSYM draw16x8bwinon
     jnz near .loopa
     ret
 
+SECTION .data
 NEWSYM extraleft, db 0,0,0,1,0,1,2,2,0,2,3,1,2,4,2,1
+SECTION .text
 
 NEWSYM domosaic
     mov esi,xtravbuf+16
@@ -3645,20 +3676,22 @@ NEWSYM dowindow
 
 ALIGN32
 
-NEWSYM yadder,     dd 0
-NEWSYM yrevadder,  dd 0
-NEWSYM tempcach,   dd 0          ; points to cached memory
-NEWSYM temptile,   dd 0          ; points to the secondary video pointer
-NEWSYM bgptr,      dd 0
-NEWSYM bgptrb,     dd 0
-NEWSYM bgptrc,     dd 0
-NEWSYM bgptrd,     dd 0
-NEWSYM bgptrx1,    dd 0
-NEWSYM bgptrx2,    dd 0
-NEWSYM curvidoffset, dd 0
-NEWSYM winon,      dd 0
-NEWSYM bgofwptr,   dd 0
-NEWSYM bgsubby,    dd 0
+SECTION .bss
+NEWSYM yadder,     resd 1
+NEWSYM yrevadder,  resd 1
+NEWSYM tempcach,   resd 1        ; points to cached memory
+NEWSYM temptile,   resd 1        ; points to the secondary video pointer
+NEWSYM bgptr,      resd 1
+NEWSYM bgptrb,     resd 1
+NEWSYM bgptrc,     resd 1
+NEWSYM bgptrd,     resd 1
+NEWSYM bgptrx1,    resd 1
+NEWSYM bgptrx2,    resd 1
+NEWSYM curvidoffset, resd 1
+NEWSYM winon,      resd 1
+NEWSYM bgofwptr,   resd 1
+NEWSYM bgsubby,    resd 1
+SECTION .text
 
 
 NEWSYM draw8x8offset
@@ -3915,21 +3948,23 @@ NEWSYM draw8x8winonoffset
 
 ALIGN32
 
-NEWSYM offsetmodeptr, dd 0
-NEWSYM offsetptra,    dd 0
-NEWSYM offsetptrb,    dd 0
-NEWSYM prevtempcache, dd 0
-NEWSYM prevoffsetdat, dd 0
-NEWSYM offsetenab,    dd 0
-NEWSYM offsettilel,   dd 0
-NEWSYM offsetrevval,  dd 0
-NEWSYM posyscroll,    dd 0
-NEWSYM offsetmcol,    dd 0
-NEWSYM offsetmshl,    dd 0
-NEWSYM offsetmptr,    dd 0
-NEWSYM offsetmtst,    dd 0
-NEWSYM offsetmclr,    dd 0
-NEWSYM offsetcedi,    dd 0
+SECTION .bss
+NEWSYM offsetmodeptr, resd 1
+NEWSYM offsetptra,    resd 1
+NEWSYM offsetptrb,    resd 1
+NEWSYM prevtempcache, resd 1
+NEWSYM prevoffsetdat, resd 1
+NEWSYM offsetenab,    resd 1
+NEWSYM offsettilel,   resd 1
+NEWSYM offsetrevval,  resd 1
+NEWSYM posyscroll,    resd 1
+NEWSYM offsetmcol,    resd 1
+NEWSYM offsetmshl,    resd 1
+NEWSYM offsetmptr,    resd 1
+NEWSYM offsetmtst,    resd 1
+NEWSYM offsetmclr,    resd 1
+NEWSYM offsetcedi,    resd 1
+SECTION .text
 
 ;*******************************************************
 ; Processes & Draws 16x16 tiles in 2, 4, & 8 bit mode
@@ -4238,8 +4273,10 @@ NEWSYM draw16x16
     jne near domosaic
     ret
 
-.yadd      dw 0
-.yflipadd  dw 0
+SECTION .bss
+.yadd      resw 1
+.yflipadd  resw 1
+SECTION .text
 
 NEWSYM draw16x16winon
 .domosaic
@@ -4379,10 +4416,12 @@ NEWSYM draw16x16winon
     jnz near .loopa
     ret
 
-NEWSYM temp,       db 0
-NEWSYM bshifter,   db 0
-NEWSYM a16x16xinc, db 0
-NEWSYM a16x16yinc, db 0
+SECTION .bss
+NEWSYM temp,       resb 1
+NEWSYM bshifter,   resb 1
+NEWSYM a16x16xinc, resb 1
+NEWSYM a16x16yinc, resb 1
+SECTION .text
 
 
 NEWSYM MakeVidAsmEnd

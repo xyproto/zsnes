@@ -1354,21 +1354,23 @@ FALSE         dd 0x00000000, 0x00000000
 TRUE          dd 0xffffffff, 0xffffffff
 ONE           dd 0x00010001, 0x00010001
 
-ACPixel       times 8 db 0
-Mask1         times 8 db 0
-Mask2         times 8 db 0
 
-I56Pixel      times 8 db 0
-I23Pixel      times 8 db 0
-Mask26        times 8 db 0
-Mask35        times 8 db 0
-Mask26b       times 8 db 0
-Mask35b       times 8 db 0
-product1a     times 8 db 0
-product1b     times 8 db 0
-product2a     times 8 db 0
-product2b     times 8 db 0
-final1a       times 8 db 0
-final1b       times 8 db 0
-final2a       times 8 db 0
-final2b       times 8 db 0
+        SECTION .bss ALIGN = 32
+ACPixel       resb 8
+Mask1         resb 8
+Mask2         resb 8
+
+I56Pixel      resb 8
+I23Pixel      resb 8
+Mask26        resb 8
+Mask35        resb 8
+Mask26b       resb 8
+Mask35b       resb 8
+product1a     resb 8
+product1b     resb 8
+product2a     resb 8
+product2b     resb 8
+final1a       resb 8
+final1b       resb 8
+final2a       resb 8
+final2b       resb 8

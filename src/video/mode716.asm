@@ -552,45 +552,47 @@ drawmode7ngextbg216bsnt:
     ExtBG2 ExtBGNormalsnt
 
 ALIGN32
-mtemp        dd 0       ; for byte move left
-mmode7xpos   dd 0       ; x position
-mtempa2      dd 0       ; keep this blank!
-mmode7xrpos  dd 0       ; x position
-mtempa       dd 0       ; keep this blank!
-mmode7ypos   dd 0       ; y position
-mtempb2      dd 0       ; keep this blank!
-mmode7yrpos  dd 0       ; y position
-mtempb       dd 0       ; keep this blank!
-mmode7xadder dd 0       ; number to add for x
-mtempc2      dd 0       ; keep this blank!
-mmode7xadd2  dd 0       ; number to add for x
-mtempc       dd 0       ; keep this blank!
-mmode7yadder dd 0       ; number to add for y
-mtempd2      dd 0       ; keep this blank!
-mmode7yadd2  dd 0       ; number to add for y
-mtempd       dd 0       ; keep this blank!
-mmode7ptr    dd 0       ; pointer value
-mmode7xinc   dd 0       ; number to add for x
-mmode7xincc  dd 0       ; range check for x
-mmode7yinc   dd 0       ; number to add for y
-mmode7xsloc  dd 0       ; which screen x
-mmode7ysloc  dd 0       ; which screen y
-mmode7xsrl   dd 0       ; which relative screen x
-mmode7ysrl   dd 0       ; which relative screen y
-mcxloc       dw 0       ; cx location
-mcyloc       dw 0       ; cy location
-M7HROn       dd 0       ; High Resolution On
-switchtorep3 dd 0
+SECTION .bss
+mtemp        resd 1       ; for byte move left
+mmode7xpos   resd 1       ; x position
+mtempa2      resd 1       ; keep this blank!
+mmode7xrpos  resd 1       ; x position
+mtempa       resd 1       ; keep this blank!
+mmode7ypos   resd 1       ; y position
+mtempb2      resd 1       ; keep this blank!
+mmode7yrpos  resd 1       ; y position
+mtempb       resd 1       ; keep this blank!
+mmode7xadder resd 1       ; number to add for x
+mtempc2      resd 1       ; keep this blank!
+mmode7xadd2  resd 1       ; number to add for x
+mtempc       resd 1       ; keep this blank!
+mmode7yadder resd 1       ; number to add for y
+mtempd2      resd 1       ; keep this blank!
+mmode7yadd2  resd 1       ; number to add for y
+mtempd       resd 1       ; keep this blank!
+mmode7ptr    resd 1       ; pointer value
+mmode7xinc   resd 1       ; number to add for x
+mmode7xincc  resd 1       ; range check for x
+mmode7yinc   resd 1       ; number to add for y
+mmode7xsloc  resd 1       ; which screen x
+mmode7ysloc  resd 1       ; which screen y
+mmode7xsrl   resd 1       ; which relative screen x
+mmode7ysrl   resd 1       ; which relative screen y
+mcxloc       resw 1       ; cx location
+mcyloc       resw 1       ; cy location
+M7HROn       resd 1       ; High Resolution On
+switchtorep3 resd 1
 
-m7xaddof dd 0
-m7xaddof2 dd 0
-m7yaddof dd 0
-m7yaddof2 dd 0
-pixelsleft dd 0
-mm7xaddof dd 0
-mm7xaddof2 dd 0
-mm7yaddof dd 0
-mm7yaddof2 dd 0
+m7xaddof resd 1
+m7xaddof2 resd 1
+m7yaddof resd 1
+m7yaddof2 resd 1
+pixelsleft resd 1
+mm7xaddof resd 1
+mm7xaddof2 resd 1
+mm7yaddof resd 1
+mm7yaddof2 resd 1
+SECTION .text
 
 %macro newvaluepred 2
     mov dx,word[%1+ebx*4+8]

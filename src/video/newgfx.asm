@@ -890,58 +890,74 @@ NEWSYM BuildWindow
     pop edx
     ret
 
+SECTION .data ;ALIGN=32
 NEWSYM firstdrawn, db 0
-ALIGN32
+
 NEWSYM bgusedng
          dd 01010101h,00010101h,00000101h,00000101h,00000101h,00000101h
          dd 00000001h,00000001h
-NEWSYM bgcmsung, dd 0
-NEWSYM modeused, dd 0,0
-NEWSYM reslbyl,  dd 0
-NEWSYM sprprdrn, dd 0
-NEWSYM csprival, dd 0
-NEWSYM pesimpng2, dd 0
-NEWSYM cfieldad, dd 0
-NEWSYM ignor512, dd 0
-NEWSYM ofsmcptr, dd 0
-NEWSYM ofsmtptr, dd 0
-NEWSYM ofsmmptr, dd 0
-NEWSYM ofsmcyps, dd 0
-NEWSYM ofsmady,  dd 0
-NEWSYM ofsmadx,  dd 0
-NEWSYM mosoldtab, times 15 dd 0
+
+SECTION .bss ;ALIGN=32
+NEWSYM bgcmsung, resd 1
+NEWSYM modeused, resd 2
+NEWSYM reslbyl,  resd 1
+NEWSYM sprprdrn, resd 1
+NEWSYM csprival, resd 1
+NEWSYM pesimpng2, resd 1
+NEWSYM cfieldad, resd 1
+NEWSYM ignor512, resd 1
+NEWSYM ofsmcptr, resd 1
+NEWSYM ofsmtptr, resd 1
+NEWSYM ofsmmptr, resd 1
+NEWSYM ofsmcyps, resd 1
+NEWSYM ofsmady,  resd 1
+NEWSYM ofsmadx,  resd 1
+NEWSYM mosoldtab, resd 15
+
+SECTION .data ;ALIGN=32
 NEWSYM ngwintable, times 16 dd 0EE00h
 NEWSYM ngwintableb, times 16 dd 0EE00h
 NEWSYM ngwintablec, times 16 dd 0EE00h
 NEWSYM ngwintabled, times 16 dd 0EE00h
 NEWSYM valtemp, dd 0EE00h, 0EE00h
-NEWSYM ngwinen, dd 0
 NEWSYM ngcwinptr, dd ngwintable
-NEWSYM ngcwinmode, dd 0
-NEWSYM ngcpixleft, dd 0
-NEWSYM Mode7BackA, dd 0
-NEWSYM Mode7BackC, dd 0
-NEWSYM Mode7BackX0, dd 0
-NEWSYM Mode7BackSet, dd 0
-NEWSYM ngextbg, dd 0
-NEWSYM cbgval, dd 0
-NEWSYM ofsmval, dd 0
-NEWSYM ofsmvalh, dd 0
+
+SECTION .bss ;ALIGN=32
+NEWSYM ngwinen, resd 1
+NEWSYM ngcwinmode, resd 1
+NEWSYM ngcpixleft, resd 1
+NEWSYM Mode7BackA, resd 1
+NEWSYM Mode7BackC, resd 1
+NEWSYM Mode7BackX0, resd 1
+NEWSYM Mode7BackSet, resd 1
+NEWSYM ngextbg, resd 1
+NEWSYM cbgval, resd 1
+NEWSYM ofsmval, resd 1
+NEWSYM ofsmvalh, resd 1
+
+SECTION .data ;ALIGN=32
 NEWSYM pwinen, dd 0FFFFh
 NEWSYM pngwinen, dd 0FFFFh
-NEWSYM pwinbound, dd 0
-NEWSYM WinPtrAPos, dd 0
-NEWSYM WinPtrBPos, dd 0
+
+SECTION .bss ;ALIGN=32
+NEWSYM pwinbound, resd 1
+NEWSYM WinPtrAPos, resd 1
+NEWSYM WinPtrBPos, resd 1
+
+SECTION .data ;ALIGN=32
 NEWSYM OrLogicTable, db 0,1,1,0
 NEWSYM AndLogicTable, db 0,0,1,0
 NEWSYM XorLogicTable, db 0,1,0,0
 NEWSYM XNorLogicTable, db 1,0,1,0
-NEWSYM nglogicval, dd 0
-NEWSYM pnglogicval, dd 0
-NEWSYM mosjmptab, times 15 dd 0
-NEWSYM Mode7HiRes, dd 0
-NEWSYM pesimpng, dd 0
-NEWSYM bgtxadd2, dd 0
+
+SECTION .bss ;ALIGN=32
+NEWSYM nglogicval, resd 1
+NEWSYM pnglogicval, resd 1
+NEWSYM mosjmptab, resd 15
+NEWSYM Mode7HiRes, resd 1
+NEWSYM pesimpng, resd 1
+NEWSYM bgtxadd2, resd 1
+SECTION .text
 
 NEWSYM StartDrawNewGfx
     mov byte[WindowRedraw],1
@@ -1712,31 +1728,32 @@ NEWSYM drawbg4linepr1
     drawbglinengpr1 3,1
 
 
-ALIGN32
-NEWSYM bgtxadd,  dd 0
-NEWSYM bgcyval,  dd 0
-NEWSYM bgcxval,  dd 0
-NEWSYM tleftn,   dd 0
-NEWSYM tleftnb,  dd 0
-NEWSYM bg1totng, dd 0
-NEWSYM bg2totng, dd 0
-NEWSYM bg3totng, dd 0
-NEWSYM bg4totng, dd 0
-NEWSYM bg1drwng, dd 0
-NEWSYM bg2drwng, dd 0
-NEWSYM bg3drwng, dd 0
-NEWSYM bg4drwng, dd 0
-NEWSYM sprcurng, dd 0
-NEWSYM scfbl,    dd 0
-NEWSYM mode0ads, dd 0
-NEWSYM mode0add, dd 0
-NEWSYM taddnfy16x16, dd 0
-NEWSYM taddfy16x16, dd 0
-NEWSYM switch16x16, dd 0
-NEWSYM yposng,     dd 0
-NEWSYM flipyposng, dd 0
-NEWSYM yposngom,     dd 0
-NEWSYM flipyposngom, dd 0
+SECTION .bss ;ALIGN=32
+NEWSYM bgtxadd,  resd 1
+NEWSYM bgcyval,  resd 1
+NEWSYM bgcxval,  resd 1
+NEWSYM tleftn,   resd 1
+NEWSYM tleftnb,  resd 1
+NEWSYM bg1totng, resd 1
+NEWSYM bg2totng, resd 1
+NEWSYM bg3totng, resd 1
+NEWSYM bg4totng, resd 1
+NEWSYM bg1drwng, resd 1
+NEWSYM bg2drwng, resd 1
+NEWSYM bg3drwng, resd 1
+NEWSYM bg4drwng, resd 1
+NEWSYM sprcurng, resd 1
+NEWSYM scfbl,    resd 1
+NEWSYM mode0ads, resd 1
+NEWSYM mode0add, resd 1
+NEWSYM taddnfy16x16, resd 1
+NEWSYM taddfy16x16, resd 1
+NEWSYM switch16x16, resd 1
+NEWSYM yposng,     resd 1
+NEWSYM flipyposng, resd 1
+NEWSYM yposngom,     resd 1
+NEWSYM flipyposngom, resd 1
+SECTION .text
 
 NEWSYM drawsprng
     cmp byte[winbg1enval+ebx+4*256],0
@@ -2012,7 +2029,9 @@ NEWSYM drawsprngm7h
     pop esi
     ret
 
-NEWSYM NGNumSpr, db 0
+SECTION .bss
+NEWSYM NGNumSpr, resb 1
+SECTION .text
 
 ;    cmp byte[winbg1enval+eax+4*256],0
 ;    je near .skipobjw
@@ -2342,8 +2361,9 @@ NEWSYM preparesprpr
     mov dword[sprsingle],1
     ret
 
-ALIGN32
-NEWSYM sprclprio,  dd 0
-NEWSYM sprsingle,  dd 0
+SECTION .bss ;ALIGN=32
+NEWSYM sprclprio,  resd 1
+NEWSYM sprsingle,  resd 1
+SECTION .text
 
 NEWSYM NewGfxAsmEnd

@@ -60,11 +60,14 @@ NEWSYM MakeV16BAsmStart
 
 ;drawspritesprio
 
-NEWSYM tempstuff, dd 0
+SECTION .bss
+NEWSYM tempstuff, resd 1
 
-ALIGN16
-.stuff dd 0
-.stuff2 db 0,0
+;ALIGN16
+.stuff resd 1
+.stuff2 resb 2
+
+SECTION .text
 
 %macro procmode716bextbg 3
     xor eax,eax
@@ -886,7 +889,9 @@ NEWSYM setpalall
 .noveg2
     ret
 
-NEWSYM colleft16b, db 0
+SECTION .bss
+NEWSYM colleft16b, resb 1
+SECTION .text
 
 NEWSYM setpalette16b
     cmp byte[gammalevel16b],0
@@ -1858,7 +1863,9 @@ NEWSYM draw8x816b
 .nodraw2
     ret
 
-NEWSYM tileleft16b, db 0
+SECTION .bss
+NEWSYM tileleft16b, resb 1
+SECTION .text
 
 NEWSYM draw8x816bwinon
     mov byte[tileleft16b],33
@@ -2955,8 +2962,10 @@ NEWSYM draw16x1616b
     jne near domosaic16b
     ret
 
-.yadd      dw 0
-.yflipadd  dw 0
+SECTION .bss
+.yadd      resw 1
+.yflipadd  resw 1
+SECTION .text
 
 draw16x1616bwinon:
     mov byte[tileleft16b],33

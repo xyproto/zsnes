@@ -2072,5 +2072,4 @@ final1b       resb 8
 final2a       resb 8
 final2b       resb 8
 
-
-
+SECTION .text

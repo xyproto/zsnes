@@ -274,7 +274,9 @@ NEWSYM setpalette16bng
 .noveg2
     ret
 
+section .data
 prevpal2 times 256 dw 0F00Fh
+section .text
 
 %macro WinBGCheck 1
     mov bl,[winbg1en+%1]
@@ -427,10 +429,12 @@ prevpal2 times 256 dw 0F00Fh
     mov [winbg1enval+eax+%1*256],bl
 %endmacro
 
-BackAreaAdd dd 0
-BackAreaUnFillCol dd 0
-BackAreaFillCol dd 0
-clinemainsub    dd 0
+section .bss
+BackAreaAdd resd 1
+BackAreaUnFillCol resd 1
+BackAreaFillCol resd 1
+clinemainsub    resd 1
+section .text
 
 BackAreaFill:
     cmp byte[winbg1enval+eax+5*256],0
@@ -1331,45 +1335,47 @@ NEWSYM newengine16b
     xor ebx,ebx
     ret
 
-ALIGN32
-NEWSYM ngwinenval,  dd 0
-NEWSYM cdrawbuffer, dd 0
-NEWSYM draw16bnng,  dd 0
-NEWSYM scaddsngb,   dd 0
-NEWSYM scaddtngb,   dd 0
-NEWSYM scaddtngbx,  dd 0
-NEWSYM prevbcolng,  dd 0
-NEWSYM bcolvalng,   dd 0
-NEWSYM cebppos,     dd 0
-NEWSYM subscreenonng, dd 0
-NEWSYM cdrawmeth,   dd 0
-NEWSYM cpalptrng,   dd 0
-NEWSYM prevcoladdrng, dd 0
-NEWSYM prevcolvalng,  dd 0
-NEWSYM cbackofsaddr,  dd 0
-NEWSYM cbackofsaddrs, dd 0
-NEWSYM cbackofsaddrm, dd 0
-NEWSYM subscrng,      dd 0
-NEWSYM ngmsdraw,      dd 0
-NEWSYM CMainWinScr,   dd 0
-NEWSYM CSubWinScr,    dd 0
-NEWSYM Prevcoladdr,   dd 0
-NEWSYM ColResult,     dd 0
-NEWSYM CPalPtrng,     dd 0
-NEWSYM WindowRedraw,  dd 0
-NEWSYM mostranspval,  dd 0
-NEWSYM mosclineval,   dd 0
-NEWSYM startlinet,    dd 0
-NEWSYM endlinet,      dd 0
-NEWSYM palchanged,    dd 0
+section .bss
+alignb 32
+NEWSYM ngwinenval,  resd 1
+NEWSYM cdrawbuffer, resd 1
+NEWSYM draw16bnng,  resd 1
+NEWSYM scaddsngb,   resd 1
+NEWSYM scaddtngb,   resd 1
+NEWSYM scaddtngbx,  resd 1
+NEWSYM prevbcolng,  resd 1
+NEWSYM bcolvalng,   resd 1
+NEWSYM cebppos,     resd 1
+NEWSYM subscreenonng, resd 1
+NEWSYM cdrawmeth,   resd 1
+NEWSYM cpalptrng,   resd 1
+NEWSYM prevcoladdrng, resd 1
+NEWSYM prevcolvalng,  resd 1
+NEWSYM cbackofsaddr,  resd 1
+NEWSYM cbackofsaddrs, resd 1
+NEWSYM cbackofsaddrm, resd 1
+NEWSYM subscrng,      resd 1
+NEWSYM ngmsdraw,      resd 1
+NEWSYM CMainWinScr,   resd 1
+NEWSYM CSubWinScr,    resd 1
+NEWSYM Prevcoladdr,   resd 1
+NEWSYM ColResult,     resd 1
+NEWSYM CPalPtrng,     resd 1
+NEWSYM WindowRedraw,  resd 1
+NEWSYM mostranspval,  resd 1
+NEWSYM mosclineval,   resd 1
+NEWSYM startlinet,    resd 1
+NEWSYM endlinet,      resd 1
+NEWSYM palchanged,    resd 1
 
-NEWSYM ng16bbgval, dd 0         ; bg # (mov dword[ng16bbgval],%1)
-NEWSYM ng16bprval, dd 0         ; 0 = pr0, 2000h = pr1
+NEWSYM ng16bbgval, resd 1         ; bg # (mov dword[ng16bbgval],%1)
+NEWSYM ng16bprval, resd 1         ; 0 = pr0, 2000h = pr1
 
-NEWSYM mosjmptab16b, times 15 dd 0
-NEWSYM mosjmptab16bt, times 15 dd 0
-NEWSYM mosjmptab16btms, times 15 dd 0
-NEWSYM mosjmptab16bntms, times 15 dd 0
+NEWSYM mosjmptab16b, resd 15
+NEWSYM mosjmptab16bt, resd 15
+NEWSYM mosjmptab16btms, resd 15
+NEWSYM mosjmptab16bntms, resd 15
+section .text
 
 NEWSYM StartDrawNewGfx16b
     push edx
@@ -3027,6 +3033,8 @@ ProcessTransparencies:
     dec ecx
     jnz .prochalfadd
     jmp .faddloopdoneh
+.procfulladdnext:
+    movq [esi-8],mm0
 .procfulladd
     mov ebx,[esi]
     and ebx,eax
@@ -3048,35 +3056,37 @@ ProcessTransparencies:
     movq mm0,[esi]
     movq mm1,[esi+75036*2]
     pand mm0,[UnusedBitXor]
-    movq mm2,mm0
     movq mm4,mm1
-    movq mm3,mm0
+    movq mm2,mm0
     %if %1>0
     psllw mm0,%1
     psllw mm1,%1
+    movq mm3,mm2
+    %else
+    movq mm3,mm0
     %endif
+    psllw mm2,%2
     paddusw mm0,mm1
     pand mm0,[FullBitAnd]
     movq mm1,mm4
+    psllw mm4,%2
+    add esi,byte 8
     %if %1>0
     psrlw mm0,%1
     %endif
-    psllw mm2,%2
-    psllw mm1,%2
-    paddusw mm2,mm1
-    pand mm2,[FullBitAnd]
-    psrlw mm2,%2
+    paddusw mm2,mm4
     psllw mm3,%3
-    psllw mm4,%3
-    paddusw mm3,mm4
+    pand mm2,[FullBitAnd]
+    psllw mm1,%3
+    psrlw mm2,%2
+    paddusw mm3,mm1
+    por mm0,mm2
     pand mm3,[FullBitAnd]
     psrlw mm3,%3
     por mm0,mm3
-    por mm0,mm2
-    movq [esi],mm0
-    add esi,8
     dec ecx
-    jnz near .procfulladd
+    jnz near .procfulladdnext
+    movq [esi],mm0
     jmp .faddloopdoneh
 .faddlooph
     mov ebx,dword[esi]
@@ -3252,56 +3262,62 @@ ProcessTransparencies:
 .faddl2
     test dword[esi],eax
     jnz .faddloopb
+.faddl2_2
     test dword[esi+4],eax
     jnz .faddloopb
     add esi,8
     dec ecx
     jnz .faddl2
     jmp .faddloopdone
+.faddloopnext
+    movq [esi-8],mm0
 .faddloop
     test dword[esi],eax
-    jz .faddl2
+    jz .faddl2_2
 .faddloopb
     movq mm0,[esi]
     movq mm1,[esi+75036*2]
     movq mm6,mm0
     pand mm0,[UnusedBitXor]
-    movq mm2,mm0
     movq mm4,mm1
-    movq mm3,mm0
-    movq mm5,mm0
+    movq mm2,mm0
     %if %1>0
     psllw mm0,%1
     psllw mm1,%1
+    movq mm3,mm2
+    movq mm5,mm2
+    %else
+    movq mm3,mm0
+    movq mm5,mm0
     %endif
     paddusw mm0,mm1
     pand mm0,[FullBitAnd]
+    psllw mm2,%2
     movq mm1,mm4
+    psllw mm4,%2
+    paddusw mm2,mm4
+    psllw mm3,%3
+    pand mm2,[FullBitAnd]
+    psllw mm1,%3
+    psrlw mm2,%2
+    paddusw mm3,mm1
+    pand mm3,[FullBitAnd]
     %if %1>0
     psrlw mm0,%1
     %endif
-    psllw mm2,%2
-    psllw mm1,%2
-    paddusw mm2,mm1
-    pand mm2,[FullBitAnd]
-    psrlw mm2,%2
-    psllw mm3,%3
-    psllw mm4,%3
-    paddusw mm3,mm4
-    pand mm3,[FullBitAnd]
     psrlw mm3,%3
-    por mm0,mm3
-    por mm0,mm2
     pand mm6,[UnusedBit]
+    por mm0,mm2
     pcmpeqw mm6,[UnusedBit]
+    por mm0,mm3
     pand mm0,mm6
     pxor mm6,[UnusedBitXor]
     pand mm5,mm6
+    add esi,byte 8
     por mm0,mm5
-    movq [esi],mm0
-    add esi,8
     dec ecx
-    jnz near .faddloop
+    jnz near .faddloopnext
+    movq [esi-8],mm0
 .faddloopdone
     pop esi
     pop ebx
@@ -3438,6 +3454,7 @@ ProcessTransparenciesMMXargb
 ; PSRLW - Shirt Right, Logical
 ; POR
 
+section .data
 ALIGN32
 NEWSYM UnusedBit, dd 00000000001000000000000000100000b,00000000001000000000000000100000b
 NEWSYM HalfTrans, dd 11110111110111101111011111011110b,11110111110111101111011111011110b,0,0
@@ -3450,6 +3467,7 @@ NEWSYM FullBitAnd, dd 0F800F800h,0F800F800h
 NEWSYM HalfTransB, dd 00001000010000010000100001000001b,00001000010000010000100001000001b
 NEWSYM HalfTransC, dd 11110111100111101111011110011110b,11110111100111101111011110011110b
 NEWSYM NGNoTransp, dd 0
+section .text
 NEWSYM NewGfx16AsmEnd
 
 %macro SCMainA 0

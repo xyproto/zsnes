@@ -3426,6 +3426,7 @@ EXTSYM osm2dis
     ; eax = pointer to beginning of tile area
     mov dword[mode0add],0
     mov byte[tleftn],33
+
 .loopdn
     mov cx,[vrama+eax]
     test cx,2000h
@@ -3443,6 +3444,7 @@ EXTSYM osm2dis
     mov [ngcedi+%2*1024+ebx*4],edi
     ; eax = pointer to beginning of tile area
     mov byte[tleftn],33
+
 .loopdn2
     mov cx,[vrama+eax]
     test cx,2000h
@@ -3803,6 +3805,7 @@ EXTSYM osm2dis
     jne near .no2bitdn
     ; eax = pointer to beginning of tile area
     mov byte[tleftn],33
+
 .loopdn
     mov cx,[vrama+eax]
     test cx,2000h
@@ -3813,6 +3816,7 @@ EXTSYM osm2dis
     jne near .no8bitdn
     ; eax = pointer to beginning of tile area
     mov byte[tleftn],33
+
 .loopdn2
     mov cx,[vrama+eax]
     test cx,2000h

@@ -989,8 +989,9 @@ NEWSYM drawbackgrndmain16tfix
 
 ALIGN32
 
-NEWSYM transpbuf, times 576+16+288*2 db 0        ; Transparent buffer
-
+SECTION .bss
+NEWSYM transpbuf, resb 576+16+288*2        ; Transparent buffer
+SECTION .text
 
 NEWSYM drawline16t
     cmp byte[bgmode],7
@@ -1397,8 +1398,10 @@ NEWSYM processmode716t2
 ; Clear Backarea, with 0s
 ;*******************************************************
 
-NEWSYM prevrgbcol, dd 0
-NEWSYM prevrgbpal, dd 0
+SECTION .bss
+NEWSYM prevrgbcol, resd 1
+NEWSYM prevrgbpal, resd 1
+SECTION .text
 
 NEWSYM clearback16bts
     mov byte[DoTransp],0
@@ -1490,7 +1493,9 @@ NEWSYM clearback16bts
     xor eax,eax
     ret
 
-mmxtempdat dd 0,0
+SECTION .bss
+mmxtempdat resd 2
+SECTION .text
 
 NEWSYM clearback16bts0b
     mov eax,[coladdr]
@@ -1967,7 +1972,9 @@ NEWSYM clearback16bdualrev2
 .findraw
     ret
 
-NEWSYM DoTransp, db 0
+SECTION .bss
+NEWSYM DoTransp, resb 1
+SECTION .data
 
 ;*******************************************************
 ; Clear Backarea, 16-bit mode w/ transparency
@@ -3185,7 +3192,9 @@ NEWSYM draw8x816ts
     ret
 
 ALIGN32
-NEWSYM coadder16, dd 0
+SECTION .bss
+NEWSYM coadder16, resd 1
+SECTION .text
 
 NEWSYM draw8x816twinon
     mov ebp,transpbuf+32
@@ -4744,8 +4753,10 @@ NEWSYM draw16x1616t
     jne near domosaic16b
     ret
 
-NEWSYM yadd,   dw 0
-NEWSYM yflipadd,  dw 0
+SECTION .bss
+NEWSYM yadd,   resw 1
+NEWSYM yflipadd,  resw 1
+SECTION .text
 
 NEWSYM draw16x16fulladd
     mov byte[tileleft16b],33

@@ -143,37 +143,39 @@ NEWSYM drawmode7
     Mode7ProcessB Mode7Normal, domosaic, 1
 
 ALIGN32
-.temp        dd 0       ; for byte move left
-.mode7xpos   dd 0       ; x position
-.tempa2      dd 0       ; keep this blank!
-.mode7xrpos  dd 0       ; x position
-.tempa       dd 0       ; keep this blank!
-.mode7ypos   dd 0       ; y position
-.tempb2      dd 0       ; keep this blank!
-.mode7yrpos  dd 0       ; y position
-.tempb       dd 0       ; keep this blank!
-.mode7xadder dd 0       ; number to add for x
-.tempc2      dd 0       ; keep this blank!
-.mode7xadd2  dd 0       ; number to add for x
-.tempc       dd 0       ; keep this blank!
-.mode7yadder dd 0       ; number to add for y
-.tempd2      dd 0       ; keep this blank!
-.mode7yadd2  dd 0       ; number to add for y
-.tempd       dd 0       ; keep this blank!
-.mode7ptr    dd 0       ; pointer value
-.mode7xinc   dd 0       ; number to add for x
-.mode7xincc  dd 0       ; range check for x
-.mode7yinc   dd 0       ; number to add for y
-.mode7xsloc  dd 0       ; which screen x
-.mode7ysloc  dd 0       ; which screen y
-.mode7xsrl   dd 0       ; which relative screen x
-.mode7ysrl   dd 0       ; which relative screen y
-.cxloc       dw 0       ; cx location
-.cyloc       dw 0       ; cy location
-.m7xaddofa   dd 0
-.m7xaddof2a  dd 0
-.m7yaddofa   dd 0
-.m7yaddof2a  dd 0
+SECTION .bss
+.temp        resd 1       ; for byte move left
+.mode7xpos   resd 1       ; x position
+.tempa2      resd 1       ; keep this blank!
+.mode7xrpos  resd 1       ; x position
+.tempa       resd 1       ; keep this blank!
+.mode7ypos   resd 1       ; y position
+.tempb2      resd 1       ; keep this blank!
+.mode7yrpos  resd 1       ; y position
+.tempb       resd 1       ; keep this blank!
+.mode7xadder resd 1       ; number to add for x
+.tempc2      resd 1       ; keep this blank!
+.mode7xadd2  resd 1       ; number to add for x
+.tempc       resd 1       ; keep this blank!
+.mode7yadder resd 1       ; number to add for y
+.tempd2      resd 1       ; keep this blank!
+.mode7yadd2  resd 1       ; number to add for y
+.tempd       resd 1       ; keep this blank!
+.mode7ptr    resd 1       ; pointer value
+.mode7xinc   resd 1       ; number to add for x
+.mode7xincc  resd 1       ; range check for x
+.mode7yinc   resd 1       ; number to add for y
+.mode7xsloc  resd 1       ; which screen x
+.mode7ysloc  resd 1       ; which screen y
+.mode7xsrl   resd 1       ; which relative screen x
+.mode7ysrl   resd 1       ; which relative screen y
+.cxloc       resw 1       ; cx location
+.cyloc       resw 1       ; cy location
+.m7xaddofa   resd 1
+.m7xaddof2a  resd 1
+.m7yaddofa   resd 1
+.m7yaddof2a  resd 1
+SECTION .text
 
 .drawmode7win
 .domosaicw
@@ -264,37 +266,39 @@ NEWSYM drawmode7win
     Mode7ProcessB Mode7Normal, domosaicng, 1
 
 ALIGN32
-.temp        dd 0       ; for byte move left
-.mode7xpos   dd 0       ; x position
-.tempa2      dd 0       ; keep this blank!
-.mode7xrpos  dd 0       ; x position
-.tempa       dd 0       ; keep this blank!
-.mode7ypos   dd 0       ; y position
-.tempb2      dd 0       ; keep this blank!
-.mode7yrpos  dd 0       ; y position
-.tempb       dd 0       ; keep this blank!
-.mode7xadder dd 0       ; number to add for x
-.tempc2      dd 0       ; keep this blank!
-.mode7xadd2  dd 0       ; number to add for x
-.tempc       dd 0       ; keep this blank!
-.mode7yadder dd 0       ; number to add for y
-.tempd2      dd 0       ; keep this blank!
-.mode7yadd2  dd 0       ; number to add for y
-.tempd       dd 0       ; keep this blank!
-.mode7ptr    dd 0       ; pointer value
-.mode7xinc   dd 0       ; number to add for x
-.mode7xincc  dd 0       ; range check for x
-.mode7yinc   dd 0       ; number to add for y
-.mode7xsloc  dd 0       ; which screen x
-.mode7ysloc  dd 0       ; which screen y
-.mode7xsrl   dd 0       ; which relative screen x
-.mode7ysrl   dd 0       ; which relative screen y
-.cxloc       dw 0       ; cx location
-.cyloc       dw 0       ; cy location
-.m7xaddofa   dd 0
-.m7xaddof2a  dd 0
-.m7yaddofa   dd 0
-.m7yaddof2a  dd 0
+SECTION .bss
+.temp        resd 1       ; for byte move left
+.mode7xpos   resd 1       ; x position
+.tempa2      resd 1       ; keep this blank!
+.mode7xrpos  resd 1       ; x position
+.tempa       resd 1       ; keep this blank!
+.mode7ypos   resd 1       ; y position
+.tempb2      resd 1       ; keep this blank!
+.mode7yrpos  resd 1       ; y position
+.tempb       resd 1       ; keep this blank!
+.mode7xadder resd 1       ; number to add for x
+.tempc2      resd 1       ; keep this blank!
+.mode7xadd2  resd 1       ; number to add for x
+.tempc       resd 1       ; keep this blank!
+.mode7yadder resd 1       ; number to add for y
+.tempd2      resd 1       ; keep this blank!
+.mode7yadd2  resd 1       ; number to add for y
+.tempd       resd 1       ; keep this blank!
+.mode7ptr    resd 1       ; pointer value
+.mode7xinc   resd 1       ; number to add for x
+.mode7xincc  resd 1       ; range check for x
+.mode7yinc   resd 1       ; number to add for y
+.mode7xsloc  resd 1       ; which screen x
+.mode7ysloc  resd 1       ; which screen y
+.mode7xsrl   resd 1       ; which relative screen x
+.mode7ysrl   resd 1       ; which relative screen y
+.cxloc       resw 1       ; cx location
+.cyloc       resw 1       ; cy location
+.m7xaddofa   resd 1
+.m7xaddof2a  resd 1
+.m7yaddofa   resd 1
+.m7yaddof2a  resd 1
+SECTION .text
 
 .drawmode7win
 .domosaicw
@@ -383,37 +387,39 @@ NEWSYM drawmode7winB
     Mode7ProcessB Mode7Normal, domosaic, 1
 
 ALIGN32
-.temp        dd 0       ; for byte move left
-.mode7xpos   dd 0       ; x position
-.tempa2      dd 0       ; keep this blank!
-.mode7xrpos  dd 0       ; x position
-.tempa       dd 0       ; keep this blank!
-.mode7ypos   dd 0       ; y position
-.tempb2      dd 0       ; keep this blank!
-.mode7yrpos  dd 0       ; y position
-.tempb       dd 0       ; keep this blank!
-.mode7xadder dd 0       ; number to add for x
-.tempc2      dd 0       ; keep this blank!
-.mode7xadd2  dd 0       ; number to add for x
-.tempc       dd 0       ; keep this blank!
-.mode7yadder dd 0       ; number to add for y
-.tempd2      dd 0       ; keep this blank!
-.mode7yadd2  dd 0       ; number to add for y
-.tempd       dd 0       ; keep this blank!
-.mode7ptr    dd 0       ; pointer value
-.mode7xinc   dd 0       ; number to add for x
-.mode7xincc  dd 0       ; range check for x
-.mode7yinc   dd 0       ; number to add for y
-.mode7xsloc  dd 0       ; which screen x
-.mode7ysloc  dd 0       ; which screen y
-.mode7xsrl   dd 0       ; which relative screen x
-.mode7ysrl   dd 0       ; which relative screen y
-.cxloc       dw 0       ; cx location
-.cyloc       dw 0       ; cy location
-.m7xaddofa   dd 0
-.m7xaddof2a  dd 0
-.m7yaddofa   dd 0
-.m7yaddof2a  dd 0
+SECTION .bss
+.temp        resd 1       ; for byte move left
+.mode7xpos   resd 1       ; x position
+.tempa2      resd 1       ; keep this blank!
+.mode7xrpos  resd 1       ; x position
+.tempa       resd 1       ; keep this blank!
+.mode7ypos   resd 1       ; y position
+.tempb2      resd 1       ; keep this blank!
+.mode7yrpos  resd 1       ; y position
+.tempb       resd 1       ; keep this blank!
+.mode7xadder resd 1       ; number to add for x
+.tempc2      resd 1       ; keep this blank!
+.mode7xadd2  resd 1       ; number to add for x
+.tempc       resd 1       ; keep this blank!
+.mode7yadder resd 1       ; number to add for y
+.tempd2      resd 1       ; keep this blank!
+.mode7yadd2  resd 1       ; number to add for y
+.tempd       resd 1       ; keep this blank!
+.mode7ptr    resd 1       ; pointer value
+.mode7xinc   resd 1       ; number to add for x
+.mode7xincc  resd 1       ; range check for x
+.mode7yinc   resd 1       ; number to add for y
+.mode7xsloc  resd 1       ; which screen x
+.mode7ysloc  resd 1       ; which screen y
+.mode7xsrl   resd 1       ; which relative screen x
+.mode7ysrl   resd 1       ; which relative screen y
+.cxloc       resw 1       ; cx location
+.cyloc       resw 1       ; cy location
+.m7xaddofa   resd 1
+.m7xaddof2a  resd 1
+.m7yaddofa   resd 1
+.m7yaddof2a  resd 1
+SECTION .text
 
 .drawmode7win
 .domosaicw
@@ -506,38 +512,40 @@ NEWSYM drawmode7winhr
     Mode7ProcessBhr Mode7Normal, domosaicng, 1
 
 ALIGN32
-.temp        dd 0       ; for byte move left
-.temp2       dd 0       ; for byte move left
-.mode7xpos   dd 0       ; x position
-.tempa2      dd 0       ; keep this blank!
-.mode7xrpos  dd 0       ; x position
-.tempa       dd 0       ; keep this blank!
-.mode7ypos   dd 0       ; y position
-.tempb2      dd 0       ; keep this blank!
-.mode7yrpos  dd 0       ; y position
-.tempb       dd 0       ; keep this blank!
-.mode7xadder dd 0       ; number to add for x
-.tempc2      dd 0       ; keep this blank!
-.mode7xadd2  dd 0       ; number to add for x
-.tempc       dd 0       ; keep this blank!
-.mode7yadder dd 0       ; number to add for y
-.tempd2      dd 0       ; keep this blank!
-.mode7yadd2  dd 0       ; number to add for y
-.tempd       dd 0       ; keep this blank!
-.mode7ptr    dd 0       ; pointer value
-.mode7xinc   dd 0       ; number to add for x
-.mode7xincc  dd 0       ; range check for x
-.mode7yinc   dd 0       ; number to add for y
-.mode7xsloc  dd 0       ; which screen x
-.mode7ysloc  dd 0       ; which screen y
-.mode7xsrl   dd 0       ; which relative screen x
-.mode7ysrl   dd 0       ; which relative screen y
-.cxloc       dw 0       ; cx location
-.cyloc       dw 0       ; cy location
-.m7xaddofa   dd 0
-.m7xaddof2a  dd 0
-.m7yaddofa   dd 0
-.m7yaddof2a  dd 0
+SECTION .bss
+.temp        resd 1       ; for byte move left
+.temp2       resd 1       ; for byte move left
+.mode7xpos   resd 1       ; x position
+.tempa2      resd 1       ; keep this blank!
+.mode7xrpos  resd 1       ; x position
+.tempa       resd 1       ; keep this blank!
+.mode7ypos   resd 1       ; y position
+.tempb2      resd 1       ; keep this blank!
+.mode7yrpos  resd 1       ; y position
+.tempb       resd 1       ; keep this blank!
+.mode7xadder resd 1       ; number to add for x
+.tempc2      resd 1       ; keep this blank!
+.mode7xadd2  resd 1       ; number to add for x
+.tempc       resd 1       ; keep this blank!
+.mode7yadder resd 1       ; number to add for y
+.tempd2      resd 1       ; keep this blank!
+.mode7yadd2  resd 1       ; number to add for y
+.tempd       resd 1       ; keep this blank!
+.mode7ptr    resd 1       ; pointer value
+.mode7xinc   resd 1       ; number to add for x
+.mode7xincc  resd 1       ; range check for x
+.mode7yinc   resd 1       ; number to add for y
+.mode7xsloc  resd 1       ; which screen x
+.mode7ysloc  resd 1       ; which screen y
+.mode7xsrl   resd 1       ; which relative screen x
+.mode7ysrl   resd 1       ; which relative screen y
+.cxloc       resw 1       ; cx location
+.cyloc       resw 1       ; cy location
+.m7xaddofa   resd 1
+.m7xaddof2a  resd 1
+.m7yaddofa   resd 1
+.m7yaddof2a  resd 1
+SECTION .text
 
 NEWSYM drawmode7winBhr
     ProcessBuildWindow 0
@@ -611,48 +619,50 @@ NEWSYM drawmode7winBhr
     Mode7ProcessBhr Mode7Normal, domosaic, 1
 
 ALIGN32
-.temp        dd 0       ; for byte move left
-.temp2       dd 0       ; for byte move left
-.mode7xpos   dd 0       ; x position
-.tempa2      dd 0       ; keep this blank!
-.mode7xrpos  dd 0       ; x position
-.tempa       dd 0       ; keep this blank!
-.mode7ypos   dd 0       ; y position
-.tempb2      dd 0       ; keep this blank!
-.mode7yrpos  dd 0       ; y position
-.tempb       dd 0       ; keep this blank!
-.mode7xadder dd 0       ; number to add for x
-.tempc2      dd 0       ; keep this blank!
-.mode7xadd2  dd 0       ; number to add for x
-.tempc       dd 0       ; keep this blank!
-.mode7yadder dd 0       ; number to add for y
-.tempd2      dd 0       ; keep this blank!
-.mode7yadd2  dd 0       ; number to add for y
-.tempd       dd 0       ; keep this blank!
-.mode7ptr    dd 0       ; pointer value
-.mode7xinc   dd 0       ; number to add for x
-.mode7xincc  dd 0       ; range check for x
-.mode7yinc   dd 0       ; number to add for y
-.mode7xsloc  dd 0       ; which screen x
-.mode7ysloc  dd 0       ; which screen y
-.mode7xsrl   dd 0       ; which relative screen x
-.mode7ysrl   dd 0       ; which relative screen y
-.cxloc       dw 0       ; cx location
-.cyloc       dw 0       ; cy location
-.m7xaddofa   dd 0
-.m7xaddof2a  dd 0
-.m7yaddofa   dd 0
-.m7yaddof2a  dd 0
+SECTION .bss
+.temp        resd 1       ; for byte move left
+.temp2       resd 1       ; for byte move left
+.mode7xpos   resd 1       ; x position
+.tempa2      resd 1       ; keep this blank!
+.mode7xrpos  resd 1       ; x position
+.tempa       resd 1       ; keep this blank!
+.mode7ypos   resd 1       ; y position
+.tempb2      resd 1       ; keep this blank!
+.mode7yrpos  resd 1       ; y position
+.tempb       resd 1       ; keep this blank!
+.mode7xadder resd 1       ; number to add for x
+.tempc2      resd 1       ; keep this blank!
+.mode7xadd2  resd 1       ; number to add for x
+.tempc       resd 1       ; keep this blank!
+.mode7yadder resd 1       ; number to add for y
+.tempd2      resd 1       ; keep this blank!
+.mode7yadd2  resd 1       ; number to add for y
+.tempd       resd 1       ; keep this blank!
+.mode7ptr    resd 1       ; pointer value
+.mode7xinc   resd 1       ; number to add for x
+.mode7xincc  resd 1       ; range check for x
+.mode7yinc   resd 1       ; number to add for y
+.mode7xsloc  resd 1       ; which screen x
+.mode7ysloc  resd 1       ; which screen y
+.mode7xsrl   resd 1       ; which relative screen x
+.mode7ysrl   resd 1       ; which relative screen y
+.cxloc       resw 1       ; cx location
+.cyloc       resw 1       ; cy location
+.m7xaddofa   resd 1
+.m7xaddof2a  resd 1
+.m7yaddofa   resd 1
+.m7yaddof2a  resd 1
 
-ALIGN32
-NEWSYM ngwleft,       dd 0       ; for byte move left
-NEWSYM ngwleftb,      dd 0       ; for byte move left
-NEWSYM mode7xpos,   dd 0,0       ; x position
-NEWSYM mode7ypos,   dd 0,0       ; x position
-NEWSYM mode7xrpos,  dd 0,0       ; x position, relative
-NEWSYM mode7yrpos,  dd 0,0       ; y position, relative
-NEWSYM mode7xadder, dd 0,0       ; number to add for x
-NEWSYM mode7yadder, dd 0,0       ; number to add for y
+;ALIGN32
+NEWSYM ngwleft,       resd 1       ; for byte move left
+NEWSYM ngwleftb,      resd 1       ; for byte move left
+NEWSYM mode7xpos,   resd 2         ; x position
+NEWSYM mode7ypos,   resd 2         ; x position
+NEWSYM mode7xrpos,  resd 2         ; x position, relative
+NEWSYM mode7yrpos,  resd 2         ; y position, relative
+NEWSYM mode7xadder, resd 2         ; number to add for x
+NEWSYM mode7yadder, resd 2         ; number to add for y
+SECTION .text
 
 NEWSYM ProcessMode7ngwin
     mov ecx,[ngcwinptr]

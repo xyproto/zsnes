@@ -786,7 +786,7 @@ NEWSYM _2xSaISuper2xSaILineW
          pop ecx
          sub ecx, 4
          cmp ecx, 0
-         jg  near .Loop
+         jg  .Loop
 
 ; Restore some stuff
          popad
@@ -1345,7 +1345,7 @@ NEWSYM _2xSaISuperEagleLineW
          pop ecx
          sub ecx, 4
          cmp ecx, 0
-         jg  near .Loop
+         jg  .Loop
 
 ; Restore some stuff
          popad
@@ -1954,7 +1954,7 @@ NEWSYM _2xSaILineW
          pop ecx
          sub ecx, 4
          cmp ecx, 0
-         jg  near .Loop
+         jg  .Loop
 
 ; Restore some stuff
          popad

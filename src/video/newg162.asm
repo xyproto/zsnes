@@ -77,6 +77,7 @@ NEWSYM NewG162AsmStart
     add ecx,[%2]
     mov edi,ecx
     mov ecx,8
+
 .loop
     cacheloopstuff 0
     cacheloopstuff 1
@@ -196,6 +197,7 @@ cache8b16b:
 
 %macro drawtile16b 10
     mov byte[tleftn],33
+
 %%loop
     mov cx,[vrama+eax]
     xor ecx,[ng16bprval]
