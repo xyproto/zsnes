@@ -23,6 +23,9 @@
 
 #include "SDL_thread.h"
 
+#include <sys/time.h>
+#include <time.h>
+
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 typedef unsigned long DWORD;

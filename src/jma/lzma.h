@@ -62,7 +62,7 @@ protected:
     m_State.Init();
     m_PreviousByte = 0;
     m_PeviousIsMatch = false;
-    for(int i = 0 ; i < kNumRepDistances; i++)
+    for(UINT32 i = 0 ; i < kNumRepDistances; i++)
       m_RepDistances[i] = 0;
   }
 };

@@ -22,8 +22,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 namespace NStream{
 
 CInByte::CInByte(UINT32 aBufferSize):
-  m_BufferSize(aBufferSize),
-  m_BufferBase(0)
+  m_BufferBase(0),
+  m_BufferSize(aBufferSize)
 {
   m_BufferBase = new BYTE[m_BufferSize];
 }

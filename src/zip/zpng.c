@@ -169,9 +169,9 @@ char *generate_filename(void)
 	for(i=0;i<10000;i++)
 	{
 #ifdef __LINUX__
-	  sprintf(tmp, "_%04d.png\0", i);
+	  sprintf(tmp, "_%04d.png", i);
 #else
-	  sprintf(tmp, " %04d.png\0", i);
+	  sprintf(tmp, " %04d.png", i);
 #endif
 	  if(stat(filename, &buf)==-1)
 	    break;

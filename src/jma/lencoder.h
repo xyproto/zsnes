@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 namespace NLength {
 
-const int kNumPosStatesBitsMax = 4;
+const UINT32 kNumPosStatesBitsMax = 4;
 const int kNumPosStatesMax = (1 << kNumPosStatesBitsMax);
 
 

@@ -105,7 +105,7 @@ HRESULT CDecoder::Init(ISequentialInStream *anInStream,
    
   // m_RepMatchLenDecoder.Init();
 
-  for (i = 0; i < kNumLenToPosStates; i++)
+  for (i = 0; (UINT32) i < kNumLenToPosStates; i++)
     m_PosSlotDecoder[i].Init();
 
   for(i = 0; i < kNumPosModels; i++)
@@ -133,7 +133,7 @@ HRESULT CDecoder::CodeReal(ISequentialInStream *anInStream,
   bool aPeviousIsMatch = false;
   BYTE aPreviousByte = 0;
   UINT32 aRepDistances[kNumRepDistances];
-  for(int i = 0 ; i < kNumRepDistances; i++)
+  for(UINT32 i = 0 ; i < kNumRepDistances; i++)
     aRepDistances[i] = 0;
 
   UINT64 aNowPos64 = 0;
@@ -144,7 +144,7 @@ HRESULT CDecoder::CodeReal(ISequentialInStream *anInStream,
     while(aNowPos64 < aNext)
     {
       UINT32 aPosState = UINT32(aNowPos64) & m_PosStateMask;
-      if (m_MainChoiceDecoders[aState.m_Index][aPosState].Decode(&m_RangeDecoder) == kMainChoiceLiteralIndex)
+      if (m_MainChoiceDecoders[aState.m_Index][aPosState].Decode(&m_RangeDecoder) == (UINT32) kMainChoiceLiteralIndex)
       {
         // aCounts[0]++;
         aState.UpdateChar();
@@ -166,7 +166,7 @@ HRESULT CDecoder::CodeReal(ISequentialInStream *anInStream,
         aPeviousIsMatch = true;
         UINT32 aDistance, aLen;
         if(m_MatchChoiceDecoders[aState.m_Index].Decode(&m_RangeDecoder) == 
-            kMatchChoiceRepetitionIndex)
+            (UINT32) kMatchChoiceRepetitionIndex)
         {
           if(m_MatchRepChoiceDecoders[aState.m_Index].Decode(&m_RangeDecoder) == 0)
           {
@@ -218,10 +218,10 @@ HRESULT CDecoder::CodeReal(ISequentialInStream *anInStream,
           aState.UpdateMatch();
           UINT32 aPosSlot = m_PosSlotDecoder[GetLenToPosState(aLen)].Decode(&m_RangeDecoder);
           // aCounts[aPosSlot]++;
-          if (aPosSlot >= kStartPosModelIndex)
+          if (aPosSlot >= (UINT32) kStartPosModelIndex)
           {
             aDistance = kDistStart[aPosSlot];
-            if (aPosSlot < kEndPosModelIndex)
+            if (aPosSlot < (UINT32) kEndPosModelIndex)
               aDistance += m_PosDecoders[aPosSlot - kStartPosModelIndex].Decode(&m_RangeDecoder);
             else
             {
