@@ -29,7 +29,6 @@ DOSDIR=dos
 GUIDIR=gui
 VIDEODIR=video
 WINDIR=win
-OBJDIR=obj
 ZIPDIR=zip
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.obj ${CHIPDIR}/fxemu2.obj ${CHIPDIR}/dsp1proc.obj\
@@ -58,8 +57,6 @@ WINOBJ=${WINDIR}/copyvwin.obj ${WINDIR}/winintrf.obj ${WINDIR}/winlink.obj\
 WINDOSOBJ=${DOSDIR}/debug.obj ${DOSDIR}/joy.obj ${DOSDIR}/modemrtn.obj ${DOSDIR}/vesa2.obj\
 	${DOSDIR}/initvid.obj ${DOSDIR}/sw.obj ${DOSDIR}/gppro.obj ${DOSDIR}/vesa12.obj\
         ${DOSDIR}/zsipx.obj
-
-PREOBJ=
 
 ZIPOBJ=${ZIPDIR}/zzip.obj ${ZIPDIR}/unzip.obj
 
