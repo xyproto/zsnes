@@ -3265,11 +3265,11 @@ DisplayGUIPathsClick
     ret
 
 DisplayGUISaveClick:
-    GUIClickCButtonAS 11,40,byte[AutoIncSaveSlot]
-    GUIClickCButton 11,50,byte[SRAMSave5Sec]
-    GUIClickCButton 11,60,byte[LatestSave]
-    GUIClickCButton 11,70,byte[AutoState]
-    GUIClickCButton 11,80,byte[SRAMState]
+    GUIClickCButtonAS 11,50,byte[AutoIncSaveSlot]
+    GUIClickCButton 11,60,byte[SRAMSave5Sec]
+    GUIClickCButton 11,70,byte[LatestSave]
+    GUIClickCButton 11,80,byte[AutoState]
+    GUIClickCButton 11,90,byte[SRAMState]
     GUIPHoldbutton2 143,22,151,30,70,byte[RewindStates],1,25
     GUIPHoldbutton2 154,22,162,30,71,byte[RewindStates],-1,0
     GUIPHoldbutton2 173,32,181,40,72,byte[RewindFrames],1,40
