@@ -23,7 +23,7 @@ EXTSYM nmistatus,regaccessbankr8,snesmap2,snesmmap,stackand,stackor,tablead
 EXTSYM wramdata,xa,xd,xdb,xe,xirqb,xpb,xpc,xs,xx,xy
 EXTSYM switchtovirq,intrset,UpdateDPage
 EXTSYM switchtovirqret
-EXTSYM debstop3
+EXTSYM debstop3,romdata
 
 
 
@@ -494,7 +494,23 @@ COpCDm16:; CMP a
    CMPMacro16b
 COpCFm8: ; CMP al
    addr_al_8br
+   mov bl,[esi-1]
+   mov cx,[esi-3]
+   test ecx,8000h
+   jz .loweraddr2
+   add ecx,[snesmmap+ebx*4]
+   jmp .nextaddr
+.loweraddr2
+   add ecx,[snesmap2+ebx*4]
+.nextaddr
+   cmp ecx,esi
+   je .ne
+.equal
+   xor ecx,ecx
    CMPMacro8b
+.ne
+   xor al,al
+   jmp .equal
 COpCFm16:; CMP al
    addr_al_16br
    CMPMacro16b
