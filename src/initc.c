@@ -415,7 +415,7 @@ void headerhack()
   } 
 
   //Should be Super Famista 2 (J), uses non-standard characters
-  if (!strncmp((RomData+Lo),"\x0bd\x0b0\x0ca\x0df\x0b0\x0cc\x0a7\x0d0\x0bd\x0c0 \x032     " ,16))
+  if (!strncmp((RomData+Lo),"\x0bd\x0b0\x0ca\x0df\x0b0\x0cc\x0a7\x0d0\x0bd\x0c0 \x032    " ,16))
   {
     //Skip a check for value FF at 2140 when spc not initialized yet?!?
     RomData[0x6CED] = 0xEA;
@@ -598,19 +598,6 @@ void headerhack()
   //Okaaay...
   if(DSP1Type) { disablehdma = true; }
 
-   
-  //In asm, but doesn't do anything - if(!strncmp((RomData+Hi), "FINA", 4) 
-    
-  //Final Fantasy 3 (extent unknown!)
-  if (romdata[0x26AC] == 0xF00F2908)
-  {
-    //asm volatile("int $3");
-    opexec268 = 163;
-    opexec358 = 157;
-    opexec268cph = 39;
-    opexec358cph = 39;
-  }
-
   //Earthworm Jim 2 (all regions?)
   if (!strncmp((RomData+Lo),"EARTHWORM JIM 2     " ,20))
   {
@@ -642,29 +629,6 @@ void headerhack()
     opexec358 = 220;
     opexec268cph = 64;
     opexec358cph = 64;
-  }
-
-  //Battletoads & Double Dragon (extent unknown!)
-  if (romdata[0x190] == 0xE2FA85F6)
-  {
-    opexec268 = 187;
-    opexec358 = 187;
-    opexec268cph = 47;
-    opexec358cph = 47;
-    cycpblt = cycpb358;
-    cycpl = opexec358;
-  }
-
-  //Chrono Trigger (extent unknown!)
-  if (romdata[0x2190] == 0xE243728D && opexec358 <= 182)
-  {
-    ClearScreenSkip = true;
-    opexec268 = 187;
-    opexec358 = 182;
-    opexec268cph = 47;
-    opexec358cph = 47;
-    cycpblt = cycpb358;
-    cycpl = opexec358;
   }
 
   //Front Mission
