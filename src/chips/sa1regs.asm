@@ -62,9 +62,8 @@ NEWSYM Sa1RegsAsmStart
 
 
 
+SECTION .data ;ALIGN=32
 
-
-ALIGN32
 NEWSYM SPCMultA, dd 0
 NEWSYM SPCMultB, dd 0
 NEWSYM SPCDivEnd, dd 0
@@ -95,6 +94,8 @@ NEWSYM RTCRest, dd 0
 NEWSYM SPC7110TempPosition, dd 0
 NEWSYM SPC7110TempLength, dd 0
 NEWSYM SPCPrevCompPtr, dd 0
+
+SECTION .text
 
 RTC2800:
     push ebx
@@ -274,7 +275,10 @@ SPC485F:
     mov al,[SPC7110RTC+0Fh]
     ret
 
-NEWSYM SPCDecompFin, dd 0
+SECTION .bss
+NEWSYM SPCDecompFin, resd 1
+
+SECTION .text
 
 NEWSYM SPC7110init
     mov dword[SPCMultA],0
@@ -592,16 +596,19 @@ SPC480C:        ; decompression finished status
     mov byte[SPCDecompFin],0
     ret
 
-NEWSYM CurPtrVal, dd 0
-NEWSYM CurCompCounter2, dd 0
-NEWSYM CurPtrLen, dd 0
-NEWSYM CurValUsed, db 0
-NEWSYM PrevDecompPtr, dw 0
-NEWSYM CurDecompPtr, dw 0
-NEWSYM CurDecompSize, dw 0
-NEWSYM DecompArray, times 65536 db 0
-NEWSYM DecompAPtr, dd 0
-lastentry dd 0
+SECTION .bss
+NEWSYM CurPtrVal, resd 1
+NEWSYM CurCompCounter2, resd 1
+NEWSYM CurPtrLen, resd 1
+NEWSYM CurValUsed, resb 1
+NEWSYM PrevDecompPtr, resw 1
+NEWSYM CurDecompPtr, resw 1
+NEWSYM CurDecompSize, resw 1
+NEWSYM DecompArray, resb 65536
+NEWSYM DecompAPtr, resd 1
+lastentry resd 1
+
+SECTION .text
 
 
 NEWSYM UpdateRTC
@@ -1423,10 +1430,13 @@ SPC4841:
     mov al,byte[SPC7110RTCStat+2]
     ret
 
+SECTION .data
 SPCTimerVal
  db 12h,01h,02h,03h,04h,05h,06h,07h,08h,09h,0,0,0,0,0,0
  db 10h,11h,32h,21h,22h,23h,24h,25h,26h,27h,0,0,0,0,0,0
  db 28h,29h
+
+SECTION .text
 
 SPC4842:
     mov al,80h
@@ -1461,7 +1471,7 @@ SPC4842:
 ; SA-1 Start
 ; ----------
 
-ALIGN32
+SECTION .data ;ALIGN=32
 
 ; IRQ Stuff
 NEWSYM SA1Mode, dd 0     ; 0 = SNES CPU, 1 = SA1 CPU
@@ -1546,6 +1556,8 @@ NEWSYM Sdd1Mode, dd 0
 NEWSYM Sdd1Bank, dd 0
 NEWSYM Sdd1Addr, dd 0
 NEWSYM Sdd1NewAddr, dd 0
+
+SECTION .text
 
 %macro SA1QuickF 2
 NEWSYM %1
@@ -2297,8 +2309,11 @@ NEWSYM sa12239w
     mov [SA1DMACount+1],al
     ret
 
-NEWSYM sa1dmaptr, dd 0
-NEWSYM sa1dmaptrs, dd 0
+SECTION .bss
+NEWSYM sa1dmaptr, resd 1
+NEWSYM sa1dmaptrs, resd 1
+
+SECTION .text
 
 NEWSYM sa1dmairam
     mov ebx,[SA1DMADest]
@@ -2359,8 +2374,10 @@ executesa1dma:
     pop edx
     ret
 
+SECTION .bss
+tempblah resb 1
 
-tempblah db 0
+SECTION .text
 
 %macro setbit2b 2
     test al,%1
@@ -2553,7 +2570,10 @@ sa1chconv:
 
     popad
     ret
-.numrows dd 0
+SECTION .bss
+.numrows resd 1
+
+SECTION .text
 
 NEWSYM initSA1regs
     setreg 2300h*4,sa12300r

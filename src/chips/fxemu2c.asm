@@ -39,7 +39,7 @@ NEWSYM FxEmu2CAsmStart
 
 
 
-
+SECTION .text ;ALIGN=32
 
 ALIGN32
 NEWSYM FxOpd00      ; STOP   stop GSU execution (and maybe generate an IRQ)     ; Verified.
@@ -747,8 +747,11 @@ NEWSYM FxOpd4C      ; PLOT   plot pixel with R1,R2 as x,y and the color register
    inc word [SfxR1]
    FXReturn
 
-.prevx dw 0
-.prevy dw 0
+SECTION .bss
+.prevx resw 1
+.prevy resw 1
+
+SECTION .text
 
 NEWSYM FxOpd4CA1    ; RPIX   read color of the pixel with R1,R2 as x,y
    FETCHPIPE

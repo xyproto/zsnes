@@ -22,7 +22,6 @@ EXTSYM DSPOp0A,Op0AA,Op0AB,Op0AC,Op0AD,Op0AVS,DSPOp10
 EXTSYM debstop
 EXTSYM DSPOp00,Op00Multiplicand,Op00Multiplier
 EXTSYM Op00Result
-;EXTSYM DSPOp10,Op10a,Op10b,Op10A,Op10B
 EXTSYM DSPOp0F,Op0FPass
 EXTSYM DSPOp04,Op04Angle,Op04Cos,Op04Radius,Op04Sin
 EXTSYM DSPOp28,Op28R,Op28X,Op28Y,Op28Z
@@ -54,9 +53,11 @@ NEWSYM Dsp1ProcAsmStart
 
 
 
+SECTION .bss
+NEWSYM dsp1ptr, resd 1
+NEWSYM dsp1array, resb 4096
 
-NEWSYM dsp1ptr, dd 0
-NEWSYM dsp1array, times 4096 db 0
+SECTION .text
 
 ;*******************************************************
 ; DSP1 Read Functions
@@ -75,7 +76,6 @@ NEWSYM DSP1Read8b3F
     mov al,80h
     ret
 
-
 NEWSYM DSP1Read16b3F
     test ecx,8000h
     jnz .dsp1area
@@ -85,7 +85,7 @@ NEWSYM DSP1Read16b3F
     jae .doC000
     cmp byte[DSP1RLeft],0
     jne .movestuff
-    mov ax,0FFFFh
+    xor ax,ax
     ret
 .doC000
     mov ax,08000h
@@ -145,7 +145,7 @@ NEWSYM DSP1Read16b
     jae .do7000
     cmp byte[DSP1RLeft],0
     jne .movestuff
-    mov ax,0FFFFh
+    xor ax,ax
     ret
 .do7000
     mov ax,8000h
@@ -305,16 +305,19 @@ NEWSYM DSP1Write16b
     DSP1WriteProc 0Fh, DSP1_0F  ; DSP RAM Check
     ret
 
-NEWSYM DSP1COp,   db 0
-NEWSYM DSP1RLeft, db 0
-NEWSYM DSP1WLeft, db 0
-NEWSYM DSP1CPtrW, db 0
-NEWSYM DSP1CPtrR, db 0
-NEWSYM DSP1VARS,  times 16 dw 0
-NEWSYM DSP1RET,   times 16 dw 0
-NEWSYM DSPDet,    db 0
+SECTION .bss
+NEWSYM DSP1COp,   resb 1
+NEWSYM DSP1RLeft, resb 1
+NEWSYM DSP1WLeft, resb 1
+NEWSYM DSP1CPtrW, resb 1
+NEWSYM DSP1CPtrR, resb 1
+NEWSYM DSP1VARS,  resw 16
+NEWSYM DSP1RET,   resw 16
+NEWSYM DSPDet,    resb 1
 
-NEWSYM DSPFuncUsed, times 256 db 0
+NEWSYM DSPFuncUsed, resb 256
+
+SECTION .text
 
 ;*******************************************************
 ; DSP1 Conversion Functions
@@ -337,6 +340,7 @@ DSP1_00:  ; 16-bit multiply
 
 EXTSYM Op10Exponent, Op10ExponentR
 EXTSYM Op10Coefficient, Op10CoefficientR
+
 DSP1_10:  ; Inverse
     push eax
     mov ax,[DSP1VARS]
@@ -371,6 +375,7 @@ DSP1_04:  ; Trigonometric
     mov byte[DSP1RLeft],2
     pop eax
     ret
+
 DSP1_08:  ; Vector Size
     push eax
     mov ax,[DSP1VARS]
@@ -389,6 +394,7 @@ DSP1_08:  ; Vector Size
     mov byte[DSP1RLeft],2
     pop eax
     ret
+
 DSP1_18:  ; Vector Size Comparison
     push eax
     mov ax,[DSP1VARS]
@@ -426,7 +432,6 @@ DSP1_28:  ; Vector Absolute Value
     pop eax
     ret
 
-
 DSP1_0C:  ; Coordinate Rotation
     or byte[DSPDet],08h
     push eax
@@ -446,6 +451,7 @@ DSP1_0C:  ; Coordinate Rotation
     mov byte[DSP1RLeft],2
     pop eax
     ret
+
 DSP1_1C:  ; 3D Coordinate Rotation
     push eax
     mov ax,[DSP1VARS]
@@ -472,7 +478,6 @@ DSP1_1C:  ; 3D Coordinate Rotation
     mov byte[DSP1RLeft],3
     pop eax
     ret
-
 
 DSP1_02:  ; Vector Size
     or byte[DSPDet],10h
@@ -564,6 +569,7 @@ DSP1_0A:  ; Raster Data Calculation via DMA
     mov byte[DSP1RLeft],4
     pop eax
     ret
+
 DSP1_06:  ; Object Projection Calculation
     or byte[DSPDet],40h
     push eax
@@ -603,6 +609,7 @@ DSP1_06:  ; Object Projection Calculation
     mov [eax+11],bx
     pop ebx
     add dword[dsp1ptr],13
+
 DSP1_0E:  ; Coordinate Calculation of a point onscreen
     push eax
     mov ax,[DSP1VARS]
@@ -619,6 +626,7 @@ DSP1_0E:  ; Coordinate Calculation of a point onscreen
     mov byte[DSP1RLeft],2
     pop eax
     ret
+
 DSP1_01:  ; Set Attitude Matrix A
     push eax
     mov ax,[DSP1VARS]
@@ -634,6 +642,7 @@ DSP1_01:  ; Set Attitude Matrix A
     popad
     pop eax
     ret
+
 DSP1_11:  ; Set Attitude Matrix B
     push eax
     mov ax,[DSP1VARS]
@@ -649,6 +658,7 @@ DSP1_11:  ; Set Attitude Matrix B
     popad
     pop eax
     ret
+
 DSP1_21:  ; Set Attitude Matrix C
     push eax
     mov ax,[DSP1VARS]
@@ -664,6 +674,7 @@ DSP1_21:  ; Set Attitude Matrix C
     popad
     pop eax
     ret
+
 DSP1_0D:  ; Convert from global to object coords Matrix A
     push eax
     mov ax,[DSP1VARS]
@@ -684,6 +695,7 @@ DSP1_0D:  ; Convert from global to object coords Matrix A
     mov byte[DSP1RLeft],3
     pop eax
     ret
+
 DSP1_0F:  ; DSP RAM Test
     push eax
     mov ax,[DSP1VARS]
@@ -695,6 +707,7 @@ DSP1_0F:  ; DSP RAM Test
     mov byte[DSP1RLeft],1
     pop eax
     ret
+
 DSP1_1D:  ; Convert from global to object coords Matrix B
     push eax
     mov ax,[DSP1VARS]
@@ -715,6 +728,7 @@ DSP1_1D:  ; Convert from global to object coords Matrix B
     mov byte[DSP1RLeft],3
     pop eax
     ret
+
 DSP1_2D:  ; Convert from global to object coords Matrix C
     push eax
     mov ax,[DSP1VARS]
@@ -735,6 +749,7 @@ DSP1_2D:  ; Convert from global to object coords Matrix C
     mov byte[DSP1RLeft],3
     pop eax
     ret
+
 DSP1_03:  ; Convert from object to global coords Matrix A
     push eax
     mov ax,[DSP1VARS]
@@ -755,6 +770,7 @@ DSP1_03:  ; Convert from object to global coords Matrix A
     mov byte[DSP1RLeft],3
     pop eax
     ret
+
 DSP1_13:  ; Convert from object to global coords Matrix B
     push eax
     mov ax,[DSP1VARS]
@@ -775,6 +791,7 @@ DSP1_13:  ; Convert from object to global coords Matrix B
     mov byte[DSP1RLeft],3
     pop eax
     ret
+
 DSP1_23:  ; Convert from object to global coords Matrix C
     push eax
     mov ax,[DSP1VARS]
@@ -795,6 +812,7 @@ DSP1_23:  ; Convert from object to global coords Matrix C
     mov byte[DSP1RLeft],3
     pop eax
     ret
+
 DSP1_0B:  ; Calculation of inner product Matrix A
     push eax
     mov ax,[DSP1VARS]
@@ -811,6 +829,7 @@ DSP1_0B:  ; Calculation of inner product Matrix A
     mov byte[DSP1RLeft],1
     pop eax
     ret
+
 DSP1_1B:  ; Calculation of inner product Matrix B
     push eax
     mov ax,[DSP1VARS]
@@ -827,6 +846,7 @@ DSP1_1B:  ; Calculation of inner product Matrix B
     mov byte[DSP1RLeft],1
     pop eax
     ret
+
 DSP1_2B:  ; Calculation of inner product Matrix C
     push eax
     mov ax,[DSP1VARS]
@@ -843,6 +863,7 @@ DSP1_2B:  ; Calculation of inner product Matrix C
     mov byte[DSP1RLeft],1
     pop eax
     ret
+
 DSP1_14:  ; 3D angle rotation
     push eax
     mov ax,[DSP1VARS]

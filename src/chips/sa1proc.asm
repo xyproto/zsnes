@@ -18,7 +18,7 @@
 %include "macros.mac"
 
 EXTSYM xa,xx,xy,xd,xdb,xpb,xs,xe,initaddrl,UpdateDPage,wramdata,IRAM,cycpbl,SA1DoIRQ
-EXTSYM spcnumread,SA1IRQEn,nextopcodesa1,debugds
+EXTSYM spcnumread,spchalted,SA1IRQEn,nextopcodesa1,debugds
 EXTSYM SNSRegP,SNSRegE,SNSRegPCS,SA1Ptr,SNSPtr,nmiv,irqv,nmiv2,irqv2,snesmap2,SA1tablead
 EXTSYM SA1xpb,SA1RegP,wramdataa,SA1TimerVal,debuggeron
 EXTSYM SA1RegE,SA1RegPCS,SA1BWPtr,SNSBWPtr,CurBWPtr,SA1NMIV,SA1IRQV,debstop,tablead
@@ -35,14 +35,16 @@ NEWSYM Sa1ProcAsmStart
 ; *** Disable spc700 if possible ***
 
 
+SECTION .bss ;ALIGN=32
+NEWSYM SA1Status, resb 1  ; 0 = 65816, 1 = SA1A, 2 = SA1B
 
-NEWSYM SA1Status, db 0  ; 0 = 65816, 1 = SA1A, 2 = SA1B
+NEWSYM CurrentExecSA1, resb 1
+NEWSYM CurrentCPU, resb 1
 
-NEWSYM CurrentExecSA1, db 0
-NEWSYM CurrentCPU, db 0
+;ALIGN32
+NEWSYM prevedi, resd 1
 
-ALIGN32
-NEWSYM prevedi, dd 0
+SECTION .text
 
 %macro SA1Debugb 0
     pushad
@@ -232,7 +234,9 @@ NEWSYM SA1Swap
     or byte[SA1DoIRQ],8
     jmp .returnirq
 
-NEWSYM SA1xpc, dd 0
+SECTION .bss
+NEWSYM SA1xpc, resd 1
+SECTION .text
 
 %macro makedl 0
    and dl,00111100b

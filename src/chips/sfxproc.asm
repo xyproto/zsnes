@@ -190,7 +190,10 @@ NEWSYM cacheregw
     or byte[cachewarning],2
     ret
 
-NEWSYM cachewarning, db 0
+SECTION .bss
+NEWSYM cachewarning, resb 1
+
+SECTION .text
 
 ; SFX Registers
 
@@ -315,7 +318,10 @@ NEWSYM reg3031r
 .cleared
     mov al,[SfxSFR+1]
     ret
-.test db 0
+SECTION .bss
+.test resb 1
+SECTION .text
+
 NEWSYM reg3032r       ; Unused
     xor al,al
     ret

@@ -199,11 +199,12 @@ NEWSYM FxTableAsmStart
 
 
 
-
-NEWSYM sfx128lineloc, dd 0
-NEWSYM sfx160lineloc, dd 0
-NEWSYM sfx192lineloc, dd 0
-NEWSYM sfxobjlineloc, dd 0
+SECTION .bss ;ALIGN=32
+NEWSYM sfx128lineloc, resd 1
+NEWSYM sfx160lineloc, resd 1
+NEWSYM sfx192lineloc, resd 1
+NEWSYM sfxobjlineloc, resd 1
+SECTION .text
 
 
 NEWSYM InitFxTables
@@ -3222,6 +3223,7 @@ NEWSYM InitFxTables
    ret
 
 ; normal
+SECTION .data
 NEWSYM sfxnametab
             db 'STOP    NOP     CACHE   LSR     '
             db 'ROL     BRA     BLT     BGE     '
@@ -3543,5 +3545,7 @@ NEWSYM sfxnametab
             db 'IWT R4  IWT R5  IWT R6  IWT R7  '
             db 'IWT R8  IWT R9  IWT R10 IWT R11 '
             db 'IWT R12 IWT R13 IWT R14 IWT R15 '
+
+SECTION .text
 
 NEWSYM FxTableAsmEnd

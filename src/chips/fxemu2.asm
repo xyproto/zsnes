@@ -37,10 +37,10 @@ NEWSYM FlushCache
    ; Copy 512 bytes from pb:eax to SfxCACHERAM
    ret
 
-SECTION .data
-NEWSYM tempsfx, db 0,0,0
+SECTION .bss
+NEWSYM tempsfx, resb 3
 
-ALIGN32
+SECTION .data ;ALIGN=32
 
 ; FxChip emulation by _Demo_
 ; Optimised by zsKnight
@@ -119,7 +119,6 @@ NEWSYM SfxB,           dd 0  ; B flag  (1 when with instruction executed)
 NEWSYM SfxOverflow,    dd 0  ; Overflow flag
 
 NEWSYM SfxCACHERAM, times 512 db 0    ; 512 bytes of GSU cache memory
-SECTION .data
 num2writesfxreg  equ $-SfxR0
 ; pharos equ hack *sigh*
 NEWSYM PHnum2writesfxreg, dd num2writesfxreg
@@ -844,10 +843,13 @@ NEWSYM FxOp4C      ; PLOT   plot pixel with R1,R2 as x,y and the color register 
    inc word [SfxR1]
    ret
 
-.prevx dw 0
-.prevy dw 0
+SECTION .bss
+.prevx resw 1
+.prevy resw 1
 
-sfxwarning db 0
+sfxwarning resb 1
+
+SECTION .text
 
 NEWSYM FxOp4CA1    ; RPIX   read color of the pixel with R1,R2 as x,y
    FETCHPIPE
@@ -2646,11 +2648,13 @@ NEWSYM FxOpFFA2    ; SM (XX),RN   store word in RAM
    CLRFLAGS
    ret
 
-ALIGN32
+SECTION .bss ;ALIGN=32
 
-NEWSYM NumberOfOpcodes, dd 0    ; Number of opcodes to execute
-NEWSYM NumberOfOpcodesBU, dd 0  ; Number of opcodes to execute backup value
-NEWSYM sfxwarningb, db 0
+NEWSYM NumberOfOpcodes, resd 1    ; Number of opcodes to execute
+NEWSYM NumberOfOpcodesBU, resd 1  ; Number of opcodes to execute backup value
+NEWSYM sfxwarningb, resb 1
+
+SECTION .text
 
 NEWSYM MainLoop
    mov eax,[SfxPBR]
