@@ -70,7 +70,7 @@ namespace JMA
     }
     
     //Seek to before file block so we can read the file block
-    stream.seekg(-(file_block_size+UINT_SIZE),ios::end);
+    stream.seekg(-((int)file_block_size+UINT_SIZE),ios::end);
     
     jma_file_info file_info;
     char byte;
