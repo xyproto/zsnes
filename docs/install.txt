@@ -47,7 +47,7 @@ If you have any problems we will probably not help you as cross compiling
      
 
 Windows port with MSVC: 
-- GNU Make : it comes with djgpp
+- GNU Make : http://unxutils.sourceforge.net/
 - NASM v0.98.39 : http://nasm.sf.net/
 - MSVC++ 6.0 or higher : not freely available, you'll have to buy it
                    You need to run VCVARS32.BAT.  If you get an 
@@ -87,7 +87,7 @@ it will divide its size by 10.
 
 
 Windows port with MinGW:
-- GNU Make : it comes with djgpp
+- GNU Make : http://unxutils.sourceforge.net/
 - NASM v0.98.39 : http://nasm.sf.net/ 
 - MinGW : http://www.mingw.org
 - Latest Win32API : http://www.mingw.org
