@@ -136,7 +136,6 @@ GUIStringGreater2:
     mov edx,46+157+6
     sub edx,[GUIWincoladd]
     DrawGUILine
-
     mov edx,42+157+4+4
     sub edx,[GUIWincoladd]
     DrawGUILine
@@ -154,11 +153,9 @@ GUIStringGreater2:
     DrawGUILine
     dec edx
     DrawGUILine
-
     mov edx,38+157+4
     sub edx,[GUIWincoladd]
     DrawGUILine
-
     sub ebx,10
     mov edx,44+157+4
     sub edx,[GUIWincoladd]
@@ -171,7 +168,6 @@ GUIStringGreater2:
     jnz %%loop2
     pop ecx
     sub ebx,8
-
     mov edx,40+157+4
     sub edx,[GUIWincoladd]
     mov esi,9

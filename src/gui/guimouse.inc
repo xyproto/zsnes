@@ -2192,7 +2192,6 @@ DisplayGUIInputClick:
 %endif
     ret
 
-
 DisplayGUIOptionClick:
     GUIClickCButtonfr 11,26,byte[frameskip]
     xor ebx,ebx
@@ -2233,7 +2232,6 @@ DisplayGUIOptionClick:
     GUIPHoldbutton2 118,12,126,22,12,byte[maxskip],1,9
     GUIPHoldbutton2 129,12,137,22,13,byte[maxskip],-1,0
     ret
-
 
 DisplayGUIVideoClick2:
     push eax

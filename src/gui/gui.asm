@@ -148,13 +148,11 @@ EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Lk,pl1Rk,pl1Ak,pl1Bk
 EXTSYM deinitipx
 EXTSYM InitModem
 EXTSYM outofmemfix,yesoutofmemory
-
 EXTSYM CReadHead,ReadHead,CFWriteHead,CFWriteStart
 EXTSYM JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209,JoyMaxX209
 EXTSYM JoyMinY209,JoyMaxY209,GetCoords,GetCoords3
 EXTSYM MultiTap,SFXEnable
-EXTSYM RestoreSystemVars
-	
+EXTSYM RestoreSystemVars	
 EXTSYM TCPIPStartServer
 EXTSYM TCPIPInitConnectToServer
 EXTSYM TCPIPWaitForConnection
