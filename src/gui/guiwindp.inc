@@ -4735,7 +4735,7 @@ GUIGUIOptnsTextC dd 'ENABLE WATER EFFECT',0
 DisplayGUIAbout:
     cmp byte[OSPort],3
     jne .notwin32
-    mov dword[GUIwinsizey+11*4],94
+    mov dword[GUIwinsizey+11*4],104
 .notwin32
     mov byte[GUIGUIAboutText1+1],'S'+136
     mov byte[GUIGUIAboutText1+2],'N'-26
@@ -4756,11 +4756,13 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,6,36,GUIGUIAboutText3
     GUIOuttextwin2 11,6,46,GUIGUIAboutText4
     GUIOuttextwin2 11,6,66,GUIGUIAboutText6
+    GUIOuttextwin2 11,5,75,GUIGUIAboutText6b
     add byte[GUItextcolor],15
     GUIOuttextwin2 11,5,15,GUIGUIAboutText1
     GUIOuttextwin2 11,5,35,GUIGUIAboutText3
     GUIOuttextwin2 11,5,45,GUIGUIAboutText4
     GUIOuttextwin2 11,5,65,GUIGUIAboutText6
+    GUIOuttextwin2 11,5,75,GUIGUIAboutText6b
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 11,6,26,GUIGUIAboutText2
@@ -4774,19 +4776,21 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,5,55,GUIGUIAboutText5
     ret
 .win32
-    DrawGUIButton 11,5,87,74,98,GUIGUIAboutText8,65,0,0
+    DrawGUIButton 11,5,97,74,108,GUIGUIAboutText8,65,0,0
     sub byte[GUItextcolor],15
     GUIOuttextwin2 11,6,16,GUIGUIAboutText1
     GUIOuttextwin2 11,6,26,GUIGUIAboutText7
     GUIOuttextwin2 11,6,46,GUIGUIAboutText3
     GUIOuttextwin2 11,6,56,GUIGUIAboutText4
     GUIOuttextwin2 11,6,76,GUIGUIAboutText6
+    GUIOuttextwin2 11,6,86,GUIGUIAboutText6b
     add byte[GUItextcolor],15
     GUIOuttextwin2 11,5,15,GUIGUIAboutText1
     GUIOuttextwin2 11,5,25,GUIGUIAboutText7
     GUIOuttextwin2 11,5,45,GUIGUIAboutText3
     GUIOuttextwin2 11,5,55,GUIGUIAboutText4
     GUIOuttextwin2 11,5,75,GUIGUIAboutText6
+    GUIOuttextwin2 11,5,85,GUIGUIAboutText6b
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 11,6,36,GUIGUIAboutText2
@@ -4804,8 +4808,9 @@ GUIGUIAboutText1 db 'ZSNES V0.Agh  ',0
 GUIGUIAboutText2 db 'CODED BY :  ',0
 GUIGUIAboutText3 db '    ZSKNIGHT',0
 GUIGUIAboutText4 db '    _DEMO_',0
-GUIGUIAboutText5 db 'ASSISTANT CODER :  ',0
+GUIGUIAboutText5 db 'ASSISTANT CODERS :  ',0
 GUIGUIAboutText6 db '    PHAROS',0
+GUIGUIAboutText6b db '    TEUF',0
 GUIGUIAboutText7 db 'WIN PORT V0.86',0
 GUIGUIAboutText8 db 'HOMEPAGE',0
 

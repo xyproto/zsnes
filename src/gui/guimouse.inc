@@ -2584,7 +2584,7 @@ DisplayGUIOptnsClick:
 DisplayGUIAboutClick:
     cmp byte[OSPort],3
     jne near .nowin32
-    GUIPHoldbutton 5,87,74,98,65
+    GUIPHoldbutton 5,97,74,108,65
 .nowin32
     ret
 
