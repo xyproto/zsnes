@@ -5642,7 +5642,7 @@ GUIGUIAboutText5  db 'ASSISTANT CODERS :',0
 GUIGUIAboutText6  db '    PHAROS        STATMAT',0
 GUIGUIAboutText6b db '    TEUF          HPSOLO',0
 GUIGUIAboutText6d db '    THEODDONE33   SILOH',0
-GUIGUIAboutText6e db '          GRINVADER',0
+GUIGUIAboutText6e db '    IPHER         GRINVADER',0
 
 %ifdef __MSDOS__
 GUIGUIAboutText7 db 'DOS VERSION',0
