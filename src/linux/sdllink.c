@@ -38,11 +38,7 @@ int sdl_inited = 0;
 DWORD                   CurrentJoy=0;
 
 SDL_Joystick	*JoystickInput[4];
-#ifdef __OPENGL__
-DWORD                   BitDepth=16;	// Do NOT change this for ANY reason
-#else
 DWORD                   BitDepth=0;	// Do NOT change this for ANY reason
-#endif
 BYTE                    BackColor=0;
 
 float MouseMinX=0;
@@ -537,6 +533,7 @@ int startgame(void)
      flags |= SDL_OPENGL;
      SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
    }
+   BitDepth = (UseOpenGL ? 16 : 0);
 #endif
 
    surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, flags);
