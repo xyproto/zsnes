@@ -132,8 +132,8 @@ NEWSYM SA1Swap
 
 ;    SA1Debug
 
-;    cmp byte[SA1SH],1
-;    je near .speedhack
+    cmp byte[SA1SH],1
+    je near .speedhack
 
      ; non debug version
     mov bl,[esi]
@@ -189,8 +189,7 @@ NEWSYM SA1Swap
     mov dword[snesmap2],eax
     mov edi,[prevedi]
     xor eax,eax
-    add dh,40
-    add byte[CurrentExecSA1],1
+    add byte[CurrentExecSA1],4
     mov byte[SA1Status],0
     add dword[SA1TimerVal],23
 ;    xor dh,dh
