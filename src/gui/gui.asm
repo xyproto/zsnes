@@ -1508,7 +1508,9 @@ NEWSYM SaveSramData
     pop edx ;Restore data to save
     call Write_File
     call Close_File
+    push edx ;Dirty hack for the next line
 .failed    
+    pop edx ;This is needed here because if the jump to failed is carried out, edx is never popped
     stim
 .savesramdone
     
