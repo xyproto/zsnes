@@ -23,6 +23,12 @@
 #include <limits.h>
 #include <unistd.h>
 
+#ifdef __QNXNTO__ 
+/* QNX6 has getpagesize() commented out in unistd.h, 
+however it's a static value that we can just define */ 
+#define getpagesize() 4096 
+#endif 
+
 extern void GuiAsmStart();
 extern void GuiAsmEnd();
 extern void SfxProcAsmStart();
@@ -132,22 +138,24 @@ extern void NewGfxAsmEnd();
 extern void VCacheAsmStart();
 extern void VCacheAsmEnd();
 
-// Thanks QuakeForge
-void MakeCodeWriteable (unsigned long startaddr, unsigned long length)
-{
-	int r;
-	unsigned int addr;
-	int psize = getpagesize();
+// Thanks QuakeForge 
+void MakeCodeWriteable (unsigned long startaddr, unsigned long length) 
+{ 
+	int r; 
+	unsigned int addr; 
+	int psize = getpagesize(); 
 
+	//fprintf(stderr, "Unprotecting 0x%x to 0x%x\n", startaddr, startaddr+length); 
+	addr = (startaddr & ~(psize -1)) - psize; 
 
-	//fprintf(stderr, "Unprotecting 0x%x to 0x%x\n", startaddr, startaddr+length);
-	addr = (startaddr & ~(psize -1)) - psize;
+	/* Using 7 is a very stupid thing to do, but I'll leave it in commented form for the non-posix compliant zealots to ph34r... */ 
+	//r = mprotect ((char *) addr, length + startaddr - addr + psize, 7); 
+	r = mprotect ((char *) addr, length + startaddr - addr + psize, PROT_READ | PROT_WRITE | PROT_EXEC); 
 
-	r = mprotect ((char *) addr, length + startaddr - addr + psize, 7);
+	if (r < 0) 
+		fprintf (stderr, "Error! Memory *NOT* unprotected. startaddr = 0x%08lx\n", startaddr); 
+} 
 
-	if (r < 0)
-		fprintf (stderr, "Error! Memory *NOT* unprotected. startaddr = 0x%08lx\n", startaddr);
-}
 
 void UnProtectMemory(void)
 {
