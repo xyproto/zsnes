@@ -192,7 +192,6 @@ NEWSYM GetCoords
   nop
   inc dword[JoyY]
   nop
-;  loop .YAxis
   dec ecx
   jnz .YAxis
   mov byte [JoyExists], 0
