@@ -1816,11 +1816,7 @@ void CheckTimers(void)
 
    while ((end - start) >= update_ticks_pc)
       {
-         _asm{
-         pushad
-         call Game60hzcall
-         popad
-         }
+         Game60hzcall();
          start += update_ticks_pc;
       }                                     
    }
@@ -1832,11 +1828,7 @@ void CheckTimers(void)
 
    while ((end - start) >= update_ticks_pc)
       {
-         _asm{
-         pushad
-         call GUI36hzcall
-         popad
-         }
+         GUI36hzcall();
          start += update_ticks_pc;
       }                                     
    }
