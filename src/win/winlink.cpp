@@ -2044,6 +2044,7 @@ void clearwin()
 
 extern void DrawWin256x224x16();
 extern void DrawWin256x224x32();
+extern void DrawWin320x240x16();
 
 void drawscreenwin(void)
 {
@@ -2098,40 +2099,14 @@ void drawscreenwin(void)
       {
          case 16:
          {
-               DrawWin256x224x16();
-         }
+            DrawWin256x224x16();
             break;
+         }
       case 32:
-                  _asm {
-                     push es
-                     mov ax,ds
-                     mov es,ax
-                     xor eax,eax
-                     mov ebx,BitConv32Ptr
-                     mov esi,ScreenPtr
-                     mov edi,SurfBufD
-                  Copying32b:
-                     mov ecx,256
-                     push eax
-                     xor eax,eax
-                  CopyLoop32b:
-                     mov ax,[esi]
-                     add esi,2
-                     mov edx,[ebx+eax*4]
-                     mov [edi],edx
-                     add edi,4
-                     dec ecx
-                     jnz CopyLoop32b
-                     pop eax
-                     inc eax
-                     add edi,pitch
-                     sub edi,1024
-                     sub esi,512
-                     add esi,576
-                     cmp eax,239
-                     jne Copying32b
-                     pop es
-                  }
+         {
+            DrawWin256x224x32();
+            break;
+         }
 
             SURFDW=(DWORD *) &SurfBuf[(resolutn-1)*pitch];
             color32=0x7F000000;
@@ -2172,110 +2147,10 @@ void drawscreenwin(void)
       switch (BitDepth)
       {
          case 16:
-             if (MMXSupport == 1) {
-                  _asm {
-                     push es
-                     mov ax,ds
-                     mov es,ax
-                     xor eax,eax
-                     xor ebx,ebx
-                     mov esi,ScreenPtr
-                     mov edi,SurfBufD
-                     movsx edx,resolutn
-                     sub edx,2
-                  Blank1MMX:
-                     xor eax,eax
-                     mov ecx,160
-                     rep stosd
-                     sub edi,640
-                     add edi,pitch
-                     add ebx,1
-                     cmp ebx,8
-                     jne Blank1MMX
-                     xor ebx,ebx
-                     pxor mm0,mm0
-                  Copying2MMX:
-                     mov ecx,4
-                  MMXLoopA:
-                     movq [edi],mm0
-                     movq [edi+8],mm0
-                     add edi,16
-                     dec ecx
-                     jnz MMXLoopA
-                     mov ecx,32
-                  MMXLoopB:
-                     movq mm1,[esi]
-                     movq mm2,[esi+8]
-                     movq [edi],mm1
-                     movq [edi+8],mm2
-                     add esi,16
-                     add edi,16
-                     dec ecx
-                     jnz MMXLoopB
-                     mov ecx,4
-                  MMXLoopC:
-                     movq [edi],mm0
-                     movq [edi+8],mm0
-                     add edi,16
-                     dec ecx
-                     jnz MMXLoopC
-                     inc ebx
-                     add edi,pitch
-                     sub edi,640
-                     sub esi,512
-                     add esi,576
-                     cmp ebx,edx
-                     jne Copying2MMX
-                     xor eax,eax
-                     mov ecx,128
-                     rep stosd
-                     pop es
-                     emms
-                  }
-             } else {
-                  _asm {
-                     push es
-                     mov ax,ds
-                     mov es,ax
-                     xor eax,eax
-                     xor ebx,ebx
-                     mov esi,ScreenPtr
-                     mov edi,SurfBufD
-                     movsx edx,resolutn
-                     sub edx,2
-                  Blank1:
-                     xor eax,eax
-                     mov ecx,160
-                     rep stosd
-                     sub edi,640
-                     add edi,pitch
-                     add ebx,1
-                     cmp ebx,8
-                     jne Blank1
-                     xor ebx,ebx
-                  Copying2:
-                     xor eax,eax
-                     mov ecx,16
-                     rep stosd
-                     mov ecx,128
-                     rep movsd
-                     xor eax,eax
-                     mov ecx,16
-                     rep stosd
-                     inc ebx
-                     add edi,pitch
-                     sub edi,640
-                     sub esi,512
-                     add esi,576
-                     cmp ebx,edx
-                     jne Copying2
-                     xor eax,eax
-                     mov ecx,128
-                     rep stosd
-                     pop es
-                  }
-             }
+         {
+            DrawWin320x240x16();
             break;
+         }
       case 32:
             for(j=0;j<8;j++)
             {

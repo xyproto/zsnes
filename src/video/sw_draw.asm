@@ -24,6 +24,9 @@ ALIGN 32
 EXTSYM SurfaceX,SurfaceY
 EXTSYM ScreenPtr,SurfBufD
 EXTSYM pitch,MMXSupport,resolutn
+%ifdef __WIN32__
+EXTSYM BitConv32Ptr
+%endif
 
 SECTION .text
 
@@ -46,7 +49,7 @@ NEWSYM ClearWin16
         ret
 
 NEWSYM ClearWin32
-        push es
+        pushad
         mov  ax,ds
         mov  es,ax
         xor  eax,eax
@@ -64,13 +67,13 @@ NEWSYM ClearWin32
         add  ebx,1
         cmp  ebx, [SurfaceY]
         jne .Blank3
-        pop  es
+        popad
 	ret
 
 NEWSYM DrawWin256x224x16
         pushad
-        cmp byte[MMXSupport],0
-        je  .nommx
+        cmp byte [MMXSupport],0
+        je  .noMMX
         mov  esi, [ScreenPtr]
         mov  edi, [SurfBufD]
         xor  eax,eax
@@ -101,7 +104,7 @@ NEWSYM DrawWin256x224x16
         emms
         popad
         ret
-.nommx
+.noMMX:
         mov  ax,ds
         mov  es,ax
         xor  eax,eax
@@ -122,15 +125,52 @@ NEWSYM DrawWin256x224x16
 %else
         cmp  eax,223
 %endif
-        jne  .Copying
+        jne .Copying
         xor  eax,edx
         mov  ecx,128
         rep  stosd
         popad
         ret
 
+NEWSYM DrawWin256x224x32
+        pushad
+        mov  ax,ds
+        mov  es,ax
+        xor  eax,eax
+        mov  ebx, [BitConv32Ptr]
+        mov  esi, [ScreenPtr]
+        mov  edi, [SurfBufD]
+.Copying32b:
+        mov  ecx,256
+        push eax
+        xor  eax,eax
+.CopyLoop32b:
+        mov  ax,[esi]
+        add  esi,2
+        mov  edx,[ebx+eax*4]
+        mov  [edi],edx
+        add  edi,4
+        dec  ecx
+        jnz .CopyLoop32b
+        pop  eax
+        inc  eax
+        add  edi, [pitch]
+        sub  edi,1024
+        sub  esi,512
+        add  esi,576
+%ifdef __WIN32__
+        cmp  eax,239
+%else
+        cmp  eax,223
+%endif
+        jne .Copying32b
+        popad
+        ret
+
 NEWSYM DrawWin320x240x16
         pushad
+        cmp byte [MMXSupport],0
+        je  near .noMMX
         xor  eax,eax
         xor  ebx,ebx
         mov  esi, [ScreenPtr]
@@ -174,10 +214,54 @@ NEWSYM DrawWin320x240x16
         add  edi, [pitch]
         sub  edi,640
         add  esi,64
-        cmp  ebx,223
+%ifdef __WIN32__
+        cmp  eax,239
+%else
+        cmp  eax,223
+%endif
         jne .Copying2MMX
         mov  ecx,128
         rep stosd
         emms
+        popad
+        ret
+.noMMX:
+        mov  ax,ds
+        mov  es,ax
+        xor  eax,eax
+        xor  ebx,ebx
+        mov  esi, [ScreenPtr]
+        mov  edi, [SurfBufD]
+        movsx edx, word[resolutn]
+        sub  edx,2
+.Blank1:
+        xor  eax,eax
+        mov  ecx,160
+        rep  stosd
+        sub  edi,640
+        add  edi, [pitch]
+        add  ebx,1
+        cmp  ebx,8
+        jne .Blank1
+        xor  ebx,ebx
+.Copying2:
+        xor  eax,eax
+        mov  ecx,16
+        rep  stosd
+        mov  ecx,128
+        rep  movsd
+        xor  eax,eax
+        mov  ecx,16
+        rep  stosd
+        inc  ebx
+        add  edi, [pitch]
+        sub  edi,640
+        sub  esi,512
+        add  esi,576
+        cmp  ebx,edx
+        jne .Copying2
+        xor  eax,eax
+        mov  ecx,128
+        rep  stosd
         popad
         ret
