@@ -1310,7 +1310,7 @@ DisplayGUIInput:
     jne .nozero2
     mov dword[GUIWincol],148
 .nozero2
-    mov dl,[GUIWincol]
+    mov dl,[GUIWincol]                  ;Device
     DrawGUIWinBox 3,5,33,107,33,dl
     mov dl,[GUIWincol]
     add dl,1
@@ -1318,6 +1318,249 @@ DisplayGUIInput:
     mov dl,[GUIWincol]
     add dl,4
     DrawGUIWinBox 3,5,78,107,78,dl
+    mov dl,[GUIWincol]                  ; Up
+    DrawGUIWinBox 3,45,99,64,99,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,44,100,43,106,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,45,107,64,107,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,66,100,65,106,dl
+    mov dl,[GUIWincol]                  ; Down
+    DrawGUIWinBox 3,45,109,64,109,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,44,110,43,116,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,45,117,64,117,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,66,110,65,116,dl
+    mov dl,[GUIWincol]                  ; Left
+    DrawGUIWinBox 3,45,119,64,119,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,44,120,43,126,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,45,127,64,127,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,66,120,65,126,dl
+    mov dl,[GUIWincol]                  ; Right
+    DrawGUIWinBox 3,45,129,64,129,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,44,130,43,136,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,45,137,64,137,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,66,130,65,136,dl
+    mov dl,[GUIWincol]                  ; Start
+    DrawGUIWinBox 3,45,139,64,139,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,44,140,43,146,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,45,147,64,147,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,66,140,65,146,dl
+    mov dl,[GUIWincol]                  ; Select
+    DrawGUIWinBox 3,45,149,64,149,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,44,150,43,156,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,45,157,64,157,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,66,150,65,156,dl
+    mov dl,[GUIWincol]                  ; A
+    DrawGUIWinBox 3,85,99,104,99,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,84,100,83,106,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,85,107,104,107,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,106,100,105,106,dl
+    mov dl,[GUIWincol]                  ; B
+    DrawGUIWinBox 3,85,109,104,109,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,84,110,83,116,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,85,117,104,117,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,106,110,105,116,dl
+    mov dl,[GUIWincol]                  ; X
+    DrawGUIWinBox 3,85,119,104,119,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,84,120,83,126,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,85,127,104,127,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,106,120,105,126,dl
+    mov dl,[GUIWincol]                  ; Y
+    DrawGUIWinBox 3,85,129,104,129,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,84,130,83,136,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,85,137,104,137,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,106,130,105,136,dl
+    mov dl,[GUIWincol]                  ; L
+    DrawGUIWinBox 3,85,139,104,139,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,84,140,83,146,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,85,147,104,147,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,106,140,105,146,dl
+    mov dl,[GUIWincol]                  ; R
+    DrawGUIWinBox 3,85,149,104,149,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,84,150,83,156,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,85,157,104,157,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,106,150,105,156,dl
+    mov dl,[GUIWincol]                  ; Turbo X
+    DrawGUIWinBox 3,125,99,144,99,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,124,100,123,106,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,125,107,144,107,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,146,100,145,106,dl
+    mov dl,[GUIWincol]                  ; Turbo Y
+    DrawGUIWinBox 3,125,109,144,109,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,124,110,123,116,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,125,117,144,117,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,146,110,145,116,dl
+    mov dl,[GUIWincol]                  ; Turbo L
+    DrawGUIWinBox 3,125,119,144,119,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,124,120,123,126,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,125,127,144,127,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,146,120,145,126,dl
+    mov dl,[GUIWincol]                  ; DL
+    DrawGUIWinBox 3,125,139,144,139,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,124,140,123,146,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,125,147,144,147,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,146,140,145,146,dl
+    mov dl,[GUIWincol]                  ; DR
+    DrawGUIWinBox 3,125,149,144,149,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,124,150,123,156,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,125,157,144,157,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,146,150,145,156,dl
+    mov dl,[GUIWincol]                  ; Turbo A
+    DrawGUIWinBox 3,165,99,184,99,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,164,100,163,106,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,165,107,184,107,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,186,100,185,106,dl
+    mov dl,[GUIWincol]                  ; Turbo B
+    DrawGUIWinBox 3,165,109,184,109,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,164,110,163,116,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,165,117,184,117,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,186,110,185,116,dl
+    mov dl,[GUIWincol]                  ; Turbo R
+    DrawGUIWinBox 3,165,119,184,119,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,164,120,163,126,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,165,127,184,127,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,186,120,185,126,dl
+    mov dl,[GUIWincol]                  ; UL
+    DrawGUIWinBox 3,165,139,184,139,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,164,140,163,146,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,165,147,184,147,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,186,140,185,146,dl
+    mov dl,[GUIWincol]                  ; UR
+    DrawGUIWinBox 3,165,149,184,149,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 3,164,150,163,156,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 3,165,157,184,157,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 3,186,150,185,156,dl
+    ; End draw borders  
     ret
 
 SECTION .data
