@@ -926,8 +926,11 @@ NEWSYM GUIRestoreVars
     mov [smallscreenon],al
     mov al,[GUIScreenScale]
     mov [ScreenScale],al
+    cmp byte[newengen],1
+    jne .nofpsatstart
     mov al,[FPSAtStart]
     mov [FPSOn],al
+.nofpsatstart
     call CalcChecksum
     cmp byte[TimeChecker],bl
     jne .nottimer
