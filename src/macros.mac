@@ -77,8 +77,6 @@ section .text
 %ifndef __PRINTF__
 %define __PRINTF__
 EXTSYM printf
-EXTSYM fflush
-EXTSYM stdout
 %endif
 [section .data] 
 %%string: db %1, 0
@@ -96,10 +94,7 @@ push eax
 mov eax, %%strformat
 push eax
 call printf
-mov eax, [stdout]
-push eax
-call fflush
-add esp, 20
+add esp, 16
 popad
 %endmacro
 
@@ -110,8 +105,6 @@ popad
 %ifndef __PRINTF__
 %define __PRINTF__
 EXTSYM printf
-EXTSYM fflush
-EXTSYM stdout
 %endif
 [section .data] 
 %%strformat: db '%s in %s line %u',13, 10,0
@@ -128,10 +121,7 @@ push eax
 mov eax, %%strformat
 push eax
 call printf
-mov eax, [stdout]
-push eax
-call fflush
-add esp, 20
+add esp, 16 
 popad
 %endmacro
 
@@ -140,8 +130,6 @@ popad
 %ifndef __PRINTF__
 %define __PRINTF__
 EXTSYM printf
-EXTSYM fflush
-EXTSYM stdout
 %endif
 [section .data] 
 %%strformat: db '%x in %s line %u',13, 10,0
@@ -158,9 +146,6 @@ push eax
 mov eax, %%strformat
 push eax
 call printf
-mov eax, [stdout]
-push eax
-call fflush
-add esp, 20
+add esp, 16
 popad
 %endmacro

@@ -197,7 +197,6 @@ NEWSYM init
     call loadfile
     call showinfo
 .noloadfile
-
     call UpdateDevices
     call init65816
     call initregr
@@ -4812,7 +4811,6 @@ NEWSYM showinfo
     mov ah,9
     call Output_Text
 .nointerl
-
     mov edx,.ret
     mov ah,9
     call Output_Text
