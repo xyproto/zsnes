@@ -1530,8 +1530,6 @@ SECTION .data
 SECTION .text
 
 NEWSYM StartGUI
-;    cmp byte[OSPort],1
-;    jbe .dosport
     cmp byte[TripBufAvail],0
     jne .notexttb
     mov byte[Triplebufen],0
@@ -1561,8 +1559,6 @@ NEWSYM StartGUI
     mov byte[scanlines],0
     mov byte[antienab],0
 .nohq3x
-
-;.dosport
     mov ecx,64
     mov eax,SpecialLine
 .slloop
