@@ -226,6 +226,7 @@ int main (int argc, char *argv[]) {
 
 			/* disables GUI */
 			case 'm': {
+printf("Hello the gui should now be off.");
 				guioff = 1; 
 				break;
 			}
@@ -316,14 +317,16 @@ int main (int argc, char *argv[]) {
 			}
 
                         case 'z': {
+					printf("\nDebugger not implemented for Linux version!\n");
 				// FIX STATMAT
-				if(*(argv[p]+1) == 's')
+				if((argv[p+1]) == 's')
 				{				
 //					if(!hasroom) return 4;
-					autoloadstate=my_atoi(argv[p+1]) + 1;
-					p++;
+//					autoloadstate=my_atoi(argv[p+1]) + 1;
+//					p++;
 				}
 				else StereoSound=1;
+
 				// FIX STATMAT
 				break;
 			}
