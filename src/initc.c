@@ -677,24 +677,23 @@ void DumpROMLoadInfo()
 {
   FILE *fp = 0;
   
-  if (!RomInfo) //rominfo.txt info dumping enabled?
+  if (RomInfo) //rominfo.txt info dumping enabled?
   {
-    return;
+    fp = fopen("rominfo.txt", "w");
+    if (!fp) { return; }
+    fputs("This is the info for the last game you ran.\n\nFile: ", fp);
+    fputs(lastROMFileName, fp);
+    fputs(" Header: ", fp);
+    fputs(Header512 ? "Yes\n" : "No\n", fp);
+    fputs(CSStatus, fp);
+    fputs("\n", fp);
+    fputs(CSStatus2, fp);
+    fputs("\n", fp);
+    fputs(CSStatus3, fp);
+    fputs("\n", fp);
+    fclose(fp);
   }
-  
-  fp = fopen("rominfo.txt", "w");
-  if (!fp) { return; }
-  fputs("This is the info for the last game you ran.\n\nFile: ", fp);
-  fputs(lastROMFileName, fp);
-  fputs(" Header: ", fp);
-  fputs(Header512 ? "Yes\n" : "No\n", fp);
-  fputs(CSStatus, fp);
-  fputs("\n", fp);
-  fputs(CSStatus2, fp);
-  fputs("\n", fp);
-  fputs(CSStatus3, fp);
-  fputs("\n", fp);
-  fclose(fp);
+
 }
 
 
