@@ -1848,8 +1848,8 @@ NEWSYM headerhack
     jne .noromheadfm2
     mov byte[opexec268],226
     mov byte[opexec358],226
-    mov byte[opexec268cph],44
-    mov byte[opexec358cph],44
+    mov byte[opexec268cph],80
+    mov byte[opexec358cph],80
 .noromheadfm2
 
     ; Clayfighter 2 - -p 120
@@ -1884,8 +1884,8 @@ NEWSYM headerhack
     jne .noromheadfm
     mov byte[opexec268],226
     mov byte[opexec358],226
-    mov byte[opexec268cph],44
-    mov byte[opexec358cph],44
+    mov byte[opexec268cph],80
+    mov byte[opexec358cph],80
 .noromheadfm
 
     ret
