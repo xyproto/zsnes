@@ -735,9 +735,9 @@ reg213Er:
 ; PPU Status Flag & Version number (NTSC/PAL/EXTRN Latch flag)
 reg213Fr:
 ;    mov byte[debstop3],1
-    mov al,[ppustatus]
+    mov al,[romispal]
     shl al,4
-    or al,[romispal]
+    or al,[ppustatus]
     or al,[cfield]
     mov byte[latchxr],0
     mov byte[latchyr],0
