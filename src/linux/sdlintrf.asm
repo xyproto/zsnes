@@ -1432,6 +1432,8 @@ NEWSYM SetInputDevice
 
 ; TCPIPPortNum
 SECTION .data
+ALIGN32
+
 NEWSYM TCPIPStatus, db 0
 NEWSYM PacketSendSize, dd 0
 NEWSYM PacketRecvSize, dd 0
