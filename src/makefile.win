@@ -97,8 +97,8 @@ ${WINDIR}/zipxw.obj: ${WINDIR}/zipxw.c
 ${WINDIR}/zloaderw.obj: ${WINDIR}/zloaderw.c
 ${WINDIR}/ztcp.obj: ${WINDIR}/ztcp.c
 ${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
-${ZIPDIR}/unzip.obj: ${ZIPDIR}/unzip.c ${ZIPDIR}/unzip.h 
-${ZIPDIR}/zzip.obj: ${ZIPDIR}/zzip.c ${ZIPDIR}/unzip.h
+${ZIPDIR}/unzip.obj: ${ZIPDIR}/unzip.c ${ZIPDIR}/zunzip.h 
+${ZIPDIR}/zzip.obj: ${ZIPDIR}/zzip.c ${ZIPDIR}/zunzip.h
 ${ZIPDIR}/zpng.obj: ${ZIPDIR}/zpng.c  ${ZIPDIR}/zpng.h
 ${DOSDIR}/initvid.o:${DOSDIR}/initvid.asm macros.mac
 ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
