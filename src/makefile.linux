@@ -184,5 +184,6 @@ clean:
 	rm ${GUIDIR}/*.o
 	rm ${DOSDIR}/*.o
 	rm ${WINDIR}/*.o
+	rm ${ZIPDIR}/*.o
 	rm *.o
 	rm zsnes
