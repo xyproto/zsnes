@@ -98,6 +98,8 @@ DWORD                   S01Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 DWORD                   S02Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 DWORD                   S11Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 DWORD                   S12Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+DWORD                   POVDisable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+DWORD                   NumPOV[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 DWORD                   CurrentJoy=0;
 
@@ -817,6 +819,16 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
       S12Disable[CurrentJoy]=1;
    }
 
+   for (int i=0; i<5; i++)
+   {
+      diprg.diph.dwObj     = DIJOFS_POV(i);
+      if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
+      {
+         POVDisable[CurrentJoy]=1;
+      }
+      else NumPOV[i]++;
+   }
+
    DIPROPDWORD dipdw;
 
    dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
@@ -846,6 +858,12 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 
    dipdw.diph.dwObj         = DIJOFS_SLIDER(1);
    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+
+   for (int i2=0; i<5; i++)
+   {
+      dipdw.diph.dwObj         = DIJOFS_POV(i2);
+      JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
+   }
 
    dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
    dipdw.diph.dwHeaderSize = sizeof(dipdw.diph);
@@ -988,10 +1006,10 @@ bool InitInput()
 	
    hr=KeyboardInput->SetCooperativeLevel(hMainWindow,DISCL_NONEXCLUSIVE | DISCL_FOREGROUND );
 
-	hr=DInput->CreateDevice(GUID_SysMouse, &MouseInput,NULL);
+   hr=DInput->CreateDevice(GUID_SysMouse, &MouseInput,NULL);
    if (FAILED(hr)) {DInputError();return FALSE;}
 
-	hr=MouseInput->SetDataFormat(&c_dfDIMouse);
+   hr=MouseInput->SetDataFormat(&c_dfDIMouse);
    if (FAILED(hr)) {DInputError();return FALSE;}
 	
    hr=MouseInput->SetCooperativeLevel(hMainWindow,DISCL_EXCLUSIVE|DISCL_FOREGROUND);
@@ -2352,6 +2370,76 @@ void WinUpdateDevices()
          if (!S12Disable[i])
          {
             if (js[i].rglSlider[1]<0) keys[0x100+i*32+13]=1;
+         }
+
+         if (!POVDisable[i])
+         {
+            for (int i2=0; i2<NumPOV[i]; i++)
+            {
+               if (js[i].rgdwPOV[i2] == -1)
+               {
+                  keys[0x100 + i * 32 + 0] = 0;
+                  keys[0x100 + i * 32 + 1] = 0;
+                  keys[0x100 + i * 32 + 2] = 0;
+                  keys[0x100 + i * 32 + 3] = 0;
+               }
+
+               if (js[i].rgdwPOV[i2] == 0)
+               {
+                  keys[0x100 + i * 32 + 2] = 0;
+                  keys[0x100 + i * 32 + 3] = 1;
+               }
+
+               if (js[i].rgdwPOV[i2] == 4500)
+               {
+                  keys[0x100 + i * 32 + 0] = 1;
+                  keys[0x100 + i * 32 + 1] = 0;
+                  keys[0x100 + i * 32 + 2] = 0;
+                  keys[0x100 + i * 32 + 3] = 1;
+               }
+
+               if (js[i].rgdwPOV[i2] == 9000)
+               {
+                  keys[0x100 + i * 32 + 0] = 1;
+                  keys[0x100 + i * 32 + 1] = 0;
+               }
+
+               if (js[i].rgdwPOV[i2] == 13500)
+               {
+                  keys[0x100 + i * 32 + 0] = 1;
+                  keys[0x100 + i * 32 + 1] = 0;
+                  keys[0x100 + i * 32 + 2] = 1;
+                  keys[0x100 + i * 32 + 3] = 0;
+               }
+
+               if (js[i].rgdwPOV[i2] == 18000)
+               {
+                  keys[0x100 + i * 32 + 2] = 1;
+                  keys[0x100 + i * 32 + 3] = 0;
+               }
+
+               if (js[i].rgdwPOV[i2] == 22500)
+               {
+                  keys[0x100 + i * 32 + 0] = 0;
+                  keys[0x100 + i * 32 + 1] = 1;
+                  keys[0x100 + i * 32 + 2] = 1;
+                  keys[0x100 + i * 32 + 3] = 0;
+               }
+
+               if (js[i].rgdwPOV[i2] == 27000)
+               {
+                  keys[0x100 + i * 32 + 0] = 0;
+                  keys[0x100 + i * 32 + 1] = 1;
+               }
+
+               if (js[i].rgdwPOV[i2] == 31500)
+               {
+                  keys[0x100 + i * 32 + 0] = 0;
+                  keys[0x100 + i * 32 + 1] = 1;
+                  keys[0x100 + i * 32 + 2] = 0;
+                  keys[0x100 + i * 32 + 3] = 1;
+               }
+            }
          }
 
          if (js[i].rgbButtons[0]) keys[0x100+i*32+16]=1;
