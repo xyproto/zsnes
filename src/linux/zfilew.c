@@ -474,11 +474,12 @@ void obtaindir()
 
   if ((homedir = (char *)getenv("HOME")) == 0)
   {
-    homedir = (char *)malloc(ZCFG_DIR_LEN);
-    getcwd(homedir, ZCFG_DIR_LEN);
+    getcwd(zcfgdir, ZCFG_DIR_LEN);
   }
-  strcpy(zcfgdir, homedir);
-  free(homedir);
+  else
+  {
+    strcpy(zcfgdir, homedir);
+  }
   strcat(zcfgdir, ZCFG_DIR);
   tmp = opendir(zcfgdir);
   if (tmp == NULL) 
