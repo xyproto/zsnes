@@ -479,6 +479,7 @@ void obtaindir()
 	}
 	cfgdir = (char *)malloc(strlen(homedir)+strlen("/.zsnes")+1);
 	strcpy(cfgdir, homedir);
+	free(homedir);
 	strcat(cfgdir, "/.zsnes");
 	tmp = opendir(cfgdir);
 	if (tmp == NULL) {
