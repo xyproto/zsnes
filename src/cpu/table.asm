@@ -68,7 +68,7 @@ NEWSYM TableAsmStart
 
 
 
-
+section .data
 
 ; global variables
 ;tableA  times 256 dd 0             ; Table addresses (M:0,X:0,D:0)
@@ -85,6 +85,8 @@ NEWSYM addrmdef, times 27 dd 0             ; Address modes
 ;memtablew8 times 256 dd 0          ; Memory Bank Locations for writing 8-bit
 ;memtabler16 times 256 dd 0          ; Memory Bank Locations for reading 16-bit
 ;memtablew16 times 256 dd 0          ; Memory Bank Locations for reading 16-bit
+
+section .text
 
 ;*******************************************************
 ; Generate OpCode Table
@@ -615,6 +617,8 @@ NEWSYM SetAddressingModesSA1
 eopINVALID
     ret
 
+section .data
+
 ;*******************************************************
 ; Cpu Cycles                    Sets the CPU cycle table
 ;*******************************************************
@@ -651,6 +655,8 @@ NEWSYM cpucycle
 ;  |  2 2  |  2 5   |  2 5   |   2 7    |  2 6   |  2 4   |  2 6   |  2 6    |  1 2  |  3 4   |  1 3  |  1 3  |  3 6   |  3 4   |  3 7   |   4 5   |
 ;  |  2 2  |  2 6   |  2 3   |   2 4    |  2 3   |  2 3   |  2 5   |  2 6    |  1 2  |  2 2   |  1 2  |  1 3  |  3 4   |  3 4   |  3 6   |   4 5   |
 ;  |  2 2  |  2 5   |  2 5   |   2 7    |  3 5   |  2 4   |  2 6   |   2 6   |  1 2  |  3 4   |  1 4  |  1 2  |  3 6   |  3 4   |  3 7   |   4 5   |
+
+section .text
 
 ;*******************************************************
 ; Set Tables     Sets the opcode tables according to EDI

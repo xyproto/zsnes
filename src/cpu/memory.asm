@@ -96,17 +96,21 @@ C4ProcessVectors:
     jnz .loop
     ret
 
-C4ObjDisp dd 0
+section .data
 C4ColRot db 1
-NEWSYM C4ObjSelec, db 0
-NEWSYM C4SObjSelec, db 0
-NEWSYM C4Pause, db 0
-C4DataCopy times 64 db 0
+
+SECTION .bss
+C4ObjDisp resd 1
+NEWSYM C4ObjSelec, resb 1
+NEWSYM C4SObjSelec, resb 1
+NEWSYM C4Pause, resb 1
+C4DataCopy resb 64
 ;NEWSYM C4Data times 64*4096 db 0        ; 15 sprites, 4 bytes each
                                         ; x,y,oamptr,stat (b0=oamb8,b1=16x16)
                                         ; 4 byte header (#sobj,?,?,?)
-CObjNum dw 0
-C4Temp dd 0
+CObjNum resw 1
+C4Temp resd 1
+section .text
 
 C4Edit:
     ; C4 editing routines
@@ -395,7 +399,9 @@ C4Edit:
     mov [esi+16+288*8*2],ax
 .skipall
     ret
-.flipped db 0
+SECTION .bss
+.flipped resb 1
+SECTION .text
 
 C4AddSprite:
     cmp dword[C4count],0
@@ -604,19 +610,23 @@ C4ConvOAM:
     dec ecx
     jnz .next
     ret
-.addx dw 0
-.addy dw 0
 
-C4count   dd 0
-C4usprptr dd 0
-C4SprX    dw 0
-C4SprY    dw 0
-C4SprCnt  db 0
-C4SprAttr db 0
-C4SprOAM  db 0
-C4SprFlip db 0
-C4Timer   db 0
-C4Timer2  db 0
+section .bss
+.addx resw 1
+.addy resw 1
+
+C4count   resd 1
+C4usprptr resd 1
+C4SprX    resw 1
+C4SprY    resw 1
+C4SprCnt  resb 1
+C4SprAttr resb 1
+C4SprOAM  resb 1
+C4SprFlip resb 1
+C4Timer   resb 1
+C4Timer2  resb 1
+
+section .text
 
 NEWSYM C4VBlank
     ret
@@ -660,12 +670,15 @@ NEWSYM C4ProcessSprites
     pop ecx
     ret
 
-NEWSYM SprValAdd, db 0
-C4Data dd 0
-C4sprites dd 0
-OBClog dd 0
-NumSprites db 0
-OBCOldRegArray db 0
+section .bss
+NEWSYM SprValAdd, resb 1
+C4Data resd 1
+C4sprites resd 1
+OBClog resd 1
+NumSprites resb 1
+OBCOldRegArray resb 1
+
+section .text
 
 NEWSYM InitOBC
     pushad
@@ -786,9 +799,12 @@ OBCClear:
 ;bit 6   = horizontal flip bit 7   = horizonal flip
 ; Extra: bit 0 = X bit 8, bit 1 = Larger sprite size
 
-OBCRegArray times 8 db 0
+SECTION .bss
+OBCRegArray resb 8
+clearmem resb 1
+SECTION .data
 OBCIncArray db 2,1,1,1,2,2,2,2
-clearmem db 0
+SECTION .text
 
 OBCRegs:
     pushad
@@ -960,16 +976,18 @@ C4SprBitPlane:
 .end
     ret
 
-C4XXScale dw 0
-C4XYScale dw 0
-C4YXScale dw 0
-C4YYScale dw 0
-C4CXPos dw 0
-C4CYPos dw 0
-C4CXMPos dd 0
-C4CYMPos dd 0
-C4PCXMPos dd 0
-C4PCYMPos dd 0
+SECTION .bss
+C4XXScale resw 1
+C4XYScale resw 1
+C4YXScale resw 1
+C4YYScale resw 1
+C4CXPos resw 1
+C4CYPos resw 1
+C4CXMPos resd 1
+C4CYMPos resd 1
+C4PCXMPos resd 1
+C4PCYMPos resd 1
+SECTION .text
 
 DoScaleRotate:
     pushad
@@ -1526,8 +1544,10 @@ C4SprDisintegrate:
 
     popad
     ret
-.scalex dd 0
-.scaley dd 0
+SECTION .bss
+.scalex resd 1
+.scaley resd 1
+SECTION .text
 
 C4BitPlaneWave:
     pushad
@@ -1617,13 +1637,17 @@ C4BitPlaneWave:
 ;    mov [C4values+2],cx
     popad
     ret
+SECTION .data
 .bmptr dd 0000h,0002h,0004h,0006h,0008h,000Ah,000Ch,000Eh
        dd 0200h,0202h,0204h,0206h,0208h,020Ah,020Ch,020Eh
        dd 0400h,0402h,0404h,0406h,0408h,040Ah,040Ch,040Eh
        dd 0600h,0602h,0604h,0606h,0608h,060Ah,060Ch,060Eh
        dd 0800h,0802h,0804h,0806h,0808h,080Ah,080Ch,080Eh
-.temp dd 0,0
-.waveptr dd 0
+SECTION .bss
+.temp resd 2
+.waveptr resd 1
+
+SECTION .text
 
 C4DrawLine:
 ;C4X1 dw 0
@@ -1818,13 +1842,15 @@ DrawWireFrame:
     jnz near .loop
     ret
 
-C4X1 dd 0
-C4Y1 dd 0
-C4Z1 dd 0
-C4X2 dd 0
-C4Y2 dd 0
-C4Z2 dd 0
-C4Col dd 0
+SECTION .bss
+C4X1 resd 1
+C4Y1 resd 1
+C4Z1 resd 1
+C4X2 resd 1
+C4Y2 resd 1
+C4Z2 resd 1
+C4Col resd 1
+SECTION .text
 
 WireFrameB:
     pushad
@@ -1988,14 +2014,17 @@ C4Transform:
     popad
     ret
 
-C4SprPos dd 0
-C4SprScale dd 0
-C4SprScaleY dd 0
-C4SprScaler dd 0
-C4SprScalerY dd 0
-C4SprPtr dd 0
-C4SprPtrInc dd 0
-NEWSYM C4values, dd 0,0,0
+SECTION .bss
+C4SprPos resd 1
+C4SprScale resd 1
+C4SprScaleY resd 1
+C4SprScaler resd 1
+C4SprScalerY resd 1
+C4SprPtr resd 1
+C4SprPtrInc resd 1
+NEWSYM C4values, resd 3
+
+section .text
 
 C4activate:
     add ecx,[C4Ram]
@@ -2449,6 +2478,7 @@ NEWSYM C4WriteReg
     sub ecx,[C4Ram]
     ret
 
+section .data
 SinTable:
 dw $00000,$00192,$00324,$004B6,$00647,$007D9,$0096A,$00AFB,$00C8B,$00E1B,$00FAB
 dw $01139,$012C8,$01455,$015E2,$0176D,$018F8,$01A82,$01C0B,$01D93,$01F19,$0209F
@@ -2550,6 +2580,7 @@ dw $07A05,$07A7D,$07AEF,$07B5D,$07BC5,$07C29,$07C89,$07CE3,$07D39,$07D8A,$07DD6,
 dw $07E1D,$07E5F,$07E9D,$07ED5,$07F09,$07F38,$07F62,$07F87,$07FA7,$07FC2,$07FD8,
 dw $07FE9,$07FF6,$07FFD
 
+section .text
 
 NEWSYM regaccessbankr8
     test ecx,8000h
@@ -2969,8 +3000,10 @@ EXTSYM BWShift,BWAndAddr,BWAnd,BWRAnd,SA1BWPtr
 .nosa1
 %endmacro
 
-NEWSYM BWUsed2, db 0
-NEWSYM BWUsed, db 0
+section .bss
+NEWSYM BWUsed2, resb 1
+NEWSYM BWUsed, resb 1
+section .text
 
 %macro BWCheck2r8 0
 .shift
@@ -3279,17 +3312,20 @@ NEWSYM BWUsed, db 0
 %%loop
     mov [eax],ebx
     add eax,4
-    loop %%loop
+    dec ecx
+    jnz %%loop
 %endmacro
 
-NEWSYM DPageR8, dd 0
-NEWSYM DPageR16, dd 0
-NEWSYM DPageW8, dd 0
-NEWSYM DPageW16, dd 0
-NEWSYM SA1DPageR8, dd 0
-NEWSYM SA1DPageR16, dd 0
-NEWSYM SA1DPageW8, dd 0
-NEWSYM SA1DPageW16, dd 0
+section .bss
+NEWSYM DPageR8, resd 1
+NEWSYM DPageR16, resd 1
+NEWSYM DPageW8, resd 1
+NEWSYM DPageW16, resd 1
+NEWSYM SA1DPageR8, resd 1
+NEWSYM SA1DPageR16, resd 1
+NEWSYM SA1DPageW8, resd 1
+NEWSYM SA1DPageW16, resd 1
+section .text
 
 NEWSYM UpdateDPage
     push eax
@@ -4407,7 +4443,9 @@ NEWSYM invaccessbank
     int 21h
     jmp DosExit
 
+SECTION .data
 .invalidbank db 'Invalid Bank Access : $'
+SECTION .text
     ret
 
 
@@ -4818,10 +4856,11 @@ NEWSYM SA1RAMaccessbankw16b
     call SA1RAMaccessbankw8b
     ret
 
-NEWSYM SDD1Array, times 65536 db 0
-NEWSYM SDD1Entry, dd 0
-NEWSYM SDD1EntryPtr, dd 0
-
+SECTION .bss
+NEWSYM SDD1Array, resb 65536
+NEWSYM SDD1Entry, resd 1
+NEWSYM SDD1EntryPtr, resd 1
+SECTION .text
 
 %macro GetBankLog 1
     cmp bl,0C0h
@@ -4848,7 +4887,10 @@ NEWSYM SDD1EntryPtr, dd 0
 %%done
 %endmacro
 
+SECTION .data
 NEWSYM LatestBank, dd 0FFFFh
+SECTION .text
+
 NEWSYM memaccessbankr8sdd1
 ;    TestSDD1
 ;    jmp debugdecompress
@@ -4993,7 +5035,9 @@ NEWSYM memaccessbankr8sdd1
     pop ebx
     jmp memaccessbankr8
     ; Start Debug Decompressor
-.found4 db 0
+SECTION .bss
+.found4 resb 1
+SECTION .text
 
 FillArray:
     TestSDD1
