@@ -5933,7 +5933,7 @@ NEWSYM CheckROMType
     mov byte[intldone],1
     call UnInterleave
     mov byte[romtype],2
-    jmp .doneinterl
+    jmp .donecheck
 .nointerlcheck
     cmp byte[finterleave],1
     je .interleaved2
