@@ -1412,7 +1412,7 @@ SECTION .data
           db '  -e      Skip enter key press at the beginning',13,10
 %endif
           db '  -f #    Turn on frame skip [0..9]',13,10
-          db '  -g #    Set Gamma Correction [0..5, 0 = Normal]',13,10
+          db '  -g #    Set Gamma Correction [0...31, 0 = 1.0, 31 = 2.0]',13,10
           db '  -h      Force HiROM',13,10
           db '  -i      Uninterleave ROM Image',13,10
           db '  -j      Disable Mouse (Automatically turns off right mouse click)',13,10

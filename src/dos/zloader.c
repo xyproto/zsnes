@@ -44,7 +44,7 @@ void ccmdline(void);
 char *ers[] =
 {
   "Frame Skip must be a value of 0 to 9!\n",
-  "Gamma Correction Level must be a value of 0 to 5!\n",
+  "Gamma Correction Level must be a value of 0 to 31!\n",
   "Sound Sampling Rate must be a value of 0 to 6!\n",
   "Invalid Video Mode!\n",
   "Percentage of instructions to execute must be a number from 50 to 150!\n",
@@ -166,7 +166,7 @@ int pccmdline(void)
         {
           if(!hasroom) return 4;
           gammalevel=my_atoi(argv[p+1]);
-          if(gammalevel > 5) return 11;
+          if(gammalevel > 31) return 11;
           p++;
           break;
         }
