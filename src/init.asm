@@ -6181,10 +6181,11 @@ NEWSYM CheckROMType
     mov byte[intldone],0
     cmp byte[romtype],1
     jne near .nointerlcheck
+    xor eax,eax
     xor ebx,ebx
     xor edx,edx
-    mov eax,[curromsize]
-    imul eax,1048576
+    mov eax,[NumofBanks]
+    imul eax,32768
     shr eax,2
     mov esi,[romdata]
     add esi,7FC0h
@@ -6250,7 +6251,6 @@ NEWSYM CheckROMType
     jae .nointerlcheck
     mov esi,[romdata]
     add esi,7FC0h
-    add esi,eax
     add esi,21
     cmp byte[esi],33
     je .interleaved
