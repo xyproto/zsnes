@@ -304,7 +304,10 @@ void SetupRewindBuffer()
   if (StateBackup){ free(StateBackup); }
   StateBackup = 0;
   StateBackup = (unsigned char *)malloc(rewind_state_size*16);
-  if (!StateBackup) { asm_call(outofmemory); }
+  if (!StateBackup) 
+  { 
+    asm_call(outofmemory); 
+  }
 }
 
 static size_t state_size;
