@@ -4674,6 +4674,14 @@ DisplayGUIOptns:
     mov dword[GUITemp],22
     add [GUITemp],eax
     GUIDisplayIconWin 10,[GUITemp],144,GUIIconDataSlideBar
+
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[MouseWheel],1
+    jne .nocheckr
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckr
+    GUIDisplayIconWin 10,124,23,[GUITemp]
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[mousewrap],1
     jne .nocheck
@@ -4765,6 +4773,7 @@ DisplayGUIOptns:
     GUIOuttextwin2u 10,26,58,GUIGUIOptnsText7,5
     GUIOuttextwin2u 10,26,68,GUIGUIOptnsText8,0
     GUIOuttextwin2u 10,26,78,GUIGUIOptnsTextA,0
+    GUIOuttextwin2 10,138,28,GUIGUIOptnsTextJ
     GUIOuttextwin2 10,60,111,GUIGUIOptnsTextG
     GUIOuttextwin2 10,100,111,GUIGUIOptnsTextH
     GUIOuttextwin2 10,147,111,GUIGUIOptnsTextI
@@ -4787,6 +4796,7 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,25,57,GUIGUIOptnsText7
     GUIOuttextwin2 10,25,67,GUIGUIOptnsText8
     GUIOuttextwin2 10,25,77,GUIGUIOptnsTextA
+    GUIOuttextwin2 10,137,27,GUIGUIOptnsTextJ
     GUIOuttextwin2 10,59,110,GUIGUIOptnsTextG
     GUIOuttextwin2 10,99,110,GUIGUIOptnsTextH
     GUIOuttextwin2 10,146,110,GUIGUIOptnsTextI
@@ -4870,21 +4880,22 @@ DisplayGUIOptns:
 GUIGUIOptnsText1 db 'COLOR:',0
 GUIGUIOptnsText2 db 'MOUSE WRAP',0
 GUIGUIOptnsText3 db 'MOUSE SHADOW',0
-GUIGUIOptnsText4 db 'KEEP MENU POSITION',0
+GUIGUIOptnsText4 db 'KEEP MENU POSITN',0
 GUIGUIOptnsText5 db 'GUI SWITCHES :',0
 GUIGUIOptnsText6 db '@',0
-GUIGUIOptnsText7 db 'SAVE GUI WINDOW POSITIONS',0
-GUIGUIOptnsText8 db 'CLICK ENTERS/EXITS GUI',0
+GUIGUIOptnsText7 db 'SAVE WIN POSITNS',0
+GUIGUIOptnsText8 db 'CLICK ENTERS GUI',0
 GUIGUIOptnsText9 dd 0
-GUIGUIOptnsTextA db 'USE JOYPAD1 TO CONTROL',0
-GUIGUIOptnsTextB dd 'ENABLE SNOW EFFECT',0
-GUIGUIOptnsTextC dd 'ENABLE WATER EFFECT',0
+GUIGUIOptnsTextA db 'USE JOYPAD1',0
+GUIGUIOptnsTextB dd 'SNOW EFFECT',0
+GUIGUIOptnsTextC dd 'WATER EFFECT',0
 GUIGUIOptnsTextD dd 'MAIN WINDOW OPTIONS :',0
 GUIGUIOptnsTextE dd 'ALWAYS ON TOP',0
 GUIGUIOptnsTextF db 'SAVE MAIN WINDOW POSITION',0
 GUIGUIOptnsTextG db 'BACK',0
 GUIGUIOptnsTextH db 'TITLE',0
 GUIGUIOptnsTextI db 'WIN',0
+GUIGUIOptnsTextJ db 'WHEEL MOUSE',0
 
 DisplayGUIAbout:
 ;    cmp byte[OSPort],3
