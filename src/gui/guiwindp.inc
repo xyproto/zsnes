@@ -5214,9 +5214,7 @@ DisplayGUIAbout:
     je .zero3
     mov byte[GUItextcolor],211
 .zero3
-%ifndef __LINUX__
     DrawGUIButton 11,90,30,175,40,GUIGUIAboutText8,65,0,0
-%endif
     sub byte[GUItextcolor],15
     GUIOuttextwin2 11,6,16,GUIGUIAboutText1
     GUIOuttextwin2 11,6,26,GUIGUIAboutText7

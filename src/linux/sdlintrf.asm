@@ -124,7 +124,7 @@ EXTSYM WinErrorA2,WinErrorB2,WinErrorC2
 EXTSYM GetLocalTime
 EXTSYM V8Mode,GrayscaleMode
 EXTSYM PrevWinMode,PrevFSMode
-EXTSYM sem_sleep
+EXTSYM sem_sleep,ZsnesPage
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
@@ -1730,8 +1730,10 @@ NEWSYM WinErrorC
     call WinErrorC2
     ret
 
-; Not supported in Linux
 NEWSYM GotoHomepage
+    pushad
+    call ZsnesPage
+    popad    
     ret
 
 EXTSYM SystemTimewHour

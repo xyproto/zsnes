@@ -711,11 +711,9 @@ ProcessMouseButtons:
     jne .nostatecancel
     mov byte[NetStateQuit],1
 .nostatecancel
-%ifndef __LINUX__
     cmp byte[GUICBHold],65
     jne .nohomepage
     call GotoHomepage
-%endif
 .nohomepage
     mov byte[GUICBHold],0
     ret
