@@ -467,8 +467,6 @@ int RegisterWinClass(void)
    wcl.lpszMenuName     = NULL;
    wcl.lpszClassName    = "ZSNESWIN";
 
-   CheckPriority();
-
 	if (RegisterClass(&wcl)  == 0) return FALSE;
 
 	return TRUE;
@@ -1411,6 +1409,9 @@ void initwinvideo(void)
 
       hMainWindow = CreateWindow( "ZSNESWIN", WinName, WS_VISIBLE|WS_POPUP,X,Y,  //WS_OVERLAPPED "ZSNESWIN"
                                  WindowWidth,WindowHeight,NULL,NULL,hInst,NULL);
+
+      CheckPriority();
+      CheckAlwaysOnTop();
 
       if(!hMainWindow) { return; }
 
