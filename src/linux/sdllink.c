@@ -1018,7 +1018,7 @@ void drawscreenwin(void)
 	    ratiox = 1.0;
 	*/
     
-	glClear(GL_COLOR_BUFFER_BIT);
+	//glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	glEnable(GL_TEXTURE_2D);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,glfilters);
