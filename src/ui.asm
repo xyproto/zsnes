@@ -25,10 +25,10 @@ EXTSYM ConvertJoyMap,ConvertJoyMap1,ConvertJoyMap2,printhex
 EXTSYM StartUp,PrintStr,WaitForKey,PrintChar,ZFileSystemInit
 EXTSYM SystemInit,allocmem
 EXTSYM cfgsoundon
-EXTSYM xa,MMX2Support
+EXTSYM xa
 EXTSYM ram7fa,wramdataa
 EXTSYM malloc,free
-EXTSYM MMXSupport,ScreenScale,SoundQuality
+EXTSYM MMXSupport,MMXextSupport,ScreenScale,SoundQuality
 EXTSYM debugger,pl1contrl,pl2contrl,romtype,smallscreence
 EXTSYM smallscreenon,spcon
 EXTSYM statefileloc,LatestSave,firstsaveinc
@@ -1097,16 +1097,27 @@ NEWSYM MMXCheck
 
     ; MMX support
     mov byte[MMXSupport],0
-    mov byte[MMX2Support],0
+    mov byte[MMXextSupport],0
     mov eax,1
     CPUID
 
     test edx,1 << 23
     jz .nommx
     mov byte[MMXSupport],1
+
+    ; Check if CPU has SSE (also support mmxext)
     test edx,1 << 25
+    jz .tryextmmx
+    mov byte[MMXextSupport],1
+    jmp .nommx
+
+.tryextmmx
+    ; Test extended CPU flag
+    mov eax,80000001h
+    CPUID
+    test edx,1 << 22
     jz .nommx
-    mov byte[MMX2Support],1
+    mov byte[MMXextSupport],1
 .noprintstr
 .nommx
     ret
