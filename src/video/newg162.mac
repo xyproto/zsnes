@@ -395,7 +395,7 @@
 %%notflipypart
     add ecx,[yposng]
 %%yesflipypart
-    add ecx,[yposng]
+
     test word[vrama+eax],4000h
     jnz near %%flipxpart
     push eax
@@ -503,7 +503,6 @@
     add word[ofsmtptr],bx
     jmp %%next
 %endmacro
-
 
 %macro drawlinengom16b 10
     ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value

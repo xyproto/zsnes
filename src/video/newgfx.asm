@@ -47,8 +47,6 @@ EXTSYM winlogicb
 EXTSYM ngwinptr,objwlrpos,objwen,objclineptr,CSprWinPtr
 EXTSYM WindowRedraw
 
-NEWSYM BGPT3B, times 256 dw 0
-
 NEWSYM NewGfxAsmStart
 
 %include "video/vidmacro.mac"

@@ -2909,7 +2909,6 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
 ;.offsetm4
     mov edx,eax
     and edx,0FFFFFFC0h
-    mov word[BGPT3B+ebx*2],dx
     add edx,[vram]
     mov [ofsmcptr],edx
     and eax,3Fh

@@ -675,8 +675,11 @@ NEWSYM newengine16b
     mov bl,[bgmode]
     and bl,07h
     mov [BGMA+eax],bl
+    cmp bl,4
+    je .changedmode4
     cmp [BGMA+eax-1],bl
     je .nobgma
+.changedmode4
     mov byte[bgallchange+eax],1
 .nobgma
 

@@ -2832,8 +2832,8 @@ EXTSYM osm2dis
     je near .offsetm
     cmp byte[t16x161+ebx+%1*256],1
     je near .tiles16x16
-;    cmp byte[BGMA+ebx],4
-;    je near .offsetm
+    cmp byte[BGMA+ebx],4
+    je near .offsetm
 .nooffsetm
     mov eax,[BGPT1+ebx*2+%1*512]
     test ecx,100h
@@ -3299,8 +3299,8 @@ EXTSYM osm2dis
     shr dx,5
     add ax,dx
 .nooma
-    cmp byte[BGMA+ebx],4
-    je .offsetm4
+;    cmp byte[BGMA+ebx],4
+;    je .offsetm4
     add eax,40h
 .offsetm4
     mov edx,eax
@@ -3687,8 +3687,8 @@ EXTSYM osm2dis
     add ax,dx
 .nooma
     mov edx,eax
-    cmp byte[BGMA+ebx],4
-    je .offsetm4
+;    cmp byte[BGMA+ebx],4
+;    je .offsetm4
     add edx,40h
 .offsetm4
     and edx,0FFC0h
