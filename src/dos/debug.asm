@@ -58,27 +58,7 @@ NEWSYM DebugAsmStart
 
 ; debstop at regsw.asm 2118/2119
 
-NEWSYM startdebugger
-    mov byte[curblank],40h
-    mov byte[debuggeron],1
-    mov ax,0003h
-    int 10h
-
-;    mov edx,.fname3+1
-;    call Open_File
-;    mov bx,ax
-;    mov ecx,480h
-;    mov edx,[romdata]
-;    add edx,65536*13h
-;    call Read_File
-;    call Close_File
-
-    mov byte[execut],0
-    call startdisplay
-    call debugloop
-    call cleardisplay
-    ; sort SDD1
-    jmp .noSDD1
+NEWSYM SDD1Sort
     mov ecx,[SDD1Entry]
     cmp ecx,8
     jbe near .noSDD1
@@ -132,7 +112,31 @@ NEWSYM startdebugger
     add ebx,8
     cmp ebx,ecx
     jne near .next3
+.noSDD1
+    ret
 
+NEWSYM startdebugger
+    mov byte[curblank],40h
+    mov byte[debuggeron],1
+    mov ax,0003h
+    int 10h
+
+;    mov edx,.fname3+1
+;    call Open_File
+;    mov bx,ax
+;    mov ecx,480h
+;    mov edx,[romdata]
+;    add edx,65536*13h
+;    call Read_File
+;    call Close_File
+
+    mov byte[execut],0
+    call startdisplay
+    call debugloop
+    call cleardisplay
+    ; sort SDD1
+;    jmp .noSDD1
+    call SDD1Sort
 .noSDD1
 
     pushad
@@ -151,8 +155,8 @@ NEWSYM startdebugger
 ;    mov edx,[romdata]
 ;    add edx,65536*13h
 ;    mov ecx,2EFh
-;    mov edx,SDD1Array
-;    mov ecx,[SDD1Entry]
+    mov edx,SDD1Array
+    mov ecx,[SDD1Entry]
 ;    mov edx,[romdata]
 ;    add edx,32768*40
 ;    mov edx,cnetplaybuf
