@@ -36,11 +36,22 @@ v1.35
          check MMX SUPPORT by using the keyboard shortcut it will now
          attempt to actually detect MMX before enabling it. :)
          [stainless, pagefault] (DOS only)        
+       - Command line support in windows port [StatMat]        
+       - Fixed problem when some video modes were not being saved. (Windows
+         only) [pagefault]
+       - Lots of updates to Linux/SDL version, including sound fixes, video
+         code updates and other misc bugs. [theoddone33, Thorsten Glaser,
+         Wilbern Cobb]
+       - Fixed gamma in PNG snapshots. [pagefault]
        - Added several new goodies to the GUI, which include a force
          8-bit sound option (fixes a few cards under WinMe), a second
          water effect, and an experimental smoke effect.
          [stainless] (DOS only/all ports)        
-       - [_TRAC_] commented, unified, and cleaned up the Mode-Q and Mode-X
+       - Fixed problem with sound getting disabled when running command-line
+         network games. (Windows only) [pagefault]
+       - Updated video code in Windows port to properly display 239 line
+         modes. (Windows only) [pagefault]
+       - Commented, unified, and cleaned up the Mode-Q and Mode-X
          blitters.  I did a major overhaul to the DOS video code, I cleaned
          up and reorganized it alot, and there seem to be no problems as of
          yet. [stainless, TRAC] (DOS only)        
@@ -71,9 +82,7 @@ v1.35
        - Special modification for Bahamut Lagoon and Clay Fighter to
          delay write to the hdma register. (those games need dma delay
          implemented) [_Demo_]        
-       - Many changes for ports [theoddone33, Thorsten Glaser, Wilbern Cobb]        
-       - Command line support in windows port [Statmat]        
-       - Lots of other minor fixes.
+       - Lots of other minor fixes and things we forgot to mention.
 
 
 v1.337 - This release is dedicated to zsKnight and his family
@@ -182,6 +191,9 @@ v1.337 - This release is dedicated to zsKnight and his family
        - Updated video interpolation code, now looks better than before
          [kode54]
        - Lots of misc GUI fixes and cosmetic tweaks [pagefault]
+       - (UPDATE) Added surround sound to Windows and Linux ports, updated
+         filter in DOS port (This was left out of the previous whatsnew
+         file) [kode54]
 
        DOS v1.337
        ----------
@@ -209,7 +221,7 @@ v1.337 - This release is dedicated to zsKnight and his family
        - You can now use / in command line options in addition to the
          previous - character [stainless]
 
-       Win v1.05
+       Win v1.06
        ---------
        - Added option to toggle the trap mouse cursor feature which prevents
          the mouse cursor from leaving the window by accident [pagefault]
@@ -243,6 +255,8 @@ v1.337 - This release is dedicated to zsKnight and his family
          be needed anymore [pagefault]
        - Now uses idle task priority when in GUI and window is not active,
          should also smooth task swtiching on slower computers [pagefault]
+       - (UPDATE) Fixed server IP bug when using zbattle.net or command-line
+         options to connect [pagefault]
 
        Linux v0.37
        -----------
