@@ -1772,6 +1772,12 @@ DisplayGUIVideo:
 .notext8
     xor eax,eax
     mov al,[cvidmode]
+    cmp byte[GUI2xVID+eax],0
+    je near .notext11a
+    GUIOuttextwin2u 5,130,158,GUIVideoTextscale2x,1
+.notext11a
+    xor eax,eax
+    mov al,[cvidmode]
     cmp byte[GUIHQ3X+eax],0
     je near .notext11
     GUIOuttextwin2u 5,130,168,GUIVideoTexthq3x,1
@@ -1883,10 +1889,16 @@ DisplayGUIVideo:
 .notext8b
     xor eax,eax
     mov al,[cvidmode]
-    cmp byte[GUIHQ3X+eax],0
+    cmp byte[GUI2xVID+eax],0
     je near .notext11b
-    GUIOuttextwin2 5,129,167,GUIVideoTexthq3x
+    GUIOuttextwin2 5,129,157,GUIVideoTextscale2x
 .notext11b
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUIHQ3X+eax],0
+    je near .notext11c
+    GUIOuttextwin2 5,129,167,GUIVideoTexthq3x
+.notext11c
     GUIOuttextwin2 5,25,187,GUIVideoText8c
 %ifndef __LINUX__
     GUIOuttextwin2 5,129,187,GUIVideoText9
@@ -2072,6 +2084,17 @@ DisplayGUIVideo:
 .nocheckbox3b
     xor eax,eax
     mov al,[cvidmode]
+    cmp byte[GUI2xVID+eax],0
+    je near .nocheckbox2scale2x
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[scale2xFilter],0
+    je .nocheckbox1scale2x
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox1scale2x
+    GUIDisplayIconWin 5,115,153,[GUITemp]
+.nocheckbox2scale2x
+    xor eax,eax
+    mov al,[cvidmode]
     cmp byte[GUIHQ3X+eax],0
     je near .nocheckbox2hq3x
     mov dword[GUITemp],GUIIconDataCheckBoxUC
@@ -2200,6 +2223,7 @@ GUIVideoTextd2 db 'SUPER 2XSAI',0
 GUIVideoTextbf db 'BILINEAR FILTER',0
 GUIVideoText3 db 'INTERPOLATION',0      ; -y
 GUIVideoText4 db 'EAGLE ENGINE',0       ; -y
+GUIVideoTextscale2x db 'SCALE2X',0
 GUIVideoTexthq3x db 'HQ3X',0
 GUIVideoText5 db 'FULL SCREEN',0        ; -c
 GUIVideoText5b db 'WIDE SCREEN',0        ; -c
