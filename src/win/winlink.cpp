@@ -171,6 +171,7 @@ void DrawScreen()
          {
             DDrawError();
          }
+         DD_Primary->Blt(&rcWindow, DD_CFB, NULL, DDBLT_WAIT, NULL);
       }
    }
    else
