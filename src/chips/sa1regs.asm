@@ -2352,6 +2352,13 @@ tempblah db 0
 %%nosb
 %endmacro
 
+%macro setbit2b2 2
+    test al,%1
+    jz %%nosb
+    or word[ebx+16],%2
+%%nosb
+%endmacro
+
 ; Character Conversion DMA
 sa1chconv:
 ;    or byte[SA1DoIRQ],4
@@ -2375,15 +2382,92 @@ sa1chconv:
     test byte[SA1DMAChar],1
     jnz .4bit
     test byte[SA1DMAChar],2
-    jnz .2bit
+    jnz near .2bit
     mov ebx,[sa1dmaptr]
     push ecx
     pop ecx
     ret
 .4bit
-    mov ebx,[sa1dmaptr]
-    push ecx
-    pop ecx
+    pushad
+    mov edx,[sa1dmaptrs]
+    mov ebx,[romdata]
+    add ebx,4096*1024+1024*1024
+    mov edi,16
+.loop34b
+    push ebx
+    push edx
+    mov ecx,32
+.loop4b
+    mov esi,8
+    push ebx
+    push edx
+.loop24b
+    mov word[ebx],0
+    mov al,[edx+3]
+    setbit2b 10h,0001h
+    setbit2b 20h,0100h
+    setbit2b2 40h,0001h
+    setbit2b2 80h,0100h
+    setbit2b 01h,0002h
+    setbit2b 02h,0200h
+    setbit2b2 04h,0002h
+    setbit2b2 08h,0200h
+    mov al,[edx+2]
+    setbit2b 10h,0004h
+    setbit2b 20h,0400h
+    setbit2b2 40h,0004h
+    setbit2b2 80h,0400h
+    setbit2b 01h,0008h
+    setbit2b 02h,0800h
+    setbit2b2 04h,0008h
+    setbit2b2 08h,0800h
+    mov al,[edx+1]
+    setbit2b 10h,0010h
+    setbit2b 20h,1000h
+    setbit2b2 40h,0010h
+    setbit2b2 80h,1000h
+    setbit2b 01h,0020h
+    setbit2b 02h,2000h
+    setbit2b2 04h,0020h
+    setbit2b2 08h,2000h
+    mov al,[edx]
+    setbit2b 10h,0040h
+    setbit2b 20h,4000h
+    setbit2b2 40h,0040h
+    setbit2b2 80h,4000h
+    setbit2b 01h,0080h
+    setbit2b 02h,8000h
+    setbit2b2 04h,0080h
+    setbit2b2 08h,8000h
+    add ebx,2
+    add edx,128
+    dec esi
+    jnz near .loop24b
+    pop edx
+    pop ebx
+    add edx,4
+    add ebx,32
+    dec ecx
+    jnz near .loop4b
+    pop edx
+    pop ebx
+    add edx,128*8
+    add ebx,128*8
+    dec edi
+    jnz near .loop34b
+
+    mov ecx,10*128*8
+    mov edx,[sa1dmaptrs]
+    mov ebx,[romdata]
+    add ebx,4096*1024+1024*1024
+.next4b
+    mov al,[ebx]
+    mov [edx],al
+    inc ebx
+    inc edx
+    loop .next4b
+
+    popad
     ret
 
 .2bit
