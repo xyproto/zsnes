@@ -1115,10 +1115,11 @@ reg2Axxr:
 reg4016r:
     xor al,al
     test dword[JoyANow],80000000h
-    jz .noal
-    mov al,1
-.noal
+    jnz .noal
     rol dword[JoyANow],1
+    ret
+.noal
+    mov al,1
     ret
 
 NEWSYM MultiTap, db 0
@@ -1131,10 +1132,11 @@ reg4017r:
 .nomultitap
     xor al,al
     test dword[JoyBNow],80000000h
-    jz .noal
-    mov al,1
-.noal
+    jnz .noal
     rol dword[JoyBNow],1
+    ret
+.noal
+    mov al,1
     ret
 .multitap
     test byte[MultiTapStat],1
