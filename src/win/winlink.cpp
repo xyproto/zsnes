@@ -1005,6 +1005,8 @@ void ReleaseDirectSound()
 
 void ReleaseDirectDraw()
 {
+   if (FullScreen == 1) lpDD->RestoreDisplayMode();
+
    if (DD_CFB)
    {
       DD_CFB->Release();
