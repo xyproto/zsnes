@@ -1359,7 +1359,6 @@ COPemulmode
     mov [xpc],ax
     test eax,8000h
     jz .loweraddr
-    mov byte[doirqnext],0
     mov esi,[snesmmap+ebx*4]
     mov [initaddrl],esi
     add esi,eax
@@ -1386,6 +1385,7 @@ COPemulmode
 .upperlower
     cmp dword[memtabler8+ebx*4],regaccessbankr8
     je .dma
+    mov byte[doirqnext],0
     mov [initaddrl],esi
     add esi,eax
     cmp byte[esi],0CBh
