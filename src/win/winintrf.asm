@@ -1297,6 +1297,7 @@ NEWSYM GUIM7VID, db 0,0,0,0,0,1,0,1,1,0,0,1,0,1,0,1,0,1,0,1,0,1       ; ?Mode 7 
 NEWSYM GUIWFVID, db 0,0,0,1,0,0,0,1,1,1,0,0,1,1,0,0,1,1,0,0,0,0       ; If Windows Full Screen
 NEWSYM GUIDSIZE, db 0,0,0,0,0,1,0,1,1,0,0,1,0,1,0,1,0,1,0,1,0,1
 NEWSYM GUIRATIO, db 0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+NEWSYM GUIBIFIL, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 SECTION .text
 

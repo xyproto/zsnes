@@ -2196,6 +2196,12 @@ DisplayGUIVideoClick:
 .nocheckbox1b
     xor ebx,ebx
     mov bl,[cvidmode]
+    cmp byte[GUIBIFIL+ebx],0
+    je .nocheckbox1bf
+    GUIClickCButton 11,78,byte[BilinearFilter]
+.nocheckbox1bf
+    xor ebx,ebx
+    mov bl,[cvidmode]
     cmp byte[GUIFSVID+ebx],0
     je .nocheckbox2b
     GUIClickCButton3 11,88,byte[ScreenScale],byte[GUIScreenScale],1

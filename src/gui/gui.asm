@@ -174,7 +174,7 @@ EXTSYM ModemSendChar
 EXTSYM numlockptr
 %endif
 %ifdef __WIN32__
-EXTSYM CheckPriority
+EXTSYM CheckPriority,GUIBIFIL
 EXTSYM CheckAlwaysOnTop
 %endif
 %ifdef __LINUX__
@@ -583,6 +583,7 @@ NEWSYM MouseWheel, db 1
 NEWSYM AlternateTimer, db 0
 NEWSYM AllowMultipleInst, db 0
 NEWSYM FilteredGUI, db 0
+NEWSYM BilinearFilter, db 0
 
 GUIsave equ $-GUIRAdd
 

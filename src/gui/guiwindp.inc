@@ -1657,6 +1657,12 @@ DisplayGUIVideo:
 .notextb2
     xor eax,eax
     mov al,[cvidmode]
+    cmp byte[GUIBIFIL+eax],0
+    je near .notextbf2
+    GUIOuttextwin2 5,26,168,GUIVideoTextbf
+.notextbf2
+    xor eax,eax
+    mov al,[cvidmode]
     cmp byte[GUIINVID+eax],0
     je .notext3
     GUIOuttextwin2 5,26,83,GUIVideoText3
@@ -1737,6 +1743,12 @@ DisplayGUIVideo:
     je near .notextb2b
     GUIOuttextwin2 5,25,167,GUIVideoText3
 .notextb2b
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUIBIFIL+eax],0
+    je near .notextb2bf
+    GUIOuttextwin2 5,25,167,GUIVideoText3
+.notextb2bf
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIINVID+eax],0
@@ -1851,6 +1863,18 @@ DisplayGUIVideo:
 .nocheckbox1i2
     GUIDisplayIconWin 5,11,163,[GUITemp]
 .nocheckboxi2
+
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUIBIFIL+eax],0
+    je near .nocheckboxbf
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[BilinearFilter],0
+    je .nocheckbox1bf
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox1bf
+    GUIDisplayIconWin 5,11,163,[GUITemp]
+.nocheckboxbf
 
     xor eax,eax
     mov al,[cvidmode]
@@ -2038,6 +2062,7 @@ GUIVideoTexta3 db '25%',0
 GUIVideoTextc db '2XSAI ENGINE',0
 GUIVideoTextd db 'SUPER EAGLE ENGINE',0
 GUIVideoTextd2 db 'SUPER 2XSAI ENGINE',0
+GUIVideoTextbf db 'BILINEAR FILTER',0
 GUIVideoText3 db 'INTERPOLATION',0      ; -y
 GUIVideoText4 db 'EAGLE ENGINE',0       ; -y
 GUIVideoText5 db 'FULL SCREEN',0        ; -c
