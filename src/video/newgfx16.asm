@@ -2204,7 +2204,7 @@ NEWSYM drawbg3tile16b
 
 NEWSYM drawbg4tile16b
     mov byte[prdata+ebx],1
-    drawbgtileng16b 3,1
+    drawbgtileng16b 3,3
     ret
 
 NEWSYM drawbg1tilepr116b
@@ -2220,7 +2220,7 @@ NEWSYM drawbg3tilepr116b
     ret
 
 NEWSYM drawbg4tilepr116b
-    drawbgtilengpr116b 3,1
+    drawbgtilengpr116b 3,3
     ret
 
 NEWSYM drawbg1line16b
@@ -2237,7 +2237,7 @@ NEWSYM drawbg3line16b
 
 NEWSYM drawbg4line16b
     mov byte[prdata+ebx],0
-    drawbglineng16b 3,1
+    drawbglineng16b 3,3
 
 NEWSYM drawbg1linepr116b
     drawbglinengpr116b 0,0
@@ -2249,7 +2249,7 @@ NEWSYM drawbg3linepr116b
     drawbglinengpr116b 2,2
 
 NEWSYM drawbg4linepr116b
-    drawbglinengpr116b 3,1
+    drawbglinengpr116b 3,3
 
 %macro normalsprng16b 2
     test dword[sprleftpr+ebx*4],80000000h
