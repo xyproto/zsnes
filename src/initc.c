@@ -32,7 +32,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //better versions from NSRT. -Nach
 
 
-//init.asm goodnes
+//init.asm goodness
 extern unsigned int NumofBanks;
 extern unsigned int NumofBytes;
 extern unsigned int *romdata;
@@ -86,8 +86,8 @@ void swapBlocks(char *blocks)
 
 void deintlv1()
 {
-  int i, numblocks = NumofBanks/2;
   char blocks[256];
+  int i, numblocks = NumofBanks/2;
   for (i = 0; i < numblocks; i++)
   {
     blocks[i * 2] = i + numblocks;
@@ -121,24 +121,17 @@ void CheckIntl1(unsigned char *ROM)
   }
 }
 
-//It would be nice to find a way to eliminate the 2MB here
-//Then we can also drop the includes of these two
-#include <string.h>
-#include <malloc.h>
 void deintToP()
 {
-  int i;
-  char blocks[256];
-  char *ROM = (char *)romdata;
-  char *ROMSwap = (char *)malloc(0x200000);
-  if (ROMSwap)
+  //Swap 2MB and 4MB ROMs
+  unsigned int temp, i, *loc1 = romdata, *loc2 = romdata + 0x80000;
+  for (i = 0; i < 0x100000; i++)
   {
-    memmove(ROMSwap, ROM, 0x200000);            //Copy Small ROM to RAM
-    memmove(ROM, &ROM[0x200000], 0x400000);     //Move Large ROM to front
-    memmove(&ROM[0x400000], ROMSwap, 0x200000); //Place Small ROM after
-    free(ROMSwap);
+    temp = loc1[i];
+    loc1[i] = loc2[i];
+    loc2[i] = temp;
   }
-  
+    
   //Deinterleave the 4MB ROM first
   NumofBanks = 128;
   deintlv1();
@@ -171,12 +164,12 @@ bool AllASCII(char *b, int size)
 int InfoScore(char *Buffer)
 {
   int score = 0;
-  if (Buffer[26] == 0x33) { score += 2; }
-  if ((Buffer[21] & 0xf) < 4) {	score += 2; }
-  if (!(Buffer[61] & 0x80)) { score -= 4; }
-  if ((1 << (Buffer[23] - 7)) > 48) { score -= 1; }
-  if (Buffer[25] < 14) { score += 1; }
-  if (!AllASCII(Buffer, 20)) { score -= 1; }
+  if (Buffer[26] == 0x33)            { score += 2; }
+  if ((Buffer[21] & 0xf) < 4)        { score += 2; }
+  if (!(Buffer[61] & 0x80))          { score -= 4; }
+  if ((1 << (Buffer[23] - 7)) > 48)  { score -= 1; }
+  if (Buffer[25] < 14)               { score += 1; }
+  if (!AllASCII(Buffer, 20))         { score -= 1; }
   return(score);
 }
 
@@ -249,7 +242,6 @@ void BankCheck()
       infoloc = Lo;
     }
   }
-
 }   
 
 
@@ -284,10 +276,8 @@ void CalcChecksum()
 {
   unsigned char *ROM = (unsigned char *)romdata;
   unsigned short Mbit = NumofBanks >> 2, Checksum;
-  unsigned int ROMSize = NumofBytes;
-  unsigned int Bank = infoloc;
+  unsigned int ROMSize = NumofBytes, Bank = infoloc;
   
-
   if ((Mbit == 10 || Mbit == 20 || Mbit == 40) && !SPC7110Enable)
   {
     unsigned int P1Size = npow(2, ROM[Bank + 23] - 7) * 65536;
