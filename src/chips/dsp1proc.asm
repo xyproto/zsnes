@@ -84,7 +84,6 @@ NEWSYM DSP1Read16b3F
     jae .doC000
     cmp byte[DSP1RLeft],0
     jne .movestuff
-    xor ax,ax
     ret
 .doC000
     mov ax,08000h
@@ -144,7 +143,6 @@ NEWSYM DSP1Read16b
     jae .do7000
     cmp byte[DSP1RLeft],0
     jne .movestuff
-    xor ax,ax
     ret
 .do7000
     mov ax,8000h
