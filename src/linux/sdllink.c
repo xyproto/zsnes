@@ -505,8 +505,10 @@ int InitSound(void)
 	}
 
 	//wanted.samples = (wanted.freq / 60) * 2 * wanted.channels;
-	wanted.samples = samptab[SoundQuality] * 2 * wanted.channels;
-	wanted.format = AUDIO_S16LSB;
+	//wanted.samples = samptab[SoundQuality] * 2 * wanted.channels;
+	wanted.samples = samptab[SoundQuality] * 8 * wanted.channels;
+	//wanted.format = AUDIO_S16LSB;
+	wanted.format = AUDIO_S16;
 	wanted.userdata = NULL;
 	wanted.callback = UpdateSound;
 
