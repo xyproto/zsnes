@@ -1603,12 +1603,12 @@ NEWSYM headerhack
     je .marvelous
     cmp dword[esi],'REND'
     jne .notrend
-    mov byte[cycpb268],127
-    mov byte[cycpb358],127
-    mov byte[cycpbl2],127
-    mov byte[cycpblt2],127
-    mov byte[cycpbl],127
-    mov byte[cycpblt],127
+    mov byte[cycpb268],157
+    mov byte[cycpb358],157
+    mov byte[cycpbl2],157
+    mov byte[cycpblt2],157
+    mov byte[cycpbl],157
+    mov byte[cycpblt],157
     jmp .notrend
 .marvelous
 .notrend
