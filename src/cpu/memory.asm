@@ -2561,6 +2561,7 @@ NEWSYM regaccessbankr8
     cmp ecx,6000h
     jae .hiromsram
     xor al,al
+    mov al,ch
     ret
 .hiromsram
     cmp byte[SPC7110Enable],1
@@ -2665,6 +2666,8 @@ NEWSYM regaccessbankr16
     cmp ecx,6000h
     jae .hiromsram
     xor ax,ax
+    mov al,ch
+    mov ah,ch
     ret
 .hiromsram
     cmp byte[SPC7110Enable],1
@@ -3104,7 +3107,8 @@ NEWSYM membank0r8reg             ; 2000-48FF
     xor ebx,ebx
     ret
 NEWSYM membank0r8inv             ; 4800-5FFF
-    mov al,80h
+    add ecx,ebx
+    mov al,ch
     ret
 NEWSYM membank0r8chip            ; 6000-7FFF
     add ecx,ebx
@@ -3176,7 +3180,9 @@ NEWSYM membank0r16reg             ; 2000-48FF
     xor ebx,ebx
     ret
 NEWSYM membank0r16inv             ; 4800-5FFF
-    mov ax,8080h
+    add ecx,ebx
+    mov al,ch
+    mov ah,ch
     ret
 NEWSYM membank0r16chip            ; 6000-FFFF
     add ecx,ebx
