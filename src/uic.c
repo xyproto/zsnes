@@ -21,8 +21,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 
-
+#ifdef __LINUX__
+#include "gblhdr.h"
+#else
+#include <stdio.h>
 #include <stdlib.h>
+#endif
 
 //C++ style code in C
 #define bool unsigned char
@@ -207,14 +211,14 @@ void zstart ()
 	StartUp ();
 
 	// Print welcome message.
-	printf ("ZSNES v%s, (c) 1997-2005, ZSNES Team\n\n", ZVERSION);
-	printf ("Be sure to check http://www.zsnes.com/ for the latest version.\n");
-	printf ("Please report crashes to zsnes-devel@lists.sourceforge.net.\n\n");
-	printf ("ZSNES is written by the ZSNES Team (See AUTHORS.TXT)\n");
-	printf ("ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,\n");
-	printf ("and you are welcome to redistribute it under certain conditions;\n");
-	printf ("please read 'LICENSE.TXT' thoroughly before doing so.\n\n");
-	printf ("Use ZSNES -? for command line defintitions.\n\n");
+	printf("ZSNES v%s, (c) 1997-2005, ZSNES Team\n", ZVERSION);
+	puts("Be sure to check http://www.zsnes.com/ for the latest version.");
+	puts("Please report crashes to zsnes-devel@lists.sourceforge.net.\n");
+	puts("ZSNES is written by the ZSNES Team (See AUTHORS.TXT)");
+	puts("ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,");
+	puts("and you are welcome to redistribute it under certain conditions;");
+	puts("please read 'LICENSE.TXT' thoroughly before doing so.\n");
+	puts("Use ZSNES -? for command line defintitions.\n");
 
 	SystemInit ();
 
