@@ -1655,7 +1655,9 @@ NEWSYM init65816
 ;    call Outputfilename
 
     ; Check Headers
+    pushad
     call headerhack
+    popad
 
     mov byte [spcRam+0F4h],0
     mov byte [spcRam+0F5h],0
