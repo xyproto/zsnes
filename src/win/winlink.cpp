@@ -136,12 +136,19 @@ extern "C"
    DWORD CurMode=-1;
 }
 
+void DDrawError(){
+   char message1[256];
+
+   sprintf(message1,"Error drawing to the screen\nMake sure the device is not being used by another process \0");
+   MessageBox (NULL, message1, "DirectDraw Error" , MB_ICONERROR );
+}
+
 void DrawScreen()
 {
    if(DD_CFB==NULL) return;
    if(DD_Primary->Blt(&rcWindow,DD_CFB,NULL,DDBLT_WAIT,NULL)!=DD_OK)
    {
-      // Error!!!
+      DDrawError();
 	}
 }
 
@@ -834,7 +841,7 @@ void DInputError(){
    char message1[256];
 
    sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 7.0a or higher located at www.microsoft.com/directx \0");
-   MessageBox (NULL, message1, "Init Error" , MB_ICONERROR );
+   MessageBox (NULL, message1, "DirectInput Error" , MB_ICONERROR );
 }
 
 bool InitInput()
