@@ -81,7 +81,7 @@ Header
 2 bytes  -  Length of author name
 3 bytes  -  ZST size
 1 byte   -  Flag Byte
-  2 bits -   Start from ZST/Power On/Reset
+  2 bits -   Start from ZST/Power On/Reset/Power On + Clear SRAM
   1 bit  -   NTSC or PAL
   5 bits -   Reserved
 ZST size -  ZST (no thumbnail)
@@ -160,7 +160,7 @@ ZMV header types, vars, and functions
 
 */
 
-enum zmv_start_methods { zmv_sm_zst, zmv_sm_power, zmv_sm_reset };
+enum zmv_start_methods { zmv_sm_zst, zmv_sm_power, zmv_sm_reset, zmv_sm_clear_all };
 enum zmv_video_modes { zmv_vm_ntsc, zmv_vm_pal };
 
 #define INT_CHAP_SIZE (cur_zst_size+4+8)
@@ -226,6 +226,11 @@ static void zmv_header_write(struct zmv_header *zmv_head, FILE *fp)
       flag &= ~BIT(7);
       flag |= BIT(6);
       break;
+      
+    case zmv_sm_clear_all:
+      flag |= BIT(7);
+      flag |= BIT(6);
+      break;  
   }
 
   switch (zmv_head->zmv_flag.video_mode)
@@ -287,7 +292,7 @@ static bool zmv_header_read(struct zmv_header *zmv_head, FILE *fp)
        break;
 
     case BIT(7)|BIT(6):
-      return(false);
+      zmv_head->zmv_flag.start_method = zmv_sm_clear_all;
       break;
   }
 
@@ -589,6 +594,9 @@ static void zmv_create(char *filename)
         asm_call(GUIDoReset);
         ReturnFromSPCStall = 0;
         break;
+      case zmv_sm_clear_all:
+        powercycle(false);
+        break;
     }
 
     zst_save(zmv_vars.fp, false);
@@ -778,6 +786,10 @@ static bool zmv_open(char *filename)
           asm_call(GUIDoReset);
           ReturnFromSPCStall = 0;
           zst_sram_load(zmv_vars.fp);
+          break;
+        case zmv_sm_clear_all:
+          powercycle(false);
+          fseek(zmv_vars.fp, cur_zst_size, SEEK_CUR);
           break;
       }
 
