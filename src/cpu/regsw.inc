@@ -291,125 +291,6 @@ NEWSYM initregw
 ; video memory change buffer for caching (65536/16=4096)
 ;vidmemch2, vidmemch4, vidmemch8. 4096 bytes each
 
-NEWSYM repackfunct
-    ; Global/Echo Volumes
-    mov al,[DSPMem+0Ch]
-    call WDSPReg0C
-    mov al,[DSPMem+1Ch]
-    call WDSPReg1C
-    mov al,[DSPMem+2Ch]
-    call WDSPReg2C
-    mov al,[DSPMem+3Ch]
-    call WDSPReg3C
-    ; Echo Values
-    mov al,[DSPMem+7Dh]
-    call WDSPReg7D
-    mov al,[DSPMem+0Dh]
-    call WDSPReg0D
-    ; FIR Filter Values
-    mov al,[DSPMem+00Fh]
-    call WDSPReg0F
-    mov al,[DSPMem+01Fh]
-    call WDSPReg1F
-    mov al,[DSPMem+02Fh]
-    call WDSPReg2F
-    mov al,[DSPMem+03Fh]
-    call WDSPReg3F
-    mov al,[DSPMem+04Fh]
-    call WDSPReg4F
-    mov al,[DSPMem+05Fh]
-    call WDSPReg5F
-    mov al,[DSPMem+06Fh]
-    call WDSPReg6F
-    mov al,[DSPMem+07Fh]
-    call WDSPReg7F
-    ; Noise
-    mov al,[DSPMem+6Ch]
-    call WDSPReg6C
-    mov al,[DSPMem+3Dh]
-    call WDSPReg3D
-
-    mov bx,[bg1ptrb]
-    sub bx,[bg1ptr]
-    mov [bg1ptrx],bx
-    mov bx,[bg1ptrc]
-    sub bx,[bg1ptr]
-    mov [bg1ptry],bx
-    mov bx,[bg2ptrb]
-    sub bx,[bg2ptr]
-    mov [bg2ptrx],bx
-    mov bx,[bg2ptrc]
-    sub bx,[bg2ptr]
-    mov [bg2ptry],bx
-    mov bx,[bg3ptrb]
-    sub bx,[bg3ptr]
-    mov [bg3ptrx],bx
-    mov bx,[bg3ptrc]
-    sub bx,[bg3ptr]
-    mov [bg3ptry],bx
-    mov bx,[bg4ptrb]
-    sub bx,[bg4ptr]
-    mov [bg4ptrx],bx
-    mov bx,[bg4ptrc]
-    sub bx,[bg4ptr]
-    mov [bg4ptry],bx
-
-    ; 16x16 tiles
-    mov bl,[bgtilesz]
-    shl bl,4
-    mov dword[BG116x16t],0
-    add bl,bl
-    adc byte[BG416x16t],0
-    add bl,bl
-    adc byte[BG316x16t],0
-    add bl,bl
-    adc byte[BG216x16t],0
-    add bl,bl
-    adc byte[BG116x16t],0
-
-    mov ebx,[oamaddrt]
-    and ebx,0FFFFh
-    mov [oamaddr],ebx
-
-    mov ax,[xat]
-    mov [xa],ax
-    mov al,[xdbt]
-    mov [xdb],al
-    mov al,[xpbt]
-    mov [xpb],al
-    mov ax,[xst]
-    mov [xs],ax
-    mov ax,[xdt]
-    mov [xd],ax
-    mov ax,[xxt]
-    mov [xx],ax
-    mov ax,[xyt]
-    mov [xy],ax
-
-    cmp byte[vramincby8on],1
-    je near .incby8
-    mov ebx,[regptw]
-    cmp byte[vramincr],1
-    je .from2118
-    mov dword[ebx+2118h*4],reg2118
-    mov dword[ebx+2119h*4],reg2119inc
-    ret
-.from2118
-    mov dword[ebx+2118h*4],reg2118inc
-    mov dword[ebx+2119h*4],reg2119
-    ret
-.incby8
-    mov ebx,[regptw]
-    cmp byte[vramincr],1
-    je .from2118b
-    mov dword[ebx+2118h*4],reg2118inc8
-    mov dword[ebx+2119h*4],reg2119inc8inc
-    ret
-.from2118b
-    mov dword[ebx+2118h*4],reg2118inc8inc
-    mov dword[ebx+2119h*4],reg2119inc8
-    ret
-
 ;*******************************************************
 ; Registers    Note : restore AH, ECX, ESI, EDI, *S & DX
 ;*******************************************************
@@ -935,7 +816,7 @@ reg2117w:
     ret
 
 ; Video port data (Low)
-reg2118:
+NEWSYM reg2118
     mov ebx,[vramaddr]
     mov [vrama+ebx],al
     shr ebx,4
@@ -944,7 +825,7 @@ reg2118:
     mov byte[vidmemch8+ebx],1
     ret
 
-reg2118inc:
+NEWSYM reg2118inc
     mov ebx,[vramaddr]
     mov [vrama+ebx],al
     shr ebx,4
@@ -955,7 +836,7 @@ reg2118inc:
     add [vramaddr],bx
     ret
 
-reg2118inc8:
+NEWSYM reg2118inc8
     push ecx
     xor ecx,ecx
     mov ebx,[vramaddr]
@@ -985,7 +866,7 @@ reg2118inc8:
 .nochange2
     ret
 
-reg2118inc8inc:
+NEWSYM reg2118inc8inc
     push ecx
     xor ecx,ecx
     mov ebx,[vramaddr]
@@ -1017,7 +898,7 @@ reg2118inc8inc:
     add [vramaddr],bx
     ret
 
-reg2119:
+NEWSYM reg2119
     cmp dword[vramaddr],0E000h
     jb .skip
     mov byte[debstop],1
@@ -1033,7 +914,7 @@ reg2119:
 .nochange
     ret
 
-reg2119inc:
+NEWSYM reg2119inc
     mov ebx,[vramaddr]
 ;    cmp [vrama+ebx+1],al
 ;    je .nochange
@@ -1047,7 +928,7 @@ reg2119inc:
     add [vramaddr],bx
     ret
 
-reg2119inc8:
+NEWSYM reg2119inc8
     push ecx
     xor ecx,ecx
     mov ebx,[vramaddr]
@@ -1075,7 +956,7 @@ reg2119inc8:
 .nochange2
     ret
 
-reg2119inc8inc:
+NEWSYM reg2119inc8inc
     push ecx
     xor ecx,ecx
     mov ebx,[vramaddr]

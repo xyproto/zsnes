@@ -120,7 +120,7 @@ EXTSYM SfxSFR,nosprincr
 EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 EXTSYM NetPlayNoMore
 EXTSYM statefileloc
-EXTSYM CHIPBATT,SaveSramData, BackupCVFrame, RestoreCVFrame
+EXTSYM CHIPBATT,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
 
 %ifdef OPENSPC
 EXTSYM OSPC_Run, ospc_cycle_frac
@@ -1073,7 +1073,12 @@ reexecuteb2:
     jnz near savestate
     mov eax,[KeyLoadState]
     test byte[pressed+eax],1
-    jnz near loadstate
+    jz .noloadstt0
+    pushad
+    call loadstate
+    popad
+    jmp reexecuteb
+.noloadstt0
     cmp byte[SSKeyPressed],1
     je near showmenu
     cmp byte[SPCKeyPressed],1
@@ -1241,311 +1246,12 @@ SECTION .data
 
 SECTION .bss
 cycpblblah resd 2
-SECTION .text
-
-    ; Load State
-NEWSYM stateloader
-    mov byte[MovieProcessing],0
-    mov byte[prevoamptr],0FFh
-    ; Load 65816 status, etc.
-    mov bx,ax
-    mov ecx,[PHnum2writecpureg]
-    add dword[Totalbyteloaded],ecx
-    mov edx,zsmesg
-    call Read_File
-    cmp byte[versn],60
-    jb near .convert
-    ; Load SPC timers
-    mov ecx,8
-    add dword[Totalbyteloaded],ecx
-    mov edx,cycpbl
-    call Read_File
-    ; Load SNES PPU Register status
-    mov ecx,3019    ; 3019
-    add dword[Totalbyteloaded],ecx
-    mov edx,sndrot
-    call Read_File
-    cmp byte[versn],60
-    jne .not60
-    mov byte[ioportval],0FFh
-.not60
-    ; Load RAM (WRAM(128k),VRAM(64k),SRAM)
-    mov ecx,65536+65536
-    add dword[Totalbyteloaded],ecx
-    mov edx,[wramdata]
-    call Read_File
-    mov ecx,65536
-    add dword[Totalbyteloaded],ecx
-    mov edx,[vram]
-    call Read_File
-    cmp byte[spcon],0
-    je .nospcon
-    ; Load SPC stuff
-    mov ecx,[PHspcsave]
-    add dword[Totalbyteloaded],ecx
-    mov edx,spcRam
-    call Read_File
-    ; Load DSP stuff
-    mov ecx,[PHdspsave]
-    add dword[Totalbyteloaded],ecx
-    mov edx,BRRBuffer
-    call Read_File
-    ; Load DSP Mem
-    mov ecx,256
-    add dword[Totalbyteloaded],ecx
-    mov edx,DSPMem
-    call Read_File
-.nospcon
-    cmp byte[SFXEnable],1
-    jne near .nosfx
-    mov ecx,65536*2
-    add dword[Totalbyteloaded],ecx
-    mov edx,[sfxramdata]
-    call Read_File
-
-    mov ecx,[PHnum2writesfxreg]
-    add dword[Totalbyteloaded],ecx
-    mov edx,SfxR0
-    call Read_File
-
-    xor ecx,ecx
-    mov cl,[SfxPBR]
-    mov ecx,[SfxMemTable+ecx*4]
-    mov [SfxCPB],ecx
-
-    xor ecx,ecx
-    mov cl,[SfxROMBR]
-    mov ecx,[SfxMemTable+ecx*4]
-    mov [SfxCROM],ecx
-
-    xor ecx,ecx
-    mov cl,[SfxRAMBR]
-    shl ecx,16
-    add ecx,[sfxramdata]
-    mov dword [SfxRAMMem],ecx
-
-    mov ecx,[SfxCROM]
-    add [SfxRomBuffer],ecx
-    mov ecx,[SfxRAMMem]
-    add [SfxLastRamAdr],ecx
-
-.nosfx
-
-    cmp byte[SETAEnable],1
-    jne near .noseta
-    mov ecx,4096
-    add dword[Totalbyteloaded],ecx
-    mov edx,[setaramdata]
-    call Read_File
-    ; TODO: load the SetaCmdEnable?  For completeness we should do it but currently we ignore it anyway.
-.noseta
-
-    cmp byte[C4Enable],1
-    jne .noc4
-    mov ecx,2000h
-    add dword[Totalbyteloaded],ecx
-    mov edx,[C4Ram]
-    call Read_File
-.noc4
-    cmp byte[SPC7110Enable],1
-    jne .nospc7110
-    mov edx,[romdata]
-    add edx,510000h
-    mov ecx,65536
-    call Read_File
-    mov edx,SPCMultA
-    mov ecx,[PHnum2writespc7110reg]
-    call Read_File
-.nospc7110
-    cmp byte[SA1Enable],1
-    jne .nossa1
-    mov ecx,[PHnum2writesa1reg]
-    add dword[Totalbyteloaded],ecx
-    mov edx,SA1Mode
-    call Read_File
-    mov ecx,65536*2
-    add dword[Totalbyteloaded],ecx
-    mov edx,[SA1RAMArea]
-    call Read_File
-    ; Convert back SA-1 stuff
-    pushad
-    call RestoreSA1
-    popad
-    call SA1UpdateDPage
-.nossa1
-    cmp byte[SDD1Enable],1
-    jne .nosdd1
-    call UpdateBanksSDD1
-.nosdd1
-
-    call Close_File
-    call repackfunct
-    mov dword[spcnumread],0
-	mov dword[spchalted],-1
-    mov byte[nexthdma],0
-
-;    call headerhack
-
-    call initpitch
-    ret
-
-.convert
-    ; Load SNES PPU Register status
-    mov ecx,3019
-    mov edx,sndrot
-    call Read_File
-    ; Load RAM (WRAM(128k),VRAM(64k),SRAM)
-    mov dword[cycpbl],0
-    mov dword[cycpblt],0
-    mov ah,[cycpbl2]
-    mov [cycpbl],ah
-    mov ah,[cycpblt2]
-    mov [cycpblt],ah
-
-    mov ecx,[ramsize]
-    add ecx,65536+65536+65536
-    mov edx,[wramdata]
-    call Read_File
-    cmp byte[spcon],0
-    je .nospconb
-    ; Load SPC stuff
-    mov ecx,[PHspcsave]
-    mov edx,spcRam
-    call Read_File
-    ; Load DSP stuff
-    mov ecx,32
-    mov edx,BRRBuffer
-    call Read_File
-    ; Convert old to new data
-    ; read/write 6, jump 2 for 8 times
-    mov edx,BRRPlace0
-    mov ecx,8
-.loopconv
-    push edx
-    push ecx
-    mov ecx,4
-    call Read_File
-    pop ecx
-    pop edx
-    add edx,8
-    dec ecx
-    jnz .loopconv
-;dspsave equ $-BRRBuffer
-;dspconvb equ $-Voice0Freq
-    ; Load DSP stuff
-    mov ecx,[PHdspsave]
-    sub ecx,64+32
-    sub ecx,8
-    mov edx,Voice0Freq
-    call Read_File
-    ; Load DSP Mem
-    mov ecx,256
-    mov edx,DSPMem
-    call Read_File
-.nospconb
-    call Close_File
-    call repackfunct
-    mov dword[cycpbl],0
-    mov dword[spcnumread],0
- mov dword[spchalted],-1
-    mov byte[nexthdma],0
-    call headerhack
-    call initpitch
-    ret
-
-NEWSYM loadstate
-    mov byte[pressed+1],0
-    mov eax,[KeyLoadState]
-    mov byte[pressed+eax],2
-    mov byte[multchange],1
-    clim
-%ifdef __LINUX__
-    pushad
-    call SRAMChdir
-    popad
-%endif
-    ; Get the state number
-    mov ebx,[statefileloc]
-    mov cl,[fnamest+ebx]
-    cmp cl,'t'
-    jne .writewhichstate
-    mov cl,'0'
-.writewhichstate
-    mov [.loadmsg+6],cl
-    mov [.convmsg+6],cl
-    mov [.nfndmsg+21],cl
-    mov edx,fnamest+1
-    call Open_File
-    jc near .nofile
-    call stateloader
-
-    ; Clear Cache Check
-    mov esi,vidmemch2
-    mov ecx,4096+4096+4096
-.next
-    mov byte[esi],1
-    inc esi
-    dec ecx
-    jnz .next
-    cmp byte[versn],60
-    jb near .convert
-    mov dword[Msgptr],.loadmsg
-    jmp .noconvert
-.convert
-    mov dword[Msgptr],.convmsg
-    mov byte[versn],60
-    mov byte[versn-2],'6'
-.noconvert
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    add dword[Curtableaddr],tableA
-    add dword[spcPCRam],spcRam
-    add dword[spcRamDP],spcRam
-    pushad
-    call ResetState
-    popad
-    call procexecloop
-    stim
-    jmp reexecuteb
-.nofile
-    mov dword[Msgptr],.nfndmsg
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    stim
-    jmp reexecuteb
 
 SECTION .data
-.loadmsg db 'STATE - LOADED.',0
-.convmsg db 'STATE - LOADED/CONVERTED',0
-.nfndmsg db 'UNABLE TO LOAD STATE -.',0
+NEWSYM txtloadmsg, db 'STATE - LOADED.',0
+NEWSYM txtconvmsg, db 'STATE - TOO OLD.',0
+NEWSYM txtnfndmsg, db 'UNABLE TO LOAD STATE -.',0
 SECTION .text
-
-NEWSYM loadstate2
-    mov edx,fnamest+1
-NEWSYM loadstate3
-    call Open_File
-    jc near .nofile
-    mov dword[Totalbyteloaded],0
-    call stateloader
-
-    ; Clear Cache Check
-    mov esi,vidmemch2
-    mov ecx,4096+4096+4096
-.next
-    mov byte[esi],1
-    inc esi
-    dec ecx
-    jnz .next
-    add dword[Curtableaddr],tableA
-    add dword[spcPCRam],spcRam
-    add dword[spcRamDP],spcRam
-    pushad
-    call ResetState
-    popad
-    call procexecloop
-    ret
-.nofile
-    ret
 
 ;*******************************************************
 ; Int 08h vector
@@ -3205,7 +2911,6 @@ NEWSYM cpuover
     test byte[curexecstate],01h
     jnz .dis65816
     or byte[curexecstate],01h
-;    call changeexecloop
 .dis65816
     cmp byte[CheatOn],1
     je near .cheater
@@ -3407,7 +3112,6 @@ NEWSYM cpuover
     test byte[curexecstate],01h
     jnz .dis658162
     or byte[curexecstate],01h
-;    call changeexecloop
 .dis658162
     mov byte[doirqnext],0
     xor ebx,ebx

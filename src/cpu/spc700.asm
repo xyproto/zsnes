@@ -24,7 +24,7 @@ EXTSYM DSPMem,spcWptr,debstop,disablespcclr,SPCSkipXtraROM,SPC700sh
 EXTSYM cycpbl,spcRptr
 EXTSYM spc700read
 EXTSYM dspWptr
-EXTSYM changeexecloop,curexecstate,SA1Enable,tableadb
+EXTSYM curexecstate,SA1Enable,tableadb
 
 %include "cpu/regsw.mac"
 %include "cpu/spcdef.inc"

@@ -1331,7 +1331,6 @@ COPemulmode
     test byte[curexecstate],01h
     jz near .nodis65816
     and byte[curexecstate],0FEh
-    call changeexecloop
 .nodis65816
     cmp byte[curexecstate],0
     jne near .nn

@@ -515,7 +515,9 @@ NEWSYM GUIDoReset
 
     ; reset the snes
     call init65816
+    pushad
     call procexecloop
+    popad
 
     mov eax,spcRam
     mov edx,0EFh

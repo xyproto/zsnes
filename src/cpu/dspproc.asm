@@ -442,27 +442,6 @@ NEWSYM conv2speedb
     ret
 %endif
 
-%macro initpitchm 1
-      mov ax,[DSPMem+02h+%1*10h]
-      mov word[Voice0Pitch+%1*2],ax
-      And EAX, 03FFFh
-      Mul dword [dspPAdj]
-      ShRD EAX,EDX,8
-      mov [Voice0Freq+%1*4],eax
-      ; modpitch
-%endmacro
-
-NEWSYM initpitch
-    initpitchm 0
-    initpitchm 1
-    initpitchm 2
-    initpitchm 3
-    initpitchm 4
-    initpitchm 5
-    initpitchm 6
-    initpitchm 7
-    ret
-
 %if 0
 %macro fixdspm 1
     mov esi,%1
@@ -2210,13 +2189,13 @@ NEWSYM Voice6Freq, resd 1            ; Frequency of Voice 6 (Delta Freq)
 NEWSYM Voice7Freq, resd 1            ; Frequency of Voice 7 (Delta Freq)
 
 NEWSYM Voice0Pitch, resw 1            ; Previous Pitch for Voice 0
-Voice1Pitch resw 1            ; Previous Pitch for Voice 1
-Voice2Pitch resw 1            ; Previous Pitch for Voice 2
-Voice3Pitch resw 1            ; Previous Pitch for Voice 3
-Voice4Pitch resw 1            ; Previous Pitch for Voice 4
-Voice5Pitch resw 1            ; Previous Pitch for Voice 5
-Voice6Pitch resw 1            ; Previous Pitch for Voice 6
-Voice7Pitch resw 1            ; Previous Pitch for Voice 7
+NEWSYM Voice1Pitch, resw 1            ; Previous Pitch for Voice 1
+NEWSYM Voice2Pitch, resw 1            ; Previous Pitch for Voice 2
+NEWSYM Voice3Pitch, resw 1            ; Previous Pitch for Voice 3
+NEWSYM Voice4Pitch, resw 1            ; Previous Pitch for Voice 4
+NEWSYM Voice5Pitch, resw 1            ; Previous Pitch for Voice 5
+NEWSYM Voice6Pitch, resw 1            ; Previous Pitch for Voice 6
+NEWSYM Voice7Pitch, resw 1            ; Previous Pitch for Voice 7
 
 NEWSYM Voice0Status,   resb 1 ; 0=Not Playing 1=Playing
 NEWSYM Voice1Status,   resb 1 

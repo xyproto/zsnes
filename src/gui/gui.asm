@@ -3134,7 +3134,9 @@ MoviePlay:
     call SRAMChdir
     popad
     mov dword[Totalbyteloaded],0
+    pushad
     call loadstate2
+    popad
     mov edx,fnamest+1
     call Open_File
     jc near .notexist
@@ -3687,7 +3689,9 @@ GUIProcStates:
     call NetLoadStuff
     jmp .changedir
 .notnet
+    pushad
     call loadstate2
+    popad
 .changedir
     ; change dir to LoadDrive/LoadDir
     call ChangetoLOADdir
@@ -3715,9 +3719,9 @@ LoadSecondState:
     mov ebx,[statefileloc]
     mov al,[fnamest+ebx]
     mov byte[fnamest+ebx],'s'
-    push eax
+    pushad
     call loadstate2
-    pop eax
+    popad
     mov ebx,[statefileloc]
     mov [fnamest+ebx],al
     call ChangetoLOADdir

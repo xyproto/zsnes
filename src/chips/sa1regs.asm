@@ -1605,22 +1605,6 @@ NEWSYM SA1Reset
     mov word[SA1Overflow],0
     ret
 
-NEWSYM UpdateBanksSDD1
-    pushad
-    cmp dword[SDD1BankA],0
-    je .nobank
-    mov al,[SDD1BankA]
-    call sdd14804w
-    mov al,[SDD1BankA+1]
-    call sdd14805w
-    mov al,[SDD1BankA+2]
-    call sdd14806w
-    mov al,[SDD1BankA+3]
-    call sdd14807w
-.nobank
-    popad
-    ret
-
 %macro BankSwitch 4
     push ecx
     push edx

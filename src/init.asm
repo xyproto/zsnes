@@ -75,7 +75,7 @@ EXTSYM memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
 EXTSYM memaccessspc7110w16
 EXTSYM ram7f,snesmap2,snesmmap,sram,MultiTap
 EXTSYM memaccessbankr848mb,memaccessbankr1648mb
-EXTSYM cpuover,execloop
+EXTSYM cpuover,execloop,procexecloop
 ;EXTSYM execloopn,execloopns,execloops
 ;EXTSYM PHsizeofexecloop,PHsizeofexecloopn,PHsizeofexecloopns
 ;EXTSYM PHsizeofexecloops
@@ -219,8 +219,9 @@ NEWSYM init
     call inittablec
     call SA1inittable
     ; SPC Init
-    call copyexecloop
+    pushad
     call procexecloop
+    popad
     ; SNES Init
     pushad
     call Setper2exec
@@ -282,7 +283,9 @@ NEWSYM init
 .enddigits
 
     ; Load the specified state file
+    pushad
     call loadstate2
+    popad
 
     ; Just skip the extension re-setup below if we don't need to do it
     cmp byte[autoloadstate],9
@@ -2392,31 +2395,6 @@ NEWSYM preparesfx
     inc edi
     dec ecx
     jnz .n
-    ret
-
-;*******************************************************
-; Copy execloop
-;*******************************************************
-
-NEWSYM copyexecloop
-    ret
-
-;*******************************************************
-; Process execloop
-;*******************************************************
-NEWSYM procexecloop
-    cmp byte[spcon],0
-    jne .noprocloop
-    mov byte[curexecstate],1
-    ret
-.noprocloop
-    mov byte[curexecstate],3
-    ret
-
-;*******************************************************
-; Change execloop
-;*******************************************************
-NEWSYM changeexecloop
     ret
 
 ;*******************************************************

@@ -2225,7 +2225,7 @@ NEWSYM WDSPReg6B       ; Voice  6
       ret
 
 SECTION .bss
-spcres resb 1
+NEWSYM spcres, resb 1
 SECTION .text
 
 NEWSYM WDSPReg6C       ; Voice  6

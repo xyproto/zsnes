@@ -51,6 +51,7 @@ EXTSYM SA1xpb,SA1xpc,SA1xa,SA1xx,SA1xy,SA1xd,SA1xdb,SA1xs
 EXTSYM cycpbl,debugbuf,soundon,spcA,spcNZ,spcP,spcPCRam
 EXTSYM spcRam,spcRamDP,spcS,spcX,spcY
 EXTSYM CurPtrVal,SPC7110Enable
+EXTSYM debugloadstate
 
 ; debstop at regsw.asm 2118/2119
 
@@ -258,7 +259,12 @@ NEWSYM debugloopb
     cmp al,59
     je near .execute65816
     cmp al,62
-    je near debugloadstate
+    jne .noloadstate
+    pushad
+    call debugloadstate
+    popad
+    jmp debugloopa
+.noloadstate
     cmp al,60
     je near debugsavestate
     jmp .loopd
@@ -411,39 +417,8 @@ SECTION .data
 SECTION .text
 
 ;*******************************************************
-; Debug save/load states
+; Debug save states (debug load state ported to c)
 ;*******************************************************
-NEWSYM debugloadstate
-    ; Load State
-    mov edx,fnamest+1
-    call Open_File
-    jc near .nofile
-    call stateloader
-    ; Clear Cache Check
-    mov esi,vidmemch2
-    mov ecx,4096+4096+4096
-.next
-    mov byte[esi],1
-    inc esi
-    dec ecx
-    jnz .next
-    cmp byte[versn],60
-    jne near .convert
-    jmp .noconvert
-.convert
-    mov byte[versn],60
-    mov byte[versn-2],'6'
-.noconvert
-    add dword[Curtableaddr],tableA
-    add dword[spcPCRam],spcRam
-    add dword[spcRamDP],spcRam
-    pushad
-    call ResetState
-    popad
-    call procexecloop
-.nofile
-    jmp debugloopa
-
 NEWSYM debugsavestate
     pushad
     call statesaver

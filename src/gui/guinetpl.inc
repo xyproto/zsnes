@@ -1630,7 +1630,7 @@ NetStateTotal resd 1
 NetStateQuit resb 1
 NetStateBuffer resb 2048
 SECTION .data
-Netfname db 'nettemp.zst',0
+NEWSYM Netfname, db 'nettemp.zst',0
 SECTION .text
 
 NetLoadStuff:
@@ -1756,7 +1756,9 @@ loadstatesend:
     cmp dword[NetStateSize],0
     jne .notzero
     pushad
+    pushad
     call loadstate2
+    popad
     mov byte[RestoreValues],0
     mov bx,[NetLoadHandle]
     call Close_File
@@ -1834,7 +1836,9 @@ loadstaterecv:
     popad
     mov edx,Netfname
     mov byte[RestoreValues],0
+    pushad
     call loadstate3
+    popad
     call ChangetoLOADdir
     cmp byte[NetLoadState],0
     je .norun2

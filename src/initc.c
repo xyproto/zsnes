@@ -73,6 +73,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define BSSizeOffset     25 //Contains Type as well
 //26 - 31 is the same
 
+// Some archaic code from an unfinished Dynarec
+extern unsigned int curexecstate;
+extern unsigned char spcon;
+
+void procexecloop()
+{
+    curexecstate &= 0xFFFFFF00;
+
+    if (spcon)	{ curexecstate += 3; }
+    else	{ curexecstate += 1; }
+}
 
 void Debug_WriteString(char *str)
 {
