@@ -114,7 +114,7 @@ EXTSYM setaaccessbankr16,setaaccessbankw16,setaaccessbankr16a,setaaccessbankw16a
 EXTSYM DSP2Read8b,DSP2Read16b,DSP2Write8b,DSP2Write16b,InitDSP2
 EXTSYM DSP4Read8b,DSP4Read16b,DSP4Write8b,DSP4Write16b,InitDSP4
 
-EXTSYM SetupROMc
+EXTSYM SetupROMc,CMovieExt,MoviePlay
 
 %ifdef __LINUX__
 EXTSYM LoadDir,popdir,pushdir
@@ -135,7 +135,8 @@ NEWSYM SfxAC, db 0
 blah times 450 db 0
 ; FIX STATMAT
 NEWSYM autoloadstate, db 0        ; auto load state slot number
-; FIX STATMAT
+NEWSYM autoloadmovie, db 0
+
 NEWSYM EndMessage 	 
  db '                                                                   ',13,10,0
 
@@ -287,7 +288,25 @@ NEWSYM init
 %endif
 
 .noautoloadstate
-; FIX STATMAT
+
+    cmp byte[autoloadmovie],1
+    jb .noautloadmovie
+    cmp byte[autoloadmovie],10
+    ja .noautloadmovie
+    mov al,byte[autoloadmovie]
+    add al,'0'-1
+    cmp al,'0'
+    jne .notzero1
+    mov al,'v'
+.notzero1
+    mov byte[CMovieExt],al
+        
+    pushad
+    call MoviePlay
+    popad
+    
+.noautloadmovie
+    
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUI16VID+eax],1

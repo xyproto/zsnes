@@ -52,7 +52,7 @@ extern unsigned char Palette0, pl1contrl, pl2contrl, MMXSupport, Force8b, ForceP
                      antienab, cvidmode, debugdisble, debugger, enterpress, vsyncon, DisplayS,
                      fname, SnowOn, Triplebufen, SPC700sh, OffBy1Line, DSPDisable, frameskip,
                      gammalevel, guioff, romtype, per2exec, scanlines, soundon, spcon,
-                     showallext, autoloadstate, smallscreenon;
+                     showallext, autoloadstate, smallscreenon, autoloadmovie;
 
 void ConvertJoyMap1(), ConvertJoyMap2(), zstart(), makeextension();
 
@@ -163,6 +163,7 @@ static void display_help()
   puts("  -w      Enable vsync (disables triple buffering)");
   puts("  -y      Enable Anti-Aliasing");
   puts("  -z      Disable Stereo Sound");
+  puts("  -zm #   Auto load specified movie slot on startup ");
   puts("  -zs #   Auto load specified save state slot on startup ");
   puts("");
   puts("  File Formats Supported by GUI : SMC,SFC,SWC,FIG,MGD,UFO,BIN,");
@@ -508,6 +509,16 @@ static void handle_params(int argc, char *argv[])
           if ((autoloadstate = zatoi(argv[i])+1) > 10)
           {
             puts("State load position must be a value of 0 to 9!");
+            exit(1);
+          }
+        }
+
+        else if (tolower(argv[i][1]) == 'z' && argv[i][2] == 'm') //Autoload save state
+        {
+          i++;
+          if ((autoloadmovie = zatoi(argv[i])+1) > 10)
+          {
+            puts("Movie load position must be a value of 0 to 9!");
             exit(1);
           }
         }

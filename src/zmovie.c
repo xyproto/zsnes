@@ -1561,7 +1561,6 @@ enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY }
 
 extern bool SRAMState, SloMo50;
 bool PrevSRAMState;
-extern unsigned int statefileloc;
 extern unsigned char ComboCounter, MovieRecordWinVal, RewindStates;
 char MovieFrameStr[10];
 void SRAMChdir();
@@ -1877,6 +1876,7 @@ void MoviePlay()
 {
   if (!MovieProcessing)
   {
+    size_t fname_len = strlen(fnamest+1);
     unsigned char FileExt[4];
     FILE *fp;
 
@@ -1884,9 +1884,9 @@ void MoviePlay()
     SRAMState = true;
 
     GUIQuit = 2;
-    memcpy(FileExt, &fnamest[statefileloc-3], 4);
-    memcpy(&fnamest[statefileloc-3], ".zmv", 4);
-    fnamest[statefileloc] = CMovieExt;
+    memcpy(FileExt, &fnamest[fname_len-3], 4);
+    memcpy(&fnamest[fname_len-3], ".zmv", 4);
+    fnamest[fname_len] = CMovieExt;
 
     SRAMChdir();
 
@@ -1903,8 +1903,8 @@ void MoviePlay()
         {
           zmv_alloc_rewind_buffer(RewindStates);
           SetMovieMode(MOVIE_PLAYBACK);
-          memcpy(&fnamest[statefileloc-3], ".sub", 4);
-          if (isdigit(CMovieExt)) { fnamest[statefileloc] = CMovieExt; }
+          memcpy(&fnamest[fname_len-3], ".sub", 4);
+          if (isdigit(CMovieExt)) { fnamest[fname_len] = CMovieExt; }
           MovieSub_Open(fnamest+1);
           MessageOn = MsgCount;
         }
@@ -1921,11 +1921,12 @@ void MoviePlay()
     }
     else
     {
+      printf(fnamest+1);
       Msgptr = "MOVIE COULD NOT BE OPENED.";
       MessageOn = MsgCount;
     }
 
-    memcpy(&fnamest[statefileloc-3], FileExt, 4);
+    memcpy(&fnamest[fname_len-3], FileExt, 4);
     asm_call(ChangetoLOADdir);
   }
 }
@@ -1940,12 +1941,13 @@ void MovieRecord()
 
   if (!MovieProcessing)
   {
+    size_t fname_len = strlen(fnamest+1);
     unsigned char FileExt[4];
     FILE *tempfhandle;
 
-    memcpy(FileExt, &fnamest[statefileloc-3], 4);
-    memcpy(&fnamest[statefileloc-3], ".zmv", 4);
-    fnamest[statefileloc] = CMovieExt;
+    memcpy(FileExt, &fnamest[fname_len-3], 4);
+    memcpy(&fnamest[fname_len-3], ".zmv", 4);
+    fnamest[fname_len] = CMovieExt;
 
     SRAMChdir();
 
@@ -1974,7 +1976,7 @@ void MovieRecord()
 
     asm_call(ChangetoLOADdir);
 
-    memcpy (&fnamest[statefileloc-3], FileExt, 4);
+    memcpy (&fnamest[fname_len-3], FileExt, 4);
   }
 }
 
