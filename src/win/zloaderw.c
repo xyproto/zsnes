@@ -605,11 +605,11 @@ int pccmdline(void)
             DSPDisable=1;
             pp++;
           }
-          else
-          {
-            debugger=1;
-            debugdisble=0;
-          }
+//          else
+//          {
+//            debugger=1;
+//            debugdisble=0;
+//          }
           break;
         }
         case 'b':
