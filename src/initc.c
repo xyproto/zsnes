@@ -1258,8 +1258,8 @@ void headerhack()
   //Okaaay...
   if(DSP1Type) { disablehdma = true; }
 
-  //Final Fantasy 3 (extent unknown!)
-  if (romdata[0x26AC] == 0xF00F2908)
+  //Final Fantasy 3u/6j (extent unknown!)
+  if ((romdata[0x26AC] == 0xF00F2908) || !strncmp((RomData+Hi),"FINAL FANTASY 6" ,15))
   {
     //asm volatile("int $3");
     opexec268 = 163;
