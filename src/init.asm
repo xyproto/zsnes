@@ -1691,6 +1691,7 @@ NEWSYM init65816
     cmp word[resetv],0F000h
     jne .ntrchecka
     jmp .yestrainer
+.ntrchecka
     sub eax,8000h
     cmp byte[eax],5Ch
     jne .notrainer
