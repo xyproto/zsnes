@@ -129,7 +129,16 @@ NEWSYM SfxAC, db 0
 blah times 450 db 0
 SECTION .text
 
+EXTSYM cpalval
 NEWSYM init
+    ; prevents a crash if cpalval gets accessed before initializing
+    mov eax,cpalval
+    mov ecx,256
+.looppal
+    mov dword[eax],cpalval
+    add eax,4
+    loop .looppal
+
     ; Initialize snow stuff
     mov ecx,400
     xor edx,edx
