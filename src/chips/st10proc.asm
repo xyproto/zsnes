@@ -17,7 +17,9 @@
 
 %include "macros.mac"
 
+SECTION .data
 NEWSYM SetaCmdEnable,    dd 0     ; Seta ST010/ST011 command enable register. Maybe also status.
+SECTION .text
 EXTSYM setaramdata
 EXTSYM ST010DoCommand
 
