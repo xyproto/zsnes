@@ -1174,6 +1174,8 @@ void DSP4_OP09()
       int16 sp_x, sp_y, sp_attr, sp_dattr;
       int16 sp_dx, sp_dy;
       int16 pixels;
+
+      bool8 draw = TRUE;
       
       DSP4.in_count = 2;
       DSP4_WAIT(5) resume5 :  
@@ -1226,9 +1228,6 @@ void DSP4_OP09()
 
       // allow partially visibile tiles
       pixels = sprite_size ? 15 : 7;
-
-      bool8 draw = TRUE;
-
 
       DSP4_CLEAR_OUT();
 
