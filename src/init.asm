@@ -4005,7 +4005,10 @@ SPC7110IndexName db 'INDEX.BIN',0
 SPC7110DirEntry db '*.BIN',0
 SPC7110CPtr dd 0
 SPC7110CPtr2 dd 0
+NEWSYM SDD1Offset, dd 65536*3
 NEWSYM SDD1nfname, db '        \_00000-0.bin',0
+NEWSYM SDD1ifname, db 'sdd1gfx.idx',0
+NEWSYM SDD1dfname, db 'sdd1gfx.dat',0
 NEWSYM SPC7110nfname, db '        \      .bin',0
 NEWSYM SPC7110IndexSize, dd 0
 NEWSYM SPC7110Entries, dd 0
@@ -4084,10 +4087,56 @@ NEWSYM SPC7110Load
 .notalloc
     call Change_Single_Dir
     jc near .nodir
+
     mov eax,[spc7110romptr]
     mov [SPC7110CPtr],eax
-    add eax,65536
+    add eax,[SDD1Offset]
     mov [SPC7110CPtr2],eax
+
+    mov edx,SDD1ifname
+    call Open_File
+    jc near .noindexfile
+    mov bx,ax
+    mov edx,[SPC7110CPtr]
+    mov ecx,[SDD1Offset]
+    call Read_File
+    add dword[SPC7110CPtr],eax
+    xor ecx,ecx
+    or eax,eax
+    jz .notfoundb
+    push ebx
+    xor edx,edx
+    mov ebx,12
+    div ebx
+    mov dword[SPC7110Entries],eax
+    mov ecx,eax
+    mov eax,[spc7110romptr]
+    mov ebx,[SPC7110CPtr2]
+.sdd1loop
+    add [eax+4],ebx
+    add eax,12
+    loop .sdd1loop
+    pop ebx
+.notfoundb
+    call Close_File
+    mov edx,SDD1dfname
+    call Open_File
+    jc near .noindexfile
+    mov bx,ax
+    mov edx,[SPC7110CPtr2]
+    mov ecx,7*1024*1024
+    call Read_File
+    add dword[SPC7110CPtr2],eax
+    call Close_File
+    jmp .yesindexfile
+.noindexfile
+    mov eax,[spc7110romptr]
+    mov [SPC7110CPtr],eax
+    add eax,[SDD1Offset]
+    mov [SPC7110CPtr2],eax
+    mov dword[SPC7110Entries],0
+.yesindexfile
+
     mov edx,SPC7110DirEntry
     mov cx,20h
     call Get_First_Entry
@@ -4137,7 +4186,7 @@ NEWSYM SPC7110Load
     mov bx,ax
     add dword[SPC7110CPtr],8
     mov edx,[SPC7110CPtr2]
-    mov ecx,65536
+    mov ecx,[SDD1Offset]
     call Read_File
     add dword[SPC7110CPtr2],eax
     mov edx,dword[SPC7110CPtr]
@@ -4149,6 +4198,53 @@ NEWSYM SPC7110Load
     popad
     call Get_Next_Entry
     jnc near .moreentries
+
+    ; Save Datafile
+    jmp .nosavedatafile
+
+;    mov eax,[spc7110romptr]
+;    mov [SPC7110CPtr],eax
+;    add eax,[SDD1Offset]
+;    mov [SPC7110CPtr2],eax
+
+    mov ecx,[SPC7110Entries]
+    mov eax,[spc7110romptr]
+    mov ebx,eax
+    add ebx,[SDD1Offset]
+.sdd1loopb
+    sub [eax+4],ebx
+    add eax,12
+    loop .sdd1loopb
+
+    mov edx,SDD1ifname
+    call Create_File
+    mov bx,ax
+    mov edx,[spc7110romptr]
+    mov ecx,[SPC7110CPtr]
+    sub ecx,edx
+    call Write_File
+    call Close_File
+
+    mov edx,SDD1dfname
+    call Create_File
+    mov bx,ax
+    mov edx,[spc7110romptr]
+    add edx,[SDD1Offset]
+    mov ecx,[SPC7110CPtr2]
+    sub ecx,edx
+    call Write_File
+    call Close_File
+
+    mov ecx,[SPC7110Entries]
+    mov eax,[spc7110romptr]
+    mov ebx,eax
+    add ebx,[SDD1Offset]
+.sdd1loopc
+    add [eax+4],ebx
+    add eax,12
+    loop .sdd1loopc
+.nosavedatafile
+
     mov edx,PrevDir
     call Change_Single_Dir
     ret
