@@ -2584,7 +2584,7 @@ NEWSYM cpuover
     add dh,[cycpl]
     mov ax,[totlines]
     cmp word[curypos],ax
-    ja near .overy
+    jae near .overy
     cmp byte[spcon],0
     je .nosound
     call updatetimer
