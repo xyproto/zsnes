@@ -1319,6 +1319,7 @@ COp7Em16:; ROR a,x
    endloop
 
 COp40:   ; RTI s
+   mov byte[intrset],2
    RTIMacro
 COp6B:   ; RTL s
    RTLMacro
@@ -1976,7 +1977,6 @@ COpBBx16:; TYX i
     endloop
 
 COpCB:   ; WAI i
-    mov byte[debstop3],1
     WAIMacro
 
 COpEB:   ; XBA i

@@ -21,9 +21,33 @@ EXTSYM initaddrl,membank0r16,membank0r8
 EXTSYM membank0w16,membank0w8,memtabler16,memtabler8,memtablew16,memtablew8
 EXTSYM nmistatus,regaccessbankr8,snesmap2,snesmmap,stackand,stackor
 EXTSYM wramdata,SA1xa,SA1xd,SA1xdb,xe,xirqb,SA1xpb,xpc,SA1xs,SA1xx,SA1xy
-EXTSYM switchtovirq,cpuoverptr,debstop4
+EXTSYM switchtovirq,cpuoverptr,debstop4,SA1RegP,nextopcode,debugsa1,skipdebugsa1
 
 
+sa1debug:
+   cmp byte[debuggeron],0
+   je .nodebugger
+   cmp byte[skipdebugsa1],1
+   je .nodebugger
+   pushad
+   mov bl,[SA1xpb]
+   mov ax,[xpc]
+   test eax,8000h
+   jz .loweraddr2
+   mov eax,[snesmmap+ebx*4]
+   jmp .nextaddr
+.loweraddr2
+   mov eax,[snesmap2+ebx*4]
+.nextaddr
+   mov ebx,esi
+   sub ebx,eax
+   mov [xpc],bx
+   mov [SA1RegP],dl
+   mov byte[debugsa1],1
+   call nextopcode
+   popad
+.nodebugger
+   ret
 
 
 
@@ -1315,6 +1339,7 @@ SA1COp7Em16:; ROR a,x
    endloop
 
 SA1COp40:   ; RTI s
+   mov byte[intrset],2
    RTIMacro
 SA1COp6B:   ; RTL s
    RTLMacro
