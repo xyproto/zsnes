@@ -168,13 +168,13 @@ EXTSYM SendPacketIPX,TCPIPSendPacket,TCPIPSendPacketUDP
 EXTSYM TCPIPDisconnect,TCPIPStatus
 EXTSYM DeInitModemC
 EXTSYM ipxgetchar,ipxsendchar,TCPIPStoreByte
-EXTSYM TCPIPGetByte
+EXTSYM TCPIPGetByte,GUIBIFIL
 EXTSYM ModemSendChar
 %ifdef __LINUX__
 EXTSYM numlockptr
 %endif
 %ifdef __WIN32__
-EXTSYM CheckPriority,GUIBIFIL
+EXTSYM CheckPriority
 EXTSYM CheckAlwaysOnTop
 %endif
 %ifdef __LINUX__
