@@ -388,9 +388,6 @@ prevlfreeze db 0
 GUIsmallscreenon db 0
 GUIScreenScale db 0
 
-;FIXME: pl1contrl  and pl2contrl are extern to this file 
-;but pl3contrl, pl4contrl and pl5contrl are defined here!
-;strange... (Christophe 2001/03/10)
 NEWSYM pl3contrl, db 0
 NEWSYM pl4contrl, db 0
 NEWSYM pl1p209b, db 0
