@@ -1576,24 +1576,7 @@ void initwinvideo(void)
 
    if (Moving == 1) return;
 
-   if (FullScreen == 0 && PrevFull == 1 || newmode == 1)
-   {
-      PrevFull = 0;
-      ReleaseDirectDraw();
-      InitDirectDraw();
-      clearwin();
-      return;
-   }
-
-   if (FullScreen == 1 && PrevFull != 1)
-   {
-      PrevFull = 1;
-      InitDirectDraw();
-      clearwin();
-      return;
-   }
-   
-   if (FullScreen == 1 && newmode == 1)
+   if (newmode == 1)
    {
       ReleaseDirectDraw();
       InitDirectDraw();
