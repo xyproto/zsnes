@@ -278,6 +278,7 @@ GUIConfigMenuData
         db 1,'INPUT #5    ',0
         db 0,'------------',0
         db 1,'ADD-ONS     ',0
+        db 1,'CHIP CFG    ',0
         db 0,'------------',0
         db 1,'OPTIONS     ',0
         db 1,'VIDEO       ',0
@@ -3902,7 +3903,7 @@ DisplayMenu:
 .nomenu2
     cmp byte[GUIcmenupos],3
     jne near .nomenu3
-    GUIDrawMenuM 52,16,9,12,GUIConfigMenuData,54,57,22,139,42 ;19+12*10
+    GUIDrawMenuM 52,16,9,13,GUIConfigMenuData,54,57,22,149,42 ;19+13*10
     mov dword[GUICYLocPtr],MenuDat3
 .nomenu3
     cmp byte[GUIcmenupos],4
