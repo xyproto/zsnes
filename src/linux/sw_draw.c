@@ -283,7 +283,7 @@ void sw_drawwin()
 		"	movl (%%ebx, %%eax, 4), %%edx\n"		\
 		"	movl %%edx, (%%edi)\n"				\
 		"	addl $4, %%edi\n"				\
-		"	decl ecx\n"					\
+		"	decl %%ecx\n"					\
 		"	jnz CopyLoop32b\n"				\
 		"	popl %%eax\n"					\
 		"	incl %%eax\n"					\
