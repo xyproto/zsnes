@@ -375,7 +375,9 @@ NEWSYM DosUpdateDevices
     ; 1 = keyboard, 2 = 2b joystick, 3,4 = 4b joystick, 5 = 6b joystick
     ; 6 = Sidewinder1, 7 = Sidewinder2, 8 = Sidewinder3, 9 = Sidewiner4
     ; 10 = Grip0, 11 = Grip1, 12 = Grip2, 13 = Grip3, 14 = Parallel pad0
-    ; 15 = Parallel pad1, 16 = PPad LPT2, 17 = PPad2 LPT2, 18 = 8b joystick
+    ; 15 = Parallel pad1, 16 = Parallel pad2, 17 = Parallel pad3
+    ; 19 = Parallel pad4, 18 = 8b joystick
+
     cmp al,1
     ja .joyokay
     ret
@@ -400,6 +402,11 @@ NEWSYM DosUpdateDevices
     or byte[PPad],8
     ret
 .nopp3
+    cmp al,19
+    jne .nopp4
+    or byte[PPad],16
+    ret
+.nopp4
     cmp ah,0
     jne near .port209
     cmp al,2
@@ -800,6 +807,10 @@ NEWSYM DOSJoyRead
    jz .noport4
    call GetParallelPlayer4
 .noport4
+   test byte[PPad],16
+   jz .noport5
+   call GetParallelPlayer5
+.noport5
    cmp byte[JoyAltrn],0
    je .nogpp2209
    cmp byte[NumGRiPs],2
@@ -1207,8 +1218,22 @@ NEWSYM SideWinder209
 %%nobutton
 %endmacro
 
+%macro PPortHelpInv 3         ;needed for the pad 5
+    mov al, %1
+    out dx, al
+    mov al, 0F8h
+    out dx, al
+    inc dx
+    in  al, dx
+    dec dx
+    and ax, %2
+    jz %%nobutton             ;pad 5 is on pin 11, which is hardware inverted...
+    mov byte[pressed+%3], 1
+%%nobutton
+%endmacro
+
 NEWSYM GetParallelPlayer1
-    mov dx, 0378h		; may want to make this configurable
+    mov dx, 0378h
     mov byte[pressed+180h],0
     mov byte[pressed+181h],0
     mov byte[pressed+182h],0
@@ -1221,7 +1246,7 @@ NEWSYM GetParallelPlayer1
     mov byte[pressed+189h],0
     mov byte[pressed+18Ah],0
     mov byte[pressed+18Bh],0
-    PPortHelp 0FAh, 40h, 180h
+    PPortHelp 0FAh, 40h, 180h ;Mask 40h (pin 10 of lpt : data for pad 1)
     PPortHelp 0F9h, 40h, 181h
     PPortHelp 0F9h, 40h, 182h
     PPortHelp 0F9h, 40h, 183h
@@ -1236,7 +1261,7 @@ NEWSYM GetParallelPlayer1
     ret
 
 NEWSYM GetParallelPlayer2
-    mov dx, 0378h		; may want to make this configurable
+    mov dx, 0378h
     mov byte[pressed+190h],0
     mov byte[pressed+191h],0
     mov byte[pressed+192h],0
@@ -1249,7 +1274,7 @@ NEWSYM GetParallelPlayer2
     mov byte[pressed+199h],0
     mov byte[pressed+19Ah],0
     mov byte[pressed+19Bh],0
-    PPortHelp 0FAh, 20h, 190h
+    PPortHelp 0FAh, 20h, 190h ;Mask 20h (pin 12 of lpt : data for pad 2)
     PPortHelp 0F9h, 20h, 191h
     PPortHelp 0F9h, 20h, 192h
     PPortHelp 0F9h, 20h, 193h
@@ -1264,7 +1289,7 @@ NEWSYM GetParallelPlayer2
     ret
 
 NEWSYM GetParallelPlayer3
-    mov dx, 0278h               ; may want to make this configurable
+    mov dx, 0378h
     mov byte[pressed+1A0h],0
     mov byte[pressed+1A1h],0
     mov byte[pressed+1A2h],0
@@ -1277,22 +1302,22 @@ NEWSYM GetParallelPlayer3
     mov byte[pressed+1A9h],0
     mov byte[pressed+1AAh],0
     mov byte[pressed+1ABh],0
-    PPortHelp 0FAh, 40h, 1A0h
-    PPortHelp 0F9h, 40h, 1A1h
-    PPortHelp 0F9h, 40h, 1A2h
-    PPortHelp 0F9h, 40h, 1A3h
-    PPortHelp 0F9h, 40h, 1A4h
-    PPortHelp 0F9h, 40h, 1A5h
-    PPortHelp 0F9h, 40h, 1A6h
-    PPortHelp 0F9h, 40h, 1A7h
-    PPortHelp 0F9h, 40h, 1A8h
-    PPortHelp 0F9h, 40h, 1A9h
-    PPortHelp 0F9h, 40h, 1AAh
-    PPortHelp 0F9h, 40h, 1ABh
+    PPortHelp 0FAh, 10h, 1A0h ;Mask 10h (pin 13 of lpt : data for pad 3)
+    PPortHelp 0F9h, 10h, 1A1h
+    PPortHelp 0F9h, 10h, 1A2h
+    PPortHelp 0F9h, 10h, 1A3h
+    PPortHelp 0F9h, 10h, 1A4h
+    PPortHelp 0F9h, 10h, 1A5h
+    PPortHelp 0F9h, 10h, 1A6h
+    PPortHelp 0F9h, 10h, 1A7h
+    PPortHelp 0F9h, 10h, 1A8h
+    PPortHelp 0F9h, 10h, 1A9h
+    PPortHelp 0F9h, 10h, 1AAh
+    PPortHelp 0F9h, 10h, 1ABh
     ret
 
 NEWSYM GetParallelPlayer4
-    mov dx, 0278h               ; may want to make this configurable
+    mov dx, 0378h
     mov byte[pressed+1B0h],0
     mov byte[pressed+1B1h],0
     mov byte[pressed+1B2h],0
@@ -1305,18 +1330,46 @@ NEWSYM GetParallelPlayer4
     mov byte[pressed+1B9h],0
     mov byte[pressed+1BAh],0
     mov byte[pressed+1BBh],0
-    PPortHelp 0FAh, 20h, 1B0h
-    PPortHelp 0F9h, 20h, 1B1h
-    PPortHelp 0F9h, 20h, 1B2h
-    PPortHelp 0F9h, 20h, 1B3h
-    PPortHelp 0F9h, 20h, 1B4h
-    PPortHelp 0F9h, 20h, 1B5h
-    PPortHelp 0F9h, 20h, 1B6h
-    PPortHelp 0F9h, 20h, 1B7h
-    PPortHelp 0F9h, 20h, 1B8h
-    PPortHelp 0F9h, 20h, 1B9h
-    PPortHelp 0F9h, 20h, 1BAh
-    PPortHelp 0F9h, 20h, 1BBh
+    PPortHelp 0FAh, 08h, 1B0h
+    PPortHelp 0F9h, 08h, 1B1h ;Mask 08h (pin 15 of lpt : data for pad 4)
+    PPortHelp 0F9h, 08h, 1B2h
+    PPortHelp 0F9h, 08h, 1B3h
+    PPortHelp 0F9h, 08h, 1B4h
+    PPortHelp 0F9h, 08h, 1B5h
+    PPortHelp 0F9h, 08h, 1B6h
+    PPortHelp 0F9h, 08h, 1B7h
+    PPortHelp 0F9h, 08h, 1B8h
+    PPortHelp 0F9h, 08h, 1B9h
+    PPortHelp 0F9h, 08h, 1BAh
+    PPortHelp 0F9h, 08h, 1BBh
+    ret
+
+NEWSYM GetParallelPlayer5
+    mov dx, 0378h
+    mov byte[pressed+1c0h],0
+    mov byte[pressed+1c1h],0
+    mov byte[pressed+1c2h],0
+    mov byte[pressed+1c3h],0
+    mov byte[pressed+1c4h],0
+    mov byte[pressed+1c5h],0
+    mov byte[pressed+1c6h],0
+    mov byte[pressed+1c7h],0
+    mov byte[pressed+1c8h],0
+    mov byte[pressed+1c9h],0
+    mov byte[pressed+1cAh],0
+    mov byte[pressed+1cBh],0
+    PPortHelpInv 0FAh, 80h, 1c0h
+    PPortHelpInv 0F9h, 80h, 1c1h ;Mask 80h (pin 11 of lpt : data for pad 5)
+    PPortHelpInv 0F9h, 80h, 1c2h
+    PPortHelpInv 0F9h, 80h, 1c3h
+    PPortHelpInv 0F9h, 80h, 1c4h
+    PPortHelpInv 0F9h, 80h, 1c5h
+    PPortHelpInv 0F9h, 80h, 1c6h
+    PPortHelpInv 0F9h, 80h, 1c7h
+    PPortHelpInv 0F9h, 80h, 1c8h
+    PPortHelpInv 0F9h, 80h, 1c9h
+    PPortHelpInv 0F9h, 80h, 1cAh
+    PPortHelpInv 0F9h, 80h, 1cBh
     ret
 
 NEWSYM SetInputDevice209
@@ -1612,6 +1665,23 @@ NEWSYM SetInputDevice209
     mov dword[eax+44],1BBh
     ret
 .nopp4
+    cmp bl,19
+    jne near .nopp5
+    mov dword[eax+40],1c0h
+    mov dword[eax+36],1c1h
+    mov dword[eax+0],1c2h
+    mov dword[eax+4],1c3h
+    mov dword[eax+8],1c4h
+    mov dword[eax+12],1c5h
+    mov dword[eax+16],1c6h
+    mov dword[eax+20],1c7h
+    mov dword[eax+28],1c8h
+    mov dword[eax+24],1c9h
+    mov dword[eax+32],1cAh
+    mov dword[eax+44],1cBh
+    ret
+.nopp5
+
 .exit
     ret
 
