@@ -3412,10 +3412,8 @@ NEWSYM loadfileGUI
     je near .failed
 
 
-    ;dec dword[curromspace]
     mov eax,dword[curromspace]
     mov dword[.curfileofs],eax
-    dec dword[.curfileofs]
 
     mov byte[lorommapmode2],0
     mov esi,[romdata]
