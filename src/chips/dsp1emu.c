@@ -661,6 +661,13 @@ double matrixI0[4][4];
 double matrixI1[4][4];
 double matrixI2[4][4];
 
+double matrixB[3][3];
+double matrixB2[3][3];
+double matrixB3[3][3];
+
+double matrixA[3][3];
+double matrixAI[3][3];
+
 void InitMatrix() 
 {
    matrix[0][0]=1; matrix[0][1]=0; matrix[0][2]=0; matrix[0][3]=0;
@@ -772,6 +779,32 @@ void rotate(double ax,double ay,double az)
    MultMatrix(matrix,zmat,mat2);
 }
 
+void MultMatrixB(double result[3][3],double mat1[3][3],double mat2[3][3])
+{
+   result[0][0]=0;
+   result[0][0]+=(mat1[0][0]*mat2[0][0]+mat1[0][1]*mat2[1][0]+mat1[0][2]*mat2[2][0]);
+   result[0][1]=0;
+   result[0][1]+=(mat1[0][0]*mat2[0][1]+mat1[0][1]*mat2[1][1]+mat1[0][2]*mat2[2][1]);
+   result[0][2]=0;
+   result[0][2]+=(mat1[0][0]*mat2[0][2]+mat1[0][1]*mat2[1][2]+mat1[0][2]*mat2[2][2]);
+
+   result[1][0]=0;
+   result[1][0]+=(mat1[1][0]*mat2[0][0]+mat1[1][1]*mat2[1][0]+mat1[1][2]*mat2[2][0]);
+   result[1][1]=0;
+   result[1][1]+=(mat1[1][0]*mat2[0][1]+mat1[1][1]*mat2[1][1]+mat1[1][2]*mat2[2][1]);
+   result[1][2]=0;
+   result[1][2]+=(mat1[1][0]*mat2[0][2]+mat1[1][1]*mat2[1][2]+mat1[1][2]*mat2[2][2]);
+   
+   result[2][0]=0;
+   result[2][0]+=(mat1[2][0]*mat2[0][0]+mat1[2][1]*mat2[1][0]+mat1[2][2]*mat2[2][0]);
+   result[2][1]=0;
+   result[2][1]+=(mat1[2][0]*mat2[0][1]+mat1[2][1]*mat2[1][1]+mat1[2][2]*mat2[2][1]);
+   result[2][2]=0;
+   result[2][2]+=(mat1[2][0]*mat2[0][2]+mat1[2][1]*mat2[1][2]+mat1[2][2]*mat2[2][2]);
+
+}
+
+
 short Op01m;
 short Op01Zr;
 short Op01Xr;
@@ -779,14 +812,46 @@ short Op01Yr;
 
 DSPOp01()
 {
-   InitMatrix();
+   double zr,yr,xr,sc;
+
+   zr = 65536.0/Op01Zr*6.2832;
+   yr = 65536.0/Op01Yr*6.2832;
+   xr = 65536.0/Op01Xr*6.2832;
+
+   matrixB[0][0]=cos(yr); matrixB[0][1]=0; matrixB[0][2]=-sin(yr);
+   matrixB[1][0]=0;       matrixB[1][1]=1; matrixB[1][2]=0;
+   matrixB[2][0]=sin(yr); matrixB[2][1]=0; matrixB[2][2]=cos(yr);
+
+   matrixB2[0][0]=1;       matrixB2[0][1]=0;        matrixB2[0][2]=0;       
+   matrixB2[1][0]=0;       matrixB2[1][1]=cos(xr);  matrixB2[1][2]=sin(xr);
+   matrixB2[2][0]=0;       matrixB2[2][1]=-sin(xr); matrixB2[2][2]=cos(xr);
+
+   MultMatrixB(matrixB3,matrixB,matrixB2);
+
+   matrixB2[0][0]=cos(zr); matrixB2[0][1]=sin(zr);  matrixB2[0][2]=0;
+   matrixB2[1][0]=-sin(zr);matrixB2[1][1]=cos(zr);  matrixB2[1][2]=0;
+   matrixB2[2][0]=0;       matrixB2[2][1]=0;        matrixB2[2][2]=1;
+
+   MultMatrixB(matrixB,matrixB3,matrixB2);
+
+   sc = Op01m/32768;
+
+   matrixB[0][0]*=sc;     matrixB[0][1]*=sc;  matrixB[0][2]*=sc;
+   matrixB[1][0]*=sc;     matrixB[1][1]*=sc;  matrixB[1][2]*=sc;
+   matrixB[2][0]*=sc;     matrixB[2][1]*=sc;  matrixB[2][2]*=sc;
+
+   matrixA[0][0]=matrixB[0][0]; matrixA[0][1]=matrixB[0][1]; matrixA[0][2]=matrixB[0][2]; 
+   matrixA[1][0]=matrixB[1][0]; matrixA[1][1]=matrixB[1][1]; matrixA[1][2]=matrixB[1][2]; 
+   matrixA[2][0]=matrixB[2][0]; matrixA[2][1]=matrixB[2][1]; matrixA[2][2]=matrixB[2][2]; 
+
+/*   InitMatrix();
    rotate(Op01Xr/65536.0*6.2832,Op01Yr/65536.0*6.2832,Op01Zr/65536.0*6.2832);
    CopyMatrix(matrix0,matrix);
    InitMatrix();
    rotate(0,0,Op01Zr/65536.0*6.2832);
    rotate(Op01Xr/65536.0*6.2832,0,0);
    rotate(0,Op01Yr/65536.0*6.2832,0);
-   CopyMatrix(matrixI0,matrix);
+   CopyMatrix(matrixI0,matrix);*/
    #ifdef DebugDSP1
       Log_Message("OP01");
    #endif
@@ -832,11 +897,27 @@ short Op0DF;
 short Op0DL;
 short Op0DU;
 
+#define swap(a,b) temp=a;a=b;b=temp;
+
 DSPOp0D()
 {
-   Op0DF=(short)(Op0DX*matrixI0[0][0]+Op0DY*matrixI0[1][0]+Op0DZ*matrixI0[2][0]+matrixI0[3][0]);
-   Op0DL=(short)(Op0DX*matrixI0[0][1]+Op0DY*matrixI0[1][1]+Op0DZ*matrixI0[2][1]+matrixI0[3][1]);
-   Op0DU=(short)(Op0DX*matrixI0[0][2]+Op0DY*matrixI0[1][2]+Op0DZ*matrixI0[2][2]+matrixI0[3][2]);
+   double a,b,c,d,e,f,g,h,i,det,temp;
+   double a2,b2,c2,d2,e2,f2,g2,h2,i2;
+   a = matrixA[0][0]; b=matrixA[0][1]; c=matrixA[0][2];
+   d = matrixA[1][0]; e=matrixA[1][1]; f=matrixA[1][2];
+   g = matrixA[2][0]; h=matrixA[2][1]; i=matrixA[2][2];
+   //abc
+   //def
+   //ghi
+   det = a*e*i+b*f*g+c*d*h-g*e*c-h*f*a-i*d*b;
+   swap(d,b); swap(g,c); swap(h,f);
+   b=-b; d=-d; f=-f; h=-h;
+   a2=(e*i-h*f)/det; b2=(d*i-g*f)/det; c2=(d*h-g*e)/det;
+   d2=(b*i-h*c)/det; e2=(a*i-g*c)/det; f2=(a*h-g*b)/det;
+   g2=(b*f-e*c)/det; h2=(a*f-d*c)/det; i2=(a*e-d*b)/det;
+   Op0DF=(short)((Op0DX*a2+Op0DY*d2+Op0DZ*g2)/4);
+   Op0DL=(short)((Op0DX*b2+Op0DY*e2+Op0DZ*h2)/4);
+   Op0DU=(short)((Op0DX*c2+Op0DY*f2+Op0DZ*i2)/4);
    #ifdef DebugDSP1
       Log_Message("OP0D");
    #endif
@@ -871,9 +952,9 @@ short Op03Z;
 
 DSPOp03()
 {
-   Op03X=(short)(Op03F*matrix0[0][0]+Op03L*matrix0[1][0]+Op03U*matrix0[2][0]+matrix0[3][0]);
-   Op03Y=(short)(Op03F*matrix0[0][1]+Op03L*matrix0[1][1]+Op03U*matrix0[2][1]+matrix0[3][1]);
-   Op03Z=(short)(Op03F*matrix0[0][2]+Op03L*matrix0[1][2]+Op03U*matrix0[2][2]+matrix0[3][2]);
+   Op03X=(short)((Op03F*matrixA[0][0]+Op03L*matrixA[1][0]+Op03U*matrixA[2][0]));
+   Op03Y=(short)((Op03F*matrixA[0][1]+Op03L*matrixA[1][1]+Op03U*matrixA[2][1]));
+   Op03Z=(short)((Op03F*matrixA[0][2]+Op03L*matrixA[1][2]+Op03U*matrixA[2][2]));
    #ifdef DebugDSP1
       Log_Message("OP03");
    #endif
