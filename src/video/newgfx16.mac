@@ -1023,10 +1023,6 @@ EXTSYM osm2dis
     jae near %%proclinebyline
     cmp byte[BGMA+ebx],2
     je near %%proclinebyline
-    test dword[intrlng+ebx],01010101h
-    jnz near %%proclinebyline
-    test dword[intrlng+ebx+4],01010101h
-    jnz near %%proclinebyline
     test byte[mosenng+ebx],1 << %1
     jnz %%mosaic
 %%nomosaic
@@ -1107,10 +1103,6 @@ EXTSYM osm2dis
     mov eax,[BG3PRI+ebx]
     cmp eax,[BG3PRI+ebx+4]
     jne near %%proclinebyline
-    test dword[intrlng+ebx],01010101h
-    jnz near %%proclinebyline
-    test dword[intrlng+ebx+4],01010101h
-    jnz near %%proclinebyline
     test byte[mosenng+ebx],1 << %1
     jnz %%mosaic
 %%nomosaic
@@ -3481,6 +3473,11 @@ EXTSYM osm2dis
     mov eax,[BG1SYl+ebx*2+%1*512]
     and eax,0FFFFh
     add eax,ebx
+    test byte[intrlng+ebx],01h
+    jz %%nointerl
+    add eax,ebx
+    add eax,[cfieldad]
+%%nointerl
     lea eax,[eax*8]
     and eax,38h
     mov [yposng],eax
@@ -3496,6 +3493,7 @@ EXTSYM osm2dis
     mov [ngptrdat2],ecx
     mov eax,[ngceax+%2*1024+ebx*4]
     mov edi,[ngcedi+%2*1024+ebx*4]
+
     cmp dl,2
     jne near .no4bit
     ; eax = pointer to beginning of tile area
@@ -3537,6 +3535,13 @@ EXTSYM osm2dis
     and ecx,0FFFFh
     mov dword[taddnfy16x16],0
     add ecx,ebx
+
+    test byte[intrlng+ebx],01h
+    jz %%nointerl7
+    add ecx,ebx
+    add ecx,[cfieldad]
+%%nointerl7
+
     mov dword[taddfy16x16],16
     test ecx,08h
     jz .nobottomy
@@ -3601,6 +3606,13 @@ EXTSYM osm2dis
     mov ecx,[BG1SYl+ebx*2+%1*512]
     and ecx,0FFFFh
     add ecx,ebx
+
+    test byte[intrlng+ebx],01h
+    jz %%nointerl8
+    add ecx,ebx
+    add ecx,[cfieldad]
+%%nointerl8
+
     mov dword[taddnfy16x16],0
     mov dword[taddfy16x16],16
     test ecx,08h

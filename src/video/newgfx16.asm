@@ -797,6 +797,11 @@ NEWSYM newengine16b
     mov byte[bgallchange+eax],1
 .nosbgfb
 
+    test byte[interlval],40h
+    jz .nointrl
+    mov byte[bgallchange+eax],1
+.nointrl
+
     mov ebx,[mode7A]
     mov [mode7ab+eax*4],ebx
     mov ebx,[mode7C]
@@ -1294,7 +1299,7 @@ NEWSYM newengine16b
 
     cmp byte[scanlines],0
     jne .notinterl
-    test byte[interlval],1
+    test byte[interlval],01h
     jz .notinterl
     or byte[SpecialLine+eax],4
 .notinterl
