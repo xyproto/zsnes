@@ -307,6 +307,8 @@ NEWSYM cachevideo
     mov dword[sramb4save],0
 .nofocussave
 
+;    call UpdateSoundAgain
+
     cmp byte[CNetType],20
     je near .sdskip
 
@@ -403,7 +405,7 @@ NEWSYM cachevideo
     push esi
     push edi
     push edx
-    call UpdateSoundAgain
+;    call UpdateSoundAgain
     inc byte[mousecheck]
     and byte[mousecheck],07h
     cmp byte[mousecheck],0
