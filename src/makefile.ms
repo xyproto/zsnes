@@ -24,12 +24,13 @@ DOSDIR=dos
 GUIDIR=gui
 VIDEODIR=video
 WINDIR=win
+NETDIR=net
 OBJDIR=obj
 ZIPDIR=zip
 EFFECTSDIR=effects
 JMADIR=jma
 
-DELETECOMMAND=rm
+DELETECOMMAND=rm -f
 TRUTH=;true
 SLASH=/
 ASM=nasm
@@ -148,7 +149,9 @@ WINVIDOBJ=${VIDEODIR}/sw_draw${OE} ${VIDEODIR}/hq2x16${OE} ${VIDEODIR}/hq2x32${O
 
 WINOBJ=${WINDIR}/copyvwin${OE} ${DRESOBJ}\
 	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE} ${WINDIR}/zloaderw${OE}\
-	${WINDIR}/ztcp${OE} ${WINDIR}/zipxw${OE} ${WINDIR}/zfilew${OE}
+	${WINDIR}/zipxw${OE} ${WINDIR}/zfilew${OE}
+
+NETOBJ=${NETDIR}/ztcp${OE}
 
 #only used on DOS
 PREOBJ=${OBJDIR}/dosbuff.o ${OBJDIR}/ipx.o ${OBJDIR}/zipx.o
@@ -177,7 +180,7 @@ DELETEOBJS=${OBJSORIG} ${DOSOBJ}
 endif
 
 ifeq (${OS},__WIN32__)
-OBJS=${OBJSORIG} ${WINOBJ} ${DOSOBJORIG} ${WINVIDOBJ}
+OBJS=${OBJSORIG} ${WINOBJ} ${DOSOBJORIG} ${WINVIDOBJ} ${NETOBJ}
 DELETEOBJS=${OBJS}
 endif
 

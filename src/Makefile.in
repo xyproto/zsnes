@@ -25,6 +25,7 @@ GUIDIR=gui
 VIDEODIR=video
 WINDIR=linux
 OBJDIR=obj
+NETDIR=net
 ZIPDIR=zip
 EFFECTSDIR=effects
 JMADIR=jma
@@ -56,11 +57,12 @@ VIDEOBJ=${VIDEODIR}/makev16b.o ${VIDEODIR}/makev16t.o ${VIDEODIR}/makevid.o\
 WINOBJ=${WINDIR}/copyvwin.o \
 	${WINDIR}/sdlintrf.o ${WINDIR}/sdllink.o \
 	@GL_DRAW@ ${WINDIR}/sw_draw.o \
-	${WINDIR}/zloaderw.o ${WINDIR}/ztcp.o ${WINDIR}/zipxw.o \
-	${WINDIR}/zfilew.o
+	${WINDIR}/zloaderw.o ${WINDIR}/zipxw.o ${WINDIR}/zfilew.o
 
 WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/modemrtn.o ${DOSDIR}/vesa2.o\
 	${DOSDIR}/initvid.o ${DOSDIR}/sw.o ${DOSDIR}/gppro.o ${DOSDIR}/vesa12.o
+
+NETOBJ=${NETDIR}/ztcp.o
 
 JMAOBJ=${JMADIR}/7zlzma.o ${JMADIR}/crc32.o ${JMADIR}/iiostrm.o\
        ${JMADIR}/inbyte.o ${JMADIR}/jma.o ${JMADIR}/lzma.o ${JMADIR}/lzmadec.o\
@@ -72,7 +74,7 @@ EFFECTSOBJ=${EFFECTSDIR}/burn.o ${EFFECTSDIR}/water.o ${EFFECTSDIR}/smoke.o
 
 MAINOBJ=cfgload.o endmem.o init.o initc.o uic.o patch.o ui.o vcache.o version.o
 
-OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
+OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${NETOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
 
 .SUFFIXES: .cpp .c .asm 
 

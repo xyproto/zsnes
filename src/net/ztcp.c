@@ -86,10 +86,31 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //     only be done if the requested packet is within the past 64 packets.
 //   In-game chat will be moved to a separate packet in TCP/IP
 
+#ifdef __LINUX__
+#include "gblhdr.h"
+#define closesocket(A) close(A)
+#define CopyMemory(A,B,C) memcpy(A,B,C)
+#define STUB_FUNCTION fprintf(stderr,"STUB: %s at " __FILE__ ", line %d, thread %d\n",__FUNCTION__,__LINE__,getpid())
+#define UINT unsigned int
+#define WORD unsigned short
+#define SOCKET int
+#define SOCKADDR_IN struct sockaddr_in
+#define LPSOCKADDR struct sockaddr*
+#define LPHOSTENT struct hostent*
+#define HOSTENT struct hostent
+#define LPINADDR struct in_addr*
+#define LPIN_ADDR struct in_addr*
+#define SOCKET_ERROR -1
+#define INVALID_SOCKET -1
+#define ioctlsocket ioctl
+#define FD_SET_VAR fd_set
+#else
 #include <stdio.h>
 #include <time.h>
 #include <windows.h>
 #include <winsock.h>
+#define FD_SET_VAR FD_SET
+#endif
 
 int RecvPtr;
 int RecvPtr2;
@@ -153,7 +174,7 @@ char hostname[50] = "IP N/A";
 
 int SendData(int dsize,unsigned char *dptr);
 int GetData(int dsize,unsigned char *dptr);
-int GetLeftUDP(void);
+int GetLeftUDP();
 
 /**********************************************************\
 * Initialize the zsnes tcpip module                        *
@@ -165,22 +186,24 @@ int GetLeftUDP(void);
 
 int InitTCP()
 {
-   //MK:unused 2003/08/31
-   //char blah[255];
+#ifndef __LINUX__
    WORD versionneeded = MAKEWORD(2,2);
    WSADATA wsadata;
+#endif
 
    UDPEnable=0;
 
+#ifndef __LINUX__
    /* Startup winsock */
    WSAStartup(versionneeded, &wsadata);
 
    /* Verify version number and exit on wrong version */
    if (wsadata.wVersion != versionneeded)
-	{	
+   {
       return(-1);
-	}
-	serversocket=INVALID_SOCKET;
+   }
+   serversocket=INVALID_SOCKET;
+#endif
    return(0);
 }
 
@@ -194,7 +217,9 @@ int InitTCP()
 
 void DeInitTCP()
 {
+#ifndef __LINUX__
 	WSACleanup();
+#endif
 }
 
 /**********************************************************\
@@ -206,7 +231,6 @@ void DeInitTCP()
 
 void GetUDPStatus() {
   int retval;
-  char NoSend = 0;
 
   UDPEnable=UDPConfig;
 
@@ -239,10 +263,8 @@ void GetUDPStatus() {
 \**********************************************************/
 
 int isipval(char *name){
-  int i;
-  //MK:unused 2003/08/31
-  //int tcperr;
-  i=0;
+  int i=0;
+  
   while(name[i]!=0){
     if (!((name[i]=='.') || ((name[i]>='0') && (name[i]<='9'))))
       return(0);
@@ -256,11 +278,7 @@ int ConnectServer(char *servername, unsigned int port)
    char blah[255];
    int retval,i;
    LPHOSTENT host1=NULL;
-   //MK:unused 2003/08/31
-   //unsigned long addr1;
    int yesip;
-   //MK:unused 2003/08/31
-   //WSADATA wsadata;
 
    packetnum = 0;
    packetnumhead = 0;
@@ -319,26 +337,38 @@ int ConnectServer(char *servername, unsigned int port)
 
       if (ugamesocket == INVALID_SOCKET)
       {
+#ifdef __LINUX__
+	      STUB_FUNCTION;
+#else
                  tcperr=WSAGetLastError();
                  sprintf(blah,"Could not initialize UDP(2) : %d",tcperr);
                  MessageBox(NULL,blah,"Error",MB_SYSTEMMODAL|MB_OK);
+#endif
                  return(-2);
       }
 
       if (userversocket == INVALID_SOCKET)
       {
+#ifdef __LINUX__
+	      STUB_FUNCTION;
+#else
                  tcperr=WSAGetLastError();
                  sprintf(blah,"Could not initialize UDP(2.5) : %d",tcperr);
                  MessageBox(NULL,blah,"Error",MB_SYSTEMMODAL|MB_OK);
-                 return(-2);
+#endif
+		 return(-2);
       }
 
       if (bind(userversocket,(struct sockaddr*)&userveraddress,sizeof(userveraddress))==
           SOCKET_ERROR)
       {
+#ifdef __LINUX__
+	      STUB_FUNCTION;
+#else
          tcperr=WSAGetLastError();
          sprintf(blah,"Could not initialize UDP(16) : %d",tcperr);
          MessageBox(NULL,blah,"Error",MB_SYSTEMMODAL|MB_OK);
+#endif
          return(-2);
       }
 
@@ -390,11 +420,14 @@ int ConnectServer(char *servername, unsigned int port)
                      sizeof(struct sockaddr));
    if (retval == SOCKET_ERROR)
 	{
-
+#ifdef __LINUX__
+		STUB_FUNCTION;
+#else
       sprintf(blah,"Could not connect to other side");
       MessageBox(NULL,blah,
               "Error",
               MB_SYSTEMMODAL|MB_OK);
+#endif
 
       closesocket(gamesocket);
       return(-3);
@@ -451,8 +484,7 @@ void Disconnect()
 int StartServerCycle(unsigned short port)
 {
    int retval,i;
-   //MK:unused 2003/08/31
-   //int sizet;
+
    portval = port;
    packetnum = 0;
    packetnumhead = 0;
@@ -492,17 +524,25 @@ int StartServerCycle(unsigned short port)
 
       if (userversocket == INVALID_SOCKET)
       {
+#ifdef __LINUX__
+	      STUB_FUNCTION;
+#else
          tcperr=WSAGetLastError();
                  sprintf(blah,"Could not initialize UDP(5) : %d",tcperr);
                  MessageBox(NULL,blah,"Error",MB_SYSTEMMODAL|MB_OK);
+#endif
                  return(-2);
       }
       if (bind(userversocket,(struct sockaddr*)&userveraddress,sizeof(userveraddress))==
           SOCKET_ERROR)
       {
+#ifdef __LINUX__
+	      STUB_FUNCTION;
+#else
          tcperr=WSAGetLastError();
          sprintf(blah,"Could not initialize UDP(6) : %d",tcperr);
          MessageBox(NULL,blah,"Error",MB_SYSTEMMODAL|MB_OK);
+#endif
          return(-2);
       }
 
@@ -532,7 +572,9 @@ int StartServerCycle(unsigned short port)
    serversocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
    if (serversocket == INVALID_SOCKET)
 	{
+#ifndef __LINUX__
 	  tcperr=WSAGetLastError();
+#endif
 
       return(-1);
 	}
@@ -547,7 +589,9 @@ int StartServerCycle(unsigned short port)
                  sizeof(struct sockaddr));
    if (retval == SOCKET_ERROR)
 	{
+#ifndef __LINUX__
 	  tcperr=WSAGetLastError();
+#endif
       closesocket(serversocket);
       return(-2);
 	}
@@ -556,7 +600,9 @@ int StartServerCycle(unsigned short port)
    retval = listen(serversocket, SOMAXCONN);
    if (retval == SOCKET_ERROR)
 	{
+#ifndef __LINUX__
       tcperr=WSAGetLastError();
+#endif
       closesocket(serversocket);
       return(-3);
 	}
@@ -566,13 +612,6 @@ int StartServerCycle(unsigned short port)
 
 int acceptzuser()
 {
-   //MK:unused 2003/08/31
-   //int retval;
-   //int r,i;
-   //LPHOSTENT host1;
-   //int yesip;
-   //MK: unused end
-
    if (UDPEnable)
    {
      return(0);
@@ -583,7 +622,9 @@ int acceptzuser()
    gamesocket = accept(serversocket, NULL, NULL);
    if (gamesocket == INVALID_SOCKET)
 	{
+#ifndef __LINUX__
       tcperr=WSAGetLastError();
+#endif
       closesocket(serversocket);
       serversocket=-1;
       return(-1);
@@ -596,7 +637,7 @@ int acceptzuser()
 
 int ServerCheckNewClient()
 {
-	FD_SET zrf;
+	FD_SET_VAR zrf;
 	struct timeval nto;
 	int r;
 
@@ -627,7 +668,9 @@ int ServerCheckNewClient()
 
 	if(r == -1)
 	{
+#ifndef __LINUX__
                 tcperr=WSAGetLastError();
+#endif
                 return(-2);
 	}
 	if(r == 0)
@@ -827,8 +870,6 @@ extern void UpdateVFrame(void);
 int SendData(int dsize,unsigned char *dptr)
 {
    int retval;
-   //MK: unused 2003/08/31
-    //char message1[256];
 
    if (UDPEnable){
 /*      retval = sendto(ugamesocket,dptr,dsize,0,(struct sockaddr *)&ugameaddress,sizeof(ugameaddress));
@@ -888,6 +929,7 @@ int SendDataNop()
 {
    return (SendData(PacketSendSize,PacketSendArray));
 }
+
 
 /**********************************************************\
 * Send data UDP                                            *
@@ -1032,7 +1074,6 @@ int SendDataUDPNop()
    return (SendDataUDP(PacketSendSize,PacketSendArray));
 }
 
-
 /**********************************************************\
 * Get data left                                            *
 * - return size left on success negative value on error    *
@@ -1056,11 +1097,9 @@ int GetLeft()
 
 int GetLeftUDP()
 {
-   FD_SET zrf;
+   FD_SET_VAR zrf;
    struct timeval nto;
    int r;
-   //MK: unused 2003/08/31
-   //int tempsize;
 
    nto.tv_sec=0;
    nto.tv_usec=0; /* return immediately */
@@ -1076,7 +1115,6 @@ int GetLeftUDP()
 	}
    return(r);
 }
-
 
 /**********************************************************\
 * Receive data                                             *
@@ -1198,21 +1236,33 @@ void UDPDisableMode(){
 }
 
 void WinErrorA2(void){
+#ifdef __LINUX__
+	STUB_FUNCTION;
+#else
     char message1[256];
     sprintf(message1,"Failed waiting for checksum.");
     MessageBox (NULL, message1, "Init Error" , MB_ICONERROR );
+#endif
 }
 
 void WinErrorB2(void){
+#ifdef __LINUX__
+	STUB_FUNCTION;
+#else
     char message1[256];
     sprintf(message1,"Failed waiting for confirmation.");
     MessageBox (NULL, message1, "Init Error" , MB_ICONERROR );
+#endif
 }
 
 void WinErrorC2(void){
+#ifdef __LINUX__
+	STUB_FUNCTION;
+#else
     char message1[256];
     sprintf(message1,"Failed waiting for confirmation(B).");
     MessageBox (NULL, message1, "Init Error" , MB_ICONERROR );
+#endif
 }
 
 
