@@ -282,6 +282,7 @@ GUIConfigMenuData
         db 1,'OPTIONS     ',0
         db 1,'VIDEO       ',0
         db 1,'SOUND       ',0
+        db 1,'PATHS       ',0
 GUICheatMenuData
         db 1,'ADD CODE    ',0
         db 1,'BROWSE      ',0
@@ -3901,7 +3902,7 @@ DisplayMenu:
 .nomenu2
     cmp byte[GUIcmenupos],3
     jne near .nomenu3
-    GUIDrawMenuM 52,16,9,11,GUIConfigMenuData,54,57,22,129,42 ;19+11*10
+    GUIDrawMenuM 52,16,9,12,GUIConfigMenuData,54,57,22,139,42 ;19+12*10
     mov dword[GUICYLocPtr],MenuDat3
 .nomenu3
     cmp byte[GUIcmenupos],4
