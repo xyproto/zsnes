@@ -879,8 +879,8 @@ void initpitch()
 extern unsigned int KeyLoadState, Totalbyteloaded, SfxMemTable[256], SfxCPB;
 extern unsigned int SfxPBR, SfxROMBR, SfxRAMBR;
 extern unsigned char pressed[256+128+64], multchange, txtloadmsg[15];
-extern unsigned char txtconvmsg[16], txtnfndmsg[23], MovieProcessing;
-extern unsigned char ioportval, SDD1Enable, nexthdma;
+extern unsigned char txtconvmsg[16], txtnfndmsg[23], ioportval, SDD1Enable;
+extern unsigned char nexthdma;
 
 void procexecloop();
 
@@ -942,8 +942,6 @@ bool zst_load(FILE *fp)
   memset(vidmemch8, 1, sizeof(vidmemch8));
 
   repackfunct();
-
-  //headerhack(); //Was in the asm, but why is this needed?
 
   initpitch();
   ResetOffset();

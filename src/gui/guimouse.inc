@@ -617,6 +617,7 @@ ProcessMouseButtons:
     cmp byte[GUICBHold],30	; back to previous chapter
     jne .noPrevChap
     mov byte[GUICBHold],0
+    mov byte[GUIQuit],2
     pushad
     call MovieSeekBehind
     popad
@@ -625,6 +626,7 @@ ProcessMouseButtons:
     cmp byte[GUICBHold],31	; jump to next chapter
     jne .noNextChap
     mov byte[GUICBHold],0
+    mov byte[GUIQuit],2
     pushad
     call MovieSeekAhead
     popad

@@ -106,8 +106,9 @@ EXTSYM SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,hdmaearlstart,SFXCounter
 EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67,fxbit67pcal
 EXTSYM SfxSFR,nosprincr
 EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
-EXTSYM NetPlayNoMore
+EXTSYM NetPlayNoMore,MovieSeekBehind
 EXTSYM statefileloc,CHIPBATT,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
+EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 
 %ifdef __MSDOS__
 EXTSYM dssel
@@ -919,7 +920,7 @@ reexecuteb2:
     je near .activatereset
     mov eax,[KeySaveState]
     cmp byte[CNetType],20
-    je .net
+    je near .net
     test byte[pressed+eax],1
     jnz near savestate
     mov eax,[KeyLoadState]
@@ -930,6 +931,35 @@ reexecuteb2:
     popad
     jmp reexecuteb
 .noloadstt0
+    mov eax,[KeyInsrtChap]
+    test byte[pressed+eax],1
+    jz .noinsertchapter
+    mov byte[pressed+eax],0
+    pushad
+    call MovieInsertChapter
+    popad
+    jmp continueprognokeys
+.noinsertchapter
+    mov eax,[KeyNextChap]
+    test byte[pressed+eax],1
+    jz .nonextchapter
+    mov byte[pressed+eax],0
+    mov byte[multchange],1
+    pushad
+    call MovieSeekAhead
+    popad
+    jmp continueprognokeys
+.nonextchapter
+    mov eax,[KeyPrevChap]
+    test byte[pressed+eax],1
+    jz .noprevchapter
+    mov byte[pressed+eax],0
+    mov byte[multchange],1
+    pushad
+    call MovieSeekBehind
+    popad
+    jmp continueprognokeys
+.noprevchapter
     cmp byte[SSKeyPressed],1
     je near showmenu
     cmp byte[SPCKeyPressed],1
@@ -1360,35 +1390,6 @@ SECTION .text
 NEWSYM exitloop2
    mov byte[ExecExitOkay],0
 NEWSYM exitloop
-   ret
-   cmp byte[nextmenupopup],1
-   je near .okay
-   cmp byte[ExecExitOkay],0
-   je near .okay
-   mov byte[pressed+1],0
-   mov byte[pressed+59],0
-   mov eax,[KeySaveState]
-   mov byte[pressed+eax],0
-   mov eax,[KeyLoadState]
-   mov byte[pressed+eax],0
-   mov eax,[KeyQuickExit]
-   mov byte[pressed+eax],0
-   mov eax,[KeyQuickLoad]
-   mov byte[pressed+eax],0
-   mov eax,[KeyQuickRst]
-   mov byte[pressed+eax],0
-   mov byte[ExecExitOkay],5
-   mov eax,[KeyQuickSnapShot]
-   mov byte[pressed+eax],0
-   mov eax,[KeyQuickClock]
-   mov byte[pressed+eax],0
-   mov eax,[KeyQuickSaveSPC]
-   mov byte[pressed+eax],0
-   mov byte[SSKeyPressed],0
-   mov byte[SPCKeyPressed],0
-   jmp cpuover.returntoloop
-.okay
-   mov byte[ExecExitOkay],5
    ret
 
 ALIGN16
@@ -1909,6 +1910,15 @@ NEWSYM cpuover
     test byte[pressed+eax],01h
     jnz near exitloop
     mov eax,[KeyLoadState]
+    test byte[pressed+eax],01h
+    jnz near exitloop
+    mov eax,[KeyInsrtChap]
+    test byte[pressed+eax],01h
+    jnz near exitloop
+    mov eax,[KeyPrevChap]
+    test byte[pressed+eax],01h
+    jnz near exitloop
+    mov eax,[KeyNextChap]
     test byte[pressed+eax],01h
     jnz near exitloop
     mov eax,[KeyQuickRst]
