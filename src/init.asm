@@ -3868,6 +3868,7 @@ SPC7110IndexName db 'INDEX.BIN',0
 SPC7110DirEntry db '*.BIN',0
 SPC7110CPtr dd 0
 SPC7110CPtr2 dd 0
+NEWSYM SDD1nfname, db '        \_00000-0.bin',0
 NEWSYM SPC7110nfname, db '        \      .bin',0
 NEWSYM SPC7110IndexSize, dd 0
 NEWSYM SPC7110Entries, dd 0
@@ -3899,13 +3900,6 @@ NEWSYM SPC7110Load
     je .sdd1
 .notlorom
 .sdd1
-    ret
-.spc7110
-    mov edx,SPC7110DIRA
-    cmp al,0F9h
-    je .noSPC7110b
-    mov edx,SPC7110DIRB
-.noSPC7110b
     cmp al,043h
     jne .noSDD1
     mov edx,SDD1DIRB
@@ -3916,6 +3910,13 @@ NEWSYM SPC7110Load
     mov edx,SDD1DIRA
     jmp .sdd1b
 .noSDD1b
+    ret
+.spc7110
+    mov edx,SPC7110DIRA
+    cmp al,0F9h
+    je .noSPC7110b
+    mov edx,SPC7110DIRB
+.noSPC7110b
     mov eax,[edx]
     mov [SPC7110nfname],eax
     mov eax,[edx+4]
@@ -3965,6 +3966,8 @@ NEWSYM SPC7110Load
     cmp byte[edx],0
     je .fin
     cmp byte[edx],'-'
+    je .skipthisone
+    cmp byte[edx],'_'
     je .skipthisone
     mov al,[edx]
     cmp al,'A'
@@ -4268,6 +4271,25 @@ NEWSYM loadfileGUI
 .nogdformat
     mov byte[TextFile], 1
     mov byte[IPSPatched],0
+
+    ; mirror image
+    mov eax,[.curromspace]
+    cmp dword[.maxromspace],eax
+    jbe .nomir
+    mov edx,[romdata]
+    mov ebx,[romdata]
+    add edx,[.curromspace]
+    mov ecx,[.curromspace]
+.nextmir
+    mov al,[ebx]
+    mov [edx],al
+    inc ebx
+    inc edx
+    inc ecx
+    cmp ecx,[.maxromspace]
+    jne .nextmir
+.nomir
+
     cmp byte[ZipSupport],1
     jne .nottempdirdel
     call PatchIPS
@@ -4301,24 +4323,6 @@ NEWSYM loadfileGUI
     mov ah,9
     call Output_Text
 .inguib
-
-    ; mirror image
-    mov eax,[.curromspace]
-    cmp dword[.maxromspace],eax
-    jbe .nomir
-    mov edx,[romdata]
-    mov ebx,[romdata]
-    add edx,[.curromspace]
-    mov ecx,[.curromspace]
-.nextmir
-    mov al,[ebx]
-    mov [edx],al
-    inc ebx
-    inc edx
-    inc ecx
-    cmp ecx,[.maxromspace]
-    jne .nextmir
-.nomir
 
     mov eax,[.curfileofs]
     mov [NumofBytes],eax
