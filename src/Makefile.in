@@ -114,7 +114,7 @@ ${CHIPDIR}/st10proc.o: ${CHIPDIR}/st10proc.asm macros.mac
 ${CHIPDIR}/seta10.o: ${CHIPDIR}/seta10.c
 ${CHIPDIR}/dsp1emu.o: ${CHIPDIR}/dsp1emu.c
 ui.o: ui.asm macros.mac
-cfgload.o:cfgload.asm macros.mac
+cfgload.o:cfgload.c macros.mac
 init.o:init.asm macros.mac
 initc.o:initc.c ${JMADIR}/zsnesjma.h
 uic.o:uic.c

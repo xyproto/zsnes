@@ -150,7 +150,7 @@ ${CHIPDIR}/dsp1emu.obj: ${CHIPDIR}/dsp1emu.c
 ${CHIPDIR}/dsp1proc.obj: ${CHIPDIR}/dsp1proc.asm macros.mac
 ${CHIPDIR}/sdd1emu.obj: ${CHIPDIR}/sdd1emu.c
 ui.obj: ui.asm macros.mac
-cfgload.obj:cfgload.asm macros.mac
+cfgload.obj:cfgload.c macros.mac
 init.obj:init.asm macros.mac
 initc.obj:initc.c ${JMADIR}/zsnesjma.h
 uic.obj:uic.c
