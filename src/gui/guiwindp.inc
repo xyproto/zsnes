@@ -1744,7 +1744,9 @@ DisplayGUIVideo:
     GUIOuttextwin2 5,26,178,GUIVideoText8b
 .notext8
     GUIOuttextwin2 5,26,188,GUIVideoText8c
+%ifndef __LINUX__
     GUIOuttextwin2 5,130,188,GUIVideoText9
+%endif
     add byte[GUItextcolor],15
 
 ;    cmp byte[OSPort],3
@@ -1837,7 +1839,9 @@ DisplayGUIVideo:
     GUIOuttextwin2 5,25,177,GUIVideoText8b
 .notext8b
     GUIOuttextwin2 5,25,187,GUIVideoText8c
+%ifndef __LINUX__
     GUIOuttextwin2 5,129,187,GUIVideoText9
+%endif
     DrawGUIButton 5,128,60,164,71,GUIVideoText8,4,0,0
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
