@@ -541,22 +541,24 @@ const short DSP1_SinTable[256] = {
 
 short DSP1_Sin(short Angle)
 {
+	int S;
 	if (Angle < 0) {
 		if (Angle == -32768) return 0;
 		return -DSP1_Sin(-Angle);
 	}
-	int S = DSP1_SinTable[Angle >> 8] + (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[0x40 + (Angle >> 8)] >> 15);
+	S = DSP1_SinTable[Angle >> 8] + (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[0x40 + (Angle >> 8)] >> 15);
 	if (S > 32767) S = 32767;
 	return (short) S;
 }
 
 short DSP1_Cos(short Angle)
 {
+	int S;
 	if (Angle < 0) {
 		if (Angle == -32768) return -32768;
 		Angle = -Angle;
 	}
-	int S = DSP1_SinTable[0x40 + (Angle >> 8)] - (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[Angle >> 8] >> 15);
+	S = DSP1_SinTable[0x40 + (Angle >> 8)] - (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[Angle >> 8] >> 15);
 	if (S < -32768) S = -32767;
 	return (short) S;
 }
@@ -1482,14 +1484,14 @@ void DSPOp28()
 	if (Radius == 0) Op28R = 0;
 	else
 	{
-		short C, E;
+		short C, E, Pos, Node1, Node2;
 		DSP1_NormalizeDouble(Radius, &C, &E);
 		if (E & 1) C = C * 0x4000 >> 15;
 
-		short Pos = C * 0x0040 >> 15;
+		Pos = C * 0x0040 >> 15;
 
-		short Node1 = DSP1ROM[0x00d5 + Pos];
-		short Node2 = DSP1ROM[0x00d6 + Pos];
+		Node1 = DSP1ROM[0x00d5 + Pos];
+		Node2 = DSP1ROM[0x00d6 + Pos];
 
 		Op28R = ((Node2 - Node1) * (C & 0x1ff) >> 9) + Node1;
 		Op28R >>= (E >> 1);
