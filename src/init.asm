@@ -1461,7 +1461,6 @@ NEWSYM headerhack
     mov byte[hirqmode2],0
     mov byte[ENVDisable],0
     mov byte[MMXSRAMFix],0
-    mov byte[osm2dis],0
 
     mov esi,[romdata]
     add esi,07FC0h
@@ -1537,17 +1536,6 @@ NEWSYM headerhack
     mov byte[esi],0EEh ; RTS instead of jumping to a rts 
     mov byte[esi+1],0BCh ; RTS instead of jumping to a rts 
 .nothomealone
-
-    mov esi,[romdata]
-    add esi,07FC0h
-    cmp dword[esi],'Zero'
-    jne .notzerosquirrel
-    cmp dword[esi+4],' the'
-    jne .notzerosquirrel
-    cmp dword[esi+8],' Kam'
-    jne .notzerosquirrel
-    mov byte[osm2dis],1
-.notzerosquirrel
 
     mov esi,[romdata]
     add esi,0FFC0h
