@@ -131,6 +131,7 @@ EXTSYM SetupSramSize
 EXTSYM IntlEHi
 EXTSYM CHIPBATT,SFXEnable,C4Enable,SPC7110Enable,RTCEnable,SA1Enable,SDD1Enable,OBCEnable
 EXTSYM SETAEnable,ST18Enable,SGBEnable,DSP1Enable,DSP2Enable,DSP3Enable,DSP4Enable,BSEnable
+EXTSYM clearvidsound
 
 EXTSYM calculate_state_sizes,InitRewindVars
 
@@ -1582,12 +1583,9 @@ NEWSYM init65816
     mov dword[ram7fa+65528],01010101h
     mov dword[ram7fa+65532],01010101h
 .notbsx2
-    xor eax,eax
-    helpclearmem [vram], 65536
-    helpclearmem vidmemch2, 4096
-    helpclearmem vidmemch4, 4096
-    helpclearmem vidmemch8, 4096
-
+    pushad
+    call clearvidsound
+    popad
     mov dword[wramreadptr],getwram1fff
     mov dword[wramwriteptr],setwram1fff
     ret

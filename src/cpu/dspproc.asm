@@ -2038,23 +2038,23 @@ NoisePtr           resd 1
 
 ; used only in dspproc.asm
 SECTION .data
+ALIGN32
+
 Filter dd 0,0,240,0,488,-240,460,-208
 
-SECTION .bss
-prev0              resd 1         ; previous value 1
-prev1              resd 1         ; previous value 2
-nextsamp           resd 1         ; next sample
-filter0            resd 1         ; filter 0
-filter1            resd 1         ; filter 1
-bshift             resd 1
-sampleleft         resd 1         ; 8 bytes/sample
+prev0              dd 0         ; previous value 1
+prev1              dd 0         ; previous value 2
+nextsamp           dd 0         ; next sample
+filter0            dd 0         ; filter 0
+filter1            dd 0         ; filter 1
+bshift             dd 0
+sampleleft         dd 0         ; 8 bytes/sample
 
-lastbl             resd 1         ; Last block if = 1
-loopbl             resd 1         ; Loop if = 1
-usenoisedata       resd 1
+lastbl             dd 0         ; Last block if = 1
+loopbl             dd 0         ; Loop if = 1
+usenoisedata       dd 0
+ 
 
-SECTION .data
-ALIGN32
 
 VolumeTableD
 db 0,3,6,9,12,15,17,18,19,21,22,23,24,24,26,28,30,31,33,35,36,38,40,41,43,45,46,48,49
@@ -2568,11 +2568,6 @@ NEWSYM FIRTAPVal5,      resd 1
 NEWSYM FIRTAPVal6,      resd 1
 NEWSYM FIRTAPVal7,      resd 1
 
-SECTION .data
-ALIGN32
-NEWSYM MaxEcho,         dd 172
-
-SECTION .bss
 NEWSYM CEchoPtr,        resd 1
 NEWSYM EchoFB,          resd 1
 
@@ -2626,8 +2621,12 @@ NEWSYM Voice5FirstBlock,  resb 1
 NEWSYM Voice6FirstBlock,  resb 1
 NEWSYM Voice7FirstBlock,  resb 1
 
+marksave2:
+
 SECTION .data
 ALIGN32
+
+NEWSYM MaxEcho,         dd 172
 
 ;    |AR Time 0 to 1|DR|Time 1 to SL|SL|Ratio| SR Time 1to 1/10|
 ;---------------------------------------------------------------------     
@@ -2710,8 +2709,10 @@ NEWSYM AdsrSustLevLoc, db 58,39,27,19,13,8,3,1
 
 dspsave equ marksave-BRRBuffer
 dspconvb equ marksave-Voice0Freq
+dspsave2 equ marksave2-echoon0
 NEWSYM PHdspsave, dd dspsave
 NEWSYM PHdspconvb, dd dspconvb
+NEWSYM PHdspsave2, dd dspsave2
 
 SECTION .bss
 spc700temp resd 2

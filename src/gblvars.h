@@ -32,10 +32,10 @@ extern unsigned int soundcycleft, spc700read, timer2upd, xa, PHnum2writesfxreg;
 extern unsigned int spcnumread, spchalted, opcd, HIRQCycNext, oamaddr;
 extern unsigned int SfxR0, ReadHead, *setaramdata, ramsize, *sram;
 extern unsigned int tempesi, tempedi, tempedx, tempebp;
-extern unsigned int SPCMultA, PHnum2writespc7110reg;
+extern unsigned int SPCMultA, PHnum2writespc7110reg, PHdspsave2;
 extern unsigned char sndrot, spcRam[65472];
 extern unsigned char DSPMem[256], SA1Status, *SA1RAMArea, DSP1Type, DSP1COp;
-extern unsigned char prevoamptr, BRRBuffer[32], *romdata, curcyc;
+extern unsigned char prevoamptr, BRRBuffer[32], *romdata, curcyc, echoon0;
 extern unsigned char vidmemch4[4096], vidmemch8[4096], vidmemch2[4096];
 
 extern bool C4Enable, SFXEnable, SA1Enable, SPC7110Enable, SETAEnable, spcon, SRAMState;

@@ -1334,6 +1334,20 @@ void clearmem2()
   clearSPCRAM();
 }
 
+extern unsigned char BRRBuffer[32];
+extern unsigned char echoon0;
+extern unsigned int PHdspsave;
+extern unsigned int PHdspsave2;
+
+void clearvidsound()
+{
+  memset(vram, 0, 65536);
+  memset(vidmemch2, 0, 4096);
+  memset(vidmemch4, 0, 4096);
+  memset(vidmemch8, 0, 4096);
+  memset(&BRRBuffer, 0, PHdspsave);
+  memset(&echoon0, 0, PHdspsave2);
+}
 
 /*
 

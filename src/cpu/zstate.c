@@ -60,8 +60,8 @@ static void copy_spc_data(unsigned char **buffer, void (*copy_func)(unsigned cha
 {
   //SPC stuff, DSP stuff
   copy_func(buffer, spcRam, PHspcsave);    
-  copy_func(buffer, BRRBuffer, PHdspsave);
-  copy_func(buffer, DSPMem, sizeof(DSPMem));
+  copy_func(buffer, &BRRBuffer, PHdspsave);
+  copy_func(buffer, &DSPMem, sizeof(DSPMem));
 }
 
 static void copy_extra_data(unsigned char **buffer, void (*copy_func)(unsigned char **, void *, size_t))
@@ -97,6 +97,10 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
   if (spcon)
   {
     copy_spc_data(&buffer, copy_func);
+    if (buffer) //Rewind stuff
+    {
+      copy_func(&buffer, &echoon0, PHdspsave2);
+    }
   }
   
   if (C4Enable)
