@@ -552,7 +552,8 @@ void zmv_create(char *filename)
       press_buf[nibble/2] = (unsigned char)(prev >> 8);                   \
       nibble++;                                                           \
     }                                                                     \
-  }
+  }                                                                       \
+  cur <<= 20;
 
 void zmv_record()
 {
