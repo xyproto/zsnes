@@ -2267,8 +2267,7 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,156,byte[AutoState]
     GUIClickCButton 11,166,byte[DontSavePath]
 %ifdef __WIN32__
-    GUIClickCButtonW 11,176,byte[DisableScreenSaver]
-    GUIClickCButtonat 11,186,byte[AlternateTimer]
+    GUIClickCButtonW 11,186,byte[DisableScreenSaver]
 %endif
     ; Frameskip = 0
     cmp byte[frameskip],0

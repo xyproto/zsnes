@@ -914,11 +914,6 @@ GUIOptionKeys:
     jne .noscreensaver
     xor byte[DisableScreenSaver],1
 .noscreensaver
-    cmp dh,'S'
-    jne .noalttimer
-    xor byte[AlternateTimer],1
-    call guimustrestartmsg
-.noalttimer
 %endif
     ret
 

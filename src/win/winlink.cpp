@@ -122,7 +122,6 @@ BYTE                    MouseButtonPressed;
 
 BYTE                    IsActivated=1;
 
-BYTE                    AltTimer=0;
 WORD                    PrevRes=0;
 RECT                    BlitArea;
 
@@ -235,14 +234,14 @@ _int64 start, end, freq, update_ticks_pc, start2, end2, update_ticks_pc2;
 void ReleaseDirectDraw();
 void ReleaseDirectSound();
 void ReleaseDirectInput();
+int InitDirectDraw();
+int ReInitSound();
 
 extern "C"
 {
    void drawscreenwin(void);
    DWORD LastUsedPos=0;
    DWORD CurMode=-1;
-int InitDirectDraw();
-int ReInitSound();
    void initDirectDraw()
    {
       InitDirectDraw();
@@ -335,7 +334,6 @@ extern DWORD SoundQuality;
 extern BYTE HighPriority;
 extern BYTE AlwaysOnTop;
 extern BYTE SaveMainWindowPos;
-extern BYTE AlternateTimer;
 extern BYTE AllowMultipleInst;
 extern BYTE DisableScreenSaver;
 extern BYTE TrapMouseCursor;
@@ -1476,16 +1474,8 @@ void Start60HZ(void)
       update_ticks_pc = UPDATE_TICKS_GAME * freq / 1000;
    }
 
-   if (AltTimer == 0)
-   {
-      QueryPerformanceCounter((LARGE_INTEGER*)&start);
-      QueryPerformanceCounter((LARGE_INTEGER*)&start2);
-   }
-   else
-   {
-      start = timeGetTime();
-      start2 = timeGetTime();
-   }
+   QueryPerformanceCounter((LARGE_INTEGER*)&start);
+   QueryPerformanceCounter((LARGE_INTEGER*)&start2);
 
    T36HZEnabled=0;
    T60HZEnabled=1;
@@ -1501,16 +1491,8 @@ void Start36HZ(void)
    update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000;
    update_ticks_pc = UPDATE_TICKS_GUI * freq / 1000;
 
-   if (AltTimer == 0)
-   {
-      QueryPerformanceCounter((LARGE_INTEGER*)&start);
-      QueryPerformanceCounter((LARGE_INTEGER*)&start2);
-   }
-   else
-   {
-      start = timeGetTime();
-      start2 = timeGetTime();
-   }
+   QueryPerformanceCounter((LARGE_INTEGER*)&start);
+   QueryPerformanceCounter((LARGE_INTEGER*)&start2);
 
    T60HZEnabled=0;
    T36HZEnabled=1;
@@ -1790,16 +1772,7 @@ void initwinvideo(void)
    {
       atexit(ExitFunction);
 
-      AltTimer = AlternateTimer;
-
-      if (AltTimer == 0)
-      {
-         if (!QueryPerformanceFrequency((LARGE_INTEGER*)&freq)) return;
-      }
-      else
-      {
-         freq = CLOCKS_PER_SEC;
-      }
+      if (!QueryPerformanceFrequency((LARGE_INTEGER*)&freq)) return;
 
       if (!RegisterWinClass())
       { 
@@ -1871,8 +1844,7 @@ extern int CounterB;
 
 void CheckTimers(void)
 {
-   if (AltTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end2);
-      else end2 = timeGetTime();
+   QueryPerformanceCounter((LARGE_INTEGER*)&end2);
 
    while ((end2 - start2) >= update_ticks_pc2)
       {
@@ -1889,8 +1861,7 @@ void CheckTimers(void)
 
    if (T60HZEnabled == 1)
    {
-      if (AltTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
-         else end = timeGetTime();
+      QueryPerformanceCounter((LARGE_INTEGER*)&end);
 
    while ((end - start) >= update_ticks_pc)
       {
@@ -1901,8 +1872,7 @@ void CheckTimers(void)
 
    if (T36HZEnabled == 1)
    {
-      if (AltTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
-         else end = timeGetTime();
+      QueryPerformanceCounter((LARGE_INTEGER*)&end);
 
    while ((end - start) >= update_ticks_pc)
       {
