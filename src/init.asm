@@ -1465,7 +1465,6 @@ NEWSYM headerhack
     mov byte[hirqmode2],0
     mov byte[ENVDisable],0
     mov byte[MMXSRAMFix],0
-
     mov dword[Reg4212hack],0
 
     mov esi,[romdata]
@@ -1474,10 +1473,7 @@ NEWSYM headerhack
     jne .notcuonpa
     cmp dword[esi+4],'n-Pa'
     jne .notcuonpa
-    cmp dword[esi+8],' SFC'
-    jne .notcuonpa
     mov dword[Reg4212hack],4
-
 .notcuonpa
 
     mov esi,[romdata]
