@@ -1451,6 +1451,23 @@ NEWSYM headerhack
     mov byte[ENVDisable],0
 
     EXTSYM latchxr
+
+    mov esi,[romdata]
+    add esi,07FC0h
+    cmp dword[esi],'NEUG'
+    jne .notneugier
+    cmp dword[esi+4],'IER '
+    jne .notneugier
+    cmp dword[esi+8],'    '
+    jne .notneugier
+    mov word[latchxr],0
+    mov esi,[romdata]
+    add esi,0D4150h
+    mov byte [esi],0F9h
+.notneugier
+
+
+
     mov esi,[romdata]
     add esi,07FC0h
     cmp dword[esi],'Supe'
