@@ -47,9 +47,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 Big thanks to Nach, TRAC and anomie for helping me out on porting !!*/
 
 extern unsigned int CBackupPos, PHnum2writecpureg, cycpbl;
-extern unsigned int *wramdata, *vram, PHspcsave, *C4Ram, *sfxramdata;
-extern unsigned int PHnum2writesa1reg, SA1Mode, prevedi, SA1xpc;
-extern unsigned int sa1dmaptr, soundcycleft, spc700read, timer2upd, xa;
+extern unsigned int *wramdata, *vram, PHspcsave, PHdspsave, *C4Ram, *sfxramdata;
+extern unsigned int PHnum2writesa1reg, SA1Mode, prevedi, SA1xpc, sa1dmaptr;
+extern unsigned int soundcycleft, spc700read, timer2upd, xa;
 extern unsigned int spcnumread, spchalted, opcd, HIRQCycNext, oamaddr;
 extern unsigned int ReadHead, *setaramdata, ramsize, *sram;
 extern unsigned int tempesi, tempedi, tempedx, tempebp;
@@ -57,6 +57,7 @@ extern unsigned int tempesi, tempedi, tempedx, tempebp;
 extern unsigned char *StateBackup, zsmesg[26], sndrot, spcon, spcRam[65472];
 extern unsigned char DSPMem[256], C4Enable, SFXEnable, SA1Enable, SA1Status;
 extern unsigned char *SA1RAMArea, DSP1Type, DSP1COp, prevoamptr, SETAEnable;
+extern unsigned char BRRBuffer[32];
 
 extern short C4WFXVal, C41FXVal, Op00Multiplicand, Op04Angle, Op08X, Op18X;
 extern short Op28X, Op0CA, Op02FX, Op0AVS, Op06X, Op01m, Op0DX, Op03F, Op14Zr;
@@ -77,6 +78,7 @@ void BackupCVFrame()
     if (spcon)
     {
 	memcpyinc (curpos, spcRam, PHspcsave);
+	memcpyinc (curpos, BRRBuffer, PHdspsave);
 	memcpyinc (curpos, DSPMem, 16*16);
     }
 
@@ -176,6 +178,7 @@ void RestoreCVFrame()
     if (spcon)
     {
 	memcpyrinc (curpos, spcRam, PHspcsave);
+	memcpyrinc (curpos, BRRBuffer, PHdspsave);
 	memcpyrinc (curpos, DSPMem, 16*16);
     }
 
@@ -395,12 +398,12 @@ void ResetState()
 }
 
 extern unsigned int Curtableaddr, tableA[256], spcPCRam, spcRamDP;
-extern unsigned int statefileloc, CurrentHandle, PHdspsave, SfxRomBuffer;
+extern unsigned int statefileloc, CurrentHandle, SfxRomBuffer;
 extern unsigned int SfxCROM, SfxLastRamAdr, SfxRAMMem, PHnum2writesfxreg;
-extern unsigned int *SfxR0, *SPCMultA, PHnum2writespc7110reg;
+extern unsigned int *SfxR0, SPCMultA, PHnum2writespc7110reg;
 extern unsigned int MsgCount, MessageOn;
 
-extern unsigned char AutoIncSaveSlot, firstsaveinc, fnamest[512], BRRBuffer[32];
+extern unsigned char AutoIncSaveSlot, firstsaveinc, fnamest[512];
 extern unsigned char SPC7110Enable, cbitmode, NoPictureSave, txtsavemsg[15];
 extern unsigned char *Msgptr, txtsavemsgfail[16];
 
@@ -489,7 +492,7 @@ void statesaver()
 	if (SPC7110Enable)
 	{
 	    fwrite (romdata+0x510000, 1, 65536, fhandle);
-	    fwrite (SPCMultA, 1, PHnum2writespc7110reg, fhandle);
+	    fwrite (&SPCMultA, 1, PHnum2writespc7110reg, fhandle);
 	}
 
 	if (SA1Enable)
