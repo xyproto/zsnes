@@ -985,10 +985,7 @@ NetSaveState:
 %%nointrseta3
     cmp byte[intrset],1
     jne %%nointrseta2
-    mov byte[intrset],8
-    jmp %%noirq
-%%hirqchange
-    mov byte[intrset],3
+    mov byte[intrset],2
     jmp %%setagain
 %%nointrseta2
     test dl,04h
