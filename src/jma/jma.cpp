@@ -113,12 +113,12 @@ namespace JMA
       stream.read((char *)uint_buffer, UINT_SIZE);
       file_info.crc32 = charp_to_uint(uint_buffer);
       
-      //Special UINT representation of file's date
-      stream.read((char *)uint_buffer, UINT_SIZE);
+      //Special USHORT representation of file's date
+      stream.read((char *)uint_buffer, USHORT_SIZE);
       file_info.date = charp_to_ushort(uint_buffer);
       
-      //Special UINT representation of file's time
-      stream.read((char *)uint_buffer, UINT_SIZE);
+      //Special USHORT representation of file's time
+      stream.read((char *)uint_buffer, USHORT_SIZE);
       file_info.time = charp_to_ushort(uint_buffer);
       
       file_info.buffer = 0; //Pointing to null till we decompress files
