@@ -805,7 +805,6 @@ NEWSYM outputchar16b5x52
     jz .nowrite
     push eax
     mov ax,[textcolor16b]
-    mov ax,4
     mov word[esi],ax
     mov word[esi+75036*4],ax
     pop eax
