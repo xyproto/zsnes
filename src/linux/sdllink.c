@@ -71,11 +71,13 @@ int MouseX, MouseY;
 float MouseMoveX, MouseMoveY;
 int MouseMove2X, MouseMove2Y;
 Uint8 MouseButton;
+float MouseXScale = 1.0;
+float MouseYScale = 1.0;
 
 DWORD LastUsedPos = 0;
 DWORD CurMode = -1;
 extern BYTE GUIOn2;
-static BYTE IsActivated;
+static BYTE IsActivated = 1;
 
 #define UPDATE_TICKS_GAME (1000.855001760297741789468390082/60.0)	// milliseconds per world update
 #define UPDATE_TICKS_GAMEPAL (1000/50.0)// milliseconds per world update
@@ -94,6 +96,16 @@ void LinuxExit(void);
 #ifdef __OPENGL__
 extern void gl_clearwin();
 #endif
+
+static void adjustMouseXScale(void)
+{
+	MouseXScale = (MouseMaxX - MouseMinX) / ((float) WindowWidth);
+}
+
+static void adjustMouseYScale(void)
+{
+	MouseYScale = (MouseMaxY - MouseMinY) / ((float) WindowHeight);
+}
 
 int Main_Proc(void)
 {
@@ -133,8 +145,17 @@ int Main_Proc(void)
 				break;
 
 			case SDL_MOUSEMOTION:
-				MouseX = event.motion.x;
-				MouseY = event.motion.y;
+				if (FullScreen)
+				{
+					MouseX += event.motion.xrel;
+					MouseY += event.motion.yrel;
+				}
+				else
+				{
+					MouseX = ((int) ((float) event.motion.x) * MouseXScale);
+					MouseY = ((int) ((float) event.motion.y) * MouseYScale);
+				}
+
 				if (MouseX < MouseMinX) MouseX = MouseMinX;
 				if (MouseX > MouseMaxX) MouseX = MouseMaxX;
 				if (MouseY < MouseMinY) MouseY = MouseMinY;
@@ -310,12 +331,16 @@ int Main_Proc(void)
 				if(cvidmode != 16) {
 				    surface = SDL_SetVideoMode(WindowWidth, WindowHeight,
 					    BitDepth, surface->flags & ~SDL_RESIZABLE);
+					adjustMouseXScale();
+					adjustMouseYScale();
 				    break;
 				}
 				WindowWidth = SurfaceX = event.resize.w;
 				WindowHeight = SurfaceY = event.resize.h;
 				surface = SDL_SetVideoMode(WindowWidth,
 				    WindowHeight, BitDepth, surface->flags);
+				adjustMouseXScale();
+				adjustMouseYScale();
 				glViewport(0,0, WindowWidth, WindowHeight);
 				glFlush();
 				gl_clearwin();
@@ -325,6 +350,7 @@ int Main_Proc(void)
 				break;
 		}
 	}
+
 	/* TODO - fix this later
 	   if(pressed[0x38]!=0&&pressed[0x3E]!=0)
 	   LinuxExit();
@@ -741,6 +767,8 @@ void initwinvideo(void)
 				WindowHeight = 768;
 				break;
 		}
+		adjustMouseXScale();
+		adjustMouseYScale();
 	}
 
 	if (startgame() != TRUE)
@@ -926,14 +954,18 @@ void UpdateSound(void *userdata, Uint8 * stream, int len)
 
 void UpdateVFrame(void)
 {
-	if (GUIOn2 == 1 && IsActivated == 0) SDL_WaitEvent(NULL);
-	Main_Proc();
+	/* rcg06172001 get menu animations running correctly... */
+	/*if (GUIOn2 == 1 && IsActivated == 0) SDL_WaitEvent(NULL);*/
+	if (GUIOn2 == 1 && IsActivated == 0)
+		SDL_Delay(100);  /* spare the CPU a little. */
+
 	CheckTimers();
+	Main_Proc();
 }
 
 void clearwin()
 {
-    if (!sdl_inited) return;
+	if (!sdl_inited) return;
 
 #ifdef __OPENGL__
 	if (UseOpenGL)
@@ -982,18 +1014,22 @@ int GetMouseButton(void)
 void SetMouseMinX(int MinX)
 {
 	MouseMinX = MinX;
+	adjustMouseXScale();
 }
 void SetMouseMaxX(int MaxX)
 {
 	MouseMaxX = MaxX;
+	adjustMouseXScale();
 }
 void SetMouseMinY(int MinY)
 {
 	MouseMinY = MinY;
+	adjustMouseYScale();
 }
 void SetMouseMaxY(int MaxY)
 {
 	MouseMaxY = MaxY;
+	adjustMouseYScale();
 }
 
 // we can probably get rid of these functions since they are no
