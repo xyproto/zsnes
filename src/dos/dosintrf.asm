@@ -395,8 +395,10 @@ NEWSYM File_Seek
     pushad
     call ZFileSeek
     popad
+    cmp byte[ZFileSeekError], 1
     mov ax,dx
     mov dx,cx
+    clc
     ret
     ; seek to cx:dx from 0 position, return carry as error
     mov ax,4200h
