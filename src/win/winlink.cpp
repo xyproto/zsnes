@@ -207,6 +207,12 @@ extern "C" void CheckAlwaysOnTop()
        else SetWindowPos(hMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 }
 
+extern "C" void MinimizeWindow()
+{
+    MoveWindow(hMainWindow, 0, 0, 0, 0, TRUE);
+    InputDeAcquire();
+}
+
 BOOL InputRead(void)
 {
    static PrevZ=0;

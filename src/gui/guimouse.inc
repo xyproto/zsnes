@@ -15,7 +15,9 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-
+%ifdef __WIN32__
+EXTSYM MinimizeWindow
+%endif
 
 lastmouseholded db 0
 mousebuttonstat dw 0
@@ -505,7 +507,7 @@ ProcessMouseButtons:
     jb .notwinpressc
     cmp word[GUImouseposx],242
     ja .notwinpressc
-;    call MinimizeWindow
+    call MinimizeWindow
     ret
 .notwinpressc
 
