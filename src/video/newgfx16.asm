@@ -3511,4 +3511,100 @@ MainScreenClip:
     add esi,288*2
     cmp [resolutn],bx
     jne near .nextline
+;    ret
+
+SubScreenClip:
+    mov esi,[vidbuffer]
+    add esi,16*2+288*2
+    mov ebx,1
+.nextline
+    mov al,byte[scadsng+ebx]
+    shl al,2
+    test al,0C0h
+    jz near .notthisone
+    push esi
+    push ebx
+    and al,0C0h
+    cmp al,0C0h
+    jne .notentire
+    mov ebx,[UnusedBit]
+    mov ecx,256
+    mov edx,256
+    jmp .startclipping
+.notentire
+
+    mov dword[ngwinen],0
+    test byte[winbg1enval+ebx+5*256],0Ah
+    jz .nowindowing
+    push eax
+    push ebx
+    mov al,[winlogicaval+ebx*2+1]
+    shr al,2
+    and al,03h
+    mov [nglogicval],al
+    mov eax,ebx
+    add ebx,5*256
+    call BuildWindow
+;ngwintable
+    pop ebx
+    pop eax
+.nowindowing
+
+    mov ebx,[UnusedBit]
+    mov edx,256
+    cmp dword[ngwinen],0
+    jne .windowenabled
+    cmp al,80h
+    je near .finclipping
+    mov ecx,256
+    jmp .startclipping
+.windowenabled
+    cmp al,80h
+    je near .outsideclipping
+    mov edi,ngwintable
+    mov ecx,[edi]
+    add edi,4
+    or ecx,ecx
+    jnz near .startclipping
+    mov ecx,[edi]
+    add edi,4
+    jmp .noclipping
+.outsideclipping
+    mov edi,ngwintable
+    mov ecx,[edi]
+    add edi,4
+    or ecx,ecx
+    jnz .noclipping
+    mov ecx,[edi]
+    add edi,4
+    jmp .startclipping
+
+.startclipping
+    mov word[esi+75036*2],bx
+    add esi,2
+    dec edx
+    jz .finclipping
+    dec ecx
+    jnz .startclipping
+    mov ecx,[edi]
+    add edi,4
+.noclipping
+    sub edx,ecx
+    jz .finclipping
+    jc .finclipping
+    add ecx,ecx
+    add esi,ecx
+    mov ecx,[edi]
+    add edi,4
+    jmp .startclipping
+
+.finclipping
+    pop ebx
+    pop esi
+.notthisone
+    inc ebx
+    add esi,288*2
+    cmp [resolutn],bx
+    jne near .nextline
     ret
+
