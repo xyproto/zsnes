@@ -63,7 +63,7 @@ SDLCFLAGS := $(shell sdl-config --cflags)
 #LIBS=-static -pg ${SDLLIBS} -lz
 LIBS=${SDLLIBS} -lz -lpng
 #CFLAGS=-pg -g -Wall -D__LINUX__ ${SDLCFLAGS}
-CFLAGS=-g -Wall -mcpu=pentium -finline-functions -funroll-loops -D__LINUX__ ${SDLCFLAGS}
+CFLAGS=-g -Wall -O2 -mcpu=pentium -finline-functions -funroll-loops -D__LINUX__ ${SDLCFLAGS}
 ASM=nasm
 ASMFLAGS=-f elf -D__LINUX__ -g -w-orphan-labels 
 CC=gcc
@@ -105,7 +105,7 @@ ${CHIPDIR}/sfxproc.o: ${CHIPDIR}/sfxproc.asm macros.mac\
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
 
 ${CHIPDIR}/dsp1emu.o: ${CHIPDIR}/dsp1emu.c betauser.mac
-	${CC} ${CFLAGS} -O2 -o $@ -c $<
+	${CC} ${CFLAGS} -o $@ -c $<
 ui.o: ui.asm macros.mac betauser.mac
 cfgload.o:cfgload.asm macros.mac
 init.o:init.asm macros.mac

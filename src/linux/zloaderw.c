@@ -94,7 +94,7 @@ int my_atoi(char *nptr) {
 extern void UnProtectMemory (void);
 
 int main (int argc, char *argv[]) {
-	int opt,hasroom,p,pp;
+	int opt,p,pp;
 
 	char *fvar;
 
@@ -108,7 +108,7 @@ int main (int argc, char *argv[]) {
 			}
 			/* Player 1 Input */
 			case '1': {
-				if (!hasroom) return 4;
+				//if (!hasroom) return 4;
 				pl1contrl = my_atoi(optarg);
 
 				if (pl1contrl > 6) return 15;
@@ -119,7 +119,7 @@ int main (int argc, char *argv[]) {
 			}
 			/* Player 2 Input */
 			case '2': {
-				if (!hasroom) return 4;
+//				if (!hasroom) return 4;
 				pl2contrl=my_atoi(optarg);
 
 				if (pl2contrl > 6) return 15;
@@ -192,7 +192,7 @@ int main (int argc, char *argv[]) {
 			}
 
 			case 'f': {
-				if (!hasroom) return 4;
+//				if (!hasroom) return 4;
 				frameskip = my_atoi(optarg);
 
 				if (frameskip > 9) return 10;
@@ -201,7 +201,7 @@ int main (int argc, char *argv[]) {
 			}
 
 			case 'g': {
-				if (!hasroom) return 4;
+//				if (!hasroom) return 4;
 				gammalevel = my_atoi(optarg);
 
 				if (gammalevel > 5) return 11;
@@ -227,7 +227,7 @@ int main (int argc, char *argv[]) {
 			}
 
 			case 'k': {
-				if (!hasroom) return 4;
+//				if (!hasroom) return 4;
 				MusicRelVol = my_atoi(optarg);
 
 				if (MusicRelVol > 100) return 16;
@@ -262,7 +262,7 @@ int main (int argc, char *argv[]) {
 			}
 
 			case 'p': {
-				if (!hasroom) return 4;
+//				if (!hasroom) return 4;
 				per2exec = my_atoi(optarg);
 
 				if (per2exec > 150) return 14;
@@ -274,7 +274,7 @@ int main (int argc, char *argv[]) {
 			}
 
 			case 'r': {
-				if (!hasroom) return 4;
+//				if (!hasroom) return 4;
 				SoundQuality = my_atoi(optarg);
 
 				if (SoundQuality > 5) return 12;
@@ -315,7 +315,7 @@ int main (int argc, char *argv[]) {
 					V8Mode = 1;
 					pp++;
 				} else {
-					if (!hasroom) return 4;
+//					if (!hasroom) return 4;
 					cvidmode = my_atoi(optarg);
 
 					if (cvidmode > 10) return 13;

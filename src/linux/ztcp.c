@@ -285,7 +285,7 @@ int ConnectServer(char *servername, unsigned int port)
 {
    char blah[255];
    int retval,i;
-   LPHOSTENT host1;
+   LPHOSTENT host1=NULL;
    int yesip;
 #ifndef __LINUX__
    WSADATA wsadata;

@@ -188,7 +188,7 @@ int do_extract_currentfile(unzFile uf,
 
 		if (((*popt_overwrite)==0) && (err==UNZ_OK))
 		{
-			char rep;
+			char rep='A';
 			FILE* ftestexist;
 			ftestexist = fopen(write_filename,"rb");
 			if (ftestexist!=NULL)

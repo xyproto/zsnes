@@ -40,7 +40,7 @@ void DrawWaterWithLight(int *ptr,int light);
 static void SineBlob(int x, int y, int radius, int height, int page);
 static void CalcWater(int *nptr,int *optr,int density);
 
-static int x,y;
+//static int x,y;
 static int ox=80,oy=60;
 static int xang,yang;
 static int density=4;

@@ -208,7 +208,7 @@ DWORD ZFileRead()
 
 DWORD ZFileWrite()
 {
-	int res=0;
+	DWORD res=0;
 	if (TextFile)
 		res = fwrite(ZFileWriteBlock,
 			     1,
