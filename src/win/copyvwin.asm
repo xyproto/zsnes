@@ -1550,8 +1550,8 @@ NEWSYM interpolate640x480x16bwin
     pop es
     ret
 
-SECTION .bss
-InterPtr resd 1
+SECTION .data
+InterPtr dd 0
 SECTION .text
 
 

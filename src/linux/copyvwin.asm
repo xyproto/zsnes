@@ -1561,9 +1561,9 @@ NEWSYM interpolate640x480x16bwin
     popad
     ret
 
-SECTION .bss
+SECTION .data
 ;ALIGN32
-InterPtr resd 1
+InterPtr dd 0
 SECTION .text
 
 NEWSYM CopyVWinAsmEnd
