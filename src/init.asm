@@ -2274,8 +2274,15 @@ NEWSYM init65816
     mov esi,[romdata]
     mov byte[hdmaearlstart],0
     add esi,07FC0h
-    cmp byte[esi],'Y'
+    cmp dword[esi],'YOSH'
+    jne .notyoshi
+    cmp dword[esi+8],'ISLA'
+    jne .notyoshi
+.notyoshi
+    cmp dword[esi],'YOSS'
     jne .nohdmaearlstart
+    cmp dword[esi+8],'ISLA'
+    jne .notyoshi
     mov byte[hdmaearlstart],2
 .nohdmaearlstart
 
