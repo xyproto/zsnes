@@ -6417,7 +6417,7 @@ BlinkCursorCheck:
 DisplayGUIPaths:
     GUIDrawWindowBox 19,GUIPathsDisp
     sub byte[GUItextcolor],15
-    GUIOuttextwin2 19,8,18,GUIPathsText1
+    ;GUIOuttextwin2 19,8,18,GUIPathsText1
     GUIOuttextwin2 19,8,38,GUIPathsText2
     GUIOuttextwin2 19,8,58,GUIPathsText3
     GUIOuttextwin2 19,60,78,GUIPathsText4
@@ -6432,7 +6432,7 @@ DisplayGUIPaths:
     GUIOuttextwin2 19,135,173,GUIPathsTextD
 
     add byte[GUItextcolor],15
-    GUIOuttextwin2 19,7,17,GUIPathsText1
+    ;GUIOuttextwin2 19,7,17,GUIPathsText1
     GUIOuttextwin2 19,7,37,GUIPathsText2
     GUIOuttextwin2 19,7,57,GUIPathsText3
     GUIOuttextwin2 19,59,77,GUIPathsText4
@@ -6447,7 +6447,7 @@ DisplayGUIPaths:
     GUIOuttextwin2 19,134,172,GUIPathsTextD
 
     ;Input boxes - alternate color
-    DrawGUIWinBox  19,74,14,232,26,177
+    ;DrawGUIWinBox  19,74,14,232,26,177
     DrawGUIWinBox  19,74,34,232,46,177
     DrawGUIWinBox  19,74,54,232,66,177
     DrawGUIWinBox  19,7,94,107,106,177
@@ -6460,7 +6460,7 @@ DisplayGUIPaths:
     DrawGUIWinBox  19,134,179,236,191,177
 
     ;Input boxes
-    DrawGUIWinBox  19,75,15,231,25,167
+    ;DrawGUIWinBox  19,75,15,231,25,167
     DrawGUIWinBox  19,75,35,231,45,167
     DrawGUIWinBox  19,75,55,231,65,167
     DrawGUIWinBox  19,8,95,106,105,167
@@ -6472,7 +6472,7 @@ DisplayGUIPaths:
     DrawGUIWinBox  19,135,155,235,165,167
     DrawGUIWinBox  19,135,180,235,190,167
 
-    GUIOuttextwin2d 19,77,19,SRAMPath,25
+    ;GUIOuttextwin2d 19,77,19,SRAMPath,25
     GUIOuttextwin2d 19,77,39,SnapPath,25
     GUIOuttextwin2d 19,77,59,SPCPath,25
     GUIOuttextwin2d 19,10,99,BSXPath,15
