@@ -348,6 +348,7 @@ GUIloadfilename:
     mov word[totlines],314
     mov dword[MsgCount],100
 .nopal
+    call showinfogui
     call initsnes
     mov byte[snesmouse],0
     mov byte[sramsavedis],0
@@ -390,7 +391,6 @@ GUIloadfilename:
     mov dl,[LoadDrive]
     mov ebx,LoadDir
     call Change_Dir
-    call showinfogui
     ret
 
 GUILoadData:
