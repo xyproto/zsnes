@@ -131,10 +131,11 @@ char *generate_filename(void)
 	extern char fnames;
 	char *filename;
 	char *tmp = &fnames;
-	struct stat buf;
 	short i=0;
 #ifdef __WIN32__
 	SYSTEMTIME time;
+#else
+	struct stat buf;
 #endif
 
 #ifdef __MSDOS__
@@ -162,7 +163,7 @@ char *generate_filename(void)
 	filename = (char *)malloc(strlen(tmp)+6);
 #endif
 #ifdef __WIN32__
-	filename = (char *)malloc(strlen(tmp)+36);
+	filename = (char *)malloc(strlen(tmp)+25);
 #endif
 	strcpy(filename, tmp);
 	tmp = filename;
@@ -173,7 +174,7 @@ char *generate_filename(void)
 	GetLocalTime(&time);
 	
 	/*make filename from local time*/
-	wsprintf(tmp," %d_%02d_%02d_%02d-%02d-%02d-ScreenShot.png\0", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+	wsprintf(tmp," %d_%02d_%02d_%02d-%02d-%02d.png\0", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
 #endif
 #ifdef __LINUX__
 	/*find first unused file*/
