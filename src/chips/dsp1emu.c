@@ -16,15 +16,11 @@
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-#ifdef __LINUX__
-#include "../gblhdr.h"
-#else
 #include <stdio.h>
 #include <stdarg.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
-#endif
 //#define DebugDSP1
 
 // uncomment some lines to test
@@ -71,32 +67,30 @@ void Start_Log (void)
    LogFile = fopen(LogFileName,"wb");
 }
 
-void Stop_Log(void)
+void Stop_Log (void)
 {
- if(LogFile)
- {
-  fclose(LogFile);
-  LogFile=NULL;
- }
+   if (LogFile)
+   {
+      fclose(LogFile);
+      LogFile = NULL;
+	}
 }
 
 #endif
+
 
 /***************************************************************************\
 *  Math tables                                                              *
 \***************************************************************************/
 
-double *CosTable2;
-double *SinTable2;
 #define INCR 2048
 #define Angle(x) (((x)/(65536/INCR)) & (INCR-1))
 #define Cos(x) ((double) CosTable2[x])
 #define Sin(x) ((double) SinTable2[x])
-// gcc warning fix
-#ifdef PI
-#undef PI
-#endif
 #define PI 3.14159265358979323846264338327
+double CosTable2[INCR];
+double SinTable2[INCR];
+
 
 double Atan(double x)
 {
@@ -231,7 +225,6 @@ void C4Op0D()
   C41FXVal=(short)(((double)C41FXVal*tanval)*0.98);
 }
 
-
 /***************************************************************************\
 *  DSP1 code                                                                *
 \***************************************************************************/
@@ -241,8 +234,8 @@ void InitDSP(void)
 {
 #ifdef __OPT__
         unsigned int i;
-	CosTable2 = (double *)malloc(INCR*sizeof(double));
-	SinTable2 = (double *)malloc(INCR*sizeof(double));
+//	CosTable2 = (double *) malloc(INCR*sizeof(double));
+//	SinTable2 = (double *) malloc(INCR*sizeof(double));
 	for (i=0; i<INCR; i++){
 		CosTable2[i] = (cos((double)(2*PI*i/INCR)));
 		SinTable2[i] = (sin((double)(2*PI*i/INCR)));
@@ -254,13 +247,16 @@ void InitDSP(void)
 }
 
 
-short Op00Multiplicand;
-short Op00Multiplier;
-short Op00Result;
+short Op00Multiplicand;		// int16
+short Op00Multiplier;		// int16
+short Op00Result;		// int16
 
 void DSPOp00()
 {
-   Op00Result=Op00Multiplicand*Op00Multiplier/32768;
+   // Use the shift 15, don't divide by 32768, it doesn't round the same.
+
+   // This expression is bit accurate to DSP1B on MSVC 6.
+   Op00Result=Op00Multiplicand*Op00Multiplier >> 15;
    #ifdef DebugDSP1
       Log_Message("OP00 MULT %d*%d/32768=%d",Op00Multiplicand,Op00Multiplier,Op00Result);
    #endif
@@ -274,23 +270,28 @@ float Op10Temp;
 
 void DSPOp10()
 {
-        Op10ExponentR=-Op10Exponent;
-        Op10Temp = Op10Coefficient / 32768.0;
-	if (Op10Temp == 0) {
-		Op10CoefficientR = 0;
-	} else
-		Op10Temp = 1/Op10Temp;	
-        if (Op10Temp > 0) 
-                while (Op10Temp>=1.0) {
-                        Op10Temp=Op10Temp/2.0;
-                        Op10ExponentR++;
-                }
-        else
-                while (Op10Temp<-1.0) {
-                        Op10Temp=Op10Temp/2.0;
-                        Op10ExponentR++;
-                }
-        Op10CoefficientR = Op10Temp*32768;
+	// Hard to get bit accurate here but it's very close...
+	// within 2 lsb's on the coefficient of the DSP1B.  Emu is more accurate.
+
+	if (Op10Coefficient == 0) {
+		Op10CoefficientR = 0x7fff;	// DSP1B - Strange but true
+	        Op10ExponentR = 0x002f;
+	} else {
+	        Op10ExponentR = -Op10Exponent;
+	        Op10Temp = (float)(Op10Coefficient / 32768.0);
+		Op10Temp = 1/Op10Temp;
+	        if (Op10Temp > 0) 
+        	        while (Op10Temp >= 1.0) {
+                	        Op10Temp = (float)(Op10Temp/2.0);
+                        	Op10ExponentR++;
+	                }
+        	else
+                	while (Op10Temp <= -1.0) {
+                        	Op10Temp=(float)(Op10Temp/2.0);
+	                        Op10ExponentR++;
+        	        }
+	        Op10CoefficientR = (short)(Op10Temp*32768);
+	}
 	#ifdef DebugDSP1
         Log_Message("OP10 INV %d*2^%d = %d*2^%d", Op10Coefficient, Op10Exponent, Op10CoefficientR, Op10ExponentR);
 	#endif
@@ -298,7 +299,7 @@ void DSPOp10()
 
 
 short Op04Angle;
-unsigned short Op04Radius;
+short Op04Radius;	// This is signed
 short Op04Sin;
 short Op04Cos;
 
@@ -326,8 +327,8 @@ void DSPOp04()
    
    angle = Op04Angle*2*PI/65536.0;
 
-   Op04Sin = sin(angle) * Op04Radius;
-   Op04Cos = cos(angle) * Op04Radius;
+   Op04Sin = (short)(sin(angle) * Op04Radius);
+   Op04Cos = (short)(cos(angle) * Op04Radius);
 
    #ifdef DebugDSP1
       Log_Message("OP04 Angle:%d Radius:%d",(Op04Angle/256)&255,Op04Radius);
@@ -345,8 +346,8 @@ short Op0CY2;
 #ifdef __OPT0C__
 void DSPOp0C()
 {
-   Op0CX2=(Op0CX1*Cos(Angle(Op0CA))+Op0CY1*Sin(Angle(Op0CA)));
-   Op0CY2=(Op0CX1*-Sin(Angle(Op0CA))+Op0CY1*Cos(Angle(Op0CA)));
+   Op0CX2=(short)((Op0CX1*Cos(Angle(Op0CA))+Op0CY1*Sin(Angle(Op0CA))));
+   Op0CY2=(short)((Op0CX1*-Sin(Angle(Op0CA))+Op0CY1*Cos(Angle(Op0CA))));
    #ifdef DebugDSP1
       Log_Message("OP0C Angle:%d X:%d Y:%d CX:%d CY:%d",(Op0CA/256)&255,Op0CX1,Op0CY1,Op0CX2,Op0CY2);
    #endif
@@ -354,7 +355,7 @@ void DSPOp0C()
 #else
 void DSPOp0C()
 {
-	
+
    Op0CX2=(Op0CX1*cos(Op0CA*2*PI/65536.0)+Op0CY1*sin(Op0CA*2*PI/65536.0));
    Op0CY2=(Op0CX1*-sin(Op0CA*2*PI/65536.0)+Op0CY1*cos(Op0CA*2*PI/65536.0));
    #ifdef DebugDSP1
@@ -500,7 +501,7 @@ void DSPOp02()
    CenterY = (cos(NAasB)*ViewerZc*CXdistance)+ViewerYc;
    if (CenterY<-32768) CenterY = -32768; if (CenterY>32767) CenterY=32767;
 
-   TValDebug = (NAzsB*65536/6.28);
+   TValDebug = (short)((NAzsB*65536/6.28));
    TValDebug2 = ScrDispl;
 
 //   if (Op02CY < 0) {Op02CYSup = Op02CY/256; Op02CY = 0;}
@@ -713,6 +714,7 @@ double ObjPX2;
 double ObjPY2;
 double ObjPZ2;
 double DivideOp06;
+double d;
 int Temp;
 int tanval2;
 
@@ -752,7 +754,16 @@ void DSPOp06()
    {
       Op06H=(short)(-ObjPX2*Op02LES/-(ObjPZ2)); //-ObjPX2*256/-ObjPZ2;
       Op06V=(short)(-ObjPY2*Op02LES/-(ObjPZ2)); //-ObjPY2*256/-ObjPZ2;
-      Op06S=(unsigned short)(256*(double)Op02LES/-ObjPZ2);
+          d=(double)Op02LES;
+	  d*=256.0;
+	  d/=(-ObjPZ2);
+	  if(d>65535.0)
+		  d=65535.0;
+	  else if(d<0.0)
+		  d=0.0;
+	  Op06S=(unsigned short)d;
+	  //Op06S=(unsigned short)(256*(double)Op02LES/-ObjPZ2);
+      //Op06S=(unsigned short)((double)(256.0*((double)Op02LES)/(-ObjPZ2)));
    }
    else
    {
@@ -803,7 +814,15 @@ void DSPOp06()
    {
       Op06H=(short)(-ObjPX2*Op02LES/-(ObjPZ2)); //-ObjPX2*256/-ObjPZ2;
       Op06V=(short)(-ObjPY2*Op02LES/-(ObjPZ2)); //-ObjPY2*256/-ObjPZ2;
-      Op06S=(unsigned short)(256*(double)Op02LES/-ObjPZ2);
+      double d=(double)Op02LES;
+	  d*=256.0;
+	  d/=(-ObjPZ2);
+	  if(d>65535.0)
+		  d=65535.0;
+	  else if(d<0.0)
+		  d=0.0;
+	  Op06S=(unsigned short)d;
+//	  Op06S=(unsigned short)(256*(double)Op02LES/-ObjPZ2);
    }
    else
    {
@@ -1291,8 +1310,8 @@ void DSPOp0E()
    RVPos = Op0EV;
    RHPos = Op0EH;
    GetRXYPos();
-   Op0EX = RXRes;
-   Op0EY = RYRes;
+   Op0EX = (short)(RXRes);
+   Op0EY = (short)(RYRes);
 
    #ifdef DebugDSP1
       Log_Message("OP0E COORDINATE H:%d V:%d   X:%d Y:%d",Op0EH,Op0EV,Op0EX,Op0EY);
@@ -1314,7 +1333,7 @@ short Op2BS;
 
 void DSPOp0B()
 {
-    Op0BS = (Op0BX*matrixA[0][0]+Op0BY*matrixA2[0][1]+Op0BZ*matrixA2[0][2]);
+    Op0BS = (short)((Op0BX*matrixA[0][0]+Op0BY*matrixA2[0][1]+Op0BZ*matrixA2[0][2]));
 #ifdef DebugDSP1
         Log_Message("OP0B");
 #endif
@@ -1322,7 +1341,7 @@ void DSPOp0B()
 
 void DSPOp1B()
 {   
-    Op1BS = (Op1BX*matrixA2[0][0]+Op1BY*matrixA2[0][1]+Op1BZ*matrixA2[0][2]);
+    Op1BS = (short)((Op1BX*matrixA2[0][0]+Op1BY*matrixA2[0][1]+Op1BZ*matrixA2[0][2]));
 #ifdef DebugDSP1
       Log_Message("OP1B X: %d Y: %d Z: %d S: %d",Op1BX,Op1BY,Op1BZ,Op1BS);
       Log_Message("     MX: %d MY: %d MZ: %d Scale: %d",(short)(matrixA2[0][0]*100),(short)(matrixA2[0][1]*100),(short)(matrixA2[0][2]*100),(short)(sc2*100));
@@ -1332,7 +1351,7 @@ void DSPOp1B()
 
 void DSPOp2B()
 {
-    Op2BS = (Op2BX*matrixA3[0][0]+Op2BY*matrixA3[0][1]+Op2BZ*matrixA3[0][2]);
+    Op2BS = (short)((Op2BX*matrixA3[0][0]+Op2BY*matrixA3[0][1]+Op2BZ*matrixA3[0][2]));
 #ifdef DebugDSP1
       Log_Message("OP2B");
 #endif
@@ -1343,6 +1362,8 @@ long Op08Size;
 
 void DSPOp08()
 {
+   // This is bit accurate to DSP1B when compiled with VC 6 on a P4
+
    Op08Size=(Op08X*Op08X+Op08Y*Op08Y+Op08Z*Op08Z)*2;
    Op08Ll = Op08Size&0xFFFF;
    Op08Lh = (Op08Size>>16) & 0xFFFF;
@@ -1356,12 +1377,12 @@ short Op18X,Op18Y,Op18Z,Op18R,Op18D;
 
 void DSPOp18()
 {
-   double x,y,z,r;
+   // This is bit accurate to DSP1B when compiled with VC6 on a P4
+
+   int x,y,z,r;	// int32
    x=Op18X; y=Op18Y; z=Op18Z; r=Op18R;
    r = (x*x+y*y+z*z-r*r);
-   if (r>32767) r=32767;
-   if (r<-32768) r=-32768;
-   Op18D=(short)r;
+   Op18D=(short) (r >> 15);
    #ifdef DebugDSP1
       Log_Message("OP18 X: %d Y: %d Z: %d R: %D DIFF %d",Op18X,Op18Y,Op18Z,Op18D);
    #endif
@@ -1374,6 +1395,9 @@ short Op28R;
 
 void DSPOp28()
 {
+   // This works pretty good until r overflows from 0x7fff, then it goes to h*ll.
+   // Hopefully games don't count on overflow cases matching the DSP
+
    Op28R=(short)sqrt(Op28X*Op28X+Op28Y*Op28Y+Op28Z*Op28Z);
    #ifdef DebugDSP1
       Log_Message("OP28 X:%d Y:%d Z:%d",Op28X,Op28Y,Op28Z);
@@ -1381,8 +1405,7 @@ void DSPOp28()
    #endif
 }
 
-short Op1CAZ;
-unsigned short Op1CX,Op1CY,Op1CZ;
+short Op1CX,Op1CY,Op1CZ;
 short Op1CXBR,Op1CYBR,Op1CZBR,Op1CXAR,Op1CYAR,Op1CZAR;
 short Op1CX1;
 short Op1CY1;
@@ -1400,17 +1423,17 @@ void DSPOp1C()
    za = Angle(Op1CZ);
 
    // rotate around Z
-   Op1CX1=(Op1CXBR*Cos(za)+Op1CYBR*Sin(za));
-   Op1CY1=(Op1CXBR*-Sin(za)+Op1CYBR*Cos(za));
+   Op1CX1=(short)((Op1CXBR*Cos(za)+Op1CYBR*Sin(za)));
+   Op1CY1=(short)((Op1CXBR*-Sin(za)+Op1CYBR*Cos(za)));
    Op1CZ1=Op1CZBR;
    // rotate around Y
-   Op1CX2=(Op1CX1*Cos(ya)+Op1CZ1*-Sin(ya));
+   Op1CX2=(short)((Op1CX1*Cos(ya)+Op1CZ1*-Sin(ya)));
    Op1CY2=Op1CY1;
-   Op1CZ2=(Op1CX1*Sin(ya)+Op1CZ1*Cos(ya));
+   Op1CZ2=(short)((Op1CX1*Sin(ya)+Op1CZ1*Cos(ya)));
    // rotate around X
    Op1CXAR=Op1CX2;
-   Op1CYAR=(Op1CY2*Cos(xa)+Op1CZ2*Sin(xa));
-   Op1CZAR=(Op1CY2*-Sin(xa)+Op1CZ2*Cos(xa));
+   Op1CYAR=(short)((Op1CY2*Cos(xa)+Op1CZ2*Sin(xa)));
+   Op1CZAR=(short)((Op1CY2*-Sin(xa)+Op1CZ2*Cos(xa)));
 
    #ifdef DebugDSP1
       Log_Message("OP1C Apply Matrix CX:%d CY:%d CZ",Op1CXAR,Op1CYAR,Op1CZAR);
@@ -1420,9 +1443,10 @@ void DSPOp1C()
 void DSPOp1C()
 {
    double ya,xa,za;
-   ya = Op1CX/65536.0*PI*2;
-   xa = Op1CY/65536.0*PI*2;
-   za = Op1CZ/65536.0*PI*2;
+   ya = Op1CX/32768.0*PI;
+   xa = Op1CY/32768.0*PI;
+   za = Op1CZ/32768.0*PI;
+
    // rotate around Z
    Op1CX1=(Op1CXBR*cos(za)+Op1CYBR*sin(za));
    Op1CY1=(Op1CXBR*-sin(za)+Op1CYBR*cos(za));
@@ -1440,6 +1464,7 @@ void DSPOp1C()
       Log_Message("OP1C Apply Matrix CX:%d CY:%d CZ",Op1CXAR,Op1CYAR,Op1CZAR);
    #endif
 }
+
 #endif
 
 // Op 0F = Test DSP1 RAM

@@ -24,7 +24,7 @@ EXTSYM KeyRewind
 EXTSYM xa,timer2upd,prevoamptr,ReadHead
 EXTSYM prevedi,SA1xpc,SA1RAMArea,sa1dmaptr
 EXTSYM DSP1COp,C4WFXVal,C41FXVal,Op00Multiplicand,Op10Coefficient,Op04Angle
-EXTSYM Op08X,Op18X,Op28X,Op0CA,Op1CAZ,Op02FX,Op0AVS,Op06X,Op0DX,Op03F,Op14Zr
+EXTSYM Op08X,Op18X,Op28X,Op0CA,Op02FX,Op0AVS,Op06X,Op0DX,Op03F,Op14Zr
 EXTSYM Op0EH,DSP1Type,Op01m
 EXTSYM Voice0Status
 EXTSYM UpdateDPage
@@ -547,7 +547,6 @@ NEWSYM BackupCVFrame
     BackupCVMacB Op18X,5*4+128
     BackupCVMacB Op28X,4*4+128
     BackupCVMacB Op0CA,5*4+128
-    BackupCVMacB Op1CAZ,15*4+128
     BackupCVMacB Op02FX,11*4+3*4+28*8+128
     BackupCVMacB Op0AVS,5*4+14*8+128
     BackupCVMacB Op06X,6*4+10*8+4+128
@@ -642,7 +641,6 @@ NEWSYM RestoreCVFrame
     BackupCVRMacB Op18X,5*4+128
     BackupCVRMacB Op28X,4*4+128
     BackupCVRMacB Op0CA,5*4+128
-    BackupCVRMacB Op1CAZ,15*4+128
     BackupCVRMacB Op02FX,11*4+3*4+28*8+128
     BackupCVRMacB Op0AVS,5*4+14*8+128
     BackupCVRMacB Op06X,6*4+10*8+4+128
