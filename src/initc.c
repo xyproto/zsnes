@@ -668,9 +668,7 @@ void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
   SplittedROM = true;
 }
 
-char ST_Path[1024];
-char GNext_Path[1024];
-char SG_Path[1024];
+char *ST_Path, *GNext_Path, *SG_Path;
 void SplitSupport()
 {
   unsigned char *ROM = (unsigned char *)romdata;

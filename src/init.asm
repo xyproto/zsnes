@@ -3410,20 +3410,13 @@ NEWSYM loadfileGUI
     mov dword[ZOpenFileName],edx
 
     ;This is to get the C stuff to see these variables
-    xor ecx,ecx
-.pathcopy
-    mov edx,dword[STPath+ecx]
-    mov dword[ST_Path+ecx],edx
-    mov edx,dword[GNextPath+ecx]
-    mov dword[GNext_Path+ecx],edx
-    mov edx,dword[SGPath+ecx]
-    mov dword[SG_Path+ecx],edx
-    add ecx,4
-    cmp ecx,1024
-    je .donepathcopy
-    jmp .pathcopy
+    mov ebx,STPath
+    mov [ST_Path],ebx
+    mov ebx,GNextPath
+    mov [GNext_Path],ebx
+    mov ebx,SGPath
+    mov [SG_Path],ebx
 
-.donepathcopy
     pushad
     call loadROM
     popad
