@@ -180,7 +180,7 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
   {
     copy_extra_data(&buffer, copy_func);
     
-    if (loading_state_no_sram)
+    if (!loading_state_no_sram)
     {
       copy_func(&buffer, sram, ramsize);  
     }
