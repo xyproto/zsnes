@@ -958,9 +958,12 @@ static size_t MovieSub_GetDuration()
 
 static void MovieSub_ResetStream()
 {
-  rewind(MovieSub.fp);
-  MovieSub.message_start = 0;
-  MovieSub.message_duration = 0;
+  if (MovieSub.fp)
+  {
+    rewind(MovieSub.fp);
+    MovieSub.message_start = 0;
+    MovieSub.message_duration = 0;
+  }
 }
 
 /////////////////////////////////////////////////////////
@@ -974,7 +977,6 @@ MovieProcessing
 1 = movie playback in progress
 2 = movie recording in progress
 
-
 */
 
 
@@ -987,7 +989,7 @@ void MovieInsertChapter()
   {
     case 1:	// replaying - external
       zmv_add_chapter();
-      Msgptr = "INTERNAL CHAPTER ADDED.";
+      Msgptr = "EXTERNAL CHAPTER ADDED.";
       break;
     case 2:	// recording - internal
       zmv_insert_chapter();
@@ -1002,31 +1004,37 @@ void MovieInsertChapter()
 
 void MovieSeekAhead()
 {
-  if (MovieProcessing == 1) // replaying only - record can use ZMTs
+  switch (MovieProcessing)
   {
-    if (zmv_next_chapter())
-    {
-      Msgptr = "NEXT CHAPTER LOADED.";
-    }  
-    else
-    {
-      Msgptr = "NO CHAPTERS AHEAD.";
-    }
+    case 1:	// replay seeking ok
+      if (zmv_next_chapter())	{ Msgptr = "NEXT CHAPTER LOADED."; }
+      else	{ Msgptr = "NO CHAPTERS AHEAD."; }
+      break;
+    case 2:	// record will use MZTs
+      Msgptr = "NO SEEKING DURING RECORD.";
+      break;
+    default:
+      Msgptr = "NO MOVIE PROCESSING.";
   }
-  else	{ Msgptr = "NO MOVIE PROCESSING."; }
 
   MessageOn = MsgCount;
 }
 
 void MovieSeekBehind()
 {
-  if (MovieProcessing == 1) // replaying only - record can use ZMTs
+  switch (MovieProcessing)
   {
-    zmv_prev_chapter();
-    MovieSub_ResetStream();
-    Msgptr = "PREVIOUS CHAPTER LOADED.";
+    case 1:	// replay seeking ok
+      zmv_prev_chapter();
+      MovieSub_ResetStream();
+      Msgptr = "PREVIOUS CHAPTER LOADED.";
+      break;
+    case 2:	// record will use MZTs
+      Msgptr = "NO SEEKING DURING RECORD.";
+      break;
+    default:
+      Msgptr = "NO MOVIE PROCESSING.";
   }
-  else { Msgptr = "NO MOVIE PROCESSING."; }
 
   MessageOn = MsgCount;
 }
