@@ -1752,7 +1752,11 @@ DisplayGUIMovieClick:
     GUIPHoldbutton 7,17,49,28,16
     GUIPHoldbutton 7,33,49,44,17
     GUIPHoldbutton 7,49,49,60,18
+%ifdef __LINUX__
+    GUIPButtonHole 60,25,byte[CMovieExt],'v'
+%else
     GUIPButtonHole 60,25,byte[CMovieExt],'V'
+%endif
     GUIPButtonHole 80,25,byte[CMovieExt],'1'
     GUIPButtonHole 100,25,byte[CMovieExt],'2'
     GUIPButtonHole 120,25,byte[CMovieExt],'3'
