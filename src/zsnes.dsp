@@ -899,15 +899,11 @@ InputName=winintrf
 # End Group
 # Begin Source File
 
-SOURCE=.\burn.c
+SOURCE=.\effects\burn.c
 # End Source File
 # Begin Source File
 
 SOURCE=.\chips\dsp1emu.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\fixsin.c
 # End Source File
 # Begin Source File
 
@@ -924,6 +920,10 @@ SOURCE=.\smoke.c
 # End Source File
 # Begin Source File
 
+SOURCE=.\uic.c
+# End Source File
+# Begin Source File
+
 SOURCE=.\zip\unzip.c
 # End Source File
 # Begin Source File
@@ -932,7 +932,7 @@ SOURCE=.\version.c
 # End Source File
 # Begin Source File
 
-SOURCE=.\water.c
+SOURCE=.\effects\water.c
 # End Source File
 # Begin Source File
 
@@ -954,17 +954,13 @@ SOURCE=.\zip\zpng.c
 
 SOURCE=.\win\ztcp.c
 # End Source File
-# Begin Source File
-
-SOURCE=.\zip\zzip.c
-# End Source File
 # End Group
 # Begin Group "Header Files"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=.\fixsin.h
+SOURCE=.\effects\fixsin.h
 # End Source File
 # Begin Source File
 
