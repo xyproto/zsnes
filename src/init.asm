@@ -2440,6 +2440,7 @@ SDD1memmap:
 
 SECTION .data
 NEWSYM memdest, dd 0
+NEWSYM SFXIRQFlag, db 0
 NEWSYM SFXCounter, dd 0
 SECTION .text
 
@@ -4413,6 +4414,7 @@ NEWSYM CheckROMType
 
     ; Chip Detection
     mov byte[SFXEnable],0
+    mov byte[SFXIRQFlag],0
     mov byte[C4Enable],0
     mov byte[SPC7110Enable],0
     mov byte[RTCEnable],0
@@ -4488,12 +4490,14 @@ NEWSYM CheckROMType
 ;Super FX has SRAM, but only a battery to save it on the latter two
     cmp ax,01320h
     jne .notSFXA
+int 3h
     mov byte[SFXEnable],1
     jmp .endchpdtct
 .notSFXA
     cmp ax,01420h
     jne .notSFXB
     mov byte[SFXEnable],1
+int 3h
     jmp .endchpdtct
 .notSFXB
     cmp ax,01520h
@@ -4505,6 +4509,7 @@ NEWSYM CheckROMType
     cmp ax,01A20h
     jne .notSFXD
     mov byte[SFXEnable],1
+    mov byte[SFXIRQFlag],1
     mov byte[SFXSRAM],1 ;Contains Battery
     jmp .endchpdtct
 .notSFXD

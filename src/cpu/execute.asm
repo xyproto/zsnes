@@ -109,7 +109,7 @@ EXTSYM C4VBlank
 EXTSYM dsp1teststuff
 EXTSYM ReturnFromSPCStall,SPCStallSetting,cycpb268,cycpb358,HIRQSkip,scanlines
 EXTSYM smallscreenon,ScreenScale
-EXTSYM MainLoop,NumberOfOpcodes,SfxCLSR,SfxSCMR,SfxPOR
+EXTSYM MainLoop,NumberOfOpcodes,SfxCLSR,SfxSCMR,SfxPOR,SFXIRQFlag
 EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,sfxclineloc
 EXTSYM PLOTJmpa,PLOTJmpb,FxTable,FxTableb,FxTablec,FxTabled
 EXTSYM SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,hdmaearlstart,SFXCounter
@@ -2844,7 +2844,9 @@ NEWSYM cpuover
     dec word[curypos]
     mov [tempdh],dh
     xor dh,dh
-    mov byte[doirqnext],0
+
+    mov al,[SFXIRQFlag]
+    mov byte[doirqnext],al
 
     call exechdma
     call exechdma
