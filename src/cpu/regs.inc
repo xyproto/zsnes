@@ -571,20 +571,23 @@ reg2138r:
 
 ; Read VRAM Data (Low)
 reg2139r:
+    mov al,[vramread]
+
     xor ebx,ebx
     mov bx,[vramaddr]
     add ebx,[vram]
     mov bl,[ebx]
-    mov al,[vramread]
     mov [vramread],bl
+
     cmp byte[vramincr],0
-    je .noincr
+    je near .noincr
     mov bx,[addrincr]
     add [vramaddr],bx
     cmp byte[vramincby8on],1
     jne .noincr
     dec byte[vramincby8left]
     jnz .noincr
+
     add word[vramaddr],2
     mov bl,byte[vramincby8totl]
     mov byte[vramincby8left],bl
@@ -601,20 +604,23 @@ reg2139r:
 
 ; Read VRAM Data (High)
 reg213Ar:
+    mov al,[vramread2]
+
     xor ebx,ebx
     mov bx,[vramaddr]
     add ebx,[vram]
     mov bl,[ebx+1]
-    mov al,[vramread2]
     mov [vramread2],bl
+
     cmp byte[vramincr],1
-    je .noincr
+    je near .noincr
     mov bx,[addrincr]
     add [vramaddr],bx
     cmp byte[vramincby8on],1
     jne .noincr
     dec byte[vramincby8left]
     jnz .noincr
+
     add word[vramaddr],2
     mov bl,byte[vramincby8totl]
     mov byte[vramincby8left],bl

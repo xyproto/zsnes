@@ -906,6 +906,17 @@ reg2117w:
     mov byte[vramaddr+1],al
     shl word[vramaddr],1
     mov byte[vramread],0
+
+    xor ebx,ebx
+    mov bx,[vramaddr]
+    add ebx,[vram]
+    mov bl,[ebx]
+    mov [vramread],bl
+    xor ebx,ebx
+    mov bx,[vramaddr]
+    add ebx,[vram]
+    mov bl,[ebx+1]
+    mov [vramread2],bl
     ret
 
 ; Video port data (Low)
@@ -1166,9 +1177,17 @@ reg2122w:
 reg2123w:
     mov bl,al
     and bl,0Fh
+    test bl,0Ah
+    jnz .nen1
+;    or bl,02h
+.nen1
     mov [winbg1en],bl
     mov bl,al
     shr bl,4
+    test bl,0Ah
+    jnz .nen2
+;    or bl,02h
+.nen2
     mov [winbg2en],bl
     ret
 
@@ -1176,9 +1195,17 @@ reg2123w:
 reg2124w:
     mov bl,al
     and bl,0Fh
+    test bl,0Ah
+    jnz .nen1
+;    or bl,02h
+.nen1
     mov [winbg3en],bl
     mov bl,al
     shr bl,4
+    test bl,0Ah
+    jnz .nen2
+;    or bl,02h
+.nen2
     mov [winbg4en],bl
     ret
 
