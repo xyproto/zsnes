@@ -65,7 +65,7 @@ endif
 
 ifeq (${CROSS},no)
   DELETECOMMAND = del
-  SLASH=\ 
+  SLASH=\${BLAHBLAHBLAH}
 endif
 
 ifeq (${OS},__MSDOS__)
@@ -291,10 +291,17 @@ ${WINDIR}/winlink.o: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
 	${CPPC} ${CFLAGS} -masm=intel -O0 -o $@ -c ${WINDIR}/winlink.cpp
 
 clean: 
-	${DELETECOMMAND} ${EXE} zsnesd.exe *.o
-	${DELETECOMMAND} ${CPUDIR}${SLASH}*.o ${VIDEODIR}${SLASH}*.o ${CHIPDIR}${SLASH}*.o
-	${DELETECOMMAND} ${EFFECTSDIR}${SLASH}*.o ${ZIPDIR}${SLASH}*.o ${JMADIR}${SLASH}*.o
-	${DELETECOMMAND} ${DOSDIR}${SLASH}*.o ${WINDIR}${SLASH}*.o ${GUIDIR}${SLASH}*.o
+	${DELETECOMMAND} ${EXE}
+	${DELETECOMMAND} *.o
+	${DELETECOMMAND} ${CPUDIR}${SLASH}*.o
+	${DELETECOMMAND} ${VIDEODIR}${SLASH}*.o
+	${DELETECOMMAND} ${CHIPDIR}${SLASH}*.o
+	${DELETECOMMAND} ${EFFECTSDIR}${SLASH}*.o
+	${DELETECOMMAND} ${ZIPDIR}${SLASH}*.o
+	${DELETECOMMAND} ${JMADIR}${SLASH}*.o
+	${DELETECOMMAND} ${DOSDIR}${SLASH}*.o
+	${DELETECOMMAND} ${WINDIR}${SLASH}*.o
+	${DELETECOMMAND} ${GUIDIR}${SLASH}*.o
 
 help:
 	@echo Please specify which platform to compile for with PLATFORM=platform_name
