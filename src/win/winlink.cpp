@@ -54,7 +54,7 @@ HINSTANCE hInst;
 }
 
 LPDIRECTSOUND8          lpDirectSound;
-LPDIRECTSOUNDBUFFER     SoundBuffer;
+LPDIRECTSOUNDBUFFER8    lpSoundBuffer;
 LPDIRECTSOUNDBUFFER     lpPrimaryBuffer;
 DSBUFFERDESC dsbd;
 
@@ -554,19 +554,26 @@ InitSound()
    dsbd.dwBufferBytes = SoundBufferSize;
    dsbd.lpwfxFormat = &wfx;
     
-   if(DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &SoundBuffer, NULL))
+   if(DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &lpPrimaryBuffer, NULL))
 	{
-      if(DS_OK  != SoundBuffer->Play(0,0,DSBPLAY_LOOPING ))
+      if(DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
+      {
+         if(DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING))
+         {
+            SoundEnabled=0; return FALSE;
+         }      
+         FirstSound=0;
+         return TRUE;
+      }
+      else
       {
          SoundEnabled=0; return FALSE;
-      }      
-      FirstSound=0;
-      return TRUE;
+      }
    } 
-	else 
-	{
-           SoundEnabled=0; return FALSE;
-	}
+   else 
+   {
+      SoundEnabled=0; return FALSE;
+   }
 
 }
 
@@ -576,8 +583,8 @@ ReInitSound()
 
    if (!SoundEnabled) return FALSE;
 
-   SoundBuffer->Stop();
-   SoundBuffer->Release();
+   lpSoundBuffer->Stop();
+   lpSoundBuffer->Release();
 
    PrevSoundQuality=SoundQuality;
    PrevStereoSound=StereoSound;
@@ -641,19 +648,26 @@ ReInitSound()
    dsbd.dwBufferBytes = SoundBufferSize;
    dsbd.lpwfxFormat = &wfx;
 
-   if(DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &SoundBuffer, NULL))
+   if(DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &lpPrimaryBuffer, NULL))
 	{
-      if(DS_OK  != SoundBuffer->Play(0,0,DSBPLAY_LOOPING ))
+      if(DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
+      {
+         if(DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING ))
+         {
+            return FALSE;
+         }
+         LastUsedPos=0;
+         return TRUE;
+      }
+      else
       {
          return FALSE;
       }
-        LastUsedPos=0;
-        return TRUE;
    } 
-	else 
-	{
-		return FALSE;
-	}
+   else 
+   {
+      return FALSE;
+   }
 
 }
 
@@ -814,10 +828,10 @@ void endgame()
       lpDirectSound=NULL;
    }
 
-   if(SoundBuffer)
+   if(lpSoundBuffer)
    {
-      SoundBuffer->Release();
-      SoundBuffer=NULL;
+      lpSoundBuffer->Release();
+      lpSoundBuffer=NULL;
    }
 
    if(lpPrimaryBuffer)
@@ -1538,7 +1552,7 @@ void UpdateVFrame(void)
 
    if (!SoundEnabled) return;
 
-   SoundBuffer->GetCurrentPosition(&CurrentPos,&WritePos);
+   lpSoundBuffer->GetCurrentPosition(&CurrentPos,&WritePos);
 
    if(LastUsedPos <= CurrentPos)
    {
@@ -1546,7 +1560,7 @@ void UpdateVFrame(void)
    }
    else
    {
-      DataNeeded=SoundBufferSize- LastUsedPos + CurrentPos;
+      DataNeeded=SoundBufferSize - LastUsedPos + CurrentPos;
    }
 
    DataNeeded/=(SPCSize*2);
@@ -1571,7 +1585,7 @@ void UpdateVFrame(void)
          if(T36HZEnabled)Buffer[i]=0;
       }
 
-      if(DS_OK!=SoundBuffer->Lock(LastUsedPos,
+      if(DS_OK!=lpSoundBuffer->Lock(LastUsedPos,
                                   SPCSize*2, &lpvPtr1,
                                   &dwBytes1, &lpvPtr2,
                                   &dwBytes2, 0))
@@ -1588,7 +1602,7 @@ void UpdateVFrame(void)
          CopyMemory(lpvPtr2, &Buffer[0]+dwBytes1, dwBytes2);
       }   
 
-      if(DS_OK  != SoundBuffer->Unlock(lpvPtr1, dwBytes1, lpvPtr2, dwBytes2))
+      if(DS_OK != lpSoundBuffer->Unlock(lpvPtr1, dwBytes1, lpvPtr2, dwBytes2))
       {
          return;
       }
