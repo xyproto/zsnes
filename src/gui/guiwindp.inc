@@ -5150,7 +5150,7 @@ GUIGUIAboutText6d db '    THEODDONE33',0
 GUIGUIAboutText6e db '    STAINLESS',0
 
 %ifdef __WIN32__
-GUIGUIAboutText7 db 'WIN PORT V1.05',0
+GUIGUIAboutText7 db 'WIN PORT V1.06',0
 %elifdef __LINUX__
 GUIGUIAboutText7 db 'LINUX PORT V0.37',0
 %endif
