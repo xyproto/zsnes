@@ -25,8 +25,8 @@ Dos port :
 Then to build the executable, go to the src directory and type:
 make -f makefile.dos 
 
-You may also want to compress zsnes.exe with upx (http://upx.tsx.org), it will 
-divide its size by 10.
+You may also want to compress zsnes.exe with upx (http://upx.sourceforge.net),
+it will divide its size by 10.
 
 
 Windows port : 
