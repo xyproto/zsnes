@@ -190,7 +190,7 @@ DWORD ZFileRMDir()
 
 DWORD ZFileGetDir()
 {
-  return(getcwd(DirName,128));
+  return (DWORD) (getcwd(DirName,128));
 }
 
 BYTE * ZFileFindPATH;
