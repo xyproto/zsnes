@@ -736,7 +736,6 @@ NEWSYM ShowTimer,    resb 1
 NEWSYM MousePRClick, resb 1
 NEWSYM MouseDis, resb 1
 NEWSYM NetPlayNoMore, resb 1
-RestoreValues resb 1
 NEWSYM NetChatFirst, resb 1
 NEWSYM NetServer, resb 1
 NEWSYM NetQuitAfter, resb 1
@@ -753,6 +752,7 @@ NEWSYM GUIcurrentdir, resb 131
 curgsval resb 1
 
 SECTION .data
+RestoreValues db 0
 NEWSYM numdrives, dd 26
 SubPalTable times 256 db 1      ; Corresponding Gray Scale Color
 
@@ -1102,14 +1102,14 @@ NEWSYM ExecGUISaveVars
     call GUIDeInit
 %endmacro
 
-SECTION .bss
-NEWSYM GUIoldhand9o, resd 1
-NEWSYM GUIoldhand9s, resw 1
-NEWSYM GUIoldhand8o, resd 1
-NEWSYM GUIoldhand8s, resw 1
-GUIt1cc resd 1
-GUIt1ccSwap resb 1
-GUIskipnextkey42 resb 1
+SECTION .data
+ NEWSYM GUIoldhand9o, dd 0
+ NEWSYM GUIoldhand9s, dw 0
+ NEWSYM GUIoldhand8o, dd 0
+ NEWSYM GUIoldhand8s, dw 0
+ GUIt1cc dd 0
+ GUIt1ccSwap db 0
+ GUIskipnextkey42 db 0
 
 SECTION .text
 NEWSYM GUIinit18_2hz
