@@ -2590,6 +2590,14 @@ NEWSYM copyvesa2320x240x16b
     mov dl,[resolutn]
     dec dl
     dec dl
+    cmp byte[GUIOn],1
+    jne .nogui
+    cmp byte[FilteredGUI],1
+    jne .nointerp
+.nogui
+    cmp byte[antienab],1
+    je near .interpolate
+.nointerp
     cmp byte[ScreenScale],1
     je near .fullscreen
     cmp byte[MMXSupport],1
@@ -2633,6 +2641,42 @@ NEWSYM copyvesa2320x240x16b
     dec ecx
     jnz .fsloopb
     jmp .fsloopa2
+
+.interpolate
+    ;cmp byte[ScreenScale],1
+    ;je .infsloopa
+.inloopa
+    mov ecx,256
+    jmp .inloopb
+.inloopa2
+    add esi,32*2
+    add edi,64*2
+    dec dl
+    jnz .inloopa
+    jmp .done
+.inloopb
+    mov ax,[esi]
+    mov bx,[esi-2]
+    cmp ax,bx
+    jne .inloopb2
+    mov [es:edi],ax
+    mov [es:edi-2],bx
+    jmp .inloopb3
+.inloopb2
+    shr ax,1
+    shr bx,1
+    and ax,7befh
+    and bx,7befh
+    add ax,bx
+    mov [es:edi],ax
+    mov [es:edi-2],ax
+    jmp .inloopb3
+.inloopb3
+    add esi,2
+    add edi,2
+    dec ecx
+    jnz .inloopb
+    jmp .inloopa2
 
 .done
     pop es
