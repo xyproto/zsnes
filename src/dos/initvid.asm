@@ -39,7 +39,11 @@ NEWSYM res480, resb 1
 SECTION .text
 
 NEWSYM dosinitvideo2
-;       jmp dosinitvideo.noaddsub
+    cmp byte[cvidmode],2
+    jne .nomodeq
+    jmp dosinitvideo.initmodeq
+.nomodeq
+    ret
 
 ;*******************************************************
 ; InitVideo
@@ -122,7 +126,7 @@ NEWSYM dosinitvideo
 .initmodeq
 %ifdef __MSDOS__
     cmp byte[scanlines],1
-    jnz .noscanlines
+    jne .noscanlines
     jmp .scanlines
 .noscanlines
     SetVGAMode .Mode256x256c
