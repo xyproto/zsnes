@@ -855,8 +855,6 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 
 void endgame()
 {
-
-MessageBox(NULL, "blah", "blah", MB_OK);
    if(lpDirectSound)
    {
       lpDirectSound->Release();
