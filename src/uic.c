@@ -144,7 +144,10 @@ void *doMemAlloc(size_t size)
 {
   void *ptr = NULL;
   ptr = malloc(size);
-  if (!ptr) { asm_call(outofmemory); }
+  if (!ptr)
+  { 
+    asm_call(outofmemory);
+  }
   return(ptr);
 }
 
