@@ -94,7 +94,6 @@ EXTSYM drawscreenwin
 EXTSYM ConvertToAFormat
 EXTSYM UnusedBit,HalfTrans,UnusedBitXor,UnusedBit,UnusedBitXor
 EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC
-EXTSYM WinUpdateDevices
 EXTSYM UpdateVFrame
 EXTSYM GetMouseX
 EXTSYM GetMouseY
