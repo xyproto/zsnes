@@ -3067,14 +3067,6 @@ GUILoadManualDir
 SECTION .bss
 ManualCPtr resd 1
 ManualStatus resb 1
-
-NEWSYM MovieCounter, resd 1
-
-SECTION .data
-NEWSYM UnableMovie2, db 'MUST PLAY WITH SOUND OFF',0
-NEWSYM UnableMovie3, db 'MUST PLAY WITH SOUND ON',0
-
-SECTION .bss
 NEWSYM Totalbyteloaded, resd 1
 NEWSYM sramsavedis, resb 1
 
