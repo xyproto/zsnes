@@ -44,7 +44,6 @@ DWORD FirstSound=1;
 int AllowDefault=0;
 int SoundEnabled=1;
 
-BYTE OverlayEnabled = 0;
 DWORD Overlay = 0;
 DWORD Overlay_failed = 0;
 DWORD Overlay_Colorkey = 0;
@@ -162,6 +161,7 @@ void DDrawError(){
 
 extern "C" BYTE vsyncon;
 extern "C" BYTE TripleBufferWin;
+extern "C" BYTE OverlayEnabled;
 
 void DrawScreen()
 {

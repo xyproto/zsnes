@@ -2119,8 +2119,8 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,146,byte[LatestSave]
     GUIClickCButton 11,156,byte[AutoState]
     GUIClickCButton 11,166,byte[DontSavePath]
-    GUIClickCButton 11,176,byte[SPCDisable]
 %ifdef __WIN32__
+    GUIClickCButtonat 11,176,byte[OverlayEnabled]
     GUIClickCButtonat 11,186,byte[AlternateTimer]
 %endif
     ; Frameskip = 0
@@ -2252,6 +2252,7 @@ DisplayGUISoundClick:
 %ifdef __WIN32__
     GUIClickCButton 11,171,byte[ExclusiveSound]
 %endif
+    GUIClickCButton 11,181,byte[SPCDisable]
     cmp eax,15
     jl near .nosrate
     cmp edx,61
