@@ -182,6 +182,8 @@ int Main_Proc(void)
 		case SDL_MOUSEMOTION:
 			MouseX = event.motion.x;
 			MouseY = event.motion.y;
+			MouseMoveX = event.motion.xrel;
+			MouseMoveY = event.motion.yrel;
 			if (MouseX < MouseMinX) MouseX = MouseMinX;
 			if (MouseX > MouseMaxX) MouseX = MouseMaxX;
 			if (MouseY < MouseMinY) MouseY = MouseMinY;

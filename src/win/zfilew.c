@@ -343,7 +343,7 @@ DWORD GetDate()
    newtime = localtime( &long_time );
    value = ((newtime->tm_mday) % 10)+((newtime->tm_mday)/10)*16
           +(((newtime->tm_mon)+1) << 8)
-          +((((newtime->tm_year) % 10)+((newtime->tm_year)/10)*16) << 16);
+          +((((newtime->tm_year) % 10)+((newtime->tm_year)/10)*16) << 16)
           +((newtime->tm_wday) << 28);
 
    return(value);
