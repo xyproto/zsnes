@@ -3654,6 +3654,7 @@ NEWSYM membank0w16romram             ; 0000-1FFF
     ret
 
 NEWSYM membank0r8
+    and ecx,0FFFFh
     cmp byte[SA1Enable],1
     je near membank0r8SA1
     cmp ecx,2000h
@@ -3702,6 +3703,7 @@ NEWSYM membank0r8
     ret
 
 NEWSYM membank0r16
+    and ecx,0FFFFh
     cmp byte[SA1Enable],1
     je near membank0r16SA1
     cmp ecx,2000h
@@ -3761,6 +3763,7 @@ NEWSYM membank0r16
     ret
 
 NEWSYM membank0w8
+    and ecx,0FFFFh
     cmp byte[SA1Enable],1
     je near membank0w8SA1
     cmp ecx,2000h
@@ -3810,6 +3813,7 @@ NEWSYM membank0w8
     pop ecx
     ret
 NEWSYM membank0w16
+    and ecx,0FFFFh
     cmp byte[SA1Enable],1
     je near membank0w16SA1
     cmp ecx,2000h
