@@ -525,6 +525,7 @@ InitSound()
          break;
       default:
          wfx.nSamplesPerSec = 11025;
+         SoundBufferSize=1024*2;
    }
 
    if (LargeSoundBuf == 1)
@@ -617,7 +618,6 @@ ReInitSound()
          wfx.nSamplesPerSec = 48000;
          SoundBufferSize=1024*8;
          break;
-
       default:
          wfx.nSamplesPerSec = 11025;
          SoundBufferSize=1024*2;
