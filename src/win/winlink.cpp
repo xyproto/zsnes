@@ -37,7 +37,6 @@ DWORD WindowWidth = 256;
 DWORD WindowHeight = 224;
 
 DWORD FullScreen=0;
-DWORD PrevFull=0;
 DWORD Moving=0;
 DWORD SoundBufferSize=1024*18;
 DWORD FirstSound=1;
@@ -223,6 +222,7 @@ void initwinvideo();
 void DosExit();
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
+extern BYTE LargeSoundBuf;
 extern BYTE ExclusiveSound;
 extern BYTE HighPriority;
 extern BYTE AlwaysOnTop;
@@ -660,6 +660,11 @@ ReInitSound()
          wfx.nSamplesPerSec = 11025;
          SoundBufferSize=1024*2;
   }
+
+   if (LargeSoundBuf == 1)
+   {
+      SoundBufferSize*=2;
+   }
 
    if (StereoSound==1)
    {

@@ -993,10 +993,10 @@ GUISoundKeys:
     xor byte[RevStereo],1
 .notrevst
 %ifdef __WIN32__
-    cmp dh,'X'
-    jne .noexclusivesound
-    xor byte[ExclusiveSound],1
-.noexclusivesound
+    cmp dh,'A'
+    jne .nolargebuffer
+    xor byte[LargeSoundBuf],1
+.nolargebuffer
 %endif
 %ifdef __MSDOS__
     cmp dh,'U'
@@ -1020,6 +1020,12 @@ GUISoundKeys:
     jne .nocubic
     xor byte[UseCubicSpline],1
 .nocubic
+%ifdef __WIN32__
+    cmp dh,'X'
+    jne .noexclusivesound
+    xor byte[ExclusiveSound],1
+.noexclusivesound
+%endif
     ret
 
 .sampratenext db 1,4,5,6,2,3,0,0,0,0

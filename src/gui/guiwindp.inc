@@ -2140,6 +2140,9 @@ DisplayGUISound:
     GUIOuttextwin2u 6,26,146,GUISoundTextK,0
     GUIOuttextwin2u 6,26,156,GUISoundTextL,6
     GUIOuttextwin2u 6,26,166,GUISoundTextM,0
+%ifdef __WIN32__
+    GUIOuttextwin2u 6,26,176,GUISoundTextN,1
+%endif
     add byte[GUItextcolor],15
     GUIOuttextwin2 6,25,25,GUISoundText1
     GUIOuttextwin2 6,25,34,GUISoundText3
@@ -2164,6 +2167,9 @@ DisplayGUISound:
     GUIOuttextwin2 6,25,145,GUISoundTextK
     GUIOuttextwin2 6,25,155,GUISoundTextL
     GUIOuttextwin2 6,25,165,GUISoundTextM
+%ifdef __WIN32__
+    GUIOuttextwin2 6,25,175,GUISoundTextN
+%endif
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 6,6,16,GUISoundText6
@@ -2225,7 +2231,7 @@ DisplayGUISound:
 .nocheckbox42
 %ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[ExclusiveSound],0
+    cmp byte[LargeSoundBuf],0
     je .nocheckbox43
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox43
@@ -2255,6 +2261,14 @@ DisplayGUISound:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox8
     GUIDisplayIconWin 6,11,161,[GUITemp]
+%ifdef __WIN32__
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[ExclusiveSound],0
+    je .nocheckbox9
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox9
+    GUIDisplayIconWin 6,11,171,[GUITemp]
+%endif
     DrawGUIWinBox 6,15,61,69,69,167
     mov dword[GUITemp],GUISoundText7
     xor eax,eax
@@ -2269,7 +2283,6 @@ DisplayGUISound:
     mov byte[GUItextcolor],222
 .zero4
     GUIOuttextwin2 6,22,63,[GUITemp]
-
     mov eax,dword[GUIwinposx+6*4]
     mov ebx,dword[GUIwinposy+6*4]
     mov ecx,eax
@@ -2284,7 +2297,6 @@ DisplayGUISound:
     inc eax
     sub dl,13
     DrawGUILine
-
     xor eax,eax
     mov al,[MusicRelVol]
     mov dword[GUITemp],11
@@ -2342,11 +2354,12 @@ GUISoundTextCb db '48000HZ',0
 GUISoundTextD db '---%',0
 GUISoundTextH db 'REVERSE STEREO',0
 GUISoundTextI db 'SURROUND SOUND',0
-GUISoundTextIb db 'EXCLUSIVE MODE',0
+GUISoundTextIb db 'LARGE SOUND BUFFER',0
 GUISoundTextJ db 'SOUND INTERPOLATION',0
 GUISoundTextK db 'LOW PASS FILTER',0
 GUISoundTextL db 'SOUND BUFFERING',0
 GUISoundTextM db 'CUBIC SPLINE INTERP',0
+GUISoundTextN db 'EXCLUSIVE MODE',0
 
 DisplayGUICheatConv:
     mov eax,[ccheatnpos]

@@ -2243,12 +2243,15 @@ DisplayGUISoundClick:
 %endif
 ;.win32sound
 %ifdef __WIN32__
-    GUIClickCButton 11,121,byte[ExclusiveSound]
+    GUIClickCButton 11,121,byte[LargeSoundBuf]
 %endif
     GUIClickCButton 11,131,byte[InterSound]
     GUIClickCButton 11,141,byte[LowPassFilter]
     GUIClickCButton 11,151,byte[SoundBufEn]
     GUIClickCButton 11,161,byte[UseCubicSpline]
+%ifdef __WIN32__
+    GUIClickCButton 11,171,byte[ExclusiveSound]
+%endif
     cmp eax,15
     jl near .nosrate
     cmp edx,61
