@@ -581,7 +581,22 @@ db '',13,10
 ;db '',13,10
 ;db 'CopyMethod = %o',13,10
 ;db '',13,10
-db '; Video Mode, 0 - 3',13,10
+%ifdef __WIN32__
+db '; Video Mode, 0 - 17',13,10
+db ';   0 = 64x56 R WIN           1 = 128x112 R WIN',13,10
+db ';   2 = 256X224 R WIN         3 = 256x224 R FULL',13,10
+db ';   4 = 512X448 R WIN         5 = 512X448 DR WIN',13,10
+db ';   6 = 640x480 S WIN         7 = 640x480 DR FULL',13,10
+db ';   8 = 640X480 DS FULL       9 = 640X480 S FULL',13,10
+db ';   10 = 800x600 S WIN        11 = 800x600 DS WIN',13,10
+db ';   12 = 800x600 S FULL       13 = 800x600 DS FULL',13,10
+db ';   14 = 1024X768 S WIN       15 = 1024X768 DS WIN',13,10
+db ';   16 = 1024x768 S FULL      17 = 1024x768 DS FULL',13,10
+db '',13,10
+db 'VideoMode = %U',13,10
+db '',13,10
+%elifdef __LINUX__
+db '; Video Mode, 0 - 10',13,10
 db ';   0 = 320x240x256           1 = 256x256x256',13,10
 db ';   2 = 320x240x256 VESA2     3 = 320x240x65536 VESA2',13,10
 db ';   4 = 640x480x256 VESA2     5 = 640x480x65536 VESA2',13,10
@@ -591,6 +606,18 @@ db ';   10 = 320x480x65536 VESA2',13,10
 db '',13,10
 db 'VideoMode = %U',13,10
 db '',13,10
+%elifdef __MSDOS__
+db '; Video Mode, 0 - 10',13,10
+db ';   0 = 320x240x256           1 = 256x256x256',13,10
+db ';   2 = 320x240x256 VESA2     3 = 320x240x65536 VESA2',13,10
+db ';   4 = 640x480x256 VESA2     5 = 640x480x65536 VESA2',13,10
+db ';   6 = 512x384x256 VESA2     7 = 512x384x65536 VESA2',13,10
+db ';   8 = 640x480x65536 VESA1.2 9 = 320x480x256 VESA2',13,10
+db ';   10 = 320x480x65536 VESA2',13,10
+db '',13,10
+db 'VideoMode = %U',13,10
+db '',13,10
+%endif
 db '; Sound Emulation = 0 or 1 (1 = ON)',13,10
 db '',13,10
 db 'Sound = %V',13,10
@@ -611,13 +638,16 @@ db 'ReverseStereo = %s',13,10
 db '',13,10
 db '; GUI Disable (1 = Disable GUI, 0 = Enable GUI)',13,10
 db '',13,10
+%ifdef __MSDOS__
 db 'GUIDisable = %Y',13,10
 db '',13,10
+%endif
 db '; New Graphics Engine (1 = Enable, 0 = Disable)',13,10
 db '; All 256 color modes and 320x240x65536 supported',13,10
 db '',13,10
 db 'NewGfx = %n',13,10
 db '',13,10
+%ifdef __MSDOS__
 db '; Scanlines (0 = Disable, 1 = Full, 2 = 25%, 3 = 50%)',13,10
 db '; 256x256x256 or 640x480 modes only (25% and 50% in 640x480x65536 mode only)',13,10
 db '',13,10
@@ -642,8 +672,10 @@ db 'Force8bit = %c',13,10
 db '',13,10
 db '; Disable Echo  (1 = Yes, 0 = No)',13,10
 db '',13,10
+%endif
 db 'EchoDisable = %r',13,10
 db '',13,10
+%ifdef __MSDOS__
 db '; Sound Volume Level (0 .. 100)',13,10
 db '; Note : Setting this too high can cause sound overflow which degrades quality',13,10
 db '',13,10
@@ -651,6 +683,7 @@ db 'Volume = %q',13,10
 db '',13,10
 db '; Set this to 1 if you do not want ZSNES to save the configuration files.',13,10
 db '',13,10
+%endif
 db 'DontSave = %u',13,10
 db '',13,10
 db '; Savefile directory.  Leave it blank if you want the save files to be in the',13,10
