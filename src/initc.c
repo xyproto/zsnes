@@ -454,7 +454,7 @@ void loadZipFile()
 {
   int err, fileSize;
   unsigned char *ROM = (unsigned char *)romdata;
-  bool multifile = false;  
+  bool multifile = false, NSS = false;  
   char *incrementer = 0;
 
   unzFile zipfile = unzOpen(ZOpenFileName); //Open zip file
@@ -495,11 +495,12 @@ void loadZipFile()
     if (strlen(cFileName) >= 5) //Char + ".IC2"
     {
       char *ext = cFileName+strlen(cFileName)-4;  
-      if (!strcasecmp(ext, ".IC3"))
+      if (!strncasecmp(ext, ".IC", 3))
       {
         strcpy(ourFile, cFileName);
         incrementer = ourFile+strlen(ourFile)-1;
-        multifile = true;
+        *incrementer = '7';
+        NSS = true;
         break;
       }
     }
@@ -527,6 +528,11 @@ void loadZipFile()
     //Sets current file to the file we liked before
     if (unzLocateFile(zipfile, ourFile, 1) != UNZ_OK)
     { 
+      if (NSS)
+      {
+        (*incrementer)--;
+        continue;
+      }
       unzClose(zipfile);
       return;
     }
@@ -568,19 +574,19 @@ void loadZipFile()
 
     curromspace += fileSize;
 
+    if (NSS)
+    {
+      if (!*incrementer) { return; }
+      (*incrementer)--;
+      continue;
+    }
+
     if (!multifile)
     { 
       unzClose(zipfile);
       return;
     }
-
     (*incrementer)++;
-    //Code to find next ROM for NSS games
-    if ((incrementer[-1] == 'C' || incrementer[-1] == 'c'))
-    {
-      if (*incrementer == '4') { *incrementer = '2'; }
-      if (*incrementer == '3') { *incrementer = '8'; }
-    }
   }
 }
 
