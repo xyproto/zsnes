@@ -54,7 +54,7 @@ EXTSYM ZFileDelFName,ZFileDelete
 EXTSYM ZCloseFileHandle,ZCloseFile
 EXTSYM ZFileTellHandle,ZFileTell
 EXTSYM ZFFTimeFName,ZFTime,ZFDate,ZFileGetFTime
-EXTSYM kbhit
+;EXTSYM kbhit
 EXTSYM keyboardhit
 EXTSYM GUIkeydelay2
 ;EXTSYM _kbhit
@@ -62,7 +62,7 @@ EXTSYM GUIkeydelay2
 ;EXTSYM _chdrive
 EXTSYM ZFileMKDir,ZFileCHDir,ZFileRMDir,CHPath,MKPath,RMPath
 EXTSYM ZFileGetDir,DriveNumber,DirName
-EXTSYM _getdrive
+;EXTSYM _getdrive
 EXTSYM DTALoc,DTALocPos,ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
 EXTSYM NoSoundReinit,soundon,DSPDisable,SBInt,NoSoundReinit,PICMaskP,SBIrq
@@ -313,16 +313,16 @@ NEWSYM allocmem
 NEWSYM PrintChar
     ret
     ; print character at dl, push all modified registers
-    pushad 
-    push eax
-    push edx
-    call putchar
-    pop edx
+;    pushad 
+;    push eax
+;    push edx
+;    call putchar
+;    pop edx
 ;    mov ah,02h
 ;    int 21h
-    pop eax
-    popad 
-    ret
+;    pop eax
+;    popad 
+;    ret
 
 NEWSYM PrintStr          ; Print ASCIIZ string
 
