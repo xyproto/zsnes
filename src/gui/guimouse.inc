@@ -2332,7 +2332,11 @@ DisplayGUIVideoClick:
     mov bl,[cvidmode]
     cmp byte[GUISLVID+ebx],0
     je near .nocheckboxb
+%ifdef __LINUX__
+    GUIClickCButton4 21,119,byte[scanlines],byte[cfgscanline],1
+%else
     GUIClickCButton4 21,114,byte[scanlines],byte[cfgscanline],1
+%endif
 .nocheckboxb
     xor ebx,ebx
     mov bl,[cvidmode]
@@ -2357,8 +2361,13 @@ DisplayGUIVideoClick:
     mov bl,[cvidmode]
     cmp byte[GUIHSVID+ebx],0
     je near .nohsline
+%ifdef __LINUX__
+    GUIClickCButton4 61,119,byte[scanlines],byte[cfgscanline],3
+    GUIClickCButton4 101,119,byte[scanlines],byte[cfgscanline],2
+%else
     GUIClickCButton4 61,114,byte[scanlines],byte[cfgscanline],3
     GUIClickCButton4 101,114,byte[scanlines],byte[cfgscanline],2
+%endif
 .nohsline
 %ifdef __WIN32__
      xor ebx,ebx

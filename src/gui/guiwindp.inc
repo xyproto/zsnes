@@ -1638,21 +1638,34 @@ DisplayGUIVideo:
     GUIOuttextwin2 5,12,90,GUIVideoTextw2
     GUIOuttextwin2 5,12,97,GUIVideoTextw3
 %endif
-
+%ifdef __LINUX__
+    GUIOuttextwin2 5,12,104,GUIVideoTextw4
+%endif
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUISLVID+eax],0
     je near .notext2
+%ifdef __LINUX__
+    GUIOuttextwin2 5,13,116,GUIVideoTextb
+    GUIOuttextwin2u 5,36,124,GUIVideoTexta,0
+%else
     GUIOuttextwin2 5,13,111,GUIVideoTextb
     GUIOuttextwin2u 5,36,119,GUIVideoTexta,0
+%endif    
 .notext2
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHSVID+eax],0
     je near .notexta
+%ifdef __LINUX__
+    GUIOuttextwin2 5,13,116,GUIVideoTextb
+    GUIOuttextwin2u 5,76,124,GUIVideoTexta2,0
+    GUIOuttextwin2u 5,116,124,GUIVideoTexta3,0
+%else
     GUIOuttextwin2 5,13,111,GUIVideoTextb
     GUIOuttextwin2u 5,76,119,GUIVideoTexta2,0
     GUIOuttextwin2u 5,116,119,GUIVideoTexta3,0
+%endif
 .notexta
     xor eax,eax
     mov al,[cvidmode]
@@ -1761,20 +1774,34 @@ DisplayGUIVideo:
     GUIOuttextwin2 5,11,89,GUIVideoTextw2
     GUIOuttextwin2 5,11,96,GUIVideoTextw3
 %endif
+%ifdef __LINUX__
+    GUIOuttextwin2 5,11,103,GUIVideoTextw4
+%endif
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUISLVID+eax],0
     je .notext2b
+%ifdef __LINUX__
+    GUIOuttextwin2 5,12,115,GUIVideoTextb
+    GUIOuttextwin2 5,35,123,GUIVideoTexta
+%else
     GUIOuttextwin2 5,12,110,GUIVideoTextb
     GUIOuttextwin2 5,35,118,GUIVideoTexta
+%endif
 .notext2b
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHSVID+eax],0
     je near .notextab
+%ifdef __LINUX__
+    GUIOuttextwin2 5,12,115,GUIVideoTextb
+    GUIOuttextwin2 5,75,123,GUIVideoTexta2
+    GUIOuttextwin2 5,115,123,GUIVideoTexta3
+%else
     GUIOuttextwin2 5,12,110,GUIVideoTextb
     GUIOuttextwin2 5,75,118,GUIVideoTexta2
     GUIOuttextwin2 5,115,118,GUIVideoTexta3
+%endif
 .notextab
     xor eax,eax
     mov al,[cvidmode]
@@ -1894,7 +1921,11 @@ DisplayGUIVideo:
     jne .nocheckbox
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox
+%ifdef __LINUX__
+    GUIDisplayIconWin 5,21,119,[GUITemp]
+%else
     GUIDisplayIconWin 5,21,114,[GUITemp]
+%endif
 .nocheckboxb
     xor eax,eax
     mov al,[cvidmode]
@@ -1905,13 +1936,21 @@ DisplayGUIVideo:
     jne .nocheckboxv
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckboxv
+%ifdef __LINUX__
+    GUIDisplayIconWin 5,61,119,[GUITemp]
+%else
     GUIDisplayIconWin 5,61,114,[GUITemp]
+%endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[scanlines],2
     jne .nocheckboxv2
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckboxv2
+%ifdef __LINUX__
+    GUIDisplayIconWin 5,101,119,[GUITemp]
+%else
     GUIDisplayIconWin 5,101,114,[GUITemp]
+%endif
 .nocheckboxw
     xor eax,eax
     mov al,[cvidmode]
@@ -2207,6 +2246,7 @@ GUIVideoTextw0 db 'LEGEND:',0
 GUIVideoTextw1 db ' S = SCALED TO FIT SCREEN',0
 GUIVideoTextw2 db ' R = MATCHED SCREEN RATIO',0
 GUIVideoTextw3 db ' D = ALLOW 2XSAI,HIRES,ETC',0
+GUIVideoTextw4 db ' O = OPENGL MODE',0
 
 SECTION .bss
 GUIVStA resd 3
@@ -5042,7 +5082,7 @@ DisplayGUIOptns:
     GUIOuttextwin2u 10,26,183,GUIGUIOptnsTextF,2
     GUIOuttextwin2u 10,138,38,GUIGUIOptnsTextK,1
     GUIOuttextwin2u 10,26,193,GUIGUIOptnsTextL,1
-    GUIOuttextwin2u 10,138,58,GUIGUIOptnsTextN,3
+    GUIOuttextwin2u 10,138,58,GUIGUIOptnsTextN,1
 %endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,16,123,GUIGUIOptnsText6

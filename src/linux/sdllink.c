@@ -821,6 +821,7 @@ void initwinvideo(void)
 		switch (cvidmode)
 		{
 			//case 0:
+			//case 4;
 			default:
 				WindowWidth = 256;
 				WindowHeight = 224;
@@ -831,41 +832,45 @@ void initwinvideo(void)
 				break;
 			case 2:
 			case 5:
-			case 13:
 				WindowWidth = 512;
 				WindowHeight = 448;
 				break;
 			case 3:
 			case 6:
-			case 16:
+			case 7:
+			case 17:					// Variable
 				WindowWidth = 640;
 				WindowHeight = 480;
 				break;
-			case 7:
+			case 8:
 				WindowWidth = 640;
 				WindowHeight = 576;
 				break;
-			case 8:
+			case 9:
 				WindowWidth = 768;
 				WindowHeight = 672;
 				break;
-			case 9:
-				WindowWidth = 896;
-				WindowHeight = 784;
-				break;
 			case 10:
-				WindowWidth = 1024;
-				WindowHeight = 896;
-				break;
 			case 11:
-			case 14:
 				WindowWidth = 800;
 				WindowHeight = 600;
 				break;
 			case 12:
-			case 15:
+				WindowWidth = 896;
+				WindowHeight = 784;
+				break;
+			case 13:
+			case 14:
 				WindowWidth = 1024;
 				WindowHeight = 768;
+				break;
+			case 15:
+				WindowWidth = 1024;
+				WindowHeight = 896;
+				break;
+			case 16:
+				WindowWidth = 1280;
+				WindowHeight = 1024;
 				break;
 		}
 		adjustMouseXScale();
