@@ -125,7 +125,7 @@ EXTSYM GetScreen,GUITBWVID
 EXTSYM Clear2xSaIBuffer
 EXTSYM MouseWindow
 EXTSYM GotoHomepage
-EXTSYM cfgcvidmode,ExitFromGUI
+EXTSYM cfgcvidmode, ExitFromGUI
 EXTSYM GUIWFVID
 EXTSYM cfgvsync,newgfx16b
 EXTSYM cfgscanline,cfginterp
@@ -146,11 +146,13 @@ EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Lk,pl1Rk,pl1Ak,pl1Bk
 EXTSYM deinitipx
 EXTSYM InitModem
 EXTSYM outofmemfix,yesoutofmemory
+
 EXTSYM CReadHead,ReadHead,CFWriteHead,CFWriteStart
 EXTSYM JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209,JoyMaxX209
 EXTSYM JoyMinY209,JoyMaxY209,GetCoords,GetCoords3
 EXTSYM MultiTap,SFXEnable
 EXTSYM RestoreSystemVars
+	
 EXTSYM TCPIPStartServer
 EXTSYM TCPIPInitConnectToServer
 EXTSYM TCPIPWaitForConnection
@@ -168,7 +170,6 @@ EXTSYM DeInitModemC
 EXTSYM ipxgetchar,ipxsendchar,TCPIPStoreByte
 EXTSYM TCPIPGetByte,GUIBIFIL
 EXTSYM ModemSendChar
-EXTSYM MMXCheck
 %ifdef __LINUX__
 EXTSYM numlockptr
 %endif
@@ -583,7 +584,6 @@ NEWSYM DisableScreenSaver, db 0
 NEWSYM TrapMouseCursor, db 1
 NEWSYM KeyQuickClock, dd 0
 NEWSYM KeyQuickMinimize, dd 0
-NEWSYM MMXSupport, db 1
 
 GUIsave equ $-GUIRAdd
 

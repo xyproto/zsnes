@@ -1305,6 +1305,19 @@ GUIWinClicked:
 %endif
 %endmacro
 
+%macro GUIClickCButtonMMX 3
+    cmp eax,%1+1
+    jl %%noclick
+    cmp edx,%2+3
+    jl %%noclick
+    cmp eax,%1+6
+    jg %%noclick
+    cmp edx,%2+8
+    jg %%noclick
+    xor %3,2
+%%noclick
+%endmacro
+
 %macro GUIClickCButtonI 3
     cmp eax,%1+1
     jl %%noclick
@@ -1318,21 +1331,6 @@ GUIWinClicked:
     cmp byte[En2xSaI],1
     jnae %%noclick
     call Clear2xSaIBuffer
-%%noclick
-%endmacro
-
-%macro GUIClickCButtonMMX 4
-    cmp eax,%1+1
-    jl %%noclick
-    cmp edx,%2+3
-    jl %%noclick
-    cmp eax,%1+6
-    jg %%noclick
-    cmp edx,%2+8
-    jg %%noclick
-    xor %3,%4
-    call MMXCheck
-    ret
 %%noclick
 %endmacro
 
@@ -2154,7 +2152,7 @@ DisplayGUIOptionClick:
     GUIClickCButton2 11,36,byte[newengen],byte[cfgnewgfx],1
 .invalidng
 ;    GUIClickCButton2 11,46,byte[vsyncon],byte[cfgvsync],1
-    GUIClickCButtonMMX 11,56,byte[MMXSupport],1
+    GUIClickCButtonMMX 11,56,byte[FPUCopy]
     GUIClickCButtonM 11,66,byte[pl12s34]
 %ifdef __MSDOS__
     GUIClickCButton 11,76,byte[SidewinderFix]
