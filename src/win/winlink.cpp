@@ -315,6 +315,7 @@ extern "C" {
 unsigned char keyboardhit=0;
 void initwinvideo();
 void DosExit();
+extern BYTE GUIOn2;
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
 extern BYTE LargeSoundBuf;
@@ -421,15 +422,26 @@ aquireagain:;
 	return TRUE;
 }
 
+extern "C" void SaveSramData();
+
 void ExitFunction()
 {
+   if (GUIOn2 == 0)
+   {
+      _asm
+      {
+         pushad
+         call SaveSramData
+         popad
+      }
+   }
    IsActivated = 0;
    CheckScreenSaver();
    ReleaseDirectInput();
    ReleaseDirectSound();
    ReleaseDirectDraw();
    DestroyWindow(hMainWindow);
-} 
+}
 
 LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -1839,8 +1851,6 @@ void CheckTimers(void)
    }
 }
 
-extern BYTE GUIOn2;
-
 void UpdateVFrame(void)
 {
    if (GUIOn2 == 1 && IsActivated == 0) WaitMessage();
@@ -2384,7 +2394,7 @@ extern WORD vesa2_btrcl;
 extern WORD vesa2_btrcla;
 extern WORD nojoystickpoll;
 
-extern void SwitchFullScreen(void);
+extern void SwitchFullScreen();
 
 void WinUpdateDevices()
 {
@@ -2408,10 +2418,11 @@ void WinUpdateDevices()
    if (keys2[0x38] != 0 && keys2[0x3E] != 0) exit(0);
    if (keys2[0xB8] != 0 && keys2[0x1C] != 0 || keys2[0x38] != 0 && keys2[0x1C] != 0)
    {
-    _asm{
-      pushad
-      call SwitchFullScreen
-      popad
+      _asm
+      {
+         pushad
+         call SwitchFullScreen
+         popad
       }
       return;
    }
