@@ -2858,6 +2858,8 @@ guipostvideofail:
     call DisplayMenu
 %ifndef __LINUX__
     mov dword[GUIkeydelay],0FFFFFFFFh
+%else
+    mov dword[GUIkeydelay],0x0
 %endif
     jmp guipostvideo.pressedfail
 
