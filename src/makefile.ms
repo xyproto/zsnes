@@ -57,6 +57,7 @@ ifeq ($(PLATFORM),win32)
   CPPC = g++
   WINDRES = windres
   OS=__WIN32__
+  OBJFIX=objfix.exe
 endif
 
 ifeq ($(PLATFORM),msvc)
@@ -78,6 +79,7 @@ ifeq ($(PLATFORM),win32-cross)
   WINDRES = i586-mingw32msvc-windres
   OS=__WIN32__
   CROSS=yes
+  OBJFIX=objfix
 endif
 
 ifeq (${CROSS},no)
@@ -95,7 +97,7 @@ endif
 
 ifeq (${OS},__WIN32__)
   EXE=zsnesw.exe
-  FILEFORMAT=gnuwin32
+  FILEFORMAT=win32
   LIBS=${LIBSORIG} -ldxguid -ldinput8 -lwsock32 -luser32 -lgdi32 -lshell32 -lwinmm -mwindows
   OE=.obj
 endif
@@ -176,6 +178,9 @@ ifneq ($(PLATFORM),msvc)
 
 %${OE}: %.asm
 	${ASM} ${ASMOPT} ${ASMFLAGS} -o $@ $<
+ifeq (${OS},__WIN32__)
+	objfix $@
+endif
 else
 %.obj : %.c
 	cl /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ $<
@@ -190,7 +195,7 @@ endif
 ALL: zsnes
 	${DELETECOMMAND} version${OE}
 
-zsnes: ${OBJS}
+zsnes: ${OBJFIX} ${OBJS}
 ifneq ($(PLATFORM),msvc)
 	${CPPC} -Ws -s -o ${EXE} ${OBJS} ${LIBS}
 else
@@ -317,6 +322,8 @@ ${WINDIR}/zsnes${OE}: ${WINDIR}/zsnes.rc
 	${WINDRES} --include-dir ${WINDIR} ${WINDIR}/zsnes.rc -o${WINDIR}/zsnes${OE}
 ${WINDIR}/winlink${OE}: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
 	${CPPC} -O0 ${CFLAGS} -masm=intel -o $@ -c ${WINDIR}/winlink.cpp
+${OBJFIX}: $<
+	gcc -O3 -o $@ objfix.c
 endif
 
 clean: 
