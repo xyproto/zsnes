@@ -908,7 +908,7 @@ void mzt_chdir()
   chdir(zmv_vars.filename);
 }
 
-bool mzt_save(char *statename, bool thumb)
+bool mzt_save(char *statename, bool thumb, bool playback)
 {
   size_t filename_len = strlen(zmv_vars.filename);
   struct stat stat_buffer;
@@ -970,7 +970,7 @@ bool mzt_save(char *statename, bool thumb)
 
         if ((fp = fopen(statename,"wb")))
         {    
-          fwrite4(zmv_open_vars.frames_replayed, fp);
+          fwrite4((playback) ? zmv_open_vars.frames_replayed : zmv_vars.header.frames, fp);
           write_last_joy_state(fp);
           fwrite4(rewind_point, fp);
           fclose(fp);

@@ -720,8 +720,8 @@ void statesaver()
 
   if (MovieProcessing == 2)
   {
-    bool mzt_save(char *, bool);
-    if (mzt_save(fnamest+1, (cbitmode && !NoPictureSave) ? true : false))
+    bool mzt_save(char *, bool, bool);
+    if (mzt_save(fnamest+1, (cbitmode && !NoPictureSave) ? true : false, false))
     {
       Msgptr = "RR STATE SAVED.";
       MessageOn = MsgCount;          
