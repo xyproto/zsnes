@@ -741,6 +741,13 @@ void zmv_add_chapter()
   }
 }
 
+void zmv_replay_finished()
+{
+  internal_chapter_free_chain(zmv_vars.internal_chapters.next);
+  internal_chapter_free_chain(zmv_open_vars.external_chapters.next);  
+  fclose(zmv_vars.fp);
+}
+
 
 /////////////////////////////////////////////////////////
 
