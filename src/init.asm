@@ -1311,57 +1311,6 @@ NEWSYM ClearScreenSkip, db 0
 NEWSYM ENVDisable, db 0
 SECTION .text
 
-NEWSYM Outputfilename
-    mov esi,[romdata]
-    add esi,0FFC0h
-
-    mov ecx,20
-.l
-    push esi
-    push ecx
-    xor eax,eax
-    mov al,[esi]
-    xor al,07Fh
-    call printnum
-    mov ah,02h
-    mov dl,','
-    call Output_Text
-    pop ecx
-    pop esi
-    inc esi
-    dec ecx
-    jnz .l
-
-    mov ah,02h
-    mov dl,'-'
-    call Output_Text
-    xor eax,eax
-    mov al,[opexec268]
-    call printnum
-    mov ah,02h
-    mov dl,'-'
-    call Output_Text
-    xor eax,eax
-    mov al,[opexec358]
-    call printnum
-    mov ah,02h
-    mov dl,'-'
-    call Output_Text
-    xor eax,eax
-    mov al,[opexec268cph]
-    call printnum
-    mov ah,02h
-    mov dl,'-'
-    call Output_Text
-    xor eax,eax
-    mov al,[opexec358cph]
-    call printnum
-
-    call Get_Key
-    ret
-
-SECTION .text
-
 NEWSYM idledetectspc
     inc dword[numspcvblleft]
     cmp byte[SPCStallSetting],2
@@ -1523,8 +1472,6 @@ NEWSYM init65816
     mov dword[FIRTAPVal6],0
     mov dword[FIRTAPVal7],0
     mov byte[disable65816sh],0
-
-;    call Outputfilename
 
     ; Check Headers
     pushad
