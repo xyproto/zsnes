@@ -63,6 +63,8 @@ struct
   uint8 output[512];
 } DSP4;
 
+//Todo: get all of this into a struct for easy save stating
+
 // op control
 int8 DSP4_Logic;            // controls op flow
 
@@ -2267,7 +2269,7 @@ void DSP4GetByte()
   {
     if (DSP4.out_count)
     {
-      dsp4_byte = (uint8) DSP4.output[DSP4.out_index];
+      dsp4_byte = (uint8) DSP4.output[DSP4.out_index&0x1FF];
       DSP4.out_index++;
       if (DSP4.out_count == DSP4.out_index)
         DSP4.out_count = 0;
