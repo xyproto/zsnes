@@ -3536,7 +3536,6 @@ NEWSYM NewGfx16AsmEnd
     je near .outsideclipping
     mov edi,ngwintable
     mov ecx,[edi]
-    dec ecx
     add edi,4
     or ecx,ecx
     jnz near .startclippingb
@@ -3547,7 +3546,6 @@ NEWSYM NewGfx16AsmEnd
 .outsideclipping
     mov edi,ngwintable
     mov ecx,[edi]
-    dec ecx
     add edi,4
     or ecx,ecx
     jnz .noclipping
