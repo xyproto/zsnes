@@ -177,9 +177,6 @@ EXTSYM numlockptr
 EXTSYM CheckPriority
 EXTSYM CheckAlwaysOnTop
 %endif
-%ifdef __LINUX__
-EXTSYM numlockptr
-%endif
 
 NEWSYM GuiAsmStart
 
@@ -670,8 +667,6 @@ NEWSYM NetServer, db 0
 NEWSYM NetQuitAfter, db 0
 NEWSYM NetNewNick, times 16 db 0
 NEWSYM NetFilename, times 512 db 0
-
-NEWSYM UseOpenGL, dd 0
 
 NEWSYM CheatOn, dd 0
 NEWSYM NumCheats, dd 0
