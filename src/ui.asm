@@ -1279,7 +1279,6 @@ NEWSYM makeextension
     call DetermineNew
 %endmacro
 
-
 DetermineNew:
     push eax
     push ebx
@@ -1430,7 +1429,6 @@ SECTION .data
 %ifndef __LINUX__
           db '  -d      Start with debugger',13,10
 %endif
-
           db '  -dd     Disable sound DSP emulation',13,10
 %ifndef __LINUX__
           db '  -e      Skip enter key press at the beginning',13,10
