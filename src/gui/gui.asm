@@ -537,7 +537,7 @@ NEWSYM pl5p209, db 0
 NEWSYM GUIEnableTransp, db 0
 NEWSYM Mode7HiRes16b, dd 0
 NEWSYM NewEngEnForce, db 1
-NEWSYM KeyRewind, dd 14
+NEWSYM KeyRewind, dd 0
 NEWSYM ChatNick, times 16 db 0
 NEWSYM KeySlowDown, dd 0
 
