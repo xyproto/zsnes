@@ -104,12 +104,6 @@ DWORD                   S12Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 DWORD                   CurrentJoy=0;
 
 #ifdef __LINUX__
-extern signed long JoyMaxX;
-extern signed long JoyMaxY;
-extern signed long JoyMinX;
-extern signed long JoyMinY;
-extern signed long JoyX;
-extern signed long JoyY;
 SDL_Joystick	*JoystickInput[4];
 #endif //__LINUX__
 
@@ -154,7 +148,7 @@ DWORD InputEn=0;
 BOOL InputAcquire(void)
 {
 #ifdef __LINUX__ // AH
-//	STUB_FUNCTION;
+	STUB_FUNCTION;
    InputEn=1;
    return TRUE;
 #else // __WIN32__
@@ -264,24 +258,20 @@ int Main_Proc(void)
 		case SDL_JOYAXISMOTION:
 			CurrentJoy = event.jaxis.which;
 			if( event.jaxis.axis == 0) {
-				if (event.jaxis.value < JoyMinX) {
+				if (event.jaxis.value < -16384) {
 					pressed[0x100 + CurrentJoy*32 + 1] = 1;
-					printf("Joystick left : %d\n", event.jaxis.value);
-				} else if (event.jaxis.value > JoyMaxX) {
+				} else if (event.jaxis.value > 16384) {
 					pressed[0x100 + CurrentJoy*32 + 0] = 1;
-					printf("Joystick right : %d\n", event.jaxis.value);
 				} else {
 					pressed[0x100 + CurrentJoy*32 + 1] = 0;
 					pressed[0x100 + CurrentJoy*32 + 0] = 0;
 				}
 			}
 			if( event.jaxis.axis == 1) {
-				if (event.jaxis.value < JoyMinY)  {
+				if (event.jaxis.value < -16384)  {
 					pressed[0x100 + CurrentJoy*32 + 3] = 1;
-					printf("Joystick up : %d\n", event.jaxis.value);
-				} else if (event.jaxis.value > JoyMaxY) {
+				} else if (event.jaxis.value > 16384) {
 					pressed[0x100 + CurrentJoy*32 + 2] = 1;
-					printf("Joystick down : %d\n", event.jaxis.value);
 				} else {
 					pressed[0x100 + CurrentJoy*32 + 3] = 0;
 					pressed[0x100 + CurrentJoy*32 + 2] = 0;
@@ -293,10 +283,11 @@ int Main_Proc(void)
 			CurrentJoy = event.jbutton.which;
 			JoyButton = event.jbutton.button;
 			pressed[0x100 + CurrentJoy*32 + 16 + JoyButton] = 1; 
-			printf("Button %u pressed on joystick %u\n", JoyButton, CurrentJoy);
 			break;
 
 		case SDL_JOYBUTTONUP: 
+			CurrentJoy = event.jbutton.which;
+			JoyButton = event.jbutton.button;
 			pressed[0x100 + CurrentJoy*32 + 16 + JoyButton] = 0; 
 			break;    			
 		case SDL_QUIT:
@@ -853,7 +844,7 @@ BOOL InitJoystickInput(void)
 	int i;
 	SDL_Event *event;
 
-   	STUB_FUNCTION;
+//   	STUB_FUNCTION;
    	
    	for (i=0; i<4; i++)
    		JoystickInput[i]=NULL;
@@ -862,51 +853,11 @@ BOOL InitJoystickInput(void)
 	// this call can be replaced with SDL_InitSubSystem
    	if (!SDL_NumJoysticks()) {
 		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);		
-		return;		
+		return FALSE;		
 	}
    	SDL_JoystickEventState(SDL_ENABLE);
    	for (i=0; i<SDL_NumJoysticks(); i++)
    		JoystickInput[i]=SDL_JoystickOpen(i);
-
-/* if your joystick doesn't work correctly, you may want to 
- * change these values
- */
-	JoyMaxX = 100;
-	JoyMinX = -100;
-	JoyMaxY = 100;
-	JoyMinY = -100;
-
-/*the goal of this piece of code is to autocalibrate the joystick
- * but for the moment it segfaults
- */
-/*
-	JoyMaxX = 0;
-	JoyMinX = 0;
-	JoyMaxY = 0;
-	JoyMinY = 0;
-	JoyX = 0;
-	JoyY = 0;
-	while ((JoyX == 0) || (JoyY == 0)) {
-		SDL_WaitEvent(event);
-		if (event->type == SDL_JOYAXISMOTION) {
-			if (event->jaxis.axis == 0) {
-				JoyX = event->jaxis.value;
-				if (JoyX < 0) JoyX = -JoyX;
-				JoyMaxX = 2*JoyX;
-				JoyMinX = -2*JoyX;
-			}
-			if (event->jaxis.axis == 1) {
-				JoyY = event->jaxis.value;
-				if (JoyY < 0) JoyY = -JoyY;
-				JoyMaxY = 2*JoyY;
-				JoyMinY = -2*JoyY;
-			}
-		}
-	}
-	printf("Joystick initialised\n");
-	printf("MinX : %d   MaxX : %d\n", JoyMinX, JoyMaxX);
-	printf("MinY : %d   MaxY : %d\n", JoyMinY, JoyMaxY);
-*/
    	return TRUE;
 }
 #else // __WIN32__
@@ -1115,7 +1066,6 @@ BOOL InitInput()
 {
 	char message1[256];
 #ifdef __LINUX__ // AH	
-	STUB_FUNCTION;
 	InitJoystickInput();
 #else // __WIN32__
    HRESULT hr;
@@ -1733,7 +1683,7 @@ SM_CYSCREEN )-WindowHeight);
 
       ShowWindow(hMainWindow, SW_SHOWNORMAL);
       SetWindowText(hMainWindow,"ZSNESWIN");
-      InitJoystickInput();
+      InitInput();
       InitSound();
       TestJoy();
    }
