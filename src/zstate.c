@@ -666,7 +666,49 @@ void ResetOffset()
 {
   Curtableaddr += (unsigned int)tableA;
 }
+
+void zst_save(FILE *fhandle, bool Thumbnail)
+{
+  fwrite(zst_header_cur, 1, sizeof(zst_header_cur)-1, fhandle); //-1 for null
+
+  PrepareOffset();
+  PrepareSaveState();
+  unpackfunct();
+
+  if (SFXEnable)
+  {
+    SfxRomBuffer -= SfxCROM;
+    SfxLastRamAdr -= SfxRAMMem;
+  }
     
+  if (SA1Enable)
+  {
+    SaveSA1(); //Convert SA-1 stuff to standard, non displacement format
+  }
+     
+  copy_state_data(0, write_save_state_data, false);
+
+  if (SFXEnable)
+  {
+    SfxRomBuffer += SfxCROM;
+    SfxLastRamAdr += SfxRAMMem;
+  }
+
+  if (SA1Enable)
+  {
+    RestoreSA1(); //Convert back SA-1 stuff
+  }
+    
+  if (Thumbnail)
+  {
+    CapturePicture();
+    fwrite(PrevPicture, 1, 64*56*sizeof(unsigned short), fhandle);
+  }
+    
+  ResetOffset();
+  ResetState();
+}
+
 void statesaver()
 {
   //'Auto increment savestate slot' code
@@ -702,42 +744,8 @@ void statesaver()
   
   if ((fhandle = fopen(fnamest+1,"wb")))
   {    
-    fwrite(zst_header_cur, 1, sizeof(zst_header_cur)-1, fhandle); //-1 for null
-
-    PrepareOffset();
-    PrepareSaveState();
-    unpackfunct();
-
-    if (SFXEnable)
-    {
-      SfxRomBuffer -= SfxCROM;
-      SfxLastRamAdr -= SfxRAMMem;
-    }
-    
-    if (SA1Enable)
-    {
-      SaveSA1(); //Convert SA-1 stuff to standard, non displacement format
-    }
-      
-    copy_state_data(0, write_save_state_data, false);
-
-    if (SFXEnable)
-    {
-      SfxRomBuffer += SfxCROM;
-      SfxLastRamAdr += SfxRAMMem;
-    }
-
-    if (SA1Enable)
-    {
-      RestoreSA1(); //Convert back SA-1 stuff
-    }
-    
-    if (cbitmode && !NoPictureSave)
-    {
-      CapturePicture();
-      fwrite(PrevPicture, 1, 64*56*sizeof(unsigned short), fhandle);
-    }
-    
+    zst_save(fhandle, (cbitmode && !NoPictureSave) ? true : false)
+  
     fclose(fhandle);
   
     //Display message on the screen, 'STATE X SAVED.'
@@ -752,9 +760,6 @@ void statesaver()
 
     Msgptr = txtsavemsg;
     MessageOn = MsgCount;
-  
-    ResetOffset();
-    ResetState();
   }  
   else
   {
