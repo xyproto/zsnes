@@ -19,7 +19,6 @@
 %ifdef __WIN32__
 EXTSYM CheckPriority
 EXTSYM CheckAlwaysOnTop
-EXTSYM CheckScreenSaver
 EXTSYM MinimizeWindow
 %endif
 
@@ -1351,7 +1350,6 @@ GUIWinClicked:
 %ifdef __WIN32__
     pushad
     call CheckPriority
-    call CheckScreenSaver
     popad
 %endif
 %endmacro
