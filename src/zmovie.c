@@ -29,6 +29,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #define DIR_SLASH "\\"
 #endif
 #include "gblvars.h"
@@ -45,9 +46,9 @@ struct
   size_t message_duration;
 } MovieSub;
 
-void MovieSub_Open()
+void MovieSub_Open(const char *filename)
 {
-  MovieSub.fp = fopen("movie.sub", "r");
+  MovieSub.fp = fopen(filename, "r");
   MovieSub.frame_current = 0;
   MovieSub.message_start = 0;
   MovieSub.message_duration = 0;
@@ -370,7 +371,10 @@ void MoviePlay()
 
       if ((movfhandle = fopen(fnamest+1,"rb")) != NULL)
       {
-	MovieSub_Open();
+	memcpy(&fnamest[statefileloc-3], ".sub", 4);
+        if (isdigit(CMovieExt)) { fnamest[statefileloc] = CMovieExt; }
+	MovieSub_Open(fnamest+1);
+	
 	fseek(movfhandle, Totalbyteloaded, SEEK_SET);
 	fread(RecData, 1, 16, movfhandle);
 	printf("Movie made with version: %d\n", RecData[1]);
