@@ -1155,10 +1155,18 @@ SECTION .data
 
 NEWSYM savepcx
 %ifndef NO_PNG
-        cmp byte[ScreenShotFormat],1
-        jne .notpng
-        call Grab_PNG_Data
-	ret
+    cmp byte[ScreenShotFormat],1
+    jne .notpng
+    pushad
+    mov dl,[SRAMDrive] ; Need to get rid of this, no reason for it
+    mov ebx,SnapPath
+    call Change_Dir
+    call Grab_PNG_Data
+    mov dl,[SRAMDrive]
+    mov ebx,SRAMDir
+    call Change_Dir
+    popad
+    ret
 .notpng
 %endif
     
