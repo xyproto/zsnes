@@ -118,6 +118,7 @@ DWORD                   SurfaceX=0;
 DWORD                   SurfaceY=0;
 
 BYTE                    IsActivated = 1;
+BYTE                    AltTimer = 0;
 
 extern "C" {
 DWORD                   MouseButton;
@@ -1248,7 +1249,7 @@ void Start60HZ(void)
    update_ticks_pc = UPDATE_TICKS_GAME * freq / 1000;
    }
 
-   if (AlternateTimer == 0)
+   if (AltTimer == 0)
    {
       QueryPerformanceCounter((LARGE_INTEGER*)&start);
       QueryPerformanceCounter((LARGE_INTEGER*)&start2);
@@ -1273,7 +1274,7 @@ void Start36HZ(void)
    update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000;
    update_ticks_pc = UPDATE_TICKS_GUI * freq / 1000;
 
-   if (AlternateTimer == 0)
+   if (AltTimer == 0)
    {
       QueryPerformanceCounter((LARGE_INTEGER*)&start);
       QueryPerformanceCounter((LARGE_INTEGER*)&start2);
@@ -1480,7 +1481,9 @@ void initwinvideo(void)
    {
       FirstVid=0;
 
-      if (AlternateTimer == 0)
+      AltTimer = AlternateTimer;
+
+      if (AltTimer == 0)
       {
          if (!QueryPerformanceFrequency((LARGE_INTEGER*)&freq)) return;
       }
@@ -1556,7 +1559,7 @@ extern int CounterB;
 
 void CheckTimers(void)
 {
-   if (AlternateTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end2);
+   if (AltTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end2);
       else end2 = timeGetTime();
 
    while ((end2 - start2) >= update_ticks_pc2)
@@ -1574,7 +1577,7 @@ void CheckTimers(void)
 
    if(T60HZEnabled)
    {
-   if (AlternateTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
+   if (AltTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
       else end = timeGetTime();
 
    while ((end - start) >= update_ticks_pc)
@@ -1590,7 +1593,7 @@ void CheckTimers(void)
 
    if(T36HZEnabled)
    {
-   if (AlternateTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
+   if (AltTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
       else end = timeGetTime();
 
    while ((end - start) >= update_ticks_pc)
