@@ -1,4 +1,0 @@
-libpng is the official PNG reference library. It supports almost all PNG features,
-is extensible, and has been extensively tested for over five years.
-
-You can download libpng from http://www.freesoftware.com/pub/png/libpng.html
