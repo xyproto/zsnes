@@ -5649,10 +5649,10 @@ NEWSYM CheckROMType
     cmp byte[ForceHiLoROM],0
     je .noguiforce
     mov al,[ForceHiLoROM]
-.noguiforce
-
     mov byte[forceromtype],al
     xor al,al
+.noguiforce
+
     cmp byte[forceromtype],0
     je .noforce
     mov al,[forceromtype]
