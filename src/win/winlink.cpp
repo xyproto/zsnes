@@ -731,7 +731,8 @@ int RegisterWinClass(void)
 
 BYTE PrevStereoSound;
 DWORD PrevSoundQuality;
-extern unsigned char PrimaryBuffer;
+
+extern "C" { extern unsigned char PrimaryBuffer; }
 
 BOOL InitSound()
 {
