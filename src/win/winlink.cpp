@@ -1323,13 +1323,18 @@ extern "C" unsigned int BitConv32Ptr;
 extern "C" unsigned int RGBtoYUVPtr;
 extern "C" unsigned char cvidmode;
 extern "C" unsigned char hqFilter;
+extern "C" unsigned short resolutn;
+extern "C" unsigned short scanlines;
 DWORD FirstVid=1;
 DWORD FirstFull=1;
+DWORD DMode=0;
 DWORD SMode=0;
 DWORD DSMode=0;
 DWORD prevHQMode=-1;
+DWORD prevScanlines=-1;
 WORD Refresh = 0;
 extern "C" BYTE GUIWFVID[];
+extern "C" BYTE GUIDSIZE[];
 extern "C" BYTE GUISMODE[];
 extern "C" BYTE GUIDSMODE[];
 extern "C" BYTE GUIHQ2X[];
@@ -1409,14 +1414,15 @@ int InitDirectDraw()
         rcWindow.bottom -= marginy;
       }
     }
-    if (DSMode == 1 || SMode == 1)
+
+    if ((DSMode == 1) && (scanlines != 0))
     {
-      int windowy = rcWindow.bottom - rcWindow.top;
-      int marginy = (windowy - (double(windowy)/240.0)*224.0)/2;
-      if (marginy>0)
+      int OldHeight = rcWindow.bottom - rcWindow.top;
+      if ((OldHeight % 240) == 0)
       {
-        rcWindow.top += marginy;
-        rcWindow.bottom -= marginy;
+        int NewHeight = (OldHeight/240)*resolutn;
+        rcWindow.top += (OldHeight - NewHeight)/2;
+        rcWindow.bottom = rcWindow.top + NewHeight;
       }
     }
   }
@@ -1752,7 +1758,6 @@ void Stop36HZ(void)
 }
 
 char WinMessage[256];
-extern unsigned short resolutn;
 void clearwin();
 void Clear2xSaIBuffer();
 void clear_display();
@@ -1787,6 +1792,7 @@ void initwinvideo(void)
       X=0;
       Y=0;
       FullScreen=GUIWFVID[cvidmode];
+      DMode=GUIDSIZE[cvidmode];
       SMode=GUISMODE[cvidmode];
       DSMode=GUIDSMODE[cvidmode];
 
@@ -1799,173 +1805,83 @@ void initwinvideo(void)
       case 1:
          WindowWidth=640;
          WindowHeight=480;
-         SurfaceX=320;
-         SurfaceY=240;
          break;
       case 2:
-         WindowWidth=512;
-         WindowHeight=448;
-         break;
       case 3:
          WindowWidth=512;
          WindowHeight=448;
-         SurfaceX=512;
-         SurfaceY=480;
          break;
       case 4:
-         WindowWidth=640;
-         WindowHeight=480;
-         break;
       case 5:
-         WindowWidth=640;
-         WindowHeight=480;
-         SurfaceX=512;
-         SurfaceY=448;
-         break;
       case 6:
-         WindowWidth=640;
-         WindowHeight=480;
-         SurfaceX=640;
-         SurfaceY=480;
-         break;
       case 7:
-         WindowWidth=640;
-         WindowHeight=480;
-         SurfaceX=512;
-         SurfaceY=448;
-         break;
       case 8:
          WindowWidth=640;
          WindowHeight=480;
          break;
       case 9:
-         WindowWidth=768;
-         WindowHeight=672;
-         break;
       case 10:
          WindowWidth=768;
          WindowHeight=672;
-         SurfaceX=512;
-         SurfaceY=480;
          break;
       case 11:
-         WindowWidth=800;
-         WindowHeight=600;
-         break;
       case 12:
-         WindowWidth=800;
-         WindowHeight=600;
-         SurfaceX=512;
-         SurfaceY=448;
-         break;
       case 13:
-         WindowWidth=800;
-         WindowHeight=600;
-         break;
       case 14:
-         WindowWidth=800;
-         WindowHeight=600;
-         SurfaceX=640;
-         SurfaceY=480;
-         break;
       case 15:
          WindowWidth=800;
          WindowHeight=600;
-         SurfaceX=512;
-         SurfaceY=448;
          break;
       case 16:
-         WindowWidth=1024;
-         WindowHeight=768;
-         break;
       case 17:
-         WindowWidth=1024;
-         WindowHeight=768;
-         SurfaceX=512;
-         SurfaceY=448;
-         break;
       case 18:
-         WindowWidth=1024;
-         WindowHeight=768;
-         break;
       case 19:
-         WindowWidth=1024;
-         WindowHeight=768;
-         SurfaceX=640;
-         SurfaceY=480;
-         break;
       case 20:
          WindowWidth=1024;
          WindowHeight=768;
-         SurfaceX=512;
-         SurfaceY=448;
          break;
       case 21:
-         WindowWidth=1024;
-         WindowHeight=896;
-         break;
       case 22:
          WindowWidth=1024;
          WindowHeight=896;
-         SurfaceX=512;
-         SurfaceY=480;
          break;
       case 23:
-         WindowWidth=1280;
-         WindowHeight=960;
-         break;
       case 24:
-         WindowWidth=1280;
-         WindowHeight=960;
-         SurfaceX=512;
-         SurfaceY=448;
-         break;
       case 25:
-         WindowWidth=1280;
-         WindowHeight=960;
-         break;
       case 26:
-         WindowWidth=1280;
-         WindowHeight=960;
-         SurfaceX=640;
-         SurfaceY=480;
-         break;
       case 27:
          WindowWidth=1280;
          WindowHeight=960;
-         SurfaceX=512;
-         SurfaceY=448;
          break;
       case 28:
-         WindowWidth=1280;
-         WindowHeight=1024;
-         break;
       case 29:
-         WindowWidth=1280;
-         WindowHeight=1024;
-         SurfaceX=512;
-         SurfaceY=448;
-         break;
       case 30:
-         WindowWidth=1280;
-         WindowHeight=1024;
-         break;
       case 31:
-         WindowWidth=1280;
-         WindowHeight=1024;
-         SurfaceX=640;
-         SurfaceY=480;
-         break;
       case 32:
          WindowWidth=1280;
          WindowHeight=1024;
-         SurfaceX=512;
-         SurfaceY=448;
          break;
       default:
          WindowWidth=256;
          WindowHeight=224;
          break;
+      }
+
+      if (DMode == 1)
+      {
+        if ((DSMode == 1) || (FullScreen == 0))
+          SurfaceX = 512; 
+        else 
+          SurfaceX = 640;
+        SurfaceY=480;
+      }
+      else
+      {
+        if ((SMode == 0) && (FullScreen == 1))
+          SurfaceX=320;
+        else
+          SurfaceX=256;
+        SurfaceY=240;
       }
 
       switch ( HQMode )
@@ -1988,28 +1904,12 @@ void initwinvideo(void)
       BlitArea.left = 0;
       BlitArea.right = SurfaceX;
 
+      if ((SurfaceX == 640) || (SurfaceX == 320))
+        BlitArea.bottom = SurfaceY;
+      else
+        BlitArea.bottom = (SurfaceY/240)*resolutn;
 
-     if (FullScreen == 0)
-     {
-        if (SurfaceX == 256) BlitArea.bottom = (SurfaceY/240)*resolutn;
-        if (SurfaceX == 512)
-        {
-           BlitArea.bottom = (SurfaceY/240)*resolutn;
-           if (DSMode == 1) BlitArea.bottom = SurfaceY;
-        }
-     }
-     else
-     {
-        if (SMode == 1)
-           BlitArea.bottom = (SurfaceY/240)*resolutn;
-        else
-           BlitArea.bottom = SurfaceY;
-     }
-
-     if ( HQMode != 0 )
-       BlitArea.bottom = (SurfaceY/240)*resolutn;
-
-     if (PrevRes == 0) PrevRes = resolutn;
+      if (PrevRes == 0) PrevRes = resolutn;
    }
 
    if (((PrevStereoSound!=StereoSound)||(PrevSoundQuality!=SoundQuality))&&FirstSound!=1)
@@ -2056,17 +1956,19 @@ void initwinvideo(void)
             rcWindow.top += marginy;
             rcWindow.bottom -= marginy;
           }
-       }
-       if (DSMode == 1 || SMode == 1)
-       {
-         int windowy = rcWindow.bottom - rcWindow.top;
-         int marginy = (windowy - (double(windowy)/240.0)*224.0)/2;
-         if (marginy>0)
-         {
-           rcWindow.top += marginy;
-           rcWindow.bottom -= marginy;
-         }
-       }
+        }
+
+        if ((DSMode == 1) && (scanlines != 0))
+        {
+          int OldHeight = rcWindow.bottom - rcWindow.top;
+          if ((OldHeight % 240) == 0)
+          {
+            int NewHeight = (OldHeight/240)*resolutn;
+            rcWindow.top += (OldHeight - NewHeight)/2;
+            rcWindow.bottom = rcWindow.top + NewHeight;
+            clear_display();
+          }
+        }
      }
    }
    else
@@ -2473,24 +2375,6 @@ void drawscreenwin(void)
    ScreenPtr=vidbuffer;
    ScreenPtr+=16*2+32*2+256*2;
 
-   if (resolutn == 224 && FullScreen == 0 && PrevRes != resolutn)
-   {
-      BlitArea.bottom = (SurfaceY/240)*224;
-      if (SurfaceX == 512 && DSMode == 1) BlitArea.bottom = SurfaceY;
-      if ((SurfaceX == 256 || SurfaceX == 512 || SurfaceX == 768 || SurfaceX == 1024) && (SMode == 0 && DSMode == 0)) WindowHeight = (WindowHeight/239)*224;
-      initwinvideo();
-      PrevRes = resolutn;
-   }
-
-   if (resolutn == 239 && FullScreen == 0 && PrevRes != resolutn)
-   {
-      BlitArea.bottom = (SurfaceY/240)*239;
-      if (SurfaceX == 512 && DSMode == 1) BlitArea.bottom = SurfaceY;
-      if ((SurfaceX == 256 || SurfaceX == 512 || SurfaceX == 768 || SurfaceX == 1024) && (SMode == 0 && DSMode == 0)) WindowHeight = (WindowHeight/224)*239;
-      initwinvideo();
-      PrevRes = resolutn;
-   }
-
    DWORD HQMode=0;
 
    if (MMXSupport == 0)
@@ -2503,8 +2387,28 @@ void drawscreenwin(void)
      if ( GUIHQ4X[cvidmode] != 0 ) HQMode=4;
    }
 
+   if (PrevRes != resolutn)
+   {
+     if ((SurfaceX == 640) || (SurfaceX == 320))
+       BlitArea.bottom = SurfaceY;
+     else
+       BlitArea.bottom = (SurfaceY/240)*resolutn;
+
+     if ((FullScreen == 0) && (SMode == 0) && (DSMode == 0))
+       WindowHeight = (WindowHeight/224)*resolutn;
+
+     initwinvideo();
+     PrevRes = resolutn;
+   }
+
    if (prevHQMode!=HQMode)
      initwinvideo();
+
+   if (prevScanlines != scanlines)
+   {
+     initwinvideo();
+     prevScanlines = scanlines;
+   }
 
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
@@ -2648,7 +2552,7 @@ void drawscreenwin(void)
        }
      }
 
-     if (SurfaceX==512 && (SurfaceY==448 || SurfaceY==480))
+     if (SurfaceX==512 && SurfaceY==480)
      {
        switch (BitDepth)
        {
@@ -2682,7 +2586,7 @@ void drawscreenwin(void)
          case 32: // using 16bpp AltSurface
             AddEndBytes=pitch-1024;
             NumBytesPerLine=pitch;
-            WinVidMemStart=&SurfBuf[16*640*2+64*2];
+            WinVidMemStart=&SurfBuf[(240-resolutn)*pitch+64*2];
             _asm
             {
                pushad
