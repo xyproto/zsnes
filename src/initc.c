@@ -250,23 +250,18 @@ unsigned short sum(unsigned char *array, unsigned int size)
 {
   unsigned short theSum = 0;
   unsigned int i;
+  
+  //Prevent crashing by reading too far (needed for messed up ROMs)
+  if (array + size > (unsigned char *)romdata + NumofBytes)
+  {
+    return(0xFFFF);
+  } 
+  
   for (i = 0; i < size; i++)
   {
     theSum += array[i];
   }
   return(theSum);
-}
-
-//Not entirely accurate pow, but good for our needs and very fast
-unsigned int npow(register unsigned int base, register unsigned int exponent)
-{
-  register unsigned int total = base;
-  register unsigned int i;
-  for (i = 1; i < exponent; i++)
-  {
-    total *= base;
-  }
-  return(total);
 }
 
 extern unsigned char SPC7110Enable;
@@ -275,29 +270,28 @@ extern unsigned short Checksumvalue;
 void CalcChecksum()
 {
   unsigned char *ROM = (unsigned char *)romdata;
-  unsigned short Mbit = NumofBanks >> 2, Checksum;
-  unsigned int ROMSize = NumofBytes, Bank = infoloc;
+  unsigned short Mbit = NumofBanks >> 2;
   
   if ((Mbit == 10 || Mbit == 20 || Mbit == 40) && !SPC7110Enable)
   {
-    unsigned int P1Size = npow(2, ROM[Bank + 23] - 7) * 65536;
+    unsigned int P1Size = 512 << ROM[infoloc + 23];
     unsigned short part1 = sum(ROM, P1Size),
-                   part2 = sum(ROM+P1Size, ROMSize-P1Size);
+                   part2 = sum(ROM+P1Size, NumofBytes-P1Size);
     Checksumvalue = part1 + part2*4;
   }
   else if ((Mbit == 12 || Mbit == 24 || Mbit == 48) && !SPC7110Enable)
   {
-    unsigned int P1Size = npow(2, ROM[Bank + 23] - 7) * 65536;
+    unsigned int P1Size = 512 << ROM[infoloc + 23];
     unsigned short part1 = sum(ROM, P1Size),
-                   part2 = sum(ROM+P1Size, ROMSize-P1Size);
+                   part2 = sum(ROM+P1Size, NumofBytes-P1Size);
     Checksumvalue = part1 + part2 + part2;
   }
   else
   {
-    Checksumvalue = sum(ROM, ROMSize);
+    Checksumvalue = sum(ROM, NumofBytes);
     if (BSEnable)
     {
-      Checksumvalue -= sum(&ROM[Bank - 16], 48); //Fix for BS Dumps
+      Checksumvalue -= sum(&ROM[infoloc - 16], 48); //Fix for BS Dumps
     }
     else if (Mbit == 24)
     { 
