@@ -3549,6 +3549,16 @@ DSPInterpolate_4
     add ecx,edx
 
     sar ecx,11
+
+    cmp ecx, -32768
+    jge .sat1
+    mov ecx, -32768
+.sat1
+    cmp ecx, 32767
+    jle .sat2
+    mov ecx, 32767
+.sat2
+
     mov ax,cx
 	pop edi
 	ret
@@ -3610,13 +3620,13 @@ DSPInterpolate_4_mmx:
     packssdw mm0,[edx*4+PSampleBuf+edi+16]
     movq mm1,[DSPInterP+eax*8]
     pmaddwd mm0,mm1
-    movd eax, mm0
+    movq mm1, mm0
     psrlq mm0, 32
-    movd ebx, mm0
+    paddd mm0, mm1
+    psrad mm0, 11
+    packssdw mm0, mm0
+    movd eax, mm0
     emms
-    add eax,ebx
-    sar eax,11
-
     pop edi
     ret
 
