@@ -6180,9 +6180,8 @@ NEWSYM CheckROMType
     mov byte[DSP4Enable],0
 
     mov esi,[romdata]
-    mov eax,NumofBanks
-    cmp eax,128             ;32Mbit/4MB
-    jbe .notEHi             ;Next line, only if greater
+    mov byte[NumofBanks],128
+    jbe .notEHi
     mov ah,[esi + 040FFDFh]    
     mov al,[esi + 040FFDEh]
     xor ah,[esi + 040FFDDh]    
