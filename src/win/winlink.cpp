@@ -1585,10 +1585,12 @@ void CheckTimers(void)
    }
 }
 
+extern BYTE GUIOn2;
+
 void UpdateVFrame(void)
 {
 
-//   if (SuspendInBackground == 1 && IsActivated == 0) WaitMessage();
+   if (GUIOn2 == 1 && IsActivated == 0) WaitMessage();
 
    int DataNeeded;
    int SPCSize=256;
