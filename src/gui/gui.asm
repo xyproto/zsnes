@@ -1850,47 +1850,16 @@ NEWSYM StartGUI
 .noof
     mov [GUIcurrentvideoviewloc],eax
 
+    call SaveSramData
+
     ; change to sram dir
     mov dl,[SRAMDrive]
     mov ebx,SRAMDir
     call Change_Dir
 
-    call SaveSramData
-
-    cmp byte[SFXEnable],0
-    je .nosfxbatt
-    cmp byte[CHIPBATT],0
-    je .nosfxbatt
-    clim
-    mov edx,fnames+1
-    call Create_File
-    jc .nosfxramwrite
-    mov bx,ax
-    mov ecx,65536
-    mov edx,[sfxramdata]
-    call Write_File
-    call Close_File
-.nosfxramwrite
-    stim
-.nosfxbatt
-    
-    cmp byte[SETAEnable],0
-    je .nosetasram
-    clim
-    mov edx,fnames+1
-    call Create_File
-    jc .nosetaramwrite
-    mov bx,ax
-    mov ecx,4096
-    mov edx,[setaramdata]
-    call Write_File
-    call Close_File
-.nosetaramwrite
-    stim
-.nosetasram
-
     call GUIQuickLoadUpdate
     call LoadDetermine
+    
     ; change dir to LoadDrive/LoadDir
     mov dl,[LoadDrive]
     mov ebx,LoadDir
