@@ -2567,12 +2567,12 @@ NEWSYM drawsprng16b
     jnz .main2
     mov edi,[CSubWinScr]
 .main2
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16b
     test byte[FillSubScr+ebx],1
     jz .main
     test byte[BGMS1+ebx*2],10h
     jnz .main
+    cmp byte[edi+ebx+4*256],0
+    jne near drawsprngw16b
     add esi,75036*2
 .main
     xor edi,edi
