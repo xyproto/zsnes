@@ -123,89 +123,9 @@ EXTSYM statefileloc
 EXTSYM CHIPBATT,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
 EXTSYM InitRewindVars
 
-%ifdef OPENSPC
-EXTSYM OSPC_Run, ospc_cycle_frac
-%endif
-
 %ifdef __MSDOS__
 EXTSYM dssel
 %endif
-
-%macro BackupCVMacM 2
-    mov edx,%1
-    mov ecx,%2
-%%loop
-    movq mm0,[edx]
-    movq mm1,[edx+8]
-    movq [ebx],mm0
-    movq [ebx+8],mm1
-    add edx,16
-    add ebx,16
-    dec ecx
-    jnz %%loop
-%endmacro
-
-%macro BackupCVMac 2
-    mov edx,%1
-    mov ecx,%2
-%%loop
-    mov eax,[edx]
-    mov [ebx],eax
-    add edx,4
-    add ebx,4
-    dec ecx
-    jnz %%loop
-%endmacro
-
-%macro BackupCVMacB 2
-    mov edx,%1
-    mov ecx,%2
-%%loop
-    mov al,[edx]
-    mov [ebx],al
-    inc edx
-    inc ebx
-    dec ecx
-    jnz %%loop
-%endmacro
-
-%macro BackupCVRMacM 2
-    mov edx,%1
-    mov ecx,%2
-%%loop
-    movq mm0,[ebx]
-    movq mm1,[ebx+8]
-    movq [edx],mm0
-    movq [edx+8],mm1
-    add edx,16
-    add ebx,16
-    dec ecx
-    jnz %%loop
-%endmacro
-
-%macro BackupCVRMac 2
-    mov edx,%1
-    mov ecx,%2
-%%loop
-    mov eax,[ebx]
-    mov [edx],eax
-    add edx,4
-    add ebx,4
-    dec ecx
-    jnz %%loop
-%endmacro
-
-%macro BackupCVRMacB 2
-    mov edx,%1
-    mov ecx,%2
-%%loop
-    mov al,[ebx]
-    mov [edx],al
-    inc edx
-    inc ebx
-    dec ecx
-    jnz %%loop
-%endmacro
 
 SECTION .data
 NEWSYM CBackupPos, dd 0
@@ -249,8 +169,6 @@ NEWSYM valuea, dd 0
 NEWSYM valueb, dd 0
 NEWSYM valuet, dd 0
 
-SECTION .bss
-BackupArray resd 3000
 SECTION .text
 
 NEWSYM SplitStringChat
