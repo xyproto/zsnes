@@ -1373,54 +1373,54 @@ DisplayGUIOption:
     mov dword[GUITemp],GUIOptionText1
     cmp byte[frameskip],0
     jne .noauto
-    mov dword[GUITemp],GUIOptionText3
+    mov dword[GUITemp],GUIOptionText1b
 .noauto
     GUIOuttextwin2 4,6,14,[GUITemp]
     GUIOuttextwin2u 4,26,24,GUIOptionText2,0
-    GUIOuttextwin2u 4,26,34,GUIOptionText4,0
-    GUIOuttextwin2u 4,26,44,GUIOptionText6,0
-    GUIOuttextwin2u 4,26,54,GUIOptionText7,0
+    GUIOuttextwin2u 4,26,34,GUIOptionText3,0
+    GUIOuttextwin2u 4,26,44,GUIOptionText4,0
+    GUIOuttextwin2u 4,26,54,GUIOptionText5,0
 %ifdef __MSDOS__
-    GUIOuttextwin2u 4,26,64,GUIOptionTextA,0
+    GUIOuttextwin2u 4,26,64,GUIOptionText6,0
 %endif
 %ifdef __WIN32__
-    GUIOuttextwin2u 4,26,64,GUIOptionTextAb,0
+    GUIOuttextwin2u 4,26,64,GUIOptionText6b,0
 %endif
-    GUIOuttextwin2u 4,26,74,GUIOptionTextB,0
-    GUIOuttextwin2u 4,26,84,GUIOptionTextC,2
-    GUIOuttextwin2u 4,26,94,GUIOptionTextD,12
-    GUIOuttextwin2u 4,26,104,GUIOptionTextE,2
-    GUIOuttextwin2u 4,26,114,GUIOptionTextG,0
-    GUIOuttextwin2u 4,26,124,GUIOptionTextJ,0
-    GUIOuttextwin2u 4,26,134,GUIOptionTextK,1
-    GUIOuttextwin2u 4,26,144,GUIOptionTextM,12
-    GUIOuttextwin2u 4,26,154,GUIOptionTextN,15
+    GUIOuttextwin2u 4,26,74,GUIOptionText7,0 
+    GUIOuttextwin2u 4,26,84,GUIOptionText8,2 
+    GUIOuttextwin2u 4,26,94,GUIOptionText9,12
+    GUIOuttextwin2u 4,26,104,GUIOptionTextA,2
+    GUIOuttextwin2u 4,26,114,GUIOptionTextB,0
+    GUIOuttextwin2u 4,26,124,GUIOptionTextC,0
+    GUIOuttextwin2u 4,26,134,GUIOptionTextD,1
+    GUIOuttextwin2u 4,26,144,GUIOptionTextE,12
+    GUIOuttextwin2u 4,26,154,GUIOptionTextF,15
 %ifdef __WIN32__
-    GUIOuttextwin2u 4,26,164,GUIOptionTextL,1
+    GUIOuttextwin2u 4,26,164,GUIOptionTextW,1
 %endif
     add byte[GUItextcolor],15
     GUIOuttextwin2 4,5,13,[GUITemp]
     GUIOuttextwin2 4,25,23,GUIOptionText2
-    GUIOuttextwin2 4,25,33,GUIOptionText4
-    GUIOuttextwin2 4,25,43,GUIOptionText6
-    GUIOuttextwin2 4,25,53,GUIOptionText7
+    GUIOuttextwin2 4,25,33,GUIOptionText3
+    GUIOuttextwin2 4,25,43,GUIOptionText4
+    GUIOuttextwin2 4,25,53,GUIOptionText5
 %ifdef __MSDOS__
-    GUIOuttextwin2 4,25,63,GUIOptionTextA
+    GUIOuttextwin2 4,25,63,GUIOptionText6
 %endif
 %ifdef __WIN32__
-    GUIOuttextwin2 4,25,63,GUIOptionTextAb
+    GUIOuttextwin2 4,25,63,GUIOptionText6b
 %endif
-    GUIOuttextwin2 4,25,73,GUIOptionTextB
-    GUIOuttextwin2 4,25,83,GUIOptionTextC
-    GUIOuttextwin2 4,25,103,GUIOptionTextE
-    GUIOuttextwin2 4,25,93,GUIOptionTextD
-    GUIOuttextwin2 4,25,113,GUIOptionTextG
-    GUIOuttextwin2 4,25,123,GUIOptionTextJ
-    GUIOuttextwin2 4,25,133,GUIOptionTextK
-    GUIOuttextwin2 4,25,143,GUIOptionTextM
-    GUIOuttextwin2 4,25,153,GUIOptionTextN
+    GUIOuttextwin2 4,25,73,GUIOptionText7
+    GUIOuttextwin2 4,25,83,GUIOptionText8
+    GUIOuttextwin2 4,25,93,GUIOptionText9
+    GUIOuttextwin2 4,25,103,GUIOptionTextA
+    GUIOuttextwin2 4,25,113,GUIOptionTextB
+    GUIOuttextwin2 4,25,123,GUIOptionTextC
+    GUIOuttextwin2 4,25,133,GUIOptionTextD
+    GUIOuttextwin2 4,25,143,GUIOptionTextE
+    GUIOuttextwin2 4,25,153,GUIOptionTextF
 %ifdef __WIN32__
-    GUIOuttextwin2 4,25,163,GUIOptionTextL
+    GUIOuttextwin2 4,25,163,GUIOptionTextW
 %endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[frameskip],0
@@ -1529,67 +1529,68 @@ DisplayGUIOption:
     DrawGUIWinBox 4,75,12,93,19,167
     mov al,[frameskip]
     add al,47
-    mov [GUIOptionText8],al
+    mov [GUIOptionTextX],al
     mov byte[GUItextcolor],223
-    GUIOuttextwin2 4,85,14,GUIOptionText8
+    GUIOuttextwin2 4,85,14,GUIOptionTextX
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je .zero4
     mov byte[GUItextcolor],222
 .zero4
-    GUIOuttextwin2 4,84,13,GUIOptionText8
+    GUIOuttextwin2 4,84,13,GUIOptionTextX
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
     je .zero6
     mov byte[GUItextcolor],211
 .zero6
-    DrawGUIButton 4,97,12,105,20,GUIOptionText9,12,-2,-1
-    DrawGUIButton 4,108,12,116,20,GUIOptionText10,13,-2,-1
+    DrawGUIButton 4,97,12,105,20,GUIOptionTextY,12,-2,-1
+    DrawGUIButton 4,108,12,116,20,GUIOptionTextZ,13,-2,-1
     ret
 .auto
     DrawGUIWinBox 4,96,12,114,19,167
     mov al,[maxskip]
     add al,48
-    mov [GUIOptionText8],al
+    mov [GUIOptionTextX],al
     mov byte[GUItextcolor],223
-    GUIOuttextwin2 4,107,14,GUIOptionText8
+    GUIOuttextwin2 4,107,14,GUIOptionTextX
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je .zero5
     mov byte[GUItextcolor],222
 .zero5
-    GUIOuttextwin2 4,106,13,GUIOptionText8
+    GUIOuttextwin2 4,106,13,GUIOptionTextX
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
     je .zero7
     mov byte[GUItextcolor],211
 .zero7
-    DrawGUIButton 4,118,12,126,20,GUIOptionText9,12,-2,-1
-    DrawGUIButton 4,129,12,137,20,GUIOptionText10,13,-2,-1
+    DrawGUIButton 4,118,12,126,20,GUIOptionTextY,12,-2,-1
+    DrawGUIButton 4,129,12,137,20,GUIOptionTextZ,13,-2,-1
     ret
 
 SECTION .data
 GUIOptionText1 db 'FRAME RATE',0
+GUIOptionText1b db 'MAX FRAME SKIP',0
 GUIOptionText2 db 'AUTO FRAME RATE',0
-GUIOptionText3 db 'MAX FRAME SKIP',0
-GUIOptionText4 db 'NEW GFX ENGINE',0
-GUIOptionText6 db 'MMX SUPPORT',0
-GUIOptionText7 db 'USE PL3/4 AS PL1/2',0
-GUIOptionTextA db 'SIDEWINDER FIX',0
-GUIOptionTextAb db 'HIGH PRIORITY MODE',0
-GUIOptionTextB db 'FPS AT PROGRAM START',0
-GUIOptionTextC db 'USE 30HZ FOR TURBO',0
-GUIOptionTextD db 'ENABLE GAME CLOCK',0
-GUIOptionTextE db 'TOGGLED FAST FWD/SLWDWN',0
-GUIOptionTextG db 'OLD GFX MODE 2',0
-GUIOptionTextJ db 'DON',39,'T SAVE CUR PATH',0
-GUIOptionTextK db 'USE SMALL MESSAGE TEXT',0
-GUIOptionTextL db 'DISABLE SCREENSAVER',0
-GUIOptionTextM db 'ENABLE AUTO-PATCH',0
-GUIOptionTextN db 'ENABLE ROMINFO.TXT',0
-GUIOptionText8 db '-',0
-GUIOptionText9 db '+',0
-GUIOptionText10 db '-',0
+GUIOptionText3 db 'NEW GFX ENGINE',0
+GUIOptionText4 db 'MMX SUPPORT',0
+GUIOptionText5 db 'USE PL3/4 AS PL1/2',0
+GUIOptionText6 db 'SIDEWINDER FIX',0
+GUIOptionText6b db 'HIGH PRIORITY MODE',0
+GUIOptionText7 db 'FPS AT PROGRAM START',0
+GUIOptionText8 db 'USE 30HZ FOR TURBO',0
+GUIOptionText9 db 'ENABLE GAME CLOCK',0
+GUIOptionTextA db 'TOGGLED FAST FWD/SLWDWN',0
+GUIOptionTextB db 'OLD GFX MODE 2',0
+GUIOptionTextC db 'DON',39,'T SAVE CUR PATH',0
+GUIOptionTextD db 'USE SMALL MESSAGE TEXT',0
+GUIOptionTextE db 'ENABLE AUTO-PATCH',0
+GUIOptionTextF db 'ENABLE ROMINFO.TXT',0
+GUIOptionTextW db 'DISABLE SCREENSAVER',0 ; Try to keep as last option, since its Win Only.
+GUIOptionTextX db '-',0
+GUIOptionTextY db '+',0
+GUIOptionTextZ db '-',0
+
 SECTION .text
 
 DisplayGUIVideo:
