@@ -29,6 +29,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #define DIR_SLASH "\\"
 #endif
 
@@ -47,7 +48,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 //static unsigned char save_state_buffer[0x80000]; //Save state should never exceed half a megabyte
 
-extern unsigned int CBackupPos, PBackupPos, cycpbl;
+extern unsigned int CBackupPos, PBackupPos, cycpbl, PH65816regsize;
 extern unsigned int *wramdata, *vram, PHspcsave, PHdspsave, *C4Ram, *sfxramdata;
 extern unsigned int PHnum2writesa1reg, SA1Mode, prevedi, SA1xpc, sa1dmaptr;
 extern unsigned int soundcycleft, spc700read, timer2upd, xa, PHnum2writesfxreg;
@@ -58,7 +59,7 @@ extern unsigned int SPCMultA, PHnum2writespc7110reg;
 
 extern unsigned char *StateBackup, sndrot, spcRam[65472];
 extern unsigned char DSPMem[256], SA1Status, *SA1RAMArea, DSP1Type, DSP1COp;
-extern unsigned char prevoamptr, BRRBuffer[32], *romdata;
+extern unsigned char prevoamptr, BRRBuffer[32], *romdata, curcyc;
 
 extern bool C4Enable, SFXEnable, SA1Enable, SPC7110Enable, SETAEnable, spcon;
 
@@ -67,12 +68,18 @@ extern short Op28X, Op0CA, Op02FX, Op0AVS, Op06X, Op01m, Op0DX, Op03F, Op14Zr;
 extern short Op0EH;
 extern signed short Op10Coefficient;
 
-void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t), bool file)
+static size_t load_save_size;
+static unsigned int zst_version;
+
+//For compatibility with old save states (pre v1.43)
+#define loading_old_state (file && read && (zst_version == 60))
+
+void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t), bool file, bool read)
 {
   //65816 status, etc.
-  
+  copy_func(&buffer, &curcyc, PH65816regsize);
   //SPC Timers
-  copy_func(&buffer, &cycpbl, 2*4);    
+  copy_func(&buffer, &cycpbl, 2*4);
   //SNES PPU Register status
   copy_func(&buffer, &sndrot, 3019);    
   //WRAM (128k), VRAM (64k)
@@ -101,12 +108,15 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
   {
     copy_func(&buffer, &SA1Mode, PHnum2writesa1reg);
     copy_func(&buffer, SA1RAMArea, 8192*16);
-    copy_func(&buffer, &SA1Status, 3);
-    copy_func(&buffer, &SA1xpc, 1*4);
-    copy_func(&buffer, &sa1dmaptr, 2*4);
+    if (!loading_old_state)
+    {
+      copy_func(&buffer, &SA1Status, 3);
+      copy_func(&buffer, &SA1xpc, 1*4);
+      copy_func(&buffer, &sa1dmaptr, 2*4);
+    }
   }
     
-  if (DSP1Type)
+  if (DSP1Type && !loading_old_state)
   {
     copy_func(&buffer, &DSP1COp, 70+128);
     copy_func(&buffer, &C4WFXVal, 7*4+7*8+128);
@@ -141,7 +151,12 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
     copy_func(&buffer, romdata+0x510000, 65536);
     copy_func(&buffer, &SPCMultA, PHnum2writespc7110reg);
   }
-
+  
+  if (loading_old_state)
+  {
+    return;
+  }
+  
   copy_func(&buffer, &soundcycleft, 33);
   copy_func(&buffer, &spc700read, 10*4);  
   copy_func(&buffer, &timer2upd, 1*4);  
@@ -155,7 +170,7 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
   copy_func(&buffer, &ReadHead, 1*4);  
 
   copy_func(&buffer, sram, ramsize);  
-  
+
   if (!file)
   {
     copy_func(&buffer, &tempesi, 4);  
@@ -175,7 +190,7 @@ static void memcpyinc(unsigned char **dest, void *src, size_t len)
 void BackupCVFrame()
 {
   unsigned char *curpos = StateBackup + (CBackupPos << 19) + 1024;
-  copy_state_data(curpos, memcpyinc, false);
+  copy_state_data(curpos, memcpyinc, false, false);
 }
 
 static void memcpyrinc(unsigned char **src, void *dest, size_t len)
@@ -187,7 +202,7 @@ static void memcpyrinc(unsigned char **src, void *dest, size_t len)
 void RestoreCVFrame()
 {
   unsigned char *curpos = StateBackup + (PBackupPos << 19) + 1024;
-  copy_state_data(curpos, memcpyrinc, false);
+  copy_state_data(curpos, memcpyrinc, false, true);
 }
 
 extern unsigned int Bank0datr8[256], Bank0datr16[256], Bank0datw8[256];
@@ -491,7 +506,8 @@ static void write_save_state_data(unsigned char **dest, void *data, size_t len)
   fwrite(data, 1, len, fhandle);  
 }
 
-static const char zsmesg[] = "ZSNES Save State File V0.6";
+static const char zst_header_old[] = "ZSNES Save State File V0.6\x1a\x3c";
+static const char zst_header_cur[] = "ZSNES Save State File V143\x1a\x3c";
 
 void statesaver()
 {
@@ -528,7 +544,7 @@ void statesaver()
   
   if ((fhandle = fopen(fnamest+1,"wb")))
   {
-    fwrite(zsmesg, 1, sizeof(zsmesg)-1, fhandle);
+    fwrite(zst_header_cur, 1, sizeof(zst_header_cur)-1, fhandle); //-1 for null
     
     PrepareSaveState();
     
@@ -543,7 +559,7 @@ void statesaver()
       SaveSA1(); //Convert SA-1 stuff to standard, non displacement format
     }
       
-    copy_state_data(0, write_save_state_data, true);
+    copy_state_data(0, write_save_state_data, true, false);
 
     if (SFXEnable)
     {
@@ -559,7 +575,7 @@ void statesaver()
     if (cbitmode && !NoPictureSave)
     {
       CapturePicture();
-      fwrite (PrevPicture, 1, 64*56*2, fhandle);
+      fwrite(PrevPicture, 1, 64*56*2, fhandle);
     }
     
     fclose (fhandle);
@@ -702,7 +718,6 @@ extern unsigned char ioportval, SDD1Enable, nexthdma;
 
 void procexecloop();
 
-size_t load_save_size;
 static void read_save_state_data(unsigned char **dest, void *data, size_t len)
 {
   load_save_size += fread(data, 1, len, fhandle);  
@@ -710,7 +725,7 @@ static void read_save_state_data(unsigned char **dest, void *data, size_t len)
 
 void stateloader (unsigned char *statename, unsigned char keycheck, unsigned char xfercheck)
 {
-  char zsmesgcheck[sizeof(zsmesg)-1];
+  char zst_header_check[sizeof(zst_header_cur)-1];
   
   if (keycheck)
   {
@@ -744,13 +759,23 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
   //Actual state loading code
   if ((fhandle = fopen(statename,"rb")) != NULL)
   {
+    zst_version = 0;
     if (xfercheck) { Totalbyteloaded = 0; }
 
-    Totalbyteloaded += fread(zsmesgcheck, 1, sizeof(zsmesgcheck), fhandle);
-    if (!memcmp(zsmesgcheck, zsmesg, sizeof(zsmesgcheck))) //Just drop older states
+    Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fhandle);
+    if (!memcmp(zst_header_check, zst_header_cur, sizeof(zst_header_check)))
+    {
+      zst_version = 143; //v1.43+
+    }
+    if (!memcmp(zst_header_check, zst_header_old, sizeof(zst_header_check)))
+    {
+      zst_version = 60; //v0.60 - v1.42
+    }
+    
+    if (zst_version) //Pre v0.60 saves are no longer loaded
     {
       load_save_size = 0;
-      copy_state_data(0, read_save_state_data, true);
+      copy_state_data(0, read_save_state_data, true, true);
       Totalbyteloaded += load_save_size;
       
       if (SFXEnable)
