@@ -4675,13 +4675,14 @@ DisplayGUIOptns:
     add [GUITemp],eax
     GUIDisplayIconWin 10,[GUITemp],144,GUIIconDataSlideBar
 
+%ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[MouseWheel],1
     jne .nocheckr
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckr
     GUIDisplayIconWin 10,124,23,[GUITemp]
-
+%endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[mousewrap],1
     jne .nocheck
@@ -4773,7 +4774,6 @@ DisplayGUIOptns:
     GUIOuttextwin2u 10,26,58,GUIGUIOptnsText7,5
     GUIOuttextwin2u 10,26,68,GUIGUIOptnsText8,0
     GUIOuttextwin2u 10,26,78,GUIGUIOptnsTextA,0
-    GUIOuttextwin2 10,138,28,GUIGUIOptnsTextJ
     GUIOuttextwin2 10,60,111,GUIGUIOptnsTextG
     GUIOuttextwin2 10,100,111,GUIGUIOptnsTextH
     GUIOuttextwin2 10,147,111,GUIGUIOptnsTextI
@@ -4782,6 +4782,7 @@ DisplayGUIOptns:
 %ifdef __WIN32__
     GUIOuttextwin2 10,26,173,GUIGUIOptnsTextE
     GUIOuttextwin2 10,26,183,GUIGUIOptnsTextF
+    GUIOuttextwin2 10,138,28,GUIGUIOptnsTextJ
 %endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,16,123,GUIGUIOptnsText6
@@ -4796,7 +4797,6 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,25,57,GUIGUIOptnsText7
     GUIOuttextwin2 10,25,67,GUIGUIOptnsText8
     GUIOuttextwin2 10,25,77,GUIGUIOptnsTextA
-    GUIOuttextwin2 10,137,27,GUIGUIOptnsTextJ
     GUIOuttextwin2 10,59,110,GUIGUIOptnsTextG
     GUIOuttextwin2 10,99,110,GUIGUIOptnsTextH
     GUIOuttextwin2 10,146,110,GUIGUIOptnsTextI
@@ -4805,6 +4805,7 @@ DisplayGUIOptns:
 %ifdef __WIN32__
     GUIOuttextwin2 10,25,172,GUIGUIOptnsTextE
     GUIOuttextwin2 10,25,182,GUIGUIOptnsTextF
+    GUIOuttextwin2 10,137,27,GUIGUIOptnsTextJ
 %endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,15,122,GUIGUIOptnsText6
