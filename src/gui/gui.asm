@@ -570,6 +570,14 @@ NEWSYM pl4Rtk,    dd 0   ; Turbo R
 NEWSYM pl5Ltk,    dd 0   ; Turbo L
 NEWSYM pl5Rtk,    dd 0   ; Turbo R
 
+NEWSYM GUITRAdd,  db 0
+NEWSYM GUITGAdd,  db 10
+NEWSYM GUITBAdd,  db 31
+
+NEWSYM GUIWRAdd,  db 8
+NEWSYM GUIWGAdd,  db 8
+NEWSYM GUIWBAdd,  db 25
+
 GUIsave equ $-GUIRAdd
 
 NEWSYM CombinDataGlob, times 3300 db 0 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff
@@ -644,6 +652,7 @@ GUIPalConv   dd 0
 PrevResoln   dw 0
 SnowMover    dd 0
 keycontrolval dd 0
+NEWSYM CheatBDoor,   db 0
 NEWSYM ShowTimer,    db 0
 NEWSYM MousePRClick, db 0
 NEWSYM MouseDis, db 0
@@ -693,12 +702,23 @@ NEWSYM GUICTimer,   dd 0
 NEWSYM GUIOn,       db 0
 NEWSYM GUIOn2,       db 0
 ;GOSPort db 0
+NEWSYM CurPalSelect, db 0
 
 NEWSYM StartLL, dd 0
 NEWSYM StartLR, dd 0
 NEWSYM LatencyVal, times 32 db 0
 
 NEWSYM NetLoadState, db 0
+
+NEWSYM TRVal, dw 0
+NEWSYM TGVal, dw 0
+NEWSYM TBVal, dw 0
+NEWSYM TRVali, dw 0
+NEWSYM TGVali, dw 0
+NEWSYM TBVali, dw 0
+NEWSYM TRVal2, dw 0
+NEWSYM TGVal2, dw 0
+NEWSYM TBVal2, dw 0
 
 
 ;ModemProcess db 0       ; Shows current dial/answer process
@@ -1177,6 +1197,8 @@ LoadDetermine:
     mov byte[GUICheatMenuData+14],1
     mov byte[GUICheatMenuData+14*2],1
     mov byte[GUIMiscMenuData+14*2],1
+    cmp byte[CheatBDoor],1
+    je .nomodem
     cmp byte[CNetType],21
     je .modem
     cmp byte[CNetType],22
@@ -3162,12 +3184,15 @@ GUITryMenuItem:
 .noconfig
     cmp byte[romloadskip],0
     jne near .nocheat
+    cmp byte[CheatBDoor],1
+    je .yescheat
     cmp byte[CNetType],20
     je near .nocheat
     cmp byte[CNetType],21
     je near .nocheat
     cmp byte[CNetType],22
     je near .nocheat
+.yescheat
     cmp byte[GUIcmenupos],4
     jne near .nocheat
     GUICheckMenuItem 7, 0
@@ -3874,14 +3899,48 @@ GUISetPal:
     cmp bl,32
     jne .loope
 
-    GUIPal 64,0,21,57
-    GUIPal 65,0,21,54
-    GUIPal 66,0,20,51
-    GUIPal 67,0,18,48
-    GUIPal 68,0,16,44
-    GUIPal 69,0,14,40
-    GUIPal 70,0,12,36
-    GUIPal 71,0,10,31
+    ; 0,10,31
+    mov al,[GUITRAdd]
+    mov [TRVal],al
+    mov al,[GUITGAdd]
+    mov [TGVal],al
+    mov al,[GUITBAdd]
+    mov [TBVal],al
+    mov ax,[TRVal]
+    inc ax
+    shr ax,3
+    mov [TRVali],ax
+    shl ax,3
+    add [TRVal],ax
+    mov ax,[TGVal]
+    inc ax
+    shr ax,3
+    mov [TGVali],ax
+    shl ax,3
+    add [TGVal],ax
+    mov ax,[TBVal]
+    inc ax
+    shr ax,3
+    mov [TBVali],ax
+    shl ax,3
+    add [TBVal],ax
+
+    GUIPal 64,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 65,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 66,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 67,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 68,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 69,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 70,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 71,[TRVal],[TGVal],[TBVal]
+
     GUIPal 72,40,0,20
     GUIPal 73,34,0,21
 
@@ -3917,23 +3976,80 @@ GUISetPal:
     jnz .loopf
 
     ; Blue scale = 148 .. 167
-    GUIPal 148,00,00,34
-    GUIPal 149,04,04,38
-    GUIPal 150,08,08,42
-    GUIPal 151,12,12,46
-    GUIPal 152,16,16,50
+    mov al,[GUIWRAdd]
+    add al,al
+    mov [TRVal],al
+    mov al,[GUIWGAdd]
+    add al,al
+    mov [TGVal],al
+    mov al,[GUIWBAdd]
+    add al,al
+    mov [TBVal],al
+    mov byte[TRVali],4
+    mov byte[TGVali],4
+    mov byte[TBVali],4
 
-    GUIPal 153,05,00,24
-    GUIPal 154,09,04,28
-    GUIPal 155,13,08,32
-    GUIPal 156,18,12,36
-    GUIPal 157,23,16,40
+    GUIPal 152,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 151,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 150,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 149,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 148,[TRVal],[TGVal],[TBVal]
 
-    GUIPal 158,10,00,14
-    GUIPal 159,14,04,18
-    GUIPal 160,18,08,22
-    GUIPal 161,22,12,26
-    GUIPal 162,26,16,30
+    mov al,[GUIWRAdd]
+    add al,al
+    mov [TRVal],al
+    mov al,[GUIWGAdd]
+    add al,al
+    mov [TGVal],al
+    mov al,[GUIWBAdd]
+    add al,al
+    mov [TBVal],al
+    mov byte[TRVali],4
+    mov byte[TGVali],4
+    mov byte[TBVali],4
+    call DecPalVal
+    call DecPalVal
+
+    GUIPal 157,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 156,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 155,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 154,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 153,[TRVal],[TGVal],[TBVal]
+
+    mov al,[GUIWRAdd]
+    add al,al
+    mov [TRVal],al
+    mov al,[GUIWGAdd]
+    add al,al
+    mov [TGVal],al
+    mov al,[GUIWBAdd]
+    add al,al
+    mov [TBVal],al
+    mov byte[TRVali],4
+    mov byte[TGVali],4
+    mov byte[TBVali],4
+    call DecPalVal
+    call DecPalVal
+    call DecPalVal
+    call DecPalVal
+
+    GUIPal 162,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 161,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 160,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 159,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 158,[TRVal],[TGVal],[TBVal]
 
     GUIPal 163,40,40,00
     GUIPal 164,30,30,00
@@ -3942,23 +4058,71 @@ GUISetPal:
     GUIPal 167,00,00,00
 
     ; Blue scale shadow
-    GUIPal 168,00,00,17
-    GUIPal 169,02,02,19
-    GUIPal 170,04,04,21
-    GUIPal 171,06,06,23
-    GUIPal 172,08,08,25
+    mov al,[GUIWRAdd]
+    mov [TRVal],al
+    mov al,[GUIWGAdd]
+    mov [TGVal],al
+    mov al,[GUIWBAdd]
+    mov [TBVal],al
+    mov byte[TRVali],2
+    mov byte[TGVali],2
+    mov byte[TBVali],2
 
-    GUIPal 173,02,00,12
-    GUIPal 174,04,02,14
-    GUIPal 175,06,04,16
-    GUIPal 176,09,06,18
-    GUIPal 177,11,08,20
+    GUIPal 172,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 171,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 170,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 169,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 168,[TRVal],[TGVal],[TBVal]
 
-    GUIPal 178,05,00,07
-    GUIPal 179,07,02,09
-    GUIPal 180,09,04,11
-    GUIPal 181,11,06,13
-    GUIPal 182,13,08,15
+    mov al,[GUIWRAdd]
+    mov [TRVal],al
+    mov al,[GUIWGAdd]
+    mov [TGVal],al
+    mov al,[GUIWBAdd]
+    mov [TBVal],al
+    mov byte[TRVali],2
+    mov byte[TGVali],2
+    mov byte[TBVali],2
+    call DecPalVal
+    call DecPalVal
+
+    GUIPal 177,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 176,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 175,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 174,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 173,[TRVal],[TGVal],[TBVal]
+
+    mov al,[GUIWRAdd]
+    mov [TRVal],al
+    mov al,[GUIWGAdd]
+    mov [TGVal],al
+    mov al,[GUIWBAdd]
+    mov [TBVal],al
+    mov byte[TRVali],2
+    mov byte[TGVali],2
+    mov byte[TBVali],2
+    call DecPalVal
+    call DecPalVal
+    call DecPalVal
+    call DecPalVal
+
+    GUIPal 182,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 181,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 180,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 179,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal 178,[TRVal],[TGVal],[TBVal]
 
     GUIPal 183,20,20,00
     GUIPal 184,15,15,00
@@ -4031,12 +4195,38 @@ GUISetPal:
 NEWSYM GUICPC, times 256 dw 0
 
 %macro GUIPal16b 4
-    mov ax,%2 >> 1
+    mov ax,%2
+    shr ax,1
     shl ax,11
-    or ax,%3 << 5
-    or ax,%4 >> 1
+    mov bx,%3
+    shl bx,5
+    or ax,bx
+    mov bx,%4
+    shr bx,1
+    or ax,bx
     mov word[GUICPC+%1*2],ax
 %endmacro
+
+DecPalVal:
+    mov ax,[TRVali]
+    sub word[TRVal],ax
+    mov ax,[TGVali]
+    sub word[TGVal],ax
+    mov ax,[TBVali]
+    sub word[TBVal],ax
+    test word[TRVal],8000h
+    jz .notnegr
+    mov word[TRVal],0
+.notnegr
+    test word[TGVal],8000h
+    jz .notnegg
+    mov word[TGVal],0
+.notnegg
+    test word[TBVal],8000h
+    jz .notnegb
+    mov word[TBVal],0
+.notnegb
+    ret
 
 GUISetPal16:
     ; set palette
@@ -4123,14 +4313,48 @@ GUISetPal16:
     cmp bl,32
     jne .loope
 
-    GUIPal16b 64,0,21,57
-    GUIPal16b 65,0,21,54
-    GUIPal16b 66,0,20,51
-    GUIPal16b 67,0,18,48
-    GUIPal16b 68,0,16,44
-    GUIPal16b 69,0,14,40
-    GUIPal16b 70,0,12,36
-    GUIPal16b 71,0,10,31
+    ; 0,10,31
+    mov al,[GUITRAdd]
+    mov [TRVal],al
+    mov al,[GUITGAdd]
+    mov [TGVal],al
+    mov al,[GUITBAdd]
+    mov [TBVal],al
+    mov ax,[TRVal]
+    inc ax
+    shr ax,3
+    mov [TRVali],ax
+    shl ax,3
+    add [TRVal],ax
+    mov ax,[TGVal]
+    inc ax
+    shr ax,3
+    mov [TGVali],ax
+    shl ax,3
+    add [TGVal],ax
+    mov ax,[TBVal]
+    inc ax
+    shr ax,3
+    mov [TBVali],ax
+    shl ax,3
+    add [TBVal],ax
+
+    GUIPal16b 64,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 65,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 66,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 67,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 68,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 69,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 70,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 71,[TRVal],[TGVal],[TBVal]
+
     GUIPal16b 72,40,0,20
     GUIPal16b 73,34,0,21
 
@@ -4166,23 +4390,92 @@ GUISetPal16:
     jnz .loopf
 
     ; Blue scale = 148 .. 167
-    GUIPal16b 148,00,00,34
-    GUIPal16b 149,04,04,38
-    GUIPal16b 150,08,08,42
-    GUIPal16b 151,12,12,46
-    GUIPal16b 152,16,16,50
+    mov al,[GUIWRAdd]
+    add al,al
+    mov [TRVal],al
+    mov al,[GUIWGAdd]
+    add al,al
+    mov [TGVal],al
+    mov al,[GUIWBAdd]
+    add al,al
+    mov [TBVal],al
+    mov byte[TRVali],4
+    mov byte[TGVali],4
+    mov byte[TBVali],4
 
-    GUIPal16b 153,05,00,24
-    GUIPal16b 154,09,04,28
-    GUIPal16b 155,13,08,32
-    GUIPal16b 156,18,12,36
-    GUIPal16b 157,23,16,40
+    GUIPal16b 152,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 151,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 150,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 149,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 148,[TRVal],[TGVal],[TBVal]
 
-    GUIPal16b 158,10,00,14
-    GUIPal16b 159,14,04,18
-    GUIPal16b 160,18,08,22
-    GUIPal16b 161,22,12,26
-    GUIPal16b 162,26,16,30
+    mov al,[GUIWRAdd]
+    add al,al
+    mov [TRVal],al
+    mov al,[GUIWGAdd]
+    add al,al
+    mov [TGVal],al
+    mov al,[GUIWBAdd]
+    add al,al
+    mov [TBVal],al
+    mov byte[TRVali],4
+    mov byte[TGVali],4
+    mov byte[TBVali],4
+    mov al,[TRVal]
+    shr al,2
+    sub [TRVal],al
+    mov al,[TGVal]
+    shr al,2
+    sub [TGVal],al
+    mov al,[TBVal]
+    shr al,2
+    sub [TBVal],al
+
+    GUIPal16b 157,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 156,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 155,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 154,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 153,[TRVal],[TGVal],[TBVal]
+
+    mov al,[GUIWRAdd]
+    add al,al
+    mov [TRVal],al
+    mov al,[GUIWGAdd]
+    add al,al
+    mov [TGVal],al
+    mov al,[GUIWBAdd]
+    add al,al
+    mov [TBVal],al
+    mov byte[TRVali],4
+    mov byte[TGVali],4
+    mov byte[TBVali],4
+    mov al,[TRVal]
+    shr al,1
+    sub [TRVal],al
+    mov al,[TGVal]
+    shr al,1
+    sub [TGVal],al
+    mov al,[TBVal]
+    shr al,1
+    sub [TBVal],al
+
+    GUIPal16b 162,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 161,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 160,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 159,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 158,[TRVal],[TGVal],[TBVal]
 
     GUIPal16b 163,40,40,00
     GUIPal16b 164,30,30,00
@@ -4191,23 +4484,71 @@ GUISetPal16:
     GUIPal16b 167,00,00,00
 
     ; Blue scale shadow
-    GUIPal16b 168,00,00,17
-    GUIPal16b 169,02,02,19
-    GUIPal16b 170,04,04,21
-    GUIPal16b 171,06,06,23
-    GUIPal16b 172,08,08,25
+    mov al,[GUIWRAdd]
+    mov [TRVal],al
+    mov al,[GUIWGAdd]
+    mov [TGVal],al
+    mov al,[GUIWBAdd]
+    mov [TBVal],al
+    mov byte[TRVali],2
+    mov byte[TGVali],2
+    mov byte[TBVali],2
 
-    GUIPal16b 173,02,00,12
-    GUIPal16b 174,04,02,14
-    GUIPal16b 175,06,04,16
-    GUIPal16b 176,09,06,18
-    GUIPal16b 177,11,08,20
+    GUIPal16b 172,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 171,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 170,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 169,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 168,[TRVal],[TGVal],[TBVal]
 
-    GUIPal16b 178,05,00,07
-    GUIPal16b 179,07,02,09
-    GUIPal16b 180,09,04,11
-    GUIPal16b 181,11,06,13
-    GUIPal16b 182,13,08,15
+    mov al,[GUIWRAdd]
+    mov [TRVal],al
+    mov al,[GUIWGAdd]
+    mov [TGVal],al
+    mov al,[GUIWBAdd]
+    mov [TBVal],al
+    mov byte[TRVali],2
+    mov byte[TGVali],2
+    mov byte[TBVali],2
+    call DecPalVal
+    call DecPalVal
+
+    GUIPal16b 177,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 176,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 175,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 174,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 173,[TRVal],[TGVal],[TBVal]
+
+    mov al,[GUIWRAdd]
+    mov [TRVal],al
+    mov al,[GUIWGAdd]
+    mov [TGVal],al
+    mov al,[GUIWBAdd]
+    mov [TBVal],al
+    mov byte[TRVali],2
+    mov byte[TGVali],2
+    mov byte[TBVali],2
+    call DecPalVal
+    call DecPalVal
+    call DecPalVal
+    call DecPalVal
+
+    GUIPal16b 182,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 181,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 180,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 179,[TRVal],[TGVal],[TBVal]
+    call DecPalVal
+    GUIPal16b 178,[TRVal],[TGVal],[TBVal]
 
     GUIPal16b 183,20,20,00
     GUIPal16b 184,15,15,00

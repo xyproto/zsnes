@@ -4589,6 +4589,37 @@ GUIGameOptnsTextT db 'SLOWDWN KEY',0
 
 DisplayGUIOptns:
     GUIDrawWindowBox 10,GUIGUIDisp
+
+    push eax
+    cmp byte[CurPalSelect],1
+    je .yespal2b
+    cmp byte[CurPalSelect],2
+    je .yespal3b
+    mov al,[GUIRAdd]
+    mov [TRVal2],al
+    mov al,[GUIGAdd]
+    mov [TGVal2],al
+    mov al,[GUIBAdd]
+    mov [TBVal2],al
+    jmp .nopal1b
+.yespal2b
+    mov al,[GUITRAdd]
+    mov [TRVal2],al
+    mov al,[GUITGAdd]
+    mov [TGVal2],al
+    mov al,[GUITBAdd]
+    mov [TBVal2],al
+    jmp .nopal1b
+.yespal3b
+    mov al,[GUIWRAdd]
+    mov [TRVal2],al
+    mov al,[GUIWGAdd]
+    mov [TGVal2],al
+    mov al,[GUIWBAdd]
+    mov [TBVal2],al
+.nopal1b
+    pop eax
+
     mov eax,dword[GUIwinposx+10*4]
     mov ebx,dword[GUIwinposy+10*4]
     mov ecx,eax
@@ -4614,19 +4645,19 @@ DisplayGUIOptns:
     add ebx,11
     DrawGUILine
     xor eax,eax
-    mov al,[GUIRAdd]
+    mov al,[TRVal2]
     shl eax,2
     mov dword[GUITemp],22
     add [GUITemp],eax
     GUIDisplayIconWin 10,[GUITemp],120,GUIIconDataSlideBar
     xor eax,eax
-    mov al,[GUIGAdd]
+    mov al,[TGVal2]
     shl eax,2
     mov dword[GUITemp],22
     add [GUITemp],eax
     GUIDisplayIconWin 10,[GUITemp],132,GUIIconDataSlideBar
     xor eax,eax
-    mov al,[GUIBAdd]
+    mov al,[TBVal2]
     shl eax,2
     mov dword[GUITemp],22
     add [GUITemp],eax
@@ -4722,6 +4753,9 @@ DisplayGUIOptns:
     GUIOuttextwin2u 10,26,58,GUIGUIOptnsText7,5
     GUIOuttextwin2u 10,26,68,GUIGUIOptnsText8,0
     GUIOuttextwin2u 10,26,78,GUIGUIOptnsTextA,0
+    GUIOuttextwin2 10,60,111,GUIGUIOptnsTextG
+    GUIOuttextwin2 10,100,111,GUIGUIOptnsTextH
+    GUIOuttextwin2 10,147,111,GUIGUIOptnsTextI
     GUIOuttextwin2 10,26,88,GUIGUIOptnsTextB
     GUIOuttextwin2 10,26,98,GUIGUIOptnsTextC
 %ifdef __WIN32__
@@ -4741,6 +4775,9 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,25,57,GUIGUIOptnsText7
     GUIOuttextwin2 10,25,67,GUIGUIOptnsText8
     GUIOuttextwin2 10,25,77,GUIGUIOptnsTextA
+    GUIOuttextwin2 10,59,110,GUIGUIOptnsTextG
+    GUIOuttextwin2 10,99,110,GUIGUIOptnsTextH
+    GUIOuttextwin2 10,146,110,GUIGUIOptnsTextI
     GUIOuttextwin2 10,25,87,GUIGUIOptnsTextB
     GUIOuttextwin2 10,25,97,GUIGUIOptnsTextC
 %ifdef __WIN32__
@@ -4754,10 +4791,14 @@ DisplayGUIOptns:
     mov byte[GUIGUIOptnsText6],'B'
     GUIOuttextwin2 10,15,146,GUIGUIOptnsText6
 
+    GUIDisplayButtonHole 10,48,108,byte[CurPalSelect],0
+    GUIDisplayButtonHole 10,88,108,byte[CurPalSelect],1
+    GUIDisplayButtonHole 10,135,108,byte[CurPalSelect],2
+
     mov dword[GUIGUIOptnsText9],0
     mov esi,GUIGUIOptnsText9+2
     xor eax,eax
-    mov al,[GUIRAdd]
+    mov al,[TRVal2]
     call .processnum
     GUIOuttextwin2 10,160,123,[GUITemp]
     mov byte[GUItextcolor],221
@@ -4769,7 +4810,7 @@ DisplayGUIOptns:
     mov dword[GUIGUIOptnsText9],0
     mov esi,GUIGUIOptnsText9+2
     xor eax,eax
-    mov al,[GUIGAdd]
+    mov al,[TGVal2]
     call .processnum
     GUIOuttextwin2 10,160,135,[GUITemp]
     mov byte[GUItextcolor],221
@@ -4781,7 +4822,7 @@ DisplayGUIOptns:
     mov dword[GUIGUIOptnsText9],0
     mov esi,GUIGUIOptnsText9+2
     xor eax,eax
-    mov al,[GUIBAdd]
+    mov al,[TBVal2]
     call .processnum
     GUIOuttextwin2 10,160,147,[GUITemp]
     mov byte[GUItextcolor],221
@@ -4814,7 +4855,7 @@ DisplayGUIOptns:
 ;lastcursres db 0        ; 0 = go to load, 1 = go to previous menu, 2 = no menu
 ;resetposn   db 1        ; 0 = no window reset, 1 = window reset
 
-GUIGUIOptnsText1 db 'BACK COLOR DISPLACEMENT :',0
+GUIGUIOptnsText1 db 'COLOR:',0
 GUIGUIOptnsText2 db 'MOUSE WRAP',0
 GUIGUIOptnsText3 db 'MOUSE SHADOW',0
 GUIGUIOptnsText4 db 'KEEP MENU POSITION',0
@@ -4829,6 +4870,9 @@ GUIGUIOptnsTextC dd 'ENABLE WATER EFFECT',0
 GUIGUIOptnsTextD dd 'MAIN WINDOW OPTIONS :',0
 GUIGUIOptnsTextE dd 'ALWAYS ON TOP',0
 GUIGUIOptnsTextF db 'SAVE MAIN WINDOW POSITION',0
+GUIGUIOptnsTextG db 'BACK',0
+GUIGUIOptnsTextH db 'TITLE',0
+GUIGUIOptnsTextI db 'WIN',0
 
 DisplayGUIAbout:
 ;    cmp byte[OSPort],3

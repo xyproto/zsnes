@@ -2628,6 +2628,41 @@ DisplayGUIOptnsClick:
     GUIClickCButton 12,168,byte[AlwaysOnTop]
     GUIClickCButton 12,178,byte[SaveMainWindowPos]
 %endif
+
+    GUIPButtonHole 48,108,byte[CurPalSelect],0
+    GUIPButtonHole 88,108,byte[CurPalSelect],1
+    GUIPButtonHole 135,108,byte[CurPalSelect],2
+
+    push eax
+    cmp byte[CurPalSelect],1
+    je .yespal2b
+    cmp byte[CurPalSelect],2
+    je .yespal3b
+    mov al,[GUIRAdd]
+    mov [TRVal2],al
+    mov al,[GUIGAdd]
+    mov [TGVal2],al
+    mov al,[GUIBAdd]
+    mov [TBVal2],al
+    jmp .nopal1b
+.yespal2b
+    mov al,[GUITRAdd]
+    mov [TRVal2],al
+    mov al,[GUITGAdd]
+    mov [TGVal2],al
+    mov al,[GUITBAdd]
+    mov [TBVal2],al
+    jmp .nopal1b
+.yespal3b
+    mov al,[GUIWRAdd]
+    mov [TRVal2],al
+    mov al,[GUIWGAdd]
+    mov [TGVal2],al
+    mov al,[GUIWBAdd]
+    mov [TBVal2],al
+.nopal1b
+    pop eax
+
     cmp eax,25
     jl near .nomovebar
     cmp eax,25+32*4-1
@@ -2638,10 +2673,10 @@ DisplayGUIOptnsClick:
     jl .nomovebar1
     cmp edx,126
     jg .nomovebar1
-    cmp byte[GUIRAdd],al
+    cmp byte[TRVal2],al
     je .nomovebar1b
-    mov byte[GUIRAdd],al
-    call GUISetPal
+    mov byte[TRVal2],al
+    mov byte[TRVal2+1],1
 .nomovebar1b
     mov byte[GUIHold],2
     mov eax,[GUIwinposy+10*4]
@@ -2653,10 +2688,10 @@ DisplayGUIOptnsClick:
     jl .nomovebar2
     cmp edx,138
     jg .nomovebar2
-    cmp byte[GUIGAdd],al
+    cmp byte[TGVal2],al
     je .nomovebar2b
-    mov byte[GUIGAdd],al
-    call GUISetPal
+    mov byte[TGVal2],al
+    mov byte[TRVal2+1],1
 .nomovebar2b
     mov byte[GUIHold],2
     mov eax,[GUIwinposy+10*4]
@@ -2668,10 +2703,10 @@ DisplayGUIOptnsClick:
     jl .nomovebar3
     cmp edx,150
     jg .nomovebar3
-    cmp byte[GUIBAdd],al
+    cmp byte[TBVal2],al
     je .nomovebar3b
-    mov byte[GUIBAdd],al
-    call GUISetPal
+    mov byte[TBVal2],al
+    mov byte[TRVal2+1],1
 .nomovebar3b
     mov byte[GUIHold],2
     mov eax,[GUIwinposy+10*4]
@@ -2679,6 +2714,43 @@ DisplayGUIOptnsClick:
     mov [GUIHoldYlim],eax
 .nomovebar3
 .nomovebar
+
+    push eax
+    cmp byte[CurPalSelect],1
+    je .yespal2
+    cmp byte[CurPalSelect],2
+    je .yespal3
+    mov al,[TRVal2]
+    mov [GUIRAdd],al
+    mov al,[TGVal2]
+    mov [GUIGAdd],al
+    mov al,[TBVal2]
+    mov [GUIBAdd],al
+    jmp .nopal1
+.yespal2
+    mov al,[TRVal2]
+    mov [GUITRAdd],al
+    mov al,[TGVal2]
+    mov [GUITGAdd],al
+    mov al,[TBVal2]
+    mov [GUITBAdd],al
+    jmp .nopal1
+.yespal3
+    mov al,[TRVal2]
+    mov [GUIWRAdd],al
+    mov al,[TGVal2]
+    mov [GUIWGAdd],al
+    mov al,[TBVal2]
+    mov [GUIWBAdd],al
+.nopal1
+    pop eax
+
+    cmp byte[TRVal2+1],1
+    jne .nopalchange
+    call GUISetPal
+    mov byte[TRVal2+1],0
+.nopalchange
+
     cmp byte[GUIHold],2
     jne .nohold
     mov eax,[GUIwinposx+10*4]
