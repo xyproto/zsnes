@@ -1303,6 +1303,8 @@ NEWSYM endprog
 
     EXTSYM SDD1Array,SDD1Entry,SDD1Sort
     call SDD1Sort
+    cmp dword[SDD1Entry],0
+    je .nodecomppack
     mov edx,.blah
     call Create_File
     mov bx,ax
@@ -1310,6 +1312,7 @@ NEWSYM endprog
     mov ecx,[SDD1Entry]
     call Write_File
     call Close_File
+.nodecomppack
 
     cmp byte[sramsavedis],1
     je .nosram
@@ -4309,7 +4312,8 @@ NEWSYM execsingle
     inc ax
     cmp word[curypos],ax
     je near .nmi
-    cmp word[curypos],261
+    mov ax,[totlines]
+    cmp word[curypos],ax
     ja near .overy
     ; check for VIRQ/HIRQ/NMI
     ProcessIRQStuff
@@ -4463,3 +4467,4 @@ NEWSYM execsingle
 
 
 NEWSYM ExecuteAsmEnd
+
