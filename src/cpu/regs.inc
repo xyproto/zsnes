@@ -1181,27 +1181,27 @@ reg4017r:
 
 reg4100r:
    cmp byte[nssdip1],1
-   je .nodip1
+   jne .nodip1
    mov al,1
 .nodip1
    cmp byte[nssdip1],1
-   je .nodip2
+   jne .nodip2
    or al,02h
 .nodip2
    cmp byte[nssdip3],1
-   je .nodip3
+   jne .nodip3
    or al,04h
 .nodip3
    cmp byte[nssdip4],1
-   je .nodip4
+   jne .nodip4
    or al,08h
 .nodip4
    cmp byte[nssdip5],1
-   je .nodip5
+   jne .nodip5
    or al,10h
 .nodip5
    cmp byte[nssdip6],1
-   je .nodip6
+   jne .nodip6
    or al,20h
 .nodip6
    ret
