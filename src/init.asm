@@ -2586,7 +2586,6 @@ NEWSYM ProcessSwapTable
 
 SECTION .data
 NEWSYM SFXCounter, dd 0
-NEWSYM SFXIRQFlag, db 0
 
 SECTION .text
 
@@ -4424,7 +4423,6 @@ NEWSYM CheckROMType
 
     ; Chip Detection
     mov byte[SFXEnable],0
-    mov byte[SFXIRQFlag],0
     mov byte[C4Enable],0
     mov byte[SPC7110Enable],0
     mov byte[RTCEnable],0
@@ -4520,7 +4518,6 @@ int 3h
     jne .notSFXD
     mov byte[SFXEnable],1
     mov byte[SFXBATT],1 ;Contains Battery
-    mov byte[SFXIRQFlag],1
     jmp .endchpdtct
 .notSFXD
     cmp ax,05535h

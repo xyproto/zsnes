@@ -109,7 +109,7 @@ EXTSYM C4VBlank
 EXTSYM dsp1teststuff
 EXTSYM ReturnFromSPCStall,SPCStallSetting,cycpb268,cycpb358,HIRQSkip,scanlines
 EXTSYM smallscreenon,ScreenScale
-EXTSYM MainLoop,NumberOfOpcodes,SfxCLSR,SfxSCMR,SfxPOR,SFXIRQFlag
+EXTSYM MainLoop,NumberOfOpcodes,SfxCLSR,SfxSCMR,SfxPOR
 EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,sfxclineloc
 EXTSYM PLOTJmpa,PLOTJmpb,FxTable,FxTableb,FxTablec,FxTabled
 EXTSYM SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,hdmaearlstart,SFXCounter
