@@ -22,7 +22,7 @@ extern "C" {
    #include <windows.h>
    #include <stdio.h>
    #include <ddraw.h> 
-   #include <initguid.h>
+   //#include <initguid.h>
    #include <mmsystem.h>
    #include <time.h>
 }
@@ -31,6 +31,62 @@ extern "C" {
 #include <dinput.h>
 #include <winuser.h>
 #include "resource.h"
+
+
+/*
+December 17 2004 -Nach
+
+I added some macros for inline assembly to keep compatibility between GCC and MSVC
+
+ASM_BEGIN is to start an assembly section
+ASM_END is to end it
+
+ASM_COMMAND is for any simple command without a , in it example: dec eax
+ASM_COMMAND2 is when a command has a , for example: add ebx, 5
+ASM_COMMAND3 is when the parameter after the , is a variable example: mov eax, my_variable
+
+ASM_CALL is for calling another function inside assembly section
+
+asm_call() can be treated like any C function, use it to call an assembly function
+           from any normal C code.
+*/
+
+#ifdef __GNUC__ //MinGW
+
+//Simple start and end structure, set as volatile so perhaps we can use -O1+ later
+#define ASM_BEGIN asm volatile (
+#define ASM_END );
+//All commands need quotes and a newline and tab. C vars are _ prefixed
+#define ASM_COMMAND(line) #line"\n\t"
+#define ASM_COMMAND2(line, part2) #line", "#part2"\n\t"
+#define ASM_COMMAND3(line, var) #line", _"#var"\n\t"
+//Just for the prefix
+#define ASM_CALL(func) ASM_COMMAND(call _ ## func)
+//A function call is a simple register backup, call, restore
+#define asm_call(func) ASM_BEGIN \
+ASM_COMMAND(pushad) \
+ASM_CALL(func) \
+ASM_COMMAND(popad) \
+ASM_END
+
+#else //MSVC
+
+#define ASM_BEGIN _asm {
+#define ASM_END };
+
+//MSVC is all straight foward about these
+#define ASM_COMMAND(line) line
+#define ASM_COMMAND2(line, part2) line, part2
+#define ASM_COMMAND3(line, var) ASM_COMMAND2(line, var)
+//Next is not really special either
+#define ASM_CALL(func) ASM_COMMAND(call func)
+//Using this weird style because of MSVCs bad parsing
+#define asm_call(func) _asm pushad \
+_asm call func \
+_asm popad
+
+#endif
+
 
 DWORD WindowWidth = 256;
 DWORD WindowHeight = 224;
@@ -138,10 +194,11 @@ DWORD                   SurfaceY=0;
 HANDLE hLock, hThread;
 DWORD dwThreadId, dwThreadParam, semaphore_run;
 
-extern "C" int SemaphoreMax = 5;
-
-extern "C" void InitSemaphore();
-extern "C" void ShutdownSemaphore();
+extern "C" {
+int SemaphoreMax = 5;
+void InitSemaphore();
+void ShutdownSemaphore();
+}
 
 static char dinput8_dll[] = {"dinput8.dll\0"};
 static char dinput8_imp[] = {"DirectInput8Create\0"};
@@ -234,12 +291,19 @@ extern "C" void ImportDirectX()
    }
 }
 
-#define UPDATE_TICKS_GAME 1000.855001760297741789468390082/60      // milliseconds per world update
-#define UPDATE_TICKS_GAMEPAL 1000/50   // milliseconds per world update
-#define UPDATE_TICKS_GUI 1000/36       // milliseconds per world update
-#define UPDATE_TICKS_UDP 1000/60       // milliseconds per world update
+//Nach: I'm not sure why we have such a number for NTSC, but MinGW
+//is using floating point arithmetic with it and going really slow.
+//So for MinGW I set it to the same idea as PAL
+#ifdef __GNUC__
+#define UPDATE_TICKS_GAME (1000/60)
+#else
+#define UPDATE_TICKS_GAME (1000.855001760297741789468390082/60)      // milliseconds per world update
+#endif
+#define UPDATE_TICKS_GAMEPAL (1000/50)   // milliseconds per world update
+#define UPDATE_TICKS_GUI (1000/36)       // milliseconds per world update
+#define UPDATE_TICKS_UDP (1000/60)       // milliseconds per world update
 
-_int64 start, end, freq, update_ticks_pc, start2, end2, update_ticks_pc2;
+__int64 start, end, freq, update_ticks_pc, start2, end2, update_ticks_pc2;
 
 void ReleaseDirectDraw();
 void ReleaseDirectSound();
@@ -251,7 +315,7 @@ extern "C"
 {
    void drawscreenwin(void);
    DWORD LastUsedPos=0;
-   DWORD CurMode=-1;
+   DWORD CurMode=~0;
    void initDirectDraw()
    {
       InitDirectDraw();
@@ -324,7 +388,7 @@ void DrawScreen()
  
 DWORD InputEn=0;
 
-InputAcquire(void)
+BOOL InputAcquire(void)
 {
    if (JoystickInput[0]) JoystickInput[0]->Acquire();
    if (JoystickInput[1]) JoystickInput[1]->Acquire();
@@ -392,7 +456,7 @@ extern "C" BYTE MouseWheel;
 
 BOOL InputRead(void)
 {
-   static PrevZ=0;
+   static int PrevZ=0;
    MouseMoveX=0;
    MouseMoveY=0;
    if (MouseInput&&InputEn==1)
@@ -459,13 +523,8 @@ void ExitFunction()
 {
    if (GUIOn2 == 0)
    {
-      _asm
-      {
-         pushad
-         call SaveSramData
-         call GUISaveVars
-         popad
-      }
+      asm_call(SaveSramData);
+      asm_call(GUISaveVars);
    }
    IsActivated = 0;
    ReleaseDirectInput();
@@ -483,10 +542,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
    bool accept;
    int vkeyval;
 
-   //MK: unused 2003/08/31
-   //   short zDelta;
-
-	switch (uMsg)
+   switch (uMsg)
    {
       case WM_KEYDOWN:        // sent when user presses a key
          if (!((CurKeyPos+1==CurKeyReadPos) || ((CurKeyPos+1==16)
@@ -664,7 +720,7 @@ int RegisterWinClass(void)
 BYTE PrevStereoSound;
 DWORD PrevSoundQuality;
 
-InitSound()
+BOOL InitSound()
 {
    WAVEFORMATEX wfx;
 	DSBCAPS dsbcaps;
@@ -788,7 +844,7 @@ InitSound()
    }
 }
 
-ReInitSound()
+BOOL ReInitSound()
 {
    WAVEFORMATEX wfx;
 	DSBCAPS dsbcaps;
@@ -1330,8 +1386,8 @@ DWORD FirstFull=1;
 DWORD DMode=0;
 DWORD SMode=0;
 DWORD DSMode=0;
-DWORD prevHQMode=-1;
-DWORD prevScanlines=-1;
+DWORD prevHQMode=~0;
+DWORD prevScanlines=~0;
 WORD Refresh = 0;
 extern "C" BYTE GUIWFVID[];
 extern "C" BYTE GUIDSIZE[];
@@ -1766,12 +1822,8 @@ char WinName[]={"ZSNESW\0"};
 
 void initwinvideo(void)
 {
-   //MK: unused 2003/08/31
-   //RECT zwindowrect;
    WINDOWPLACEMENT wndpl;
    RECT rc1;
-   //MK: unused 2003/08/31
-   //RECT swrect;
    DWORD newmode=0;
    DWORD HQMode=0;
 
@@ -2017,12 +2069,7 @@ void initwinvideo(void)
       if (Force60hz) Refresh = 60;
       InitDirectDraw();
       clearwin();
-      _asm
-      {
-         pushad
-         call Clear2xSaIBuffer
-         popad
-      }
+      asm_call(Clear2xSaIBuffer);
       clear_display();
       return;
    }
@@ -2034,12 +2081,7 @@ void initwinvideo(void)
       ReleaseDirectDraw();
       InitDirectDraw();
       clearwin();
-      _asm
-      {
-         pushad
-         call Clear2xSaIBuffer
-         popad
-      }
+      asm_call(Clear2xSaIBuffer);
       clear_display();
       return;
    }
@@ -2052,8 +2094,8 @@ extern int DSPBuffer;
 int * DSPBuffer1;
 DWORD ScreenPtr;
 DWORD ScreenPtr2;
-extern GUI36hzcall(void);
-extern Game60hzcall(void);
+extern void GUI36hzcall(void);
+extern void Game60hzcall(void);
 extern int packettimeleft[256];
 extern int PacketCounter;
 extern int CounterA;
@@ -2101,156 +2143,164 @@ void CheckTimers(void)
 
 extern unsigned char MMXSupport;
 
+extern "C" {
+volatile int SPCSize;
+volatile int buffer_ptr;
+}
+
 void UpdateVFrame(void)
 {
-   int DataNeeded;
-   int SPCSize=256;
+  int DataNeeded;
+  SPCSize=256;
 
-   if (StereoSound==1)SPCSize=256;
+  if (StereoSound==1) SPCSize=256;
 
-   while (PeekMessage(&msg,NULL,0,0,PM_REMOVE))
-   {
-      TranslateMessage(&msg);
-      DispatchMessage(&msg);
-   }
+  while (PeekMessage(&msg,NULL,0,0,PM_REMOVE))
+  {
+    TranslateMessage(&msg);
+    DispatchMessage(&msg);
+  }
 
-   WinUpdateDevices();
-   CheckTimers();
+  WinUpdateDevices();
+  CheckTimers();
 
-   if (SoundEnabled == 0) return;
+  if (SoundEnabled == 0) return;
 
-   if(!UsePrimaryBuffer) lpSoundBuffer->GetCurrentPosition(&CurrentPos,&WritePos);
-	else lpPrimaryBuffer->GetCurrentPosition(&CurrentPos,&WritePos);
+  if(!UsePrimaryBuffer) lpSoundBuffer->GetCurrentPosition(&CurrentPos,&WritePos);
+  else lpPrimaryBuffer->GetCurrentPosition(&CurrentPos,&WritePos);
 
-   if (LastUsedPos <= CurrentPos)
-   {
-      DataNeeded=CurrentPos-LastUsedPos;
-   }
-   else
-   {
-      DataNeeded=SoundBufferSize - LastUsedPos + CurrentPos;
-   }
+  if (LastUsedPos <= CurrentPos)
+  {
+    DataNeeded=CurrentPos-LastUsedPos;
+  }
+  else
+  {
+    DataNeeded=SoundBufferSize - LastUsedPos + CurrentPos;
+  }
 
-   DataNeeded/=(SPCSize*2);
-   DataNeeded*=(SPCSize*2);
+  DataNeeded/=(SPCSize*2);
+  DataNeeded*=(SPCSize*2);
 
-   while (DataNeeded>0)
-   {
-      _asm
+  while (DataNeeded>0)
+  {
+    asm_call(SoundProcess);
+
+    DSPBuffer1=(int *)&DSPBuffer;
+
+    buffer_ptr = (int)&Buffer[0];
+
+    if (T36HZEnabled == 1)
+    {
+      if (MMXSupport == 1)
       {
-         pushad
-         call SoundProcess
-         popad
+        ASM_BEGIN
+        ASM_COMMAND3(mov edi,buffer_ptr)
+        ASM_COMMAND3(mov ecx,SPCSize)
+        ASM_COMMAND2(shr ecx,2)
+        ASM_COMMAND2(pxor mm0,mm0)
+ASM_COMMAND(_blank_top_fpu:)
+        ASM_COMMAND2(movq [edi],mm0)
+        ASM_COMMAND2(add edi,8)
+        ASM_COMMAND(dec ecx)
+        ASM_COMMAND(jne _blank_top_fpu)
+        ASM_COMMAND(emms)
+        ASM_END
       }
-
-      DSPBuffer1=(int *)&DSPBuffer;
-
-      int buffer_ptr = (int)&Buffer[0];
-
-      if (T36HZEnabled == 1)
-         if (MMXSupport == 1)
-            _asm
-            {
-               mov edi,buffer_ptr
-               mov ecx,SPCSize
-               shr ecx,2
-               pxor mm0,mm0
-_blank_top_fpu:
-               movq [edi],mm0
-               add edi,8
-               dec ecx
-               jne _blank_top_fpu
-               emms
-            }
-         else
-            _asm
-            {
-               mov edi,buffer_ptr
-               mov ecx,SPCSize
-               shr ecx,1
-               xor eax,eax
-_blank_top:
-               mov [edi],eax
-               add edi,4
-               dec ecx
-               jne _blank_top
-            }
       else
-         if (MMXSupport == 1)
-            _asm
-            {
-               mov esi,DSPBuffer1
-               mov edi,buffer_ptr
-               mov ecx,SPCSize
-               shr ecx,2
-_top_mmx:
-               movq mm0,[esi]
-               packssdw mm0,[esi+8]
-               movq [edi],mm0
-               add esi,16
-               add edi,8
-               dec ecx
-               jne _top_mmx
-               emms
-            }
-         else
-            for(i=0;i<SPCSize;i++)
-            {
-               Buffer[i]=DSPBuffer1[i];
-               if (DSPBuffer1[i]>32767)Buffer[i]=32767;
-               if (DSPBuffer1[i]<-32767)Buffer[i]=-32767;
-            }
-
-		if(!UsePrimaryBuffer)
-		{
-	      if (DS_OK!=lpSoundBuffer->Lock(LastUsedPos,
-	                                  SPCSize*2, &lpvPtr1,
-	  	                               &dwBytes1, &lpvPtr2,
-	                                  &dwBytes2, 0))
-	      {
-	         return;
-	      }
-		}
-		else
-		{
-	      if (DS_OK!=lpPrimaryBuffer->Lock(LastUsedPos,
-	                                  SPCSize*2, &lpvPtr1,
-	                                  &dwBytes1, &lpvPtr2,
-	                                  &dwBytes2, 0))
-	      {
-	         return;
-	      }
-		}
-
-      Sound=(short *)lpvPtr1;
-
-      CopyMemory(lpvPtr1, &Buffer[0], dwBytes1);
-
-      if (NULL != lpvPtr2)
       {
-         CopyMemory(lpvPtr2, &Buffer[0]+dwBytes1, dwBytes2);
-      }   
+        ASM_BEGIN
+        ASM_COMMAND3(mov edi,buffer_ptr)
+        ASM_COMMAND3(mov ecx,SPCSize)
+        ASM_COMMAND2(shr ecx,1)
+        ASM_COMMAND2(xor eax,eax)
+ASM_COMMAND(_blank_top:)
+        ASM_COMMAND2(mov [edi],eax)
+        ASM_COMMAND2(add edi,4)
+        ASM_COMMAND(dec ecx)
+        ASM_COMMAND(jne _blank_top)
+        ASM_END
+      }
+    }
+    else
+    {
+      if (MMXSupport == 1)
+      {
+        ASM_BEGIN
+        ASM_COMMAND3(mov esi,DSPBuffer1)
+        ASM_COMMAND3(mov edi,buffer_ptr)
+        ASM_COMMAND3(mov ecx,SPCSize)
+        ASM_COMMAND2(shr ecx,2)
+ASM_COMMAND(_top_mmx:)
+        ASM_COMMAND2(movq mm0,[esi])
+        ASM_COMMAND2(packssdw mm0,[esi+8])
+        ASM_COMMAND2(movq [edi],mm0)
+        ASM_COMMAND2(add esi,16)
+        ASM_COMMAND2(add edi,8)
+        ASM_COMMAND(dec ecx)
+        ASM_COMMAND(jne _top_mmx)
+        ASM_COMMAND(emms)
+        ASM_END
+      }
+      else
+      {
+        for(i=0;i<SPCSize;i++)
+        {
+          Buffer[i]=DSPBuffer1[i];
+          if (DSPBuffer1[i]>32767)Buffer[i]=32767;
+          if (DSPBuffer1[i]<-32767)Buffer[i]=-32767;
+        }
+      }
+    }
 
-		if(!UsePrimaryBuffer)
-		{
-	      if (DS_OK != lpSoundBuffer->Unlock(lpvPtr1, dwBytes1, lpvPtr2, dwBytes2))
-	      {
-	         return;
-	      }
-		}
-		else
-		{
-	      if (DS_OK != lpPrimaryBuffer->Unlock(lpvPtr1, dwBytes1, lpvPtr2, dwBytes2))
-	      {
-	         return;
-	      }
-		}
+    if(!UsePrimaryBuffer)
+    {
+      if (DS_OK!=lpSoundBuffer->Lock(LastUsedPos,
+                                     SPCSize*2, &lpvPtr1,
+                                     &dwBytes1, &lpvPtr2,
+                                     &dwBytes2, 0))
+      {
+        return;
+      }
+    }
+    else
+    {
+      if (DS_OK!=lpPrimaryBuffer->Lock(LastUsedPos,
+                                       SPCSize*2, &lpvPtr1,
+                                       &dwBytes1, &lpvPtr2,
+                                       &dwBytes2, 0))
+      {
+        return;
+      }
+    }
 
-      LastUsedPos+=SPCSize*2;
-      if (LastUsedPos==SoundBufferSize) LastUsedPos=0;
-      DataNeeded-=(SPCSize*2);
-   }
+    Sound=(short *)lpvPtr1;
 
+    CopyMemory(lpvPtr1, &Buffer[0], dwBytes1);
+
+    if (NULL != lpvPtr2)
+    {
+      CopyMemory(lpvPtr2, &Buffer[0]+dwBytes1, dwBytes2);
+    }
+
+    if(!UsePrimaryBuffer)
+    {
+      if (DS_OK != lpSoundBuffer->Unlock(lpvPtr1, dwBytes1, lpvPtr2, dwBytes2))
+      {
+        return;
+      }
+    }
+    else
+    {
+      if (DS_OK != lpPrimaryBuffer->Unlock(lpvPtr1, dwBytes1, lpvPtr2, dwBytes2))
+      {
+        return;
+      }
+    }
+
+    LastUsedPos+=SPCSize*2;
+    if (LastUsedPos==SoundBufferSize) LastUsedPos=0;
+    DataNeeded-=(SPCSize*2);
+  }
 }
 
 extern unsigned char curblank;
@@ -2345,10 +2395,10 @@ extern void DrawWin256x224x16();
 extern void DrawWin256x224x32();
 extern void DrawWin320x240x16();
 
-extern _int64 copymaskRB = 0x001FF800001FF800;
-extern _int64 copymaskG = 0x0000FC000000FC00;
-extern _int64 copymagic = 0x0008010000080100;
-extern _int64 coef = 0x0066009a0066009a;
+volatile __int64 copymaskRB = 0x001FF800001FF800LL;
+volatile __int64 copymaskG = 0x0000FC000000FC00LL;
+volatile __int64 copymagic = 0x0008010000080100LL;
+volatile __int64 coef = 0x0066009a0066009aLL;
 
 //extern BYTE MotionBlur;
 extern WORD totlines;
@@ -2561,12 +2611,7 @@ void drawscreenwin(void)
             AddEndBytes=pitch-1024;
             NumBytesPerLine=pitch;
             WinVidMemStart=&SurfBuf[0];
-            _asm
-            {
-               pushad
-               call copy640x480x16bwin
-               popad
-            }
+            asm_call(copy640x480x16bwin);
             break;
          default:
             UnlockSurface();
@@ -2587,12 +2632,7 @@ void drawscreenwin(void)
             AddEndBytes=pitch-1024;
             NumBytesPerLine=pitch;
             WinVidMemStart=&SurfBuf[(240-resolutn)*pitch+64*2];
-            _asm
-            {
-               pushad
-               call copy640x480x16bwin
-               popad
-            }
+            asm_call(copy640x480x16bwin);
             break;
          default:
             UnlockSurface();
@@ -2672,12 +2712,7 @@ void WinUpdateDevices()
    if (keys2[0x38] != 0 && keys2[0x3E] != 0) exit(0);
    if (keys2[0xB8] != 0 && keys2[0x1C] != 0 || keys2[0x38] != 0 && keys2[0x1C] != 0)
    {
-      _asm
-      {
-         pushad
-         call SwitchFullScreen
-         popad
-      }
+      asm_call(SwitchFullScreen);
       return;
    }
 

@@ -1532,10 +1532,6 @@ NEWSYM StartSound
 
 
 NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
-   pushad
-;    cmp byte[OSPort],1  ; Do not call in the dos port
-;    ja .notdos
-;.notdos
     cmp byte[soundon],0
     je .nosound
     cmp byte[DSPDisable],1
@@ -1550,7 +1546,6 @@ NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
     ; DSPBuffer should contain the processed buffer in the specified size
     ; You will have to convert/clip it to 16-bit for actual sound process
 .nosound    
-    popad
     ret
 
 NEWSYM delay
