@@ -328,8 +328,8 @@ unsigned short sum(unsigned char *array, unsigned int size)
   return(theSum);
 }
 
-extern unsigned char SPC7110Enable;
-extern unsigned char BSEnable;
+extern bool SPC7110Enable;
+extern bool BSEnable;
 extern unsigned short Checksumvalue;
 void CalcChecksum()
 {
@@ -399,7 +399,11 @@ extern bool SETAEnable;
 void SetupSramSize()
 {
   unsigned char *ROM = (unsigned char *)romdata;
-  if (SFXEnable)
+  if (BSEnable)
+  {
+    ramsize = 0;
+  }
+  else if (SFXEnable)
   {
     if (ROM[infoloc+CompanyOffset] == 0x33) //Extended header
     {

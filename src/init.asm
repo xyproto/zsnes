@@ -1556,53 +1556,20 @@ NEWSYM init65816
     mov byte[nmiprevline],224
     mov byte[nmistatus],0
 
-    mov eax,055555555h
-
-    ;mov esi,[romdata]
-    ;add esi,07FC0h
-    ;cmp word[esi],'BS'  ; 7FFFFFA
-    ;jne .notbsx
-;.yesbsx
-    ;mov eax,0FFFFFFFFh
-    ;pushad
-    ;xor edx,edx
-    ;mov eax,128
-    ;mov ebx,[NumofBanks]
-    ;div ebx
-    ;mov ecx,eax
-    ;dec ecx
-    ;jz .skipbsxmove
-    ;mov ebx,[NumofBanks]
-    ;shl ebx,15
-    ;mov edx,ebx
-    ;add ebx,[romdata]
-;.loopbsx
-    ;mov esi,[romdata]
-    ;mov edi,edx
-;.loopbsx2
-    ;mov al,[esi]
-    ;xor al,al
-    ;mov [ebx],al
-    ;inc esi
-    ;inc ebx
-    ;dec edi
-    ;jnz .loopbsx2
-    ;dec ecx
-    ;jnz .loopbsx
-;.skipbsxmove
-    ;popad
-;.notbsx
-
     cmp byte[GUIReset],1
     jne .notreseting
     mov byte[GUIReset],0
     jmp .afterramclear
 .notreseting
+    mov eax,055555555h
     helpclearmem wramdataa, 65536
     helpclearmem ram7fa, 65536
 .afterramclear
     cmp byte[BSEnable],1
     jne .notbsx2
+    mov eax,0FFFFFFFFh
+    helpclearmem wramdataa, 65536
+    helpclearmem ram7fa, 65536    
     cmp byte[romtype],1 ;Hack for BS HiROMs
     jne .notbsx2
     mov dword[ram7fa+65528],01010101h
