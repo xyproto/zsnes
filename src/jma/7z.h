@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 NSRT Team ( http://nsrt.edgeemu.com )
+Copyright (C) 2005 NSRT Team ( http://nsrt.edgeemu.com )
 Copyright (C) 2002 Andrea Mazzoleni ( http://advancemame.sf.net )
 
 This library is free software; you can redistribute it and/or
@@ -20,6 +20,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #ifndef __7Z_H
 #define __7Z_H
 
+#include "iiostrm.h"
+
+bool decompress_lzma_7z(ISequentialInStream& in, unsigned in_size, ISequentialOutStream& out, unsigned out_size) throw ();
 bool decompress_lzma_7z(const unsigned char* in_data, unsigned in_size, unsigned char* out_data, unsigned out_size) throw ();
 
 #endif

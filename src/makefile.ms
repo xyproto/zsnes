@@ -327,11 +327,12 @@ ${EFFECTSDIR}/burn${OE}: $<
 ${ZIPDIR}/unzip${OE}: $< ${ZIPDIR}/zunzip.h
 ${ZIPDIR}/zpng${OE}: $<  ${ZIPDIR}/zpng.h
 
-${JMADIR}/7zlzma${OE}: $< ${JMADIR}/iiostrm.h
+${JMADIR}/7zlzma${OE}: $< ${JMADIR}/7z.h ${JMADIR}/iiostrm.h
 ${JMADIR}/crc32${OE}: $< ${JMADIR}/crc32.h
 ${JMADIR}/iiostrm${OE}: $< ${JMADIR}/iiostrm.h ${JMADIR}/crc32.h
 ${JMADIR}/inbyte${OE}: $<
-${JMADIR}/jma${OE}: $< ${JMADIR}/jma.h ${JMADIR}/crc32.h ${JMADIR}/portable.h ${JMADIR}/iiostrm.h
+${JMADIR}/jma${OE}: $< ${JMADIR}/jma.h ${JMADIR}/crc32.h ${JMADIR}/portable.h\
+	${JMADIR}/7z.h ${JMADIR}/iiostrm.h
 ${JMADIR}/lzma${OE}: $<
 ${JMADIR}/lzmadec${OE}: $<
 ${JMADIR}/winout${OE}: $< ${JMADIR}/iiostrm.h
