@@ -1503,34 +1503,31 @@ NEWSYM interror
 SECTION .data
 .nohand db 'Cannot process interrupt handler!',13,10,0
 
-SECTION .bss
 ; global variables
-NEWSYM invalid, resb 1
-NEWSYM invopcd, resb 1
-NEWSYM pressed, resb 256+128+64          ; keyboard pressed keys in scancode
-NEWSYM exiter, resb 1
-NEWSYM oldhand9o, resd 1
-NEWSYM oldhand9s, resw 1
-NEWSYM oldhand8o, resd 1
-NEWSYM oldhand8s, resw 1
-NEWSYM opcd,      resd 1
-NEWSYM pdh,       resd 1
-NEWSYM pcury,     resd 1
-NEWSYM timercount, resd 1
-NEWSYM initaddrl, resd 1                  ; initial address location
-NEWSYM NetSent, resd 1
-NEWSYM nextframe, resd 1                  ; tick count for timer
-NEWSYM curfps,    resb 1                  ; frame/sec for current screen
-NEWSYM SFXSRAM,   resb 1
-
-SECTION .data
+NEWSYM invalid, db 0
+NEWSYM invopcd, db 0
+NEWSYM pressed, times 256+128+64 db 0          ; keyboard pressed keys in scancode
+NEWSYM exiter, db 0
+NEWSYM oldhand9o, dd 0
+NEWSYM oldhand9s, dw 0
+NEWSYM oldhand8o, dd 0
+NEWSYM oldhand8s, dw 0
+NEWSYM opcd,      dd 0
+NEWSYM pdh,       dd 0
+NEWSYM pcury,     dd 0
+NEWSYM timercount, dd 0
+NEWSYM initaddrl, dd 0                  ; initial address location
+NEWSYM NetSent, dd 0
+NEWSYM nextframe, dd 0                  ; tick count for timer
+NEWSYM curfps,    db 0                  ; frame/sec for current screen
+NEWSYM SFXSRAM,   db 0
 NEWSYM newgfxerror, db 'NEED MEMORY FOR GFX ENGINE',0
 NEWSYM newgfxerror2, db 'NEED 320x240 FOR NEW GFX 16B',0
 ;newgfxerror db 'NEW GFX IN 16BIT IS N/A',0
+NEWSYM HIRQCycNext,   dd 0
+NEWSYM HIRQNextExe,   db 0
 
-SECTION .bss
-NEWSYM HIRQCycNext,   resd 1
-NEWSYM HIRQNextExe,   resb 1
+
 SECTION .text
 
 ;*******************************************************
