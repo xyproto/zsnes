@@ -323,7 +323,7 @@ void CalcChecksum()
   if (SplittedROM)
   {
     Checksumvalue = sum(ROM+addOnStart, addOnSize);
-    Checksumvalue -= sum(&ROM[infoloc+addOnStart - 16], 48);
+    Checksumvalue -= sum(ROM+infoloc+addOnStart-16, 48);
   }
   else if (SPC7110Enable)
   {
@@ -632,8 +632,9 @@ void SplitSetup(const char *basefile, unsigned int MirrorSystem)
       break;
      
     case 2:   
-      memcpy(ROM+0x180000, ROM+0x100000, 0x80000); //Mirror 12 to 16
-      memcpy(ROM+0x200000, ROM, 0x200000); //Mirror 16 to 32
+      memcpy(ROM+0x180000, ROM+0x100000, 0x80000); //Mirrors 12 to 16
+      memcpy(ROM+0x200000, ROM+0x400000, 0x80000); //Copy base over
+      memset(ROM+0x280000, 0, 0x180000);           //Blank out rest
       break;
   }
       
@@ -662,6 +663,7 @@ void SplitSupport()
     addOnStart = 0x400000;
     addOnSize = 0x80000;
     SplitSetup("G-NEXT.ZIP", 2);
+    addOnStart = 0x200000;
   }          
 }
 
