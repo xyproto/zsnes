@@ -1499,7 +1499,8 @@ NEWSYM BWAndAddr, dd 0
 NEWSYM BWAnd, dd 0
 NEWSYM BWRAnd, dd 0
 
-SA1Reserved times 460 db 0
+SA1Reserved times 456 db 0
+
 
 ; SA1 Swap Stuff
 NEWSYM SA1xa, dd 0
