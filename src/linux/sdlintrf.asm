@@ -127,9 +127,6 @@ NEWSYM WinIntRFAsmStart
 ;   made.  GUI36hzcall should be called at 36hz after a call GUIInit and
 ;   before GUIDeInit.
 
-
-SECTION .data
-;NEWSYM OSPort, db 3      ; 0 = DOS (C), 1 = DOS (ASM), 2 = Linux, 3 = Win95
 SECTION .text
 
 NEWSYM StartUp
