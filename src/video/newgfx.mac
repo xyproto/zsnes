@@ -125,7 +125,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     jz %%tilecheck
 %%proclinebyline
     ; process line by line
-;    call %2
+    call %2
 %%nogo
     inc ebx
     add esi,288
