@@ -4109,16 +4109,21 @@ SPC7110DIRA db 'FEOEZSP7',0
 SPC7110DIRB db 'SMHT-SP7',0
 SDD1DIRA db 'SOCNSDD1',0
 SDD1DIRB db 'SFA2SDD1',0
-SPC7110IndexName db 'INDEX.BIN',0
-SPC7110DirEntry db '*.BIN',0
+SPC7110IndexName db 'index.bin',0
+SPC7110DirEntry db '*.bin',0
 SPC7110CPtr dd 0
 SPC7110CPtr2 dd 0
 NEWSYM SDD1Offset, dd 65536*8
-NEWSYM SDD1nfname, db '        \_00000-0.BIN',0
+%ifndef __LINUX__
+NEWSYM SDD1nfname, db '        \_00000-0.bin',0
+NEWSYM SPC7110nfname, db '        \      .bin',0
+%else
+NEWSYM SDD1nfname, db '        /_00000-0.bin',0
+NEWSYM SPC7110nfname, db '        /      .bin',0
+%endif
 NEWSYM SDD1ifname, db 'sdd1gfx.idx',0
 NEWSYM SDD1dfname, db 'sdd1gfx.dat',0
 NEWSYM SDD1pfname, db 'sdd1gfx.pat',0
-NEWSYM SPC7110nfname, db '        \      .BIN',0
 NEWSYM SPC7110IndexSize, dd 0
 NEWSYM SPC7110Entries, dd 0
 spc7110notfound db 'DECOMPRESSED PACK NOT FOUND',0
