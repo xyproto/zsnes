@@ -37,7 +37,6 @@ EXTSYM KeyQuickClock,KeyQuickSaveSPC,TimerEnable,AutoIncSaveSlot
 EXTSYM IRQHack,HIRQLoc,Offby1line,splitflags,joinflags,KeyQuickSnapShot
 EXTSYM csounddisable,videotroub,Open_File,Close_File,Read_File,ResetTripleBuf
 EXTSYM Write_File,Output_Text,Create_File,Check_Key,Get_Key,Change_Dir,InitPreGame
-;EXTSYM OSPort
 ;    EXTSYM tempblah,romdata
 EXTSYM Curtableaddr
 EXTSYM curcyc,debugdisble,dmadata,guioff,memtabler8,SetupPreGame
