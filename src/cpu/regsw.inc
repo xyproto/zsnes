@@ -528,8 +528,8 @@ reg2103w:
     cmp word[oamaddr],200h
     jne .notinvptr
     mov bx,[oamaddrs]
-    dec bx
     mov [oamaddr],bx
+    mov byte[nosprincr],1
 .notinvptr
     mov bx,[oamaddr]
     mov [oamaddrs],bx
@@ -547,9 +547,12 @@ reg2104w:
     mov byte[debstop3],1
     mov byte[NextLineCache],1
     mov ebx,[oamaddr]
+    cmp byte[nosprincr],1
+    je .noinc
     inc dword[oamaddr]
     cmp ebx,544
     je .overflow
+.noinc
     mov [oamram+ebx],al
     ret
 .overflow

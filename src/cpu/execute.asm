@@ -111,7 +111,7 @@ EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,sfxclineloc
 EXTSYM PLOTJmpa,PLOTJmpb,FxTable,FxTableb,FxTablec,FxTabled
 EXTSYM SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,hdmaearlstart,SFXCounter
 EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67,fxbit67pcal
-EXTSYM SfxSFR
+EXTSYM SfxSFR,nosprincr
 EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 EXTSYM ReadSPC7110log,WriteSPC7110log
 
@@ -1678,6 +1678,8 @@ NEWSYM savestate
     jmp reexecuteb
 
 .fname2 db 9,'image.dat',0
+
+cycpblblah dd 0,0
 
     ; Load State
 NEWSYM stateloader
@@ -3608,6 +3610,7 @@ NEWSYM cpuover
 .novirqz
     mov ax,[oamaddrs]
     mov [oamaddr],ax
+    mov byte[nosprincr],0
     call showvideo
 ;    call dsp1teststuff
     xor ebx,ebx
