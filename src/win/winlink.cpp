@@ -2461,32 +2461,32 @@ void WinUpdateDevices()
                switch (js[i].rgdwPOV[i2])
                {
                case 0:
-                  keys[0x100 + i * 32 + 3] = 1;
+                  keys[0x100+i*32+3]=1;
                   break;
                case 4500:
-                  keys[0x100 + i * 32 + 0] = 1;
-                  keys[0x100 + i * 32 + 3] = 1;
+                  keys[0x100+i*32+0]=1;
+                  keys[0x100+i*32+3]=1;
                   break; 
                case 9000:
-                  keys[0x100 + i * 32 + 0] = 1;
+                  keys[0x100+i*32+0]=1;
                   break;
                case 13500:
-                  keys[0x100 + i * 32 + 0] = 1;
-                  keys[0x100 + i * 32 + 2] = 1;
+                  keys[0x100+i*32+0]=1;
+                  keys[0x100+i*32+2]=1;
                   break;
                case 18000:
-                  keys[0x100 + i * 32 + 2] = 1;
+                  keys[0x100+i*32+2]=1;
                   break;
                case 22500:
-                  keys[0x100 + i * 32 + 1] = 1;
-                  keys[0x100 + i * 32 + 2] = 1;
+                  keys[0x100+i*32+1]=1;
+                  keys[0x100+i*32+2]=1;
                   break;
                case 27000:
-                  keys[0x100 + i * 32 + 1] = 1;
+                  keys[0x100+i*32+1]=1;
                   break;
                case 31500:
-                  keys[0x100 + i * 32 + 1] = 1;
-                  keys[0x100 + i * 32 + 3] = 1;
+                  keys[0x100+i*32+1]=1;
+                  keys[0x100+i*32+3]=1;
                   break;
                }
             }
