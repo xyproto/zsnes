@@ -2058,6 +2058,7 @@ void initwinvideo(void)
    if (FirstVid == 1)
    {
       FirstVid = 0;
+      if (Force60hz) Refresh = 60;
       InitDirectDraw();
       clearwin();
       _asm
@@ -2429,8 +2430,6 @@ void drawscreenwin(void)
 
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
-
-   if (Force60hz) Refresh = 60;
 
    if (!KitchenSync && Refresh !=0 && !Force60hz)
    {
