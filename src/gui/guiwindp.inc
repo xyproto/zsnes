@@ -4810,13 +4810,13 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,26,88,GUIGUIOptnsTextB
     GUIOuttextwin2 10,26,98,GUIGUIOptnsTextC
     GUIOuttextwin2u 10,138,28,GUIGUIOptnsTextJ,0
+    GUIOuttextwin2 10,138,48,GUIGUIOptnsTextM
 %ifdef __WIN32__
     GUIOuttextwin2u 10,26,173,GUIGUIOptnsTextE,0
     GUIOuttextwin2u 10,26,183,GUIGUIOptnsTextF,2
     GUIOuttextwin2u 10,138,38,GUIGUIOptnsTextK,1
     GUIOuttextwin2u 10,26,193,GUIGUIOptnsTextL,1
 %endif
-    GUIOuttextwin2 10,138,48,GUIGUIOptnsTextM
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,16,123,GUIGUIOptnsText6
     mov byte[GUIGUIOptnsText6],'G'
@@ -4836,13 +4836,13 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,25,87,GUIGUIOptnsTextB
     GUIOuttextwin2 10,25,97,GUIGUIOptnsTextC
     GUIOuttextwin2 10,137,27,GUIGUIOptnsTextJ
+    GUIOuttextwin2 10,137,47,GUIGUIOptnsTextM
 %ifdef __WIN32__
     GUIOuttextwin2 10,25,172,GUIGUIOptnsTextE
     GUIOuttextwin2 10,25,182,GUIGUIOptnsTextF
     GUIOuttextwin2 10,137,37,GUIGUIOptnsTextK
     GUIOuttextwin2 10,25,192,GUIGUIOptnsTextL
 %endif
-    GUIOuttextwin2 10,137,47,GUIGUIOptnsTextM
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,15,122,GUIGUIOptnsText6
     mov byte[GUIGUIOptnsText6],'G'
