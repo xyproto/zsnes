@@ -5814,104 +5814,6 @@ NEWSYM CheckROMType
     call GenerateBank0Table
 
     mov byte[intldone],0
-    xor eax,eax
-    xor ebx,ebx
-    xor edx,edx
-    mov eax,[NumofBanks]
-    imul eax,32768
-    shr eax,1
-    mov esi,[romdata]
-    add esi,7FC0h
-    add esi,eax
-    add esi,28
-    mov ebx,[esi]
-    inc esi
-    mov edx,[esi]
-    shl edx,16
-    add ebx,edx
-    inc esi
-    add ebx,[esi]
-    inc esi
-    mov edx,[esi]
-    shl edx,16
-    add ebx,edx
-    cmp bx,0FFFFh
-    jne .interlcheck2
-    mov esi,[romdata]
-    add esi,7FC0h
-    add esi,eax
-    add esi,25
-    cmp byte[esi],14
-    jae .interlcheck2
-    jmp .interleaved
-
-.interlcheck2
-    xor ebx,ebx
-    xor edx,edx
-    mov esi,[romdata]
-    add esi,7FC0h
-    add esi,28
-    mov ebx,[esi]
-    inc esi
-    mov edx,[esi]
-    shl edx,16
-    add ebx,edx
-    inc esi
-    add ebx,[esi]
-    inc esi
-    mov edx,[esi]
-    shl edx,16
-    add ebx,edx
-    cmp bx,0FFFFh
-    jne near .nointerlcheck
-    mov esi,[romdata]
-    add esi,7FC0h
-    add esi,25
-    cmp byte[esi],14
-    jae .nointerlcheck
-    mov esi,[romdata]
-    add esi,7FC0h
-    add esi,21
-    cmp byte[esi],33
-    je .overflowcheck
-    cmp byte[esi],49
-    je .overflowcheck
-    cmp byte[esi],53
-    je .overflowcheck
-    cmp byte[esi],58
-    je .overflowcheck
-    jmp .nointerlcheck
-
-.overflowcheck
-    mov edx,[esi]
-    dec esi
-    cmp byte[esi],32
-    je .interleaved
-    cmp byte[esi],dl
-    je .nointerlcheck
-    dec esi
-    cmp byte[esi],dl
-    je .nointerlcheck
-    dec esi
-    cmp byte[esi],dl
-    je .nointerlcheck
-    dec esi
-    cmp byte[esi],dl
-    je .nointerlcheck
-    je near .interleaved
-.interleaved
-    cmp byte[finterleave],1
-    je .doneinterl
-.interleaved2
-    mov byte[intldone],1
-    call UnInterleave
-    mov byte[romtype],2
-    jmp .doneinterl
-.nointerlcheck
-    cmp byte[finterleave],1
-    je .interleaved2
-.doneinterl
-
     mov byte[ROMTypeNOTFound],0
     ; check reset vectors
 ;        RES     Hardware        00FFFC.D    00FFFC,D     1
@@ -6070,6 +5972,104 @@ NEWSYM CheckROMType
     mov byte[forceromtype],0
     mov byte[ROMTypeNOTFound],0
 .noforce
+
+    xor eax,eax
+    xor ebx,ebx
+    xor edx,edx
+    mov eax,[NumofBanks]
+    imul eax,32768
+    shr eax,1
+    mov esi,[romdata]
+    add esi,7FC0h
+    add esi,eax
+    add esi,28
+    mov ebx,[esi]
+    inc esi
+    mov edx,[esi]
+    shl edx,16
+    add ebx,edx
+    inc esi
+    add ebx,[esi]
+    inc esi
+    mov edx,[esi]
+    shl edx,16
+    add ebx,edx
+    cmp bx,0FFFFh
+    jne .interlcheck2
+    mov esi,[romdata]
+    add esi,7FC0h
+    add esi,eax
+    add esi,25
+    cmp byte[esi],14
+    jae .interlcheck2
+    jmp .interleaved
+
+.interlcheck2
+    xor ebx,ebx
+    xor edx,edx
+    mov esi,[romdata]
+    add esi,7FC0h
+    add esi,28
+    mov ebx,[esi]
+    inc esi
+    mov edx,[esi]
+    shl edx,16
+    add ebx,edx
+    inc esi
+    add ebx,[esi]
+    inc esi
+    mov edx,[esi]
+    shl edx,16
+    add ebx,edx
+    cmp bx,0FFFFh
+    jne near .nointerlcheck
+    mov esi,[romdata]
+    add esi,7FC0h
+    add esi,25
+    cmp byte[esi],14
+    jae .nointerlcheck
+    mov esi,[romdata]
+    add esi,7FC0h
+    add esi,21
+    cmp byte[esi],33
+    je .overflowcheck
+    cmp byte[esi],49
+    je .overflowcheck
+    cmp byte[esi],53
+    je .overflowcheck
+    cmp byte[esi],58
+    je .overflowcheck
+    jmp .nointerlcheck
+
+.overflowcheck
+    mov edx,[esi]
+    dec esi
+    cmp byte[esi],32
+    je .interleaved
+    cmp byte[esi],dl
+    je .nointerlcheck
+    dec esi
+    cmp byte[esi],dl
+    je .nointerlcheck
+    dec esi
+    cmp byte[esi],dl
+    je .nointerlcheck
+    dec esi
+    cmp byte[esi],dl
+    je .nointerlcheck
+    je near .interleaved
+.interleaved
+    cmp byte[finterleave],1
+    je .doneinterl
+.interleaved2
+    mov byte[intldone],1
+    call UnInterleave
+    mov byte[romtype],2
+    jmp .doneinterl
+.nointerlcheck
+    cmp byte[finterleave],1
+    je .interleaved2
+.doneinterl
 
     mov esi,[romdata]
     add esi,0FFC0h
