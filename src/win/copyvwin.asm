@@ -1079,8 +1079,6 @@ MMXInterpolwin:
     add edi,16
     dec ecx
     jnz .a
-    mov eax,[esi+510]
-    mov [esi+512],eax
 .returninterps
     add esi,64
     add edi,[AddEndBytes]
