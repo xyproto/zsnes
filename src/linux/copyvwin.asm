@@ -238,7 +238,12 @@ NEWSYM copy640x480x16bwin
 .returnb
     add esi,64
     add edi,[AddEndBytes]
-    add edi,[NumBytesPerLine]
+    mov ecx,256
+.fslloop
+    mov dword[edi],0
+    add edi,4
+    loop .fslloop
+    add edi,[AddEndBytes]
     inc ebx
     dec dl
     jnz .loopab
@@ -1073,7 +1078,12 @@ MMXInterpolwin:
 .returninterps
     add esi,64
     add edi,[AddEndBytes]
-    add edi,[NumBytesPerLine]
+    mov ecx,256
+.fslloop
+    mov dword[edi],0
+    add edi,4
+    loop .fslloop
+    add edi,[AddEndBytes]
     inc ebx
     mov ecx,64
     dec byte[lineleft]
@@ -1361,7 +1371,12 @@ NEWSYM interpolate640x480x16bwin
     add esi,66
     add edi,4
     add edi,[AddEndBytes]
-    add edi,[NumBytesPerLine]
+    mov ecx,256
+.fslloop
+    mov dword[edi],0
+    add edi,4
+    loop .fslloop
+    add edi,[AddEndBytes]
     inc ebx
     dec dl
     jnz .loopab
@@ -1393,7 +1408,12 @@ NEWSYM interpolate640x480x16bwin
     add esi,64
     inc dword[InterPtr]
     add edi,[AddEndBytes]
-    add edi,[NumBytesPerLine]
+    mov ecx,256
+.fslloop2
+    mov dword[edi],0
+    add edi,4
+    loop .fslloop2
+    add edi,[AddEndBytes]
     dec byte[lineleft]
     jnz near .loopab
     pop es
