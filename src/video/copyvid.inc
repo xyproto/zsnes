@@ -860,7 +860,7 @@ NEWSYM copymodeq224
     jnz .loopa
     jmp .done
 .loopb
-    mov ecx,256/8
+    mov ecx,256/16
     MMXStuff
     add esi,16+16
     dec dl
@@ -905,7 +905,7 @@ NEWSYM copymodeq240
     jnz .loopa
     jmp .done
 .loopb
-    mov ecx,256/8
+    mov ecx,256/16
     MMXStuff
     add esi,16+16
     dec dl
@@ -951,7 +951,7 @@ NEWSYM copymodeq256
     jnz .loopa
     jmp .done
 .loopb
-    mov ecx,256/8
+    mov ecx,256/16
     MMXStuff
     add esi,16+16
     dec dl
@@ -1012,7 +1012,7 @@ NEWSYM copyvesa2320x240x8b
     jnz .loopa
     jmp .done
 .loopb
-    mov ecx,256/8
+    mov ecx,256/16
     MMXStuff
     add esi,16+16
     add edi,32+32
@@ -1107,11 +1107,11 @@ NEWSYM copyvesa2320x480x8b
     jnz .loopa
     jmp .done
 .loopb
-    mov ecx,256/8
+    mov ecx,256/16
     MMXStuff
     sub esi,256
     add edi,32+32
-    mov ecx,256/8
+    mov ecx,256/16
     MMXStuff
     add esi,16+16
     add edi,32+32
@@ -1132,7 +1132,7 @@ NEWSYM copyvesa2320x480x8b
     jnz .sloopa
     jmp .done
 .sloopb
-    mov ecx,256/8
+    mov ecx,256/16
     MMXStuff
     add esi,16+16
     add edi,32+320+32
@@ -1341,7 +1341,7 @@ NEWSYM copyvesa2640x400x8b
     jnz .ssloopa
     jmp .done
 .ssloopb
-    mov ecx,256/8
+    mov ecx,256/16
     MMXStuff
     add esi,16+16
     add edi,192+192
@@ -1457,7 +1457,7 @@ NEWSYM copyvesa2640x400x16b
     jnz .ssloopa
     jmp .done
 .ssloopb
-    mov ecx,256/8*2
+    mov ecx,256/16*2
     MMXStuff
     add esi,16*2+16*2
     add edi,192*2+192*2
@@ -2695,7 +2695,7 @@ NEWSYM copyvesa2320x240x16b
     jnz .loopa
     jmp .done
 .loopb
-    mov ecx,256/8*2
+    mov ecx,256/16*2
     MMXStuff
     add esi,16*2+16*2
     add edi,32*2+32*2
@@ -3096,12 +3096,12 @@ NEWSYM copyvesa2320x480x16b
     jnz .loopa
     jmp .done
 .loopb
-    mov ecx,256/8*2
+    mov ecx,256/16*2
     MMXStuff
     sub esi,256*2
     add edi,32*2+32*2
-    mov ecx,256/8*2
-    rep movsd
+    mov ecx,256/16*2
+    MMXStuff
     add esi,16*2+16*2
     add edi,32*2+32*2
     dec dl
@@ -3121,7 +3121,7 @@ NEWSYM copyvesa2320x480x16b
     jnz .sloopa
     jmp .done
 .sloopb
-    mov ecx,256/8*2
+    mov ecx,256/16*2
     MMXStuff
     add esi,16*2+16*2
     add edi,32*2+320*2+32*2
@@ -3176,41 +3176,43 @@ NEWSYM copyvesa2320x480x16b
 .quartscanlines
     ;cmp byte[MMXSupport],1
     ;je .qsloopb
+
+    push edx
+    mov dh,0
+    push ebp
+
 .qsloopa
     mov ecx,256/4*2
     rep movsd
     sub esi,256*2
     add edi,32*2+32*2
-    mov ecx,256/2
-    jmp .qsloopa3
+
+.qsloopa3
+    mov eax,[esi]
+    mov ebx,[esi+4]
+    mov ecx,eax
+    mov ebp,ebx
+    shr ecx,byte 2
+    and ebp,39e739e7h * 4
+    shr ebp,byte 2
+    and ecx,39e739e7h * 4
+    sub eax,ecx
+    sub ebx,ebp
+    mov [es:edi],eax
+    mov [es:edi+4],ebx
+    add esi,byte 8
+    add edi,byte 8
+    sub dh,4
+    jnz .qsloopa3
 .qsloopa2
     add esi,16*2+16*2
     add edi,32*2+32*2
     dec dl
     jnz .qsloopa
-    jmp .done
-.qsloopa3
-    push ecx
-    push edx
-    mov ax,[esi]
-    mov bx,[esi+2]
-    mov cx,ax
-    mov dx,bx
-    shr cx,byte 1
-    shr dx,byte 1
-    and cx,39e7h
-    and dx,39e7h
-    sub ax,cx
-    sub bx,dx
-    mov [es:edi],ax
-    mov [es:edi+2],bx
+    pop ebp
     pop edx
-    pop ecx
-    add esi,byte 4
-    add edi,byte 4
-    dec ecx
-    jnz .qsloopa3
-    jmp .qsloopa2
+    mov dl,0
+    jmp .done
 
 .fullscreen
     sub edi,32*2
