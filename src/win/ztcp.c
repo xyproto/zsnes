@@ -147,6 +147,7 @@ char hostname[50] = "IP N/A";
 
 int SendData(int dsize,unsigned char *dptr);
 int GetData(int dsize,unsigned char *dptr);
+int GetLeftUDP(void);
 
 /**********************************************************\
 * Initialize the zsnes tcpip module                        *
@@ -158,8 +159,8 @@ int GetData(int dsize,unsigned char *dptr);
 
 int InitTCP()
 {
-
-   char blah[255];
+   //MK:unused 2003/08/31
+   //char blah[255];
    WORD versionneeded = MAKEWORD(2,2);
    WSADATA wsadata;
 
@@ -233,7 +234,8 @@ void GetUDPStatus() {
 
 int isipval(char *name){
   int i;
-  int tcperr;
+  //MK:unused 2003/08/31
+  //int tcperr;
   i=0;
   while(name[i]!=0){
     if (!((name[i]=='.') || ((name[i]>='0') && (name[i]<='9'))))
@@ -248,9 +250,11 @@ int ConnectServer(char *servername, unsigned int port)
    char blah[255];
    int retval,i;
    LPHOSTENT host1;
-   unsigned long addr1;
+   //MK:unused 2003/08/31
+   //unsigned long addr1;
    int yesip;
-   WSADATA wsadata;
+   //MK:unused 2003/08/31
+   //WSADATA wsadata;
 
    packetnum = 0;
    packetnumhead = 0;
@@ -440,8 +444,9 @@ void Disconnect()
 
 int StartServerCycle(unsigned short port)
 {
-   int retval,sizet,i;
-
+   int retval,i;
+   //MK:unused 2003/08/31
+   //int sizet;
    portval = port;
    packetnum = 0;
    packetnumhead = 0;
@@ -555,9 +560,12 @@ int StartServerCycle(unsigned short port)
 
 int acceptzuser()
 {
-   int retval,r,i;
-   LPHOSTENT host1;
-   int yesip;
+   //MK:unused 2003/08/31
+   //int retval;
+   //int r,i;
+   //LPHOSTENT host1;
+   //int yesip;
+   //MK: unused end
 
    if (UDPEnable)
    {
@@ -813,7 +821,8 @@ extern void UpdateVFrame(void);
 int SendData(int dsize,unsigned char *dptr)
 {
    int retval;
-    char message1[256];
+   //MK: unused 2003/08/31
+    //char message1[256];
 
    if (UDPEnable){
 /*      retval = sendto(ugamesocket,dptr,dsize,0,(struct sockaddr *)&ugameaddress,sizeof(ugameaddress));
@@ -1032,7 +1041,8 @@ int GetLeftUDP()
    FD_SET zrf;
    struct timeval nto;
    int r;
-   int tempsize;
+   //MK: unused 2003/08/31
+   //int tempsize;
 
    nto.tv_sec=0;
    nto.tv_usec=0; /* return immediately */

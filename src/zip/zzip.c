@@ -27,6 +27,11 @@
 #include <fcntl.h>
 #endif
 
+#ifdef __WIN32__
+#include <direct.h>
+#include <sys/utime.h>
+#endif
+
 #ifdef __MSDOS__
 #include <utime.h>
 #include <sys/stat.h>
@@ -48,10 +53,12 @@ unsigned int ZipError=0;
 
 #ifndef __LINUX__
 #ifndef __MSDOS__
+#ifndef __WIN32__
 struct utimbuf {
   time_t actime;
   time_t modtime;
 };
+#endif
 #endif
 #endif
 
@@ -310,10 +317,10 @@ int do_extract(unzFile uf,int opt_extract_without_path,int opt_overwrite)
 void extractzip(char *FileToExtract)
 {
 	unzFile uf=NULL;
-// I really don't like hardcoding these sizes...
-	char oldpath[128];
 
 #ifdef __LINUX__
+// I really don't like hardcoding these sizes...
+	char oldpath[128];
 	extern char InitDir;
 
 	getcwd(oldpath, 128);

@@ -31,6 +31,8 @@ extern void ConvertJoyMap2(void);
 extern void displayparams(void);
 extern void makeextension(void);
 
+int pccmdline(void);
+
 extern unsigned char Palette0, SPC700sh, OffBy1Line, DSPDisable,
                      MMXSupport, Force8b, ForcePal, GUIClick, MouseDis,
                      MusicRelVol, ScreenScale, SoundCompD, SoundQuality,
@@ -69,13 +71,14 @@ char ucase(char ch){
 }
 
 extern HINSTANCE hInst;
-WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
+int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
    int longueur;
 
    char path_buffer[_MAX_PATH], drive[_MAX_DRIVE] ,dir[_MAX_DIR];
    char fname2[_MAX_FNAME],ext[_MAX_EXT], File[_MAX_PATH];
-   DWORD dwRead;
+   //MK: Unused 2003/08/31
+   //DWORD dwRead;
 
    char * strp;
 
