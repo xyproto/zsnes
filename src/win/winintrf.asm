@@ -1247,7 +1247,6 @@ db '1280x960  DS FULL',0  ;23
 
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)
 ; Left side starts with Video Mode 0
-
 NEWSYM GUI16VID, db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1       ; 16-bit mode
 NEWSYM GUINGVID, db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1       ; New Graphics Mode Available
 NEWSYM GUISLVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Scanlines
