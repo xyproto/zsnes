@@ -110,6 +110,18 @@
 %%nopr
 %endmacro
 
+%macro GUIkeystoggleoptn 2
+    cmp %1,%2
+    jne %%set
+    xor %1,%2
+    jmp %%clear
+%%set
+    mov %1,%2
+%%clear
+    ret
+%%noclick
+%endmacro
+
 GUIfirstkey dd 0
 GUIlastkey dd 0
 NEWSYM GUIkeydelay, dd 0
@@ -932,33 +944,11 @@ GUIGUIOptnsKeys:
 .guioptn6
     cmp dh,'N'
     jne .guioptn7
-    cmp byte[GUIEffect],0
-    je .snoweffect
-    cmp byte[GUIEffect],1
-    je .nosnoweffect
-    cmp byte[GUIEffect],2
-    je .snoweffect
-    jmp .guioptn7
-.nosnoweffect
-    mov byte[GUIEffect],0
-    jmp .guioptn7
-.snoweffect
-    mov byte[GUIEffect],1
+    GUIkeystoggleoptn byte[GUIEffect],1
 .guioptn7
     cmp dh,'E'
     jne .guioptn8
-    cmp byte[GUIEffect],0
-    je .watereffect
-    cmp byte[GUIEffect],1
-    je .watereffect
-    cmp byte[GUIEffect],2
-    je .nowatereffect
-    jmp .guioptn8
-.nowatereffect
-    mov byte[GUIEffect],0
-    jmp .guioptn8
-.watereffect
-    mov byte[GUIEffect],2
+    GUIkeystoggleoptn byte[GUIEffect],2
 .guioptn8
 %ifdef __WIN32__
     cmp dh,'A'
