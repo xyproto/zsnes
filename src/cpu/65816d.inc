@@ -471,7 +471,7 @@ BRKemulmode
     mov ax,[brkv8]
     mov [xpc],ax
     and dl,11110011b
-    or dl,00000100b
+    or dl,00001100b
     test eax,8000h
     jz .loweraddr
     mov esi,[snesmmap+ebx*4]
