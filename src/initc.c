@@ -26,6 +26,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define Hi 0xFFC0
 #define EHi 0x40FFC0
 
+#define MB_bytes 0x100000
+#define Mbit_bytes 0x20000
+
 
 //I want to port over the more complicated
 //functions from init.asm, or replace with
@@ -41,8 +44,8 @@ extern unsigned char Interleaved;
 
 
 
-
-
+unsigned int maxromspace;
+unsigned int curromspace;
 unsigned int infoloc;
 
 //Deinterleave functions
@@ -231,13 +234,13 @@ void BankCheck()
     }
     switch(ROM[Hi + 21])
     {
-      case 33: case 49: case 53:
+      case 33: case 49: case 53: case 58:
       case 128: case 156: case 176: case 188: case 252: //BS
         hiscore += 1;      
         break;
     }
     
-    if(ForceHiLoROM)
+    if (ForceHiLoROM)
     {
       //asm volatile("int $3");
       if (forceromtype == 1) { loscore += 50; }
@@ -265,7 +268,7 @@ unsigned short sum(unsigned char *array, unsigned int size)
   unsigned int i;
   
   //Prevent crashing by reading too far (needed for messed up ROMs)
-  if (array + size > (unsigned char *)romdata + NumofBytes)
+  if (array + size > (unsigned char *)romdata + maxromspace)
   {
     return(0xFFFF);
   } 
@@ -283,33 +286,52 @@ extern unsigned short Checksumvalue;
 void CalcChecksum()
 {
   unsigned char *ROM = (unsigned char *)romdata;
-  unsigned short Mbit = NumofBanks >> 2;
-  
-  if ((Mbit == 10 || Mbit == 20 || Mbit == 40) && !SPC7110Enable)
-  {
-    unsigned int P1Size = 512 << ROM[infoloc + 23];
-    unsigned short part1 = sum(ROM, P1Size),
-                   part2 = sum(ROM+P1Size, NumofBytes-P1Size);
-    Checksumvalue = part1 + part2*4;
-  }
-  else if ((Mbit == 12 || Mbit == 24 || Mbit == 48) && !SPC7110Enable)
-  {
-    unsigned int P1Size = 512 << ROM[infoloc + 23];
-    unsigned short part1 = sum(ROM, P1Size),
-                   part2 = sum(ROM+P1Size, NumofBytes-P1Size);
-    Checksumvalue = part1 + part2 + part2;
-  }
-  else
+  if (SPC7110Enable)
   {
     Checksumvalue = sum(ROM, NumofBytes);
-    if (BSEnable)
-    {
-      Checksumvalue -= sum(&ROM[infoloc - 16], 48); //Fix for BS Dumps
-    }
-    else if (Mbit == 24)
+    if (NumofBanks == 96)
     { 
       Checksumvalue += Checksumvalue; //Fix for 24Mb SPC7110 ROMs
     }
   }
+  else
+  {
+    Checksumvalue = sum(ROM, curromspace);
+    if (NumofBanks > 128 && maxromspace == 6*MB_bytes)
+    { 
+      Checksumvalue += sum(ROM+4*MB_bytes, 2*MB_bytes);
+    }
+    if (BSEnable)
+    {
+      Checksumvalue -= sum(&ROM[infoloc - 16], 48); //Fix for BS Dumps
+    }
+  }
 }
 
+//Misc functions
+void MirrorROM()
+{
+  unsigned char *ROM = (unsigned char *)romdata;
+  int size, StartMirror = 0, ROMSize = curromspace;
+  //This will mirror up non power of two ROMs to powers of two
+  for (size = 1; size <= 64; size +=size)
+  {
+    int fullSize = size * Mbit_bytes,
+        halfSize = fullSize >> 1;
+    if ((ROMSize > halfSize) && (ROMSize < fullSize))
+    {
+      for (StartMirror = halfSize;
+           ROMSize < fullSize && ROMSize < maxromspace;)
+      {
+        ROM[ROMSize++] = ROM[StartMirror++];
+      }
+      curromspace = ROMSize;
+      break;
+    }
+  }
+  //This will mirror (now) full sized ROMs through the ROM buffer
+  for (StartMirror = 0; ROMSize < maxromspace;)
+  {
+    ROM[ROMSize++] = ROM[StartMirror++];
+  }
+}

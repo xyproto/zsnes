@@ -95,7 +95,7 @@ EXTSYM GUIfindUSA,GUIfindEUR,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall
 EXTSYM spc7110romptr,allocspc7110
 EXTSYM SRAMDir,SRAMDrive,cfgloadsdir,fnamest,statefileloc
 EXTSYM ForcePal,ForceROMTiming,ForceHiLoROM,InitDir,InitDrive,enterpress,frameskip
-EXTSYM infoloc
+EXTSYM maxromspace,curromspace,infoloc
 EXTSYM gotoroot,headdata,printnum,romispal
 EXTSYM InitFxTables,SFXSRAM,SfxR1,SfxR2,SfxSCMR,SfxSFR,finterleave
 EXTSYM initregr,initregw,memtabler16,DSP1Read16b3F,memaccessbankr16
@@ -2452,39 +2452,13 @@ NEWSYM initsnes
     mov dword[NoiseDisTemp+4],0
     mov byte[MMXSRAMFix],0
 
+    ;Megaman/Rockman X
     mov esi,[romdata]
     add esi,7FC0h
-    cmp dword[esi],'MEGA'
-    jne .notmmx
     cmp dword[esi+4],'MAN '
     jne .notmmx
     cmp dword[esi+8],'X   '
     jne .notmmx
-    mov esi,[romdata]
-    cmp byte[esi+824Ah],0F0h
-    jne .mmxa
-    mov byte[esi+824Ah],080h
-.mmxa
-    cmp byte[esi+21FC3h],0F0h
-    jne .mmxb
-    mov byte[esi+21FC3h],080h
-.mmxb
-    cmp byte[esi+2241Bh],0F0h
-    jne .mmxc
-    mov byte[esi+2241Bh],080h
-.mmxc
-    cmp byte[esi+824Fh],0F0h
-    jne .mmxd
-    mov byte[esi+824Fh],080h
-.mmxd
-    cmp byte[esi+21FC8h],0F0h
-    jne .mmxe
-    mov byte[esi+21FC8h],080h
-.mmxe
-    cmp byte[esi+22420h],0F0h
-    jne .mmxf
-    mov byte[esi+22420h],080h
-.mmxf
     mov byte[MMXSRAMFix],1
 .notmmx
 
@@ -4713,7 +4687,7 @@ NEWSYM loadfileGUI
     mov dword[.curfileofs],0
     mov byte[.first],1
     mov byte[.multfound],0
-    mov dword[.curromspace],0
+    mov dword[curromspace],0
     ; open file
     mov edx,fname+1
     call Open_File
@@ -4745,8 +4719,8 @@ NEWSYM loadfileGUI
     je .no16mb
     sub ecx,2097152
 .no16mb
-    mov [.maxromspace],ecx
-    sub dword[.maxromspace],32768
+    mov [maxromspace],ecx
+    sub dword[maxromspace],32768
     sub ecx,[.curfileofs]
     jnc .nooverflow
     xor ecx,ecx
@@ -4758,7 +4732,7 @@ NEWSYM loadfileGUI
 
     or eax,eax
     jz near .success2
-    add dword[.curromspace],eax
+    add dword[curromspace],eax
     mov esi,[headdata]
     add esi,[.curfileofs]
     mov edi,[headdata]
@@ -4793,7 +4767,7 @@ NEWSYM loadfileGUI
     add edi,512
     sub eax,512
     ; move eax # of bytes from edi to esi
-    sub dword[.curromspace],512
+    sub dword[curromspace],512
     sub dword[.curfileofs],512
 .next
     mov cl,[edi]
@@ -5047,8 +5021,6 @@ SECTION .bss
 .filehand resw 1
 .temp resb 1
 .fail resb 1
-.maxromspace resd 1
-.curromspace resd 1
 NEWSYM GUIloadfailed, resb 1
 
 SECTION .text
@@ -5913,7 +5885,14 @@ NEWSYM CheckROMType
     call GenerateBank0Table
 
     EXTSYM BankCheck
+    pushad
     call BankCheck
+    popad    
+
+    EXTSYM MirrorROM
+    pushad
+    call MirrorROM
+    popad    
 
     ; Chip Detection
     mov byte[SFXEnable],0
@@ -6393,4 +6372,5 @@ NEWSYM outofmemoryerror2, db 'ROM IS TOO BIG.',0
 SECTION .text
 
 NEWSYM InitAsmEnd
+
 
