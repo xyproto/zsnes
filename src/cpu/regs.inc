@@ -68,6 +68,8 @@ NEWSYM initregr
     setreg 2143h*4,reg2143r
     setreg 2144h*4,reg2140r
     setreg 2180h*4,reg2180r
+    setreg 21C2h*4,reg21C2r
+    setreg 21C3h*4,reg21C3r
 
     setreg 4016h*4,reg4016r
     setreg 4017h*4,reg4017r
@@ -888,6 +890,18 @@ reg2180r:
     mov al,[ebx]
     inc dword[wramrwadr]
     and dword[wramrwadr],01FFFFh
+    ret
+
+; Unknown register, used by test cart
+
+reg21C2r:
+    mov al,20h
+    ret
+
+; Unknown register, used by test cart
+
+reg21C3r:
+    xor al,al
     ret
 
 ; Joystick Data for controller 1 and 2
