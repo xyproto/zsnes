@@ -3038,20 +3038,20 @@ SECTION .text
 
 SECTION .data
 
-SDD1DIRA db 'SOCNSDD1',0
-SDD1DIRB db 'SFZ2SDD1',0
-SDD1DIRC db 'SFA2SDD1',0
-SDD1DIRD db 'SF2ESDD1',0
+;SDD1DIRA db 'SOCNSDD1',0
+;SDD1DIRB db 'SFZ2SDD1',0
+;SDD1DIRC db 'SFA2SDD1',0
+;SDD1DIRD db 'SF2ESDD1',0
 SPC7110DirEntry db '*.bin',0
 NEWSYM SDD1Offset, dd 65536*8
-%ifndef __LINUX__
-NEWSYM SDD1nfname, db '        \_00000-0.bin',0
-%else
-NEWSYM SDD1nfname, db '        /_00000-0.bin',0
-%endif
-NEWSYM SDD1ifname, db 'sdd1gfx.idx',0
-NEWSYM SDD1dfname, db 'sdd1gfx.dat',0
-NEWSYM SDD1pfname, db 'sdd1gfx.pat',0
+;%ifndef __LINUX__
+;NEWSYM SDD1nfname, db '        \_00000-0.bin',0
+;%else
+;NEWSYM SDD1nfname, db '        /_00000-0.bin',0
+;%endif
+;NEWSYM SDD1ifname, db 'sdd1gfx.idx',0
+;NEWSYM SDD1dfname, db 'sdd1gfx.dat',0
+;NEWSYM SDD1pfname, db 'sdd1gfx.pat',0
 spc7110notfound db 'DECOMPRESSED PACK NOT FOUND',0
 spc7110notfoundb db 'INDEX DATA NOT FOUND',0
 
@@ -3061,13 +3061,13 @@ SPC7110Allocated resb 1
 SPC7110CPtr resd 1
 SPC7110CPtr2 resd 1
 NEWSYM SPC7110Entries, resd 1
-SDD1PatchAddr resd 1
-SDD1PatchOfs resd 1
-SDD1PatchLen resd 1
+;SDD1PatchAddr resd 1
+;SDD1PatchOfs resd 1
+;SDD1PatchLen resd 1
 
 SECTION .text
 
-EXTSYM sdd1fname
+;EXTSYM sdd1fname
 
 NEWSYM SPC7110Load
     mov dword[SPC7110Entries],0
@@ -3096,28 +3096,28 @@ NEWSYM SPC7110Load
 .sdd1
     cmp al,045h
     jne .noSDD1
-    mov edx,SDD1DIRA
-    mov dword[sdd1fname],'socn'
+;    mov edx,SDD1DIRA
+;    mov dword[sdd1fname],'socn'
     jmp .sdd1b
 .noSDD1
     cmp al,043h
     jne .noSDD1a
-    add esi,3
-    mov al,[esi]
+;    add esi,3
+;    mov al,[esi]
     cmp al,0
     jne .notsfz2
-    mov edx,SDD1DIRB
-    mov dword[sdd1fname],'sfz2'
+;    mov edx,SDD1DIRB
+;    mov dword[sdd1fname],'sfz2'
     jmp .sdd1b
 .notsfz2
     cmp al,01h
     jne .notsfa2
-    mov edx,SDD1DIRC
-    mov dword[sdd1fname],'sfa2'
+;    mov edx,SDD1DIRC
+;    mov dword[sdd1fname],'sfa2'
     jmp .sdd1b
 .notsfa2
-    mov edx,SDD1DIRD
-    mov dword[sdd1fname],'sf2e'
+;    mov edx,SDD1DIRD
+;    mov dword[sdd1fname],'sf2e'
     jmp .sdd1b
 .noSDD1a
     ret
@@ -3139,165 +3139,165 @@ NEWSYM SPC7110Load
     call Change_Single_Dir
     jc near .nodir
 
-    mov eax,[spc7110romptr]
-    mov [SPC7110CPtr],eax
-    add eax,[SDD1Offset]
-    mov [SPC7110CPtr2],eax
+;    mov eax,[spc7110romptr]
+;    mov [SPC7110CPtr],eax
+;    add eax,[SDD1Offset]
+;    mov [SPC7110CPtr2],eax
 
-    mov edx,SDD1ifname
-    call Open_File
-    jc near .noindexfile
-    mov bx,ax
-    mov edx,[SPC7110CPtr]
-    mov ecx,[SDD1Offset]
-    call Read_File
-    add dword[SPC7110CPtr],eax
-    xor ecx,ecx
-    or eax,eax
-    jz .notfoundb
-    push ebx
-    xor edx,edx
-    mov ebx,12
-    div ebx
-    mov dword[SPC7110Entries],eax
-    mov ecx,eax
-    mov eax,[spc7110romptr]
-    mov ebx,[SPC7110CPtr2]
-.sdd1loop
-    add [eax+4],ebx
-    add eax,12
-    dec ecx
-    jnz .sdd1loop
-    pop ebx
-.notfoundb
-    call Close_File
-    mov edx,SDD1dfname
-    call Open_File
-    jc near .noindexfile
-    mov bx,ax
-    mov edx,[SPC7110CPtr2]
-    mov ecx,7*1024*1024
-    call Read_File
-    add dword[SPC7110CPtr2],eax
-    call Close_File
-    jmp .yesindexfile
-.noindexfile
-    mov eax,[spc7110romptr]
-    mov [SPC7110CPtr],eax
-    add eax,[SDD1Offset]
-    mov [SPC7110CPtr2],eax
-    mov dword[SPC7110Entries],0
-.yesindexfile
+;    mov edx,SDD1ifname
+;    call Open_File
+;    jc near .noindexfile
+;    mov bx,ax
+;    mov edx,[SPC7110CPtr]
+;    mov ecx,[SDD1Offset]
+;    call Read_File
+;    add dword[SPC7110CPtr],eax
+;    xor ecx,ecx
+;    or eax,eax
+;    jz .notfoundb
+;    push ebx
+;    xor edx,edx
+;    mov ebx,12
+;    div ebx
+;    mov dword[SPC7110Entries],eax
+;    mov ecx,eax
+;    mov eax,[spc7110romptr]
+;    mov ebx,[SPC7110CPtr2]
+;.sdd1loop
+;    add [eax+4],ebx
+;    add eax,12
+;    dec ecx
+;    jnz .sdd1loop
+;    pop ebx
+;.notfoundb
+;    call Close_File
+;    mov edx,SDD1dfname
+;    call Open_File
+;    jc near .noindexfile
+;    mov bx,ax
+;    mov edx,[SPC7110CPtr2]
+;    mov ecx,7*1024*1024
+;    call Read_File
+;    add dword[SPC7110CPtr2],eax
+;    call Close_File
+;    jmp .yesindexfile
+;.noindexfile
+;    mov eax,[spc7110romptr]
+;    mov [SPC7110CPtr],eax
+;    add eax,[SDD1Offset]
+;    mov [SPC7110CPtr2],eax
+;    mov dword[SPC7110Entries],0
+;.yesindexfile
 
-    mov edx,SPC7110DirEntry
-    mov cx,20h
-    call Get_First_Entry
-    jc near .notfound
-.moreentries
-    pushad
-    mov edx,DTALoc+1Eh
-    xor ecx,ecx
-    xor eax,eax
-.loop
-    cmp byte[edx],'.'
-    je .fin
-    cmp byte[edx],0
-    je .fin
-    cmp byte[edx],'-'
-    je .skipthisone
-    cmp byte[edx],'_'
-    je .skipthisone
-    mov al,[edx]
-    cmp al,'A'
-    jb .num
-    cmp al,'a'
-    jb .uppercl
-    sub al,'a'-10
-    jmp .done
-.uppercl
-    sub al,'A'-10
-    jmp .done
-.num
-    sub al,'0'
-.done
-    shl ecx,4
-    add ecx,eax
-.skipthisone
-    inc edx
-    jmp .loop
-.fin
+;    mov edx,SPC7110DirEntry
+;    mov cx,20h
+;    call Get_First_Entry
+;    jc near .notfound
+;.moreentries
+;    pushad
+;    mov edx,DTALoc+1Eh
+;    xor ecx,ecx
+;    xor eax,eax
+;.loop
+;    cmp byte[edx],'.'
+;    je .fin
+;    cmp byte[edx],0
+;    je .fin
+;    cmp byte[edx],'-'
+;    je .skipthisone
+;    cmp byte[edx],'_'
+;    je .skipthisone
+;    mov al,[edx]
+;    cmp al,'A'
+;    jb .num
+;    cmp al,'a'
+;    jb .uppercl
+;    sub al,'a'-10
+;    jmp .done
+;.uppercl
+;    sub al,'A'-10
+;    jmp .done
+;.num
+;    sub al,'0'
+;.done
+;    shl ecx,4
+;    add ecx,eax
+;.skipthisone
+;    inc edx
+;    jmp .loop
+;.fin
     ; spc7110romptr format:
     ;   64K - address/pointer/length table
-    mov ebx,[SPC7110CPtr2]
-    mov eax,[SPC7110CPtr]
-    mov [eax],ecx
-    mov [eax+4],ebx
-    mov edx,DTALoc+1Eh
-    call Open_File
-    jc near .failed
-    mov bx,ax
-    add dword[SPC7110CPtr],8
-    mov edx,[SPC7110CPtr2]
-    mov ecx,[SDD1Offset]
-    call Read_File
-    add dword[SPC7110CPtr2],eax
-    mov edx,dword[SPC7110CPtr]
-    mov [edx],eax
-    add dword[SPC7110CPtr],4
-    call Close_File
-    inc dword[SPC7110Entries]
-.failed
-    popad
-    call Get_Next_Entry
-    jnc near .moreentries
+;    mov ebx,[SPC7110CPtr2]
+;    mov eax,[SPC7110CPtr]
+;    mov [eax],ecx
+;    mov [eax+4],ebx
+;    mov edx,DTALoc+1Eh
+;    call Open_File
+;    jc near .failed
+;    mov bx,ax
+;    add dword[SPC7110CPtr],8
+;    mov edx,[SPC7110CPtr2]
+;    mov ecx,[SDD1Offset]
+;    call Read_File
+;    add dword[SPC7110CPtr2],eax
+;    mov edx,dword[SPC7110CPtr]
+;    mov [edx],eax
+;    add dword[SPC7110CPtr],4
+;    call Close_File
+;    inc dword[SPC7110Entries]
+;.failed
+;    popad
+;    call Get_Next_Entry
+;    jnc near .moreentries
 
     ; Load patch (Address, offset, length)
-    mov edx,SDD1pfname
-    call Open_File
-    jc near .nopatch
-    mov bx,ax
-    mov ecx,4
-    mov edx,SDD1PatchAddr
-    call Read_File
-    or eax,eax
-    jz .donepatch
-    mov ecx,4
-    mov edx,SDD1PatchOfs
-    call Read_File
-    mov ecx,4
-    mov edx,SDD1PatchLen
-    call Read_File
-    pushad
-    mov ecx,[SPC7110Entries]
-    mov edx,[spc7110romptr]
-.patloop
-    mov eax,[edx]
-    cmp eax,[SDD1PatchAddr]
-    jne .notaddress
-    mov eax,[edx+4]
-    add eax,[SDD1PatchOfs]
-    pushad
-    mov edx,eax
-    mov ecx,[SDD1PatchLen]
-    call Read_File
-    popad
-    jmp .foundaddr
-.notaddress
-    add edx,12
-    dec ecx
-    jnz .patloop
-    ; not found
-    pushad
-    mov edx,[SPC7110CPtr2]
-    mov ecx,[SDD1PatchLen]
-    call Read_File
-    popad
-.foundaddr
-    popad
-.donepatch
-    call Close_File
-.nopatch
-
+;    mov edx,SDD1pfname
+;    call Open_File
+;    jc near .nopatch
+;    mov bx,ax
+;    mov ecx,4
+;    mov edx,SDD1PatchAddr
+;    call Read_File
+;    or eax,eax
+;    jz .donepatch
+;    mov ecx,4
+;    mov edx,SDD1PatchOfs
+;    call Read_File
+;    mov ecx,4
+;    mov edx,SDD1PatchLen
+;    call Read_File
+;    pushad
+;    mov ecx,[SPC7110Entries]
+;    mov edx,[spc7110romptr]
+;.patloop
+;    mov eax,[edx]
+;    cmp eax,[SDD1PatchAddr]
+;    jne .notaddress
+;    mov eax,[edx+4]
+;    add eax,[SDD1PatchOfs]
+;    pushad
+;    mov edx,eax
+;    mov ecx,[SDD1PatchLen]
+;    call Read_File
+;    popad
+;    jmp .foundaddr
+;.notaddress
+;    add edx,12
+;    dec ecx
+;    jnz .patloop
+;    ; not found
+;    pushad
+;    mov edx,[SPC7110CPtr2]
+;    mov ecx,[SDD1PatchLen]
+;    call Read_File
+;    popad
+;.foundaddr
+;    popad
+;.donepatch
+;    call Close_File
+;.nopatch
+;
     ; Save Datafile
     jmp .nosavedatafile
 
@@ -3306,44 +3306,44 @@ NEWSYM SPC7110Load
 ;    add eax,[SDD1Offset]
 ;    mov [SPC7110CPtr2],eax
 
-    mov ecx,[SPC7110Entries]
-    mov eax,[spc7110romptr]
-    mov ebx,eax
-    add ebx,[SDD1Offset]
-.sdd1loopb
-    sub [eax+4],ebx
-    add eax,12
-    dec ecx
-    jnz .sdd1loopb
+;    mov ecx,[SPC7110Entries]
+;    mov eax,[spc7110romptr]
+;    mov ebx,eax
+;    add ebx,[SDD1Offset]
+;.sdd1loopb
+;    sub [eax+4],ebx
+;    add eax,12
+;    dec ecx
+;    jnz .sdd1loopb
 
-    mov edx,SDD1ifname
-    call Create_File
-    mov bx,ax
-    mov edx,[spc7110romptr]
-    mov ecx,[SPC7110CPtr]
-    sub ecx,edx
-    call Write_File
-    call Close_File
+;    mov edx,SDD1ifname
+;    call Create_File
+;    mov bx,ax
+;    mov edx,[spc7110romptr]
+;    mov ecx,[SPC7110CPtr]
+;    sub ecx,edx
+;    call Write_File
+;    call Close_File
 
-    mov edx,SDD1dfname
-    call Create_File
-    mov bx,ax
-    mov edx,[spc7110romptr]
-    add edx,[SDD1Offset]
-    mov ecx,[SPC7110CPtr2]
-    sub ecx,edx
-    call Write_File
-    call Close_File
+;    mov edx,SDD1dfname
+;    call Create_File
+;    mov bx,ax
+;    mov edx,[spc7110romptr]
+;    add edx,[SDD1Offset]
+;    mov ecx,[SPC7110CPtr2]
+;    sub ecx,edx
+;    call Write_File
+;    call Close_File
 
-    mov ecx,[SPC7110Entries]
-    mov eax,[spc7110romptr]
-    mov ebx,eax
-    add ebx,[SDD1Offset]
-.sdd1loopc
-    add [eax+4],ebx
-    add eax,12
-    dec ecx
-    jnz .sdd1loopc
+;    mov ecx,[SPC7110Entries]
+;    mov eax,[spc7110romptr]
+;    mov ebx,eax
+;    add ebx,[SDD1Offset]
+;.sdd1loopc
+;    add [eax+4],ebx
+;    add eax,12
+;    dec ecx
+;    jnz .sdd1loopc
 .nosavedatafile
 
     mov edx,PrevDir

@@ -21,7 +21,7 @@ EXTSYM DosExit,curblank,previdmode,start65816,wramdata,C4Ram,cnetplaybuf
 EXTSYM UpdateDPage,SA1Enable,splitflags,joinflags,delay
 EXTSYM Open_File,Read_File,Create_File,Write_File,Close_File,romdata
 EXTSYM Check_Key,Get_Key
-EXTSYM SDD1Array, SDD1Entry
+;EXTSYM SDD1Array, SDD1Entry
 EXTSYM LastLog
 EXTSYM fulladdtab
 EXTSYM DecompArray,DecompAPtr
@@ -58,62 +58,62 @@ NEWSYM DebugAsmStart
 
 ; debstop at regsw.asm 2118/2119
 
-NEWSYM SDD1Sort
-    mov ecx,[SDD1Entry]
-    cmp ecx,8
-    jbe near .noSDD1
-    sub ecx,8
-.next2
-    xor esi,esi
-    xor ebx,ebx
-.next
-    xor eax,eax
-    xor edx,edx
-    mov al,[SDD1Array+ebx]
-    shl eax,16
-    mov ah,[SDD1Array+ebx+1]
-    mov al,[SDD1Array+ebx+2]
-    mov dl,[SDD1Array+ebx+8]
-    shl edx,16
-    mov dh,[SDD1Array+ebx+9]
-    mov dl,[SDD1Array+ebx+10]
-    cmp edx,eax
-    ja .noswap
-    mov eax,dword[SDD1Array+ebx]
-    mov edx,dword[SDD1Array+ebx+8]
-    mov dword[SDD1Array+ebx+8],eax
-    mov dword[SDD1Array+ebx],edx
-    mov eax,dword[SDD1Array+ebx+4]
-    mov edx,dword[SDD1Array+ebx+12]
-    mov dword[SDD1Array+ebx+12],eax
-    mov dword[SDD1Array+ebx+4],edx
-    mov esi,1
-.noswap
-    add ebx,8
-    cmp ebx,ecx
-    jne near .next
-    or esi,esi
-    jnz near .next2
+;NEWSYM SDD1Sort
+;    mov ecx,[SDD1Entry]
+;    cmp ecx,8
+;    jbe near .noSDD1
+;    sub ecx,8
+;.next2
+;    xor esi,esi
+;    xor ebx,ebx
+;.next
+;    xor eax,eax
+;    xor edx,edx
+;    mov al,[SDD1Array+ebx]
+;    shl eax,16
+;    mov ah,[SDD1Array+ebx+1]
+;    mov al,[SDD1Array+ebx+2]
+;    mov dl,[SDD1Array+ebx+8]
+;    shl edx,16
+;    mov dh,[SDD1Array+ebx+9]
+;    mov dl,[SDD1Array+ebx+10]
+;    cmp edx,eax
+;    ja .noswap
+;    mov eax,dword[SDD1Array+ebx]
+;    mov edx,dword[SDD1Array+ebx+8]
+;    mov dword[SDD1Array+ebx+8],eax
+;    mov dword[SDD1Array+ebx],edx
+;    mov eax,dword[SDD1Array+ebx+4]
+;    mov edx,dword[SDD1Array+ebx+12]
+;    mov dword[SDD1Array+ebx+12],eax
+;    mov dword[SDD1Array+ebx+4],edx
+;    mov esi,1
+;.noswap
+;    add ebx,8
+;    cmp ebx,ecx
+;    jne near .next
+;    or esi,esi
+;    jnz near .next2
 
-    xor ebx,ebx
-.next3
-    mov al,[SDD1Array+ebx]
-    mov ah,[SDD1Array+ebx+8]
-    cmp al,ah
-    jne .notequal
-    mov ah,[SDD1Array+ebx+9]
-    mov al,[SDD1Array+ebx+10]
-    mov dh,[SDD1Array+ebx+1]
-    mov dl,[SDD1Array+ebx+2]
-    sub ax,dx
-    mov [SDD1Array+ebx+5],ah
-    mov [SDD1Array+ebx+6],al
-.notequal
-    add ebx,8
-    cmp ebx,ecx
-    jne near .next3
-.noSDD1
-    ret
+;    xor ebx,ebx
+;.next3
+;    mov al,[SDD1Array+ebx]
+;    mov ah,[SDD1Array+ebx+8]
+;    cmp al,ah
+;    jne .notequal
+;    mov ah,[SDD1Array+ebx+9]
+;    mov al,[SDD1Array+ebx+10]
+;    mov dh,[SDD1Array+ebx+1]
+;    mov dl,[SDD1Array+ebx+2]
+;    sub ax,dx
+;    mov [SDD1Array+ebx+5],ah
+;    mov [SDD1Array+ebx+6],al
+;.notequal
+;    add ebx,8
+;    cmp ebx,ecx
+;    jne near .next3
+;.noSDD1
+;    ret
 
 NEWSYM startdebugger
     mov byte[curblank],40h
@@ -135,8 +135,8 @@ NEWSYM startdebugger
     call cleardisplay
     ; sort SDD1
 ;    jmp .noSDD1
-    call SDD1Sort
-.noSDD1
+;    call SDD1Sort
+;.noSDD1
 
     pushad
     call LastLog

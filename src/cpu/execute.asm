@@ -1357,22 +1357,22 @@ NEWSYM endprog
     mov ebx,SRAMDir
     call Change_Dir
 
-    EXTSYM SDD1Array,SDD1Entry,SDD1Sort
-    call SDD1Sort
+;    EXTSYM SDD1Array,SDD1Entry,SDD1Sort
+;    call SDD1Sort
 ;    jmp .nodecomppack
-    cmp byte[SDD1Enable],0
-    jne .yesdecomppack
-    cmp dword[SDD1Entry],0
-    je .nodecomppack
-.yesdecomppack
-    mov edx,sdd1fname
-    call Create_File
-    mov bx,ax
-    mov edx,SDD1Array
-    mov ecx,[SDD1Entry]
-    call Write_File
-    call Close_File
-.nodecomppack
+;    cmp byte[SDD1Enable],0
+;    jne .yesdecomppack
+;    cmp dword[SDD1Entry],0
+;    je .nodecomppack
+;.yesdecomppack
+;    mov edx,sdd1fname
+;    call Create_File
+;    mov bx,ax
+;    mov edx,SDD1Array
+;    mov ecx,[SDD1Entry]
+;    call Write_File
+;    call Close_File
+;.nodecomppack
 
     cmp byte[sramsavedis],1
     je .nosram
@@ -1489,9 +1489,9 @@ NEWSYM endprog
 ;.nodeinitipx
 %endif
     jmp OSExit
-SECTION .data
-NEWSYM sdd1fname, db 'sdd1dat.dat',0,0
-SECTION .text
+;SECTION .data
+;NEWSYM sdd1fname, db 'sdd1dat.dat',0,0
+;SECTION .text
 
 NEWSYM interror
     stim
