@@ -6181,72 +6181,59 @@ GUIIconDataComboSecond:
     db 0  ,48 ,46 ,44 ,42 ,0  ,0  ,0  ,0  ,0
     db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
 
+
 SECTION .text
 
-
-DisplayGUIAddOnsEE:
-    GUIDrawWindowBox 17,GUIAddOnsDispAlt
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2 17,21,18,GUIAddOnText1Alt
-    GUIOuttextwin2 17,21,28,GUIAddOnText2Alt
-    GUIOuttextwin2 17,21,38,GUIAddOnText3Alt
-    GUIOuttextwin2 17,21,48,GUIAddOnText4Alt
-    GUIOuttextwin2 17,21,58,GUIAddOnText5Alt
-    GUIOuttextwin2 17,10,78,GUIAddOnText6Alt
-    GUIOuttextwin2 17,21,88,GUIAddOnText7Alt
-    GUIOuttextwin2 17,71,88,GUIAddOnText8Alt
-    GUIOuttextwin2 17,121,88,GUIAddOnText9Alt
-    GUIOuttextwin2 17,21,98,GUIAddOnTextAAlt
-    GUIOuttextwin2 17,71,98,GUIAddOnTextBAlt
-    GUIOuttextwin2 17,121,98,GUIAddOnTextCAlt
-    add byte[GUItextcolor],15
-    GUIOuttextwin2 17,20,17,GUIAddOnText1Alt
-    GUIOuttextwin2 17,20,27,GUIAddOnText2Alt
-    GUIOuttextwin2 17,20,37,GUIAddOnText3Alt
-    GUIOuttextwin2 17,20,47,GUIAddOnText4Alt
-    GUIOuttextwin2 17,20,57,GUIAddOnText5Alt
-    GUIOuttextwin2 17,9,77,GUIAddOnText6Alt
-    GUIOuttextwin2 17,20,87,GUIAddOnText7Alt
-    GUIOuttextwin2 17,70,87,GUIAddOnText8Alt
-    GUIOuttextwin2 17,120,87,GUIAddOnText9Alt
-    GUIOuttextwin2 17,20,97,GUIAddOnTextAAlt
-    GUIOuttextwin2 17,70,97,GUIAddOnTextBAlt
-    GUIOuttextwin2 17,120,97,GUIAddOnTextCAlt
-    ret
-    
-DisplayGUIAddOns:
-    
-    ;EE
+EEMode:
     pushad
     call GetTime
     cmp eax,360
     popad
     ja .noEE
-    call DisplayGUIAddOnsEE
-    jmp .endEE
-
+    mov eax,1
+    ret
 .noEE
+    mov eax,0
+    ret
 
-    ;Regular
+DisplayGUIAddOns:
     GUIDrawWindowBox 17,GUIAddOnsDisp
     sub byte[GUItextcolor],15
+    
+    call EEMode
+    cmp eax,0
+    je .noEE
+    GUIOuttextwin2 17,21,18,GUIAddOnText1Alt
+    GUIOuttextwin2 17,21,28,GUIAddOnText2Alt
+    GUIOuttextwin2 17,21,38,GUIAddOnText3Alt
+    GUIOuttextwin2 17,21,48,GUIAddOnText4Alt
+    GUIOuttextwin2 17,21,58,GUIAddOnText5Alt
+    jmp .endEE
+.noEE
     GUIOuttextwin2 17,21,18,GUIAddOnText1
     GUIOuttextwin2 17,21,28,GUIAddOnText2
     GUIOuttextwin2 17,21,38,GUIAddOnText3
     GUIOuttextwin2 17,21,48,GUIAddOnText4
     GUIOuttextwin2 17,21,58,GUIAddOnText5
-    
+.endEE    
     add byte[GUItextcolor],15
+    
+    call EEMode
+    cmp eax,0
+    je .noEE2
+    GUIOuttextwin2 17,20,17,GUIAddOnText1Alt
+    GUIOuttextwin2 17,20,27,GUIAddOnText2Alt
+    GUIOuttextwin2 17,20,37,GUIAddOnText3Alt
+    GUIOuttextwin2 17,20,47,GUIAddOnText4Alt
+    GUIOuttextwin2 17,20,57,GUIAddOnText5Alt
+    jmp .endEE2
+.noEE2    
     GUIOuttextwin2 17,20,17,GUIAddOnText1
     GUIOuttextwin2 17,20,27,GUIAddOnText2
     GUIOuttextwin2 17,20,37,GUIAddOnText3
     GUIOuttextwin2 17,20,47,GUIAddOnText4
     GUIOuttextwin2 17,20,57,GUIAddOnText5
-    
-
-.endEE    
-    
-    
+.endEE2        
     GUIDisplayButtonHole 17,9,15,byte[snesmouse],0
     GUIDisplayButtonHole 17,9,25,byte[snesmouse],1
     GUIDisplayButtonHole 17,9,35,byte[snesmouse],2
@@ -6261,22 +6248,12 @@ GUIAddOnText3 db 'SNES MOUSE AT PORT #2',0
 GUIAddOnText4 db 'SUPER SCOPE',0
 GUIAddOnText5 db 'LETHAL ENFORCER GUN',0
 
-
 ;EE
 GUIAddOnText1Alt db 79,70,70,0
 GUIAddOnText2Alt db 84,79,65,83,84,32,77,89,32,66,82,69,65,68,0
 GUIAddOnText3Alt db 71,73,77, 77,69,32,70,82,73,69,83,32,87,73,84,72,32,84,72,65,84,0
 GUIAddOnText4Alt db 65,78,68,32,65,32,77,85,70,70,73,78,0
 GUIAddOnText5Alt db 87,73,84,72,32,86,73,84,65,77,73,78,83,0
-GUIAddOnText6Alt db 69,88,84,82,65,83,0
-GUIAddOnText7Alt db 83,65,76,84,0
-GUIAddOnText8Alt db 71,65,82,76,73,67,0
-GUIAddOnText9Alt db 80,69,80,80,69,82,0
-GUIAddOnTextAAlt db 67,72,69,69,83,69,0
-GUIAddOnTextBAlt db 66,85,84,84,69,82,0
-GUIAddOnTextCAlt db 67,65,84,83,85,80,0
-
-
 
 SECTION .text
 
@@ -6288,6 +6265,19 @@ DisplayGUIChipConfig:
     mov byte[GUItextcolor],211
 .zero
     sub byte[GUItextcolor],15
+
+    call EEMode
+    cmp eax,0
+    je .noEE
+    GUIOuttextwin2 18,10,38,GUIChipText1Alt
+    GUIOuttextwin2 18,21,48,GUIChipText2Alt
+    GUIOuttextwin2 18,71,48,GUIChipText3Alt
+    GUIOuttextwin2 18,121,48,GUIChipText4Alt
+    GUIOuttextwin2 18,21,58,GUIChipText5Alt
+    GUIOuttextwin2 18,71,58,GUIChipText6Alt
+    GUIOuttextwin2 18,121,58,GUIChipText7Alt
+    jmp .endEE
+.noEE
     GUIOuttextwin2 18,10,38,GUIChipText1
     GUIOuttextwin2u 18,21,48,GUIChipText2,4
     GUIOuttextwin2u 18,71,48,GUIChipText3,4
@@ -6295,7 +6285,21 @@ DisplayGUIChipConfig:
     GUIOuttextwin2u 18,21,58,GUIChipText5,4
     GUIOuttextwin2u 18,71,58,GUIChipText6,4
     GUIOuttextwin2u 18,121,58,GUIChipText7,4
+.endEE    
     add byte[GUItextcolor],15
+    
+    call EEMode
+    cmp eax,0
+    je .noEE2
+    GUIOuttextwin2 18,9,37,GUIChipText1Alt
+    GUIOuttextwin2 18,20,47,GUIChipText2Alt
+    GUIOuttextwin2 18,70,47,GUIChipText3Alt
+    GUIOuttextwin2 18,120,47,GUIChipText4Alt
+    GUIOuttextwin2 18,20,57,GUIChipText5Alt
+    GUIOuttextwin2 18,70,57,GUIChipText6Alt
+    GUIOuttextwin2 18,120,57,GUIChipText7Alt
+    jmp .endEE2
+.noEE2
     GUIOuttextwin2 18,9,37,GUIChipText1
     GUIOuttextwin2 18,20,47,GUIChipText2
     GUIOuttextwin2 18,70,47,GUIChipText3
@@ -6303,7 +6307,7 @@ DisplayGUIChipConfig:
     GUIOuttextwin2 18,20,57,GUIChipText5
     GUIOuttextwin2 18,70,57,GUIChipText6
     GUIOuttextwin2 18,120,57,GUIChipText7
-
+.endEE2
 
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[nssdip1],0
@@ -6351,6 +6355,15 @@ GUIChipText4 db 'DIP 3',0
 GUIChipText5 db 'DIP 4',0
 GUIChipText6 db 'DIP 5',0
 GUIChipText7 db 'DIP 6',0
+
+;EE
+GUIChipText1Alt db 69,88,84,82,65,83,0
+GUIChipText2Alt db 83,65,76,84,0
+GUIChipText3Alt db 71,65,82,76,73,67,0
+GUIChipText4Alt db 80,69,80,80,69,82,0
+GUIChipText5Alt db 67,72,69,69,83,69,0
+GUIChipText6Alt db 66,85,84,84,69,82,0
+GUIChipText7Alt db 67,65,84,83,85,80,0
 
 SECTION .text
 
@@ -6583,7 +6596,6 @@ GUIMovieDisp db 'MOVIE OPTIONS',0
 GUIStatesDisp db 'STATE CONFIRM',0
 GUIComboDisp db 'KEY COMBINATION EDITOR',0
 GUIAddOnsDisp db 'ADD-ON SELECTOR',0
-GUIAddOnsDispAlt db 84,79,65,83,84,69,82,32,80,76,85,71,73,78,83,0
 GUIChipConfigDisp db 'CONFIGURE CHIPS',0
 GUIPathsDisp db 'SETUP PATHS',0
 GUISaveDisp db 'SAVE OPTIONS',0
