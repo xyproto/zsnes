@@ -25,7 +25,7 @@ EXTSYM ConvertJoyMap,ConvertJoyMap1,ConvertJoyMap2,printhex
 EXTSYM StartUp,PrintStr,WaitForKey,PrintChar,ZFileSystemInit
 EXTSYM SystemInit,allocmem
 EXTSYM cfgsoundon
-EXTSYM xa
+EXTSYM xa,MMX2Support
 EXTSYM ram7fa,wramdataa
 EXTSYM malloc,free
 EXTSYM MMXSupport,ScreenScale,SoundQuality
@@ -1097,16 +1097,16 @@ NEWSYM MMXCheck
 
     ; MMX support
     mov byte[MMXSupport],0
+    mov byte[MMX2Support],0
     mov eax,1
     CPUID
 
     test edx,1 << 23
     jz .nommx
     mov byte[MMXSupport],1
-    cmp byte[GUIOn2],1
-    je .noprintstr
-    mov edx,YesMMX
-    call PrintStr
+    test edx,1 << 25
+    jz .nommx
+    mov byte[MMX2Support],1
 .noprintstr
 .nommx
     ret
