@@ -78,18 +78,31 @@ Windows port with MSVC:
             and put it somewhere where MSVC++ will find it (usually the
             lib subdirectory of your main MSVC++ directory).
 
-Don't forget to set the correct path to the directx sdk in makefile.win!
 Then to build the executable, go to the src directory and type:
-make -f makefile.msvc
+make -f makefile.ms PLATFORM=msvc
+
+You may also want to compress zsnesw.exe with upx (http://upx.sourceforge.net),
+it will divide its size by 10.
+
+
+
+Windows port with MinGW:
+- GNU Make : it comes with djgpp
+- NASM v0.98.39 : http://nasm.sf.net/
+- MinGW : http://www.mingw.org
+- Latest Win32API : http://www.mingw.org
+- zlib : http://www.info-zip.org/pub/infozip/zlib/
+- libpng : http://www.libpng.org/
+
+Then to build the executable, go to the src directory and type:
+make -f makefile.ms PLATFORM=win32
 
 You may also want to compress zsnesw.exe with upx (http://upx.sourceforge.net),
 it will divide its size by 10.
 
 
 Windows port cross compiling: 
--You need to get the MinGW cross compiler and everything else mentioned 
-     above with one exception. You need to get a copy of DirectX 8 or 
-     higher for MinGW.
+-You need to get the MinGW cross compiler and everything else mentioned above.
 -You might need to edit makefile.ms and change 
      i586-mingw32msvc-gcc, i586-mingw32msvc-g++, and i586-mingw32msvc-windres
      to something else.
