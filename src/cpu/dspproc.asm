@@ -1746,22 +1746,33 @@ section .text
     sar eax,8
     add edx,eax
 
+    cmp dword [filter0],488
+    jne %%notfilter2
+
+    mov eax,[prev0]
+    movsx eax,ax
+    mov [prev1],eax
+    mov eax,edx
+    and eax,0fffffffch
+    mov [prev0],eax
+
+    jmp %%skipclamp
+%%notfilter2
     mov eax,[prev0]
     mov [prev1],eax
     cmp edx,-32768
     jnl %%notless
-    mov dx,0
-;    mov edx,-32768
+    mov edx,-32768
     mov byte[filteron],1
 %%notless
     cmp edx,32767
     jng %%notgreater
-    mov dx,0
-;    mov edx,32767
+    mov edx,32767
     mov byte[filteron],1
 %%notgreater
     movsx edx,dx
     mov [prev0],edx
+%%skipclamp
 %endmacro
 
 %macro ProcessDynamicLowPass 0
