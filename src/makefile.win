@@ -211,6 +211,7 @@ clean:
 	del ${GUIDIR}\*.obj
 	del ${WINDIR}\*.obj
 	del ${WINDIR}\zsnes.res
+	del ${ZIPDIR}\*.obj
 	del ${DOSDIR}\*.obj
 	del zsnesw.exe
 	
