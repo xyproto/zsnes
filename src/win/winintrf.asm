@@ -190,8 +190,6 @@ NEWSYM SystemInit
     mov byte[esi+11+256],'T'
     mov byte[esi+12+256],0
 
-    mov byte[spcon],1
-
     ; Get and set the initial directory
     mov ebx,InitDir
     mov edx,InitDrive
@@ -207,7 +205,6 @@ NEWSYM SystemInit
     call ccmdline
     call tparms
     call preparedir
-    mov byte[soundon],0
 ;    call getblaster                     ; get set blaster environment
 ;    cmp byte[Force8b],1
 ;    jne .noforce8b

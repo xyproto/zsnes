@@ -398,7 +398,7 @@ NEWSYM pl2p209b, db 0
 NEWSYM pl3p209b, db 0
 NEWSYM pl4p209b, db 0
 JoyPad1Move db 0
-FirstTimeData db 0
+NEWSYM FirstTimeData, db 0
 NEWSYM PrevSWFix, db 0
 NEWSYM CalibXmin, dd 0
 NEWSYM CalibYmin, dd 0
@@ -2162,10 +2162,6 @@ NEWSYM StartGUI
     jne .nofirsttime
     call guifirsttimemsg
     mov byte[FirstTimeData],1
-%ifndef __MSDOS__
-    mov byte[soundon],1
-    mov byte[cfgsoundon],1
-%endif
 .nofirsttime
     cmp dword[GUICTimer],0
     je .notimer

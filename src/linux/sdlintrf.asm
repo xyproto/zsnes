@@ -199,8 +199,6 @@ NEWSYM SystemInit
     mov byte[esi+12+256],0
 %endif
 
-    mov byte[spcon],1
-
     ; Get and set the initial directory
 %ifdef __LINUX__
     call obtaindir
@@ -237,7 +235,6 @@ NEWSYM SystemInit
     mov ebx,SRAMDir
     call Change_Dir
 %endif	
-    mov byte[soundon],0
 ;    call getblaster                     ; get set blaster environment
 ;    cmp byte[Force8b],1
 ;    jne .noforce8b
