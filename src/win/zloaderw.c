@@ -47,6 +47,8 @@ extern unsigned char Palette0, SPC700sh, OffBy1Line, DSPDisable,
 extern unsigned char autoloadstate;
 // FIX STATMAT                     
 
+extern unsigned int numdrives;
+
 void ccmdline(void);
 
 char *ers[] =
@@ -351,6 +353,9 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdSh
       argv = (char **) realloc(argv, (argc + 1) * sizeof(char *));
       argv[argc] = NULL;
    }
+
+   for (drivebits = GetLogicalDrives(), numdrives = 0;drivebits != 0;drivebits>>= 1)
+	   numdrives++;
 
    zstart();
 
