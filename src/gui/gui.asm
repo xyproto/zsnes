@@ -2550,6 +2550,62 @@ guiftimemsg6 db 'PROBLEMS, BE SURE TO READ',0
 guiftimemsg7 db 'ZSNES.FAQ AND README.TXT',0
 guiftimemsg8 db 'PRESS "Z" TO CONTINUE.',0
 
+guimustrestartmsg:
+    xor ebx,ebx
+    mov ecx,256
+.a
+    mov byte[pressed+ebx],0
+    inc ebx
+    loop .a
+    mov byte[pressed+2Ch],0
+.again
+    GUIBox 43,87,213,151,160
+    GUIBox 43,87,213,87,162
+    GUIBox 43,87,43,151,161
+    GUIBox 213,87,213,151,159
+    GUIBox 43,151,213,151,158
+    GUIOuttext 56,93,guiqtimemsg1,220-15
+    GUIOuttext 55,92,guiqtimemsg1,220
+    GUIOuttext 56,108,guiqtimemsg2,220-15
+    GUIOuttext 55,107,guiqtimemsg2,220
+    GUIOuttext 56,116,guiqtimemsg3,220-15
+    GUIOuttext 55,115,guiqtimemsg3,220
+    GUIOuttext 56,124,guiqtimemsg4,220-15
+    GUIOuttext 55,123,guiqtimemsg4,220
+    GUIOuttext 56,139,guiqtimemsg8,220-15
+    GUIOuttext 55,138,guiqtimemsg8,220
+    call vidpastecopyscr
+    call GUIUnBuffer
+    call DisplayBoxes
+    call DisplayMenu
+    call JoyRead
+    cmp byte[pressed+2Ch],0
+    jne .pressedokay
+    jmp .again
+.pressedokay
+.again2
+    call Check_Key
+    or al,al
+    jz .nokey
+    call Get_Key
+    jmp .again2
+.nokey
+    cmp byte[MouseDis],1
+    je .mousedis2
+    push ebx
+;    mov eax,0Bh
+;    int 33h
+    pop ebx
+.mousedis2
+    mov byte[GUIQuit],1
+    ret
+
+guiqtimemsg1 db 'ZSNES MUST BE RESTARTED',0
+guiqtimemsg2 db 'TO USE THIS OPTION.',0
+guiqtimemsg3 db 'THIS PROGRAM WILL NOW',0
+guiqtimemsg4 db 'EXIT.',0
+guiqtimemsg8 db 'PRESS ANY KEY.',0
+
 guiprevideo:
     xor ebx,ebx
     mov ecx,256
