@@ -1513,7 +1513,6 @@ void MovieStop()
       case 1:
         zmv_replay_finished();
         MovieSub_Close();
-        SRAMState = PrevSRAMState;
         break;
 
       case 2:
@@ -1528,6 +1527,7 @@ void MovieStop()
 
     zmv_dealloc_rewind_buffer();
     MovieProcessing = 0;
+    SRAMState = PrevSRAMState;
   }
   else { firstloop = false; }
 }
@@ -1543,11 +1543,11 @@ void MoviePlay()
 {
   unsigned char FileExt[4];
 
-  PrevSRAMState = SRAMState;
-  SRAMState = true;
-
   if (!MovieProcessing)
   {
+    PrevSRAMState = SRAMState;
+    SRAMState = true;
+      
     GUIQuit = 2;
     memcpy(FileExt, &fnamest[statefileloc-3], 4);
     memcpy(&fnamest[statefileloc-3], ".zmv", 4);
@@ -1602,6 +1602,9 @@ void MovieRecord()
 
     if (!(tempfhandle = fopen(fnamest+1,"rb")))
     {
+      PrevSRAMState = SRAMState;
+      SRAMState = true;
+      
       zmv_create(fnamest+1);
       zmv_alloc_rewind_buffer(RewindStates);
       MovieProcessing = 2;
