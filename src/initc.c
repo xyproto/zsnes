@@ -636,6 +636,11 @@ void SplitSetup(const char *basefile, unsigned int MirrorSystem)
       memcpy(ROM+0x200000, ROM+0x400000, 0x80000); //Copy base over
       memset(ROM+0x280000, 0, 0x180000);           //Blank out rest
       break;
+  
+    case 3:
+      memcpy(ROM+0x40000, ROM, 0x40000);
+      memcpy(ROM+0x80000, ROM, 0x80000);
+      break;
   }
       
   curromspace = addOnStart+addOnSize;
@@ -664,6 +669,14 @@ void SplitSupport()
     addOnSize = 0x80000;
     SplitSetup("G-NEXT.ZIP", 2);
     addOnStart = 0x200000;
+  }          
+
+  //Sufami Turbo
+  if (!strncmp(ROM, "BANDAI SFC-ADX", 14))
+  {
+    addOnStart = 0x100000;
+    addOnSize = curromspace;
+    SplitSetup("STBIOS.ZIP", 3);
   }          
 }
 
