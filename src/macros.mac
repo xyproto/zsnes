@@ -20,7 +20,7 @@ bits 32
 section .text
 ; Zsnes required macros
 
-%define ZVERSION '1.36'
+%define ZVERSION '1.36 CVS'
 
 %ifdef ELF
 %imacro newsym 1
