@@ -6210,14 +6210,6 @@ NEWSYM CheckROMType
     mov dword[memtablew8+0F3h*4],sramaccessbankw8
     mov dword[memtabler16+0F3h*4],sramaccessbankr16
     mov dword[memtablew16+0F3h*4],sramaccessbankw16
-    mov dword[memtabler8+0F8h*4],memaccessbankr8
-    mov dword[memtablew8+0F8h*4],memaccessbankw8
-    mov dword[memtabler16+0F8h*4],memaccessbankr16
-    mov dword[memtablew16+0F8h*4],memaccessbankw16
-    mov dword[memtabler8+0F9h*4],memaccessbankr8
-    mov dword[memtablew8+0F9h*4],memaccessbankw8
-    mov dword[memtabler16+0F9h*4],memaccessbankr16
-    mov dword[memtablew16+0F9h*4],memaccessbankw16
 
     mov esi,[romdata]
     add esi,32704+22
