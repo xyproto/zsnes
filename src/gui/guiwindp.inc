@@ -5155,13 +5155,13 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,5,95,GUIGUIAboutText6b
     GUIOuttextwin2 11,5,105,GUIGUIAboutText6d
     GUIOuttextwin2 11,5,115,GUIGUIAboutText6e
-    GUIOuttextwin2 11,6,130,GUIGUIAboutTextA
-    GUIOuttextwin2 11,6,140,GUIGUIAboutTextB
-    GUIOuttextwin2 11,6,150,GUIGUIAboutTextC
-    GUIOuttextwin2 11,6,160,GUIGUIAboutTextD
-    GUIOuttextwin2 11,6,170,GUIGUIAboutTextE
-    GUIOuttextwin2 11,6,180,GUIGUIAboutTextF
-    GUIOuttextwin2 11,6,190,GUIGUIAboutTextG
+    GUIOuttextwin2 11,5,130,GUIGUIAboutTextA
+    GUIOuttextwin2 11,5,140,GUIGUIAboutTextB
+    GUIOuttextwin2 11,5,150,GUIGUIAboutTextC
+    GUIOuttextwin2 11,5,160,GUIGUIAboutTextD
+    GUIOuttextwin2 11,5,170,GUIGUIAboutTextE
+    GUIOuttextwin2 11,5,180,GUIGUIAboutTextF
+    GUIOuttextwin2 11,5,190,GUIGUIAboutTextG
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 11,6,36,GUIGUIAboutText2
