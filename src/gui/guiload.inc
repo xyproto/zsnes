@@ -342,7 +342,7 @@ GUIloadfilename:
     mov al,2
 .nopal2
     mov byte[romispal],0
-    mov word[totlines],262
+    mov word[totlines],263
     mov dword[MsgCount],120
     cmp al,1
     jbe .nopal
