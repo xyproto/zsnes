@@ -599,7 +599,7 @@ db 'VideoMode = %U',13,10
 db '',13,10
 %elifdef __LINUX__
 %ifdef __OPENGL__
-db '; Video Mode, 0 - 7',13,10
+db '; Video Mode, 0 - 6',13,10
 %else
 db '; Video Mode, 0 - 3',13,10
 %endif

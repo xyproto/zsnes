@@ -140,6 +140,7 @@ int UseOpenGL = 0;
 int glfilters = GL_NEAREST;
 extern Uint8 BilinearFilter;
 extern Uint8 FilteredGUI;
+extern Uint8 GUIOn2;
 #endif
 extern unsigned char cvidmode;
 DWORD vidbuff_w, vidbuff_h;
@@ -1113,8 +1114,14 @@ void drawscreenwin(void)
     for (j = 0; j<224; j++) {
       memcpy(glvidbuffer + 256*j, (short *) (vidbuffer) + 16 + 288 + (256+32)*j, 256*2);
     }
-    if (BilinearFilter && FilteredGUI) glfilters = GL_LINEAR; else glfilters = GL_NEAREST;
-    if (FullScreen && cvidmode != 7) ratiox = 0.875; else ratiox = 1.0;
+    if (BilinearFilter) {
+      glfilters = GL_LINEAR;
+      if (GUIOn2 && !FilteredGUI) glfilters = GL_NEAREST;
+    } else {
+      glfilters = GL_NEAREST;
+    }
+
+    if (FullScreen) ratiox = 0.875; else ratiox = 1.0;
     
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
