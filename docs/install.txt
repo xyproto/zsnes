@@ -11,7 +11,7 @@ win version, I hope it will also work for you
 
 First, you need the following software:
 
-DOS port : 
+DOS port: 
 - NASM v0.98.39 or higher
 - DJGPP v2 or higher, (GCC also installed) : http://www.delorie.com/djgpp/
                    using the zip picker, the default choices are ok if you
@@ -27,13 +27,26 @@ DOS port :
                 the source for them from your hard drive.
 
 Then to build the executable, go to the src directory and type:
-make -f makefile.dos 
+make -f makefile.ms PLATFORM=dos
 
 You may also want to compress zsnes.exe with upx (http://upx.sourceforge.net),
 it will divide its size by 10.
 
 
-Windows port : 
+DOS port cross compiling: 
+-You need to get the DJGPP cross compiler and everything else mentioned above.
+-You might need to edit makefile.ms and change 
+     i386-pc-msdosdjgpp-gcc and i386-pc-msdosdjgpp-g++ to something else.
+
+Then to build the executable, go to the src directory and type:
+make -f makefile.ms PLATFORM=dos-cross
+
+If you have any problems we will probably not help you as cross compiling
+     is an advanced feature only for people who know what they are doing.
+
+     
+
+Windows port with MSVC: 
 - GNU Make : it comes with djgpp
 - NASM v0.98.39 : http://nasm.sf.net/
 - MSVC++ 6.0 or higher : not freely available, you'll have to buy it
@@ -67,12 +80,28 @@ Windows port :
 
 Don't forget to set the correct path to the directx sdk in makefile.win!
 Then to build the executable, go to the src directory and type:
-make -f makefile.win
+make -f makefile.msvc
 
 You may also want to compress zsnesw.exe with upx (http://upx.sourceforge.net),
 it will divide its size by 10.
 
 
+Windows port cross compiling: 
+-You need to get the MinGW cross compiler and everything else mentioned 
+     above with one exception. You need to get a copy of DirectX 8 or 
+     higher for MinGW.
+-You might need to edit makefile.ms and change 
+     i586-mingw32msvc-gcc, i586-mingw32msvc-g++, and i586-mingw32msvc-windres
+     to something else.
+
+Then to build the executable, go to the src directory and type:
+make -f makefile.ms PLATFORM=win32-cross
+
+If you have any problems we will probably not help you as cross compiling
+     is an advanced feature only for people who know what they are doing.
+
+     
+     
 Linux/SDL/POSIX port:
 I assume the standard development tools are installed (gcc, make, ...)
 You'll also need : 
