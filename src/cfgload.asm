@@ -592,6 +592,8 @@ db ';   10 = 800x600 S WIN        11 = 800x600 DS WIN',13,10
 db ';   12 = 800x600 S FULL       13 = 800x600 DS FULL',13,10
 db ';   14 = 1024X768 S WIN       15 = 1024X768 DS WIN',13,10
 db ';   16 = 1024x768 S FULL      17 = 1024x768 DS FULL',13,10
+db ';   18 = 768x672 R WIN        19 = 768x672 DR WIN',13,10
+db ';   20 = 1024x896 R WIN       21 = 1024x896 DR WIN',13,10
 db '',13,10
 db 'VideoMode = %U',13,10
 db '',13,10
