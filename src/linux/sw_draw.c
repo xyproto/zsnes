@@ -114,7 +114,6 @@ extern void copy640x480x16bwin(void);
 /* FIXME: Figure out how to make these locals */
 static DWORD ScreenPtr;
 static DWORD SurfBufD;
-static DWORD *SURFDW;
 static DWORD pitch;
 
 void sw_clearwin()
@@ -123,9 +122,7 @@ void sw_clearwin()
     SurfBufD = (DWORD) surface->pixels;
 
     LockSurface();
-    switch (BitDepth) {
-	case 16:
-	    __asm__ __volatile__ (
+    __asm__ __volatile__ (
 	"	xorl %%eax, %%eax\n"				\
 	"	xorl %%ebx, %%ebx\n"				\
         "Blank2:\n"						\
@@ -139,34 +136,13 @@ void sw_clearwin()
 	"	subl %%edx, %%edi\n"				\
 	"	cmpl %2, %%ebx\n"				\
 	"	jne Blank2\n"					\
-	: : "g" (pitch), "g" (SurfaceX), "g" (SurfaceY), "D" (SurfBufD) : "cc", "memory", "eax", "ebx", "edx", "ecx");
-	    break;
-	case 32:
-	    __asm__ __volatile__ (
-	"	xorl %%eax, %%eax\n"				\
-	"	xorl %%ebx, %%ebx\n"				\
-	"Blank3:\n"						\
-	"	movl %1, %%ecx\n"				\
-	"	rep\n"						\
-	"	stosl\n"					\
-	"	addl %0, %%edi\n"				\
-	"	subl %1, %%edi\n"				\
-	"	subl %1, %%edi\n"				\
-	"	subl %1, %%edi\n"				\
-	"	subl %1, %%edi\n"				\
-	"	addl $1, %%ebx\n"				\
-	"	cmpl %2, %%ebx\n"				\
-	"	jne Blank3\n"					\
-	: : "g" (pitch), "g" (SurfaceX), "g" (SurfaceY), "D" (SurfBufD) : "cc", "memory", "eax", "ebx", "ecx");
-	    break;
-    }
+    : : "g" (pitch), "g" (SurfaceX), "g" (SurfaceY), "D" (SurfBufD)
+    : "cc", "memory", "eax", "ebx", "edx", "ecx");
     UnlockSurface();
 }
 
 void sw_drawwin()
 {
-    DWORD i,j,color32;
-
     NGNoTransp = 0;             // Set this value to 1 within the appropriate
                                 // video mode if you want to add a custom
                                 // transparency routine or hardware
@@ -174,9 +150,8 @@ void sw_drawwin()
                                 // the value of newengen is equal to 1.
                                 // (see ProcessTransparencies in newgfx16.asm
                                 //  for ZSNES' current transparency code)
-	UpdateVFrame();
-	if (curblank != 0)
-		return;
+    UpdateVFrame();
+    if (curblank != 0) return;
 
     LockSurface();
 
@@ -187,7 +162,6 @@ void sw_drawwin()
 
     pitch = surface->pitch;
     SurfBufD = (DWORD) surface->pixels;
-    SURFDW = (DWORD *) surface->pixels;
 
     if (SurfBufD == 0) {
 	UnlockSurface();
@@ -195,10 +169,8 @@ void sw_drawwin()
     }
 
     if (SurfaceX == 256 && SurfaceY == 224) {
-	switch(BitDepth) {
-	    case 16:
-		if (MMXSupport){
-		    __asm__ __volatile__ (
+	if (MMXSupport){
+	    __asm__ __volatile__ (
 		"	xorl %%eax, %%eax\n"				\
 		"Copying3:\n"						\
 		"	movl $32, %%ecx\n"				\
@@ -223,10 +195,9 @@ void sw_drawwin()
 		"	rep\n"						\
 		"	stosl\n"					\
 		"	emms\n"						\
-		: : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD) : "cc", "memory", "eax", "ecx");
-		} else {
-		    // Doesn't seem to work - DDOI
-		    __asm__ __volatile__ (
+	    : : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD) : "cc", "memory", "eax", "ecx");
+	} else {
+	    __asm__ __volatile__ (
 		"	xorl %%eax, %%eax\n"				\
 		"Copying:\n"						\
 		"	movl $128, %%ecx\n"				\
@@ -242,77 +213,12 @@ void sw_drawwin()
 		"	movl $128, %%ecx\n"				\
 		"	rep\n"						\
 		"	stosl\n"					\
-		: : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD) : "cc", "memory", "eax", "ecx");
-		}
-		break;
-
-	    case 32:
-		__asm__ __volatile__ (
-		"	xorl %%eax, %%eax\n"				\
-		"Copying32b:\n"						\
-		"	movl $256, %%ecx\n"				\
-		"	pushl %%eax\n"					\
-		"	xorl %%eax, %%eax\n"				\
-		"CopyLoop32b:\n"					\
-		"	movw (%%esi), %%ax\n"				\
-		"	addl $2, %%esi\n"				\
-		"	movl (%%ebx, %%eax, 4), %%edx\n"		\
-		"	movl %%edx, (%%edi)\n"				\
-		"	addl $4, %%edi\n"				\
-		"	decl %%ecx\n"					\
-		"	jnz CopyLoop32b\n"				\
-		"	popl %%eax\n"					\
-		"	incl %%eax\n"					\
-		"	addl %0, %%edi\n"				\
-		"	subl $1024, %%edi\n"				\
-		"	addl $64, %%esi\n"				\
-		"	cmpl $223, %%eax\n"				\
-		"	jne Copying32b\n"				\
-		: : "g" (pitch), "b" (BitConv32Ptr), "S" (ScreenPtr), "D" (SurfBufD) : "cc", "memory", "eax", "ecx","edx");
-		SURFDW = (DWORD *) SurfBufD + 222*pitch;
-		color32 = 0x7F000000;
-	
-		for(i=0; i<256; i++)
-		    {
-			SURFDW[i] = color32;
-		    }
-		
-		SURFDW=(DWORD *) SurfBufD + 223*pitch;
-		color32=0x7F000000;
-		
-		for(i=0; i<256; i++)
-		    {
-			SURFDW[i] = color32;
-		    }
-		break;
-
-	    case 24:
-		fprintf (stderr, "Sorry, this mode does not work in 24 bit color\n");
-		LinuxExit();
-		/*
-		  cvidmode=3;
-		  initwinvideo();
-		  sleep(1);
-		  drawscreenwin();
-		*/
-		break;
-	    default:
-		UnlockSurface();
-		fprintf(stderr, "Mode only available in 16 and 32 bit color.\n");
-		LinuxExit();
-		/*
-		  cvidmode=2;
-		  initwinvideo();
-		  sleep(1);
-		  drawscreenwin();
-		*/
-		break;
-	} // switch (BitDepth)
+	    : : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD)
+	    : "cc", "memory", "eax", "ecx");
+	}
     } else if (SurfaceX == 320 && SurfaceY == 240) {
-	switch(BitDepth) {
-	    case 16:
-		if (MMXSupport) {
-		    __asm__ __volatile__ (
+	if (MMXSupport) {
+	    __asm__ __volatile__ (
 		"	xor %%eax, %%eax\n"				\
 		"	xor %%ebx, %%ebx\n"				\
 		"Blank1MMX:\n"						\
@@ -362,10 +268,10 @@ void sw_drawwin()
 		"	rep\n"						\
 		"	stosl\n"					\
 		"	emms\n"						\
-		: : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD) : "cc", "memory", "eax", "ebx", "ecx");
-
-		} else {
-		    __asm__ __volatile__ (
+	    : : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD)
+	    : "cc", "memory", "eax", "ebx", "ecx");
+	} else {
+	    __asm__ __volatile__ (
 		"	xorl %%eax, %%eax\n"				\
 		"	xorl %%ebx, %%ebx\n"				\
 		"Blank1:\n"						\
@@ -398,186 +304,19 @@ void sw_drawwin()
 		"	movl $128, %%ecx\n"				\
 		"	rep\n"						\
 		"	stosl\n"					\
-		: : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD) : "cc", "memory", "eax", "ebx", "ecx");
-
-		}
-		break;
-
-	    case 32:
-		for(j=0; j<8; j++)
-		    {
-			SURFDW = (DWORD *) SurfBufD + j*pitch;
-			color32 = 0x7F000000;
-			
-			for(i=0; i<320; i++)
-			    {
-				SURFDW[i] = color32;
-			    }
-		    }
-		
-		for(j=8; j<223+8; j++)
-		    {
-			color32 = 0x7F000000;
-			for(i=0; i<32; i++)
-			    {
-				SURFDW[i]=color32;
-			    }
-			
-			for(i=32; i<(256+32); i++)
-			    {
-				color32 = (((*(WORD *)(ScreenPtr))&0xF800)<<8)+
-				    (((*(WORD *)(ScreenPtr))&0x07E0)<<5)+
-				    (((*(WORD *)(ScreenPtr))&0x001F)<<3)+0x7F000000;
-				SURFDW[i] = color32;
-				ScreenPtr += 2;
-			    }
-			
-			color32 = 0x7F000000;
-			for(i=(256+32); i<320; i++)
-			    {
-				SURFDW[i] = color32;
-			    }
-			
-			ScreenPtr = ScreenPtr+576-512;
-			SURFDW=(DWORD *) SurfBufD + j*pitch;
-		    }
-		
-		for(j=(223+8);j<240;j++)
-		    {
-			SURFDW=(DWORD *) SurfBufD + j*pitch;
-			
-			color32 = 0x7F000000;
-			for(i=0; i<320; i++)
-			    {
-				SURFDW[i] = color32;
-			    }
-		    }
-		break;
-	    default:
-		UnlockSurface();
-		fprintf(stderr, "Mode only available in 16 and 32 bit color.\n");
-		LinuxExit();
-		/*
-		  cvidmode=2;
-		  initwinvideo();
-		  sleep(1);
-		  drawscreenwin();
-		*/
-		break;
-	} // switch
-    } else if(SurfaceX == 512 && SurfaceY == 448) {
-	switch(BitDepth) {
-	    case 16:
-		AddEndBytes = pitch-1024;
-		NumBytesPerLine = pitch;
-		WinVidMemStart = (void*)SurfBufD;
-		copy640x480x16bwin();
-		break;
-
-	    case 32:
-		__asm__ __volatile__ (
-		"	xorl %%eax, %%eax\n"				\
-		"Copying32c:\n"						\
-		"	movl $256, %%ecx\n"				\
-		"	pushl %%eax\n"					\
-		"	xorl %%eax, %%eax\n"				\
-		"CopyLoop32c:\n"					\
-		"	movw (%%esi), %%ax\n"				\
-		"	addl $2, %%esi\n"				\
-		"	movl (%%ebx, %%eax, 4), %%edx\n"		\
-		"	movl %%edx, (%%edi)\n"				\
-		"	movl %%edx, 4(%%edi)\n"				\
-		"	addl $8, %%edi\n"				\
-		"	loop CopyLoop32c\n"				\
-		"	pushl %%esi\n"					\
-		"	movl %%edi, %%esi\n"				\
-		"	subl %0, %%esi\n"				\
-		"	movl $512, %%ecx\n"				\
-		"	rep\n"						\
-		"	movsl\n"					\
-		"	popl %%esi\n"					\
-		"	popl %%eax\n"					\
-		"	incl %%eax\n"					\
-		"	addl $64, %%esi\n"				\
-		"	cmpl $223, %%eax\n"				\
-		"	jne Copying32c\n"				\
-		: : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD), "b" (BitConv32Ptr) : "cc", "memory","eax","ecx","edx");
-		break;
-		/*
-		  addl pitch, %%edi
-		  subl $2048, %%edi
-		*/
-	    default:
-		UnlockSurface();
-		fprintf(stderr, "Mode only available in 16 or 32 bit color.\n");
-		LinuxExit();
-		/*
-		  cvidmode=2;
-		  initwinvideo();
-		  sleep(1);
-		  drawscreenwin();
-		*/
-		break;
-	} // switch
-    } else if (SurfaceX == 640 && SurfaceY == 480) {
-	switch(BitDepth)
-	    {
-	    case 16:
-		AddEndBytes = pitch-1024;
-		NumBytesPerLine = pitch;
-		WinVidMemStart = (void*) (SurfBufD + 16*640*2 + 64*2);
-		copy640x480x16bwin();
-		break;
-
-	    case 32:
-		__asm__ __volatile__ (
-		"	xorl %%eax, %%eax\n"				\
-		"	addl $20608, %%edi\n"				\
-		"Copying32d:\n"						\
-		"	movl $256, %%ecx\n"				\
-		"	pushl %%eax\n"					\
-		"	xorl %%eax, %%eax\n"				\
-		"CopyLoop32d:\n"					\
-		"	movw (%%esi), %%ax\n"				\
-		"	addl $2, %%esi\n"				\
-		"	movl (%%ebx, %%eax, 4), %%edx\n"		\
-		"	movl %%edx, (%%edi)\n"				\
-		"	movl %%edx, 4(%%edi)\n"				\
-		"	addl $8, %%edi\n"				\
-		"	loop CopyLoop32d\n"				\
-		"	addl $512, %%edi\n"				\
-		"	pushl %%esi\n"					\
-		"	movl %%edi, %%esi\n"				\
-		"	subl %0, %%esi\n"				\
-		"	movl $512, %%ecx\n"				\
-		"	rep\n"						\
-		"	movsl\n"					\
-		"	popl %%esi\n"					\
-		"	popl %%eax\n"					\
-		"	incl %%eax\n"					\
-		"	addl $512, %%edi\n"				\
-		"	addl $64, %%esi\n"				\
-		"	cmpl $223, %%eax\n"				\
-		"	jne Copying32d\n"				\
-		: : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD), "b" (BitConv32Ptr) : "cc", "memory","eax","ecx","edx");
-		break;
-		/*
-		  addl pitch, %%edi
-		  subl $2048, %%edi
-		*/
-
-	    default:
-		UnlockSurface();
-		fprintf(stderr, "Mode only available in 16 or 32 bit color.\n");
-		LinuxExit();
-		/*
-		  cvidmode=2;
-		  initwinvideo();
-		  sleep(1);
-		  drawscreenwin();
-		*/
-		break;
+	    : : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD)
+	    : "cc", "memory", "eax", "ebx", "ecx");
 	}
+    } else if(SurfaceX == 512 && SurfaceY == 448) {
+	AddEndBytes = pitch-1024;
+	NumBytesPerLine = pitch;
+	WinVidMemStart = (void*)SurfBufD;
+	copy640x480x16bwin();
+    } else if (SurfaceX == 640 && SurfaceY == 480) {
+	AddEndBytes = pitch-1024;
+	NumBytesPerLine = pitch;
+	WinVidMemStart = (void*) (SurfBufD + 16*640*2 + 64*2);
+	copy640x480x16bwin();
     }
     UnlockSurface();
 }
