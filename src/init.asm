@@ -4253,6 +4253,7 @@ NEWSYM loadfileGUI
     pop esi
     cmp ecx,450
     jb .nomove
+    mov byte[Header512],1
     mov edi,esi
     add edi,512
     sub eax,512
