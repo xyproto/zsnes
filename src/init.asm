@@ -1473,17 +1473,6 @@ NEWSYM Outputfilename
 
 headerhack2:
 
-    ; Megaman X2 - Header Hack
-    mov esi,[romdata]
-    add esi,7FC0h
-    mov edi,.mmx2head
-    call Checkheadersame
-    cmp al,0
-    jne .noromheadmmx2
-    mov esi,[romdata]
-    add esi,32704+22
-    mov byte[esi],0F3h
-.noromheadmmx2
 ; THE KING OF RALLY - Header hack
     mov esi,[romdata]
     cmp dword[esi+7FC0h],'THE '
@@ -1505,8 +1494,6 @@ headerhack2:
 .nokingofrally    
     ret
 
-SECTION .data
-.mmx2head db 50,58,56,62,50,62,49,95,39,77,95,95,95,95,95,95,95,95,95,95
 SECTION .text
 
 EXTSYM ewj2hack
