@@ -896,6 +896,7 @@ GUIOptionKeys:
     cmp dh,'S'
     jne .noalttimer
     xor byte[AlternateTimer],1
+    call guimustrestartmsg
 .noalttimer
 %endif
     ret
