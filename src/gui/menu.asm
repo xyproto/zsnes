@@ -33,7 +33,7 @@ EXTSYM Clear2xSaIBuffer
 EXTSYM romdata,romtype,ScreenShotFormat
 EXTSYM Voice0Disable,Voice1Disable,Voice2Disable,Voice3Disable
 EXTSYM Voice4Disable,Voice5Disable,Voice6Disable,Voice7Disable
-EXTSYM SRAMDrive, SRAMDir, SPCPath, Change_Dir
+EXTSYM SRAMDrive, SRAMDir, SPCPath, SnapPath, Change_Dir
 %ifndef NO_PNG
 EXTSYM Grab_PNG_Data
 %endif
@@ -1186,6 +1186,14 @@ NEWSYM savepcx
     mov word[pcxheader+10],237
 .res224ph
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    pushad
+    mov dl,[SRAMDrive] ; Need to get rid of this, no reason for it
+    mov ebx,SnapPath
+    call Change_Dir
+    popad
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
     mov ecx,0    ;GetFreeFile use ecx==0 to tell if it's PCX
     call GetFreeFile
 
@@ -1246,6 +1254,11 @@ NEWSYM savepcx
 ;    mov dword[Msgptr],.pcxsaved
 ;    mov eax,[MsgCount]
 ;    mov [MessageOn],eax
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    mov dl,[SRAMDrive]
+    mov ebx,SRAMDir
+    call Change_Dir
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ret
 
 .save16b
@@ -1276,6 +1289,12 @@ NEWSYM savepcx
     add dword[pcxheader+2],768*15
     mov word[pcxheader+20],238
 .res224b
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    mov dl,[SRAMDrive] ; Need to get rid of this, no reason for it
+    mov ebx,SnapPath
+    call Change_Dir
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
     mov ecx,1    ;GetFreeFile use ecx==1 to tell if it's BMP
     call GetFreeFile
@@ -1340,6 +1359,11 @@ NEWSYM savepcx
 ;    mov eax,[MsgCount]
 ;    mov [MessageOn],eax
     call restore16b
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    mov dl,[SRAMDrive]
+    mov ebx,SRAMDir
+    call Change_Dir
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ret
 
 
@@ -1489,6 +1513,12 @@ NEWSYM save16b2
     mov word[pcxheader+22],1
     mov word[pcxheader+24],24
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    mov dl,[SRAMDrive] ; Need to get rid of this, no reason for it
+    mov ebx,SnapPath
+    call Change_Dir
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
     mov ecx,1    ;GetFreeFile use ecx==1 to tell if it's BMP
     call GetFreeFile
 
@@ -1550,6 +1580,11 @@ NEWSYM save16b2
 ;    mov [MessageOn],eax
     pop es
     call restore16b
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    mov dl,[SRAMDrive]
+    mov ebx,SRAMDir
+    call Change_Dir
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ret
 
 SECTION .data
