@@ -125,6 +125,7 @@ DWORD                   SurfaceY=0;
 
 BYTE                    IsActivated = 1;
 BYTE                    AltTimer = 0;
+RECT                    BlitArea;
 
 extern "C" {
 DWORD                   MouseButton;
@@ -255,7 +256,7 @@ void DrawScreen()
    {
       if (TripleBufferWin == 1)
       {
-         DD_BackBuffer->Blt(NULL, DD_CFB, NULL, DDBLT_WAIT, NULL);
+         DD_BackBuffer->Blt(NULL, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
          DD_Primary->Flip(NULL, DDFLIP_WAIT);
       }
       else
@@ -267,7 +268,7 @@ void DrawScreen()
                DDrawError();
             }
          }
-         DD_Primary->Blt(&rcWindow, DD_CFB, NULL, DDBLT_WAIT, NULL);
+         DD_Primary->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
       }
    }
    else
@@ -279,7 +280,7 @@ void DrawScreen()
             DDrawError();
          }
       }
-         DD_Primary->Blt(&rcWindow, DD_CFB, NULL, DDBLT_WAIT, NULL);
+         DD_Primary->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
    }
 }
  
@@ -1503,7 +1504,7 @@ void initwinvideo(void)
       CurMode=cvidmode;
       newmode=1;
       SurfaceX=256;
-      SurfaceY=224;
+      SurfaceY=240;
       X=0;
       Y=0;
       FullScreen=GUIWFVID[cvidmode];
@@ -1528,7 +1529,7 @@ void initwinvideo(void)
          WindowWidth=512;
          WindowHeight=448;
          SurfaceX=512;
-         SurfaceY=448;
+         SurfaceY=464;
          break;
       case 4:
          WindowWidth=640;
@@ -1538,7 +1539,7 @@ void initwinvideo(void)
          WindowWidth=640;
          WindowHeight=480;
          SurfaceX=512;
-         SurfaceY=448;
+         SurfaceY=448+16;
          break;
       case 6:
          WindowWidth=640;
@@ -1550,7 +1551,7 @@ void initwinvideo(void)
          WindowWidth=640;
          WindowHeight=480;
          SurfaceX=512;
-         SurfaceY=448;
+         SurfaceY=464;
          break;
       case 8:
          WindowWidth=640;
@@ -1564,7 +1565,7 @@ void initwinvideo(void)
          WindowWidth=768;
          WindowHeight=672;
          SurfaceX=512;
-         SurfaceY=448;
+         SurfaceY=464;
          break;
       case 11:
          WindowWidth=800;
@@ -1574,7 +1575,7 @@ void initwinvideo(void)
          WindowWidth=800;
          WindowHeight=600;
          SurfaceX=512;
-         SurfaceY=448;
+         SurfaceY=464;
          break;
       case 13:
          WindowWidth=800;
@@ -1590,7 +1591,7 @@ void initwinvideo(void)
          WindowWidth=800;
          WindowHeight=600;
          SurfaceX=512;
-         SurfaceY=448;
+         SurfaceY=464;
          break;
       case 16:
          WindowWidth=1024;
@@ -1600,7 +1601,7 @@ void initwinvideo(void)
          WindowWidth=1024;
          WindowHeight=768;
          SurfaceX=512;
-         SurfaceY=448;
+         SurfaceY=464;
          break;
       case 18:
          WindowWidth=1024;
@@ -1616,7 +1617,7 @@ void initwinvideo(void)
          WindowWidth=1024;
          WindowHeight=768;
          SurfaceX=512;
-         SurfaceY=448;
+         SurfaceY=464;
          break;
       case 21:
          WindowWidth=1024;
@@ -1626,7 +1627,7 @@ void initwinvideo(void)
          WindowWidth=1024;
          WindowHeight=896;
          SurfaceX=512;
-         SurfaceY=448;
+         SurfaceY=464;
          break;
       case 23:
          WindowWidth=1280;
@@ -1636,7 +1637,7 @@ void initwinvideo(void)
          WindowWidth=1280;
          WindowHeight=960;
          SurfaceX=512;
-         SurfaceY=448;
+         SurfaceY=464;
          break;
       case 25:
          WindowWidth=1280;
@@ -1652,7 +1653,7 @@ void initwinvideo(void)
          WindowWidth=1280;
          WindowHeight=960;
          SurfaceX=512;
-         SurfaceY=448;
+         SurfaceY=464;
          break;
       case 28:
          WindowWidth=1280;
@@ -1662,7 +1663,7 @@ void initwinvideo(void)
          WindowWidth=1280;
          WindowHeight=1024;
          SurfaceX=512;
-         SurfaceY=448;
+         SurfaceY=464;
          break;
       case 30:
          WindowWidth=1280;
@@ -1678,13 +1679,19 @@ void initwinvideo(void)
          WindowWidth=1280;
          WindowHeight=1024;
          SurfaceX=512;
-         SurfaceY=448;
+         SurfaceY=464;
          break;
       default:
          WindowWidth=256;
          WindowHeight=224;
          break;
       }
+
+      BlitArea.top = 0;
+      BlitArea.left=0;
+      BlitArea.bottom=SurfaceY;
+      BlitArea.right=SurfaceX;
+
    }
 
    if (((PrevStereoSound!=StereoSound)||(PrevSoundQuality!=SoundQuality))&&FirstSound!=1)
@@ -2069,12 +2076,13 @@ void drawscreenwin(void)
    ScreenPtr=vidbuffer;
    ScreenPtr+=16*2+32*2+256*2;
 
-   if (resolutn == 239) ScreenPtr+=8*288*2;
+   if (resolutn == 239) BlitArea.bottom = 239;
+   if (resolutn == 224) BlitArea.bottom = 223;
 
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
 
-   if (SurfaceX==256&&SurfaceY==224)
+   if (SurfaceX==256&&SurfaceY==240)
    {
       switch (BitDepth)
       {
@@ -2103,7 +2111,7 @@ void drawscreenwin(void)
                      sub edi,512
                      sub esi,512
                      add esi,576
-                     cmp eax,223
+                     cmp eax,239
                      jne Copying3
                      xor eax,eax
                      mov ecx,128
@@ -2127,7 +2135,7 @@ void drawscreenwin(void)
                      sub edi,512
                      sub esi,512
                      add esi,576
-                     cmp eax,223
+                     cmp eax,239
                      jne Copying
                      xor eax,eax
                      mov ecx,128
@@ -2163,12 +2171,12 @@ void drawscreenwin(void)
                      sub edi,1024
                      sub esi,512
                      add esi,576
-                     cmp eax,223
+                     cmp eax,239
                      jne Copying32b
                      pop es
                   }
-   
-            SURFDW=(DWORD *) &SurfBuf[222*Temp1];
+
+            SURFDW=(DWORD *) &SurfBuf[238*Temp1];
             color32=0x7F000000;
             
                for(i=0;i<256;i++)
@@ -2176,7 +2184,7 @@ void drawscreenwin(void)
                   SURFDW[i]=color32;
                }
 
-            SURFDW=(DWORD *) &SurfBuf[223*Temp1];
+            SURFDW=(DWORD *) &SurfBuf[239*Temp1];
             color32=0x7F000000;
          
                for(i=0;i<256;i++)
@@ -2257,7 +2265,7 @@ void drawscreenwin(void)
                      sub edi,640
                      sub esi,512
                      add esi,576
-                     cmp ebx,223
+                     cmp ebx,239
                      jne Copying2MMX
                      xor eax,eax
                      mov ecx,128
@@ -2298,7 +2306,7 @@ void drawscreenwin(void)
                      sub edi,640
                      sub esi,512
                      add esi,576
-                     cmp ebx,223
+                     cmp ebx,239
                      jne Copying2
                      xor eax,eax
                      mov ecx,128
@@ -2368,7 +2376,7 @@ void drawscreenwin(void)
       }
    }
 
-   if (SurfaceX==512&&SurfaceY==448)
+   if (SurfaceX==512&&SurfaceY==464)
    {
       switch (BitDepth)
       {
