@@ -4,6 +4,9 @@
 #include <sys/types.h>
 #include <time.h>
 #include "SDL.h"
+#ifdef __OPENGL__
+#include <GL/gl.h>
+#endif
 
 #define BYTE   unsigned char
 #define WORD   unsigned short
@@ -36,7 +39,7 @@ DWORD                   CurrentJoy=0;
 
 SDL_Joystick	*JoystickInput[4];
 
-DWORD                   BitDepth=0;
+DWORD                   BitDepth=16;
 BYTE                    BackColor=0;
 
 float MouseMinX=0;
@@ -127,6 +130,19 @@ int shiftptr = 0;
 DWORD numlockptr;
 void ProcessKeyBuf(int scancode);
 void LinuxExit(void);
+
+#ifdef __OPENGL__
+int gl_inited = 0;
+unsigned short *glvidbuffer = 0;
+int glvbtexture[1];
+float ratiox = 1.0;
+int UseOpenGL = 0;
+int glfilters = GL_NEAREST;
+extern Uint8 BilinearFilter;
+extern Uint8 FilteredGUI;
+#endif
+extern unsigned char cvidmode;
+DWORD vidbuff_w, vidbuff_h;
 
 int Main_Proc(void)
 {
@@ -512,6 +528,12 @@ int startgame(void)
    }
 
    flags |= ( FullScreen ? SDL_FULLSCREEN : 0);
+#ifdef __OPENGL__
+   if (UseOpenGL) {
+     flags |= SDL_OPENGL;
+     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+   }
+#endif
 
    surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, flags);
    if (surface == NULL) {
@@ -519,6 +541,24 @@ int startgame(void)
 			WindowHeight);
 	return FALSE;
    }
+
+#ifdef __OPENGL__
+   if (UseOpenGL) {
+
+     if (SurfaceY) glViewport(0,0, SurfaceX, SurfaceY);
+       else glViewport(0,0, SurfaceX, 1); 
+     glMatrixMode(GL_PROJECTION);
+     glLoadIdentity();
+     glMatrixMode(GL_MODELVIEW);
+     glFlush();
+
+     if (!gl_inited) {
+       glGenTextures(1,&glvbtexture[0]);
+       gl_inited = 1;
+       glvidbuffer = malloc(256*256*2);
+     }
+   }
+#endif
 
    SurfaceLocking = SDL_MUSTLOCK(surface);
    SDL_WarpMouse(SurfaceX/4,SurfaceY/4);
@@ -534,15 +574,23 @@ int startgame(void)
    // Check hardware for 565/555
    GBitMask = surface->format->Gmask;
 
-   if(BitDepth==16 && GBitMask!=0x07E0)
-   {
-      converta=1;
-//      Init_2xSaI(555);
+#ifdef __OPENGL__
+   if (!UseOpenGL) {
+#endif
+     if(BitDepth==16 && GBitMask!=0x07E0)
+       {
+	 converta=1;
+	 //      Init_2xSaI(555);
+       }
+     else
+       {
+	 converta=0;
+       }
+
+#ifdef __OPENGL__
    }
-   else
-   {
-      converta=0;
-   }
+#endif
+
    return TRUE;
 }
 
@@ -558,8 +606,14 @@ DWORD LockSurface(void)
 void UnlockSurface(void)
 {
     if (SurfaceLocking) SDL_UnlockSurface(surface);
-    SDL_Flip(surface);
-    SurfBuf = surface->pixels;
+#ifdef __OPENGL__
+    if (!UseOpenGL) {
+#endif
+      SDL_Flip(surface);
+      SurfBuf = surface->pixels;
+#ifdef __OPENGL__
+    }
+#endif
 }
 
 void WinUpdateDevices();
@@ -637,7 +691,6 @@ void Stop36HZ(void)
    T36HZEnabled=0;
 }
 
-extern unsigned char cvidmode;
 extern BYTE BlackAndWhite;
 extern BYTE V8Mode;
 DWORD FirstVid=1;
@@ -667,13 +720,19 @@ void initwinvideo(void)
       X=0;
       Y=0;
       FullScreen=GUIWFVID[cvidmode];
+#ifdef __OPENGL__
+      UseOpenGL = 0;
+      if (cvidmode > 3) UseOpenGL = 1;
+#endif
 
       switch(cvidmode)
       {
+	/* redundant
       case 0:
          WindowWidth=256;
          WindowHeight=224;
          break;
+	*/
       case 1:
          //WindowWidth=640;
          //WindowHeight=480 ;
@@ -682,13 +741,13 @@ void initwinvideo(void)
          SurfaceX=320;
          SurfaceY=240;
          break;
-      case 2:
+      case 2: case 5:
          WindowWidth=512;
          WindowHeight=448;
          SurfaceX=512;
          SurfaceY=448;
          break;
-      case 3:
+      case 3: case 6:
          WindowWidth=640;
          WindowHeight=480;
          SurfaceX=640;
@@ -954,9 +1013,21 @@ void clearwin()
 
    Temp1=LockSurface();
    if(Temp1==0) { return; }
+   vidbuff_w = SurfaceX; vidbuff_h = SurfaceY;
 
-   SurfBufD=(DWORD) &SurfBuf[0];
-   SURFDW=(DWORD *) &SurfBuf[0];
+#ifdef __OPENGL__
+   if (!UseOpenGL) {
+#endif
+     SurfBufD=(DWORD) &SurfBuf[0];
+     SURFDW=(DWORD *) &SurfBuf[0];
+#ifdef __OPENGL__
+   } else {
+     SurfBufD=(DWORD) &glvidbuffer[0];
+     SURFDW=(DWORD *) &glvidbuffer[0];
+     vidbuff_w=256; vidbuff_h=224;
+     Temp1 = 512; // Temp1 = 2 * SurfaceX
+   }
+#endif
 
    if (SurfBufD == 0) { UnlockSurface(); return; }
 
@@ -972,14 +1043,14 @@ void clearwin()
 		movl SurfBufD, %%edi
 		xorl %%ebx, %%ebx
 	Blank2:
-		movl SurfaceX, %%ecx
+		movl vidbuff_w, %%ecx
 		rep
 		stosw
 		addl Temp1, %%edi
-		subl SurfaceX, %%edi
-		subl SurfaceX, %%edi
+		subl vidbuff_w, %%edi
+		subl vidbuff_w, %%edi
 		addl $1, %%ebx
-		cmpl SurfaceY, %%ebx
+		cmpl vidbuff_h, %%ebx
 		jne Blank2
 		popw %%es
 	" : : : "cc", "memory", "eax", "ebx", "ecx", "edi");
@@ -993,16 +1064,16 @@ void clearwin()
                movl SurfBufD, %%edi
                xorl %%ebx, %%ebx
        Blank3:
-               movl SurfaceX, %%ecx
+               movl vidbuff_w, %%ecx
                rep
                stosl
                addl Temp1, %%edi
-               subl SurfaceX, %%edi
-               subl SurfaceX, %%edi
-               subl SurfaceX, %%edi
-               subl SurfaceX, %%edi
+               subl vidbuff_w, %%edi
+               subl vidbuff_w, %%edi
+               subl vidbuff_w, %%edi
+               subl vidbuff_w, %%edi
                addl $1, %%ebx
-               cmpl SurfaceY, %%ebx
+               cmpl vidbuff_h, %%ebx
                jne Blank3
                popw %%es       
        " : : : "cc", "memory", "eax", "ebx", "ecx","edi");
@@ -1023,8 +1094,8 @@ void LinuxExit (void)
 
 void drawscreenwin(void)
 {
-   DWORD i,j,color32;
-   DWORD *SURFDW;
+  DWORD i,j,color32;
+  DWORD *SURFDW;
 
    NGNoTransp = 0;              // Set this value to 1 within the appropriate
                                 // video mode if you want to add a custom
@@ -1035,6 +1106,35 @@ void drawscreenwin(void)
                                 //  for ZSNES' current transparency code)
    UpdateVFrame();
    if(curblank!=0) return;
+
+#ifdef __OPENGL__
+  if (UseOpenGL) {
+
+    for (j = 0; j<224; j++) {
+      memcpy(glvidbuffer + 256*j, (short *) (vidbuffer) + 16 + 288 + (256+32)*j, 256*2);
+    }
+    if (BilinearFilter && FilteredGUI) glfilters = GL_LINEAR; else glfilters = GL_NEAREST;
+    if (FullScreen && cvidmode != 7) ratiox = 0.875; else ratiox = 1.0;
+    
+    glClear(GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
+    glEnable(GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,glfilters);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,glfilters);
+    glBindTexture(GL_TEXTURE_2D, *glvbtexture);
+    glColor3f(1.0f,1.0f,1.0f);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer);
+    glBegin(GL_QUADS);
+      glTexCoord2f(0.0f, 0.0f);         glVertex3f(-ratiox,  1.0f, -1.0f);
+      glTexCoord2f(1.0f, 0.0f);         glVertex3f( ratiox,  1.0f, -1.0f);
+      glTexCoord2f(1.0f, 2.240/2.560);  glVertex3f( ratiox, -1.0f, -1.0f);
+      glTexCoord2f(0.0f, 2.240/2.560);  glVertex3f(-ratiox, -1.0f, -1.0f);
+    glEnd();
+
+    SDL_GL_SwapBuffers();
+
+  } else {
+#endif
 
    Temp1=LockSurface();
    if(Temp1==0) { return; }
@@ -1486,6 +1586,9 @@ void drawscreenwin(void)
    }
 
    UnlockSurface();
+#ifdef __OPENGL__
+  }
+#endif
 }
 
 extern char fulladdtab[65536*2];

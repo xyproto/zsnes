@@ -598,13 +598,18 @@ db '',13,10
 db 'VideoMode = %U',13,10
 db '',13,10
 %elifdef __LINUX__
-db '; Video Mode, 0 - 10',13,10
-db ';   0 = 320x240x256           1 = 256x256x256',13,10
-db ';   2 = 320x240x256 VESA2     3 = 320x240x65536 VESA2',13,10
-db ';   4 = 640x480x256 VESA2     5 = 640x480x65536 VESA2',13,10
-db ';   6 = 512x384x256 VESA2     7 = 512x384x65536 VESA2',13,10
-db ';   8 = 640x480x65536 VESA1.2 9 = 320x480x256 VESA2',13,10
-db ';   10 = 320x480x65536 VESA2',13,10
+%ifdef __OPENGL__
+db '; Video Mode, 0 - 7',13,10
+%else
+db '; Video Mode, 0 - 3',13,10
+%endif
+db ';   0 = 256x224 WIN           1 = 256x224 FULL',13,10
+db ';   2 = 512x448 WIN           3 = 640x480 FULL',13,10
+%ifdef __OPENGL__
+db ';   4 = 256x224 OGL WIN',13,10
+db ';   5 = 512x448 OGL WIN',13,10
+db ';   6 = 640x480 OGL FULL',13,10
+%endif
 db '',13,10
 db 'VideoMode = %U',13,10
 db '',13,10

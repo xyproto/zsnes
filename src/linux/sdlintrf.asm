@@ -972,37 +972,46 @@ NEWSYM ClearScreen
 SECTION .data
 
 ; Total Number of Video Modes
+%ifdef __OPENGL__
+NEWSYM NumVideoModes, dd 7
+%else
 NEWSYM NumVideoModes, dd 4
+%endif
 
 ; GUI Video Mode Names - Make sure that all names are of the same length
 ; and end with a NULL terminator
 NEWSYM GUIVideoModeNames
-db '256X224    R WIN ',0  ;2
-db '256x224    R FULL',0  ;3
-db '512X448   DR WIN ',0  ;5
-db '640x480   DR FULL',0  ;6
-
+db '256X224    R WIN ',0  ;0
+db '256x224    R FULL',0  ;1
+db '512X448   DR WIN ',0  ;2
+db '640x480   DR FULL',0  ;3
+%ifdef __OPENGL__
+db '256x224  OGL WIN ',0  ;4
+db '512x448  OGL WIN ',0  ;5
+db '640x480  OGL FULL',0  ;6
+db '800x600  OGL FULL',0  ;7
+%endif	
 
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)
 ; Left side starts with Video Mode 0
-NEWSYM GUI16VID, db 1,1,1,1       ; 16-bit mode
-NEWSYM GUINGVID, db 0,0,0,0       ; New Graphics Mode Available
-NEWSYM GUISLVID, db 0,0,0,0       ; Scanlines
-NEWSYM GUIINVID, db 0,0,0,0       ; Interpolation
-NEWSYM GUII2VID, db 0,0,1,1       ; Interpolation(w)
-NEWSYM GUIEAVID, db 0,0,0,0       ; Eagle
-NEWSYM GUIIEVID, db 0,0,0,0       ; (Interp | Eagle)
-NEWSYM GUIFSVID, db 0,0,0,0       ; Full Screen
-NEWSYM GUISSVID, db 0,0,0,0       ; Small Screen
-NEWSYM GUITBVID, db 0,0,0,0       ; Triple Buffering
-NEWSYM GUIHSVID, db 0,0,1,1       ; Half/Quarter Scanlines
-NEWSYM GUI2xVID, db 0,0,1,1       ; 2xSaI/Super Eagle Engines
-NEWSYM GUIM7VID, db 0,0,1,1       ; ?Mode 7 video thing?
-NEWSYM GUIWFVID, db 0,1,0,1       ; If Windows Full Screen
-NEWSYM GUIDSIZE, db 0,0,1,1
-NEWSYM GUIRATIO, db 0,1,0,0
-NEWSYM GUIBIFIL, db 0,0,0,0       ; If Video mode supports Bilinear Filtering
-
+NEWSYM GUI16VID, db 1,1,1,1,1,1,1       ; 16-bit mode
+NEWSYM GUINGVID, db 0,0,0,0,0,0,0       ; New Graphics Mode Available
+NEWSYM GUISLVID, db 0,0,0,0,0,0,0       ; Scanlines
+NEWSYM GUIINVID, db 0,0,0,0,0,0,0       ; Interpolation
+NEWSYM GUII2VID, db 0,0,1,1,0,0,0       ; Interpolation(w)
+NEWSYM GUIEAVID, db 0,0,0,0,0,0,0       ; Eagle
+NEWSYM GUIIEVID, db 0,0,0,0,0,0,0       ; (Interp | Eagle)
+NEWSYM GUIFSVID, db 0,0,0,0,0,0,0       ; Full Screen
+NEWSYM GUISSVID, db 0,0,0,0,0,0,0       ; Small Screen
+NEWSYM GUITBVID, db 0,0,0,0,0,0,0       ; Triple Buffering
+NEWSYM GUIHSVID, db 0,0,1,1,0,0,0       ; Half/Quarter Scanlines
+NEWSYM GUI2xVID, db 0,0,1,1,0,0,0       ; 2xSaI/Super Eagle Engines
+NEWSYM GUIM7VID, db 0,0,1,1,0,0,0       ; ?Mode 7 video thing?
+NEWSYM GUIWFVID, db 0,1,0,1,0,0,1       ; If Windows Full Screen
+NEWSYM GUIDSIZE, db 0,0,1,1,0,0,0
+NEWSYM GUIRATIO, db 0,1,0,0,0,0,1
+NEWSYM GUIBIFIL, db 0,0,0,0,1,1,1	; binlinear = 1, nearest = 0
+	
 SECTION .text
 
 ; ****************************
