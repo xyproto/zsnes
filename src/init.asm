@@ -6186,7 +6186,7 @@ NEWSYM CheckROMType
     xor edx,edx
     mov eax,[NumofBanks]
     imul eax,32768
-    shr eax,2
+    shr eax,1
     mov esi,[romdata]
     add esi,7FC0h
     add esi,eax
