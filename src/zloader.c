@@ -194,7 +194,7 @@ static void display_help()
   put_line(" D = N (Stay in ZSNES after disconnect), Q (Quit after disconnect)");
   put_line(" E = # of connections (Keep it 2 for now)");
 #ifdef __WIN32__  
-  put_line("   eg: ZSNESW /UCCN2 nickname d:\snesroms 202.36.124.28");
+  put_line("   eg: ZSNESW /UCCN2 nickname d:\\snesroms 202.36.124.28");
 #else
   put_line("   eg: zsnes /UCCN2 nickname /home/zuser/snesroms 202.36.124.28");
 #endif
