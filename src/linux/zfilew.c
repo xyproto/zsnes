@@ -18,7 +18,10 @@
 
 #include <stdio.h>
 #ifdef __LINUX__
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/time.h>
+#include <dirent.h>
 #include <unistd.h>
 #include <time.h>
 #else
@@ -182,7 +185,11 @@ DWORD ZFileGetFTime()
 
 DWORD ZFileMKDir()
 {
+#ifdef __LINUX__
+  return(mkdir(MKPath, 0xff));
+#else  
   return(mkdir(MKPath));
+#endif
 }
 
 DWORD ZFileCHDir()
@@ -214,16 +221,33 @@ DWORD DTALocPos;
 //};
 
 
-int FindFirstHandle;
 int TempFind;
 #ifndef __LINUX__
+int FindFirstHandle;
 struct _finddata_t FindDataStruct;
+#else
+struct dirent *next;
+DIR *FindFirstHandle;
+int ignoredirs=0;
 #endif
 
 DWORD ZFileFindNext()
 {
 #ifdef __LINUX__
-	STUB_FUNCTION;
+	//STUB_FUNCTION;
+   struct stat filetype;
+
+   next = readdir (FindFirstHandle );
+   if ( next == NULL ) return -1;
+
+   *(char *)(DTALocPos + 0x15) = 0;
+
+   stat ( next->d_name, &filetype );
+   if(ZFileFindATTRIB&0x10 && !S_ISDIR ( filetype.st_mode )) return(ZFileFindNext());
+   if((ZFileFindATTRIB&0x10==0) && S_ISDIR ( filetype.st_mode )) return(ZFileFindNext());
+   if ( S_ISDIR ( filetype.st_mode ))
+     *(char *)(DTALocPos + 0x15) = 0x10;
+   strcpy((char *)DTALocPos + 0x1E, next->d_name);
 #else
    TempFind=_findnext(FindFirstHandle,&FindDataStruct);
    if(TempFind==-1) return(-1);
@@ -236,14 +260,37 @@ DWORD ZFileFindNext()
    if(FindDataStruct.attrib&_A_SUBDIR)  *(char *)(DTALocPos+0x15)=0x10;
    strcpy((char *)DTALocPos+0x1E,FindDataStruct.name);
    if(TempFind==-1) return(-1);
-   return(0);
 #endif
+   return(0);
 }
 
 DWORD ZFileFindFirst()
 {
 #ifdef __LINUX__
-	STUB_FUNCTION;
+	//STUB_FUNCTION;
+   struct stat filetype;
+
+   FindFirstHandle = opendir ( ZFileFindPATH );
+
+   *(char *)(DTALocPos + 0x15) = 0;
+
+   TempFind = 0;
+
+   if ( FindFirstHandle==NULL ) return -1;
+
+   next = readdir ( FindFirstHandle );
+   if (next == NULL) return -1;
+
+   stat ( next->d_name, &filetype );
+
+   if(ZFileFindATTRIB&0x10 && !S_ISDIR ( filetype.st_mode )) return(ZFileFindNext());
+   if((ZFileFindATTRIB&0x10==0) && S_ISDIR ( filetype.st_mode )) return(ZFileFindNext());
+
+   if ( S_ISDIR ( filetype.st_mode ))
+     *(char *)(DTALocPos + 0x15) = 0x10;
+
+   strcpy ((char *) DTALocPos + 0x1E, next->d_name);
+
 #else
    FindFirstHandle=_findfirst(ZFileFindPATH,&FindDataStruct);
    *(char *)(DTALocPos+0x15)=0;
@@ -255,19 +302,20 @@ DWORD ZFileFindFirst()
    if(FindDataStruct.attrib&_A_SUBDIR)  *(char *)(DTALocPos+0x15)=0x10;
    strcpy((char *) DTALocPos+0x1E,FindDataStruct.name);
    if(FindFirstHandle==-1) return(-1);
-   return(0);
 #endif
+   return(0);
 }
 
 
 DWORD ZFileFindEnd()  // for compatibility with windows later
 {
 #ifdef __LINUX__
-	STUB_FUNCTION;
+	//STUB_FUNCTION;
+   closedir(FindFirstHandle);
 #else
    _findclose(FindFirstHandle);
-   return(0);
 #endif
+   return(0);
 }
 
 

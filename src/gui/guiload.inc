@@ -1380,20 +1380,40 @@ GUIdirStartLoc    dd 0
 GUInumentries dd 0
 GUIdirentries dd 0
 GUIfileentries dd 0
+%ifdef __LINUX__
+NEWSYM GUIsmcfind,    db '*.smc',0
+NEWSYM GUIsfcfind,    db '*.sfc',0
+NEWSYM GUIswcfind,    db '*.swc',0
+NEWSYM GUIfigfind,    db '*.fig',0
+%else
 NEWSYM GUIsmcfind,    db '*.SMC',0
 NEWSYM GUIsfcfind,    db '*.SFC',0
 NEWSYM GUIswcfind,    db '*.SWC',0
 NEWSYM GUIfigfind,    db '*.FIG',0
+%endif
 NEWSYM GUIfind058,    db '*.058',0
 NEWSYM GUIfind078,    db '*.078',0
+%ifdef __LINUX__
+NEWSYM GUIfindUSA,    db '*.usa',0
+NEWSYM GUIfindJAP,    db '*.jap',0
+NEWSYM GUIfindBIN,    db '*.bin',0
+NEWSYM GUIfindZIP,    db '*.zip',0
+NEWSYM GUIfindGZIP,    db '*.gz',0
+%else
 NEWSYM GUIfindUSA,    db '*.USA',0
 NEWSYM GUIfindJAP,    db '*.JAP',0
 NEWSYM GUIfindBIN,    db '*.BIN',0
 NEWSYM GUIfindZIP,    db '*.ZIP',0
 NEWSYM GUIfindGZIP,    db '*.GZ',0
+%endif
 NEWSYM GUIfind1,      db '*.1',0
+%ifdef __LINUX__
+GUIfindDIR    db '*',0
+NEWSYM GUIfindall,    db '*',0
+%else
 GUIfindDIR    db '*.*',0
 NEWSYM GUIfindall,    db '*.*',0
+%endif
 NEWSYM DTALoc, times 2048+32 db 0
 
 ; Routines to load from the Quick Menu
