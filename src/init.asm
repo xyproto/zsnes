@@ -1718,18 +1718,22 @@ NEWSYM init65816
     mov dword[CSStatus+25],'OBC '
 .noobc
 
-    mov ax,[Checksumvalue]
     mov esi,[romdata]
     add esi,7FDCh+2
     cmp byte[romtype],2
     jne .nohirom3
     add esi,8000h
 .nohirom3
+    mov ax,[Checksumvalue]
     cmp ax,[esi]
     jne .failed
+.passed2
     mov dword[CSStatus+36],'OK  '
     jmp .passed
 .failed
+    mov ax,[Checksumvalue2]
+    cmp ax,[esi]
+    je .passed2
     mov dword[CSStatus+36],'FAIL'
 .passed
     mov dword[Msgptr],CSStatus
@@ -3525,217 +3529,6 @@ NEWSYM loadfile
 
     jmp loadfileGUI.nogui
 
-%ifndef __LINUX__
-    mov dword[MessageOn],0
-    mov byte[loadedfromgui],0
-    mov byte[yesoutofmemory],0
-    mov byte[Header512],0
-    mov byte[.fail],0
-    ; determine header size
-    mov dword[.curfileofs],0
-    mov byte[.first],1
-    mov byte[.multfound],0
-    ; open file
-    mov edx,fname+1
-    call Open_File
-    jc near .failed
-.nextfile
-    cmp byte[.first],1
-    je .nomul
-    cmp byte[.multfound],0
-    jne .nomul
-    push eax
-    push edx
-    mov byte[.multfound],1
-    mov edx,.mult
-    mov ah,9         
-    call Output_Text
-    pop edx
-    pop eax
-.nomul
-    mov bx,ax
-    mov ecx,4194304+32768
-    cmp byte[Sup48mbit],0
-    je .no48mb
-    add ecx,2097152
-.no48mb
-    cmp byte[Sup16mbit],0
-    je .no16mb
-    sub ecx,2097152
-.no16mb
-    sub ecx,[.curfileofs]
-    jnc .nooverflow
-    xor ecx,ecx
-.nooverflow
-    mov edx,[headdata]
-    add edx,[.curfileofs]
-    call Read_File
-    jc near .failed
-    or eax,eax
-    jz near .success
-    mov ecx,eax
-    shr eax,15
-    shl eax,15
-    mov esi,[headdata]
-    add esi,[.curfileofs]
-    mov edi,[headdata]
-    add edi,[.curfileofs]
-    sub ecx,eax
-    or ecx,ecx
-    jz .nonoheader
-    add eax,ecx
-    sub eax,512
-    mov ecx,512
-    mov byte[Header512],1
-;    mov ecx,512
-;    and eax,0FFFF8000h
-;    add eax,8000h
-.nonoheader
-    add [.curfileofs],eax
-    add edi,ecx
-
-.next
-    mov cl,[edi]
-    mov [esi],cl
-    inc esi
-    inc edi
-    dec eax
-    jnz .next
-    mov ecx,1
-    mov edx,.temp
-    call Read_File
-    cmp eax,0
-    je .success
-    mov byte[.fail],1
-.success
-    call Close_File
-    jc near .failed
-    ; check for 2nd+ part of file
-    mov edi,fname+1
-    mov byte[.cchar],'\'
-    ; get position of . or \
-.nextsearch
-    cmp byte[edi],0
-    je .nomore
-    cmp byte[edi],'.'
-    jne .notdot
-    mov byte[.cchar],'.'
-    mov [.dotpos],edi
-.notdot
-    cmp byte[edi],'\'
-    jne .notslash
-    mov byte[.cchar],'\'
-.notslash
-    inc edi
-    jmp .nextsearch
-.nomore
-    cmp byte[.cchar],'\'
-    jne .noslashb
-    mov [.dotpos],edi
-.noslashb
-    mov edi,[.dotpos]
-    ; search for .1, .2, etc.
-    cmp byte[edi],'.'
-    jne .nonumer
-    cmp byte[edi+1],'1'
-    jb .nonumer
-    cmp byte[edi+1],'8'
-    ja .nonumer
-    cmp byte[edi+2],0
-    jne .nonumer
-    inc byte[edi+1]
-    xor ecx,ecx
-    mov byte[.first],2
-    mov edx,fname+1
-    call Open_File
-    jnc near .nextfile
-    dec byte[edi+1]
-.nonumer
-    ; search for A,B,C, etc.
-    cmp byte[.first],0
-    je .yesgd
-    cmp byte[edi-1],'A'
-    je .yesgd
-    cmp byte[edi-1],'a'
-    je .yesgd
-    jmp .nogdformat
-.yesgd
-    mov byte[.first],0
-    inc byte[edi-1]
-    mov edx,fname+1
-    call Open_File
-    jnc near .nextfile
-    dec byte[edi-1]
-.nogdformat
-    call convertsram
-    mov byte[SramExists],0
-
-    ; change to sram dir
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
-
-    ; open .srm file
-    mov edx,fnames+1
-    call Open_File
-    jc .notexist
-    mov byte[SramExists],1
-    mov bx,ax
-    mov ecx,65536
-    mov edx,[sram]
-    call Read_File
-    jc near .failed
-    call Close_File
-    jc .failed
-.notexist
-    call OpenCombFile
-    mov edx,.opened
-    mov ah,9
-    call Output_Text
-
-    ; calculate checksum
-    mov eax,1
-.nextcr
-    add eax,eax
-    cmp eax,[.curfileofs]
-    jb .nextcr
-    mov ecx,eax
-    mov esi,[romdata]
-    xor eax,eax
-    xor ebx,ebx
-    xor edi,edi
-    mov edx,ecx
-    shr edx,1
-.nextcs
-    mov al,[esi+edi]
-    inc edi
-    add ebx,eax
-    cmp edi,[.curfileofs]
-    jne .notcrs
-    mov edi,edx
-.notcrs
-    dec ecx
-    jnz .nextcs
-    mov [Checksumvalue],bx
-
-    mov eax,[.curfileofs]
-    mov [NumofBytes],eax
-    shr eax,15
-    mov [NumofBanks],eax
-    cmp byte[.fail],0
-    je .notfailed
-    mov byte[yesoutofmemory],1
-.notfailed
-    mov byte[TextFile], 1
-    call PatchIPS
-    ret
-
-.failed
-    mov edx,.failop
-    mov ah,9
-    call Output_Text
-    jmp DosExit
-%endif
 SECTION .data
 .multfound db 0
 .first db 0
@@ -3751,6 +3544,7 @@ SECTION .data
 
 
 NEWSYM Checksumvalue, dw 0
+NEWSYM Checksumvalue2, dw 0
 NEWSYM SramExists,    db 0
 NEWSYM NumofBanks,    dd 0
 NEWSYM NumofBytes,    dd 0
@@ -4423,12 +4217,13 @@ NEWSYM loadfileGUI
     add edx,[.curfileofs]
     call Read_File
     jc near .failed
+
     or eax,eax
     jz near .success2
     add dword[.curromspace],eax
     mov ecx,eax
-    shr eax,15
-    shl eax,15
+;    shr eax,15
+;    shl eax,15
     mov esi,[headdata]
     add esi,[.curfileofs]
     mov edi,[headdata]
@@ -4437,45 +4232,33 @@ NEWSYM loadfileGUI
     sub ecx,eax
 ;    xor ecx,ecx
 ;    or ecx,ecx
-    cmp ecx,512
-    jne .nonoheader
-    mov byte[Header512],1
-    mov ecx,512
-    and eax,0FFFF8000h
-    add eax,8000h
-    jmp .yesheader
-.nonoheader
-    add eax,ecx
-    xor ecx,ecx
-.yesheader
-    add edi,ecx
+
+
     ; check if .smc header
     push esi
     push eax
-    mov esi,[headdata]
-    add esi,7FDCh
-    add esi,512
-    mov ax,[esi]
-    xor ax,[esi+2]
-    cmp ax,0FFFFh
-    je .yessmc
-    add esi,8000h
-    mov ax,[esi]
-    xor ax,[esi+2]
-    cmp ax,0FFFFh
-    je .yessmc
+    push ebx
+    xor ecx,ecx
+    mov ebx,512
+.nextzerocheck
+    cmp byte[esi],0
+    jne .notzero
+    inc ecx
+.notzero
+    inc esi
+    dec ebx
+    jnz .nextzerocheck
+    pop ebx
     pop eax
     pop esi
-    jmp .next
-.yessmc
-    pop eax
-    pop esi
+    cmp ecx,450
+    jb .nomove
     mov edi,esi
     add edi,512
-    and eax,0FFFF8000h
-    add eax,8000h
+    sub eax,512
     ; move eax # of bytes from edi to esi
     sub dword[.curromspace],512
+    sub dword[.curfileofs],512
 .next
     mov cl,[edi]
     mov [esi],cl
@@ -4483,6 +4266,7 @@ NEWSYM loadfileGUI
     inc edi
     dec eax
     jnz .next
+.nomove
     mov ecx,1
     mov edx,.temp
     call Read_File
@@ -4598,6 +4382,19 @@ NEWSYM loadfileGUI
     dec ecx
     jnz .nextcs
     mov [Checksumvalue],bx
+
+    mov esi,[romdata]
+    mov ecx,[.curfileofs]
+    xor eax,eax
+    xor ebx,ebx
+    xor edi,edi
+.nextcs3
+    mov al,[esi+edi]
+    inc edi
+    add ebx,eax
+    cmp edi,ecx
+    jne .nextcs3
+    mov [Checksumvalue2],bx
 
 
     cmp byte[ZipSupport],1
@@ -5129,9 +4926,13 @@ NEWSYM showinfo
 .nohirom3
     cmp ax,[esi]
     jne .failed
+.cpassed2
     mov edx,.cpassed
     jmp .passed
 .failed
+    mov ax,[Checksumvalue2]
+    cmp ax,[esi]
+    je .cpassed2
     mov edx,.cfailed
 .passed
     mov ah,9
