@@ -1412,7 +1412,7 @@ SECTION .data
           db '  -e      Skip enter key press at the beginning',13,10
 %endif
           db '  -f #    Turn on frame skip [0..9]',13,10
-          db '  -g #    Set Gamma Correction [0...31, 0 = 1.0, 31 = 2.0]',13,10
+          db '  -g #    Set Gamma Correction [0...15, 0 = 1.0, 15 = 2.0]',13,10
 %ifndef __LINUX__
           db '            - Only works properly in 256 color video modes',13,10
 %endif
