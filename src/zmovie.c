@@ -183,6 +183,7 @@ Key input  -  Repeated for all input / internal chapters
 -If Chapter-
 
 ZST size -  ZST
+4 bytes  -  Frame #
 
 -Else-
 
@@ -197,7 +198,7 @@ variable - Input
 Internal chapter offsets  -  Repeated for all internal chapters
 -----------------------------------------------------------------
 
-4 bytes  -  Offset to chapter from beginning of file
+4 bytes  -  Offset to chapter from beginning of file (after input flag byte for ZST)
 
 
 -----------------------------------------------------------------
@@ -205,6 +206,7 @@ External chapters  -  Repeated for all external chapters
 -----------------------------------------------------------------
 
 ZST Size -  ZST
+4 bytes  -  Frame #
 4 bytes  -  Offset to input for current chapter from beginning of file
 
 
@@ -416,6 +418,30 @@ void internal_chapter_write(struct internal_chapter_buf *icb, FILE *fp)
   }
 }
 
+void internal_chapter_read(struct internal_chapter_buf *icb, FILE *fp, size_t count)
+{
+  while (count--)
+  {
+    interal_chapter_add_offset(icb, fread4(fp));
+  }
+}
+
+size_t internal_chapter_pos(struct internal_chapter_buf *icb, size_t offset)
+{
+  size_t pos = 0;
+  do
+  {
+    unsigned char i;
+    for (i = 0; i < icb->used; i++, pos++)
+    {
+      if (icb->offsets[i] == offset)
+      {
+        return(pos);
+      }
+    }
+  } while ((icb = icb->next));
+  return(0);
+}
 
 /*
 
@@ -524,7 +550,7 @@ void zmv_record()
 
 void zmv_insert_chapter()
 {
-  if ((zmv_vars.header.internal_chapters < 65535) && 
+  if ((zmv_vars.header.internal_chapters < 65535) && zmv_vars.header.frames &&
       (zmv_vars.last_internal_chapter_offset != ftell(zmv_vars.fp)))
   {
     unsigned char flag = BIT(2);
@@ -542,6 +568,7 @@ void zmv_insert_chapter()
     zmv_vars.last_internal_chapter_offset = ftell(zmv_vars.fp);
     
     zst_save(zmv_vars.fp, false);
+    fwrite4(zmv_vars.header.frames, zmv_vars.fp);
   }
 }
 
@@ -553,7 +580,7 @@ void zmv_record_finish()
     zmv_vars.write_buffer_loc = 0;  
   }
   
-  internal_chapter_write(&(zmv_vars.internal_chapters), zmv_vars.fp);
+  internal_chapter_write(&zmv_vars.internal_chapters, zmv_vars.fp);
   internal_chapter_free_chain(zmv_vars.internal_chapters.next);
   
   fwrite2(0, zmv_vars.fp); //External chapter count
@@ -570,13 +597,28 @@ Open and replay ZMV
 
 */
 
+typedef struct internal_chapter_buf external_chapter_buf;
+
+struct
+{
+  external_chapter_buf external_chapters;
+  unsigned short external_chapter_count;
+  unsigned int frames_replayed;
+} zmv_open_vars; //Additional vars for open/replay of a ZMV
+
+
 bool zmv_open(char *filename)
 {
   memset(&zmv_vars, 0, sizeof(zmv_vars));
+  memset(&zmv_open_vars, 0, sizeof(zmv_open_vars));
+  
   zmv_vars.fp = fopen(filename,"r+b");
   if (zmv_vars.fp && zmv_header_read(&zmv_vars.header, zmv_vars.fp) &&
       !strncpy(zmv_vars.header.magic, "ZMV", 3)) 
   {
+    size_t input_start_pos;
+    unsigned short i;
+    
     if (zmv_vars.header.zsnes_version != (versionNumber & 0xFFFF))
     {
     
@@ -588,6 +630,21 @@ bool zmv_open(char *filename)
     }
     
     zst_load(zmv_vars.fp);
+    input_start_pos = ftell(zmv_vars.fp);
+    
+    fseek(zmv_vars.fp, -2, SEEK_END);
+    zmv_open_vars.external_chapter_count = fread2(zmv_vars.fp);
+    
+    fseek(zmv_vars.fp, -(zmv_open_vars.external_chapter_count*(cur_zst_size+8) + 2), SEEK_END);
+    internal_chapter_read(&zmv_vars.internal_chapters, zmv_vars.fp, zmv_vars.header.internal_chapters);
+    
+    for (i = 0; i < zmv_open_vars.external_chapter_count; i++)
+    {
+      fseek(zmv_vars.fp, cur_zst_size+4, SEEK_CUR);
+      interal_chapter_add_offset(&zmv_open_vars.external_chapters, fread4(zmv_vars.fp));
+    }
+    
+    fseek(zmv_vars.fp, input_start_pos, SEEK_SET);
     
     return(true);
   }
@@ -616,23 +673,28 @@ bool zmv_open(char *filename)
 
 void zmv_replay()
 {
-  unsigned char flag = 0;
-  bool mid_byte = false;
-  unsigned char byte;
-
-  fread(&flag, 1, 1, zmv_vars.fp);
-  
-  if (flag & BIT(2))
+  if (zmv_open_vars.frames_replayed < zmv_vars.header.frames)
   {
-    fseek(zmv_vars.fp, cur_zst_size, SEEK_CUR);
+    unsigned char flag = 0;
+    bool mid_byte = false;
+    unsigned char byte;
+
     fread(&flag, 1, 1, zmv_vars.fp);
-  }
   
-  REPLAY_PAD(PJoyAOrig, 7);
-  REPLAY_PAD(PJoyBOrig, 6);
-  REPLAY_PAD(PJoyCOrig, 5);
-  REPLAY_PAD(PJoyDOrig, 4);
-  REPLAY_PAD(PJoyEOrig, 3);
+    if (flag & BIT(2))
+    {
+      fseek(zmv_vars.fp, cur_zst_size+4, SEEK_CUR);
+      fread(&flag, 1, 1, zmv_vars.fp);
+    }
+  
+    REPLAY_PAD(PJoyAOrig, 7);
+    REPLAY_PAD(PJoyBOrig, 6);
+    REPLAY_PAD(PJoyCOrig, 5);
+    REPLAY_PAD(PJoyDOrig, 4);
+    REPLAY_PAD(PJoyEOrig, 3);
+  
+    zmv_open_vars.frames_replayed++;
+  }
 }
 
 void zmv_next_chapter()
@@ -647,8 +709,38 @@ void zmv_prev_chapter()
 
 void zmv_add_chapter()
 {
+  if ((zmv_open_vars.external_chapter_count < 65535) && zmv_open_vars.frames_replayed)
+  {
+    size_t current_loc = ftell(zmv_vars.fp);
+    
+    if (!internal_chapter_pos(&zmv_vars.internal_chapters, current_loc-(cur_zst_size+4)) &&
+        !internal_chapter_pos(&zmv_open_vars.external_chapters, current_loc))
+    {
+      unsigned char flag;
+      fread(&flag, 1, 1, zmv_vars.fp);
+  
+      if (!(flag & BIT(2)))
+      {
+        interal_chapter_add_offset(&zmv_open_vars.external_chapters, current_loc);
+        zmv_open_vars.external_chapter_count++;
 
+        fseek(zmv_vars.fp, -2, SEEK_END);
+        zst_save(zmv_vars.fp, false);
+        fwrite4(zmv_open_vars.frames_replayed, zmv_vars.fp);
+        fwrite4(current_loc, zmv_vars.fp);
+
+        fwrite2(zmv_open_vars.external_chapter_count, zmv_vars.fp);
+      
+        fseek(zmv_vars.fp, current_loc, SEEK_SET); 
+      }
+      else
+      {
+        fseek(zmv_vars.fp, cur_zst_size+4, SEEK_CUR);
+      }
+    }
+  }
 }
+
 
 /////////////////////////////////////////////////////////
 
