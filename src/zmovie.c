@@ -1768,17 +1768,12 @@ void Replay()
 bool MovieExitLoop = false;
 void ProcessMovies()
 {
-  MovieExitLoop = false;
   switch (MovieProcessing)
   {
     case MOVIE_PLAYBACK:
       Replay();
       if (GUIReset == 1)
       {
-        SetMovieMode(MOVIE_OFF);
-        asm_call(GUIDoReset);
-        SetMovieMode(MOVIE_PLAYBACK);       
-        ReturnFromSPCStall = 0;
         MovieExitLoop = true;  
       }
       break;

@@ -893,6 +893,16 @@ reexecuteb2:
     call DeInitPostGame
 .skippostgame
 
+    cmp byte[MovieExitLoop],1
+    jne .notmoviereset
+    mov byte[MovieExitLoop],0
+    ;mov byte[MovieProcessing],0
+    call GUIDoReset
+    mov byte[MovieProcessing],1    
+    mov byte[ReturnFromSPCStall],0
+    jmp continueprog    
+.notmoviereset
+    
     ; clear all keys
     call Check_Key
     cmp al,0
@@ -2731,7 +2741,9 @@ NEWSYM cpuover
     call ProcessMovies
     popad
     cmp byte[MovieExitLoop],1
-    je execloop.startagain ;Where do we jump to?
+    jne .noprocmovie
+    mov byte[MovieProcessing],0
+    jmp reexecuteb
 .noprocmovie
 
     test byte[INTEnab],1
