@@ -1403,6 +1403,7 @@ NEWSYM Outputfilename
 ; Header hacks
 
 headerhack2:
+
     ; Megaman X2 - Header Hack
     mov esi,[romdata]
     add esi,7FC0h
@@ -1425,6 +1426,42 @@ NEWSYM headerhack
     mov byte[HIRQSkip],0
     mov dword[WindowDisables],0
     mov byte[ClearScreenSkip],0
+
+    mov esi,[romdata]
+    add esi,7FC0h
+    cmp dword[esi],'REND'
+    jne .notrend
+    mov byte[cycpb268],127
+    mov byte[cycpb358],127
+    mov byte[cycpbl2],127
+    mov byte[cycpblt2],127
+    mov byte[cycpbl],127
+    mov byte[cycpblt],127
+.notrend
+
+    mov esi,[romdata]
+    add esi,7FC0h
+    cmp dword[esi],'SP F'
+    jne .notfmatchtennis
+    mov byte[cycpb268],145
+    mov byte[cycpb358],147
+    mov byte[cycpbl2],145
+    mov byte[cycpblt2],145
+    mov byte[cycpbl],145
+    mov byte[cycpblt],145
+.notfmatchtennis
+
+    mov esi,[romdata]
+    add esi,7FC0h
+    cmp dword[esi],'TUFF'
+    jne .nottuffenuff
+    mov byte[cycpb268],75
+    mov byte[cycpb358],77
+    mov byte[cycpbl2],75
+    mov byte[cycpblt2],75
+    mov byte[cycpbl],75
+    mov byte[cycpblt],75
+.nottuffenuff
 
     cmp byte[DSP1Type],0
     je .notdis
@@ -2054,42 +2091,6 @@ NEWSYM initsnes
     mov byte[ForceNewGfxOff],0
     mov dword[NoiseDisTemp],0
     mov dword[NoiseDisTemp+4],0
-
-    mov esi,[romdata]
-    add esi,7FC0h
-    cmp dword[esi],'REND'
-    jne .notrend
-    mov byte[cycpb268],127
-    mov byte[cycpb358],127
-    mov byte[cycpbl2],127
-    mov byte[cycpblt2],127
-    mov byte[cycpbl],127
-    mov byte[cycpblt],127
-.notrend
-
-    mov esi,[romdata]
-    add esi,7FC0h
-    cmp dword[esi],'SP F'
-    jne .notfmatchtennis
-    mov byte[cycpb268],145
-    mov byte[cycpb358],147
-    mov byte[cycpbl2],145
-    mov byte[cycpblt2],145
-    mov byte[cycpbl],145
-    mov byte[cycpblt],145
-.notfmatchtennis
-
-    mov esi,[romdata]
-    add esi,7FC0h
-    cmp dword[esi],'TUFF'
-    jne .nottuffenuff
-    mov byte[cycpb268],75
-    mov byte[cycpb358],77
-    mov byte[cycpbl2],75
-    mov byte[cycpblt2],75
-    mov byte[cycpbl],75
-    mov byte[cycpblt],75
-.nottuffenuff
 
     mov esi,[romdata]
     add esi,7FC0h
