@@ -74,10 +74,7 @@ char *ers[] =
   "Percentage of instructions to execute must be a number from 50 to 150!\n",
   "Player Input must be a value from 0 to 6!\n",
   "Volume must be a number from 0 to 100!\n"
-
 };
-
-
 
 int argc;
 char **argv;
@@ -293,7 +290,6 @@ startup_error_exit:
    zstart();
 }
 
-
 int my_atoi(char *nptr)
 {
   int p,c;
@@ -306,7 +302,6 @@ int my_atoi(char *nptr)
   else return atoi(nptr);
 
 }
-
 
 void ccmdline(void)
 {
