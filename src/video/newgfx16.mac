@@ -2837,10 +2837,10 @@ EXTSYM osm2dis
     test ecx,100h
     jz .noyinc
     cmp byte[osm2dis],1
-    je .nooffsetm2
+    je .nooffsetm4
     cmp byte[BGMA+ebx],4
     je near .offsetm
-.nooffsetm2
+.nooffsetm4
     add eax,[BGPT1Y+ebx*2+%1*512]
 .noyinc
     lea ecx,[ecx*8]
