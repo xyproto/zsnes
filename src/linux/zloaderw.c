@@ -317,15 +317,15 @@ printf("Hello the gui should now be off.");
 			}
 
                         case 'z': {
-					printf("\nDebugger not implemented for Linux version!\n");
 				// FIX STATMAT
-				if((argv[p+1]) == 's')
-				{				
+//				if((argv[p+1]) == 's')
+//				{				
 //					if(!hasroom) return 4;
 //					autoloadstate=my_atoi(argv[p+1]) + 1;
 //					p++;
-				}
-				else StereoSound=1;
+//				}
+
+				StereoSound=1;
 
 				// FIX STATMAT
 				break;
