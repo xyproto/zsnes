@@ -40,7 +40,8 @@ extern unsigned char Palette0, SPC700sh, OffBy1Line, DSPDisable,
                      romtype, scanlines, showallext, smallscreenon, soundon,
                      spcon, vsyncon, DisplayS, fname, filefound, SnowOn,
                      NetChatFirst,NetServer,NetNewNick,
-                     NetFilename,TCPIPAddress,NetQuitAfter,UDPConfig;
+                     NetFilename,CmdLineTCPIPAddress,NetQuitAfter,UDPConfig,
+                     CmdLineNetPlay;
 
 void ccmdline(void);
 
@@ -178,7 +179,8 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdSh
          if (strptr<4) {
            NetServer=0;
          } else {
-           strp=&TCPIPAddress;
+           CmdLineNetPlay = 1;
+           strp=&CmdLineTCPIPAddress;
            strncpy(strp,ExtA[3],28);
          }
        }
