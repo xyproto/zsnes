@@ -1472,7 +1472,7 @@ NEWSYM headerhack
     jne .notcuonpa
     cmp dword[esi+8],' SFC'
     jne .notcuonpa
-    mov dword[Reg4212hack],4
+    mov dword[Reg4212hack],2
 .notcuonpa
 
     mov esi,[romdata]
