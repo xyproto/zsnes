@@ -2532,7 +2532,8 @@ NEWSYM C4WriteReg
     movzx ecx,word[esi+1F43h] ;Num of bytes to copy
     movzx eax,byte[esi+1F42h] ;Source bank
     mov eax,[snesmmap+eax*4]
-    add eax,word[esi+1F40h]
+    movzx edx,word[esi+1F40h]
+    add eax,edx
     movzx edx,word[esi+1F45h] ;Destination
     mov ebx,[C4Ram]
     and edx,01FFFh
