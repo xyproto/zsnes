@@ -921,6 +921,10 @@ GUIOptionKeys:
     xor byte[RomInfo],1
 .norominfo   
 %ifdef __WIN32__
+    cmp dh,'B'
+    jne .noprimarybuffer
+    xor byte[PrimaryBuffer],1
+.noprimarybuffer
     cmp dh,'I'
     jne .noscreensaver
     xor byte[DisableScreenSaver],1

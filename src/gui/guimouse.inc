@@ -2297,7 +2297,8 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,140,byte[AutoPatch]
     GUIClickCButton 11,150,byte[RomInfo]
 %ifdef __WIN32__
-    GUIClickCButtonW 11,160,byte[DisableScreenSaver]
+    GUIClickCButtonW 11,160,byte[PrimaryBuffer]
+    GUIClickCButtonW 11,170,byte[DisableScreenSaver]
 %endif
     ; Frameskip = 0
     cmp byte[frameskip],0

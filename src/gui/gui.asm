@@ -643,7 +643,7 @@ NEWSYM AutoPatch, db 1
 NEWSYM RomInfo, db 1
 NEWSYM SRAMState, db 0
 NEWSYM RewindStates, db 16
-
+NEWSYM PrimaryBuffer, db 0
 GUIsave equ $-GUIRAdd
 
 section .bss

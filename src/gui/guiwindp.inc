@@ -1637,7 +1637,8 @@ DisplayGUIOption:
     GUIOuttextwin2u 4,26,144,GUIOptionTextE,12
     GUIOuttextwin2u 4,26,154,GUIOptionTextF,15
 %ifdef __WIN32__
-    GUIOuttextwin2u 4,26,164,GUIOptionTextW,1
+    GUIOuttextwin2u 4,26,164,GUIOptionTextV,12
+    GUIOuttextwin2u 4,26,174,GUIOptionTextW,1
 %endif
     add byte[GUItextcolor],15
     GUIOuttextwin2 4,5,13,[GUITemp]
@@ -1661,7 +1662,8 @@ DisplayGUIOption:
     GUIOuttextwin2 4,25,143,GUIOptionTextE
     GUIOuttextwin2 4,25,153,GUIOptionTextF
 %ifdef __WIN32__
-    GUIOuttextwin2 4,25,163,GUIOptionTextW
+    GUIOuttextwin2 4,25,163,GUIOptionTextV
+    GUIOuttextwin2 4,25,173,GUIOptionTextW
 %endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[frameskip],0
@@ -1759,11 +1761,17 @@ DisplayGUIOption:
     GUIDisplayIconWin 4,11,150,[GUITemp]
 %ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[DisableScreenSaver],0
+    cmp byte[PrimaryBuffer],0
     je .nocheckbox14
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox14
     GUIDisplayIconWin 4,11,160,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[DisableScreenSaver],0
+    je .nocheckbox15
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox15
+    GUIDisplayIconWin 4,11,170,[GUITemp]
 %endif
 
 
@@ -1874,7 +1882,8 @@ GUIOptionTextC db 'DON',39,'T SAVE CUR PATH',0
 GUIOptionTextD db 'USE SMALL MESSAGE TEXT',0
 GUIOptionTextE db 'ENABLE AUTO-PATCH',0
 GUIOptionTextF db 'ENABLE ROMINFO.TXT',0
-GUIOptionTextW db 'DISABLE SCREENSAVER',0 ; Try to keep as last option, since its Win Only.
+GUIOptionTextV db 'USE PRIMARY BUFFER',0  ; Try to keep as last option, since its Win Only.
+GUIOptionTextW db 'DISABLE SCREENSAVER',0 ; Same.
 GUIOptionTextX db '-',0
 GUIOptionTextY db '+',0
 GUIOptionTextZ db '-',0
