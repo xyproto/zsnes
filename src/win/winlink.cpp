@@ -15,8 +15,8 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#define DIRECTINPUT_VERSION 0x800
-#define DIRECTSOUND_VERSION 0x800
+#define DIRECTINPUT_VERSION 0x0800
+#define DIRECTSOUND_VERSION 0x0800
 
 extern "C" {
    #include <windows.h>
@@ -807,10 +807,7 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
       S12Disable[CurrentJoy]=1;
    }
 
-
-
-
-	DIPROPDWORD dipdw;
+   DIPROPDWORD dipdw;
 
    dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
    dipdw.diph.dwHeaderSize = sizeof(dipdw.diph);
