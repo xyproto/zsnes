@@ -193,6 +193,7 @@ BOOL InputDeAcquire(void)
 extern "C" {
 unsigned char keyboardhit=0;
 void initwinvideo();
+void DosExit();
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
 extern BYTE ExclusiveSound;
@@ -200,6 +201,7 @@ extern BYTE HighPriority;
 extern BYTE AlwaysOnTop;
 extern BYTE SaveMainWindowPos;
 extern BYTE AlternateTimer;
+extern BYTE AllowMultipleInst;
 extern signed short int MainWindowX;
 extern signed short int MainWindowY;
 extern int CurKeyPos;
@@ -462,6 +464,18 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 int RegisterWinClass(void)
 {
+   if (AllowMultipleInst == 0)
+   {
+      HWND hFindWindow;
+      hFindWindow = FindWindow("ZSNESWIN", NULL);
+
+      if (hFindWindow != NULL)
+      {
+         SetForegroundWindow(hFindWindow);
+         DosExit();
+      }
+   }
+
    WNDCLASS wcl;
 
    wcl.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_NOCLOSE ;
