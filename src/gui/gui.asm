@@ -644,7 +644,7 @@ NEWSYM RomInfo, db 1
 NEWSYM SRAMState, db 0
 NEWSYM RewindStates, db 16
 NEWSYM PrimaryBuffer, db 0
-NEWSYM RewindFrames, db 1
+NEWSYM RewindFrames, db 6
 GUIsave equ $-GUIRAdd
 
 section .bss

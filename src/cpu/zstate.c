@@ -283,12 +283,16 @@ void SetupRewindBuffer()
 */
 
 extern unsigned int CBackupPos, PBackupPos, RewindPos, RewindOldPos;
+extern unsigned char RewindFrames, romispal;
+#define ActualRewindFrames (RewindFrames * (romispal ? 25 : 30))
+
 
 void BackupCVFrame()
 {
   unsigned char *RewindBufferPos = StateBackup + CBackupPos*rewind_state_size;
   //printf("Backing up rewind in slot #%u\n", CBackupPos);
   copy_state_data(RewindBufferPos, memcpyinc, false);
+  RewindTimer = ActualRewindFrames;
 }
   
 void RestoreCVFrame()
@@ -296,6 +300,7 @@ void RestoreCVFrame()
   unsigned char *RewindBufferPos = StateBackup + PBackupPos*rewind_state_size;
   //printf("Restoring rewind in slot #%u\n", PBackupPos);
   copy_state_data(RewindBufferPos, memcpyrinc, true);
+  RewindTimer = ActualRewindFrames;
 }
 
 void SetupRewindBuffer()
@@ -325,7 +330,7 @@ void InitRewindVars()
   RewindPos = 0;
   RewindOldPos = 0;
   //RewindEarliestPos = 0;
-  RewindTimer = 60*4;
+  RewindTimer = ActualRewindFrames;
 #endif
 }
 

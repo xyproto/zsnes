@@ -356,7 +356,6 @@ NEWSYM ProcessRewind
     inc dword[RewindPos]
     and dword[RewindPos],0Fh
     mov edx,[tempedx]
-    mov dword[RewindTimer],60*3
 .notokay
     ret
 .notokay2
@@ -395,7 +394,6 @@ NEWSYM UpdateRewind
     inc dword[RewindOldPos]
     and dword[RewindOldPos],0Fh
 .noteq
-    mov dword[RewindTimer],60*3
     pop eax
 %endif
     ret
