@@ -1688,12 +1688,9 @@ NEWSYM init65816
     add eax,ebx
     cmp word[xpc],8000h
     jb .notrainer
-    cmp dword[ebx+0FFC0h],'BREA'
-    jne .ntrchecka
     cmp word[resetv],0F000h
     jne .ntrchecka
     jmp .yestrainer
-.ntrchecka
     sub eax,8000h
     cmp byte[eax],5Ch
     jne .notrainer
