@@ -1381,6 +1381,8 @@ extern unsigned char  opexec268b;
 extern unsigned char  opexec358b;
 extern unsigned char  opexec268cph;
 extern unsigned char  opexec358cph;
+extern unsigned char  opexec268cphb;
+extern unsigned char  opexec358cphb;
 extern unsigned char  DSP1Type;
 extern unsigned int   ewj2hack;
 extern unsigned char  cycpl;
