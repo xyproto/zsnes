@@ -965,21 +965,21 @@ GUIGUIOptnsKeys:
     jne .guioptn12
     xor byte[MouseWheel],1
 .guioptn12
+    cmp dh,'R'
+    jne .guioptn13
+    xor byte[TrapMouseCursor],1
+.guioptn13
+%endif
+    cmp dh,'T'
+    jne .guioptn14
+    xor byte[GUIEnableTransp],1
+.guioptn14
     cmp dh,'F'
     jne .guioptn13
     xor byte[FilteredGUI],1
     cmp byte[En2xSaI],1
-    jnae .guioptn13
+    jnae .guioptn15
     call Clear2xSaIBuffer
-.guioptn13
-    cmp dh,'R'
-    jne .guioptn14
-    xor byte[TrapMouseCursor],1
-.guioptn14
-%endif
-    cmp dh,'T'
-    jne .guioptn15
-    xor byte[GUIEnableTransp],1
 .guioptn15
     ret
 
