@@ -33,7 +33,6 @@ EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
 EXTSYM KeyResetAll,KeyExtraEnab,KeyWinDisble,KeyNewGfxSwt,KeyOffsetMSw
 EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
-EXTSYM KeyQuickMinimize
 EXTSYM maxskip,DSPMem,SprValAdd,dsp1ptr,dsp1array,FastFwdToggle,SaveSramData
 EXTSYM ngextbg,Mode7HiRes,Check60hz,Get_MouseData,Get_MousePositionDisplacement
 EXTSYM WindowDisables,scanlines,romispal
@@ -55,9 +54,7 @@ EXTSYM vcache8b,vidmemch8
 EXTSYM offsetmshl,NextLineCache
 EXTSYM tltype2b,UpdateSoundAgain
 EXTSYM tltype8b,objwlrpos
-%ifdef __WIN32__
-EXTSYM MinimizeWindow
-%endif
+
 
 NEWSYM VCacheAsmStart
 
@@ -691,15 +688,6 @@ NEWSYM cachevideo
     mov eax,[MsgCount]
     mov [MessageOn],eax
 .nofrdown
-%ifdef __WIN32__
-    mov eax,[KeyQuickMinimize]
-    test byte[pressed+eax],1
-    je .nominimize
-    pushad
-    call MinimizeWindow
-    popad
-.nominimize
-%endif
     ; do state selects
     stateselcomp KeyStateSlc0,'0','T'
     stateselcomp KeyStateSlc1,'1','1'
