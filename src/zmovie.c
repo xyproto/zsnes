@@ -705,7 +705,8 @@ static bool zmv_open(char *filename)
     fseek(zmv_vars.fp, -2, SEEK_END);
     zmv_open_vars.external_chapter_count = fread2(zmv_vars.fp);
     
-    fseek(zmv_vars.fp, -(zmv_open_vars.external_chapter_count*EXT_CHAP_SIZE + 2), SEEK_END);
+    fseek(zmv_vars.fp, -(zmv_vars.header.internal_chapters*4 + zmv_open_vars.external_chapter_count*EXT_CHAP_SIZE + 2), SEEK_END);
+
     internal_chapter_read(&zmv_vars.internal_chapters, zmv_vars.fp, zmv_vars.header.internal_chapters);
     
     for (i = 0; i < zmv_open_vars.external_chapter_count; i++)
@@ -775,11 +776,26 @@ static bool zmv_replay()
 static void zmv_next_chapter()
 {
   size_t current_loc = ftell(zmv_vars.fp);
+  
   size_t next_internal = internal_chapter_greater(&zmv_vars.internal_chapters, current_loc);
   size_t next_external = internal_chapter_greater(&zmv_open_vars.external_chapters, current_loc);
-  size_t next = ((next_internal < next_external) && (next_internal != current_loc)) ? next_internal : next_external;
 
-  if (next != current_loc)
+  size_t next = 0;
+  
+  if (next_internal != current_loc)
+  { 
+    next = next_internal;
+  }
+  else
+  {
+    next_internal = ~0;
+  }
+  if ((next_external != current_loc) && next_external < next_internal)
+  { 
+    next = next_external;
+  }
+   
+  if (next)
   {
     if (next == next_internal)
     {
@@ -808,11 +824,26 @@ static void zmv_next_chapter()
 static void zmv_prev_chapter()
 {
   size_t current_loc = ftell(zmv_vars.fp);
+  
   size_t prev_internal = internal_chapter_lesser(&zmv_vars.internal_chapters, current_loc);
   size_t prev_external = internal_chapter_lesser(&zmv_open_vars.external_chapters, current_loc);
-  size_t prev = ((prev_internal > prev_external) && (prev_internal != current_loc)) ? prev_internal : prev_external;
 
-  if (prev != current_loc)
+  size_t prev = 0;
+  
+  if (prev_internal != current_loc)
+  { 
+    prev = prev_internal;
+  }
+  else
+  {
+    prev_internal = 0;
+  }
+  if ((prev_external != current_loc) && prev_external > prev_internal)
+  { 
+    prev = prev_external;
+  }
+   
+  if (prev)
   {
     if (prev == prev_internal)
     {
