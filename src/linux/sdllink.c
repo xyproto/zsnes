@@ -128,8 +128,6 @@ void UpdateSound(void *userdata, Uint8 * stream, int len);
 extern int GUI36hzcall(void);
 extern int Game60hzcall(void);
 extern void SoundProcess();
-void *blur_temp=0;
-void *blur_buffer=0;
 _int64 copymaskRB = 0x001FF800001FF800LL;
 _int64 copymaskG = 0x0000FC000000FC00LL;
 _int64 copymagic = 0x0008010000080100LL;

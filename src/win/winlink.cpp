@@ -131,8 +131,6 @@ extern "C" {
 DWORD                   MouseButton;
 DWORD                   SurfaceX=0;
 DWORD                   SurfaceY=0;
-VOID *blur_temp=0;
-VOID *blur_buffer=0;
 }
 
 HANDLE hLock, hThread;
@@ -476,8 +474,6 @@ void ExitFunction()
    ReleaseDirectInput();
    ReleaseDirectSound();
    ReleaseDirectDraw();
-   if (blur_temp) free(blur_temp);
-   if (blur_buffer) free(blur_buffer);
    FreeLibrary(hM_dsound);
    FreeLibrary(hM_ddraw);
    FreeLibrary(hM_dinput8);
@@ -1515,11 +1511,6 @@ int InitDirectDraw()
        AltSurface = 1;
    }
 
-      if (!blur_buffer) blur_buffer = malloc(SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
-	  else blur_buffer = realloc(blur_buffer, SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
-	  if (!blur_temp) blur_temp = malloc(SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
-	  else blur_temp = realloc(blur_temp, SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
-
    return TRUE;
 }
 
@@ -2331,9 +2322,7 @@ void clear_display()
 }
 
 extern void DrawWin256x224x16();
-extern void DrawWin256x224x16MB();
 extern void DrawWin256x224x32();
-extern void DrawWin256x224x32MB();
 extern void DrawWin320x240x16();
 
 extern _int64 copymaskRB = 0x001FF800001FF800;
@@ -2424,15 +2413,13 @@ void drawscreenwin(void)
       {
         case 16:
         {
-          if (MotionBlur == 1) DrawWin256x224x16MB();
-            else DrawWin256x224x16();
-          break;
+			DrawWin256x224x16();
+			break;
         }
         case 32:
-        {
-          if (MotionBlur == 1) DrawWin256x224x32MB();
-            else DrawWin256x224x32();
-          break;
+        {			
+			DrawWin256x224x32();
+			break;
         }
 
             SURFDW=(DWORD *) &SurfBuf[(resolutn-1)*pitch];
