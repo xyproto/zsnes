@@ -220,13 +220,19 @@ NEWSYM WaterOn,  db 1
 ;-------------------------------------------------------
 ;    Load        Input#1    Add Code  Modem        Game Keys
 ;    Run         Input#2    Browse    IPX          GUI Opns
-;    Reset       Input#3    Search                 About
-;    -----       Input#4
-;    Save State  -------
-;    Load State  Options
-;    Chose State Video
-;    -----       Sound
-;    Quit
+;    Reset       Input#3    Search                 Movie Opn
+;    -----       Input#4                           Key Comb.
+;    Save State  Input#5                           Save Cfg
+;    Load State  -----                             ----
+;    Pick State  Add-Ons                           About
+;    -----       Chip Cfg
+;    Quit        ----
+;                Options
+;                Video
+;                Sound
+;                Paths
+
+; MultiPlay only has "Internet" for Windows/Linux
 
 ; Windows : 1 = Save/Load Confirmation
 ;           2 = Chose State
@@ -235,10 +241,18 @@ NEWSYM WaterOn,  db 1
 ;           5 = Video
 ;           6 = Sound
 ;           7 = Cheat
-;           8 = IPX/Modem
-;           9 = GameOptions
+;           8 = Net Options
+;           9 = Game Options
 ;           10 = GUI Options
 ;           11 = About
+;           12 = Reset Confirmation
+;           13 = Cheat Search
+;           14 = SaveState Confirmation
+;           15 = Movies
+;           16 = Key Combo
+;           17 = Add-Ons
+;           18 = Chip Config
+;           19 = Paths
 
 ;The first byte is the number of fields on the right not including the seperators
 MenuDat1 db 12, 3,1,1,1,1,1,1,1,1,1,0,1,2,0
