@@ -56,26 +56,28 @@ NEWSYM dosinitvideo
     cmp byte[cvidmode],0
     je near .initmodeq224
     cmp byte[cvidmode],1
-    je near .initmodeq
+    je near .initmodeq240
     cmp byte[cvidmode],2
-    je near .initmodex
+    je near .initmodeq
     cmp byte[cvidmode],3
-    je near .initvesa12640x480x16
+    je near .initmodex
     cmp byte[cvidmode],4
-    je near .initvesa2320x240x8
+    je near .initvesa12640x480x16
     cmp byte[cvidmode],5
-    je near .initvesa2320x240x16
+    je near .initvesa2320x240x8
     cmp byte[cvidmode],6
-    je near .initvesa2320x480x8
+    je near .initvesa2320x240x16
     cmp byte[cvidmode],7
-    je near .initvesa2320x480x16
+    je near .initvesa2320x480x8
     cmp byte[cvidmode],8
-    je near .initvesa2512x384x8
+    je near .initvesa2320x480x16
     cmp byte[cvidmode],9
-    je near .initvesa2512x384x16
+    je near .initvesa2512x384x8
     cmp byte[cvidmode],10
-    je near .initvesa2640x480x8
+    je near .initvesa2512x384x16
     cmp byte[cvidmode],11
+    je near .initvesa2640x480x8
+    cmp byte[cvidmode],12
     je near .initvesa2640x480x16
     ret
 
@@ -482,6 +484,135 @@ NEWSYM dosinitvideo
     out dx,ax
     inc dx
     mov ax,001ah
+    out dx,ax
+
+%ifdef __MSDOS__
+    call cscopymodeq
+%endif
+
+    call makepal
+
+    ret
+
+;*******************************************************
+; InitModeQ240              Sets up 256x240 chained mode
+;*******************************************************
+
+.initmodeq240
+    mov byte[cbitmode],0
+
+    mov ax,0013h
+    int 10h
+
+    ; enable writes
+    mov dx,03d4h
+    mov ax,0011h
+    out dx,ax
+    inc dx
+    in ax,dx
+    and ax,007fh
+    push ax
+    mov dx,03d4h
+    mov ax,0011h
+    out dx,ax
+    inc dx
+    pop ax
+    out dx,ax
+
+    ; tweak regs
+    mov dx,03c2h
+    mov ax,00e3h
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,1
+    out dx,ax
+    inc dx
+    mov ax,003fh
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,2
+    out dx,ax
+    inc dx
+    mov ax,0040h
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,4
+    out dx,ax
+    inc dx
+    mov ax,004ah
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,5
+    out dx,ax
+    inc dx
+    mov ax,009ah
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,6
+    out dx,ax
+    inc dx
+    mov ax,000dh
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,7
+    out dx,ax
+    inc dx
+    mov ax,003eh
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,9
+    out dx,ax
+    inc dx
+    mov ax,0041h
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,0010h
+    out dx,ax
+    inc dx
+    mov ax,00eah
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,0011h
+    out dx,ax
+    inc dx
+    mov ax,00ach
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,0012h
+    out dx,ax
+    inc dx
+    mov ax,00dfh
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,0013h
+    out dx,ax
+    inc dx
+    mov ax,0020h
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,0015h
+    out dx,ax
+    inc dx
+    mov ax,00e7h
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,0016h
+    out dx,ax
+    inc dx
+    mov ax,0006h
     out dx,ax
 
 %ifdef __MSDOS__
