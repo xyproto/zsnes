@@ -858,7 +858,9 @@ NEWSYM SwitchFullScreen
 .loop
     mov dword[eax],0FEFEFEFEh
     add eax,4
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
 
     xor eax,eax
     mov al,[cvidmode]
@@ -1149,7 +1151,9 @@ GUIWinClicked:
 %%loop
     mov dword[eax],0
     add eax,4
-    loop %%loop
+;    loop %%loop
+    dec ecx
+    jnz %%loop
     pop ecx
     pop eax
     ret
@@ -1198,7 +1202,9 @@ GUIWinClicked:
 %%loop
     mov dword[eax],0
     add eax,4
-    loop %%loop
+;    loop %%loop
+    dec ecx
+    jnz %%loop
     pop ecx
     pop eax
 %%clear
@@ -2523,7 +2529,9 @@ guipresstest:
 .a
     mov byte[pressed+ebx],0
     inc ebx
-    loop .a
+;    loop .a
+    dec ecx
+    jnz .a
     call GUIUnBuffer
     call DisplayBoxes
     call DisplayMenu
@@ -2551,7 +2559,9 @@ guipresstest:
     cmp byte[pressed+ebx],0
     jne .pressedokay
     inc ebx
-    loop .b
+;    loop .b
+    dec ecx
+    jnz .b
     jmp .again
 .pressedokay
     push ebx
@@ -2563,7 +2573,9 @@ guipresstest:
     mov byte[pressed+ebx],2
 .pressedokayb
     inc ebx
-    loop .a2
+;    loop .a2
+    dec ecx
+    jnz .a2
     pop ebx
 .again2
     call Check_Key
@@ -2612,7 +2624,9 @@ guipresstestb:
     cmp byte[pressed+ebx],0
     jne .tryagain
     inc ebx
-    loop .b2
+;    loop .b2
+    dec ecx
+    jnz .b2
 
 .again
     call JoyRead
@@ -2627,7 +2641,9 @@ guipresstestb:
     cmp byte[pressed+ebx],0
     jne .pressedokay
     inc ebx
-    loop .b
+;    loop .b
+    dec ecx
+    jnz .b
     jmp .again
 .pressedokay
 .again2

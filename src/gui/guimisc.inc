@@ -146,7 +146,9 @@ CalibrateDispA:
 .a
     mov byte[pressed+ebx],0
     inc ebx
-    loop .a
+;    loop .a
+    dec ecx
+    jnz .a
     call GUIUnBuffer
     call DisplayBoxes
     call DisplayMenu
@@ -171,7 +173,9 @@ CalibrateDispB:
 .a
     mov byte[pressed+ebx],0
     inc ebx
-    loop .a
+;    loop .a
+    dec ecx
+    jnz .a
     call GUIUnBuffer
     call DisplayBoxes
     call DisplayMenu
@@ -207,7 +211,9 @@ SetAllKeys:
 .a
     mov byte[pressed+ebx],0
     inc ebx
-    loop .a
+;    loop .a
+    dec ecx
+    jnz .a
 
     mov byte[GUICBHold],0
     mov edi,pl1selk

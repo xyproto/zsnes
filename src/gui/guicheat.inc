@@ -106,7 +106,9 @@ AddCSCheatCode:
     inc eax
 %%noinceax
     rol dl,1
-    loop %%searchloop
+;    loop %%searchloop
+    dec ecx
+    jnz %%searchloop
 %endmacro
 
 %macro SearchMacroB 1
@@ -183,7 +185,9 @@ CheatCodeSearchProcess:
     rol bl,1
     rol bh,1
     inc esi
-    loop .exactloop
+;    loop .exactloop
+    dec ecx
+    jnz .exactloop
 ; CSCurValue  dd 0
     mov byte[CopyRamToggle],1
     mov byte[CheatSearchStatus],1
@@ -239,7 +243,9 @@ CheatCodeSearchInit:
     mov [eax],edx
     add ebx,4
     add eax,4
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
     ; fill searched buffer with 0xFF
     mov eax,dword[vidbuffer]
     add eax,129600+65536*2
@@ -247,7 +253,9 @@ CheatCodeSearchInit:
 .loop2
     mov dword[eax],0FFFFFFFFh
     add eax,4
-    loop .loop2
+;    loop .loop2
+    dec ecx
+    jnz .loop2
     cmp byte[CheatSrcSearchType],1
     jne .nottype1
     mov byte[CheatSearchStatus],1
@@ -670,7 +678,9 @@ AddCheatCode:
     mov [eax+18*2+2],dl
     inc ebx
     inc eax
-    loop .dloop
+;    loop .dloop
+    dec ecx
+    jnz .dloop
     pop edx
     pop ebx
     pop eax
@@ -727,7 +737,9 @@ ProcessCheatCode:
     mov [eax+18*2+2],dl
     inc ebx
     inc eax
-    loop .dloop
+;    loop .dloop
+    dec ecx
+    jnz .dloop
     ; determine whether it is gamegenie, par, or GF
     ; uppercase all codes if necessary
     mov eax,GUICheatText9
@@ -742,7 +754,9 @@ ProcessCheatCode:
     mov [eax],bl
 .nolower
     inc eax
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
     mov byte[guicheatvalrep],0
     xor eax,eax
     mov al,[GUICheatPosA]
@@ -776,7 +790,9 @@ ProcessCheatCode:
     ja .invalidpar
 .okaypar
     inc eax
-    loop .looppar
+;    loop .looppar
+    dec ecx
+    jnz .looppar
     jmp decodepar
 .invalidgg
     jmp guicheaterror
@@ -803,7 +819,9 @@ ProcessCheatCode:
     ja .invalidgg
 .okaygg
     inc eax
-    loop .loopgg
+;    loop .loopgg
+    dec ecx
+    jnz .loopgg
     jmp decodegg
     ret
 .invalidgf
@@ -824,7 +842,9 @@ ProcessCheatCode:
     ja .invalidgf
 .okaygf
     inc eax
-    loop .loopgf
+;    loop .loopgf
+    dec ecx
+    jnz .loopgf
     mov eax,GUICheatText9+5
     mov ecx,6
 .loopgf2
@@ -841,7 +861,9 @@ ProcessCheatCode:
     ja near .invalidgf
 .okaygf2
     inc eax
-    loop .loopgf2
+;    loop .loopgf2
+    dec ecx
+    jnz .loopgf2
     mov bl,[GUICheatText9+13]
     cmp bl,'0'
     je .okaygf3
@@ -1276,7 +1298,9 @@ guicheaterror:
 .a
     mov byte[pressed+ebx],0
     inc ebx
-    loop .a
+;    loop .a
+    dec ecx
+    jnz .a
 .again
     call GUIUnBuffer
     call DisplayBoxes
@@ -1304,7 +1328,9 @@ guicheaterror:
     cmp byte[pressed+ebx],0
     jne .pressedokay
     inc ebx
-    loop .b
+;    loop .b
+    dec ecx
+    jnz .b
     cmp byte[MouseDis],1
     je .mousedis
     call Get_MouseData

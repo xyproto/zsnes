@@ -359,7 +359,9 @@ GUIloadfilename:
     mov [ebx],dl
     inc ebx
     inc eax
-    loop .rbackupl
+;    loop .rbackupl
+    dec ecx
+    jnz .rbackupl
     cmp byte[yesoutofmemory],1
     jne .noout
     call outofmemfix
@@ -514,7 +516,9 @@ GUILoadData:
     mov [ebx],al
     inc edx
     inc ebx
-    loop .loopfnc
+;    loop .loopfnc
+    dec ecx
+    jnz .loopfnc
 
     ; get Drive/Dir
     mov ebx,prevloaddnamel+1
@@ -998,7 +1002,9 @@ GetLoadHeader:
     sub al,'a'-'A'
 .nocap
     mov [edi],al
-    loop .loop4
+;    loop .loop4
+    dec ecx
+    jnz .loop4
     pop ecx
     pop edi
     add esi,14

@@ -38,7 +38,9 @@ ProcessModem:
 .clooptcpip
     mov byte[eax],0
     inc eax
-    loop .clooptcpip
+;    loop .clooptcpip
+    dec ecx
+    jnz .clooptcpip
     mov dword[CCursLoc],0
     mov dword[CViewLoc],0
     mov dword[NViewLoc],0
@@ -96,7 +98,9 @@ ProcessModem:
 .clooptcpip2
     mov byte[eax],0
     inc eax
-    loop .clooptcpip2
+;    loop .clooptcpip2
+    dec ecx
+    jnz .clooptcpip2
     mov dword[CCursLoc],0
     mov dword[CViewLoc],0
     mov dword[NViewLoc],0
@@ -235,7 +239,9 @@ ProcessModem:
 .cloopipx
     mov byte[eax],0
     inc eax
-    loop .cloopipx
+;    loop .cloopipx
+    dec ecx
+    jnz .cloopipx
     mov dword[CCursLoc],0
     mov dword[CViewLoc],0
     mov dword[NViewLoc],0
@@ -307,7 +313,9 @@ ProcessModem:
 .cloop
     mov byte[eax],0
     inc eax
-    loop .cloop
+;    loop .cloop
+    dec ecx
+    jnz .cloop
     mov dword[CCursLoc],0
     mov dword[CViewLoc],0
     mov dword[NViewLoc],0
@@ -688,7 +696,9 @@ ProcessModem:
 .cloop2
     mov byte[eax],0
     inc eax
-    loop .cloop2
+;    loop .cloop2
+    dec ecx
+    jnz .cloop2
     mov dword[CCursLoc],0
     mov dword[CViewLoc],0
     mov dword[NViewLoc],0
@@ -1445,7 +1455,9 @@ transfersram:
     pop ebx
     inc esi
     inc ebx
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
     mov byte[sramsavedis],0
     ret
 
@@ -1477,7 +1489,9 @@ transfersram:
     je .getnext
     mov [ebx],dl
     inc ebx
-    loop .loopb
+;    loop .loopb
+    dec ecx
+    jnz .loopb
     ret
 
 NEWSYM RemoteSendEAX
@@ -1681,7 +1695,9 @@ loadstatesend:
     pop ecx
     pop edx
     inc edx
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
     call SendPacket
     cmp dword[NetStateSize],0
     jne .notzero
@@ -1748,7 +1764,9 @@ loadstaterecv:
     pop edx
     mov [edx],al
     inc edx
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
     pop ecx
     mov bx,[NetLoadHandle]
     mov edx,NetStateBuffer

@@ -2428,7 +2428,9 @@ DisplayGUICheatConv:
     mov [edx],bl
     add edx,2
     dec eax
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
     mov eax,[ccheatnpos]
     inc eax
     mov edx,GUICheatTextB+7
@@ -2487,7 +2489,9 @@ DisplayGUICheatConv:
     mov [edx],bl
     inc eax
     inc edx
-    loop .loop2
+;    loop .loop2
+    dec ecx
+    jnz .loop2
     ret
 
 %macro GUIOuttextwin2cheat 2
@@ -2993,7 +2997,9 @@ FindChtSrcRes:
     dec dh
     jnz .sloop2
     inc eax
-    loop .searchloop
+;    loop .searchloop
+    dec ecx
+    jnz .searchloop
     mov eax,ebx
     ret
 .found
@@ -5488,7 +5494,9 @@ DisplayGUICombo:
     jz .donecomp
     inc esi
     inc edi
-    loop .comploop
+;    loop .comploop
+    dec ecx
+    jnz .comploop
 .donecomp
     call ComboClip
     mov edi,[GUIccombcursloc]

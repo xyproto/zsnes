@@ -774,7 +774,9 @@ clearsram:
 .loop
     mov byte[eax],0FFh
     inc eax
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
     cmp byte[SFXSRAM],0
     je .nosfxsram
     mov eax,[sfxramdata]
@@ -782,7 +784,9 @@ clearsram:
 .loop2
     mov byte[eax],0FFh
     inc eax
-    loop .loop2
+;    loop .loop2
+    dec ecx
+    jnz .loop2
 .nosfxsram
     cmp byte[SA1Enable],1
     jne .nosa1
@@ -791,7 +795,9 @@ clearsram:
 .loop3
     mov byte[eax],0FFh
     inc eax
-    loop .loop3
+;    loop .loop3
+    dec ecx
+    jnz .loop3
 .nosa1
     pop ecx
     pop eax
@@ -886,7 +892,9 @@ CalcChecksum:
     mov bl,[eax]
     add edx,ebx
     inc eax
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
     mov ebx,edx
     xor bx,1011001011101101b
     xor eax,eax
@@ -1020,7 +1028,9 @@ NEWSYM ExecGUISaveVars
 .loopa
     mov [esi],al
     inc esi
-    loop .loopa
+;    loop .loopa
+    dec ecx
+    jnz .loopa
 %endmacro
 
 %macro GUIDeInitIRQs 0
@@ -1288,7 +1298,9 @@ DrawSnow:
 .transp
     inc esi
     inc edx
-    loop .sloop
+;    loop .sloop
+    dec ecx
+    jnz .sloop
     add esi,272
     dec ebx
     jnz .sloop2
@@ -1315,7 +1327,9 @@ DrawSnow:
     mov byte[esi+eax],bl
 .nosnow
     inc edx
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
     ; Change Snow Displacement Values
 .next
     cmp dword[SnowMover],0
@@ -1377,7 +1391,9 @@ ProcessSnowVelocity:
     or byte[SnowVelDist+edx*2],8
 .nosdata
     inc edx
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
     ret
 
 OkaySC db 0
@@ -1530,7 +1546,9 @@ NEWSYM StartGUI
 .slloop
     mov dword[eax],0
     add eax,4
-    loop .slloop
+;    loop .slloop
+    dec ecx
+    jnz .slloop
     cmp byte[OldWinPos],0
     jne .okayow
     xor esi,esi
@@ -1541,7 +1559,9 @@ NEWSYM StartGUI
     mov eax,[GUIwinposy2+esi*4]
     mov [GUIwinposy+esi*4],eax
     inc esi
-    loop .nextow
+;    loop .nextow
+    dec ecx
+    jnz .nextow
     mov byte[OldWinPos],1
     mov eax,[pl1p209b]
     mov [pl1p209],eax
@@ -1588,6 +1608,8 @@ NEWSYM StartGUI
     inc eax
     dec bl
     jnz .convlfnlp2b
+;    loop .convlfnlp
+    dec ecx
     loop .convlfnlp
 .noconvertlfqm
 
@@ -1643,7 +1665,9 @@ NEWSYM StartGUI
 .loop
     mov dword[eax],0
     add eax,4
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
 .nong
     mov byte[ShowTimer],1
     call Get_Date
@@ -1700,7 +1724,9 @@ NEWSYM StartGUI
 .pclear
     mov dword[esi],0
     add esi,4
-    loop .pclear
+;    loop .pclear
+    dec ecx
+    jnz .pclear
     mov byte[pressed+1],2
     mov byte[GUIescpress],1
 
@@ -2278,7 +2304,9 @@ NEWSYM StartGUI
 .loop20
     mov byte[eax],0
     inc eax
-    loop .loop20
+;    loop .loop20
+    dec ecx
+    jnz .loop20
     mov al,[Latency]
     mov [LatencyLeft],al
     mov byte[NetSwap],0
@@ -2297,7 +2325,9 @@ NEWSYM StartGUI
     add al,[ebx]
     adc ah,0
     inc ebx
-    loop .csumloop
+;    loop .csumloop
+    dec ecx
+    jnz .csumloop
 .nocsumloop
     mov [CheckSumVal],eax
 
@@ -2406,7 +2436,9 @@ NEWSYM StartGUI
     mov [eax],edx
     add ebx,4
     add eax,4
-    loop .loopcr
+;    loop .loopcr
+    dec ecx
+    jnz .loopcr
 .nocopyram
 
     cmp byte[CheatWinMode],2
@@ -2438,7 +2470,9 @@ NEWSYM StartGUI
 .loopcl
     mov dword[eax],0
     add eax,4
-    loop .loopcl
+;    loop .loopcl
+    dec ecx
+    jnz .loopcl
 
     mov al,[cfgsoundon]
     mov [soundon],al
@@ -2488,7 +2522,9 @@ guifirsttimemsg:
 .a
     mov byte[pressed+ebx],0
     inc ebx
-    loop .a
+;    loop .a
+    dec ecx
+    jnz .a
     mov byte[pressed+2Ch],0
 .again
     GUIBox 43,75,213,163,160
@@ -2555,7 +2591,9 @@ guimustrestartmsg:
     mov byte[pressed+ebx],2
 .npr1
     inc ebx
-    loop .a
+;    loop .a
+    dec ecx
+    jnz .a
     mov byte[pressed+2Ch],0
 .again
     GUIBox 43,87,213,151,160
@@ -2588,7 +2626,9 @@ guimustrestartmsg:
     cmp byte[pressed+ebx],1
     je .pressedokay
     inc ebx
-    loop .b
+;    loop .b
+    dec ecx
+    jnz .b
     jmp .again
 .pressedokay
 .again2
@@ -2620,7 +2660,9 @@ guiprevideo:
 .a
     mov byte[pressed+ebx],0
     inc ebx
-    loop .a
+;    loop .a
+    dec ecx
+    jnz .a
     call GUIUnBuffer
     call DisplayBoxes
     call DisplayMenu
@@ -2653,7 +2695,9 @@ guiprevideo:
     cmp byte[pressed+ebx],0
     jne .pressedokay
     inc ebx
-    loop .b
+;    loop .b
+    dec ecx
+    jnz .b
     cmp byte[MouseDis],1
     je .mousedis
     call Get_MouseData
@@ -2692,14 +2736,18 @@ guipostvideo:
 .loop
     mov dword[eax],0FFFFFFFFh
     add eax,4
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
 
     xor ebx,ebx
     mov ecx,256
 .a
     mov byte[pressed+ebx],0
     inc ebx
-    loop .a
+;    loop .a
+    dec ecx
+    jnz .a
     mov dword[GUIkeydelay],36*10
 
 .pressedfail
@@ -2725,7 +2773,9 @@ guipostvideo:
     cmp byte[pressed+ebx],0
     jne near .pressedfail
     inc ebx
-    loop .b2
+;    loop .b2
+    dec ecx
+    jnz .b2
     cmp byte[MouseDis],1
     je .mousedis3
     call Get_MouseData
@@ -2741,7 +2791,9 @@ guipostvideo:
     cmp byte[pressed+ebx],0
     jne .pressedokay
     inc ebx
-    loop .b
+;    loop .b
+    dec ecx
+    jnz .b
     cmp byte[MouseDis],1
     je .mousedis
     call Get_MouseData
@@ -2830,7 +2882,9 @@ guipostvideofail:
 .a
     mov byte[pressed+ebx],0
     inc ebx
-    loop .a
+;    loop .a
+    dec ecx
+    jnz .a
     call GUIUnBuffer
     call DisplayBoxes
     call DisplayMenu

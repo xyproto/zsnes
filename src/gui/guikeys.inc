@@ -1109,7 +1109,9 @@ GUIVideoKeys:
 .fsloop
     mov dword[eax],0
     add eax,4
-    loop .fsloop
+;    loop .fsloop
+    dec ecx
+    jnz .fsloop
     pop ecx
     pop eax
 .nofullscreen
@@ -1130,7 +1132,9 @@ GUIVideoKeys:
 .ssloop
     mov dword[eax],0
     add eax,4
-    loop .ssloop
+;    loop .ssloop
+    dec ecx
+    jnz .ssloop
     pop ecx
     pop eax
 .nosmallscreen
@@ -2932,7 +2936,9 @@ WaitForKey:
     cmp byte[pressed+ebx],0
     jne near .again3
     inc ebx
-    loop .b2
+;    loop .b2
+    dec ecx
+    jnz .b2
     dec edx
     jnz near .again4
 .again
@@ -2955,7 +2961,9 @@ WaitForKey:
     cmp byte[pressed+ebx],0
     jne .pressedokay
     inc ebx
-    loop .b
+;    loop .b
+    dec ecx
+    jnz .b
     jmp .again
 .pressedokay
 .again2
