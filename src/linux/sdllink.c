@@ -39,7 +39,7 @@ DWORD                   CurrentJoy=0;
 
 SDL_Joystick	*JoystickInput[4];
 
-DWORD                   BitDepth=0;
+DWORD                   BitDepth=0;	// Do NOT change this for ANY reason
 BYTE                    BackColor=0;
 
 float MouseMinX=0;
