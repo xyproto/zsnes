@@ -584,6 +584,7 @@ NEWSYM DisableScreenSaver, db 0
 NEWSYM TrapMouseCursor, db 1
 NEWSYM KeyQuickClock, dd 0
 NEWSYM KeyQuickMinimize, dd 0
+NEWSYM CopyMethod, db 2
 
 GUIsave equ $-GUIRAdd
 
