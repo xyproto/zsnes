@@ -137,7 +137,7 @@ NEWSYM DspProcAsmStart
 
 
 
-SECTION .bss
+SECTION .data
 
 ; MixEcho
 ; modpitch
@@ -171,7 +171,7 @@ SECTION .bss
 ; Jump to Address [0000]
 
 DSPInterP:
-  resw 1024
+  times 1024 dw 0
 
 section .data
 
@@ -383,10 +383,10 @@ CubicSpline:
 
 %include "cpu/fir_tables.inc"
 
-SECTION .bss ;ALIGN=32
+SECTION .data ;ALIGN=32
 
-NEWSYM spcWptr,  resd 16     ; SPC Write pointers (point to their own functions)
-NEWSYM spcRptr,  resd 16     ; SPC Read pointers (point to their own functions)
+NEWSYM spcWptr,  times 16 dd 0    ; SPC Write pointers (point to their own functions)
+NEWSYM spcRptr,  times 16 dd 0    ; SPC Read pointers (point to their own functions)
 
 ;dspWptr  times 256 dd 0     ; DSP Write pointers (point to their own functions)
 ;dspRptr  times 256 dd 0     ; DSP Read pointers (point to their own functions)
@@ -1701,17 +1701,17 @@ NEWSYM Interror
 section .data
 .nohand db 'Cannot process interrupt handler!',13,10,'$'
 
-SECTION .bss
-NEWSYM oldhandSBs, resw 1
-NEWSYM oldhandSBo, resd 1
-NEWSYM SBswitch,   resb 1         ; which block to process next
+SECTION .data
+NEWSYM oldhandSBs, dw 0
+NEWSYM oldhandSBo, dd 0
+NEWSYM SBswitch,   db 0         ; which block to process next
 
-PSampleBuf resd 26*8
+PSampleBuf times 26*8 dd 0
 
-NEWSYM LPFsample1, resd 1
-NEWSYM LPFsample2, resd 1
+NEWSYM LPFsample1, dd 0
+NEWSYM LPFsample2, dd 0
 
-NEWSYM DLPFsamples, resd 8*26
+NEWSYM DLPFsamples, times 8*26 dd 0
 section .text
 
 %macro ProcessA 0
@@ -1959,9 +1959,10 @@ ALIGN16
     pmaddwd mm0,mm2
     pmaddwd mm1,mm3
     paddd mm0,mm1
-    movq [fir_tmp],mm0
-    mov edx,[fir_tmp]
-    add edx,[fir_tmp+4]
+    movd edx,mm0
+    psrlq mm0,32
+    movd eax,mm0
+    add edx,eax
     sar edx,14
     cmp edx,32767
     jle %%DLPF_fir_clip
@@ -1980,9 +1981,9 @@ ALIGN16
     ret
 %endmacro
 
-section .bss
-NEWSYM lastblockbrr, resd 8
-NEWSYM curvoice, resd 1
+section .data
+NEWSYM lastblockbrr, times 8 dd 0
+NEWSYM curvoice, dd 0
 section .text
 
 BRRDecode:
@@ -2156,26 +2157,26 @@ NEWSYM DecreaseRateExpO
                dd 13230,9702,8158,6504,4851,4079,3197,2425
                dd 1984,1653,1212,1014,815,606,407,198
 
-SECTION .bss
-filteron           resd 1
-NoisePtr           resd 1
+SECTION .data
+filteron           dd 0
+NoisePtr           dd 0
 
 ; used only in dspproc.asm
 SECTION .data
 Filter dd 0,0,240,0,488,-240,460,-208
 
-SECTION .bss
-prev0              resd 1         ; previous value 1
-prev1              resd 1         ; previous value 2
-nextsamp           resd 1         ; next sample
-filter0            resd 1         ; filter 0
-filter1            resd 1         ; filter 1
-bshift             resd 1
-sampleleft         resd 1         ; 8 bytes/sample
+SECTION .data
+prev0              dd 0         ; previous value 1
+prev1              dd 0         ; previous value 2
+nextsamp           dd 0         ; next sample
+filter0            dd 0         ; filter 0
+filter1            dd 0         ; filter 1
+bshift             dd 0
+sampleleft         dd 0         ; 8 bytes/sample
 
-lastbl             resd 1         ; Last block if = 1
-loopbl             resd 1         ; Loop if = 1
-usenoisedata       resd 1
+lastbl             dd 0         ; Last block if = 1
+loopbl             dd 0         ; Loop if = 1
+usenoisedata       dd 0
 
 SECTION .data
 
@@ -2279,28 +2280,28 @@ NEWSYM VolumeTableb
 ;                db 1,1,1,1,1,1,1,1,1,1
 ;                db 1,1,1,1,1,1,1,1
 
-SECTION .bss ;ALIGN=32
-NEWSYM DSPBuffer, resd 320*4 ; The play buffer...
-NEWSYM EchoBuffer, resd 320*4 ; The play buffer...
-NEWSYM PModBuffer, resd 320*4 ; The play buffer...
-NEWSYM BRRBuffer, resb 32   ; The BRR Decode Buffer
+SECTION .data ;ALIGN=32
+NEWSYM DSPBuffer, times 320*4 dd 0; The play buffer...
+NEWSYM EchoBuffer, times 320*4 dd 0; The play buffer...
+NEWSYM PModBuffer, times 320*4 dd 0; The play buffer...
+NEWSYM BRRBuffer, times 32 dd 0  ; The BRR Decode Buffer
 
-NEWSYM BRRPlace0, resd 1             ; Place in the BRRBuffer for Voice 0
-NEWSYM BRRTemp0,  resd 1             ; Keep this 0
-NEWSYM BRRPlace1, resd 1             ; Place in the BRRBuffer for Voice 0
-NEWSYM BRRTemp1,  resd 1             ; Keep this 0
-NEWSYM BRRPlace2, resd 1             ; Place in the BRRBuffer for Voice 0
-NEWSYM BRRTemp2,  resd 1             ; Keep this 0
-NEWSYM BRRPlace3, resd 1             ; Place in the BRRBuffer for Voice 0
-NEWSYM BRRTemp3,  resd 1             ; Keep this 0
-NEWSYM BRRPlace4, resd 1             ; Place in the BRRBuffer for Voice 0
-NEWSYM BRRTemp4,  resd 1             ; Keep this 0
-NEWSYM BRRPlace5, resd 1             ; Place in the BRRBuffer for Voice 0
-NEWSYM BRRTemp5,  resd 1             ; Keep this 0
-NEWSYM BRRPlace6, resd 1             ; Place in the BRRBuffer for Voice 0
-NEWSYM BRRTemp6,  resd 1             ; Keep this 0
-NEWSYM BRRPlace7, resd 1             ; Place in the BRRBuffer for Voice 0
-NEWSYM BRRTemp7,  resd 1             ; Keep this 0
+NEWSYM BRRPlace0, dd 0             ; Place in the BRRBuffer for Voice 0
+NEWSYM BRRTemp0,  dd 0             ; Keep this 0
+NEWSYM BRRPlace1, dd 0             ; Place in the BRRBuffer for Voice 0
+NEWSYM BRRTemp1,  dd 0             ; Keep this 0
+NEWSYM BRRPlace2, dd 0             ; Place in the BRRBuffer for Voice 0
+NEWSYM BRRTemp2,  dd 0             ; Keep this 0
+NEWSYM BRRPlace3, dd 0             ; Place in the BRRBuffer for Voice 0
+NEWSYM BRRTemp3,  dd 0             ; Keep this 0
+NEWSYM BRRPlace4, dd 0             ; Place in the BRRBuffer for Voice 0
+NEWSYM BRRTemp4,  dd 0             ; Keep this 0
+NEWSYM BRRPlace5, dd 0             ; Place in the BRRBuffer for Voice 0
+NEWSYM BRRTemp5,  dd 0             ; Keep this 0
+NEWSYM BRRPlace6, dd 0             ; Place in the BRRBuffer for Voice 0
+NEWSYM BRRTemp6,  dd 0             ; Keep this 0
+NEWSYM BRRPlace7, dd 0             ; Place in the BRRBuffer for Voice 0
+NEWSYM BRRTemp7,  dd 0             ; Keep this 0
 
 ;NEWSYM Voice0Freq, dd 1            ; Frequency of Voice 0 (Delta Freq)
 ;NEWSYM Voice1Freq, dd 1            ; Frequency of Voice 1 (Delta Freq)
@@ -2311,14 +2312,14 @@ NEWSYM BRRTemp7,  resd 1             ; Keep this 0
 ;NEWSYM Voice6Freq, dd 1            ; Frequency of Voice 6 (Delta Freq)
 ;NEWSYM Voice7Freq, dd 1            ; Frequency of Voice 7 (Delta Freq)
 
-NEWSYM Voice0Freq, resd 1            ; Frequency of Voice 0 (Delta Freq)
-NEWSYM Voice1Freq, resd 1            ; Frequency of Voice 1 (Delta Freq)
-NEWSYM Voice2Freq, resd 1            ; Frequency of Voice 2 (Delta Freq)
-NEWSYM Voice3Freq, resd 1            ; Frequency of Voice 3 (Delta Freq)
-NEWSYM Voice4Freq, resd 1            ; Frequency of Voice 4 (Delta Freq)
-NEWSYM Voice5Freq, resd 1            ; Frequency of Voice 5 (Delta Freq)
-NEWSYM Voice6Freq, resd 1            ; Frequency of Voice 6 (Delta Freq)
-NEWSYM Voice7Freq, resd 1            ; Frequency of Voice 7 (Delta Freq)
+NEWSYM Voice0Freq, dd 0            ; Frequency of Voice 0 (Delta Freq)
+NEWSYM Voice1Freq, dd 0            ; Frequency of Voice 1 (Delta Freq)
+NEWSYM Voice2Freq, dd 0            ; Frequency of Voice 2 (Delta Freq)
+NEWSYM Voice3Freq, dd 0            ; Frequency of Voice 3 (Delta Freq)
+NEWSYM Voice4Freq, dd 0            ; Frequency of Voice 4 (Delta Freq)
+NEWSYM Voice5Freq, dd 0            ; Frequency of Voice 5 (Delta Freq)
+NEWSYM Voice6Freq, dd 0            ; Frequency of Voice 6 (Delta Freq)
+NEWSYM Voice7Freq, dd 0            ; Frequency of Voice 7 (Delta Freq)
 
 ; appears to only be used in dspproc.asm
 ;Voice0Pitch dw 1            ; Previous Pitch for Voice 0
@@ -2330,86 +2331,86 @@ NEWSYM Voice7Freq, resd 1            ; Frequency of Voice 7 (Delta Freq)
 ;Voice6Pitch dw 1            ; Previous Pitch for Voice 6
 ;Voice7Pitch dw 1            ; Previous Pitch for Voice 7
 
-Voice0Pitch resw 1            ; Previous Pitch for Voice 0
-Voice1Pitch resw 1            ; Previous Pitch for Voice 1
-Voice2Pitch resw 1            ; Previous Pitch for Voice 2
-Voice3Pitch resw 1            ; Previous Pitch for Voice 3
-Voice4Pitch resw 1            ; Previous Pitch for Voice 4
-Voice5Pitch resw 1            ; Previous Pitch for Voice 5
-Voice6Pitch resw 1            ; Previous Pitch for Voice 6
-Voice7Pitch resw 1            ; Previous Pitch for Voice 7
+Voice0Pitch dw 0            ; Previous Pitch for Voice 0
+Voice1Pitch dw 0            ; Previous Pitch for Voice 1
+Voice2Pitch dw 0            ; Previous Pitch for Voice 2
+Voice3Pitch dw 0            ; Previous Pitch for Voice 3
+Voice4Pitch dw 0            ; Previous Pitch for Voice 4
+Voice5Pitch dw 0            ; Previous Pitch for Voice 5
+Voice6Pitch dw 0            ; Previous Pitch for Voice 6
+Voice7Pitch dw 0            ; Previous Pitch for Voice 7
 
-NEWSYM Voice0Status,   resb 1 ; 0=Not Playing 1=Playing
-NEWSYM Voice1Status,   resb 1 
-NEWSYM Voice2Status,   resb 1
-NEWSYM Voice3Status,   resb 1
-NEWSYM Voice4Status,   resb 1
-NEWSYM Voice5Status,   resb 1
-NEWSYM Voice6Status,   resb 1
-NEWSYM Voice7Status,   resb 1
+NEWSYM Voice0Status,   db 0 ; 0=Not Playing 1=Playing
+NEWSYM Voice1Status,   db 0 
+NEWSYM Voice2Status,   db 0
+NEWSYM Voice3Status,   db 0
+NEWSYM Voice4Status,   db 0
+NEWSYM Voice5Status,   db 0
+NEWSYM Voice6Status,   db 0
+NEWSYM Voice7Status,   db 0
 
-NEWSYM Voice0Ptr,      resd 1 ; Ptr to Next BRR Block to be played
-NEWSYM Voice1Ptr,      resd 1
-NEWSYM Voice2Ptr,      resd 1
-NEWSYM Voice3Ptr,      resd 1
-NEWSYM Voice4Ptr,      resd 1
-NEWSYM Voice5Ptr,      resd 1
-NEWSYM Voice6Ptr,      resd 1
-NEWSYM Voice7Ptr,      resd 1
-NEWSYM Voice0LoopPtr,  resd 1 ; Ptr to Loop BRR Block to be played
-NEWSYM Voice1LoopPtr,  resd 1 ; Ptr to Loop BRR Block to be played
-NEWSYM Voice2LoopPtr,  resd 1 ; Ptr to Loop BRR Block to be played
-NEWSYM Voice3LoopPtr,  resd 1 ; Ptr to Loop BRR Block to be played
-NEWSYM Voice4LoopPtr,  resd 1 ; Ptr to Loop BRR Block to be played
-NEWSYM Voice5LoopPtr,  resd 1 ; Ptr to Loop BRR Block to be played
-NEWSYM Voice6LoopPtr,  resd 1 ; Ptr to Loop BRR Block to be played
-NEWSYM Voice7LoopPtr,  resd 1 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice0Ptr,      dd 0 ; Ptr to Next BRR Block to be played
+NEWSYM Voice1Ptr,      dd 0
+NEWSYM Voice2Ptr,      dd 0
+NEWSYM Voice3Ptr,      dd 0
+NEWSYM Voice4Ptr,      dd 0
+NEWSYM Voice5Ptr,      dd 0
+NEWSYM Voice6Ptr,      dd 0
+NEWSYM Voice7Ptr,      dd 0
+NEWSYM Voice0LoopPtr,  dd 0 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice1LoopPtr,  dd 0 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice2LoopPtr,  dd 0 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice3LoopPtr,  dd 0 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice4LoopPtr,  dd 0 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice5LoopPtr,  dd 0 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice6LoopPtr,  dd 0 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice7LoopPtr,  dd 0 ; Ptr to Loop BRR Block to be played
 
-NEWSYM Voice0BufPtr,  resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice1BufPtr,  resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice2BufPtr,  resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice3BufPtr,  resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice4BufPtr,  resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice5BufPtr,  resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice6BufPtr,  resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice7BufPtr,  resd 1 ; Ptr to Buffer Block to be played
+NEWSYM Voice0BufPtr,  dd 0 ; Ptr to Buffer Block to be played
+NEWSYM Voice1BufPtr,  dd 0 ; Ptr to Buffer Block to be played
+NEWSYM Voice2BufPtr,  dd 0 ; Ptr to Buffer Block to be played
+NEWSYM Voice3BufPtr,  dd 0 ; Ptr to Buffer Block to be played
+NEWSYM Voice4BufPtr,  dd 0 ; Ptr to Buffer Block to be played
+NEWSYM Voice5BufPtr,  dd 0 ; Ptr to Buffer Block to be played
+NEWSYM Voice6BufPtr,  dd 0 ; Ptr to Buffer Block to be played
+NEWSYM Voice7BufPtr,  dd 0 ; Ptr to Buffer Block to be played
 
-NEWSYM SoundCounter,   resd 1 ; Counter used for sound generation
-NEWSYM SoundCounter2,  resd 1 ; Counter used for sound generation
-NEWSYM Voice0Prev0,    resd 1 
-NEWSYM Voice1Prev0,    resd 1 
-NEWSYM Voice2Prev0,    resd 1 
-NEWSYM Voice3Prev0,    resd 1 
-NEWSYM Voice4Prev0,    resd 1 
-NEWSYM Voice5Prev0,    resd 1 
-NEWSYM Voice6Prev0,    resd 1 
-NEWSYM Voice7Prev0,    resd 1 
-NEWSYM Voice0Prev1,    resd 1 
-NEWSYM Voice1Prev1,    resd 1 
-NEWSYM Voice2Prev1,    resd 1 
-NEWSYM Voice3Prev1,    resd 1 
-NEWSYM Voice4Prev1,    resd 1 
-NEWSYM Voice5Prev1,    resd 1 
-NEWSYM Voice6Prev1,    resd 1 
-NEWSYM Voice7Prev1,    resd 1 
+NEWSYM SoundCounter,   dd 0 ; Counter used for sound generation
+NEWSYM SoundCounter2,  dd 0 ; Counter used for sound generation
+NEWSYM Voice0Prev0,    dd 0 
+NEWSYM Voice1Prev0,    dd 0 
+NEWSYM Voice2Prev0,    dd 0 
+NEWSYM Voice3Prev0,    dd 0 
+NEWSYM Voice4Prev0,    dd 0 
+NEWSYM Voice5Prev0,    dd 0 
+NEWSYM Voice6Prev0,    dd 0 
+NEWSYM Voice7Prev0,    dd 0 
+NEWSYM Voice0Prev1,    dd 0 
+NEWSYM Voice1Prev1,    dd 0 
+NEWSYM Voice2Prev1,    dd 0 
+NEWSYM Voice3Prev1,    dd 0 
+NEWSYM Voice4Prev1,    dd 0 
+NEWSYM Voice5Prev1,    dd 0 
+NEWSYM Voice6Prev1,    dd 0 
+NEWSYM Voice7Prev1,    dd 0 
 
-NEWSYM Voice0Loop,     resb 1
-NEWSYM Voice1Loop,     resb 1
-NEWSYM Voice2Loop,     resb 1
-NEWSYM Voice3Loop,     resb 1
-NEWSYM Voice4Loop,     resb 1
-NEWSYM Voice5Loop,     resb 1
-NEWSYM Voice6Loop,     resb 1
-NEWSYM Voice7Loop,     resb 1
+NEWSYM Voice0Loop,     db 0
+NEWSYM Voice1Loop,     db 0
+NEWSYM Voice2Loop,     db 0
+NEWSYM Voice3Loop,     db 0
+NEWSYM Voice4Loop,     db 0
+NEWSYM Voice5Loop,     db 0
+NEWSYM Voice6Loop,     db 0
+NEWSYM Voice7Loop,     db 0
 
-NEWSYM Voice0End,      resb 1
-NEWSYM Voice1End,      resb 1
-NEWSYM Voice2End,      resb 1
-NEWSYM Voice3End,      resb 1
-NEWSYM Voice4End,      resb 1
-NEWSYM Voice5End,      resb 1
-NEWSYM Voice6End,      resb 1
-NEWSYM Voice7End,      resb 1
+NEWSYM Voice0End,      db 0
+NEWSYM Voice1End,      db 0
+NEWSYM Voice2End,      db 0
+NEWSYM Voice3End,      db 0
+NEWSYM Voice4End,      db 0
+NEWSYM Voice5End,      db 0
+NEWSYM Voice6End,      db 0
+NEWSYM Voice7End,      db 0
 
 ;NEWSYM Voice0Noise,    db 1
 ;NEWSYM Voice1Noise,    db 1
@@ -2420,41 +2421,41 @@ NEWSYM Voice7End,      resb 1
 ;NEWSYM Voice6Noise,    db 1
 ;NEWSYM Voice7Noise,    db 1
 
-NEWSYM Voice0Noise,    resb 1
-NEWSYM Voice1Noise,    resb 1
-NEWSYM Voice2Noise,    resb 1
-NEWSYM Voice3Noise,    resb 1
-NEWSYM Voice4Noise,    resb 1
-NEWSYM Voice5Noise,    resb 1
-NEWSYM Voice6Noise,    resb 1
-NEWSYM Voice7Noise,    resb 1
+NEWSYM Voice0Noise,    db 0
+NEWSYM Voice1Noise,    db 0
+NEWSYM Voice2Noise,    db 0
+NEWSYM Voice3Noise,    db 0
+NEWSYM Voice4Noise,    db 0
+NEWSYM Voice5Noise,    db 0
+NEWSYM Voice6Noise,    db 0
+NEWSYM Voice7Noise,    db 0
 
-NEWSYM Voice0Volume,   resb 1
-NEWSYM Voice1Volume,   resb 1
-NEWSYM Voice2Volume,   resb 1
-NEWSYM Voice3Volume,   resb 1
-NEWSYM Voice4Volume,   resb 1
-NEWSYM Voice5Volume,   resb 1
-NEWSYM Voice6Volume,   resb 1
-NEWSYM Voice7Volume,   resb 1
+NEWSYM Voice0Volume,   db 0
+NEWSYM Voice1Volume,   db 0
+NEWSYM Voice2Volume,   db 0
+NEWSYM Voice3Volume,   db 0
+NEWSYM Voice4Volume,   db 0
+NEWSYM Voice5Volume,   db 0
+NEWSYM Voice6Volume,   db 0
+NEWSYM Voice7Volume,   db 0
 
-NEWSYM Voice0VolumeR,   resb 1
-NEWSYM Voice1VolumeR,   resb 1
-NEWSYM Voice2VolumeR,   resb 1
-NEWSYM Voice3VolumeR,   resb 1
-NEWSYM Voice4VolumeR,   resb 1
-NEWSYM Voice5VolumeR,   resb 1
-NEWSYM Voice6VolumeR,   resb 1
-NEWSYM Voice7VolumeR,   resb 1
+NEWSYM Voice0VolumeR,   db 0
+NEWSYM Voice1VolumeR,   db 0
+NEWSYM Voice2VolumeR,   db 0
+NEWSYM Voice3VolumeR,   db 0
+NEWSYM Voice4VolumeR,   db 0
+NEWSYM Voice5VolumeR,   db 0
+NEWSYM Voice6VolumeR,   db 0
+NEWSYM Voice7VolumeR,   db 0
 
-NEWSYM Voice0VolumeL,   resb 1
-NEWSYM Voice1VolumeL,   resb 1
-NEWSYM Voice2VolumeL,   resb 1
-NEWSYM Voice3VolumeL,   resb 1
-NEWSYM Voice4VolumeL,   resb 1
-NEWSYM Voice5VolumeL,   resb 1
-NEWSYM Voice6VolumeL,   resb 1
-NEWSYM Voice7VolumeL,   resb 1
+NEWSYM Voice0VolumeL,   db 0
+NEWSYM Voice1VolumeL,   db 0
+NEWSYM Voice2VolumeL,   db 0
+NEWSYM Voice3VolumeL,   db 0
+NEWSYM Voice4VolumeL,   db 0
+NEWSYM Voice5VolumeL,   db 0
+NEWSYM Voice6VolumeL,   db 0
+NEWSYM Voice7VolumeL,   db 0
 
 ;NEWSYM Voice0Env,      db 1
 ;NEWSYM Voice1Env,      db 1
@@ -2465,318 +2466,318 @@ NEWSYM Voice7VolumeL,   resb 1
 ;NEWSYM Voice6Env,      db 1
 ;NEWSYM Voice7Env,      db 1
 
-NEWSYM Voice0Env,      resb 1
-NEWSYM Voice1Env,      resb 1
-NEWSYM Voice2Env,      resb 1
-NEWSYM Voice3Env,      resb 1
-NEWSYM Voice4Env,      resb 1
-NEWSYM Voice5Env,      resb 1
-NEWSYM Voice6Env,      resb 1
-NEWSYM Voice7Env,      resb 1
+NEWSYM Voice0Env,      db 0
+NEWSYM Voice1Env,      db 0
+NEWSYM Voice2Env,      db 0
+NEWSYM Voice3Env,      db 0
+NEWSYM Voice4Env,      db 0
+NEWSYM Voice5Env,      db 0
+NEWSYM Voice6Env,      db 0
+NEWSYM Voice7Env,      db 0
 
-NEWSYM Voice0Out,      resb 1
-NEWSYM Voice1Out,      resb 1
-NEWSYM Voice2Out,      resb 1
-NEWSYM Voice3Out,      resb 1
-NEWSYM Voice4Out,      resb 1
-NEWSYM Voice5Out,      resb 1
-NEWSYM Voice6Out,      resb 1
-NEWSYM Voice7Out,      resb 1
+NEWSYM Voice0Out,      db 0
+NEWSYM Voice1Out,      db 0
+NEWSYM Voice2Out,      db 0
+NEWSYM Voice3Out,      db 0
+NEWSYM Voice4Out,      db 0
+NEWSYM Voice5Out,      db 0
+NEWSYM Voice6Out,      db 0
+NEWSYM Voice7Out,      db 0
 
 ; 1 Attack, 2 Decrease,3 Sustain, 0 Gain
-NEWSYM Voice0State,   resb 1
-NEWSYM Voice1State,   resb 1
-NEWSYM Voice2State,   resb 1
-NEWSYM Voice3State,   resb 1
-NEWSYM Voice4State,   resb 1
-NEWSYM Voice5State,   resb 1
-NEWSYM Voice6State,   resb 1
-NEWSYM Voice7State,   resb 1
+NEWSYM Voice0State,   db 0
+NEWSYM Voice1State,   db 0
+NEWSYM Voice2State,   db 0
+NEWSYM Voice3State,   db 0
+NEWSYM Voice4State,   db 0
+NEWSYM Voice5State,   db 0
+NEWSYM Voice6State,   db 0
+NEWSYM Voice7State,   db 0
 
 ; WAS all dd 1 before, down to next applicable comment
 
-NEWSYM Voice0Time,     resd 1
-NEWSYM Voice1Time,     resd 1
-NEWSYM Voice2Time,     resd 1
-NEWSYM Voice3Time,     resd 1
-NEWSYM Voice4Time,     resd 1
-NEWSYM Voice5Time,     resd 1
-NEWSYM Voice6Time,     resd 1
-NEWSYM Voice7Time,     resd 1
+NEWSYM Voice0Time,     dd 0
+NEWSYM Voice1Time,     dd 0
+NEWSYM Voice2Time,     dd 0
+NEWSYM Voice3Time,     dd 0
+NEWSYM Voice4Time,     dd 0
+NEWSYM Voice5Time,     dd 0
+NEWSYM Voice6Time,     dd 0
+NEWSYM Voice7Time,     dd 0
 
-NEWSYM Voice0Attack,   resd 1
-NEWSYM Voice1Attack,   resd 1
-NEWSYM Voice2Attack,   resd 1
-NEWSYM Voice3Attack,   resd 1
-NEWSYM Voice4Attack,   resd 1
-NEWSYM Voice5Attack,   resd 1
-NEWSYM Voice6Attack,   resd 1
-NEWSYM Voice7Attack,   resd 1
+NEWSYM Voice0Attack,   dd 0
+NEWSYM Voice1Attack,   dd 0
+NEWSYM Voice2Attack,   dd 0
+NEWSYM Voice3Attack,   dd 0
+NEWSYM Voice4Attack,   dd 0
+NEWSYM Voice5Attack,   dd 0
+NEWSYM Voice6Attack,   dd 0
+NEWSYM Voice7Attack,   dd 0
 
-NEWSYM Voice0Decay, resd 1
-NEWSYM Voice1Decay, resd 1
-NEWSYM Voice2Decay, resd 1
-NEWSYM Voice3Decay, resd 1
-NEWSYM Voice4Decay, resd 1
-NEWSYM Voice5Decay, resd 1
-NEWSYM Voice6Decay, resd 1
-NEWSYM Voice7Decay, resd 1
+NEWSYM Voice0Decay, dd 0
+NEWSYM Voice1Decay, dd 0
+NEWSYM Voice2Decay, dd 0
+NEWSYM Voice3Decay, dd 0
+NEWSYM Voice4Decay, dd 0
+NEWSYM Voice5Decay, dd 0
+NEWSYM Voice6Decay, dd 0
+NEWSYM Voice7Decay, dd 0
 
-NEWSYM Voice0SustainL, resb 1
-NEWSYM Voice1SustainL, resb 1
-NEWSYM Voice2SustainL, resb 1
-NEWSYM Voice3SustainL, resb 1
-NEWSYM Voice4SustainL, resb 1
-NEWSYM Voice5SustainL, resb 1
-NEWSYM Voice6SustainL, resb 1
-NEWSYM Voice7SustainL, resb 1
+NEWSYM Voice0SustainL, db 0
+NEWSYM Voice1SustainL, db 0
+NEWSYM Voice2SustainL, db 0
+NEWSYM Voice3SustainL, db 0
+NEWSYM Voice4SustainL, db 0
+NEWSYM Voice5SustainL, db 0
+NEWSYM Voice6SustainL, db 0
+NEWSYM Voice7SustainL, db 0
 
-NEWSYM Voice0SustainL2, resb 1
-NEWSYM Voice1SustainL2, resb 1
-NEWSYM Voice2SustainL2, resb 1
-NEWSYM Voice3SustainL2, resb 1
-NEWSYM Voice4SustainL2, resb 1
-NEWSYM Voice5SustainL2, resb 1
-NEWSYM Voice6SustainL2, resb 1
-NEWSYM Voice7SustainL2, resb 1
+NEWSYM Voice0SustainL2, db 0
+NEWSYM Voice1SustainL2, db 0
+NEWSYM Voice2SustainL2, db 0
+NEWSYM Voice3SustainL2, db 0
+NEWSYM Voice4SustainL2, db 0
+NEWSYM Voice5SustainL2, db 0
+NEWSYM Voice6SustainL2, db 0
+NEWSYM Voice7SustainL2, db 0
 
-NEWSYM Voice0SustainR, resd 1
-NEWSYM Voice1SustainR, resd 1
-NEWSYM Voice2SustainR, resd 1
-NEWSYM Voice3SustainR, resd 1
-NEWSYM Voice4SustainR, resd 1
-NEWSYM Voice5SustainR, resd 1
-NEWSYM Voice6SustainR, resd 1
-NEWSYM Voice7SustainR, resd 1
+NEWSYM Voice0SustainR, dd 0
+NEWSYM Voice1SustainR, dd 0
+NEWSYM Voice2SustainR, dd 0
+NEWSYM Voice3SustainR, dd 0
+NEWSYM Voice4SustainR, dd 0
+NEWSYM Voice5SustainR, dd 0
+NEWSYM Voice6SustainR, dd 0
+NEWSYM Voice7SustainR, dd 0
 
-NEWSYM Voice0SustainR2, resd 1
-NEWSYM Voice1SustainR2, resd 1
-NEWSYM Voice2SustainR2, resd 1
-NEWSYM Voice3SustainR2, resd 1
-NEWSYM Voice4SustainR2, resd 1
-NEWSYM Voice5SustainR2, resd 1
-NEWSYM Voice6SustainR2, resd 1
-NEWSYM Voice7SustainR2, resd 1
+NEWSYM Voice0SustainR2, dd 0
+NEWSYM Voice1SustainR2, dd 0
+NEWSYM Voice2SustainR2, dd 0
+NEWSYM Voice3SustainR2, dd 0
+NEWSYM Voice4SustainR2, dd 0
+NEWSYM Voice5SustainR2, dd 0
+NEWSYM Voice6SustainR2, dd 0
+NEWSYM Voice7SustainR2, dd 0
 
-NEWSYM Voice0IncNumber,  resd 1
-NEWSYM Voice1IncNumber,  resd 1
-NEWSYM Voice2IncNumber,  resd 1
-NEWSYM Voice3IncNumber,  resd 1
-NEWSYM Voice4IncNumber,  resd 1
-NEWSYM Voice5IncNumber,  resd 1
-NEWSYM Voice6IncNumber,  resd 1
-NEWSYM Voice7IncNumber,  resd 1
+NEWSYM Voice0IncNumber,  dd 0
+NEWSYM Voice1IncNumber,  dd 0
+NEWSYM Voice2IncNumber,  dd 0
+NEWSYM Voice3IncNumber,  dd 0
+NEWSYM Voice4IncNumber,  dd 0
+NEWSYM Voice5IncNumber,  dd 0
+NEWSYM Voice6IncNumber,  dd 0
+NEWSYM Voice7IncNumber,  dd 0
 
 ; END formerly initialized to 1 junk
 
-NEWSYM Voice0SLenNumber,  resd 1
-NEWSYM Voice1SLenNumber,  resd 1
-NEWSYM Voice2SLenNumber,  resd 1
-NEWSYM Voice3SLenNumber,  resd 1
-NEWSYM Voice4SLenNumber,  resd 1
-NEWSYM Voice5SLenNumber,  resd 1
-NEWSYM Voice6SLenNumber,  resd 1
-NEWSYM Voice7SLenNumber,  resd 1
+NEWSYM Voice0SLenNumber,  dd 0
+NEWSYM Voice1SLenNumber,  dd 0
+NEWSYM Voice2SLenNumber,  dd 0
+NEWSYM Voice3SLenNumber,  dd 0
+NEWSYM Voice4SLenNumber,  dd 0
+NEWSYM Voice5SLenNumber,  dd 0
+NEWSYM Voice6SLenNumber,  dd 0
+NEWSYM Voice7SLenNumber,  dd 0
 
-NEWSYM Voice0SEndNumber,  resd 1
-NEWSYM Voice1SEndNumber,  resd 1
-NEWSYM Voice2SEndNumber,  resd 1
-NEWSYM Voice3SEndNumber,  resd 1
-NEWSYM Voice4SEndNumber,  resd 1
-NEWSYM Voice5SEndNumber,  resd 1
-NEWSYM Voice6SEndNumber,  resd 1
-NEWSYM Voice7SEndNumber,  resd 1
+NEWSYM Voice0SEndNumber,  dd 0
+NEWSYM Voice1SEndNumber,  dd 0
+NEWSYM Voice2SEndNumber,  dd 0
+NEWSYM Voice3SEndNumber,  dd 0
+NEWSYM Voice4SEndNumber,  dd 0
+NEWSYM Voice5SEndNumber,  dd 0
+NEWSYM Voice6SEndNumber,  dd 0
+NEWSYM Voice7SEndNumber,  dd 0
 
-NEWSYM Voice0SEndLNumber,  resd 1
-NEWSYM Voice1SEndLNumber,  resd 1
-NEWSYM Voice2SEndLNumber,  resd 1
-NEWSYM Voice3SEndLNumber,  resd 1
-NEWSYM Voice4SEndLNumber,  resd 1
-NEWSYM Voice5SEndLNumber,  resd 1
-NEWSYM Voice6SEndLNumber,  resd 1
-NEWSYM Voice7SEndLNumber,  resd 1
+NEWSYM Voice0SEndLNumber,  dd 0
+NEWSYM Voice1SEndLNumber,  dd 0
+NEWSYM Voice2SEndLNumber,  dd 0
+NEWSYM Voice3SEndLNumber,  dd 0
+NEWSYM Voice4SEndLNumber,  dd 0
+NEWSYM Voice5SEndLNumber,  dd 0
+NEWSYM Voice6SEndLNumber,  dd 0
+NEWSYM Voice7SEndLNumber,  dd 0
 
 ; MORE junk that was initialized to 1
 
-NEWSYM Voice0DecreaseNumber,  resd 1
-NEWSYM Voice1DecreaseNumber,  resd 1
-NEWSYM Voice2DecreaseNumber,  resd 1
-NEWSYM Voice3DecreaseNumber,  resd 1
-NEWSYM Voice4DecreaseNumber,  resd 1
-NEWSYM Voice5DecreaseNumber,  resd 1
-NEWSYM Voice6DecreaseNumber,  resd 1
-NEWSYM Voice7DecreaseNumber,  resd 1
+NEWSYM Voice0DecreaseNumber,  dd 0
+NEWSYM Voice1DecreaseNumber,  dd 0
+NEWSYM Voice2DecreaseNumber,  dd 0
+NEWSYM Voice3DecreaseNumber,  dd 0
+NEWSYM Voice4DecreaseNumber,  dd 0
+NEWSYM Voice5DecreaseNumber,  dd 0
+NEWSYM Voice6DecreaseNumber,  dd 0
+NEWSYM Voice7DecreaseNumber,  dd 0
 
-NEWSYM Voice0EnvInc,          resd 1
-NEWSYM Voice1EnvInc,          resd 1
-NEWSYM Voice2EnvInc,          resd 1
-NEWSYM Voice3EnvInc,          resd 1
-NEWSYM Voice4EnvInc,          resd 1
-NEWSYM Voice5EnvInc,          resd 1
-NEWSYM Voice6EnvInc,          resd 1
-NEWSYM Voice7EnvInc,          resd 1
+NEWSYM Voice0EnvInc,          dd 0
+NEWSYM Voice1EnvInc,          dd 0
+NEWSYM Voice2EnvInc,          dd 0
+NEWSYM Voice3EnvInc,          dd 0
+NEWSYM Voice4EnvInc,          dd 0
+NEWSYM Voice5EnvInc,          dd 0
+NEWSYM Voice6EnvInc,          dd 0
+NEWSYM Voice7EnvInc,          dd 0
 
 ; END initialized to 1 junk
 
 ; 0 = Direct, 1 = Increase, 2 = Increase2, 3 = Decrease, 4 = Decrease2
-NEWSYM Voice0GainType,       resb 1
-NEWSYM Voice1GainType,       resb 1
-NEWSYM Voice2GainType,       resb 1
-NEWSYM Voice3GainType,       resb 1
-NEWSYM Voice4GainType,       resb 1
-NEWSYM Voice5GainType,       resb 1
-NEWSYM Voice6GainType,       resb 1
-NEWSYM Voice7GainType,       resb 1
+NEWSYM Voice0GainType,       db 0
+NEWSYM Voice1GainType,       db 0
+NEWSYM Voice2GainType,       db 0
+NEWSYM Voice3GainType,       db 0
+NEWSYM Voice4GainType,       db 0
+NEWSYM Voice5GainType,       db 0
+NEWSYM Voice6GainType,       db 0
+NEWSYM Voice7GainType,       db 0
 
 ; YET ANOTHER block that was initialized to 1
 
-NEWSYM Voice0GainTime,       resd 1
-NEWSYM Voice1GainTime,       resd 1
-NEWSYM Voice2GainTime,       resd 1
-NEWSYM Voice3GainTime,       resd 1
-NEWSYM Voice4GainTime,       resd 1
-NEWSYM Voice5GainTime,       resd 1
-NEWSYM Voice6GainTime,       resd 1
-NEWSYM Voice7GainTime,       resd 1
+NEWSYM Voice0GainTime,       dd 0
+NEWSYM Voice1GainTime,       dd 0
+NEWSYM Voice2GainTime,       dd 0
+NEWSYM Voice3GainTime,       dd 0
+NEWSYM Voice4GainTime,       dd 0
+NEWSYM Voice5GainTime,       dd 0
+NEWSYM Voice6GainTime,       dd 0
+NEWSYM Voice7GainTime,       dd 0
 
 ; END that block
 
-NEWSYM Voice0Starting,          resb 1
-NEWSYM Voice1Starting,          resb 1
-NEWSYM Voice2Starting,          resb 1
-NEWSYM Voice3Starting,          resb 1
-NEWSYM Voice4Starting,          resb 1
-NEWSYM Voice5Starting,          resb 1
-NEWSYM Voice6Starting,          resb 1
-NEWSYM Voice7Starting,          resb 1
+NEWSYM Voice0Starting,          db 0
+NEWSYM Voice1Starting,          db 0
+NEWSYM Voice2Starting,          db 0
+NEWSYM Voice3Starting,          db 0
+NEWSYM Voice4Starting,          db 0
+NEWSYM Voice5Starting,          db 0
+NEWSYM Voice6Starting,          db 0
+NEWSYM Voice7Starting,          db 0
 
-NEWSYM Freqdisp,        resd 1
-NEWSYM SBRateb,         resd 1
+NEWSYM Freqdisp,        dd 0
+NEWSYM SBRateb,         dd 0
 
-NEWSYM Voice0Looped,            resb 1
-NEWSYM Voice1Looped,            resb 1
-NEWSYM Voice2Looped,            resb 1
-NEWSYM Voice3Looped,            resb 1
-NEWSYM Voice4Looped,            resb 1
-NEWSYM Voice5Looped,            resb 1
-NEWSYM Voice6Looped,            resb 1
-NEWSYM Voice7Looped,            resb 1
+NEWSYM Voice0Looped,            db 0
+NEWSYM Voice1Looped,            db 0
+NEWSYM Voice2Looped,            db 0
+NEWSYM Voice3Looped,            db 0
+NEWSYM Voice4Looped,            db 0
+NEWSYM Voice5Looped,            db 0
+NEWSYM Voice6Looped,            db 0
+NEWSYM Voice7Looped,            db 0
 
-VoiceNoiseEn resb 8
-NEWSYM GainDecBendDataPos, resb 8
-NEWSYM GainDecBendDataTime, resd 8
-NEWSYM GainDecBendDataDat, resb 8
+VoiceNoiseEn times 8 db 0
+NEWSYM GainDecBendDataPos, times 8 db 0
+NEWSYM GainDecBendDataTime, times 8 dd 0
+NEWSYM GainDecBendDataDat, times 8 db 0
 
-NEWSYM AdsrBlocksLeft, resb 8
-NEWSYM AdsrNextTimeDepth, resd 8
+NEWSYM AdsrBlocksLeft, times 8 db 0
+NEWSYM AdsrNextTimeDepth, times 8 dd 0
 
-TimeTemp   resd 8   ; 104 bytes
-IncNTemp   resd 8
-EnvITemp   resd 8
-StatTemp   resd 2
+TimeTemp   times 8 dd 0  ; 104 bytes
+IncNTemp   times 8 dd 0
+EnvITemp   times 8 dd 0
+StatTemp   times 2 dd 0
 
-NEWSYM FutureExpand,   resb 44
+NEWSYM FutureExpand,   times 44 db 0
 ; pharos equ hack *sigh*
 marksave:
 
-NEWSYM echoon0,   resb 1
-NEWSYM echoon1,   resb 1
-NEWSYM echoon2,   resb 1
-NEWSYM echoon3,   resb 1
-NEWSYM echoon4,   resb 1
-NEWSYM echoon5,   resb 1
-NEWSYM echoon6,   resb 1
-NEWSYM echoon7,   resb 1
+NEWSYM echoon0,   db 0
+NEWSYM echoon1,   db 0
+NEWSYM echoon2,   db 0
+NEWSYM echoon3,   db 0
+NEWSYM echoon4,   db 0
+NEWSYM echoon5,   db 0
+NEWSYM echoon6,   db 0
+NEWSYM echoon7,   db 0
 
-NEWSYM GlobalVL,   resd 1
-NEWSYM GlobalVR,   resd 1
-NEWSYM EchoVL,   resd 1
-NEWSYM EchoVR,   resd 1
-NEWSYM EchoT,    resd 1
+NEWSYM GlobalVL,   dd 0
+NEWSYM GlobalVR,   dd 0
+NEWSYM EchoVL,   dd 0
+NEWSYM EchoVR,   dd 0
+NEWSYM EchoT,    dd 0
 
-NEWSYM Voice0Volumee,  resb 1
-NEWSYM Voice1Volumee,  resb 1
-NEWSYM Voice2Volumee,  resb 1
-NEWSYM Voice3Volumee,  resb 1
-NEWSYM Voice4Volumee,  resb 1
-NEWSYM Voice5Volumee,  resb 1
-NEWSYM Voice6Volumee,  resb 1
-NEWSYM Voice7Volumee,  resb 1
+NEWSYM Voice0Volumee,  db 0
+NEWSYM Voice1Volumee,  db 0
+NEWSYM Voice2Volumee,  db 0
+NEWSYM Voice3Volumee,  db 0
+NEWSYM Voice4Volumee,  db 0
+NEWSYM Voice5Volumee,  db 0
+NEWSYM Voice6Volumee,  db 0
+NEWSYM Voice7Volumee,  db 0
 
-NEWSYM Voice0VolumeRe,  resb 1
-NEWSYM Voice1VolumeRe,  resb 1
-NEWSYM Voice2VolumeRe,  resb 1
-NEWSYM Voice3VolumeRe,  resb 1
-NEWSYM Voice4VolumeRe,  resb 1
-NEWSYM Voice5VolumeRe,  resb 1
-NEWSYM Voice6VolumeRe,  resb 1
-NEWSYM Voice7VolumeRe,  resb 1
+NEWSYM Voice0VolumeRe,  db 0
+NEWSYM Voice1VolumeRe,  db 0
+NEWSYM Voice2VolumeRe,  db 0
+NEWSYM Voice3VolumeRe,  db 0
+NEWSYM Voice4VolumeRe,  db 0
+NEWSYM Voice5VolumeRe,  db 0
+NEWSYM Voice6VolumeRe,  db 0
+NEWSYM Voice7VolumeRe,  db 0
 
-NEWSYM Voice0VolumeLe,  resb 1
-NEWSYM Voice1VolumeLe,  resb 1
-NEWSYM Voice2VolumeLe,  resb 1
-NEWSYM Voice3VolumeLe,  resb 1
-NEWSYM Voice4VolumeLe,  resb 1
-NEWSYM Voice5VolumeLe,  resb 1
-NEWSYM Voice6VolumeLe,  resb 1
-NEWSYM Voice7VolumeLe,  resb 1
+NEWSYM Voice0VolumeLe,  db 0
+NEWSYM Voice1VolumeLe,  db 0
+NEWSYM Voice2VolumeLe,  db 0
+NEWSYM Voice3VolumeLe,  db 0
+NEWSYM Voice4VolumeLe,  db 0
+NEWSYM Voice5VolumeLe,  db 0
+NEWSYM Voice6VolumeLe,  db 0
+NEWSYM Voice7VolumeLe,  db 0
 
-NEWSYM FIRTAPVal0,      resd 1
-NEWSYM FIRTAPVal1,      resd 1
-NEWSYM FIRTAPVal2,      resd 1
-NEWSYM FIRTAPVal3,      resd 1
-NEWSYM FIRTAPVal4,      resd 1
-NEWSYM FIRTAPVal5,      resd 1
-NEWSYM FIRTAPVal6,      resd 1
-NEWSYM FIRTAPVal7,      resd 1
+NEWSYM FIRTAPVal0,      dd 0
+NEWSYM FIRTAPVal1,      dd 0
+NEWSYM FIRTAPVal2,      dd 0
+NEWSYM FIRTAPVal3,      dd 0
+NEWSYM FIRTAPVal4,      dd 0
+NEWSYM FIRTAPVal5,      dd 0
+NEWSYM FIRTAPVal6,      dd 0
+NEWSYM FIRTAPVal7,      dd 0
 
 SECTION .data
 NEWSYM MaxEcho,         dd 172
 
-SECTION .bss
-NEWSYM CEchoPtr,        resd 1
-NEWSYM EchoFB,          resd 1
+SECTION .data
+NEWSYM CEchoPtr,        dd 0
+NEWSYM EchoFB,          dd 0
 
-NEWSYM Voice0Ptre,     resd 1 ; Ptr to Next BRR Block to be played
-NEWSYM Voice1Ptre,     resd 1
-NEWSYM Voice2Ptre,     resd 1
-NEWSYM Voice3Ptre,     resd 1
-NEWSYM Voice4Ptre,     resd 1
-NEWSYM Voice5Ptre,     resd 1
-NEWSYM Voice6Ptre,     resd 1
-NEWSYM Voice7Ptre,     resd 1
-NEWSYM Voice0LoopPtre, resd 1 ; Ptr to Loop BRR Block to be played
-NEWSYM Voice1LoopPtre, resd 1 ; Ptr to Loop BRR Block to be played
-NEWSYM Voice2LoopPtre, resd 1 ; Ptr to Loop BRR Block to be played
-NEWSYM Voice3LoopPtre, resd 1 ; Ptr to Loop BRR Block to be played
-NEWSYM Voice4LoopPtre, resd 1 ; Ptr to Loop BRR Block to be played
-NEWSYM Voice5LoopPtre, resd 1 ; Ptr to Loop BRR Block to be played
-NEWSYM Voice6LoopPtre, resd 1 ; Ptr to Loop BRR Block to be played
-NEWSYM Voice7LoopPtre, resd 1 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice0Ptre,     dd 0 ; Ptr to Next BRR Block to be played
+NEWSYM Voice1Ptre,     dd 0
+NEWSYM Voice2Ptre,     dd 0
+NEWSYM Voice3Ptre,     dd 0
+NEWSYM Voice4Ptre,     dd 0
+NEWSYM Voice5Ptre,     dd 0
+NEWSYM Voice6Ptre,     dd 0
+NEWSYM Voice7Ptre,     dd 0
+NEWSYM Voice0LoopPtre, dd 0 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice1LoopPtre, dd 0 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice2LoopPtre, dd 0 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice3LoopPtre, dd 0 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice4LoopPtre, dd 0 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice5LoopPtre, dd 0 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice6LoopPtre, dd 0 ; Ptr to Loop BRR Block to be played
+NEWSYM Voice7LoopPtre, dd 0 ; Ptr to Loop BRR Block to be played
 
-NEWSYM Voice0BufPtre, resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice1BufPtre, resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice2BufPtre, resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice3BufPtre, resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice4BufPtre, resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice5BufPtre, resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice6BufPtre, resd 1 ; Ptr to Buffer Block to be played
-NEWSYM Voice7BufPtre, resd 1 ; Ptr to Buffer Block to be played
+NEWSYM Voice0BufPtre, dd 0 ; Ptr to Buffer Block to be played
+NEWSYM Voice1BufPtre, dd 0 ; Ptr to Buffer Block to be played
+NEWSYM Voice2BufPtre, dd 0 ; Ptr to Buffer Block to be played
+NEWSYM Voice3BufPtre, dd 0 ; Ptr to Buffer Block to be played
+NEWSYM Voice4BufPtre, dd 0 ; Ptr to Buffer Block to be played
+NEWSYM Voice5BufPtre, dd 0 ; Ptr to Buffer Block to be played
+NEWSYM Voice6BufPtre, dd 0 ; Ptr to Buffer Block to be played
+NEWSYM Voice7BufPtre, dd 0 ; Ptr to Buffer Block to be played
 
-NEWSYM CurFiltPtr, resd 1
-NEWSYM FiltLoop, resd 16
-NEWSYM FiltLoopR, resd 16
+NEWSYM CurFiltPtr, dd 0
+NEWSYM FiltLoop, times 16 dd 0
+NEWSYM FiltLoopR, times 16 dd 0
 
-NEWSYM SoundLooped0, resb 1
-NEWSYM SoundLooped1, resb 1
-NEWSYM SoundLooped2, resb 1
-NEWSYM SoundLooped3, resb 1
-NEWSYM SoundLooped4, resb 1
-NEWSYM SoundLooped5, resb 1
-NEWSYM SoundLooped6, resb 1
-NEWSYM SoundLooped7, resb 1
+NEWSYM SoundLooped0, db 0
+NEWSYM SoundLooped1, db 0
+NEWSYM SoundLooped2, db 0
+NEWSYM SoundLooped3, db 0
+NEWSYM SoundLooped4, db 0
+NEWSYM SoundLooped5, db 0
+NEWSYM SoundLooped6, db 0
+NEWSYM SoundLooped7, db 0
 
-NEWSYM UniqueSoundv, resd 1
+NEWSYM UniqueSoundv, dd 0
 
 SECTION .data
 
@@ -2922,8 +2923,8 @@ NEWSYM ResetState
 
 ;VolumeConvTable times 32768 db 0
 
-SECTION .bss ;ALIGN=32
-spc700temp resd 2
+SECTION .data ;ALIGN=32
+spc700temp times 2 dd 0
 SECTION .text
 
 %macro VoiceStart 2
@@ -3329,10 +3330,10 @@ NEWSYM VoiceStarter
    VoiceStarterM 7
    ret
 
-section .bss ;ALIGN=32
-NEWSYM NoiseInc, resd 1
-NEWSYM NoisePointer, resd 1
-NEWSYM LastNoise, resd 1
+section .data ;ALIGN=32
+NEWSYM NoiseInc, dd 0
+NEWSYM NoisePointer, dd 0
+NEWSYM LastNoise, dd 0
 section .text
 
 %macro CalculatePMod 1
@@ -3580,9 +3581,9 @@ section .text
    add  eax, [WaveIndex+%1*4] ; add the oldSample to the scaling.
 %endmacro
 
-SECTION .bss ;ALIGN=32
-SaveSample resd 8
-WaveIndex  resd 8
+SECTION .data ;ALIGN=32
+SaveSample times 8 dd 0
+WaveIndex  times 8 dd 0
 SECTION .text
 
 ;DSPInterP
@@ -3595,10 +3596,6 @@ SECTION .text
 ;    sar edx,1                  ;
 ;    add eax,edx                ;
 ;%%DontFilter1                  ;
-
-section .bss ;ALIGN=32
-NEWSYM fir_tmp,resd 2
-section .text
 
 %macro DSPInterpolate 1
 
@@ -3663,10 +3660,11 @@ section .text
     pmaddwd mm0,mm2
     pmaddwd mm1,mm3
     paddd mm0,mm1
-    movq [fir_tmp],mm0
+    movd eax,mm0
+    psrlq mm0,32
+    movd ebx,mm0
     emms
-    mov eax,[fir_tmp]
-    add eax,[fir_tmp+4]
+    add eax,ebx
     sar eax,14
 
 %else
@@ -5373,8 +5371,8 @@ NEWSYM handlersbseg
     sti
     jmp Startprocsbdata
 
-section .bss ;ALIGN=32
-echowrittento resb 1
+section .data ;ALIGN=32
+echowrittento db 0
 section .text
 
 NEWSYM stopsbsound
@@ -5447,8 +5445,8 @@ NEWSYM stopsbsound
     sti
     iretd
 
-section .bss ;ALIGN=32
-NEWSYM sbhandexec, resd 1
+section .data ;ALIGN=32
+NEWSYM sbhandexec, dd 0
 section .text
 
 ; Process 20 blocks * 8 voices (no pitch yet)
@@ -5870,12 +5868,12 @@ NEWSYM stopsbsound16
 ; Sound Blaster Initialization Stuff
 ;****************************************************
 
-section .bss ;ALIGN=32
-NEWSYM memoryloc, resd 1        ; Memory offset in conventional memory
-NEWSYM memoryloc2, resd 1       ; Memory offset in conventional memory
-NEWSYM sbselec,   resw 1        ; Selector of Memory location
-NEWSYM sbpmofs,   resd 1        ; offset of Memory location
-SBDeinitType resb 1
+section .data ;ALIGN=32
+NEWSYM memoryloc, dd 0        ; Memory offset in conventional memory
+NEWSYM memoryloc2, dd 0       ; Memory offset in conventional memory
+NEWSYM sbselec,   dw 0        ; Selector of Memory location
+NEWSYM sbpmofs,   dd 0        ; offset of Memory location
+SBDeinitType db 0
 section .text
 
 NEWSYM initSB
@@ -6025,8 +6023,8 @@ NEWSYM initSB
     call WriteDSP
     jmp .fixsurround
 
-SECTION .bss ;ALIGN=32
-.Versionnum resw 1
+SECTION .data ;ALIGN=32
+.Versionnum dw 0
 SECTION .text
 
 ; *****************************************
