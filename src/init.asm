@@ -4434,6 +4434,102 @@ NEWSYM loadfileGUI
     mov byte[TextFile], 1
     mov byte[IPSPatched],0
 
+    ; Wizardry Gaiden 4?
+    mov esi,[romdata]
+    cmp dword[esi+207FC0h],'WIZA'
+    jne near .notwiz4
+    cmp dword[esi+207FC4h],'RDRY'
+    jne near .notwiz4
+    cmp dword[esi+207FC8h],' GAI'
+    jne near .notwiz4
+    cmp dword[esi+207FCDh],'EN 4'
+    jne near .notwiz4
+    mov eax,100000h
+.loopwiz4
+    mov bl,[esi]
+    mov bh,[esi+200000h]
+    mov [esi+200000h],bl
+    mov [esi],bh
+    inc esi
+    dec eax
+    jnz .loopwiz4
+
+    pushad
+    mov edi,mode7tab+256
+    mov ecx,256
+    xor al,al
+.nextlb2
+    mov [edi],al
+    inc al
+    inc edi
+    dec ecx
+    jnz .nextlb2
+    mov edi,mode7tab+256
+    ; 0,4,8,C
+    ; 0,64,1,65,2,... (1st 3MB, 1st 1MB)
+    ; (2nd 4MB?, 2nd 2MB)
+    mov dl,4
+.nextl2
+    mov eax,4
+    sub al,dl
+    mov bl,[.table+eax*2]
+    mov bh,[.table+eax*2+1]
+    mov ecx,16
+.nextl
+    mov [edi],bl
+    mov [edi+1],bh
+    inc bl
+    inc bh
+    add edi,2
+    dec ecx
+    jnz .nextl
+    add bl,16
+    add bh,16
+    dec dl
+    jnz .nextl2
+    jmp .skiptable
+;         O O  O     O     ?  ?  ?    ?
+.table db 0,64,96+16,32+16,32,96,0+16,64+16
+.skiptable
+    mov dword[NumofBanks],20h*4
+    call SwapTable256
+    call UnInterleave
+    popad
+.notwiz4
+
+    jmp .skipall
+    ; scan for branches
+    mov esi,06A5h
+    add esi,[romdata]
+    mov ecx,80h
+.loopcheck
+    cmp byte[esi],48h
+    je .yes
+    cmp byte[esi],8Bh
+    je .yes
+    cmp byte[esi],0Bh
+    je .yes
+    cmp byte[esi],4Bh
+    je .yes
+    cmp byte[esi],08h
+    je .yes
+    cmp byte[esi],0DAh
+    je .yes
+    cmp byte[esi],5Ah
+    je .yes
+    jmp .no
+.yes
+    pushad
+    mov al,byte[esi]
+    mov al,80h
+    sub al,cl
+    call printhex8
+    popad
+.no
+    add esi,8000h
+    loop .loopcheck
+.skipall
+
     ; mirror image
     mov eax,[.curromspace]
     cmp dword[.maxromspace],eax
@@ -4450,7 +4546,7 @@ NEWSYM loadfileGUI
     inc ecx
     cmp ecx,[.maxromspace]
     jne .nextmir
-.nomir
+ .nomir
 
     ; calculate checksum
     mov eax,1
