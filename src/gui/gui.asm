@@ -622,7 +622,7 @@ keycontrolval dd 0
 NEWSYM ShowTimer,    db 0
 NEWSYM MousePRClick, db 0
 NEWSYM MouseDis, db 0
-NetPlayNoMore db 0
+NEWSYM NetPlayNoMore, db 0
 RestoreValues db 0
 NEWSYM NetChatFirst, db 0
 NEWSYM NetServer, db 0

@@ -116,9 +116,7 @@ EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 EXTSYM ReadSPC7110log,WriteSPC7110log
 
 NEWSYM ExecuteAsmStart
-
-
-
+EXTSYM NetPlayNoMore
 
 
 %macro BackupCVMacM 2
@@ -1031,6 +1029,7 @@ NEWSYM continueprog
     inc esi
     loop .loopa
 
+
     call InitPreGame
 
 ; Incorrect
@@ -1148,6 +1147,7 @@ reexecuteb2:
     mov byte[NoSoundReinit],0
     mov byte[csounddisable],0
     mov byte[NextNGDisplay],0
+    mov byte[NetPlayNoMore],1
 
     call splitflags
 
@@ -1281,6 +1281,15 @@ NEWSYM endprog
     mov ebx,SRAMDir
     call Change_Dir
 
+;    mov edx,.blah
+;    call Create_File
+;    mov bx,ax
+;    EXTSYM DSPFuncUsed
+;    mov edx,DSPFuncUsed
+;    mov ecx,256
+;    call Write_File
+;    call Close_File
+
     cmp byte[sramsavedis],1
     je .nosram
     cmp dword[ramsize],0
@@ -1381,6 +1390,7 @@ NEWSYM endprog
     call deinitipx
 .nodeinitipx
     jmp OSExit
+.blah db 'dsptrace.dat',0
 
 NEWSYM interror
     stim
@@ -4325,7 +4335,7 @@ NEWSYM execsingle
     jne .nointrset
     mov byte[intrset],2
 .nointrset
-;    mov byte[debstop3],1
+    mov byte[debstop3],1
     jmp switchtonmideb
 .nonmi
     cmp byte[intrset],1
@@ -4381,7 +4391,7 @@ NEWSYM execsingle
     jne .nointrset2
     mov byte[intrset],2
 .nointrset2
-;    mov byte[debstop3],1
+    mov byte[debstop3],1
     jmp switchtovirqdeb
 
 
