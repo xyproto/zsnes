@@ -443,6 +443,40 @@ size_t internal_chapter_pos(struct internal_chapter_buf *icb, size_t offset)
   return(0);
 }
 
+size_t internal_chapter_greater(struct internal_chapter_buf *icb, size_t offset)
+{
+  size_t greater = ~0;
+  do
+  {
+    unsigned char i;
+    for (i = 0; i < icb->used; i++)
+    {
+      if ((icb->offsets[i] > offset) && (icb->offsets[i] < greater))
+      {
+        greater = icb->offsets[i];
+      }
+    }
+  } while ((icb = icb->next));
+  return((greater == ~0) ? offset : greater);
+}
+
+size_t internal_chapter_lesser(struct internal_chapter_buf *icb, size_t offset)
+{
+  size_t lesser = 0;
+  do
+  {
+    unsigned char i;
+    for (i = 0; i < icb->used; i++)
+    {
+      if ((icb->offsets[i] < offset) && (icb->offsets[i] > lesser))
+      {
+        lesser = icb->offsets[i];
+      }
+    }
+  } while ((icb = icb->next));
+  return((lesser == 0) ? offset : lesser);
+}
+
 /*
 
 Shared var between record/replay functions
@@ -699,12 +733,64 @@ void zmv_replay()
 
 void zmv_next_chapter()
 {
+  size_t current_loc = ftell(zmv_vars.fp);
+  size_t next_internal = internal_chapter_greater(&zmv_vars.internal_chapters, current_loc);
+  size_t next_external = internal_chapter_greater(&zmv_open_vars.external_chapters, current_loc);
+  size_t next = (next_internal < next_external) ? next_internal : next_external;
 
+  if (next != current_loc)
+  {
+    if (next == next_internal)
+    {
+      fseek(zmv_vars.fp, next_internal, SEEK_SET);
+      zst_load(zmv_vars.fp);
+      zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
+    }
+    else
+    {
+      size_t ext_chapter_loc = zmv_open_vars.external_chapter_count;
+      ext_chapter_loc -= internal_chapter_pos(&zmv_open_vars.external_chapters, next);
+      ext_chapter_loc *= (cur_zst_size+8);
+      ext_chapter_loc += 2;
+      
+      fseek(zmv_vars.fp, -(ext_chapter_loc), SEEK_END);
+      zst_load(zmv_vars.fp);
+      zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
+      
+      fseek(zmv_vars.fp, next_external, SEEK_SET);
+    }
+  }
 }
 
 void zmv_prev_chapter()
 {
+  size_t current_loc = ftell(zmv_vars.fp);
+  size_t prev_internal = internal_chapter_lesser(&zmv_vars.internal_chapters, current_loc);
+  size_t prev_external = internal_chapter_lesser(&zmv_open_vars.external_chapters, current_loc);
+  size_t prev = (prev_internal > prev_external) ? prev_internal : prev_external;
 
+  if (prev != current_loc)
+  {
+    if (prev == prev_internal)
+    {
+      fseek(zmv_vars.fp, prev_internal, SEEK_SET);
+      zst_load(zmv_vars.fp);
+      zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
+    }
+    else
+    {
+      size_t ext_chapter_loc = zmv_open_vars.external_chapter_count;
+      ext_chapter_loc -= internal_chapter_pos(&zmv_open_vars.external_chapters, prev);
+      ext_chapter_loc *= (cur_zst_size+8);
+      ext_chapter_loc += 2;
+      
+      fseek(zmv_vars.fp, -(ext_chapter_loc), SEEK_END);
+      zst_load(zmv_vars.fp);
+      zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
+      
+      fseek(zmv_vars.fp, prev_external, SEEK_SET);
+    }
+  }
 }
 
 void zmv_add_chapter()
