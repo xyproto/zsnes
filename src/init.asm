@@ -1793,17 +1793,6 @@ NEWSYM headerhack
 
     mov esi,[romdata]
     add esi,07FC0h
-    cmp dword[esi],'MEGA'
-    jne .notmmx
-    cmp dword[esi+4],'MAN '
-    jne .notmmx
-    cmp dword[esi+8],'X   '
-    jne .notmmx
-    mov byte[MMXSRAMFix],1
-.notmmx
-
-    mov esi,[romdata]
-    add esi,07FC0h
     cmp dword[esi],'STAR'
     jne .notds9
     cmp dword[esi+4],' TRE'
@@ -2541,6 +2530,7 @@ NEWSYM initsnes
     jne .mmxf
     mov byte[esi+22420h],080h
 .mmxf
+    mov byte[MMXSRAMFix],1
 .notmmx
 
     mov esi,[romdata]
