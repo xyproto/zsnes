@@ -574,6 +574,11 @@ static void zmv_record_finish()
   fclose(zmv_vars.fp);
 }
 
+static size_t zmv_frames_recorded()
+{
+  return(zmv_vars.header.frames);
+}
+
 /*
 
 Open and replay ZMV
@@ -866,6 +871,11 @@ static void zmv_replay_finished()
   fclose(zmv_vars.fp);
 }
 
+static size_t zmv_frames_replayed()
+{
+  return(zmv_open_vars.frames_replayed);
+}
+
 /////////////////////////////////////////////////////////
 
 
@@ -915,7 +925,7 @@ static char *MovieSub_GetData()
   {
     char *i, *num;
             
-    if (zmv_open_vars.frames_replayed > MovieSub.message_start + MovieSub.message_duration)
+    if (zmv_frames_replayed() > MovieSub.message_start + MovieSub.message_duration)
     {
       MovieSub.message_duration = 0;
       do
@@ -930,7 +940,7 @@ static char *MovieSub_GetData()
           if (!isdigit(*i)) { return(0); }
         }
         MovieSub.message_start = atoi(num);
-      } while(MovieSub.message_start < zmv_open_vars.frames_replayed );
+      } while(MovieSub.message_start < zmv_frames_replayed());
       if (!(num = strtok(0, ":"))) { return(0); }
       for (i = num; *i; i++)
       {
@@ -943,17 +953,12 @@ static char *MovieSub_GetData()
       MovieSub.message_duration = atoi(num);
     }
   
-    if (zmv_open_vars.frames_replayed == MovieSub.message_start)
+    if (zmv_frames_replayed() == MovieSub.message_start)
     {
       return(strtok(0, ":"));
     }
   }
   return(0);
-}
-
-static size_t MovieSub_GetDuration()
-{
-  return(MovieSub.message_duration);
 }
 
 static void MovieSub_ResetStream()
@@ -965,6 +970,12 @@ static void MovieSub_ResetStream()
     MovieSub.message_duration = 0;
   }
 }
+
+static size_t MovieSub_GetDuration()
+{
+  return(MovieSub.message_duration);
+}
+
 
 /////////////////////////////////////////////////////////
 
@@ -1007,8 +1018,8 @@ void MovieSeekAhead()
   switch (MovieProcessing)
   {
     case 1:	// replay seeking ok
-      if (zmv_next_chapter())	{ Msgptr = "NEXT CHAPTER LOADED."; }
-      else	{ Msgptr = "NO CHAPTERS AHEAD."; }
+      if (zmv_next_chapter()) { Msgptr = "NEXT CHAPTER LOADED."; }
+      else { Msgptr = "NO CHAPTERS AHEAD."; }
       break;
     case 2:	// record will use MZTs
       Msgptr = "NO SEEKING DURING RECORD.";
@@ -1052,7 +1063,14 @@ void Replay()
   }
   else
   {
-    Msgptr = "MOVIE FINISHED.";
+    if (zmv_frames_replayed())
+    {
+      Msgptr = "MOVIE FINISHED.";
+    }
+    else
+    {
+      Msgptr = "STATE LOADED.";
+    }
     MessageOn = MsgCount;
     MovieProcessing = 0;
     
@@ -1063,8 +1081,8 @@ void Replay()
 
 void ProcessMovies()
 {
-  if (MovieProcessing == 2)	{ zmv_record(); }
-  else	{ Replay(); }
+  if (MovieProcessing == 2) { zmv_record(); }
+  else { Replay(); }
 }
 
 // The following will maybe end up in guic.c once we get it started.
@@ -1081,7 +1099,14 @@ void MovieStop()
   switch (MovieProcessing)
   {
     case 1: zmv_replay_finished(); break;
-    case 2: zmv_record_finish(); break;
+    case 2: 
+      zmv_record_finish();
+      if (!zmv_frames_recorded())
+      {
+        Msgptr = "STATE SAVED.";
+        MessageOn = MsgCount;      
+      }
+      break;
   }
   MovieProcessing = 0;
 }
@@ -1115,10 +1140,13 @@ void MoviePlay()
       memcpy(&fnamest[statefileloc-3], ".sub", 4);
       if (isdigit(CMovieExt)) { fnamest[statefileloc] = CMovieExt; }
       MovieSub_Open(fnamest+1);   
+      Msgptr = "MOVIE STARTED.";
+      MessageOn = MsgCount;        
     }
     else
     {
-    
+      Msgptr = "MOVIE COULD NOT BE STARTED.";
+      MessageOn = MsgCount;    
     }
     
     memcpy (&fnamest[statefileloc-3], FileExt, 4);
@@ -1149,6 +1177,8 @@ void MovieRecord()
     {
       zmv_create(fnamest+1);
       MovieProcessing = 2;
+      Msgptr = "MOVIE RECORDING.";
+      MessageOn = MsgCount;    
     }
     else
     {
