@@ -18,7 +18,7 @@
 %include "macros.mac"
 
 EXTSYM regaccessbankr8,regaccessbankr16,regaccessbankw8,regaccessbankw16
-EXTSYM DSPOp0A,Op0AA,Op0AB,Op0AC,Op0AD,Op0AVS
+EXTSYM DSPOp0A,Op0AA,Op0AB,Op0AC,Op0AD,Op0AVS,DSPOp10
 EXTSYM debstop
 EXTSYM DSPOp00,Op00Multiplicand,Op00Multiplier
 EXTSYM Op00Result
@@ -311,18 +311,21 @@ DSP1_00:  ; 16-bit multiply
     mov byte[DSP1RLeft],1
     pop eax
     ret
+
+EXTSYM Op10Exponent, Op10ExponentR
+EXTSYM Op10Coefficient, Op10CoefficientR
 DSP1_10:  ; Inverse
     push eax
     mov ax,[DSP1VARS]
-;    mov [Op10a],ax
+    mov [Op10Coefficient],ax
     mov ax,[DSP1VARS+2]
-;    mov [Op10b],ax
+    mov [Op10Exponent],ax
     pushad
-;    call DSPOp10
+    call DSPOp10
     popad
-;    mov ax,[Op10A]
+    mov ax,[Op10CoefficientR]
     mov [DSP1RET],ax
-;    mov ax,[Op10B]
+    mov ax,[Op10ExponentR]
     mov [DSP1RET+2],ax
     mov byte[DSP1RLeft],2
     pop eax
