@@ -314,7 +314,7 @@ BOOL InputDeAcquire(void)
 extern "C" {
 unsigned char keyboardhit=0;
 void initwinvideo();
-void DosExit();
+void DosExit(void);
 extern BYTE GUIOn2;
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
@@ -422,7 +422,7 @@ aquireagain:;
 	return TRUE;
 }
 
-extern "C" void SaveSramData();
+extern "C" void SaveSramData(void);
 
 void ExitFunction()
 {
@@ -2394,7 +2394,7 @@ extern WORD vesa2_btrcl;
 extern WORD vesa2_btrcla;
 extern WORD nojoystickpoll;
 
-extern void SwitchFullScreen();
+extern void SwitchFullScreen(void);
 
 void WinUpdateDevices()
 {
