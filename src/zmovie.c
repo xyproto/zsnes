@@ -370,10 +370,10 @@ Internal chapter types, vars, and functions
 
 */
 
-#define INTERAL_CHAPTER_BUF_LIM 10
+#define INTERNAL_CHAPTER_BUF_LIM 10
 struct internal_chapter_buf
 {
-  size_t offsets[INTERAL_CHAPTER_BUF_LIM];
+  size_t offsets[INTERNAL_CHAPTER_BUF_LIM];
   unsigned char used;
   struct internal_chapter_buf *next;
 };
@@ -385,7 +385,7 @@ void interal_chapter_add_offset(struct internal_chapter_buf *icb, size_t offset)
     icb = icb->next;
   }
   
-  if (icb->used == INTERAL_CHAPTER_BUF_LIM)
+  if (icb->used == INTERNAL_CHAPTER_BUF_LIM)
   {
     icb->next = (struct internal_chapter_buf *)malloc(sizeof(struct internal_chapter_buf));
     icb = icb->next;
