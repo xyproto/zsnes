@@ -632,7 +632,7 @@ db '; Stereo (0 = off, 1 = on)',13,10
 db '',13,10
 db 'Stereo = %X',13,10
 db '',13,10
-db '; Stereo Reversed (0 = off, 1 = L <-> R)',13,10
+db '; Stereo Reversed (swaps left channel with right) (0 = off, 1 = L <-> R)',13,10
 db '',13,10
 db 'ReverseStereo = %s',13,10
 db '',13,10
