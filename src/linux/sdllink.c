@@ -656,8 +656,10 @@ void initwinvideo(void)
          WindowHeight=224;
          break;
       case 1:
-         WindowWidth=640;
-         WindowHeight=480 ;
+         //WindowWidth=640;
+         //WindowHeight=480 ;
+         WindowWidth=320;
+         WindowHeight=240 ;
          SurfaceX=320;
          SurfaceY=240;
          break;
