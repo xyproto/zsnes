@@ -1399,7 +1399,7 @@ SECTION .data
           db '  -c      Scale to fit screen (320x240 VESA2/640x480 VESA2)',13,10
 %endif
           db '  -cb     Remove Background Color in 256 color video modes',13,10
-          db '  -cc     No image scale and center image in screen (640x480 VESA2)',13,10
+          db '  -cc     No image scale and center image in screen (640x480 only)',13,10
 
 ; debugger not available in linux version
 ; because of bios interrupt code
@@ -1413,6 +1413,9 @@ SECTION .data
 %endif
           db '  -f #    Turn on frame skip [0..9]',13,10
           db '  -g #    Set Gamma Correction [0...31, 0 = 1.0, 31 = 2.0]',13,10
+%ifndef __LINUX__
+          db '            - Only works properly in 256 color video modes',13,10
+%endif
           db '  -h      Force HiROM',13,10
           db '  -i      Uninterleave ROM Image',13,10
           db '  -j      Disable Mouse (Automatically turns off right mouse click)',13,10
@@ -1420,11 +1423,11 @@ SECTION .data
           db 'Press any key to continue.',0
 .noparms2 db 13,'  -l      Force LoROM        ',13,10
           db '  -m      Disable GUI',13,10
-          db '  -n      Turn scanlines on (256x256 and 640x480 only)',13,10
+          db '  -n      Turn scanlines on (640x480 only)',13,10
 %ifdef __LINUX__
           db '  -of     Enable FPU copy   ',13,10
 %else
-          db '  -o      Enable FPU copy   ',13,10
+;          db '  -o      Enable FPU copy   ',13,10
 %endif
           db '  -om     Enable MMX copy',13,10
           db '  -p #    Percentage of instructions to execute [50..120]',13,10
