@@ -58,7 +58,6 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 	flags |= (cvidmode == 16 ? SDL_RESIZABLE : 0);
 	flags |= (FullScreen ? SDL_FULLSCREEN : 0);
 
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	SurfaceX = width; SurfaceY = height;
 	surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
@@ -68,6 +67,8 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 			SurfaceX, SurfaceY);
 		return FALSE;
 	}
+
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	glvidbuffer = (unsigned short *) malloc(512 * 512 * sizeof(short));
 	gl_clearwin();
