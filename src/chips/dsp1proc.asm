@@ -84,10 +84,14 @@ NEWSYM DSP1Read16b3F
     jae .doC000
     cmp byte[DSP1RLeft],0
     jne .movestuff
-    mov ax,08080h
+    mov ax,0FFFFh
     ret
 .doC000
-    mov ax,08080h
+    mov ax,08000h
+    cmp byte[DSP1WLeft],0
+    je .notwleft
+    mov ax,0C000h
+.notwleft
     ret
 .movestuff
     push ebx
@@ -144,10 +148,14 @@ NEWSYM DSP1Read16b
     ret
 .do7000
     mov ax,8000h
-    test ecx,01h
-    jz .norev
-    mov ax,0080h
-.norev
+    cmp byte[DSP1WLeft],0
+    je .notwleft
+    mov ax,0C000h
+.notwleft
+;    test ecx,01h
+;    jz .norev
+;    mov ax,0080h
+;.norev
     ret
 .movestuff
     push ebx
