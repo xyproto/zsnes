@@ -23,7 +23,7 @@
 EXTSYM DosExit,UpdateDevices,InitSPC,Makemode7Table,MusicRelVol,MusicVol
 EXTSYM makesprprtable,romloadskip,start65816,startdebugger,SfxR0
 EXTSYM MovieProcessing
-EXTSYM MovieFileHand,filefound,inittable,SA1inittable
+EXTSYM filefound,inittable,SA1inittable
 EXTSYM MessageOn,Msgptr,MsgCount,sndrot,GenerateBank0Table,SnowTimer
 EXTSYM inittableb,inittablec,newgfx16b,cfgreinittime
 EXTSYM Open_File,Read_File,Write_File,Close_File,Output_Text,Get_Key,CNetType
@@ -36,7 +36,6 @@ EXTSYM NewEngEnForce
 EXTSYM PrintChar
 EXTSYM TextFile
 EXTSYM Setper2exec,per2exec
-EXTSYM MovieCounter
 EXTSYM chaton
 EXTSYM JoyRead,JoyReadControl,joy4218,joy4219
 EXTSYM joy421A,joy421B,pressed
@@ -53,7 +52,7 @@ EXTSYM pl3Xtk,pl3Ytk,pl3Atk,pl3Btk,pl4Xtk,pl4Ytk,pl4Atk,pl4Btk
 EXTSYM pl1ULk,pl1URk,pl1DLk,pl1DRk,pl2ULk,pl2URk,pl2DLk,pl2DRk
 EXTSYM pl3ULk,pl3URk,pl3DLk,pl3DRk,pl4ULk,pl4URk,pl4DLk,pl4DRk
 EXTSYM pl5ULk,pl5URk,pl5DLk,pl5DRk,pl5Xtk,pl5Ytk,pl5Atk,pl5Btk
-EXTSYM Turbo30hz,RepeatFrame,nojoystickpoll
+EXTSYM Turbo30hz,nojoystickpoll
 EXTSYM NumComboLocl,ComboBlHeader,ComboHeader,CombinDataLocl
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec
 EXTSYM mousexloc,mouseyloc
@@ -161,6 +160,8 @@ blah times 450 db 0
 ; FIX STATMAT
 NEWSYM autoloadstate, db 0        ; auto load state slot number
 ; FIX STATMAT
+NEWSYM EndMessage 	 
+ db '                                                                   ',13,10,0
 
 SECTION .text
 
@@ -322,9 +323,6 @@ NEWSYM init
     mov byte[newengen],1
     mov byte[cfgnewgfx],1
 .noforce
-	; Dan - I don't know what this is, but all it seems to do is update
-	; EndMessage which I've nuked.
-%if 0
     mov ebx,ebm
     mov eax,EndMessage
     mov dh,17h
@@ -346,7 +344,6 @@ NEWSYM init
     inc ebx
     dec ch
     jnz .loopen
-%endif
 
     cmp byte[yesoutofmemory],1
     jne .noout
@@ -1045,254 +1042,13 @@ NEWSYM ReadInputDevice
 .nopl24
     ret
 
-NEWSYM ProcessMovies
-    cmp byte[MovieProcessing],2
-    je near .record
-
-.repeater
-    pushad
-    mov bx,[MovieFileHand]
-    mov ecx,1
-    mov edx,MovieTemp
-    call Read_File
-    cmp eax,0
-    je near .endplay2
-    cmp byte[MovieTemp],1
-    ja near .endplay
-    cmp byte[MovieTemp],1
-    je .nomovement
-    mov ecx,20
-    mov edx,PJoyAOrig
-    call Read_File
-.nomovement
-    popad
-    mov eax,[PJoyAOrig]
-    mov [JoyAOrig],eax
-    mov eax,[PJoyBOrig]
-    mov [JoyBOrig],eax
-    mov eax,[PJoyCOrig]
-    mov [JoyCOrig],eax
-    mov eax,[PJoyDOrig]
-    mov [JoyDOrig],eax
-    mov eax,[PJoyEOrig]
-    mov [JoyEOrig],eax
-    ret
-.endplay2
-    mov dword[Msgptr],.movieended
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-.endplay
-    mov byte[MovieProcessing],0
-    call Close_File
-    popad
-    ret
-.record
-    cmp byte[BackState],1
-    jne .nobackstate
-    cmp byte[CNetType],20
-    jae near .storefullcrecv
-.nobackstate
-    mov eax,[JoyAOrig]
-    cmp eax,[PJoyAOrig]
-    jne .storefull
-    mov eax,[JoyBOrig]
-    cmp eax,[PJoyBOrig]
-    jne .storefull
-    mov eax,[JoyCOrig]
-    cmp eax,[PJoyCOrig]
-    jne .storefull
-    mov eax,[JoyDOrig]
-    cmp eax,[PJoyDOrig]
-    jne .storefull
-    mov eax,[JoyEOrig]
-    cmp eax,[PJoyEOrig]
-    jne .storefull
-    mov byte[MovieTemp],1
-    push ebx
-    mov ebx,[MovieBuffSize]
-    mov byte[MovieBuffer+ebx],1
-    inc dword[MovieBuffSize]
-    pop ebx
-    inc dword[MovieBuffFrame]
-    cmp dword[MovieBuffFrame],60
-    je near .writebuffertodisk
-    ret
-.storefull
-    mov eax,[JoyAOrig]
-    mov [PJoyAOrig],eax
-    mov eax,[JoyBOrig]
-    mov [PJoyBOrig],eax
-    mov eax,[JoyCOrig]
-    mov [PJoyCOrig],eax
-    mov eax,[JoyDOrig]
-    mov [PJoyDOrig],eax
-    mov eax,[JoyEOrig]
-    mov [PJoyEOrig],eax
-    mov byte[MovieTemp],0
-    push ebx
-    mov ebx,[MovieBuffSize]
-    mov byte[MovieBuffer+ebx],0
-    mov eax,[JoyAOrig]
-    mov [MovieBuffer+ebx+1],eax
-    mov eax,[JoyBOrig]
-    mov [MovieBuffer+ebx+5],eax
-    mov eax,[JoyCOrig]
-    mov [MovieBuffer+ebx+9],eax
-    mov eax,[JoyDOrig]
-    mov [MovieBuffer+ebx+13],eax
-    mov eax,[JoyEOrig]
-    mov [MovieBuffer+ebx+17],eax
-    add dword[MovieBuffSize],21
-    pop ebx
-    inc dword[MovieBuffFrame]
-    cmp dword[MovieBuffFrame],60
-    je near .writebuffertodisk
-    ret
-.writebuffertodisk
-    pushad
-    mov bx,[MovieFileHand]
-    mov ecx,[MovieBuffSize]
-    mov edx,MovieBuffer
-    call Write_File
-    popad
-    mov dword[MovieBuffSize],0
-    mov dword[MovieBuffFrame],0
-    ret
-
-.notstorefullcrecv
-    push ebx
-    mov eax,[ReadHead]
-    cmp [CReadHead],eax
-    jne .juststoredata
-    inc dword[CFWriteStart]
-    and dword[CFWriteStart],7Fh
-    mov eax,[CFWriteHead]
-    cmp eax,[CFWriteStart]
-    jne .nowrite
-    call .writetobuffer
-    inc dword[CFWriteHead]
-    and dword[CFWriteHead],7Fh
-.nowrite
-    inc dword[CReadHead]
-    and dword[CReadHead],7Fh
-.juststoredata
-    mov ebx,[ReadHead]
-    shl ebx,5
-    mov byte[StoreBuffer+ebx],1
-    inc dword[ReadHead]
-    and dword[ReadHead],7Fh
-    pop ebx
-    ret
-
-.storefullcrecv
-    push ebx
-    mov eax,[ReadHead]
-    cmp [CReadHead],eax
-    jne .juststoredata2
-    inc dword[CFWriteStart]
-    and dword[CFWriteStart],7Fh
-    mov eax,[CFWriteHead]
-    cmp eax,[CFWriteStart]
-    jne .nowrite2
-    call .writetobuffer
-    inc dword[CFWriteHead]
-    and dword[CFWriteHead],7Fh
-.nowrite2
-    inc dword[CReadHead]
-    and dword[CReadHead],7Fh
-.juststoredata2
-    mov ebx,[ReadHead]
-    shl ebx,5
-    add ebx,StoreBuffer
-    mov byte[ebx],0
-    mov eax,[JoyAOrig]
-    mov [ebx+1],eax
-    mov eax,[JoyBOrig]
-    mov [ebx+5],eax
-    mov eax,[JoyCOrig]
-    mov [ebx+9],eax
-    mov eax,[JoyDOrig]
-    mov [ebx+13],eax
-    mov eax,[JoyEOrig]
-    mov [ebx+17],eax
-    inc dword[ReadHead]
-    and dword[ReadHead],7Fh
-    pop ebx
-    ret
-
-.writetobuffer
-    push ecx
-    mov ecx,[CFWriteHead]
-    shl ecx,5
-    add ecx,StoreBuffer
-;    cmp byte[ecx],1
-;    je .nochange
-    mov eax,[ecx+1]
-    cmp [PJoyAOrig],eax
-    jne .change
-    mov eax,[ecx+5]
-    cmp [PJoyBOrig],eax
-    jne .change
-    mov eax,[ecx+9]
-    cmp [PJoyCOrig],eax
-    jne .change
-    mov eax,[ecx+13]
-    cmp [PJoyDOrig],eax
-    jne .change
-    mov eax,[ecx+17]
-    cmp [PJoyEOrig],eax
-    jne .change
-.nochange
-    pop ecx
-    mov ebx,[MovieBuffSize]
-    mov byte[MovieBuffer+ebx],1
-    inc dword[MovieBuffSize]
-    inc dword[MovieBuffFrame]
-    cmp dword[MovieBuffFrame],60
-    je near .writebuffer
-    ret
-.change
-    mov eax,[ecx+1]
-    mov [PJoyAOrig],eax
-    mov eax,[ecx+5]
-    mov [PJoyBOrig],eax
-    mov eax,[ecx+9]
-    mov [PJoyCOrig],eax
-    mov eax,[ecx+13]
-    mov [PJoyDOrig],eax
-    mov eax,[ecx+17]
-    mov [PJoyEOrig],eax
-    mov ebx,[MovieBuffSize]
-    mov byte[MovieBuffer+ebx],0
-    mov eax,[ecx+1]
-    mov [MovieBuffer+ebx+1],eax
-    mov eax,[ecx+5]
-    mov [MovieBuffer+ebx+5],eax
-    mov eax,[ecx+9]
-    mov [MovieBuffer+ebx+9],eax
-    mov eax,[ecx+13]
-    mov [MovieBuffer+ebx+13],eax
-    mov eax,[ecx+17]
-    mov [MovieBuffer+ebx+17],eax
-    add dword[MovieBuffSize],21
-    pop ecx
-    inc dword[MovieBuffFrame]
-    cmp dword[MovieBuffFrame],60
-    je .writebuffer
-    ret
-.writebuffer
-    call .writebuffertodisk
-    ret
-
 SECTION .data
-
-.movieended db 'MOVIE FINISHED.',0
+NEWSYM txtmovieended, db 'MOVIE FINISHED.',0
 NEWSYM CFWriteStart, dd 64+30
 
 SECTION .bss
 NEWSYM MovieBuffSize, resd 1
 NEWSYM MovieBuffFrame, resd 1
-MovieBuffer resd 21*60
 NEWSYM CReadHead, resd 1
 NEWSYM ReadHead, resd 1
 NEWSYM CFWriteHead, resd 1

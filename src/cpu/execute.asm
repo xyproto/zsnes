@@ -20,17 +20,13 @@
 
 %include "macros.mac"
 
-EXTSYM StringLength
-EXTSYM Get_Time
-EXTSYM objhipr
-EXTSYM KeyRewind, statesaver
+EXTSYM StringLength,Get_Time,objhipr,KeyRewind,statesaver
 EXTSYM xa,timer2upd,prevoamptr,ReadHead
 EXTSYM prevedi,SA1xpc,SA1RAMArea,sa1dmaptr
 EXTSYM DSP1COp,C4WFXVal,C41FXVal,Op00Multiplicand,Op10Coefficient,Op04Angle
 EXTSYM Op08X,Op18X,Op28X,Op0CA,Op02FX,Op0AVS,Op06X,Op0DX,Op03F,Op14Zr
 EXTSYM Op0EH,DSP1Type,Op01m
-EXTSYM Voice0Status
-EXTSYM UpdateDPage
+EXTSYM Voice0Status,UpdateDPage
 EXTSYM MessageOn,MsgCount,Msgptr,StartGUI,cbitmode,debuggeron,romdata
 EXTSYM frameskip,initvideo,newgfx16b,soundon,cvidmode
 EXTSYM vidbuffer,vidbufferofsa,vidbufferofsb,disable65816sh,GUISaveVars,virqnodisable
@@ -41,16 +37,13 @@ EXTSYM IRQHack,HIRQLoc,Offby1line,splitflags,joinflags,KeyQuickSnapShot
 EXTSYM csounddisable,videotroub,Open_File,Close_File,Read_File,ResetTripleBuf
 EXTSYM Write_File,Output_Text,Create_File,Check_Key,Get_Key,Change_Dir,InitPreGame
 ;    EXTSYM tempblah,romdata
-EXTSYM Curtableaddr
-EXTSYM curcyc,debugdisble,dmadata,guioff,memtabler8,SetupPreGame
+EXTSYM Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8,SetupPreGame
 EXTSYM memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap,DeInitPostGame
 EXTSYM spcPCRam,startdebugger,xp,xpb,xpc,tablead,tableadb,tableadc
 ;    EXTSYM oamram
 EXTSYM SA1UpdateDPage,Makemode7Table
 EXTSYM memtabler16,memaccessbankr848mb,memaccessbankr1648mb
-EXTSYM nextmenupopup
-EXTSYM MovieProcessing
-EXTSYM MovieFileHand, PrintStr
+EXTSYM nextmenupopup,MovieProcessing,PrintStr
 EXTSYM OSExit,DosExit,InitDir,InitDrive,createnewcfg,fnames,gotoroot,previdmode
 EXTSYM ramsize,sfxramdata,setaramdata,SETAEnable,sram,SRAMChdir
 ;    EXTSYM tempstore
@@ -63,10 +56,8 @@ EXTSYM deinitvideo
 EXTSYM BRRBuffer,DSPMem,PrepareSaveState,ResetState,SFXEnable,PHdspsave
 EXTSYM fnamest,sndrot,spcRam,spcRamDP,tableA,vram,wramdata
 EXTSYM PHnum2writesfxreg,SfxR0,PHspcsave
-EXTSYM C4Ram
-EXTSYM SPC7110Enable
+EXTSYM C4Ram,SPC7110Enable,SDD1Enable
 EXTSYM SA1Mode,PHnum2writesa1reg,SaveSA1,RestoreSA1,UpdateBanksSDD1
-EXTSYM SDD1Enable
 EXTSYM CapturePicture,PrevPicture,NoPictureSave
 EXTSYM BRRPlace0,SfxCPB,SfxCROM,SfxLastRamAdr,SfxMemTable
 EXTSYM SfxRAMBR,SfxRAMMem,SfxROMBR,SfxRomBuffer,Voice0Freq
@@ -99,16 +90,13 @@ EXTSYM RemoteSendChar,RemoteGetChar,pl1neten,pl2neten,pl3neten,pl4neten
 EXTSYM pl5neten,RemoteSendEAX,prevp1net,prevp2net,prevp3net,prevp4net
 EXTSYM RemoteGetEAX,cnetplaybuf,netdelayed,cnetptrtail,cnetptrhead
 EXTSYM ChatProgress,RecvProgress,chatTL,WritetochatBuffer,NetAddChar
-EXTSYM PreparePacket, SendPacket, NoInputRead, RemoteDisconnect
-EXTSYM SendPacketUDP
-EXTSYM ChatNick
+EXTSYM PreparePacket,SendPacket,NoInputRead,RemoteDisconnect
+EXTSYM SendPacketUDP,ChatNick
 EXTSYM JoyRead,ChatType2,chatstrR2,chatstrR3,chatstrR4,chatstrR5
 EXTSYM chatRTL2,chatRTL3,chatRTL4,chatRTL5
-EXTSYM NetLoadState
-EXTSYM ProcessMovies
+EXTSYM NetLoadState,ProcessMovies,MovieStop
 EXTSYM ioportval,ppustatus
-EXTSYM C4VBlank
-EXTSYM dsp1teststuff
+EXTSYM C4VBlank,dsp1teststuff
 EXTSYM ReturnFromSPCStall,SPCStallSetting,cycpb268,cycpb358,HIRQSkip,scanlines
 EXTSYM smallscreenon,ScreenScale
 EXTSYM MainLoop,NumberOfOpcodes,SfxCLSR,SfxSCMR,SfxPOR
@@ -119,8 +107,7 @@ EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67,fxbit
 EXTSYM SfxSFR,nosprincr
 EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 EXTSYM NetPlayNoMore
-EXTSYM statefileloc
-EXTSYM CHIPBATT,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
+EXTSYM statefileloc,CHIPBATT,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
 
 %ifdef __MSDOS__
 EXTSYM dssel
@@ -976,8 +963,6 @@ reexecuteb2:
 NEWSYM endprog
     call deinitvideo
 
-    cmp byte[previdmode],3
-
 ;    mov eax,[opcd]
 ;    mov eax,[numinst]          ;Temporary
 ;    mov eax,[NumBRRconv]
@@ -987,12 +972,9 @@ NEWSYM endprog
     call createnewcfg
     call GUISaveVars
 
-    cmp byte[MovieProcessing],0
-    je .nomovieclose
-    mov bx,[MovieFileHand]
-    mov byte[MovieProcessing],0
-    call Close_File
-.nomovieclose
+    pushad
+    call MovieStop
+    popad
 
     ; change dir to InitDrive/InitDir
     mov dl,[InitDrive]
@@ -2730,7 +2712,9 @@ NEWSYM cpuover
 
     cmp byte[MovieProcessing],0
     je .noprocmovie
+    pushad
     call ProcessMovies
+    popad
 .noprocmovie
 
     test byte[INTEnab],1

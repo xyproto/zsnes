@@ -1921,13 +1921,13 @@ DisplayGUIVideo:
     sub byte[GUItextcolor],15
 
 %ifndef __MSDOS__
-    GUIOuttextwin2 5,12,76,GUIVideoTextw0
-    GUIOuttextwin2 5,12,83,GUIVideoTextw1
-    GUIOuttextwin2 5,12,90,GUIVideoTextw2
-    GUIOuttextwin2 5,12,97,GUIVideoTextw3
+    GUIOuttextwin2 5,8,76,GUIVideoTextw0
+    GUIOuttextwin2 5,10,85,GUIVideoTextw1
+    GUIOuttextwin2 5,10,92,GUIVideoTextw2
+    GUIOuttextwin2 5,10,99,GUIVideoTextw3
 %endif
 %ifdef __LINUX__
-    GUIOuttextwin2 5,12,104,GUIVideoTextw4
+    GUIOuttextwin2 5,10,106,GUIVideoTextw4
 %endif
     xor eax,eax
     mov al,[cvidmode]
@@ -2057,13 +2057,13 @@ DisplayGUIVideo:
     add byte[GUItextcolor],15
 
 %ifndef __MSDOS__
-    GUIOuttextwin2 5,11,75,GUIVideoTextw0
-    GUIOuttextwin2 5,11,82,GUIVideoTextw1
-    GUIOuttextwin2 5,11,89,GUIVideoTextw2
-    GUIOuttextwin2 5,11,96,GUIVideoTextw3
+    GUIOuttextwin2 5,7,75,GUIVideoTextw0
+    GUIOuttextwin2 5,9,84,GUIVideoTextw1
+    GUIOuttextwin2 5,9,91,GUIVideoTextw2
+    GUIOuttextwin2 5,9,98,GUIVideoTextw3
 %endif
 %ifdef __LINUX__
-    GUIOuttextwin2 5,11,103,GUIVideoTextw4
+    GUIOuttextwin2 5,9,105,GUIVideoTextw4
 %endif
     xor eax,eax
     mov al,[cvidmode]
@@ -2531,10 +2531,11 @@ GUIVideoText8 db 'SET',0                ; set button
 GUIVideoText9 db 'VSYNC',0       ; -c
 GUIVideoTextH db 'MODE : ',0
 GUIVideoTextw0 db 'LEGEND:',0
-GUIVideoTextw1 db ' S = SCALED TO FIT SCREEN',0
-GUIVideoTextw2 db ' R = MATCHED SCREEN RATIO',0
-GUIVideoTextw3 db ' D = ALLOW 2XSAI,HIRES,ETC',0
-GUIVideoTextw4 db ' O = OPENGL MODE',0
+GUIVideoTextw1 db 'S = STRETCH  R = KEEP RATIO',0
+GUIVideoTextw2 db ' D = ALLOW SPECIAL FILTERS',0
+GUIVideoTextw3 db ' W = WIN          F = FULL',0
+GUIVideoTextw4 db '      O = USES OPENGL',0
+
 
 SECTION .bss
 GUIVStA resd 3
@@ -4825,7 +4826,7 @@ NEWSYM LatencyLeft, db 2
 SECTION .bss
 NEWSYM NetSwap, resb 1
 RemCNetType resb 1
-UseRemoteSRAMData resb 1
+NEWSYM UseRemoteSRAMData, resb 1
 ChatString resb 276
 FileNameMod resb 512
 CurCStringPos resd 1
@@ -5648,7 +5649,7 @@ DisplayGUIAbout:
     ret
 
 SECTION .data
-GUIGUIAboutText1  db 'ZSNES ',ZVERSION,'             ',0 ;Need room for date
+GUIGUIAboutText1  db 'ZSNES V',ZVERSION,'             ',0 ;Need room for date
 GUIGUIAboutText2  db 'CODED BY :  ',0
 GUIGUIAboutText3  db '    ZSKNIGHT      _DEMO_',0
 GUIGUIAboutText4  db '    PAGEFAULT     NACH',0
@@ -5793,7 +5794,7 @@ GUIMovieText7 db 'OKAY TO OVERWRITE?',0
 GUIMovieText8 db 'YES',0
 GUIMovieText9 db 'NO',0
 GUIMovieTextA db 'STATUS :           ',0
-CMovieExt db 'v'
+NEWSYM CMovieExt, db 'v'
 
 SECTION .text
 

@@ -1213,39 +1213,39 @@ NEWSYM NumVideoModes, dd 33
 ; GUI Video Mode Names - Make sure that all names are of the same length
 ; and end with a NULL terminator
 NEWSYM GUIVideoModeNames
-db '256x224    R WIN ',0  ;0
-db '256x224    R FULL',0  ;1
-db '512x448    R WIN ',0  ;2
-db '512x448   DR WIN ',0  ;3
-db '640x480    S WIN ',0  ;4
-db '640x480   DS WIN ',0  ;5
-db '640x480   DR FULL',0  ;6
-db '640x480   DS FULL',0  ;7
-db '640x480    S FULL',0  ;8
-db '768x672    R WIN ',0  ;9
-db '768x672   DR WIN ',0  ;10
-db '800x600    S WIN ',0  ;11
-db '800x600   DS WIN ',0  ;12
-db '800x600    S FULL',0  ;13
-db '800x600   DR FULL',0  ;14
-db '800x600   DS FULL',0  ;15
-db '1024x768   S WIN ',0  ;16
-db '1024x768  DS WIN ',0  ;17
-db '1024x768   S FULL',0  ;18
-db '1024x768  DR FULL',0  ;19
-db '1024x768  DS FULL',0  ;20
-db '1024x896   R WIN ',0  ;21
-db '1024x896  DR WIN ',0  ;22
-db '1280x960   S WIN ',0  ;23
-db '1280x960  DS WIN ',0  ;24
-db '1280x960   S FULL',0  ;25
-db '1280x960  DR FULL',0  ;26
-db '1280x960  DS FULL',0  ;27
-db '1280x1024  S WIN ',0  ;28
-db '1280x1024 DS WIN ',0  ;29
-db '1280x1024  S FULL',0  ;30
-db '1280x1024 DR FULL',0  ;31
-db '1280x1024 DS FULL',0  ;32
+db '256x224       R W',0  ;0
+db '256x224       R F',0  ;1
+db '512x448       R W',0  ;2
+db '512x448      DR W',0  ;3
+db '640x480       S W',0  ;4
+db '640x480      DS W',0  ;5
+db '640x480      DR F',0  ;6
+db '640x480      DS F',0  ;7
+db '640x480       S F',0  ;8
+db '768x672       R W',0  ;9
+db '768x672      DR W',0  ;10
+db '800x600       S W',0  ;11
+db '800x600      DS W',0  ;12
+db '800x600       S F',0  ;13
+db '800x600      DR F',0  ;14
+db '800x600      DS F',0  ;15
+db '1024x768      S W',0  ;16
+db '1024x768     DS W',0  ;17
+db '1024x768      S F',0  ;18
+db '1024x768     DR F',0  ;19
+db '1024x768     DS F',0  ;20
+db '1024x896      R W',0  ;21
+db '1024x896     DR W',0  ;22
+db '1280x960      S W',0  ;23
+db '1280x960     DS W',0  ;24
+db '1280x960      S F',0  ;25
+db '1280x960     DR F',0  ;26
+db '1280x960     DS F',0  ;27
+db '1280x1024     S W',0  ;28
+db '1280x1024    DS W',0  ;29
+db '1280x1024     S F',0  ;30
+db '1280x1024    DR F',0  ;31
+db '1280x1024    DS F',0  ;32
 
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)
 ; Left side starts with Video Mode 0

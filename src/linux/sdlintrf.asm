@@ -901,26 +901,26 @@ NEWSYM NumVideoModes, dd 4
 ; GUI Video Mode Names - Make sure that all names are of the same length
 ; and end with a NULL terminator
 NEWSYM GUIVideoModeNames
-db '256X224    R WIN ',0  ;0
-db '256x224    R FULL',0  ;1
-db '512X448   DR WIN ',0  ;2
-db '640x480   DS FULL',0  ;3
+db '256X224       R W',0  ;0
+db '256x224       R F',0  ;1
+db '512X448      DR W',0  ;2
+db '640x480      DR F',0  ;3
 %ifdef __OPENGL__
-db '256x224   OR WIN ',0  ;4
-db '512x448  ODR WIN ',0  ;5
-db '640x480  ODS FULL',0  ;6
-db '640x480  ODS WIN ',0  ;7
-db '640x576  ODR WIN ',0  ;8
-db '768x672  ODR WIN ',0  ;9
-db '800x600  ODS FULL',0  ;10
-db '800x600  ODS WIN ',0  ;11
-db '896x784  ODR WIN ',0  ;12
-db '1024x768 ODS FULL',0  ;13
-db '1024x768 ODS WIN ',0  ;14
-db '1024x896 ODR WIN ',0  ;15
-db '1280x1024ODS FULL',0  ;16
-db '1600x1200ODS FULL',0  ;17
-db 'VARIABLE ODR WIN ',0  ;18
+db '256x224      OR W',0  ;4
+db '512x448     ODR W',0  ;5
+db '640x480     ODS F',0  ;6
+db '640x480     ODS W',0  ;7
+db '640x576     ODR W',0  ;8
+db '768x672     ODR W',0  ;9
+db '800x600     ODS F',0  ;10
+db '800x600     ODS W',0  ;11
+db '896x784     ODR W',0  ;12
+db '1024x768    ODS F',0  ;13
+db '1024x768    ODS W',0  ;14
+db '1024x896    ODR W',0  ;15
+db '1280x1024   ODS F',0  ;16
+db '1600x1200   ODS F',0  ;17
+db 'VARIABLE    ODR W',0  ;18
 
 %endif	
 

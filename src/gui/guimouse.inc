@@ -567,15 +567,41 @@ ProcessMouseButtons:
     cmp byte[GUICBHold],15
     je near CalibrateDev1
     cmp byte[GUICBHold],16
-    je near MoviePlay
+    jne .notMoviePlay
+    pushad
+    call MoviePlay
+    popad
+    ret
+.notMoviePlay
     cmp byte[GUICBHold],17
-    je near MovieRecord
+    jne .notMovieRecord0
+    pushad
+    call MovieRecord
+    popad
+    ret
+.notMovieRecord0
     cmp byte[GUICBHold],18
-    je near MovieStop
+    jne .notMovieStop
+    mov byte[GUICBHold],0
+    pushad
+    call MovieStop
+    popad
+    ret
+.notMovieStop
     cmp byte[GUICBHold],19
-    je near MovieRecord
+    jne .notMovieRecord1
+    pushad
+    call MovieRecord
+    popad
+    ret
+.notMovieRecord1
     cmp byte[GUICBHold],20
-    je near SkipMovie
+    jne .notSkipMovie
+    pushad
+    call SkipMovie
+    popad
+    ret
+.notSkipMovie
     cmp byte[GUICBHold],40
     je near SetAllKeys
     cmp byte[GUICBHold],50

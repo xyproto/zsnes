@@ -530,15 +530,14 @@ SECTION .text
     call RemoteSendChar
     mov al,222
     call RemoteSendChar
-	 ; Dan - Change this from looking into the welcome message forthe version.
-	 mov al,[versionNumber + 0]
-	 call RemoteSendChar
-	 mov al,[versionNumber + 1]
-	 call RemoteSendChar
-	 mov al,[versionNumber + 2]
-	 call RemoteSendChar
-	 mov al,[versionNumber + 3]
-	 call RemoteSendChar
+    mov al,[versionNumber]
+    call RemoteSendChar
+    mov al,[versionNumber+1]
+    call RemoteSendChar
+    mov al,[versionNumber+2]
+    call RemoteSendChar
+    mov al,[versionNumber+3]
+    call RemoteSendChar
     mov al,[soundon]
     call RemoteSendChar
     cmp al,byte[CNetType]
@@ -581,28 +580,28 @@ SECTION .text
 .nocheck3
     cmp byte[IDCheckPos],3
     jne .nocheck4
-    cmp dl,[versionNumber + 0]
+    cmp dl,[versionNumber]
     jne near .invversion
     mov byte[IDCheckPos],4
     ret
 .nocheck4
     cmp byte[IDCheckPos],4
     jne .nocheck5
-    cmp dl,[versionNumber + 1]
+    cmp dl,[versionNumber+1]
     jne near .invversion
     mov byte[IDCheckPos],5
     ret
 .nocheck5
     cmp byte[IDCheckPos],5
     jne .nocheck6
-    cmp dl,[versionNumber + 2]
+    cmp dl,[versionNumber+2]
     jne .invversion
     mov byte[IDCheckPos],6
     ret
 .nocheck6
     cmp byte[IDCheckPos],6
     jne .nocheck7
-    cmp dl,[versionNumber + 3]
+    cmp dl,[versionNumber+3]
     jne .invversion
     mov byte[IDCheckPos],9
     ret

@@ -22,144 +22,14 @@
 
 ; Movie, Joystick setting (display) routines, SNES Reset Function
 
-MovieRecord:
-    mov byte[GUICBHold],0
-    cmp byte[MovieProcessing],0
-    jne near .dontrecord
-    ;jne .noreset
-    mov dword[MovieCounter],0
-.noreset
-    ; check if movie exists already
-    mov ebx,[statefileloc]
-    mov eax,[fnamest+ebx-3]
-    push eax
-    mov dword[fnamest+ebx-3],'.zmv'
-    mov al,[CMovieExt]
-    mov byte[fnamest+ebx],al
-
-    ; check if file exists
-    cmp byte[MovieRecordWinVal],1
-    je .nocheck
-    mov edx,fnamest+1
-    call Open_File
-    jc .nocheck
-    mov bx,ax
-    call Close_File
-    mov byte[MovieRecordWinVal],1
-    jmp .skipstate
-.nocheck
-    cmp byte[MovieProcessing],0
-    jne near .nocheckit
-    mov dword[CFWriteHead],0
-    mov dword[CReadHead],0
-    mov dword[ReadHead],0
-    mov dword[CFWriteStart],64
-.nocheckit
-    mov byte[MovieRecordWinVal],0
-    pushad
-    call SRAMChdir
-    popad
-    mov byte[NoPictureSave],1
-    cmp byte[MovieProcessing],0
-    jne .nostatesaver
-    pushad
-    call statesaver
-    popad
-.nostatesaver
-    mov byte[NoPictureSave],0
-    mov edx,fnamest+1
-    call Open_File_Write
-    mov bx,ax
-    mov [MovieFileHand],bx
-    mov cx,0
-    mov dx,0
-    call File_Seek_End
-    cmp byte[MovieProcessing],0
-    je .noappend
-    mov byte[MovieProcessing],2
-    jmp .netstuff
-.noappend
-    mov al,[soundon]
-    mov [RecData],al
-    mov eax,[versionNumber]
-    mov [RecData+1],eax
-    mov byte[RecData+2],1
-    mov eax,[timer2upd]
-    mov [RecData+3],eax
-    mov eax,[curexecstate]
-    mov [RecData+7],eax
-    mov edx,RecData
-    mov ecx,16
-    call Write_File
-    cmp dword[ramsize],0
-    je .noram
-    mov edx,[sram]
-    mov ecx,[ramsize]
-    call Write_File
-.noram
-    mov byte[MovieProcessing],2
-    mov dword[MovieBuffSize],0
-    mov dword[MovieBuffFrame],0
-    mov byte[RepeatFrame],0
-    cmp byte[CNetType],20
-    je near .netstuff
-    cmp byte[CNetType],21
-    je near .netstuff
-    mov dword[nmiprevaddrl],0
-    mov dword[nmiprevaddrh],0
-    mov dword[nmirept],0
-    mov dword[nmiprevline],224
-    mov dword[nmistatus],0
-    mov dword[spcnumread],0
-	mov dword[spchalted],-1
-    mov byte[NextLineCache],0
-    mov dword[PJoyAOrig],0
-    mov dword[PJoyBOrig],0
-    mov dword[PJoyCOrig],0
-    mov dword[PJoyDOrig],0
-    mov dword[PJoyEOrig],0
-    mov byte[DSPMem+08h],0
-    mov byte[DSPMem+18h],0
-    mov byte[DSPMem+28h],0
-    mov byte[DSPMem+38h],0
-    mov byte[DSPMem+48h],0
-    mov byte[DSPMem+58h],0
-    mov byte[DSPMem+68h],0
-    mov byte[DSPMem+78h],0
-.netstuff
-    mov byte[MovieProcessing],2
-    call ChangetoLOADdir
-.skipstate
-    pop eax
-    mov ebx,[statefileloc]
-    mov [fnamest+ebx-3],eax
-.dontrecord
-    ret
-
 SECTION .bss
-MovieRecordWinVal resb 1
+NEWSYM MovieRecordWinVal, resb 1
 NEWSYM MovieProcessing, resb 1
 NEWSYM MovieFileHand, resw 1
-NEWSYM RepeatFrame, resb 1
 NEWSYM RecData, resb 16
 NEWSYM NoPictureSave, resb 1
 
 SECTION .text
-
-SkipMovie:
-    mov byte[MovieRecordWinVal],0
-    mov byte[GUICBHold],0
-    ret
-
-MovieStop:
-    mov byte[GUICBHold],0
-    cmp byte[MovieProcessing],0
-    je .skipfileend
-    mov bx,[MovieFileHand]
-    mov byte[MovieProcessing],0
-    call Close_File
-.skipfileend
-    ret
 
 CalibrateDispA:
     xor ebx,ebx
@@ -495,13 +365,8 @@ NEWSYM GUIDoReset
 ;    mov byte[NetPlayNoMore],1
     mov byte[RestoreValues],0
 
-    cmp byte[MovieProcessing],0
-    je .skipfileend
-    mov bx,[MovieFileHand]
-    mov byte[MovieProcessing],0
-    call Close_File
-.skipfileend
     pushad
+    call MovieStop
     call RestoreSystemVars
     popad
 

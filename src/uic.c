@@ -35,14 +35,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define true 1
 #define false 0
 
-extern void outofmemory();
-
 extern unsigned char *vbufaptr;
 extern unsigned char *vbufeptr;
 extern unsigned char *ngwinptrb;
 extern unsigned char *vbufdptr;
 extern unsigned char *romaptr;
-extern unsigned char welcome[452+16]; // 452=message string, 16=version string
 extern unsigned char mydebug[2];
 extern unsigned char outofmem[51];
 extern unsigned char YesMMX[34];
@@ -147,7 +144,7 @@ void *doMemAlloc(size_t size)
 {
   void *ptr = NULL;
   ptr = malloc(size);
-  if (!ptr) { outofmemory(); }
+  if (!ptr) { asm_call(outofmemory); }
   return(ptr);
 }
 
@@ -175,22 +172,22 @@ void cycleinputdevice()
     if (snesmouse == 0)
     {
       if (input1gp && input2gp) { return; }
-      snesmouse++;   
+      snesmouse++;
     }
     if (snesmouse == 1)
     {
       if (input1mouse) { return; }
-      snesmouse++;   
+      snesmouse++;
     }
     if (snesmouse == 2)
     {
       if (input2mouse) { return; }
-      snesmouse++;   
+      snesmouse++;
     }
     if (snesmouse == 3)
     {
       if (input2scope) { return; }
-      snesmouse++;   
+      snesmouse++;
     }
     if (snesmouse == 4)
     {
@@ -199,60 +196,84 @@ void cycleinputdevice()
   }
 }
 
-extern unsigned char soundon;
-extern unsigned char SPCDisable;
-extern unsigned char spcon;
-extern unsigned char FPSOn;
-extern unsigned char FPSAtStart;
+extern unsigned int xa;
+extern unsigned char soundon, SPCDisable, spcon, FPSOn, FPSAtStart;
 
-const unsigned int versionNumber = 0x00000143;
-const char* ZVERSION = "Pre 1.43";
+const unsigned int versionNumber = 0x0000008F; // 1.43
+unsigned char *ZVERSION = "Pre 1.43";
+unsigned char txtfailedalignd[25] = "Data Alignment Failure : ";
+unsigned char txtfailedalignc[25] = "Code Alignment Failure : ";
+
+void outofmemory();
 
 void zstart ()
 {
-	asm_call(StartUp);
+  unsigned int ptr;
 
-	// Print welcome message.
-	printf("ZSNES v%s, (c) 1997-2005, ZSNES Team\n", ZVERSION);
-	puts("Be sure to check http://www.zsnes.com/ for the latest version.");
-	puts("Please report crashes to zsnes-devel@lists.sourceforge.net.\n");
-	puts("ZSNES is written by the ZSNES Team (See AUTHORS.TXT)");
-	puts("ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,");
-	puts("and you are welcome to redistribute it under certain conditions;");
-	puts("please read 'LICENSE.TXT' thoroughly before doing so.\n");
-	puts("Use ZSNES -? for command line definitions.\n");
+  asm_call(StartUp);
 
-	asm_call(SystemInit);
+  printf("%s", mydebug);
+
+  // Print welcome message.
+  printf("ZSNES v%s, (c) 1997-2005, ZSNES Team\n", ZVERSION);
+  puts("Be sure to check http://www.zsnes.com/ for the latest version.");
+  puts("Please report crashes to zsnes-devel@lists.sourceforge.net.\n");
+  puts("ZSNES is written by the ZSNES Team (See AUTHORS.TXT)");
+  puts("ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,");
+  puts("and you are welcome to redistribute it under certain conditions;");
+  puts("please read 'LICENSE.TXT' thoroughly before doing so.\n");
+  puts("Use ZSNES -? for command line definitions.\n");
+
+  asm_call(SystemInit);
 
 #ifdef OPENSPC
-	OSPC_Init ();
+  OSPC_Init();
 #else
-	asm_call(setnoise);
-	asm_call(InitSPC);
+  asm_call(setnoise);
+  asm_call(InitSPC);
 #endif
 	
-	asm_call(allocmem);
+  asm_call(allocmem);
 
-	if (!soundon && !SPCDisable)
-	{
-		soundon = 1;
-		spcon = 1;
-		DSPDisable = 1;
-	}
+  if (!soundon && (SPCDisable != 1))
+  {
+    soundon = 1;
+    spcon = 1;
+    DSPDisable = 1;
+  }
 
-	if (SPCDisable)
-	{
-		soundon = 0;
-		spcon = 0;
-	}
+  if (SPCDisable)
+  {
+    soundon = 0;
+    spcon = 0;
+  }
 
-	if (!frameskip)
-	{
-		FPSOn = FPSAtStart;
-	}
+  if (!frameskip)
+  {
+    FPSOn = FPSAtStart;
+  }
 
-	gammalevel16b = gammalevel * 2;
+  gammalevel16b = gammalevel >> 1;
 
-	asm_call(MMXCheck);
-	asm_call(init);
+  asm_call(MMXCheck);
+
+  ptr = (unsigned int)&outofmemory;
+
+  if ((ptr & 3))
+  {
+    printf("%s%d", txtfailedalignc, (ptr & 0x1F));
+
+    asm_call(WaitForKey);
+  }
+
+  ptr = (unsigned int)&xa;
+
+  if ((ptr & 3))
+  {
+    printf("%s%d", txtfailedalignd, (ptr & 0x1F));
+
+    asm_call(WaitForKey);
+  }
+
+  asm_call(init);
 }

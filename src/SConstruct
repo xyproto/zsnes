@@ -31,7 +31,6 @@ source_files = Split("""
 	cpu/table.asm
 	cpu/tableb.asm
 	cpu/tablec.asm
-	cpu/zstate.c
 	dos/debug.asm
 	dos/joy.asm
 	dos/modemrtn.asm
@@ -91,6 +90,8 @@ source_files = Split("""
 	ui.asm
 	vcache.asm
 	version.c
+	zmovie.c
+	zstate.c
 """)
 
 linux_source_files = Split("""

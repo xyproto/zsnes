@@ -167,6 +167,7 @@ EXTSYM GUIHQ3X
 EXTSYM GUIHQ4X
 EXTSYM firstsaveinc
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
+EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord
 
 %ifdef __LINUX__
 EXTSYM numlockptr
@@ -719,7 +720,7 @@ vbuflimbot   resd 1
 GUIScrolTim1 resd 1
 GUIScrolTim2 resd 1
 GUICHold     resd 1
-GUICBHold    resd 1
+NEWSYM GUICBHold,    resd 1
 GUICBHold2   resd 1
 GUIDClickTL  resd 1
 GUIDClCWin   resd 1
@@ -2346,6 +2347,9 @@ NEWSYM StartGUI
     mov dword[PBackupPos],0
     call RestoreCVFrame
     popad
+    mov esi,[tempesi] 	 
+    mov edi,[tempedi] 	 
+    mov ebp,[tempebp]
 .norestoreval
 
     mov dword[nmiprevaddrl],0
@@ -3061,103 +3065,103 @@ ManualStatus resb 1
 NEWSYM MovieCounter, resd 1
 
 SECTION .data
-UnableMovie2 db 'MUST PLAY WITH SOUND OFF',0
-UnableMovie3 db 'MUST PLAY WITH SOUND ON',0
+NEWSYM UnableMovie2, db 'MUST PLAY WITH SOUND OFF',0
+NEWSYM UnableMovie3, db 'MUST PLAY WITH SOUND ON',0
 
-SECTION .text
-
-MoviePlay:
-    cmp byte[CNetType],20
-    je near .dontplay
-    mov byte[GUICBHold],0
-    mov dword[MovieCounter],0
-    cmp byte[MovieProcessing],0
-    jne near .dontplay
-    mov byte[GUIQuit],2
-    mov ebx,[statefileloc]
-    mov eax,[fnamest+ebx-3]
-    push eax
-    mov dword[fnamest+ebx-3],'.zmv'
-    mov al,[CMovieExt]
-    mov byte[fnamest+ebx],al
-    pushad
-    call SRAMChdir
-    popad
-    mov dword[Totalbyteloaded],0
-    pushad
-    call loadstate2
-    popad
-    mov edx,fnamest+1
-    call Open_File
-    jc near .notexist
-    mov bx,ax
-    mov [MovieFileHand],bx
-    mov cx,[Totalbyteloaded+2]
-    mov dx,[Totalbyteloaded]
-    call File_Seek
-    mov edx,RecData
-    mov ecx,16
-    call Read_File
-    cmp byte[RecData+2],1
-    jne .noextra
-    mov eax,[RecData+3]
-    mov [timer2upd],eax
-    mov eax,[RecData+7]
-    mov [curexecstate],eax
-    mov dword[nmiprevaddrl],0
-    mov dword[nmiprevaddrh],0
-    mov dword[nmirept],0
-    mov dword[nmiprevline],224
-    mov dword[nmistatus],0
-    mov dword[spcnumread],0
-	mov dword[spchalted],-1
-    mov byte[NextLineCache],0
-.noextra
-    mov al,[RecData]
-    cmp al,[soundon]
-    jne near .soundisoff
-    cmp dword[ramsize],0
-    je .noram
-    mov edx,[sram]
-    mov ecx,[ramsize]
-    call Read_File
-.noram
-    mov byte[MovieProcessing],1
-.skip
-    mov dword[PJoyAOrig],0
-    mov dword[PJoyBOrig],0
-    mov dword[PJoyCOrig],0
-    mov dword[PJoyDOrig],0
-    mov dword[PJoyEOrig],0
-    mov byte[sramsavedis],1
-    mov byte[UseRemoteSRAMData],0
-    mov byte[DSPMem+08h],0
-    mov byte[DSPMem+18h],0
-    mov byte[DSPMem+28h],0
-    mov byte[DSPMem+38h],0
-    mov byte[DSPMem+48h],0
-    mov byte[DSPMem+58h],0
-    mov byte[DSPMem+68h],0
-    mov byte[DSPMem+78h],0
-.notexist
-    call ChangetoLOADdir
-    pop eax
-    mov ebx,[statefileloc]
-    mov [fnamest+ebx-3],eax
-.dontplay
-    ret
-.soundisoff
-    mov dword[Msgptr],UnableMovie2
-    cmp byte[soundon],0
-    jne .soundon
-    mov dword[Msgptr],UnableMovie3
-.soundon
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    call Close_File
-    pop eax
-    ret
-
+;SECTION .text
+;
+;MoviePlay:
+;    cmp byte[CNetType],20
+;    je near .dontplay
+;    mov byte[GUICBHold],0
+;    mov dword[MovieCounter],0
+;    cmp byte[MovieProcessing],0
+;    jne near .dontplay
+;    mov byte[GUIQuit],2
+;    mov ebx,[statefileloc]
+;    mov eax,[fnamest+ebx-3]
+;    push eax
+;    mov dword[fnamest+ebx-3],'.zmv'
+;    mov al,[CMovieExt]
+;    mov byte[fnamest+ebx],al
+;    pushad
+;    call SRAMChdir
+;    popad
+;    mov dword[Totalbyteloaded],0
+;    pushad
+;    call loadstate2
+;    popad
+;    mov edx,fnamest+1
+;    call Open_File
+;    jc near .notexist
+;    mov bx,ax
+;    mov [MovieFileHand],bx
+;    mov cx,[Totalbyteloaded+2]
+;    mov dx,[Totalbyteloaded]
+;    call File_Seek
+;    mov edx,RecData
+;    mov ecx,16
+;    call Read_File
+;    cmp byte[RecData+2],1
+;    jne .noextra
+;    mov eax,[RecData+3]
+;    mov [timer2upd],eax
+;    mov eax,[RecData+7]
+;    mov [curexecstate],eax
+;    mov dword[nmiprevaddrl],0
+;    mov dword[nmiprevaddrh],0
+;    mov dword[nmirept],0
+;    mov dword[nmiprevline],224
+;    mov dword[nmistatus],0
+;    mov dword[spcnumread],0
+;	mov dword[spchalted],-1
+;    mov byte[NextLineCache],0
+;.noextra
+;    mov al,[RecData]
+;    cmp al,[soundon]
+;    jne near .soundisoff
+;    cmp dword[ramsize],0
+;    je .noram
+;    mov edx,[sram]
+;    mov ecx,[ramsize]
+;    call Read_File
+;.noram
+;    mov byte[MovieProcessing],1
+;.skip
+;    mov dword[PJoyAOrig],0
+;    mov dword[PJoyBOrig],0
+;    mov dword[PJoyCOrig],0
+;    mov dword[PJoyDOrig],0
+;    mov dword[PJoyEOrig],0
+;    mov byte[sramsavedis],1
+;    mov byte[UseRemoteSRAMData],0
+;    mov byte[DSPMem+08h],0
+;    mov byte[DSPMem+18h],0
+;    mov byte[DSPMem+28h],0
+;    mov byte[DSPMem+38h],0
+;    mov byte[DSPMem+48h],0
+;    mov byte[DSPMem+58h],0
+;    mov byte[DSPMem+68h],0
+;    mov byte[DSPMem+78h],0
+;.notexist
+;    call ChangetoLOADdir
+;    pop eax
+;    mov ebx,[statefileloc]
+;    mov [fnamest+ebx-3],eax
+;.dontplay
+;    ret
+;.soundisoff
+;    mov dword[Msgptr],UnableMovie2
+;    cmp byte[soundon],0
+;    jne .soundon
+;    mov dword[Msgptr],UnableMovie3
+;.soundon
+;    mov eax,[MsgCount]
+;    mov [MessageOn],eax
+;    call Close_File
+;    pop eax
+;    ret
+;
 SECTION .bss
 NEWSYM Totalbyteloaded, resd 1
 NEWSYM sramsavedis, resb 1
@@ -3605,7 +3609,7 @@ DisplayBoxes:
 .nomore
     ret
 
-ChangetoLOADdir:
+NEWSYM ChangetoLOADdir
     mov dl,[LoadDrive]
     mov ebx,LoadDir
     call Change_Dir
