@@ -1732,7 +1732,6 @@ NEWSYM LPFsample2, dd 0
     add edx,eax
 
     mov eax,[prev0]
-    mov [prev0],edx
     mov [prev1],eax
     cmp edx,-32768
     jnl %%notless
@@ -1744,6 +1743,8 @@ NEWSYM LPFsample2, dd 0
     mov edx,32767
     mov byte[filteron],1
 %%notgreater
+    movsx edx,dx
+    mov [prev0],edx
 %endmacro
 
 NEWSYM lastblockbrr, times 8 dd 0
