@@ -2327,7 +2327,7 @@ DisplayGUIVideoClick:
 .nocheckboxttb
     xor ebx,ebx
     mov bl,[cvidmode]
-    cmp byte[GUITBVID+ebx],0
+    cmp byte[GUITBWVID+ebx],0
     je .nocheckboxks
     GUIClickCButton 83,173,byte[KitchenSync]
 .nocheckboxks
