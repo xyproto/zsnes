@@ -160,8 +160,8 @@ NEWSYM StartUp
 NEWSYM SystemInit
     ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
     push es
-    mov byte[cfgcvidmode],2
-    mov byte[cvidmode],2
+    mov byte[cfgcvidmode],3
+    mov byte[cvidmode],3
     call getcmdline
 
     mov byte[esi],'z'
