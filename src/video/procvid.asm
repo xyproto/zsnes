@@ -34,7 +34,7 @@ EXTSYM GUIEnableTransp
 EXTSYM GUIFontData
 EXTSYM StopSound,StartSound
 EXTSYM PrevPicture,File_Seek,File_Seek_End,nggposng
-EXTSYM OSPort
+;EXTSYM OSPort
 EXTSYM Palette0
 EXTSYM GetTimeInSeconds
 EXTSYM scaddset,scrnon,spcRam,nmiprevline,bgmode,ofsmcptr
