@@ -955,6 +955,7 @@ char *txtaddextchap = "EXTERNAL CHAPTER ADDED.";
 char *txtnomovie = "NO MOVIE PROCESSING.";
 char *txtseeknext = "NEXT CHAPTER LOADED.";
 char *txtseekprev = "PREVIOUS CHAPTER LOADED.";
+char *txtseekrecord = "NO SEEKING DURING RECORD.";
  
 void MovieInsertChapter()
 {
@@ -977,24 +978,36 @@ void MovieInsertChapter()
 
 void MovieSeekAhead()
 {
-  if (MovieProcessing == 1) // replaying only - record can use ZMTs
+  switch (MovieProcessing)
   {
-    zmv_next_chapter();
-    Msgptr = txtseeknext;
+    case 1:	// replaying ok
+      zmv_next_chapter();
+      Msgptr = txtseeknext;
+      break;
+    case 2:	// recording will use MZTs
+      Msgptr = txtseekrecord;
+      break;
+    default:	// can't seek without a movie
+      Msgptr = txtnomovie;
   }
-  else	{ Msgptr = txtnomovie; }
 
   MessageOn = MsgCount;
 }
 
 void MovieSeekBehind()
 {
-  if (MovieProcessing == 1) // replaying only - record can use ZMTs
+  switch (MovieProcessing)
   {
-    zmv_prev_chapter();
-    Msgptr = txtseekprev;
+    case 1:	// replaying ok
+      zmv_prev_chapter();
+      Msgptr = txtseekprev;
+      break;
+    case 2:	// recording will use MZTs
+      Msgptr = txtseekrecord;
+      break;
+    default:	// can't seek without a movie
+      Msgptr = txtnomovie;
   }
-  else	{ Msgptr = txtnomovie; }
 
   MessageOn = MsgCount;
 }
