@@ -2073,7 +2073,7 @@ DisplayGUISound:
 ;    cmp byte[OSPort],3
 ;    je near .win32b
 %ifdef __MSDOS__
-    GUIOuttextwin2 6,26,44,GUISoundText2b
+    GUIOuttextwin2u 6,26,44,GUISoundText2b,1
 %endif
 ;.win32b
     GUIOuttextwin2u 6,26,106,GUISoundText4,8

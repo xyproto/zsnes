@@ -970,6 +970,12 @@ GUISoundKeys:
     jne .notstereo
     xor byte[cfgStereoSound],1
 .notstereo
+%ifdef __MSDOS__
+    cmp dh,'A'
+    jne .noraisepitch
+    xor byte[RaisePitch],1
+.noraisepitch
+%endif
     cmp dh,'N'
     jne .notnoise
     xor byte[SoundNoiseDis],1
