@@ -5529,7 +5529,7 @@ NEWSYM CheckROMType
     cmp bx,0FFFFh
     jne .cantcheck
     mov byte[romtype],2
-    jmp .notfound
+    jmp .checkhiromletter
 .cantcheck
     ; check for a header with mostly letters or spaces
     mov esi,[romdata]
