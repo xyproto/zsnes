@@ -11,7 +11,7 @@
     To get help with ZSNES you can visit the ZSNES message boards.
     Please, read the rules thoroughly before posting anything.
 
-    http://board.zsnes.com
+    http://board.zsnes.com/phpBB2/
 
     There are also several mailing lists devoted to ZSNES which are
     kindly hosted by SourceForge.  They are usually low-traffic.
