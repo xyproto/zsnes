@@ -6282,10 +6282,22 @@ SECTION .text
 
 DisplayGUIChip:
     GUIDrawWindowBox 18,GUIChipConfigDisp
+    sub byte[GUItextcolor],15
+    GUIOuttextwin2 18,15,18,GUIChipText1
+    GUIOuttextwin2 18,35,28,GUIChipText2
+    GUIOuttextwin2 18,90,28,GUIChipText3
+    add byte[GUItextcolor],15
+    GUIOuttextwin2 18,14,17,GUIChipText1
+    GUIOuttextwin2 18,34,27,GUIChipText2
+    GUIOuttextwin2 18,89,27,GUIChipText3
+    GUIDisplayButtonHole 18,20,25,byte[st010difficulty],0
+    GUIDisplayButtonHole 18,75,25,byte[st010difficulty],1
     ret
 
 SECTION .data
-
+GUIChipText1 db 'SETA 10 DIFFICULTY:',0
+GUIChipText2 db 'NORMAL',0
+GUIChipText3 db 'HARD',0
 
 SECTION .text
 

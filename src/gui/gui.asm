@@ -163,6 +163,8 @@ EXTSYM GUIHQ3X
 EXTSYM GUIHQ4X
 EXTSYM firstsaveinc
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
+NEWSYM st010difficulty,  db 0     ; place holder till we commit the other Seta 10 file
+;EXTSYM st010difficulty
 %ifdef __LINUX__
 EXTSYM numlockptr
 %endif
