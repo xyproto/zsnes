@@ -1377,8 +1377,16 @@ int InitDirectDraw()
       }
       if (lpDD->SetDisplayMode(WindowWidth, WindowHeight, 16, Refresh, 0) != DD_OK)
       {
-         MessageBox(NULL, "IDirectDraw7::SetDisplayMode failed.\nMake sure your video card supports this mode.", "DirectDraw Error", MB_ICONERROR);
-         return FALSE;
+         if (lpDD->SetDisplayMode(WindowWidth, WindowHeight, 16, 0, 0) != DD_OK)
+         {
+           MessageBox(NULL, "IDirectDraw7::SetDisplayMode failed.\nMake sure your video card supports this mode.", "DirectDraw Error", MB_ICONERROR);
+           return FALSE;
+         }
+         else
+         {
+           KitchenSync = 0;
+           Refresh = 0;
+         }
       }
    }
    else
@@ -1483,6 +1491,8 @@ int InitDirectDraw()
       return FALSE;
    }
 
+   AltSurface = 0;
+
    // create alt. drawing surface
    if ( BitDepth == 32 )
    {
@@ -1499,6 +1509,9 @@ int InitDirectDraw()
         MessageBox(NULL, "IDirectDraw7::CreateSurface failed.", "DirectDraw Error", MB_ICONERROR);
         return FALSE;
      }
+
+     if ((SurfaceX==512) || (SurfaceX==640))
+       AltSurface = 1;
    }
 
       if (!blur_buffer) blur_buffer = malloc(SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
@@ -1924,7 +1937,6 @@ void initwinvideo(void)
      if (SurfaceX == 768) BlitArea.bottom = (SurfaceY/240)*resolutn;
 
      if (PrevRes == 0) PrevRes = resolutn;
-
    }
 
    if (((PrevStereoSound!=StereoSound)||(PrevSoundQuality!=SoundQuality))&&FirstSound!=1)
@@ -2261,27 +2273,45 @@ void clear_display()
 {
   if (FullScreen == 1)
   {
-    if ((DD_Primary != NULL) && (DD_BackBuffer != NULL))
+    DDBLTFX ddbltfx;
+
+    ddbltfx.dwSize = sizeof(ddbltfx);
+    ddbltfx.dwFillColor = 0;
+
+    if (TripleBufferWin == 1)
     {
-      DDBLTFX ddbltfx;
+      if ((DD_Primary != NULL) && (DD_BackBuffer != NULL))
+      {
+        if (DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
+          DD_Primary->Restore();
 
-      ddbltfx.dwSize = sizeof(ddbltfx);
-      ddbltfx.dwFillColor = 0;
+        if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+          DD_Primary->Restore();
 
-      if (DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
-        DD_Primary->Restore();
+        if (DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
+          DD_Primary->Restore();
 
-      if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
-        DD_Primary->Restore();
+        if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+          DD_Primary->Restore();
 
-      if (DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
-        DD_Primary->Restore();
-
-      if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
-        DD_Primary->Restore();
-
-      if (DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
-        DD_Primary->Restore();
+        if (DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
+          DD_Primary->Restore();
+      }
+    }
+    else
+    {
+      if (DD_Primary != NULL)
+      {
+        if (vsyncon == 1)
+        {
+          if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
+          {
+            DDrawError();
+          }
+        }
+        if (DD_Primary->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
+          DD_Primary->Restore();
+      }
     }
   }
 }
@@ -2315,11 +2345,6 @@ void drawscreenwin(void)
 
    UpdateVFrame();
    if (curblank!=0) return;
-
-   AltSurface = 0;
-
-   if ( ((SurfaceX==512) || (SurfaceX==640)) && (BitDepth == 32) )
-     AltSurface = 1;
 
    if (!(pitch = LockSurface()))
       return;

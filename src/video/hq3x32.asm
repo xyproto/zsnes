@@ -23,6 +23,7 @@
 %include "macros.mac"
 
 EXTSYM vidbuffer,curblank,MMXSupport,GUIOn,GUIOn2,
+EXTSYM vidbufferofsb
 EXTSYM FilteredGUI,resolutn,lineleft,cfield
 EXTSYM hirestiledat,newengen,SpecialLine
 EXTSYM hq3xFilter
@@ -31,7 +32,7 @@ EXTSYM NumBytesPerLine
 EXTSYM WinVidMemStart
 EXTSYM BitConv32Ptr
 EXTSYM RGBtoYUVPtr
-EXTSYM firstline, xcounter
+EXTSYM prevline, nextline, deltaptr, xcounter
 EXTSYM w1, w2, w3, w4, w5, w6, w7, w8, w9
 EXTSYM reg_blank, const7, cross, threshold
 
@@ -370,6 +371,8 @@ NEWSYM copy768x720x32bwin
     mov esi,[vidbuffer]
     mov edi,[WinVidMemStart]
     add esi,16*2+256*2+32*2
+    mov ecx,[vidbufferofsb]
+    mov [deltaptr],ecx
     cmp byte[FilteredGUI],0
     jne .filtergui
     cmp byte[GUIOn2],1
@@ -417,7 +420,8 @@ nointerp:
 hq3x:
     mov dl,[resolutn]
     mov byte[lineleft],dl
-    mov byte[firstline], 1
+    mov dword[prevline],0
+    mov dword[nextline],576
     mov ebx,hirestiledat+1
     cmp byte[GUIOn],1
     je .loopy
@@ -429,55 +433,106 @@ hq3x:
     cmp byte[ebx],1
     jbe .nohires
     call HighResProc
-    jmp .nextline
-.nohires
-    movzx eax,word[esi]
-    mov [w5],eax
-    mov [w6],eax
-    mov edx,eax
-    cmp byte[firstline],1
-    je  .firstline
-    movzx eax,word[esi-576]
-.firstline
-    mov [w2],eax
-    mov [w3],eax
-    cmp byte[lineleft], 1
-    je  .lastline
-    movzx edx,word[esi+576]
-.lastline
-    mov dword[xcounter],256
-    mov [w8],edx
-    mov [w9],edx
-.loopx
-    mov ebx,[BitConv32Ptr]
-    mov eax,[w2]
-    mov [w1],eax
-    mov eax,[w5]
-    mov [w4],eax
-    mov eax,[w8]
-    mov [w7],eax
-    mov eax,[w3]
-    mov [w2],eax
-    mov eax,[w6]
-    mov [w5],eax
-    mov eax,[w9]
-    mov [w8],eax
-    cmp dword[xcounter],1
-    je .a
-    movzx eax,word[esi+2]
-    mov [w6],eax
-    cmp byte[firstline],1
-    je  .first
-    movzx eax,word[esi-576+2]
-.first
-    mov [w3],eax
-    mov eax,[w6]
-    cmp byte[lineleft],1
-    je  .last
-    movzx eax,word[esi+576+2]
-.last
-    mov [w9],eax
+    mov edx,[deltaptr]
+    mov ecx,128
+    mov eax,0xAAAAAAAA
 .a
+    mov [edx],eax
+    add edx,4
+    dec ecx
+    jnz .a
+    mov [deltaptr],edx
+    jmp .nexty
+.nohires
+    mov     dword[xcounter],254   ; x={Xres-2, Xres-1} are special cases.
+    ; x=0 - special case
+    mov     edx,[deltaptr]
+    mov     ecx,[prevline]
+    mov     eax,[nextline]
+    movq    mm2,[esi+ecx]
+    movq    mm3,[esi]
+    movq    mm4,[esi+eax]
+    movq    mm5,mm2
+    movq    mm6,mm3
+    movq    mm7,mm4
+    pcmpeqw mm2,[edx+ecx]
+    pcmpeqw mm3,[edx]
+    pcmpeqw mm4,[edx+eax]
+    pand    mm2,mm3
+    pand    mm2,mm4
+    movd    eax,mm2
+    inc     eax
+    jz      .loopx_end
+    movd    eax,mm5
+    movzx   edx,ax
+    mov     [w1],edx
+    mov     [w2],edx
+    shr     eax,16
+    mov     [w3],eax
+    movd    eax,mm6
+    movzx   edx,ax
+    mov     [w4],edx
+    mov     [w5],edx
+    shr     eax,16
+    mov     [w6],eax
+    movd    eax,mm7
+    movzx   edx,ax
+    mov     [w7],edx
+    mov     [w8],edx
+    shr     eax,16
+    mov     [w9],eax
+    jmp     .flags
+.loopx
+    mov     edx,[deltaptr]
+    mov     ecx,[prevline]
+    mov     eax,[nextline]
+    movq    mm2,[esi+ecx-2]
+    movq    mm3,[esi-2]
+    movq    mm4,[esi+eax-2]
+    movq    mm5,mm2
+    movq    mm6,mm3
+    movq    mm7,mm4
+    pcmpeqw mm2,[edx+ecx-2]
+    pcmpeqw mm3,[edx-2]
+    pcmpeqw mm4,[edx+eax-2]
+    pand    mm2,mm3
+    pand    mm2,mm4
+    movd    ebx,mm2
+    psrlq   mm2,32
+    movd    eax,mm2
+    cwde
+    and     eax,ebx
+    inc     eax
+    jz      .loopx_end
+    movd    eax,mm5
+    mov     [edx+ecx-2],ax
+    movzx   edx,ax
+    mov     [w1],edx
+    shr     eax,16
+    mov     [w2],eax
+    psrlq   mm5,32
+    movd    eax,mm5
+    movzx   edx,ax
+    mov     [w3],edx
+    movd    eax,mm6
+    movzx   edx,ax
+    mov     [w4],edx
+    shr     eax,16
+    mov     [w5],eax
+    psrlq   mm6,32
+    movd    eax,mm6
+    movzx   edx,ax
+    mov     [w6],edx
+    movd    eax,mm7
+    movzx   edx,ax
+    mov     [w7],edx
+    shr     eax,16
+    mov     [w8],eax
+    psrlq   mm7,32
+    movd    eax,mm7
+    movzx   edx,ax
+    mov     [w9],edx
+.flags
     mov     ebx,[RGBtoYUVPtr]
     mov     eax,[w5]
     xor     ecx,ecx
@@ -544,21 +599,12 @@ hq3x:
     jz      .noflag8
     or      ecx,64
 .noflag8
-    cmp dword[cross],0
-    jne .testflag1
-    mov ebx,[BitConv32Ptr]
-    mov eax,[ebx+eax*4]
-    mov ebx,[NumBytesPerLine]
-    mov [edi],eax
-    mov [edi+4],eax
-    mov [edi+8],eax
-    mov [edi+ebx],eax
-    mov [edi+ebx+4],eax
-    mov [edi+ebx+8],eax
-    mov [edi+ebx*2],eax
-    mov [edi+ebx*2+4],eax
-    mov [edi+ebx*2+8],eax
-    jmp .loopx_end
+    test    ecx,ecx
+    jnz     .testflag1
+    mov     ecx,[cross]
+    mov     ebx,[BitConv32Ptr]
+    mov     eax,[ebx+eax*4]
+    jmp     [FuncTable2+ecx*4]
 .testflag1
     mov     edx,[w1]
     cmp     eax,edx
@@ -616,37 +662,37 @@ hq3x:
     jz      .noflag9
     or      ecx,128
 .noflag9
-    mov ebx,[BitConv32Ptr]
-    mov eax,[ebx+eax*4]
-    mov edx,[w2]
-    mov edx,[ebx+edx*4]
-    mov [c2],edx
-    mov edx,[w4]
-    mov edx,[ebx+edx*4]
-    mov [c4],edx
-    mov edx,[w6]
-    mov edx,[ebx+edx*4]
-    mov [c6],edx
-    mov edx,[w8]
-    mov edx,[ebx+edx*4]
-    mov [c8],edx
-    test ecx,0x005A
-    jz  .switch
-    mov edx,[w1]
-    mov edx,[ebx+edx*4]
-    mov [c1],edx
-    mov edx,[w3]
-    mov edx,[ebx+edx*4]
-    mov [c3],edx
-    mov edx,[w7]
-    mov edx,[ebx+edx*4]
-    mov [c7],edx
-    mov edx,[w9]
-    mov edx,[ebx+edx*4]
-    mov [c9],edx
+    mov     ebx,[BitConv32Ptr]
+    mov     eax,[ebx+eax*4]
+    mov     edx,[w2]
+    mov     edx,[ebx+edx*4]
+    mov     [c2],edx
+    mov     edx,[w4]
+    mov     edx,[ebx+edx*4]
+    mov     [c4],edx
+    mov     edx,[w6]
+    mov     edx,[ebx+edx*4]
+    mov     [c6],edx
+    mov     edx,[w8]
+    mov     edx,[ebx+edx*4]
+    mov     [c8],edx
+    test    ecx,0x005A
+    jz      .switch
+    mov     edx,[w1]
+    mov     edx,[ebx+edx*4]
+    mov     [c1],edx
+    mov     edx,[w3]
+    mov     edx,[ebx+edx*4]
+    mov     [c3],edx
+    mov     edx,[w7]
+    mov     edx,[ebx+edx*4]
+    mov     [c7],edx
+    mov     edx,[w9]
+    mov     edx,[ebx+edx*4]
+    mov     [c9],edx
 .switch
-    mov ebx,[NumBytesPerLine]
-    jmp [FuncTable+ecx*4]
+    mov     ebx,[NumBytesPerLine]
+    jmp     [FuncTable+ecx*4]
 
 ..@flag0
 ..@flag1
@@ -2364,23 +2410,233 @@ hq3x:
     DiffOrNot w6,w8,PIXEL22_C,PIXEL22_2
     jmp .loopx_end
 
+..@cross0
+    mov     ebx,[NumBytesPerLine]
+    mov     [edi],eax
+    mov     [edi+4],eax
+    mov     [edi+8],eax
+    mov     [edi+ebx],eax
+    mov     [edi+ebx+4],eax
+    mov     [edi+ebx+8],eax
+    mov     [edi+ebx*2],eax
+    mov     [edi+ebx*2+4],eax
+    mov     [edi+ebx*2+8],eax
+    jmp     .loopx_end
+..@cross1
+    mov     ecx,[w2]
+    mov     edx,eax
+    shl     edx,2
+    add     edx,[ebx+ecx*4]
+    sub     edx,eax
+    shr     edx,2
+    mov     ebx,[NumBytesPerLine]
+    mov     [edi],edx
+    mov     [edi+4],edx
+    mov     [edi+8],edx
+    mov     [edi+ebx],eax
+    mov     [edi+ebx+4],eax
+    mov     [edi+ebx+8],eax
+    mov     [edi+ebx*2],eax
+    mov     [edi+ebx*2+4],eax
+    mov     [edi+ebx*2+8],eax
+    jmp     .loopx_end
+..@cross2
+    mov     ecx,[w4]
+    mov     edx,eax
+    shl     edx,2
+    add     edx,[ebx+ecx*4]
+    sub     edx,eax
+    shr     edx,2
+    mov     ebx,[NumBytesPerLine]
+    mov     [edi],edx
+    mov     [edi+4],eax
+    mov     [edi+8],eax
+    mov     [edi+ebx],edx
+    mov     [edi+ebx+4],eax
+    mov     [edi+ebx+8],eax
+    mov     [edi+ebx*2],edx
+    mov     [edi+ebx*2+4],eax
+    mov     [edi+ebx*2+8],eax
+    jmp     .loopx_end
+..@cross4
+    mov     ecx,[w6]
+    mov     edx,eax
+    shl     edx,2
+    add     edx,[ebx+ecx*4]
+    sub     edx,eax
+    shr     edx,2
+    mov     ebx,[NumBytesPerLine]
+    mov     [edi],eax
+    mov     [edi+4],eax
+    mov     [edi+8],edx
+    mov     [edi+ebx],eax
+    mov     [edi+ebx+4],eax
+    mov     [edi+ebx+8],edx
+    mov     [edi+ebx*2],eax
+    mov     [edi+ebx*2+4],eax
+    mov     [edi+ebx*2+8],edx
+    jmp     .loopx_end
+..@cross8
+    mov     ecx,[w8]
+    mov     edx,eax
+    shl     edx,2
+    add     edx,[ebx+ecx*4]
+    sub     edx,eax
+    shr     edx,2
+    mov     ebx,[NumBytesPerLine]
+    mov     [edi],eax
+    mov     [edi+4],eax
+    mov     [edi+8],eax
+    mov     [edi+ebx],eax
+    mov     [edi+ebx+4],eax
+    mov     [edi+ebx+8],eax
+    mov     [edi+ebx*2],edx
+    mov     [edi+ebx*2+4],edx
+    mov     [edi+ebx*2+8],edx
+    jmp     .loopx_end
+..@crossN
+    mov     edx,[w2]
+    mov     ecx,[ebx+edx*4]
+    mov     [c2],ecx
+    mov     edx,[w4]
+    mov     ecx,[ebx+edx*4]
+    mov     [c4],ecx
+    mov     edx,[w6]
+    mov     ecx,[ebx+edx*4]
+    mov     [c6],ecx
+    mov     edx,[w8]
+    mov     ecx,[ebx+edx*4]
+    mov     [c8],ecx
+    mov     ebx,[NumBytesPerLine]
+    jmp     ..@flag0
+
 .loopx_end
-    add esi,2
-    add edi,12
-    dec dword[xcounter]
-    jz  .nextline
-    jmp .loopx
-.nextline
-    mov byte[firstline],0
-    add esi,64
-    add edi,[AddEndBytes]
-    add edi,ebx
-    add edi,ebx
-    mov ebx,[InterPtr]
-    inc ebx
-    dec byte[lineleft]
-    jz  .fin
-    jmp .loopy
+    add     esi,2
+    add     dword[deltaptr],2
+    add     edi,12
+    dec     dword[xcounter]
+    jle     .xres_2
+    jmp     .loopx
+.xres_2
+    ; x=Xres-2 - special case
+    jl      .xres_1
+    mov     edx,[deltaptr]
+    mov     ecx,[prevline]
+    mov     eax,[nextline]
+    movq    mm2,[esi+ecx-4]
+    movq    mm3,[esi-4]
+    movq    mm4,[esi+eax-4]
+    movq    mm5,mm2
+    movq    mm6,mm3
+    movq    mm7,mm4
+    pcmpeqw mm2,[edx+ecx-4]
+    pcmpeqw mm3,[edx-4]
+    pcmpeqw mm4,[edx+eax-4]
+    pand    mm2,mm3
+    pand    mm2,mm4
+    psrlq   mm2,16
+    movd    ebx,mm2
+    psrlq   mm2,32
+    movd    eax,mm2
+    cwde
+    and     eax,ebx
+    inc     eax
+    jz      .loopx_end
+    psrlq   mm5,16
+    psrlq   mm6,16
+    psrlq   mm7,16
+    movd    eax,mm5
+    mov     [edx+ecx-2],ax
+    movzx   edx,ax
+    mov     [w1],edx
+    shr     eax,16
+    mov     [w2],eax
+    psrlq   mm5,32
+    movd    eax,mm5
+    mov     [w3],eax
+    movd    eax,mm6
+    movzx   edx,ax
+    mov     [w4],edx
+    shr     eax,16
+    mov     [w5],eax
+    psrlq   mm6,32
+    movd    eax,mm6
+    mov     [w6],eax
+    movd    eax,mm7
+    movzx   edx,ax
+    mov     [w7],edx
+    shr     eax,16
+    mov     [w8],eax
+    psrlq   mm7,32
+    movd    eax,mm7
+    mov     [w9],eax
+    jmp     .flags
+.xres_1
+    cmp     dword[xcounter],-1
+    jl      .endofline
+    ; x=Xres-1 - special case
+    mov     edx,[deltaptr]
+    mov     ecx,[prevline]
+    mov     eax,[nextline]
+    movq    mm2,[esi+ecx-6]
+    movq    mm3,[esi-6]
+    movq    mm4,[esi+eax-6]
+    movq    mm5,mm2
+    movq    mm6,mm3
+    movq    mm7,mm4
+    pcmpeqw mm2,[edx+ecx-6]
+    pcmpeqw mm3,[edx-6]
+    pcmpeqw mm4,[edx+eax-6]
+    pand    mm2,mm3
+    pand    mm2,mm4
+    psrlq   mm2,32
+    movd    eax,mm2
+    inc     eax
+    jz      .loopx_end
+    psrlq   mm5,32
+    psrlq   mm6,32
+    psrlq   mm7,32
+    movd    eax,mm5
+    mov     [edx+ecx-2],eax
+    movzx   edx,ax  
+    mov     [w1],edx
+    shr     eax,16
+    mov     [w2],eax
+    mov     [w3],eax
+    movd    eax,mm6
+    movzx   edx,ax  
+    mov     [w4],edx
+    shr     eax,16
+    mov     [w5],eax
+    mov     [w6],eax
+    movd    eax,mm7
+    movzx   edx,ax  
+    mov     [w7],edx
+    shr     eax,16
+    mov     [w8],eax
+    mov     [w9],eax
+    jmp     .flags
+.endofline
+    mov     ebx,[NumBytesPerLine]
+.nexty
+    add     esi,64
+    add     dword[deltaptr],64
+    add     edi,[AddEndBytes] 
+    add     edi,ebx
+    add     edi,ebx
+    mov     ebx,[InterPtr]
+    inc     ebx
+    dec     byte[lineleft]
+    jz      .fin
+    cmp     byte[lineleft],1
+    je      .lastline
+    mov     dword[nextline],576
+    mov     dword[prevline],-576
+    jmp     .loopy
+.lastline
+    mov     dword[nextline],0
+    mov     dword[prevline],-576
+    jmp     .loopy
 .fin
     emms
     pop es
@@ -2562,6 +2818,12 @@ FuncTable
     dd ..@flag232, ..@flag233, ..@flag234, ..@flag235, ..@flag236, ..@flag237, ..@flag238, ..@flag239
     dd ..@flag240, ..@flag241, ..@flag242, ..@flag243, ..@flag244, ..@flag245, ..@flag246, ..@flag247
     dd ..@flag248, ..@flag249, ..@flag250, ..@flag251, ..@flag252, ..@flag253, ..@flag254, ..@flag255
+
+FuncTable2
+    dd ..@cross0, ..@cross1, ..@cross2, ..@crossN,
+    dd ..@cross4, ..@crossN, ..@crossN, ..@crossN,
+    dd ..@cross8, ..@crossN, ..@crossN, ..@crossN,
+    dd ..@crossN, ..@crossN, ..@crossN, ..@crossN
 
 SECTION .bss
 InterPtr resd 1
