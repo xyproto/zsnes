@@ -754,6 +754,30 @@ void initwinvideo(void)
          SurfaceX=640;
          SurfaceY=480;
          break;
+      case 7:
+	WindowWidth=640;
+	WindowHeight=576;
+	SurfaceX=640;
+	SurfaceY=576;
+	break;
+      case 8:
+	WindowWidth=768;
+	WindowHeight=672;
+	SurfaceX=768;
+	SurfaceY=672;
+	break;
+      case 9:
+	WindowWidth=896;
+	WindowHeight=784;
+	SurfaceX=896;
+	SurfaceY=784;
+	break;
+      case 10:
+	WindowWidth=1024;
+	WindowHeight=896;
+	SurfaceX=1024;
+	SurfaceY=896;
+	break;
       default:
          WindowWidth=256;
          WindowHeight=224;
@@ -1121,7 +1145,10 @@ void drawscreenwin(void)
       glfilters = GL_NEAREST;
     }
 
-    if (FullScreen) ratiox = 0.875; else ratiox = 1.0;
+    if (FullScreen)
+      ratiox = 0.875;
+    else
+      ratiox = 1.0;
     
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
