@@ -296,11 +296,12 @@ int Main_Proc(void)
 		default: break;
 	   }
    }
-   // TODO Fix these so	
+   /* TODO - fix this later
    if(pressed[0x38]!=0&&pressed[0x3E]!=0)
 	   LinuxExit();
    if(pressed[0x38]!=0&&pressed[0x1c]!=0)
 	   SwitchFullScreen();
+	   */
    return TRUE;
 }
 #define true 1
