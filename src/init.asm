@@ -4430,7 +4430,7 @@ NEWSYM CheckROMType
     mov byte[SDD1Enable],0
     mov byte[SFXBATT],0
     mov byte[OBCEnable],0
-    mov byte[CHIPSRAM],0
+    mov byte[CHIPBATT],0
     mov byte[SGBEnable],0
     mov byte[SETAEnable],0
     mov byte[ST18Enable],0
@@ -4448,13 +4448,13 @@ NEWSYM CheckROMType
     cmp ax,02530h
     jne .notOBC1
     mov byte[OBCEnable],1
-    mov byte[CHIPSRAM],1
+    mov byte[CHIPBATT],1
     jmp .endchpdtct
 .notOBC1      
     cmp ax,04532h
     jne .notSDD1A
     mov byte[SDD1Enable],1
-    mov byte[CHIPSRAM],1
+    mov byte[CHIPBATT],1
     jmp .endchpdtct
 .notSDD1A
     cmp ax,04332h
@@ -4475,7 +4475,7 @@ NEWSYM CheckROMType
     cmp ax,03523h
     jne .notSA1A
     mov byte[SA1Enable],1
-    mov byte[CHIPSRAM],1
+    mov byte[CHIPBATT],1
     jmp .endchpdtct
 .notSA1A
     cmp ax,03423h
@@ -4486,13 +4486,13 @@ NEWSYM CheckROMType
     cmp ax,0F530h
     jne .notSETAA
     mov byte[ST18Enable],1
-    mov byte[CHIPSRAM],1 ;Check later if this should be removed
+    mov byte[CHIPBATT],1 ;Check later if this should be removed
     jmp .endchpdtct
 .notSETAA
     cmp ax,0F630h
     jne .notSETAB
     mov byte[SETAEnable],1
-;;    mov byte[CHIPSRAM],1 ;Check later if this should be removed
+    mov byte[CHIPBATT],1
     jmp .endchpdtct
 .notSETAB
 ;Super FX has SRAM, but only a battery to save it on the latter two
@@ -4521,26 +4521,26 @@ NEWSYM CheckROMType
     cmp ax,05535h
     jne .notRTCplain
     mov byte[RTCEnable],1
-    mov byte[CHIPSRAM],1
+    mov byte[CHIPBATT],1
     jmp .endchpdtct
 .notRTCplain
     cmp ax,0F93Ah
     jne .notSPC7A
     mov byte[SPC7110Enable],1
     mov byte[RTCEnable],1
-    mov byte[CHIPSRAM],1
+    mov byte[CHIPBATT],1
     jmp .endchpdtct
 .notSPC7A
     cmp ax,0F53Ah
     jne .notSPC7B
     mov byte[SPC7110Enable],1
-    mov byte[CHIPSRAM],1
+    mov byte[CHIPBATT],1
     jmp .endchpdtct
 .notSPC7B
     cmp ax,00520h
     jne .notDSP2  
     mov byte[DSP2Enable],1
-    mov byte[CHIPSRAM],1
+    mov byte[CHIPBATT],1
     jmp .endchpdtct
 .notDSP2 
     cmp ax,00330h
@@ -4553,7 +4553,7 @@ NEWSYM CheckROMType
     cmp byte[esi+5],0B2h ;Bandai only
     jne .notDSP3  
     mov byte[DSP3Enable],1
-    mov byte[CHIPSRAM],1
+    mov byte[CHIPBATT],1
     jmp .endchpdtct
 .notDSP3
     cmp ah,3
@@ -4564,7 +4564,7 @@ NEWSYM CheckROMType
     cmp ah,5
     jne .notDSP1B
     mov byte[DSP1Enable],1
-    mov byte[CHIPSRAM],1
+    mov byte[CHIPBATT],1
     jmp .endchpdtct
 .notDSP1B
     cmp byte[esi+5],033h
@@ -4799,7 +4799,7 @@ NEWSYM CheckROMType
     call GenerateBank0TableSA1
     call SetAddressingModesSA1
     ; open .srm file
-    cmp byte[CHIPSRAM],1
+    cmp byte[CHIPBATT],1
     jne .nosa1init
     mov edx,fnames+1
     call Open_File
@@ -4844,7 +4844,7 @@ NEWSYM CheckROMType
     ret
 
 SECTION .bss
-NEWSYM CHIPSRAM, resb 1
+NEWSYM CHIPBATT, resb 1
 NEWSYM SFXEnable, resb 1
 NEWSYM C4Enable, resb 1
 NEWSYM SPC7110Enable, resb 1

@@ -821,6 +821,8 @@ clearsram:
     inc eax
     dec ecx
     jnz .loop
+    cmp byte[SFXBATT],0
+    je .nosfxbatt
     mov eax,[sfxramdata]
     mov ecx,65536
 .loop2
@@ -828,7 +830,8 @@ clearsram:
     inc eax
     dec ecx
     jnz .loop2
-
+.nosfxbatt
+    
     cmp byte[SETAEnable],0
     je .nosetasram
     mov eax,[setaramdata]
@@ -1795,6 +1798,8 @@ NEWSYM StartGUI
 
     call SaveSramData
 
+    cmp byte[SFXBATT],0
+    je .nosfxbatt
     clim
     mov edx,fnames+1
     call Create_File
@@ -1806,7 +1811,8 @@ NEWSYM StartGUI
     call Close_File
 .nosfxramwrite
     stim
-
+.nosfxbatt
+    
     cmp byte[SETAEnable],0
     je .nosetasram
     clim
