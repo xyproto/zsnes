@@ -5171,7 +5171,7 @@ GUIGUIAboutText6e db '    STAINLESS',0
 %ifdef __MSDOS__
 GUIGUIAboutText7 db 'DOS VERSION',0
 %elifdef __WIN32__
-GUIGUIAboutText7 db 'WIN PORT V1.06',0
+GUIGUIAboutText7 db 'WIN VERSION',0
 %elifdef __LINUX__
 GUIGUIAboutText7 db 'LINUX VERSION',0
 %endif
