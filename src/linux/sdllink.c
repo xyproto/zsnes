@@ -121,6 +121,12 @@ void UpdateSound(void *userdata, Uint8 * stream, int len);
 extern int GUI36hzcall(void);
 extern int Game60hzcall(void);
 extern void SoundProcess();
+extern VOID *blur_temp=0;
+extern VOID *blur_buffer=0;
+extern _int64 copymaskRB = 0x001FF800001FF800;
+extern _int64 copymaskG = 0x0000FC000000FC00;
+extern _int64 copymagic = 0x0008010000080100;
+extern _int64 coef = 0x0066009a0066009a;
 #ifdef __OPENGL__
 extern void gl_clearwin(void);
 #endif
@@ -800,6 +806,12 @@ void initwinvideo(void)
 	if (((PrevStereoSound != StereoSound)
 	     || (PrevSoundQuality != SoundQuality)))
 		ReInitSound();
+
+        if (!blur_buffer) blur_buffer = malloc(SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
+           else blur_buffer = realloc(blur_buffer, SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
+	   if (!blur_temp) blur_temp = malloc(SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
+	   else blur_temp = realloc(blur_temp, SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
+
 }
 
 void CheckTimers(void)
