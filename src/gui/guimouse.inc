@@ -2120,7 +2120,7 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,156,byte[AutoState]
     GUIClickCButton 11,166,byte[DontSavePath]
 %ifdef __WIN32__
-    GUIClickCButtonat 11,176,byte[OverlayEnabled]
+    GUIClickCButton 11,176,byte[OverlayEnabled]
     GUIClickCButtonat 11,186,byte[AlternateTimer]
 %endif
     ; Frameskip = 0

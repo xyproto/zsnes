@@ -892,7 +892,6 @@ GUIOptionKeys:
     cmp dh,'Y'
     jne .nooverlay
     xor byte[OverlayEnabled],1
-    call guimustrestartmsg
 .nooverlay
     cmp dh,'S'
     jne .noalttimer

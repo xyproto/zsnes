@@ -1494,12 +1494,19 @@ DDSURFACEDESC2       ddsd;
 DWORD LockSurface()
 {
 
+   HRESULT hr;
+
    if (DD_CFB == NULL) return(0);
     
    memset(&ddsd,0,sizeof(ddsd));
    ddsd.dwSize = sizeof( ddsd );
    ddsd.dwFlags = DDSD_LPSURFACE | DDSD_PITCH;
-   if (DD_CFB->Lock(NULL,&ddsd,DDLOCK_WAIT,NULL) != DD_OK)
+   if (Overlay == 1 && vsyncon == 1 && (DD_BackBuffer))
+      hr=DD_BackBuffer->Lock(NULL,&ddsd,DDLOCK_WAIT,NULL);
+   else
+      hr=DD_CFB->Lock(NULL,&ddsd,DDLOCK_WAIT,NULL);
+
+   if (hr != DD_OK)
    {
       return(0);
    }
@@ -1510,7 +1517,7 @@ DWORD LockSurface()
 
 void UnlockSurface()
 {
-   if (Overlay && (vsyncon == 1))
+   if (Overlay == 1 && vsyncon == 1 && (DD_BackBuffer))
       DD_BackBuffer->Unlock((struct tagRECT *)ddsd.lpSurface);
    else
       DD_CFB->Unlock((struct tagRECT *)ddsd.lpSurface);
@@ -1929,6 +1936,8 @@ void CheckTimers(void)
 
 extern BYTE GUIOn2;
 
+extern unsigned char FPUCopy;
+
 void UpdateVFrame(void)
 {
 
@@ -1975,13 +1984,61 @@ void UpdateVFrame(void)
 
       DSPBuffer1=(int *)&DSPBuffer;
 
-      for(i=0;i<SPCSize;i++)
-      {
-         Buffer[i]=DSPBuffer1[i];
-         if (DSPBuffer1[i]>32767)Buffer[i]=32767;
-         if (DSPBuffer1[i]<-32767)Buffer[i]=-32767;
-         if (T36HZEnabled)Buffer[i]=0;
-      }
+      int buffer_ptr = (int)&Buffer[0];
+
+      if (T36HZEnabled)
+         if (FPUCopy)
+            _asm
+            {
+               mov edi, buffer_ptr
+               mov ecx, SPCSize
+               shr ecx, 2
+               pxor mm0,mm0
+_blank_top_fpu:
+               movq [edi],mm0
+               add edi,8
+               dec ecx
+               jne _blank_top_fpu
+               emms
+            }
+         else
+            _asm
+            {
+               mov edi, buffer_ptr
+               mov ecx, SPCSize
+               shr ecx, 1
+               xor eax,eax
+_blank_top:
+               mov [edi],eax
+               add edi,4
+               dec ecx
+               jne _blank_top
+            }
+      else
+         if (FPUCopy)
+            _asm
+            {
+               mov esi, DSPBuffer1
+               mov edi, buffer_ptr
+               mov ecx, SPCSize
+               shr ecx, 2
+_top_mmx:
+               movq mm0, [esi]
+               packssdw mm0, [esi+8]
+               movq [edi], mm0
+               add esi, 16
+               add edi, 8
+               dec ecx
+               jne _top_mmx
+               emms
+            }
+         else
+            for(i=0;i<SPCSize;i++)
+            {
+               Buffer[i]=DSPBuffer1[i];
+               if (DSPBuffer1[i]>32767)Buffer[i]=32767;
+               if (DSPBuffer1[i]<-32767)Buffer[i]=-32767;
+            }
 
       if (DS_OK!=lpSoundBuffer->Lock(LastUsedPos,
                                   SPCSize*2, &lpvPtr1,
@@ -2017,7 +2074,6 @@ extern DWORD AddEndBytes;
 extern DWORD NumBytesPerLine;
 extern unsigned char * WinVidMemStart;
 extern void copy640x480x16bwin(void);
-extern unsigned char FPUCopy;
 extern unsigned char NGNoTransp;
 extern unsigned char newengen;
 
