@@ -27,6 +27,7 @@
 	#include <string.h>
 	#include <errno.h>
 		
+	#include "config.h"
 // General time.h checking
 
 	#if TIME_WITH_SYS_TIME

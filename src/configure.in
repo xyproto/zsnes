@@ -14,6 +14,7 @@ dnl optimized binaries.
 dnl See also: remarks supplied in the debug checking area below
 
 AC_INIT(init.asm)
+AC_CONFIG_HEADER(config.h)	
 echo -- Where is our compiler, and who are we compiling for?
 CFLAGS="-pipe -I. -Wall"
 CXXFLAGS=$CFLAGS
