@@ -1417,6 +1417,25 @@ headerhack2:
     add esi,32704+22
     mov byte[esi],0F3h
 .noromheadmmx2
+; THE KING OF RALLY - Header hack
+    mov esi,[romdata]
+    cmp dword[esi+7FC0h],'THE '
+    jne near .nokingofrally
+    cmp dword[esi+7FC4h],'KING'
+    jne near .nokingofrally
+    cmp dword[esi+7FC8h],' OF '
+    jne near .nokingofrally
+    cmp dword[esi+7FCCh],'RALL'
+    jne near .nokingofrally
+    mov dword[esi+0FFC0h],0FFFFFFFFh
+    mov dword[esi+0FFC4h],0FFFFFFFFh
+    mov dword[esi+0FFC8h],0FFFFFFFFh
+    mov dword[esi+0FFCCh],0FFFFFFFFh
+    mov dword[esi+0FFD0h],0FFFFFFFFh
+    mov dword[esi+0FFD4h],0FFFFFFFFh
+    mov dword[esi+0FFD8h],0FFFFFFFFh
+    mov dword[esi+0FFDCh],0FFFFFFFFh
+.nokingofrally    
     ret
 
 .mmx2head db 50,58,56,62,50,62,49,95,39,77,95,95,95,95,95,95,95,95,95,95
