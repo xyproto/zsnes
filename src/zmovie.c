@@ -952,8 +952,6 @@ extern unsigned int MsgCount, MessageOn;
 extern unsigned char MovieTemp, MovieProcessing, *Msgptr;
 char *txtmovieended = "MOVIE FINISHED.";
 
-bool KeyNextChapBind;
-
 void MovieInsertChapter()
 {
   switch (MovieProcessing)
@@ -981,12 +979,6 @@ void MovieSeekBehind()
 
 void Replay()
 {
-  if (KeyNextChapBind)
-  {
-    MovieSeekAhead();
-    KeyNextChapBind = false;
-  }
-  
   if (zmv_replay())
   {
     char *sub;
