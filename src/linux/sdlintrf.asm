@@ -484,6 +484,7 @@ NEWSYM Get_Time
     popad
     mov eax,[TempVarSeek]
     ret
+
 NEWSYM Get_TimeDate
     pushad
     call GetDate

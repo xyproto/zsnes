@@ -17,7 +17,7 @@
 
 %include "macros.mac"
 
-EXTSYM dssel, selcA000, selcB800, selc0040, previdmode, DosExit, ZFileSystemInit
+EXTSYM dssel,selcA000,selcB800,selc0040,previdmode,DosExit,ZFileSystemInit
 EXTSYM getcmdline,GUIRestoreVars,getcfg,obtaindir,ConvertJoyMap,tparms
 EXTSYM preparedir,getblaster,Force8b,SBHDMA
 EXTSYM ccmdline
@@ -492,6 +492,7 @@ NEWSYM Get_Time
     popad
     mov eax,[TempVarSeek]
     ret
+
 NEWSYM Get_TimeDate
     pushad
     call GetDate
