@@ -1036,12 +1036,14 @@ DisplayGUIInput:
 %endif
     GUIOuttextwin2 3,156,102,GUIInputText7
     GUIOuttextwin2 3,156,112,GUIInputText8
+    GUIOuttextwin2 3,156,122,GUIInputTextC
     GUIOuttextwin2 3,116,102,GUIInputText9
     GUIOuttextwin2 3,116,112,GUIInputTextA
-    GUIOuttextwin2 3,153,137,GUIInputTextd
-    GUIOuttextwin2 3,153,147,GUIInputTexte
-    GUIOuttextwin2 3,113,137,GUIInputTextf
-    GUIOuttextwin2 3,113,147,GUIInputTextg
+    GUIOuttextwin2 3,116,122,GUIInputTextB
+    GUIOuttextwin2 3,153,142,GUIInputTextd
+    GUIOuttextwin2 3,153,152,GUIInputTexte
+    GUIOuttextwin2 3,113,142,GUIInputTextf
+    GUIOuttextwin2 3,113,152,GUIInputTextg
     add byte[GUItextcolor],15
     GUIOuttextwin2 3,5,101,GUIInputText3
     GUIOuttextwin2 3,5,111,GUIInputText4
@@ -1060,12 +1062,14 @@ DisplayGUIInput:
 %endif
     GUIOuttextwin2 3,155,101,GUIInputText7
     GUIOuttextwin2 3,155,111,GUIInputText8
+    GUIOuttextwin2 3,155,121,GUIInputTextC
     GUIOuttextwin2 3,115,101,GUIInputText9
     GUIOuttextwin2 3,115,111,GUIInputTextA
-    GUIOuttextwin2 3,152,136,GUIInputTextd
-    GUIOuttextwin2 3,152,146,GUIInputTexte
-    GUIOuttextwin2 3,112,136,GUIInputTextf
-    GUIOuttextwin2 3,112,146,GUIInputTextg
+    GUIOuttextwin2 3,115,121,GUIInputTextB
+    GUIOuttextwin2 3,152,141,GUIInputTextd
+    GUIOuttextwin2 3,152,151,GUIInputTexte
+    GUIOuttextwin2 3,112,141,GUIInputTextf
+    GUIOuttextwin2 3,112,151,GUIInputTextg
 %ifdef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     xor eax,eax
@@ -1093,7 +1097,7 @@ DisplayGUIInput:
     GUIOuttextwin2 3,6,26,GUIInputText2
     GUIOuttextwin2 3,6,92,GUIInputTextP
     GUIOuttextwin2 3,116,92,GUIInputTextb
-    GUIOuttextwin2 3,116,127,GUIInputTextc
+    GUIOuttextwin2 3,116,131,GUIInputTextc
     xor eax,eax
     mov al,[cplayernum]
     mov ebx,[GUIInputRefP+eax*4]
@@ -1115,7 +1119,7 @@ DisplayGUIInput:
     GUIOuttextwin2 3,5,25,GUIInputText2
     GUIOuttextwin2 3,5,91,GUIInputTextP
     GUIOuttextwin2 3,115,91,GUIInputTextb
-    GUIOuttextwin2 3,115,126,GUIInputTextc
+    GUIOuttextwin2 3,115,130,GUIInputTextc
     GUIOuttextwin2 3,6+24,82,[GUITemp]
     GUIOuttextwin2 3,6,82,GUIInputTextT
     DrawGUIWinBox 3,5,34,107,77,167
@@ -1175,6 +1179,26 @@ DisplayGUIInput:
     GUIInputDispKey 165,110      ; B Turbo
     GUIInputDispKey 125,100      ; X Turbo
     GUIInputDispKey 125,110      ; Y Turbo
+    mov edi,pl1Ltk
+    cmp byte[cplayernum],1
+    jne .nopl2tl
+    mov edi,pl2Ltk
+.nopl2tl
+    cmp byte[cplayernum],2
+    jne .nopl3tl
+    mov edi,pl3Ltk
+.nopl3tl
+    cmp byte[cplayernum],3
+    jne .nopl4tl
+    mov edi,pl4Ltk
+.nopl4tl
+    cmp byte[cplayernum],4
+    jne .nopl5tl
+    mov edi,pl5Ltk
+.nopl5tl
+    GUIInputDispKey 125,120      ; L Turbo
+    GUIInputDispKey 165,120      ; R Turbo
+
     mov edi,pl1ULk
     cmp byte[cplayernum],1
     jne .nopl2tb
@@ -1192,10 +1216,10 @@ DisplayGUIInput:
     jne .nopl5tb
     mov edi,pl5ULk
 .nopl5tb
-    GUIInputDispKey 165,135      ; Up-Left
-    GUIInputDispKey 165,145      ; Up-Right
-    GUIInputDispKey 125,135      ; Down-Left
-    GUIInputDispKey 125,145      ; Down-Right
+    GUIInputDispKey 165,140      ; Up-Left
+    GUIInputDispKey 165,150      ; Up-Right
+    GUIInputDispKey 125,140      ; Down-Left
+    GUIInputDispKey 125,150      ; Down-Right
 
     mov byte[GUItextcolor],223
     mov eax,[GUIcurrentinputviewloc]

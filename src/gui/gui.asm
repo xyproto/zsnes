@@ -559,6 +559,17 @@ NEWSYM MainWindowY, dw -1
 
 NEWSYM ScreenShotFormat, db 0
 
+NEWSYM pl1Ltk,    dd 0   ; Turbo L
+NEWSYM pl1Rtk,    dd 0   ; Turbo R
+NEWSYM pl2Ltk,    dd 0   ; Turbo L
+NEWSYM pl2Rtk,    dd 0   ; Turbo R
+NEWSYM pl3Ltk,    dd 0   ; Turbo L
+NEWSYM pl3Rtk,    dd 0   ; Turbo R
+NEWSYM pl4Ltk,    dd 0   ; Turbo L
+NEWSYM pl4Rtk,    dd 0   ; Turbo R
+NEWSYM pl5Ltk,    dd 0   ; Turbo L
+NEWSYM pl5Rtk,    dd 0   ; Turbo R
+
 GUIsave equ $-GUIRAdd
 
 NEWSYM CombinDataGlob, times 3300 db 0 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff

@@ -109,6 +109,7 @@ EXTSYM sramaccessbankr16,sramaccessbankr16s,sramaccessbankr8
 EXTSYM sramaccessbankr8s,sramaccessbankw16,sramaccessbankw16s
 EXTSYM sramaccessbankw8,sramaccessbankw8s,GenerateBank0TableSA1
 EXTSYM ScrDispl
+EXTSYM pl1Ltk,pl1Rtk,pl2Ltk,pl2Rtk,pl3Ltk,pl3Rtk,pl4Ltk,pl4Rtk,pl5Ltk,pl5Rtk
 %ifdef __LINUX__
 EXTSYM LoadDir, popdir, pushdir
 %endif
@@ -808,6 +809,8 @@ NEWSYM ReadInputDevice
     PlayerDeviceHelp pl1Ytk   ,JoyAOrig,40000000h
     PlayerDeviceHelp pl1Atk   ,JoyAOrig,00800000h
     PlayerDeviceHelp pl1Btk   ,JoyAOrig,80000000h
+    PlayerDeviceHelp pl1Ltk   ,JoyAOrig,00200000h
+    PlayerDeviceHelp pl1Rtk   ,JoyAOrig,00100000h
 .noswitch
     ProcessKeyComb 0,JoyAOrig
     or dword[JoyAOrig],00008000h        ; Joystick Enable
@@ -917,6 +920,8 @@ NEWSYM ReadInputDevice
     PlayerDeviceHelp pl2Ytk   ,JoyBOrig,40000000h
     PlayerDeviceHelp pl2Atk   ,JoyBOrig,00800000h
     PlayerDeviceHelp pl2Btk   ,JoyBOrig,80000000h
+    PlayerDeviceHelp pl2Ltk   ,JoyBOrig,00200000h
+    PlayerDeviceHelp pl2Rtk   ,JoyBOrig,00100000h
 .noswitch2
     ProcessKeyComb 1,JoyBOrig
     or dword[JoyBOrig],00008000h        ; Joystick Enable
@@ -949,6 +954,8 @@ NEWSYM ReadInputDevice
     PlayerDeviceHelp pl3Ytk   ,JoyCOrig,40000000h
     PlayerDeviceHelp pl3Atk   ,JoyCOrig,00800000h
     PlayerDeviceHelp pl3Btk   ,JoyCOrig,80000000h
+    PlayerDeviceHelp pl3Ltk   ,JoyCOrig,00200000h
+    PlayerDeviceHelp pl3Rtk   ,JoyCOrig,00100000h
 .noswitch3
     ProcessKeyComb 2,JoyCOrig
     or dword[JoyCOrig],00008000h        ; Joystick Enable
@@ -981,6 +988,8 @@ NEWSYM ReadInputDevice
     PlayerDeviceHelp pl4Ytk   ,JoyDOrig,40000000h
     PlayerDeviceHelp pl4Atk   ,JoyDOrig,00800000h
     PlayerDeviceHelp pl4Btk   ,JoyDOrig,80000000h
+    PlayerDeviceHelp pl4Ltk   ,JoyDOrig,00200000h
+    PlayerDeviceHelp pl4Rtk   ,JoyDOrig,00100000h
 .noswitch4
     ProcessKeyComb 3,JoyDOrig
     or dword[JoyDOrig],00008000h        ; Joystick Enable
@@ -1013,6 +1022,8 @@ NEWSYM ReadInputDevice
     PlayerDeviceHelp pl5Ytk   ,JoyEOrig,40000000h
     PlayerDeviceHelp pl5Atk   ,JoyEOrig,00800000h
     PlayerDeviceHelp pl5Btk   ,JoyEOrig,80000000h
+    PlayerDeviceHelp pl5Ltk   ,JoyEOrig,00200000h
+    PlayerDeviceHelp pl5Rtk   ,JoyEOrig,00100000h
 .noswitch5
     ProcessKeyComb 3,JoyEOrig
     or dword[JoyEOrig],00008000h        ; Joystick Enable

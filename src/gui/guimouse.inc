@@ -2028,6 +2028,26 @@ DisplayGUIInputClick:
     DGOptnsProcBox 125,100,[edi+8]    ; X Turbo
     DGOptnsProcBox 125,110,[edi+12]   ; Y Turbo
 
+    mov edi,pl1Ltk
+    cmp byte[cplayernum],1
+    jne .nopl2tl
+    mov edi,pl2Ltk
+.nopl2tl
+    cmp byte[cplayernum],2
+    jne .nopl3tl
+    mov edi,pl3Ltk
+.nopl3tl
+    cmp byte[cplayernum],3
+    jne .nopl4tl
+    mov edi,pl4Ltk
+.nopl4tl
+    cmp byte[cplayernum],4
+    jne .nopl5tl
+    mov edi,pl5Ltk
+.nopl5tl
+    DGOptnsProcBox 125,120,[edi]      ; L Turbo
+    DGOptnsProcBox 165,120,[edi+4]    ; R Turbo
+
     mov edi,pl1ULk
     cmp byte[cplayernum],1
     jne .nopl2tb
@@ -2045,10 +2065,10 @@ DisplayGUIInputClick:
     jne .nopl5tb
     mov edi,pl5ULk
 .nopl5tb
-    DGOptnsProcBoxb 165,135,[edi]
-    DGOptnsProcBoxb 165,145,[edi+4]
-    DGOptnsProcBoxb 125,135,[edi+8]
-    DGOptnsProcBoxb 125,145,[edi+12]
+    DGOptnsProcBoxb 165,140,[edi]
+    DGOptnsProcBoxb 165,150,[edi+4]
+    DGOptnsProcBoxb 125,140,[edi+8]
+    DGOptnsProcBoxb 125,150,[edi+12]
 %ifdef __MSDOS__
     xor ebx,ebx
     mov bl,[cplayernum]
