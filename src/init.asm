@@ -277,7 +277,6 @@ NEWSYM init
 
 .noautoloadstate
 ; FIX STATMAT
-
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUI16VID+eax],1
