@@ -372,7 +372,7 @@ NEWSYM reg303Ar       ; SCMR (Screen Mode Register)
     mov [sfxclineloc],eax
     ret
 NEWSYM reg303Br       ; VCR (Version Code Register)
-    mov al,20h
+    mov al,10h
     ret
 NEWSYM reg303Cr       ; RAMBR (Ram bank register)
     mov al,[SfxRAMBR]

@@ -1517,20 +1517,6 @@ NEWSYM headerhack
                         ; from causing bad length spc transfer (0xFFFF)
 .notdigitaldevilstory
 
-
-    mov esi,[romdata]
-    add esi,0FFC0h
-    cmp dword[esi],'SAMU'
-    jne .notsamuraishodown
-    cmp dword[esi+4],'RAI '
-    jne .notsamuraishodown
-    cmp dword[esi+8],'SHOD'
-    jne .notsamuraishodown
-    cmp dword[esi+12],'OWN '
-    jne .notsamuraishodown
-    mov word [IRQHack],1
-.notsamuraishodown
-
     mov esi,[romdata]
     add esi,07FC0h
     cmp dword[esi],0DFCAB0BDh
