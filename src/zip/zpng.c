@@ -1,3 +1,4 @@
+
 #include "zpng.h"
 
 
@@ -179,6 +180,7 @@ char *generate_filename(void)
 	return filename;
 }
 
+#define SNAP_WIDTH 223
 void Grab_PNG_Data(void)
 {
 	 char *filename;
@@ -196,14 +198,14 @@ void Grab_PNG_Data(void)
 	filename = generate_filename();
 
 	/*Allocate image buffer for DIB data*/
-	DIBits=(unsigned char*)malloc(scanline*224);
+	DIBits=(unsigned char*)malloc(scanline*SNAP_WIDTH);
 
 	/*Cast pointer to 32-bit data type*/
 	DBits=(unsigned int*) DIBits;
 
 	/*Use zsKnight's 16 to 32 bit color conversion*/
 	pixel=(unsigned short*)(vidbuffer);
-	for(i=0;i<224;i++)
+	for(i=0;i<SNAP_WIDTH;i++)
 	{
 		for(j=0;j<256;j++)
 		{
@@ -216,7 +218,7 @@ void Grab_PNG_Data(void)
 	}
 
 	/*compress and write the PNG*/
-	Png_Dump(filename, 256, 224, DIBits, is_bgr_data);
+	Png_Dump(filename, 256, SNAP_WIDTH, DIBits, is_bgr_data);
 
 	free(DIBits);
 	free(filename);
