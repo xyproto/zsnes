@@ -521,7 +521,7 @@ BackAreaFill:
     add ecx,eax
     add ecx,[BackAreaAdd]
     mov ebx,[BackAreaUnFillCol]
-    mov eax,128
+    mov eax,64
 .nowinloop
     mov [ecx],ebx
     mov [ecx+4],ebx
