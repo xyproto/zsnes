@@ -2062,224 +2062,214 @@ void InitDSP4()
 
 void DSP4SetByte()
 {
-  if ((dsp4_address & 0xf000) == 0x6000 || (dsp4_address >= 0x8000 && dsp4_address < 0xc000))
-  {    
-    // clear pending read
-    if (DSP4.out_index < DSP4.out_count)
+  // clear pending read
+  if (DSP4.out_index < DSP4.out_count)
+  {
+    DSP4.out_index++;
+    return;
+  }
+   
+  if (DSP4.waiting4command)
+  {
+    if (DSP4.half_command)
     {
-      DSP4.out_index++;
-      return;
-    }
-     
-    if (DSP4.waiting4command)
-    {
-      if (DSP4.half_command)
+      DSP4.command |= (dsp4_byte << 8);
+      DSP4.in_index = 0;
+      DSP4.waiting4command = FALSE;
+      DSP4.half_command = FALSE;
+      DSP4.out_count = 0;
+      DSP4.out_index = 0;
+
+      DSP4_Logic = 0;
+
+
+      switch (DSP4.command)
       {
-        DSP4.command |= (dsp4_byte << 8);
-        DSP4.in_index = 0;
-        DSP4.waiting4command = FALSE;
-        DSP4.half_command = FALSE;
-        DSP4.out_count = 0;
-        DSP4.out_index = 0;
-
-        DSP4_Logic = 0;
-
-
-        switch (DSP4.command)
-        {
-          case 0x0000:
-            DSP4.in_count = 4; break;
-          case 0x0001:
-            DSP4.in_count = 44; break;
-          case 0x0003:
-            DSP4.in_count = 0; break;
-          case 0x0005:
-            DSP4.in_count = 0; break;
-          case 0x0006:
-            DSP4.in_count = 0; break;
-          case 0x0007:
-            DSP4.in_count = 34; break;
-          case 0x0008:
-            DSP4.in_count = 90; break;
-          case 0x0009:
-            DSP4.in_count = 14; break;
-          case 0x000a:
-            DSP4.in_count = 6; break;
-          case 0x000b:
-            DSP4.in_count = 6; break;
-          case 0x000d:
-            DSP4.in_count = 42; break;
-          case 0x000e:
-            DSP4.in_count = 0; break;
-          case 0x000f:
-            DSP4.in_count = 46; break;
-          case 0x0010:
-            DSP4.in_count = 36; break;
-          case 0x0011:
-            DSP4.in_count = 8; break;
-          default:
-            DSP4.waiting4command = TRUE;
-            break;
-        }
-      }
-      else
-      {
-        DSP4.command = dsp4_byte;
-        DSP4.half_command = TRUE;
+        case 0x0000:
+          DSP4.in_count = 4; break;
+        case 0x0001:
+          DSP4.in_count = 44; break;
+        case 0x0003:
+          DSP4.in_count = 0; break;
+        case 0x0005:
+          DSP4.in_count = 0; break;
+        case 0x0006:
+          DSP4.in_count = 0; break;
+        case 0x0007:
+          DSP4.in_count = 34; break;
+        case 0x0008:
+          DSP4.in_count = 90; break;
+        case 0x0009:
+          DSP4.in_count = 14; break;
+        case 0x000a:
+          DSP4.in_count = 6; break;
+        case 0x000b:
+          DSP4.in_count = 6; break;
+        case 0x000d:
+          DSP4.in_count = 42; break;
+        case 0x000e:
+          DSP4.in_count = 0; break;
+        case 0x000f:
+          DSP4.in_count = 46; break;
+        case 0x0010:
+          DSP4.in_count = 36; break;
+        case 0x0011:
+          DSP4.in_count = 8; break;
+        default:
+          DSP4.waiting4command = TRUE;
+          break;
       }
     }
     else
     {
-      DSP4.parameters[DSP4.in_index] = dsp4_byte;
-      DSP4.in_index++;
+      DSP4.command = dsp4_byte;
+      DSP4.half_command = TRUE;
     }
-     
-    if (!DSP4.waiting4command && DSP4.in_count == DSP4.in_index)
+  }
+  else
+  {
+    DSP4.parameters[DSP4.in_index] = dsp4_byte;
+    DSP4.in_index++;
+  }
+    
+  if (!DSP4.waiting4command && DSP4.in_count == DSP4.in_index)
+  {
+    // Actually execute the command
+    DSP4.waiting4command = TRUE;
+    DSP4.out_index = 0;
+    DSP4.in_index = 0;
+      
+    switch (DSP4.command)
     {
-      // Actually execute the command
-      DSP4.waiting4command = TRUE;
-      DSP4.out_index = 0;
-      DSP4.in_index = 0;
-
-      switch (DSP4.command)
+        // 16-bit multiplication
+      case 0x0000:
       {
-          // 16-bit multiplication
-        case 0x0000:
-        {
-          int16 multiplier, multiplicand;
-          int32 product;
+        int16 multiplier, multiplicand;
+        int32 product;
 
-          multiplier = DSP4_READ_WORD();
-          multiplicand = DSP4_READ_WORD();
+        multiplier = DSP4_READ_WORD();
+        multiplicand = DSP4_READ_WORD();
 
-          DSP4_Multiply(multiplicand, multiplier, &product);
+        DSP4_Multiply(multiplicand, multiplier, &product);
           
-          DSP4_CLEAR_OUT();
-          DSP4_WRITE_WORD(product);
-          DSP4_WRITE_WORD(product >> 16);
-        }
-        break;
-
-        // single-player track projection
-        case 0x0001:
-          DSP4_OP01(); break;
-
-        // single-player selection
-        case 0x0003:
-          DSP4_OP03(); break;
-
-        // clear OAM
-        case 0x0005:
-          DSP4_OP05(); break;
-            
-        // transfer OAM
-        case 0x0006:
-          DSP4_OP06(); break;
-
-        // single-player track fork projection
-        case 0x0007:
-          DSP4_OP07(); break;
-
-        // solid polygon projection
-        case 0x0008:
-          DSP4_OP08(); break;
-
-        // sprite projection
-        case 0x0009:
-          DSP4_OP09(); break;
-
-        // unknown
-        case 0x000A:
-        {
-          int16 in1a = DSP4_READ_WORD();
-          int16 in2a = DSP4_READ_WORD();
-          int16 in3a = DSP4_READ_WORD();
-          int16 out1a, out2a, out3a, out4a;
-          
-          DSP4_OP0A(in2a, &out2a, &out1a, &out4a, &out3a);
-
-          DSP4_CLEAR_OUT();
-          DSP4_WRITE_WORD(out1a);
-          DSP4_WRITE_WORD(out2a);
-          DSP4_WRITE_WORD(out3a);
-          DSP4_WRITE_WORD(out4a);
-        }
-        break;
-
-        // set OAM
-        case 0x000B:
-        {
-          int16 sp_x = DSP4_READ_WORD();
-          int16 sp_y = DSP4_READ_WORD();
-          int16 sp_attr = DSP4_READ_WORD();
-          bool8 draw = 1;
-
-          DSP4_CLEAR_OUT();
-              
-          DSP4_OP0B(&draw, sp_x, sp_y, sp_attr, 0, 1);
-        }
-        break;
-
-        // multi-player track projection
-        case 0x000D:
-          DSP4_OP0D(); break;
-
-        // multi-player selection
-        case 0x000E:
-          DSP4_OP0E(); break;
-
-        // single-player track projection with lighting
-        case 0x000F:
-          DSP4_OP0F(); break;
-
-        // single-player track fork projection with lighting
-        case 0x0010:
-          DSP4_OP10(); break;
-
-        // unknown: horizontal mapping command
-        case 0x0011:
-        {
-          int16 a, b, c, d, m;
-
-
-          d = DSP4_READ_WORD();
-          c = DSP4_READ_WORD();
-          b = DSP4_READ_WORD();
-          a = DSP4_READ_WORD();
-
-          DSP4_OP11(a, b, c, d, &m);
-          
-          DSP4_CLEAR_OUT();
-          DSP4_WRITE_WORD(m);
-
-          break;
-        }
-
-        default:
-          break;
+        DSP4_CLEAR_OUT();
+        DSP4_WRITE_WORD(product);
+        DSP4_WRITE_WORD(product >> 16);
       }
+      break;
+
+      // single-player track projection
+      case 0x0001:
+        DSP4_OP01(); break;
+
+      // single-player selection
+      case 0x0003:
+        DSP4_OP03(); break;
+
+      // clear OAM
+      case 0x0005:
+        DSP4_OP05(); break;
+            
+      // transfer OAM
+      case 0x0006:
+        DSP4_OP06(); break;
+
+      // single-player track fork projection
+      case 0x0007:
+        DSP4_OP07(); break;
+
+      // solid polygon projection
+      case 0x0008:
+        DSP4_OP08(); break;
+
+      // sprite projection
+      case 0x0009:
+        DSP4_OP09(); break;
+
+      // unknown
+      case 0x000A:
+      {
+        int16 in1a = DSP4_READ_WORD();
+        int16 in2a = DSP4_READ_WORD();
+        int16 in3a = DSP4_READ_WORD();
+        int16 out1a, out2a, out3a, out4a;
+          
+        DSP4_OP0A(in2a, &out2a, &out1a, &out4a, &out3a);
+          
+        DSP4_CLEAR_OUT();
+        DSP4_WRITE_WORD(out1a);
+        DSP4_WRITE_WORD(out2a);
+        DSP4_WRITE_WORD(out3a);
+        DSP4_WRITE_WORD(out4a);
+      }
+      break;
+
+      // set OAM
+      case 0x000B:
+      {
+        int16 sp_x = DSP4_READ_WORD();
+        int16 sp_y = DSP4_READ_WORD();
+        int16 sp_attr = DSP4_READ_WORD();
+        bool8 draw = 1;
+
+        DSP4_CLEAR_OUT();
+              
+        DSP4_OP0B(&draw, sp_x, sp_y, sp_attr, 0, 1);
+      }
+      break;
+
+      // multi-player track projection
+      case 0x000D:
+        DSP4_OP0D(); break;
+
+      // multi-player selection
+      case 0x000E:
+        DSP4_OP0E(); break;
+
+      // single-player track projection with lighting
+      case 0x000F:
+        DSP4_OP0F(); break;
+
+      // single-player track fork projection with lighting
+      case 0x0010:
+        DSP4_OP10(); break;
+
+      // unknown: horizontal mapping command
+      case 0x0011:
+      {
+        int16 a, b, c, d, m;
+
+
+        d = DSP4_READ_WORD();
+        c = DSP4_READ_WORD();
+        b = DSP4_READ_WORD();
+        a = DSP4_READ_WORD();
+
+        DSP4_OP11(a, b, c, d, &m);
+          
+        DSP4_CLEAR_OUT();
+        DSP4_WRITE_WORD(m);
+
+        break;
+      }
+
+      default:
+        break;
     }
   }
 }
 
 void DSP4GetByte()
 {
-  if ((dsp4_address & 0xf000) == 0x6000 || (dsp4_address >= 0x8000 && dsp4_address < 0xc000))
+  if (DSP4.out_count)
   {
-    if (DSP4.out_count)
-    {
-      dsp4_byte = (uint8) DSP4.output[DSP4.out_index&0x1FF];
-      DSP4.out_index++;
-      if (DSP4.out_count == DSP4.out_index)
-        DSP4.out_count = 0;
-    }
-    else
-    {
-      dsp4_byte = 0xff;
-    }
+    dsp4_byte = (uint8) DSP4.output[DSP4.out_index&0x1FF];
+    DSP4.out_index++;
+    if (DSP4.out_count == DSP4.out_index)
+      DSP4.out_count = 0;
   }
   else
   {
-    dsp4_byte = 0x80;
+    dsp4_byte = 0xff;
   }
 }

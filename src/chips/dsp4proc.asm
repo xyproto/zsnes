@@ -25,11 +25,25 @@ EXTSYM regaccessbankr16,regaccessbankr8,regaccessbankw16,regaccessbankw8
 
 SECTION .text
 
-NEWSYM DSP4Read8b
-    test ecx,8000h
+%macro RouteAccess 1
+    test ecx,08000h
     jnz .dsp4area
-    jmp regaccessbankr8
-.dsp4area   
+    jmp %1
+.dsp4area
+    mov dx,cx
+    and dx,0C000h
+    cmp dx,08000h
+    je .dsp4continue
+    mov dx,cx
+    and dx,0F000h
+    cmp dx,06000h
+    je .dsp4continue
+    ret
+.dsp4continue
+%endmacro
+
+NEWSYM DSP4Read8b
+    RouteAccess regaccessbankr8
     mov word[dsp4_address],cx
     pushad
     call DSP4GetByte
@@ -38,10 +52,7 @@ NEWSYM DSP4Read8b
     ret
 
 NEWSYM DSP4Write8b
-    test ecx,8000h
-    jnz .dsp4area
-    jmp regaccessbankw8
-.dsp4area       
+    RouteAccess regaccessbankw8
     mov word[dsp4_address],cx
     mov byte[dsp4_byte],al
     pushad
@@ -50,10 +61,7 @@ NEWSYM DSP4Write8b
     ret
     
 NEWSYM DSP4Read16b
-    test ecx,8000h
-    jnz .dsp4area
-    jmp regaccessbankr16
-.dsp4area       
+    RouteAccess regaccessbankr16    
     mov word[dsp4_address],cx
     pushad
     call DSP4GetByte
@@ -67,10 +75,7 @@ NEWSYM DSP4Read16b
     ret
 
 NEWSYM DSP4Write16b
-    test ecx,8000h
-    jnz .dsp4area
-    jmp regaccessbankw16
-.dsp4area       
+    RouteAccess regaccessbankw16
     mov word[dsp4_address],cx
     mov byte[dsp4_byte],al
     mov byte[dsp4temp],ah
