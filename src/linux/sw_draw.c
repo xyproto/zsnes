@@ -40,7 +40,7 @@ BOOL sw_start(int width, int height, int req_depth, int FullScreen)
 {
     unsigned int color32, p;
     int i;
-    Uint32 flags = SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE;
+    Uint32 flags = SDL_DOUBLEBUF | SDL_SWSURFACE;
     DWORD GBitMask;
     
     flags |= (FullScreen ? SDL_FULLSCREEN : 0);
