@@ -123,9 +123,9 @@ BYTE                    MouseButtonPressed;
 DWORD                   SurfaceX=0;
 DWORD                   SurfaceY=0;
 
-BYTE                    IsActivated = 1;
-BYTE                    AltTimer = 0;
-WORD                    PrevRes = 0;
+BYTE                    IsActivated=1;
+BYTE                    AltTimer=0;
+WORD                    PrevRes=0;
 RECT                    BlitArea;
 
 extern "C" {
@@ -1696,7 +1696,7 @@ void initwinvideo(void)
       if (FullScreen == 0)
          BlitArea.bottom = (SurfaceY/240)*resolutn;
       else
-         BlitArea.bottom = (SurfaceY/224)*resolutn;
+         BlitArea.bottom = SurfaceY;
 
       if (PrevRes == 0) PrevRes = resolutn;
 
@@ -2103,7 +2103,7 @@ void drawscreenwin(void)
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
 
-   if (SurfaceX==256&&SurfaceY==240)
+   if (SurfaceX==256 && SurfaceY == 240)
    {
       switch (BitDepth)
       {
@@ -2235,7 +2235,7 @@ void drawscreenwin(void)
       }
    }
 
-   if (SurfaceX==320&&SurfaceY==240)
+   if (SurfaceX == 320 && SurfaceY == 240)
    {
       switch (BitDepth)
       {
@@ -2405,7 +2405,7 @@ void drawscreenwin(void)
       }
    }
 
-   if (SurfaceX==512&&SurfaceY==448||SurfaceY==480)
+   if (SurfaceX==512 && (SurfaceY==448 || SurfaceY==480))
    {
       switch (BitDepth)
       {
@@ -2430,7 +2430,7 @@ void drawscreenwin(void)
          }
    }
 
-   if (SurfaceX==640&&SurfaceY==480)
+   if (SurfaceX == 640 && SurfaceY == 480)
    {
       switch (BitDepth)
       {
