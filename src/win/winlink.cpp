@@ -2493,7 +2493,7 @@ void WinUpdateDevices()
          }
 
          if (NumBTN[i])
-            for (j = 0; j < NumBTN[i]; j++)
+            for (j=0; j<NumBTN[i]; j++)
                if (js[i].rgbButtons[j]) keys[0x100+i*32+16+j]=1;
       }
       else
