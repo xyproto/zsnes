@@ -4955,6 +4955,8 @@ DisplayGameOptns:
     DGOptnsBorderBox 9,32,146
     DGOptnsBorderBox 9,109,146
     DGOptnsBorderBox 9,185,146
+    DGOptnsBorderBox 9,102,156
+    DGOptnsBorderBox 9,189,156
     
     ; Draw black boxes
     DGOptnsDrawBox 27,23,[KeyBGDisble0]
