@@ -36,7 +36,11 @@ ASM=nasm
 ASMOPT=-O1
 ASMFLAGSORIG=
 COPT=-O3
-CFLAGSORIG=-march=i586 -ffast-math -fomit-frame-pointer -fno-unroll-loops -Wall -Wno-unused
+CPUOPT=i586
+ifneq ($(CPU),)
+CPUOPT=$(CPU)
+endif
+CFLAGSORIG=-march=${CPUOPT} -ffast-math -fomit-frame-pointer -fno-unroll-loops -Wall -Wno-unused
 LIBSORIG=-lz -lpng
 DRESOBJ=${WINDIR}/zsnes.obj
 CROSS=no
