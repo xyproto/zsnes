@@ -83,9 +83,6 @@ int Png_Dump(const char * filename, unsigned short width, unsigned short height,
 		PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 	
 	info_ptr->color_type=PNG_COLOR_TYPE_RGB_ALPHA;
-	/*Set palette and gamma (assume 1.0 gamma)*/
-//	png_set_PLTE(png_ptr, info_ptr, &fake_pal, 1);
-	png_set_gAMA(png_ptr, info_ptr, ZPNG_GAMMA);
 
 	/*Allocate an array of scanline pointers*/
 	row_pointers=(png_bytep*)malloc(height*sizeof(png_bytep));
