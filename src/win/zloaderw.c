@@ -670,10 +670,17 @@ int pccmdline(void)
     }
     else
     {
-      if(gfnm > 0)
+      if(gfnm > 0) // Quick fix to allow spaces, might produce strange names
+                   // if there are unrecognized options
       {
-        printf("Limit yourself to one filename\n");
-        return 2;
+        char *fvar, *fvar2;
+        fvar=&fname;
+        fvar2=&fname+fvar[0]+1;
+        if(fvar[0]+3>127) return(2);
+        fvar2[0]=' ';
+        strncpy(&fvar2[1],argv[p],127-fvar[0]-1);
+        fvar[0] += strlen(argv[p])+1;
+        gfnm++;
       }
       else
       {
@@ -685,7 +692,7 @@ int pccmdline(void)
       }
     }
   }
-  if(gfnm == 1)
+  if(gfnm > 0)
   {
     filefound=0;
     makeextension();
