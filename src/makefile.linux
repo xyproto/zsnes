@@ -23,6 +23,7 @@ VIDEODIR=video
 WINDIR=linux
 OBJDIR=obj
 ZIPDIR=zip
+MANDIR=/usr/man/man1
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
 	 ${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
@@ -80,6 +81,9 @@ PP=g++
 
 
 ALL: zsnes
+
+man:
+	cp linux/zsnes.man ${MANDIR}/zsnes.1
 
 zsnes: ${OBJS}
 	${CC} -o zsnes ${OBJS}  ${LIBS}
