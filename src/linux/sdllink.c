@@ -9,6 +9,7 @@
 typedef enum
 { FALSE = 0, TRUE = !FALSE }
 BOOL;
+typedef enum vidstate_e { vid_null, vid_none, vid_soft, vid_gl } vidstate_t;
 typedef Uint32 UINT32;
 typedef long long _int64;
 typedef long long LARGE_INTEGER;
@@ -34,7 +35,7 @@ int SurfaceX, SurfaceY;
 static DWORD WindowWidth = 256;
 static DWORD WindowHeight = 224;
 static DWORD FullScreen = 0;
-static int sdl_inited = 0;
+static vidstate_t sdl_state = vid_null;
 static int UseOpenGL = 0;
 extern unsigned char cvidmode;
 DWORD BitDepth = 16;
@@ -569,7 +570,7 @@ int startgame(void)
 {
 	int status;
 
-	if (!sdl_inited)
+	if (sdl_state != vid_null)
 	{
 		if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER |
 	        SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
@@ -577,12 +578,12 @@ int startgame(void)
 			fprintf(stderr, "Could not initialize SDL!\n");
 			return FALSE;
 		}
-		sdl_inited = -1;
+		sdl_state = vid_none;
 	}
 
-	if (sdl_inited == 1) sw_end();
+	if (sdl_state == vid_soft) sw_end();
 #ifdef __OPENGL__
-	else if (sdl_inited == 2) gl_end();
+	else if (sdl_state == vid_gl) gl_end();
 
 	if (UseOpenGL)
 	{
@@ -595,13 +596,13 @@ int startgame(void)
 	}
 
 	if (!status) return FALSE;
-	sdl_inited = UseOpenGL + 1;
+	sdl_state = (UseOpenGL ? vid_gl : vid_soft);
 	return TRUE;
 }
 
 void LinuxExit(void)
 {
-	if (sdl_inited)
+	if (sdl_state != vid_null)
 	{
 		SDL_WM_GrabInput(SDL_GRAB_OFF);	// probably redundant
 		SDL_Quit();
@@ -754,7 +755,11 @@ void initwinvideo(void)
 
 	if (startgame() != TRUE)
 	{
-		LinuxExit ();
+		/* Exit zsnes if SDL could not be initialized */
+		if (sdl_state == vid_null)
+			LinuxExit ();
+		else
+			return;
 	}
 
 	if (newmode == 1)
@@ -946,7 +951,9 @@ void UpdateVFrame(void)
 
 void clearwin()
 {
-	if (!sdl_inited) return;
+	/* If we're vid_null and we get here, there's a problem */
+	/* elsewhere - DDOI */
+	if (sdl_state == vid_none) return;
 
 #ifdef __OPENGL__
 	if (UseOpenGL)
@@ -958,6 +965,9 @@ void clearwin()
 
 void drawscreenwin(void)
 {
+	/* Just in case - DDOI */
+	if (sdl_state == vid_none) return;
+
 #ifdef __OPENGL__
 	if (UseOpenGL)
 		gl_drawwin();
