@@ -109,6 +109,7 @@ EXTSYM pesimpng
     test bx,0001000000000000b
     jz .nonega
     or bx,1110000000000000b    
+    or word[mode7X0],1110000000000000b    
 .nonega
     mov [mcxloc],bx
     mov bx,dx
@@ -130,6 +131,7 @@ EXTSYM pesimpng
     test bx,0001000000000000b
     jz .nonegd
     or bx,1110000000000000b
+    or word[mode7Y0],1110000000000000b    
 .nonegd
     sub word[mcyloc],bx
 

@@ -20,8 +20,6 @@
 
 
 
-
-
 %macro Mode7Calculate 0
     ; mode 7, ax = curyposition, dx = curxposition (left side)
     ; draw center map coordinates at (X0-bg1scrolx,Y0-bg1scroly) on screen
@@ -33,6 +31,7 @@
     test bx,0001000000000000b
     jz .nonega
     or bx,1110000000000000b    
+    or word[mode7X0],1110000000000000b    
 .nonega
     mov [.cxloc],bx
     mov bx,dx
@@ -54,6 +53,7 @@
     test bx,0001000000000000b
     jz .nonegd
     or bx,1110000000000000b
+    or word[mode7Y0],1110000000000000b    
 .nonegd
     sub word[.cyloc],bx
 
@@ -113,6 +113,7 @@
     test bx,0001000000000000b
     jz .nonega
     or bx,1110000000000000b    
+    or word[mode7X0],1110000000000000b    
 .nonega
     mov [.cxloc],bx
     mov bx,dx
@@ -134,6 +135,7 @@
     test bx,0001000000000000b
     jz .nonegd
     or bx,1110000000000000b
+    or word[mode7Y0],1110000000000000b    
 .nonegd
     add bx,bx
     sub word[.cyloc],bx
