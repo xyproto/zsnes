@@ -2214,8 +2214,6 @@ NEWSYM init65816
     mov byte[cycpbl],117
     mov byte[cycpblt],117
 
-    cmp byte[SPC7110Enable],0
-    jne .specialtimer
     cmp byte[SDD1Enable],0
     jne .specialtimer
     jmp .nospecialtimer
