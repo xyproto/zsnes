@@ -2983,17 +2983,19 @@ NEWSYM copyvesa2320x480x16b
 .widescreen
     add edi,60*320*2
     sub edi,16*2
+    cmp byte[MMXSupport],1
+    je near .wsloopb
 .wsloopa
     mov ecx,32
-    call .wsloopb
+    call .wsloopa2
     add esi,32*2
     add edi,16*2*2
     mov ecx,32
-    call .wsloopb
+    call .wsloopa2
     sub esi,256*2
     add edi,16*2*2
     mov ecx,32
-    call .wsloopb
+    call .wsloopa2
     add esi,32*2
     add edi,16*2*2
     dec dl
@@ -3001,7 +3003,7 @@ NEWSYM copyvesa2320x480x16b
     jnz .wsloopa
     pop es
     ret
-.wsloopb
+.wsloopa2
     movsd
     movsd
     movsd
@@ -3012,7 +3014,40 @@ NEWSYM copyvesa2320x480x16b
     add esi,2
     add edi,2
     dec ecx
+    jnz .wsloopa2
+    ret
+.wsloopb
+    mov ecx,32
+    call .wsloopb2
+    add esi,32*2
+    add edi,16*2*2
+    mov ecx,32
+    call .wsloopb2
+    sub esi,256*2
+    add edi,16*2*2
+    mov ecx,32
+    call .wsloopb2
+    add esi,32*2
+    add edi,16*2*2
+    dec dl
+    dec dl
     jnz .wsloopb
+    pop es
+    ret
+.wsloopb2
+    movq mm0,[esi]
+    movq [es:edi],mm0
+    movq mm1,[esi+8]
+    movq [es:edi+8],mm1
+    add esi,14
+    add edi,16
+    mov ax,[esi]
+    mov [es:edi],ax
+    add esi,2
+    add edi,2
+    dec ecx
+    jnz .wsloopb2
+    emms
     ret
 
 ;*******************************************************
@@ -5886,10 +5921,7 @@ NEWSYM copyvesa12640x480x16b
     mov ecx,128
     precheckvesa12 128
 .ac
-    mov eax,[esi]
-    mov [es:edi],eax
-    add esi,4
-    add edi,4
+    movsd
     dec ecx
     jnz .ac
     postcheckvesa12 .ac,64+128,128,16384
