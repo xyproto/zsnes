@@ -36,7 +36,7 @@ EXTSYM Create_File,Delete_File,Open_File,Get_File_Date,Close_File,Change_Dir,Get
 EXTSYM romloadskip
 EXTSYM cfgloadgdir,cfgloadsdir
 EXTSYM init18_2hz
-EXTSYM OSExit
+EXTSYM OSExit,GUIOn2
 %ifdef __LINUX__
 EXTSYM LinuxExit
 EXTSYM GetFilename
@@ -1662,8 +1662,11 @@ NEWSYM MMXCheck
     test edx,1 << 23
     jz .nommx
     mov byte[MMXSupport],1
+    cmp byte[GUIOn2],1
+    je .noprintstr
     mov edx,YesMMX
     call PrintStr
+.noprintstr
 .nommx
     ret
 
