@@ -2007,6 +2007,7 @@ DisplayGUISound:
     GUIOuttextwin2 6,26,136,GUISoundTextJ
     GUIOuttextwin2 6,26,146,GUISoundTextK
     GUIOuttextwin2 6,26,156,GUISoundTextL
+    GUIOuttextwin2 6,26,166,GUISoundTextM
     add byte[GUItextcolor],15
     GUIOuttextwin2 6,25,25,GUISoundText1
     GUIOuttextwin2 6,25,34,GUISoundText3
@@ -2023,6 +2024,7 @@ DisplayGUISound:
     GUIOuttextwin2 6,25,135,GUISoundTextJ
     GUIOuttextwin2 6,25,145,GUISoundTextK
     GUIOuttextwin2 6,25,155,GUISoundTextL
+    GUIOuttextwin2 6,25,165,GUISoundTextM
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 6,6,16,GUISoundText6
@@ -2096,6 +2098,12 @@ DisplayGUISound:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox7
     GUIDisplayIconWin 6,11,151,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[UseCubicSpline],0
+    je .nocheckbox8
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox8
+    GUIDisplayIconWin 6,11,161,[GUITemp]
     DrawGUIWinBox 6,15,61,69,69,167
     mov dword[GUITemp],GUISoundText7
     xor eax,eax
@@ -2186,6 +2194,7 @@ GUISoundTextI db 'SURROUND SOUND',0
 GUISoundTextJ db 'SOUND INTERPOLATION',0
 GUISoundTextK db 'LOW PASS FILTER',0
 GUISoundTextL db 'SOUND BUFFERING',0
+GUISoundTextM db 'CUBIC SPLINE INTERP',0
 
 DisplayGUICheatConv:
     mov eax,[ccheatnpos]

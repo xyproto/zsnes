@@ -2105,6 +2105,7 @@ DisplayGUISoundClick:
     GUIClickCButton 11,131,byte[InterSound]
     GUIClickCButton 11,141,byte[LowPassFilter]
     GUIClickCButton 11,151,byte[SoundBufEn]
+    GUIClickCButton 11,161,byte[UseCubicSpline]
     cmp eax,15
     jl near .nosrate
     cmp edx,61
