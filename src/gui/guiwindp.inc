@@ -6387,6 +6387,10 @@ DisplayGUIPaths:
     GUIOuttextwin2d 19,10,124,SGPath,15
     GUIOuttextwin2d 19,137,99,STPath,15
     GUIOuttextwin2d 19,137,124,GNextPath,15
+    GUIOuttextwin2d 19,10,159,FEOEZPath,15
+    GUIOuttextwin2d 19,10,184,SJNSPath,15
+    GUIOuttextwin2d 19,137,159,MDHPath,15
+    GUIOuttextwin2d 19,137,184,SPL4Path,15
     ret
 
 SECTION .data

@@ -1503,6 +1503,26 @@ GUIPathKeys:
     mov eax,GNextPath
     jmp .boxselected
 .notBox7
+    cmp dword[GUIInputBox],8
+    jne .notBox8
+    mov eax,FEOEZPath
+    jmp .boxselected
+.notBox8
+    cmp dword[GUIInputBox],9
+    jne .notBox9
+    mov eax,SJNSPath
+    jmp .boxselected
+.notBox9
+    cmp dword[GUIInputBox],10
+    jne .notBox10
+    mov eax,MDHPath
+    jmp .boxselected
+.notBox10
+    cmp dword[GUIInputBox],11
+    jne .notBox11
+    mov eax,SPL4Path
+    jmp .boxselected
+.notBox11
 
 .boxselected
     mov ecx,eax
@@ -1525,7 +1545,7 @@ GUIPathKeys:
 .notbackspace
     
     ;check if we're at the end
-    add ecx,16383
+    add ecx,dword[GUIInputLimit]
     cmp eax,ecx
     jne .stillroom
     ret
@@ -1537,6 +1557,7 @@ GUIPathKeys:
 
 SECTION .bss
 GUIInputBox resd 1
+GUIInputLimit resd 1
 SECTION .text
 
 GUIComboKeys:

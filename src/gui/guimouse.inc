@@ -1783,7 +1783,7 @@ SECTION .text
 %%noclick
 %endmacro
 
-%macro GUITextBoxInputNach 5
+%macro GUITextBoxInputNach 6
     cmp eax,%1
     jl %%noclick
     cmp edx,%2
@@ -1793,6 +1793,7 @@ SECTION .text
     cmp edx,%4
     jg %%noclick
     mov dword[GUIInputBox],%5
+    mov dword[GUIInputLimit],%6-1
 %%noclick
 %endmacro
 
@@ -3252,18 +3253,17 @@ DisplayGUIChipClick
     ret
 
 DisplayGUIPathsClick
-    GUITextBoxInputNach 75,15,230,25,1     ;SRAMPath
-    GUITextBoxInputNach 75,35,230,45,2     ;SnapPath
-    GUITextBoxInputNach 75,55,230,65,3     ;SPCPath
-    GUITextBoxInputNach 8,95,100,105,4     ;BSXPath
-    GUITextBoxInputNach 8,120,100,130,5    ;SGPath
-    GUITextBoxInputNach 135,95,235,105,6   ;STPath
-    GUITextBoxInputNach 135,120,235,130,7  ;GNextPath
-
-    ;GUITextBoxInput 8,155,100,165,,16384
-    ;GUITextBoxInput 8,180,100,190,,16384
-    ;GUITextBoxInput 135,155,235,165,,16384
-    ;GUITextBoxInput 135,180,235,190,,16384
+    GUITextBoxInputNach 75,15,230,25,1,1024       ;SRAMPath
+    GUITextBoxInputNach 75,35,230,45,2,1024       ;SnapPath
+    GUITextBoxInputNach 75,55,230,65,3,1024       ;SPCPath
+    GUITextBoxInputNach 8,95,100,105,4,1024       ;BSXPath
+    GUITextBoxInputNach 8,120,100,130,5,1024      ;SGPath
+    GUITextBoxInputNach 135,95,235,105,6,1024     ;STPath
+    GUITextBoxInputNach 135,120,235,130,7,1024    ;GNextPath
+    GUITextBoxInputNach 8,155,100,165,8,1024      ;FEOEZPath
+    GUITextBoxInputNach 8,180,100,190,9,1024      ;SJNSPath
+    GUITextBoxInputNach 135,155,235,165,10,1024   ;MDHPath
+    GUITextBoxInputNach 135,180,235,190,11,1024   ;SPL4Path
     ret
 
 DrawMouse:

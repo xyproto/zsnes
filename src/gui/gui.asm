@@ -611,13 +611,17 @@ NEWSYM hqFilter, db 0
 NEWSYM reserved, db 0
 NEWSYM scale2xFilter, db 0
 NEWSYM st010difficulty,  db 0     ; place holder till we commit the other Seta 10 file
-NEWSYM SRAMPath, times 16384 db 0
-NEWSYM SnapPath, times 16384 db 0
-NEWSYM SPCPath, times 16384 db 0
-NEWSYM BSXPath, times 16384 db 0
-NEWSYM STPath, times 16384 db 0
-NEWSYM GNextPath, times 16384 db 0
-NEWSYM SGPath, times 16384 db 0
+NEWSYM SRAMPath, times 1024 db 0
+NEWSYM SnapPath, times 1024 db 0
+NEWSYM SPCPath, times 1024 db 0
+NEWSYM BSXPath, times 1024 db 0
+NEWSYM STPath, times 1024 db 0
+NEWSYM GNextPath, times 1024 db 0
+NEWSYM SGPath, times 1024 db 0
+NEWSYM FEOEZPath, times 1024 db 0
+NEWSYM SJNSPath, times 1024 db 0
+NEWSYM MDHPath, times 1024 db 0
+NEWSYM SPL4Path, times 1024 db 0
 
 
 GUIsave equ $-GUIRAdd
