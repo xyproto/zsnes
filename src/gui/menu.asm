@@ -1033,9 +1033,9 @@ NEWSYM pcxheader
 NEWSYM picnum, dw 0
 
 NEWSYM savepcx
-	cmp dword[ScreenShotFormat],1
-	jne .notpng
-	call Grab_PNG_Data
+        cmp byte[ScreenShotFormat],1
+        jne .notpng
+        call Grab_PNG_Data
 	ret
 .notpng
     
