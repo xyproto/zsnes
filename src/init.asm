@@ -5645,7 +5645,12 @@ NEWSYM CheckROMType
 
     mov byte[ROMTypeNOTFound],1
 .donecheck
+
+    cmp byte[ForceHiLoROM],0
+    je .noguiforce
     mov al,[ForceHiLoROM]
+.noguiforce
+
     mov byte[forceromtype],al
     xor al,al
     cmp byte[forceromtype],0
