@@ -105,7 +105,7 @@ void deintlv1()
     blocks[i * 2] = i + numblocks;
     blocks[i * 2 + 1] = i;
   }
-  swapBlocks(blocks);  
+  swapBlocks(blocks);
 }
 
 void CheckIntl1(unsigned char *ROM)
@@ -114,8 +114,8 @@ void CheckIntl1(unsigned char *ROM)
   if (validChecksum(ROM, ROMmidPoint + Lo) &&
      !validChecksum(ROM, Lo) &&
       ROM[ROMmidPoint+Lo+25] < 14) //Country Code
-  {    
-    deintlv1(); 
+  {
+    deintlv1();
     Interleaved = true;
   }
   else if (validChecksum(ROM, Lo) && !validChecksum(ROM, Hi) &&
@@ -139,9 +139,9 @@ void CheckIntlEHi(unsigned char *ROM)
   if (EHiHeader(ROM, Lo))
   {
     unsigned int temp, i, oldNumBanks = NumofBanks,
-                *loc1 = romdata, 
+                *loc1 = romdata,
                 *loc2 = romdata + ((NumofBytes - 0x400000)/4);
-  
+
     //Swap 4MB ROM with the other one
     for (i = 0; i < 0x100000; i++)
     {
@@ -149,11 +149,11 @@ void CheckIntlEHi(unsigned char *ROM)
       loc1[i] = loc2[i];
       loc2[i] = temp;
     }
-    
+
     //Deinterleave the 4MB ROM first
     NumofBanks = 128;
     deintlv1();
-  
+
     //Now the other one
     NumofBanks = oldNumBanks - 128;
     romdata += 0x100000; //Ofset pointer
@@ -201,7 +201,7 @@ void BankCheck()
   unsigned char *ROM = (unsigned char *)romdata;
   infoloc = 0;
   Interleaved = false;
-  
+
   if (NumofBytes >= 0x500000)
   {
     //Deinterleave if neccesary
@@ -221,16 +221,16 @@ void BankCheck()
 
     //Deinterleave if neccesary
     CheckIntl1(ROM);
-    
+
     loscore = InfoScore(ROM+Lo);
     hiscore = InfoScore(ROM+Hi);
 
     switch(ROM[Lo + 21])
     {
       case 32: case 35: case 48: case 50:
-        loscore += 2;      
+        loscore += 2;
       case 128: case 156: case 176: case 188: case 252: //BS
-        loscore += 1;      
+        loscore += 1;
         break;
     }
     switch(ROM[Hi + 21])
@@ -238,10 +238,10 @@ void BankCheck()
       case 33: case 49: case 53: case 58:
         hiscore += 2;
       case 128: case 156: case 176: case 188: case 252: //BS
-        hiscore += 1;      
+        hiscore += 1;
         break;
     }
-    
+
     /*
     Force code.
     ForceHiLoROM is from the GUI.
@@ -251,13 +251,13 @@ void BankCheck()
     */
     if (ForceHiLoROM == 1 ||
         (forceromtype == 1 && !CommandLineForce2))
-    { 
+    {
       CommandLineForce2 = true;
       loscore += 50;
     }
     else if (ForceHiLoROM == 2 ||
              (forceromtype == 2 && !CommandLineForce2))
-    { 
+    {
       CommandLineForce2 = true;
       hiscore += 50;
     }
@@ -273,7 +273,7 @@ void BankCheck()
       infoloc = Lo;
     }
   }
-}   
+}
 
 
 //Checksum functions
@@ -281,13 +281,13 @@ unsigned short sum(unsigned char *array, unsigned int size)
 {
   unsigned short theSum = 0;
   unsigned int i;
-  
+
   //Prevent crashing by reading too far (needed for messed up ROMs)
   if (array + size > (unsigned char *)romdata + maxromspace)
   {
     return(0xFFFF);
-  } 
-  
+  }
+
   for (i = 0; i < size; i++)
   {
     theSum += array[i];
@@ -305,7 +305,7 @@ void CalcChecksum()
   {
     Checksumvalue = sum(ROM, NumofBytes);
     if (NumofBanks == 96)
-    { 
+    {
       Checksumvalue += Checksumvalue; //Fix for 24Mb SPC7110 ROMs
     }
   }
@@ -313,7 +313,7 @@ void CalcChecksum()
   {
     Checksumvalue = sum(ROM, curromspace);
     if (NumofBanks > 128 && maxromspace == 6*MB_bytes)
-    { 
+    {
       Checksumvalue += sum(ROM+4*MB_bytes, 2*MB_bytes);
     }
     if (BSEnable)
@@ -401,8 +401,8 @@ void clearmem()
 void clearmem2()
 {
   /*
-  SPC RAM is filled with alternating 0x00 and 0xFF for 0x20 bytes. 
-  
+  SPC RAM is filled with alternating 0x00 and 0xFF for 0x20 bytes.
+
   Basically the SPCRAM is initialized as follows:
   xx00 - xx1f: $00
   xx20 - xx3f: $ff
@@ -418,7 +418,7 @@ void clearmem2()
   {
     memset(spcRam+i, 0, 0x20);
     memset(spcRam+i+0x20, 0xFF, 0x20);
-  }    
+  }
 
   memset(sram, 0xFF, 16384);
 }
@@ -468,7 +468,7 @@ void headerhack()
   WindowDisables = 0;
   ClearScreenSkip = 0;
   ENVDisable = 0;
-  
+
 
   //These next fiew look like RAM init hacks, should be looked into
 
@@ -477,7 +477,7 @@ void headerhack()
   {
     RomData[0x2762F] = 0xEA;
     RomData[0x27630] = 0xEA;
-  } 
+  }
 
   //Should be Super Famista 2 (J), uses non-standard characters
   if (!strncmp((RomData+Lo),"\x0bd\x0b0\x0ca\x0df\x0b0\x0cc\x0a7\x0d0\x0bd\x0c0 \x032    " ,16))
@@ -488,13 +488,13 @@ void headerhack()
     //Skip a check for value FF at 2140 when spc not initialized yet?!?
     RomData[0x6CF9] = 0xEA;
     RomData[0x6CFA] = 0xEA;
-  } 
+  }
 
   //Kamen Rider (J)
   if (!strncmp((RomData+Lo),"SFC \x0b6\x0d2\x0dd\x0d7\x0b2\x0c0\x0de\x0b0    " ,16))
   {
     latchyr = 2;
-  } 
+  }
 
   //Deae Tonosama Appare Ichiban (J)
   if (!strncmp((RomData+Lo),"\x0c3\x0de\x0b1\x0b4\x0c4\x0c9\x0bb\x0cf \x0b1\x0af\x0ca" ,12))
@@ -517,7 +517,7 @@ void headerhack()
     cycpblt2 = 125;
     cycpbl   = 125;
     cycpblt  = 125;
-  } 
+  }
 
   //Accele Brid (J)
   if (!strncmp((RomData+Lo),"ACCELEBRID  " ,12))
@@ -578,7 +578,7 @@ void headerhack()
 
   /*
   Marvelous (J) has this hack in the asm, but disabled
-  
+
   Alternate if for Marvelous-inclusive version
   if (!strncmp((RomData+Lo),"\x0cf\x0bo\x0b3\x0de", 4) ||
       !strncmp((RomData+Lo),"REND", 4))
@@ -592,13 +592,6 @@ void headerhack()
     cycpblt2 = 157;
     cycpbl   = 157;
     cycpblt  = 157;
-  }
-
-  //Star Trek - Deep Space Nine: Crossroads of Time (U/E)
-  if (!strncmp((RomData+Lo),"STAR TREK: D" ,12))
-  {
-    opexec268 = 187;
-    opexec358 = 187;
   }
 
   //Clay Fighter (U), other versions are CLAYFIGHTER with no space
@@ -624,15 +617,6 @@ void headerhack()
       !strncmp((RomData+Lo),"Super Punch-Out!!   ", 20))
   {
     disablehdma = true;
-  }
-
-  //Clock Tower (J) and AGTP translation
-  if (!strncmp((RomData+Hi),"CLOCK TOWER " ,12))
-  {
-    opexec268 = 187;
-    opexec358 = 182;
-    opexec268cph = 47;
-    opexec358cph = 47;
   }
 
   //Super Final Match Tennis (J)
@@ -685,15 +669,6 @@ void headerhack()
   {
     opexec268 = 120;
     opexec358 = 100;
-  }
-
-  //Bubsy in Claws Encounters of the Furred Kind (U/E)
-  if (!strncmp((RomData+Lo), "Bubsy               ", 20))
-  {
-    opexec268 = 220;
-    opexec358 = 220;
-    opexec268cph = 64;
-    opexec358cph = 64;
   }
 
   //Front Mission
