@@ -56,6 +56,11 @@ ifeq ($(PLATFORM),dos)
   OS=__MSDOS__
 endif
 
+ifeq ($(PLATFORM),win32-unix-shell)
+  PLATFORM=win32
+  CROSS=yes
+endif 
+
 ifeq ($(PLATFORM),win32)
   CC = gcc
   CPPC = g++
