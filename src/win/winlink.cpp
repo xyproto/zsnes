@@ -2381,23 +2381,6 @@ void drawscreenwin(void)
    UnlockSurface();
 }
 
-extern char fulladdtab[65536*2];
-extern WORD vesa2_usbit;
-extern WORD vesa2_clbit;
-extern WORD vesa2_rpos;
-extern WORD vesa2_rfull;
-extern WORD vesa2_rtrcl;
-extern WORD vesa2_rtrcla;
-extern WORD vesa2_gpos;
-extern WORD vesa2_gfull;
-extern WORD vesa2_gtrcl;
-extern WORD vesa2_gtrcla;
-extern WORD vesa2_bpos;
-extern WORD vesa2_bfull;
-extern WORD vesa2_btrcl;
-extern WORD vesa2_btrcla;
-extern WORD nojoystickpoll;
-
 extern void SwitchFullScreen(void);
 
 void WinUpdateDevices()
