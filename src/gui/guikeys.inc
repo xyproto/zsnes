@@ -958,7 +958,7 @@ GUIGUIOptnsKeys:
     jne .guioptn6b
     GUIkeystoggleoptn byte[GUIEffect],1
 .guioptn6b
-    cmp dh,'O'
+    cmp dh,'R'
     jne .guioptn7
     GUIkeystoggleoptn byte[GUIEffect],4
 .guioptn7
