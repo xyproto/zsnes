@@ -1321,6 +1321,23 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
+%macro GUIClickCButtonMMX 4
+    cmp eax,%1+1
+    jl %%noclick
+    cmp edx,%2+3
+    jl %%noclick
+    cmp eax,%1+6
+    jg %%noclick
+    cmp edx,%2+8
+    jg %%noclick
+    xor %3,%4
+    call MMXCheck
+    ret
+%%noclick
+%endmacro
+
+
+
 %macro GUISlidebarPostImpl 13 ; x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
     cmp dword[%11],0
     je near %%nolower
@@ -2139,7 +2156,7 @@ DisplayGUIOptionClick:
     GUIClickCButton2 11,36,byte[newengen],byte[cfgnewgfx],1
 .invalidng
 ;    GUIClickCButton2 11,46,byte[vsyncon],byte[cfgvsync],1
-    GUIClickCButton2 11,56,byte[FPUCopy],byte[cfgcopymethod],2
+    GUIClickCButtonMMX 11,56,byte[MMXSupport],1
     GUIClickCButtonM 11,66,byte[pl12s34]
 %ifdef __MSDOS__
     GUIClickCButton 11,76,byte[SidewinderFix]

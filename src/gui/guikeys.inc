@@ -832,9 +832,8 @@ GUIOptionKeys:
 ;.novsync
     cmp dh,'M'
     jne .nommxcopy
-    xor byte[FPUCopy],2
-    mov al,[FPUCopy]
-    mov [cfgcopymethod],al
+    xor byte[MMXSupport],1
+    call MMXCheck
 .nommxcopy
     cmp dh,'U'
     jne .nousepl34
