@@ -568,7 +568,10 @@ GetNormalEntries2:
     GUIGetEntry2 GUIsfcfind
     GUIGetEntry2 GUIswcfind
     GUIGetEntry2 GUIfigfind
+    cmp byte[OSPort],1
+    jbe near .dos
     GUIGetEntry2 GUIfindGZIP
+.dos
     GUIGetEntry2 GUIfind058
     GUIGetEntry2 GUIfind078
     GUIGetEntry2 GUIfindUSA
@@ -592,7 +595,10 @@ GetNormalEntries:
     GUIGetEntry GUIsfcfind
     GUIGetEntry GUIswcfind
     GUIGetEntry GUIfigfind
+    cmp byte[OSPort],1
+    jbe near .dos
     GUIGetEntry GUIfindGZIP
+.dos
     GUIGetEntry GUIfind058
     GUIGetEntry GUIfind078
     GUIGetEntry GUIfindUSA
@@ -754,7 +760,10 @@ GetLoadLfn:
     GUIGetEntryLFN GUIsfcfind
     GUIGetEntryLFN GUIswcfind
     GUIGetEntryLFN GUIfigfind
+    cmp byte[OSPort],1
+    jbe near .dos
     GUIGetEntryLFN GUIfindGZIP
+.dos
     GUIGetEntryLFN GUIfind058
     GUIGetEntryLFN GUIfind078
     GUIGetEntryLFN GUIfindUSA
