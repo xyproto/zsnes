@@ -63,9 +63,9 @@ SDLCFLAGS := $(shell sdl-config --cflags)
 #LIBS=-static -pg ${SDLLIBS} -lz
 LIBS=${SDLLIBS} -lz -lpng
 #CFLAGS=-pg -g -Wall -D__LINUX__ ${SDLCFLAGS}
-CFLAGS=-g -Wall -D__LINUX__ ${SDLCFLAGS}
+CFLAGS=-g -Wall -O2  -mcpu=pentium -finline-functions -funroll-loops -D__LINUX__ ${SDLCFLAGS}
 ASM=nasm
-ASMFLAGS=-f elf -D__LINUX__ -g -w-orphan-labels
+ASMFLAGS=-f elf -D__LINUX__ -g -w-orphan-labels 
 CC=gcc
 PP=g++
 
@@ -89,7 +89,8 @@ man:
 
 zsnes: ${OBJS}
 	${CC} -o zsnes ${OBJS}  ${LIBS}
-
+	
+${ZIPDIR}/zpng.o: ${ZIPDIR}/zpng.c ${ZIPDIR}/zpng.h
 ${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/unzip.h
 ${ZIPDIR}/zzip.o: ${ZIPDIR}/zzip.c ${ZIPDIR}/unzip.h
 ${DOSDIR}/zloader.o: ${DOSDIR}/zloader.c
