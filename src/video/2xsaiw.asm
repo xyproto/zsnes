@@ -17,6 +17,7 @@
 
 %include "macros.mac"
 
+NEWSYM TwoxSaiWAsmStart
 
 ;/*---------------------------------------------------------------------*
 ; * The following (piece of) code, (part of) the 2xSaI engine,          *
@@ -2049,3 +2050,5 @@ final1a       resb 8
 final1b       resb 8
 final2a       resb 8
 final2b       resb 8
+
+NEWSYM TwoxSaiWAsmEnd

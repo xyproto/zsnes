@@ -19,12 +19,11 @@
 
 EXTSYM vesa2selec,vidbuffer,GUIOn,FPUCopy,resolutn,En2xSaI,antienab,scanlines
 EXTSYM hirestiledat,res512switch,curblank,spritetablea
-EXTSYM lineleft,_2xSaILineW,_2xSaISuperEagleLineW
+EXTSYM lineleft,_2xSaILineW,_2xSaISuperEagleLineW, _2xSaISuper2xSaILineW
 EXTSYM newengen,cfield,HalfTrans
 EXTSYM GUIOn2
 EXTSYM SpecialLine
 EXTSYM vidbufferofsb
-EXTSYM Super2xSaI
 EXTSYM HalfTransB,HalfTransC
 
 NEWSYM CopyVWinAsmStart
@@ -867,7 +866,7 @@ Process2xSaIwin:
     call _2xSaISuperEagleLineW
     jmp .normal
 .super2xSaI
-    call Super2xSaI
+    call _2xSaISuper2xSaILineW
 .normal
     add esp,24
     pop ebx

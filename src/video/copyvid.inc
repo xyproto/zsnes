@@ -28,7 +28,7 @@ EXTSYM vidbufferofsb
 EXTSYM HalfTransB,HalfTransC
 
 
-%include "video/2xSaImmx.inc"
+%include "video/2xsaimmx.inc"
 
 
 
