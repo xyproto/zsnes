@@ -1047,7 +1047,6 @@ NEWSYM GUIINVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0     ; Interpolation
 NEWSYM GUIEAVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0     ; Eagle
 NEWSYM GUIIEVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0     ; (Interp | Eagle)
 NEWSYM GUIFSVID, db 0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,1,1,0     ; Full Screen
-NEWSYM GUIWSVID, db 0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0     ; (Full Scr. | Wide Scr.)
 NEWSYM GUISSVID, db 0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,1,1,0     ; Small Screen
 NEWSYM GUITBVID, db 0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,0     ; Triple Buffering
 NEWSYM GUIHSVID, db 0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0     ; Half/Quarter Scanlines
