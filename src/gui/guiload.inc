@@ -1400,10 +1400,10 @@ GUInumentries dd 0
 GUIdirentries dd 0
 GUIfileentries dd 0
 %ifdef __LINUX__
-NEWSYM GUIsmcfind,    db '*.smc',0
-NEWSYM GUIsfcfind,    db '*.sfc',0
-NEWSYM GUIswcfind,    db '*.swc',0
-NEWSYM GUIfigfind,    db '*.fig',0
+NEWSYM GUIsmcfind,    db '*.[sS][mM][cC]',0
+NEWSYM GUIsfcfind,    db '*.[sS][fF][cC]',0
+NEWSYM GUIswcfind,    db '*.[sS][wW][cC]',0
+NEWSYM GUIfigfind,    db '*.[fF][iI][gG]',0
 %else
 NEWSYM GUIsmcfind,    db '*.SMC',0
 NEWSYM GUIsfcfind,    db '*.SFC',0
@@ -1413,11 +1413,11 @@ NEWSYM GUIfigfind,    db '*.FIG',0
 NEWSYM GUIfind058,    db '*.058',0
 NEWSYM GUIfind078,    db '*.078',0
 %ifdef __LINUX__
-NEWSYM GUIfindUSA,    db '*.usa',0
-NEWSYM GUIfindJAP,    db '*.jap',0
-NEWSYM GUIfindBIN,    db '*.bin',0
-NEWSYM GUIfindZIP,    db '*.zip',0
-NEWSYM GUIfindGZIP,    db '*.gz',0
+NEWSYM GUIfindUSA,    db '*.[uU][sS][aA]',0
+NEWSYM GUIfindJAP,    db '*.[jJ][aA][pP]',0
+NEWSYM GUIfindBIN,    db '*.[bB][iI][nN]',0
+NEWSYM GUIfindZIP,    db '*.[zZ][iI][pP]',0
+NEWSYM GUIfindGZIP,    db '*.[gG][zZ]',0
 %else
 NEWSYM GUIfindUSA,    db '*.USA',0
 NEWSYM GUIfindJAP,    db '*.JAP',0
