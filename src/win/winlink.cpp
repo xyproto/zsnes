@@ -150,7 +150,16 @@ static lpDirectDrawCreateEx pDirectDrawCreateEx;
 typedef HRESULT (WINAPI* lpDirectSoundCreate8)(LPCGUID pcGuidDevice, LPDIRECTSOUND8 *ppDS8, LPUNKNOWN pUnkOuter);
 static lpDirectSoundCreate8 pDirectSoundCreate8;
 
-extern "C" void ImportDirectX(void)
+extern "C" void FreeDirectX()
+{
+   FreeLibrary(hM_dsound);
+   FreeLibrary(hM_ddraw);
+   FreeLibrary(hM_dinput8);
+   exit(0);
+}
+
+
+extern "C" void ImportDirectX()
 {
    hM_dinput8 = LoadLibrary(dinput8_dll);
 
@@ -158,7 +167,7 @@ extern "C" void ImportDirectX(void)
    {
       if (MessageBox(NULL, "Sorry, you need DirectX v8.0 or higher to use\nZSNESW. Would you like to go to the DirectX homepage?", "Error", MB_ICONINFORMATION | MB_YESNO) == IDYES)
          ShellExecute(NULL, NULL, "http://www.microsoft.com/directx/", NULL, NULL, 0);
-      goto startup_error_exit;
+      FreeDirectX();
    }
 
    pDirectInput8Create = (lpDirectInput8Create) GetProcAddress(hM_dinput8, dinput8_imp);
@@ -168,7 +177,7 @@ extern "C" void ImportDirectX(void)
       char err[256];
       wsprintf(err,"Failed to import %s:%s", dinput8_dll, dinput8_imp);
       MessageBox(NULL, err, "Error", MB_ICONERROR);
-      goto startup_dinput8_error;
+      FreeDirectX();
    }
 
    hM_ddraw = LoadLibrary(ddraw_dll);
@@ -178,7 +187,7 @@ extern "C" void ImportDirectX(void)
       char err[256];
       wsprintf(err,"Failed to import %s",ddraw_dll);
       MessageBox(NULL, err,"Error",MB_ICONERROR);
-      goto startup_dinput8_error;
+      FreeDirectX();
    }
 
    pDirectDrawCreateEx = (lpDirectDrawCreateEx) GetProcAddress(hM_ddraw, ddraw_imp);
@@ -188,7 +197,7 @@ extern "C" void ImportDirectX(void)
       char err[256];
       wsprintf(err,"Failed to import %s:%s", ddraw_dll, ddraw_imp);
       MessageBox(NULL, err, "Error", MB_ICONERROR);
-      goto startup_ddraw_error;
+      FreeDirectX();
    }
 
    hM_dsound = LoadLibrary(dsound_dll);
@@ -198,7 +207,7 @@ extern "C" void ImportDirectX(void)
       char err[256];
       wsprintf(err,"Failed to import %s",dsound_dll);
       MessageBox(NULL, err,"Error",MB_ICONERROR);
-      goto startup_ddraw_error;
+      FreeDirectX();
    }
 
    pDirectSoundCreate8 = (lpDirectSoundCreate8) GetProcAddress(hM_dsound, dsound_imp);
@@ -208,13 +217,7 @@ extern "C" void ImportDirectX(void)
       char err[256];
       wsprintf(err,"Failed to import %s:%s", dsound_dll, dsound_imp);
       MessageBox(NULL, err, "Error", MB_ICONERROR);
-      FreeLibrary(hM_dsound);
-startup_ddraw_error:
-      FreeLibrary(hM_ddraw);
-startup_dinput8_error:
-      FreeLibrary(hM_dinput8);
-startup_error_exit:
-      exit(0);
+      FreeDirectX();
    }
 }
 
