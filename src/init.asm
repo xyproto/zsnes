@@ -3533,6 +3533,7 @@ NEWSYM loadfileGUI
 
 .failed
 .failed2
+    mov byte[TextFile], 1
     cmp byte[InGUI],1
     je .noguic
     mov edx,.failop
