@@ -130,7 +130,6 @@ EXTSYM NoiseData,Voice0Disable,csounddisable,spcRamcmp
 EXTSYM cfgecho,Surround,SoundBufEn
 EXTSYM echobuf,ENVDisable
 EXTSYM LowPassFilterType
-EXTSYM NoiseDisTemp
 
 %ifdef __MSDOS__
 EXTSYM SB_alloc_dma,SB_quality_limiter,vibracard
