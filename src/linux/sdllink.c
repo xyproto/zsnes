@@ -820,12 +820,6 @@ void initwinvideo(void)
 	if (((PrevStereoSound != StereoSound)
 	     || (PrevSoundQuality != SoundQuality)))
 		ReInitSound();
-
-        if (!blur_buffer) blur_buffer = malloc(SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
-           else blur_buffer = realloc(blur_buffer, SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
-	   if (!blur_temp) blur_temp = malloc(SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
-	   else blur_temp = realloc(blur_temp, SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
-
 }
 
 void CheckTimers(void)
