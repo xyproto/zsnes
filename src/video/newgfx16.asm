@@ -561,9 +561,6 @@ NEWSYM newengine16b
 
     ; BG3 Priority
     or [bgcmsung],ebx
-    mov [BGMS1+eax*2],ebx
-    cmp [BGMS1+eax*2-2],bx
-    je near .nosbgms1
     mov bl,[bg3highst]
     mov [BG3PRI+eax],bl
     cmp [BG3PRI+eax-1],bl
