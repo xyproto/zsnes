@@ -1446,9 +1446,17 @@ NEWSYM getcfg
     ret
 .videob
     cmp byte[.stringb],'1'
-    jne .novideo
+    jne .novideo2
     mov al,[.stringb+1]
     sub al,38
+    mov [cvidmode],al
+    mov [cfgcvidmode],al
+    ret
+.novideo2
+    cmp byte[.stringb],'2'
+    jne .novideo
+    mov al,[.stringb+1]
+    sub al,28
     mov [cvidmode],al
     mov [cfgcvidmode],al
     ret
