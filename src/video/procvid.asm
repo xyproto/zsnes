@@ -2143,19 +2143,35 @@ NEWSYM testpressed8b
 .noright
     cmp byte[OSPort],3
     jne near .nowin32
+%ifdef __LINUX__
+    test byte[pressed+05Ch],1
+%else
     test byte[pressed+0CBh],1
+%endif
     jz .noleft2
     cmp bl,0
     je .noleft2
     dec bl
+%ifdef __LINUX__
+    test byte[pressed+05Ch],1
+%else
     mov byte[pressed+0CBh],2
+%endif
 .noleft2
+%ifdef __LINUX__
+    test byte[pressed+05Eh],1
+%else
     test byte[pressed+0CDh],1
+%endif
     jz .noright2
     cmp bl,9
     je .noright2
     inc bl
+%ifdef __LINUX__
+    test byte[pressed+05Eh],1
+%else
     mov byte[pressed+0CDh],2
+%endif
 .noright2
 .nowin32
     ret
