@@ -552,6 +552,7 @@ BOOL InitJoystickInput(void)
 	// If it is possible to use SDL_NumJoysticks
 	// before initialising SDL_INIT_JOYSTICK then
 	// this call can be replaced with SDL_InitSubSystem
+	SDL_InitSubSystem (SDL_INIT_JOYSTICK);
 	max_num_joysticks = SDL_NumJoysticks();
 	if (!max_num_joysticks)
 	{
@@ -586,7 +587,7 @@ int startgame(void)
 	if (sdl_state != vid_null)
 	{
 		if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER |
-	        SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
+	        SDL_INIT_VIDEO) < 0)
 		{
 			fprintf(stderr, "Could not initialize SDL!\n");
 			return FALSE;
