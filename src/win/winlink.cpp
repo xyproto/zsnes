@@ -2375,12 +2375,6 @@ void drawscreenwin(void)
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
 
-   if (KitchenSync == 1 && Refresh == 0)
-   {
-      Refresh = 60;
-      InitDirectDraw();
-   }
-
    if (KitchenSync == 0 && Refresh != 0)
    {
       Refresh = 0;
