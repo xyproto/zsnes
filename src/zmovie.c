@@ -286,12 +286,12 @@ void zmv_header_write(struct zmv_header *zmv_head, FILE *fp)
     case zmv_vm_ntsc:
       flag &= ~BIT(5);
       break;
-  
+
     case zmv_vm_pal:
       flag |= BIT(5);
-      break;  
+      break;
   }
-  
+
   //Not needed, but oh well, it makes it easier to read for some.
   //Reserved bits:
   flag &= ~BIT(4);
@@ -513,8 +513,7 @@ Create and record ZMV
 void zmv_create(char *filename)
 {
   memset(&zmv_vars, 0, sizeof(zmv_vars));
-  zmv_vars.fp = fopen(filename,"wb");
-  if (zmv_vars.fp) 
+  if ((zmv_vars.fp = fopen(filename,"wb")))
   {
     strncpy(zmv_vars.header.magic, "ZMV", 3);
     zmv_vars.header.zsnes_version = versionNumber & 0xFFFF;
@@ -531,29 +530,29 @@ void zmv_create(char *filename)
   }
 }
 
-#define RECORD_PAD(prev, cur, bit)                                        \
-  cur >>= 20;                                                             \
-  if (cur != prev)                                                        \
-  {                                                                       \
-    prev = cur;                                                           \
-    flag |= BIT(bit);                                                     \
-                                                                          \
-    if (nibble & 1)                                                       \
-    {                                                                     \
-      press_buf[nibble/2] |= ((unsigned char)(prev & 0x0F)) << 4;         \
-      nibble++;                                                           \
-      press_buf[nibble/2] = (unsigned char)(prev >> 4);                   \
-      nibble += 2;                                                        \
-    }                                                                     \
-    else                                                                  \
-    {                                                                     \
-      press_buf[nibble/2] = (unsigned char)(prev & 0xFF);                 \
-      nibble += 2;                                                        \
-      press_buf[nibble/2] = (unsigned char)(prev >> 8);                   \
-      nibble++;                                                           \
-    }                                                                     \
-  }                                                                       \
-  cur <<= 20;
+#define RECORD_PAD(prev, cur, bit)                                    \
+  if (cur != prev)                                                    \
+  {                                                                   \
+    prev = (cur >> 20);                                               \
+    flag |= BIT(bit);                                                 \
+                                                                      \
+    if (nibble & 1)                                                   \
+    {                                                                 \
+      press_buf[nibble/2] |= ((unsigned char)(prev & 0x0F)) << 4;     \
+      nibble++;                                                       \
+      press_buf[nibble/2] = (unsigned char)(prev >> 4);               \
+      nibble += 2;                                                    \
+    }                                                                 \
+    else                                                              \
+    {                                                                 \
+      press_buf[nibble/2] = (unsigned char)(prev & 0xFF);             \
+      nibble += 2;                                                    \
+      press_buf[nibble/2] = (unsigned char)(prev >> 8);               \
+      nibble++;                                                       \
+    }                                                                 \
+                                                                      \
+    prev <<= 20;                                                      \
+  }
 
 void zmv_record()
 {
@@ -721,6 +720,7 @@ bool zmv_replay()
   
     if (flag & BIT(2))
     {
+      puts("Skipping Chapter");
       fseek(zmv_vars.fp, cur_zst_size+4, SEEK_CUR);
       fread(&flag, 1, 1, zmv_vars.fp);
     }
@@ -840,7 +840,6 @@ void zmv_replay_finished()
   fclose(zmv_vars.fp);
 }
 
-
 /////////////////////////////////////////////////////////
 
 /*
@@ -886,8 +885,6 @@ unsigned int bytemerger (unsigned char heaviest, unsigned char heavy, unsigned c
   return ((heaviest << 24) | (heavy << 16) | (light << 8) | (lightest));
 }
 
-extern unsigned char CNetType;
-
 void ProcessMovies()
 {
   if (MovieProcessing == 2)	{ zmv_record(); }
@@ -902,7 +899,6 @@ extern unsigned int GUICBHold;
 void SkipMovie() 
 {
   MovieRecordWinVal = 0;
-  GUICBHold &= 0xFFFFFF00;
 }
 
 void MovieStop()
@@ -928,8 +924,6 @@ void ChangetoLOADdir();
 void MoviePlay()
 {
   unsigned char FileExt[4];
-
-  GUICBHold &= 0xFFFFFF00;
 
   if (!MovieProcessing)
   {
@@ -959,8 +953,6 @@ void MoviePlay()
 
 void MovieRecord()
 {
-  GUICBHold &= 0xFFFFFF00;
-
   if (!MovieProcessing)
   {
     unsigned char FileExt[4];
@@ -989,5 +981,30 @@ void MovieRecord()
 
     asm_call(ChangetoLOADdir);
     memcpy (&fnamest[statefileloc-3], FileExt, 4);
+  }
+}
+
+void MovieInsertChapter()
+{
+  switch (MovieProcessing)
+  {
+    case 1: puts("Adding external chapter"); zmv_add_chapter(); break;	 // replaying - external
+    case 2: puts("Adding internal chapter"); zmv_insert_chapter(); break; // recording - internal
+  }
+}
+
+void MovieSeekAhead()
+{
+  if (MovieProcessing == 1) // replaying only - record can use ZMTs
+  {
+    puts("Going to next chapter"); zmv_next_chapter();
+  }
+}
+
+void MovieSeekBehind()
+{
+  if (MovieProcessing == 1) // replaying only - record can use ZMTs
+  {
+    puts("Going to previous chapter"); zmv_prev_chapter();
   }
 }

@@ -566,21 +566,23 @@ ProcessMouseButtons:
     je near SetDevice
     cmp byte[GUICBHold],15
     je near CalibrateDev1
-    cmp byte[GUICBHold],16
+    cmp byte[GUICBHold],16	; movie replay
     jne .notMoviePlay
+    mov byte[GUICBHold],0
     pushad
     call MoviePlay
     popad
     ret
 .notMoviePlay
     cmp byte[GUICBHold],17
-    jne .notMovieRecord0
+    jne .notMovieRecord0	; movie record
+    mov byte[GUICBHold],0
     pushad
     call MovieRecord
     popad
     ret
 .notMovieRecord0
-    cmp byte[GUICBHold],18
+    cmp byte[GUICBHold],18	; movie stop
     jne .notMovieStop
     mov byte[GUICBHold],0
     pushad
@@ -588,20 +590,46 @@ ProcessMouseButtons:
     popad
     ret
 .notMovieStop
-    cmp byte[GUICBHold],19
+    cmp byte[GUICBHold],19	; overwrite zmv ? yes
     jne .notMovieRecord1
+    mov byte[GUICBHold],0
     pushad
     call MovieRecord
     popad
     ret
 .notMovieRecord1
-    cmp byte[GUICBHold],20
+    cmp byte[GUICBHold],20	; overwrite zmv ? no
     jne .notSkipMovie
+    mov byte[GUICBHold],0
     pushad
     call SkipMovie
     popad
     ret
 .notSkipMovie
+    cmp byte[GUICBHold],29	; insert chapter
+    jne .noInsertChap
+    mov byte[GUICBHold],0
+    pushad
+    call MovieInsertChapter
+    popad
+    ret
+.noInsertChap
+    cmp byte[GUICBHold],30	; back to previous chapter
+    jne .noPrevChap
+    mov byte[GUICBHold],0
+    pushad
+    call MovieSeekBehind
+    popad
+    ret
+.noPrevChap
+    cmp byte[GUICBHold],31	; jump to next chapter
+    jne .noNextChap
+    mov byte[GUICBHold],0
+    pushad
+    call MovieSeekAhead
+    popad
+    ret
+.noNextChap
     cmp byte[GUICBHold],40
     je near SetAllKeys
     cmp byte[GUICBHold],50
