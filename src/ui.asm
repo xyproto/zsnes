@@ -192,6 +192,7 @@ NEWSYM vidbufferofsmos, resd 1          ; mosaic offset for new graphics engine
 NEWSYM headdata,      resd 1
 NEWSYM romdata,       resd 1            ; rom data  (4MB = 4194304)
 NEWSYM sfxramdata,    resd 1            ; SuperFX Ram Data
+NEWSYM setaramdata,   resd 1            ; Seta ST010/ST011 SRam Data
 NEWSYM wramdata,      resd 1            ; stack (64K = 32768)
 NEWSYM ram7f,         resd 1            ; ram @ 7f = 65536
 NEWSYM vram,          resd 1            ; vram = 65536
@@ -724,6 +725,7 @@ NEWSYM allocptr
     add eax,4194304
     mov dword[sfxramdata],eax
 
+    mov dword[setaramdata],eax	; share ram data with sfx
     mov esi,[romdata]
     cmp byte[Sup48mbit],0
     je .no48mbit

@@ -77,7 +77,7 @@ EXTSYM Voice0Status, Voice1Status, Voice2Status, Voice3Status, Voice4Status
 EXTSYM Voice5Status, Voice6Status, Voice7Status, romtype, SetIRQVectors
 EXTSYM ClearScreen, statesaver, loadstate2, vidbuffer, ASCII2Font, hirestiledat
 EXTSYM showallext, ROMTypeNOTFound, scanlines,statefileloc,pl1selk,pl2selk
-EXTSYM fnamest,sprlefttot,spritetablea,fnames,SFXSRAM,sfxramdata,cgram,srama
+EXTSYM fnamest,sprlefttot,spritetablea,fnames,SFXSRAM,sfxramdata,setaramdata,SETAEnable,cgram,srama
 EXTSYM tempco0,prevbright,maxbr,prevpal,coladdr,coladdg,coladdb
 EXTSYM scaddtype,ScreenScale,vesa2red10,initvideo2,initvideo,pressed,UpdateDevices
 EXTSYM memtabler8,memtablew8,writeon,pl1contrl,pl2contrl,JoyRead,SetInputDevice
@@ -800,6 +800,18 @@ clearsram:
     dec ecx
     jnz .loop2
 .nosfxsram
+
+    cmp byte[SETAEnable],0
+    je .nosetasram
+    mov eax,[setaramdata]
+    mov ecx,4096
+.loop2seta
+    mov byte[eax],0FFh
+    inc eax
+    dec ecx
+    jnz .loop2seta
+.nosetasram
+
     cmp byte[SA1Enable],1
     jne .nosa1
     mov eax,[SA1RAMArea]
@@ -1769,6 +1781,22 @@ NEWSYM StartGUI
 .nosfxramwrite
     stim
 .nosfxsram
+
+    cmp byte[SETAEnable],0
+    je .nosetasram
+    clim
+    mov edx,fnames+1
+    call Create_File
+    jc .nosetaramwrite
+    mov bx,ax
+    mov ecx,4096
+    mov edx,[setaramdata]
+    call Write_File
+    call Close_File
+.nosetaramwrite
+    stim
+.nosetasram
+
     call GUIQuickLoadUpdate
     call LoadDetermine
     ; change dir to LoadDrive/LoadDir

@@ -50,7 +50,7 @@ EXTSYM nextmenupopup
 EXTSYM MovieProcessing
 EXTSYM MovieFileHand, PrintStr
 EXTSYM OSExit,DosExit,InitDir,InitDrive,createnewcfg,fnames,gotoroot,previdmode
-EXTSYM ramsize,sfxramdata,sram,SRAMDrive,SRAMDir,welcome
+EXTSYM ramsize,sfxramdata,setaramdata,SETAEnable,sram,SRAMDrive,SRAMDir,welcome
 ;    EXTSYM tempstore
 EXTSYM printhex
 %ifdef __MSDOS__
@@ -599,6 +599,11 @@ NEWSYM BackupCVFrame
     BackupCVMacB prevoamptr,1
     BackupCVMac ReadHead,1
 
+    cmp byte[SETAEnable],1
+    jne .noseta
+    BackupCVMacM [setaramdata],256
+.noseta
+
     mov edx,[sram]
     mov ecx,[ramsize]
     shr ecx,4
@@ -693,6 +698,11 @@ NEWSYM RestoreCVFrame
     BackupCVRMac oamaddr,14
     BackupCVRMacB prevoamptr,1
     BackupCVRMac ReadHead,1
+
+    cmp byte[SETAEnable],1
+    jne .noseta
+    BackupCVRMacM [setaramdata],256
+.noseta
 
     mov edx,[sram]
     mov ecx,[ramsize]
@@ -1393,6 +1403,19 @@ NEWSYM endprog
     call Write_File
     call Close_File
 .nosfxsram
+
+    cmp byte[SETAEnable],0
+    je .nosetasram
+    mov edx,fnames+1
+    call Create_File
+    jc .nosetasram
+    mov bx,ax
+    mov ecx,4096
+    mov edx,[setaramdata]
+    call Write_File
+    call Close_File
+.nosetasram
+
     cmp byte[SA1Enable],1
     jne .nosa1
     mov edx,fnames+1
@@ -1654,6 +1677,14 @@ NEWSYM statesaver
     mov ecx,[SfxRAMMem]
     add [SfxLastRamAdr],ecx
 .nosfx
+
+    cmp byte[SETAEnable],1
+    jne .noseta
+    mov ecx,4096
+    mov edx,[setaramdata]
+    call Write_File
+.noseta
+
     cmp byte[SPC7110Enable],1
     jne .nospc7110
     mov edx,[romdata]
@@ -1686,6 +1717,7 @@ NEWSYM statesaver
     mov edx,PrevPicture
     call Write_File
 .nocapturepicture
+
     call Close_File
     add dword[Curtableaddr],tableA
     add dword[spcPCRam],spcRam
@@ -1852,6 +1884,15 @@ NEWSYM stateloader
 
 .nosfx
 
+    cmp byte[SETAEnable],1
+    jne near .noseta
+    mov ecx,4096
+    add dword[Totalbyteloaded],ecx
+    mov edx,[setaramdata]
+    call Read_File
+    ; TODO: load the SetaCmdEnable?  For completeness we should do it but currently we ignore it anyway.
+.noseta
+
     cmp byte[C4Enable],1
     jne .noc4
     mov ecx,2000h
@@ -1889,6 +1930,7 @@ NEWSYM stateloader
     jne .nosdd1
     call UpdateBanksSDD1
 .nosdd1
+
     call Close_File
     call repackfunct
     mov dword[spcnumread],0

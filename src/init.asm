@@ -123,6 +123,10 @@ EXTSYM CalcChecksum
 EXTSYM BankCheck
 EXTSYM MirrorROM
 
+EXTSYM SetaCmdEnable,setaramdata
+EXTSYM setaaccessbankr8,setaaccessbankw8,setaaccessbankr8a,setaaccessbankw8a
+EXTSYM setaaccessbankr16,setaaccessbankw16,setaaccessbankr16a,setaaccessbankw16a
+
 %ifdef __LINUX__
 EXTSYM LoadDir, popdir, pushdir
 %endif
@@ -4487,7 +4491,7 @@ NEWSYM CheckROMType
     cmp ax,0F630h
     jne .notSETAB
     mov byte[SETAEnable],1
-    mov byte[CHIPSRAM],1 ;Check later if this should be removed
+;;    mov byte[CHIPSRAM],1 ;Check later if this should be removed
     jmp .endchpdtct
 .notSETAB
 ;Super FX has SRAM, but only a battery to save it on the latter two
@@ -4738,6 +4742,48 @@ NEWSYM CheckROMType
 .nosramsfx
     call InitFxTables
 .nosfx
+
+
+
+  ;Setup Seta ST010 / ST011 stuff
+    cmp byte[SETAEnable],1
+    jne near .noseta
+    ; Really banks 68h-6Fh:0000-7FFF are all mapped the same by the chip but F1ROCII only uses bank 68h
+    mov dword[memtabler8+68h*4],setaaccessbankr8
+    mov dword[memtablew8+68h*4],setaaccessbankw8
+    mov dword[memtabler16+68h*4],setaaccessbankr16
+    mov dword[memtablew16+68h*4],setaaccessbankw16
+
+    ; Control register (and some status?) is in banks 60h-67h:0000-3FFF
+    mov dword[memtabler8+60h*4],setaaccessbankr8a
+    mov dword[memtablew8+60h*4],setaaccessbankw8a
+    mov dword[memtabler16+60h*4],setaaccessbankr16a
+    mov dword[memtablew16+60h*4],setaaccessbankw16a
+
+    mov dword[SetaCmdEnable],00000080h	; 60:0000
+    mov esi,[setaramdata]
+    mov ecx,1024	; 4096 bytes
+.loopsetaclear
+    mov dword[esi],0
+    add esi,4
+    dec ecx
+    jnz .loopsetaclear
+    cmp byte[SramExists],0
+    je .nosramseta
+    mov esi,[sram]
+    mov edi,[setaramdata]
+    mov ecx,1024
+.setasramloop
+    mov eax,[esi]
+    mov [edi],eax
+    add esi,4
+    add edi,4
+    dec ecx
+    jnz .setasramloop
+.nosramseta
+.noseta
+
+
     
     ;General Stuff all mixed together
     mov dword[SfxSFR],0
