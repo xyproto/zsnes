@@ -57,62 +57,6 @@ NEWSYM DebugAsmStart
 
 ; debstop at regsw.asm 2118/2119
 
-;NEWSYM SDD1Sort
-;    mov ecx,[SDD1Entry]
-;    cmp ecx,8
-;    jbe near .noSDD1
-;    sub ecx,8
-;.next2
-;    xor esi,esi
-;    xor ebx,ebx
-;.next
-;    xor eax,eax
-;    xor edx,edx
-;    mov al,[SDD1Array+ebx]
-;    shl eax,16
-;    mov ah,[SDD1Array+ebx+1]
-;    mov al,[SDD1Array+ebx+2]
-;    mov dl,[SDD1Array+ebx+8]
-;    shl edx,16
-;    mov dh,[SDD1Array+ebx+9]
-;    mov dl,[SDD1Array+ebx+10]
-;    cmp edx,eax
-;    ja .noswap
-;    mov eax,dword[SDD1Array+ebx]
-;    mov edx,dword[SDD1Array+ebx+8]
-;    mov dword[SDD1Array+ebx+8],eax
-;    mov dword[SDD1Array+ebx],edx
-;    mov eax,dword[SDD1Array+ebx+4]
-;    mov edx,dword[SDD1Array+ebx+12]
-;    mov dword[SDD1Array+ebx+12],eax
-;    mov dword[SDD1Array+ebx+4],edx
-;    mov esi,1
-;.noswap
-;    add ebx,8
-;    cmp ebx,ecx
-;    jne near .next
-;    or esi,esi
-;    jnz near .next2
-
-;    xor ebx,ebx
-;.next3
-;    mov al,[SDD1Array+ebx]
-;    mov ah,[SDD1Array+ebx+8]
-;    cmp al,ah
-;    jne .notequal
-;    mov ah,[SDD1Array+ebx+9]
-;    mov al,[SDD1Array+ebx+10]
-;    mov dh,[SDD1Array+ebx+1]
-;    mov dl,[SDD1Array+ebx+2]
-;    sub ax,dx
-;    mov [SDD1Array+ebx+5],ah
-;    mov [SDD1Array+ebx+6],al
-;.notequal
-;    add ebx,8
-;    cmp ebx,ecx
-;    jne near .next3
-;.noSDD1
-;    ret
 
 NEWSYM startdebugger
     mov byte[curblank],40h
@@ -1170,9 +1114,8 @@ NEWSYM SPCbreakpoint
 
 SECTION .data
 .message1 db 'Enter Address : 0000'
-SECTION .text
-
 PrevBreakPt dd 0
+SECTION .text
 
 NEWSYM repeatbreakpoint
     push es
@@ -1855,9 +1798,10 @@ NEWSYM breakatsignlog
 ;*******************************************************
 ; BreakatSignB               Breaks whenever keyonsn = 1
 ;*******************************************************
-
+SECTION .data
 NEWSYM keyonsn, db 0
 NEWSYM prbreak, db 0
+SECTION .text
 
 EXTSYM SPCSave
 
@@ -1942,8 +1886,9 @@ NEWSYM breakatsignb
 ;*******************************************************
 ; BreakatSignC               Breaks whenever sndwrit = 1
 ;*******************************************************
-
+SECTION .data
 NEWSYM sndwrit, db 0
+SECTION .text
 
 NEWSYM breakatsignc
     mov byte[prbreak],0
@@ -2305,8 +2250,10 @@ NEWSYM startdisplay
 ; Next Opcode              Writes the next opcode & regs
 ;*******************************************************
 ; 008000 STZ $123456,x A:0000 X:0000 Y:0000 S:01FF DB:00 D:0000 P:33 E+
+SECTION .data
 NEWSYM debugsa1, db 0
 NEWSYM skipdebugsa1, db 1
+SECTION .text
 
 NEWSYM nextopcode
     push es
@@ -3598,7 +3545,9 @@ SECTION .text
     pop ecx
     ret
 
+SECTION .data    
 .hexdat db '0123456789ABCDEF'
+SECTION .text
 
 NEWSYM nextopcodesa1
     push es
@@ -4199,6 +4148,7 @@ NEWSYM nextspcopcode
     pop ecx
     ret
 
+SECTION .data
 .hexdat db '0123456789ABCDEF'
 
 ;*******************************************************
@@ -4455,5 +4405,5 @@ NEWSYM ArgumentTable
    db 00,01,02,03,04,05,06,07,08,24,63,32,30,00,31,00
 ;     F0 F1 F2 F3 F4 F5 F6 F7 F8 F9 FA FB FC FD FE FF
    db 14,01,02,03,15,16,17,18,35,64,09,65,31,66,67,00
-
+SECTION .text
 NEWSYM DebugAsmEnd

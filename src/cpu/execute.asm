@@ -1433,12 +1433,12 @@ NEWSYM HIRQCycNext,   dd 0
 NEWSYM HIRQNextExe,   db 0
 
 
-SECTION .text
 
 ;*******************************************************
 ; Save/Load States
 ;*******************************************************
 
+SECTION .data
 NEWSYM firstsaveinc, db 0
 
 SECTION .text
