@@ -390,7 +390,7 @@ void loadFile()
     struct stat stat_results;
     stat(ZOpenFileName, &stat_results);
 
-    if (stat_results.st_size <= maxromspace+512-curromspace)
+    if ((unsigned int)stat_results.st_size <= maxromspace+512-curromspace)
     {
       FILE *fp = 0;
       fp = fopen(ZOpenFileName, "rb");
@@ -434,7 +434,7 @@ void loadGZipFile()
   size |= fgetc(fp) << 24;
   fclose(fp);
 
-  if (size > maxromspace+512) { return; }
+  if ((unsigned int)size > maxromspace+512) { return; }
 
   //Open GZip file for decompression
   GZipFile = gzopen(ZOpenFileName, "rb"); 
@@ -512,7 +512,8 @@ void loadZipFile()
     }
 
     //Check for valid ROM based on size
-    if ((fileSize < maxromspace+512) && fileSize > LargestGoodFile)
+    if (((unsigned int)fileSize <= maxromspace+512) &&
+        (fileSize > LargestGoodFile))
     {
       strcpy(ourFile, cFileName);
       LargestGoodFile = fileSize;
@@ -1011,9 +1012,9 @@ extern unsigned char per2exec;
 
 void Setper2exec()
 {
-    opexec268 = opexec268*(per2exec*0.01);
-    opexec358 = opexec358*(per2exec*0.01);
-    opexec268cph = opexec268cph*(per2exec*0.01);
-    opexec358cph = opexec358cph*(per2exec*0.01);
+  opexec268 = (unsigned char)(opexec268*(per2exec*0.01));
+  opexec358 = (unsigned char)(opexec358*(per2exec*0.01));
+  opexec268cph = (unsigned char)(opexec268cph*(per2exec*0.01));
+  opexec358cph = (unsigned char)(opexec358cph*(per2exec*0.01));
 }
 
