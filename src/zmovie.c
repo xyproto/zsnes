@@ -34,7 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <io.h>
 #define ftruncate chsize
 #else
-#include <unstd.h>
+#include <unistd.h>
 #endif
 #define DIR_SLASH "\\"
 #endif
