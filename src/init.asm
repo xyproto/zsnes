@@ -1625,7 +1625,9 @@ NEWSYM headerhack
     cmp dword[esi+8],'WER '
     jne .notclocktower
     mov byte[opexec268],187
-    mov byte[opexec358],187
+    mov byte[opexec358],182
+    mov byte[opexec268cph],47
+    mov byte[opexec358cph],47
 .notclocktower
 
     ; Lamborgini Challenge - -p 110
