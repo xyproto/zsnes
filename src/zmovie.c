@@ -532,9 +532,10 @@ void zmv_create(char *filename)
 }
 
 #define RECORD_PAD(prev, cur, bit)                                        \
+  cur >>= 20;                                                             \
   if (cur != prev)                                                        \
   {                                                                       \
-    prev = (cur >> 20);                                                   \
+    prev = cur;                                                           \
     flag |= BIT(bit);                                                     \
                                                                           \
     if (nibble & 1)                                                       \
@@ -551,8 +552,6 @@ void zmv_create(char *filename)
       press_buf[nibble/2] = (unsigned char)(prev >> 8);                   \
       nibble++;                                                           \
     }                                                                     \
-                                                                          \
-    prev <<= 20;                                                          \
   }
 
 void zmv_record()
@@ -696,7 +695,6 @@ bool zmv_open(char *filename)
       cur = (byte & 0xF0) >> 4;                       \
       fread(&byte, 1, 1, zmv_vars.fp);                \
       cur |= ((unsigned long)byte) << 4;              \
-      cur <<= 20;                                     \
       mid_byte = false;                               \
     }                                                 \
     else                                              \
@@ -705,9 +703,9 @@ bool zmv_open(char *filename)
       cur = byte;                                     \
       fread(&byte, 1, 1, zmv_vars.fp);                \
       cur |= ((unsigned long)(byte & 0xF)) << 8;      \
-      cur <<= 20;                                     \
       mid_byte = true;                                \
     }                                                 \
+    cur <<= 20;                                       \
   }
 
 bool zmv_replay()
