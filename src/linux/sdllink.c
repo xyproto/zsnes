@@ -623,88 +623,26 @@ void initwinvideo(void)
       switch(cvidmode)
       {
       case 0:
-         WindowWidth=64;
-         WindowHeight=56;
-         break;
-      case 1:
-         WindowWidth=128;
-         WindowHeight=112;
-         break;
-      case 2:
          WindowWidth=256;
          WindowHeight=224;
+         break;
+      case 1:
+         WindowWidth=640;
+         WindowHeight=480 ;
+         SurfaceX=320;
+         SurfaceY=240;
+         break;
+      case 2:
+         WindowWidth=512;
+         WindowHeight=448;
+         SurfaceX=512;
+         SurfaceY=448;
          break;
       case 3:
          WindowWidth=640;
          WindowHeight=480;
-         SurfaceX=320;
-         SurfaceY=240;
-         break;
-      case 4:
-         WindowWidth=512;
-         WindowHeight=448;
-         break;
-      case 5:
-         WindowWidth=512;
-         WindowHeight=448;
-         SurfaceX=512;
-         SurfaceY=448;
-         break;
-      case 6:
-         WindowWidth=640;
-         WindowHeight=480;
          SurfaceX=640;
          SurfaceY=480;
-         break;
-      case 7:
-         WindowWidth=640;
-         WindowHeight=480;
-         SurfaceX=512;
-         SurfaceY=448;
-         break;
-      case 8:
-         WindowWidth=640;
-         WindowHeight=480;
-         break;
-      case 9:
-         WindowWidth=800;
-         WindowHeight=600;
-         break;
-      case 10:
-         WindowWidth=800;
-         WindowHeight=600;
-         SurfaceX=512;
-         SurfaceY=448;
-         break;
-      case 11:
-         WindowWidth=800;
-         WindowHeight=600;
-         break;
-      case 12:
-         WindowWidth=800;
-         WindowHeight=600;
-         SurfaceX=512;
-         SurfaceY=448;
-         break;
-      case 13:
-         WindowWidth=1024;
-         WindowHeight=768;
-         break;
-      case 14:
-         WindowWidth=1024;
-         WindowHeight=768;
-         SurfaceX=512;
-         SurfaceY=448;
-         break;
-      case 15:
-         WindowWidth=1024;
-         WindowHeight=768;
-         break;
-      case 16:
-         WindowWidth=1024;
-         WindowHeight=768;
-         SurfaceX=512;
-         SurfaceY=448;
          break;
       default:
          WindowWidth=256;

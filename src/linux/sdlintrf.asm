@@ -1301,44 +1301,42 @@ NEWSYM NumVideoModes, dd 18
 ; GUI Video Mode Names - Make sure that all names are of the same length
 ; and end with a NULL terminator
 NEWSYM GUIVideoModeNames
-db '64x56      R WIN ',0  ;0
-db '128x112    R WIN ',0  ;1
 db '256X224    R WIN ',0  ;2
 db '256x224    R FULL',0  ;3
-db '512X448    R WIN ',0  ;4
+;db '512X448    R WIN ',0  ;4
 db '512X448   DR WIN ',0  ;5
+db '640x480   DR FULL',0  ;6
 ;db '640x480    S WIN ',0  ;6
-db '640x480   DR FULL',0  ;7
-db '640X480   DS FULL',0  ;8
-db '640X480    S FULL',0  ;9
-db '800x600    S WIN ',0  ;10
-db '800x600   DS WIN ',0  ;11
-db '800x600    S FULL',0  ;12
-db '800x600   DS FULL',0  ;13
-db '1024X768   S WIN ',0  ;14
-db '1024X768  DS WIN ',0  ;15
-db '1024x768   S FULL',0  ;16
-db '1024x768  DS FULL',0  ;17
+;db '640X480   DS FULL',0  ;8
+;db '640X480    S FULL',0  ;9
+;db '800x600    S WIN ',0  ;10
+;db '800x600   DS WIN ',0  ;11
+;db '800x600    S FULL',0  ;12
+;db '800x600   DS FULL',0  ;13
+;db '1024X768   S WIN ',0  ;14
+;db '1024X768  DS WIN ',0  ;15
+;db '1024x768   S FULL',0  ;16
+;db '1024x768  DS FULL',0  ;17
 
 
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)
 ; Left side starts with Video Mode 0
-NEWSYM GUI16VID, db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1       ; 16-bit mode
-NEWSYM GUINGVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; New Graphics Mode Available
-NEWSYM GUISLVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Scanlines
-NEWSYM GUIINVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Interpolation
-NEWSYM GUII2VID, db 0,0,0,0,0,1,1,1,0,0,1,0,1,0,1,0,1       ; Interpolation(w)
-NEWSYM GUIEAVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Eagle
-NEWSYM GUIIEVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; (Interp | Eagle)
-NEWSYM GUIFSVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Full Screen
-NEWSYM GUISSVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Small Screen
-NEWSYM GUITBVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Triple Buffering
-NEWSYM GUIHSVID, db 0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0       ; Half/Quarter Scanlines
-NEWSYM GUI2xVID, db 0,0,0,0,0,1,1,1,0,0,1,0,1,0,1,0,1       ; 2xSaI/Super Eagle Engines
-NEWSYM GUIM7VID, db 0,0,0,0,0,1,1,1,0,0,1,0,1,0,1,0,1       ; ?Mode 7 video thing?
-NEWSYM GUIWFVID, db 0,0,0,1,0,0,1,1,1,0,0,1,1,0,0,1,1       ; If Windows Full Screen
-NEWSYM GUIDSIZE, db 0,0,0,0,0,1,1,1,0,0,1,0,1,0,1,0,1
-NEWSYM GUIRATIO, db 0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+NEWSYM GUI16VID, db 1,1,1,1       ; 16-bit mode
+NEWSYM GUINGVID, db 0,0,0,0       ; New Graphics Mode Available
+NEWSYM GUISLVID, db 0,0,0,0       ; Scanlines
+NEWSYM GUIINVID, db 0,0,0,0       ; Interpolation
+NEWSYM GUII2VID, db 0,0,1,1       ; Interpolation(w)
+NEWSYM GUIEAVID, db 0,0,0,0       ; Eagle
+NEWSYM GUIIEVID, db 0,0,0,0       ; (Interp | Eagle)
+NEWSYM GUIFSVID, db 0,0,0,0       ; Full Screen
+NEWSYM GUISSVID, db 0,0,0,0       ; Small Screen
+NEWSYM GUITBVID, db 0,0,0,0       ; Triple Buffering
+NEWSYM GUIHSVID, db 0,0,1,1       ; Half/Quarter Scanlines
+NEWSYM GUI2xVID, db 0,0,1,1       ; 2xSaI/Super Eagle Engines
+NEWSYM GUIM7VID, db 0,0,1,1       ; ?Mode 7 video thing?
+NEWSYM GUIWFVID, db 0,1,0,1       ; If Windows Full Screen
+NEWSYM GUIDSIZE, db 0,0,1,1
+NEWSYM GUIRATIO, db 0,1,0,0
 
 SECTION .text
 
