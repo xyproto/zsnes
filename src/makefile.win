@@ -79,7 +79,7 @@ MAINOBJ=cfgload.obj endmem.obj init.obj initc.obj uic.obj patch.obj ui.obj vcach
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ} ${WINDOSOBJ} ${EFFECTSOBJ} ${JMAOBJ}
 LIBS=
-CFLAGS=/Ox /G6 /c /D__WIN32__
+CFLAGS=/Ox /G6 /c /EHsc /D__WIN32__
 ASM=nasm
 ASMFLAGS=-O1 -f win32 -D__WIN32__
 CC=cl
