@@ -146,7 +146,7 @@ void MakeCodeWriteable (unsigned long startaddr, unsigned long length)
 	r = mprotect ((char *) addr, length + startaddr - addr + psize, 7);
 
 	if (r < 0)
-		fprintf (stderr, "Error! Memory *NOT* unprotected.\n");
+		fprintf (stderr, "Error! Memory *NOT* unprotected. startaddr = 0x%08lx\n", startaddr);
 }
 
 void UnProtectMemory(void)
