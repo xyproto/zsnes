@@ -5340,7 +5340,7 @@ GUIGUIAboutText6c db '    PAGEFAULT',0
 GUIGUIAboutText5 db 'ASSISTANT CODERS :  ',0
 GUIGUIAboutText6  db '    PHAROS        NACH',0
 GUIGUIAboutText6b db '    TEUF          HPSOLO',0
-GUIGUIAboutText6d db '    THEODDONE33   STAINLESS',0
+GUIGUIAboutText6d db '    THEODDONE33   SILOH',0
 GUIGUIAboutText6e db '    STATMAT',0
 
 %ifdef __MSDOS__
