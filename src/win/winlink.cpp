@@ -295,8 +295,8 @@ InputAcquire(void)
    if (JoystickInput[4]) JoystickInput[4]->Acquire();
    if (MouseInput) MouseInput->Acquire();
    if (KeyboardInput) KeyboardInput->Acquire();
-   InputEn=1;
-	return TRUE;
+   InputEn = 1;
+   return TRUE;
 }
 
 BOOL InputDeAcquire(void)
@@ -308,8 +308,8 @@ BOOL InputDeAcquire(void)
    if (JoystickInput[2]) JoystickInput[2]->Unacquire();
    if (JoystickInput[3]) JoystickInput[3]->Unacquire();
    if (JoystickInput[4]) JoystickInput[4]->Unacquire();
-   InputEn=0;
-	return TRUE;
+   InputEn = 0;
+   return TRUE;
 }
 
 extern "C" {
@@ -2459,7 +2459,7 @@ void WinUpdateDevices()
    for(i=0; i<256; i++)
    {
       if (keys2[i] == 0) keys[i] = 0;
-      if (keys2[i]!= 0 && keys[i] == 0) keys[i] = 1;
+      if (keys2[i] != 0 && keys[i] == 0) keys[i] = 1;
    }
 
    keys[0] = 0;
@@ -2768,7 +2768,7 @@ void SetMouseY(int Y)
 
 void ZsnesPage()
 {
-     ShellExecute(NULL, NULL, "http://www.zsnes.com/", NULL, NULL, 0);
+   ShellExecute(NULL, NULL, "http://www.zsnes.com/", NULL, NULL, 0);
 }
 
 }
