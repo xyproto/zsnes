@@ -302,7 +302,9 @@ ProcessMouseButtons:
 
 ;    cmp byte[OSPort],3
 ;    jne .noclick
-%ifndef __MSDOS__
+%ifdef __MSDOS__
+    jmp .noclick
+%else
     mov byte[GUIpclicked],1
     mov byte[GUIHold],255
     mov eax,[GUImouseposy]
@@ -311,13 +313,13 @@ ProcessMouseButtons:
     mov [GUIHoldXlimL],eax
     call MouseWindow
     jmp .noclick
+%endif
 .nomenu
     cmp byte[GUIcmenupos],0
     je near .checkmenuboxclick
     mov al,[GUIcmenupos]
     mov [GUIpmenupos],al
     mov byte[GUIcmenupos],0
-%endif
 .noclick
     mov byte[GUIpclicked],1
     xor eax,eax
