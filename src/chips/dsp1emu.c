@@ -15,11 +15,15 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+#ifdef __LINUX__
+#include "../gblhdr.h"
+#else
 #include <stdio.h>
 #include <stdarg.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#endif
 
 //#define DebugDSP1
 
@@ -100,7 +104,7 @@ double Atan(double x)
 		return (PI/2 - Atan(1/x));
 }
 
-#if 1 //0 in Snes9x
+#if 1
 /***************************************************************************\
 *  C4 C code                                                                *
 \***************************************************************************/
