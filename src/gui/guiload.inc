@@ -1391,7 +1391,7 @@ NEWSYM GUIswcfind,    db '*.SWC',0
 NEWSYM GUIfigfind,    db '*.FIG',0
 NEWSYM GUImgdfind,    db '*.MGD',0
 NEWSYM GUIufofind,    db '*.UFO',0
-NEWSYM GUIjmafind,    db '*.JMA',0
+NEWSYM GUIjmafind,    db '*.GD3',0
 %endif
 NEWSYM GUIfind058,    db '*.058',0
 NEWSYM GUIfind078,    db '*.078',0
@@ -1409,7 +1409,7 @@ NEWSYM GUIfindEUR,    db '*.EUR',0
 NEWSYM GUIfindJAP,    db '*.JAP',0
 NEWSYM GUIfindBIN,    db '*.BIN',0
 NEWSYM GUIfindZIP,    db '*.ZIP',0
-NEWSYM GUIfindJMA,    db '*.ZIP',0
+NEWSYM GUIfindJMA,    db '*.JMA',0
 NEWSYM GUIfindGZIP,    db '*.GZ',0
 %endif
 NEWSYM GUIfind1,      db '*.1',0
