@@ -287,10 +287,10 @@ NEWSYM pl1keya,   dd 0
 NEWSYM pl1keyb,   dd 0
 NEWSYM pl1selk,   dd 54
 NEWSYM pl1startk, dd 28
-NEWSYM pl1upk,    dd 72
-NEWSYM pl1downk,  dd 80
-NEWSYM pl1leftk,  dd 75 
-NEWSYM pl1rightk, dd 77
+NEWSYM pl1upk,    dd 200
+NEWSYM pl1downk,  dd 208
+NEWSYM pl1leftk,  dd 203 
+NEWSYM pl1rightk, dd 205
 NEWSYM pl1Xk,     dd 31
 NEWSYM pl1Ak,     dd 45
 NEWSYM pl1Lk,     dd 32
