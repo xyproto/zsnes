@@ -501,7 +501,9 @@ NEWSYM GUIDoReset
     mov byte[MovieProcessing],0
     call Close_File
 .skipfileend
+    pushad
     call RestoreSystemVars
+    popad
     ; clear spc700 ram
     mov al,0FFh
     mov edi,spcRam

@@ -121,6 +121,7 @@ EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 EXTSYM NetPlayNoMore
 EXTSYM statefileloc
 EXTSYM CHIPBATT,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
+EXTSYM InitRewindVars
 
 %ifdef OPENSPC
 EXTSYM OSPC_Run, ospc_cycle_frac
@@ -483,51 +484,6 @@ NEWSYM UpdateRewind
 %endif
     ret
 
-NEWSYM BackupSystemVars
-    pushad
-    mov ebx,BackupArray
-    BackupCVMac cycpbl,2
-    BackupCVMacB sndrot,3019
-    BackupCVMacB soundcycleft,33
-    BackupCVMac spc700read,10
-    BackupCVMac timer2upd,1
-    BackupCVMac xa,14
-    BackupCVMacB spcnumread,4
- BackupCVMacB spchalted,4
-    BackupCVMac opcd,6
-    BackupCVMacB HIRQCycNext,5
-    BackupCVMac oamaddr,14
-    BackupCVMacB prevoamptr,1
-    BackupCVMac ReadHead,1
-    popad
-    ret
-
-NEWSYM InitRewindVars
-    mov dword[RewindPos],0
-    mov dword[RewindOldPos],0
-    mov dword[RewindTimer],60*4
-    ret
-
-NEWSYM RestoreSystemVars
-    pushad
-    call InitRewindVars
-    mov ebx,BackupArray
-    BackupCVRMac cycpbl,2
-    BackupCVRMacB sndrot,3019
-    BackupCVRMacB soundcycleft,33
-    BackupCVRMac spc700read,10
-    BackupCVRMac timer2upd,1
-    BackupCVRMac xa,14
-    BackupCVRMacB spcnumread,4
- BackupCVRMacB spchalted,4
-    BackupCVRMac opcd,6
-    BackupCVRMacB HIRQCycNext,5
-    BackupCVRMac oamaddr,14
-    BackupCVRMacB prevoamptr,1
-    BackupCVRMac ReadHead,1
-    popad
-    ret
-
 SECTION .bss
 NEWSYM MuteVoiceF, resb 0
 SECTION .text
@@ -863,8 +819,10 @@ NEWSYM start65816
 
     ; Initialize the rewind vars so that the rewind feature works
     ; when ZSnes is launched with a commandline filename
+    pushad
     call InitRewindVars
-
+    popad
+    
 NEWSYM continueprog
 
     ; clear keyboard presses

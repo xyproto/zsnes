@@ -186,8 +186,10 @@ NEWSYM init
     dec ecx
     jnz .snowloop
 
+    pushad
     call BackupSystemVars
-
+    popad
+    
     xor eax,eax
     mov al,[cfgreinittime]
     mov ebx,50

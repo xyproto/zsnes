@@ -68,30 +68,58 @@ extern short Op28X, Op0CA, Op02FX, Op0AVS, Op06X, Op01m, Op0DX, Op03F, Op14Zr;
 extern short Op0EH;
 extern signed short Op10Coefficient;
 
+
+static void copy_snes_data(unsigned char **buffer, void (*copy_func)(unsigned char **, void *, size_t))
+{
+  //65816 status, etc.
+  copy_func(buffer, &curcyc, PH65816regsize);
+  //SPC Timers
+  copy_func(buffer, &cycpbl, 2*4);
+  //SNES PPU Register status
+  copy_func(buffer, &sndrot, 3019);    
+}
+
+static void copy_spc_data(unsigned char **buffer, void (*copy_func)(unsigned char **, void *, size_t))
+{
+  //SPC stuff, DSP stuff
+  copy_func(buffer, spcRam, PHspcsave);    
+  copy_func(buffer, BRRBuffer, PHdspsave);
+  copy_func(buffer, DSPMem, sizeof(DSPMem));
+}
+
+static void copy_extra_data(unsigned char **buffer, void (*copy_func)(unsigned char **, void *, size_t))
+{
+  copy_func(buffer, &soundcycleft, 33);
+  copy_func(buffer, &spc700read, 10*4);  
+  copy_func(buffer, &timer2upd, 1*4);  
+  copy_func(buffer, &xa, 14*4);  
+  copy_func(buffer, &spcnumread, 4);  
+  copy_func(buffer, &spchalted, 4);  
+  copy_func(buffer, &opcd, 6*4);  
+  copy_func(buffer, &HIRQCycNext, 5);  
+  copy_func(buffer, &oamaddr, 14*4);  
+  copy_func(buffer, &prevoamptr, 1);  
+  copy_func(buffer, &ReadHead, 1*4);  
+}
+
 static size_t load_save_size;
 static unsigned int zst_version;
 
 //For compatibility with old save states (pre v1.43)
-#define loading_old_state (file && read && (zst_version == 60))
-#define loading_state_no_sram (file && read && !SRAMState)
+#define loading_old_state (!buffer && read && (zst_version == 60))
+#define loading_state_no_sram (!buffer && read && !SRAMState)
 
-void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t), bool file, bool read)
+void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t), bool read)
 {
-  //65816 status, etc.
-  copy_func(&buffer, &curcyc, PH65816regsize);
-  //SPC Timers
-  copy_func(&buffer, &cycpbl, 2*4);
-  //SNES PPU Register status
-  copy_func(&buffer, &sndrot, 3019);    
+  copy_snes_data(&buffer, copy_func);
+  
   //WRAM (128k), VRAM (64k)
   copy_func(&buffer, wramdata, 8192*16);    
-  copy_func(&buffer, vram, 4096*16);    
+  copy_func(&buffer, vram, 4096*16);
   
-  if (spcon) //SPC stuff, DSP stuff
+  if (spcon)
   {
-    copy_func(&buffer, spcRam, PHspcsave);    
-    copy_func(&buffer, BRRBuffer, PHdspsave);
-    copy_func(&buffer, DSPMem, sizeof(DSPMem));
+    copy_spc_data(&buffer, copy_func);
   }
   
   if (C4Enable)
@@ -143,7 +171,7 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
   { 
     copy_func(&buffer, setaramdata, 256*16);
     
-    //Todo: save the SetaCmdEnable?  For completeness we should do it
+    //Todo: copy the SetaCmdEnable?  For completeness we should do it
     //but currently we ignore it anyway.
   }
 
@@ -153,34 +181,22 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
     copy_func(&buffer, &SPCMultA, PHnum2writespc7110reg);
   }
   
-  if (loading_old_state)
+  if (!loading_old_state)
   {
-    return;
-  }
-  
-  copy_func(&buffer, &soundcycleft, 33);
-  copy_func(&buffer, &spc700read, 10*4);  
-  copy_func(&buffer, &timer2upd, 1*4);  
-  copy_func(&buffer, &xa, 14*4);  
-  copy_func(&buffer, &spcnumread, 4);  
-  copy_func(&buffer, &spchalted, 4);  
-  copy_func(&buffer, &opcd, 6*4);  
-  copy_func(&buffer, &HIRQCycNext, 5);  
-  copy_func(&buffer, &oamaddr, 14*4);  
-  copy_func(&buffer, &prevoamptr, 1);  
-  copy_func(&buffer, &ReadHead, 1*4);  
-
-  if (loading_state_no_sram)
-  {
-    copy_func(&buffer, sram, ramsize);  
-  }
+    copy_extra_data(&buffer, copy_func);
     
-  if (!file)
-  {
-    copy_func(&buffer, &tempesi, 4);  
-    copy_func(&buffer, &tempedi, 4);  
-    copy_func(&buffer, &tempedx, 4);  
-    copy_func(&buffer, &tempebp, 4);  
+    if (loading_state_no_sram)
+    {
+      copy_func(&buffer, sram, ramsize);  
+    }
+    
+    if (buffer) //Not to a file, i.e. rewind
+    {
+      copy_func(&buffer, &tempesi, 4);  
+      copy_func(&buffer, &tempedi, 4);  
+      copy_func(&buffer, &tempedx, 4);  
+      copy_func(&buffer, &tempebp, 4);  
+    }
   }
 }
 
@@ -194,7 +210,7 @@ static void memcpyinc(unsigned char **dest, void *src, size_t len)
 void BackupCVFrame()
 {
   unsigned char *curpos = StateBackup + (CBackupPos << 19) + 1024;
-  copy_state_data(curpos, memcpyinc, false, false);
+  copy_state_data(curpos, memcpyinc, false);
 }
 
 static void memcpyrinc(unsigned char **src, void *dest, size_t len)
@@ -206,7 +222,35 @@ static void memcpyrinc(unsigned char **src, void *dest, size_t len)
 void RestoreCVFrame()
 {
   unsigned char *curpos = StateBackup + (PBackupPos << 19) + 1024;
-  copy_state_data(curpos, memcpyrinc, false, true);
+  copy_state_data(curpos, memcpyrinc, true);
+}
+
+extern unsigned int RewindPos, RewindOldPos, RewindTimer;
+
+void InitRewindVars()
+{
+  RewindPos = 0;
+  RewindOldPos = 0;
+  RewindTimer = 60*4;
+}
+
+//This is used to preserve system load state between loads
+static unsigned char BackupSystemBuffer[0x800000]; //Half a megabyte, should be enough for a while
+void BackupSystemVars()
+{
+  unsigned char *buffer = BackupSystemBuffer;
+  copy_snes_data(&buffer, memcpyinc);
+  copy_spc_data(&buffer, memcpyinc);
+  copy_extra_data(&buffer, memcpyinc);
+}
+
+void RestoreSystemVars()
+{
+  unsigned char *buffer = BackupSystemBuffer;
+  InitRewindVars();
+  copy_snes_data(&buffer, memcpyrinc);
+  copy_spc_data(&buffer, memcpyrinc);
+  copy_extra_data(&buffer, memcpyrinc);
 }
 
 extern unsigned int Bank0datr8[256], Bank0datr16[256], Bank0datw8[256];
@@ -563,7 +607,7 @@ void statesaver()
       SaveSA1(); //Convert SA-1 stuff to standard, non displacement format
     }
       
-    copy_state_data(0, write_save_state_data, true, false);
+    copy_state_data(0, write_save_state_data, false);
 
     if (SFXEnable)
     {
@@ -779,7 +823,7 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
     if (zst_version) //Pre v0.60 saves are no longer loaded
     {
       load_save_size = 0;
-      copy_state_data(0, read_save_state_data, true, true);
+      copy_state_data(0, read_save_state_data, true);
       Totalbyteloaded += load_save_size;
       
       if (SFXEnable)
