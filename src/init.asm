@@ -1467,6 +1467,42 @@ NEWSYM headerhack
 
     mov esi,[romdata]
     add esi,07FC0h
+    cmp dword[esi],0DFCAB0BDh
+    jne .notfamista1
+    cmp dword[esi+4],0D0A7CCB0h
+    jne .notfamista1
+    cmp dword[esi+8],02020C0BDh
+    jne .notfamista1
+    cmp dword[esi+12],20202020h
+    jne .notfamista1
+    mov esi,[romdata]
+    add esi,2762Fh
+    mov word [esi],0EAEAh ; Skip a check for value FF at 2140 when spc not
+                          ; initialized yet?!?
+.notfamista1
+
+    mov esi,[romdata]
+    add esi,07FC0h
+    cmp dword[esi],0DFCAB0BDh
+    jne .notfamista2
+    cmp dword[esi+4],0D0A7CCB0h
+    jne .notfamista2
+    cmp dword[esi+8],03220C0BDh
+    jne .notfamista2
+    cmp dword[esi+12],20202020h
+    jne .notfamista2
+    mov esi,[romdata]
+    add esi,6CEDh
+    mov word [esi],0EAEAh ; Skip a check for value FF at 2140 when spc not
+                          ; initialized yet?!?
+    mov esi,[romdata]
+    add esi,6CF9h
+    mov word [esi],0EAEAh ; Skip a check for value FF at 2140 when spc not
+                          ; initialized yet?!?
+.notfamista2
+
+    mov esi,[romdata]
+    add esi,07FC0h
     cmp dword[esi],20434653h
     jne .notkamenrider
     cmp dword[esi+4],0D7DDD2B6h
