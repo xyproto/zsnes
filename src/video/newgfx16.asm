@@ -2562,8 +2562,8 @@ NEWSYM drawsprng16b
     mov edi,[CMainWinScr]
     cmp byte[edi+ebx+4*256],0
     je .submain
-    test byte[scaddtype],10h
-    jnz .nosubmain
+    test byte[scaddtype],20h
+    jz .nosubmain
 .submain
     test byte[FillSubScr+ebx],1
     jne near drawsprng16bt
