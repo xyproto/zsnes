@@ -126,8 +126,10 @@ extern void NewGfxAsmEnd();
 extern void VCacheAsmStart();
 extern void VCacheAsmEnd();
 
+#define MakeCodeWriteable(a, b) MakeCodeWriteable_f (a, b, #a)
+
 // Thanks QuakeForge 
-void MakeCodeWriteable (unsigned long startaddr, unsigned long length) 
+void MakeCodeWriteable_f (unsigned long startaddr, unsigned long length, const char *name) 
 { 
 	int r; 
 	unsigned int addr; 
@@ -141,7 +143,7 @@ void MakeCodeWriteable (unsigned long startaddr, unsigned long length)
 	r = mprotect ((char *) addr, length + startaddr - addr + psize, PROT_READ | PROT_WRITE | PROT_EXEC); 
 
 	if (r < 0) 
-		fprintf (stderr, "Error! Memory *NOT* unprotected. startaddr = 0x%08lx\n", startaddr); 
+		fprintf (stderr, "Error! Memory *NOT* unprotected. startaddr = 0x%08lx (%s)\n", startaddr, name); 
 } 
 
 
