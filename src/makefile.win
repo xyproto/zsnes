@@ -61,7 +61,7 @@ WINDOSOBJ=${DOSDIR}/debug.obj ${DOSDIR}/joy.obj ${DOSDIR}/modemrtn.obj ${DOSDIR}
 
 PREOBJ=
 
-ZIPOBJ=${ZIPDIR}/zzip.obj ${ZIPDIR}/unzip.obj ${ZIPDIR}/zpng.obj
+ZIPOBJ=${ZIPDIR}/zzip.obj ${ZIPDIR}/unzip.obj ${ZIPDIR}/zpng.obj ${ZIPDIR}/fir_proc.obj
 
 MAINOBJ=cfgload.obj endmem.obj fixsin.obj init.obj ui.obj vcache.obj water.obj
 
@@ -100,6 +100,7 @@ ${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
 ${ZIPDIR}/unzip.obj: ${ZIPDIR}/unzip.c ${ZIPDIR}/unzip.h 
 ${ZIPDIR}/zzip.obj: ${ZIPDIR}/zzip.c ${ZIPDIR}/unzip.h
 ${ZIPDIR}/zpng.obj: ${ZIPDIR}/zpng.c  ${ZIPDIR}/zpng.h ${ZIPDIR}/png.h
+${ZIPDIR}/fir_proc.obj: ${ZIPDIR}/fir_proc.cpp
 ${DOSDIR}/initvid.o:${DOSDIR}/initvid.asm macros.mac
 ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
 ${DOSDIR}/zsipx.o: ${DOSDIR}/zsipx.asm

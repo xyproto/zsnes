@@ -125,7 +125,7 @@ EXTSYM WDSPRegFC,WDSPRegFD,WDSPRegFE,WDSPRegFF,RaisePitch
 EXTSYM delay
 EXTSYM spcBuffera
 EXTSYM DSPMem
-EXTSYM InterSound
+EXTSYM SoundInterpType
 EXTSYM NoiseData,SoundCompD,Voice0Disable,csounddisable,dssel,spcRamcmp
 EXTSYM cfgecho,Surround,SoundBufEn
 EXTSYM echobuf,ENVDisable
@@ -170,8 +170,7 @@ tempstuff db 0
 ; If A is not zero, goto FFD6
 ; Jump to Address [0000]
 
-
-ALIGN32
+section .data
 
 DSPInterP:
   times 1024 dw 0
@@ -416,6 +415,9 @@ NEWSYM NoiseSpeeds
             dd 800,1000,1300,1600,2000,2700,3200,4000,5300,6400,8000,10700,
             dd 16000,32000
 
+section .text
+
+
 NEWSYM conv2speedb
 .next
     mov eax,[esi]
@@ -506,8 +508,12 @@ NEWSYM conv2speed
 
 
 NEWSYM AdjustFrequency
-      cmp byte[UseCubicSpline],1
+      mov al,[SoundInterpType]
+      or al,al
+      je .notgaussian
+      cmp al,2
       je .cubicspline
+      ja .notgaussian
       ; Copy from Gaussian to DSPInterP
       mov ebx,DSPInterP
       mov edx,DSPInterP+2046
@@ -1592,6 +1598,8 @@ NEWSYM DeInitSPC
     out dx,al
     ret
 
+section .data
+
 ;SoundBlaster DSP Ports
 NEWSYM SBPort, dw 220
 NEWSYM SBInt,  db 5+8
@@ -1601,12 +1609,15 @@ NEWSYM SBDMAPage, db 83
 NEWSYM SBHDMA, db 0
 NEWSYM SBHDMAPage, db 0
 NEWSYM vibracard, db 0
+                dw 0    ; padding
 
 ; ViBRA16X fixes!
 EXTSYM MsgCount         ; points to counter
 EXTSYM MessageOn        ; points to "message" delay counter
 EXTSYM Msgptr           ; points to the message to be displayed
 NEWSYM vibmsg, db 'VIBRA16X MODE ENABLED', 0
+
+section .text
 
 NEWSYM ResetSBDSP
     mov dx,[SBPort]
@@ -1648,7 +1659,9 @@ NEWSYM ResetSBDSP
     int 21h                 ;to print a string
     jmp DosExit
 
+section .data
 NEWSYM initfailed, db 'Sound card failed to initialize!',13,10,'$'
+section .text
 
 ; Write AL into DSP port
 NEWSYM WriteDSP
@@ -1688,16 +1701,20 @@ NEWSYM Interror
     int 21h                 ;to print a string
     call DosExit
 
+section .data
 .nohand db 'Cannot process interrupt handler!',13,10,'$'
 
 NEWSYM oldhandSBs, dw 0
 NEWSYM oldhandSBo, dd 0
 NEWSYM SBswitch,   db 0         ; which block to process next
 
-PSampleBuf times 22*8 dd 0
+PSampleBuf times 26*8 dd 0
 
 NEWSYM LPFsample1, dd 0
 NEWSYM LPFsample2, dd 0
+
+NEWSYM DLPFsamples, times 8*26 dd 0
+section .text
 
 %macro ProcessA 0
     shr al,4
@@ -1732,6 +1749,7 @@ NEWSYM LPFsample2, dd 0
     add edx,eax
 
     mov eax,[prev0]
+    mov [prev0],edx
     mov [prev1],eax
     cmp edx,-32768
     jnl %%notless
@@ -1743,10 +1761,208 @@ NEWSYM LPFsample2, dd 0
     mov edx,32767
     mov byte[filteron],1
 %%notgreater
-    movsx edx,dx
-    mov [prev0],edx
 %endmacro
 
+EXTSYM fir_downsample
+
+%macro ProcessDynamicLowPass 0
+    mov ecx,[curvoice]
+    mov edx, [Voice0Freq+ecx*4]
+    cmp edx, dword 1000000h
+    ja %%DLPF
+    ret
+%%DLPF
+    lea ebx,[ecx*4]
+    lea ebx,[ebx*4]
+    lea ecx,[ecx*4+ecx]
+    lea ebx,[ecx*2+ebx]
+    lea ebx,[DLPFsamples+ebx*4]
+    cmp byte[LowPassFilterType],3
+    je near %%DLPF_fir
+DLPF_dynamic:
+    mov eax,[ebx+21*4]
+    mov [ebx],eax
+    mov eax,[ebx+22*4]
+    mov [ebx+1*4],eax
+    mov eax,[ebx+23*4]
+    mov [ebx+2*4],eax
+    mov eax,[ebx+24*4]
+    mov [ebx+3*4],eax
+    mov eax,[ebx+25*4]
+    mov [ebx+4*4],eax
+    sub edi,32
+    movsx eax,word[edi+22]
+    mov [ebx+21*4],eax
+    movsx eax,word[edi+24]
+    mov [ebx+22*4],eax
+    movsx eax,word[edi+26]
+    mov [ebx+23*4],eax
+    movsx eax,word[edi+28]
+    mov [ebx+24*4],eax
+    movsx eax,word[edi+30]
+    mov [ebx+25*4],eax
+    mov ecx,16
+    shr edx,24
+    cmp dl,2
+    jle %%dlpf_by_2
+    cmp dl,3
+    jle %%dlpf_by_3
+    cmp dl,4
+    jle %%dlpf_by_4
+    jmp %%dlpf_by_5
+
+%%dlpf_by_2
+    mov eax,[ebx+4*4]
+    jmp Short %%dlpf_by_2_loop
+
+ALIGN16
+%%dlpf_by_2_loop
+    movsx edx,word[edi]
+    add eax,edx
+    sar eax,1
+    mov [edi],ax
+    mov eax,edx
+    add edi,2
+    dec ecx
+    jnz %%dlpf_by_2_loop
+    ret
+
+%%dlpf_by_3
+    push ebx
+    mov eax,[ebx+3*4]
+    mov ebp,[ebx+4*4]
+    jmp Short %%dlpf_by_3_loop
+
+ALIGN16
+%%dlpf_by_3_loop
+    movsx ebx,word[edi]
+    add eax,ebx
+    add eax,ebp
+    mov edx,55555555h ; (1/3)
+    imul edx
+    mov [edi],dx
+    add edi,2
+    mov eax,ebp
+    mov ebp,ebx
+    dec ecx
+    jnz %%dlpf_by_3_loop
+    pop ebx
+    ret
+
+%%dlpf_by_4
+    push ebx
+    mov ebp,[ebx+2*4]
+    mov edx,[ebx+3*4]
+    mov eax,[ebx+4*4]
+    jmp Short %%dlpf_by_4_loop
+
+ALIGN16
+%%dlpf_by_4_loop
+    movsx ebx,word[edi]
+    add eax,ebx
+    add eax,edx
+    add eax,ebp
+    sar eax,2
+    mov [edi],ax
+    add edi,2
+    mov eax,edx
+    mov edx,ebp
+    mov ebp,ebx
+    dec ecx
+    jnz %%dlpf_by_4_loop
+    pop ebx
+    ret
+
+%%dlpf_by_5
+    push ebx
+    push ecx
+    mov ecx,[ebx+1*4]
+    mov ebp,[ebx+2*4]
+    mov esi,[ebx+3*4]
+    mov eax,[ebx+4*4]
+    jmp Short %%dlpf_by_5_loop
+
+ALIGN16
+%%dlpf_by_5_loop
+    movsx ebx,word[edi]
+    add eax,ebx
+    add eax,esi
+    add eax,ebp
+    add eax,ecx
+    mov edx,33333333h	; 1/5
+    mov [edi],dx
+    add edi,2
+    mov eax,esi
+    mov esi,ebp
+    mov ebp,ecx
+    mov ecx,ebx
+    dec dword [esp]
+    jnz %%dlpf_by_5_loop
+    pop ecx
+    pop ebx
+    ret
+
+%%DLPF_fir
+    mov eax,[ebx+21*4]
+    mov [ebx],eax
+    mov eax,[ebx+22*4]
+    mov [ebx+4],eax
+    mov eax,[ebx+23*4]
+    mov [ebx+2*4],eax
+    mov eax,[ebx+24*4]
+    mov [ebx+3*4],eax
+    mov eax,[ebx+25*4]
+    mov [ebx+4*4],eax
+    sub edi,32
+    movsx eax,word[edi]
+    mov [ebx+5*4],eax
+    movsx eax,word[edi+2]
+    mov [ebx+6*4],eax
+    movsx eax,word[edi+4]
+    mov [ebx+7*4],eax
+    movsx eax,word[edi+6]
+    mov [ebx+8*4],eax
+    movsx eax,word[edi+8]
+    mov [ebx+9*4],eax
+    movsx eax,word[edi+10]
+    mov [ebx+10*4],eax
+    movsx eax,word[edi+12]
+    mov [ebx+11*4],eax
+    movsx eax,word[edi+14]
+    mov [ebx+12*4],eax
+    movsx eax,word[edi+16]
+    mov [ebx+13*4],eax
+    movsx eax,word[edi+18]
+    mov [ebx+14*4],eax
+    movsx eax,word[edi+20]
+    mov [ebx+15*4],eax
+    movsx eax,word[edi+22]
+    mov [ebx+16*4],eax
+    mov [ebx+21*4],eax
+    movsx eax,word[edi+24]
+    mov [ebx+17*4],eax
+    mov [ebx+22*4],eax
+    movsx eax,word[edi+26]
+    mov [ebx+18*4],eax
+    mov [ebx+23*4],eax
+    movsx eax,word[edi+28]
+    mov [ebx+19*4],eax
+    mov [ebx+24*4],eax
+    movsx eax,word[edi+30]
+    mov [ebx+20*4],eax
+    mov [ebx+25*4],eax
+
+
+    push edi
+    push ebx
+    push edx
+    call fir_downsample
+    add esp,+12
+    add edi,32
+    ret
+%endmacro
+
+section .data
 NEWSYM lastblockbrr, times 8 dd 0
 NEWSYM curvoice, dd 0
 
@@ -1816,7 +2032,7 @@ BRRDecode:
 
     pop ecx
     cmp byte[VoiceNoiseEn+ecx],10
-    je .yesfilter
+    je near .yesfilter
     cmp byte[VoiceNoiseEn+ecx],0
     je .nofilter2              
     cmp byte[VoiceNoiseEn+ecx],10
@@ -1828,9 +2044,9 @@ BRRDecode:
     inc byte[VoiceNoiseEn+ecx]
 .nofilter2
     cmp byte[filteron],1
-    jne .nofilter
+    jne near .nofilter
     cmp byte[NoiseDisTemp+ecx],0
-    jne .nofilter
+    jne near .nofilter
     cmp byte[VoiceNoiseEn+ecx],100
     je .strfilter
     cmp byte[VoiceNoiseEn+ecx],101
@@ -1842,11 +2058,13 @@ BRRDecode:
     test byte[esi+9],01h
     jnz .nofilter
     mov byte[VoiceNoiseEn+ecx],10
-.nofilter
-    ret
+;.nofilter
+;    ret
+    jmp .nofilter
 .strfilter
     mov byte[VoiceNoiseEn+ecx],8
-    ret
+    jmp .nofilter
+;    ret
 
 .yesfilter
     cmp byte[SoundNoiseDis],1
@@ -1868,6 +2086,16 @@ BRRDecode:
     pop ecx
     ret
 
+.nofilter
+    cmp byte[LowPassFilterType],1
+    ja .dlpf
+    ret
+
+.dlpf
+
+    ProcessDynamicLowPass
+
+section .data
 ALIGN32
 
 ; Original Values
@@ -2559,7 +2787,7 @@ dspconvb equ marksave-Voice0Freq
 NEWSYM PHdspsave, dd dspsave
 NEWSYM PHdspconvb, dd dspconvb
 
-
+section .text
 
 
 NEWSYM PrepareSaveState
@@ -2881,9 +3109,11 @@ spc700temp dd 0,0
       mov byte  [Voice0Loop+%1],0
       mov byte[VoiceNoiseEn+%1],0
       mov dword[WaveIndex+%1*4],0
-      mov dword[PSampleBuf+%1*22*4+19*4],0
-      mov dword[PSampleBuf+%1*22*4+20*4],0
-      mov dword[PSampleBuf+%1*22*4+21*4],0
+      mov dword[PSampleBuf+%1*26*4+21*4],0
+      mov dword[PSampleBuf+%1*26*4+22*4],0
+      mov dword[PSampleBuf+%1*26*4+23*4],0
+      mov dword[PSampleBuf+%1*26*4+24*4],0
+      mov dword[PSampleBuf+%1*26*4+25*4],0
       mov byte[SoundLooped0+%1],0
       mov byte[echoon0+%1],0
       test byte[DSPMem+4Dh],%2
@@ -2999,9 +3229,11 @@ NEWSYM Voice7Start
       mov byte  [Voice0Loop+%1],0
       mov byte[VoiceNoiseEn+%1],0
       mov dword[WaveIndex+%1*4],0
-      mov dword[PSampleBuf+%1*22*4+19*4],0
-      mov dword[PSampleBuf+%1*22*4+20*4],0
-      mov dword[PSampleBuf+%1*22*4+21*4],0
+      mov dword[PSampleBuf+%1*26*4+21*4],0
+      mov dword[PSampleBuf+%1*26*4+22*4],0
+      mov dword[PSampleBuf+%1*26*4+23*4],0
+      mov dword[PSampleBuf+%1*26*4+24*4],0
+      mov dword[PSampleBuf+%1*26*4+25*4],0
       pop edx
       ret
 %%nope
@@ -3018,9 +3250,11 @@ NEWSYM VoiceStarter
    VoiceStarterM 7
    ret
 
+section .data
 NEWSYM NoiseInc, dd 0
 NEWSYM NoisePointer, dd 0
 NEWSYM LastNoise, dd 0
+section .text
 
 %macro CalculatePMod 1
     xor eax,eax
@@ -3281,11 +3515,17 @@ WaveIndex  times 8 dd 0
 ;    add eax,edx                ;
 ;%%DontFilter1                  ;
 
+EXTSYM fir_interpolate
+
 %macro DSPInterpolate 1
+
+    cmp byte[SoundInterpType],3
+    je near %%fir_interpolate
+
     xor ebx,ebx
     mov bl,[BRRPlace0+%1*8+2]
 
-    mov ax,[PSampleBuf+edx*4+0+%1*22*4]
+    mov ax,[PSampleBuf+edx*4+8+%1*26*4]
     mov dx,[DSPInterP+ebx*2+256*6]
     imul dx
     shl edx,16
@@ -3293,7 +3533,7 @@ WaveIndex  times 8 dd 0
     mov eax,[BRRPlace0+%1*8+3]
     mov ecx,edx
 
-    mov ax,[PSampleBuf+eax*4+4+%1*22*4]
+    mov ax,[PSampleBuf+eax*4+12+%1*26*4]
     mov dx,[DSPInterP+ebx*2+256*4]
     imul dx
     shl edx,16
@@ -3301,7 +3541,7 @@ WaveIndex  times 8 dd 0
     mov eax,[BRRPlace0+%1*8+3]
     add ecx,edx
 
-    mov ax,[PSampleBuf+eax*4+8+%1*22*4]
+    mov ax,[PSampleBuf+eax*4+16+%1*26*4]
     mov dx,[DSPInterP+ebx*2+256*2]
     imul dx
     shl edx,16
@@ -3309,7 +3549,7 @@ WaveIndex  times 8 dd 0
     mov eax,[BRRPlace0+%1*8+3]
     add ecx,edx
 
-    mov ax,[PSampleBuf+eax*4+12+%1*22*4]
+    mov ax,[PSampleBuf+eax*4+20+%1*26*4]
     mov dx,[DSPInterP+ebx*2]
     imul dx
     shl edx,16
@@ -3318,6 +3558,22 @@ WaveIndex  times 8 dd 0
 
     sar ecx,11
     mov ax,cx
+    jmp %%end
+
+%%fir_interpolate
+    push dword PSampleBuf+(%1*26*4)
+    push dword [BRRPlace0+%1*8]
+    call fir_interpolate
+    add esp,+8
+    cmp eax,32767
+    jle %%clip1
+    mov eax,32767
+%%clip1
+    cmp eax,-32768
+    jge %%clip2
+    mov eax,-32768
+%%clip2
+%%end
 %endmacro
 
 %macro NonEchoMonoInterpolated 4
@@ -4023,8 +4279,8 @@ WaveIndex  times 8 dd 0
     mov ebx,[Voice0Freq+%1*4]
 ;    cmp byte[VoiceNoiseEn+%1],10
 ;    je %%notinterpsound
-    cmp byte [InterSound],1
-    jne %%notinterpsound
+    cmp byte [SoundInterpType],0
+    je %%notinterpsound
     cmp byte [StereoSound],1
     je near %%EndofProcessNEnvsi
     jmp %%EndofProcessNEnvi
@@ -4066,8 +4322,8 @@ WaveIndex  times 8 dd 0
     mov ebx,[Voice0Freq+%1*4]
 ;    cmp byte[VoiceNoiseEn+%1],10
 ;    je %%notinterpsound2
-    cmp byte [InterSound],1
-    jne %%notinterpsound2
+    cmp byte [SoundInterpType],0
+    je %%notinterpsound2
     cmp byte [StereoSound],1
     je near %%EndofProcessNEnvsi
     jmp %%EndofProcessNEnvi
@@ -4083,8 +4339,8 @@ WaveIndex  times 8 dd 0
     mov ebx,[Voice0Freq+%1*4]
 ;    cmp byte[VoiceNoiseEn+%1],10
 ;    je %%notinterpsound3
-    cmp byte [InterSound],1
-    jne %%notinterpsound3
+    cmp byte [SoundInterpType],0
+    je %%notinterpsound3
     cmp byte [StereoSound],1
     je near %%EndofProcessNEnvsi
     jmp %%EndofProcessNEnvi
@@ -4093,6 +4349,11 @@ WaveIndex  times 8 dd 0
     je near %%EndofProcessNEnvs
     jmp %%EndofProcessNEnv
 %%EndofSamp
+    mov dword[DLPFsamples+%1*26+21*4],0
+    mov dword[DLPFsamples+%1*26+22*4],0
+    mov dword[DLPFsamples+%1*26+23*4],0
+    mov dword[DLPFsamples+%1*26+24*4],0
+    mov dword[DLPFsamples+%1*26+25*4],0
     mov dword[Voice0EnvInc+%1*4],0
     mov dword[Voice0IncNumber+%1*4],0
     mov byte [Voice0Status+%1],0
@@ -4216,8 +4477,8 @@ WaveIndex  times 8 dd 0
 
 ;    cmp byte[VoiceNoiseEn+%1],10
 ;    je %%notinterpsound4
-    cmp byte [InterSound],1
-    jne %%notinterpsound4
+    cmp byte [SoundInterpType],0
+    je %%notinterpsound4
     cmp byte [StereoSound],1
     je near %%NextSampleSi
     jmp %%NextSamplei
@@ -4331,12 +4592,16 @@ WaveIndex  times 8 dd 0
 ;    cmp byte[Voice0Looped+%1],0
 ;    je %%nobrrcheck
 
-    mov eax,[PSampleBuf+19*4+%1*22*4]
-    mov [PSampleBuf+0*4+%1*22*4],eax
-    mov eax,[PSampleBuf+20*4+%1*22*4]
-    mov [PSampleBuf+1*4+%1*22*4],eax
-    mov eax,[PSampleBuf+21*4+%1*22*4]
-    mov [PSampleBuf+2*4+%1*22*4],eax
+    mov eax,[PSampleBuf+21*4+%1*26*4]
+    mov [PSampleBuf+0*4+%1*26*4],eax
+    mov eax,[PSampleBuf+22*4+%1*26*4]
+    mov [PSampleBuf+1*4+%1*26*4],eax
+    mov eax,[PSampleBuf+23*4+%1*26*4]
+    mov [PSampleBuf+2*4+%1*26*4],eax
+    mov eax,[PSampleBuf+24*4+%1*26*4]
+    mov [PSampleBuf+3*4+%1*26*4],eax
+    mov eax,[PSampleBuf+25*4+%1*26*4]
+    mov [PSampleBuf+4*4+%1*26*4],eax
 
     cmp byte[SoundBufEn],0
     je near %%convertBRR2
@@ -4373,46 +4638,48 @@ WaveIndex  times 8 dd 0
     mov ebx,[Voice0Freq+%1*4]
     mov [Voice0BufPtr+%1*4],edi
 
-    mov ax,[edi]
-    mov [PSampleBuf+3*4+%1*22*4],eax
-    mov ax,[edi+2*1]
-    mov [PSampleBuf+4*4+%1*22*4],eax
-    mov ax,[edi+2*2]
-    mov [PSampleBuf+5*4+%1*22*4],eax
-    mov ax,[edi+2*3]
-    mov [PSampleBuf+6*4+%1*22*4],eax
-    mov ax,[edi+2*4]
-    mov [PSampleBuf+7*4+%1*22*4],eax
-    mov ax,[edi+2*5]
-    mov [PSampleBuf+8*4+%1*22*4],eax
-    mov ax,[edi+2*6]
-    mov [PSampleBuf+9*4+%1*22*4],eax
-    mov ax,[edi+2*7]
-    mov [PSampleBuf+10*4+%1*22*4],eax
-    mov ax,[edi+2*8]
-    mov [PSampleBuf+11*4+%1*22*4],eax
-    mov ax,[edi+2*9]
-    mov [PSampleBuf+12*4+%1*22*4],eax
-    mov ax,[edi+2*10]
-    mov [PSampleBuf+13*4+%1*22*4],eax
-    mov ax,[edi+2*11]
-    mov [PSampleBuf+14*4+%1*22*4],eax
-    mov ax,[edi+2*12]
-    mov [PSampleBuf+15*4+%1*22*4],eax
-    mov ax,[edi+2*13]
-    mov [PSampleBuf+16*4+%1*22*4],eax
-    mov [PSampleBuf+19*4+%1*22*4],eax
-    mov ax,[edi+2*14]
-    mov [PSampleBuf+17*4+%1*22*4],eax
-    mov [PSampleBuf+20*4+%1*22*4],eax
-    mov ax,[edi+2*15]
-    mov [PSampleBuf+18*4+%1*22*4],eax
-    mov [PSampleBuf+21*4+%1*22*4],eax
+    movsx eax,word [edi]
+    mov [PSampleBuf+5*4+%1*26*4],eax
+    movsx eax,word [edi+2*1]
+    mov [PSampleBuf+6*4+%1*26*4],eax
+    movsx eax,word [edi+2*2]
+    mov [PSampleBuf+7*4+%1*26*4],eax
+    movsx eax,word [edi+2*3]
+    mov [PSampleBuf+8*4+%1*26*4],eax
+    movsx eax,word[edi+2*4]
+    mov [PSampleBuf+9*4+%1*26*4],eax
+    movsx eax,word [edi+2*5]
+    mov [PSampleBuf+10*4+%1*26*4],eax
+    movsx eax,word [edi+2*6]
+    mov [PSampleBuf+11*4+%1*26*4],eax
+    movsx eax,word [edi+2*7]
+    mov [PSampleBuf+12*4+%1*26*4],eax
+    movsx eax,word [edi+2*8]
+    mov [PSampleBuf+13*4+%1*26*4],eax
+    movsx eax,word [edi+2*9]
+    mov [PSampleBuf+14*4+%1*26*4],eax
+    movsx eax,word [edi+2*10]
+    mov [PSampleBuf+15*4+%1*26*4],eax
+    movsx eax,word [edi+2*11]
+    mov [PSampleBuf+16*4+%1*26*4],eax
+    mov [PSampleBuf+21*4+%1*26*4],eax
+    movsx eax,word [edi+2*12]
+    mov [PSampleBuf+17*4+%1*26*4],eax
+    mov [PSampleBuf+22*4+%1*26*4],eax
+    movsx eax,word [edi+2*13]
+    mov [PSampleBuf+18*4+%1*26*4],eax
+    mov [PSampleBuf+23*4+%1*26*4],eax
+    movsx eax,word [edi+2*14]
+    mov [PSampleBuf+19*4+%1*26*4],eax
+    mov [PSampleBuf+24*4+%1*26*4],eax
+    movsx eax,word [edi+2*15]
+    mov [PSampleBuf+20*4+%1*26*4],eax
+    mov [PSampleBuf+25*4+%1*26*4],eax
 
 ;    cmp byte[VoiceNoiseEn+%1],10
 ;    je %%notinterpsound5
-    cmp byte [InterSound],1
-    jne %%notinterpsound5
+    cmp byte [SoundInterpType],0
+    je %%notinterpsound5
     cmp byte [StereoSound],1
     je near %%NextSampleSi
     jmp %%NextSamplei
@@ -4443,41 +4710,43 @@ WaveIndex  times 8 dd 0
     pop esi
     mov edi,[Voice0BufPtr+%1*4]
 
-    mov ax,[edi]
-    mov [PSampleBuf+3*4+%1*22*4],eax
-    mov ax,[edi+2*1]
-    mov [PSampleBuf+4*4+%1*22*4],eax
-    mov ax,[edi+2*2]
-    mov [PSampleBuf+5*4+%1*22*4],eax
-    mov ax,[edi+2*3]
-    mov [PSampleBuf+6*4+%1*22*4],eax
-    mov ax,[edi+2*4]
-    mov [PSampleBuf+7*4+%1*22*4],eax
-    mov ax,[edi+2*5]
-    mov [PSampleBuf+8*4+%1*22*4],eax
-    mov ax,[edi+2*6]
-    mov [PSampleBuf+9*4+%1*22*4],eax
-    mov ax,[edi+2*7]
-    mov [PSampleBuf+10*4+%1*22*4],eax
-    mov ax,[edi+2*8]
-    mov [PSampleBuf+11*4+%1*22*4],eax
-    mov ax,[edi+2*9]
-    mov [PSampleBuf+12*4+%1*22*4],eax
-    mov ax,[edi+2*10]
-    mov [PSampleBuf+13*4+%1*22*4],eax
-    mov ax,[edi+2*11]
-    mov [PSampleBuf+14*4+%1*22*4],eax
-    mov ax,[edi+2*12]
-    mov [PSampleBuf+15*4+%1*22*4],eax
-    mov ax,[edi+2*13]
-    mov [PSampleBuf+16*4+%1*22*4],eax
-    mov [PSampleBuf+19*4+%1*22*4],eax
-    mov ax,[edi+2*14]
-    mov [PSampleBuf+17*4+%1*22*4],eax
-    mov [PSampleBuf+20*4+%1*22*4],eax
-    mov ax,[edi+2*15]
-    mov [PSampleBuf+18*4+%1*22*4],eax
-    mov [PSampleBuf+21*4+%1*22*4],eax
+    movsx eax,word [edi]
+    mov [PSampleBuf+5*4+%1*26*4],eax
+    movsx eax,word [edi+2*1]
+    mov [PSampleBuf+6*4+%1*26*4],eax
+    movsx eax,word [edi+2*2]
+    mov [PSampleBuf+7*4+%1*26*4],eax
+    movsx eax,word [edi+2*3]
+    mov [PSampleBuf+8*4+%1*26*4],eax
+    movsx eax,word[edi+2*4]
+    mov [PSampleBuf+9*4+%1*26*4],eax
+    movsx eax,word [edi+2*5]
+    mov [PSampleBuf+10*4+%1*26*4],eax
+    movsx eax,word [edi+2*6]
+    mov [PSampleBuf+11*4+%1*26*4],eax
+    movsx eax,word [edi+2*7]
+    mov [PSampleBuf+12*4+%1*26*4],eax
+    movsx eax,word [edi+2*8]
+    mov [PSampleBuf+13*4+%1*26*4],eax
+    movsx eax,word [edi+2*9]
+    mov [PSampleBuf+14*4+%1*26*4],eax
+    movsx eax,word [edi+2*10]
+    mov [PSampleBuf+15*4+%1*26*4],eax
+    movsx eax,word [edi+2*11]
+    mov [PSampleBuf+16*4+%1*26*4],eax
+    mov [PSampleBuf+21*4+%1*26*4],eax
+    movsx eax,word [edi+2*12]
+    mov [PSampleBuf+17*4+%1*26*4],eax
+    mov [PSampleBuf+22*4+%1*26*4],eax
+    movsx eax,word [edi+2*13]
+    mov [PSampleBuf+18*4+%1*26*4],eax
+    mov [PSampleBuf+23*4+%1*26*4],eax
+    movsx eax,word [edi+2*14]
+    mov [PSampleBuf+19*4+%1*26*4],eax
+    mov [PSampleBuf+24*4+%1*26*4],eax
+    movsx eax,word [edi+2*15]
+    mov [PSampleBuf+20*4+%1*26*4],eax
+    mov [PSampleBuf+25*4+%1*26*4],eax
 
     mov eax,dword [prev0]
     mov [Voice0Prev0+%1*4],eax
@@ -4491,8 +4760,8 @@ WaveIndex  times 8 dd 0
     add dword [Voice0Ptr+%1*4],9
 ;    cmp byte[VoiceNoiseEn+%1],10
 ;    je %%notinterpsound6
-    cmp byte [InterSound],1
-    jne %%notinterpsound6
+    cmp byte [SoundInterpType],0
+    je %%notinterpsound6
     cmp byte [StereoSound],1
     je near %%NextSampleSi
     jmp %%NextSamplei
@@ -4548,6 +4817,11 @@ WaveIndex  times 8 dd 0
     or byte [DSPMem+7Ch],%3
     mov byte [DSPMem+08h+%1*10h],0
 %%SkipStuff4
+    mov dword[DLPFsamples+%1*26+21*4],0
+    mov dword[DLPFsamples+%1*26+22*4],0
+    mov dword[DLPFsamples+%1*26+23*4],0
+    mov dword[DLPFsamples+%1*26+24*4],0
+    mov dword[DLPFsamples+%1*26+25*4],0
 ;    and byte [DSPMem+5Ch],%4
     mov dword[Voice0EnvInc+%1*4],0
     mov dword[Voice0IncNumber+%1*4],0
@@ -5020,7 +5294,9 @@ NEWSYM handlersbseg
     sti
     jmp Startprocsbdata
 
-echowrittento db 0
+section .data
+echowrittento db 0      ,0,0,0  ; padding
+section .text
 
 NEWSYM stopsbsound
 ;    mov byte[Voice0Status],0
@@ -5092,7 +5368,9 @@ NEWSYM stopsbsound
     sti
     iretd
 
+section .data
 NEWSYM sbhandexec, dd 0
+section .text
 
 ; Process 20 blocks * 8 voices (no pitch yet)
 NEWSYM SBHandler16
@@ -5334,8 +5612,8 @@ NEWSYM ProcessVoice816
     loop .revstloop
 .norevstereo
 
-    cmp byte[LowPassFilterType],0
-    je near LPFexit
+    cmp byte[LowPassFilterType],1
+    jne near LPFexit
     mov esi,DSPBuffer
     cmp byte[StereoSound],1
     jz  near LPFstereo
@@ -5466,11 +5744,13 @@ NEWSYM stopsbsound16
 ; Sound Blaster Initialization Stuff
 ;****************************************************
 
+section .data
 NEWSYM memoryloc, dd 0          ; Memory offset in conventional memory
 NEWSYM memoryloc2, dd 0          ; Memory offset in conventional memory
-NEWSYM sbselec,   dw 0          ; Selector of Memory location
+NEWSYM sbselec,   dw 0   ,0,0,0  ; Selector of Memory location
 NEWSYM sbpmofs,   dd 0          ; offset of Memory location
 SBDeinitType db 0
+section .text
 
 NEWSYM initSB
     mov eax,[SoundQuality]
