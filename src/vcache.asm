@@ -63,31 +63,24 @@ EXTSYM Change_Dir,LoadDrive,LoadDir
 
 ; Process stuff & Cache sprites
 
-SECTION .bss
-NEWSYM fskipped,     resb 1
-NEWSYM objvramadder, resd 1
-NEWSYM pobjvram,     resw 1
-
 SECTION .data
-NEWSYM sprprifix,    db 1
+ALIGN32
 
-SECTION .bss
-NEWSYM OMBGTestVal, resd 1
-NEWSYM ngptrdat2, resd 1
-NEWSYM ofshvaladd, resd 1
-NEWSYM ofsmtptrs, resd 1
-NEWSYM ofsmcptr2, resd 1
-NEWSYM sramb4save, resd 1
-
-SECTION .data
-NEWSYM mode7hiresen, dd 1
-
-SECTION .bss
-NEWSYM hiresstuff, resd 1
-NEWSYM cmovietimeint, resd 1
-NEWSYM overalltimer, resd 1
-
-mousecheck resb 1
+NEWSYM fskipped,     db 0
+NEWSYM objvramadder, dd 0
+NEWSYM pobjvram,     dw 0
+NEWSYM sprprifix,    db 0
+NEWSYM OMBGTestVal, dd 0
+NEWSYM ngptrdat2, dd 0
+NEWSYM ofshvaladd, dd 0
+NEWSYM ofsmtptrs, dd 0
+NEWSYM ofsmcptr2, dd 0
+NEWSYM sramb4save, dd 0
+NEWSYM mode7hiresen, dd 0
+NEWSYM hiresstuff, dd 0
+NEWSYM cmovietimeint, dd 0
+NEWSYM overalltimer, dd 0
+mousecheck db 0
 
 section .text
 
