@@ -24,8 +24,6 @@ General
   someone can do this, I'll add an option to switch between them in the
   GUI later)
 - Clean up the makefiles (get rid of this ugly link.win32)
-- ZSNES doesn't compile with nasm 0.98.08 because of problems with 
-  the way it deals with loops
   
 Compatibility
 - Game not working - Guikuden 1 (and some more)
