@@ -193,4 +193,61 @@ void cycleinputdevice()
   }
 }
 
+extern unsigned char soundon;
+extern unsigned char SPCDisable;
+extern unsigned char spcon;
+extern unsigned char FPSOn;
+extern unsigned char FPSAtStart;
+
+const char* ZVERSION = "Pre 1.43";
+
+void zstart ()
+{
+	StartUp ();
+
+	// Print welcome message.
+	printf ("ZSNES v%s, (c) 1997-2005, ZSNES Team\n\n", ZVERSION);
+	printf ("Be sure to check http://www.zsnes.com/ for the latest version.\n");
+	printf ("Please report crashes to zsnes-devel@lists.sourceforge.net.\n\n");
+	printf ("ZSNES is written by the ZSNES Team (See AUTHORS.TXT)\n");
+	printf ("ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,\n");
+	printf ("and you are welcome to redistribute it under certain conditions;\n");
+	printf ("please read 'LICENSE.TXT' thoroughly before doing so.\n\n");
+	printf ("Use ZSNES -? for command line defintitions.\n\n");
+
+	SystemInit ();
+
+#ifdef OPENSPC
+	OSPC_Init ();
+#else
+	setnoise ();
+	InitSPC ();
+#endif
+	
+	allocmem ();
+
+	if (!soundon || !SPCDisable)
+	{
+		soundon = 1;
+		spcon = 1;
+		DSPDisable = 1;
+	}
+
+	if (SPCDisable)
+	{
+		soundon = 0;
+		spcon = 0;
+	}
+
+	if (!frameskip)
+	{
+		FPSOn = FPSAtStart;
+	}
+
+	gammalevel16b = gammalevel * 2;
+
+	MMXCheck ();
+
+	init ();
+}
 
