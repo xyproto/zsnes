@@ -2019,10 +2019,11 @@ NEWSYM headerhack
     call Checkheadersame
     cmp al,0
     jne .noromhead5
-    mov byte[opexec268],182
-    mov byte[opexec358],177
-    mov byte[opexec268cph],44
-    mov byte[opexec358cph],44
+;    mov byte[opexec268],182
+;    mov byte[opexec358],177
+;    mov byte[opexec268cph],44
+;    mov byte[opexec358cph],44
+;int 3h
 .noromhead5
 
     ; PunchOut - Disable HDMA start in middle of screen
@@ -4355,7 +4356,9 @@ SECTION .data
 SPC7110DIRA db 'FEOEZSP7',0
 SPC7110DIRB db 'SMHT-SP7',0
 SDD1DIRA db 'SOCNSDD1',0
-SDD1DIRB db 'SFA2SDD1',0
+SDD1DIRB db 'SFZ2SDD1',0
+SDD1DIRC db 'SFA2SDD1',0
+SDD1DIRD db 'SF2ESDD1',0
 SPC7110IndexName db 'index.bin',0
 SPC7110DirEntry db '*.bin',0
 NEWSYM SDD1Offset, dd 65536*8
@@ -4412,18 +4415,32 @@ NEWSYM SPC7110Load
     je .sdd1
 .notlorom
 .sdd1
-    cmp al,043h
+    cmp al,045h
     jne .noSDD1
-    mov edx,SDD1DIRB
-    mov dword[sdd1fname],'sfa2'
+    mov edx,SDD1DIRA
+    mov dword[sdd1fname],'socn'
     jmp .sdd1b
 .noSDD1
-    cmp al,045h
-    jne .noSDD1b
-    mov edx,SDD1DIRA
-    mov dword[sdd1fname],'sdd1'
+    cmp al,043h
+    jne .noSDD1a
+    add esi,3
+    mov al,[esi]
+    cmp al,0
+    jne .notsfz2
+    mov edx,SDD1DIRB
+    mov dword[sdd1fname],'sfz2'
     jmp .sdd1b
-.noSDD1b
+.notsfz2
+    cmp al,01h
+    jne .notsfa2
+    mov edx,SDD1DIRC
+    mov dword[sdd1fname],'sfa2'
+    jmp .sdd1b
+.notsfa2
+    mov edx,SDD1DIRD
+    mov dword[sdd1fname],'sf2e'
+    jmp .sdd1b
+.noSDD1a
     ret
 .spc7110
     mov edx,SPC7110DIRA
