@@ -821,7 +821,23 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 
 void endgame()
 {
+   if(lpDirectSound)
+   {
+      lpDirectSound->Release();
+      lpDirectSound=NULL;
+   }
 
+   if(SoundBuffer)
+   {
+      SoundBuffer->Release();
+      SoundBuffer=NULL;
+   }
+
+   if(lpPrimaryBuffer)
+   {
+      lpPrimaryBuffer->Release();
+      lpPrimaryBuffer=NULL;
+   }
 
    if(DD_CFB)
    {
@@ -829,13 +845,11 @@ void endgame()
       DD_CFB=NULL;
    }
 
-
    if(lpDD)
    {
       lpDD->Release();
       lpDD=NULL;
    }
-
 
    if(lpDDClipper)
    {
