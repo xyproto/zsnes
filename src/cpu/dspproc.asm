@@ -1780,7 +1780,7 @@ EXTSYM fir_downsample
     lea ebx,[DLPFsamples+ebx*4]
     cmp byte[LowPassFilterType],3
     je near %%DLPF_fir
-DLPF_dynamic:
+;dynamic
     mov eax,[ebx+21*4]
     mov [ebx],eax
     mov eax,[ebx+22*4]
@@ -1829,7 +1829,6 @@ ALIGN16
     ret
 
 %%dlpf_by_3
-    push ebx
     mov eax,[ebx+3*4]
     mov ebp,[ebx+4*4]
     jmp Short %%dlpf_by_3_loop
@@ -1847,14 +1846,12 @@ ALIGN16
     mov ebp,ebx
     dec ecx
     jnz %%dlpf_by_3_loop
-    pop ebx
     ret
 
 %%dlpf_by_4
-    push ebx
-    mov ebp,[ebx+2*4]
+    mov eax,[ebx+2*4]
     mov edx,[ebx+3*4]
-    mov eax,[ebx+4*4]
+    mov ebp,[ebx+4*4]
     jmp Short %%dlpf_by_4_loop
 
 ALIGN16
@@ -1871,16 +1868,14 @@ ALIGN16
     mov ebp,ebx
     dec ecx
     jnz %%dlpf_by_4_loop
-    pop ebx
     ret
 
 %%dlpf_by_5
-    push ebx
     push ecx
-    mov ecx,[ebx+1*4]
-    mov ebp,[ebx+2*4]
-    mov esi,[ebx+3*4]
-    mov eax,[ebx+4*4]
+    mov eax,[ebx+1*4]
+    mov esi,[ebx+2*4]
+    mov ebp,[ebx+3*4]
+    mov ecx,[ebx+4*4]
     jmp Short %%dlpf_by_5_loop
 
 ALIGN16
@@ -1891,6 +1886,7 @@ ALIGN16
     add eax,ebp
     add eax,ecx
     mov edx,33333333h	; 1/5
+    imul edx
     mov [edi],dx
     add edi,2
     mov eax,esi
@@ -1900,7 +1896,6 @@ ALIGN16
     dec dword [esp]
     jnz %%dlpf_by_5_loop
     pop ecx
-    pop ebx
     ret
 
 %%DLPF_fir
@@ -1966,6 +1961,7 @@ ALIGN16
 section .data
 NEWSYM lastblockbrr, times 8 dd 0
 NEWSYM curvoice, dd 0
+section .text
 
 BRRDecode:
     mov [curvoice],ecx

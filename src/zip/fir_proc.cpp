@@ -167,7 +167,7 @@ CzWINDOWEDFIR::CzWINDOWEDFIR()
 	for( _LPcl=0;_LPcl<WFIR_CUTOFFLEN;_LPcl++ )
 	{
 		int _LCc,_LIdx	= _LPcl<<WFIR_LOG2WIDTH;
-		_LCut = WFIR_CUTOFF / (1.0f + ((float)_LPcl / (WFIR_CUTOFFLEN / 15.0f)));
+		_LCut = 1.0f - pow((float)_LPcl / WFIR_CUTOFFLEN,1/5.0f); // bleh  (1.0f + 5.0f * (log2(2.0f + (_LPcl / (WFIR_CUTOFFLEN / 256.0f))) - 1.0f));
 		for(_LCc=0,_LGain=0.0f;_LCc<WFIR_WIDTH;_LCc++ )
 		{
 			_LGain	+= (_LCoefs[_LCc] = coef( _LCc, -0.5f, _LCut, WFIR_WIDTH, WFIR_TYPE ));
