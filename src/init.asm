@@ -2000,12 +2000,12 @@ NEWSYM init65816
     dec ecx
     jnz .spc7110clear
 .nospc7110init
-    mov byte[cycpb268],115
+    mov byte[cycpb268],117
     mov byte[cycpb358],127
-    mov byte[cycpbl2],115
-    mov byte[cycpblt2],115
-    mov byte[cycpbl],115
-    mov byte[cycpblt],115
+    mov byte[cycpbl2],117
+    mov byte[cycpblt2],117
+    mov byte[cycpbl],117
+    mov byte[cycpblt],117
 
     cmp byte[SPC7110Enable],0
     jne .specialtimer
