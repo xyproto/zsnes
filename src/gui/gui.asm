@@ -73,7 +73,7 @@ EXTSYM soundon, StereoSound, SoundQuality, MusicRelVol
 EXTSYM endprog, continueprog, spcBuffera, spcRamcmp, cbitmode, makepal
 EXTSYM t1cc, LoadDir, LoadDrive, SRAMDir, SRAMChdir, SRAMDirCurDir, initsnes, romloadskip
 EXTSYM fname, makeextension, sram, loadfileGUI, GUIloadfailed
-EXTSYM SetupROM,CheckROMType, romdata, ForcePal, ramsize, ramsizeand, curromsize
+EXTSYM SetupROM, romdata, ForcePal, ramsize, ramsizeand, curromsize
 EXTSYM romispal, totlines, cfgloadsdir, init65816, procexecloop
 EXTSYM spcRam, spcPCRam, spcS, spcRamDP, spcA, spcX, spcY, spcP, spcNZ
 EXTSYM Voice0Status, Voice1Status, Voice2Status, Voice3Status, Voice4Status
