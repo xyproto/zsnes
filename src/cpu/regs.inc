@@ -393,9 +393,10 @@ NEWSYM SDD1BankC, db 2
 NEWSYM SDD1BankD, db 3
 NEWSYM vramread2, db 0             ; previous character for vram read
 NEWSYM nosprincr, db 0
+NEWSYM poamaddrs, dw 0
 
 
-NEWSYM tempdat, times 482 db 0     ; expandable area
+NEWSYM tempdat, times 480 db 0     ; expandable area
 
 num2writeppureg equ $-sndrot
 ; pharos equ hack *sigh*

@@ -497,8 +497,10 @@ reg2102w:
     shr word[oamaddr],1
     mov [oamaddr],al
     shl word[oamaddr],1
-    or al,al
-    jz .skipstore
+;    or al,al
+;    jz .skipstore
+    mov bx,[oamaddrs]
+    mov [poamaddrs],bx
     mov bx,[oamaddr]
     mov [oamaddrs],bx
 .skipstore
@@ -519,17 +521,16 @@ reg2102w:
 
 ; OAM address register
 reg2103w:
-    mov byte[debstop3],1
     mov bl,al
     and bl,01h
     shr word[oamaddr],1
     mov [oamaddr+1],bl
     shl word[oamaddr],1
-    cmp word[oamaddrs],200h
+    cmp word[poamaddrs],200h
     jbe .notinvptr
     cmp word[oamaddr],200h
     jne .notinvptr
-    mov bx,[oamaddrs]
+    mov bx,[poamaddrs]
     mov [oamaddr],bx
     mov byte[nosprincr],1
 .notinvptr
@@ -546,7 +547,6 @@ reg2103w:
 
 ; OAM data register
 reg2104w:
-    mov byte[debstop3],1
     mov byte[NextLineCache],1
     mov ebx,[oamaddr]
     cmp byte[nosprincr],1
