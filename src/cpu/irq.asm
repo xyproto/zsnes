@@ -25,6 +25,7 @@ EXTSYM irqon,irqv
 EXTSYM irqv8
 EXTSYM execloopdeb
 EXTSYM nmiv8
+EXTSYM membank0r8,membank0w8
 
 NEWSYM IrqAsmStart
 
@@ -70,31 +71,36 @@ NEWSYM switchtonmi
     mov [xpc],bx
 
     xor ebx,ebx
-    mov eax,[wramdata]
-    mov bx,[xs]
-    mov cl,[xpb]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc+1]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    makedl
-    mov [eax+ebx],dl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov [xs],bx
-    xor bh,bh
 
+    mov cx,[xs]
+    mov al,[xpb]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    mov al,[xpc+1]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    mov al,[xpc]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    makedl
+    mov al,dl
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    mov [xs],cx
+
+    xor bh,bh
     mov bl,byte[xirqb]
     mov [xpb],bl
     xor eax,eax
@@ -123,26 +129,29 @@ NEWSYM NMIemulmode
     sub ebx,[initaddrl]
     mov [xpc],bx
 
-    mov eax,[wramdata]
-    mov bx,[xs]
-    mov cl,[xpc+1]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    makedl
-    mov [eax+ebx],dl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov [xs],bx
-    xor bh,bh
+    mov cx,[xs]
+    mov al,[xpc+1]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
 
+    mov al,[xpc]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    makedl
+    mov al,dl
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    mov [xs],cx
+
+    xor bh,bh
     mov bl,[xpb]
     xor eax,eax
     mov ax,[nmiv8]
@@ -170,32 +179,35 @@ NEWSYM switchtovirq
     sub ebx,[initaddrl]
     mov [xpc],bx
 
-    xor ebx,ebx
-    mov eax,[wramdata]
-    mov bx,[xs]
-    mov cl,[xpb]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc+1]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    makedl
-    mov [eax+ebx],dl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov [xs],bx
-    xor bh,bh
+    mov cx,[xs]
+    mov al,[xpb]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
 
+    mov al,[xpc+1]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    mov al,[xpc]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    makedl
+    mov al,dl
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    mov [xs],cx
+
+    xor bh,bh
     mov bl,byte[xirqb]
     mov [xpb],bl
     xor eax,eax
@@ -228,32 +240,35 @@ NEWSYM switchtovirqret
     sub ebx,[initaddrl]
     mov [xpc],bx
 
-    xor ebx,ebx
-    mov eax,[wramdata]
-    mov bx,[xs]
-    mov cl,[xpb]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc+1]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    makedl
-    mov [eax+ebx],dl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov [xs],bx
-    xor bh,bh
+    mov cx,[xs]
+    mov al,[xpb]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
 
+    mov al,[xpc+1]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    mov al,[xpc]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    makedl
+    mov al,dl
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    mov [xs],cx
+
+    xor bh,bh
     mov bl,byte[xirqb]
     mov [xpb],bl
     xor eax,eax
@@ -282,26 +297,29 @@ NEWSYM IRQemulmode
     sub ebx,[initaddrl]
     mov [xpc],bx
 
-    mov eax,[wramdata]
-    mov bx,[xs]
-    mov cl,[xpc+1]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    makedl
-    mov [eax+ebx],dl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov [xs],bx
-    xor bh,bh
+    mov cx,[xs]
+    mov al,[xpc+1]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
 
+    mov al,[xpc]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    makedl
+    mov al,dl
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    mov [xs],cx
+
+    xor bh,bh
     mov bl,[xpb]
     xor eax,eax
     mov ax,[irqv8]
@@ -330,32 +348,35 @@ NEWSYM switchtovirqdeb
     sub ebx,[initaddrl]
     mov [xpc],bx
 
-    xor ebx,ebx
-    mov eax,[wramdata]
-    mov bx,[xs]
-    mov cl,[xpb]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc+1]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    makedl
-    mov [eax+ebx],dl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov [xs],bx
-    xor bh,bh
+    mov cx,[xs]
+    mov al,[xpb]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
 
+    mov al,[xpc+1]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    mov al,[xpc]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    makedl
+    mov al,dl
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    mov [xs],cx
+
+    xor bh,bh
     mov bl,byte[xirqb]
     mov [xpb],bl
     xor eax,eax
@@ -384,26 +405,29 @@ NEWSYM IRQemulmodedeb
     sub ebx,[initaddrl]
     mov [xpc],bx
 
-    mov eax,[wramdata]
-    mov bx,[xs]
-    mov cl,[xpc+1]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    makedl
-    mov [eax+ebx],dl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov [xs],bx
-    xor bh,bh
+    mov cx,[xs]
+    mov al,[xpc+1]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
 
+    mov al,[xpc]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    makedl
+    mov al,dl
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    mov [xs],cx
+
+    xor bh,bh
     mov bl,[xpb]
     xor eax,eax
     mov ax,[irqv8]
@@ -430,32 +454,35 @@ NEWSYM switchtonmideb
     sub ebx,[initaddrl]
     mov [xpc],bx
 
-    xor ebx,ebx
-    mov eax,[wramdata]
-    mov bx,[xs]
-    mov cl,[xpb]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc+1]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    makedl
-    mov [eax+ebx],dl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov [xs],bx
-    xor bh,bh
+    mov cx,[xs]
+    mov al,[xpb]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
 
+    mov al,[xpc+1]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    mov al,[xpc]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    makedl
+    mov al,dl
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    mov [xs],cx
+
+    xor bh,bh
     mov bl,byte[xirqb]
     mov [xpb],bl
     xor eax,eax
@@ -484,26 +511,29 @@ NEWSYM NMIemulmodedeb
     sub ebx,[initaddrl]
     mov [xpc],bx
 
-    mov eax,[wramdata]
-    mov bx,[xs]
-    mov cl,[xpc+1]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    makedl
-    mov [eax+ebx],dl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov [xs],bx
-    xor bh,bh
+    mov cx,[xs]
+    mov al,[xpc+1]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
 
+    mov al,[xpc]
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    makedl
+    mov al,dl
+    call membank0w8
+    dec cx
+    and cx,word[stackand]
+    or cx,word[stackor]
+
+    mov [xs],cx
+
+    xor bh,bh
     mov bl,[xpb]
     xor eax,eax
     mov ax,[nmiv8]
