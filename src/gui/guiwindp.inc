@@ -4608,10 +4608,21 @@ DisplayGUIOptns:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck8
     GUIDisplayIconWin 10,12,93,[GUITemp]
+%ifdef __WIN32__
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[AlwaysOnTop],1
+    jne .nocheck9
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheck9
+    GUIDisplayIconWin 10,12,168,[GUITemp]
+%endif
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 10,6,111,GUIGUIOptnsText1
     GUIOuttextwin2 10,6,16,GUIGUIOptnsText5
+%ifdef __WIN32__
+    GUIOuttextwin2 10,6,160,GUIGUIOptnsTextD
+%endif
     mov byte[GUItextcolor],163
     cmp byte[GUIWincoladd],0
     je .zero
@@ -4619,6 +4630,9 @@ DisplayGUIOptns:
 .zero
     GUIOuttextwin2 10,5,110,GUIGUIOptnsText1
     GUIOuttextwin2 10,5,15,GUIGUIOptnsText5
+%ifdef __WIN32__
+    GUIOuttextwin2 10,5,160,GUIGUIOptnsTextD
+%endif
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
     je .zero3
@@ -4636,6 +4650,9 @@ DisplayGUIOptns:
     GUIOuttextwin2u 10,26,78,GUIGUIOptnsTextA,0
     GUIOuttextwin2 10,26,88,GUIGUIOptnsTextB
     GUIOuttextwin2 10,26,98,GUIGUIOptnsTextC
+%ifdef __WIN32__
+    GUIOuttextwin2 10,26,173,GUIGUIOptnsTextE
+%endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,16,123,GUIGUIOptnsText6
     mov byte[GUIGUIOptnsText6],'G'
@@ -4654,6 +4671,9 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,25,77,GUIGUIOptnsTextA
     GUIOuttextwin2 10,25,87,GUIGUIOptnsTextB
     GUIOuttextwin2 10,25,97,GUIGUIOptnsTextC
+%ifdef __WIN32__
+    GUIOuttextwin2 10,25,172,GUIGUIOptnsTextE
+%endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,15,122,GUIGUIOptnsText6
     mov byte[GUIGUIOptnsText6],'G'
@@ -4727,12 +4747,14 @@ GUIGUIOptnsText3 db 'MOUSE SHADOW',0
 GUIGUIOptnsText4 db 'KEEP MENU POSITION',0
 GUIGUIOptnsText5 db 'GUI SWITCHES :',0
 GUIGUIOptnsText6 db '@',0
-GUIGUIOptnsText7 db 'SAVE WINDOW POSITIONS',0
+GUIGUIOptnsText7 db 'SAVE GUI WINDOW POSITIONS',0
 GUIGUIOptnsText8 db 'CLICK ENTERS/EXITS GUI',0
 GUIGUIOptnsText9 dd 0
 GUIGUIOptnsTextA db 'USE JOYPAD1 TO CONTROL',0
 GUIGUIOptnsTextB dd 'ENABLE SNOW EFFECT',0
 GUIGUIOptnsTextC dd 'ENABLE WATER EFFECT',0
+GUIGUIOptnsTextD dd 'MAIN WINDOW OPTIONS :',0
+GUIGUIOptnsTextE dd 'ALWAYS ON TOP',0
 
 DisplayGUIAbout:
     cmp byte[OSPort],3

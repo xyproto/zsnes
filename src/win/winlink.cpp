@@ -186,6 +186,7 @@ extern BYTE StereoSound;
 extern DWORD SoundQuality;
 extern BYTE LargeSoundBuf;
 extern BYTE HighPriority;
+extern BYTE AlwaysOnTop;
 extern int CurKeyPos;
 extern int CurKeyReadPos;
 extern int KeyBuffer[16];
@@ -195,6 +196,12 @@ extern "C" void CheckPriority()
 {
     if (HighPriority == 1) SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
        else SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+}
+
+extern "C" void CheckAlwaysOnTop()
+{
+    if (AlwaysOnTop == 1) SetWindowPos(hMainWindow, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+       else SetWindowPos(hMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 }
 
 BOOL InputRead(void)
