@@ -1,0 +1,3762 @@
+;Copyright (C) 1997-2001 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
+;
+;This program is free software; you can redistribute it and/or
+;modify it under the terms of the GNU General Public License
+;as published by the Free Software Foundation; either
+;version 2 of the License, or (at your option) any later
+;version.
+;
+;This program is distributed in the hope that it will be useful,
+;but WITHOUT ANY WARRANTY; without even the implied warranty of
+;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;GNU General Public License for more details.
+;
+;You should have received a copy of the GNU General Public License
+;along with this program; if not, write to the Free Software
+;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+EXTSYM mode7B, mode7D, processmode7hires16b, processmode7hires16bd
+EXTSYM drawmode7ngextbg16b,drawmode7ngextbg216b
+EXTSYM osm2dis
+
+
+
+
+
+
+; drawtileng16b
+
+%macro ngsub 2
+    test dword[BGMS1+ebx*2+1],%1
+    jz near %2
+    test dword[BGMS1+ebx*2],%1
+    jnz near %2
+    test byte[FillSubScr+ebx],1
+    jnz near %2
+%endmacro
+
+%macro ngmain 2
+    test dword[BGMS1+ebx*2],%1
+    jnz %%yesmain
+    test byte[FillSubScr+ebx],1
+    jz near %2
+    test dword[BGMS1+ebx*2+1],%1
+    jz near %2
+%%yesmain
+%endmacro
+
+%macro sprdrawpra16bng 1
+    or al,al
+    jz %%skip
+    add al,ch
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    xor eax,eax
+    or byte[sprpriodata+ebx-%1+16],dl
+%%skip
+%endmacro
+
+%macro sprdrawprb16bng 1
+    or al,al
+    jz %%skip
+    add al,ch
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprawb16bng 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprbwb16bng 1
+    or al,al
+    jz %%skip
+    add al,dh
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawpra16bngt 1
+    or al,al
+    jz %%skip
+    add al,ch
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    mov ax,[ebp+eax*2+512]
+    or byte[sprpriodata+ebx-%1+16],dl
+    cmp ch,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprb16bngt 1
+    or al,al
+    jz %%skip
+    add al,ch
+    mov ax,[ebp+eax*2+512]
+    cmp ch,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprawb16bngt 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    mov ax,[ebp+eax*2+512]
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprbwb16bngt 1
+    or al,al
+    jz %%skip
+    add al,dh
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov ax,[ebp+eax*2+512]
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawpra16bngmst 1
+    or al,al
+    jz %%skip
+    add al,ch
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    mov ax,[ebp+eax*2+512]
+    cmp ch,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    and eax,[UnusedBitXor]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    xor eax,eax
+    or byte[sprpriodata+ebx-%1+16],dl
+%%skip
+%endmacro
+
+%macro sprdrawprb16bngmst 1
+    or al,al
+    jz %%skip
+    add al,ch
+    mov ax,[ebp+eax*2+512]
+    cmp ch,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    and eax,[UnusedBitXor]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprawb16bngmst 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    mov ax,[ebp+eax*2+512]
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    and eax,[UnusedBitXor]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprbwb16bngmst 1
+    or al,al
+    jz %%skip
+    add al,dh
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov ax,[ebp+eax*2+512]
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    and eax,[UnusedBitXor]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprawb16bngst 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    mov ax,[ebp+eax*2+512]
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    and eax,[UnusedBitXor]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawprbwb16bngst 1
+    or al,al
+    jz %%skip
+    add al,dh
+    mov ax,[ebp+eax*2+512]
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    and eax,[UnusedBitXor]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawprawb16bngmt 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    or ax,[UnusedBit]
+    mov [edi+ebx*2-%1*2],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawprbwb16bngmt 1
+    or al,al
+    jz %%skip
+    add al,dh
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    or ax,[UnusedBit]
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawpra16bngnt 1
+    or al,al
+    jz %%skip
+    add al,ch
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    xor eax,eax
+    or byte[sprpriodata+ebx-%1+16],dl
+%%skip
+%endmacro
+
+%macro sprdrawprb16bngnt 1
+    or al,al
+    jz %%skip
+    add al,ch
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprawb16bngnt 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprbwb16bngnt 1
+    or al,al
+    jz %%skip
+    add al,dh
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawpra16bngmsnt 1
+    or al,al
+    jz %%skip
+    add al,ch
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    xor eax,eax
+    or byte[sprpriodata+ebx-%1+16],dl
+%%skip
+%endmacro
+
+%macro sprdrawprb16bngmsnt 1
+    or al,al
+    jz %%skip
+    add al,ch
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprawb16bngmsnt 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprbwb16bngmsnt 1
+    or al,al
+    jz %%skip
+    add al,dh
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprawb16bngsnt 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov [edi+ebx*2-%1*2+75036*2],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawprbwb16bngsnt 1
+    or al,al
+    jz %%skip
+    add al,dh
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov [edi+ebx*2-%1*2+75036*2],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawprawb16bngmnt 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov [edi+ebx*2-%1*2],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawprbwb16bngmnt 1
+    or al,al
+    jz %%skip
+    add al,dh
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov [edi+ebx*2-%1*2],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawpra216bng 1
+    or al,al
+    jz %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+%%skip
+%endmacro
+
+%macro sprdrawpra16bnghr 1
+    or al,al
+    jz %%skip
+    add al,ch
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    xor eax,eax
+    or byte[sprpriodata+ebx-%1+16],dl
+%%skip
+%endmacro
+
+%macro sprdrawprb16bnghr 1
+    or al,al
+    jz %%skip
+    add al,ch
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    mov [edi+ebx*2-%1*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprawb16bnghr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    mov [edi+ebx*2-%1*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprbwb16bnghr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    mov [edi+ebx*2-%1*2],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawpra16bngthr 1
+    or al,al
+    jz %%skip
+    add al,ch
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    mov ax,[ebp+eax*2+512]
+    or byte[sprpriodata+ebx-%1+16],dl
+    cmp ch,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprb16bngthr 1
+    or al,al
+    jz %%skip
+    add al,ch
+    mov ax,[ebp+eax*2+512]
+    cmp ch,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprawb16bngthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    mov ax,[ebp+eax*2+512]
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprbwb16bngthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov ax,[ebp+eax*2+512]
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawpra16bngmsthr 1
+    or al,al
+    jz %%skip
+    add al,ch
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    mov ax,[ebp+eax*2+512]
+    cmp ch,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    and eax,[UnusedBitXor]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+    xor eax,eax
+    or byte[sprpriodata+ebx-%1+16],dl
+%%skip
+%endmacro
+
+%macro sprdrawprb16bngmsthr 1
+    or al,al
+    jz %%skip
+    add al,ch
+    mov ax,[ebp+eax*2+512]
+    cmp ch,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    and eax,[UnusedBitXor]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprawb16bngmsthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    mov ax,[ebp+eax*2+512]
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    and eax,[UnusedBitXor]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprbwb16bngmsthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov ax,[ebp+eax*2+512]
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    and eax,[UnusedBitXor]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprawb16bngsthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    mov ax,[ebp+eax*2+512]
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    and eax,[UnusedBitXor]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawprbwb16bngsthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    mov ax,[ebp+eax*2+512]
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    and eax,[UnusedBitXor]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawprawb16bngmthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    or ax,[UnusedBit]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawprbwb16bngmthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    or ax,[UnusedBit]
+    cmp dh,128+64
+    jae %%yestransp
+    and eax,[UnusedBitXor]
+%%yestransp
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawpra16bngnthr 1
+    or al,al
+    jz %%skip
+    add al,ch
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    xor eax,eax
+    or byte[sprpriodata+ebx-%1+16],dl
+%%skip
+%endmacro
+
+%macro sprdrawprb16bngnthr 1
+    or al,al
+    jz %%skip
+    add al,ch
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprawb16bngnthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprbwb16bngnthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawpra16bngmsnthr 1
+    or al,al
+    jz %%skip
+    add al,ch
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+    xor eax,eax
+    or byte[sprpriodata+ebx-%1+16],dl
+%%skip
+%endmacro
+
+%macro sprdrawprb16bngmsnthr 1
+    or al,al
+    jz %%skip
+    add al,ch
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprawb16bngmsnthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprbwb16bngmsnthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+    xor eax,eax
+%%skip
+%endmacro
+
+%macro sprdrawprawb16bngsnthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawprbwb16bngsnthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawprawb16bngmnthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    test byte[sprpriodata+ebx-%1+16],dl
+    jnz %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawprbwb16bngmnthr 1
+    or al,al
+    jz %%skip
+    add al,dh
+    mov ax,[ebp+eax*2]
+    mov [edi+ebx*2-%1*2+75036*2],ax
+    mov [edi+ebx*2-%1*2+75036*6],ax
+    cmp byte[ecx+ebx-%1],1
+    je %%skip
+    mov [edi+ebx*2-%1*2],ax
+    mov [edi+ebx*2-%1*2+75036*4],ax
+%%skip
+    xor eax,eax
+%endmacro
+
+%macro sprdrawpra216bnghr 1
+    or al,al
+    jz %%skip
+    or byte[sprpriodata+ebx-%1+16],dl
+%%skip
+%endmacro
+
+%macro Procbgpr016b 5
+    ; Draw BG 2
+    ; Start line by line drawing/check
+    mov esi,[vidbuffer]
+    add esi,16*2
+;    add esi,16*2+288*2
+    xor ebx,ebx
+%%nextline
+    cmp byte[BGFB+ebx],0
+    jne %%nogo
+    %4 %5, %%nogo
+    ; Check if at a tile alignment
+    mov ecx,[BG1SYl+ebx*2+%1*512]
+    and ecx,0FFFFh
+    add ecx,ebx
+    test ecx,07h
+    jz %%tilecheck
+%%proclinebyline
+    ; process line by line
+    push esi
+    mov eax,[cpalval+ebx*4]
+    mov [CPalPtrng],eax
+    call %2
+    pop esi
+%%nogo
+    inc ebx
+    add esi,288*2
+    cmp [resolutn],bx
+    jne %%nextline
+    jmp %%donextbg
+%%tilecheck
+    cmp dword[startlinet],ebx
+    jae %%proclinebyline
+    cmp dword[endlinet],ebx
+    jbe %%proclinebyline
+    test dword[bgwinchange+ebx],0FFFFFF00h
+    jnz %%linebyline
+    test dword[bgwinchange+ebx+4],0FFFFFFFFh
+    jz %%tilebytile
+%%linebyline
+    test dword[winbg1enval+ebx+%1*256],0A0A0A0Ah
+    jnz %%proclinebyline
+    test dword[winbg1enval+ebx+%1*256+4],0A0A0A0Ah
+    jnz %%proclinebyline
+%%tilebytile
+    cmp ebx,[reslbyl]
+    jae %%proclinebyline
+    test dword[bgallchange+ebx],0FFFFFF00h
+    jnz %%proclinebyline
+    test dword[bgallchange+ebx+4],0FFFFFFFFh
+    jnz near %%proclinebyline
+    test dword[bg1change+ebx+%1*256],0FFFFFF00h
+    jnz near %%proclinebyline
+    test dword[bg1change+ebx+%1*256+4],0FFFFFFFFh
+    jnz near %%proclinebyline
+    cmp byte[BGMA+ebx],5
+    jae near %%proclinebyline
+    cmp byte[BGMA+ebx],2
+    je near %%proclinebyline
+    test dword[intrlng+ebx],01010101h
+    jnz near %%proclinebyline
+    test dword[intrlng+ebx+4],01010101h
+    jnz near %%proclinebyline
+    test byte[mosenng+ebx],1 << %1
+    jnz %%mosaic
+%%nomosaic
+    mov ax,[resolutn]
+    sub ax,8
+    cmp bx,ax
+    jae near %%proclinebyline
+    push esi
+    call %3
+    pop esi
+    add ebx,8
+    add esi,288*2*8
+    cmp [resolutn],bx
+    ja near %%nextline
+    jmp %%donextbg
+%%mosaic
+    cmp byte[mosszng+ebx],0
+    je %%nomosaic
+    jmp %%proclinebyline
+%%donextbg
+%endmacro
+
+%macro Procbg3pr016b 5
+    ; Draw BG 2
+    ; Start line by line drawing/check
+    mov esi,[vidbuffer]
+    add esi,16*2
+;    add esi,16+288
+    xor ebx,ebx
+%%nextline
+    cmp byte[BGFB+ebx],0
+    jne %%nogo
+    %4 %5, %%nogo
+    ; Check if at a tile alignment
+    mov ecx,[BG1SYl+ebx*2+%1*512]
+    and ecx,0FFFFh
+    add ecx,ebx
+    test ecx,07h
+    jz %%tilecheck
+%%proclinebyline
+    ; process line by line
+    push esi
+    mov eax,[cpalval+ebx*4]
+    mov [CPalPtrng],eax
+    call %2
+    pop esi
+%%nogo
+    inc ebx
+    add esi,288*2
+    cmp [resolutn],bx
+    jne %%nextline
+    jmp %%donextbg
+%%tilecheck
+    cmp dword[startlinet],ebx
+    jae %%proclinebyline
+    cmp dword[endlinet],ebx
+    jbe %%proclinebyline
+    test dword[bgwinchange+ebx],0FFFFFF00h
+    jnz %%linebyline
+    test dword[bgwinchange+ebx+4],0FFFFFFFFh
+    jz %%tilebytile
+%%linebyline
+    test dword[winbg1enval+ebx+%1*256],0A0A0A0Ah
+    jnz %%proclinebyline
+    test dword[winbg1enval+ebx+%1*256+4],0A0A0A0Ah
+    jnz %%proclinebyline
+%%tilebytile
+    cmp ebx,[reslbyl]
+    jae %%proclinebyline
+    test dword[bgallchange+ebx],0FFFFFF00h
+    jnz %%proclinebyline
+    test dword[bgallchange+ebx+4],0FFFFFFFFh
+    jnz near %%proclinebyline
+    test dword[bg1change+ebx+%1*256],0FFFFFF00h
+    jnz near %%proclinebyline
+    test dword[bg1change+ebx+%1*256+4],0FFFFFFFFh
+    jnz near %%proclinebyline
+    mov eax,[BG3PRI+ebx]
+    cmp eax,[BG3PRI+ebx+4]
+    jne near %%proclinebyline
+    test dword[intrlng+ebx],01010101h
+    jnz near %%proclinebyline
+    test dword[intrlng+ebx+4],01010101h
+    jnz near %%proclinebyline
+    test byte[mosenng+ebx],1 << %1
+    jnz %%mosaic
+%%nomosaic
+    mov ax,[resolutn]
+    sub ax,8
+    cmp bx,ax
+    jae near %%proclinebyline
+    push esi
+    call %3
+    pop esi
+    add ebx,8
+    add esi,288*8*2
+    cmp [resolutn],bx
+    ja near %%nextline
+    jmp %%donextbg
+%%mosaic
+    cmp byte[mosszng+ebx],0
+    je %%nomosaic
+    jmp %%proclinebyline
+%%donextbg
+%endmacro
+
+%macro Procbgpr116b 6
+    ; Draw BG
+    ; Start line by line drawing/check
+    mov esi,[vidbuffer]
+    add esi,16*2
+;    add esi,16*2+288*2
+    xor ebx,ebx
+%%nextline
+    cmp byte[BGFB+ebx],0
+    jne %%nogo
+    %5 %6, %%nogo
+    ; Check if at a tile alignment
+    cmp byte[%4+ebx],1
+    je %%tile
+%%proclinebyline
+    ; process line by line
+    push esi
+    mov eax,[cpalval+ebx*4]
+    mov [CPalPtrng],eax
+    call %2
+    pop esi
+%%nogo
+    inc ebx
+    add esi,288*2
+    cmp [resolutn],bx
+    jne %%nextline
+    jmp %%donextbg
+%%tile
+    push esi
+    mov eax,[cpalval+ebx*4]
+    mov [CPalPtrng],eax
+    call %3
+    pop esi
+    add ebx,8
+    add esi,288*2*8
+    cmp [resolutn],bx
+    ja near %%nextline
+%%donextbg
+%endmacro
+
+%macro Procbg3pr116b 6
+    ; Draw BG 2
+    ; Start line by line drawing/check
+    mov esi,[vidbuffer]
+    add esi,16*2
+    xor ebx,ebx
+%%nextline
+    cmp byte[BGFB+ebx],0
+    jne near %%nogo
+    %5 %6, %%nogo
+    cmp byte[BGMA+ebx],1
+    jne %%nomode1
+    cmp byte[BG3PRI+ebx],0
+    jne %%nogo
+%%nomode1
+    ; Check if at a tile alignment
+    cmp byte[%4+ebx],1
+    je %%tile
+%%proclinebyline
+    ; process line by line
+    push esi
+    mov eax,[cpalval+ebx*4]
+    mov [CPalPtrng],eax
+    call %2
+    pop esi
+%%nogo
+    inc ebx
+    add esi,288*2
+    cmp [resolutn],bx
+    jne %%nextline
+    jmp %%donextbg
+%%tile
+    push esi
+    mov eax,[cpalval+ebx*4]
+    mov [CPalPtrng],eax
+    call %3
+    pop esi
+    add ebx,8
+    add esi,288*2*8
+    cmp [resolutn],bx
+    ja near %%nextline
+%%donextbg
+%endmacro
+
+%macro Procbg3pr1b16b 6
+    ; Draw BG 2
+    ; Start line by line drawing/check
+    mov esi,[vidbuffer]
+    add esi,16*2
+    xor ebx,ebx
+%%nextline
+    cmp byte[BGFB+ebx],0
+    jne near %%nogo
+    %5 %6, %%nogo
+    cmp byte[BGMA+ebx],1
+    jne %%nogo
+    cmp byte[BG3PRI+ebx],0
+    je %%nogo
+    ; Check if at a tile alignment
+    cmp byte[%4+ebx],1
+    je %%tile
+%%proclinebyline
+    ; process line by line
+    push esi
+    mov eax,[cpalval+ebx*4]
+    mov [CPalPtrng],eax
+    call %2
+    pop esi
+%%nogo
+    inc ebx
+    add esi,288*2
+    cmp [resolutn],bx
+    jne %%nextline
+    jmp %%donextbg
+%%tile
+    push esi
+    mov eax,[cpalval+ebx*4]
+    mov [CPalPtrng],eax
+    call %3
+    pop esi
+    add ebx,8
+    add esi,288*2*8
+    cmp [resolutn],bx
+    ja near %%nextline
+%%donextbg
+%endmacro
+
+%macro Procsprng16b 2
+    ; Draw BG 2
+    ; Start line by line drawing/check
+    mov esi,[vidbuffer]
+    add esi,16*2+288*2
+    mov ebx,1
+%%nextline
+    cmp byte[BGFB+ebx],0
+    jne near %%nogo
+    %1 %2, %%nogo
+    xor eax,eax
+    mov al,[sprtlng+ebx]
+    mov cl,byte[sprlefttot+ebx]
+    mov [csprival],eax
+    inc byte[sprtlng+ebx]
+    test byte[sprleftpr+ebx*4+eax],1
+    jz %%nogo
+    or cl,cl
+    jz %%nogo
+    test byte[SpecialLine+ebx],2
+    jnz %%hires
+    push esi
+    call drawsprng16b
+    pop esi
+    jmp %%nogo
+%%hires
+    mov cl,byte[sprlefttot+ebx]
+    push esi
+    call drawsprng16bhr
+    pop esi
+%%nogo
+    inc ebx
+    add esi,288*2
+    cmp [resolutn],bx
+    jne near %%nextline
+%endmacro
+
+%macro Procsprng0116b 2
+    ; Draw BG 2
+    ; Start line by line drawing/check
+    mov esi,[vidbuffer]
+    add esi,16*2+288*2
+    mov ebx,1
+%%nextline
+    cmp byte[BGFB+ebx],0
+    jne near %%nogo
+    %1 %2, %%nogo
+    cmp byte[BGMA+ebx],1
+    ja %%nogo
+    xor eax,eax
+    mov al,[sprtlng+ebx]
+    mov cl,byte[sprlefttot+ebx]
+    mov [csprival],eax
+    inc byte[sprtlng+ebx]
+    test byte[sprleftpr+ebx*4+eax],1
+    jz %%nogo
+    or cl,cl
+    jz %%nogo
+    test byte[SpecialLine+ebx],2
+    jnz %%hires
+    push esi
+    call drawsprng16b
+    pop esi
+    jmp %%nogo
+%%hires
+    mov cl,byte[sprlefttot+ebx]
+    push esi
+    call drawsprng16bhr
+    pop esi
+%%nogo
+    inc ebx
+    add esi,288*2
+    cmp [resolutn],bx
+    jne near %%nextline
+%endmacro
+
+%macro Procsprng23456716b 2
+    ; Draw BG 2
+    ; Start line by line drawing/check
+    mov esi,[vidbuffer]
+    add esi,16*2+288*2
+    mov ebx,1
+%%nextline
+    cmp byte[BGFB+ebx],0
+    jne near %%nogo
+    %1 %2, %%nogo
+    cmp byte[BGMA+ebx],1
+    jbe %%nogo
+    xor eax,eax
+    mov al,[sprtlng+ebx]
+    mov cl,byte[sprlefttot+ebx]
+    mov [csprival],eax
+    inc byte[sprtlng+ebx]
+    test byte[sprleftpr+ebx*4+eax],1
+    jz %%nogo
+    or cl,cl
+    jz %%nogo
+    test byte[SpecialLine+ebx],2
+    jnz %%hires
+    push esi
+    call drawsprng16b
+    pop esi
+    jmp %%nogo
+%%hires
+    mov cl,byte[sprlefttot+ebx]
+    push esi
+    call drawsprng16bhr
+    pop esi
+%%nogo
+    inc ebx
+    add esi,288*2
+    cmp [resolutn],bx
+    jne near %%nextline
+%endmacro
+
+%macro ProcMode7ng16b 2
+    mov byte[winon],0
+    ; Draw BG
+    ; Start line by line drawing/check
+    mov esi,[vidbuffer]
+    add esi,16*2+288*2
+    mov ebx,[mode7A]
+    mov [Mode7BackA],ebx
+    mov ebx,[mode7C]
+    mov [Mode7BackC],ebx
+    mov ebx,[mode7X0]
+    mov [Mode7BackX0],ebx
+    mov bl,[mode7set]
+    mov [Mode7BackSet],ebx
+    mov ebx,1
+%%nextline
+    cmp byte[BGFB+ebx],0
+    jne near %%nogo
+    cmp byte[BGMA+ebx],7
+    jne near %%nogo
+    test byte[intrlng+ebx],40h
+    jnz near %%nogo
+    %1 %2, %%nogo
+    push ebx
+    mov ebp,[cpalval+ebx*4]
+    ; Process mosaic
+    mov byte[curmosaicsz],1
+    xor ecx,ecx
+    test byte[mosenng+ebx],1
+    jz %%nomosaic
+    mov cl,[mosszng+ebx]
+    or cl,cl
+    jz %%nomosaic
+    inc cl
+    mov byte[curmosaicsz],cl
+    xor edx,edx
+    mov eax,ebx
+    div cl
+    xor edx,edx
+    mul cl
+    mov ebx,eax
+%%nomosaic
+    ; process line by line
+    mov edx,[mode7ab+ebx*4]
+    mov [mode7A],edx
+    mov edx,[mode7cd+ebx*4]
+    mov [mode7C],edx
+
+    mov edx,[mode7xy+ebx*4]
+    mov [mode7X0],edx
+    mov edx,[mode7st+ebx]
+    mov [mode7set],dl
+    xor edx,edx
+    mov eax,ebx
+    test byte[mode7set],02h
+    jz %%noflip
+    mov eax,261
+    sub eax,ebx
+%%noflip
+    mov dx,[BG1SXl+ebx*2]
+    add ax,[BG1SYl+ebx*2]
+    mov [curvidoffset],esi
+    pop ebx
+    push eax
+    push edx
+    push esi
+    push ebx
+    test byte[scadsng+ebx],1
+    jnz %%directmode
+    push esi
+    push ebx
+    call drawmode7win16b
+    pop ebx
+    pop esi
+    jmp %%donemode7
+%%directmode
+    push esi
+    push ebx
+    call drawmode7win16bd
+    pop ebx
+    pop esi
+%%donemode7
+    pop ebx
+    pop esi
+    pop edx
+    pop eax
+
+    cmp byte[Mode7HiRes16b],0
+    je %%nogoc
+    cmp byte[scanlines],0
+    jne %%nogoc
+    test byte[scadsng+ebx],1
+    jnz %%directmodeb
+    call processmode7hires16b
+    jmp %%nogoc
+%%directmodeb
+    call processmode7hires16bd
+%%nogoc
+
+%%nogo
+    inc ebx
+    add esi,288*2
+    cmp [resolutn],bx
+    jne near %%nextline
+    mov ebx,[Mode7BackA]
+    mov [mode7A],ebx
+    mov ebx,[Mode7BackC]
+    mov [mode7C],ebx
+    mov ebx,[Mode7BackX0]
+    mov [mode7X0],ebx
+    mov ebx,[Mode7BackSet]
+    mov [mode7set],bl
+%endmacro
+
+
+%macro ProcMode7ngextbg16b 2
+    mov byte[winon],0
+    ; Draw BG
+    ; Start line by line drawing/check
+    mov esi,[vidbuffer]
+    add esi,16*2+288*2
+    mov ebx,[mode7A]
+    mov [Mode7BackA],ebx
+    mov ebx,[mode7C]
+    mov [Mode7BackC],ebx
+    mov ebx,[mode7X0]
+    mov [Mode7BackX0],ebx
+    mov bl,[mode7set]
+    mov [Mode7BackSet],ebx
+    mov ebx,1
+%%nextline
+    mov byte[esi-1],0
+    cmp byte[BGFB+ebx],0
+    jne near %%nogo
+    cmp byte[BGMA+ebx],7
+    jne near %%nogo
+    %1 %2, %%nogo
+    test byte[intrlng+ebx],40h
+    jz near %%nogo
+    mov byte[esi-1],1
+    push ebx
+    mov ebp,[cpalval+ebx*4]
+    ; Process mosaic
+    mov byte[curmosaicsz],1
+    xor ecx,ecx
+    test byte[mosenng+ebx],1
+    jz %%nomosaic
+    mov cl,[mosszng+ebx]
+    or cl,cl
+    jz %%nomosaic
+    inc cl
+    mov byte[curmosaicsz],cl
+    xor edx,edx
+    mov eax,ebx
+    div cl
+    xor edx,edx
+    mul cl
+    mov ebx,eax
+%%nomosaic
+    ; process line by line
+    mov edx,[mode7ab+ebx*4]
+    mov [mode7A],edx
+    mov edx,[mode7cd+ebx*4]
+    mov [mode7C],edx
+    mov edx,[mode7xy+ebx*4]
+    mov [mode7X0],edx
+    mov edx,[mode7st+ebx]
+    mov [mode7set],dl
+    xor edx,edx
+    mov eax,ebx
+    test byte[mode7set],02h
+    jz %%noflip
+    mov eax,261
+    sub eax,ebx
+%%noflip
+    mov dx,[BG1SXl+ebx*2]
+    add ax,[BG1SYl+ebx*2]
+    mov [curvidoffset],esi
+    push esi
+    call drawmode7ngextbg16b
+    pop esi
+    pop ebx
+%%nogo
+    inc ebx
+    add esi,288*2
+    cmp [resolutn],bx
+    jne near %%nextline
+    mov ebx,[Mode7BackA]
+    mov [mode7A],ebx
+    mov ebx,[Mode7BackC]
+    mov [mode7C],ebx
+    mov ebx,[Mode7BackX0]
+    mov [mode7X0],ebx
+    mov ebx,[Mode7BackSet]
+    mov [mode7set],bl
+%endmacro
+
+%macro ProcMode7ngextbg216b 2
+    mov byte[winon],0
+    ; Draw BG
+    ; Start line by line drawing/check
+    mov esi,[vidbuffer]
+    add esi,16*2+288*2
+    mov ebx,[mode7A]
+    mov [Mode7BackA],ebx
+    mov ebx,[mode7C]
+    mov [Mode7BackC],ebx
+    mov ebx,[mode7X0]
+    mov [Mode7BackX0],ebx
+    mov bl,[mode7set]
+    mov [Mode7BackSet],ebx
+    mov ebx,1
+%%nextline
+    cmp byte[BGFB+ebx],0
+    jne near %%nogo
+    cmp byte[BGMA+ebx],7
+    jne near %%nogo
+    %1 %2, %%nogo
+    test byte[intrlng+ebx],40h
+    jz near %%nogo
+
+    push ebx
+    mov ebp,[cpalval+ebx*4]
+    ; Process mosaic
+    mov byte[curmosaicsz],1
+    xor ecx,ecx
+    test byte[mosenng+ebx],1
+    jz %%nomosaic
+    mov cl,[mosszng+ebx]
+    or cl,cl
+    jz %%nomosaic
+    inc cl
+    mov byte[curmosaicsz],cl
+    xor edx,edx
+    mov eax,ebx
+    div cl
+    xor edx,edx
+    mul cl
+    mov ebx,eax
+%%nomosaic
+    ; process line by line
+    mov edx,[mode7ab+ebx*4]
+    mov [mode7A],edx
+    mov edx,[mode7cd+ebx*4]
+    mov [mode7C],edx
+    mov edx,[mode7xy+ebx*4]
+    mov [mode7X0],edx
+    mov edx,[mode7st+ebx]
+    mov [mode7set],dl
+    xor edx,edx
+    mov eax,ebx
+    test byte[mode7set],02h
+    jz %%noflip
+    mov eax,261
+    sub eax,ebx
+%%noflip
+    mov dx,[BG1SXl+ebx*2]
+    add ax,[BG1SYl+ebx*2]
+    mov [curvidoffset],esi
+    push esi
+    cmp byte[esi-1],1
+    je %%drawb
+    call drawmode7ngextbg16b
+    jmp %%drawa
+%%drawb
+    call drawmode7ngextbg216b
+%%drawa
+    pop esi
+    pop ebx
+%%nogo
+    inc ebx
+    add esi,288*2
+    cmp [resolutn],bx
+    jne near %%nextline
+    mov ebx,[Mode7BackA]
+    mov [mode7A],ebx
+    mov ebx,[Mode7BackC]
+    mov [mode7C],ebx
+    mov ebx,[Mode7BackX0]
+    mov [mode7X0],ebx
+    mov ebx,[Mode7BackSet]
+    mov [mode7set],bl
+%endmacro
+
+%macro preparet4ba 0
+    shl cx,5
+    add ecx,ecx
+    add ecx,[vcache4b]
+%endmacro
+
+%macro preparet2ba 0
+    shl cx,4
+    shl ecx,2
+    add ecx,[vcache2b]
+%endmacro
+
+%macro preparet8ba 0
+    shl cx,6
+    add ecx,[vcache8b]
+%endmacro
+
+%macro preparet2batile 0
+    shl ecx,8
+    add ecx,[vcache2bs]
+%endmacro
+%macro preparet4batile 0
+    shl ecx,8
+    add ecx,[vcache4bs]
+%endmacro
+%macro preparet8batile 0
+    shl ecx,8
+    add ecx,[vcache8bs]
+%endmacro
+
+%macro test4ba 0
+    and ecx,2047
+    test dword[vidmemch4+ecx*2],0FFFFh
+%endmacro
+
+%macro test2ba 0
+    and ecx,4095
+    add edx,dword[mode0add]
+    test dword[vidmemch2+ecx],0FFh
+%endmacro
+
+%macro test8ba 0
+    and ecx,1023
+    test dword[vidmemch8+ecx*4],0FFFFFFFFh
+%endmacro
+
+%macro tilenormal 2
+    mov ebx,[ecx+%2]
+    mov [edi+%1],ebx
+    mov ebx,[ecx+%2+4]
+    mov [edi+%1+4],ebx
+    mov ebx,[ecx+%2+8]
+    mov [edi+%1+8],ebx
+    mov ebx,[ecx+%2+12]
+    mov [edi+%1+12],ebx
+%endmacro
+
+%macro tilenormalb 1
+    cmp word[ecx+%1],0FFFFh
+    je %%nott
+    mov bx,[ecx+%1]
+    mov [edi+%1],bx
+%%nott
+%endmacro
+
+%macro tilenormals 2
+    mov ebx,[ecx+%2]
+    mov [edi+%1+75036*2],ebx
+    mov ebx,[ecx+%2+4]
+    mov [edi+%1+4+75036*2],ebx
+    mov ebx,[ecx+%2+8]
+    mov [edi+%1+8+75036*2],ebx
+    mov ebx,[ecx+%2+12]
+    mov [edi+%1+12+75036*2],ebx
+%endmacro
+
+%macro tilenormalbs 1
+    cmp word[ecx+%1],0FFFFh
+    je %%nott
+    mov bx,[ecx+%1]
+    mov [edi+%1+75036*2],bx
+%%nott
+%endmacro
+
+%macro tilenormalt 2
+    mov ebx,[ecx+%2]
+    or ebx,[UnusedBit]
+    mov [edi+%1],ebx
+    mov ebx,[ecx+%2+4]
+    or ebx,[UnusedBit]
+    mov [edi+%1+4],ebx
+    mov ebx,[ecx+%2+8]
+    or ebx,[UnusedBit]
+    mov [edi+%1+8],ebx
+    mov ebx,[ecx+%2+12]
+    or ebx,[UnusedBit]
+    mov [edi+%1+12],ebx
+%endmacro
+
+%macro tilenormalbt 1
+    cmp word[ecx+%1],0FFFFh
+    je %%nott
+    mov bx,[ecx+%1]
+    or bx,[UnusedBit]
+    mov [edi+%1],bx
+%%nott
+%endmacro
+
+%macro tilenormalmsnt 2
+    mov ebx,[ecx+%2]
+    mov [edi+%1],ebx
+    mov [edi+%1+75036*2],ebx
+    mov ebx,[ecx+%2+4]
+    mov [edi+%1+4],ebx
+    mov [edi+%1+4+75036*2],ebx
+    mov ebx,[ecx+%2+8]
+    mov [edi+%1+8],ebx
+    mov [edi+%1+8+75036*2],ebx
+    mov ebx,[ecx+%2+12]
+    mov [edi+%1+12],ebx
+    mov [edi+%1+12+75036*2],ebx
+%endmacro
+
+%macro tilenormalbmsnt 1
+    cmp word[ecx+%1],0FFFFh
+    je %%nott
+    mov bx,[ecx+%1]
+    mov [edi+%1],bx
+    mov [edi+%1+75036*2],bx
+%%nott
+%endmacro
+
+%macro tilenormalmst 2
+    mov ebx,[ecx+%2]
+    mov [edi+%1+75036*2],ebx
+    or ebx,[UnusedBit]
+    mov [edi+%1],ebx
+    mov ebx,[ecx+%2+4]
+    mov [edi+%1+4+75036*2],ebx
+    or ebx,[UnusedBit]
+    mov [edi+%1+4],ebx
+    mov ebx,[ecx+%2+8]
+    mov [edi+%1+8+75036*2],ebx
+    or ebx,[UnusedBit]
+    mov [edi+%1+8],ebx
+    mov ebx,[ecx+%2+12]
+    mov [edi+%1+12+75036*2],ebx
+    or ebx,[UnusedBit]
+    mov [edi+%1+12],ebx
+%endmacro
+
+%macro tilenormalbmst 1
+    cmp word[ecx+%1],0FFFFh
+    je %%nott
+    mov bx,[ecx+%1]
+    mov [edi+%1+75036*2],bx
+    or bx,[UnusedBit]
+    mov [edi+%1],bx
+%%nott
+%endmacro
+
+%macro drawtileng16b 12
+    ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
+    ;              bit 10-12 = palette, 0-9=tile#
+    mov ebx,[ng16bbgval]
+    mov dl,ch
+    inc dword[bg1drwng+ebx*4]
+    and ecx,3FFh
+    and edx,1Fh
+    add ecx,[ngptrdat2]
+    mov edx,[%6+edx*4]
+    %7
+    jnz near %%docache
+    cmp byte[%9+ecx],dl
+    je %%returnfromcache
+    mov byte[%9+ecx],dl
+    call %10
+%%returnfromcache
+    cmp byte[%1+ecx],2
+    je near %5
+    cmp byte[%1+ecx],0
+    je near %%parttile
+    %2
+    ; start drawing from ecx
+    test dword[vrama+eax],4000h
+    jz %%noflipxfull
+    add ecx,128
+%%noflipxfull
+    test dword[vrama+eax],8000h
+    jnz near %%flipyfull
+    %11 0,0
+    %11 288*2,16
+    %11 288*4,32
+    %11 288*6,48
+    %11 288*8,64
+    %11 288*10,80
+    %11 288*12,96
+    %11 288*14,112
+    jmp %5
+%%flipyfull
+    %11 288*14,0
+    %11 288*12,16
+    %11 288*10,32
+    %11 288*8,48
+    %11 288*6,64
+    %11 288*4,80
+    %11 288*2,96
+    %11 0,112
+    jmp %5
+%%parttile
+    %2
+    ; start drawing from ecx to edi
+    test word[vrama+eax],4000h
+    jz %%noflipxpart
+    add ecx,128
+%%noflipxpart
+    test word[vrama+eax],8000h
+    jnz near %%flipypart
+    mov dword[tleftnb],8
+%%nextb
+    %12 0
+    %12 2
+    %12 4
+    %12 6
+    %12 8
+    %12 10
+    %12 12
+    %12 14
+    add ecx,16
+    add edi,288*2
+    dec dword[tleftnb]
+    jnz near %%nextb
+    sub edi,288*2*8
+    jmp %5
+%%flipypart
+    add edi,288*2*7
+    mov dword[tleftnb],8
+%%nextbm
+    %12 0
+    %12 2
+    %12 4
+    %12 6
+    %12 8
+    %12 10
+    %12 12
+    %12 14
+    add ecx,16
+    sub edi,288*2
+    dec dword[tleftnb]
+    jnz near %%nextbm
+    add edi,288*2
+%5
+    mov ebx,[ng16bbgval]
+    add ax,2
+    inc dword[bg1totng+ebx*4]
+    add edi,16
+    test eax,03Fh
+    jz %%tileadd
+%%next
+    dec byte[tleftn]
+    jnz near %4
+    pop ebx
+    ret
+%%docache
+    call %3
+    mov byte[%9+ecx],dl
+    call %10
+    jmp %%returnfromcache
+%%tileadd
+    add ax,[bgtxadd]
+    jmp %%next
+%endmacro
+
+%macro drawtileng16x1616b 12
+    ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
+    ;              bit 10-12 = palette, 0-9=tile#
+    mov ebx,[ng16bbgval]
+    mov dl,ch
+    inc dword[bg1drwng+ebx*4]
+    and ecx,3FFh
+    and edx,1Fh
+    add ecx,[ngptrdat2]
+    add cx,[taddnfy16x16]
+    test dword[vrama+eax],8000h
+    jz %%noflipy
+    add cx,[taddfy16x16]
+%%noflipy
+    test dword[vrama+eax],4000h
+    jz %%noflipx
+    inc cx
+%%noflipx
+%%nexttile
+    push ecx
+    push edx
+    mov edx,[%6+edx*4]
+    %7
+    jnz near %%docache
+    cmp byte[%9+ecx],dl
+    je %%returnfromcache
+    mov byte[%9+ecx],dl
+    call %10
+%%returnfromcache
+    cmp byte[%1+ecx],2
+    je near %%done
+    cmp byte[%1+ecx],0
+    je near %%parttile
+    %2
+    ; start drawing from ecx
+    test dword[vrama+eax],4000h
+    jz %%noflipxfull
+    add ecx,128
+%%noflipxfull
+    test dword[vrama+eax],8000h
+    jnz near %%flipyfull
+    %11 0,0
+    %11 288*2,16
+    %11 288*4,32
+    %11 288*6,48
+    %11 288*8,64
+    %11 288*10,80
+    %11 288*12,96
+    %11 288*14,112
+    jmp %%done
+%%flipyfull
+    %11 288*14,0
+    %11 288*12,16
+    %11 288*10,32
+    %11 288*8,48
+    %11 288*6,64
+    %11 288*4,80
+    %11 288*2,96
+    %11 0,112
+    jmp %%done
+%%parttile
+    %2
+    ; start drawing from ecx to edi
+    test word[vrama+eax],4000h
+    jz %%noflipxpart
+    add ecx,128
+%%noflipxpart
+    test word[vrama+eax],8000h
+    jnz near %%flipypart
+    mov dword[tleftnb],8
+%%nextb
+    %12 0
+    %12 2
+    %12 4
+    %12 6
+    %12 8
+    %12 10
+    %12 12
+    %12 14
+    add ecx,16
+    add edi,288*2
+    dec dword[tleftnb]
+    jnz near %%nextb
+    sub edi,288*2*8
+    jmp %%done
+%%flipypart
+    add edi,288*2*7
+    mov dword[tleftnb],8
+%%nextbm
+    %12 0
+    %12 2
+    %12 4
+    %12 6
+    %12 8
+    %12 10
+    %12 12
+    %12 14
+    add ecx,16
+    sub edi,288*2
+    dec dword[tleftnb]
+    jnz near %%nextbm
+    add edi,288*2
+%%done
+    pop edx
+    pop ecx
+    inc cx
+    test dword[vrama+eax],4000h
+    jz %%noflipxb
+    sub cx,2
+%%noflipxb
+    add edi,16
+    xor dword[switch16x16],1
+    jnz near %%nexttile
+%%ntile
+    mov ebx,[ng16bbgval]
+    add ax,2
+    inc dword[bg1totng+ebx*4]
+    test eax,03Fh
+    jz %%tileadd
+%%next
+    dec byte[tleftn]
+    jnz near %4
+    pop ebx
+    ret
+%5
+    add edi,32
+    jmp %%ntile
+%%docache
+    call %3
+    mov byte[%9+ecx],dl
+    call %10
+    jmp %%returnfromcache
+%%tileadd
+    add ax,[bgtxadd]
+    jmp %%next
+%endmacro
+
+%macro ProcessBuildWindow 1
+    mov dword[ngwinen],0
+    test byte[winbg1enval+ebx+%1*256],0Ah
+    jz %%nowindowing
+    push eax
+    push ebx
+;NEWSYM winlogicaval, times 256 dw 0
+    mov al,[winlogicaval+ebx*2]
+    shr al,%1*2
+    and al,03h
+    mov [nglogicval],al
+    mov eax,ebx
+    add ebx,%1*256
+    call BuildWindow
+    mov eax,edi
+    sub eax,esi
+    sar eax,1
+    cmp dword[ngwintable],0
+    jne %%notzero
+    sub [ngwintable+4],eax
+    jmp %%done
+%%notzero
+    sub [ngwintable],eax
+%%done
+    pop ebx
+    pop eax
+%%nowindowing
+%endmacro
+
+%macro drawbgtileng16b 2
+    mov dword[ng16bprval],0
+    mov dword[ng16bbgval],%1
+    cmp byte[t16x161+ebx+%1*256],1
+    je near .tiles16x16
+    push ebx
+    mov eax,[BGPT1+ebx*2+%1*512]
+    test ecx,100h
+    jz .noyinc
+    add eax,[BGPT1Y+ebx*2+%1*512]
+.noyinc
+    lea ecx,[ecx*8]
+    and ecx,07C0h      ; 1Fh*40h
+    add eax,ecx
+    mov ecx,[BG1SXl+ebx*2+%1*512]
+    mov edx,[BGPT1X+ebx*2+%1*512]
+    test ecx,100h
+    jz .noxinc
+    add eax,edx
+    neg dx
+.noxinc
+    mov edi,ecx
+    sub dx,64
+    and ecx,0F8h
+    and eax,0FFFFh
+    shr ecx,2
+    mov [bgtxadd],edx
+    mov [bgtxad+ebx*2+%2*512],dx
+    add eax,ecx
+    mov ecx,[BGOPT1+ebx*2+%1*512]
+    mov edx,[BGMA+ebx]
+    and edi,07h
+    and edx,07h
+    and ecx,0FFFFh
+    mov edx,[colormodedef+edx*4+%1]
+    neg edi
+    add edi,edi
+    cmp dl,2
+    jne near .no4bit
+    shr ecx,5
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    add ecx,%2*256
+    mov dl,1 << %2
+    jmp drawtileng4b16b
+.no4bit
+    cmp dl,1
+    jne near .no2bit
+    shr ecx,4
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    mov dword[mode0add],0
+    ProcessBuildWindow %1
+    cmp byte[BGMA+ebx],0
+    jne .nomode0
+    push ebx
+    mov ebx,[mode0ads]
+    mov [mode0add],ebx
+    pop ebx
+.nomode0
+    mov ecx,ebx
+    add ecx,%2*256
+    mov dl,1 << %2
+    jmp drawtileng2b16b
+.no2bit
+    cmp dl,3
+    jne near .no8bit
+    shr ecx,6
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    add ecx,%2*256
+    mov dl,1 << %2
+    jmp drawtileng8b16b
+.no8bit
+    pop ebx
+    ret
+
+.tiles16x16
+    mov dword[taddnfy16x16],0
+    mov dword[taddfy16x16],16
+    test ecx,08h
+    jz .nobottomy
+    mov dword[taddnfy16x16],16
+    mov dword[taddfy16x16],-16
+.nobottomy
+    push ebx
+    mov eax,[BGPT1+ebx*2+%1*512]
+    test ecx,200h
+    jz .noyinc2
+    add eax,[BGPT1Y+ebx*2+%1*512]
+.noyinc2
+    lea ecx,[ecx*4]
+    and ecx,07C0h      ; 1Fh*40h
+    add eax,ecx
+    mov ecx,[BG1SXl+ebx*2+%1*512]
+    mov edx,[BGPT1X+ebx*2+%1*512]
+    test ecx,200h
+    jz .noxinc2
+    add eax,edx
+    neg dx
+.noxinc2
+    mov edi,ecx
+    sub dx,64
+    and ecx,1F0h
+    and eax,0FFFFh
+    shr ecx,3
+    mov [bgtxadd],edx
+    mov [bgtxad+ebx*2+%2*512],dx
+    add eax,ecx
+    mov ecx,[BGOPT1+ebx*2+%1*512]
+    mov edx,[BGMA+ebx]
+    and edi,0Fh
+    and edx,07h
+    and ecx,0FFFFh
+    mov edx,[colormodedef+edx*4+%1]
+    neg edi
+    add edi,edi
+    cmp dl,2
+    jne near .no4bit2
+    shr ecx,5
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    add ecx,%2*256
+    mov dl,1 << %2
+    jmp drawtileng16x164b16b
+.no4bit2
+    cmp dl,1
+    jne near .no2bit2
+    shr ecx,4
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    mov dword[mode0add],0
+    ProcessBuildWindow %1
+    cmp byte[BGMA+ebx],0
+    jne .nomode02
+    push ebx
+    mov ebx,[mode0ads]
+    mov [mode0add],ebx
+    pop ebx
+.nomode02
+    mov ecx,ebx
+    add ecx,%2*256
+    mov dl,1 << %2
+    jmp drawtileng16x162b16b
+.no2bit2
+    cmp dl,3
+    jne near .no8bit
+    shr ecx,6
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    add ecx,%2*256
+    mov dl,1 << %2
+    jmp drawtileng16x168b16b
+.no8bit2
+    pop ebx
+    ret
+%endmacro
+
+%macro drawbgtilengpr116b 2
+    mov dword[ng16bprval],2000h
+    mov dword[ng16bbgval],%1
+    cmp byte[t16x161+ebx+%1*256],1
+    je near .tiles16x16
+    push ebx
+    mov edx,[BGMA+ebx]
+    mov ecx,[bgtxad+ebx*2+%2*512]
+    and edx,07h
+    mov [bgtxadd],cx
+    mov ecx,[ngptrdat+%2*1024+ebx*4]
+    mov edx,[colormodedef+edx*4+%1]
+    mov [ngptrdat2],ecx
+    mov eax,[ngceax+%2*1024+ebx*4]
+    mov edi,[ngcedi+%2*1024+ebx*4]
+    cmp dl,2
+    jne near .no4bit
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    add ecx,%2*256
+    mov dl,1 << %2
+    jmp drawtileng4b16b
+.no4bit
+    cmp dl,1
+    jne near .no2bit
+    ; eax = pointer to beginning of tile area
+    mov dword[mode0add],0
+    ProcessBuildWindow %1
+    cmp byte[BGMA+ebx],0
+    jne .nomode0
+    push ebx
+    mov ebx,[mode0ads]
+    mov [mode0add],ebx
+    pop ebx
+.nomode0
+    mov ecx,ebx
+    add ecx,%2*256
+    mov dl,1 << %2
+    jmp drawtileng2b16b
+.no2bit
+    cmp dl,3
+    jne near .no8bit
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    add ecx,%2*256
+    mov dl,1 << %2
+    jmp drawtileng8b16b
+.no8bit
+    pop ebx
+    ret
+.tiles16x16
+    mov ecx,[BG1SYl+ebx*2+%1*512]
+    and ecx,0FFFFh
+    mov dword[taddnfy16x16],0
+    add ecx,ebx
+    mov dword[taddfy16x16],16
+    test ecx,08h
+    jz .nobottomy
+    mov dword[taddnfy16x16],16
+    mov dword[taddfy16x16],-16
+.nobottomy
+    push ebx
+    mov edx,[BGMA+ebx]
+    mov ecx,[bgtxad+ebx*2+%2*512]
+    and edx,07h
+    mov [bgtxadd],cx
+    mov ecx,[ngptrdat+%2*1024+ebx*4]
+    mov edx,[colormodedef+edx*4+%1]
+    mov [ngptrdat2],ecx
+    mov eax,[ngceax+%2*1024+ebx*4]
+    mov edi,[ngcedi+%2*1024+ebx*4]
+    cmp dl,2
+    jne near .no4bit2
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    add ecx,%2*256
+    mov dl,1 << %2
+    jmp drawtileng16x164b16b
+.no4bit2
+    cmp dl,1
+    jne near .no2bit2
+    ; eax = pointer to beginning of tile area
+    mov dword[mode0add],0
+    ProcessBuildWindow %1
+    cmp byte[BGMA+ebx],0
+    jne .nomode02
+    push ebx
+    mov ebx,[mode0ads]
+    mov [mode0add],ebx
+    pop ebx
+.nomode02
+    mov ecx,ebx
+    add ecx,%2*256
+    mov dl,1 << %2
+    jmp drawtileng16x162b16b
+.no2bit2
+    cmp dl,3
+    jne near .no8bit2
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    add ecx,%2*256
+    mov dl,1 << %2
+    jmp drawtileng16x168b16b
+.no8bit2
+    pop ebx
+    ret
+%endmacro
+
+%macro procpixels 3
+    mov bl,[esi+%2]
+    mov cl,[esi+%1]
+    add bl,dl
+    add cl,dl
+    mov bx,[eax+ebx*2]
+    shl ebx,16
+    mov bx,[eax+ecx*2]
+    mov [edi+%3],ebx
+    xor ebx,ebx
+%endmacro
+
+%macro procpixelst 3
+    mov bl,[esi+%1]
+    add bl,dl
+    test bl,%3
+    jz %%nodraw
+    mov cx,[eax+ebx*2]
+    mov [edi+%2],cx
+%%nodraw
+%endmacro
+
+%macro procpixelstr 3
+    mov bl,[esi+%2]
+    mov cl,[esi+%1]
+    add bl,dl
+    add cl,dl
+    mov bx,[eax+ebx*2+512]
+    shl ebx,16
+    mov bx,[eax+ecx*2+512]
+    mov [edi+%3],ebx
+    xor ebx,ebx
+%endmacro
+
+%macro procpixelstt 3
+    mov bl,[esi+%1]
+    add bl,dl
+    test bl,%3
+    jz %%nodraw
+    mov cx,[eax+ebx*2+512]
+    mov [edi+%2],cx
+%%nodraw
+%endmacro
+
+%macro procpixelsnt 3
+    mov bl,[esi+%2]
+    mov cl,[esi+%1]
+    add bl,dl
+    add cl,dl
+    mov bx,[eax+ebx*2]
+    shl ebx,16
+    mov bx,[eax+ecx*2]
+    mov [edi+%3],ebx
+    xor ebx,ebx
+%endmacro
+
+%macro procpixelstnt 3
+    mov bl,[esi+%1]
+    add bl,dl
+    test bl,%3
+    jz %%nodraw
+    mov cx,[eax+ebx*2]
+    mov [edi+%2],cx
+%%nodraw
+%endmacro
+
+%macro procpixelsmst 3
+    mov bl,[esi+%2]
+    mov cl,[esi+%1]
+    add bl,dl
+    add cl,dl
+    mov bx,[eax+ebx*2+512]
+    shl ebx,16
+    mov bx,[eax+ecx*2+512]
+    and ebx,[UnusedBitXor]
+    mov [edi+%3],ebx
+    mov [edi+%3+75036*2],ebx
+    xor ebx,ebx
+%endmacro
+
+%macro procpixelstmst 3
+    mov bl,[esi+%1]
+    add bl,dl
+    test bl,%3
+    jz %%nodraw
+    mov cx,[eax+ebx*2+512]
+    mov [edi+%2],cx
+    and cx,[UnusedBitXor]
+    mov [edi+%2+75036*2],cx
+%%nodraw
+%endmacro
+
+%macro procpixelsmsnt 3
+    mov bl,[esi+%2]
+    mov cl,[esi+%1]
+    add bl,dl
+    add cl,dl
+    mov bx,[eax+ebx*2]
+    shl ebx,16
+    mov bx,[eax+ecx*2]
+    mov [edi+%3],ebx
+    mov [edi+%3+75036*2],ebx
+    xor ebx,ebx
+%endmacro
+
+%macro procpixelstmsnt 3
+    mov bl,[esi+%1]
+    add bl,dl
+    test bl,%3
+    jz %%nodraw
+    mov cx,[eax+ebx*2]
+    mov [edi+%2],cx
+    mov [edi+%2+75036*2],cx
+%%nodraw
+%endmacro
+
+%macro procpixelss 3
+    mov bl,[esi+%2]
+    mov cl,[esi+%1]
+    add bl,dl
+    add cl,dl
+    mov bx,[eax+ebx*2]
+    shl ebx,16
+    mov bx,[eax+ecx*2]
+    mov [edi+%3+75036*2],ebx
+    xor ebx,ebx
+%endmacro
+
+%macro procpixelsts 3
+    mov bl,[esi+%1]
+    add bl,dl
+    test bl,%3
+    jz %%nodraw
+    mov cx,[eax+ebx*2]
+    mov [edi+%2+75036*2],cx
+%%nodraw
+%endmacro
+
+%macro drawlineng16b 10
+    ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
+    ;              bit 10-12 = palette, 0-9=tile#
+    mov ebx,[ng16bbgval]
+    mov dl,ch
+    inc dword[bg1drwng+ebx*4]
+    and ecx,3FFh
+    and edx,1Fh
+    add ecx,[ngptrdat2]
+    mov edx,[%6+edx*4]
+    %7
+    jnz near %%docache
+%%returnfromcache
+    cmp byte[%1+ecx],2
+    je near %5
+    cmp byte[%1+ecx],0
+    je near %%parttile
+    jmp %%parttile
+    %2
+    ; start drawing from ecx
+    test dword[vrama+eax],8000h
+    jz %%notflipyfull
+    add ecx,[flipyposng]
+    jmp %%yesflipyfull
+%%notflipyfull
+    add ecx,[yposng]
+%%yesflipyfull
+    test dword[vrama+eax],4000h
+    jnz near %%flipxfull
+    push eax
+    mov esi,ecx
+    xor ecx,ecx
+    xor ebx,ebx
+    mov eax,[CPalPtrng]
+    %9 0,1,0
+    %9 2,3,4
+    %9 4,5,8
+    %9 6,7,12
+    pop eax
+    jmp %5
+%%flipxfull
+    push eax
+    mov esi,ecx
+    xor ecx,ecx
+    xor ebx,ebx
+    mov eax,[CPalPtrng]
+    %9 7,6,0
+    %9 5,4,4
+    %9 3,2,8
+    %9 1,0,12
+    pop eax
+    jmp %5
+%%parttile
+    %2
+    ; start drawing from ecx to edi
+    test word[vrama+eax],8000h
+    jz %%noflipypart
+    add ecx,[flipyposng]
+    jmp %%yesflipypart
+%%noflipypart
+    add ecx,[yposng]
+%%yesflipypart
+    test word[vrama+eax],4000h
+    jnz near %%flipxpart
+    push eax
+    mov eax,[CPalPtrng]
+    mov esi,ecx
+    xor ebx,ebx
+    %10 0,0,%8
+    %10 1,2,%8
+    %10 2,4,%8
+    %10 3,6,%8
+    %10 4,8,%8
+    %10 5,10,%8
+    %10 6,12,%8
+    %10 7,14,%8
+    pop eax
+    jmp %5
+%%flipxpart
+    push eax
+    mov eax,[CPalPtrng]
+    mov esi,ecx
+    xor ebx,ebx
+    %10 7,0,%8
+    %10 6,2,%8
+    %10 5,4,%8
+    %10 4,6,%8
+    %10 3,8,%8
+    %10 2,10,%8
+    %10 1,12,%8
+    %10 0,14,%8
+    pop eax
+%5
+    mov ebx,[ng16bbgval]
+    add ax,2
+    inc dword[bg1totng+ebx*4]
+    add edi,16
+    test eax,03Fh
+    jz %%tileadd
+%%next
+    dec byte[tleftn]
+    jnz near %4
+    pop ebx
+    cmp byte[curmosaicsz],1
+    jne near domosaicng16b
+    ret
+%%docache
+    call %3
+    jmp %%returnfromcache
+%%tileadd
+    add ax,[bgtxadd]
+    jmp %%next
+%endmacro
+
+%macro drawlineng16x1616b 10
+    ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
+    ;              bit 10-12 = palette, 0-9=tile#
+    mov ebx,[ng16bbgval]
+    mov dl,ch
+    inc dword[bg1drwng+ebx*4]
+    and ecx,3FFh
+    and edx,1Fh
+    add ecx,[ngptrdat2]
+    add cx,[taddnfy16x16]
+    test dword[vrama+eax],8000h
+    jz %%noflipy
+    add cx,[taddfy16x16]
+%%noflipy
+    test dword[vrama+eax],4000h
+    jz %%noflipx
+    inc cx
+%%noflipx
+%%nexttile
+    push ecx
+    push edx
+    mov edx,[%6+edx*4]
+    %7
+    jnz near %%docache
+%%returnfromcache
+    cmp byte[%1+ecx],2
+    je near %%done
+    cmp byte[%1+ecx],0
+    je near %%parttile
+    %2
+    ; start drawing from ecx
+    test word[vrama+eax],8000h
+    jz %%noflipyfull
+    add ecx,[flipyposng]
+    jmp %%yesflipyfull
+%%noflipyfull
+    add ecx,[yposng]
+%%yesflipyfull
+    test dword[vrama+eax],4000h
+    jnz near %%flipxfull
+    push eax
+    mov esi,ecx
+    xor ecx,ecx
+    xor ebx,ebx
+    mov eax,[CPalPtrng]
+    %9 0,1,0
+    %9 2,3,4
+    %9 4,5,8
+    %9 6,7,12
+    pop eax
+    jmp %%done
+%%flipxfull
+    push eax
+    mov esi,ecx
+    xor ecx,ecx
+    xor ebx,ebx
+    mov eax,[CPalPtrng]
+    %9 7,6,0
+    %9 5,4,4
+    %9 3,2,8
+    %9 1,0,12
+    pop eax
+    jmp %%done
+%%parttile
+    %2
+    ; start drawing from ecx to edi
+    test word[vrama+eax],8000h
+    jz %%noflipypart
+    add ecx,[flipyposng]
+    jmp %%yesflipypart
+%%noflipypart
+    add ecx,[yposng]
+%%yesflipypart
+    test word[vrama+eax],4000h
+    jnz near %%flipxpart
+    push eax
+    mov eax,[CPalPtrng]
+    mov esi,ecx
+    xor ebx,ebx
+    %10 0,0,%8
+    %10 1,2,%8
+    %10 2,4,%8
+    %10 3,6,%8
+    %10 4,8,%8
+    %10 5,10,%8
+    %10 6,12,%8
+    %10 7,14,%8
+    pop eax
+    jmp %%done
+%%flipxpart
+    push eax
+    mov eax,[CPalPtrng]
+    mov esi,ecx
+    xor ebx,ebx
+    %10 7,0,%8
+    %10 6,2,%8
+    %10 5,4,%8
+    %10 4,6,%8
+    %10 3,8,%8
+    %10 2,10,%8
+    %10 1,12,%8
+    %10 0,14,%8
+    pop eax
+%%done
+    pop edx
+    pop ecx
+    inc cx
+    test dword[vrama+eax],4000h
+    jz %%noflipxb
+    sub cx,2
+%%noflipxb
+    add edi,16
+    xor dword[switch16x16],1
+    jnz near %%nexttile
+%%ntile
+    mov ebx,[ng16bbgval]
+    add ax,2
+    inc dword[bg1totng+ebx*4]
+    test eax,03Fh
+    jz %%tileadd
+%%next
+    dec byte[tleftn]
+    jnz near %4
+    pop ebx
+    cmp byte[curmosaicsz],1
+    jne near domosaicng16b
+    ret
+%5
+    add edi,32
+    jmp %%ntile
+%%docache
+    call %3
+    jmp %%returnfromcache
+%%tileadd
+    add ax,[bgtxadd]
+    jmp %%next
+%endmacro
+
+%macro drawbglineng16b 2
+    mov dword[ng16bprval],0
+    mov [pesimpng],esi
+    mov dword[ng16bbgval],%1
+    cmp byte[bgmode],5
+    jb %%nointerl
+    test byte[intrlng+ebx],01h
+    jz %%nointerl
+    add ecx,ebx
+    add ecx,[cfieldad]
+%%nointerl
+    push ebx
+    mov byte[curmosaicsz],1
+    xor eax,eax
+    test byte[mosenng+ebx],1 << %1
+    jz %%nomosaic
+    mov al,[mosszng+ebx]
+    or al,al
+    jz %%nomosaic
+    inc al
+    mov byte[curmosaicsz],al
+    mov cl,al
+    mov al,bl
+    div cl
+    mul cl
+    mov ebx,eax
+    mov edi,xtravbuf+32
+    mov ecx,128
+    mov eax,0FFFFFFFFh
+    mov esi,xtravbuf+32
+    rep stosd
+    or ebx,ebx
+    jnz %%nozeroline
+    inc ebx
+%%nozeroline
+    mov ecx,[BG1SYl+ebx*2+%1*512]
+    and ecx,0FFFFh
+    add ecx,ebx
+    jmp %%yesmosaic
+%%nomosaic
+%%yesmosaic
+    cmp byte[BGMA+ebx],5
+    jae near .tiles16x8
+    cmp byte[osm2dis],1
+    je .nooffsetm
+    cmp byte[BGMA+ebx],2
+    je near .offsetm
+    cmp byte[t16x161+ebx+%1*256],1
+    je near .tiles16x16
+;    cmp byte[BGMA+ebx],4
+;    je near .offsetm
+.nooffsetm
+    mov eax,[BGPT1+ebx*2+%1*512]
+    test ecx,100h
+    jz .noyinc
+    add eax,[BGPT1Y+ebx*2+%1*512]
+.noyinc
+    lea ecx,[ecx*8]
+    mov edx,ecx
+    and ecx,07C0h      ; 1Fh*40h
+    and edx,38h
+    add eax,ecx
+    mov [yposng],edx
+    xor edx,38h
+    mov ecx,[BG1SXl+ebx*2+%1*512]
+    mov [flipyposng],edx
+    mov edx,[BGPT1X+ebx*2+%1*512]
+    test ecx,100h
+    jz .noxinc
+    add eax,edx
+    neg dx
+.noxinc
+    mov edi,ecx
+    sub dx,64
+    and ecx,0F8h
+    and eax,0FFFFh
+    shr ecx,2
+    mov [bgtxadd],edx
+    mov [bgtxad+ebx*2+%2*512],dx
+    add eax,ecx
+    mov ecx,[BGOPT1+ebx*2+%1*512]
+    mov edx,[BGMA+ebx]
+    and edi,07h
+    and edx,07h
+    and ecx,0FFFFh
+    mov edx,[colormodedef+edx*4+%1]
+    neg edi
+    add edi,edi
+    cmp dl,2
+    jne near .no4bit
+    shr ecx,5
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    add ecx,%2*256
+    mov dl,1 << %2
+    jmp drawlineng4b16b
+.no4bit
+    cmp dl,1
+    jne near .no2bit
+    shr ecx,4
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    mov dword[mode0add],0
+    ProcessBuildWindow %1
+    cmp byte[BGMA+ebx],0
+    jne .nomode0
+    mov ecx,[mode0ads]
+    mov [mode0add],ecx
+.nomode0
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlineng2b16b
+.no2bit
+    cmp dl,3
+    jne near .no8bit
+    shr ecx,6
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlineng8b16b
+.no8bit
+    pop ebx
+    ret
+
+.tiles16x16
+    mov dword[taddnfy16x16],0
+    mov dword[taddfy16x16],16
+    test ecx,08h
+    jz .nobottomy
+    mov dword[taddnfy16x16],16
+    mov dword[taddfy16x16],-16
+.nobottomy
+    mov eax,[BGPT1+ebx*2+%1*512]
+    test ecx,200h
+    jz .noyinc2
+    add eax,[BGPT1Y+ebx*2+%1*512]
+.noyinc2
+    lea edx,[ecx*8]
+    lea ecx,[ecx*4]
+    and edx,38h
+    and ecx,07C0h      ; 1Fh*40h
+    mov [yposng],edx
+    xor edx,38h
+    add eax,ecx
+    mov [flipyposng],edx
+    mov ecx,[BG1SXl+ebx*2+%1*512]
+    mov edx,[BGPT1X+ebx*2+%1*512]
+    test ecx,200h
+    jz .noxinc2
+    add eax,edx
+    neg dx
+.noxinc2
+    mov edi,ecx
+    sub dx,64
+    and ecx,1F0h
+    and eax,0FFFFh
+    shr ecx,3
+    mov [bgtxadd],edx
+    mov [bgtxad+ebx*2+%2*512],dx
+    add eax,ecx
+    mov ecx,[BGOPT1+ebx*2+%1*512]
+    mov edx,[BGMA+ebx]
+    and edi,0Fh
+    and edx,07h
+    and ecx,0FFFFh
+    mov edx,[colormodedef+edx*4+%1]
+    neg edi
+    add edi,edi
+    cmp dl,2
+    jne near .no4bit2
+    shr ecx,5
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlineng16x164b16b
+.no4bit2
+    cmp dl,1
+    jne near .no2bit2
+    shr ecx,4
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    mov dword[mode0add],0
+    ProcessBuildWindow %1
+    cmp byte[BGMA+ebx],0
+    jne .nomode02
+    push ebx
+    mov ebx,[mode0ads]
+    mov [mode0add],ebx
+    pop ebx
+.nomode02
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlineng16x162b16b
+.no2bit2
+    cmp dl,3
+    jne near .no8bit
+    shr ecx,6
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlineng16x168b16b
+.no8bit2
+    pop ebx
+    ret
+
+.tiles16x8
+    cmp byte[t16x161+ebx+%1*256],1
+    je .tiles16x16hr
+    mov dword[taddnfy16x16],0
+    mov dword[taddfy16x16],0
+    mov eax,[BGPT1+ebx*2+%1*512]
+    test ecx,100h
+    jz .noyinc2c
+    add eax,[BGPT1Y+ebx*2+%1*512]
+.noyinc2c
+    lea ecx,[ecx*8]
+    mov edx,ecx
+    and ecx,07C0h      ; 1Fh*40h
+    and edx,38h
+    jmp .tiles16x8hr
+.tiles16x16hr
+    mov dword[taddnfy16x16],0
+    mov dword[taddfy16x16],16
+    test ecx,08h
+    jz .nobottomy2
+    mov dword[taddnfy16x16],16
+    mov dword[taddfy16x16],-16
+.nobottomy2
+    mov eax,[BGPT1+ebx*2+%1*512]
+    test ecx,200h
+    jz .noyinc2b
+    add eax,[BGPT1Y+ebx*2+%1*512]
+.noyinc2b
+    lea edx,[ecx*8]
+    lea ecx,[ecx*4]
+    and edx,38h
+    and ecx,07C0h      ; 1Fh*40h
+.tiles16x8hr
+    mov [yposng],edx
+    xor edx,38h
+    add eax,ecx
+    mov [flipyposng],edx
+    mov ecx,[BG1SXl+ebx*2+%1*512]
+    add ecx,ecx
+    mov edx,[BGPT1X+ebx*2+%1*512]
+    test ecx,200h
+    jz .noxinc2b
+    add eax,edx
+    neg dx
+.noxinc2b
+    mov edi,ecx
+    sub dx,64
+    and ecx,01F0h
+    and eax,0FFFFh
+    shr ecx,3
+    mov [bgtxadd],edx
+    mov [bgtxad+ebx*2+%2*512],dx
+    add eax,ecx
+    mov ecx,[BGOPT1+ebx*2+%1*512]
+    mov edx,[BGMA+ebx]
+    and edi,0Fh
+    and edx,07h
+    and ecx,0FFFFh
+    shr edi,1
+    mov edx,[colormodedef+edx*4+%1]
+    neg edi
+    add edi,edi
+    cmp dl,2
+    jne near .no4bit2b
+    shr ecx,5
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    mov dword[cbgval],%1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlineng16x84b16b
+.no4bit2b
+    cmp dl,1
+    jne near .no2bit2b
+    shr ecx,4
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    mov dword[mode0add],0
+    mov dword[cbgval],%1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlineng16x82b16b
+.no2bit2b
+    pop ebx
+    ret
+
+
+.offsetm16x16
+    pushad
+    xor edx,edx
+    mov dx,[BG3SYl+ebx*2]
+;    and dx,0F8h
+    shr edx,3
+    shl edx,6
+    xor eax,eax
+    mov ax,[BGPT3+ebx*2]
+    add ax,dx
+    xor edx,edx
+    mov dx,[BG3SXl+ebx*2]
+    and dx,0F8h
+    mov [ofsmcyps],ebx
+    shr edx,3
+    shl edx,1
+    add ax,dx
+    mov dx,[bg3scrolx]
+    test dx,8000h
+    jz .nooma16x16
+    and dx,0F000h
+    shr dx,5
+    add ax,dx
+.nooma16x16
+    cmp byte[BGMA+ebx],4
+    je .offsetm416x16
+    add eax,40h
+.offsetm416x16
+    mov edx,eax
+    and edx,0FFFFFFC0h
+    add edx,[vram]
+    mov [ofsmcptr],edx
+    and eax,3Fh
+    mov [ofsmcptr2],eax
+    mov eax,[BGPT1Y+ebx*2+%1*512]
+    mov [ofsmady],eax
+    mov eax,[BGPT1X+ebx*2+%1*512]
+    mov [ofsmadx],eax
+    mov eax,[BGPT1+ebx*2+%1*512]
+    mov [ofsmtptr],eax
+    mov [ofsmtptrs],eax
+    test ecx,100h
+    jz .noyincd16x16
+    add eax,[BGPT1Y+ebx*2+%1*512]
+.noyincd16x16
+    lea ecx,[ecx*8]
+    mov edx,ecx
+    and ecx,07C0h      ; 1Fh*40h
+    and edx,38h
+    add eax,ecx
+    mov [yposng],edx
+    mov [yposngom],edx
+    xor edx,38h
+    mov ecx,[BG1SXl+ebx*2+%1*512]
+    mov [flipyposng],edx
+    mov [flipyposngom],edx
+    mov edx,[BGPT1X+ebx*2+%1*512]
+    test ecx,100h
+    jz .noxincd16x16
+    add eax,edx
+    add [ofsmtptr],edx
+    neg dx
+.noxincd16x16
+    mov edi,ecx
+    sub dx,64
+    and ecx,0F8h
+    and eax,0FFFFh
+    shr ecx,2
+    mov [bgtxadd],edx
+    mov [bgtxad+ebx*2+%2*512],dx
+    add eax,ecx
+    add [ofsmtptr],ecx
+    mov [ofsmmptr],eax
+    mov dword[ofshvaladd],0
+    popad
+
+    mov eax,[BGPT1+ebx*2+%1*512]
+    mov [ofsmtptr],eax
+    mov [ofsmtptrs],eax
+    mov dword[taddnfy16x16],0
+    mov dword[taddfy16x16],16
+    test ecx,08h
+    jz .nobottomy16om
+    mov dword[taddnfy16x16],16
+    mov dword[taddfy16x16],-16
+.nobottomy16om
+    mov eax,[BGPT1+ebx*2+%1*512]
+    test ecx,200h
+    jz .noyinc216om
+    add eax,[BGPT1Y+ebx*2+%1*512]
+.noyinc216om
+    lea edx,[ecx*8]
+    lea ecx,[ecx*4]
+    and edx,38h
+    and ecx,07C0h      ; 1Fh*40h
+    mov [yposng],edx
+    xor edx,38h
+    add eax,ecx
+    mov [flipyposng],edx
+    mov [flipyposngom],edx
+    mov ecx,[BG1SXl+ebx*2+%1*512]
+    mov edx,[BGPT1X+ebx*2+%1*512]
+    test ecx,200h
+    jz .noxinc216om
+    add eax,edx
+    add [ofsmtptr],edx
+    neg dx
+.noxinc216om
+    mov edi,ecx
+    sub dx,64
+    and ecx,1F0h
+    and eax,0FFFFh
+    shr ecx,3
+    mov [bgtxadd],edx
+    mov [bgtxad+ebx*2+%2*512],dx
+    add eax,ecx
+    add [ofsmtptr],ecx
+    mov [ofsmmptr],eax
+    mov ecx,[BGOPT1+ebx*2+%1*512]
+    mov edx,[BGMA+ebx]
+    and edi,0Fh
+    and edx,07h
+    and ecx,0FFFFh
+    mov edx,[colormodedef+edx*4+%1]
+    neg edi
+    add edi,edi
+    cmp dl,2
+    jne near .no4bitom16x16
+    shr ecx,5
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    mov dword[ofsmval],2000h << %1
+    mov dword[ofsmvalh],2000h << %1
+    cmp byte[hdmaearlstart],0
+    je .ofsmvalhack16x16
+    mov dword[ofsmvalh],0
+.ofsmvalhack16x16
+    mov dword[cbgval],%1
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlinengom16x164b16b
+.no4bitom16x16
+    pop ebx
+    ret
+
+    ; Offsetmode calculation : <b2-7,2109>*1024+<b3-7,2112>*32+<b3-7,2111>
+.offsetm
+    cmp byte[t16x161+ebx+%1*256],1
+    je near .offsetm16x16
+    xor edx,edx
+    mov dx,[BG3SYl+ebx*2]
+;    and dx,0F8h
+    shr edx,3
+    shl edx,6
+    xor eax,eax
+    mov ax,[BGPT3+ebx*2]
+    add ax,dx
+    xor edx,edx
+    mov dx,[BG3SXl+ebx*2]
+    and dx,0F8h
+    mov [ofsmcyps],ebx
+    shr edx,3
+    shl edx,1
+    add ax,dx
+    mov dx,[bg3scrolx]
+    test dx,8000h
+    jz .nooma
+    and dx,0F000h
+    shr dx,5
+    add ax,dx
+.nooma
+    cmp byte[BGMA+ebx],4
+    je .offsetm4
+    add eax,40h
+.offsetm4
+    mov edx,eax
+    and edx,0FFFFFFC0h
+    add edx,[vram]
+    mov [ofsmcptr],edx
+    and eax,3Fh
+    mov [ofsmcptr2],eax
+    mov eax,[BGPT1Y+ebx*2+%1*512]
+    mov [ofsmady],eax
+    mov eax,[BGPT1X+ebx*2+%1*512]
+    mov [ofsmadx],eax
+    mov eax,[BGPT1+ebx*2+%1*512]
+    mov [ofsmtptr],eax
+    mov [ofsmtptrs],eax
+    test ecx,100h
+    jz .noyincd
+    add eax,[BGPT1Y+ebx*2+%1*512]
+.noyincd
+    lea ecx,[ecx*8]
+    mov edx,ecx
+    and ecx,07C0h      ; 1Fh*40h
+    and edx,38h
+    add eax,ecx
+    mov [yposng],edx
+    mov [yposngom],edx
+    xor edx,38h
+    mov ecx,[BG1SXl+ebx*2+%1*512]
+    mov [flipyposng],edx
+    mov [flipyposngom],edx
+    mov edx,[BGPT1X+ebx*2+%1*512]
+    test ecx,100h
+    jz .noxincd
+    add eax,edx
+    add [ofsmtptr],edx
+    neg dx
+.noxincd
+    mov edi,ecx
+    sub dx,64
+    and ecx,0F8h
+    and eax,0FFFFh
+    shr ecx,2
+    mov [bgtxadd],edx
+    mov [bgtxad+ebx*2+%2*512],dx
+    add eax,ecx
+    add [ofsmtptr],ecx
+    mov [ofsmmptr],eax
+    mov dword[ofshvaladd],0
+    mov ecx,[BGOPT1+ebx*2+%1*512]
+    mov edx,[BGMA+ebx]
+    and edi,07h
+    and edx,07h
+    and ecx,0FFFFh
+    mov edx,[colormodedef+edx*4+%1]
+    neg edi
+    add edi,edi
+    cmp dl,2
+    jne near .no4bitd
+    shr ecx,5
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    mov dword[ofsmval],2000h << %1
+    mov dword[ofsmvalh],2000h << %1
+    cmp byte[hdmaearlstart],0
+    je .ofsmvalhack
+    mov dword[ofsmvalh],0
+.ofsmvalhack
+    mov dword[cbgval],%1
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlinengom4b16b
+.no4bitd
+    cmp dl,1
+    jne near .no2bitdn
+    ; eax = pointer to beginning of tile area
+    shr ecx,4
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    mov dword[mode0add],0
+    mov byte[tleftn],33
+.loopdn
+    mov cx,[vrama+eax]
+    test cx,2000h
+    jnz near .fintiledn
+    drawlinengom216b tltype2b, preparet2ba, cachesingle2bng,.loopdn,.fintiledn,ngpalcon2b,test2ba,03h,%1
+.no2bitdn
+    cmp dl,3
+    jne near .no8bitdn
+    ; eax = pointer to beginning of tile area
+    shr ecx,6
+    add edi,esi
+    mov [ngptrdat+%2*1024+ebx*4],ecx
+    mov [ngptrdat2],ecx
+    mov [ngceax+%2*1024+ebx*4],eax
+    mov [ngcedi+%2*1024+ebx*4],edi
+    ; eax = pointer to beginning of tile area
+    mov byte[tleftn],33
+.loopdn2
+    mov cx,[vrama+eax]
+    test cx,2000h
+    jnz near .fintiledn2
+    drawlinengom216b tltype8b, preparet8ba, cachesingle8bng,.loopdn2,.fintiledn2,ngpalcon8b,test8ba,0FFh,%1
+.no8bitdn
+    pop ebx
+    ret
+%endmacro
+
+%macro mosender 1
+.nodraw
+    add edi,%1*2
+    add esi,%1*2
+    dec ecx
+    jnz near .next
+    pop esi
+    mov dword[ignor512],0
+    ret
+%endmacro
+
+%macro drawbglinengpr116b 2
+    mov dword[ng16bprval],2000h
+    mov [pesimpng],esi
+    mov dword[ng16bbgval],%1
+    push ebx
+    mov byte[curmosaicsz],1
+    xor eax,eax
+    test byte[mosenng+ebx],1 << %1
+    jz %%nomosaic
+    mov al,[mosszng+ebx]
+    or al,al
+    jz %%nomosaic
+    inc al
+    mov byte[curmosaicsz],al
+    mov cl,al
+    mov al,bl
+    div cl
+    mul cl
+    mov ebx,eax
+    mov edi,xtravbuf+32
+    mov ecx,128
+    mov eax,0FFFFFFFFh
+    mov esi,xtravbuf+32
+    rep stosd
+    or ebx,ebx
+    jnz %%nomosaic
+    inc ebx
+    jmp %%yesmosaic
+%%nomosaic
+%%yesmosaic
+    cmp byte[BGMA+ebx],5
+    jae near .tiles16x8
+    cmp byte[t16x161+ebx+%1*256],1
+    je near .tiles16x16
+    cmp byte[osm2dis],1
+    je .nooffsetm
+    cmp byte[BGMA+ebx],2
+    je near .offsetm
+;    cmp byte[BGMA+ebx],4
+;    je near .offsetm
+.nooffsetm
+    mov eax,[BG1SYl+ebx*2+%1*512]
+    and eax,0FFFFh
+    add eax,ebx
+    lea eax,[eax*8]
+    and eax,38h
+    mov [yposng],eax
+    xor eax,38h
+    mov [flipyposng],eax
+
+    mov edx,[BGMA+ebx]
+    mov ecx,[bgtxad+ebx*2+%2*512]
+    and edx,07h
+    mov [bgtxadd],cx
+    mov ecx,[ngptrdat+%2*1024+ebx*4]
+    mov edx,[colormodedef+edx*4+%1]
+    mov [ngptrdat2],ecx
+    mov eax,[ngceax+%2*1024+ebx*4]
+    mov edi,[ngcedi+%2*1024+ebx*4]
+    cmp dl,2
+    jne near .no4bit
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlineng4b16b
+.no4bit
+    cmp dl,1
+    jne near .no2bit
+    ; eax = pointer to beginning of tile area
+    mov dword[mode0add],0
+    ProcessBuildWindow %1
+    cmp byte[BGMA+ebx],0
+    jne .nomode0
+    mov ecx,[mode0ads]
+    mov [mode0add],ecx
+.nomode0
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlineng2b16b
+.no2bit
+    cmp dl,3
+    jne near .no8bit
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlineng8b16b
+.no8bit
+    pop ebx
+    ret
+
+.tiles16x16
+    mov ecx,[BG1SYl+ebx*2+%1*512]
+    and ecx,0FFFFh
+    mov dword[taddnfy16x16],0
+    add ecx,ebx
+    mov dword[taddfy16x16],16
+    test ecx,08h
+    jz .nobottomy
+    mov dword[taddnfy16x16],16
+    mov dword[taddfy16x16],-16
+.nobottomy
+
+    lea eax,[ecx*8]
+    and eax,38h
+    mov [yposng],eax
+    xor eax,38h
+    mov [flipyposng],eax
+
+    mov edx,[BGMA+ebx]
+    mov ecx,[bgtxad+ebx*2+%2*512]
+    and edx,07h
+    mov [bgtxadd],cx
+    mov ecx,[ngptrdat+%2*1024+ebx*4]
+    mov edx,[colormodedef+edx*4+%1]
+    mov [ngptrdat2],ecx
+    mov eax,[ngceax+%2*1024+ebx*4]
+    mov edi,[ngcedi+%2*1024+ebx*4]
+    cmp dl,2
+    jne near .no4bit2
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlineng16x164b16b
+.no4bit2
+    cmp dl,1
+    jne near .no2bit2
+    ; eax = pointer to beginning of tile area
+    mov dword[mode0add],0
+    ProcessBuildWindow %1
+    cmp byte[BGMA+ebx],0
+    jne .nomode02
+    push ebx
+    mov ebx,[mode0ads]
+    mov [mode0add],ebx
+    pop ebx
+.nomode02
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlineng16x162b16b
+.no2bit2
+    cmp dl,3
+    jne near .no8bit2
+    ; eax = pointer to beginning of tile area
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlineng16x168b16b
+.no8bit2
+    pop ebx
+    ret
+
+.tiles16x8
+    mov ecx,[BG1SYl+ebx*2+%1*512]
+    and ecx,0FFFFh
+    add ecx,ebx
+    mov dword[taddnfy16x16],0
+    mov dword[taddfy16x16],16
+    test ecx,08h
+    jz .nobottomyb
+    mov dword[taddnfy16x16],16
+    mov dword[taddfy16x16],-16
+.nobottomyb
+    cmp byte[t16x161+ebx+%1*256],1
+    je near .tiles16x16hr
+    mov dword[taddnfy16x16],0
+    mov dword[taddfy16x16],0
+.tiles16x16hr
+
+    lea eax,[ecx*8]
+    and eax,38h
+    mov [yposng],eax
+    xor eax,38h
+    mov [flipyposng],eax
+
+    mov edx,[BGMA+ebx]
+    mov ecx,[bgtxad+ebx*2+%2*512]
+    and edx,07h
+    mov [bgtxadd],cx
+    mov ecx,[ngptrdat+%2*1024+ebx*4]
+    mov edx,[colormodedef+edx*4+%1]
+    mov [ngptrdat2],ecx
+    mov eax,[ngceax+%2*1024+ebx*4]
+    mov edi,[ngcedi+%2*1024+ebx*4]
+    cmp dl,2
+    jne near .no4bit2b
+    ; eax = pointer to beginning of tile area
+    mov dword[cbgval],%1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlineng16x84b16b
+.no4bit2b
+    cmp dl,1
+    jne near .no2bit2b
+    ; eax = pointer to beginning of tile area
+    mov dword[mode0add],0
+    mov dword[cbgval],%1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlineng16x82b16b
+.no2bit2b
+    pop ebx
+    ret
+
+.offsetm
+    xor edx,edx
+    mov dx,[BG3SYl+ebx*2]
+;    and dx,0F8h
+    shr edx,3
+    shl edx,6
+    xor eax,eax
+    mov ax,[BGPT3+ebx*2]
+    add ax,dx
+    xor edx,edx
+    mov dx,[BG3SXl+ebx*2]
+    and dx,0F8h
+    mov [ofsmcyps],ebx
+    shr edx,3
+    shl edx,1
+    add ax,dx
+    mov dx,[bg3scrolx]
+    test dx,8000h
+    jz .nooma
+    and dx,0F000h
+    shr dx,5
+    add ax,dx
+.nooma
+    mov edx,eax
+    cmp byte[BGMA+ebx],4
+    je .offsetm4
+    add edx,40h
+.offsetm4
+    and edx,0FFC0h
+    add edx,[vram]
+    mov [ofsmcptr],edx
+    and eax,3Fh
+    mov [ofsmcptr2],eax
+    mov eax,[BGPT1Y+ebx*2+%1*512]
+    mov [ofsmady],eax
+    mov eax,[BGPT1X+ebx*2+%1*512]
+    mov [ofsmadx],eax
+    mov eax,[BGPT1+ebx*2+%1*512]
+    mov [ofsmtptr],eax
+    mov [ofsmtptrs],eax
+    mov ecx,[BG1SXl+ebx*2+%1*512]
+    mov edx,[BGPT1X+ebx*2+%1*512]
+    test ecx,100h
+    jz .noxincdd
+    add [ofsmtptr],edx
+.noxincdd
+    and ecx,0F8h
+    shr ecx,2
+    add [ofsmtptr],ecx
+    mov eax,[BG1SYl+ebx*2+%1*512]
+    and eax,0FFFFh
+    add eax,ebx
+    lea eax,[eax*8]
+    and eax,38h
+    mov [yposng],eax
+    mov [yposngom],eax
+    xor eax,38h
+    mov [flipyposng],eax
+    mov [flipyposngom],eax
+    mov edx,[BGMA+ebx]
+    mov ecx,[bgtxad+ebx*2+%2*512]
+    and edx,07h
+    mov [bgtxadd],cx
+    mov ecx,[ngptrdat+%2*1024+ebx*4]
+    mov edx,[colormodedef+edx*4+%1]
+    mov [ngptrdat2],ecx
+    mov eax,[ngceax+%2*1024+ebx*4]
+    mov edi,[ngcedi+%2*1024+ebx*4]
+    mov [ofsmmptr],eax
+    mov dword[ofshvaladd],0
+    cmp dl,2
+    jne near .no4bitd
+    ; eax = pointer to beginning of tile area
+    mov dword[ofsmval],2000h << %1
+    mov dword[ofsmvalh],2000h << %1
+    cmp byte[hdmaearlstart],0
+    je .ofsmvalhack
+    mov dword[ofsmvalh],0
+.ofsmvalhack
+    mov dword[cbgval],%1
+    ProcessBuildWindow %1
+    mov ecx,ebx
+    mov dl,1 << %2
+    add ecx,%2*256
+    jmp drawlinengom4b16b
+.no4bitd
+    cmp dl,1
+    jne near .no2bitdn
+    ; eax = pointer to beginning of tile area
+    mov byte[tleftn],33
+.loopdn
+    mov cx,[vrama+eax]
+    test cx,2000h
+    jz near .fintiledn
+    drawlinengom216b tltype2b, preparet2ba, cachesingle2bng,.loopdn,.fintiledn,ngpalcon2b,test2ba,03h,%1
+.no2bitdn
+    cmp dl,3
+    jne near .no8bitdn
+    ; eax = pointer to beginning of tile area
+    mov byte[tleftn],33
+.loopdn2
+    mov cx,[vrama+eax]
+    test cx,2000h
+    jz near .fintiledn2
+    drawlinengom216b tltype8b, preparet8ba, cachesingle8bng,.loopdn2,.fintiledn2,ngpalcon8b,test8ba,0FFh,%1
+.no8bitdn
+    pop ebx
+    ret
+%endmacro
+

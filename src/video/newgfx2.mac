@@ -1,0 +1,1009 @@
+;Copyright (C) 1997-2001 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
+;
+;This program is free software; you can redistribute it and/or
+;modify it under the terms of the GNU General Public License
+;as published by the Free Software Foundation; either
+;version 2 of the License, or (at your option) any later
+;version.
+;
+;This program is distributed in the hope that it will be useful,
+;but WITHOUT ANY WARRANTY; without even the implied warranty of
+;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;GNU General Public License for more details.
+;
+;You should have received a copy of the GNU General Public License
+;along with this program; if not, write to the Free Software
+;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+
+
+
+
+
+
+; Finish up parttile
+
+%macro drawlineng16x8 8
+    ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
+    ;              bit 10-12 = palette, 0-9=tile#
+    mov ebx,[cbgval]
+    mov dl,ch
+    inc dword[bg1drwng+ebx*4]
+    and ecx,3FFh
+    and edx,1Fh
+    add ecx,[ngptrdat2]
+    add cx,[taddnfy16x16]
+    test dword[vrama+eax],8000h
+    jz %%noflipy
+    add cx,[taddfy16x16]
+%%noflipy
+    test dword[vrama+eax],4000h
+    jz %%noflipx
+    inc cx
+%%noflipx
+%%nexttile
+    push ecx
+    push edx
+    mov edx,[%6+edx*4]
+    %7
+    jnz near %%docache
+%%returnfromcache
+    cmp byte[%1+ecx],2
+    je near %%done
+    cmp byte[%1+ecx],0
+    je near %%parttile
+    %2
+    ; start drawing from ecx
+    test dword[vrama+eax],8000h
+    jnz near %%flipyfull
+    add ecx,[yposng]
+    test dword[vrama+eax],4000h
+    jnz near %%flipxfull
+    mov ebx,[ecx]
+    add ebx,edx
+    mov [edi],bl
+    mov [edi+75036],bh
+    shr ebx,16
+    mov [edi+1],bl
+    mov [edi+75037],bh
+    mov ebx,[ecx+4]
+    add ebx,edx
+    mov [edi+2],bl
+    mov [edi+75038],bh
+    shr ebx,16
+    mov [edi+3],bl
+    mov [edi+75039],bh
+    jmp %%done
+%%flipxfull
+    mov ebx,[ecx+4]
+    bswap ebx
+    add ebx,edx
+    mov [edi],bl
+    mov [edi+75036],bh
+    shr ebx,16
+    mov [edi+1],bl
+    mov [edi+75037],bh
+    mov ebx,[ecx]
+    bswap ebx
+    add ebx,edx
+    mov [edi+2],bl
+    mov [edi+75038],bh
+    shr ebx,16
+    mov [edi+3],bl
+    mov [edi+75039],bh
+    jmp %%done
+%%flipyfull
+    add ecx,[flipyposng]
+    test word[vrama+eax],4000h
+    jnz near %%flipxyfull
+    mov ebx,[ecx]
+    add ebx,edx
+    mov [edi],bl
+    mov [edi+75036],bh
+    shr ebx,16
+    mov [edi+1],bl
+    mov [edi+75037],bh
+    mov ebx,[ecx+4]
+    add ebx,edx
+    mov [edi+2],bl
+    mov [edi+75038],bh
+    shr ebx,16
+    mov [edi+3],bl
+    mov [edi+75039],bh
+    jmp %%done
+%%flipxyfull
+    mov ebx,[ecx+4]
+    bswap ebx
+    add ebx,edx
+    mov [edi],bl
+    mov [edi+75036],bh
+    shr ebx,16
+    mov [edi+1],bl
+    mov [edi+75037],bh
+    mov ebx,[ecx]
+    bswap ebx
+    add ebx,edx
+    mov [edi+2],bl
+    mov [edi+75038],bh
+    shr ebx,16
+    mov [edi+3],bl
+    mov [edi+75039],bh
+    jmp %%done
+%%parttile
+    %2
+    ; start drawing from ecx to edi
+    test word[vrama+eax],8000h
+    jnz near %%flipypart
+    add ecx,[yposng]
+    test word[vrama+eax],4000h
+    jnz near %%flipxpart
+    mov ebx,[ecx]
+    or ebx,ebx
+    jz %%drawd
+    add ebx,edx
+    test bl,%8
+    jz %%drawa
+    mov [edi],bl
+%%drawa
+    test bh,%8
+    jz %%drawb
+    mov [edi+75036],bh
+%%drawb
+    shr ebx,16
+    test bl,%8
+    jz %%drawc
+    mov [edi+1],bl
+%%drawc
+    test bh,%8
+    jz %%drawd
+    mov [edi+75037],bh
+%%drawd
+    mov ebx,[ecx+4]
+    or ebx,ebx
+    jz %%drawd2
+    add ebx,edx
+    test bl,%8
+    jz %%drawa2
+    mov [edi+2],bl
+%%drawa2
+    test bh,%8
+    jz %%drawb2
+    mov [edi+75038],bh
+%%drawb2
+    shr ebx,16
+    test bl,%8
+    jz %%drawc2
+    mov [edi+3],bl
+%%drawc2
+    test bh,%8
+    jz %%drawd2
+    mov [edi+75039],bh
+%%drawd2
+    jmp %%done
+
+%%flipxpart
+    mov ebx,[ecx]
+    or ebx,ebx
+    jz %%drawdf
+    add ebx,edx
+    test bl,%8
+    jz %%drawaf
+    mov [edi+75039],bl
+%%drawaf
+    test bh,%8
+    jz %%drawbf
+    mov [edi+3],bh
+%%drawbf
+    shr ebx,16
+    test bl,%8
+    jz %%drawcf
+    mov [edi+75038],bl
+%%drawcf
+    test bh,%8
+    jz %%drawdf
+    mov [edi+2],bh
+%%drawdf
+    mov ebx,[ecx+4]
+    or ebx,ebx
+    jz %%drawd2f
+    add ebx,edx
+    test bl,%8
+    jz %%drawa2f
+    mov [edi+75037],bl
+%%drawa2f
+    test bh,%8
+    jz %%drawb2f
+    mov [edi+1],bh
+%%drawb2f
+    shr ebx,16
+    test bl,%8
+    jz %%drawc2f
+    mov [edi+75036],bl
+%%drawc2f
+    test bh,%8
+    jz %%drawd2f
+    mov [edi],bh
+%%drawd2f
+    jmp %%done
+
+%%flipypart
+    add ecx,[flipyposng]
+    test word[vrama+eax],4000h
+    jnz near %%flipxypart
+    mov ebx,[ecx]
+    or ebx,ebx
+    jz %%drawdm
+    add ebx,edx
+    test bl,%8
+    jz %%drawam
+    mov [edi],bl
+%%drawam
+    test bh,%8
+    jz %%drawbm
+    mov [edi+75036],bh
+%%drawbm
+    shr ebx,16
+    test bl,%8
+    jz %%drawcm
+    mov [edi+1],bl
+%%drawcm
+    test bh,%8
+    jz %%drawdm
+    mov [edi+75037],bh
+%%drawdm
+    mov ebx,[ecx+4]
+    or ebx,ebx
+    jz %%drawd2m
+    add ebx,edx
+    test bl,%8
+    jz %%drawa2m
+    mov [edi+2],bl
+%%drawa2m
+    test bh,%8
+    jz %%drawb2m
+    mov [edi+75038],bh
+%%drawb2m
+    shr ebx,16
+    test bl,%8
+    jz %%drawc2m
+    mov [edi+3],bl
+%%drawc2m
+    test bh,%8
+    jz %%drawd2m
+    mov [edi+75039],bh
+%%drawd2m
+    jmp %%done
+
+%%flipxypart
+    mov ebx,[ecx]
+    or ebx,ebx
+    jz %%drawdfm
+    add ebx,edx
+    test bl,%8
+    jz %%drawafm
+    mov [edi+75039],bl
+%%drawafm
+    test bh,%8
+    jz %%drawbfm
+    mov [edi+3],bh
+%%drawbfm
+    shr ebx,16
+    test bl,%8
+    jz %%drawcfm
+    mov [edi+75038],bl
+%%drawcfm
+    test bh,%8
+    jz %%drawdfm
+    mov [edi+2],bh
+%%drawdfm
+    mov ebx,[ecx+4]
+    or ebx,ebx
+    jz %%drawd2fm
+    add ebx,edx
+    test bl,%8
+    jz %%drawa2fm
+    mov [edi+75037],bl
+%%drawa2fm
+    test bh,%8
+    jz %%drawb2fm
+    mov [edi+1],bh
+%%drawb2fm
+    shr ebx,16
+    test bl,%8
+    jz %%drawc2fm
+    mov [edi+75036],bl
+%%drawc2fm
+    test bh,%8
+    jz %%drawd2fm
+    mov [edi],bh
+%%drawd2fm
+%%done
+    pop edx
+    pop ecx
+    inc cx
+    test dword[vrama+eax],4000h
+    jz %%noflipxb
+    sub cx,2
+%%noflipxb
+    add edi,4
+    xor dword[switch16x16],1
+    jnz near %%nexttile
+%%ntile
+    mov ebx,[cbgval]
+    add ax,2
+    inc dword[bg1totng+ebx*4]
+    test eax,03Fh
+    jz %%tileadd
+%%next
+    dec byte[tleftn]
+    jnz near %4
+    pop ebx
+    cmp byte[curmosaicsz],1
+    jne near domosaicng
+    ret
+%5
+    add edi,8
+    jmp %%ntile
+%%docache
+    call %3
+    jmp %%returnfromcache
+%%tileadd
+    add ax,[bgtxadd]
+    jmp %%next
+%endmacro
+
+%macro drawlinengom2 9
+    ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
+    ;              bit 10-12 = palette, 0-9=tile#
+    mov dl,ch
+    inc dword[bg1drwng+%9*4]
+    and ecx,3FFh
+    and edx,1Fh
+    add ecx,[ngptrdat2]
+    mov edx,[%6+edx*4]
+    %7
+    jnz near %%docache
+%%returnfromcache
+    cmp byte[%1+ecx],2
+    je near %5
+    cmp byte[%1+ecx],0
+    je near %%parttile
+    %2
+    ; start drawing from ecx
+    test dword[vrama+eax],8000h
+    jnz near %%flipyfull
+    add ecx,[yposng]
+    test dword[vrama+eax],4000h
+    jnz near %%flipxfull
+    mov ebx,[ecx]
+    add ebx,edx
+    mov [edi],ebx
+    mov ebx,[ecx+4]
+    add ebx,edx
+    mov [edi+4],ebx
+    jmp %5
+%%flipxfull
+    mov ebx,[ecx+4]
+    bswap ebx
+    add ebx,edx
+    mov [edi],ebx
+    mov ebx,[ecx]
+    bswap ebx
+    add ebx,edx
+    mov [edi+4],ebx
+    jmp %5
+%%flipyfull
+    add ecx,[flipyposng]
+    test word[vrama+eax],4000h
+    jnz near %%flipxyfull
+    mov ebx,[ecx]
+    add ebx,edx
+    mov [edi],ebx
+    mov ebx,[ecx+4]
+    add ebx,edx
+    mov [edi+4],ebx
+    jmp %5
+%%flipxyfull
+    mov ebx,[ecx+4]
+    bswap ebx
+    add ebx,edx
+    mov [edi],ebx
+    mov ebx,[ecx]
+    bswap ebx
+    add ebx,edx
+    mov [edi+4],ebx
+    jmp %5
+%%parttile
+    %2
+    ; start drawing from ecx to edi
+    test word[vrama+eax],8000h
+    jnz near %%flipypart
+    add ecx,[yposng]
+    test word[vrama+eax],4000h
+    jnz near %%flipxpart
+    mov ebx,[ecx]
+    or ebx,ebx
+    jz %%drawd
+    add ebx,edx
+    test bl,%8
+    jz %%drawa
+    mov [edi],bl
+%%drawa
+    test bh,%8
+    jz %%drawb
+    mov [edi+1],bh
+%%drawb
+    shr ebx,16
+    test bl,%8
+    jz %%drawc
+    mov [edi+2],bl
+%%drawc
+    test bh,%8
+    jz %%drawd
+    mov [edi+3],bh
+%%drawd
+    mov ebx,[ecx+4]
+    or ebx,ebx
+    jz %%drawd2
+    add ebx,edx
+    test bl,%8
+    jz %%drawa2
+    mov [edi+4],bl
+%%drawa2
+    test bh,%8
+    jz %%drawb2
+    mov [edi+5],bh
+%%drawb2
+    shr ebx,16
+    test bl,%8
+    jz %%drawc2
+    mov [edi+6],bl
+%%drawc2
+    test bh,%8
+    jz %%drawd2
+    mov [edi+7],bh
+%%drawd2
+    jmp %5
+
+%%flipxpart
+    mov ebx,[ecx]
+    or ebx,ebx
+    jz %%drawdf
+    add ebx,edx
+    test bl,%8
+    jz %%drawaf
+    mov [edi+7],bl
+%%drawaf
+    test bh,%8
+    jz %%drawbf
+    mov [edi+6],bh
+%%drawbf
+    shr ebx,16
+    test bl,%8
+    jz %%drawcf
+    mov [edi+5],bl
+%%drawcf
+    test bh,%8
+    jz %%drawdf
+    mov [edi+4],bh
+%%drawdf
+    mov ebx,[ecx+4]
+    or ebx,ebx
+    jz %%drawd2f
+    add ebx,edx
+    test bl,%8
+    jz %%drawa2f
+    mov [edi+3],bl
+%%drawa2f
+    test bh,%8
+    jz %%drawb2f
+    mov [edi+2],bh
+%%drawb2f
+    shr ebx,16
+    test bl,%8
+    jz %%drawc2f
+    mov [edi+1],bl
+%%drawc2f
+    test bh,%8
+    jz %%drawd2f
+    mov [edi],bh
+%%drawd2f
+    jmp %5
+
+%%flipypart
+    add ecx,[flipyposng]
+    test word[vrama+eax],4000h
+    jnz near %%flipxypart
+    mov ebx,[ecx]
+    or ebx,ebx
+    jz %%drawdm
+    add ebx,edx
+    test bl,%8
+    jz %%drawam
+    mov [edi],bl
+%%drawam
+    test bh,%8
+    jz %%drawbm
+    mov [edi+1],bh
+%%drawbm
+    shr ebx,16
+    test bl,%8
+    jz %%drawcm
+    mov [edi+2],bl
+%%drawcm
+    test bh,%8
+    jz %%drawdm
+    mov [edi+3],bh
+%%drawdm
+    mov ebx,[ecx+4]
+    or ebx,ebx
+    jz %%drawd2m
+    add ebx,edx
+    test bl,%8
+    jz %%drawa2m
+    mov [edi+4],bl
+%%drawa2m
+    test bh,%8
+    jz %%drawb2m
+    mov [edi+5],bh
+%%drawb2m
+    shr ebx,16
+    test bl,%8
+    jz %%drawc2m
+    mov [edi+6],bl
+%%drawc2m
+    test bh,%8
+    jz %%drawd2m
+    mov [edi+7],bh
+%%drawd2m
+    jmp %5
+
+%%flipxypart
+    mov ebx,[ecx]
+    or ebx,ebx
+    jz %%drawdfm
+    add ebx,edx
+    test bl,%8
+    jz %%drawafm
+    mov [edi+7],bl
+%%drawafm
+    test bh,%8
+    jz %%drawbfm
+    mov [edi+6],bh
+%%drawbfm
+    shr ebx,16
+    test bl,%8
+    jz %%drawcfm
+    mov [edi+5],bl
+%%drawcfm
+    test bh,%8
+    jz %%drawdfm
+    mov [edi+4],bh
+%%drawdfm
+    mov ebx,[ecx+4]
+    or ebx,ebx
+    jz %%drawd2fm
+    add ebx,edx
+    test bl,%8
+    jz %%drawa2fm
+    mov [edi+3],bl
+%%drawa2fm
+    test bh,%8
+    jz %%drawb2fm
+    mov [edi+2],bh
+%%drawb2fm
+    shr ebx,16
+    test bl,%8
+    jz %%drawc2fm
+    mov [edi+1],bl
+%%drawc2fm
+    test bh,%8
+    jz %%drawd2fm
+    mov [edi],bh
+%%drawd2fm
+%5
+    inc dword[bg1totng+%9*4]
+    add word[ofsmmptr],2
+    add word[ofsmtptr],2
+    mov ax,[ofsmmptr]
+    mov ebx,[yposngom]
+    mov edx,[flipyposngom]
+    mov [yposng],ebx
+    mov [flipyposng],edx
+    add edi,8
+    test eax,03Fh
+    jz near %%tileadd
+%%next
+    mov ebx,[ofsmcptr]
+    add ebx,[ofsmcptr2]
+    add dword[ofshvaladd],8
+    test dword[ebx-40h],8000h
+    jz near %%noofsm
+    test dword[ebx-40h],2000h << %9
+    jz %%noofsm
+    mov ebx,[ebx-40h]
+    mov ax,[ofsmtptr]
+    and ebx,3FFh
+    add ebx,[ofsmcyps]
+    test ebx,100h
+    jz %%noupper
+    add ax,[ofsmady]
+%%noupper
+    and ebx,0FFh
+    mov edx,ebx
+    shr ebx,3
+    and edx,07h
+    shl ebx,6
+    shl edx,3
+    add ax,bx
+    mov [yposng],edx
+    xor edx,38h
+    mov [flipyposng],edx
+%%noofsm
+    mov ebx,[ofsmcptr]
+    add ebx,[ofsmcptr2]
+    add dword[ofsmcptr2],2
+    and dword[ofsmcptr2],3Fh
+    test dword[ebx-40h],8000h
+    jnz near %%noofsmh
+    test dword[ebx-40h],2000h << %9
+    jz %%noofsmh
+    mov ebx,[ebx-40h]
+    sub ax,[ofsmtptr]
+    add ax,[ofsmtptrs]
+    add ebx,[ofshvaladd]
+    test ebx,100h
+    jz %%noleft
+    add ax,[ofsmadx]
+%%noleft
+    and ebx,0F8h
+    shr ebx,2
+    add ax,bx
+%%noofsmh
+    dec byte[tleftn]
+    jnz near %4
+%%fin
+    pop ebx
+    cmp byte[curmosaicsz],1
+    jne near domosaicng
+    ret
+%%docache
+    call %3
+    jmp %%returnfromcache
+%%tileadd
+    mov bx,[bgtxadd]
+    add ax,bx
+    add [ofsmmptr],bx
+    add word[ofsmtptr],bx
+    jmp %%next
+%endmacro
+
+
+%macro drawlinengom 8
+    ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
+    ;              bit 10-12 = palette, 0-9=tile#
+    mov ebx,[cbgval]
+    mov dl,ch
+    inc dword[bg1drwng+ebx*4]
+    and ecx,3FFh
+    and edx,1Fh
+    add ecx,[ngptrdat2]
+    mov edx,[%6+edx*4]
+    %7
+    jnz near %%docache
+%%returnfromcache
+    cmp byte[%1+ecx],2
+    je near %5
+    cmp byte[%1+ecx],0
+    je near %%parttile
+    %2
+    ; start drawing from ecx
+    test dword[vrama+eax],8000h
+    jnz near %%flipyfull
+    add ecx,[yposng]
+    test dword[vrama+eax],4000h
+    jnz near %%flipxfull
+    mov ebx,[ecx]
+    add ebx,edx
+    mov [edi],ebx
+    mov ebx,[ecx+4]
+    add ebx,edx
+    mov [edi+4],ebx
+    jmp %5
+%%flipxfull
+    mov ebx,[ecx+4]
+    bswap ebx
+    add ebx,edx
+    mov [edi],ebx
+    mov ebx,[ecx]
+    bswap ebx
+    add ebx,edx
+    mov [edi+4],ebx
+    jmp %5
+%%flipyfull
+    add ecx,[flipyposng]
+    test word[vrama+eax],4000h
+    jnz near %%flipxyfull
+    mov ebx,[ecx]
+    add ebx,edx
+    mov [edi],ebx
+    mov ebx,[ecx+4]
+    add ebx,edx
+    mov [edi+4],ebx
+    jmp %5
+%%flipxyfull
+    mov ebx,[ecx+4]
+    bswap ebx
+    add ebx,edx
+    mov [edi],ebx
+    mov ebx,[ecx]
+    bswap ebx
+    add ebx,edx
+    mov [edi+4],ebx
+    jmp %5
+%%parttile
+    %2
+    ; start drawing from ecx to edi
+    test word[vrama+eax],8000h
+    jnz near %%flipypart
+    add ecx,[yposng]
+    test word[vrama+eax],4000h
+    jnz near %%flipxpart
+    mov ebx,[ecx]
+    or ebx,ebx
+    jz %%drawd
+    add ebx,edx
+    test bl,%8
+    jz %%drawa
+    mov [edi],bl
+%%drawa
+    test bh,%8
+    jz %%drawb
+    mov [edi+1],bh
+%%drawb
+    shr ebx,16
+    test bl,%8
+    jz %%drawc
+    mov [edi+2],bl
+%%drawc
+    test bh,%8
+    jz %%drawd
+    mov [edi+3],bh
+%%drawd
+    mov ebx,[ecx+4]
+    or ebx,ebx
+    jz %%drawd2
+    add ebx,edx
+    test bl,%8
+    jz %%drawa2
+    mov [edi+4],bl
+%%drawa2
+    test bh,%8
+    jz %%drawb2
+    mov [edi+5],bh
+%%drawb2
+    shr ebx,16
+    test bl,%8
+    jz %%drawc2
+    mov [edi+6],bl
+%%drawc2
+    test bh,%8
+    jz %%drawd2
+    mov [edi+7],bh
+%%drawd2
+    jmp %5
+
+%%flipxpart
+    mov ebx,[ecx]
+    or ebx,ebx
+    jz %%drawdf
+    add ebx,edx
+    test bl,%8
+    jz %%drawaf
+    mov [edi+7],bl
+%%drawaf
+    test bh,%8
+    jz %%drawbf
+    mov [edi+6],bh
+%%drawbf
+    shr ebx,16
+    test bl,%8
+    jz %%drawcf
+    mov [edi+5],bl
+%%drawcf
+    test bh,%8
+    jz %%drawdf
+    mov [edi+4],bh
+%%drawdf
+    mov ebx,[ecx+4]
+    or ebx,ebx
+    jz %%drawd2f
+    add ebx,edx
+    test bl,%8
+    jz %%drawa2f
+    mov [edi+3],bl
+%%drawa2f
+    test bh,%8
+    jz %%drawb2f
+    mov [edi+2],bh
+%%drawb2f
+    shr ebx,16
+    test bl,%8
+    jz %%drawc2f
+    mov [edi+1],bl
+%%drawc2f
+    test bh,%8
+    jz %%drawd2f
+    mov [edi],bh
+%%drawd2f
+    jmp %5
+
+%%flipypart
+    add ecx,[flipyposng]
+    test word[vrama+eax],4000h
+    jnz near %%flipxypart
+    mov ebx,[ecx]
+    or ebx,ebx
+    jz %%drawdm
+    add ebx,edx
+    test bl,%8
+    jz %%drawam
+    mov [edi],bl
+%%drawam
+    test bh,%8
+    jz %%drawbm
+    mov [edi+1],bh
+%%drawbm
+    shr ebx,16
+    test bl,%8
+    jz %%drawcm
+    mov [edi+2],bl
+%%drawcm
+    test bh,%8
+    jz %%drawdm
+    mov [edi+3],bh
+%%drawdm
+    mov ebx,[ecx+4]
+    or ebx,ebx
+    jz %%drawd2m
+    add ebx,edx
+    test bl,%8
+    jz %%drawa2m
+    mov [edi+4],bl
+%%drawa2m
+    test bh,%8
+    jz %%drawb2m
+    mov [edi+5],bh
+%%drawb2m
+    shr ebx,16
+    test bl,%8
+    jz %%drawc2m
+    mov [edi+6],bl
+%%drawc2m
+    test bh,%8
+    jz %%drawd2m
+    mov [edi+7],bh
+%%drawd2m
+    jmp %5
+
+%%flipxypart
+    mov ebx,[ecx]
+    or ebx,ebx
+    jz %%drawdfm
+    add ebx,edx
+    test bl,%8
+    jz %%drawafm
+    mov [edi+7],bl
+%%drawafm
+    test bh,%8
+    jz %%drawbfm
+    mov [edi+6],bh
+%%drawbfm
+    shr ebx,16
+    test bl,%8
+    jz %%drawcfm
+    mov [edi+5],bl
+%%drawcfm
+    test bh,%8
+    jz %%drawdfm
+    mov [edi+4],bh
+%%drawdfm
+    mov ebx,[ecx+4]
+    or ebx,ebx
+    jz %%drawd2fm
+    add ebx,edx
+    test bl,%8
+    jz %%drawa2fm
+    mov [edi+3],bl
+%%drawa2fm
+    test bh,%8
+    jz %%drawb2fm
+    mov [edi+2],bh
+%%drawb2fm
+    shr ebx,16
+    test bl,%8
+    jz %%drawc2fm
+    mov [edi+1],bl
+%%drawc2fm
+    test bh,%8
+    jz %%drawd2fm
+    mov [edi],bh
+%%drawd2fm
+%5
+    mov ebx,[cbgval]
+    add word[ofsmmptr],2
+    inc dword[bg1totng+ebx*4]
+    add word[ofsmtptr],2
+    mov ax,[ofsmmptr]
+    mov ebx,[yposngom]
+    mov edx,[flipyposngom]
+    mov [yposng],ebx
+    mov [flipyposng],edx
+    add edi,8
+    test eax,03Fh
+    jz near %%tileadd
+%%next
+    mov ebx,[ofsmcptr]
+    add ebx,[ofsmcptr2]
+    mov ecx,[ofsmval]
+    add dword[ofshvaladd],8
+    test dword[ebx],ecx
+    jz .noofsm
+    mov ebx,[ebx]
+    mov ax,[ofsmtptr]
+    and ebx,3FFh
+    add ebx,[ofsmcyps]
+    test ebx,100h
+    jz .noupper
+    add ax,[ofsmady]
+.noupper
+    and ebx,0FFh
+    mov edx,ebx
+    shr ebx,3
+    and edx,07h
+    shl ebx,6
+    shl edx,3
+    add ax,bx
+    mov [yposng],edx
+    xor edx,38h
+    mov [flipyposng],edx
+.noofsm
+    mov ebx,[ofsmcptr]
+    add ebx,[ofsmcptr2]
+    add dword[ofsmcptr2],2
+    mov ecx,[ofsmvalh]
+    and dword[ofsmcptr2],3Fh
+    test dword[ebx-40h],ecx
+    jz %%noofsmh
+    mov ebx,[ebx-40h]
+    sub ax,[ofsmtptr]
+    add ax,[ofsmtptrs]
+    add ebx,[ofshvaladd]
+    test ebx,100h
+    jz %%noleft
+    add ax,[ofsmadx]
+%%noleft
+    and ebx,0F8h
+    shr ebx,2
+    add ax,bx
+%%noofsmh
+    dec byte[tleftn]
+    jnz near %4
+%%fin
+    pop ebx
+    cmp byte[curmosaicsz],1
+    jne near domosaicng
+    ret
+%%docache
+    call %3
+    jmp %%returnfromcache
+%%tileadd
+    mov bx,[bgtxadd]
+    add ax,bx
+    add [ofsmmptr],bx
+    add word[ofsmtptr],bx
+    jmp %%next
+%endmacro
+
+

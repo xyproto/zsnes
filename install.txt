@@ -1,0 +1,57 @@
+Compiling the Source Code:
+--------------------------
+
+Well, for the moment, zsnes sources may be a little hard to compile. Here 
+is a quick guide (based on my own experience and on a doc written by zsKnight)
+explaining how to compile zsnes. With these tools, I can build both dos and
+win version, I hope it will also work for you
+
+
+First, you need the following software:
+
+Dos port : 
+- NASM v0.98 : http://www.cryogen.com/nasm/
+                   the version found on http://nasm.2y.net/ DOES NOT WORK
+                   with zsnes sources. When you type nasm -r, you must get
+                   'NASM version 0.98' and not 'NASM version 0.98.08' if you
+                   have the correct version
+- DJGPP v2 or higher, (GCC also installed) : http://www.delorie.com/djgpp/
+                   using the zip picker, the default choices are ok if you
+                   check C and C++ in the programming languages. You also need 
+                   to get zlib which is available with the full distribution 
+                   of djgpp. You can get it at :
+                   ftp://ftp.simtel.net/pub/simtelnet/gnu/djgpp/v2tk/zlib112b.zip
+		   
+Then to build the executable, go to the src directory and type:
+make -f makefile.dos 
+
+You may also want to compress zsnes.exe with upx (http://upx.tsx.org), it will 
+divide its size by 10.
+
+
+Windows port : 
+- GNU Make : it comes with djgpp
+- NASM v0.98 : http://nasm.2y.net/ or http://www.cryogen.com/nasm/
+- MSVC++ 6.0 or higher : not freely available, you'll have to buy it
+                   You need to run VCVARS32.BAT.  If you get an 
+                   out of environment space error, type 'command /e:32768' 
+                   (to create a new command.com entity with more 
+                   environment space)
+- DX7.0 SDK or higher : you can get it at microsoft.com. It is quite big.
+                   Also, edit makefile.win to set the correct path to your 
+                   SDK. I also had some problems with vc++ using its own 
+                   (old) directx headers instead of the sdk headers. I replaced 
+                   these old headers (in the include directory of vc++ dir) 
+                   with the newer ones.
+- zlib : http://www.info-zip.org/pub/infozip/zlib/
+		   you need the Win9x/WinNT static library (the dll version doesn't
+		   seem to work with zsnes). Name the static version zlib.lib and
+		   put it somewhere where vc++ will find it (for example, the lib
+		   directory in vc++ dir).
+
+Don't forget to set the correct path to the directx sdk in makefile.win!
+Then to build the executable, go to the src directory and type:
+make -f makefile.win
+
+You may also want to compress zsnesw.exe with upx (http://upx.tsx.org), it will 
+divide its size by 10.

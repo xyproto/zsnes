@@ -1,0 +1,374 @@
+_[ ZSNES Windows Frequently Asked Questions ]______________________________
+
+[GENERAL ISSUES:]
+
+Q: Why does ZSNESw crash and give me an error with dinput.dll?
+Q: Why do I get a black (or corrupted) box when I start up ZSNESw?
+Q: Why in the GUI under Config/Options are some of the choices gone?
+Q: How do I use CD-ROMs with ZSNESw?
+Q: Why is netplay choppy/slow?
+
+
+[SOUND COMPATIBILITY ISSUES:]
+
+Q: Will ZSNES Windows be able to use my sound card now?  It wouldn't work
+   for me in the DOS version.
+Q: How come I don't get any sound?
+Q: ZSNES Windows tends to have some static when playing games is there any
+   way to remove it?
+Q: How come stereo is reversed?
+
+
+[VIDEO ISSUES:]
+
+Q: Why do I get a dark line every quarter inch roughly on my screen when I
+Q: In the Video section where I set my resolution what do those letters
+   stand for to the right of the resolution?
+Q: Will ZSNES Windows support a 3DFX graphics mode?
+Q: Are there transparencies in ZSNES?
+Q: How come the graphics are really screwed up?
+
+
+[GAME COMPATIBILITY ISSUES:]
+
+Q: Why doesn't *name of game* work on ZSNES?
+Q: Can you get *name of game* working by the next release?
+Q: Why is *name of game* not working in v.*version #* of ZSNES?  It was
+   working before.
+Q: When do you think you will emulate the *DSP/SFX chip?  My favorite game
+   *name of game with chip* won't run without it.
+Q: This game tells me that it is not compatible with the MultiTap (or an
+   external device attached).  What should I do?
+Q: How do I improve the compatibility of ZSNES?
+Q: Why am I experiencing problems with Chrono Trigger?
+Q: Why doesn't Pilotwings/Star Ocean/Street Fighter Alpha 2 work?
+Q: Can you guys get Pilotwings/Star Ocean/Street Fighter Alpha 2 to work?
+
+
+[SPEED ISSUES:]
+
+Q: Why is ZSNES slow?
+Q: Can you please make ZSNES faster?
+Q: Can you implement dynamic recompilation into ZSNES?
+Q: Why does the game slow down even though I'm using auto frame rate and
+   the FPS is pretty high?
+
+
+[[KEYBOARD/JOYSTICK ISSUES:]
+
+Q: Will ZSNES Windows now be able to use my Windows Joystick/Gamepad?
+Q: Why can't I press more than 2 keys at a time?
+Q: How come my joystick keeps holding in one direction?
+Q: How do I use both my Keyboard and Joystick for the 1st player?
+
+
+[CHEAT ISSUES:]
+
+Q: How come the game genie codes don't work?
+Q: How do I use .CHT files?
+
+
+[FREEZING/CRASHING ISSUES:]
+
+Q: When I load a ROM, how come ZSNES crashes?
+
+
+[MISC:]
+
+Q: How does the auto .IPS patching feature work?
+Q: Where do I get the games?
+
+
+_[ GENERAL ISSUES ]________________________________________________________
+
+Q: Why does ZSNESw crash and give me an error with dinput.dll?
+
+A: If you get this error, download and install the latest version of DirectX
+   which is located at www.microsoft.com/directx
+   If you already have the newest version of directx installed for
+   a while, try re-installing it (and make sure that you're installing
+   DirectX v7.0a or higher).
+
+Q: Why do I get a black (or corrupted) box when I start up ZSNESw?
+
+A: First of all, make sure that you have the latest version of DirectX
+   installed (see above question).  If that didn't help, then check
+   your desktop color settings and make sure that the number of colors
+   is set to either 16bit or 32bit (since ZSNESw will only work with those
+   modes).
+
+Q: Why in the GUI under Config/Options are some of the choices gone?
+
+A: Basically they have become obsolete due to the abilities of Windows.
+   One such removed option is "vsync" because Direct Draw renders the
+   screen in synch without a speed loss as with the DOS version so it was
+   not needed anymore.
+
+Q: How do I use CD-ROMs with ZSNESw?
+
+A: You need to define a save directory that points to your hard drive.
+   In order to do this, use a text editing program such as wordpad and
+   open up zsnesw.cfg, which should be located in the directory where you
+   installed ZSNESw in (this will only appear after you run ZSNESw at
+   least once).  Then look for the line SaveDirectory= and enter
+   the directory where you want all the writeable files to be stored.
+
+Q: Why is netplay choppy/slow?
+
+A: Please read netplay.txt that is included in the original ZSNESw archive.
+
+_[ SOUND COMPATIBILITY ISSUES ]____________________________________________
+
+Q: Will ZSNES Windows be able to use my sound card now?  It wouldn't work
+   for me in the DOS version.
+
+A: It is very likely that your sound card will in fact work given that your
+   card is supported by Windows and Direct Sound from Microsoft's Direct X.
+
+
+Q: How come I don't get any sound?
+
+A: There could be several situations :
+
+A: Either you accidently disabled sound (You can enable it through the GUI)
+   or you don't have a sound card or the sound drivers aren't properly
+   installed in your system.
+
+Q: ZSNES Windows tends to have some static when playing games is there any
+   way to remove it?
+
+A: First of all, make sure that you have the latest sound drivers installed.
+   Also, the problem could be in relation to many different variables.  The
+   emulator uses Direct Sound for audio so it is likely not an issue with
+   Windows but most likely a setting in the emulator.  The problem could be
+   in relation to using a lower khz value than the SNES uses which is
+   32000khz.  Another more likely reason is that you have one of the
+   special sound filters engaged.  For higher end cards (better than SB16)
+   it appears that the Low Pass Filter can cause static.
+
+Q: How come stereo is reversed?
+
+A: Turn on 'Reverse Stereo' in the Sound configuration in the GUI.
+
+
+_[ VIDEO ISSUES ]__________________________________________________________
+
+Q: Why do I get a dark line every quarter inch roughly on my screen when I
+   use 25/50% scanlines in a full screen stretched video mode?
+
+A: This is a video card based issue in which your card does not scale the
+   video image properly and that is the result.
+
+Q: In the Video section where I set my resolution what do those letters
+   stand for to the right of the resolution?
+
+A: There are four different sets of letters which are R, S, DR, and DS.  R
+   stands for ratio as these modes will retain the screen size ratio to the
+   output of a real SNES.  S stands for stretched, any of these modes will
+   stretch the image to the exact size of the resolution you have chosen.
+   The D in DR/DS meants high resolution which allows for the use of
+   interpolation, 25/50% scanlines, 2xSai, and Super Eagle modes. 
+
+Q: Will ZSNES Windows support a 3DFX graphics mode?
+
+A: Probably not as the author has little interest in adding support for it.
+
+
+Q: Are there transparencies in ZSNES?
+
+A: Yes.  Transparencies are in ZSNES.
+
+
+Q: How come the graphics are really screwed up?
+
+A: It's probably a problem with the emulation.  You can try running the
+   game 80% or 120% execution which can be set in the ZSNESW.CFG through
+   the DOS prompt or another editor.  It might fix your problem, but then
+   again maybe it won't be the solution.
+
+
+_[ COMPATIBILITY ISSUES ]__________________________________________________
+
+Q: Why doesn't *name of game* work on ZSNES?
+
+A: Getting the compatibility higher is a very hard task to do.  We're
+   always trying to get more games working.
+
+
+Q: Can you get *name of game* working by the next release?
+
+A: We're always trying, but we can never guarantee a specific game will be
+   working because of the difficulties involved in bug fixing.
+
+
+Q: Why is *name of game* not working in v.*version #* of ZSNES?  It was
+   working before.
+
+A: Whenever we change something in the emulation, whether it's optimisation
+   or bug fixes, it has a good potential to have caused a problem elsewhere.
+   Usually, these problems aren't discovered until after a release.
+
+
+Q: When do you think you will emulate the *DSP/SFX chip?  My favorite game
+   *name of game with chip* won't run without it.
+
+A: We will consider emulating extra chips only if decent information on
+   those chips are found.  However, even if we find info on them, we
+   cannot guarantee to be able to implement them.
+
+
+Q: This game tells me that it is not compatible with the MultiTap.  What
+   should I do?
+
+A: Set both Player 3,  Player 4, and Player 5's input device to 'None'.
+
+
+Q: How do I improve the compatibility of ZSNES?
+
+A: Turning on sound helps a lot here.  Also, try in the ZSNES configuration
+   file to keep the % of execution at 100%.  If a game still doesn't work,
+   try tweaking the percentage of execution to both 120% or 80%.  If that
+   still doesn't work, then it's either a corrupt rom, a game that requires
+   a special chip, or a bug in ZSNES.
+
+
+Q: Why am I experiencing problems with Chrono Trigger?
+
+A: If you cannot press the L+R+A seqence, then you would need to assign
+   both the L and R key as the same key such as set L and R to PageUp and
+   set A to Home, then pressing PageUp+Home will be the same as pressing
+   L,R, and A together.  This is a hardware limitation of the keyboard,
+   not a bug in ZSNES.
+
+
+Q: Why doesn't Pilotwings/Star Ocean/Street Fighter Alpha 2 work?
+
+A: Pilotwings uses the DSP1 chip which as of yet is not completely figured
+   out.  So far the only DSP1 game which will run is Super Mario Kart.
+   Star Ocean and Street Fighter Alpha 2 both use the SDD-1 chip, which
+   uses an unknown compression routine that has to be figured out before
+   it can be emulated.
+
+
+Q: Can you guys get Pilotwings/Star Ocean/Street Fighter Alpha 2 to work?
+
+A: We have already worked on them to an extent, however, we cannot go much
+   further until we gain knowledge on how to get them to work.
+   Unfortunately, we are not magicians.
+
+
+_[ SPEED ISSUES ]__________________________________________________________
+
+Q: Why is ZSNES slow?
+
+A: For the Windows version, you might want to change your video mode in 
+   ZSNESWin to different settings until you find the mode that's optimal
+   in performance.
+
+   Emulating a SNES is slow because it is a complex system.  Also, ZSNES
+   by default uses a tile/line engine which is newly completed in v1.0.
+   This engine is faster than the old so if the speed isn't up to par you
+   may try a solution below, or your computer just may be too slow.
+
+
+Q: Can you please make ZSNES faster?
+
+A: We're always trying and there are still a lot of room left for
+   optimisation, but a lack of time keeps us from implementing them.
+
+
+Q: Can you implement dynamic recompilation into ZSNES?
+
+A: There is no plans to implement it since it doesn't seem necessary.  The
+   SuperNES only uses a 3mhz cpu compared to say the 93mhz cpu inside the
+   Nintendo 64.  Implementing a dynamic recompilation engine will be hard
+   work and won't improve performance by much.
+
+
+Q: Why does the game slow down even though I'm using auto frame rate and
+   the FPS is pretty high?
+
+A: A game slows down like that when it executes its code beyond the speed
+   of cpu emulation that ZSNES currently handles.  To reduce slowdowns,
+    increase the percentage of execution by using editing the ZSNESW.CFG.
+
+
+_[ KEYBOARD/JOYSTICK ISSUES ]______________________________________________
+
+Q: Will ZSNES Windows now be able to use my Windows Joystick/Gamepad?
+
+A: Yes, the controls are now handed via Direct Input so all Windows based
+   control devices should work within ZSNES Windows.
+
+Q: Why can't I press more than 2 keys at a time?
+
+A: It's mainly the limitation of the PC Keyboard.  If you want to press
+   more than 2 keys at a time, either use a joystick or change the keyboard
+   keys around until you find a combination where you can press more than
+   2 keys at a time.  Another technique that works is to set multiple
+   buttons to a single key.  That way, pressing that key presses multiple
+   buttons at the same time.
+
+
+Q: How come my joystick keeps holding in one direction?
+
+A: That happens when you hold a direction when ZSNES Windows starts up.
+   If that happens, then exit ZSNES and reload to recalibrate.  Clicking on
+   SET in the input device window also calibrates the joystick, but it also
+   resets the controls to the default joystick settings.
+
+
+Q: How do I use both my Keyboard and Joystick for the 1st player?
+
+A: In the GUI, enter the CONFIG -> OPTIONS menu.  Then check 'USE Pl1/2 AS
+   Pl3/4'.  Once you've done that, Player 3 controls will control Player 1
+   so if you have joystick set on Player 1, set Player 3 as keyboard.
+   This disables multitap emulation however.
+
+
+_[ CHEAT ISSUES ]__________________________________________________________
+
+Q: How come the game genie codes don't work?
+
+A: You probably didn't insert the '-'.  Otherwise, try clicking on the FIX
+   button once while the highlight is over the code.
+
+
+Q: How do I use .CHT files?
+
+A: Copy the .CHT file to the ROM Directory or if you have a save directory
+   defined, copy it to the Save Directory.  Then rename the .CHT file if
+   necessary so that the filename before the . matches the ROM file.
+
+
+_[ FREEZING/CRASHING ISSUES ]______________________________________________
+
+
+Q: When I load a ROM, how come ZSNES crashes?
+
+A: For ZSNESWin, you first might want to see if you have any other major
+   program running in the background (eg. WinAMP).  If it still crashes
+   after you close those programs, you might want to download and install
+   the newest version of DirectX which is located at
+   www.microsoft.com/directx
+
+   Odds are, if the emulator crashes as you load a ROM then it is probably
+   not compatable with ZSNES Windows due to it being incomplete, a bad
+   header, or for some other reason making it broken.
+
+
+-[ MISC ]__________________________________________________________________
+
+Q: How does the auto .IPS patching feature work?
+
+A: The auto .IPS feature works by copying the .IPS file to the directory of
+   your ROM file or if you have a save directory defined, then the .IPS
+   file goes into the save directory.  Next, rename the .IPS file so that
+   it matches filename (eg.  If your ROM filename is THISGAME.SMC, then
+   your .IPS filename is THISGAME.IPS.)
+
+
+Q: Where do I get the games?
+
+A: The ZSNES Team will *NOT* provide any games or any links to games.
+

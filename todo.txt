@@ -1,0 +1,35 @@
+Some Issues :
+
+Windows Port:
+- For some reason DirectDraw runs very slow on 3dfx cards.
+  Is this possible to fix?  Or maybe implementing a glide mode would fix it.
+  DirectDraw blit routines are probably not handled in an optimal way
+- DirectSound in ZSNESw doesn't support the primary sound buffer.
+  Unfortunately, this causes 8-bit quality sounds on certain computers.
+- DirectInput seems to cause some systems to really slow down for some
+  odd reason.  When those systems that are affected disables their joystick
+  from the control panel, the framerate suddenenly goes up from choppy to
+  smooth.
+- VSync or triple buffering not implemented
+- Glide,OpenGL, or Direct3D support would be nice
+- .ZIPed files seems to not work on certain Win2K configurations
+- Use another (free) compiler for the windows version (cygwin?)
+
+General
+- Maybe add in Cubic Spline Interpolation to the SNES DSP Sound processor
+  (DSPPROC.ASM) since some people like the clarity of it compared to
+  Gaussian Interpolation (even though that's the method the real snes uses) 
+  and also make a variable to select between those interpolations (If
+  someone can do this, I'll add an option to switch between them in the
+  GUI later)
+- Clean up the makefiles (get rid of this ugly link.win32)
+- ZSNES doesn't compile with nasm 0.98.08 because of problems with 
+  the way it deals with loops
+  
+Compatibility
+- Game not working - Guikuden 1 (and some more)
+- Graphics Glitches - Uniracers (2p mode), Killer Instinct (couple stages,
+    black background), FF3 (some sprite clipping probs), Metal Combat,
+    Tactic Ogre (Menus?)
+- Special Chips - DSP1 (60% done), DSP2 (0% done), SA-1 (95% done),
+                  SDD-1 (decompression left), and others                       

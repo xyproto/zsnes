@@ -1,0 +1,1048 @@
+;Copyright (C) 1997-2001 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
+;
+;This program is free software; you can redistribute it and/or
+;modify it under the terms of the GNU General Public License
+;as published by the Free Software Foundation; either
+;version 2 of the License, or (at your option) any later
+;version.
+;
+;This program is distributed in the hope that it will be useful,
+;but WITHOUT ANY WARRANTY; without even the implied warranty of
+;MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;GNU General Public License for more details.
+;
+;You should have received a copy of the GNU General Public License
+;along with this program; if not, write to the Free Software
+;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+
+
+
+
+
+
+Nextwinmode:
+    push ebx
+    mov ebx,[ngcwinptr]
+    xor dword[ngcwinmode],1
+    mov ebx,[ebx+4]
+    add dword[ngcwinptr],4
+    mov [ngcpixleft],ebx
+    pop ebx
+    ret
+
+%macro processnextdrawwin 3
+    dec dword[ngcpixleft]
+    jnz %%notzero
+    call Nextwinmode
+%%notzero
+    cmp dword[ngcwinmode],1
+    je %%nodraw
+    test %1,%3
+    jz %%nodraw
+    mov [edi+%2],%1
+%%nodraw
+%endmacro
+
+%macro processwinpixel 0
+    dec dword[ngcpixleft]
+    jnz %%notzero
+    call Nextwinmode
+%%notzero
+    dec dword[ngcpixleft]
+    jnz %%notzero2
+    call Nextwinmode
+%%notzero2
+%endmacro
+
+%macro drawlinengwin 8
+    ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
+    ;              bit 10-12 = palette, 0-9=tile#
+    mov ebx,[ng16bbgval]
+    mov dl,ch
+    inc dword[bg1drwng+ebx*4]
+    and ecx,3FFh
+    and edx,1Fh
+    add ecx,[ngptrdat2]
+    mov edx,[%6+edx*4]
+    %7
+    jnz near %%docache
+%%returnfromcache
+    %2
+    ; start drawing from ecx to edi
+    test word[vrama+eax],8000h
+    jz %%noflipypart
+    add ecx,[flipyposng]
+    jmp %%flipypart
+%%noflipypart
+    add ecx,[yposng]
+%%flipypart
+    test word[vrama+eax],4000h
+    jnz near %%flipxpart
+    mov ebx,[ecx]
+    add ebx,edx
+    processnextdrawwin bl,0,%8
+    processnextdrawwin bh,1,%8
+    shr ebx,16
+    processnextdrawwin bl,2,%8
+    processnextdrawwin bh,3,%8
+    mov ebx,[ecx+4]
+    add ebx,edx
+    processnextdrawwin bl,4,%8
+    processnextdrawwin bh,5,%8
+    shr ebx,16
+    processnextdrawwin bl,6,%8
+    processnextdrawwin bh,7,%8
+    jmp .fin
+%%flipxpart
+    mov ebx,[ecx+4]
+    add ebx,edx
+    rol ebx,16
+    processnextdrawwin bh,0,%8
+    processnextdrawwin bl,1,%8
+    shr ebx,16
+    processnextdrawwin bh,2,%8
+    processnextdrawwin bl,3,%8
+    mov ebx,[ecx]
+    add ebx,edx
+    rol ebx,16
+    processnextdrawwin bh,4,%8
+    processnextdrawwin bl,5,%8
+    shr ebx,16
+    processnextdrawwin bh,6,%8
+    processnextdrawwin bl,7,%8
+    jmp .fin
+%5
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+.fin
+    mov ebx,[ng16bbgval]
+    add ax,2
+    inc dword[bg1totng+ebx*4]
+    add edi,8
+    test eax,03Fh
+    jz %%tileadd
+%%next
+    dec byte[tleftn]
+    jnz near %4
+    pop ebx
+    cmp byte[curmosaicsz],1
+    jne near domosaicng
+    ret
+%%docache
+    call %3
+    jmp %%returnfromcache
+%%tileadd
+    add ax,[bgtxadd]
+    jmp %%next
+%endmacro
+
+%macro drawlineng16x16win 8
+    ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
+    ;              bit 10-12 = palette, 0-9=tile#
+    mov ebx,[ng16bbgval]
+    mov dl,ch
+    inc dword[bg1drwng+ebx*4]
+    and ecx,3FFh
+    and edx,1Fh
+    add ecx,[ngptrdat2]
+    add cx,[taddnfy16x16]
+    test dword[vrama+eax],8000h
+    jz %%noflipy
+    add cx,[taddfy16x16]
+%%noflipy
+    test dword[vrama+eax],4000h
+    jz %%noflipx
+    inc cx
+%%noflipx
+%%nexttile
+    push ecx
+    push edx
+    mov edx,[%6+edx*4]
+    %7
+    jnz near %%docache
+%%returnfromcache
+    %2
+    ; start drawing from ecx to edi
+    test word[vrama+eax],8000h
+    jnz %%flipypart
+    add ecx,[yposng]
+    jmp %%noflipypart
+%%flipypart
+    add ecx,[flipyposng]
+%%noflipypart
+    test word[vrama+eax],4000h
+    jnz near %%flipxpart
+    mov ebx,[ecx]
+    add ebx,edx
+    processnextdrawwin bl,0,%8
+    processnextdrawwin bh,1,%8
+    shr ebx,16
+    processnextdrawwin bl,2,%8
+    processnextdrawwin bh,3,%8
+    mov ebx,[ecx+4]
+    add ebx,edx
+    processnextdrawwin bl,4,%8
+    processnextdrawwin bh,5,%8
+    shr ebx,16
+    processnextdrawwin bl,6,%8
+    processnextdrawwin bh,7,%8
+    jmp %%done
+%%flipxpart
+    mov ebx,[ecx+4]
+    add ebx,edx
+    rol ebx,16
+    processnextdrawwin bh,0,%8
+    processnextdrawwin bl,1,%8
+    shr ebx,16
+    processnextdrawwin bh,2,%8
+    processnextdrawwin bl,3,%8
+    mov ebx,[ecx]
+    add ebx,edx
+    rol ebx,16
+    processnextdrawwin bh,4,%8
+    processnextdrawwin bl,5,%8
+    shr ebx,16
+    processnextdrawwin bh,6,%8
+    processnextdrawwin bl,7,%8
+%%done
+    pop edx
+    pop ecx
+    inc cx
+    test dword[vrama+eax],4000h
+    jz %%noflipxb
+    sub cx,2
+%%noflipxb
+    add edi,8
+    xor dword[switch16x16],1
+    jnz near %%nexttile
+%%ntile
+    mov ebx,[ng16bbgval]
+    add ax,2
+    inc dword[bg1totng+ebx*4]
+    test eax,03Fh
+    jz near %%tileadd
+%%next
+    dec byte[tleftn]
+    jnz near %4
+    pop ebx
+    cmp byte[curmosaicsz],1
+    jne near domosaicng
+    ret
+%5
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    add edi,16
+    jmp %%ntile
+%%docache
+    call %3
+    jmp %%returnfromcache
+%%tileadd
+    add ax,[bgtxadd]
+    jmp %%next
+%endmacro
+
+%macro drawlinengomwin 8
+    ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
+    ;              bit 10-12 = palette, 0-9=tile#
+    mov ebx,[cbgval]
+    mov dl,ch
+    inc dword[bg1drwng+ebx*4]
+    and ecx,3FFh
+    and edx,1Fh
+    add ecx,[ngptrdat2]
+    mov edx,[%6+edx*4]
+    %7
+    jnz near %%docache
+%%returnfromcache
+    %2
+    ; start drawing from ecx to edi
+    test word[vrama+eax],8000h
+    jnz near %%flipypart
+    add ecx,[yposng]
+    jmp %%notflipypart
+%%flipypart
+    add ecx,[flipyposng]
+%%notflipypart
+    test word[vrama+eax],4000h
+    jnz near %%flipxpart
+    mov ebx,[ecx]
+    add ebx,edx
+    processnextdrawwin bl,0,%8
+    processnextdrawwin bh,1,%8
+    shr ebx,16
+    processnextdrawwin bl,2,%8
+    processnextdrawwin bh,3,%8
+    mov ebx,[ecx+4]
+    add ebx,edx
+    processnextdrawwin bl,4,%8
+    processnextdrawwin bh,5,%8
+    shr ebx,16
+    processnextdrawwin bl,6,%8
+    processnextdrawwin bh,7,%8
+    jmp %%endokay
+
+%%flipxpart
+    mov ebx,[ecx+4]
+    add ebx,edx
+    rol ebx,16
+    processnextdrawwin bh,0,%8
+    processnextdrawwin bl,1,%8
+    shr ebx,16
+    processnextdrawwin bh,2,%8
+    processnextdrawwin bl,3,%8
+    mov ebx,[ecx]
+    add ebx,edx
+    rol ebx,16
+    processnextdrawwin bh,4,%8
+    processnextdrawwin bl,5,%8
+    shr ebx,16
+    processnextdrawwin bh,6,%8
+    processnextdrawwin bl,7,%8
+    jmp %%endokay
+%5
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+%%endokay
+    mov ebx,[cbgval]
+    add word[ofsmmptr],2
+    inc dword[bg1totng+ebx*4]
+    add word[ofsmtptr],2
+    mov ax,[ofsmmptr]
+    mov ebx,[yposngom]
+    mov edx,[flipyposngom]
+    mov [yposng],ebx
+    mov [flipyposng],edx
+    add edi,8
+    test eax,03Fh
+    jz near %%tileadd
+%%next
+    mov ebx,[ofsmcptr]
+    add ebx,[ofsmcptr2]
+    mov ecx,[ofsmval]
+    add dword[ofshvaladd],8
+    test dword[ebx],ecx
+    jz .noofsm
+    mov ebx,[ebx]
+    mov ax,[ofsmtptr]
+    and ebx,3FFh
+    add ebx,[ofsmcyps]
+    test ebx,100h
+    jz .noupper
+    add ax,[ofsmady]
+.noupper
+    and ebx,0FFh
+    mov edx,ebx
+    shr ebx,3
+    and edx,07h
+    shl ebx,6
+    shl edx,3
+    add ax,bx
+    mov [yposng],edx
+    xor edx,38h
+    mov [flipyposng],edx
+.noofsm
+    mov ebx,[ofsmcptr]
+    add ebx,[ofsmcptr2]
+    add dword[ofsmcptr2],2
+    mov ecx,[ofsmval]
+    and dword[ofsmcptr2],3Fh
+    test dword[ebx-40h],ecx
+    jz %%noofsmh
+    mov ebx,[ebx-40h]
+    sub ax,[ofsmtptr]
+    add ax,[ofsmtptrs]
+    add ebx,[ofshvaladd]
+    test ebx,100h
+    jz %%noleft
+    add ax,[ofsmadx]
+%%noleft
+    and ebx,0F8h
+    shr ebx,2
+    add ax,bx
+%%noofsmh
+    dec byte[tleftn]
+    jnz near %4
+%%fin
+    pop ebx
+    cmp byte[curmosaicsz],1
+    jne near domosaicng
+    ret
+%%docache
+    call %3
+    jmp %%returnfromcache
+%%tileadd
+    mov bx,[bgtxadd]
+    add ax,bx
+    add [ofsmmptr],bx
+    add word[ofsmtptr],bx
+    jmp %%next
+%endmacro
+
+%macro parttilewin 2
+    cmp dword[ngcwinmode],1
+    je %%nodraw
+    mov bl,[ecx+%1*8]
+    or bl,bl
+    jz %%nodraw
+    add bl,dl
+    mov [edi+%2*288],bl
+%%nodraw
+%endmacro
+
+%macro drawtilengwin 8
+    ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
+    ;              bit 10-12 = palette, 0-9=tile#
+    mov ebx,[ng16bbgval]
+    mov dl,ch
+    inc dword[bg1drwng+ebx*4]
+    and ecx,3FFh
+    and edx,1Fh
+    add ecx,[ngptrdat2]
+    mov edx,[%6+edx*4]
+    %7
+    jnz near %%docache
+%%returnfromcache
+    cmp byte[%1+ecx],2
+    je near %5
+    cmp byte[%1+ecx],0
+    je near %%parttile
+    %2
+    ; start drawing from ecx
+    test dword[vrama+eax],8000h
+    jnz near %%flipyfull
+    test dword[vrama+eax],4000h
+    jnz near %%flipxfull
+    mov dword[tleftnb],8
+%%loopfa
+    dec dword[ngcpixleft]
+    jnz %%notzero
+    call Nextwinmode
+%%notzero
+    cmp dword[ngcwinmode],1
+    je %%nodraw
+    mov bl,[ecx]
+    add bl,dl
+    mov [edi],bl
+    mov bl,[ecx+8]
+    add bl,dl
+    mov [edi+288],bl
+    mov bl,[ecx+8*2]
+    add bl,dl
+    mov [edi+288*2],bl
+    mov bl,[ecx+8*3]
+    add bl,dl
+    mov [edi+288*3],bl
+    mov bl,[ecx+8*4]
+    add bl,dl
+    mov [edi+288*4],bl
+    mov bl,[ecx+8*5]
+    add bl,dl
+    mov [edi+288*5],bl
+    mov bl,[ecx+8*6]
+    add bl,dl
+    mov [edi+288*6],bl
+    mov bl,[ecx+8*7]
+    add bl,dl
+    mov [edi+288*7],bl
+%%nodraw
+    inc ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfa
+    sub edi,8
+    jmp %%end
+%%flipxfull
+    mov dword[tleftnb],8
+    add ecx,7
+%%loopfb
+    dec dword[ngcpixleft]
+    jnz %%notzerob
+    call Nextwinmode
+%%notzerob
+    cmp dword[ngcwinmode],1
+    je %%nodrawb
+    mov bl,[ecx]
+    add bl,dl
+    mov [edi],bl
+    mov bl,[ecx+8]
+    add bl,dl
+    mov [edi+288],bl
+    mov bl,[ecx+8*2]
+    add bl,dl
+    mov [edi+288*2],bl
+    mov bl,[ecx+8*3]
+    add bl,dl
+    mov [edi+288*3],bl
+    mov bl,[ecx+8*4]
+    add bl,dl
+    mov [edi+288*4],bl
+    mov bl,[ecx+8*5]
+    add bl,dl
+    mov [edi+288*5],bl
+    mov bl,[ecx+8*6]
+    add bl,dl
+    mov [edi+288*6],bl
+    mov bl,[ecx+8*7]
+    add bl,dl
+    mov [edi+288*7],bl
+%%nodrawb
+    dec ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfb
+    sub edi,8
+    jmp %%end
+%%flipyfull
+    test word[vrama+eax],4000h
+    jnz near %%flipxyfull
+    mov dword[tleftnb],8
+%%loopfc
+    dec dword[ngcpixleft]
+    jnz %%notzeroc
+    call Nextwinmode
+%%notzeroc
+    cmp dword[ngcwinmode],1
+    je %%nodrawc
+    mov bl,[ecx+8*7]
+    add bl,dl
+    mov [edi],bl
+    mov bl,[ecx+8*6]
+    add bl,dl
+    mov [edi+288],bl
+    mov bl,[ecx+8*5]
+    add bl,dl
+    mov [edi+288*2],bl
+    mov bl,[ecx+8*4]
+    add bl,dl
+    mov [edi+288*3],bl
+    mov bl,[ecx+8*3]
+    add bl,dl
+    mov [edi+288*4],bl
+    mov bl,[ecx+8*2]
+    add bl,dl
+    mov [edi+288*5],bl
+    mov bl,[ecx+8]
+    add bl,dl
+    mov [edi+288*6],bl
+    mov bl,[ecx]
+    add bl,dl
+    mov [edi+288*7],bl
+%%nodrawc
+    inc ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfc
+    sub edi,8
+    jmp %%end
+%%flipxyfull
+    mov dword[tleftnb],8
+    add ecx,7
+%%loopfd
+    dec dword[ngcpixleft]
+    jnz %%notzerod
+    call Nextwinmode
+%%notzerod
+    cmp dword[ngcwinmode],1
+    je %%nodrawd
+    mov bl,[ecx+8*7]
+    add bl,dl
+    mov [edi],bl
+    mov bl,[ecx+8*6]
+    add bl,dl
+    mov [edi+288],bl
+    mov bl,[ecx+8*5]
+    add bl,dl
+    mov [edi+288*2],bl
+    mov bl,[ecx+8*4]
+    add bl,dl
+    mov [edi+288*3],bl
+    mov bl,[ecx+8*3]
+    add bl,dl
+    mov [edi+288*4],bl
+    mov bl,[ecx+8*2]
+    add bl,dl
+    mov [edi+288*5],bl
+    mov bl,[ecx+8]
+    add bl,dl
+    mov [edi+288*6],bl
+    mov bl,[ecx]
+    add bl,dl
+    mov [edi+288*7],bl
+%%nodrawd
+    dec ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfd
+    sub edi,8
+    jmp %%end
+%%parttile
+    %2
+    ; start drawing from ecx
+    test dword[vrama+eax],8000h
+    jnz near %%flipyfullp
+    test dword[vrama+eax],4000h
+    jnz near %%flipxfullp
+    mov dword[tleftnb],8
+%%loopfap
+    dec dword[ngcpixleft]
+    jnz %%notzerop
+    call Nextwinmode
+%%notzerop
+    parttilewin 0,0
+    parttilewin 1,1
+    parttilewin 2,2
+    parttilewin 3,3
+    parttilewin 4,4
+    parttilewin 5,5
+    parttilewin 6,6
+    parttilewin 7,7
+    inc ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfap
+    sub edi,8
+    jmp %%end
+%%flipxfullp
+    mov dword[tleftnb],8
+    add ecx,7
+%%loopfbp
+    dec dword[ngcpixleft]
+    jnz %%notzerobp
+    call Nextwinmode
+%%notzerobp
+    parttilewin 0,0
+    parttilewin 1,1
+    parttilewin 2,2
+    parttilewin 3,3
+    parttilewin 4,4
+    parttilewin 5,5
+    parttilewin 6,6
+    parttilewin 7,7
+    dec ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfbp
+    sub edi,8
+    jmp %%end
+%%flipyfullp
+    test word[vrama+eax],4000h
+    jnz near %%flipxyfullp
+    mov dword[tleftnb],8
+%%loopfcp
+    dec dword[ngcpixleft]
+    jnz %%notzerocp
+    call Nextwinmode
+%%notzerocp
+    parttilewin 7,0
+    parttilewin 6,1
+    parttilewin 5,2
+    parttilewin 4,3
+    parttilewin 3,4
+    parttilewin 2,5
+    parttilewin 1,6
+    parttilewin 0,7
+    inc ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfcp
+    sub edi,8
+    jmp %%end
+%%flipxyfullp
+    mov dword[tleftnb],8
+    add ecx,7
+%%loopfdp
+    dec dword[ngcpixleft]
+    jnz %%notzerodp
+    call Nextwinmode
+%%notzerodp
+    parttilewin 7,0
+    parttilewin 6,1
+    parttilewin 5,2
+    parttilewin 4,3
+    parttilewin 3,4
+    parttilewin 2,5
+    parttilewin 1,6
+    parttilewin 0,7
+    dec ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfdp
+    sub edi,8
+    jmp %%end
+%5
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+%%end
+    mov ebx,[ng16bbgval]
+    add ax,2
+    inc dword[bg1totng+ebx*4]
+    add edi,8
+    test eax,03Fh
+    jz %%tileadd
+%%next
+    dec byte[tleftn]
+    jnz near %4
+    pop ebx
+    ret
+%%docache
+    call %3
+    jmp %%returnfromcache
+%%tileadd
+    add ax,[bgtxadd]
+    jmp %%next
+%endmacro
+
+%macro drawtileng16x16win 8
+    ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
+    ;              bit 10-12 = palette, 0-9=tile#
+    mov ebx,[ng16bbgval]
+    mov dl,ch
+    inc dword[bg1drwng+ebx*4]
+    and ecx,3FFh
+    and edx,1Fh
+    add ecx,[ngptrdat2]
+    add cx,[taddnfy16x16]
+    test dword[vrama+eax],8000h
+    jz %%noflipy
+    add cx,[taddfy16x16]
+%%noflipy
+    test dword[vrama+eax],4000h
+    jz %%noflipx
+    inc cx
+%%noflipx
+%%nexttile
+    push ecx
+    push edx
+    mov edx,[%6+edx*4]
+    %7
+    jnz near %%docache
+%%returnfromcache
+    cmp byte[%1+ecx],2
+    je near %%skip
+    cmp byte[%1+ecx],0
+    je near %%parttile
+    %2
+    ; start drawing from ecx
+    test dword[vrama+eax],8000h
+    jnz near %%flipyfull
+    test dword[vrama+eax],4000h
+    jnz near %%flipxfull
+    mov dword[tleftnb],8
+%%loopfa
+    dec dword[ngcpixleft]
+    jnz %%notzero
+    call Nextwinmode
+%%notzero
+    cmp dword[ngcwinmode],1
+    je %%nodraw
+    mov bl,[ecx]
+    add bl,dl
+    mov [edi],bl
+    mov bl,[ecx+8]
+    add bl,dl
+    mov [edi+288],bl
+    mov bl,[ecx+8*2]
+    add bl,dl
+    mov [edi+288*2],bl
+    mov bl,[ecx+8*3]
+    add bl,dl
+    mov [edi+288*3],bl
+    mov bl,[ecx+8*4]
+    add bl,dl
+    mov [edi+288*4],bl
+    mov bl,[ecx+8*5]
+    add bl,dl
+    mov [edi+288*5],bl
+    mov bl,[ecx+8*6]
+    add bl,dl
+    mov [edi+288*6],bl
+    mov bl,[ecx+8*7]
+    add bl,dl
+    mov [edi+288*7],bl
+%%nodraw
+    inc ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfa
+    sub edi,8
+    jmp %%end
+%%flipxfull
+    mov dword[tleftnb],8
+    add ecx,7
+%%loopfb
+    dec dword[ngcpixleft]
+    jnz %%notzerob
+    call Nextwinmode
+%%notzerob
+    cmp dword[ngcwinmode],1
+    je %%nodrawb
+    mov bl,[ecx]
+    add bl,dl
+    mov [edi],bl
+    mov bl,[ecx+8]
+    add bl,dl
+    mov [edi+288],bl
+    mov bl,[ecx+8*2]
+    add bl,dl
+    mov [edi+288*2],bl
+    mov bl,[ecx+8*3]
+    add bl,dl
+    mov [edi+288*3],bl
+    mov bl,[ecx+8*4]
+    add bl,dl
+    mov [edi+288*4],bl
+    mov bl,[ecx+8*5]
+    add bl,dl
+    mov [edi+288*5],bl
+    mov bl,[ecx+8*6]
+    add bl,dl
+    mov [edi+288*6],bl
+    mov bl,[ecx+8*7]
+    add bl,dl
+    mov [edi+288*7],bl
+%%nodrawb
+    dec ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfb
+    sub edi,8
+    jmp %%end
+%%flipyfull
+    test word[vrama+eax],4000h
+    jnz near %%flipxyfull
+    mov dword[tleftnb],8
+%%loopfc
+    dec dword[ngcpixleft]
+    jnz %%notzeroc
+    call Nextwinmode
+%%notzeroc
+    cmp dword[ngcwinmode],1
+    je %%nodrawc
+    mov bl,[ecx+8*7]
+    add bl,dl
+    mov [edi],bl
+    mov bl,[ecx+8*6]
+    add bl,dl
+    mov [edi+288],bl
+    mov bl,[ecx+8*5]
+    add bl,dl
+    mov [edi+288*2],bl
+    mov bl,[ecx+8*4]
+    add bl,dl
+    mov [edi+288*3],bl
+    mov bl,[ecx+8*3]
+    add bl,dl
+    mov [edi+288*4],bl
+    mov bl,[ecx+8*2]
+    add bl,dl
+    mov [edi+288*5],bl
+    mov bl,[ecx+8]
+    add bl,dl
+    mov [edi+288*6],bl
+    mov bl,[ecx]
+    add bl,dl
+    mov [edi+288*7],bl
+%%nodrawc
+    inc ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfc
+    sub edi,8
+    jmp %%end
+%%flipxyfull
+    mov dword[tleftnb],8
+    add ecx,7
+%%loopfd
+    dec dword[ngcpixleft]
+    jnz %%notzerod
+    call Nextwinmode
+%%notzerod
+    cmp dword[ngcwinmode],1
+    je %%nodrawd
+    mov bl,[ecx+8*7]
+    add bl,dl
+    mov [edi],bl
+    mov bl,[ecx+8*6]
+    add bl,dl
+    mov [edi+288],bl
+    mov bl,[ecx+8*5]
+    add bl,dl
+    mov [edi+288*2],bl
+    mov bl,[ecx+8*4]
+    add bl,dl
+    mov [edi+288*3],bl
+    mov bl,[ecx+8*3]
+    add bl,dl
+    mov [edi+288*4],bl
+    mov bl,[ecx+8*2]
+    add bl,dl
+    mov [edi+288*5],bl
+    mov bl,[ecx+8]
+    add bl,dl
+    mov [edi+288*6],bl
+    mov bl,[ecx]
+    add bl,dl
+    mov [edi+288*7],bl
+%%nodrawd
+    dec ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfd
+    sub edi,8
+    jmp %%end
+%%parttile
+    %2
+    ; start drawing from ecx
+    test dword[vrama+eax],8000h
+    jnz near %%flipyfullp
+    test dword[vrama+eax],4000h
+    jnz near %%flipxfullp
+    mov dword[tleftnb],8
+%%loopfap
+    dec dword[ngcpixleft]
+    jnz %%notzerop
+    call Nextwinmode
+%%notzerop
+    parttilewin 0,0
+    parttilewin 1,1
+    parttilewin 2,2
+    parttilewin 3,3
+    parttilewin 4,4
+    parttilewin 5,5
+    parttilewin 6,6
+    parttilewin 7,7
+    inc ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfap
+    sub edi,8
+    jmp %%end
+%%flipxfullp
+    mov dword[tleftnb],8
+    add ecx,7
+%%loopfbp
+    dec dword[ngcpixleft]
+    jnz %%notzerobp
+    call Nextwinmode
+%%notzerobp
+    parttilewin 0,0
+    parttilewin 1,1
+    parttilewin 2,2
+    parttilewin 3,3
+    parttilewin 4,4
+    parttilewin 5,5
+    parttilewin 6,6
+    parttilewin 7,7
+    dec ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfbp
+    sub edi,8
+    jmp %%end
+%%flipyfullp
+    test word[vrama+eax],4000h
+    jnz near %%flipxyfullp
+    mov dword[tleftnb],8
+%%loopfcp
+    dec dword[ngcpixleft]
+    jnz %%notzerocp
+    call Nextwinmode
+%%notzerocp
+    parttilewin 7,0
+    parttilewin 6,1
+    parttilewin 5,2
+    parttilewin 4,3
+    parttilewin 3,4
+    parttilewin 2,5
+    parttilewin 1,6
+    parttilewin 0,7
+    inc ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfcp
+    sub edi,8
+    jmp %%end
+%%flipxyfullp
+    mov dword[tleftnb],8
+    add ecx,7
+%%loopfdp
+    dec dword[ngcpixleft]
+    jnz %%notzerodp
+    call Nextwinmode
+%%notzerodp
+    parttilewin 7,0
+    parttilewin 6,1
+    parttilewin 5,2
+    parttilewin 4,3
+    parttilewin 3,4
+    parttilewin 2,5
+    parttilewin 1,6
+    parttilewin 0,7
+    dec ecx
+    inc edi
+    dec dword[tleftnb]
+    jnz near %%loopfdp
+    sub edi,8
+    jmp %%end
+%%skip
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+%%end
+    pop edx
+    pop ecx
+    inc cx
+    test dword[vrama+eax],4000h
+    jz %%noflipxb
+    sub cx,2
+%%noflipxb
+    add edi,8
+    xor dword[switch16x16],1
+    jnz near %%nexttile
+%%ntile
+    mov ebx,[ng16bbgval]
+    add ax,2
+    inc dword[bg1totng+ebx*4]
+    test eax,03Fh
+    jz near %%tileadd
+%%next
+    dec byte[tleftn]
+    jnz near %4
+    pop ebx
+    ret
+%%done
+%5
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    processwinpixel
+    add edi,16
+    jmp %%ntile
+%%docache
+    call %3
+    jmp %%returnfromcache
+%%tileadd
+    add ax,[bgtxadd]
+    jmp %%next
+%endmacro
+
+

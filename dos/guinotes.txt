@@ -1,0 +1,506 @@
+Table of Contents
+컴컴컴컴컴컴컴컴�
+I.  ) The Game Menu
+II. ) The Quick Menu (Arrow Menu)
+III.) The Config Menu
+IV. ) The Cheat Menu
+V.  ) The MultiPlay Menu
+VI. ) The Misc Menu
+
+----------------------------------------------------------------------------
+
+Note : If any windows exists in the GUI field, pressing ESC always closes
+       the top-most window
+Note : Pressing ESC when no window is active is equivalent to RUN.  It will
+       not function if no game is loaded
+
+Notes on the filename box where you can manually type in the filename:
+  - Typing text into the box would automatically seek to the closest
+    matching filename in the box where the file selection cursor is located
+  - When you press enter with text in the box without any '\' or ':' in the
+    filename, ZSNES will first look for a directory matching the text and
+    changes its directory if one is found.  Otherwise, it will load the
+    current file or directory highlighted by the selection cursor.
+  - You can type in the full filename or directory including path
+    (eg. d:\games\mario.smc) or the drive name (eg. d:)
+
+----------------------------------------------------------------------------
+
+---------------------
+- I.) The Game Menu -
+---------------------
+
+Load :
+  Perform : Load File and Run
+  Usage   :
+     Loading a File :
+        You can move through the list using either the mouse or the
+        keyboard.  The keys for the keyboard are :
+          Up/Down - Move Up/Down through the list
+          Left/Right - Switch between the File and Directory Window
+          PageUp/PageDown/Home/End - Move through the list in larger
+            increments
+          A .. Z, \, : - Enters filename/directory into the load box
+          Enter - Load File or Change Directory (depending on which
+            window you are in)
+     Display Type :
+        You can select from either Normal 8.3 file format (Default),
+        Snes Header name, and Win95 long filename format.
+        Note : Win95 long filename format will not work in Pure DOS.
+               It will crash when using dosemu in Linux
+        Note : Snes Header Display will sometimes display garbled Lines.
+               This is normal since some images don't have a proper
+               name in the header or the header is not in english.
+               Whenever ZSNES detects a blank header name, it uses
+               the filename instead.
+               Also note that .ZIP files will not display the header name.
+               It's not efficient for the program to unzip every zip file
+               in the directory just to get the header names.
+     Show all Extensions : This will force the GUI to show
+        all of the file extensions instead of the default (.SMC,.SFC,...)
+
+Run :
+  Perform : Runs the game
+
+Reset :
+  Perform : Resets the game, but asks user for confirmation first
+
+Save State :
+  Perform : Saves the state (Equivalent to default F2), but asks
+            user for confirmation first
+Load State :
+  Perform : Loads the state (Equivalent to default F4), but asks
+            user for confirmation first
+
+Pick State :
+  Perform : Allows user to select the state position to use
+            (Equivalent to default F3)
+
+Quit :
+  Perform : Quits ZSNES
+
+----------------------------------------------------------------------------
+
+-----------------------------------------------
+- II.) The Quick Menu (Displayed as an Arrow) -
+-----------------------------------------------
+
+Perform : Allows the user to quickly select the last 10 games loaded off
+          the GUI.  Also allows the user to freeze/clear the list.
+
+Tip : You can create a favorites list by first clearing the list then
+      loading up all the games (last game loaded will be at the top) and
+      turning freeze on.
+
+----------------------------------------------------------------------------
+
+-------------------------
+- III.) The Config Menu -
+-------------------------
+
+Input #1-#5 :
+   Perform : Allows user to select the input device and control
+             keys for each player
+   Usage   :
+      Selecting an Input Device :
+        Using your mouse, move through the list of input devices
+           until the device of your choice is highlighted.  From
+           there, click on SET and the input device you selected
+           should appear after CDV: (CDV = Current Device)
+        Changing default keys :
+           Click on the key which you want to change using your
+           mouse and then press the key or joystick button/pad
+           which you want to change it to.  Pressing ESC disables
+           the game key.
+        Joystick 209h usage :
+           Some dual joystick cards support dual joystick ports
+           (port 201h and 209h) which allows for 2 6-button joysticks
+           or 2 different types of joysticks (sidewinder and a
+           standard joystick).  If you have one of these, check
+           the 'Use joystick port 209h' box.  If you do not have
+           a dual joystick/dual port card and if you check the box,
+           then the joystick will not work.
+
+Options :
+  Perform : Allows the user to select some in-game options
+  Usage :
+     Auto Frame Rate - Enables Auto Frame Rate
+     Frame Skip - (Shown when Auto Frame Rate is disabled)
+       Sets the constant frame skip value used when a game plays
+     Max Frame Skip - (Shown when Auto Frame Rate is enabled)
+       Sets the maximum allowable frame skip in auto framerate mode
+     New Gfx Engine - Enables/Disables the New Graphics engine
+       in 256 color modes or 320x240x65536 mode
+     VSync - Enables vertical sync wait to reduce sheering of the
+       screen.  Requires a very fast computer.
+     MMX Copy - Enables MMX Copying routines for a slight speed
+       increase (MMX processors only)
+     Use Pl1/2 as Pl3/4 - Allows the user to use 2 devices for 1 player
+       such as the keyboard and the joystick. (set keyboard as input
+       device 1 and joystick as input device 3).  This, however, disables
+       multitap support
+     Sidewinder Fix - Click this when your sidewinder doesn't work
+       after disabling the sidewinder profiler and pressed the
+       mode button twice
+     FPS at Start - Checking this would make the FPS appear whenever
+       you start ZSNES
+     Use 30Hz for Turbo - When activated, Turbo will change at 30hz NTSC
+       or 25hz PAL.  Otherwise, Turbo will change at 60hz NTSC or 50hz PAL
+     Enable Game Clock - Enabling this will show the system clock on-screen
+     Toggled Fast Fwd - Checking this will change the way how the fast forward
+       button functions.  Having it checked will cause it to act as a switch
+       and having it unchecked will cause it to act as a push button.
+     SRam Check+Save - This will enable automatic Save Ram write detection and
+       save the sram (.srm) to disk approximately 10 seconds after.
+     Old Gfx Mode 2 - This will enable the Old Gfx Engine Mode 2 which fixes
+       many transparency bugs that currently plagues ZSNES in the current
+       engine, however, it also creates some new ones.  This mode can be
+       slower at times so it's recommended that you only turn it on when
+       you need it.
+     Start at Latest Save - Checking this will automatically set the
+       save state pointer (F3 Menu) to the most recently saved location
+       whenever you load a rom image.
+     Auto State Save/Load - Enabling this will allow ZSNES to automatically
+       re-load the state whenever you return back to the game after a
+       proper exit.
+     Don't Save Current Path - This will prevent ZSNES from changing the
+       current start-up game path in the configuration.  You can
+       access this in Config->Options.
+     Disable Sound CPU Emu - Selecting this would disable the SPC700 chip
+       that controls the sound.  Using this would speed up emulation,
+       but the drawback is that you won't have sound and the gane
+       compatibility rate would be lower.
+Add-ons:
+  Perform : Changes the current special input selected for the game
+  Usage :
+    None - Uses the regular snes controllers
+    SNES Mouse at Port #1 - Emulates the SNES mouse at controller port #1
+    SNES Mouse at Port #2 - Emulates the SNES mouse at controller port #2
+    Super Scope - Emulates the SNES Super Scope
+    Lethal Enforcer Gun - Simulates the mouse movements for Lethal
+      Enforcers 1
+
+Video :
+  Perform : Changes the current video mode and sets some options
+  Usage :
+    Changing the video mode - Use the mouse to select the video mode
+      and click 'SET'.  When the video mode changes and if the result
+      doesn't look right, wait for 10 seconds without pressing any key
+      or button and the display will return to the previous one.
+    Scanlines - Only available in 256x256x256 and VESA2 640x480 modes.
+      This mode adds a blank line in between every line to produce
+      a scanline effect similar, if not exact, to a TV.
+    Eagle Engine - Only available in VESA2 320x240x256.  Setting
+      this would enable the Eagle Engine designed by Dirk Stevens
+      which basically locates 3 similar colored pixels together
+      and places a small dot in between to smooth out some graphics.
+    Interpolation - Only available in VESA2 640x480x65536.  Setting
+      this enable interpolation which basically blends all the
+      inbetween colors to produce a blurry effect.  However, this
+      slows down emulation.
+    Full Screen - Only available in VESA2 320x240 and 640x480 modes.
+      Setting this would scale the image to fit the screen.  This,
+      however, slows down emulation.
+    Small Screen - Only available in VESA2 640x480 modes.  Setting
+      this would display the image in a small, centered screen.  This
+      greatly improves performance in 640x480 modes.
+    50% Scanlines - Only available in 640x480x65536 video mode.  This
+      will enable scanline mode except that each line is 50% darker than
+      the line above it.
+    25% Scanlines - Only available in 640x480x65536 video mode.  This
+      will enable scanline mode except that each line is 25% darker than
+      the line above it.
+    2xSaI Engine - Setting this would enable Kreed's 2x Scale Advanced
+      Interpolation engine.
+    Super Eagle - Setting this would enable Kreed's Super Eagle engine.
+    Super 2xSaI Engine - Setting this would enable Kreed's Super 2x Scale
+      Advanced Interpolation engine.  This mode would require a lot of
+      cpu power since it is written in C.
+    Triple Buffering - This will enable Triple Buffering if it is available
+      on your VESA drivers/Video Card.  If it isn't available, then Zsnes
+      will use simulated Triple Buffering which is slower, but still does
+      the job.  Note that Triple Buffering will not work with 2xSaI/Super
+      Eagle.
+    Hi-resolution Mode 7 - Enabling this would activate high resolution
+      mode 7 whenever standard mode 7 is used within a game.  This mode
+      is only available in video modes that support it.
+
+Sound :
+  Perform : Allows user to change the sound configurations of ZSNES
+  Usage :
+     Enable Sound - Setting this turns on the sound
+     Stereo Sound - Enables Stereo Sound (Noticably slower though unless
+       you have a fast cpu)
+     Sound Rate - To change the sound rate, just click on the box
+       containing the value to rotate through all the
+       possible values.
+     Volume Level - To change, just slide the bar
+     Disable Noise Sim. (Disable Noise Simulation) - Setting this will
+       disable the noise filter which corrects many sound effects in
+       certain games, but will also ruin some others.
+     Surround Sound - Enables simulated 2 speaker surround sound
+     Sound Interpolation - Enables Sound Interpolation which smoothes out
+       the wave forms of lower frequency sounds
+     Reverse Stereo - This function swaps the L & R volume levels
+       in stereo mode
+     Low Pass Filter - The Low Pass Filter, when enabled, will produce
+       better bass in certain sound effects.  However, the side effect
+       is that the sound will overall be more muffled.
+
+----------------------------------------------------------------------------
+
+-----------------------
+- IV.) The Cheat Menu -
+-----------------------
+
+Add Code :
+  Perform : Enter Cheat Code Window and Set the keyboard cursor
+            on the cheat code entry box
+  Usage : Type in the code in either Game Genie, Pro Action Replay, or
+          Gold Finger format, press enter, then enter the description.
+          Note : Be sure to include the '-' when entering Game Genie codes
+  Note : You can also quickly modify the value of the currently selected
+         cheat code (in the browse window) by typing a 2 digit hex number
+         in the cheat code enter space
+
+Cheat Code Reflector - What this feature does is that it allows a value
+  of one cheat code to be mirrored from a value of another cheat code.  To
+  enable this option, type an 'R' at the end of any cheat code as the
+  destination, then type another cheat code (Without the 'R') as the source.
+  For example, if you want address 7E1000 to reflect the value at address
+  7F2000 (Whatever value written to 7E2000 from the game will also be
+  written to 7E1000), enter cheat code 7E1000FFR, then cheat code
+  7F2000FF (where FF can be any value).
+
+Browse :
+  Perform : Enter Cheat Code Window and Set the keyboard cursor at the
+            browse box
+  Usage : Move through the list using either the mouse or keyboard and
+          select the cheat code you want to modify.  Then click on the
+          buttons to the right or type in the key of the first letter
+          of the action.
+          Actions :
+            Toggle - Turns a cheat code on or off
+            Remove - Deletes the cheat code off the list
+            Save - Saves the current list into a .cht file which will
+              be located in the save directory
+            Load - Loads a previously saved list
+            Fix - Clicking this fixes some cheat codes that don't work,
+              but it will not always work
+          You can also toggle a cheat code on or off by double clicking on
+            them.
+
+Search :
+  Perform : Allows you to search for values in memory such as life, score,
+            etc. and allows you to change their values to your own preferred
+            choice.
+  Usage :
+       Select Size : You can choose what data size to search for.  If you
+         know the numerical values of the data you're going to select,
+         select the smallest number range that fits the data values.
+         (eg.  If you know the value cannot go higher than 50000, then
+         select 2 BYTES (0..65535) instead of 3 BYTES (0..16777215)).
+         Sometimes, you don't know the numerical value (in the case of
+         life bars) and you'd have to guess the size.
+       Select Format : DEC (Decimal, 0 .. 9), HEX (Hexadecimal, 0 .. F)
+         Most of the time, it's recommended that you'd use decimal, although
+         there are some cases that the values in memory are sometimes stored
+         as hex.
+       Search Type :
+         Exact Value Search - In this mode, you have to enter the exact
+           numerical value that you want to search for.  Such as if you
+           have 3 lives left, then search for the value 3.  The cheat
+           search engine also looks for value - 1 since even if a game
+           tells you that you have 3 lives left, it stores the value as
+           2 in memory.
+         Comparitive Search - In this mode, you select whether the value
+           is less than, greater than, equal to, or not equal to the
+           previous value.  Such as if you have a life bar and if the life
+           bar suddenly goes down, go back to the cheat search engine and
+           select less than to search for any value that has been decreased.
+
+----------------------------------------------------------------------------
+
+------------------------
+- V.) The NetPlay Menu -
+------------------------
+
+Modem Mode :
+
+NOTE #1 : DOS Compatible modem is REQUIRED!
+       If you don't know your modem settings and you're in win95/98, go to
+       Control Panel -> System -> Device Manager -> Modem and select
+       your modem.  Then click on your resources tab and the settings should
+       be there.
+
+  1.) Dial Menu     - Allows you to enter the phone number to dial and then
+                      dials and connects
+  2.) Wait for Ring - Waits for ring
+  3.) Config Modem  - Allows you to configure your modem :
+                        ComPort, IRQ, Baudrate - Sets your modem settings
+                        Use Fossil Driver - Set this option if you want
+                          ZSNES to use your a fossil driver.  If you don't
+                          know what a fossil driver is, just leave this
+                          option unchecked and pretend it doesn't exist.
+  4.) Manual        - Allows you to connect manually through the terminal.
+                      However, if both remote and local users select manual,
+                      the player numbers will not be assigned.
+
+IPX :
+
+  IPX mode currently connects at the first remote connection it detects.
+  This will probabily change in the future if there is a demand.
+
+Chat Mode :
+
+  Latency - The lower the number, the better the control response time.
+            But setting it too low can cause a lot of frame skip problems.
+            This value should vary depending on the traffic of the connection
+            you are using.  A value of 2 or 3 is recommended for modem.  The
+            value for IPX varies.  Latency is basically the amount of time
+            between a user input and that input being affected in the actual
+            game.  The delay should be higher than the time it takes for data
+            to move from one end to the other. Latency value of 1 is
+            equivalent to 1/30th of a second on NTSC games or 1/25th of a
+            second on PAL games.
+  Player # boxes - This will allow you to select up to a 5 player multiplayer
+            game.  Anything that is checked will be controlled locally
+            starting from player 1 as the lowest checked player.  Anything
+            marked with an X will be controlled remotely.
+            For example, if players 2,3,5 are checked and 1,4 are X'ed :
+              local player 1 will control player 2
+              local player 2 will control player 3
+              local player 3 will control player 5
+              remote player 1 will control player 1
+              remote player 2 will control player 4
+
+----------------------------------------------------------------------------
+
+----------------------
+- VI.) The Misc Menu -
+----------------------
+
+Game Keys :
+  Perform : Allows user to change the game keys to their own preference
+  Usage :
+     Click on the key which you want to change using your
+     mouse and then press the key or joystick button/pad
+     which you want to change it to.  Pressing ESC disables
+     the key.
+
+GUI Options :
+  Perform : Allows the user to customize some of the GUI
+  Usage :
+     Mouse Wrap - Allows the mouse pointer to wrap at the borders of the
+                  screen
+     Mouse Shadow - Disables/Enables the Mouse Shadow
+     Keep Menu Positions - When enabled, re-entering the GUI from the
+                  game does not automatically enter the Load Menu, but
+                  the previous menu which you were on when you last exit
+                  the GUI
+     Save Window Positions - When enabled, the GUI doesn't reset the locations
+                  of the windows when you exit/enter the GUI
+     Click Enters/Exits GUI - When enabled, it allows the right mouse button
+                  to automatically run and exit the game to the GUI.  This
+                  however, slows down emulation by a bit since it has to
+                  check the mouse button status once in a while.  In the
+                  windows port, the right click button won't return back
+                  to the game.
+     Use JoyPad1 to Control - When enabled, it allows Player 1's device
+                  to be used to move through the GUI.  This is mainly used
+                  if you want to use your joystick in the GUI.  The equivalent
+                  SNES keys to the Keyboard keys are :
+
+                  SNES ControlPad = Move
+                  SNES A = Enter
+                  SNES B = ESC
+                  SNES L = PageUp
+                  SNES R = PageDown
+     Enable Water Effect - Enables the water effect in the GUI background
+     Enable Snow Effect  - Enables the snow effect in the GUI background
+
+Key Comb. (Key Combination Editor) :
+  Perform : Allows you to specify certain keyboard combination routines
+    with a single keystroke/joystick button press.
+  Usage :
+    Description - Allows you type in the description of the combination key
+    Key - Clicking on this box will allow you to select which key/button to
+      use
+    Combination Keys - this window will display the sequence of events
+      selected by the user
+    P# - Selects which player # to use those keys as
+    > = Last </> - Enabling this would mean that the event symbol > will
+      mean the last left or right direction the user presses in the game and
+      the symbol < is the opposite of that direction.  When disabled, > means
+      right and < means left.
+    Game Specfic (Game Specific) - Enabling this will tell Zsnes to use
+      separate Key Combination files for each individual game.
+    Clear - Clears the current key combination field
+    Add - Adds the key combination fields below as a new entry
+    Replace - Copies the contents of the key combination fields below
+      to the current highlighted key combination above
+    Delete - Deletes the highlighted key combination above
+    Events:
+      Press+Rel - The key will be pressed and held.  It will be released
+        once another key is pressed after any amount of frame or second
+        delay.
+      Press Only - The key will be pressed and held
+      Rel Only - The key will be released if it is Pressed
+        by a pressed only event
+      Frame Delay - Delays for the specified number of frames
+      Second Delay - Delays for the specified number of seconds
+      Del - Deletes the event at the end of the Combination Keys list if
+        one exists
+  Note : A 1 frame delay exists after the combination key list has finished
+    processing
+
+  Example Key Combination: (Down / Down+Right / Right / L) :
+    Method 1:
+      Press+Rel Down / 2 Frame Delay / Press+Rel Down / Press+Rel Right /
+      2 Frame Delay / Press+Rel Right / 2 Frame Delay / Press+Rel L
+    Method 2:
+      Press Only Down / 2 Frame Delay / Press Only Right / 2 Frame Delay /
+      Rel Only Down / 2 Frame Delay / Rel Only Right / Press Only L
+
+Movie Options :
+  Perform : Allows you to record SNES Movies so that you can play them
+            back at a later date either to amuse your friends, torture
+            your friends, or whatever.  Just don't play anything in
+            front of your enemies since they might break your computer.
+  Usage :
+     Movies are saved as .ZMV, .ZM1, .ZM2, etc. files.  They should be
+     located in the same directory as your save files.  A movie file
+     consists of a save state file, saveram data, and the recorded
+     controller data.  The initial filesize of a .ZMV file is the
+     combination of a .zst and a .srm file (around 300kbytes) and
+     it averages around 7kbytes/minute (value varies) or 420kbytes/hour.
+
+     You can record :
+       - Standard 1/2 player games
+       - 3-4 player Multitap games
+       - SNES Mouse games
+       - Network/Modem games
+     You cannot record :
+       - Super Scope Games
+
+  GUI Usage :
+     Record - Begins recording the movie file
+     Play   - Begins playing the movie file
+     Stop   - Stops the movie process
+     The numbers at the right side selects which movie file to play/record.
+
+  NOTE : Movies recorded without sound cannot be played when sound
+    is enabled and vice versa
+  NOTE : Loading another game, loading a state, or resetting the
+    game will halt the play/record process
+  NOTE : When you play a movie file, the SRAM data becomes invalid and
+    ZSNES won't save it until you load a game.  This way, you don't have
+    to worry about your save ram when you load up a movie file.
+
+Save Cfg :
+  Perform : Saves the configuration files
+
+About :
+  Perform : Just displays the version # and the authors of ZSNES
+
+
