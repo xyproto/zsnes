@@ -44,7 +44,7 @@ NEWSYM CfgLoadAsmStart
 ; .CFG variables
 SECTION .data
 NEWSYM cfgsoundon,      db 0
-NEWSYM cfgSoundQuality, db 2
+NEWSYM cfgSoundQuality, db 5
 NEWSYM cfgStereoSound,  db 0
 NEWSYM cfgguioff,       db 0
 NEWSYM cfgper2exec,     db 100
