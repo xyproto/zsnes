@@ -2678,6 +2678,7 @@ NEWSYM cpuover
     jmp execloop.startagain
 
 .nmi
+    mov byte[irqon],80h
     mov byte[doirqnext],0
     inc dword[NetSent]
     cmp byte[yesoutofmemory],1
@@ -4373,6 +4374,7 @@ NEWSYM execsingle
     jmp dword near [edi+ebx*4]
 
 .nmi
+    mov byte[irqon],80h
     cmp byte[C4Enable],0
     je .noC4
     call C4VBlank

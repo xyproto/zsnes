@@ -393,6 +393,9 @@ ALIGN32
 .writeaddr dd 0
 .cebx      dd 0
 
+%macro TestDMA 0
+%endmacro
+
 ; DMA enable register
 ; use dmadata for input on dma
 NEWSYM reg420Bw
@@ -404,41 +407,49 @@ NEWSYM reg420Bw
     mov esi,dmadata
     test al,01h
     jz .notransa
+    TestDMA
     call transdma
 .notransa
     add esi,16
     test al,02h
     jz .notransb
+    TestDMA
     call transdma
 .notransb
     add esi,16
     test al,04h
     jz .notransc
+    TestDMA
     call transdma
 .notransc
     add esi,16
     test al,08h
     jz .notransd
+    TestDMA
     call transdma
 .notransd
     add esi,16
     test al,10h
     jz .notranse
+    TestDMA
     call transdma
 .notranse
     add esi,16
     test al,20h
     jz .notransf
+    TestDMA
     call transdma
 .notransf
     add esi,16
     test al,40h
     jz .notransg
+    TestDMA
     call transdma
 .notransg
     add esi,16
     test al,80h
     jz .notransh
+    TestDMA
     call transdma
 .notransh
     pop edx
@@ -762,6 +773,7 @@ NEWSYM hdmastartsc, db 0
 NEWSYM hdmarestart, db 0
 
 NEWSYM reg420Cw
+
     mov [curhdma],al
     mov bx,[resolutn]
     cmp word[curypos],bx

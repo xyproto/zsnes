@@ -2964,7 +2964,7 @@ NEWSYM BWUsed, db 0
 .shift
     cmp byte[SA1Status],0
     je .nosa1
-    mov byte[debstop3],1
+;    mov byte[debstop3],1
     ; value of 8Fh
     test byte[SA1Overflow+1],80h
     jnz .2bit

@@ -28,9 +28,10 @@ EXTSYM Sflagnz, Sflago, Sflagc,dmadata
 ;*******************************************************
 ; Flag Setting Macros
 ;*******************************************************
-
+EXTSYM debuggeron
 
 %macro endloop 0
+    call sa1debug
     mov bl,[esi]
     inc esi
     sub dh,[cpucycle+ebx]
