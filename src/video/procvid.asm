@@ -2893,7 +2893,7 @@ NEWSYM ClockOutputB
     dec ebx
     jnz .loop2b
 .do8b
-	call GetTimeInSeconds
+    call GetTimeInSeconds
     xor edx,edx
     mov ebx,60
     div ebx
@@ -3035,7 +3035,6 @@ NEWSYM hextestoutput
     add eax,40h
     mov edx,eax
     mov [Testval],edx
-
     cmp byte[pressed+25],1
     jne .nopress25
     jmp .nopress25
@@ -3504,7 +3503,6 @@ NEWSYM copyvid
     jne .nortl5
     mov dword[chatstrR5],0
 .nortl5
-
 
     ; Test if add table needs updating
     cmp byte[cbitmode],0
