@@ -83,7 +83,7 @@ PP=gpp
 	${CC} ${CFLAGS} -o $@ -c $<
 
 %.o: %.cpp
-	${PP} ${CFLAGS} -o $@ -c $<
+	${PP} ${CFLAGS} -fexceptions -o $@ -c $<
 
 %.o: %.asm
 	${ASM} ${ASMFLAGS} -o $@ $<
