@@ -1464,6 +1464,11 @@ NEWSYM headerhack
     mov esi,[romdata]
     add esi,018089h
     mov byte[esi],0FBh
+
+    mov esi,[romdata]
+    add esi,006C95h
+    mov byte[esi],0FBh
+
 .notbattlegp
 
     mov esi,[romdata]
