@@ -24,6 +24,7 @@ extern "C" {
    #include <ddraw.h> 
    #include <initguid.h>
    #include <mmsystem.h>
+   #include <time.h>
 }
 #include <math.h>
 #include <dsound.h>
@@ -127,6 +128,8 @@ DWORD                   MouseButton;
 #define UPDATE_TICKS_UDP 1000/60       // milliseconds per world update
 
 _int64 start, end, freq, update_ticks_pc, start2, end2, update_ticks_pc2;
+
+BYTE AlternateTimer=0;
 
 extern "C"
 {
@@ -1219,8 +1222,18 @@ void Start60HZ(void)
    {
    update_ticks_pc = UPDATE_TICKS_GAME * freq / 1000;
    }
-   QueryPerformanceCounter((LARGE_INTEGER*)&start);
-   QueryPerformanceCounter((LARGE_INTEGER*)&start2);
+
+   if (AlternateTimer == 0)
+   {
+      QueryPerformanceCounter((LARGE_INTEGER*)&start);
+      QueryPerformanceCounter((LARGE_INTEGER*)&start2);
+   }
+   else
+   {
+      start = timeGetTime();
+      start2 = timeGetTime();
+   }
+
    T36HZEnabled=0;
    T60HZEnabled=1;
 }
@@ -1234,8 +1247,18 @@ void Start36HZ(void)
 {
    update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000;
    update_ticks_pc = UPDATE_TICKS_GUI * freq / 1000;
-   QueryPerformanceCounter((LARGE_INTEGER*)&start);
-   QueryPerformanceCounter((LARGE_INTEGER*)&start2);
+
+   if (AlternateTimer == 0)
+   {
+      QueryPerformanceCounter((LARGE_INTEGER*)&start);
+      QueryPerformanceCounter((LARGE_INTEGER*)&start2);
+   }
+   else
+   {
+      start = timeGetTime();
+      start2 = timeGetTime();
+   }
+
    T60HZEnabled=0;
    T36HZEnabled=1;
 }
@@ -1431,7 +1454,16 @@ void initwinvideo(void)
    else
    {
       FirstVid=0;
-      if (!QueryPerformanceFrequency((LARGE_INTEGER*)&freq)) return;
+
+      if (AlternateTimer == 0)
+      {
+         if (!QueryPerformanceFrequency((LARGE_INTEGER*)&freq)) return;
+      }
+      else
+      {
+         freq = CLOCKS_PER_SEC;
+      }
+
 //      hInst=GetModuleHandle(0);
       if ( !RegisterWinClass() ); // { return; }
       X=(GetSystemMetrics( SM_CXSCREEN ) - WindowWidth) / 2;
@@ -1499,7 +1531,9 @@ extern int CounterB;
 
 void CheckTimers(void)
 {
-   QueryPerformanceCounter((LARGE_INTEGER*)&end2);
+   if (AlternateTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end2);
+      else end2 = timeGetTime();
+
    while ((end2 - start2) >= update_ticks_pc2)
       {
          if (CounterA>0) CounterA--;
@@ -1515,7 +1549,8 @@ void CheckTimers(void)
 
    if(T60HZEnabled)
    {
-   QueryPerformanceCounter((LARGE_INTEGER*)&end);
+   if (AlternateTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
+      else end = timeGetTime();
 
    while ((end - start) >= update_ticks_pc)
       {
@@ -1530,7 +1565,8 @@ void CheckTimers(void)
 
    if(T36HZEnabled)
    {
-   QueryPerformanceCounter((LARGE_INTEGER*)&end);
+   if (AlternateTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
+      else end = timeGetTime();
 
    while ((end - start) >= update_ticks_pc)
       {
