@@ -624,10 +624,8 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			}
 		 }
 		break;
-      default:
-         return DefWindowProc(hWnd,uMsg,wParam,lParam);
    }
-	return 0;
+	return DefWindowProc(hWnd,uMsg,wParam,lParam);;
 }
 
 int RegisterWinClass(void)
