@@ -533,7 +533,7 @@ NEWSYM Timecheck
 NEWSYM Setper2exec
     cmp byte[per2exec],100
     jne .not100
-    mov byte[per2exec],99
+    ret
 .not100
     ; Decrease standard % of execution by 5% to replace branch and 16bit
     ;   cycle deductions
