@@ -608,10 +608,12 @@ DWORD LockSurface(void)
     if (!UseOpenGL) {
 #endif
       SurfBuf = surface->pixels;
+      return(surface->pitch);
 #ifdef __OPENGL__
+    } else {
+      return (512);
     }
 #endif
-    return(surface->pitch);
 }
 
 void UnlockSurface(void)
@@ -622,6 +624,8 @@ void UnlockSurface(void)
 #endif
       SDL_Flip(surface);
 #ifdef __OPENGL__
+    } else {
+      SDL_GL_SwapBuffers();
     }
 #endif
 }
@@ -1141,6 +1145,9 @@ void drawscreenwin(void)
    UpdateVFrame();
    if(curblank!=0) return;
 
+   Temp1=LockSurface();
+   if(Temp1==0) { return; }
+
 #ifdef __OPENGL__
   if (UseOpenGL) {
 
@@ -1174,13 +1181,8 @@ void drawscreenwin(void)
       glTexCoord2f(0.0f, 2.240/2.560);  glVertex3f(-ratiox, -1.0f, -1.0f);
     glEnd();
 
-    SDL_GL_SwapBuffers();
-
   } else {
 #endif
-
-   Temp1=LockSurface();
-   if(Temp1==0) { return; }
 
    ScreenPtr=vidbuffer;
    ScreenPtr+=16*2+32*2+256*2;
@@ -1628,10 +1630,10 @@ void drawscreenwin(void)
 	}
    }
 
-   UnlockSurface();
 #ifdef __OPENGL__
   }
 #endif
+  UnlockSurface();
 }
 
 extern char fulladdtab[65536*2];
