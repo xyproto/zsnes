@@ -2832,12 +2832,15 @@ EXTSYM osm2dis
     je near .offsetm
     cmp byte[t16x161+ebx+%1*256],1
     je near .tiles16x16
-    cmp byte[BGMA+ebx],4
-    je near .offsetm
 .nooffsetm
     mov eax,[BGPT1+ebx*2+%1*512]
     test ecx,100h
     jz .noyinc
+    cmp byte[osm2dis],1
+    je .nooffsetm2
+    cmp byte[BGMA+ebx],4
+    je near .offsetm
+.nooffsetm2
     add eax,[BGPT1Y+ebx*2+%1*512]
 .noyinc
     lea ecx,[ecx*8]
@@ -3131,10 +3134,7 @@ EXTSYM osm2dis
     shl edx,6
     xor eax,eax
     mov ax,[BGPT3+ebx*2]
-    cmp dx,0
-    jl .isneg1
     add ax,dx
-.isneg1
     xor edx,edx
     mov dx,[BG3SXl+ebx*2]
     and dx,0F8h
@@ -3303,10 +3303,7 @@ EXTSYM osm2dis
     shl edx,6
     xor eax,eax
     mov ax,[BGPT3+ebx*2]
-    cmp dx,0
-    jl .isneg2
     add ax,dx
-.isneg2
     xor edx,edx
     mov dx,[BG3SXl+ebx*2]
     and dx,0F8h
@@ -3709,10 +3706,7 @@ EXTSYM osm2dis
     shl edx,6
     xor eax,eax
     mov ax,[BGPT3+ebx*2]
-    cmp dx,0
-    jl .isneg3
     add ax,dx
-.isneg3
     xor edx,edx
     mov dx,[BG3SXl+ebx*2]
     and dx,0F8h
