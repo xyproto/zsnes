@@ -1,4 +1,9 @@
-;Copyright (C) 1997-2004 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
+;Copyright (C) 1997-2005 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+;
+;zsknight@zsnes.com
+;_demo_@zsnes.com
+;pagefault@zsnes.com
+;n-a-c-h@users.sf.net
 ;
 ;This program is free software; you can redistribute it and/or
 ;modify it under the terms of the GNU General Public License
@@ -5251,16 +5256,16 @@ DisplayGUIAbout:
     ret
 
 SECTION .data
-GUIGUIAboutText1 db 'ZSNES V',ZVERSION,'             ',0 ;Need room for date
-GUIGUIAboutText2 db 'CODED BY :  ',0
-GUIGUIAboutText3 db '    ZSKNIGHT',0
-GUIGUIAboutText4 db '    _DEMO_',0
-GUIGUIAboutText6c db '    PAGEFAULT',0
-GUIGUIAboutText5 db 'ASSISTANT CODERS :  ',0
-GUIGUIAboutText6  db '    PHAROS        NACH',0
+GUIGUIAboutText1  db 'ZSNES V',ZVERSION,'             ',0 ;Need room for date
+GUIGUIAboutText2  db 'CODED BY :  ',0
+GUIGUIAboutText3  db '    ZSKNIGHT      _DEMO_',0
+GUIGUIAboutText4  db '    PAGEFAULT     NACH',0
+GUIGUIAboutText6c db 0
+GUIGUIAboutText5  db 'ASSISTANT CODERS :',0
+GUIGUIAboutText6  db '    PHAROS        STATMAT',0
 GUIGUIAboutText6b db '    TEUF          HPSOLO',0
 GUIGUIAboutText6d db '    THEODDONE33   SILOH',0
-GUIGUIAboutText6e db '    STATMAT',0
+GUIGUIAboutText6e db 0
 
 %ifdef __MSDOS__
 GUIGUIAboutText7 db 'DOS VERSION',0
@@ -6514,4 +6519,5 @@ NEWSYM GUIMenuItem, db 'GAME  ',0
             db 25,0
 
 SECTION .text
+
 

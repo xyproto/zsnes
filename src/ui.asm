@@ -1,4 +1,9 @@
-;Copyright (C) 1997-2004 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
+;Copyright (C) 1997-2005 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+;
+;zsknight@zsnes.com
+;_demo_@zsnes.com
+;pagefault@zsnes.com
+;n-a-c-h@users.sf.net
 ;
 ;This program is free software; you can redistribute it and/or
 ;modify it under the terms of the GNU General Public License
@@ -133,7 +138,7 @@ NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,
 NEWSYM welcome
 
 
-                 db 'ZSNES v',ZVERSION,' (c) 1997-2004, ZSNES Team',13,10,13,10
+                 db 'ZSNES v',ZVERSION,' (c) 1997-2005, ZSNES Team',13,10,13,10
                  db 'Be sure to check http://www.zsnes.com/ for the latest version.',13,10
                  db 'Please report crashes to zsnes-devel@lists.sourceforge.net.',13,10,13,10
                  db 'ZSNES is written by the ZSNES Team (See AUTHORS.TXT)',13,10
@@ -1296,3 +1301,4 @@ NEWSYM MMXCheck
 .noprintstr
 .nommx
     ret
+

@@ -1,4 +1,9 @@
-;Copyright (C) 1997-2004 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
+;Copyright (C) 1997-2005 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+;
+;zsknight@zsnes.com
+;_demo_@zsnes.com
+;pagefault@zsnes.com
+;n-a-c-h@users.sf.net
 ;
 ;This program is free software; you can redistribute it and/or
 ;modify it under the terms of the GNU General Public License
@@ -4372,3 +4377,4 @@ NEWSYM ArgumentTable
 ;     F0 F1 F2 F3 F4 F5 F6 F7 F8 F9 FA FB FC FD FE FF
    db 14,01,02,03,15,16,17,18,35,64,09,65,31,66,67,00
 SECTION .text
+

@@ -1,4 +1,9 @@
-;Copyright (C) 1997-2004 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
+;Copyright (C) 1997-2005 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+;
+;zsknight@zsnes.com
+;_demo_@zsnes.com
+;pagefault@zsnes.com
+;n-a-c-h@users.sf.net
 ;
 ;This program is free software; you can redistribute it and/or
 ;modify it under the terms of the GNU General Public License
@@ -401,4 +406,5 @@
 .npb
     call dword near [memtabler16+ebx*4]
 %endmacro
+
 

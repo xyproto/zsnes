@@ -1,4 +1,9 @@
-;Copyright (C) 1997-2004 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
+;Copyright (C) 1997-2005 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+;
+;zsknight@zsnes.com
+;_demo_@zsnes.com
+;pagefault@zsnes.com
+;n-a-c-h@users.sf.net
 ;
 ;This program is free software; you can redistribute it and/or
 ;modify it under the terms of the GNU General Public License
@@ -3539,3 +3544,4 @@ NEWSYM sfxnametab
             db 'IWT R4  IWT R5  IWT R6  IWT R7  '
             db 'IWT R8  IWT R9  IWT R10 IWT R11 '
             db 'IWT R12 IWT R13 IWT R14 IWT R15 '
+

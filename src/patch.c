@@ -1,5 +1,10 @@
 /*
-Copyright (C) 2003-2004 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
+Copyright (C) 1997-2005 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+
+zsknight@zsnes.com
+_demo_@zsnes.com
+pagefault@zsnes.com
+n-a-c-h@users.sf.net
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,6 +21,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+
+
 
 #ifdef __LINUX__
 #include "gblhdr.h"
@@ -287,4 +294,5 @@ void findZipIPS(char *compressedfile)
   reloadBuffer();
   PatchUsingIPS();
 }
+
 

@@ -4,7 +4,7 @@ AC_INIT(init.asm)
 AC_CONFIG_HEADER(config.h)	
 ISODATE=`date +%Y-%m-%d`
 AC_SUBST(ISODATE)
-VERSION=1.40
+VERSION=1.41
 AC_SUBST(VERSION)
 AC_ARG_WITH(nasm-prefix,[  --with-nasm-prefix=PFX Prefix where nasm is installed (optional)], nasm_prefix="$withval", nasm_prefix="")
 
