@@ -6004,11 +6004,11 @@ NEWSYM GetScreen
 ;    jbe .getscreen
 ;    ret
 ;.getscreen
-    cmp byte[cvidmode],6
+    cmp byte[cvidmode],9
     je near getcopyvesa2320x240x16b
-    cmp byte[cvidmode],12
+    cmp byte[cvidmode],14
 ;    je near getcopyvesa2640x480x16b
-    cmp byte[cvidmode],10
+    cmp byte[cvidmode],12
 ;    je near getcopyvesa2512x384x16b
 %endif
     ret
