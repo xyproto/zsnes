@@ -586,7 +586,6 @@ NEWSYM SmallMsgText, db 0
 NEWSYM AllowMultipleInst, db 0
 NEWSYM FilteredGUI, db 0
 NEWSYM BilinearFilter, db 0
-NEWSYM hq3xFilter, db 0
 
 NEWSYM ExclusiveSound, db 0
 NEWSYM DisableScreenSaver, db 0
@@ -601,6 +600,7 @@ NEWSYM KeyDisplayFPS, dd 0
 NEWSYM KeyIncStateSlot, dd 0
 NEWSYM KeyDecStateSlot, dd 0
 NEWSYM KeyUsePlayer1234, dd 0
+NEWSYM hq3xFilter, db 0
 
 GUIsave equ $-GUIRAdd
 
