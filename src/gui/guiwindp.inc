@@ -1714,7 +1714,12 @@ DisplayGUIVideo:
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIFSVID+eax],0
-    je .notext5
+    je near .notext5
+    cmp byte[GUIWSVID+eax],0
+    je .fs
+    GUIOuttextwin2u 5,26,93,GUIVideoText5b,1
+    jmp .notext5
+.fs
     GUIOuttextwin2u 5,26,93,GUIVideoText5,1
 .notext5
     xor eax,eax
@@ -1810,7 +1815,12 @@ DisplayGUIVideo:
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIFSVID+eax],0
-    je .notext5b
+    je near .notext5b
+    cmp byte[GUIWSVID+eax],0
+    je .fs2
+    GUIOuttextwin2 5,25,92,GUIVideoText5b
+    jmp .notext5b
+.fs2
     GUIOuttextwin2 5,25,92,GUIVideoText5
 .notext5b
     xor eax,eax
@@ -2126,6 +2136,7 @@ GUIVideoTextbf db 'BILINEAR FILTER',0
 GUIVideoText3 db 'INTERPOLATION',0      ; -y
 GUIVideoText4 db 'EAGLE ENGINE',0       ; -y
 GUIVideoText5 db 'FULL SCREEN',0        ; -c
+GUIVideoText5b db 'WIDE SCREEN',0        ; -c
 GUIVideoText6 db 'SMALL SCREEN',0       ; -c
 GUIVideoText7 db 'TRIPLE BUFFERING',0       ; -c
 GUIVideoText8b db 'HI-RESOLUTION MODE7',0       ; -c

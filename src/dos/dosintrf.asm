@@ -1044,16 +1044,17 @@ NEWSYM GUISLVID, db 0,0,1,0,0,1,1,0,0,1,1,0,0,1,1,0     ; Scanlines
 NEWSYM GUIINVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0     ; Interpolation
 NEWSYM GUIEAVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0     ; Eagle
 NEWSYM GUIIEVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0     ; (Interp | Eagle)
-NEWSYM GUIFSVID, db 0,0,0,0,0,0,0,1,1,0,0,0,0,1,1,0     ; Full Screen
-NEWSYM GUISSVID, db 0,0,0,0,0,0,1,0,0,1,1,0,0,1,1,0     ; Small Screen
+NEWSYM GUIFSVID, db 0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,0     ; Full Screen
+NEWSYM GUIWSVID, db 0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0     ; (Full Scr. | Wide Scr.)
+NEWSYM GUISSVID, db 0,0,0,0,0,0,1,0,0,0,0,0,0,1,1,0     ; Small Screen
 NEWSYM GUITBVID, db 0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0     ; Triple Buffering
 NEWSYM GUIHSVID, db 0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0     ; Half/Quarter Scanlines
 NEWSYM GUI2xVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0     ; 2xSaI/Super Eagle Engines
 NEWSYM GUIWFVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; If Windows Full Screen
-NEWSYM GUII2VID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; Interpolation
-NEWSYM GUIM7VID, db 0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0     ; Interpolation
+NEWSYM GUII2VID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; Super 2xSAI Engine
+NEWSYM GUIM7VID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0     ; Hi-Resolution Mode 7
 NEWSYM GUIBIFIL, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; Bilinear Filtering
-NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; Triple Buffering (Win)
+NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0    ; Triple Buffering (Win)
 SECTION .text
 
 ; ****************************
