@@ -401,6 +401,7 @@ void internal_chapter_free_chain(struct internal_chapter_buf *icb)
   if (icb->next)
   {
     internal_chapter_free_chain(icb->next);
+    icb->next = 0;
   }
   free(icb);
 }
