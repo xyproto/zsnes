@@ -508,7 +508,9 @@ ProcessMouseButtons:
     cmp word[GUImouseposx],242
     ja .notwinpressc
 %ifdef __WIN32__
+    pushad
     call MinimizeWindow
+    popad
 %endif
     ret
 .notwinpressc
