@@ -1991,7 +1991,7 @@ NEWSYM Init_2xSaIMMXW
 	 jz Bits565
 end2:
 	 mov eax, 1
-	 jmp end
+	 jmp end1
 Bits555:
          mov edx, 0x7BDE7BDE
          mov eax, colorMask
@@ -2010,7 +2010,7 @@ Bits555:
          mov [eax], edx
          mov [eax+4], edx
          mov eax, 0
-         jmp end
+         jmp end1
 Bits565:
          mov edx, 0xF7DEF7DE
          mov eax, colorMask
@@ -2029,8 +2029,8 @@ Bits565:
          mov [eax], edx
          mov [eax+4], edx
          mov eax, 0
-         jmp end
-end:	
+         jmp end1
+end1:	
          pop edx
 	 mov esp, ebp
 	 pop ebp
