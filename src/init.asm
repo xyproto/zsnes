@@ -5229,8 +5229,8 @@ NEWSYM CheckROMType
     je .initdsp
     cmp byte[DSP3Enable],1
     je .initdsp
-    cmp byte[DSP4Enable],0
-    je .notDSP1Hi
+    cmp byte[DSP4Enable],1
+    je .initdsp
 ;   call InitDSP4
     jmp .notDSP1Hi
 .initdsp
