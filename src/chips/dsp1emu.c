@@ -17,7 +17,7 @@
 
 
 #ifdef __LINUX__
-#include <../gblhdr.h>
+#include "../gblhdr.h"
 #else
 #include <stdio.h>
 #include <stdarg.h>
