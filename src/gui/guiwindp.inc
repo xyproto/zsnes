@@ -434,14 +434,11 @@ DisplayGUILoad:
     mov byte[GUItextcolor],211
 .zero
     sub byte[GUItextcolor],15
-;    cmp byte[OSPort],2
-;    jae near .noloadtypeb
 %ifdef __MSDOS__
     GUIOuttextwin2 1,21,166,GUILoadText3
     GUIOuttextwin2 1,21,174,GUILoadText4
     GUIOuttextwin2 1,21,182,GUILoadText5
 %endif
-.noloadtypeb
     GUIOuttextwin2 1,21,192,GUILoadText6
     GUIOuttextwin2 1,6,16,GUILoadText7
     GUIOuttextwin2 1,161,16,GUILoadText8
@@ -456,8 +453,6 @@ DisplayGUILoad:
     mov dword[cloadmaxlen],39
     cmp dword[GUIcurrentfilewin],0
     jne .nofiles
-;    cmp byte[OSPort],2
-;    jb .nofiles
 %ifndef __MSDOS__
     mov eax,[GUIcurrentcursloc]
     mov eax,[spcRamcmp+eax*4]
@@ -466,16 +461,12 @@ DisplayGUILoad:
     GUIOuttextwin2l 1,6,158,[cloadnpos]
 %endif
 .nofiles
-
     add byte[GUItextcolor],15
-;    cmp byte[OSPort],2
-;    jae near .noloadtypec
 %ifdef __MSDOS__
     GUIOuttextwin2 1,20,165,GUILoadText3
     GUIOuttextwin2 1,20,173,GUILoadText4
     GUIOuttextwin2 1,20,181,GUILoadText5
 %endif
-.noloadtypec
     GUIOuttextwin2 1,20,191,GUILoadText6
     GUIOuttextwin2 1,5,15,GUILoadText7
     GUIOuttextwin2 1,160,15,GUILoadText8
@@ -490,8 +481,6 @@ DisplayGUILoad:
     mov dword[cloadmaxlen],39
     cmp dword[GUIcurrentfilewin],0
     jne .nofilesb
-;    cmp byte[OSPort],2
-;    jb .nofilesb
 %ifndef __MSDOS__
     mov eax,[GUIcurrentcursloc]
     mov eax,[spcRamcmp+eax*4]
@@ -500,29 +489,20 @@ DisplayGUILoad:
     GUIOuttextwin2l 1,5,157,[cloadnpos]
 %endif
 .nofilesb
-
     DrawGUIButton 1,186,165,228,176,GUILoadText9,1,0,0
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
-;    GUIOuttextwin2 1,6,16,GUILoadText1
-;    cmp byte[OSPort],2
-;    jae near .noloadtypee
 %ifdef __MSDOS__
     GUIOuttextwin2 1,6,157,GUILoadText2
 %endif
-.noloadtypee
     mov byte[GUItextcolor],163
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUItextcolor],164
 .zero3
-;    GUIOuttextwin2 1,5,15,GUILoadText1
-;    cmp byte[OSPort],2
-;    jae near .noloadtyped
 %ifdef __MSDOS__
     GUIOuttextwin2 1,5,156,GUILoadText2
 %endif
-.noloadtyped
     DrawGUIWinBox 1,5,25,144,134,167    ; 126 = 6 * 21, 112 = 7 * 16
     DrawGUIWinBox 1,160,25,228,134,167  ; 78 =  6 * 13
     DrawGUIWinBox 1,5,145,228,152,167    ; 126 = 6 * 21, 112 = 7 * 16
@@ -684,14 +664,11 @@ DisplayGUILoad:
     mov bl,[GUILoadPos]
     mov byte[GUILoadTextA+ebx],0
 
-;    cmp byte[OSPort],2
-;    jae near .noloadtype
 %ifdef __MSDOS__
     GUIDisplayButtonHole 1,9,163,byte[GUIloadfntype],0
     GUIDisplayButtonHole 1,9,171,byte[GUIloadfntype],1
     GUIDisplayButtonHole 1,9,179,byte[GUIloadfntype],2
 %endif
-.noloadtype
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[showallext],1
     jne .noshowallext
@@ -1126,12 +1103,9 @@ DisplayGUIInput:
     GUIDisplayIconWin 3,5,162,[GUITemp]
 %endif
     DrawGUIButton 3,125,34,155,45,GUIInputTextV,14,0,0
-;    cmp byte[OSPort],3
-;    je near .win32
 %ifdef __MSDOS__
     DrawGUIButton 3,125,50,185,61,GUIInputTexta,15,0,0
 %endif
-.win32
     DrawGUIButton 3,125,66,179,77,GUIInputTexta2,15,0,0
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
@@ -1670,15 +1644,12 @@ DisplayGUIVideo:
 .zero
     sub byte[GUItextcolor],15
 
-;    cmp byte[OSPort],3
-;    jne near .nowin32pt2
 %ifndef __MSDOS__
     GUIOuttextwin2 5,12,76,GUIVideoTextw0
     GUIOuttextwin2 5,12,83,GUIVideoTextw1
     GUIOuttextwin2 5,12,90,GUIVideoTextw2
     GUIOuttextwin2 5,12,97,GUIVideoTextw3
 %endif
-;.nowin32pt2
 
     xor eax,eax
     mov al,[cvidmode]
@@ -1796,15 +1767,12 @@ DisplayGUIVideo:
 %endif
     add byte[GUItextcolor],15
 
-;    cmp byte[OSPort],3
-;    jne near .nowin32pt
 %ifndef __MSDOS__
     GUIOuttextwin2 5,11,75,GUIVideoTextw0
     GUIOuttextwin2 5,11,82,GUIVideoTextw1
     GUIOuttextwin2 5,11,89,GUIVideoTextw2
     GUIOuttextwin2 5,11,96,GUIVideoTextw3
 %endif
-;.nowin32pt
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUISLVID+eax],0
@@ -2274,19 +2242,12 @@ DisplayGUISound:
     ; R = Sample Rate
     GUIOuttextwin2u 6,26,26,GUISoundText1,0
     GUIOuttextwin2u 6,26,35,GUISoundText3,0
-;    cmp byte[OSPort],3
-;    je near .win32b
 %ifdef __MSDOS__
     GUIOuttextwin2u 6,116,26,GUISoundText1b,0
     GUIOuttextwin2u 6,26,44,GUISoundText2b,1
 %endif
-;.win32b
-;    GUIOuttextwin2u 6,26,106,GUISoundText4,8
     GUIOuttextwin2u 6,26,116,GUISoundTextH,2
-;    cmp byte[OSPort],3
-;    je near .win32s2
     GUIOuttextwin2u 6,26,126,GUISoundTextI,1
-;.win32s2
     GUIOuttextwin2u 6,26,136,GUISoundTextJ,6
     GUIOuttextwin2u 6,26,146,GUISoundTextK,0
     GUIOuttextwin2u 6,26,168,GUISoundTextQ,0
@@ -2302,19 +2263,12 @@ DisplayGUISound:
     add byte[GUItextcolor],15
     GUIOuttextwin2 6,25,25,GUISoundText1
     GUIOuttextwin2 6,25,34,GUISoundText3
-;    cmp byte[OSPort],3
-;    je near .win32c
 %ifdef __MSDOS__
     GUIOuttextwin2 6,115,25,GUISoundText1b
     GUIOuttextwin2 6,25,43,GUISoundText2b
 %endif
-;.win32c
-;    GUIOuttextwin2 6,25,105,GUISoundText4
     GUIOuttextwin2 6,25,115,GUISoundTextH
-;    cmp byte[OSPort],3
-;    je near .win32s
     GUIOuttextwin2 6,25,125,GUISoundTextI
-;.win32s
     GUIOuttextwin2 6,25,135,GUISoundTextJ
     GUIOuttextwin2 6,25,145,GUISoundTextK
     GUIOuttextwin2 6,25,167,GUISoundTextQ
@@ -2370,25 +2324,14 @@ DisplayGUISound:
     je .nocheckbox1b
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1b
-;    cmp byte[OSPort],3
-;    je near .win32
     GUIDisplayIconWin 6,11,39,[GUITemp]
 %endif
-;.win32
-;    mov dword[GUITemp],GUIIconDataCheckBoxUC
-;    cmp byte[SoundNoiseDis],0
-;    je .nocheckbox2
-;    mov dword[GUITemp],GUIIconDataCheckBoxC
-;.nocheckbox2
-;    GUIDisplayIconWin 6,11,101,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[RevStereo],0
     je .nocheckbox3
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox3
     GUIDisplayIconWin 6,11,111,[GUITemp]
-;    cmp byte[OSPort],3
-;    je near .nocheckbox42
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[Surround],0
     je .nocheckbox4
@@ -4609,12 +4552,9 @@ DisplayGameOptns:
     GUIOuttextwin2 9,9,78,GUIGameOptnsTextF
     GUIOuttextwin2 9,9,86,GUIGameOptnsTextG
     GUIOuttextwin2 9,9,94,GUIGameOptnsTextT
-;    cmp byte[OSPort],3
-;    jne near .notwin32
 %ifndef __MSDOS__
     GUIOuttextwin2 9,109,46,GUIGameOptnsTextS
 %endif
-;.notwin32
     GUIOuttextwin2 9,109,54,GUIGameOptnsTextH
     GUIOuttextwin2 9,109,62,GUIGameOptnsTextM
     GUIOuttextwin2 9,109,70,GUIGameOptnsTextN
@@ -4718,12 +4658,9 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8,77,GUIGameOptnsTextF
     GUIOuttextwin2 9,8,85,GUIGameOptnsTextG
     GUIOuttextwin2 9,8,93,GUIGameOptnsTextT
-;    cmp byte[OSPort],3
-;    jne near .notwin32b
 %ifndef __MSDOS__
     GUIOuttextwin2 9,108,45,GUIGameOptnsTextS
 %endif
-;.notwin32b
     GUIOuttextwin2 9,108,53,GUIGameOptnsTextH
     GUIOuttextwin2 9,108,61,GUIGameOptnsTextM
     GUIOuttextwin2 9,108,69,GUIGameOptnsTextN
@@ -4807,12 +4744,9 @@ DisplayGameOptns:
     DGOptnsDrawBox 78,76,[KeyWinDisble]
     DGOptnsDrawBox 78,84,[KeyOffsetMSw]
     DGOptnsDrawBox 78,92,[KeySlowDown]
-;    cmp byte[OSPort],3
-;    jne near .notwin32c
 %ifndef __MSDOS__
     DGOptnsDrawBox 178,44,[KeyRewind]
 %endif
-;.notwin32c
     DGOptnsDrawBox 178,52,[KeyFastFrwrd]
     DGOptnsDrawBox 178,60,[KeyVolUp]
     DGOptnsDrawBox 178,68,[KeyVolDown]

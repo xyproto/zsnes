@@ -1224,9 +1224,6 @@ NEWSYM StartSound
 
 NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
    pushad
-;    cmp byte[OSPort],1  ; Do not call in the dos port
-;    ja .notdos
-;.notdos
     cmp byte[soundon],0
     je .nosound
     cmp byte[DSPDisable],1

@@ -437,11 +437,6 @@ NEWSYM ProcessRewind
     ret
 
 NEWSYM UpdateRewind
-;    cmp byte[OSPort],3
-;    je .yeswin32
-;    ret
-
-;.yeswin32
 %ifndef __MSDOS__
     push eax
     cmp dword[KeyRewind],0
@@ -1024,8 +1019,6 @@ NEWSYM start65816
     ret
 .notrouble
 
-;    cmp byte[OSPort],2
-;    jae .nonewgfxcheck
     jmp .nonewgfxcheck
     cmp byte[cbitmode],1
     jne .nonewgfxcheck
@@ -1107,8 +1100,6 @@ reexecutenokeys
     jmp reexecuteb2
 
 NEWSYM reexecuteb
-    ;cmp byte[OSPort],1
-    ;ja reexecuteb2
 %ifdef __MSDOS__
     mov esi,pressed
     mov ecx,256+128+64
@@ -2839,8 +2830,6 @@ NEWSYM cpuover
     call RemoteSendChar
     ; ##################
     ; Send latency value
-    ;cmp byte[OSPort],3
-    ;jne .nolatencysend
 %ifndef __MSDOS__ 
     cmp byte[BackState],1
     jne .nolatencysend
@@ -2891,8 +2880,6 @@ NEWSYM cpuover
     push esi
     mov esi,chatstrR
 
-    ;cmp byte[OSPort],2
-    ;jae .notwin32b
 %ifdef __MSDOS__
     mov byte[esi],'L'
     mov byte[esi+1],'>'
@@ -2942,8 +2929,6 @@ NEWSYM cpuover
 %endif
 .skipsendnick
     mov ebx,chatstrL+1
-    ;cmp byte[OSPort],2
-    ;jb .noaction3
 %ifndef __MSDOS__
     cmp dword[chatstrL+1],'/ME '
     jne .noaction3
@@ -2997,8 +2982,6 @@ NEWSYM cpuover
 
     push ecx
     push ebx
-;    cmp byte[OSPort],3
-;    jne .nobackstate
 %ifndef __MSDOS__
     cmp byte[BackState],1
     jne .nobackstate
@@ -3069,8 +3052,6 @@ NEWSYM cpuover
 .notor
     cmp dh,0
     jne .foundchar
-    ;cmp byte[OSPort],3
-    ;jne .notwin32
 %ifndef __MSDOS__
     push ebx
     cmp byte[BackState],1
@@ -3128,8 +3109,6 @@ NEWSYM cpuover
     pushad
     ; Receive latency value
     ; #####################
-    ;cmp byte[OSPort],3
-    ;jne near .nolatencyrecv2
 %ifndef __MSDOS__
     cmp byte[BackState],1
     jne near .nolatencyrecv2
@@ -3206,8 +3185,6 @@ NEWSYM cpuover
     test dl,02h
     jz near .nocrupdate2
 
-;    cmp byte[OSPort],3
-;    jne .notwin32d
 %ifndef __MSDOS__
     cmp byte[BackState],1
     jne .notwin32d
@@ -3314,8 +3291,6 @@ NEWSYM cpuover
     jne .nextchatcr            ; *********
     pop edx
     pushad
-    ;cmp byte[OSPort],2
-    ;jae .notwin32e
 %ifdef __MSDOS__
     mov dl,'R'
     call NetAddChar

@@ -1563,10 +1563,6 @@ NEWSYM InitSPC
       mov dword [opcjmptab+03F4h],OpFD
       mov dword [opcjmptab+03F8h],OpFE
       mov dword [opcjmptab+03FCh],OpFF
-;    cmp byte[soundon],0
-;    je .nosound
-;    cmp byte[OSPort],2
-;    jae .nosound
 %ifdef __MSDOS__
      call SB_alloc_dma
 %endif

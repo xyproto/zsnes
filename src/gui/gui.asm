@@ -3334,11 +3334,6 @@ GUITryMenuItem:
     jne .noreset
     mov byte[GUICResetPos],1
 .noreset
-;    cmp byte[OSPort],3
-;    je .win32state
-;    cmp byte[CNetType],20
-;    je near .noromloaded
-;.win32state
     cmp byte[CNetType],21
     je near .noromloaded
     cmp byte[CNetType],22
@@ -3440,8 +3435,6 @@ GUITryMenuItem:
 .nocheat
     cmp byte[GUIcmenupos],5
     jne near .nonet
-;    cmp byte[GOSPort],3
-;    je near .win32
 %ifdef __MSDOS__
     cmp byte[CNetType],10
     jae .nomod
@@ -3894,8 +3887,6 @@ DisplayMenu:
     GUIBox 0,14,229,14,70
     GUIBox 0,15,229,15,71
 
-;    cmp byte[OSPort],3
-;    jne near .notwinpressa
     %ifdef __LINUX__
     GUIShadow 238,9,247,20
     GUIShadow 249,9,257,20
@@ -3906,9 +3897,6 @@ DisplayMenu:
     GUIShadow 249,9,257,20
     %endif
 .notwinpressa
-
-;    cmp byte[OSPort],3
-;    jne near .notwinpressb
 
     %ifdef __LINUX__
     mov byte[GUIMenuItem+36],247
@@ -3967,8 +3955,6 @@ DisplayMenu:
 .nomenu4
     cmp byte[GUIcmenupos],5
     jne near .nomenu5
-;    cmp byte[GOSPort],3
-;    je near .menu5b
 %ifdef __MSDOS__
     GUIDrawMenuM 140,16,10,2,GUINetPlayMenuData,142,145,22,39,48 ;19+2*10
     mov dword[GUICYLocPtr],MenuDat5

@@ -259,8 +259,6 @@ SECTION .text
     pop es
     call .writehex
     ; ipx
-;    cmp byte[OSPort],1
-;    je .noinitipx
     call initipx
 .noinitipx
     cmp ax,0
@@ -282,8 +280,6 @@ SECTION .text
     cmp dword[ModemPTimer],0
     jne .nolookforconnect
     mov dword[ModemPTimer],36
-;    cmp byte[OSPort],1
-;    je .noipxlook
     call ipxlookforconnect
 .noipxlook
     cmp byte[IPXSearchval],0

@@ -26,7 +26,6 @@ EXTSYM xa
 EXTSYM ram7fa,wramdataa
 EXTSYM malloc,free
 EXTSYM StateBackup
-;EXTSYM OSPort
 EXTSYM ADSRGAINSwitch,MMXSupport,ScreenScale,SoundQuality
 EXTSYM debugger,pl1contrl,pl2contrl,romtype,smallscreence
 EXTSYM smallscreenon,spcon
@@ -248,7 +247,6 @@ NEWSYM Palette0,      db 0
 NEWSYM DisplayS,      db 0
 NEWSYM SPC700sh,      db 0
 NEWSYM OffBy1Line,    db 0
-NEWSYM DosPort,       db 3
 NEWSYM spc7110romptr, dd 0
 
 NEWSYM MusicRelVol,   db 75
@@ -642,28 +640,22 @@ SECTION .text
 ;    ret
 
 outofmemoryb
-;    cmp byte[OSPort],1
-;    ja .notdos
 %ifdef __MSDOS__
     mov ax,3
     int 10h
 %endif
-;.notdos
     jmp outofmemory
 
 NEWSYM allocptr
     mov dword[cmemallocptr],memfreearray
 
 
-;    cmp byte[OSPort],3
-;    jne near .nostate
 %ifndef __MSDOS__
     AllocmemFail 4096*128*16+4096+65536*16,StateBackup,outofmemory
     mov eax,[StateBackup]
     add eax,4096*128*16
     mov [BitConv32Ptr],eax
 %endif
-;.nostate
 
     ; Memory Allocation
     AllocmemFail 65536*4+4096,spcBuffera,outofmemory

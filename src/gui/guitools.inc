@@ -430,8 +430,6 @@ GUIOutputStringwinl:
     mov ecx,[cloadmaxlen]
 .more
     mov al,[edi]
-;    cmp byte[OSPort],1
-;    jbe .noperc
 %ifndef __MSDOS__
     cmp al,'%'
     jne .noperc

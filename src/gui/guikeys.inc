@@ -187,8 +187,6 @@ GUIgetcurrentinput:
     GUIqcheckkeys 1
     GUIqcheckkeys 1Ch
 
-;    cmp byte[OSPort],3
-;    jne near .notwinport
 %ifndef __MSDOS__
     GUIqcheckkeys 0C8h
     GUIqcheckkeys 0D0h
@@ -256,9 +254,6 @@ GUIgetcurrentinput:
 .okayextk
     mov al,cl
 .notextkb
-
-;    cmp byte[OSPort],3
-;    jne near .notwinport2
 
 %ifdef __LINUX__
     GUIgetprkeys 90,90 ; UP
@@ -358,8 +353,6 @@ GUIgetcurrentinput:
 .yesnet15
     mov byte[CNetType],0
 %ifdef __MSDOS__
-;    cmp byte[OSPort],1
-;    je .nodeinitipx
     call deinitipx
 .nodeinitipx
 %endif

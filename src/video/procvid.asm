@@ -34,7 +34,6 @@ EXTSYM GUIEnableTransp
 EXTSYM GUIFontData
 EXTSYM StopSound,StartSound
 EXTSYM PrevPicture,File_Seek,File_Seek_End,nggposng
-;EXTSYM OSPort
 EXTSYM Palette0
 EXTSYM GetTimeInSeconds
 EXTSYM scaddset,scrnon,spcRam,nmiprevline,bgmode,ofsmcptr
@@ -1622,8 +1621,6 @@ NEWSYM saveselect
     cmp byte[soundon],0
     je .nosound
     mov byte[csounddisable],1
-    ;cmp byte[OSPort],1
-    ;ja .nosound
 %ifdef __MSDOS__
     call SB_blank
 %endif
@@ -2204,8 +2201,6 @@ NEWSYM testpressed8b
     inc bl
     mov byte[pressed+77],2
 .noright
-    ;cmp byte[OSPort],3
-    ;jne near .nowin32
 %ifndef __MSDOS__
 %ifdef __LINUX__
     test byte[pressed+92],1
@@ -3384,9 +3379,6 @@ NEWSYM ChatType
     mov byte[chatstrL+ebx+1],0
     pushad
     mov dl,'L'
-;    call NetAddChar
-    ;cmp byte[OSPort],2
-    ;jb .dos
 %ifndef __MSDOS__
     cmp dword[chatstrL+1],'/ME '
     je .action
@@ -3633,8 +3625,6 @@ NEWSYM vidpaste
     jne .novsync
     cmp byte[curblank],0h
     jne .novsync
-;    cmp byte[OSPort],1
-;    ja .novsync
 %ifdef __MSDOS__
     call waitvsync
 %endif
@@ -3657,8 +3647,6 @@ NEWSYM vidpaste
     je .noclock
     cmp byte[ShowTimer],0
     je .noclock
-;    cmp byte[OSPort],2
-;    jae .noclock
     call ClockOutput
 .noclock
     cmp byte[snesmouse],3

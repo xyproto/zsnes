@@ -6475,10 +6475,6 @@ NEWSYM cscopyvesa2512x384x16b
 
 NEWSYM GetScreen
 %ifdef __MSDOS__
-;    cmp byte[OSPort],1
-;    jbe .getscreen
-;    ret
-;.getscreen
     cmp byte[cvidmode],9
     je near getcopyvesa2320x240x16b
     cmp byte[cvidmode],14

@@ -305,8 +305,6 @@ ProcessMouseButtons:
     jmp .noclick
 .noclicked
 
-;    cmp byte[OSPort],3
-;    jne .noclick
 %ifdef __MSDOS__
     jmp .noclick
 %else
@@ -463,8 +461,6 @@ ProcessMouseButtons:
     mov byte[GUIpclicked],0
     mov byte[GUIHold],0
 
-;    cmp byte[OSPort],3
-;    jne .notwinpressa
 
 %ifdef __LINUX__
     cmp byte[GUIcwinpress],1
@@ -500,8 +496,6 @@ ProcessMouseButtons:
 
 .notwinpressa
 
-;    cmp byte[OSPort],3
-;    jne .notwinpressb
 %ifndef __MSDOS__
     cmp byte[GUIcwinpress],2
     jne .notwinpressb
@@ -518,8 +512,6 @@ ProcessMouseButtons:
     ret
 .notwinpressb
 
-    ;cmp byte[OSPort],3
-    ;jne .notwinpressc
     cmp byte[GUIcwinpress],3
     jne .notwinpressc
     mov byte[GUIcwinpress],0
@@ -793,8 +785,6 @@ ProcessMouseButtons:
 
 GUIProcVideo:
     mov al,[GUIcurrentvideocursloc]
-;    cmp byte[OSPort],2
-;    jae .yes16b
 %ifdef __MSDOS__
     cmp al,3
     je .yes16b
@@ -1281,8 +1271,6 @@ GUIWinClicked:
 %ifdef __MSDOS__
     cmp byte[En2xSaI],0
     jne %%nomodeq
-;    cmp byte[OSPort],2
-;    jae %%nomodeq
     cmp byte[cvidmode],2
     jne %%nomodeq
     jmp %%refresh
@@ -2054,8 +2042,6 @@ DisplayGUIMovieClick:
     cmp ebx,3Bh
     je %%cancelkey
     mov %3,ebx
-;    cmp byte[OSPort],3
-;    jne %%notwin32
 %ifndef __MSDOS__
     cmp dword[keycontrolval],0
     je %%notwin32
@@ -2159,12 +2145,9 @@ DisplayGUIInputClick:
     ;x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
     GUIWinControl 5,36,107,34+5*8,GUIBlankVar,GUIcurrentinputviewloc,GUINumValue,35,8,GUIcurrentinputcursloc,4,3,0
     GUIPHoldbutton 125,34,155,45,14
-;    cmp byte[OSPort],3
-;    je near .win32
 %ifdef __MSDOS__
     GUIPHoldbutton 125,50,185,61,15
 %endif
-;.win32
     GUIPHoldbutton 125,66,185,77,40
     mov edi,pl1selk
     mov dword[keycontrolval],pl1contrl
@@ -2459,10 +2442,7 @@ DisplayGUISoundClick:
 %endif
 ;    GUIClickCButton 11,101,byte[SoundNoiseDis]
     GUIClickCButton 11,111,byte[RevStereo]
-;    cmp byte[OSPort],3
-;    je near .win32sound
     GUIClickCButton 11,121,byte[Surround]
-;.win32sound
     GUIClickCButton 11,131,byte[SoundBufEn]
     GUIClickCButton 11,141,byte[SPCDisable]
     GUIClickCButton5 11,163,byte[SoundInterpType],1
@@ -2840,12 +2820,9 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 178,76,[KeyFRateUp]
     DGOptnsProcBox 178,84,[KeyFRateDown]
     DGOptnsProcBox 178,92,[KeyDisplayFPS]
-;    cmp byte[OSPort],3
-;    jne near .notwin32
 %ifndef __MSDOS__
     DGOptnsProcBox 178,44,[KeyRewind]
 %endif
-;.notwin32
     DGOptnsProcBox 178,52,[KeyFastFrwrd]
     DGOptnsProcBox 27,112,[KeyDisableSC0]
     DGOptnsProcBox 27+45,112,[KeyDisableSC1]
@@ -3037,12 +3014,9 @@ DisplayGUIOptnsClick:
     ret
 
 DisplayGUIAboutClick:
-;    cmp byte[OSPort],3
-;    jne near .nowin32
 %ifndef __MSDOS__
     GUIPHoldbutton 90,50,175,60,65
 %endif
-;.nowin32
     ret
 
 %macro ComboBoxProc 5
