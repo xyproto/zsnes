@@ -19,7 +19,7 @@
 
 NEWSYM SetaCmdEnable,    dd 0     ; Seta ST010/ST011 command enable register. Maybe also status.
 EXTSYM setaramdata
-;; EXTSYM ST010DoCommand   ; coming soon
+EXTSYM ST010DoCommand
 
 ;; TODO - should return ROM for > 8000h
 NEWSYM setaaccessbankr8
@@ -38,7 +38,7 @@ NEWSYM setaaccessbankw8
     cmp byte [ebx+021h], 80h
     jnz .nosetenablew8
     pushad
-;;    call ST010DoCommand
+    call ST010DoCommand
     popad
 .nosetenablew8
     xor ebx,ebx
@@ -73,7 +73,7 @@ NEWSYM setaaccessbankw16
     cmp byte [ebx+021h], 80h
     jnz .nosetenablew16
     pushad
-;;    call ST010DoCommand
+    call ST010DoCommand
     popad
 .nosetenablew16
     xor ebx,ebx

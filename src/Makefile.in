@@ -28,7 +28,7 @@ EFFECTSDIR=effects
 CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
 	 ${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
 	 ${CHIPDIR}/sa1proc.o ${CHIPDIR}/sa1regs.o ${CHIPDIR}/dsp1emu.o\
-         ${CHIPDIR}/st10proc.o ${CHIPDIR}/dsp2proc.o
+         ${CHIPDIR}/st10proc.o ${CHIPDIR}/seta10.o ${CHIPDIR}/dsp2proc.o
 
 CPUOBJ=${CPUDIR}/addrni.o ${CPUDIR}/dma.o ${CPUDIR}/dsp.o ${CPUDIR}/dspproc.o\
 	${CPUDIR}/execute.o ${CPUDIR}/irq.o ${CPUDIR}/memory.o \
@@ -99,6 +99,7 @@ ${CHIPDIR}/sa1regs.o: ${CHIPDIR}/sa1regs.asm macros.mac\
 ${CHIPDIR}/sfxproc.o: ${CHIPDIR}/sfxproc.asm macros.mac\
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
 ${CHIPDIR}/st10proc.o: ${CHIPDIR}/st10proc.asm macros.mac
+${CHIPDIR}/seta10.o: ${CHIPDIR}/seta10.c
 ${CHIPDIR}/dsp1emu.o: ${CHIPDIR}/dsp1emu.c
 ui.o: ui.asm macros.mac
 cfgload.o:cfgload.asm macros.mac
