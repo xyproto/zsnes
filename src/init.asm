@@ -1644,7 +1644,9 @@ NEWSYM headerhack
     jne .notbahamutlagoon
     cmp dword[esi+8],'Lago'
     jne .notbahamutlagoon
-    mov byte[disablehdma],1
+    mov esi,[romdata]
+    add esi,010254h
+    mov byte[esi],0EEh
 .notbahamutlagoon
 
     mov esi,[romdata]
