@@ -350,7 +350,7 @@ NEWSYM getcmdline
 .next2
     cmp eax,edi
     je .nomore
- %ifdef __LINUX__
+%ifdef __LINUX__
     cmp byte[eax],'/'
 %else
     cmp byte[eax],'\'
@@ -1515,12 +1515,11 @@ NEWSYM gotoroot, db '\',0
 SECTION .text
 
 NEWSYM DosExit ; Terminate Program
-%ifdef __LINUX__
-	call LinuxExit
-%endif
 %ifdef __WIN32__
 	call OSExit
-%else
+%elifdef __LINUX__
+	call LinuxExit
+%elifdef __MSDOS__
 	jmp .nodeallocate
 
 	mov ebx,memfreearray
