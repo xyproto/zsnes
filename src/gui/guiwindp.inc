@@ -1314,7 +1314,7 @@ DisplayGUIOption:
     je near .win32b2
     GUIOuttextwin2u 4,26,81,GUIOptionTextA,0
 .win32b2
-%ifndef __LINUX__
+%ifdef __WIN32__
     GUIOuttextwin2u 4,26,81,GUIOptionTextAb,0
 %endif
     GUIOuttextwin2u 4,26,91,GUIOptionTextB,1
@@ -1342,7 +1342,7 @@ DisplayGUIOption:
     je near .win32c2
     GUIOuttextwin2 4,25,80,GUIOptionTextA
 .win32c2
-%ifndef __LINUX__
+%ifdef __WIN32__
     GUIOuttextwin2 4,25,80,GUIOptionTextAb
 %endif
     GUIOuttextwin2 4,25,90,GUIOptionTextB
@@ -1405,7 +1405,7 @@ DisplayGUIOption:
     je near .win322
     GUIDisplayIconWin 4,11,76,[GUITemp]
 .win322
-%ifndef __LINUX__
+%ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[HighPriority],0
     je .win323
@@ -1525,9 +1525,7 @@ GUIOptionText5 db 'VSYNC',0
 GUIOptionText6 db 'MMX SUPPORT',0
 GUIOptionText7 db 'USE PL3/4 AS PL1/2',0
 GUIOptionTextA db 'SIDEWINDER FIX',0
-%ifndef __LINUX__
 GUIOptionTextAb db 'HIGH PRIORITY MODE',0
-%endif
 GUIOptionTextB db 'FPS AT START',0
 GUIOptionTextC db 'USE 30HZ FOR TURBO',0
 GUIOptionTextD db 'ENABLE GAME CLOCK',0
@@ -2021,7 +2019,7 @@ DisplayGUISound:
     je near .win32s2
     GUIOuttextwin2 6,26,126,GUISoundTextI
 .win32s2
-%ifndef __LINUX__
+%ifdef __WIN32__
     GUIOuttextwin2 6,26,126,GUISoundTextIb
 %endif
     GUIOuttextwin2 6,26,136,GUISoundTextJ
@@ -2041,7 +2039,7 @@ DisplayGUISound:
     je near .win32s
     GUIOuttextwin2 6,25,125,GUISoundTextI
 .win32s
-%ifndef __LINUX__
+%ifdef __WIN32__
     GUIOuttextwin2 6,25,125,GUISoundTextIb
 %endif
     GUIOuttextwin2 6,25,135,GUISoundTextJ
@@ -2103,7 +2101,7 @@ DisplayGUISound:
 .nocheckbox4
     GUIDisplayIconWin 6,11,121,[GUITemp]
 .nocheckbox42
-%ifndef __LINUX__
+%ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[LargeSoundBuf],0
     je .nocheckbox43
@@ -2222,9 +2220,7 @@ GUISoundTextCb db '48000HZ',0
 GUISoundTextD db '---%',0
 GUISoundTextH db 'REVERSE STEREO',0
 GUISoundTextI db 'SURROUND SOUND',0
-%ifndef __LINUX__
 GUISoundTextIb db 'LARGE SOUND BUFFER',0
-%endif
 GUISoundTextJ db 'SOUND INTERPOLATION',0
 GUISoundTextK db 'LOW PASS FILTER',0
 GUISoundTextL db 'SOUND BUFFERING',0

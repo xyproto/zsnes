@@ -1993,7 +1993,7 @@ DisplayGUIOptionClick:
     je near .win32config
     GUIClickCButton 11,76,byte[SidewinderFix]
 .win32config
-%ifndef __LINUX__
+%ifdef __WIN32__
     GUIClickCButton 11,76,byte[HighPriority]
 %endif
     GUIClickCButton 11,86,byte[FPSAtStart]
@@ -2115,7 +2115,7 @@ DisplayGUISoundClick:
     je near .win32sound
     GUIClickCButton 11,121,byte[Surround]
 .win32sound
-%ifndef __LINUX__
+%ifdef __WIN32__
     GUIClickCButton 11,121,byte[LargeSoundBuf]
 %endif
     GUIClickCButton 11,131,byte[InterSound]
