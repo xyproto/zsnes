@@ -92,10 +92,8 @@ _asm popad
 
 #endif
 
-
 DWORD WindowWidth = 256;
 DWORD WindowHeight = 224;
-
 DWORD FullScreen=0;
 DWORD Moving=0;
 DWORD SoundBufferSize=1024*18;
@@ -111,6 +109,7 @@ DWORD FirstActivate = 1;
 #define DWORD  unsigned long
 
 HWND hMainWindow;
+HANDLE debugWindow = 0;
 
 extern "C"
 {
@@ -203,6 +202,7 @@ extern "C" {
 int SemaphoreMax = 5;
 void InitSemaphore();
 void ShutdownSemaphore();
+void InitDebugger();
 }
 
 static char dinput8_dll[] = {"dinput8.dll\0"};
@@ -438,6 +438,7 @@ extern signed short int MainWindowY;
 extern int CurKeyPos;
 extern int CurKeyReadPos;
 extern int KeyBuffer[16];
+extern BYTE debugger;
 }
 
 extern "C" void CheckPriority()
@@ -532,6 +533,11 @@ void ExitFunction()
       asm_call(SaveSramData);
       asm_call(GUISaveVars);
    }
+
+   // We need to clean up the debug window if it's running
+
+   if (debugWindow) FreeConsole();
+
    IsActivated = 0;
    ReleaseDirectInput();
    ReleaseDirectSound();
@@ -2067,6 +2073,9 @@ void initwinvideo(void)
       InitInput();
       InitSound();
       TestJoy();
+
+      if (debugger) InitDebugger(); // Start debugger
+
    }
 
    if (FirstVid == 1)
@@ -3039,7 +3048,7 @@ void SetMouseY(int Y)
 
 void FrameSemaphore()
 {
-   if (T60HZEnabled == 1)
+   if (T60HZEnabled)
    {
       double delay;
       QueryPerformanceCounter((LARGE_INTEGER*)&end);
@@ -3058,5 +3067,14 @@ void ZsnesPage()
    MouseY = 0;
 }
 
+// This function creates the debug console
+void InitDebugger()
+{
+   if(AllocConsole())
+   {
+      debugWindow = GetStdHandle(STD_OUTPUT_HANDLE);
+      WriteConsole(debugWindow, "Welcome to the ZSNES Debugger v0.01\n", sizeof("Welcome to the ZSNES Debugger v0.01\n"), NULL, NULL);
+   }
 }
 
+}

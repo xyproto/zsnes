@@ -285,8 +285,8 @@ NEWSYM OSExit
     call exit
     jmp DosExit
 
-SECTION .bss
-NEWSYM TempHandle, resd 1
+SECTION .data
+NEWSYM TempHandle, dd 0
 SECTION .text
 
 NEWSYM Open_File
