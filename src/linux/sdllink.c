@@ -1218,7 +1218,7 @@ void drawscreenwin(void)
                incl %%ebx
                addl Temp1, %%edi
                subl $640, %%edi
-               addl $564, %%esi
+               addl $64, %%esi
                cmpl $223, %%ebx
                jne Copying2MMX
                
