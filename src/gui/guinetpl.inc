@@ -1516,6 +1516,9 @@ transfersram:
     ; receive sram
     mov ecx,[ramsize]
     mov ebx,[sram]
+    cmp byte[SFXEnable],1
+    jne .loopb
+    mov ebx,[sfxramdata]
 .loopb
 .getnext
     pushad
