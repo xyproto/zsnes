@@ -1418,31 +1418,43 @@ NEWSYM GetFreeFile
 %else
     mov esi,fnames+1
     mov ebx,.imagefname
-.next
+.end1
     mov al,[esi]
-    mov [ebx],al
     inc esi
-    inc ebx
+    cmp al,0
+    jne .end1
+.end2
+    dec esi
+    mov al,[esi]
     cmp al,'.'
+    jne .end2
+    mov edx,fnames+1
+.next
+    mov al,[edx]
+    mov [ebx],al
+    inc edx
+    inc ebx
+    cmp edx,esi
     jne .next
     mov esi,ebx
-    mov byte[esi-1],' '
-    mov byte[esi],'0'
+    mov byte[esi],' '
     mov byte[esi+1],'0'
     mov byte[esi+2],'0'
-    mov byte[esi+3],'.'
+    mov byte[esi+3],'0'
+    mov byte[esi+4],'0'
+    mov byte[esi+5],'.'
     cmp ecx,0
     jne .isbmp
-    mov byte[esi+4],'p'
-    mov byte[esi+5],'c'
-    mov byte[esi+6],'x'
+    mov byte[esi+6],'p'
+    mov byte[esi+7],'c'
+    mov byte[esi+8],'x'
     jmp .doneextselect
 .isbmp
-    mov byte[esi+4],'b'
-    mov byte[esi+5],'m'
-    mov byte[esi+6],'p'
+    mov byte[esi+6],'b'
+    mov byte[esi+7],'m'
+    mov byte[esi+8],'p'
 .doneextselect
-    mov byte[esi+7],0
+    mov byte[esi+9],0
 
     mov word[picnum],0
 .findagain
@@ -1453,24 +1465,28 @@ NEWSYM GetFreeFile
     call Close_File
 
     inc word[picnum]
-    cmp word[picnum],1000
+    cmp word[picnum],10000
     je .nofile
-
     mov ax,[picnum]
+    xor edx,edx
+    mov bx,1000
+    div bx
+    add al,48
+    mov byte[esi+1],al
+    mov ax,dx
     xor edx,edx
     mov bx,100
     div bx
-    mov cl,al
+    add al,48
+    mov byte[esi+2],al
     mov ax,dx
     xor edx,edx
     mov bx,10
     div bx
-    add cl,48
     add al,48
     add dl,48
-    mov byte[esi],cl
-    mov byte[esi+1],al
-    mov byte[esi+2],dl
+    mov byte[esi+3],al
+    mov byte[esi+4],dl
     jmp .findagain
 .nofile
     mov edx,.imagefname

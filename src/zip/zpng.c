@@ -3,6 +3,7 @@
 
 #ifdef __WIN32__
 	#include <windows.h>
+	#include <sys/stat.h>
 	
 	#ifdef __WIN32DBG__
 		#include <crtdbg.h>
@@ -123,12 +124,9 @@ char *generate_filename(void)
 	extern char fnames;
 	char *filename;
 	char *tmp = &fnames;
+	char *tmp2 = 0;
 	short i=0;
-#ifdef __WIN32__
-	SYSTEMTIME time;
-#else
 	struct stat buf;
-#endif
 
 #ifdef __MSDOS__
 	filename = (char *)malloc(14);
@@ -143,45 +141,41 @@ char *generate_filename(void)
 	return filename;
 #endif
 
-
 	tmp++;         // the first char is the string length
 	// removes the path if there is one
 	while (*tmp!=0) tmp++;
 	while ((*tmp!='/') && (tmp!=&fnames)) tmp--;
 	tmp++;
 	// allocates enough memory to store the filename
-#ifdef __LINUX__
 	filename = (char *)malloc(strlen(tmp)+10);
-#endif
-#ifdef __WIN32__
-	filename = (char *)malloc(strlen(tmp)+25);
-#endif
 	strcpy(filename, tmp);
-	tmp = filename;
-	while (*tmp!='.') {
-	  if (*tmp == ' ') *tmp = '_';
-	  tmp++;
-	}
 
-#ifdef __WIN32__
-	/*get system time.*/
-	GetLocalTime(&time);
-	
-	/*make filename from local time*/
-	wsprintf(tmp," %d %02d_%02d %02d-%02d-%02d.png\0", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
-#endif
+	tmp = filename+strlen(filename);
+	while (*tmp!='.') tmp--;
+
 #ifdef __LINUX__
+	tmp2 = filename;
+	while (tmp2<tmp) {
+	  if (*tmp2 == ' ') *tmp2 = '_';
+	  tmp2++;
+	}
+#endif
+
 	/*find first unused file*/
 
-	/*Note: this results in a 1000 image limit!*/
+	/*Note: this results in a 9999 image limit!*/
 
 	for(i=0;i<10000;i++)
 	{
-	  sprintf(tmp, "_%04d.png", i);
+#ifdef __LINUX__
+	  sprintf(tmp, "_%04d.png\0", i);
+#else
+	  sprintf(tmp, " %04d.png\0", i);
+#endif
 	  if(stat(filename, &buf)==-1)
 	    break;
 	}
-#endif
+
 	return filename;
 }
 
