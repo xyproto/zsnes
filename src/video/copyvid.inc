@@ -574,7 +574,7 @@ NEWSYM copymodeq224
     jmp .done
 .loopb
     mov ecx,16
-    MMXStuff                    ; Copy 64 64-bit words.
+    MMXStuff                    ; Copy 16 64-bit words.
     add esi,32                  ; ...
     dec edx
     jnz .loopb                  ; ...
