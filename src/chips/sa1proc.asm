@@ -191,7 +191,7 @@ NEWSYM SA1Swap
     mov byte[SA1Status],0
     add dword[SA1TimerVal],23
 ;    xor dh,dh
-    mov dh,18
+    add dh,63
     cmp esi,dword[SA1LBound]
     jb .stoph
     cmp esi,dword[SA1UBound]
