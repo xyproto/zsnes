@@ -9,11 +9,8 @@
  *          
 */
 
-#ifdef __LINUX__
-#include "../gblhdr.h"
-#else
 #include <math.h>
-#endif
+#include <stdio.h>
 
 #ifndef log2
 inline float log2(float f) {
@@ -55,7 +52,7 @@ inline float log2(float f) {
   ------------------------------------------------------------------------------------------------
 */
 // quantizer scale of window coefs
-#define WFIR_QUANTBITS		15
+#define WFIR_QUANTBITS		14
 #define WFIR_QUANTSCALE		(1L<<WFIR_QUANTBITS)
 #define WFIR_8SHIFT			(WFIR_QUANTBITS-8)
 #define WFIR_16BITSHIFT		(WFIR_QUANTBITS)
@@ -137,11 +134,11 @@ class CzWINDOWEDFIR
 			}
 			return (float)(_LWc*_LSi);
 		}
-		static signed int lut[WFIR_LUTLEN*WFIR_WIDTH];
+		static signed short lut[WFIR_LUTLEN*WFIR_WIDTH];
 		static signed int lut_co[WFIR_CUTOFFLEN*WFIR_WIDTH];
 };
 
-signed int CzWINDOWEDFIR::lut[WFIR_LUTLEN*WFIR_WIDTH];
+signed short CzWINDOWEDFIR::lut[WFIR_LUTLEN*WFIR_WIDTH];
 signed int CzWINDOWEDFIR::lut_co[WFIR_CUTOFFLEN*WFIR_WIDTH];
 
 CzWINDOWEDFIR::CzWINDOWEDFIR()
@@ -161,7 +158,7 @@ CzWINDOWEDFIR::CzWINDOWEDFIR()
 		_LGain = 1.0f/_LGain;
 		for( _LCc=0;_LCc<WFIR_WIDTH;_LCc++ )
 		{	float _LCoef = (float)floor( 0.5 + _LScale*_LCoefs[_LCc]*_LGain );
-			lut[_LIdx+_LCc] = (signed int)( (_LCoef<-_LScale)?-_LScale:((_LCoef>_LScale)?_LScale:_LCoef) );
+			lut[_LIdx+_LCc] = (signed short)( (_LCoef<-_LScale)?-_LScale:((_LCoef>_LScale)?_LScale:_LCoef) );
 		}
 	}
 	for( _LPcl=0;_LPcl<WFIR_CUTOFFLEN;_LPcl++ )
@@ -260,9 +257,13 @@ inline int __fir_interpolate(unsigned int nPos, int *p)
 	return vol;
 }
 
-extern "C" int fir_interpolate(unsigned int nPos, int *p)
-{
-	return __fir_interpolate(nPos, p);
+extern "C" {
+	signed short *fir_lut = &CzWINDOWEDFIR::lut[0];
+
+	int fir_interpolate(unsigned int nPos, int *p)
+	{
+		return __fir_interpolate(nPos, p);
+	}
 }
 
 #define WFIR_CUTOFFSHIFT	(32-(WFIR_CUTOFFBITS+WFIR_LOG2WIDTH))

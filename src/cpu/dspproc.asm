@@ -3513,6 +3513,11 @@ WaveIndex  times 8 dd 0
 ;%%DontFilter1                  ;
 
 EXTSYM fir_interpolate
+EXTSYM fir_lut
+
+section .data
+NEWSYM fir_tmp,dd 0,0
+section .text
 
 %macro DSPInterpolate 1
 
@@ -3558,10 +3563,37 @@ EXTSYM fir_interpolate
     jmp %%end
 
 %%fir_interpolate
+%if 1
+    xor eax,eax
+    mov ebx,[BRRPlace0+%1*8]
+    mov al,[BRRPlace0+%1*8+3]
+    shl eax,2
+    and ebx,0FFFFFFh
+    add ebx,1000h
+    shr ebx,9
+    and ebx,0FFF0h
+    add ebx,[fir_lut]
+    movq mm0,[eax+PSampleBuf+(%1*26*4)]
+    packssdw mm0,[eax+PSampleBuf+(%1*26*4)+8]
+    movq mm1,[eax+PSampleBuf+(%1*26*4)+16]
+    packssdw mm1,[eax+PSampleBuf+(%1*26*4)+24]
+    movq mm2,[ebx]
+    movq mm3,[ebx+8]
+    pmaddwd mm0,mm2
+    pmaddwd mm1,mm3
+    paddd mm0,mm1
+    movq [fir_tmp],mm0
+    emms
+    mov eax,[fir_tmp]
+    add eax,[fir_tmp+4]
+    sar eax,14
+
+%else
     push dword PSampleBuf+(%1*26*4)
     push dword [BRRPlace0+%1*8]
     call fir_interpolate
     add esp,+8
+%endif
     cmp eax,32767
     jle %%clip1
     mov eax,32767
