@@ -2856,7 +2856,9 @@ guipostvideofail:
     call GUIUnBuffer
     call DisplayBoxes
     call DisplayMenu
+%ifndef __LINUX__
     mov dword[GUIkeydelay],0FFFFFFFFh
+%endif
     jmp guipostvideo.pressedfail
 
 guipostvidmsg1b db 'VIDEO MODE CHANGE FAILED.',0
