@@ -32,11 +32,13 @@ typedef enum { FALSE = 0, TRUE = 1 } BOOL;
 typedef enum vidstate_e { vid_null, vid_none, vid_soft, vid_gl } vidstate_t;
 
 // SOUND RELATED VARIABLES
+SDL_AudioSpec audiospec;
 int SoundEnabled = 1;
 BYTE PrevStereoSound;
 DWORD PrevSoundQuality;
-DWORD BufferLeftOver = 0;	/* should we clear these on sound reset? */
-short Buffer[1800 * 2];
+Uint8 *Buffer = NULL;
+int Buffer_len = 0, Buffer_fill = 0;
+int Buffer_head = 0, Buffer_tail = 0;
 
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
@@ -503,6 +505,11 @@ int InitSound(void)
 		return FALSE;
 	}
 
+	if (Buffer)
+		free(Buffer);
+	Buffer = NULL;
+	Buffer_len = 0;
+
 	PrevSoundQuality = SoundQuality;
 	PrevStereoSound = StereoSound;
 
@@ -524,7 +531,7 @@ int InitSound(void)
 	wanted.userdata = NULL;
 	wanted.callback = UpdateSound;
 
-	if (SDL_OpenAudio(&wanted, NULL) < 0)
+	if (SDL_OpenAudio(&wanted, &audiospec) < 0)
 	{
 		fprintf(stderr, "Sound init failed!\n");
 		fprintf(stderr, "freq: %d, channels: %d, samples: %d\n",
@@ -533,6 +540,10 @@ int InitSound(void)
 		return FALSE;
 	}
 	SDL_PauseAudio(0);
+
+	Buffer_len = (audiospec.size * 2);
+	Buffer_len = (Buffer_len + 255) & ~255; /* Align to SPCSize */
+	Buffer = malloc(Buffer_len);
 
 	return TRUE;
 }
@@ -850,90 +861,30 @@ void CheckTimers(void)
 
 void UpdateSound(void *userdata, Uint8 * stream, int len)
 {
-	const int SPCSize = 256;
-	int DataNeeded;
-	int i;
-	Uint8 *ptr;
+	int left;
 
-	len /= 2;		/* only 16bit here */
+	left = Buffer_len - Buffer_head;
 
-	ptr = stream;
-	DataNeeded = len;
-
-	/* take care of the things we left behind last time */
-	if (BufferLeftOver)
-	{
-		DataNeeded -= BufferLeftOver;
-
-		memcpy(ptr, &Buffer[BufferLeftOver],
-		       (SPCSize - BufferLeftOver) * 2);
-
-		ptr += (SPCSize - BufferLeftOver) * 2;
-		BufferLeftOver = 0;
+	if (left <= len) {
+		memcpy(stream, &Buffer[Buffer_head], left);
+		stream += left;
+		len -= left;
+		Buffer_head = 0;
+		Buffer_fill -= left;
 	}
 
-	if (len & 255)
-	{			/* we'll save the rest first */
-		DataNeeded -= 256;
-	}
-
-	while (DataNeeded > 0)
-	{
-		SoundProcess();
-
-		for (i = 0; i < SPCSize; i++)
-		{
-			if (T36HZEnabled)
-			{
-				Buffer[i] = 0;
-			}
-			else
-			{
-				if (DSPBuffer[i] > 32767)
-					Buffer[i] = 32767;
-				else if (DSPBuffer[i] < -32767)
-					Buffer[i] = -32767;
-				else
-					Buffer[i] = DSPBuffer[i];
-			}
-		}
-
-		memcpy(ptr, &Buffer[0], SPCSize * 2);
-		ptr += SPCSize * 2;
-
-		DataNeeded -= SPCSize;
-	}
-
-	if (DataNeeded)
-	{
-		DataNeeded += 256;
-		BufferLeftOver = DataNeeded;
-
-		SoundProcess();
-
-		for (i = 0; i < SPCSize; i++)
-		{
-			if (T36HZEnabled)
-			{
-				Buffer[i] = 0;
-			}
-			else
-			{
-				if (DSPBuffer[i] > 32767)
-					Buffer[i] = 32767;
-				else if (DSPBuffer[i] < -32767)
-					Buffer[i] = -32767;
-				else
-					Buffer[i] = DSPBuffer[i];
-			}
-		}
-
-		memcpy(ptr, &Buffer[0], DataNeeded * 2);
+	if (len) {
+		memcpy(stream, &Buffer[Buffer_head], len);
+		Buffer_head += len;
+		Buffer_fill -= len;
 	}
 }
 
 void UpdateVFrame(void)
 {
+	const int SPCSize = 256;
+	int i;
+
 	/* rcg06172001 get menu animations running correctly... */
 	/*if (GUIOn2 == 1 && IsActivated == 0) SDL_WaitEvent(NULL);*/
 	if (GUIOn2 == 1 && IsActivated == 0)
@@ -941,6 +892,38 @@ void UpdateVFrame(void)
 
 	CheckTimers();
 	Main_Proc();
+
+	/* Process sound */
+
+	/* take care of the things we left behind last time */
+	SDL_LockAudio();
+	while (Buffer_fill < Buffer_len) {
+		short *ptr = (short*)&Buffer[Buffer_tail];
+
+		SoundProcess();
+
+		for (i = 0; i < SPCSize; i++, ptr++)
+		{
+			if (T36HZEnabled)
+			{
+				*ptr = 0;
+			}
+			else
+			{
+				if (DSPBuffer[i] > 32767)
+					*ptr = 32767;
+				else if (DSPBuffer[i] < -32767)
+					*ptr = -32767;
+				else
+					*ptr = DSPBuffer[i];
+			}
+		}
+
+		Buffer_fill += SPCSize * 2;
+		Buffer_tail += SPCSize * 2;
+		if (Buffer_tail >= Buffer_len) Buffer_tail = 0;
+	}
+	SDL_UnlockAudio();
 }
 
 void clearwin()
