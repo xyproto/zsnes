@@ -2548,9 +2548,9 @@ NEWSYM initsnes
     cmp al,40h
     je near SDD1memmap
 
-
     cmp byte[SPC7110Enable],1
     je near .hirom
+    ;Should catch DKJM2 here, but need to fix mem map as well
     cmp byte[curromsize],13
     je near .lorom48
     cmp byte[romtype],1
@@ -4070,6 +4070,7 @@ SECTION .bss
 
 NEWSYM Checksumvalue, resw 1
 NEWSYM Checksumvalue2, resw 1
+NEWSYM CRC32, resd 1
 NEWSYM SramExists,    resb 1
 NEWSYM NumofBanks,    resd 1
 NEWSYM NumofBytes,    resd 1
@@ -5249,14 +5250,74 @@ NEWSYM convertsram
     ret
 
 SECTION .data
-NEWSYM CSStatus, db '                    TYPE:     CHSUM:OK  ',0
+NEWSYM CSStatus, db '                        TYPE:           ',0
+NEWSYM CSStatus2, db 'INTERLEAVED:No    BANK:Lo     CHSUM:OK  ',0
+NEWSYM CSStatus3, db '                          CRC32:        ',0
+
+crc32_table:
+dd 000000000h, 077073096h, 0ee0e612ch, 0990951bah, 0076dc419h, 0706af48fh
+dd 0e963a535h, 09e6495a3h, 00edb8832h, 079dcb8a4h, 0e0d5e91eh, 097d2d988h
+dd 009b64c2bh, 07eb17cbdh, 0e7b82d07h, 090bf1d91h, 01db71064h, 06ab020f2h
+dd 0f3b97148h, 084be41deh, 01adad47dh, 06ddde4ebh, 0f4d4b551h, 083d385c7h
+dd 0136c9856h, 0646ba8c0h, 0fd62f97ah, 08a65c9ech, 014015c4fh, 063066cd9h
+dd 0fa0f3d63h, 08d080df5h, 03b6e20c8h, 04c69105eh, 0d56041e4h, 0a2677172h
+dd 03c03e4d1h, 04b04d447h, 0d20d85fdh, 0a50ab56bh, 035b5a8fah, 042b2986ch
+dd 0dbbbc9d6h, 0acbcf940h, 032d86ce3h, 045df5c75h, 0dcd60dcfh, 0abd13d59h
+dd 026d930ach, 051de003ah, 0c8d75180h, 0bfd06116h, 021b4f4b5h, 056b3c423h
+dd 0cfba9599h, 0b8bda50fh, 02802b89eh, 05f058808h, 0c60cd9b2h, 0b10be924h
+dd 02f6f7c87h, 058684c11h, 0c1611dabh, 0b6662d3dh, 076dc4190h, 001db7106h
+dd 098d220bch, 0efd5102ah, 071b18589h, 006b6b51fh, 09fbfe4a5h, 0e8b8d433h
+dd 07807c9a2h, 00f00f934h, 09609a88eh, 0e10e9818h, 07f6a0dbbh, 0086d3d2dh
+dd 091646c97h, 0e6635c01h, 06b6b51f4h, 01c6c6162h, 0856530d8h, 0f262004eh
+dd 06c0695edh, 01b01a57bh, 08208f4c1h, 0f50fc457h, 065b0d9c6h, 012b7e950h
+dd 08bbeb8eah, 0fcb9887ch, 062dd1ddfh, 015da2d49h, 08cd37cf3h, 0fbd44c65h
+dd 04db26158h, 03ab551ceh, 0a3bc0074h, 0d4bb30e2h, 04adfa541h, 03dd895d7h
+dd 0a4d1c46dh, 0d3d6f4fbh, 04369e96ah, 0346ed9fch, 0ad678846h, 0da60b8d0h
+dd 044042d73h, 033031de5h, 0aa0a4c5fh, 0dd0d7cc9h, 05005713ch, 0270241aah
+dd 0be0b1010h, 0c90c2086h, 05768b525h, 0206f85b3h, 0b966d409h, 0ce61e49fh
+dd 05edef90eh, 029d9c998h, 0b0d09822h, 0c7d7a8b4h, 059b33d17h, 02eb40d81h
+dd 0b7bd5c3bh, 0c0ba6cadh, 0edb88320h, 09abfb3b6h, 003b6e20ch, 074b1d29ah
+dd 0ead54739h, 09dd277afh, 004db2615h, 073dc1683h, 0e3630b12h, 094643b84h
+dd 00d6d6a3eh, 07a6a5aa8h, 0e40ecf0bh, 09309ff9dh, 00a00ae27h, 07d079eb1h
+dd 0f00f9344h, 08708a3d2h, 01e01f268h, 06906c2feh, 0f762575dh, 0806567cbh
+dd 0196c3671h, 06e6b06e7h, 0fed41b76h, 089d32be0h, 010da7a5ah, 067dd4acch
+dd 0f9b9df6fh, 08ebeeff9h, 017b7be43h, 060b08ed5h, 0d6d6a3e8h, 0a1d1937eh
+dd 038d8c2c4h, 04fdff252h, 0d1bb67f1h, 0a6bc5767h, 03fb506ddh, 048b2364bh
+dd 0d80d2bdah, 0af0a1b4ch, 036034af6h, 041047a60h, 0df60efc3h, 0a867df55h
+dd 0316e8eefh, 04669be79h, 0cb61b38ch, 0bc66831ah, 0256fd2a0h, 05268e236h
+dd 0cc0c7795h, 0bb0b4703h, 0220216b9h, 05505262fh, 0c5ba3bbeh, 0b2bd0b28h
+dd 02bb45a92h, 05cb36a04h, 0c2d7ffa7h, 0b5d0cf31h, 02cd99e8bh, 05bdeae1dh
+dd 09b64c2b0h, 0ec63f226h, 0756aa39ch, 0026d930ah, 09c0906a9h, 0eb0e363fh
+dd 072076785h, 005005713h, 095bf4a82h, 0e2b87a14h, 07bb12baeh, 00cb61b38h
+dd 092d28e9bh, 0e5d5be0dh, 07cdcefb7h, 00bdbdf21h, 086d3d2d4h, 0f1d4e242h
+dd 068ddb3f8h, 01fda836eh, 081be16cdh, 0f6b9265bh, 06fb077e1h, 018b74777h
+dd 088085ae6h, 0ff0f6a70h, 066063bcah, 011010b5ch, 08f659effh, 0f862ae69h
+dd 0616bffd3h, 0166ccf45h, 0a00ae278h, 0d70dd2eeh, 04e048354h, 03903b3c2h
+dd 0a7672661h, 0d06016f7h, 04969474dh, 03e6e77dbh, 0aed16a4ah, 0d9d65adch
+dd 040df0b66h, 037d83bf0h, 0a9bcae53h, 0debb9ec5h, 047b2cf7fh, 030b5ffe9h
+dd 0bdbdf21ch, 0cabac28ah, 053b39330h, 024b4a3a6h, 0bad03605h, 0cdd70693h
+dd 054de5729h, 023d967bfh, 0b3667a2eh, 0c4614ab8h, 05d681b02h, 02a6f2b94h
+dd 0b40bbe37h, 0c30c8ea1h, 05a05df1bh, 02d02ef8dh
+
 SECTION .text
 
 NEWSYM showinfogui
     mov esi,[romdata]
+    cmp byte[NumofBanks],128
+    jbe .notEHi1
+    mov ax,word[esi + 040FFDEh]
+    xor ax,word[esi + 040FFDCh]
+    cmp ax,0FFFFh
+    jne .notEHi1
+    add esi,040FFC0h
+    mov dword[CSStatus2+23], 'EHi '
+    jmp .nohiromrn
+.notEHi1
     add esi,7FC0h
+    mov dword[CSStatus2+23], 'Lo  '
     cmp byte[romtype],2
     jne .nohiromrn
+    mov dword[CSStatus2+23], 'Hi  '
     add esi,8000h
 .nohiromrn
     mov edi,CSStatus
@@ -5272,65 +5333,137 @@ NEWSYM showinfogui
     inc edi
     dec ecx
     jnz .looprn
-    mov dword[CSStatus+25],'NRM '
+    mov dword[CSStatus+29],'NORM'
+    mov dword[CSStatus+33],'AL  '
     cmp byte[SA1Enable],0
     je .nosa1
-    mov dword[CSStatus+25],'SA-1'
+    mov dword[CSStatus+29],'SA-1'
+    mov dword[CSStatus+33],'    '
 .nosa1
     cmp byte[RTCEnable],0
     je .nortc
-    mov dword[CSStatus+25],'RTC '
+    mov dword[CSStatus+29],'RTC '
+    mov dword[CSStatus+33],'    '
+
 .nortc
     cmp byte[SPC7110Enable],0
     je .nospc7110
-    mov dword[CSStatus+25],'SPC7'
+    mov dword[CSStatus+29],'SPC7'
+    mov dword[CSStatus+33],'110 '
 .nospc7110
     cmp byte[SFXEnable],0
     je .nosfx
-    mov dword[CSStatus+25],'SFX '
+    mov dword[CSStatus+29],'SUPE'
+    mov dword[CSStatus+33],'R FX'
 .nosfx
     cmp byte[C4Enable],0
     je .noc4
-    mov dword[CSStatus+25],'C4  '
+    mov dword[CSStatus+29],'C4  '
+    mov dword[CSStatus+33],'    '
 .noc4
     cmp byte[DSP1Enable],0
     je .nodsp1
-    mov dword[CSStatus+25],'DSP1'
+    mov dword[CSStatus+29],'DSP-'
+    mov dword[CSStatus+33],'1   '
 .nodsp1
     cmp byte[DSP2Enable],0
     je .nodsp2
-    mov dword[CSStatus+25],'DSP2'
+    mov dword[CSStatus+29],'DSP-'
+    mov dword[CSStatus+33],'2   '
 .nodsp2
     cmp byte[DSP3Enable],0
     je .nodsp3
-    mov dword[CSStatus+25],'DSP3'
+    mov dword[CSStatus+29],'DSP-'
+    mov dword[CSStatus+33],'3   '
 .nodsp3
     cmp byte[DSP4Enable],0
     je .nodsp4
-    mov dword[CSStatus+25],'DSP4'
+    mov dword[CSStatus+29],'DSP-'
+    mov dword[CSStatus+33],'4   '
 .nodsp4
     cmp byte[SDD1Enable],0
     je .nosdd1
-    mov dword[CSStatus+25],'SDD1'
+    mov dword[CSStatus+29],'S-DD'
+    mov dword[CSStatus+33],'1   '
 .nosdd1
     cmp byte[OBCEnable],0
     je .noobc
-    mov dword[CSStatus+25],'OBC1'
+    mov dword[CSStatus+29],'OBC1'
+    mov dword[CSStatus+33],'    '
 .noobc
     cmp byte[SETAEnable],0
     je .noseta
-    mov dword[CSStatus+25],'SETA'
+    mov dword[CSStatus+29],'SETA'
+    mov dword[CSStatus+33],' DSP'
 .noseta
     cmp byte[ST18Enable],0
     je .nost18
-    mov dword[CSStatus+25],'ST18'
+    mov dword[CSStatus+29],'ST01'
+    mov dword[CSStatus+33],'8   '
 .nost18
     cmp byte[SGBEnable],0
     je .nosgb
-    mov dword[CSStatus+25],'SGB '
+    mov dword[CSStatus+29],'SGB '
+    mov dword[CSStatus+33],'    '
 .nosgb
+    mov dword[CSStatus2+12],'No  '
+    cmp byte[Interleaved],0
+    je .nointlv
+    mov dword[CSStatus2+12],'Yes '
+.nointlv
+
+    ; calculate CRC32
+    xor edx,edx         
+    mov eax,0FFFFFFFFh
+    mov ecx,dword[NumofBytes]
+    mov esi,[romdata]   
+ .calcloop
+    mov dl,byte[esi] 
+    mov ebx,eax                     ;ebx = CRC32
+    xor ebx,edx                     ;ebx ^= edx
+    movzx ebx,bl                    ;ebx &= 0xFF
+    mov ebx,[ebx*4 + crc32_table]   ;ebx = crc32_table[bl]
+    shr eax,8                       ;CRC32 >>= 8
+    xor eax,ebx                     ;CRC32 ^= ebx
+    inc esi                      
+    dec ecx                      
+    jnz .calcloop                 
+    xor eax,0FFFFFFFFh
+    mov [CRC32],eax          
+
+    ;Place CRC32 on line
+    mov ecx,8
+    mov esi,CSStatus3
+    add esi,32
+    mov ebx,0F0000000h
+.crcprintloop
+    mov eax,[CRC32]
+    and eax,ebx
+    dec ecx
+    shl ecx,2
+    shr eax,cl
+    add eax,48
+    cmp eax,58
+    jb .noadd
+    add eax,7  
+.noadd
+    mov [esi],al
+    inc esi    
+    shr ebx,4
+    shr ecx,2
+    jnz .crcprintloop
+
     mov esi,[romdata]
-    add esi,7FDCh+2
+    cmp byte[NumofBanks],128
+    jbe .notEHi2
+    mov ax,word[esi + 040FFDEh]
+    xor ax,word[esi + 040FFDCh]
+    cmp ax,0FFFFh
+    jne .notEHi2
+    add esi,040FFDEh
+    jmp .nohirom3
+.notEHi2    
+    add esi,7FDEh
     cmp byte[romtype],2
     jne .nohirom3
     add esi,8000h
@@ -5339,11 +5472,11 @@ NEWSYM showinfogui
     cmp ax,[esi]
     jne .failed
 .passed2
-    mov dword[CSStatus+36],'OK  '
+    mov dword[CSStatus2+36],'OK  '
     jmp .passed
 .failed
     mov ax,[Checksumvalue2]
-    cmp byte[SPC7110Enable],1
+        cmp byte[SPC7110Enable],1
     jne .nospc7110en
     cmp byte[NumofBanks],96
     jne .nospc7110en
@@ -5351,13 +5484,27 @@ NEWSYM showinfogui
 .nospc7110en
     cmp ax,[esi]
     je .passed2
-    mov dword[CSStatus+36],'FAIL'
+    mov dword[CSStatus2+36],'FAIL'
 .passed
+    cmp byte[NumofBanks],128
+    jbe .notopint
+    mov esi,[romdata]
+    mov ax,word[esi + 0207FDEh]
+    xor ax,word[esi + 0207FDCh]
+    cmp ax,0FFFFh
+    jne .notopint    
+    mov dword[CSStatus2+12],'Yes '
+    mov dword[CSStatus3+32],'????'
+    mov dword[CSStatus3+36],'????'
+    mov dword[CSStatus2+23], 'EHi '
+    cmp word[Checksumvalue2],047C9h
+    jne .notopint
+    mov dword[CSStatus2+36],'OK  '
+.notopint
+    mov dword[MessageOn],300
     mov dword[Msgptr],CSStatus
     mov eax,[MsgCount]
-    mov [MessageOn],eax
     ret
-
 ;*******************************************************
 ; Show Information
 ;*******************************************************
@@ -5996,6 +6143,12 @@ NEWSYM CheckROMType
     mov byte[ROMTypeNOTFound],0
 .noforce
 
+
+    ; Interleave Detection
+    mov byte[Interleaved],0
+    cmp byte[NumofBanks],128
+    ja .nointerlcheck
+
     ;LoROM interleaved check
     mov esi,[romdata]
     add esi,07FDCh    ;Checksum area
@@ -6054,13 +6207,14 @@ NEWSYM CheckROMType
     dec esi
     cmp byte[esi],dl
     je .nointerlcheck
-    je near .interleaved
+    
 .interleaved
     cmp byte[finterleave],1
     je .doneinterl
 .interleaved2
     mov byte[intldone],1
     call UnInterleave
+    mov byte[Interleaved],1
     mov byte[romtype],2
     jmp .doneinterl
 .nointerlcheck
@@ -6111,9 +6265,7 @@ NEWSYM CheckROMType
     mov dword[memtabler16+79h*4],memaccessbankr16
     mov dword[memtablew16+79h*4],memaccessbankw16
 
-
-
-    ;Chip Detection
+    ; Chip Detection
     mov byte[SFXEnable],0
     mov byte[C4Enable],0
     mov byte[SPC7110Enable],0
@@ -6255,7 +6407,7 @@ NEWSYM CheckROMType
 .notDSP4
     cmp ax,00530h
     jne .notDSP3  
-    cmp byte[esi+4],0B2h ;Bandai only
+    cmp byte[esi+5],0B2h ;Bandai only
     jne .notDSP3  
     mov byte[DSP3Enable],1
     mov byte[CHIPSRAM],1
@@ -6406,6 +6558,7 @@ NEWSYM C4RamR,   resd 1
 NEWSYM C4RamW,   resd 1
 NEWSYM C4Ram,   resd 1
 NEWSYM ROMTypeNOTFound, resb 1
+NEWSYM Interleaved, resb 1
 SECTION .text
 
 NEWSYM SetIRQVectors
