@@ -160,13 +160,13 @@ NEWSYM showmenu
     call savepcx
     jmp .nopalwrite
 .nosskey
-    cmp byte[SPCKeyPressed],1
-    je near .savespckey
     test byte[pressed+14],1
     jz .nof12
     call savepcx
     jmp .nopalwrite
 .nof12
+    cmp byte[SPCKeyPressed],1
+    je near .savespckey
     mov dword[menucloc],0
     cmp byte[nextmenupopup],0
     je .nomenuinc2
