@@ -668,9 +668,9 @@ extern char *ZOpenFileName;
 bool Header512;
 
 
-extern char CSStatus[41];
-extern char CSStatus2[41];
-extern char CSStatus3[41];
+extern char CSStatus[40];
+extern char CSStatus2[40];
+extern char CSStatus3[40];
 extern bool RomInfo;
 char *lastROMFileName;
 void DumpROMLoadInfo()
@@ -1711,8 +1711,92 @@ void SPC7_Convert_Lower()
   }
 }
 
+extern unsigned int crc32_table[256];
 
+unsigned int CalcCRC32 (unsigned char *start, unsigned int size)
+{
+  unsigned int i, result=0xFFFFFFFF;
 
+  for (i=0 ; i<size ; i++)
+  {
+    result = (result >> 8) ^ (crc32_table[(result ^ (*(start+i))) & 0xFF]);
+  }
 
+  return (~result);
+}
 
+extern unsigned int MsgCount, MessageOn, CRC32;
+extern unsigned char IPSPatched, *Msgptr;
 
+unsigned int showinfogui()
+{
+  unsigned int i;
+  unsigned char *ROM = (unsigned char *)romdata;
+
+  if (infoloc == 0x40FFC0)	{ memcpy (CSStatus2+23, "EHi ", 4); }
+  else
+  {
+    if (romtype == 2)	{ memcpy (CSStatus2+23, "Hi  ", 4); }
+    else	{ memcpy (CSStatus2+23, "Lo  ", 4); }
+  }
+
+  for (i=0 ; i<20 ; i++)
+  {
+    CSStatus[i] = (ROM[infoloc + i]) ? ROM[infoloc + i] : 32;
+  }
+
+  if ((ROM[infoloc + 25] < 2 ) || (ROM[infoloc + 25] > 12))
+  {
+    memcpy (CSStatus3+6, "NTSC", 4);
+  }
+  else	{ memcpy (CSStatus3+6, "PAL ", 4); }
+
+  if (IPSPatched)	{ memcpy (CSStatus3+16, "IPS ", 4); }
+  else	{ memcpy (CSStatus3+16, "    ", 4); }
+
+  memcpy (CSStatus+29, "NORMAL  ", 8);
+
+  if (SA1Enable)	{ memcpy (CSStatus+29, "SA-1    ", 8); }
+  if (RTCEnable)	{ memcpy (CSStatus+29, "RTC     ", 8); }
+  if (SPC7110Enable)	{ memcpy (CSStatus+29, "SPC7110 ", 8); }
+  if (SFXEnable)	{ memcpy (CSStatus+29, "SUPER FX", 8); }
+  if (C4Enable)		{ memcpy (CSStatus+29, "C4      ", 8); }
+  if (DSP1Enable)	{ memcpy (CSStatus+29, "DSP-1   ", 8); }
+  if (DSP2Enable)	{ memcpy (CSStatus+29, "DSP-2   ", 8); }
+  if (DSP3Enable)	{ memcpy (CSStatus+29, "DSP-3   ", 8); }
+  if (DSP4Enable)	{ memcpy (CSStatus+29, "DSP-4   ", 8); }
+  if (SDD1Enable)	{ memcpy (CSStatus+29, "S-DD1   ", 8); }
+  if (OBCEnable)	{ memcpy (CSStatus+29, "OBC1    ", 8); }
+  if (SETAEnable)	{ memcpy (CSStatus+29, "SETA DSP", 8); }
+  if (ST18Enable)	{ memcpy (CSStatus+29, "ST018   ", 8); }
+  if (SGBEnable)	{ memcpy (CSStatus+29, "SGB     ", 8); }
+  if (BSEnable)		{ memcpy (CSStatus+29, "BROADCST", 8);
+	// dummy out date so CRC32 matches
+    ROM[infoloc + 22] = 0x42;
+    ROM[infoloc + 23] = 0x00;
+	// 42 is the answer, and the uCONSRT standard
+  }
+
+  if (Interleaved)	{ memcpy (CSStatus2+12, "Yes ", 4); }
+  else	{ memcpy (CSStatus2+12, "No  ", 4); }
+
+	// calculate CRC32 for the whole ROM, or Add-on ROM only
+  CRC32 = (SplittedROM) ? CalcCRC32(ROM+addOnStart, addOnSize) : CalcCRC32(ROM, NumofBytes);
+
+	// place CRC32 on line
+  sprintf (CSStatus3+32, "%08X", CRC32);
+
+  CalcChecksum();
+
+  i = (SplittedROM) ? infoloc + 0x1E + addOnStart: infoloc + 0x1E;
+
+  if ((ROM[i] == (Checksumvalue & 0xFF)) && (ROM[i+1] == (Checksumvalue >> 8)))
+	{ memcpy (CSStatus2+36, "OK  ", 4); }
+  else	{ memcpy (CSStatus2+36, "FAIL", 4); }
+
+  DumpROMLoadInfo();
+
+  MessageOn = 300;
+  Msgptr = CSStatus;
+  return (MsgCount);
+}

@@ -22,7 +22,7 @@
 
 EXTSYM DosExit,UpdateDevices,InitSPC,Makemode7Table,MusicRelVol,MusicVol
 EXTSYM makesprprtable,romloadskip,start65816,startdebugger,SfxR0
-EXTSYM MovieProcessing
+EXTSYM MovieProcessing,showinfogui
 EXTSYM filefound,inittable,SA1inittable
 EXTSYM MessageOn,Msgptr,MsgCount,sndrot,GenerateBank0Table,SnowTimer
 EXTSYM inittableb,inittablec,newgfx16b,cfgreinittime
@@ -244,7 +244,9 @@ NEWSYM init
     mov byte[romloadskip],0
     call loadfile
     call SetupROM
+    pushad
     call showinfogui
+    popad
 .noloadfile
     call UpdateDevices
     call init65816
@@ -2608,11 +2610,11 @@ NEWSYM convertsram
     ret
 
 SECTION .data
-NEWSYM CSStatus, db '                        TYPE:           ',0
-NEWSYM CSStatus2, db 'INTERLEAVED:No    BANK:Lo    CHKSUM:OK  ',0
+NEWSYM CSStatus,  db '                        TYPE:           ',0
+NEWSYM CSStatus2, db 'INTERLEAVED:      BANK:      CHKSUM:    ',0
 NEWSYM CSStatus3, db 'VIDEO:                    CRC32:        ',0
 
-crc32_table:
+NEWSYM crc32_table,
 dd 000000000h, 077073096h, 0ee0e612ch, 0990951bah, 0076dc419h, 0706af48fh
 dd 0e963a535h, 09e6495a3h, 00edb8832h, 079dcb8a4h, 0e0d5e91eh, 097d2d988h
 dd 009b64c2bh, 07eb17cbdh, 0e7b82d07h, 090bf1d91h, 01db71064h, 06ab020f2h
@@ -2656,217 +2658,6 @@ dd 040df0b66h, 037d83bf0h, 0a9bcae53h, 0debb9ec5h, 047b2cf7fh, 030b5ffe9h
 dd 0bdbdf21ch, 0cabac28ah, 053b39330h, 024b4a3a6h, 0bad03605h, 0cdd70693h
 dd 054de5729h, 023d967bfh, 0b3667a2eh, 0c4614ab8h, 05d681b02h, 02a6f2b94h
 dd 0b40bbe37h, 0c30c8ea1h, 05a05df1bh, 02d02ef8dh
-
-SECTION .text
-
-NEWSYM showinfogui
-    mov esi,[romdata]
-    add esi,[infoloc]
-
-    cmp dword[infoloc],40FFC0h
-    jne .notEHi1
-    mov dword[CSStatus2+23], 'EHi '
-    jmp .nohiromrn
-.notEHi1
-    mov dword[CSStatus2+23], 'Lo  '
-    cmp byte[romtype],2
-    jne .nohiromrn
-    mov dword[CSStatus2+23], 'Hi  '
-.nohiromrn
-
-    mov edi,CSStatus
-    mov ecx,20
-.looprn
-    mov al,[esi]
-    or al,al
-    jnz .okaysp
-    mov al,32
-.okaysp
-    mov [edi],al
-    inc esi
-    inc edi
-    dec ecx
-    jnz .looprn
-
-    mov dword[CSStatus3+6], 'PAL '
-    add esi,5
-    cmp byte[esi],2    
-    jae .notntsc1
-    mov dword[CSStatus3+6], 'NTSC'
-.notntsc1
-    cmp byte[esi],13
-    jb .notntsc2
-    mov dword[CSStatus3+6], 'NTSC'
-.notntsc2
-    mov dword[CSStatus3+16], '    '
-    cmp byte[IPSPatched],1
-    jne .notpatched
-    mov dword[CSStatus3+16], 'IPS '
-.notpatched    
-    mov dword[CSStatus+29],'NORM'
-    mov dword[CSStatus+33],'AL  '
-    cmp byte[SA1Enable],0
-    je .nosa1
-    mov dword[CSStatus+29],'SA-1'
-    mov dword[CSStatus+33],'    '
-.nosa1
-    cmp byte[RTCEnable],0
-    je .nortc
-    mov dword[CSStatus+29],'RTC '
-    mov dword[CSStatus+33],'    '
-
-.nortc
-    cmp byte[SPC7110Enable],0
-    je .nospc7110
-    mov dword[CSStatus+29],'SPC7'
-    mov dword[CSStatus+33],'110 '
-.nospc7110
-    cmp byte[SFXEnable],0
-    je .nosfx
-    mov dword[CSStatus+29],'SUPE'
-    mov dword[CSStatus+33],'R FX'
-.nosfx
-    cmp byte[C4Enable],0
-    je .noc4
-    mov dword[CSStatus+29],'C4  '
-    mov dword[CSStatus+33],'    '
-.noc4
-    cmp byte[DSP1Enable],0
-    je .nodsp1
-    mov dword[CSStatus+29],'DSP-'
-    mov dword[CSStatus+33],'1   '
-.nodsp1
-    cmp byte[DSP2Enable],0
-    je .nodsp2
-    mov dword[CSStatus+29],'DSP-'
-    mov dword[CSStatus+33],'2   '
-.nodsp2
-    cmp byte[DSP3Enable],0
-    je .nodsp3
-    mov dword[CSStatus+29],'DSP-'
-    mov dword[CSStatus+33],'3   '
-.nodsp3
-    cmp byte[DSP4Enable],0
-    je .nodsp4
-    mov dword[CSStatus+29],'DSP-'
-    mov dword[CSStatus+33],'4   '
-.nodsp4
-    cmp byte[SDD1Enable],0
-    je .nosdd1
-    mov dword[CSStatus+29],'S-DD'
-    mov dword[CSStatus+33],'1   '
-.nosdd1
-    cmp byte[OBCEnable],0
-    je .noobc
-    mov dword[CSStatus+29],'OBC1'
-    mov dword[CSStatus+33],'    '
-.noobc
-    cmp byte[SETAEnable],0
-    je .noseta
-    mov dword[CSStatus+29],'SETA'
-    mov dword[CSStatus+33],' DSP'
-.noseta
-    cmp byte[ST18Enable],0
-    je .nost18
-    mov dword[CSStatus+29],'ST01'
-    mov dword[CSStatus+33],'8   '
-.nost18
-    cmp byte[SGBEnable],0
-    je .nosgb
-    mov dword[CSStatus+29],'SGB '
-    mov dword[CSStatus+33],'    '
-.nosgb
-    cmp byte[BSEnable],0
-    je .nobs
-    mov dword[CSStatus+29],'BROA'
-    mov dword[CSStatus+33],'DCST'
-    ;dummy out date so CRC32 matches
-    sub esi,3
-    mov word[esi],042h ;42 is the answer, and the uCONSRT standard
-.nobs
-
-    mov dword[CSStatus2+12],'No  '
-    cmp byte[Interleaved],0
-    je .nointlv
-    mov dword[CSStatus2+12],'Yes '
-.nointlv
- 
-    ; calculate CRC32
-    xor edx,edx         
-    mov eax,0FFFFFFFFh
-    mov ecx,dword[NumofBytes]
-    mov esi,[romdata]   
-
-    ;Only calculate Add on ROM?
-    cmp byte[SplittedROM],1
-    jne .calcloop
-    mov ecx,dword[addOnSize]
-    add esi,dword[addOnStart]
-
- .calcloop
-    mov dl,byte[esi] 
-    mov ebx,eax                     ;ebx = CRC32
-    xor ebx,edx                     ;ebx ^= edx
-    movzx ebx,bl                    ;ebx &= 0xFF
-    mov ebx,[ebx*4 + crc32_table]   ;ebx = crc32_table[bl]
-    shr eax,8                       ;CRC32 >>= 8
-    xor eax,ebx                     ;CRC32 ^= ebx
-    inc esi                      
-    dec ecx                      
-    jnz .calcloop                 
-    xor eax,0FFFFFFFFh
-    mov [CRC32],eax          
-
-    ;Place CRC32 on line
-    mov ecx,8
-    mov esi,CSStatus3
-    add esi,32
-    mov ebx,0F0000000h
-.crcprintloop
-    mov eax,[CRC32]
-    and eax,ebx
-    dec ecx
-    shl ecx,2
-    shr eax,cl
-    add eax,48
-    cmp eax,58
-    jb .noadd
-    add eax,7  
-.noadd
-    mov [esi],al
-    inc esi    
-    shr ebx,4
-    shr ecx,2
-    jnz .crcprintloop
-
-    pushad
-    call CalcChecksum
-    popad
-
-    mov esi,[romdata]
-    add esi,[infoloc]
-    add esi,1Eh
-    mov ax,[Checksumvalue]
-    ;On add on ROMs we check the add on
-    cmp byte[SplittedROM],1
-    jne .check
-    add esi,dword[addOnStart]
-.check
-    cmp ax,[esi]
-    jne .failed
-.passed2
-    mov dword[CSStatus2+36],'OK  '
-    jmp .passed
-.failed
-    mov dword[CSStatus2+36],'FAIL'
-.passed
-    pushad
-    call DumpROMLoadInfo
-    popad
-    mov dword[MessageOn],300
-    mov dword[Msgptr],CSStatus
-    mov eax,[MsgCount]
-    ret
 
 ;*******************************************************
 ; Show Information

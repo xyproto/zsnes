@@ -294,7 +294,9 @@ GUIloadfilename:
     mov byte[CheatSearchStatus],0
 
     call SetupROM
+    pushad
     call showinfogui
+    popad
     call initsnes
     ;mov byte[snesmouse],0
     mov byte[sramsavedis],0
