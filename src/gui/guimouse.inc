@@ -2355,12 +2355,12 @@ DisplayGUISoundClick:
 ;.win32sound
     GUIClickCButton 11,131,byte[SoundBufEn]
     GUIClickCButton 11,141,byte[SPCDisable]
-    GUIClickCButton5 11,161,byte[SoundInterpType],1
-    GUIClickCButton5 11,171,byte[SoundInterpType],2
-    GUIClickCButton5MMX 11,181,byte[SoundInterpType],3
-    GUIClickCButton5 111,161,byte[LowPassFilterType],1
-    GUIClickCButton5 111,171,byte[LowPassFilterType],2
-    GUIClickCButton5MMX 111,181,byte[LowPassFilterType],3
+    GUIClickCButton5 11,163,byte[SoundInterpType],1
+    GUIClickCButton5 11,173,byte[SoundInterpType],2
+    GUIClickCButton5MMX 11,183,byte[SoundInterpType],3
+    GUIClickCButton5 111,163,byte[LowPassFilterType],1
+    GUIClickCButton5 111,173,byte[LowPassFilterType],2
+    GUIClickCButton5MMX 111,183,byte[LowPassFilterType],3
     cmp eax,15
     jl near .nosrate
     cmp edx,61

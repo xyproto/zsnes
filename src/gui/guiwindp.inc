@@ -2174,12 +2174,12 @@ DisplayGUISound:
 ;.win32s2
     GUIOuttextwin2u 6,26,136,GUISoundTextJ,6
     GUIOuttextwin2u 6,26,146,GUISoundTextK,0
-    GUIOuttextwin2u 6,26,166,GUISoundTextQ,0
-    GUIOuttextwin2u 6,26,176,GUISoundTextR,0
-    GUIOuttextwin2u 6,26,186,GUISoundTextS,0
-    GUIOuttextwin2u 6,126,166,GUISoundTextU,1
-    GUIOuttextwin2u 6,126,176,GUISoundTextV,1
-    GUIOuttextwin2u 6,126,186,GUISoundTextW,0
+    GUIOuttextwin2u 6,26,168,GUISoundTextQ,0
+    GUIOuttextwin2u 6,26,178,GUISoundTextR,0
+    GUIOuttextwin2u 6,26,188,GUISoundTextS,0
+    GUIOuttextwin2u 6,126,168,GUISoundTextU,1
+    GUIOuttextwin2u 6,126,178,GUISoundTextV,1
+    GUIOuttextwin2u 6,126,188,GUISoundTextW,0
     add byte[GUItextcolor],15
     GUIOuttextwin2 6,25,25,GUISoundText1
     GUIOuttextwin2 6,25,34,GUISoundText3
@@ -2197,19 +2197,19 @@ DisplayGUISound:
 ;.win32s
     GUIOuttextwin2 6,25,135,GUISoundTextJ
     GUIOuttextwin2 6,25,145,GUISoundTextK
-    GUIOuttextwin2 6,25,165,GUISoundTextQ
-    GUIOuttextwin2 6,25,175,GUISoundTextR
-    GUIOuttextwin2 6,25,185,GUISoundTextS
-    GUIOuttextwin2 6,125,165,GUISoundTextU
-    GUIOuttextwin2 6,125,175,GUISoundTextV
-    GUIOuttextwin2 6,125,185,GUISoundTextW
+    GUIOuttextwin2 6,25,167,GUISoundTextQ
+    GUIOuttextwin2 6,25,177,GUISoundTextR
+    GUIOuttextwin2 6,25,187,GUISoundTextS
+    GUIOuttextwin2 6,125,167,GUISoundTextU
+    GUIOuttextwin2 6,125,177,GUISoundTextV
+    GUIOuttextwin2 6,125,187,GUISoundTextW
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 6,6,16,GUISoundText6
     GUIOuttextwin2u 6,6,53,GUISoundText2,9
     GUIOuttextwin2 6,6,76,GUISoundText5
-    GUIOuttextwin2 6,6,156,GUISoundTextP
-    GUIOuttextwin2 6,106,156,GUISoundTextT
+    GUIOuttextwin2 6,6,158,GUISoundTextP
+    GUIOuttextwin2 6,106,158,GUISoundTextT
     mov byte[GUItextcolor],163
     cmp byte[GUIWincoladd],0
     je .zero3
@@ -2218,8 +2218,8 @@ DisplayGUISound:
     GUIOuttextwin2 6,5,15,GUISoundText6
     GUIOuttextwin2 6,5,52,GUISoundText2
     GUIOuttextwin2 6,5,75,GUISoundText5
-    GUIOuttextwin2 6,5,155,GUISoundTextP
-    GUIOuttextwin2 6,105,155,GUISoundTextT
+    GUIOuttextwin2 6,5,157,GUISoundTextP
+    GUIOuttextwin2 6,105,157,GUISoundTextT
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[cfgsoundon],0
     je .nocheckbox
@@ -2280,37 +2280,37 @@ DisplayGUISound:
     jne .nocheckbox7
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox7
-    GUIDisplayIconWin 6,11,161,[GUITemp]
+    GUIDisplayIconWin 6,11,163,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SoundInterpType],2
     jne .nocheckbox8
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox8
-    GUIDisplayIconWin 6,11,171,[GUITemp]
+    GUIDisplayIconWin 6,11,173,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SoundInterpType],3
     jne .nocheckbox9
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox9
-    GUIDisplayIconWin 6,11,181,[GUITemp]
+    GUIDisplayIconWin 6,11,183,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[LowPassFilterType],1
     jne .nocheckbox10
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox10
-    GUIDisplayIconWin 6,111,161,[GUITemp]
+    GUIDisplayIconWin 6,111,163,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[LowPassFilterType],2
     jne .nocheckbox11
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox11
-    GUIDisplayIconWin 6,111,171,[GUITemp]
+    GUIDisplayIconWin 6,111,173,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[LowPassFilterType],3
     jne .nocheckbox12
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox12
-    GUIDisplayIconWin 6,111,181,[GUITemp]
+    GUIDisplayIconWin 6,111,183,[GUITemp]
     DrawGUIWinBox 6,15,61,69,69,167
     mov dword[GUITemp],GUISoundText7
     xor eax,eax
