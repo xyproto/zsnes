@@ -141,14 +141,17 @@ extern unsigned int ZCloseFile(); //Close_File
 
 #ifdef __LINUX__
 extern char zcfgdir[1024];
+unsigned char changedsavedir = 1; //Set to yes, since savedir is always set and considered to be changed
+#else
+unsigned char changedsavedir = 0; //Only set to yes if modified in the paths window
 #endif
+
 
 char SRAMDir[1024];
 
 char LoadDriveB[2];
 char LoadDirB[128];
 
-//extern "C"{
 unsigned char cfgsoundon = 0;
 unsigned char cfgSoundQuality = 5;
 unsigned char cfgStereoSound = 1;
@@ -170,8 +173,6 @@ unsigned char JoyStatRead = 0;
 unsigned char pl12s34 = 0;
 unsigned char cfgdontsave = 0;
 unsigned char cfgreinittime = 30;
-//}
-
 
 #define ConvertJoyMapHelp(a,b,c)\
   if(b == c) \
@@ -561,7 +562,14 @@ void DOScreatenewcfg()
   WRITE_LINE("; Savefile directory.  Leave it blank if you want the save files to be in the\r\n");
   WRITE_LINE("; same directory as the games.  It should be in a format like : C:\\dir\\dir\r\n\r\n");
 
-  sprintf(buffer, "SaveDirectory = %s\r\n\r\n", SRAMDir);
+  if (changedsavedir)
+  {
+    sprintf(buffer, "SaveDirectory = %s\r\n\r\n", SRAMDir);
+  }
+  else
+  {
+    sprintf(buffer, "SaveDirectory = \r\n\r\n");
+  }
   SAVE_LINE(buffer);
 
   WRITE_LINE("; Game directory.  This is the directory where the GUI starts at.\r\n");

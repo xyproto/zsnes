@@ -166,7 +166,8 @@ EXTSYM GUIHQ3X
 EXTSYM GUIHQ4X
 EXTSYM firstsaveinc
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
-;EXTSYM st010difficulty
+EXTSYM changedsavedir
+
 %ifdef __LINUX__
 EXTSYM numlockptr
 %endif
