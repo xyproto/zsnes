@@ -681,9 +681,9 @@ ModemOKStat  resb 1       ; OK is detected on modem status
 SECTION .data             ; Window sizes and positions
 ;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE
 GUIwinposxo dd 0,5   ,60  ,30  ,55  ,50  ,35  ,5   ,30  ,10   ,10   ,50  ,65  ,20  ,70  ,40  ,3   ,50  ,50  ,5    ,20
-GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,20   ,20   ,20  ,60  ,30  ,65  ,20  ,22  ,60  ,60  ,20   ,60
+GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,35   ,20   ,20  ,60  ,30  ,65  ,40  ,22  ,60  ,60  ,20   ,60
 GUIwinsizex dd 0,244 ,126 ,189 ,167 ,180 ,188 ,244 ,8*16,235  ,240  ,190 ,9*16,8*16,9*16,180 ,250 ,160 ,160 ,244  ,200
-GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,189  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,100 ,100 ,190  ,150
+GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,150  ,150  ,190 ,42  ,40  ,42  ,150 ,190 ,100 ,100 ,190  ,150
 GUIwinptr   db 0
 
 section .bss

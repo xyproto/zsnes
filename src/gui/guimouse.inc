@@ -2120,14 +2120,14 @@ DisplayGUIMovieClick:
     GUIPButtonHole 120,40,byte[CMovieExt],'8'
     GUIPButtonHole 140,40,byte[CMovieExt],'9'
     
-    DGOptnsProcBox 97,119,[KeyInsrtChap]
-    DGOptnsProcBox 97,129,[KeyNextChap]
-    DGOptnsProcBox 97,139,[KeyPrevChap]
+    DGOptnsProcBox 116,68,[KeyInsrtChap]
+    DGOptnsProcBox 116,84,[KeyNextChap]
+    DGOptnsProcBox 116,100,[KeyPrevChap]
     GUIClickCButton 60,50,byte[MovieDisplayFrame]
-    GUIPButtonHole 8,167,byte[MovieStartMethod],0
-    GUIPButtonHole 43,167,byte[MovieStartMethod],1
-    GUIPButtonHole 88,167,byte[MovieStartMethod],2
-    GUIPButtonHole 8,177,byte[MovieStartMethod],3
+    GUIPButtonHole 8,127,byte[MovieStartMethod],0
+    GUIPButtonHole 43,127,byte[MovieStartMethod],1
+    GUIPButtonHole 88,127,byte[MovieStartMethod],2
+    GUIPButtonHole 8,137,byte[MovieStartMethod],3
     ret
 
 
@@ -2915,13 +2915,13 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 27+45,120,[KeyDisableSC5]
     DGOptnsProcBox 27+45*2,120,[KeyDisableSC6]
     DGOptnsProcBox 27+45*3,120,[KeyDisableSC7]
-    DGOptnsProcBox 8+25,178,[KeyQuickLoad]
-    DGOptnsProcBox 8+57+26,178,[KeyQuickRst]
-    DGOptnsProcBox 8+114+20,178,[KeyQuickExit]
-    DGOptnsProcBox 8+114+78,178,[KeyQuickClock]
-    DGOptnsProcBox 8+25,188,[KeyQuickChat]
-    DGOptnsProcBox 8+57+45,188,[KeyQuickSnapShot]
-    DGOptnsProcBox 8+108+70,188,[KeyQuickSaveSPC]
+    DGOptnsProcBox 8+25,138,[KeyQuickLoad]
+    DGOptnsProcBox 8+57+26,138,[KeyQuickRst]
+    DGOptnsProcBox 8+114+20,138,[KeyQuickExit]
+    DGOptnsProcBox 8+114+78,138,[KeyQuickClock]
+    DGOptnsProcBox 8+25,148,[KeyQuickChat]
+    DGOptnsProcBox 8+57+45,148,[KeyQuickSnapShot]
+    DGOptnsProcBox 8+108+70,148,[KeyQuickSaveSPC]
     ret
 
 DisplayGUIOptnsClick:
