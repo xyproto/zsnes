@@ -1374,7 +1374,9 @@ DisplayGUIOption:
     GUIOuttextwin2u 4,26,151,GUIOptionTextH,9
     GUIOuttextwin2u 4,26,161,GUIOptionTextI,15
     GUIOuttextwin2u 4,26,171,GUIOptionTextJ,0
+%ifdef __WIN32__
     GUIOuttextwin2u 4,26,181,GUIOptionTextK,1
+%endif
     add byte[GUItextcolor],15
     GUIOuttextwin2 4,5,15,[GUITemp]
     GUIOuttextwin2 4,25,30,GUIOptionText2
@@ -1400,7 +1402,9 @@ DisplayGUIOption:
     GUIOuttextwin2 4,25,150,GUIOptionTextH
     GUIOuttextwin2 4,25,160,GUIOptionTextI
     GUIOuttextwin2 4,25,170,GUIOptionTextJ
+%ifdef __WIN32__
     GUIOuttextwin2 4,25,180,GUIOptionTextK
+%endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[TimerEnable],0
     je .nocheckboxt
