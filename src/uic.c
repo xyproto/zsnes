@@ -20,7 +20,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdlib.h>
 
 //C++ style code in C
-enum bool { false, true };
+#define bool unsigned char
+#define true 1
+#define false 0
 
 extern void outofmemory();
 extern unsigned char *spc7110romptr;
