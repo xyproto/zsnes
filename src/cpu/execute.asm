@@ -114,7 +114,7 @@ EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,sfxclineloc
 EXTSYM PLOTJmpa,PLOTJmpb,FxTable,FxTableb,FxTablec,FxTabled
 EXTSYM SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,hdmaearlstart,SFXCounter
 EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67,fxbit67pcal
-EXTSYM SfxSFR,nosprincr,hirqmode2
+EXTSYM SfxSFR,nosprincr
 EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 EXTSYM ReadSPC7110log,WriteSPC7110log
 EXTSYM NetPlayNoMore
@@ -985,8 +985,6 @@ NetSaveState:
 %%nointrseta3
     cmp byte[intrset],1
     jne %%nointrseta2
-    cmp byte[hirqmode2],1
-    je %%hirqchange
     mov byte[intrset],8
     jmp %%noirq
 %%hirqchange
