@@ -176,6 +176,7 @@ EXTSYM numlockptr
 %ifdef __WIN32__
 EXTSYM CheckPriority
 EXTSYM CheckAlwaysOnTop
+EXTSYM initDirectDraw
 %endif
 
 NEWSYM GuiAsmStart

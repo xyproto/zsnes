@@ -818,6 +818,13 @@ GUIOptionKeys:
     xor byte[vsyncon],1
     mov al,[vsyncon]
     mov [cfgvsync],al
+%ifdef __WIN32__
+    cmp byte[OverlayEnabled],1
+    jne .novsync
+    pushad
+    call initDirectDraw
+    popad
+%endif
 .novsync
 %endif
     cmp dh,'M'
@@ -892,6 +899,9 @@ GUIOptionKeys:
     cmp dh,'Y'
     jne .nooverlay
     xor byte[OverlayEnabled],1
+    pushad
+    call initDirectDraw
+    popad
 .nooverlay
     cmp dh,'S'
     jne .noalttimer
