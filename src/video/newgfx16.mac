@@ -3300,7 +3300,7 @@ EXTSYM osm2dis
     je near .offsetm16x16
     xor edx,edx
     mov dx,[BG3SYl+ebx*2]
-;    and dx,0F8h
+    and dx,0F8h
     shr edx,3
     shl edx,6
     xor eax,eax
