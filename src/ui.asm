@@ -1629,6 +1629,9 @@ NEWSYM MMXCheck
 ;    mov edx,cpuidtext
 ;    call PrintStr
 
+    cmp byte[MMXSupport],0
+    je .nommx
+
     ; Real way to check for presence of CPUID instruction  -kode54
     pushfd
     pop eax

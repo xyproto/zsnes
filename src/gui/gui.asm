@@ -101,6 +101,7 @@ EXTSYM ipxlookforconnect
 EXTSYM SA1Enable,SA1RAMArea
 EXTSYM GUIFName,GUICName
 EXTSYM printnum
+EXTSYM MMXCheck
 EXTSYM SaveCombFile
 EXTSYM NetSent,valuea
 EXTSYM welcome
