@@ -701,11 +701,13 @@ ProcessCombo:
     or [HoldComb+ecx*4],ebx
     jmp .finkeyproc
 .releaseonly
+    sub ebx,12                ; <- bugfix from Maxim
     shl ebx,2
     add ebx,[CombCont+ecx*4]
     mov ebx,[ebx]
     xor ebx,0FFFFFFFFh
     and [HoldComb+ecx*4],ebx
+    and [PressComb+ecx*4],ebx  ; <- buxfix from Maxim
 .finkeyproc
     inc eax
     inc byte[ComboPtr+ecx]
@@ -1424,6 +1426,15 @@ NEWSYM headerhack
     jne .notff
 ;    mov dword[WindowDisables],180
 .notff
+    mov esi,[romdata]
+    add esi,9AB0h
+    cmp dword[esi],0F00F2908h
+    jne .notff3
+    mov byte[opexec268],163
+    mov byte[opexec358],157
+    mov byte[opexec268cph],39
+    mov byte[opexec358cph],39
+.notff3
 
     ; Earth Worm Jim 2 - IRQ hack (reduce sound static)
     mov esi,[romdata]
@@ -1916,10 +1927,13 @@ NEWSYM init65816
 SECTION .data
 NEWSYM curromsize, db 0
 NEWSYM cromptradd, dd 0
+NEWSYM NoiseDisTemp, dd 0,0
 SECTION .text
 
 NEWSYM initsnes
     mov byte[ForceNewGfxOff],0
+    mov dword[NoiseDisTemp],0
+    mov dword[NoiseDisTemp+4],0
 
     mov esi,[romdata]
     add esi,7FC0h
@@ -1956,6 +1970,7 @@ NEWSYM initsnes
     je near SA1memmap
     cmp al,40h
     je near SDD1memmap
+
 
     cmp byte[SPC7110Enable],1
     je near .hirom
@@ -2126,6 +2141,19 @@ NEWSYM initsnes
     ret
 
 .lorom48
+    mov byte[cycpb268],94
+    mov byte[cycpb358],94
+    mov byte[cycpbl2],94
+    mov byte[cycpblt2],94
+    mov byte[cycpbl],94
+    mov byte[cycpblt],94
+    mov byte[opexec268],183
+    mov byte[opexec358],187
+    mov byte[opexec268cph],30
+    mov byte[opexec358cph],30
+    mov dword[NoiseDisTemp],01000101h
+    mov dword[NoiseDisTemp+4],01h
+
     mov edi,memtabler8+40h*4
     mov ecx,30h
     mov eax,memaccessbankr848mb
