@@ -2183,10 +2183,14 @@ DisplayGUISound:
     GUIOuttextwin2u 6,26,146,GUISoundTextK,0
     GUIOuttextwin2u 6,26,168,GUISoundTextQ,0
     GUIOuttextwin2u 6,26,178,GUISoundTextR,0
+%ifndef __MSDOS__
     GUIOuttextwin2u 6,26,188,GUISoundTextS,0
+%endif
     GUIOuttextwin2u 6,126,168,GUISoundTextU,1
     GUIOuttextwin2u 6,126,178,GUISoundTextV,1
+%ifndef __MSDOS__
     GUIOuttextwin2u 6,126,188,GUISoundTextW,0
+%endif
     add byte[GUItextcolor],15
     GUIOuttextwin2 6,25,25,GUISoundText1
     GUIOuttextwin2 6,25,34,GUISoundText3
@@ -2206,10 +2210,14 @@ DisplayGUISound:
     GUIOuttextwin2 6,25,145,GUISoundTextK
     GUIOuttextwin2 6,25,167,GUISoundTextQ
     GUIOuttextwin2 6,25,177,GUISoundTextR
+%ifndef __MSDOS__
     GUIOuttextwin2 6,25,187,GUISoundTextS
+%endif
     GUIOuttextwin2 6,125,167,GUISoundTextU
     GUIOuttextwin2 6,125,177,GUISoundTextV
+%ifndef __MSDOS__
     GUIOuttextwin2 6,125,187,GUISoundTextW
+%endif
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 6,6,16,GUISoundText6
@@ -2294,12 +2302,14 @@ DisplayGUISound:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox8
     GUIDisplayIconWin 6,11,173,[GUITemp]
+%ifndef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SoundInterpType],3
     jne .nocheckbox9
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox9
     GUIDisplayIconWin 6,11,183,[GUITemp]
+%endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[LowPassFilterType],1
     jne .nocheckbox10
@@ -2312,12 +2322,14 @@ DisplayGUISound:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox11
     GUIDisplayIconWin 6,111,173,[GUITemp]
+%ifndef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[LowPassFilterType],3
     jne .nocheckbox12
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox12
     GUIDisplayIconWin 6,111,183,[GUITemp]
+%endif
     DrawGUIWinBox 6,15,61,69,69,167
     mov dword[GUITemp],GUISoundText7
     xor eax,eax

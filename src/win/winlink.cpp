@@ -1972,7 +1972,6 @@ extern DWORD AddEndBytes;
 extern DWORD NumBytesPerLine;
 extern unsigned char * WinVidMemStart;
 extern void copy640x480x16bwin(void);
-extern unsigned char MMXSupport;
 extern unsigned char NGNoTransp;
 extern unsigned char newengen;
 
