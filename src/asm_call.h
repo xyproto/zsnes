@@ -63,9 +63,9 @@ ASM_COMMAND(popal) \
 
 #else //MSVC
 
-#define asm_call(func) _asm pushad \
+#define asm_call(func) { _asm pushad \
 _asm call func \
-_asm popad
+_asm popad };
 
 #endif
 
