@@ -118,10 +118,10 @@ BYTE                    BackColor=0;
 DEVMODE mode;
 
 int DTimerCheck;
-/*float MouseMinX=0;
+float MouseMinX=0;
 float MouseMaxX=256;
 float MouseMinY=0;
-float MouseMaxY=223;*/
+float MouseMaxY=223;
 int MouseX;
 int MouseY;
 float MouseMoveX;
@@ -246,6 +246,10 @@ int Main_Proc(void)
 		case SDL_MOUSEMOTION:
 			MouseX = event.motion.x;
 			MouseY = event.motion.y;
+			if (MouseX < MouseMinX) MouseX = MouseMinX;
+			if (MouseX > MouseMaxX) MouseX = MouseMaxX;
+			if (MouseY < MouseMinY) MouseY = MouseMinY;
+			if (MouseY > MouseMaxY) MouseY = MouseMaxY;
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:
@@ -2476,7 +2480,7 @@ void WinUpdateDevices()
 
 #ifdef __LINUX__
    //STUB_FUNCTION;
-   MouseButton = SDL_GetMouseState( &MouseX, &MouseY);
+   //MouseButton = SDL_GetMouseState( &MouseX, &MouseY);
 #else
    for (i=0;i<256;i++)
       keys2[i]=0;
@@ -2658,7 +2662,7 @@ void SetMouseMinX(int MinX)
 //   char message1[256];
 //   sprintf(message1,"MinX %d",MinX);
 //   MessageBox (NULL, message1, "Init", MB_ICONERROR );
-//   MouseMinX=MinX;
+   MouseMinX=MinX;
 }
 
 void SetMouseMaxX(int MaxX)
@@ -2667,7 +2671,7 @@ void SetMouseMaxX(int MaxX)
 //   char message1[256];
 //   sprintf(message1,"MaxX %d",MaxX);
 //   MessageBox (NULL, message1, "Init", MB_ICONERROR );
-//   MouseMaxX=MaxX;
+   MouseMaxX=MaxX;
 }
 
 void SetMouseMinY(int MinY)
@@ -2676,7 +2680,7 @@ void SetMouseMinY(int MinY)
 //   char message1[256];
 //   sprintf(message1,"MinY %d",MinY);
 //   MessageBox (NULL, message1, "Init", MB_ICONERROR );
-//   MouseMinY=MinY;
+   MouseMinY=MinY;
 }
 
 void SetMouseMaxY(int MaxY)
@@ -2685,7 +2689,7 @@ void SetMouseMaxY(int MaxY)
 //   char message1[256];
 //   sprintf(message1,"MaxY %d",MaxY);
 //   MessageBox (NULL, message1, "Init", MB_ICONERROR );
-//   MouseMaxY=MaxY;
+   MouseMaxY=MaxY;
 }
 
 void SetMouseX(int X)
