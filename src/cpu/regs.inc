@@ -1180,6 +1180,7 @@ reg4017r:
     ret
 
 reg4100r:
+   xor al,al
    cmp byte[nssdip1],1
    jne .nodip1
    mov al,1
