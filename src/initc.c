@@ -1165,6 +1165,10 @@ void headerhack()
   ClearScreenSkip = 0;
   ENVDisable = 0;
 
+  if (curromspace < Lo)
+  {
+    return;
+  }
 
   //These next fiew look like RAM init hacks, should be looked into
 
