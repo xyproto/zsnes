@@ -1307,7 +1307,7 @@ NEWSYM endprog
     cmp byte[SDD1Enable],0
     jne .yesdecomppack
     cmp dword[SDD1Entry],0
-;    je .nodecomppack
+    je .nodecomppack
 .yesdecomppack
     mov edx,.blah
     call Create_File
