@@ -88,10 +88,7 @@ EXTSYM fname,fnames,GetCurDir
 EXTSYM GUIcurrentdir,PrintStr
 ;STUB DDOI
 ;EXTSYM GUIcurrentdir, PrintStr
-EXTSYM GUIsmcfind,GUIsfcfind,GUIswcfind,GUIfigfind,GUIfind058,GUIfind078,GUIfindBIN
-EXTSYM GUImgdfind,GUIufofind
-;EXTSYM GUIfindUSA,GUIfindEUR,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall,ZipError
-EXTSYM GUIfindUSA,GUIfindEUR,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall
+EXTSYM DTALoc
 EXTSYM spc7110romptr,allocspc7110
 EXTSYM SRAMDir,SRAMDrive,cfgloadsdir,fnamest,statefileloc
 EXTSYM ForcePal,ForceROMTiming,ForceHiLoROM,InitDir,InitDrive,enterpress,frameskip

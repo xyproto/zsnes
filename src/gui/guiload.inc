@@ -533,6 +533,7 @@ GetNormalEntries2:
 ;    cmp byte[OSPort],1
 ;    je near .noasm
     GUIGetEntry2 GUIfindZIP
+    GUIGetEntry2 GUIfindJMA
 ;.noasm
     GUIGetEntry2 GUIfind1
     jmp .guiNext
@@ -550,6 +551,7 @@ GetNormalEntries:
     GUIGetEntry GUIfigfind
     GUIGetEntry GUImgdfind
     GUIGetEntry GUIufofind
+    GUIGetEntry GUIgd3find
     %ifndef __MSDOS__
     GUIGetEntry GUIfindGZIP
     %endif
@@ -1381,6 +1383,7 @@ NEWSYM GUIswcfind,    db '*.[sS][wW][cC]',0
 NEWSYM GUIfigfind,    db '*.[fF][iI][gG]',0
 NEWSYM GUImgdfind,    db '*.[mM][gG][dD]',0
 NEWSYM GUIufofind,    db '*.[uU][fF][oO]',0
+NEWSYM GUIgd3find,    db '*.[gG][dD]3',0
 %else
 NEWSYM GUIsmcfind,    db '*.SMC',0
 NEWSYM GUIsfcfind,    db '*.SFC',0
@@ -1388,6 +1391,7 @@ NEWSYM GUIswcfind,    db '*.SWC',0
 NEWSYM GUIfigfind,    db '*.FIG',0
 NEWSYM GUImgdfind,    db '*.MGD',0
 NEWSYM GUIufofind,    db '*.UFO',0
+NEWSYM GUIjmafind,    db '*.JMA',0
 %endif
 NEWSYM GUIfind058,    db '*.058',0
 NEWSYM GUIfind078,    db '*.078',0
@@ -1397,6 +1401,7 @@ NEWSYM GUIfindEUR,    db '*.[eE][uU][rR]',0
 NEWSYM GUIfindJAP,    db '*.[jJ][aA][pP]',0
 NEWSYM GUIfindBIN,    db '*.[bB][iI][nN]',0
 NEWSYM GUIfindZIP,    db '*.[zZ][iI][pP]',0
+NEWSYM GUIfindJMA,    db '*.[jJ][mM][aA]',0
 NEWSYM GUIfindGZIP,    db '*.[gG][zZ]',0
 %else
 NEWSYM GUIfindUSA,    db '*.USA',0
@@ -1404,6 +1409,7 @@ NEWSYM GUIfindEUR,    db '*.EUR',0
 NEWSYM GUIfindJAP,    db '*.JAP',0
 NEWSYM GUIfindBIN,    db '*.BIN',0
 NEWSYM GUIfindZIP,    db '*.ZIP',0
+NEWSYM GUIfindJMA,    db '*.ZIP',0
 NEWSYM GUIfindGZIP,    db '*.GZ',0
 %endif
 NEWSYM GUIfind1,      db '*.1',0
