@@ -1002,7 +1002,7 @@ db 'VARIABLE OGL WIN ',0  ;16
 ; Left side starts with Video Mode 0
 ; vid mode column = 0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6 
 NEWSYM GUI16VID, db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1       ; 16-bit mode
-NEWSYM GUINGVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; New Graphics Mode Available
+NEWSYM GUINGVID, db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1       ; New Graphics Mode Available
 NEWSYM GUISLVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Scanlines
 NEWSYM GUIINVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Interpolation
 NEWSYM GUII2VID, db 0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Interpolation(w)
