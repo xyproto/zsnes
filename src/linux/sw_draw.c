@@ -112,7 +112,7 @@ static DWORD ScreenPtr;
 static DWORD SurfBufD;
 static DWORD *SURFDW;
 static DWORD pitch;
-extern BYTE resolutn;
+extern DWORD resolutn;
 
 void sw_clearwin()
 {

@@ -1793,7 +1793,7 @@ extern int DSPBuffer;
 int * DSPBuffer1;
 DWORD ScreenPtr;
 DWORD ScreenPtr2;
-extern BYTE resolutn;
+extern DWORD resolutn;
 extern GUI36hzcall(void);
 extern Game60hzcall(void);
 extern int packettimeleft[256];
