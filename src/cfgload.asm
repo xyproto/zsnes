@@ -624,7 +624,7 @@ db 'VideoModeLin = %U',13,10
 db '',13,10
 %endif
 %ifdef __MSDOS__
-db '; Video Mode, 0 - 10',13,10
+db '; Video Mode, 0 - 14',13,10
 db ';  0 = 256x224x8B  (MODEQ)  1 = 256x240x8B (MODEQ)',13,10
 db ';  2 = 256x256x8B  (MODEQ)  3 = 320x224x8B (MODEX)',13,10
 db ';  4 = 320x240x8B  (MODEX)  5 = 320x256x8B (MODEX)',13,10
