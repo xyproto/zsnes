@@ -1554,6 +1554,7 @@ void initwinvideo(void)
       X=(GetSystemMetrics( SM_CXSCREEN ) - WindowWidth) / 2;
       Y=(GetSystemMetrics( SM_CYSCREEN ) - WindowHeight) / 2;
       if (FullScreen==1) {X=0; Y=0;}
+
       if (hMainWindow) 
       {
          CloseWindow(hMainWindow);
@@ -1596,6 +1597,9 @@ void initwinvideo(void)
    {
       if (newmode) clearwin();
    }
+
+   if (FullScreen == 1 && newmode == 1) { ReleaseDirectDraw(); InitDirectDraw(); }
+
 }
 
 extern unsigned int vidbuffer;
