@@ -59,7 +59,7 @@ EXTSYM ClearScreen
 EXTSYM Mode7HiRes,mosenng,mosszng,intrlng,mode7hr ;,VESAAddr
 EXTSYM GUICPC, newgfx16b
 EXTSYM vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3
-EXTSYM granadd,CSStatus
+EXTSYM granadd,CSStatus,CSStatus2,CSStatus3
 EXTSYM SpecialLine
 EXTSYM vidbufferofsb
 ;EXTSYM Super2xSaI
@@ -805,6 +805,7 @@ NEWSYM outputchar16b5x52
     jz .nowrite
     push eax
     mov ax,[textcolor16b]
+    mov ax,4
     mov word[esi],ax
     mov word[esi+75036*4],ax
     pop eax
@@ -3579,6 +3580,14 @@ NEWSYM copyvid
     jmp .nfivex5b
 .fivex5b
     call OutputGraphicString5x5
+    mov edi,CSStatus2
+    mov esi,208*288+32
+    add esi,[vidbuffer]
+    call OutputGraphicString5x5
+    mov edi,CSStatus3
+    mov esi,216*288+32
+    add esi,[vidbuffer]
+    call OutputGraphicString5x5
 .nfivex5b
     dec dword[MessageOn]
     jnz .nomsg
@@ -3596,7 +3605,16 @@ NEWSYM copyvid
     je .fivex5
     call OutputGraphicString16b
     jmp .nfivex5
+.statusline2
 .fivex5
+    call OutputGraphicString16b5x5
+    mov edi,CSStatus2
+    mov esi,208*288*2+32*2
+    add esi,[vidbuffer]
+    call OutputGraphicString16b5x5
+    mov edi,CSStatus3
+    mov esi,216*288*2+32*2
+    add esi,[vidbuffer]
     call OutputGraphicString16b5x5
 .nfivex5
     dec dword[MessageOn]
