@@ -434,7 +434,6 @@ NEWSYM cycpblt2, db 149  ; percentage of CPU/SPC to run
 NEWSYM writeon, db 0    ; Write enable/disable on snes rom memory
 NEWSYM totlines, dw 263 ; total # of lines
 NEWSYM soundon, db 0    ; Current sound enabled (1=enabled)
-NEWSYM zsmesg,  db 'ZSNES Save State File V0.6',26
 NEWSYM versn,   db 60   ; version #/100
 NEWSYM curcyc,  db 0    ; cycles left in scanline
 NEWSYM curypos, dw 0    ; current y position
@@ -463,14 +462,9 @@ NEWSYM xirqb,    db 0           ; which bank the irqs start at
 NEWSYM debugger, db 0              ; Start with debugger (1=yes,0=no)
 NEWSYM Curtableaddr,  dd 0                 ; Current table address
 NEWSYM curnmi,   db 0           ; if in NMI(1) or not(0)
-; pharos - equ hack *sigh*
-num2writecpureg equ $-zsmesg
 ALIGN32
 NEWSYM cycpbl,  dd 110  ; percentage left of CPU/SPC to run  (3.58 = 175)
 NEWSYM cycpblt, dd 110  ; percentage of CPU/SPC to run
-
-NEWSYM PHnum2writecpureg, dd num2writecpureg
-
 
 ; SNES memory map ROM locations
 

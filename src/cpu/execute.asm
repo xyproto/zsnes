@@ -62,7 +62,7 @@ EXTSYM deinitipx
 EXTSYM deinitvideo
 EXTSYM BRRBuffer,DSPMem,PrepareSaveState,ResetState,SFXEnable,PHdspsave
 EXTSYM fnamest,sndrot,spcRam,spcRamDP,tableA,unpackfunct,vram,wramdata
-EXTSYM zsmesg,PHnum2writesfxreg,SfxR0,PHnum2writecpureg,PHspcsave
+EXTSYM PHnum2writesfxreg,SfxR0,PHspcsave
 EXTSYM C4Ram
 EXTSYM SPC7110Enable
 EXTSYM SA1Mode,PHnum2writesa1reg,SaveSA1,RestoreSA1,UpdateBanksSDD1
@@ -486,7 +486,6 @@ NEWSYM UpdateRewind
 NEWSYM BackupSystemVars
     pushad
     mov ebx,BackupArray
-    BackupCVMacB zsmesg,[PHnum2writecpureg]
     BackupCVMac cycpbl,2
     BackupCVMacB sndrot,3019
     BackupCVMacB soundcycleft,33
@@ -513,7 +512,6 @@ NEWSYM RestoreSystemVars
     pushad
     call InitRewindVars
     mov ebx,BackupArray
-    BackupCVRMacB zsmesg,[PHnum2writecpureg]
     BackupCVRMac cycpbl,2
     BackupCVRMacB sndrot,3019
     BackupCVRMacB soundcycleft,33

@@ -32,6 +32,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIR_SLASH "\\"
 #endif
 
+//C++ style code in C
+#define bool unsigned char
+#define true 1
+#define false 0
+
 #ifdef __MSDOS__
 #define clim() __asm__ __volatile__ ("cli");
 #define stim() __asm__ __volatile__ ("sti");
@@ -43,18 +48,20 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 /*Let's start converting stuff from execute.asm ^_^;
 Big thanks to Nach, TRAC and anomie for helping me out on porting !!*/
 
-extern unsigned int CBackupPos, PBackupPos, PHnum2writecpureg, cycpbl;
+extern unsigned int CBackupPos, PBackupPos, cycpbl;
 extern unsigned int *wramdata, *vram, PHspcsave, PHdspsave, *C4Ram, *sfxramdata;
 extern unsigned int PHnum2writesa1reg, SA1Mode, prevedi, SA1xpc, sa1dmaptr;
 extern unsigned int soundcycleft, spc700read, timer2upd, xa, PHnum2writesfxreg;
 extern unsigned int spcnumread, spchalted, opcd, HIRQCycNext, oamaddr;
 extern unsigned int SfxR0, ReadHead, *setaramdata, ramsize, *sram;
 extern unsigned int tempesi, tempedi, tempedx, tempebp;
+extern unsigned int SPCMultA, PHnum2writespc7110reg;
 
-extern unsigned char *StateBackup, zsmesg[26], sndrot, spcon, spcRam[65472];
-extern unsigned char DSPMem[256], C4Enable, SFXEnable, SA1Enable, SA1Status;
-extern unsigned char *SA1RAMArea, DSP1Type, DSP1COp, prevoamptr, SETAEnable;
-extern unsigned char BRRBuffer[32];
+extern unsigned char *StateBackup, sndrot, spcRam[65472];
+extern unsigned char DSPMem[256], SA1Status, *SA1RAMArea, DSP1Type, DSP1COp;
+extern unsigned char prevoamptr, BRRBuffer[32], *romdata;
+
+extern bool C4Enable, SFXEnable, SA1Enable, SPC7110Enable, SETAEnable, spcon;
 
 extern short C4WFXVal, C41FXVal, Op00Multiplicand, Op04Angle, Op08X, Op18X;
 extern short Op28X, Op0CA, Op02FX, Op0AVS, Op06X, Op01m, Op0DX, Op03F, Op14Zr;
@@ -73,9 +80,15 @@ void memcpyrinc(unsigned char **src, void *dest, size_t len)
   *src += len;
 }
 
-void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t))
+char zsmesg[] = "ZSNES Save State File V0.6";
+
+void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t), bool file)
 {
-  copy_func(&buffer, zsmesg, PHnum2writecpureg);
+  if (file)
+  {
+    copy_func(&buffer, zsmesg, sizeof(zsmesg)-1);
+  }
+  
   copy_func(&buffer, &cycpbl, 2*4);    
   copy_func(&buffer, &sndrot, 3019);    
   copy_func(&buffer, wramdata, 8192*16);    
@@ -85,7 +98,7 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
   {
     copy_func(&buffer, spcRam, PHspcsave);    
     copy_func(&buffer, BRRBuffer, PHdspsave);
-    copy_func(&buffer, DSPMem, 16*16);
+    copy_func(&buffer, DSPMem, sizeof(DSPMem));
   }
   
   if (C4Enable)
@@ -104,7 +117,6 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
     copy_func(&buffer, &SA1Mode, PHnum2writesa1reg);
     copy_func(&buffer, SA1RAMArea, 8192*16);
     copy_func(&buffer, &SA1Status, 3);
-    copy_func(&buffer, &prevedi, 1*4);
     copy_func(&buffer, &SA1xpc, 1*4);
     copy_func(&buffer, &SA1RAMArea, 6*4);
     copy_func(&buffer, &sa1dmaptr, 2*4);
@@ -132,6 +144,17 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
     copy_func(&buffer, &Op0EH, 4*4+128);
   }
 
+  if (SETAEnable)
+  { 
+    copy_func(&buffer, setaramdata, 256*16);
+  }
+
+  if (SPC7110Enable)
+  {
+    copy_func(&buffer, romdata+0x510000, 65536);
+    copy_func(&buffer, &SPCMultA, PHnum2writespc7110reg);
+  }
+
   copy_func(&buffer, &soundcycleft, 33);
   copy_func(&buffer, &spc700read, 10*4);  
   copy_func(&buffer, &timer2upd, 1*4);  
@@ -144,27 +167,27 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
   copy_func(&buffer, &prevoamptr, 1);  
   copy_func(&buffer, &ReadHead, 1*4);  
 
-  if (SETAEnable)
-  { 
-    copy_func(&buffer, setaramdata, 256*16);
-  }
   copy_func(&buffer, sram, ramsize);  
-  copy_func(&buffer, &tempesi, 4);  
-  copy_func(&buffer, &tempedi, 4);  
-  copy_func(&buffer, &tempedx, 4);  
-  copy_func(&buffer, &tempebp, 4);  
+  
+  if (!file)
+  {
+    copy_func(&buffer, &tempesi, 4);  
+    copy_func(&buffer, &tempedi, 4);  
+    copy_func(&buffer, &tempedx, 4);  
+    copy_func(&buffer, &tempebp, 4);  
+  }
 }
 
 void BackupCVFrame()
 {
   unsigned char *curpos = StateBackup + (CBackupPos << 19) + 1024;
-  copy_state_data(curpos, memcpyinc);
+  copy_state_data(curpos, memcpyinc, false);
 }
 
 void RestoreCVFrame()
 {
   unsigned char *curpos = StateBackup + (PBackupPos << 19) + 1024;
-  copy_state_data(curpos, memcpyrinc);
+  copy_state_data(curpos, memcpyrinc, false);
 }
 
 extern unsigned int Bank0datr8[256], Bank0datr16[256], Bank0datw8[256];
@@ -361,7 +384,7 @@ void repackfunct()
 
 extern unsigned int SA1Stat;
 extern unsigned char IRAM[2049], *SA1Ptr, *SA1RegPCS, *CurBWPtr, *SA1BWPtr;
-extern unsigned char *SNSBWPtr, *romdata;
+extern unsigned char *SNSBWPtr;
 
 void SaveSA1()
 {
@@ -433,11 +456,10 @@ void ResetState()
 extern unsigned int Curtableaddr, tableA[256], spcPCRam, spcRamDP;
 extern unsigned int statefileloc, CurrentHandle, SfxRomBuffer;
 extern unsigned int SfxCROM, SfxLastRamAdr, SfxRAMMem;
-extern unsigned int SPCMultA, PHnum2writespc7110reg;
 extern unsigned int MsgCount, MessageOn;
 
 extern unsigned char AutoIncSaveSlot, firstsaveinc, fnamest[512];
-extern unsigned char SPC7110Enable, cbitmode, NoPictureSave, txtsavemsg[14];
+extern unsigned char cbitmode, NoPictureSave, txtsavemsg[14];
 extern unsigned char *Msgptr, txtsavemsgfail[15];
 
 extern unsigned short PrevPicture[64*56];
@@ -494,8 +516,7 @@ void statesaver()
     if ((fhandle = fopen(fnamest+1,"wb")) != NULL)
     {
 	// Save 65816 status, etc.
-
-	fwrite (zsmesg, 1, PHnum2writecpureg, fhandle);
+	fwrite (zsmesg, 1, sizeof(zsmesg)-1, fhandle);
 	fwrite (&cycpbl, 1, 2*4, fhandle);
 	fwrite (&sndrot, 1, 3019, fhandle);	// Save SNES PPU Register status
 	fwrite (wramdata, 1, 8192*16, fhandle);
@@ -695,7 +716,7 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
 {
     unsigned int offst;
     unsigned char statevalue;
-
+    char zsmesgcheck[sizeof(zsmesg)-1];
     if (keycheck)
     {
 	pressed[1] = 0;
@@ -731,8 +752,8 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
 	prevoamptr = 0xFF;
 
 	// Load 65816 status, etc.
-	Totalbyteloaded += fread (zsmesg, 1, PHnum2writecpureg, fhandle);
-	if (zsmesg[25] >= '6')	// just drop older states
+	Totalbyteloaded += fread (zsmesgcheck, 1, sizeof(zsmesgcheck), fhandle);
+	if (!memcmp(zsmesgcheck, zsmesg, sizeof(zsmesgcheck)))	// just drop older states
 	{
 	    // Load SPC timers
 	    Totalbyteloaded += fread (&cycpbl, 1, 2*4, fhandle);
@@ -821,7 +842,7 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
 	{
 	    if (!xfercheck)
 	    {
-		if (zsmesg[25] < '6')	{ Msgptr = txtconvmsg; }
+		if (!memcmp(zsmesgcheck, zsmesg, sizeof(zsmesgcheck)))	{ Msgptr = txtconvmsg; }
 	    	else	{ Msgptr = txtloadmsg; }
 	    }
 
