@@ -31,6 +31,7 @@ extern void ConvertJoyMap2(void);
 extern void displayparams(void);
 extern void makeextension(void);
 extern unsigned char KitchenSync;
+extern unsigned char Force60hz;
 
 int pccmdline(void);
 
@@ -675,6 +676,11 @@ int pccmdline(void)
         case 'K':
         {
           KitchenSync=1;
+          break;
+        }
+        case '6':
+        {
+          Force60hz=1;
           break;
         }
         case '?':

@@ -54,6 +54,7 @@ extern "C"
 {
 HINSTANCE hInst;
 unsigned char KitchenSync = 0;
+unsigned char Force60hz = 0;
 }
 
 LPDIRECTSOUND8          lpDirectSound = NULL;
@@ -1398,6 +1399,7 @@ int InitDirectDraw()
          else
          {
            KitchenSync = 0;
+           Force60hz = 0;
            Refresh = 0;
          }
       }
@@ -2429,23 +2431,25 @@ void drawscreenwin(void)
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
 
-   if (KitchenSync == 0 && Refresh != 0)
+   if (!KitchenSync && Refresh != 0)
    {
       Refresh = 0;
       InitDirectDraw();
    }
 
-   if (KitchenSync == 1 && Refresh != 120 && totlines == 263)
+   if (KitchenSync && Refresh != 120 && totlines == 263)
    {
       Refresh = 120;
       InitDirectDraw();
    }
 
-   if (KitchenSync == 1 && Refresh != 100 && totlines == 314)
+   if (KitchenSync && Refresh != 100 && totlines == 314)
    {
       Refresh = 100;
       InitDirectDraw();
    }
+
+   if (Force60hz) Refresh = 60;
 
    if ( HQMode == 0 )
    {
