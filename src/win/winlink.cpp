@@ -2431,6 +2431,8 @@ void drawscreenwin(void)
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
 
+   if (Force60hz) Refresh = 60;
+
    if (!KitchenSync && Refresh != 0)
    {
       Refresh = 0;
@@ -2448,8 +2450,6 @@ void drawscreenwin(void)
       Refresh = 100;
       InitDirectDraw();
    }
-
-   if (Force60hz) Refresh = 60;
 
    if ( HQMode == 0 )
    {
