@@ -1200,7 +1200,7 @@ reg4100r:
    jne .nodip1
    mov al,1
 .nodip1
-   cmp byte[nssdip1],1
+   cmp byte[nssdip2],1
    jne .nodip2
    or al,02h
 .nodip2
