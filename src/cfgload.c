@@ -562,7 +562,7 @@ void DOScreatenewcfg()
   WRITE_LINE("; Savefile directory.  Leave it blank if you want the save files to be in the\r\n");
   WRITE_LINE("; same directory as the games.  It should be in a format like : C:\\dir\\dir\r\n\r\n");
 
-  if (changedsavedir)
+  if (changedsavedir || cfgloadsdir)
   {
     sprintf(buffer, "SaveDirectory = %s\r\n\r\n", SRAMDir);
   }
@@ -1042,12 +1042,9 @@ void getcfg()
               {
                 if (_strlenb == 1)
                 {
-                  if (*_stringb == '1')
-                  {
-                    spcon = 1;        // SPC Enabled
-                    soundon = 1;
-                    cfgsoundon = 1;
-                  }
+                  spcon = ASCIIChar2Bool(*_stringb); // SPC Enabled?
+                  soundon = ASCIIChar2Bool(*_stringb);
+                  cfgsoundon = ASCIIChar2Bool(*_stringb);
                 }
               }
             }
