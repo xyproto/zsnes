@@ -1235,7 +1235,7 @@ GUIWinClicked:
 ;    cmp byte[OSPort],2
 ;    jae %%nomodeq
 %ifdef __MSDOS__
-    cmp byte[cvidmode],1
+    cmp byte[cvidmode],2
     jne %%nomodeq
     mov byte[cbitmode],1
     call initvideo2
