@@ -889,7 +889,7 @@ int AttachEnd(int psb){
    for (i=0;i<(UDPBackTrace-1);i++){
      if (PrevSPacket[i]) i2++;
    }
-//   if (PrevSPacket[0]) i2=0;
+   if (PrevSPacket[0]) { i2=0; }
    if (i2){
       cpacketdata[0]+=8;
       cpacketdata[ps]=(char)i2;
