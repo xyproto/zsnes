@@ -25,6 +25,7 @@ extern int NumofBytes;
 extern int NumofBanks;
 extern unsigned int *romdata;
 extern unsigned char IPSPatched;
+extern unsigned char Header512;
 
 char *patchfile;
 
@@ -32,6 +33,7 @@ void PatchUsingIPS()
 {
   unsigned char *ROM = (unsigned char *)romdata;
   int location = 0, length = 0;
+  int sub = Header512 ? 512 : 0;
   
   FILE *fp = 0;
   fp = fopen(patchfile, "rb");
@@ -57,8 +59,8 @@ void PatchUsingIPS()
       break;
     }
 
-    //We assume all IPS files are for ROMs with headers
-    location = inloc - 512;
+    //Offset by size of ROM header
+    location = inloc - sub;
 
     //Length is a 2 byte value (max 64KB)
     length = (fgetc(fp) << 8) | fgetc(fp);
