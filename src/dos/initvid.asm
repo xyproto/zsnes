@@ -484,7 +484,10 @@ NEWSYM dosinitvideo
     mov ax,001ah
     out dx,ax
 
+%ifdef __MSDOS__
     call cscopymodeq
+%endif
+
     call makepal
 
     ret
