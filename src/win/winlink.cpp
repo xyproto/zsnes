@@ -609,7 +609,7 @@ int RegisterWinClass(void)
    wcl.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_NOCLOSE;
    wcl.cbClsExtra	= 0;
    wcl.cbWndExtra = 0;
-   wcl.hIcon = LoadIcon(NULL,IDI_APPLICATION);
+   wcl.hIcon = LoadIcon(NULL,"ZSNESW.ICO");
    wcl.hCursor = NULL;
    wcl.hInstance = hInst;
    wcl.lpfnWndProc = (WNDPROC)Main_Proc;
