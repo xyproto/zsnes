@@ -3384,7 +3384,22 @@ GUITryMenuItem:
     GUICheckMenuItem 17, 6
     GUICheckMenuItem 18, 7
     GUICheckMenuItem 4, 9
-    GUICheckMenuItem 5, 10
+    cmp byte[GUIcrowpos],10
+    jne near .novideo
+    ; set Video cursor location
+    xor eax,eax
+    mov al,[cvidmode]
+    mov [GUIcurrentvideocursloc],eax
+    mov edx,[NumVideoModes]
+    sub edx,5
+    cmp eax,edx
+    jbe .noof
+    mov eax,edx
+.noof
+    mov [GUIcurrentvideoviewloc],eax
+    mov edx,5
+    call CheckMenuItemHelp
+.novideo
     GUICheckMenuItem 6, 11
     GUICheckMenuItem 19, 12
 .noconfig

@@ -1247,6 +1247,144 @@ GUIVideoKeys:
 %endif
 .novsync
 %endif
+;   "Home"
+%ifdef __LINUX__
+    cmp dl,89
+    je  .yeshome
+    cmp dword[numlockptr],1
+    je  .nohome
+    cmp dl,71
+    jne .nohome
+.yeshome
+%else
+    cmp dl,71
+    jne .nohome
+%endif
+    mov dword[GUIcurrentvideocursloc],0
+    mov dword[GUIcurrentvideoviewloc],0
+.nohome
+;   "End"
+%ifdef __LINUX__
+    cmp dl,95
+    je  .yesendp
+    cmp dword[numlockptr],1
+    je  .noendp
+    cmp dl,79
+    jne .noendp
+.yesendp
+%else
+    cmp dl,79
+    jne .noendp
+%endif
+    mov eax,[NumVideoModes]
+    dec eax
+    mov [GUIcurrentvideocursloc],eax
+    sub eax,4
+    mov [GUIcurrentvideoviewloc],eax
+    test dword[GUIcurrentvideoviewloc],8000000h
+    jz .noendp
+    mov dword[GUIcurrentvideoviewloc],0
+.noendp
+;   "Up"
+%ifdef __LINUX__
+    cmp dl,90
+    je  .up
+    cmp dword[numlockptr],1
+    je  .noup
+    cmp dl,72
+    jne .noup
+%else
+    cmp dl,72
+    jne .noup
+%endif
+.up    
+    cmp dword[GUIcurrentvideocursloc],0
+    je .noup
+    mov ebx,[GUIcurrentvideocursloc]
+    cmp [GUIcurrentvideoviewloc],ebx
+    jne .noviewdec
+    dec dword[GUIcurrentvideoviewloc]
+.noviewdec
+    dec dword[GUIcurrentvideocursloc]
+.noup
+;   "Down"
+%ifdef __LINUX__
+    cmp dl,96
+    je  .yesdown
+    cmp dword[numlockptr],1
+    je  .nodown
+    cmp dl,80
+    jne .nodown
+.yesdown
+%else
+    cmp dl,80
+    jne .nodown
+%endif
+    mov ebx,[GUIcurrentvideocursloc]
+    inc ebx
+    cmp ebx,[NumVideoModes]
+    je .nodown
+    inc dword[GUIcurrentvideocursloc]
+    sub ebx,5
+    cmp ebx,[GUIcurrentvideoviewloc]
+    jne .nodown
+    inc dword[GUIcurrentvideoviewloc]
+.nodown
+;   "PageUp"
+%ifdef __LINUX__
+    cmp dl,91
+    je  .yespageup
+    cmp dword[numlockptr],1
+    je  .nopageup
+    cmp dl,73
+    jne .nopageup
+.yespageup
+%else
+    cmp dl,73
+    jne .nopageup
+%endif
+    sub dword[GUIcurrentvideoviewloc],5
+    sub dword[GUIcurrentvideocursloc],5
+    test dword[GUIcurrentvideoviewloc],8000000h
+    jz .posv
+    mov dword[GUIcurrentvideoviewloc],0
+.posv
+    test dword[GUIcurrentvideocursloc],8000000h
+    jz .posc
+    mov dword[GUIcurrentvideocursloc],0
+.posc
+.nopageup
+;   "PageDown"
+%ifdef __LINUX__
+    cmp dl,97
+    je  .yespagedn
+    cmp dword[numlockptr],1
+    je  .nopagedown
+    cmp dl,81
+    jne .nopagedown
+.yespagedn
+%else
+    cmp dl,81
+    jne .nopagedown
+%endif
+    add dword[GUIcurrentvideoviewloc],5
+    add dword[GUIcurrentvideocursloc],5
+    mov ebx,[NumVideoModes]
+    dec ebx
+    cmp dword[GUIcurrentvideocursloc],ebx
+    jb .poscd
+    mov dword[GUIcurrentvideocursloc],ebx
+.poscd
+    sub ebx,4
+    cmp dword[GUIcurrentvideoviewloc],ebx
+    jl .posvd
+    test ebx,8000000h
+    jz .noneg
+    mov ebx,0
+.noneg
+    mov dword[GUIcurrentvideoviewloc],ebx
+.posvd
+.nopagedown
     ret
 
 GUISoundKeys:
