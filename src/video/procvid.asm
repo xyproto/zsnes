@@ -3574,7 +3574,7 @@ NEWSYM copyvid
     cmp edi,CSStatus
     je .fivex5b
     cmp byte[SmallMsgText],1
-    je .fivex5b
+    je .smallmsgtext
     call OutputGraphicString.no16bit
     jmp .nfivex5b
 .fivex5b
@@ -3586,6 +3586,9 @@ NEWSYM copyvid
     mov edi,CSStatus3
     mov esi,216*288+32
     add esi,[vidbuffer]
+    call OutputGraphicString5x5
+    jmp .nfivex5b
+.smallmsgtext
     call OutputGraphicString5x5
 .nfivex5b
     dec dword[MessageOn]
@@ -3601,10 +3604,9 @@ NEWSYM copyvid
     cmp edi,CSStatus
     je .fivex5
     cmp byte[SmallMsgText],1
-    je .fivex5
+    je .smallmsgtext2
     call OutputGraphicString16b
     jmp .nfivex5
-.statusline2
 .fivex5
     call OutputGraphicString16b5x5
     mov edi,CSStatus2
@@ -3614,6 +3616,9 @@ NEWSYM copyvid
     mov edi,CSStatus3
     mov esi,216*288*2+32*2
     add esi,[vidbuffer]
+    call OutputGraphicString16b5x5
+    jmp .nfivex5
+.smallmsgtext2
     call OutputGraphicString16b5x5
 .nfivex5
     dec dword[MessageOn]
