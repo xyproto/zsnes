@@ -45,6 +45,7 @@ CFLAGSORIG=-march=${CPUOPT} -ffast-math -fomit-frame-pointer -fno-unroll-loops -
 LIBSORIG=-lz -lpng
 DRESOBJ=${WINDIR}/zsnes.obj
 CROSS=no
+STRIP=-Ws -s
 
 ifeq ($(PLATFORM),)
 _foo: help
@@ -116,6 +117,8 @@ ifeq (${DEBUG},yes)
   CFLAGSORIG=-fno-omit-frame-pointer -ggdb3 -DDEBUG
   COPT=-O0
   ASMFLAGSORIG=-DDEBUG -g
+  EXE=zsnesd.exe
+  STRIP=
 endif
 
 CFLAGS=${CFLAGSORIG} -D${OS}
@@ -215,11 +218,7 @@ ALL: zsnes
 
 zsnes: ${OBJFIX} ${OBJS}
 ifneq ($(PLATFORM),msvc)
-ifneq (${DEBUG},yes)
-	${CPPC} -Ws -s -o ${EXE} ${OBJS} ${LIBS}
-else
-	${CPPC} -Ws -o zsnesd.exe ${OBJS} ${LIBS}
-endif
+	${CPPC} ${STRIP} -o ${EXE} ${OBJS} ${LIBS}
 else
 	 @echo /Fezsnesw.exe *.obj ${CPUDIR}\*.obj ${VIDEODIR}\*.obj ${CHIPDIR}\*.obj ${EFFECTSDIR}\*.obj ${DOSDIR}\*.obj ${WINDIR}\*.obj ${GUIDIR}\*.obj > link.vc
 	 @echo ${ZIPDIR}\*.obj ${JMADIR}\*.obj ${NETDIR}\*.obj >> link.vc
