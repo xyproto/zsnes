@@ -1309,7 +1309,7 @@ DetermineNew:
     mov bx,ax
     mov edx,fnamest+1
     call Get_File_Date
-%ifndef __LINUX__
+%ifdef __MSDOS__
     shl edx,16
     mov dx,cx
 %endif
