@@ -238,8 +238,8 @@ void InitDSP(void)
 {
 #ifdef __OPT__
         unsigned int i;
-	*CosTable2 = malloc(INCR*sizeof(double));
-	*SinTable2 = malloc(INCR*sizeof(double));
+	CosTable2 = malloc(INCR*sizeof(double));
+	SinTable2 = malloc(INCR*sizeof(double));
 	for (i=0; i<INCR; i++){
 		CosTable2[i] = (cos((double)(2*PI*i/INCR)));
 		SinTable2[i] = (sin((double)(2*PI*i/INCR)));
