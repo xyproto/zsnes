@@ -1020,10 +1020,10 @@ void TestJoy()
       {
          JoystickInput[i]->Poll();
 
-         if (IDirectInputDevice8_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i])==DIERR_INPUTLOST)
+         if (JoystickInput[i]->GetDeviceState(sizeof(DIJOYSTATE), &js[i])==DIERR_INPUTLOST)
          {
             if (JoystickInput[i]) JoystickInput[i]->Acquire();
-            if (FAILED(IDirectInputDevice8_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i]))) return;
+            if (FAILED(JoystickInput[i]->GetDeviceState(sizeof(DIJOYSTATE), &js[i]))) return;
          }
 
          if (!X1Disable[i])
@@ -2204,10 +2204,8 @@ void drawscreenwin(void)
             initwinvideo();
             Sleep(1000);
             drawscreenwin();
-//            exit(0);
          }
    }
-
 
    UnlockSurface();
 }
@@ -2280,10 +2278,10 @@ void WinUpdateDevices()
 
          JoystickInput[i]->Poll();
 
-         if (IDirectInputDevice8_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i])==DIERR_INPUTLOST)
+         if (JoystickInput[i]->GetDeviceState(sizeof(DIJOYSTATE), &js[i])==DIERR_INPUTLOST)
          {
             if (JoystickInput[i]) JoystickInput[i]->Acquire();
-            if (FAILED(IDirectInputDevice8_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i]))) return;
+            if (FAILED(JoystickInput[i]->GetDeviceState(sizeof(DIJOYSTATE), &js[i]))) return;
          }
 
          if (!X1Disable[i])
