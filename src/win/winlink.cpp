@@ -1799,7 +1799,6 @@ extern BYTE GUIOn2;
 
 void UpdateVFrame(void)
 {
-
    if (GUIOn2 == 1 && IsActivated == 0) WaitMessage();
 
    int DataNeeded;
