@@ -1,141 +1,140 @@
-body{
- background-color:#ffffff;
- font:normal 11px Verdana, Sans-Serif;
- color:#000000;
- margin:0px;
+a:link, a:active, a:visited {
+	background-color: transparent;
+	text-decoration: underline;
+	color: #203040;
+}
+a:hover {
+	background-color: #D0D0D0;
+	text-decoration: underline;
+	color: #506070;
 }
 
-img {
- border-width:0px;
+#zsnes-documentation {
+	margin: 0px;
+	background-color: #FFFFFF;
+	font: normal 11px Verdana, Sans-Serif;
 }
 
-.PHeader{
- background-color:#C8CFD8;
- color:#000000;
- padding:3px;
+#header {
+	padding: 3px;
+	background-color: #C8CFD8;
 }
-.PSubHeader{
- background-color:#A4A9B0;
- color:#000000;
- padding:3px;
- font:bold 11px Verdana, Sans-Serif;
- text-align:center;
+#header h1 {
+    float: left;
+    margin: 0px;
 }
-
-a:link, a:active, a:visited{
- background-color:transparent;
- text-decoration:underline;
- color:#203040;
+#header h2 {
+    padding: 83px 0px 0px 0px;
+	margin: 0px;
 }
-a:hover{
- background-color:#d0d0d0;
- text-decoration:underline;
- color:#506070;
+#header_oslogo {
+	float: right;
 }
 
-.MMenu{
- width:200px;
- padding:10px;
- padding-top:0px;
- padding-right:0px;
- vertical-align:top;
-}
-.MBody{
- padding:10px;
- padding-top:0px;
- vertical-align:top;
+#header_nav {
+	background-color: #A4A9B0;
+	padding: 3px;
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+	text-align: center;
+	font-weight: bold;
+	border-bottom: solid 1px #404040;
 }
 
-.TBox{
- background-color:#C8CFD8;
- border:solid 1px #404040;
- color:#000000;
+#navigation {
+	float: left;
+    width: 192px;
+    margin: 10px;
+	padding: 1px 1px 3px 1px;
+	background-color: #C8CFD8;
+	border: solid 1px #404040;
+	font: Normal 13px Verdana, Sans-Serif;
 }
-.TBoxHead{
- background-color:#A4A9B0;
- color:#000000;
- font:bold 14px Arial, Sans-Serif;
- padding:0px;
- padding-left:4px;
- background-image: url( '../images/corner.png' );
- background-position:top right;
- background-repeat: no-repeat;
- height:25px;
+#navigation h1 {
+	background-color: #A4A9B0;
+	margin: 0px;
+    padding: 4px 0px 0px 4px;
+	font: Bold 14px Arial, Sans-Serif;
+	background-image: url( 'images/corner.png' );
+	background-position:top right;
+	background-repeat: no-repeat;
+	height: 22px;
 }
-.TBoxSubHead{
- background-color:#A4A9B0;
- color:#000000;
- font:bold 14px Arial, Sans-Serif;
- padding-left: 5px;
-}
-.TBoxText{
- background-color:#C8CFD8;
- color:#000000;
- font:normal 13px Verdana, Sans-Serif;
- padding:5px;
-}
-.TBoxFoot{
- background-color:#A4A9B0;
- color:#000000;
- font:bold 12px Verdana, Sans-Serif;
- padding:4px;
+#navigation ul {
+	list-style-type: none;
+	margin: 0px 0px 0px -20px;
+	padding: 0px 4px 0px 41px;
 }
 
-.FListing{
- background-color:#000000;
- color:#ffffff;
+#content {
+	margin: 10px 10px 10px 216px;
+	padding: 1px;
+	background-color: #C8CFD8;
+	border: solid 1px #404040;
 }
-.FListing td{
- background-color:#e0e0e0;
- color:#000000;
- width: 30%;
- text-align:center;
+#content h1 {
+	background-color: #A4A9B0;
+	margin: 0px;
+    padding: 4px 0px 0px 4px;
+	font: Bold 14px Arial, Sans-Serif;
+	background-image: url('images/corner.png');
+	background-position:top right;
+	background-repeat: no-repeat;
+    height: 22px;
 }
-.FListing td.FLabel{
- background-color:#000000;
- color:#ffffff;
- font:bold 11px Verdana, Sans-Serif;
- width: 10%;
- text-align:left;
+#content h2 {
+	background-color: #A4A9B0;
+	margin: 0px;
+    padding: 3px;
+	font: Bold 14px Arial, Sans-Serif;
 }
-.FListing th{
- background-color:#405060;
- color:#ffffff;
- text-align:center;
+.content_body {
+	margin: 0px;
+	padding: 4px;
+	font: Normal 13px Verdana, Sans-Serif;
 }
- .small{
- font-size:11px;
-}
-.big{
- font-size:16px;
-}
-
-p{
- text-indent: 12px;
-}
-
-input, textarea, select {
- background-color:#ffffff;
- color:#000000;
- border:solid 1px #000000;
- font:normal 12px Verdana, Sans-Serif;
- padding:3px;
+.content_body ul {
+	list-style-type: none;
+	margin: 0px 0px 0px -24px;
+	text-indent: -12px;
+	padding: 0px 4px 0px 52px;
 }
 
-.indent_list{
- margin-top: 0px;
- margin-bottom: 0px;
- list-style-type:none;
- padding-left:24px;
+#footer {
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+	text-align: center;
+	font-weight: bold;
 }
 
-.indent_list ul, li{
- list-style-type:none;
- margin-left: -12px;
- /*padding-left: -12px;*/
- text-indent: -12px;
+#version {
+	margin-top: 8px;
+	margin-left: auto;
+	margin-right: auto;
+	display: block;
+	text-align: center;
+    font-size: 8px;
+    color: #BBBBBB;
 }
 
-abbr {
-cursor: help;
+.list_head {
+	padding: 3px;
+	margin: 0px 0px 0px -20px;
+    font-weight: bold;
+}
+
+.faq_question {
+	margin: 0px 0px 0px -16px;
+	font-weight: bold;
+}
+
+.faq_answer {
+	margin: 0px 0px 0px -16px;
+}
+
+.previous_version_number {
+	font-weight: bold;
+	text-decoration: underline;
 }
