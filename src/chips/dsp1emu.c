@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <math.h>
+#include <string.h>
 
 #define DebugDSP1
 
@@ -49,7 +50,7 @@ void Log_Message (char *Message, ...)
 void Start_Log (void)
 {
 	char LogFileName[255];
-	char *p;
+//  [4/15/2001]	char *p;
 
    strcpy(LogFileName,"dsp1emu.log\0");
 	
@@ -145,8 +146,8 @@ C4TransfWireFrame()
   c4y=c4x2*sin(tanval)+c4y2*cos(tanval);
 
   // Scale
-  C4WFXVal=c4x*(double)C4WFScale/(0x90*(c4z+0x95))*0x95;
-  C4WFYVal=c4y*(double)C4WFScale/(0x90*(c4z+0x95))*0x95;
+  C4WFXVal=(short)(c4x*C4WFScale/(0x90*(c4z+0x95))*0x95);
+  C4WFYVal=(short)(c4y*C4WFScale/(0x90*(c4z+0x95))*0x95);
 }
 
 C4TransfWireFrame2()
@@ -171,8 +172,8 @@ C4TransfWireFrame2()
   c4y=c4x2*sin(tanval)+c4y2*cos(tanval);
 
   // Scale
-  C4WFXVal=c4x*(double)C4WFScale/0x100;
-  C4WFYVal=c4y*(double)C4WFScale/0x100;
+  C4WFXVal=(short)(c4x*C4WFScale/0x100);
+  C4WFYVal=(short)(c4y*C4WFScale/0x100);
 }
 
 C4CalcWireFrame()
@@ -181,14 +182,14 @@ C4CalcWireFrame()
   C4WFYVal=C4WFY2Val-C4WFYVal;
   if (abs(C4WFXVal)>abs(C4WFYVal)){
     C4WFDist=abs(C4WFXVal)+1;
-    C4WFYVal=256*(double)C4WFYVal/abs((double)C4WFXVal);
+    C4WFYVal=(256*(long)C4WFYVal)/abs(C4WFXVal);
     if (C4WFXVal<0) C4WFXVal=-256;
     else C4WFXVal=256;
   }
   else
   if (C4WFYVal!=0) {
     C4WFDist=abs(C4WFYVal)+1;
-    C4WFXVal=256*(double)C4WFXVal/abs((double)C4WFYVal);
+    C4WFXVal=(256*(long)C4WFXVal)/abs(C4WFYVal);
     if (C4WFYVal<0) C4WFYVal=-256;
     else C4WFYVal=256;
   }
@@ -209,7 +210,7 @@ C4Op1F()
   }
   else {
     tanval = ((double)C41FYVal)/((double)C41FXVal);
-    C41FAngleRes=atan(tanval)/(3.141592675*2)*512;
+    C41FAngleRes=(short)(atan(tanval)/(3.141592675*2)*512);
     C41FAngleRes=C41FAngleRes;
     if (C41FXVal<0) C41FAngleRes+=0x100;
     C41FAngleRes&=0x1FF;
@@ -220,7 +221,7 @@ C4Op15()
 {
   tanval=sqrt(((double)C41FYVal)*((double)C41FYVal)+((double)C41FXVal)*
     ((double)C41FXVal));
-  C41FDist=tanval;
+  C41FDist=(short)tanval;
 }
 
 C4Op0D()
@@ -228,8 +229,8 @@ C4Op0D()
   tanval=sqrt(((double)C41FYVal)*((double)C41FYVal)+((double)C41FXVal)*
     ((double)C41FXVal));
   tanval=(double)C41FDistVal/tanval;
-  C41FYVal=((double)C41FYVal*tanval)*0.99;
-  C41FXVal=((double)C41FXVal*tanval)*0.98;
+  C41FYVal=(short)(((double)C41FYVal*tanval)*0.99);
+  C41FXVal=(short)(((double)C41FXVal*tanval)*0.98);
 }
 
 
@@ -330,7 +331,7 @@ short Op28R;
 
 DSPOp28()
 {
-   Op28R=sqrt(abs(Op28X*Op28X+Op28Y*Op28Y+Op28Z*Op28Z));
+   Op28R=(short)sqrt(abs(Op28X*Op28X+Op28Y*Op28Y+Op28Z*Op28Z));
    #ifdef DebugDSP1
       Log_Message("OP28 X:%d Y:%d Z:%d",Op18X,Op18Y,Op18Z);
       Log_Message("OP28 Vector Length %d",Op18R);
@@ -463,11 +464,11 @@ DSPOp02()
    if (ViewerZ1==0)ViewerZ1++;
    NumberOfSlope=ViewerZ/-ViewerZ1;
 
-   Op02CX=ViewerX+ViewerX1*NumberOfSlope;
-   Op02CY=ViewerY+ViewerY1*NumberOfSlope;
+   Op02CX=(short)(Op02CXF=ViewerX+ViewerX1*NumberOfSlope);
+   Op02CY=(short)(Op02CYF=ViewerY+ViewerY1*NumberOfSlope);
 
-   Op02CXF=ViewerX+ViewerX1*NumberOfSlope;
-   Op02CYF=ViewerY+ViewerY1*NumberOfSlope;
+//  [4/15/2001]   (ViewerX+ViewerX1*NumberOfSlope);
+//  [4/15/2001]   (ViewerY+ViewerY1*NumberOfSlope);
 
    Op02VOF=0x0000;
    if(Op02LFE==0x2200)Op02VVA=0xFECD;
@@ -549,13 +550,13 @@ DSPOp0A()
 
    if(Op02LES==0)Op02LES=1;
 
-   Op0AA=(GroundRX-GroundLX);
-   Op0AB=(GroundRY-GroundLY);  //0x300/Op02LES*2;
+   Op0AA=(short)(GroundRX-GroundLX);
+   Op0AB=(short)(GroundRY-GroundLY);  //0x300/Op02LES*2;
 
    if(Op0AVS!=0)
    {
-      Op0AC=(((Op02CXF)-((GroundRX+GroundLX)/2)))/Op0AVS;
-      Op0AD=(((Op02CYF)-((GroundRY+GroundLY)/2)))/Op0AVS*256;
+      Op0AC=(short)(((Op02CXF)-((GroundRX+GroundLX)/2))/Op0AVS);
+      Op0AD=(short)(((Op02CYF)-((GroundRY+GroundLY)/2))/Op0AVS*256);
    }
    else
    {
@@ -609,9 +610,9 @@ DSPOp06()
 
    if (ObjPZ2<0)
    {
-      Op06H=-ObjPX2*Op02LES/-(ObjPZ2); //-ObjPX2*256/-ObjPZ2;
-      Op06V=-ObjPY2*Op02LES/-(ObjPZ2); //-ObjPY2*256/-ObjPZ2;
-      Op06S=256*Op02LES/-ObjPZ2;
+      Op06H=(short)(-ObjPX2*Op02LES/-(ObjPZ2)); //-ObjPX2*256/-ObjPZ2;
+      Op06V=(short)(-ObjPY2*Op02LES/-(ObjPZ2)); //-ObjPY2*256/-ObjPZ2;
+      Op06S=(unsigned short)(256*(double)Op02LES/-ObjPZ2);
    }
    else
    {
@@ -813,9 +814,9 @@ short Op0DU;
 
 DSPOp0D()
 {
-   Op0DF=(double)(Op0DX*matrixI0[0][0]+Op0DY*matrixI0[1][0]+Op0DZ*matrixI0[2][0]+matrixI0[3][0]);
-   Op0DL=(double)(Op0DX*matrixI0[0][1]+Op0DY*matrixI0[1][1]+Op0DZ*matrixI0[2][1]+matrixI0[3][1]);
-   Op0DU=(double)(Op0DX*matrixI0[0][2]+Op0DY*matrixI0[1][2]+Op0DZ*matrixI0[2][2]+matrixI0[3][2]);
+   Op0DF=(short)(Op0DX*matrixI0[0][0]+Op0DY*matrixI0[1][0]+Op0DZ*matrixI0[2][0]+matrixI0[3][0]);
+   Op0DL=(short)(Op0DX*matrixI0[0][1]+Op0DY*matrixI0[1][1]+Op0DZ*matrixI0[2][1]+matrixI0[3][1]);
+   Op0DU=(short)(Op0DX*matrixI0[0][2]+Op0DY*matrixI0[1][2]+Op0DZ*matrixI0[2][2]+matrixI0[3][2]);
    #ifdef DebugDSP1
       Log_Message("OP0D");
    #endif
@@ -823,9 +824,9 @@ DSPOp0D()
 
 DSPOp1D()
 {
-   Op0DF=(double)(Op0DX*matrixI1[0][0]+Op0DY*matrixI1[1][0]+Op0DZ*matrixI1[2][0]+matrixI1[3][0]);
-   Op0DL=(double)(Op0DX*matrixI1[0][1]+Op0DY*matrixI1[1][1]+Op0DZ*matrixI1[2][1]+matrixI1[3][1]);
-   Op0DU=(double)(Op0DX*matrixI1[0][2]+Op0DY*matrixI1[1][2]+Op0DZ*matrixI1[2][2]+matrixI1[3][2]);
+   Op0DF=(short)(Op0DX*matrixI1[0][0]+Op0DY*matrixI1[1][0]+Op0DZ*matrixI1[2][0]+matrixI1[3][0]);
+   Op0DL=(short)(Op0DX*matrixI1[0][1]+Op0DY*matrixI1[1][1]+Op0DZ*matrixI1[2][1]+matrixI1[3][1]);
+   Op0DU=(short)(Op0DX*matrixI1[0][2]+Op0DY*matrixI1[1][2]+Op0DZ*matrixI1[2][2]+matrixI1[3][2]);
    #ifdef DebugDSP1
       Log_Message("OP1D");
    #endif
@@ -833,9 +834,9 @@ DSPOp1D()
 
 DSPOp2D()
 {
-   Op0DF=(double)(Op0DX*matrixI2[0][0]+Op0DY*matrixI2[1][0]+Op0DZ*matrixI2[2][0]+matrixI2[3][0]);
-   Op0DL=(double)(Op0DX*matrixI2[0][1]+Op0DY*matrixI2[1][1]+Op0DZ*matrixI2[2][1]+matrixI2[3][1]);
-   Op0DU=(double)(Op0DX*matrixI2[0][2]+Op0DY*matrixI2[1][2]+Op0DZ*matrixI2[2][2]+matrixI2[3][2]);
+   Op0DF=(short)(Op0DX*matrixI2[0][0]+Op0DY*matrixI2[1][0]+Op0DZ*matrixI2[2][0]+matrixI2[3][0]);
+   Op0DL=(short)(Op0DX*matrixI2[0][1]+Op0DY*matrixI2[1][1]+Op0DZ*matrixI2[2][1]+matrixI2[3][1]);
+   Op0DU=(short)(Op0DX*matrixI2[0][2]+Op0DY*matrixI2[1][2]+Op0DZ*matrixI2[2][2]+matrixI2[3][2]);
    #ifdef DebugDSP1
       Log_Message("OP2D");
    #endif
@@ -850,9 +851,9 @@ short Op03Z;
 
 DSPOp03()
 {
-   Op03X=(double)(Op03F*matrix0[0][0]+Op03L*matrix0[1][0]+Op03U*matrix0[2][0]+matrix0[3][0]);
-   Op03Y=(double)(Op03F*matrix0[0][1]+Op03L*matrix0[1][1]+Op03U*matrix0[2][1]+matrix0[3][1]);
-   Op03Z=(double)(Op03F*matrix0[0][2]+Op03L*matrix0[1][2]+Op03U*matrix0[2][2]+matrix0[3][2]);
+   Op03X=(short)(Op03F*matrix0[0][0]+Op03L*matrix0[1][0]+Op03U*matrix0[2][0]+matrix0[3][0]);
+   Op03Y=(short)(Op03F*matrix0[0][1]+Op03L*matrix0[1][1]+Op03U*matrix0[2][1]+matrix0[3][1]);
+   Op03Z=(short)(Op03F*matrix0[0][2]+Op03L*matrix0[1][2]+Op03U*matrix0[2][2]+matrix0[3][2]);
    #ifdef DebugDSP1
       Log_Message("OP03");
    #endif
@@ -860,9 +861,9 @@ DSPOp03()
 
 DSPOp13()
 {
-   Op03X=(double)(Op03F*matrix1[0][0]+Op03L*matrix1[1][0]+Op03U*matrix1[2][0]+matrix1[3][0]);
-   Op03Y=(double)(Op03F*matrix1[0][1]+Op03L*matrix1[1][1]+Op03U*matrix1[2][1]+matrix1[3][1]);
-   Op03Z=(double)(Op03F*matrix1[0][2]+Op03L*matrix1[1][2]+Op03U*matrix1[2][2]+matrix1[3][2]);
+   Op03X=(short)(Op03F*matrix1[0][0]+Op03L*matrix1[1][0]+Op03U*matrix1[2][0]+matrix1[3][0]);
+   Op03Y=(short)(Op03F*matrix1[0][1]+Op03L*matrix1[1][1]+Op03U*matrix1[2][1]+matrix1[3][1]);
+   Op03Z=(short)(Op03F*matrix1[0][2]+Op03L*matrix1[1][2]+Op03U*matrix1[2][2]+matrix1[3][2]);
    #ifdef DebugDSP1
       Log_Message("OP13");
    #endif
@@ -870,9 +871,9 @@ DSPOp13()
 
 DSPOp23()
 {
-   Op03X=(double)(Op03F*matrix2[0][0]+Op03L*matrix2[1][0]+Op03U*matrix2[2][0]+matrix2[3][0]);
-   Op03Y=(double)(Op03F*matrix2[0][1]+Op03L*matrix2[1][1]+Op03U*matrix2[2][1]+matrix2[3][1]);
-   Op03Z=(double)(Op03F*matrix2[0][2]+Op03L*matrix2[1][2]+Op03U*matrix2[2][2]+matrix2[3][2]);
+   Op03X=(short)(Op03F*matrix2[0][0]+Op03L*matrix2[1][0]+Op03U*matrix2[2][0]+matrix2[3][0]);
+   Op03Y=(short)(Op03F*matrix2[0][1]+Op03L*matrix2[1][1]+Op03U*matrix2[2][1]+matrix2[3][1]);
+   Op03Z=(short)(Op03F*matrix2[0][2]+Op03L*matrix2[1][2]+Op03U*matrix2[2][2]+matrix2[3][2]);
    #ifdef DebugDSP1
       Log_Message("OP23");
    #endif
@@ -892,11 +893,11 @@ double Op14Temp;
 DSPOp14()
 {
    Op14Temp=(Op14Zr*6.2832/65536.0)+(1/cos(Op14Xr*6.2832/65536.0))*((Op14U*6.2832/65536.0)*cos(Op14Yr*6.2832/65536.0)-(Op14F*6.2832/65536.0)*sin(Op14Yr*6.2832/65536.0));
-   Op14Zrr=Op14Temp*65536.0/6.2832;
+   Op14Zrr=(short)(Op14Temp*65536.0/6.2832);
    Op14Temp=(Op14Xr*6.2832/65536.0)+((Op14U*6.2832/65536.0)*sin(Op14Yr*6.2832/65536.0)+(Op14F*6.2832/65536.0)*cos(Op14Yr*6.2832/65536.0));
-   Op14Xrr=Op14Temp*65536.0/6.2832;
+   Op14Xrr=(short)(Op14Temp*65536.0/6.2832);
    Op14Temp=(Op14Yr*6.2832/65536.0)-tan(Op14Xr*6.2832/65536.0)*((Op14U*6.2832/65536.0)*cos(Op14Yr*6.2832/65536.0)+(Op14F*6.2832/65536.0)*sin(Op14Yr*6.2832/65536.0))+(Op14L*6.2832/65536.0);
-   Op14Yrr=Op14Temp*65536.0/6.2832;
+   Op14Yrr=(short)(Op14Temp*65536.0/6.2832);
    #ifdef DebugDSP1
       Log_Message("OP14 X:%d Y%d Z:%D U:%d F:%d L:%d",Op14Xr,Op14Yr,Op14Zr,Op14U,Op14F,Op14L);
       Log_Message("OP14 X:%d Y%d Z:%D",Op14Xrr,Op14Yrr,Op14Zrr);
@@ -941,8 +942,8 @@ DSPOp0E()
    GroundLX=ViewerX+RasterLSlopeX*NumberOfSlope;
    GroundLY=ViewerY+RasterLSlopeY*NumberOfSlope;
 
-   Op0EX=GroundLX;
-   Op0EY=GroundLY;
+   Op0EX=(short)GroundLX;
+   Op0EY=(short)GroundLY;
 
    #ifdef DebugDSP1
       Log_Message("OP0E COORDINATE H:%d V:%d",Op0EH,Op0EV);
