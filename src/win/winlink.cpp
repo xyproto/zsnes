@@ -15,8 +15,8 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#define DIRECTINPUT_VERSION 0x700
-#define DIRECTSOUND_VERSION 0x700
+#define DIRECTINPUT_VERSION 0x800
+#define DIRECTSOUND_VERSION 0x800
 
 extern "C" {
    #include <windows.h>
@@ -53,7 +53,7 @@ extern "C"
 HINSTANCE hInst;
 }
 
-LPDIRECTSOUND           lpDirectSound;
+LPDIRECTSOUND8          lpDirectSound;
 LPDIRECTSOUNDBUFFER     SoundBuffer;
 LPDIRECTSOUNDBUFFER     lpPrimaryBuffer;
 DSBUFFERDESC dsbd;
@@ -71,10 +71,10 @@ LPDIRECTDRAWSURFACE     DD_CFB = NULL;
 LPDIRECTDRAWCLIPPER     lpDDClipper =NULL;
 RECT                    rcWindow;
 
-LPDIRECTINPUT           DInput;
-LPDIRECTINPUTDEVICE     MouseInput;
-LPDIRECTINPUTDEVICE     KeyboardInput;
-LPDIRECTINPUTDEVICE7    JoystickInput[4];
+LPDIRECTINPUT8          DInput;
+LPDIRECTINPUTDEVICE8    MouseInput;
+LPDIRECTINPUTDEVICE8    KeyboardInput;
+LPDIRECTINPUTDEVICE8    JoystickInput[4];
 DIJOYSTATE js[4];
 
 
@@ -495,7 +495,7 @@ InitSound()
    PrevSoundQuality=SoundQuality;
    PrevStereoSound=StereoSound;
 
-	if(DS_OK == DirectSoundCreate(NULL, &lpDirectSound,NULL))
+	if(DS_OK == DirectSoundCreate8(NULL, &lpDirectSound,NULL))
 	{    
           if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL))
           {
@@ -680,7 +680,7 @@ ReInitSound()
 
 BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 {
-   LPDIRECTINPUT7 pdi = (LPDIRECTINPUT7)pvRef;
+   LPDIRECTINPUT8 pdi = (LPDIRECTINPUT8)pvRef;
 //   fprintf(tempf,"Cur :%d %X\n",CurrentJoy,pdinst->guidInstance);
    GUID DeviceGuid = pdinst->guidInstance;
 
@@ -688,8 +688,7 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
       return DIENUM_CONTINUE;
 
    // Create the DirectInput joystick device.
-   if (pdi->CreateDeviceEx(DeviceGuid,IID_IDirectInputDevice7,
-                           (void**)&JoystickInput[CurrentJoy], NULL) != DI_OK)
+   if (pdi->CreateDevice(DeviceGuid,&JoystickInput[CurrentJoy], NULL) != DI_OK)
    {
 //      fprintf(tempf,"IDirectInput7::CreateDeviceEx FAILED\n");
       return DIENUM_CONTINUE;
@@ -889,7 +888,7 @@ bool InitInput()
    char message1[256];
    HRESULT hr;
 
-   if(FAILED(hr=DirectInputCreate(hInst,DIRECTINPUT_VERSION,&DInput,NULL)))
+   if(DI_OK != (hr=DirectInput8Create(hInst,DIRECTINPUT_VERSION,IID_IDirectInput8A,(void **) &DInput,NULL)))
    {
       sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 7.0a or higher located at www.microsoft.com/directx \0");
       MessageBox (NULL, message1, "DirectInput Error" , MB_ICONERROR );
@@ -942,7 +941,7 @@ bool InitInput()
    JoystickInput[0]=NULL;JoystickInput[1]=NULL;JoystickInput[2]=NULL;JoystickInput[3]=NULL;
 
 
-   hr=DInput->EnumDevices(DIDEVTYPE_JOYSTICK, InitJoystickInput,
+   hr=DInput->EnumDevices(DI8DEVCLASS_GAMECTRL, InitJoystickInput,
                        DInput, DIEDFL_ATTACHEDONLY);
    if(FAILED(hr)) {DInputError();return FALSE;}
 
@@ -964,10 +963,10 @@ void TestJoy()
          JoystickInput[i]->Poll();
 //         memset(&js[i], 0, sizeof(DIJOYSTATE));
 
-         if(IDirectInputDevice7_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i])==DIERR_INPUTLOST)
+         if(IDirectInputDevice8_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i])==DIERR_INPUTLOST)
          {
             if(JoystickInput[i]) JoystickInput[i]->Acquire();
-            if(FAILED(IDirectInputDevice7_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i]))) return;
+            if(FAILED(IDirectInputDevice8_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i]))) return;
          }
 
 
