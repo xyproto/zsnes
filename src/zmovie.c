@@ -388,7 +388,6 @@ void MoviePlay()
       fnamest[statefileloc] = CMovieExt;
 
       SRAMChdir();
-
       loadstate2();
 
       if ((movfhandle = fopen(fnamest+1,"rb")) != NULL)
@@ -435,8 +434,6 @@ void MoviePlay()
 	  DSPMem[0x58] = 0;
 	  DSPMem[0x68] = 0;
 	  DSPMem[0x78] = 0;
-
-	  memcpy (&fnamest[statefileloc-3], FileExt, 4);
 	}
 	else
 	{
@@ -445,12 +442,8 @@ void MoviePlay()
 	  fclose(movfhandle);
 	}
       }
-      else
-      {
 
-	memcpy (&fnamest[statefileloc-3], FileExt, 4);
-      }
-
+      memcpy (&fnamest[statefileloc-3], FileExt, 4);
       asm_call(ChangetoLOADdir);
     }
   }
@@ -550,6 +543,7 @@ void MovieRecord()
       fclose(tempfhandle);
       MovieRecordWinVal = 1;
     }
+
     memcpy (&fnamest[statefileloc-3], FileExt, 4);
   }
 }
