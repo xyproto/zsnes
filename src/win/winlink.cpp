@@ -614,18 +614,17 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       case WM_CLOSE:
          break;
 	  case WM_SYSCOMMAND:
-		  { 
+		  if (DisableScreenSaver)
+		  {
 			  switch (wParam)
 			  { 
 			  case SC_MONITORPOWER:
 				  return 0;
-			  } 
+			  }
 		  }
 		break;
       default:
          return DefWindowProc(hWnd,uMsg,wParam,lParam);
-} 
-
    }
 	return 0;
 }
