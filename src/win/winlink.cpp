@@ -39,7 +39,6 @@ DWORD FullScreen = 0;
 DWORD Moving= 0;
 DWORD SoundBufferSize=1024*18;
 DWORD FirstSound=1;
-DWORD CurrentTimer=0;
 
 int AllowDefault=0;
 int SoundEnabled=1;
