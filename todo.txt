@@ -8,9 +8,6 @@ Windows Port:
 - Auto-detect high/low latency connections and adjust settings accordingly
 - Add support to use filters in a 32-bit windowed mode
 
-General
-- Clean up the makefiles (get rid of this ugly link.win32)
-  
 Compatibility
 - Game not working - Guikuden 1 (and some more)
 - Graphics Glitches - Uniracers (2p mode), Killer Instinct (couple stages,
