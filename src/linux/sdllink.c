@@ -140,7 +140,7 @@ _int64 start, end, freq, update_ticks_pc, start2, end2, update_ticks_pc2;
 extern unsigned char pressed[];
 
 void drawscreenwin(void);
-void Init_2xSaI(UINT32 BitFormat);
+//void Init_2xSaI(UINT32 BitFormat);
 DWORD LastUsedPos=0;
 DWORD CurMode=-1;
 
@@ -1296,7 +1296,7 @@ int startgame(void)
    if(BitDepth==16 && GBitMask!=0x07E0)
    {
       converta=1;
-      Init_2xSaI(555);
+//      Init_2xSaI(555);
    }
    else
    {
