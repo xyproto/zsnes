@@ -4758,6 +4758,12 @@ DisplayGUIOptns:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck10
     GUIDisplayIconWin 10,12,178,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[SuspendInBackground],1
+    jne .nocheck11
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheck11
+    GUIDisplayIconWin 10,12,188,[GUITemp]
 %endif
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
@@ -4797,6 +4803,7 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,26,173,GUIGUIOptnsTextE
     GUIOuttextwin2 10,26,183,GUIGUIOptnsTextF
     GUIOuttextwin2u 10,138,28,GUIGUIOptnsTextJ,1
+    GUIOuttextwin2 10,26,193,GUIGUIOptnsTextK
 %endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,16,123,GUIGUIOptnsText6
@@ -4820,6 +4827,7 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,25,172,GUIGUIOptnsTextE
     GUIOuttextwin2 10,25,182,GUIGUIOptnsTextF
     GUIOuttextwin2 10,137,27,GUIGUIOptnsTextJ
+    GUIOuttextwin2 10,25,192,GUIGUIOptnsTextK
 %endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,15,122,GUIGUIOptnsText6
@@ -4911,6 +4919,7 @@ GUIGUIOptnsTextG db 'BACK',0
 GUIGUIOptnsTextH db 'TITLE',0
 GUIGUIOptnsTextI db 'WIN',0
 GUIGUIOptnsTextJ db 'WHEEL MOUSE',0
+GUIGUIOptnsTextK db 'SUSPEND IN BACKGROUND',0
 
 DisplayGUIAbout:
 ;    cmp byte[OSPort],3

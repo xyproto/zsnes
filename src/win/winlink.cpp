@@ -117,6 +117,8 @@ int                     MouseMove2Y;
 DWORD                   SurfaceX=0;
 DWORD                   SurfaceY=0;
 
+BYTE                    IsActivated = 1;
+
 extern "C" {
 DWORD                   MouseButton;
 }
@@ -189,6 +191,7 @@ extern BYTE HighPriority;
 extern BYTE AlwaysOnTop;
 extern BYTE SaveMainWindowPos;
 extern BYTE AlternateTimer;
+extern BYTE SuspendInBackground;
 extern signed short int MainWindowX;
 extern signed short int MainWindowY;
 extern int CurKeyPos;
@@ -196,19 +199,10 @@ extern int CurKeyReadPos;
 extern int KeyBuffer[16];
 }
 
-BYTE IsActivated = 1;
-
 extern "C" void CheckPriority()
 {
-   if (IsActivated == 1)
-   {
-      if (HighPriority == 1) SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
-         else SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
-   }
-   else
-   {
-      SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
-   }
+   if (HighPriority == 1) SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
+      else SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
 }
 
 extern "C" void CheckAlwaysOnTop()
@@ -412,7 +406,6 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          break;
       case WM_ACTIVATE: 
         IsActivated = 1;
-        CheckPriority();
         if(LOWORD(wParam)==WA_INACTIVE)
          {
             ChangeDisplaySettings(NULL,0);
@@ -440,7 +433,6 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          ChangeDisplaySettings(NULL,0);
          InputDeAcquire();
          IsActivated = 0;
-         CheckPriority();
          break;
       case WM_DESTROY:
          ChangeDisplaySettings(NULL,0);
@@ -843,6 +835,8 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 
 void endgame()
 {
+
+MessageBox(NULL, "blah", "blah", MB_OK);
    if(lpDirectSound)
    {
       lpDirectSound->Release();
@@ -1594,6 +1588,9 @@ void CheckTimers(void)
 
 void UpdateVFrame(void)
 {
+
+   if (SuspendInBackground == 1 && IsActivated == 0) WaitMessage();
+
    int DataNeeded;
    int SPCSize=256;
 
