@@ -3265,11 +3265,13 @@ DisplayGUIPathsClick
     ret
 
 DisplayGUISaveClick:
-    GUIClickCButtonAS 11,20,byte[AutoIncSaveSlot]
-    GUIClickCButton 11,30,byte[SRAMSave5Sec]
-    GUIClickCButton 11,40,byte[LatestSave]
-    GUIClickCButton 11,50,byte[AutoState]
-    GUIClickCButton 11,60,byte[SRAMState]
+    GUIClickCButtonAS 11,40,byte[AutoIncSaveSlot]
+    GUIClickCButton 11,50,byte[SRAMSave5Sec]
+    GUIClickCButton 11,60,byte[LatestSave]
+    GUIClickCButton 11,70,byte[AutoState]
+    GUIClickCButton 11,80,byte[SRAMState]
+    GUIPHoldbutton2 138,22,146,30,70,byte[RewindStates],1,25
+    GUIPHoldbutton2 149,22,157,30,71,byte[RewindStates],-1,0
     ret
 
 DrawMouse:

@@ -7016,49 +7016,79 @@ DisplayGUISave:
     mov byte[GUItextcolor],211
 .zero
     sub byte[GUItextcolor],15
-    GUIOuttextwin2u 20,26,24,GUISaveText1,5
-    GUIOuttextwin2u 20,26,34,GUISaveText2,5
-    GUIOuttextwin2u 20,26,44,GUISaveText3,0
-    GUIOuttextwin2u 20,26,54,GUISaveText4,0
-    GUIOuttextwin2u 20,26,64,GUISaveText5,0
+    GUIOuttextwin2 20,8,24,GUISaveText6
+    GUIOuttextwin2u 20,26,44,GUISaveText1,5
+    GUIOuttextwin2u 20,26,54,GUISaveText2,5
+    GUIOuttextwin2u 20,26,64,GUISaveText3,0
+    GUIOuttextwin2u 20,26,74,GUISaveText4,0
+    GUIOuttextwin2u 20,26,84,GUISaveText5,0
 
     add byte[GUItextcolor],15
-    GUIOuttextwin2 20,25,23,GUISaveText1
-    GUIOuttextwin2 20,25,33,GUISaveText2
-    GUIOuttextwin2 20,25,43,GUISaveText3
-    GUIOuttextwin2 20,25,53,GUISaveText4
-    GUIOuttextwin2 20,25,63,GUISaveText5
+    GUIOuttextwin2 20,7,23,GUISaveText6
+    GUIOuttextwin2 20,25,43,GUISaveText1
+    GUIOuttextwin2 20,25,53,GUISaveText2
+    GUIOuttextwin2 20,25,63,GUISaveText3
+    GUIOuttextwin2 20,25,73,GUISaveText4
+    GUIOuttextwin2 20,25,83,GUISaveText5
     
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AutoIncSaveSlot],0
     je .nocheckbox
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox
-    GUIDisplayIconWin 20,11,20,[GUITemp]
+    GUIDisplayIconWin 20,11,40,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SRAMSave5Sec],0
     je .nocheckbox1
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
-    GUIDisplayIconWin 20,11,30,[GUITemp]
+    GUIDisplayIconWin 20,11,50,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[LatestSave],0
     je .nocheckbox2
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox2
-    GUIDisplayIconWin 20,11,40,[GUITemp]
+    GUIDisplayIconWin 20,11,60,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AutoState],0
     je .nocheckbox3
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox3
-    GUIDisplayIconWin 20,11,50,[GUITemp]
+    GUIDisplayIconWin 20,11,70,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SRAMState],0
     je .nocheckbox4
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox4
-    GUIDisplayIconWin 20,11,60,[GUITemp]
+    GUIDisplayIconWin 20,11,80,[GUITemp]
+    DrawGUIWinBox 20,120,22,135,29,167
+    xor ax,ax
+    mov ah,[RewindStates]
+    mov al,48
+    add ah,48
+.asciiloop
+    cmp ah,58
+    jb .hex2asciidone
+    add al,1
+    sub ah,10
+    jmp .asciiloop
+.hex2asciidone
+    mov [GUISaveTextX],ax
+    mov byte[GUItextcolor],223
+    GUIOuttextwin2 20,124,24,GUISaveTextX
+    mov byte[GUItextcolor],221
+    cmp byte[GUIWincoladd],0
+    je .zero4
+    mov byte[GUItextcolor],222
+.zero4
+    GUIOuttextwin2 20,123,23,GUISaveTextX
+    mov byte[GUItextcolor],217
+    cmp byte[GUIWincoladd],0
+    je .zero6
+    mov byte[GUItextcolor],211    
+.zero6
+    DrawGUIButton 20,143,22,151,30,GUISaveTextY,70,-2,-1
+    DrawGUIButton 20,154,22,162,30,GUISaveTextZ,71,-2,-1
     ret
 
 SECTION .data
@@ -7067,6 +7097,10 @@ GUISaveText2 db 'SRAM CHECK+SAVE',0
 GUISaveText3 db 'START AT LATEST SAVE',0
 GUISaveText4 db 'AUTO STATE SAVE/LOAD',0
 GUISaveText5 db 'LOAD SAVESTATE W/SRAM',0
+GUISaveText6 db '# OF REWIND STATES',0
+GUISaveTextX db '  ',0
+GUISaveTextY db '+',0
+GUISaveTextZ db '-',0
 
 ;General data
 GUILoadDisp     db 'LOAD GAME',0
