@@ -84,10 +84,10 @@ NEWSYM DSP1Read16b3F
     jae .doC000
     cmp byte[DSP1RLeft],0
     jne .movestuff
-    mov ax,08000h
+    mov ax,08080h
     ret
 .doC000
-    mov ax,08000h
+    mov ax,08080h
     ret
 .movestuff
     push ebx
@@ -218,7 +218,7 @@ NEWSYM DSP1Write8b
     DSP1WriteInit 18h, 4  ; Vector Size Comparison
     DSP1WriteInit 28h, 3  ; Vector Absolute Value
     DSP1WriteInit 0Ch, 3  ; Coordinate Rotation
-    DSP1WriteInit 1Ch, 4  ; 3D Coordinate Rotation
+    DSP1WriteInit 1Ch, 6  ; 3D Coordinate Rotation
     DSP1WriteInit 02h, 7  ; Vector Size
     DSP1WriteInit 0Ah, 1  ; Raster Data Calculation via DMA
     DSP1WriteInit 1Ah, 1  ; Raster Data Calculation w/o DMA
@@ -438,11 +438,11 @@ DSP1_0C:  ; Coordinate Rotation
 DSP1_1C:  ; 3D Coordinate Rotation
     push eax
     mov ax,[DSP1VARS]
-    mov [Op1CX],ax
-    mov ax,[DSP1VARS+2]
-    mov [Op1CY],ax
-    mov ax,[DSP1VARS+4]
     mov [Op1CZ],ax
+    mov ax,[DSP1VARS+2]
+    mov [Op1CX],ax
+    mov ax,[DSP1VARS+4]
+    mov [Op1CY],ax
     mov ax,[DSP1VARS+6]
     mov [Op1CXBR],ax
     mov ax,[DSP1VARS+8]
@@ -455,9 +455,9 @@ DSP1_1C:  ; 3D Coordinate Rotation
     mov ax,[Op1CXAR]
     mov [DSP1RET],ax
     mov ax,[Op1CYAR]
-    mov [DSP1RET],ax
+    mov [DSP1RET+2],ax
     mov ax,[Op1CZAR]
-    mov [DSP1RET],ax
+    mov [DSP1RET+4],ax
     mov byte[DSP1RLeft],3
     pop eax
     ret
@@ -742,7 +742,7 @@ DSP1_13:  ; Convert from object to global coords Matrix B
     mov ax,[DSP1VARS+4]
     mov [Op13U],ax
     pushad
-    call DSPOp03
+    call DSPOp13
     popad
     mov ax,[Op13X]
     mov word[DSP1RET],ax

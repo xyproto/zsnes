@@ -473,8 +473,9 @@ void DSPOp02()
 
 
    #ifdef DebugDSP1
-//      Log_Message("OP02 FX:%d FY:%d FZ:%d LFE:%d LES:%d",Op02FX,Op02FY,Op02FZ,Op02LFE,Op02LES);
-//      Log_Message("     AAS:%d AZS:%d VOF:%d VVA:%d",Op02AAS,Op02AZS,Op02VOF,Op02VVA);
+      Log_Message("OP02 FX:%d FY:%d FZ:%d LFE:%d LES:%d",Op02FX,Op02FY,Op02FZ,Op02LFE,Op02LES);
+      Log_Message("     AAS:%d AZS:%d VOF:%d VVA:%d",Op02AAS,Op02AZS,Op02VOF,Op02VVA);
+      Log_Message("     VX:%d VY:%d VZ:%d",(short)ViewerX,(short)ViewerY,(short)ViewerZ);
    #endif
 
 }
@@ -585,19 +586,56 @@ int Temp;
 DSPOp06()
 {
 
-   ObjPX=Op06X-Op02CXF;
-   ObjPY=Op06Y-Op02CYF;
-   ObjPZ=Op06Z;
+/*   ObjPX=(Op06X-CenterX);
+   ObjPY=-(Op06Y-CenterY);
+   ObjPZ=-(Op06Z-0);
 
    // rotate around Z
-   ObjPX1=(ObjPX*cos((-Op02AAS+32768)/65536.0*6.2832)+ObjPY*-sin((-Op02AAS+32768)/65536.0*6.2832));
-   ObjPY1=(ObjPX*sin((-Op02AAS+32768)/65536.0*6.2832)+ObjPY*cos((-Op02AAS+32768)/65536.0*6.2832));
+   tanval = (Op02AAS)/65536.0*6.2832;
+   ObjPX1=(ObjPX*cos(tanval)+ObjPY*-sin(tanval));
+   ObjPY1=(ObjPX*sin(tanval)+ObjPY*cos(tanval));
+   ObjPZ1=ObjPZ;
+
+   // rotate around Y
+//   ObjPX2=ObjPX1;
+//   ObjPY2=(ObjPY1*cos((-Op02AZS)/65536.0*6.2832)+ObjPZ1*-sin((-Op02AZS)/65536.0*6.2832));
+//   ObjPZ2=(ObjPY1*sin((-Op02AZS)/65536.0*6.2832)+ObjPZ1*cos((-Op02AZS)/65536.0*6.2832));
+   // Rotate around X
+   tanval=((Op02AZS-16384.0))/65536.0*6.2832;
+   ObjPX2=ObjPX1;
+   ObjPY2=ObjPY1*cos(tanval)+ObjPZ1*-sin(tanval);
+   ObjPZ2=ObjPY1*sin(tanval)+ObjPZ1*cos(tanval);
+
+//   ObjPZ2=ObjPZ2-Op02LFE;
+
+   if (ObjPY2>0)
+   {
+      Op06H=(short)(ObjPX2*Op02LES/(ObjPY2)); //-ObjPX2*256/-ObjPZ2;
+      Op06V=(short)(ObjPZ2*Op02LES/(ObjPY2)); //-ObjPY2*256/-ObjPZ2;
+      Op06S=(unsigned short)(256*(double)Op02LES/ObjPY2);
+   }
+   else
+   {
+      Op06H=0;
+      Op06V=14*16;
+   }*/
+
+
+   ObjPX=Op06X-Op02FX;
+   ObjPY=Op06Y-Op02FY;
+   ObjPZ=Op06Z-Op02FZ;
+
+   // rotate around Z
+   tanval = (-Op02AAS+32768)/65536.0*6.2832;
+   ObjPX1=(ObjPX*cos(tanval)+ObjPY*-sin(tanval));
+   ObjPY1=(ObjPX*sin(tanval)+ObjPY*cos(tanval));
    ObjPZ1=ObjPZ;
 
    // rotate around X
+   tanval = (-Op02AZS)/65536.0*6.2832;
    ObjPX2=ObjPX1;
-   ObjPY2=(ObjPY1*cos((-Op02AZS)/65536.0*6.2832)+ObjPZ1*-sin((-Op02AZS)/65536.0*6.2832));
-   ObjPZ2=(ObjPY1*sin((-Op02AZS)/65536.0*6.2832)+ObjPZ1*cos((-Op02AZS)/65536.0*6.2832));
+   ObjPY2=(ObjPY1*cos(tanval)+ObjPZ1*-sin(tanval));
+   ObjPZ2=(ObjPY1*sin(tanval)+ObjPZ1*cos(tanval));
 
    #ifdef debug06
    printf("ObjPX2: %f ObjPY2: %f ObjPZ2: %f\n",ObjPX2,ObjPY2,ObjPZ2);
@@ -615,11 +653,13 @@ DSPOp06()
    {
       Op06H=0;
       Op06V=14*16;
+      Op06S=0xFFFF;
    }
 
+
    #ifdef DebugDSP1
-//      Log_Message("OP06 X:%d Y:%d Z:%d",Op06X,Op06Y,Op06Z);
-//      Log_Message("OP06 H:%d V:%d S:%d",Op06H,Op06V,Op06S);
+      Log_Message("OP06 X:%d Y:%d Z:%d",Op06X,Op06Y,Op06Z);
+      Log_Message("OP06 H:%d V:%d S:%d",Op06H,Op06V,Op06S);
    #endif
 }
 
@@ -1011,9 +1051,9 @@ void DSPOp0B()
 
 void DSPOp1B()
 {   
-	Op1BS = Op1BX*matrixA2[0][0]+Op1BY*matrixA2[0][1]+Op1BZ*matrixA2[0][2];
+        Op1BS = (Op1BX*matrixA2[0][0]+Op1BY*matrixA2[0][1]+Op1BZ*matrixA2[0][2])*sc2*50;
 #ifdef DebugDSP1
-      Log_Message("OP1B");
+      Log_Message("OP1B X: %d Y: %d Z: %d S: %d",Op1BX,Op1BY,Op1BZ,Op1BS);
 #endif
 
 }
@@ -1045,7 +1085,7 @@ void DSPOp18()
 {
    Op18D=(Op18X*Op18X+Op18Y*Op18Y+Op18Z*Op18Z-Op18R*Op18R)/65536;
    #ifdef DebugDSP1
-      Log_Message("OP18 DIFF %d",Op18D);
+      Log_Message("OP18 X: %d Y: %d Z: %d DIFF %d",Op18X,Op18Y,Op18Z,Op18D);
    #endif
 }
 
@@ -1058,8 +1098,8 @@ DSPOp28()
 {
    Op28R=(short)sqrt(Op28X*Op28X+Op28Y*Op28Y+Op28Z*Op28Z);
    #ifdef DebugDSP1
-      Log_Message("OP28 X:%d Y:%d Z:%d",Op18X,Op18Y,Op18Z);
-      Log_Message("OP28 Vector Length %d",Op18R);
+      Log_Message("OP28 X:%d Y:%d Z:%d",Op28X,Op28Y,Op28Z);
+      Log_Message("OP28 Vector Length %d",Op28R);
    #endif
 }
 
@@ -1073,20 +1113,24 @@ short Op1CX2;
 short Op1CY2;
 short Op1CZ2;
 
-DSPOp1C()
+void DSPOp1C()
 {
-   // rotate around Y
-   Op1CX1=(Op1CXBR*CosTable2[(Op1CY/256)&255]+Op1CZBR*SinTable2[(Op1CY/256)&255])/65536;
-   Op1CY1=Op1CYBR;
-   Op1CZ1=(Op1CXBR*-SinTable2[(Op1CY/256)&255]+Op1CZBR*CosTable2[(Op1CY/256)&255])/65536;
-   // rotate around X
-   Op1CX2=Op1CX1;
-   Op1CY2=(Op1CY1*CosTable2[(Op1CX/256)&255]+Op1CZ1*-SinTable2[(Op1CX/256)&255])/65536;
-   Op1CZ2=(Op1CY1*SinTable2[(Op1CX/256)&255]+Op1CZ1*CosTable2[(Op1CX/256)&255])/65536;
+   double ya,xa,za;
+   ya = Op1CX/65536.0*3.1415*2;
+   xa = Op1CY/65536.0*3.1415*2;
+   za = Op1CZ/65536.0*3.1415*2;
    // rotate around Z
-   Op1CXAR=(Op1CX2*CosTable2[(Op1CZ/256)&255]+Op1CY2*-SinTable2[(Op1CZ/256)&255])/65536;
-   Op1CYAR=(Op1CX2*SinTable2[(Op1CZ/256)&255]+Op1CY2*CosTable2[(Op1CZ/256)&255])/65536;
-   Op1CZAR=Op1CZ2;
+   Op1CX1=(Op1CXBR*cos(za)+Op1CYBR*sin(za));
+   Op1CY1=(Op1CXBR*-sin(za)+Op1CYBR*cos(za));
+   Op1CZ1=Op1CZBR;
+   // rotate around Y
+   Op1CX2=(Op1CX1*cos(ya)+Op1CZ1*-sin(ya));
+   Op1CY2=Op1CY1;
+   Op1CZ2=(Op1CX1*sin(ya)+Op1CZ1*cos(ya));
+   // rotate around X
+   Op1CXAR=Op1CX2;
+   Op1CYAR=(Op1CY2*cos(xa)+Op1CZ2*sin(xa));
+   Op1CZAR=(Op1CY2*-sin(xa)+Op1CZ2*cos(xa));
 
    #ifdef DebugDSP1
       Log_Message("OP1C Apply Matrix CX:%d CY:%d CZ",Op1CXAR,Op1CYAR,Op1CZAR);
