@@ -295,8 +295,8 @@ void RestoreCVFrame()
   unsigned char *RewindBufferPos = StateBackup + PBackupPos*rewind_state_size;
   //printf("Restoring rewind in slot #%u\n", PBackupPos);
   copy_state_data(RewindBufferPos, memcpyrinc, true);
-  if (MovieProcessing == 1) { zmv_rewind_save(CBackupPos, true); }
-  else if (MovieProcessing == 2) { zmv_rewind_save(CBackupPos, false); }
+  if (MovieProcessing == 1) { zmv_rewind_load(PBackupPos, true); }
+  else if (MovieProcessing == 2) { zmv_rewind_load(PBackupPos, false); }
   RewindTimer = ActualRewindFrames;
 }
 
