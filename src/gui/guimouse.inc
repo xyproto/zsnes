@@ -1336,8 +1336,6 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
-
-
 %macro GUISlidebarPostImpl 13 ; x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
     cmp dword[%11],0
     je near %%nolower
