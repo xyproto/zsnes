@@ -2663,14 +2663,13 @@ NEWSYM copyvesa2320x240x16b
     mov [es:edi-2],bx
     jmp .inloopb3
 .inloopb2
-    shr ax,1
-    shr bx,1
+    shr ax,byte 1
+    shr bx,byte 1
     and ax,7befh
     and bx,7befh
     add ax,bx
     mov [es:edi],ax
     mov [es:edi-2],ax
-    jmp .inloopb3
 .inloopb3
     add esi,2
     add edi,2
