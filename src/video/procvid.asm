@@ -1798,6 +1798,9 @@ NEWSYM saveselect
 .notpr
     inc eax
     loop .looppr
+    %ifdef __MSDOS__
+    mov byte[pressed+1],0
+    %endif
 
     mov word[t1cc],0
     mov byte[csounddisable],0
@@ -2114,6 +2117,9 @@ NEWSYM saveselect
     inc eax
     loop .looppr2
 .prwin
+    %ifdef __MSDOS__
+    mov byte[pressed+1],0
+    %endif
     mov word[t1cc],0
     mov byte[csounddisable],0
     call StartSound
@@ -3002,6 +3008,8 @@ hextestfilen db 'DSP1DUMP.DAT',0
 NEWSYM SoundTest, db 0
 
 
+blahrnr dw 0
+
 NEWSYM hextestoutput
 
     mov dx,[bg3scroly]
@@ -3045,32 +3053,44 @@ NEWSYM hextestoutput
     mov byte[pressed+25],2
 .nopress25
     call displayfpspal
+
+    mov esi,[vram]
+    mov ax,0
+    mov ecx,400h
+.loop
+;    mov word[esi],ax
+    add esi,2
+    loop .loop
+    inc word[blahrnr]
     mov esi,216*288+32
     add esi,[vidbuffer]
     xor eax,eax
     EXTSYM Op14Zr,Op14Xr,Op14Yr,Op14U,Op14F,Op14L
     EXTSYM Op02CX,Op02CY,bg1scrolx,bg1scroly
-    EXTSYM TValDebug,TValDebug2,curhdma
+    EXTSYM TValDebug,TValDebug2,curhdma,bg1ptr,bg1objptr,DecompAPtr
+    ; 4F00h
     mov ebx,[C4Ram]
-    mov al,[ebx]
+    mov ebx,[vram]
+    mov al,[DecompAPtr+1h]
     call outputhex
     mov esi,216*288+32+16
     add esi,[vidbuffer]
     xor eax,eax
     mov ebx,[C4Ram]
-    mov al,[ebx+1]
+    mov ebx,[vram]
+    mov al,[DecompAPtr]
     call outputhex
     mov esi,216*288+70
     add esi,[vidbuffer]
     xor eax,eax
     mov ebx,[C4Ram]
-    mov al,[ebx+2]
+    mov al,[bg1objptr+1]
     call outputhex
     mov esi,216*288+70+16
     add esi,[vidbuffer]
     xor eax,eax
     mov ebx,[C4Ram]
-    mov al,[ebx+3]
+    mov al,[bg1objptr]
     call outputhex
     mov esi,216*288+108
     add esi,[vidbuffer]
