@@ -3415,107 +3415,45 @@ NEWSYM HalfTransC, dd 11110111100111101111011110011110b,111101111001111011110111
 NEWSYM NGNoTransp, dd 0
 NEWSYM NewGfx16AsmEnd
 
-MainScreenClip:
-    mov esi,[vidbuffer]
-    add esi,16*2+288*2
-    mov ebx,1
-.nextline
-    mov al,byte[scadsng+ebx]
-    test al,0C0h
-    jz near .notthisone
-    push esi
-    push ebx
-    and al,0C0h
-    cmp al,0C0h
-    jne .notentire
-    mov ebx,[UnusedBit]
-    mov ecx,256
-    mov edx,256
-    jmp .startclipping
-.notentire
+%macro SCMainA 0
+%endmacro
 
-    mov dword[ngwinen],0
-    test byte[winbg1enval+ebx+5*256],0Ah
-    jz .nowindowing
-    push eax
-    push ebx
-    mov al,[winlogicaval+ebx*2+1]
-    shr al,2
-    and al,03h
-    mov [nglogicval],al
-    mov eax,ebx
-    add ebx,5*256
-    call BuildWindow
-;ngwintable
-    pop ebx
-    pop eax
-.nowindowing
+%macro SCSubA 0
+    shl al,2
+%endmacro
 
-    mov ebx,[UnusedBit]
-    mov edx,256
-    cmp dword[ngwinen],0
-    jne .windowenabled
-    cmp al,80h
-    je near .finclipping
-    mov ecx,256
-    jmp .startclipping
-.windowenabled
-    cmp al,80h
-    je near .outsideclipping
-    mov edi,ngwintable
-    mov ecx,[edi]
-    add edi,4
-    or ecx,ecx
-    jnz near .startclipping
-    mov ecx,[edi]
-    add edi,4
-    jmp .noclipping
-.outsideclipping
-    mov edi,ngwintable
-    mov ecx,[edi]
-    add edi,4
-    or ecx,ecx
-    jnz .noclipping
-    mov ecx,[edi]
-    add edi,4
-    jmp .startclipping
-
-.startclipping
+%macro SCMainB 0
     and word[esi],bx
     or word[esi+75036*2],bx
-    add esi,2
-    dec edx
-    jz .finclipping
-    dec ecx
-    jnz .startclipping
-    mov ecx,[edi]
-    add edi,4
-.noclipping
-    sub edx,ecx
-    jz .finclipping
-    jc .finclipping
-    add ecx,ecx
-    add esi,ecx
-    mov ecx,[edi]
-    add edi,4
-    jmp .startclipping
+%endmacro
 
-.finclipping
-    pop ebx
-    pop esi
-.notthisone
-    inc ebx
-    add esi,288*2
-    cmp [resolutn],bx
-    jne near .nextline
+%macro SCSubB 0
+    and word[esi],bx
+%endmacro
 
-SubScreenClip:
+%macro SCMainC 0
+%endmacro
+
+%macro SCSubC 0
+    xor ebx,0FFFFFFFFh
+%endmacro
+
+%macro SCMainD 0
+    and dword[esi],ebx
+    or dword[esi+75036*2],ebx
+%endmacro
+
+%macro SCSubD 0
+    and dword[esi],ebx
+%endmacro
+
+%macro ScreenClip 4
     mov esi,[vidbuffer]
     add esi,16*2+288*2
     mov ebx,1
 .nextline
     mov al,byte[scadsng+ebx]
-    shl al,2
+    %1
     test al,0C0h
     jz near .notthisone
     push esi
@@ -3524,10 +3462,10 @@ SubScreenClip:
     cmp al,0C0h
     jne .notentire
     mov ebx,[UnusedBit]
-    xor ebx,0FFFFFFFFh
+    %3
     mov ecx,256
     mov edx,256
-    jmp .startclipping
+    jmp .startclippingfull
 .notentire
 
     mov dword[ngwinen],0
@@ -3548,14 +3486,14 @@ SubScreenClip:
 .nowindowing
 
     mov ebx,[UnusedBit]
-    xor ebx,0FFFFFFFFh
+    %3
     mov edx,256
     cmp dword[ngwinen],0
     jne .windowenabled
     cmp al,80h
     je near .finclipping
     mov ecx,256
-    jmp .startclipping
+    jmp .startclippingfull
 .windowenabled
     cmp al,80h
     je near .outsideclipping
@@ -3563,7 +3501,7 @@ SubScreenClip:
     mov ecx,[edi]
     add edi,4
     or ecx,ecx
-    jnz near .startclipping
+    jnz near .startclippingb
     mov ecx,[edi]
     add edi,4
     jmp .noclipping
@@ -3575,10 +3513,12 @@ SubScreenClip:
     jnz .noclipping
     mov ecx,[edi]
     add edi,4
-    jmp .startclipping
-
+    jmp .startclippingb
+.startclippingb
+    cmp ecx,256
+    jae near .startclippingfull
 .startclipping
-    and word[esi],bx
+    %2
     add esi,2
     dec edx
     jz .finclipping
@@ -3595,7 +3535,12 @@ SubScreenClip:
     mov ecx,[edi]
     add edi,4
     jmp .startclipping
-
+.startclippingfull
+    mov ecx,128
+.loopclipfull
+    %4
+    add esi,4
+    loop .loopclipfull
 .finclipping
     pop ebx
     pop esi
@@ -3604,6 +3549,12 @@ SubScreenClip:
     add esi,288*2
     cmp [resolutn],bx
     jne near .nextline
+%endmacro
+
+MainScreenClip:
+    ScreenClip SCMainA,SCMainB,SCMainC,SCMainD
+SubScreenClip:
+    ScreenClip SCSubA,SCSubB,SCSubC,SCSubD
     ret
 
 
