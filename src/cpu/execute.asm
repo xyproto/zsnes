@@ -2007,7 +2007,7 @@ NEWSYM cpuover
     mov byte[MovieWaiting],1
     mov eax,[KeyQuickRst]
     mov byte[pressed+eax],01h
-    jnz near exitloop
+    jmp near exitloop
 .notreset    
     cmp byte[MovieProcessing],0
     jne .noprocmovie
