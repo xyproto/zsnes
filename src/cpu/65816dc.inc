@@ -529,7 +529,6 @@ BRKemulmode
 %endmacro
 
 %macro COPMacro 0
-    int 3h
     inc esi
     test byte[xe],1
     jne near COPemulmode
