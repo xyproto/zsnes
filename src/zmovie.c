@@ -531,9 +531,9 @@ void zmv_create(char *filename)
 }
 
 #define RECORD_PAD(prev, cur, bit)                                    \
-  if (cur != prev)                                                    \
+  if ((unsigned short)(cur >> 20) != prev)                            \
   {                                                                   \
-    prev = (cur >> 20);                                               \
+    prev = (unsigned short)(cur >> 20);                               \
     flag |= BIT(bit);                                                 \
                                                                       \
     if (nibble & 1)                                                   \
@@ -550,8 +550,6 @@ void zmv_create(char *filename)
       press_buf[nibble/2] = (unsigned char)(prev >> 8);               \
       nibble++;                                                       \
     }                                                                 \
-                                                                      \
-    prev <<= 20;                                                      \
   }
 
 void zmv_record()
@@ -687,27 +685,28 @@ bool zmv_open(char *filename)
   return(false);
 }
 
-#define REPLAY_PAD(cur, bit)                          \
+#define REPLAY_PAD(prev, cur, bit)                    \
   if (flag & BIT(bit))                                \
   {                                                   \
     if (mid_byte)                                     \
     {                                                 \
-      cur = (byte & 0xF0) >> 4;                       \
+      prev = (byte & 0xF0) >> 4;                      \
       fread(&byte, 1, 1, zmv_vars.fp);                \
-      cur |= ((unsigned long)byte) << 4;              \
+      prev |= ((unsigned long)byte) << 4;             \
       mid_byte = false;                               \
     }                                                 \
     else                                              \
     {                                                 \
       fread(&byte, 1, 1, zmv_vars.fp);                \
-      cur = byte;                                     \
+      prev = byte;                                    \
       fread(&byte, 1, 1, zmv_vars.fp);                \
-      cur |= ((unsigned long)(byte & 0xF)) << 8;      \
+      prev |= ((unsigned long)(byte & 0xF)) << 8;     \
       mid_byte = true;                                \
     }                                                 \
-    cur <<= 20;                                       \
-  }
+  }                                                   \
+  cur = (((unsigned int)prev) << 20) | 0x8000;
 
+  
 bool zmv_replay()
 {
   if (zmv_open_vars.frames_replayed < zmv_vars.header.frames)
@@ -725,11 +724,11 @@ bool zmv_replay()
       fread(&flag, 1, 1, zmv_vars.fp);
     }
 
-    REPLAY_PAD(JoyAOrig, 7);
-    REPLAY_PAD(JoyBOrig, 6);
-    REPLAY_PAD(JoyCOrig, 5);
-    REPLAY_PAD(JoyDOrig, 4);
-    REPLAY_PAD(JoyEOrig, 3);
+    REPLAY_PAD(zmv_vars.last_joy_state.A, JoyAOrig, 7);
+    REPLAY_PAD(zmv_vars.last_joy_state.B, JoyBOrig, 6);
+    REPLAY_PAD(zmv_vars.last_joy_state.C, JoyCOrig, 5);
+    REPLAY_PAD(zmv_vars.last_joy_state.D, JoyDOrig, 4);
+    REPLAY_PAD(zmv_vars.last_joy_state.E, JoyEOrig, 3);
   
     zmv_open_vars.frames_replayed++;
     return(true);
@@ -963,14 +962,16 @@ void MovieRecord()
     fnamest[statefileloc] = CMovieExt;
     
     SRAMChdir();
-    tempfhandle = fopen(fnamest+1,"rb");
-
-    if ((MovieRecordWinVal == 1) || (tempfhandle == NULL))
+    
+    if (MovieRecordWinVal == 1)
     {
+      remove(fnamest+1);
       MovieRecordWinVal = 0;
-
+    }
+    
+    if (!(tempfhandle = fopen(fnamest+1,"rb")))
+    {
       zmv_create(fnamest+1);
-      
       MovieProcessing = 2;
     }
     else
