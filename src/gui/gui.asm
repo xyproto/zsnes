@@ -404,7 +404,6 @@ NEWSYM CalibYmin209, dd 0
 NEWSYM CalibXmax209, dd 0
 NEWSYM CalibYmax209, dd 0
 NEWSYM maxskip,      db 9
-NEWSYM HighPriority, db 0
 FPSAtStart           db 0
 NEWSYM SidewinderFix, db 0
 GUIInitSt1 db 'ATZ'
@@ -443,7 +442,6 @@ NEWSYM FossilUse,     db 0
 NEWSYM TimerEnable,   db 0
 
 NEWSYM Surround,      db 0
-NEWSYM LargeSoundBuf, db 0
 NEWSYM InterSound,    db 1
 NEWSYM FastFwdToggle, db 0
 NEWSYM En2xSaI, db 0
@@ -540,6 +538,9 @@ NEWSYM ChatNick, times 16 db 0
 NEWSYM KeySlowDown, dd 0
 
 NEWSYM UseCubicSpline, db 1
+
+NEWSYM LargeSoundBuf, db 0
+NEWSYM HighPriority, db 0
 
 GUIsave equ $-GUIRAdd
 
