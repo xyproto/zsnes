@@ -117,7 +117,7 @@ NEWSYM outofmemory
 
 ;SECTION .data
 NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,10,0
-%define ZVERSION '17b  '
+%define ZVERSION '18   '
 ;%define ZBETA    0
 NEWSYM welcome
 
