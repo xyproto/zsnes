@@ -29,7 +29,8 @@ JMADIR=jma
 CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
 	 ${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
 	 ${CHIPDIR}/sa1proc.o ${CHIPDIR}/sa1regs.o ${CHIPDIR}/dsp1emu.o\
-         ${CHIPDIR}/st10proc.o ${CHIPDIR}/seta10.o ${CHIPDIR}/dsp2proc.o
+         ${CHIPDIR}/st10proc.o ${CHIPDIR}/seta10.o ${CHIPDIR}/dsp2proc.o\
+         ${CHIPDIR}/sdd1emu.o
 
 CPUOBJ=${CPUDIR}/addrni.o ${CPUDIR}/dma.o ${CPUDIR}/dsp.o ${CPUDIR}/dspproc.o\
 	${CPUDIR}/execute.o ${CPUDIR}/irq.o ${CPUDIR}/memory.o \
