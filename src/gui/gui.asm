@@ -3073,13 +3073,13 @@ GUITryMenuItem:
     cmp byte[prevlfreeze],0
     je .off
     mov byte[GUIPrevMenuData.onoff+15],'O'
-    mov byte[GUIPrevMenuData.onoff+15],'N'
-    mov byte[GUIPrevMenuData.onoff+16],' '
+    mov byte[GUIPrevMenuData.onoff+16],'N'
+    mov byte[GUIPrevMenuData.onoff+17],' '
     jmp .on
 .off
-    mov byte[GUIPrevMenuData.onoff+14],'O'
-    mov byte[GUIPrevMenuData.onoff+15],'F'
+    mov byte[GUIPrevMenuData.onoff+15],'O'
     mov byte[GUIPrevMenuData.onoff+16],'F'
+    mov byte[GUIPrevMenuData.onoff+17],'F'
 .on
 .skipswitch
     cmp byte[GUIcrowpos],12
