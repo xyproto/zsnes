@@ -64,7 +64,7 @@ LIBS=-lz -lm -lpng
 CFLAGS=-O3 -march=i586 -fno-rtti -fno-exceptions -ffast-math\
 -fomit-frame-pointer -fno-unroll-loops -Wall -Wno-unused -D__MSDOS__
 ASM=nasm
-ASMFLAGS=-f coff -D__MSDOS__
+ASMFLAGS=-O1 -f coff -D__MSDOS__
 CC=gcc
 PP=gpp
 

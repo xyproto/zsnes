@@ -69,7 +69,7 @@ OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ} $
 LIBS=
 CFLAGS=/Ox /G6 /c /D__WIN32__
 ASM=nasm
-ASMFLAGS=-f win32 -D__WIN32__
+ASMFLAGS=-O1 -f win32 -D__WIN32__
 CC=cl
 
 .SUFFIXES: .c .cpp .asm 
