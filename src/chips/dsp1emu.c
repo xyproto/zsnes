@@ -1440,5 +1440,21 @@ void DSPOp1C()
       Log_Message("OP1C Apply Matrix CX:%d CY:%d CZ",Op1CXAR,Op1CYAR,Op1CZAR);
    #endif
 }
-
 #endif
+
+// Op 0F = Test DSP1 RAM
+//         Returns 0x0000 if RAM checks OK
+
+unsigned short Op0FRamsize;
+unsigned short Op0FPass;
+
+void DSPOp0F()
+{
+   // We use our PC's RAM, not DSP1 RAM but we need to pass the RAM check
+   Op0FPass = 0x0000;
+   return;
+
+   #ifdef DebugDSP1
+      Log_Message("OP0F RAM Test Pass:%d", Op0FPass);
+   #endif
+}

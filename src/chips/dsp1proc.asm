@@ -23,6 +23,7 @@ EXTSYM debstop
 EXTSYM DSPOp00,Op00Multiplicand,Op00Multiplier
 EXTSYM Op00Result
 ;EXTSYM DSPOp10,Op10a,Op10b,Op10A,Op10B
+EXTSYM DSPOp0F,Op0FPass
 EXTSYM DSPOp04,Op04Angle,Op04Cos,Op04Radius,Op04Sin
 EXTSYM DSPOp28,Op28R,Op28X,Op28Y,Op28Z
 EXTSYM DSPOp0C,Op0CA,Op0CX1,Op0CX2,Op0CY1,Op0CY2
@@ -245,6 +246,7 @@ NEWSYM DSP1Write8b
     DSP1WriteInit 1Bh, 3  ; Calculation of inner product Matrix B
     DSP1WriteInit 2Bh, 3  ; Calculation of inner product Matrix C
     DSP1WriteInit 14h, 6  ; 3D angle rotation
+    DSP1WriteInit 0Fh, 1  ; DSP RAM Check
     ret
 
 %macro DSP1WriteProc 2
@@ -300,6 +302,7 @@ NEWSYM DSP1Write16b
     DSP1WriteProc 1Bh, DSP1_1B  ; Calculation of inner product Matrix B
     DSP1WriteProc 2Bh, DSP1_2B  ; Calculation of inner product Matrix C
     DSP1WriteProc 14h, DSP1_14  ; 3D angle rotation
+    DSP1WriteProc 0Fh, DSP1_0F  ; DSP RAM Check
     ret
 
 NEWSYM DSP1COp,   db 0
@@ -679,6 +682,17 @@ DSP1_0D:  ; Convert from global to object coords Matrix A
     mov ax,[Op0DU]
     mov word[DSP1RET+4],ax
     mov byte[DSP1RLeft],3
+    pop eax
+    ret
+DSP1_0F:  ; DSP RAM Test
+    push eax
+    mov ax,[DSP1VARS]
+    pushad
+    call DSPOp0F
+    popad
+    mov ax,[Op0FPass]
+    mov word[DSP1RET],ax
+    mov byte[DSP1RLeft],1
     pop eax
     ret
 DSP1_1D:  ; Convert from global to object coords Matrix B
