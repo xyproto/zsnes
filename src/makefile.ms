@@ -24,12 +24,12 @@
 #                         Valid options are:
 #                         dos, dos-cross, msvc, win32, win32-cross, win32-unix-shell
 #
-# RELEASEGRADE=yes        for high assembly optimization for releases, will take at least half an hour
-# clean                   cleans object and executable files
+# RELEASEGRADE=yes        for high assembly optimization for releases, will take at least half an hour.
+# clean                   cleans object and executable files.
 #
 # --Not for MSVC--
-# DEBUG=yes               for debugging with GDB
-# CPU=cpu-type            optimize for a particular CPU, find a list of cpu types in the GCC manual
+# DEBUG=yes               for debugging with GDB.
+# CPU=cpu-type            optimize for a particular CPU, find a list of cpu types in the GCC manual.
 
 
 ENV=$(PLATFORM)
@@ -378,5 +378,5 @@ clean:
 
 else  #else no ENV specified
 help:
-	@echo Please specify which ENV to compile/clean for with ENV=ENV_name
+	@echo Please specify which platform to compile/clean for with PLATFORM=platform_name
 endif #endif on the ENV being empty
