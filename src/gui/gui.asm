@@ -1525,14 +1525,6 @@ NEWSYM StartGUI
     mov dword[eax],0
     add eax,4
     loop .slloop
-    ; Change GUI to suit the Win32 port
-;    cmp byte[OSPort],3
-;    jne .nowinport
-%ifndef __MSDOS__
-;    mov dword[GUIGUIOptnsText8+12],' GUI'
-;    mov byte[GUIGUIOptnsText8+16],0
-%endif
-;.nowinport
     cmp byte[OldWinPos],0
     jne .okayow
     xor esi,esi
@@ -1548,10 +1540,6 @@ NEWSYM StartGUI
     mov eax,[pl1p209b]
     mov [pl1p209],eax
 .okayow
-;    mov al,[OSPort]
-;    mov [GOSPort],al
-;    cmp byte[GOSPort],3
-;    jne .notwinport
 %ifndef __MSDOS__
     mov dword[GUINetPlayMenuData+1],'INTE'
     mov dword[GUINetPlayMenuData+5],'RNET'
