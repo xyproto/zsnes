@@ -422,6 +422,7 @@ void loadFile()
 void loadGZipFile()
 {
   int size, err;
+  gzFile GZipFile;
   FILE *fp = 0;
   fp = fopen(ZOpenFileName, "rb");
   if (!fp) { return; }
@@ -432,7 +433,7 @@ void loadGZipFile()
   if (size > maxromspace+512) { return; }
 
   //Open GZip file for decompression
-  gzFile GZipFile = gzopen(ZOpenFileName, "rb"); 
+  GZipFile = gzopen(ZOpenFileName, "rb"); 
     
   //Decompress file into memory
   err = gzread(GZipFile, romdata, size); 
