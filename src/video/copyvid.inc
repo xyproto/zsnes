@@ -396,7 +396,7 @@ NEWSYM copymodex224
     mov eax,(320*225)/4
 .pageb
 
-    mov dl,222
+    mov bl,222
     jmp copymodexloop
 
 ;*******************************************************
@@ -438,8 +438,8 @@ NEWSYM copymodex240
     mov eax,(320*240)/4
 .pageb
 
-    mov dl,[resolutn]
-    sub dl,2
+    mov bl,[resolutn]
+    sub bl,2
     jmp copymodexloop
 
 ;*******************************************************
@@ -481,110 +481,84 @@ NEWSYM copymodex256
     mov eax,(320*256)/4
 .pageb
 
-    mov dl,[resolutn]
-    sub dl,2
+    mov bl,[resolutn]
+    sub bl,2
     jmp copymodexloop
 
 ;eax = VGA address of output page
 ;edi = offset in current page of first line
 ;esi = address of first line to be copied
-;dl = number of lines to copy
+;bl = number of lines to copy
 NEWSYM copymodexloop
     add edi,eax
     mov [.pageaddress],eax
-    mov [.linecount],dl
+    mov [.linecount],bl
     mov [.startesi],esi
     mov [.startedi],edi
 
-.loopa1
-    mov ecx,16
-.loopb1
-    mov ah,[esi+12]
-    mov al,[esi+8]
-    shl eax,16
-    mov ah,[esi+4]
-    mov al,[esi+0]
-    mov [es:edi],eax
-    add esi,16
-    add edi,4
-    dec ecx
-    jnz .loopb1
-    add esi,32
-    add edi,16
-    dec dl
-    jnz .loopa1
+; register allocation
+; bl = line counter (0-total lines)
+; bh = other line counter (descriptive, eh?) (0-8)
+; ebp = plane counter
+; ch = plane enable bit
+; cl = 4-pixel copy counter
+; edx= pixel processing & I/O address
+; eax = pixel processing & I/O data
+
     mov dx,03C4h
-    mov ax,0202h
+
+.loopa
+    mov ebp,4
+    mov ch,1
+    cmp bl,8
+    mov bh,bl
+    jb .loopb
+    mov bh,8
+
+.loopb
+    ; set write plane
+    mov ah,ch
+    add ch,ch
+    mov al,02h
     out dx,ax
-    mov esi,[.startesi]
+
+    push ebx
+    push edi
+    push esi
+
+.loopc
+    ; loop count
+    mov cl,16
+.loopd
+    mov al,[esi+8]
+    mov ah,[esi+12]
+    shl eax,16
+    mov al,[esi+0]
+    mov ah,[esi+4]
+    add esi,16
+    mov [es:edi],eax
+    add edi,4
+    dec cl
+    jnz .loopd
+
+    add esi,16+16
+    add edi,(320-256)/4
+    dec bh
+    jnz .loopc
+
+    pop esi
+    pop edi
+    pop ebx
+
     inc esi
-    mov edi,[.startedi]
-    mov dl,[.linecount]
-.loopa2
-    mov ecx,16
-.loopb2
-    mov ah,[esi+12]
-    mov al,[esi+8]
-    shl eax,16
-    mov ah,[esi+4]
-    mov al,[esi+0]
-    mov [es:edi],eax
-    add esi,16
-    add edi,4
-    dec ecx
-    jnz .loopb2
-    add esi,32
-    add edi,16
-    dec dl
-    jnz .loopa2
-    mov dx,03C4h
-    mov ax,0402h
-    out dx,ax
-    mov esi,[.startesi]
-    add esi,2
-    mov edi,[.startedi]
-    mov dl,[.linecount]
-.loopa3
-    mov ecx,16
-.loopb3
-    mov ah,[esi+12]
-    mov al,[esi+8]
-    shl eax,16
-    mov ah,[esi+4]
-    mov al,[esi+0]
-    mov [es:edi],eax
-    add esi,16
-    add edi,4
-    dec ecx
-    jnz .loopb3
-    add esi,32
-    add edi,16
-    dec dl
-    jnz .loopa3
-    mov dx,03C4h
-    mov ax,0802h
-    out dx,ax
-    mov esi,[.startesi]
-    add esi,3
-    mov edi,[.startedi]
-    mov dl,[.linecount]
-.loopa4
-    mov ecx,16
-.loopb4
-    mov ah,[esi+12]
-    mov al,[esi+8]
-    shl eax,16
-    mov ah,[esi+4]
-    mov al,[esi+0]
-    mov [es:edi],eax
-    add esi,16
-    add edi,4
-    dec ecx
-    jnz .loopb4
-    add esi,32
-    add edi,16
-    dec dl
-    jnz .loopa4
+    dec ebp
+    jnz .loopb
+
+    ; next line
+    add esi,(16+256+16)*8-4
+    add edi,320*8/4
+    sub bl,bh
+    jnz .loopa
 
     pop es
 
@@ -610,6 +584,7 @@ NEWSYM copymodexloop
 .setpageb
     mov [whichpage],al
     ret
+
 SECTION .bss
 .startesi resd 1
 .startedi resd 1
@@ -618,7 +593,6 @@ SECTION .bss
 
 NEWSYM whichpage, resb 1          ; active page and visual page locations
 SECTION .text
-
 
 ;*******************************************************
 ; CopyModeQ 224       Copies buffer into chained 256x224

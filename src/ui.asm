@@ -159,7 +159,7 @@ NEWSYM	outofmemory
 SECTION .data
 NEWSYM mydebug, db '',13,10,0
 NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,10,0
-%define ZVERSION '337  '
+%define ZVERSION '337'
 ;%define ZBETA    0
 
 ; Line added by Peter Santing
@@ -176,27 +176,34 @@ NEWSYM welcome
 ;                 db 'PRIVATE BETA VERSION!!!  PLEASE DO NOT DISTRIBUTE!!!  Thank you!',13,10
 ;                 db 'Private Beta is Registered to : ',USERNAMEN,13,10
 ;%else
+                 db 'ZSNES v1.',ZVERSION,' beta (c) 1997-2001, ZSNES Team (zsKnight & _Demo_)',13,10
 %ifdef __LINUX__
-                 db 'ZSNES v1.',ZVERSION,' beta (c)1997-2001 ZSNES Team (zsKnight - _Demo_)',13,10
-                 db 'Linux version, please report crashes to zsnes-devel@lists.sourceforge.net.',13,10
-                 db 'Compiled under NASM, GCC',13,10,13,10
+                 db 'Compiled under NASM and GCC. (Linux/FreeBSD)',13,10,13,10
 %else
-                 db 'ZSNES v1.',ZVERSION,' beta (c)1997-2001 ZSNES Team (zsKnight - _Demo_)',13,10
-                 ; ZSNES DOS doesn't use WDOSX anymore
-                 db 'Compiled under NASM, GCC (DOS+DPMI)',13,10,13,10
+%ifdef __WIN32__
+                 db 'Compiled under NASM and MSVC++. (Windows)',13,10,13,10
+%else
+                 db 'Compiled under NASM and DJGPP. (DOS w/ DPMI)',13,10,13,10
+%endif
 %endif
 ;%endif
-                 db '  Programmers     : zsKnight, _Demo_',13,10
-                 db '  Assistant Coder : Pharos',13,10,13,10
-                 db 'ZSNES comes with ABSOLUTELY NO WARRANTY. This is free software,',10,13
+                 db 'Be sure to check http://www.zsnes.com/ for the latest version.',13,10
+                 db 'Please report crashes to zsnes-devel@lists.sourceforge.net.',13,10,13,10
+                 db '  Main Coders      : zsKnight, _Demo_, and pagefault',13,10
+                 db '  Assistant Coders : Pharos, teuf, theoddone33, and stainless',13,10,13,10
+                 db 'ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,',10,13
                  db 'and you are welcome to redistribute it under certain conditions;',10,13
-                 db 'check license.txt.',10,13,10,13
-                 db 'Use ZSNES -? for command line definitions',13,10,13,10,0
+%ifdef __LINUX__
+                 db 'please read ',39,'LICENSE',39,' thoroughly before using it.',10,13,10,13
+%else
+                 db 'please read ',39,'LICENSE.TXT',39,' thoroughly before using it.',10,13,10,13
+%endif
+                 db 'Use ZSNES -? for command line definitions.',13,10,13,10,0
 
 ;cpuidfname db 'nocpuzid.dat',0
 ;cpuidtext db 'NOTE: If ZSNES crashes here, then please re-run. ',0
 ;cpuidtext2 db 13,'                                                 ',13,0
-YesMMX    db 'MMX support enabled.',13,10,13,10,0
+YesMMX    db 'MMX support found and enabled.',13,10,13,10,0
 
 ; global variables
 
