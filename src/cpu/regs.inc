@@ -212,8 +212,6 @@ NEWSYM initregr
     setreg 437Eh*4,reg43XXr
     setreg 437Fh*4,reg43XXr
 
-    setreg 3030h*4,reg3030r
-
     cmp byte[SFXEnable],0
     je .nosfx
     call initsfxregsr
@@ -1083,14 +1081,10 @@ reg43XXr:
     mov al,[dmadata+ebx]
     ret
 
-reg3030r:
-    mov al,0FFh
+regINVALID:     ; Invalid Register
+    mov al,ch
     ret
 
-regINVALID:     ; Invalid Register
-    xor al,al
-;    mov al,30h
-    ret
     mov al,[previdmode]
     mov ah,0
     int 10h
