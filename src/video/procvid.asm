@@ -1292,12 +1292,6 @@ GetPicture:
     jne .notskip
     ret
 .notskip
-    cmp byte[MovieProcessing],0
-    jz .nomovie
-    pushad
-    call mzt_chdir
-    popad
-.nomovie
     mov [PrevPictureVal],cl
     mov edx,PrevPicture
     mov ecx,64*56*2
@@ -1392,12 +1386,6 @@ GetPicture:
     add esi,288*2
     dec edx
     jnz .ploopa2
-    cmp byte[MovieProcessing],0
-    jz .nomovie2
-    pushad
-    call UpChdir
-    popad
-.nomovie2    
     ret
 
 NEWSYM drawfillboxsc
@@ -1546,6 +1534,12 @@ NEWSYM drawbox16b
 
 
 NEWSYM saveselect
+    cmp byte[MovieProcessing],0
+    jz .nomovie
+    pushad
+    call mzt_chdir
+    popad
+.nomovie    
     mov byte[f3menuen],1
     mov byte[ForceNonTransp],1
     cmp byte[ForceNewGfxOff],0
@@ -1774,6 +1768,12 @@ NEWSYM saveselect
     call makepal
     mov byte[f3menuen],0
     mov byte[ForceNonTransp],0
+    cmp byte[MovieProcessing],0
+    jz .nomovie2
+    pushad
+    call UpChdir
+    popad
+.nomovie2    
     ret
 
 SECTION .bss
@@ -2081,6 +2081,12 @@ SECTION .text
     mov byte[ForceNonTransp],0
     mov byte[GUIOn],0
     call Clear2xSaIBuffer
+    cmp byte[MovieProcessing],0
+    jz .nomovie3
+    pushad
+    call UpChdir
+    popad
+.nomovie3    
     ret
 
 SECTION .data
