@@ -43,7 +43,7 @@ EXTSYM regaccessbankr8,selcB800,snesmap2,snesmmap
 EXTSYM ram7f
 EXTSYM StringLength
 EXTSYM exiter
-EXTSYM SA1Status,CurrentCPU
+EXTSYM SA1Status,CurrentCPU,SA1RegP
 EXTSYM curypos,xa,xd,xdb,xe,xp,xpb,xpc,xs,xx,xy
 EXTSYM SA1xpb,SA1xpc,SA1xa,SA1xx,SA1xy,SA1xd,SA1xdb,SA1xs
 EXTSYM cycpbl,debugbuf,soundon,spcA,spcNZ,spcP,spcPCRam
@@ -147,16 +147,19 @@ NEWSYM startdebugger
     call Create_File
     xor ecx,ecx
     mov bx,ax
-;    mov ecx,65536
-;    mov edx,[vram]
+    mov ecx,65536
+    mov edx,[vram]
+    EXTSYM oamram
+    mov edx,oamram
+    mov ecx,544
 ;    mov ecx,2048*4
 ;    mov edx,[C4Ram]
 ;    mov ecx,32768
 ;    mov edx,[romdata]
 ;    add edx,65536*13h
 ;    mov ecx,2EFh
-    mov edx,SDD1Array
-    mov ecx,[SDD1Entry]
+;    mov edx,SDD1Array
+;    mov ecx,[SDD1Entry]
 ;    mov edx,[romdata]
 ;    add edx,32768*40
 ;    mov edx,cnetplaybuf
@@ -188,6 +191,10 @@ NEWSYM startdebugger
 ;    mov edx,[romdata]
 ;    add edx,3E5CCEh
 ;    mov ecx,0022h
+;    mov edx,[romdata]
+;    add edx,1024*4096
+;    mov ecx,65536
+
     or ecx,ecx
     jz .nofilecontents
     call Write_File
@@ -385,7 +392,7 @@ NEWSYM debugloopb
     mov ah,07h
     int 21h
     cmp al,59
-    je .execute65816
+    je near .execute65816
     cmp al,62
     je near debugloadstate
     cmp al,60
@@ -396,6 +403,8 @@ NEWSYM debugloopb
     je .exit
     cmp al,13
     je near .loope
+    cmp al,'-'
+    je near .skipopcode
     cmp al,'C'
     je near .clear
     cmp al,'M'
@@ -448,8 +457,59 @@ NEWSYM debugloopb
 ;    jnz .n
     jmp debugloopa
 
+.skipopcode
+    xor eax,eax
+    xor ebx,ebx
+    xor ecx,ecx
+    xor edx,edx
+    mov bl,[xpb]
+    mov ax,[xpc]
+    test ax,8000h
+    jz .loweraddrso
+    mov esi,[snesmmap+ebx*4]
+    jmp .skiplowerso
+.loweraddrso
+    cmp ax,4300h
+    jb .lowerso
+    cmp dword[memtabler8+ebx*4],regaccessbankr8
+    je .dmaso
+.lowerso
+    mov esi,[snesmap2+ebx*4]
+    jmp .skiplowerso
+.dmaso
+    mov esi,dmadata-4300h
+.skiplowerso
+    mov [initaddrl],esi
+    add esi,eax                 ; add program counter to address
+    ; 10,30,50,70,80,90,B0,D0,F0
+    cmp byte[esi],10h
+    je .okay
+    cmp byte[esi],30h
+    je .okay
+    cmp byte[esi],50h
+    je .okay
+    cmp byte[esi],70h
+    je .okay
+    cmp byte[esi],80h
+    je .okay
+    cmp byte[esi],90h
+    je .okay
+    cmp byte[esi],0B0h
+    je .okay
+    cmp byte[esi],0D0h
+    je .okay
+    cmp byte[esi],0F0h
+    je .okay
+    jmp .notokay
+.okay
+    mov word[esi],0EAEAh
+.notokay
+    jmp debugloopa
+
 .loope
+    mov byte[skipdebugsa1],0
     call execnextop
+    mov byte[skipdebugsa1],1
     cmp byte[soundon],0
     je .nosnd
     test byte[debugds],02h
@@ -1612,40 +1672,6 @@ NEWSYM breakatsign
     cmp al,27
     je .skipc
 .skipa
-    mov al,[dmadata+01h]
-    and al,0F0h
-    cmp al,40h
-    je .skipc2
-    mov al,[dmadata+11h]
-    and al,0F0h
-    cmp al,40h
-    je .skipc2
-    mov al,[dmadata+21h]
-    and al,0F0h
-    cmp al,40h
-    je .skipc2
-    mov al,[dmadata+31h]
-    and al,0F0h
-    cmp al,40h
-    je .skipc2
-    mov al,[dmadata+41h]
-    and al,0F0h
-    cmp al,40h
-    je .skipc2
-    mov al,[dmadata+51h]
-    and al,0F0h
-    cmp al,40h
-    je .skipc2
-    mov al,[dmadata+61h]
-    and al,0F0h
-    cmp al,40h
-    je .skipc2
-    mov al,[dmadata+71h]
-    and al,0F0h
-    cmp al,40h
-    je .skipc2
-.skipc2
-    mov eax,[ram7f]
     cmp byte[debstop3],1
     jne near .loopa
     mov byte[debstop3],0
@@ -1783,9 +1809,9 @@ NEWSYM breakatsignlog
 ;    cmp byte[spcRam+6],40h
 ;    je .skipc
     mov eax,[ram7f]
-    jmp .loopa
-;    cmp byte[debstop3],1
-;    jne .loopa
+;    jmp .loopa
+    cmp byte[debstop3],1
+    jne near .loopa
 .skipc
     mov byte[debstop3],0
     ; copy back data
@@ -1857,7 +1883,7 @@ NEWSYM prbreak, db 0
 NEWSYM breakatsignb
     mov byte[keyonsn],0
     mov byte[prbreak],0
-    mov byte[debuggeron],1
+;    mov byte[debuggeron],1
 
     mov byte[exiter],01h
     xor eax,eax
@@ -1922,7 +1948,7 @@ NEWSYM breakatsignb
     sub esi,eax                 ; subtract program counter by address
     mov [xpc],si
     mov byte[exiter],0
-    mov byte[debuggeron],0
+;    mov byte[debuggeron],0
     ret
 
 ;*******************************************************
@@ -1934,7 +1960,7 @@ NEWSYM sndwrit, db 0
 NEWSYM breakatsignc
     mov byte[prbreak],0
     mov byte[sndwrit],0
-    mov byte[debuggeron],1
+;    mov byte[debuggeron],1
 
     mov byte[exiter],01h
     xor eax,eax
@@ -2001,7 +2027,7 @@ NEWSYM breakatsignc
     sub esi,eax                 ; subtract program counter by address
     mov [xpc],si
     mov byte[exiter],0
-    mov byte[debuggeron],0
+;    mov byte[debuggeron],0
     ret
 
 ;*******************************************************
@@ -2290,6 +2316,9 @@ NEWSYM startdisplay
 ; Next Opcode              Writes the next opcode & regs
 ;*******************************************************
 ; 008000 STZ $123456,x A:0000 X:0000 Y:0000 S:01FF DB:00 D:0000 P:33 E+
+NEWSYM debugsa1, db 0
+NEWSYM skipdebugsa1, db 1
+
 NEWSYM nextopcode
     push es
     mov es,[selcB800]
@@ -2307,7 +2336,10 @@ NEWSYM nextopcode
     mov edi,160+52
     mov ax,word[curypos]
     call .printnum
-    pop es
+
+    mov ax,ds
+    mov es,ax
+
     ; set output pointer
     mov edi,[debugbuf]          ; set write pointer
     inc edi
@@ -2319,7 +2351,14 @@ NEWSYM nextopcode
     pop bx
     add edi,eax
 
+    cmp byte[debugsa1],1
+    je .sa1
     call .outputbuffer
+    jmp .nosa1
+.sa1
+    mov byte[debugsa1],0
+    call .outputbuffersa1
+.nosa1
 
     ; increment tail/head
     call .addtail
@@ -2344,6 +2383,7 @@ NEWSYM nextopcode
     mov dh,0
     mov dl,0
     int 10h
+    pop es
     ret
 
 .outputbuffer
@@ -2452,6 +2492,107 @@ NEWSYM nextopcode
     mov al,'+'
 .nopos
     stosb
+    ret
+
+.outputbuffersa1
+    mov al,'-'
+    stosb
+
+    ; output pb/pc
+    mov al,[SA1xpb]
+    call .printhex8
+    mov ax,[xpc]
+    call .printhex16
+    mov al,32
+    stosb
+
+    ; output instruction
+    xor ebx,ebx
+    mov bl,[SA1xpb]
+    xor eax,eax
+    mov ax,[xpc]
+    test ax,8000h
+    jz .loweraddrsa1
+    mov ebx,[snesmmap+ebx*4]
+    jmp .skiplowersa1
+.loweraddrsa1
+    cmp ax,4300h
+    jb .lowersa1
+    cmp dword[memtabler8+ebx*4],regaccessbankr8
+    je .dmasa1
+.lowersa1
+    mov ebx,[snesmap2+ebx*4]
+    jmp .skiplowersa1
+.dmasa1
+    mov ebx,dmadata-4300h
+.skiplowersa1
+    add ebx,eax                 ; add program counter to address
+    xor ah,ah
+    mov al,[ebx]                ; get instruction number
+    mov esi,ocname
+    shl eax,2
+    add esi,eax
+    mov ecx,4
+    rep movsb
+    call .outaddrmode
+
+    ; output registers
+    mov al,'A'
+    stosb
+    mov al,':'
+    stosb
+    mov ax,[SA1xa]
+    call .printhex16
+    mov al,32
+    stosb
+    mov al,'X'
+    stosb
+    mov al,':'
+    stosb
+    mov ax,[SA1xx]
+    call .printhex16
+    mov al,32
+    stosb
+    mov al,'Y'
+    stosb
+    mov al,':'
+    stosb
+    mov ax,[SA1xy]
+    call .printhex16
+    mov al,32
+    stosb
+    mov al,'S'
+    stosb
+    mov al,':'
+    stosb
+    mov ax,[SA1xs]
+    call .printhex16
+    mov al,32
+    stosb
+    mov al,'D'
+    stosb
+    mov al,'B'
+    stosb
+    mov al,':'
+    stosb
+    mov al,[SA1xdb]
+    call .printhex8
+    mov al,32
+    stosb
+    mov al,'D'
+    stosb
+    mov al,':'
+    stosb
+    mov ax,[SA1xd]
+    call .printhex16
+    mov al,32
+    stosb
+    mov al,'P'
+    stosb
+    mov al,':'
+    stosb
+    mov al,[SA1RegP]
+    call .printhex8
     ret
 
 .addtail

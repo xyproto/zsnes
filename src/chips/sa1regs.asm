@@ -1928,7 +1928,7 @@ EXTSYM BWUsed2
     je .nosa1
     mov dword[CurBWPtr],ebx
 .nosa1
-    mov byte[debstop3],1
+;    mov byte[debstop3],1
     ret
 NEWSYM sa12250w
     mov byte[SA1ARC],al
