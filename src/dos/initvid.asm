@@ -142,8 +142,8 @@ NEWSYM dosinitvideo
     mov word[vesa2_clbit],0F7DFh ; clear all bit 0's if AND is used
     mov word[clearfilter],0F7DFh ; Filter out unnecessary bits
 
-    cmp byte[scanlines],1
-    je near .scanlines
+;    cmp byte[scanlines],1
+;    je near .scanlines
     mov ax,0013h
     int 10h
     mov dx,03D4h
@@ -246,108 +246,108 @@ NEWSYM dosinitvideo
     pop es
     ret
 
-.scanlines
-    mov ax,0013h
-    int 10h
-    mov dx,03D4h
-    mov al,11h
-    out dx,al
-
-    inc dx
-    in al,dx
-    and al,7Fh
-    mov ah,al
-    dec dx
-    mov al,11h
-    out dx,al
-    inc dx
-    mov al,ah
-    out dx,al
-
-    mov dx,03C2h
-    mov al,0E3h
-    out dx,al
-    mov dx,03D4h
-    mov ax,5F00h
-    out dx,ax
-    mov ax,3F01h
-    out dx,ax
-    mov ax,4002h
-    out dx,ax
-    mov ax,8203h
-    out dx,ax
-    mov ax,4A04h
-    out dx,ax
-    mov ax,9A05h
-    out dx,ax
-    mov ax,2306h
-    out dx,ax
-    mov ax,01D07h
-    out dx,ax
-    mov ax,0008h
-    out dx,ax
-    mov ax,6009h
-    out dx,ax
-    mov ax,0A10h
-    out dx,ax
-    mov ax,0AC11h
-    out dx,ax
-    mov ax,0FF12h
-    out dx,ax
-    mov ax,2013h
-    out dx,ax
-    mov ax,4014h
-    out dx,ax
-    mov ax,0715h
-    out dx,ax
-    mov ax,1A16h
-    out dx,ax
-    mov ax,0A317h
-    out dx,ax
-    mov dx,03C4h
-    mov ax,0101h
-    out dx,ax
-    mov ax,0E04h
-    out dx,ax
-    mov dx,03CEh
-    mov ax,4005h
-    out dx,ax
-    mov ax,0506h
-    out dx,ax
-
-    mov dx,03DAh
-    in al,dx
-    mov dx,03C0h
-    mov al,30h
-    out dx,al
-    mov al,41h
-    out dx,al
-
-    mov dx,03DAh
-    in al,dx
-    mov dx,03C0h
-    mov al,33h
-    out dx,al
-    mov al,0h
-    out dx,al
-
-    mov dx,03C6h
-    mov al,0FFh
-    out dx,al
-    cmp byte[cbitmode],1
-    je .nopalb
-    call makepal
-.nopalb
-    ; clear screen
-    push es
-    mov ax,[selcA000]
-    mov es,ax
-    xor edi,edi
-    mov ecx,256*64
-    xor eax,eax
-    rep stosd
-    pop es
-    ret
+;.scanlines
+;    mov ax,0013h
+;    int 10h
+;    mov dx,03D4h
+;    mov al,11h
+;    out dx,al
+;
+;    inc dx
+;    in al,dx
+;    and al,7Fh
+;    mov ah,al
+;    dec dx
+;    mov al,11h
+;    out dx,al
+;    inc dx
+;    mov al,ah
+;    out dx,al
+;
+;    mov dx,03C2h
+;    mov al,0E3h
+;    out dx,al
+;    mov dx,03D4h
+;    mov ax,5F00h
+;    out dx,ax
+;    mov ax,3F01h
+;    out dx,ax
+;    mov ax,4002h
+;    out dx,ax
+;    mov ax,8203h
+;    out dx,ax
+;    mov ax,4A04h
+;    out dx,ax
+;    mov ax,9A05h
+;    out dx,ax
+;    mov ax,2306h
+;    out dx,ax
+;    mov ax,01D07h
+;    out dx,ax
+;    mov ax,0008h
+;    out dx,ax
+;    mov ax,6009h
+;    out dx,ax
+;    mov ax,0A10h
+;    out dx,ax
+;    mov ax,0AC11h
+;    out dx,ax
+;    mov ax,0FF12h
+;    out dx,ax
+;    mov ax,2013h
+;    out dx,ax
+;    mov ax,4014h
+;    out dx,ax
+;    mov ax,0715h
+;    out dx,ax
+;    mov ax,1A16h
+;    out dx,ax
+;    mov ax,0A317h
+;    out dx,ax
+;    mov dx,03C4h
+;    mov ax,0101h
+;    out dx,ax
+;    mov ax,0E04h
+;    out dx,ax
+;    mov dx,03CEh
+;    mov ax,4005h
+;    out dx,ax
+;    mov ax,0506h
+;    out dx,ax
+;
+;    mov dx,03DAh
+;    in al,dx
+;    mov dx,03C0h
+;    mov al,30h
+;    out dx,al
+;    mov al,41h
+;    out dx,al
+;
+;    mov dx,03DAh
+;    in al,dx
+;    mov dx,03C0h
+;    mov al,33h
+;    out dx,al
+;    mov al,0h
+;    out dx,al
+;
+;    mov dx,03C6h
+;    mov al,0FFh
+;    out dx,al
+;    cmp byte[cbitmode],1
+;    je .nopalb
+;    call makepal
+;.nopalb
+;    ; clear screen
+;    push es
+;    mov ax,[selcA000]
+;    mov es,ax
+;    xor edi,edi
+;    mov ecx,256*64
+;    xor eax,eax
+;    rep stosd
+;    pop es
+;    ret
 
 ;*******************************************************
 ; InitVESA2 320x240x8           Set up Linear 320x240x8b
