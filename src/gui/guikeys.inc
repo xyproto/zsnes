@@ -750,6 +750,10 @@ GUIOptionKeys:
     jne .noswfix
     xor byte[SidewinderFix],1
 .noswfix
+    cmp dh,'H'
+    jne .nohighpriority
+    xor byte[HighPriority],1
+.nohighpriority
     cmp dh,'P'
     jne .nofpsatstart
     xor byte[FPSAtStart],1
