@@ -1528,12 +1528,6 @@ void initwinvideo(void)
       GetClientRect(hMainWindow, &rcWindow);
       ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow);
       ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow + 1);
-
-//      return;
-//      sprintf(WinMessage,"FirstVid!=1 end\n\0");
-//      MessageBox (NULL, WinMessage, "Init", MB_ICONERROR );
-
-//      MoveScreen(wndpl.rcNormalPosition.left, wndpl.rcNormalPosition.top);
    }
    else
    {
@@ -1551,7 +1545,6 @@ void initwinvideo(void)
          freq = CLOCKS_PER_SEC;
       }
 
-//      hInst=GetModuleHandle(0);
       if (!RegisterWinClass())
       { 
           exit(1);
