@@ -582,7 +582,7 @@ db '',13,10
 ;db 'CopyMethod = %o',13,10
 ;db '',13,10
 %ifdef __WIN32__
-db '; Video Mode, 0 - 17',13,10
+db '; Video Mode, 0 - 21',13,10
 db ';   0 = 64x56 R WIN           1 = 128x112 R WIN',13,10
 db ';   2 = 256X224 R WIN         3 = 256x224 R FULL',13,10
 db ';   4 = 512X448 R WIN         5 = 512X448 DR WIN',13,10
