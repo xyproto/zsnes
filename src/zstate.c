@@ -721,7 +721,11 @@ void statesaver()
   if (MovieProcessing == 2)
   {
     bool mzt_save(char *, bool);
-    mzt_save(fnamest+1, (cbitmode && !NoPictureSave) ? true : false);
+    if (mzt_save(fnamest+1, (cbitmode && !NoPictureSave) ? true : false))
+    {
+      Msgptr = "RR STATE SAVED.";
+      MessageOn = MsgCount;          
+    }
     return;
   } 
   
@@ -993,11 +997,19 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
     bool mzt_load(char *, bool);
     
     case 1:
-      mzt_load(statename, true);
+      if (mzt_load(statename, true))
+      {
+        Msgptr = "RR STATE LOADED.";
+        MessageOn = MsgCount;      
+      }
       return;
   
     case 2:
-      mzt_load(statename, false);
+      if (mzt_load(statename, false))
+      {
+        Msgptr = "CHAPTER LOADED.";
+        MessageOn = MsgCount;
+      }
       return;
   }  
   
