@@ -6180,12 +6180,12 @@ NEWSYM CheckROMType
 
     mov byte[intldone],0
     cmp byte[romtype],1
-    je near .hirominterlcheck
+    jne near .nointerlcheck
+    xor ebx,ebx
+    xor edx,edx
     mov eax,[curromsize]
     imul eax,1048576
-    shr eax,3
-    shr eax,4
-    imul eax,[curromsize]
+    shr eax,2
     mov esi,[romdata]
     add esi,7FC0h
     add esi,eax
@@ -6193,22 +6193,22 @@ NEWSYM CheckROMType
     mov ebx,[esi]
     inc esi
     mov edx,[esi]
-    shl edx,8
+    shl edx,16
     add ebx,edx
     inc esi
     add ebx,[esi]
     inc esi
     mov edx,[esi]
-    shl edx,8
+    shl edx,16
     add ebx,edx
-    cmp ebx,0FFFFh
-    jne near .nointerlcheck
+    cmp bx,0FFFFh
+    jne .interlcheck2
     mov esi,[romdata]
     add esi,7FC0h
     add esi,eax
     add esi,25
     cmp byte[esi],14
-    jb near .nointerlcheck
+    jae .interlcheck2
     mov esi,[romdata]
     add esi,7FC0h
     add esi,eax
@@ -6223,32 +6223,33 @@ NEWSYM CheckROMType
     je near .interleaved
     cmp byte[esi],83
     je near .interleaved
-    jmp .nointerlcheck
-.hirominterlcheck
+
+.interlcheck2
+    xor ebx,ebx
+    xor edx,edx
     mov esi,[romdata]
-    add esi,0FFC0h
+    add esi,7FC0h
     add esi,28
     mov ebx,[esi]
     inc esi
     mov edx,[esi]
-    shl edx,8
+    shl edx,16
     add ebx,edx
     inc esi
     add ebx,[esi]
     inc esi
     mov edx,[esi]
-    shl edx,8
+    shl edx,16
     add ebx,edx
-    cmp ebx,0FFFFh
+    cmp bx,0FFFFh
     jne near .nointerlcheck
     mov esi,[romdata]
-    add esi,0FFC0h
-    add esi,eax
+    add esi,7FC0h
     add esi,25
     cmp byte[esi],14
-    jb .nointerlcheck
+    jae .nointerlcheck
     mov esi,[romdata]
-    add esi,0FFC0h
+    add esi,7FC0h
     add esi,eax
     add esi,21
     cmp byte[esi],33
