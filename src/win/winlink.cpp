@@ -1488,7 +1488,11 @@ char WinMessage[256];
 extern unsigned char cvidmode;
 DWORD FirstVid=1;
 DWORD FirstFull=1;
+DWORD SMode=0;
+DWORD DSMode=0;
 extern BYTE GUIWFVID[];
+extern BYTE GUISMODE[];
+extern BYTE GUIDSIZE[];
 extern unsigned short resolutn;
 void clearwin();
 
@@ -1510,6 +1514,8 @@ void initwinvideo(void)
       X=0;
       Y=0;
       FullScreen=GUIWFVID[cvidmode];
+      SMode=GUISMODE[cvidmode];
+      DSMode=GUIDSIZE[cvidmode];
 
       switch (cvidmode)
       {
@@ -1693,9 +1699,9 @@ void initwinvideo(void)
       BlitArea.left = 0;
       BlitArea.right = SurfaceX;
 
-      if (FullScreen == 0)
+     if (FullScreen == 0 && DSMode == 0)
          BlitArea.bottom = (SurfaceY/240)*resolutn;
-      else
+     else
          BlitArea.bottom = SurfaceY;
 
       if (PrevRes == 0) PrevRes = resolutn;
@@ -2086,16 +2092,18 @@ void drawscreenwin(void)
 
    if (resolutn == 224 && FullScreen == 0 && PrevRes != resolutn)
    {
-      BlitArea.bottom = (SurfaceY/240)*224;
-      WindowHeight = (WindowHeight/239)*224;
+      if (DSMode == 0) BlitArea.bottom = (SurfaceY/240)*224;
+         else BlitArea.bottom = SurfaceY;
+      if (SMode == 0) WindowHeight = (WindowHeight/239)*224;
       initwinvideo();
       PrevRes = resolutn;
    }
 
    if (resolutn == 239 && FullScreen == 0 && PrevRes != resolutn)
    {
-      BlitArea.bottom = (SurfaceY/240)*239;
-      WindowHeight = (WindowHeight/224)*239;
+      if (DSMode == 0) BlitArea.bottom = (SurfaceY/240)*224;
+         else BlitArea.bottom = SurfaceY;
+      if (SMode == 0) WindowHeight = (WindowHeight/239)*224;
       initwinvideo();
       PrevRes = resolutn;
    }
