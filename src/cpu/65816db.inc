@@ -1363,6 +1363,10 @@ COPemulmode
     mov esi,[snesmmap+ebx*4]
     mov [initaddrl],esi
     add esi,eax
+    cmp byte[esi],0CBh
+    jne .notwai
+    mov byte[intrset],2
+.notwai
     test dl,00010000b
     jnz .setx
     endloop
@@ -1372,6 +1376,10 @@ COPemulmode
     jae .upperlower
     mov [initaddrl],esi
     add esi,eax
+    cmp byte[esi],0CBh
+    jne .notwai2
+    mov byte[intrset],2
+.notwai2
     test dl,00010000b
     jnz .setx
     endloop
