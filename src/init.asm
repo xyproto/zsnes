@@ -5507,8 +5507,8 @@ NEWSYM CheckROMType
 
     mov esi,[romdata]
     add esi,7FECh
-    cmp word[esi],8000h
-    jb .checkhirom
+;    cmp word[esi],8000h
+;    jb .checkhirom
     mov esi,[romdata]
     add esi,32704+23
     cmp byte[esi],32
@@ -5541,7 +5541,7 @@ NEWSYM CheckROMType
     cmp bx,0FFFFh
     jne .cantcheck
     mov byte[romtype],2
-    jmp .checkhiromletter
+    jmp .donecheck
 .cantcheck
     ; check for a header with mostly letters or spaces
     mov esi,[romdata]
