@@ -1889,8 +1889,20 @@ GUIStateSelKeys:
     inc cl
     jmp .done
 .noright
+%ifdef __LINUX__
+    cmp al,90
+    je  .vert
+    cmp dword[numlockptr],1
+    je  .novert
+%endif
     cmp al,72
     je .vert
+%ifdef __LINUX__
+    cmp al,96
+    je  .vert
+    cmp dword[numlockptr],1
+    je  .novert
+%endif
     cmp al,80
     jne .novert
 .vert

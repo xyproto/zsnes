@@ -2188,7 +2188,7 @@ NEWSYM testpressed8b
     ;jne near .nowin32
 %ifndef __MSDOS__
 %ifdef __LINUX__
-    test byte[pressed+05Ch],1
+    test byte[pressed+92],1
 %else
     test byte[pressed+0CBh],1
 %endif
@@ -2197,13 +2197,13 @@ NEWSYM testpressed8b
     je .noleft2
     dec bl
 %ifdef __LINUX__
-    test byte[pressed+05Ch],1
+    mov byte[pressed+92],2
 %else
     mov byte[pressed+0CBh],2
 %endif
 .noleft2
 %ifdef __LINUX__
-    test byte[pressed+05Eh],1
+    test byte[pressed+94],1
 %else
     test byte[pressed+0CDh],1
 %endif
@@ -2212,7 +2212,7 @@ NEWSYM testpressed8b
     je .noright2
     inc bl
 %ifdef __LINUX__
-    test byte[pressed+05Eh],1
+    mov byte[pressed+94],2
 %else
     mov byte[pressed+0CDh],2
 %endif

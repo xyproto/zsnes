@@ -177,6 +177,9 @@ EXTSYM numlockptr
 EXTSYM CheckPriority
 EXTSYM CheckAlwaysOnTop
 %endif
+%ifdef __LINUX__
+EXTSYM numlockptr
+%endif
 
 NEWSYM GuiAsmStart
 
