@@ -430,11 +430,11 @@ section .text
     mov [winbg1enval+eax+%1*256],bl
 %endmacro
 
-section .bss
-BackAreaAdd resd 1
-BackAreaUnFillCol resd 1
-BackAreaFillCol resd 1
-clinemainsub    resd 1
+section .data
+BackAreaAdd dd 0
+BackAreaUnFillCol dd 0
+BackAreaFillCol dd 0
+clinemainsub    dd 0
 section .text
 
 BackAreaFill:
