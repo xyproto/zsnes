@@ -887,7 +887,7 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
    LPDIRECTINPUT8 pdi = (LPDIRECTINPUT8)pvRef;
    GUID DeviceGuid = pdinst->guidInstance;
 
-   if (CurrentJoy>3)
+   if (CurrentJoy>4)
       return DIENUM_CONTINUE;
 
    // Create the DirectInput joystick device.
@@ -1196,7 +1196,7 @@ void TestJoy()
 {
    int i;
 
-   for(i=0;i<4;i++)
+   for(i=0;i<5;i++)
    {
       if (JoystickInput[i])
       {
