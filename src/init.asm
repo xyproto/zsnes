@@ -5879,19 +5879,6 @@ NEWSYM CheckROMType
     add esi,25
     cmp byte[esi],14
     jae .interlcheck2
-    mov esi,[romdata]
-    add esi,7FC0h
-    add esi,eax
-    add esi,21
-    cmp byte[esi],32
-    je near .interleaved
-    cmp byte[esi],35
-    je near .interleaved
-    cmp byte[esi],48
-    je near .interleaved
-    cmp byte[esi],50
-    je near .interleaved
-    cmp byte[esi],83
     je near .interleaved
 
 .interlcheck2
@@ -5922,16 +5909,32 @@ NEWSYM CheckROMType
     add esi,7FC0h
     add esi,21
     cmp byte[esi],33
-    je .interleaved
+    je .overflowcheck
     cmp byte[esi],49
-    je .interleaved
+    je .overflowcheck
     cmp byte[esi],53
-    je .interleaved
-    cmp byte[esi],50
-    je .interleaved
+    je .overflowcheck
     cmp byte[esi],58
-    je .interleaved
+    je .overflowcheck
     jmp .nointerlcheck
+
+.overflowcheck
+    mov edx,[esi]
+    dec esi
+    cmp byte[esi],32
+    je .interleaved
+    cmp byte[esi],dl
+    je .nointerlcheck
+    dec esi
+    cmp byte[esi],dl
+    je .nointerlcheck
+    dec esi
+    cmp byte[esi],dl
+    je .nointerlcheck
+    dec esi
+    cmp byte[esi],dl
+    je .nointerlcheck
+    je near .interleaved
 .interleaved
     cmp byte[finterleave],1
     je .doneinterl
