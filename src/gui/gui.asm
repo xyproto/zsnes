@@ -2564,14 +2564,14 @@ guimustrestartmsg:
     GUIBox 43,87,43,151,161
     GUIBox 213,87,213,151,159
     GUIBox 43,151,213,151,158
-    GUIOuttext 56,93,guiqtimemsg1,220-15
-    GUIOuttext 55,92,guiqtimemsg1,220
-    GUIOuttext 56,108,guiqtimemsg2,220-15
-    GUIOuttext 55,107,guiqtimemsg2,220
-    GUIOuttext 56,116,guiqtimemsg3,220-15
-    GUIOuttext 55,115,guiqtimemsg3,220
-    GUIOuttext 56,124,guiqtimemsg4,220-15
-    GUIOuttext 55,123,guiqtimemsg4,220
+    GUIOuttext 56,92,guiqtimemsg1,220-15
+    GUIOuttext 55,91,guiqtimemsg1,220
+    GUIOuttext 56,100,guiqtimemsg2,220-15
+    GUIOuttext 55,99,guiqtimemsg2,220
+    GUIOuttext 56,108,guiqtimemsg3,220-15
+    GUIOuttext 55,107,guiqtimemsg3,220
+    GUIOuttext 56,116,guiqtimemsg4,220-15
+    GUIOuttext 55,115,guiqtimemsg4,220
     GUIOuttext 56,139,guiqtimemsg8,220-15
     GUIOuttext 55,138,guiqtimemsg8,220
     call vidpastecopyscr
@@ -2579,8 +2579,17 @@ guimustrestartmsg:
     call DisplayBoxes
     call DisplayMenu
     call JoyRead
-    cmp byte[pressed+2Ch],0
+
+    mov byte[pressed+2Ch],0
+
+    call JoyRead
+    xor ebx,ebx
+    mov ecx,256+128+64
+.b
+    cmp byte[pressed+ebx],0
     jne .pressedokay
+    inc ebx
+    loop .b
     jmp .again
 .pressedokay
 .again2

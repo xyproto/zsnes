@@ -994,6 +994,20 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
+%macro GUIClickCButtonat 3
+    cmp eax,%1+1
+    jl %%noclick
+    cmp edx,%2+3
+    jl %%noclick
+    cmp eax,%1+6
+    jg %%noclick
+    cmp edx,%2+8
+    jg %%noclick
+    xor %3,1
+    call guimustrestartmsg
+%%noclick
+%endmacro
+
 %macro GUIClickCButtonC 3
     cmp eax,%1+1
     jl %%noclick
@@ -2107,7 +2121,7 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,166,byte[DontSavePath]
     GUIClickCButton 11,176,byte[SPCDisable]
 %ifdef __WIN32__
-    GUIClickCButton 11,186,byte[AlternateTimer]
+    GUIClickCButtonat 11,186,byte[AlternateTimer]
 %endif
     ; Frameskip = 0
     cmp byte[frameskip],0
@@ -2150,7 +2164,7 @@ DisplayGUIVideoClick:
     GUIClickCButton5 11,163,byte[Triplebufen],1
 .nocheckboxttb
 %ifndef __MSDOS__
-    GUIClickCButton5 11,183,byte[BlackAndWhite],1
+    GUIClickCButton 11,183,byte[BlackAndWhite]
 %endif
     xor ebx,ebx
     mov bl,[cvidmode]
