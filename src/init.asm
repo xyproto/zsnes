@@ -143,7 +143,8 @@ NEWSYM init
 .looppal
     mov dword[eax],cpalval
     add eax,4
-    loop .looppal
+    dec ecx
+    jnz .looppal
 
     ; Initialize snow stuff
     mov ecx,400
@@ -156,7 +157,8 @@ NEWSYM init
     or byte[SnowVelDist+edx],08h
 .skip
     inc edx
-    loop .snowloop
+    dec ecx
+    jnz .snowloop
 
     call BackupSystemVars
 
@@ -180,7 +182,8 @@ NEWSYM init
     mov [eax],dl
     inc ebx
     inc eax
-    loop .rbackupl
+    dec ecx
+    jnz .rbackupl
     mov byte[virqnodisable],0
     call clearmem
     call inittable
@@ -1930,7 +1933,8 @@ NEWSYM init65816
     mov [edi],al
     inc esi
     inc edi
-    loop .looprn
+    dec ecx
+    jnz .looprn
     mov dword[CSStatus+25],'NRM '
     cmp byte[SA1Enable],0
     je .nosa1
@@ -2024,7 +2028,8 @@ NEWSYM init65816
 .spc7110clear
     mov dword[eax],0
     add eax,4
-    loop .spc7110clear
+    dec ecx
+    jnz .spc7110clear
 .nospc7110init
     mov byte[cycpb268],115
     mov byte[cycpb358],127
@@ -2279,7 +2284,8 @@ NEWSYM init65816
     inc ebx
     dec edi
     jnz .loopbsx2
-    loop .loopbsx
+    dec ecx
+    jnz .loopbsx
 .skipbsxmove
     popad
 .notbsx
@@ -2420,13 +2426,15 @@ NEWSYM initsnes
 .loopa
     stosd
     add eax,8000h
-    loop .loopa
+    dec ecx
+    jnz .loopa
     ; set banks 40-6F (30h x 64KB ROM banks @ 0000h)
     mov ecx,40h
 .loopb
     stosd
     add eax,8000h
-    loop .loopb
+    dec ecx
+    jnz .loopb
     ; set banks 80-BF (40h x 32KB ROM banks @ 8000h)
     mov eax,[romdata]
     cmp byte[lorommapmode2],0
@@ -2438,7 +2446,8 @@ NEWSYM initsnes
 .loopc
     stosd
     add eax,8000h
-    loop .loopc
+    dec ecx
+    jnz .loopc
     cmp byte[lorommapmode2],0
     je .notlorommode2b
     sub eax,200000h
@@ -2447,13 +2456,15 @@ NEWSYM initsnes
 .loopclr
     stosd
     add eax,8000h
-    loop .loopclr
+    dec ecx
+    jnz .loopclr
     ; set banks C0-FF (40h x 64KB ROM banks @ 0000h)
     mov ecx,40h
 .loopd
     stosd
     add eax,8000h
-    loop .loopd
+    dec ecx
+    jnz .loopd
     ; set addresses 0000-7FFF (01h x 32KB WRAM @ 0000h)
     ; set banks 00-3F
     mov edi,snesmap2
@@ -2461,7 +2472,8 @@ NEWSYM initsnes
     mov ecx,40h
 .loopa2
     stosd
-    loop .loopa2
+    dec ecx
+    jnz .loopa2
     ; set banks 40-6F (30h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,200000h
@@ -2469,13 +2481,15 @@ NEWSYM initsnes
 .loopb2
     stosd
     add eax,8000h
-    loop .loopb2
+    dec ecx
+    jnz .loopb2
     ; set banks 80-BF (01h x 32KB WRAM @ 0000h)
     mov eax,[wramdata]
     mov ecx,40h
 .loopc2
     stosd
-    loop .loopc2
+    dec ecx
+    jnz .loopc2
     ; set banks C0-FF (40h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,200000h
@@ -2483,7 +2497,8 @@ NEWSYM initsnes
 .loopd2
     stosd
     add eax,8000h
-    loop .loopd2
+    dec ecx
+    jnz .loopd2
     ; set bank 70
     mov eax,[sram]
     xor ebx,ebx
@@ -2513,13 +2528,15 @@ NEWSYM initsnes
 .loopas
     stosd
     add eax,8000h
-    loop .loopas
+    dec ecx
+    jnz .loopas
     ; set banks 40-6F (30h x 64KB ROM banks @ 0000h)
     mov ecx,40h
 .loopbs
     stosd
     add eax,8000h
-    loop .loopbs
+    dec ecx
+    jnz .loopbs
     ; set banks 80-BF (40h x 32KB ROM banks @ 8000h)
     mov eax,[romdata]
     sub eax,8000h
@@ -2527,7 +2544,8 @@ NEWSYM initsnes
 .loopcs
     stosd
     add eax,8000h
-    loop .loopcs
+    dec ecx
+    jnz .loopcs
     ; set banks C0-FF (40h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,8000h
@@ -2535,7 +2553,8 @@ NEWSYM initsnes
 .loopds
     stosd
     add eax,8000h
-    loop .loopds
+    dec ecx
+    jnz .loopds
     ; set addresses 0000-7FFF (01h x 32KB WRAM @ 0000h)
     ; set banks 00-3F
     mov edi,snesmap2
@@ -2543,7 +2562,8 @@ NEWSYM initsnes
     mov ecx,40h
 .loopa2s
     stosd
-    loop .loopa2s
+    dec ecx
+    jnz .loopa2s
     ; set banks 40-6F (30h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,200000h
@@ -2551,13 +2571,15 @@ NEWSYM initsnes
 .loopb2s
     stosd
     add eax,8000h
-    loop .loopb2s
+    dec ecx
+    jnz .loopb2s
     ; set banks 80-BF (01h x 32KB WRAM @ 0000h)
     mov eax,[wramdata]
     mov ecx,40h
 .loopc2s
     stosd
-    loop .loopc2s
+    dec ecx
+    jnz .loopc2s
     ; set banks C0-FF (40h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,8000h
@@ -2565,7 +2587,8 @@ NEWSYM initsnes
 .loopd2s
     stosd
     add eax,8000h
-    loop .loopd2s
+    dec ecx
+    jnz .loopd2s
     ; set bank 70
     mov eax,[sram]
     xor ebx,ebx
@@ -2616,7 +2639,8 @@ NEWSYM initsnes
 .loopa3
     stosd
     add eax,8000h
-    loop .loopa3
+    dec ecx
+    jnz .loopa3
     ; set banks 40-6F (30h x 64KB ROM banks @ 8000h)
     mov eax,[romdata]
     sub eax,8000h
@@ -2624,7 +2648,8 @@ NEWSYM initsnes
 .loopb32
     stosd
     add eax,8000h
-    loop .loopb32
+    dec ecx
+    jnz .loopb32
     ; set banks 80-BF (40h x 32KB ROM banks @ 8000h)
     mov eax,[romdata]
     sub eax,8000h
@@ -2632,7 +2657,8 @@ NEWSYM initsnes
 .loopc3
     stosd
     add eax,8000h
-    loop .loopc3
+    dec ecx
+    jnz .loopc3
     ; set banks C0-FF (40h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,200000h
@@ -2640,7 +2666,8 @@ NEWSYM initsnes
 .loopd3
     stosd
     add eax,10000h
-    loop .loopd3
+    dec ecx
+    jnz .loopd3
     ; set addresses 0000-7FFF (01h x 32KB WRAM @ 0000h)
     ; set banks 00-3F
     mov edi,snesmap2
@@ -2648,7 +2675,8 @@ NEWSYM initsnes
     mov ecx,40h
 .loopa23
     stosd
-    loop .loopa23
+    dec ecx
+    jnz .loopa23
     ; set banks 40-6F (30h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,100000h
@@ -2656,13 +2684,15 @@ NEWSYM initsnes
 .loopb3
     stosd
     add eax,8000h
-    loop .loopb3
+    dec ecx
+    jnz .loopb3
     ; set banks 80-BF (01h x 32KB WRAM @ 0000h)
     mov eax,[wramdata]
     mov ecx,40h
 .loopc23
     stosd
-    loop .loopc23
+    dec ecx
+    jnz .loopc23
     ; set banks C0-FF (40h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,200000h
@@ -2670,7 +2700,8 @@ NEWSYM initsnes
 .loopd23
     stosd
     add eax,10000h
-    loop .loopd23
+    dec ecx
+    jnz .loopd23
     ; set bank 70
     mov eax,[sram]
     xor ebx,ebx
@@ -2700,28 +2731,32 @@ NEWSYM initsnes
 .loopab
     stosd
     add eax,10000h
-    loop .loopab
+    dec ecx
+    jnz .loopab
     ; set banks 40-6F (30h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     mov ecx,40h
 .loopbb
     stosd
     add eax,10000h
-    loop .loopbb 
+    dec ecx
+    jnz .loopbb 
     ; set banks 80-BF (40h x 32KB ROM banks @ 8000h)
     mov eax,[romdata]
     mov ecx,40h
 .loopcb
     stosd
     add eax,10000h
-    loop .loopcb
+    dec ecx
+    jnz .loopcb
     ; set banks C0-FF (40h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     mov ecx,40h
 .loopdb
     stosd
     add eax,10000h
-    loop .loopdb
+    dec ecx
+    jnz .loopdb
     ; set addresses 0000-7FFF (01h x 32KB WRAM @ 0000h)
     ; set banks 00-3F
     mov edi,snesmap2
@@ -2729,27 +2764,31 @@ NEWSYM initsnes
     mov ecx,40h
 .loopa2b
     stosd
-    loop .loopa2b
+    dec ecx
+    jnz .loopa2b
     ; set banks 40-6F (30h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     mov cx,40h
 .loopb2b
     stosd
     add eax,10000h
-    loop .loopb2b
+    dec ecx
+    jnz .loopb2b
     ; set banks 80-BF (01h x 32KB WRAM @ 0000h)
     mov eax,[wramdata]
     mov cx,40h
 .loopc2b
     stosd
-    loop .loopc2b
+    dec ecx
+    jnz .loopc2b
     ; set banks C0-FF (40h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     mov cx,40h
 .loopd2b
     stosd
     add eax,10000h
-    loop .loopd2b
+    dec ecx
+    jnz .loopd2b
     ; set bank 70
     mov eax,[sram]
     xor ebx,ebx
@@ -2785,7 +2824,8 @@ NEWSYM initsnes
 .loopa3s
     stosd
     add eax,10000h
-    loop .loopa3s
+    dec ecx
+    jnz .loopa3s
     ; set banks 40-6F (30h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
 ;    add eax,200000h
@@ -2794,7 +2834,8 @@ NEWSYM initsnes
 .loopb3s
     stosd
     add eax,20000h
-    loop .loopb3s
+    dec ecx
+    jnz .loopb3s
     ; set banks 80-BF (40h x 32KB ROM banks @ 8000h)
     mov eax,[romdata]
 ;    sub eax,8000h
@@ -2802,7 +2843,8 @@ NEWSYM initsnes
 .loopc3s
     stosd
     add eax,10000h
-    loop .loopc3s
+    dec ecx
+    jnz .loopc3s
     ; set banks C0-FF (40h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
 ;    add eax,200000h
@@ -2811,7 +2853,8 @@ NEWSYM initsnes
 .loopd3s
     stosd
     add eax,20000h
-    loop .loopd3s
+    dec ecx
+    jnz .loopd3s
     ; set addresses 0000-7FFF (01h x 32KB WRAM @ 0000h)
     ; set banks 00-3F
     mov edi,snesmap2
@@ -2819,7 +2862,8 @@ NEWSYM initsnes
     mov ecx,40h
 .loopa23s
     stosd
-    loop .loopa23s
+    dec ecx
+    jnz .loopa23s
     ; set banks 40-6F (30h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,8000h
@@ -2827,13 +2871,15 @@ NEWSYM initsnes
 .loopb23s
     stosd
     add eax,20000h
-    loop .loopb23s
+    dec ecx
+    jnz .loopb23s
     ; set banks 80-BF (01h x 32KB WRAM @ 0000h)
     mov eax,[wramdata]
     mov ecx,40h
 .loopc23s
     stosd
-    loop .loopc23s
+    dec ecx
+    jnz .loopc23s
     ; set banks C0-FF (40h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,8000h
@@ -2841,7 +2887,8 @@ NEWSYM initsnes
 .loopd23s
     stosd
     add eax,20000h
-    loop .loopd23s
+    dec ecx
+    jnz .loopd23s
     ; set bank 70
     mov eax,[sram]
     mov [snesmap2+78h*4],eax
@@ -2881,7 +2928,8 @@ SA1memmap:
 .loopa3s
     stosd
     add eax,8000h
-    loop .loopa3s
+    dec ecx
+    jnz .loopa3s
     ; set banks 40-6F (30h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
 ;    add eax,400000h
@@ -2889,7 +2937,8 @@ SA1memmap:
 .loopb3s
     stosd
     add eax,10000h
-    loop .loopb3s
+    dec ecx
+    jnz .loopb3s
     ; set banks 80-BF (40h x 32KB ROM banks @ 8000h)
     mov eax,[romdata]
     add eax,200000h
@@ -2898,7 +2947,8 @@ SA1memmap:
 .loopc3s
     stosd
     add eax,8000h
-    loop .loopc3s
+    dec ecx
+    jnz .loopc3s
     ; set banks C0-FF (40h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,00000h
@@ -2906,7 +2956,8 @@ SA1memmap:
 .loopd3s
     stosd
     add eax,10000h
-    loop .loopd3s
+    dec ecx
+    jnz .loopd3s
     ; set addresses 0000-7FFF (01h x 32KB WRAM @ 0000h)
     ; set banks 00-3F
     mov edi,snesmap2
@@ -2914,7 +2965,8 @@ SA1memmap:
     mov ecx,40h
 .loopa23s
     stosd
-    loop .loopa23s
+    dec ecx
+    jnz .loopa23s
     ; set banks 40-6F (30h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,400000h
@@ -2922,13 +2974,15 @@ SA1memmap:
 .loopb23s
     stosd
     add eax,10000h
-    loop .loopb23s
+    dec ecx
+    jnz .loopb23s
     ; set banks 80-BF (01h x 32KB WRAM @ 0000h)
     mov eax,[wramdata]
     mov ecx,40h
 .loopc23s
     stosd
-    loop .loopc23s
+    dec ecx
+    jnz .loopc23s
     ; set banks C0-FF (40h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,00000h
@@ -2936,7 +2990,8 @@ SA1memmap:
 .loopd23s
     stosd
     add eax,10000h
-    loop .loopd23s
+    dec ecx
+    jnz .loopd23s
     ; set bank 7E
     mov eax,[wramdata]
     mov [snesmmap+7Eh*4],eax
@@ -2963,7 +3018,8 @@ SDD1memmap:
 .loopa3s
     stosd
     add eax,8000h
-    loop .loopa3s
+    dec ecx
+    jnz .loopa3s
     ; set banks 40-6F (30h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
 ;    add eax,400000h
@@ -2971,7 +3027,8 @@ SDD1memmap:
 .loopb3s
     stosd
     add eax,10000h
-    loop .loopb3s
+    dec ecx
+    jnz .loopb3s
     ; set banks 80-BF (40h x 32KB ROM banks @ 8000h)
     mov eax,[romdata]
 ;    add eax,200000h
@@ -2980,7 +3037,8 @@ SDD1memmap:
 .loopc3s
     stosd
     add eax,8000h
-    loop .loopc3s
+    dec ecx
+    jnz .loopc3s
     ; set banks C0-FF (40h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,00000h
@@ -2988,7 +3046,8 @@ SDD1memmap:
 .loopd3s
     stosd
     add eax,10000h
-    loop .loopd3s
+    dec ecx
+    jnz .loopd3s
     ; set addresses 0000-7FFF (01h x 32KB WRAM @ 0000h)
     ; set banks 00-3F
     mov edi,snesmap2
@@ -2996,7 +3055,8 @@ SDD1memmap:
     mov ecx,40h
 .loopa23s
     stosd
-    loop .loopa23s
+    dec ecx
+    jnz .loopa23s
     ; set banks 40-6F (30h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,400000h
@@ -3004,13 +3064,15 @@ SDD1memmap:
 .loopb23s
     stosd
     add eax,10000h
-    loop .loopb23s
+    dec ecx
+    jnz .loopb23s
     ; set banks 80-BF (01h x 32KB WRAM @ 0000h)
     mov eax,[wramdata]
     mov ecx,40h
 .loopc23s
     stosd
-    loop .loopc23s
+    dec ecx
+    jnz .loopc23s
     ; set banks C0-FF (40h x 64KB ROM banks @ 0000h)
     mov eax,[romdata]
     add eax,00000h
@@ -3018,7 +3080,8 @@ SDD1memmap:
 .loopd23s
     stosd
     add eax,10000h
-    loop .loopd23s
+    dec ecx
+    jnz .loopd23s
     ; set bank 7E
     mov eax,[wramdata]
     mov [snesmmap+7Eh*4],eax
@@ -3082,7 +3145,8 @@ UnInterleave48mbit:
     mov [esi+40h],al
     inc al
     inc esi
-    loop .loop
+    dec ecx
+    jnz .loop
     mov esi,mode7tab+256
     mov ecx,40h
     mov al,40h+1
@@ -3090,7 +3154,8 @@ UnInterleave48mbit:
     mov [esi+80h],al
     add al,2
     inc esi
-    loop .loop2
+    dec ecx
+    jnz .loop2
     mov esi,mode7tab+256
     mov ecx,20h
     mov al,40h
@@ -3100,7 +3165,8 @@ UnInterleave48mbit:
     mov [esi],al
     add al,2
     inc esi
-    loop .loop3
+    dec ecx
+    jnz .loop3
     call SwapTable256
     popad
     ret
@@ -3233,7 +3299,8 @@ NEWSYM preparesfx
     mov [edi+32768],al
     inc esi
     inc edi
-    loop .swaploop
+    dec ecx
+    jnz .swaploop
     sub edi,65536+32768
     sub esi,65536
     dec dl
@@ -3474,7 +3541,8 @@ NEWSYM printhex
     call Output_Text
     pop ax
     shl ax,4
-    loop .loopa
+    dec ecx
+    jnz .loopa
     ret
 
 .hexdat db '0123456789ABCDEF'
@@ -3492,7 +3560,8 @@ NEWSYM printhex8
     call Output_Text
     pop ax
     shl ax,4
-    loop .loopb
+    dec ecx
+    jnz .loopb
     ret
 
 .hexdat db '0123456789ABCDEF'
@@ -4055,7 +4124,8 @@ ZipDeleteRecurse:
     mov [esi],al
     inc edi
     inc esi
-    loop .loop
+    dec ecx
+    jnz .loop
     mov edx,DTALoc+1Eh
     call Change_Single_Dir
 
@@ -4217,7 +4287,8 @@ NEWSYM SPC7110Load
 .sdd1loop
     add [eax+4],ebx
     add eax,12
-    loop .sdd1loop
+    dec ecx
+    jnz .sdd1loop
     pop ebx
 .notfoundb
     call Close_File
@@ -4334,7 +4405,8 @@ NEWSYM SPC7110Load
     jmp .foundaddr
 .notaddress
     add edx,12
-    loop .patloop
+    dec ecx
+    jnz .patloop
     ; not found
     pushad
     mov edx,[SPC7110CPtr2]
@@ -4362,7 +4434,8 @@ NEWSYM SPC7110Load
 .sdd1loopb
     sub [eax+4],ebx
     add eax,12
-    loop .sdd1loopb
+    dec ecx
+    jnz .sdd1loopb
 
     mov edx,SDD1ifname
     call Create_File
@@ -4390,7 +4463,8 @@ NEWSYM SPC7110Load
 .sdd1loopc
     add [eax+4],ebx
     add eax,12
-    loop .sdd1loopc
+    dec ecx
+    jnz .sdd1loopc
 .nosavedatafile
 
     mov edx,PrevDir
@@ -4865,7 +4939,8 @@ NEWSYM loadfileGUI
     popad
 .no
     add esi,8000h
-    loop .loopcheck
+    dec ecx
+    jnz .loopcheck
 .skipall
 
     ; mirror image
@@ -5147,7 +5222,8 @@ NEWSYM showinfo
     lodsb
     mov dl,al
     call Output_Text
-    loop .loopa
+    dec ecx
+    jnz .loopa
     mov edx,.ret
     mov ah,9         
     call Output_Text
@@ -5242,7 +5318,8 @@ NEWSYM showinfo
     mov dl,al
     mov ah,2
     call Output_Text
-    loop .loopb
+    dec ecx
+    jnz .loopb
     inc esi
     mov edx,.ret
 
@@ -5664,7 +5741,8 @@ NEWSYM CheckROMType
     inc al
 .noletter
     inc esi
-    loop .nextletter
+    dec ecx
+    jnz .nextletter
     cmp al,12
     jna .checkhiromletter
     mov byte[romtype],1
@@ -5693,7 +5771,8 @@ NEWSYM CheckROMType
     inc al
 .noletterb
     inc esi
-    loop .nextletterb
+    dec ecx
+    jnz .nextletterb
     cmp al,12
     jna .notfound
     mov byte[romtype],2

@@ -415,7 +415,8 @@ NEWSYM InitFxTables
    mov [eax],edx
    inc ebx
    add eax,4
-   loop .loopat
+   dec ecx
+   jnz .loopat
    ; bit tables
    mov eax,fxbit01
    mov ecx,256

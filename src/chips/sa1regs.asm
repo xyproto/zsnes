@@ -442,7 +442,8 @@ NEWSYM initSPC7110regs
     add eax,10000h
     add ebx,4
     add edx,4
-    loop .mmaploop2
+    dec ecx
+    jnz .mmaploop2
     pop eax
     pop edx
     pop ecx
@@ -717,7 +718,8 @@ SPC4806w:
     je .found
 .notfound
     add eax,12
-    loop .loopc
+    dec ecx
+    jnz .loopc
     jmp .noentries
 .found
     xor word[CurPtrLen],0FFFFh
@@ -733,7 +735,8 @@ SPC4806w:
     mov [edx],al
     inc ebx
     inc edx
-    loop .loopb
+    dec ecx
+    jnz .loopb
     pop eax
     mov ebx,[eax+4]
     mov edx,[lastentry]
@@ -781,7 +784,8 @@ SPC4806w:
     mov [edx],bl
     inc edx
     shl eax,4
-    loop .sploop2
+    dec ecx
+    jnz .sploop2
 
     mov edx,SPC7110nfname
     call Open_File
@@ -1692,7 +1696,8 @@ NEWSYM UpdateBanksSDD1
     mov [ebx],eax
     add eax,8000h
     add ebx,4
-    loop .mmaploop
+    dec ecx
+    jnz .mmaploop
     pop eax
     add eax,[romdata]
     mov ecx,10h
@@ -1704,7 +1709,8 @@ NEWSYM UpdateBanksSDD1
     add eax,10000h
     add ebx,4
     add edx,4
-    loop .mmaploop2
+    dec ecx
+    jnz .mmaploop2
     pop eax
     pop edx
     pop ecx
@@ -1737,7 +1743,8 @@ NEWSYM sa12223w
     add eax,10000h
     add ebx,4
     add edx,4
-    loop .mmaploop2
+    dec ecx
+    jnz .mmaploop2
     pop eax
     pop edx
     pop ecx
@@ -2344,7 +2351,8 @@ executesa1dma:
     mov [edx],al
     inc ebx
     inc edx
-    loop .loop
+    dec ecx
+    jnz .loop
 .notransfer
     pop ecx
     pop eax
@@ -2474,7 +2482,8 @@ sa1chconv:
     mov [edx],al
     inc ebx
     inc edx
-    loop .next4b
+    dec ecx
+    jnz .next4b
 
     popad
     ret
@@ -2539,7 +2548,8 @@ sa1chconv:
     mov [edx],al
     inc ebx
     inc edx
-    loop .next
+    dec ecx
+    jnz .next
 
     popad
     ret
@@ -2570,7 +2580,8 @@ NEWSYM initSA1regs
 .loopr
     mov [edi],eax
     add edi,4
-    loop .loopr
+    dec ecx
+    jnz .loopr
     ret
 
 NEWSYM initSA1regsw
@@ -2636,7 +2647,8 @@ NEWSYM initSA1regsw
 .loopw
     mov [edi],eax
     add edi,4
-    loop .loopw
+    dec ecx
+    jnz .loopw
     setregw 3000h*4,IRamWrite2
     ret
 

@@ -141,7 +141,6 @@ NEWSYM ModemSendChar
    in al,dx
    test al,00100000b
    jnz .transokay
-;   loop .loop
    dec ecx
    jnz .loop
    xor al,al

@@ -1122,7 +1122,8 @@ NEWSYM converthex
     mov [esi],dl
     inc esi
     shl eax,4
-    loop .loopb
+    dec ecx
+    jnz .loopb
     mov byte[esi],0
     ret
 
@@ -1177,7 +1178,8 @@ NEWSYM makeextension
     mov [fnamest+ebx],al
     inc ebx
     inc ah
-    loop .loopc
+    dec ecx
+    jnz .loopc
     ; find for '.' or '\'
     mov cl,dl
     mov edx,ebx

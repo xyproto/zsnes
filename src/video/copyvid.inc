@@ -2318,7 +2318,7 @@ NEWSYM ConvertToAFormat
     movq [esi],mm0
     add esi,8
     dec ecx
-    loop .crgbloop2m
+    jnz .crgbloop2m
     add esi,64
     dec dl
     jnz .crgbloopm
