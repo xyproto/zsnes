@@ -1971,12 +1971,15 @@ NEWSYM init65816
     mov dword[SDD1BankA],03020100h
     mov byte[xp],00110100b  ; NVMXDIZC
 
+    push ebx
     mov byte[xe],1          ; E
     xor eax,eax
     mov ax,[resetv]
     mov word[xpc],ax
     mov ebx,[romdata]
     add eax,ebx
+    cmp word[xpc],8000h
+    jb .notrainer
     cmp dword[ebx+0FFC0h],'BREA'
     jne .ntrchecka
     cmp word[resetv],0F000h
@@ -1990,6 +1993,8 @@ NEWSYM init65816
     mov dword[ramsize],32768
     mov dword[ramsizeand],32767
 .notrainer
+    pop ebx
+
     mov byte[intrset],0
     cmp byte[romtype],1
     je .nohirom
