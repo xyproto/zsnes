@@ -378,7 +378,7 @@ struct internal_chapter_buf
   struct internal_chapter_buf *next;
 };
 
-void interal_chapter_add_offset(struct internal_chapter_buf *icb, size_t offset)
+void internal_chapter_add_offset(struct internal_chapter_buf *icb, size_t offset)
 {
   while (icb->next)
   {
@@ -422,7 +422,7 @@ void internal_chapter_read(struct internal_chapter_buf *icb, FILE *fp, size_t co
 {
   while (count--)
   {
-    interal_chapter_add_offset(icb, fread4(fp));
+    internal_chapter_add_offset(icb, fread4(fp));
   }
 }
 
@@ -597,7 +597,7 @@ void zmv_insert_chapter()
   
     fwrite(&flag, 1, 1, zmv_vars.fp);
   
-    interal_chapter_add_offset(&(zmv_vars.internal_chapters), ftell(zmv_vars.fp));
+    internal_chapter_add_offset(&(zmv_vars.internal_chapters), ftell(zmv_vars.fp));
     zmv_vars.header.internal_chapters++;
     zmv_vars.last_internal_chapter_offset = ftell(zmv_vars.fp);
     
@@ -675,7 +675,7 @@ bool zmv_open(char *filename)
     for (i = 0; i < zmv_open_vars.external_chapter_count; i++)
     {
       fseek(zmv_vars.fp, cur_zst_size+4, SEEK_CUR);
-      interal_chapter_add_offset(&zmv_open_vars.external_chapters, fread4(zmv_vars.fp));
+      internal_chapter_add_offset(&zmv_open_vars.external_chapters, fread4(zmv_vars.fp));
     }
     
     fseek(zmv_vars.fp, input_start_pos, SEEK_SET);
@@ -807,7 +807,7 @@ void zmv_add_chapter()
   
       if (!(flag & BIT(2)))
       {
-        interal_chapter_add_offset(&zmv_open_vars.external_chapters, current_loc);
+        internal_chapter_add_offset(&zmv_open_vars.external_chapters, current_loc);
         zmv_open_vars.external_chapter_count++;
 
         fseek(zmv_vars.fp, -2, SEEK_END);
