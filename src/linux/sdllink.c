@@ -107,7 +107,7 @@ DWORD                   CurrentJoy=0;
 SDL_Joystick	*JoystickInput[4];
 #endif //__LINUX__
 
-DWORD                   BitDepth;
+DWORD                   BitDepth=0;
 BYTE                    BackColor=0;
 DEVMODE mode;
 
@@ -1265,10 +1265,14 @@ int startgame(void)
 
    flags |= ( FullScreen ? SDL_FULLSCREEN : 0);
 
-   surface = SDL_SetVideoMode(WindowWidth, WindowHeight, 0, flags);
+   surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, flags);
    if (surface == NULL) {
-	   fprintf (stderr, "Could not set %dx%d video mode.\n",SurfaceX,
-			   SurfaceY);
+	   if (BitDepth)
+		   fprintf (stderr, "Could not set %dx%dx%d video mode.\n",
+				   SurfaceX,SurfaceY,BitDepth);
+	   else
+	   	fprintf (stderr, "Could not set %dx%d video mode.\n",SurfaceX,
+				SurfaceY);
 	   return FALSE;
    }
 
