@@ -21,7 +21,7 @@ EXTSYM getcfg,soundon,SBHDMA,StereoSound,init,GUIRestoreVars,GUIClick,MouseDis
 EXTSYM ConvertJoyMap,ConvertJoyMap1,ConvertJoyMap2,printhex,InitSPC
 EXTSYM StartUp,PrintStr,WaitForKey,PrintChar,ZFileSystemInit
 EXTSYM SPCDisable,SystemInit,allocmem
-EXTSYM FPSOn,FPSAtStart,cfgsoundon,FirstTimeData
+EXTSYM FPSOn,FPSAtStart,cfgsoundon
 EXTSYM xa
 EXTSYM SBPort,SBInt,SBIrq,SBDMA,SBDMAPage,SBHDMAPage,getenv,vibracard
 EXTSYM ram7fa,wramdataa
@@ -68,14 +68,6 @@ NEWSYM zstart
 	call SystemInit
 
 	cld                     ;clear direction flag
-
-%ifndef __MSDOS__
-        cmp byte[FirstTimeData],1
-        je .nofirsttime
-	mov byte[soundon],1
-	mov byte[cfgsoundon],1
-.nofirsttime
-%endif
 
 	call setnoise
 	call InitSPC
