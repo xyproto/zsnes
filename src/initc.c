@@ -596,6 +596,33 @@ void loadZipFile()
   }
 }
 
+void SplitSupport()
+{
+  unsigned char *ROM = (unsigned char *)romdata;
+  
+  //Same Game add on  
+  if (ROM[Hi+26] == 0x33 && curromspace == 0x80000 &&
+      !ROM[Hi+21] && !ROM[Hi+22] && !ROM[Hi+23])
+  {
+    curromspace = 0;
+    memcpy(ROM+0x200000, ROM, 0x80000);  
+    strcpy(ZOpenFileName, "SAMEGAME.ZIP");
+    loadZipFile();
+    if (curromspace == 0x100200)
+    {
+      memmove(ROM, ROM+512, 0x100000);
+    }
+    else if (curromspace != 0x100000)
+    {
+      curromspace = 0;
+      return;
+    }
+    memcpy(ROM+0x100000, ROM, 0x100000);
+    curromspace = 0x280000;
+  }          
+
+}
+
 extern bool Sup48mbit;
 extern bool Sup16mbit;
 void findZipIPS(char *);
@@ -680,6 +707,8 @@ void loadROM()
     curromspace -= 512;
     memmove((unsigned char *)romdata, ((unsigned char *)romdata)+512, curromspace);  
   }
+
+  SplitSupport();
 
   if (isZip) { findZipIPS(ZOpenFileName); }
 }
