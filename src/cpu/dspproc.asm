@@ -178,6 +178,7 @@ DSPInterP:
   resw 1024
 
 section .data
+ALIGN32
 
 Gaussian:
   dw 1305,1305,1304,1304,1304,1304,1304,1303
@@ -244,7 +245,6 @@ Gaussian:
   dw    1,   1,   1,   1,   1,   1,   1,   1
   dw    0,   0,   0,   0,   0,   0,   0,   0
   dw    0,   0,   0,   0,   0,   0,   0,   0
-
   dw    0,   0,   0,   0,   0,   0,   0,   0
   dw    0,   0,   0,   0,   0,   0,   0,   0
   dw    0,   0,   0,   0,   0,   0,   0,   0
@@ -2076,6 +2076,7 @@ loopbl             resd 1         ; Loop if = 1
 usenoisedata       resd 1
 
 SECTION .data
+ALIGN32
 
 VolumeTableD
 db 0,3,6,9,12,15,17,18,19,21,22,23,24,24,26,28,30,31,33,35,36,38,40,41,43,45,46,48,49
@@ -2590,6 +2591,7 @@ NEWSYM FIRTAPVal6,      resd 1
 NEWSYM FIRTAPVal7,      resd 1
 
 SECTION .data
+ALIGN32
 NEWSYM MaxEcho,         dd 172
 
 SECTION .bss
@@ -2647,6 +2649,7 @@ NEWSYM Voice6FirstBlock,  resb 1
 NEWSYM Voice7FirstBlock,  resb 1
 
 SECTION .data
+ALIGN32
 
 ;    |AR Time 0 to 1|DR|Time 1 to SL|SL|Ratio| SR Time 1to 1/10|
 ;---------------------------------------------------------------------     
