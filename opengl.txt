@@ -74,7 +74,8 @@ might be usefull to have before compiling anything:
 Device3Dfx, Glide_SDK, Glide_V2 (or Glide_XXXX depending on your card)
 
 I believe Glide 2 is what you want, as Glide 3 doesn't work for older
-hardware, and has been claimed to not work with kernel 2.4.x
+hardware. Also Device3Dfx may not be implemented the same way for 2.4.x
+kernels.
 
 
 KNOWN ISSUES (AND SOME WORK-AROUNDS)
