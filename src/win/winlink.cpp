@@ -876,7 +876,7 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
       X2Disable[CurrentJoy]=1;
    }
 
-   diprg.diph.dwObj        = DIJOFS_Y;
+   diprg.diph.dwObj = DIJOFS_Y;
 
    if FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph))
    {
@@ -884,42 +884,42 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
       Y2Disable[CurrentJoy]=1;
    }
 
-   diprg.diph.dwObj        = DIJOFS_Z;
+   diprg.diph.dwObj = DIJOFS_Z;
    if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
    {
       Z1Disable[CurrentJoy]=1;
       Z2Disable[CurrentJoy]=1;
    }
 
-   diprg.diph.dwObj        = DIJOFS_RX;
+   diprg.diph.dwObj = DIJOFS_RX;
    if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
    {
       RX1Disable[CurrentJoy]=1;
       RX2Disable[CurrentJoy]=1;
    }
 
-   diprg.diph.dwObj        = DIJOFS_RY;
+   diprg.diph.dwObj = DIJOFS_RY;
    if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
    {
       RY1Disable[CurrentJoy]=1;
       RY2Disable[CurrentJoy]=1;
    }
 
-   diprg.diph.dwObj        = DIJOFS_RZ;
+   diprg.diph.dwObj = DIJOFS_RZ;
    if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
    {
       RZ1Disable[CurrentJoy]=1;
       RZ2Disable[CurrentJoy]=1;
    }
 
-   diprg.diph.dwObj        = DIJOFS_SLIDER(0);
+   diprg.diph.dwObj = DIJOFS_SLIDER(0);
    if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
    {
       S01Disable[CurrentJoy]=1;
       S02Disable[CurrentJoy]=1;
    }
 
-   diprg.diph.dwObj        = DIJOFS_SLIDER(1);
+   diprg.diph.dwObj = DIJOFS_SLIDER(1);
    if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
    {
       S11Disable[CurrentJoy]=1;
@@ -1235,8 +1235,8 @@ extern "C" unsigned int BitConv32Ptr;
 
 int InitDirectDraw()
 {
-   DDSURFACEDESC2       ddsd2;
-   DDPIXELFORMAT        format;
+   DDSURFACEDESC2 ddsd2;
+   DDPIXELFORMAT format;
    HRESULT hr;
    char message1[256];
    unsigned int color32,ScreenPtr2;
@@ -1369,7 +1369,7 @@ int InitDirectDraw()
 }
 
 BYTE* SurfBuf;
-DDSURFACEDESC2       ddsd;
+DDSURFACEDESC2 ddsd;
 
 DWORD LockSurface()
 {
