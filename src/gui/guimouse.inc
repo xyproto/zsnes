@@ -2297,8 +2297,7 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,140,byte[AutoPatch]
     GUIClickCButton 11,150,byte[RomInfo]
 %ifdef __WIN32__
-    GUIClickCButtonW 11,160,byte[PrimaryBuffer]
-    GUIClickCButtonW 11,170,byte[DisableScreenSaver]
+    GUIClickCButtonW 11,160,byte[DisableScreenSaver]
 %endif
     ; Frameskip = 0
     cmp byte[frameskip],0
@@ -2465,6 +2464,9 @@ DisplayGUISoundClick:
     GUIClickCButton5 111,173,byte[LowPassFilterType],2
 %ifndef __MSDOS__
     GUIClickCButton5MMXC 111,183,byte[LowPassFilterType],3
+%endif
+%ifdef __WIN32__
+    GUIClickCButton 11,101,byte[PrimaryBuffer]
 %endif
     cmp eax,15
     jl near .nosrate
