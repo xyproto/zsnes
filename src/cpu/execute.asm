@@ -110,6 +110,7 @@ EXTSYM NetPlayNoMore,MovieSeekBehind
 EXTSYM statefileloc,CHIPBATT,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead,ResetDuringMovie
 EXTSYM EMUPauseKey,INCRFrameKey,MovieWaiting
+EXTSYM copyvid
 
 %ifdef __MSDOS__
 EXTSYM dssel
@@ -1991,7 +1992,9 @@ NEWSYM cpuover
     jmp .noemupause
 .noframeincr    
     cmp byte[EMUPause],1
-    je .nonewgfx
+    jne .noemupause
+    call copyvid ;Update screen
+    jmp .nonewgfx
 .noemupause
 
     cmp byte[MovieProcessing],0
