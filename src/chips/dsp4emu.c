@@ -1672,6 +1672,9 @@ void DSP4_OP0F()
     // scan next command if no SR check needed
     if (segments)
     {
+      int32 px_dx, py_dy;
+      int32 x_scroll, y_scroll;
+
       for (lcv = 0; lcv < 4; lcv++)
       {
         // grab inputs
@@ -1704,9 +1707,6 @@ void DSP4_OP0F()
       }
 
       //////////////////////////////////////////////////////
-
-      int32 px_dx, py_dy;
-      int32 x_scroll, y_scroll;
 
       // SR = 0x00
 
