@@ -1871,7 +1871,7 @@ DisplayGUIVideo:
 .notext7b
     cmp byte[GUITBWVID+eax],0
     je .notext7c
-    GUIOuttextwin2 5,97,177,GUIVideoText10
+    GUIOuttextwin2 5,95,177,GUIVideoText10
 .notext7c
     xor eax,eax
     mov al,[cvidmode]
