@@ -187,6 +187,9 @@ extern DWORD SoundQuality;
 extern BYTE LargeSoundBuf;
 extern BYTE HighPriority;
 extern BYTE AlwaysOnTop;
+extern BYTE SaveMainWindowPos;
+extern WORD MainWindowX;
+extern WORD MainWindowY;
 extern int CurKeyPos;
 extern int CurKeyReadPos;
 extern int KeyBuffer[16];
@@ -1375,6 +1378,8 @@ void initwinvideo(void)
       if(Y>(GetSystemMetrics( SM_CYSCREEN )-WindowHeight)) Y=(GetSystemMetrics( SM_CYSCREEN )-WindowHeight);
       if(FullScreen==1) {X=0; Y=0;}
 
+      if (SaveMainWindowPos == 1) { MainWindowX = X; MainWindowY = Y; }
+
       MoveWindow( hMainWindow, X, Y,
                   WindowWidth, WindowHeight, TRUE );    
 
@@ -1406,6 +1411,8 @@ void initwinvideo(void)
       Y=(GetSystemMetrics( SM_CYSCREEN ) - WindowHeight) / 2;
       if(FullScreen==1) {X=0; Y=0;}
       if(hMainWindow) CloseWindow(hMainWindow);
+
+      if (SaveMainWindowPos == 1 && MainWindowX != -1) { X = MainWindowX; Y = MainWindowY; }
 
       hMainWindow = CreateWindow( "ZSNESWIN", WinName, WS_VISIBLE|WS_POPUP,X,Y,  //WS_OVERLAPPED "ZSNESWIN"
                                  WindowWidth,WindowHeight,NULL,NULL,hInst,NULL);

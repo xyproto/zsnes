@@ -4612,6 +4612,12 @@ DisplayGUIOptns:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck9
     GUIDisplayIconWin 10,12,168,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[SaveMainWindowPos],1
+    jne .nocheck10
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheck10
+    GUIDisplayIconWin 10,12,178,[GUITemp]
 %endif
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
@@ -4646,6 +4652,7 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,26,98,GUIGUIOptnsTextC
 %ifdef __WIN32__
     GUIOuttextwin2 10,26,173,GUIGUIOptnsTextE
+    GUIOuttextwin2 10,26,183,GUIGUIOptnsTextF
 %endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,16,123,GUIGUIOptnsText6
@@ -4664,6 +4671,7 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,25,97,GUIGUIOptnsTextC
 %ifdef __WIN32__
     GUIOuttextwin2 10,25,172,GUIGUIOptnsTextE
+    GUIOuttextwin2 10,25,182,GUIGUIOptnsTextF
 %endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,15,122,GUIGUIOptnsText6
@@ -4746,6 +4754,7 @@ GUIGUIOptnsTextB dd 'ENABLE SNOW EFFECT',0
 GUIGUIOptnsTextC dd 'ENABLE WATER EFFECT',0
 GUIGUIOptnsTextD dd 'MAIN WINDOW OPTIONS :',0
 GUIGUIOptnsTextE dd 'ALWAYS ON TOP',0
+GUIGUIOptnsTextF db 'SAVE MAIN WINDOW POSITION',0
 
 DisplayGUIAbout:
 ;    cmp byte[OSPort],3

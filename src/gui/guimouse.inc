@@ -2522,6 +2522,7 @@ DisplayGUIOptnsClick:
     GUIClickCButton6 12,93,byte[GUIEffect],2
 %ifdef __WIN32__
     GUIClickCButton 12,168,byte[AlwaysOnTop]
+    GUIClickCButton 12,178,byte[SaveMainWindowPos]
 %endif
     cmp eax,25
     jl near .nomovebar
