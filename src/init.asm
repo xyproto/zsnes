@@ -3871,7 +3871,7 @@ SPC7110IndexName db 'INDEX.BIN',0
 SPC7110DirEntry db '*.BIN',0
 SPC7110CPtr dd 0
 SPC7110CPtr2 dd 0
-NEWSYM SDD1Offset, dd 65536*3
+NEWSYM SDD1Offset, dd 65536*8
 NEWSYM SDD1nfname, db '        \_00000-0.bin',0
 NEWSYM SDD1ifname, db 'sdd1gfx.idx',0
 NEWSYM SDD1dfname, db 'sdd1gfx.dat',0
@@ -4116,7 +4116,7 @@ NEWSYM SPC7110Load
 .nopatch
 
     ; Save Datafile
-    jmp .nosavedatafile
+;    jmp .nosavedatafile
 
 ;    mov eax,[spc7110romptr]
 ;    mov [SPC7110CPtr],eax
