@@ -1288,7 +1288,7 @@ pid_t spc_fork() {
   For out purposes in ZSNES to launch a browser, this bug does not effect us. But
   be careful if you copy this code to use somewhere else.
   */
-  if (!spc_drop_privileges()) //Failed to drop special privliges
+  if (!spc_drop_privileges()) //Failed to drop special privleges
   {
     exit(0);
   }
@@ -1304,8 +1304,7 @@ void LaunchBrowser(char *browser)
 
 void ZsnesPage()
 {
-  pid_t pid = spc_fork();
-  if (pid) //If fork failed, or we are the parent
+  if (spc_fork()) //If fork failed, or we are the parent
   { 
     MouseX = 0;
     MouseY = 0;    
@@ -1319,6 +1318,7 @@ void ZsnesPage()
   LaunchBrowser("mozilla-firefox");
   LaunchBrowser("konqueror");
   LaunchBrowser("lynx");
+  LaunchBrowser("links");
   
   exit(0); //All browser launches failed, oh well
 }
