@@ -36,10 +36,6 @@ extern "C" {
 DWORD WindowWidth = 256;
 DWORD WindowHeight = 224;
 
-void ReleaseDirectDraw();
-void ReleaseDirectSound();
-void ReleaseDirectInput();
-
 DWORD FullScreen = 0;
 
 DWORD Moving= 0;
@@ -140,6 +136,10 @@ DWORD                   MouseButton;
 #define UPDATE_TICKS_UDP 1000/60       // milliseconds per world update
 
 _int64 start, end, freq, update_ticks_pc, start2, end2, update_ticks_pc2;
+
+void ReleaseDirectDraw();
+void ReleaseDirectSound();
+void ReleaseDirectInput();
 
 extern "C"
 {
@@ -432,7 +432,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          break;
       case WM_KEYUP:          // sent when user releases a key
          if (wParam==16)
-              shiftpr=false;
+            shiftpr=false;
          break;
       case WM_MOUSEMOVE:
          if(MouseInput) MouseInput->Acquire();
@@ -488,16 +488,16 @@ int RegisterWinClass(void)
 
    WNDCLASS wcl;
 
-   wcl.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_NOCLOSE ;
-	wcl.cbClsExtra		= 0;
-	wcl.cbWndExtra		= 0;
-   wcl.hIcon         = LoadIcon(NULL,IDI_APPLICATION);
-	wcl.hCursor			= NULL;	
-	wcl.hInstance		= hInst;
-	wcl.lpfnWndProc		= (WNDPROC)Main_Proc;
-   wcl.hbrBackground    = (HBRUSH)GetStockObject(BLACK_BRUSH);
-   wcl.lpszMenuName     = NULL;
-   wcl.lpszClassName    = "ZSNESWIN";
+   wcl.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_NOCLOSE ;
+   wcl.cbClsExtra	= 0;
+   wcl.cbWndExtra = 0;
+   wcl.hIcon = LoadIcon(NULL,IDI_APPLICATION);
+   wcl.hCursor = NULL;	
+   wcl.hInstance = hInst;
+   wcl.lpfnWndProc = (WNDPROC)Main_Proc;
+   wcl.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+   wcl.lpszMenuName = NULL;
+   wcl.lpszClassName = "ZSNESWIN";
 
    if (RegisterClass(&wcl) == 0) return FALSE;
 
@@ -847,13 +847,12 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
    dipdw.diph.dwObj         = DIJOFS_SLIDER(1);
    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
-
-
    dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
    dipdw.diph.dwHeaderSize = sizeof(dipdw.diph);
    dipdw.diph.dwHow        = DIPH_DEVICE;
    dipdw.dwData            = DIPROPAXISMODE_ABS;
    dipdw.diph.dwObj        = 0;
+
    JoystickInput[CurrentJoy]->SetProperty(DIPROP_AXISMODE, &dipdw.diph);
 
    CurrentJoy+=1;
