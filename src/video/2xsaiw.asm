@@ -17,7 +17,7 @@
 
 %include "macros.mac"
 
-NEWSYM TwoxSaiWAsmStart
+
 ;/*---------------------------------------------------------------------*
 ; * The following (piece of) code, (part of) the 2xSaI engine,          *
 ; * copyright (c) 1999 by Derek Liauw Kie Fa.                           *
@@ -72,6 +72,707 @@ colorA0   equ -2
 colorA1   equ 0
 colorA2   equ 2
 colorA3   equ 4
+
+
+NEWSYM _2xSaISuper2xSaILineW
+; Store some stuff
+	 push ebp
+	 mov ebp, esp
+         pushad
+
+; Prepare the destination
+%ifdef __DJGPP__
+         ; Set the selector
+         mov eax, [ebp+dstSegment]
+         mov fs, ax
+%endif
+         mov edx, [ebp+dstOffset]         ; edx points to the screen
+; Prepare the source
+         ; eax points to colorA
+         mov eax, [ebp+srcPtr]				;eax points to colorA
+         mov ebx, [ebp+srcPitch]			;ebx contains the source pitch
+         mov ecx, [ebp+width]				;ecx contains the number of pixels to process
+         ; eax now points to colorB1
+         sub eax, ebx						;eax points to B1 which is the base 
+
+; Main Loop
+.Loop:   push ecx
+
+         ;-----Check Delta------------------
+         mov ecx, [ebp+deltaPtr]
+
+
+		;load source img
+         movq mm0, [eax+colorB0]
+         movq mm1, [eax+colorB3]
+         movq mm2, [eax+ebx+color4]
+         movq mm3, [eax+ebx+colorS2]
+         movq mm4, [eax+ebx+ebx+color1]
+         movq mm5, [eax+ebx+ebx+colorS1]
+         push eax
+         add eax, ebx
+         movq mm6, [eax+ebx+ebx+colorA0]
+         movq mm7, [eax+ebx+ebx+colorA3]
+         pop eax
+
+		;compare to delta
+         pcmpeqw mm0, [ecx+2+colorB0]
+         pcmpeqw mm1, [ecx+2+colorB3]
+         pcmpeqw mm2, [ecx+ebx+2+color4]
+         pcmpeqw mm3, [ecx+ebx+2+colorS2]
+         pcmpeqw mm4, [ecx+ebx+ebx+2+color1]
+         pcmpeqw mm5, [ecx+ebx+ebx+2+colorS1]
+         add ecx, ebx
+         pcmpeqw mm6, [ecx+ebx+ebx+2+colorA0]
+         pcmpeqw mm7, [ecx+ebx+ebx+2+colorA3]
+         sub ecx, ebx
+
+
+		;compose results
+         pand mm0, mm1
+         pand mm2, mm3
+         pand mm4, mm5
+         pand mm6, mm7
+         pand mm0, mm2
+         pand mm4, mm6
+         pxor mm7, mm7
+         pand mm0, mm4
+         movq mm6, [eax+colorB0]
+         pcmpeqw mm7, mm0			;did any compare give us a zero ?
+
+         movq [ecx+2+colorB0], mm6
+
+         packsswb mm7, mm7
+         movd ecx, mm7
+         test ecx, ecx				
+         jz near .SKIP_PROCESS		;no, so we can skip
+
+         ;End Delta
+
+         ;---------------------------------
+         movq mm0, [eax+ebx+color5]
+         movq mm1, [eax+ebx+color6]
+         movq mm2, mm0
+         movq mm3, mm1
+         movq mm4, mm0
+         movq mm5, mm1
+
+         pand mm0, [colorMask]
+         pand mm1, [colorMask]
+
+         psrlw mm0, 1
+         psrlw mm1, 1
+
+         pand mm3, [lowPixelMask]
+         paddw mm0, mm1
+
+         pand mm3, mm2
+         paddw mm0, mm3                ;mm0 contains the interpolated values
+         movq [I56Pixel], mm0
+         movq mm7, mm0
+
+         ;-------------------
+         movq mm0, mm7
+         movq mm1, mm4  ;5,5,5,6
+         movq mm2, mm0
+         movq mm3, mm1
+
+         pand mm0, [colorMask]
+         pand mm1, [colorMask]
+
+         psrlw mm0, 1
+         psrlw mm1, 1
+
+         pand mm3, [lowPixelMask]
+         paddw mm0, mm1
+
+         pand mm3, mm2
+         paddw mm0, mm3                ;mm0 contains the interpolated values
+         movq [I5556Pixel], mm0
+         ;--------------------
+
+         movq mm0, mm7
+         movq mm1, mm5  ;6,6,6,5
+         movq mm2, mm0
+         movq mm3, mm1
+
+         pand mm0, [colorMask]
+         pand mm1, [colorMask]
+
+         psrlw mm0, 1
+         psrlw mm1, 1
+
+         pand mm3, [lowPixelMask]
+         paddw mm0, mm1
+
+         pand mm3, mm2
+         paddw mm0, mm3
+         movq [I5666Pixel], mm0
+
+         ;-------------------------
+         ;-------------------------
+         movq mm0, [eax+ebx+ebx+color2]
+         movq mm1, [eax+ebx+ebx+color3]
+         movq mm2, mm0
+         movq mm3, mm1
+         movq mm4, mm0
+         movq mm5, mm1
+
+         pand mm0, [colorMask]
+         pand mm1, [colorMask]
+
+         psrlw mm0, 1
+         psrlw mm1, 1
+
+         pand mm3, [lowPixelMask]
+         paddw mm0, mm1
+
+         pand mm3, mm2
+         paddw mm0, mm3
+         movq [I23Pixel], mm0
+         movq mm7, mm0
+
+         ;---------------------
+         movq mm0, mm7
+         movq mm1, mm4  ;2,2,2,3
+         movq mm2, mm0
+         movq mm3, mm1
+
+         pand mm0, [colorMask]
+         pand mm1, [colorMask]
+
+         psrlw mm0, 1
+         psrlw mm1, 1
+
+         pand mm3, [lowPixelMask]
+         paddw mm0, mm1
+
+         pand mm3, mm2
+         paddw mm0, mm3
+         movq [I2223Pixel], mm0
+
+         ;----------------------
+         movq mm0, mm7
+         movq mm1, mm5  ;3,3,3,2
+         movq mm2, mm0
+         movq mm3, mm1
+
+         pand mm0, [colorMask]
+         pand mm1, [colorMask]
+
+         psrlw mm0, 1
+         psrlw mm1, 1
+
+         pand mm3, [lowPixelMask]
+         paddw mm0, mm1
+
+         pand mm3, mm2
+         paddw mm0, mm3
+         movq [I2333Pixel], mm0
+
+
+         ;--------------------
+;////////////////////////////////
+; Decide which "branch" to take
+;--------------------------------
+         movq mm0, [eax+ebx+color5]
+         movq mm1, [eax+ebx+color6]
+         movq mm6, mm0
+         movq mm7, mm1
+         pcmpeqw mm0, [eax+ebx+ebx+color3]
+         pcmpeqw mm1, [eax+ebx+ebx+color2]
+         pcmpeqw mm6, mm7
+
+         movq mm2, mm0
+         movq mm3, mm0
+
+         pand mm0, mm1       ;colorA == colorD && colorB == colorC
+         pxor mm7, mm7
+
+         pcmpeqw mm2, mm7
+         pand mm6, mm0
+         pand mm2, mm1       ;colorA != colorD && colorB == colorC
+
+         pcmpeqw mm1, mm7
+
+         pand mm1, mm3       ;colorA == colorD && colorB != colorC
+         pxor mm0, mm6
+         por mm1, mm6
+         movq mm7, mm0
+         movq [Mask26], mm2
+         packsswb mm7, mm7
+         movq [Mask35], mm1
+
+         movd ecx, mm7
+         test ecx, ecx
+         jz near .SKIP_GUESS
+
+;---------------------------------------------
+         movq mm6, mm0
+         movq mm4, [eax+ebx+colorA]
+         movq mm5, [eax+ebx+colorB]
+         pxor mm7, mm7
+         pand mm6, [ONE]
+
+         movq mm0, [eax+colorE]
+         movq mm1, [eax+ebx+colorG]
+         movq mm2, mm0
+         movq mm3, mm1
+         pcmpeqw mm0, mm4
+         pcmpeqw mm1, mm4
+         pcmpeqw mm2, mm5
+         pcmpeqw mm3, mm5
+         pand mm0, mm6
+         pand mm1, mm6
+         pand mm2, mm6
+         pand mm3, mm6
+         paddw mm0, mm1
+         paddw mm2, mm3
+
+         pxor mm3, mm3
+         pcmpgtw mm0, mm6
+         pcmpgtw mm2, mm6
+         pcmpeqw mm0, mm3
+         pcmpeqw mm2, mm3
+         pand mm0, mm6
+         pand mm2, mm6
+         paddw mm7, mm0
+         psubw mm7, mm2
+
+         movq mm0, [eax+colorF]
+         movq mm1, [eax+ebx+colorK]
+         movq mm2, mm0
+         movq mm3, mm1
+         pcmpeqw mm0, mm4
+         pcmpeqw mm1, mm4
+         pcmpeqw mm2, mm5
+         pcmpeqw mm3, mm5
+         pand mm0, mm6
+         pand mm1, mm6
+         pand mm2, mm6
+         pand mm3, mm6
+         paddw mm0, mm1
+         paddw mm2, mm3
+
+         pxor mm3, mm3
+         pcmpgtw mm0, mm6
+         pcmpgtw mm2, mm6
+         pcmpeqw mm0, mm3
+         pcmpeqw mm2, mm3
+         pand mm0, mm6
+         pand mm2, mm6
+         paddw mm7, mm0
+         psubw mm7, mm2
+
+         push eax
+         add eax, ebx
+         movq mm0, [eax+ebx+colorH]
+         movq mm1, [eax+ebx+ebx+colorN]
+         movq mm2, mm0
+         movq mm3, mm1
+         pcmpeqw mm0, mm4
+         pcmpeqw mm1, mm4
+         pcmpeqw mm2, mm5
+         pcmpeqw mm3, mm5
+         pand mm0, mm6
+         pand mm1, mm6
+         pand mm2, mm6
+         pand mm3, mm6
+         paddw mm0, mm1
+         paddw mm2, mm3
+
+         pxor mm3, mm3
+         pcmpgtw mm0, mm6
+         pcmpgtw mm2, mm6
+         pcmpeqw mm0, mm3
+         pcmpeqw mm2, mm3
+         pand mm0, mm6
+         pand mm2, mm6
+         paddw mm7, mm0
+         psubw mm7, mm2
+
+         movq mm0, [eax+ebx+colorL]
+         movq mm1, [eax+ebx+ebx+colorO]
+         movq mm2, mm0
+         movq mm3, mm1
+         pcmpeqw mm0, mm4
+         pcmpeqw mm1, mm4
+         pcmpeqw mm2, mm5
+         pcmpeqw mm3, mm5
+         pand mm0, mm6
+         pand mm1, mm6
+         pand mm2, mm6
+         pand mm3, mm6
+         paddw mm0, mm1
+         paddw mm2, mm3
+
+         pxor mm3, mm3
+         pcmpgtw mm0, mm6
+         pcmpgtw mm2, mm6
+         pcmpeqw mm0, mm3
+         pcmpeqw mm2, mm3
+         pand mm0, mm6
+         pand mm2, mm6
+         paddw mm7, mm0
+         psubw mm7, mm2
+
+         pop eax
+         movq mm1, mm7
+         pxor mm0, mm0
+         pcmpgtw mm7, mm0
+         pcmpgtw mm0, mm1
+
+         por mm7, [Mask35]
+         por mm0, [Mask26]
+         movq [Mask35], mm7
+         movq [Mask26], mm0
+
+.SKIP_GUESS:
+
+         ;Start the ASSEMBLY !!!	eh... compose all the results together to form the final image...
+
+		 
+         movq mm0, [eax+ebx+color5]
+         movq mm1, [eax+ebx+ebx+color2]
+         movq mm2, mm0
+         movq mm3, mm1
+         movq mm4, mm0
+         movq mm5, mm1
+
+         pand mm0, [colorMask]
+         pand mm1, [colorMask]
+
+         psrlw mm0, 1
+         psrlw mm1, 1
+
+         pand mm3, [lowPixelMask]
+         paddw mm0, mm1
+
+         pand mm3, mm2
+         paddw mm0, mm3                ;mm0 contains the interpolated values
+		 ;---------------------------
+
+
+
+%ifdef dfhsdfhsdahdsfhdsfh
+
+                if (color5 == color3 && color2 != color6 && color4 == color5 && color5 != colorA2)
+                   product2a = INTERPOLATE (color2, color5);
+                else
+                if (color5 == color1 && color6 == color5 && color4 != color2 && color5 != colorA0)
+                   product2a = INTERPOLATE(color2, color5);
+                else
+                   product2a = color2;
+
+                if (color2 == color6 && color5 != color3 && color1 == color2 && color2 != colorB2)
+                   product1a = INTERPOLATE (color2, color5);
+                else
+                if (color4 == color2 && color3 == color2 && color1 != color5 && color2 != colorB0)
+                   product1a = INTERPOLATE(color2, color5);
+                else
+                   product1a = color5;
+
+%endif
+
+
+		 movq mm7, [Mask26]
+		 movq mm6, [eax+colorB2]
+		 movq mm5, [eax+ebx+ebx+color2]
+		 movq mm4, [eax+ebx+ebx+color1]
+		 pcmpeqw mm4, mm5
+		 pcmpeqw mm6, mm5
+		 pxor mm5, mm5
+		 pand mm7, mm4
+		 pcmpeqw mm6, mm5
+		 pand mm7, mm6
+
+
+
+		 movq mm6, [eax+ebx+ebx+color3]
+		 movq mm5, [eax+ebx+ebx+color2]
+		 movq mm4, [eax+ebx+ebx+color1]
+		 movq mm2, [eax+ebx+color5]
+		 movq mm1, [eax+ebx+color4]
+		 movq mm3, [eax+colorB0]
+
+		 pcmpeqw mm2, mm4
+		 pcmpeqw mm6, mm5
+		 pcmpeqw mm1, mm5
+		 pcmpeqw mm3, mm5
+		 pxor mm5, mm5
+		 pcmpeqw mm2, mm5
+		 pcmpeqw mm3, mm5
+		 pand mm6, mm1
+		 pand mm2, mm3
+		 pand mm6, mm2
+		 por mm7, mm6
+
+		 
+		 movq mm6, mm7
+		 pcmpeqw mm6, mm5
+		 pand mm7, mm0
+
+		 movq mm1, [eax+ebx+color5]
+		 pand mm6, mm1
+		 por mm7, mm6
+		 movq [final1a], mm7			;finished  1a
+
+
+	 
+	     ;--------------------------------		 
+
+		 movq mm7, [Mask35]
+		 push eax
+		 add eax, ebx
+		 movq mm6, [eax+ebx+ebx+colorA2]
+		 pop eax
+		 movq mm5, [eax+ebx+color5]
+		 movq mm4, [eax+ebx+color4]
+		 pcmpeqw mm4, mm5
+		 pcmpeqw mm6, mm5
+		 pxor mm5, mm5
+		 pand mm7, mm4
+		 pcmpeqw mm6, mm5
+		 pand mm7, mm6
+
+
+
+		 movq mm6, [eax+ebx+color6]
+		 movq mm5, [eax+ebx+color5]
+		 movq mm4, [eax+ebx+color4]
+		 movq mm2, [eax+ebx+ebx+color2]
+		 movq mm1, [eax+ebx+ebx+color1]
+		 push eax
+		 add eax, ebx
+		 movq mm3, [eax+ebx+ebx+colorA0]
+		 pop eax
+
+		 pcmpeqw mm2, mm4
+		 pcmpeqw mm6, mm5
+		 pcmpeqw mm1, mm5
+		 pcmpeqw mm3, mm5
+		 pxor mm5, mm5
+		 pcmpeqw mm2, mm5
+		 pcmpeqw mm3, mm5
+		 pand mm6, mm1
+		 pand mm2, mm3
+		 pand mm6, mm2
+		 por mm7, mm6
+
+		 
+		 movq mm6, mm7
+		 pcmpeqw mm6, mm5
+		 pand mm7, mm0
+
+		 movq mm1, [eax+ebx+ebx+color2]
+		 pand mm6, mm1
+		 por mm7, mm6
+		 movq [final2a], mm7			;finished  2a
+
+
+		 ;--------------------------------------------
+ 
+
+%ifdef dfhsdfhsdahdsfhdsfh
+                   if (color6 == color3 && color3 == colorA1 && color2 != colorA2 && color3 != colorA0)
+                      product2b = Q_INTERPOLATE (color3, color3, color3, color2);
+                   else
+                   if (color5 == color2 && color2 == colorA2 && colorA1 != color3 && color2 != colorA3)
+                      product2b = Q_INTERPOLATE (color2, color2, color2, color3);
+                   else
+                      product2b = INTERPOLATE (color2, color3);
+
+                   if (color6 == color3 && color6 == colorB1 && color5 != colorB2 && color6 != colorB0)
+                      product1b = Q_INTERPOLATE (color6, color6, color6, color5);
+                   else
+                   if (color5 == color2 && color5 == colorB2 && colorB1 != color6 && color5 != colorB3)
+                      product1b = Q_INTERPOLATE (color6, color5, color5, color5);
+                   else
+                      product1b = INTERPOLATE (color5, color6);
+%endif
+
+		 push eax
+		 add eax, ebx
+		 pxor mm7, mm7
+		 movq mm0, [eax+ebx+ebx+colorA0]
+		 movq mm1, [eax+ebx+ebx+colorA1]
+		 movq mm2, [eax+ebx+ebx+colorA2]
+		 movq mm3, [eax+ebx+ebx+colorA3]
+		 pop eax
+		 movq mm4, [eax+ebx+ebx+color2]
+		 movq mm5, [eax+ebx+ebx+color3]
+		 movq mm6, [eax+ebx+color6]
+
+		 pcmpeqw mm6, mm5
+		 pcmpeqw mm1, mm5
+		 pcmpeqw mm4, mm2
+		 pcmpeqw mm0, mm5
+		 pcmpeqw mm4, mm7
+		 pcmpeqw mm0, mm7
+		 pand mm0, mm4
+		 pand mm6, mm1
+		 pand mm0, mm6
+
+		 movq mm4, [eax+ebx+color2]
+		 movq mm5, [eax+ebx+ebx+color5]
+		 movq mm6, [eax+ebx+ebx+color3]
+
+		 pcmpeqw mm5, mm4
+		 pcmpeqw mm2, mm4
+		 pcmpeqw mm1, mm6
+		 pcmpeqw mm3, mm4
+		 pcmpeqw mm1, mm7
+		 pcmpeqw mm3, mm7
+		 pand mm2, mm5
+		 pand mm1, mm3
+		 pand mm1, mm2
+
+		 movq mm2, mm0
+		 movq mm7, [I2333Pixel]
+		 movq mm6, [I2223Pixel]
+		 movq mm5, [I23Pixel]
+		 movq mm4, [Mask35]
+		 movq mm3, [Mask26]
+
+		 por mm2, mm4
+		 pand mm4, [eax+ebx+ebx+color3]
+		 por mm2, mm3
+		 pand mm3, [eax+ebx+ebx+color2]
+		 por mm2, mm1
+		 pand mm0, mm7
+		 pand mm1, mm6
+		 pxor mm7, mm7
+		 pcmpeqw mm2, mm7
+		 por mm0, mm1
+		 por mm3, mm4
+		 pand mm2, mm5
+		 por mm0, mm3
+		 por mm0, mm2
+		 movq [final2b], mm0
+
+		 ;-----------------------------------
+		 
+
+		 pxor mm7, mm7
+		 movq mm0, [eax+colorB0]
+		 movq mm1, [eax+colorB1]
+		 movq mm2, [eax+colorB2]
+		 movq mm3, [eax+colorB3]
+		 movq mm4, [eax+ebx+color5]
+		 movq mm5, [eax+ebx+color6]
+		 movq mm6, [eax+ebx+ebx+color3]
+
+		 pcmpeqw mm6, mm5
+		 pcmpeqw mm1, mm5
+		 pcmpeqw mm4, mm2
+		 pcmpeqw mm0, mm5
+		 pcmpeqw mm4, mm7
+		 pcmpeqw mm0, mm7
+		 pand mm0, mm4
+		 pand mm6, mm1
+		 pand mm0, mm6
+
+		 movq mm4, [eax+ebx+color5]
+		 movq mm5, [eax+ebx+ebx+color2]
+		 movq mm6, [eax+ebx+color6]
+
+		 pcmpeqw mm5, mm4
+		 pcmpeqw mm2, mm4
+		 pcmpeqw mm1, mm6
+		 pcmpeqw mm3, mm4
+		 pcmpeqw mm1, mm7
+		 pcmpeqw mm3, mm7
+		 pand mm2, mm5
+		 pand mm1, mm3
+		 pand mm1, mm2
+
+		 movq mm2, mm0
+		 movq mm7, [I5666Pixel]
+		 movq mm6, [I5556Pixel]
+		 movq mm5, [I56Pixel]
+		 movq mm4, [Mask35]
+		 movq mm3, [Mask26]
+
+		 por mm2, mm4
+		 pand mm4, [eax+ebx+color5]
+		 por mm2, mm3
+		 pand mm3, [eax+ebx+color6]
+		 por mm2, mm1
+		 pand mm0, mm7
+		 pand mm1, mm6
+		 pxor mm7, mm7
+		 pcmpeqw mm2, mm7
+		 por mm0, mm1
+		 por mm3, mm4
+		 pand mm2, mm5
+		 por mm0, mm3
+		 por mm0, mm2
+		 movq [final1b], mm0
+		 
+	  ;---------
+
+		 movq mm0, [final1a]
+		 movq mm4, [final2a]
+		 movq mm2, [final1b]
+		 movq mm6, [final2b]
+
+		 movq mm1, mm0
+		 movq mm5, mm4
+
+
+         punpcklwd mm0, mm2
+         punpckhwd mm1, mm2
+
+         punpcklwd mm4, mm6
+         punpckhwd mm5, mm6
+
+
+%ifdef __DJGPP__
+         movq [fs:edx], mm0
+         movq [fs:edx+8], mm1
+         push edx
+         add edx, [ebp+dstPitch]
+         movq [fs:edx], mm4
+         movq [fs:edx+8], mm5
+         pop edx
+%else
+         movq [edx], mm0
+         movq [edx+8], mm1
+         push edx
+         add edx, [ebp+dstPitch]
+         movq [edx], mm4
+         movq [edx+8], mm5
+         pop edx
+%endif
+.SKIP_PROCESS:
+         mov ecx, [ebp+deltaPtr]
+         add ecx, 8
+         mov [ebp+deltaPtr], ecx
+         add edx, 16
+         add eax, 8
+
+         pop ecx
+         sub ecx, 4
+         cmp ecx, 0
+         jg  near .Loop
+
+; Restore some stuff
+         popad
+         mov esp, ebp
+         pop ebp
+         emms
+         ret
+
+
+;-------------------------------------------------------------------------
+;-------------------------------------------------------------------------
+;-------------------------------------------------------------------------
+
+
+
+
+
+
 
 
 
@@ -1324,24 +2025,27 @@ FALSE         dd 0x00000000, 0x00000000
 TRUE          dd 0xffffffff, 0xffffffff
 ONE           dd 0x00010001, 0x00010001
 
-ACPixel       times 8 db 0
-Mask1         times 8 db 0
-Mask2         times 8 db 0
 
-I56Pixel      times 8 db 0
-I23Pixel      times 8 db 0
-Mask26        times 8 db 0
-Mask35        times 8 db 0
-Mask26b       times 8 db 0
-Mask35b       times 8 db 0
-product1a     times 8 db 0
-product1b     times 8 db 0
-product2a     times 8 db 0
-product2b     times 8 db 0
-final1a       times 8 db 0
-final1b       times 8 db 0
-final2a       times 8 db 0
-final2b       times 8 db 0
+	SECTION .bss ALIGN = 32
+ACPixel       resb 8
+Mask1         resb 8
+Mask2         resb 8
 
-SECTION .text
-NEWSYM TwoxSaiWAsmEnd
+I56Pixel      resb 8
+I23Pixel      resb 8
+I5556Pixel    resb 8
+I2223Pixel    resb 8
+I5666Pixel    resb 8
+I2333Pixel    resb 8
+Mask26        resb 8
+Mask35        resb 8
+Mask26b       resb 8
+Mask35b       resb 8
+product1a     resb 8
+product1b     resb 8
+product2a     resb 8
+product2b     resb 8
+final1a       resb 8
+final1b       resb 8
+final2a       resb 8
+final2b       resb 8

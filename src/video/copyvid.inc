@@ -24,11 +24,11 @@ EXTSYM vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3
 EXTSYM granadd
 EXTSYM SpecialLine
 EXTSYM vidbufferofsb
-EXTSYM Super2xSaI
+;EXTSYM Super2xSaI
 EXTSYM HalfTransB,HalfTransC
 
 
-%include "video/2xsaimmx.inc"
+%include "video/2xSaImmx.inc"
 
 
 
@@ -831,7 +831,6 @@ copyvesa2320x480x8ng:
 ;*******************************************************
 
 ALIGN32
-SECTION .data
 NEWSYM EagleHold, dd 0
 NEWSYM smallscreenon, dd 0
 NEWSYM smallscreence, dd 0
@@ -839,7 +838,7 @@ NEWSYM CurrentGUIOn, dd 0
 vesavaland dd 0,0
 mmxvalanda dd 11111111110000001111111111000000b,11111111110000001111111111000000b
 mmxvalandb dd 00000000000111110000000000011111b,00000000000111110000000000011111b
-SECTION .text
+
 NEWSYM copyvesa2640x480x8bgui
     mov byte[CurrentGUIOn],1
     cmp byte[smallscreenon],1
@@ -3800,9 +3799,10 @@ Process2xSaI:
 ;dstPitch      equ 28
 ;dstSegment    equ 32
 
-
+%ifdef asdfasdfasdfsafdasdf
     cmp byte[En2xSaI],3
     je .super2xsai
+%endif
     mov eax,1280        ; destination pitch
     push eax
     mov eax,edi         ; destination offset
@@ -3821,6 +3821,8 @@ Process2xSaI:
 .supereagle
     call _2xSaISuperEagleLine
     jmp .normal
+
+%ifdef asdgawe65egfdgfdg
 .super2xsai
     pushad
     mov eax,1280        ; destination pitch
@@ -3860,6 +3862,9 @@ Process2xSaI:
     add eax,8
     loop .s2xsailoop2
     jmp .dones2xsai
+%endif
+
+
 .normal
     add esp,24
 .dones2xsai
@@ -5696,4 +5701,3 @@ NEWSYM Clear2xSaIBuffer
     add ebx,4
     loop .nextb
     ret
-

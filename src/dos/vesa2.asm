@@ -25,9 +25,10 @@ EXTSYM InitDrive,gotoroot,InitDir,fulladdtab
 ;        EXTSYM printhex
 EXTSYM UnusedBit,HalfTrans,UnusedBitXor,ngrposng,nggposng,ngbposng
 ;        EXTSYM printhex
-EXTSYM Init_2xSaIMMX,Init_2xSaI
 
-NEWSYM Vesa2AsmStart
+EXTSYM Init_2xSaIMMX
+
+
 
 
 
@@ -762,7 +763,6 @@ NEWSYM InitVesa2
 .red11
         push eax
         call Init_2xSaIMMX
-        call Init_2xSaI
         pop eax
         ret
 
@@ -799,4 +799,3 @@ NEWSYM RMREGS
 .ss	dw 0
 .spare	times 20 dd 0
 ;----------------------------------------------------------------------
-NEWSYM Vesa2AsmEnd
