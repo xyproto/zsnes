@@ -2048,6 +2048,8 @@ C4activate:
     je near .calcangle
     cmp al,22h          ; supply x/y displacement, return angle (+distance?)
     je near .linearray
+    cmp al,25h
+    je near .multiply
     cmp al,2Dh          ; ???
     je near .transform
     cmp al,89h
@@ -2310,6 +2312,22 @@ C4activate:
     call C4Transform
 ;    mov word[eax+1F80h],0
 ;    mov word[eax+1F83h],0
+    popad
+    ret
+.multiply
+    pushad
+    mov esi,[C4Ram]
+    mov eax,[esi+1F80h]
+    and eax,0FFFFFFh
+    mov ebx,[esi+1F83h]
+    and ebx,0FFFFFFh   
+    imul eax,ebx
+    mov [esi+1F80h],ax
+    sar eax,16
+    mov [esi+1F82h],al
+    ;imul ebx
+    ;mov [esi+1F80h],eax
+    ;mov [esi+1F84h],dx
     popad
     ret
 .equatevelocity
