@@ -48,6 +48,7 @@ EXTSYM curypos,xa,xd,xdb,xe,xp,xpb,xpc,xs,xx,xy
 EXTSYM SA1xpb,SA1xpc,SA1xa,SA1xx,SA1xy,SA1xd,SA1xdb,SA1xs
 EXTSYM cycpbl,debugbuf,soundon,spcA,spcNZ,spcP,spcPCRam
 EXTSYM spcRam,spcRamDP,spcS,spcX,spcY
+EXTSYM CurPtrVal,SPC7110Enable
 
 NEWSYM DebugAsmStart
 
@@ -242,6 +243,42 @@ NEWSYM debstop3, db 0
 NEWSYM debstop4, db 0
 SECTION .text
 
+NEWSYM WriteSPC7110log
+    cmp byte[SPC7110Enable],0
+    je .nospc7110
+    mov edx,SPC7110fn
+    call Create_File
+    mov bx,ax
+    mov ecx,8
+    mov edx,DecompAPtr
+    call Write_File
+    mov edx,CurPtrVal
+    mov ecx,[DecompAPtr]
+    shl ecx,3
+    add ecx,27
+    call Write_File
+    call Close_File
+.nospc7110
+    ret
+NEWSYM ReadSPC7110log
+    cmp byte[SPC7110Enable],0
+    je .nospc7110
+    mov edx,SPC7110fn
+    call Open_File
+    jc .nospc7110
+    mov bx,ax
+    mov ecx,8
+    mov edx,DecompAPtr
+    call Read_File
+    mov edx,CurPtrVal
+    mov ecx,[DecompAPtr]
+    shl ecx,3
+    add ecx,27
+    call Read_File
+    call Close_File
+.nospc7110
+    ret
+SPC7110fn db 'SPC7110.dat',0
 
 NEWSYM loadtempstuff
     ; Load stuff
