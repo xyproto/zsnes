@@ -1018,16 +1018,16 @@ NEWSYM ScanCodeListing
         db 'KP8','KP9','KP-','KP4','KP5','KP6','KP+','KP1'
         db 'KP2','KP3','KP0','KP.','   ','   ','OEM','F11'  ; 50h
         db 'F12','HOM',' UP','PGU','LFT','5DH','RGT','END'
-        db 'DWN','PGD','INS','DEL','64H','65H','66H','67H'  ; 80h
+        db 'DWN','PGD','INS','DEL','64H','65H','66H','67H'  ; 60h
 %else
         db 'F6 ','F7 ','F8 ','F9 ','F10','NUM','SCR','N 7'  ; 40h
         db 'N 8','N 9','N -','N 4','N 5','N 6','N +','N 1'
         db 'N 2','N 3','N 0','N .','   ','   ','OEM','F11'  ; 50h
         db 'F12','59h','5Ah','5BH','5CH','5DH','5EH','5FH'
-        db '60H','61H','62H','63H','64H','65H','66H','67H'  ; 80h
-        db '68H','69H','6AH','6BH','6CH','6DH','6EH','6FH'
+        db '60H','61H','62H','63H','64H','65H','66H','67H'  ; 60h
 %endif
-        db '70H','71H','72H','73H','74H','75H','76H','77H'  ; 90h
+        db '68H','69H','6AH','6BH','6CH','6DH','6EH','6FH'
+        db '70H','71H','72H','73H','74H','75H','76H','77H'  ; 70h
         db '78H','79H','7AH','7BH','7CH','7DH','7EH','7FH'
         ; Keyboard continued (Direct Input)
         db '80H','81H','82H','83H','84H','85H','86H','87H'  ; 80h
@@ -1046,32 +1046,44 @@ NEWSYM ScanCodeListing
         db 'E8H','E9H','EAH','EBH','ECH','EDH','EEH','EFH'
         db 'F0H','F1H','F2H','F3H','F4H','F5H','F6H','F7H'  ; F0h
         db 'F8H','F9H','FAH','FBH','FCH','FDH','FEH','FFH'
-        ; Joystick Stuff (Direct Input)
-        db 'J00','J01','J02','J03','J04','J05','J06','J07'
+        ; Joystick Stuff
+        db 'J00','J01','J02','J03','J04','J05','J06','J07'  ; 100h
         db 'J08','J09','J0A','J0B','J0C','J0D','J0E','J0F'
-        db 'J10','J11','J12','J13','J14','J15','J16','J17'
+        db 'J10','J11','J12','J13','J14','J15','J16','J17'  ; 110h
         db 'J18','J19','J1A','J1B','J1C','J1D','J1E','J1F'
-        db 'J20','J21','J22','J23','J24','J25','J26','J27'
+        db 'J20','J21','J22','J23','J24','J25','J26','J27'  ; 120h
         db 'J28','J29','J2A','J2B','J2C','J2D','J2E','J2F'
-        db 'J30','J31','J32','J33','J34','J35','J36','J37'
+        db 'J30','J31','J32','J33','J34','J35','J36','J37'  ; 130h
         db 'J38','J39','J3A','J3B','J3C','J3D','J3E','J3F'
-        db 'J40','J41','J42','J43','J44','J45','J46','J47'
+        db 'J40','J41','J42','J43','J44','J45','J46','J47'  ; 140h
         db 'J48','J49','J4A','J4B','J4C','J4D','J4E','J4F'
-        db 'J50','J51','J52','J53','J54','J55','J56','J57'
+        db 'J50','J51','J52','J53','J54','J55','J56','J57'  ; 150h
         db 'J58','J59','J5A','J5B','J5C','J5D','J5E','J5F'
-        db 'J60','J61','J62','J63','J64','J65','J66','J67'
+        db 'J60','J61','J62','J63','J64','J65','J66','J67'  ; 160h
         db 'J68','J69','J6A','J6B','J6C','J6D','J6E','J6F'
-        db 'J70','J71','J72','J73','J74','J75','J76','J77'
+        db 'J70','J71','J72','J73','J74','J75','J76','J77'  ; 170h
         db 'J78','J79','J7A','J7B','J7C','J7D','J7E','J7F'
+%ifdef __LINUX__
+        ; Extra Joystick Stuff
+        db 'J80','J81','J82','J83','J84','J85','J86','J87'  ; 180h
+        db 'J88','J89','J8A','J8B','J8C','J8D','J8E','J8F'
+        db 'J90','J91','J92','J93','J94','J95','J96','J97'  ; 190h
+        db 'J98','J99','J9A','J9B','J9C','J9D','J9E','J9F'
+        db 'JA0','JA1','JA2','JA3','JA4','JA5','JA6','JA7'  ; 2A0h
+        db 'JA8','JA9','JAA','JAB','JAC','JAD','JAE','JAF'
+        db 'JB0','JB1','JB2','JB3','JB4','JB5','JB6','JB7'  ; 2B0h
+        db 'JB8','JB9','JBA','JBB','JBC','JBD','JBE','JBF' 
+%else
         ; Extra Stuff (180h) (Parallel Port)
-        db 'PPB','PPY','PSL','PST','PUP','PDN','PLT','PRT'
+        db 'PPB','PPY','PSL','PST','PUP','PDN','PLT','PRT'  ; 180h
         db 'PPA','PPX','PPL','PPR','   ','   ','   ','   '
-        db 'P2B','P2Y','P2S','P2T','P2U','P2D','P2L','P2R'
+        db 'P2B','P2Y','P2S','P2T','P2U','P2D','P2L','P2R'  ; 190h
         db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
-        db 'PPB','PPY','PSL','PST','PUP','PDN','PLT','PRT'
+        db 'PPB','PPY','PSL','PST','PUP','PDN','PLT','PRT'  ; 2A0h
         db 'PPA','PPX','PPL','PPR','   ','   ','   ','   '
-        db 'P2B','P2Y','P2S','P2T','P2U','P2D','P2L','P2R'
-        db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
+        db 'P2B','P2Y','P2S','P2T','P2U','P2D','P2L','P2R'  ; 2B0h
+        db 'P2A','P2X','P2L','P2R','   ','   ','   ','   ' 
+%endif
 
 SECTION .text
 

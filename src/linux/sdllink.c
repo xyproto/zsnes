@@ -77,7 +77,12 @@ extern BYTE GUIHQ4X[];
 
 /* JOYSTICK AND KEYBOARD INPUT */
 SDL_Joystick *JoystickInput[5];
+unsigned int AxisOffset[5] = {256 + 128 + 64};	// per joystick offsets in
+unsigned int ButtonOffset[5] = {448};		// pressed. We have 128 + 64
+unsigned int HatOffset[5] = {448};		// bytes for all joysticks. We
+unsigned int BallOffset[5] = {448};		// can control all 5 players.
 int shiftptr = 0;
+int offset;
 DWORD numlockptr;
 
 extern unsigned char pressed[];
@@ -150,7 +155,6 @@ static void adjustMouseYScale(void)
 
 int Main_Proc(void)
 {
-	int j;
 	SDL_Event event;
 
 	while (SDL_PollEvent(&event))
@@ -176,7 +180,7 @@ int Main_Proc(void)
 				if (event.key.keysym.scancode - 8 >= 0)
 				{
 					//if (pressed[event.key.keysym.scancode - 8] != 2)
-						pressed[event.key.keysym.scancode - 8] = 1;
+					pressed[event.key.keysym.scancode - 8] = 1;
 					ProcessKeyBuf(event.key.keysym.sym);
 				}
 				break;
@@ -228,7 +232,6 @@ int Main_Proc(void)
 						MouseButton = MouseButton | event.button.button;
 						break;
 				}
-
 				break;
 
 			case SDL_MOUSEBUTTONUP:
@@ -236,132 +239,127 @@ int Main_Proc(void)
 					MouseButton & ~event.button.button;
 				break;
 
-		    case SDL_JOYHATMOTION: // POV hats act as direction pad
-			    if (event.jhat.hat == 0) // only support the first POV hat for now
-			    {
-				    switch (event.jhat.value)
-				    {
+			case SDL_JOYHATMOTION: // POV hats act as direction pad
+				offset = HatOffset[event.jhat.which];
+				if (offset >= (256 + 128 + 64)) break;
+				switch (event.jhat.value)
+			    	{
 				        case SDL_HAT_CENTERED:
-						    pressed[0x100 + event.jhat.which * 32 + 0] = 0;
-							pressed[0x100 + event.jhat.which * 32 + 1] = 0;
-							pressed[0x100 + event.jhat.which * 32 + 2] = 0;
-							pressed[0x100 + event.jhat.which * 32 + 3] = 0;
-							break;
-					    case SDL_HAT_UP:
-						    pressed[0x100 + event.jhat.which * 32 + 3] = 1;
-							pressed[0x100 + event.jhat.which * 32 + 2] = 0;
-							break;
-					    case SDL_HAT_RIGHTUP:
-						    pressed[0x100 + event.jhat.which * 32 + 0] = 1;
-							pressed[0x100 + event.jhat.which * 32 + 3] = 1;
-							pressed[0x100 + event.jhat.which * 32 + 1] = 0;
-							pressed[0x100 + event.jhat.which * 32 + 2] = 0;
-							break;
-					    case SDL_HAT_RIGHT:
-						    pressed[0x100 + event.jhat.which * 32 + 0] = 1;
-							pressed[0x100 + event.jhat.which * 32 + 1] = 0;
-							break;
-					    case SDL_HAT_RIGHTDOWN:
-						    pressed[0x100 + event.jhat.which * 32 + 0] = 1;
-							pressed[0x100 + event.jhat.which * 32 + 2] = 1;
-							pressed[0x100 + event.jhat.which * 32 + 1] = 0;
-							pressed[0x100 + event.jhat.which * 32 + 3] = 0;
-							break;
-					    case SDL_HAT_DOWN:
-						    pressed[0x100 + event.jhat.which * 32 + 2] = 1;
-							pressed[0x100 + event.jhat.which * 32 + 3] = 0;
-							break;
-					    case SDL_HAT_LEFTDOWN:
-						    pressed[0x100 + event.jhat.which * 32 + 1] = 1;
-							pressed[0x100 + event.jhat.which * 32 + 2] = 1;
-							pressed[0x100 + event.jhat.which * 32 + 0] = 0;
-							pressed[0x100 + event.jhat.which * 32 + 3] = 0;
-							break;
-					    case SDL_HAT_LEFT:
-						    pressed[0x100 + event.jhat.which * 32 + 1] = 1;
-							pressed[0x100 + event.jhat.which * 32 + 0] = 0;
-							break;
-					    case SDL_HAT_LEFTUP:
-						    pressed[0x100 + event.jhat.which * 32 + 1] = 1;
-							pressed[0x100 + event.jhat.which * 32 + 3] = 1;
-							pressed[0x100 + event.jhat.which * 32 + 0] = 0;
-							pressed[0x100 + event.jhat.which * 32 + 2] = 0;
-							break;
-					}
+						pressed[offset] = 0;
+						pressed[offset + 1] = 0;
+						pressed[offset + 2] = 0;
+						pressed[offset + 3] = 0;
+						break;
+					case SDL_HAT_UP:
+						pressed[offset + 3] = 1;
+						pressed[offset + 2] = 0;
+						break;
+					case SDL_HAT_RIGHTUP:
+						pressed[offset] = 1;
+						pressed[offset + 3] = 1;
+						pressed[offset + 1] = 0;
+						pressed[offset + 2] = 0;
+						break;
+					case SDL_HAT_RIGHT:
+						pressed[offset] = 1;
+						pressed[offset + 1] = 0;
+						break;
+					case SDL_HAT_RIGHTDOWN:
+						pressed[offset] = 1;
+						pressed[offset + 2] = 1;
+						pressed[offset + 1] = 0;
+						pressed[offset + 3] = 0;
+						break;
+					case SDL_HAT_DOWN:
+						pressed[offset + 2] = 1;
+						pressed[offset + 3] = 0;
+						break;
+					case SDL_HAT_LEFTDOWN:
+						pressed[offset + 1] = 1;
+						pressed[offset + 2] = 1;
+						pressed[offset] = 0;
+						pressed[offset + 3] = 0;
+						break;
+					case SDL_HAT_LEFT:
+						pressed[offset + 1] = 1;
+						pressed[offset] = 0;
+						break;
+					case SDL_HAT_LEFTUP:
+						pressed[offset + 1] = 1;
+						pressed[offset + 3] = 1;
+						pressed[offset] = 0;
+						pressed[offset + 2] = 0;
+						break;
 				}
 				break;
 
 			/*
-			   joystick trackball code untested; change the test values
-			   if the motion is too sensitive (or not sensitive enough);
-			   only the first trackball is supported for now. we could get
-			   really general here, but this may break the format of 'pressed'
+			   joystick trackball code untested; change the test
+			   values if the motion is too sensitive (or not
+			   sensitive enough)
 			 */
 			case SDL_JOYBALLMOTION:
-			    //CurrentJoy = event.jball.which;
-				if (event.jball.ball == 0)
+				offset = BallOffset[event.jball.which];
+				offset += event.jball.ball;
+				if (offset >= (256 + 128 + 64)) break;
+				if (event.jball.xrel < -100)
 				{
-					if (event.jball.xrel < -100)
-					{
-						pressed[0x100 + event.jball.which * 32 + 6] = 0;
-						pressed[0x100 +	event.jball.which * 32 + 7] = 1;
-					}
-					if (event.jball.xrel > 100)
-					{
-						pressed[0x100 + event.jball.which * 32 + 6] = 1;
-						pressed[0x100 +	event.jball.which * 32 + 7] = 0;
-					}
-					if (event.jball.yrel < -100)
-					{
-						pressed[0x100 + event.jball.which * 32 + 8] = 0;
-						pressed[0x100 + event.jball.which * 32 + 9] = 1;
-					}
-					if (event.jball.yrel > 100)
-					{
-						pressed[0x100 + event.jball.which * 32 + 8] = 1;
-						pressed[0x100 + event.jball.which * 32 + 9] = 0;
+					pressed[offset] = 0;
+					pressed[offset + 1] = 1;
 				}
+				if (event.jball.xrel > 100)
+				{
+					pressed[offset] = 1;
+					pressed[offset + 1] = 0;
+				}
+				if (event.jball.yrel < -100)
+				{
+					pressed[offset + 2] = 0;
+					pressed[offset + 3] = 1;
+				}
+				if (event.jball.yrel > 100)
+				{
+					pressed[offset + 2] = 1;
+					pressed[offset + 3] = 0;
 				}
 				break;
 
 			case SDL_JOYAXISMOTION:
-				for (j = 0; j < 4; j++)
+				offset = AxisOffset[event.jaxis.which];
+				offset += event.jaxis.axis * 2;
+				if (offset >= (256 + 128 + 64)) break;
+//				printf("DEBUG axis offset: %d\n", offset);
+				if (event.jaxis.value < -16384)
 				{
-					if (event.jaxis.axis == j)
-					{
-						if (event.jaxis.value < -16384)
-						{
-							pressed[0x100 +
-								event.jaxis.which *	32 + 2 * j + 1] = 1;
-							pressed[0x100 +
-								event.jaxis.which * 32 + 2 * j + 0] = 0;
-						}
-						else if (event.jaxis.value > 16384)
-						{
-							pressed[0x100 +
-								event.jaxis.which * 32 + 2 * j + 0] = 1;
-							pressed[0x100 +
-								event.jaxis.which * 32 + 2 * j + 1] = 0;
-						}
-						else
-						{
-							pressed[0x100 +
-								event.jaxis.which * 32 + 2 * j + 0] = 0;
-							pressed[0x100 +
-								event.jaxis.which * 32 + 2 * j + 1] = 0;
-						}
-					}
+					pressed[offset + 1] = 1;
+					pressed[offset + 0] = 0;
+				}
+				else if (event.jaxis.value > 16384)
+				{
+					pressed[offset + 0] = 1;
+					pressed[offset + 1] = 0;
+				}
+				else
+				{
+					pressed[offset + 0] = 0;
+					pressed[offset + 1] = 0;
 				}
 				break;
 
 			case SDL_JOYBUTTONDOWN:
-				pressed[0x100 + event.jbutton.which * 32 + 16 +
-					event.jbutton.button] = 1;
+				offset = ButtonOffset[event.jbutton.which];
+				offset += event.jbutton.button;
+//				printf("DEBUG button offset: %d\n", offset);
+				if (offset >= (256 + 128 + 64)) break;
+				pressed[offset] = 1;
 				break;
 
 			case SDL_JOYBUTTONUP:
-				pressed[0x100 + event.jbutton.which * 32 + 16 +
-					event.jbutton.button] = 0;
+				offset = ButtonOffset[event.jbutton.which];
+				offset += event.jbutton.button;
+//				printf("DEBUG button offset: %d\n", offset);
+				if (offset >= (256 + 64)) break;
+				pressed[offset] = 0;
 				break;
 			case SDL_QUIT:
 				LinuxExit();
@@ -584,6 +582,8 @@ int ReInitSound(void)
 BOOL InitJoystickInput(void)
 {
 	int i, max_num_joysticks;
+	int num_axes, num_buttons, num_hats, num_balls;
+	int js_fail = 0;
 
 	for (i = 0; i < 5; i++)
 		JoystickInput[i] = NULL;
@@ -602,12 +602,51 @@ BOOL InitJoystickInput(void)
 	SDL_JoystickEventState(SDL_ENABLE);
 
 	if (max_num_joysticks > 5) max_num_joysticks = 5;
+
 	for (i = 0; i < max_num_joysticks; i++)
 	{
 		JoystickInput[i] = SDL_JoystickOpen(i);
-		printf("Joystick %i (%i Buttons): %s\n", i,
-		       SDL_JoystickNumButtons(JoystickInput[i]),
-		       SDL_JoystickName(i));
+		num_axes = SDL_JoystickNumAxes(JoystickInput[i]);
+		num_buttons = SDL_JoystickNumButtons(JoystickInput[i]);
+		num_hats = SDL_JoystickNumHats(JoystickInput[i]);
+		num_balls = SDL_JoystickNumBalls(JoystickInput[i]);
+		printf("Device %i %s\n", i, SDL_JoystickName(i));
+		printf("  %i axis, %i buttons, %i hats, %i balls\n",
+			num_axes, num_buttons, num_hats, num_balls);
+
+		if (js_fail)
+		{
+			printf("Warning: Joystick won't work.\n");
+			continue;
+		}
+		if (i == 0)
+		{
+			AxisOffset[0] = 256;		// After key data
+			ButtonOffset[0] = AxisOffset[0] + num_axes * 2;
+//			printf("ButtonOffset %d\n", ButtonOffset[0]);
+			HatOffset[0] = ButtonOffset[0] + num_buttons;
+//			printf("HatOffset %d\n", HatOffset[0]);
+			BallOffset[0] = HatOffset[0] + num_hats * 4;
+//			printf("BallOffset %d\n", BallOffset[0]);
+			if ((BallOffset[0] + num_balls * 4) >= (256 + 128 + 64))
+				js_fail = 1;
+		}
+		else
+		{
+			AxisOffset[i] = BallOffset[i - 1] +
+				SDL_JoystickNumBalls(JoystickInput[i - 1]);
+			ButtonOffset[i] = AxisOffset[i] + num_axes * 2;
+			HatOffset[i] = ButtonOffset[i] + num_buttons;
+			BallOffset[i] = HatOffset[i] + num_hats * 4;
+			if ((BallOffset[i] + num_balls * 4) >= (256 + 128 + 64))
+				js_fail = 1;
+
+		}
+		if (js_fail)
+		{
+			printf("Warning: Too many buttons, axes, hats and/or Balls!\n");
+			printf("Warning: Joystick won't work fully.\n");
+		}
 	}
 
 	return TRUE;
