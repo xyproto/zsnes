@@ -398,11 +398,14 @@ void internal_chapter_add_offset(struct internal_chapter_buf *icb, size_t offset
 
 void internal_chapter_free_chain(struct internal_chapter_buf *icb)
 {
-  if (icb->next)
+  if (icb)
   {
-    internal_chapter_free_chain(icb->next);
+    if (icb->next)
+    {
+      internal_chapter_free_chain(icb->next);
+    }
+    free(icb);
   }
-  free(icb);
 }
 
 void internal_chapter_write(struct internal_chapter_buf *icb, FILE *fp)
@@ -903,163 +906,16 @@ void Replay()
   }
 }
 
-unsigned int MovieBuffFrame, MovieBuffSize;
-unsigned char MovieBuffer[21*60];
-
-void IncFrameWriteBuffer()
-{
-  MovieBuffFrame++;
-
-  if (MovieBuffFrame == 60)
-  {
-    fwrite(MovieBuffer, 1, MovieBuffSize, movfhandle);
-
-    MovieBuffSize = 0;
-    MovieBuffFrame = 0;
-  }
-}
-
-void intsplitter (unsigned char *buffer, unsigned int offset, unsigned int value)
-{
-  unsigned char i;
-
-  for (i=0 ; i<4 ; i++)
-  {
-    buffer[offset + i] = ((value >> i*8) & 0xFF);
-  }
-}
-
 unsigned int bytemerger (unsigned char heaviest, unsigned char heavy, unsigned char light, unsigned char lightest)
 {
   return ((heaviest << 24) | (heavy << 16) | (light << 8) | (lightest));
 }
 
-unsigned int CReadHead, ReadHead, CFWriteStart = 64+30, CFWriteHead;
-extern unsigned char BackState, CNetType;
-unsigned char StoreBuffer[128*32];
-
-void Record()
-{
-  unsigned int offst, PJoyATemp, PJoyBTemp, PJoyCTemp, PJoyDTemp, PJoyETemp;
-
-  if ((BackState == 1) && (CNetType >= 20))
-  {
-    if (CReadHead == ReadHead)
-    {
-      CFWriteStart++;
-      CFWriteStart &= 0x7F;
-
-      if (CFWriteStart == CFWriteHead)
-      {
-	offst = (CFWriteHead << 5);
-
-	offst++;
-	PJoyATemp = bytemerger (StoreBuffer[offst+3],StoreBuffer[offst+2],StoreBuffer[offst+1],StoreBuffer[offst]);
-	offst+=4;
-	PJoyBTemp = bytemerger (StoreBuffer[offst+3],StoreBuffer[offst+2],StoreBuffer[offst+1],StoreBuffer[offst]);
-	offst+=4;
-	PJoyCTemp = bytemerger (StoreBuffer[offst+3],StoreBuffer[offst+2],StoreBuffer[offst+1],StoreBuffer[offst]);
-	offst+=4;
-	PJoyDTemp = bytemerger (StoreBuffer[offst+3],StoreBuffer[offst+2],StoreBuffer[offst+1],StoreBuffer[offst]);
-	offst+=4;
-	PJoyETemp = bytemerger (StoreBuffer[offst+3],StoreBuffer[offst+2],StoreBuffer[offst+1],StoreBuffer[offst]);
-	offst+=4;
-
-//	if (StoreBuffer[offst]) - commented out in the ASM.
-	if ((PJoyAOrig == PJoyATemp) && (PJoyBOrig == PJoyBTemp) && (PJoyCOrig == PJoyCTemp) && (PJoyDOrig == PJoyDTemp) && (PJoyEOrig == PJoyETemp))
-	{
-	  MovieBuffer[MovieBuffSize] = 1;
-	  MovieBuffSize++;
-	}
-	else
-	{
-	  PJoyAOrig = PJoyATemp;
-	  PJoyBOrig = PJoyBTemp;
-	  PJoyCOrig = PJoyCTemp;
-	  PJoyDOrig = PJoyDTemp;
-	  PJoyEOrig = PJoyETemp;
-
-	  MovieBuffer[MovieBuffSize] = 0;
-	  MovieBuffSize++;
-
-	  intsplitter (MovieBuffer, MovieBuffSize, PJoyAOrig);
-	  MovieBuffSize += 4;
-	  intsplitter (MovieBuffer, MovieBuffSize, PJoyBOrig);
-	  MovieBuffSize += 4;
-	  intsplitter (MovieBuffer, MovieBuffSize, PJoyCOrig);
-	  MovieBuffSize += 4;
-	  intsplitter (MovieBuffer, MovieBuffSize, PJoyDOrig);
-	  MovieBuffSize += 4;
-	  intsplitter (MovieBuffer, MovieBuffSize, PJoyEOrig);
-	  MovieBuffSize += 4;
-	}
-
-	IncFrameWriteBuffer();
-
-	CFWriteHead++;
-	CFWriteHead &= 0x7F;
-      }
-
-      CReadHead++;
-      CReadHead &= 0x7F;
-    }
-
-    offst = (ReadHead << 5);
-    StoreBuffer[offst] = 0;
-    offst++;
-
-    intsplitter (StoreBuffer, offst, JoyAOrig);
-    offst += 4;
-    intsplitter (StoreBuffer, offst, JoyBOrig);
-    offst += 4;
-    intsplitter (StoreBuffer, offst, JoyCOrig);
-    offst += 4;
-    intsplitter (StoreBuffer, offst, JoyDOrig);
-    offst += 4;
-    intsplitter (StoreBuffer, offst, JoyEOrig);
-    offst +=4;
-
-    ReadHead++;
-    ReadHead &= 0x7F;
-  }
-  else
-  {
-    if ((PJoyAOrig != JoyAOrig) || (PJoyBOrig != JoyBOrig) || (PJoyCOrig != JoyCOrig) || (PJoyDOrig != JoyDOrig) || (PJoyEOrig != JoyEOrig))
-    {
-      PJoyAOrig = JoyAOrig;
-      PJoyBOrig = JoyBOrig;
-      PJoyCOrig = JoyCOrig;
-      PJoyDOrig = JoyDOrig;
-      PJoyEOrig = JoyEOrig;
-      MovieTemp = 0;
-      MovieBuffer[MovieBuffSize] = 0;
-      MovieBuffSize++;
-
-      intsplitter (MovieBuffer, MovieBuffSize, JoyAOrig);
-      MovieBuffSize += 4;
-      intsplitter (MovieBuffer, MovieBuffSize, JoyBOrig);
-      MovieBuffSize += 4;
-      intsplitter (MovieBuffer, MovieBuffSize, JoyCOrig);
-      MovieBuffSize += 4;
-      intsplitter (MovieBuffer, MovieBuffSize, JoyDOrig);
-      MovieBuffSize += 4;
-      intsplitter (MovieBuffer, MovieBuffSize, JoyEOrig);
-      MovieBuffSize += 4;
-    }
-    else
-    {
-      MovieTemp = 1;
-      MovieBuffer[MovieBuffSize] = 1;
-      MovieBuffSize++;
-    }
-
-    IncFrameWriteBuffer();
-  }
-}
+extern unsigned char CNetType;
 
 void ProcessMovies()
 {
-  if (MovieProcessing == 2)	{ Record(); }
+  if (MovieProcessing == 2)	{ zmv_record(); }
   else	{ Replay(); }
 }
 
@@ -1076,11 +932,12 @@ void SkipMovie()
 
 void MovieStop()
 {
-  if (MovieProcessing)
+  switch (MovieProcessing)
   {
-    fclose(movfhandle);
-    MovieProcessing = 0;
+    case 1: fclose(movfhandle); break;
+    case 2: zmv_record_finish(); break;
   }
+  MovieProcessing = 0;
 }
 
 extern unsigned int MovieCounter, statefileloc, Totalbyteloaded, curexecstate;
@@ -1172,93 +1029,29 @@ void MoviePlay()
   }
 }
 
-extern unsigned char NoPictureSave;
-
-void statesaver();
-
 void MovieRecord()
 {
-  unsigned char FileExt[4];
-
-  FILE *tempfhandle;
-
   GUICBHold &= 0xFFFFFF00;
 
   if (!MovieProcessing)
   {
-    MovieCounter = 0;
+    unsigned char FileExt[4];
+    FILE *tempfhandle;
+    
     memcpy (FileExt, &fnamest[statefileloc-3], 4);
     memcpy (&fnamest[statefileloc-3], ".zmv", 4);
     fnamest[statefileloc] = CMovieExt;
+    
+    SRAMChdir();
     tempfhandle = fopen(fnamest+1,"rb");
 
-	// check if file exists
     if ((MovieRecordWinVal == 1) || (tempfhandle == NULL))
     {
-      if (!MovieProcessing)
-      {
-	CFWriteHead = 0;
-	CReadHead = 0;
-	ReadHead = 0;
-	CFWriteStart = 64;
-      }
-
       MovieRecordWinVal = 0;
 
-      SRAMChdir();
-
-      NoPictureSave = 1;
-	// saves the statedata as first chunk of movie
-      if (!MovieProcessing)	{ statesaver(); }
-
-      NoPictureSave = 0;
-	// it shouldn't fail, but paranoids can add an 'if'...
-      movfhandle = fopen(fnamest+1,"r+b");
-      fseek(movfhandle, 0, SEEK_END);
-
-      if (!MovieProcessing)
-      {
-	RecData[0] = soundon;
-	RecData[1] = (versionNumber & 0xFF); // valid for versions under 2.56
-	RecData[2] = 1;
-	intsplitter (RecData, 3, timer2upd);
-	intsplitter (RecData, 7, curexecstate);
-	fwrite(RecData, 1, 16, movfhandle);
-
-	if (ramsize)	{ fwrite(sram, 1, ramsize, movfhandle); }
-
-	MovieBuffSize = 0;
-	MovieBuffFrame = 0;
-
-	if ((CNetType != 20) && (CNetType != 21))
-	{
-	  nmiprevaddrl = 0;
-	  nmiprevaddrh = 0;
-	  nmirept = 0;
-	  nmiprevline = 224;
-	  nmistatus = 0;
-	  spcnumread = 0;
-	  spchalted = 0xFFFFFFFF;
-	  NextLineCache = 0;
-	  PJoyAOrig = 0;
-	  PJoyBOrig = 0;
-	  PJoyCOrig = 0;
-	  PJoyDOrig = 0;
-	  PJoyEOrig = 0;
-	  DSPMem[0x08] = 0;
-	  DSPMem[0x18] = 0;
-	  DSPMem[0x28] = 0;
-	  DSPMem[0x38] = 0;
-	  DSPMem[0x48] = 0;
-	  DSPMem[0x58] = 0;
-	  DSPMem[0x68] = 0;
-	  DSPMem[0x78] = 0;
-	}
-      }
-
+      zmv_create(fnamest+1);
+      
       MovieProcessing = 2;
-
-      asm_call(ChangetoLOADdir);
     }
     else
     {
@@ -1266,6 +1059,7 @@ void MovieRecord()
       MovieRecordWinVal = 1;
     }
 
+    asm_call(ChangetoLOADdir);
     memcpy (&fnamest[statefileloc-3], FileExt, 4);
   }
 }
