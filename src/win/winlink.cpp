@@ -1005,7 +1005,6 @@ void TestJoy()
       if (JoystickInput[i])
       {
          JoystickInput[i]->Poll();
-//         memset(&js[i], 0, sizeof(DIJOYSTATE));
 
          if (IDirectInputDevice8_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i])==DIERR_INPUTLOST)
          {
@@ -1047,22 +1046,27 @@ void TestJoy()
          {
             if (js[i].lRy>0) RY1Disable[i]=1;
          }
+
          if (!RY2Disable[i])
          {
             if (js[i].lRy<0) RY2Disable[i]=1;
          }
+
          if (!RZ1Disable[i])
          {
             if (js[i].lRz>0) RZ1Disable[i]=1;
          }
+
          if (!RZ2Disable[i])
          {
             if (js[i].lRz<0) RZ2Disable[i]=1;
          }
+
          if (!S01Disable[i])
          {
             if (js[i].rglSlider[0]>0) S01Disable[i]=1;
          }
+
          if (!S02Disable[i])
          {
             if (js[i].rglSlider[0]<0) S02Disable[i]=1;
@@ -1072,6 +1076,7 @@ void TestJoy()
          {
             if (js[i].rglSlider[1]>0) S11Disable[i]=1;
          }
+
          if (!S12Disable[i])
          {
             if (js[i].rglSlider[1]<0) S12Disable[i]=1;
@@ -1962,7 +1967,6 @@ void drawscreenwin(void)
             initwinvideo();
             Sleep(1000);
             drawscreenwin();
-//            exit(0);
             break;
       }
    }
@@ -2238,15 +2242,14 @@ void WinUpdateDevices()
       }
       return;
    }
+
    for(i=0;i<256;i++)
    {
       if (keys2[i]==0) keys[i]=0;
       if (keys2[i]!=0&&keys[i]==0) keys[i]=1;
    }
-//   keys[1]=keys[16];
-   keys[0]=0;
 
-//   if (nojoystickpoll) return;
+   keys[0]=0;
 
    for(i=0;i<4;i++)
    {
@@ -2257,7 +2260,6 @@ void WinUpdateDevices()
             keys[0x100+i*32+j]=0;
          }
 
-//         memset(&js[i], 0, sizeof(DIJOYSTATE));
          JoystickInput[i]->Poll();
 
          if (IDirectInputDevice7_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i])==DIERR_INPUTLOST)
@@ -2416,7 +2418,6 @@ int GetMouseY(void)
 
 int GetMouseMoveX(void)
 {
-//   InputRead();
    MouseMove2X=MouseMoveX;
    return(MouseMove2X);
 }
