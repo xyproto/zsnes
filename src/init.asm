@@ -1429,6 +1429,8 @@ NEWSYM headerhack
 
     mov esi,[romdata]
     add esi,7FC0h
+    cmp dword[esi],0DEB3B0CFh
+    je .marvelous
     cmp dword[esi],'REND'
     jne .notrend
     mov byte[cycpb268],127
@@ -1437,6 +1439,8 @@ NEWSYM headerhack
     mov byte[cycpblt2],127
     mov byte[cycpbl],127
     mov byte[cycpblt],127
+    jmp .notrend
+.marvelous
 .notrend
 
     mov esi,[romdata]
@@ -1968,8 +1972,24 @@ NEWSYM init65816
     mov byte[xp],00110100b  ; NVMXDIZC
 
     mov byte[xe],1          ; E
+    xor eax,eax
     mov ax,[resetv]
     mov word[xpc],ax
+    mov ebx,[romdata]
+    add eax,ebx
+    cmp dword[ebx+0FFC0h],'BREA'
+    jne .ntrchecka
+    cmp word[resetv],0F000h
+    jne .ntrchecka
+    jmp .yestrainer
+.ntrchecka
+    sub eax,8000h
+    cmp byte[eax],5Ch
+    jne .notrainer
+.yestrainer
+    mov dword[ramsize],32768
+    mov dword[ramsizeand],32767
+.notrainer
     mov byte[intrset],0
     cmp byte[romtype],1
     je .nohirom
