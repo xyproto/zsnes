@@ -582,7 +582,15 @@ ProcessMouseButtons:
     cmp byte[GUICBHold],20
     je near SkipMovie
     cmp byte[GUICBHold],40
-    je near SetAllKeys
+    jne .notClickedSetKeys
+    push ebx
+    mov ebx,[GUIcurrentinputcursloc]
+    mov bl,[GUIInputRefF+ebx]
+    cmp bl,0
+    pop ebx
+    je .notClickedSetKeys
+    jmp near SetAllKeys
+.notClickedSetKeys
     cmp byte[GUICBHold],50
     jne .notstartcheat
     call CheatCodeSearchInit
