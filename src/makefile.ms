@@ -147,7 +147,8 @@ CHIPSOBJ=${CHIPDIR}/dsp1emu${OE} ${CHIPDIR}/fxemu2${OE} ${CHIPDIR}/sfxproc${OE}\
 	${CHIPDIR}/fxemu2b${OE} ${CHIPDIR}/fxemu2c${OE} ${CHIPDIR}/fxtable${OE}\
         ${CHIPDIR}/sa1proc${OE} ${CHIPDIR}/sa1regs${OE} ${CHIPDIR}/dsp1proc${OE}\
         ${CHIPDIR}/st10proc${OE} ${CHIPDIR}/seta10${OE} ${CHIPDIR}/dsp2proc${OE}\
-	${CHIPDIR}/sdd1emu${OE} ${CHIPDIR}/c4emu${OE}
+	${CHIPDIR}/sdd1emu${OE} ${CHIPDIR}/c4emu${OE} ${CHIPDIR}/dsp4proc${OE}\
+	${CHIPDIR}/dsp4emu${OE}
 
 CPUOBJ=${CPUDIR}/dma${OE} ${CPUDIR}/dsp${OE} ${CPUDIR}/dspproc${OE}\
 	${CPUDIR}/execute${OE} ${CPUDIR}/irq${OE} ${CPUDIR}/memory${OE}\
@@ -309,6 +310,9 @@ ${CHIPDIR}/fxemu2b${OE}: $< ${CHIPDIR}/fxemu2.mac ${CHIPDIR}/fxemu2b.mac
 ${CHIPDIR}/fxemu2c${OE}: $< macros.mac ${CHIPDIR}/fxemu2.mac ${CHIPDIR}/fxemu2b.mac ${CHIPDIR}/fxemu2c.mac
 ${CHIPDIR}/fxtable${OE}: $< macros.mac
 ${CHIPDIR}/sa1proc${OE}: $< macros.mac
+${CHIPDIR}/dsp4proc${OE}: $< macros.mac
+${CHIPDIR}/dsp4emu${OE}: $<
+
 
 ${GUIDIR}/gui${OE}: $< ${GUIDIR}/guitools.inc\
 	${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guiwindp.inc\

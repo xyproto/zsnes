@@ -140,6 +140,8 @@ EXTSYM setaaccessbankr16,setaaccessbankw16,setaaccessbankr16a,setaaccessbankw16a
 
 EXTSYM DSP2Read8b,DSP2Read16b,DSP2Write8b,DSP2Write16b,InitDSP2
 
+EXTSYM DSP4Read8b,DSP4Read16b,DSP4Write8b,DSP4Write16b,InitDSP4
+
 %ifdef __LINUX__
 EXTSYM LoadDir, popdir, pushdir
 %endif
@@ -3083,13 +3085,25 @@ NEWSYM CheckROMType
     cmp byte[DSP3Enable],1
     je .initdsp
     cmp byte[DSP4Enable],1
-    je .initdsp
-;   call InitDSP4
+    pushad
+    call InitDSP4
+    popad
+    xor ecx,ecx
+.dsp4loop
+    mov dword[memtabler8+30h*4+ecx],DSP4Read8b
+    mov dword[memtablew8+30h*4+ecx],DSP4Write8b
+    mov dword[memtabler16+30h*4+ecx],DSP4Read16b
+    mov dword[memtablew16+30h*4+ecx],DSP4Write16b
+    add ecx,4
+    cmp ecx,16*4
+    jne .dsp4loop
     jmp .notDSP1Hi
 .initdsp2
     call InitDSP2
 .initdsp
+    pushad
     call InitDSP
+    popad
     mov byte[DSP1Type],1
     cmp byte[romtype],2
     jne .notDSP1Hi
