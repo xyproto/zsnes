@@ -1465,6 +1465,19 @@ NEWSYM headerhack
 .notneugier
 
     mov esi,[romdata]
+    add esi,07FC0h
+    cmp dword[esi],'HOME'
+    jne .nothomealone
+    cmp dword[esi+4],' ALO'
+    jne .nothomealone
+    mov esi,[romdata]
+    add esi,0666Bh
+    mov byte[esi],0EEh ; RTS instead of jumping to a rts 
+    mov byte[esi+1],0BCh ; RTS instead of jumping to a rts 
+.nothomealone
+
+
+    mov esi,[romdata]
     add esi,0FFC0h
     cmp dword[esi],'EMER'
     jne .notemeralddragon
