@@ -40,8 +40,7 @@ extern unsigned char Palette0, SPC700sh, OffBy1Line, DSPDisable,
                      romtype, scanlines, showallext, smallscreenon, soundon,
                      spcon, vsyncon, DisplayS, fname, filefound, SnowOn,
                      NetChatFirst,NetServer,NetNewNick,
-                     NetFilename,NetQuitAfter,UDPConfig,CmdLineNetPlay,
-                     CmdLineTCPIPAddress;
+                     NetFilename,TCPIPAddress,NetQuitAfter,UDPConfig;
 
 void ccmdline(void);
 
@@ -75,9 +74,17 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdSh
 
    char * strp;
 
+   // START FIX - STATMAT - 22/01/02
+   /* REMOVED
+   int nofile;
+   REMOVED */
+      
+   char *endquote_pos = NULL;
+   // END FIX - STATMAT - 22/01/02
+
    char ExtA[4][512];
    int charptr,strptr,strcharptr,dquotes;
-   int i,j,nofile;
+   int i,j; 
 
    hInst=hInstance;
 
@@ -125,9 +132,9 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdSh
    NetServer=0;
    NetChatFirst=0;
    NetQuitAfter=0;
-   nofile=0;
+   //nofile=0;
    if ((strptr>2) && (ExtA[0][0]=='/') && (strlen(ExtA[0])>=5)){
-       nofile=1;
+       //nofile=1;
        if (ucase(ExtA[0][1])=='T') UDPConfig=0;
        if (ucase(ExtA[0][2])=='S') NetServer=1;
        if (ucase(ExtA[0][2])=='C') NetServer=2;
@@ -171,8 +178,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdSh
          if (strptr<4) {
            NetServer=0;
          } else {
-           CmdLineNetPlay=1;
-           strp=&CmdLineTCPIPAddress;
+           strp=&TCPIPAddress;
            strncpy(strp,ExtA[3],28);
          }
        }
@@ -187,25 +193,190 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdSh
 
    longueur=strlen(szCmdLine);
 
-   if((longueur!=0) && (!nofile))
+   // START FIX - STATMAT - 22/01/02
+   //if((longueur!=0) && (!nofile))
+   if(longueur != 0)   
    {
-        char *fvar;
-        fvar=&fname;
+      /* REMOVED
+      char *fvar;
+      fvar=&fname;
+      
+      fvar[0] = longueur;
+      if(szCmdLine[0]=='"')
+      {
+         strncpy(&fvar[1],&szCmdLine[1],127);
+         fvar[longueur-1]=0;
+      }
+      else
+      {
+         strncpy(&fvar[1],szCmdLine,127);
+      }
+      makeextension();
+      REMOVED */
+      
+      argv = (char **) calloc(1, sizeof(char *));
+      argv[0] = (char *) calloc(1, strlen(fname2) + strlen(ext) + 1);
+      sprintf(argv[0], "%s%s\0", fname2, ext);
+      strp = strtok(szCmdLine, " ");
+      argc = 1;
+      
+      while(strp)
+      {
+         argv = (char **) realloc(argv, (argc + 1) * sizeof(char *));			
+         
+         // The parameter is in quotes ("")
+         if(*strp == '"')
+         {				
+            // Skip the opening quote
+            strp++;
+            
+            endquote_pos = strchr(strp, '"');
+            
+            // There were no spaces in between the quotes
+            // so we know strptr contains the entire string
+            if(endquote_pos)
+            {               
+               // Get rid of the closing quote
+               *endquote_pos = '\0';
+               
+               argv[argc] = (char *) calloc(1, strlen(strp) + 1);
+               strcpy(argv[argc], strp);               
+               argc++;
+            }
+            // There are spaces inbetween the quotes
+            else
+            {
+               // Make sure it's not just a single quote
+               // on the end of the param string               
+               if(strp + (strlen(strp) + 1) <= szCmdLine + longueur)
+               {
+                  endquote_pos = strchr(strp + (strlen(strp) + 1), '"');
+               }
+               
+               if(endquote_pos)
+               {
+                  argv[argc] = (char *) calloc(1, (endquote_pos - strp) + 2);
+                  strcpy(argv[argc], strp);
+                  
+                  i = 0;
+                  strp = strtok(NULL, " ");
+                  
+                  while(strp)
+                  {
+                     // We've got another opening quote
+                     // before a closing one?
+                     if(*strp == '"')
+                     {
+                        strp++;
+                        
+                        argv[argc] = (char *) realloc(argv[argc],
+                        strlen(argv[argc]) + strlen(strp) + 2);								
+                        
+                        i = 1;
+                     }
+                     else if(strp[strlen(strp) - 1] == '"')
+                     {
+                        // Get rid of the closing quote
+                        strp[strlen(strp) - 1] = '\0';
+                        
+                        i = 1;
+                     }
+               
+                     if(*strp)
+                     {
+                        strcat(argv[argc], " ");
+                        strcat(argv[argc], strp);								
+                     }
+                     
+                     if(i) break;
+                     
+                     strp = strtok(NULL, " ");
+                  }
+               
+                  argc++;
+               }
+               else
+               {
+                  // Mangled parameter - don't use?
+               }               
+            }
+         }
+         // Netplay parameters			
+         else if(*strp == '/' && strlen(strp) >= 5)
+         {
+            i = j = strptr = 0;
+            
+            do
+            {
+               strp++;
+               strptr++;
+               
+               if(*strp == '"')
+               {
+                  j = !j;
+               }					
+               else if(*strp == ' ' && !j)
+               {
+                  i++;
+               }
+            }
+            while(i < 3 && strp < szCmdLine + longueur);
+            
+            // Just blank the params with spaces,
+            // as they are no longer needed
+            memset(strp - strptr, 32, strptr);
+         }
+         else
+         {
+            argv[argc] = (char *) calloc(1, strlen(strp) + 1);
+            strcpy(argv[argc], strp);
+            argc++;
+         }
+         
+         // Remove any remaining quotes from the parameter
+         if(argv[argc - 1] && strchr(argv[argc - 1], '"'))
+         {
+            strptr = i = 0;
+            memset(File, 0, sizeof(File));
+            
+            do
+            {
+               if(argv[argc - 1][strptr] != '"')
+               {
+                  // Just hijack File string buffer
+                  File[i] = argv[argc - 1][strptr];
+                  i++;
+               }
+            
+               strptr++;
+            }
+            while(argv[argc - 1][strptr]);
+            
+            sprintf(argv[argc - 1], "%s\0", File);
+         }         
 
-        fvar[0] = longueur;
-        if(szCmdLine[0]=='"')
-        {
-           strncpy(&fvar[1],&szCmdLine[1],127);
-           fvar[longueur-1]=0;
-        }
-        else
-        {
-           strncpy(&fvar[1],szCmdLine,127);
-        }
-        makeextension();
+         strp = strtok(NULL, " ");			
+      }
+
+      // Put one last null pointer onto the end of the argv array
+      argv = (char **) realloc(argv, (argc + 1) * sizeof(char *));
+      argv[argc] = NULL;
    }
 
    zstart();
+
+   if(argc)
+   {
+      // Free up our created argv array
+      // use argc + 1 to allow for our terminating null pointer
+      for(strptr = 0 ; strptr < (argc + 1) ; strptr++)
+      {
+         free(argv[strptr]);
+      }
+      
+      free(argv);
+   }
+   // END FIX - STATMAT - 22/01/02   
 }
 
 int my_atoi(char *nptr)
