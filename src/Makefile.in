@@ -223,10 +223,10 @@ uninstall:
 	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man5/zsnes.5
 
 clean:
-	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  ${EFFECTSDIR}/*.o  ${JMADIR}/*.o  *.o  @ZSNESEXE@
+	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${NETDIR}/*.o ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  ${EFFECTSDIR}/*.o  ${JMADIR}/*.o  *.o  @ZSNESEXE@
 
 distclean:
-	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  ${EFFECTSDIR}/*.o  ${JMADIR}/*.o  *.o  @ZSNESEXE@ Makefile config.cache config.log config.status config.h
+	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${NETDIR}/*.o ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  ${EFFECTSDIR}/*.o  ${JMADIR}/*.o  *.o  @ZSNESEXE@ Makefile config.cache config.log config.status config.h
 
 
 
