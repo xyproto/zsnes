@@ -80,7 +80,8 @@ EXTSYM GUINetTextk2
 
 
 SECTION .data
-;NEWSYM OSPort, db 0      ; 0 = DOS (C), 1 = DOS (ASM), 2 = Linux, 3 = Win95
+NEWSYM OSPort, db 0      ; 0 = DOS (C), 1 = DOS (ASM), 2 = Linux, 3 = Win95
+NEWSYM TextFile, db 0
 SECTION .text
 
 NEWSYM StartUp
@@ -249,8 +250,13 @@ NEWSYM MMXCheck
     ret
 
 NEWSYM Open_File
+    mov ax,3D00h
+    int 21h
+    ; return ax = file handle, carry = error
+    ret
     pushad
     mov dword[ZOpenMode],0
+    mov byte[TextFile],1
     mov dword[ZOpenFileName],edx
     call ZOpenFile
     cmp eax,0FFFFFFFFh
@@ -271,12 +277,12 @@ NEWSYM Open_File
     popad
     stc
     ret
-    mov ax,3D00h
+
+NEWSYM Open_File_Write
+    mov ax,3D01h
     int 21h
     ; return ax = file handle, carry = error
     ret
-
-NEWSYM Open_File_Write
     pushad
     mov dword[ZOpenMode],2
     mov dword[ZOpenFileName],edx
@@ -299,12 +305,13 @@ NEWSYM Open_File_Write
     popad
     stc
     ret
-    mov ax,3D01h
-    int 21h
-    ; return ax = file handle, carry = error
-    ret
 
 NEWSYM Create_File
+    mov ah,3Ch
+    mov cx,0
+    int 21h
+    ; return ax = file handle
+    ret
     pushad
     mov dword[ZOpenMode],1
     mov dword[ZOpenFileName],edx
@@ -320,13 +327,11 @@ NEWSYM Create_File
     popad
     stc
     ret
-    mov ah,3Ch
-    mov cx,0
-    int 21h
-    ; return ax = file handle
-    ret
 
 NEWSYM Write_File
+    mov ah,40h
+    int 21h
+    ret
     mov dword[ZFileWriteHandle],0
     mov [ZFileWriteHandle],bx
     mov [ZFileWriteSize],ecx
@@ -344,11 +349,11 @@ NEWSYM Write_File
     mov eax,0
     stc
     ret
-    mov ah,40h
-    int 21h
-    ret
 
 NEWSYM Read_File
+    mov ah,3Fh
+    int 21h
+    ret
     mov dword[ZFileReadHandle],0
     mov [ZFileReadHandle],bx
     mov [ZFileReadSize],ecx
@@ -359,9 +364,6 @@ NEWSYM Read_File
     popad
     mov eax,[TempVarSeek]
     clc
-    ret
-    mov ah,3Fh
-    int 21h
     ret
 
 NEWSYM Delete_File
@@ -375,6 +377,9 @@ NEWSYM Delete_File
     ret
 
 NEWSYM Close_File
+    mov ah,3Eh
+    int 21h
+    ret
     mov dword[ZCloseFileHandle],0
     mov [ZCloseFileHandle],bx
     pushad
@@ -382,11 +387,12 @@ NEWSYM Close_File
     popad
     clc
     ret
-    mov ah,3Eh
-    int 21h
-    ret
 
 NEWSYM File_Seek
+    ; seek to cx:dx from 0 position, return carry as error
+    mov ax,4200h
+    int 21h
+    ret
     mov word[ZFileSeekPos+2],cx
     mov word[ZFileSeekPos],dx
     mov dword[ZFileSeekMode],0
@@ -399,12 +405,12 @@ NEWSYM File_Seek
     mov dx,cx
     clc
     ret
-    ; seek to cx:dx from 0 position, return carry as error
-    mov ax,4200h
-    int 21h
-    ret
 
 NEWSYM File_Seek_End
+    ; seek to cx:dx from end position, and return file location in dx:ax
+    mov ax,4202h
+    int 21h
+    ret
     mov word[ZFileSeekPos+2],cx
     mov word[ZFileSeekPos],dx
     mov dword[ZFileSeekHandle],0
@@ -419,10 +425,6 @@ NEWSYM File_Seek_End
     popad
     mov ax,[TempVarSeek]
     mov dx,[TempVarSeek+2]
-    ret
-    ; seek to cx:dx from end position, and return file location in dx:ax
-    mov ax,4202h
-    int 21h
     ret
 
 NEWSYM Get_Time
