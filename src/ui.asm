@@ -328,9 +328,6 @@ NEWSYM regptwa,     resb 49152
 
 NEWSYM fulladdtab, resw 65536
 
-; init.asm
-NEWSYM echobuf,       resb 90000
-
 ; dspproc.asm
 
 NEWSYM spcRamcmp, resb 65536

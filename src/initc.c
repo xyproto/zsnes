@@ -1338,6 +1338,9 @@ extern unsigned char BRRBuffer[32];
 extern unsigned char echoon0;
 extern unsigned int PHdspsave;
 extern unsigned int PHdspsave2;
+unsigned char echobuf[90000];
+extern unsigned char *spcBuffera;
+extern unsigned char DSPMem[256];
 
 void clearvidsound()
 {
@@ -1347,6 +1350,9 @@ void clearvidsound()
   memset(vidmemch8, 0, 4096);
   memset(&BRRBuffer, 0, PHdspsave);
   memset(&echoon0, 0, PHdspsave2);
+  memset(echobuf, 0, 90000);
+  memset(spcBuffera, 0, 65536*4+4096);
+  memset(DSPMem, 0, 256);
 }
 
 /*

@@ -503,28 +503,13 @@ NEWSYM GUIDoReset
 .skipfileend
     pushad
     call RestoreSystemVars
-    call clearSPCRAM
     popad
-
-    ; clear dsp ram
-    xor al,al
-    mov edi,DSPMem
-    mov ecx,256
-    rep stosb
 
     ; reset the snes
     call init65816
     pushad
     call procexecloop
     popad
-
-    mov eax,spcRam
-    mov edx,0EFh
-.loop
-    mov byte[eax],0
-    inc eax
-    dec edx
-    jnz .loop
 
     xor eax,eax
     mov edx,spcRam

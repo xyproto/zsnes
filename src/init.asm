@@ -62,12 +62,12 @@ EXTSYM BackState
 EXTSYM FIRTAPVal0,FIRTAPVal1,FIRTAPVal2,FIRTAPVal3,FIRTAPVal4
 EXTSYM FIRTAPVal5,FIRTAPVal6,FIRTAPVal7,INTEnab,JoyAPos,JoyBPos
 EXTSYM NMIEnab,SPCROM,VIRQLoc,coladdb,coladdg,coladdr,doirqnext
-EXTSYM echobuf,forceblnk,nmiprevaddrh,nmiprevaddrl,nmiprevline
+EXTSYM forceblnk,nmiprevaddrh,nmiprevaddrl,nmiprevline
 EXTSYM nmirept,nmistatus,opexec268,opexec268b,opexec268cph
 EXTSYM opexec268cphb,opexec358,opexec358b,opexec358cph,spcextraram
 EXTSYM opexec358cphb,prevoamptr,reg1read,reg2read,reg3read
-EXTSYM reg4read,resolutn,romdata,scrndis,spcBuffera,spcP,spcRam
-EXTSYM spcnumread,spchalted,tableD,timeron,vidbright,DSPMem,OldGfxMode2
+EXTSYM reg4read,resolutn,romdata,scrndis,spcP,spcRam
+EXTSYM spcnumread,spchalted,tableD,timeron,vidbright,OldGfxMode2
 EXTSYM SPC700read,SPC700write,GUIDoReset,spc700read, GUIReset
 EXTSYM InitC4,SA1Reset,SetAddressingModesSA1,SetAddressingModes,SDD1BankA,SPC7110init
 EXTSYM RTCinit,InitOBC
@@ -1440,25 +1440,8 @@ NEWSYM init65816
     ; Clear SPC Memory
     pushad
     call clearSPCRAM
+    call clearvidsound
     popad
-
-    ; Clear Sound buffer
-    mov edi,[spcBuffera]
-    mov ecx,65536
-    xor eax,eax
-    rep stosd
-
-    ; Clear Echo buffer
-    mov edi,echobuf
-    mov ecx,25000
-    xor eax,eax
-    rep stosd
-
-    ; Clear DSPMem
-    mov edi,DSPMem
-    mov ecx,64
-    xor eax,eax
-    rep stosd
 
     mov byte[prevoamptr],0FFh
     mov byte[disablehdma],0
@@ -1585,9 +1568,6 @@ NEWSYM init65816
     mov dword[ram7fa+65528],01010101h
     mov dword[ram7fa+65532],01010101h
 .notbsx2
-    pushad
-    call clearvidsound
-    popad
     mov dword[wramreadptr],getwram1fff
     mov dword[wramwriteptr],setwram1fff
     ret
