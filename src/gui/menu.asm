@@ -851,6 +851,7 @@ NEWSYM savespcdata
     mov byte[edi+2],'0'
     jmp .tryagainspc
 .nofileopen
+    xor al,al
     mov al,[edi+1]
     mov [showmenu.saved+2],al
     mov al,[edi+2]
