@@ -115,8 +115,8 @@ EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67,fxbit
 EXTSYM SfxSFR,nosprincr,hirqmode2
 EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 EXTSYM ReadSPC7110log,WriteSPC7110log
-EXTSYM statefileloc
 EXTSYM NetPlayNoMore
+EXTSYM statefileloc
 
 NEWSYM ExecuteAsmStart
 
