@@ -79,8 +79,8 @@ RECT                    rcWindow;
 LPDIRECTINPUT8          DInput = NULL;
 LPDIRECTINPUTDEVICE8    MouseInput = NULL;
 LPDIRECTINPUTDEVICE8    KeyboardInput = NULL;
-LPDIRECTINPUTDEVICE8    JoystickInput[4];
-DIJOYSTATE js[4];
+LPDIRECTINPUTDEVICE8    JoystickInput[5];
+DIJOYSTATE js[5];
 
 DWORD                   X1Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 DWORD                   X2Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
