@@ -1466,6 +1466,23 @@ NEWSYM headerhack
 
     mov esi,[romdata]
     add esi,07FC0h
+    cmp dword[esi],'CYBE'
+    jne .notcyberknight2
+    cmp dword[esi+4],'R KN'
+    jne .notcyberknight2
+    cmp dword[esi+8],'IGHT'
+    jne .notcyberknight2
+    cmp dword[esi+12],' 2  '
+    mov byte[cycpb268],75
+    mov byte[cycpb358],77
+    mov byte[cycpbl2],75
+    mov byte[cycpblt2],75
+    mov byte[cycpbl],75
+    mov byte[cycpblt],75
+.notcyberknight2
+
+    mov esi,[romdata]
+    add esi,07FC0h
     cmp dword[esi],0B4B1DEC3h
     jne .notdeasomething
     cmp dword[esi+4],0CFBBC9C4h
