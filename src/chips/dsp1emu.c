@@ -776,7 +776,7 @@ DSPOp11()
    matrixA2[1][0]=matrixB[1][0]; matrixA2[1][1]=matrixB[1][1]; matrixA2[1][2]=matrixB[1][2]; 
    matrixA2[2][0]=matrixB[2][0]; matrixA2[2][1]=matrixB[2][1]; matrixA2[2][2]=matrixB[2][2]; 
    #ifdef DebugDSP1
-      Log_Message("OP11 ZR: %d XR: %d YR: %d",Op11Zr,Op11Xr,Op11Yr);
+      Log_Message("OP11 ZR: %d XR: %d YR: %d SC: %d",Op11Zr,Op11Xr,Op11Yr,Op11m);
    #endif
 }
 
@@ -1046,22 +1046,25 @@ short Op2BS;
 
 void DSPOp0B()
 {
-	Log_Message("OP0B : NOT IMPLEMENTED");
+    Op0BS = (Op0BX*matrixA[0][0]+Op0BY*matrixA2[0][1]+Op0BZ*matrixA2[0][2]);
+        Log_Message("OP0B");
 }
 
 void DSPOp1B()
 {   
-        Op1BS = (Op1BX*matrixA2[0][0]+Op1BY*matrixA2[0][1]+Op1BZ*matrixA2[0][2])*sc2;
+    Op1BS = (Op1BX*matrixA2[0][0]+Op1BY*matrixA2[0][1]+Op1BZ*matrixA2[0][2]);
 #ifdef DebugDSP1
       Log_Message("OP1B X: %d Y: %d Z: %d S: %d",Op1BX,Op1BY,Op1BZ,Op1BS);
+      Log_Message("     MX: %d MY: %d MZ: %d Scale: %d",(short)(matrixA2[0][0]*100),(short)(matrixA2[0][1]*100),(short)(matrixA2[0][2]*100),(short)(sc2*100));
 #endif
 
 }
 
 void DSPOp2B()
 {
+    Op2BS = (Op2BX*matrixA3[0][0]+Op2BY*matrixA3[0][1]+Op2BZ*matrixA3[0][2]);
 #ifdef DebugDSP1
-      Log_Message("OP2B : NOT IMPLEMENTED");
+      Log_Message("OP2B");
 #endif
 }
 
@@ -1083,9 +1086,11 @@ short Op18X,Op18Y,Op18Z,Op18R,Op18D;
 
 void DSPOp18()
 {
-   Op18D=(Op18X*Op18X+Op18Y*Op18Y+Op18Z*Op18Z-Op18R*Op18R)/65536;
+   double x,y,z,r;
+   x=Op18X; y=Op18Y; z=Op18Z; r=Op18R;
+   Op18D=(short)(x*x+y*y+z*z-r*r);
    #ifdef DebugDSP1
-      Log_Message("OP18 X: %d Y: %d Z: %d DIFF %d",Op18X,Op18Y,Op18Z,Op18D);
+      Log_Message("OP18 X: %d Y: %d Z: %d R: %D DIFF %d",Op18X,Op18Y,Op18Z,Op18D);
    #endif
 }
 
