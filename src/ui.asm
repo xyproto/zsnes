@@ -1463,10 +1463,13 @@ SECTION .data
           db '          12 = 512x384x16B (VESA2) 13 = 640x480x8B (VESA2)',13,10
           db '          14 = 640x480x16B (VESA2)',13,10
 %endif
-          db '  -w      Enable VSync',13,10
+          db '  -w      Enable VSync (disables Triple Buffering)',13,10
           db 'Press any key to continue.',0
-.noparms3 db 13,'  -y      Enable EAGLE (640x480x8B only) or Interpolation (640x480x16B only)',13,10          
+.noparms3 db 13,'  -y      Enable EAGLE (640x480x8B only) or Interpolation (640x480x16B only)',13,10
           db '  -z      Enable Stereo Sound',13,10
+%ifdef __MSDOS__
+          db '  -3      Enable Triple Buffering (disables VSync)',13,10
+%endif
           db '',13,10
           db '  File Formats Supported by GUI : .SMC,.SFC,.SWC,.FIG,.058,.078,.1,.USA,.JAP',13,10
           db '',13,10,0

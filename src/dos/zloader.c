@@ -37,7 +37,8 @@ extern unsigned char Palette0, SPC700sh, OffBy1Line, DSPDisable,
                      debugger, enterpress, finterleave, frameskip,
                      gammalevel, guioff, per2exec, pl1contrl, pl2contrl,
                      romtype, scanlines, showallext, smallscreenon, soundon,
-                     spcon, vsyncon, DisplayS, fname, filefound, SnowOn;
+                     spcon, vsyncon, DisplayS, fname, filefound, SnowOn,
+                     Triplebufen;
 
 void ccmdline(void);
 
@@ -123,7 +124,7 @@ int pccmdline(void)
     printf("(%i/%i): %s\n",p,argc,argv[p]);
  */
           
-    if(argv[p][0] == '-')
+    if((argv[p][0] == '-') || (argv[p][0] == '/'))
     {
       int hasroom=0;
       int pp=1;
@@ -153,7 +154,14 @@ int pccmdline(void)
           ConvertJoyMap2();
           break;
         }
-        case 'f': 
+        case '3':
+        {
+          vsyncon=0;
+          Triplebufen=1;
+          p++;
+          break;
+        }
+        case 'f':
         {
           if(!hasroom) return 4;
           frameskip=my_atoi(argv[p+1]);
@@ -294,6 +302,7 @@ int pccmdline(void)
         }
         case 'w':
         {
+          Triplebufen=0;
           vsyncon=1;
           break;
         }
