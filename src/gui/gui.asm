@@ -1439,6 +1439,12 @@ NEWSYM StartGUI
 %ifndef __MSDOS__
     mov byte[sampratenext+3],0
 %endif
+%ifdef __WIN32__
+    cmp byte[PrevFSMode],5
+    jne .notvm5
+    mov byte[PrevFSMode],7
+.notvm5
+%endif
 ;.dosport
     mov ecx,64
     mov eax,SpecialLine
