@@ -147,9 +147,9 @@ NEWSYM welcome
                  db 'ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,',10,13
                  db 'and you are welcome to redistribute it under certain conditions;',10,13
 %ifdef __LINUX__
-                 db 'please read ',39,'LICENSE',39,' thoroughly before using it.',10,13,10,13
+                 db 'please read ',39,'LICENSE',39,' thoroughly before doing so.',10,13,10,13
 %else
-                 db 'please read ',39,'LICENSE.TXT',39,' thoroughly before using it.',10,13,10,13
+                 db 'please read ',39,'LICENSE.TXT',39,' thoroughly before doing so.',10,13,10,13
 %endif
                  db 'Use ZSNES -? for command line definitions.',13,10,13,10,0
 
