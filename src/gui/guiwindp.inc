@@ -2004,6 +2004,9 @@ DisplayGUISound:
     je near .win32s2
     GUIOuttextwin2 6,26,126,GUISoundTextI
 .win32s2
+%ifndef __LINUX__
+    GUIOuttextwin2 6,26,126,GUISoundTextIb
+%endif
     GUIOuttextwin2 6,26,136,GUISoundTextJ
     GUIOuttextwin2 6,26,146,GUISoundTextK
     GUIOuttextwin2 6,26,156,GUISoundTextL
@@ -2021,6 +2024,9 @@ DisplayGUISound:
     je near .win32s
     GUIOuttextwin2 6,25,125,GUISoundTextI
 .win32s
+%ifndef __LINUX__
+    GUIOuttextwin2 6,25,125,GUISoundTextIb
+%endif
     GUIOuttextwin2 6,25,135,GUISoundTextJ
     GUIOuttextwin2 6,25,145,GUISoundTextK
     GUIOuttextwin2 6,25,155,GUISoundTextL
@@ -2071,15 +2077,16 @@ DisplayGUISound:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox3
     GUIDisplayIconWin 6,11,111,[GUITemp]
-    cmp byte[OSPort],3
-    je near .nocheckbox42
+;    cmp byte[OSPort],3
+;    je near .checkbox42
+%ifndef __LINUX__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[Surround],0
     je .nocheckbox4
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox4
     GUIDisplayIconWin 6,11,121,[GUITemp]
-.nocheckbox42
+%endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[InterSound],0
     je .nocheckbox5
@@ -2191,6 +2198,9 @@ GUISoundTextCb db '48000HZ',0
 GUISoundTextD db '---%',0
 GUISoundTextH db 'REVERSE STEREO',0
 GUISoundTextI db 'SURROUND SOUND',0
+%ifndef __LINUX__
+GUISoundTextIb db 'EAX SUPPORT',0
+%endif
 GUISoundTextJ db 'SOUND INTERPOLATION',0
 GUISoundTextK db 'LOW PASS FILTER',0
 GUISoundTextL db 'SOUND BUFFERING',0

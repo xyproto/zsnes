@@ -184,6 +184,7 @@ unsigned char keyboardhit=0;
 void initwinvideo();
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
+extern BYTE Surround;
 extern int CurKeyPos;
 extern int CurKeyReadPos;
 extern int KeyBuffer[16];
