@@ -19,9 +19,14 @@
 #include <stdio.h>
 #include <time.h>
 #include <zlib.h>
-#ifdef ZDOS
 #include <dos.h>
-#endif
+#include <fcntl.h>
+#include <share.h>
+#include <sys/stat.h>
+#include <unistd.h>
+/* #ifdef ZDOS
+#include <dos.h>
+#endif */
 
 
 #define DWORD unsigned int
@@ -158,7 +163,7 @@ DWORD ZCloseFile()
 
 DWORD ZFileSeek()
 {
-	int res = 0;
+    /*int res = 0;*/
 	int mode = 0;
 	if (ZFileSeekMode==0)
 		mode = SEEK_SET;
@@ -237,7 +242,8 @@ DWORD ZFileGetFTime()
 
 DWORD ZFileMKDir()
 {
-  return(mkdir(MKPath));
+  /*return(mkdir(MKPath));*/
+  return (mkdir(MKPath, S_IWUSR));
 }
 
 DWORD ZFileCHDir()
@@ -252,7 +258,8 @@ DWORD ZFileRMDir()
 
 DWORD ZFileGetDir()
 {
-  return(getcwd(DirName,128));
+  /*return(getcwd(DirName,128));*/
+  return(*getcwd(DirName,128));
 }
 
 BYTE * ZFileFindPATH;
@@ -270,12 +277,15 @@ DWORD DTALocPos;
 
 DWORD ZFileFindFirst()
 {
-   return(_dos_findfirst(ZFileFindPATH,ZFileFindATTRIB,DTALocPos));
+   /*return(_dos_findfirst(ZFileFindPATH,ZFileFindATTRIB,DTALocPos));*/
+   return(_dos_findfirst(ZFileFindPATH,ZFileFindATTRIB,((struct find_t *)DTALocPos)));
+
 }
 
 DWORD ZFileFindNext()
 {
-   return(_dos_findnext(DTALocPos));
+   /*return(_dos_findnext(DTALocPos));*/
+   return(_dos_findnext(((struct find_t *) DTALocPos)));
 }
 
 DWORD ZFileFindEnd()  // for compatibility with windows later
@@ -312,7 +322,8 @@ DWORD GetDate()
    struct tm *newtime;
    time_t long_time;
 
-   time( &long_time );
+   /*time( &long_time );*/
+   long_time = time (NULL);
    newtime = localtime( &long_time );
    value = ((newtime->tm_mday) % 10)+((newtime->tm_mday)/10)*16
           +(((newtime->tm_mon)+1) << 8)

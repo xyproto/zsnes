@@ -18,6 +18,10 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
+
+int pccmdline(void);
 
 extern void zstart(void);
 extern void DosExit(void);
@@ -58,6 +62,7 @@ int main(int margc, char **margv)
   argc=margc;
   argv=margv;
   zstart();
+  return(0);
 }
 
 

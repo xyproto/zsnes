@@ -25,6 +25,11 @@
 #include <time.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <utime.h>
+#endif
+
+#ifdef __MSDOS__
+#include <sys/stat.h>
 #endif
 
 #include "unzip.h"
@@ -42,10 +47,12 @@ unsigned int ZipError=0;
 // 6 : Error Writing file
 
 #ifndef __LINUX__
+#ifndef __MSDOS__
 struct utimbuf {
   time_t actime;
   time_t modtime;
 };
+#endif
 #endif
 
 void change_file_date(const char *filename,uLong dosdate,tm_unz tmu_date)
@@ -73,7 +80,11 @@ int mymkdir(const char *dirname)
 #ifdef __LINUX__
   return(mkdir(dirname, (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)));
 #else
+#ifdef __MSDOS__
+  return(mkdir(dirname, (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)));
+#else
   return(mkdir(dirname));
+#endif
 #endif
 }
 
