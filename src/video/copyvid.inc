@@ -1162,12 +1162,11 @@ NEWSYM copyvesa2320x480x8b
     jnz .fsloopa2
     jmp .done
 .fsloopb
-    movsd
-    dec esi
-    mov al,[esi]
+    mov eax,[esi]
     mov [es:edi],al
-    inc esi
-    inc edi
+    mov [es:edi+1],eax
+    add esi,byte 4
+    add edi,byte 5
     dec ecx
     jnz .fsloopb
     ret
@@ -2631,56 +2630,56 @@ NEWSYM copyvesa2320x240x16b
     jnz .fsloopa
     jmp .done
 .fsloopb
-    movsd
-    movsd
-    sub esi,2
-    mov ax,[esi]
+    mov eax,[esi]
     mov [es:edi],ax
-    add esi,2
-    add edi,2
+    mov [es:edi+2],eax
+    add esi,byte 4
+    add edi,byte 6
+    movsd
     dec ecx
     jnz .fsloopb
     jmp .fsloopa2
 
-; by stainless & TRAC
 .interpolate
     ;cmp byte[ScreenScale],1
     ;je .infsloopa
 .inloopa
-    add edi,byte 2
+    mov bx,[esi]
+    mov ecx,254
+    mov ax,[esi+2]
     add esi,byte 2
-    mov ecx,255
+    mov [es:edi],bx
+    add edi,byte 2
 .inloopb
-    mov ax,[esi]
-    mov bx,[esi-2]
-    cmp ax,bx
-    jne .inloopb2
-    mov [es:edi],ax
-    mov [es:edi-2],bx
-    add esi,byte 2
-    add edi,byte 2
-    dec ecx
-    jnz .inloopb
-    jmp .inloopa2
-.inloopb2
+    push eax
+    mov ebp,[esi+2]
     shr eax,byte 1
-    shr ebx,byte 1
+    push ebp
+    shr ebx,byte 2
     and eax,7befh
-    and ebx,7befh
+    shr ebp,byte 2
+    and ebx,39e7h
     add eax,ebx
+    and ebp,39e7h
+    add eax,ebp
     mov [es:edi],ax
-    mov [es:edi-2],ax
+    pop eax
+    pop ebx
 .inloopb3
     add esi,byte 2
     add edi,byte 2
     dec ecx
     jnz .inloopb
 .inloopa2
+    mov ax,[esi]
+    add esi,byte 2
+    mov [es:edi],ax
+    add edi,byte 2
     add esi,byte 32*2
     sub edi,byte -64*2
     dec dl
     jnz .inloopa
-
+    
 .done
     pop es
     ret
@@ -3244,13 +3243,12 @@ NEWSYM copyvesa2320x480x16b
     jnz .fsloopa2
     jmp .done
 .fsloopb
-    movsd
-    movsd
-    sub esi,2
-    mov ax,[esi]
+    mov eax,[esi]
     mov [es:edi],ax
-    add esi,2
-    add edi,2
+    mov [es:edi+2],eax
+    add esi,byte 4
+    add edi,byte 6
+    movsd
     dec ecx
     jnz .fsloopb
     ret
