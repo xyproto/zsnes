@@ -680,7 +680,7 @@ void initwinvideo(void)
 		SurfaceX = 512;
 		SurfaceY = 448;
 		break;
-	    case 3: case 6:
+	    case 3: case 6: case 13:
 		WindowWidth = 640;
 		WindowHeight = 480;
 		SurfaceX = 640;
@@ -710,13 +710,13 @@ void initwinvideo(void)
 		SurfaceX = 1024;
 		SurfaceY = 896;
 		break;
-	    case 11:
+	    case 11: case 14:
 		WindowWidth = 800;
 		WindowHeight = 600;
 		SurfaceX = 800;
 		SurfaceY = 600;
 		break;
-	    case 12:
+	    case 12: case 15:
 		WindowWidth = 1024;
 		WindowHeight = 768;
 		SurfaceX = 1024;

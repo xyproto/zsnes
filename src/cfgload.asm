@@ -599,7 +599,7 @@ db 'VideoMode = %U',13,10
 db '',13,10
 %elifdef __LINUX__
 %ifdef __OPENGL__
-db '; Video Mode, 0 - 12',13,10
+db '; Video Mode, 0 - 15',13,10
 %else
 db '; Video Mode, 0 - 3',13,10
 %endif
@@ -610,7 +610,8 @@ db ';   4 = 256x224  OGL WIN      5 = 512x448  OGL WIN',13,10
 db ';   6 = 640x480  OGL FULL     7 = 640x576  OGL WIN',13,10
 db ';   8 = 768x672  OGL WIN      9 = 896x784  OGL WIN',13,10
 db ';  10 = 1024x896 OGL WIN     11 = 800x600  OGL FULL',13,10
-db ';  12 = 1024x768 OGL FULL',13,10
+db ';  12 = 1024x768 OGL FULL    13 = 640x480  OGL WIN',13,10
+db ';  14 = 800x600  OGL WIN     15 = 1024x768 OGL WIN',13,10
 %endif
 db '',13,10
 db 'VideoMode = %U',13,10
