@@ -5375,6 +5375,10 @@ NEWSYM showinfogui
     jmp .passed
 .failed
     mov ax,[Checksumvalue2]
+    cmp byte[NumofBanks],96
+    jne .nospc7110en
+    shl ax,1
+.nospc7110en
     cmp ax,[esi]
     je .passed2
     mov dword[CSStatus+36],'FAIL'
@@ -5956,7 +5960,7 @@ NEWSYM CheckROMType
     mov byte[intldone],1
     call UnInterleave
     mov byte[romtype],2
-    jmp .donecheck
+    jmp .doneinterl
 .nointerlcheck
     cmp byte[finterleave],1
     je .interleaved2
