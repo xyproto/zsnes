@@ -103,8 +103,8 @@ ${CHIPDIR}/sa1regs.o: ${CHIPDIR}/sa1regs.asm macros.mac\
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
 ${CHIPDIR}/sfxproc.o: ${CHIPDIR}/sfxproc.asm macros.mac\
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
-${CHIPDIR}/dsp1emu.o: ${CHIPDIR}/dsp1emu.c betauser.mac
-ui.o: ui.asm macros.mac betauser.mac
+${CHIPDIR}/dsp1emu.o: ${CHIPDIR}/dsp1emu.c
+ui.o: ui.asm macros.mac
 cfgload.o:cfgload.asm macros.mac
 init.o:init.asm macros.mac
 ${DOSDIR}/debug.o: ${DOSDIR}/debug.asm macros.mac

@@ -43,7 +43,6 @@ EXTSYM GetFilename
 %endif
 
 NEWSYM UIAsmStart
-%include "betauser.mac"
 
 
 
@@ -151,11 +150,6 @@ NEWSYM vibradetect
 NEWSYM welcome
 
 
-;%ifdef ZBETA
-;                 db 'ZSNES v1.',ZVERSION,' beta (c)1997-2001, Compiled under NASM, GCC, and WDOSX',13,10
-;                 db 'PRIVATE BETA VERSION!!!  PLEASE DO NOT DISTRIBUTE!!!  Thank you!',13,10
-;                 db 'Private Beta is Registered to : ',USERNAMEN,13,10
-;%else
                  db 'ZSNES v1.',ZVERSION,' beta (c) 1997-2002, ZSNES Team (zsKnight & _Demo_)',13,10
 %ifdef __LINUX__
                  db 'Compiled under NASM and GCC. (Linux/FreeBSD)',13,10,13,10
@@ -1092,32 +1086,6 @@ section .data
 ; Check Parameter          This Processes the Parameters
 ;*******************************************************
 
-SECTION .text
-
-ShowIdentStr:
-    mov dl,[.idstrdata]
-    xor dl,76
-    call .prst
-    mov dl,[.idstrdata+1]
-    xor dl,89
-    call .prst
-    mov dl,[.idstrdata+2]
-    xor dl,178
-    call .prst
-    mov dl,[.idstrdata+3]
-    xor dl,34
-    call .prst
-    mov dl,[.idstrdata+4]
-    xor dl,217
-    call .prst
-    jmp DosExit
-    ret
-.prst
-    call PrintChar
-    ret
-
-SECTION .data
-.idstrdata db USERNAMEC
 SECTION .bss
 newestfileloc resb 1
 newestfiledate resd 1

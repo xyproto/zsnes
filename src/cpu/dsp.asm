@@ -40,7 +40,6 @@ EXTSYM KeyOnStA,KeyOnStB,SoundTest
 
 NEWSYM DspAsmStart
 
-%include "betauser.mac"
 
 
 
@@ -49,7 +48,6 @@ NEWSYM DspAsmStart
 ;none times 256 db 0
 
 identcode db 255,1,78,78
-idcodedata db USERNAMEI
 ;sardcode db 234,76,80,128,65,65 ; 6
 ;efxcode db 17,47,62,97,26,126,98 ; 7
 ;zopcode db 54,39,21,0,0,8,14,12,18 ; 9
