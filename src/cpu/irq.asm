@@ -152,6 +152,7 @@ NEWSYM NMIemulmode
     mov [xs],cx
 
     xor bh,bh
+    mov [xpb],bh
     mov bl,[xpb]
     xor eax,eax
     mov ax,[nmiv8]
@@ -320,6 +321,7 @@ NEWSYM IRQemulmode
     mov [xs],cx
 
     xor bh,bh
+    mov [xpb],bh
     mov bl,[xpb]
     xor eax,eax
     mov ax,[irqv8]
@@ -428,6 +430,7 @@ NEWSYM IRQemulmodedeb
     mov [xs],cx
 
     xor bh,bh
+    mov [xpb],bh
     mov bl,[xpb]
     xor eax,eax
     mov ax,[irqv8]
@@ -534,6 +537,7 @@ NEWSYM NMIemulmodedeb
     mov [xs],cx
 
     xor bh,bh
+    mov [xpb],bh
     mov bl,[xpb]
     xor eax,eax
     mov ax,[nmiv8]

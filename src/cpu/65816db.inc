@@ -382,6 +382,7 @@ EXTSYM dmadata
     sub ebx,eax
     mov [xpc],bx
     mov eax,[wramdata]
+    xor ebx,ebx
     mov bx,[xs]
     mov cl,[xpb]
     mov [eax+ebx],cl
@@ -437,6 +438,7 @@ BRKemulmode
     sub ebx,eax
     mov [xpc],bx
     mov eax,[wramdata]
+    xor ebx,ebx
     mov bx,[xs]
     mov cl,[xpc+1]
     mov [eax+ebx],cl
@@ -535,6 +537,7 @@ BRKemulmode
     sub ebx,eax
     mov [xpc],bx
     mov eax,[wramdata]
+    xor ebx,ebx
     mov bx,[xs]
     mov cl,[xpb]
     mov [eax+ebx],cl
@@ -590,6 +593,7 @@ COPemulmode
     sub ebx,eax
     mov [xpc],bx
     mov eax,[wramdata]
+    xor ebx,ebx
     mov bx,[xs]
     mov cl,[xpc+1]
     mov [eax+ebx],cl

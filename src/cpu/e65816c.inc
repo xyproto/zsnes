@@ -1896,7 +1896,12 @@ COp5B:   ; TCD i
     endloop
 COp1B:   ; TCS i
     mov ax,[xa]
+    test byte[xe],1
+    jnz .emul
     mov [xs],ax
+    endloop
+.emul
+    mov [xs],al
     endloop
 COp7B:   ; TDC i
     mov ax,[xd]
