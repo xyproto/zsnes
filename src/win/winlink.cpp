@@ -37,6 +37,7 @@ DWORD WindowWidth = 256;
 DWORD WindowHeight = 224;
 
 DWORD FullScreen=0;
+DWORD PrevFull=0;
 DWORD Moving=0;
 DWORD SoundBufferSize=1024*18;
 DWORD FirstSound=1;
@@ -1025,7 +1026,7 @@ void ReleaseDirectSound()
 
 void ReleaseDirectDraw()
 {
-   if (FullScreen == 1) lpDD->RestoreDisplayMode();
+   if (PrevFull == 1) lpDD->RestoreDisplayMode();
 
    if (DD_CFB)
    {
@@ -1716,6 +1717,7 @@ void initwinvideo(void)
    if (FirstVid == 1)
    {
       FirstVid = 0;
+      PrevFull = (FullScreen == 1);
       InitDirectDraw();
       clearwin();
       return;
@@ -1726,6 +1728,7 @@ void initwinvideo(void)
    if (newmode == 1)
    {
       ReleaseDirectDraw();
+      PrevFull = (FullScreen == 1);
       InitDirectDraw();
       clearwin();
       return;
