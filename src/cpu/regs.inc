@@ -931,9 +931,9 @@ reg213Cr:
     mov byte[latchxr],1
     ret
 .highv
-    mov al,byte[latchx+1]
-    and al,1
-    or  al,byte[latchx]
+    mov al,byte[latchx]
+    and al,0FEh
+    or  al,byte[latchx+1]
     mov byte[latchxr],0
     ret
 
