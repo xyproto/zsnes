@@ -780,7 +780,7 @@ NEWSYM reg420Cw
     jae near .nohdma
     mov dh,[pdh]
     cmp dh,[cycphb]
-    jne near .nohdma
+    jb near .nohdma
 ;    jmp starthdma
     mov al,[curhdma]
     mov [nexthdma],al
