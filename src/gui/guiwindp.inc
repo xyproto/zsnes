@@ -2491,7 +2491,7 @@ DisplayGUICheatConv:
     jnz .loop2
     ret
 
-%macro GUIOuttextwin2bheat 2
+%macro GUIOuttextwin2cheat 2
     test dword[ccheatnleft],80000000h
     jnz %%skip
     call DisplayGUICheatConv
@@ -2560,18 +2560,18 @@ DisplayGUICheat:
     sub eax,ebx
     sub eax,ebx
     add [ccheatnpos],eax
-    GUIOuttextwin2bheat 12,24
-    GUIOuttextwin2bheat 12,24+7
-    GUIOuttextwin2bheat 12,24+7*2
-    GUIOuttextwin2bheat 12,24+7*3
-    GUIOuttextwin2bheat 12,24+7*4
-    GUIOuttextwin2bheat 12,24+7*5
-    GUIOuttextwin2bheat 12,24+7*6
-    GUIOuttextwin2bheat 12,24+7*7
-    GUIOuttextwin2bheat 12,24+7*8
-    GUIOuttextwin2bheat 12,24+7*9
-    GUIOuttextwin2bheat 12,24+7*10
-    GUIOuttextwin2bheat 12,24+7*11
+    GUIOuttextwin2cheat 12,24
+    GUIOuttextwin2cheat 12,24+7
+    GUIOuttextwin2cheat 12,24+7*2
+    GUIOuttextwin2cheat 12,24+7*3
+    GUIOuttextwin2cheat 12,24+7*4
+    GUIOuttextwin2cheat 12,24+7*5
+    GUIOuttextwin2cheat 12,24+7*6
+    GUIOuttextwin2cheat 12,24+7*7
+    GUIOuttextwin2cheat 12,24+7*8
+    GUIOuttextwin2cheat 12,24+7*9
+    GUIOuttextwin2cheat 12,24+7*10
+    GUIOuttextwin2cheat 12,24+7*11
 
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
@@ -2591,18 +2591,18 @@ DisplayGUICheat:
     sub eax,ebx
     sub eax,ebx
     add [ccheatnpos],eax
-    GUIOuttextwin2bheat 11,23
-    GUIOuttextwin2bheat 11,23+7
-    GUIOuttextwin2bheat 11,23+7*2
-    GUIOuttextwin2bheat 11,23+7*3
-    GUIOuttextwin2bheat 11,23+7*4
-    GUIOuttextwin2bheat 11,23+7*5
-    GUIOuttextwin2bheat 11,23+7*6
-    GUIOuttextwin2bheat 11,23+7*7
-    GUIOuttextwin2bheat 11,23+7*8
-    GUIOuttextwin2bheat 11,23+7*9
-    GUIOuttextwin2bheat 11,23+7*10
-    GUIOuttextwin2bheat 11,23+7*11
+    GUIOuttextwin2cheat 11,23
+    GUIOuttextwin2cheat 11,23+7
+    GUIOuttextwin2cheat 11,23+7*2
+    GUIOuttextwin2cheat 11,23+7*3
+    GUIOuttextwin2cheat 11,23+7*4
+    GUIOuttextwin2cheat 11,23+7*5
+    GUIOuttextwin2cheat 11,23+7*6
+    GUIOuttextwin2cheat 11,23+7*7
+    GUIOuttextwin2cheat 11,23+7*8
+    GUIOuttextwin2cheat 11,23+7*9
+    GUIOuttextwin2cheat 11,23+7*10
+    GUIOuttextwin2cheat 11,23+7*11
 
     DrawSlideBarWin 7,231,28,[GUIcurrentcheatviewloc],[NumCheats],12,73,GUICStA
     cmp byte[GUICHold],7
