@@ -2554,7 +2554,10 @@ guimustrestartmsg:
     xor ebx,ebx
     mov ecx,256
 .a
-    mov byte[pressed+ebx],0
+    cmp byte[pressed+ebx],1
+    jne .npr1
+    mov byte[pressed+ebx],2
+.npr1
     inc ebx
     loop .a
     mov byte[pressed+2Ch],0
@@ -2586,8 +2589,8 @@ guimustrestartmsg:
     xor ebx,ebx
     mov ecx,256+128+64
 .b
-    cmp byte[pressed+ebx],0
-    jne .pressedokay
+    cmp byte[pressed+ebx],1
+    je .pressedokay
     inc ebx
     loop .b
     jmp .again
