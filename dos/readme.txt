@@ -1,7 +1,7 @@
 
                                  ZSNES
                     by zsKnight, _Demo_, and Pharos
-                         http://www.zsnes.com
+                         http://www.zsnes.com/
 
 
 ZSNES is a Super Nintendo Entertainment System emulator written mostly
