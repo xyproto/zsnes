@@ -94,7 +94,7 @@ int main (int argc, char *argv[]) {
 	char *fvar;
 
 	UnProtectMemory();
-	while((opt = getopt(argc, argv, "01:2:789ab:c:d:ef:g:hijk:lmno:p:r:s:tuv:wyz?")) != -1) {
+	while((opt = getopt(argc, argv, "01:2:789a:c:d:ef:g:hijk:lmno:p:r:s:tuv:wyz?")) != -1) {
 		switch(opt) {
 			/* Palette 0 disable */
 			case '0': {
