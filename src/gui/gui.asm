@@ -551,6 +551,8 @@ NEWSYM SaveMainWindowPos, db 1
 NEWSYM MainWindowX, dw -1
 NEWSYM MainWindowY, dw -1
 
+NEWSYM ScreenShotFormat, db 0
+
 GUIsave equ $-GUIRAdd
 
 NEWSYM CombinDataGlob, times 3300 db 0 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff
