@@ -1732,33 +1732,71 @@ section .text
     or eax,0FFFFFFF0h
 %%noneg
     shl eax,cl
-    and eax,0fffffffeh
+    sar eax,1
     mov edx,eax
 
-    mov eax,[prev1]
-    mov ebx,[filter1]
-    imul eax,ebx
-    sar eax,8
-    and eax,0fffffffeh
-    add edx,eax
-
+    cmp dword [filter0],240
+    jne %%notfilter1
     mov eax,[prev0]
-    mov ebx,[filter0]
-    imul eax,ebx
-    sar eax,8
-    and eax,0fffffffeh
+    sar eax,1
     add edx,eax
+    mov eax,[prev0]
+    neg eax
+    sar eax,5
+    add edx,eax
+%%notfilter1
+    cmp dword [filter0],488
+    jne %%notfilter2
+    mov eax,[prev0]
+    add edx,eax
+    mov eax,[prev0]
+    sar eax,1
+    add eax,[prev0]
+    neg eax
+    sar eax,5
+    add edx,eax
+    mov eax,[prev1]
+    sar eax,1
+    sub edx,eax
+    mov eax,[prev1]
+    sar eax,5
+    add edx,eax
+%%notfilter2
+    cmp dword [filter0],460
+    jne %%notfilter3
+    mov eax,[prev0]
+    add edx,eax
+    mov eax,[prev0]
+    shl eax,1
+    add eax,[prev0]
+    shl eax,2
+    add eax,[prev0]
+    neg eax
+    sar eax,7
+    add edx,eax
+    mov eax,[prev1]
+    sar eax,1
+    sub edx,eax
+    mov eax,[prev1]
+    sar eax,1
+    add eax,[prev1]
+    sar eax,4
+    add edx,eax
+%%notfilter3
+
+    cmp edx,-32768
+    jnl %%notless
+    mov edx,-32768
+%%notless
+    cmp edx,32767
+    jng %%notgreater
+    mov edx,32767
+%%notgreater
 
     mov eax,[prev0]
     mov [prev1],eax
-    cmp edx,-65536
-    jnl %%notless
-    mov edx,-65536
-%%notless
-    cmp edx,65535
-    jng %%notgreater
-    mov edx,65535
-%%notgreater
+
+    shl edx,1
     movsx edx,dx
     mov [prev0],edx
 %endmacro
