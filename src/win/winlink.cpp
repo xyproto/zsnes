@@ -2108,6 +2108,10 @@ extern int CounterB;
 
 void CheckTimers(void)
 {
+
+   // Lame fix for GUI using 100% CPU
+   if (GUIOn2) Sleep(1);
+
    QueryPerformanceCounter((LARGE_INTEGER*)&end2);
 
    while ((end2 - start2) >= update_ticks_pc2)
