@@ -375,6 +375,7 @@ extern unsigned char *vcache2b;
 extern unsigned char *vcache4b;
 extern unsigned char *vcache8b;
 
+void clearmem2();
 void clearmem()
 {
   memset(vidbuffer, 0, 131072);
@@ -396,6 +397,7 @@ void clearmem()
   memset(pal16bclha, 0, 1024);
   memset(pal16bxcl, 0xFF, 256);
   memset(romdata, 0xFF, maxromspace+32768);
+  clearmem2();
 }
 
 void clearmem2()
@@ -679,15 +681,6 @@ void headerhack()
     opexec358 = 226;
     opexec268cph = 80;
     opexec358cph = 80;
-  }
-
-  //Clay Fighter 2
-  if (!strncmp((RomData+Hi), "Clay", 4) && RomData[Hi+12] == '2')
-  {
-    opexec268 = 187;
-    opexec358 = 182;
-    opexec268cph = 47;
-    opexec358cph = 47;
   }
 
   return;
