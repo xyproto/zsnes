@@ -488,7 +488,7 @@ int startgame(void)
 {
    unsigned int color32,ScreenPtr2;
    int i;
-   Uint32 flags = SDL_SWSURFACE | SDL_HWPALETTE;
+   Uint32 flags = SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE;
    DWORD GBitMask;
    
    //STUB_FUNCTION;
@@ -558,7 +558,7 @@ DWORD LockSurface(void)
 void UnlockSurface(void)
 {
     if (SurfaceLocking) SDL_UnlockSurface(surface);
-    SDL_UpdateRect(surface,0,0,0,0);
+    SDL_Flip(surface);
     SurfBuf = surface->pixels;
 }
 
