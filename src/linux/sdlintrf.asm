@@ -256,9 +256,10 @@ NEWSYM PrintStr          ; Print ASCIIZ string
     popad
     ret
 
-
+SECTION .data
 NEWSYM wfkey, db 0
 
+SECTION .text
 NEWSYM WaitForKey       ; Wait for a key to be pressed
     pushad
     call getchar
@@ -272,8 +273,10 @@ NEWSYM OsExit
 NEWSYM OSExit
     jmp DosExit
 
+SECTION .data    
 NEWSYM TempHandle, dd 0
 
+SECTION .text
 NEWSYM Open_File
     pushad
     mov dword[ZOpenMode],0
@@ -506,10 +509,12 @@ Keybtail db 0
 HoldKey dd 0
 PKeyBuf times 100h db 0
 
+SECTION .data
 NEWSYM CurKeyPos, dd 0
 NEWSYM CurKeyReadPos, dd 0
 NEWSYM KeyBuffer, times 16 dd 0
 
+SECTION .text
 NEWSYM Check_Key
     mov al,[CurKeyPos]
     cmp al,[CurKeyReadPos]
@@ -758,8 +763,9 @@ NEWSYM saveselectpal
     ret
 
 ; ** init video mode functions **
+SECTION .data
 NEWSYM firstvideo, dd 1
-
+SECTION .text
 
 NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
    mov byte[res640],1
@@ -818,7 +824,9 @@ NEWSYM deinitvideo
     ret
 
 ; ** copy video mode functions **
+SECTION .data
 NEWSYM converta, dd 0
+SECTION .text
 NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
     cmp dword [converta],1
     jne near .skipconv
@@ -1100,11 +1108,13 @@ NEWSYM Init_Mouse
     mov eax,01h
     ret
 
+SECTION .data    
 NEWSYM WMouseX, dd 0
 NEWSYM WMouseY, dd 0
 NEWSYM WMouseMoveX, dd 0
 NEWSYM WMouseMoveY, dd 0
 NEWSYM WMouseButton, dd 0
+SECTION .text
 
 NEWSYM Get_MouseData         ; Returns both pressed and coordinates
     ; bx : bit 0 = left button, bit 1 = right button
@@ -1416,6 +1426,7 @@ NEWSYM SetInputDevice
 ; ****************************
 
 ; TCPIPPortNum
+SECTION .data
 NEWSYM TCPIPStatus, db 0
 NEWSYM PacketSendSize, dd 0
 NEWSYM PacketRecvSize, dd 0
@@ -1424,7 +1435,7 @@ NEWSYM PacketSendArray, times 2048+256 db 0
 NEWSYM PacketRecvArray, times 2048+256 db 0
 NEWSYM IPAddrStr, times 20 db 0
 NEWSYM RemoteDisconnect, db 0
-
+SECTION .text
 NEWSYM TCPIPStartServer
     mov byte[RemoteDisconnect],0
     pushad
