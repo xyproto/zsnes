@@ -1276,7 +1276,11 @@ DetermineNewest:
     mov eax,[statefileloc]
     mov dword[newestfiledate],0
     mov byte[newestfileloc],0
+%ifdef __LINUX__
+    determinenewhelp 0,'t'
+%else
     determinenewhelp 0,'T'
+%endif
     determinenewhelp 1,'1'
     determinenewhelp 2,'2'
     determinenewhelp 3,'3'
@@ -1290,7 +1294,11 @@ DetermineNewest:
     add bl,'0'
     cmp bl,'0'
     jne .nott
+%ifdef __LINUX__
+    mov bl,'t'
+%else
     mov bl,'T'
+%endif
 .nott
     mov [fnamest+eax],bl
     ret
