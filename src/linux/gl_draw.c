@@ -91,6 +91,8 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 	glBindTexture(GL_TEXTURE_1D, gltextures[3]);
 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, 256);
 	glTexImage1D(GL_TEXTURE_1D, 0, GL_LUMINANCE_ALPHA, 256, 0, GL_ALPHA,
 		     GL_UNSIGNED_BYTE, scanbuffer);
 
