@@ -934,6 +934,9 @@ NEWSYM GUIRATIO, db 0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0
 NEWSYM GUIBIFIL, db 0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1       ; binlinear = 1, nearest = 0
 NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Triple Buffering (Win)
 NEWSYM GUIMBVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+NEWSYM GUIHQ3X,   db 0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0       ; hq3x filter
+
 	
 SECTION .text
 

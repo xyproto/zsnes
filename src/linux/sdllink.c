@@ -63,8 +63,15 @@ static const int BitDepth = 16;
 DWORD FirstVid = 1;
 
 extern void SwitchFullScreen (void);
-extern BYTE GUIWFVID[];
 extern unsigned char cvidmode;
+DWORD SMode=0;
+DWORD DSMode=0;
+DWORD prevHQ3XMode=-1;
+
+extern BYTE GUIWFVID[];
+extern BYTE GUISMODE[];
+extern BYTE GUIDSMODE[];
+extern BYTE GUIHQ3X[];
 
 /* JOYSTICK AND KEYBOARD INPUT */
 SDL_Joystick *JoystickInput[5];
@@ -123,10 +130,10 @@ extern int Game60hzcall(void);
 extern void SoundProcess();
 void *blur_temp=0;
 void *blur_buffer=0;
-_int64 copymaskRB = 0x001FF800001FF800;
-_int64 copymaskG = 0x0000FC000000FC00;
-_int64 copymagic = 0x0008010000080100;
-_int64 coef = 0x0066009a0066009a;
+_int64 copymaskRB = 0x001FF800001FF800LL;
+_int64 copymaskG = 0x0000FC000000FC00LL;
+_int64 copymagic = 0x0008010000080100LL;
+_int64 coef = 0x0066009a0066009aLL;
 #ifdef __OPENGL__
 extern void gl_clearwin(void);
 #endif
