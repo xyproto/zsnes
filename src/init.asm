@@ -1503,22 +1503,6 @@ NEWSYM headerhack
 
     mov esi,[romdata]
     add esi,07FC0h
-    cmp dword[esi],'DIGI'
-    jne .notdigitaldevilstory
-    cmp dword[esi+4],'TAL '
-    jne .notdigitaldevilstory
-    cmp dword[esi+8],'DEVI'
-    jne .notdigitaldevilstory
-    cmp dword[esi+12],'L ST'
-    jne .notdigitaldevilstory
-    mov esi,[romdata]
-    add esi,63CA3h
-    mov byte [esi],0FFh ; Increase internal spc program delay to prevent irq
-                        ; from causing bad length spc transfer (0xFFFF)
-.notdigitaldevilstory
-
-    mov esi,[romdata]
-    add esi,07FC0h
     cmp dword[esi],0DFCAB0BDh
     jne .notfamista1
     cmp dword[esi+4],0D0A7CCB0h
