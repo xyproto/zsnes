@@ -27,15 +27,15 @@ EXTSYM vidbufferofsb
 ;EXTSYM Super2xSaI
 EXTSYM HalfTransB,HalfTransC
 
-
 %ifdef __MINGW__
 NEWSYM CopyVWinAsmStart
 %endif
 
-
-NEWSYM AddEndBytes, dd 0         ; Number of bytes between each line
-NEWSYM NumBytesPerLine, dd 0     ; Total number of bytes per line (1024+AddEndBytes)
-NEWSYM WinVidMemStart, dd 0
+SECTION .bss
+NEWSYM AddEndBytes, resd 1         ; Number of bytes between each line
+NEWSYM NumBytesPerLine, resd 1     ; Total number of bytes per line (1024+AddEndBytes)
+NEWSYM WinVidMemStart, resd 1
+SECTION .text
 
 NEWSYM copy640x480x16bwin
     cmp byte[curblank],40h
@@ -951,7 +951,7 @@ MMXInterpolwin:
     movq mm3,mm0
     movq mm4,mm0
     movq mm1,[esi+2]
-    pand mm3,mm1
+    por mm3,mm1
     pand mm0,mm2
     pand mm1,mm2
     psrlw mm0,1
@@ -992,7 +992,7 @@ MMXInterpolwin:
     movq mm3,mm0
     movq mm4,mm0
     movq mm1,[esi+2]
-    pand mm3,mm1
+    por mm3,mm1
     pand mm0,mm2
     pand mm1,mm2
     psrlw mm0,1
@@ -1008,8 +1008,8 @@ MMXInterpolwin:
     punpckhwd mm5,mm0
     movq [edx],mm4
     movq [edx+8],mm5
-    pand mm0,mm4
     movq mm0,mm6
+    por mm0,mm4
     pand mm4,mm2
     pand mm6,mm2
     psrlw mm4,1
@@ -1018,7 +1018,7 @@ MMXInterpolwin:
     paddd mm4,mm6
     paddw mm4,mm0
     movq mm0,mm5
-    pand mm0,mm7
+    por mm0,mm7
     pand mm5,mm2
     pand mm7,mm2
     psrlw mm5,1
@@ -1194,7 +1194,7 @@ MMXInterpolwin:
     movq mm3,mm0
     movq mm4,mm0
     movq mm1,[esi+2]
-    pand mm3,mm1
+    por mm3,mm1
     pand mm0,mm2
     pand mm1,mm2
     psrlw mm0,1
@@ -1563,8 +1563,9 @@ NEWSYM interpolate640x480x16bwin
     pop es
     ret
 
-ALIGN32
-InterPtr dd 0
+SECTION .bss
+InterPtr resd 1
+SECTION .text
 
 
 %ifdef __MINGW__

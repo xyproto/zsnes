@@ -29,9 +29,11 @@ EXTSYM HalfTransB,HalfTransC
 NEWSYM CopyVWinAsmStart
 
 
-NEWSYM AddEndBytes, dd 0         ; Number of bytes between each line
-NEWSYM NumBytesPerLine, dd 0     ; Total number of bytes per line (1024+AddEndBytes)
-NEWSYM WinVidMemStart, dd 0
+SECTION .bss
+NEWSYM AddEndBytes, resd 1         ; Number of bytes between each line
+NEWSYM NumBytesPerLine, resd 1     ; Total number of bytes per line (1024+AddEndBytes)
+NEWSYM WinVidMemStart, resd 1
+SECTION .text
 
 NEWSYM copy640x480x16bwin
     cmp byte[curblank],40h
@@ -1559,7 +1561,9 @@ NEWSYM interpolate640x480x16bwin
     pop es
     ret
 
-ALIGN32
-InterPtr dd 0
+SECTION .bss
+;ALIGN32
+InterPtr resd 1
+SECTION .text
 
 NEWSYM CopyVWinAsmEnd

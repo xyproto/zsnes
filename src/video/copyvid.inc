@@ -224,6 +224,7 @@ PreTripleBuffer:
    ret
 %endif 
 
+SECTION .data
 VidModeSize dd 0,0,0,0,0,0,0,320*240,320*240*2,0,320*480,320*480*2
             dd 512*384,512*384*2,640*480,640*480*2
 VidModeLine dd 0,0,0,0,0,0,0,240,240,0,480,480,384,384,480,480
@@ -231,10 +232,13 @@ NEWSYM VidStartDraw, dd 0
 VidModeComp db 0,0,0,0,0,0,0,1,1,1,1,1,1,1,1
 CVidStartAd db 0
 ApplyStart db 4
-NEWSYM NextLineStart, dd 0
-NEWSYM LastLineStart, dd 0
-NEWSYM FlipWait, db 0
-NEWSYM TriplebufTech, db 0
+
+SECTION .bss
+NEWSYM NextLineStart, resd 1
+NEWSYM LastLineStart, resd 1
+NEWSYM FlipWait, resb 1
+NEWSYM TriplebufTech, resb 1
+SECTION .text
 
 %ifdef __MSDOS__
 NEWSYM DosDrawScreen
@@ -487,8 +491,10 @@ NEWSYM copymodex224
     out dx,al
     mov byte[whichpage],0
     ret
-.startesi dd 0
-.startedi dd 0
+SECTION .bss
+.startesi resd 1
+.startedi resd 1
+SECTION .text
 
 ;*******************************************************
 ; CopyModeX 240     Copies buffer into unchained 320x240
@@ -650,8 +656,11 @@ NEWSYM copymodex240
     out dx,al
     mov byte[whichpage],0
     ret
-.startesi dd 0
-.startedi dd 0
+SECTION .bss
+.startesi resd 1
+.startedi resd 1
+
+SECTION .text
 
 ;*******************************************************
 ; CopyModeX 256     Copies buffer into unchained 320x256
@@ -807,11 +816,12 @@ NEWSYM copymodex256
     out dx,al
     mov byte[whichpage],0
     ret
-.startesi dd 0
-.startedi dd 0
+SECTION .bss
+.startesi resd 1
+.startedi resd 1
 
-NEWSYM whichpage, db 0          ; active page and visual page locations
-
+NEWSYM whichpage, resb 1          ; active page and visual page locations
+SECTION .text
 
 ;*******************************************************
 ; CopyModeQ 224       Copies buffer into chained 256x224
@@ -1217,7 +1227,8 @@ copyvesa2320x480x8ng:
 ;*******************************************************
 %endif
 
-ALIGN32
+SECTION .data ALIGN = 32
+
 NEWSYM EagleHold, dd 0
 NEWSYM smallscreenon, dd 0
 NEWSYM smallscreence, dd 0
@@ -1225,6 +1236,7 @@ NEWSYM CurrentGUIOn, dd 0
 vesavaland dd 0,0
 mmxvalanda dd 11111111110000001111111111000000b,11111111110000001111111111000000b
 mmxvalandb dd 00000000000111110000000000011111b,00000000000111110000000000011111b
+SECTION .text
 
 %ifdef __MSDOS__
 NEWSYM copyvesa2640x480x8bgui
@@ -2132,9 +2144,11 @@ NEWSYM copyvesa2512x384x8b
     jnz .b2
     jmp .returnloop
 
-.scratio db 0
-.lastrep db 0
-.p512    db 0
+SECTION .bss
+.scratio resb 1
+.lastrep resb 1
+.p512    resb 1
+SECTION .text
 
 NEWSYM copyvesa2512x384x8ng
     push es
@@ -2210,9 +2224,11 @@ NEWSYM copyvesa2512x384x8ng
     jnz .b
     jmp .returnloop
 
-.scratio db 0
-.lastrep db 0
-.p512    db 0
+SECTION .bss
+.scratio resb 1
+.lastrep resb 1
+.p512    resb 1
+SECTION .text
 
 ;*******************************************************
 ; Copy VESA2 320x240x16b Copies buffer to 320x240x16bVB2
@@ -2396,8 +2412,10 @@ NEWSYM copyvesa2320x240x16b
     pop es
     ret
 
-NEWSYM palresvalng, dd 0,0
-NEWSYM palresvalngb, dd 0,0
+SECTION .bss
+NEWSYM palresvalng, resd 2
+NEWSYM palresvalngb, resd 2
+SECTION .text
 
 %macro copya320x240 0
     mov [es:edi],dx
@@ -2408,14 +2426,15 @@ NEWSYM palresvalngb, dd 0,0
 %endmacro
 %endif
 
-ALIGN32
-NEWSYM rescompareng, dd 0
-NEWSYM nextdrawallng, dd 0
-NEWSYM prevcol0ng, dd 0
-NEWSYM numbytelng, dd 0
-NEWSYM lineleft, dd 0
-NEWSYM lineleft2, dd 0
-bankpos dd 0
+SECTION .bss ALIGN = 32
+NEWSYM rescompareng, resd 1
+NEWSYM nextdrawallng, resd 1
+NEWSYM prevcol0ng, resd 1
+NEWSYM numbytelng, resd 1
+NEWSYM lineleft, resd 1
+NEWSYM lineleft2, resd 1
+bankpos resd 1
+SECTION .text
 
 
 %ifdef __MSDOS__
@@ -4625,8 +4644,9 @@ MMXInterpolFS:
     pop es
     ret
 
-ALIGN32
-.interpspad dd 0,0,0,0,0,0,0,0
+SECTION .bss ALIGN=32
+.interpspad resd 8
+SECTION .text
 
 
 MMXInterpol:
@@ -4662,7 +4682,7 @@ MMXInterpol:
     movq mm3,mm0
     movq mm4,mm0
     movq mm1,[esi+2]
-    pand mm3,mm1
+    por mm3,mm1
     pand mm0,mm2
     pand mm1,mm2
     psrlw mm0,1
@@ -4704,7 +4724,7 @@ MMXInterpol:
     movq mm3,mm0
     movq mm4,mm0
     movq mm1,[esi+2]
-    pand mm3,mm1
+    por mm3,mm1
     pand mm0,mm2
     pand mm1,mm2
     psrlw mm0,1
@@ -4720,7 +4740,7 @@ MMXInterpol:
     punpckhwd mm5,mm0
     movq [edx],mm4
     movq [edx+8],mm5
-    pand mm0,mm4
+    por mm0,mm4
     movq mm0,mm6
     pand mm4,mm2
     pand mm6,mm2
@@ -4730,7 +4750,7 @@ MMXInterpol:
     paddd mm4,mm6
     paddw mm4,mm0
     movq mm0,mm5
-    pand mm0,mm7
+    por mm0,mm7
     pand mm5,mm2
     pand mm7,mm2
     psrlw mm5,1
@@ -4767,7 +4787,9 @@ MMXInterpol:
     emms
     pop es
     ret
-.blank dd 0,0
+SECTION .bss
+.blank resd 2
+SECTION .text
 
 .scanlines
     inc dl
@@ -4901,7 +4923,7 @@ MMXInterpol:
     movq mm3,mm0
     movq mm4,mm0
     movq mm1,[esi+2]
-    pand mm3,mm1
+    por mm3,mm1
     pand mm0,mm2
     pand mm1,mm2
     psrlw mm0,1
@@ -4956,8 +4978,9 @@ MMXInterpol:
     pop es
     ret
 
-ALIGN32
-NEWSYM InterPtr, dd 0
+SECTION .bss ALIGN=32
+NEWSYM InterPtr, resd 1
+SECTION .text
 
 NEWSYM interpolate640x480x16b
     cmp byte[FPUCopy],2
@@ -5262,8 +5285,8 @@ NEWSYM interpolate640x480x16b
 ; Copy VESA2 640x480x16b, bit setting 1:5:5:5
 ;*******************************************************
 
-ALIGN32
-.interpspad dd 0,0,0,0,0,0,0,0
+SECTION .bss ALIGN = 32
+.interpspad resd 8
 
 ;*******************************************************
 ; Copy VESA2 512x384x16b  Copies buffer to 512x384x16bV2
@@ -5322,8 +5345,10 @@ NEWSYM copyvesa2512x384x16bgui
     pop es
     ret
 
-.scratio db 0
-.lastrep db 0
+SECTION .bss
+.scratio resb 1
+.lastrep resb 1
+SECTION .text
 
 NEWSYM copyvesa2512x384x16b
     cmp byte[vesa2red10],1
@@ -5420,9 +5445,11 @@ NEWSYM copyvesa2512x384x16b
     jnz .b2
     jmp .returnloop
 
-.scratio db 0
-.lastrep db 0
-.p512    db 0
+SECTION .bss
+.scratio resb 1
+.lastrep resb 1
+.p512    resb 1
+SECTION .text
 
 ; Temporary
 
@@ -5482,8 +5509,10 @@ NEWSYM tempcopy
     popa
     ret
 
-.cocol db 0
-.startbuf dd 0
+SECTION .bss
+.cocol resb 1
+.startbuf resd 1
+SECTION .text
 
 NEWSYM allcache
     pushad
@@ -5679,9 +5708,11 @@ NEWSYM allcache
     popad
     ret
 
-.nbg dw 0
-.a   db 0
-.rowleft db 0
+SECTION .bss
+.nbg resw 1
+.a   resb 1
+.rowleft resb 1
+SECTION .text
 
 ;*******************************************************
 ; Copy VESA1.2 640x480x16b
