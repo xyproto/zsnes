@@ -1507,4 +1507,7 @@ void SRAMDirCurDir()
   getcwd(SRAMDir,1024);
 }
 
-
+void UpChdir()
+{
+  chdir("..");
+}

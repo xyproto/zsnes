@@ -68,6 +68,7 @@ EXTSYM vidbufferofsb
 EXTSYM HalfTransB,HalfTransC
 
 EXTSYM cur_zst_size,old_zst_size
+EXTSYM MovieProcessing,mzt_chdir,UpChdir
 
 %ifdef __MSDOS__
 EXTSYM SB_blank
@@ -1291,6 +1292,12 @@ GetPicture:
     jne .notskip
     ret
 .notskip
+    cmp byte[MovieProcessing],0
+    jz .nomovie
+    pushad
+    call mzt_chdir
+    popad
+.nomovie
     mov [PrevPictureVal],cl
     mov edx,PrevPicture
     mov ecx,64*56*2
@@ -1385,6 +1392,12 @@ GetPicture:
     add esi,288*2
     dec edx
     jnz .ploopa2
+    cmp byte[MovieProcessing],0
+    jz .nomovie2
+    pushad
+    call UpChdir
+    popad
+.nomovie2    
     ret
 
 NEWSYM drawfillboxsc

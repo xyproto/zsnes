@@ -897,6 +897,17 @@ Save and load MZT
 
 */
 
+void mzt_chdir()
+{
+  size_t filename_len = strlen(zmv_vars.filename);
+  memcpy(zmv_vars.filename+filename_len-3, "mz", 2);
+  if (!isdigit(zmv_vars.filename[filename_len-1]))
+  {
+    zmv_vars.filename[filename_len-1] = 't';
+  }
+  chdir(zmv_vars.filename);
+}
+
 bool mzt_save(char *statename, bool thumb)
 {
   size_t filename_len = strlen(zmv_vars.filename);
