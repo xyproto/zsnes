@@ -1879,10 +1879,15 @@ NEWSYM breakatsignlog
 NEWSYM keyonsn, db 0
 NEWSYM prbreak, db 0
 
+EXTSYM SPCSave
+
 NEWSYM breakatsignb
     mov byte[keyonsn],0
     mov byte[prbreak],0
-;    mov byte[debuggeron],1
+    cmp byte[SPCSave],1
+    jne .nospcsave
+    mov byte[debuggeron],1
+.nospcsave
 
     mov byte[exiter],01h
     xor eax,eax
@@ -1947,7 +1952,10 @@ NEWSYM breakatsignb
     sub esi,eax                 ; subtract program counter by address
     mov [xpc],si
     mov byte[exiter],0
-;    mov byte[debuggeron],0
+    cmp byte[SPCSave],1
+    jne .nospcsave2
+    mov byte[debuggeron],0
+.nospcsave2
     ret
 
 ;*******************************************************

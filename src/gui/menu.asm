@@ -89,6 +89,7 @@ NEWSYM NoInputRead, db 0
 NEWSYM PrevMenuPos, db 0
 NEWSYM MenuDisplace, dd 0
 NEWSYM MenuDisplace16, dd 0
+NEWSYM SPCSave, db 0
 
 NEWSYM showmenu
     mov byte[ForceNonTransp],1
@@ -343,7 +344,9 @@ NEWSYM showmenu
 ;    call breakatsignc
 ;    cmp byte[prbreak],1
 ;    je .yesesc
-;    call breakatsignb
+    mov byte[SPCSave],1
+    call breakatsignb
+    mov byte[SPCSave],0
 ;    cmp byte[prbreak],1
 ;    je .yesesc
     call savespcdata
