@@ -32,7 +32,7 @@ Stuff db 'ZSNES v?.??? / free software, programmed by zsKnight, _Demo_, and Phar
 
 
 SECTION .bss
-ALIGN32
+; ALIGN32   ; silly boy, bss section gets aligned by default XD
 
 NEWSYM wramdataa, resb 65536
 NEWSYM ram7fa,    resb 65536

@@ -63,24 +63,33 @@ NEWSYM VCacheAsmStart
 
 ; Process stuff & Cache sprites
 
-NEWSYM fskipped,     db 0
-NEWSYM objvramadder, dd 0
-NEWSYM pobjvram,     dw 0
+SECTION .bss
+NEWSYM fskipped,     resb 1
+NEWSYM objvramadder, resd 1
+NEWSYM pobjvram,     resw 1
+
+SECTION .data
 NEWSYM sprprifix,    db 1
 
-ALIGN32
-NEWSYM OMBGTestVal, dd 0
-NEWSYM ngptrdat2, dd 0
-NEWSYM ofshvaladd, dd 0
-NEWSYM ofsmtptrs, dd 0
-NEWSYM ofsmcptr2, dd 0
-NEWSYM sramb4save, dd 0
-NEWSYM mode7hiresen, dd 1
-NEWSYM hiresstuff, dd 0
-NEWSYM cmovietimeint, dd 0
-NEWSYM overalltimer, dd 0
+SECTION .bss
+NEWSYM OMBGTestVal, resd 1
+NEWSYM ngptrdat2, resd 1
+NEWSYM ofshvaladd, resd 1
+NEWSYM ofsmtptrs, resd 1
+NEWSYM ofsmcptr2, resd 1
+NEWSYM sramb4save, resd 1
 
-mousecheck db 0
+SECTION .data
+NEWSYM mode7hiresen, dd 1
+
+SECTION .bss
+NEWSYM hiresstuff, resd 1
+NEWSYM cmovietimeint, resd 1
+NEWSYM overalltimer, resd 1
+
+mousecheck resb 1
+
+section .text
 
 
 
@@ -121,16 +130,16 @@ mousecheck db 0
 UpdateVolume:
     pushad
     xor eax,eax
-    xor edx,edx
     mov al,[MusicRelVol]
     shl eax,7
-    mov ebx,100
-    div ebx
-    cmp al,127
+    mov ebx,0A3D70A3Dh
+    mul ebx
+    shr edx,6
+    cmp dl,127
     jb .noof
-    mov al,127
+    mov dl,127
 .noof
-    mov [MusicVol],al
+    mov [MusicVol],dl
 
     mov al,[DSPMem+0Ch]
     call WDSPReg0C
@@ -235,11 +244,15 @@ NEWSYM dsp1teststuff
     ; /////////////////////////////
     ret
 
-FastForwardLock db 0
-SlowDownLock db 0
-FastForwardLockp db 0
+SECTION .data
 SaveRamSaved db 'SAVED SRAM DATA',0
-NEWSYM CSprWinPtr, dd 0
+
+SECTION .bss
+FastForwardLock resb 1
+SlowDownLock resb 1
+FastForwardLockp resb 1
+NEWSYM CSprWinPtr, resd 1
+section .text
 
 NEWSYM cachevideo
     mov byte[NextLineCache],0
@@ -891,9 +904,38 @@ NEWSYM yesblank
     pop ebx
     ret
 
-.Zero dd 0,0
-.Zero2 dd 0,0
+NEWSYM ClearBGFPUCopy
+    mov edi,[vidbuffer]
+    xor eax,eax
+    add edi,16
+    mov dl,[resolutn]
+.loopa
+    mov ecx,16
+.TopOfLoop
+    FLDZ
+    FLDZ
+    FISTP QWORD [EDI]
+    FISTP QWORD [EDI+8]
+    ADD EDI,16
+    DEC ECX
+    JNZ .TopOfLoop
+    add edi,32
+    dec dl
+    jnz .loopa
+.skipbgclear
+    xor ecx,ecx
+    pop es
+    pop edx
+    pop edi
+    pop esi
+    pop ebx
+    ret
 
+SECTION .bss
+.Zero resd 2
+.Zero2 resd 2
+
+SECTION .data
 NEWSYM osm2dis,      db 0
 NEWSYM cachedmode,   db 0
 NEWSYM tempfname,    db 'vram.bin',0
@@ -951,6 +993,7 @@ bg2laydis db 'BG2 LAYER DISABLED',0
 bg3laydis db 'BG3 LAYER DISABLED',0
 bg4laydis db 'BG4 LAYER DISABLED',0
 sprlaydis db 'SPRITE LAYER DISABLED',0
+section .text
 
 ;*******************************************************
 ; Process Sprites
@@ -1099,14 +1142,16 @@ NEWSYM processsprites
     pop ebp
     ret
 
-.objvramloc dd 0
-.objvramloc2 dd 0
-.curpri  dd 0
-.trypri  dd 0
-.objleft dd 0
-.prileft dd 0
-.size1ptr dd 0
-.size2ptr dd 0
+SECTION .bss
+.objvramloc resd 1
+.objvramloc2 resd 1
+.curpri  resd 1
+.trypri  resd 1
+.objleft resd 1
+.prileft resd 1
+.size1ptr resd 1
+.size2ptr resd 1
+SECTION .text
 
 .reprocesssprite
     cmp cx,-8
@@ -1190,7 +1235,9 @@ NEWSYM processsprites
     sub esi,64
     ret
 
-.statusbit db 0
+section .bss
+.statusbit resb 1
+section .text
 
 .process8x8sprite:
     test dh,40h
@@ -1211,7 +1258,10 @@ NEWSYM processsprites
     add esi,56
     call .reprocessspriteflipy
     jmp .returnfromptr
-.numleft2do db 0
+
+section .bss
+.numleft2do resb 1
+section .text
 
 .process16x16sprite:
     mov [.statusbit],dh
@@ -1757,15 +1807,17 @@ NEWSYM processspritesb
     pop ebp
     ret
 
-.objvramloc dd 0
-.objvramloc2 dd 0
-.curpri  dd 0
-.trypri  dd 0
-.objleft dd 0
-.prileft dd 0
-.size1ptr dd 0
-.size2ptr dd 0
-.cpri     dd 0
+SECTION .bss
+.objvramloc resd 1
+.objvramloc2 resd 1
+.curpri  resd 1
+.trypri  resd 1
+.objleft resd 1
+.prileft resd 1
+.size1ptr resd 1
+.size2ptr resd 1
+.cpri     resd 1
+SECTION .text
 
 .reprocesssprite
     cmp cx,-8
@@ -1851,7 +1903,9 @@ NEWSYM processspritesb
     sub esi,64
     ret
 
-.statusbit db 0
+section .bss
+.statusbit resb 1
+section .text
 
 .process8x8sprite:
     test dh,40h
@@ -1872,7 +1926,10 @@ NEWSYM processspritesb
     add esi,56
     call .reprocessspriteflipy
     jmp .returnfromptr
-.numleft2do db 0
+
+section .bss
+.numleft2do resb 1
+section .text
 
 .process16x16sprite:
     mov [.statusbit],dh
@@ -2368,26 +2425,31 @@ NEWSYM cachesprites
     jnz near .nextobj
     ret
 
-.objptra dd 0
-.objptrb dd 0
-.nbg     dd 0
-.objptra2 dd 0
-.objptrb2 dd 0
-.nbg2     dd 0
-.objleft db 0
-.rowleft db 0
-.a       dd 0
-.objptr dd 0
-.objleftinbyte dd 0
-.curobjtype dd 0
+SECTION .data
 .num2do dd 1
-.curobj dd 0
 .byteb4add dd 2
-.byte2move dd 0
-.byte2add  dd 0
-.sprnum    dd 0
-.sprcheck  dd 0
-.sprfillpl dd 0
+
+SECTION .bss
+.objptra resd 1
+.objptrb resd 1
+.nbg     resd 1
+.objptra2 resd 1
+.objptrb2 resd 1
+.nbg2     resd 1
+.objleft resb 1
+.rowleft resb 1
+.a       resd 1
+.objptr resd 1
+.objleftinbyte resd 1
+.curobjtype resd 1
+.curobj resd 1
+.byte2move resd 1
+.byte2add  resd 1
+.sprnum    resd 1
+.sprcheck  resd 1
+.sprfillpl resd 1
+
+section .text
 
 ;*******************************************************
 ; Cache 2-Bit
@@ -2466,11 +2528,15 @@ NEWSYM cachetile2b
     pop eax
     ret
 
-.nbg     dw 0
-.count   db 0
-.a       db 0
-.rowleft db 0
-.nextar  db 0
+section .bss
+
+.nbg     resw 1
+.count   resb 1
+.a       resb 1
+.rowleft resb 1
+.nextar  resb 1
+
+section .text
 
 NEWSYM cache2bit
     ret
@@ -2563,10 +2629,14 @@ NEWSYM cachetile4b
     pop eax
     ret
 
-.nbg     dw 0
-.count   db 0
-.rowleft db 0
-.nextar  db 0
+section .bss
+
+.nbg     resw 1
+.count   resb 1
+.rowleft resb 1
+.nextar  resb 1
+
+section .text
 
 NEWSYM cache4bit
     ret
@@ -2953,11 +3023,15 @@ NEWSYM cachetile8b
     pop eax
     ret
 
-.nbg     dw 0
-.count   db 0
-.a       db 0
-.rowleft db 0
-.nextar  db 0
+section .bss
+
+.nbg     resw 1
+.count   resb 1
+.a       resb 1
+.rowleft resb 1
+.nextar  resb 1
+
+section .text
 
 NEWSYM cache8bit
     ret
@@ -3051,12 +3125,16 @@ NEWSYM cachetile2b16x16
     pop eax
     ret
 
-.nbg      dw 0
-.count    db 0
-.a        db 0
-.rowleft  db 0
-.nextar   db 0
-.tileleft db 0
+section .bss
+
+.nbg      resw 1
+.count    resb 1
+.a        resb 1
+.rowleft  resb 1
+.nextar   resb 1
+.tileleft resb 1
+
+section .text
 
 NEWSYM cache2bit16x16
     ret
@@ -3155,11 +3233,15 @@ NEWSYM cachetile4b16x16
     pop eax
     ret
 
-.nbg     dw 0
-.count   db 0
-.rowleft db 0
-.nextar  db 0
-.tileleft db 0
+section .bss
+
+.nbg     resw 1
+.count   resb 1
+.rowleft resb 1
+.nextar  resb 1
+.tileleft resb 1
+
+section .text
 
 NEWSYM cache4bit16x16
     ret
@@ -3558,12 +3640,16 @@ NEWSYM cachetile8b16x16
     pop eax
     ret
 
-.nbg      dw 0
-.count    db 0
-.a        db 0
-.rowleft  db 0
-.nextar   db 0
-.tileleft db 0
+section .bss
+
+.nbg      resw 1
+.count    resb 1
+.a        resb 1
+.rowleft  resb 1
+.nextar   resb 1
+.tileleft resb 1
+
+section .text
 
 NEWSYM cache8bit16x16
     ret
@@ -3623,8 +3709,12 @@ NEWSYM cachesingle4b
 NEWSYM cachesingle2b
     ret
 
-NEWSYM scacheloop, db 0
-NEWSYM tiletypec, db 0
+section .bss
+
+NEWSYM scacheloop, resb 1
+NEWSYM tiletypec, resb 1
+
+section .text
 
 %macro processcache4b3 1
     xor al,al

@@ -371,8 +371,10 @@ NEWSYM DOScreatenewcfg
     checkitemcfg 'v', [cfgreinittime],.checkv
     jmp .loop
 
-.temp db 0
-.temp2 db 0
+section .bss
+.temp resb 1
+.temp2 resb 1
+section .text
 
 .insertnum
     ; preserve ecx and edx, output al into edi
@@ -539,6 +541,8 @@ NEWSYM DOScreatenewcfg
     jmp .nextinsertdirc
 .nomoredirc
     jmp .loop
+
+section .data
 
 .cfgfiledata
 db '; ZSNES Configuration file',13,10
@@ -720,6 +724,8 @@ db '; ZSNES automatically writes the current directory here upon exit.',13,10
 db '',13,10
 db 'GameDirectory = %e',13,10
 .cfgfilesize equ $-.cfgfiledata
+
+section .text
 
 NEWSYM getcfg
     mov byte[.forceauto],0
@@ -1258,7 +1264,7 @@ NEWSYM getcfg
     inc ecx
     dec dword[.strlenb]
     cmp bl,','
-    je near .finstr1
+    je .finstr1
     cmp bl,'0'
     jb near .nextstr1
     cmp bl,'9'
@@ -1272,7 +1278,7 @@ NEWSYM getcfg
     and edx,0FFh
     add eax,edx
     cmp dword[.strlenb],0
-    je near .finstr1
+    je .finstr1
     jmp .nextstr1
 .finstr1
     ; determine which variable according to bh & write
@@ -1343,7 +1349,7 @@ NEWSYM getcfg
     inc ecx
     dec dword[.strlenb]
     cmp bl,','
-    je near .finstr2
+    je .finstr2
     cmp bl,'0'
     jb near .nextstr2
     cmp bl,'9'
@@ -1357,7 +1363,7 @@ NEWSYM getcfg
     and edx,0FFh
     add eax,edx
     cmp dword[.strlenb],0
-    je near .finstr2
+    je .finstr2
     jmp .nextstr2
 .finstr2
     ; determine which variable according to bh & write
@@ -1735,17 +1741,17 @@ NEWSYM getcfg
     inc ecx
     dec dword[.strlenb]
     cmp bl,','
-    je near .finstr3
+    je .finstr3
     cmp bl,'0'
-    jb near .nextstr3
+    jb .nextstr3
     cmp bl,'9'
-    ja near .nextstr3
+    ja .nextstr3
     sub bl,48
     mov dl,10
     mul dl
     add al,bl
     cmp dword[.strlenb],0
-    je near .finstr3
+    je .finstr3
     jmp .nextstr3
 .finstr3
     ; determine which variable according to bh & write
@@ -1878,22 +1884,25 @@ NEWSYM getcfg
 .novolume
     ret
 
-SECTION .data
+SECTION .bss
 
-.per2exec db 0
-.volume   db 0
-.fileloc dw 0
-.eofile  db 0
-.ignore  db 0
-.strlen  dd 0
-.stralen dd 0    ; actual string length
-.strlena dd 0
-.strlenb dd 0
-.cchar   db 0
-.forceauto db 0
-.string  times 128 db 0  ; full string
-.stringa times 128 db 0
-.stringb times 128 db 0
+.per2exec resb 1
+.volume   resb 1
+.fileloc resw 1
+.eofile  resb 1
+.ignore  resb 1
+.strlen  resd 1
+.stralen resd 1    ; actual string length
+.strlena resd 1
+.strlenb resd 1
+.cchar   resb 1
+.forceauto resb 1
+.string  resb 128  ; full string
+.stringa resb 128
+.stringb resb 128
+
+section .data
+
 .cfgfname db 'zsnes.cfg',0
 .stra dd 9
       db 'FRAMESKIP'
