@@ -2108,7 +2108,7 @@ NEWSYM SustainRateO
                dd Rate_CounterToSamples(0x7800,600,32000)
 
 NEWSYM SustainValueO
-               db 15,31,47,63,89,95,111,127
+               db 15,31,47,63,79,95,111,127
 NEWSYM LinearRateO
 NEWSYM IncreaseO
 NEWSYM DecreaseO
@@ -2873,7 +2873,7 @@ NEWSYM SustainRate
                dd Rate_CounterToSamples(0x7800,600,32000)
 
 NEWSYM SustainValue
-               db 15,31,47,63,89,95,111,127
+               db 15,31,47,63,79,95,111,127
 
 NEWSYM LinearRate
 NEWSYM Increase
