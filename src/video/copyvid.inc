@@ -4643,7 +4643,7 @@ MMXInterpolFS:
     pop es
     ret
 
-SECTION .bss ALIGN=32
+SECTION .bss ;ALIGN=32
 .interpspad resd 8
 SECTION .text
 
@@ -4977,7 +4977,7 @@ SECTION .text
     pop es
     ret
 
-SECTION .bss ALIGN=32
+SECTION .bss ;ALIGN=32
 NEWSYM InterPtr, resd 1
 SECTION .text
 
@@ -5286,6 +5286,8 @@ NEWSYM interpolate640x480x16b
 
 SECTION .bss ALIGN = 32
 .interpspad resd 8
+
+SECTION .text
 
 ;*******************************************************
 ; Copy VESA2 512x384x16b  Copies buffer to 512x384x16bV2
