@@ -157,10 +157,6 @@ int Main_Proc(void)
 			if (event.key.keysym.sym == SDLK_LSHIFT ||
 			    event.key.keysym.sym == SDLK_RSHIFT)
 				shiftptr = 0;
-		        if (event.key.keysym.mod & KMOD_NUM)
-		                numlockptr = 0;
-			  else
-				numlockptr = 1;	
 			if (event.key.keysym.scancode-8 >= 0)
 				pressed[event.key.keysym.scancode-8]=0;
 			break;
