@@ -5155,7 +5155,14 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,5,65,GUIGUIAboutText5
     ret
 %else
+%ifndef __LINUX__
     DrawGUIButton 11,5,125,74,136,GUIGUIAboutText8,65,0,0
+%else
+    sub byte[GUItextcolor],15
+    GUIOuttextwin2 11,6,126,GUIGUIAboutText8
+    add byte[GUItextcolor],15
+    GUIOuttextwin2 11,5,125,GUIGUIAboutText8
+%endif
     sub byte[GUItextcolor],15
     GUIOuttextwin2 11,6,16,GUIGUIAboutText1
     GUIOuttextwin2 11,6,26,GUIGUIAboutText7
@@ -5207,7 +5214,11 @@ GUIGUIAboutText7 db 'WIN PORT V1.06',0
 GUIGUIAboutText7 db 'LINUX PORT V0.37',0
 %endif
 
+%ifndef __LINUX__
 GUIGUIAboutText8 db 'HOMEPAGE',0
+%else
+GUIGUIAboutText8 db 'WWW.ZSNES.COM',0
+%endif
 
 DisplayGUIMovies:
     GUIDrawWindowBox 15,GUIMovieDisp
