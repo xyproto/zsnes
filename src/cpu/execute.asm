@@ -108,7 +108,7 @@ EXTSYM SfxSFR,nosprincr
 EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 EXTSYM NetPlayNoMore,MovieSeekBehind
 EXTSYM statefileloc,CHIPBATT,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
-EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
+EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead,ResetDuringMovie,MovieExitLoop
 
 %ifdef __MSDOS__
 EXTSYM dssel
@@ -977,7 +977,13 @@ reexecuteb2:
 .activatereset
     pushad
     mov byte[GUIReset],1
+    cmp byte[MovieProcessing],2 ;Recording
+    jne .nomovierecording
+    call ResetDuringMovie
+    jmp .movieendif
+.nomovierecording    
     call GUIDoReset
+.movieendif    
     popad
     mov byte[ReturnFromSPCStall],0
     jmp continueprog
@@ -2724,6 +2730,8 @@ NEWSYM cpuover
     pushad
     call ProcessMovies
     popad
+    cmp byte[MovieExitLoop],1
+    je execloop.startagain ;Where do we jump to?
 .noprocmovie
 
     test byte[INTEnab],1

@@ -841,17 +841,17 @@ static bool zmv_open(char *filename)
   return(false);
 }
 
-static void zmv_replay_command(enum zmv_commands command)
+//If this returns true, the caller should not proccess another input
+static bool zmv_replay_command(enum zmv_commands command)
 {
   switch (command)
   {
     case zmv_command_reset:
       GUIReset = 1;
-      asm_call(GUIDoReset);
-      ReturnFromSPCStall = 0;
-      zst_sram_load(zmv_vars.fp);    
+      return(true);
       break;
   }
+  return(false);
 }
 
 #define RESTORE_PAD(cur, prev) cur = (((unsigned int)prev) << 20) | 0x8000
@@ -901,7 +901,10 @@ static bool zmv_replay()
 
       if (flag & BIT(0)) //Command
       {
-        zmv_replay_command(flag >> 1);
+        if (zmv_replay_command(flag >> 1));
+        {
+          return(true);
+        }
         return(zmv_replay());
       }
 
@@ -1762,12 +1765,22 @@ void Replay()
   }
 }
 
+bool MovieExitLoop = false;
 void ProcessMovies()
 {
+  MovieExitLoop = false;
   switch (MovieProcessing)
   {
     case MOVIE_PLAYBACK:
       Replay();
+      if (GUIReset == 1)
+      {
+        SetMovieMode(MOVIE_OFF);
+        asm_call(GUIDoReset);
+        SetMovieMode(MOVIE_PLAYBACK);       
+        ReturnFromSPCStall = 0;
+        MovieExitLoop = true;  
+      }
       break;
     case MOVIE_RECORD:
       zmv_record(SloMo50 ? true : false, ComboCounter);
@@ -1781,6 +1794,9 @@ void ProcessMovies()
 void ResetDuringMovie()
 {
   zmv_record_command(zmv_command_reset);
+  SetMovieMode(MOVIE_OFF);
+  asm_call(GUIDoReset);
+  SetMovieMode(MOVIE_RECORD);
 }
 
 void SkipMovie()
