@@ -120,7 +120,6 @@ NEWSYM startdebugger
     mov byte[debuggeron],1
     mov ax,0003h
     int 10h
-
 ;    mov edx,.fname3+1
 ;    call Open_File
 ;    mov bx,ax
@@ -2342,7 +2341,6 @@ NEWSYM nextopcode
 
     ; set output pointer
     mov edi,[debugbuf]          ; set write pointer
-    inc edi
     xor eax,eax
     mov ax,[debugt]
     push bx
@@ -2484,12 +2482,12 @@ NEWSYM nextopcode
     call .printhex8
     mov al,32
     stosb
-    mov al,'E'
-    stosb
-    mov al,'-'
+;    mov al,'e'
+;    stosb
+    mov al,'e'
     cmp byte[xe],1
     jne .nopos
-    mov al,'+'
+    mov al,'E'
 .nopos
     stosb
     ret
@@ -2705,6 +2703,10 @@ SECTION .text
     jne .check9
     jmp .out8
 .check9
+    cmp ah,9
+    jne .check10
+    jmp .out9
+.check10
     cmp ah,10
     jne .check11
     jmp .out10
@@ -2769,14 +2771,35 @@ SECTION .text
     jne .check26
     jmp .out25
 .check26
+    cmp ah,26
+    jne .check27
     jmp .out26
+.check27
+    jmp .out27
     ret
 
 ; each mode must output 10 characters
 
+%macro getxb 1
+ push eax
+ xor eax,eax
+ mov al,[esi]
+ shl eax,2
+ mov al,[ocname+eax]
+ cmp al,'J'
+ jz %%usepbr
+ pop eax
+ mov %1,[xdb]
+ jmp %%usedbr
+%%usepbr
+ pop eax
+ mov %1,[xpb]
+%%usedbr
+%endmacro
+
 .out0           ; 
-    mov al,32
-    mov ecx,10
+    mov al,' '
+    mov ecx,19
     rep stosb
     ret
 
@@ -2789,26 +2812,36 @@ SECTION .text
     jz .out116b
     mov al,[esi+1]
     call .printhex8
-    mov ecx,6
-    mov al,32
+    mov al,' '
+    mov ecx,15
     rep stosb
     ret
 .out116b
     mov ax,[esi+1]
     call .printhex16
-    mov ecx,4
-    mov al,32
+    mov al,' '
+    mov ecx,13
     rep stosb
     ret
 
-.out2           ; $1234
+.out2           ; $1234 : db+$1234
     mov al,'$'
     stosb
     mov ax,[esi+1]
     call .printhex16
-    mov al,32
+    mov al,' '
     mov ecx,5
     rep stosb
+    mov al,'['
+    stosb
+    getxb(al)
+    call .printhex8
+    mov ax,[esi+1]
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
 .out3           ; $123456
@@ -2818,36 +2851,47 @@ SECTION .text
     call .printhex8
     mov ax,[esi+1]
     call .printhex16
-    mov al,32
-    mov ecx,3
+    mov al,' '
+    mov ecx,12
     rep stosb
     ret
 
-.out4           ; $12
+.out4           ; $12 : $12+d
     mov al,'$'
     stosb
     mov al,[esi+1]
     call .printhex8
-    mov al,32
+    mov al,' '
     mov ecx,7
     rep stosb
+    mov al,'['
+    stosb
+    xor ax,ax
+    call .printhex8
+    mov al,[esi+1]
+    add ax,[xd]
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
 .out5           ; A
     mov al,'A'
     stosb
-    mov ecx,9
-    mov al,32
+    mov al,' '
+    mov ecx,18
     rep stosb
     ret
 
 .out6           ; i
-    mov al,32
-    mov ecx,10
+    mov al,' '
+    mov ecx,19
     rep stosb
     ret
 
-.out7           ; ($12),y
+.out7           ; ($12),y : ($12+$13+d)+y
     mov al,'('
     stosb
     mov al,'$'
@@ -2858,14 +2902,42 @@ SECTION .text
     stosb
     mov al,','
     stosb
-    mov al,'y'
+    mov al,'Y'
     stosb
-    mov al,32
-    mov ecx,3
-    rep stosb
+    mov al,' '
+    stosb
+    stosb
+    stosb
+    mov al,'['
+    stosb
+    xor eax,eax
+    call .printhex8
+    xor eax,eax
+    xor ecx,ecx
+    mov cl,[esi+1]
+    add cx,[xd]
+    call dword near [memtabler8]
+    mov dl,al
+    xor eax,eax
+    inc cx
+    call dword near [memtabler8]
+    mov dh,al
+    mov ax,dx
+    test byte[xp],10h
+    jz .out7w
+    add al,[xy]
+    jmp .out7n
+.out7w
+    add ax,[xy]
+.out7n
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
-.out8           ; [$12],y
+.out8           ; [$12],y : [$12+$13+$14+d]+y
     mov al,'['
     stosb
     mov al,'$'
@@ -2876,14 +2948,48 @@ SECTION .text
     stosb
     mov al,','
     stosb
-    mov al,'y'
+    mov al,'Y'
     stosb
-    mov al,32
-    mov ecx,3
-    rep stosb
+    mov al,' '
+    stosb
+    stosb
+    stosb
+    mov al,'['
+    stosb
+    xor eax,eax
+    xor ecx,ecx
+    xor edx,edx
+    mov cl,[esi+1]
+    add cx,[xd]
+    call dword near [memtabler8]
+    mov dl,al
+    xor eax,eax
+    inc cl
+    call dword near [memtabler8]
+    mov dh,al
+    inc cl
+    call dword near [memtabler8]
+    shl eax,16
+    or edx,eax
+    test byte[xp],10h
+    jz .out8w
+    add dl,[xy]
+    jmp .out8n
+.out8w
+    add dx,[xy]
+.out8n
+    mov eax,edx
+    shr eax,16
+    call .printhex8
+    mov eax,edx
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
-.out9           ; ($12,x)
+.out9           ; ($12,x) : ($12+$13+d+x)
     mov al,'('
     stosb
     mov al,'$'
@@ -2892,72 +2998,175 @@ SECTION .text
     call .printhex8
     mov al,','
     stosb
-    mov al,'x'
+    mov al,'X'
     stosb
     mov al,')'
     stosb
-    mov al,32
-    mov ecx,3
-    rep stosb
+    mov al,' '
+    stosb
+    stosb
+    stosb
+    mov al,'['
+    stosb
+    xor eax,eax
+    call .printhex8
+    xor ecx,ecx
+    mov cl,[esi+1]
+    add cx,[xd]
+    test byte[xp],10h
+    jz .out9w
+    add cl,[xx]
+    jmp .out9n
+.out9w
+    add cx,[xx]
+.out9n
+    call dword near [memtabler8]
+    mov dl,al
+    xor eax,eax
+    inc cl
+    call dword near [memtabler8]
+    mov dh,al
+    mov ax,dx
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
-.out10          ; $12,x
+.out10          ; $12,x : $12+d+x
     mov al,'$'
     stosb
     mov al,[esi+1]
     call .printhex8
     mov al,','
     stosb
-    mov al,'x'
+    mov al,'X'
     stosb
-    mov al,32
+    mov al,' '
     mov ecx,5
     rep stosb
+    mov al,'['
+    stosb
+    xor eax,eax
+    call .printhex8
+    mov al,[esi+1]
+    add ax,[xd]
+    test byte[xp],10h
+    jz .out10w
+    add al,[xx]
+    jmp .out10n
+.out10w
+    add ax,[xx]
+.out10n
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
-.out11          ; $12,y
+.out11          ; $12,y : $12+d+y
     mov al,'$'
     stosb
     mov al,[esi+1]
     call .printhex8
     mov al,','
     stosb
-    mov al,'y'
+    mov al,'Y'
     stosb
-    mov al,32
+    mov al,' '
     mov ecx,5
     rep stosb
+    mov al,'['
+    stosb
+    xor eax,eax
+    call .printhex8
+    mov al,[esi+1]
+    add ax,[xd]
+    test byte[xp],10h
+    jz .out11w
+    add al,[xy]
+    jmp .out11n
+.out11w
+    add ax,[xy]
+.out11n
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
-.out12          ; $1234,x
+.out12          ; $1234,x : dbr+$1234+x
     mov al,'$'
     stosb
     mov ax,[esi+1]
     call .printhex16
     mov al,','
     stosb
-    mov al,'x'
+    mov al,'X'
     stosb
-    mov al,32
-    mov ecx,3
-    rep stosb
+    mov al,' '
+    stosb
+    stosb
+    stosb
+    mov al,'['
+    stosb
+    mov al,[xdb]
+    call .printhex8
+    xor eax,eax
+    xor ecx,ecx
+    mov ax,[esi+1]
+    test byte[xp],10h
+    jz .out12w
+    add al,[xx]
+    jmp .out12n
+.out12w
+    add ax,[xx]
+.out12n
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
-.out13          ; $1234,y
+.out13          ; $1234,y : dbr+$1234+y
     mov al,'$'
     stosb
     mov ax,[esi+1]
     call .printhex16
     mov al,','
     stosb
-    mov al,'y'
+    mov al,'Y'
     stosb
-    mov al,32
-    mov ecx,3
-    rep stosb
+    mov al,' '
+    stosb
+    stosb
+    stosb
+    mov al,'['
+    stosb
+    mov al,[xdb]
+    call .printhex8
+    xor eax,eax
+    xor ecx,ecx
+    mov ax,[esi+1]
+    test byte[xp],10h
+    jz .out13w
+    add al,[xy]
+    jmp .out13n
+.out13w
+    add ax,[xy]
+.out13n
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
-.out14          ; $123456,x
+.out14          ; $123456,x : $123456+x
     mov al,'$'
     stosb
     mov al,[esi+3]
@@ -2966,11 +3175,38 @@ SECTION .text
     call .printhex16
     mov al,','
     stosb
-    mov al,'x'
+    mov al,'X'
     stosb
-    mov al,32
-    mov ecx,1
-    rep stosb
+    mov al,' '
+    stosb
+    mov al,'['
+    stosb
+    xor eax,eax
+    mov al,[esi+1]
+    mov ecx,eax
+    mov al,[esi+2]
+    shl eax,8
+    or ecx,eax
+    xor ax,ax
+    mov al,[esi+3]
+    shl eax,16
+    or ecx,eax
+    test byte[xp],10h
+    jz .out14w
+    add cl,[xx]
+    jmp .out14n
+.out14w
+    add cx,[xx]
+.out14n
+    mov eax,ecx
+    shr eax,16
+    call .printhex8
+    mov eax,ecx
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
 .out15          ; +-$12 / $1234
@@ -2980,10 +3216,23 @@ SECTION .text
     cbw
     add ax,[xpc]
     add ax,2
+    push eax
     call .printhex16
-    mov al,32
-    mov ecx,5
+    mov al,' '
+    mov ecx,4
     rep stosb
+    mov al,' '
+    stosb
+    mov al,'['
+    stosb
+    mov al,[xpb]
+    call .printhex8
+    pop eax
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
 .out16          ; +-$1234 / $1234
@@ -2992,13 +3241,26 @@ SECTION .text
     mov ax,[esi+1]
     add ax,[xpc]
     add ax,3
+    push eax
     call .printhex16
-    mov al,32
-    mov ecx,5
+    mov al,' '
+    mov ecx,4
     rep stosb
+    mov al,' '
+    stosb
+    mov al,'['
+    stosb
+    mov al,[xpb]
+    call .printhex8
+    pop eax
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
-.out17          ; ($1234)    
+.out17          ; ($1234)
     mov al,'('
     stosb
     mov al,'$'
@@ -3007,9 +3269,31 @@ SECTION .text
     call .printhex16
     mov al,')'
     stosb
-    mov al,32
-    mov ecx,3
-    rep stosb
+    mov al,' '
+    stosb
+    stosb
+    stosb
+    mov al,'['
+    stosb
+    getxb(al)
+    call .printhex8
+    xor ebx,ebx
+    xor ecx,ecx
+    getxb(bl)
+    mov cx,[esi+1]
+    call dword near [memtabler8+ebx*4]
+    mov bl,al
+    inc cx
+    xor ebx,ebx
+    getxb(bl)
+    call dword near [memtabler8+ebx*4]
+    mov ah,al
+    mov al,bl
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
 .out18          ; ($12)
@@ -3021,9 +3305,27 @@ SECTION .text
     call .printhex8
     mov al,')'
     stosb
-    mov al,32
+    mov al,' '
     mov ecx,5
     rep stosb
+    mov al,'['
+    stosb
+    mov al,[xdb]
+    call .printhex8
+    xor ecx,ecx
+    mov cl,[esi+1]
+    add cx,[xd]
+    call dword near [memtabler8]
+    mov bl,al
+    inc cl
+    call dword near [memtabler8]
+    mov ah,al
+    mov al,bl
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
 .out19          ; [$12]
@@ -3035,9 +3337,34 @@ SECTION .text
     call .printhex8
     mov al,']'
     stosb
-    mov al,32
+    mov al,' '
     mov ecx,5
     rep stosb
+    mov al,'['
+    stosb
+    xor eax,eax
+    xor ecx,ecx
+    xor edx,edx
+    mov cl,[esi+1]
+    call dword near [memtabler8]
+    mov dl,al
+    xor eax,eax
+    inc cl
+    call dword near [memtabler8]
+    mov dh,al
+    inc cl
+    call dword near [memtabler8]
+    shl eax,16
+    or edx,eax
+    mov eax,edx
+    shr eax,16
+    call .printhex8
+    mov eax,edx
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
 .out20          ; ($1234,x)
@@ -3049,18 +3376,46 @@ SECTION .text
     call .printhex16
     mov al,','
     stosb
-    mov al,'x'
+    mov al,'X'
     stosb
     mov al,')'
     stosb
-    mov al,32
-    mov ecx,1
-    rep stosb
+    mov al,' '
+    stosb
+    mov al,'['
+    stosb
+    mov al,[xpb]
+    call .printhex8
+    xor ebx,ebx
+    xor ecx,ecx
+    mov cx,[esi+1]
+    test byte[xp],10h
+    jz .out20w
+    add cl,[xx]
+    jmp .out20n
+.out20w
+    add cx,[xx]
+.out20n
+    xor ebx,ebx
+    mov bl,[xpb]
+    call dword near [memtabler8+ebx*4]
+    mov dl,al
+    inc cx
+    xor ebx,ebx
+    mov bl,[xpb]
+    call dword near [memtabler8+ebx*4]
+    mov ah,al
+    mov al,dl
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
-.out21          ; s 
-    mov al,32
-    mov ecx,10
+.out21          ; s
+    mov al,' '
+    mov ecx,19
     rep stosb
     ret
 
@@ -3071,11 +3426,22 @@ SECTION .text
     call .printhex8
     mov al,','
     stosb
-    mov al,'s'
+    mov al,'S'
     stosb
-    mov al,32
+    mov al,' '
     mov ecx,5
     rep stosb
+    mov al,'['
+    stosb
+    xor eax,eax
+    call .printhex8
+    mov al,[esi+1]
+    add ax,[xs]
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
 .out23          ; (d,s),y
@@ -3087,17 +3453,41 @@ SECTION .text
     call .printhex8
     mov al,','
     stosb
-    mov al,'s'
+    mov al,'S'
     stosb
     mov al,')'
     stosb
     mov al,','
     stosb
-    mov al,'y'
+    mov al,'Y'
     stosb
-    mov al,32
-    mov ecx,1
-    rep stosb
+    mov al,' '
+    stosb
+    mov al,'['
+    stosb
+    xor eax,eax
+    xor ecx,ecx
+    call .printhex8
+    mov cl,[esi+1]
+    add cx,[xs]
+    call dword near [memtabler8]
+    mov dh,al
+    inc cx
+    call dword near [memtabler8]
+    mov dl,al
+    test byte[xp],10h
+    jz .out23w
+    add dl,[xy]
+    jmp .out23n
+.out23w
+    add dx,[xy]
+.out23n
+    mov ax,dx
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
     ret
 
 .out24          ; xyc - $1234
@@ -3105,8 +3495,8 @@ SECTION .text
     stosb
     mov ax,[esi+1]
     call .printhex16
-    mov al,32
-    mov ecx,5
+    mov al,' '
+    mov ecx,14
     rep stosb
     ret
 
@@ -3117,8 +3507,8 @@ SECTION .text
     stosb
     mov al,[esi+1]
     call .printhex8
-    mov ecx,6
-    mov al,32
+    mov al,' '
+    mov ecx,15
     rep stosb
     ret
 
@@ -3131,20 +3521,58 @@ SECTION .text
     jz .out2616b
     mov al,[esi+1]
     call .printhex8
-    mov ecx,6
-    mov al,32
+    mov al,' '
+    mov ecx,15
     rep stosb
     ret
 
 .out2616b
     mov ax,[esi+1]
     call .printhex16
-    mov ecx,4
-    mov al,32
+    mov al,' '
+    mov ecx,13
     rep stosb
     ret
 
+.out27 ; [$1234]
+    mov al,'['
+    stosb
+    mov ax,[esi+1]
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    mov ecx,4
+    rep stosb
+    mov al,'['
+    stosb
+    xor eax,eax
+    xor ebx,ebx
+    xor ecx,ecx
+    mov bl,[xpb]
+    mov cx,[esi+1]
+    call dword near [memtabler8+ebx*4]
+    mov dl,al
+    xor ebx,ebx
+    mov bl,[xpb]
+    inc cx
+    call dword near [memtabler8+ebx*4]
+    mov dh,al
+    xor ebx,ebx
+    mov bl,[xpb]
+    inc cx
+    call dword near [memtabler8+ebx*4]
+    call .printhex8
+    mov ax,dx
+    call .printhex16
+    mov al,']'
+    stosb
+    mov al,' '
+    stosb
+    ret
+
 .printhex16
+    push ecx
     mov ecx,4
 .loopa
     xor ebx,ebx
@@ -3157,9 +3585,11 @@ SECTION .text
     pop ax
     shl ax,4
     loop .loopa
+    pop ecx
     ret
 
 .printhex8
+    push ecx
     xor ah,ah
     mov ecx,2
 .loopb
@@ -3173,6 +3603,7 @@ SECTION .text
     pop ax
     shl ax,4
     loop .loopb
+    pop ecx
     ret
 
 .hexdat db '0123456789ABCDEF'
@@ -3817,7 +4248,7 @@ NEWSYM addrmode
          db 26,09,26,22,04,04,04,19,06,01,06,21,02,02,02,03
          db 15,07,18,23,10,10,11,08,06,13,06,06,12,12,13,14
          db 26,09,25,22,04,04,04,19,06,01,06,06,02,02,02,03
-         db 15,07,18,23,18,10,10,08,06,13,21,06,17,12,12,14
+         db 15,07,18,23,18,10,10,08,06,13,21,06,27,12,12,14
          db 26,09,25,22,04,04,04,19,06,01,06,06,02,02,02,03
          db 15,07,18,23,02,10,10,08,06,13,21,06,20,12,12,14
 
