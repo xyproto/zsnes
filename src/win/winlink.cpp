@@ -83,7 +83,6 @@ LPDIRECTINPUTDEVICE8    KeyboardInput = NULL;
 LPDIRECTINPUTDEVICE8    JoystickInput[4];
 DIJOYSTATE js[4];
 
-
 DWORD                   X1Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 DWORD                   X2Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 DWORD                   Y1Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
@@ -262,7 +261,7 @@ BOOL InputRead(void)
    MouseMoveX=0;
    MouseMoveY=0;
    if(MouseInput&&InputEn==1)
-	{
+   {
 		DIMOUSESTATE dims;
 		HRESULT hr;
 aquireagain:;
@@ -310,17 +309,15 @@ aquireagain:;
          }
 
          MouseButton=(dims.rgbButtons[0]>>7)|(dims.rgbButtons[1]>>6)|(dims.rgbButtons[2]>>5)|(dims.rgbButtons[3]>>4);
-		}
+   }
+   else
+   {
+      return FALSE;
+   }
 
-		else
-		{
-			return FALSE;
-		}
-
-	}
+   }
 	return TRUE;
 }
-
 
 BYTE PrevStereoSound;
 DWORD PrevSoundQuality;
@@ -1527,7 +1524,7 @@ void initwinvideo(void)
       MainWindowX = X; MainWindowY = Y;
 
       MoveWindow( hMainWindow, X, Y,
-                  WindowWidth, WindowHeight, TRUE );    
+                  WindowWidth, WindowHeight, TRUE );
 
       wndpl.length = sizeof(wndpl);
       GetWindowPlacement( hMainWindow, &wndpl);
@@ -1594,9 +1591,9 @@ void initwinvideo(void)
       TestJoy();
    }
    
-   if(Moving) return;
+   if(Moving == 1) return;
    
-   if(!FullScreen || newmode==1)
+   if(FullScreen == 0 || newmode == 1)
    {
       if(InitDirectDraw() != TRUE)
       {
@@ -1639,8 +1636,8 @@ void CheckTimers(void)
 
    if(T60HZEnabled)
    {
-   if (AltTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
-      else end = timeGetTime();
+      if (AltTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
+         else end = timeGetTime();
 
    while ((end - start) >= update_ticks_pc)
       {
@@ -1655,8 +1652,8 @@ void CheckTimers(void)
 
    if(T36HZEnabled)
    {
-   if (AltTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
-      else end = timeGetTime();
+      if (AltTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
+         else end = timeGetTime();
 
    while ((end - start) >= update_ticks_pc)
       {
@@ -1691,7 +1688,7 @@ void UpdateVFrame(void)
    WinUpdateDevices();
    CheckTimers();
 
-   if (!SoundEnabled) return;
+   if (SoundEnabled == 0) return;
 
    lpSoundBuffer->GetCurrentPosition(&CurrentPos,&WritePos);
 
@@ -1852,6 +1849,7 @@ void drawscreenwin(void)
    ScreenPtr+=16*2+32*2+256*2; 
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
+
    if(SurfaceX==256&&SurfaceY==224)
    {
       switch(BitDepth)
