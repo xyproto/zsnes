@@ -93,10 +93,10 @@ ALL: zsnes.exe
 debug: zsnesd.exe
 
 zsnes.exe: ${OBJS}
-	${CC} -Ws -s -o zsnes.exe ${OBJS}  ${LIBS}
+	${PP} -Ws -s -o zsnes.exe ${OBJS}  ${LIBS}
 
 zsnesd.exe: ${OBJS}
-	${CC} -Ws -o zsnesd.exe ${OBJS}  ${LIBS}
+	${PP} -Ws -o zsnesd.exe ${OBJS}  ${LIBS}
 
 ${DOSDIR}/zloader.o: ${DOSDIR}/zloader.c
 
