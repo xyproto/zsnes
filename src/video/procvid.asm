@@ -1478,7 +1478,6 @@ NEWSYM drawfillboxsc16b
 
 NEWSYM drawbox
     ; draws a box according to position bl and color dl
-    STUB_ASM
     xor eax,eax
     mov al,11
     mul bl
