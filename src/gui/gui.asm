@@ -241,7 +241,7 @@ NEWSYM WaterOn,  db 1
 
 MenuDat1 db 12,3,1,1,1,1,1,1,1,1,1,0,1,2,0
 MenuDat2 db 8, 3,1,1,0,1,1,1,0,2,0,0
-MenuDat3 db 10, 3,1,1,1,1,0,1,0,1,1,2,0
+MenuDat3 db 10, 3,1,1,1,1,0,1,1,0,1,1,1,2,0
 MenuDat4 db 2, 3,1,2,0
 MenuDat5 db 1, 3,2,0
 MenuDat6 db 6, 3,1,1,1,1,0,2,0
