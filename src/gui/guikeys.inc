@@ -202,12 +202,7 @@ GUIgetcurrentinput:
     GUIqcheckkeys2 [pl1Ak],7
 .nopad1
     xor al,al
-;    GUIgetprkeys 72,72
-;    GUIgetprkeys 80,80
 %ifdef __LINUX__
-;    GUIgetprkeys 05Ch,75
-;    GUIgetprkeys 05Eh,77
-
     GUIgetprkeys 90,90 ; UP
     GUIgetprkeys 96,96 ; DOWN
     GUIgetprkeys 92,92 ; LEFT
@@ -221,12 +216,13 @@ GUIgetcurrentinput:
     GUIgetprkeys 80,80 ; KP2
     GUIgetprkeys 75,75 ; KP4
     GUIgetprkeys 77,77 ; KP6
-
     GUIgetprkeys 71,71 ; KP7
     GUIgetprkeys 79,79 ; KP9
     GUIgetprkeys 81,81 ; KP1
     GUIgetprkeys 73,73 ; KP3
 %else
+;    GUIgetprkeys 72,72
+;    GUIgetprkeys 80,80
     GUIgetprkeys 75,75
     GUIgetprkeys 77,77
     GUIgetprkeys 71,71
@@ -249,8 +245,6 @@ GUIgetcurrentinput:
 ;    cmp byte[OSPort],3
 ;    jne near .notwinport2
 
-;    GUIgetprkeys 0C8h,72
-;    GUIgetprkeys 0D0h,80
 %ifdef __LINUX__
     GUIgetprkeys 90,90 ; UP
     GUIgetprkeys 96,96 ; DOWN
@@ -269,13 +263,6 @@ GUIgetcurrentinput:
     GUIgetprkeys 79,79 ; KP9
     GUIgetprkeys 81,81 ; KP1
     GUIgetprkeys 73,73 ; KP3
-
-;    GUIgetprkeys 05Ch,92
-;    GUIgetprkeys 05Eh,94
-;    GUIgetprkeys 0C9h,73
-;    GUIgetprkeys 0D1h,81
-;    GUIgetprkeys 0C7h,71
-;    GUIgetprkeys 0CFh,79
 
     GUIgetprkeys 09Ch,13 ; ENTER
 %endif
@@ -537,13 +524,16 @@ GUIgetcurrentinput:
     jne .noenter
     call GUITryMenuItem
 .noenter
-    cmp al,75
 %ifdef __LINUX__
+    cmp al,92
     je .leftpressed
-    cmp al, 92
+    cmp dword[numlockptr],1
+    je  .noleft
+    cmp al,75
     jne .noleft
 .leftpressed
 %else
+    cmp al,75
     jne .noleft
 %endif
     mov byte[GUIcrowpos],0
@@ -554,13 +544,16 @@ GUIgetcurrentinput:
 .left
     mov byte[GUIcmenupos],6
 .noleft
-    cmp al,77
 %ifdef __LINUX__
-    je .rightpressed
-    cmp al, 94
+    cmp al,94
+    je  .rightpressed
+    cmp dword[numlockptr],1
+    je  .noright
+    cmp al,77
     jne .noright
 .rightpressed
 %else
+    cmp al,77
     jne .noright
 %endif
     mov byte[GUIcrowpos],0
@@ -571,13 +564,16 @@ GUIgetcurrentinput:
 .noright
     cmp byte[GUIcmenupos],0
     je near .noupdown
-    cmp al,80
 %ifdef __LINUX__
-    je .downpressed
-    cmp al, 96
+    cmp al,96
+    je  .downpressed
+    cmp dword[numlockptr],1
+    je  .nodown
+    cmp al,80
     jne .nodown
 .downpressed
 %else
+    cmp al,80
     jne .nodown
 %endif
     xor eax,eax
@@ -594,13 +590,16 @@ GUIgetcurrentinput:
     mov [GUIcrowpos],al
     jmp .nokey
 .nodown
-    cmp al,72
 %ifdef __LINUX__
-    je .uppressed
     cmp al, 90
+    je  .uppressed
+    cmp dword[numlockptr],1
+    je  .noup
+    cmp al,72
     jne .noup
 .uppressed
 %else
+    cmp al,72
     jne .noup
 %endif
     xor eax,eax
@@ -1105,26 +1104,32 @@ GUICheatKeys:
     jne .nozero
     ret
 .nozero
-    cmp al,71
 %ifdef __LINUX__
-    je .homepressed
-    cmp al, 89
+    cmp al,89
+    je  .homepressed
+    cmp dword[numlockptr],1
+    je  .nohome
+    cmp al,71
     jne .nohome
 .homepressed
 %else
+    cmp al,71
     jne .nohome
 %endif
     mov dword[GUIcurrentcheatcursloc],0
     mov dword[GUIcurrentcheatviewloc],0
     ret
 .nohome
-    cmp al,79
 %ifdef __LINUX__
-    je .endppressed
-    cmp al, 89
+    cmp al,89
+    je  .endppressed
+    cmp dword[numlockptr],1
+    je  .noendp
+    cmp al,79
     jne .noendp
 .endppressed
 %else
+    cmp al,79
     jne .noendp
 %endif
     mov eax,[NumCheats]
@@ -1138,12 +1143,15 @@ GUICheatKeys:
 .posve
     ret
 .noendp
-    cmp al,72
 %ifdef __LINUX__
+    cmp al,90
     je  .up
-    cmp al, 90
+    cmp dword[numlockptr],1
+    je  .noup
+    cmp al,72
     jne .noup
 %else
+    cmp al,72
     jne .noup
 %endif
 .up
@@ -1156,13 +1164,16 @@ GUICheatKeys:
 .noviewdec
     dec dword[GUIcurrentcheatcursloc]
 .noup
-    cmp al,80
 %ifdef __LINUX__
-    je  .downpressed
     cmp al, 96
+    je  .downpressed
+    cmp dword[numlockptr],1
+    je  .nodown
+    cmp al,80
     jne .nodown
 .downpressed
 %else
+    cmp al,80
     jne .nodown
 %endif
     mov ebx,[GUIcurrentcheatcursloc]
@@ -1176,13 +1187,16 @@ GUICheatKeys:
     inc dword[GUIcurrentcheatviewloc]
 .noviewinc
 .nodown
-    cmp al,73
 %ifdef __LINUX__
+    cmp al,91
     je  .pageuppressed
-    cmp al, 91
+    cmp dword[numlockptr],1
+    je  .nopageup
+    cmp al,73
     jne .nopageup
 .pageuppressed
 %else
+    cmp al,73
     jne .nopageup
 %endif
     sub dword[GUIcurrentcheatviewloc],12
@@ -1196,13 +1210,16 @@ GUICheatKeys:
     mov dword[GUIcurrentcheatcursloc],0
 .posc
 .nopageup
-    cmp al,81
 %ifdef __LINUX__
-    je  .pagednpressed
     cmp al, 97
+    je  .pagednpressed
+    cmp dword[numlockptr],1
+    je  .nopageup
+    cmp al,81
     jne .nopageup
 .pagednpressed
 %else
+    cmp al,81
     jne .nopagedown
 %endif
     add dword[GUIcurrentcheatviewloc],12
@@ -1537,26 +1554,32 @@ GUICheatSearchKeys:
     jne .notnotequalthan
     mov byte[CheatCompareValue],3
 .notnotequalthan
-    cmp al,72
 %ifdef __LINUX__
-    je  .yesmoveup
     cmp al,90
+    je  .yesmoveup
+    cmp dword[numlockptr],1
+    je  .nomoveup
+    cmp al,72
     jne .nomoveup
 .yesmoveup
 %else
+    cmp al,72
     jne .nomoveup
 %endif
     cmp byte[CheatCompareValue],0
     je .nomoveup
     dec byte[CheatCompareValue]
 .nomoveup
-    cmp al,80
 %ifdef __LINUX__
-    je  .yesmovedown
     cmp al,96
+    je  .yesmovedown
+    cmp dword[numlockptr],1
+    je  .nomovedown
+    cmp al,80
     jne .nomovedown
 .yesmovedown
 %else
+    cmp al,80
     jne .nomovedown
 %endif
     cmp byte[CheatCompareValue],3
@@ -1594,26 +1617,32 @@ GUICheatSearchKeys:
 .notreturnb
     ret
 .nozero
-    cmp al,71
 %ifdef __LINUX__
-    je  .yeshome
     cmp al,89
+    je  .yeshome
+    cmp dword[numlockptr],1
+    je  .nohome
+    cmp al,71
     jne .nohome
 .yeshome
 %else
+    cmp al,71
     jne .nohome
 %endif
     mov dword[GUIcurrentchtsrccursloc],0
     mov dword[GUIcurrentchtsrcviewloc],0
     ret
 .nohome
-    cmp al,79
 %ifdef __LINUX__
-    je  .yesendp
     cmp al,95
+    je  .yesendp
+    cmp dword[numlockptr],1
+    je  .noendp
+    cmp al,79
     jne .noendp
 .yesendp
 %else
+    cmp al,79
     jne .noendp
 %endif
     mov eax,[NumCheatSrc]
@@ -1627,12 +1656,15 @@ GUICheatSearchKeys:
 .posve
     ret
 .noendp
-    cmp al,72
 %ifdef __LINUX__
-    je  .up
     cmp al,90
+    je  .up
+    cmp dword[numlockptr],1
+    je  .noup
+    cmp al,72
     jne .noup
 %else
+    cmp al,72
     jne .noup
 %endif
 .up
@@ -1645,13 +1677,16 @@ GUICheatSearchKeys:
 .noviewdec
     dec dword[GUIcurrentchtsrccursloc]
 .noup
-    cmp al,80
 %ifdef __LINUX__
-    je  .yesdown
     cmp al,96
+    je  .yesdown
+    cmp dword[numlockptr],1
+    je  .nodown
+    cmp al,80
     jne .nodown
 .yesdown
 %else
+    cmp al,80
     jne .nodown
 %endif
     mov ebx,[GUIcurrentchtsrccursloc]
@@ -1665,13 +1700,16 @@ GUICheatSearchKeys:
     inc dword[GUIcurrentchtsrcviewloc]
 .noviewinc
 .nodown
-    cmp al,73
 %ifdef __LINUX__
-    je  .yespgup
     cmp al,91
+    je  .yespgup
+    cmp dword[numlockptr],1
+    je  .nopageup
+    cmp al,73
     jne .nopageup
 .yespgup
 %else
+    cmp al,73
     jne .nopageup
 %endif
     sub dword[GUIcurrentchtsrcviewloc],12
@@ -1685,13 +1723,16 @@ GUICheatSearchKeys:
     mov dword[GUIcurrentchtsrccursloc],0
 .posc
 .nopageup
-    cmp al,81
 %ifdef __LINUX__
-    je  .yespgdn
     cmp al,97
+    je  .yespgdn
+    cmp dword[numlockptr],1
+    je  .nopagedown
+    cmp al,81
     jne .nopagedown
 .yespgdn
 %else
+    cmp al,81
     jne .nopagedown
 %endif
     add dword[GUIcurrentchtsrcviewloc],12
@@ -1784,13 +1825,16 @@ GUIStateSelKeys:
     mov [GUIcmenupos],al
     ret
 .noenter
-    cmp al,75
 %ifdef __LINUX__
-    je  .yesleft
     cmp al,92
+    je  .yesleft
+    cmp dword[numlockptr],1
+    je  .noleft
+    cmp al,75
     jne .noleft
 .yesleft
 %else
+    cmp al,75
     jne .noleft
 %endif
     mov ebx,[statefileloc]
@@ -1813,13 +1857,16 @@ GUIStateSelKeys:
     dec cl
     jmp .done
 .noleft
-    cmp al,77
 %ifdef __LINUX__
-    je  .yesright
     cmp al,94
+    je  .yesright
+    cmp dword[numlockptr],1
+    je  .noright
+    cmp al,77
     jne .noright
 .yesright
 %else
+    cmp al,77
     jne .noright
 %endif
     mov ebx,[statefileloc]
@@ -1873,24 +1920,30 @@ GUIStateSelKeys:
     ret
 
 GUIResetKeys:
-    cmp al,75
 %ifdef __LINUX__
-    je  .yesleft
     cmp al,92
+    je  .yesleft
+    cmp dword[numlockptr],1
+    je  .noleft
+    cmp al,75
     jne .noleft
 .yesleft
 %else
+    cmp al,75
     jne .noleft
 %endif
     mov byte[GUICResetPos],0
 .noleft
-    cmp al,77
 %ifdef __LINUX__
-    je  .yesright
     cmp al,94
+    je  .yesright
+    cmp dword[numlockptr],1
+    je  .noright
+    cmp al,77
     jne .noright
 .yesright
 %else
+    cmp al,77
     jne .noright
 %endif
     mov byte[GUICResetPos],1
@@ -1926,24 +1979,30 @@ GUIResetKeys:
     ret
 
 GUIStateKeys:
-    cmp al,75
 %ifdef __LINUX__
-    je  .yesleft
     cmp al,92
+    je  .yesleft
+    cmp dword[numlockptr],1
+    je  .noleft
+    cmp al,75
     jne .noleft
 .yesleft
 %else
+    cmp al,75
     jne .noleft
 %endif
     mov byte[GUICStatePos],0
 .noleft
-    cmp al,77
 %ifdef __LINUX__
-    je  .yesright
     cmp al,94
+    je  .yesright
+    cmp dword[numlockptr],1
+    je  .noright
+    cmp al,77
     jne .noright
 .yesright
 %else
+    cmp al,77
     jne .noright
 %endif
     mov byte[GUICStatePos],1
@@ -1981,33 +2040,35 @@ GUIStateKeys:
 GUILoadKeys:
     mov byte[ManualStatus],0
     mov dword[ManualCPtr],GUILoadTextA
-%ifdef __LINUX__
-    cmp dword[numlockptr],1
-    je near .nopagedown
-%endif
     cmp dword[GUIfileentries],0
     je .noright
     cmp dword[GUIdirentries],0
     je .noright
-    cmp al,75
 %ifdef __LINUX__
-    je  .yesleft
     cmp al,92
+    je  .yesleft
+    cmp dword[numlockptr],1
+    je  .noleft
+    cmp al,75
     jne .noleft
 .yesleft
 %else
+    cmp al,75
     jne .noleft
 %endif
     mov byte[GUILoadPos],0
     xor dword[GUIcurrentfilewin],1
 .noleft
-    cmp al,77
 %ifdef __LINUX__
-    je  .yesright
     cmp al,94
+    je  .yesright
+    cmp dword[numlockptr],1
+    je  .noright
+    cmp al,77
     jne .noright
 .yesright
 %else
+    cmp al,77
     jne .noright
 %endif
     mov byte[GUILoadPos],0
@@ -2051,14 +2112,16 @@ GUILoadKeys:
 .noenter
     cmp dword[GUIcurrentfilewin],1
     je near .dirwin
-
-    cmp al,71
 %ifdef __LINUX__
-    je  .yeshome
     cmp al,89
+    je  .yeshome
+    cmp dword[numlockptr],1
+    je  .nohome
+    cmp al,71
     jne .nohome
 .yeshome
 %else
+    cmp al,71
     jne .nohome
 %endif
     mov byte[GUILoadPos],0
@@ -2066,13 +2129,16 @@ GUILoadKeys:
     mov dword[GUIcurrentviewloc],0
     ret
 .nohome
-    cmp al,79
 %ifdef __LINUX__
-    je  .yesendp
     cmp al,95
+    je  .yesendp
+    cmp dword[numlockptr],1
+    je  .noendp
+    cmp al,79
     jne .noendp
 .yesendp
 %else
+    cmp al,79
     jne .noendp
 %endif
     mov byte[GUILoadPos],0
@@ -2087,12 +2153,15 @@ GUILoadKeys:
 .posve
     ret
 .noendp
-    cmp al,72
 %ifdef __LINUX__
-    je  .up
     cmp al,90
+    je  .up
+    cmp dword[numlockptr],1
+    je  .noup
+    cmp al,72
     jne .noup
 %else
+    cmp al,72
     jne .noup
 %endif
 .up
@@ -2106,13 +2175,16 @@ GUILoadKeys:
 .noviewdec
     dec dword[GUIcurrentcursloc]
 .noup
-    cmp al,80
 %ifdef __LINUX__
-    je  .yesdown
     cmp al,96
+    je  .yesdown
+    cmp dword[numlockptr],1
+    je  .nodown
+    cmp al,80
     jne .nodown
 .yesdown
 %else
+    cmp al,80
     jne .nodown
 %endif
     mov byte[GUILoadPos],0
@@ -2127,13 +2199,16 @@ GUILoadKeys:
     inc dword[GUIcurrentviewloc]
 .noviewinc
 .nodown
-    cmp al,73
 %ifdef __LINUX__
-    je  .yespageup
     cmp al,91
+    je  .yespageup
+    cmp dword[numlockptr],1
+    je  .nopageup
+    cmp al,73
     jne .nopageup
 .yespageup
 %else
+    cmp al,73
     jne .nopageup
 %endif
     mov byte[GUILoadPos],0
@@ -2148,13 +2223,16 @@ GUILoadKeys:
     mov dword[GUIcurrentcursloc],0
 .posc
 .nopageup
-    cmp al,81
 %ifdef __LINUX__
-    je  .yespagedn
     cmp al,97
+    je  .yespagedn
+    cmp dword[numlockptr],1
+    je  .nopagedown
+    cmp al,81
     jne .nopagedown
 .yespagedn
 %else
+    cmp al,81
     jne .nopagedown
 %endif
     mov byte[GUILoadPos],0
@@ -2330,13 +2408,16 @@ GUILoadKeys:
 .maxfound dd 0
 
 .dirwin
-    cmp al,71
 %ifdef __LINUX__
-    je  .yeshome2
     cmp al,89
+    je  .yeshome2
+    cmp dword[numlockptr],1
+    je  .nohome2
+    cmp al,71
     jne .nohome2
 .yeshome2
 %else
+    cmp al,71
     jne .nohome2
 %endif
     mov byte[GUILoadPos],0
@@ -2344,13 +2425,16 @@ GUILoadKeys:
     mov dword[GUIcurrentdirviewloc],0
     ret
 .nohome2
-    cmp al,79
 %ifdef __LINUX__
-    je  .yesendp2
     cmp al,95
+    je  .yesendp2
+    cmp dword[numlockptr],1
+    je  .noendp2
+    cmp al,79
     jne .noendp2
 .yesendp2
 %else
+    cmp al,79
     jne .noendp2
 %endif
     mov byte[GUILoadPos],0
@@ -2365,13 +2449,16 @@ GUILoadKeys:
 .posve2
     ret
 .noendp2
-    cmp al,72
 %ifdef __LINUX__
-    je  .yesup2
     cmp al,90
+    je  .yesup2
+    cmp dword[numlockptr],1
+    je  .noup2
+    cmp al,72
     jne .noup2
 .yesup2
 %else
+    cmp al,72
     jne .noup2
 %endif
     mov byte[GUILoadPos],0
@@ -2384,13 +2471,16 @@ GUILoadKeys:
 .noviewdec2
     dec dword[GUIcurrentdircursloc]
 .noup2
-    cmp al,80
 %ifdef __LINUX__
-    je  .yesdown2
     cmp al,96
+    je  .yesdown2
+    cmp dword[numlockptr],1
+    je  .nodown2
+    cmp al,80
     jne .nodown2
 .yesdown2
 %else
+    cmp al,80
     jne .nodown2
 %endif
     mov byte[GUILoadPos],0
@@ -2405,13 +2495,16 @@ GUILoadKeys:
     inc dword[GUIcurrentdirviewloc]
 .noviewinc2
 .nodown2
-    cmp al,73
 %ifdef __LINUX__
-    je  .yespgup2
     cmp al,91
+    je  .yespgup2
+    cmp dword[numlockptr],1
+    je  .nopageup2
+    cmp al,73
     jne .nopageup2
 .yespgup2
 %else
+    cmp al,73
     jne .nopageup2
 %endif
     mov byte[GUILoadPos],0
@@ -2426,13 +2519,16 @@ GUILoadKeys:
     mov dword[GUIcurrentdircursloc],0
 .posc2
 .nopageup2
-    cmp al,81
 %ifdef __LINUX__
-    je  .yespgdn2
     cmp al,97
+    je  .yespgdn2
+    cmp dword[numlockptr],1
+    je  .nopagedown2
+    cmp al,81
     jne .nopagedown2
 .yespgdn2
 %else
+    cmp al,81
     jne .nopagedown2
 %endif
     mov byte[GUILoadPos],0

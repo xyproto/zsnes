@@ -142,10 +142,10 @@ int Main_Proc(void)
 			if (event.key.keysym.sym == SDLK_LSHIFT ||
 			    event.key.keysym.sym == SDLK_RSHIFT)
 				shiftptr = 1;
-			if (event.key.keysym.mod & KMOD_NUM)
-				numlockptr = 1;
-			else
-				numlockptr = 0;
+		        if (event.key.keysym.mod & KMOD_NUM)
+		                numlockptr = 1;
+			  else
+				numlockptr = 0;			
 			if (event.key.keysym.scancode-8 >= 0) {
 				if (pressed[event.key.keysym.scancode-8]!=2)
 					pressed[event.key.keysym.scancode-8]=1;
@@ -157,6 +157,10 @@ int Main_Proc(void)
 			if (event.key.keysym.sym == SDLK_LSHIFT ||
 			    event.key.keysym.sym == SDLK_RSHIFT)
 				shiftptr = 0;
+		        if (event.key.keysym.mod & KMOD_NUM)
+		                numlockptr = 0;
+			  else
+				numlockptr = 1;	
 			if (event.key.keysym.scancode-8 >= 0)
 				pressed[event.key.keysym.scancode-8]=0;
 			break;
@@ -279,8 +283,10 @@ void ProcessKeyBuf(int scancode)
 	int vkeyval;
 
     if (((scancode>='A') && (scancode<='Z')) ||
-	((scancode>='a') && (scancode<='z')) || (scancode==27) ||
-	(scancode==32) || (scancode==8) || (scancode==13) || (scancode==9)) {
+	((scancode>='a') && (scancode<='z')) ||
+        (scancode==SDLK_ESCAPE) || (scancode==SDLK_SPACE) ||
+	(scancode==SDLK_BACKSPACE) || (scancode==SDLK_RETURN) ||
+	(scancode==SDLK_TAB)) {
       accept=true; vkeyval=scancode;
     }
     if ((scancode>='0') && (scancode<='9')) {
