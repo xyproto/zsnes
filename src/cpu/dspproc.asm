@@ -171,10 +171,12 @@ tempstuff resb 0
 ; If A is not zero, goto FFD6
 ; Jump to Address [0000]
 
-section .data
+section .bss
 
 DSPInterP:
-  times 1024 dw 0
+  resw 1024
+
+section .data
 
 Gaussian:
   dw 1305,1305,1304,1304,1304,1304,1304,1303
@@ -510,6 +512,7 @@ NEWSYM conv2speed
     jnz .next
     ret
 
+
 NEWSYM AdjustFrequency
       mov al,[SoundInterpType]
       or al,al
@@ -520,14 +523,16 @@ NEWSYM AdjustFrequency
       ; Copy from Gaussian to DSPInterP
       mov ebx,DSPInterP
       mov edx,DSPInterP+2046
+      mov esi,Gaussian+1022
       mov ecx,512
 .intrploop
       xor eax,eax
-      mov ax,[edx+1024]
+      mov ax,[esi]
       mov [edx],ax
       mov [ebx],ax
       add ebx,2
       sub edx,2
+      sub esi,2
       dec ecx
       jnz .intrploop
       jmp .notgaussian
@@ -550,6 +555,7 @@ NEWSYM AdjustFrequency
       dec ecx
       jnz .intrploopb
 .notgaussian
+
 
       cmp byte[StereoSound],1
       jne .nostereo8b
@@ -5329,7 +5335,7 @@ NEWSYM handlersbseg
     cmp byte[Surround],0
     je .nosurround
     cmp byte[StereoSound],0
-    jne near .surroundstereo
+    je .surroundmono
 ;    jmp .surroundmono
 .nosurround
 .loopb
@@ -5349,6 +5355,7 @@ NEWSYM handlersbseg
     dec ecx
     jnz .loopb
     jmp .sbend
+%ifdef _I_LIKE_SUCKY_FILTERS_          ;bwahaha
 .surroundstereo
     shr ecx,1
 .loopbs
@@ -5380,6 +5387,7 @@ NEWSYM handlersbseg
     dec ecx
     jnz .loopbs
     jmp .sbend
+%endif
 .surroundmono
     cmp byte[SBswitch],0
     je .1stblock
@@ -5542,7 +5550,8 @@ NEWSYM SBHandler16
     cmp byte[Surround],0
     je .nosurround
     cmp byte[StereoSound],0
-    jne near .surroundstereo
+;    jne near .surroundstereo
+    je .surroundmono
 ;    jmp .surroundmono
 .nosurround
 .loopb
@@ -5561,6 +5570,7 @@ NEWSYM SBHandler16
     dec ecx
     jnz .loopb
     jmp .sbend
+%ifdef _I_LIKE_SUCKY_FILTERS_          ;bwahaha
 .surroundstereo
     shr ecx,1
 .loopbs
@@ -5590,6 +5600,7 @@ NEWSYM SBHandler16
     dec ecx
     jnz .loopbs
     jmp .sbend
+%endif
 .surroundmono
     cmp byte[SBswitch],0
     je .1stblock
@@ -5804,7 +5815,7 @@ NEWSYM LPFstereoloop
     mov [LPFsample2],edx
 
 NEWSYM LPFexit
-%ifndef __MSDOS__
+; %ifndef __MSDOS__     ; wtf ... the other surround filter sucks anyway ;P
     cmp byte[Surround],1
     jnz near .nosurround
     cmp byte[StereoSound],1
@@ -5818,33 +5829,33 @@ NEWSYM LPFexit
     add edx,eax
     sar edx,1
 
-    sub eax,edx         ; possibly eliminate center
-    shl eax,3
+    sub eax,edx
+;    shl eax,1
 
     mov ebx,[esi+4]
     sub [esi+4],eax
 
-    sub ebx,edx         ; possibly eliminate center
-    shl ebx,3
+    sub ebx,edx
+;    shl ebx,1
 
     sub [esi],ebx
 
-    sar dword[esi],1
-    sar dword[esi+4],1
+;    sar dword[esi],1
+;    sar dword[esi+4],1
 
-    mov eax,[esi]
-    mov edx,[esi+4]
-    add edx,eax
-    sar edx,1
+;    mov eax,[esi]
+;    mov edx,[esi+4]
+;    add edx,eax
+;    sar edx,1
 
-    add [esi],edx
-    add [esi+4],edx
+;    add [esi],edx
+;    add [esi+4],edx
     
     add esi,8
     dec ecx
     jnz near .loop
 .nosurround
-%endif
+;%endif
     ret
 
 NEWSYM stopsbsound16
@@ -5976,7 +5987,7 @@ NEWSYM initSB
     mov al,40h
     call WriteDSP
 
-    cmp byte[Surround],0
+;    cmp byte[Surround],0
 ;    jne .surround8b
     cmp byte[StereoSound],1
     jne .nostereo8b
