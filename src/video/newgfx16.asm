@@ -561,7 +561,7 @@ NEWSYM newengine16b
 
     ; BG3 Priority
     test byte[scaddset],2
-    jnz .noscaddset
+    jz .noscaddset
     or [bgcmsung],ebx
 .noscaddset
 
