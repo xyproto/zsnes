@@ -948,39 +948,39 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 
    DIPROPDWORD dipdw;
 
-   dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
+   dipdw.diph.dwSize = sizeof(DIPROPDWORD);
    dipdw.diph.dwHeaderSize = sizeof(dipdw.diph);
-   dipdw.diph.dwHow        = DIPH_BYOFFSET;
-   dipdw.dwData            = 2500;
-   dipdw.diph.dwObj         = DIJOFS_X;
+   dipdw.diph.dwHow = DIPH_BYOFFSET;
+   dipdw.dwData = 2500;
+   dipdw.diph.dwObj = DIJOFS_X;
    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
-   dipdw.diph.dwObj         = DIJOFS_Y;
+   dipdw.diph.dwObj = DIJOFS_Y;
    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
-   dipdw.diph.dwObj         = DIJOFS_Z;
+   dipdw.diph.dwObj = DIJOFS_Z;
    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
-   dipdw.diph.dwObj         = DIJOFS_RX;
+   dipdw.diph.dwObj = DIJOFS_RX;
    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
-   dipdw.diph.dwObj         = DIJOFS_RY;
+   dipdw.diph.dwObj = DIJOFS_RY;
    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
-   dipdw.diph.dwObj         = DIJOFS_RZ;
+   dipdw.diph.dwObj = DIJOFS_RZ;
    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
-   dipdw.diph.dwObj         = DIJOFS_SLIDER(0);
+   dipdw.diph.dwObj = DIJOFS_SLIDER(0);
    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
-   dipdw.diph.dwObj         = DIJOFS_SLIDER(1);
+   dipdw.diph.dwObj = DIJOFS_SLIDER(1);
    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
 
-   dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
+   dipdw.diph.dwSize = sizeof(DIPROPDWORD);
    dipdw.diph.dwHeaderSize = sizeof(dipdw.diph);
-   dipdw.diph.dwHow        = DIPH_DEVICE;
-   dipdw.dwData            = DIPROPAXISMODE_ABS;
-   dipdw.diph.dwObj        = 0;
+   dipdw.diph.dwHow = DIPH_DEVICE;
+   dipdw.dwData = DIPROPAXISMODE_ABS;
+   dipdw.diph.dwObj = 0;
 
    JoystickInput[CurrentJoy]->SetProperty(DIPROP_AXISMODE, &dipdw.diph);
 
