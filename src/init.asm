@@ -2859,7 +2859,6 @@ NEWSYM initsnes
     mov [snesmap2+7Fh*4],eax
     call prepare48mbit
     ret
-
 .hirom
     ; set addresses 8000-FFFF
     ; set banks 00-3F (40h x 32KB ROM banks @ 8000h)
