@@ -1770,7 +1770,7 @@ NEWSYM saveselect
     pop ebx
     jmp .noesc
 .enter
-    mov byte[pressed+28],0
+    mov byte[pressed+28],2
     cmp bl,0
     jne .nozero
 %ifdef __LINUX__
@@ -1786,20 +1786,17 @@ NEWSYM saveselect
     mov ebx,[statefileloc]
     mov byte[fnamest+ebx],al
 .esc
-    mov byte[pressed+1],0
-    mov byte[pressed+28],0
-    ;cmp byte[OSPort],1
-    ;jbe .notpr28b
-%ifndef __MSDOS__
-    cmp byte[pressed+1],1
-    jne .notpr1b
-    mov byte[pressed+1],2
-.notpr1b
-    cmp byte[pressed+28],1
-    jne .notpr28b
-    mov byte[pressed+28],2
-%endif
-.notpr28b
+
+    mov eax,pressed
+    mov ecx,256
+.looppr
+    cmp byte[eax],1
+    jne .notpr
+    mov byte[eax],2
+.notpr
+    inc eax
+    loop .looppr
+
     mov word[t1cc],0
     mov byte[csounddisable],0
     call StartSound
@@ -2089,7 +2086,7 @@ NEWSYM saveselect
     pop ebx
     jmp .noesc16b
 .enter16b
-    mov byte[pressed+28],0
+    mov byte[pressed+28],2
     cmp bl,0
     jne .nozero16b
 %ifdef __LINUX__
@@ -2105,22 +2102,15 @@ NEWSYM saveselect
     mov ebx,[statefileloc]
     mov byte[fnamest+ebx],al
 .esc16b
-    ;cmp byte[OSPort],1
-    ;jbe .notprwin
-%ifndef __MSDOS__
-    cmp byte[pressed+1],1
-    jne .notpr1
-    mov byte[pressed+1],2
-.notpr1
-    cmp byte[pressed+28],1
-    jne .notpr28
-    mov byte[pressed+28],2
-.notpr28
-    jmp .prwin
-%endif
-.notprwin
-    mov byte[pressed+1],0
-    mov byte[pressed+28],0
+    mov eax,pressed
+    mov ecx,256
+.looppr2
+    cmp byte[eax],1
+    jne .notpr2
+    mov byte[eax],2
+.notpr2
+    inc eax
+    loop .looppr2
 .prwin
     mov word[t1cc],0
     mov byte[csounddisable],0
