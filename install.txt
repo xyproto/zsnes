@@ -37,7 +37,7 @@ Windows port :
                    out of environment space error, type 'command /e:32768' 
                    (to create a new command.com entity with more 
                    environment space)
-- DX7.0 SDK or higher : you can get it at microsoft.com. It is quite big.
+- DX8.0 SDK or higher : you can get it at microsoft.com. It is quite big.
                    Also, edit makefile.win to set the correct path to your 
                    SDK. I also had some problems with vc++ using its own 
                    (old) directx headers instead of the sdk headers. I replaced 
@@ -74,7 +74,13 @@ You'll also need :
                                    development headers. Check in the 
                                    packages available with your distribution 
                                    or go to the page above
-                                   
+- libpng : http://www.libpng.org/
+                    You might also need libpng, ZSNES will compile without
+                    PNG support but I have found doing so to make ZSNES
+                    unstable for some weird reason.  If you don't have
+                    libpng, either get it and install it or pass the
+                    --without-png option to the 'configure' script.
+
 Then to build the executable, go to the src directory and type:
 ./configure && gmake && gmake install
 
