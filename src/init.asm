@@ -130,6 +130,8 @@ EXTSYM SetaCmdEnable,setaramdata
 EXTSYM setaaccessbankr8,setaaccessbankw8,setaaccessbankr8a,setaaccessbankw8a
 EXTSYM setaaccessbankr16,setaaccessbankw16,setaaccessbankr16a,setaaccessbankw16a
 
+EXTSYM DSP2Read8b,DSP2Read16b,DSP2Write8b,DSP2Write16b,InitDSP2
+
 %ifdef __LINUX__
 EXTSYM LoadDir, popdir, pushdir
 %endif
@@ -4689,6 +4691,7 @@ NEWSYM CheckROMType
     jmp .notDSP1Hi
 .initdsp
     call InitDSP
+    call InitDSP2
     mov byte[DSP1Type],1
     cmp byte[romtype],2
     jne .notDSP1Hi
@@ -4837,6 +4840,10 @@ NEWSYM CheckROMType
     add ecx,4
     cmp ecx,16*4
     jne .dsp1loop
+    mov dword[memtabler8+3Fh*4],DSP2Read8b
+    mov dword[memtablew8+3Fh*4],DSP2Write8b
+    mov dword[memtabler16+3Fh*4],DSP2Read16b
+    mov dword[memtablew16+3Fh*4],DSP2Write16b
 .nodsp1lorom
     mov dword[wramdata],wramdataa
     call SPC7110Load

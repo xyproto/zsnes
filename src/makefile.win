@@ -36,7 +36,7 @@ EFFECTSDIR=effects
 CHIPSOBJ=${CHIPDIR}/sfxproc.obj ${CHIPDIR}/fxemu2.obj ${CHIPDIR}/dsp1proc.obj\
 	 ${CHIPDIR}/fxemu2b.obj ${CHIPDIR}/fxemu2c.obj ${CHIPDIR}/fxtable.obj\
 	 ${CHIPDIR}/sa1proc.obj ${CHIPDIR}/sa1regs.obj ${CHIPDIR}/dsp1emu.obj\
-       ${CHIPDIR}/st10proc.obj
+         ${CHIPDIR}/st10proc.obj ${CHIPDIR}/dsp2proc.obj
 
 CPUOBJ=${CPUDIR}/addrni.obj ${CPUDIR}/dma.obj ${CPUDIR}/dsp.obj ${CPUDIR}/dspproc.obj\
 	${CPUDIR}/execute.obj ${CPUDIR}/irq.obj ${CPUDIR}/memory.obj\
