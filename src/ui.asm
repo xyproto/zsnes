@@ -1148,8 +1148,10 @@ SECTION .data
 %endif
           db '  -z      Enable Stereo Sound',13,10
 ; FIX STATMAT
-          db '  -zs #   Auto load specified save state slot on startup',13,10
-; FIX STATMAT          
+%ifdef __WIN32__
+          db '  -zs #   Auto load specified save state slot on startup ',13,10
+; FIX STATMAT   
+%endif       
           db '',13,10
           db '  File Formats Supported by GUI : .SMC,.SFC,.SWC,.FIG,.MGD,.UFO,.BIN,',13,10
           db '                                  .058,.078,.1,.USA,.EUR,.JAP',13,10
