@@ -22,7 +22,7 @@
 
 EXTSYM DosExit,UpdateDevices,InitSPC,Makemode7Table,MusicRelVol,MusicVol
 EXTSYM makesprprtable,romloadskip,start65816,startdebugger,SfxR0
-EXTSYM MovieProcessing,showinfogui
+EXTSYM showinfogui
 EXTSYM filefound,inittable,SA1inittable
 EXTSYM MessageOn,Msgptr,MsgCount,sndrot,GenerateBank0Table,SnowTimer
 EXTSYM inittableb,inittablec,newgfx16b,cfgreinittime
@@ -526,7 +526,6 @@ NEWSYM WhichGR, resb 1
 NEWSYM autofr,  resb 1
 TurboCB resb 1
 
-NEWSYM MovieTemp, resb 1
 NEWSYM JoyAOrig, resd 1
 NEWSYM JoyBOrig, resd 1
 NEWSYM JoyCOrig, resd 1

@@ -949,7 +949,7 @@ MovieProcessing
 
 
 extern unsigned int MsgCount, MessageOn;
-extern unsigned char MovieTemp, MovieProcessing, *Msgptr;
+extern unsigned char MovieProcessing, *Msgptr;
 char *txtmovieended = "MOVIE FINISHED.";
 
 void MovieInsertChapter()
@@ -999,11 +999,6 @@ void Replay()
   }
 }
 
-unsigned int bytemerger (unsigned char heaviest, unsigned char heavy, unsigned char light, unsigned char lightest)
-{
-  return ((heaviest << 24) | (heavy << 16) | (light << 8) | (lightest));
-}
-
 void ProcessMovies()
 {
   if (MovieProcessing == 2)	{ zmv_record(); }
@@ -1013,7 +1008,6 @@ void ProcessMovies()
 // The following will maybe end up in guic.c once we get it started.
 // It came from guiwindp.inc and gui.asm, after all
 extern unsigned char MovieRecordWinVal;
-extern unsigned int GUICBHold;
 
 void SkipMovie() 
 {
