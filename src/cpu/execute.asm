@@ -1998,7 +1998,7 @@ NEWSYM loadstate
     dec ecx
     jnz .next
     cmp byte[versn],60
-    jne near .convert
+    jb near .convert
     mov dword[Msgptr],.loadmsg
     jmp .noconvert
 .convert
