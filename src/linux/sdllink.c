@@ -1057,7 +1057,7 @@ void clearwin()
      SurfBufD=(DWORD) &glvidbuffer[0];
      SURFDW=(DWORD *) &glvidbuffer[0];
      vidbuff_w=256; vidbuff_h=224;
-     Temp1 = (BitDepth/8*SurfaceX)	// Temp1 = 2 * SurfaceX
+     Temp1 = (BitDepth/8*SurfaceX);	// Temp1 = 2 * SurfaceX
    }
 #endif
 
