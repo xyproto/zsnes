@@ -719,6 +719,7 @@ static bool zmv_open(char *filename)
     switch (MovieStartMethod)
     {
       case 0: // from zst
+        zst_load(zmv_vars.fp);
         break;
       case 1: // from power-on
         powercycle();
@@ -728,11 +729,11 @@ static bool zmv_open(char *filename)
         break;
     }
 
-    zst_load(zmv_vars.fp);
-
-    if (zmv_vars.header.zsnes_version != (versionNumber & 0xFFFF))
+    if (MovieStartMethod)
     {
-
+      if (zmv_vars.header.zsnes_version != (versionNumber & 0xFFFF))
+	{ zst_load(zmv_vars.fp); }
+      else	{ fseek(zmv_vars.fp, zmv_vars.header.zst_size, SEEK_CUR); }
     }
 
     firstloop = true;

@@ -57,7 +57,7 @@ EXTSYM NumComboLocl,ComboBlHeader,ComboHeader,CombinDataLocl
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec
 EXTSYM mousexloc,mouseyloc
 EXTSYM extlatch
-EXTSYM BackState,clearmem2,NextLineCache,sramsavedis
+EXTSYM BackState
 EXTSYM FIRTAPVal0,FIRTAPVal1,FIRTAPVal2,FIRTAPVal3,FIRTAPVal4
 EXTSYM FIRTAPVal5,FIRTAPVal6,FIRTAPVal7,INTEnab,JoyAPos,JoyBPos
 EXTSYM NMIEnab,SPCROM,VIRQLoc,coladdb,coladdg,coladdr,doirqnext

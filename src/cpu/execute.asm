@@ -718,12 +718,8 @@ NEWSYM start65816
 ;    rep stosd
     cmp byte[romloadskip],1
     je near StartGUI
-    cmp byte[MovieProcessing],0
-    je continueprog
-    ret
     
 NEWSYM continueprog
-
     ; clear keyboard presses
     mov esi,pressed
     mov ecx,256+128+64
