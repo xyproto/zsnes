@@ -56,7 +56,6 @@ NEWSYM cfgforce8b,      db 0
 NEWSYM cfgloadsdir,     db 0
 NEWSYM cfgloadgdir,     db 0
 NEWSYM cfgnewgfx,       db 0
-NEWSYM cfgcopymethod,   db 0
 NEWSYM cfgvsync,        db 0
 NEWSYM cfgvolume,       db 75
 NEWSYM cfgecho,         db 0
@@ -364,7 +363,6 @@ NEWSYM DOScreatenewcfg
     checkitemcfg 'l', [JoyLC],.checkl
     checkitemcfg 'm', [JoyRC],.checkm
     checkitemcfg 'n', [cfgnewgfx],.checkn
-    checkitemcfg 'o', [cfgcopymethod],.checko
     checkitemcfg 'p', [cfgvsync],.checkp
     checkitemcfg 'q', [cfgvolume],.checkq
     checkitemcfg 'r', [cfgecho],.checkr
@@ -577,10 +575,6 @@ db '; Percent to Execute [50 .. 150]',13,10
 db '',13,10
 db 'Execute = %T',13,10
 db '',13,10
-;db '; Copy Method, 0 = Normal, 2 = MMX',13,10
-;db '',13,10
-;db 'CopyMethod = %o',13,10
-;db '',13,10
 %ifdef __WIN32__
 db '; Video Mode, 0 - 25',13,10
 db ';   0 = 64x56 R WIN           1 = 128x112 R WIN',13,10
@@ -1078,7 +1072,7 @@ NEWSYM getcfg
     call .cmpstr
     cmp bl,1
     je .nostrw
-    call .getcopymethod
+    call .getvsync
 .nostrw
     mov ecx,[.strlena]
     cmp ecx,[.strx]
@@ -1088,7 +1082,7 @@ NEWSYM getcfg
     call .cmpstr
     cmp bl,1
     je .nostrx
-    call .getvsync
+    call .getvolume
 .nostrx
     mov ecx,[.strlena]
     cmp ecx,[.stry]
@@ -1098,7 +1092,7 @@ NEWSYM getcfg
     call .cmpstr
     cmp bl,1
     je .nostry
-    call .getvolume
+    call .getecho
 .nostry
     mov ecx,[.strlena]
     cmp ecx,[.strz]
@@ -1108,7 +1102,7 @@ NEWSYM getcfg
     call .cmpstr
     cmp bl,1
     je .nostrz
-    call .getecho
+    call .getreverses
 .nostrz
     mov ecx,[.strlena]
     cmp ecx,[.str1]
@@ -1118,7 +1112,7 @@ NEWSYM getcfg
     call .cmpstr
     cmp bl,1
     je .nostr1
-    call .getreverses
+    call .getplay1234
 .nostr1
     mov ecx,[.strlena]
     cmp ecx,[.str2]
@@ -1128,7 +1122,7 @@ NEWSYM getcfg
     call .cmpstr
     cmp bl,1
     je .nostr2
-    call .getplay1234
+    call .getdontsave
 .nostr2
     mov ecx,[.strlena]
     cmp ecx,[.str3]
@@ -1138,18 +1132,8 @@ NEWSYM getcfg
     call .cmpstr
     cmp bl,1
     je .nostr3
-    call .getdontsave
-.nostr3
-    mov ecx,[.strlena]
-    cmp ecx,[.str4]
-    jne .nostr4
-    mov edx,.str4+4
-    mov eax,.stringa
-    call .cmpstr
-    cmp bl,1
-    je .nostr4
     call .getreinit
-.nostr4
+.nostr3
     ret
 
 .cmpstr
@@ -1790,22 +1774,6 @@ NEWSYM getcfg
 .nonewgfx
     ret
 
-.getcopymethod
-    cmp dword[.strlenb],1
-    jne .nocopymethod
-    cmp byte[.stringb],'1'
-    jne .nofpu
-    mov byte[FPUCopy],0
-    mov byte[cfgcopymethod],1
-    jmp .nocopymethod
-.nofpu
-    cmp byte[.stringb],'2'
-    jne .nocopymethod
-    mov byte[FPUCopy],2
-    mov byte[cfgcopymethod],2
-.nocopymethod
-    ret
-
 .getvsync
     cmp dword[.strlenb],1
     jne .novsync
@@ -1944,21 +1912,19 @@ SECTION .data
       db 'JOYMAP1'
 .strv dd 6
       db 'NEWGFX'
-.strw dd 10
-      db 'COPYMETHOD'
-.strx dd 5
+.strw dd 5
       db 'VSYNC'
-.stry dd 6
+.strx dd 6
       db 'VOLUME'
-.strz dd 11
+.stry dd 11
       db 'ECHODISABLE'
-.str1 dd 13
+.strz dd 13
       db 'REVERSESTEREO'
-.str2 dd 13
+.str1 dd 13
       db 'PL34TO12SHARE'
-.str3 dd 8
+.str2 dd 8
       db 'DONTSAVE'
-.str4 dd 10
+.str3 dd 10
       db 'REINITTIME'
 .usespace db 0
 
