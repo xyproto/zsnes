@@ -4020,6 +4020,7 @@ NEWSYM StartSFX
     test byte[SfxCLSR],01h
     jnz .nofastsfx
     mov byte[SfxAC],1
+    mov byte[cycpl],126 ;Winter Gold FX wants this
 .nofastsfx
     mov eax,[NumberOfOpcodes2]
     mov [NumberOfOpcodes],eax
