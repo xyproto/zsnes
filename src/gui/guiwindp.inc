@@ -3717,7 +3717,7 @@ DisplayNetOptns:
     mov dword[GUINetDisp],'IPX '
     mov dword[GUINetDisp+4],'    '
     mov byte[GUINetDisp+8],0
-    cmp byte[per2exec],99
+    cmp byte[per2exec],100
     je .netokay
     mov dword[GUIwinsizex+8*4],7*16
     mov dword[GUIwinsizey+8*4],40
