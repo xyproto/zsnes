@@ -121,7 +121,7 @@ EXTSYM MessageOn,Msgptr,MsgCount
 EXTSYM PJoyAOrig,PJoyBOrig,PJoyCOrig,PJoyDOrig,PJoyEOrig
 EXTSYM GetHostName
 EXTSYM vramaddr,curypos,ClearRegs,vram,sndrot,regsbackup
-EXTSYM GetScreen
+EXTSYM GetScreen,GUITBWVID
 
 EXTSYM MouseWindow
 EXTSYM GotoHomepage
@@ -581,6 +581,7 @@ NEWSYM AlternateTimer, db 0
 NEWSYM AllowMultipleInst, db 0
 NEWSYM FilteredGUI, db 0
 NEWSYM BilinearFilter, db 0
+NEWSYM TripleBufferWin, db 0
 
 GUIsave equ $-GUIRAdd
 

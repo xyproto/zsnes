@@ -2176,10 +2176,11 @@ DisplayGUIVideoClick:
     mov bl,[cvidmode]
     cmp byte[GUIHSVID+ebx],0
     je near .nohsline
-    GUIClickCButton4 21,123,byte[scanlines],byte[cfgscanline],1
-    GUIClickCButton4 61,123,byte[scanlines],byte[cfgscanline],3
-    GUIClickCButton4 101,123,byte[scanlines],byte[cfgscanline],2
+    GUIClickCButton4 21,114,byte[scanlines],byte[cfgscanline],1
+    GUIClickCButton4 61,114,byte[scanlines],byte[cfgscanline],3
+    GUIClickCButton4 101,114,byte[scanlines],byte[cfgscanline],2
 .nohsline
+    GUIClickCButton 11,123,byte[TripleBufferWin]
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUI2xVID+ebx],0
