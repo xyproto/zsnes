@@ -51,7 +51,9 @@ extern unsigned int CRC32;
 extern unsigned int cur_zst_size;
 extern bool romispal;
 extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
-
+extern unsigned char MovieStartMethod;
+void powercycle();
+bool firstloop;
 
 void zst_save(FILE *, bool);
 bool zst_load(FILE *);
@@ -534,10 +536,6 @@ Create and record ZMV
 
 */
 
-extern unsigned char MovieStartMethod;
-void powercycle();
-bool firstloop;
-
 static void zmv_create(char *filename)
 {
   memset(&zmv_vars, 0, sizeof(zmv_vars));
@@ -552,17 +550,17 @@ static void zmv_create(char *filename)
     zmv_vars.header.zmv_flag.video_mode = romispal ? zmv_vm_pal : zmv_vm_ntsc;
     zmv_header_write(&zmv_vars.header, zmv_vars.fp);
 
-    switch (MovieStartMethod)
+    switch (zmv_vars.header.zmv_flag.start_method)
     {
-      case 0: // from zst
+      case zmv_sm_zst:
         break;
-      case 1: // from power-on
+      case zmv_sm_power:
         powercycle();
         break;
-      case 2: // from reset
-        // resetcycle(); // not done yet
+      case zmv_sm_reset:
+        //resetcycle(); // not done yet
         break;
-    }
+    }    
 
     zst_save(zmv_vars.fp, false);
     zmv_vars.filename = (char *)malloc(filename_len+1); //+1 for null
@@ -1527,7 +1525,7 @@ void MovieStop()
     zmv_dealloc_rewind_buffer();
     MovieProcessing = 0;
   }
-  else	{ firstloop = false; }
+  else { firstloop = false; }
 }
 
 extern unsigned int MovieCounter, statefileloc, Totalbyteloaded, curexecstate;
