@@ -6286,6 +6286,18 @@ DisplayGUIChip:
 
 SECTION .data
 
+
+SECTION .text
+
+DisplayGUIPaths:
+    GUIDrawWindowBox 19,GUIPathsDisp
+    ret
+
+SECTION .data
+
+
+
+
 ;General data
 GUILoadDisp     db 'LOAD GAME',0
 GUIResetDisp    db 'RESET GAME',0
@@ -6304,7 +6316,8 @@ GUIMovieDisp db 'MOVIE OPTIONS',0
 GUIStatesDisp db 'STATE CONFIRM',0
 GUIComboDisp db 'KEY COMBINATION EDITOR',0
 GUIAddOnsDisp db 'ADD-ON SELECTOR',0
-GUIChipConfigDisp db 'Configure Chips',0
+GUIChipConfigDisp db 'CONFIGURE CHIPS',0
+GUIPathsDisp db 'SETUP PATHS',0
 
 SECTION .bss
 GUIItemBoxColor resd 1
