@@ -17,10 +17,9 @@
 
 %include "macros.mac"
 
-EXTSYM dssel, selcA000, selcB800, selc0040, previdmode, DosExit, ZFileSystemInit
+EXTSYM DosExit, ZFileSystemInit
 EXTSYM getcmdline,GUIRestoreVars,getcfg,obtaindir,ConvertJoyMap,tparms
-EXTSYM preparedir,getblaster,Force8b,SBHDMA
-EXTSYM SRAMDir
+EXTSYM preparedir,SBHDMA
 EXTSYM ccmdline
 EXTSYM FilenameStart
 EXTSYM spcon
@@ -107,8 +106,6 @@ EXTSYM SetMouseMinY,SetMouseMaxY
 EXTSYM SetMouseX,SetMouseY
 EXTSYM T36HZEnabled
 EXTSYM MouseButton
-EXTSYM GUIinit36_4hz,GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o
-EXTSYM GUIhandler9h,GUIhandler8h,GUIinit18_2hz
 EXTSYM Start36HZ
 EXTSYM Stop36HZ
 EXTSYM BufferSizeW,BufferSizeB,ProcessSoundBuffer

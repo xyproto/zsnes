@@ -608,7 +608,6 @@ DWORD LockSurface(void)
     if (!UseOpenGL) {
 #endif
       SurfBuf = surface->pixels;
-      SDL_Flip(surface);
 #ifdef __OPENGL__
     }
 #endif
