@@ -69,7 +69,7 @@ int sdl_inited = 0;
    DWORD dwBytes2;
 
 #ifndef __LINUX__ // AH
-LPDIRECTDRAW         BasiclpDD = NULL;
+//LPDIRECTDRAW         BasiclpDD = NULL;
 
 LPDIRECTDRAW2           lpDD = NULL;
 LPDIRECTDRAWSURFACE     DD_Primary = NULL;
