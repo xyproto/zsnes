@@ -1292,6 +1292,8 @@ NEWSYM copyvesa2640x400x8b
     mov dl,[resolutn]
     dec dl
     dec dl
+    cmp byte[ScreenScale],1
+    je near .fullscreen
     cmp byte[smallscreenon],1
     je .smallscreen
 .loopa
@@ -1342,6 +1344,45 @@ NEWSYM copyvesa2640x400x8b
     dec dl
     jnz .ssloopb
     emms
+    jmp .done
+
+.fullscreen
+    push ebx
+    sub edi,64
+.fsloopa
+    mov ecx,64
+    call .fsloopb
+    add esi,32
+    mov ecx,64
+    call .fsloopb
+    sub esi,256
+    mov ecx,64
+    call .fsloopb
+    add esi,32
+    dec dl
+    dec dl
+    jnz .fsloopa
+    pop ebx
+    jmp .done
+.fsloopb
+    mov ebx,1
+    call .fsloopc
+    sub esi,1
+    mov ebx,4
+    call .fsloopc
+    dec ecx
+    jnz .fsloopb
+    ret
+.fsloopc
+    mov al,[esi]
+    mov [es:edi],al
+    inc edi
+    mov [es:edi],al
+    inc esi
+    inc edi
+    dec ebx
+    jnz .fsloopc
+    ret
 
 .done
     pop es
@@ -1368,6 +1409,8 @@ NEWSYM copyvesa2640x400x16b
     mov dl,[resolutn]
     dec dl
     dec dl
+    cmp byte[ScreenScale],1
+    je near .fullscreen
     cmp byte[smallscreenon],1
     je .smallscreen
 .loopa
@@ -1418,6 +1461,44 @@ NEWSYM copyvesa2640x400x16b
     dec dl
     jnz .ssloopb
     emms
+    jmp .done
+
+.fullscreen
+    push ebx
+    sub edi,64*2
+.fsloopa
+    mov ecx,64
+    call .fsloopb
+    add esi,32*2
+    mov ecx,64
+    call .fsloopb
+    sub esi,256*2
+    mov ecx,64
+    call .fsloopb
+    add esi,32*2
+    dec dl
+    dec dl
+    jnz .fsloopa
+    pop ebx
+    jmp .done
+.fsloopb
+    mov ebx,1
+    call .fsloopc
+    sub esi,2
+    mov ebx,4
+    call .fsloopc
+    dec ecx
+    jnz .fsloopb
+    ret
+.fsloopc
+    mov ax,[esi]
+    mov [es:edi],ax
+    mov [es:edi+2],ax
+    add esi,byte 2
+    add edi,byte 4
+    dec ebx
+    jnz .fsloopc
+    ret
 
 .done
     pop es
