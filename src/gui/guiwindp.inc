@@ -4562,10 +4562,7 @@ DisplayGUIOptns:
     jne .nocheck
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck
-    cmp byte[OSPort],3
-    je near .win32
     GUIDisplayIconWin 10,12,23,[GUITemp]
-.win32
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[mouseshad],1
     jne .nocheck2
@@ -4639,10 +4636,7 @@ DisplayGUIOptns:
     mov byte[GUItextcolor],211
 .zero3
     sub byte[GUItextcolor],15
-    cmp byte[OSPort],3
-    je near .win32b
     GUIOuttextwin2u 10,26,28,GUIGUIOptnsText2,0
-.win32b
     GUIOuttextwin2u 10,26,38,GUIGUIOptnsText3,6
     GUIOuttextwin2u 10,26,48,GUIGUIOptnsText4,0
     GUIOuttextwin2u 10,26,58,GUIGUIOptnsText7,5
@@ -4660,10 +4654,7 @@ DisplayGUIOptns:
     mov byte[GUIGUIOptnsText6],'B'
     GUIOuttextwin2 10,16,147,GUIGUIOptnsText6
     add byte[GUItextcolor],15
-    cmp byte[OSPort],3
-    je near .win32c
     GUIOuttextwin2 10,25,27,GUIGUIOptnsText2
-.win32c
     GUIOuttextwin2 10,25,37,GUIGUIOptnsText3
     GUIOuttextwin2 10,25,47,GUIGUIOptnsText4
     GUIOuttextwin2 10,25,57,GUIGUIOptnsText7
