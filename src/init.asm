@@ -4602,7 +4602,7 @@ NEWSYM loadfileGUI
     ; check for 2nd+ part of file
     mov edi,fname+1
     mov byte[.cchar],'\'
-    ; get position of . or \
+    ; get position of . or \ (You suck nasm)
 .nextsearch
     cmp byte[edi],0
     je .nomore
