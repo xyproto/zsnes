@@ -121,12 +121,12 @@ void UpdateSound(void *userdata, Uint8 * stream, int len);
 extern int GUI36hzcall(void);
 extern int Game60hzcall(void);
 extern void SoundProcess();
-extern VOID *blur_temp=0;
-extern VOID *blur_buffer=0;
-extern _int64 copymaskRB = 0x001FF800001FF800;
-extern _int64 copymaskG = 0x0000FC000000FC00;
-extern _int64 copymagic = 0x0008010000080100;
-extern _int64 coef = 0x0066009a0066009a;
+void *blur_temp=0;
+void *blur_buffer=0;
+_int64 copymaskRB = 0x001FF800001FF800;
+_int64 copymaskG = 0x0000FC000000FC00;
+_int64 copymagic = 0x0008010000080100;
+_int64 coef = 0x0066009a0066009a;
 #ifdef __OPENGL__
 extern void gl_clearwin(void);
 #endif
