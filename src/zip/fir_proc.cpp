@@ -238,6 +238,11 @@ float coef( int _PCnr, float _POfs, float _PCut, int _PWidth, int _PType ) //flo
 
 CzWINDOWEDFIR sfir;
 
+extern "C" signed short *fir_lut = &CzWINDOWEDFIR::lut[0];
+
+
+#if 0
+
 // fir interpolation
 #define WFIR_FRACSHIFT	(16-(WFIR_FRACBITS+1+WFIR_LOG2WIDTH))
 #define WFIR_FRACMASK	((((1L<<(17-WFIR_FRACSHIFT))-1)&~((1L<<WFIR_LOG2WIDTH)-1)))
@@ -261,14 +266,12 @@ inline int __fir_interpolate(unsigned int nPos, int *p)
 	return vol;
 }
 
-extern "C" {
-	signed short *fir_lut = &CzWINDOWEDFIR::lut[0];
-
-	int fir_interpolate(unsigned int nPos, int *p)
-	{
-		return __fir_interpolate(nPos, p);
-	}
+extern "C" int fir_interpolate(unsigned int nPos, int *p)
+{
+	return __fir_interpolate(nPos, p);
 }
+
+#endif
 
 #define WFIR_CUTOFFSHIFT	(32-(WFIR_CUTOFFBITS+WFIR_LOG2WIDTH))
 #define WFIR_CUTOFFMASK	((((1L<<(32-WFIR_CUTOFFSHIFT))-1)&~((1L<<WFIR_LOG2WIDTH)-1)))

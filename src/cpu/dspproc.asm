@@ -3512,7 +3512,6 @@ WaveIndex  times 8 dd 0
 ;    add eax,edx                ;
 ;%%DontFilter1                  ;
 
-EXTSYM fir_interpolate
 EXTSYM fir_lut
 
 section .data
