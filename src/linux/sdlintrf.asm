@@ -1255,9 +1255,6 @@ NEWSYM Check60hz
     popad
     ret
 
-NEWSYM UpdateSoundAgain
-    ret
-
 BitPosR db 11 
 BitPosG db 5
 BitPosB db 0

@@ -406,7 +406,6 @@ NEWSYM cachevideo
     push esi
     push edi
     push edx
-;    call UpdateSoundAgain
     inc byte[mousecheck]
     and byte[mousecheck],07h
     cmp byte[mousecheck],0
