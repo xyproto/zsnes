@@ -64,7 +64,7 @@ NEWSYM initregr
     setreg 2141h*4,reg2141r
     setreg 2142h*4,reg2142r
     setreg 2143h*4,reg2143r
-    setreg 2144h*4,reg2144r
+    setreg 2144h*4,reg2140r
     setreg 2180h*4,reg2180r
 
     setreg 2A00h*4,reg2Axxr
