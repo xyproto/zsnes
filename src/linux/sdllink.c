@@ -34,82 +34,23 @@ int SoundEnabled=1;
 
 #ifdef __LINUX__ // AH
 typedef enum {TRUE, FALSE} BOOL;
-typedef void *HWND;
-typedef void *MSG;
-typedef void *HINSTANCE;
-typedef void *LPVOID;
-typedef void *DEVMODE;
 typedef Uint32 UINT32;
 typedef long long _int64;
 typedef long long LARGE_INTEGER;
-typedef int HRESULT;
 #define STUB_FUNCTION fprintf(stderr,"STUB: %s at " __FILE__ ", line %d, thread %d\n",__FUNCTION__,__LINE__,getpid())
 #define FAR
 #define PASCAL
 #endif // __LINUX__
 
-HWND hMainWindow;
-
-HINSTANCE hInst;
-
-#ifndef __LINUX__ // AH
-LPDIRECTSOUND           lpDirectSound;
-LPDIRECTSOUNDBUFFER     SoundBuffer;
-LPDIRECTSOUNDBUFFER     lpPrimaryBuffer;
-DSBUFFERDESC dsbd;
-#else
 SDL_Surface	*surface;
 int sdl_inited = 0;
-#endif // __LINUX__
-
-        LPVOID lpvPtr1;
-   DWORD dwBytes1;
-        LPVOID lpvPtr2;
-   DWORD dwBytes2;
-
-#ifndef __LINUX__ // AH
-//LPDIRECTDRAW         BasiclpDD = NULL;
-
-LPDIRECTDRAW2           lpDD = NULL;
-LPDIRECTDRAWSURFACE     DD_Primary = NULL;
-LPDIRECTDRAWSURFACE     DD_CFB = NULL;
-LPDIRECTDRAWCLIPPER     lpDDClipper =NULL;
-RECT                    rcWindow;
-
-LPDIRECTINPUT          DInput;
-LPDIRECTINPUTDEVICE     MouseInput;
-LPDIRECTINPUTDEVICE     KeyboardInput;
-LPDIRECTINPUTDEVICE7    JoystickInput[4];
-DIJOYSTATE js[4];
-
-DWORD                   X1Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-DWORD                   X2Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-DWORD                   Y1Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-DWORD                   Y2Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-DWORD                   Z1Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-DWORD                   Z2Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-DWORD                   RX1Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-DWORD                   RX2Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-DWORD                   RY1Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-DWORD                   RY2Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-DWORD                   RZ1Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-DWORD                   RZ2Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-DWORD                   S01Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-DWORD                   S02Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-DWORD                   S11Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-DWORD                   S12Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-
-#endif // __LINUX__
 
 DWORD                   CurrentJoy=0;
 
-#ifdef __LINUX__
 SDL_Joystick	*JoystickInput[4];
-#endif //__LINUX__
 
 DWORD                   BitDepth=0;
 BYTE                    BackColor=0;
-DEVMODE mode;
 
 int DTimerCheck;
 float MouseMinX=0;
@@ -140,6 +81,7 @@ _int64 start, end, freq, update_ticks_pc, start2, end2, update_ticks_pc2;
 extern unsigned char pressed[];
 
 void drawscreenwin(void);
+
 //void Init_2xSaI(UINT32 BitFormat);
 DWORD LastUsedPos=0;
 DWORD CurMode=-1;
@@ -181,7 +123,6 @@ BOOL InputDeAcquire(void)
    InputEn=0;
    return TRUE;
 #endif // __LINUX__
-
 }
 
 unsigned char keyboardhit=0;
@@ -205,7 +146,6 @@ void ExitFunction(void)
 #endif // __LINUX__   
 }
 
-#ifdef __LINUX__ // AH
 int shiftptr = 0;
 void ProcessKeyBuf(int scancode);
 void LinuxExit(void);
@@ -224,7 +164,7 @@ int Main_Proc(void)
 			if (event.key.keysym.sym == SDLK_LSHIFT ||
 			    event.key.keysym.sym == SDLK_RSHIFT)
 				shiftptr = 1;
-			if (event.key.keysym.scancode-8 > 0) {
+			if (event.key.keysym.scancode-8 >= 0) {
 				if (pressed[event.key.keysym.scancode-8]!=2)
 					pressed[event.key.keysym.scancode-8]=1;
 				ProcessKeyBuf(event.key.keysym.sym);
@@ -235,7 +175,7 @@ int Main_Proc(void)
 			if (event.key.keysym.sym == SDLK_LSHIFT ||
 			    event.key.keysym.sym == SDLK_RSHIFT)
 				shiftptr = 0;
-			if (event.key.keysym.scancode-8 > 0)
+			if (event.key.keysym.scancode-8 >= 0)
 				pressed[event.key.keysym.scancode-8]=0;
 			break;
 
@@ -299,6 +239,7 @@ int Main_Proc(void)
 	   */
    return TRUE;
 }
+
 #define true 1
 
 void ProcessKeyBuf(int scancode)
@@ -384,221 +325,6 @@ void ProcessKeyBuf(int scancode)
       if (CurKeyPos==16) CurKeyPos=0;
     }
 }
-#else // __WIN32__
-LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-   static bool shiftpr;
-   bool accept;
-   int vkeyval;
-   short zDelta;
-
-        switch (uMsg)
-   {
-      case WM_KEYDOWN:        // sent when user presses a key
-         if (!((CurKeyPos+1==CurKeyReadPos) || ((CurKeyPos+1==16)
-            && (CurKeyReadPos==0)))){
-            accept=false;
-
-//            char bla[256];
-//            sprintf(bla,"%d",wParam);
-//            MessageBox(NULL,bla,"Key",MB_SYSTEMMODAL|MB_OK);
-
-            if (wParam==16)
-              shiftpr=true;
-            if (((wParam>='A') && (wParam<='Z')) ||
-                ((wParam>='a') && (wParam<='z')) || (wParam==27) ||
-                (wParam==32) || (wParam==8) || (wParam==13) || (wParam==9)) {
-              accept=true; vkeyval=wParam;
-            }
-            if ((wParam>='0') && (wParam<='9')) {
-              accept=true; vkeyval=wParam;
-              if (shiftpr) {
-                switch (wParam) {
-                  case '1': vkeyval='!'; break;
-                  case '2': vkeyval='@'; break;
-                  case '3': vkeyval='#'; break;
-                  case '4': vkeyval='$'; break;
-                  case '5': vkeyval='%'; break;
-                  case '6': vkeyval='^'; break;
-                  case '7': vkeyval='&'; break;
-                  case '8': vkeyval='*'; break;
-                  case '9': vkeyval='('; break;
-                  case '0': vkeyval=')'; break;
-                }
-              }
-            }
-            if ((wParam>=VK_NUMPAD0) && (wParam<=VK_NUMPAD9)) {
-              accept=true; vkeyval=wParam-VK_NUMPAD0+'0';
-            }
-            if (!shiftpr){
-              switch (wParam) {
-                case 189: vkeyval='-'; accept=true; break;
-                case 187: vkeyval='='; accept=true; break;
-                case 219: vkeyval='['; accept=true; break;
-                case 221: vkeyval=']'; accept=true; break;
-                case 186: vkeyval=';'; accept=true; break;
-                case 222: vkeyval=39; accept=true; break;
-                case 188: vkeyval=','; accept=true; break;
-                case 190: vkeyval='.'; accept=true; break;
-                case 191: vkeyval='/'; accept=true; break;
-                case 192: vkeyval='`'; accept=true; break;
-                case 220: vkeyval=92; accept=true; break;
-              }
-            } else {
-              switch (wParam) {
-                case 189: vkeyval='_'; accept=true; break;
-                case 187: vkeyval='+'; accept=true; break;
-                case 219: vkeyval='{'; accept=true; break;
-                case 221: vkeyval='}'; accept=true; break;
-                case 186: vkeyval=':'; accept=true; break;
-                case 222: vkeyval='"'; accept=true; break;
-                case 188: vkeyval='<'; accept=true; break;
-                case 190: vkeyval='>'; accept=true; break;
-                case 191: vkeyval='?'; accept=true; break;
-                case 192: vkeyval='~'; accept=true; break;
-                case 220: vkeyval='|'; accept=true; break;
-              }
-            }
-            switch (wParam) {
-              case 33: vkeyval=256+73; accept=true; break;
-              case 38: vkeyval=256+72; accept=true; break;
-              case 36: vkeyval=256+71; accept=true; break;
-              case 39: vkeyval=256+77; accept=true; break;
-              case 12: vkeyval=256+76; accept=true; break;
-              case 37: vkeyval=256+75; accept=true; break;
-              case 34: vkeyval=256+81; accept=true; break;
-              case 40: vkeyval=256+80; accept=true; break;
-              case 35: vkeyval=256+79; accept=true; break;
-              case 107: vkeyval='+'; accept=true; break;
-              case 109: vkeyval='-'; accept=true; break;
-              case 106: vkeyval='*'; accept=true; break;
-              case 111: vkeyval='/'; accept=true; break;
-              case 110: vkeyval='.'; accept=true; break;
-            }
-            if (accept){
-              KeyBuffer[CurKeyPos]=vkeyval;
-              CurKeyPos++;
-              if (CurKeyPos==16) CurKeyPos=0;
-            }
-         }
-         break;
-      case WM_KEYUP:          // sent when user releases a key
-         if (wParam==16)
-              shiftpr=false;
-         break;
-      case WM_MOUSEMOVE:
-         if(MouseInput) MouseInput->Acquire();
-         break;
-/*      case 0x020A:
-         zDelta = (short) HIWORD(wParam);
-         zDelta=120;
-         while (zDelta>0){
-           zDelta-=120;
-           if (!((CurKeyPos+1==CurKeyReadPos) || ((CurKeyPos+1==16)
-              && (CurKeyReadPos==0)))){
-              KeyBuffer[CurKeyPos]=72+256;
-              CurKeyPos++;
-              if (CurKeyPos==16) CurKeyPos=0;
-           }
-         }
-         while (zDelta<0){
-           zDelta+=120;
-           if (!((CurKeyPos+1==CurKeyReadPos) || ((CurKeyPos+1==16)
-              && (CurKeyReadPos==0)))){
-              KeyBuffer[CurKeyPos]=72+256;
-              CurKeyPos++;
-              if (CurKeyPos==16) CurKeyPos=0;
-           }
-         }
-         break;*/
-      case WM_MOVE:
-         initwinvideo();
-         break;
-      case WM_PAINT:
-         ValidateRect(hWnd,NULL);
-         break;
-      case WM_ACTIVATE:
-         if(LOWORD(wParam)==WA_INACTIVE)
-         {
-            ChangeDisplaySettings(NULL,0);
-         }
-         else
-         {
-            if(FullScreen==1)
-            {
-               ChangeDisplaySettings(&mode,0);
-            }
-            initwinvideo();
-         }
-         InputAcquire();
-         break;
-      case WM_SETFOCUS:
-         if(FullScreen==1)
-         {
-            ChangeDisplaySettings(&mode,0);
-         }
-         ShowWindow(hMainWindow, SW_SHOWNORMAL);
-         InputAcquire();
-         break;
-      case WM_KILLFOCUS:
-         ChangeDisplaySettings(NULL,0);
-         InputDeAcquire();
-         break;
-      case WM_DESTROY:
-         ChangeDisplaySettings(NULL,0);
-         PostQuitMessage(0);
-         break;
-      case WM_SETTEXT:
-      case WM_SHOWWINDOW:
-      case WM_SETTINGCHANGE:
-      case WM_SETICON:
-      case WM_CREATE:
-      case WM_SETREDRAW:
-         return DefWindowProc(hWnd,uMsg,wParam,lParam);
-         break;
-      default:
-         break;
-   }
-        return TRUE;
-}
-#endif // __LINUX__
-
-#ifdef __LINUX__ // AH
-int RegisterWinClass ( void )
-{
-   // TODO: WM stuff goes here
-   STUB_FUNCTION;
-   return TRUE;
-}
-#else // __WIN32__
-int RegisterWinClass ( void )
-{
-        WNDCLASS wcl;
-
-   wcl.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_NOCLOSE ;
-        wcl.cbClsExtra          = 0;
-        wcl.cbWndExtra          = 0;
-   wcl.hIcon         = LoadIcon(NULL,IDI_APPLICATION);
-        wcl.hCursor                     = NULL;
-        wcl.hInstance           = hInst;
-
-        wcl.lpfnWndProc         = (WNDPROC)Main_Proc;
-   wcl.hbrBackground    = (HBRUSH)GetStockObject(BLACK_BRUSH);
-   wcl.lpszMenuName     = NULL;
-   wcl.lpszClassName    = "ZSNESWIN";
-
-        if (RegisterClass(&wcl)  == 0) return FALSE;
-
-        return TRUE;
-}
-#endif // __LINUX__
-
-void ShutdownApplication()
-{
-
-}
-
-#ifdef __LINUX__
 
 void UpdateSound(void *userdata, Uint8 *stream, int len);
 
@@ -645,200 +371,11 @@ int InitSound (void)
    
    return TRUE;
 }
-#else // __WIN32__
-InitSound()
-{
-   HRESULT hr;
-        WAVEFORMATEX wfx;
 
-   if (!SoundEnabled) return FALSE;
-
-   PrevSoundQuality=SoundQuality;
-   PrevStereoSound=StereoSound;
-
-        if(DS_OK == DirectSoundCreate(NULL, &lpDirectSound,NULL))
-        {
-          hr = lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL );
-          if (hr != DS_OK) {SoundEnabled=0; return FALSE;}
-        }
-        else
-        {
-          SoundEnabled=0; return FALSE;
-        }
-
-   wfx.wFormatTag = WAVE_FORMAT_PCM;
-   switch(SoundQuality)
-   {
-      case 0:
-         wfx.nSamplesPerSec = 8000;
-         SoundBufferSize=1024*2;
-         break;
-      case 1:
-         wfx.nSamplesPerSec = 11025;
-         SoundBufferSize=1024*2;
-         break;
-      case 2:
-         wfx.nSamplesPerSec = 22050;
-         SoundBufferSize=1024*4;
-         break;
-      case 3:
-         wfx.nSamplesPerSec = 44100;
-         SoundBufferSize=1024*8;
-         break;
-      case 4:
-         wfx.nSamplesPerSec = 16000;
-         SoundBufferSize=1024*4;
-         break;
-      case 5:
-         wfx.nSamplesPerSec = 32000;
-         SoundBufferSize=1024*8;
-         break;
-      case 6:
-         wfx.nSamplesPerSec = 48000;
-         SoundBufferSize=1024*8;
-         break;
-      default:
-         wfx.nSamplesPerSec = 11025;
-         SoundBufferSize=1024*2;
-   }
-
-   if(StereoSound==1)
-   {
-      wfx.nChannels = 2;
-      wfx.nBlockAlign = 4;
-      SoundBufferSize*=2;
-   }
-   else
-   {
-      wfx.nChannels = 1;
-      wfx.nBlockAlign = 2;
-   }
-
-   wfx.wBitsPerSample = 16;
-   wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
-   wfx.cbSize=0;
-
-        memset(&dsbd, 0, sizeof(DSBUFFERDESC));
-   dsbd.dwSize = sizeof(DSBUFFERDESC);
-   dsbd.dwFlags = DSBCAPS_STICKYFOCUS; // | DSBCAPS_PRIMARYBUFFER;
-   dsbd.dwBufferBytes = SoundBufferSize;
-        dsbd.lpwfxFormat = &wfx;
-
-   hr = lpDirectSound->CreateSoundBuffer(&dsbd, &SoundBuffer, NULL);
-
-   if(DS_OK == hr)
-        {
-      if(DS_OK  != SoundBuffer->Play(0,0,DSBPLAY_LOOPING ))
-      {
-         SoundEnabled=0; return FALSE;
-      }
-      FirstSound=0;
-      return TRUE;
-   }
-        else
-        {
-           SoundEnabled=0; return FALSE;
-        }
-
-}
-#endif // __LINUX__
-
-#ifdef __LINUX__ // AH
 int ReInitSound(void)
 {
 	return InitSound();
 }
-#else // __WIN32__
-ReInitSound()
-{
-   HRESULT hr;
-        WAVEFORMATEX wfx;
-
-   if (!SoundEnabled) return FALSE;
-
-   SoundBuffer->Stop();
-   SoundBuffer->Release();
-
-   PrevSoundQuality=SoundQuality;
-   PrevStereoSound=StereoSound;
-
-
-        wfx.wFormatTag = WAVE_FORMAT_PCM;
-   switch(SoundQuality)
-   {
-      case 0:
-         wfx.nSamplesPerSec = 8000;
-         SoundBufferSize=1024*2;
-         break;
-      case 1:
-         wfx.nSamplesPerSec = 11025;
-         SoundBufferSize=1024*2;
-         break;
-      case 2:
-         wfx.nSamplesPerSec = 22050;
-         SoundBufferSize=1024*4;
-         break;
-      case 3:
-         wfx.nSamplesPerSec = 44100;
-         SoundBufferSize=1024*8;
-         break;
-      case 4:
-         wfx.nSamplesPerSec = 16000;
-         SoundBufferSize=1024*4;
-         break;
-      case 5:
-         wfx.nSamplesPerSec = 32000;
-         SoundBufferSize=1024*8;
-         break;
-      case 6:
-         wfx.nSamplesPerSec = 48000;
-         SoundBufferSize=1024*8;
-         break;
-
-      default:
-         wfx.nSamplesPerSec = 11025;
-   }
-
-   if(StereoSound==1)
-   {
-      wfx.nChannels = 2;
-      wfx.nBlockAlign = 4;
-      SoundBufferSize*=2;
-   }
-   else
-   {
-      wfx.nChannels = 1;
-      wfx.nBlockAlign = 2;
-   }
-
-   wfx.wBitsPerSample = 16;
-   wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
-   wfx.cbSize=0;
-
-        memset(&dsbd, 0, sizeof(DSBUFFERDESC));
-   dsbd.dwSize = sizeof(DSBUFFERDESC);
-   dsbd.dwFlags = DSBCAPS_STICKYFOCUS;
-   dsbd.dwBufferBytes = SoundBufferSize;
-        dsbd.lpwfxFormat = &wfx;
-
-   hr = lpDirectSound->CreateSoundBuffer(&dsbd, &SoundBuffer, NULL);
-
-   if(DS_OK == hr)
-        {
-      if(DS_OK  != SoundBuffer->Play(0,0,DSBPLAY_LOOPING ))
-      {
-         return FALSE;
-      }
-        LastUsedPos=0;
-        return TRUE;
-   }
-        else
-        {
-                return FALSE;
-        }
-
-}
-#endif // __LINUX__
 
 #ifdef __LINUX__ // AH
 BOOL InitJoystickInput(void)
@@ -868,382 +405,37 @@ BOOL InitJoystickInput(void)
 
    	return TRUE;
 }
-#else // __WIN32__
-BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
-{
-   LPDIRECTINPUT7 pdi = (LPDIRECTINPUT7)pvRef;
-//   fprintf(tempf,"Cur :%d %X\n",CurrentJoy,pdinst->guidInstance);
-   GUID DeviceGuid = pdinst->guidInstance;
-
-   if(CurrentJoy>3)
-      return DIENUM_CONTINUE;
-
-   // Create the DirectInput joystick device.
-   if (pdi->CreateDeviceEx(DeviceGuid,IID_IDirectInputDevice7,
-                           (void**)&JoystickInput[CurrentJoy], NULL) != DI_OK)
-   {
-//      fprintf(tempf,"IDirectInput7::CreateDeviceEx FAILED\n");
-      return DIENUM_CONTINUE;
-   }
-
-   if (JoystickInput[CurrentJoy]->SetDataFormat(&c_dfDIJoystick) != DI_OK)
-   {
-//      fprintf(tempf,"IDirectInputDevice7::SetDataFormat FAILED\n");
-      JoystickInput[CurrentJoy]->Release();
-      return DIENUM_CONTINUE;
-   }
-
-   if(JoystickInput[CurrentJoy]->SetCooperativeLevel(hMainWindow,
-DISCL_NONEXCLUSIVE | DISCL_FOREGROUND) != DI_OK)
-   {
-//      fprintf(tempf,"IDirectInputDevice7::SetCooperativeLevel FAILED\n");
-      JoystickInput[CurrentJoy]->Release();
-      return DIENUM_CONTINUE;
-   }
-
-
-   DIPROPRANGE diprg;
-
-   diprg.diph.dwSize       = sizeof(diprg);
-   diprg.diph.dwHeaderSize = sizeof(diprg.diph);
-   diprg.diph.dwObj        = DIJOFS_X;
-   diprg.diph.dwHow        = DIPH_BYOFFSET;
-   diprg.lMin              = -1000;
-   diprg.lMax              = +1000;
-
-   if FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph))
-   {
-//      fprintf(tempf,"IDirectInputDevice7::SetProperty(DIPH_RANGE) FAILED\n");
-//      JoystickInput[CurrentJoy]->Release();
-//      return FALSE;
-      X1Disable[CurrentJoy]=1;
-      X2Disable[CurrentJoy]=1;
-   }
-
-   diprg.diph.dwObj        = DIJOFS_Y;
-
-   if FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph))
-   {
-//      fprintf(tempf,"IDirectInputDevice7::SetProperty(DIPH_RANGE) FAILED\n");
-//      JoystickInput[CurrentJoy]->Release();
-//      return FALSE;
-      Y1Disable[CurrentJoy]=1;
-      Y2Disable[CurrentJoy]=1;
-   }
-
-
-
-   diprg.diph.dwObj        = DIJOFS_Z;
-   if(FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
-   {
-      Z1Disable[CurrentJoy]=1;
-      Z2Disable[CurrentJoy]=1;
-   }
-
-   diprg.diph.dwObj        = DIJOFS_RX;
-   if(FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
-   {
-      RX1Disable[CurrentJoy]=1;
-      RX2Disable[CurrentJoy]=1;
-   }
-
-   diprg.diph.dwObj        = DIJOFS_RY;
-   if(FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
-   {
-      RY1Disable[CurrentJoy]=1;
-      RY2Disable[CurrentJoy]=1;
-   }
-
-   diprg.diph.dwObj        = DIJOFS_RZ;
-   if(FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
-   {
-      RZ1Disable[CurrentJoy]=1;
-      RZ2Disable[CurrentJoy]=1;
-   }
-
-   diprg.diph.dwObj        = DIJOFS_SLIDER(0);
-   if(FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
-   {
-      S01Disable[CurrentJoy]=1;
-      S02Disable[CurrentJoy]=1;
-   }
-
-   diprg.diph.dwObj        = DIJOFS_SLIDER(1);
-   if(FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
-   {
-      S11Disable[CurrentJoy]=1;
-      S12Disable[CurrentJoy]=1;
-   }
-
-
-
-
-        DIPROPDWORD dipdw;
-
-   dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
-   dipdw.diph.dwHeaderSize = sizeof(dipdw.diph);
-   dipdw.diph.dwHow        = DIPH_BYOFFSET;
-   dipdw.dwData            = 2500;
-   dipdw.diph.dwObj         = DIJOFS_X;
-   JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
-
-   dipdw.diph.dwObj         = DIJOFS_Y;
-   JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
-
-   dipdw.diph.dwObj         = DIJOFS_Z;
-   JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
-
-   dipdw.diph.dwObj         = DIJOFS_RX;
-   JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
-
-   dipdw.diph.dwObj         = DIJOFS_RY;
-   JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
-
-   dipdw.diph.dwObj         = DIJOFS_RZ;
-   JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
-
-   dipdw.diph.dwObj         = DIJOFS_SLIDER(0);
-   JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
-
-   dipdw.diph.dwObj         = DIJOFS_SLIDER(1);
-   JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
-
-
-
-   dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
-   dipdw.diph.dwHeaderSize = sizeof(dipdw.diph);
-   dipdw.diph.dwHow        = DIPH_DEVICE;
-   dipdw.dwData            = DIPROPAXISMODE_ABS;
-   dipdw.diph.dwObj        = 0;
-   JoystickInput[CurrentJoy]->SetProperty(DIPROP_AXISMODE, &dipdw.diph);
-
-   CurrentJoy+=1;
-//   fprintf(tempf,"joystick initialized!\n");
-
-   return DIENUM_CONTINUE;
-}
 #endif // __LINUX__
 
 void endgame()
 {
 
 #ifdef __LINUX__ // AH
-   // TODO: Cleanup, dealloc buffers, etc.
    STUB_FUNCTION;
    SDL_Quit();
-#else // __WIN32__
-   if(DD_CFB)
-   {
-      DD_CFB->Release();
-      DD_CFB=NULL;
-   }
-
-
-   if(lpDD)
-   {
-      lpDD->Release();
-      lpDD=NULL;
-   }
-
-
-   if(lpDDClipper)
-   {
-      lpDDClipper->Release();
-      lpDDClipper=NULL;
-   }
-
-   if(DD_Primary)
-   {
-      DD_Primary->Release();
-      DD_Primary=NULL;
-   }
 #endif // __LINUX__
 }
 
-#ifdef __WIN32__ // AH
-void DInputError(){
-   char message1[256];
-
-   sprintf(message1,"Error initializing DirectInput\nYou may need to install
-DirectX 7.0a or higher located at www.microsoft.com/directx \0");
-   MessageBox (NULL, message1, "Init Error" , MB_ICONERROR );
-}
-#endif // __WIN32__
-
 BOOL InitInput()
 {
-	char message1[256];
 #ifdef __LINUX__ // AH	
 	InitJoystickInput();
-#else // __WIN32__
-   HRESULT hr;
-
-   if(FAILED(hr=DirectInputCreate(hInst,DIRECTINPUT_VERSION,&DInput,NULL)))
-   {
-      sprintf(message1,"Error initializing DirectInput\nYou may need to install
-DirectX 7.0a or higher located at www.microsoft.com/directx \0");
-      MessageBox (NULL, message1, "Init Error" , MB_ICONERROR );
-
-      switch(hr)
-      {
-      case DIERR_BETADIRECTINPUTVERSION:
-         sprintf(message1,"Beta %X\n\0",hr);
-         MessageBox (NULL, message1, "Init", MB_ICONERROR );
-         break;
-      case DIERR_INVALIDPARAM:
-         sprintf(message1,"Invalid %X\n\0",hr);
-         MessageBox (NULL, message1, "Init", MB_ICONERROR );
-         break;
-      case DIERR_OLDDIRECTINPUTVERSION:
-         sprintf(message1,"OLDDIRECTINPUTVERSION %X\n\0",hr);
-         MessageBox (NULL, message1, "Init", MB_ICONERROR );
-         break;
-      case DIERR_OUTOFMEMORY:
-         sprintf(message1,"OUTOFMEMORY %X\n\0",hr);
-         MessageBox (NULL, message1, "Init", MB_ICONERROR );
-         break;
-      default:
-         sprintf(message1,"UNKNOWN %X\n\0",hr);
-         MessageBox (NULL, message1, "Init", MB_ICONERROR );
-         break;
-      }
-      return FALSE;
-   }
-
-   hr=DInput->CreateDevice(GUID_SysKeyboard, &KeyboardInput,NULL);
-   if(FAILED(hr)) {DInputError();return FALSE;}
-
-   hr=KeyboardInput->SetDataFormat(&c_dfDIKeyboard);
-   if(FAILED(hr)) {DInputError();return FALSE;}
-
-
-
-   hr=KeyboardInput->SetCooperativeLevel(hMainWindow,DISCL_NONEXCLUSIVE |
-DISCL_FOREGROUND );
-
-        hr=DInput->CreateDevice(GUID_SysMouse, &MouseInput,NULL);
-   if(FAILED(hr)) {DInputError();return FALSE;}
-
-        hr=MouseInput->SetDataFormat(&c_dfDIMouse);
-   if(FAILED(hr)) {DInputError();return FALSE;}
-
-  
-hr=MouseInput->SetCooperativeLevel(hMainWindow,DISCL_EXCLUSIVE|DISCL_FOREGROUND);
-   if(FAILED(hr)) {DInputError();return FALSE;}
-
-  
-JoystickInput[0]=NULL;JoystickInput[1]=NULL;JoystickInput[2]=NULL;JoystickInput[3]=NULL;
-
-
-   hr=DInput->EnumDevices(DIDEVTYPE_JOYSTICK, InitJoystickInput,
-                       DInput, DIEDFL_ATTACHEDONLY);
-   if(FAILED(hr)) {DInputError();return FALSE;}
-
-
-   InputAcquire();
+	InputAcquire();
 #endif // __LINUX__
    return TRUE;
 
 }
 
+int SurfaceLocking;
+
 void TestJoy()
 {
-#ifdef __LINUX__ // AH
    STUB_FUNCTION;
-#else // __WIN32__
-   int i;
-
-   for(i=0;i<4;i++)
-   {
-      if(JoystickInput[i])
-      {
-         JoystickInput[i]->Poll();
-//         memset(&js[i], 0, sizeof(DIJOYSTATE));
-
-        
-if(IDirectInputDevice7_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE),
-&js[i])==DIERR_INPUTLOST)
-         {
-            if(JoystickInput[i]) JoystickInput[i]->Acquire();
-           
-if(FAILED(IDirectInputDevice7_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE),
-&js[i]))) return;
-         }
-
-
-         if(!X1Disable[i])
-         {
-            if(js[i].lX>0) X1Disable[i]=1;
-         }
-
-         if(!X2Disable[i])
-         {
-            if(js[i].lX<0) X2Disable[i]=1;
-         }
-
-         if(!Y1Disable[i])
-         {
-            if(js[i].lY>0) Y1Disable[i]=1;
-         }
-
-         if(!Y2Disable[i])
-         {
-            if(js[i].lY<0) Y2Disable[i]=1;
-         }
-
-         if(!Z1Disable[i])
-         {
-            if(js[i].lZ>0) Z1Disable[i]=1;
-         }
-
-         if(!Z2Disable[i])
-         {
-            if(js[i].lZ<0) Z2Disable[i]=1;
-         }
-
-         if(!RY1Disable[i])
-         {
-            if(js[i].lRy>0) RY1Disable[i]=1;
-         }
-         if(!RY2Disable[i])
-         {
-            if(js[i].lRy<0) RY2Disable[i]=1;
-         }
-         if(!RZ1Disable[i])
-         {
-            if(js[i].lRz>0) RZ1Disable[i]=1;
-         }
-         if(!RZ2Disable[i])
-         {
-            if(js[i].lRz<0) RZ2Disable[i]=1;
-         }
-         if(!S01Disable[i])
-         {
-            if(js[i].rglSlider[0]>0) S01Disable[i]=1;
-         }
-         if(!S02Disable[i])
-         {
-            if(js[i].rglSlider[0]<0) S02Disable[i]=1;
-         }
-
-         if(!S11Disable[i])
-         {
-            if(js[i].rglSlider[1]>0) S11Disable[i]=1;
-         }
-         if(!S12Disable[i])
-         {
-            if(js[i].rglSlider[1]<0) S12Disable[i]=1;
-         }
-
-      }
-   }
-#endif // __LINUX__
 }
 
 DWORD converta;
 unsigned int BitConv32Ptr;
 
-#ifdef __LINUX__ // AH
 int startgame(void)
 {
    unsigned int color32,ScreenPtr2;
@@ -1283,6 +475,7 @@ int startgame(void)
 				SurfaceY);
 	   return FALSE;
    }
+   SurfaceLocking = SDL_MUSTLOCK(surface);
 
    // Grab mouse in fullscreen mode
    FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) : SDL_WM_GrabInput(SDL_GRAB_OFF);
@@ -1306,125 +499,19 @@ int startgame(void)
    }
    return TRUE;
 }
-#else // __WIN32__
-startgame()
-{
-   DDSURFACEDESC       ddsd;
-   DDPIXELFORMAT        format;
-   HRESULT hr;
-   char message1[256];
-   unsigned int color32,ScreenPtr2;
-   int i;
-
-   ScreenPtr2=BitConv32Ptr;
-   for(i=0;i<65536;i++)
-   {
-      color32=((i&0xF800)<<8)+
-              ((i&0x07E0)<<5)+
-              ((i&0x001F)<<3)+0x7F000000;
-              (*(unsigned int *)(ScreenPtr2))=color32;
-      ScreenPtr2+=4;
-   }
-
-   GetClientRect(hMainWindow, &rcWindow );
-   ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow );
-   ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow + 1 );
-
-   if(FAILED(DirectDrawCreate(NULL,&BasiclpDD,NULL)))
-   {
-      return FALSE;
-   }
-
-
-   if(FAILED(BasiclpDD->SetCooperativeLevel(hMainWindow, DDSCL_NORMAL )))
-   {
-      return FALSE;
-   }
-
-   if(FAILED(BasiclpDD->QueryInterface(IID_IDirectDraw2,(LPVOID *)&lpDD)))
-   {
-      return FALSE;
-        }
-
-        BasiclpDD->Release();
-
-   ddsd.dwSize = sizeof( ddsd );
-   ddsd.dwFlags = DDSD_CAPS;
-   ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
-
-   if (FAILED(lpDD->CreateSurface( &ddsd, &DD_Primary, NULL )))
-   {
-      return FALSE;
-   }
-
-
-   if (FAILED(lpDD->CreateClipper(0,&lpDDClipper,NULL)))
-   {
-      return FALSE;
-   }
-
-   if (FAILED(lpDDClipper->SetHWnd(0,hMainWindow)))
-   {
-      return FALSE;
-   }
-
-   if (FAILED( DD_Primary->SetClipper(lpDDClipper)))
-   {
-      return FALSE;
-   }
-
-        format.dwSize = sizeof(DDPIXELFORMAT);
-        if (DD_Primary->GetPixelFormat(&format) != DD_OK)
-   {
-      return FALSE;
-   }
-
-   BitDepth=format.dwRGBBitCount;
-   GBitMask=format.dwGBitMask; // 0x07E0 or not
-
-   if(BitDepth==16&& GBitMask!=0x07E0)
-   {
-      converta=1;
-      Init_2xSaI(555);
-   }
-   else
-   {
-      converta=0;
-   }
-
-   if(DD_CFB!=NULL) DD_CFB->Release();
-
-   DD_CFB=NULL;
-
-   ddsd.dwSize = sizeof( ddsd );
-   ddsd.dwFlags = DDSD_CAPS | DDSD_HEIGHT |DDSD_WIDTH;
-   ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN ;
-
-   ddsd.dwWidth = SurfaceX;
-   ddsd.dwHeight = SurfaceY;
-
-   if ( lpDD->CreateSurface( &ddsd, &DD_CFB, NULL ) != DD_OK )
-   {
-      DD_CFB = NULL;
-      return FALSE;
-   }
-
-        return TRUE;
-}
-#endif // __LINUX__
 
 BYTE* SurfBuf;
 
 DWORD LockSurface(void)
 {
     // Lock SDL surface, return surface pitch
-    SDL_LockSurface(surface);
+    if(SurfaceLocking) SDL_LockSurface(surface);
     return(surface->pitch);
 }
 
 void UnlockSurface(void)
 {
-    SDL_UnlockSurface(surface);
+    if (SurfaceLocking) SDL_UnlockSurface(surface);
     SurfBuf = surface->pixels;
 }
 
@@ -1442,18 +529,16 @@ unsigned char Noise[]={
 157,205,27,21,107,63,85,164};
 
 
-   int X, Y;
-   DWORD Temp1;
-        MSG msg;
-   DWORD SurfBufD;
-   int count, x,count2;
-   HRESULT hr;
-        int i;
-        short *Sound;
-        DWORD CurrentPos;
-        DWORD WritePos;
-   DWORD SoundBufD;
-   DWORD SoundBufD2;
+int X, Y;
+DWORD Temp1;
+DWORD SurfBufD;
+int count, x,count2;
+int i;
+short *Sound;
+DWORD CurrentPos;
+DWORD WritePos;
+DWORD SoundBufD;
+DWORD SoundBufD2;
 
 
 
