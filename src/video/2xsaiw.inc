@@ -50,7 +50,7 @@
           GLOBAL _2xSaISuperEagleLineW
           GLOBAL Init_2xSaIMMX
 %endif
-	  SECTION .text ALIGN = 32
+	  SECTION .text
 
 %ifdef __DJGPP__
 ;EXTERN_C void __2xSaILineW (uint8 *srcPtr, uint32 srcPitch, uint32 width,
@@ -1342,7 +1342,7 @@ end:
 ;-------------------------------------------------------------------------
 ;-------------------------------------------------------------------------
 
-	SECTION .data ALIGN = 32
+	SECTION .data
 ;Some constants
 colorMask     dd 0xF7DEF7DE, 0xF7DEF7DE
 lowPixelMask  dd 0x08210821, 0x08210821

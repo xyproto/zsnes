@@ -1539,7 +1539,7 @@ NEWSYM copyvesa2640x400x16b
 ;*******************************************************
 %endif
 
-SECTION .data ALIGN = 32
+SECTION .data
 
 NEWSYM EagleHold, dd 0
 NEWSYM smallscreenon, dd 0
@@ -2762,7 +2762,7 @@ NEWSYM copyvesa2320x240x16b
 ;%endmacro
 %endif
 
-SECTION .bss ;ALIGN = 32
+SECTION .bss
 NEWSYM rescompareng, resd 1
 NEWSYM nextdrawallng, resd 1
 NEWSYM prevcol0ng, resd 1
@@ -5639,7 +5639,7 @@ NEWSYM interpolate640x480x16b
 ; Copy VESA2 640x480x16b, bit setting 1:5:5:5
 ;*******************************************************
 
-SECTION .bss ALIGN = 32
+SECTION .bss
 .interpspad resd 8
 
 SECTION .text
