@@ -21,7 +21,6 @@
 #endif
 
 extern unsigned int vidbuffer;
-extern unsigned int BitConv32Ptr;
 
 #ifdef __PNG__
 
