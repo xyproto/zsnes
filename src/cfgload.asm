@@ -576,7 +576,7 @@ db '',13,10
 db 'Execute = %T',13,10
 db '',13,10
 %ifdef __WIN32__
-db '; Video Mode, 0 - 27',13,10
+db '; Video Mode, 0 - 32',13,10
 db ';   0 = 256x224 R WIN         1 = 256x224 R FULL',13,10
 db ';   2 = 512x448 R WIN         3 = 512x448 DR WIN',13,10
 db ';   4 = 640x480 S WIN         5 = 640x480 DS WIN',13,10
@@ -588,9 +588,12 @@ db ';   14 = 800x600 DR FULL      15 = 800x600 DS FULL',13,10
 db ';   16 = 1024x768 S WIN       17 = 1024x768 DS WIN',13,10
 db ';   18 = 1024x768 S FULL      19 = 1024x768 DR FULL',13,10
 db ';   20 = 1024x768 DS FULL     21 = 1024x896 R WIN',13,10
-db ';   22 = 1024x896 DR WIN      23 = 1280x1024 S WIN',13,10
-db ';   24 = 1280x1024 DS WIN     25 = 1280x1024 S FULL',13,10
-db ';   26 = 1280x1024 DR FULL    27 = 1280x1024 DS FULL',13,10
+db ';   22 = 1024x896 DR WIN      23 = 1280x960 S WIN',13,10
+db ';   24 = 1280x960 DS WIN      25 = 1280x960 S FULL',13,10
+db ';   26 = 1280x960 DR FULL     27 = 1280x960 DS FULL',13,10
+db ';   28 = 1280x1024 S WIN      29 = 1280x1024 DS WIN',13,10
+db ';   30 = 1280x1024 S FULL     31 = 1280x1024 DR FULL',13,10
+db ';   32 = 1280x1024 DS FULL',13,10
 db '',13,10
 db 'VideoModeWin = %U',13,10
 db '',13,10
