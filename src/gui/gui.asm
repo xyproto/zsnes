@@ -2634,7 +2634,7 @@ guifirsttimemsg:
     call DisplayBoxes
     call DisplayMenu
     call JoyRead
-    cmp byte[pressed+2Ch],0
+    cmp byte[pressed+39h],0
     jne .pressedokay
     jmp .again
 .pressedokay
@@ -2656,13 +2656,13 @@ guifirsttimemsg:
 
 SECTION .data
 guiftimemsg1 db 'ONE TIME USER REMINDER :',0
-guiftimemsg2 db 'PLEASE BE SURE TO READ',0
-guiftimemsg3 db 'GUINOTES.TXT FOR AN',0
-guiftimemsg4 db 'IMPORTANT REMINDER.',0
-guiftimemsg5 db 'ALSO, WHENEVER YOU HAVE',0
-guiftimemsg6 db 'PROBLEMS, BE SURE TO READ',0
-guiftimemsg7 db 'ZSNES.FAQ AND README.TXT',0
-guiftimemsg8 db 'PRESS "Z" TO CONTINUE.',0
+guiftimemsg2 db ' PLEASE BE SURE TO READ',0
+guiftimemsg3 db ' THE DOCUMENTATION THAT',0
+guiftimemsg4 db '    COMES WITH ZSNES.',0
+guiftimemsg5 db 'MOST COMMON PROBLEMS ARE',0
+guiftimemsg6 db 'ANSWERED IN THE INCLUDED',0
+guiftimemsg7 db '     DOCUMENTATION.',0
+guiftimemsg8 db 'PUSH SPACEBAR TO PROCEED.',0
 SECTION .text
 
 guimustrestartmsg:
