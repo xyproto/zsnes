@@ -2248,8 +2248,7 @@ NEWSYM nmiprevaddrl, dd 0       ; observed address -5
 NEWSYM nmiprevaddrh, dd 0       ; observed address +5
 NEWSYM nmirept,      dd 0       ; NMI repeat check, if 6 then okay
 NEWSYM nmiprevline,  dd 224     ; previous line
-NEWSYM nmistatus,    dd 0       ; 0 = none, 1 = waiting for nmi location,
-                        ; 2 = found, disable at next line
+NEWSYM nmistatus,    dd 0       ; 0 = none, 1 = waiting for nmi location, 2 = found, disable at next line
 NEWSYM joycontren,   dd 0       ; joystick read control check
 NEWSYM NextLineCache, db 0
 NEWSYM NetQuit, db 0
