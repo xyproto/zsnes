@@ -98,7 +98,7 @@ SECTION .text
 %macro DiffOrNot 10
    TestDiff %1,%2
    test edx,edx
-   jz %%same
+   jz near %%same
    %3
    %4
    %5
@@ -115,7 +115,7 @@ SECTION .text
 %macro DiffOrNot 14
    TestDiff %1,%2
    test edx,edx
-   jz %%same
+   jz near %%same
    %3
    %4
    %5
@@ -957,7 +957,7 @@ hq4x:
     pand    mm2,mm4
     movd    eax,mm2
     inc     eax
-    jz      .loopx_end
+    jz      near .loopx_end
     movd    eax,mm5
     movzx   edx,ax
     mov     [w1],edx
@@ -998,7 +998,7 @@ hq4x:
     cwde
     and     eax,ebx
     inc     eax
-    jz      .loopx_end
+    jz      near .loopx_end
     movd    eax,mm5
     mov     [edx+ecx-2],ax
     movzx   edx,ax
@@ -3910,7 +3910,7 @@ hq4x:
     jmp     .loopx
 .xres_2
     ; x=Xres-2 - special case
-    jl      .xres_1
+    jl      near .xres_1
     mov     edx,[deltaptr]
     mov     ecx,[prevline]
     mov     eax,[nextline]
@@ -3964,7 +3964,7 @@ hq4x:
     jmp     .flags
 .xres_1
     cmp     dword[xcounter],-1
-    jl      .endofline
+    jl      near .endofline
     ; x=Xres-1 - special case
     mov     edx,[deltaptr]
     mov     ecx,[prevline]
@@ -4148,7 +4148,7 @@ HighResProc:
     ret
 .hires
     test byte[ebx],4
-    jnz .m56
+    jnz near .m56
     mov ebx,[NumBytesPerLine]
     mov eax,edi
     add eax,ebx

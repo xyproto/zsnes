@@ -489,7 +489,7 @@ hq3x:
     pand    mm2,mm4
     movd    eax,mm2
     inc     eax
-    jz      .loopx_end
+    jz      near .loopx_end
     movd    eax,mm5
     movzx   edx,ax
     mov     [w1],edx
@@ -530,7 +530,7 @@ hq3x:
     cwde
     and     eax,ebx
     inc     eax
-    jz      .loopx_end
+    jz      near .loopx_end
     movd    eax,mm5
     mov     [edx+ecx-2],ax
     movzx   edx,ax
@@ -2469,7 +2469,7 @@ hq3x:
     jmp     .loopx
 .xres_2
     ; x=Xres-2 - special case
-    jl      .xres_1
+    jl      near .xres_1
     mov     edx,[deltaptr]
     mov     ecx,[prevline]
     mov     eax,[nextline]
@@ -2523,7 +2523,7 @@ hq3x:
     jmp     .flags
 .xres_1
     cmp     dword[xcounter],-1
-    jl      .endofline
+    jl      near .endofline
     ; x=Xres-1 - special case
     mov     edx,[deltaptr]
     mov     ecx,[prevline]
