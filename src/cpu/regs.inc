@@ -919,6 +919,10 @@ reg4210r:
 reg4211r:
     mov al,[irqon]
     mov byte[irqon],0
+    cmp dh,[cycphb]
+    jae .nohblank
+    or al,40h
+.nohblank
     ret
 
 ; H/V Blank Flag & Joystick Controller Enable Flag
