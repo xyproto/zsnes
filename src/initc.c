@@ -663,7 +663,11 @@ void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
   {
     unsigned int pathlen = strlen(basepath);
     char *ext = basepath+pathlen-4;
-    if (pathlen >= 5 && !strcasecmp(ext, ".zip"))
+    if (pathlen >= 5 && !strcasecmp(ext, ".jma"))
+    {
+      load_jma_file(basepath);
+    }
+    else if (pathlen >= 5 && !strcasecmp(ext, ".zip"))
     {
       loadZipFile(basepath);
     }
