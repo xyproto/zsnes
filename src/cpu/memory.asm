@@ -4230,6 +4230,8 @@ NEWSYM sramaccessbankw16s
     pop ecx
     ret
 
+EXTSYM MMXSRAMHack
+
 NEWSYM sramaccessbankr8b
     cmp dword[ramsize],0
     je .noaccess
@@ -4241,6 +4243,13 @@ NEWSYM sramaccessbankr8b
     xor ebx,ebx
     ret
 .noaccess
+    cmp byte[MMXSRAMHack],1
+    je .mmxsramhack
+    xor al,al
+    xor ebx,ebx
+    ret
+
+.mmxsramhack
     mov al,0FFh
     xor ebx,ebx
     ret
@@ -4259,6 +4268,13 @@ NEWSYM sramaccessbankr16b
     xor ebx,ebx
     ret
 .noaccess
+    cmp byte[MMXSRAMHack],1
+    je .mmxsramhack
+    xor ax,ax
+    xor ebx,ebx
+    ret
+
+.mmxsramhack
     mov ax,0FFFFh
     xor ebx,ebx
     ret

@@ -1327,6 +1327,7 @@ NEWSYM HIRQSkip,     db 0
 NEWSYM ClearScreenSkip, db 0
 NEWSYM hirqmode2, db 0
 NEWSYM ENVDisable, db 0
+NEWSYM MMXSRAMHack, db 0
 SECTION .text
 
 ; hacks :
@@ -1444,11 +1445,13 @@ NEWSYM headerhack
     mov byte[disablehdma],0
     mov byte[Offby1line],0
     mov byte[CacheCheckSkip],0
+    mov word[IRQHack],0
     mov byte[HIRQSkip],0
     mov dword[WindowDisables],0
     mov byte[ClearScreenSkip],0
     mov byte[hirqmode2],0
     mov byte[ENVDisable],0
+    mov byte[MMXSRAMHack],0
 
     mov esi,[romdata]
     add esi,07FC0h
@@ -1515,6 +1518,17 @@ NEWSYM headerhack
     jmp .notrend
 .marvelous
 .notrend
+
+    mov esi,[romdata]
+    add esi,07FC0h
+    cmp dword[esi],'MEGA'
+    jne .notmmx
+    cmp dword[esi+4],'MAN '
+    jne .notmmx
+    cmp dword[esi+8],'X   '
+    jne .notmmx
+    mov byte[MMXSRAMHack],1
+.notmmx
 
     mov esi,[romdata]
     add esi,07FC0h
@@ -1704,8 +1718,6 @@ NEWSYM headerhack
     jne .noromhead7
     mov byte[disablehdma],1
 .noromhead7
-
-    mov word[IRQHack],0
 
     ; Front Mission - -p 140
     mov esi,[romdata]
