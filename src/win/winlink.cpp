@@ -892,7 +892,7 @@ void ReleaseDirectInput()
       KeyboardInput = NULL;
    }
 
-   for(int i = 0; i < 4; i++)
+   for (int i=0; i<5; i++)
       if (JoystickInput[i])
       {
          JoystickInput[i]->Release();
