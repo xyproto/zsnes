@@ -204,7 +204,7 @@ int Main_Proc(void)
 		*/
 		case SDL_JOYBALLMOTION:
 		        CurrentJoy = event.jball.which;
-			if (event.jball.jball == 0) {
+			if (event.jball.ball == 0) {
 			        if (event.jball.xrel < -100) {
 			                pressed[0x100 + CurrentJoy*32 + 6] = 0;
 					pressed[0x100 + CurrentJoy*32 + 7] = 1;
