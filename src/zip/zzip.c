@@ -15,7 +15,20 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include "../gblhdr.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#ifdef __LINUX__
+#include <utime.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#endif
+#include <errno.h>
+#include <fcntl.h>
+
 #include "unzip.h"
 
 #define CASESENSITIVITY (0)
