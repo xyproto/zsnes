@@ -126,8 +126,6 @@ EXTSYM SplittedROM
 EXTSYM addOnStart
 EXTSYM addOnSize
 
-EXTSYM STPath, ST_Path, GNextPath, GNext_Path, SGPath, SG_Path
-
 EXTSYM SetaCmdEnable,setaramdata
 EXTSYM setaaccessbankr8,setaaccessbankw8,setaaccessbankr8a,setaaccessbankw8a
 EXTSYM setaaccessbankr16,setaaccessbankw16,setaaccessbankr16a,setaaccessbankw16a
@@ -3408,14 +3406,6 @@ NEWSYM loadfileGUI
 
     mov edx,fname+1
     mov dword[ZOpenFileName],edx
-
-    ;This is to get the C stuff to see these variables
-    mov ebx,STPath
-    mov [ST_Path],ebx
-    mov ebx,GNextPath
-    mov [GNext_Path],ebx
-    mov ebx,SGPath
-    mov [SG_Path],ebx
 
     pushad
     call loadROM

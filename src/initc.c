@@ -668,7 +668,9 @@ void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
   SplittedROM = true;
 }
 
-char *ST_Path, *GNext_Path, *SG_Path;
+extern char STPath;
+extern char GNextPath;
+extern char SGPath;
 void SplitSupport()
 {
   unsigned char *ROM = (unsigned char *)romdata;
@@ -680,7 +682,7 @@ void SplitSupport()
   {
     addOnStart = 0x200000;
     addOnSize = 0x80000;
-    SplitSetup(SG_Path, "SAMEGAME.ZIP", 1);
+    SplitSetup(&SGPath, "SAMEGAME.ZIP", 1);
   }          
 
   //SD Gundam G-Next add on  
@@ -689,7 +691,7 @@ void SplitSupport()
   {
     addOnStart = 0x400000;
     addOnSize = 0x80000;
-    SplitSetup(GNext_Path, "G-NEXT.ZIP", 2);
+    SplitSetup(&GNextPath, "G-NEXT.ZIP", 2);
     addOnStart = 0x200000;
   }          
 
@@ -698,7 +700,7 @@ void SplitSupport()
   {
     addOnStart = 0x100000;
     addOnSize = curromspace;
-    SplitSetup(ST_Path, "STBIOS.ZIP", 3);
+    SplitSetup(&STPath, "STBIOS.ZIP", 3);
   }          
 }
 
