@@ -16,11 +16,15 @@
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
+#ifdef __LINUX__
+#include <../gblhdr.h>
+#else
 #include <stdio.h>
 #include <stdarg.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#endif
 //#define DebugDSP1
 
 // uncomment some lines to test

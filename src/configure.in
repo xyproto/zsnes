@@ -15,23 +15,28 @@ dnl See also: remarks supplied in the debug checking area below
 
 AC_INIT(init.asm)
 echo -- Where is our compiler, and who are we compiling for?
-CFLAGS="-pipe"
+CFLAGS="-pipe -I."
 AC_PROG_CC
 AC_PATH_PROG(NASMPATH,nasm,[AC_MSG_ERROR(nasm 0.98 is required)])
-NASMD="$NASMD -w-orphan-labels"
+NFLAGS="$NFLAGS -w-orphan-labels"
 AC_PROG_INSTALL
 AC_CANONICAL_SYSTEM
 case "$target" in
-	*-*-linux* | *-*-*bsd*)
+	*-*-linux*)
 		CFLAGS="$CFLAGS -D__LINUX__"
-        	NASMD="$NASMD -D__LINUX__ -f elf"
+        	NFLAGS="$NFLAGS -D__LINUX__ -f elf"
+		;;
+	*-*-*bsd*)
+		CFLAGS="$CFLAGS -D__LINUX__ -D__FreeBSD__"
+		NFLAGS="$NFLAGS -D__LINUX__ -D__FreeBSD__ -f elf"
 		;;
 	*-*-cygwin* | *-*-*ming*)
 		CFLAGS="$CFLAGS -D__LINUX__"
-		NASMD="$NASMD -D__LINUX__ -f win32"
+		NFLAGS="$NFLAGS -D__LINUX__ -f win32"
 		ZSNESEXE=".exe"
 		;;
 	*)
+		AC_MSG_ERROR(This Target is Not Supported)
 		;;
 esac
 
@@ -41,7 +46,7 @@ echo -- Do we have X, and where is it? Needed for Mesa Checking
 
 AC_PATH_X
 CFLAGS="$CFLAGS -I$x_includes"
-LIBS="$LIBS -L$x_libraries"
+LDFLAGS="$LDFLAGS -L$x_libraries"
 
 dnl Checks for libraries.
 
@@ -49,7 +54,7 @@ echo -- Where is libSDL and zlib, and do we want/have libPNG and OpenGL support?
 
 AM_PATH_SDL(1.2.0,,[AC_MSG_ERROR(SDL >= 1.2.0 is required)])
 CFLAGS="$CFLAGS $SDL_CFLAGS"
-LIBS="$LIBS $SDL_LIBS"
+LDFLAGS="$LDFLAGS $SDL_LIBS"
 
 AC_MSG_CHECKING(for zlib)
 with_zlib=no
@@ -62,7 +67,7 @@ with_zlib=yes
 ])
 
 if test x$with_zlib = xyes; then
-	LIBS="$LIBS -lz"
+	LDFLAGS="$LDFLAGS -lz"
 	AC_MSG_RESULT(yes)
 else
 	AC_MSG_RESULT(no)
@@ -82,9 +87,9 @@ if test x$with_opengl != xno; then
 	])	
 	AC_MSG_RESULT($with_opengl)
 	if test x$with_opengl = xyes; then
-		LIBS="$LIBS -lGL"
+		LDFLAGS="$LDFLAGS -lGL"
 		CFLAGS="$CFLAGS -D__OPENGL__"
-		NASMD="$NASMD -D__OPENGL__"            
+		NFLAGS="$NFLAGS -D__OPENGL__"            
         	GL_DRAW="\${WINDIR}/gl_draw.o"
 	fi
 else
@@ -104,7 +109,7 @@ if test x$with_png != xno; then
 	])
 	AC_MSG_RESULT($with_png)
 	if test x$with_png = xyes; then
-		LIBS="$LIBS -lpng"
+		LDFLAGS="$LDFLAGS -lpng"
 	fi
 else
 	AC_MSG_RESULT(disabled by user)
@@ -120,7 +125,7 @@ if test x$debug = xyes; then
 	dnl enabled. 
 
 	CFLAGS="$CFLAGS -Wall -O0 -fno-omit-frame-pointer -ggdb3"
-	NASMD="$NASMD -g -s"
+	NFLAGS="$NFLAGS -g -s"
 	ZSNESEXE="zsnes-debug$ZSNESEXE"
 else
 	AC_MSG_RESULT(no)
@@ -130,55 +135,31 @@ else
 	dnl zsnes more easily deal with small instruction caches, and more
 	dnl effectivly use branch prediction.
 	
-	CFLAGS="$CFLAGS -s -Os -ffast-math -fomit-frame-pointer -fschedule-insns2"
+	CFLAGS="$CFLAGS -Os -ffast-math -fomit-frame-pointer -fschedule-insns2 -s"
 	ZSNESEXE="zsnes$ZSNESEXE"
 fi
 
-AC_ARG_ENABLE(force-386,[  --enable-force-386      Force 386 Optimization],wantforce=386)
-AC_ARG_ENABLE(force-486,[  --enable-force-486      Force 486 Optimization],wantforce=486)	
-AC_ARG_ENABLE(force-586,[  --enable-force-586      Force Pentium Optimization],wantforce=586)
-AC_ARG_ENABLE(force-686,[  --enable-force-686      Force PPro/P2 Optimization],wantforce=668)
-
 AC_MSG_CHECKING(which processor class to optimize for)
 if test x$debug != xyes; then
-	case "$wantforce" in
-		386)
-			AC_MSG_RESULT(forced to 386)
-			CFLAGS="$CFLAGS -march=i386"
-			;;
-		486)
-			AC_MSG_RESULT(forced to 486)
-			CFLAGS="$CFLAGS -march=i486"
-			;;
-		586)
-			AC_MSG_RESULT(forced to Pentium)
-			CFLAGS="$CFLAGS -march=pentium"
-			;;
-		686)
-			AC_MSG_RESULT(forced to PPro/P2)
-			CFLAGS="$CFLAGS -march=pentiumpro"
-			;;
-		*)
 			case "$target" in
 				i486-*-*)
 					CFLAGS="$CFLAGS -march=i486"
-					AC_MSG_RESULT(detected 486)
+					AC_MSG_RESULT(486)
 					;;
 				i586-*-*)
 					CFLAGS="$CFLAGS -march=pentium"
-					AC_MSG_RESULT(detected Pentium)
+					AC_MSG_RESULT(Pentium)
 					;;
 				i686-*-*)
 					CFLAGS="$CFLAGS -march=pentiumpro"
-					AC_MSG_RESULT(detected PPro/P2)
+					AC_MSG_RESULT(PPro/P2)
 					;;
 				*)
-					AC_MSG_RESULT(detected 386)
-					AC_MSG_WARN(*** This is probably not what you want use --enable-force-486/586/686)
+					AC_MSG_RESULT(386)
+					AC_MSG_WARN(*** This is probably not what you want use --target)
 					;;
 			esac
-			;;
-	esac
+
 else
 	AC_MSG_RESULT(no optimization because debug enabled)
 fi
@@ -186,22 +167,18 @@ fi
 dnl Checks for header files.
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h limits.h malloc.h strings.h sys/ioctl.h sys/time.h unistd.h)
+AC_CHECK_HEADERS(fcntl.h limits.h malloc.h sys/ioctl.h unistd.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
-AC_STRUCT_TM
+AC_CHECK_HEADERS(sys/time.h)
 
 dnl Checks for library functions.
-AC_FUNC_UTIME_NULL
-AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(getcwd gethostname mkdir mktime rmdir select socket)
-AC_SUBST(LIBS)
-AC_SUBST(NASMD)
 AC_SUBST(ZSNESEXE)
 AC_SUBST(GL_DRAW)
+AC_SUBST(NFLAGS)
 AC_OUTPUT(Makefile)
 echo 
 echo You may now type gmake to compile $ZSNESEXE
