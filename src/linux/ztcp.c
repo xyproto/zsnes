@@ -92,7 +92,11 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#ifndef __FreeBSD__
 #include <asm/ioctls.h> // for FIONREAD
+#else
+#include <sys/filio.h> // for FIONREAD
+#endif
 #else
 #include <windows.h>
 #include <winsock.h>

@@ -16,6 +16,9 @@
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include <stdio.h>
+#ifdef __FreeBSD__
+#include <sys/types.h>
+#endif
 #include <sys/mman.h>
 #include <limits.h>
 #include <unistd.h>
