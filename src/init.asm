@@ -5915,71 +5915,6 @@ NEWSYM CheckROMType
     EXTSYM BankCheck
     call BankCheck
 
-    mov esi,[romdata]
-    add esi,0FFC0h
-    mov byte[disablespcclr],0
-    mov eax,50205040h
-    or eax,0A000302h
-    cmp dword[esi],eax
-    jne .nospcdis
-    mov byte[disablespcclr],1
-.nospcdis
-    ; banks 0-3Fh
-    mov dword[memtabler8+3Fh*4],regaccessbankr8
-    mov dword[memtablew8+3Fh*4],regaccessbankw8
-    mov dword[memtabler16+3Fh*4],regaccessbankr16
-    mov dword[memtablew16+3Fh*4],regaccessbankw16
-    mov dword[memtabler8+0BFh*4],regaccessbankr8
-    mov dword[memtablew8+0BFh*4],regaccessbankw8
-    mov dword[memtabler16+0BFh*4],regaccessbankr16
-    mov dword[memtablew16+0BFh*4],regaccessbankw16
-    mov dword[memtabler8+70h*4],sramaccessbankr8
-    mov dword[memtablew8+70h*4],sramaccessbankw8
-    mov dword[memtabler16+70h*4],sramaccessbankr16
-    mov dword[memtablew16+70h*4],sramaccessbankw16
-    mov dword[memtabler8+71h*4],sramaccessbankr8
-    mov dword[memtablew8+71h*4],sramaccessbankw8
-    mov dword[memtabler16+71h*4],sramaccessbankr16
-    mov dword[memtablew16+71h*4],sramaccessbankw16
-    mov dword[memtabler8+72h*4],sramaccessbankr8
-    mov dword[memtablew8+72h*4],sramaccessbankw8
-    mov dword[memtabler16+72h*4],sramaccessbankr16
-    mov dword[memtablew16+72h*4],sramaccessbankw16
-    mov dword[memtabler8+73h*4],sramaccessbankr8
-    mov dword[memtablew8+73h*4],sramaccessbankw8
-    mov dword[memtabler16+73h*4],sramaccessbankr16
-    mov dword[memtablew16+73h*4],sramaccessbankw16
-    mov dword[memtabler8+78h*4],memaccessbankr8
-    mov dword[memtablew8+78h*4],memaccessbankw8
-    mov dword[memtabler16+78h*4],memaccessbankr16
-    mov dword[memtablew16+78h*4],memaccessbankw16
-    mov dword[memtabler8+79h*4],memaccessbankr8
-    mov dword[memtablew8+79h*4],memaccessbankw8
-    mov dword[memtabler16+79h*4],memaccessbankr16
-    mov dword[memtablew16+79h*4],memaccessbankw16
-
-    cmp byte[romtype],1
-    jne near .notlorom
-    cmp byte[SDD1Enable],1
-    je near .notlorom
-    mov dword[memtabler8+0F0h*4],sramaccessbankr8
-    mov dword[memtablew8+0F0h*4],sramaccessbankw8
-    mov dword[memtabler16+0F0h*4],sramaccessbankr16
-    mov dword[memtablew16+0F0h*4],sramaccessbankw16
-    mov dword[memtabler8+0F1h*4],sramaccessbankr8
-    mov dword[memtablew8+0F1h*4],sramaccessbankw8
-    mov dword[memtabler16+0F1h*4],sramaccessbankr16
-    mov dword[memtablew16+0F1h*4],sramaccessbankw16
-    mov dword[memtabler8+0F2h*4],sramaccessbankr8
-    mov dword[memtablew8+0F2h*4],sramaccessbankw8
-    mov dword[memtabler16+0F2h*4],sramaccessbankr16
-    mov dword[memtablew16+0F2h*4],sramaccessbankw16
-    mov dword[memtabler8+0F3h*4],sramaccessbankr8
-    mov dword[memtablew8+0F3h*4],sramaccessbankw8
-    mov dword[memtabler16+0F3h*4],sramaccessbankr16
-    mov dword[memtablew16+0F3h*4],sramaccessbankw16
-.notlorom
-
     ; Chip Detection
     mov byte[SFXEnable],0
     mov byte[C4Enable],0
@@ -6160,6 +6095,74 @@ NEWSYM CheckROMType
     jmp .endchpdtct
 .notBS
 .endchpdtct
+
+
+    ;Setup some Memmapping
+    mov esi,[romdata]
+    add esi,0FFC0h
+    mov byte[disablespcclr],0
+    mov eax,50205040h
+    or eax,0A000302h
+    cmp dword[esi],eax
+    jne .nospcdis
+    mov byte[disablespcclr],1
+.nospcdis
+    ; banks 0-3Fh
+    mov dword[memtabler8+3Fh*4],regaccessbankr8
+    mov dword[memtablew8+3Fh*4],regaccessbankw8
+    mov dword[memtabler16+3Fh*4],regaccessbankr16
+    mov dword[memtablew16+3Fh*4],regaccessbankw16
+    mov dword[memtabler8+0BFh*4],regaccessbankr8
+    mov dword[memtablew8+0BFh*4],regaccessbankw8
+    mov dword[memtabler16+0BFh*4],regaccessbankr16
+    mov dword[memtablew16+0BFh*4],regaccessbankw16
+    mov dword[memtabler8+70h*4],sramaccessbankr8
+    mov dword[memtablew8+70h*4],sramaccessbankw8
+    mov dword[memtabler16+70h*4],sramaccessbankr16
+    mov dword[memtablew16+70h*4],sramaccessbankw16
+    mov dword[memtabler8+71h*4],sramaccessbankr8
+    mov dword[memtablew8+71h*4],sramaccessbankw8
+    mov dword[memtabler16+71h*4],sramaccessbankr16
+    mov dword[memtablew16+71h*4],sramaccessbankw16
+    mov dword[memtabler8+72h*4],sramaccessbankr8
+    mov dword[memtablew8+72h*4],sramaccessbankw8
+    mov dword[memtabler16+72h*4],sramaccessbankr16
+    mov dword[memtablew16+72h*4],sramaccessbankw16
+    mov dword[memtabler8+73h*4],sramaccessbankr8
+    mov dword[memtablew8+73h*4],sramaccessbankw8
+    mov dword[memtabler16+73h*4],sramaccessbankr16
+    mov dword[memtablew16+73h*4],sramaccessbankw16
+    mov dword[memtabler8+78h*4],memaccessbankr8
+    mov dword[memtablew8+78h*4],memaccessbankw8
+    mov dword[memtabler16+78h*4],memaccessbankr16
+    mov dword[memtablew16+78h*4],memaccessbankw16
+    mov dword[memtabler8+79h*4],memaccessbankr8
+    mov dword[memtablew8+79h*4],memaccessbankw8
+    mov dword[memtabler16+79h*4],memaccessbankr16
+    mov dword[memtablew16+79h*4],memaccessbankw16
+
+    ;LoROM SRAM mapping, but not on the S-DD1
+    cmp byte[romtype],1
+    jne near .notlorom
+    cmp byte[SDD1Enable],1
+    je near .notlorom
+    mov dword[memtabler8+0F0h*4],sramaccessbankr8
+    mov dword[memtablew8+0F0h*4],sramaccessbankw8
+    mov dword[memtabler16+0F0h*4],sramaccessbankr16
+    mov dword[memtablew16+0F0h*4],sramaccessbankw16
+    mov dword[memtabler8+0F1h*4],sramaccessbankr8
+    mov dword[memtablew8+0F1h*4],sramaccessbankw8
+    mov dword[memtabler16+0F1h*4],sramaccessbankr16
+    mov dword[memtablew16+0F1h*4],sramaccessbankw16
+    mov dword[memtabler8+0F2h*4],sramaccessbankr8
+    mov dword[memtablew8+0F2h*4],sramaccessbankw8
+    mov dword[memtabler16+0F2h*4],sramaccessbankr16
+    mov dword[memtablew16+0F2h*4],sramaccessbankw16
+    mov dword[memtabler8+0F3h*4],sramaccessbankr8
+    mov dword[memtablew8+0F3h*4],sramaccessbankw8
+    mov dword[memtabler16+0F3h*4],sramaccessbankr16
+    mov dword[memtablew16+0F3h*4],sramaccessbankw16
+.notlorom
 
     cmp byte[DSP1Enable],1
     je .initdsp
@@ -6390,3 +6393,4 @@ NEWSYM outofmemoryerror2, db 'ROM IS TOO BIG.',0
 SECTION .text
 
 NEWSYM InitAsmEnd
+
