@@ -466,7 +466,7 @@ void obtaindir()
 		homedir = (char *)malloc(128);
 		getcwd(homedir, 128);
 	}
-	cfgdir = (char *)malloc(strlen(homedir)+strlen("/.zsnes"));	
+	cfgdir = (char *)malloc(strlen(homedir)+strlen("/.zsnes")+1);
 	strcpy(cfgdir, homedir);
 	strcat(cfgdir, "/.zsnes");
 	tmp = opendir(cfgdir);
