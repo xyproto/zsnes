@@ -1466,6 +1466,23 @@ NEWSYM headerhack
 
     mov esi,[romdata]
     add esi,07FC0h
+    cmp dword[esi],'HUMA'
+    jne .nothumangrandprix3
+    cmp dword[esi+4],'N GR'
+    jne .nothumangrandprix3
+    cmp dword[esi+8],'ANDP'
+    jne .nothumangrandprix3
+    mov byte[cycpb268],135
+    mov byte[cycpb358],157
+    mov byte[cycpbl2],125
+    mov byte[cycpblt2],125
+    mov byte[cycpbl],125
+    mov byte[cycpblt],125
+.nothumangrandprix3
+
+
+    mov esi,[romdata]
+    add esi,07FC0h
     cmp dword[esi],'Cu-O'
     jne .notcuonpa
     cmp dword[esi+4],'n-Pa'
