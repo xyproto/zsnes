@@ -69,7 +69,7 @@ NEWSYM zstart
 
 	call setnoise
 	call InitSPC
-	mov byte[soundon],1
+;        mov byte[soundon],1
 	call allocmem           ;allocate memory
 
 	;    xor eax,eax
