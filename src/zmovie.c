@@ -20,8 +20,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
-
 #ifdef __LINUX__
 #include "gblhdr.h"
 #define DIR_SLASH "/"
@@ -32,6 +30,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <ctype.h>
 #include <sys/stat.h>
 #include <zlib.h>
+#ifdef __WIN32__
+#include <io.h>
+#define ftruncate chsize
+#else
+#include <unstd.h>
+#endif
 #define DIR_SLASH "\\"
 #endif
 #include "gblvars.h"
@@ -156,7 +160,7 @@ struct zmv_header
   unsigned int frames;
   unsigned int rerecords;
   unsigned int removed_frames;
-  unsigned int slow50_frames;
+  unsigned int slow_frames;
   unsigned int key_combos;
   unsigned short internal_chapters;
   char author[20];
@@ -178,7 +182,7 @@ static void zmv_header_write(struct zmv_header *zmv_head, FILE *fp)
   fwrite4(zmv_head->frames, fp);
   fwrite4(zmv_head->rerecords, fp);
   fwrite4(zmv_head->removed_frames, fp);
-  fwrite4(zmv_head->slow50_frames, fp);
+  fwrite4(zmv_head->slow_frames, fp);
   fwrite4(zmv_head->key_combos, fp);
   fwrite2(zmv_head->internal_chapters, fp);
   fwrite(zmv_head->author, 20, 1, fp);
@@ -234,7 +238,7 @@ static bool zmv_header_read(struct zmv_header *zmv_head, FILE *fp)
   zmv_head->frames = fread4(fp);
   zmv_head->rerecords = fread4(fp);
   zmv_head->removed_frames = fread4(fp);
-  zmv_head->slow50_frames = fread4(fp);
+  zmv_head->slow_frames = fread4(fp);
   zmv_head->key_combos = fread4(fp);
   zmv_head->internal_chapters = fread2(fp);
   fread(zmv_head->author, 20, 1, fp);
@@ -400,6 +404,48 @@ static size_t internal_chapter_lesser(struct internal_chapter_buf *icb, size_t o
   return((lesser == 0) ? offset : lesser);
 }
 
+static void internal_chapter_delete_after(struct internal_chapter_buf *icb, size_t offset)
+{
+  if (icb->used)
+  {
+    size_t last_offset = 0;
+    if (icb->offsets[0] == offset)
+    {
+      last_offset = offset;
+    }
+    else
+    {
+      last_offset = internal_chapter_lesser(icb, offset);
+      if (last_offset == offset)
+      {
+        internal_chapter_free_chain(icb->next);
+        icb->next = 0;
+        icb->used = 0;
+        return;
+      }
+      if (internal_chapter_greater(icb, last_offset) == offset)
+      {
+        last_offset = offset;
+      }
+    }
+     
+    if (last_offset)
+    {
+      size_t buffer_pos = internal_chapter_pos(icb, last_offset);
+      size_t link = buffer_pos/INTERNAL_CHAPTER_BUF_LIM;
+
+      while (link--)
+      {
+        icb = icb->next;
+      }
+  
+      internal_chapter_free_chain(icb->next);
+      icb->next = 0;
+      icb->used = buffer_pos%INTERNAL_CHAPTER_BUF_LIM;
+    }
+  }
+}
+
 /*
 
 Shared var between record/replay functions
@@ -516,9 +562,7 @@ static void zmv_create(char *filename)
     }                                                                 \
   }
 
-extern bool SloMo50;
-
-static void zmv_record()
+static void zmv_record(bool slow)
 {
   unsigned char flag = 0;
   unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0 }; 
@@ -526,7 +570,7 @@ static void zmv_record()
   
   zmv_vars.header.frames++;
 
-  if (SloMo50)	{ zmv_vars.header.slow50_frames++; }
+  if (slow) { zmv_vars.header.slow_frames++; }
   
   RECORD_PAD(zmv_vars.last_joy_state.A, JoyAOrig, 7);
   RECORD_PAD(zmv_vars.last_joy_state.B, JoyBOrig, 6);
@@ -890,6 +934,17 @@ static void zmv_replay_finished()
   fclose(zmv_vars.fp);
 }
 
+static void zmv_replay_to_record()
+{
+  internal_chapter_free_chain(zmv_open_vars.external_chapters.next);  
+  zmv_vars.header.rerecords++;
+  zmv_vars.header.removed_frames += zmv_vars.header.frames - zmv_open_vars.frames_replayed;  
+  zmv_vars.header.frames = zmv_open_vars.frames_replayed;
+  internal_chapter_delete_after(&zmv_vars.internal_chapters, zmv_vars.header.frames);
+  zmv_vars.last_internal_chapter_offset = ftell(zmv_vars.fp); //Not correct, but this should work  
+  ftruncate(fileno(zmv_vars.fp), ftell(zmv_vars.fp));
+}
+
 static size_t zmv_frames_replayed()
 {
   return(zmv_open_vars.frames_replayed);
@@ -1066,14 +1121,18 @@ bool mzt_load(char *statename, bool playback)
 
             fseek(zmv_vars.fp, -(end_zmv_loc - zmv_vars.header.internal_chapters*4), SEEK_END);
             internal_chapter_read(&zmv_vars.internal_chapters, zmv_vars.fp, zmv_vars.header.internal_chapters);
+          
+            fseek(zmv_vars.fp, rewind_point, SEEK_SET);
+            zmv_vars.last_internal_chapter_offset = ftell(zmv_vars.fp); //Not correct, but this should work  
+            ftruncate(fileno(zmv_vars.fp), ftell(zmv_vars.fp));
           }
         }
         else
         {
           zmv_open_vars.frames_replayed = current_frame;
+          fseek(zmv_vars.fp, rewind_point, SEEK_SET);
         }
         
-        fseek(zmv_vars.fp, rewind_point, SEEK_SET);
         mzt_saved = true;
       }
       memcpy(statename+filename_len-3, FileExt, 3);
@@ -1288,9 +1347,11 @@ void Replay()
   }
 }
 
+extern bool SloMo50;
+
 void ProcessMovies()
 {
-  if (MovieProcessing == 2) { zmv_record(); }
+  if (MovieProcessing == 2) { zmv_record(SloMo50 ? true : false); }
   else { Replay(); }
 }
 
@@ -1373,6 +1434,12 @@ void MoviePlay()
 
 void MovieRecord()
 {
+  if (MovieProcessing == 1)
+  {
+    zmv_replay_to_record();
+    MovieProcessing = 2;
+  }
+  
   if (!MovieProcessing)
   {
     unsigned char FileExt[4];
