@@ -128,15 +128,11 @@ EXTSYM DSPMem
 EXTSYM InterSound
 EXTSYM NoiseData,SoundCompD,Voice0Disable,csounddisable,dssel,spcRamcmp
 EXTSYM cfgecho,Surround,SoundBufEn
-    EXTSYM echobuf
-    EXTSYM LowPassFilter
+EXTSYM echobuf
+EXTSYM LowPassFilter
 EXTSYM UseCubicSpline,NoiseDisTemp
 
 NEWSYM DspProcAsmStart
-
-
-
-
 
 tempstuff db 0
 ; MixEcho
