@@ -108,6 +108,9 @@ EXTSYM sramaccessbankr16,sramaccessbankr16s,sramaccessbankr8
 EXTSYM sramaccessbankr8s,sramaccessbankw16,sramaccessbankw16s
 EXTSYM sramaccessbankw8,sramaccessbankw8s,GenerateBank0TableSA1
 EXTSYM ScrDispl
+%ifdef __LINUX__
+EXTSYM LoadDir, popdir, pushdir
+%endif
 
 NEWSYM InitAsmStart
 
@@ -3098,6 +3101,11 @@ NEWSYM RetrieveDataIPS
 IPSSL dd 0
 
 NEWSYM PatchIPS
+%ifdef __LINUX__    
+    pushad
+    call pushdir
+    popad
+%endif
     mov byte[IPSPatched],0
     mov dword[IPSOffset],0
     cmp byte[Header512],0
@@ -3133,7 +3141,11 @@ NEWSYM PatchIPS
     dec eax
     cmp eax,fname
     je .failfound
+%ifdef __LINUX__
+    cmp byte[eax],'/'
+%else
     cmp byte[eax],'\'
+%endif
     je .failfound
     cmp byte[eax],'.'
     je .foundokay
@@ -3143,9 +3155,20 @@ NEWSYM PatchIPS
 .foundokay
     mov ebx,[eax]
     mov [Prevextn],ebx
+%ifdef __LINUX__
+    mov dword[eax],'.ips'
+%else
     mov dword[eax],'.IPS'
+%endif
     mov byte[eax+4],0
     push eax
+%ifdef __LINUX__
+    cmp byte [ZipSupport], 1
+    je .nochangedir
+    mov ebx,LoadDir
+    call Change_Dir
+.nochangedir:
+%endif
     mov edx,fname+1
     call Open_File
     jc near .failed
@@ -3253,6 +3276,11 @@ NEWSYM PatchIPS
 ;    mov byte[esi+edx],0
 ;    inc edx
 ;    loop .ltop
+%ifdef __LINUX__
+    pushad
+    call popdir
+    popad
+%endif
     ret
 .ipsokaymsg db 'IPS PATCHED.',0
 .ipsnokaymsg db 'IPS IS CORRUPT.',0
@@ -4238,7 +4266,7 @@ NEWSYM loadfileGUI
     jnc near .nextfile
     dec byte[edi-1]
 .nogdformat
-
+    mov byte[TextFile], 1
     mov byte[IPSPatched],0
     cmp byte[ZipSupport],1
     jne .nottempdirdel

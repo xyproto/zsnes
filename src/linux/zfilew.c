@@ -507,6 +507,22 @@ void GetFilename()
 	strcpy(&fnames, tmp);
 	fnames = size;
 }
-	
+
+char *olddir = NULL;
+
+
+void pushdir()
+{
+	olddir = (char *)malloc(128);
+	getcwd(olddir, 128);
+}	
+
+void popdir()
+{
+	CHPath = olddir;
+	ZFileCHDir();
+	free(olddir);
+	olddir = NULL;
+}
 #endif
 
