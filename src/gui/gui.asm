@@ -604,7 +604,7 @@ NEWSYM GrayscaleMode, db 0
 NEWSYM MouseWheel, db 1
 NEWSYM SmallMsgText, db 0
 NEWSYM AllowMultipleInst, db 0
-NEWSYM FilteredGUI, db 0
+NEWSYM FilteredGUI, db 1
 NEWSYM BilinearFilter, db 0
 NEWSYM TripleBufferWin, db 0
 
