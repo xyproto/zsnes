@@ -58,9 +58,9 @@ WINOBJ=${WINDIR}/copyvwin.o \
 WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/modemrtn.o ${DOSDIR}/vesa2.o\
 	${DOSDIR}/initvid.o ${DOSDIR}/sw.o ${DOSDIR}/gppro.o ${DOSDIR}/vesa12.o
 
-JMAOBJ=${JMADIR}/7zlzma.o ${JMADIR}/aribitcd.o ${JMADIR}/crc32.o ${JMADIR}/iiostrm.o\
+JMAOBJ=${JMADIR}/7zlzma.o ${JMADIR}/crc32.o ${JMADIR}/iiostrm.o\
        ${JMADIR}/inbyte.o ${JMADIR}/jma.o ${JMADIR}/lzma.o ${JMADIR}/lzmadec.o\
-       ${JMADIR}/outbyte.o ${JMADIR}/winout.o ${JMADIR}/zsnesjma.o
+       ${JMADIR}/winout.o ${JMADIR}/zsnesjma.o
 
 ZIPOBJ=${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
@@ -196,14 +196,12 @@ endmem.o: endmem.asm macros.mac
 ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
 
 ${JMADIR}/7zlzma.o: ${JMADIR}/7zlzma.cpp
-${JMADIR}/aribitcd.o: ${JMADIR}/aribitcd.cpp
 ${JMADIR}/crc32.o: ${JMADIR}/crc32.cpp ${JMADIR}/crc32.h
 ${JMADIR}/iiostrm.o: ${JMADIR}/iiostrm.cpp
 ${JMADIR}/inbyte.o: ${JMADIR}/inbyte.cpp
 ${JMADIR}/jma.o: ${JMADIR}/jma.cpp ${JMADIR}/jma.h ${JMADIR}/crc32.h ${JMADIR}/portable.h
 ${JMADIR}/lzma.o: ${JMADIR}/lzma.cpp
 ${JMADIR}/lzmadec.o: ${JMADIR}/lzmadec.cpp
-${JMADIR}/outbyte.o: ${JMADIR}/outbyte.cpp
 ${JMADIR}/winout.o: ${JMADIR}/winout.cpp
 ${JMADIR}/zsnesjma.o: ${JMADIR}/zsnesjma.cpp ${JMADIR}/zsnesjma.h ${JMADIR}/jma.h
 

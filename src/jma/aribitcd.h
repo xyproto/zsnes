@@ -11,57 +11,6 @@ const UINT32 kBitModelTotal = (1 << kNumBitModelTotalBits);
 
 const int kNumMoveReducingBits = 2;
 
-
-class CPriceTables
-{
-public:
-  UINT32 m_StatePrices[kBitModelTotal >> kNumMoveReducingBits];
-  CPriceTables();
-};
-
-extern CPriceTables g_PriceTables;
-
-
-/////////////////////////////
-// CBitModel
-
-template <int aNumMoveBits>
-class CBitModel
-{
-public:
-  UINT32 m_Probability;
-  void UpdateModel(UINT32 aSymbol)
-  {
-    /*
-    m_Probability -= (m_Probability + ((aSymbol - 1) & ((1 << aNumMoveBits) - 1))) >> aNumMoveBits;
-    m_Probability += (1 - aSymbol) << (kNumBitModelTotalBits - aNumMoveBits);
-    */
-    if (aSymbol == 0)
-      m_Probability += (kBitModelTotal - m_Probability) >> aNumMoveBits;
-    else
-      m_Probability -= (m_Probability) >> aNumMoveBits;
-  }
-public:
-  void Init() { m_Probability = kBitModelTotal / 2; }
-};
-
-template <int aNumMoveBits>
-class CBitEncoder: public CBitModel<aNumMoveBits>
-{
-public:
-  void Encode(CRangeEncoder *aRangeEncoder, UINT32 aSymbol)
-  {
-    aRangeEncoder->EncodeBit(CBitModel<aNumMoveBits>::m_Probability, kNumBitModelTotalBits, aSymbol);
-    CBitModel<aNumMoveBits>::UpdateModel(aSymbol);
-  }
-  UINT32 GetPrice(UINT32 aSymbol) const
-  {
-    return g_PriceTables.m_StatePrices[
-      (((CBitModel<aNumMoveBits>::m_Probability - aSymbol) ^ ((-(int)aSymbol))) & (kBitModelTotal - 1)) >> kNumMoveReducingBits];
-  }
-};
-
-
 template <int aNumMoveBits>
 class CBitDecoder: public CBitModel<aNumMoveBits>
 {
