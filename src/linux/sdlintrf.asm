@@ -618,7 +618,6 @@ NEWSYM Get_File_Date
     ;int 21h
     ret
 
-
 RefreshKeybBuffer:
     call JoyRead
     mov ebx,[HoldKey]
@@ -673,15 +672,12 @@ RefreshKeybBuffer:
     cmp al,[Keybhead]
     je .none
     mov al,[Keybtail]
-    mov cl,[KeyConvTable+ebx]
-    cmp byte[pressed+2Ah],0
-    jne .shift
-    cmp byte[pressed+36h],0
-    je .noshift
-.shift
-    mov cl,[KeyConvTableS+ebx]
-.noshift
-    mov [HoldKeyBuf+eax],cl
+;    mov cl,[KeyConvTable+ebx]
+;    cmp byte[shiftptr],0
+;    je .noshift
+;    mov cl,[KeyConvTableS+ebx]
+;.noshift
+;    mov [HoldKeyBuf+eax],cl
     inc al
     and al,0Fh
     mov [Keybtail],al
@@ -712,17 +708,17 @@ NEWSYM Check_Key
 ;    xor eax,eax
 ;    mov byte [keyboardhit],al
 ;    pop eax
-    pushad
+;    pushad
 ;    call kbhit
-    call RefreshKeybBuffer
-    mov byte[wfkey],0
-    mov al,[Keybhead]
-    cmp al,[Keybtail]
-    je .nokeys
-    mov byte[wfkey],0FFh
-.nokeys
-    popad
-    mov al,[wfkey]
+;    call RefreshKeybBuffer
+;    mov byte[wfkey],0
+;    mov al,[Keybhead]
+;    cmp al,[Keybtail]
+;    je .nokeys
+;    mov byte[wfkey],0FFh
+;.nokeys
+;    popad
+;    mov al,[wfkey]
 ;    mov ah,0Bh
 ;    int 21h
     ret
@@ -749,57 +745,57 @@ NEWSYM Get_Key
     xor al,al
     ret
 
-    pushad
-.nonewkey
-    call RefreshKeybBuffer
-    xor eax,eax
-    mov al,[Keybhead]
-    cmp al,[Keybtail]
-    je .nonewkey
-    mov bl,[HoldKeyBuf+eax]
-    test bl,80h
-    jz .notupperkey
-    xor bl,bl
-    sub byte[HoldKeyBuf+eax],80h
-    jmp .yesupperkey
-.notupperkey
-    inc al
-    and al,0Fh
-    mov [Keybhead],al
-.yesupperkey
-;    call getch
-    mov [wfkey],bl
-    popad
-    mov al,[wfkey]
-    ;mov ah,7
-    ;int 21h
-    ; return key in al
-    ret
+;    pushad
+;.nonewkey
+;    call RefreshKeybBuffer
+;    xor eax,eax
+;    mov al,[Keybhead]
+;    cmp al,[Keybtail]
+;    je .nonewkey
+;    mov bl,[HoldKeyBuf+eax]
+;    test bl,80h
+;    jz .notupperkey
+;    xor bl,bl
+;    sub byte[HoldKeyBuf+eax],80h
+;    jmp .yesupperkey
+;.notupperkey
+;    inc al
+;    and al,0Fh
+;    mov [Keybhead],al
+;.yesupperkey
+;;    call getch
+;    mov [wfkey],bl
+;    popad
+;    mov al,[wfkey]
+;    ;mov ah,7
+;    ;int 21h
+;    ; return key in al
+;    ret
 
-KeyConvTable
-   db 255,27 ,'1','2','3','4','5','6'  ; 00h
-   db '7','8','9','0','-','=',8  ,9 
-   db 'Q','W','E','R','T','Y','U','I'  ; 10h
-   db 'O','P','[',']',13 ,255,'A','S'
-   db 'D','F','G','H','J','K','L',';'  ; 20h
-   db 39 ,'`',255,'\','Z','X','C','V'
-   db 'B','N','M',',','.','/',255,'*'  ; 30h
-   db 255,32 ,255,255,255,255,255,255
-   db 255,255,255,255,255,255,255,255  ; 40h
-   db 200,201,202,203,204,205,206,207
-   db 208,209,210,211,255,255,255,255  ; 50h
-KeyConvTableS
-   db 255,27 ,'!','@','#','$','%','^'  ; 00h
-   db '&','*','(',')','_','+',8  ,9 
-   db 'Q','W','E','R','T','Y','U','I'  ; 10h
-   db 'O','P','{','}',13 ,255,'A','S'
-   db 'D','F','G','H','J','K','L',':'  ; 20h
-   db '"','~',255,'|','Z','X','C','V'
-   db 'B','N','M','<','>','?',255,'*'  ; 30h
-   db 255,32 ,255,255,255,255,255,255
-   db 255,255,255,255,255,255,255,255  ; 40h
-   db 200,201,202,203,204,205,206,207
-   db 208,209,210,211,255,255,255,255  ; 50h
+;KeyConvTable
+;   db 255,27 ,'1','2','3','4','5','6'  ; 00h
+;   db '7','8','9','0','-','=',8  ,9 
+;   db 'Q','W','E','R','T','Y','U','I'  ; 10h
+;   db 'O','P','[',']',13 ,255,'A','S'
+;   db 'D','F','G','H','J','K','L',';'  ; 20h
+;   db 39 ,'`',255,'\','Z','X','C','V'
+;   db 'B','N','M',',','.','/',255,'*'  ; 30h
+;   db 255,32 ,255,255,255,255,255,255
+;   db 255,255,255,255,255,255,255,255  ; 40h
+;   db 200,201,202,203,204,205,206,207
+;   db 208,209,210,211,255,255,255,255  ; 50h
+;KeyConvTableS
+;   db 255,27 ,'!','@','#','$','%','^'  ; 00h
+;   db '&','*','(',')','_','+',8  ,9 
+;   db 'Q','W','E','R','T','Y','U','I'  ; 10h
+;   db 'O','P','{','}',13 ,255,'A','S'
+;   db 'D','F','G','H','J','K','L',':'  ; 20h
+;   db '"','~',255,'|','Z','X','C','V'
+;   db 'B','N','M','<','>','?',255,'*'  ; 30h
+;   db 255,32 ,255,255,255,255,255,255
+;   db 255,255,255,255,255,255,255,255  ; 40h
+;   db 200,201,202,203,204,205,206,207
+;   db 208,209,210,211,255,255,255,255  ; 50h
 
 ;    mov dl,[SRAMDrive]
 ;    mov ebx,SRAMDir
@@ -908,20 +904,20 @@ NEWSYM Change_Dir
     ret
 
     ; dl = drive, ebx = dir
-    push ebx
-    mov ah,0Eh
-    int 21h
-    mov ah,3Bh
-    mov edx,gotoroot
-    int 21h
-    pop ebx
-    mov edx,ebx
-    cmp byte[edx],0
-    je .nodir
-    mov ah,3Bh
-    int 21h
-.nodir
-    ret
+;    push ebx
+;    mov ah,0Eh
+;    int 21h
+;    mov ah,3Bh
+;    mov edx,gotoroot
+;    int 21h
+;    pop ebx
+;    mov edx,ebx
+;    cmp byte[edx],0
+;    je .nodir
+;    mov ah,3Bh
+;    int 21h
+;.nodir
+;    ret
 
 ;    mov ebx,LoadDir
 ;    mov edx,LoadDrive
@@ -952,16 +948,16 @@ NEWSYM Get_Dir
 ;    mov [edx],al
     ret
 
-    push edx
-    mov ah,47h
-    mov dl,0
-    mov esi,ebx
-    int 21h
-    mov ah,19h
-    int 21h
-    pop edx
-    mov [edx],al
-    ret
+;    push edx
+;    mov ah,47h
+;    mov dl,0
+;    mov esi,ebx
+;    int 21h
+;    mov ah,19h
+;    int 21h
+;    pop edx
+;    mov [edx],al
+;    ret
 
 NEWSYM Get_First_Entry
     ; cx = attributes, edx = pointer to wildcard
@@ -982,10 +978,10 @@ NEWSYM Get_First_Entry
     popad
     stc
     ret
-    mov ah,4Eh
-    mov al,0
-    int 21h
-    ret
+;    mov ah,4Eh
+;    mov al,0
+;    int 21h
+;    ret
 
 NEWSYM Get_Next_Entry
     mov dword[DTALocPos],DTALoc
@@ -1000,9 +996,9 @@ NEWSYM Get_Next_Entry
     popad
     stc
     ret
-    mov ah,04Fh
-    int 21h
-    ret
+;    mov ah,04Fh
+;    int 21h
+;    ret
 
 NEWSYM Set_DTA_Address
     ; Only needed for dos stuff
@@ -1072,7 +1068,7 @@ NEWSYM InitPreGame   ; Executes before starting/continuing a game
     ; set up interrupt handler
     ; get old handler pmode mode address
     ; Process stuff such as sound init, interrupt initialization
-    ret
+;    ret
 
 NEWSYM SetupPreGame   ; Executes after pre-game init, can execute multiple
                       ; times after a single InitPreGame
@@ -1100,88 +1096,88 @@ NEWSYM changepal  ; 8-bit palette set (changes only)
 NEWSYM displayfpspal
     ret
 
-    mov al,128
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,63
-    out dx,al
-    out dx,al
-    out dx,al
-    mov al,128+64
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,0
-    out dx,al
-    out dx,al
-    out dx,al
-    ret
+;    mov al,128
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    mov al,63
+;    out dx,al
+;    out dx,al
+;    out dx,al
+;    mov al,128+64
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    mov al,0
+;    out dx,al
+;    out dx,al
+;    out dx,al
+;    ret
 
 NEWSYM superscopepal
     ret
 
-    mov al,128+16
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,63
-    out dx,al
-    xor al,al
-    out dx,al
-    out dx,al
-    ret
+;    mov al,128+16
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    mov al,63
+;    out dx,al
+;    xor al,al
+;    out dx,al
+;    out dx,al
+;    ret
 
 NEWSYM saveselectpal
     ret
 
     ; set palette of colors 128,144, and 160 to white, blue, and red
-    mov al,128
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,63
-    out dx,al
-    out dx,al
-    out dx,al
-    mov al,144
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    xor al,al
-    out dx,al
-    out dx,al
-    mov al,50
-    out dx,al
-    mov al,160
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,45
-    out dx,al
-    xor al,al
-    out dx,al
-    out dx,al
-    mov al,176
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,47
-    out dx,al
-    xor al,al
-    out dx,al
-    out dx,al
-    mov al,208
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,50
-    out dx,al
-    mov al,25
-    out dx,al
-    xor al,al
-    out dx,al
-    ret
+;    mov al,128
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    mov al,63
+;    out dx,al
+;    out dx,al
+;    out dx,al
+;    mov al,144
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    xor al,al
+;    out dx,al
+;    out dx,al
+;    mov al,50
+;    out dx,al
+;    mov al,160
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    mov al,45
+;    out dx,al
+;    xor al,al
+;    out dx,al
+;    out dx,al
+;    mov al,176
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    mov al,47
+;    out dx,al
+;    xor al,al
+;    out dx,al
+;    out dx,al
+;    mov al,208
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    mov al,50
+;    out dx,al
+;    mov al,25
+;    out dx,al
+;    xor al,al
+;    out dx,al
+;    ret
 
 ; ** init video mode functions **
 NEWSYM firstvideo, dd 1
@@ -1504,9 +1500,6 @@ NEWSYM WMouseMoveX, dd 0
 NEWSYM WMouseMoveY, dd 0
 NEWSYM WMouseButton, dd 0
 
-
-
-
 NEWSYM Get_MouseData         ; Returns both pressed and coordinates
     ; bx : bit 0 = left button, bit 1 = right button
     ; cx = Mouse X Position, dx = Mouse Y Position
@@ -1757,7 +1750,6 @@ InitializeGfxStuff:
          push eax
          call Init_2xSaIMMXW
          pop eax
-
 
         ret
 

@@ -214,8 +214,13 @@ GUIgetcurrentinput:
     jne near .notwinport2
 ;    GUIgetprkeys 0C8h,72
 ;    GUIgetprkeys 0D0h,80
+%ifdef __LINUX__
+    GUIgetprkeys 05Ch,75
+    GUIgetprkeys 05Eh,77
+%else
     GUIgetprkeys 0CBh,75
     GUIgetprkeys 0CDh,77
+%endif
     GUIgetprkeys 0C9h,73
     GUIgetprkeys 0D1h,81
     GUIgetprkeys 0C7h,71
@@ -1770,7 +1775,11 @@ GUILoadKeys:
 .nextl
     cmp byte[ebx],':'
     je .donel
+%ifdef __LINUX__
+    cmp byte[ebx],'/'
+%else
     cmp byte[ebx],'\'
+%endif
     je .donel
     inc ebx
     cmp byte[ebx],0

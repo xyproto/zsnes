@@ -298,12 +298,6 @@ void ProcessKeyBuf(int scancode)
     if ((scancode>=SDLK_KP0) && (scancode<=SDLK_KP9)) {
       accept=true; vkeyval=scancode-SDLK_KP0+'0';
     }
-    if (scancode==SDLK_KP2) {
-      accept=true; vkeyval=256+80;
-    }
-    if (scancode==SDLK_KP8) {
-      accept=true; vkeyval=256+72;
-    }
     if (!shiftptr){
       switch (scancode) {
 	case SDLK_MINUS: vkeyval='-'; accept=true; break;
@@ -339,9 +333,9 @@ void ProcessKeyBuf(int scancode)
       case SDLK_PAGEUP: vkeyval=256+73; accept=true; break;
       case SDLK_UP: vkeyval=256+72; accept=true; break;
       case SDLK_HOME: vkeyval=256+71; accept=true; break;
-      case SDLK_RIGHT: vkeyval=SDLK_KP6-SDLK_KP0+'0';; accept=true; break;
+      case SDLK_RIGHT: vkeyval=256+77; accept=true; break;
       //case 12: vkeyval=256+76; accept=true; break;
-      case SDLK_LEFT: vkeyval=SDLK_KP4-SDLK_KP0+'0'; accept=true; break;
+      case SDLK_LEFT: vkeyval=256+75; accept=true; break;
       case SDLK_PAGEDOWN: vkeyval=256+81; accept=true; break;
       case SDLK_DOWN: vkeyval=256+80; accept=true; break;
       case SDLK_END: vkeyval=256+79; accept=true; break;
@@ -351,7 +345,7 @@ void ProcessKeyBuf(int scancode)
       case SDLK_KP_DIVIDE: vkeyval='/'; accept=true; break;
       case SDLK_KP_PERIOD: vkeyval='.'; accept=true; break;
     }
-    //    printf("vkeyval : %i\n", vkeyval);
+
     if (accept){
       KeyBuffer[CurKeyPos]=vkeyval;
       CurKeyPos++;
