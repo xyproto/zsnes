@@ -152,6 +152,9 @@ enum zmv_video_modes { zmv_vm_ntsc, zmv_vm_pal };
 #define INT_CHAP_SIZE (cur_zst_size+4+8)
 #define EXT_CHAP_SIZE (cur_zst_size+4+8+4)
 
+#define INT_CHAP_INDEX_SIZE (zmv_vars.header.internal_chapters*4)
+#define EXT_CHAP_BLOCK_SIZE (zmv_open_vars.external_chapter_count*EXT_CHAP_SIZE + 2) 
+
 struct zmv_header
 {
   char magic[3];
@@ -689,13 +692,14 @@ static bool zmv_open(char *filename)
     fseek(zmv_vars.fp, -2, SEEK_END);
     zmv_open_vars.external_chapter_count = fread2(zmv_vars.fp);
     
-    fseek(zmv_vars.fp, -(zmv_vars.header.internal_chapters*4 + zmv_open_vars.external_chapter_count*EXT_CHAP_SIZE + 2), SEEK_END);
+    fseek(zmv_vars.fp, -(INT_CHAP_INDEX_SIZE + EXT_CHAP_BLOCK_SIZE), SEEK_END);
 
     internal_chapter_read(&zmv_vars.internal_chapters, zmv_vars.fp, zmv_vars.header.internal_chapters);
     
     for (i = 0; i < zmv_open_vars.external_chapter_count; i++)
     {
-      fseek(zmv_vars.fp, EXT_CHAP_SIZE-4, SEEK_CUR);
+      //Seek to 4 bytes before end of chapter, since last 4 bytes is where it contains offset value
+      fseek(zmv_vars.fp, EXT_CHAP_SIZE-4, SEEK_CUR);  
       internal_chapter_add_offset(&zmv_open_vars.external_chapters, fread4(zmv_vars.fp));
     }
     
@@ -792,11 +796,7 @@ static bool zmv_next_chapter()
     }
     else
     {
-      size_t ext_chapter_loc = zmv_open_vars.external_chapter_count;
-      ext_chapter_loc -= internal_chapter_pos(&zmv_open_vars.external_chapters, next);
-      ext_chapter_loc *= EXT_CHAP_SIZE;
-      ext_chapter_loc += 2;
-      
+      size_t ext_chapter_loc = EXT_CHAP_BLOCK_SIZE - internal_chapter_pos(&zmv_open_vars.external_chapters, next)*EXT_CHAP_SIZE;
       fseek(zmv_vars.fp, -(ext_chapter_loc), SEEK_END);
       zst_load(zmv_vars.fp);
       zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
@@ -881,11 +881,7 @@ static void zmv_prev_chapter()
   }
   else
   {
-    size_t ext_chapter_loc = zmv_open_vars.external_chapter_count;
-    ext_chapter_loc -= internal_chapter_pos(&zmv_open_vars.external_chapters, prev);
-    ext_chapter_loc *= EXT_CHAP_SIZE;
-    ext_chapter_loc += 2;
-      
+    size_t ext_chapter_loc = EXT_CHAP_BLOCK_SIZE - internal_chapter_pos(&zmv_open_vars.external_chapters, prev)*EXT_CHAP_SIZE;  
     fseek(zmv_vars.fp, -(ext_chapter_loc), SEEK_END);
     zst_load(zmv_vars.fp);
     zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
