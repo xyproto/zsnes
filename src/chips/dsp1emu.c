@@ -233,7 +233,7 @@ void C4Op0D()
 void InitDSP(void)
 {
 #ifdef __OPT__
-	unsigned short i;
+        unsigned int i;
 	CosTable2 = malloc(INCR*sizeof(double));
 	SinTable2 = malloc(INCR*sizeof(double));
 	for (i=0; i<INCR; i++){
@@ -449,10 +449,6 @@ void DSPOp02()
    Op02CX=(short)(Op02CXF=ViewerX+ViewerX1*NumberOfSlope);
    Op02CY=(short)(Op02CYF=ViewerY+ViewerY1*NumberOfSlope);
 
-   ViewerXc=ViewerX;//-Op02FX);
-   ViewerYc=ViewerY;//-Op02FY);
-   ViewerZc=ViewerZ;//-Op02FZ);
-
    Op02VOF=0x0000;
    ReversedLES=0;
    Op02LESb=Op02LES;
@@ -479,12 +475,23 @@ void DSPOp02()
 
    CXdistance=1/tan(NAzsB);
 
+   ViewerXc=Op02FX;
+   ViewerYc=Op02FY;
+   ViewerZc=Op02FZ;
+
+   CenterX = (-sin(NAasB)*ViewerZc*CXdistance)+ViewerXc;
+   CenterY = (cos(NAasB)*ViewerZc*CXdistance)+ViewerYc;
+   Op02CX = (short)CenterX;
+   Op02CY = (short)CenterY;
+
+   ViewerXc=ViewerX;//-Op02FX);
+   ViewerYc=ViewerY;//-Op02FY);
+   ViewerZc=ViewerZ;//-Op02FZ);
+
    CenterX = (-sin(NAasB)*ViewerZc*CXdistance)+ViewerXc;
    if (CenterX<-32768) CenterX = -32768; if (CenterX>32767) CenterX=32767;
-   Op02CX = (short)CenterX;
    CenterY = (cos(NAasB)*ViewerZc*CXdistance)+ViewerYc;
    if (CenterY<-32768) CenterY = -32768; if (CenterY>32767) CenterY=32767;
-   Op02CY = (short)CenterY;
 
    TValDebug = (NAzsB*65536/6.28);
    TValDebug2 = ScrDispl;
@@ -1344,7 +1351,10 @@ void DSPOp18()
 {
    double x,y,z,r;
    x=Op18X; y=Op18Y; z=Op18Z; r=Op18R;
-   Op18D=(short)(x*x+y*y+z*z-r*r);
+   r = (x*x+y*y+z*z-r*r);
+   if (r>32767) r=32767;
+   if (r<-32768) r=-32768;
+   Op18D=(short)r;
    #ifdef DebugDSP1
       Log_Message("OP18 X: %d Y: %d Z: %d R: %D DIFF %d",Op18X,Op18Y,Op18Z,Op18D);
    #endif
