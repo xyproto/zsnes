@@ -68,3 +68,37 @@ section .text
 %endrep
 %endmacro
 %endif
+
+
+; macro more or less similar to STUB_FUNCTION
+; you can call it without argument, 
+; or with a string arg which will be displayed
+%macro STUB_ASM 0-1 "STUB_ASM"
+%ifndef __PRINTF__
+%define __PRINTF__
+EXTSYM printf
+EXTSYM fflush
+EXTSYM stdout
+%endif
+[section .data] 
+%%string: db %1, 0
+%%strformat: db '%s in %s line %u',13, 10,0
+%%filename: db __FILE__, 0
+__SECT__
+;stubasm:
+pushad
+mov eax, __LINE__
+push eax
+mov eax, %%filename
+push eax
+mov eax, %%string
+push eax
+mov eax, %%strformat
+push eax
+call printf
+mov eax, [stdout]
+push eax
+call fflush
+add esp, 20
+popad
+%endmacro
