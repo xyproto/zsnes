@@ -3006,12 +3006,12 @@ NEWSYM hextestoutput
     EXTSYM Op14Zr,Op14Xr,Op14Yr,Op14U,Op14F,Op14L
     EXTSYM Op02CX,Op02CY,bg1scrolx,bg1scroly
     EXTSYM TValDebug,TValDebug2,curhdma
-    mov al,[curhdma]
+    mov al,[winbg1en]
     call outputhex
     mov esi,216*288+32+16
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[TValDebug]
+    mov al,[winenabs]
     call outputhex
     mov esi,216*288+70
     add esi,[vidbuffer]
