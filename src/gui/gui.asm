@@ -1536,7 +1536,7 @@ NEWSYM StartGUI
     mov byte[CheatSearchStatus],0
     cmp byte[newgfx16b],0
     je .nong
-    mov ecx,255*296
+    mov ecx,255*144
     mov eax,[vidbufferofsb]
 .loop
     mov dword[eax],0
@@ -2331,7 +2331,7 @@ NEWSYM StartGUI
     xor eax,eax
     rep stosd
 
-    mov ecx,256*296
+    mov ecx,256*144
     mov eax,[vidbufferofsb]
 .loopcl
     mov dword[eax],0
