@@ -25,7 +25,8 @@ DELETECOMMAND=rm
 SLASH=/
 ASM=nasm
 ASMFLAGSORIG=-O1
-CFLAGSORIG=-O3 -march=i586 -ffast-math -fomit-frame-pointer -fno-unroll-loops -Wall -Wno-unused
+CFLAGSORIG=-march=i586 -ffast-math -fomit-frame-pointer -fno-unroll-loops -Wall -Wno-unused
+COPT=-O3
 LIBSORIG=-lz -lpng
 
 ifeq ($(PLATFORM),)
@@ -163,10 +164,10 @@ endif
 .SUFFIXES: .c .cpp .asm
 
 %.o: %.c
-	${CC} ${CFLAGS} -o $@ -c $<
+	${CC} ${COPT} ${CFLAGS} -o $@ -c $<
 
 %.o: %.cpp
-	${CPPC} ${CFLAGS} -o $@ -c $<
+	${CPPC} ${COPT} ${CFLAGS} -o $@ -c $<
 
 %.o: %.asm
 	${ASM} ${ASMFLAGS} -o $@ $<
@@ -289,7 +290,7 @@ ${WINDIR}/ztcp.o: $<
 ${WINDIR}/zsnes.o: ${WINDIR}/zsnes.rc
 	${WINDRES} --include-dir ${WINDIR} ${WINDIR}/zsnes.rc -o${WINDIR}/zsnes.o
 ${WINDIR}/winlink.o: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
-	${CPPC} ${CFLAGS} -masm=intel -O0 -o $@ -c ${WINDIR}/winlink.cpp
+	${CPPC} -O0 ${CFLAGS} -masm=intel -o $@ -c ${WINDIR}/winlink.cpp
 
 clean: 
 	${DELETECOMMAND} ${EXE}

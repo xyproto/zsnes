@@ -22,7 +22,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #define DIRECTINPUT_VERSION 0x0800
 #define DIRECTSOUND_VERSION 0x0800
 
@@ -236,6 +235,14 @@ extern "C" void FreeDirectX()
    exit(0);
 }
 
+extern "C" void DXLoadError()
+{
+  if (MessageBox(NULL, "Sorry, you need to install or reinstall DirectX v8.0 or higher\nto use ZSNESW.\nWould you like to go to the DirectX homepage?", "Error", MB_ICONINFORMATION | MB_YESNO) == IDYES)
+  {
+    ShellExecute(NULL, NULL, "http://www.microsoft.com/directx/", NULL, NULL, 0);
+  }
+  FreeDirectX();
+}
 
 extern "C" void ImportDirectX()
 {
@@ -243,9 +250,7 @@ extern "C" void ImportDirectX()
 
    if (hM_dinput8 == NULL)
    {
-      if (MessageBox(NULL, "Sorry, you need DirectX v8.0 or higher to use\nZSNESW. Would you like to go to the DirectX homepage?", "Error", MB_ICONINFORMATION | MB_YESNO) == IDYES)
-         ShellExecute(NULL, NULL, "http://www.microsoft.com/directx/", NULL, NULL, 0);
-      FreeDirectX();
+     DXLoadError();
    }
 
    pDirectInput8Create = (lpDirectInput8Create) GetProcAddress(hM_dinput8, dinput8_imp);
@@ -255,7 +260,7 @@ extern "C" void ImportDirectX()
       char err[256];
       wsprintf(err,"Failed to import %s:%s", dinput8_dll, dinput8_imp);
       MessageBox(NULL, err, "Error", MB_ICONERROR);
-      FreeDirectX();
+      DXLoadError();
    }
 
    hM_ddraw = LoadLibrary(ddraw_dll);
@@ -265,7 +270,7 @@ extern "C" void ImportDirectX()
       char err[256];
       wsprintf(err,"Failed to import %s",ddraw_dll);
       MessageBox(NULL, err,"Error",MB_ICONERROR);
-      FreeDirectX();
+      DXLoadError();
    }
 
    pDirectDrawCreateEx = (lpDirectDrawCreateEx) GetProcAddress(hM_ddraw, ddraw_imp);
@@ -275,7 +280,7 @@ extern "C" void ImportDirectX()
       char err[256];
       wsprintf(err,"Failed to import %s:%s", ddraw_dll, ddraw_imp);
       MessageBox(NULL, err, "Error", MB_ICONERROR);
-      FreeDirectX();
+      DXLoadError();
    }
 
    hM_dsound = LoadLibrary(dsound_dll);
@@ -285,7 +290,7 @@ extern "C" void ImportDirectX()
       char err[256];
       wsprintf(err,"Failed to import %s",dsound_dll);
       MessageBox(NULL, err,"Error",MB_ICONERROR);
-      FreeDirectX();
+      DXLoadError();
    }
 
    pDirectSoundCreate8 = (lpDirectSoundCreate8) GetProcAddress(hM_dsound, dsound_imp);
@@ -295,23 +300,17 @@ extern "C" void ImportDirectX()
       char err[256];
       wsprintf(err,"Failed to import %s:%s", dsound_dll, dsound_imp);
       MessageBox(NULL, err, "Error", MB_ICONERROR);
-      FreeDirectX();
+      DXLoadError();
    }
 }
 
-//Nach: I'm not sure why we have such a number for NTSC, but MinGW
-//is using floating point arithmetic with it and going really slow.
-//So for MinGW I set it to the same idea as PAL
-#ifdef __GNUC__
-#define UPDATE_TICKS_GAME (1000/60)
-#else
-#define UPDATE_TICKS_GAME (1000.855001760297741789468390082/60)      // milliseconds per world update
-#endif
-#define UPDATE_TICKS_GAMEPAL (1000/50)   // milliseconds per world update
-#define UPDATE_TICKS_GUI (1000/36)       // milliseconds per world update
-#define UPDATE_TICKS_UDP (1000/60)       // milliseconds per world update
+// milliseconds per world update
+#define UPDATE_TICKS_GAME (1000.855001760297741789468390082/60.0)
+#define UPDATE_TICKS_GAMEPAL (20.0)
+#define UPDATE_TICKS_GUI (1000.0/36.0)
+#define UPDATE_TICKS_UDP (1000.0/60.0)
 
-__int64 start, end, freq, update_ticks_pc, start2, end2, update_ticks_pc2;
+double start, end, freq, update_ticks_pc, start2, end2, update_ticks_pc2;
 
 void ReleaseDirectDraw();
 void ReleaseDirectSound();
@@ -1777,15 +1776,15 @@ extern unsigned char romispal;
 
 void Start60HZ(void)
 {
-   update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000;
+   update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000.0;
 
    if (romispal==1)
    {
-      update_ticks_pc = UPDATE_TICKS_GAMEPAL * freq / 1000;
+      update_ticks_pc = UPDATE_TICKS_GAMEPAL * freq / 1000.0;
    }
    else
    {
-      update_ticks_pc = (__int64) (UPDATE_TICKS_GAME * freq / 1000);
+      update_ticks_pc = UPDATE_TICKS_GAME * freq / 1000.0;
    }
 
    QueryPerformanceCounter((LARGE_INTEGER*)&start);
@@ -1806,8 +1805,8 @@ void Stop60HZ(void)
 
 void Start36HZ(void)
 {
-   update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000;
-   update_ticks_pc = UPDATE_TICKS_GUI * freq / 1000;
+   update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000.0;
+   update_ticks_pc = UPDATE_TICKS_GUI * freq / 1000.0;
 
    QueryPerformanceCounter((LARGE_INTEGER*)&start);
    QueryPerformanceCounter((LARGE_INTEGER*)&start2);
@@ -3039,12 +3038,12 @@ void FrameSemaphore()
 {
    if (T60HZEnabled == 1)
    {
-      int delay;
+      double delay;
       QueryPerformanceCounter((LARGE_INTEGER*)&end);
 
-      delay = (int) ((update_ticks_pc - (end - start)) * 1000 / freq) - 3;
+      delay = ((update_ticks_pc - (end - start)) * 1000.0 / freq) - 3.0;
    
-      if (delay>0) WaitForSingleObject(hLock, delay);
+      if (delay>0.0) WaitForSingleObject(hLock, (unsigned int)delay);
 
    }
 }
@@ -3057,4 +3056,3 @@ void ZsnesPage()
 }
 
 }
-
