@@ -156,7 +156,11 @@ void PatchUsingIPS()
   
   if (patchfile) //Regular file, not Zip
   { 
-    if (!initPatch()) { goto IPSDone; }
+    if (!initPatch()) 
+    { 
+      deinitPatch(); //Needed because if it didn't fully init, some things could have
+      return;
+    }
   }
 
   //Yup, it's goto! :)

@@ -2978,6 +2978,11 @@ NEWSYM showinfogui
     jb .notntsc2
     mov dword[CSStatus3+6], 'NTSC'
 .notntsc2
+    mov dword[CSStatus3+16], '    '
+    cmp byte[IPSPatched],1
+    jne .notpatched
+    mov dword[CSStatus3+16], 'IPS '
+.notpatched    
     mov dword[CSStatus+29],'NORM'
     mov dword[CSStatus+33],'AL  '
     cmp byte[SA1Enable],0
