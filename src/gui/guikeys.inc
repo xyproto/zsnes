@@ -864,7 +864,7 @@ GUIOptionKeys:
     mov byte[MultiTap],0
 .mtap
 .nousepl34
-    cmp dh,'S'
+    cmp dh,'I'
     jne .noswfix
     xor byte[SidewinderFix],1
 .noswfix

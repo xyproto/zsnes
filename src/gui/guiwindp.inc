@@ -1381,7 +1381,7 @@ DisplayGUIOption:
     GUIOuttextwin2u 4,26,44,GUIOptionText4,0
     GUIOuttextwin2u 4,26,54,GUIOptionText5,0
 %ifdef __MSDOS__
-    GUIOuttextwin2u 4,26,64,GUIOptionText6,0
+    GUIOuttextwin2u 4,26,64,GUIOptionText6,1
 %endif
 %ifdef __WIN32__
     GUIOuttextwin2u 4,26,64,GUIOptionText6b,0
