@@ -42,7 +42,6 @@ EXTSYM ZFileTellHandle,ZFileTell
 EXTSYM ZFFTimeFName,ZFTime,ZFDate,ZFileGetFTime
 EXTSYM GetTime
 EXTSYM GetDate
-EXTSYM keyboardhit
 EXTSYM GUIkeydelay2
 EXTSYM ZFileMKDir,ZFileCHDir,ZFileRMDir,CHPath,MKPath,RMPath
 EXTSYM ZFileGetDir,DriveNumber,DirName
@@ -1684,10 +1683,8 @@ NEWSYM WinErrorC
     call WinErrorC2
     ret
 
+; Not supported in Linux
 NEWSYM GotoHomepage
-    pushad
-    call ZsnesPage
-    popad
     ret
 
 EXTSYM SystemTimewHour

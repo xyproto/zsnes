@@ -41,7 +41,6 @@ DWORD Moving=0;
 DWORD SoundBufferSize=1024*18;
 DWORD FirstSound=1;
 
-int AllowDefault=0;
 int SoundEnabled=1;
 
 DWORD FirstActivate = 1;
@@ -313,7 +312,6 @@ BOOL InputDeAcquire(void)
 }
 
 extern "C" {
-unsigned char keyboardhit=0;
 void initwinvideo();
 void DosExit(void);
 extern BYTE GUIOn2;

@@ -43,7 +43,6 @@ EXTSYM ZFFTimeFName,ZFTime,ZFDate,ZFileGetFTime
 EXTSYM GetTime
 EXTSYM GetDate
 extsym kbhit
-extsym keyboardhit
 extsym GUIkeydelay2
 ;extsym _kbhit
 ;EXTSYM _getch
@@ -584,11 +583,6 @@ NEWSYM Check_Key
     mov al,0FFh
     ret
     ; returns 0 if there are no keys in the keyboard buffer, 0xFF otherwise
-;    mov al,byte [keyboardhit]
-;    push eax
-;    xor eax,eax
-;    mov byte [keyboardhit],al
-;    pop eax
     pushad
 ;    call kbhit
     call RefreshKeybBuffer

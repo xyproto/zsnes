@@ -28,7 +28,6 @@ extern unsigned char cvidmode;
 extern SDL_Surface *surface;
 extern int SurfaceX, SurfaceY;
 extern int SurfaceLocking;
-extern DWORD BitDepth;
 
 extern void LinuxExit();
 
@@ -73,13 +72,10 @@ BOOL sw_start(int width, int height, int req_depth, int FullScreen)
     SDL_WM_SetCaption ("ZSNES Linux","ZSNES");
     SDL_ShowCursor(0);
 
-    BitDepth = surface->format->BitsPerPixel;
     // Check hardware for 565/555
     GBitMask = surface->format->Gmask;
-
-    if(BitDepth == 16 && GBitMask != 0x07E0) {
+    if(GBitMask != 0x07E0) {
         converta = 1;
-	//Init_2xSaI(555);
     } else {
         converta = 0;
     }

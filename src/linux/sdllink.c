@@ -1,56 +1,79 @@
+/* Copyright (C) 1997-2002 ZSNES Team
+* 
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either
+* version 2 of the License, or (at your option) any later
+* version.
+* 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*
+*/
+
 #include "gblhdr.h"
 #include "sw_draw.h"
 #include "gl_draw.h"
 
-#define BYTE  unsigned char
-#define WORD  unsigned short
-#define DWORD unsigned long
-
-typedef enum
-{ FALSE = 0, TRUE = !FALSE }
-BOOL;
-typedef enum vidstate_e { vid_null, vid_none, vid_soft, vid_gl } vidstate_t;
+typedef unsigned char BYTE;
+typedef unsigned short WORD;
+typedef unsigned long DWORD;
 typedef Uint32 UINT32;
 typedef long long _int64;
 typedef long long LARGE_INTEGER;
 
-#define STUB_FUNCTION fprintf(stderr,"STUB: %s at " __FILE__ ", line %d, thread %d\n",__FUNCTION__,__LINE__,getpid())
+typedef enum { FALSE = 0, TRUE = 1 } BOOL;
+typedef enum vidstate_e { vid_null, vid_none, vid_soft, vid_gl } vidstate_t;
 
 // SOUND RELATED VARIABLES
-// DWORD SoundBufferSize = 1; Not used in linux port
-DWORD FirstSound = 1;
-int AllowDefault = 0;
 int SoundEnabled = 1;
 BYTE PrevStereoSound;
 DWORD PrevSoundQuality;
+DWORD BufferLeftOver = 0;	/* should we clear these on sound reset? */
+short Buffer[1800 * 2];
+
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
+extern int DSPBuffer[];
 
-// SDL VIDEO VARIABLES
+/* NETWORK RELATED VARIABLES */
+extern int packettimeleft[256];
+extern int PacketCounter;
+extern int CounterA;
+extern int CounterB;
+
+/* VIDEO VARIABLES */
 SDL_Surface *surface;
 int SurfaceLocking = 0;
 int SurfaceX, SurfaceY;
-
-// VIDEO VARIABLES
 static DWORD WindowWidth = 256;
 static DWORD WindowHeight = 224;
 static DWORD FullScreen = 0;
 static vidstate_t sdl_state = vid_null;
 static int UseOpenGL = 0;
+static const int BitDepth = 16;
+DWORD FirstVid = 1;
+
+extern BYTE GUIWFVID[];
 extern unsigned char cvidmode;
-DWORD BitDepth = 16;
-// JOYSTICK AND KEYBOARD INPUT
+
+/* JOYSTICK AND KEYBOARD INPUT */
 SDL_Joystick *JoystickInput[5];
-//DWORD CurrentJoy = 0;
-unsigned char keyboardhit = 0;
 int shiftptr = 0;
 DWORD numlockptr;
+
 extern unsigned char pressed[];
 extern int CurKeyPos;
 extern int CurKeyReadPos;
 extern int KeyBuffer[16];
 
-// MOUSE INPUT
+/* MOUSE INPUT */
 float MouseMinX = 0;
 float MouseMaxX = 256;
 float MouseMinY = 0;
@@ -61,31 +84,42 @@ int MouseMove2X, MouseMove2Y;
 Uint8 MouseButton;
 float MouseXScale = 1.0;
 float MouseYScale = 1.0;
-
 DWORD LastUsedPos = 0;
 DWORD CurMode = -1;
+
 extern BYTE GUIOn2;
 static BYTE IsActivated = 1;
 
-//#define UPDATE_TICKS_GAME (1000.855001760297741789468390082/60.0)	// milliseconds per world update
+/* TIMER VARIABLES/MACROS */
 #define UPDATE_TICKS_GAME (1000/59.95)	// milliseconds per world update
-//#define UPDATE_TICKS_GAMEPAL (1000/50.0)// milliseconds per world update
 #define UPDATE_TICKS_GAMEPAL (20)// milliseconds per world update
 #define UPDATE_TICKS_GUI (1000/36.0)	// milliseconds per world update
-//#define UPDATE_TICKS_GUI (20)	// milliseconds per world update
 #define UPDATE_TICKS_UDP (1000/60)	// milliseconds per world update
 
+int T60HZEnabled = 0;
+int T36HZEnabled = 0;
+short SystemTimewHour;
+short SystemTimewMinute;
+short SystemTimewSecond;
 Uint32 end, end2;
 double start, start2;
 double update_ticks_pc, update_ticks_pc2;
 
+extern unsigned char romispal;
+
+/* FUNCTION DECLARATIONS */
+void clearwin (void);
 void drawscreenwin(void);
 void initwinvideo();
 void ProcessKeyBuf(int scancode);
 void LinuxExit(void);
+void UpdateSound(void *userdata, Uint8 * stream, int len);
 
+extern int GUI36hzcall(void);
+extern int Game60hzcall(void);
+extern void SoundProcess();
 #ifdef __OPENGL__
-extern void gl_clearwin();
+extern void gl_clearwin(void);
 #endif
 
 static void adjustMouseXScale(void)
@@ -102,7 +136,6 @@ int Main_Proc(void)
 {
 	int j;
 	SDL_Event event;
-	//Uint8 JoyButton;
 
 	while (SDL_PollEvent(&event))
 	{
@@ -271,7 +304,6 @@ int Main_Proc(void)
 				break;
 
 			case SDL_JOYAXISMOTION:
-			    //CurrentJoy = event.jaxis.which;
 				for (j = 0; j < 3; j++)
 				{
 					if (event.jaxis.axis == j)
@@ -302,15 +334,11 @@ int Main_Proc(void)
 				break;
 
 			case SDL_JOYBUTTONDOWN:
-			    //CurrentJoy = event.jbutton.which;
-			    //JoyButton = event.jbutton.button;
 				pressed[0x100 + event.jbutton.which * 32 + 16 +
 					event.jbutton.button] = 1;
 				break;
 
 			case SDL_JOYBUTTONUP:
-			    //CurrentJoy = event.jbutton.which;
-			    //JoyButton = event.jbutton.button;
 				pressed[0x100 + event.jbutton.which * 32 + 16 +
 					event.jbutton.button] = 0;
 				break;
@@ -342,16 +370,8 @@ int Main_Proc(void)
 		}
 	}
 
-	/* TODO - fix this later
-	   if(pressed[0x38]!=0&&pressed[0x3E]!=0)
-	   LinuxExit();
-	   if(pressed[0x38]!=0&&pressed[0x1c]!=0)
-	   SwitchFullScreen();
-	 */
 	return TRUE;
 }
-
-#define true 1
 
 void ProcessKeyBuf(int scancode)
 {
@@ -364,7 +384,7 @@ void ProcessKeyBuf(int scancode)
 	    (scancode == SDLK_BACKSPACE) || (scancode == SDLK_RETURN) ||
 	    (scancode == SDLK_TAB))
 	{
-		accept = true;
+		accept = 1;
 		vkeyval = scancode;
 	}
 	if ((scancode >= '0') && (scancode <= '9'))
@@ -392,7 +412,7 @@ void ProcessKeyBuf(int scancode)
 	{
 		if (numlockptr)
 		{
-			accept = true;
+			accept = 1;
 			vkeyval = scancode - SDLK_KP0 + '0';
 		}
 		else
@@ -400,15 +420,15 @@ void ProcessKeyBuf(int scancode)
 
 			switch (scancode)
 			{
-				case SDLK_KP9: vkeyval = 256 + 73; accept = true; break;
-				case SDLK_KP8: vkeyval = 256 + 72; accept = true; break;
-				case SDLK_KP7: vkeyval = 256 + 71; accept = true; break;
-				case SDLK_KP6: vkeyval = 256 + 77; accept = true; break;
-				case SDLK_KP5: vkeyval = 256 + 76; accept = true; break;
-				case SDLK_KP4: vkeyval = 256 + 75; accept = true; break;
-				case SDLK_KP3: vkeyval = 256 + 81; accept = true; break;
-				case SDLK_KP2: vkeyval = 256 + 80; accept = true; break;
-				case SDLK_KP1: vkeyval = 256 + 79; accept = true; break;
+				case SDLK_KP9: vkeyval = 256 + 73; accept = 1; break;
+				case SDLK_KP8: vkeyval = 256 + 72; accept = 1; break;
+				case SDLK_KP7: vkeyval = 256 + 71; accept = 1; break;
+				case SDLK_KP6: vkeyval = 256 + 77; accept = 1; break;
+				case SDLK_KP5: vkeyval = 256 + 76; accept = 1; break;
+				case SDLK_KP4: vkeyval = 256 + 75; accept = 1; break;
+				case SDLK_KP3: vkeyval = 256 + 81; accept = 1; break;
+				case SDLK_KP2: vkeyval = 256 + 80; accept = 1; break;
+				case SDLK_KP1: vkeyval = 256 + 79; accept = 1; break;
 			}
 		}		// end no-numlock
 	}			// end testing of keypad
@@ -416,54 +436,49 @@ void ProcessKeyBuf(int scancode)
 	{
 		switch (scancode)
 		{
-			case SDLK_MINUS:        vkeyval = '-'; accept = true; break;
-			case SDLK_EQUALS:       vkeyval = '='; accept = true; break;
-			case SDLK_LEFTBRACKET:  vkeyval = '['; accept = true; break;
-			case SDLK_RIGHTBRACKET: vkeyval = ']'; accept = true; break;
-			case SDLK_SEMICOLON:    vkeyval = ';'; accept = true; break;
-				// ??? - DDOI
-				//case 222: vkeyval=39; accept = true; break;
-				//case 220: vkeyval=92; accept = true; break;
-			case SDLK_COMMA:        vkeyval = ','; accept = true; break;
-			case SDLK_PERIOD:       vkeyval = '.'; accept = true; break;
-			case SDLK_SLASH:        vkeyval = '/'; accept = true; break;
-			case SDLK_QUOTE:        vkeyval = '`'; accept = true; break;
+			case SDLK_MINUS:        vkeyval = '-'; accept = 1; break;
+			case SDLK_EQUALS:       vkeyval = '='; accept = 1; break;
+			case SDLK_LEFTBRACKET:  vkeyval = '['; accept = 1; break;
+			case SDLK_RIGHTBRACKET: vkeyval = ']'; accept = 1; break;
+			case SDLK_SEMICOLON:    vkeyval = ';'; accept = 1; break;
+			case SDLK_COMMA:        vkeyval = ','; accept = 1; break;
+			case SDLK_PERIOD:       vkeyval = '.'; accept = 1; break;
+			case SDLK_SLASH:        vkeyval = '/'; accept = 1; break;
+			case SDLK_QUOTE:        vkeyval = '`'; accept = 1; break;
 		}
 	}
 	else
 	{
 		switch (scancode)
 		{
-			case SDLK_MINUS:        vkeyval = '_'; accept = true; break;
-			case SDLK_EQUALS:       vkeyval = '+'; accept = true; break;
-			case SDLK_LEFTBRACKET:  vkeyval = '{'; accept = true; break;
-			case SDLK_RIGHTBRACKET: vkeyval = '}'; accept = true; break;
-			case SDLK_SEMICOLON:    vkeyval = ':'; accept = true; break;
-			case SDLK_QUOTE:        vkeyval = '"'; accept = true; break;
-			case SDLK_COMMA:        vkeyval = '<'; accept = true; break;
-			case SDLK_PERIOD:       vkeyval = '>'; accept = true; break;
-			case SDLK_SLASH:        vkeyval = '?'; accept = true; break;
-			case SDLK_BACKQUOTE:    vkeyval = '~'; accept = true; break;
-			case SDLK_BACKSLASH:    vkeyval = '|'; accept = true; break;
+			case SDLK_MINUS:        vkeyval = '_'; accept = 1; break;
+			case SDLK_EQUALS:       vkeyval = '+'; accept = 1; break;
+			case SDLK_LEFTBRACKET:  vkeyval = '{'; accept = 1; break;
+			case SDLK_RIGHTBRACKET: vkeyval = '}'; accept = 1; break;
+			case SDLK_SEMICOLON:    vkeyval = ':'; accept = 1; break;
+			case SDLK_QUOTE:        vkeyval = '"'; accept = 1; break;
+			case SDLK_COMMA:        vkeyval = '<'; accept = 1; break;
+			case SDLK_PERIOD:       vkeyval = '>'; accept = 1; break;
+			case SDLK_SLASH:        vkeyval = '?'; accept = 1; break;
+			case SDLK_BACKQUOTE:    vkeyval = '~'; accept = 1; break;
+			case SDLK_BACKSLASH:    vkeyval = '|'; accept = 1; break;
 		}
 	}
-	// TODO Figure out what the rest these are supposed to be - DDOI
 	switch (scancode)
 	{
-		case SDLK_PAGEUP:      vkeyval = 256 + 73; accept = true; break;
-		case SDLK_UP:          vkeyval = 256 + 72; accept = true; break;
-		case SDLK_HOME:        vkeyval = 256 + 71; accept = true; break;
-		case SDLK_RIGHT:       vkeyval = 256 + 77; accept = true; break;
-			//case 12: vkeyval = 256+76; accept = true; break;
-		case SDLK_LEFT:        vkeyval = 256 + 75; accept = true; break;
-		case SDLK_PAGEDOWN:    vkeyval = 256 + 81; accept = true; break;
-		case SDLK_DOWN:        vkeyval = 256 + 80; accept = true; break;
-		case SDLK_END:         vkeyval = 256 + 79; accept = true; break;
-		case SDLK_KP_PLUS:     vkeyval = '+'; accept = true; break;
-		case SDLK_KP_MINUS:    vkeyval = '-'; accept = true; break;
-		case SDLK_KP_MULTIPLY: vkeyval = '*'; accept = true; break;
-		case SDLK_KP_DIVIDE:   vkeyval = '/'; accept = true; break;
-		case SDLK_KP_PERIOD:   vkeyval = '.'; accept = true; break;
+		case SDLK_PAGEUP:      vkeyval = 256 + 73; accept = 1; break;
+		case SDLK_UP:          vkeyval = 256 + 72; accept = 1; break;
+		case SDLK_HOME:        vkeyval = 256 + 71; accept = 1; break;
+		case SDLK_RIGHT:       vkeyval = 256 + 77; accept = 1; break;
+		case SDLK_LEFT:        vkeyval = 256 + 75; accept = 1; break;
+		case SDLK_PAGEDOWN:    vkeyval = 256 + 81; accept = 1; break;
+		case SDLK_DOWN:        vkeyval = 256 + 80; accept = 1; break;
+		case SDLK_END:         vkeyval = 256 + 79; accept = 1; break;
+		case SDLK_KP_PLUS:     vkeyval = '+'; accept = 1; break;
+		case SDLK_KP_MINUS:    vkeyval = '-'; accept = 1; break;
+		case SDLK_KP_MULTIPLY: vkeyval = '*'; accept = 1; break;
+		case SDLK_KP_DIVIDE:   vkeyval = '/'; accept = 1; break;
+		case SDLK_KP_PERIOD:   vkeyval = '.'; accept = 1; break;
 	}
 
 	if (accept)
@@ -475,14 +490,11 @@ void ProcessKeyBuf(int scancode)
 	}
 }
 
-void UpdateSound(void *userdata, Uint8 * stream, int len);
-
 int InitSound(void)
 {
 	SDL_AudioSpec wanted;
 	const int samptab[7] = { 1, 1, 2, 4, 2, 4, 4 };
 	const int freqtab[7] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
-
 
 	SDL_CloseAudio();
 
@@ -509,7 +521,6 @@ int InitSound(void)
 
 	wanted.samples = samptab[SoundQuality] * 128 * wanted.channels;
 	wanted.format = AUDIO_S16LSB;
-	//wanted.format = AUDIO_S16;
 	wanted.userdata = NULL;
 	wanted.callback = UpdateSound;
 
@@ -533,14 +544,15 @@ int ReInitSound(void)
 
 BOOL InitJoystickInput(void)
 {
-    int i; int max_num_joysticks;
+	int i, max_num_joysticks;
 
 	for (i = 0; i < 5; i++)
 		JoystickInput[i] = NULL;
+
 	// If it is possible to use SDL_NumJoysticks
 	// before initialising SDL_INIT_JOYSTICK then
 	// this call can be replaced with SDL_InitSubSystem
-    max_num_joysticks = SDL_NumJoysticks();
+	max_num_joysticks = SDL_NumJoysticks();
 	if (!max_num_joysticks)
 	{
 		printf("ZSNES could not find any joysticks.\n");
@@ -548,6 +560,7 @@ BOOL InitJoystickInput(void)
 		return FALSE;
 	}
 	SDL_JoystickEventState(SDL_ENABLE);
+
 	if (max_num_joysticks > 5) max_num_joysticks = 5;
 	for (i = 0; i < max_num_joysticks; i++)
 	{
@@ -615,20 +628,6 @@ void endgame()
 	LinuxExit();
 }
 
-int i;
-int count, x, count2;
-DWORD Temp1;
-DWORD SurfBufD;
-DWORD CurrentPos;
-DWORD WritePos;
-DWORD SoundBufD;
-DWORD SoundBufD2;
-DWORD T60HZEnabled = 0;
-DWORD T36HZEnabled = 0;
-short *Sound;
-
-//void WinUpdateDevices(); function removed since it was empty
-extern unsigned char romispal;
 
 void Start60HZ(void)
 {
@@ -644,8 +643,6 @@ void Start60HZ(void)
 
 	start = SDL_GetTicks();
 	start2 = SDL_GetTicks();
-	//   QueryPerformanceCounter((LARGE_INTEGER*)&start);
-	//   QueryPerformanceCounter((LARGE_INTEGER*)&start2);
 	T36HZEnabled = 0;
 	T60HZEnabled = 1;
 }
@@ -659,8 +656,6 @@ void Start36HZ(void)
 {
 	update_ticks_pc2 = UPDATE_TICKS_UDP;
 	update_ticks_pc = UPDATE_TICKS_GUI;
-	//   QueryPerformanceCounter((LARGE_INTEGER*)&start);
-	//   QueryPerformanceCounter((LARGE_INTEGER*)&start2);
 
 	start = SDL_GetTicks();
 	start2 = SDL_GetTicks();
@@ -672,11 +667,6 @@ void Stop36HZ(void)
 {
 	T36HZEnabled = 0;
 }
-
-DWORD FirstVid = 1;
-DWORD FirstFull = 1;
-extern BYTE GUIWFVID[];
-void clearwin();
 
 void initwinvideo(void)
 {
@@ -778,15 +768,6 @@ void initwinvideo(void)
 		ReInitSound();
 }
 
-extern int DSPBuffer[];
-extern int packettimeleft[256];
-extern int PacketCounter;
-extern int CounterA;
-extern int CounterB;
-extern void SoundProcess();
-extern int GUI36hzcall(void);
-extern int Game60hzcall(void);
-
 void CheckTimers(void)
 {
 	int i;
@@ -849,10 +830,6 @@ void CheckTimers(void)
 		}
 	}
 }
-
-/* should we clear these on sound reset? */
-DWORD BufferLeftOver = 0;
-short Buffer[1800 * 2];
 
 void UpdateSound(void *userdata, Uint8 * stream, int len)
 {
@@ -1030,15 +1007,6 @@ void SetMouseY(int Y)
 {
 	MouseY = Y;
 }
-
-void ZsnesPage()
-{
-	system("netscape -remote 'openURL(http://www.zsnes.com/)'");
-}
-
-short SystemTimewHour;
-short SystemTimewMinute;
-short SystemTimewSecond;
 
 void GetLocalTime()
 {
