@@ -46,8 +46,8 @@ EXTSYM GUIkeydelay2
 EXTSYM ZFileMKDir,ZFileCHDir,ZFileRMDir,CHPath,MKPath,RMPath
 EXTSYM ZFileGetDir,DriveNumber,DirName
 EXTSYM DTALoc,DTALocPos,ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
-EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
-EXTSYM NoSoundReinit,soundon,DSPDisable,SBInt,NoSoundReinit,PICMaskP,SBIrq
+EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o
+EXTSYM NoSoundReinit,soundon,DSPDisable,NoSoundReinit
 EXTSYM SBHandler,InitSB,handler8h,handler9h,init60hz,Interror,init18_2hz,DeInitSPC
 EXTSYM Start60HZ
 EXTSYM pressed
