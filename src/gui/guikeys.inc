@@ -1157,6 +1157,8 @@ GUIVideoKeys:
     cmp byte[GUITBWVID+eax],0
     je near .notriplebufferwin
     xor byte[TripleBufferWin],1
+    mov byte[vsyncon],0
+    mov byte[cfgvsync],0
 .notriplebufferwin
     cmp dh,'T'
     jne .notriplebuffer
@@ -1165,6 +1167,8 @@ GUIVideoKeys:
     cmp byte[GUITBVID+ebx],0
     je .notriplebuffer
     xor byte[Triplebufen],1
+    mov byte[vsyncon],0
+    mov byte[cfgvsync],0
 .notriplebuffer
     cmp dh,'G'
     jne .nograyscale
@@ -1176,6 +1180,12 @@ GUIVideoKeys:
     xor byte[vsyncon],1
     mov al,[vsyncon]
     mov [cfgvsync],al
+%ifdef __WIN32__
+    mov byte[TripleBufferWin],0
+%endif
+%ifdef __MSDOS__
+    mov byte[Triplebufen],0
+%endif
 .novsync
 %endif
     ret

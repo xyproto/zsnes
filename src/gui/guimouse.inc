@@ -1338,6 +1338,20 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
+%macro GUIClickCButtonT 4
+    cmp eax,%1+1
+    jl %%noclick
+    cmp edx,%2+3
+    jl %%noclick
+    cmp eax,%1+6
+    jg %%noclick
+    cmp edx,%2+8
+    jg %%noclick
+    xor %3,1
+    mov %4,0
+%%noclick
+%endmacro
+
 %macro GUISlidebarPostImpl 13 ; x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
     cmp dword[%11],0
     je near %%nolower
@@ -2220,11 +2234,14 @@ DisplayGUIVideoClick:
     mov bl,[cvidmode]
     cmp byte[GUITBVID+ebx],0
     je .nocheckboxttb
-    GUIClickCButton5 11,163,byte[Triplebufen],1
+    GUIClickCButtonT 11,163,byte[Triplebufen],byte[vsyncon]
 .nocheckboxttb
     GUIClickCButton 11,183,byte[GrayscaleMode]
-%ifndef __LINUX__
-    GUIClickCButton2 115,183,byte[vsyncon],byte[cfgvsync],1
+%ifdef __WIN32__
+    GUIClickCButtonT 115,183,byte[vsyncon],byte[TripleBufferWin]
+%endif
+%ifdef __MSDOS__
+    GUIClickCButtonT 115,183,byte[vsyncon],byte[Triplebufen]
 %endif
     xor ebx,ebx
     mov bl,[cvidmode]
@@ -2244,7 +2261,7 @@ DisplayGUIVideoClick:
     mov bl,[cvidmode]
     cmp byte[GUITBWVID+ebx],0
     je near .notriplebufferwin
-    GUIClickCButton 11,123,byte[TripleBufferWin]
+    GUIClickCButtonT 11,123,byte[TripleBufferWin],byte[vsyncon]
 .notriplebufferwin
 %endif
     xor ebx,ebx
@@ -2285,8 +2302,10 @@ DisplayGUIVideoClick:
     je .nocheckboxi2
     GUIClickCButton3 11,163,byte[antienab],byte[cfginterp],1
 .nocheckboxi2
-
     GUIPHoldbutton 128,60,164,71,4
+    mov al,[vsyncon]
+    mov byte[cfgvsync],al
+    xor al,al
     ret
 
 GUINumValue dd 0
