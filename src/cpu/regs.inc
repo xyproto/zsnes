@@ -316,8 +316,8 @@ NEWSYM divres,    dw 0             ; quotent of divc/divb
 NEWSYM multres,   dw 0             ; result of multa * multb/remainder of divc/divb
 NEWSYM latchx,    dw 0             ; latched x value
 NEWSYM latchy,    dw 0             ; latched y value
-NEWSYM latchxr,   db 0             ; low or high byte read for x value
-NEWSYM latchyr,   db 0             ; low or high byte read for y value
+NEWSYM latchxr,   db 1             ; low or high byte read for x value
+NEWSYM latchyr,   db 1             ; low or high byte read for y value
 NEWSYM frskipper, db 0             ; used to control frame skipping
 NEWSYM winl1,     db 0             ; window 1 left position
 NEWSYM winr1,     db 0             ; window 1 right position
@@ -492,6 +492,7 @@ reg2136r:
 
 ; Software latch for horizontal/vertical counter
 reg2137r:
+;    mov byte[debstop3],1
     cmp byte[debuggeron],1
     je .debugger
     xor ebx,ebx
@@ -693,6 +694,7 @@ reg213Er:
 
 ; PPU Status Flag & Version number (NTSC/PAL/EXTRN Latch flag)
 reg213Fr:
+    mov byte[debstop3],1
     mov al,[romispal]
     shl al,4
     or al,[cfield]
@@ -1114,6 +1116,7 @@ regINVALID:     ; Invalid Register
 .cleared
     xor al,al
 .nospc7110
+;    mov byte[debstop3],1
     ret
 
     mov al,[previdmode]
