@@ -273,14 +273,14 @@ void DrawScreen()
 {
   if (FullScreen == 1)
   {
-    DDBLTFX ddbltfx;
+    if ((DD_Primary != NULL) && (DD_BackBuffer != NULL))
+    {
+      if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
+        DD_Primary->Restore();
 
-    ddbltfx.dwSize = sizeof(ddbltfx);
-    ddbltfx.dwFillColor = 0;
-
-    DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx );
-    DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
-    DD_Primary->Flip(NULL, DDFLIP_WAIT);
+      if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+        DD_Primary->Restore();
+    }
   }
   else
   {
@@ -1589,6 +1589,7 @@ extern BYTE GUIDSMODE[];
 extern BYTE GUIHQ3X[];
 extern unsigned short resolutn;
 void clearwin();
+void clear_display();
 
 char WinName[]={"ZSNESW\0"};
 
@@ -1936,6 +1937,7 @@ void initwinvideo(void)
       FirstVid = 0;
       InitDirectDraw();
       clearwin();
+      clear_display();
       return;
    }
 
@@ -1946,6 +1948,7 @@ void initwinvideo(void)
       ReleaseDirectDraw();
       InitDirectDraw();
       clearwin();
+      clear_display();
       return;
    }
 
@@ -2167,6 +2170,32 @@ void clearwin()
          break;
    }
    UnlockSurface();
+}
+
+void clear_display()
+{
+  if ((DD_Primary != NULL) && (DD_BackBuffer != NULL))
+  {
+    DDBLTFX ddbltfx;
+
+    ddbltfx.dwSize = sizeof(ddbltfx);
+    ddbltfx.dwFillColor = 0;
+
+    if (DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
+      DD_Primary->Restore();
+
+    if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+      DD_Primary->Restore();
+
+    if (DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
+      DD_Primary->Restore();
+
+    if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+      DD_Primary->Restore();
+
+    if (DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
+      DD_Primary->Restore();
+  }
 }
 
 extern void DrawWin256x224x16();
