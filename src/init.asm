@@ -108,7 +108,7 @@ EXTSYM sfxaccessbankw8b,sfxaccessbankw8c,sfxaccessbankw8d,sfxramdata
 EXTSYM sramaccessbankr16,sramaccessbankr16s,sramaccessbankr8
 EXTSYM sramaccessbankr8s,sramaccessbankw16,sramaccessbankw16s
 EXTSYM sramaccessbankw8,sramaccessbankw8s,GenerateBank0TableSA1
-EXTSYM ScrDispl
+EXTSYM ScrDispl,wramreadptr,wramwriteptr
 EXTSYM pl1Ltk,pl1Rtk,pl2Ltk,pl2Rtk,pl3Ltk,pl3Rtk,pl4Ltk,pl4Rtk,pl5Ltk,pl5Rtk
 %ifdef __LINUX__
 EXTSYM LoadDir, popdir, pushdir
@@ -2020,9 +2020,19 @@ NEWSYM init65816
     helpclearmem vidmemch2, 4096
     helpclearmem vidmemch4, 4096
     helpclearmem vidmemch8, 4096
+
+    mov dword[wramreadptr],getwram1fff
+    mov dword[wramwriteptr],setwram1fff
     ret
 
 .boffound db '.....',0
+
+getwram1fff:
+    mov al,[wramdataa+1fffh]
+    ret
+setwram1fff:
+    mov [wramdata+1fffh],al
+    ret
 
 ;*******************************************************
 ; Init SNES                      Sets the pointers, etc.
@@ -2044,6 +2054,30 @@ NEWSYM initsnes
     mov byte[ForceNewGfxOff],0
     mov dword[NoiseDisTemp],0
     mov dword[NoiseDisTemp+4],0
+
+    mov esi,[romdata]
+    add esi,7FC0h
+    cmp dword[esi],'REND'
+    jne .notrend
+    mov byte[cycpb268],127
+    mov byte[cycpb358],127
+    mov byte[cycpbl2],127
+    mov byte[cycpblt2],127
+    mov byte[cycpbl],127
+    mov byte[cycpblt],127
+.notrend
+
+    mov esi,[romdata]
+    add esi,7FC0h
+    cmp dword[esi],'SP F'
+    jne .notfmatchtennis
+    mov byte[cycpb268],145
+    mov byte[cycpb358],147
+    mov byte[cycpbl2],145
+    mov byte[cycpblt2],145
+    mov byte[cycpbl],145
+    mov byte[cycpblt],145
+.notfmatchtennis
 
     mov esi,[romdata]
     add esi,7FC0h
