@@ -15,7 +15,7 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-EXTSYM Clear2xSaIBuffer
+
 %ifdef __WIN32__
 EXTSYM CheckPriority
 EXTSYM CheckAlwaysOnTop

@@ -122,7 +122,7 @@ EXTSYM PJoyAOrig,PJoyBOrig,PJoyCOrig,PJoyDOrig,PJoyEOrig
 EXTSYM GetHostName
 EXTSYM vramaddr,curypos,ClearRegs,vram,sndrot,regsbackup
 EXTSYM GetScreen,GUITBWVID
-
+EXTSYM Clear2xSaIBuffer
 EXTSYM MouseWindow
 EXTSYM GotoHomepage
 EXTSYM cfgcvidmode, ExitFromGUI

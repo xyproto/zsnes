@@ -449,6 +449,10 @@ SetDevice:
 
 NEWSYM GUIDoReset
     call ClearScreen
+    cmp byte[En2xSaI],1
+    jnae .noclear2xsai
+    call Clear2xSaIBuffer
+.noclear2xsai
 ;    mov byte[NetPlayNoMore],1
     mov byte[RestoreValues],0
 
