@@ -17,7 +17,7 @@
 
 %include "macros.mac"
 
-EXTSYM dssel,selcA000,selcB800,selc0040,previdmode,DosExit,ZFileSystemInit
+EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,ZFileSystemInit
 EXTSYM getcmdline,GUIRestoreVars,getcfg,obtaindir,ConvertJoyMap,tparms
 EXTSYM preparedir,getblaster,Force8b,SBHDMA
 EXTSYM ccmdline
@@ -85,6 +85,9 @@ SECTION .bss
 
 NEWSYM OSPort, resb 1
 
+SECTION .data
+
+NEWSYM dssel, dw 0
 
 SECTION .text
 
@@ -178,7 +181,9 @@ findselec:
     jmp DosExit
 .proceed
     ret
+SECTION .data
 .noselector db 'Cannot find selector!',10,13,0
+SECTION .text
 
 NEWSYM PrintChar
     ; print character at dl, push all modified registers
@@ -1617,9 +1622,9 @@ NEWSYM TCPIPStatus, resb 1
 NEWSYM PacketSendSize, resd 1
 NEWSYM PacketRecvSize, resd 1
 NEWSYM PacketRecvPtr,  resd 1
-NEWSYM PacketSendArray, times 256 resb 1
-NEWSYM PacketRecvArray, times 256 resb 1
-NEWSYM IPAddrStr, times 20 resb 1
+NEWSYM PacketSendArray, resb 256
+NEWSYM PacketRecvArray, resb 256
+NEWSYM IPAddrStr, resb 20
 NEWSYM RemoteDisconnect, resb 1
 
 
