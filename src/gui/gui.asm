@@ -404,6 +404,7 @@ NEWSYM CalibYmin209, dd 0
 NEWSYM CalibXmax209, dd 0
 NEWSYM CalibYmax209, dd 0
 NEWSYM maxskip,      db 9
+NEWSYM HighPriority, db 0
 FPSAtStart           db 0
 NEWSYM SidewinderFix, db 0
 GUIInitSt1 db 'ATZ'

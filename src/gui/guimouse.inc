@@ -1989,7 +1989,13 @@ DisplayGUIOptionClick:
     GUIClickCButton2 11,46,byte[vsyncon],byte[cfgvsync],1
     GUIClickCButton2 11,56,byte[FPUCopy],byte[cfgcopymethod],2
     GUIClickCButtonM 11,66,byte[pl12s34]
+    cmp byte[OSPort],3
+    je near .win32config
     GUIClickCButton 11,76,byte[SidewinderFix]
+.win32config
+%ifndef __LINUX__
+    GUIClickCButton 11,76,byte[HighPriority]
+%endif
     GUIClickCButton 11,86,byte[FPSAtStart]
     GUIClickCButton 11,96,byte[Turbo30hz]
     GUIClickCButton 11,106,byte[TimerEnable]
@@ -2105,7 +2111,10 @@ DisplayGUISoundClick:
     GUIClickCButton 11,39,byte[RaisePitch]
     GUIClickCButton 11,101,byte[SoundNoiseDis]
     GUIClickCButtonS 11,111,byte[RevStereo]
+    cmp byte[OSPort],3
+    je near .win32sound
     GUIClickCButton 11,121,byte[Surround]
+.win32sound
 %ifndef __LINUX__
     GUIClickCButton 11,121,byte[LargeSoundBuf]
 %endif

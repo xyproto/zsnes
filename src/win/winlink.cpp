@@ -184,8 +184,8 @@ unsigned char keyboardhit=0;
 void initwinvideo();
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
-extern BYTE Surround;
 extern BYTE LargeSoundBuf;
+extern BYTE HighPriority;
 extern int CurKeyPos;
 extern int CurKeyReadPos;
 extern int KeyBuffer[16];
@@ -457,6 +457,8 @@ int RegisterWinClass ( void )
    wcl.lpszClassName    = "ZSNESWIN";
 
 	if (RegisterClass(&wcl)  == 0) return FALSE;
+
+      if (HighPriority == 1) SetPriorityClass(hInst, HIGH_PRIORITY_CLASS);
 
 	return TRUE;
 }

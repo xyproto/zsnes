@@ -1314,6 +1314,9 @@ DisplayGUIOption:
     je near .win32b2
     GUIOuttextwin2u 4,26,81,GUIOptionTextA,0
 .win32b2
+%ifndef __LINUX__
+    GUIOuttextwin2u 4,26,81,GUIOptionTextAb,0
+%endif
     GUIOuttextwin2u 4,26,91,GUIOptionTextB,1
     GUIOuttextwin2u 4,26,101,GUIOptionTextC,2
     GUIOuttextwin2 4,26,111,GUIOptionTextD
@@ -1339,6 +1342,9 @@ DisplayGUIOption:
     je near .win32c2
     GUIOuttextwin2 4,25,80,GUIOptionTextA
 .win32c2
+%ifndef __LINUX__
+    GUIOuttextwin2 4,25,80,GUIOptionTextAb
+%endif
     GUIOuttextwin2 4,25,90,GUIOptionTextB
     GUIOuttextwin2 4,25,100,GUIOptionTextC
     GUIOuttextwin2 4,25,120,GUIOptionTextE
@@ -1399,6 +1405,14 @@ DisplayGUIOption:
     je near .win322
     GUIDisplayIconWin 4,11,76,[GUITemp]
 .win322
+%ifndef __LINUX__
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[HighPriority],0
+    je .win323
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.win323
+%endif
+    GUIDisplayIconWin 4,11,76,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[FPSAtStart],0
     je .nocheckbox6
@@ -1511,6 +1525,9 @@ GUIOptionText5 db 'VSYNC',0
 GUIOptionText6 db 'MMX SUPPORT',0
 GUIOptionText7 db 'USE PL3/4 AS PL1/2',0
 GUIOptionTextA db 'SIDEWINDER FIX',0
+%ifndef __LINUX__
+GUIOptionTextAb db 'HIGH PRIORITY MODE',0
+%endif
 GUIOptionTextB db 'FPS AT START',0
 GUIOptionTextC db 'USE 30HZ FOR TURBO',0
 GUIOptionTextD db 'ENABLE GAME CLOCK',0
