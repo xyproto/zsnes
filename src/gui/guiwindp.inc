@@ -2491,7 +2491,7 @@ DisplayGUICheatConv:
     jnz .loop2
     ret
 
-%macro GUIOuttextwin2cheat 2
+%macro GUIOuttextwin2bheat 2
     test dword[ccheatnleft],80000000h
     jnz %%skip
     call DisplayGUICheatConv
@@ -2560,18 +2560,18 @@ DisplayGUICheat:
     sub eax,ebx
     sub eax,ebx
     add [ccheatnpos],eax
-    GUIOuttextwin2cheat 12,24
-    GUIOuttextwin2cheat 12,24+7
-    GUIOuttextwin2cheat 12,24+7*2
-    GUIOuttextwin2cheat 12,24+7*3
-    GUIOuttextwin2cheat 12,24+7*4
-    GUIOuttextwin2cheat 12,24+7*5
-    GUIOuttextwin2cheat 12,24+7*6
-    GUIOuttextwin2cheat 12,24+7*7
-    GUIOuttextwin2cheat 12,24+7*8
-    GUIOuttextwin2cheat 12,24+7*9
-    GUIOuttextwin2cheat 12,24+7*10
-    GUIOuttextwin2cheat 12,24+7*11
+    GUIOuttextwin2bheat 12,24
+    GUIOuttextwin2bheat 12,24+7
+    GUIOuttextwin2bheat 12,24+7*2
+    GUIOuttextwin2bheat 12,24+7*3
+    GUIOuttextwin2bheat 12,24+7*4
+    GUIOuttextwin2bheat 12,24+7*5
+    GUIOuttextwin2bheat 12,24+7*6
+    GUIOuttextwin2bheat 12,24+7*7
+    GUIOuttextwin2bheat 12,24+7*8
+    GUIOuttextwin2bheat 12,24+7*9
+    GUIOuttextwin2bheat 12,24+7*10
+    GUIOuttextwin2bheat 12,24+7*11
 
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
@@ -2591,18 +2591,18 @@ DisplayGUICheat:
     sub eax,ebx
     sub eax,ebx
     add [ccheatnpos],eax
-    GUIOuttextwin2cheat 11,23
-    GUIOuttextwin2cheat 11,23+7
-    GUIOuttextwin2cheat 11,23+7*2
-    GUIOuttextwin2cheat 11,23+7*3
-    GUIOuttextwin2cheat 11,23+7*4
-    GUIOuttextwin2cheat 11,23+7*5
-    GUIOuttextwin2cheat 11,23+7*6
-    GUIOuttextwin2cheat 11,23+7*7
-    GUIOuttextwin2cheat 11,23+7*8
-    GUIOuttextwin2cheat 11,23+7*9
-    GUIOuttextwin2cheat 11,23+7*10
-    GUIOuttextwin2cheat 11,23+7*11
+    GUIOuttextwin2bheat 11,23
+    GUIOuttextwin2bheat 11,23+7
+    GUIOuttextwin2bheat 11,23+7*2
+    GUIOuttextwin2bheat 11,23+7*3
+    GUIOuttextwin2bheat 11,23+7*4
+    GUIOuttextwin2bheat 11,23+7*5
+    GUIOuttextwin2bheat 11,23+7*6
+    GUIOuttextwin2bheat 11,23+7*7
+    GUIOuttextwin2bheat 11,23+7*8
+    GUIOuttextwin2bheat 11,23+7*9
+    GUIOuttextwin2bheat 11,23+7*10
+    GUIOuttextwin2bheat 11,23+7*11
 
     DrawSlideBarWin 7,231,28,[GUIcurrentcheatviewloc],[NumCheats],12,73,GUICStA
     cmp byte[GUICHold],7
@@ -5359,15 +5359,7 @@ CMovieExt db 'V'
     mov byte[TextColorSp+1],al
 %endmacro
 
-%macro GUIOuttextwin2b 4        ; Normal, white text
-    mov al,[TextColorSp+2]
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 %1,%2,%3,%4
-    add byte[GUItextcolor],15
-    GUIOuttextwin2 %1,%2-1,%3-1,%4
-%endmacro
-
-%macro GUIOuttextwin2c 4        ; Special, yellow text
+%macro GUIOuttextwin2b 4        ; Special, yellow text
     mov al,[TextColorSp]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 %1,%2,%3,%4
@@ -5376,7 +5368,7 @@ CMovieExt db 'V'
     GUIOuttextwin2 %1,%2-1,%3-1,%4
 %endmacro
 
-%macro GUIOuttextwin2d 4        ; Boxed, green text
+%macro GUIOuttextwin2c 4        ; Boxed, green text
     mov byte[GUItextcolor],223
     GUIOuttextwin2 %1,%2,%3,%4
     mov byte[GUItextcolor],221
@@ -5654,7 +5646,7 @@ DisplayGUICombo:
     mov byte[GUIComboTextH+eax],'_'
     mov byte[GUIComboTextH+eax+1],0
 .nound
-    GUIOuttextwin2d 16,12,94,GUIComboTextH
+    GUIOuttextwin2c 16,12,94,GUIComboTextH
     xor eax,eax
     mov al,[GUIComboPos]
     mov byte[GUIComboTextH+eax],0
@@ -5664,7 +5656,7 @@ DisplayGUICombo:
     mov ebx,[ScanCodeListing+eax*3]
     mov [GUIGameDisplayKy],ebx
     mov byte[GUIGameDisplayKy+3],0
-    GUIOuttextwin2d 16,139,94,GUIGameDisplayKy
+    GUIOuttextwin2c 16,139,94,GUIGameDisplayKy
 
     ; Hole Switches
     GUIDisplayButtonHole 16,178,82,byte[GUIComboPNum],0
