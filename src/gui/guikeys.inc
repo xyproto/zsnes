@@ -833,6 +833,7 @@ GUIOptionKeys:
 .noautoincsave
     cmp dh,'M'
     jne .nommxcopy
+    xor byte[MMXSupport],1
     call MMXCheck
 .nommxcopy
     cmp dh,'U'
