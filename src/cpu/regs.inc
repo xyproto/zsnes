@@ -1082,9 +1082,12 @@ reg43XXr:
     ret
 
 regINVALID:     ; Invalid Register
+    cmp cx,2000h
+    je .cleared
     mov al,ch
     cmp byte[SPC7110Enable],0
     je .nospc7110
+.cleared
     xor al,al
 .nospc7110
     ret
