@@ -537,7 +537,7 @@ fi
 
 echo -- Where is our compiler, and who are we compiling for?
 CFLAGS="-pipe -I. -Wall"
-CXXFLAGS=CFLAGS
+CXXFLAGS=$CFLAGS
 # Extract the first word of "gcc", so it can be a program name with args.
 set dummy gcc; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
@@ -2323,6 +2323,7 @@ done
 
 
 
+CXXFLAGS=$CFLAGS
 trap '' 1 2 15
 cat > confcache <<\EOF
 # This file is a shell script that caches the results of configure
