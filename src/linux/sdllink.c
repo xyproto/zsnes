@@ -8,8 +8,6 @@
 #define WORD   unsigned short
 #define DWORD  unsigned long
 
-BYTE Tester[]={"WinTest1"};
-
 DWORD WindowWidth = 256;
 DWORD WindowHeight = 224;
 DWORD FullScreen = 0;
@@ -161,8 +159,6 @@ int Main_Proc(void)
 		case SDL_MOUSEMOTION:
 			MouseX = event.motion.x;
 			MouseY = event.motion.y;
-			MouseMoveX = event.motion.xrel;
-			MouseMoveY = event.motion.yrel;
 			if (MouseX < MouseMinX) MouseX = MouseMinX;
 			if (MouseX > MouseMaxX) MouseX = MouseMaxX;
 			if (MouseY < MouseMinY) MouseY = MouseMinY;
@@ -1569,13 +1565,13 @@ int GetMouseY(void)
 int GetMouseMoveX(void)
 {
 //   InputRead();
-   MouseMove2X=MouseMoveX;
+   //SDL_GetRelativeMouseState(&MouseMove2X, NULL);
+   SDL_GetRelativeMouseState(&MouseMove2X, &MouseMove2Y);
    return(MouseMove2X);
 }
 
 int GetMouseMoveY(void)
 {
-   MouseMove2Y=MouseMoveY;
    return(MouseMove2Y);
 }
 
