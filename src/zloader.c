@@ -173,6 +173,20 @@ static void display_help()
 #ifndef __LINUX__
   puts("  Microsoft-style options (/option) are also accepted");
 #endif
+#ifndef __MSDOS__
+  puts("               --Netplay Parameters--");
+  puts(" Commandline: /ABCDE <nickname> <fname> <IP Addy>");
+  puts("   nickname = user nickname");
+  puts("   fname = filename w/ full path (if L) or path name (if C)");
+  puts("   IP Addy = IP Address (Client Only)");
+  puts(" A = U (UDP - Recommended if works), T (TCP/IP)");
+  puts(" B = S (Server), C (Client)");
+  puts(" C = C (Chat first), L (load game first)");
+  puts(" D = N (Stay in ZSNESw after disconnect), Q (Quit after disconnect)");
+  puts(" E = # of connections (Keep it 2 for now)");
+  puts("   eg: ZSNESW /UCCN2 nickname d:\snesroms 202.36.124.28");
+#endif
+   
   exit(1);
 }
 
