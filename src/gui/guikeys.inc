@@ -1216,18 +1216,19 @@ GUICheatKeys:
     mov dword[GUIcurrentcheatcursloc],0
 .posc
 .nopageup
-%ifdef __LINUX__
-    cmp al, 97
-    je  .pagednpressed
-    cmp dword[numlockptr],1
-    je  .nopageup
-    cmp al,81
-    jne .nopageup
-.pagednpressed
-%else
+;%ifdef __LINUX__
+    ; uh this freezes the program
+    ;cmp al, 97
+    ;je  .pagednpressed
+    ;cmp dword[numlockptr],1
+    ;je  .nopageup
+    ;cmp al,81
+    ;jne .nopageup
+;.pagednpressed
+;%else
     cmp al,81
     jne .nopagedown
-%endif
+;%endif
     add dword[GUIcurrentcheatviewloc],12
     add dword[GUIcurrentcheatcursloc],12
     mov ebx,[NumCheats]
