@@ -295,6 +295,7 @@ NEWSYM DOScreatenewcfg
 %ifdef __GZIP__
     mov byte[TextFile], 0
 %endif
+    mov byte[FPUCopy],3
 .failed
     ret
 
