@@ -1951,7 +1951,7 @@ NEWSYM TCPIPRecvPacket
     pushad
     ; Store packet to PacketRecvArray, size at PacketRecvSize
     ; int GetData(int 2048,char *PacketRecvArray)
-    call GetData
+    call GetDataNop
     cmp eax,-1
     je .failed
     mov [PacketRecvSize],eax
