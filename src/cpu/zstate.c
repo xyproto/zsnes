@@ -145,8 +145,6 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
   if (DSP1Type && !loading_old_state)
   {
     copy_func(&buffer, &DSP1COp, 70+128);
-    copy_func(&buffer, &C4WFXVal, 7*4+7*8+128);
-    copy_func(&buffer, &C41FXVal, 5*4+128);
     copy_func(&buffer, &Op00Multiplicand, 3*4+128);
     copy_func(&buffer, &Op10Coefficient, 4*4+128);
     copy_func(&buffer, &Op04Angle, 4*4+128);
@@ -194,6 +192,11 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
       copy_func(&buffer, &tempedx, 4);  
       copy_func(&buffer, &tempebp, 4);  
     }
+  }
+  else
+  {
+    spcnumread = 0;
+    spchalted = 0xFFFFFFFF;
   }
 }
 
@@ -542,10 +545,18 @@ static void write_save_state_data(unsigned char **dest, void *data, size_t len)
 static const char zst_header_old[] = "ZSNES Save State File V0.6\x1a\x3c";
 static const char zst_header_cur[] = "ZSNES Save State File V143\x1a\x3c";
 
+void PrepareOffset()
+{
+  Curtableaddr -= (unsigned int)tableA;
+}
+
+void ResetOffset()
+{
+  Curtableaddr += (unsigned int)tableA;
+}
+    
 void statesaver()
 {
-  unsigned int offst;
-
   //'Auto increment savestate slot' code
   if (AutoIncSaveSlot)
   {
@@ -578,12 +589,10 @@ void statesaver()
   clim ()
   
   if ((fhandle = fopen(fnamest+1,"wb")))
-  {
+  {    
     fwrite(zst_header_cur, 1, sizeof(zst_header_cur)-1, fhandle); //-1 for null
 
-    offst = (unsigned int)tableA;
-    Curtableaddr -= offst;
-
+    PrepareOffset();
     PrepareSaveState();
     unpackfunct();
 
@@ -631,10 +640,8 @@ void statesaver()
 
     Msgptr = txtsavemsg;
     MessageOn = MsgCount;
-
-    offst = (unsigned int)tableA;
-    Curtableaddr += offst;
   
+    ResetOffset();
     ResetState();
   }  
   else
@@ -769,7 +776,6 @@ static void read_save_state_data(unsigned char **dest, void *data, size_t len)
 void stateloader (unsigned char *statename, unsigned char keycheck, unsigned char xfercheck)
 {
   char zst_header_check[sizeof(zst_header_cur)-1];
-  unsigned int offst;
   
   if (keycheck)
   {
@@ -853,22 +859,13 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
       memset(vidmemch8, 1, sizeof(vidmemch8));
     
       MovieProcessing = 0;
-      prevoamptr = 0xFF;
-      ioportval = 0xFF;
 
       repackfunct();
- 
-      spcnumread = 0;
-      spchalted = 0xFFFFFFFF;
-      nexthdma = 0;
 
       //headerhack(); //Was in the asm, but why is this needed?
 
       initpitch();
-
-      offst = (unsigned int)tableA;
-      Curtableaddr += offst;
-
+      ResetOffset();
       ResetState();
       procexecloop();
     
