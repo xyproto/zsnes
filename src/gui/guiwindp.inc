@@ -4816,7 +4816,7 @@ DisplayGUIOptns:
     GUIDisplayIconWin 10,12,168,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SaveMainWindowPos],1
-    jne .nocheck10
+    jne .nocheck11
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck11
     GUIDisplayIconWin 10,12,178,[GUITemp]
