@@ -44,10 +44,10 @@ Windows port :
                    these old headers (in the include directory of vc++ dir) 
                    with the newer ones.
 - zlib : http://www.info-zip.org/pub/infozip/zlib/
-		   you need the Win9x/WinNT static library (the dll version doesn't
-		   seem to work with zsnes). Name the static version zlib.lib and
-		   put it somewhere where vc++ will find it (for example, the lib
-		   directory in vc++ dir).
+		   you need the Win9x/WinNT static library (the dll version 
+		   doesn't seem to work with zsnes). Rename the static version 
+		   to zlib.lib and put it somewhere where vc++ will find it 
+		   (for example, the lib directory in vc++ dir).
 
 Don't forget to set the correct path to the directx sdk in makefile.win!
 Then to build the executable, go to the src directory and type:
@@ -55,3 +55,29 @@ make -f makefile.win
 
 You may also want to compress zsnesw.exe with upx (http://upx.tsx.org), it will 
 divide its size by 10.
+
+
+Linux port:
+I assume the standard development tools are installed (gcc, make, ...)
+You'll also need : 
+- SDL (Simple DirectMedia Layer) : check www.libsdl.org to grab SDL 1.2.0 or
+                                   later. If you are using rpm packages, don't
+                                   forget the -devel package.
+- NASM v0.98 : http://www.cryogen.com/nasm/
+                   the version found on http://nasm.2y.net/ DOES NOT WORK
+                   with zsnes sources. When you type nasm -r, you must get
+                   'NASM version 0.98' and not 'NASM version 0.98.08' if you
+                   have the correct version
+- zlib : http://www.info-zip.org/pub/infozip/zlib/
+                                   it is probably already installed on your 
+                                   system, maybe you are just missing the 
+                                   development headers. Check in the 
+                                   packages available with your distribution 
+                                   or go to the page above
+                                   
+Then to build the executable, go to the src directory and type:
+make -f makefile.win
+
+You may also want to compress the zsnes executable with upx (http://upx.tsx.org)
+, it will divide its size by 10.
+                                
