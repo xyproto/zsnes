@@ -1357,7 +1357,7 @@ void drawscreenwin(void)
 			   break;
 		   default:
 			   UnlockSurface();
-			   fprintf(stderr, "Mode only available in 16 bit color.\nTry running ZSNES with -b 16.");
+			   fprintf(stderr, "Mode only available in 16 bit color.\nTry running ZSNES with -b 16.\n");
 			   LinuxExit();
 			   /*
 			   cvidmode=2;
@@ -1380,7 +1380,7 @@ void drawscreenwin(void)
 			break;
 		default:
 			   UnlockSurface();
-			   fprintf(stderr, "Mode only available in 16 bit color.\nTry running ZSNES with -b 16.");
+			   fprintf(stderr, "Mode only available in 16 bit color.\nTry running ZSNES with -b 16.\n");
 			   LinuxExit();
 			   /*
 			   cvidmode=2;
