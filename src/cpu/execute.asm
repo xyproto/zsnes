@@ -58,7 +58,7 @@ EXTSYM deinitipx
 EXTSYM deinitvideo
 EXTSYM BRRBuffer,DSPMem,PrepareSaveState,ResetState,SFXEnable,PHdspsave
 EXTSYM fnamest,sndrot,spcRam,spcRamDP,tableA,unpackfunct,vram,wramdata
-EXTSYM zsmesg,PHnum2writesfxreg,SfxR0,PHnum2writecpureg,PHspcsave,initrevst
+EXTSYM zsmesg,PHnum2writesfxreg,SfxR0,PHnum2writecpureg,PHspcsave
 EXTSYM C4Ram
 EXTSYM SPC7110Enable
 EXTSYM SA1Mode,PHnum2writesa1reg,SaveSA1,RestoreSA1,UpdateBanksSDD1
@@ -1511,7 +1511,6 @@ NEWSYM statesaver
     sub dword[spcRamDP],spcRam
     call PrepareSaveState
     call unpackfunct
-    call initrevst
 
     ; Auto increment save state slot
 
@@ -1647,7 +1646,6 @@ NEWSYM statesaver
     add dword[spcPCRam],spcRam
     add dword[spcRamDP],spcRam
     call ResetState
-    call initrevst
     stim
 
     ; Get the state number
@@ -1669,7 +1667,6 @@ NEWSYM statesaver
     add dword[spcPCRam],spcRam
     add dword[spcRamDP],spcRam
     call ResetState
-    call initrevst
     stim
     mov dword[Msgptr],.savemsgfail
     mov eax,[MsgCount]
@@ -1846,7 +1843,6 @@ NEWSYM stateloader
 ;    call headerhack
 
     call initpitch
-    call initrevst
     ret
 
 .convert
@@ -1910,7 +1906,6 @@ NEWSYM stateloader
     mov byte[nexthdma],0
     call headerhack
     call initpitch
-    call initrevst
     ret
 NEWSYM loadstate
     mov byte[pressed+1],0

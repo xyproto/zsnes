@@ -81,7 +81,7 @@ EXTSYM fnamest,sprlefttot,spritetablea,fnames,SFXSRAM,sfxramdata,cgram,srama
 EXTSYM tempco0,prevbright,maxbr,prevpal,coladdr,coladdg,coladdb
 EXTSYM scaddtype,ScreenScale,vesa2red10,initvideo2,initvideo,pressed,UpdateDevices
 EXTSYM memtabler8,memtablew8,writeon,pl1contrl,pl2contrl,JoyRead,SetInputDevice
-EXTSYM SetInputDevice209,FPSOn,RevStereo,initrevst,WDSPReg0C,WDSPReg1C,WDSPReg2C
+EXTSYM SetInputDevice209,FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,WDSPReg2C
 EXTSYM WDSPReg3C,pl12s34,resolutn,delay,chaton,chatstrL,chatLpos,chatstrR,chatRTL
 EXTSYM InitDrive,InitDir,createnewcfg,Makemode7Table,SnowOn,MovieBuffSize
 EXTSYM MovieBuffFrame,vidbufferofsb,ZipSupport,wramdata,bgfixer,cfgnewgfx

@@ -1053,30 +1053,6 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
-%macro GUIClickCButtonS 3
-    cmp eax,%1+1
-    jl %%noclick
-    cmp edx,%2+3
-    jl %%noclick
-    cmp eax,%1+6
-    jg %%noclick
-    cmp edx,%2+8
-    jg %%noclick
-    push eax
-    xor %3,1
-    call initrevst
-    mov al,[DSPMem+0Ch]
-    call WDSPReg0C
-    mov al,[DSPMem+1Ch]
-    call WDSPReg1C
-    mov al,[DSPMem+2Ch]
-    call WDSPReg2C
-    mov al,[DSPMem+3Ch]
-    call WDSPReg3C
-    pop eax
-%%noclick
-%endmacro
-
 %macro GUIClickCButtonM 3
     cmp eax,%1+1
     jl %%noclick
@@ -2352,7 +2328,7 @@ DisplayGUISoundClick:
     GUIClickCButton 11,30,byte[cfgStereoSound]
     GUIClickCButton 11,39,byte[RaisePitch]
     GUIClickCButton 11,101,byte[SoundNoiseDis]
-    GUIClickCButtonS 11,111,byte[RevStereo]
+    GUIClickCButton 11,111,byte[RevStereo]
 ;    cmp byte[OSPort],3
 ;    je near .win32sound
     GUIClickCButton 11,121,byte[Surround]

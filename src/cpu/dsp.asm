@@ -67,21 +67,6 @@ identcode db 255,1,78,78
     mov [DSPMem+00h+%1],al
 %endmacro
 
-NEWSYM initrevst
-    cmp byte[RevStereo],0
-;    jne .norev
-    ret
-.norev
-    initrevsthelp 00h
-    initrevsthelp 10h
-    initrevsthelp 20h
-    initrevsthelp 30h
-    initrevsthelp 40h
-    initrevsthelp 50h
-    initrevsthelp 60h
-    initrevsthelp 70h
-    ret
-
 ALIGN32
 
 NEWSYM DSPMem, times 256 db 0
@@ -89,21 +74,11 @@ NEWSYM DSPMem, times 256 db 0
 ;Read DSP Registers functions
 
 NEWSYM RDSPReg00       ; Voice  0  Volume Left
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+00h]
-      ret
-.rev
-      mov al,[DSPMem+01h]
       ret
 
 NEWSYM RDSPReg01       ; Voice  0  Volume Right
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+01h]
-      ret
-.rev
-      mov al,[DSPMem+00h]
       ret
 
 NEWSYM RDSPReg02       ; Voice  0  Pitch Low
@@ -164,21 +139,11 @@ NEWSYM RDSPReg0F       ; Voice  0  Echo coefficient
       ret
 
 NEWSYM RDSPReg10       ; Voice  1  Volume Left                                                                                                                                                                                                                                                     
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+10h]
-      ret
-.rev
-      mov al,[DSPMem+11h]
       ret
 
 NEWSYM RDSPReg11       ; Voice  1  Volume Right                                                                                                                                                                                                                                                    
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+11h]
-      ret
-.rev
-      mov al,[DSPMem+10h]
       ret
 
 NEWSYM RDSPReg12       ; Voice  1  Pitch Low                                                                                                                                                                                                                                                       
@@ -239,21 +204,11 @@ NEWSYM RDSPReg1F       ; Voice  1  Echo coefficient
       ret
 
 NEWSYM RDSPReg20       ; Voice  2  Volume Left                                                                                                                                                                                                                                                     
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+20h]
-      ret
-.rev
-      mov al,[DSPMem+21h]
       ret
 
 NEWSYM RDSPReg21       ; Voice  2  Volume Right                                                                                                                                                                                                                                                    
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+21h]
-      ret
-.rev
-      mov al,[DSPMem+20h]
       ret
 
 NEWSYM RDSPReg22       ; Voice  2  Pitch Low                                                                                                                                                                                                                                                       
@@ -314,21 +269,11 @@ NEWSYM RDSPReg2F       ; Voice  2  Echo coefficient
       ret
 
 NEWSYM RDSPReg30       ; Voice  3  Volume Left                                                                                                                                                                                                                                                     
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+30h]
-      ret
-.rev
-      mov al,[DSPMem+31h]
       ret
 
 NEWSYM RDSPReg31       ; Voice  3  Volume Right                                                                                                                                                                                                                                                    
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+31h]
-      ret
-.rev
-      mov al,[DSPMem+30h]
       ret
 
 NEWSYM RDSPReg32       ; Voice  3  Pitch Low                                                                                                                                                                                                                                                       
@@ -389,21 +334,11 @@ NEWSYM RDSPReg3F       ; Voice  3  Echo coefficient
       ret
 
 NEWSYM RDSPReg40       ; Voice  4  Volume Left                                                                                                                                                                                                                                                     
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+40h]
-      ret
-.rev
-      mov al,[DSPMem+41h]
       ret
 
 NEWSYM RDSPReg41       ; Voice  4  Volume Right                                                                                                                                                                                                                                                    
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+41h]
-      ret
-.rev
-      mov al,[DSPMem+40h]
       ret
 
 NEWSYM RDSPReg42       ; Voice  4  Pitch Low                                                                                                                                                                                                                                                       
@@ -464,21 +399,11 @@ NEWSYM RDSPReg4F       ; Voice  4  Echo coefficient
       ret
 
 NEWSYM RDSPReg50       ; Voice  5  Volume Left                                                                                                                                                                                                                                                     
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+50h]
-      ret
-.rev
-      mov al,[DSPMem+51h]
       ret
 
 NEWSYM RDSPReg51       ; Voice  5  Volume Right                                                                                                                                                                                                                                                    
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+51h]
-      ret
-.rev
-      mov al,[DSPMem+50h]
       ret
 
 NEWSYM RDSPReg52       ; Voice  5  Pitch Low                                                                                                                                                                                                                                                       
@@ -539,21 +464,11 @@ NEWSYM RDSPReg5F       ; Voice  5  Echo coefficient
       ret
 
 NEWSYM RDSPReg60       ; Voice  6  Volume Left                                                                                                                                                                                                                                                     
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+60h]
-      ret
-.rev
-      mov al,[DSPMem+61h]
       ret
 
 NEWSYM RDSPReg61       ; Voice  6  Volume Right                                                                                                                                                                                                                                                    
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+61h]
-      ret
-.rev
-      mov al,[DSPMem+60h]
       ret
 
 NEWSYM RDSPReg62       ; Voice  6  Pitch Low                                                                                                                                                                                                                                                       
@@ -614,21 +529,11 @@ NEWSYM RDSPReg6F       ; Voice  6  Echo coefficient
       ret
 
 NEWSYM RDSPReg70       ; Voice  7  Volume Left                                                                                                                                                                                                                                                     
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+70h]
-      ret
-.rev
-      mov al,[DSPMem+71h]
       ret
 
 NEWSYM RDSPReg71       ; Voice  7  Volume Right                                                                                                                                                                                                                                                    
-;      cmp byte[RevStereo],1
-;      je .rev
       mov al,[DSPMem+71h]
-      ret
-.rev
-      mov al,[DSPMem+70h]
       ret
 
 NEWSYM RDSPReg72       ; Voice  7  Pitch Low                                                                                                                                                                                                                                                       
@@ -1719,13 +1624,7 @@ NEWSYM WDSPReg0C       ; Voice  0
       mov al,[VolumeTableb+eax]
       mov ah,[MusicVol]
       mov al,[VolumeConvTable+eax*2]
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [GlobalVL],al
-      pop eax
-      ret
-.rev
-      mov [GlobalVR],al
       pop eax
       ret
 
@@ -1751,21 +1650,11 @@ NEWSYM WDSPReg0F       ; Voice  0  Echo coefficient
       ret
 
 NEWSYM WDSPReg10       ; Voice  1  Volume Left                                                                                                                                                                                                                                                     
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+10h],al
-      ret
-.rev
-      mov [DSPMem+11h],al
       ret
 
 NEWSYM WDSPReg11       ; Voice  1  Volume Right                                                                                                                                                                                                                                                    
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+11h],al
-      ret
-.rev
-      mov [DSPMem+10h],al
       ret
 
 NEWSYM WDSPReg12       ; Voice  1  Pitch Low                                                                                                                                                                                                                                                       
@@ -1815,13 +1704,7 @@ NEWSYM WDSPReg1C       ; Voice  1
       mov al,[VolumeTableb+eax]
       mov ah,[MusicVol]
       mov al,[VolumeConvTable+eax*2]
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [GlobalVR],al
-      pop eax
-      ret
-.rev
-      mov [GlobalVL],al
       pop eax
       ret
 
@@ -1842,21 +1725,11 @@ NEWSYM WDSPReg1F       ; Voice  1  Echo coefficient
       ret
 
 NEWSYM WDSPReg20       ; Voice  2  Volume Left                                                                                                                                                                                                                                                     
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+20h],al
-      ret
-.rev
-      mov [DSPMem+21h],al
       ret
 
 NEWSYM WDSPReg21       ; Voice  2  Volume Right                                                                                                                                                                                                                                                    
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+21h],al
-      ret
-.rev
-      mov [DSPMem+20h],al
       ret
 
 NEWSYM WDSPReg22       ; Voice  2  Pitch Low                                                                                                                                                                                                                                                       
@@ -1906,13 +1779,7 @@ NEWSYM WDSPReg2C       ; Voice  2
       mov al,[VolumeTableb+eax]
       mov ah,[MusicVol]
       mov al,[VolumeConvTable+eax*2]
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [EchoVL],al
-      pop eax
-      ret
-.rev
-      mov [EchoVR],al
       pop eax
       ret
 
@@ -1933,21 +1800,11 @@ NEWSYM WDSPReg2F       ; Voice  2  Echo coefficient
       ret
 
 NEWSYM WDSPReg30       ; Voice  3  Volume Left                                                                                                                                                                                                                                                     
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+30h],al
-      ret
-.rev
-      mov [DSPMem+31h],al
       ret
 
 NEWSYM WDSPReg31       ; Voice  3  Volume Right                                                                                                                                                                                                                                                    
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+31h],al
-      ret
-.rev
-      mov [DSPMem+30h],al
       ret
 
 NEWSYM WDSPReg32       ; Voice  3  Pitch Low                                                                                                                                                                                                                                                       
@@ -1997,13 +1854,7 @@ NEWSYM WDSPReg3C       ; Voice  3
       mov al,[VolumeTableb+eax]
       mov ah,[MusicVol]
       mov al,[VolumeConvTable+eax*2]
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [EchoVR],al
-      pop eax
-      ret
-.rev
-      mov [EchoVL],al
       pop eax
       ret
 
@@ -2064,21 +1915,11 @@ NEWSYM WDSPReg3F       ; Voice  3  Echo coefficient
       ret
 
 NEWSYM WDSPReg40       ; Voice  4  Volume Left                                                                                                                                                                                                                                                     
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+40h],al
-      ret
-.rev
-      mov [DSPMem+41h],al
       ret
 
 NEWSYM WDSPReg41       ; Voice  4  Volume Right                                                                                                                                                                                                                                                    
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+41h],al
-      ret
-.rev
-      mov [DSPMem+40h],al
       ret
 
 NEWSYM WDSPReg42       ; Voice  4  Pitch Low                                                                                                                                                                                                                                                       
@@ -2120,7 +1961,6 @@ NEWSYM WDSPReg4A       ; Voice  4
 NEWSYM WDSPReg4B       ; Voice  4                                                                                                                                                                                                                                                                  
       mov [DSPMem+04Bh],al
       ret
-
 
 NEWSYM WDSPReg4C       ; Key On
       push ebx
@@ -2219,21 +2059,11 @@ NEWSYM WDSPReg4F       ; Voice  4  Echo coefficient
       ret
 
 NEWSYM WDSPReg50       ; Voice  5  Volume Left                                                                                                                                                                                                                                                     
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+50h],al
-      ret
-.rev
-      mov [DSPMem+51h],al
       ret
 
 NEWSYM WDSPReg51       ; Voice  5  Volume Right                                                                                                                                                                                                                                                    
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+51h],al
-      ret
-.rev
-      mov [DSPMem+50h],al
       ret
 
 NEWSYM WDSPReg52       ; Voice  5  Pitch Low                                                                                                                                                                                                                                                       
@@ -2354,21 +2184,11 @@ NEWSYM WDSPReg5F       ; Voice  5  Echo coefficient
       ret
 
 NEWSYM WDSPReg60       ; Voice  6  Volume Left                                                                                                                                                                                                                                                     
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+60h],al
-      ret
-.rev
-      mov [DSPMem+61h],al
       ret
 
 NEWSYM WDSPReg61       ; Voice  6  Volume Right                                                                                                                                                                                                                                                    
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+61h],al
-      ret
-.rev
-      mov [DSPMem+60h],al
       ret
 
 NEWSYM WDSPReg62       ; Voice  6  Pitch Low                                                                                                                                                                                                                                                       
@@ -2466,21 +2286,11 @@ NEWSYM WDSPReg6F       ; Voice  6  Echo coefficient
       ret
 
 NEWSYM WDSPReg70       ; Voice  7  Volume Left                                                                                                                                                                                                                                                     
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+70h],al
-      ret
-.rev
-      mov [DSPMem+71h],al
       ret
 
 NEWSYM WDSPReg71       ; Voice  7  Volume Right                                                                                                                                                                                                                                                    
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+71h],al
-      ret
-.rev
-      mov [DSPMem+70h],al
       ret
 
 NEWSYM WDSPReg72       ; Voice  7  Pitch Low                                                                                                                                                                                                                                                       
