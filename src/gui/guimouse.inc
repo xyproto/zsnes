@@ -987,6 +987,8 @@ GUIWinClicked:
     je near DisplayGUIAddOnClick
     cmp ebx,18
     je near DisplayGUIChipClick
+    cmp ebx,19
+    je near DisplayGUIPathsClick
     ret
 
 %macro GUIClickCButton 3
@@ -3234,6 +3236,16 @@ DisplayGUIAddOnClick:
 DisplayGUIChipClick
     GUIPButtonHole 20,25,byte[st010difficulty],0
     GUIPButtonHole 75,25,byte[st010difficulty],1
+    ret
+
+DisplayGUIPathsClick
+    GUITextBoxInput 75,15,230,25,SRAMPath,16384
+    ;GUITextBoxInput 75,35,230,45,,16384
+    ;GUITextBoxInput 75,55,230,65,,16384
+    ;GUITextBoxInput 8,95,100,105,,16384
+    ;GUITextBoxInput 8,120,100,130,,16384
+    ;GUITextBoxInput 135,95,235,105,,16384
+    ;GUITextBoxInput 135,120,235,130,,16384
     ret
 
 DrawMouse:

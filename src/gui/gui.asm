@@ -163,7 +163,6 @@ EXTSYM GUIHQ3X
 EXTSYM GUIHQ4X
 EXTSYM firstsaveinc
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
-NEWSYM st010difficulty,  db 0     ; place holder till we commit the other Seta 10 file
 ;EXTSYM st010difficulty
 %ifdef __LINUX__
 EXTSYM numlockptr
@@ -611,6 +610,8 @@ NEWSYM KeyUsePlayer1234, dd 0
 NEWSYM hqFilter, db 0
 NEWSYM reserved, db 0
 NEWSYM scale2xFilter, db 0
+NEWSYM st010difficulty,  db 0     ; place holder till we commit the other Seta 10 file
+NEWSYM SRAMPath, times 16384 db '0'
 
 GUIsave equ $-GUIRAdd
 

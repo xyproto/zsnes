@@ -6303,10 +6303,51 @@ SECTION .text
 
 DisplayGUIPaths:
     GUIDrawWindowBox 19,GUIPathsDisp
+    sub byte[GUItextcolor],15
+    GUIOuttextwin2 19,8,18,GUIPathsText1
+    GUIOuttextwin2 19,8,38,GUIPathsText2
+    GUIOuttextwin2 19,8,58,GUIPathsText3
+    GUIOuttextwin2 19,60,78,GUIPathsText4
+    GUIOuttextwin2 19,8,88,GUIPathsText5
+    GUIOuttextwin2 19,135,88,GUIPathsText6
+    GUIOuttextwin2 19,8,113,GUIPathsText8
+    GUIOuttextwin2 19,135,113,GUIPathsText7
+    add byte[GUItextcolor],15
+    GUIOuttextwin2 19,7,17,GUIPathsText1
+    GUIOuttextwin2 19,7,37,GUIPathsText2
+    GUIOuttextwin2 19,7,57,GUIPathsText3
+    GUIOuttextwin2 19,59,77,GUIPathsText4
+    GUIOuttextwin2 19,7,87,GUIPathsText5
+    GUIOuttextwin2 19,134,87,GUIPathsText6
+    GUIOuttextwin2 19,7,112,GUIPathsText8
+    GUIOuttextwin2 19,134,112,GUIPathsText7
+    ;Input boxes - alternate color
+    DrawGUIWinBox  19,74,14,231,26,177
+    DrawGUIWinBox  19,74,34,231,46,177
+    DrawGUIWinBox  19,74,54,231,66,177
+    DrawGUIWinBox  19,7,94,101,106,177
+    DrawGUIWinBox  19,7,119,101,131,177
+    DrawGUIWinBox  19,134,94,236,106,177
+    DrawGUIWinBox  19,134,119,236,131,177
+    ;Input boxes
+    DrawGUIWinBox  19,75,15,230,25,167
+    DrawGUIWinBox  19,75,35,230,45,167
+    DrawGUIWinBox  19,75,55,230,65,167
+    DrawGUIWinBox  19,8,95,100,105,167
+    DrawGUIWinBox  19,8,120,100,130,167
+    DrawGUIWinBox  19,135,95,235,105,167
+    DrawGUIWinBox  19,135,120,235,130,167
     ret
 
 SECTION .data
-
+GUIPathsText1 db 'SAVES:',0
+GUIPathsText2 db 'SNAPSHOTS:',0
+GUIPathsText3 db 'SPCS:',0
+GUIPathsText4 db '--BIOS/BASE CARTS--',0
+GUIPathsText5 db 'BS-X:',0
+GUIPathsText6 db 'SUFAMI TURBO:',0
+GUIPathsText7 db 'SD GUNDAM G-NEXT:',0
+GUIPathsText8 db 'SAME GAME:',0
 
 
 
