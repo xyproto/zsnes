@@ -421,7 +421,7 @@ ESC : Exit entire program
 16.) Credits
 ---------------------------------------------------------------------------
 
-ZSNES uses NASM, DJGPP, WDOSX, and CWSDPMI (source codes & binary updates
+ZSNES uses NASM, DJGPP, and CWSDPMI (source codes & binary updates
       located at http://www.dbit.com/pub/cwsdpmi ) as the compilers and dos
       extenders.  Thanks to those who produced these fine programs!
 
