@@ -5803,28 +5803,27 @@ NEWSYM CheckROMType
     mov byte[CHIPSRAM],1 ;Check later if this should be removed
     jmp .endchpdtct
 .notSETAB
+;Super FX has SRAM, but only a battery to save it on the latter two
     cmp ax,01320h
     jne .notSFXA
     mov byte[SFXEnable],1
-    mov byte[SFXSRAM],1 ;Check later if this should be removed
     jmp .endchpdtct
 .notSFXA
     cmp ax,01420h
     jne .notSFXB
     mov byte[SFXEnable],1
-    mov byte[SFXSRAM],1 ;Check later if this should be removed
     jmp .endchpdtct
 .notSFXB
     cmp ax,01520h
     jne .notSFXC
     mov byte[SFXEnable],1
-    mov byte[SFXSRAM],1 ;Check later if this should be removed
+    mov byte[SFXSRAM],1 ;Contains Battery
     jmp .endchpdtct
 .notSFXC
     cmp ax,01A20h
     jne .notSFXD
     mov byte[SFXEnable],1
-    mov byte[SFXSRAM],1 ;Check later if this should be removed
+    mov byte[SFXSRAM],1 ;Contains Battery
     jmp .endchpdtct
 .notSFXD
     cmp ax,05535h
@@ -6207,6 +6206,7 @@ NEWSYM outofmemoryerror2, db 'ROM IS TOO BIG.',0
 SECTION .text
 
 NEWSYM InitAsmEnd
+
 
 
 
