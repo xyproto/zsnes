@@ -190,8 +190,8 @@ int main (int argc, char *argv[]) {
 			case 'f': {
 //				if (!hasroom) return 4;
 				frameskip = my_atoi(optarg);
-
 				if (frameskip > 9) return 10;
+                                frameskip++;
 				p++;
 				break;
 			}

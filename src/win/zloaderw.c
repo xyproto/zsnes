@@ -301,6 +301,7 @@ int pccmdline(void)
           if(!hasroom) return 4;
           frameskip=my_atoi(argv[p+1]);
           if(frameskip > 9) return 10;
+          frameskip++;
           p++;
           break;
         }
