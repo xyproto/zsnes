@@ -994,6 +994,9 @@ void drawscreenwin(void)
                                 //  for ZSNES' current transparency code)
     UpdateVFrame();
     if(curblank!=0) return;
+
+    Temp1=LockSurface();
+    if(Temp1==0) { return; }
     
 #ifdef __OPENGL__
     if (UseOpenGL) {
@@ -1032,9 +1035,6 @@ void drawscreenwin(void)
     } else {
 #endif
 
-        Temp1=LockSurface();
-        if(Temp1==0) { return; }
-    
 	ScreenPtr = vidbuffer;
 	ScreenPtr += 16*2+32*2+256*2;
 	SurfBufD = (DWORD) &SurfBuf[0];
