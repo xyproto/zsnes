@@ -111,7 +111,7 @@ EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,sfxclineloc
 EXTSYM PLOTJmpa,PLOTJmpb,FxTable,FxTableb,FxTablec,FxTabled
 EXTSYM SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,hdmaearlstart,SFXCounter
 EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67,fxbit67pcal
-EXTSYM SfxSFR,nosprincr
+EXTSYM SfxSFR,nosprincr,hirqmode2
 EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 EXTSYM ReadSPC7110log,WriteSPC7110log
 
@@ -942,6 +942,7 @@ NetSaveState:
 %%novirq
     test byte[INTEnab],10h
     jz %%noirq
+%%setagain
     cmp byte[intrset],2
     jbe %%nointrseta3
     dec byte[intrset]
@@ -950,8 +951,13 @@ NetSaveState:
 %%nointrseta3
     cmp byte[intrset],1
     jne %%nointrseta2
+    cmp byte[hirqmode2],1
+    je %%hirqchange
     mov byte[intrset],8
     jmp %%noirq
+%%hirqchange
+    mov byte[intrset],3
+    jmp %%setagain
 %%nointrseta2
     test dl,04h
     jnz %%noirq
@@ -1303,7 +1309,7 @@ NEWSYM endprog
 
     EXTSYM SDD1Array,SDD1Entry,SDD1Sort
     call SDD1Sort
-    jmp .nodecomppack
+;    jmp .nodecomppack
     cmp byte[SDD1Enable],0
     jne .yesdecomppack
     cmp dword[SDD1Entry],0

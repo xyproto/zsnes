@@ -1325,6 +1325,7 @@ NEWSYM Reg4212hack,    dd 0
 NEWSYM CacheCheckSkip,     db 0
 NEWSYM HIRQSkip,     db 0
 NEWSYM ClearScreenSkip, db 0
+NEWSYM hirqmode2, db 0
 SECTION .text
 
 ; hacks :
@@ -1426,6 +1427,14 @@ NEWSYM headerhack
     mov byte[HIRQSkip],0
     mov dword[WindowDisables],0
     mov byte[ClearScreenSkip],0
+    mov byte[hirqmode2],0
+
+    mov esi,[romdata]
+    add esi,7FC0h
+    cmp dword[esi],'FF M'
+    jne .notffmq
+    mov byte[hirqmode2],1
+.notffmq
 
     mov esi,[romdata]
     add esi,7FC0h
