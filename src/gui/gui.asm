@@ -70,7 +70,7 @@ EXTSYM soundon, StereoSound, SoundCompD, SoundQuality, MusicRelVol
 EXTSYM endprog, continueprog, spcBuffera, spcRamcmp, cbitmode, makepal
 EXTSYM t1cc, LoadDir, SRAMDir, LoadDrive,SRAMDrive, initsnes, romloadskip
 EXTSYM fname, makeextension, sram, clearmem2, loadfileGUI, GUIloadfailed
-EXTSYM SetupROM, CheckROMType, romdata, ForcePal, ramsize, ramsizeand, curromsize
+EXTSYM SetupROM,CheckROMType, romdata, ForcePal, ramsize, ramsizeand, curromsize
 EXTSYM romispal, totlines, cfgloadsdir, init65816, procexecloop
 EXTSYM spcRam, spcPCRam, spcS, spcRamDP, spcA, spcX, spcY, spcP, spcNZ
 EXTSYM Voice0Status, Voice1Status, Voice2Status, Voice3Status, Voice4Status
@@ -158,6 +158,7 @@ EXTSYM TCPIPSendPacket,TCPIPSendPacketUDP
 EXTSYM TCPIPDisconnect,TCPIPStatus
 EXTSYM TCPIPStoreByte
 EXTSYM TCPIPGetByte,GUIBIFIL
+EXTSYM GUIHQ3X
 EXTSYM firstsaveinc
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 %ifdef __LINUX__
@@ -585,7 +586,7 @@ NEWSYM SmallMsgText, db 0
 NEWSYM AllowMultipleInst, db 0
 NEWSYM FilteredGUI, db 0
 NEWSYM BilinearFilter, db 0
-NEWSYM TripleBufferWin, db 0
+NEWSYM hq3xFilter, db 0
 
 NEWSYM ExclusiveSound, db 0
 NEWSYM DisableScreenSaver, db 0
@@ -1540,6 +1541,7 @@ NEWSYM StartGUI
     jmp .no2xSaIdis
 .2xSaIdis
     mov byte[En2xSaI],0
+    mov byte[hq3xFilter],0
 .no2xSaIdis
     cmp byte[En2xSaI],0
     je .no2xsaidis
@@ -1547,9 +1549,16 @@ NEWSYM StartGUI
 .no2xsaidis
     cmp byte[En2xSaI],0
     je .no2xsaien
+    mov byte[hq3xFilter],0
     mov byte[scanlines],0
     mov byte[antienab],0
 .no2xsaien
+    cmp byte[hq3xFilter],0
+    je .nohq3x
+    mov byte[En2xSaI],0
+    mov byte[scanlines],0
+    mov byte[antienab],0
+.nohq3x
 
 ;.dosport
     mov ecx,64

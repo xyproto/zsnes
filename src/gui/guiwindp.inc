@@ -1643,6 +1643,7 @@ DisplayGUIVideo:
     jmp .no2xSaIdis
 .2xSaIdis
     mov byte[En2xSaI],0
+    mov byte[hq3xFilter],0
 .no2xSaIdis
     cmp byte[En2xSaI],0
     je .no2xsaidis
@@ -1650,9 +1651,16 @@ DisplayGUIVideo:
 .no2xsaidis
     cmp byte[En2xSaI],0
     je .no2xsaien
+    mov byte[hq3xFilter],0
     mov byte[scanlines],0
     mov byte[antienab],0
 .no2xsaien
+    cmp byte[hq3xFilter],0
+    je .nohq3xen
+    mov byte[En2xSaI],0
+    mov byte[scanlines],0
+    mov byte[antienab],0
+.nohq3xen
     ; Video Modes List/Scanlines/Interpolation/Full(Small) Screen
     GUIDrawWindowBox 5,GUIVideoDisp
     mov byte[GUItextcolor],217
@@ -1687,12 +1695,6 @@ DisplayGUIVideo:
     GUIOuttextwin2u 5,76,119,GUIVideoTexta2,0
     GUIOuttextwin2u 5,116,119,GUIVideoTexta3,0
 .notexta
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUITBWVID+eax],0
-    je near .nottbw
-    GUIOuttextwin2u 5,26,128,GUIVideoText7,0
-.nottbw
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUI2xVID+eax],0
@@ -1758,6 +1760,12 @@ DisplayGUIVideo:
     je .notext8
     GUIOuttextwin2u 5,26,178,GUIVideoText8b,0
 .notext8
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUIHQ3X+eax],0
+    je near .notext11
+    GUIOuttextwin2u 5,26,128,GUIVideoTexthq3x,1
+.notext11
     GUIOuttextwin2u 5,26,188,GUIVideoText8c,0
 %ifndef __LINUX__
     GUIOuttextwin2u 5,130,188,GUIVideoText9,0
@@ -1788,12 +1796,6 @@ DisplayGUIVideo:
     GUIOuttextwin2 5,75,118,GUIVideoTexta2
     GUIOuttextwin2 5,115,118,GUIVideoTexta3
 .notextab
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUITBWVID+eax],0
-    je near .nottbwb
-    GUIOuttextwin2 5,25,127,GUIVideoText7
-.nottbwb
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUI2xVID+eax],0
@@ -1859,6 +1861,12 @@ DisplayGUIVideo:
     je .notext8b
     GUIOuttextwin2 5,25,177,GUIVideoText8b
 .notext8b
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUIHQ3X+eax],0
+    je near .notext11b
+    GUIOuttextwin2 5,25,127,GUIVideoTexthq3x
+.notext11b
     GUIOuttextwin2 5,25,187,GUIVideoText8c
 %ifndef __LINUX__
     GUIOuttextwin2 5,129,187,GUIVideoText9
@@ -1901,17 +1909,6 @@ DisplayGUIVideo:
 .nocheckboxv2
     GUIDisplayIconWin 5,101,114,[GUITemp]
 .nocheckboxw
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUITBWVID+eax],0
-    je near .nocheckboxslw2
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[TripleBufferWin],1
-    jne .nocheckboxslw
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckboxslw
-    GUIDisplayIconWin 5,11,123,[GUITemp]
-.nocheckboxslw2
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUI2xVID+eax],0
@@ -2031,6 +2028,17 @@ DisplayGUIVideo:
 .nocheckbox3
     GUIDisplayIconWin 5,11,98,[GUITemp]
 .nocheckbox3b
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUIHQ3X+eax],0
+    je near .nocheckbox2hq3x
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[hq3xFilter],0
+    je .nocheckbox1hq3x
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox1hq3x
+    GUIDisplayIconWin 5,11,123,[GUITemp]
+.nocheckbox2hq3x
     DrawGUIWinBox 5,5,26,115,69,167
     DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],5,28,GUIVStA
     cmp byte[GUICHold],5
@@ -2150,6 +2158,7 @@ GUIVideoTextd2 db 'SUPER 2XSAI ENGINE',0
 GUIVideoTextbf db 'BILINEAR FILTER',0
 GUIVideoText3 db 'INTERPOLATION',0      ; -y
 GUIVideoText4 db 'EAGLE ENGINE',0       ; -y
+GUIVideoTexthq3x db 'HQ3X FILTER',0
 GUIVideoText5 db 'FULL SCREEN',0        ; -c
 GUIVideoText5b db 'WIDE SCREEN',0        ; -c
 GUIVideoText6 db 'SMALL SCREEN',0       ; -c
@@ -5241,10 +5250,10 @@ GUIGUIAboutText3 db '    ZSKNIGHT',0
 GUIGUIAboutText4 db '    _DEMO_',0
 GUIGUIAboutText6c db '    PAGEFAULT',0
 GUIGUIAboutText5 db 'ASSISTANT CODERS :  ',0
-GUIGUIAboutText6  db '    PHAROS        NACH',0
-GUIGUIAboutText6b db '    TEUF          HPSOLO',0
-GUIGUIAboutText6d db '    THEODDONE33   STAINLESS',0
-GUIGUIAboutText6e db '    ',0
+GUIGUIAboutText6 db '    PHAROS',0
+GUIGUIAboutText6b db '    TEUF',0
+GUIGUIAboutText6d db '    THEODDONE33',0
+GUIGUIAboutText6e db '    STAINLESS',0
 
 %ifdef __MSDOS__
 GUIGUIAboutText7 db 'DOS VERSION',0

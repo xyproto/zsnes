@@ -212,6 +212,7 @@ NEWSYM romispal,      resb 1            ; 0 = NTSC, 1 = PAL
 NEWSYM enterpress,    resb 1            ; if enter is to be issued (0 = yes)
 NEWSYM newgfx16b,     resb 1
 NEWSYM BitConv32Ptr,     resd 1
+NEWSYM RGBtoYUVPtr,   resd 1
 
 NEWSYM previdmode,    resb 1            ; previous video mode
 NEWSYM cbitmode,      resb 1            ; bit mode, 0=8bit, 1=16bit
@@ -681,6 +682,7 @@ NEWSYM allocptr
     AllocmemFail 65536*4*4+4096,vcache2bs,outofmemory
     AllocmemFail 65536*4*2+4096,vcache4bs,outofmemory
     AllocmemFail 65536*4+4096,vcache8bs,outofmemory
+    AllocmemFail 65536*4+4096,RGBtoYUVPtr,outofmemory
     mov byte[newgfx16b],1
     AllocmemOkay 4096*1024+32768*2+2048*1024+4096,romaptr,.memoryokay
     mov byte[Sup48mbit],0

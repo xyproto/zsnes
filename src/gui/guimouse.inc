@@ -1380,6 +1380,21 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
+%macro GUIClickCButtonHQ 3
+    cmp eax,%1+1
+    jl %%noclick
+    cmp edx,%2+3
+    jl %%noclick
+    cmp eax,%1+6
+    jg %%noclick
+    cmp edx,%2+8
+    jg %%noclick
+    xor %3,1
+    jz %%noclick
+    mov byte[En2xSaI],0
+%%noclick
+%endmacro
+
 %macro GUIClickCButtonT 4
     cmp eax,%1+1
     jl %%noclick
@@ -2301,8 +2316,8 @@ DisplayGUIVideoClick:
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUISLVID+ebx],0
-    GUIClickCButton4 21,114,byte[scanlines],byte[cfgscanline],1
     je near .nocheckboxb
+    GUIClickCButton4 21,114,byte[scanlines],byte[cfgscanline],1
 .nocheckboxb
     xor ebx,ebx
     mov bl,[cvidmode]
@@ -2330,14 +2345,12 @@ DisplayGUIVideoClick:
     GUIClickCButton4 61,114,byte[scanlines],byte[cfgscanline],3
     GUIClickCButton4 101,114,byte[scanlines],byte[cfgscanline],2
 .nohsline
-%ifdef __WIN32__
     xor ebx,ebx
     mov bl,[cvidmode]
-    cmp byte[GUITBWVID+ebx],0
-    je near .notriplebufferwin
-    GUIClickCButtonf 11,123,byte[TripleBufferWin],initDirectDraw
-.notriplebufferwin
-%endif
+    cmp byte[GUIHQ3X+ebx],0
+    je .nocheckboxhq3x
+    GUIClickCButtonHQ 11,123,byte[hq3xFilter]
+.nocheckboxhq3x
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUI2xVID+ebx],0

@@ -26,7 +26,7 @@ ZIPDIR=zip
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
 	 ${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
-	 ${CHIPDIR}/sa1proc.o ${CHIPDIR}/sa1regs.o ${CHIPDIR}/dsp1emu.o
+	 ${CHIPDIR}/sa1proc.o ${CHIPDIR}/sa1regs.o $CHIPDIR}/dsp1emu.o
 
 CPUOBJ=${CPUDIR}/addrni.o ${CPUDIR}/dma.o ${CPUDIR}/dsp.o ${CPUDIR}/dspproc.o\
 	${CPUDIR}/execute.o ${CPUDIR}/irq.o ${CPUDIR}/memory.o \
@@ -41,9 +41,11 @@ VIDEOBJ=${VIDEODIR}/makev16b.o ${VIDEODIR}/makev16t.o ${VIDEODIR}/makevid.o\
 	${VIDEODIR}/mode7ext.o ${VIDEODIR}/mv16tms.o ${VIDEODIR}/newg162.o\
 	${VIDEODIR}/newgfx16.o ${VIDEODIR}/newgfx2.o ${VIDEODIR}/newgfx.o\
 	${VIDEODIR}/m716text.o ${VIDEODIR}/2xsaiw.o\
-	${VIDEODIR}/procvid.o ${VIDEODIR}/sw_draw.o
+	${VIDEODIR}/procvid.o ${VIDEODIR}/sw_draw.o\
+        $${VIDEODIR}/hq3x16.o ${VIDEODIR}/hq3x32.o
 
-WINOBJ=${WINDIR}/copyvwin.o ${WINDIR}/sdlintrf.o ${WINDIR}/sdllink.o \
+WINOBJ=${WINDIR}/copyvwin.o \
+	${WINDIR}/sdlintrf.o ${WINDIR}/sdllink.o \
 	@GL_DRAW@ ${WINDIR}/sw_draw.o \
 	${WINDIR}/zloaderw.o ${WINDIR}/ztcp.o ${WINDIR}/zipxw.o \
 	${WINDIR}/zfilew.o ${WINDIR}/protect.o
@@ -80,6 +82,9 @@ water.o: water.c
 smoke.o: smoke.c
 burn.o: burn.c
 ${VIDEODIR}/procvid.o: ${VIDEODIR}/procvid.asm macros.mac ${VIDEODIR}/copyvid.inc ${VIDEODIR}/2xsaimmx.inc
+${VIDEODIR}/sw_draw.obj: ${VIDEODIR}/sw_draw.asm macros.mac
+${VIDEODIR}/hq3x16.obj: ${VIDEODIR}/hq3x16.asm macros.mac
+${VIDEODIR}/hq3x32.obj: ${VIDEODIR}/hq3x32.asm macros.mac
 ${CHIPDIR}/dsp1proc.o: ${CHIPDIR}/dsp1proc.asm macros.mac
 ${CHIPDIR}/sa1regs.o: ${CHIPDIR}/sa1regs.asm macros.mac\
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac

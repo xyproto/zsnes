@@ -1019,6 +1019,8 @@ GUIVideoKeys:
     jne .nofullscanlines
     cmp byte[En2xSaI],0
     jne .nofullscanlines
+    cmp byte[hq3xFilter],0
+    jne .nofullscanlines
     call ClearScreen
     GUIkeystoggleoptn byte[scanlines],1
 %ifdef __MSDOS__
@@ -1043,6 +1045,8 @@ GUIVideoKeys:
     jne .nohalfscanlines
     cmp byte[En2xSaI],0
     jne .nohalfscanlines
+    cmp byte[hq3xFilter],0
+    jne .nohalfscanlines
     call ClearScreen
     GUIkeystoggleoptn byte[scanlines],3
 %ifdef __MSDOS__
@@ -1058,6 +1062,8 @@ GUIVideoKeys:
     jne .noquarterscanlines
     cmp byte[En2xSaI],0
     jne .noquarterscanlines
+    cmp byte[hq3xFilter],0
+    jne .noquarterscanlines
     call ClearScreen
     GUIkeystoggleoptn byte[scanlines],2
 %ifdef __MSDOS__
@@ -1069,6 +1075,20 @@ GUIVideoKeys:
     ;call GUISetPal
 %endif
 .noquarterscanlines
+    cmp dh,'Q'
+    jne .nohq3xfilter
+    xor ebx,ebx
+    mov bl,[cvidmode]
+    cmp byte[GUIHQ3X+ebx],0
+    je .nohq3xfilter
+    xor byte[hq3xFilter],1
+    jz .nohq3xfilter
+    mov byte[scanlines],0
+    mov byte[cfgscanline],0
+    mov byte[En2xSaI],0
+    mov byte[antienab],0
+    mov byte[cfginterp],0
+.nohq3xfilter
     cmp dh,'X'
     jne .no2xsai
     xor ebx,ebx
@@ -1176,19 +1196,6 @@ GUIVideoKeys:
     je .nobilinearfilter
     xor byte[BilinearFilter],1
 .nobilinearfilter
-%ifdef __WIN32__
-    cmp dh,'T'
-    jne .notriplebufferwin
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUITBWVID+eax],0
-    je near .notriplebufferwin
-    xor byte[TripleBufferWin],1
-;    mov byte[vsyncon],0
-;    mov byte[cfgvsync],0
-    call initDirectDraw
-.notriplebufferwin
-%endif
 %ifdef __MSDOS__
     cmp dh,'T'
     jne .notriplebuffer
@@ -1212,7 +1219,6 @@ GUIVideoKeys:
     mov al,[vsyncon]
     mov [cfgvsync],al
 %ifdef __WIN32__
-;    mov byte[TripleBufferWin],0
     call initDirectDraw
 %endif
 %ifdef __MSDOS__

@@ -268,40 +268,31 @@ void DDrawError(){
 }
 
 extern "C" BYTE vsyncon;
-extern "C" BYTE TripleBufferWin;
 
 void DrawScreen()
 {
-   if (FullScreen == 1)
-   {
-      if (TripleBufferWin == 1)
+  if (FullScreen == 1)
+  {
+    DDBLTFX ddbltfx;
+
+    ddbltfx.dwSize = sizeof(ddbltfx);
+    ddbltfx.dwFillColor = 0;
+
+    DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx );
+    DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
+    DD_Primary->Flip(NULL, DDFLIP_WAIT);
+  }
+  else
+  {
+    if (vsyncon == 1)
+    {
+      if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
       {
-         DD_BackBuffer->Blt(NULL, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
-         DD_Primary->Flip(NULL, DDFLIP_WAIT);
+        DDrawError();
       }
-      else
-      {
-         if (vsyncon == 1)
-         {
-            if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
-            {
-               DDrawError();
-            }
-         }
-         DD_Primary->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
-      }
-   }
-   else
-   {
-      if (vsyncon == 1)
-      {
-         if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
-         {
-            DDrawError();
-         }
-      }
-         DD_Primary->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
-   }
+    }
+    DD_Primary->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
+  }
 }
  
 DWORD InputEn=0;
@@ -1260,6 +1251,7 @@ void TestJoy()
 
 extern "C" DWORD converta;
 extern "C" unsigned int BitConv32Ptr;
+extern "C" unsigned int RGBtoYUVPtr;
 
 int InitDirectDraw()
 {
@@ -1268,7 +1260,7 @@ int InitDirectDraw()
    HRESULT hr;
    char message1[256];
    unsigned int color32,ScreenPtr2;
-   int i;
+   int i, j, k, r, g, b, Y, u, v;
 
    ScreenPtr2=BitConv32Ptr;
    for(i=0;i<65536;i++)
@@ -1280,17 +1272,46 @@ int InitDirectDraw()
       ScreenPtr2+=4;
    }
 
+   for (i=0; i<32; i++)
+   for (j=0; j<64; j++)
+   for (k=0; k<32; k++)
+   {
+     r = i << 3;
+     g = j << 2;
+     b = k << 3;
+     Y = (r + g + b) >> 2;
+     u = 128 + ((r - b) >> 2);
+     v = 128 + ((-r + 2*g -b)>>3);
+     *(((unsigned int *)RGBtoYUVPtr) + (i << 11) + (j << 5) + k) = (Y<<16) + (u<<8) + v;
+   }
+
    if (!hMainWindow)
    {
       exit(1);
    }
 
    ReleaseDirectDraw();
-
+   
    GetClientRect(hMainWindow, &rcWindow);
    ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow);
    ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow + 1);
 
+   if (SurfaceX == 768 && SurfaceY == 720)
+   {
+      int marginx = (rcWindow.right - rcWindow.left - BlitArea.right + BlitArea.left)/2;
+      int marginy = (rcWindow.bottom - rcWindow.top - BlitArea.bottom + BlitArea.top)/2;
+      if (marginx>0)
+      {
+        rcWindow.left += marginx;
+        rcWindow.right -= marginx;
+      }
+      if (marginy>0)
+      {
+        rcWindow.top += marginy;
+        rcWindow.bottom -= marginy;
+      }
+   }
+   
    if (pDirectDrawCreateEx(NULL, (void **)&lpDD, IID_IDirectDraw7, NULL) != DD_OK)
    {
       MessageBox(NULL, "DirectDrawCreateEx failed.", "DirectDraw Error", MB_ICONERROR);
@@ -1332,7 +1353,18 @@ int InitDirectDraw()
       ddsd2.ddsCaps.dwCaps |= DDSCAPS_FLIP | DDSCAPS_COMPLEX;
    }
 
-   if (lpDD->CreateSurface(&ddsd2, &DD_Primary, NULL) != DD_OK)
+   HRESULT hRes = lpDD->CreateSurface(&ddsd2, &DD_Primary, NULL);
+
+   if (FullScreen == 1)
+   {
+     if ((hRes == DDERR_OUTOFMEMORY) || (hRes == DDERR_OUTOFVIDEOMEMORY))
+     {
+       ddsd2.dwBackBufferCount = 1;
+       hRes = lpDD->CreateSurface(&ddsd2, &DD_Primary, NULL);
+     }
+   }
+
+   if (hRes != DD_OK)
    {
       MessageBox(NULL, "IDirectDraw7::CreateSurface failed.", "DirectDraw Error", MB_ICONERROR);
       return FALSE;
@@ -1545,13 +1577,16 @@ void Stop36HZ(void)
 
 char WinMessage[256];
 extern unsigned char cvidmode;
+extern unsigned char hq3xFilter;
 DWORD FirstVid=1;
 DWORD FirstFull=1;
 DWORD SMode=0;
 DWORD DSMode=0;
+DWORD prevHQ3XMode=-1;
 extern BYTE GUIWFVID[];
 extern BYTE GUISMODE[];
 extern BYTE GUIDSMODE[];
+extern BYTE GUIHQ3X[];
 extern unsigned short resolutn;
 void clearwin();
 
@@ -1563,10 +1598,15 @@ void initwinvideo(void)
    WINDOWPLACEMENT wndpl;
    RECT rc1, swrect;
    DWORD newmode=0;
+   DWORD HQ3XMode=0;
 
-   if (CurMode!=cvidmode)
+   if ((GUIHQ3X[cvidmode]!=0) && (hq3xFilter!=0))
+     HQ3XMode=1;
+
+   if ((CurMode!=cvidmode) || (prevHQ3XMode!=HQ3XMode))
    {
       CurMode=cvidmode;
+      prevHQ3XMode=HQ3XMode;
       newmode=1;
       SurfaceX=256;
       SurfaceY=240;
@@ -1631,8 +1671,16 @@ void initwinvideo(void)
       case 10:
          WindowWidth=768;
          WindowHeight=672;
-         SurfaceX=512;
-         SurfaceY=480;
+         if (HQ3XMode!=0)
+         {
+           SurfaceX=768;
+           SurfaceY=720;
+         }
+         else
+         {
+           SurfaceX=512;
+           SurfaceY=480;
+         }
          break;
       case 11:
          WindowWidth=800;
@@ -1651,8 +1699,16 @@ void initwinvideo(void)
       case 14:
          WindowWidth=800;
          WindowHeight=600;
-         SurfaceX=640;
-         SurfaceY=480;
+         if (HQ3XMode!=0)
+         {
+           SurfaceX=768;
+           SurfaceY=720;
+         }
+         else
+         {
+           SurfaceX=640;
+           SurfaceY=480;
+         }
          break;
       case 15:
          WindowWidth=800;
@@ -1677,8 +1733,16 @@ void initwinvideo(void)
       case 19:
          WindowWidth=1024;
          WindowHeight=768;
-         SurfaceX=640;
-         SurfaceY=480;
+         if (HQ3XMode!=0)
+         {
+           SurfaceX=768;
+           SurfaceY=720;
+         }
+         else
+         {
+           SurfaceX=640;
+           SurfaceY=480;
+         }
          break;
       case 20:
          WindowWidth=1024;
@@ -1776,6 +1840,8 @@ void initwinvideo(void)
            BlitArea.bottom = SurfaceY;
      }
 
+     if (SurfaceX == 768) BlitArea.bottom = (SurfaceY/240)*resolutn;
+
      if (PrevRes == 0) PrevRes = resolutn;
 
    }
@@ -1803,10 +1869,26 @@ void initwinvideo(void)
 
       AdjustWindowRectEx(&rc1,GetWindowLong(hMainWindow, GWL_STYLE),
       GetMenu(hMainWindow) != NULL, GetWindowLong(hMainWindow, GWL_EXSTYLE)); 
-
+      
       GetClientRect(hMainWindow, &rcWindow);
       ClientToScreen(hMainWindow, (LPPOINT) &rcWindow);
       ClientToScreen(hMainWindow, (LPPOINT) &rcWindow + 1);
+
+      if (SurfaceX == 768 && SurfaceY == 720)
+      {
+         int marginx = (rcWindow.right - rcWindow.left - BlitArea.right + BlitArea.left)/2;
+         int marginy = (rcWindow.bottom - rcWindow.top - BlitArea.bottom + BlitArea.top)/2;
+         if (marginx>0)
+         {
+           rcWindow.left += marginx;
+           rcWindow.right -= marginx;
+         }
+         if (marginy>0)
+         {
+           rcWindow.top += marginy;
+           rcWindow.bottom -= marginy;
+         }
+      }
    }
    else
    {
@@ -2057,6 +2139,8 @@ extern DWORD AddEndBytes;
 extern DWORD NumBytesPerLine;
 extern unsigned char * WinVidMemStart;
 extern void copy640x480x16bwin(void);
+extern void copy768x720x16bwin(void);
+extern void copy768x720x32bwin(void);
 extern unsigned char NGNoTransp;
 extern unsigned char newengen;
 extern void ClearWin16();
@@ -2128,7 +2212,7 @@ void drawscreenwin(void)
    {
       BlitArea.bottom = (SurfaceY/240)*224;
       if (SurfaceX == 512 && DSMode == 1) BlitArea.bottom = SurfaceY;
-      if ((SurfaceX == 256 || SurfaceX == 512) && (SMode == 0 && DSMode == 0)) WindowHeight = (WindowHeight/239)*224;
+      if ((SurfaceX == 256 || SurfaceX == 512 || SurfaceX == 768) && (SMode == 0 && DSMode == 0)) WindowHeight = (WindowHeight/239)*224;
       initwinvideo();
       PrevRes = resolutn;
    }
@@ -2137,10 +2221,23 @@ void drawscreenwin(void)
    {
       BlitArea.bottom = (SurfaceY/240)*239;
       if (SurfaceX == 512 && DSMode == 1) BlitArea.bottom = SurfaceY;
-      if ((SurfaceX == 256 || SurfaceX == 512) && (SMode == 0 && DSMode == 0)) WindowHeight = (WindowHeight/224)*239;
+      if ((SurfaceX == 256 || SurfaceX == 512 || SurfaceX == 768) && (SMode == 0 && DSMode == 0)) WindowHeight = (WindowHeight/224)*239;
       initwinvideo();
       PrevRes = resolutn;
    }
+
+   DWORD HQ3XMode=0;
+
+   if (MMXSupport == 0)
+     hq3xFilter=0;
+   else
+   {
+     if ((GUIHQ3X[cvidmode]!=0) && (hq3xFilter!=0))
+       HQ3XMode=1;
+   }
+
+   if (prevHQ3XMode!=HQ3XMode)
+     initwinvideo();
 
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
@@ -2309,6 +2406,41 @@ void drawscreenwin(void)
          default:
             UnlockSurface();
             MessageBox (NULL, "Mode only available in 16 bit color", "DDRAW Error" , MB_ICONERROR );
+            cvidmode=2;
+            initwinvideo();
+            Sleep(1000);
+            drawscreenwin();
+         }
+   }
+   if (SurfaceX == 768 && SurfaceY == 720)
+   {
+      switch (BitDepth)
+      {
+         case 16:
+            AddEndBytes=pitch-768*2;
+            NumBytesPerLine=pitch;
+            WinVidMemStart=&SurfBuf[0];
+            _asm
+            {
+               pushad
+               call copy768x720x16bwin
+               popad
+            }
+            break;
+         case 32:
+            AddEndBytes=pitch-768*4;
+            NumBytesPerLine=pitch;
+            WinVidMemStart=&SurfBuf[0];
+            _asm
+            {
+               pushad
+               call copy768x720x32bwin
+               popad
+            }
+            break;
+         default:
+            UnlockSurface();
+            MessageBox (NULL, "Mode only available in 16 and 32 bit color", "DDRAW Error" , MB_ICONERROR );
             cvidmode=2;
             initwinvideo();
             Sleep(1000);
