@@ -5546,7 +5546,6 @@ DisplayGUIMovies:
 .zero
     sub byte[GUItextcolor],15
     GUIOuttextwin2 15,61,16,GUIMovieText4
-    GUIOuttextwin2 15,7,115,GUIMovieTextA
     mov byte[GUIChoseSaveText2],'0'
     GUIOuttextwin2 15,71,28,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'1'
@@ -5556,28 +5555,28 @@ DisplayGUIMovies:
     mov byte[GUIChoseSaveText2],'3'
     GUIOuttextwin2 15,131,28,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'4'
-    GUIOuttextwin2 15,71,43,GUIChoseSaveText2
+    GUIOuttextwin2 15,151,28,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'5'
-    GUIOuttextwin2 15,91,43,GUIChoseSaveText2
+    GUIOuttextwin2 15,71,43,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'6'
-    GUIOuttextwin2 15,111,43,GUIChoseSaveText2
+    GUIOuttextwin2 15,91,43,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'7'
-    GUIOuttextwin2 15,131,43,GUIChoseSaveText2
+    GUIOuttextwin2 15,111,43,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'8'
-    GUIOuttextwin2 15,71,58,GUIChoseSaveText2
+    GUIOuttextwin2 15,131,43,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'9'
-    GUIOuttextwin2 15,91,58,GUIChoseSaveText2
-    GUIOuttextwin2 15,9,136,GUIMovieTextE
-    GUIOuttextwin2 15,9,146,GUIMovieTextF
-    GUIOuttextwin2 15,9,156,GUIMovieTextG
-    GUIOuttextwin2 15,21,166,GUIMovieTextI
-    GUIOuttextwin2 15,9,176,GUIMovieTextJ
-    GUIOuttextwin2 15,21,186,GUIMovieTextK
-    GUIOuttextwin2 15,56,186,GUIMovieTextL
-    GUIOuttextwin2 15,101,186,GUIMovieTextM
+    GUIOuttextwin2 15,150,42,GUIChoseSaveText2
+    GUIOuttextwin2 15,9,121,GUIMovieTextE
+    GUIOuttextwin2 15,9,131,GUIMovieTextF
+    GUIOuttextwin2 15,9,141,GUIMovieTextG
+    GUIOuttextwin2 15,71,55,GUIMovieTextI
+    GUIOuttextwin2 15,9,160,GUIMovieTextJ
+    GUIOuttextwin2 15,21,170,GUIMovieTextK
+    GUIOuttextwin2 15,56,170,GUIMovieTextL
+    GUIOuttextwin2 15,101,170,GUIMovieTextM
+    GUIOuttextwin2 15,21,180,GUIMovieTextN
     add byte[GUItextcolor],15
     GUIOuttextwin2 15,60,15,GUIMovieText4
-    GUIOuttextwin2 15,6,114,GUIMovieTextA
     mov byte[GUIChoseSaveText2],'0'
     GUIOuttextwin2 15,70,27,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'1'
@@ -5587,35 +5586,36 @@ DisplayGUIMovies:
     mov byte[GUIChoseSaveText2],'3'
     GUIOuttextwin2 15,130,27,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'4'
-    GUIOuttextwin2 15,70,42,GUIChoseSaveText2
+    GUIOuttextwin2 15,150,27,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'5'
-    GUIOuttextwin2 15,90,42,GUIChoseSaveText2
+    GUIOuttextwin2 15,70,42,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'6'
-    GUIOuttextwin2 15,110,42,GUIChoseSaveText2
+    GUIOuttextwin2 15,90,42,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'7'
-    GUIOuttextwin2 15,130,42,GUIChoseSaveText2
+    GUIOuttextwin2 15,110,42,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'8'
-    GUIOuttextwin2 15,70,57,GUIChoseSaveText2
+    GUIOuttextwin2 15,130,42,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'9'
-    GUIOuttextwin2 15,90,57,GUIChoseSaveText2
-    GUIOuttextwin2 15,8,135,GUIMovieTextE
-    GUIOuttextwin2 15,8,145,GUIMovieTextF
-    GUIOuttextwin2 15,8,155,GUIMovieTextG
-    GUIOuttextwin2 15,20,165,GUIMovieTextI
-    GUIOuttextwin2 15,8,175,GUIMovieTextJ
-    GUIOuttextwin2 15,20,185,GUIMovieTextK
-    GUIOuttextwin2 15,55,185,GUIMovieTextL
-    GUIOuttextwin2 15,100,185,GUIMovieTextM
+    GUIOuttextwin2 15,150,42,GUIChoseSaveText2
+    GUIOuttextwin2 15,8,120,GUIMovieTextE
+    GUIOuttextwin2 15,8,130,GUIMovieTextF
+    GUIOuttextwin2 15,8,140,GUIMovieTextG
+    GUIOuttextwin2 15,70,54,GUIMovieTextI
+    GUIOuttextwin2 15,8,159,GUIMovieTextJ
+    GUIOuttextwin2 15,20,169,GUIMovieTextK
+    GUIOuttextwin2 15,55,169,GUIMovieTextL
+    GUIOuttextwin2 15,100,169,GUIMovieTextM
+    GUIOuttextwin2 15,20,179,GUIMovieTextN
     GUIDisplayButtonHole 15,60,25,byte[CMovieExt],'v'
     GUIDisplayButtonHole 15,80,25,byte[CMovieExt],'1'
     GUIDisplayButtonHole 15,100,25,byte[CMovieExt],'2'
     GUIDisplayButtonHole 15,120,25,byte[CMovieExt],'3'
-    GUIDisplayButtonHole 15,60,40,byte[CMovieExt],'4'
-    GUIDisplayButtonHole 15,80,40,byte[CMovieExt],'5'
-    GUIDisplayButtonHole 15,100,40,byte[CMovieExt],'6'
-    GUIDisplayButtonHole 15,120,40,byte[CMovieExt],'7'
-    GUIDisplayButtonHole 15,60,55,byte[CMovieExt],'8'
-    GUIDisplayButtonHole 15,80,55,byte[CMovieExt],'9'
+    GUIDisplayButtonHole 15,140,25,byte[CMovieExt],'4'
+    GUIDisplayButtonHole 15,60,40,byte[CMovieExt],'5'
+    GUIDisplayButtonHole 15,80,40,byte[CMovieExt],'6'
+    GUIDisplayButtonHole 15,100,40,byte[CMovieExt],'7'
+    GUIDisplayButtonHole 15,120,40,byte[CMovieExt],'8'
+    GUIDisplayButtonHole 15,140,40,byte[CMovieExt],'9'
     
     mov al,[GUIWincol]
     mov [GUIGameOptnsColA],al
@@ -5626,7 +5626,7 @@ DisplayGUIMovies:
 .zero3
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 15,6,126,GUIMovieTextH
+    GUIOuttextwin2 15,6,192,GUIMovieTextA
     
     mov byte[GUIGameOptnsColA],163
     mov byte[GUIGameOptnsColB],217
@@ -5637,24 +5637,25 @@ DisplayGUIMovies:
 .zero5
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 15,5,125,GUIMovieTextH
+    GUIOuttextwin2 15,5,191,GUIMovieTextA
     
-    DDrawBox 15,97,134,[KeyInsrtChap]
-    DDrawBox 15,97,144,[KeyNextChap]
-    DDrawBox 15,97,154,[KeyPrevChap]
-    DGOptnsBorderBox 15,96,133
-    DGOptnsBorderBox 15,96,143
-    DGOptnsBorderBox 15,96,153
+    DDrawBox 15,97,119,[KeyInsrtChap]
+    DDrawBox 15,97,129,[KeyNextChap]
+    DDrawBox 15,97,139,[KeyPrevChap]
+    DGOptnsBorderBox 15,96,118
+    DGOptnsBorderBox 15,96,128
+    DGOptnsBorderBox 15,96,138
     
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[MovieDisplayFrame],0
     je .nocheckboxMDF
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckboxMDF
-    GUIDisplayIconWin 15,8,162,[GUITemp]
-    GUIDisplayButtonHole 15,8,183,byte[MovieStartMethod],0
-    GUIDisplayButtonHole 15,43,183,byte[MovieStartMethod],1
-    GUIDisplayButtonHole 15,88,183,byte[MovieStartMethod],2
+    GUIDisplayIconWin 15,60,50,[GUITemp]
+    GUIDisplayButtonHole 15,8,167,byte[MovieStartMethod],0
+    GUIDisplayButtonHole 15,43,167,byte[MovieStartMethod],1
+    GUIDisplayButtonHole 15,88,167,byte[MovieStartMethod],2
+    GUIDisplayButtonHole 15,8,177,byte[MovieStartMethod],3
     ret
 
 SECTION .data
@@ -5674,12 +5675,13 @@ GUIMovieTextD db 'NEXT CHAPTER',0
 GUIMovieTextE db 'INSERT CHAPTER',0
 GUIMovieTextF db 'NEXT CHAPTER',0
 GUIMovieTextG db 'PREV CHAPTER',0
-GUIMovieTextH db 'MOVIE KEYS :',0
+;GUIMovieTextH db ' ',0
 GUIMovieTextI db 'DISPLAY FRAMES',0
 GUIMovieTextJ db 'START FROM:',0
 GUIMovieTextK db 'NOW',0
 GUIMovieTextL db 'POWER',0
 GUIMovieTextM db 'RESET',0
+GUIMovieTextN db 'POWER + SRAM CLEAR',0
 NEWSYM CMovieExt, db 'v'
 
 SECTION .text
