@@ -188,7 +188,6 @@ NEWSYM showmenu
     je near .nopcx
     mov dword[menudrawbox8b.stringi+13],' PCX'
 .nopcx
-
     mov byte[nextmenupopup],0
     mov byte[menu16btrans],0
     mov byte[pressed+1],0
@@ -198,7 +197,6 @@ NEWSYM showmenu
     ; Draw box
     call menudrawbox8b
     call menudrawbox8b
-
     cmp byte[newengen],0
     je .notng
     mov byte[GUIOn],1
@@ -206,7 +204,6 @@ NEWSYM showmenu
     pushad
     call copyvid
     popad
-
     call StopSound
 .nextkey
     call GUIUnBuffer
@@ -346,7 +343,7 @@ NEWSYM showmenu
 ;    call breakatsignc
 ;    cmp byte[prbreak],1
 ;    je .yesesc
-;    call breakatsignb
+    call breakatsignb
 ;    cmp byte[prbreak],1
 ;    je .yesesc
     call savespcdata
