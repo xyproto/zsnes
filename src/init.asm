@@ -1468,6 +1468,19 @@ NEWSYM headerhack
 
     mov esi,[romdata]
     add esi,07FC0h
+    cmp dword[esi],0B4B1DEC3h
+    jne .notdeasomething
+    cmp dword[esi+4],0CFBBC9C4h
+    jne .notdeasomething
+    cmp dword[esi+8],0CAAFB120h
+    jne .notdeasomething
+    mov esi,[romdata]
+    add esi,017837Ch
+    mov word [esi],0EAEAh    
+.notdeasomething
+
+    mov esi,[romdata]
+    add esi,07FC0h
     cmp dword[esi],'HUMA'
     jne .nothumangrandprix3
     cmp dword[esi+4],'N GR'
