@@ -101,9 +101,20 @@ bool EHiHeader(unsigned char *ROM, int BankLoc)
   return(false);
 }
 
+void SwapData(unsigned int *loc1, unsigned int *loc2, unsigned int amount)
+{
+  unsigned int temp, i;
+  for (i = 0; i < amount; i++)
+  {
+    temp = loc1[i];
+    loc1[i] = loc2[i];
+    loc2[i] = temp;
+  }
+}
+
 void swapBlocks(char *blocks)
 {
-  unsigned int i,j,k;
+  unsigned int i, j;
   for (i = 0; i < NumofBanks; i++)
   {
     for (j = 0; j < NumofBanks; j++)
@@ -111,15 +122,7 @@ void swapBlocks(char *blocks)
       if (blocks[j] == (char)i)
       {
         char b;
-        unsigned int temp,
-                    *loc1 = romdata + blocks[i]*0x2000,
-                    *loc2 = romdata + blocks[j]*0x2000;
-        for (k = 0; k < 0x2000; k++)
-        {
-          temp = loc1[k];
-          loc1[k] = loc2[k];
-          loc2[k] = temp;
-        }
+        SwapData(romdata + blocks[i]*0x2000, romdata + blocks[j]*0x2000, 0x2000);
         b = blocks[j];
         blocks[j] = blocks[i];
         blocks[i] = b;
@@ -164,17 +167,6 @@ void CheckIntl1(unsigned char *ROM)
       deintlv1();
       Interleaved = true;
     }
-  }
-}
-
-void SwapData(unsigned int *loc1, unsigned int *loc2, unsigned int amount)
-{
-  unsigned int temp, i;
-  for (i = 0; i < amount; i++)
-  {
-    temp = loc1[i];
-    loc1[i] = loc2[i];
-    loc2[i] = temp;
   }
 }
 
