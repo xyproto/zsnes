@@ -74,6 +74,8 @@ Uint8 MouseButton;
 
 DWORD LastUsedPos = 0;
 DWORD CurMode = -1;
+extern BYTE GUIOn2;
+static BYTE IsActivated;
 
 #define UPDATE_TICKS_GAME (1000/60.0)	// milliseconds per world update
 #define UPDATE_TICKS_GAMEPAL (1000/50.0)// milliseconds per world update
@@ -103,6 +105,9 @@ int Main_Proc(void)
 	{
 		switch (event.type)
 		{
+			case SDL_ACTIVEEVENT:
+				IsActivated = event.active.gain;
+				break;
 			case SDL_KEYDOWN:
 				if (event.key.keysym.sym == SDLK_LSHIFT ||
 				    event.key.keysym.sym == SDLK_RSHIFT)
@@ -921,6 +926,7 @@ void UpdateSound(void *userdata, Uint8 * stream, int len)
 
 void UpdateVFrame(void)
 {
+	if (GUIOn2 == 1 && IsActivated == 0) SDL_WaitEvent(NULL);
 	Main_Proc();
 	CheckTimers();
 }
