@@ -18,6 +18,20 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+#Parameters:
+#
+# PLATFORM=platform_name  Chose target platform and how you're creating it.
+#                         Valid options are:
+#                         dos, dos-cross, msvc, win32, win32-cross, win32-unix-shell
+#
+# RELEASEGRADE=yes        for high assembly optimization for releases, will take at least half an hour
+# clean                   cleans object and executable files
+#
+# --Not for MSVC--
+# DEBUG=yes               for debugging with GDB
+# CPU=cpu-type            optimize for a particular CPU, find a list of cpu types in the GCC manual
+
+
 CHIPDIR=chips
 CPUDIR=cpu
 DOSDIR=dos
@@ -328,12 +342,13 @@ ${DOSDIR}/gppro${OE}: $< macros.mac
 ${DOSDIR}/zsipx${OE}: $<
 ${DOSDIR}/modemrtn${OE}: $< macros.mac
 
+${NETDIR}/ztcp${OE}: $<
+
 ${WINDIR}/copyvwin${OE}: $< macros.mac
 ${WINDIR}/winintrf${OE}: $< macros.mac
 ${WINDIR}/zfilew${OE}: $<
 ${WINDIR}/zipxw${OE}: $<
 ${WINDIR}/zloaderw${OE}: $<
-${WINDIR}/ztcp${OE}: $<
 ifeq ($(PLATFORM),msvc)
 ${WINDIR}/zsnes.res: ${WINDIR}/zsnes.rc
 	rc ${WINDIR}/zsnes.rc
@@ -348,6 +363,11 @@ ${OBJFIX}: $<
 endif
 
 clean: 
+
+ifeq ($(PLATFORM),)
+_foo: help
+endif
+
 	${DELETECOMMAND} ${EXE} ${TRUTH}
 	${DELETECOMMAND} *${OE} ${TRUTH}
 	${DELETECOMMAND} ${CPUDIR}${SLASH}*${OE} ${TRUTH}
@@ -361,4 +381,4 @@ clean:
 	${DELETECOMMAND} ${GUIDIR}${SLASH}*${OE} ${TRUTH}
 
 help:
-	@echo Please specify which platform to compile for with PLATFORM=platform_name
+	@echo Please specify which platform to compile/clean for with PLATFORM=platform_name
