@@ -1011,20 +1011,18 @@ NetSaveState:
 ; pexecs
 ; *** Copy to PC whenever a non-relative jump is executed
 
-SECTION .bss
-NEWSYM romloadskip, resb 1
-NEWSYM abcdefg,     resd 1
-NEWSYM abcdefg1,    resd 1
-NEWSYM abcdefg2,    resd 1
-NEWSYM abcdefg3,    resd 1
-NEWSYM SSKeyPressed, resd 1
-NEWSYM SPCKeyPressed, resd 1
-NEWSYM NoSoundReinit, resd 1
-NEWSYM NextNGDisplay, resb 1
-NEWSYM TempVidInfo, resd 1
-
-
-NEWSYM tempdh, resb 1
+SECTION .data
+NEWSYM romloadskip, db 0
+NEWSYM abcdefg,     dd 0
+NEWSYM abcdefg1,    dd 0
+NEWSYM abcdefg2,    dd 0
+NEWSYM abcdefg3,    dd 0
+NEWSYM SSKeyPressed, dd 0
+NEWSYM SPCKeyPressed, dd 0
+NEWSYM NoSoundReinit, dd 0
+NEWSYM NextNGDisplay, db 0
+NEWSYM TempVidInfo, dd 0
+NEWSYM tempdh, db 0
 
 SECTION .text
 
