@@ -546,6 +546,15 @@ NEWSYM AdjustFrequency
       jne .nostereo8b
       cmp byte[SBHDMA],0
       jne .nostereo8b
+
+      ; *****************************************
+      ; *** ViBRA16X support by Peter Santing ***
+      ; *****************************************
+      ; before REALLY switching back to 8-bit sucky mono mode
+      ; check that we're dealing with a ViBRA16X Creative Labs Card
+      cmp byte[vibracard], 1
+      je  .nostereo8b
+
       cmp dword[SoundQuality],2
       jbe .nostereo8b
       mov dword[SoundQuality],2
@@ -562,8 +571,15 @@ NEWSYM AdjustFrequency
 
       mov ecx,[SoundQuality]
       mov eax,dword [SBToSPCSpeeds+ecx*4]
+
+      ; code for supporting vibra cards (coded by Peter Santing)
+      cmp byte [vibracard], 1
+      je  .vibrafix
+
       cmp byte [SBHDMA],0
       je .not16bit
+      mov eax,dword [SBToSPCSpeeds2+ecx*4]
+.vibrafix
       mov eax,dword [SBToSPCSpeeds2+ecx*4]
 .not16bit
       cmp byte[RaisePitch],0
@@ -1581,6 +1597,7 @@ NEWSYM SBDMA,  db 1
 NEWSYM SBDMAPage, db 83
 NEWSYM SBHDMA, db 0
 NEWSYM SBHDMAPage, db 0
+NEWSYM vibracard, db 0
 
 NEWSYM ResetSBDSP
     mov dx,[SBPort]
@@ -4824,6 +4841,11 @@ NEWSYM handlersbseg
 
     cmp byte[SBHDMA],0
     jne near SBHandler16
+
+    ; code added by peter santing
+    cmp byte[vibracard], 1
+    je  near SBHandler16
+
     push ebx
     push ecx
     push edx
@@ -5423,6 +5445,10 @@ NEWSYM initSB
     ; Set up SB
     call ResetSBDSP
 
+    ; code added by peter santing
+    cmp byte [vibracard], 1
+    je  near .vibrafix2
+
     cmp byte [SBHDMA],0
     je .no16bit
     cmp byte [SBHDMA],4
@@ -5548,6 +5574,98 @@ NEWSYM initSB
     jmp .fixsurround
 
 .Versionnum dw 0
+
+; *****************************************
+; **** alternate ViBRA16X SB init code **** by Peter Santing
+; ***************************************** copied portions of original code
+; and modified it.
+
+.vibrafix2
+    ; Set Time-Constant Data ( = 256 - (1000000/sampling rate) )
+    ; 8000=131, 22050=210, 44100=233, 11025=165
+
+    ; Setup DMA
+    ; Select DMA channel
+    mov al,[SBDMA]
+    add al,4
+    mov dx,000Ah
+    out dx,al
+    ; Clear DMA
+    mov al,00h
+    mov dx,000Ch
+    out dx,al
+    ; Set autoinit/write (set as DAC)
+    mov al,58h
+    add al,[SBDMA]
+    mov dx,000Bh
+    out dx,al
+    ; Send Offset Address
+    mov al,[memoryloc]
+    mov dl,[SBDMA]
+    shl dl,1
+    out dx,al
+    mov al,[memoryloc+1]
+    out dx,al
+    ; Send length of entire block
+    mov ax,[BufferSizeW]
+    shl ax, 1
+    dec ax
+    inc dx
+    out dx,al
+    mov al,ah
+    out dx,al
+    ; Send page # (address/65536)
+    mov al,[memoryloc+2]
+    mov dh, 0
+    mov dl,[SBDMAPage]
+    out dx,al
+    ; turn on DMA
+    mov al,[SBDMA]
+    mov dx,000Ah
+    out dx,al
+
+    mov al,41h
+    call WriteDSP
+    push ecx
+    mov ecx,[SoundQuality]
+    mov al,byte [SBToSPCSpeeds2+ecx*4+1]
+    pop ecx
+    call WriteDSP
+    push ecx
+    mov ecx,[SoundQuality]
+    mov al,byte [SBToSPCSpeeds2+ecx*4]
+    pop ecx
+    call WriteDSP
+
+    ; Prepare SB for the first block
+    ; 16-bit auto-init, mono, unsigned
+    mov al,0B6h   ; Sb 16 version (DSP 4)
+    call WriteDSP
+    cmp byte[StereoSound],1
+    jne ._Mono
+._surround
+    mov al,30h    ; stereo/signed
+    call WriteDSP
+    jmp ._AfterStereo
+._Mono
+    mov al,10h    ; mono/signed
+    call WriteDSP
+._AfterStereo
+
+    ; Send Length-1 to DSP port
+    mov ax,[BufferSizeB]
+    dec ax
+    call WriteDSP
+    mov al,ah
+    call WriteDSP
+
+    ; Turn on speakers
+    mov al,0D1h
+    call WriteDSP
+
+    jmp .fixsurround
+
+; ******* end of alternate SB init code for ViBRA ********
 
 .init16bitlowhdma
     ; Set Time-Constant Data ( = 256 - (1000000/sampling rate) )

@@ -22,7 +22,7 @@ EXTSYM ConvertJoyMap,ConvertJoyMap1,ConvertJoyMap2,printhex,InitSPC
 EXTSYM StartUp,PrintStr,WaitForKey,PrintChar,MMXCheck,ZFileSystemInit
 EXTSYM SPCDisable,SystemInit,allocmem
 EXTSYM xa
-EXTSYM SBPort,SBInt,SBIrq,SBDMA,SBDMAPage,SBHDMAPage,getenv
+EXTSYM SBPort,SBInt,SBIrq,SBDMA,SBDMAPage,SBHDMAPage,getenv,vibracard
 EXTSYM ram7fa,wramdataa
 EXTSYM malloc,free
 EXTSYM StateBackup
@@ -128,6 +128,14 @@ NEWSYM mydebug, db '',13,10,0
 NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,10,0
 %define ZVERSION '18   '
 ;%define ZBETA    0
+
+; Line added by Peter Santing
+NEWSYM vibradetect
+                 db 'Creative ViBRA16X PnP card detected (support coded by Peter Santing)', 13, 10
+                 db 'High-DMA is below dma #4', 13, 10
+                 db 13,10, 'you have now full 16-bit stereo sound with the surround option!', 13, 10
+                 db 13,10, 'Press any key to continue', 13, 10,0
+
 NEWSYM welcome
 
 
@@ -625,9 +633,53 @@ NEWSYM getblaster
     jne .dma3
     mov byte[SBDMAPage],82h
 .dma3
-    cmp byte[SBHDMA],4
-    jae .hdma
-    mov byte[SBHDMA],0
+; ******************************************************
+; **** this piece of code is added by Peter Santing ****
+; **** it will enable ZSNES to use the full STEREO  ****
+; **** capability of the ViBRA16X line of creative  ****
+; **** instead of playing 8-bit MONOURAL sound      ****
+; ******************************************************
+;       cmp byte [SBHDMA], 0
+;       jne .vibradma0
+;       mov byte [SBDMAPage], 87h
+;       mov byte [vibracard], 1         ; set ViBRA16X mode
+.vibradma0
+        cmp byte [SBHDMA], 1
+        jne .vibradma1
+        mov byte [SBDMAPage], 83h
+        mov byte [vibracard], 1         ; set ViBRA16X mode
+.vibradma1
+        cmp byte [SBHDMA], 2
+        jne .vibradma2
+        mov byte [SBDMAPage], 81h
+        mov byte [vibracard], 1         ; set ViBRA16X mode
+.vibradma2
+        cmp byte [SBHDMA], 3
+        jne .vibradma3
+        mov byte [SBDMAPage], 82h
+        mov byte [vibracard], 1         ; set ViBRA16X mode
+.vibradma3
+        cmp byte [vibracard], 1
+        jne .vibrafix
+        push ax
+        mov  al, [SBHDMA]
+        mov  [SBDMA], al
+        pop  ax
+.vibrafix
+        cmp byte [SBHDMA],4
+        jae .hdma
+        ; vibra implementation (make sure that zSNES doesn't go back
+        ; to eight-bit-mode mono)
+        mov byte [SBHDMA],0
+        cmp byte[vibracard], 1
+        jne .hdma
+        push edx
+        mov edx, vibradetect
+        call PrintStr
+        call WaitForKey
+        pop  edx
+
+; ********** END OF ViBRA16X implementation code **********
 .hdma
     cmp byte[SBHDMA],4
     jne .hdma4
