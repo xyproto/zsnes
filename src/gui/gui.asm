@@ -169,6 +169,9 @@ EXTSYM DeInitModemC
 EXTSYM ipxgetchar,ipxsendchar,TCPIPStoreByte
 EXTSYM TCPIPGetByte
 EXTSYM ModemSendChar
+%ifdef __WIN32__
+EXTSYM CheckPriority
+%endif
 
 NEWSYM GuiAsmStart
 
@@ -3210,6 +3213,11 @@ DisplayBoxes:
     cmp al,4
     jne .noguioption
     call DisplayGUIOption
+%ifdef __WIN32__
+    pushad
+    call CheckPriority
+    popad
+%endif
     jmp .finstuff
 .noguioption
     cmp al,5

@@ -191,6 +191,12 @@ extern int CurKeyReadPos;
 extern int KeyBuffer[16];
 }
 
+extern "C" void CheckPriority ( void )
+{
+    if (HighPriority == 1) SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
+       else SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+}
+
 BOOL InputRead(void)
 {
    static PrevZ=0;
@@ -439,7 +445,6 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return TRUE;
 }
 
-
 int RegisterWinClass ( void )
 {
 	WNDCLASS wcl;
@@ -456,7 +461,7 @@ int RegisterWinClass ( void )
    wcl.lpszMenuName     = NULL;
    wcl.lpszClassName    = "ZSNESWIN";
 
-      if (HighPriority == 1) SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
+   CheckPriority();
 
 	if (RegisterClass(&wcl)  == 0) return FALSE;
 
