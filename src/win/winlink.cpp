@@ -161,9 +161,9 @@ void DrawScreen()
 {
    if (vsyncon == 1)
    {
-      if(FullScreen == 1)
+      if (FullScreen == 1)
       {
-         if(TripleBufferWin == 1)
+         if (TripleBufferWin == 1)
          {
             DD_BackBuffer->Blt(NULL, DD_CFB, NULL, DDBLT_WAIT, NULL);
             DD_Primary->Flip(NULL, DDFLIP_WAIT);
@@ -175,7 +175,7 @@ void DrawScreen()
       }
       else
       {
-         if(lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
+         if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
          {
             DDrawError();
          }
@@ -184,9 +184,9 @@ void DrawScreen()
    }
    else
    {
-      if(FullScreen == 1)
+      if (FullScreen == 1)
       {
-         if(TripleBufferWin == 1)
+         if (TripleBufferWin == 1)
          {
             DD_BackBuffer->Blt(NULL, DD_CFB, NULL, DDBLT_WAIT, NULL);
             DD_Primary->Flip(NULL, DDFLIP_NOVSYNC);
@@ -207,25 +207,25 @@ DWORD InputEn=0;
 
 InputAcquire(void)
 {
-   if(JoystickInput[0]) JoystickInput[0]->Acquire();
-   if(JoystickInput[1]) JoystickInput[1]->Acquire();
-   if(JoystickInput[2]) JoystickInput[2]->Acquire();
-   if(JoystickInput[3]) JoystickInput[3]->Acquire();
+   if (JoystickInput[0]) JoystickInput[0]->Acquire();
+   if (JoystickInput[1]) JoystickInput[1]->Acquire();
+   if (JoystickInput[2]) JoystickInput[2]->Acquire();
+   if (JoystickInput[3]) JoystickInput[3]->Acquire();
 
-	if(MouseInput) MouseInput->Acquire();
-   if(KeyboardInput) KeyboardInput->Acquire();
+	if (MouseInput) MouseInput->Acquire();
+   if (KeyboardInput) KeyboardInput->Acquire();
    InputEn=1;
 	return TRUE;
 }
 
 BOOL InputDeAcquire(void)
 {
-   if(MouseInput) { MouseInput->Unacquire(); }
-   if(KeyboardInput) KeyboardInput->Unacquire();
-   if(JoystickInput[0]) JoystickInput[0]->Unacquire();
-   if(JoystickInput[1]) JoystickInput[1]->Unacquire();
-   if(JoystickInput[2]) JoystickInput[2]->Unacquire();
-   if(JoystickInput[3]) JoystickInput[3]->Unacquire();
+   if (MouseInput) { MouseInput->Unacquire(); }
+   if (KeyboardInput) KeyboardInput->Unacquire();
+   if (JoystickInput[0]) JoystickInput[0]->Unacquire();
+   if (JoystickInput[1]) JoystickInput[1]->Unacquire();
+   if (JoystickInput[2]) JoystickInput[2]->Unacquire();
+   if (JoystickInput[3]) JoystickInput[3]->Unacquire();
    InputEn=0;
 	return TRUE;
 }
@@ -274,28 +274,28 @@ BOOL InputRead(void)
    static PrevZ=0;
    MouseMoveX=0;
    MouseMoveY=0;
-   if(MouseInput&&InputEn==1)
+   if (MouseInput&&InputEn==1)
    {
       DIMOUSESTATE dims;
       HRESULT hr;
 aquireagain:;
       hr=MouseInput->GetDeviceState(sizeof(DIMOUSESTATE),&dims);
 		
-      if(hr==DIERR_INPUTLOST)
+      if (hr==DIERR_INPUTLOST)
       {
          hr=MouseInput->Acquire();
-         if(SUCCEEDED(hr))
+         if (SUCCEEDED(hr))
          {
             goto aquireagain;
          }
       }
 
-      if(SUCCEEDED(hr))
+      if (SUCCEEDED(hr))
       {
          MouseMoveX=dims.lX;
          MouseMoveY=dims.lY;
 
-         if(MouseWheel == 1)
+         if (MouseWheel == 1)
          {
             long zDelta = dims.lZ-PrevZ;
             if (!dims.lZ) zDelta=0;
@@ -440,7 +440,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             shiftpr=false;
          break;
       case WM_MOUSEMOVE:
-         if(MouseInput) MouseInput->Acquire();
+         if (MouseInput) MouseInput->Acquire();
          break;
       case WM_MOVE:
          break;
@@ -449,13 +449,13 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          break;
       case WM_ACTIVATE: 
          IsActivated = 1;
-         if(LOWORD(wParam) != WA_INACTIVE)
-            if(!FirstActivate) initwinvideo(); 
+         if (LOWORD(wParam) != WA_INACTIVE)
+            if (!FirstActivate) initwinvideo(); 
          InputAcquire();
-         if(FirstActivate == 1) FirstActivate = 0;
+         if (FirstActivate == 1) FirstActivate = 0;
          break;
       case WM_SETFOCUS:
-         if(FullScreen == 0) ShowWindow(hMainWindow, SW_SHOWNORMAL);
+         if (FullScreen == 0) ShowWindow(hMainWindow, SW_SHOWNORMAL);
          InputAcquire();
          break;
       case WM_KILLFOCUS:
@@ -515,7 +515,7 @@ InitSound()
    PrevSoundQuality=SoundQuality;
    PrevStereoSound=StereoSound;
 
-      if(DS_OK == DirectSoundCreate8(NULL, &lpDirectSound,NULL))
+      if (DS_OK == DirectSoundCreate8(NULL, &lpDirectSound,NULL))
       {
           if (ExclusiveSound == 0)
           {
@@ -544,7 +544,7 @@ InitSound()
 
    wfx.wFormatTag = WAVE_FORMAT_PCM;
 
-   switch(SoundQuality)
+   switch (SoundQuality)
    {
       case 0:
          wfx.nSamplesPerSec = 8000;
@@ -579,7 +579,7 @@ InitSound()
          SoundBufferSize=1024*2;
    }
 
-   if(StereoSound==1)
+   if (StereoSound==1)
    {
       wfx.nChannels = 2;
       wfx.nBlockAlign = 4;
@@ -601,11 +601,11 @@ InitSound()
    dsbd.dwBufferBytes = SoundBufferSize;
    dsbd.lpwfxFormat = &wfx;
     
-   if(DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &lpPrimaryBuffer, NULL))
+   if (DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &lpPrimaryBuffer, NULL))
 	{
-      if(DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
+      if (DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
       {
-         if(DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING))
+         if (DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING))
          {
             SoundEnabled=0; return FALSE;
          }      
@@ -638,7 +638,7 @@ ReInitSound()
 
    wfx.wFormatTag = WAVE_FORMAT_PCM;
 
-   switch(SoundQuality)
+   switch (SoundQuality)
    {
       case 0:
          wfx.nSamplesPerSec = 8000;
@@ -673,7 +673,7 @@ ReInitSound()
          SoundBufferSize=1024*2;
   }
 
-   if(StereoSound==1)
+   if (StereoSound==1)
    {
       wfx.nChannels = 2;
       wfx.nBlockAlign = 4;
@@ -695,11 +695,11 @@ ReInitSound()
    dsbd.dwBufferBytes = SoundBufferSize;
    dsbd.lpwfxFormat = &wfx;
 
-   if(DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &lpPrimaryBuffer, NULL))
+   if (DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &lpPrimaryBuffer, NULL))
 	{
-      if(DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
+      if (DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
       {
-         if(DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING ))
+         if (DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING ))
          {
             return FALSE;
          }
@@ -724,7 +724,7 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 //   fprintf(tempf,"Cur :%d %X\n",CurrentJoy,pdinst->guidInstance);
    GUID DeviceGuid = pdinst->guidInstance;
 
-   if(CurrentJoy>3)
+   if (CurrentJoy>3)
       return DIENUM_CONTINUE;
 
    // Create the DirectInput joystick device.
@@ -741,7 +741,7 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
       return DIENUM_CONTINUE;
    }
 
-   if(JoystickInput[CurrentJoy]->SetCooperativeLevel(hMainWindow, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND) != DI_OK)
+   if (JoystickInput[CurrentJoy]->SetCooperativeLevel(hMainWindow, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND) != DI_OK)
    {
 //      fprintf(tempf,"IDirectInputDevice7::SetCooperativeLevel FAILED\n");
       JoystickInput[CurrentJoy]->Release();
@@ -778,42 +778,42 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
    }
 
    diprg.diph.dwObj        = DIJOFS_Z;
-   if(FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
+   if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
    {
       Z1Disable[CurrentJoy]=1;
       Z2Disable[CurrentJoy]=1;
    }
 
    diprg.diph.dwObj        = DIJOFS_RX;
-   if(FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
+   if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
    {
       RX1Disable[CurrentJoy]=1;
       RX2Disable[CurrentJoy]=1;
    }
 
    diprg.diph.dwObj        = DIJOFS_RY;
-   if(FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
+   if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
    {
       RY1Disable[CurrentJoy]=1;
       RY2Disable[CurrentJoy]=1;
    }
 
    diprg.diph.dwObj        = DIJOFS_RZ;
-   if(FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
+   if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
    {
       RZ1Disable[CurrentJoy]=1;
       RZ2Disable[CurrentJoy]=1;
    }
 
    diprg.diph.dwObj        = DIJOFS_SLIDER(0);
-   if(FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
+   if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
    {
       S01Disable[CurrentJoy]=1;
       S02Disable[CurrentJoy]=1;
    }
 
    diprg.diph.dwObj        = DIJOFS_SLIDER(1);
-   if(FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
+   if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
    {
       S11Disable[CurrentJoy]=1;
       S12Disable[CurrentJoy]=1;
@@ -865,26 +865,26 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 
 void ReleaseDirectInput()
 {
-   if(MouseInput)
+   if (MouseInput)
    {
       MouseInput->Release();
       MouseInput = NULL;
    }
 
-   if(KeyboardInput)
+   if (KeyboardInput)
    {
       KeyboardInput->Release();
       KeyboardInput = NULL;
    }
 
    for(int i = 0; i < 4; i++)
-      if(JoystickInput[i])
+      if (JoystickInput[i])
       {
          JoystickInput[i]->Release();
          JoystickInput[i] = NULL;
       }
 
-   if(DInput)
+   if (DInput)
    {
       DInput->Release();
       DInput = NULL;
@@ -894,19 +894,19 @@ void ReleaseDirectInput()
 
 void ReleaseDirectSound()
 {
-   if(lpSoundBuffer)
+   if (lpSoundBuffer)
    {
       lpSoundBuffer->Release();
       lpSoundBuffer = NULL;
    }
 
-   if(lpPrimaryBuffer)
+   if (lpPrimaryBuffer)
    {
       lpPrimaryBuffer->Release();
       lpPrimaryBuffer = NULL;
    }
 
-   if(lpDirectSound)
+   if (lpDirectSound)
    {
       lpDirectSound->Release();
       lpDirectSound = NULL;
@@ -915,25 +915,25 @@ void ReleaseDirectSound()
 
 void ReleaseDirectDraw()
 {
-   if(DD_CFB)
+   if (DD_CFB)
    {
       DD_CFB->Release();
       DD_CFB = NULL;
    }
 
-   if(lpDDClipper)
+   if (lpDDClipper)
    {
       lpDDClipper->Release();
       lpDDClipper = NULL;
    }
 
-   if(DD_Primary)
+   if (DD_Primary)
    {
       DD_Primary->Release();
       DD_Primary = NULL;
    }
 
-   if(lpDD)
+   if (lpDD)
    {
       lpDD->Release();
       lpDD = NULL;
@@ -952,12 +952,12 @@ bool InitInput()
    char message1[256];
    HRESULT hr;
 
-   if(FAILED(hr=DirectInput8Create(hInst,DIRECTINPUT_VERSION,IID_IDirectInput8A,(void **) &DInput,NULL)))
+   if (FAILED(hr=DirectInput8Create(hInst,DIRECTINPUT_VERSION,IID_IDirectInput8A,(void **) &DInput,NULL)))
    {
       sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx \0");
       MessageBox (NULL, message1, "DirectInput Error" , MB_ICONERROR );
 
-      switch(hr)
+      switch (hr)
       {
       case DIERR_BETADIRECTINPUTVERSION:
          sprintf(message1,"Beta %X\n\0",hr);
@@ -984,28 +984,28 @@ bool InitInput()
    }
 
    hr=DInput->CreateDevice(GUID_SysKeyboard, &KeyboardInput,NULL);
-   if(FAILED(hr)) {DInputError();return FALSE;}
+   if (FAILED(hr)) {DInputError();return FALSE;}
 
    hr=KeyboardInput->SetDataFormat(&c_dfDIKeyboard);
-   if(FAILED(hr)) {DInputError();return FALSE;}
+   if (FAILED(hr)) {DInputError();return FALSE;}
 	
    hr=KeyboardInput->SetCooperativeLevel(hMainWindow,DISCL_NONEXCLUSIVE | DISCL_FOREGROUND );
 
 	hr=DInput->CreateDevice(GUID_SysMouse, &MouseInput,NULL);
-   if(FAILED(hr)) {DInputError();return FALSE;}
+   if (FAILED(hr)) {DInputError();return FALSE;}
 
 	hr=MouseInput->SetDataFormat(&c_dfDIMouse);
-   if(FAILED(hr)) {DInputError();return FALSE;}
+   if (FAILED(hr)) {DInputError();return FALSE;}
 	
    hr=MouseInput->SetCooperativeLevel(hMainWindow,DISCL_EXCLUSIVE|DISCL_FOREGROUND);
-   if(FAILED(hr)) {DInputError();return FALSE;}
+   if (FAILED(hr)) {DInputError();return FALSE;}
 
    JoystickInput[0]=NULL;JoystickInput[1]=NULL;JoystickInput[2]=NULL;JoystickInput[3]=NULL;
 
    hr=DInput->EnumDevices(DI8DEVCLASS_GAMECTRL, InitJoystickInput,
                        DInput, DIEDFL_ATTACHEDONLY);
 
-   if(FAILED(hr)) {DInputError(); return FALSE;}
+   if (FAILED(hr)) {DInputError(); return FALSE;}
 
    InputAcquire();
 
@@ -1019,79 +1019,79 @@ void TestJoy()
 
    for(i=0;i<4;i++)
    {
-      if(JoystickInput[i])
+      if (JoystickInput[i])
       {
          JoystickInput[i]->Poll();
 //         memset(&js[i], 0, sizeof(DIJOYSTATE));
 
-         if(IDirectInputDevice8_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i])==DIERR_INPUTLOST)
+         if (IDirectInputDevice8_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i])==DIERR_INPUTLOST)
          {
-            if(JoystickInput[i]) JoystickInput[i]->Acquire();
-            if(FAILED(IDirectInputDevice8_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i]))) return;
+            if (JoystickInput[i]) JoystickInput[i]->Acquire();
+            if (FAILED(IDirectInputDevice8_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i]))) return;
          }
 
-         if(!X1Disable[i])
+         if (!X1Disable[i])
          {
-            if(js[i].lX>0) X1Disable[i]=1;
+            if (js[i].lX>0) X1Disable[i]=1;
          }
 
-         if(!X2Disable[i])
+         if (!X2Disable[i])
          {
-            if(js[i].lX<0) X2Disable[i]=1;
+            if (js[i].lX<0) X2Disable[i]=1;
          }
 
-         if(!Y1Disable[i])
+         if (!Y1Disable[i])
          {
-            if(js[i].lY>0) Y1Disable[i]=1;
+            if (js[i].lY>0) Y1Disable[i]=1;
          }
 
-         if(!Y2Disable[i])
+         if (!Y2Disable[i])
          {
-            if(js[i].lY<0) Y2Disable[i]=1;
+            if (js[i].lY<0) Y2Disable[i]=1;
          }
 
-         if(!Z1Disable[i])
+         if (!Z1Disable[i])
          {
-            if(js[i].lZ>0) Z1Disable[i]=1;
+            if (js[i].lZ>0) Z1Disable[i]=1;
          }
 
-         if(!Z2Disable[i])
+         if (!Z2Disable[i])
          {
-            if(js[i].lZ<0) Z2Disable[i]=1;
+            if (js[i].lZ<0) Z2Disable[i]=1;
          }
 
-         if(!RY1Disable[i])
+         if (!RY1Disable[i])
          {
-            if(js[i].lRy>0) RY1Disable[i]=1;
+            if (js[i].lRy>0) RY1Disable[i]=1;
          }
-         if(!RY2Disable[i])
+         if (!RY2Disable[i])
          {
-            if(js[i].lRy<0) RY2Disable[i]=1;
+            if (js[i].lRy<0) RY2Disable[i]=1;
          }
-         if(!RZ1Disable[i])
+         if (!RZ1Disable[i])
          {
-            if(js[i].lRz>0) RZ1Disable[i]=1;
+            if (js[i].lRz>0) RZ1Disable[i]=1;
          }
-         if(!RZ2Disable[i])
+         if (!RZ2Disable[i])
          {
-            if(js[i].lRz<0) RZ2Disable[i]=1;
+            if (js[i].lRz<0) RZ2Disable[i]=1;
          }
-         if(!S01Disable[i])
+         if (!S01Disable[i])
          {
-            if(js[i].rglSlider[0]>0) S01Disable[i]=1;
+            if (js[i].rglSlider[0]>0) S01Disable[i]=1;
          }
-         if(!S02Disable[i])
+         if (!S02Disable[i])
          {
-            if(js[i].rglSlider[0]<0) S02Disable[i]=1;
+            if (js[i].rglSlider[0]<0) S02Disable[i]=1;
          }
 
-         if(!S11Disable[i])
+         if (!S11Disable[i])
          {
-            if(js[i].rglSlider[1]>0) S11Disable[i]=1;
+            if (js[i].rglSlider[1]>0) S11Disable[i]=1;
          }
-         if(!S12Disable[i])
+         if (!S12Disable[i])
          {
-            if(js[i].rglSlider[1]<0) S12Disable[i]=1;
+            if (js[i].rglSlider[1]<0) S12Disable[i]=1;
          }
 
       }
@@ -1121,7 +1121,7 @@ int InitDirectDraw()
       ScreenPtr2+=4;
    }
 
-   if(!hMainWindow)
+   if (!hMainWindow)
    {
       exit(1);
    }
@@ -1132,25 +1132,25 @@ int InitDirectDraw()
    ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow);
    ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow + 1);
 
-   if(DirectDrawCreateEx(NULL, (void **)&lpDD, IID_IDirectDraw7, NULL) != DD_OK)
+   if (DirectDrawCreateEx(NULL, (void **)&lpDD, IID_IDirectDraw7, NULL) != DD_OK)
    {
       MessageBox(NULL, "DirectDrawCreateEx failed.", "DirectDraw Error", MB_ICONERROR);
    }
 
-   if(FullScreen == 1)
+   if (FullScreen == 1)
    {
-      if(lpDD->SetCooperativeLevel(hMainWindow, DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT) != DD_OK)
+      if (lpDD->SetCooperativeLevel(hMainWindow, DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT) != DD_OK)
       {
          MessageBox(NULL, "IDirectDraw7::SetCooperativeLevel failed.", "DirectDraw Error", MB_ICONERROR);
       }
-      if(lpDD->SetDisplayMode(WindowWidth, WindowHeight, 16, 0, 0) != DD_OK)
+      if (lpDD->SetDisplayMode(WindowWidth, WindowHeight, 16, 0, 0) != DD_OK)
       {
          MessageBox(NULL, "IDirectDraw7::SetDisplayMode failed.", "DirectDraw Error", MB_ICONERROR);
       }      
    }
    else
    {
-      if(lpDD->SetCooperativeLevel(hMainWindow, DDSCL_NORMAL) != DD_OK)
+      if (lpDD->SetCooperativeLevel(hMainWindow, DDSCL_NORMAL) != DD_OK)
       {
          MessageBox(NULL, "IDirectDraw7::SetCooperativeLevel failed.", "DirectDraw Error", MB_ICONERROR);
       }
@@ -1162,43 +1162,43 @@ int InitDirectDraw()
    ddsd2.dwFlags = DDSD_CAPS;
    ddsd2.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
    
-   if(FullScreen == 1)
+   if (FullScreen == 1)
    {
       ddsd2.dwFlags |= DDSD_BACKBUFFERCOUNT;
       ddsd2.dwBackBufferCount = 2;
       ddsd2.ddsCaps.dwCaps |= DDSCAPS_FLIP | DDSCAPS_COMPLEX;
    }
 
-   if(lpDD->CreateSurface( &ddsd2, &DD_Primary, NULL) != DD_OK)
+   if (lpDD->CreateSurface( &ddsd2, &DD_Primary, NULL) != DD_OK)
    {
       MessageBox(NULL, "IDirectDraw7::CreateSurface failed.", "DirectDraw Error", MB_ICONERROR);
    }
 
-   if(FullScreen == 1)
+   if (FullScreen == 1)
    {
       ddsd2.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
-      if(DD_Primary->GetAttachedSurface(&ddsd2.ddsCaps, &DD_BackBuffer) != DD_OK)
+      if (DD_Primary->GetAttachedSurface(&ddsd2.ddsCaps, &DD_BackBuffer) != DD_OK)
       {
          MessageBox(NULL, "IDirectDrawSurface7::GetAttachedSurface failed.", "DirectDraw Error", MB_ICONERROR);
       }
    }
    else
    {
-      if(lpDD->CreateClipper(0,&lpDDClipper,NULL) != DD_OK)
+      if (lpDD->CreateClipper(0,&lpDDClipper,NULL) != DD_OK)
       {
          lpDD->Release();
          lpDD=NULL;
          return FALSE;
       }
       
-      if(lpDDClipper->SetHWnd(0,hMainWindow) != DD_OK)
+      if (lpDDClipper->SetHWnd(0,hMainWindow) != DD_OK)
       {
          lpDD->Release();
          lpDD=NULL;
          return FALSE;
       }
       
-      if(DD_Primary->SetClipper(lpDDClipper) != DD_OK)
+      if (DD_Primary->SetClipper(lpDDClipper) != DD_OK)
       {
          return FALSE;
       }
@@ -1206,7 +1206,7 @@ int InitDirectDraw()
     
    format.dwSize = sizeof(DDPIXELFORMAT);
 
-   if(DD_Primary->GetPixelFormat(&format) != DD_OK)
+   if (DD_Primary->GetPixelFormat(&format) != DD_OK)
    {
       MessageBox(NULL, "IDirectDrawSurface7::GetPixelFormat failed.", "DirectDraw Error", MB_ICONERROR);
    }
@@ -1229,7 +1229,7 @@ int InitDirectDraw()
    ddsd2.dwHeight = SurfaceY;
 
    // create drawing surface
-   if(lpDD->CreateSurface(&ddsd2, &DD_CFB, NULL) != DD_OK)
+   if (lpDD->CreateSurface(&ddsd2, &DD_CFB, NULL) != DD_OK)
    {
       MessageBox(NULL, "IDirectDraw7::CreateSurface failed.", "DirectDraw Error", MB_ICONERROR);
    }
@@ -1301,7 +1301,7 @@ void Start60HZ(void)
 {
    update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000;
 
-   if(romispal==1)
+   if (romispal==1)
    {
       update_ticks_pc = UPDATE_TICKS_GAMEPAL * freq / 1000;
    }
@@ -1375,7 +1375,7 @@ void initwinvideo(void)
 
    V8Mode = (BlackAndWhite == 1);
 
-   if(CurMode!=cvidmode)
+   if (CurMode!=cvidmode)
    {
       CurMode=cvidmode;
       newmode=1;
@@ -1385,7 +1385,7 @@ void initwinvideo(void)
       Y=0;
       FullScreen=GUIWFVID[cvidmode];
 
-      switch(cvidmode)
+      switch (cvidmode)
       {
       case 0:
          WindowWidth=64;
@@ -1514,19 +1514,19 @@ void initwinvideo(void)
       }
    }
 
-   if(((PrevStereoSound!=StereoSound)||(PrevSoundQuality!=SoundQuality))&&FirstSound!=1)
+   if (((PrevStereoSound!=StereoSound)||(PrevSoundQuality!=SoundQuality))&&FirstSound!=1)
       ReInitSound();
 
-   if(!FirstVid)
+   if (!FirstVid)
    {
 //      sprintf(WinMessage,"FirstVid!=1 start\n\0");
 //      MessageBox (NULL, WinMessage, "Init", MB_ICONERROR );
    
-      if(X<0)X=0;
-      if(X>(GetSystemMetrics( SM_CXSCREEN )-WindowWidth)) X=(GetSystemMetrics( SM_CXSCREEN )-WindowWidth);
-      if(Y<0)Y=0;
-      if(Y>(GetSystemMetrics( SM_CYSCREEN )-WindowHeight)) Y=(GetSystemMetrics( SM_CYSCREEN )-WindowHeight);
-      if(FullScreen==1) {X=0; Y=0;}
+      if (X<0)X=0;
+      if (X>(GetSystemMetrics( SM_CXSCREEN )-WindowWidth)) X=(GetSystemMetrics( SM_CXSCREEN )-WindowWidth);
+      if (Y<0)Y=0;
+      if (Y>(GetSystemMetrics( SM_CYSCREEN )-WindowHeight)) Y=(GetSystemMetrics( SM_CYSCREEN )-WindowHeight);
+      if (FullScreen==1) {X=0; Y=0;}
 
       MainWindowX = X; MainWindowY = Y;
 
@@ -1572,8 +1572,8 @@ void initwinvideo(void)
       }
       X=(GetSystemMetrics( SM_CXSCREEN ) - WindowWidth) / 2;
       Y=(GetSystemMetrics( SM_CYSCREEN ) - WindowHeight) / 2;
-      if(FullScreen==1) {X=0; Y=0;}
-      if(hMainWindow) 
+      if (FullScreen==1) {X=0; Y=0;}
+      if (hMainWindow) 
       {
          CloseWindow(hMainWindow);
       }
@@ -1586,7 +1586,7 @@ void initwinvideo(void)
       CheckPriority();
       CheckAlwaysOnTop();
 
-      if(!hMainWindow)
+      if (!hMainWindow)
       { 
          return;
       }
@@ -1598,15 +1598,15 @@ void initwinvideo(void)
       TestJoy();
    }
    
-   if(Moving == 1) return;
+   if (Moving == 1) return;
    
-   if(FullScreen == 0 || newmode == 1)
+   if (FullScreen == 0 || newmode == 1)
    {
-      if(InitDirectDraw() != TRUE)
+      if (InitDirectDraw() != TRUE)
       {
          exit(1);
       }
-      if(newmode) clearwin();
+      if (newmode) clearwin();
    }
 }
 
@@ -1641,7 +1641,7 @@ void CheckTimers(void)
          start2 += update_ticks_pc2;
       }                                     
 
-   if(T60HZEnabled)
+   if (T60HZEnabled)
    {
       if (AltTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
          else end = timeGetTime();
@@ -1657,7 +1657,7 @@ void CheckTimers(void)
       }                                     
    }
 
-   if(T36HZEnabled)
+   if (T36HZEnabled)
    {
       if (AltTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
          else end = timeGetTime();
@@ -1684,7 +1684,7 @@ void UpdateVFrame(void)
    int DataNeeded;
    int SPCSize=256;
 
-   if(StereoSound==1)SPCSize=256;
+   if (StereoSound==1)SPCSize=256;
 
    while (PeekMessage(&msg,NULL,0,0,PM_REMOVE))
    {
@@ -1699,7 +1699,7 @@ void UpdateVFrame(void)
 
    lpSoundBuffer->GetCurrentPosition(&CurrentPos,&WritePos);
 
-   if(LastUsedPos <= CurrentPos)
+   if (LastUsedPos <= CurrentPos)
    {
       DataNeeded=CurrentPos-LastUsedPos;
    }
@@ -1711,7 +1711,7 @@ void UpdateVFrame(void)
    DataNeeded/=(SPCSize*2);
    DataNeeded*=(SPCSize*2);
 
-   while(DataNeeded>0)
+   while (DataNeeded>0)
    {
       _asm
       {
@@ -1725,12 +1725,12 @@ void UpdateVFrame(void)
       for(i=0;i<SPCSize;i++)
       {
          Buffer[i]=DSPBuffer1[i];
-         if(DSPBuffer1[i]>32767)Buffer[i]=32767;
-         if(DSPBuffer1[i]<-32767)Buffer[i]=-32767;
-         if(T36HZEnabled)Buffer[i]=0;
+         if (DSPBuffer1[i]>32767)Buffer[i]=32767;
+         if (DSPBuffer1[i]<-32767)Buffer[i]=-32767;
+         if (T36HZEnabled)Buffer[i]=0;
       }
 
-      if(DS_OK!=lpSoundBuffer->Lock(LastUsedPos,
+      if (DS_OK!=lpSoundBuffer->Lock(LastUsedPos,
                                   SPCSize*2, &lpvPtr1,
                                   &dwBytes1, &lpvPtr2,
                                   &dwBytes2, 0))
@@ -1742,18 +1742,18 @@ void UpdateVFrame(void)
 
       CopyMemory(lpvPtr1, &Buffer[0], dwBytes1);
 
-      if(NULL != lpvPtr2)
+      if (NULL != lpvPtr2)
       {
          CopyMemory(lpvPtr2, &Buffer[0]+dwBytes1, dwBytes2);
       }   
 
-      if(DS_OK != lpSoundBuffer->Unlock(lpvPtr1, dwBytes1, lpvPtr2, dwBytes2))
+      if (DS_OK != lpSoundBuffer->Unlock(lpvPtr1, dwBytes1, lpvPtr2, dwBytes2))
       {
          return;
       }
 
       LastUsedPos+=SPCSize*2;
-      if(LastUsedPos==SoundBufferSize) LastUsedPos=0;
+      if (LastUsedPos==SoundBufferSize) LastUsedPos=0;
       DataNeeded-=(SPCSize*2);
    }
 
@@ -1774,12 +1774,12 @@ void clearwin()
    DWORD *SURFDW;
 
    Temp1=LockSurface();
-   if(Temp1==0) { return; }
+   if (Temp1==0) { return; }
 
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
 
-   switch(BitDepth)
+   switch (BitDepth)
    {
       case 16:
          _asm {
@@ -1843,9 +1843,9 @@ void drawscreenwin(void)
                                 //  for ZSNES' current transparency code)
 
    UpdateVFrame();
-   if(curblank!=0) return;
+   if (curblank!=0) return;
 
-   if(!(Temp1 = LockSurface()))
+   if (!(Temp1 = LockSurface()))
    { 
       DD_Primary->Restore();
       DD_CFB->Restore();
@@ -1857,9 +1857,9 @@ void drawscreenwin(void)
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
 
-   if(SurfaceX==256&&SurfaceY==224)
+   if (SurfaceX==256&&SurfaceY==224)
    {
-      switch(BitDepth)
+      switch (BitDepth)
       {
          case 16:
              if (FPUCopy){
@@ -1985,9 +1985,9 @@ void drawscreenwin(void)
       }
    }
 
-   if(SurfaceX==320&&SurfaceY==240)
+   if (SurfaceX==320&&SurfaceY==240)
    {
-      switch(BitDepth)
+      switch (BitDepth)
       {
          case 16:
              if (FPUCopy){
@@ -2152,9 +2152,9 @@ void drawscreenwin(void)
       }
    }
 
-   if(SurfaceX==512&&SurfaceY==448)
+   if (SurfaceX==512&&SurfaceY==448)
    {
-      switch(BitDepth)
+      switch (BitDepth)
       {
          case 16:
             AddEndBytes=Temp1-1024;
@@ -2178,9 +2178,9 @@ void drawscreenwin(void)
          }
    }
 
-   if(SurfaceX==640&&SurfaceY==480)
+   if (SurfaceX==640&&SurfaceY==480)
    {
-      switch(BitDepth)
+      switch (BitDepth)
       {
          case 16:
             AddEndBytes=Temp1-1024;
@@ -2238,7 +2238,7 @@ void WinUpdateDevices()
       keys2[i]=0;
    keys=(unsigned char *)&pressed;
 
-   if(KeyboardInput&&InputEn==1)
+   if (KeyboardInput&&InputEn==1)
    {
       KeyboardInput->GetDeviceState(256, keys2);
    }
@@ -2246,8 +2246,8 @@ void WinUpdateDevices()
    {
       return;
    }
-   if(keys2[0x38]!=0&&keys2[0x3E]!=0) exit(0);
-   if(keys2[0x38]!=0&&keys2[0x1c]!=0)
+   if (keys2[0x38]!=0&&keys2[0x3E]!=0) exit(0);
+   if (keys2[0x38]!=0&&keys2[0x1c]!=0)
    {
     _asm{
       pushad
@@ -2258,8 +2258,8 @@ void WinUpdateDevices()
    }
    for(i=0;i<256;i++)
    {
-      if(keys2[i]==0) keys[i]=0;
-      if(keys2[i]!=0&&keys[i]==0) keys[i]=1;
+      if (keys2[i]==0) keys[i]=0;
+      if (keys2[i]!=0&&keys[i]==0) keys[i]=1;
    }
 //   keys[1]=keys[16];
    keys[0]=0;
@@ -2268,7 +2268,7 @@ void WinUpdateDevices()
 
    for(i=0;i<4;i++)
    {
-      if(JoystickInput[i])
+      if (JoystickInput[i])
       {
          for(j=0;j<32;j++)
          {
@@ -2277,90 +2277,90 @@ void WinUpdateDevices()
 
 //         memset(&js[i], 0, sizeof(DIJOYSTATE));
          JoystickInput[i]->Poll();
-         if(IDirectInputDevice7_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i])==DIERR_INPUTLOST)
+         if (IDirectInputDevice7_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i])==DIERR_INPUTLOST)
          {
-            if(JoystickInput[i]) JoystickInput[i]->Acquire();
-            if(FAILED(IDirectInputDevice7_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i]))) return;
+            if (JoystickInput[i]) JoystickInput[i]->Acquire();
+            if (FAILED(IDirectInputDevice7_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i]))) return;
          }
 
-         if(!X1Disable[i])
+         if (!X1Disable[i])
          {
-            if(js[i].lX>0) keys[0x100+i*32+0]=1;
+            if (js[i].lX>0) keys[0x100+i*32+0]=1;
          }
 
-         if(!X2Disable[i])
+         if (!X2Disable[i])
          {
-            if(js[i].lX<0) keys[0x100+i*32+1]=1;
+            if (js[i].lX<0) keys[0x100+i*32+1]=1;
          }
 
 
-         if(!Y1Disable[i])
+         if (!Y1Disable[i])
          {
-            if(js[i].lY>0) keys[0x100+i*32+2]=1;
+            if (js[i].lY>0) keys[0x100+i*32+2]=1;
          }
 
-         if(!Y2Disable[i])
+         if (!Y2Disable[i])
          {
-            if(js[i].lY<0) keys[0x100+i*32+3]=1;
+            if (js[i].lY<0) keys[0x100+i*32+3]=1;
          }
 
-         if(!Z1Disable[i])
+         if (!Z1Disable[i])
          {
-            if(js[i].lZ>0) keys[0x100+i*32+4]=1;
+            if (js[i].lZ>0) keys[0x100+i*32+4]=1;
          }
 
-         if(!Z2Disable[i])
+         if (!Z2Disable[i])
          {
-            if(js[i].lZ<0) keys[0x100+i*32+5]=1;
+            if (js[i].lZ<0) keys[0x100+i*32+5]=1;
          }
-         if(!RY1Disable[i])
+         if (!RY1Disable[i])
          {
-            if(js[i].lRy>0) keys[0x100+i*32+6]=1;
+            if (js[i].lRy>0) keys[0x100+i*32+6]=1;
          }
-         if(!RY2Disable[i])
+         if (!RY2Disable[i])
          {
-            if(js[i].lRy<0) keys[0x100+i*32+7]=1;
+            if (js[i].lRy<0) keys[0x100+i*32+7]=1;
          }
-         if(!RZ1Disable[i])
+         if (!RZ1Disable[i])
          {
-            if(js[i].lRz>0) keys[0x100+i*32+8]=1;
+            if (js[i].lRz>0) keys[0x100+i*32+8]=1;
          }
-         if(!RZ2Disable[i])
+         if (!RZ2Disable[i])
          {
-            if(js[i].lRz<0) keys[0x100+i*32+9]=1;
+            if (js[i].lRz<0) keys[0x100+i*32+9]=1;
          }
-         if(!S01Disable[i])
+         if (!S01Disable[i])
          {
-            if(js[i].rglSlider[0]>0) keys[0x100+i*32+10]=1;
+            if (js[i].rglSlider[0]>0) keys[0x100+i*32+10]=1;
          }
-         if(!S02Disable[i])
+         if (!S02Disable[i])
          {
-            if(js[i].rglSlider[0]<0) keys[0x100+i*32+11]=1;
+            if (js[i].rglSlider[0]<0) keys[0x100+i*32+11]=1;
          }
-         if(!S11Disable[i])
+         if (!S11Disable[i])
          {
-            if(js[i].rglSlider[1]>0) keys[0x100+i*32+12]=1;
+            if (js[i].rglSlider[1]>0) keys[0x100+i*32+12]=1;
          }
-         if(!S12Disable[i])
+         if (!S12Disable[i])
          {
-            if(js[i].rglSlider[1]<0) keys[0x100+i*32+13]=1;
+            if (js[i].rglSlider[1]<0) keys[0x100+i*32+13]=1;
          }
-         if(js[i].rgbButtons[0]) keys[0x100+i*32+16]=1;
-         if(js[i].rgbButtons[1]) keys[0x100+i*32+17]=1;
-         if(js[i].rgbButtons[2]) keys[0x100+i*32+18]=1;
-         if(js[i].rgbButtons[3]) keys[0x100+i*32+19]=1;
-         if(js[i].rgbButtons[4]) keys[0x100+i*32+20]=1;
-         if(js[i].rgbButtons[5]) keys[0x100+i*32+21]=1;
-         if(js[i].rgbButtons[6]) keys[0x100+i*32+22]=1;
-         if(js[i].rgbButtons[7]) keys[0x100+i*32+23]=1;
-         if(js[i].rgbButtons[8]) keys[0x100+i*32+24]=1;
-         if(js[i].rgbButtons[9]) keys[0x100+i*32+25]=1;
-         if(js[i].rgbButtons[10]) keys[0x100+i*32+26]=1;
-         if(js[i].rgbButtons[11]) keys[0x100+i*32+27]=1;
-         if(js[i].rgbButtons[12]) keys[0x100+i*32+28]=1;
-         if(js[i].rgbButtons[13]) keys[0x100+i*32+29]=1;
-         if(js[i].rgbButtons[14]) keys[0x100+i*32+30]=1;
-         if(js[i].rgbButtons[15]) keys[0x100+i*32+31]=1;
+         if (js[i].rgbButtons[0]) keys[0x100+i*32+16]=1;
+         if (js[i].rgbButtons[1]) keys[0x100+i*32+17]=1;
+         if (js[i].rgbButtons[2]) keys[0x100+i*32+18]=1;
+         if (js[i].rgbButtons[3]) keys[0x100+i*32+19]=1;
+         if (js[i].rgbButtons[4]) keys[0x100+i*32+20]=1;
+         if (js[i].rgbButtons[5]) keys[0x100+i*32+21]=1;
+         if (js[i].rgbButtons[6]) keys[0x100+i*32+22]=1;
+         if (js[i].rgbButtons[7]) keys[0x100+i*32+23]=1;
+         if (js[i].rgbButtons[8]) keys[0x100+i*32+24]=1;
+         if (js[i].rgbButtons[9]) keys[0x100+i*32+25]=1;
+         if (js[i].rgbButtons[10]) keys[0x100+i*32+26]=1;
+         if (js[i].rgbButtons[11]) keys[0x100+i*32+27]=1;
+         if (js[i].rgbButtons[12]) keys[0x100+i*32+28]=1;
+         if (js[i].rgbButtons[13]) keys[0x100+i*32+29]=1;
+         if (js[i].rgbButtons[14]) keys[0x100+i*32+30]=1;
+         if (js[i].rgbButtons[15]) keys[0x100+i*32+31]=1;
       }
       else
       {
@@ -2377,9 +2377,9 @@ int GetMouseX(void)
 {
    InputRead();
    MouseX+=MouseMoveX;
-   if(MouseX>MouseMaxX)
+   if (MouseX>MouseMaxX)
    {
-      if(abs(MouseMoveX)>10&&T36HZEnabled&&(FullScreen==0))
+      if (abs(MouseMoveX)>10&&T36HZEnabled&&(FullScreen==0))
       {
          MouseInput->Unacquire();
          SetCursorPos(X+WindowWidth+32,Y+(MouseY*WindowHeight/224));
@@ -2387,9 +2387,9 @@ int GetMouseX(void)
       MouseX=MouseMaxX;
    }
 
-   if(MouseX<MouseMinX)
+   if (MouseX<MouseMinX)
    {
-      if(abs(MouseMoveX)>10&&T36HZEnabled&&(FullScreen==0))
+      if (abs(MouseMoveX)>10&&T36HZEnabled&&(FullScreen==0))
       {
          MouseInput->Unacquire();
          SetCursorPos(X-32,Y+(MouseY*WindowHeight/224));
@@ -2402,19 +2402,19 @@ int GetMouseX(void)
 int GetMouseY(void)
 {
    MouseY+=MouseMoveY;
-   if(MouseY>MouseMaxY)
+   if (MouseY>MouseMaxY)
    {
       MouseY=MouseMaxY;
-      if(abs(MouseMoveY)>10&&T36HZEnabled&&(FullScreen==0))
+      if (abs(MouseMoveY)>10&&T36HZEnabled&&(FullScreen==0))
       {
          MouseInput->Unacquire();
          SetCursorPos(X+(MouseX*WindowWidth/256), Y+WindowHeight+32);
       }
    }
-   if(MouseY<MouseMinY)
+   if (MouseY<MouseMinY)
    {
       MouseY=MouseMinY;
-      if(abs(MouseMoveY)>10&&T36HZEnabled&&(FullScreen==0))
+      if (abs(MouseMoveY)>10&&T36HZEnabled&&(FullScreen==0))
       {
          MouseInput->Unacquire();
          SetCursorPos(X+(MouseX*WindowWidth/256), Y-32);
@@ -2439,22 +2439,22 @@ int GetMouseMoveY(void)
 int GetMouseButton(void)
 {
    RECT rc1;
-   if(MouseButton&2)
+   if (MouseButton&2)
    {
-   while((MouseButton!=0)&&T36HZEnabled&&(FullScreen==0))
+   while ((MouseButton!=0)&&T36HZEnabled&&(FullScreen==0))
    {
          Moving=1;
          X+=MouseMoveX;
          Y+=MouseMoveY;
-         if(X<0)X=0;
-         if(X>(GetSystemMetrics( SM_CXSCREEN )-WindowWidth)) X=(GetSystemMetrics( SM_CXSCREEN )-WindowWidth);
-         if(Y<0)Y=0;
-         if(Y>(GetSystemMetrics( SM_CYSCREEN )-WindowHeight)) Y=(GetSystemMetrics( SM_CYSCREEN )-WindowHeight);
+         if (X<0)X=0;
+         if (X>(GetSystemMetrics( SM_CXSCREEN )-WindowWidth)) X=(GetSystemMetrics( SM_CXSCREEN )-WindowWidth);
+         if (Y<0)Y=0;
+         if (Y>(GetSystemMetrics( SM_CYSCREEN )-WindowHeight)) Y=(GetSystemMetrics( SM_CYSCREEN )-WindowHeight);
          InputRead();
          initwinvideo();
       }
    }
-   if(Moving==1)
+   if (Moving==1)
    {
       Moving=0;
       initwinvideo();
