@@ -68,7 +68,13 @@ Voodoo:
 	broken. Voodoo Rush users might be able to get by.
 
 Note that only the 640x480 full screen mode works on the Voodoo2 cards
-so please do not email me about the other video modes.
+so please do not email me about the other video modes. Files which
+might be usefull to have before compiling anything:
+
+Device3Dfx, Glide_SDK, Glide_V2 (or Glide_XXXX depending on your card)
+
+I believe Glide 2 is what you want, as Glide 3 doesn't work for older
+hardware, and has been claimed to not work with kernel 2.4.x
 
 
 KNOWN ISSUES (AND SOME WORK-AROUNDS)
