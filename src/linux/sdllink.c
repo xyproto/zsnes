@@ -1305,7 +1305,7 @@ int startgame(void)
    }
 
    if (sdl_inited == 0) {
-	   if (SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO) < 0) {
+	   if (SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_JOYSTICK) < 0) {
 		 fprintf(stderr, "Could not initialize SDL!\n");
 		 return FALSE;
 	   } else {
