@@ -695,10 +695,7 @@ void initwinvideo(void)
 {
 	DWORD newmode = 0;
 
-	if (BlackAndWhite == 1)
-		V8Mode = 1;
-	else
-		V8Mode = 0;
+	V8Mode = (BlackAndWhite == 1);
 
 	if (CurMode != cvidmode)
 	{
