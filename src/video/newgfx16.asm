@@ -1115,7 +1115,7 @@ NEWSYM newengine16b
     cmp byte[scrnon+1],0
     jne .notblack
 ;    mov byte[clinemainsub],1
-;    mov byte[scadtng+eax],0
+    mov byte[scadtng+eax],0
 ;    mov byte[FillSubScr+eax],0
 .notblack
 
