@@ -480,11 +480,11 @@ DSPOp02()
 
    ReversedLES=0;
    Op02LESb=Op02LES;
-   if ((Op02LES>=VofAngle+0x4000) && (Op02LES<VofAngle+0x8000)) {
+   if ((Op02LES>=VofAngle+16384.0) && (Op02LES<VofAngle+32768.0)) {
      ReversedLES=1;
      Op02LESb=VofAngle+0x4000-(Op02LES-(VofAngle+0x4000));
    }
-   Op02VVA = (short)(Op02LESb * tan(Op02AZS*6.2832/65536.0));
+   Op02VVA = (short)(Op02LESb * tan((Op02AZS)*6.2832/65536.0));
    if ((Op02LESb>=VofAngle) && (Op02LESb<=VofAngle+0x4000)) {
       Op02VOF= (short)(Op02LESb * tan((Op02AZS-VofAngle)*6.2832/65536.0));
       Op02VVA-=Op02VOF;
@@ -814,9 +814,9 @@ DSPOp01()
 {
    double zr,yr,xr,sc;
 
-   zr = 65536.0/Op01Zr*6.2832;
-   yr = 65536.0/Op01Yr*6.2832;
-   xr = 65536.0/Op01Xr*6.2832;
+   zr = ((double)Op01Zr)*6.2832/65536;
+   yr = ((double)Op01Yr)*6.2832/65536;
+   xr = ((double)Op01Xr)*6.2832/65536;
 
    matrixB[0][0]=cos(yr); matrixB[0][1]=0; matrixB[0][2]=-sin(yr);
    matrixB[1][0]=0;       matrixB[1][1]=1; matrixB[1][2]=0;
@@ -834,7 +834,7 @@ DSPOp01()
 
    MultMatrixB(matrixB,matrixB3,matrixB2);
 
-   sc = Op01m/32768;
+   sc = ((double)Op01m)/32768.0;
 
    matrixB[0][0]*=sc;     matrixB[0][1]*=sc;  matrixB[0][2]*=sc;
    matrixB[1][0]*=sc;     matrixB[1][1]*=sc;  matrixB[1][2]*=sc;
@@ -902,7 +902,7 @@ short Op0DU;
 DSPOp0D()
 {
    double a,b,c,d,e,f,g,h,i,det,temp;
-   double a2,b2,c2,d2,e2,f2,g2,h2,i2;
+   double a2,b2,c2,d2,e2,f2,g2,h2,i2,x,y,z;
    a = matrixA[0][0]; b=matrixA[0][1]; c=matrixA[0][2];
    d = matrixA[1][0]; e=matrixA[1][1]; f=matrixA[1][2];
    g = matrixA[2][0]; h=matrixA[2][1]; i=matrixA[2][2];
@@ -910,14 +910,19 @@ DSPOp0D()
    //def
    //ghi
    det = a*e*i+b*f*g+c*d*h-g*e*c-h*f*a-i*d*b;
+   if (det==0) {
+     Op0DF=0; Op0DL=0; Op0DU=0;
+     return;
+   }
    swap(d,b); swap(g,c); swap(h,f);
    b=-b; d=-d; f=-f; h=-h;
    a2=(e*i-h*f)/det; b2=(d*i-g*f)/det; c2=(d*h-g*e)/det;
    d2=(b*i-h*c)/det; e2=(a*i-g*c)/det; f2=(a*h-g*b)/det;
    g2=(b*f-e*c)/det; h2=(a*f-d*c)/det; i2=(a*e-d*b)/det;
-   Op0DF=(short)((Op0DX*a2+Op0DY*d2+Op0DZ*g2)/4);
-   Op0DL=(short)((Op0DX*b2+Op0DY*e2+Op0DZ*h2)/4);
-   Op0DU=(short)((Op0DX*c2+Op0DY*f2+Op0DZ*i2)/4);
+   x=Op0DX; y=Op0DY; z=Op0DZ;
+   Op0DF=(short)((x*a2+y*d2+z*g2)/2);
+   Op0DL=(short)((x*b2+y*e2+z*h2)/2);
+   Op0DU=(short)((x*c2+y*f2+z*i2)/2);
    #ifdef DebugDSP1
       Log_Message("OP0D");
    #endif
@@ -952,9 +957,12 @@ short Op03Z;
 
 DSPOp03()
 {
-   Op03X=(short)((Op03F*matrixA[0][0]+Op03L*matrixA[1][0]+Op03U*matrixA[2][0]));
-   Op03Y=(short)((Op03F*matrixA[0][1]+Op03L*matrixA[1][1]+Op03U*matrixA[2][1]));
-   Op03Z=(short)((Op03F*matrixA[0][2]+Op03L*matrixA[1][2]+Op03U*matrixA[2][2]));
+   double F,L,U;
+   F=Op03F; L=Op03L; U=Op03U;
+
+   Op03X=(short)((F*matrixA[0][0]+L*matrixA[1][0]+U*matrixA[2][0])*2);
+   Op03Y=(short)((F*matrixA[0][1]+L*matrixA[1][1]+U*matrixA[2][1])*2);
+   Op03Z=(short)((F*matrixA[0][2]+L*matrixA[1][2]+U*matrixA[2][2])*2);
    #ifdef DebugDSP1
       Log_Message("OP03");
    #endif
