@@ -4058,9 +4058,6 @@ SECTION .text
 %%notfound
 %endmacro
 
-SECTION .data
-InvalidZip db 'ZSNES Version A does not support .ZIP files.',13,10,'Please use Version C for this feature.',10,13,0
-
 SECTION .bss
 ZipError resb 1
 
