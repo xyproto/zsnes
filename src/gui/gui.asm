@@ -593,7 +593,7 @@ NEWSYM KeyQuickClock, dd 0
 NEWSYM KeyQuickSaveSPC, dd 0
 NEWSYM AutoIncSaveSlot, db 0
 NEWSYM TCPIPAddress, times 29 db 0
-NEWSYM SoundInterpType, db 2
+NEWSYM SoundInterpType, db 1
 NEWSYM KeyDisplayFPS, dd 0
 NEWSYM KeyIncStateSlot, dd 0
 NEWSYM KeyDecStateSlot, dd 0
