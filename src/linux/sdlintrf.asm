@@ -111,9 +111,9 @@ EXTSYM acceptzuser
 EXTSYM TCPIPAddress
 EXTSYM ConnectServer
 EXTSYM WaitForServer
-EXTSYM SendData
-EXTSYM SendDataUDP
-EXTSYM GetData
+EXTSYM SendDataNop
+EXTSYM SendDataUDPNop
+EXTSYM GetDataNop
 EXTSYM DeInitTCP
 EXTSYM StopServer
 EXTSYM Disconnect
@@ -1608,12 +1608,8 @@ NEWSYM TCPIPSendPacket
     je .nopacket
     pushad
     ; Send PacketSendArray with size of PacketSendSize
-    ; SendData(int dsize,char *dptr)
-    mov eax,PacketSendArray
-    push eax
-    mov eax,[PacketSendSize]
-    push eax
-    call SendData
+    ; SendData(int [PacketSendSize],char *PacketSendArray)
+    call SendDataNop
     or eax,eax
     jnz .failed
     add esp,8
@@ -1632,12 +1628,8 @@ NEWSYM TCPIPSendPacketUDP
     je .nopacket
     pushad
     ; Send PacketSendArray with size of PacketSendSize
-    ; SendData(int dsize,char *dptr)
-    mov eax,PacketSendArray
-    push eax
-    mov eax,[PacketSendSize]
-    push eax
-    call SendDataUDP
+    ; SendData(int [PacketSendSize],char *PacketSendArray)
+    call SendDataUDPNop
     or eax,eax
     jnz .failed
     add esp,8
@@ -1654,12 +1646,8 @@ NEWSYM TCPIPSendPacketUDP
 NEWSYM TCPIPRecvPacket
     pushad
     ; Store packet to PacketRecvArray, size at PacketRecvSize
-    ; int GetData(int dsize,char *dptr)
-    mov eax,PacketRecvArray
-    push eax
-    mov eax,2048
-    push eax
-    call GetData
+    ; int GetData(int 2048,char *PacketRecvArray)
+    call GetDataNop
     cmp eax,-1
     je .failed
     mov [PacketRecvSize],eax

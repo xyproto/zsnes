@@ -881,6 +881,66 @@ int SendData(int dsize,unsigned char *dptr)
    return(0);
 }
 
+extern int PacketSendSize;
+extern unsigned char PacketSendArray[2048+256];
+
+int SendDataNop()
+{
+   int retval, dsize=PacketSendSize;
+   unsigned char *dptr=PacketSendArray;
+   //MK: unused 2003/08/31
+    //char message1[256];
+
+   if (UDPEnable){
+/*      retval = sendto(ugamesocket,dptr,dsize,0,(struct sockaddr *)&ugameaddress,sizeof(ugameaddress));
+      if (retval == SOCKET_ERROR)
+           {
+         closesocket(gamesocket);
+         return(-1);
+           }
+      return(0);  */
+
+     if (((packetnum-packetnumhead) & 0xFF) >= 15){
+//        sprintf(message1,"Packet Overflow.");
+//        MessageBox (NULL, message1, "Init Error" , MB_ICONERROR );
+
+        // wait for receive packet, call JoyRead while waiting
+        while (((packetnum-packetnumhead) & 0xFF) >= 15){
+           PacketResend();
+           PacketReceive();
+           UpdateVFrame();
+           while ((packetconfirm[packetnumhead]) && (packetnum!=packetnumhead))
+             packetnumhead=(packetnumhead+1) & 0xFF;
+        }
+     }
+     CopyMemory(&(cpacketdata[2]),dptr,dsize);
+     CopyMemory(&(packetdata[2048*(packetnum & 0x0F)]),dptr,dsize);
+     packetsize[packetnum]=dsize;
+     packetconfirm[packetnum]=0;
+     cpacketdata[0]=1;
+     cpacketdata[1]=(char)packetnum;
+     retval = sendto(ugamesocket,cpacketdata,dsize+2,0,(struct sockaddr *)&ugameaddress,sizeof(ugameaddress));
+     packettimeleft[packetnum]=60;
+     if (dsize>512) packettimeleft[packetnum]=90;
+     packetresent[packetnum]=1;
+     packetnum=(packetnum+1) & 0xFF;
+     if (retval == SOCKET_ERROR)
+          {
+        closesocket(ugamesocket);
+        return(-1);
+          }
+     return(0);
+   }
+
+   /* send data with the socket */
+   retval = send(gamesocket,dptr,dsize,0);
+   if (retval == SOCKET_ERROR)
+	{
+      closesocket(gamesocket);
+      return(-1);
+	}
+   return(0);
+}
 
 /**********************************************************\
 * Send data UDP                                            *
@@ -937,6 +997,94 @@ int SendDataUDP(int dsize,unsigned char *dptr)
    int packetsize;
 
 
+
+//   return (SendData(dsize,dptr));
+
+   if (UDPEnable){
+
+/*int SendPtr;
+char SendBuffer[256*32];
+char SendBufferSize[256];*/
+      blahblahblah++;
+
+      packetsize = 0;
+
+      for (i=0;i<dsize;i++)
+        SendBuffer[SendPtr*32+i]=dptr[i];
+      SendBufferSize[SendPtr]=dsize;
+
+      if ((dsize == 2) && (dptr[0]<=1)){
+        if (SendRepeated < 32) SendRepeated++;
+        cpacketdata[0]=4;
+        cpacketdata[1]=dptr[1];
+        cpacketdata[2]=(char)SendPtr;
+        cpacketdata[3]=(char)SendPtr2;
+        cpacketdata[4]=(char)SendRepeated;
+        packetsize=5;
+        packetsize=AttachEnd(packetsize);
+        PrevSPacket[UDPBackTrace-2]=0;
+        SendPtr=(SendPtr+1) & 0xFF;
+        if (!SendPtr) SendPtr2=(SendPtr2+1) & 0xFF;
+        retval = sendto(ugamesocket,cpacketdata,packetsize,0,(struct sockaddr *)&ugameaddress,sizeof(ugameaddress));
+        if (retval == SOCKET_ERROR)
+           {
+         closesocket(gamesocket);
+         return(-1);
+           }
+      } else {
+        if (SendRepeated){
+          PrevSPacket[UDPBackTrace-2]=1;
+          PrevSSize[UDPBackTrace-2]=3;
+          PrevSData[(UDPBackTrace-2)*32]=0;
+          PrevSData[(UDPBackTrace-2)*32+1]=dptr[1];
+          PrevSData[(UDPBackTrace-2)*32+2]=SendRepeated;
+          PrevSPtr[UDPBackTrace-2]=(SendPtr-1) & 0xFF;
+        }
+        SendRepeated=0;
+        cpacketdata[0]=5;
+        cpacketdata[1]=dptr[1];
+        cpacketdata[2]=SendPtr;
+        cpacketdata[3]=SendPtr2;
+        cpacketdata[4]=dsize;
+        packetsize=5;
+        for (i=0;i<dsize;i++)
+          cpacketdata[i+5]=dptr[i];
+        packetsize+=dsize;
+        packetsize=AttachEnd(packetsize);
+
+        PrevSPacket[UDPBackTrace-2]=1;
+        PrevSSize[UDPBackTrace-2]=dsize;
+        for (i=0;i<dsize;i++)
+          PrevSData[(UDPBackTrace-2)*32+i]=dptr[i];
+        PrevSPtr[UDPBackTrace-2]=SendPtr;
+
+        SendPtr=(SendPtr+1) & 0xFF;
+        if (!SendPtr) SendPtr2=(SendPtr2+1) & 0xFF;
+        retval = sendto(ugamesocket,cpacketdata,packetsize,0,(struct sockaddr *)&ugameaddress,sizeof(ugameaddress));
+        if (retval == SOCKET_ERROR)
+           {
+         closesocket(gamesocket);
+         return(-1);
+           }
+      }
+      return(0); 
+   }
+
+   /* send data with the socket */
+   retval = sendto(gamesocket,dptr,dsize,0,(struct sockaddr *) &ugameaddress,sizeof(struct sockaddr));
+   if (retval == SOCKET_ERROR)
+	{
+      closesocket(gamesocket);
+      return(-1);
+	}
+   return(0);
+}
+
+int SendDataUDPNop()
+{
+   int retval,i;
+   int packetsize, dsize=PacketSendSize;
+   unsigned char *dptr=PacketSendArray;
 
 //   return (SendData(dsize,dptr));
 
@@ -1139,6 +1287,70 @@ int GetData(int dsize,unsigned char *dptr)
    return(retval);
 }
 
+extern unsigned char PacketRecvArray[2048+256];
+
+int GetData()
+{
+   int retval,i;
+   int dataleft, dsize=2048;
+   unsigned char *dptr=PacketRecvArray;
+
+   retval=0;
+
+      // Temporary UDP routines
+   if (UDPEnable) {
+
+     PacketResend();
+     PacketReceive();
+
+     i=packetrecvhead;
+     if (packetreceived[i]){
+       CopyMemory(dptr,&(packetrdata[2048*(i & 0x0F)]),packetreceivesize[i]);
+       retval = packetreceivesize[i];
+       packetreceived[(i+128) & 0xFF]=0;
+       packetrecvhead=(packetrecvhead+1) & 0xFF;
+       return(retval); 
+     }
+
+     i=RecvPtr;
+     if ((RecvFlags[i]) && (UDPMode2)){
+       CopyMemory(dptr,&(RecvBuffer[32*i]),RecvBufferSize[i]);
+       retval = RecvBufferSize[i];
+       RecvFlags[(i+128) & 0xFF]=0;
+       RecvPtr=(RecvPtr+1) & 0xFF;
+       if (!RecvPtr) RecvPtr2=(RecvPtr2+1) & 0xFF;
+       CounterA=90;
+       return(retval);
+     }
+
+     if ((CounterA==0) & (UDPMode2)){
+       // Send 16+RecvPtr
+       cpacketdata[0]=16;
+       cpacketdata[1]=RecvPtr;
+       sendto(ugamesocket,cpacketdata,2,0,(struct sockaddr *)&ugameaddress,sizeof(ugameaddress));
+       CounterA=90;
+       return(0);
+     }
+
+     return(0);
+   }
+
+   dataleft=GetLeft();
+   if(dataleft==0) return(0);
+
+   if(dataleft<dsize)
+   {
+      dsize=dataleft;
+   }
+   /* get data with the socket */
+   retval = recv(gamesocket,dptr,dsize,0);
+   if (retval == SOCKET_ERROR)
+	{
+      closesocket(gamesocket);
+      return(-1);
+	}
+   return(retval);
+}
 
 void GetHostName()
 {
