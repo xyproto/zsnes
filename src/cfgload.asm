@@ -656,17 +656,25 @@ db 'GUIDisable = %Y',13,10
 db '',13,10
 %endif
 db '; New Graphics Engine (1 = Enable, 0 = Disable)',13,10
+%ifdef __MSDOS__
 db '; All 256 color modes and 320x240x65536 supported',13,10
+%endif
 db '',13,10
 db 'NewGfx = %n',13,10
 db '',13,10
 db '; Scanlines (0 = Disable, 1 = Full, 2 = 25%, 3 = 50%)',13,10
+%ifdef __MSDOS__
 db '; 256x256x256 or 640x480 modes only (25% and 50% in 640x480x65536 mode only)',13,10
+%endif
 db '',13,10
 db 'Scanlines = %Z',13,10
 db '',13,10
+%ifdef __MSDOS__
 db '; Interpolation (1 = Enable, 0 = Disable) - 640x480x65536 mode only',13,10
 db '; This option also Enables EAGLE          - 640x480x256 mode only',13,10
+%else
+db '; Interpolation (1 = Enable, 0 = Disable)',13,10
+%endif
 db '',13,10
 db 'Interpolation = %a',13,10
 db '',13,10
