@@ -49,13 +49,15 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 extern unsigned int versionNumber, CRC32, cur_zst_size;
 extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
 extern unsigned int MsgCount, MessageOn;
-extern unsigned char MovieStartMethod, GUIReset, ReturnFromSPCStall;
-extern unsigned char MovieProcessing, *Msgptr;
+extern unsigned char MovieStartMethod, GUIReset, ReturnFromSPCStall, GUIQuit;
+extern unsigned char MovieProcessing, *Msgptr, fnamest[512];
+extern unsigned char CMovieExt;
 extern bool romispal;
 bool firstloop;
 
 void GUIDoReset();
-void powercycle();
+void powercycle(bool);
+void zst_sram_load(FILE *);
 void zst_save(FILE *, bool);
 bool zst_load(FILE *);
 
@@ -556,14 +558,14 @@ static void zmv_create(char *filename)
       case zmv_sm_zst:
         break;
       case zmv_sm_power:
-        powercycle();
+        powercycle(true);
         break;
       case zmv_sm_reset:
         GUIReset = 1;
         asm_call(GUIDoReset);
         ReturnFromSPCStall = 0;
         break;
-    }    
+    }
 
     zst_save(zmv_vars.fp, false);
     zmv_vars.filename = (char *)malloc(filename_len+1); //+1 for null
@@ -712,6 +714,8 @@ static bool zmv_open(char *filename)
 
     }
 
+    MovieStartMethod = (unsigned char)zmv_vars.header.zmv_flag.start_method;
+
     if (zmv_vars.header.zsnes_version != (versionNumber & 0xFFFF))
     {
       zst_load(zmv_vars.fp);
@@ -725,23 +729,22 @@ static bool zmv_open(char *filename)
           zst_load(zmv_vars.fp);
           break;
         case zmv_sm_power:
-          powercycle();
-          fseek(zmv_vars.fp, zmv_vars.header.zst_size, SEEK_CUR);
+          powercycle(false);
+          zst_sram_load(zmv_vars.fp);
           break;
         case zmv_sm_reset:
           GUIReset = 1;
           asm_call(GUIDoReset);
           ReturnFromSPCStall = 0;
-          fseek(zmv_vars.fp, zmv_vars.header.zst_size, SEEK_CUR);
+          zst_sram_load(zmv_vars.fp);
           break;
       }
 
+      zmv_open_vars.input_start_pos = ftell(zmv_vars.fp);
       Msgptr = "MOVIE STARTED.";
     }
-    
+
     firstloop = true;
-    
-    zmv_open_vars.input_start_pos = ftell(zmv_vars.fp);
 
     fseek(zmv_vars.fp, -(EXT_CHAP_COUNT_END_DIST), SEEK_END);
     zmv_open_vars.external_chapter_count = fread2(zmv_vars.fp);
@@ -1314,6 +1317,7 @@ static void MovieSub_Close()
 {
   if (MovieSub.fp)
   {
+    MessageOn = 0;
     fclose(MovieSub.fp);
     MovieSub.fp = 0;
   }
@@ -1390,6 +1394,14 @@ MovieProcessing
 
 */
 
+extern bool SRAMState, SloMo50;
+bool PrevSRAMState;
+extern unsigned int statefileloc;
+extern unsigned char ComboCounter, MovieRecordWinVal, RewindStates;
+char MovieFrameStr[10];
+void SRAMChdir();
+void ChangetoLOADdir();
+
 void MovieInsertChapter()
 {
   switch (MovieProcessing)
@@ -1452,9 +1464,6 @@ void MovieSeekBehind()
   MessageOn = MsgCount;
 }
 
-extern bool SRAMState;
-bool PrevSRAMState;
-
 void Replay()
 {
   if (zmv_replay())
@@ -1486,18 +1495,11 @@ void Replay()
   }
 }
 
-extern bool SloMo50;
-extern unsigned char ComboCounter;
-
 void ProcessMovies()
 {
   if (MovieProcessing == 2) { zmv_record(SloMo50 ? true : false, ComboCounter); }
   else { Replay(); }
 }
-
-// The following will maybe end up in guic.c once we get it started.
-// It came from guiwindp.inc and gui.asm, after all
-extern unsigned char MovieRecordWinVal;
 
 void SkipMovie()
 {
@@ -1513,6 +1515,7 @@ void MovieStop()
       case 1:
         zmv_replay_finished();
         MovieSub_Close();
+        SRAMState = PrevSRAMState;
         break;
 
       case 2:
@@ -1527,27 +1530,19 @@ void MovieStop()
 
     zmv_dealloc_rewind_buffer();
     MovieProcessing = 0;
-    SRAMState = PrevSRAMState;
   }
   else { firstloop = false; }
 }
-
-extern unsigned int statefileloc;
-extern unsigned char GUIQuit, fnamest[512], CMovieExt;
-extern unsigned char RewindStates;
-
-void SRAMChdir();
-void ChangetoLOADdir();
 
 void MoviePlay()
 {
   unsigned char FileExt[4];
 
+  PrevSRAMState = SRAMState;
+  SRAMState = true;
+
   if (!MovieProcessing)
   {
-    PrevSRAMState = SRAMState;
-    SRAMState = true;
-      
     GUIQuit = 2;
     memcpy(FileExt, &fnamest[statefileloc-3], 4);
     memcpy(&fnamest[statefileloc-3], ".zmv", 4);
@@ -1602,9 +1597,6 @@ void MovieRecord()
 
     if (!(tempfhandle = fopen(fnamest+1,"rb")))
     {
-      PrevSRAMState = SRAMState;
-      SRAMState = true;
-      
       zmv_create(fnamest+1);
       zmv_alloc_rewind_buffer(RewindStates);
       MovieProcessing = 2;
@@ -1618,11 +1610,10 @@ void MovieRecord()
     }
 
     asm_call(ChangetoLOADdir);
+
     memcpy (&fnamest[statefileloc-3], FileExt, 4);
   }
 }
-
-char MovieFrameStr[10];
 
 void GetMovieFrameStr()
 {

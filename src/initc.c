@@ -80,10 +80,10 @@ extern unsigned char spcon;
 
 void procexecloop()
 {
-    curexecstate &= 0xFFFFFF00;
+  curexecstate &= 0xFFFFFF00;
 
-    if (spcon)	{ curexecstate += 3; }
-    else	{ curexecstate += 1; }
+  if (spcon)	{ curexecstate += 3; }
+  else	{ curexecstate += 1; }
 }
 
 void Debug_WriteString(char *str)
@@ -1807,14 +1807,31 @@ unsigned int showinfogui()
 extern unsigned int nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
 extern unsigned int spcnumread, spchalted;
 extern unsigned char NextLineCache, sramsavedis, sndrot, regsbackup[3019];
-extern unsigned char yesoutofmemory;
+extern unsigned char yesoutofmemory, fnames[512];
 
 void SetupROM();
 void initsnes();
 void outofmemfix();
 void GUIDoReset();
 
-void powercycle()
+bool loadSRAM(char *sramname)
+{
+  FILE *sramfp;
+  int sramsize;
+
+  if ((sramfp = fopen(sramname, "rb")))
+  {
+    fseek(sramfp, 0, SEEK_END);
+    sramsize = ftell(sramfp);
+    rewind(sramfp);
+    if (sramsize)	{ fread(sram, 1, sramsize, sramfp); }
+    fclose(sramfp);
+    return (true);
+  }
+  else	{ return(false); }
+}
+
+void powercycle(bool sramload)
 {
   memset(sram, 0xFF, 8192*4);
   clearSPCRAM();
@@ -1829,6 +1846,7 @@ void powercycle()
   NextLineCache = 0;
   curexecstate = 1;
 
+  if (sramload)	{ loadSRAM(fnames+1); }
   asm_call(SetupROM);
   asm_call(initsnes);
 

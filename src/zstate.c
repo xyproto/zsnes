@@ -84,11 +84,11 @@ static unsigned int zst_version;
 static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t), bool read)
 {
   copy_snes_data(&buffer, copy_func);
-  
+
   //WRAM (128k), VRAM (64k)
   copy_func(&buffer, wramdata, 8192*16);
   copy_func(&buffer, vram, 4096*16);
-  
+
   if (spcon)
   {
     copy_spc_data(&buffer, copy_func);
@@ -97,18 +97,18 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
       copy_func(&buffer, &echoon0, PHdspsave2);
     }
   }
-  
+
   if (C4Enable)
-  { 
+  {
     copy_func(&buffer, C4Ram, 2048*4);
   }
-    
+
   if (SFXEnable)
   {
     copy_func(&buffer, sfxramdata, 8192*16);
     copy_func(&buffer, &SfxR0, PHnum2writesfxreg);
   }
-    
+
   if (SA1Enable)
   {
     copy_func(&buffer, &SA1Mode, PHnum2writesa1reg);
@@ -120,7 +120,7 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
       copy_func(&buffer, &sa1dmaptr, 2*4);
     }
   }
-    
+
   if (DSP1Type && !loading_old_state)
   {
     copy_func(&buffer, &DSP1COp, 70+128);
@@ -142,9 +142,9 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
   }
 
   if (SETAEnable)
-  { 
+  {
     copy_func(&buffer, setaramdata, 256*16);
-    
+
     //Todo: copy the SetaCmdEnable?  For completeness we should do it
     //but currently we ignore it anyway.
   }
@@ -154,16 +154,16 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
     copy_func(&buffer, romdata+0x510000, 65536);
     copy_func(&buffer, &SPCMultA, PHnum2writespc7110reg);
   }
-  
+
   if (!loading_old_state)
   {
     copy_extra_data(&buffer, copy_func);
-    
+
     if (!loading_state_no_sram)
     {
       copy_func(&buffer, sram, ramsize);
     }
-    
+
     if (buffer) //Not to a file, i.e. rewind
     {
       copy_func(&buffer, &tempesi, 4);
@@ -226,7 +226,7 @@ void RestoreCVFrame()
   if (RewindPos != RewindEarliestPos)
   {
     unsigned char *RewindBufferPos;
-    
+
     if (!RewindPos)
     {
       RewindPos = RewindStates;
@@ -236,12 +236,12 @@ void RestoreCVFrame()
     RewindBufferPos = StateBackup + RewindPos*rewind_state_size;
     printf("Restoring rewind in slot #%u\n", RewindPos);
     copy_state_data(RewindBufferPos, memcpyrinc, true);
-      
+
     //Clear Cache Check
     memset(vidmemch2, 1, sizeof(vidmemch2));
     memset(vidmemch4, 1, sizeof(vidmemch4));
     memset(vidmemch8, 1, sizeof(vidmemch8));
-    
+
     RewindTimer = 60*3;
   }
 }
@@ -262,7 +262,7 @@ void MultipleFrameBack(unsigned int i)
     {
       break;
     }
-  }  
+  }
 }
 
 void SetupRewindBuffer()
@@ -296,7 +296,7 @@ void BackupCVFrame()
   }
   RewindTimer = ActualRewindFrames;
 }
-  
+
 void RestoreCVFrame()
 {
   unsigned char *RewindBufferPos = StateBackup + PBackupPos*rewind_state_size;
@@ -305,7 +305,7 @@ void RestoreCVFrame()
   if (MovieProcessing)
   {
     zmv_rewind_load(PBackupPos, MovieProcessing == 1 ? true : false);
-  }  
+  }
   RewindTimer = ActualRewindFrames;
 }
 
@@ -317,9 +317,9 @@ void SetupRewindBuffer()
   RewindStates = 16;
   StateBackup = 0;
   StateBackup = (unsigned char *)malloc(rewind_state_size*RewindStates);
-  if (!StateBackup) 
-  { 
-    asm_call(outofmemory); 
+  if (!StateBackup)
+  {
+    asm_call(outofmemory);
   }
 }
 
@@ -493,7 +493,7 @@ void repackfunct()
   if (block && 0xC0)
   {
     Voice0Status = Voice1Status = Voice2Status = Voice3Status = 0;
-    Voice4Status = Voice5Status = Voice6Status = Voice7Status = 0; 
+    Voice4Status = Voice5Status = Voice6Status = Voice7Status = 0;
   }
 
   NoiseInc = (((NoiseSpeeds[(block & 0x1F)] * dspPAdj) >> 17) & 0xFFFFFFFF);
@@ -656,7 +656,7 @@ static const char zst_header_old[] = "ZSNES Save State File V0.6\x1a\x3c";
 static const char zst_header_cur[] = "ZSNES Save State File V143\x1a\x8f";
 
 void calculate_state_sizes()
-{  
+{
   state_size = 0;
   zst_version = 143;
   copy_state_data(0, state_size_tally, false);
@@ -691,12 +691,12 @@ void zst_save(FILE *fp, bool Thumbnail)
     SfxRomBuffer -= SfxCROM;
     SfxLastRamAdr -= SfxRAMMem;
   }
-    
+
   if (SA1Enable)
   {
     SaveSA1(); //Convert SA-1 stuff to standard, non displacement format
   }
-  
+
   fhandle = fp; //Set global file handle
   copy_state_data(0, write_save_state_data, false);
 
@@ -710,20 +710,20 @@ void zst_save(FILE *fp, bool Thumbnail)
   {
     RestoreSA1(); //Convert back SA-1 stuff
   }
-    
+
   if (Thumbnail)
   {
     CapturePicture();
     fwrite(PrevPicture, 1, 64*56*sizeof(unsigned short), fp);
   }
-    
+
   ResetOffset();
   ResetState();
 }
 
 void statesaver()
 {
-  //Save State code  
+  //Save State code
   #ifdef __LINUX__
   SRAMChdir();
   #endif
@@ -734,11 +734,11 @@ void statesaver()
     if (mzt_save(fnamest+1, (cbitmode && !NoPictureSave) ? true : false, false))
     {
       Msgptr = "RR STATE SAVED.";
-      MessageOn = MsgCount;          
+      MessageOn = MsgCount;
     }
     return;
-  } 
-  
+  }
+
   //'Auto increment savestate slot' code
   if (AutoIncSaveSlot)
   {
@@ -763,13 +763,13 @@ void statesaver()
   }
 
   clim();
-  
+
   if ((fhandle = fopen(fnamest+1,"wb")))
-  {    
+  {
     zst_save(fhandle, (cbitmode && !NoPictureSave) ? true : false);
-  
+
     fclose(fhandle);
-  
+
     //Display message on the screen, 'STATE X SAVED.'
     if (fnamest[statefileloc] == 't')
     {
@@ -782,7 +782,7 @@ void statesaver()
 
     Msgptr = txtsavemsg;
     MessageOn = MsgCount;
-  }  
+  }
   else
   {
     //Display message on the screen, 'UNABLE TO SAVE.'
@@ -913,9 +913,9 @@ static void read_save_state_data(unsigned char **dest, void *data, size_t len)
 
 bool zst_load(FILE *fp)
 {
-  char zst_header_check[sizeof(zst_header_cur)-1];  
+  char zst_header_check[sizeof(zst_header_cur)-1];
   zst_version = 0;
-    
+
   Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fp);
   if (!memcmp(zst_header_check, zst_header_cur, sizeof(zst_header_check)-2))
   {
@@ -925,14 +925,14 @@ bool zst_load(FILE *fp)
   {
     zst_version = 60; //v0.60 - v1.42
   } // the -2 means we only check the text - trust me, that's ok
-    
+
   if (!zst_version) { return(false); } //Pre v0.60 saves are no longer loaded
- 
+
   load_save_size = 0;
   fhandle = fp; //Set global file handle
   copy_state_data(0, read_save_state_data, true);
   Totalbyteloaded += load_save_size;
-      
+
   if (SFXEnable)
   {
     SfxCPB = SfxMemTable[(SfxPBR & 0xFF)];
@@ -949,10 +949,10 @@ bool zst_load(FILE *fp)
     All UpdateBanks() seems to do is break Oshaberi Parodius...
     The C port is still present, just commented out
     */
-    //UpdateBanks(); 
+    //UpdateBanks();
     SA1UpdateDPageC();
   }
-    
+
   if (SDD1Enable)
   {
     UpdateBanksSDD1();
@@ -969,8 +969,27 @@ bool zst_load(FILE *fp)
   ResetOffset();
   ResetState();
   procexecloop();
-  
+
   return(true);
+}
+
+void zst_sram_load(FILE *fp)
+{
+  fseek(fp, sizeof(zst_header_cur)-1 + PH65816regsize + 199635, SEEK_CUR);
+  if (spcon)	{ fseek(fp, PHspcsave + PHdspsave + sizeof(DSPMem), SEEK_CUR); }
+  if (C4Enable)	{ fseek(fp, 8192, SEEK_CUR); }
+  if (SFXEnable)	{ fseek(fp, PHnum2writesfxreg + 131072, SEEK_CUR); }
+  if (SA1Enable)
+  {
+    fseek(fp, PHnum2writesa1reg, SEEK_CUR);
+    fread(SA1RAMArea, 1, 131072, fp);	// SA-1 sram
+    fseek(fp, 15, SEEK_CUR);
+  }
+  if (DSP1Type)	{ fseek(fp, 2874, SEEK_CUR); }
+  if (SETAEnable)	{ fread(setaramdata, 1, 4096, fp); } // SETA sram
+  if (SPC7110Enable)	{ fseek(fp, PHnum2writespc7110reg + 65536, SEEK_CUR); }
+  fseek(fp, 227, SEEK_CUR);
+  if (ramsize)	{ fread(sram, 1, ramsize, fp); } // normal sram
 }
 
 void stateloader (unsigned char *statename, unsigned char keycheck, unsigned char xfercheck)
@@ -982,7 +1001,7 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
   if (keycheck)
   {
     unsigned char statevalue;
-    
+
     pressed[1] = 0;
     pressed[KeyLoadState] = 2;
     multchange = 1;
@@ -1001,19 +1020,19 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
     txtconvmsg[6] = statevalue;
     txtnfndmsg[21] = statevalue;
   }
-      
+
   switch (MovieProcessing)
   {
     bool mzt_load(char *, bool);
-    
+
     case 1:
       if (mzt_load(statename, true))
       {
         Msgptr = "RR STATE LOADED.";
-        MessageOn = MsgCount;      
+        MessageOn = MsgCount;
       }
       return;
-  
+
     case 2:
       if (mzt_load(statename, false))
       {
@@ -1021,15 +1040,15 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
         MessageOn = MsgCount;
       }
       return;
-  }  
-  
+  }
+
   clim();
-  
+
   //Actual state loading code
   if ((fhandle = fopen(statename,"rb")) != NULL)
   {
     if (xfercheck) { Totalbyteloaded = 0; }
-    
+
     if (zst_load(fhandle))
     {
       Msgptr = txtloadmsg; // 'STATE X LOADED.'
@@ -1038,14 +1057,14 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
     {
       Msgptr = txtconvmsg; // 'STATE X TOO OLD.'
     }
-    
+
     fclose(fhandle);
   }
   else
   {
     Msgptr = txtnfndmsg; // 'UNABLE TO LOAD STATE X.'
   }
-  
+
   stim();
 
   if (keycheck)
