@@ -199,8 +199,7 @@ InputAcquire(void)
    if (JoystickInput[1]) JoystickInput[1]->Acquire();
    if (JoystickInput[2]) JoystickInput[2]->Acquire();
    if (JoystickInput[3]) JoystickInput[3]->Acquire();
-
-	if (MouseInput) MouseInput->Acquire();
+   if (MouseInput) MouseInput->Acquire();
    if (KeyboardInput) KeyboardInput->Acquire();
    InputEn=1;
 	return TRUE;
