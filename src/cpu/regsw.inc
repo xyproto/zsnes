@@ -1504,6 +1504,18 @@ reg4200w:
 
 ; Programmable I/O port (out-port)
 reg4201w:
+    cmp byte[iohvlatch],1
+    jne .noiohvlatch
+    test al,80h
+    jnz .noiohvlatch
+    mov byte[iohvlatch],0
+.noiohvlatch
+    test byte[ioportval],80h
+    jnz .nolatch
+    test al,80h
+    jz .nolatch
+    mov byte[iohvlatch],1
+.nolatch
     mov byte[ioportval],al
     mov bl,al
     and bl,80h
