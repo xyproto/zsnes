@@ -68,7 +68,7 @@ EXTSYM SPC7110Enable
 EXTSYM SA1Mode,PHnum2writesa1reg,SaveSA1,RestoreSA1,UpdateBanksSDD1
 EXTSYM SDD1Enable
 EXTSYM CapturePicture,PrevPicture,NoPictureSave
-EXTSYM BRRPlace0,SfxCPB,SfxCROM,SfxLastRamAdr,SfxMemTable,Totalbyteloaded
+EXTSYM BRRPlace0,SfxCPB,SfxCROM,SfxLastRamAdr,SfxMemTable
 EXTSYM SfxRAMBR,SfxRAMMem,SfxROMBR,SfxRomBuffer,Voice0Freq
 EXTSYM cycpbl,cycpbl2,cycpblt,cycpblt2,irqon,nexthdma
 EXTSYM repackfunct,spcnumread,spchalted,spcon,headerhack,initpitch
