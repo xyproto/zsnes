@@ -4890,9 +4890,9 @@ NEWSYM showinfo
 .yessram
     call printnum
     shl eax,10
-    cmp eax,65536
+    cmp eax,65536*2
     jbe .nosramc
-    mov eax,65536
+    mov eax,65536*2
 .nosramc
     mov [ramsize],eax
     dec eax

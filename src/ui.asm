@@ -764,7 +764,7 @@ ALIGN32
 
 NEWSYM vrama,       times 65536 db 0
 NEWSYM mode7tab,    times 65536 db 0
-NEWSYM srama,       times 65536 db 0
+NEWSYM srama,       times 65536*2 db 0
 NEWSYM debugbufa,   times 10000 db 0
 NEWSYM wramreadptr, dd 0
 NEWSYM regptra,     times 49152 db 0
