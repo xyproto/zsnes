@@ -4036,13 +4036,13 @@ UnZipFile:
     mov byte[ZipSupport],2
     ret
 
-GUIfindIC7 db '*.IC7',0
-GUIfindIC6 db '*.IC6',0
-GUIfindIC5 db '*.IC5',0
-GUIfindIC4 db '*.IC4',0
-GUIfindIC3 db '*.IC3',0
-GUIfindIC2 db '*.IC2',0
-GUIfindIC1 db '*.IC1',0
+GUIfindIC7 db '*.ic7',0
+GUIfindIC6 db '*.ic6',0
+GUIfindIC5 db '*.ic5',0
+GUIfindIC4 db '*.ic4',0
+GUIfindIC3 db '*.ic3',0
+GUIfindIC2 db '*.ic2',0
+GUIfindIC1 db '*.ic1',0
 
 ZipDelete:
     mov esi,mode7tab
