@@ -4268,19 +4268,15 @@ NEWSYM loadfileGUI
     or eax,eax
     jz near .success2
     add dword[.curromspace],eax
-    mov ecx,eax
-;    shr eax,15
-;    shl eax,15
     mov esi,[headdata]
     add esi,[.curfileofs]
     mov edi,[headdata]
     add edi,[.curfileofs]
     add [.curfileofs],eax
-    sub ecx,eax
-;    xor ecx,ecx
-;    or ecx,ecx
-
-
+    mov ecx,eax
+    and ecx,32767
+    cmp ecx,512
+    je near .yesheader
     ; check if .smc header
     push esi
     push eax
@@ -4300,6 +4296,7 @@ NEWSYM loadfileGUI
     pop esi
     cmp ecx,450
     jb .nomove
+.yesheader
     mov byte[Header512],1
     mov edi,esi
     add edi,512
