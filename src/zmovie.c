@@ -757,7 +757,6 @@ static bool zmv_replay()
   
     if (flag & BIT(2))
     {
-      puts("Skipping Chapter");
       fseek(zmv_vars.fp, INT_CHAP_SIZE, SEEK_CUR);
       fread(&flag, 1, 1, zmv_vars.fp);
     }
@@ -951,30 +950,53 @@ MovieProcessing
 extern unsigned int MsgCount, MessageOn;
 extern unsigned char MovieProcessing, *Msgptr;
 char *txtmovieended = "MOVIE FINISHED.";
-
+char *txtaddintchap = "INTERNAL CHAPTER ADDED.";
+char *txtaddextchap = "EXTERNAL CHAPTER ADDED.";
+char *txtnomovie = "NO MOVIE PROCESSING.";
+char *txtseeknext = "NEXT CHAPTER LOADED.";
+char *txtseekprev = "PREVIOUS CHAPTER LOADED.";
+ 
 void MovieInsertChapter()
 {
   switch (MovieProcessing)
   {
-    case 1: puts("Adding external chapter"); zmv_add_chapter(); break;	 // replaying - external
-    case 2: puts("Adding internal chapter"); zmv_insert_chapter(); break; // recording - internal
+    case 1:	// replaying - external
+      zmv_add_chapter();
+      Msgptr = txtaddextchap;
+      break;
+    case 2:	// recording - internal
+      zmv_insert_chapter();
+      Msgptr = txtaddintchap;
+      break;
+    default:	// no movie processing
+      Msgptr = txtnomovie;
   }
+
+  MessageOn = MsgCount;
 }
 
 void MovieSeekAhead()
 {
   if (MovieProcessing == 1) // replaying only - record can use ZMTs
   {
-    puts("Going to next chapter"); zmv_next_chapter();
+    zmv_next_chapter();
+    Msgptr = txtseeknext;
   }
+  else	{ Msgptr = txtnomovie; }
+
+  MessageOn = MsgCount;
 }
 
 void MovieSeekBehind()
 {
   if (MovieProcessing == 1) // replaying only - record can use ZMTs
   {
-    puts("Going to previous chapter"); zmv_prev_chapter();
+    zmv_prev_chapter();
+    Msgptr = txtseekprev;
   }
+  else	{ Msgptr = txtnomovie; }
+
+  MessageOn = MsgCount;
 }
 
 void Replay()
@@ -1098,4 +1120,3 @@ void MovieRecord()
     memcpy (&fnamest[statefileloc-3], FileExt, 4);
   }
 }
-
