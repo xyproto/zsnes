@@ -1770,7 +1770,7 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUI2xVID+eax],0
     je near .notext11a
-    GUIOuttextwin2u 5,130,158,GUIVideoTextscale2x,1
+    ;GUIOuttextwin2u 5,130,158,GUIVideoTextscale2x,1
 .notext11a
     xor eax,eax
     mov al,[cvidmode]
@@ -1895,7 +1895,7 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUI2xVID+eax],0
     je near .notext11b
-    GUIOuttextwin2 5,129,157,GUIVideoTextscale2x
+    ;GUIOuttextwin2 5,129,157,GUIVideoTextscale2x
 .notext11b
     xor eax,eax
     mov al,[cvidmode]
@@ -2096,7 +2096,7 @@ DisplayGUIVideo:
     je .nocheckbox1scale2x
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1scale2x
-    GUIDisplayIconWin 5,115,153,[GUITemp]
+    ;GUIDisplayIconWin 5,115,153,[GUITemp]
 .nocheckbox2scale2x
     xor eax,eax
     mov al,[cvidmode]
