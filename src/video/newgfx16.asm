@@ -2555,36 +2555,35 @@ NEWSYM drawbg4linepr116b
 NEWSYM drawsprng16b
     test byte[BGMS1+ebx*2],10h
     jz .nosubmain
-    mov edi,[CSubWinScr]
     test byte[FillSubScr+ebx],2
     jnz near drawsprng16bt
-    jmp .nosubmain
     mov edi,[CMainWinScr]
     cmp byte[edi+ebx+4*256],0
-    je .nosubmain
+    je .submain
+    jmp .nosubmain
 .submain
     test byte[FillSubScr+ebx],1
     jnz near drawsprng16bt
 .nosubmain
     mov ebp,[cpalval+ebx*4]
     xor eax,eax
+    mov edi,[CMainWinScr]
     test byte[FillSubScr+ebx],1
     jz .main2
     test byte[BGMS1+ebx*2],10h
     jnz .main2
     mov edi,[CSubWinScr]
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16b
 .main2
     test byte[FillSubScr+ebx],1
-    jnz .main
-    test byte[BGMS1+ebx*2],10h
-    jz .main
-    add esi,75036*2
-    mov edi,[CMainWinScr]
+    jnz .nodo
     cmp byte[edi+ebx+4*256],0
-    jne .main
-    sub esi,75036*2
+    jne near drawsprngw16b
+.nodo
+    test byte[FillSubScr+ebx],1
+    jz .main
+    test byte[BGMS1+ebx*2],10h
+    jnz .main
+    add esi,75036*2
 .main
     xor edi,edi
     normalsprng16b sprdrawpra16bng,sprdrawprb16bng
