@@ -266,6 +266,7 @@ extern unsigned char UnableMovie2[24], UnableMovie3[23];
 
 void SRAMChdir();
 void loadstate2();
+void ChangetoLOADdir();
 
 void MoviePlay()
 {
