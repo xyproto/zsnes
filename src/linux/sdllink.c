@@ -360,11 +360,12 @@ int InitSound (void)
    const int freqtab[7] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
    const int samptab[7] = { 64, 64, 128, 256, 128, 256, 256 };
    
-   SDL_LockAudio(); /* wait for callback to finish */
       
    SDL_CloseAudio();
 
-   if (!SoundEnabled) return FALSE;
+   if (!SoundEnabled) {
+	   return FALSE;
+   }
 
    PrevSoundQuality = SoundQuality;
    PrevStereoSound = StereoSound;
@@ -393,8 +394,6 @@ int InitSound (void)
    }
    SDL_PauseAudio(0);
 
-   SDL_UnlockAudio();
-   
    return TRUE;
 }
 
