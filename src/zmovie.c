@@ -513,8 +513,6 @@ Create and record ZMV
 void zmv_create(char *filename)
 {
   memset(&zmv_vars, 0, sizeof(zmv_vars));
-  memset(&zmv_vars.last_joy_state, ~0, sizeof(zmv_vars.last_joy_state));
-  
   if ((zmv_vars.fp = fopen(filename,"wb")))
   {
     strncpy(zmv_vars.header.magic, "ZMV", 3);
@@ -646,7 +644,6 @@ struct
 bool zmv_open(char *filename)
 {
   memset(&zmv_vars, 0, sizeof(zmv_vars));
-  memset(&zmv_vars.last_joy_state, ~0, sizeof(zmv_vars.last_joy_state));
   memset(&zmv_open_vars, 0, sizeof(zmv_open_vars));
   
   zmv_vars.fp = fopen(filename,"r+b");
