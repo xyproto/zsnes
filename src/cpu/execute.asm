@@ -1286,6 +1286,7 @@ NEWSYM nmistatus,    dd 0       ; 0 = none, 1 = waiting for nmi location,
                         ; 2 = found, disable at next line
 NEWSYM joycontren,   dd 0       ; joystick read control check
 NEWSYM NextLineCache, db 0
+NEWSYM ZMVZClose, db 0
 
 SECTION .text
 
@@ -2740,6 +2741,12 @@ NEWSYM cpuover
     pushad
     call ProcessMovies
     popad
+    cmp byte[MovieProcessing],0
+    jne .notmoviedone
+    cmp byte[ZMVZClose],1
+    jne .notmoviedone
+    jmp OSExit
+.notmoviedone    
     cmp byte[MovieExitLoop],1
     jne .noprocmovie
     mov byte[MovieProcessing],0

@@ -52,7 +52,7 @@ extern unsigned char Palette0, pl1contrl, pl2contrl, MMXSupport, Force8b, ForceP
                      antienab, cvidmode, debugdisble, debugger, enterpress, vsyncon, DisplayS,
                      fname, SnowOn, Triplebufen, SPC700sh, OffBy1Line, DSPDisable, frameskip,
                      gammalevel, guioff, romtype, per2exec, scanlines, soundon, spcon,
-                     showallext, autoloadstate, smallscreenon, autoloadmovie;
+                     showallext, autoloadstate, smallscreenon, autoloadmovie, ZMVZClose;
 
 void ConvertJoyMap1(), ConvertJoyMap2(), zstart(), makeextension();
 
@@ -95,6 +95,7 @@ static void display_help()
 #endif
   puts("  -l      Force LoROM");
   puts("  -m      Disable GUI (Must specify ROM filename)");
+  puts("  -mc     Exit ZSNES when closing a movie");
   puts("  -n #    Enable scanlines (when available)");
   puts("          Where # is: 1 = full, 2 = 25%, 3 = 50%");
   puts("  -om     Enable MMX support (when available)");
@@ -478,6 +479,11 @@ static void handle_params(int argc, char *argv[])
         }
         #endif
 
+        else if (tolower(argv[i][1]) == 'm' && argv[i][2] == 'c') //Autoload save state
+        {
+          ZMVZClose = 1;
+        }
+
         else if (tolower(argv[i][1]) == 'o' && tolower(argv[i][2]) == 'm') //Enable MMX support
         {
           MMXSupport = 1;
@@ -522,7 +528,7 @@ static void handle_params(int argc, char *argv[])
             exit(1);
           }
         }
-
+        	
         else
         {
           display_help();
