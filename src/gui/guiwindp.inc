@@ -1756,10 +1756,10 @@ DisplayGUIVideo:
     je near .notext5
     cmp byte[GUIWSVID+eax],0
     je .notext4a
-    GUIOuttextwin2u 5,26,93,GUIVideoText5b,1
+    GUIOuttextwin2u 5,26,93,GUIVideoText5b,5
     jmp .notext5
 .notext4a
-    GUIOuttextwin2u 5,26,93,GUIVideoText5,1
+    GUIOuttextwin2u 5,26,93,GUIVideoText5,5
 .notext5
     xor eax,eax
     mov al,[cvidmode]

@@ -1218,7 +1218,7 @@ GUIVideoKeys:
     mov al,[antienab]
     mov [cfginterp],al
 .nointerpolation
-    cmp dh,'U'
+    cmp dh,'C'
     jne .nofullscreen
     xor eax,eax
     mov al,[cvidmode]
