@@ -6145,6 +6145,8 @@ NEWSYM CheckROMType
     and al,0F0h
     cmp al,10h
     je .yessfx
+    cmp al,20h
+    je .yesobc
     cmp al,30h
     je near .yessa1
     cmp al,40h
@@ -6169,6 +6171,7 @@ NEWSYM CheckROMType
     add esi,32704
     cmp dword[esi],'META'
     jne .notsfx
+.yesobc
     mov byte[OBCEnable],1
     jmp .nosfx
 .notsfx
