@@ -17,6 +17,10 @@
 
 %include "macros.mac"
 
+; FIX STATMAT
+EXTSYM loadstate2
+; FIX STATMAT
+
 EXTSYM DosExit,UpdateDevices,InitSPC,Makemode7Table,MusicRelVol,MusicVol
 EXTSYM makesprprtable,romloadskip,start65816,startdebugger,SfxR0
 EXTSYM MovieProcessing
@@ -133,6 +137,10 @@ NEWSYM ReInitLength, dd 0
 NEWSYM ForceNewGfxOff, dd 0
 NEWSYM SfxAC, db 0
 blah times 450 db 0
+; FIX STATMAT
+NEWSYM autoloadstate, db 0        ; auto load state slot number
+; FIX STATMAT
+
 SECTION .text
 
 EXTSYM cpalval
@@ -225,6 +233,51 @@ NEWSYM init
     mov al,127
 .noof
     mov [MusicVol],al
+
+; FIX STATMAT
+    ; Here's the auto-load ZST file stuff
+    cmp byte[autoloadstate],1
+    jl .noautoloadstate
+    je .enddigits
+    mov ebx,[statefileloc]
+    sub byte[autoloadstate],1
+    cmp byte[autoloadstate],10
+    jge .2digits
+    mov al,byte[autoloadstate]
+    add al,48
+    mov byte[fnamest+ebx],al    
+    jmp .enddigits
+.2digits
+    xor eax,eax
+    mov al,byte[autoloadstate]
+    mov dl,10
+    div dl
+    add al,48
+    add ah,48
+    mov byte[fnamest+ebx-1],al
+    mov byte[fnamest+ebx],ah
+.enddigits
+
+    ; Load the specified state file
+    call loadstate2
+
+    ; Just skip the extension re-setup below if we don't need to do it
+    cmp byte[autoloadstate],9
+    jbe .noautoloadstate
+
+    ; Put back the 'ST' on the end of the extension as we changed it
+    ; above (by placing two digits in the extension). This is so
+    ; as not to break any other code later on which depends
+    ; on it being present.
+	 mov ebx,[statefileloc]
+%ifdef __LINUX__
+    mov word[fnamest+ebx-1],'st'
+%else
+    mov word[fnamest+ebx-1],'ST'
+%endif
+
+.noautoloadstate
+; FIX STATMAT
 
     xor eax,eax
     mov al,[cvidmode]
@@ -1466,23 +1519,6 @@ NEWSYM headerhack
     mov byte[MMXSRAMFix],0
 
     mov esi,[romdata]
-    add esi,0FFC0h
-    cmp dword[esi],'HORA'
-    jne .nothoraigakuen
-    cmp dword[esi+4],'I-GA'
-    jne .nothoraigakuen
-    cmp dword[esi+8],'KUEN'
-    jne .nothoraigakuen
-    cmp dword[esi+12],'    '
-    jne .nothoraigakuen
-    mov al,0h
-    mov edi,spcRam
-    mov ecx,65472
-    rep stosb
-    ret
-.nothoraigakuen
-
-    mov esi,[romdata]
     add esi,07FC0h
     cmp dword[esi],'DIGI'
     jne .notdigitaldevilstory
@@ -2164,11 +2200,12 @@ NEWSYM init65816
     mov byte[cycpbl],117
     mov byte[cycpblt],117
 
+    cmp byte[SPC7110Enable],0
+    jne .specialtimer
     cmp byte[SDD1Enable],0
     jne .specialtimer
     jmp .nospecialtimer
 .specialtimer
-; Which games require that?!? (_Demo_)
     mov byte[cycpb268],69
     mov byte[cycpb358],81
     mov byte[cycpbl2],69

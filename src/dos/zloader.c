@@ -39,6 +39,10 @@ extern unsigned char Palette0, SPC700sh, OffBy1Line, DSPDisable,
                      romtype, scanlines, showallext, smallscreenon, soundon,
                      spcon, vsyncon, DisplayS, fname, filefound, SnowOn,
                      Triplebufen;
+                     
+// FIX STATMAT
+extern unsigned char autoloadstate;
+// FIX STATMAT                     
 
 void ccmdline(void);
 
@@ -310,7 +314,15 @@ int pccmdline(void)
         }
         case 'z':
         {
-          StereoSound=1;
+          // FIX STATMAT
+          if(nn == 's')
+          {				
+            if(!hasroom) return 4;
+            autoloadstate=my_atoi(argv[p+1]) + 1;
+            p++;
+          }
+          else StereoSound=1;
+          // FIX STATMAT
           break;
         }
         case 'd':

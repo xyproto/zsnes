@@ -46,6 +46,10 @@ extern unsigned char	Palette0, SPC700sh, OffBy1Line, DSPDisable,
 			spcon, vsyncon, DisplayS, fname, filefound, SnowOn,
 			NetChatFirst,NetServer,NetNewNick,
 			NetFilename,TCPIPAddress,NetQuitAfter,UDPConfig;
+			
+// FIX STATMAT
+extern unsigned char	autoloadstate;
+// FIX STATMAT			
 
 int getopt(int argc, char *const argv[], const char *optstring);
 extern char *optarg;
@@ -311,8 +315,16 @@ int main (int argc, char *argv[]) {
 				break;
 			}
 
-			case 'z': {
-				StereoSound = 1;
+                        case 'z': {
+				// FIX STATMAT
+				if(*(argv[p]+1) == 's')
+				{				
+//					if(!hasroom) return 4;
+					autoloadstate=my_atoi(argv[p+1]) + 1;
+					p++;
+				}
+				else StereoSound=1;
+				// FIX STATMAT
 				break;
 			}
 

@@ -1357,6 +1357,9 @@ SECTION .data
           db '  -3      Enable triple buffering (disables vsync)',13,10
 %endif
           db '  -z      Enable Stereo Sound',13,10
+; FIX STATMAT
+          db '  -zs #   Auto load specified save state slot on startup',13,10
+; FIX STATMAT          
           db '',13,10
           db '  File Formats Supported by GUI : .SMC,.SFC,.SWC,.FIG,.058,.078,.1,.USA,.JAP',13,10
 %ifdef __MSDOS__
