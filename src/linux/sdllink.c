@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <time.h>
@@ -1702,7 +1703,7 @@ void SetMouseY(int Y)
 void ZsnesPage()
 {
 #ifdef __LINUX__
-	STUB_FUNCTION;
+	system("netscape -remote 'openURL(http://www.zsnes.com/)'");
 #else
      ShellExecute(NULL, NULL, "http://www.zsnes.com", NULL, NULL, 0);
 #endif // __LINUX__
