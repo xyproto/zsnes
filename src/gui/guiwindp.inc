@@ -5597,20 +5597,48 @@ DisplayGUICombo:
     DrawBorderedBoxB 16,204,189,218,196,188,255
 
     ; Normal Text
-    GUIOuttextwin2b 16,10,13,GUIComboText1
-    GUIOuttextwin2b 16,138,13,GUIComboText2
-    GUIOuttextwin2b 16,10,84,GUIComboTextE
-    GUIOuttextwin2b 16,138,84,GUIComboTextF
-    GUIOuttextwin2b 16,10,103,GUIComboText4
-    GUIOuttextwin2b 16,10,152,GUIComboText5
-    GUIOuttextwin2b 16,10,162,GUIComboText6
-    GUIOuttextwin2b 16,10,172,GUIComboText7
-    GUIOuttextwin2b 16,10,182,GUIComboText8
-    GUIOuttextwin2b 16,114,182,GUIComboText9
-    GUIOuttextwin2b 16,204,182,GUIComboTextG
-    GUIOuttextwin2b 16,165,85,GUIComboTextI
-    GUIOuttextwin2b 16,176,93,GUIComboTextJ
-    GUIOuttextwin2b 16,176,101,GUIComboTextK
+    mov byte[GUItextcolor],217
+    cmp byte[GUIWincoladd],0
+    je .zero5
+    mov byte[GUItextcolor],211
+.zero5
+    sub byte[GUItextcolor],15
+    GUIOuttextwin2 16,10,13,GUIComboText1
+    GUIOuttextwin2 16,138,13,GUIComboText2
+    GUIOuttextwin2 16,10,84,GUIComboTextE
+    GUIOuttextwin2 16,138,84,GUIComboTextF
+    GUIOuttextwin2 16,10,103,GUIComboText4
+    GUIOuttextwin2 16,10,152,GUIComboText5
+    GUIOuttextwin2 16,10,162,GUIComboText6
+    GUIOuttextwin2 16,10,172,GUIComboText7
+    GUIOuttextwin2 16,10,182,GUIComboText8
+    GUIOuttextwin2 16,114,182,GUIComboText9
+    GUIOuttextwin2 16,204,182,GUIComboTextG
+    GUIOuttextwin2 16,165,85,GUIComboTextI
+    GUIOuttextwin2 16,176,93,GUIComboTextJ
+    GUIOuttextwin2 16,176,101,GUIComboTextK
+
+    add byte[GUItextcolor],15
+    GUIOuttextwin2 16,9,12,GUIComboText1
+    GUIOuttextwin2 16,137,12,GUIComboText2
+    GUIOuttextwin2 16,9,83,GUIComboTextE
+    GUIOuttextwin2 16,137,83,GUIComboTextF
+    GUIOuttextwin2 16,9,102,GUIComboText4
+    GUIOuttextwin2 16,9,151,GUIComboText5
+    GUIOuttextwin2 16,9,161,GUIComboText6
+    GUIOuttextwin2 16,9,171,GUIComboText7
+    GUIOuttextwin2 16,9,181,GUIComboText8
+    GUIOuttextwin2 16,113,181,GUIComboText9
+    GUIOuttextwin2 16,203,181,GUIComboTextG
+    GUIOuttextwin2 16,164,84,GUIComboTextI
+    GUIOuttextwin2 16,175,92,GUIComboTextJ
+    GUIOuttextwin2 16,175,100,GUIComboTextK
+
+    ; Buttons
+    DrawGUIButton 16,202,20,246,31,GUIComboTextA,60,-1,0
+    DrawGUIButton 16,202,35,246,46,GUIComboTextB,61,-1,0
+    DrawGUIButton 16,202,50,246,61,GUIComboTextC,62,-1,0
+    DrawGUIButton 16,202,65,246,76,GUIComboTextD,63,-1,0
 
     ; Calculate Text Cursor Position / Draw Box Text
     xor eax,eax
@@ -5637,15 +5665,6 @@ DisplayGUICombo:
     mov [GUIGameDisplayKy],ebx
     mov byte[GUIGameDisplayKy+3],0
     GUIOuttextwin2d 16,139,94,GUIGameDisplayKy
-
-    ; Buttons
-    mov al,[TextColorSp+2]
-    add al,15
-    mov byte[GUItextcolor],al
-    DrawGUIButton 16,202,20,246,31,GUIComboTextA,60,-1,0
-    DrawGUIButton 16,202,35,246,46,GUIComboTextB,61,-1,0
-    DrawGUIButton 16,202,50,246,61,GUIComboTextC,62,-1,0
-    DrawGUIButton 16,202,65,246,76,GUIComboTextD,63,-1,0
 
     ; Hole Switches
     GUIDisplayButtonHole 16,178,82,byte[GUIComboPNum],0
