@@ -21,6 +21,7 @@ dnl -- Same thing here.
 
 AC_CANONICAL_SYSTEM
 AC_PROG_CC
+AC_PROG_CXX
 AC_CHECK_TOOL(NASMPATH,nasm,"no",$nasm_prefix:$PATH)
 if test x$NASMPATH = xno; then
 AC_MSG_ERROR(You need NASM installed to compile ZSNES)

@@ -73,7 +73,7 @@ OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ
 .SUFFIXES: .cpp .c .asm 
 
 %.o: %.cpp
-	g++ @CFLAGS@ -o $@ -c $<
+	@CXX@ @CFLAGS@ -o $@ -c $<
 
 %.o: %.c
 	@CC@ @CFLAGS@ -o $@ -c $<
