@@ -1262,10 +1262,10 @@ NEWSYM GUIHSVID, db 0,0,0,1,0,1,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1       ; Ha
 NEWSYM GUI2xVID, db 0,0,0,1,0,1,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1       ; 2xSaI/Super Eagle Engines
 NEWSYM GUIM7VID, db 0,0,0,1,0,1,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1       ; ?Mode 7 video thing?
 NEWSYM GUIWFVID, db 0,1,0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,0,0,1,1       ; If Windows Full Screen
-NEWSYM GUIDSIZE, db 0,0,0,1,0,0,0,1,1,0,1,0,0,0,1,1,0,0,0,1,1,0,0,1,1
+NEWSYM GUIDSIZE, db 0,0,0,1,0,1,1,1,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1
 NEWSYM GUIRATIO, db 0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 NEWSYM GUIBIFIL, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-NEWSYM GUITBWVID, db 0,1,0,0,0,1,0,1,1,0,0,0,0,1,1,1,0,0,1,1,1,0,0,1,1      ; Triple Buffering (Win)
+NEWSYM GUITBWVID,db 0,1,0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,0,0,1,1      ; Triple Buffering (Win)
 SECTION .text
 
 ; ****************************
