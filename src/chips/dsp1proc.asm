@@ -31,10 +31,22 @@ EXTSYM Op02FZ,Op02LES,Op02LFE,Op02VOF,Op02VVA
 EXTSYM DSPOp06,Op06X,Op06Y,Op06Z,Op06H,Op06V,Op06S
 EXTSYM DSPOp0E,Op0EH,Op0EV,Op0EX,Op0EY
 EXTSYM Op01m, Op01Zr, Op01Xr, Op01Yr, DSPOp01
+EXTSYM Op11m, Op11Zr, Op11Xr, Op11Yr, DSPOp11
+EXTSYM Op21m, Op21Zr, Op21Xr, Op21Yr, DSPOp21
 EXTSYM Op0DX, Op0DY, Op0DZ, Op0DF, Op0DL, Op0DU, DSPOp0D
+EXTSYM Op1DX, Op1DY, Op1DZ, Op1DF, Op1DL, Op1DU, DSPOp1D
+EXTSYM Op2DX, Op2DY, Op2DZ, Op2DF, Op2DL, Op2DU, DSPOp2D
 EXTSYM Op03X, Op03Y, Op03Z, Op03F, Op03L, Op03U, DSPOp03
+EXTSYM Op13X, Op13Y, Op13Z, Op13F, Op13L, Op13U, DSPOp13
+EXTSYM Op23X, Op23Y, Op23Z, Op23F, Op23L, Op23U, DSPOp23
 EXTSYM Op14Zr, Op14Xr, Op14Yr, Op14U, Op14F, Op14L
 EXTSYM Op14Zrr,Op14Xrr,Op14Yrr, DSPOp14
+EXTSYM Op0BX,Op0BY,Op0BZ,Op0BS,DSPOp0B
+EXTSYM Op1BX,Op1BY,Op1BZ,Op1BS,DSPOp1B
+EXTSYM Op2BX,Op2BY,Op2BZ,Op2BS,DSPOp2B
+EXTSYM Op08X,Op08Y,Op08Z,Op08Ll,Op08Lh,DSPOp08
+EXTSYM Op18X,Op18Y,Op18Z,Op18R,Op18D,DSPOp18
+EXTSYM Op1CX,Op1CY,Op1CZ,Op1CXBR,Op1CYBR,Op1CZBR,Op1CXAR,Op1CYAR,Op1CZAR,DSPOp1C
 
 NEWSYM Dsp1ProcAsmStart
 
@@ -349,8 +361,40 @@ DSP1_04:  ; Trigonometric
     pop eax
     ret
 DSP1_08:  ; Vector Size
+    push eax
+    mov ax,[DSP1VARS]
+    mov [Op08X],ax
+    mov ax,[DSP1VARS+2]
+    mov [Op08Y],ax
+    mov ax,[DSP1VARS+4]
+    mov [Op08Z],ax
+    pushad
+    call DSPOp08
+    popad
+    mov ax,[Op08Ll]
+    mov [DSP1RET],ax
+    mov ax,[Op08Lh]
+    mov [DSP1RET+2],ax
+    mov byte[DSP1RLeft],2
+    pop eax
     ret
 DSP1_18:  ; Vector Size Comparison
+    push eax
+    mov ax,[DSP1VARS]
+    mov [Op18X],ax
+    mov ax,[DSP1VARS+2]
+    mov [Op18Y],ax
+    mov ax,[DSP1VARS+4]
+    mov [Op18Z],ax
+    mov ax,[DSP1VARS+6]
+    mov [Op18R],ax
+    pushad
+    call DSPOp18
+    popad
+    mov ax,[Op18D]
+    mov [DSP1RET],ax
+    mov byte[DSP1RLeft],1
+    pop eax
     ret
 
 DSP1_28:  ; Vector Absolute Value
@@ -392,6 +436,30 @@ DSP1_0C:  ; Coordinate Rotation
     pop eax
     ret
 DSP1_1C:  ; 3D Coordinate Rotation
+    push eax
+    mov ax,[DSP1VARS]
+    mov [Op1CX],ax
+    mov ax,[DSP1VARS+2]
+    mov [Op1CY],ax
+    mov ax,[DSP1VARS+4]
+    mov [Op1CZ],ax
+    mov ax,[DSP1VARS+6]
+    mov [Op1CXBR],ax
+    mov ax,[DSP1VARS+8]
+    mov [Op1CYBR],ax
+    mov ax,[DSP1VARS+10]
+    mov [Op1CZBR],ax
+    pushad
+    call DSPOp1C
+    popad
+    mov ax,[Op1CXAR]
+    mov [DSP1RET],ax
+    mov ax,[Op1CYAR]
+    mov [DSP1RET],ax
+    mov ax,[Op1CZAR]
+    mov [DSP1RET],ax
+    mov byte[DSP1RLeft],3
+    pop eax
     ret
 
 
@@ -556,8 +624,34 @@ DSP1_01:  ; Set Attitude Matrix A
     pop eax
     ret
 DSP1_11:  ; Set Attitude Matrix B
+    push eax
+    mov ax,[DSP1VARS]
+    mov [Op11m],ax
+    mov ax,[DSP1VARS+2]
+    mov [Op11Zr],ax
+    mov ax,[DSP1VARS+4]
+    mov [Op11Xr],ax
+    mov ax,[DSP1VARS+6]
+    mov [Op11Yr],ax
+    pushad
+    call DSPOp11
+    popad
+    pop eax
     ret
 DSP1_21:  ; Set Attitude Matrix C
+    push eax
+    mov ax,[DSP1VARS]
+    mov [Op21m],ax
+    mov ax,[DSP1VARS+2]
+    mov [Op21Zr],ax
+    mov ax,[DSP1VARS+4]
+    mov [Op21Xr],ax
+    mov ax,[DSP1VARS+6]
+    mov [Op21Yr],ax
+    pushad
+    call DSPOp21
+    popad
+    pop eax
     ret
 DSP1_0D:  ; Convert from global to object coords Matrix A
     push eax
@@ -580,8 +674,44 @@ DSP1_0D:  ; Convert from global to object coords Matrix A
     pop eax
     ret
 DSP1_1D:  ; Convert from global to object coords Matrix B
+    push eax
+    mov ax,[DSP1VARS]
+    mov [Op1DX],ax
+    mov ax,[DSP1VARS+2]
+    mov [Op1DY],ax
+    mov ax,[DSP1VARS+4]
+    mov [Op1DZ],ax
+    pushad
+    call DSPOp1D
+    popad
+    mov ax,[Op1DF]
+    mov word[DSP1RET],ax
+    mov ax,[Op1DL]
+    mov word[DSP1RET+2],ax
+    mov ax,[Op1DU]
+    mov word[DSP1RET+4],ax
+    mov byte[DSP1RLeft],3
+    pop eax
     ret
 DSP1_2D:  ; Convert from global to object coords Matrix C
+    push eax
+    mov ax,[DSP1VARS]
+    mov [Op2DX],ax
+    mov ax,[DSP1VARS+2]
+    mov [Op2DY],ax
+    mov ax,[DSP1VARS+4]
+    mov [Op2DZ],ax
+    pushad
+    call DSPOp2D
+    popad
+    mov ax,[Op2DF]
+    mov word[DSP1RET],ax
+    mov ax,[Op2DL]
+    mov word[DSP1RET+2],ax
+    mov ax,[Op2DU]
+    mov word[DSP1RET+4],ax
+    mov byte[DSP1RLeft],3
+    pop eax
     ret
 DSP1_03:  ; Convert from object to global coords Matrix A
     push eax
@@ -604,14 +734,92 @@ DSP1_03:  ; Convert from object to global coords Matrix A
     pop eax
     ret
 DSP1_13:  ; Convert from object to global coords Matrix B
+    push eax
+    mov ax,[DSP1VARS]
+    mov [Op13F],ax
+    mov ax,[DSP1VARS+2]
+    mov [Op13L],ax
+    mov ax,[DSP1VARS+4]
+    mov [Op13U],ax
+    pushad
+    call DSPOp03
+    popad
+    mov ax,[Op13X]
+    mov word[DSP1RET],ax
+    mov ax,[Op13Y]
+    mov word[DSP1RET+2],ax
+    mov ax,[Op13Z]
+    mov word[DSP1RET+4],ax
+    mov byte[DSP1RLeft],3
+    pop eax
     ret
 DSP1_23:  ; Convert from object to global coords Matrix C
+    push eax
+    mov ax,[DSP1VARS]
+    mov [Op23F],ax
+    mov ax,[DSP1VARS+2]
+    mov [Op23L],ax
+    mov ax,[DSP1VARS+4]
+    mov [Op23U],ax
+    pushad
+    call DSPOp23
+    popad
+    mov ax,[Op23X]
+    mov word[DSP1RET],ax
+    mov ax,[Op23Y]
+    mov word[DSP1RET+2],ax
+    mov ax,[Op23Z]
+    mov word[DSP1RET+4],ax
+    mov byte[DSP1RLeft],3
+    pop eax
     ret
 DSP1_0B:  ; Calculation of inner product Matrix A
+    push eax
+    mov ax,[DSP1VARS]
+    mov [Op0BX],ax
+    mov ax,[DSP1VARS+2]
+    mov [Op0BY],ax
+    mov ax,[DSP1VARS+4]
+    mov [Op0BZ],ax
+    pushad
+    call DSPOp0B
+    popad
+    mov ax,[Op0BS]
+    mov word[DSP1RET],ax
+    mov byte[DSP1RLeft],1
+    pop eax
     ret
 DSP1_1B:  ; Calculation of inner product Matrix B
+    push eax
+    mov ax,[DSP1VARS]
+    mov [Op1BX],ax
+    mov ax,[DSP1VARS+2]
+    mov [Op1BY],ax
+    mov ax,[DSP1VARS+4]
+    mov [Op1BZ],ax
+    pushad
+    call DSPOp1B
+    popad
+    mov ax,[Op1BS]
+    mov word[DSP1RET],ax
+    mov byte[DSP1RLeft],1
+    pop eax
     ret
 DSP1_2B:  ; Calculation of inner product Matrix C
+    push eax
+    mov ax,[DSP1VARS]
+    mov [Op2BX],ax
+    mov ax,[DSP1VARS+2]
+    mov [Op2BY],ax
+    mov ax,[DSP1VARS+4]
+    mov [Op2BZ],ax
+    pushad
+    call DSPOp2B
+    popad
+    mov ax,[Op2BS]
+    mov word[DSP1RET],ax
+    mov byte[DSP1RLeft],1
+    pop eax
     ret
 DSP1_14:  ; 3D angle rotation
     push eax
