@@ -144,7 +144,7 @@ int16 OAM_Row[32];          // current number of tiles per row
 
 // input protocol
 
-inline int16 DSP4_READ_WORD()
+static int16 DSP4_READ_WORD()
 {
   int16 out;
 
@@ -154,7 +154,7 @@ inline int16 DSP4_READ_WORD()
   return out;
 }
 
-inline int32 DSP4_READ_DWORD()
+static int32 DSP4_READ_DWORD()
 {
   int32 out;
 
