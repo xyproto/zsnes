@@ -404,7 +404,7 @@ static size_t internal_chapter_lesser(struct internal_chapter_buf *icb, size_t o
   return((lesser == 0) ? offset : lesser);
 }
 
-static void internal_chapter_delete_after(struct internal_chapter_buf *icb, size_t offset)
+static size_t internal_chapter_delete_after(struct internal_chapter_buf *icb, size_t offset)
 {
   if (icb->used)
   {
@@ -421,7 +421,7 @@ static void internal_chapter_delete_after(struct internal_chapter_buf *icb, size
         internal_chapter_free_chain(icb->next);
         icb->next = 0;
         icb->used = 0;
-        return;
+        return(0);
       }
       if (internal_chapter_greater(icb, last_offset) == offset)
       {
@@ -441,9 +441,11 @@ static void internal_chapter_delete_after(struct internal_chapter_buf *icb, size
   
       internal_chapter_free_chain(icb->next);
       icb->next = 0;
-      icb->used = buffer_pos%INTERNAL_CHAPTER_BUF_LIM;
+      icb->used = (buffer_pos%INTERNAL_CHAPTER_BUF_LIM)+1;
+      return(buffer_pos+1);
     }
   }
+  return(0);
 }
 
 /*
@@ -562,7 +564,7 @@ static void zmv_create(char *filename)
     }                                                                 \
   }
 
-static void zmv_record(bool slow, unsigned char comboes_used)
+static void zmv_record(bool slow, unsigned char combos_used)
 {
   unsigned char flag = 0;
   unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0 }; 
@@ -570,9 +572,9 @@ static void zmv_record(bool slow, unsigned char comboes_used)
   
   zmv_vars.header.frames++;
 
-  if (slow)	{ zmv_vars.header.slow_frames++; }
+  if (slow) { zmv_vars.header.slow_frames++; }
 
-  zmv_vars.header.key_combos += comboes_used;
+  zmv_vars.header.key_combos += combos_used;
 
   RECORD_PAD(zmv_vars.last_joy_state.A, JoyAOrig, 7);
   RECORD_PAD(zmv_vars.last_joy_state.B, JoyBOrig, 6);
@@ -596,10 +598,10 @@ static void zmv_record(bool slow, unsigned char comboes_used)
   }
 }
 
-static void zmv_insert_chapter()
+static bool zmv_insert_chapter()
 {
   if ((zmv_vars.header.internal_chapters < 65535) && zmv_vars.header.frames &&
-      (zmv_vars.last_internal_chapter_offset != ftell(zmv_vars.fp) - (INT_CHAP_SIZE)))
+      (zmv_vars.last_internal_chapter_offset != (ftell(zmv_vars.fp) + zmv_vars.write_buffer_loc - INT_CHAP_SIZE)))
   {
     unsigned char flag = BIT(2);
   
@@ -614,7 +616,10 @@ static void zmv_insert_chapter()
     zst_save(zmv_vars.fp, false);
     fwrite4(zmv_vars.header.frames, zmv_vars.fp);
     write_last_joy_state(zmv_vars.fp); 
+  
+    return(true);
   }
+  return(false);
 }
 
 static void zmv_record_finish()
@@ -942,8 +947,8 @@ static void zmv_replay_to_record()
   zmv_vars.header.rerecords++;
   zmv_vars.header.removed_frames += zmv_vars.header.frames - zmv_open_vars.frames_replayed;  
   zmv_vars.header.frames = zmv_open_vars.frames_replayed;
-  internal_chapter_delete_after(&zmv_vars.internal_chapters, zmv_vars.header.frames);
-  zmv_vars.last_internal_chapter_offset = ftell(zmv_vars.fp); //Not correct, but this should work  
+  zmv_vars.header.internal_chapters = internal_chapter_delete_after(&zmv_vars.internal_chapters, ftell(zmv_vars.fp));
+  zmv_vars.last_internal_chapter_offset = internal_chapter_lesser(&zmv_vars.internal_chapters, ~0);
   ftruncate(fileno(zmv_vars.fp), ftell(zmv_vars.fp));
 }
 
@@ -1100,7 +1105,6 @@ bool mzt_load(char *statename, bool playback)
           {
             size_t rerecords = zmv_vars.header.rerecords+1;
             size_t removed_frames = zmv_vars.header.removed_frames + (zmv_vars.header.frames - current_frame);
-            size_t end_zmv_loc = 0;
 
             internal_chapter_free_chain(zmv_vars.internal_chapters.next);
             memset(&zmv_vars.internal_chapters, 0, sizeof(struct internal_chapter_buf));
@@ -1113,19 +1117,17 @@ bool mzt_load(char *statename, bool playback)
             }
             gzclose(gzp);            
 
-            end_zmv_loc = ftell(zmv_vars.fp);
-
             rewind(zmv_vars.fp);
             zmv_header_read(&zmv_vars.header, zmv_vars.fp);
             zmv_vars.header.removed_frames = removed_frames;
             zmv_vars.header.rerecords = rerecords;
             zmv_vars.write_buffer_loc = 0;
 
-            fseek(zmv_vars.fp, -(end_zmv_loc - zmv_vars.header.internal_chapters*4), SEEK_END);
+            fseek(zmv_vars.fp, rewind_point, SEEK_SET);
             internal_chapter_read(&zmv_vars.internal_chapters, zmv_vars.fp, zmv_vars.header.internal_chapters);
           
             fseek(zmv_vars.fp, rewind_point, SEEK_SET);
-            zmv_vars.last_internal_chapter_offset = ftell(zmv_vars.fp); //Not correct, but this should work  
+            zmv_vars.last_internal_chapter_offset = internal_chapter_lesser(&zmv_vars.internal_chapters, ~0);
             ftruncate(fileno(zmv_vars.fp), ftell(zmv_vars.fp));
           }
         }
@@ -1269,8 +1271,14 @@ void MovieInsertChapter()
       Msgptr = "EXTERNAL CHAPTER ADDED.";
       break;
     case 2:	// recording - internal
-      zmv_insert_chapter();
-      Msgptr = "INTERNAL CHAPTER ADDED.";
+      if (zmv_insert_chapter())
+      {
+        Msgptr = "INTERNAL CHAPTER ADDED.";
+      }
+      else
+      {
+        Msgptr = "";
+      }
       break;
     default:	// no movie processing
       Msgptr = "NO MOVIE PROCESSING.";
