@@ -1642,6 +1642,18 @@ NEWSYM headerhack
     mov byte[disablehdma],1
 .notmk
 
+    mov esi,[romdata]
+    add esi,0FFC0h
+    cmp dword[esi],'CLOC'
+    jne .notclocktower
+    cmp dword[esi+4],'K TO'
+    jne .notclocktower
+    cmp dword[esi+8],'WER '
+    jne .notclocktower
+    mov byte[opexec268],187
+    mov byte[opexec358],187
+.notclocktower
+
     ; Lamborgini Challenge - -p 110
     mov esi,[romdata]
     add esi,07FC0h
