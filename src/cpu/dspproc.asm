@@ -1484,7 +1484,7 @@ NEWSYM InitSPC
     cmp byte[soundon],0
 ;    je near .nosound
     cmp byte[OSPort],2
-    ja near .nosound
+    jae near .nosound
 
     mov ax,0100h                ; Allocate DOS memory
     mov bx,16384/16             ; Allocate 16384 bytes

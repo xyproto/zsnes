@@ -224,10 +224,17 @@ NEWSYM SystemInit
 
     mov byte[pl1selk],54
     mov byte[pl1startk],28  ; 1START = ENTER
+%ifdef __LINUX__
+    mov byte[pl1upk],90  ; 1UP = up 
+    mov byte[pl1downk],96  ; 1DOWN = down 
+    mov byte[pl1leftk],92  ; 1LEFT = left 
+    mov byte[pl1rightk],94  ; 1RIGHT = right 
+%else
     mov byte[pl1upk],200  ; 1UP = up 
     mov byte[pl1downk],208  ; 1DOWN = down 
     mov byte[pl1leftk],203  ; 1LEFT = left 
     mov byte[pl1rightk],205  ; 1RIGHT = right 
+%endif
     mov byte[pl1Xk],31  ; 1X = INS
     mov byte[pl1Ak],45  ; 1A = HOME
     mov byte[pl1Lk],32  ; 1L = PAGE UP
@@ -1759,10 +1766,17 @@ NEWSYM SetInputDevice
     je near .input2
     mov dword[eax],54
     mov dword[eax+4],28
+%ifdef __LINUX__
+    mov dword[eax+8],90
+    mov dword[eax+12],96
+    mov dword[eax+16],92
+    mov dword[eax+20],94
+%else
     mov dword[eax+8],200
     mov dword[eax+12],208
     mov dword[eax+16],203
     mov dword[eax+20],205
+%endif
     mov dword[eax+24],31
     mov dword[eax+28],45
     mov dword[eax+32],32
