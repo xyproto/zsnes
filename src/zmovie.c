@@ -162,6 +162,7 @@ ZMV header types, vars, and functions
 
 enum zmv_start_methods { zmv_sm_zst, zmv_sm_power, zmv_sm_reset, zmv_sm_clear_all };
 enum zmv_video_modes { zmv_vm_ntsc, zmv_vm_pal };
+enum zmv_commands { zmv_command_reset };
 
 #define INT_CHAP_SIZE (cur_zst_size+4+8)
 #define EXT_CHAP_SIZE (cur_zst_size+4+8+4)
@@ -562,6 +563,14 @@ static void flush_input_buffer()
   zmv_vars.header.author_len = 0; //If we're writing, then author is erased if there
 }
 
+static void flush_input_if_needed()
+{
+  if (zmv_vars.write_buffer_loc > WRITE_BUFFER_SIZE - 14) //14 is a RLE buffer + flag + largest input
+  {
+    flush_input_buffer();
+  }
+}
+      
 /*
 
 Create and record ZMV
@@ -609,6 +618,34 @@ static void zmv_create(char *filename)
   }
 }
 
+static void zmv_rle_flush()
+{
+  if (zmv_vars.rle_count)
+  {
+    if (zmv_vars.rle_count > 5)
+    {
+      zmv_vars.write_buffer[zmv_vars.write_buffer_loc++] = BIT(1); //RLE bit
+      memcpy(zmv_vars.write_buffer+zmv_vars.write_buffer_loc, uint32_to_bytes(zmv_vars.header.frames), 4);
+      zmv_vars.write_buffer_loc += 4;
+    }
+    else
+    {
+      memset(zmv_vars.write_buffer+zmv_vars.write_buffer_loc, 0, zmv_vars.rle_count);
+      zmv_vars.write_buffer_loc += zmv_vars.rle_count;
+    }
+    zmv_vars.rle_count = 0;
+  }
+}
+
+static void zmv_record_command(enum zmv_commands command)
+{
+  zmv_rle_flush();  
+
+  zmv_vars.write_buffer[zmv_vars.write_buffer_loc++] = (command << 1) | BIT(0);
+
+  flush_input_if_needed();
+}
+
 #define RECORD_PAD(prev, cur, bit)                                    \
   if ((unsigned short)(cur >> 20) != prev)                            \
   {                                                                   \
@@ -651,30 +688,13 @@ static void zmv_record(bool slow, unsigned char combos_used)
   {
     unsigned char buffer_used = (nibble/2) + (nibble&1);
 
-    if (zmv_vars.rle_count)
-    {
-      if (zmv_vars.rle_count > 5)
-      {
-        zmv_vars.write_buffer[zmv_vars.write_buffer_loc++] = BIT(1); //RLE bit
-        memcpy(zmv_vars.write_buffer+zmv_vars.write_buffer_loc, uint32_to_bytes(zmv_vars.header.frames), 4);
-        zmv_vars.write_buffer_loc += 4;
-      }
-      else
-      {
-        memset(zmv_vars.write_buffer+zmv_vars.write_buffer_loc, 0, zmv_vars.rle_count);
-        zmv_vars.write_buffer_loc += zmv_vars.rle_count;
-      }
-      zmv_vars.rle_count = 0;
-    }
+    zmv_rle_flush();
 
     zmv_vars.write_buffer[zmv_vars.write_buffer_loc++] = flag;
     memcpy(zmv_vars.write_buffer+zmv_vars.write_buffer_loc, press_buf, buffer_used);
     zmv_vars.write_buffer_loc += buffer_used;
 
-    if (zmv_vars.write_buffer_loc > WRITE_BUFFER_SIZE - (6+sizeof(press_buf)))
-    {
-      flush_input_buffer();
-    }
+    flush_input_if_needed();
   }
   else
   {
@@ -821,6 +841,19 @@ static bool zmv_open(char *filename)
   return(false);
 }
 
+static void zmv_replay_command(enum zmv_commands command)
+{
+  switch (command)
+  {
+    case zmv_command_reset:
+      GUIReset = 1;
+      asm_call(GUIDoReset);
+      ReturnFromSPCStall = 0;
+      zst_sram_load(zmv_vars.fp);    
+      break;
+  }
+}
+
 #define RESTORE_PAD(cur, prev) cur = (((unsigned int)prev) << 20) | 0x8000
 
 #define REPLAY_PAD(prev, cur, bit)                    \
@@ -868,7 +901,7 @@ static bool zmv_replay()
 
       if (flag & BIT(0)) //Command
       {
-
+        zmv_replay_command(flag >> 1);
         return(zmv_replay());
       }
 
@@ -1743,6 +1776,11 @@ void ProcessMovies()
       OldMovieReplay();
       break;
   }
+}
+
+void ResetDuringMovie()
+{
+  zmv_record_command(zmv_command_reset);
 }
 
 void SkipMovie()
