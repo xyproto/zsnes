@@ -556,21 +556,26 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (FirstActivate == 0) initwinvideo(); 
             InputAcquire();
             if (FirstActivate == 1) FirstActivate = 0;
+            CheckPriority();
             CheckScreenSaver();
          }
          if (LOWORD(wParam) == WA_INACTIVE)
          {
             IsActivated = 0;
+            if (GUIOn2 == 1) SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
             CheckScreenSaver();
          }
          break;
       case WM_SETFOCUS:
          if (FullScreen == 0) ShowWindow(hMainWindow, SW_SHOWNORMAL);
+         CheckPriority();
+         CheckScreenSaver();
          InputAcquire();
          break;
       case WM_KILLFOCUS:
          InputDeAcquire();
          IsActivated = 0;
+         if (GUIOn2 == 1) SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
          CheckScreenSaver();
          break;
       case WM_DESTROY:
