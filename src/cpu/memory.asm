@@ -2030,6 +2030,21 @@ C4activate:
     add ecx,[C4Ram]
     mov [ecx],al
     sub ecx,[C4Ram]
+    cmp ecx,1F4Fh
+    jne .noc4test
+    push esi
+    mov esi,[C4Ram]
+    cmp byte[esi+1F4Dh],0Eh
+    jne .befnoc4test
+    test al,0C3h
+    jnz .befnoc4test
+    shr al,2
+    mov [esi+1F80h],al
+    pop esi
+    ret
+.befnoc4test
+    pop esi
+.noc4test
     cmp al,00h
     je near .dosprites
     cmp al,01h
@@ -2194,7 +2209,7 @@ C4activate:
     popad
     ret
 .polarcord2
-pushad
+    pushad
     mov esi,[C4Ram]
     xor ecx,ecx
     mov cx,[esi+1F80h]
@@ -2205,9 +2220,7 @@ pushad
     imul ebx,eax
     sar ebx,8
     adc ebx,0
-    mov [esi+1F86h],bx
-    sar ebx,16
-    mov [esi+1F88h],bl
+    mov [esi+1F86h],ebx
     movsx ebx,word[SinTable+ecx*2]
     imul ebx,eax
     sar ebx,8
@@ -2315,12 +2328,7 @@ pushad
     mov ebx,[esi+1F83h]
     and ebx,0FFFFFFh   
     imul eax,ebx
-    mov [esi+1F80h],ax
-    sar eax,16
-    mov [esi+1F82h],al
-    ;imul ebx
-    ;mov [esi+1F80h],eax
-    ;mov [esi+1F84h],dx
+    mov [esi+1F80h],eax
     popad
     ret
 .sum
@@ -2329,6 +2337,14 @@ pushad
     ret
 .square
     pushad
+    xor edx,edx
+    mov esi,[C4Ram]
+    mov eax,[esi+1F80h]
+    shl eax,8
+    sar eax,8
+    imul eax
+    mov [esi+1F83h],eax
+    mov [esi+1F87h],dx
     popad
     ret
 .equatevelocity
