@@ -482,7 +482,7 @@ NEWSYM ASCII2Font
          db 00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
          db 00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
          db 00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-         db 00h,00h,00h,00h,00h,00h,00h,00h,00h,4Bh,4Ah,45h,46h,47h,48h,49h
+         db 00h,00h,00h,00h,00h,00h,00h,00h,4Ch,4Bh,4Ah,45h,46h,47h,48h,49h
 
 NEWSYM FontData
          db 0,0,0,0,0,0,0,0
@@ -3026,76 +3026,45 @@ NEWSYM hextestoutput
     mov esi,216*288+32
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[C4ObjSelec]
-    shl eax,4
-    mov al,[eax+224h]
-    mov al,[scrnon]
+    EXTSYM Op14Zr,Op14Xr,Op14Yr,Op14U,Op14F,Op14L
+    EXTSYM Op02CX,Op02CY,bg1scrolx,bg1scroly
+    EXTSYM TValDebug,TValDebug2,curhdma
+    mov al,[winbg1en]
     call outputhex
     mov esi,216*288+32+16
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[C4ObjSelec]
-    shl eax,4
-    mov al,[eax+225h]
-    mov al,[scrnon+1]
-    mov al,[scrnon+1]
+    mov al,[winenabs]
     call outputhex
     mov esi,216*288+70
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[C4ObjSelec]
-    shl eax,4
-    mov al,[eax+226h]
-    mov al,[scaddset]
-    mov al,byte[bgmode]
+    mov al,[TValDebug2+1]
     call outputhex
     mov esi,216*288+70+16
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[C4ObjSelec]
-    shl eax,4
-    mov al,[eax+227h]
-    mov al,[C4values+2]
-    mov al,[scaddset]
-    mov al,[blahblahblah]
+    mov al,[TValDebug2]
     call outputhex
     mov esi,216*288+108
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[C4ObjSelec]
-    shl eax,4
-    add eax,[C4Ram]
-    mov al,[eax+228h]
-    mov al,[coladdr]
+    mov al,[bg1scrolx+1]
     call outputhex
     mov esi,216*288+108+16
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[C4ObjSelec]
-    shl eax,4
-    add eax,[C4Ram]
-    mov al,[eax+229h]
-    mov al,[coladdr+1]
+    mov al,[bg1scrolx]
     call outputhex
     mov esi,216*288+146
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[C4ObjSelec]
-    shl eax,4
-    add eax,[C4Ram]
-    mov al,[eax+22Ah]
-    mov al,[coladdr+2]
+    mov al,[bg1scroly+1]
     call outputhex
     xor eax,eax
-    mov al,[C4ObjSelec]
-    shl eax,4
-    add eax,[C4Ram]
-    mov al,[eax+22Bh]
     mov esi,216*288+146+16
     add esi,[vidbuffer]
-    mov al,[C4values+6]
-    mov al,[vidbright]
-    or al,[forceblnk]
+    or al,[bg1scroly]
     call outputhex
     ret
 
