@@ -87,7 +87,6 @@ if test x$opengl_prefix != x; then
 CFLAGS="$CFLAGS -I$opengl_prefix/include"
 LDFLAGS-"$LDFLAGS -L$opengl_prefix/lib"
 fi
-CFLAGS="$CFLAGS -I$x_includes"
 LDFLAGS="$LDFLAGS -L$x_libraries"
 AC_CHECK_LIB(GL, glGetError,found_opengl="yes",,)
 if test x$found_opengl = xyes; then

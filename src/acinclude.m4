@@ -15,28 +15,6 @@ AC_ARG_WITH(zlib-prefix,[  --with-zlib-prefix=PFX  Prefix where zlib is installe
 min_zlib_version=ifelse([$1], ,1.1.0,$1)
 AC_MSG_CHECKING(for zlib - version >= $min_zlib_version)
 
-dnl Deal with X11R6 stupidity first. Some distros include zlib with X11R6,
-dnl and we cant use that one. We have to bomb if we find it.
-
-if test [-e /usr/X11R6/lib/libz.a] ; then 
-AC_MSG_RESULT(error)
-echo
-echo configure: Found a copy of zlib from X11R6
-echo configure: Please delete /usr/X11R6/lib/libz.a and /usr/X11R6/include/unzip.h
-echo "           so we can use the real zlib on your system."
-AC_MSG_ERROR(Remove these files and rerun this script)
-fi
-if test [-e /usr/X11R6/include/unzip.h] ; then 
-AC_MSG_RESULT(error)
-echo
-echo configure: Found a copy of zlib from X11R6
-echo configure: Please delete /usr/X11R6/lib/libz.a and /usr/X11R6/include/unzip.h
-echo "           so we can use the real zlib on your system."
-AC_MSG_ERROR(Remove these files and rerun this script)
-fi
-
-dnl Okay, Stupidy Check is done.
-
 tempLIBS="$LIBS"
 tempCFLAGS="$CFLAGS"
 if test x$zlib_prefix != x ; then
