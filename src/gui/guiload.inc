@@ -294,7 +294,7 @@ GUIloadfilename:
     call SetupROM
     call showinfogui
     call initsnes
-    mov byte[snesmouse],0
+    ;mov byte[snesmouse],0
     mov byte[sramsavedis],0
     mov eax,regsbackup
     mov ebx,sndrot

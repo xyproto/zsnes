@@ -704,8 +704,28 @@ void SplitSupport()
   }          
 }
 
+bool NSRTHead(unsigned char *ROM)
+{
+  unsigned char *NSRTHead = ROM + 0x1D0; //NSRT Header Location
+
+  if (!strncmp("NSRT", (char*)&NSRTHead[24],4) && NSRTHead[28] == 22)
+  {
+    if (sum(NSRTHead, 32) & 0xFF != NSRTHead[30] ||
+        NSRTHead[30] + NSRTHead[31] !=  255 ||
+        (NSRTHead[0] & 0x0F) > 13 ||
+        ((NSRTHead[0] & 0xF0) >> 4) > 3 ||
+        ((NSRTHead[0] & 0xF0) >> 4) == 0)
+    { 
+      return(false); //Corrupt
+    } 
+    return(true); //NSRT header
+  }
+  return(false); //None
+}
+
 extern bool Sup48mbit;
 extern bool Sup16mbit;
+extern unsigned char snesmouse;
 void findZipIPS(char *);
 void loadROM()
 {
@@ -752,39 +772,67 @@ void loadROM()
   else
   {
     int HeadRemain = (curromspace & 0x7FFF);
-	switch(HeadRemain)
+    switch(HeadRemain)
     {
       case 0:
-	  break;
+        break;
 				
-	  case 512:
-      Header512 = true;
-      break;
+      case 512:
+        Header512 = true;
+        break;
     
       default:
-      //SMC/SWC header
-      if (romdata[8] == 0xAA && romdata[9]==0xBB && romdata[10]== 4)
       {
-        Header512 = true;
+        unsigned char *ROM = (unsigned char *)romdata;
+
+        //SMC/SWC header
+        if (ROM[8] == 0xAA && ROM[9]==0xBB && ROM[10]== 4)
+        {
+          Header512 = true;
+        }
+        //FIG header
+        else if ((ROM[4] == 0x77 && ROM[5] == 0x83) ||
+                 (ROM[4] == 0xDD && ROM[5] == 0x82) ||
+                 (ROM[4] == 0xDD && ROM[5] == 2) ||
+                 (ROM[4] == 0xF7 && ROM[5] == 0x83) ||
+                 (ROM[4] == 0xFD && ROM[5] == 0x82) ||
+                 (ROM[4] == 0x00 && ROM[5] == 0x80) ||
+                 (ROM[4] == 0x47 && ROM[5] == 0x83) ||
+                 (ROM[4] == 0x11 && ROM[5] == 2))
+        {
+          Header512 = true;
+        }
+        break;
       }
-      //FIG header
-      else if ((romdata[4] == 0x77 && romdata[5] == 0x83) ||
-               (romdata[4] == 0xDD && romdata[5] == 0x82) ||
-               (romdata[4] == 0xDD && romdata[5] == 2) ||
-               (romdata[4] == 0xF7 && romdata[5] == 0x83) ||
-               (romdata[4] == 0xFD && romdata[5] == 0x82) ||
-               (romdata[4] == 0x00 && romdata[5] == 0x80) ||
-               (romdata[4] == 0x47 && romdata[5] == 0x83) ||
-               (romdata[4] == 0x11 && romdata[5] == 2))
-      {
-        Header512 = true;
-      }
-      break;
     }
   }
-     
+
+  snesmouse = 0;     
+
   if (Header512)
   {   
+    unsigned char *ROM = (unsigned char *)romdata;
+    if (NSRTHead(ROM))
+    {
+      switch (ROM[0x1ED]) 
+      {
+        case 0: default: break;
+
+        case 0x01: snesmouse = 2; break; //Mouse port 2
+        case 0x03: snesmouse = 3; break; //Super Scope port 2
+        case 0x04: break; //Super Scope or Gamepad port 2
+        case 0x05: snesmouse = 4; break; //Justifier (Lethal Enforcer gun) port 2
+        case 0x06: break; //Multitap port 2
+        case 0x08: break; //Mouse or Multitap port 2
+        case 0x10: snesmouse = 1; break; //Mouse port 1
+        case 0x20: break; //Mouse or Gamepad port 1
+        case 0x22: break; //Mouse or Gamepad port 1 and port 2
+        case 0x27: break; //Mouse or Gamepad port 1, Mouse, Super Scope, or Gamepad port 2
+
+        case 0x99: break; //Lasabirdie
+        case 0x0A: break; //Barcode Battler
+      }
+    }
     curromspace -= 512;
     memmove((unsigned char *)romdata, ((unsigned char *)romdata)+512, curromspace);  
   }
