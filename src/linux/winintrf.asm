@@ -341,7 +341,6 @@ NEWSYM WaitForKey       ; Wait for a key to be pressed
 
 NEWSYM OsExit
 NEWSYM OSExit
-    call exit
     ;int 3h
     jmp DosExit
 

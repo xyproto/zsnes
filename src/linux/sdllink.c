@@ -214,6 +214,7 @@ void ExitFunction(void)
 #ifdef __LINUX__ // AH
 int shiftptr = 0;
 void ProcessKeyBuf(int scancode);
+void LinuxExit(void);
 
 int Main_Proc(void)
 {
@@ -298,6 +299,9 @@ int Main_Proc(void)
 		case SDL_JOYBUTTONUP: 
 			pressed[0x100 + CurrentJoy*32 + 16 + JoyButton] = 0; 
 			break;    			
+		case SDL_QUIT:
+			LinuxExit();
+			break;
 		default: break;
 	   }
    }
@@ -2445,7 +2449,7 @@ void drawscreenwin(void)
 
 void LinuxExit (void)
 {
-	SDL_Quit();
+	if (sdl_inited) SDL_Quit();
 	exit(0);
 }
 
