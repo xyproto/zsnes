@@ -172,8 +172,6 @@ NEWSYM loadtempstuff
     mov edx,DSPMem
     call Read_File
     call Close_File
-    add dword[spcPCRam],spcRam
-    add dword[spcRamDP],spcRam
     pushad
     call ResetState
     popad

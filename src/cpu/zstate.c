@@ -46,8 +46,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define stim()
 #endif
 
-//static unsigned char save_state_buffer[0x80000]; //Save state should never exceed half a megabyte
-
 extern unsigned int CBackupPos, PBackupPos, cycpbl, PH65816regsize;
 extern unsigned int *wramdata, *vram, PHspcsave, PHdspsave, *C4Ram, *sfxramdata;
 extern unsigned int PHnum2writesa1reg, SA1Mode, prevedi, SA1xpc, sa1dmaptr;
@@ -67,7 +65,6 @@ extern short C4WFXVal, C41FXVal, Op00Multiplicand, Op04Angle, Op08X, Op18X;
 extern short Op28X, Op0CA, Op02FX, Op0AVS, Op06X, Op01m, Op0DX, Op03F, Op14Zr;
 extern short Op0EH;
 extern signed short Op10Coefficient;
-
 
 static void copy_snes_data(unsigned char **buffer, void (*copy_func)(unsigned char **, void *, size_t))
 {
@@ -200,7 +197,6 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
   }
 }
 
-
 static void memcpyinc(unsigned char **dest, void *src, size_t len)
 {
   memcpy(*dest, src, len);
@@ -275,7 +271,6 @@ void SA1UpdateDPageC()
     SA1DPageW16 = Bank0datw16[(SA1xd >> 8) & 0xFF];
 }
 
-
 extern unsigned int xdb, xpb, xs, xx, xy;
 extern unsigned short oamaddrt, xat, xst, xdt, xxt, xyt;
 extern unsigned char xdbt, xpbt;
@@ -299,11 +294,8 @@ extern unsigned int Curtableaddr, tableA[256], spcPCRam, spcRamDP;
 
 void PrepareSaveState()
 {
-  unsigned int offst;
+  unsigned int offst = (unsigned int)spcRam;
 
-  offst = (unsigned int)tableA;
-  Curtableaddr -= offst;
-  offst = (unsigned int)spcRam;
   spcPCRam -= offst;
   spcRamDP -= offst;
 
@@ -315,8 +307,6 @@ void PrepareSaveState()
   Voice5BufPtr -= spcBuffera;
   Voice6BufPtr -= spcBuffera;
   Voice7BufPtr -= spcBuffera;
-
-  unpackfunct();
 }
 
 #define byteset(byte, checkbit) (byte & (1 << checkbit)) ? 1 : 0
@@ -350,110 +340,110 @@ void reg2119inc8inc();
 
 void repackfunct()
 {
-    signed char val;
-    unsigned char block;
+  signed char val;
+  unsigned char block;
 
-    // Global/Echo Volumes
-    GlobalVL = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x0C]]] & 0xFF);
-    GlobalVR = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x1C]]] & 0xFF);
-    EchoVL = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x2C]]] & 0xFF);
-    EchoVR = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x3C]]] & 0xFF);
+  // Global/Echo Volumes
+  GlobalVL = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x0C]]] & 0xFF);
+  GlobalVR = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x1C]]] & 0xFF);
+  EchoVL = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x2C]]] & 0xFF);
+  EchoVR = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x3C]]] & 0xFF);
 
-    // Echo Values
-    MaxEcho = EchoRate[(DSPMem[0x7D] & 0xF)];
-    EchoFB = VolumeTableb[DSPMem[0x0D]];
+  // Echo Values
+  MaxEcho = EchoRate[(DSPMem[0x7D] & 0xF)];
+  EchoFB = VolumeTableb[DSPMem[0x0D]];
 
-    // FIR Filter Values
-    val = DSPMem[0x0F];
-    FIRTAPVal0 = (signed int)val;
-    val = DSPMem[0x1F];
-    FIRTAPVal1 = (signed int)val;
-    val = DSPMem[0x2F];
-    FIRTAPVal2 = (signed int)val;
-    val = DSPMem[0x3F];
-    FIRTAPVal3 = (signed int)val;
-    val = DSPMem[0x4F];
-    FIRTAPVal4 = (signed int)val;
-    val = DSPMem[0x5F];
-    FIRTAPVal5 = (signed int)val;
-    val = DSPMem[0x6F];
-    FIRTAPVal6 = (signed int)val;
-    val = DSPMem[0x7F];
-    FIRTAPVal7 = (signed int)val;
+  // FIR Filter Values
+  val = DSPMem[0x0F];
+  FIRTAPVal0 = (signed int)val;
+  val = DSPMem[0x1F];
+  FIRTAPVal1 = (signed int)val;
+  val = DSPMem[0x2F];
+  FIRTAPVal2 = (signed int)val;
+  val = DSPMem[0x3F];
+  FIRTAPVal3 = (signed int)val;
+  val = DSPMem[0x4F];
+  FIRTAPVal4 = (signed int)val;
+  val = DSPMem[0x5F];
+  FIRTAPVal5 = (signed int)val;
+  val = DSPMem[0x6F];
+  FIRTAPVal6 = (signed int)val;
+  val = DSPMem[0x7F];
+  FIRTAPVal7 = (signed int)val;
 
-    // Noise
-    block = DSPMem[0x6C];
-    DSPMem[0x6C] &= 0x7F;
+  // Noise
+  block = DSPMem[0x6C];
+  DSPMem[0x6C] &= 0x7F;
 
-    if (block && 0x80)	{ spcres++; }
+  if (block && 0x80)	{ spcres++; }
 
-    if (block && 0xC0)
+  if (block && 0xC0)
+  {
+    Voice0Status = Voice1Status = Voice2Status = Voice3Status = 0;
+    Voice4Status = Voice5Status = Voice6Status = Voice7Status = 0; 
+  }
+
+  NoiseInc = (((NoiseSpeeds[(block & 0x1F)] * dspPAdj) >> 17) & 0xFFFFFFFF);
+
+  Voice0Noise = byteset (DSPMem[0x3D], 0);
+  Voice1Noise = byteset (DSPMem[0x3D], 1);
+  Voice2Noise = byteset (DSPMem[0x3D], 2);
+  Voice3Noise = byteset (DSPMem[0x3D], 3);
+  Voice4Noise = byteset (DSPMem[0x3D], 4);
+  Voice5Noise = byteset (DSPMem[0x3D], 5);
+  Voice6Noise = byteset (DSPMem[0x3D], 6);
+  Voice7Noise = byteset (DSPMem[0x3D], 7);
+
+  bg1ptrx = bg1ptrb - bg1ptr;
+  bg1ptry = bg1ptrc - bg1ptr;
+  bg2ptrx = bg2ptrb - bg2ptr;
+  bg2ptry = bg2ptrc - bg2ptr;
+  bg3ptrx = bg3ptrb - bg3ptr;
+  bg3ptry = bg3ptrc - bg3ptr;
+  bg4ptrx = bg4ptrb - bg4ptr;
+  bg4ptry = bg4ptrc - bg4ptr;
+
+  // 16x16 tiles
+  BG116x16t = byteset (bgtilesz, 0);
+  BG216x16t = byteset (bgtilesz, 1);
+  BG316x16t = byteset (bgtilesz, 2);
+  BG416x16t = byteset (bgtilesz, 3);
+
+  oamaddr = oamaddrt;
+  xa = xat;
+  xdb = xdbt;
+  xpb = xpbt;
+  xs = xst;
+  xd = xdt;
+  xx = xxt;
+  xy = xyt;
+
+  if (vramincby8on == 1)
+  {
+    if (vramincr == 1)
     {
-	Voice0Status = Voice1Status = Voice2Status = Voice3Status = 0;
-	Voice4Status = Voice5Status = Voice6Status = Voice7Status = 0; 
-    }
-
-    NoiseInc = (((NoiseSpeeds[(block & 0x1F)] * dspPAdj) >> 17) & 0xFFFFFFFF);
-
-    Voice0Noise = byteset (DSPMem[0x3D], 0);
-    Voice1Noise = byteset (DSPMem[0x3D], 1);
-    Voice2Noise = byteset (DSPMem[0x3D], 2);
-    Voice3Noise = byteset (DSPMem[0x3D], 3);
-    Voice4Noise = byteset (DSPMem[0x3D], 4);
-    Voice5Noise = byteset (DSPMem[0x3D], 5);
-    Voice6Noise = byteset (DSPMem[0x3D], 6);
-    Voice7Noise = byteset (DSPMem[0x3D], 7);
-
-    bg1ptrx = bg1ptrb - bg1ptr;
-    bg1ptry = bg1ptrc - bg1ptr;
-    bg2ptrx = bg2ptrb - bg2ptr;
-    bg2ptry = bg2ptrc - bg2ptr;
-    bg3ptrx = bg3ptrb - bg3ptr;
-    bg3ptry = bg3ptrc - bg3ptr;
-    bg4ptrx = bg4ptrb - bg4ptr;
-    bg4ptry = bg4ptrc - bg4ptr;
-
-    // 16x16 tiles
-    BG116x16t = byteset (bgtilesz, 0);
-    BG216x16t = byteset (bgtilesz, 1);
-    BG316x16t = byteset (bgtilesz, 2);
-    BG416x16t = byteset (bgtilesz, 3);
-
-    oamaddr = oamaddrt;
-    xa = xat;
-    xdb = xdbt;
-    xpb = xpbt;
-    xs = xst;
-    xd = xdt;
-    xx = xxt;
-    xy = xyt;
-
-    if (vramincby8on == 1)
-    {
-	if (vramincr == 1)
-	{
-	    regptw[0x2118] = reg2118inc8inc;
-	    regptw[0x2119] = reg2119inc8;
-	}
-	else
-	{
-	    regptw[0x2118] = reg2118inc8;
-	    regptw[0x2119] = reg2119inc8inc;
-	}
+      regptw[0x2118] = reg2118inc8inc;
+      regptw[0x2119] = reg2119inc8;
     }
     else
     {
-	if (vramincr == 1)
-	{
-	    regptw[0x2118] = reg2118inc;
-	    regptw[0x2119] = reg2119;
-	}
-	else
-	{
-	    regptw[0x2118] = reg2118;
-	    regptw[0x2119] = reg2119inc;
-	}
+      regptw[0x2118] = reg2118inc8;
+      regptw[0x2119] = reg2119inc8inc;
     }
+  }
+  else
+  {
+    if (vramincr == 1)
+    {
+      regptw[0x2118] = reg2118inc;
+      regptw[0x2119] = reg2119;
+    }
+    else
+    {
+      regptw[0x2118] = reg2118;
+      regptw[0x2119] = reg2119inc;
+    }
+  }
 }
 
 extern unsigned int SA1Stat;
@@ -517,11 +507,8 @@ void RestoreSA1()
 
 void ResetState()
 {
-  unsigned int offst;
-  
-  offst = (unsigned int)tableA;
-  Curtableaddr += offst;
-  offst = (unsigned int)spcRam;
+  unsigned int offst = (unsigned int)spcRam;
+
   spcPCRam += offst;
   spcRamDP += offst;
 
@@ -538,11 +525,9 @@ void ResetState()
 extern unsigned int statefileloc, CurrentHandle, SfxRomBuffer;
 extern unsigned int SfxCROM, SfxLastRamAdr, SfxRAMMem;
 extern unsigned int MsgCount, MessageOn;
-
 extern unsigned char AutoIncSaveSlot, firstsaveinc, fnamest[512];
 extern unsigned char cbitmode, NoPictureSave, txtsavemsg[14];
 extern unsigned char *Msgptr, txtsavemsgfail[15];
-
 extern unsigned short PrevPicture[64*56];
 
 static FILE *fhandle;
@@ -559,6 +544,8 @@ static const char zst_header_cur[] = "ZSNES Save State File V143\x1a\x3c";
 
 void statesaver()
 {
+  unsigned int offst;
+
   //'Auto increment savestate slot' code
   if (AutoIncSaveSlot)
   {
@@ -593,9 +580,13 @@ void statesaver()
   if ((fhandle = fopen(fnamest+1,"wb")))
   {
     fwrite(zst_header_cur, 1, sizeof(zst_header_cur)-1, fhandle); //-1 for null
-    
+
+    offst = (unsigned int)tableA;
+    Curtableaddr -= offst;
+
     PrepareSaveState();
-    
+    unpackfunct();
+
     if (SFXEnable)
     {
       SfxRomBuffer -= SfxCROM;
@@ -628,7 +619,7 @@ void statesaver()
     
     fclose (fhandle);
   
-    //Display message on the screen, State X Saved
+    //Display message on the screen, 'STATE X SAVED.'
     if (fnamest[statefileloc] == 't')
     {
       txtsavemsg[6]='0';
@@ -640,15 +631,19 @@ void statesaver()
 
     Msgptr = txtsavemsg;
     MessageOn = MsgCount;
+
+    offst = (unsigned int)tableA;
+    Curtableaddr += offst;
   
     ResetState();
   }  
   else
   {
+    //Display message on the screen, 'UNABLE TO SAVE.'
     Msgptr = txtsavemsgfail;
     MessageOn = MsgCount;
   }
-  
+
   stim();
 }
 
@@ -658,49 +653,49 @@ extern unsigned char SA1BankVal[4];
 
 void BankSwitchC (unsigned char bank, unsigned int offset1, unsigned int offset2, unsigned int pointer)
 {
-    unsigned int curbankval=SA1BankVal[bank], membankval, i;
+  unsigned int curbankval=SA1BankVal[bank], membankval, i;
 
-    if ((NumofBanks & 0xFF) == 64)	{ curbankval &= 1 ; }
+  if ((NumofBanks & 0xFF) == 64)	{ curbankval &= 1 ; }
 
-    curbankval &= 7;
-    curbankval <<= 20;
+  curbankval &= 7;
+  curbankval <<= 20;
 
-    if (SA1BankVal[bank] & 0x80)
-    {
-	membankval = (pointer + (unsigned int)romdata - 0x8000);
-    }
-    else
-    {
-	membankval = (curbankval + (unsigned int)romdata - 0x8000);
-    }
+  if (SA1BankVal[bank] & 0x80)
+  {
+    membankval = (pointer + (unsigned int)romdata - 0x8000);
+  }
+  else
+  {
+    membankval = (curbankval + (unsigned int)romdata - 0x8000);
+  }
 
-    for (i=0 ; i<32 ; i++)
-    {
-	snesmmap[offset1+i] = membankval;
-	membankval += 0x8000;
-    }
+  for (i=0 ; i<32 ; i++)
+  {
+    snesmmap[offset1+i] = membankval;
+    membankval += 0x8000;
+  }
 
-    membankval = curbankval + (unsigned int)romdata;
+  membankval = curbankval + (unsigned int)romdata;
 
-    for (i=0 ; i<16 ; i++)
-    {
-	snesmap2[offset2+i] = membankval;
-	snesmmap[offset2+i] = membankval;
-	membankval += 0x10000;
-    }
+  for (i=0 ; i<16 ; i++)
+  {
+    snesmap2[offset2+i] = membankval;
+    snesmmap[offset2+i] = membankval;
+    membankval += 0x10000;
+  }
 }
 
 extern unsigned int SA1BankSw;
 
 void UpdateBanks()
 {
-    if ((SA1BankSw & 0xFF) == 1)
-    {
-	BankSwitchC (0, 0x000, 0x0C0, 0x000000) ;
-	BankSwitchC (1, 0x020, 0x0D0, 0x100000) ;
-	BankSwitchC (2, 0x080, 0x0E0, 0x200000) ;
-	BankSwitchC (3, 0x0A0, 0x0F0, 0x300000) ;
-    }
+  if ((SA1BankSw & 0xFF) == 1)
+  {
+    BankSwitchC (0, 0x000, 0x0C0, 0x000000) ;
+    BankSwitchC (1, 0x020, 0x0D0, 0x100000) ;
+    BankSwitchC (2, 0x080, 0x0E0, 0x200000) ;
+    BankSwitchC (3, 0x0A0, 0x0F0, 0x300000) ;
+  }
 }*/
 
 void BankSwitchSDD1C (unsigned char bankval, unsigned int offset)
@@ -774,6 +769,7 @@ static void read_save_state_data(unsigned char **dest, void *data, size_t len)
 void stateloader (unsigned char *statename, unsigned char keycheck, unsigned char xfercheck)
 {
   char zst_header_check[sizeof(zst_header_cur)-1];
+  unsigned int offst;
   
   if (keycheck)
   {
@@ -869,21 +865,25 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
       //headerhack(); //Was in the asm, but why is this needed?
 
       initpitch();
+
+      offst = (unsigned int)tableA;
+      Curtableaddr += offst;
+
       ResetState();
       procexecloop();
     
-      Msgptr = txtloadmsg;
+      Msgptr = txtloadmsg; // 'STATE X LOADED.'
     }
     else
     {
-      Msgptr = txtconvmsg;
+      Msgptr = txtconvmsg; // 'STATE X TOO OLD.'
     }
     
     fclose(fhandle);
   }
   else
   {
-    Msgptr = txtnfndmsg;
+    Msgptr = txtnfndmsg; // 'UNABLE TO LOAD STATE X.'
   }
   
   stim();

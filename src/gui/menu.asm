@@ -855,8 +855,6 @@ NEWSYM savespcdata
     add dword[spcPCRam],spcRam
 .savestuff
     ChangeDir SPCPath
-    sub dword[spcPCRam],spcRam
-    sub dword[spcRamDP],spcRam
     pushad
     call PrepareSaveState
     popad
@@ -1009,8 +1007,6 @@ NEWSYM savespcdata
     call Close_File
 %endif
 
-    add dword[spcPCRam],spcRam
-    add dword[spcRamDP],spcRam
     pushad
     call ResetState
     popad
