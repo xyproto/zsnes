@@ -1,3 +1,20 @@
+//Copyright (C) 1997-2004 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
+//
+//This program is free software; you can redistribute it and/or
+//modify it under the terms of the GNU General Public License
+//as published by the Free Software Foundation; either
+//version 2 of the License, or (at your option) any later
+//version.
+//
+//This program is distributed in the hope that it will be useful,
+//but WITHOUT ANY WARRANTY; without even the implied warranty of
+//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//GNU General Public License for more details.
+//
+//You should have received a copy of the GNU General Public License
+//along with this program; if not, write to the Free Software
+//Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
 /*******************************************************************************
   S-DD1 C emulator code
   (c) Copyright 2003 Brad Jorsch with research by
@@ -144,93 +161,6 @@ static inline unsigned char GetBit(unsigned char cur_bitplane){
     return bit;
 }
 
-void SDD1_decompress(unsigned char *out, unsigned char *in, int len){
-    unsigned char bit, i, plane;
-    unsigned char byte1, byte2;
-
-    if(len==0) len=0x10000;
-    
-    bitplane_type=in[0]>>6;
-
-    switch(in[0]&0x30){
-      case 0x00:
-        high_context_bits=0x01c0;
-        low_context_bits =0x0001;
-        break;
-      case 0x10:
-        high_context_bits=0x0180;
-        low_context_bits =0x0001;
-        break;
-      case 0x20:
-        high_context_bits=0x00c0;
-        low_context_bits =0x0001;
-        break;
-      case 0x30:
-        high_context_bits=0x0180;
-        low_context_bits =0x0003;
-        break;
-    }
-
-    in_stream=(in[0]<<11) | (in[1]<<3);
-    valid_bits=5;
-    in_buf=in+2;
-    memset(bit_ctr, 0, sizeof(bit_ctr));
-    memset(context_states, 0, sizeof(context_states));
-    memset(context_MPS, 0, sizeof(context_MPS));
-    memset(prev_bits, 0, sizeof(prev_bits));
-
-    switch(bitplane_type){
-      case 0:
-        while(1) {
-            for(byte1=byte2=0, bit=0x80; bit; bit>>=1){
-                if(GetBit(0)) byte1 |= bit;
-                if(GetBit(1)) byte2 |= bit;
-            }
-            *(out++)=byte1;
-            if(!--len) return;
-            *(out++)=byte2;
-            if(!--len) return;
-        }
-        break;
-      case 1:
-        i=plane=0;
-        while(1) {
-            for(byte1=byte2=0, bit=0x80; bit; bit>>=1){
-                if(GetBit(plane)) byte1 |= bit;
-                if(GetBit(plane+1)) byte2 |= bit;
-            }
-            *(out++)=byte1;
-            if(!--len) return;
-            *(out++)=byte2;
-            if(!--len) return;
-            if(!(i+=32)) plane = (plane+2)&7;
-        }
-        break;
-      case 2:
-        i=plane=0;
-        while(1) {
-            for(byte1=byte2=0, bit=0x80; bit; bit>>=1){
-                if(GetBit(plane)) byte1 |= bit;
-                if(GetBit(plane+1)) byte2 |= bit;
-            }
-            *(out++)=byte1;
-            if(!--len) return;
-            *(out++)=byte2;
-            if(!--len) return;
-            if(!(i+=32)) plane ^= 2;
-        }
-        break;
-      case 3:
-        do {
-            for(byte1=plane=0, bit=1; bit; bit<<=1, plane++){
-                if(GetBit(plane)) byte1 |= bit;
-            }
-            *(out++)=byte1;
-        } while(--len);
-        break;
-    }
-}
-
 static unsigned char cur_plane;
 static unsigned char num_bits;
 static unsigned char next_byte;
@@ -272,7 +202,7 @@ void SDD1_init(unsigned char *in){
 unsigned char SDD1_get_byte(void){
     unsigned char bit;
     unsigned char byte=0;
-    
+
     switch(bitplane_type){
       case 0:
         num_bits+=16;
@@ -326,4 +256,3 @@ unsigned char SDD1_get_byte(void){
         return 0;
     }
 }
-
