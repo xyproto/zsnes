@@ -2488,22 +2488,23 @@ ALIGN32
 NEWSYM ExecExitOkay, db 1
 
 SECTION .bss ;ALIGN=32
-NEWSYM JoyABack, resd 1
-NEWSYM JoyBBack, resd 1
-NEWSYM JoyCBack, resd 1
-NEWSYM JoyDBack, resd 1
-NEWSYM JoyEBack, resd 1
-NEWSYM NetCommand, resd 1
-NEWSYM spc700read, resd 1
-NEWSYM lowestspc,  resd 1
-NEWSYM highestspc, resd 1
-NEWSYM SA1UBound,  resd 1
-NEWSYM SA1LBound,  resd 1
-NEWSYM SA1SH,      resd 1
-NEWSYM SA1SHb,     resd 1
-NEWSYM NumberOfOpcodes2, resd 1
-NEWSYM ChangeOps, resd 1
-NEWSYM SFXProc,    resd 1
+NEWSYM JoyABack, dd 0
+NEWSYM JoyBBack, dd 0
+NEWSYM JoyCBack, dd 0
+NEWSYM JoyDBack, dd 0
+NEWSYM JoyEBack, dd 0
+NEWSYM NetCommand, dd 0
+NEWSYM spc700read, dd 0
+NEWSYM lowestspc,  dd 0
+NEWSYM highestspc, dd 0
+NEWSYM SA1UBound,  dd 0
+NEWSYM SA1LBound,  dd 0
+NEWSYM SA1SH,      dd 0
+NEWSYM SA1SHb,     dd 0
+NEWSYM NumberOfOpcodes2, dd 0
+NEWSYM ChangeOps, dd 0
+NEWSYM SFXProc,    dd 0
+
 SECTION .text
 
 
