@@ -1117,8 +1117,15 @@ reg43XXr:
     mov al,[dmadata+ebx]
     ret
 
+NEWSYM blah, dw 0
+;EXTSYM MinimizeWindow
+
 regINVALID:     ; Invalid Register
-    cmp cx,2050h
+;    mov word[blah],cx
+;pushad
+;    call MinimizeWindow
+;popad
+    cmp cx,3000h
     jb .cleared
     mov al,ch
     cmp byte[SPC7110Enable],0
@@ -1127,7 +1134,7 @@ regINVALID:     ; Invalid Register
     xor al,al
 .nospc7110
 ;    mov byte[debstop3],1
-    ret
+;    ret
 
     mov al,[previdmode]
     mov ah,0
