@@ -2060,31 +2060,6 @@ DisplayGUIChoseSaveClick:
     mov [fnamest+ebx],al
     ret
 
-DisplayGUIMovieClick:
-    cmp byte[MovieRecordWinVal],0
-    je near .displayboxa
-    GUIPHoldbutton 17,55,59,66,19
-    GUIPHoldbutton 70,55,112,66,20
-    ret
-.displayboxa
-    GUIPHoldbutton 7,17,49,28,16
-    GUIPHoldbutton 7,33,49,44,17
-    GUIPHoldbutton 7,49,49,60,18
-    GUIPHoldbutton 7,65,106,76,29
-    GUIPHoldbutton 7,81,106,92,30
-    GUIPHoldbutton 7,97,106,108,31
-    GUIPButtonHole 60,25,byte[CMovieExt],'v'
-    GUIPButtonHole 80,25,byte[CMovieExt],'1'
-    GUIPButtonHole 100,25,byte[CMovieExt],'2'
-    GUIPButtonHole 120,25,byte[CMovieExt],'3'
-    GUIPButtonHole 60,40,byte[CMovieExt],'4'
-    GUIPButtonHole 80,40,byte[CMovieExt],'5'
-    GUIPButtonHole 100,40,byte[CMovieExt],'6'
-    GUIPButtonHole 120,40,byte[CMovieExt],'7'
-    GUIPButtonHole 60,55,byte[CMovieExt],'8'
-    GUIPButtonHole 80,55,byte[CMovieExt],'9'
-    ret
-
 %macro DGOptnsProcBox 3
     cmp eax,%1
     jl %%skip
@@ -2118,6 +2093,36 @@ DisplayGUIMovieClick:
     ret
 %%skip
 %endmacro
+
+DisplayGUIMovieClick:
+    cmp byte[MovieRecordWinVal],0
+    je near .displayboxa
+    GUIPHoldbutton 17,55,59,66,19
+    GUIPHoldbutton 70,55,112,66,20
+    ret
+.displayboxa
+    GUIPHoldbutton 7,17,49,28,16
+    GUIPHoldbutton 7,33,49,44,17
+    GUIPHoldbutton 7,49,49,60,18
+    GUIPHoldbutton 7,65,106,76,29
+    GUIPHoldbutton 7,81,106,92,30
+    GUIPHoldbutton 7,97,106,108,31
+    GUIPButtonHole 60,25,byte[CMovieExt],'v'
+    GUIPButtonHole 80,25,byte[CMovieExt],'1'
+    GUIPButtonHole 100,25,byte[CMovieExt],'2'
+    GUIPButtonHole 120,25,byte[CMovieExt],'3'
+    GUIPButtonHole 60,40,byte[CMovieExt],'4'
+    GUIPButtonHole 80,40,byte[CMovieExt],'5'
+    GUIPButtonHole 100,40,byte[CMovieExt],'6'
+    GUIPButtonHole 120,40,byte[CMovieExt],'7'
+    GUIPButtonHole 60,55,byte[CMovieExt],'8'
+    GUIPButtonHole 80,55,byte[CMovieExt],'9'
+    DGOptnsProcBox 97,134,[KeyInsrtChap]
+    DGOptnsProcBox 97,144,[KeyNextChap]
+    DGOptnsProcBox 97,154,[KeyPrevChap]
+    ret
+
+
 
 %macro DGOptnsProcBoxc 5
     cmp eax,%1
@@ -2902,9 +2907,6 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 27+45,120,[KeyDisableSC5]
     DGOptnsProcBox 27+45*2,120,[KeyDisableSC6]
     DGOptnsProcBox 27+45*3,120,[KeyDisableSC7]
-    DGOptnsProcBox 100,140,[KeyInsrtChap]
-    DGOptnsProcBox 100,150,[KeyNextChap]
-    DGOptnsProcBox 100,160,[KeyPrevChap]
     DGOptnsProcBox 8+25,178,[KeyQuickLoad]
     DGOptnsProcBox 8+57+26,178,[KeyQuickRst]
     DGOptnsProcBox 8+114+20,178,[KeyQuickExit]

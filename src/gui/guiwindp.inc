@@ -1023,11 +1023,11 @@ mov dl,[GUIWincol]
     GUIOuttextwin2 9,%1+2,%2+1,GUIGameDisplayKy
 %endmacro
 
-%macro DSaveDrawBox 3
-    mov eax,dword[GUIwinposx+20*4]
-    mov ebx,dword[GUIwinposy+20*4]
-    add eax,%1
-    add ebx,%2
+%macro DDrawBox 4
+    mov eax,dword[GUIwinposx+%1*4]
+    mov ebx,dword[GUIwinposy+%1*4]
+    add eax,%2
+    add ebx,%3
     mov ecx,eax
     add ecx,20
     mov dl,167
@@ -1036,18 +1036,18 @@ mov dl,[GUIWincol]
     DrawGUILine
     dec esi
     jnz %%loop
-    mov eax,%3
+    mov eax,%4
     mov ebx,[ScanCodeListing+eax*3]
     mov [GUIGameDisplayKy],ebx
     mov byte[GUIGameDisplayKy+3],0
     mov byte[GUItextcolor],223
-    GUIOuttextwin2 20,%1+3,%2+2,GUIGameDisplayKy
+    GUIOuttextwin2 %1,%2+3,%3+2,GUIGameDisplayKy
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je %%zero
     mov byte[GUItextcolor],222
 %%zero
-    GUIOuttextwin2 20,%1+2,%2+1,GUIGameDisplayKy
+    GUIOuttextwin2 %1,%2+2,%3+1,GUIGameDisplayKy
 %endmacro
 
 %macro DGOptnsDrawBox2 3
@@ -4819,12 +4819,9 @@ DisplayGameOptns:
     GUIOuttextwin2 9,9+45*3,122,GUIGameOptnsText2
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,6,132,GUIGameOptnsText6
+;    GUIOuttextwin2 9,6,132,GUIGameOptnsText6
     mov al,byte[GUIGameOptnsColB]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,9,142,GUIGameOptnsTextI
-    GUIOuttextwin2 9,9,152,GUIGameOptnsTextJ
-    GUIOuttextwin2 9,9,162,GUIGameOptnsTextK
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 9,6,170,GUIGameOptnsText8
@@ -4903,12 +4900,9 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8+45*3,121,GUIGameOptnsText2
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,5,131,GUIGameOptnsText6
+;    GUIOuttextwin2 9,5,131,GUIGameOptnsText6
     mov al,byte[GUIGameOptnsColB]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,8,141,GUIGameOptnsTextI
-    GUIOuttextwin2 9,8,151,GUIGameOptnsTextJ
-    GUIOuttextwin2 9,8,161,GUIGameOptnsTextK
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 9,5,169,GUIGameOptnsText8
@@ -4951,9 +4945,6 @@ DisplayGameOptns:
     DGOptnsBorderBox 9,71,119
     DGOptnsBorderBox 9,116,119
     DGOptnsBorderBox 9,161,119
-    DGOptnsBorderBox 9,99,139
-    DGOptnsBorderBox 9,99,149
-    DGOptnsBorderBox 9,99,159
     DGOptnsBorderBox 9,32,177
     DGOptnsBorderBox 9,90,177
     DGOptnsBorderBox 9,141,177
@@ -4992,9 +4983,6 @@ DisplayGameOptns:
     DGOptnsDrawBox 27+45,120,[KeyDisableSC5]
     DGOptnsDrawBox 27+45*2,120,[KeyDisableSC6]
     DGOptnsDrawBox 27+45*3,120,[KeyDisableSC7]
-    DGOptnsDrawBox 100,140,[KeyInsrtChap]
-    DGOptnsDrawBox 100,150,[KeyNextChap]
-    DGOptnsDrawBox 100,160,[KeyPrevChap]
     DGOptnsDrawBox 8+25,178,[KeyQuickLoad]
     DGOptnsDrawBox 8+57+26,178,[KeyQuickRst]
     DGOptnsDrawBox 8+114+20,178,[KeyQuickExit]
@@ -5573,6 +5561,9 @@ DisplayGUIMovies:
     GUIOuttextwin2 15,71,58,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'9'
     GUIOuttextwin2 15,91,58,GUIChoseSaveText2
+    GUIOuttextwin2 15,9,136,GUIMovieTextE
+    GUIOuttextwin2 15,9,146,GUIMovieTextF
+    GUIOuttextwin2 15,9,156,GUIMovieTextG
     add byte[GUItextcolor],15
     GUIOuttextwin2 15,60,15,GUIMovieText4
     GUIOuttextwin2 15,6,114,GUIMovieTextA
@@ -5596,6 +5587,9 @@ DisplayGUIMovies:
     GUIOuttextwin2 15,70,57,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'9'
     GUIOuttextwin2 15,90,57,GUIChoseSaveText2
+    GUIOuttextwin2 15,8,135,GUIMovieTextE
+    GUIOuttextwin2 15,8,145,GUIMovieTextF
+    GUIOuttextwin2 15,8,155,GUIMovieTextG
     GUIDisplayButtonHole 15,60,25,byte[CMovieExt],'v'
     GUIDisplayButtonHole 15,80,25,byte[CMovieExt],'1'
     GUIDisplayButtonHole 15,100,25,byte[CMovieExt],'2'
@@ -5606,6 +5600,35 @@ DisplayGUIMovies:
     GUIDisplayButtonHole 15,120,40,byte[CMovieExt],'7'
     GUIDisplayButtonHole 15,60,55,byte[CMovieExt],'8'
     GUIDisplayButtonHole 15,80,55,byte[CMovieExt],'9'
+    
+    mov al,[GUIWincol]
+    mov [GUIGameOptnsColA],al
+    mov byte[GUIGameOptnsColB],202
+    cmp byte[GUIWincoladd],0
+    je .zero3
+    mov byte[GUIGameOptnsColB],196
+.zero3
+    mov al,byte[GUIGameOptnsColA]
+    mov byte[GUItextcolor],al
+    GUIOuttextwin2 15,6,126,GUIMovieTextH
+    
+    mov byte[GUIGameOptnsColA],163
+    mov byte[GUIGameOptnsColB],217
+    cmp byte[GUIWincoladd],0
+    je .zero5
+    mov byte[GUIGameOptnsColA],164
+    mov byte[GUIGameOptnsColB],211
+.zero5
+    mov al,byte[GUIGameOptnsColA]
+    mov byte[GUItextcolor],al
+    GUIOuttextwin2 15,5,125,GUIMovieTextH
+    
+    DDrawBox 15,97,134,[KeyInsrtChap]
+    DDrawBox 15,97,144,[KeyNextChap]
+    DDrawBox 15,97,154,[KeyPrevChap]
+    DGOptnsBorderBox 15,96,133
+    DGOptnsBorderBox 15,96,143
+    DGOptnsBorderBox 15,96,153
     ret
 
 SECTION .data
@@ -5622,6 +5645,10 @@ GUIMovieTextA db 'STATUS :           ',0
 GUIMovieTextB db 'INSERT CHAPTER',0
 GUIMovieTextC db 'PREVIOUS CHAPTER',0
 GUIMovieTextD db 'NEXT CHAPTER',0
+GUIMovieTextE db 'INSERT CHAPTER',0
+GUIMovieTextF db 'NEXT CHAPTER',0
+GUIMovieTextG db 'PREV CHAPTER',0
+GUIMovieTextH db 'MOVIE KEYS :',0
 NEWSYM CMovieExt, db 'v'
 
 SECTION .text
@@ -6868,7 +6895,6 @@ DisplayGUISave:
     mov byte[GUItextcolor],211
 .zero1
     sub byte[GUItextcolor],15
-    GUIOuttextwin2 20,6,113,GUISaveTextE
     mov byte[GUISaveText8+2],'0'
     GUIOuttextwin2 20,9,123,GUISaveText8
     mov byte[GUISaveText8+2],'1'
@@ -6896,8 +6922,7 @@ DisplayGUISave:
     GUIOuttextwin2 20,9+114,150,GUISaveTextB
     
     add byte[GUItextcolor],15
-    GUIOuttextwin2 20,5,112,GUISaveTextE
-        mov byte[GUISaveText8+2],'0'
+    mov byte[GUISaveText8+2],'0'
     GUIOuttextwin2 20,8,122,GUISaveText8
     mov byte[GUISaveText8+2],'1'
     GUIOuttextwin2 20,8+45,122,GUISaveText8
@@ -6923,6 +6948,27 @@ DisplayGUISave:
     GUIOuttextwin2 20,8+57,149,GUISaveTextA
     GUIOuttextwin2 20,8+114,149,GUISaveTextB
 
+    mov al,[GUIWincol]
+    mov [GUIGameOptnsColA],al
+    mov byte[GUIGameOptnsColB],202
+    cmp byte[GUIWincoladd],0
+    je .zero3
+    mov byte[GUIGameOptnsColB],196
+.zero3
+    mov al,byte[GUIGameOptnsColA]
+    mov byte[GUItextcolor],al
+    GUIOuttextwin2 20,6,112,GUISaveTextE
+    
+    mov byte[GUIGameOptnsColA],163
+    mov byte[GUIGameOptnsColB],217
+    cmp byte[GUIWincoladd],0
+    je .zero8
+    mov byte[GUIGameOptnsColA],164
+    mov byte[GUIGameOptnsColB],211
+.zero8
+    mov al,byte[GUIGameOptnsColA]
+    mov byte[GUItextcolor],al
+    GUIOuttextwin2 20,5,111,GUISaveTextE
     
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AutoIncSaveSlot],0
@@ -7066,21 +7112,21 @@ DisplayGUISave:
     DrawGUIButton 20,184,32,192,40,GUISaveTextW,73,-2,-1
     
 
-    DSaveDrawBox 27,121,[KeyStateSlc0]
-    DSaveDrawBox 27+45,121,[KeyStateSlc1]    
-    DSaveDrawBox 27+45*2,121,[KeyStateSlc2]
-    DSaveDrawBox 27+45*3,121,[KeyStateSlc3]   
-    DSaveDrawBox 27,130,[KeyStateSlc4]
-    DSaveDrawBox 27+45,130,[KeyStateSlc5]
-    DSaveDrawBox 27+45*2,130,[KeyStateSlc6]
-    DSaveDrawBox 27+45*3,130,[KeyStateSlc7]
-    DSaveDrawBox 27,139,[KeyStateSlc8]
-    DSaveDrawBox 27+45,139,[KeyStateSlc9]
-    DSaveDrawBox 27+45*2,139,[KeyIncStateSlot]
-    DSaveDrawBox 27+45*3,139,[KeyDecStateSlot]
-    DSaveDrawBox 8+25,148,[KeySaveState]
-    DSaveDrawBox 8+57+25,148,[KeyLoadState]
-    DSaveDrawBox 8+114+25,148,[KeyStateSelct]
+    DDrawBox 20,27,121,[KeyStateSlc0]
+    DDrawBox 20,27+45,121,[KeyStateSlc1]    
+    DDrawBox 20,27+45*2,121,[KeyStateSlc2]
+    DDrawBox 20,27+45*3,121,[KeyStateSlc3]   
+    DDrawBox 20,27,130,[KeyStateSlc4]
+    DDrawBox 20,27+45,130,[KeyStateSlc5]
+    DDrawBox 20,27+45*2,130,[KeyStateSlc6]
+    DDrawBox 20,27+45*3,130,[KeyStateSlc7]
+    DDrawBox 20,27,139,[KeyStateSlc8]
+    DDrawBox 20,27+45,139,[KeyStateSlc9]
+    DDrawBox 20,27+45*2,139,[KeyIncStateSlot]
+    DDrawBox 20,27+45*3,139,[KeyDecStateSlot]
+    DDrawBox 20,8+25,148,[KeySaveState]
+    DDrawBox 20,8+57+25,148,[KeyLoadState]
+    DDrawBox 20,8+114+25,148,[KeyStateSelct]
     ret
 
 SECTION .data
