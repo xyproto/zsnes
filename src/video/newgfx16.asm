@@ -2552,12 +2552,17 @@ NEWSYM drawbg4linepr116b
 ; FillSubScr bit 0 sets to 1 if there is no subscreen present
 ; ms,wms,wm,ws
 ; FillSubScr scadtng
-NEWSYM drawsprng16b
+<NEWSYM drawsprng16b
     test byte[BGMS1+ebx*2],10h
     jz .nosubmain
     mov edi,[CSubWinScr]
+    test byte[FillSubScr+ebx],2
+    jnz near drawsprng16bt
+    jmp .nosubmain
+    mov edi,[CMainWinScr]
     cmp byte[edi+ebx+4*256],0
     je .nosubmain
+.submain
     test byte[FillSubScr+ebx],1
     jnz near drawsprng16bt
 .nosubmain
