@@ -18,7 +18,7 @@
 
 EXTSYM SFXEnable,regptr,initsfxregsr,initSA1regs,SA1Enable,initSDD1regs
 EXTSYM SPC7110Enable,initSPC7110regs,RTCEnable,RTCReset
-EXTSYM curypos,cycpl,debuggeron,pdh,Reg4212hack
+EXTSYM curypos,cycpl,debuggeron,pdh
 EXTSYM vram
 EXTSYM romispal
 EXTSYM reg1read,spcnumread,spcon
@@ -1253,7 +1253,11 @@ reg4212r:
     cmp byte[debuggeron],1
     je .debugger
     mov bx,[resolutn]
-    sub bx,[Reg4212hack]
+    cmp word[curypos],bx
+    jne .notres
+    cmp byte[nmistatus],2
+    je .vblank
+.notres
     inc bx
     cmp word[curypos],bx
     jb .novbl
@@ -1261,6 +1265,7 @@ reg4212r:
     dec bx
     cmp word[curypos],bx
     jae .novbl
+.vblank
     or al,80h
 ;    jmp .nohblank
 .novbl
@@ -1284,7 +1289,11 @@ debblah2:
     push edx
     mov dh,[pdh]
     mov bx,[resolutn]
-    sub bx,[Reg4212hack]
+    cmp word[curypos],bx
+    jne .notres
+    cmp byte[nmistatus],2
+    je .vblank
+.notres
     inc bx
     cmp word[curypos],bx
     jb .novbl
@@ -1292,6 +1301,7 @@ debblah2:
     dec bx
     cmp word[curypos],bx
     jae .novbl
+.vblank
     or al,80h
 ;    jmp .nohblank
 .novbl

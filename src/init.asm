@@ -1332,7 +1332,6 @@ NEWSYM numspcvblleft,  dd 0
 NEWSYM spc700idle,     dd 0
 NEWSYM IRQHack,        dw 0
 NEWSYM Offby1line,     db 0
-NEWSYM Reg4212hack,    dd 0
 NEWSYM CacheCheckSkip,     db 0
 NEWSYM HIRQSkip,     db 0
 NEWSYM ClearScreenSkip, db 0
@@ -1464,7 +1463,6 @@ NEWSYM headerhack
     mov byte[hirqmode2],0
     mov byte[ENVDisable],0
     mov byte[MMXSRAMFix],0
-    mov dword[Reg4212hack],0
 
     mov esi,[romdata]
     add esi,07FC0h
@@ -1494,18 +1492,6 @@ NEWSYM headerhack
     mov byte[cycpbl],125
     mov byte[cycpblt],125
 .nothumangrandprix3
-
-
-    mov esi,[romdata]
-    add esi,07FC0h
-    cmp dword[esi],'Cu-O'
-    jne .notcuonpa
-    cmp dword[esi+4],'n-Pa'
-    jne .notcuonpa
-    cmp dword[esi+8],' SFC'
-    jne .notcuonpa
-    mov dword[Reg4212hack],2
-.notcuonpa
 
     mov esi,[romdata]
     add esi,07FC0h
@@ -1822,7 +1808,6 @@ NEWSYM headerhack
     mov byte[opexec358],220
     mov byte[opexec268cph],64
     mov byte[opexec358cph],64
-    mov byte[Reg4212hack],4
 .noromhead3
 
     ; BToad vs DD - 197/192/47/47 -p 120
