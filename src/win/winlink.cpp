@@ -127,6 +127,18 @@ extern "C" {
 DWORD                   MouseButton;
 }
 
+extern "C" {
+extern HMODULE hM_dinput8, hM_ddraw, hM_dsound;
+
+typedef HRESULT (WINAPI* lpDirectInput8Create)(HINSTANCE hinst, DWORD dwVersion, REFIID riidltf, LPVOID *ppvOut, LPUNKNOWN punkOuter);
+extern lpDirectInput8Create pDirectInput8Create;
+
+typedef HRESULT (WINAPI* lpDirectDrawCreateEx)(GUID FAR * lpGuid, LPVOID  *lplpDD, REFIID  iid,IUnknown FAR *pUnkOuter);
+extern lpDirectDrawCreateEx pDirectDrawCreateEx;
+
+typedef HRESULT (WINAPI* lpDirectSoundCreate8)(LPCGUID pcGuidDevice, LPDIRECTSOUND8 *ppDS8, LPUNKNOWN pUnkOuter);
+extern lpDirectSoundCreate8 pDirectSoundCreate8;
+}
 
 #define UPDATE_TICKS_GAME 1000.855001760297741789468390082/60      // milliseconds per world update
 #define UPDATE_TICKS_GAMEPAL 1000/50   // milliseconds per world update
@@ -506,7 +518,7 @@ InitSound()
    PrevSoundQuality=SoundQuality;
    PrevStereoSound=StereoSound;
 
-      if (DS_OK == DirectSoundCreate8(NULL, &lpDirectSound,NULL))
+      if (DS_OK == pDirectSoundCreate8(NULL, &lpDirectSound,NULL))
       {
           if (ExclusiveSound == 0)
           {
@@ -937,7 +949,7 @@ bool InitInput()
    char message1[256];
    HRESULT hr;
 
-   if (FAILED(hr=DirectInput8Create(hInst,DIRECTINPUT_VERSION,IID_IDirectInput8A,(void **) &DInput,NULL)))
+   if (FAILED(hr=pDirectInput8Create(hInst,DIRECTINPUT_VERSION,IID_IDirectInput8A,(void **) &DInput,NULL)))
    {
       sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx \0");
       MessageBox (NULL, message1, "DirectInput Error" , MB_ICONERROR );
@@ -1122,7 +1134,7 @@ int InitDirectDraw()
    ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow);
    ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow + 1);
 
-   if (DirectDrawCreateEx(NULL, (void **)&lpDD, IID_IDirectDraw7, NULL) != DD_OK)
+   if (pDirectDrawCreateEx(NULL, (void **)&lpDD, IID_IDirectDraw7, NULL) != DD_OK)
    {
       MessageBox(NULL, "DirectDrawCreateEx failed.", "DirectDraw Error", MB_ICONERROR);
    }

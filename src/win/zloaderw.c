@@ -22,6 +22,30 @@
 #include <direct.h>
 #include <winuser.h>
 
+
+#include <dinput.h>
+#include <dsound.h>
+
+static char dinput8_dll[] = {"dinput8.dll\0"};
+static char dinput8_imp[] = {"DirectInput8Create\0"};
+
+static char ddraw_dll[] = {"ddraw.dll\0"};
+static char ddraw_imp[] = {"DirectDrawCreateEx\0"};
+
+static char dsound_dll[] = {"dsound.dll\0"};
+static char dsound_imp[] = {"DirectSoundCreate8\0"};
+
+HMODULE hM_ddraw = NULL, hM_dsound = NULL,hM_dinput8 = NULL;
+
+typedef HRESULT (WINAPI* lpDirectInput8Create)(HINSTANCE hinst, DWORD dwVersion, REFIID riidltf, LPVOID *ppvOut, LPUNKNOWN punkOuter);
+lpDirectInput8Create pDirectInput8Create;
+
+typedef HRESULT (WINAPI* lpDirectDrawCreateEx)( GUID FAR * lpGuid, LPVOID  *lplpDD, REFIID  iid,IUnknown FAR *pUnkOuter );
+lpDirectDrawCreateEx pDirectDrawCreateEx;
+
+typedef HRESULT (WINAPI* lpDirectSoundCreate8)(LPCGUID pcGuidDevice, LPDIRECTSOUND8 *ppDS8, LPUNKNOWN pUnkOuter);
+lpDirectSoundCreate8 pDirectSoundCreate8;
+
 extern void zstart(void);
 extern void DosExit(void);
 extern void ConvertJoyMap1(void);
@@ -80,6 +104,71 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdSh
    int i,j,nofile;
 
    hInst=hInstance;
+
+   hM_dinput8 = LoadLibrary(dinput8_dll);
+
+   if (hM_dinput8 == NULL)
+   {
+      if (MessageBox(NULL, "Sorry, you need DirectX v8.0 or higher to use\nZSNESW. Would you like to go to the DirectX homepage?", "Error", MB_ICONINFORMATION | MB_YESNO) == IDYES)
+         ShellExecute(NULL, NULL, "http://www.microsoft.com/directx/", NULL, NULL, 0);
+      goto startup_error_exit;
+   }
+
+   pDirectInput8Create = (lpDirectInput8Create) GetProcAddress(hM_dinput8, dinput8_imp);
+
+   if (pDirectInput8Create == NULL)
+   {
+      char err[256];
+      wsprintf(err,"Failed to import %s:%s", dinput8_dll, dinput8_imp);
+      MessageBox(NULL, err, "Error", MB_ICONERROR);
+      goto startup_dinput8_error;
+   }
+
+   hM_ddraw = LoadLibrary(ddraw_dll);
+
+   if (hM_ddraw == NULL)
+   {
+      char err[256];
+      wsprintf(err,"Failed to import %s",ddraw_dll);
+      MessageBox(NULL, err,"Error",MB_ICONERROR);
+      goto startup_dinput8_error;
+   }
+
+   pDirectDrawCreateEx = (lpDirectDrawCreateEx) GetProcAddress(hM_ddraw, ddraw_imp);
+
+   if (pDirectDrawCreateEx == NULL)
+   {
+      char err[256];
+      wsprintf(err,"Failed to import %s:%s", ddraw_dll, ddraw_imp);
+      MessageBox(NULL, err, "Error", MB_ICONERROR);
+      goto startup_ddraw_error;
+   }
+
+   hM_dsound = LoadLibrary(dsound_dll);
+
+   if (hM_dsound == NULL)
+   {
+      char err[256];
+      wsprintf(err,"Failed to import %s",dsound_dll);
+      MessageBox(NULL, err,"Error",MB_ICONERROR);
+      goto startup_ddraw_error;
+   }
+
+   pDirectSoundCreate8 = (lpDirectSoundCreate8) GetProcAddress(hM_dsound, dsound_imp);
+
+   if (pDirectSoundCreate8 == NULL)
+   {
+      char err[256];
+      wsprintf(err,"Failed to import %s:%s", dsound_dll, dsound_imp);
+      MessageBox(NULL, err, "Error", MB_ICONERROR);
+      FreeLibrary(hM_dsound);
+startup_ddraw_error:
+      FreeLibrary(hM_ddraw);
+startup_dinput8_error:
+      FreeLibrary(hM_dinput8);
+startup_error_exit:
+      exit(0);
+   }
 
    // Commandline: /ABCDE <nickname> <fname> <IP Addy>
    //   nickname = user nickname
