@@ -979,11 +979,6 @@ void UpdateVFrame(void)
 	const int SPCSize = 256;
 	int i;
 
-	/* rcg06172001 get menu animations running correctly... */
-	/*if (GUIOn2 == 1 && IsActivated == 0) SDL_WaitEvent(NULL);*/
-	if (GUIOn2 == 1 && IsActivated == 0)
-		SDL_Delay(100);  /* spare the CPU a little. */
-
 	CheckTimers();
 	Main_Proc();
 
