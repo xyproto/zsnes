@@ -1241,6 +1241,9 @@ void MovieSeekBehind()
   MessageOn = MsgCount;
 }
 
+extern bool SRAMState;
+bool PrevSRAMState;
+
 void Replay()
 {
   if (zmv_replay())
@@ -1267,6 +1270,7 @@ void Replay()
     
     zmv_replay_finished();
     MovieSub_Close();  
+    SRAMState = PrevSRAMState;
   }
 }
 
@@ -1289,7 +1293,12 @@ void MovieStop()
 {
   switch (MovieProcessing)
   {
-    case 1: zmv_replay_finished(); break;
+    case 1: 
+      zmv_replay_finished();
+      MovieSub_Close(); 
+      SRAMState = PrevSRAMState;
+      break;
+    
     case 2: 
       zmv_record_finish();
       if (!zmv_frames_recorded())
@@ -1316,6 +1325,9 @@ void MoviePlay()
 {
   unsigned char FileExt[4];
 
+  PrevSRAMState = SRAMState;
+  SRAMState = true;
+  
   if (!MovieProcessing)
   {
     GUIQuit = 2;
