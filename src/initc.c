@@ -362,6 +362,8 @@ void MirrorROM()
   {
     ROM[ROMSize++] = ROM[StartMirror++];
   }
+
+  NumofBanks = curromspace >> 15;
 }
 
 //File loading code
@@ -605,20 +607,38 @@ void SplitSupport()
       !ROM[Hi+21] && !ROM[Hi+22] && !ROM[Hi+23])
   {
     curromspace = 0;
+    if (maxromspace < 0x280000) { return; }
     memcpy(ROM+0x200000, ROM, 0x80000);  
     strcpy(ZOpenFileName, "SAMEGAME.ZIP");
     loadZipFile();
-    if (curromspace == 0x100200)
+    if ((curromspace & 0x7FFF) == 512)
     {
-      memmove(ROM, ROM+512, 0x100000);
+      memmove(ROM, ROM+512, 0x200000);
+      curromspace -= 512;
     }
-    else if (curromspace != 0x100000)
-    {
-      curromspace = 0;
-      return;
-    }
-    memcpy(ROM+0x100000, ROM, 0x100000);
+    if (!curromspace) { return; }
+    memcpy(ROM+0x100000, ROM, 0x100000); //Mirror 8 to 16
     curromspace = 0x280000;
+  }          
+
+  //SD Gundam G-Next add on  
+  if (ROM[Lo+26] == 0x33 && curromspace == 0x80000 &&
+      !ROM[Lo+21] && !ROM[Lo+22] && !ROM[Lo+23] && !strncmp(ROM+Lo, "GNEXT", 5))
+  {
+    curromspace = 0;
+    if (maxromspace < 0x480000) { return; }
+    memcpy(ROM+0x400000, ROM, 0x80000);  
+    strcpy(ZOpenFileName, "G-NEXT.ZIP");
+    loadZipFile();
+    if ((curromspace & 0x7FFF) == 512)
+    {
+      memmove(ROM, ROM+512, 0x400000);
+      curromspace -= 512;
+    }
+    if (!curromspace) { return; }
+    memcpy(ROM+0x180000, ROM+0x100000, 0x80000); //Mirror 12 to 16
+    memcpy(ROM+0x200000, ROM, 0x200000); //Mirror 16 to 32
+    curromspace = 0x480000;
   }          
 
 }

@@ -3410,67 +3410,6 @@ NEWSYM loadfileGUI
     cmp dword[curromspace],0
     je near .failed
 
-
-    mov eax,dword[curromspace]
-    mov dword[.curfileofs],eax
-
-    mov byte[lorommapmode2],0
-    mov esi,[romdata]
-    cmp dword[esi+207FC0h],'DERB'
-    jne .noderby96
-    cmp dword[esi+207FC4h],'Y ST'
-    jne .noderby96
-    cmp dword[esi+207FC8h],'ALLI'
-    jne .noderby96
-    cmp dword[esi+207FCDh],'N 96'
-    jne .noderby96
-    mov byte[lorommapmode2],1
-.noderby96
-    cmp dword[esi+7FC0h],'SOUN'
-    jne .nosoundnovel
-    cmp dword[esi+7FC4h],'D NO'
-    jne .nosoundnovel
-    cmp dword[esi+7FC8h],'VEL-'
-    jne .nosoundnovel
-    cmp dword[esi+7FCDh],'COOL'
-    jne .nosoundnovel
-    mov byte[lorommapmode2],1
-.nosoundnovel
-
-    jmp .skipall
-    ; scan for branches
-    mov esi,06A5h
-    add esi,[romdata]
-    mov ecx,80h
-.loopcheck
-    cmp byte[esi],48h
-    je .yes
-    cmp byte[esi],8Bh
-    je .yes
-    cmp byte[esi],0Bh
-    je .yes
-    cmp byte[esi],4Bh
-    je .yes
-    cmp byte[esi],08h
-    je .yes
-    cmp byte[esi],0DAh
-    je .yes
-    cmp byte[esi],5Ah
-    je .yes
-    jmp .no
-.yes
-    pushad
-    mov al,byte[esi]
-    mov al,80h
-    sub al,cl
-    call printhex8
-    popad
-.no
-    add esi,8000h
-    dec ecx
-    jnz .loopcheck
-.skipall
-
     call convertsram
     mov byte[SramExists],0
 
@@ -3499,14 +3438,12 @@ NEWSYM loadfileGUI
     call Output_Text
 .inguib
 
-    mov eax,[.curfileofs]
+    mov eax,dword[curromspace]
+    mov dword[.curfileofs],eax
     mov [NumofBytes],eax
     shr eax,15
     mov [NumofBanks],eax
 
-    mov eax,[.curfileofs]
-    shr eax,15
-    mov [NumofBanks],eax
     cmp byte[.fail],0
     je .notfailed
     mov byte[yesoutofmemory],1
@@ -4417,9 +4354,6 @@ NEWSYM SetupROM
     ret
 
 NEWSYM CheckROMType
-    call SetAddressingModes
-    call GenerateBank0Table
-
     pushad
     call BankCheck
     popad    
@@ -4427,6 +4361,67 @@ NEWSYM CheckROMType
     pushad
     call MirrorROM
     popad    
+
+
+    mov byte[lorommapmode2],0
+    mov esi,[romdata]
+    cmp dword[esi+207FC0h],'DERB'
+    jne .noderby96
+    cmp dword[esi+207FC4h],'Y ST'
+    jne .noderby96
+    cmp dword[esi+207FC8h],'ALLI'
+    jne .noderby96
+    cmp dword[esi+207FCDh],'N 96'
+    jne .noderby96
+    mov byte[lorommapmode2],1
+.noderby96
+    cmp dword[esi+7FC0h],'SOUN'
+    jne .nosoundnovel
+    cmp dword[esi+7FC4h],'D NO'
+    jne .nosoundnovel
+    cmp dword[esi+7FC8h],'VEL-'
+    jne .nosoundnovel
+    cmp dword[esi+7FCDh],'COOL'
+    jne .nosoundnovel
+    mov byte[lorommapmode2],1
+.nosoundnovel
+
+    jmp .skipall
+    ; scan for branches
+    mov esi,06A5h
+    add esi,[romdata]
+    mov ecx,80h
+.loopcheck
+    cmp byte[esi],48h
+    je .yes
+    cmp byte[esi],8Bh
+    je .yes
+    cmp byte[esi],0Bh
+    je .yes
+    cmp byte[esi],4Bh
+    je .yes
+    cmp byte[esi],08h
+    je .yes
+    cmp byte[esi],0DAh
+    je .yes
+    cmp byte[esi],5Ah
+    je .yes
+    jmp .no
+.yes
+    pushad
+    mov al,byte[esi]
+    mov al,80h
+    sub al,cl
+    call printhex8
+    popad
+.no
+    add esi,8000h
+    dec ecx
+    jnz .loopcheck
+.skipall
+
+    call SetAddressingModes
+    call GenerateBank0Table
 
     ; Chip Detection
     mov byte[SFXEnable],0
