@@ -504,11 +504,15 @@ NEWSYM BackupSystemVars
     popad
     ret
 
-NEWSYM RestoreSystemVars
-    pushad
+NEWSYM InitRewindVars
     mov dword[RewindPos],0
     mov dword[RewindOldPos],0
     mov dword[RewindTimer],60*4
+    ret
+
+NEWSYM RestoreSystemVars
+    pushad
+    call InitRewindVars
     mov ebx,BackupArray
     BackupCVRMacB zsmesg,[PHnum2writecpureg]
     BackupCVRMac cycpbl,2
@@ -1070,6 +1074,11 @@ NEWSYM start65816
 ;    rep stosd
     cmp byte[romloadskip],1
     je near StartGUI
+
+    ; Initialize the rewind vars so that the rewind feature works
+    ; when ZSnes is launched with a commandline filename
+    call InitRewindVars
+
 NEWSYM continueprog
 
     ; clear keyboard presses
