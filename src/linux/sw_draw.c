@@ -160,7 +160,20 @@ void sw_drawwin()
 	NumBytesPerLine = pitch;
 	WinVidMemStart = (void*)SurfBufD;
 	if (hqFilter) {
-		hq2x_16b();
+		switch (hqFilter)
+		{
+		case 1:
+			hq2x_16b();
+			break;
+		case 2:
+			//hq3x_16b();
+			break;
+		case 3:
+			//hq4x_16b();
+			break;
+		default:
+			break;
+		}	
 	} else {
 		copy640x480x16bwin();
 	}
