@@ -459,7 +459,7 @@ DisplayGUILoad:
     GUIOuttextwin2 1,195,182,GUILoadTextE
     GUIOuttextwin2 1,195,192,GUILoadTextF
 
-    mov dword[cloadmaxlen],39
+    mov dword[cloadmaxlen],30
     cmp dword[GUIcurrentfilewin],0
     jne .nofiles
 ;    cmp byte[OSPort],2
@@ -493,7 +493,7 @@ DisplayGUILoad:
     GUIOuttextwin2 1,194,181,GUILoadTextE
     GUIOuttextwin2 1,194,191,GUILoadTextF
 
-    mov dword[cloadmaxlen],39
+    mov dword[cloadmaxlen],30
     cmp dword[GUIcurrentfilewin],0
     jne .nofilesb
 ;    cmp byte[OSPort],2
