@@ -1812,6 +1812,8 @@ NEWSYM domosaicng16b
     push ebx
     mov ebx,[mosclineval]
     mov cl,[mostranspval]
+    cmp byte[BGMA+ebx],7
+    je .main
     test byte[BGMS1+ebx*2],cl
     jz .nosubmain
     test byte[FillSubScr+ebx],1
