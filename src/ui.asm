@@ -141,20 +141,21 @@ NEWSYM vibradetect
 NEWSYM welcome
 
 
-%ifdef ZBETA
-                 db 'ZSNES v1.',ZVERSION,' beta (c)1997-2001, Compiled under NASM, GCC, and WDOSX',13,10
-                 db 'PRIVATE BETA VERSION!!!  PLEASE DO NOT DISTRIBUTE!!!  Thank you!',13,10
-                 db 'Private Beta is Registered to : ',USERNAMEN,13,10
-%else
+;%ifdef ZBETA
+;                 db 'ZSNES v1.',ZVERSION,' beta (c)1997-2001, Compiled under NASM, GCC, and WDOSX',13,10
+;                 db 'PRIVATE BETA VERSION!!!  PLEASE DO NOT DISTRIBUTE!!!  Thank you!',13,10
+;                 db 'Private Beta is Registered to : ',USERNAMEN,13,10
+;%else
 %ifdef __LINUX__
                  db 'ZSNES v1.',ZVERSION,' beta (c)1997-2001 ZSNES Team (zsKnight - _Demo_)',13,10
                  db 'Linux version, please report crashes to zsnes-devel@lists.sourceforge.net.',13,10
                  db 'Compiled under NASM, GCC',13,10,13,10
 %else
                  db 'ZSNES v1.',ZVERSION,' beta (c)1997-2001 ZSNES Team (zsKnight - _Demo_)',13,10
-                 db 'Compiled under NASM, GCC, and WDOSX',13,10,13,10
+                 ; ZSNES DOS doesn't use WDOSX anymore
+                 db 'Compiled under NASM, GCC',13,10,13,10
 %endif
-%endif
+;%endif
                  db '  Programmers     : zsKnight, _Demo_',13,10
                  db '  Assistant Coder : Pharos',13,10,13,10
                  db 'ZSNES comes with ABSOLUTELY NO WARRANTY. This is free software,',10,13
