@@ -5581,7 +5581,7 @@ SECTION .text
 
 %macro GUIOuttextwin2c 4        ; Boxed, green text
     mov byte[GUItextcolor],223
-    push ecx ;need to save register for when called by the following macro
+    push ecx                    ;Needed for the macro below
     GUIOuttextwin2 %1,%2,%3,%4
     pop ecx
     mov byte[GUItextcolor],221
@@ -5589,25 +5589,54 @@ SECTION .text
     je %%zero
     mov byte[GUItextcolor],222
 %%zero
-    GUIOuttextwin2 %1,%2-1,%3-1,%4
+    push esi
+    mov esi,%2
+    dec esi
+    GUIOuttextwin2 %1,esi,%3-1,%4
+    pop esi
 %endmacro
 
 %macro GUIOuttextwin2d 5        ; Boxed, green text, limited to 5th param
     push ecx
-    mov ecx,%4
+    mov ecx,%4                  ;Move pointer to text into ecx
 %%zero
-    cmp byte[ecx],0
+    cmp byte[ecx],0             ;Check for null in string 
     je %%one
-    inc ecx
+    inc ecx                 
     jmp %%zero
 %%one
-    sub ecx,%5
+    push eax
+    mov eax,ecx                 ;Move pointer to null into eax
+    sub ecx,%5                  ;Move ecx pointer back by length to display
     cmp ecx,%4
     jae %%two
-    mov ecx,%4
+    mov ecx,%4                  ;If pointer is before beginning, reset pointer to beginning
 %%two
+    sub eax,ecx                 ;Subtract new pointer from old null pointer which gives us length of chars
+    push eax
     GUIOuttextwin2c %1,%2,%3,ecx
+    pop eax
+    push ebx
     pop ecx
+    call BlinkCursorCheck
+    cmp ebx,%4
+    pop ebx
+    jne %%fixreg
+    cmp byte[GUIBlinkCursor],' '
+    je %%three
+    mov byte[GUIBlinkCursor],' '
+    jmp %%four
+%%three    
+    mov byte[GUIBlinkCursor],'_'
+%%four
+    imul eax,6
+    add eax,%2
+    push ecx
+    mov ecx,eax
+    GUIOuttextwin2c %1,ecx,%3,GUIBlinkCursor
+    pop ecx
+%%fixreg    
+    pop eax
 %endmacro
 
 %macro DrawSlideBar 10
@@ -6321,6 +6350,69 @@ GUIChipText3 db 'HARD',0
 
 SECTION .text
 
+BlinkCursorCheck:
+    cmp dword[GUIInputBox],0
+    jne .checkboxes
+    mov ebx,0
+    ret
+
+.checkboxes    
+    cmp dword[GUIInputBox],1
+    jne .notBox1
+    mov ebx,SRAMPath
+    ret
+.notBox1
+    cmp dword[GUIInputBox],2
+    jne .notBox2
+    mov ebx,SnapPath
+    ret
+.notBox2
+    cmp dword[GUIInputBox],3
+    jne .notBox3
+    mov ebx,SPCPath
+    ret
+.notBox3
+    cmp dword[GUIInputBox],4
+    jne .notBox4
+    mov ebx,BSXPath
+    ret
+.notBox4
+    cmp dword[GUIInputBox],5
+    jne .notBox5
+    mov ebx,SGPath
+    ret
+.notBox5
+    cmp dword[GUIInputBox],6
+    jne .notBox6
+    mov ebx,STPath
+    ret
+.notBox6
+    cmp dword[GUIInputBox],7
+    jne .notBox7
+    mov ebx,GNextPath
+    ret
+.notBox7
+    cmp dword[GUIInputBox],8
+    jne .notBox8
+    mov ebx,FEOEZPath
+    ret
+.notBox8
+    cmp dword[GUIInputBox],9
+    jne .notBox9
+    mov ebx,SJNSPath
+    ret
+.notBox9
+    cmp dword[GUIInputBox],10
+    jne .notBox10
+    mov ebx,MDHPath
+    ret
+.notBox10
+    cmp dword[GUIInputBox],11
+    jne .notBox11
+    mov ebx,SPL4Path
+.notBox11    
+    ret
+
 
 DisplayGUIPaths:
     GUIDrawWindowBox 19,GUIPathsDisp
@@ -6358,12 +6450,12 @@ DisplayGUIPaths:
     DrawGUIWinBox  19,74,14,232,26,177
     DrawGUIWinBox  19,74,34,232,46,177
     DrawGUIWinBox  19,74,54,232,66,177
-    DrawGUIWinBox  19,7,94,101,106,177
-    DrawGUIWinBox  19,7,119,101,131,177
+    DrawGUIWinBox  19,7,94,107,106,177
+    DrawGUIWinBox  19,7,119,107,131,177
     DrawGUIWinBox  19,134,94,236,106,177
     DrawGUIWinBox  19,134,119,236,131,177
-    DrawGUIWinBox  19,7,154,101,166,177
-    DrawGUIWinBox  19,7,179,101,191,177
+    DrawGUIWinBox  19,7,154,107,166,177
+    DrawGUIWinBox  19,7,179,107,191,177
     DrawGUIWinBox  19,134,154,236,166,177
     DrawGUIWinBox  19,134,179,236,191,177
 
@@ -6371,18 +6463,18 @@ DisplayGUIPaths:
     DrawGUIWinBox  19,75,15,231,25,167
     DrawGUIWinBox  19,75,35,231,45,167
     DrawGUIWinBox  19,75,55,231,65,167
-    DrawGUIWinBox  19,8,95,100,105,167
-    DrawGUIWinBox  19,8,120,100,130,167
+    DrawGUIWinBox  19,8,95,106,105,167
+    DrawGUIWinBox  19,8,120,106,130,167
     DrawGUIWinBox  19,135,95,235,105,167
     DrawGUIWinBox  19,135,120,235,130,167
-    DrawGUIWinBox  19,8,155,100,165,167
-    DrawGUIWinBox  19,8,180,100,190,167
+    DrawGUIWinBox  19,8,155,106,165,167
+    DrawGUIWinBox  19,8,180,106,190,167
     DrawGUIWinBox  19,135,155,235,165,167
     DrawGUIWinBox  19,135,180,235,190,167
 
-    GUIOuttextwin2d 19,77,19,SRAMPath,26
-    GUIOuttextwin2d 19,77,39,SnapPath,26
-    GUIOuttextwin2d 19,77,59,SPCPath,26
+    GUIOuttextwin2d 19,77,19,SRAMPath,25
+    GUIOuttextwin2d 19,77,39,SnapPath,25
+    GUIOuttextwin2d 19,77,59,SPCPath,25
     GUIOuttextwin2d 19,10,99,BSXPath,15
     GUIOuttextwin2d 19,10,124,SGPath,15
     GUIOuttextwin2d 19,137,99,STPath,15
@@ -6407,7 +6499,7 @@ GUIPathsTextA db 'FEOEZ:',0
 GUIPathsTextB db 'FEOEZ - SJNS:',0
 GUIPathsTextC db 'MDH:',0
 GUIPathsTextD db 'SPL4:',0
-
+NEWSYM GUIBlinkCursor, times 2 db 0
 
 
 ;General data
