@@ -3764,8 +3764,8 @@ DisplayNetOptns:
     mov dword[GUINetDisp],'INTE'
     mov dword[GUINetDisp+4],'RNET'
     mov byte[GUINetDisp+8],0
-    cmp byte[NetPlayNoMore],1
-    jne .notcpip
+;    cmp byte[NetPlayNoMore],1
+;    jne .notcpip
     mov dword[GUIwinsizex+8*4],201
     mov dword[GUIwinsizey+8*4],48
 .notcpip
@@ -3943,8 +3943,8 @@ DisplayNetOptnsTCPIP:
 .zero
     sub byte[GUItextcolor],15
 
-    cmp byte[NetPlayNoMore],1
-    jne near .tcpip
+;    cmp byte[NetPlayNoMore],1
+;    jne near .tcpip
     GUIOuttextwin2 8,6,16,GUINetTextr1
     GUIOuttextwin2 8,6,36,GUINetTextr2
     GUIOuttextwin2 8,6,46,GUINetTextr3
@@ -4541,9 +4541,12 @@ GUINetTextm2 db 0,0,0
 GUINetTextn2 db '_',0
 GUINetTexto2 db 'BACK BUFFER',0
 GUINetTextp2 db 'ALLOW UDP CONNECTION',0
-GUINetTextr1 db 'PLEASE RESTART ZSNESW',0
-GUINetTextr2 db 'BEFORE STARTING A NEW',0
-GUINetTextr3 db 'NETPLAY SESSION',0
+GUINetTextr1 db 'NETPLAY IS DISABLED IN',0
+GUINetTextr2 db 'WIP VERSIONS UNTIL',0
+GUINetTextr3 db 'FURTHER NOTICE',0
+;GUINetTextr1 db 'PLEASE RESTART ZSNESW',0
+;GUINetTextr2 db 'BEFORE STARTING A NEW',0
+;GUINetTextr3 db 'NETPLAY SESSION',0
 
 %ifdef __MSDOS__
 BaudVal  dd 9600,14400,19200,28800,38400,57600,115200
