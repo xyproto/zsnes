@@ -601,6 +601,14 @@ DWORD LockSurface(void)
 {
     // Lock SDL surface, return surface pitch
     if(SurfaceLocking) SDL_LockSurface(surface);
+#ifdef __OPENGL__
+    if (!UseOpenGL) {
+#endif
+      SurfBuf = surface->pixels;
+      SDL_Flip(surface);
+#ifdef __OPENGL__
+    }
+#endif
     return(surface->pitch);
 }
 
@@ -611,7 +619,6 @@ void UnlockSurface(void)
     if (!UseOpenGL) {
 #endif
       SDL_Flip(surface);
-      SurfBuf = surface->pixels;
 #ifdef __OPENGL__
     }
 #endif
@@ -1050,7 +1057,7 @@ void clearwin()
      SurfBufD=(DWORD) &glvidbuffer[0];
      SURFDW=(DWORD *) &glvidbuffer[0];
      vidbuff_w=256; vidbuff_h=224;
-     Temp1 = 512; // Temp1 = 2 * SurfaceX
+     Temp1 = (BitDepth/8*SurfaceX)	// Temp1 = 2 * SurfaceX
    }
 #endif
 
