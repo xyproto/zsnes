@@ -399,7 +399,6 @@ NEWSYM getcmdline
     jmp .next2
 .nomore
     mov [FilenameStart],esi
-%ifdef __LINUX__
     mov byte[esi],'z'
     mov byte[esi+1],'s'
     mov byte[esi+2],'n'
@@ -431,46 +430,12 @@ NEWSYM getcmdline
     mov byte[esi+6+512],'m'
     mov byte[esi+7+512],'b'
     mov byte[esI+8+512],0
-%else
-    mov byte[esi],'Z'
-    mov byte[esi+1],'S'
-    mov byte[esi+2],'N'
-    mov byte[esi+3],'E'
-    mov byte[esi+4],'S'
-    mov byte[esi+5],'.'
-    mov byte[esi+6],'C'
-    mov byte[esi+7],'F'
-    mov byte[esi+8],'G'
-    mov byte[esi+9],0
-    mov byte[esi+256],'Z'
-    mov byte[esi+1+256],'G'
-    mov byte[esi+2+256],'U'
-    mov byte[esi+3+256],'I'
-    mov byte[esi+4+256],'C'
-    mov byte[esi+5+256],'F'
-    mov byte[esi+6+256],'G'
-    mov byte[esi+7+256],'.'
-    mov byte[esi+8+256],'D'
-    mov byte[esi+9+256],'A'
-    mov byte[esi+10+256],'T'
-    mov byte[esi+11+256],0
-    mov byte[esi+512],'D'
-    mov byte[esi+1+512],'A'
-    mov byte[esi+2+512],'T'
-    mov byte[esi+3+512],'A'
-    mov byte[esi+4+512],'.'
-    mov byte[esi+5+512],'C'
-    mov byte[esi+6+512],'M'
-    mov byte[esi+7+512],'B'
-    mov byte[esI+8+512],0
-%endif
     ret
 .nfound
     mov edx,.stringnf
     call PrintStr
     mov esi,CMDLineStr
     mov [FilenameStart],esi
-%ifdef __LINUX__
     mov byte[esi],'z'
     mov byte[esi+1],'s'
     mov byte[esi+2],'n'
@@ -502,39 +467,6 @@ NEWSYM getcmdline
     mov byte[esi+6+512],'m'
     mov byte[esi+7+512],'b'
     mov byte[esI+8+512],0
-%else
-    mov byte[esi],'Z'
-    mov byte[esi+1],'S'
-    mov byte[esi+2],'N'
-    mov byte[esi+3],'E'
-    mov byte[esi+4],'S'
-    mov byte[esi+5],'.'
-    mov byte[esi+6],'C'
-    mov byte[esi+7],'F'
-    mov byte[esi+8],'G'
-    mov byte[esi+9],0
-    mov byte[esi+256],'Z'
-    mov byte[esi+1+256],'G'
-    mov byte[esi+2+256],'U'
-    mov byte[esi+3+256],'I'
-    mov byte[esi+4+256],'C'
-    mov byte[esi+5+256],'F'
-    mov byte[esi+6+256],'G'
-    mov byte[esi+7+256],'.'
-    mov byte[esi+8+256],'D'
-    mov byte[esi+9+256],'A'
-    mov byte[esi+10+256],'T'
-    mov byte[esi+11+256],0
-    mov byte[esi+512],'D'
-    mov byte[esi+1+512],'A'
-    mov byte[esi+2+512],'T'
-    mov byte[esi+3+512],'A'
-    mov byte[esi+4+512],'.'
-    mov byte[esi+5+512],'C'
-    mov byte[esi+6+512],'M'
-    mov byte[esi+7+512],'B'
-    mov byte[esI+8+512],0
-%endif
     ret
 
 SECTION .data
@@ -1231,7 +1163,6 @@ NEWSYM makeextension
     mov byte[fnames+ebx],'.'
     mov byte[fnamest+ebx],'.'
     inc ebx
-%ifdef __LINUX__
     mov byte[fnames+ebx],'s'
     mov byte[fnamest+ebx],'z'
     inc ebx
@@ -1241,17 +1172,6 @@ NEWSYM makeextension
     mov byte[fnames+ebx],'m'
     mov byte[fnamest+ebx],'t'
     mov dword[statefileloc],ebx
-%else
-    mov byte[fnames+ebx],'S'
-    mov byte[fnamest+ebx],'Z'
-    inc ebx
-    mov byte[fnames+ebx],'R'
-    mov byte[fnamest+ebx],'S'
-    inc ebx
-    mov byte[fnames+ebx],'M'
-    mov byte[fnamest+ebx],'T'
-    mov dword[statefileloc],ebx
-%endif
     inc ebx
     mov byte[fnames+ebx],0
     mov byte[fnamest+ebx],0
@@ -1321,11 +1241,7 @@ DetermineNewest:
     mov eax,[statefileloc]
     mov dword[newestfiledate],0
     mov byte[newestfileloc],0
-%ifdef __LINUX__
     determinenewhelp 0,'t'
-%else
-    determinenewhelp 0,'T'
-%endif
     determinenewhelp 1,'1'
     determinenewhelp 2,'2'
     determinenewhelp 3,'3'
@@ -1339,11 +1255,7 @@ DetermineNewest:
     add bl,'0'
     cmp bl,'0'
     jne .nott
-%ifdef __LINUX__
     mov bl,'t'
-%else
-    mov bl,'T'
-%endif
 .nott
     mov [fnamest+eax],bl
     ret

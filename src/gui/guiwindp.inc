@@ -970,7 +970,7 @@ DisplayGUIChoseSave:
     mov ebx,[statefileloc]
     mov al,byte[fnamest+ebx]
     mov [GUIChoseSaveText2],al
-    GUIDisplayButtonHole 2,10,28,byte[GUIChoseSaveText2],'T'
+    GUIDisplayButtonHole 2,10,28,byte[GUIChoseSaveText2],'t'
     GUIDisplayButtonHole 2,30,28,byte[GUIChoseSaveText2],'1'
     GUIDisplayButtonHole 2,50,28,byte[GUIChoseSaveText2],'2'
     GUIDisplayButtonHole 2,70,28,byte[GUIChoseSaveText2],'3'
@@ -5297,11 +5297,7 @@ DisplayGUIMovies:
     GUIOuttextwin2 15,70,57,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'9'
     GUIOuttextwin2 15,90,57,GUIChoseSaveText2
-%ifdef __LINUX__
     GUIDisplayButtonHole 15,60,25,byte[CMovieExt],'v'
-%else
-    GUIDisplayButtonHole 15,60,25,byte[CMovieExt],'V'
-%endif
     GUIDisplayButtonHole 15,80,25,byte[CMovieExt],'1'
     GUIDisplayButtonHole 15,100,25,byte[CMovieExt],'2'
     GUIDisplayButtonHole 15,120,25,byte[CMovieExt],'3'
@@ -5323,11 +5319,7 @@ GUIMovieText7 db 'OKAY TO OVERWRITE?',0
 GUIMovieText8 db 'YES',0
 GUIMovieText9 db 'NO',0
 GUIMovieTextA db 'STATUS :           ',0
-%ifdef __LINUX__
 CMovieExt db 'v'
-%else
-CMovieExt db 'V'
-%endif
 
 ; Key types: Up, Down, Left, Right, A, B, X, Y, L, R (Press/Relase/P+R)
 ; Frame delays: 1 frame, 2, 3, 4, 5, 1 sec., 2, 3 ,4 ,5

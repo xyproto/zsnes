@@ -3596,11 +3596,7 @@ NEWSYM PatchIPS
 .foundokay
     mov ebx,[eax]
     mov [Prevextn],ebx
-%ifdef __LINUX__
     mov dword[eax],'.ips'
-%else
-    mov dword[eax],'.IPS'
-%endif
     mov byte[eax+4],0
     push eax
 %ifdef __LINUX__
@@ -3749,11 +3745,7 @@ OpenCombFile:
     je .found2
     jmp .found
 .found2
-%ifdef __LINUX__
     mov dword[edx],'.cmb'
-%else
-    mov dword[edx],'.CMB'
-%endif
     push edx
     mov dword[NumComboLocl],0
     mov edx,fnames+1
@@ -3778,11 +3770,7 @@ OpenCombFile:
     call Close_File
 .failb
     pop edx
-%ifdef __LINUX__
     mov dword[edx],'.srm'
-%else
-    mov dword[edx],'.SRM'
-%endif
     ret
 
 NEWSYM SaveCombFile
@@ -3823,11 +3811,7 @@ NEWSYM SaveCombFile
     call Close_File
 .failb
     pop edx
-%ifdef __LINUX__
     mov dword[edx],'.srm'
-%else
-    mov dword[edx],'.SRM'
-%endif
 .notfound
     ret
 

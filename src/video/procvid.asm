@@ -1235,11 +1235,7 @@ DetermineNewest:
     mov dword[newestfiledate],0
     mov byte[newestfileloc],0
 
-%ifdef __LINUX__
     determinenewhelp 0,'t'
-%else
-    determinenewhelp 0,'T'
-%endif
     determinenewhelp 1,'1'
     determinenewhelp 2,'2'
     determinenewhelp 3,'3'
@@ -1629,11 +1625,7 @@ NEWSYM saveselect
     mov bl,byte[fnamest+eax]
     push ebx
     call DetermineNewest
-%ifdef __LINUX__
     drawfillboxhelp 0,'t'
-%else
-    drawfillboxhelp 0,'T'
-%endif
     drawfillboxhelp 1,'1'
     drawfillboxhelp 2,'2'
     drawfillboxhelp 3,'3'
@@ -1722,11 +1714,7 @@ NEWSYM saveselect
     mov bl,0
     mov ebx,[statefileloc]
     mov al,byte[fnamest+ebx]
-%ifdef __LINUX__
     cmp al,'t'
-%else
-    cmp al,'T'
-%endif
     jne .noT
     mov bl,0
     jmp .nexter
@@ -1784,11 +1772,7 @@ NEWSYM saveselect
     mov byte[pressed+28],2
     cmp bl,0
     jne .nozero
-%ifdef __LINUX__
     mov al,'t'
-%else
-    mov al,'T'
-%endif
     jmp .save
 .nozero
     add bl,48
@@ -1909,11 +1893,7 @@ NEWSYM saveselect
     mov bl,byte[fnamest+eax]
     push ebx
     call DetermineNewest
-%ifdef __LINUX__
     drawfillboxhelp16b 0,'t'
-%else
-    drawfillboxhelp16b 0,'T'
-%endif
     drawfillboxhelp16b 1,'1'
     drawfillboxhelp16b 2,'2'
     drawfillboxhelp16b 3,'3'
@@ -2003,11 +1983,7 @@ NEWSYM saveselect
     mov bl,0
     mov ebx,[statefileloc]
     mov al,byte[fnamest+ebx]
-%ifdef __LINUX__
     cmp al,'t'
-%else
-    cmp al,'T'
-%endif
     jne .noT16b
     mov bl,0
     jmp .nexter16b
@@ -2036,11 +2012,7 @@ NEWSYM saveselect
     push ecx
     cmp bl,0
     jne .nozero16b2
-%ifdef __LINUX__
     mov cl,'t'
-%else
-    mov cl,'T'
-%endif
     jmp .save16b2
 .nozero16b2
     mov cl,bl
@@ -2106,11 +2078,7 @@ NEWSYM saveselect
     mov byte[pressed+28],2
     cmp bl,0
     jne .nozero16b
-%ifdef __LINUX__
     mov al,'t'
-%else
-    mov al,'T'
-%endif
     jmp .save16b
 .nozero16b
     add bl,48

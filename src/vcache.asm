@@ -697,11 +697,7 @@ NEWSYM cachevideo
 .nodisplayfps
 
     ; do state selects
-%ifdef __LINUX__
     stateselcomp KeyStateSlc0,'0','t'
-%else
-    stateselcomp KeyStateSlc0,'0','T'
-%endif
     stateselcomp KeyStateSlc1,'1','1'
     stateselcomp KeyStateSlc2,'2','2'
     stateselcomp KeyStateSlc3,'3','3'
@@ -727,11 +723,7 @@ NEWSYM cachevideo
     mov byte[pressed+eax],2
     mov eax,[statefileloc]
     mov dh,[fnamest+eax]
-%ifdef __LINUX__
     cmp dh,'t'
-%else
-    cmp dh,'T'
-%endif
     je .secondstate
     cmp dh,'9'
     je .jumptofirststate
@@ -741,18 +733,10 @@ NEWSYM cachevideo
     mov dh,'1'
     jmp .donextstate
 .jumptofirststate
-%ifdef __LINUX__
     mov dh,'t'
-%else
-    mov dh,'T'
-%endif
 .donextstate
     mov byte[fnamest+eax],dh
-%ifdef __LINUX__
     cmp dh,'t'
-%else
-    cmp dh,'T'
-%endif
     je .firststatemsg
     mov byte[sselm+11],dh
     jmp .incstatemsg
@@ -771,31 +755,19 @@ NEWSYM cachevideo
     mov byte[pressed+eax],2
     mov eax,[statefileloc]
     mov dh,[fnamest+eax]
-%ifdef __LINUX__
     cmp dh,'t'
-%else
-    cmp dh,'T'
-%endif
     je .jumptolaststate
     dec dh
     cmp dh,'0'
     jne .doprevstate
 .firststate
-%ifdef __LINUX__
     mov dh,'t'
-%else
-    mov dh,'T'
-%endif
     jmp .doprevstate
 .jumptolaststate
     mov dh,'9'
 .doprevstate
     mov byte[fnamest+eax],dh
-%ifdef __LINUX__
     cmp dh,'t'
-%else
-    cmp dh,'T'
-%endif
     je .firststatemsg2
     mov byte[sselm+11],dh
     jmp .decstatemsg

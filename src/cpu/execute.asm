@@ -1521,11 +1521,7 @@ NEWSYM statesaver
     je .clearfirstinc
     mov eax,[statefileloc]
     mov dh,[fnamest+eax]
-%ifdef __LINUX__
     cmp dh,'t'
-%else
-    cmp dh,'T'
-%endif
     je .secondstate
     cmp dh,'9'
     je .jumptofirststate
@@ -1535,11 +1531,7 @@ NEWSYM statesaver
     mov dh,'1'
     jmp .donextstate
 .jumptofirststate
-%ifdef __LINUX__
     mov dh,'t'
-%else
-    mov dh,'T'
-%endif
 .donextstate
     mov byte[fnamest+eax],dh
     xor dh,dh
@@ -1661,11 +1653,8 @@ NEWSYM statesaver
     ; Get the state number
     mov ebx,[statefileloc]
     mov cl,[fnamest+ebx]
-    cmp cl,'T'
-    je  .stateiszero
     cmp cl,'t'
     jne .writewhichstate
-.stateiszero
     mov cl,'0'
 .writewhichstate
     mov [.savemsg+6],cl
@@ -1937,11 +1926,8 @@ NEWSYM loadstate
     ; Get the state number
     mov ebx,[statefileloc]
     mov cl,[fnamest+ebx]
-    cmp cl,'T'
-    je  .stateiszero
     cmp cl,'t'
     jne .writewhichstate
-.stateiszero
     mov cl,'0'
 .writewhichstate
     mov [.loadmsg+6],cl

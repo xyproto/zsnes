@@ -2210,14 +2210,14 @@ GUIStateSelKeys:
 %endif
     mov ebx,[statefileloc]
     mov cl,[fnamest+ebx]
-    cmp cl,'T'
+    cmp cl,'t'
     jne .no1st
     mov cl,'4'
     jmp .done
 .no1st
     cmp cl,'1'
     jne .no2nd
-    mov cl,'T'
+    mov cl,'t'
     jmp .done
 .no2nd
     cmp cl,'5'
@@ -2242,14 +2242,14 @@ GUIStateSelKeys:
 %endif
     mov ebx,[statefileloc]
     mov cl,[fnamest+ebx]
-    cmp cl,'T'
+    cmp cl,'t'
     jne .noT
     mov cl,'1'
     jmp .done
 .noT
     cmp cl,'4'
     jne .no4th
-    mov cl,'T'
+    mov cl,'t'
     jmp .done
 .no4th
     cmp cl,'9'
@@ -2279,14 +2279,14 @@ GUIStateSelKeys:
 .vert
     mov ebx,[statefileloc]
     mov cl,[fnamest+ebx]
-    cmp cl,'T'
+    cmp cl,'t'
     jne .noTv
     mov cl,'5'
     jmp .done
 .noTv
     cmp cl,'5'
     jne .no5v
-    mov cl,'T'
+    mov cl,'t'
     jmp .done
 .no5v
     cmp cl,'5'

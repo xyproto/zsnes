@@ -809,15 +809,9 @@ NEWSYM savespcdata
     cmp al,'.'
     jne .next
     ; Save stuff
-%ifdef __LINUX__
     mov byte[edi],'s'
     mov byte[edi+1],'p'
     mov byte[edi+2],'c'
-%else
-    mov byte[edi],'S'
-    mov byte[edi+1],'P'
-    mov byte[edi+2],'C'
-%endif
     mov byte[edi+3],0
     ; Find an unoccupied file
 .tryagainspc
@@ -826,11 +820,7 @@ NEWSYM savespcdata
     jc .nofileopen
     mov bx,ax
     call Close_File
-%ifdef __LINUX__
     cmp byte[edi+2],'c'
-%else
-    cmp byte[edi+2],'C'
-%endif
     jne .notc
     mov byte[edi+2],'1'
     jmp .tryagainspc
@@ -843,11 +833,7 @@ NEWSYM savespcdata
     mov al,[edi+1]
     cmp al,[edi+2]
     je .nofileopen
-%ifdef __LINUX__
     cmp byte[edi+1],'p'
-%else
-    cmp byte[edi+1],'P'
-%endif
     jne .notp
     mov byte[edi+1],'0'
 .notp
@@ -1114,15 +1100,9 @@ NEWSYM savepcx
 
     ; get unused filename
     mov byte[.filename+5],'.'
-%ifdef __LINUX__
     mov byte[.filename+6],'p'
     mov byte[.filename+7],'c'
     mov byte[.filename+8],'x'
-%else
-    mov byte[.filename+6],'P'
-    mov byte[.filename+7],'C'
-    mov byte[.filename+8],'X'
-%endif
     mov byte[.filename+9],0
     mov word[picnum],1
 .findagain
@@ -1168,15 +1148,9 @@ NEWSYM savepcx
     inc esi
 .finproc
     mov byte[esi],'.'
-%ifdef __LINUX__
     mov byte[esi+1],'p'
     mov byte[esi+2],'c'
     mov byte[esi+3],'x'
-%else
-    mov byte[esi+1],'P'
-    mov byte[esi+2],'C'
-    mov byte[esi+3],'X'
-%endif
     mov byte[esi+4],0
     jmp .findagain
 .nofile
@@ -1272,15 +1246,9 @@ NEWSYM savepcx
 
     ; get unused filename
     mov byte[.filename2+5],'.'
-%ifdef __LINUX__
     mov byte[.filename2+6],'b'
     mov byte[.filename2+7],'m'
     mov byte[.filename2+8],'p'
-%else
-    mov byte[.filename2+6],'B'
-    mov byte[.filename2+7],'M'
-    mov byte[.filename2+8],'P'
-%endif
     mov byte[.filename2+9],0
     mov word[picnum],1
 .findagain2
@@ -1326,15 +1294,9 @@ NEWSYM savepcx
     inc esi
 .finproc2
     mov byte[esi],'.'
-%ifdef __LINUX__
     mov byte[esi+1],'b'
     mov byte[esi+2],'m'
     mov byte[esi+3],'p'
-%else
-    mov byte[esi+1],'B'
-    mov byte[esi+2],'M'
-    mov byte[esi+3],'P'
-%endif
     mov byte[esi+4],0
     jmp .findagain2
 .nofile2
@@ -1403,17 +1365,9 @@ NEWSYM savepcx
     ret
 
 .pcxsaved db 'SNAPSHOT SAVED TO '
-%ifdef __LINUX__
 .filename db 'image.pcx',0,0,0,0
-%else
-.filename db 'IMAGE.PCX',0,0,0,0
-%endif
 .rawsaved db 'SNAPSHOT SAVED TO '
-%ifdef __LINUX__
 .filename2 db 'image.bmp',0,0,0,0
-%else
-.filename2 db 'IMAGE.BMP',0,0,0,0
-%endif
 .rowsleft db 0
 .curdptr dd 0
 
@@ -1441,15 +1395,9 @@ NEWSYM save16b2
 
     ; get unused filename
     mov byte[.filename2+5],'.'
-%ifdef __LINUX__
     mov byte[.filename2+6],'b'
     mov byte[.filename2+7],'m'
     mov byte[.filename2+8],'p'
-%else
-    mov byte[.filename2+6],'B'
-    mov byte[.filename2+7],'M'
-    mov byte[.filename2+8],'P'
-%endif
     mov byte[.filename2+9],0
     mov word[picnum],1
 .findagain2
@@ -1495,15 +1443,9 @@ NEWSYM save16b2
     inc esi
 .finproc2
     mov byte[esi],'.'
-%ifdef __LINUX__
     mov byte[esi+1],'b'
     mov byte[esi+2],'m'
     mov byte[esi+3],'p'
-%else
-    mov byte[esi+1],'B'
-    mov byte[esi+2],'M'
-    mov byte[esi+3],'P'
-%endif
     mov byte[esi+4],0
     jmp .findagain2
 .nofile2
@@ -1570,11 +1512,7 @@ NEWSYM save16b2
     ret
 
 .rawsaved db 'SNAPSHOT SAVED TO '
-%ifdef __LINUX__
 .filename2 db 'image.bmp',0,0,0,0
-%else
-.filename2 db 'IMAGE.BMP',0,0,0,0
-%endif
 .rowsleft dd 0
 .curdptr dd 0
 

@@ -3028,11 +3028,7 @@ MoviePlay:
     mov ebx,[statefileloc]
     mov eax,[fnamest+ebx-3]
     push eax
-%ifdef __LINUX__
     mov dword[fnamest+ebx-3],'.zmv'
-%else
-    mov dword[fnamest+ebx-3],'.ZMV'
-%endif
     mov al,[CMovieExt]
     mov byte[fnamest+ebx],al
     call ChangetoSRAMdir
@@ -3572,11 +3568,7 @@ SaveSecondState:
     call ChangetoSRAMdir
     mov ebx,[statefileloc]
     mov al,[fnamest+ebx]
-%ifdef __LINUX__
     mov byte[fnamest+ebx],'s'
-%else
-    mov byte[fnamest+ebx],'S'
-%endif
     push eax
     call statesaver
     pop eax
@@ -3589,11 +3581,7 @@ LoadSecondState:
     call ChangetoSRAMdir
     mov ebx,[statefileloc]
     mov al,[fnamest+ebx]
-%ifdef __LINUX__
     mov byte[fnamest+ebx],'s'
-%else
-    mov byte[fnamest+ebx],'S'
-%endif
     push eax
     call loadstate2
     pop eax

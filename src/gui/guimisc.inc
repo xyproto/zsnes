@@ -28,11 +28,7 @@ MovieRecord:
     mov ebx,[statefileloc]
     mov eax,[fnamest+ebx-3]
     push eax
-%ifdef __LINUX__
     mov dword[fnamest+ebx-3],'.zmv'
-%else
-    mov dword[fnamest+ebx-3],'.ZMV'
-%endif
     mov al,[CMovieExt]
     mov byte[fnamest+ebx],al
 

@@ -291,7 +291,7 @@ CheatCodeSave:
     mov ebx,[statefileloc]
     sub ebx,2
     mov eax,[fnamest+ebx]
-    mov dword[fnamest+ebx],'CHT'
+    mov dword[fnamest+ebx],'cht'
     push eax
     push ebx
     mov edx,fnamest+1
@@ -321,7 +321,7 @@ CheatCodeLoad:
     mov ebx,[statefileloc]
     sub ebx,2
     mov eax,[fnamest+ebx]
-    mov dword[fnamest+ebx],'CHT'
+    mov dword[fnamest+ebx],'cht'
     push eax
     push ebx
     mov edx,fnamest+1
