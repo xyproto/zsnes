@@ -1565,13 +1565,6 @@ NEWSYM headerhack
     mov byte[hirqmode2],1
 .notffmq
 
-;    mov byte[cycpb268],145
-;    mov byte[cycpb358],147
-;    mov byte[cycpbl2],145
-;    mov byte[cycpblt2],145
-;    mov byte[cycpbl],145
-;    mov byte[cycpblt],145
-
     mov esi,[romdata]
     add esi,0FFC0h
     cmp dword[esi],'BUBS'
@@ -1674,6 +1667,20 @@ NEWSYM headerhack
     mov byte[opexec268cph],58
     mov byte[opexec358cph],58
 .notequinox
+
+    mov esi,[romdata]
+    add esi,07FC0h
+    cmp dword[esi],'DRAG'
+    jne .notdq5
+    cmp dword[esi+4],'ONQU'
+    jne .notdq5
+    cmp dword[esi+8],'EST5'
+    jne .notdq5
+    mov byte[opexec268],220
+    mov byte[opexec358],220
+    mov byte[opexec268cph],64
+    mov byte[opexec358cph],64
+.notdq5
 
     ; Lamborgini Challenge - -p 110
     mov esi,[romdata]
