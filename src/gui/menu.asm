@@ -347,7 +347,7 @@ NEWSYM showmenu
 ;    call breakatsignc
 ;    cmp byte[prbreak],1
 ;    je .yesesc
-    call breakatsignb
+;    call breakatsignb
 ;    cmp byte[prbreak],1
 ;    je .yesesc
     call savespcdata
