@@ -2991,6 +2991,7 @@ SECTION .text
     stosb
     mov ax,[esi+1]
     add ax,[xpc]
+    add ax,3
     call .printhex16
     mov al,32
     mov ecx,5
