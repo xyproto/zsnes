@@ -2129,7 +2129,9 @@ NEWSYM WDSPReg4C       ; Key On
       and bl,al
 
       xor byte [DSPMem+05Ch],0FFh
+      jnz .notzero
       and bl,[DSPMem+05Ch]
+.notzero
       xor byte [DSPMem+05Ch],0FFh
 
       or byte[KeyOnStA],bl
