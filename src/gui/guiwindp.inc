@@ -2199,7 +2199,7 @@ GUISoundTextD db '---%',0
 GUISoundTextH db 'REVERSE STEREO',0
 GUISoundTextI db 'SURROUND SOUND',0
 %ifndef __LINUX__
-GUISoundTextIb db 'EAX SUPPORT',0
+GUISoundTextIb db 'BASS ENHANCEMENT',0
 %endif
 GUISoundTextJ db 'SOUND INTERPOLATION',0
 GUISoundTextK db 'LOW PASS FILTER',0
