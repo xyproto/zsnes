@@ -35,7 +35,23 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "gblvars.h"
 #include "asm_call.h"
 
-#define bool unsigned char
+
+/*
+Nach's insane subtitle library for movies files :)
+
+The filename would be gamename.sub in the same directory the ZMV would be in.
+If you're playing gamename.zm1, then the sub file will be gamename.su1 etc...
+
+Format of the sub file:
+Start Frame:Frame Duration:Message
+
+Example:
+1:180:Hi how are you?
+300:180:Isn't this cool?
+700:180:This is great :)
+2500:375:Kill 'em!
+3500:20:Did you see this?
+*/
 
 struct
 {
@@ -102,6 +118,12 @@ size_t MovieSub_GetDuration()
 {
   return(MovieSub.message_duration);
 }
+
+
+
+/////////////////////////////////////////////////////////
+
+
 
 
 extern unsigned int PJoyAOrig, PJoyBOrig, PJoyCOrig, PJoyDOrig, PJoyEOrig;
