@@ -5241,10 +5241,10 @@ GUIGUIAboutText3 db '    ZSKNIGHT',0
 GUIGUIAboutText4 db '    _DEMO_',0
 GUIGUIAboutText6c db '    PAGEFAULT',0
 GUIGUIAboutText5 db 'ASSISTANT CODERS :  ',0
-GUIGUIAboutText6 db '    PHAROS',0
-GUIGUIAboutText6b db '    TEUF',0
-GUIGUIAboutText6d db '    THEODDONE33',0
-GUIGUIAboutText6e db '    STAINLESS',0
+GUIGUIAboutText6  db '    PHAROS        NACH',0
+GUIGUIAboutText6b db '    TEUF          HPSOLO',0
+GUIGUIAboutText6d db '    THEODDONE33   STAINLESS',0
+GUIGUIAboutText6e db '    ',0
 
 %ifdef __MSDOS__
 GUIGUIAboutText7 db 'DOS VERSION',0
