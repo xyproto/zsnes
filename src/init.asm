@@ -5320,7 +5320,7 @@ NEWSYM showinfogui
 .nosdd1
     cmp byte[OBCEnable],0
     je .noobc
-    mov dword[CSStatus+25],'OBC1'
+    mov dword[CSStatus+25],'OBC '
 .noobc
     cmp byte[SETAEnable],0
     je .noseta
@@ -6159,10 +6159,8 @@ NEWSYM CheckROMType
     mov esi,[romdata]
     cmp byte[NumofBanks],128
     jbe .notEHi
-    mov ah,[esi + 040FFDFh]    
-    mov al,[esi + 040FFDEh]
-    xor ah,[esi + 040FFDDh]    
-    xor al,[esi + 040FFDCh]
+    mov ax,word[esi + 040FFDEh]
+    xor ax,word[esi + 040FFDCh]
     cmp ax,0FFFFh
     jne  .notEHi
     add esi,040FFD5h
