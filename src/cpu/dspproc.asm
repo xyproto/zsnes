@@ -1744,6 +1744,7 @@ section .text
     mov ebx,[filter0]
     imul eax,ebx
     sar eax,8
+    and eax,0fffffffeh
     add edx,eax
 
     cmp dword [filter0],488
@@ -1753,26 +1754,16 @@ section .text
     movsx eax,ax
     mov [prev1],eax
     mov eax,edx
-    and eax,0fffffffch
+    and eax,0fffffffeh
     mov [prev0],eax
+    jmp %%skipext
 
-    jmp %%skipclamp
 %%notfilter2
     mov eax,[prev0]
     mov [prev1],eax
-    cmp edx,-32768
-    jnl %%notless
-    mov edx,-32768
-    mov byte[filteron],1
-%%notless
-    cmp edx,32767
-    jng %%notgreater
-    mov edx,32767
-    mov byte[filteron],1
-%%notgreater
     movsx edx,dx
     mov [prev0],edx
-%%skipclamp
+%%skipext
 %endmacro
 
 %macro ProcessDynamicLowPass 0
