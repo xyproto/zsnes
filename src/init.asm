@@ -3775,8 +3775,10 @@ ZipDeleteRecurse:
 
     cmp byte[tempzip],3
     jne .notone
+%ifndef __LINUX__ 
     mov ax,03h
     int 10h
+%endif
     jmp DosExit
 .notone
 
