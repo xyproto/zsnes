@@ -2026,20 +2026,6 @@ NEWSYM headerhack
     mov byte[cycpl],al
 .noromhead6
 
-    ; Lufia 2 - 182/177/44/44
-    mov esi,[romdata]
-    add esi,07FC0h
-    mov edi,.luf2head
-    call Checkheadersame
-    cmp al,0
-    jne .noromhead5
-;    mov byte[opexec268],182
-;    mov byte[opexec358],177
-;    mov byte[opexec268cph],44
-;    mov byte[opexec358cph],44
-;int 3h
-.noromhead5
-
     ; PunchOut - Disable HDMA start in middle of screen
     mov esi,[romdata]
     add esi,07FC0h
