@@ -739,7 +739,13 @@ ReInitSound()
 {
    WAVEFORMATEX wfx;
 
-   if (!SoundEnabled) return FALSE;
+   if (SoundEnabled == 0)
+   {
+      lpSoundBuffer->Stop();
+      lpSoundBuffer->Release();
+      ReleaseDirectSound();
+      return FALSE;
+   }
 
    lpSoundBuffer->Stop();
    lpSoundBuffer->Release();
