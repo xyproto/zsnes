@@ -7,17 +7,23 @@ _Demo_ <z_demo_z@users.sourceforge.net>
 pagefault
 
 ------------------
+Assistant Coders
+------------------
+pharos
+stainless
+Nach
+
+------------------
 Additional Authors
 ------------------
 
-stainless
 pharos
 teuf
-Nach
 relnev
 prometheus
 theoddone33
 EvilTypeGuy
+MKendora
 hpsolo
 aaronl
 Diablo-D3
