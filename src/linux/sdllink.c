@@ -653,58 +653,54 @@ void initwinvideo(void)
       case 6:
          WindowWidth=640;
          WindowHeight=480;
+         SurfaceX=640;
+         SurfaceY=480;
          break;
       case 7:
          WindowWidth=640;
          WindowHeight=480;
-         SurfaceX=640;
-         SurfaceY=480;
+         SurfaceX=512;
+         SurfaceY=448;
          break;
       case 8:
          WindowWidth=640;
          WindowHeight=480;
-         SurfaceX=512;
-         SurfaceY=448;
          break;
       case 9:
-         WindowWidth=640;
-         WindowHeight=480;
+         WindowWidth=800;
+         WindowHeight=600;
          break;
       case 10:
          WindowWidth=800;
          WindowHeight=600;
+         SurfaceX=512;
+         SurfaceY=448;
          break;
       case 11:
          WindowWidth=800;
          WindowHeight=600;
-         SurfaceX=512;
-         SurfaceY=448;
          break;
       case 12:
          WindowWidth=800;
          WindowHeight=600;
-         break;
-      case 13:
-         WindowWidth=800;
-         WindowHeight=600;
          SurfaceX=512;
          SurfaceY=448;
+         break;
+      case 13:
+         WindowWidth=1024;
+         WindowHeight=768;
          break;
       case 14:
          WindowWidth=1024;
          WindowHeight=768;
+         SurfaceX=512;
+         SurfaceY=448;
          break;
       case 15:
          WindowWidth=1024;
          WindowHeight=768;
-         SurfaceX=512;
-         SurfaceY=448;
          break;
       case 16:
-         WindowWidth=1024;
-         WindowHeight=768;
-         break;
-      case 17:
          WindowWidth=1024;
          WindowHeight=768;
          SurfaceX=512;
@@ -1770,3 +1766,4 @@ void GetLocalTime(void *pointer)
 	STUB_FUNCTION;
 }
 #endif
+

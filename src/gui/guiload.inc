@@ -568,9 +568,7 @@ GetNormalEntries2:
     GUIGetEntry2 GUIsfcfind
     GUIGetEntry2 GUIswcfind
     GUIGetEntry2 GUIfigfind
-%ifdef __GZIP__
     GUIGetEntry2 GUIfindGZIP
-%endif
     GUIGetEntry2 GUIfind058
     GUIGetEntry2 GUIfind078
     GUIGetEntry2 GUIfindUSA
@@ -594,9 +592,7 @@ GetNormalEntries:
     GUIGetEntry GUIsfcfind
     GUIGetEntry GUIswcfind
     GUIGetEntry GUIfigfind
-%ifdef __GZIP__
     GUIGetEntry GUIfindGZIP
-%endif
     GUIGetEntry GUIfind058
     GUIGetEntry GUIfind078
     GUIGetEntry GUIfindUSA
@@ -758,9 +754,7 @@ GetLoadLfn:
     GUIGetEntryLFN GUIsfcfind
     GUIGetEntryLFN GUIswcfind
     GUIGetEntryLFN GUIfigfind
-%ifdef __GZIP__
     GUIGetEntryLFN GUIfindGZIP
-%endif
     GUIGetEntryLFN GUIfind058
     GUIGetEntryLFN GUIfind078
     GUIGetEntryLFN GUIfindUSA

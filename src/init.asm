@@ -31,6 +31,7 @@ EXTSYM SnowData,SnowVelDist
 EXTSYM cvidmode, newengen, cfgnewgfx, GUI16VID
 EXTSYM NewEngEnForce
 EXTSYM PrintChar
+EXTSYM TextFile
 EXTSYM mode7tab
 EXTSYM per2exec
 EXTSYM MovieCounter
@@ -3356,6 +3357,7 @@ NEWSYM SaveCombFile
     ret
 
 NEWSYM loadfile
+    mov byte[TextFile], 0
     call GetCurDir
     mov byte[InGUI],0
     jmp loadfileGUI.nogui
@@ -3547,6 +3549,7 @@ NEWSYM loadfile
     je .notfailed
     mov byte[yesoutofmemory],1
 .notfailed
+    mov byte[TextFile], 1
     call PatchIPS
     ret
 
@@ -3997,19 +4000,19 @@ NEWSYM loadfileGUI
     cmp byte[eax],0
     jne .ziploop
     sub eax,4
-    cmp byte[eax+1],'.'
-    jne .finishzipd2
-    cmp byte[eax+2],'g'
-    je .zokay4
-    cmp byte[eax+2],'G'
-    jne .finishzipd2
-.zokay4
-    cmp byte[eax+3],'z'
-    je .zokay5
-    cmp byte[eax+3],'Z'
-    jne .finishzipd2
-.zokay5
-    jmp .zokay3
+;    cmp byte[eax+1],'.'
+;    jne .finishzipd2
+;    cmp byte[eax+2],'g'
+;    je .zokay4
+;    cmp byte[eax+2],'G'
+;    jne .finishzipd2
+;.zokay4
+;    cmp byte[eax+3],'z'
+;    je .zokay5
+;    cmp byte[eax+3],'Z'
+;    jne .finishzipd2
+;.zokay5
+;    jmp .zokay3
 .finishzipd2
     cmp byte[eax],'.'
     jne near .finishzipd
@@ -4040,6 +4043,7 @@ NEWSYM loadfileGUI
 .zipfail
     ret
 .finishzipd
+    mov byte[TextFile], 0
     mov dword[MessageOn],0
     mov byte[loadedfromgui],1
     mov byte[Header512],0
@@ -4314,6 +4318,7 @@ NEWSYM loadfileGUI
 .nosramtof
     cmp byte[IPSPatched],0
     jne .patched
+    mov byte[TextFile], 1
     call PatchIPS
 .patched
     ret

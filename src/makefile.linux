@@ -43,7 +43,7 @@ VIDEOBJ=${VIDEODIR}/makev16b.o ${VIDEODIR}/makev16t.o ${VIDEODIR}/makevid.o\
 	${VIDEODIR}/m716text.o ${VIDEODIR}/2xsaiw.o\
 	${VIDEODIR}/procvid.o
 
-WINOBJ=${WINDIR}/copyvwin.o ${WINDIR}/winintrf.o ${WINDIR}/sdllink.o\
+WINOBJ=${WINDIR}/copyvwin.o ${WINDIR}/sdlintrf.o ${WINDIR}/sdllink.o\
 	${WINDIR}/zloaderw.o ${WINDIR}/ztcp.o ${WINDIR}/zipxw.o\
 	${WINDIR}/zfilew.o ${WINDIR}/protect.o
 

@@ -18,9 +18,7 @@
 
 #include <stdio.h>
 
-#ifdef __GZIP__
 #include <zlib.h>
-#endif
 
 #ifdef __LINUX__
 #include <sys/types.h>
@@ -43,11 +41,7 @@
 #endif
 #include <errno.h>
 
-#ifdef __GZIP__
-gzFile *FILEHANDLE[16];
-#else
 FILE *FILEHANDLE[16];
-#endif
 
 DWORD CurrentHandle=0;
 
@@ -97,7 +91,11 @@ DWORD ZFTime;
 BYTE * MKPath;
 BYTE * CHPath;
 BYTE * RMPath;
+
+//Indicate whether the file must be opened using
+//zlib or not (used for gzip support)
 BYTE TextFile;
+
 // GetDir
 BYTE * DirName;
 DWORD DriveNumber;
@@ -124,7 +122,7 @@ DWORD ZOpenFile()
 		if (TextFile) 
 			FILEHANDLE[CurrentHandle]=fopen(ZOpenFileName,"rb");
 		else
-			FILEHANDLE[CurrentHandle]=gzopen(ZOpenFileName,"rb");
+			FILEHANDLE[CurrentHandle]=(FILE *)gzopen(ZOpenFileName,"rb");
 		if(FILEHANDLE[CurrentHandle]!=NULL)
 		{
 			CurrentHandle+=1;
@@ -137,7 +135,7 @@ DWORD ZOpenFile()
 		if (TextFile) 
 			FILEHANDLE[CurrentHandle]=fopen(ZOpenFileName,"wb");
 		else
-			FILEHANDLE[CurrentHandle]=gzopen(ZOpenFileName,"wb");
+			FILEHANDLE[CurrentHandle]=(FILE *)gzopen(ZOpenFileName,"wb");
 		if(FILEHANDLE[CurrentHandle]!=NULL)	       
 		{
 			CurrentHandle+=1;
