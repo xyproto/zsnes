@@ -848,7 +848,7 @@ GUIOptionKeys:
     jne .nohighpriority
     xor byte[HighPriority],1
 .nohighpriority
-    cmp dh,'P'
+    cmp dh,'F'
     jne .nofpsatstart
     xor byte[FPSAtStart],1
 .nofpsatstart
@@ -856,6 +856,42 @@ GUIOptionKeys:
     jne .nouse30hz
     xor byte[Turbo30hz],1
 .nouse30hz
+    cmp dh,'C'
+    jne .nogameclock
+    xor byte[TimerEnable],1
+.nogameclock
+    cmp dh,'T'
+    jne .nofastforward
+    xor byte[FastFwdToggle],1
+.nofastforward
+    cmp dh,'R'
+    jne .nosramcheck
+    xor byte[SRAMSave5Sec],1
+.nosramcheck
+    cmp dh,'O'
+    jne .nooldgfx
+    xor byte[OldGfxMode2],1
+.nooldgfx
+    cmp dh,'L'
+    jne .nostartsave
+    xor byte[LatestSave],1
+.nostartsave
+    cmp dh,'/'
+    jne .noautostate
+    xor byte[AutoState],1
+.noautostate
+    cmp dh,'D'
+    jne .nosavepath
+    xor byte[DontSavePath],1
+.nosavepath
+    cmp dh,'I'
+    jne .nospcdisable
+    xor byte[SPCDisable],1
+.nospcdisable
+    cmp dh,'P'
+    jne .notransmsg
+    xor byte[GUIEnableTransp],1
+.notransmsg
     ret
 
 GUIGUIOptnsKeys:

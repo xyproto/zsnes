@@ -1367,17 +1367,17 @@ DisplayGUIOption:
 %ifdef __WIN32__
     GUIOuttextwin2u 4,26,81,GUIOptionTextAb,0
 %endif
-    GUIOuttextwin2u 4,26,91,GUIOptionTextB,1
+    GUIOuttextwin2u 4,26,91,GUIOptionTextB,0
     GUIOuttextwin2u 4,26,101,GUIOptionTextC,2
-    GUIOuttextwin2 4,26,111,GUIOptionTextD
-    GUIOuttextwin2 4,26,121,GUIOptionTextE
-    GUIOuttextwin2 4,26,131,GUIOptionTextF
-    GUIOuttextwin2 4,26,141,GUIOptionTextG
-    GUIOuttextwin2 4,26,151,GUIOptionTextH
-    GUIOuttextwin2 4,26,161,GUIOptionTextI
-    GUIOuttextwin2 4,26,171,GUIOptionTextJ
-    GUIOuttextwin2 4,26,181,GUIOptionTextK
-    GUIOuttextwin2 4,26,191,GUIOptionTextL
+    GUIOuttextwin2u 4,26,111,GUIOptionTextD,12
+    GUIOuttextwin2u 4,26,121,GUIOptionTextE,0
+    GUIOuttextwin2u 4,26,131,GUIOptionTextF,1
+    GUIOuttextwin2u 4,26,141,GUIOptionTextG,0
+    GUIOuttextwin2u 4,26,151,GUIOptionTextH,9
+    GUIOuttextwin2u 4,26,161,GUIOptionTextI,15
+    GUIOuttextwin2u 4,26,171,GUIOptionTextJ,0
+    GUIOuttextwin2u 4,26,181,GUIOptionTextK,1
+    GUIOuttextwin2u 4,26,191,GUIOptionTextL,5
     add byte[GUItextcolor],15
     GUIOuttextwin2 4,5,15,[GUITemp]
     GUIOuttextwin2 4,25,30,GUIOptionText2
