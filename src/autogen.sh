@@ -1,7 +1,6 @@
 #!/bin/sh
 
-echo "Generating build information using aclocal, automake and autoconf"
-echo "This may take a while ..."
+echo "Generating build information using aclocal and autoconf..."
 
 # Touch the timestamps on all the files since CVS messes them up
 directory=`dirname $0`
