@@ -546,9 +546,9 @@ NEWSYM UseCubicSpline, db 1
 NEWSYM LargeSoundBuf, db 0
 NEWSYM HighPriority, db 0
 NEWSYM AlwaysOnTop, db 0
-NEWSYM SaveMainWindowPos, db 1
-NEWSYM MainWindowX, dw -1
-NEWSYM MainWindowY, dw -1
+NEWSYM SaveMainWindowPos, db 2
+NEWSYM MainWindowX, dw 0
+NEWSYM MainWindowY, dw 0
 
 GUIsave equ $-GUIRAdd
 

@@ -1412,7 +1412,9 @@ void initwinvideo(void)
       if(FullScreen==1) {X=0; Y=0;}
       if(hMainWindow) CloseWindow(hMainWindow);
 
-      if (SaveMainWindowPos == 1 && MainWindowX != -1) { X = MainWindowX; Y = MainWindowY; }
+      if (SaveMainWindowPos == 1) { X = MainWindowX; Y = MainWindowY; }
+
+      if (SaveMainWindowPos == 2) SaveMainWindowPos = 1;
 
       hMainWindow = CreateWindow( "ZSNESWIN", WinName, WS_VISIBLE|WS_POPUP,X,Y,  //WS_OVERLAPPED "ZSNESWIN"
                                  WindowWidth,WindowHeight,NULL,NULL,hInst,NULL);
