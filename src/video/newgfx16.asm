@@ -2566,9 +2566,11 @@ NEWSYM drawsprng16b
     jz .submain
     test byte[FillSubScr+ebx],2
     jnz .submain
+    mov edi,[CMainWinScr]
+    cmp byte[edi+ebx+4*256],0
+    je .submain
     cmp eax,0
     je .nosubmain
-    mov edi,[CMainWinScr]
 .submain
     test byte[FillSubScr+ebx],1
     jne near drawsprng16bt
