@@ -1610,6 +1610,9 @@ NEWSYM Check60hz
     ; Call the timer update function here
     ret
 
+NEWSYM UpdateSoundAgain
+    ret
+
 ; ****************************
 ; TCP/IP Stuff
 ; ****************************

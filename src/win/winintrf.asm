@@ -983,15 +983,18 @@ NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
     ret
 
 
+NEWSYM TempBlah, dd 0
 
 NEWSYM InitPreGame   ; Executes before starting/continuing a game
     mov byte[pressed+1],2
     pushad
     call Start60HZ
     popad
+    mov dword[TempBlah],1
     pushad
     call initwinvideo
     popad
+    mov dword[TempBlah],0
 
     mov byte[RaisePitch],1
     pushad
@@ -1584,6 +1587,9 @@ NEWSYM Check60hz
     pushad
     call CheckTimers
     popad
+    ret
+
+NEWSYM UpdateSoundAgain
     ret
 
 BitPosR db 11 

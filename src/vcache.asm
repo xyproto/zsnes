@@ -52,7 +52,7 @@ EXTSYM objadds1,objadds2,objmovs1,objmovs2,tltype4b,vidmemch4,vram
 EXTSYM bgptr,bgptrc,bgptrd,curtileptr,vcache2b
 EXTSYM vcache8b,vidmemch8
 EXTSYM offsetmshl
-EXTSYM tltype2b
+EXTSYM tltype2b,UpdateSoundAgain
 EXTSYM tltype8b,objwlrpos
 
 
@@ -403,6 +403,7 @@ NEWSYM cachevideo
     push esi
     push edi
     push edx
+    call UpdateSoundAgain
     inc byte[mousecheck]
     and byte[mousecheck],07h
     cmp byte[mousecheck],0
