@@ -1064,7 +1064,9 @@ NEWSYM GUII2VID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; Super 2xSAI En
 NEWSYM GUIM7VID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0     ; Hi-Resolution Mode 7
 NEWSYM GUIBIFIL, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; Bilinear Filtering
 NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0    ; Triple Buffering (Win)
+NEWSYM GUIHQ2X, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0      ; HQ2X Filter
 NEWSYM GUIHQ3X, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0      ; HQ3X Filter
+NEWSYM GUIHQ4X, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0      ; HQ4X Filter
 SECTION .text
 
 ; ****************************

@@ -51,7 +51,9 @@ VIDEOBJ=${VIDEODIR}/makev16b.obj ${VIDEODIR}/makev16t.obj ${VIDEODIR}/makevid.ob
 	${VIDEODIR}/newgfx16.obj ${VIDEODIR}/newgfx2.obj ${VIDEODIR}/newgfx.obj\
         ${VIDEODIR}/m716text.obj ${VIDEODIR}/2xsaiw.obj\
 	${VIDEODIR}/procvid.obj ${VIDEODIR}/sw_draw.obj\
-        ${VIDEODIR}/hq3x16.obj ${VIDEODIR}/hq3x32.obj
+        ${VIDEODIR}/hq2x16.obj ${VIDEODIR}/hq2x32.obj\
+        ${VIDEODIR}/hq3x16.obj ${VIDEODIR}/hq3x32.obj\
+        ${VIDEODIR}/hq4x16.obj ${VIDEODIR}/hq4x32.obj
 
 WINOBJ=${WINDIR}/copyvwin.obj \
 	${WINDIR}/winintrf.obj ${WINDIR}/winlink.obj ${WINDIR}/zloaderw.obj\
@@ -119,8 +121,12 @@ ${EFFECTSDIR}/burn.obj: ${EFFECTSDIR}/burn.c
 ${VIDEODIR}/2xsaiw.obj: ${VIDEODIR}/2xsaiw.asm macros.mac
 ${VIDEODIR}/procvid.obj: ${VIDEODIR}/procvid.asm macros.mac ${VIDEODIR}/copyvid.inc ${VIDEODIR}/2xSaImmx.inc
 ${VIDEODIR}/sw_draw.obj: ${VIDEODIR}/sw_draw.asm macros.mac
+${VIDEODIR}/hq2x16.obj: ${VIDEODIR}/hq2x16.asm macros.mac
+${VIDEODIR}/hq2x32.obj: ${VIDEODIR}/hq2x32.asm macros.mac
 ${VIDEODIR}/hq3x16.obj: ${VIDEODIR}/hq3x16.asm macros.mac
 ${VIDEODIR}/hq3x32.obj: ${VIDEODIR}/hq3x32.asm macros.mac
+${VIDEODIR}/hq4x16.obj: ${VIDEODIR}/hq4x16.asm macros.mac
+${VIDEODIR}/hq4x32.obj: ${VIDEODIR}/hq4x32.asm macros.mac
 ${CHIPDIR}/sa1regs.obj: ${CHIPDIR}/sa1regs.asm macros.mac\
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
 ${CHIPDIR}/sfxproc.obj: ${CHIPDIR}/sfxproc.asm macros.mac\

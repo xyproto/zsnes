@@ -1643,7 +1643,7 @@ DisplayGUIVideo:
     jmp .no2xSaIdis
 .2xSaIdis
     mov byte[En2xSaI],0
-    mov byte[hq3xFilter],0
+    mov byte[hqFilter],0
 .no2xSaIdis
     cmp byte[En2xSaI],0
     je .no2xsaidis
@@ -1651,11 +1651,11 @@ DisplayGUIVideo:
 .no2xsaidis
     cmp byte[En2xSaI],0
     je .no2xsaien
-    mov byte[hq3xFilter],0
+    mov byte[hqFilter],0
     mov byte[scanlines],0
     mov byte[antienab],0
 .no2xsaien
-    cmp byte[hq3xFilter],0
+    cmp byte[hqFilter],0
     je .nohq3xen
     mov byte[En2xSaI],0
     mov byte[scanlines],0
@@ -1774,10 +1774,22 @@ DisplayGUIVideo:
 .notext11a
     xor eax,eax
     mov al,[cvidmode]
+    cmp byte[GUIHQ2X+eax],0
+    je near .notexthq2xa
+    GUIOuttextwin2u 5,130,168,GUIVideoTexthq2x,1
+.notexthq2xa
+    xor eax,eax
+    mov al,[cvidmode]
     cmp byte[GUIHQ3X+eax],0
-    je near .notext11
+    je near .notexthq3xa
     GUIOuttextwin2u 5,130,168,GUIVideoTexthq3x,1
-.notext11
+.notexthq3xa
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUIHQ4X+eax],0
+    je near .notexthq4xa
+    GUIOuttextwin2u 5,130,168,GUIVideoTexthq4x,1
+.notexthq4xa
     GUIOuttextwin2u 5,26,188,GUIVideoText8c,0
 %ifndef __LINUX__
     GUIOuttextwin2u 5,130,188,GUIVideoText9,0
@@ -1887,10 +1899,22 @@ DisplayGUIVideo:
 .notext11b
     xor eax,eax
     mov al,[cvidmode]
+    cmp byte[GUIHQ2X+eax],0
+    je near .notexthq2xb
+    GUIOuttextwin2 5,129,167,GUIVideoTexthq2x
+.notexthq2xb
+    xor eax,eax
+    mov al,[cvidmode]
     cmp byte[GUIHQ3X+eax],0
-    je near .notext11c
+    je near .notexthq3xb
     GUIOuttextwin2 5,129,167,GUIVideoTexthq3x
-.notext11c
+.notexthq3xb
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUIHQ4X+eax],0
+    je near .notexthq4xb
+    GUIOuttextwin2 5,129,167,GUIVideoTexthq4x
+.notexthq4xb
     GUIOuttextwin2 5,25,187,GUIVideoText8c
 %ifndef __LINUX__
     GUIOuttextwin2 5,129,187,GUIVideoText9
@@ -2076,15 +2100,21 @@ DisplayGUIVideo:
 .nocheckbox2scale2x
     xor eax,eax
     mov al,[cvidmode]
+    cmp byte[GUIHQ2X+eax],0
+    jne near .checkboxhq
     cmp byte[GUIHQ3X+eax],0
-    je near .nocheckbox2hq3x
+    jne near .checkboxhq
+    cmp byte[GUIHQ4X+eax],0
+    jne near .checkboxhq
+    jmp .nocheckboxhq
+.checkboxhq
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[hq3xFilter],0
-    je .nocheckbox1hq3x
+    cmp byte[hqFilter],0
+    je .uncheckedhq
     mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox1hq3x
+.uncheckedhq
     GUIDisplayIconWin 5,115,163,[GUITemp]
-.nocheckbox2hq3x
+.nocheckboxhq
     DrawGUIWinBox 5,5,26,115,69,167
     DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],5,28,GUIVStA
     cmp byte[GUICHold],5
@@ -2205,7 +2235,9 @@ GUIVideoTextbf db 'BILINEAR FILTER',0
 GUIVideoText3 db 'INTERPOLATION',0      ; -y
 GUIVideoText4 db 'EAGLE ENGINE',0       ; -y
 GUIVideoTextscale2x db 'SCALE2X',0
+GUIVideoTexthq2x db 'HQ2X',0
 GUIVideoTexthq3x db 'HQ3X',0
+GUIVideoTexthq4x db 'HQ4X',0
 GUIVideoText5 db 'FULL SCREEN',0        ; -c
 GUIVideoText5b db 'WIDE SCREEN',0        ; -c
 GUIVideoText6 db 'SMALL SCREEN',0       ; -c
@@ -3764,8 +3796,8 @@ DisplayNetOptns:
     mov dword[GUINetDisp],'INTE'
     mov dword[GUINetDisp+4],'RNET'
     mov byte[GUINetDisp+8],0
-;    cmp byte[NetPlayNoMore],1
-;    jne .notcpip
+    cmp byte[NetPlayNoMore],1
+    jne .notcpip
     mov dword[GUIwinsizex+8*4],201
     mov dword[GUIwinsizey+8*4],48
 .notcpip
@@ -3943,8 +3975,8 @@ DisplayNetOptnsTCPIP:
 .zero
     sub byte[GUItextcolor],15
 
-;    cmp byte[NetPlayNoMore],1
-;    jne near .tcpip
+    cmp byte[NetPlayNoMore],1
+    jne near .tcpip
     GUIOuttextwin2 8,6,16,GUINetTextr1
     GUIOuttextwin2 8,6,36,GUINetTextr2
     GUIOuttextwin2 8,6,46,GUINetTextr3
@@ -4541,12 +4573,9 @@ GUINetTextm2 db 0,0,0
 GUINetTextn2 db '_',0
 GUINetTexto2 db 'BACK BUFFER',0
 GUINetTextp2 db 'ALLOW UDP CONNECTION',0
-GUINetTextr1 db 'NETPLAY IS DISABLED IN',0
-GUINetTextr2 db 'WIP VERSIONS UNTIL',0
-GUINetTextr3 db 'FURTHER NOTICE',0
-;GUINetTextr1 db 'PLEASE RESTART ZSNESW',0
-;GUINetTextr2 db 'BEFORE STARTING A NEW',0
-;GUINetTextr3 db 'NETPLAY SESSION',0
+GUINetTextr1 db 'PLEASE RESTART ZSNESW',0
+GUINetTextr2 db 'BEFORE STARTING A NEW',0
+GUINetTextr3 db 'NETPLAY SESSION',0
 
 %ifdef __MSDOS__
 BaudVal  dd 9600,14400,19200,28800,38400,57600,115200

@@ -43,7 +43,9 @@ VIDEOBJ=${VIDEODIR}/makev16b.o ${VIDEODIR}/makev16t.o ${VIDEODIR}/makevid.o\
 	${VIDEODIR}/newgfx16.o ${VIDEODIR}/newgfx2.o ${VIDEODIR}/newgfx.o\
 	${VIDEODIR}/m716text.o ${VIDEODIR}/2xsaiw.o\
 	${VIDEODIR}/procvid.o ${VIDEODIR}/sw_draw.o\
-        ${VIDEODIR}/hq3x16.o ${VIDEODIR}/hq3x32.o
+        ${VIDEODIR}/hq2x16.o ${VIDEODIR}/hq2x32.o\
+        ${VIDEODIR}/hq3x16.o ${VIDEODIR}/hq3x32.o\
+        ${VIDEODIR}/hq4x16.o ${VIDEODIR}/hq4x32.o
 
 WINOBJ=${WINDIR}/copyvwin.o \
 	${WINDIR}/sdlintrf.o ${WINDIR}/sdllink.o \
@@ -84,8 +86,12 @@ ${EFFECTSDIR}/smoke.o: ${EFFECTSDIR}/smoke.c
 ${EFFECTSDIR}/burn.o: ${EFFECTSDIR}/burn.c
 ${VIDEODIR}/procvid.o: ${VIDEODIR}/procvid.asm macros.mac ${VIDEODIR}/copyvid.inc ${VIDEODIR}/2xsaimmx.inc
 ${VIDEODIR}/sw_draw.obj: ${VIDEODIR}/sw_draw.asm macros.mac
+${VIDEODIR}/hq2x16.obj: ${VIDEODIR}/hq2x16.asm macros.mac
+${VIDEODIR}/hq2x32.obj: ${VIDEODIR}/hq2x32.asm macros.mac
 ${VIDEODIR}/hq3x16.obj: ${VIDEODIR}/hq3x16.asm macros.mac
 ${VIDEODIR}/hq3x32.obj: ${VIDEODIR}/hq3x32.asm macros.mac
+${VIDEODIR}/hq4x16.obj: ${VIDEODIR}/hq4x16.asm macros.mac
+${VIDEODIR}/hq4x32.obj: ${VIDEODIR}/hq4x32.asm macros.mac
 ${CHIPDIR}/dsp1proc.o: ${CHIPDIR}/dsp1proc.asm macros.mac
 ${CHIPDIR}/sa1regs.o: ${CHIPDIR}/sa1regs.asm macros.mac\
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
@@ -182,8 +188,8 @@ endmem.o: endmem.asm macros.mac
 ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
 
 install:
-	@INSTALL@ -D -m 0755 @ZSNESEXE@ @prefix@/bin
-	@INSTALL@ -D -m 0644 linux/zsnes.1 @prefix@/man/man1
+	@INSTALL@ -m 0755 @ZSNESEXE@ @prefix@/bin
+	@INSTALL@ -m 0644 linux/zsnes.1 @prefix@/man/man1
 
 uninstall:
 	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man5/zsnes.5

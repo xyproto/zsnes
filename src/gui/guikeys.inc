@@ -1019,7 +1019,7 @@ GUIVideoKeys:
     jne .nofullscanlines
     cmp byte[En2xSaI],0
     jne .nofullscanlines
-    cmp byte[hq3xFilter],0
+    cmp byte[hqFilter],0
     jne .nofullscanlines
     call ClearScreen
     GUIkeystoggleoptn byte[scanlines],1
@@ -1045,7 +1045,7 @@ GUIVideoKeys:
     jne .nohalfscanlines
     cmp byte[En2xSaI],0
     jne .nohalfscanlines
-    cmp byte[hq3xFilter],0
+    cmp byte[hqFilter],0
     jne .nohalfscanlines
     call ClearScreen
     GUIkeystoggleoptn byte[scanlines],3
@@ -1062,7 +1062,7 @@ GUIVideoKeys:
     jne .noquarterscanlines
     cmp byte[En2xSaI],0
     jne .noquarterscanlines
-    cmp byte[hq3xFilter],0
+    cmp byte[hqFilter],0
     jne .noquarterscanlines
     call ClearScreen
     GUIkeystoggleoptn byte[scanlines],2
@@ -1076,19 +1076,25 @@ GUIVideoKeys:
 %endif
 .noquarterscanlines
     cmp dh,'Q'
-    jne .nohq3xfilter
+    jne .nohqfilter
     xor ebx,ebx
     mov bl,[cvidmode]
+    cmp byte[GUIHQ2X+ebx],0
+    jne .hqfilter
     cmp byte[GUIHQ3X+ebx],0
-    je .nohq3xfilter
-    xor byte[hq3xFilter],1
-    jz .nohq3xfilter
+    jne .hqfilter
+    cmp byte[GUIHQ4X+ebx],0
+    jne .hqfilter
+    jmp .nohqfilter
+.hqfilter
+    xor byte[hqFilter],1
+    jz .nohqfilter
     mov byte[scanlines],0
     mov byte[cfgscanline],0
     mov byte[En2xSaI],0
     mov byte[antienab],0
     mov byte[cfginterp],0
-.nohq3xfilter
+.nohqfilter
     cmp dh,'X'
     jne .no2xsai
     xor ebx,ebx

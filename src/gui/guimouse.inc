@@ -2355,10 +2355,16 @@ DisplayGUIVideoClick:
 %endif
     xor ebx,ebx
     mov bl,[cvidmode]
+    cmp byte[GUIHQ2X+ebx],0
+    jne .checkboxhq
     cmp byte[GUIHQ3X+ebx],0
-    je .nocheckboxhq3x
-    GUIClickCButtonHQ 115,163,byte[hq3xFilter]
-.nocheckboxhq3x
+    jne .checkboxhq
+    cmp byte[GUIHQ4X+ebx],0
+    jne .checkboxhq
+    jmp .nocheckboxhq
+.checkboxhq
+    GUIClickCButtonHQ 115,163,byte[hqFilter]
+.nocheckboxhq
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUI2xVID+ebx],0

@@ -158,7 +158,9 @@ EXTSYM TCPIPSendPacket,TCPIPSendPacketUDP
 EXTSYM TCPIPDisconnect,TCPIPStatus
 EXTSYM TCPIPStoreByte
 EXTSYM TCPIPGetByte,GUIBIFIL
+EXTSYM GUIHQ2X
 EXTSYM GUIHQ3X
+EXTSYM GUIHQ4X
 EXTSYM firstsaveinc
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 %ifdef __LINUX__
@@ -601,7 +603,7 @@ NEWSYM KeyDisplayFPS, dd 0
 NEWSYM KeyIncStateSlot, dd 0
 NEWSYM KeyDecStateSlot, dd 0
 NEWSYM KeyUsePlayer1234, dd 0
-NEWSYM hq3xFilter, db 0
+NEWSYM hqFilter, db 0
 NEWSYM reserved, db 0
 NEWSYM scale2xFilter, db 0
 
@@ -1542,7 +1544,7 @@ NEWSYM StartGUI
     jmp .no2xSaIdis
 .2xSaIdis
     mov byte[En2xSaI],0
-    mov byte[hq3xFilter],0
+    mov byte[hqFilter],0
 .no2xSaIdis
     cmp byte[En2xSaI],0
     je .no2xsaidis
@@ -1550,16 +1552,16 @@ NEWSYM StartGUI
 .no2xsaidis
     cmp byte[En2xSaI],0
     je .no2xsaien
-    mov byte[hq3xFilter],0
+    mov byte[hqFilter],0
     mov byte[scanlines],0
     mov byte[antienab],0
 .no2xsaien
-    cmp byte[hq3xFilter],0
-    je .nohq3x
+    cmp byte[hqFilter],0
+    je .nohq
     mov byte[En2xSaI],0
     mov byte[scanlines],0
     mov byte[antienab],0
-.nohq3x
+.nohq
     mov ecx,64
     mov eax,SpecialLine
 .slloop

@@ -66,12 +66,14 @@ extern void SwitchFullScreen (void);
 extern unsigned char cvidmode;
 DWORD SMode=0;
 DWORD DSMode=0;
-DWORD prevHQ3XMode=-1;
+DWORD prevHQMode=-1;
 
 extern BYTE GUIWFVID[];
 extern BYTE GUISMODE[];
 extern BYTE GUIDSMODE[];
+extern BYTE GUIHQ2X[];
 extern BYTE GUIHQ3X[];
+extern BYTE GUIHQ4X[];
 
 /* JOYSTICK AND KEYBOARD INPUT */
 SDL_Joystick *JoystickInput[5];

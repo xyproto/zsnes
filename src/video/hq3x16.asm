@@ -26,37 +26,19 @@ EXTSYM vidbuffer,curblank,MMXSupport,GUIOn,GUIOn2,
 EXTSYM vidbufferofsb
 EXTSYM FilteredGUI,resolutn,lineleft,cfield
 EXTSYM hirestiledat,newengen,SpecialLine,HalfTrans
-EXTSYM hq3xFilter
+EXTSYM hqFilter
 EXTSYM AddEndBytes
 EXTSYM NumBytesPerLine
 EXTSYM WinVidMemStart
 EXTSYM BitConv32Ptr
 EXTSYM RGBtoYUVPtr
+EXTSYM prevline, nextline, deltaptr, xcounter
+EXTSYM w1, w2, w3, w4, w5, w6, w7, w8, w9
+EXTSYM reg_blank, const7, cross, threshold
 
 %ifdef __MINGW__
 NEWSYM CopyVWinAsmStart
 %endif
-
-SECTION .bss
-NEWSYM prevline, resd 1
-NEWSYM nextline, resd 1
-NEWSYM deltaptr, resd 1
-NEWSYM xcounter, resd 1
-NEWSYM w1, resd 1    
-NEWSYM w2, resd 1
-NEWSYM w3, resd 1
-NEWSYM w4, resd 1
-NEWSYM w5, resd 1
-NEWSYM w6, resd 1
-NEWSYM w7, resd 1
-NEWSYM w8, resd 1
-NEWSYM w9, resd 1
-NEWSYM cross, resd 1
-
-SECTION .data
-NEWSYM reg_blank, dd 0,0
-NEWSYM const7,    dd 0x00070007,0x00000007
-NEWSYM threshold, dd 0x00300706,0x00000000
 
 SECTION .text
 
@@ -409,12 +391,12 @@ SECTION .text
     mov [edi+ebx*2+4],ax
 %endmacro
 
-NEWSYM copy768x720x16bwin
+NEWSYM hq3x_16b
     cmp byte[curblank],40h
     jne .startcopy
     ret
 .startcopy
-    push es
+    pushad
     mov ax,ds
     mov es,ax
     mov esi,[vidbuffer]
@@ -429,7 +411,7 @@ NEWSYM copy768x720x16bwin
 .filtergui
     cmp byte[MMXSupport],0
     je  nointerp
-    cmp byte[hq3xFilter],0
+    cmp byte[hqFilter],0
     jne hq3x
 
 ;----------------------------;
@@ -458,7 +440,7 @@ nointerp:
     add esi,64
     dec dl
     jnz near .loopy
-    pop es
+    popad
     ret
 
 ;----------------------------;
@@ -2607,7 +2589,7 @@ hq3x:
     jmp     .loopy
 .fin
     emms
-    pop es
+    popad
     ret
 
 HighResProc:
