@@ -29,7 +29,7 @@ sw_draw.h	;
 zfilew.c	;
 zipxw.c		;
 zloaderw.c	;
-zsnes.5		; man page for zsnes
+zsnes.1		; man page for zsnes
 ztcp.c		; TCP/IP (Netplay)
 
 ; ----------------------------------------------------------------

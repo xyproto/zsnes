@@ -22,7 +22,7 @@ section .text
 
 %define ZVERSION '1.337'
 
-%ifdef __LINUX__
+%ifdef ELF
 %imacro newsym 1
   GLOBAL %1
   %1:

@@ -5180,7 +5180,7 @@ NEWSYM GUIFontData
          db 01000000b
          db 00100000b
          db 00010000b
-         db 00001000b; \
+         db 00001000b; \ (Screw you nassm)
          db 10101000b
          db 01110000b
          db 11111000b

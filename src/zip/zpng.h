@@ -1,7 +1,11 @@
 #ifndef __ZPNG__
 #define __ZPNG__
 
+#ifdef NO_PNG
+#undef __PNG__
+#else
 #define __PNG__
+#endif
 
 #ifdef __PNG__
 #ifndef bool

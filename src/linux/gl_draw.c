@@ -276,8 +276,7 @@ void gl_drawwin()
 		AddEndBytes = 0;
 		NumBytesPerLine = 1024;
 		WinVidMemStart = (void *) glvidbuffer;
-		__asm__ __volatile__("call copy640x480x16bwin"
-			::: "memory", "eax", "ebx", "ecx", "edx", "esi", "edi");
+		copy640x480x16bwin();
 
 		/* Display 4 256x256 quads for the 512x448 buffer */
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glfilters);

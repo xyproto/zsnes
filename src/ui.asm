@@ -148,17 +148,7 @@ NEWSYM vibradetect
 NEWSYM welcome
 
 
-                 db 'ZSNES v',ZVERSION,' (c) 1997-2002, ZSNES Team (zsKnight & _Demo_)',13,10
-%ifdef __LINUX__
-                 db 'Compiled under NASM and GCC. (*nix)',13,10,13,10
-%else
-%ifdef __WIN32__
-                 db 'Compiled under NASM and MSVC++. (Windows)',13,10,13,10
-%else
-                 db 'Compiled under NASM and DJGPP. (DOS w/ DPMI)',13,10,13,10
-%endif
-%endif
-;%endif
+                 db 'ZSNES v',ZVERSION,' (c) 1997-2002, ZSNES Team (zsKnight & _Demo_)',13,10,13,10
                  db 'Be sure to check http://www.zsnes.com/ for the latest version.',13,10
                  db 'Please report crashes to zsnes-devel@lists.sourceforge.net.',13,10,13,10
                  db '  Main Coders      : zsKnight, _Demo_, and pagefault',13,10

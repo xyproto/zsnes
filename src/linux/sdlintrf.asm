@@ -116,7 +116,6 @@ EXTSYM StopServer
 EXTSYM Disconnect
 EXTSYM UDPDisableMode,UDPEnableMode,UDPClearVars,UDPWait1Sec
 EXTSYM WinErrorA2,WinErrorB2,WinErrorC2
-EXTSYM ZsnesPage
 EXTSYM GetLocalTime
 EXTSYM V8Mode,GrayscaleMode
 EXTSYM PrevWinMode,PrevFSMode
