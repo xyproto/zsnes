@@ -549,37 +549,38 @@ NEWSYM copymodeq
 ;*******************************************************
 
 NEWSYM copymodeq224
-    cmp byte[curblank],40h
-    jne .startcopy
+    cmp byte[curblank],40h      ; Check for VBlank.
+    jne .startcopy              ; OK, no VBlank...
     ret
 .startcopy
-    push es
-    mov ax,[selcA000]
-    mov es,ax
-    mov esi,[vidbuffer]
-    mov ebp,[vidbufferm]
-    add esi,16+256+32
-    add ebp,16+256+32
-    mov edi,256
-    mov edx,222
-    cmp byte[FPUCopy],2
+    push es                     ; Backup ES register.
+;    mov ax,[selcA000]
+;    mov es,ax
+    mov es,[selcA000]           ; Get 0xA000 selector.
+    mov esi,[vidbuffer]         ; vidbuffer to source.
+;    mov ebp,[vidbufferm]
+    add esi,16+256+32           ; Skip top+bottom lines.
+;    add ebp,16+256+32
+    mov edi,256                 ; Start at second line.
+    mov edx,222                 ; Only copy 222 lines.
+    cmp byte[FPUCopy],2         ; Check for MMX enable.
     je near .loopb
 .loopa
     mov ecx,64
-    rep movsd
-    add esi,32
+    rep movsd                   ; Copy 64 32-bit words.
+    add esi,32                  ; Skip vidbuffer margins.
     dec edx
-    jnz .loopa
+    jnz .loopa                  ; Loop for each line.
     jmp .done
 .loopb
     mov ecx,16
-    MMXStuff
-    add esi,32
+    MMXStuff                    ; Copy 64 64-bit words.
+    add esi,32                  ; ...
     dec edx
-    jnz .loopb
-    emms
+    jnz .loopb                  ; ...
+    emms                        ; Empty MMX state.
 .done
-    pop es
+    pop es                      ; Restore ES register.
     ret
 
 ;*******************************************************
