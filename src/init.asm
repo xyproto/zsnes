@@ -3401,6 +3401,7 @@ NEWSYM loadfileGUI
     mov byte[loadedfromgui],1
     mov byte[yesoutofmemory],0
     mov byte[.fail],0
+    mov byte[IPSPatched],0
 
     mov edx,fname+1
     mov dword[ZOpenFileName],edx
