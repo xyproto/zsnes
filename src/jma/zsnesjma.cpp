@@ -23,9 +23,11 @@ using namespace std;
 #include "zsnesjma.h"
 #include "jma.h"
 
+extern "C" {
 extern unsigned char *romdata;
 extern unsigned int curromspace;
 extern unsigned int maxromspace;
+}
 
 void load_jma_file(const char *filename)
 {
