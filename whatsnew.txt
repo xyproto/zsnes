@@ -24,7 +24,8 @@ v1.36
          [_Demo_]
        - Special hack for Super Famista 1 & 2 SPC bugs. [_Demo_]
        - Fixed some more bugs in video code. (Windows only) [pagefault]
-       - Fixed Digital Devil Story hang. [_Demo_]
+       - Fixed Digital Devil Story hang by modifying the spc code.
+         You must start a new game for the fix to work. [_Demo_]
 
 v1.35
        - Fixed triple buffering corruption on some VESA 2.x video modes,
