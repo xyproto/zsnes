@@ -419,7 +419,7 @@ ScreenShow:
     cmp byte[cvidmode],18
     je near copyvesa2800x600x16b
     cmp byte[curblank],40h
-    je .startcopy
+    jne .startcopy
     inc byte[curfps2]
 ;    call sounddisplay
     call hextestoutput
