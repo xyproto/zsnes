@@ -907,6 +907,7 @@ NEWSYM mosoldtab, resd 15
 
 SECTION .data
 ALIGN32
+
 NEWSYM ngwintable, times 16 dd 0EE00h
 NEWSYM ngwintableb, times 16 dd 0EE00h
 NEWSYM ngwintablec, times 16 dd 0EE00h
