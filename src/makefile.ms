@@ -32,8 +32,8 @@
 # CPU=cpu-type            optimize for a particular CPU, find a list of cpu types in the GCC manual
 
 
-
-ifneq ($(PLATFORM),) #end if is at the bottom of the file
+ENV=$(PLATFORM)
+ifneq (${ENV},) #end if is at the bottom of the file
 
 
 CHIPDIR=chips
@@ -66,18 +66,18 @@ CROSS=no
 STRIP=-Ws -s
 
 
-ifeq ($(PLATFORM),dos)
+ifeq (${ENV},dos)
   CC = gcc
   CPPC = gpp
   OS=__MSDOS__
 endif
 
-ifeq ($(PLATFORM),win32-unix-shell)
-  PLATFORM=win32
+ifeq (${ENV},win32-unix-shell)
+  ENV=win32
   CROSS=yes
 endif 
 
-ifeq ($(PLATFORM),win32)
+ifeq (${ENV},win32)
   CC = gcc
   CPPC = g++
   WINDRES = windres
@@ -85,20 +85,20 @@ ifeq ($(PLATFORM),win32)
   OBJFIX=objfix.exe
 endif
 
-ifeq ($(PLATFORM),msvc)
+ifeq (${ENV},msvc)
   MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shell32.lib winmm.lib dinput8.lib dxguid.lib
   DRESOBJ=${WINDIR}/zsnes.res
   OS=__WIN32__
 endif
 
-ifeq ($(PLATFORM),dos-cross)
+ifeq (${ENV},dos-cross)
   CC = i386-pc-msdosdjgpp-gcc
   CPPC = i386-pc-msdosdjgpp-g++
   OS=__MSDOS__
   CROSS=yes
 endif
 
-ifeq ($(PLATFORM),win32-cross)
+ifeq (${ENV},win32-cross)
   CC = i586-mingw32msvc-gcc
   CPPC = i586-mingw32msvc-g++
   WINDRES = i586-mingw32msvc-windres
@@ -208,7 +208,7 @@ endif
 
 .SUFFIXES: .c .cpp .asm
 
-ifneq ($(PLATFORM),msvc)
+ifneq (${ENV},msvc)
 %${OE}: %.c
 	${CC} ${COPT} ${CFLAGS} -o $@ -c $<
 
@@ -235,7 +235,7 @@ ALL: zsnes
 	${DELETECOMMAND} version${OE}
 
 zsnes: ${OBJFIX} ${OBJS}
-ifneq ($(PLATFORM),msvc)
+ifneq (${ENV},msvc)
 	${CPPC} ${STRIP} -o ${EXE} ${OBJS} ${LIBS}
 else
 	 @echo /Fezsnesw.exe *.obj ${CPUDIR}\*.obj ${VIDEODIR}\*.obj ${CHIPDIR}\*.obj ${EFFECTSDIR}\*.obj ${DOSDIR}\*.obj ${WINDIR}\*.obj ${GUIDIR}\*.obj > link.vc
@@ -349,7 +349,7 @@ ${WINDIR}/winintrf${OE}: $< macros.mac
 ${WINDIR}/zfilew${OE}: $<
 ${WINDIR}/zipxw${OE}: $<
 ${WINDIR}/zloaderw${OE}: $<
-ifeq ($(PLATFORM),msvc)
+ifeq (${ENV},msvc)
 ${WINDIR}/zsnes.res: ${WINDIR}/zsnes.rc
 	rc ${WINDIR}/zsnes.rc
 ${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
@@ -376,7 +376,7 @@ clean:
 	${DELETECOMMAND} ${WINDIR}${SLASH}*${OE} ${TRUTH}
 	${DELETECOMMAND} ${GUIDIR}${SLASH}*${OE} ${TRUTH}
 
-else  #else no platform specified
+else  #else no ENV specified
 help:
-	@echo Please specify which platform to compile/clean for with PLATFORM=platform_name
-endif #endif on the PLATFORM being empty
+	@echo Please specify which ENV to compile/clean for with ENV=ENV_name
+endif #endif on the ENV being empty
