@@ -56,6 +56,15 @@ bool validChecksum(unsigned char *ROM, int BankLoc)
   return(false);
 }
 
+bool EHiHeader(unsigned char *ROM, int BankLoc)
+{
+  if (validChecksum(ROM, BankLoc) && ROM[BankLoc+21] == 53)
+  {
+    return(true);
+  }
+  return(false);
+}
+
 void swapBlocks(char *blocks)
 {
   int i,j,k;
@@ -107,9 +116,10 @@ void CheckIntl1(unsigned char *ROM)
     Interleaved = true;
   }
   else if (validChecksum(ROM, Lo) && !validChecksum(ROM, Hi) &&
-      ROM[Lo+25] < 14 && //Country code
-      //Rom make up
-     (ROM[Lo+21] == 33 || ROM[Lo+21] == 49 || ROM[Lo+21] == 53))
+           ROM[Lo+25] < 14 && //Country code
+           //Rom make up
+          (ROM[Lo+21] == 33 || ROM[Lo+21] == 49 ||
+           ROM[Lo+21] == 53 || ROM[Lo+21] == 58))
   {
     if (ROM[Lo+20] == 32 ||//Check that Header name did not overflow
       !(ROM[Lo+21] == ROM[Lo+20] || ROM[Lo+21] == ROM[Lo+19] ||
@@ -121,31 +131,38 @@ void CheckIntl1(unsigned char *ROM)
   }
 }
 
-void deintToP()
+void CheckIntlEHi(unsigned char *ROM)
 {
-  //Swap 2MB and 4MB ROMs
-  unsigned int temp, i, *loc1 = romdata, *loc2 = romdata + 0x80000;
-  for (i = 0; i < 0x100000; i++)
+  if (EHiHeader(ROM, Lo))
   {
-    temp = loc1[i];
-    loc1[i] = loc2[i];
-    loc2[i] = temp;
-  }
-    
-  //Deinterleave the 4MB ROM first
-  NumofBanks = 128;
-  deintlv1();
+    unsigned int temp, i, oldNumBanks = NumofBanks,
+                *loc1 = romdata, 
+                *loc2 = romdata + ((NumofBytes - 0x400000)/4);
   
-  //Now the 2MB one
-  NumofBanks = 64;
-  romdata += 0x100000; //Ofset pointer
-  deintlv1();
+    //Swap 4MB ROM with the other one
+    for (i = 0; i < 0x100000; i++)
+    {
+      temp = loc1[i];
+      loc1[i] = loc2[i];
+      loc2[i] = temp;
+    }
+    
+    //Deinterleave the 4MB ROM first
+    NumofBanks = 128;
+    deintlv1();
+  
+    //Now the other one
+    NumofBanks = oldNumBanks - 128;
+    romdata += 0x100000; //Ofset pointer
+    deintlv1();
 
-  //Now fix the data and we're done
-  NumofBanks = 192;
-  romdata -= 0x100000;
+    //Now fix the data and we're done
+    NumofBanks = oldNumBanks;
+    romdata -= 0x100000;
+
+    Interleaved = true;
+  }
 }
-
 
 //ROM loading functions, which some strangly enough were in guiload.inc
 bool AllASCII(char *b, int size)
@@ -164,6 +181,7 @@ bool AllASCII(char *b, int size)
 int InfoScore(char *Buffer)
 {
   int score = 0;
+  if (validChecksum(Buffer, 0))      { score += 3; }
   if (Buffer[26] == 0x33)            { score += 2; }
   if ((Buffer[21] & 0xf) < 4)        { score += 2; }
   if (!(Buffer[61] & 0x80))          { score -= 4; }
@@ -184,12 +202,10 @@ void BankCheck()
   
   if (NumofBytes >= 0x500000)
   {
-    if (validChecksum(ROM, 0x207FC0))
-    {
-      deintToP();
-      Interleaved = true;
-    } 
-    if (validChecksum(ROM, EHi))
+    //Deinterleave if neccesary
+    CheckIntlEHi(ROM);
+
+    if (EHiHeader(ROM, EHi))
     {
       romtype = 2;
       infoloc = EHi;
@@ -204,10 +220,7 @@ void BankCheck()
     CheckIntl1(ROM);
     
     loscore = InfoScore(ROM+Lo);
-    if (validChecksum(ROM, Lo)) { loscore += 3; }
-
     hiscore = InfoScore(ROM+Hi);
-    if (validChecksum(ROM, Hi)) { hiscore += 3; }
 
     switch(ROM[Lo + 21])
     {
