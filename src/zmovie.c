@@ -137,6 +137,12 @@ External chapter count
 
 2 bytes  - Number of external chapters
 
+-----------------------------------------------------------------
+Author name
+-----------------------------------------------------------------
+
+Name Len - Author's name
+
 */
 
 
