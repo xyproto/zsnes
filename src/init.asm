@@ -1479,6 +1479,7 @@ NEWSYM headerhack
     mov byte[CacheCheckSkip],0
     mov word[IRQHack],0
     mov byte[HIRQSkip],0
+    mov byte[hdmaearlstart],0
     mov dword[WindowDisables],0
     mov byte[ClearScreenSkip],0
     mov byte[hirqmode2],0
@@ -1733,6 +1734,22 @@ NEWSYM headerhack
     jne .notffmq
     mov byte[hirqmode2],1
 .notffmq
+
+    mov esi,[romdata]
+    add esi,07FC0h
+    cmp dword[esi],'YOSH'
+    jne .notyoshi
+    cmp dword[esi+8],'ISLA'
+    jne .notyoshi
+.notyoshi
+    cmp dword[esi],'YOSS'
+    jne .notyoshi2
+    cmp dword[esi+8],'ISLA'
+    jne .notyoshi2
+    mov byte[hdmaearlstart],2
+    mov byte[opexec268],116
+    mov byte[opexec358],126
+.notyoshi2
 
     mov esi,[romdata]
     add esi,0FFC0h
@@ -2271,21 +2288,6 @@ NEWSYM init65816
 ;    call Outputfilename
 
     ; Check Headers
-    mov esi,[romdata]
-    mov byte[hdmaearlstart],0
-    add esi,07FC0h
-    cmp dword[esi],'YOSH'
-    jne .notyoshi
-    cmp dword[esi+8],'ISLA'
-    jne .notyoshi
-.notyoshi
-    cmp dword[esi],'YOSS'
-    jne .nohdmaearlstart
-    cmp dword[esi+8],'ISLA'
-    jne .notyoshi
-    mov byte[hdmaearlstart],2
-.nohdmaearlstart
-
     call headerhack
 
     mov byte [spcRam+0F4h],0
