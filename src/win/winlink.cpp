@@ -1658,7 +1658,7 @@ void Start60HZ(void)
    }
    else
    {
-      update_ticks_pc = (__int64) UPDATE_TICKS_GAME * freq / 1000;
+      update_ticks_pc = (__int64) (UPDATE_TICKS_GAME * freq / 1000);
    }
 
    QueryPerformanceCounter((LARGE_INTEGER*)&start);
