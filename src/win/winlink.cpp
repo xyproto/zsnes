@@ -100,6 +100,7 @@ DWORD                   S11Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 DWORD                   S12Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 DWORD                   POVDisable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 DWORD                   NumPOV[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+DWORD                   NumBTN[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
 DWORD                   CurrentJoy=0;
 
@@ -894,15 +895,25 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
       S12Disable[CurrentJoy]=1;
    }
 
-   for (int i=0; i<5; i++)
+   DIDEVCAPS didc;
+
+   didc.dwSize = sizeof(DIDEVCAPS);
+
+   if (JoystickInput[CurrentJoy]->GetCapabilities(&didc) != DI_OK)
    {
-      diprg.diph.dwObj     = DIJOFS_POV(i);
-      if (FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
-      {
-         POVDisable[CurrentJoy]=1;
-      }
-      else NumPOV[i]++;
+      JoystickInput[CurrentJoy]->Release();
+      return DIENUM_CONTINUE;
    }
+
+   if (didc.dwButtons <= 16)   
+      NumBTN[CurrentJoy] = didc.dwButtons;
+   else
+      NumBTN[CurrentJoy] = 16;
+
+   if (didc.dwPOVs)
+      NumPOV[CurrentJoy] = didc.dwPOVs;
+   else
+      POVDisable[CurrentJoy] = 1;
 
    DIPROPDWORD dipdw;
 
@@ -933,12 +944,6 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 
    dipdw.diph.dwObj         = DIJOFS_SLIDER(1);
    JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
-
-   for (int i2=0; i<5; i++)
-   {
-      dipdw.diph.dwObj         = DIJOFS_POV(i2);
-      JoystickInput[CurrentJoy]->SetProperty(DIPROP_DEADZONE, &dipdw.diph);
-   }
 
    dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
    dipdw.diph.dwHeaderSize = sizeof(dipdw.diph);
@@ -2455,72 +2460,41 @@ void WinUpdateDevices()
             {
                switch (js[i].rgdwPOV[i2])
                {
-               case -1:
-                  keys[0x100 + i * 32 + 0] = 0;
-                  keys[0x100 + i * 32 + 1] = 0;
-                  keys[0x100 + i * 32 + 2] = 0;
-                  keys[0x100 + i * 32 + 3] = 0;
-                  break;
                case 0:
-                  keys[0x100 + i * 32 + 2] = 0;
                   keys[0x100 + i * 32 + 3] = 1;
                   break;
                case 4500:
                   keys[0x100 + i * 32 + 0] = 1;
-                  keys[0x100 + i * 32 + 1] = 0;
-                  keys[0x100 + i * 32 + 2] = 0;
                   keys[0x100 + i * 32 + 3] = 1;
                   break; 
                case 9000:
                   keys[0x100 + i * 32 + 0] = 1;
-                  keys[0x100 + i * 32 + 1] = 0;
                   break;
                case 13500:
                   keys[0x100 + i * 32 + 0] = 1;
-                  keys[0x100 + i * 32 + 1] = 0;
                   keys[0x100 + i * 32 + 2] = 1;
-                  keys[0x100 + i * 32 + 3] = 0;
                   break;
                case 18000:
                   keys[0x100 + i * 32 + 2] = 1;
-                  keys[0x100 + i * 32 + 3] = 0;
                   break;
                case 22500:
-                  keys[0x100 + i * 32 + 0] = 0;
                   keys[0x100 + i * 32 + 1] = 1;
                   keys[0x100 + i * 32 + 2] = 1;
-                  keys[0x100 + i * 32 + 3] = 0;
                   break;
                case 27000:
-                  keys[0x100 + i * 32 + 0] = 0;
                   keys[0x100 + i * 32 + 1] = 1;
                   break;
                case 31500:
-                  keys[0x100 + i * 32 + 0] = 0;
                   keys[0x100 + i * 32 + 1] = 1;
-                  keys[0x100 + i * 32 + 2] = 0;
                   keys[0x100 + i * 32 + 3] = 1;
                   break;
                }
             }
          }
 
-         if (js[i].rgbButtons[0]) keys[0x100+i*32+16]=1;
-         if (js[i].rgbButtons[1]) keys[0x100+i*32+17]=1;
-         if (js[i].rgbButtons[2]) keys[0x100+i*32+18]=1;
-         if (js[i].rgbButtons[3]) keys[0x100+i*32+19]=1;
-         if (js[i].rgbButtons[4]) keys[0x100+i*32+20]=1;
-         if (js[i].rgbButtons[5]) keys[0x100+i*32+21]=1;
-         if (js[i].rgbButtons[6]) keys[0x100+i*32+22]=1;
-         if (js[i].rgbButtons[7]) keys[0x100+i*32+23]=1;
-         if (js[i].rgbButtons[8]) keys[0x100+i*32+24]=1;
-         if (js[i].rgbButtons[9]) keys[0x100+i*32+25]=1;
-         if (js[i].rgbButtons[10]) keys[0x100+i*32+26]=1;
-         if (js[i].rgbButtons[11]) keys[0x100+i*32+27]=1;
-         if (js[i].rgbButtons[12]) keys[0x100+i*32+28]=1;
-         if (js[i].rgbButtons[13]) keys[0x100+i*32+29]=1;
-         if (js[i].rgbButtons[14]) keys[0x100+i*32+30]=1;
-         if (js[i].rgbButtons[15]) keys[0x100+i*32+31]=1;
+         if (NumBTN[i])
+            for (j = 0; j < NumBTN[i]; j++)
+               if (js[i].rgbButtons[j]) keys[0x100+i*32+16+j]=1;
       }
       else
       {
