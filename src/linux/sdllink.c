@@ -1887,12 +1887,13 @@ void clearwin()
 
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
+
+   if (SurfBufD == 0) { UnlockSurface(); return; }
+
    switch(BitDepth)
    {
       case 16:
-	      // Still crashes - DDOI
-	      STUB_FUNCTION;
-	      /*
+	      //STUB_FUNCTION;
 	__asm__ __volatile__ ("
 		pushw %%es
 		movw %%ds, %%ax
@@ -1935,7 +1936,6 @@ void clearwin()
                jne Blank3
                popw %%es       
        " : : : "cc", "memory", "eax", "ebx", "ecx","edi");
-*/
          break;
    }
    UnlockSurface();
