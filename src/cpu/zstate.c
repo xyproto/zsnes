@@ -327,6 +327,7 @@ static void state_size_tally(unsigned char **dest, void *src, size_t len)
 {
   state_size += len;
 }
+
 void InitRewindVars()
 {
 #ifndef __MSDOS__  //When all the code is ported to C, we can make this work with DOS too
@@ -433,7 +434,7 @@ extern signed int FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
 extern unsigned short VolumeConvTable[32768], bg1ptr, bg1ptrb, bg1ptrc;
 extern unsigned short bg2ptr, bg2ptrb, bg2ptrc, bg3ptr, bg3ptrb, bg3ptrc;
 extern unsigned short bg4ptr, bg4ptrb, bg4ptrc;
-extern unsigned char VolumeTableb[256], MusicVol, spcres, Voice0Status;
+extern unsigned char VolumeTableb[256], MusicVol, Voice0Status;
 extern unsigned char Voice1Status, Voice2Status, Voice3Status, Voice4Status;
 extern unsigned char Voice5Status, Voice6Status, Voice7Status, Voice0Noise;
 extern unsigned char Voice1Noise, Voice2Noise, Voice3Noise, Voice4Noise;
@@ -487,8 +488,6 @@ void repackfunct()
   // Noise
   block = DSPMem[0x6C];
   DSPMem[0x6C] &= 0x7F;
-
-  if (block && 0x80)	{ spcres++; }
 
   if (block && 0xC0)
   {

@@ -2213,17 +2213,9 @@ NEWSYM WDSPReg6B       ; Voice  6
       mov [DSPMem+06Bh],al
       ret
 
-SECTION .bss
-NEWSYM spcres, resb 1
-SECTION .text
-
 NEWSYM WDSPReg6C       ; Voice  6
       mov [DSPMem+06Ch],al
       and byte [DSPMem+06Ch],7Fh
-      test al,128
-      jz .NoRes
-      inc byte[spcres]
-.NoRes
       test al,0C0h
       jz .NoRes2
       mov byte[Voice0Status],0
