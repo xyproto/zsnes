@@ -435,6 +435,10 @@ double RasterLZ;
 double ScreenLX1;
 double ScreenLY1;
 double ScreenLZ1;
+int    ReversedLES;
+short Op02LESb;
+
+#define VofAngle 0x3880
 
 DSPOp02()
 {
@@ -474,7 +478,20 @@ DSPOp02()
 //   if(Op02LFE==0x2200)Op02VVA=0xFECD;
 //   else Op02VVA=0xFFB2;
 
-   Op02VVA = (short)(Op02LES * tan(Op02AZS*6.2832/65536.0));
+   ReversedLES=0;
+   Op02LESb=Op02LES;
+   if ((Op02LES>=VofAngle+0x4000) && (Op02LES<VofAngle+0x8000)) {
+     ReversedLES=1;
+     Op02LESb=VofAngle+0x4000-(Op02LES-(VofAngle+0x4000));
+   }
+   Op02VVA = (short)(Op02LESb * tan(Op02AZS*6.2832/65536.0));
+   if ((Op02LESb>=VofAngle) && (Op02LESb<=VofAngle+0x4000)) {
+      Op02VOF= (short)(Op02LESb * tan((Op02AZS-VofAngle)*6.2832/65536.0));
+      Op02VVA-=Op02VOF;
+   }
+   if (ReversedLES){
+     Op02VOF=-Op02VOF;
+   }
 
    #ifdef DebugDSP1
       Log_Message("OP02 FX:%d FY:%d FZ:%d LFE:%d LES:%d",Op02FX,Op02FY,Op02FZ,Op02LFE,Op02LES);
