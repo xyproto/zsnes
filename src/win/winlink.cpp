@@ -120,16 +120,17 @@ int                     MouseMove2X;
 int                     MouseMove2Y;
 BYTE                    MouseButtonPressed;
 
-DWORD                   SurfaceX=0;
-DWORD                   SurfaceY=0;
-
 BYTE                    IsActivated=1;
+
 BYTE                    AltTimer=0;
 WORD                    PrevRes=0;
 RECT                    BlitArea;
 
 extern "C" {
 DWORD                   MouseButton;
+DWORD                   SurfaceX=0;
+DWORD                   SurfaceY=0;
+
 }
 
 static char dinput8_dll[] = {"dinput8.dll\0"};
@@ -1409,7 +1410,7 @@ unsigned char Noise[]={ 27,232,234,138,187,246,176,81,25,241,1,127,154,190,195,1
 157,205,27,21,107,63,85,164};
 
    int X, Y;
-   DWORD Temp1;
+   DWORD pitch;
 	MSG msg;
    DWORD SurfBufD;
    int count, x,count2;
@@ -2015,14 +2016,16 @@ extern unsigned char * WinVidMemStart;
 extern void copy640x480x16bwin(void);
 extern unsigned char NGNoTransp;
 extern unsigned char newengen;
+extern void ClearWin16();
+extern void ClearWin32();
 
 void clearwin()
 {
    DWORD i,j,color32;
    DWORD *SURFDW;
 
-   Temp1=LockSurface();
-   if (Temp1==0) { return; }
+   pitch=LockSurface();
+   if (pitch==0) { return; }
 
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
@@ -2030,48 +2033,10 @@ void clearwin()
    switch (BitDepth)
    {
       case 16:
-         _asm {
-            push es
-            mov ax,ds
-            mov es,ax
-            xor eax,eax
-            mov edi,SurfBufD
-            xor ebx,ebx
-         Blank2:
-            xor eax,eax
-            mov ecx,SurfaceX
-            rep stosw
-            add edi,Temp1
-            sub edi,SurfaceX
-            sub edi,SurfaceX
-            add ebx,1
-            cmp ebx,SurfaceY
-            jne Blank2
-            pop es  // BUGFIX
-         }
+      ClearWin16();
          break;
       case 32:
-         _asm {
-            push es
-            mov ax,ds
-            mov es,ax
-            xor eax,eax
-            mov edi,SurfBufD
-            xor ebx,ebx
-         Blank3:
-            xor eax,eax
-            mov ecx,SurfaceX
-            rep stosd
-            add edi,Temp1
-            sub edi,SurfaceX
-            sub edi,SurfaceX
-            sub edi,SurfaceX
-            sub edi,SurfaceX
-            add ebx,1
-            cmp ebx,SurfaceY
-            jne Blank3
-            pop es  // BUGFIX
-         }
+      ClearWin32();
          break;
    }
    UnlockSurface();
@@ -2093,7 +2058,7 @@ void drawscreenwin(void)
    UpdateVFrame();
    if (curblank!=0) return;
 
-   if (!(Temp1 = LockSurface()))
+   if (!(pitch = LockSurface()))
    { 
       DD_Primary->Restore();
       DD_CFB->Restore();
@@ -2151,7 +2116,7 @@ void drawscreenwin(void)
                      dec ecx
                      jnz CopyLoop
                      inc eax            
-                     add edi,Temp1
+                     add edi,pitch
                      sub edi,512
                      sub esi,512
                      add esi,576
@@ -2177,7 +2142,7 @@ void drawscreenwin(void)
                      mov ecx,128
                      rep movsd
                      inc eax            
-                     add edi,Temp1
+                     add edi,pitch
                      sub edi,512
                      sub esi,512
                      add esi,576
@@ -2213,7 +2178,7 @@ void drawscreenwin(void)
                      jnz CopyLoop32b
                      pop eax
                      inc eax
-                     add edi,Temp1
+                     add edi,pitch
                      sub edi,1024
                      sub esi,512
                      add esi,576
@@ -2222,7 +2187,7 @@ void drawscreenwin(void)
                      pop es
                   }
 
-            SURFDW=(DWORD *) &SurfBuf[(resolutn-1)*Temp1];
+            SURFDW=(DWORD *) &SurfBuf[(resolutn-1)*pitch];
             color32=0x7F000000;
             
                for(i=0;i<256;i++)
@@ -2230,7 +2195,7 @@ void drawscreenwin(void)
                   SURFDW[i]=color32;
                }
 
-            SURFDW=(DWORD *) &SurfBuf[resolutn*Temp1];
+            SURFDW=(DWORD *) &SurfBuf[resolutn*pitch];
             color32=0x7F000000;
          
                for(i=0;i<256;i++)
@@ -2277,7 +2242,7 @@ void drawscreenwin(void)
                      mov ecx,160
                      rep stosd
                      sub edi,640
-                     add edi,Temp1
+                     add edi,pitch
                      add ebx,1
                      cmp ebx,8
                      jne Blank1MMX
@@ -2309,7 +2274,7 @@ void drawscreenwin(void)
                      dec ecx
                      jnz MMXLoopC
                      inc ebx
-                     add edi,Temp1
+                     add edi,pitch
                      sub edi,640
                      sub esi,512
                      add esi,576
@@ -2337,7 +2302,7 @@ void drawscreenwin(void)
                      mov ecx,160
                      rep stosd
                      sub edi,640
-                     add edi,Temp1
+                     add edi,pitch
                      add ebx,1
                      cmp ebx,8
                      jne Blank1
@@ -2352,7 +2317,7 @@ void drawscreenwin(void)
                      mov ecx,16
                      rep stosd
                      inc ebx
-                     add edi,Temp1
+                     add edi,pitch
                      sub edi,640
                      sub esi,512
                      add esi,576
@@ -2368,7 +2333,7 @@ void drawscreenwin(void)
       case 32:
             for(j=0;j<8;j++)
             {
-               SURFDW=(DWORD *) &SurfBuf[j*Temp1];
+               SURFDW=(DWORD *) &SurfBuf[j*pitch];
                color32=0x7F000000;
             
                for(i=0;i<320;i++)
@@ -2401,12 +2366,12 @@ void drawscreenwin(void)
                }
 
                ScreenPtr=ScreenPtr+576-512;
-               SURFDW=(DWORD *) &SurfBuf[(j)*Temp1];
+               SURFDW=(DWORD *) &SurfBuf[(j)*pitch];
             }
    
             for(j=((resolutn-1)+8);j<240;j++)
             {
-               SURFDW=(DWORD *) &SurfBuf[j*Temp1];
+               SURFDW=(DWORD *) &SurfBuf[j*pitch];
 
                color32=0x7F000000;
                for(i=0;i<320;i++)
@@ -2431,8 +2396,8 @@ void drawscreenwin(void)
       switch (BitDepth)
       {
          case 16:
-            AddEndBytes=Temp1-1024;
-            NumBytesPerLine=Temp1;
+            AddEndBytes=pitch-1024;
+            NumBytesPerLine=pitch;
             WinVidMemStart=&SurfBuf[0];
             _asm
             {
@@ -2456,8 +2421,8 @@ void drawscreenwin(void)
       switch (BitDepth)
       {
          case 16:
-            AddEndBytes=Temp1-1024;
-            NumBytesPerLine=Temp1;
+            AddEndBytes=pitch-1024;
+            NumBytesPerLine=pitch;
             WinVidMemStart=&SurfBuf[16*640*2+64*2];
             _asm
             {

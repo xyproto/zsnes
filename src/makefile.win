@@ -49,7 +49,7 @@ VIDEOBJ=${VIDEODIR}/makev16b.obj ${VIDEODIR}/makev16t.obj ${VIDEODIR}/makevid.ob
 	${VIDEODIR}/mode7ext.obj ${VIDEODIR}/mv16tms.obj ${VIDEODIR}/newg162.obj\
 	${VIDEODIR}/newgfx16.obj ${VIDEODIR}/newgfx2.obj ${VIDEODIR}/newgfx.obj\
         ${VIDEODIR}/m716text.obj ${VIDEODIR}/2xsaiw.obj\
-	${VIDEODIR}/procvid.obj
+	${VIDEODIR}/procvid.obj ${VIDEODIR}/sw_draw.obj
 
 WINOBJ=${WINDIR}/copyvwin.obj ${WINDIR}/winintrf.obj ${WINDIR}/winlink.obj\
 	${WINDIR}/zloaderw.obj ${WINDIR}/ztcp.obj ${WINDIR}/zipxw.obj\

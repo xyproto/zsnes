@@ -23,7 +23,7 @@ ALIGN 32
 
 EXTSYM SurfaceX,SurfaceY
 EXTSYM ScreenPtr,SurfBufD
-EXTSYM pitch, MMXSupport
+EXTSYM pitch,MMXSupport
 
 SECTION .text
 
@@ -44,6 +44,28 @@ NEWSYM ClearWin16
         jne .Blank2
         popad
         ret
+
+NEWSYM ClearWin32
+        push es
+        mov  ax,ds
+        mov  es,ax
+        xor  eax,eax
+        mov  edi, [SurfBufD]
+        xor  ebx,ebx
+.Blank3:
+        xor  eax,eax
+        mov  ecx, [SurfaceX]
+        rep  stosd
+        add  edi, [pitch]
+        sub  edi, [SurfaceX]
+        sub  edi, [SurfaceX]
+        sub  edi, [SurfaceX]
+        sub  edi, [SurfaceX]
+        add  ebx,1
+        cmp  ebx, [SurfaceY]
+        jne .Blank3
+        pop  es
+	ret
 
 NEWSYM DrawWin256x224x16
         pushad
