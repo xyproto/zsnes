@@ -286,7 +286,7 @@ void BackupCVFrame()
   //printf("Backing up rewind in slot #%u\n", CBackupPos);
   copy_state_data(RewindBufferPos, memcpyinc, false);
   if (MovieProcessing == 1) { zmv_rewind_save(CBackupPos, true); }
-  else if (MovieProcessing == 1) { zmv_rewind_save(CBackupPos, false); }
+  else if (MovieProcessing == 2) { zmv_rewind_save(CBackupPos, false); }
   RewindTimer = ActualRewindFrames;
 }
 
@@ -296,7 +296,7 @@ void RestoreCVFrame()
   //printf("Restoring rewind in slot #%u\n", PBackupPos);
   copy_state_data(RewindBufferPos, memcpyrinc, true);
   if (MovieProcessing == 1) { zmv_rewind_save(CBackupPos, true); }
-  else if (MovieProcessing == 1) { zmv_rewind_save(CBackupPos, false); }
+  else if (MovieProcessing == 2) { zmv_rewind_save(CBackupPos, false); }
   RewindTimer = ActualRewindFrames;
 }
 
