@@ -445,6 +445,10 @@ double ScreenLY1;
 double ScreenLZ1;
 int    ReversedLES;
 short Op02LESb;
+double NAzsB,NAasB;
+double ViewerXc;
+double ViewerYc;
+double ViewerZc;
 
 #define VofAngle 0x3880
 
@@ -478,6 +482,16 @@ DSPOp02()
 
    Op02CX=(short)(Op02CXF=ViewerX+ViewerX1*NumberOfSlope);
    Op02CY=(short)(Op02CYF=ViewerY+ViewerY1*NumberOfSlope);
+
+   ViewerXc=ViewerX;//-Op02FX);
+   ViewerYc=ViewerY;//-Op02FY);
+   ViewerZc=ViewerZ;//-Op02FZ);
+
+   NAzsB = (Op02AZS-0x4000)*6.2832/65536.0;
+   NAasB = Op02AAS*6.2832/65536.0;
+
+   Op02CX = (short)(-sin(NAasB)*ViewerZc/(tan(NAzsB))+ViewerXc);
+   Op02CY = (short)(cos(NAasB)*ViewerZc/(tan(NAzsB))+ViewerYc);
 
 //  [4/15/2001]   (ViewerX+ViewerX1*NumberOfSlope);
 //  [4/15/2001]   (ViewerY+ViewerY1*NumberOfSlope);
@@ -1022,11 +1036,12 @@ short Op0EH;
 short Op0EV;
 short Op0EX;
 short Op0EY;
+double NAzs,NAas;
 DSPOp0E()
 {
 
    // screen Directions UP
-   ScreenLZ1=-cos((Op02AZS-16384.0)*6.2832/65536.0);       // -16384.0
+/*   ScreenLZ1=-cos((Op02AZS-16384.0)*6.2832/65536.0);       // -16384.0
    ScreenLX1=sin((Op02AZS-16384.0)*6.2832/65536.0)*-sin(Op02AAS*6.2832/65536.0);
    ScreenLY1=-sin((Op02AZS-16384.0)*6.2832/65536.0)*-cos(-Op02AAS*6.2832/65536.0);
 
@@ -1057,7 +1072,16 @@ DSPOp0E()
    GroundLY=ViewerY+RasterLSlopeY*NumberOfSlope;
 
    Op0EX=(short)GroundLX;
-   Op0EY=(short)GroundLY;
+   Op0EY=(short)GroundLY;*/
+
+   NAzs = NAzsB - atan((double)Op0EV / (double)Op02LES);
+   NAas = NAasB + atan((double)Op0EH / (double)Op02LES);
+
+   if (tan(NAzs)==0) return;
+
+   Op0EX = (short)(-sin(NAas)*ViewerZc/(tan(NAzs))+ViewerXc);
+   Op0EY = (short)(cos(NAas)*ViewerZc/(tan(NAzs))+ViewerYc);
+
 
    #ifdef DebugDSP1
       Log_Message("OP0E COORDINATE H:%d V:%d",Op0EH,Op0EV);
