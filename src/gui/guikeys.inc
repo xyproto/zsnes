@@ -918,7 +918,7 @@ GUIOptionKeys:
 .noautopatch   
     cmp dh,'.'
     jne .norominfo
-;   xor byte[RomInfo],1
+    xor byte[RomInfo],1
 .norominfo   
 %ifdef __WIN32__
     cmp dh,'I'
@@ -954,7 +954,7 @@ GUISaveKeys:
 .noautostate
     cmp dh,'L'
     jne .nosramstate
-;   xor byte[SRAMState],1
+    xor byte[SRAMState],1
 .nosramstate
     ret
 

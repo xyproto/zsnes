@@ -1511,7 +1511,7 @@ DisplayGUIOption:
 .nocheckbox12
     GUIDisplayIconWin 4,11,140,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-;   cmp byte[RomInfo],0
+    cmp byte[RomInfo],0
     je .nocheckbox13
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox13
@@ -6509,7 +6509,7 @@ DisplayGUISave:
 .nocheckbox3
     GUIDisplayIconWin 20,11,50,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-;   cmp byte[SRAMState],0
+    cmp byte[SRAMState],0
     je .nocheckbox4
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox4
