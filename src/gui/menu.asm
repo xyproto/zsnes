@@ -1175,12 +1175,12 @@ NEWSYM savepcx
 .res224ph
 
     ; get unused filename
-    mov byte[.filename+5],'.'
-    mov byte[.filename+6],'p'
-    mov byte[.filename+7],'c'
-    mov byte[.filename+8],'x'
-    mov byte[.filename+9],0
-    mov word[picnum],1
+    mov byte[.filename+8],'.'
+    mov byte[.filename+9],'p'
+    mov byte[.filename+10],'c'
+    mov byte[.filename+11],'x'
+    mov byte[.filename+12],0
+    mov word[picnum],0
 .findagain
     mov edx,.filename
     call Open_File
@@ -1205,24 +1205,10 @@ NEWSYM savepcx
     add cl,48
     add al,48
     add dl,48
-    cmp cl,48
-    je .nohund
     mov byte[esi],cl
     mov byte[esi+1],al
     mov byte[esi+2],dl
     add esi,3
-    jmp .finproc
-.nohund
-    cmp al,48
-    je .noten
-    mov byte[esi],al
-    mov byte[esi+1],dl
-    add esi,2
-    jmp .finproc
-.noten
-    mov byte[esi],dl
-    inc esi
-.finproc
     mov byte[esi],'.'
     mov byte[esi+1],'p'
     mov byte[esi+2],'c'
@@ -1321,12 +1307,12 @@ NEWSYM savepcx
 .res224b
 
     ; get unused filename
-    mov byte[.filename2+5],'.'
-    mov byte[.filename2+6],'b'
-    mov byte[.filename2+7],'m'
-    mov byte[.filename2+8],'p'
-    mov byte[.filename2+9],0
-    mov word[picnum],1
+    mov byte[.filename2+8],'.'
+    mov byte[.filename2+9],'b'
+    mov byte[.filename2+10],'m'
+    mov byte[.filename2+11],'p'
+    mov byte[.filename2+12],0
+    mov word[picnum],0
 .findagain2
     mov edx,.filename2
     call Open_File
@@ -1351,24 +1337,10 @@ NEWSYM savepcx
     add cl,48
     add al,48
     add dl,48
-    cmp cl,48
-    je .nohund2
     mov byte[esi],cl
     mov byte[esi+1],al
     mov byte[esi+2],dl
     add esi,3
-    jmp .finproc2
-.nohund2
-    cmp al,48
-    je .noten2
-    mov byte[esi],al
-    mov byte[esi+1],dl
-    add esi,2
-    jmp .finproc2
-.noten2
-    mov byte[esi],dl
-    inc esi
-.finproc2
     mov byte[esi],'.'
     mov byte[esi+1],'b'
     mov byte[esi+2],'m'
@@ -1442,9 +1414,9 @@ NEWSYM savepcx
 
 SECTION .data
 .pcxsaved db 'SNAPSHOT SAVED TO '
-.filename db 'image.pcx',0,0,0,0
+.filename db 'image000.pcx',0,0,0,0
 .rawsaved db 'SNAPSHOT SAVED TO '
-.filename2 db 'image.bmp',0,0,0,0
+.filename2 db 'image000.bmp',0,0,0,0
 SECTION .bss
 .rowsleft resb 1
 .curdptr resd 1
@@ -1592,7 +1564,7 @@ NEWSYM save16b2
 
 SECTION .data
 .rawsaved db 'SNAPSHOT SAVED TO '
-.filename2 db 'image.bmp',0,0,0,0
+.filename2 db 'image000.bmp',0,0,0,0
 SECTION .bss
 .rowsleft resd 1
 .curdptr resd 1
