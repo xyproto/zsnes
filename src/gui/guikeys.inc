@@ -406,6 +406,8 @@ GUIgetcurrentinput:
     je near GUIComboKeys
     cmp ebx,19
     je near GUIPathKeys
+    cmp ebx,20
+    je near GUISaveKeys
     cmp ebx,8
     jne .notstartmenu
     cmp byte[CNetType],4
@@ -921,6 +923,33 @@ GUIOptionKeys:
 .noscreensaver
 %endif
     ret
+    
+GUISaveKeys:
+    cmp dh,'a'
+    jb .nocap
+    cmp dh,'z'
+    ja .nocap
+    sub dh,'z'-'Z'
+.nocap
+    cmp dh,'I'
+    jne .noautoincsave
+    xor byte[AutoIncSaveSlot],1
+    mov byte[firstsaveinc],1
+.noautoincsave
+    cmp dh,'C'
+    jne .nosramcheck
+    xor byte[SRAMSave5Sec],1
+.nosramcheck
+    cmp dh,'S'
+    jne .nostartsave
+    xor byte[LatestSave],1
+.nostartsave
+    cmp dh,'A'
+    jne .noautostate
+    xor byte[AutoState],1
+.noautostate
+    ret
+
 
 GUIGUIOptnsKeys:
     cmp dh,'a'

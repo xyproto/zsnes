@@ -234,6 +234,7 @@ NEWSYM WaterOn,  db 1
 ;                Video
 ;                Sound
 ;                Paths
+;                Saves        
 
 ; MultiPlay only has "Internet" for Windows/Linux
 
@@ -260,7 +261,7 @@ NEWSYM WaterOn,  db 1
 ;The first byte is the number of fields on the right not including the seperators
 MenuDat1 db 12, 3,1,1,1,1,1,1,1,1,1,0,1,2,0
 MenuDat2 db 8,  3,1,1,0,1,1,1,0,2,0,0
-MenuDat3 db 12, 3,1,1,1,1,0,1,1,0,1,1,1,2,0
+MenuDat3 db 13, 3,1,1,1,1,0,1,1,0,1,1,1,1,2,0
 MenuDat4 db 2,  3,1,2,0
 MenuDat5 db 1,  3,2,0
 MenuDat6 db 6,  3,1,1,1,1,0,2,0
@@ -303,6 +304,7 @@ GUIConfigMenuData
         db 1,'VIDEO       ',0
         db 1,'SOUND       ',0
         db 1,'PATHS       ',0
+        db 1,'SAVES       ',0
 GUICheatMenuData
         db 1,'ADD CODE    ',0
         db 1,'BROWSE      ',0
@@ -667,11 +669,11 @@ ModemPTimer  resd 1       ; Timer for modem process
 ModemOKStat  resb 1       ; OK is detected on modem status
 
 SECTION .data
-;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH
-GUIwinposxo dd 0,5   ,60  ,30  ,55  ,50  ,35  ,5   ,30  ,10   ,10   ,50  ,65  ,20  ,70  ,50  ,3   ,50  ,50  ,5
-GUIwinposyo dd 0,20  ,70  ,30  ,19  ,20  ,20  ,20  ,30  ,20   ,20   ,20  ,60  ,30  ,65  ,50  ,22  ,60  ,60  ,20
-GUIwinsizex dd 0,244 ,126 ,189 ,167 ,180 ,188 ,244 ,8*16,235  ,240  ,190 ,9*16,8*16,9*16,140 ,250 ,160 ,160 ,244
-GUIwinsizey dd 0,190 ,3*16,166 ,191 ,192 ,188 ,191 ,40  ,189  ,150  ,190 ,42  ,40  ,42  ,70  ,190 ,100 ,100 ,190
+;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE
+GUIwinposxo dd 0,5   ,60  ,30  ,55  ,50  ,35  ,5   ,30  ,10   ,10   ,50  ,65  ,20  ,70  ,50  ,3   ,50  ,50  ,5    ,50
+GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,20   ,20   ,20  ,60  ,30  ,65  ,50  ,22  ,60  ,60  ,20   ,60
+GUIwinsizex dd 0,244 ,126 ,189 ,167 ,180 ,188 ,244 ,8*16,235  ,240  ,190 ,9*16,8*16,9*16,140 ,250 ,160 ,160 ,244  ,160
+GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,189  ,150  ,190 ,42  ,40  ,42  ,70  ,190 ,100 ,100 ,190  ,100
 GUIwinptr   db 0
 
 section .bss
@@ -3412,6 +3414,7 @@ GUITryMenuItem:
 .novideo
     GUICheckMenuItem 6, 11
     GUICheckMenuItem 19, 12
+    GUICheckMenuItem 20, 13
 .noconfig
     cmp byte[romloadskip],0
     jne near .nocheat
@@ -3626,6 +3629,11 @@ DisplayBoxes:
     call DisplayGUIPaths
     jmp .finstuff
 .nopaths
+    cmp al,20
+    jne .nosave
+    call DisplayGUISave
+    jmp .finstuff
+.nosave
 .finstuff
     pop esi
     inc esi
@@ -3950,7 +3958,7 @@ DisplayMenu:
 .nomenu2
     cmp byte[GUIcmenupos],3
     jne near .nomenu3
-    GUIDrawMenuM 52,16,9,13,GUIConfigMenuData,54,57,22,149,42 ;19+13*10
+    GUIDrawMenuM 52,16,9,14,GUIConfigMenuData,54,57,22,159,42 ;19+14*10
     mov dword[GUICYLocPtr],MenuDat3
 .nomenu3
     cmp byte[GUIcmenupos],4

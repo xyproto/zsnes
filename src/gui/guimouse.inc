@@ -981,8 +981,9 @@ GUIWinClicked:
     je near DisplayGUIChipClick
     cmp ebx,19
     je near DisplayGUIPathsClick
+    cmp ebx,20
+    je near DisplayGUISaveClick
     ret
-
 %macro GUIClickCButton 3
     cmp eax,%1+1
     jl %%noclick
@@ -2279,28 +2280,24 @@ DisplayGUIOptionClick:
     jne near .invalidng
     GUIClickCButton2 11,30,byte[newengen],byte[cfgnewgfx],1
 .invalidng
-    GUIClickCButtonAS 11,40,byte[AutoIncSaveSlot]
-    GUIClickCButtonMMX 11,50,byte[MMXSupport]
-    GUIClickCButtonM 11,60,byte[pl12s34]
+    GUIClickCButtonMMX 11,40,byte[MMXSupport]
+    GUIClickCButtonM 11,50,byte[pl12s34]
 %ifdef __MSDOS__
-    GUIClickCButton 11,70,byte[SidewinderFix]
+    GUIClickCButton 11,60,byte[SidewinderFix]
 %endif
 %ifdef __WIN32__
-    GUIClickCButtonW 11,70,byte[HighPriority]
+    GUIClickCButtonW 11,60,byte[HighPriority]
 %endif
-    GUIClickCButton 11,80,byte[FPSAtStart]
-    GUIClickCButton 11,90,byte[Turbo30hz]
-    GUIClickCButton 11,100,byte[TimerEnable]
-    GUIClickCButton 11,110,byte[FastFwdToggle]
-    GUIClickCButton 11,120,byte[SRAMSave5Sec]
-    GUIClickCButtonO 11,130,byte[OldGfxMode2]
-    GUIClickCButton 11,140,byte[LatestSave]
-    GUIClickCButton 11,150,byte[AutoState]
-    GUIClickCButton 11,160,byte[DontSavePath]
-    GUIClickCButton 11,170,byte[SmallMsgText]
-    GUIClickCButton 11,180,byte[AutoPatch]
+    GUIClickCButton 11,70,byte[FPSAtStart]
+    GUIClickCButton 11,80,byte[Turbo30hz]
+    GUIClickCButton 11,90,byte[TimerEnable]
+    GUIClickCButton 11,100,byte[FastFwdToggle]
+    GUIClickCButtonO 11,110,byte[OldGfxMode2]
+    GUIClickCButton 11,120,byte[DontSavePath]
+    GUIClickCButton 11,130,byte[SmallMsgText]
+    GUIClickCButton 11,140,byte[AutoPatch]
 %ifdef __WIN32__
-    GUIClickCButtonW 11,190,byte[DisableScreenSaver]
+    GUIClickCButtonW 11,150,byte[DisableScreenSaver]
 %endif
     ; Frameskip = 0
     cmp byte[frameskip],0
@@ -3254,6 +3251,13 @@ DisplayGUIPathsClick
     GUITextBoxInputNach 135,155,235,165,9,1024    ;SJNSPath
     GUITextBoxInputNach 8,180,100,190,10,1024     ;MDHPath
     GUITextBoxInputNach 135,180,235,190,11,1024   ;SPL4Path
+    ret
+
+DisplayGUISaveClick:
+    GUIClickCButtonAS 11,20,byte[AutoIncSaveSlot]
+    GUIClickCButton 11,30,byte[SRAMSave5Sec]
+    GUIClickCButton 11,40,byte[LatestSave]
+    GUIClickCButton 11,50,byte[AutoState]
     ret
 
 DrawMouse:
