@@ -1539,10 +1539,6 @@ NEWSYM RDSPRegFF      ;
       ProcessGain2 %1
 %endmacro
 
-SECTION .bss
-NEWSYM ADSRGAINSwitch, resb 1
-SECTION .text
-
 ;Write DSP Registers functions
 
 NEWSYM WDSPReg00       ; Voice  0  Volume Left                                                                                                                                                                                                                                                     

@@ -28,7 +28,7 @@ EXTSYM FPSOn,FPSAtStart,cfgsoundon
 EXTSYM xa
 EXTSYM ram7fa,wramdataa
 EXTSYM malloc,free
-EXTSYM ADSRGAINSwitch,MMXSupport,ScreenScale,SoundQuality
+EXTSYM MMXSupport,ScreenScale,SoundQuality
 EXTSYM debugger,pl1contrl,pl2contrl,romtype,smallscreence
 EXTSYM smallscreenon,spcon
 EXTSYM statefileloc,LatestSave,firstsaveinc
