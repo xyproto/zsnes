@@ -756,7 +756,7 @@ void Start36HZ(void)
 	update_ticks_pc = UPDATE_TICKS_GUI;
 
 	//Quick fix for GUI CPU usage
-	usleep(1000);
+	if (GUIOn2) usleep(1000);
 
 	start = sem_GetTicks();
 	start2 = sem_GetTicks();
