@@ -5515,19 +5515,25 @@ DisplayGUIMovies:
 .displayboxa
     mov dword[GUIMovieTextA+9],'INAC'
     mov dword[GUIMovieTextA+13],'TIVE'
-    mov byte[GUIMovieTextA+17],' '
+    mov dword[GUIMovieTextA+17],'    '
     cmp byte[MovieProcessing],1
     jne .noplay
     mov dword[GUIMovieTextA+9],'PLAY'
     mov dword[GUIMovieTextA+13],'ING '
-    mov byte[GUIMovieTextA+17],' '
+    mov dword[GUIMovieTextA+17],'    '
 .noplay
     cmp byte[MovieProcessing],2
     jne .norec
     mov dword[GUIMovieTextA+9],'RECO'
     mov dword[GUIMovieTextA+13],'RDIN'
-    mov byte[GUIMovieTextA+17],'G'
+    mov dword[GUIMovieTextA+17],'G   '
 .norec
+    cmp byte[MovieProcessing],3
+    jne .nooldplay
+    mov dword[GUIMovieTextA+9],'OLD '
+    mov dword[GUIMovieTextA+13],'PLAY'
+    mov dword[GUIMovieTextA+17],'ING '
+.nooldplay
     DrawGUIButton 15,7,17,49,28,GUIMovieText1,16,0,0
     DrawGUIButton 15,7,33,49,44,GUIMovieText2,17,0,0
     DrawGUIButton 15,7,49,49,60,GUIMovieText3,18,0,0
@@ -5661,7 +5667,7 @@ GUIMovieText6 db '  FILE ALREADY EXISTS',0
 GUIMovieText7 db 'OKAY TO OVERWRITE?',0
 GUIMovieText8 db 'YES',0
 GUIMovieText9 db 'NO',0
-GUIMovieTextA db 'STATUS :           ',0
+GUIMovieTextA db 'STATUS :              ',0
 GUIMovieTextB db 'INSERT CHAPTER',0
 GUIMovieTextC db 'PREVIOUS CHAPTER',0
 GUIMovieTextD db 'NEXT CHAPTER',0

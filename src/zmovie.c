@@ -1519,13 +1519,15 @@ static void OldMoviePlay(FILE *fp)
     DSPMem[0x58] = 0;
     DSPMem[0x68] = 0;
     DSPMem[0x78] = 0;
+  
+    Msgptr = "OLD MOVIE REPLAYING.";
   }
   else
   {
     Msgptr = (!soundon) ? "MUST PLAY WITH SOUND ON." : "MUST PLAY WITH SOUND OFF.";
-    MessageOn = MsgCount;
     fclose(fp);
   }
+  MessageOn = MsgCount;  
 }
 
 
@@ -1683,7 +1685,7 @@ void MovieStop()
     SetMovieMode(MOVIE_OFF);
     SRAMState = PrevSRAMState;
   }
-  else { firstloop = false; }
+  else { firstloop = true; }
 }
 
 void MoviePlay()
