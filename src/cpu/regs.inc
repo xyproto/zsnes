@@ -63,6 +63,7 @@ NEWSYM initregr
     setreg 2141h*4,reg2141r
     setreg 2142h*4,reg2142r
     setreg 2143h*4,reg2143r
+    setreg 2144h*4,reg2144r
     setreg 2180h*4,reg2180r
     setreg 4016h*4,reg4016r
     setreg 4017h*4,reg4017r
@@ -827,6 +828,10 @@ reg2143r:
     mov byte[ebx+1],0EAh
 .notfound
     mov al,[xa+1]
+    ret
+
+reg2144r:
+    xor al,al
     ret
 
 ; WRAM Read
