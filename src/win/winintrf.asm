@@ -818,7 +818,8 @@ NEWSYM Get_Dir
 .noslash
     mov [eax],dl
     inc eax
-    loop .loop
+    dec ecx
+    jnz .loop
     popad
     push edx
     call _getdrive
@@ -1183,7 +1184,8 @@ NEWSYM vidpastecopyscr       ; GUI screen render
    mov bx,[GUICPC+ebx*2]
    mov [eax+edx*2],bx
    dec edx
-   loop .loop
+   dec ecx
+   jnz .loop
 .no16bconv
    popad
    jmp DrawScreen

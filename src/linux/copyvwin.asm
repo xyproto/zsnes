@@ -251,7 +251,8 @@ NEWSYM copy640x480x16bwin
 .fslloop
     mov dword[edi],0
     add edi,4
-    loop .fslloop
+    dec ecx
+    jnz .fslloop
     add edi,[AddEndBytes]
     inc ebx
     dec dl
@@ -844,7 +845,8 @@ Process2xSaIwin:
 .nextb
     mov dword[ebx],0FFFFFFFFh
     add ebx,4
-    loop .nextb
+    dec ecx
+    jnz .nextb
     pop ebx
     jmp .returninterp
 .ignorehr
@@ -896,7 +898,8 @@ Process2xSaIwin:
 .loop
     mov dword[es:edi],0
     add edi,4
-    loop .loop
+    dec ecx
+    jnz .loop
     pop es
     emms
     ret
@@ -1091,7 +1094,8 @@ MMXInterpolwin:
 .fslloop
     mov dword[edi],0
     add edi,4
-    loop .fslloop
+    dec ecx
+    jnz .fslloop
     add edi,[AddEndBytes]
     inc ebx
     mov ecx,64
@@ -1282,7 +1286,8 @@ NEWSYM interpolate640x480x16bwin
     add esi,2
     add edi,4
     add edx,4
-    loop .a
+    dec ecx
+    jnz .a
     add esi,66
     add edi,[AddEndBytes]
     add edi,4
@@ -1314,7 +1319,8 @@ NEWSYM interpolate640x480x16bwin
     add esi,2
     add edi,4
     add edx,4
-    loop .c
+    dec ecx
+    jnz .c
     add edi,4
     add edi,[AddEndBytes]
     mov edx,[spritetablea]
@@ -1324,7 +1330,8 @@ NEWSYM interpolate640x480x16bwin
     mov [edi],eax
     add edx,4
     add edi,4
-    loop .d
+    dec ecx
+    jnz .d
     add esi,66
     inc dword[InterPtr]
     add edi,[AddEndBytes]
@@ -1384,7 +1391,8 @@ NEWSYM interpolate640x480x16bwin
 .fslloop
     mov dword[edi],0
     add edi,4
-    loop .fslloop
+    dec ecx
+    jnz .fslloop
     add edi,[AddEndBytes]
     inc ebx
     dec dl
@@ -1421,7 +1429,8 @@ NEWSYM interpolate640x480x16bwin
 .fslloop2
     mov dword[edi],0
     add edi,4
-    loop .fslloop2
+    dec ecx
+    jnz .fslloop2
     add edi,[AddEndBytes]
     dec byte[lineleft]
     jnz near .loopab
