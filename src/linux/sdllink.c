@@ -16,7 +16,7 @@ typedef long long LARGE_INTEGER;
 #define STUB_FUNCTION fprintf(stderr,"STUB: %s at " __FILE__ ", line %d, thread %d\n",__FUNCTION__,__LINE__,getpid())
 
 // SOUND RELATED VARIABLES
-DWORD SoundBufferSize = 1024 * 18;
+// DWORD SoundBufferSize = 1; Not used in linux port
 DWORD FirstSound = 1;
 int AllowDefault = 0;
 int SoundEnabled = 1;
@@ -37,8 +37,7 @@ static DWORD FullScreen = 0;
 static int sdl_inited = 0;
 static int UseOpenGL = 0;
 extern unsigned char cvidmode;
-DWORD BitDepth = 0;	// Do NOT change this for ANY reason
-
+DWORD BitDepth = 0;	// Do NOT change this for ANY reason!
 // JOYSTICK AND KEYBOARD INPUT
 SDL_Joystick *JoystickInput[5];
 //DWORD CurrentJoy = 0;
@@ -67,10 +66,13 @@ DWORD CurMode = -1;
 extern BYTE GUIOn2;
 static BYTE IsActivated = 1;
 
-#define UPDATE_TICKS_GAME (1000.855001760297741789468390082/60.0)	// milliseconds per world update
-#define UPDATE_TICKS_GAMEPAL (1000/50.0)// milliseconds per world update
+//#define UPDATE_TICKS_GAME (1000.855001760297741789468390082/60.0)	// milliseconds per world update
+#define UPDATE_TICKS_GAME (1000/59.95)	// milliseconds per world update
+//#define UPDATE_TICKS_GAMEPAL (1000/50.0)// milliseconds per world update
+#define UPDATE_TICKS_GAMEPAL (20)// milliseconds per world update
 #define UPDATE_TICKS_GUI (1000/36.0)	// milliseconds per world update
-#define UPDATE_TICKS_UDP (1000/60.0)	// milliseconds per world update
+//#define UPDATE_TICKS_GUI (20)	// milliseconds per world update
+#define UPDATE_TICKS_UDP (1000/60)	// milliseconds per world update
 
 Uint32 end, end2;
 double start, start2;
@@ -263,7 +265,7 @@ int Main_Proc(void)
 					{
 						pressed[0x100 + event.jball.which * 32 + 8] = 1;
 						pressed[0x100 + event.jball.which * 32 + 9] = 0;
-					}
+				}
 				}
 				break;
 
@@ -479,8 +481,8 @@ int InitSound(void)
 	SDL_AudioSpec wanted;
 	const int freqtab[7] =
 		{ 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
-	const int samptab[7] = { 64, 64, 128, 256, 128, 256, 256 };
-
+	// const int samptab[7] = { 134, 184, 368, 735, 267, 534, 800 };
+	const int samptab[7] = { 1, 1, 2, 8, 2, 4, 8 };
 	SDL_CloseAudio();
 
 	if (!SoundEnabled)
@@ -506,9 +508,9 @@ int InitSound(void)
 
 	//wanted.samples = (wanted.freq / 60) * 2 * wanted.channels;
 	//wanted.samples = samptab[SoundQuality] * 2 * wanted.channels;
-	wanted.samples = samptab[SoundQuality] * 8 * wanted.channels;
-	//wanted.format = AUDIO_S16LSB;
-	wanted.format = AUDIO_S16;
+	wanted.samples = samptab[SoundQuality] * 256 * wanted.channels;
+	wanted.format = AUDIO_S16LSB;
+	//wanted.format = AUDIO_S16;
 	wanted.userdata = NULL;
 	wanted.callback = UpdateSound;
 
@@ -809,7 +811,7 @@ void CheckTimers(void)
 	}
 
 	if (T60HZEnabled)
-	{
+{
 		//QueryPerformanceCounter((LARGE_INTEGER*)&end);
 		end = SDL_GetTicks();
 
