@@ -164,7 +164,7 @@ NEWSYM SA1Swap
     ret
 
 .speedhack
-    add dh,30
+    add dh,50
 
     mov bl,[esi]
     inc esi
