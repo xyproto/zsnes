@@ -104,6 +104,7 @@ EXTSYM printnum
 EXTSYM SaveCombFile
 EXTSYM NetSent,valuea
 EXTSYM welcome
+EXTSYM showinfogui
 EXTSYM BackupCVFrame
 EXTSYM Wait1SecWin,ClearUDPStuff
 EXTSYM DisableSUDPPacket,EnableSUDPPacket

@@ -375,7 +375,6 @@ GUIloadfilename:
     mov dl,[LoadDrive]
     mov ebx,LoadDir
     call Change_Dir
-
     call CheatCodeLoad
 .nocheatload
     cmp byte[AutoState],0
@@ -391,6 +390,7 @@ GUIloadfilename:
     mov dl,[LoadDrive]
     mov ebx,LoadDir
     call Change_Dir
+    call showinfogui
     ret
 
 GUILoadData:

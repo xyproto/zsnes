@@ -205,6 +205,7 @@ NEWSYM init
     mov byte[romloadskip],0
     call loadfile
     call showinfo
+    call showinfogui
 .noloadfile
     call UpdateDevices
     call init65816
@@ -1920,91 +1921,13 @@ NEWSYM SPCSkipXtraROM, db 0
 NEWSYM WindowDisables, dd 0
 SECTION .text
 
-
 %macro helpclearmem 2
     mov edi,%1
     mov ecx,%2
     rep stosb
 %endmacro
 
-NEWSYM CSStatus, db '                    TYPE:     CHSUM:OK  ',0
-
 NEWSYM init65816
-    mov esi,[romdata]
-    add esi,7FC0h
-    cmp byte[romtype],2
-    jne .nohiromrn
-    add esi,8000h
-.nohiromrn
-    mov edi,CSStatus
-    mov ecx,20
-.looprn
-    mov al,[esi]
-    or al,al
-    jnz .okaysp
-    mov al,32
-.okaysp
-    mov [edi],al
-    inc esi
-    inc edi
-    dec ecx
-    jnz .looprn
-    mov dword[CSStatus+25],'NRM '
-    cmp byte[SA1Enable],0
-    je .nosa1
-    mov dword[CSStatus+25],'SA1 '
-.nosa1
-    cmp byte[RTCEnable],0
-    je .nortc
-    mov dword[CSStatus+25],'RTC '
-.nortc
-    cmp byte[SPC7110Enable],0
-    je .nospc7110
-    mov dword[CSStatus+25],'SP7 '
-.nospc7110
-    cmp byte[SFXEnable],0
-    je .nosfx
-    mov dword[CSStatus+25],'SFX '
-.nosfx
-    cmp byte[C4Enable],0
-    je .noc4
-    mov dword[CSStatus+25],'C4  '
-.noc4
-    cmp byte[DSP1Type],0
-    je .nodsp1
-    mov dword[CSStatus+25],'DSP '
-.nodsp1
-    cmp byte[SDD1Enable],0
-    je .nosdd1
-    mov dword[CSStatus+25],'SDD '
-.nosdd1
-    cmp byte[OBCEnable],0
-    je .noobc
-    mov dword[CSStatus+25],'OBC '
-.noobc
-
-    mov esi,[romdata]
-    add esi,7FDCh+2
-    cmp byte[romtype],2
-    jne .nohirom3
-    add esi,8000h
-.nohirom3
-    mov ax,[Checksumvalue]
-    cmp ax,[esi]
-    jne .failed
-.passed2
-    mov dword[CSStatus+36],'OK  '
-    jmp .passed
-.failed
-    mov ax,[Checksumvalue2]
-    cmp ax,[esi]
-    je .passed2
-    mov dword[CSStatus+36],'FAIL'
-.passed
-    mov dword[Msgptr],CSStatus
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-
     mov byte[osm2dis],0
     mov byte[bgfixer2],0
     mov word[ScrDispl],0
@@ -5191,6 +5114,84 @@ NEWSYM convertsram
     mov dl,[SRAMDrive]
     mov ebx,SRAMDir
     call Change_Dir
+    ret
+
+NEWSYM CSStatus, db '                    TYPE:     CHSUM:OK  ',0
+
+NEWSYM showinfogui
+    mov esi,[romdata]
+    add esi,7FC0h
+    cmp byte[romtype],2
+    jne .nohiromrn
+    add esi,8000h
+.nohiromrn
+    mov edi,CSStatus
+    mov ecx,20
+.looprn
+    mov al,[esi]
+    or al,al
+    jnz .okaysp
+    mov al,32
+.okaysp
+    mov [edi],al
+    inc esi
+    inc edi
+    dec ecx
+    jnz .looprn
+    mov dword[CSStatus+25],'NRM '
+    cmp byte[SA1Enable],0
+    je .nosa1
+    mov dword[CSStatus+25],'SA1 '
+.nosa1
+    cmp byte[RTCEnable],0
+    je .nortc
+    mov dword[CSStatus+25],'RTC '
+.nortc
+    cmp byte[SPC7110Enable],0
+    je .nospc7110
+    mov dword[CSStatus+25],'SP7 '
+.nospc7110
+    cmp byte[SFXEnable],0
+    je .nosfx
+    mov dword[CSStatus+25],'SFX '
+.nosfx
+    cmp byte[C4Enable],0
+    je .noc4
+    mov dword[CSStatus+25],'C4  '
+.noc4
+    cmp byte[DSP1Type],0
+    je .nodsp1
+    mov dword[CSStatus+25],'DSP '
+.nodsp1
+    cmp byte[SDD1Enable],0
+    je .nosdd1
+    mov dword[CSStatus+25],'SDD '
+.nosdd1
+    cmp byte[OBCEnable],0
+    je .noobc
+    mov dword[CSStatus+25],'OBC '
+.noobc
+    mov esi,[romdata]
+    add esi,7FDCh+2
+    cmp byte[romtype],2
+    jne .nohirom3
+    add esi,8000h
+.nohirom3
+    mov ax,[Checksumvalue]
+    cmp ax,[esi]
+    jne .failed
+.passed2
+    mov dword[CSStatus+36],'OK  '
+    jmp .passed
+.failed
+    mov ax,[Checksumvalue2]
+    cmp ax,[esi]
+    je .passed2
+    mov dword[CSStatus+36],'FAIL'
+.passed
+    mov dword[Msgptr],CSStatus
+    mov eax,[MsgCount]
+    mov [MessageOn],eax
     ret
 
 ;*******************************************************
