@@ -198,7 +198,7 @@ int pccmdline(void)
           {
             if(!hasroom) return 4;
             cvidmode=my_atoi(argv[p+1]);
-            if(cvidmode > 10) return 13;
+            if(cvidmode > 11) return 13;
             p++;
           }
           break;

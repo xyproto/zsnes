@@ -20,7 +20,7 @@
 EXTSYM AddSub256,InitVesa2,cbitmode,cvidmode,makepal
 EXTSYM scanlines,selcA000,vesa2_bits,vesa2_bpos,vesa2_clbit
 EXTSYM vesa2_gpos,vesa2_rpos,vesa2_usbit,vesa2_x,vesa2_y
-EXTSYM vesa2selec,InitVesa12,videotroub
+EXTSYM vesa2selec,InitVesa12,videotroub,cscopymodeq
 
 NEWSYM InitVidAsmStart
 
@@ -51,26 +51,28 @@ NEWSYM dosinitvideo
     mov byte[res640],0
     mov byte[res480],0
     cmp byte[cvidmode],0
-    je near .initmodeq
+    je near .initmodeq224
     cmp byte[cvidmode],1
-    je near .initmodex
+    je near .initmodeq
     cmp byte[cvidmode],2
-    je near .initvesa12640x480x16
+    je near .initmodex
     cmp byte[cvidmode],3
-    je near .initvesa2320x240x8
+    je near .initvesa12640x480x16
     cmp byte[cvidmode],4
-    je near .initvesa2320x240x16
+    je near .initvesa2320x240x8
     cmp byte[cvidmode],5
-    je near .initvesa2320x480x8
+    je near .initvesa2320x240x16
     cmp byte[cvidmode],6
-    je near .initvesa2320x480x16
+    je near .initvesa2320x480x8
     cmp byte[cvidmode],7
-    je near .initvesa2512x384x8
+    je near .initvesa2320x480x16
     cmp byte[cvidmode],8
-    je near .initvesa2512x384x16
+    je near .initvesa2512x384x8
     cmp byte[cvidmode],9
-    je near .initvesa2640x480x8
+    je near .initvesa2512x384x16
     cmp byte[cvidmode],10
+    je near .initvesa2640x480x8
+    cmp byte[cvidmode],11
     je near .initvesa2640x480x16
     ret
 
@@ -357,6 +359,132 @@ NEWSYM dosinitvideo
 ;    rep stosd
 ;    pop es
 ;    ret
+
+;*******************************************************
+; InitModeQ224              Sets up 256x224 chained mode
+;*******************************************************
+
+.initmodeq224
+    mov byte[cbitmode],0
+
+    mov ax,0013h
+    int 10h
+
+    ; enable writes
+    mov dx,03d4h
+    mov ax,0011h
+    out dx,ax
+    inc dx
+    in ax,dx
+    and ax,007fh
+    push ax
+    mov dx,03d4h
+    mov ax,0011h
+    out dx,ax
+    inc dx
+    pop ax
+    out dx,ax
+
+    ; tweak regs
+    mov dx,03c2h
+    mov ax,00e3h
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,1
+    out dx,ax
+    inc dx
+    mov ax,003fh
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,2
+    out dx,ax
+    inc dx
+    mov ax,0040h
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,4
+    out dx,ax
+    inc dx
+    mov ax,004ah
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,5
+    out dx,ax
+    inc dx
+    mov ax,009ah
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,6
+    out dx,ax
+    inc dx
+    mov ax,000bh
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,7
+    out dx,ax
+    inc dx
+    mov ax,003eh
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,9
+    out dx,ax
+    inc dx
+    mov ax,0061h
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,0010h
+    out dx,ax
+    inc dx
+    mov ax,00dah
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,0011h
+    out dx,ax
+    inc dx
+    mov ax,009ah
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,0012h
+    out dx,ax
+    inc dx
+    mov ax,00bfh
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,0013h
+    out dx,ax
+    inc dx
+    mov ax,0020h
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,0015h
+    out dx,ax
+    inc dx
+    mov ax,0007h
+    out dx,ax
+
+    mov dx,03d4h
+    mov ax,0016h
+    out dx,ax
+    inc dx
+    mov ax,001ah
+    out dx,ax
+
+    call cscopymodeq
+    call makepal
+
+    ret
 
 ;*******************************************************
 ; InitVESA2 320x240x8           Set up Linear 320x240x8b
