@@ -6180,7 +6180,7 @@ NEWSYM CheckROMType
     mov byte[DSP4Enable],0
 
     mov esi,[romdata]
-    mov byte[NumofBanks],128
+    cmp byte[NumofBanks],128
     jbe .notEHi
     mov ah,[esi + 040FFDFh]    
     mov al,[esi + 040FFDEh]
