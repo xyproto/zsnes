@@ -4191,6 +4191,9 @@ NEWSYM LatestBank, dd 0FFFFh
 NEWSYM memaccessbankr8sdd1
 ;    TestSDD1
 ;    jmp debugdecompress
+;    call FillArray
+    mov byte[.found4],0
+
     cmp byte[AddrNoIncr],0
     je near .failed
     cmp dword[Sdd1Mode],2
@@ -4212,6 +4215,10 @@ NEWSYM memaccessbankr8sdd1
     shl eax,4
     GetBankLog cl
     or al,cl
+    cmp dx,8192 ;eax,4f1591h
+    jbe .nota
+    mov byte[debstop3],1
+.nota
     mov ecx,[SPC7110Entries]
     mov edx,[spc7110romptr]
     or ecx,ecx
@@ -4225,12 +4232,15 @@ NEWSYM memaccessbankr8sdd1
 .found2
     mov eax,[edx+4]
     mov [SDD1EntryPtr],eax
+    mov byte[.found4],1
 .notfound
     pop ecx
     pop eax
     pop edx
 
     push eax
+    cmp byte[.found4],1
+    je near .nomore
     mov eax,[SDD1Entry]
     cmp eax,65536
     je near .nomore
@@ -4321,6 +4331,53 @@ NEWSYM memaccessbankr8sdd1
     pop ebx
     jmp memaccessbankr8
     ; Start Debug Decompressor
+.found4 db 0
+
+FillArray:
+    TestSDD1
+    push ecx
+    push eax
+    mov eax,[SDD1Entry]
+    cmp eax,65536
+    je near .nomore
+    push edx
+    xor edx,edx
+    or eax,eax
+    jz .noentries
+.trynext
+    cmp byte[SDD1Array+edx],bl
+    jne .nomatch
+    cmp byte[SDD1Array+edx+1],ch
+    jne .nomatch
+    cmp byte[SDD1Array+edx+2],cl
+    jne .nomatch
+    jmp .found
+.nomatch
+    add edx,8
+    cmp edx,eax
+    jne .trynext
+.noentries
+    pop edx
+    mov [SDD1Array+eax],bl
+    mov [SDD1Array+eax+1],ch
+    mov [SDD1Array+eax+2],cl
+    mov [SDD1Array+eax+3],dh
+    mov [SDD1Array+eax+4],dl
+    push ebx
+    GetBankLog bl
+    mov [SDD1Array+eax+7],bl
+    pop ebx
+    add dword[SDD1Entry],8
+.nomore
+    pop eax
+    jmp .decompress
+.found
+    pop edx
+    pop eax
+.decompress
+    pop ecx
+    ret
+
 
 debugdecompress:
     cmp byte[AddrNoIncr],0
