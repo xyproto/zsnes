@@ -1378,7 +1378,7 @@ void initwinvideo(void)
       if(Y>(GetSystemMetrics( SM_CYSCREEN )-WindowHeight)) Y=(GetSystemMetrics( SM_CYSCREEN )-WindowHeight);
       if(FullScreen==1) {X=0; Y=0;}
 
-      if (SaveMainWindowPos == 1) { MainWindowX = X; MainWindowY = Y; }
+      MainWindowX = X; MainWindowY = Y;
 
       MoveWindow( hMainWindow, X, Y,
                   WindowWidth, WindowHeight, TRUE );    
