@@ -132,6 +132,8 @@ EXTSYM IntlEHi
 EXTSYM CHIPBATT,SFXEnable,C4Enable,SPC7110Enable,RTCEnable,SA1Enable,SDD1Enable,OBCEnable
 EXTSYM SETAEnable,ST18Enable,SGBEnable,DSP1Enable,DSP2Enable,DSP3Enable,DSP4Enable,BSEnable
 
+EXTSYM calculate_state_sizes
+
 EXTSYM SetaCmdEnable,setaramdata
 EXTSYM setaaccessbankr8,setaaccessbankw8,setaaccessbankr8a,setaaccessbankw8a
 EXTSYM setaaccessbankr16,setaaccessbankw16,setaaccessbankr16a,setaaccessbankw16a
@@ -3166,6 +3168,7 @@ NEWSYM SetupROM
     mov [curromsize],cl
     pushad
     call SetupSramSize
+    call calculate_state_sizes
     popad
 
     ; get pal/ntsc
@@ -3200,9 +3203,6 @@ NEWSYM SetupROM
 NEWSYM CheckROMType
     pushad
     call BankCheck
-    popad    
-
-    pushad
     call MirrorROM
     popad    
 

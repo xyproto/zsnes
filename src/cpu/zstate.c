@@ -106,7 +106,7 @@ static unsigned int zst_version;
 #define loading_old_state (!buffer && read && (zst_version == 60))
 #define loading_state_no_sram (!buffer && read && !SRAMState)
 
-void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t), bool read)
+static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t), bool read)
 {
   copy_snes_data(&buffer, copy_func);
   
@@ -225,6 +225,7 @@ void RestoreCVFrame()
 }
 
 extern unsigned int RewindPos, RewindOldPos, RewindTimer;
+
 
 void InitRewindVars()
 {
@@ -545,6 +546,37 @@ static void write_save_state_data(unsigned char **dest, void *data, size_t len)
 static const char zst_header_old[] = "ZSNES Save State File V0.6\x1a\x3c";
 static const char zst_header_cur[] = "ZSNES Save State File V143\x1a\x3c";
 
+static size_t state_size;
+static void state_size_tally(unsigned char **dest, void *src, size_t len)
+{
+  state_size += len;
+}
+
+size_t rewind_state_size, cur_zst_size, old_zst_size;
+void calculate_state_sizes()
+{
+  state_size = 0;
+  copy_state_data(StateBackup, state_size_tally, false);
+  rewind_state_size = state_size;
+  
+  state_size = 0;
+  zst_version = 143;
+  copy_state_data(0, state_size_tally, false);
+  cur_zst_size = state_size + sizeof(zst_header_cur)-1;
+
+  state_size = 0;
+  zst_version = 60;
+  copy_state_data(0, state_size_tally, true);
+  old_zst_size = state_size + sizeof(zst_header_old)-1;
+
+  /*
+  printf("Rewind size: %u; ZST v1.43 size: %u; ZST v0.60 size: %u\n"
+         "ZST sizes with thumbnails. v1.43 size: %u; v0.60 size: %u\n", 
+         rewind_state_size, cur_zst_size, old_zst_size,
+         cur_zst_size + 64*56*sizeof(unsigned short), old_zst_size + 64*56*sizeof(unsigned short));
+  */
+}
+
 void PrepareOffset()
 {
   Curtableaddr -= (unsigned int)tableA;
@@ -623,10 +655,10 @@ void statesaver()
     if (cbitmode && !NoPictureSave)
     {
       CapturePicture();
-      fwrite(PrevPicture, 1, 64*56*2, fhandle);
+      fwrite(PrevPicture, 1, 64*56*sizeof(unsigned short), fhandle);
     }
     
-    fclose (fhandle);
+    fclose(fhandle);
   
     //Display message on the screen, 'STATE X SAVED.'
     if (fnamest[statefileloc] == 't')
