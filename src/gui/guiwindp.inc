@@ -4469,12 +4469,13 @@ DisplayGameOptns:
     mov al,byte[GUIGameOptnsColB]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 9,9,180,GUIGameOptnsText9
-    GUIOuttextwin2 9,9+57,180,GUIGameOptnsTextA
-    GUIOuttextwin2 9,9+114,180,GUIGameOptnsTextB
+    GUIOuttextwin2 9,9+52,180,GUIGameOptnsTextA
+    GUIOuttextwin2 9,9+109,180,GUIGameOptnsTextB
     GUIOuttextwin2 9,9,190,GUIGameOptnsTextQ
-    GUIOuttextwin2 9,9+57,190,GUIGameOptnsTextR
+    GUIOuttextwin2 9,9+53,190,GUIGameOptnsTextR
+    GUIOuttextwin2 9,9+160,180,GUIGameOptnsTextU
 %ifdef __WIN32__
-    GUIOuttextwin2 9,141,190,GUIGameOptnsTextU
+    GUIOuttextwin2 9,137,190,GUIGameOptnsTextV
 %endif
 
     mov byte[GUIGameOptnsColA],163
@@ -4575,12 +4576,13 @@ DisplayGameOptns:
     mov al,byte[GUIGameOptnsColB]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 9,8,179,GUIGameOptnsText9
-    GUIOuttextwin2 9,8+57,179,GUIGameOptnsTextA
-    GUIOuttextwin2 9,8+114,179,GUIGameOptnsTextB
+    GUIOuttextwin2 9,8+52,179,GUIGameOptnsTextA
+    GUIOuttextwin2 9,8+109,179,GUIGameOptnsTextB
     GUIOuttextwin2 9,8,189,GUIGameOptnsTextQ
-    GUIOuttextwin2 9,8+57,189,GUIGameOptnsTextR
+    GUIOuttextwin2 9,8+53,189,GUIGameOptnsTextR
+    GUIOuttextwin2 9,8+160,179,GUIGameOptnsTextU
 %ifdef __WIN32__
-    GUIOuttextwin2 9,140,189,GUIGameOptnsTextU
+    GUIOuttextwin2 9,136,189,GUIGameOptnsTextV
 %endif
 
     ; Draw black boxes
@@ -4628,12 +4630,13 @@ DisplayGameOptns:
     DGOptnsDrawBox 8+57+25,158,[KeyLoadState]
     DGOptnsDrawBox 8+114+25,158,[KeyStateSelct]
     DGOptnsDrawBox 8+25,178,[KeyQuickLoad]
-    DGOptnsDrawBox 8+57+31,178,[KeyQuickRst]
-    DGOptnsDrawBox 8+114+25,178,[KeyQuickExit]
+    DGOptnsDrawBox 8+57+26,178,[KeyQuickRst]
+    DGOptnsDrawBox 8+114+20,178,[KeyQuickExit]
+    DGOptnsDrawBox 8+114+78,178,[KeyQuickClock]
     DGOptnsDrawBox 8+25,188,[KeyQuickChat]
-    DGOptnsDrawBox 8+57+49,188,[KeyQuickSnapShot]
+    DGOptnsDrawBox 8+57+46,188,[KeyQuickSnapShot]
 %ifdef __WIN32__
-    DGOptnsDrawBox 8+111+70,188,[KeyQuickMinimize]
+    DGOptnsDrawBox 8+108+70,188,[KeyQuickMinimize]
 %endif
     ret
 
@@ -4669,7 +4672,8 @@ GUIGameOptnsTextQ db 'CHAT',0
 GUIGameOptnsTextR db 'SNAPSHOT',0
 GUIGameOptnsTextS db 'REWIND KEY',0
 GUIGameOptnsTextT db 'SLOWDWN KEY',0
-GUIGameOptnsTextU db 'MINIMIZE',0
+GUIGameOptnsTextU db 'CLOCK',0
+GUIGameOptnsTextV db 'MINIMIZE',0
 
 DisplayGUIOptns:
     GUIDrawWindowBox 10,GUIGUIDisp

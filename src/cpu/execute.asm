@@ -33,6 +33,7 @@ EXTSYM frameskip,initvideo,newgfx16b,oldhandSBo,oldhandSBs,soundon,cvidmode
 EXTSYM vidbuffer,vidbufferofsa,vidbufferofsb,disable65816sh,GUISaveVars,virqnodisable
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst,GUIDoReset
 EXTSYM KeyOnStA,KeyOnStB,ProcessKeyOn,printnum,sramsavedis,DSPDisable,C4Enable
+EXTSYM KeyQuickClock,KeyQuickMinimize,TimerEnable
 EXTSYM IRQHack,HIRQLoc,Offby1line,splitflags,joinflags,KeyQuickSnapShot
 EXTSYM csounddisable,videotroub,Open_File,Close_File,Read_File,ResetTripleBuf
 EXTSYM Write_File,Output_Text,Create_File,Check_Key,Get_Key,Change_Dir,InitPreGame
@@ -117,6 +118,10 @@ EXTSYM ReadSPC7110log,WriteSPC7110log
 
 NEWSYM ExecuteAsmStart
 EXTSYM NetPlayNoMore
+
+%ifdef __WIN32__
+EXTSYM MinimizeWindow
+%endif
 
 EXTSYM statefileloc
 
@@ -2240,9 +2245,9 @@ NEWSYM exitloop2
 NEWSYM exitloop
    ret
    cmp byte[nextmenupopup],1
-   je .okay
+   jmp .okay
    cmp byte[ExecExitOkay],0
-   je .okay
+   jmp .okay
    mov byte[pressed+1],0
    mov byte[pressed+59],0
    mov eax,[KeySaveState]
@@ -2257,6 +2262,10 @@ NEWSYM exitloop
    mov byte[pressed+eax],0
    mov byte[ExecExitOkay],5
    mov eax,[KeyQuickSnapShot]
+   mov byte[pressed+eax],0
+   mov eax,[KeyQuickClock]
+   mov byte[pressed+eax],0
+   mov eax,[KeyQuickMinimize]
    mov byte[pressed+eax],0
    mov byte[SSKeyPressed],0
    jmp cpuover.returntoloop
@@ -2740,6 +2749,27 @@ NEWSYM cpuover
     mov byte[pressed+eax],2
     jmp exitloop
 .nosskey
+    mov eax,dword[KeyQuickClock]
+    or eax,eax
+    jz .noclockkey
+    test byte[pressed+eax],1
+    jz .noclockkey
+    xor byte[TimerEnable],1
+    mov byte[pressed+eax],2
+.noclockkey
+%ifdef __WIN32__
+    mov eax,dword[KeyQuickMinimize]
+    or eax,eax
+    jz .nominimizekey
+    test byte[pressed+eax],1
+    jz .nominimizekey
+    pushad
+    call MinimizeWindow
+    popad
+    mov byte[pressed+eax],2
+    jmp exitloop
+.nominimizekey
+%endif
     test byte[pressed+1],01h
     jnz near exitloop
     test byte[pressed+59],01h

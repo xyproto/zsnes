@@ -2633,12 +2633,13 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 8+57+25,158,[KeyLoadState]
     DGOptnsProcBox 8+114+25,158,[KeyStateSelct]
     DGOptnsProcBox 8+25,178,[KeyQuickLoad]
-    DGOptnsProcBox 8+57+31,178,[KeyQuickRst]
-    DGOptnsProcBox 8+114+25,178,[KeyQuickExit]
+    DGOptnsProcBox 8+57+26,178,[KeyQuickRst]
+    DGOptnsProcBox 8+114+20,178,[KeyQuickExit]
+    DGOptnsProcBox 8+114+78,178,[KeyQuickClock]
     DGOptnsProcBox 8+25,188,[KeyQuickChat]
-    DGOptnsProcBox 8+57+49,188,[KeyQuickSnapShot]
+    DGOptnsProcBox 8+57+46,188,[KeyQuickSnapShot]
 %ifdef __WIN32__
-    DGOptnsProcBox 8+111+70,188,[KeyQuickMinimize]
+    DGOptnsProcBox 8+108+70,188,[KeyQuickMinimize]
 %endif
     ret
 
