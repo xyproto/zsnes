@@ -560,7 +560,11 @@ NEWSYM newengine16b
     mov dword[palchanged],0
 
     ; BG3 Priority
+    test byte[scaddset],2
+    jnz .noscaddset
     or [bgcmsung],ebx
+.noscaddset
+
     mov bl,[bg3highst]
     mov [BG3PRI+eax],bl
     cmp [BG3PRI+eax-1],bl
