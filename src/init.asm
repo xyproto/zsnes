@@ -89,8 +89,9 @@ EXTSYM GUIcurrentdir,extractzip,PrintStr
 ;STUB DDOI
 ;EXTSYM GUIcurrentdir, PrintStr
 EXTSYM GUIsmcfind,GUIsfcfind,GUIswcfind,GUIfigfind,GUIfind058,GUIfind078,GUIfindBIN
-;EXTSYM GUIfindUSA,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall,ZipError
-EXTSYM GUIfindUSA,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall
+EXTSYM GUImgdfind,GUIufofind
+;EXTSYM GUIfindUSA,GUIfindEUR,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall,ZipError
+EXTSYM GUIfindUSA,GUIfindEUR,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall
 EXTSYM spc7110romptr,allocspc7110
 EXTSYM SRAMDir,SRAMDrive,cfgloadsdir,fnamest,statefileloc
 EXTSYM ForcePal,ForceROMTiming,ForceHiLoROM,InitDir,InitDrive,enterpress,frameskip
@@ -4210,9 +4211,12 @@ UnZipFile:
     UnZipSearch GUIsfcfind
     UnZipSearch GUIswcfind
     UnZipSearch GUIfigfind
+    UnZipSearch GUImgdfind
+    UnZipSearch GUIufofind
     UnZipSearch GUIfind058
     UnZipSearch GUIfind078
     UnZipSearch GUIfindUSA
+    UnZipSearch GUIfindEUR
     UnZipSearch GUIfindJAP
     UnZipSearch GUIfindBIN
     UnZipSearch GUIfindZIP

@@ -579,12 +579,15 @@ GetNormalEntries2:
     GUIGetEntry2 GUIsfcfind
     GUIGetEntry2 GUIswcfind
     GUIGetEntry2 GUIfigfind
+    GUIGetEntry2 GUImgdfind
+    GUIGetEntry2 GUIufofind
     %ifndef __MSDOS__
     GUIGetEntry2 GUIfindGZIP
     %endif
     GUIGetEntry2 GUIfind058
     GUIGetEntry2 GUIfind078
     GUIGetEntry2 GUIfindUSA
+    GUIGetEntry2 GUIfindEUR
     GUIGetEntry2 GUIfindJAP
     GUIGetEntry2 GUIfindBIN
 ;    cmp byte[OSPort],1
@@ -605,12 +608,15 @@ GetNormalEntries:
     GUIGetEntry GUIsfcfind
     GUIGetEntry GUIswcfind
     GUIGetEntry GUIfigfind
+    GUIGetEntry GUImgdfind
+    GUIGetEntry GUIufofind
     %ifndef __MSDOS__
     GUIGetEntry GUIfindGZIP
     %endif
     GUIGetEntry GUIfind058
     GUIGetEntry GUIfind078
     GUIGetEntry GUIfindUSA
+    GUIGetEntry GUIfindEUR
     GUIGetEntry GUIfindJAP
     GUIGetEntry GUIfindBIN
 ;    cmp byte[OSPort],1
@@ -769,12 +775,15 @@ GetLoadLfn:
     GUIGetEntryLFN GUIsfcfind
     GUIGetEntryLFN GUIswcfind
     GUIGetEntryLFN GUIfigfind
+    GUIGetEntryLFN GUImgdfind
+    GUIGetEntryLFN GUIufofind
     %ifndef __MSDOS__
     GUIGetEntryLFN GUIfindGZIP
     %endif
     GUIGetEntryLFN GUIfind058
     GUIGetEntryLFN GUIfind078
     GUIGetEntryLFN GUIfindUSA
+    GUIGetEntryLFN GUIfindEUR
     GUIGetEntryLFN GUIfindJAP
     GUIGetEntryLFN GUIfindBIN
     GUIGetEntryLFN GUIfindZIP
@@ -1430,22 +1439,28 @@ NEWSYM GUIsmcfind,    db '*.[sS][mM][cC]',0
 NEWSYM GUIsfcfind,    db '*.[sS][fF][cC]',0
 NEWSYM GUIswcfind,    db '*.[sS][wW][cC]',0
 NEWSYM GUIfigfind,    db '*.[fF][iI][gG]',0
+NEWSYM GUImgdfind,    db '*.[mM][gG][dD]',0
+NEWSYM GUIufofind,    db '*.[uU][fF][oO]',0
 %else
 NEWSYM GUIsmcfind,    db '*.SMC',0
 NEWSYM GUIsfcfind,    db '*.SFC',0
 NEWSYM GUIswcfind,    db '*.SWC',0
 NEWSYM GUIfigfind,    db '*.FIG',0
+NEWSYM GUImgdfind,    db '*.MGD',0
+NEWSYM GUIufofind,    db '*.UFO',0
 %endif
 NEWSYM GUIfind058,    db '*.058',0
 NEWSYM GUIfind078,    db '*.078',0
 %ifdef __LINUX__
 NEWSYM GUIfindUSA,    db '*.[uU][sS][aA]',0
+NEWSYM GUIfindEUR,    db '*.[eE][uU][rR]',0
 NEWSYM GUIfindJAP,    db '*.[jJ][aA][pP]',0
 NEWSYM GUIfindBIN,    db '*.[bB][iI][nN]',0
 NEWSYM GUIfindZIP,    db '*.[zZ][iI][pP]',0
 NEWSYM GUIfindGZIP,    db '*.[gG][zZ]',0
 %else
 NEWSYM GUIfindUSA,    db '*.USA',0
+NEWSYM GUIfindEUR,    db '*.EUR',0
 NEWSYM GUIfindJAP,    db '*.JAP',0
 NEWSYM GUIfindBIN,    db '*.BIN',0
 NEWSYM GUIfindZIP,    db '*.ZIP',0

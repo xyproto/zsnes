@@ -1154,7 +1154,8 @@ SECTION .data
           db '  -zs #   Auto load specified save state slot on startup',13,10
 ; FIX STATMAT          
           db '',13,10
-          db '  File Formats Supported by GUI : .SMC,.SFC,.SWC,.FIG,.058,.078,.1,.USA,.JAP',13,10
+          db '  File Formats Supported by GUI : .SMC,.SFC,.SWC,.FIG,.MGD,.UFO,.BIN,',13,10
+          db '                                  .058,.078,.1,.USA,.EUR,.JAP',13,10
 %ifdef __MSDOS__
           db '',13,10
           db '  Microsoft-style options (/option) are also accepted',13,10
