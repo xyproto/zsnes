@@ -550,7 +550,7 @@ NEWSYM KeySlowDown, dd 0
 
 NEWSYM UseCubicSpline, db 1
 
-NEWSYM LargeSoundBuf, db 0
+NEWSYM ExclusiveSound, db 0
 NEWSYM HighPriority, db 0
 NEWSYM AlwaysOnTop, db 0
 NEWSYM SaveMainWindowPos, db 1

@@ -183,7 +183,7 @@ unsigned char keyboardhit=0;
 void initwinvideo();
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
-extern BYTE LargeSoundBuf;
+extern BYTE ExclusiveSound;
 extern BYTE HighPriority;
 extern BYTE AlwaysOnTop;
 extern BYTE SaveMainWindowPos;
@@ -475,8 +475,19 @@ InitSound()
    PrevStereoSound=StereoSound;
 
 	if(DS_OK == DirectSoundCreate8(NULL, &lpDirectSound,NULL))
-	{    
-          if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL))
+	{
+          if (ExclusiveSound == 0)
+          {
+             if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL))
+             {
+                if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
+                {
+                   SoundEnabled=0;
+                   return FALSE;
+                }
+             }
+          }
+          else
           {
              if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
              {
@@ -525,11 +536,6 @@ InitSound()
       default:
          wfx.nSamplesPerSec = 11025;
          SoundBufferSize=1024*2;
-   }
-
-   if (LargeSoundBuf == 1)
-   {
-      SoundBufferSize*=2;
    }
 
    if(StereoSound==1)

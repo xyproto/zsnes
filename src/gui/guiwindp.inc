@@ -2189,7 +2189,7 @@ DisplayGUISound:
 .nocheckbox42
 %ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[LargeSoundBuf],0
+    cmp byte[ExclusiveSound],0
     je .nocheckbox43
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox43
@@ -2306,7 +2306,7 @@ GUISoundTextCb db '48000HZ',0
 GUISoundTextD db '---%',0
 GUISoundTextH db 'REVERSE STEREO',0
 GUISoundTextI db 'SURROUND SOUND',0
-GUISoundTextIb db 'LARGE SOUND BUFFER',0
+GUISoundTextIb db 'EXCLUSIVE MODE',0
 GUISoundTextJ db 'SOUND INTERPOLATION',0
 GUISoundTextK db 'LOW PASS FILTER',0
 GUISoundTextL db 'SOUND BUFFERING',0

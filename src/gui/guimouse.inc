@@ -2221,7 +2221,7 @@ DisplayGUISoundClick:
 %endif
 ;.win32sound
 %ifdef __WIN32__
-    GUIClickCButton 11,121,byte[LargeSoundBuf]
+    GUIClickCButton 11,121,byte[ExclusiveSound]
 %endif
     GUIClickCButton 11,131,byte[InterSound]
     GUIClickCButton 11,141,byte[LowPassFilter]
