@@ -6534,19 +6534,138 @@ DisplayGUIPaths:
     GUIOuttextwin2 19,7,172,GUIPathsTextC
     GUIOuttextwin2 19,134,172,GUIPathsTextD
 
-    ;Input boxes - alternate color
-    DrawGUIWinBox  19,74,14,232,26,177
-    DrawGUIWinBox  19,74,34,232,46,177
-    DrawGUIWinBox  19,74,54,232,66,177
-    DrawGUIWinBox  19,7,94,107,106,177
-    DrawGUIWinBox  19,7,119,107,131,177
-    DrawGUIWinBox  19,134,94,236,106,177
-    DrawGUIWinBox  19,134,119,236,131,177
-    DrawGUIWinBox  19,7,154,107,166,177
-    DrawGUIWinBox  19,7,179,107,191,177
-    DrawGUIWinBox  19,134,154,236,166,177
-    DrawGUIWinBox  19,134,179,236,191,177
-
+    ; Draw borders
+    mov dword[GUIWincol],148+10 
+    cmp byte[cwindrawn],1
+    jne .noone3
+    mov dword[GUIWincol],148+5
+.noone3
+    cmp byte[cwindrawn],0
+    jne .nozero3
+    mov dword[GUIWincol],148
+.nozero3
+    mov dl,[GUIWincol]                   ; Saves Border
+    DrawGUIWinBox 19,75,14,231,14,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 19,74,15,74,25,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 19,75,26,231,26,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 19,232,15,232,25,dl
+    mov dl,[GUIWincol]                   ; Snapshots Border
+    DrawGUIWinBox 19,75,34,231,34,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 19,74,35,74,45,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 19,75,46,231,46,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 19,232,35,232,45,dl
+    mov dl,[GUIWincol]                   ; SPCs Border
+    DrawGUIWinBox 19,75,54,231,54,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 19,74,55,74,65,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 19,75,66,231,66,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 19,232,55,232,65,dl
+    mov dl,[GUIWincol]                   ; BS-X Border
+    DrawGUIWinBox 19,8,94,106,94,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 19,7,95,74,105,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 19,8,106,106,106,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 19,107,95,107,105,dl
+    mov dl,[GUIWincol]                   ; SAME GAME Border
+    DrawGUIWinBox 19,8,119,106,119,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 19,7,120,7,130,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 19,8,131,106,131,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 19,107,120,107,130,dl
+    mov dl,[GUIWincol]                   ; FEOEZ Border
+    DrawGUIWinBox 19,8,154,106,154,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 19,7,155,7,165,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 19,8,166,106,166,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 19,107,155,107,165,dl
+    mov dl,[GUIWincol]                   ; MDH Border
+    DrawGUIWinBox 19,8,179,106,179,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 19,7,180,7,190,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 19,8,191,106,191,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 19,107,180,107,190,dl
+    mov dl,[GUIWincol]                   ; Sufami Turbo Border
+    DrawGUIWinBox 19,135,94,235,94,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 19,134,95,134,105,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 19,135,106,235,106,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 19,236,95,236,105,dl    
+    mov dl,[GUIWincol]                   ; SD GUNDAM Border
+    DrawGUIWinBox 19,135,119,235,119,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 19,134,120,134,130,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 19,135,131,235,131,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 19,236,120,236,130,dl    
+    mov dl,[GUIWincol]                   ; FEOEZ SJNS Border
+    DrawGUIWinBox 19,135,154,235,154,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 19,134,155,134,165,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 19,135,166,235,166,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 19,236,155,236,165,dl    
+    mov dl,[GUIWincol]                   ; SPL4 Border
+    DrawGUIWinBox 19,135,179,235,179,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 19,134,180,134,190,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 19,135,191,235,191,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 19,236,180,236,190,dl   
+    ; End draw borders  
     ;Input boxes
     DrawGUIWinBox  19,75,15,231,25,167
     DrawGUIWinBox  19,75,35,231,45,167
