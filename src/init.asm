@@ -1451,6 +1451,8 @@ headerhack2:
 
 .mmx2head db 50,58,56,62,50,62,49,95,39,77,95,95,95,95,95,95,95,95,95,95
 
+EXTSYM ewj2hack
+
 NEWSYM headerhack
     mov byte[disablehdma],0
     mov byte[Offby1line],0
@@ -1766,7 +1768,12 @@ NEWSYM headerhack
     call Checkheadersame
     cmp al,0
     jne .noromhead2
-    mov byte[execatzerovirq],1
+    mov esi,[romdata]
+    add esi,02A9C1Ah
+    mov word [esi],0
+    add esi, 5
+    mov word [esi],0
+    mov dword [ewj2hack],1
 .noromhead2
 
     ; Lamborgini Challenge - -p 110

@@ -1137,7 +1137,62 @@ NEWSYM indirectaddr
 .tempdecr db 0
 .fname2 db 9,'vram2.dat',0
 
+EXTSYM spcRam
+NEWSYM ewj2hack, dd 0
+
 NEWSYM hdmatype2indirect
+    cmp dword [ewj2hack],1
+    jne near .notend
+    cmp byte [esi+1],40h ; Writing to spc
+    jne near .notend 
+    cmp byte [esi+10],0DAh ; first transfer
+    jne near .notend
+    ; EWJ2 HACK
+;    int 3h
+    push eax
+    push ebx
+    push ecx
+    push edx
+    xor eax,eax
+    xor ebx,ebx
+    xor ecx,ecx
+    xor edx,edx
+    mov ax,word[spcRam+021h] ; load dest offset
+    mov dword [.dest],spcRam
+    add [.dest],eax
+    mov dl,byte[esi+10] ; number of bytes to transfer
+    sub dl,80h
+.inloop
+    xor ebx,ebx
+    xor ecx,ecx
+    mov bl,[esi+7]
+    mov cx,[esi+5]
+    inc word[esi+5]
+    call dword near [memtabler8+ebx*4]
+    mov ebx,[.dest]
+    mov byte [ebx],al
+    inc ebx
+    mov [.dest],ebx
+    xor ebx,ebx
+    xor ecx,ecx
+    mov bl,[esi+7]
+    mov cx,[esi+5]
+    inc word[esi+5]
+    call dword near [memtabler8+ebx*4]
+    mov ebx,[.dest]
+    mov byte [ebx],al
+    inc ebx
+    mov [.dest],ebx
+    dec edx
+    jnz .inloop
+    sub word[esi+5],5Ah
+    sub word[esi+5],5Ah
+    pop edx
+    pop ecx
+    pop ebx
+    pop eax
+.notend
+
     mov al,[edx+16]
     mov [.tempdecr],al
     xor ebx,ebx
@@ -1176,135 +1231,7 @@ NEWSYM hdmatype2indirect
     dec byte[esi+10]
     ret
 
-.tempdecr db 0
-
-
-NEWSYM dohdma2
-    ; new hdma routines
-    xor ebx,ebx
-    push eax
-    test [hdmatype],ah
-    jz .nostart
-    xor ah,0FFh
-    xor ecx,ecx
-    and [hdmatype],ah
-    test byte[esi],40h
-    jnz near .indir
-    mov bl,[esi+4]
-    mov cx,[esi+8]
-    call dword near [memtabler8+ebx*4]
-    inc word[esi+8]
-    xor ebx,ebx
-    mov [esi+10],al
-    jmp .nostart
-.indir
-    mov bl,[esi+4]
-    mov [esi+7],bl
-    mov cx,[esi+2]
-    mov [esi+5],cx
-    call dword near [memtabler8+ebx*4]
-    xor ebx,ebx
-    inc word[esi+5]
-    mov bl,[esi+7]
-    mov [esi+10],al
-    mov cx,[esi+5]
-    call dword near [memtabler8+ebx*4]
-    xor ebx,ebx
-    inc word[esi+5]
-    mov bl,[esi+7]
-    mov [esi+8],al
-    mov cx,[esi+5]
-    call dword near [memtabler8+ebx*4]
-    inc word[esi+5]
-    mov [esi+9],al
-    xor ebx,ebx
-.nostart
-
-    cmp byte[esi+10],0
-    je near .endhdma
-    mov bl,[esi+4]
-    mov al,[edx+16]
-    mov [.tempdecr],al
-    xor ecx,ecx
-    mov bl,[esi+4]
-    mov cx,[esi+8]         ; increment/decrement/keep pointer location
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx]
-    dec byte[.tempdecr]
-    jz .nomorehdma
-    xor ebx,ebx
-    mov cx,[esi+8]         ; increment/decrement/keep pointer location
-    mov bl,[esi+4]
-    inc cx
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx+4]
-    dec byte[.tempdecr]
-    jz .nomorehdma
-    xor ebx,ebx
-    mov cx,[esi+8]         ; increment/decrement/keep pointer location
-    mov bl,[esi+4]
-    add cx,2
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx+8]
-    dec byte[.tempdecr]
-    jz .nomorehdma
-    xor ebx,ebx
-    mov cx,[esi+8]         ; increment/decrement/keep pointer location
-    mov bl,[esi+4]
-    add cx,3
-    call dword near [memtabler8+ebx*4]
-    call dword near [edx+12]
-.nomorehdma
-    dec byte[esi+10]
-    test byte[esi+10],7Fh
-    jz .zeroed
-    test byte[esi+10],80h
-    jz .noadd
-    xor ebx,ebx
-    mov bl,[edx+16]
-    add [esi+8],bx
-.noadd
-    pop eax
-    ret
-.zeroed
-    test byte[esi],40h
-    jnz near .indirzero
-    xor ebx,ebx
-    mov bl,[edx+16]
-    add [esi+8],bx
-    mov bl,[esi+4]
-    mov cx,[esi+8]
-    call dword near [memtabler8+ebx*4]
-    inc word[esi+8]
-    mov [esi+10],al
-    pop eax
-    ret
-.indirzero
-    xor ebx,ebx
-    mov bl,[esi+7]
-    mov cx,[esi+5]
-    call dword near [memtabler8+ebx*4]
-    xor ebx,ebx
-    inc word[esi+5]
-    mov bl,[esi+7]
-    mov [esi+10],al
-    mov cx,[esi+5]
-    call dword near [memtabler8+ebx*4]
-    xor ebx,ebx
-    inc word[esi+5]
-    mov bl,[esi+7]
-    mov [esi+8],al
-    mov cx,[esi+5]
-    call dword near [memtabler8+ebx*4]
-    inc word[esi+5]
-    mov [esi+9],al
-    pop eax
-    ret
-.endhdma
-    pop eax
-    xor [nexthdma],ah
-    ret
-
+.dest dd 0
 .tempdecr db 0
 
 NEWSYM exechdma
