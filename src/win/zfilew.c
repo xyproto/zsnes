@@ -21,7 +21,7 @@
 #include <io.h>
 #include <direct.h>
 #include <string.h>
-#include <zlib.h>
+#include "../zip/zlib.h"
 
 #define DWORD unsigned int
 #define BYTE unsigned char
