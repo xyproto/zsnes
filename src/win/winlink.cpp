@@ -563,6 +563,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          if (LOWORD(wParam) == WA_INACTIVE)
          {
             IsActivated = 0;
+            InputDeAcquire();
             if (GUIOn2 == 1) SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
             CheckScreenSaver();
          }
