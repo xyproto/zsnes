@@ -129,8 +129,6 @@ DWORD                   MouseButton;
 
 _int64 start, end, freq, update_ticks_pc, start2, end2, update_ticks_pc2;
 
-BYTE AlternateTimer=0;
-
 extern "C"
 {
    void drawscreenwin(void);
@@ -190,6 +188,7 @@ extern BYTE ExclusiveSound;
 extern BYTE HighPriority;
 extern BYTE AlwaysOnTop;
 extern BYTE SaveMainWindowPos;
+extern BYTE AlternateTimer;
 extern signed short int MainWindowX;
 extern signed short int MainWindowY;
 extern int CurKeyPos;

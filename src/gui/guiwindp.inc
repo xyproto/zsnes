@@ -1355,6 +1355,9 @@ DisplayGUIOption:
 %ifdef __MSDOS__
     GUIOuttextwin2u 4,26,51,GUIOptionText5,0
 %endif
+%ifdef __WIN32__
+    GUIOuttextwin2u 4,26,51,GUIOptionText5b,0
+%endif
 ;.win32b
     GUIOuttextwin2u 4,26,61,GUIOptionText6,0
     GUIOuttextwin2u 4,26,71,GUIOptionText7,0
@@ -1365,7 +1368,7 @@ DisplayGUIOption:
 %endif
 ;.win32b2
 %ifdef __WIN32__
-    GUIOuttextwin2u 4,26,81,GUIOptionTextAb,0
+    GUIOuttextwin2u 4,26,81,GUIOptionTextAb,1
 %endif
     GUIOuttextwin2u 4,26,91,GUIOptionTextB,0
     GUIOuttextwin2u 4,26,101,GUIOptionTextC,2
@@ -1386,6 +1389,9 @@ DisplayGUIOption:
 ;    je near .win32c
 %ifdef __MSDOS__
     GUIOuttextwin2 4,25,50,GUIOptionText5
+%endif
+%ifdef __WIN32__
+    GUIOuttextwin2 4,25,50,GUIOptionText5b
 %endif
 ;.win32c
     GUIOuttextwin2 4,25,60,GUIOptionText6
@@ -1429,17 +1435,24 @@ DisplayGUIOption:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
     GUIDisplayIconWin 4,11,36,[GUITemp]
+%ifdef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[vsyncon],0
     je .nocheckbox2
     mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox2
 ;    cmp byte[OSPort],3
 ;    je near .win32
-%ifdef __MSDOS__
     GUIDisplayIconWin 4,11,46,[GUITemp]
 %endif
 ;.win32
+%ifdef __WIN32__
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[HighPriority],0
+    je .nocheckbox2
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+%endif
+.nocheckbox2
+    GUIDisplayIconWin 4,11,46,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[FPUCopy],2
     jne .nocheckbox3
@@ -1465,7 +1478,7 @@ DisplayGUIOption:
 ;.win322
 %ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[HighPriority],0
+    cmp byte[AlternateTimer],0
     je .win323
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .win323
@@ -1580,10 +1593,11 @@ GUIOptionText2 db 'AUTO FRAME RATE',0
 GUIOptionText3 db 'MAX FRAME SKIP',0
 GUIOptionText4 db 'NEW GFX ENGINE',0
 GUIOptionText5 db 'VSYNC',0
+GUIOptionText5b db 'HIGH PRIORITY MODE',0
 GUIOptionText6 db 'MMX SUPPORT',0
 GUIOptionText7 db 'USE PL3/4 AS PL1/2',0
 GUIOptionTextA db 'SIDEWINDER FIX',0
-GUIOptionTextAb db 'HIGH PRIORITY MODE',0
+GUIOptionTextAb db 'USE ALTERNATE TIMER',0
 GUIOptionTextB db 'FPS AT START',0
 GUIOptionTextC db 'USE 30HZ FOR TURBO',0
 GUIOptionTextD db 'ENABLE GAME CLOCK',0

@@ -2085,7 +2085,12 @@ DisplayGUIOptionClick:
     jne near .invalidng
     GUIClickCButton2 11,36,byte[newengen],byte[cfgnewgfx],1
 .invalidng
+%ifdef __MSDOS__
     GUIClickCButton2 11,46,byte[vsyncon],byte[cfgvsync],1
+%endif
+%ifdef __WIN32__
+    GUIClickCButton 11,46,byte[HighPriority]
+%endif
     GUIClickCButton2 11,56,byte[FPUCopy],byte[cfgcopymethod],2
     GUIClickCButtonM 11,66,byte[pl12s34]
 ;    cmp byte[OSPort],3
@@ -2095,7 +2100,7 @@ DisplayGUIOptionClick:
 %endif
 ;.win32config
 %ifdef __WIN32__
-    GUIClickCButton 11,76,byte[HighPriority]
+    GUIClickCButton 11,76,byte[AlternateTimer]
 %endif
     GUIClickCButton 11,86,byte[FPSAtStart]
     GUIClickCButton 11,96,byte[Turbo30hz]

@@ -812,12 +812,20 @@ GUIOptionKeys:
     mov [cfgnewgfx],al
 .invalidng
 .nonewgfx
+%ifdef __MSDOS__
     cmp dh,'V'
     jne .novsync
     xor byte[vsyncon],1
     mov al,[vsyncon]
     mov [cfgvsync],al
 .novsync
+%endif
+%ifdef __WIN32__
+    cmp dh,'H'
+    jne .nohighpriority
+    xor byte[HighPriority],1
+.nohighpriority
+%endif
     cmp dh,'M'
     jne .nommxcopy
     xor byte[FPUCopy],2
@@ -844,10 +852,12 @@ GUIOptionKeys:
     jne .noswfix
     xor byte[SidewinderFix],1
 .noswfix
-    cmp dh,'H'
-    jne .nohighpriority
-    xor byte[HighPriority],1
-.nohighpriority
+%ifdef __WIN32__
+    cmp dh,'S'
+    jne .noalttimer
+    xor byte[AlternateTimer],1
+.noalttimer
+%endif
     cmp dh,'F'
     jne .nofpsatstart
     xor byte[FPSAtStart],1
