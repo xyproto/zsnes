@@ -888,7 +888,7 @@ bool InitInput()
    char message1[256];
    HRESULT hr;
 
-   if(DI_OK != (hr=DirectInput8Create(hInst,DIRECTINPUT_VERSION,IID_IDirectInput8A,(void **) &DInput,NULL)))
+   if(FAILED(hr=DirectInput8Create(hInst,DIRECTINPUT_VERSION,IID_IDirectInput8A,(void **) &DInput,NULL)))
    {
       sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 7.0a or higher located at www.microsoft.com/directx \0");
       MessageBox (NULL, message1, "DirectInput Error" , MB_ICONERROR );
