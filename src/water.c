@@ -38,6 +38,7 @@ static unsigned char vscr[SCRW*SCRH];
 
 static int Height[2][SCRW*SCRH];
 
+extern char NetPlayNoMore;
 
 static void DrawWaterNoLight(int *ptr);
 void DrawWaterWithLight(int *ptr,int light);
@@ -59,8 +60,14 @@ void DrawWater(void)
 	//		tslast=tscurrent;
 //		tscurrent=time(NULL);
 			
-		DrawWaterNoLight(Height[Hpage]);
-//		DrawWaterWithLight(Height[Hpage],1);	
+      if (NetPlayNoMore == 1)
+      {
+        DrawWaterNoLight(Height[Hpage]);
+      }
+      else
+      {
+        DrawWaterWithLight(Height[Hpage],1);
+      }
 		if(mode&2)	//  && (tscurrent-tslast))
 		{
 			int x,y;
@@ -312,10 +319,15 @@ void SineBlob(int x, int y, int radius, int height, int page)
   if(y<0) y = 1+radius+ rand()%(SCRH-2*radius-1);
 
 
-//  radsquare = (radius*radius) << 8;
-  radsquare = (radius*radius);
-
-//  height /= 8;
+  if (NetPlayNoMore == 1)
+  {
+    radsquare = (radius*radius);
+  }
+  else
+  {
+    radsquare = (radius*radius) << 8;
+    height /= 8;
+  }
 
   left=-radius; right = radius;
   top=-radius; bottom = radius;
