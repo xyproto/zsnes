@@ -114,9 +114,7 @@ NEWSYM dosinitvideo
 .initmodeq256
 %ifdef __MSDOS__
     cmp byte[scanlines],1
-    jne .noscanlines
-    jmp .scanlines
-.noscanlines
+    je near .scanlines
     SetVGAMode .Mode256x256c
     jmp .done    
 .scanlines
