@@ -809,9 +809,15 @@ NEWSYM savespcdata
     cmp al,'.'
     jne .next
     ; Save stuff
+%ifdef __LINUX__
+    mov byte[edi],'s'
+    mov byte[edi+1],'p'
+    mov byte[edi+2],'c'
+%else
     mov byte[edi],'S'
     mov byte[edi+1],'P'
     mov byte[edi+2],'C'
+%endif
     mov byte[edi+3],0
     ; Find an unoccupied file
 .tryagainspc
@@ -820,16 +826,33 @@ NEWSYM savespcdata
     jc .nofileopen
     mov bx,ax
     call Close_File
+%ifdef __LINUX__
+    cmp byte[edi+2],'c'
+%else
     cmp byte[edi+2],'C'
-    jne .noC
+%endif
+    jne .notc
     mov byte[edi+2],'1'
     jmp .tryagainspc
-.noC
+.notc
     cmp byte[edi+2],'9'
-    je .nofileopen
+    je .donext10
     inc byte[edi+2]
     jmp .tryagainspc
+.donext10
+    mov al,[edi+1]
+    cmp al,[edi+2]
+    je .nofileopen
+    cmp byte[edi+1],'P'
+    jne .notp
+    mov byte[edi+1],'0'
+.notp
+    inc byte[edi+1]
+    mov byte[edi+2],'0'
+    jmp .tryagainspc
 .nofileopen
+    mov al,[edi+1]
+    mov [showmenu.saved+2],al
     mov al,[edi+2]
     mov [showmenu.saved+3],al
     ; copy spcextra ram to dspmem+192
