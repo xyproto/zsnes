@@ -261,7 +261,7 @@ int main (int argc, char *argv[]) {
 //				if (!hasroom) return 4;
 				SoundQuality = my_atoi(optarg);
 
-				if (SoundQuality > 5) return 12;
+				if (SoundQuality > 6) return 12;
 				p++;
 
 				break;
