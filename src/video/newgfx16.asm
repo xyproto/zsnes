@@ -2552,28 +2552,31 @@ NEWSYM drawbg4linepr116b
 ; FillSubScr bit 0 sets to 1 if there is no subscreen present
 ; ms,wms,wm,ws
 ; FillSubScr scadtng
-NEWSYM drawsprng16b
-    test byte[BGMS1+ebx*2],10h
-    jz .nosubmain
-    test byte[FillSubScr+ebx],1
-    jnz near drawsprng16bt
-.nosubmain
-    mov ebp,[cpalval+ebx*4]
-    xor eax,eax
-    mov edi,[CMainWinScr]
-    test byte[FillSubScr+ebx],1
-    jz .main2
-    test byte[BGMS1+ebx*2],10h
-    jnz .main2
-    mov edi,[CSubWinScr]
-.main2
-    test byte[FillSubScr+ebx],1
-    jz .main
-    test byte[BGMS1+ebx*2],10h
-    jnz .main
-    cmp byte[edi+ebx+4*256],0
-    jne near drawsprngw16b
-    add esi,75036*2
+<pagefault> NEWSYM drawsprng16b
+<pagefault>     test byte[BGMS1+ebx*2],10h
+<pagefault>     jz .nosubmain
+<pagefault>     mov edi,[CSubWinScr]
+<pagefault>     cmp byte[edi+ebx+4*256],0
+<pagefault>     je .nosubmain
+<pagefault>     test byte[FillSubScr+ebx],1
+<pagefault>     jnz near drawsprng16bt
+<pagefault> .nosubmain
+<pagefault>     mov ebp,[cpalval+ebx*4]
+<pagefault>     xor eax,eax
+<pagefault>     mov edi,[CMainWinScr]
+<pagefault>     test byte[FillSubScr+ebx],1
+<pagefault>     jz .main2
+<pagefault>     test byte[BGMS1+ebx*2],10h
+<pagefault>     jnz .main2
+<pagefault>     mov edi,[CSubWinScr]
+<pagefault>     cmp byte[edi+ebx+4*256],0
+<pagefault>     jne near drawsprngw16b
+<pagefault> .main2
+<pagefault>     test byte[FillSubScr+ebx],1
+<pagefault>     jz .main
+<pagefault>     test byte[BGMS1+ebx*2],10h
+<pagefault>     jnz .main
+<pagefault>     add esi,75036*2
 .main
     xor edi,edi
     normalsprng16b sprdrawpra16bng,sprdrawprb16bng
