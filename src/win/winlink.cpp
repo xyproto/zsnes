@@ -2268,17 +2268,6 @@ void WinUpdateDevices()
 
 }
 
-extern "C" void DosExit();
-
-extern "C" void RestartTimer()
-{
-   if (CurrentTimer != AlternateTimer)
-   {
-      MessageBox(hMainWindow, "ZSNESW must be restarted to use this option", "Info", MB_OK);
-      DosExit();
-   }
-}
-
 int GetMouseX(void)
 {
    char message1[256];
