@@ -200,8 +200,6 @@ NEWSYM SystemInit
 %endif
 
     mov byte[spcon],1
-    mov byte[soundon],1
-    mov byte[cfgsoundon],1
 
     ; Get and set the initial directory
 %ifdef __LINUX__

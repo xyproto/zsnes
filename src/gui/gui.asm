@@ -2162,6 +2162,10 @@ NEWSYM StartGUI
     jne .nofirsttime
     call guifirsttimemsg
     mov byte[FirstTimeData],1
+%ifndef __MSDOS__
+    mov byte[soundon],1
+    mov byte[cfgsoundon],1
+%endif
 .nofirsttime
     cmp dword[GUICTimer],0
     je .notimer

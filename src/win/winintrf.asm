@@ -191,8 +191,6 @@ NEWSYM SystemInit
     mov byte[esi+12+256],0
 
     mov byte[spcon],1
-    mov byte[soundon],1
-    mov byte[cfgsoundon],1
 
     ; Get and set the initial directory
     mov ebx,InitDir
