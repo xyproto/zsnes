@@ -28,6 +28,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #else
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <string.h>
 #include <sys/stat.h>
 #define DIR_SLASH "\\"
@@ -1936,7 +1937,6 @@ void SetAddressingModes(), GenerateBank0Table();
 void SetAddressingModesSA1(), GenerateBank0TableSA1();
 void InitDSP(), InitDSP2(), InitDSP4(), InitFxTables(), initregr(), initregw();
 void SPC7110Load();
-void rep_stosd(void (**fptrarray)(), void (*fptr), unsigned int);
 
 void CheckROMTypeC()
 {

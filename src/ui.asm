@@ -829,7 +829,7 @@ NEWSYM tparms
     je .yesgui
     cmp byte[fname],0
     jne .yesgui
-    jmp displayparams
+    jmp DosExit
 
 .yesgui
     mov byte[romloadskip],1
@@ -842,125 +842,6 @@ SECTION .data
 .nostr db 'This emulator will not work without a filename!',13,10,0
 .waitkey   db 'Press Any Key to Continue.',0
 .ret       db 13,10,0
-
-SECTION .text
-NEWSYM displayparams
-    mov edx,.noparams        ;use extended
-    call PrintStr
-%ifndef __LINUX__
-    call WaitForKey
-%endif
-    mov edx,.noparms2        ;use extended
-    call PrintStr
-%ifndef __LINUX__
-    call WaitForKey
-%endif
-    mov edx,.noparms3        ;use extended
-    call PrintStr
-    jmp DosExit
-
-; yes it sucks, i had to change the one character options to have at least two characters
-; that way i could distinguish from the other two character options that share the same
-; first letter...only way getopt works correctly :|
-; EvilTypeGuy
-SECTION .data
-%ifdef __LINUX__
-.noparams db 'Usage : zsnes [-d,-f #, ... ] <filename.smc>',13,10
-          db '   Eg : zsnes -s -r 2 game.smc',13,10,13,10
-%else
-.noparams db 'Usage : ZSNES [-d,-f #, ... ] <filename.SMC>',13,10
-          db '   Eg : ZSNES -s -r 2 game.smc',13,10,13,10
-%endif
-          db '  -0      Disable Color 0 modification in 8-bit modes',13,10
-          db '  -1 #/-2 #   Select Player 1/2 Input :',13,10
-          db '                0 = None       1 = Keyboard   2 = Joystick   3 = Gamepad',13,10
-          db '                4 = 4Button    5 = 6Button    6 = Sidewinder   ',13,10
-          db '  -7      Disable SPC700 speedhack',13,10
-          db '  -8      Force 8-bit sound',13,10
-          db '  -9      Off by 1 line fix',13,10
-          db '  -a      Enable automatic frame rate',13,10
-%ifdef __LINUX__
-          db '  -cs     Enable full/wide screen (when available)',13,10
-%else
-          db '  -c      Enable full screen (when available)',13,10
-%endif
-          db '  -cb     Remove Background Color in 256 color video modes',13,10
-          db '  -cc     Enable small screen (when available)',13,10
-
-; debugger not available in linux version
-; because of bios interrupt code
-%ifndef __LINUX__
-          db '  -d      Start with debugger enabled',13,10
-%endif
-          db '  -dd     Disable sound DSP emulation',13,10
-%ifndef __LINUX__
-          ;db '  -e      Skip enter key press at the beginning',13,10
-%endif
-          db '  -f #    Enable fixed frame rate [0...9]',13,10
-%ifndef __LINUX__
-          db '  -g #    Specify gamma correction value [0...15]',13,10
-          db '          (Only works properly in 8-bit modes)',13,10
-%endif
-          db '  -h      Force HiROM',13,10
-          db '  -i      Uninterleave ROM Image',13,10
-          db '  -j      Disable Mouse (Automatically turns off right mouse click)',13,10
-          db '  -k #    Set Volume Level (0 .. 100)',13,10
-          db 'Press any key to continue.',0
-.noparms2 db 13,'  -l      Force LoROM        ',13,10
-          db '  -m      Disable GUI (Must specify ROM filename)',13,10
-%ifdef __LINUX__
-          db '  -n      Enable full scanlines (when available)',13,10
-%else
-          db '  -n #    Enable scanlines (when available)',13,10
-          db '          Where # is: 1 = full, 2 = 25%, 3 = 50%',13,10
-%endif
-          db '  -om     Enable MMX support (when available)',13,10
-          db '  -p #    Percentage of instructions to execute [50..120]',13,10
-          db '  -r #    Set Sampling Sound Blaster Sampling Rate & Bit :',13,10
-          db '             0 = 8000Hz  1 = 11025Hz 2 = 22050Hz 3 = 44100Hz',13,10
-          db '             4 = 16000Hz 5 = 32000Hz',13,10
-%ifdef __LINUX__
-          db '  -se     Enable SPC700/DSP emulation (Sound)',13,10
-%else
-          db '  -s      Enable SPC700/DSP emulation (Sound)',13,10
-%endif
-          db '  -sa     Show all extensions in GUI (*.*)',13,10
-          db '  -sn     Enable Snowy GUI Background',13,10
-          db '  -t      Force NTSC timing',13,10
-          db '  -u      Force PAL timing',13,10
-%ifndef __LINUX__
-          db '  -v #    Select Video Mode :',13,10
-          db '           0 = 256x224x8B  (MODEQ)  1 = 256x240x8B (MODEQ)',13,10
-          db '           2 = 256x256x8B  (MODEQ)  3 = 320x224x8B (MODEX)',13,10
-          db '           4 = 320x240x8B  (MODEX)  5 = 320x256x8B (MODEX)',13,10
-          db '           6 = 640x480x16B (VESA1)  7 = 320x240x8B (VESA2)',13,10
-          db '           8 = 320x240x16B (VESA2)  9 = 320x480x8B (VESA2)',13,10
-          db '          10 = 320x480x16B (VESA2) 11 = 512x384x8B (VESA2)',13,10
-          db '          12 = 512x384x16B (VESA2) 13 = 640x400x8B (VESA2)',13,10
-          db '          14 = 640x400x16B (VESA2) 15 = 640x480x8B (VESA2)',13,10
-          db '          16 = 640x480x16B (VESA2) 17 = 800x600x8B (VESA2)',13,10
-          db '          18 = 800x600x16B (VESA2)',13,10
-%endif
-          db '  -w      Enable vsync (disables triple buffering)',13,10
-          db 'Press any key to continue.',0
-.noparms3 db 13,'  -y      Enable EAGLE (640x480x8B only) or Interpolation (640x480x16B only)',13,10
-%ifdef __MSDOS__
-          db '  -3      Enable triple buffering (disables vsync)',13,10
-%endif
-          db '  -z      Disable Stereo Sound',13,10
-; FIX STATMAT
-%ifdef __WIN32__
-          db '  -zs #   Auto load specified save state slot on startup ',13,10
-; FIX STATMAT   
-%endif       
-          db '',13,10
-          db '  File Formats Supported by GUI : .SMC,.SFC,.SWC,.FIG,.MGD,.UFO,.BIN,',13,10
-          db '                                  .058,.078,.1,.USA,.EUR,.JAP',13,10
-%ifdef __MSDOS__
-          db '',13,10
-          db '  Microsoft-style options (/option) are also accepted',13,10
-%endif
-          db '',13,10,0
 
 SECTION .text
 

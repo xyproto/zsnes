@@ -170,7 +170,7 @@ WINVIDOBJ=${VIDEODIR}/sw_draw${OE} ${VIDEODIR}/hq2x16${OE} ${VIDEODIR}/hq2x32${O
 
 #only used on Win32
 WINOBJ=${WINDIR}/copyvwin${OE} ${DRESOBJ}\
-	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE} ${WINDIR}/zloaderw${OE}\
+	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE}\
 	${WINDIR}/zipxw${OE} ${WINDIR}/zfilew${OE}
 
 NETOBJ=${NETDIR}/ztcp${OE}
@@ -187,7 +187,7 @@ JMAOBJ=${JMADIR}/7zlzma${OE} ${JMADIR}/crc32${OE} ${JMADIR}/iiostrm${OE}\
        ${JMADIR}/winout${OE} ${JMADIR}/zsnesjma${OE}
        
 MAINOBJ=cfgload${OE} endmem${OE} init${OE} initc${OE} uic${OE} patch${OE}\
-	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE}
+	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE}
 
 DOSOBJORIG=${DOSDIR}/debug${OE} ${DOSDIR}/joy${OE} ${DOSDIR}/modemrtn${OE} ${DOSDIR}/vesa2${OE}\
        ${DOSDIR}/initvid${OE} ${DOSDIR}/sw${OE} ${DOSDIR}/gppro${OE} ${DOSDIR}/vesa12${OE}\
@@ -197,7 +197,7 @@ DOSOBJORIG=${DOSDIR}/debug${OE} ${DOSDIR}/joy${OE} ${DOSDIR}/modemrtn${OE} ${DOS
 OBJSORIG=${CHIPSOBJ} ${CPUOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
 
 ifeq (${OS},__MSDOS__)
-DOSOBJ=${DOSOBJORIG} ${DOSDIR}/dosintrf${OE} ${DOSDIR}/sound${OE} ${DOSDIR}/zloader${OE} ${DOSDIR}/zfile${OE}
+DOSOBJ=${DOSOBJORIG} ${DOSDIR}/dosintrf${OE} ${DOSDIR}/sound${OE} ${DOSDIR}/zfile${OE}
 OBJS=${OBJSORIG} ${DOSOBJ} ${PREOBJ}
 DELETEOBJS=${OBJSORIG} ${DOSOBJ}
 endif
@@ -256,6 +256,7 @@ patch${OE}: $<
 endmem${OE}: $< macros.mac
 zmovie${OE}: $< gblvars.h
 zstate${OE}: $< gblvars.h
+zloader${OE}: $<
 
 ${CPUDIR}/execute${OE}: $< macros.mac
 ${CPUDIR}/table${OE}: $< ${CPUDIR}/65816d.inc ${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816.inc\
@@ -356,7 +357,6 @@ ${WINDIR}/copyvwin${OE}: $< macros.mac
 ${WINDIR}/winintrf${OE}: $< macros.mac
 ${WINDIR}/zfilew${OE}: $<
 ${WINDIR}/zipxw${OE}: $<
-${WINDIR}/zloaderw${OE}: $<
 ifeq (${ENV},msvc)
 ${WINDIR}/zsnes.res: ${WINDIR}/zsnes.rc
 	rc ${WINDIR}/zsnes.rc

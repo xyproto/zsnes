@@ -27,6 +27,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+#include <unistd.h>
 #define DIR_SLASH '\\'
 #ifdef __WIN32__
 #include <windows.h>
@@ -39,6 +41,8 @@ extern unsigned char NetChatFirst, NetServer, NetNewNick, NetFilename[512], CmdL
 #endif
 
 #ifdef __WIN32__
+void ImportDirectX();
+
 extern unsigned char KitchenSync, Force60hz;
 
 #endif
@@ -180,7 +184,7 @@ static size_t zatoi(const char *str)
   return((size_t)atoi(orig_str));
 }
 
-static void handle_params(int argc, const char **argv)
+static void handle_params(int argc, char *argv[])
 {
   int i;
 
@@ -530,11 +534,20 @@ static void handle_params(int argc, const char **argv)
   }
 }
 
+int argc;
+char **argv;
+
+void ccmdline()
+{
+  handle_params(argc, argv);
+}
+
 #ifdef __WIN32__
 extern HINSTANCE hInst;
 int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
-  handle_params(__argc, __argv);
+  argc = __argc;
+  argv = __argv;
 
   hInst=hInstance;
   ImportDirectX();
@@ -542,10 +555,17 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
   zstart();
   return(0);
 }
+
 #else
-int main(int argc, const char **argv)
+
+int main(int zargc, char *zargv[])
 {
-  handle_params(argc, argv);
+  argc = zargc;
+  argv = zargv;
+
+  #ifdef __LINUX__
+  handle_params(zargc, zargv);
+  #endif
 
   zstart();
   return(0);
