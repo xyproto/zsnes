@@ -1144,11 +1144,6 @@ NEWSYM ProcessMovies
     mov [JoyDOrig],eax
     mov eax,[PJoyEOrig]
     mov [JoyEOrig],eax
-;    cmp byte[RepeatFrame],1
-;    jne .norepeat
-;    mov byte[RepeatFrame],0
-;    jmp .repeater
-;.norepeat
     ret
 .endplay2
     mov dword[Msgptr],.movieended
