@@ -2129,12 +2129,17 @@ NEWSYM WDSPReg4C       ; Key On
       mov bl,[MuteVoiceF]
       xor bl,0FFh
       and bl,al
+
+      xor byte [DSPMem+05Ch],0FFh
+      and bl,[DSPMem+05Ch]
+      xor byte [DSPMem+05Ch],0FFh
+
       or byte[KeyOnStA],bl
       pop ebx
       test al,80h
       jz .nokon
       inc byte[SoundTest]
-.nokon
+.nokon      
       mov [DSPMem+04Ch],al
       push eax
       xor al,0FFh
