@@ -2715,9 +2715,7 @@ NEWSYM cpuover
 ;    pop es
 
     mov byte[NetCommand],0
-
     mov byte[NextNGDisplay],1
-
     cmp byte[newengen],0
     je .nonewgfx
     cmp byte[curblank],0h
@@ -2728,7 +2726,6 @@ NEWSYM cpuover
 ;    je .nonewgfx
     call StartDrawNewGfx
 .nonewgfx
-
     cmp byte[chaton],1
     je near .nonet
     cmp byte[CNetType],20
@@ -2814,7 +2811,6 @@ NEWSYM cpuover
 .nonet
     mov dh,[tempdh]
     inc word[curypos]
-
     cmp byte[CurRecv],1
     je .noinputread
     cmp byte[NoInputRead],1
@@ -3336,6 +3332,7 @@ NEWSYM cpuover
     jmp .norecvchats
 .recvchats
     push ebx
+
     call MoveStringChat
 
     mov ebx,chatstrR
