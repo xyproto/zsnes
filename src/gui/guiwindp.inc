@@ -4482,6 +4482,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,9+45*2,134,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'1'
     GUIOuttextwin2 9,9+45*3,134,GUIGameOptnsText7
+    GUIOuttextwin2 9,9+45*4,134,GUIGameOptnsTextY
     mov byte[GUIGameOptnsText7+2],'2'
     GUIOuttextwin2 9,9,141,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'3'
@@ -4490,6 +4491,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,9+45*2,142,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'5'
     GUIOuttextwin2 9,9+45*3,142,GUIGameOptnsText7
+    GUIOuttextwin2 9,9+45*4,142,GUIGameOptnsTextZ
     mov byte[GUIGameOptnsText7+2],'6'
     GUIOuttextwin2 9,9,150,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'7'
@@ -4588,6 +4590,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8+45*2,133,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'1'
     GUIOuttextwin2 9,8+45*3,133,GUIGameOptnsText7
+    GUIOuttextwin2 9,8+45*4,133,GUIGameOptnsTextY
     mov byte[GUIGameOptnsText7+2],'2'
     GUIOuttextwin2 9,8,141,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'3'
@@ -4596,6 +4599,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8+45*2,141,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'5'
     GUIOuttextwin2 9,8+45*3,141,GUIGameOptnsText7
+    GUIOuttextwin2 9,8+45*4,141,GUIGameOptnsTextZ
     mov byte[GUIGameOptnsText7+2],'6'
     GUIOuttextwin2 9,8,149,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'7'
@@ -4654,10 +4658,12 @@ DisplayGameOptns:
     DGOptnsDrawBox 27+45*3,120,[KeyDisableSC7]
     DGOptnsDrawBox 27+45*2,132,[KeyStateSlc0]
     DGOptnsDrawBox 27+45*3,132,[KeyStateSlc1]
+    DGOptnsDrawBox 27+45*4,132,[KeyIncStateSlot]
     DGOptnsDrawBox 27,140,[KeyStateSlc2]
     DGOptnsDrawBox 27+45,140,[KeyStateSlc3]
     DGOptnsDrawBox 27+45*2,140,[KeyStateSlc4]
     DGOptnsDrawBox 27+45*3,140,[KeyStateSlc5]
+    DGOptnsDrawBox 27+45*4,140,[KeyDecStateSlot]
     DGOptnsDrawBox 27,148,[KeyStateSlc6]
     DGOptnsDrawBox 27+45,148,[KeyStateSlc7]
     DGOptnsDrawBox 27+45*2,148,[KeyStateSlc8]
@@ -4709,6 +4715,8 @@ GUIGameOptnsTextT db 'SLOWDWN KEY',0
 GUIGameOptnsTextU db 'CLOCK',0
 GUIGameOptnsTextV db 'SAVE SPC',0
 GUIGameOptnsTextX db 'DISPLAY FPS',0
+GUIGameOptnsTextY db 'ST+',0
+GUIGameOptnsTextZ db 'ST-',0
 
 DisplayGUIOptns:
     GUIDrawWindowBox 10,GUIGUIDisp

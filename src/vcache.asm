@@ -33,6 +33,7 @@ EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
 EXTSYM KeyResetAll,KeyExtraEnab,KeyWinDisble,KeyNewGfxSwt,KeyOffsetMSw
 EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
+EXTSYM KeyIncStateSlot,KeyDecStateSlot
 EXTSYM maxskip,DSPMem,SprValAdd,dsp1ptr,dsp1array,FastFwdToggle,SaveSramData
 EXTSYM ngextbg,Mode7HiRes,Check60hz,Get_MouseData,Get_MousePositionDisplacement
 EXTSYM WindowDisables,scanlines,romispal
@@ -723,6 +724,94 @@ NEWSYM cachevideo
     soundselcomp KeyDisableSC5,Voice5Disable,Voice5Status,'6'
     soundselcomp KeyDisableSC6,Voice6Disable,Voice6Status,'7'
     soundselcomp KeyDisableSC7,Voice7Disable,Voice7Status,'8'
+
+    mov eax,[KeyIncStateSlot]
+    test byte[pressed+eax],1
+    je .noincstateslot
+    mov byte[pressed+eax],2
+    mov eax,[statefileloc]
+    mov dh,[fnamest+eax]
+%ifndef __LINUX__
+    cmp dh,'T'
+%else
+    cmp dh,'t'
+%endif
+    je .secondstate
+    cmp dh,'9'
+    je .jumptofirststate
+    inc dh
+    jmp .donextstate
+.secondstate
+    mov dh,'1'
+    jmp .donextstate
+.jumptofirststate
+%ifndef __LINUX__
+    mov dh,'T'
+%else
+    mov dh,'t'
+%endif
+.donextstate
+    mov byte[fnamest+eax],dh
+%ifndef __LINUX__
+    cmp dh,'T'
+%else
+    cmp dh,'t'
+%endif
+    je .firststatemsg
+    mov byte[sselm+11],dh
+    jmp .incstatemsg
+.firststatemsg
+    mov byte[sselm+11],'0'
+.incstatemsg
+    mov dword[Msgptr],sselm
+    mov eax,[MsgCount]
+    mov [MessageOn],eax
+    xor dh,dh
+.noincstateslot
+
+    mov eax,[KeyDecStateSlot]
+    test byte[pressed+eax],1
+    je .nodecstateslot
+    mov byte[pressed+eax],2
+    mov eax,[statefileloc]
+    mov dh,[fnamest+eax]
+%ifndef __LINUX__
+    cmp dh,'T'
+%else
+    cmp dh,'t'
+%endif
+    je .jumptolaststate
+    dec dh
+    cmp dh,'0'
+    jne .doprevstate
+.firststate
+%ifndef __LINUX__
+    mov dh,'T'
+%else
+    mov dh,'t'
+%endif
+    jmp .doprevstate
+.jumptolaststate
+    mov dh,'9'
+.doprevstate
+    mov byte[fnamest+eax],dh
+%ifndef __LINUX__
+    cmp dh,'T'
+%else
+    cmp dh,'t'
+%endif
+    je .firststatemsg2
+    mov byte[sselm+11],dh
+    jmp .decstatemsg
+.firststatemsg2
+    mov byte[sselm+11],'0'
+.decstatemsg
+    mov dword[Msgptr],sselm
+    mov eax,[MsgCount]
+    mov [MessageOn],eax
+    xor dh,dh
+.nodecstateslot
+
 .finishchatskip
     cmp byte[curblank],0h
     jne near yesblank
