@@ -1,3 +1,7 @@
+This document is no longer up-to-date, but is a good start to
+understanding how the OpenGL code works for non-filtered modes.
+-------------------------------------------------------------------------
+
      OpenGL is currently only avialable on Linux and via CVS. For the most
 part, it works and fairly stable. Please send all comments, suggestions,
 and bug fixes to hpsolo@my-deja.com. DO NOT EMAIL THE OTHER DEVELOPERS
