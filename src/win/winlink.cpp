@@ -250,10 +250,7 @@ BOOL IsMinimized = FALSE;
 
 extern "C" void MinimizeWindow()
 {
-   if (AlwaysOnTop == 1) SetWindowPos(hMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-   MoveWindow(hMainWindow, 0, 0, 0, 0, TRUE);
-   InputDeAcquire();
-   SetActiveWindow(0);
+   ShowWindow(hMainWindow, SW_MINIMIZE);
    IsMinimized = TRUE;
 }
 
@@ -446,14 +443,13 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          IsActivated = 1;
          if(LOWORD(wParam) != WA_INACTIVE)
             if(!FirstActivate) initwinvideo(); 
-         if(!FullScreen)
+         if(FullScreen == 0)
             if(IsMinimized == TRUE && AlwaysOnTop == 1) CheckAlwaysOnTop();              
          InputAcquire();
          if(FirstActivate) FirstActivate = 0;
          break;
       case WM_SETFOCUS:
-         if(!FullScreen) 
-            ShowWindow(hMainWindow, SW_SHOWNORMAL);
+         if(FullScreen == 0) ShowWindow(hMainWindow, SW_SHOWNORMAL);
          InputAcquire();
          break;
       case WM_KILLFOCUS:
@@ -1126,7 +1122,7 @@ int InitDirectDraw()
 
    ReleaseDirectDraw();
 
-   if(!FullScreen)
+   if(FullScreen == 0)
    {
       GetClientRect(hMainWindow, &rcWindow );
       ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow );
