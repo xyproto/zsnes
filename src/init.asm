@@ -1468,32 +1468,10 @@ NEWSYM Outputfilename
     call Get_Key
     ret
 
-; Header hacks
-
-headerhack2:
-
-; THE KING OF RALLY - Header hack
-    mov esi,[romdata]
-    cmp dword[esi+7FC0h],'THE '
-    jne near .nokingofrally
-    cmp dword[esi+7FC4h],'KING'
-    jne near .nokingofrally
-    cmp dword[esi+7FC8h],' OF '
-    jne near .nokingofrally
-    cmp dword[esi+7FCCh],'RALL'
-    jne near .nokingofrally
-    mov dword[esi+0FFC0h],0FFFFFFFFh
-    mov dword[esi+0FFC4h],0FFFFFFFFh
-    mov dword[esi+0FFC8h],0FFFFFFFFh
-    mov dword[esi+0FFCCh],0FFFFFFFFh
-    mov dword[esi+0FFD0h],0FFFFFFFFh
-    mov dword[esi+0FFD4h],0FFFFFFFFh
-    mov dword[esi+0FFD8h],0FFFFFFFFh
-    mov dword[esi+0FFDCh],0FFFFFFFFh
-.nokingofrally    
-    ret
 
 SECTION .text
+
+; Header hacks
 
 EXTSYM ewj2hack
 EXTSYM latchyr
@@ -5834,7 +5812,6 @@ SECTION .text
 NEWSYM CheckROMType
     call SetAddressingModes
     call GenerateBank0Table
-    call headerhack2
 
     mov byte[intldone],0
     xor eax,eax
