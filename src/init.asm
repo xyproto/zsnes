@@ -17,10 +17,6 @@
 
 %include "macros.mac"
 
-; FIX STATMAT
-EXTSYM loadstate2
-; FIX STATMAT
-
 EXTSYM DosExit,UpdateDevices,InitSPC,Makemode7Table,MusicRelVol,MusicVol
 EXTSYM makesprprtable,romloadskip,start65816,startdebugger,SfxR0
 EXTSYM MovieProcessing
@@ -114,6 +110,7 @@ EXTSYM sramaccessbankr8s,sramaccessbankw16,sramaccessbankw16s
 EXTSYM sramaccessbankw8,sramaccessbankw8s,GenerateBank0TableSA1
 EXTSYM ScrDispl,wramreadptr,wramwriteptr
 EXTSYM pl1Ltk,pl1Rtk,pl2Ltk,pl2Rtk,pl3Ltk,pl3Rtk,pl4Ltk,pl4Rtk,pl5Ltk,pl5Rtk
+EXTSYM loadstate2
 %ifdef __LINUX__
 EXTSYM LoadDir, popdir, pushdir
 %endif
@@ -1518,22 +1515,22 @@ NEWSYM headerhack
     mov byte[ENVDisable],0
     mov byte[MMXSRAMFix],0
 
-    mov esi,[romdata] 
-    add esi,0FFC0h 
+    mov esi,[romdata]
+    add esi,0FFC0h
     cmp dword[esi],'HORA' 
+    jne .nothoraigakuen
+    cmp dword[esi+4],'I-GA'
+    jne .nothoraigakuen
+    cmp dword[esi+8],'KUEN'
     jne .nothoraigakuen 
-    cmp dword[esi+4],'I-GA' 
-    jne .nothoraigakuen 
-    cmp dword[esi+8],'KUEN' 
-    jne .nothoraigakuen 
-    cmp dword[esi+12],'    ' 
-    jne .nothoraigakuen 
-    mov al,0h 
-    mov edi,spcRam 
-    mov ecx,65472 
-    rep stosb 
-    ret 
-.nothoraigakuen 
+    cmp dword[esi+12],'    '
+    jne .nothoraigakuen
+    mov al,0h
+    mov edi,spcRam
+    mov ecx,65472
+    rep stosb
+    ret
+.nothoraigakuen
 
     mov esi,[romdata]
     add esi,07FC0h
