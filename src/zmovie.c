@@ -562,7 +562,7 @@ static void zmv_create(char *filename)
     }                                                                 \
   }
 
-static void zmv_record(bool slow)
+static void zmv_record(bool slow, unsigned char comboes_used)
 {
   unsigned char flag = 0;
   unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0 }; 
@@ -570,8 +570,10 @@ static void zmv_record(bool slow)
   
   zmv_vars.header.frames++;
 
-  if (slow) { zmv_vars.header.slow_frames++; }
-  
+  if (slow)	{ zmv_vars.header.slow_frames++; }
+
+  zmv_vars.header.key_combos += comboes_used;
+
   RECORD_PAD(zmv_vars.last_joy_state.A, JoyAOrig, 7);
   RECORD_PAD(zmv_vars.last_joy_state.B, JoyBOrig, 6);
   RECORD_PAD(zmv_vars.last_joy_state.C, JoyCOrig, 5);
@@ -1348,10 +1350,11 @@ void Replay()
 }
 
 extern bool SloMo50;
+extern unsigned char ComboCounter;
 
 void ProcessMovies()
 {
-  if (MovieProcessing == 2) { zmv_record(SloMo50 ? true : false); }
+  if (MovieProcessing == 2) { zmv_record(SloMo50 ? true : false, ComboCounter); }
   else { Replay(); }
 }
 

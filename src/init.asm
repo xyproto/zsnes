@@ -542,6 +542,7 @@ NEWSYM PJoyCOrig, resd 1
 NEWSYM PJoyDOrig, resd 1
 NEWSYM PJoyEOrig, resd 1
 NEWSYM LethEnData, resd 1
+NEWSYM ComboCounter, resb 1
 SECTION .text
 
 %macro PlayerDeviceHelp 3
@@ -621,6 +622,7 @@ SECTION .text
     jmp %%endcomb
 %%startprogress
     mov byte[pressed+ebx],2
+    inc byte[ComboCounter]
     mov byte[ComboProg+%1],1
     mov byte[ComboPtr+%1],0
     mov dword[PressComb+%1*4],0
@@ -727,15 +729,15 @@ ProcessCombo:
     jmp .nextsession
 
 SECTION .data
-ComboProg dd 0
-ComboPtr  dd 0
+ComboProg times 5 db 0
+ComboPtr  times 5 db 0
 KeyLPress dd 0
 CombDirSwap dd 0
-CombDelay times 4 dd 0
-StartComb times 4 dd 0
-HoldComb times 4 dd 0
-PressComb times 4 dd 0
-CombCont times 4 dd 0
+CombDelay times 5 dd 0
+StartComb times 5 dd 0
+HoldComb times 5 dd 0
+PressComb times 5 dd 0
+CombCont times 5 dd 0
 CombTDelN dd 1,2,3,4,5,9,30,60,120,180,240,300
 CombTDelP dd 1,2,3,4,5,9,25,50,100,150,200,250
 CombContDatN dd 08000000h,04000000h,02000000h,01000000h,00800000h,80000000h
@@ -808,6 +810,7 @@ NEWSYM ReadInputDevice
     PlayerDeviceHelp pl1Ltk   ,JoyAOrig,00200000h
     PlayerDeviceHelp pl1Rtk   ,JoyAOrig,00100000h
 .noswitch
+    mov byte[ComboCounter],0
     ProcessKeyComb 0,JoyAOrig
     or dword[JoyAOrig],00008000h        ; Joystick Enable
     cmp byte[GUIDelayB],0
@@ -1021,7 +1024,7 @@ NEWSYM ReadInputDevice
     PlayerDeviceHelp pl5Ltk   ,JoyEOrig,00200000h
     PlayerDeviceHelp pl5Rtk   ,JoyEOrig,00100000h
 .noswitch5
-    ProcessKeyComb 3,JoyEOrig
+    ProcessKeyComb 4,JoyEOrig
     or dword[JoyEOrig],00008000h        ; Joystick Enable
 .noinput5
     cmp byte[pl12s34],1
