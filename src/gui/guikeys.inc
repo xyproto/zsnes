@@ -1226,44 +1226,38 @@ GUISoundKeys:
     jne .notrevst
     xor byte[RevStereo],1
 .notrevst
-%ifdef __WIN32__
-    cmp dh,'A'
-    jne .nolargebuffer
-    xor byte[LargeSoundBuf],1
-.nolargebuffer
-%endif
 %ifdef __MSDOS__
     cmp dh,'U'
     jne .nosurround
     xor byte[Surround],1
 .nosurround
 %endif
-    cmp dh,'O'
-    jne .nointersound
-    xor byte[InterSound],1
-.nointersound
-    cmp dh,'L'
-    jne .nolowpass
-    xor byte[LowPassFilter],1
-.nolowpass
-    cmp dh,'B'
-    jne .nosoundbuf
-    xor byte[SoundBufEn],1
-.nosoundbuf
-    cmp dh,'C'
-    jne .nocubic
-    xor byte[UseCubicSpline],1
-.nocubic
-    cmp dh,'D'
-    jne .nospcdisable
-    xor byte[SPCDisable],1
-.nospcdisable
 %ifdef __WIN32__
     cmp dh,'X'
     jne .noexclusivesound
     xor byte[ExclusiveSound],1
 .noexclusivesound
 %endif
+    cmp dh,'B'
+    jne .nosoundbuf
+    xor byte[SoundBufEn],1
+.nosoundbuf
+    cmp dh,'D'
+    jne .nospcdisable
+    xor byte[SPCDisable],1
+.nospcdisable
+    cmp dh,'G'
+    jne .nogausseninterp
+    GUIkeystoggleoptn byte[SoundInterpType],1
+.nogausseninterp
+    cmp dh,'C'
+    jne .nocubicinterp
+    GUIkeystoggleoptn byte[SoundInterpType],2
+.nocubicinterp
+    cmp dh,'8'
+    jne .no8ptinterp
+    GUIkeystoggleoptn byte[SoundInterpType],3
+.no8ptinterp
     ret
 
 .sampratenext db 1,4,5,6,2,3,0,0,0,0

@@ -2326,18 +2326,15 @@ DisplayGUISoundClick:
 %ifdef __MSDOS__
     GUIClickCButton 11,121,byte[Surround]
 %endif
+%ifdef __WIN32__
+    GUIClickCButton 11,121,byte[ExclusiveSound]
+%endif
 ;.win32sound
-%ifdef __WIN32__
-    GUIClickCButton 11,121,byte[LargeSoundBuf]
-%endif
-    GUIClickCButton 11,131,byte[InterSound]
-    GUIClickCButton 11,141,byte[LowPassFilter]
-    GUIClickCButton 11,151,byte[SoundBufEn]
-    GUIClickCButton 11,161,byte[UseCubicSpline]
-    GUIClickCButton 11,171,byte[SPCDisable]
-%ifdef __WIN32__
-    GUIClickCButton 11,181,byte[ExclusiveSound]
-%endif
+    GUIClickCButton 11,131,byte[SoundBufEn]
+    GUIClickCButton 11,141,byte[SPCDisable]
+    GUIClickCButton6 11,161,byte[SoundInterpType],1
+    GUIClickCButton6 11,171,byte[SoundInterpType],2
+    GUIClickCButton6 11,181,byte[SoundInterpType],3
     cmp eax,15
     jl near .nosrate
     cmp edx,61

@@ -2176,16 +2176,13 @@ DisplayGUISound:
 %endif
 ;.win32s2
 %ifdef __WIN32__
-    GUIOuttextwin2u 6,26,126,GUISoundTextIb,1
+    GUIOuttextwin2u 6,26,126,GUISoundTextO,1
 %endif
-    GUIOuttextwin2u 6,26,136,GUISoundTextJ,1
+    GUIOuttextwin2u 6,26,136,GUISoundTextJ,6
     GUIOuttextwin2u 6,26,146,GUISoundTextK,0
-    GUIOuttextwin2u 6,26,156,GUISoundTextL,6
-    GUIOuttextwin2u 6,26,166,GUISoundTextM,0
-    GUIOuttextwin2u 6,26,176,GUISoundTextN,0
-%ifdef __WIN32__
-    GUIOuttextwin2u 6,26,186,GUISoundTextO,1
-%endif
+    GUIOuttextwin2u 6,26,166,GUISoundTextQ,0
+    GUIOuttextwin2u 6,26,176,GUISoundTextR,0
+    GUIOuttextwin2u 6,26,186,GUISoundTextS,0
     add byte[GUItextcolor],15
     GUIOuttextwin2 6,25,25,GUISoundText1
     GUIOuttextwin2 6,25,34,GUISoundText3
@@ -2204,21 +2201,19 @@ DisplayGUISound:
 %endif
 ;.win32s
 %ifdef __WIN32__
-    GUIOuttextwin2 6,25,125,GUISoundTextIb
+    GUIOuttextwin2 6,25,125,GUISoundTextO
 %endif
     GUIOuttextwin2 6,25,135,GUISoundTextJ
     GUIOuttextwin2 6,25,145,GUISoundTextK
-    GUIOuttextwin2 6,25,155,GUISoundTextL
-    GUIOuttextwin2 6,25,165,GUISoundTextM
-    GUIOuttextwin2 6,25,175,GUISoundTextN
-%ifdef __WIN32__
-    GUIOuttextwin2 6,25,185,GUISoundTextO
-%endif
+    GUIOuttextwin2 6,25,165,GUISoundTextQ
+    GUIOuttextwin2 6,25,175,GUISoundTextR
+    GUIOuttextwin2 6,25,185,GUISoundTextS
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 6,6,16,GUISoundText6
     GUIOuttextwin2u 6,6,53,GUISoundText2,9
     GUIOuttextwin2 6,6,76,GUISoundText5
+    GUIOuttextwin2 6,6,156,GUISoundTextP
     mov byte[GUItextcolor],163
     cmp byte[GUIWincoladd],0
     je .zero3
@@ -2227,6 +2222,7 @@ DisplayGUISound:
     GUIOuttextwin2 6,5,15,GUISoundText6
     GUIOuttextwin2 6,5,52,GUISoundText2
     GUIOuttextwin2 6,5,75,GUISoundText5
+    GUIOuttextwin2 6,5,155,GUISoundTextP
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[cfgsoundon],0
     je .nocheckbox
@@ -2262,6 +2258,14 @@ DisplayGUISound:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox3
     GUIDisplayIconWin 6,11,111,[GUITemp]
+%ifdef __WIN32__
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[ExclusiveSound],0
+    je .nocheckbox32
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox32
+    GUIDisplayIconWin 6,11,121,[GUITemp]
+%endif
 ;    cmp byte[OSPort],3
 ;    je near .nocheckbox42
 %ifdef __MSDOS__
@@ -2272,53 +2276,36 @@ DisplayGUISound:
 .nocheckbox4
     GUIDisplayIconWin 6,11,121,[GUITemp]
 %endif
-.nocheckbox42
-%ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[LargeSoundBuf],0
-    je .nocheckbox43
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox43
-    GUIDisplayIconWin 6,11,121,[GUITemp]
-%endif
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[InterSound],0
+    cmp byte[SoundBufEn],0
     je .nocheckbox5
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox5
     GUIDisplayIconWin 6,11,131,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[LowPassFilter],0
+    cmp byte[SPCDisable],0
     je .nocheckbox6
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox6
     GUIDisplayIconWin 6,11,141,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[SoundBufEn],0
-    je .nocheckbox7
+    cmp byte[SoundInterpType],1
+    jne .nocheckbox7
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox7
-    GUIDisplayIconWin 6,11,151,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[UseCubicSpline],0
-    je .nocheckbox8
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox8
     GUIDisplayIconWin 6,11,161,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[SPCDisable],0
-    je .nocheckbox9
+    cmp byte[SoundInterpType],2
+    jne .nocheckbox8
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox8
+    GUIDisplayIconWin 6,11,171,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[SoundInterpType],3
+    jne .nocheckbox9
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox9
-    GUIDisplayIconWin 6,11,171,[GUITemp]
-%ifdef __WIN32__
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[ExclusiveSound],0
-    je .nocheckbox10
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox10
     GUIDisplayIconWin 6,11,181,[GUITemp]
-%endif
     DrawGUIWinBox 6,15,61,69,69,167
     mov dword[GUITemp],GUISoundText7
     xor eax,eax
@@ -2404,13 +2391,15 @@ GUISoundTextCb db '48000HZ',0
 GUISoundTextD db '---%',0
 GUISoundTextH db 'REVERSE STEREO',0
 GUISoundTextI db 'SURROUND SOUND',0
-GUISoundTextIb db 'LARGE SOUND BUFFER',0
-GUISoundTextJ db 'SOUND INTERPOLATION',0
-GUISoundTextK db 'LOW PASS FILTER',0
-GUISoundTextL db 'SOUND BUFFERING',0
-GUISoundTextM db 'CUBIC SPLINE INTERP',0
-GUISoundTextN db 'DISABLE SPC EMU',0
+GUISoundTextJ db 'SOUND BUFFERING',0
+GUISoundTextK db 'DISABLE SPC EMU',0
 GUISoundTextO db 'EXCLUSIVE MODE',0
+GUISoundTextP db 'INTERPOLATION :',0
+GUISoundTextQ db 'GAUSSEN',0
+GUISoundTextR db 'CUBIC SPLINE',0
+GUISoundTextS db '8-POINT',0
+
+
 
 DisplayGUICheatConv:
     mov eax,[ccheatnpos]

@@ -318,7 +318,6 @@ void DosExit(void);
 extern BYTE GUIOn2;
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
-extern BYTE LargeSoundBuf;
 extern BYTE ExclusiveSound;
 extern BYTE HighPriority;
 extern BYTE AlwaysOnTop;
@@ -784,11 +783,6 @@ ReInitSound()
          wfx.nSamplesPerSec = 11025;
          SoundBufferSize=1024*2;
   }
-
-   if (LargeSoundBuf == 1)
-   {
-      SoundBufferSize*=2;
-   }
 
    if (StereoSound==1)
    {
