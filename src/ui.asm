@@ -193,9 +193,6 @@ NEWSYM headdata,      resd 1
 NEWSYM romdata,       resd 1            ; rom data  (4MB = 4194304)
 NEWSYM sfxramdata,    resd 1            ; SuperFX Ram Data
 NEWSYM setaramdata,   resd 1            ; Seta ST010/ST011 SRam Data
-global ?_Csetaramdata@@3PAEA
-; _Csetaramdata:                          ; Put labels using the naming conventions of whatever other compilers you want to support
-?_Csetaramdata@@3PAEA  resd 1           ; Lazy Dumper - copy setaramdata to a VC6 export instead of renaming the var
 NEWSYM wramdata,      resd 1            ; stack (64K = 32768)
 NEWSYM ram7f,         resd 1            ; ram @ 7f = 65536
 NEWSYM vram,          resd 1            ; vram = 65536
@@ -728,7 +725,6 @@ NEWSYM allocptr
     add eax,4194304
     mov dword[sfxramdata],eax
     mov dword[setaramdata],eax	; share ram data with sfx
-    mov dword[?_Csetaramdata@@3PAEA],eax	; cheezy C export of setaramdata
     mov esi,[romdata]
     cmp byte[Sup48mbit],0
     je .no48mbit
