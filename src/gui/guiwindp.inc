@@ -5082,7 +5082,7 @@ DisplayGUIOptns:
     GUIOuttextwin2u 10,26,183,GUIGUIOptnsTextF,2
     GUIOuttextwin2u 10,138,38,GUIGUIOptnsTextK,1
     GUIOuttextwin2u 10,26,193,GUIGUIOptnsTextL,1
-    GUIOuttextwin2u 10,138,58,GUIGUIOptnsTextN,1
+    GUIOuttextwin2u 10,138,58,GUIGUIOptnsTextN,3
 %endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,16,123,GUIGUIOptnsText6
@@ -6530,14 +6530,14 @@ DisplayGUISave:
     GUIOuttextwin2u 20,26,34,GUISaveText2,5
     GUIOuttextwin2u 20,26,44,GUISaveText3,0
     GUIOuttextwin2u 20,26,54,GUISaveText4,0
-    GUIOuttextwin2u 20,26,64,GUISaveText5,0
+;   GUIOuttextwin2u 20,26,64,GUISaveText5,0
 
     add byte[GUItextcolor],15
     GUIOuttextwin2 20,25,23,GUISaveText1
     GUIOuttextwin2 20,25,33,GUISaveText2
     GUIOuttextwin2 20,25,43,GUISaveText3
     GUIOuttextwin2 20,25,53,GUISaveText4
-    GUIOuttextwin2 20,25,63,GUISaveText5
+;   GUIOuttextwin2 20,25,63,GUISaveText5
     
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AutoIncSaveSlot],0
@@ -6568,7 +6568,7 @@ DisplayGUISave:
     je .nocheckbox4
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox4
-    GUIDisplayIconWin 20,11,60,[GUITemp]
+;   GUIDisplayIconWin 20,11,60,[GUITemp]
     ret
 
 SECTION .data
