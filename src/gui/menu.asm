@@ -843,7 +843,11 @@ NEWSYM savespcdata
     mov al,[edi+1]
     cmp al,[edi+2]
     je .nofileopen
+%ifdef __LINUX__
+    cmp byte[edi+1],'p'
+%else
     cmp byte[edi+1],'P'
+%endif
     jne .notp
     mov byte[edi+1],'0'
 .notp
