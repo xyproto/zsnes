@@ -438,7 +438,9 @@ void ExitFunction()
    ReleaseDirectInput();
    ReleaseDirectSound();
    ReleaseDirectDraw();
-   FreeDirectX();
+   FreeLibrary(hM_dsound);
+   FreeLibrary(hM_ddraw);
+   FreeLibrary(hM_dinput8);
    DestroyWindow(hMainWindow);
 }
 
