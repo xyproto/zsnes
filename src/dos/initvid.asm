@@ -42,27 +42,27 @@ NEWSYM dosinitvideo
     mov byte[res640],0
     mov byte[res480],0
     cmp byte[cvidmode],0
-    je near .initmodex
-    cmp byte[cvidmode],1
     je near .initmodeq
+    cmp byte[cvidmode],1
+    je near .initmodex
     cmp byte[cvidmode],2
-    je near .initvesa2320x240x8
-    cmp byte[cvidmode],3
-    je near .initvesa2320x240x16
-    cmp byte[cvidmode],4
-    je near .initvesa2640x480x8
-    cmp byte[cvidmode],5
-    je near .initvesa2640x480x16
-    cmp byte[cvidmode],6
-    je near .initvesa2512x384x8
-    cmp byte[cvidmode],7
-    je near .initvesa2512x384x16
-    cmp byte[cvidmode],8
     je near .initvesa12640x480x16
-    cmp byte[cvidmode],9
+    cmp byte[cvidmode],3
+    je near .initvesa2320x240x8
+    cmp byte[cvidmode],4
+    je near .initvesa2320x240x16
+    cmp byte[cvidmode],5
     je near .initvesa2320x480x8
-    cmp byte[cvidmode],10
+    cmp byte[cvidmode],6
     je near .initvesa2320x480x16
+    cmp byte[cvidmode],7
+    je near .initvesa2512x384x8
+    cmp byte[cvidmode],8
+    je near .initvesa2512x384x16
+    cmp byte[cvidmode],9
+    je near .initvesa2640x480x8
+    cmp byte[cvidmode],10
+    je near .initvesa2640x480x16
     ret
 
 ;*******************************************************

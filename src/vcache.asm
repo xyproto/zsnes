@@ -270,9 +270,9 @@ NEWSYM cachevideo
     je .nohires
     cmp byte[scanlines],1
     je .nohires
-    cmp byte[cvidmode],9
+    cmp byte[cvidmode],5
     je .yeshires
-    cmp byte[cvidmode],4
+    cmp byte[cvidmode],9
     jne .nohires
 .yeshires
     mov byte[Mode7HiRes],1

@@ -259,29 +259,29 @@ NEWSYM DosDrawScreenB
 ScreenShow:
     cmp byte[debugdisble],0
     je .debug
-    cmp byte[cvidmode],1
+    cmp byte[cvidmode],0
     je near copymodeq
 .debug
-    cmp byte[cvidmode],2
-    je near copyvesa2320x240x8b
-    cmp byte[cvidmode],3
-    je near copyvesa2320x240x16b
-    cmp byte[cvidmode],4
-    je near copyvesa2640x480x8b
-    cmp byte[cvidmode],5
-    je near copyvesa2640x480x16b
-    cmp byte[cvidmode],6
-    je near copyvesa2512x384x8b
-    cmp byte[cvidmode],7
-    je near copyvesa2512x384x16b
-    cmp byte[cvidmode],8
-    je near copyvesa12640x480x16b
-    cmp byte[cvidmode],9
-    je near copyvesa2320x480x8b
-    cmp byte[cvidmode],10
-    je near copyvesa2320x480x16b
-    cmp byte[cvidmode],0
+    cmp byte[cvidmode],1
     je near copymodex
+    cmp byte[cvidmode],2
+    je near copyvesa12640x480x16b
+    cmp byte[cvidmode],3
+    je near copyvesa2320x240x8b
+    cmp byte[cvidmode],4
+    je near copyvesa2320x240x16b
+    cmp byte[cvidmode],5
+    je near copyvesa2320x480x8b
+    cmp byte[cvidmode],6
+    je near copyvesa2320x480x16b
+    cmp byte[cvidmode],7       
+    je near copyvesa2512x384x8b
+    cmp byte[cvidmode],8
+    je near copyvesa2512x384x16b
+    cmp byte[cvidmode],9
+    je near copyvesa2640x480x8b
+    cmp byte[cvidmode],10
+    je near copyvesa2640x480x16b
     cmp byte[curblank],40h
     je .startcopy
     inc byte[curfps2]
@@ -299,28 +299,28 @@ NEWSYM dosvidpastecopyscr
    ret
 
 ScreenShowGUI:
-    cmp byte[cvidmode],1
-    je near copymodeq
-    cmp byte[cvidmode],2
-    je near copyvesa2320x240x8b
-    cmp byte[cvidmode],3
-    je near copyvesa2320x240x16bgui
-    cmp byte[cvidmode],4
-    je near copyvesa2640x480x8bgui
-    cmp byte[cvidmode],5
-    je near copyvesa2640x480x16bgui
-    cmp byte[cvidmode],6
-    je near copyvesa2512x384x8b
-    cmp byte[cvidmode],7
-    je near copyvesa2512x384x16bgui
-    cmp byte[cvidmode],8
-    je near copyvesa12640x480x16bgui
-    cmp byte[cvidmode],9
-    je near copyvesa2320x480x8bgui
-    cmp byte[cvidmode],10
-    je near copyvesa2320x480x16bgui
     cmp byte[cvidmode],0
+    je near copymodeq
+    cmp byte[cvidmode],1
     je near copymodex
+    cmp byte[cvidmode],2
+    je near copyvesa12640x480x16bgui
+    cmp byte[cvidmode],3
+    je near copyvesa2320x240x8b
+    cmp byte[cvidmode],4
+    je near copyvesa2320x240x16bgui
+    cmp byte[cvidmode],5
+    je near copyvesa2320x480x8bgui
+    cmp byte[cvidmode],6
+    je near copyvesa2320x480x16bgui
+    cmp byte[cvidmode],7
+    je near copyvesa2512x384x8b
+    cmp byte[cvidmode],8
+    je near copyvesa2512x384x16bgui
+    cmp byte[cvidmode],9
+    je near copyvesa2640x480x8bgui
+    cmp byte[cvidmode],10
+    je near copyvesa2640x480x16bgui
     jmp copymodeq
 %endif
 
@@ -5394,28 +5394,28 @@ NEWSYM copyvesa12640x480x16b
 ;*******************************************************
 NEWSYM DOSClearScreen
 %ifdef __MSDOS__
-    cmp byte[cvidmode],1
-    je near cscopymodeq
-    cmp byte[cvidmode],2
-    je near cscopyvesa2320x240x8b
-    cmp byte[cvidmode],3
-    je near cscopyvesa2320x240x16b
-    cmp byte[cvidmode],4
-    je near cscopyvesa2640x480x8b
-    cmp byte[cvidmode],5
-    je near cscopyvesa2640x480x16b
-    cmp byte[cvidmode],6
-    je near cscopyvesa2512x384x8b
-    cmp byte[cvidmode],7
-    je near cscopyvesa2512x384x16b
-    cmp byte[cvidmode],8
-    je near cscopyvesa12640x480x16b
-    cmp byte[cvidmode],9
-    je near cscopyvesa2320x480x8b
-    cmp byte[cvidmode],10
-    je near cscopyvesa2320x480x16b
     cmp byte[cvidmode],0
+    je near cscopymodeq
+    cmp byte[cvidmode],1
     je near cscopymodex
+    cmp byte[cvidmode],2
+    je near cscopyvesa12640x480x16b
+    cmp byte[cvidmode],3
+    je near cscopyvesa2320x240x8b
+    cmp byte[cvidmode],4
+    je near cscopyvesa2320x240x16b
+    cmp byte[cvidmode],5
+    je near cscopyvesa2320x480x8b
+    cmp byte[cvidmode],6
+    je near cscopyvesa2320x480x16b
+    cmp byte[cvidmode],7
+    je near cscopyvesa2512x384x8b
+    cmp byte[cvidmode],8
+    je near cscopyvesa2512x384x16b
+    cmp byte[cvidmode],9
+    je near cscopyvesa2640x480x8b
+    cmp byte[cvidmode],10
+    je near cscopyvesa2640x480x16b
 %endif
     ret
 
@@ -5584,11 +5584,11 @@ NEWSYM GetScreen
 ;    jbe .getscreen
 ;    ret
 ;.getscreen
-    cmp byte[cvidmode],3
+    cmp byte[cvidmode],4
     je near getcopyvesa2320x240x16b
-    cmp byte[cvidmode],5
+    cmp byte[cvidmode],10
 ;    je near getcopyvesa2640x480x16b
-    cmp byte[cvidmode],7
+    cmp byte[cvidmode],8
 ;    je near getcopyvesa2512x384x16b
 %endif
     ret

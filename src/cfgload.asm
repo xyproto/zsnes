@@ -621,14 +621,14 @@ db '',13,10
 %endif
 %ifdef __MSDOS__
 db '; Video Mode, 0 - 10',13,10
-db ';   0 = 320x240x256           1 = 256x256x256',13,10
-db ';   2 = 320x240x256 VESA2     3 = 320x240x65536 VESA2',13,10
-db ';   4 = 640x480x256 VESA2     5 = 640x480x65536 VESA2',13,10
-db ';   6 = 512x384x256 VESA2     7 = 512x384x65536 VESA2',13,10
-db ';   8 = 640x480x65536 VESA1.2 9 = 320x480x256 VESA2',13,10
-db ';   10 = 320x480x65536 VESA2',13,10
+db ';  0 = 256x256x8B  (MODEQ)  1 = 320x240x8B (MODEX)',13,10
+db ';  2 = 640x480x16B (VESA1)  3 = 320x240x8B (VESA2)',13,10
+db ';  4 = 320x240x16B (VESA2)  5 = 320x480x8B (VESA2)',13,10
+db ';  6 = 320x480x16B (VESA2)  7 = 512x384x8B (VESA2)',13,10
+db ';  8 = 512x384x16B (VESA2)  9 = 640x480x8B (VESA2)',13,10
+db '; 10 = 640x480x16B (VESA2)',13,10
 db '',13,10
-db 'VideoMode = %U',13,10
+db 'VideoModeDos = %U',13,10
 db '',13,10
 %endif
 db '; Sound Emulation = 0 or 1 (1 = ON)',13,10
@@ -1901,8 +1901,8 @@ SECTION .data
       db 'VIDEOMODELIN'
 %endif
 %ifdef __MSDOS__
-.stri dd 9
-      db 'VIDEOMODE'
+.stri dd 12
+      db 'VIDEOMODEDOS'
 %endif
 .strj dd 7
       db 'EXECUTE'

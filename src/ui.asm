@@ -1436,16 +1436,16 @@ SECTION .data
           db '  -u      Force PAL timing',13,10
 %ifndef __LINUX__
           db '  -v #    Select Video Mode :',13,10
-          db '            0 = 320x240x256           1 = 256x256x256',13,10
-          db '            2 = 320x240x256(VESA2)    3 = 320x240x16b(VESA2) ',13,10
-          db '            4 = 640x480x256(VESA2)    5 = 640x480x16b(VESA2) ',13,10
-          db '            6 = 512x384x256(VESA2)    7 = 512x384x16b(VESA2) ',13,10
-          db '            8 = 640x480x16b(VESA1.2)  9 = 320x480x256(VESA2) ',13,10
-          db '            10 = 320x480x65536(VESA2)',13,10
+          db '            0 = 256x256x8B  (MODEQ)  1 = 320x240x8B (MODEX)',13,10
+          db '            2 = 640x480x16B (VESA1)  3 = 320x240x8B (VESA2)',13,10
+          db '            4 = 320x240x16B (VESA2)  5 = 320x480x8B (VESA2)',13,10
+          db '            6 = 320x480x16B (VESA2)  7 = 512x384x8B (VESA2)',13,10
+          db '            8 = 512x384x16B (VESA2)  9 = 640x480x8B (VESA2)',13,10
+          db '           10 = 640x480x16B (VESA2)',13,10
 %endif
           db '  -w      Enable VSync',13,10
           db 'Press any key to continue.',0
-.noparms3 db 13,'  -y      Enable EAGLE (640x480x256 only) or Interpolation (640x480x65536 only)',13,10          
+.noparms3 db 13,'  -y      Enable EAGLE (640x480x8B only) or Interpolation (640x480x16B only)',13,10          
           db '  -z      Enable Stereo Sound',13,10
           db '',13,10
           db '  File Formats Supported by GUI : .SMC,.SFC,.SWC,.FIG,.058,.078,.1,.USA,.JAP',13,10
