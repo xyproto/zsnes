@@ -164,8 +164,8 @@ v1.337 - This release is dedicated to zsKnight and his family
         - Now uses idle task priority when in GUI and window is not active,
           should also smooth task swtiching on slower computers [pagefault]
 
-        Linux 0.32
-        ----------
+        Linux v0.37
+        -----------
         - Added autoconf support for easy compiling [Diablo-D3, amit,
           theoddone33]
         - Fixed sound buffering in linux port to improve sound on some cards
