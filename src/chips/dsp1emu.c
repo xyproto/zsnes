@@ -471,8 +471,11 @@ DSPOp02()
 //  [4/15/2001]   (ViewerY+ViewerY1*NumberOfSlope);
 
    Op02VOF=0x0000;
-   if(Op02LFE==0x2200)Op02VVA=0xFECD;
-   else Op02VVA=0xFFB2;
+//   if(Op02LFE==0x2200)Op02VVA=0xFECD;
+//   else Op02VVA=0xFFB2;
+
+   Op02VVA = (short)(Op02LES * tan(Op02AZS*6.2832/65536.0));
+
    #ifdef DebugDSP1
       Log_Message("OP02 FX:%d FY:%d FZ:%d LFE:%d LES:%d",Op02FX,Op02FY,Op02FZ,Op02LFE,Op02LES);
       Log_Message("     AAS:%d AZS:%d VOF:%d VVA:%d",Op02AAS,Op02AZS,Op02VOF,Op02VVA);
