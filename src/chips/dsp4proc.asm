@@ -30,14 +30,8 @@ SECTION .text
     jnz .dsp4area
     jmp %1
 .dsp4area
-    mov dx,cx
-    and dx,0C000h
-    cmp dx,08000h
-    je .dsp4continue
-    mov dx,cx
-    and dx,0F000h
-    cmp dx,06000h
-    je .dsp4continue
+    test ecx,04000h
+    jz .dsp4continue
     ret
 .dsp4continue
 %endmacro
