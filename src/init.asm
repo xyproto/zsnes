@@ -1443,6 +1443,15 @@ NEWSYM headerhack
 .marvelous
 .notrend
 
+    ; Lamborgini Challenge - -p 110
+    mov esi,[romdata]
+    add esi,07FC0h
+    cmp dword[esi],'DIGI'
+    jne .nodigitaldevil
+    mov byte[opexec268],187
+    mov byte[opexec358],187
+.nodigitaldevil
+
     mov esi,[romdata]
     add esi,7FC0h
     cmp dword[esi],'SP F'
@@ -1457,8 +1466,11 @@ NEWSYM headerhack
 
     mov esi,[romdata]
     add esi,7FC0h
+    cmp dword[esi],'DEAD'
+    je .deaddance
     cmp dword[esi],'TUFF'
     jne .nottuffenuff
+.deaddance
     mov byte[cycpb268],75
     mov byte[cycpb358],77
     mov byte[cycpbl2],75
@@ -4116,7 +4128,7 @@ NEWSYM SPC7110Load
 .nopatch
 
     ; Save Datafile
-;    jmp .nosavedatafile
+    jmp .nosavedatafile
 
 ;    mov eax,[spc7110romptr]
 ;    mov [SPC7110CPtr],eax
