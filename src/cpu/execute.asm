@@ -31,7 +31,7 @@ EXTSYM UpdateDPage
 EXTSYM MessageOn,MsgCount,Msgptr,StartGUI,cbitmode,debuggeron,romdata
 EXTSYM frameskip,initvideo,newgfx16b,soundon,cvidmode
 EXTSYM vidbuffer,vidbufferofsa,vidbufferofsb,disable65816sh,GUISaveVars,virqnodisable
-EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst,GUIDoReset
+EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst,GUIDoReset, GUIReset
 EXTSYM KeyOnStA,KeyOnStB,ProcessKeyOn,printnum,sramsavedis,DSPDisable,C4Enable
 EXTSYM KeyQuickClock,KeyQuickSaveSPC,TimerEnable,AutoIncSaveSlot
 EXTSYM IRQHack,HIRQLoc,Offby1line,splitflags,joinflags,KeyQuickSnapShot
@@ -490,7 +490,7 @@ NEWSYM BackupSystemVars
     BackupCVMac timer2upd,1
     BackupCVMac xa,14
     BackupCVMacB spcnumread,4
-	BackupCVMacB spchalted,4
+ BackupCVMacB spchalted,4
     BackupCVMac opcd,6
     BackupCVMacB HIRQCycNext,5
     BackupCVMac oamaddr,14
@@ -517,7 +517,7 @@ NEWSYM RestoreSystemVars
     BackupCVRMac timer2upd,1
     BackupCVRMac xa,14
     BackupCVRMacB spcnumread,4
-	BackupCVRMacB spchalted,4
+ BackupCVRMacB spchalted,4
     BackupCVRMac opcd,6
     BackupCVRMacB HIRQCycNext,5
     BackupCVRMac oamaddr,14
@@ -591,7 +591,7 @@ NEWSYM BackupCVFrame
     BackupCVMac timer2upd,1
     BackupCVMac xa,14
     BackupCVMacB spcnumread,4
-	BackupCVMacB spchalted,4
+ BackupCVMacB spchalted,4
     BackupCVMac opcd,6
     BackupCVMacB HIRQCycNext,5
     BackupCVMac oamaddr,14
@@ -1315,6 +1315,7 @@ reexecuteb2:
     jz .noreset
 .activatereset
     pushad
+    mov byte[GUIReset],1
     call GUIDoReset
     popad
     mov byte[ReturnFromSPCStall],0
@@ -1998,7 +1999,7 @@ NEWSYM stateloader
     call repackfunct
     mov dword[cycpbl],0
     mov dword[spcnumread],0
-	mov dword[spchalted],-1
+ mov dword[spchalted],-1
     mov byte[nexthdma],0
     call headerhack
     call initpitch

@@ -762,7 +762,7 @@ NEWSYM GUICMessage, resd 1
 NEWSYM GUICTimer,   resd 1
 NEWSYM GUIOn,       resb 1
 NEWSYM GUIOn2,      resb 1
-NEWSYM GUIReset,    resb 1
+NEWSYM GUIReset,    resb 0
 ;GOSPort db 0
 NEWSYM CurPalSelect, resb 1
 NEWSYM MotionBlur, resb 1
@@ -2324,7 +2324,7 @@ NEWSYM StartGUI
     mov dword[nmiprevline],224
     mov dword[nmistatus],0
     mov dword[spcnumread],0
-	mov dword[spchalted],-1
+ mov dword[spchalted],-1
     mov byte[NextLineCache],0
     mov byte[DSPMem+08h],0
     mov byte[DSPMem+18h],0

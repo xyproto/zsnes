@@ -67,7 +67,7 @@ EXTSYM opexec268cphb,opexec358,opexec358b,opexec358cph,spcextraram
 EXTSYM opexec358cphb,prevoamptr,reg1read,reg2read,reg3read
 EXTSYM reg4read,resolutn,romdata,scrndis,spcBuffera,spcP,spcRam
 EXTSYM spcnumread,spchalted,tableD,timeron,vidbright,DSPMem,OldGfxMode2
-EXTSYM SPC700read,SPC700write,GUIDoReset,spc700read
+EXTSYM SPC700read,SPC700write,GUIDoReset,spc700read, GUIReset
 EXTSYM InitC4,SA1Reset,SetAddressingModesSA1,SetAddressingModes,SDD1BankA,SPC7110init
 EXTSYM RTCinit,InitOBC
 EXTSYM memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
@@ -1545,7 +1545,7 @@ NEWSYM init65816
     mov byte [reg4read],0
     mov dword[cycpbl],0
     mov dword[spcnumread],0
-	mov dword[spchalted],-1
+ mov dword[spchalted],-1
     mov dword[coladdr],0
     mov byte[NMIEnab],1
     mov word[VIRQLoc],0
@@ -1672,8 +1672,14 @@ NEWSYM init65816
     ;popad
 ;.notbsx
 
+    cmp byte[GUIReset],1
+    jne .notreseting
+    mov byte[GUIReset],0
+    jmp .afterramclear
+.notreseting
     helpclearmem wramdataa, 65536
     helpclearmem ram7fa, 65536
+.afterramclear
     cmp byte[BSEnable],1
     jne .notbsx2
     cmp byte[romtype],1 ;Hack for BS HiROMs
@@ -4763,9 +4769,9 @@ int 3h
     mov dword[memtabler16+60h*4],setaaccessbankr16a
     mov dword[memtablew16+60h*4],setaaccessbankw16a
 
-    mov dword[SetaCmdEnable],00000080h	; 60:0000
+    mov dword[SetaCmdEnable],00000080h ; 60:0000
     mov esi,[setaramdata]
-    mov ecx,1024	; 4096 bytes
+    mov ecx,1024 ; 4096 bytes
 .loopsetaclear
     mov dword[esi],0
     add esi,4
