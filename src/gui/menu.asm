@@ -112,6 +112,37 @@ NEWSYM showmenu
     jnz .b
 .nopalread
 
+    cmp byte[cbitmode],1
+    je near .nopal16b
+    ; set palette of colors 128,144, and 160 to white, blue, and red
+    mov al,128
+    mov dx,03C8h
+    out dx,al
+    inc dx
+    mov al,63
+    out dx,al
+    out dx,al
+    out dx,al
+    mov al,144
+    mov dx,03C8h
+    out dx,al
+    inc dx
+    xor al,al
+    out dx,al
+    out dx,al
+    mov al,50
+    out dx,al
+    mov al,160
+    mov dx,03C8h
+    out dx,al
+    inc dx
+    mov al,45
+    out dx,al
+    xor al,al
+    out dx,al
+    out dx,al
+.nopal16b
+
     mov byte[NoInputRead],0
     cmp byte[newengen],0
     je .nong16b
@@ -408,33 +439,6 @@ NEWSYM showmenu
 NEWSYM menudrawbox8b
     cmp byte[cbitmode],1
     je near menudrawbox16b
-    ; set palette of colors 128,144, and 160 to white, blue, and red
-    mov al,128
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,63
-    out dx,al
-    out dx,al
-    out dx,al
-    mov al,144
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    xor al,al
-    out dx,al
-    out dx,al
-    mov al,50
-    out dx,al
-    mov al,160
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,45
-    out dx,al
-    xor al,al
-    out dx,al
-    out dx,al
     ; draw a small blue box with a white border
     mov esi,40+20*288
     add esi,[vidbuffer]
