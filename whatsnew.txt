@@ -2,6 +2,7 @@ What's New :
 ------------
 
 v1.337 - This release is dedicated to zsKnight and his family
+
        All ports
        ---------
        - Added a customizable key to toggle display of the game clock in game
