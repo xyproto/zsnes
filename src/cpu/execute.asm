@@ -1194,11 +1194,11 @@ SECTION .text
 ; Int 09h vector
 ;*******************************************************
 
+%ifdef __MSDOS__
 SECTION .bss
 NEWSYM skipnextkey42, resb 1
 SECTION .text
 
-%ifdef __MSDOS__
 NEWSYM handler9h
     cli
     push ds
@@ -1263,6 +1263,7 @@ NEWSYM handler9h
 %endif
 
 SECTION .data
+ALIGN32
 NEWSYM soundcycleft, dd 0
 NEWSYM curexecstate, dd 0
 
