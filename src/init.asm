@@ -1518,6 +1518,23 @@ NEWSYM headerhack
     mov byte[ENVDisable],0
     mov byte[MMXSRAMFix],0
 
+    mov esi,[romdata] 
+    add esi,0FFC0h 
+    cmp dword[esi],'HORA' 
+    jne .nothoraigakuen 
+    cmp dword[esi+4],'I-GA' 
+    jne .nothoraigakuen 
+    cmp dword[esi+8],'KUEN' 
+    jne .nothoraigakuen 
+    cmp dword[esi+12],'    ' 
+    jne .nothoraigakuen 
+    mov al,0h 
+    mov edi,spcRam 
+    mov ecx,65472 
+    rep stosb 
+    ret 
+.nothoraigakuen 
+
     mov esi,[romdata]
     add esi,07FC0h
     cmp dword[esi],'DIGI'
