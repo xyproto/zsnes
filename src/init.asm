@@ -1710,22 +1710,10 @@ SECTION .bss
 NEWSYM curromsize, resb 1
 NEWSYM cromptradd, resd 1
 NEWSYM lorommapmode2, resb 1
-NEWSYM MMXSRAMFix, resb 1
 SECTION .text
 
 NEWSYM initsnes
     mov byte[ForceNewGfxOff],0
-    mov byte[MMXSRAMFix],0
-
-    ;Megaman/Rockman X
-    mov esi,[romdata]
-    add esi,7FC0h
-    cmp dword[esi+4],'MAN '
-    jne .notmmx
-    cmp dword[esi+8],'X   '
-    jne .notmmx
-;    mov byte[MMXSRAMFix],1
-.notmmx
 
     mov esi,[romdata]
     add esi,7FC0h
