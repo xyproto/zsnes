@@ -5260,10 +5260,16 @@ NEWSYM CheckROMType
     mov esi,[romdata]
     mov ax,[esi+0FFFCh]
     mov bx,[esi+07FFCh]
+    cmp bx,8000h
+    jne .notrv1
+    cmp ax,8011h
+    je .yeslorom
+.notrv1
     test ax,8000h
     jnz .checkloarea
     test bx,8000h
     jz .notfound2
+.yeslorom
     mov byte[romtype],1
     jmp .donecheck
 .checkloarea
