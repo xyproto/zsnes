@@ -531,7 +531,7 @@ void ProcessKeyBuf(int scancode)
 int InitSound(void)
 {
 	SDL_AudioSpec wanted;
-
+	const int samptab[7] = { 1, 1, 2, 4, 2, 4, 4 };
 	const int freqtab[7] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
 
 	SDL_CloseAudio();
@@ -562,16 +562,8 @@ int InitSound(void)
 		wanted.channels = 1;
 	}
 
-	wanted.samples = (freqtab[SoundQuality] * wanted.channels)/32;
+	wanted.samples = samptab[SoundQuality] * 128 * wanted.channels;
 
-	printf("InitSound: %dhz, requesting %d sized buffer, " , freqtab[SoundQuality], wanted.samples);
-	
-	if (wanted.samples < 256) { wanted.samples = 256; } 
-	else if(wanted.samples < 512) { wanted.samples = 512; }
-	else if(wanted.samples < 1024) { wanted.samples = 1024; }
-	else { wanted.samples = 2048; } // never exceed this.
-
-	printf("getting %d.\n",wanted.samples);
 	wanted.format = AUDIO_S16LSB;
 	wanted.userdata = NULL;
 	wanted.callback = UpdateSound;
@@ -586,9 +578,9 @@ int InitSound(void)
 	}
 	SDL_PauseAudio(0);
 
-	Buffer_len = (audiospec.size * 3);
-	Buffer_len = (Buffer_len + 255) & ~255; /* Align to SPCSize */;
-	Buffer = malloc(Buffer_len+1);
+	Buffer_len = (audiospec.size * 2);
+	Buffer_len = (Buffer_len + 255) & ~255; /* Align to SPCSize */
+	Buffer = malloc(Buffer_len);
 
 	return TRUE;
 }
