@@ -302,10 +302,6 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             && (CurKeyReadPos==0)))){
             accept=false;
 
-//            char bla[256];
-//            sprintf(bla,"%d",wParam);
-//            MessageBox(NULL,bla,"Key",MB_SYSTEMMODAL|MB_OK);
-
             if (wParam==16)
               shiftpr=true;
             if (((wParam>='A') && (wParam<='Z')) ||
@@ -392,28 +388,6 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       case WM_MOUSEMOVE:
          if(MouseInput) MouseInput->Acquire();
          break;
-/*      case 0x020A:
-         zDelta = (short) HIWORD(wParam);
-         zDelta=120;
-         while (zDelta>0){
-           zDelta-=120;
-           if (!((CurKeyPos+1==CurKeyReadPos) || ((CurKeyPos+1==16)
-              && (CurKeyReadPos==0)))){
-              KeyBuffer[CurKeyPos]=72+256;
-              CurKeyPos++;
-              if (CurKeyPos==16) CurKeyPos=0;
-           }
-         }
-         while (zDelta<0){
-           zDelta+=120;
-           if (!((CurKeyPos+1==CurKeyReadPos) || ((CurKeyPos+1==16)
-              && (CurKeyReadPos==0)))){
-              KeyBuffer[CurKeyPos]=72+256;
-              CurKeyPos++;
-              if (CurKeyPos==16) CurKeyPos=0;
-           }
-         }
-         break;*/
       case WM_MOVE:
          initwinvideo();
          break;
@@ -708,7 +682,6 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
       return DIENUM_CONTINUE;
    }
 
-
    DIPROPRANGE diprg;
 
    diprg.diph.dwSize       = sizeof(diprg);
@@ -737,8 +710,6 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
       Y1Disable[CurrentJoy]=1;
       Y2Disable[CurrentJoy]=1;
    }
-
-
 
    diprg.diph.dwObj        = DIJOFS_Z;
    if(FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph)))
@@ -879,7 +850,7 @@ void endgame()
 void DInputError(){
    char message1[256];
 
-   sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 7.0a or higher located at www.microsoft.com/directx \0");
+   sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx \0");
    MessageBox (NULL, message1, "DirectInput Error" , MB_ICONERROR );
 }
 
@@ -890,7 +861,7 @@ bool InitInput()
 
    if(FAILED(hr=DirectInput8Create(hInst,DIRECTINPUT_VERSION,IID_IDirectInput8A,(void **) &DInput,NULL)))
    {
-      sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 7.0a or higher located at www.microsoft.com/directx \0");
+      sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx \0");
       MessageBox (NULL, message1, "DirectInput Error" , MB_ICONERROR );
 
       switch(hr)
@@ -924,8 +895,6 @@ bool InitInput()
 
    hr=KeyboardInput->SetDataFormat(&c_dfDIKeyboard);
    if(FAILED(hr)) {DInputError();return FALSE;}
-
-
 	
    hr=KeyboardInput->SetCooperativeLevel(hMainWindow,DISCL_NONEXCLUSIVE | DISCL_FOREGROUND );
 
@@ -940,11 +909,10 @@ bool InitInput()
 
    JoystickInput[0]=NULL;JoystickInput[1]=NULL;JoystickInput[2]=NULL;JoystickInput[3]=NULL;
 
-
    hr=DInput->EnumDevices(DI8DEVCLASS_GAMECTRL, InitJoystickInput,
                        DInput, DIEDFL_ATTACHEDONLY);
-   if(FAILED(hr)) {DInputError();return FALSE;}
 
+   if(FAILED(hr)) {DInputError(); return FALSE;}
 
    InputAcquire();
 
@@ -968,7 +936,6 @@ void TestJoy()
             if(JoystickInput[i]) JoystickInput[i]->Acquire();
             if(FAILED(IDirectInputDevice8_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i]))) return;
          }
-
 
          if(!X1Disable[i])
          {
@@ -1194,7 +1161,6 @@ unsigned char Noise[]={ 27,232,234,138,187,246,176,81,25,241,1,127,154,190,195,1
 93,75,83,238,104,238,131,70,22,252,180,82,110,123,106,133,183,209,48,230,
 157,205,27,21,107,63,85,164};
 
-
    int X, Y;
    DWORD Temp1;
 	MSG msg;
@@ -1207,8 +1173,6 @@ unsigned char Noise[]={ 27,232,234,138,187,246,176,81,25,241,1,127,154,190,195,1
 	DWORD WritePos;
    DWORD SoundBufD;
    DWORD SoundBufD2;
-
-
 
 DWORD T60HZEnabled=0;
 DWORD T36HZEnabled=0;
@@ -1399,8 +1363,6 @@ void initwinvideo(void)
 
       AdjustWindowRectEx( &rc1,GetWindowLong( hMainWindow, GWL_STYLE ),
       GetMenu( hMainWindow ) != NULL, GetWindowLong( hMainWindow, GWL_EXSTYLE ) ); 
-//      X=(GetSystemMetrics( SM_CXSCREEN ) - WindowWidth) / 2;
-//      Y=(GetSystemMetrics( SM_CYSCREEN ) - WindowHeight) / 2;
 
       GetClientRect( hMainWindow, &rc1 );
       ClientToScreen( hMainWindow, ( LPPOINT )&rc1 );
@@ -1479,7 +1441,6 @@ extern int packettimeleft[256];
 extern int PacketCounter;
 extern int CounterA;
 extern int CounterB;
-
 
 void CheckTimers(void)
 {
@@ -1730,7 +1691,6 @@ void drawscreenwin(void)
                      add esi,576
                      cmp eax,223
                      jne Copying3
-
                      xor eax,eax
                      mov ecx,128
                      rep stosd
@@ -1755,7 +1715,6 @@ void drawscreenwin(void)
                      add esi,576
                      cmp eax,223
                      jne Copying
-
                      xor eax,eax
                      mov ecx,128
                      rep stosd
@@ -1793,21 +1752,6 @@ void drawscreenwin(void)
                      jne Copying32b
                      pop es
                   }
-
-
-/*            for(j=0;j<223;j++)
-            {
-               for(i=0;i<256;i++)
-               {
-                  color32=(((*(WORD *)(ScreenPtr))&0xF800)<<8)+
-                          (((*(WORD *)(ScreenPtr))&0x07E0)<<5)+
-                          (((*(WORD *)(ScreenPtr))&0x001F)<<3)+0x7F000000;
-                  SURFDW[i]=color32;
-                  ScreenPtr+=2;
-               }
-            ScreenPtr=ScreenPtr+576-512;         
-            SURFDW=(DWORD *) &SurfBuf[j*Temp1];
-            } */
    
             SURFDW=(DWORD *) &SurfBuf[222*Temp1];
             color32=0x7F000000;
@@ -1901,7 +1845,6 @@ void drawscreenwin(void)
                      add esi,576
                      cmp ebx,223
                      jne Copying2MMX
-
                      xor eax,eax
                      mov ecx,128
                      rep stosd
@@ -1943,7 +1886,6 @@ void drawscreenwin(void)
                      add esi,576
                      cmp ebx,223
                      jne Copying2
-
                      xor eax,eax
                      mov ecx,128
                      rep stosd
@@ -2235,7 +2177,6 @@ void WinUpdateDevices()
 
 }
 
-
 int GetMouseX(void)
 {
    char message1[256];
@@ -2358,9 +2299,4 @@ void ZsnesPage()
      ShellExecute(NULL, NULL, "http://www.zsnes.com/", NULL, NULL, 0);
 }
 
-
-
-
 }
-
-
