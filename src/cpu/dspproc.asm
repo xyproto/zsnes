@@ -521,9 +521,9 @@ NEWSYM AdjustFrequency
       je .cubicspline
       ja .notgaussian
       ; Copy from Gaussian to DSPInterP
-      mov ebx,DSPInterP
-      mov edx,DSPInterP+2046
-      mov esi,Gaussian+1022
+      mov ebx,DSPInterP+1024
+      mov edx,DSPInterP+1022
+      mov esi,Gaussian
       mov ecx,512
 .intrploop
       xor eax,eax
@@ -532,7 +532,7 @@ NEWSYM AdjustFrequency
       mov [ebx],ax
       add ebx,2
       sub edx,2
-      sub esi,2
+      add esi,2
       dec ecx
       jnz .intrploop
       jmp .notgaussian
@@ -653,19 +653,6 @@ NEWSYM InitSPC
       push ebx
       push ecx
       push edx
-
-      ; Mirror Interpolation Table
-      mov ebx,Gaussian
-      mov ecx,512
-.intloop
-      mov ax,[ebx]
-      or ax,ax
-      jz .nodec
-      dec ax
-.nodec
-      mov [ebx],ax
-      dec ecx
-      jnz .intloop
 
       call AdjustFrequency
 
