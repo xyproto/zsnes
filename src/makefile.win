@@ -85,9 +85,6 @@ CC=cl
 %.obj: %.asm
 	${ASM} ${ASMFLAGS} -o $@ $<
 
-chips/dsp1emu.obj : chips/dsp1emu.c
-	${CC} /O2t ${CFLAGS} /Fo$@ $<
-
 ALL: zsnesw.exe
 
 zsnesw.exe: ${OBJS} ${WINDIR}/zsnes.res
@@ -124,6 +121,7 @@ ${CHIPDIR}/sfxproc.obj: ${CHIPDIR}/sfxproc.asm macros.mac\
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
 
 ${CHIPDIR}/dsp1emu.obj: ${CHIPDIR}/dsp1emu.c betauser.mac
+	${CC} /O2t ${CFLAGS} /Fo$@ $<
 ${CHIPDIR}/dsp1proc.obj: ${CHIPDIR}/dsp1proc.asm macros.mac
 ui.obj: ui.asm macros.mac betauser.mac
 cfgload.obj:cfgload.asm macros.mac
