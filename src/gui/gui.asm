@@ -442,6 +442,7 @@ NEWSYM FossilUse,     db 0
 NEWSYM TimerEnable,   db 0
 
 NEWSYM Surround,      db 0
+NEWSYM LargeSoundBuf, db 0
 NEWSYM InterSound,    db 1
 NEWSYM FastFwdToggle, db 0
 NEWSYM En2xSaI, db 0

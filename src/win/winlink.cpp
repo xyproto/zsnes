@@ -185,6 +185,7 @@ void initwinvideo();
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
 extern BYTE Surround;
+extern BYTE LargeSoundBuf;
 extern int CurKeyPos;
 extern int CurKeyReadPos;
 extern int KeyBuffer[16];
@@ -460,7 +461,6 @@ int RegisterWinClass ( void )
 	return TRUE;
 }
 
-
 void ShutdownApplication()
 {
 
@@ -519,6 +519,11 @@ InitSound()
          break;
       default:
          wfx.nSamplesPerSec = 11025;
+   }
+
+   if (LargeSoundBuf == 1)
+   {
+      SoundBufferSize*=2;
    }
 
    if(StereoSound==1)

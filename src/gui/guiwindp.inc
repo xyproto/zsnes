@@ -2077,14 +2077,21 @@ DisplayGUISound:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox3
     GUIDisplayIconWin 6,11,111,[GUITemp]
-;    cmp byte[OSPort],3
-;    je near .checkbox42
-%ifndef __LINUX__
+    cmp byte[OSPort],3
+    je near .nocheckbox42
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[Surround],0
     je .nocheckbox4
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox4
+    GUIDisplayIconWin 6,11,121,[GUITemp]
+.nocheckbox42
+%ifndef __LINUX__
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[LargeSoundBuf],0
+    je .nocheckbox43
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox43
     GUIDisplayIconWin 6,11,121,[GUITemp]
 %endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
@@ -2199,7 +2206,7 @@ GUISoundTextD db '---%',0
 GUISoundTextH db 'REVERSE STEREO',0
 GUISoundTextI db 'SURROUND SOUND',0
 %ifndef __LINUX__
-GUISoundTextIb db 'BASS ENHANCEMENT',0
+GUISoundTextIb db 'LARGE SOUND BUFFER',0
 %endif
 GUISoundTextJ db 'SOUND INTERPOLATION',0
 GUISoundTextK db 'LOW PASS FILTER',0

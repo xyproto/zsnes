@@ -2102,6 +2102,9 @@ DisplayGUISoundClick:
     GUIClickCButton 11,101,byte[SoundNoiseDis]
     GUIClickCButtonS 11,111,byte[RevStereo]
     GUIClickCButton 11,121,byte[Surround]
+%ifndef __LINUX__
+    GUIClickCButton 11,121,byte[LargeSoundBuf]
+%endif
     GUIClickCButton 11,131,byte[InterSound]
     GUIClickCButton 11,141,byte[LowPassFilter]
     GUIClickCButton 11,151,byte[SoundBufEn]
