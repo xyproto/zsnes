@@ -409,6 +409,7 @@ NEWSYM nosprincr, db 0
 NEWSYM poamaddrs, dw 0
 NEWSYM ioportval, db 255
 NEWSYM iohvlatch, db 0
+NEWSYM ppustatus, db 0
 
 
 NEWSYM tempdat, times 478 db 0     ; expandable area
@@ -734,7 +735,8 @@ reg213Er:
 ; PPU Status Flag & Version number (NTSC/PAL/EXTRN Latch flag)
 reg213Fr:
 ;    mov byte[debstop3],1
-    mov al,[romispal]
+    mov al,[ppustatus]
+    or al,[romispal]
     shl al,4
     or al,[cfield]
     mov byte[latchxr],0

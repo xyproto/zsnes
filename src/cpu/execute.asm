@@ -104,7 +104,7 @@ EXTSYM JoyRead,ChatType2,chatstrR2,chatstrR3,chatstrR4,chatstrR5
 EXTSYM chatRTL2,chatRTL3,chatRTL4,chatRTL5
 EXTSYM NetLoadState
 EXTSYM ProcessMovies
-EXTSYM ioportval
+EXTSYM ioportval,ppustatus
 EXTSYM C4VBlank
 EXTSYM dsp1teststuff
 EXTSYM ReturnFromSPCStall,SPCStallSetting,cycpb268,cycpb358,HIRQSkip,scanlines
@@ -4563,6 +4563,7 @@ NEWSYM execsingle
 .overy
     shr dh,1
     mov word[curypos],0
+    xor byte[ppustatus],80h
     mov byte[NMIEnab],01h
     add dword[opcd],170*262
     call cachevideo
