@@ -28,6 +28,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIR_SLASH "\\"
 #endif
 #include "zip/zunzip.h"
+#include "jma/zsnesjma.h"
 
 #ifndef __GNUC__
 #define strcasecmp stricmp
@@ -782,6 +783,16 @@ void loadROM()
   if (Sup16mbit) { maxromspace -= 2097152; } //I don't get it either
 
   lastROMFileName = ZOpenFileName;
+
+  if (strlen(ZOpenFileName) >= 5) //Char + ".jma"
+  {
+    char *ext = ZOpenFileName+strlen(ZOpenFileName)-4;
+    if (!strcasecmp(ext, ".jma"))
+    {
+      isCompressed = true;
+      load_jma_file(ZOpenFileName);
+    }
+  }
 
   if (strlen(ZOpenFileName) >= 5) //Char + ".zip"
   {

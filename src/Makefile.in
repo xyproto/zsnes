@@ -24,6 +24,7 @@ WINDIR=linux
 OBJDIR=obj
 ZIPDIR=zip
 EFFECTSDIR=effects
+JMADIR=jma
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
 	 ${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
@@ -57,7 +58,9 @@ WINOBJ=${WINDIR}/copyvwin.o \
 WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/modemrtn.o ${DOSDIR}/vesa2.o\
 	${DOSDIR}/initvid.o ${DOSDIR}/sw.o ${DOSDIR}/gppro.o ${DOSDIR}/vesa12.o
 
-#PREOBJ=${OBJDIR}/unzip.o ${DOSDIR}/zsipx.o
+JMAOBJ=${JMADIR}/7zlzma.o ${JMADIR}/aribitcd.o ${JMADIR}/crc32.o ${JMADIR}/iiostrm.o\
+       ${JMADIR}/inbyte.o ${JMADIR}/jma.o ${JMADIR}/lzma.o ${JMADIR}/lzmadec.o\
+       ${JMADIR}/outbyte.o ${JMADIR}/winout.o ${JMADIR}/zsnesjma.o
 
 ZIPOBJ=${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
@@ -65,9 +68,12 @@ EFFECTSOBJ=${EFFECTSDIR}/burn.o ${EFFECTSDIR}/water.o ${EFFECTSDIR}/smoke.o
 
 MAINOBJ=cfgload.o endmem.o init.o initc.o uic.o patch.o ui.o vcache.o version.o
 
-OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${ZIPOBJ} ${EFFECTSOBJ}
+OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
 
-.SUFFIXES: .c .asm 
+.SUFFIXES: .cpp .c .asm 
+
+%.o: %.cpp
+	g++ @CFLAGS@ -o $@ -c $<
 
 %.o: %.c
 	@CC@ @CFLAGS@ -o $@ -c $<
@@ -78,7 +84,7 @@ OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ
 ALL:	@ZSNESEXE@
 
 @ZSNESEXE@:  ${OBJS}
-	@CC@ -o @ZSNESEXE@ ${OBJS} @CFLAGS@ @LDFLAGS@
+	g++ -o @ZSNESEXE@ ${OBJS} @CFLAGS@ @LDFLAGS@
 
 ${ZIPDIR}/zpng.o: ${ZIPDIR}/zpng.c ${ZIPDIR}/zpng.h
 ${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/zunzip.h
@@ -104,7 +110,7 @@ ${CHIPDIR}/dsp1emu.o: ${CHIPDIR}/dsp1emu.c
 ui.o: ui.asm macros.mac
 cfgload.o:cfgload.asm macros.mac
 init.o:init.asm macros.mac
-initc.o:initc.c
+initc.o:initc.c ${JMADIR}/zsnesjma.h
 uic.o:uic.c
 patch.o:patch.c
 
@@ -189,6 +195,18 @@ ${CHIPDIR}/sa1proc.o: ${CHIPDIR}/sa1proc.asm macros.mac
 endmem.o: endmem.asm macros.mac
 ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
 
+${JMADIR}/7zlzma.o: ${JMADIR}/7zlzma.cpp
+${JMADIR}/aribitcd.o: ${JMADIR}/aribitcd.cpp
+${JMADIR}/crc32.o: ${JMADIR}/crc32.cpp ${JMADIR}/crc32.h
+${JMADIR}/iiostrm.o: ${JMADIR}/iiostrm.cpp
+${JMADIR}/inbyte.o: ${JMADIR}/inbyte.cpp
+${JMADIR}/jma.o: ${JMADIR}/jma.cpp ${JMADIR}/jma.h ${JMADIR}/crc32.h ${JMADIR}/portable.h
+${JMADIR}/lzma.o: ${JMADIR}/lzma.cpp
+${JMADIR}/lzmadec.o: ${JMADIR}/lzmadec.cpp
+${JMADIR}/outbyte.o: ${JMADIR}/outbyte.cpp
+${JMADIR}/winout.o: ${JMADIR}/winout.cpp
+${JMADIR}/zsnesjma.o: ${JMADIR}/zsnesjma.cpp ${JMADIR}/zsnesjma.h ${JMADIR}/jma.h
+
 install:
 	@INSTALL@ -m 0755 @ZSNESEXE@ @prefix@/bin
 	@INSTALL@ -m 0644 linux/zsnes.1 @prefix@/man/man1
@@ -197,10 +215,10 @@ uninstall:
 	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man5/zsnes.5
 
 clean:
-	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  ${EFFECTSDIR}/*.o  *.o  @ZSNESEXE@
+	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  ${EFFECTSDIR}/*.o  ${JMADIR}/*.o  *.o  @ZSNESEXE@
 
 distclean:
-	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  ${EFFECTSDIR}/*.o  *.o  @ZSNESEXE@ Makefile config.cache config.log config.status config.h
+	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  ${EFFECTSDIR}/*.o  ${JMADIR}/*.o  *.o  @ZSNESEXE@ Makefile config.cache config.log config.status config.h
 
 
 
