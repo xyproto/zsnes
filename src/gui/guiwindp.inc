@@ -4104,7 +4104,11 @@ DisplayNetOptnsTCPIP:
     DrawGUIWinBox 8,26,58,191,66,167
     GUIOuttextwin2 8,17,97,GUINetTextp2
     GUIOuttextwin2 8,5,87,hostname
-   
+
+    mov byte[GUItextcolor],223
+    GUIOuttextwin2 8,60,16,GUINetTextl2
+    GUIOuttextwin2 8,31,61,TCPIPAddress
+    GUIOuttextwin2 8,60,27,ChatNick   
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je .zero2
