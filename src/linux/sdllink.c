@@ -52,7 +52,7 @@ extern unsigned char cvidmode;
 DWORD BitDepth = 0;	// Do NOT change this for ANY reason
 
 // JOYSTICK AND KEYBOARD INPUT
-SDL_Joystick *JoystickInput[4];
+SDL_Joystick *JoystickInput[5];
 //DWORD CurrentJoy = 0;
 unsigned char keyboardhit = 0;
 int shiftptr = 0;
@@ -165,12 +165,67 @@ int Main_Proc(void)
 					MouseButton & ~event.button.button;
 				break;
 
-				/*
-				   joystick trackball code untested; change the test values
-				   if the motion is too sensitive (or not sensitive enough);
-				   only the first trackball is supported for now. we could get
-				   really general here, but this may break the format of 'pressed'
-				 */
+		    case SDL_JOYHATMOTION: // POV hats act as direction pad
+			    if (event.jhat.hat == 0) // only support the first POV hat for now
+			    {
+				    switch (event.jhat.value)
+				    {
+				        case SDL_HAT_CENTERED:
+						    pressed[0x100 + event.jhat.which * 32 + 0] = 0;
+							pressed[0x100 + event.jhat.which * 32 + 1] = 0;
+							pressed[0x100 + event.jhat.which * 32 + 2] = 0;
+							pressed[0x100 + event.jhat.which * 32 + 3] = 0;
+							break;
+					    case SDL_HAT_UP:
+						    pressed[0x100 + event.jhat.which * 32 + 3] = 1;
+							pressed[0x100 + event.jhat.which * 32 + 2] = 0;
+							break;
+					    case SDL_HAT_RIGHTUP:
+						    pressed[0x100 + event.jhat.which * 32 + 0] = 1;
+							pressed[0x100 + event.jhat.which * 32 + 3] = 1;
+							pressed[0x100 + event.jhat.which * 32 + 1] = 0;
+							pressed[0x100 + event.jhat.which * 32 + 2] = 0;
+							break;
+					    case SDL_HAT_RIGHT:
+						    pressed[0x100 + event.jhat.which * 32 + 0] = 1;
+							pressed[0x100 + event.jhat.which * 32 + 1] = 0;
+							break;
+					    case SDL_HAT_RIGHTDOWN:
+						    pressed[0x100 + event.jhat.which * 32 + 0] = 1;
+							pressed[0x100 + event.jhat.which * 32 + 2] = 1;
+							pressed[0x100 + event.jhat.which * 32 + 1] = 0;
+							pressed[0x100 + event.jhat.which * 32 + 3] = 0;
+							break;
+					    case SDL_HAT_DOWN:
+						    pressed[0x100 + event.jhat.which * 32 + 2] = 1;
+							pressed[0x100 + event.jhat.which * 32 + 3] = 0;
+							break;
+					    case SDL_HAT_LEFTDOWN:
+						    pressed[0x100 + event.jhat.which * 32 + 1] = 1;
+							pressed[0x100 + event.jhat.which * 32 + 2] = 1;
+							pressed[0x100 + event.jhat.which * 32 + 0] = 0;
+							pressed[0x100 + event.jhat.which * 32 + 3] = 0;
+							break;
+					    case SDL_HAT_LEFT:
+						    pressed[0x100 + event.jhat.which * 32 + 1] = 1;
+							pressed[0x100 + event.jhat.which * 32 + 0] = 0;
+							break;
+					    case SDL_HAT_LEFTUP:
+						    pressed[0x100 + event.jhat.which * 32 + 1] = 1;
+							pressed[0x100 + event.jhat.which * 32 + 3] = 1;
+							pressed[0x100 + event.jhat.which * 32 + 0] = 0;
+							pressed[0x100 + event.jhat.which * 32 + 2] = 0;
+							break;
+					}
+				}
+				break;
+
+			/*
+			   joystick trackball code untested; change the test values
+			   if the motion is too sensitive (or not sensitive enough);
+			   only the first trackball is supported for now. we could get
+			   really general here, but this may break the format of 'pressed'
+			 */
 			case SDL_JOYBALLMOTION:
 			    //CurrentJoy = event.jball.which;
 				if (event.jball.ball == 0)
@@ -456,21 +511,23 @@ int ReInitSound(void)
 
 BOOL InitJoystickInput(void)
 {
-	int i;
+    int i; int max_num_joysticks;
 
-	for (i = 0; i < 4; i++)
+	for (i = 0; i < 5; i++)
 		JoystickInput[i] = NULL;
 	// If it is possible to use SDL_NumJoysticks
 	// before initialising SDL_INIT_JOYSTICK then
 	// this call can be replaced with SDL_InitSubSystem
-	if (!SDL_NumJoysticks())
+    max_num_joysticks = SDL_NumJoysticks();
+	if (!max_num_joysticks)
 	{
 		printf("ZSNES could not find any joysticks.\n");
 		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
 		return FALSE;
 	}
 	SDL_JoystickEventState(SDL_ENABLE);
-	for (i = 0; i < SDL_NumJoysticks(); i++)
+	if (max_num_joysticks > 5) max_num_joysticks = 5;
+	for (i = 0; i < max_num_joysticks; i++)
 	{
 		JoystickInput[i] = SDL_JoystickOpen(i);
 		printf("Joystick %i (%i Buttons): %s\n", i,
