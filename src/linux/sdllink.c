@@ -491,7 +491,7 @@ int InitSound (void)
    	wanted.channels = 1;
    }
   
-   wanted.samples /= 4;
+   wanted.samples /= 8;
    
    wanted.format = AUDIO_S16LSB;
    wanted.userdata = NULL;
