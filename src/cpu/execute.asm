@@ -400,8 +400,8 @@ NEWSYM UpdateRewind
 %endif
     ret
 
-SECTION .bss
-NEWSYM MuteVoiceF, resb 0
+SECTION .data
+NEWSYM MuteVoiceF, dd 0
 SECTION .text
 
 VoiceEndMute:
