@@ -3819,7 +3819,7 @@ DisplayNetOptns:
 %endif
 .nomodem
     GUIDrawWindowBox 8,GUINetDisp
-    cmp byte[per2exec],99
+    cmp byte[per2exec],100
     jne near DisplayNetOptnsInvalid
 
     cmp byte[CNetType],22
