@@ -59,8 +59,6 @@ extern signed short Op10Coefficient;
 
 void BackupCVFrame()
 {
-
-    unsigned int ramsizew, i;
     unsigned char *curpos;
 
     curpos = StateBackup + (CBackupPos << 19) + 1024;
@@ -127,13 +125,7 @@ void BackupCVFrame()
 
     if (SETAEnable)	{ memcpyinc (curpos, setaramdata, 256*16); }
 
-    ramsizew = ramsize >> 4;
-
-    for (i = ramsizew ; i>0 ; i--)
-    {
-	memcpyinc (curpos, sram, 1*16);
-    }
-
+    memcpyinc (curpos, sram, ramsize);
     memcpyinc (curpos, &tempesi, 4);
     memcpyinc (curpos, &tempedi, 4);
     memcpyinc (curpos, &tempedx, 4);
@@ -166,7 +158,6 @@ extern unsigned int PBackupPos;
 
 void RestoreCVFrame()
 {
-    unsigned int ramsizew, i;
     unsigned char *curpos;
 
     curpos = StateBackup + (PBackupPos << 19) + 1024;
@@ -233,13 +224,7 @@ void RestoreCVFrame()
 
     if (SETAEnable)	{ memcpyrinc (curpos, setaramdata, 256*16); }
 
-    ramsizew = ramsize >> 4;
-
-    for (i = ramsizew ; i>0 ; i--)
-    {
-	memcpyrinc (curpos, sram, 1*16);
-    }
-
+    memcpyrinc (curpos, sram, ramsize);
     memcpyrinc (curpos, &tempesi, 4);
     memcpyrinc (curpos, &tempedi, 4);
     memcpyrinc (curpos, &tempedx, 4);
