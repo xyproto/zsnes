@@ -7017,7 +7017,7 @@ DisplayGUISave:
     mov byte[GUItextcolor],211
 .zero
     sub byte[GUItextcolor],15
-    GUIOuttextwin2 20,8,24,GUISaveText6
+    GUIOuttextwin2 20,8,19,GUISaveText6
     GUIOuttextwin2 20,8,34,GUISaveText7
     GUIOuttextwin2u 20,26,54,GUISaveText1,5
     GUIOuttextwin2u 20,26,64,GUISaveText2,5
@@ -7026,7 +7026,7 @@ DisplayGUISave:
     GUIOuttextwin2u 20,26,94,GUISaveText5,0
 
     add byte[GUItextcolor],15
-    GUIOuttextwin2 20,7,23,GUISaveText6
+    GUIOuttextwin2 20,7,18,GUISaveText6
     GUIOuttextwin2 20,7,33,GUISaveText7
     GUIOuttextwin2 20,25,53,GUISaveText1
     GUIOuttextwin2 20,25,63,GUISaveText2
@@ -7088,16 +7088,16 @@ DisplayGUISave:
     DrawGUIWinBox 20,165,32,166,39,dl
     
     mov dl,[GUIWincol]
-    DrawGUIWinBox 20,120,21,135,21,dl
+    DrawGUIWinBox 20,150,16,165,16,dl
     mov dl,[GUIWincol]
     add dl,1
-    DrawGUIWinBox 20,119,22,119,29,dl
+    DrawGUIWinBox 20,149,17,149,24,dl
     mov dl,[GUIWincol]
     add dl,4
-    DrawGUIWinBox 20,120,30,135,30,dl
+    DrawGUIWinBox 20,150,25,165,25,dl
     mov dl,[GUIWincol]
     add dl,3
-    DrawGUIWinBox 20,135,22,136,29,dl
+    DrawGUIWinBox 20,165,17,166,24,dl
     ; End draw borders  
     
     DrawGUIWinBox 20,150,32,165,39,167
@@ -7127,7 +7127,7 @@ DisplayGUISave:
     mov byte[GUItextcolor],211    
 .zero7
 
-    DrawGUIWinBox 20,120,22,135,29,167
+    DrawGUIWinBox 20,150,17,165,26,167
     xor ax,ax
     mov ah,[RewindStates]
     mov al,48
@@ -7141,21 +7141,21 @@ DisplayGUISave:
 .hex2asciidone
     mov [GUISaveTextX],ax
     mov byte[GUItextcolor],223
-    GUIOuttextwin2 20,124,24,GUISaveTextX
+    GUIOuttextwin2 20,154,19,GUISaveTextX
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je .zero4
     mov byte[GUItextcolor],222
 .zero4
-    GUIOuttextwin2 20,123,23,GUISaveTextX
+    GUIOuttextwin2 20,153,18,GUISaveTextX
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
     je .zero6
     mov byte[GUItextcolor],211    
 .zero6
 
-    DrawGUIButton 20,143,22,151,30,GUISaveTextY,70,-2,-1
-    DrawGUIButton 20,154,22,162,30,GUISaveTextZ,71,-2,-1
+    DrawGUIButton 20,173,22,181,30,GUISaveTextY,70,-2,-1
+    DrawGUIButton 20,184,22,192,30,GUISaveTextZ,71,-2,-1
     DrawGUIButton 20,173,32,181,40,GUISaveTextV,72,-2,-1
     DrawGUIButton 20,184,32,192,40,GUISaveTextW,73,-2,-1
     ret
