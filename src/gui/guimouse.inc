@@ -829,15 +829,6 @@ GUIProcVideo:
     cmp dword[GUIkeydelay],0
     je .failed2
     mov dword[GUIkeydelay],0
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUIWFVID+eax],1
-    je .fullsc
-    mov byte[PrevWinMode],al
-    ret
-.fullsc
-    mov byte[PrevFSMode],al
-    ret
 .failed
     mov byte[videotroub],0
     mov al,[.prevvid]
