@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <string.h>
+#include <stdlib.h>
 
 //C++ style code in C
 #define bool unsigned char
@@ -25,32 +25,30 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define false 0
 
 extern void outofmemory();
-extern int *spc7110romptr;
-extern int *StateBackup;
-extern int *spcBuffera;
-extern int *spritetablea;
-extern int *vbufaptr;
-extern int *vbufeptr;
-extern int *ngwinptrb;
-extern int *vbufdptr;
-extern int *vcache2bs;
-extern int *vcache4bs;
-extern int *vcache8bs;
-extern int *RGBtoYUVPtr;
-extern int *romaptr;
+extern unsigned char *spc7110romptr;
+extern unsigned char *StateBackup;
+extern unsigned char *spcBuffera;
+extern unsigned char *spritetablea;
+extern unsigned char *vbufaptr;
+extern unsigned char *vbufeptr;
+extern unsigned char *ngwinptrb;
+extern unsigned char *vbufdptr;
+extern unsigned char *vcache2bs;
+extern unsigned char *vcache4bs;
+extern unsigned char *vcache8bs;
+extern unsigned char *RGBtoYUVPtr;
+extern unsigned char *romaptr;
 
 
-int doMemAlloc(int *ptr, int size)
+void *doMemAlloc(int size)
 {
-	int result = 0;
-
-	ptr = malloc(size);
-	if (ptr) result = 1;
-
-	return result;
+  void *ptr = NULL;
+  ptr = malloc(size);
+  if (!ptr) { outofmemory(); }
+  return(ptr);
 }
 
 void allocspc7110()
 {
-	if (!doMemAlloc(spc7110romptr, 8192*1024+4096)) outofmemory();
+  spc7110romptr = (unsigned char *)doMemAlloc(8192*1024+4096);
 }
