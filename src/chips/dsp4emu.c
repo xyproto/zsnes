@@ -1202,6 +1202,7 @@ void DSP4_OP09()
       header = raster;
       header >>= 8;
       if (header != 0x20 &&
+          header != 0x2e && //This is for attractor sprite
           header != 0x40 &&
           header != 0x60 &&
           header != 0xa0 &&
