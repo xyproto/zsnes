@@ -1,0 +1,260 @@
+What's New :
+------------
+
+v1.25b, Win v0.93
+      - Fixed cheat menu text when game was not loaded [pagefault]
+      - Fixed unlabed checkbox in DOS port [pagefault]
+      - DSP1 - Fixed plane controls in Pilotwings [_Demo_]
+      - dosintrf.asm - Fixed header detection in the dos port [zsKnight]
+      - gui.asm - Video mode checking done at initialization [zsKnight]
+      - Enabled mouse wrap in the Windows and Linux ports [pagefault]
+      - Fixed full screen mode switch when the user starts ZSNESw before
+        selecting any full screen modes [zsKnight]
+      - Made default video mode 512x448 windowed in Windows port [pagefault]
+      - Prevented enter key from affecting gameplay on returning from
+        F1 and F3 menus [zsKnight]
+      - Added minimize button to the Windows port [pagefault]
+      - Added always on top option in GUI options menu [pagefault]
+      - Menu fix for 8bit graphics modes [zsKnight]
+      - ZSNESW now remembers the window position on your desktop (can be
+        disabled in GUI options) [pagefault]
+      - Fixed crashing problem with some IPS's in ZIP's [Teuf, zsKnight]
+      - Ported to DirectX 8.0 which fixed some problems and improved performance
+        (DirectX 8.0 is now required to run ZSNESW) [pagefault]
+      - DSP1 - Fixed map offset problem in Pilotwings [zsKnight]
+      - DSP1 - Fixed rings being mysteriously passed problem in Pilotwings [zsKnight]
+      - Fixed DirectSound crash when a normal priority buffer could not be
+        acquired [pagefault]
+      - Fixed DirectInput compatibility on some computers [pagefault]
+      - Optimized DSP1 code for better performance [teuf]
+      - Added proper full main/sub-screen window clipping in the new gfx 16bit
+        engine (fixed Illusion of Gaia/DKC2 selection screens, etc) [zsKnight]
+      - Added checksum/header name/chip type header display upon game load [zsKnight]
+      - Added PNG snapshot support which is selectable in the F1 menu [Matt Kendora]
+      - Stunt Race FX old graphics engine force fixed [zsKnight]
+      - Fixed MegamanX copy protection schemes [zsKnight, Matthew Kendora]
+      - Fixed TopGear 2 PAL version from detecting a PAL system [zsKnight]
+      - Implemented OBC1 chip (for Metal Combat) [zsKnight]
+      - Fixed Mode 7 bug in Super Ghouls and Ghosts [zsKnight]
+      - Added turbo keys for L & R keys [zsKnight]
+      - OBC1 emulation support.  Metal Combat works! [zsKnight]
+      - You can now customizable the colors to the title bar and
+        window colors. [zsKnight]
+      - Optimised global code to provide up to a 50% speed increase on it on most
+        processors [pagefault]
+      - Added black and white mode to Windows and Linux ports [pagefault]
+      - ZSNESW is now packed with the newest version of UPX [pagefault]
+      - Cleaned up the cfg files for windows/linux ports [pagefault]
+      - Fixed command-line crash in the Windows port (Thanks Matt Kendora) [pagefault]
+      - Save/Load state now displays which state is being loaded [hpsolo]
+      - Added double buffering support to Linux port [teuf]
+
+v1.20b, Win v0.88
+      - Final Fantasy Mystic Quest works again.
+      - Fixed Empire Strikes Back crashing bug in the millenium falcon
+        sequence (hopefully this will fix some other games too)
+      - Removed all self-modifying code in ZSNES.  This will make ZSNES crash
+        a lot less on certain systems, especially during mode 7 sequences.
+        Thanks Ivar!
+      - Implemented S-RTC chip, using the system clock as the actual
+        time (The game will make you set the time though, but it will just
+        be replaced with the system time in-game).  Thanks to John Weidman and
+        Dark Force for the info on this chip!
+      - Fixed crashing bug in certain mosaic scenes (eg. FF3 Phantom Forest)
+        in the new graphics engine
+      - Fixed a nasty crashing/corruption bug in the new graphics engine
+        (both 8bit and 16bit)
+      - SPC7110 emulation!  This is based on the information reverse
+        engineered by the hard working folks at dejap translations,
+        Dark Force and John Weidman.
+      - Altered HiROM/LoROM detection a bit - Fievel goes West works now
+      - Open source preparations [teuf]
+      - In-game clock working for the windows port.  [kode54]
+      - Fixed a memory leak problem in the new graphics engine [TRAC]
+      - Added Cubic Spline Interpolation [Anti Resonance]
+      - Fixed a assign/compare size bug in the new graphics engine [TRAC]
+      - Fixed b flag setting in BRK instruction in 6502 emulation mode
+        [zsKnight]
+      - Added SPC7110 logger file output to help in the filesize clipping of
+        the SPC7110 data files [zsKnight]
+      - Fixed a memory leak bug, fixing that nasty Win2K crash bug
+        [Matthew Kendora]
+      - Fixed key combination release [Maxim]
+      - Fixed source code warnings/added necessary includes [Maxim]
+      - Added high priority mode for Windows 2000 users and slower
+        computers (works on Windows 9x as well) [pagefault]
+      - Added large sound buffer option for people having DirectSound
+        problems. [pagefault]
+      - Fixed problem with ZSNESW and Opera causing a BSOD. [pagefault]
+      - Fixed up error reporting for people experiencing problems. [pagefault]
+      - Improved performance on 3dfx cards by compiling with DirectX 8
+        SDK. [pagefault]
+      - Fixed a sound problem with people with messed up config files.
+        [pagefault]
+      - Fixed FF3 flashing line problem [zsKnight]
+      - Fixed mysterious sprite disappearing bug in the new graphics engine
+        [zsKnight]
+      - Reduced noise in ToP opening theme.  It works fine in the DOS port,
+        but the windows port still seems to produce some static, probably
+        because of the way how sound is updated in that port. [zsKnight]
+      - Updated Super 2xSaI and Super Eagle code (should be much faster
+        now on MMX processors) [Kreed, added by pagefault]
+      - Added gzip support [teuf]
+      - Added support for ViBRA16 cards [Peter Santing]
+      - No longer requires zlib.dll file, now statically linked. ZSNESw won't
+        crash anymore if you try to load a .zip file without that dll file.
+        [pagefault]
+      - Now compiled using an optimising compiler [pagefault]
+      - Almost a fully re-written DSP-1 emulation engine!
+        [zsKnight, theoddone33, pagefault, teuf].  Also thanks to CrASH_Man
+        for the 3x3 inverse matrix formula.
+      - Fixed memory leak problem in the windows port during exit [pagefault]
+      - And more ...
+
+
+v1.17, Win v0.85
+      - Added slow-down key.  You can configure it in Misc -> Game Keys
+      - Invulnerability bug of the 3rd boss in Demon's Crest in the
+        good checksum roms is fixed through rom mirroring
+        I also noticed that this fix is the same as what the author of
+        SNEeSe told me before about on some MegamanX1 roms, but I never had
+        that rom so I never added this until now.  Guess that rom
+        is also fixed too.
+      - Changed memory initialization values - Lost Viking 2 works again
+      - 65816: Fixed WAI instruction timing with HIRQ's
+        Top Gear 2 - 2 player mode works now
+      - Improved IRQ re-execution timing precision
+      - Starfox 2 beta now runs with sound!
+      - Fixed flickering problem in Starfox 2 beta
+      - Added Mode 2 16x16 tile offset per tile mode
+      - (Win32) Improved the timestamps on UDP headers.  This should
+        (hopefully) solve those out of sync (where both sides see different
+        things) problems with certain connections (ie. T1/LAN connections) in
+        netplay.
+      - (Win32) Added a big notice in netplay.txt.  For all of you who used
+        netplay and had poor experiences with a ping time of less than
+        300ms, read it!  Also added a more realistic system requirements
+        description for decent netplay in netplay.txt rather than a cpu
+        speed estimate.
+      - Changed reverse stereo method to become invisible to the sound
+        registers in emulation
+
+v1.14, Win v0.80
+      - Fixed configuration files from removing spaces from directory names
+      - (DOS) Fixed 640x480 vesa2 scanline+interpolation display problem
+      - (Win32) Improved Windows speed in 32-bit windowed mode.  Should
+        give around an 18% speed increase in FPS.
+      - (Win32) More netplay improvements.  Shouldn't be as jumpy when
+        one side lacks input.
+      - (Win32) Starting netplay will now force the max frameskip to 3
+        if it is less than it and also force on auto frameskip.
+      - (Win32) MMX optimised netplay with back buffer enabled.
+      - (Win32) Fixed load state in netplay to load properly instead
+        of sometimes stalling for no reason
+      - (DOS) Accidently deleted the code to initialize IPX.  Fixed now.
+      - Fixed a configuration loading problem when loading ZSNES from
+        a different directory.
+      - (Win32) Attempted to fix those out of sync problems (although
+        I don't know if it's fixed now since those problems rarely happen
+        to me)
+      - (Win32) Displayed the current filename in the load window
+        for those files with extra long names.
+      - (Win32) Added nickname support to NetPlay.  There's a 9 character
+        nickname size limit.
+      - (Win32) Added actions to chat (similar to how mIRC works - use
+        /me <action> )
+      - (Win32) Nicknames can be changed in the windowed chat by typing
+        /nick <new nickname>
+      - Added a small buffer to the in-game chat to allow up to 5 chat
+        strings displayed at once.
+      - Local chat strings now appear in that buffer
+      - Thickened black borders on the 5x5 font
+      - Extended in-game chat length by around 30 characters
+      - Fixed up Interpolation
+
+v1.12, Win v0.74
+      - (Win32) Hopefully fixed up those green display bugs in
+        scanlines/2xSaI in 1:5:5:5 16bit modes.
+      - (Win32) Improved lost packet recovery time and reduced the
+        number of lost packet stalls in UDP netplay (should produce
+        more fluid netplay)
+      - (Win32) Fixed up crashing bug in Tales of Phantasia with a 512
+        byte header
+      - Extended filename length of the Quick Menu
+      - (Win32) Hopefully fixed up the mouse wheel support for certain
+        mice
+      - Temp .ZIP directory is now cleared if it exists prior to another
+        .ZIP file being loaded.
+      - (Win32) Improved DirectInput error handling
+
+v1.11, Win v0.72
+      - (Win32) ZSNESw won't crash anymore if you don't have a soundcard
+        or if DirectSound fails to initialize.
+      - (Win32) Fixed a nasty performance bug with certain types of
+        joystick/drivers installed, causing the FPS to be slower for
+        no reason.
+      - (Win32) Wrote an MMX optimised blitter for 16bit non-D windowed
+        and full screen modes.
+      - (Win32) Added simple wheel mouse support.
+
+v1.10, Win v0.70
+      - Fixed games that turns on the x239 resolution (eg. Chrono Trigger
+        battles) when scanline mode is enabled
+      - (Win32) Fixed up crashing bugs on extra long filenames with
+        underscores
+      - (Win32) Hopefully fixed the odd colored interpolation in 1:5:5:5 16bit
+        color settings
+      - (Win32) Hopefully won't crash anymore when the temporary directory
+        exists prior to unzipping a .zip file
+      - (Win32) Fixed loading of .zip files with more than 2 '.'s in the
+        filename.  Thanks to DCX for helping us troubleshoot this.
+      - (Win32) Fixed up short filename saveram/save states loading when
+        the long filename has spaces in it.
+      - Added TCP/IP Support.  It is recommended that for playable netplay,
+        you'd have an average ping time of less than 300ms (type
+        ping <ip address> in dos) and that packet loss is minimal for TCP/IP
+        (not UDP).  At the moment, you cannot have more than 2 connections
+        Thanks for all the testers for testing this, especially DooMStalK,
+        GreenImp, and TeleKawaru!  Also added back buffer support.  This
+        will sacrifice cpu power for netplay to make it much more playable.
+        WARNING: High cpu speed recommendations (~450mhz+).
+                 Please see netplay.txt for details.
+      - Added save states to netplay (just use them like you normally do)
+      - Save Ram is now defaulted to load/save on the server's side
+        Save Ram are not supported in SA-1/SuperFX games due to their size,
+        but you can use save states instead in that case.
+      - Increased chat line length in the out-of-game chatbox by a lot
+      - Partly increased the chat line length in-game
+      - in-game chat text now stays longer on-screen by 2 seconds
+      - Added reset in netplay
+      - Fixed up movie recording feature
+      - (Win32) Mouse shouldn't get stuck on the left side anymore.
+      - (Win32) Video mode 3 (256x224FS) shouldn't crash anymore.  Thanks
+        to kode54 for his assistance on the above 2 bugfixes.
+      - (Win32) Fixed the instability bug where the window can sometimes
+        start shaking for no reason and takes away windows resources.
+      - (Win32) Re-wrote keyboard character input routines
+      - Fixed up FF2(4)'s music in lower sampling rates
+      - (Win32) Coded in the UDP protocol as a replacement for TCP/IP.
+        Some network configurations won't work with UDP.  However, it is
+        strongly recommended that you use UDP if you can because of the
+        speed increase.  In order to disable UDP and use TCP/IP, both sides
+        must de-select UDP.  
+      - (Win32) Added a small multiplayer game list (multi.txt)
+      - Added an updated Windows FAQ, courtesy of TuxedoMsk of VGNetwork
+        who updated it.
+      - Added a more user friendly input selection routine (changed Direct
+        Input to Keyb/Joystick and it also auto-sets keyb/Joystick when you
+        set a key)
+      - Hopefully fixed up the sprite priority problems (eg. FF2/4's
+        damage points)
+      - (Win32) Added rewind support for up to 8 levels (in 8 second
+        intervals) (NOTE: Windows Port only! - Sorry DOS Port users).  In
+        order to activate this, assign a key to the Rewind Key in the
+        Misc -> GameKeys option.
+      Note: Netplay plays really nice as long as the net connection is not
+            unstable, both sides have a fast cpu  (speed requirements depend
+            on the game), and at least have a 28.8 connection.
+      *** PLEASE READ ZSNESW.TXT IF YOU ARE STILL HAVING PROBLEMS WITH
+          THE WINDOWS PORT
+
