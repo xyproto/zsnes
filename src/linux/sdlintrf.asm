@@ -147,7 +147,6 @@ NEWSYM SystemInit
     mov byte[cfgcvidmode],2
     mov byte[cvidmode],2
     call getcmdline
-%ifdef __LINUX__
     mov byte[esi],'z'
     mov byte[esi+1],'s'
     mov byte[esi+2],'n'
@@ -172,32 +171,6 @@ NEWSYM SystemInit
     mov byte[esi+10+256],'a'
     mov byte[esi+11+256],'t'
     mov byte[esi+12+256],0
-%else
-    mov byte[esi],'Z'
-    mov byte[esi+1],'S'
-    mov byte[esi+2],'N'
-    mov byte[esi+3],'E'
-    mov byte[esi+4],'S'
-    mov byte[esi+5],'W'
-    mov byte[esi+6],'.'
-    mov byte[esi+7],'C'
-    mov byte[esi+8],'F'
-    mov byte[esi+9],'G'
-    mov byte[esi+10],0
-    mov byte[esi+256],'Z'
-    mov byte[esi+1+256],'G'
-    mov byte[esi+2+256],'U'
-    mov byte[esi+3+256],'I'
-    mov byte[esi+4+256],'C'
-    mov byte[esi+5+256],'F'
-    mov byte[esi+6+256],'G'
-    mov byte[esi+7+256],'W'
-    mov byte[esi+8+256],'.'
-    mov byte[esi+9+256],'D'
-    mov byte[esi+10+256],'A'
-    mov byte[esi+11+256],'T'
-    mov byte[esi+12+256],0
-%endif
 
     ; Get and set the initial directory
 %ifdef __LINUX__
