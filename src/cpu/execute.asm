@@ -78,7 +78,7 @@ EXTSYM oamaddrs,processmouse,resolutn,showvideo,snesmouse,starthdma
 EXTSYM switchtonmi,switchtovirq,totlines,updatetimer,SA1Swap,SA1DoIRQ
 EXTSYM JoyAOrig,JoyANow,JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow
 EXTSYM JoyEOrig,JoyENow,chaton,chatstrL,chatRTL,chatstrR,SA1Message
-EXTSYM MultiTapStat,MovieCounter,idledetectspc,SA1Control,SA1Enable,SA1IRQEnable
+EXTSYM MultiTapStat,idledetectspc,SA1Control,SA1Enable,SA1IRQEnable
 EXTSYM SPC700read,SPC700write,numspcvblleft,spc700idle,SA1Status,SA1IRQExec
 EXTSYM ForceNewGfxOff,LethEnData,C4Pause,GUIQuit
 EXTSYM IRAM,SA1Ptr,SA1BWPtr

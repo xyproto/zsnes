@@ -130,7 +130,6 @@ extern unsigned int versionNumber;
 extern unsigned int CRC32;
 extern unsigned int cur_zst_size;
 extern bool romispal;
-extern unsigned int PJoyAOrig, PJoyBOrig, PJoyCOrig, PJoyDOrig, PJoyEOrig;
 extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
 
 
@@ -535,23 +534,25 @@ void zmv_create(char *filename)
 #define RECORD_PAD(prev, cur, bit)                                        \
   if (cur != prev)                                                        \
   {                                                                       \
-    prev = cur;                                                           \
+    prev = (cur >> 20);                                                   \
     flag |= BIT(bit);                                                     \
                                                                           \
     if (nibble & 1)                                                       \
     {                                                                     \
-      press_buf[nibble/2] |= (unsigned char)(prev & 0x0F);                \
+      press_buf[nibble/2] |= ((unsigned char)(prev & 0x0F)) << 4;         \
       nibble++;                                                           \
-      press_buf[nibble/2] = (unsigned char)((prev >> 4) & 0xFF);          \
+      press_buf[nibble/2] = (unsigned char)(prev >> 4);                   \
       nibble += 2;                                                        \
     }                                                                     \
     else                                                                  \
     {                                                                     \
       press_buf[nibble/2] = (unsigned char)(prev & 0xFF);                 \
       nibble += 2;                                                        \
-      press_buf[nibble/2] = ((unsigned char)((prev >> 8) & 0x0F)) << 4;   \
+      press_buf[nibble/2] = (unsigned char)(prev >> 8);                   \
       nibble++;                                                           \
     }                                                                     \
+                                                                          \
+    prev <<= 20;                                                          \
   }
 
 void zmv_record()
@@ -562,11 +563,11 @@ void zmv_record()
   
   zmv_vars.header.frames++;
   
-  RECORD_PAD(zmv_vars.last_joy_state.A, PJoyAOrig, 7);
-  RECORD_PAD(zmv_vars.last_joy_state.B, PJoyBOrig, 6);
-  RECORD_PAD(zmv_vars.last_joy_state.C, PJoyCOrig, 5);
-  RECORD_PAD(zmv_vars.last_joy_state.D, PJoyDOrig, 4);
-  RECORD_PAD(zmv_vars.last_joy_state.E, PJoyEOrig, 3);
+  RECORD_PAD(zmv_vars.last_joy_state.A, JoyAOrig, 7);
+  RECORD_PAD(zmv_vars.last_joy_state.B, JoyBOrig, 6);
+  RECORD_PAD(zmv_vars.last_joy_state.C, JoyCOrig, 5);
+  RECORD_PAD(zmv_vars.last_joy_state.D, JoyDOrig, 4);
+  RECORD_PAD(zmv_vars.last_joy_state.E, JoyEOrig, 3);
 
   zmv_vars.write_buffer[zmv_vars.write_buffer_loc] = flag;
   zmv_vars.write_buffer_loc++;
@@ -643,7 +644,6 @@ struct
   unsigned int frames_replayed;
 } zmv_open_vars; //Additional vars for open/replay of a ZMV
 
-
 bool zmv_open(char *filename)
 {
   memset(&zmv_vars, 0, sizeof(zmv_vars));
@@ -651,7 +651,7 @@ bool zmv_open(char *filename)
   
   zmv_vars.fp = fopen(filename,"r+b");
   if (zmv_vars.fp && zmv_header_read(&zmv_vars.header, zmv_vars.fp) &&
-      !strncpy(zmv_vars.header.magic, "ZMV", 3)) 
+      !strncmp(zmv_vars.header.magic, "ZMV", 3)) 
   {
     size_t input_start_pos;
     unsigned short i;
@@ -693,9 +693,10 @@ bool zmv_open(char *filename)
   {                                                   \
     if (mid_byte)                                     \
     {                                                 \
-      cur = byte & 0x0F;                              \
+      cur = (byte & 0xF0) >> 4;                       \
       fread(&byte, 1, 1, zmv_vars.fp);                \
-      cur |= ((unsigned short)byte) << 4;             \
+      cur |= ((unsigned long)byte) << 4;              \
+      cur <<= 20;                                     \
       mid_byte = false;                               \
     }                                                 \
     else                                              \
@@ -703,18 +704,19 @@ bool zmv_open(char *filename)
       fread(&byte, 1, 1, zmv_vars.fp);                \
       cur = byte;                                     \
       fread(&byte, 1, 1, zmv_vars.fp);                \
-      cur |= ((unsigned short)(byte & 0xF0)) << 4;    \
+      cur |= ((unsigned long)(byte & 0xF)) << 8;      \
+      cur <<= 20;                                     \
       mid_byte = true;                                \
     }                                                 \
   }
 
-void zmv_replay()
+bool zmv_replay()
 {
   if (zmv_open_vars.frames_replayed < zmv_vars.header.frames)
   {
     unsigned char flag = 0;
-    bool mid_byte = false;
     unsigned char byte;
+    bool mid_byte = false;
 
     fread(&flag, 1, 1, zmv_vars.fp);
   
@@ -723,15 +725,17 @@ void zmv_replay()
       fseek(zmv_vars.fp, cur_zst_size+4, SEEK_CUR);
       fread(&flag, 1, 1, zmv_vars.fp);
     }
-  
-    REPLAY_PAD(PJoyAOrig, 7);
-    REPLAY_PAD(PJoyBOrig, 6);
-    REPLAY_PAD(PJoyCOrig, 5);
-    REPLAY_PAD(PJoyDOrig, 4);
-    REPLAY_PAD(PJoyEOrig, 3);
+
+    REPLAY_PAD(JoyAOrig, 7);
+    REPLAY_PAD(JoyBOrig, 6);
+    REPLAY_PAD(JoyCOrig, 5);
+    REPLAY_PAD(JoyDOrig, 4);
+    REPLAY_PAD(JoyEOrig, 3);
   
     zmv_open_vars.frames_replayed++;
+    return(true);
   }
+  return(false);
 }
 
 void zmv_next_chapter()
@@ -856,53 +860,25 @@ extern unsigned int MsgCount, MessageOn;
 extern unsigned char MovieTemp, MovieProcessing, *Msgptr;
 char *txtmovieended = "MOVIE FINISHED.";
 
-static FILE *movfhandle;
-
 void Replay()
 {
-  if (fread(&MovieTemp, 1, 1, movfhandle))
+  if (zmv_replay())
   {
-    if (MovieTemp < 2) // 1 or 0 are correct values
+    char *sub;
+    if ((sub = MovieSub_GetData()))
     {
-      char *sub;
-      
-      if (MovieTemp == 0) // 0 means the input has changed
-      {
-	fread(&PJoyAOrig, 1, 4, movfhandle);
-	fread(&PJoyBOrig, 1, 4, movfhandle);
-	fread(&PJoyCOrig, 1, 4, movfhandle);
-	fread(&PJoyDOrig, 1, 4, movfhandle);
-	fread(&PJoyEOrig, 1, 4, movfhandle);
-      }
-
-      JoyAOrig = PJoyAOrig;
-      JoyBOrig = PJoyBOrig;
-      JoyCOrig = PJoyCOrig;
-      JoyDOrig = PJoyDOrig;
-      JoyEOrig = PJoyEOrig;
-    
-      if ((sub = MovieSub_GetData()))
-      {
-        Msgptr = sub;
-        MessageOn = MovieSub_GetDuration();
-      }
-    }
-    else // anything else is bad - the file isn't a movie.
-    {
-      MovieProcessing = 0;
-
-      fclose(movfhandle);
-      MovieSub_Close();
-    }
+      Msgptr = sub;
+      MessageOn = MovieSub_GetDuration();
+    }  
   }
   else
   {
     Msgptr = txtmovieended;
     MessageOn = MsgCount;
     MovieProcessing = 0;
-
-    fclose(movfhandle);
-    MovieSub_Close();
+    
+    zmv_replay_finished();
+    MovieSub_Close();  
   }
 }
 
@@ -934,7 +910,7 @@ void MovieStop()
 {
   switch (MovieProcessing)
   {
-    case 1: fclose(movfhandle); break;
+    case 1: zmv_replay_finished(); break;
     case 2: zmv_record_finish(); break;
   }
   MovieProcessing = 0;
@@ -956,76 +932,29 @@ void MoviePlay()
 
   GUICBHold &= 0xFFFFFF00;
 
-  if (CNetType != 20)
+  if (!MovieProcessing)
   {
-    MovieCounter= 0;
+    GUIQuit = 2;
+    memcpy (FileExt, &fnamest[statefileloc-3], 4);
+    memcpy (&fnamest[statefileloc-3], ".zmv", 4);
+    fnamest[statefileloc] = CMovieExt;
 
-    if (!MovieProcessing)
+    SRAMChdir();
+
+    if (zmv_open(fnamest+1))
     {
-      GUIQuit = 2;
-      memcpy (FileExt, &fnamest[statefileloc-3], 4);
-      memcpy (&fnamest[statefileloc-3], ".zmv", 4);
-      fnamest[statefileloc] = CMovieExt;
-
-      SRAMChdir();
-      loadstate2();
-
-      if ((movfhandle = fopen(fnamest+1,"rb")) != NULL)
-      {
-	memcpy(&fnamest[statefileloc-3], ".sub", 4);
-        if (isdigit(CMovieExt)) { fnamest[statefileloc] = CMovieExt; }
-	MovieSub_Open(fnamest+1);
-	
-	fseek(movfhandle, Totalbyteloaded, SEEK_SET);
-	fread(RecData, 1, 16, movfhandle);
-	printf("Movie made with version: %d\n", RecData[1]);
-
-	if (RecData[2] == 1)
-	{
-	  timer2upd = bytemerger(RecData[6], RecData[5], RecData[4], RecData[3]);
-	  curexecstate = bytemerger(RecData[10], RecData[9], RecData[9], RecData[7]);
-	  nmiprevaddrl = 0;
-	  nmiprevaddrh = 0;
-	  nmirept = 0;
-	  nmiprevline = 224;
-	  nmistatus = 0;
-	  spcnumread = 0;
-	  spchalted = 0xFFFFFFFF;
-	  NextLineCache = 0;
-	}
-
-	if (soundon == RecData[0])
-	{
-	  if (ramsize)	{ fread(sram, 1, ramsize, movfhandle); }
-
-	  MovieProcessing = 1;
-	  PJoyAOrig = 0;
-	  PJoyBOrig = 0;
-	  PJoyCOrig = 0;
-	  PJoyDOrig = 0;
-	  PJoyEOrig = 0;
-	  sramsavedis = 1;
-	  UseRemoteSRAMData = 0;
-	  DSPMem[0x08] = 0;
-	  DSPMem[0x18] = 0;
-	  DSPMem[0x28] = 0;
-	  DSPMem[0x38] = 0;
-	  DSPMem[0x48] = 0;
-	  DSPMem[0x58] = 0;
-	  DSPMem[0x68] = 0;
-	  DSPMem[0x78] = 0;
-	}
-	else
-	{
-	  Msgptr = (!soundon) ? UnableMovie3 : UnableMovie2;
-	  MessageOn = MsgCount;
-	  fclose(movfhandle);
-	}
-      }
-
-      memcpy (&fnamest[statefileloc-3], FileExt, 4);
-      asm_call(ChangetoLOADdir);
+      MovieProcessing = 1;
+      memcpy(&fnamest[statefileloc-3], ".sub", 4);
+      if (isdigit(CMovieExt)) { fnamest[statefileloc] = CMovieExt; }
+      MovieSub_Open(fnamest+1);   
     }
+    else
+    {
+    
+    }
+    
+    memcpy (&fnamest[statefileloc-3], FileExt, 4);
+    asm_call(ChangetoLOADdir);
   }
 }
 
