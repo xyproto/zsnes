@@ -17,10 +17,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+
+
 //C++ style code in C
 #define bool unsigned char
 #define true 1
 #define false 0
+
 
 #define Lo 0x7FC0
 #define Hi 0xFFC0
@@ -34,15 +37,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //functions from init.asm, or replace with
 //better versions from NSRT. -Nach
 
-
 //init.asm goodness
 extern unsigned int NumofBanks;
 extern unsigned int NumofBytes;
 extern unsigned int *romdata;
 extern unsigned char romtype;
 extern unsigned char Interleaved;
-
-
 
 unsigned int maxromspace;
 unsigned int curromspace;
@@ -350,3 +350,4 @@ void MirrorROM()
     ROM[ROMSize++] = ROM[StartMirror++];
   }
 }
+
