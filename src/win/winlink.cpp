@@ -151,7 +151,7 @@ extern "C" BYTE vsyncon;
 void DrawScreen()
 {
    if(DD_CFB==NULL) return;
-   if (vsyncon == 1 && FullScreen == 1)
+   if (vsyncon == 1)
    {
    if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
       {
