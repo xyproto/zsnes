@@ -1479,7 +1479,6 @@ NEWSYM headerhack
     mov esi,[romdata]
     add esi,034DA3h
     mov byte[esi],000h
-
 .notaccelebrid
 
     mov esi,[romdata]
