@@ -2255,6 +2255,7 @@ DisplayGUIVideoClick:
     GUIClickCButton5 11,173,byte[Mode7HiRes16b],1
 .nocheckboxm7
 %ifndef __MSDOS__
+    mov bl,[cvidmode]
     cmp byte[GUIMBVID+ebx],0
     je .nocheckboxmb
     GUIClickCButton5 11,173,byte[MotionBlur],1

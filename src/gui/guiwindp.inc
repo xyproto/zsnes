@@ -1743,6 +1743,7 @@ DisplayGUIVideo:
     GUIOuttextwin2u 5,26,178,GUIVideoText8b,0
 .notext8
 %ifndef __MSDOS__
+    mov al,[cvidmode]
     cmp byte[GUIMBVID+eax],0
     je .notext82
     GUIOuttextwin2u 5,26,178,GUIVideoText8b2,0
@@ -1850,6 +1851,7 @@ DisplayGUIVideo:
     GUIOuttextwin2 5,25,177,GUIVideoText8b
 .notext8b
 %ifndef __MSDOS__
+    mov al,[cvidmode]
     cmp byte[GUIMBVID+eax],0
     je .notext8b2
     GUIOuttextwin2 5,25,177,GUIVideoText8b2
@@ -1981,6 +1983,7 @@ DisplayGUIVideo:
     GUIDisplayIconWin 5,11,173,[GUITemp]
 .nocheckboxm72
 %ifndef __MSDOS__
+    mov al,[cvidmode]
     cmp byte[GUIMBVID+eax],0
     je .nocheckboxmb2
     mov dword[GUITemp],GUIIconDataCheckBoxUC

@@ -1162,6 +1162,7 @@ GUIVideoKeys:
     cmp dh,'M'
     jne .nomotionblur
     xor ebx,ebx
+    mov bl,[cvidmode]
     cmp byte[GUIMBVID+ebx],0
     je .nomotionblur
     xor byte[MotionBlur],1
