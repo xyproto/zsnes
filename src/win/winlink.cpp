@@ -155,6 +155,7 @@ void DDrawError(){
 }
 
 extern "C" BYTE vsyncon;
+extern "C" BYTE TripleBufferWin;
 
 void DrawScreen()
 {
@@ -162,8 +163,15 @@ void DrawScreen()
    {
       if(FullScreen == 1)
       {
-         DD_BackBuffer->Blt(NULL, DD_CFB, NULL, DDBLT_WAIT, NULL);
-         DD_Primary->Flip(NULL, DDFLIP_WAIT);
+         if(TripleBufferWin == 1)
+         {
+            DD_BackBuffer->Blt(NULL, DD_CFB, NULL, DDBLT_WAIT, NULL);
+            DD_Primary->Flip(NULL, DDFLIP_WAIT);
+         }
+         else
+         {
+            DD_Primary->Blt(&rcWindow, DD_CFB, NULL, DDBLT_WAIT, NULL);
+         }
       }
       else
       {
@@ -178,8 +186,15 @@ void DrawScreen()
    {
       if(FullScreen == 1)
       {
-         DD_BackBuffer->Blt(NULL, DD_CFB, NULL, DDBLT_WAIT, NULL);
-         DD_Primary->Flip(NULL, DDFLIP_NOVSYNC);
+         if(TripleBufferWin == 1)
+         {
+            DD_BackBuffer->Blt(NULL, DD_CFB, NULL, DDBLT_WAIT, NULL);
+            DD_Primary->Flip(NULL, DDFLIP_NOVSYNC);
+         }
+         else
+         {
+            DD_Primary->Blt(&rcWindow, DD_CFB, NULL, DDBLT_WAIT, NULL);
+         }
       }
       else
       {
