@@ -25,10 +25,10 @@
 #include <time.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <utime.h>
 #endif
 
 #ifdef __MSDOS__
+#include <utime.h>
 #include <sys/stat.h>
 #endif
 
