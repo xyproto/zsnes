@@ -6301,6 +6301,7 @@ GUIChipText3 db 'HARD',0
 
 SECTION .text
 
+
 DisplayGUIPaths:
     GUIDrawWindowBox 19,GUIPathsDisp
     sub byte[GUItextcolor],15
@@ -6334,9 +6335,9 @@ DisplayGUIPaths:
     GUIOuttextwin2 19,134,172,GUIPathsTextD
 
     ;Input boxes - alternate color
-    DrawGUIWinBox  19,74,14,231,26,177
-    DrawGUIWinBox  19,74,34,231,46,177
-    DrawGUIWinBox  19,74,54,231,66,177
+    DrawGUIWinBox  19,74,14,232,26,177
+    DrawGUIWinBox  19,74,34,232,46,177
+    DrawGUIWinBox  19,74,54,232,66,177
     DrawGUIWinBox  19,7,94,101,106,177
     DrawGUIWinBox  19,7,119,101,131,177
     DrawGUIWinBox  19,134,94,236,106,177
@@ -6347,9 +6348,9 @@ DisplayGUIPaths:
     DrawGUIWinBox  19,134,179,236,191,177
 
     ;Input boxes
-    DrawGUIWinBox  19,75,15,230,25,167
-    DrawGUIWinBox  19,75,35,230,45,167
-    DrawGUIWinBox  19,75,55,230,65,167
+    DrawGUIWinBox  19,75,15,231,25,167
+    DrawGUIWinBox  19,75,35,231,45,167
+    DrawGUIWinBox  19,75,55,231,65,167
     DrawGUIWinBox  19,8,95,100,105,167
     DrawGUIWinBox  19,8,120,100,130,167
     DrawGUIWinBox  19,135,95,235,105,167
@@ -6358,6 +6359,14 @@ DisplayGUIPaths:
     DrawGUIWinBox  19,8,180,100,190,167
     DrawGUIWinBox  19,135,155,235,165,167
     DrawGUIWinBox  19,135,180,235,190,167
+
+    GUIOuttextwin2c 19,77,19,SRAMPath
+    GUIOuttextwin2c 19,77,39,SnapPath
+    GUIOuttextwin2c 19,77,59,SPCPath
+    GUIOuttextwin2c 19,10,99,BSXPath
+    GUIOuttextwin2c 19,10,124,SGPath
+    GUIOuttextwin2c 19,137,99,STPath
+    GUIOuttextwin2c 19,137,124,GNextPath
     ret
 
 SECTION .data

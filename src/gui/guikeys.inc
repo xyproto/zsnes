@@ -406,6 +406,8 @@ GUIgetcurrentinput:
     je near GUIStateKeys
     cmp ebx,16
     je near GUIComboKeys
+    cmp ebx,19
+    je near GUIPathKeys
     cmp ebx,8
     jne .notstartmenu
     cmp byte[CNetType],4
@@ -1460,6 +1462,81 @@ GUIEditStringmLen resd 1          ; Max length of string
 GUIEditStringLTxt resd 1          ; blink value, should be set to 0 when box selected
 GUIEditStringLstb resd 1          ; if cursor is placed (set in main function)
 GUIEditStringcWin resd 1          ; 0 = no text window selected
+SECTION .text
+
+GUIPathKeys:
+    cmp dh,0
+    je .nokeypressed
+
+    cmp dword[GUIInputBox],1
+    jne .notBox1
+    mov eax,SRAMPath
+    jmp .boxselected
+.notBox1
+    cmp dword[GUIInputBox],2
+    jne .notBox2
+    mov eax,SnapPath
+    jmp .boxselected
+.notBox2
+    cmp dword[GUIInputBox],3
+    jne .notBox3
+    mov eax,SPCPath
+    jmp .boxselected
+.notBox3
+    cmp dword[GUIInputBox],4
+    jne .notBox4
+    mov eax,BSXPath
+    jmp .boxselected
+.notBox4
+    cmp dword[GUIInputBox],5
+    jne .notBox5
+    mov eax,SGPath
+    jmp .boxselected
+.notBox5
+    cmp dword[GUIInputBox],6
+    jne .notBox6
+    mov eax,STPath
+    jmp .boxselected
+.notBox6
+    cmp dword[GUIInputBox],7
+    jne .notBox7
+    mov eax,GNextPath
+    jmp .boxselected
+.notBox7
+
+.boxselected
+    mov ecx,eax
+
+    ;Find end of string
+.findend
+    cmp byte[eax],0
+    je .foundend
+    inc eax
+    jmp .findend
+.foundend
+
+    cmp dh,8    ;Backspace     
+    jne .notbackspace
+    cmp eax,ecx
+    je .cantback
+    mov byte[eax-1],0
+.cantback
+    ret
+.notbackspace
+    
+    ;check if we're at the end
+    add ecx,16383
+    cmp eax,ecx
+    jne .stillroom
+    ret
+.stillroom
+    mov byte[eax],dh
+
+.nokeypressed
+    ret
+
+SECTION .bss
+GUIInputBox resd 1
 SECTION .text
 
 GUIComboKeys:

@@ -1783,6 +1783,19 @@ SECTION .text
 %%noclick
 %endmacro
 
+%macro GUITextBoxInputNach 5
+    cmp eax,%1
+    jl %%noclick
+    cmp edx,%2
+    jl %%noclick
+    cmp eax,%3
+    jg %%noclick
+    cmp edx,%4
+    jg %%noclick
+    mov dword[GUIInputBox],%5
+%%noclick
+%endmacro
+
 %macro GUIPButtonHole 4
     cmp eax,%1+1
     jl %%noclick
@@ -3239,13 +3252,14 @@ DisplayGUIChipClick
     ret
 
 DisplayGUIPathsClick
-    GUITextBoxInput 75,15,230,25,SRAMPath,16384
-    ;GUITextBoxInput 75,35,230,45,,16384
-    ;GUITextBoxInput 75,55,230,65,,16384
-    ;GUITextBoxInput 8,95,100,105,,16384
-    ;GUITextBoxInput 8,120,100,130,,16384
-    ;GUITextBoxInput 135,95,235,105,,16384
-    ;GUITextBoxInput 135,120,235,130,,16384
+    GUITextBoxInputNach 75,15,230,25,1     ;SRAMPath
+    GUITextBoxInputNach 75,35,230,45,2     ;SnapPath
+    GUITextBoxInputNach 75,55,230,65,3     ;SPCPath
+    GUITextBoxInputNach 8,95,100,105,4     ;BSXPath
+    GUITextBoxInputNach 8,120,100,130,5    ;SGPath
+    GUITextBoxInputNach 135,95,235,105,6   ;STPath
+    GUITextBoxInputNach 135,120,235,130,7  ;GNextPath
+
     ;GUITextBoxInput 8,155,100,165,,16384
     ;GUITextBoxInput 8,180,100,190,,16384
     ;GUITextBoxInput 135,155,235,165,,16384
