@@ -32,6 +32,10 @@
 # CPU=cpu-type            optimize for a particular CPU, find a list of cpu types in the GCC manual
 
 
+
+ifneq ($(PLATFORM),) #end if is at the bottom of the file
+
+
 CHIPDIR=chips
 CPUDIR=cpu
 DOSDIR=dos
@@ -60,10 +64,6 @@ LIBSORIG=-lz -lpng
 DRESOBJ=${WINDIR}/zsnes.obj
 CROSS=no
 STRIP=-Ws -s
-
-ifeq ($(PLATFORM),)
-_foo: help
-endif
 
 
 ifeq ($(PLATFORM),dos)
@@ -364,10 +364,6 @@ endif
 
 clean: 
 
-ifeq ($(PLATFORM),)
-_foo: help
-endif
-
 	${DELETECOMMAND} ${EXE} ${TRUTH}
 	${DELETECOMMAND} *${OE} ${TRUTH}
 	${DELETECOMMAND} ${CPUDIR}${SLASH}*${OE} ${TRUTH}
@@ -380,5 +376,7 @@ endif
 	${DELETECOMMAND} ${WINDIR}${SLASH}*${OE} ${TRUTH}
 	${DELETECOMMAND} ${GUIDIR}${SLASH}*${OE} ${TRUTH}
 
+else  #else no platform specified
 help:
 	@echo Please specify which platform to compile/clean for with PLATFORM=platform_name
+endif #endif on the PLATFORM being empty
