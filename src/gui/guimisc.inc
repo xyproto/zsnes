@@ -503,7 +503,7 @@ NEWSYM GUIDoReset
 .skipfileend
     pushad
     call RestoreSystemVars
-    call ClearSPCRAM
+    call clearSPCRAM
     popad
 
     ; clear dsp ram
