@@ -4373,7 +4373,7 @@ NEWSYM execsingle
     je near .nmi
     mov ax,[totlines]
     cmp word[curypos],ax
-    ja near .overy
+    jae near .overy
     ; check for VIRQ/HIRQ/NMI
     ProcessIRQStuff
 
