@@ -207,11 +207,15 @@ extern "C" void CheckAlwaysOnTop()
        else SetWindowPos(hMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 }
 
+BOOL IsMinimized = FALSE;
+
 extern "C" void MinimizeWindow()
 {
+    if (AlwaysOnTop == 1) SetWindowPos(hMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     MoveWindow(hMainWindow, 0, 0, 0, 0, TRUE);
     InputDeAcquire();
     SetActiveWindow(0);
+    IsMinimized = TRUE;
 }
 
 BOOL InputRead(void)
@@ -417,8 +421,8 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       case WM_PAINT:
          ValidateRect(hWnd,NULL);
          break;
-      case WM_ACTIVATE:
-         if(LOWORD(wParam)==WA_INACTIVE)
+      case WM_ACTIVATE: 
+        if(LOWORD(wParam)==WA_INACTIVE)
          {
             ChangeDisplaySettings(NULL,0);
          }
@@ -430,6 +434,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
             initwinvideo();
          }
+         if (IsMinimized == TRUE && AlwaysOnTop == 1) CheckAlwaysOnTop();
          InputAcquire();
          break;
       case WM_SETFOCUS:
