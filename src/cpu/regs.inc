@@ -736,8 +736,8 @@ reg213Er:
 reg213Fr:
 ;    mov byte[debstop3],1
     mov al,[ppustatus]
-    or al,[romispal]
     shl al,4
+    or al,[romispal]
     or al,[cfield]
     mov byte[latchxr],0
     mov byte[latchyr],0
