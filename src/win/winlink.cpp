@@ -1860,8 +1860,8 @@ extern unsigned char MMXSupport;
 
 void UpdateVFrame(void)
 {
-   if (GUIOn2 == 1 && IsActivated == 0) WaitMessage();
    if (GUIOn2 == 1 && IsActivated == 1) Sleep(1);
+   if (GUIOn2 == 1 && IsActivated == 0) WaitMessage();
 
    int DataNeeded;
    int SPCSize=256;
