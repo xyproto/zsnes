@@ -121,7 +121,7 @@ NEWSYM SA1Swap
     ; Check if IRQ is executed on SA-1
     xor eax,eax
     mov al,dl
-    add dh,25
+    add dh,100
     mov edi,[SA1tablead+eax*4]
     mov byte[SA1Status],1
     test dword[SA1DoIRQ],0FF000003h
@@ -157,7 +157,7 @@ NEWSYM SA1Swap
     mov dword[snesmap2],eax
     mov edi,[prevedi]
     xor eax,eax
-    add dh,11
+    add dh,51
     inc byte[CurrentExecSA1]
     mov byte[SA1Status],0
     add dword[SA1TimerVal],23
