@@ -28,6 +28,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdlib.h>
 #endif
 
+#include "asm_call.h"
+
 //C++ style code in C
 #define bool unsigned char
 #define true 1
@@ -208,7 +210,7 @@ const char* ZVERSION = "Pre 1.43";
 
 void zstart ()
 {
-	StartUp ();
+	asm_call(StartUp);
 
 	// Print welcome message.
 	printf("ZSNES v%s, (c) 1997-2005, ZSNES Team\n", ZVERSION);
@@ -218,18 +220,18 @@ void zstart ()
 	puts("ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,");
 	puts("and you are welcome to redistribute it under certain conditions;");
 	puts("please read 'LICENSE.TXT' thoroughly before doing so.\n");
-	puts("Use ZSNES -? for command line defintitions.\n");
+	puts("Use ZSNES -? for command line definitions.\n");
 
-	SystemInit ();
+	asm_call(SystemInit);
 
 #ifdef OPENSPC
 	OSPC_Init ();
 #else
-	setnoise ();
-	InitSPC ();
+	asm_call(setnoise);
+	asm_call(InitSPC);
 #endif
 	
-	allocmem ();
+	asm_call(allocmem);
 
 	if (!soundon && !SPCDisable)
 	{
@@ -251,8 +253,6 @@ void zstart ()
 
 	gammalevel16b = gammalevel * 2;
 
-	MMXCheck ();
-
-	init ();
+	asm_call(MMXCheck);
+	asm_call(init);
 }
-
