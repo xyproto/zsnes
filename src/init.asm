@@ -436,7 +436,7 @@ NEWSYM writeon, db 0    ; Write enable/disable on snes rom memory
 NEWSYM totlines, dw 263 ; total # of lines
 NEWSYM soundon, db 0    ; Current sound enabled (1=enabled)
 NEWSYM zsmesg,  db 'ZSNES Save State File V0.6',26
-NEWSYM versn,   db 61   ; version #/100
+NEWSYM versn,   db 60   ; version #/100
 NEWSYM curcyc,  db 0    ; cycles left in scanline
 NEWSYM curypos, dw 0    ; current y position
 NEWSYM cacheud, db 1    ; update cache every ? frames
