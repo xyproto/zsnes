@@ -932,11 +932,27 @@ GUIGUIOptnsKeys:
     xor byte[JoyPad1Move],1
 .guioptn6
 %ifdef __WIN32__
-    cmp dh,'H'
+    cmp dh,'A'
     jne .guioptn7
-    xor byte[MouseWheel],1
+    xor byte[AlwaysOnTop],1
 .guioptn7
+    cmp dh,'V'
+    jne .guioptn8
+    xor byte[SaveMainWindowPos],1
+.guioptn8
+    cmp dh,'L'
+    jne .guioptn9
+    xor byte[AllowMultipleInst],1
+.guioptn9
+    cmp dh,'H'
+    jne .guioptn10
+    xor byte[MouseWheel],1
+.guioptn10
 %endif
+    cmp dh,'T'
+    jne .guioptn11
+    xor byte[GUIEnableTransp],1
+.guioptn11
     ret
 
 GUISoundKeys:
@@ -969,6 +985,34 @@ GUISoundKeys:
     jne .notrevst
     xor byte[RevStereo],1
 .notrevst
+%ifdef __WIN32__
+    cmp dh,'X'
+    jne .noexclusivesound
+    xor byte[ExclusiveSound],1
+.noexclusivesound
+%endif
+%ifdef __MSDOS__
+    cmp dh,'U'
+    jne .nosurround
+    xor byte[Surround],1
+.nosurround
+%endif
+    cmp dh,'O'
+    jne .nointersound
+    xor byte[InterSound],1
+.nointersound
+    cmp dh,'L'
+    jne .nolowpass
+    xor byte[LowPassFilter],1
+.nolowpass
+    cmp dh,'B'
+    jne .nosoundbuf
+    xor byte[SoundBufEn],1
+.nosoundbuf
+    cmp dh,'C'
+    jne .nocubic
+    xor byte[UseCubicSpline],1
+.nocubic
     ret
 
 .sampratenext db 1,4,5,6,2,3,0,0,0,0

@@ -2081,16 +2081,16 @@ DisplayGUISound:
 ;    cmp byte[OSPort],3
 ;    je near .win32s2
 %ifdef __MSDOS__
-    GUIOuttextwin2 6,26,126,GUISoundTextI
+    GUIOuttextwin2u 6,26,126,GUISoundTextI,1
 %endif
 ;.win32s2
 %ifdef __WIN32__
-    GUIOuttextwin2 6,26,126,GUISoundTextIb
+    GUIOuttextwin2u 6,26,126,GUISoundTextIb,1
 %endif
-    GUIOuttextwin2 6,26,136,GUISoundTextJ
-    GUIOuttextwin2 6,26,146,GUISoundTextK
-    GUIOuttextwin2 6,26,156,GUISoundTextL
-    GUIOuttextwin2 6,26,166,GUISoundTextM
+    GUIOuttextwin2u 6,26,136,GUISoundTextJ,1
+    GUIOuttextwin2u 6,26,146,GUISoundTextK,0
+    GUIOuttextwin2u 6,26,156,GUISoundTextL,6
+    GUIOuttextwin2u 6,26,166,GUISoundTextM,0
     add byte[GUItextcolor],15
     GUIOuttextwin2 6,25,25,GUISoundText1
     GUIOuttextwin2 6,25,34,GUISoundText3
@@ -4778,12 +4778,12 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,147,111,GUIGUIOptnsTextI
     GUIOuttextwin2 10,26,88,GUIGUIOptnsTextB
     GUIOuttextwin2 10,26,98,GUIGUIOptnsTextC
-    GUIOuttextwin2 10,138,28,GUIGUIOptnsTextJ
+    GUIOuttextwin2u 10,138,28,GUIGUIOptnsTextJ,0
 %ifdef __WIN32__
-    GUIOuttextwin2 10,26,173,GUIGUIOptnsTextE
-    GUIOuttextwin2 10,26,183,GUIGUIOptnsTextF
+    GUIOuttextwin2u 10,26,173,GUIGUIOptnsTextE,0
+    GUIOuttextwin2u 10,26,183,GUIGUIOptnsTextF,2
     GUIOuttextwin2u 10,138,38,GUIGUIOptnsTextK,1
-    GUIOuttextwin2 10,26,193,GUIGUIOptnsTextL
+    GUIOuttextwin2u 10,26,193,GUIGUIOptnsTextL,1
 %endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,16,123,GUIGUIOptnsText6
@@ -4997,7 +4997,7 @@ GUIGUIAboutText6b db '    TEUF',0
 GUIGUIAboutText6c db '    PAGEFAULT',0
 GUIGUIAboutText6d db '    THEODDONE33',0
 %ifdef __WIN32__
-GUIGUIAboutText7 db 'WIN PORT V0.97',0
+GUIGUIAboutText7 db 'WIN PORT V0.99',0
 %elifdef __LINUX__
 GUIGUIAboutText7 db 'LINUX PORT V0.19',0
 %endif
