@@ -1163,6 +1163,9 @@ LoadDetermine:
     mov byte[GUIGameMenuData+14*4],2
     mov byte[GUIGameMenuData+14*5],2
     mov byte[GUIGameMenuData+14*6],2
+    mov byte[GUICheatMenuData],2
+    mov byte[GUICheatMenuData+14],2
+    mov byte[GUICheatMenuData+14*2],2
     mov byte[GUIMiscMenuData+14*2],2
 .noromloaded2
 .noromloaded
