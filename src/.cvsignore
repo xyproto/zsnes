@@ -1,0 +1,10 @@
+config.log
+Makefile
+aclocal.m4
+config.h
+configure
+config.cache
+.gdbinit
+config.status
+zsnesd
+zsnes
