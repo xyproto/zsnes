@@ -223,7 +223,7 @@ void sw_drawwin()
 		"	rep\n"						\
 		"	stosl\n"					\
 		"	emms\n"						\
-		: : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD) : "cc", "memory", "eax", "ebx", "ecx");
+		: : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD) : "cc", "memory", "eax", "ecx");
 		} else {
 		    // Doesn't seem to work - DDOI
 		    __asm__ __volatile__ (
