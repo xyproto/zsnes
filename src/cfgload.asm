@@ -977,16 +977,6 @@ NEWSYM getcfg
     call .getexecute
 .nostrj
     mov ecx,[.strlena]
-    cmp ecx,[.strk]
-    jne .nostrk
-    mov edx,.strk+4
-    mov eax,.stringa
-    call .cmpstr
-    cmp bl,1
-    je .nostrk
-    call .getbufdisable
-.nostrk
-    mov ecx,[.strlena]
     cmp ecx,[.strm]
     jne .nostrm
     mov edx,.strm+4
