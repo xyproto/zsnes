@@ -532,7 +532,6 @@ NEWSYM RSPCRegFC
       ret
 
 %macro skipmacro 1
-ALIGN4
 .spcnextskip
   	  test byte[timeron],1<<%1
 	  je .ret
@@ -568,7 +567,6 @@ NEWSYM haltspc
       mov dword[spcnumread],0
       ret
 
-ALIGN4
 NEWSYM RSPCRegFD
       mov al,[spcRam+0fdh]
       and al,0Fh
@@ -579,7 +577,6 @@ NEWSYM RSPCRegFD
       ret
 	  skipmacro 0
 
-ALIGN4
 NEWSYM RSPCRegFE
       mov al,[spcRam+0feh]
       and al,0Fh
@@ -590,7 +587,6 @@ NEWSYM RSPCRegFE
       ret
 	  skipmacro 1
 
-ALIGN4
 NEWSYM RSPCRegFF
       mov al,[spcRam+0ffh]
       and al,0Fh
