@@ -1,17 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
 
-dnl To: The Ports Teams for the various BSD Distributions
-dnl CC: Anyone else who cares
-dnl From: A FreeBSD user who wrote this autoconf setup.
-dnl
-dnl Please do not use global cflags for zsnes, they are
-dnl not optimized. This has been tested on very many
-dnl different processors of the x86 architecture, and 
-dnl this has been proven correct, and I doubt you want
-dnl to annoy your users by having ports build un-
-dnl optimized binaries. 
-dnl See also: remarks supplied in the debug checking area below
-
 AC_INIT(init.asm)
 AC_CONFIG_HEADER(config.h)	
 ISODATE=`date +%Y-%m-%d`
@@ -67,14 +55,18 @@ dnl -- Where is libSDL and zlib, and do we want/have libPNG and OpenGL support?
 
 AM_PATH_SDL(1.2.0,,[AC_MSG_ERROR(SDL >= 1.2.0 is required)])
 AM_PATH_ZLIB(1.1.0,,[AC_MSG_ERROR(ZLIB >= 1.1.0 is required)])
-AM_PATH_LIBPNG(1.0.0,,)
-
 CFLAGS="$CFLAGS $ZLIB_CFLAGS"
 LDFLAGS="$LDFLAGS $ZLIB_LIBS"
+AM_PATH_LIBPNG(1.0.0,,)
+CFLAGS="$CFLAGS $SDL_CFLAGS"
+LDFLAGS="$LDFLAGS $SDL_LIBS"
 
 if test x$with_libpng != xyes; then
         CFLAGS="$CFLAGS -DNO_PNG"
         NFLAGS="$NFLAGS -DNO_PNG"
+else
+	CFLAGS="$CFLAGS $LIBPNG_CFLAGS"
+	LDFLAGS="$LDFLAGS $LIBPNG_LIBS"
 fi
 
 dnl -- opengl stuff
@@ -121,12 +113,7 @@ if test x$debug = xyes; then
 else
 	AC_MSG_RESULT(no)
 	
-	dnl DONT TOUCH THESE CFLAGS! THESE ARE OPTIMIZED! 
-	dnl 	Because of the way zsnes is written, these options make
-	dnl zsnes more easily deal with small instruction caches, and more
-	dnl effectivly use branch prediction.
-	
-	CFLAGS="$CFLAGS -O3 -funroll-loops -ffast-math -fomit-frame-pointer -fexpensive-optimizations  -fcse-follow-jumps -fcse-skip-blocks -frerun-cse-after-loop -fstrength-reduce -finline-functions -fforce-mem -fschedule-insns2  -s"
+	CFLAGS="$CFLAGS -O3 -ffast-math -fomit-frame-pointer -fexpensive-optimizations -s"
 	ZSNESEXE="zsnes"
 fi
 
@@ -139,11 +126,11 @@ if test x$debug != xyes; then
 					;;
 				i586-*-*)
 					CFLAGS="$CFLAGS -march=pentium"
-					AC_MSG_RESULT(Pentium)
+					AC_MSG_RESULT(586)
 					;;
 				i686-*-*)
 					CFLAGS="$CFLAGS -march=pentiumpro"
-					AC_MSG_RESULT(PPro/P2)
+					AC_MSG_RESULT(686)
 					;;
 				*)
 					AC_MSG_RESULT(386)
