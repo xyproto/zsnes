@@ -472,11 +472,11 @@ short SinInt(short Angle)
 
 short CosInt(short Angle)
 {
+	int S;
 	if (Angle == -32768) return -32768;
-
 	if (Angle < 0) Angle = -Angle;
 
-	int S = SinTable[Hi((Angle + 0x4000))] - ((MulTable[Lo(Angle)] * (-SinTable[Hi((Angle + 0x8000))])) >> 15);
+	S = SinTable[Hi((Angle + 0x4000))] - ((MulTable[Lo(Angle)] * (-SinTable[Hi((Angle + 0x8000))])) >> 15);
 	if (S > 32767)
 		S = 32767;
 	if (S < -32768)
@@ -959,9 +959,10 @@ void DSPOp06()
 
    if (ObjPZ2<0)
    {
+      double d;
       Op06H=(short)(-ObjPX2*Op02LES/-(ObjPZ2)); //-ObjPX2*256/-ObjPZ2;
       Op06V=(short)(-ObjPY2*Op02LES/-(ObjPZ2)); //-ObjPY2*256/-ObjPZ2;
-      double d=(double)Op02LES;
+      d=(double)Op02LES;
 	  d*=256.0;
 	  d/=(-ObjPZ2);
 	  if(d>65535.0)
