@@ -1,0 +1,127 @@
+# SConstruct file for ZSNES
+# Run 'scons' in this directory to build.
+# Run 'scons -c' in this directory to cleanup.
+
+# Source file list
+source_files = Split("""
+	chips/dsp1emu.c
+	chips/seta10.c
+	chips/sdd1emu.c
+	chips/c4emu.c
+	chips/dsp1proc.asm
+	chips/dsp2proc.asm
+	chips/fxemu2.asm
+	chips/fxemu2b.asm
+	chips/fxemu2c.asm
+	chips/fxtable.asm
+	chips/sa1proc.asm
+	chips/sa1regs.asm
+	chips/sfxproc.asm
+	chips/st10proc.asm
+	cfgload.c
+	debug.c
+	initc.c
+	patch.c
+	uic.c
+	version.c
+	endmem.asm
+	init.asm
+	ui.asm
+	vcache.asm
+	net/ztcp.c
+	cpu/zstate.c
+	cpu/addrni.asm
+	cpu/dma.asm
+	cpu/dsp.asm
+	cpu/dspproc.asm
+	cpu/execute.asm
+	cpu/irq.asm
+	cpu/memory.asm
+	cpu/spc700.asm
+	cpu/stable.asm
+	cpu/table.asm
+	cpu/tableb.asm
+	cpu/tablec.asm
+	effects/burn.c
+	effects/smoke.c
+	effects/water.c
+	gui/gui.asm
+	gui/menu.asm
+	video/procvidc.c
+	video/2xsaiw.asm
+	video/hq2x16.asm
+	video/hq2x32.asm
+	video/hq3x16.asm
+	video/hq3x32.asm
+	video/hq4x16.asm
+	video/hq4x32.asm
+	video/m716text.asm
+	video/makev16b.asm
+	video/makev16t.asm
+	video/makevid.asm
+	video/mode7.asm
+	video/mode716.asm
+	video/mode716b.asm
+	video/mode716d.asm
+	video/mode716e.asm
+	video/mode716t.asm
+	video/mode7ext.asm
+	video/mv16tms.asm
+	video/newg162.asm
+	video/newgfx.asm
+	video/newgfx16.asm
+	video/newgfx2.asm
+	video/procvid.asm
+	video/sw_draw.asm
+	zip/unzip.c
+	zip/zpng.c
+""")
+
+linux_source_files = Split("""
+	linux/sdllink.c
+	linux/sw_draw.c
+	linux/zfilew.c
+	linux/zloaderw.c
+	linux/copyvwin.asm
+	linux/sdlintrf.asm
+""")
+
+zsnes = Environment ()
+
+platform = zsnes['PLATFORM']
+
+# Setup environment for nasm
+zsnes.Replace (AS = 'nasm')
+zsnes.Replace (ASFLAGS = '-f elf ')
+
+#sdl_config = Builder (action = 'sdl-config --include')
+
+# Run config tests.
+conf = Configure (zsnes)
+
+# Must have SDL to compile
+if not conf.CheckLib ('SDL', 'SDL_Init'):
+	print 'SDL not found! Please install SDL and try again.'
+	Exit (1)
+
+if not conf.CheckLib ('png'):
+	print 'libpng not found! Please install libpng and try again.'
+	Exit (1)
+
+# Check for nasm's existence
+if not conf.TryCompile ('db __NASM_VER__', '.asm'):
+	print 'NASM not found! Please install NASM and try again.'
+	Exit (1)
+
+zsnes = conf.Finish ()
+
+# Perform any platform-specific initialization
+if platform == 'posix':
+	source_files = source_files + linux_source_files
+	zsnes.Append (CCFLAGS = '-D__LINUX__')
+	zsnes.Append (ASFLAGS = '-DELF -D__LINUX__')
+	zsnes.Append (CCFLAGS = '-I.')
+	zsnes.Append (CCFLAGS = '-I/usr/include/SDL')
+
+# Build the program.
+zsnes.Program ('zsnes', source_files)
