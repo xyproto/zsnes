@@ -1720,14 +1720,12 @@ NEWSYM LPFsample2, dd 0
     mov edx,eax
 
     mov eax,[prev1]
-    movsx eax,ax
     mov ebx,[filter1]
     imul eax,ebx
     sar eax,8
     add edx,eax
 
     mov eax,[prev0]
-    movsx eax,ax
     mov ebx,[filter0]
     imul eax,ebx
     sar eax,8
