@@ -1296,7 +1296,7 @@ NEWSYM ClearScreen
 SECTION .data
 
 ; Total Number of Video Modes
-NEWSYM NumVideoModes, dd 18
+NEWSYM NumVideoModes, dd 4
 
 ; GUI Video Mode Names - Make sure that all names are of the same length
 ; and end with a NULL terminator
