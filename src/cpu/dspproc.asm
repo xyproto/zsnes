@@ -1497,11 +1497,11 @@ NEWSYM InitSPC
       mov dword [opcjmptab+03F4h],OpFD
       mov dword [opcjmptab+03F8h],OpFE
       mov dword [opcjmptab+03FCh],OpFF
-    cmp byte[soundon],0
+;    cmp byte[soundon],0
 ;    je near .nosound
-    cmp byte[OSPort],2
-    jae near .nosound
-
+;    cmp byte[OSPort],2
+;    jae near .nosound
+%ifdef __MSDOS__
     mov ax,0100h                ; Allocate DOS memory
     mov bx,16384/16             ; Allocate 16384 bytes
     int 31h
@@ -1537,12 +1537,14 @@ NEWSYM InitSPC
     mov eax,0
     rep stosd
     pop es
+%endif
 .nosound
     pop edx
     pop ecx
     pop ebx
     pop eax
     ret
+%ifdef __MSDOS__
 .error
     mov edx,.nohand         ;use extended
     mov ah,9                ;DOS- API
@@ -1550,10 +1552,12 @@ NEWSYM InitSPC
     call DosExit
 
 .nohand db 'Unable to allocate conventional memory!',13,10,'$'
-
+%endif
 
 NEWSYM InitSB
+%ifdef __MSDOS__
     call initSB
+%endif
     ret
 
 NEWSYM DeInitSPC

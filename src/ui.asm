@@ -26,7 +26,7 @@ EXTSYM SBPort,SBInt,SBIrq,SBDMA,SBDMAPage,SBHDMAPage,getenv,vibracard
 EXTSYM ram7fa,wramdataa
 EXTSYM malloc,free
 EXTSYM StateBackup
-EXTSYM OSPort
+;EXTSYM OSPort
 EXTSYM ADSRGAINSwitch,FPUCopy,ScreenScale,SoundQuality
 EXTSYM debugger,pl1contrl,pl2contrl,romtype,smallscreence
 EXTSYM smallscreenon,spcon
@@ -518,6 +518,7 @@ SECTION .text
 ; Get Blaster            Locates SET BLASTER environment
 ;*******************************************************
 NEWSYM getblaster
+%ifndef __LINUX__
     mov edx,.string2s
     push edx
     call getenv
@@ -733,6 +734,7 @@ NEWSYM getblaster
     mov edx,.blasterstr2b
     call PrintStr
     call WaitForKey
+%endif
     ret
 
 SECTION .data
@@ -807,6 +809,7 @@ SECTION .text
 
 
 AllocateLDTDescriptor:
+%ifndef __LINUX__
 ;Get ZSNES Base
    mov ax,ds
    mov bx,ax
@@ -818,10 +821,12 @@ AllocateLDTDescriptor:
    ret
 .FatalError
 ; maybe dosexit?
+%endif
    ret
 
 
 AllocateBlock:
+%ifndef __LINUX__
    mov eax,0501h
    mov bx,[BlockSize+2]
    mov cx,[BlockSize]
@@ -840,6 +845,7 @@ AllocateBlock:
    ret
 .FatalError
    mov ebx,1
+%endif
    ret
 
 
@@ -905,24 +911,28 @@ NEWSYM allocspc7110
     ret
 
 outofmemoryb
-    cmp byte[OSPort],1
-    ja .notdos
+;    cmp byte[OSPort],1
+;    ja .notdos
+%ifdef __MSDOS__
     mov ax,3
     int 10h
-.notdos
+%endif
+;.notdos
     jmp outofmemory
 
 NEWSYM allocptr
     mov dword[cmemallocptr],memfreearray
 
 
-    cmp byte[OSPort],3
-    jne near .nostate
+;    cmp byte[OSPort],3
+;    jne near .nostate
+%ifndef __MSDOS__
     AllocmemFail 4096*128*16+4096+65536*16,StateBackup,outofmemory
     mov eax,[StateBackup]
     add eax,4096*128*16
     mov [BitConv32Ptr],eax
-.nostate
+%endif
+;.nostate
 
     ; Memory Allocation
     AllocmemFail 65536*4+4096,spcBuffera,outofmemory

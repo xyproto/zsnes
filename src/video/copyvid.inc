@@ -16,23 +16,6 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-EXTSYM GUIOn,HalfTrans
-EXTSYM ClearScreen
-EXTSYM Mode7HiRes,mosenng,mosszng,intrlng,mode7hr ;,VESAAddr
-EXTSYM GUICPC, newgfx16b
-EXTSYM vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3
-EXTSYM granadd
-EXTSYM SpecialLine
-EXTSYM vidbufferofsb
-;EXTSYM Super2xSaI
-EXTSYM HalfTransB,HalfTransC
-
-
-%include "video/2xsaimmx.inc"
-
-
-
-
 
 SECTION .text
 
@@ -60,6 +43,7 @@ NEWSYM ResetTripleBuf
    mov byte[CVidStartAd],0
    ret
 
+%ifdef __MSDOS__
 GUITripleBuffer:
    cmp byte[TriplebufTech],0
    je near .tech2
@@ -238,6 +222,7 @@ PreTripleBuffer:
 .failed
    mov byte[Triplebufen],0
    ret
+%endif 
 
 VidModeSize dd 0,0,320*240,320*240*2,640*480,640*480*2,512*384,512*384*2
             dd 0,320*480,320*480*2
@@ -252,6 +237,7 @@ NEWSYM LastLineStart, dd 0
 NEWSYM FlipWait, db 0
 NEWSYM TriplebufTech, db 0
 
+%ifdef __MSDOS__
 NEWSYM DosDrawScreen
    cmp byte[curblank],40h
    je .nocopy
@@ -336,13 +322,13 @@ ScreenShowGUI:
     cmp byte[cvidmode],0
     je near copymodex
     jmp copymodeq
-
+%endif
 
 
 ;*******************************************************
 ; CopyModeX         Copies buffer into unchained 320x240
 ;*******************************************************
-
+%ifdef __MSDOS__
 NEWSYM copymodex
     cmp byte[curblank],40h
     jne .startcopy
@@ -829,6 +815,7 @@ copyvesa2320x480x8ng:
 ;*******************************************************
 ; Copy VESA2 640x480x8b  Copies buffer to 640x480x8bVBE2
 ;*******************************************************
+%endif
 
 ALIGN32
 NEWSYM EagleHold, dd 0
@@ -839,6 +826,7 @@ vesavaland dd 0,0
 mmxvalanda dd 11111111110000001111111111000000b,11111111110000001111111111000000b
 mmxvalandb dd 00000000000111110000000000011111b,00000000000111110000000000011111b
 
+%ifdef __MSDOS__
 NEWSYM copyvesa2640x480x8bgui
     mov byte[CurrentGUIOn],1
     cmp byte[smallscreenon],1
@@ -2016,6 +2004,7 @@ NEWSYM palresvalngb, dd 0,0
 %macro copyb320x240 0
     mov [es:edi+2],dx
 %endmacro
+%endif
 
 ALIGN32
 NEWSYM rescompareng, dd 0
@@ -2026,6 +2015,8 @@ NEWSYM lineleft, dd 0
 NEWSYM lineleft2, dd 0
 bankpos dd 0
 
+
+%ifdef __MSDOS__
 ;*******************************************************
 ; Copy VESA2 320x480x16b Copies buffer to 320x480x16bVB2
 ;*******************************************************
@@ -2180,7 +2171,7 @@ NEWSYM copyvesa2320x480x16bgui
     jnz .loopabhq
     pop es
     ret
-
+%endif
 
 NEWSYM ConvertToAFormat
     cmp byte[GUIOn],1
@@ -2264,6 +2255,7 @@ NEWSYM UnConvertToAFormat
     jnz .crgbloop
     ret
 
+%ifdef __MSDOS__
 NEWSYM copyvesa2320x480x16b
     cmp byte[curblank],40h
     jne .startcopy
@@ -5393,12 +5385,12 @@ NEWSYM copyvesa12640x480x16b
     jnz near .loopac
     pop es
     ret
-
+%endif
 ;*******************************************************
 ; Clear Screen
 ;*******************************************************
-
 NEWSYM DOSClearScreen
+%ifdef __MSDOS__
     cmp byte[cvidmode],1
     je near cscopymodeq
     cmp byte[cvidmode],2
@@ -5421,6 +5413,7 @@ NEWSYM DOSClearScreen
     je near cscopyvesa2320x480x16b
     cmp byte[cvidmode],0
     je near cscopymodex
+%endif
     ret
 
 %macro TripleBufferClear 0
@@ -5434,6 +5427,7 @@ NEWSYM DOSClearScreen
 %%noclear
 %endmacro
 
+%ifdef __MSDOS__
 NEWSYM cscopymodeq
     push es
     mov ax,[selcA000]
@@ -5579,21 +5573,24 @@ NEWSYM cscopyvesa2512x384x16b
     jnz .loopb
     pop es
     ret
-
+%endif
 
 NEWSYM GetScreen
-    cmp byte[OSPort],1
-    jbe .getscreen
-    ret
-.getscreen
+%ifdef __MSDOS__
+;    cmp byte[OSPort],1
+;    jbe .getscreen
+;    ret
+;.getscreen
     cmp byte[cvidmode],3
     je near getcopyvesa2320x240x16b
     cmp byte[cvidmode],5
 ;    je near getcopyvesa2640x480x16b
     cmp byte[cvidmode],7
 ;    je near getcopyvesa2512x384x16b
+%endif
     ret
 
+%ifdef __MSDOS__
 NEWSYM getcopyvesa2320x240x16b
     push es
     mov ax,[vesa2selec]
@@ -5691,13 +5688,4 @@ NEWSYM cscopyvesa12640x480x16b
     jnz near .loopa
     pop es
     ret
-
-NEWSYM Clear2xSaIBuffer
-    mov ebx,[vidbufferofsb]
-    add ebx,288*2
-    mov ecx,144*239
-.nextb
-    mov dword[ebx],0FFFFFFFFh
-    add ebx,4
-    loop .nextb
-    ret
+%endif

@@ -53,6 +53,17 @@ EXTSYM ClearScreenSkip,debugdisble,cmovietimeint
 EXTSYM ChatNick
 EXTSYM StringLength
 EXTSYM chatstrLt
+EXTSYM GUIOn,HalfTrans
+EXTSYM ClearScreen
+EXTSYM Mode7HiRes,mosenng,mosszng,intrlng,mode7hr ;,VESAAddr
+EXTSYM GUICPC, newgfx16b
+EXTSYM vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3
+EXTSYM granadd
+EXTSYM SpecialLine
+EXTSYM vidbufferofsb
+;EXTSYM Super2xSaI
+EXTSYM HalfTransB,HalfTransC
+
 
 NEWSYM ProcVidAsmStart
 
@@ -82,8 +93,10 @@ NEWSYM TempDebugV, dw 0       ; Temporary Debugging variable
 %MACRO CopyFPU 0
 %ENDMACRO
 
+%include "video/2xsaimmx.inc"
 %include "video/copyvid.inc"
 
+SECTION  .text
 NEWSYM FPUZero
     mov [.Zero],eax
     mov [.Zero+4],eax
@@ -1551,7 +1564,9 @@ NEWSYM saveselect
     jne .nong16b
     cmp byte[cbitmode],0
     je .nong16b
+%ifdef __MSDOS__
     call GetScreen
+%endif
 .nong16b
     cmp dword[MessageOn],0
     je .nochangem
@@ -1567,8 +1582,9 @@ NEWSYM saveselect
     cmp byte[soundon],0
     je .nosound
     mov byte[csounddisable],1
-    cmp byte[OSPort],1
-    ja .nosound
+    ;cmp byte[OSPort],1
+    ;ja .nosound
+%ifdef __MSDOS__
     push es
     mov es,[sbselec]
     mov edi,[sbpmofs]
@@ -1579,6 +1595,7 @@ NEWSYM saveselect
     dec ecx
     jnz .loopa
     pop es
+%endif
 .nosound
     cmp byte[cbitmode],1
     je near .16b
@@ -1771,8 +1788,9 @@ NEWSYM saveselect
 .esc
     mov byte[pressed+1],0
     mov byte[pressed+28],0
-    cmp byte[OSPort],1
-    jbe .notpr28b
+    ;cmp byte[OSPort],1
+    ;jbe .notpr28b
+%ifndef __MSDOS__
     cmp byte[pressed+1],1
     jne .notpr1b
     mov byte[pressed+1],2
@@ -1780,6 +1798,7 @@ NEWSYM saveselect
     cmp byte[pressed+28],1
     jne .notpr28b
     mov byte[pressed+28],2
+%endif
 .notpr28b
     mov word[t1cc],0
     mov byte[csounddisable],0
@@ -2086,8 +2105,9 @@ NEWSYM saveselect
     mov ebx,[statefileloc]
     mov byte[fnamest+ebx],al
 .esc16b
-    cmp byte[OSPort],1
-    jbe .notprwin
+    ;cmp byte[OSPort],1
+    ;jbe .notprwin
+%ifndef __MSDOS__
     cmp byte[pressed+1],1
     jne .notpr1
     mov byte[pressed+1],2
@@ -2097,6 +2117,7 @@ NEWSYM saveselect
     mov byte[pressed+28],2
 .notpr28
     jmp .prwin
+%endif
 .notprwin
     mov byte[pressed+1],0
     mov byte[pressed+28],0
@@ -2173,8 +2194,9 @@ NEWSYM testpressed8b
     inc bl
     mov byte[pressed+77],2
 .noright
-    cmp byte[OSPort],3
-    jne near .nowin32
+    ;cmp byte[OSPort],3
+    ;jne near .nowin32
+%ifndef __MSDOS__
 %ifdef __LINUX__
     test byte[pressed+05Ch],1
 %else
@@ -2205,7 +2227,8 @@ NEWSYM testpressed8b
     mov byte[pressed+0CDh],2
 %endif
 .noright2
-.nowin32
+;.nowin32
+%endif
     ret
 
 ;*******************************************************
@@ -3301,11 +3324,13 @@ NEWSYM ChatType
     pushad
     mov dl,'L'
 ;    call NetAddChar
-    cmp byte[OSPort],2
-    jb .dos
+    ;cmp byte[OSPort],2
+    ;jb .dos
+%ifndef __MSDOS__
     cmp dword[chatstrL+1],'/ME '
     je .action
-.dos
+%endif
+;.dos
     mov esi,ChatNick
     call WritetochatBuffer
     mov esi,chatstrL
@@ -3508,9 +3533,11 @@ NEWSYM vidpaste
     jne .novsync
     cmp byte[curblank],0h
     jne .novsync
-    cmp byte[OSPort],1
-    ja .novsync
+;    cmp byte[OSPort],1
+;    ja .novsync
+%ifdef __MSDOS__
     call waitvsync
+%endif
 .novsync
     cmp byte[cbitmode],1
     je .nopal
@@ -3620,6 +3647,17 @@ NEWSYM vidpaste
     jmp .returnfromdraw
 
 .SSRedCo dw 0
+
+
+NEWSYM Clear2xSaIBuffer
+    mov ebx,[vidbufferofsb]
+    add ebx,288*2
+    mov ecx,144*239
+.nextb
+    mov dword[ebx],0FFFFFFFFh
+    add ebx,4
+    loop .nextb
+    ret
 
 
 NEWSYM lastfps,   db 0                  ; stores the last fps encountered

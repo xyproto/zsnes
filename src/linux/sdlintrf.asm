@@ -69,9 +69,6 @@ EXTSYM RaisePitch,AdjustFrequency
 EXTSYM vidbufferofsb,vidbuffer
 EXTSYM clearwin
 EXTSYM Stop60HZ
-EXTSYM dosmakepal
-EXTSYM doschangepal
-EXTSYM dosinitvideo,dosinitvideo2
 EXTSYM initwinvideo
 EXTSYM vesa2_rpos
 EXTSYM vesa2_gpos
@@ -93,15 +90,12 @@ EXTSYM scanlines,vesa2_bits
 EXTSYM vesa2_x,vesa2_y
 EXTSYM vesa2selec,InitVesa12,videotroub
 EXTSYM genfulladdtab
-EXTSYM DosDrawScreen,dosvidpastecopyscr,GUICPC
+EXTSYM GUICPC
 EXTSYM drawscreenwin
 EXTSYM ConvertToAFormat
 EXTSYM UnusedBit,HalfTrans,UnusedBitXor,UnusedBit,UnusedBitXor
 EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC
-EXTSYM DOSClearScreen
-EXTSYM DosUpdateDevices
 EXTSYM WinUpdateDevices
-EXTSYM DOSJoyRead
 EXTSYM UpdateVFrame
 EXTSYM GetMouseX
 EXTSYM GetMouseY
@@ -985,20 +979,8 @@ NEWSYM NumVideoModes, dd 4
 NEWSYM GUIVideoModeNames
 db '256X224    R WIN ',0  ;2
 db '256x224    R FULL',0  ;3
-;db '512X448    R WIN ',0  ;4
 db '512X448   DR WIN ',0  ;5
 db '640x480   DR FULL',0  ;6
-;db '640x480    S WIN ',0  ;6
-;db '640X480   DS FULL',0  ;8
-;db '640X480    S FULL',0  ;9
-;db '800x600    S WIN ',0  ;10
-;db '800x600   DS WIN ',0  ;11
-;db '800x600    S FULL',0  ;12
-;db '800x600   DS FULL',0  ;13
-;db '1024X768   S WIN ',0  ;14
-;db '1024X768  DS WIN ',0  ;15
-;db '1024x768   S FULL',0  ;16
-;db '1024x768  DS FULL',0  ;17
 
 
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)

@@ -415,10 +415,12 @@ NEWSYM ProcessRewind
     ret
 
 NEWSYM UpdateRewind
-    cmp byte[OSPort],3
-    je .yeswin32
-    ret
-.yeswin32
+;    cmp byte[OSPort],3
+;    je .yeswin32
+;    ret
+
+;.yeswin32
+%ifndef __MSDOS__
     push eax
     cmp dword[KeyRewind],0
     je .notftimer
@@ -449,6 +451,7 @@ NEWSYM UpdateRewind
 .noteq
     mov dword[RewindTimer],60*3
     pop eax
+%endif
     ret
 
 NEWSYM BackupSystemVars
@@ -812,17 +815,21 @@ NetSaveState:
 
 
 %macro stim 0
-    cmp byte[OSPort],1
-    ja %%nosti
+;    cmp byte[OSPort],1
+;    ja %%nosti
+%ifdef __MSDOS__
     sti
-%%nosti
+%endif
+;%%nosti
 %endmacro
 
 %macro clim 0
-    cmp byte[OSPort],1
-    ja %%nocli
+;    cmp byte[OSPort],1
+;    ja %%nocli
+%ifdef __MSDOS__
     cli
-%%nocli
+%endif
+;%%nocli
 %endmacro
 
 %macro ProcessIRQStuffB 0
@@ -1050,8 +1057,9 @@ NEWSYM reexecute
     jmp reexecuteb2
 
 NEWSYM reexecuteb
-    cmp byte[OSPort],1
-    ja reexecuteb2
+    ;cmp byte[OSPort],1
+    ;ja reexecuteb2
+%ifdef __MSDOS__
     mov esi,pressed
     mov ecx,256+128+64
     mov al,0
@@ -1062,6 +1070,7 @@ NEWSYM reexecuteb
 .notclear
     inc esi
     loop .loopa
+%endif 
 reexecuteb2:
     ; temporary sprite displayer
 ;    mov edx,.sdispname
@@ -2787,8 +2796,9 @@ NEWSYM cpuover
     call RemoteSendChar
     ; ##################
     ; Send latency value
-    cmp byte[OSPort],3
-    jne .nolatencysend
+    ;cmp byte[OSPort],3
+    ;jne .nolatencysend
+%ifndef __MSDOS__ 
     cmp byte[BackState],1
     jne .nolatencysend
     mov ebx,[LatencySendPtr]
@@ -2799,6 +2809,7 @@ NEWSYM cpuover
     mov al,[LocalLValue]
 ;    inc al
     call RemoteSendChar
+%endif
 .nolatencysend
     mov ebx,[cnetptrhead]
     mov ecx,JoyAOrig
@@ -2837,13 +2848,15 @@ NEWSYM cpuover
     push esi
     mov esi,chatstrR
 
-    cmp byte[OSPort],2
-    jae .notwin32b
+    ;cmp byte[OSPort],2
+    ;jae .notwin32b
+%ifdef __MSDOS__
     mov byte[esi],'L'
     mov byte[esi+1],'>'
     add esi,2
-    jmp .skipsendnick
-.notwin32b
+%else
+    ;jmp .skipsendnick
+;.notwin32b
     cmp dword[chatstrL+1],'/ME '
     jne .noaction
     mov al,'*'
@@ -2883,13 +2896,16 @@ NEWSYM cpuover
     call RemoteSendChar
     pop eax
     pop ebx
+%endif
 .skipsendnick
     mov ebx,chatstrL+1
-    cmp byte[OSPort],2
-    jb .noaction3
+    ;cmp byte[OSPort],2
+    ;jb .noaction3
+%ifndef __MSDOS__
     cmp dword[chatstrL+1],'/ME '
     jne .noaction3
     mov ebx,chatstrL+5
+%endif
 .noaction3
 .nextchatc
     mov al,[ebx]
@@ -2937,8 +2953,9 @@ NEWSYM cpuover
 
     push ecx
     push ebx
-    cmp byte[OSPort],3
-    jne .nobackstate
+;    cmp byte[OSPort],3
+;    jne .nobackstate
+%ifndef __MSDOS__
     cmp byte[BackState],1
     jne .nobackstate
     call BackupCVFrame
@@ -2947,6 +2964,7 @@ NEWSYM cpuover
     inc ebx
     and ebx,0Fh
     mov [CBackupPos],ebx
+%endif
 .nobackstate
     pop ebx
     pop ecx
@@ -3007,8 +3025,9 @@ NEWSYM cpuover
 .notor
     cmp dh,0
     jne .foundchar
-    cmp byte[OSPort],3
-    jne .notwin32
+    ;cmp byte[OSPort],3
+    ;jne .notwin32
+%ifndef __MSDOS__
     push ebx
     cmp byte[BackState],1
     jne .nobackstate2
@@ -3049,6 +3068,7 @@ NEWSYM cpuover
     jb .notwin32
     cmp byte[pressed+1],1
     je .netquit2
+%endif
 .notwin32
     mov bl,1
     jmp .notfoundchar
@@ -3079,8 +3099,9 @@ NEWSYM cpuover
     pushad
     ; Receive latency value
     ; #####################
-    cmp byte[OSPort],3
-    jne near .nolatencyrecv2
+    ;cmp byte[OSPort],3
+    ;jne near .nolatencyrecv2
+%ifndef __MSDOS__
     cmp byte[BackState],1
     jne near .nolatencyrecv2
 .tryagainlatency
@@ -3114,6 +3135,7 @@ NEWSYM cpuover
     jb .nolatencyrecv2
     mov dword[latencytimer],0
     inc byte[t1cc]
+%endif
 .nolatencyrecv2
     popad
     inc dword[NetSent2]
@@ -3155,8 +3177,9 @@ NEWSYM cpuover
     test dl,02h
     jz near .nocrupdate2
 
-    cmp byte[OSPort],3
-    jne .notwin32d
+;    cmp byte[OSPort],3
+;    jne .notwin32d
+%ifndef __MSDOS__
     cmp byte[BackState],1
     jne .notwin32d
     push edx
@@ -3182,6 +3205,7 @@ NEWSYM cpuover
     and ebx,0Fh
     mov [PBackupPos],ebx
     pop edx
+%endif
 .notwin32d
     mov ecx,JoyAOrig
     NetHelpExecRecv 0
@@ -3260,12 +3284,14 @@ NEWSYM cpuover
     jne .nextchatcr            ; *********
     pop edx
     pushad
-    cmp byte[OSPort],2
-    jae .notwin32e
+    ;cmp byte[OSPort],2
+    ;jae .notwin32e
+%ifdef __MSDOS__
     mov dl,'R'
     call NetAddChar
     mov dl,'>'
     call NetAddChar
+%endif
 .notwin32e
     mov esi,chatstrR
     call WritetochatBuffer

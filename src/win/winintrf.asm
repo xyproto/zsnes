@@ -94,14 +94,13 @@ EXTSYM res480
 EXTSYM AddSub256,InitVesa2,cbitmode,cvidmode
 EXTSYM scanlines,vesa2_bits
 EXTSYM vesa2_x,vesa2_y
-EXTSYM vesa2selec,InitVesa12,videotroub
+EXTSYM vesa2selec,videotroub
 EXTSYM genfulladdtab
-EXTSYM DosDrawScreen,dosvidpastecopyscr,GUICPC
+EXTSYM GUICPC
 EXTSYM drawscreenwin
 EXTSYM ConvertToAFormat
 EXTSYM UnusedBit,HalfTrans,UnusedBitXor,UnusedBit,UnusedBitXor
 EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC
-EXTSYM DOSClearScreen
 EXTSYM DosUpdateDevices
 EXTSYM WinUpdateDevices
 EXTSYM DOSJoyRead

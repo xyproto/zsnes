@@ -25,7 +25,8 @@ EXTSYM MessageOn,Msgptr,MsgCount,sndrot,GenerateBank0Table,SnowTimer
 EXTSYM inittableb,inittablec,FPUCopy,newgfx16b,cfgreinittime,EndMessage
 EXTSYM Open_File,Read_File,Write_File,Close_File,Output_Text,Get_Key,CNetType
 EXTSYM Delete_File,Get_First_Entry,Get_Next_Entry,Change_Dir,Get_Dir,InitDSP
-EXTSYM Remove_Dir,Change_Single_Dir,Create_Dir,Get_Memfree,OSPort,Create_File
+EXTSYM Remove_Dir,Change_Single_Dir,Create_Dir,Get_Memfree,Create_File
+EXTSYM OSPort
 EXTSYM SPCDisable,osm2dis,CurRecv,BackupSystemVars
 EXTSYM SnowData,SnowVelDist
 EXTSYM cvidmode, newengen, cfgnewgfx, GUI16VID
@@ -4871,8 +4872,9 @@ NEWSYM showinfo
     ; wait for key
     cmp byte[enterpress],0
     jne .noesc
-    cmp byte[OSPort],3
-    je .noesc
+;    cmp byte[OSPort],3
+;    je .noesc
+%ifdef __MSDOS__
     call Get_Key
     cmp al,27
     jne .noesc
@@ -4880,6 +4882,7 @@ NEWSYM showinfo
     mov ebx,InitDir
     call Change_Dir
     jmp DosExit
+%endif
 .noesc
     mov edx,.ret
     call Output_Text
