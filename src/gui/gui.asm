@@ -581,7 +581,7 @@ NEWSYM GUIWBAdd,  db 25
 NEWSYM BlackAndWhite, db 0
 NEWSYM MouseWheel, db 1
 NEWSYM AlternateTimer, db 0
-NEWSYM SuspendInBackground, db 0
+NEWSYM AllowMultipleInst, db 0
 
 GUIsave equ $-GUIRAdd
 

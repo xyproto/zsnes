@@ -4759,7 +4759,7 @@ DisplayGUIOptns:
 .nocheck10
     GUIDisplayIconWin 10,12,178,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[SuspendInBackground],1
+    cmp byte[AllowMultipleInst],1
     jne .nocheck11
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck11
@@ -4919,7 +4919,7 @@ GUIGUIOptnsTextG db 'BACK',0
 GUIGUIOptnsTextH db 'TITLE',0
 GUIGUIOptnsTextI db 'WIN',0
 GUIGUIOptnsTextJ db 'WHEEL MOUSE',0
-GUIGUIOptnsTextK db 'SUSPEND IN BACKGROUND',0
+GUIGUIOptnsTextK db 'ALLOW MULTIPLE INSTANCES',0
 
 DisplayGUIAbout:
 ;    cmp byte[OSPort],3

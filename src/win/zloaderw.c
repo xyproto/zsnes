@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <direct.h>
+#include <winuser.h>
 
 extern void zstart(void);
 extern void DosExit(void);
@@ -37,7 +38,7 @@ extern unsigned char Palette0, SPC700sh, OffBy1Line, DSPDisable,
                      romtype, scanlines, showallext, smallscreenon, soundon,
                      spcon, vsyncon, DisplayS, fname, filefound, SnowOn,
                      NetChatFirst,NetServer,NetNewNick,
-                     NetFilename,GUINetTextk2,NetQuitAfter,UDPConfig;
+                     NetFilename,GUINetTextk2,NetQuitAfter,UDPConfig,AllowMultipleInst;
 
 void ccmdline(void);
 
@@ -79,6 +80,18 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdSh
    int i,j,nofile;
 
    hInst=hInstance;
+
+   if (AllowMultipleInst == 0)
+   {
+      HWND hFindWindow;
+      hFindWindow = FindWindow("ZSNESWIN", NULL);
+
+      if (hFindWindow != NULL)
+      {
+         SetForegroundWindow(hFindWindow);
+         DosExit();
+      }
+   }
 
    // Commandline: /ABCDE <nickname> <fname> <IP Addy>
    //   nickname = user nickname

@@ -2634,7 +2634,7 @@ DisplayGUIOptnsClick:
 %ifdef __WIN32__
     GUIClickCButton 12,168,byte[AlwaysOnTop]
     GUIClickCButton 12,178,byte[SaveMainWindowPos]
-    GUIClickCButton 12,188,byte[SuspendInBackground]
+    GUIClickCButton 12,188,byte[AllowMultipleInst]
     GUIClickCButton 124,23,byte[MouseWheel]
 %endif
 

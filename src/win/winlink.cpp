@@ -191,7 +191,6 @@ extern BYTE HighPriority;
 extern BYTE AlwaysOnTop;
 extern BYTE SaveMainWindowPos;
 extern BYTE AlternateTimer;
-extern BYTE SuspendInBackground;
 extern signed short int MainWindowX;
 extern signed short int MainWindowY;
 extern int CurKeyPos;
@@ -1589,7 +1588,7 @@ void CheckTimers(void)
 void UpdateVFrame(void)
 {
 
-   if (SuspendInBackground == 1 && IsActivated == 0) WaitMessage();
+//   if (SuspendInBackground == 1 && IsActivated == 0) WaitMessage();
 
    int DataNeeded;
    int SPCSize=256;
