@@ -4208,6 +4208,8 @@ NEWSYM UpdateSFX
    call UpdateCLSR
    ret
 
+EXTSYM SfxAC
+
 NEWSYM StartSFX
     push edx
     push esi
@@ -4226,11 +4228,14 @@ NEWSYM StartSFX
     test al,08h
     jz .noaccess
 .noram
-    mov eax,[NumberOfOpcodes2]
-    test byte[SfxCLSR],0
+    mov byte[SfxAC],0
+    test byte[SfxCLSR],01h
     jnz .nofastsfx
-    add eax,200000
+    mov byte[SfxAC],1
+    mov byte[cycpbl],20
+    mov byte[cycpl],126
 .nofastsfx
+    mov eax,[NumberOfOpcodes2]
     mov [NumberOfOpcodes],eax
     call MainLoop
 .noaccess
