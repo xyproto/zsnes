@@ -133,7 +133,7 @@ DWORD                   MouseButton;
 }
 
 
-#define UPDATE_TICKS_GAME 1000/60      // milliseconds per world update
+#define UPDATE_TICKS_GAME 1000.855001760297741789468390082/60      // milliseconds per world update
 #define UPDATE_TICKS_GAMEPAL 1000/50   // milliseconds per world update
 #define UPDATE_TICKS_GUI 1000/36       // milliseconds per world update
 #define UPDATE_TICKS_UDP 1000/60       // milliseconds per world update
