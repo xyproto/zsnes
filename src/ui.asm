@@ -75,12 +75,6 @@ NEWSYM zstart
         %endif
 	call allocmem           ;allocate memory
 
-	;    xor eax,eax
-	;    mov al,[soundon]
-	;    call printnum
-
-	;    jmp DosExit
-
 	cmp byte[soundon],0
 	jne .yessound
 	cmp byte[SPCDisable],1
