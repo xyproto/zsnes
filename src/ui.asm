@@ -1472,6 +1472,10 @@ SECTION .data
 %endif
           db '',13,10
           db '  File Formats Supported by GUI : .SMC,.SFC,.SWC,.FIG,.058,.078,.1,.USA,.JAP',13,10
+%ifdef __MSDOS__
+          db '',13,10
+          db '  Microsoft-style options (/option) are also accepted',13,10
+%endif
           db '',13,10,0
 
 SECTION .text
