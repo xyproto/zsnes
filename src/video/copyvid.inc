@@ -2642,18 +2642,14 @@ NEWSYM copyvesa2320x240x16b
     jnz .fsloopb
     jmp .fsloopa2
 
+; by stainless & TRAC
 .interpolate
     ;cmp byte[ScreenScale],1
     ;je .infsloopa
 .inloopa
-    mov ecx,256
-    jmp .inloopb
-.inloopa2
-    add esi,32*2
-    add edi,64*2
-    dec dl
-    jnz .inloopa
-    jmp .done
+    add edi,byte 2
+    add esi,byte 2
+    mov ecx,255
 .inloopb
     mov ax,[esi]
     mov bx,[esi-2]
@@ -2661,21 +2657,29 @@ NEWSYM copyvesa2320x240x16b
     jne .inloopb2
     mov [es:edi],ax
     mov [es:edi-2],bx
-    jmp .inloopb3
-.inloopb2
-    shr ax,byte 1
-    shr bx,byte 1
-    and ax,7befh
-    and bx,7befh
-    add ax,bx
-    mov [es:edi],ax
-    mov [es:edi-2],ax
-.inloopb3
-    add esi,2
-    add edi,2
+    add esi,byte 2
+    add edi,byte 2
     dec ecx
     jnz .inloopb
     jmp .inloopa2
+.inloopb2
+    shr eax,byte 1
+    shr ebx,byte 1
+    and eax,7befh
+    and ebx,7befh
+    add eax,ebx
+    mov [es:edi],ax
+    mov [es:edi-2],ax
+.inloopb3
+    add esi,byte 2
+    add edi,byte 2
+    dec ecx
+    jnz .inloopb
+.inloopa2
+    add esi,byte 32*2
+    sub edi,byte -64*2
+    dec dl
+    jnz .inloopa
 
 .done
     pop es
