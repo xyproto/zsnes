@@ -2027,9 +2027,6 @@ NEWSYM C4values, resd 3
 section .text
 
 C4activate:
-    add ecx,[C4Ram]
-    mov [ecx],al
-    sub ecx,[C4Ram]
     cmp ecx,1F4Fh
     jne .noc4test
     push esi
@@ -2333,6 +2330,17 @@ C4activate:
     ret
 .sum
     pushad
+    xor eax,eax
+    xor ebx,ebx
+    mov esi,[C4Ram]
+    mov ecx,800h
+.sumloop    
+    mov bl,byte[esi]
+    inc esi
+    add ax,bx
+    dec ecx
+    jnz .sumloop
+    mov [esi+1F80h-0800h],ax
     popad
     ret
 .square
@@ -2494,12 +2502,16 @@ C4activate:
     ret
 
 C4RegFunction:
-    cmp ecx,1F4Fh
-    je near C4activate
     add ecx,[C4Ram]
     mov [ecx],al
     sub ecx,[C4Ram]
+    cmp ecx,1F4Fh
+    je near C4activate
     ret
+
+ ;well, when 7f47 is written, copy the number of bytes specified in 
+ ;$7f43-4 from the address at $7f40-2 to the address at $7f45-6 
+ ;(which is presumably in the $6000-$7fff range)
 
 NEWSYM C4ReadReg
     add ecx,[C4Ram]
@@ -2511,7 +2523,30 @@ NEWSYM C4WriteReg
     add ecx,[C4Ram]
     mov [ecx],al
     sub ecx,[C4Ram]
+    cmp ecx,1F47h
+    je .C4Memcpy
     ret
+.C4Memcpy
+    pushad
+    mov esi,[C4Ram]
+    movzx ecx,word[esi+1F43h] ;Num of bytes to copy
+    movzx eax,byte[esi+1F42h] ;Source bank
+    mov eax,[snesmmap+eax*4]
+    add eax,word[esi+1F40h]
+    movzx edx,word[esi+1F45h] ;Destination
+    mov ebx,[C4Ram]
+    and edx,01FFFh
+    add ebx,edx
+.c4movloop    
+    mov dl,byte[eax]
+    mov [ebx],dl
+    inc eax
+    inc ebx
+    dec ecx
+    jnz .c4movloop
+    popad
+    ret
+
 
 section .data
 SinTable:
