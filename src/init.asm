@@ -5355,6 +5355,12 @@ NEWSYM showinfogui
     jmp .passed
 .failed
     mov ax,[Checksumvalue2]
+    cmp byte[SPC7110Enable],1
+    jne .nospc7110en
+    cmp byte[NumofBanks],96
+    jne .nospc7110en
+    shl ax,1
+.nospc7110en
     cmp ax,[esi]
     je .passed2
     mov dword[CSStatus+36],'FAIL'
