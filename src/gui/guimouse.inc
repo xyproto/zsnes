@@ -2780,6 +2780,7 @@ DisplayGUIOptnsClick:
     GUIClickCButton 12,73,byte[JoyPad1Move]
     GUIClickCButton6 12,83,byte[GUIEffect],1
     GUIClickCButton6 12,93,byte[GUIEffect],2
+    GUIClickCButton6 124,93,byte[GUIEffect],3
     GUIClickCButton 124,23,byte[GUIEnableTransp]
 %ifdef __WIN32__
     GUIClickCButton 12,168,byte[AlwaysOnTop]

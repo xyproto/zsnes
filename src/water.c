@@ -55,6 +55,8 @@ static int offset;
 static int pheight=400;
 static int radius=30;
 
+extern char GUIEffect;
+
 void DrawWater(void)
 {
 	//		tslast=tscurrent;
@@ -76,6 +78,9 @@ void DrawWater(void)
 #else
         DrawWaterWithLight(Height[Hpage],1);
 #endif
+
+        if (GUIEffect==2) { mode=0x0001; }
+        else { mode = 0x0004; }
 
     	if(mode&2)	//  && (tscurrent-tslast))
 		{

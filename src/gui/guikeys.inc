@@ -946,8 +946,12 @@ GUIGUIOptnsKeys:
     GUIkeystoggleoptn byte[GUIEffect],1
 .guioptn7
     cmp dh,'E'
-    jne .guioptn8
+    jne .guioptn7b
     GUIkeystoggleoptn byte[GUIEffect],2
+.guioptn7b
+    cmp dh,'B'
+    jne .guioptn8
+    GUIkeystoggleoptn byte[GUIEffect],3
 .guioptn8
 %ifdef __WIN32__
     cmp dh,'A'

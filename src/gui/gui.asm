@@ -511,7 +511,7 @@ GUIwinposxexp times 30 dd 0
 GUIwinposy  dd 0,20  ,70  ,30  ,20  ,22  ,36  ,20  ,30  ,20  ,30   ,70  ,60  ,30  ,65  ,50  ,22  ,60
 GUIwinposyexp times 30 dd 0
 
-GUIEffect db 0
+NEWSYM GUIEffect, db 0
 
 NEWSYM pl5selk,   dd 0   ; 4SELECT = SHIFT
 NEWSYM pl5startk, dd 0   ; 4START = ENTER
@@ -2032,6 +2032,10 @@ NEWSYM StartGUI
     jne .nowater
     call DrawWater
 .nowater
+    cmp byte[GUIEffect],3
+    jne .nowater2
+    call DrawWater
+.nowater2
 ;    call TestSent
     cmp byte[CNetType],20
     jne .noreceive
