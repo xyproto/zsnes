@@ -793,7 +793,7 @@ GUIGUIOptnsKeys:
     jne .guioptn3
     xor byte[lastcursres],1
 .guioptn3
-    cmp dh,'W'
+    cmp dh,'G'
     jne .guioptn4
     xor byte[resetposn],1
 .guioptn4
