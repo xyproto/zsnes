@@ -2296,8 +2296,9 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,120,byte[DontSavePath]
     GUIClickCButton 11,130,byte[SmallMsgText]
     GUIClickCButton 11,140,byte[AutoPatch]
+;   GUIClickCButton 11,150,byte[RomInfo]
 %ifdef __WIN32__
-    GUIClickCButtonW 11,150,byte[DisableScreenSaver]
+    GUIClickCButtonW 11,160,byte[DisableScreenSaver]
 %endif
     ; Frameskip = 0
     cmp byte[frameskip],0
@@ -3258,6 +3259,7 @@ DisplayGUISaveClick:
     GUIClickCButton 11,30,byte[SRAMSave5Sec]
     GUIClickCButton 11,40,byte[LatestSave]
     GUIClickCButton 11,50,byte[AutoState]
+;   GUIClickCButton 11,60,byte[SRAMState]
     ret
 
 DrawMouse:

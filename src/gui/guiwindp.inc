@@ -1394,8 +1394,9 @@ DisplayGUIOption:
     GUIOuttextwin2u 4,26,124,GUIOptionTextJ,0
     GUIOuttextwin2u 4,26,134,GUIOptionTextK,1
     GUIOuttextwin2u 4,26,144,GUIOptionTextM,12
+    GUIOuttextwin2u 4,26,154,GUIOptionTextN,15
 %ifdef __WIN32__
-    GUIOuttextwin2u 4,26,154,GUIOptionTextL,1
+    GUIOuttextwin2u 4,26,164,GUIOptionTextL,1
 %endif
     add byte[GUItextcolor],15
     GUIOuttextwin2 4,5,13,[GUITemp]
@@ -1417,8 +1418,9 @@ DisplayGUIOption:
     GUIOuttextwin2 4,25,123,GUIOptionTextJ
     GUIOuttextwin2 4,25,133,GUIOptionTextK
     GUIOuttextwin2 4,25,143,GUIOptionTextM
+    GUIOuttextwin2 4,25,153,GUIOptionTextN
 %ifdef __WIN32__
-    GUIOuttextwin2 4,25,153,GUIOptionTextL
+    GUIOuttextwin2 4,25,163,GUIOptionTextL
 %endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[frameskip],0
@@ -1508,13 +1510,19 @@ DisplayGUIOption:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox12
     GUIDisplayIconWin 4,11,140,[GUITemp]
-%ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[DisableScreenSaver],0
+;   cmp byte[RomInfo],0
     je .nocheckbox13
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox13
     GUIDisplayIconWin 4,11,150,[GUITemp]
+%ifdef __WIN32__
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[DisableScreenSaver],0
+    je .nocheckbox14
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox14
+    GUIDisplayIconWin 4,11,160,[GUITemp]
 %endif
     cmp byte[frameskip],0
     je near .auto
@@ -1578,6 +1586,7 @@ GUIOptionTextJ db 'DON',39,'T SAVE CUR PATH',0
 GUIOptionTextK db 'USE SMALL MESSAGE TEXT',0
 GUIOptionTextL db 'DISABLE SCREENSAVER',0
 GUIOptionTextM db 'ENABLE AUTO-PATCH',0
+GUIOptionTextN db 'DISABLE ROMINFO.TXT',0
 GUIOptionText8 db '-',0
 GUIOptionText9 db '+',0
 GUIOptionText10 db '-',0
@@ -6466,12 +6475,14 @@ DisplayGUISave:
     GUIOuttextwin2u 20,26,34,GUISaveText2,5
     GUIOuttextwin2u 20,26,44,GUISaveText3,0
     GUIOuttextwin2u 20,26,54,GUISaveText4,0
+    GUIOuttextwin2u 20,26,64,GUISaveText5,0
 
     add byte[GUItextcolor],15
     GUIOuttextwin2 20,25,23,GUISaveText1
     GUIOuttextwin2 20,25,33,GUISaveText2
     GUIOuttextwin2 20,25,43,GUISaveText3
     GUIOuttextwin2 20,25,53,GUISaveText4
+    GUIOuttextwin2 20,25,63,GUISaveText5
     
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AutoIncSaveSlot],0
@@ -6497,6 +6508,12 @@ DisplayGUISave:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox3
     GUIDisplayIconWin 20,11,50,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+;   cmp byte[SRAMState],0
+    je .nocheckbox4
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox4
+    GUIDisplayIconWin 20,11,60,[GUITemp]
     ret
 
 SECTION .data
@@ -6504,6 +6521,7 @@ GUISaveText1 db 'AUTO INCRMNT SAVE SLOT',0
 GUISaveText2 db 'SRAM CHECK+SAVE',0
 GUISaveText3 db 'START AT LATEST SAVE',0
 GUISaveText4 db 'AUTO STATE SAVE/LOAD',0
+GUISaveText5 db 'LOAD SRAM W/SAVESTATE',0
 
 SECTION .text
 

@@ -916,6 +916,10 @@ GUIOptionKeys:
     jne .noautopatch
     xor byte[AutoPatch],1
 .noautopatch   
+    cmp dh,'.'
+    jne .norominfo
+;   xor byte[RomInfo],1
+.norominfo   
 %ifdef __WIN32__
     cmp dh,'I'
     jne .noscreensaver
@@ -948,6 +952,10 @@ GUISaveKeys:
     jne .noautostate
     xor byte[AutoState],1
 .noautostate
+    cmp dh,'L'
+    jne .nosramstate
+;   xor byte[SRAMState],1
+.nosramstate
     ret
 
 
