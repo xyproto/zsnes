@@ -317,8 +317,8 @@ NEWSYM divres,    dw 0             ; quotent of divc/divb
 NEWSYM multres,   dw 0             ; result of multa * multb/remainder of divc/divb
 NEWSYM latchx,    dw 0             ; latched x value
 NEWSYM latchy,    dw 0             ; latched y value
-NEWSYM latchxr,   db 1             ; low or high byte read for x value
-NEWSYM latchyr,   db 1             ; low or high byte read for y value
+NEWSYM latchxr,   db 0             ; low or high byte read for x value
+NEWSYM latchyr,   db 0             ; low or high byte read for y value
 NEWSYM frskipper, db 0             ; used to control frame skipping
 NEWSYM winl1,     db 0             ; window 1 left position
 NEWSYM winr1,     db 0             ; window 1 right position
@@ -673,6 +673,8 @@ reg213Cr:
     ret
 .highv
     mov al,byte[latchx+1]
+    and al,1
+    or  al,byte[latchx]
     mov byte[latchxr],0
     ret
 
@@ -684,7 +686,9 @@ reg213Dr:
     mov byte[latchyr],1
     ret
 .highv
-    mov al,byte[latchy+1]
+    mov al,byte[latchy]
+    and al,0FEh    
+    or  al,byte[latchy+1]
     mov byte[latchyr],0
     ret
 

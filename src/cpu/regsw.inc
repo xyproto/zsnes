@@ -1585,6 +1585,10 @@ reg4208w:
 reg4209w:
     mov [VIRQLoc],al
 ;    mov bx,[curypos]
+    cmp word [VIRQLoc],106h
+    jne .not106
+    mov word [VIRQLoc],107h
+.not106
     cmp byte[HIRQNextExe],1
     je .nohirq
     ret
@@ -1602,6 +1606,10 @@ reg4209w:
 reg420Aw:
     and al,01h
     mov [VIRQLoc+1],al
+    cmp word [VIRQLoc],106h
+    jne .not106
+    mov word [VIRQLoc],107h
+.not106
     cmp byte[HIRQNextExe],1
     je .nohirq
     ret

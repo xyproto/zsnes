@@ -1319,7 +1319,7 @@ COPemulmode
 %endmacro
 
 %macro RTIMacro 0
-    mov byte[doirqnext],0
+;    mov byte[doirqnext],0
     cmp byte[nmistatus],3
     jne near .nodis658162
     test byte[curexecstate],01h
