@@ -91,7 +91,6 @@ EXTSYM Change_Drive,Change_Single_Dir,Change_Dir,Get_Dir,Get_First_Entry
 EXTSYM Get_Next_Entry,Set_DTA_Address,timer2upd,curexecstate,TripBufAvail
 EXTSYM nmiprevaddrl,nmiprevaddrh,nmirept,nmiprevline,nmistatus,spcnumread
 EXTSYM NextLineCache,VidStartDraw,ResetTripleBuf,GUINGVID
-;EXTSYM OSPort
 EXTSYM ScanCodeListing,AdjustFrequency,GUISaveVars,Init_Mouse
 EXTSYM Get_MouseData,Set_MouseXMax,Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement
 EXTSYM GUIInit,GUIDeInit,SpecialLine
@@ -535,11 +534,11 @@ NEWSYM pl5Btk,    dd 0   ; Turbo B
 NEWSYM pl5Xtk,    dd 0   ; Turbo X
 NEWSYM pl5Ytk,    dd 0   ; Turbo Y
 NEWSYM pl5contrl, db 0
-NEWSYM pl1p209, db 0
-NEWSYM pl2p209, db 0
-NEWSYM pl3p209, db 0
-NEWSYM pl4p209, db 0
-NEWSYM pl5p209, db 0
+NEWSYM pl1p209,   db 0
+NEWSYM pl2p209,   db 0
+NEWSYM pl3p209,   db 0
+NEWSYM pl4p209,   db 0
+NEWSYM pl5p209,   db 0
 
 NEWSYM GUIEnableTransp, db 0
 NEWSYM Mode7HiRes16b, dd 0
@@ -593,7 +592,7 @@ NEWSYM TrapMouseCursor, db 1
 NEWSYM KeyQuickClock, dd 0
 NEWSYM KeyQuickSaveSPC, dd 0
 NEWSYM AutoIncSaveSlot, db 0
-NEWSYM TCPIPAddress, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+NEWSYM TCPIPAddress, times 29 db 0
 NEWSYM SoundInterpType, db 2
 NEWSYM KeyDisplayFPS, dd 0
 NEWSYM KeyIncStateSlot, dd 0
@@ -607,11 +606,11 @@ NEWSYM ForceHiLoROM, db 0
 NEWSYM CombinDataGlob, times 3300 db 0 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff
 NEWSYM CombinDataLocl, times 3300 db 0
 
-GUIwinorder db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-GUIwinpos   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-GUIwinactiv db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-DialNumber times 40 db 0
-ViewBuffer times 50*32 db 0
+GUIwinorder times    18 db 0
+GUIwinpos   times    18 db 0
+GUIwinactiv times    18 db 0
+DialNumber  times    40 db 0
+ViewBuffer  times 50*32 db 0
 NEWSYM ModemInitStat, db 0
 ModemProcess db 0       ; Shows current dial/answer process
 ModemPTimer  dd 0       ; Timer for modem process
@@ -653,20 +652,20 @@ GUIHoldXlimL dd 0
 GUIHoldXlimR dd 0
 GUIHoldYlim  dd 0
 GUIHoldYlimR dd 0
-cloadnpos   dd 0
-cloadnposb  dd 0
-cloadmaxlen dd 0
-cloadnleft  dd 0
-cplayernum  db 0
-vbuflimtop  dd 0
-vbuflimbot  dd 0
+cloadnpos    dd 0
+cloadnposb   dd 0
+cloadmaxlen  dd 0
+cloadnleft   dd 0
+cplayernum   db 0
+vbuflimtop   dd 0
+vbuflimbot   dd 0
 GUIScrolTim1 dd 0
 GUIScrolTim2 dd 0
-GUICHold dd 0
-GUICBHold dd 0
-GUICBHold2 dd 0
-GUIDClickTL dd 0
-GUIDClCWin  dd 0
+GUICHold     dd 0
+GUICBHold    dd 0
+GUICBHold2   dd 0
+GUIDClickTL  dd 0
+GUIDClCWin   dd 0
 GUIDClCEntry dd 0
 GUICResetPos dd 0
 GUICStatePos dd 0
@@ -696,7 +695,6 @@ NEWSYM cheatdata, times 28*255+56 db 0 ; toggle, value, address, pvalue, name(22
 NEWSYM GUIcurrentdir, times 131 db 0
 
 numdrives dd 26
-gotoroot db '\',0
 curgsval db 0
 SubPalTable times 256 db 1      ; Corresponding Gray Scale Color
 WhichRemote dd 0                ; Modem = 1, IPX = 2, TCP/IP = 4
@@ -745,29 +743,17 @@ NEWSYM TRVal2, dw 0
 NEWSYM TGVal2, dw 0
 NEWSYM TBVal2, dw 0
 
-
-;ModemProcess db 0       ; Shows current dial/answer process
-;ModemPTimer  db 0       ; Timer for modem process
-
 %macro stim 0
-;    cmp byte[OSPort],1
-;    ja %%nosti
 %ifdef __MSDOS__
     sti
 %endif
-;%%nosti
 %endmacro
 
 %macro clim 0
-;    cmp byte[OSPort],1
-;    ja %%nocli
 %ifdef __MSDOS__
     cli
 %endif
-;%%nocli
 %endmacro
-
-
 
 clearsram:
     push eax
@@ -816,22 +802,16 @@ GUIQuickLoadUpdate:
     mov byte[GUIPrevMenuData.onoff+17],'F'
 .on
     mov esi,prevloadfnamel
-;    cmp byte[OSPort],2
-;    jae .notdos
 %ifdef __MSDOS__
     mov esi,prevloadnames
 %endif
-;.notdos
     mov edi,GUIPrevMenuData+3
     mov edx,10
 .mainloop
     mov ecx,25
-;    cmp byte[OSPort],2
-;    jae .notdos3
 %ifdef __MSDOS__
     mov ecx,16
 %endif
-;.notdos3
     push edi
     push esi
     cmp byte[esi],32
@@ -870,12 +850,9 @@ GUIQuickLoadUpdate:
     pop esi
     pop edi
     add esi,512 ;16
-;    cmp byte[OSPort],2
-;    jae .notdos2
 %ifdef __MSDOS__
     sub esi,512-16
 %endif
-;.notdos2
     add edi,32
     dec edx
     jnz near .mainloop

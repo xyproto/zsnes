@@ -91,10 +91,10 @@ extern BYTE GUIOn2;
 static BYTE IsActivated = 1;
 
 /* TIMER VARIABLES/MACROS */
-#define UPDATE_TICKS_GAME (1000/59.95)	// milliseconds per world update
-#define UPDATE_TICKS_GAMEPAL (20)// milliseconds per world update
-#define UPDATE_TICKS_GUI (1000/36.0)	// milliseconds per world update
-#define UPDATE_TICKS_UDP (1000/60)	// milliseconds per world update
+#define UPDATE_TICKS_GAME (1000.0/59.95)// milliseconds per world update
+#define UPDATE_TICKS_GAMEPAL (20)	// milliseconds per world update
+#define UPDATE_TICKS_GUI (1000.0/36.0)	// milliseconds per world update
+#define UPDATE_TICKS_UDP (1000.0/60.0)	// milliseconds per world update
 
 int T60HZEnabled = 0;
 int T36HZEnabled = 0;
