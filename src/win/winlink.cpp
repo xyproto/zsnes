@@ -681,7 +681,7 @@ InitSound()
    dsbd.dwFlags = DSBCAPS_STICKYFOCUS; // | DSBCAPS_PRIMARYBUFFER;
    dsbd.dwBufferBytes = SoundBufferSize;
    dsbd.lpwfxFormat = &wfx;
-    
+
    if (DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &lpPrimaryBuffer, NULL))
 	{
       if (DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
@@ -689,7 +689,7 @@ InitSound()
          if (DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING))
          {
             SoundEnabled=0; return FALSE;
-         }      
+         }
          FirstSound=0;
          return TRUE;
       }
