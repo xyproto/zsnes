@@ -3855,7 +3855,7 @@ GUITCPStateText2 db 'RECEIVING STATUS',0
 GUITCPStateText3 db 'CANCEL',0
 SECTION .text
 
-%ifdef __MSDOS
+%ifdef __MSDOS__
 DisplayNetIPXStart:
     DrawGUIButton 8,53,48,87,59,GUINetTextZ,34,0,0
     sub byte[GUItextcolor],15
