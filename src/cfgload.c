@@ -28,6 +28,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "gblhdr.h"
 #else
 #include <string.h>
+#include <unistd.h>
 #endif
 
 #define StringA "FRAMESKIP"
@@ -48,8 +49,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define StringI "VIDEOMODEDOS"
 #endif
 #define StringJ "EXECUTE"
-/* StringK is unused */
-#define StringK "SOUNDBUFDISABLE"
 #define StringM "STEREO"
 #define StringN "GUIDISABLE"
 #define StringO "SCANLINES"
@@ -120,7 +119,6 @@ extern unsigned char cvidmode;
 extern unsigned char antienab;
 extern unsigned char StereoSound;
 extern unsigned int SoundQuality;
-extern char SRAMDir[512];
 extern unsigned char MusicRelVol;
 extern unsigned char Force8b;
 extern unsigned char scanlines;
@@ -143,12 +141,10 @@ extern unsigned int ZOpenFile(); //Create_File. Open_File
 extern unsigned int ZFileWrite(); //Write_File();
 extern unsigned int ZCloseFile(); //Close_File
 #ifdef __LINUX__
-/* if TextFile==0, zlib functions aren't used
-useful to save the config file*/
-
-extern char *InitDir; /* 512 unsigned chars */
-extern char *InitDrive; /* 2 unsigned chars */
+extern char zcfgdir[1024];
 #endif
+
+char SRAMDir[1024];
 
 char LoadDriveB[2];
 char LoadDirB[128];
@@ -375,7 +371,7 @@ void DOScreatenewcfg()
   }
 
 #ifdef __LINUX__  
-  chdir(SRAMDir);
+  chdir(zcfgdir);
 #endif  
   
   ZOpenFileName = CMDLineStr;
@@ -571,18 +567,7 @@ void DOScreatenewcfg()
   WRITE_LINE("; Savefile directory.  Leave it blank if you want the save files to be in the\r\n");
   WRITE_LINE("; same directory as the games.  It should be in a format like : C:\\dir\\dir\r\n\r\n");
 
-  if (cfgloadsdir == 1)
-  {
-#ifdef __LINUX__
-    sprintf(buffer, "SaveDirectory = %s\r\n\r\n", SRAMDir);
-#else
-    sprintf(buffer, "SaveDirectory = %c:\\%s\r\n\r\n", (char) (*SRAMDrive + 65), SRAMDir);
-#endif
-  }
-  else
-  {
-    sprintf(buffer, "SaveDirectory = \r\n\r\n");
-  }
+  sprintf(buffer, "SaveDirectory = %s\r\n\r\n", SRAMDir);
   SAVE_LINE(buffer);
 
   WRITE_LINE("; Game directory.  This is the directory where the GUI starts at.\r\n");
@@ -1250,22 +1235,11 @@ void getcfg()
             {
               if (!strcmp(_stringa, StringS))
               {
-                if (_strlenb >= 3)
+                if (_strlenb >= 1)
                 {
-#ifndef __LINUX__
-                  if (_stringb[1] == ':' && _stringb[2] == '\\')
-                  {
-                    cfgloadsdir = 1;
-                    SRAMDrive[0] = _stringb[0] - 65;
-                    strncpy(SRAMDir, _stringb + 3, _strlenb - 3);
-                    SRAMDir[_strlenb - 3] = '\0';
-                  }
-#else
                   cfgloadsdir = 1;
                   strncpy(SRAMDir, _stringb, _strlenb);
                   SRAMDir[_strlenb]='\0';
-
-#endif    
                 }
               }
             }
@@ -1515,3 +1489,23 @@ void getcfg()
     DOScreatenewcfg();
   }
 }
+
+unsigned char SRAMChdirFail = 0;
+
+void SRAMChdir()
+{
+  if (!chdir(SRAMDir))
+  {
+    SRAMChdirFail = 0;
+  }
+  else
+  {
+    SRAMChdirFail = 1;
+  }
+}
+
+void SRAMDirCurDir()
+{
+  getcwd(SRAMDir,1024);
+}
+

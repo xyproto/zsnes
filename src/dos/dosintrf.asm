@@ -463,10 +463,6 @@ NEWSYM Get_Key
     int 21h
     ret
 
-;    mov dl,[SRAMDrive]
-;    mov ebx,SRAMDir
-;    call Change_Dir
-
 NEWSYM Change_Drive
     ; change to drive in dl (0 = A, 1 = B, etc.)
     mov ah,0Eh

@@ -24,14 +24,14 @@
 
 EXTSYM DosExit,ZFileSystemInit
 EXTSYM getcmdline,GUIRestoreVars,getcfg,obtaindir,ConvertJoyMap,tparms
-EXTSYM preparedir,SBHDMA
+EXTSYM SBHDMA
 EXTSYM ccmdline
 EXTSYM FilenameStart
 EXTSYM spcon
 EXTSYM cfgsoundon
 EXTSYM cfgcvidmode
 EXTSYM pl1contrl,pl2contrl
-EXTSYM InitDir,InitDrive, SRAMDir, SRAMDrive
+EXTSYM InitDir,InitDrive,SRAMChdir
 EXTSYM DOScreatenewcfg,ExecGUISaveVars
 EXTSYM allocptr
 EXTSYM putchar
@@ -182,9 +182,9 @@ NEWSYM SystemInit
     mov edx,InitDrive
     call Get_Dir
 
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
+    pushad
+    call SRAMChdir
+    popad
 %else
     mov ebx,InitDir
     mov edx,InitDrive
@@ -205,17 +205,10 @@ NEWSYM SystemInit
     call ConvertJoyMap                  ; Mini joystick init
     call ccmdline
     call tparms
-%ifndef __LINUX__
-    call preparedir
-%else
-    mov ebx,SRAMDir
-    call Change_Dir
-%endif	
-;    call getblaster                     ; get set blaster environment
-;    cmp byte[Force8b],1
-;    jne .noforce8b
+    pushad
+    call SRAMChdir
+    popad
     mov byte[SBHDMA],1
-;.noforce8b
     pop es
     ret
 

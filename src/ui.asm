@@ -40,6 +40,8 @@ EXTSYM romloadskip
 EXTSYM cfgloadgdir,cfgloadsdir
 EXTSYM init18_2hz
 EXTSYM OSExit,GUIOn2
+EXTSYM SRAMDirCurDir,SRAMChdir,SRAMChdirFail
+
 %ifdef __LINUX__
 EXTSYM LinuxExit
 EXTSYM GetFilename
@@ -921,9 +923,9 @@ NEWSYM makeextension
     ret
 .latestsave
     ; change dir to Save Dir
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
+    pushad
+    call SRAMChdir
+    popad
 
     call DetermineNewest
 
@@ -1157,9 +1159,9 @@ SECTION .text
 NEWSYM obtaindir
     cmp byte[cfgloadsdir],1
     je .nosdriveb
-    mov ebx,SRAMDir
-    mov edx,SRAMDrive
-    call Get_Dir
+    pushad
+    call SRAMDirCurDir
+    popad
 .nosdriveb
     cmp byte[cfgloadgdir],1
     je .noldriveb
@@ -1185,21 +1187,21 @@ NEWSYM preparedir
     je near .nosdrivec
     ; verify sram drive/directory exists
     ; change dir to SRAMDrive/SRAMDir
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
-    jc .sramerror
-    jmp .yessdrive
-.sramerror
+    pushad
+    call SRAMChdir
+    popad
+    cmp byte[SRAMChdirFail],0
+    je .yessdrive
+    
     mov dl,[InitDrive]
     mov ebx,InitDir
     call Change_Dir
 
     mov byte[cfgloadsdir],0
     ; Get drive/dir
-    mov ebx,SRAMDir
-    mov edx,SRAMDrive
-    call Get_Dir
+    pushad
+    call SRAMDirCurDir
+    popad
 
     mov edx,.sramerrorm
     call PrintStr
@@ -1227,7 +1229,6 @@ SECTION .data
 .enter      db 13,10,0
 
 NEWSYM InitDrive, db 2
-NEWSYM SRAMDrive, db 2
 NEWSYM LoadDrive, db 2
 
 %ifdef __LINUX__
@@ -1238,7 +1239,6 @@ NEWSYM gotoroot, db '\',0
 
 SECTION .bss
 NEWSYM InitDir, resb 512
-NEWSYM SRAMDir, resb 512
 NEWSYM LoadDir, resb 512
 
 SECTION .text

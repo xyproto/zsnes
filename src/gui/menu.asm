@@ -38,7 +38,7 @@ EXTSYM Clear2xSaIBuffer
 EXTSYM romdata,romtype,ScreenShotFormat
 EXTSYM Voice0Disable,Voice1Disable,Voice2Disable,Voice3Disable
 EXTSYM Voice4Disable,Voice5Disable,Voice6Disable,Voice7Disable
-EXTSYM SRAMDrive, SRAMDir, SPCPath, SnapPath, Change_Dir, CHPath, ZFileCHDir
+EXTSYM SRAMChdir, SPCPath, SnapPath, Change_Dir, CHPath, ZFileCHDir
 %ifndef NO_PNG
 EXTSYM Grab_PNG_Data
 %endif
@@ -56,9 +56,7 @@ EXTSYM Grab_PNG_Data
 
 %macro ChangeDirSRAM 0
     pushad
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
+    call SRAMChdir
     popad
 %endmacro
 

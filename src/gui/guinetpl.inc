@@ -1661,7 +1661,9 @@ NetLoadStuff:
     mov al,[NetStateSize+2]
     call RemoteSendChar
     call SendPacket
-    call ChangetoSRAMdir
+    pushad
+    call SRAMChdir
+    popad
     mov edx,fnamest+1
     call Open_File
     mov [NetLoadHandle],ax
@@ -1690,7 +1692,9 @@ loadstaterecvinit:
     cmp dh,0
     je .noreceive2
     mov [NetStateSize+2],dl
-    call ChangetoSRAMdir
+    pushad
+    call SRAMChdir
+    popad
     mov edx,Netfname
     call Create_File
     mov edx,[NetStateSize]
@@ -1827,7 +1831,9 @@ loadstaterecv:
     pushad
     mov bx,[NetLoadHandle]
     call Close_File
-    call ChangetoSRAMdir
+    pushad
+    call SRAMChdir
+    popad
     mov edx,Netfname
     mov byte[RestoreValues],0
     call loadstate3

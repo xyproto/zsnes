@@ -269,10 +269,6 @@ DWORD ZFileMKDir()
 #endif
 }
 
-extern char SRAMDir;
-extern char InitDir;
-extern char LoadDir;
-
 
 DWORD ZFileCHDir()
 {
@@ -464,39 +460,46 @@ DWORD GetDate()
    return(value);
 }
 
+extern char SRAMDir[1024];
+extern char LoadDir[512];
+
 #ifdef __LINUX__
 
+char zcfgdir[1024];
+#define ZCFG_DIR "/.zsnes"
+#define ZCFG_DIR_LEN (1023-strlen(ZCFG_DIR))
 
 void obtaindir()
 {
-	char *cfgdir = NULL;
-	char *homedir = NULL;
-	DIR *tmp;
+  char *homedir = 0;
+  DIR *tmp;
 
-	if ((homedir = (char *)getenv("HOME"))==NULL) {
-		homedir = (char *)malloc(128);
-		getcwd(homedir, 128);
-	}
-	cfgdir = (char *)malloc(strlen(homedir)+strlen("/.zsnes")+1);
-	strcpy(cfgdir, homedir);
-	free(homedir);
-	strcat(cfgdir, "/.zsnes");
-	tmp = opendir(cfgdir);
-	if (tmp == NULL) {
-		MKPath = cfgdir;
-		ZFileMKDir();
-	} else {
-		closedir(tmp);
-	}
-//	strcpy(&InitDir, cfgdir);
-//	getcwd(&InitDir, 128);
-	if (SRAMDir == 0){
-		strcpy(&SRAMDir, cfgdir);
-	}
-	free(cfgdir);
-	if (LoadDir == 0) {
-		getcwd(&LoadDir, 128);
-	}
+  if ((homedir = (char *)getenv("HOME")) == 0)
+  {
+    homedir = (char *)malloc(ZCFG_DIR_LEN);
+    getcwd(homedir, ZCFG_DIR_LEN);
+  }
+  strcpy(zcfgdir, homedir);
+  free(homedir);
+  strcat(zcfgdir, ZCFG_DIR);
+  tmp = opendir(zcfgdir);
+  if (tmp == NULL) 
+  {
+    MKPath = zcfgdir;
+    ZFileMKDir();
+  } 
+  else 
+  {
+    closedir(tmp);
+  }
+  if (*SRAMDir == 0)
+  {
+    strcpy(SRAMDir, zcfgdir);
+  }
+  if (*LoadDir == 0) 
+  {
+    getcwd(LoadDir, 512);
+  }
 }
 
 extern char fnamest, fnames;

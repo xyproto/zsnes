@@ -54,7 +54,7 @@ EXTSYM nextmenupopup
 EXTSYM MovieProcessing
 EXTSYM MovieFileHand, PrintStr
 EXTSYM OSExit,DosExit,InitDir,InitDrive,createnewcfg,fnames,gotoroot,previdmode
-EXTSYM ramsize,sfxramdata,setaramdata,SETAEnable,sram,SRAMDrive,SRAMDir,welcome
+EXTSYM ramsize,sfxramdata,setaramdata,SETAEnable,sram,SRAMChdir,welcome
 ;    EXTSYM tempstore
 EXTSYM printhex
 %ifdef __MSDOS__
@@ -1429,9 +1429,9 @@ NEWSYM statesaver
 ;    jmp .skipsaves
     ; Save State
 %ifdef __LINUX__
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
+    pushad
+    call SRAMChdir
+    popad
 %endif
     mov edx,fnamest+1
     call Create_File
@@ -1831,9 +1831,9 @@ NEWSYM loadstate
     mov byte[multchange],1
     clim
 %ifdef __LINUX__
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
+    pushad
+    call SRAMChdir
+    popad
 %endif
     ; Get the state number
     mov ebx,[statefileloc]

@@ -248,9 +248,9 @@ GUIloadfilename:
 %ifndef __LINUX__
     cmp byte[cfgloadsdir],0
     jne .nosdrive
-    mov ebx,SRAMDir
-    mov edx,SRAMDrive
-    call Get_Dir
+    pushad
+    call SRAMDirCurDir
+    popad
 %endif
 .nosdrive
 

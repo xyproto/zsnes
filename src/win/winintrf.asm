@@ -688,10 +688,6 @@ KeyConvTableS
    db 208,209,210,211,255,255,255,255  ; 50h
 SECTION .text
 
-;    mov dl,[SRAMDrive]
-;    mov ebx,SRAMDir
-;    call Change_Dir
-
 NEWSYM Change_Drive
     ; change to drive in dl (0 = A, 1 = B, etc.)
     and edx,0FFh

@@ -73,7 +73,7 @@ EXTSYM curblank, vidpastecopyscr, frameskip, newengen, vsyncon
 EXTSYM cvidmode, antienab, smallscreenon, smallscreence,NetQuit
 EXTSYM soundon, StereoSound, SoundQuality, MusicRelVol
 EXTSYM endprog, continueprog, spcBuffera, spcRamcmp, cbitmode, makepal
-EXTSYM t1cc, LoadDir, SRAMDir, LoadDrive,SRAMDrive, initsnes, romloadskip
+EXTSYM t1cc, LoadDir, LoadDrive, SRAMDir, SRAMChdir, SRAMDirCurDir, initsnes, romloadskip
 EXTSYM fname, makeextension, sram, loadfileGUI, GUIloadfailed
 EXTSYM SetupROM,CheckROMType, romdata, ForcePal, ramsize, ramsizeand, curromsize
 EXTSYM romispal, totlines, cfgloadsdir, init65816, procexecloop
@@ -630,7 +630,6 @@ NEWSYM hqFilter, db 0
 NEWSYM reserved, db 0
 NEWSYM scale2xFilter, db 0
 NEWSYM st010difficulty,  db 0     ; place holder till we commit the other Seta 10 file
-NEWSYM SRAMPath, times 1024 db 0
 NEWSYM SnapPath, times 1024 db 0
 NEWSYM SPCPath, times 1024 db 0
 NEWSYM BSXPath, times 1024 db 0
@@ -1473,9 +1472,9 @@ SECTION .text
 
 NEWSYM SaveSramData
     ; change to sram dir
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
+    pushad
+    call SRAMChdir
+    popad
 
     cmp byte[sramsavedis],1
     je .savesramdone
@@ -1834,9 +1833,9 @@ NEWSYM StartGUI
     call SaveSramData
 
     ; change to sram dir
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
+    pushad
+    call SRAMChdir
+    popad
 
     call GUIQuickLoadUpdate
     call LoadDetermine
@@ -2060,9 +2059,9 @@ NEWSYM StartGUI
     cmp byte[CheatWinMode],0
     je near .csskip
     ; change to sram dir
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
+    pushad
+    call SRAMChdir
+    popad
 
     ; Load Cheat Search File
     mov edx,cstempfname
@@ -2488,9 +2487,9 @@ NEWSYM StartGUI
     call GUISaveVars
 
     ; change dir to SRAMDrive/SRAMDir
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
+    pushad
+    call SRAMChdir
+    popad
 
     mov byte[MousePRClick],1
     mov byte[prevbright],0
@@ -2587,9 +2586,9 @@ SRAMDirc:
     mov edx,LoadDrive
     call Get_Dir
     ; change to sram dir
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
+    pushad
+    call SRAMChdir
+    popad
     ret
 
 LOADDir:
@@ -3123,7 +3122,9 @@ MoviePlay:
     mov dword[fnamest+ebx-3],'.zmv'
     mov al,[CMovieExt]
     mov byte[fnamest+ebx],al
-    call ChangetoSRAMdir
+    pushad
+    call SRAMChdir
+    popad
     mov dword[Totalbyteloaded],0
     call loadstate2
     mov edx,fnamest+1
@@ -3644,14 +3645,6 @@ DisplayBoxes:
 .nomore
     ret
 
-
-
-ChangetoSRAMdir:
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
-    ret
-
 ChangetoLOADdir:
     mov dl,[LoadDrive]
     mov ebx,LoadDir
@@ -3671,8 +3664,9 @@ GUIProcStates:
     ret
 .yesstate
     mov byte[GUICBHold],0
-    ; change dir to SRAMDrive/SRAMDir
-    call ChangetoSRAMdir
+    pushad
+    call SRAMChdir
+    popad
     cmp byte[GUIStatesText5],1
     je .loadstate
     call statesaver
@@ -3690,8 +3684,9 @@ GUIProcStates:
     ret
 
 SaveSecondState:
-    ; change dir to SRAMDrive/SRAMDir
-    call ChangetoSRAMdir
+    pushad
+    call SRAMChdir
+    popad
     mov ebx,[statefileloc]
     mov al,[fnamest+ebx]
     mov byte[fnamest+ebx],'s'
@@ -3704,7 +3699,9 @@ SaveSecondState:
     ret
 
 LoadSecondState:
-    call ChangetoSRAMdir
+    pushad
+    call SRAMChdir
+    popad
     mov ebx,[statefileloc]
     mov al,[fnamest+ebx]
     mov byte[fnamest+ebx],'s'

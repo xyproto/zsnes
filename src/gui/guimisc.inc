@@ -58,7 +58,9 @@ MovieRecord:
     mov dword[CFWriteStart],64
 .nocheckit
     mov byte[MovieRecordWinVal],0
-    call ChangetoSRAMdir
+    pushad
+    call SRAMChdir
+    popad
     mov byte[NoPictureSave],1
     cmp byte[MovieProcessing],0
     jne .nostatesaver

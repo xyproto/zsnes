@@ -29,7 +29,7 @@ EXTSYM MovieFileHand,filefound,inittable,SA1inittable
 EXTSYM MessageOn,Msgptr,MsgCount,sndrot,GenerateBank0Table,SnowTimer
 EXTSYM inittableb,inittablec,newgfx16b,cfgreinittime,EndMessage
 EXTSYM Open_File,Read_File,Write_File,Close_File,Output_Text,Get_Key,CNetType
-EXTSYM Delete_File,Get_First_Entry,Get_Next_Entry,Change_Dir,Get_Dir,InitDSP
+EXTSYM Delete_File,Get_First_Entry,Get_Next_Entry,Change_Dir,InitDSP
 EXTSYM Remove_Dir,Change_Single_Dir,Create_Dir,Get_Memfree,Create_File
 EXTSYM SPCDisable,osm2dis,CurRecv,BackupSystemVars
 EXTSYM SnowData,SnowVelDist
@@ -93,7 +93,7 @@ EXTSYM GUIcurrentdir,PrintStr
 ;EXTSYM GUIcurrentdir, PrintStr
 EXTSYM DTALoc
 EXTSYM spc7110romptr,allocspc7110
-EXTSYM SRAMDir,SRAMDrive,cfgloadsdir,fnamest,statefileloc
+EXTSYM SRAMChdir,cfgloadsdir,fnamest,statefileloc
 EXTSYM ForcePal,ForceROMTiming,ForceHiLoROM,InitDir,InitDrive,enterpress,frameskip
 EXTSYM maxromspace,curromspace,infoloc, patchfile
 EXTSYM gotoroot,headdata,printnum,romispal
@@ -2722,9 +2722,9 @@ NEWSYM loadfileGUI
     mov byte[SramExists],0
 
     ; change to sram dir
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
+    pushad
+    call SRAMChdir
+    popad
 
     ; open .srm file
     mov edx,fnames+1
@@ -2880,9 +2880,9 @@ NEWSYM convertsram
     jne .next2b
 .nocutoffb
     ; change to sram directory
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
+    pushad
+    call SRAMChdir
+    popad
     ret
 
 SECTION .data

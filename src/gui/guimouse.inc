@@ -3241,7 +3241,7 @@ DisplayGUIChipClick
     ret
 
 DisplayGUIPathsClick
-    GUITextBoxInputNach 75,15,230,25,1,1024       ;SRAMPath
+    GUITextBoxInputNach 75,15,230,25,1,1024       ;SRAMDir
     GUITextBoxInputNach 75,35,230,45,2,1024       ;SnapPath
     GUITextBoxInputNach 75,55,230,65,3,1024       ;SPCPath
     GUITextBoxInputNach 8,95,100,105,4,1024       ;BSXPath
