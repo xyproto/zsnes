@@ -26,11 +26,11 @@ EXTSYM spcBuffera,spcNZ,spcP,spcPCRam,spcRam,spcRamDP,spcS,spcX,spcY
 EXTSYM spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2selec
 EXTSYM vidbuffer,spritetablea,sprlefttot,newengen,spcextraram,resolutn
 EXTSYM Open_File,Close_File,Read_File,Write_File,Create_File,Get_Key,Get_Date
-EXTSYM continueprog,ForceNonTransp,GUIOn,Check_Key,JoyRead
+EXTSYM continueprognokeys,ForceNonTransp,GUIOn,Check_Key,JoyRead
 EXTSYM GetScreen, SSKeyPressed, StopSound, StartSound    
 EXTSYM ExecExitOkay,t1cc
 EXTSYM Clear2xSaIBuffer
-EXTSYM romdata,romtype
+EXTSYM romdata,romtype,ScreenShotFormat
 EXTSYM Voice0Disable,Voice1Disable,Voice2Disable,Voice3Disable
 EXTSYM Voice4Disable,Voice5Disable,Voice6Disable,Voice7Disable
 
@@ -143,6 +143,20 @@ NEWSYM showmenu
     jne .nomenuinc2
     mov dword[menucloc],60*288
 .nomenuinc2
+    cmp byte[PrevMenuPos],3
+    jne .nomenuinc3
+    mov dword[menucloc],70*288
+.nomenuinc3
+
+    mov dword[menudrawbox8b.stringi+13],' BMP'
+    cmp byte[ScreenShotFormat],0
+    je .normalscrn
+    mov dword[menudrawbox8b.stringi+13],' PNG'
+.normalscrn
+    cmp byte[cbitmode],1
+    je near .nopcx
+    mov dword[menudrawbox8b.stringi+13],' PCX'
+.nopcx
 
     mov byte[nextmenupopup],0
     mov byte[menu16btrans],0
@@ -164,6 +178,12 @@ NEWSYM showmenu
 
     call StopSound
 .nextkey
+    call GUIUnBuffer
+    call menudrawbox8b
+    push eax
+    call copyvid
+    pop eax
+
     call JoyRead
     call Check_Key
     or al,al
@@ -171,28 +191,27 @@ NEWSYM showmenu
     call Get_Key
     cmp al,0
     jne near .processextend
+
     call Get_Key
     cmp al,72
     jne .noup
     cmp dword[menucloc],0
     jne .nogoup
-    add dword[menucloc],70*288
+    add dword[menucloc],80*288
 .nogoup
     sub dword[menucloc],10*288
     call menudrawbox8b
     mov al,[newengen]
     mov byte[newengen],0
-    push eax
-    call copyvid
-    pop eax
+
     mov [newengen],al
     jmp .nextkey
 .noup
     cmp al,80
     jne .nodown
-    cmp dword[menucloc],60*288
+    cmp dword[menucloc],70*288
     jne .nogodown
-    sub dword[menucloc],70*288
+    sub dword[menucloc],80*288
 .nogodown
     add dword[menucloc],10*288
     call menudrawbox8b
@@ -241,6 +260,17 @@ NEWSYM showmenu
     mov byte[t1cc],0
     mov byte[PrevMenuPos],1
 .noskipframe
+    cmp dword[menucloc],70*288
+    jne .noimagechange
+    cmp byte[cbitmode],0
+    je .noimagechange
+    xor byte[ScreenShotFormat],1
+    mov byte[ExecExitOkay],0
+    mov byte[nextmenupopup],1
+    mov byte[NoInputRead],1
+    mov byte[t1cc],0
+    mov byte[PrevMenuPos],3
+.noimagechange
     cmp dword[menucloc],60*288
     jne .nomovewin
     mov byte[ExecExitOkay],0
@@ -343,13 +373,29 @@ NEWSYM showmenu
     dec ecx
     jnz .c
 .nopalwrite
-    mov byte[pressed+1],2
-    mov byte[pressed+59],2
+    mov eax,pressed
+    mov ecx,256
+.looppr
+    cmp byte[eax],1
+    jne .notpr
+    mov byte[eax],2
+.notpr
+    inc eax
+    loop .looppr
+;    mov byte[pressed+1],2
+;    cmp byte[pressed+59],1
+;    jne .not59
+;    mov byte[pressed+59],2
+;.not59
+;    cmp byte[pressed+28],1
+;    jne .not28
+;    mov byte[pressed+28],2
+;.not28
     call StartSound
     mov byte[ForceNonTransp],0
     mov byte[GUIOn],0
     call Clear2xSaIBuffer
-    jmp continueprog
+    jmp continueprognokeys
 
 .unablefps db 'NEED AUTO FRAMERATE ON',0
 .sndbufsav db 'BUFFER SAVED AS SOUNDDMP.RAW',0
@@ -394,7 +440,7 @@ NEWSYM menudrawbox8b
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
     mov ecx,150
-    mov al,85
+    mov al,95
 .loop
     mov byte[esi],144
     inc esi
@@ -413,9 +459,9 @@ NEWSYM menudrawbox8b
     mov esi,40+20*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
-    mov ecx,85
+    mov ecx,95
     call drawvline
-    mov esi,40+104*288
+    mov esi,40+114*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
     mov ecx,150
@@ -428,7 +474,7 @@ NEWSYM menudrawbox8b
     mov esi,189+20*288
     add esi,[vidbuffer]
     add esi,[MenuDisplace]
-    mov ecx,85
+    mov ecx,95
     call drawvline
     call menudrawcursor8b
 
@@ -476,6 +522,11 @@ NEWSYM menudrawbox8b
     add esi,[MenuDisplace]
     mov edi,.stringh
     call OutputGraphicString
+    mov esi,45+105*288
+    add esi,[vidbuffer]
+    add esi,[MenuDisplace]
+    mov edi,.stringi
+    call OutputGraphicString
     mov al,[newengen]
     mov byte[newengen],0
     push eax
@@ -493,6 +544,7 @@ NEWSYM menudrawbox8b
 .stringf db 'SNAPSHOT/INCR FRM',0
 .stringg db 'INCR FRAME ONLY',0
 .stringh db 'MOVE THIS WINDOW',0
+.stringi db 'IMAGE FORMAT: ---',0
 
 NEWSYM menudrawcursor8b
     cmp byte[cbitmode],1
@@ -563,7 +615,7 @@ NEWSYM menudrawbox16b
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
     mov ecx,150
-    mov al,85
+    mov al,95
     mov ah,5
 .loop16b
     mov [esi],dx
@@ -589,9 +641,9 @@ NEWSYM menudrawbox16b
     mov esi,40*2+20*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    mov ecx,85
+    mov ecx,95
     call drawvline16b
-    mov esi,40*2+104*288*2
+    mov esi,40*2+114*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
     mov ecx,150
@@ -604,7 +656,7 @@ NEWSYM menudrawbox16b
     mov esi,189*2+20*288*2
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
-    mov ecx,85
+    mov ecx,95
     call drawvline16b
     call menudrawcursor16b
 
@@ -651,6 +703,11 @@ NEWSYM menudrawbox16b
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
     mov edi,menudrawbox8b.stringh
+    call OutputGraphicString16b
+    mov esi,45*2+105*288*2
+    add esi,[vidbuffer]
+    add esi,[MenuDisplace16]
+    mov edi,menudrawbox8b.stringi
     call OutputGraphicString16b
     mov al,[newengen]
     mov byte[newengen],0
