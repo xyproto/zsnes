@@ -4959,7 +4959,88 @@ SECTION .data
 NEWSYM LatestBank, dd 0FFFFh
 SECTION .text
 
+EXTSYM SDD1_init
+EXTSYM SDD1_get_byte
+
+; Software decompression version
 NEWSYM memaccessbankr8sdd1
+    cmp byte[AddrNoIncr],0
+    je near .failed
+
+    cmp dword[Sdd1Mode],2
+    je near .decompress
+
+    mov [Sdd1Bank],ebx
+    mov [Sdd1Addr],ecx
+    mov [Sdd1NewAddr],ecx
+
+    mov dword[Sdd1Mode],2
+    push edx
+    push eax
+    push ecx
+    
+    and ecx,0FFFFh
+    xor eax,eax
+    GetBankLog al   
+    shl eax, 20
+    mov edx, [Sdd1Bank]
+    and edx, 0Fh
+    shl edx, 16    
+    add eax, edx
+    add eax, [romdata]
+    add eax, ecx
+
+    pushad
+    push eax
+    call SDD1_init
+    pop eax
+    popad
+        
+    pop ecx
+    pop eax
+    pop edx
+        
+.decompress
+    cmp [Sdd1Bank],ebx
+    jne .nomoredec
+    cmp [Sdd1Addr],ecx
+    je .yesdec
+.nomoredec
+    mov ebx,[snesmmap+ebx*4]
+    mov al,[ebx+ecx]
+    push eax
+    mov eax,memtabler8+0C0h*4
+    mov ebx,40h
+.loopb
+    mov dword[eax],memaccessbankr8
+    add eax,4
+    dec ebx
+    jnz .loopb
+    pop eax
+    xor ebx,ebx
+    ret
+.yesdec
+    pushad
+    call SDD1_get_byte        
+    mov [.tmpbyte], al
+    popad
+    mov al, [.tmpbyte]
+    ret
+
+.failed
+    push ebx
+    call .nomoredec
+    pop ebx
+    jmp memaccessbankr8
+SECTION .bss
+.tmpbyte resb 1
+SECTION .text
+
+
+
+
+; File loading version
+NEWSYM oldmemaccessbankr8sdd1
 ;    TestSDD1
 ;    jmp debugdecompress
 ;    call FillArray
