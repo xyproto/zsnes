@@ -170,6 +170,9 @@ EXTSYM DeInitModemC
 EXTSYM ipxgetchar,ipxsendchar,TCPIPStoreByte
 EXTSYM TCPIPGetByte
 EXTSYM ModemSendChar
+%ifdef __LINUX__
+EXTSYM numlockptr
+%endif
 %ifdef __WIN32__
 EXTSYM CheckPriority
 EXTSYM CheckAlwaysOnTop
