@@ -1,0 +1,33 @@
+##############################################################################
+# Makes sure that a system is capable of running ZSNES, errors out with
+# an informative message if it is not.
+##############################################################################
+
+##############################################################################
+# VARIABLES
+##############################################################################
+NASMMINVER=0.98.36
+
+##############################################################################
+# CHECKS
+##############################################################################
+
+# NASM version check
+NASMVER=$(word 3, $(shell nasm -v))
+ifeq ($(strip $(NASMVER)),)
+  $(error Could not find NASM executable. Please install NASM)
+endif
+ifneq ($(word 1, $(sort $(NASMMINVER) $(NASMVER))),$(NASMMINVER))
+  $(error ZSNES needs at least NASM version $(NASMMINVER) to compile.  You have version $(NASMVER) installed)
+endif
+
+# OpenGL check
+USE_OPENGL=true
+ifeq ($(strip $(wildcard /usr/lib/libGL.so* /usr/local/lib/libGL.so*)),)
+  $(warning Could not find OpenGL libraries.  Continuing without OpenGL support)
+  USE_OPENGL=false
+endif
+ifeq ($(strip $(wildcard /usr/include/GL/gl.h /usr/local/include/GL/gl.h)),)
+  $(warning Could not find OpenGL headers.  Continuing without OpenGL support)
+  USE_OPENGL=false
+endif
