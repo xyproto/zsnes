@@ -19,7 +19,7 @@ DOS port:
                    to get zlib which is available with the full distribution 
                    of djgpp. You can get it at :
                    ftp://ftp.simtel.net/pub/simtelnet/gnu/djgpp/v2tk/zlib112b.zip
-- zlib : http://www.info-zip.org/pub/infozip/zlib/
+- zlib : http://www.zlib.net
 - libpng : http://www.libpng.org/
                 Build the static versions of both of these libraries using
                 DJGPP and do a 'make install' to put them where DJGPP
@@ -66,7 +66,7 @@ Windows port with MSVC:
                    (old) directx headers instead of the sdk headers. I replaced 
                    these old headers (in the include directory of vc++ dir) 
                    with the newer ones.
-- zlib : http://www.info-zip.org/pub/infozip/zlib/
+- zlib : http://www.zlib.net
 		   you need the Win9x/WinNT static library (the dll version 
 		   doesn't seem to work with zsnes). Rename the static version 
 		   to zlib.lib and put it somewhere where vc++ will find it 
@@ -89,11 +89,9 @@ it will divide its size by 10.
 Windows port with MinGW:
 - GNU Make : it comes with djgpp
 - NASM v0.98.39 : http://nasm.sf.net/ 
-                  You will need to add the GNUWIN32 patch.
-                  To find the patch though, you'll have to do some searching.
 - MinGW : http://www.mingw.org
 - Latest Win32API : http://www.mingw.org
-- zlib : http://www.info-zip.org/pub/infozip/zlib/
+- zlib : http://www.zlib.net
 - libpng : http://www.libpng.org/
 
 Then to build the executable, go to the src directory and type:
@@ -124,7 +122,7 @@ You'll also need :
                                    later. If you are using rpm packages, don't
                                    forget the -devel package.
 - NASM v0.98.39 : http://nasm.sf.net/
-- zlib : http://www.info-zip.org/pub/infozip/zlib/
+- zlib : http://www.zlib.net
                                    it is probably already installed on your 
                                    system, maybe you are just missing the 
                                    development headers. Check in the 
