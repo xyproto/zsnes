@@ -24,6 +24,7 @@
 #include <utime.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 #endif
 #include <errno.h>
 #include <fcntl.h>
@@ -300,14 +301,27 @@ int do_extract(unzFile uf,int opt_extract_without_path,int opt_overwrite)
 void extractzip(char *FileToExtract)
 {
 	unzFile uf=NULL;
-   uf = unzOpen(FileToExtract);
+// I really don't like hardcoding these sizes...
+	char oldpath[128];
+
+#ifdef __LINUX__
+	extern char InitDir;
+
+	getcwd(oldpath, 128);
+	chdir(&InitDir);
+#endif
+	uf = unzOpen(FileToExtract);
+#ifdef __LINUX__
+	chdir(oldpath);
+#endif
+
 	if (uf==NULL)
 	{
-      ZipError=1;
-      return;
+		ZipError=1;
+		return;
 	}
-   ZipError=0;
-   do_extract(uf,0,0);
+	ZipError=0;
+	do_extract(uf,0,0);
 }
 
 
