@@ -1504,6 +1504,7 @@ reg4200w:
 
 ; Programmable I/O port (out-port)
 reg4201w:
+    mov byte[rdioval],al
     mov bl,al
     and bl,80h
     and byte[MultiTapStat],07Fh
