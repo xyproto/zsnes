@@ -1503,52 +1503,54 @@ void initwinvideo(void)
       switch (cvidmode)
       {
       case 0:
-         WindowWidth=64;
-         WindowHeight=56;
-         break;
-      case 1:
-         WindowWidth=128;
-         WindowHeight=112;
-         break;
-      case 2:
          WindowWidth=256;
          WindowHeight=224;
          break;
-      case 3:
+      case 1:
          WindowWidth=640;
          WindowHeight=480;
          SurfaceX=320;
          SurfaceY=240;
          break;
-      case 4:
+      case 2:
          WindowWidth=512;
          WindowHeight=448;
          break;
-      case 5:
+      case 3:
          WindowWidth=512;
          WindowHeight=448;
          SurfaceX=512;
          SurfaceY=448;
          break;
-      case 6:
+      case 4:
          WindowWidth=640;
          WindowHeight=480;
          break;
-      case 7:
+      case 5:
          WindowWidth=640;
          WindowHeight=480;
          SurfaceX=640;
          SurfaceY=480;
          break;
-      case 8:
+      case 6:
          WindowWidth=640;
          WindowHeight=480;
          SurfaceX=512;
          SurfaceY=448;
          break;
-      case 9:
+      case 7:
          WindowWidth=640;
          WindowHeight=480;
+         break;
+      case 8:
+         WindowWidth=768;
+         WindowHeight=672;
+         break;
+      case 9:
+         WindowWidth=768;
+         WindowHeight=672;
+         SurfaceX=512;
+         SurfaceY=448;
          break;
       case 10:
          WindowWidth=800;
@@ -1567,36 +1569,38 @@ void initwinvideo(void)
       case 13:
          WindowWidth=800;
          WindowHeight=600;
-         SurfaceX=512;
-         SurfaceY=448;
+         SurfaceX=640;
+         SurfaceY=480;
          break;
       case 14:
-         WindowWidth=1024;
-         WindowHeight=768;
+         WindowWidth=800;
+         WindowHeight=600;
+         SurfaceX=512;
+         SurfaceY=448;
          break;
       case 15:
          WindowWidth=1024;
          WindowHeight=768;
-         SurfaceX=512;
-         SurfaceY=448;
          break;
       case 16:
          WindowWidth=1024;
          WindowHeight=768;
+         SurfaceX=512;
+         SurfaceY=448;
          break;
       case 17:
          WindowWidth=1024;
          WindowHeight=768;
-         SurfaceX=512;
-         SurfaceY=448;
          break;
       case 18:
-         WindowWidth=768;
-         WindowHeight=672;
+         WindowWidth=1024;
+         WindowHeight=768;
+         SurfaceX=640;
+         SurfaceY=480;
          break;
       case 19:
-         WindowWidth=768;
-         WindowHeight=672;
+         WindowWidth=1024;
+         WindowHeight=768;
          SurfaceX=512;
          SurfaceY=448;
          break;
@@ -1621,18 +1625,6 @@ void initwinvideo(void)
          WindowHeight=960;
          SurfaceX=512;
          SurfaceY=448;
-         break;
-      case 24:
-         WindowWidth=800;
-         WindowHeight=600;
-         SurfaceX=640;
-         SurfaceY=480;
-         break;
-      case 25:
-         WindowWidth=1024;
-         WindowHeight=768;
-         SurfaceX=640;
-         SurfaceY=480;
          break;
       default:
          WindowWidth=256;

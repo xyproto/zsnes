@@ -576,24 +576,24 @@ db '',13,10
 db 'Execute = %T',13,10
 db '',13,10
 %ifdef __WIN32__
-db '; Video Mode, 0 - 25',13,10
-db ';   0 = 64x56 R WIN           1 = 128x112 R WIN',13,10
-db ';   2 = 256X224 R WIN         3 = 256x224 R FULL',13,10
-db ';   4 = 512X448 R WIN         5 = 512X448 DR WIN',13,10
-db ';   6 = 640x480 S WIN         7 = 640x480 DR FULL',13,10
-db ';   8 = 640X480 DS FULL       9 = 640X480 S FULL',13,10
+db '; Video Mode, 0 - 23',13,10
+db ';   0 = 256x224 R WIN         1 = 256x224 R FULL',13,10
+db ';   2 = 512x448 R WIN         3 = 512x448 DR WIN',13,10
+db ';   4 = 640x480 S WIN         5 = 640x480 DR FULL',13,10
+db ';   6 = 640x480 DS FULL       7 = 640x480 S FULL',13,10
+db ';   8 = 768x672 R WIN         9 = 768x672 DR WIN',13,10
 db ';   10 = 800x600 S WIN        11 = 800x600 DS WIN',13,10
-db ';   12 = 800x600 S FULL       13 = 800x600 DS FULL',13,10
-db ';   14 = 1024X768 S WIN       15 = 1024X768 DS WIN',13,10
-db ';   16 = 1024x768 S FULL      17 = 1024x768 DS FULL',13,10
-db ';   18 = 768x672 R WIN        19 = 768x672 DR WIN',13,10
+db ';   12 = 800x600 S FULL       13 = 800x600 DR FULL',13,10
+db ';   14 = 800x600 DS FULL      15 = 1024x768 S WIN',13,10
+db ';   16 = 1024x768 DS WIN      17 = 1024x768 S FULL',13,10
+db ';   18 = 1024x768 DR FULL     19 = 1024x768 DS FULL',13,10
 db ';   20 = 1024x896 R WIN       21 = 1024x896 DR WIN',13,10
 db ';   22 = 1280x960 DR FULL     23 = 1280x960 DS FULL',13,10
-db ';   24 = 800x600 DR FULL      25 = 1024x768 DR FULL',13,10
 db '',13,10
 db 'VideoModeWin = %U',13,10
 db '',13,10
-%elifdef __LINUX__
+%endif
+%ifdef __LINUX__
 %ifdef __OPENGL__
 db '; Video Mode, 0 - 15',13,10
 %else
@@ -1887,14 +1887,16 @@ SECTION .data
       db 'SOUND'
 .strh dd 9
       db 'SOUNDRATE'
-.stri dd 9
 %ifdef __WIN32__
+.stri dd 12
       db 'VIDEOMODEWIN'
 %endif
 %ifdef __LINUX__
+.stri dd 12
       db 'VIDEOMODELIN'
 %endif
 %ifdef __MSDOS__
+.stri dd 9
       db 'VIDEOMODE'
 %endif
 .strj dd 7
