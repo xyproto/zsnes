@@ -799,8 +799,8 @@ void zmv_add_chapter()
   {
     size_t current_loc = ftell(zmv_vars.fp);
     
-    if ((internal_chapter_pos(&zmv_vars.internal_chapters, current_loc-(cur_zst_size+4)) != ~0) &&
-        (internal_chapter_pos(&zmv_open_vars.external_chapters, current_loc)) != ~0)
+    if ((internal_chapter_pos(&zmv_vars.internal_chapters, current_loc-(cur_zst_size+4)) == ~0) &&
+        (internal_chapter_pos(&zmv_open_vars.external_chapters, current_loc)) == ~0)
     {
       unsigned char flag;
       fread(&flag, 1, 1, zmv_vars.fp);
