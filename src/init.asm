@@ -1091,7 +1091,6 @@ NEWSYM ReadInputDevice
     ProcessKeyComb 3,JoyEOrig
     or dword[JoyEOrig],00008000h        ; Joystick Enable
 .noinput5
-
     cmp byte[pl12s34],1
     je .pl1234
 .nopl1234
