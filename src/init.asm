@@ -57,7 +57,7 @@ EXTSYM NumComboLocl,ComboBlHeader,ComboHeader,CombinDataLocl
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec
 EXTSYM mousexloc,mouseyloc
 EXTSYM extlatch
-EXTSYM BackState
+EXTSYM BackState,clearmem2,NextLineCache,sramsavedis
 EXTSYM FIRTAPVal0,FIRTAPVal1,FIRTAPVal2,FIRTAPVal3,FIRTAPVal4
 EXTSYM FIRTAPVal5,FIRTAPVal6,FIRTAPVal7,INTEnab,JoyAPos,JoyBPos
 EXTSYM NMIEnab,SPCROM,VIRQLoc,coladdb,coladdg,coladdr,doirqnext
@@ -67,7 +67,7 @@ EXTSYM opexec268cphb,opexec358,opexec358b,opexec358cph,spcextraram
 EXTSYM opexec358cphb,prevoamptr,reg1read,reg2read,reg3read
 EXTSYM reg4read,resolutn,romdata,scrndis,spcP,spcRam
 EXTSYM spcnumread,spchalted,tableD,timeron,vidbright,OldGfxMode2
-EXTSYM SPC700read,SPC700write,GUIDoReset,spc700read, GUIReset
+EXTSYM SPC700read,SPC700write,GUIDoReset,spc700read,GUIReset
 EXTSYM InitC4,SA1Reset,SetAddressingModesSA1,SetAddressingModes,SDD1BankA,SPC7110init
 EXTSYM RTCinit,InitOBC
 EXTSYM memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8

@@ -718,6 +718,9 @@ NEWSYM start65816
 ;    rep stosd
     cmp byte[romloadskip],1
     je near StartGUI
+    cmp byte[MovieProcessing],0
+    je continueprog
+    ret
     
 NEWSYM continueprog
 

@@ -398,5 +398,3 @@ NEWSYM GUIDoReset
     mov byte[Voice7Status],0
     mov byte[GUIQuit],2
     ret
-
-

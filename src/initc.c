@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include "zip/zunzip.h"
 #include "jma/zsnesjma.h"
+#include "asm_call.h"
 
 #ifndef __GNUC__
 #define strcasecmp stricmp
@@ -1279,31 +1280,6 @@ extern unsigned char *vcache2b;
 extern unsigned char *vcache4b;
 extern unsigned char *vcache8b;
 
-void clearmem2();
-void clearmem()
-{
-  memset(vidbuffer, 0, 131072);
-  memset(wramdataa, 0, 65536);
-  memset(ram7fa, 0, 65536);
-  memset(vram, 0, 65536);
-  memset(srama, 0, 65536);
-  memset(debugbufa, 0, 80000);
-  memset(regptra, 0, 49152);
-  memset(regptwa, 0, 49152);
-  memset(vcache2b, 0, 262144);
-  memset(vcache4b, 0, 131072);
-  memset(vcache8b, 0, 65536);
-  memset(vidmemch2, 0, 4096);
-  memset(vidmemch4, 0, 4096);
-  memset(vidmemch8, 0, 4096);
-  memset(pal16b, 0, 1024);
-  memset(pal16bcl, 0, 1024);
-  memset(pal16bclha, 0, 1024);
-  memset(pal16bxcl, 0xFF, 256);
-  memset(romdata, 0xFF, maxromspace+32768);
-  clearmem2();
-}
-
 void clearSPCRAM()
 {
   /*
@@ -1331,6 +1307,30 @@ void clearmem2()
 {
   memset(sram, 0xFF, 16384);
   clearSPCRAM();
+}
+
+void clearmem()
+{
+  memset(vidbuffer, 0, 131072);
+  memset(wramdataa, 0, 65536);
+  memset(ram7fa, 0, 65536);
+  memset(vram, 0, 65536);
+  memset(srama, 0, 65536);
+  memset(debugbufa, 0, 80000);
+  memset(regptra, 0, 49152);
+  memset(regptwa, 0, 49152);
+  memset(vcache2b, 0, 262144);
+  memset(vcache4b, 0, 131072);
+  memset(vcache8b, 0, 65536);
+  memset(vidmemch2, 0, 4096);
+  memset(vidmemch4, 0, 4096);
+  memset(vidmemch8, 0, 4096);
+  memset(pal16b, 0, 1024);
+  memset(pal16bcl, 0, 1024);
+  memset(pal16bclha, 0, 1024);
+  memset(pal16bxcl, 0xFF, 256);
+  memset(romdata, 0xFF, maxromspace+32768);
+  clearmem2();
 }
 
 extern unsigned char BRRBuffer[32];
@@ -1802,4 +1802,36 @@ unsigned int showinfogui()
   MessageOn = 300;
   Msgptr = CSStatus;
   return (MsgCount);
+}
+
+extern unsigned int nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
+extern unsigned int spcnumread, spchalted;
+extern unsigned char NextLineCache, sramsavedis, sndrot, regsbackup[3019];
+extern unsigned char yesoutofmemory;
+
+void powercycle()
+{
+  memset(sram, 0xFF, 8192*4);
+  clearSPCRAM();
+
+  nmiprevaddrl = 0;
+  nmiprevaddrh = 0;
+  nmirept = 0;
+  nmiprevline = 224;
+  nmistatus = 0;
+  spcnumread = 0;
+  spchalted = ~0;
+  NextLineCache = 0;
+  curexecstate = 1;
+
+  asm_call(SetupROM);
+  asm_call(initsnes);
+
+  sramsavedis = 0;
+
+  memcpy(&sndrot, regsbackup, 3019);
+
+  if (yesoutofmemory == 1)	{ asm_call(outofmemfix); }
+
+  asm_call(GUIDoReset);
 }

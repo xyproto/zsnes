@@ -166,7 +166,7 @@ EXTSYM GUIHQ3X
 EXTSYM GUIHQ4X
 EXTSYM firstsaveinc
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
-EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord,MovieInsertChapter
+EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord,MovieInsertChapter,init
 EXTSYM MovieSeekAhead,MovieSeekBehind
 
 %ifdef __LINUX__
