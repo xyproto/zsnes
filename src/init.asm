@@ -3085,6 +3085,7 @@ NEWSYM CheckROMType
     cmp byte[DSP3Enable],1
     je .initdsp
     cmp byte[DSP4Enable],1
+    jne .notDSP1Hi
     pushad
     call InitDSP4
     popad

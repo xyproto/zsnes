@@ -49,7 +49,7 @@ NEWSYM DSP4Read16b
     popad    
     mov ah,byte[dsp4_byte]    
     ret
-; 
+
 NEWSYM DSP4Write16b
     mov word[dsp4_address],cx
     mov byte[dsp4_byte],al

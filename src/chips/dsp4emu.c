@@ -20,6 +20,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <string.h>
+
 typedef unsigned char bool8;
 typedef unsigned char uint8;
 typedef unsigned short uint16;
@@ -29,19 +31,6 @@ typedef short int16;
 typedef long int32;
 #define FALSE 0
 #define TRUE 1
-
-struct 
-{
-  bool8 waiting4command;
-  bool8 half_command;
-  uint16 command;
-  uint32 in_count;
-  uint32 in_index;
-  uint32 out_count;
-  uint32 out_index;
-  uint8 parameters[512];
-  uint8 output[512];
-} DSP4;
 
 /*
 Due recognition and credit are given on Overload's DSP website.
@@ -60,6 +49,19 @@ Fixed-point math reminder:
 #define READ_DWORD(s) (*(uint32 *) (s))
 #define WRITE_WORD(s, d) (*(uint16 *) (s)) = (d)
 #define WRITE_DWORD(s, d) (*(uint32 *) (s)) = (d)
+
+struct 
+{
+  bool8 waiting4command;
+  bool8 half_command;
+  uint16 command;
+  uint32 in_count;
+  uint32 in_index;
+  uint32 out_count;
+  uint32 out_index;
+  uint8 parameters[512];
+  uint8 output[512];
+} DSP4;
 
 // op control
 int8 DSP4_Logic;            // controls op flow
@@ -2043,14 +2045,12 @@ void DSP4_OP11(int16 A, int16 B, int16 C, int16 D, int16 *M)
 //Processing Code
 /////////////////////////////////////////////////////////////
 
-
-
-
 uint8 dsp4_byte;
 uint16 dsp4_address;
 
 void InitDSP4()
 {
+  memset(&DSP4, 0, sizeof(DSP4));
   DSP4.waiting4command = TRUE;
 }
 
