@@ -1047,7 +1047,7 @@ void UpdateVFrame(void)
 	int i;
 
 	//Quick fix for GUI CPU usage
-	if (GUIOn | GUIOn2) usleep(6000);
+	if (GUIOn || GUIOn2) usleep(6000);
 
 	CheckTimers();
 	Main_Proc();
