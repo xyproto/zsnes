@@ -262,28 +262,26 @@ BOOL InputRead(void)
    MouseMoveY=0;
    if(MouseInput&&InputEn==1)
    {
-		DIMOUSESTATE dims;
-		HRESULT hr;
+      DIMOUSESTATE dims;
+      HRESULT hr;
 aquireagain:;
-		hr=MouseInput->GetDeviceState(sizeof(DIMOUSESTATE),&dims);
+      hr=MouseInput->GetDeviceState(sizeof(DIMOUSESTATE),&dims);
 		
-		if(hr==DIERR_INPUTLOST)
-		{
-			hr=MouseInput->Acquire();
-			if(SUCCEEDED(hr))
-			{
-				goto aquireagain;
-			}
-		}
-		
-		
-		if(SUCCEEDED(hr))
-		{
+      if(hr==DIERR_INPUTLOST)
+      {
+         hr=MouseInput->Acquire();
+         if(SUCCEEDED(hr))
+         {
+            goto aquireagain;
+         }
+      }
 
+      if(SUCCEEDED(hr))
+      {
          MouseMoveX=dims.lX;
          MouseMoveY=dims.lY;
 
-         if (MouseWheel == 1)
+         if(MouseWheel == 1)
          {
             long zDelta = dims.lZ-PrevZ;
             if (!dims.lZ) zDelta=0;
@@ -2368,12 +2366,11 @@ void WinUpdateDevices()
 
 int GetMouseX(void)
 {
-   char message1[256];
    InputRead();
    MouseX+=MouseMoveX;
    if(MouseX>MouseMaxX)
    {
-      if(abs(MouseMoveX)>10&&T36HZEnabled)
+      if(abs(MouseMoveX)>10&&T36HZEnabled&&(FullScreen==0))
       {
          MouseInput->Unacquire();
          SetCursorPos(X+WindowWidth+32,Y+(MouseY*WindowHeight/224));
@@ -2383,7 +2380,7 @@ int GetMouseX(void)
 
    if(MouseX<MouseMinX)
    {
-      if(abs(MouseMoveX)>10&&T36HZEnabled)
+      if(abs(MouseMoveX)>10&&T36HZEnabled&&(FullScreen==0))
       {
          MouseInput->Unacquire();
          SetCursorPos(X-32,Y+(MouseY*WindowHeight/224));
@@ -2391,7 +2388,6 @@ int GetMouseX(void)
       MouseX=MouseMinX;
    }
    return((int)MouseX);
-//   return(100);
 }
 
 int GetMouseY(void)
@@ -2400,7 +2396,7 @@ int GetMouseY(void)
    if(MouseY>MouseMaxY)
    {
       MouseY=MouseMaxY;
-      if(abs(MouseMoveY)>10&&T36HZEnabled)
+      if(abs(MouseMoveY)>10&&T36HZEnabled&&(FullScreen==0))
       {
          MouseInput->Unacquire();
          SetCursorPos(X+(MouseX*WindowWidth/256), Y+WindowHeight+32);
@@ -2409,15 +2405,13 @@ int GetMouseY(void)
    if(MouseY<MouseMinY)
    {
       MouseY=MouseMinY;
-      if(abs(MouseMoveY)>10&&T36HZEnabled)
+      if(abs(MouseMoveY)>10&&T36HZEnabled&&(FullScreen==0))
       {
          MouseInput->Unacquire();
          SetCursorPos(X+(MouseX*WindowWidth/256), Y-32);
       }
    }
    return((int)MouseY);
-//   return(100);
-
 }
 
 int GetMouseMoveX(void)
