@@ -3378,6 +3378,10 @@ NEWSYM preparesfx
     add esi,07FC0h
     cmp dword[esi],'FX S'
     je .yessfxcounter
+    cmp dword[esi],'DIRT'
+    jne .nosfxcounter
+    cmp dword[esi+4],' RAC'
+    je .yessfxcounter
     cmp dword[esi],'Stun'
     jne .nosfxcounter
     mov byte[ForceNewGfxOff],1
