@@ -462,9 +462,15 @@ bool Header512;
 extern char CSStatus[41];
 extern char CSStatus2[41];
 extern char CSStatus3[41];
+extern bool RomInfo;
 char *lastROMFileName;
 void DumpROMLoadInfo()
 {
+  if (!RomInfo) //rominfo.txt info dumping enabled?
+  {
+    return;
+  }
+  
   FILE *fp = 0;
   fp = fopen("rominfo.txt", "w");
   if (!fp) { return; }
