@@ -1056,7 +1056,6 @@ void MoviePlay()
     if (zmv_open(fnamest+1))
     {
       MovieProcessing = 1;
-      KeyNextChapBind = false;
       memcpy(&fnamest[statefileloc-3], ".sub", 4);
       if (isdigit(CMovieExt)) { fnamest[statefileloc] = CMovieExt; }
       MovieSub_Open(fnamest+1);   
