@@ -492,8 +492,11 @@ reg2101w:
 .objadds1 dw 14,14,14,14,14,12,14,14
 .objadds2 dw 14,12,8,12,8,8,14,14
 
+NEWSYM oamlow, db 0
+
 ; OAM address register
 reg2102w:
+    mov byte[oamlow],1
     mov word[oamaddr],0
     shr word[oamaddr],1
     mov [oamaddr],al
@@ -522,6 +525,11 @@ reg2102w:
 
 ; OAM address register
 reg2103w:
+    cmp byte[oamlow],1
+    je  .afteroamlow
+    ret
+.afteroamlow
+    mov byte[oamlow],0
     mov bl,al
     and bl,01h
     shr word[oamaddr],1
