@@ -69,7 +69,7 @@ MAINOBJ=cfgload.obj endmem.obj fixsin.obj init.obj ui.obj vcache.obj water.obj
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ} ${WINDOSOBJ}
 LIBS=
-CFLAGS=/G6 /c /D__WIN32__
+CFLAGS=/O2b2t /G6 /c /D__WIN32__
 ASM=nasm
 ASMFLAGS=-f win32 -D__WIN32__
 CC=cl
@@ -121,7 +121,7 @@ ${CHIPDIR}/sfxproc.obj: ${CHIPDIR}/sfxproc.asm macros.mac\
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
 
 ${CHIPDIR}/dsp1emu.obj: ${CHIPDIR}/dsp1emu.c betauser.mac
-	${CC} /O2t ${CFLAGS} /Fo$@ $<
+	${CC} ${CFLAGS} /Fo$@ $<
 ${CHIPDIR}/dsp1proc.obj: ${CHIPDIR}/dsp1proc.asm macros.mac
 ui.obj: ui.asm macros.mac betauser.mac
 cfgload.obj:cfgload.asm macros.mac
