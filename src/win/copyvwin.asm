@@ -44,10 +44,9 @@ NEWSYM copy640x480x16bwin
     mov esi,[vidbuffer]
     mov edi,[WinVidMemStart]
     add esi,16*2+256*2+32*2
-
     cmp byte[GUIOn],1
     je .not239
-    cmp byte [resolutn],239
+    cmp byte[resolutn],239
     jne .not239
     add esi,8*288*2
 .not239
