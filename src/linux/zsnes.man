@@ -1,0 +1,217 @@
+.TH ZSNES 1 "30 APRIL 01"
+.SH VERSION 1.0
+
+.SH NAME
+zSNES \- Play Super Nintendo games on your Intel x86 or compatible PC.
+
+.SH SYNOPSIS
+\fBzsnes\fP [-?] [-0] [-1 #] [-2 #] [-7] [-8] [-9] [-a] [-c] [-cb] [-cd] [-d] [-dd] [-e] [-f #] [-g #] [-h | -l] [-i] [-j] [-k #] [-m] [-n] [-o] [-om] [-p #] [-r #] [-s] [-sa] [-sn] [-t | -u] [-v #] [-w] [-y] [-z] <romname>
+
+
+.SS
+.TP
+\fB-0\fP
+Disable color 0 modification in 256 (8-bit) color modes
+.TP
+\fB-1 #/-2 #\fP
+Not documented until I know for sure how this works on Linux.
+.TP
+\fB-7\fP
+Disable SPC700 speedhack
+.TP
+\fB-8\fP
+Force 8-bit sound
+.TP
+\fB-9\fP
+Off by 1 line fix
+.TP
+\fB-a\fP
+Turn on auto frame skip
+.TP
+\fB-c\fP
+Scale to fit screen
+.TP
+\fB-cb\fP
+Remove Background Color in 256 (8-bit) color modes
+.TP
+\fB-cc\fP
+No image scale and center image in screen
+.TP
+\fB-d\fP
+Start with debugger
+.TP
+\fb-dd\fP
+Disable sound DSP emulation
+.TP
+\fB-e\fP
+Skip Enter key press at beginning
+.TP
+\fB-f #\fP
+Enable frame skipping, where \fB#\fP is a numerical value from \fI0-9\fP
+.TP
+\fB-g #\fP
+Enable Gamme Correction, where \fB#\fP is a numerical value from \fI0-5\fP. Default is \fI0\fP
+.TP
+\fB-h\fP
+Force HiROM. Cannot be used with \fB-l\fP
+.TP
+\fB-i\fP
+Uninterleave ROM image
+.TP
+\fB-j\fP
+Disable Mouse (Automatically turns off right mouse click)
+.TP
+\fB-k #\fP
+Set volume level, where \fB#\fP is a numerical value from \fI1-100\fP
+.TP
+\fB-l\fP
+Force LoROM. Cannot be used with \fB-h\fP
+.TP
+\fB-m\fP
+Disable GUI
+.TP
+\fB-n\fP
+Enable scanlines
+.TP
+\fB-o\fP
+Enable FPU copy
+.TP
+\fB-om\fP
+Enable MMX copy
+.TP
+\fB-p #\fP
+Percentage of instructions to execute, where \fB#\fP is a numerical value from \fI50-150\fP
+.TP
+\fB-r #\fP
+Set audio sampling rate, where \fB#\fP is one of:
+
+\fI0\fP = 8 KHz        \fI1\fP = 11.025 KHz   \fI2\fP = 22.05 KHz    \fI3\fP = 44.1 KHz     \fI4\fP = 16 KHz       \fI5\fP = 32 KHz
+.TP
+\fB-s\fP
+Enable SPC700/DSP emulation (i.e., sound)
+.TP
+\fB-sa\fP
+Show files with all extensions (*.*) in GUI. Default is to only show files with one of the extensions listed in \fBromname\fP
+.TP
+\fB-sn\fP
+Enable Snowy GUI background
+.TP
+\fB-t\fP
+Force NTSC (60 Hz) timing. Cannot be used with \fB-u\fP
+.TP
+\fB-u\fP
+Force PAL (50 Hz) timing. Cannot be used with \fB-t\fP
+.TP
+\fB-v #\fP
+\fINot documented unitl I know how this works under Linux\fP
+.TP
+\fB-w\fP
+Enable VSync
+.TP
+\fB-y\fP
+Enable EAGLE (640x480x256 <8-bit> only) or Interpolation (640x480x65536 <16-bit> only)
+.TP
+\fB-z\fP
+Enable Stereo Sound
+.TP
+\fBromname\fP
+Name of ROM to auto-load. \fBromname\fP is of the format \fBfilename.ext\fP, where \fB.ext\fP is one of \fI.SMC, .SFC, .SWC, .FIG, .058, .078, .1, .A, .USA,\fP or \fB.JAP\fP 
+
+.SH DESCRIPTION
+\fBzSNES\fP is an emulator for the Super Nintendo video game console, written mostly in assembler by zsKnight and _Demo_ (who also works on ePSXe), with Pharos and Teuf as assistant coders.
+
+.SH FILES
+.TP
+zsnesl
+The main program.
+.TP
+zsnesl.cfg
+Where configuration settings are stored.
+.TP
+other
+I will list the rest of the major files as soon as I compile the Linux version.
+
+.SH "SEE ALSO"
+\fIzsnesgui(1)\fP and \fIzsnesfaq(1)\fP, neither of which happens to be written yet. (Hey, this is a work in progress.)
+
+
+.SH BUGS
+As of 1.17b, the following are known bugs:
+
+In Tales of Phantasia, the emulator crashes during the scene when Dhaos is released from his seal. This can be circumvented by using certain GFX modes during that scene. (I'm not sure what they are for Linux yet, or if this problem even occurs.)
+
+
+Final Fantasy Mystic Quest does not work. (I don't know to what extent it doesn't work, I deleted the game because (IMO) it sucked, I have heard this from a bunch of people, including zsKnight.)
+
+
+An American Tale: Feivel Goes West does not work due to a bug in the HiROM/LoROM detection routines. (Works in current CVS tree.)
+
+****************
+
+Many games that use special chips do not work, including but not limited to the following:
+
+
+SuperFX:
+
+- Dirt Trax FX
+
+- Winter Gold
+
+
+DSP-1 (and variants):
+
+- Pilotwings (mostly works with current CVS tree, some problems.) 
+
+- Top Gear 3000
+
+
+SDD-1:
+
+- Street Fighter Alpha 2
+
+- Star Ocean (Dialog text is legible, in Linux CVS source, some graphics are legible.)
+
+Note: these games work, but all the graphics are illegible. (Except as noted for Star Ocean.)
+
+
+SPC7110:
+
+- Far East of Eden Zero (Works in current CVS tree.)
+
+
+SA-1:
+
+- Super Mario RPG: Legend of the Seven Stars (Mostly works, the status text on the level-up screen is not shown.)
+
+****************
+
+.SH AUTHOR
+This document was written by Mitchell Mebane (majm101@yahoo.com). The latest official version of this document (i.e., excluding betas) may always be found at the zSNES CVS page (zsnes.sourceforge.net).
+
+
+The authors of zSNES are:
+
+.SS
+.TP
+zsKnight
+(zsknight@zsnes.com)
+.TP
+_Demo_
+(_demo_@zsnes.com)
+.TP
+Pharos
+(pharos@zsnes.com)
+.TP
+Teuf
+(Don't know if he has a zsnes.com email yet, if/when he does, it will probably be teuf@zsnes.com)
+
+Do not email them any ROM requests, or send any file attachments without their prior consent.
+
+.SH "VERSION HISTORY"
+.SS
+
+.TP
+Initial release.
+
+zSNES manpage, version 0.5. Total characters: 5142.
+
