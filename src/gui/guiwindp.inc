@@ -4241,52 +4241,6 @@ DisplayNetIPXInvalid:
 %endif
 
 DisplayNetOptnsTCPIP:
-
-; Draw borders 
-    mov dword[GUIWincol],148+10
-    cmp byte[cwindrawn],1
-    jne .noone3
-    mov dword[GUIWincol],148+5
-.noone3
-    cmp byte[cwindrawn],0
-    jne .nozero3
-    mov dword[GUIWincol],148
-.nozero3
-    mov dl,[GUIWincol]                 ; Port
-    DrawGUIWinBox 8,55,12,95,12,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 8,54,13,53,21,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 8,55,22,95,22,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 8,97,13,96,21,dl
-    mov dl,[GUIWincol]                 ; Nickname
-    DrawGUIWinBox 8,55,23,119,23,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 8,54,24,53,32,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 8,55,33,119,33,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 8,121,24,120,32,dl
-    mov dl,[GUIWincol]                 ; IP
-    DrawGUIWinBox 8,26,57,191,57,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 8,25,58,24,66,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 8,26,67,191,67,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 8,193,58,192,66,dl
-   ; End draw borders  
-    
     ; Your IP:
     ; Port:
     ; Start as Server
@@ -4388,6 +4342,50 @@ DisplayNetOptnsTCPIP:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckm
     GUIDisplayIconWin 8,5,93,[GUITemp]
+    ; Draw borders 
+    mov dword[GUIWincol],148+10
+    cmp byte[cwindrawn],1
+    jne .noone3
+    mov dword[GUIWincol],148+5
+.noone3
+    cmp byte[cwindrawn],0
+    jne .nozero3
+    mov dword[GUIWincol],148
+.nozero3
+    mov dl,[GUIWincol]                 ; Port
+    DrawGUIWinBox 8,55,12,95,12,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 8,54,13,53,21,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 8,55,22,95,22,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 8,97,13,96,21,dl
+    mov dl,[GUIWincol]                 ; Nickname
+    DrawGUIWinBox 8,55,23,119,23,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 8,54,24,53,32,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 8,55,33,119,33,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 8,121,24,120,32,dl
+    mov dl,[GUIWincol]                 ; IP
+    DrawGUIWinBox 8,26,57,191,57,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 8,25,58,24,66,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 8,26,67,191,67,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 8,193,58,192,66,dl
+   ; End draw borders  
     ret
 
 DisplayNetOptnsInvalid:
