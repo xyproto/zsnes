@@ -941,6 +941,7 @@ NEWSYM pnglogicval, dd 0
 NEWSYM mosjmptab, times 15 dd 0
 NEWSYM Mode7HiRes, dd 0
 NEWSYM pesimpng, dd 0
+NEWSYM bgtxadd2, dd 0
 
 NEWSYM StartDrawNewGfx
     mov byte[WindowRedraw],1

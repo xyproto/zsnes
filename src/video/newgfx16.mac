@@ -3201,6 +3201,7 @@ EXTSYM osm2dis
     mov eax,[BGPT1+ebx*2+%1*512]
     mov [ofsmtptr],eax
     mov [ofsmtptrs],eax
+
     mov dword[taddnfy16x16],0
     mov dword[taddfy16x16],16
     test ecx,08h
@@ -3240,6 +3241,21 @@ EXTSYM osm2dis
     add eax,ecx
     add [ofsmtptr],ecx
     mov [ofsmmptr],eax
+
+    mov word[bgtxadd2],0
+    cmp word[BGPT3X+ebx*2],0
+    je .yesoverfl
+    mov cx,word[BG3SXl+ebx*2]
+    add cx,16
+    test cx,100h
+    jz .notoverfl
+    add dword[ofsmcptr],800h
+    sub word[bgtxadd2],800h
+    jmp .yesoverfl
+.notoverfl
+    add word[bgtxadd2],800h
+.yesoverfl
+
     mov ecx,[BGOPT1+ebx*2+%1*512]
     mov edx,[BGMA+ebx]
     and edi,0Fh
@@ -3316,6 +3332,7 @@ EXTSYM osm2dis
     mov eax,[BGPT1+ebx*2+%1*512]
     mov [ofsmtptr],eax
     mov [ofsmtptrs],eax
+
     test ecx,100h
     jz .noyincd
     add eax,[BGPT1Y+ebx*2+%1*512]
@@ -3348,6 +3365,21 @@ EXTSYM osm2dis
     add eax,ecx
     add [ofsmtptr],ecx
     mov [ofsmmptr],eax
+
+    mov word[bgtxadd2],0
+    cmp word[BGPT3X+ebx*2],0
+    je .yesoverfl3
+    mov cx,word[BG3SXl+ebx*2]
+    add cx,16
+    test cx,100h
+    jz .notoverfl3
+    add dword[ofsmcptr],800h
+    sub word[bgtxadd2],800h
+    jmp .yesoverfl3
+.notoverfl3
+    add word[bgtxadd2],800h
+.yesoverfl3
+
     mov dword[ofshvaladd],0
     mov ecx,[BGOPT1+ebx*2+%1*512]
     mov edx,[BGMA+ebx]
@@ -3703,6 +3735,21 @@ EXTSYM osm2dis
     mov eax,[BGPT1+ebx*2+%1*512]
     mov [ofsmtptr],eax
     mov [ofsmtptrs],eax
+
+    mov word[bgtxadd2],0
+    cmp word[BGPT3X+ebx*2],0
+    je .yesoverfl
+    mov cx,word[BG3SXl+ebx*2]
+    add cx,16
+    test cx,100h
+    jz .notoverfl
+    add dword[ofsmcptr],800h
+    sub word[bgtxadd2],800h
+    jmp .yesoverfl
+.notoverfl
+    add word[bgtxadd2],800h
+.yesoverfl
+
     mov ecx,[BG1SXl+ebx*2+%1*512]
     mov edx,[BGPT1X+ebx*2+%1*512]
     test ecx,100h

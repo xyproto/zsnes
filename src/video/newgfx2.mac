@@ -974,6 +974,11 @@
     add dword[ofsmcptr2],2
     mov ecx,[ofsmvalh]
     and dword[ofsmcptr2],3Fh
+    test dword[ofsmcptr2],3Fh
+    jnz %%notzeroed
+    mov bx,[bgtxadd2]
+    add word[ofsmcptr],bx
+%%notzeroed
     test dword[ebx-40h],ecx
     jz %%noofsmh
     mov ebx,[ebx-40h]

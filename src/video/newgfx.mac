@@ -2952,6 +2952,21 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     add eax,ecx
     add [ofsmtptr],ecx
     mov [ofsmmptr],eax
+
+    mov word[bgtxadd2],0
+    cmp word[BGPT3X+ebx*2],0
+    je .yesoverfl
+    mov cx,word[BG3SXl+ebx*2]
+    add cx,16
+    test cx,100h
+    jz .notoverfl
+    add dword[ofsmcptr],800h
+    sub word[bgtxadd2],800h
+    jmp .yesoverfl
+.notoverfl
+    add word[bgtxadd2],800h
+.yesoverfl
+
     mov dword[ofshvaladd],0
     mov ecx,[BGOPT1+ebx*2+%1*512]
     mov edx,[BGMA+ebx]
@@ -3269,6 +3284,21 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     mov eax,[BGPT1+ebx*2+%1*512]
     mov [ofsmtptr],eax
     mov [ofsmtptrs],eax
+
+    mov word[bgtxadd2],0
+    cmp word[BGPT3X+ebx*2],0
+    je .yesoverfl
+    mov cx,word[BG3SXl+ebx*2]
+    add cx,16
+    test cx,100h
+    jz .notoverfl
+    add dword[ofsmcptr],800h
+    sub word[bgtxadd2],800h
+    jmp .yesoverfl
+.notoverfl
+    add word[bgtxadd2],800h
+.yesoverfl
+
     mov ecx,[BG1SXl+ebx*2+%1*512]
     mov edx,[BGPT1X+ebx*2+%1*512]
     test ecx,100h

@@ -63,7 +63,7 @@ EXTSYM ngwinptr,objwlrpos,objwen,objclineptr,CSprWinPtr
 EXTSYM BuildWindow2    
 EXTSYM NGNumSpr
 EXTSYM fulladdtab
-EXTSYM FPUCopy
+EXTSYM FPUCopy,bgtxadd2
 
 NEWSYM NewGfx16AsmStart
 

@@ -28,7 +28,7 @@ EXTSYM yposngom,flipyposngom,cbgval,ofsmval,ofsmvalh,vram,CPalPtrng,BGMS1,scadtn
 EXTSYM CMainWinScr,CSubWinScr,UnusedBit,res640,mosclineval,mostranspval
 EXTSYM vcache2bs,vcache4bs,vcache8bs
 EXTSYM vidmemch2s,vidmemch4s,vidmemch8s
-EXTSYM cpalval
+EXTSYM cpalval,bgtxadd2
 EXTSYM SpecialLine
 
 NEWSYM NewG162AsmStart

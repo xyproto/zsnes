@@ -431,6 +431,7 @@
     inc dword[bg1totng+%9*4]
     add word[ofsmmptr],2
     add word[ofsmtptr],2
+
     mov ax,[ofsmmptr]
     mov ebx,[yposngom]
     mov edx,[flipyposngom]
@@ -470,6 +471,11 @@
     add ebx,[ofsmcptr2]
     add dword[ofsmcptr2],2
     and dword[ofsmcptr2],3Fh
+    test dword[ofsmcptr2],3Fh
+    jnz %%notzeroed
+    mov bx,[bgtxadd2]
+    add word[ofsmcptr],bx
+%%notzeroed
     test dword[ebx-40h],8000h
     jnz near %%noofsmh
     test dword[ebx-40h],2000h << %9
@@ -639,6 +645,11 @@
     add dword[ofsmcptr2],2
     mov ecx,[ofsmvalh]
     and dword[ofsmcptr2],3Fh
+    test dword[ofsmcptr2],3Fh
+    jnz %%notzeroed
+    mov bx,[bgtxadd2]
+    add word[ofsmcptr],bx
+%%notzeroed
     test dword[ebx-40h],ecx
     jz %%noofsmh
     mov ebx,[ebx-40h]
@@ -835,6 +846,11 @@
 %%noofsm
     add dword[ofsmcptr2],2
     and dword[ofsmcptr2],3Fh
+    test dword[ofsmcptr2],3Fh
+    jnz %%notzeroed
+    mov bx,[bgtxadd2]
+    add word[ofsmcptr],bx
+%%notzeroed
 
     add edi,16
     xor dword[switch16x16],1

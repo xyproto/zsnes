@@ -24,7 +24,7 @@ EXTSYM vidmemch4,vidmemch2,vidmemch8,mode0add,vcache4b,vcache2b,vcache8b
 EXTSYM cachesingle2bng,cachesingle8bng,ngpalcon4b,ngpalcon8b
 EXTSYM ngpalcon2b,tleftnb,tltype2b,tltype4b,tltype8b,yposng,flipyposng
 EXTSYM ofsmcptr,ofsmtptr,ofsmmptr,ofsmcyps,ofsmady,ofsmadx
-EXTSYM yposngom,flipyposngom,cbgval,ofsmval,ofsmvalh,vram
+EXTSYM yposngom,flipyposngom,cbgval,ofsmval,ofsmvalh,vram,bgtxadd2
 
 NEWSYM NewGfx2AsmStart
 
