@@ -37,7 +37,7 @@
 #include <string.h>
 
 #ifndef __GNUC__
-#define INLINE __inline__
+#define INLINE
 #else
 #define INLINE static inline
 #endif
