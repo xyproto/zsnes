@@ -86,6 +86,10 @@ NEWSYM transdma
     ; get address order to be written
     xor ebx,ebx
     and al,00000111b
+    cmp al,5
+    jne .notmode5dma
+    mov al,1
+.notmode5dma
     mov bl,al
     shl bl,3
     add ebx,.addrwrite
