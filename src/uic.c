@@ -21,8 +21,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 //C++ style code in C
 #define bool unsigned char
-#define true 1
-#define false 0
+#define TRUE 1
+#define FALSE 0
 
 extern void outofmemory();
 extern unsigned char *spc7110romptr;
