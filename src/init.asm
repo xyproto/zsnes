@@ -1394,7 +1394,6 @@ NEWSYM HIRQSkip,     db 0
 NEWSYM ClearScreenSkip, db 0
 NEWSYM hirqmode2, db 0
 NEWSYM ENVDisable, db 0
-NEWSYM MMXSRAMFix, db 0
 SECTION .text
 
 ; hacks :
@@ -1509,7 +1508,6 @@ NEWSYM headerhack
     mov byte[ClearScreenSkip],0
     mov byte[hirqmode2],0
     mov byte[ENVDisable],0
-    mov byte[MMXSRAMFix],0
 
     mov esi,[romdata]
     add esi,0FFC0h
@@ -2490,12 +2488,14 @@ NEWSYM curromsize, resb 1
 NEWSYM cromptradd, resd 1
 NEWSYM NoiseDisTemp, resd 2
 NEWSYM lorommapmode2, resb 1
+NEWSYM MMXSRAMFix, resb 1
 SECTION .text
 
 NEWSYM initsnes
     mov byte[ForceNewGfxOff],0
     mov dword[NoiseDisTemp],0
     mov dword[NoiseDisTemp+4],0
+    mov byte[MMXSRAMFix],0
 
     mov esi,[romdata]
     add esi,7FC0h
