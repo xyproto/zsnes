@@ -932,32 +932,66 @@ GUIGUIOptnsKeys:
     jne .guioptn6
     xor byte[JoyPad1Move],1
 .guioptn6
+    cmp dh,'N'
+    jne .guioptn7
+    cmp byte[GUIEffect],0
+    je .snoweffect
+    cmp byte[GUIEffect],1
+    je .nosnoweffect
+    cmp byte[GUIEffect],2
+    je .snoweffect
+    je .guioptn7
+.nosnoweffect
+    mov byte[GUIEffect],0
+    je .guioptn7
+.snoweffect
+    mov byte[GUIEffect],1
+.guioptn7
+    cmp dh,'E'
+    jne .guioptn8
+    cmp byte[GUIEffect],0
+    je .watereffect
+    cmp byte[GUIEffect],1
+    je .watereffect
+    cmp byte[GUIEffect],2
+    je .nowatereffect
+    je .guioptn8
+.nowatereffect
+    mov byte[GUIEffect],0
+    je .guioptn8
+.watereffect
+    mov byte[GUIEffect],2
+.guioptn8
 %ifdef __WIN32__
     cmp dh,'A'
-    jne .guioptn7
-    xor byte[AlwaysOnTop],1
-.guioptn7
-    cmp dh,'V'
-    jne .guioptn8
-    xor byte[SaveMainWindowPos],1
-.guioptn8
-    cmp dh,'L'
     jne .guioptn9
-    xor byte[AllowMultipleInst],1
+    xor byte[AlwaysOnTop],1
 .guioptn9
-    cmp dh,'H'
+    cmp dh,'V'
     jne .guioptn10
-    xor byte[MouseWheel],1
+    xor byte[SaveMainWindowPos],1
 .guioptn10
-    cmp dh,'R'
+    cmp dh,'L'
     jne .guioptn11
-    xor byte[TrapMouseCursor],1
+    xor byte[AllowMultipleInst],1
 .guioptn11
+    cmp dh,'H'
+    jne .guioptn12
+    xor byte[MouseWheel],1
+.guioptn12
+    cmp dh,'F'
+    jne .guioptn13
+    xor byte[FilteredGUI],1
+.guioptn13
+    cmp dh,'R'
+    jne .guioptn14
+    xor byte[TrapMouseCursor],1
+.guioptn14
 %endif
     cmp dh,'T'
-    jne .guioptn12
+    jne .guioptn15
     xor byte[GUIEnableTransp],1
-.guioptn12
+.guioptn15
     ret
 
 GUISoundKeys:

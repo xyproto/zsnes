@@ -4875,10 +4875,10 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,60,111,GUIGUIOptnsTextG
     GUIOuttextwin2 10,100,111,GUIGUIOptnsTextH
     GUIOuttextwin2 10,147,111,GUIGUIOptnsTextI
-    GUIOuttextwin2 10,26,88,GUIGUIOptnsTextB
-    GUIOuttextwin2 10,26,98,GUIGUIOptnsTextC
+    GUIOuttextwin2u 10,26,88,GUIGUIOptnsTextB,1
+    GUIOuttextwin2u 10,26,98,GUIGUIOptnsTextC,3
     GUIOuttextwin2u 10,138,28,GUIGUIOptnsTextJ,0
-    GUIOuttextwin2 10,138,48,GUIGUIOptnsTextM
+    GUIOuttextwin2u 10,138,48,GUIGUIOptnsTextM,0
 %ifdef __WIN32__
     GUIOuttextwin2u 10,26,173,GUIGUIOptnsTextE,0
     GUIOuttextwin2u 10,26,183,GUIGUIOptnsTextF,2
