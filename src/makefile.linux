@@ -60,7 +60,7 @@ OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ}
 LIBS=`sdl-config --libs` -lz
 CFLAGS=-g -D__LINUX__ `sdl-config --cflags`
 ASM=nasm
-ASMFLAGS=-f elf -D__LINUX__ -g
+ASMFLAGS=-f elf -D__LINUX__ -g -w-orphan-labels
 CC=gcc
 PP=g++
 
