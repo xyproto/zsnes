@@ -3540,7 +3540,11 @@ NEWSYM NumofBanks,    dd 0
 NEWSYM NumofBytes,    dd 0
 NEWSYM ZipSupport, db 0
 InGUI db 0
+%ifdef __LINUX__
+tempdirname db '/tmp/zziptmp',0
+%else
 tempdirname db 'zziptmp_.__z',0
+%endif
 PrevDir db '..',0
 SECTION .text
 
