@@ -650,6 +650,7 @@ NEWSYM RewindFrames, db 6
 NEWSYM KeyInsrtChap,  dd 0
 NEWSYM KeyNextChap,   dd 0
 NEWSYM KeyPrevChap,   dd 0
+NEWSYM MovieDisplayFrame, db 0
 
 GUIsave equ $-GUIRAdd
 

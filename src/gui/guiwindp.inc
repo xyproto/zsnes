@@ -5564,6 +5564,7 @@ DisplayGUIMovies:
     GUIOuttextwin2 15,9,136,GUIMovieTextE
     GUIOuttextwin2 15,9,146,GUIMovieTextF
     GUIOuttextwin2 15,9,156,GUIMovieTextG
+    GUIOuttextwin2 15,21,166,GUIMovieTextI    
     add byte[GUItextcolor],15
     GUIOuttextwin2 15,60,15,GUIMovieText4
     GUIOuttextwin2 15,6,114,GUIMovieTextA
@@ -5590,6 +5591,7 @@ DisplayGUIMovies:
     GUIOuttextwin2 15,8,135,GUIMovieTextE
     GUIOuttextwin2 15,8,145,GUIMovieTextF
     GUIOuttextwin2 15,8,155,GUIMovieTextG
+    GUIOuttextwin2 15,20,165,GUIMovieTextI    
     GUIDisplayButtonHole 15,60,25,byte[CMovieExt],'v'
     GUIDisplayButtonHole 15,80,25,byte[CMovieExt],'1'
     GUIDisplayButtonHole 15,100,25,byte[CMovieExt],'2'
@@ -5629,6 +5631,13 @@ DisplayGUIMovies:
     DGOptnsBorderBox 15,96,133
     DGOptnsBorderBox 15,96,143
     DGOptnsBorderBox 15,96,153
+    
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[MovieDisplayFrame],0
+    je .nocheckboxMDF
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckboxMDF
+    GUIDisplayIconWin 15,8,162,[GUITemp]
     ret
 
 SECTION .data
@@ -5649,6 +5658,7 @@ GUIMovieTextE db 'INSERT CHAPTER',0
 GUIMovieTextF db 'NEXT CHAPTER',0
 GUIMovieTextG db 'PREV CHAPTER',0
 GUIMovieTextH db 'MOVIE KEYS :',0
+GUIMovieTextI db 'DISPLAY FRAMES',0
 NEWSYM CMovieExt, db 'v'
 
 SECTION .text

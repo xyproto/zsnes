@@ -69,7 +69,7 @@ EXTSYM HalfTransB,HalfTransC
 
 EXTSYM cur_zst_size,old_zst_size
 EXTSYM MovieProcessing,mzt_chdir,UpChdir
-EXTSYM MovieFrameStr,GetMovieFrameStr
+EXTSYM MovieFrameStr,GetMovieFrameStr,MovieDisplayFrame
 
 %ifdef __MSDOS__
 EXTSYM SB_blank
@@ -3570,6 +3570,8 @@ NEWSYM copyvid
     dec dword[MessageOn]
 .nomsg
     cmp byte[MovieProcessing],0
+    jz .nomovie4
+    cmp byte[MovieDisplayFrame],0
     jz .nomovie4
     pushad
     call GetMovieFrameStr
