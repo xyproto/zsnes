@@ -261,8 +261,10 @@ GUIloadfilename:
     add edi,4
     dec ecx
     jnz .n
+    EXTSYM clearmem2
+    pushad
     call clearmem2
-
+    popad
     mov dword[nmiprevaddrl],0
     mov dword[nmiprevaddrh],0
     mov dword[nmirept],0

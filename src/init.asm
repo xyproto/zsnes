@@ -192,7 +192,10 @@ NEWSYM init
     dec ecx
     jnz .rbackupl
     mov byte[virqnodisable],0
+    EXTSYM clearmem
+    pushad
     call clearmem
+    popad
     call inittable
     call inittableb
     call inittablec
@@ -2885,75 +2888,6 @@ NEWSYM procexecloop
 ; Change execloop
 ;*******************************************************
 NEWSYM changeexecloop
-    ret
-
-;*******************************************************
-; Clear Memory
-;*******************************************************
-;vidbuffera  resb 131072
-;romdataa    resb 4194304+32768+2097152
-;wramdataa   resb 65536
-;ram7fa      resb 65536
-;vrama       resb 65536
-;srama       resb 32768
-;debugbufa   resb 80000
-;regptra     resb 49152
-;regptwa     resb 49152
-;vcache2ba   resb 262144
-;vcache4ba   resb 131072
-;vcache8ba   resb 65536
-
-%macro helpclearmem2 2
-    mov edi,%1
-    mov ecx,%2
-    rep stosd
-%endmacro
-
-
-NEWSYM clearmem
-    xor eax,eax
-    helpclearmem [vidbuffer], 131072
-    helpclearmem wramdataa, 65536
-    helpclearmem ram7fa, 65536
-    helpclearmem [vram], 65536
-    helpclearmem srama, 65536
-    helpclearmem debugbufa, 80000
-    helpclearmem regptra, 49152
-    helpclearmem regptwa, 49152
-    helpclearmem [vcache2b], 262144
-    helpclearmem [vcache4b], 131072
-    helpclearmem [vcache8b], 65536
-    helpclearmem vidmemch2, 4096
-    helpclearmem vidmemch4, 4096
-    helpclearmem vidmemch8, 4096
-    helpclearmem pal16b, 1024
-    helpclearmem pal16bcl, 1024
-    helpclearmem pal16bclha, 1024
-    mov eax,0FFFFh
-    helpclearmem2 pal16bxcl, 256
-    xor al,al
-    mov al,0FFh
-    mov edi,[romdata]
-    mov ecx,4194304+32768
-    cmp byte[Sup48mbit],0
-    je .no48mb
-    add ecx,2097152
-.no48mb
-    cmp byte[Sup16mbit],0
-    je .no16mb
-    sub ecx,2097152
-.no16mb
-    rep stosb
-;    ret
-NEWSYM clearmem2
-    mov edi,[sram]
-    mov eax,0FFFFFFFFh
-    mov ecx,8192*2
-    rep stosd
-    mov al,0FFh
-    mov edi,spcRam
-    mov ecx,65472
-    rep stosb
     ret
 
 ;*******************************************************

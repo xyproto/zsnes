@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
+#include <string.h>
 
 //C++ style code in C
 #define bool unsigned char
@@ -352,6 +352,76 @@ void MirrorROM()
 }
 
 
+//Memory Setup functions
+extern unsigned char wramdataa[65536];
+extern unsigned char ram7fa[65536];
+extern unsigned char srama[65536];
+extern unsigned char debugbufa[80000];
+extern unsigned char regptra[49152];
+extern unsigned char regptwa[49152];
+extern unsigned char vidmemch2[4096];
+extern unsigned char vidmemch4[4096];
+extern unsigned char vidmemch8[4096];
+extern unsigned char pal16b[1024];
+extern unsigned char pal16bcl[1024];
+extern unsigned char pal16bclha[1024];
+extern unsigned char pal16bxcl[256];
+extern unsigned char spcRam[65472];
+
+extern unsigned char *sram;
+extern unsigned char *vidbuffer;
+extern unsigned char *vram;
+extern unsigned char *vcache2b;
+extern unsigned char *vcache4b;
+extern unsigned char *vcache8b;
+
+void clearmem()
+{
+  memset(vidbuffer, 0, 131072);
+  memset(wramdataa, 0, 65536);
+  memset(ram7fa, 0, 65536);
+  memset(vram, 0, 65536);
+  memset(srama, 0, 65536);
+  memset(debugbufa, 0, 80000);
+  memset(regptra, 0, 49152);
+  memset(regptwa, 0, 49152);
+  memset(vcache2b, 0, 262144);
+  memset(vcache4b, 0, 131072);
+  memset(vcache8b, 0, 65536);
+  memset(vidmemch2, 0, 4096);
+  memset(vidmemch4, 0, 4096);
+  memset(vidmemch8, 0, 4096);
+  memset(pal16b, 0, 1024);
+  memset(pal16bcl, 0, 1024);
+  memset(pal16bclha, 0, 1024);
+  memset(pal16bxcl, 0xFF, 256);
+  memset(romdata, 0xFF, maxromspace+32768);
+}
+
+void clearmem2()
+{
+  /*
+  SPC RAM is filled with alternating 0x00 and 0xFF for 0x20 bytes. 
+  
+  Basically the SPCRAM is initialized as follows:
+  xx00 - xx1f: $00
+  xx20 - xx3f: $ff
+  xx40 - xx5f: $00
+  xx60 - xx7f: $ff
+  xx80 - xx9f: $00
+  xxa0 - xxbf: $ff
+  xxc0 - xxdf: $00
+  xxe0 - xxff: $ff
+  */
+  unsigned int i;
+  for (i = 0; i < 65472; i += 0x40)
+  {
+    memset(spcRam+i, 0, 0x20);
+    memset(spcRam+i+0x20, 0xFF, 0x20);
+  }    
+
+  memset(sram, 0xFF, 16384);
+}
 
 
 /*
@@ -362,8 +432,6 @@ Would be nice to trash this section in the future
 */
 
 
-#include <string.h>
-
 extern unsigned char  disablehdma;
 extern unsigned char  Offby1line;
 extern unsigned char  CacheCheckSkip;
@@ -373,7 +441,6 @@ extern unsigned char  hdmaearlstart;
 extern unsigned int   WindowDisables;
 extern unsigned char  ClearScreenSkip;
 extern unsigned char  ENVDisable;
-extern unsigned char  *spcRam;
 extern unsigned char  latchyr;
 extern unsigned char  cycpb268;
 extern unsigned char  cycpb358;
@@ -388,8 +455,6 @@ extern unsigned char  opexec358cph;
 extern unsigned char  DSP1Type;
 extern unsigned int   ewj2hack;
 extern unsigned char  cycpl;
-extern unsigned short ramsize;
-extern unsigned short ramsizeand;
 
 void headerhack()
 {
