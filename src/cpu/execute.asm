@@ -3840,7 +3840,7 @@ NEWSYM cpuover
     xor byte[cfield],1
 .nocfield
     mov word[curypos],0
-
+    xor byte[ppustatus],80h
     cmp dword[numspcvblleft],0
     je near .novblch
     cmp [lowestspc],ebp
