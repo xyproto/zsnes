@@ -144,6 +144,7 @@ EXTSYM Disconnect
 EXTSYM UDPDisableMode,UDPEnableMode,UDPClearVars,UDPWait1Sec
 EXTSYM WinErrorA2,WinErrorB2,WinErrorC2
 EXTSYM ZsnesPage
+EXTSYM V8Mode,GrayscaleMode
 EXTSYM _imp__GetLocalTime@4
 
 
@@ -985,8 +986,6 @@ NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
     ret
 
 
-NEWSYM TempBlah, dd 0
-
 NEWSYM InitPreGame   ; Executes before starting/continuing a game
     mov byte[pressed+1],2
     pushad
@@ -996,6 +995,12 @@ NEWSYM InitPreGame   ; Executes before starting/continuing a game
     pushad
     call initwinvideo
     popad
+
+    mov al,[GrayscaleMode]
+    cmp al,[V8Mode]
+    je .nochangemode
+    xor byte[V8Mode],1
+.nochangemode
 
     mov byte[RaisePitch],1
     pushad

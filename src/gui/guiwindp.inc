@@ -1705,9 +1705,7 @@ DisplayGUIVideo:
     je .notext8
     GUIOuttextwin2 5,26,178,GUIVideoText8b
 .notext8
-%ifndef __MSDOS__
     GUIOuttextwin2 5,26,188,GUIVideoText8c
-%endif
     GUIOuttextwin2 5,130,188,GUIVideoText9
     add byte[GUItextcolor],15
 
@@ -1800,9 +1798,7 @@ DisplayGUIVideo:
     je .notext8b
     GUIOuttextwin2 5,25,177,GUIVideoText8b
 .notext8b
-%ifndef __MSDOS__
     GUIOuttextwin2 5,25,187,GUIVideoText8c
-%endif
     GUIOuttextwin2 5,129,187,GUIVideoText9
     DrawGUIButton 5,128,60,164,71,GUIVideoText8,4,0,0
     mov al,[GUIWincol]
@@ -1921,14 +1917,12 @@ DisplayGUIVideo:
 .nocheckbox1m72
     GUIDisplayIconWin 5,11,173,[GUITemp]
 .nocheckboxm72
-%ifndef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[GrayscaleMode],0
     je .nocheckboxm73
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckboxm73
     GUIDisplayIconWin 5,11,183,[GUITemp]
-%endif
 %ifndef __LINUX__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[vsyncon],0

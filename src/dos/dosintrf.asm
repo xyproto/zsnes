@@ -54,6 +54,7 @@ EXTSYM DOSJoyRead
 EXTSYM pl1contrl,pl2contrl,pl3contrl,pl4contrl,pl5contrl
 EXTSYM BufferSizeW,BufferSizeB,ProcessSoundBuffer
 EXTSYM TCPIPPortNum
+EXTSYM V8Mode,GrayscaleMode
 ;    EXTSYM InitTCP
 ;    EXTSYM StartServer
 ;    EXTSYM InitTCP
@@ -753,6 +754,13 @@ NEWSYM InitPreGame   ; Executes before starting/continuing a game
     jc near interror
     mov [oldhand8s],cx
     mov [oldhand8o],edx
+
+    mov al,[GrayscaleMode]
+    cmp al,[V8Mode]
+    je .nochangemode
+    xor byte[V8Mode],1
+.nochangemode
+
 .nofs
     cmp byte[NoSoundReinit],1
     je .nosound

@@ -2183,9 +2183,7 @@ DisplayGUIVideoClick:
     je .nocheckboxttb
     GUIClickCButton5 11,163,byte[Triplebufen],1
 .nocheckboxttb
-%ifndef __MSDOS__
     GUIClickCButton 11,183,byte[GrayscaleMode]
-%endif
 %ifndef __LINUX__
     GUIClickCButton2 115,183,byte[vsyncon],byte[cfgvsync],1
 %endif

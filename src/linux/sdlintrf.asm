@@ -132,6 +132,7 @@ EXTSYM UDPDisableMode,UDPEnableMode,UDPClearVars,UDPWait1Sec
 EXTSYM WinErrorA2,WinErrorB2,WinErrorC2
 EXTSYM ZsnesPage
 EXTSYM GetLocalTime
+EXTSYM V8Mode,GrayscaleMode
 
 NEWSYM WinIntRFAsmStart
 
@@ -807,6 +808,12 @@ NEWSYM InitPreGame   ; Executes before starting/continuing a game
     pushad
     call initwinvideo
     popad
+
+    mov al,[GrayscaleMode]
+    cmp al,[V8Mode]
+    je .nochangemode
+    xor byte[V8Mode],1
+.nochangemode
 
     mov byte[RaisePitch],1
     pushad

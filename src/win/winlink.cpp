@@ -1476,8 +1476,6 @@ void Stop36HZ(void)
 
 char WinMessage[256];
 extern unsigned char cvidmode;
-extern BYTE GrayscaleMode;
-extern BYTE V8Mode;
 DWORD FirstVid=1;
 DWORD FirstFull=1;
 extern BYTE GUIWFVID[];
@@ -1491,8 +1489,6 @@ void initwinvideo(void)
    WINDOWPLACEMENT wndpl;
    RECT rc1, swrect;
    DWORD newmode=0;
-
-   V8Mode = (GrayscaleMode == 1);
 
    if (CurMode!=cvidmode)
    {
