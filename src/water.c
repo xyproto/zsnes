@@ -388,7 +388,7 @@ void SineBlob(int x, int y, int radius, int height, int page)
       square = cy*cy + cx*cx;
       if(square < radsquare)
       {
-        dist = sqrt(square*length);
+        dist = (int) sqrt(square*length);
         Height[page][SCRW*(cy+y) + cx+x]
           += (int)((FCos(dist)+0xffff)*(height)) >> 19;
       }

@@ -91,9 +91,9 @@ void hsi2rgb(double h, double s, double i, struct colorvalue *c)
   bv = 1 + s * sin(t + 2 * M_PI / 3);
   t = 255.999 * i / 2;
   {
-    c->r = floor(rv * t);
-    c->g = floor(gv * t);
-    c->b = floor(bv * t);
+    c->r = (unsigned char) floor(rv * t);
+    c->g = (unsigned char) floor(gv * t);
+    c->b = (unsigned char) floor(bv * t);
   }
 }
 
