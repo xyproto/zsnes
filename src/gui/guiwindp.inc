@@ -4748,10 +4748,12 @@ GUIGUIOptnsTextD dd 'MAIN WINDOW OPTIONS :',0
 GUIGUIOptnsTextE dd 'ALWAYS ON TOP',0
 
 DisplayGUIAbout:
-    cmp byte[OSPort],3
-    jne .notwin32
+;    cmp byte[OSPort],3
+;    jne .notwin32
+%ifndef __MSDOS__
     mov dword[GUIwinsizey+11*4],124
-.notwin32
+%endif
+;.notwin32
     mov byte[GUIGUIAboutText1+1],'S'+136
     mov byte[GUIGUIAboutText1+2],'N'-26
     add byte[GUIGUIAboutText1+2],26
@@ -4764,8 +4766,9 @@ DisplayGUIAbout:
     mov byte[GUItextcolor],211
 .zero3
     add byte[GUIGUIAboutText1+4],97
-    cmp byte[OSPort],3
-    je near .win32
+;    cmp byte[OSPort],3
+;    je near .win32
+%ifdef __MSDOS__
     sub byte[GUItextcolor],15
     GUIOuttextwin2 11,6,16,GUIGUIAboutText1
     GUIOuttextwin2 11,6,36,GUIGUIAboutText3
@@ -4794,7 +4797,7 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,5,25,GUIGUIAboutText2
     GUIOuttextwin2 11,5,55,GUIGUIAboutText5
     ret
-.win32
+%else
     DrawGUIButton 11,5,117,74,128,GUIGUIAboutText8,65,0,0
     sub byte[GUItextcolor],15
     GUIOuttextwin2 11,6,16,GUIGUIAboutText1
@@ -4826,6 +4829,7 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,5,35,GUIGUIAboutText2
     GUIOuttextwin2 11,5,65,GUIGUIAboutText5
     ret
+%endif 
 
 GUIGUIAboutText1 db 'ZSNES V0.Agh  ',0
 GUIGUIAboutText2 db 'CODED BY :  ',0
@@ -4841,6 +4845,7 @@ GUIGUIAboutText7 db 'WIN PORT V0.89',0
 %elifdef __LINUX__
 GUIGUIAboutText7 db 'LINUX PORT V0.17',0
 %endif
+
 GUIGUIAboutText8 db 'HOMEPAGE',0
 
 DisplayGUIMovies:
