@@ -6124,9 +6124,11 @@ DisplayGUICombo:
     GUIOuttextwin2c 16,14,94,GUIGameDisplayKy
 
     ; Buttons
-    mov al,[TextColorSp+2]
-    add al,15
-    mov byte[GUItextcolor],al
+    mov byte[GUItextcolor],217
+    cmp byte[GUIWincoladd],0
+    je .zero20
+    mov byte[GUItextcolor],211
+.zero20
     DrawGUIButton 16,202,20,246,31,GUIComboTextA,60,-1,0
     DrawGUIButton 16,202,35,246,46,GUIComboTextB,61,-1,0
     DrawGUIButton 16,202,50,246,61,GUIComboTextC,62,-1,0
