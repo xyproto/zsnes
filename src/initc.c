@@ -19,11 +19,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __LINUX__
 #include "gblhdr.h"
+#define DIR_SLASH "/"
 #else
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#define DIR_SLASH "\\"
 #endif
 #include "zip/zunzip.h"
 
@@ -44,6 +46,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define MB_bytes 0x100000
 #define Mbit_bytes 0x20000
+
+
+
+void Debug_WriteString(char *str)
+{
+  FILE *fp = 0;
+  fp = fopen("zsnes.dbg", "w");
+  if (!fp) { return; }
+  fputs(str, fp);
+  fclose(fp);
+}
 
 
 //I want to port over the more complicated
@@ -414,16 +427,16 @@ void loadFile(char *filename)
         stat_results.st_size -= 512;
         fseek(fp, 512, SEEK_SET);
       }
-        
+
       fread(ROM+curromspace, stat_results.st_size, 1, fp);
       fclose(fp);
-  
+
       curromspace += stat_results.st_size;
-      
+
       if (!multifile) { return; }
       
       (*incrementer)++;
-    }  
+    }
     else
     {
       return;
@@ -546,7 +559,7 @@ void loadZipFile(char *filename)
   {
     //Sets current file to the file we liked before
     if (unzLocateFile(zipfile, ourFile, 1) != UNZ_OK)
-    { 
+    {
       if (NSS)
       {
         (*incrementer)--;
@@ -638,7 +651,7 @@ void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
       loadFile(basepath);
     }
   }
-  
+
   if ((curromspace & 0x7FFF) == 512)
   {
     memmove(ROM, ROM+512, addOnStart);
@@ -676,7 +689,7 @@ void SplitSupport()
   unsigned char *ROM = (unsigned char *)romdata;
   SplittedROM = false;
   
-  //Same Game add on  
+  //Same Game add on
   if (ROM[Hi+26] == 0x33 && curromspace == 0x80000 &&
       !ROM[Hi+21] && !ROM[Hi+22] && !ROM[Hi+23])
   {
@@ -748,7 +761,7 @@ void loadROM()
   {
     char *ext = ZOpenFileName+strlen(ZOpenFileName)-4;
     if (!strcasecmp(ext, ".zip"))
-    { 
+    {
       isCompressed = true;
       isZip = true;
       loadZipFile(ZOpenFileName);
@@ -759,23 +772,23 @@ void loadROM()
   {
     char *ext = ZOpenFileName+strlen(ZOpenFileName)-3;
     if (!strcasecmp(ext, ".gz"))
-    { 
+    {
       isCompressed = true;
       loadGZipFile(ZOpenFileName);
     }
   }
-  
+
   if (!isCompressed) { loadFile(ZOpenFileName); }
 
   Header512 = false;
-  
+
   if (!curromspace) { return; }
-  
+
   if (!strncmp("GAME DOCTOR SF 3", (char *)romdata, 16) ||
       !strncmp("SUPERUFO", (char *)romdata+8, 8))
-  {    
+  {
     Header512 = true;
-  } 
+  }
   else
   {
     int HeadRemain = (curromspace & 0x7FFF);
@@ -783,7 +796,7 @@ void loadROM()
     {
       case 0:
         break;
-				
+
       case 512:
         Header512 = true;
         break;
@@ -1273,4 +1286,83 @@ void Setper2exec()
   opexec268cph = (unsigned char)(opexec268cph*(per2exec*0.01));
   opexec358cph = (unsigned char)(opexec358cph*(per2exec*0.01));
 }
+
+extern char FEOEZPath[1024];
+extern char SJNSPath[1024];
+extern char MDHPath[1024];
+extern char SPL4Path[1024];
+char *SPC7110filep;
+char SPC7110nfname[1024+12]; //12 is / plus 6.3
+unsigned int SPC7110IndexSize;
+extern unsigned int SPC7110Entries;
+void SPC7PackIndexLoad()
+{
+  unsigned char *ROM = (unsigned char *)romdata;
+  FILE *fp = 0;
+  SPC7110IndexSize = 0;
+
+  //Get correct path for the ROM we just loaded
+  if (!strncmp(ROM+infoloc, "HU TENGAI MAKYO ZERO ", 21))
+  {
+    strcpy(SPC7110nfname, *FEOEZPath ? FEOEZPath : "FEOEZSP7");
+  }
+  else if (!strncmp(ROM+infoloc, "JUMP TENGAIMAKYO ZERO", 21))
+  {
+    strcpy(SPC7110nfname, *SJNSPath ? SJNSPath : "SJNS-SP7");
+  }
+  else if (!strncmp(ROM+infoloc, "MOMOTETSU HAPPY      ", 21))
+  {
+    strcpy(SPC7110nfname, *MDHPath ? MDHPath : "MDH-SP7");
+  }
+  else if (!strncmp(ROM+infoloc, "SUPER POWER LEAG 4   ", 21))
+  {
+    strcpy(SPC7110nfname, *SPL4Path ? SPL4Path : "SPL4-SP7");
+  }
+
+  //Add a slash if needed
+  if (SPC7110nfname[strlen(SPC7110nfname)-1] != *DIR_SLASH)
+  {
+    strcat(SPC7110nfname, DIR_SLASH);
+  }
+
+  //Set the pointer to after the slash - needed for sa1regs.asm
+  SPC7110filep = SPC7110nfname+strlen(SPC7110nfname);
+
+  //Index file;
+  strcat(SPC7110nfname, "index.bin");
+
+  //Load the index
+  fp = fopen(SPC7110nfname, "rb");
+  if (!fp) { return; }
+  SPC7110IndexSize = fread(ROM+0x580000, 1, 12*32768, fp);
+  fclose(fp);
+
+  SPC7110Entries = 0;
+
+  //Get file pointer ready for individual pack files
+  strcpy(SPC7110filep, "123456.bin"); //Extension Lower Case
+}
+
+void SPC7_Convert_Upper()
+{
+  char *i = SPC7110filep;
+  while (*i)
+  {
+    if (islower(*i)) { *i = toupper(*i); } //To make extension Upper case
+    i++;
+  }
+}
+
+void SPC7_Convert_Lower()
+{
+  char *i = SPC7110filep;
+  while (*i)
+  {
+    if (isupper(*i)) { *i = tolower(*i); } //To make everything Lower case
+    i++;
+  }
+}
+
+
+
 

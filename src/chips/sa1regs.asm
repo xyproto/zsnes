@@ -43,7 +43,8 @@ EXTSYM regptr,regptw,romdata,SA1Status,debstop4,SDD1BankA,curromsize
 EXTSYM debuggeron
 EXTSYM Get_Time,Get_TimeDate
 EXTSYM spc7110romptr,SPC7110Entries
-EXTSYM SPC7110IndexSize,SPC7110nfname
+EXTSYM SPC7110IndexSize,SPC7110nfname,SPC7110filep
+EXTSYM SPC7_Convert_Upper,SPC7_Convert_Lower
 EXTSYM Open_File,Close_File,Read_File,File_Seek
 ;    EXTSYM Msgptr,MessageOn
 EXTSYM irqv2,irqv,nmiv2,nmiv
@@ -774,8 +775,8 @@ SPC4806w:
     mov [SPC7110TempPosition],eax
     mov eax,[edx+8]
     mov [SPC7110TempLength],eax
-    mov edx,SPC7110nfname
-    add edx,9
+ 
+    mov edx,dword[SPC7110filep]
     mov eax,[SPCCompPtr]
     and eax,0FFFFFFh
     mov ecx,6
@@ -796,7 +797,18 @@ SPC4806w:
 
     mov edx,SPC7110nfname
     call Open_File
+    jnc .nocaseerror
+    pushad
+    call SPC7_Convert_Upper
+    popad
+    call Open_File
+    jnc .nocaseerror
+    pushad
+    call SPC7_Convert_Lower
+    popad
+    call Open_File
     jc .error
+.nocaseerror
     mov bx,ax
     mov dx,[SPC7110TempPosition]
     mov cx,[SPC7110TempPosition+2]

@@ -125,6 +125,7 @@ EXTSYM MirrorROM
 EXTSYM SplittedROM
 EXTSYM addOnStart
 EXTSYM addOnSize
+EXTSYM SPC7PackIndexLoad,SPC7110IndexSize
 
 EXTSYM SetaCmdEnable,setaramdata
 EXTSYM setaaccessbankr8,setaaccessbankw8,setaaccessbankr8a,setaaccessbankw8a
@@ -3029,21 +3030,16 @@ SECTION .text
 
 SECTION .data
 
-SPC7110DIRA db 'FEOEZSP7',0
-SPC7110DIRB db 'SMHT-SP7',0
 SDD1DIRA db 'SOCNSDD1',0
 SDD1DIRB db 'SFZ2SDD1',0
 SDD1DIRC db 'SFA2SDD1',0
 SDD1DIRD db 'SF2ESDD1',0
-SPC7110IndexName db 'index.bin',0
 SPC7110DirEntry db '*.bin',0
 NEWSYM SDD1Offset, dd 65536*8
 %ifndef __LINUX__
 NEWSYM SDD1nfname, db '        \_00000-0.bin',0
-NEWSYM SPC7110nfname, db '        \      .bin',0
 %else
 NEWSYM SDD1nfname, db '        /_00000-0.bin',0
-NEWSYM SPC7110nfname, db '        /      .bin',0
 %endif
 NEWSYM SDD1ifname, db 'sdd1gfx.idx',0
 NEWSYM SDD1dfname, db 'sdd1gfx.dat',0
@@ -3056,7 +3052,6 @@ SECTION .bss
 SPC7110Allocated resb 1
 SPC7110CPtr resd 1
 SPC7110CPtr2 resd 1
-NEWSYM SPC7110IndexSize, resd 1
 NEWSYM SPC7110Entries, resd 1
 SDD1PatchAddr resd 1
 SDD1PatchOfs resd 1
@@ -3119,31 +3114,12 @@ NEWSYM SPC7110Load
 .noSDD1a
     ret
 .spc7110
-    mov edx,SPC7110DIRA
-    cmp al,0F9h
-    je .noSPC7110b
-    mov edx,SPC7110DIRB
-.noSPC7110b
-    mov eax,[edx]
-    mov [SPC7110nfname],eax
-    mov eax,[edx+4]
-    mov [SPC7110nfname+4],eax
-    call Change_Single_Dir
-    jc near .nodir
-    mov edx,SPC7110IndexName
-    call Open_File
-    jc near .noindex
-    mov bx,ax
-    mov edx,[romdata]
-    add edx,580000h
-    mov ecx,12*32768
-    call Read_File
-    mov [SPC7110IndexSize],eax
-    call Close_File
-    mov dword[SPC7110Entries],0
-    mov edx,PrevDir
-    call Change_Single_Dir
-    ret
+     pushad
+     call SPC7PackIndexLoad
+     popad
+     cmp dword[SPC7110IndexSize],0
+     je .nodir
+     ret
 .sdd1b
     cmp byte[SPC7110Allocated],0
     jne .notalloc
