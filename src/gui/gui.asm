@@ -3895,6 +3895,7 @@ InitGUI:
     call GetScreen
 .nong16b
     call ClearScreen
+    call Clear2xSaIBuffer
     call GUISetPal
     call GUIBufferData
     ret
