@@ -435,7 +435,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          if (LOWORD(wParam) != WA_INACTIVE)
          {
             IsActivated = 1;
-            if (!FirstActivate) initwinvideo(); 
+            if (FirstActivate == 0) initwinvideo(); 
             InputAcquire();
             if (FirstActivate == 1) FirstActivate = 0;
          }
@@ -1582,14 +1582,14 @@ void initwinvideo(void)
       TestJoy();
    }
 
-   if (PrevFull == 1)
+   if (FullScreen == 0 && PrevFull == 1)
    {
       PrevFull = 0;
       ReleaseDirectDraw();
       InitDirectDraw();
    }
    
-   if (FullScreen == 1) { PrevFull = 1; InitDirectDraw(); }
+   if (FullScreen == 1 && PrevFull != 1) { PrevFull = 1; InitDirectDraw(); }
 
    if (Moving == 1) return;
    
