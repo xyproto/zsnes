@@ -2245,9 +2245,9 @@ NEWSYM exitloop2
 NEWSYM exitloop
    ret
    cmp byte[nextmenupopup],1
-   jmp .okay
+   je near .okay
    cmp byte[ExecExitOkay],0
-   jmp .okay
+   je near .okay
    mov byte[pressed+1],0
    mov byte[pressed+59],0
    mov eax,[KeySaveState]
