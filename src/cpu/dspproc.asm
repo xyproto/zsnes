@@ -516,11 +516,11 @@ EXTSYM MMXSupport
 
 NEWSYM AdjustFrequency
       mov al,[SoundInterpType]
+%ifndef __MSDOS__
       mov ah,[MMXSupport]
       cmp ah,0
       jne .mmx
-      cmp al,3
-      jne .mmx
+%endif
       mov al,1
       mov [SoundInterpType],al
 .mmx
