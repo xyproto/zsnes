@@ -27,9 +27,18 @@ NEWSYM InitVidAsmStart
 
 
 
-NEWSYM clearfilter, dw 0
-NEWSYM res640,      db 0
-NEWSYM res480,      db 0
+;NEWSYM clearfilter, dw 0
+;NEWSYM res640,      db 0
+;NEWSYM res480,      db 0
+
+SECTION .bss
+
+NEWSYM clearfilter, resw 1
+NEWSYM res640, resb 1
+NEWSYM res480, resb 1
+
+
+SECTION .text
 
 NEWSYM dosinitvideo2
        jmp dosinitvideo.noaddsub
