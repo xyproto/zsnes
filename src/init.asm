@@ -1542,6 +1542,17 @@ NEWSYM headerhack
     mov byte[opexec358],187
 .notds9
 
+    mov esi,[romdata]
+    add esi,0FFC0h
+    cmp dword[esi],'Baha'
+    jne .notbahamutlagoon
+    cmp dword[esi+4],'mut '
+    jne .notbahamutlagoon
+    cmp dword[esi+8],'Lago'
+    jne .notbahamutlagoon
+    mov byte[disablehdma],1
+.notbahamutlagoon
+
     ; Lamborgini Challenge - -p 110
     mov esi,[romdata]
     add esi,07FC0h
