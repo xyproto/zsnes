@@ -525,6 +525,8 @@ reg2103w:
     shr word[oamaddr],1
     mov [oamaddr+1],bl
     shl word[oamaddr],1
+    cmp word[oamaddrs],200h
+    jbe .notinvptr
     cmp word[oamaddr],200h
     jne .notinvptr
     mov bx,[oamaddrs]
