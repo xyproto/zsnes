@@ -2949,6 +2949,318 @@ NEWSYM regaccessbankr8mp
 ; enter : BL = bank number, CX = address location
 ; leave : AL = value read
 
+EXTSYM BWShift,BWAndAddr,BWAnd,BWRAnd,SA1BWPtr
+
+%macro BWCheck 0
+    cmp byte[BWShift],0
+    jne near .shift
+.nosa1
+%endmacro
+
+NEWSYM BWUsed2, db 0
+NEWSYM BWUsed, db 0
+
+%macro BWCheck2r8 0
+.shift
+    cmp byte[SA1Status],0
+    je .nosa1
+    mov byte[debstop3],1
+    ; value of 8Fh
+    test byte[SA1Overflow+1],80h
+    jnz .2bit
+    push ecx
+    push ebx
+    sub ecx,6000h
+    push eax
+    mov eax,ecx
+    and eax,01h
+    shl eax,2
+    shr ecx,1
+    mov ebx,ecx
+    mov cl,al
+    pop eax
+    mov al,0Fh
+    shl al,cl
+    add ebx,[SA1BWPtr]
+    and al,[ebx]
+    shr al,cl
+    pop ebx
+    pop ecx
+    ret
+.2bit
+    push ecx
+    push ebx
+    sub ecx,6000h
+    push eax
+    mov eax,ecx
+    and eax,03h
+    shl eax,1
+    shr ecx,2
+    mov ebx,ecx
+    mov cl,al
+    pop eax
+    mov al,03h
+    shl al,cl
+    add ebx,[SA1BWPtr]
+    and al,[ebx]
+    shr al,cl
+    pop ebx
+    pop ecx
+    ret
+%endmacro
+
+%macro BWCheck2r16 0
+.shift
+    cmp byte[SA1Status],0
+    je .nosa1
+    ; value of 8Fh
+    test byte[SA1Overflow+1],80h
+    jnz .2bit
+    push ecx
+    push ebx
+    sub ecx,6000h
+    push eax
+    mov eax,ecx
+    and eax,01h
+    shl eax,2
+    shr ecx,1
+    mov ebx,ecx
+    mov cl,al
+    pop eax
+    mov al,0Fh
+    shl al,cl
+    add ebx,[SA1BWPtr]
+    and al,[ebx]
+    shr al,cl
+    pop ebx
+    pop ecx
+    push ecx
+    push ebx
+    sub ecx,6000h
+    inc ecx
+    push eax
+    mov eax,ecx
+    and eax,01h
+    shl eax,2
+    shr ecx,1
+    mov ebx,ecx
+    mov cl,al
+    pop eax
+    mov ah,0Fh
+    shl ah,cl
+    add ebx,[SA1BWPtr]
+    and ah,[ebx]
+    shr ah,cl
+    pop ebx
+    pop ecx
+    ret
+.2bit
+    push ecx
+    push ebx
+    sub ecx,6000h
+    push eax
+    mov eax,ecx
+    and eax,03h
+    shl eax,1
+    shr ecx,2
+    mov ebx,ecx
+    mov cl,al
+    pop eax
+    mov al,03h
+    shl al,cl
+    add ebx,[SA1BWPtr]
+    and al,[ebx]
+    shr al,cl
+    pop ebx
+    pop ecx
+    push ecx
+    push ebx
+    inc ecx
+    sub ecx,6000h
+    push eax
+    mov eax,ecx
+    and eax,03h
+    shl eax,1
+    shr ecx,2
+    mov ebx,ecx
+    mov cl,al
+    pop eax
+    mov ah,03h
+    shl ah,cl
+    add ebx,[SA1BWPtr]
+    and ah,[ebx]
+    shr ah,cl
+    pop ebx
+    pop ecx
+    ret
+%endmacro
+
+%macro BWCheck2w8 0
+.shift
+    cmp byte[SA1Status],0
+    je .nosa1
+    test byte[SA1Overflow+1],80h
+    jnz .2bit
+    push ecx
+    push ebx
+    push edx
+    sub ecx,6000h
+    push eax
+    mov eax,ecx
+    and eax,01h
+    shl eax,2
+    shr ecx,1
+    mov ebx,ecx
+    mov cl,al
+    pop eax
+    mov dh,0Fh
+    shl dh,cl
+    xor dh,0FFh
+    and al,0Fh
+    shl al,cl
+    add ebx,[SA1BWPtr]
+    and byte[ebx],dh
+    or byte[ebx],al
+    pop edx
+    pop ebx
+    pop ecx
+    ret
+.2bit
+    push ecx
+    push ebx
+    push edx
+    sub ecx,6000h
+    push eax
+    mov eax,ecx
+    and eax,03h
+    shl eax,1
+    shr ecx,2
+    mov ebx,ecx
+    mov cl,al
+    pop eax
+    mov dh,03h
+    shl dh,cl
+    xor dh,0FFh
+    and al,03h
+    shl al,cl
+    add ebx,[SA1BWPtr]
+    and byte[ebx],dh
+    or byte[ebx],al
+    pop edx
+    pop ebx
+    pop ecx
+    ret
+%endmacro
+
+%macro BWCheck2w16 0
+.shift
+    cmp byte[SA1Status],0
+    je .nosa1
+    test byte[SA1Overflow+1],80h
+    jnz .2bit
+    push eax
+    push ecx
+    push ebx
+    push edx
+    sub ecx,6000h
+    push eax
+    mov eax,ecx
+    and eax,01h
+    shl eax,2
+    shr ecx,1
+    mov ebx,ecx
+    mov cl,al
+    pop eax
+    mov dh,0Fh
+    shl dh,cl
+    xor dh,0FFh
+    and al,0Fh
+    shl al,cl
+    add ebx,[SA1BWPtr]
+    and byte[ebx],dh
+    or byte[ebx],al
+    pop edx
+    pop ebx
+    pop ecx
+    pop eax
+    push ecx
+    push ebx
+    push edx
+    inc ecx
+    sub ecx,6000h
+    push eax
+    mov eax,ecx
+    and eax,01h
+    shl eax,2
+    shr ecx,1
+    mov ebx,ecx
+    mov cl,al
+    pop eax
+    mov dh,0Fh
+    shl dh,cl
+    xor dh,0FFh
+    and ah,0Fh
+    shl ah,cl
+    add ebx,[SA1BWPtr]
+    and byte[ebx],dh
+    or byte[ebx],ah
+    pop edx
+    pop ebx
+    pop ecx
+    ret
+.2bit
+    push eax
+    push ecx
+    push ebx
+    push edx
+    sub ecx,6000h
+    push eax
+    mov eax,ecx
+    and eax,03h
+    shl eax,1
+    shr ecx,2
+    mov ebx,ecx
+    mov cl,al
+    pop eax
+    mov dh,03h
+    shl dh,cl
+    xor dh,0FFh
+    and al,03h
+    shl al,cl
+    add ebx,[SA1BWPtr]
+    and byte[ebx],dh
+    or byte[ebx],al
+    pop edx
+    pop ebx
+    pop ecx
+    pop eax
+    push ecx
+    push ebx
+    push edx
+    inc ecx
+    sub ecx,6000h
+    push eax
+    mov eax,ecx
+    and eax,03h
+    shl eax,1
+    shr ecx,2
+    mov ebx,ecx
+    mov cl,al
+    pop eax
+    mov dh,03h
+    shl dh,cl
+    xor dh,0FFh
+    and ah,03h
+    shl ah,cl
+    add ebx,[SA1BWPtr]
+    and byte[ebx],dh
+    or byte[ebx],ah
+    pop edx
+    pop ebx
+    pop ecx
+    ret
+%endmacro
+
 %macro writetobank0table 2
     mov ebx,%1
     mov ecx,%2
@@ -3130,10 +3442,13 @@ NEWSYM membank0r8chip            ; 6000-7FFF
     pop ecx
     ret
 .sa1ram
+    BWCheck
     mov ebx,[CurBWPtr]
     mov al,[ebx+ecx]
     xor ebx,ebx
     ret
+    BWCheck2r8
+
 NEWSYM membank0r8rom             ; 8000-FFFF
     add ebx,[snesmmap]
     mov al,[ebx+ecx]
@@ -3205,10 +3520,12 @@ NEWSYM membank0r16chip            ; 6000-FFFF
     pop ecx
     ret
 .sa1ram
+    BWCheck
     mov ebx,[CurBWPtr]
     mov ax,[ebx+ecx]
     xor ebx,ebx
     ret
+    BWCheck2r16
 NEWSYM membank0r16rom             ; 8000-FFFF
     add ebx,[snesmmap]
     mov ax,[ebx+ecx]
@@ -3258,10 +3575,12 @@ NEWSYM membank0w8chip            ; 6000-FFFF
     pop ecx
     ret
 .sa1ram
+    BWCheck
     mov ebx,[CurBWPtr]
     mov [ebx+ecx],al
     xor ebx,ebx
     ret
+    BWCheck2w8
 NEWSYM membank0w8rom             ; 8000-FFFF
     ret
 NEWSYM membank0w8romram             ; 0000-1FFF
@@ -3319,10 +3638,12 @@ NEWSYM membank0w16rom             ; 8000-FFFF
     pop ecx
     ret
 .sa1ram
+    BWCheck
     mov ebx,[CurBWPtr]
     mov [ebx+ecx],ax
     xor ebx,ebx
     ret
+    BWCheck2w16
 NEWSYM membank0w16romram             ; 0000-1FFF
     add cx,bx
     test cx,8000h
@@ -3577,10 +3898,12 @@ NEWSYM membank0r8SA1
     xor al,al
     ret
 .bwram
+    BWCheck
     mov ebx,[CurBWPtr]
     mov al,[ebx+ecx]
     xor ebx,ebx
     ret
+    BWCheck2r8
 
 NEWSYM membank0r16SA1
     test ecx,8000h
@@ -3620,10 +3943,12 @@ NEWSYM membank0r16SA1
     xor ax,ax
     ret
 .bwram
+    BWCheck
     mov ebx,[CurBWPtr]
     mov ax,[ebx+ecx]
     xor ebx,ebx
     ret
+    BWCheck2r16
 
 NEWSYM membank0w8SA1
     test ecx,8000h
@@ -3652,10 +3977,12 @@ NEWSYM membank0w8SA1
     jae .bwram
     ret
 .bwram
+    BWCheck
     mov ebx,[CurBWPtr]
     mov [ebx+ecx],al
     xor ebx,ebx
     ret
+    BWCheck2w8
 
 NEWSYM membank0w16SA1
     test ecx,8000h
@@ -3688,10 +4015,12 @@ NEWSYM membank0w16SA1
     jae .bwram
     ret
 .bwram
+    BWCheck
     mov ebx,[CurBWPtr]
     mov [ebx+ecx],ax
     xor ebx,ebx
     ret
+    BWCheck2w16
 
 ;*******************************************************
 ; ROM Only Access Banks (40 - 6F) / (C0 - FF)
@@ -3725,7 +4054,7 @@ NEWSYM memaccessspc7110r8
     inc word[CurDecompSize]
     ret
 
-    mov byte[debstop3],1
+;    mov byte[debstop3],1
     mov ebx,[romdata]
     add ebx,510000h
     mov al,[ebx+ecx]
@@ -3740,7 +4069,7 @@ NEWSYM memaccessspc7110r8
     xor ebx,ebx
     ret
 NEWSYM memaccessspc7110r16
-    mov byte[debstop3],1
+;    mov byte[debstop3],1
     mov ebx,[romdata]
     add ebx,510000h
     mov ax,[ebx+ecx]
@@ -4085,10 +4414,12 @@ NEWSYM regaccessbankr8SA1
     xor al,al
     ret
 .bwram
+    BWCheck
     mov ebx,[CurBWPtr]
     mov al,[ebx+ecx]
     xor ebx,ebx
     ret
+    BWCheck2r8
 
 NEWSYM regaccessbankr16SA1
     test ecx,8000h
@@ -4128,10 +4459,12 @@ NEWSYM regaccessbankr16SA1
     xor ax,ax
     ret
 .bwram
+    BWCheck
     mov ebx,[CurBWPtr]
     mov ax,[ebx+ecx]
     xor ebx,ebx
     ret
+    BWCheck2r16
 
 NEWSYM regaccessbankw8SA1
     test ecx,8000h
@@ -4167,10 +4500,12 @@ NEWSYM regaccessbankw8SA1
     jae .bwram
     ret
 .bwram
+    BWCheck
     mov ebx,[CurBWPtr]
     mov [ebx+ecx],al
     xor ebx,ebx
     ret
+    BWCheck2w8
 
 NEWSYM regaccessbankw16SA1
     test ecx,8000h
@@ -4210,10 +4545,12 @@ NEWSYM regaccessbankw16SA1
     jae .bwram
     ret
 .bwram
+    BWCheck
     mov ebx,[CurBWPtr]
     mov [ebx+ecx],ax
     xor ebx,ebx
     ret
+    BWCheck2w16
 
 NEWSYM SA1RAMaccessbankr8
     and ebx,03h
@@ -4249,7 +4586,7 @@ NEWSYM SA1RAMaccessbankw16
 
 
 NEWSYM SA1RAMaccessbankr8b
-    test byte[SA1Overflow],80h
+    test byte[SA1Overflow+1],80h
     jnz .2bit
     and ebx,07h
     shl ebx,15
@@ -4305,7 +4642,7 @@ NEWSYM SA1RAMaccessbankr8b
     ret
 
 NEWSYM SA1RAMaccessbankr16b
-    test byte[SA1Overflow],80h
+    test byte[SA1Overflow+1],80h
     jnz .2bit
     and ebx,07h
     shl ebx,15
@@ -4375,11 +4712,78 @@ NEWSYM SA1RAMaccessbankr16b
     ret
 
 NEWSYM SA1RAMaccessbankw8b
+    test byte[SA1Overflow+1],80h
+    jnz .2bit
+    and ebx,07h
+    shl ebx,15
+    test ecx,1
+    jnz .4bitb
+    shr ecx,1
+    add ebx,[SA1RAMArea]
+    and al,0Fh
+    and byte[ebx+ecx],0F0h
+    or byte[ebx+ecx],al
+    xor ebx,ebx
+    ret
+.4bitb
+    shr ecx,1
+    add ebx,[SA1RAMArea]
+    and al,0Fh
+    shl al,4
+    and byte[ebx+ecx],0Fh
+    or byte[ebx+ecx],al
+    xor ebx,ebx
+    ret
+.2bit
+    and ebx,0Fh
+    shl ebx,14
+    add ebx,[SA1RAMArea]
+    test ecx,2
+    jnz .bit1
+    test ecx,1
+    jnz .bit0
+    shr ecx,2
+    and byte[ebx+ecx],0FCh
+    and al,3
+    or byte[ebx+ecx],al
+    xor ebx,ebx
+    ret
+.bit0
+    shr ecx,2
+    and byte[ebx+ecx],0F3h
+    and al,3
+    shl al,2
+    or byte[ebx+ecx],al
+    xor ebx,ebx
+    ret
+.bit1
+    test ecx,1
+    jnz .bit0b
+    shr ecx,2
+    and byte[ebx+ecx],0CFh
+    and al,3
+    shl al,4
+    or byte[ebx+ecx],al
+    xor ebx,ebx
+    ret
+.bit0b
+    shr ecx,2
+    and byte[ebx+ecx],03Fh
+    and al,3
+    shl al,6
+    or byte[ebx+ecx],al
     xor ebx,ebx
     ret
 
 NEWSYM SA1RAMaccessbankw16b
-    xor ebx,ebx
+    push ecx
+    push ebx
+    call SA1RAMaccessbankw8b
+    pop ebx
+    pop ecx
+    inc ecx
+    mov al,ah
+    call SA1RAMaccessbankw8b
     ret
 
 NEWSYM SDD1Array, times 65536 db 0
@@ -4442,7 +4846,7 @@ NEWSYM memaccessbankr8sdd1
     or al,cl
     cmp dx,8192 ;eax,4f1591h
     jbe .nota
-    mov byte[debstop3],1
+;    mov byte[debstop3],1
 .nota
     mov ecx,[SPC7110Entries]
     mov edx,[spc7110romptr]
