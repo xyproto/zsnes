@@ -1111,7 +1111,7 @@ void ReleaseDirectDraw()
 void DInputError(int f, HRESULT hr){
    char message1[256];
 
-   sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx\n   Specific error: %.1d-%x \0",f,hr);
+   sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx/\n   Specific error: %.1d-%x \0",f,hr);
    MessageBox (NULL, message1, "DirectInput Error" , MB_ICONERROR );
 }
 
@@ -1160,10 +1160,10 @@ bool InitInput()
    hr=KeyboardInput->SetCooperativeLevel(hMainWindow,DISCL_NONEXCLUSIVE | DISCL_FOREGROUND );
 
    hr=DInput->CreateDevice(GUID_SysMouse, &MouseInput,NULL);
-   if (FAILED(hr)) {DInputError();return FALSE;}
+   if (FAILED(hr)) {DInputError(2,hr);return FALSE;}
 
    hr=MouseInput->SetDataFormat(&c_dfDIMouse);
-   if (FAILED(hr)) {DInputError();return FALSE;}
+   if (FAILED(hr)) {DInputError(3,hr);return FALSE;}
 	
    hr=MouseInput->SetCooperativeLevel(hMainWindow,DISCL_EXCLUSIVE|DISCL_FOREGROUND);
    if (FAILED(hr)) {DInputError(4,hr);return FALSE;}
