@@ -44,6 +44,11 @@ DWORD FirstSound=1;
 int AllowDefault=0;
 int SoundEnabled=1;
 
+BYTE OverlayEnabled = 0;
+DWORD Overlay = 0;
+DWORD Overlay_failed = 0;
+DWORD Overlay_Colorkey = 0;
+
 DWORD FirstActivate = 1;
 
 #define BYTE   unsigned char
@@ -74,6 +79,7 @@ LPDIRECTDRAWSURFACE7    DD_Primary = NULL;
 LPDIRECTDRAWSURFACE7    DD_CFB = NULL;
 LPDIRECTDRAWSURFACE7    DD_BackBuffer = NULL;
 LPDIRECTDRAWCLIPPER     lpDDClipper = NULL;
+DDOVERLAYFX             ddofx;
 RECT                    rcWindow;
 
 LPDIRECTINPUT8          DInput = NULL;
@@ -135,6 +141,7 @@ DWORD                   MouseButton;
 
 _int64 start, end, freq, update_ticks_pc, start2, end2, update_ticks_pc2;
 
+int InitDirectDraw();
 void ReleaseDirectDraw();
 void ReleaseDirectSound();
 void ReleaseDirectInput();
@@ -158,35 +165,59 @@ extern "C" BYTE TripleBufferWin;
 
 void DrawScreen()
 {
-   if (FullScreen == 1)
+   if (OverlayEnabled == 1 && !Overlay && !Overlay_failed)
+      InitDirectDraw();
+
+   if (Overlay)
    {
-      if (TripleBufferWin == 1)
+      if (OverlayEnabled == 0)
+         InitDirectDraw();
+
+      if (vsyncon == 1)
       {
-         DD_BackBuffer->Blt(NULL, DD_CFB, NULL, DDBLT_WAIT, NULL);
-         DD_Primary->Flip(NULL, DDFLIP_WAIT);
+         if (DD_BackBuffer == NULL) InitDirectDraw();
+         DD_CFB->Flip(NULL,DDFLIP_WAIT);
       }
       else
-      {
-         if (vsyncon == 1)
-         {
-            if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
-            {
-               DDrawError();
-            }
-         }
-         DD_Primary->Blt(&rcWindow, DD_CFB, NULL, DDBLT_WAIT, NULL);
-      }
+         if (DD_BackBuffer) InitDirectDraw();
    }
    else
    {
       if (vsyncon == 1)
       {
-         if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
+         if(FullScreen == 1)
          {
-            DDrawError();
+            if(TripleBufferWin == 1)
+            {
+               DD_BackBuffer->Blt(NULL, DD_CFB, NULL, DDBLT_WAIT, NULL);
+               DD_Primary->Flip(NULL, DDFLIP_WAIT);
+            }
+            else
+            {
+               DD_Primary->Blt(&rcWindow, DD_CFB, NULL, DDBLT_WAIT, NULL);
+            }
+         }
+         else
+         {
+            if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
+            {
+               DDrawError();
+            }
+            DD_Primary->Blt(&rcWindow, DD_CFB, NULL, DDBLT_WAIT, NULL);
          }
       }
-         DD_Primary->Blt(&rcWindow, DD_CFB, NULL, DDBLT_WAIT, NULL);
+      else
+      {
+         if (FullScreen == 1 && TripleBufferWin == 1)
+         {
+            DD_BackBuffer->Blt(NULL, DD_CFB, NULL, DDBLT_WAIT, NULL);
+            DD_Primary->Flip(NULL, DDFLIP_NOVSYNC);
+         }
+         else
+         {
+            DD_Primary->Blt(&rcWindow, DD_CFB, NULL, DDBLT_WAIT, NULL);
+         }
+      }
    }
 }
  
@@ -429,17 +460,78 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       case WM_MOVE:
          break;
       case WM_PAINT:
+         if (Overlay && Overlay_Colorkey && (DD_Primary))
+         {
+            HDC hdc;
+            POINT pt;
+            RECT rc1;
+            struct tagPAINTSTRUCT ps;
+            DDBLTFX ddbfx;
+
+            hdc = BeginPaint(hWnd, &ps);
+
+            rc1 = ps.rcPaint;
+            ClientToScreen(hMainWindow, ( LPPOINT )&rc1 );
+            ClientToScreen(hMainWindow, ( LPPOINT )&rc1 + 1 );
+
+            ddbfx.dwSize = sizeof(DDBLTFX);
+            ddbfx.dwFillColor = Overlay_Colorkey;
+
+            DD_Primary->Blt(&rc1, NULL, &rc1, DDBLT_COLORFILL |
+                                              DDBLT_WAIT, &ddbfx);
+
+            EndPaint(hWnd, &ps);
+         }
+         else
          ValidateRect(hWnd,NULL);
          break;
-      case WM_ACTIVATE: 
+      case WM_ACTIVATE:
          if (LOWORD(wParam) != WA_INACTIVE)
          {
             IsActivated = 1;
-            if (FirstActivate == 0) initwinvideo(); 
+            if(FirstActivate == 0)
+            {
+               if (Overlay == 1)
+                  ShowWindow(hMainWindow, SW_SHOWNORMAL);
+               initwinvideo();
+               if (Overlay == 1)
+               {
+                  HRESULT hr;
+                  RECT rc1;
+                  DWORD flags = DDOVER_SHOW, ddofx_ptr = NULL;
+                  if (FullScreen == 1)
+                     SetRect(&rc1, 0, 0, WindowWidth, WindowHeight);
+                  else
+                  {
+                     GetClientRect( hMainWindow, &rc1 );
+                     ClientToScreen( hMainWindow, ( LPPOINT )&rc1 );
+                     ClientToScreen( hMainWindow, ( LPPOINT )&rc1 + 1 );
+                  }
+
+                  if (Overlay_Colorkey)
+                  {
+                     ddofx.dwSize = sizeof(DDOVERLAYFX);
+                     ddofx.dckDestColorkey.dwColorSpaceLowValue = Overlay_Colorkey;
+                     ddofx.dckDestColorkey.dwColorSpaceHighValue = Overlay_Colorkey;
+
+                     flags |= DDOVER_KEYDESTOVERRIDE;
+                     ddofx_ptr = (DWORD) &ddofx;
+                  }
+
+                  if ( (hr=DD_CFB->UpdateOverlay(NULL, DD_Primary,
+                    &rc1, flags, (DDOVERLAYFX *)ddofx_ptr)) != DD_OK)
+                  {
+                     char err[256];
+                     sprintf(err,"IDirectDrawSurface7::UpdateOverlay failed: 0x%x", hr);
+                     MessageBox(NULL, err, "DirectDraw Error", MB_ICONERROR);
+                  }
+                  
+               }
+            }
             InputAcquire();
             if (FirstActivate == 1) FirstActivate = 0;
          }
-         if (LOWORD(wParam) == WA_INACTIVE) IsActivated = 0;
+         else IsActivated = 0;
          break;
       case WM_SETFOCUS:
          if (FullScreen == 0) ShowWindow(hMainWindow, SW_SHOWNORMAL);
@@ -1089,24 +1181,33 @@ void TestJoy()
 
 extern "C" DWORD converta;
 extern "C" unsigned int BitConv32Ptr;
+DWORD madeBitConv = 0;
 
 int InitDirectDraw()
 {
    DDSURFACEDESC2       ddsd2;
    DDPIXELFORMAT        format;
+   DDBLTFX              ddbfx;
+   DDCAPS               ddcaps;
+   DDSCAPS2             ddscaps;
+   RECT                 rc1;
    HRESULT hr;
    char message1[256];
    unsigned int color32,ScreenPtr2;
    int i;
 
-   ScreenPtr2=BitConv32Ptr;
-   for(i=0;i<65536;i++)
+   if (!madeBitConv)
    {
-      color32=((i&0xF800)<<8)+
-              ((i&0x07E0)<<5)+
-              ((i&0x001F)<<3)+0xFF000000;
-              (*(unsigned int *)(ScreenPtr2))=color32;
-      ScreenPtr2+=4;
+      ScreenPtr2=BitConv32Ptr;
+      for(i=0;i<65536;i++)
+      {
+         color32=((i&0xF800)<<8)+
+                 ((i&0x07E0)<<5)+
+                 ((i&0x001F)<<3)+0xFF000000;
+                 (*(unsigned int *)(ScreenPtr2))=color32;
+         ScreenPtr2+=4;
+      }
+      madeBitConv = 1;
    }
 
    if (!hMainWindow)
@@ -1125,9 +1226,25 @@ int InitDirectDraw()
       MessageBox(NULL, "DirectDrawCreateEx failed.", "DirectDraw Error", MB_ICONERROR);
    }
 
-   if (FullScreen == 1)
+
+   if (OverlayEnabled == 1 && !Overlay_failed)
    {
-      if (lpDD->SetCooperativeLevel(hMainWindow, DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT) != DD_OK)
+      ddcaps.dwSize = sizeof(DDCAPS);
+      if(lpDD->GetCaps(&ddcaps, NULL) != DD_OK)
+      {
+         MessageBox(NULL, "IDirectDraw7::GetCaps failed.", "DirectDraw Error", MB_ICONERROR);
+      }
+      if ((ddcaps.dwCaps & DDCAPS_OVERLAY) &&
+          (ddcaps.dwCaps & DDCAPS_OVERLAYSTRETCH))
+         Overlay = 1;
+      if (ddcaps.dwCaps & DDCAPS_COLORKEY)
+         Overlay_Colorkey = 1;
+   }
+   else Overlay = 0;
+
+   if(FullScreen == 1)
+   {
+      if(lpDD->SetCooperativeLevel(hMainWindow, DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT) != DD_OK)
       {
          MessageBox(NULL, "IDirectDraw7::SetCooperativeLevel failed.", "DirectDraw Error", MB_ICONERROR);
       }
@@ -1145,12 +1262,14 @@ int InitDirectDraw()
       CheckAlwaysOnTop();
    }
 
+overlay_failed:
+
    ZeroMemory(&ddsd2, sizeof(DDSURFACEDESC2));
    ddsd2.dwSize = sizeof(DDSURFACEDESC2);
    ddsd2.dwFlags = DDSD_CAPS;
    ddsd2.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
-   
-   if (FullScreen == 1)
+
+   if(!Overlay && FullScreen == 1)
    {
       ddsd2.dwFlags |= DDSD_BACKBUFFERCOUNT;
       ddsd2.dwBackBufferCount = 2;
@@ -1162,7 +1281,7 @@ int InitDirectDraw()
       MessageBox(NULL, "IDirectDraw7::CreateSurface failed.", "DirectDraw Error", MB_ICONERROR);
    }
 
-   if (FullScreen == 1)
+   if(!Overlay && FullScreen == 1)
    {
       ddsd2.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
       if (DD_Primary->GetAttachedSurface(&ddsd2.ddsCaps, &DD_BackBuffer) != DD_OK)
@@ -1170,7 +1289,7 @@ int InitDirectDraw()
          MessageBox(NULL, "IDirectDrawSurface7::GetAttachedSurface failed.", "DirectDraw Error", MB_ICONERROR);
       }
    }
-   else
+   if(FullScreen == 0)
    {
       if (lpDD->CreateClipper(0,&lpDDClipper,NULL) != DD_OK)
       {
@@ -1202,7 +1321,7 @@ int InitDirectDraw()
    BitDepth=format.dwRGBBitCount;
    GBitMask=format.dwGBitMask; // 0x07E0 or not
 
-   if (BitDepth==24)
+   if (BitDepth==24 && Overlay==0)
    {
       MessageBox(NULL,"ZSNESw does not support 24bit color.\nPlease change your resolution to either 16bit or 32bit color","Error",MB_OK);
       exit(0);
@@ -1210,18 +1329,162 @@ int InitDirectDraw()
 
    converta = (BitDepth==16 && GBitMask!=0x07E0);
 
-   ddsd2.dwSize = sizeof(ddsd2);
+   ddsd2.dwSize = sizeof(DDSURFACEDESC2);
    ddsd2.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
-   ddsd2.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN;
    ddsd2.dwWidth = SurfaceX;
    ddsd2.dwHeight = SurfaceY;
+   if (Overlay)
+   {
+      DWORD flags = DDOVER_SHOW, ddofx_ptr = NULL;
+
+      ddsd2.ddsCaps.dwCaps = DDSCAPS_OVERLAY;
+      ddsd2.dwFlags |= DDSD_PIXELFORMAT;
+      if (vsyncon == 1)
+      {
+         ddsd2.dwFlags |= DDSD_BACKBUFFERCOUNT;
+         ddsd2.ddsCaps.dwCaps |= DDSCAPS_FLIP | DDSCAPS_COMPLEX;
+         ddsd2.dwBackBufferCount = 1;
+      }
+      else DD_BackBuffer = NULL;
+
+      if (Overlay_Colorkey)
+         switch (GBitMask)
+         {
+            case 0xff00:
+               Overlay_Colorkey = 0x22ee22;
+               break;
+            case 0x7e0:
+               Overlay_Colorkey = 0x27e4;
+               break;
+            case 0x3e0:
+               Overlay_Colorkey = 0x13e4;
+               break;
+         }
+
+// force overlay to 16bpp, 5-6-5... only works on supported hardware...
+// if no 5-6-5 support, it's safe to assume the hardware doesn't support RGB
+// overlays at all
+
+// At this time of writing (7:50pm PDT 2 June 2001) the following
+// chipsets are known to support this feature:
+
+// Cirrus Logic CL-GD5465 "Laguna" - works in 16 and 32bpp modes
+// ATI Rage II* - works, unknown desktop depth
+// ATI Radeon* - works, tested in 32bpp mode, 16bpp mode assumed to work
+
+// While the following are known to NOT work with this mode:
+
+// NVidia GeForce 2 MX - fails in all desktop bit depths
+// NVidia GeForce 2 GTS* - same as above
+
+// *Tested by 3rd parties only
+
+      BitDepth = 16;
+      converta = 0;
+
+      ZeroMemory(&ddsd2.ddpfPixelFormat, sizeof(DDPIXELFORMAT));
+
+      ddsd2.ddpfPixelFormat.dwSize = sizeof(DDPIXELFORMAT);
+      ddsd2.ddpfPixelFormat.dwFlags = DDPF_RGB;
+      ddsd2.ddpfPixelFormat.dwRGBBitCount = 16;
+      ddsd2.ddpfPixelFormat.dwRBitMask = 0xf800;
+      ddsd2.ddpfPixelFormat.dwGBitMask = 0x07e0;
+      ddsd2.ddpfPixelFormat.dwBBitMask = 0x001f;
+
+      hr=lpDD->CreateSurface( &ddsd2, &DD_CFB, NULL );
+
+      if ( hr == DDERR_NOOVERLAYHW )
+
+      {
+         DD_Primary->Release();
+         Overlay = 0;
+         Overlay_failed = 1;
+         goto overlay_failed;
+      }
+
+      if ( hr != DD_OK )
+      {
+         char err[256];
+         sprintf(err, "IDirectDrawSurface7::CreateSurface failed: 0x%x", hr);
+         MessageBox(NULL, err, "DirectDraw Error", MB_ICONERROR);
+         DD_CFB->Release();
+         DD_CFB = NULL;
+         return FALSE;
+      }
+
+      if (vsyncon == 1)
+      {
+         ZeroMemory(&ddscaps, sizeof(DDSCAPS2));
+         ddscaps.dwCaps = DDSCAPS_BACKBUFFER;
+         if ( DD_CFB->GetAttachedSurface(&ddscaps, &DD_BackBuffer) != DD_OK )
+         {
+            MessageBox(NULL, "IDirectDrawSurface7::GetAttachedSurface failed.", "DirectDraw Error", MB_ICONERROR);
+            DD_CFB->Release();
+            DD_CFB = NULL;
+            DD_BackBuffer = NULL;
+            return FALSE;
+         }
+      }
+      if (FullScreen == 1)
+         SetRect(&rc1, 0, 0, WindowWidth, WindowHeight);
+      else
+      {
+         GetClientRect( hMainWindow, &rc1 );
+         ClientToScreen( hMainWindow, ( LPPOINT )&rc1 );
+         ClientToScreen( hMainWindow, ( LPPOINT )&rc1 + 1 );
+      }
+
+      if (Overlay_Colorkey)
+      {
+         ddofx.dwSize = sizeof(DDOVERLAYFX);
+         ddofx.dckDestColorkey.dwColorSpaceLowValue = Overlay_Colorkey;
+         ddofx.dckDestColorkey.dwColorSpaceHighValue = Overlay_Colorkey;
+
+         flags |= DDOVER_KEYDESTOVERRIDE;
+         ddofx_ptr = (DWORD) &ddofx;
+      }
+
+overlay_nocolorkey:
+
+      if ( (hr=DD_CFB->UpdateOverlay(NULL, DD_Primary,
+        &rc1, flags, (DDOVERLAYFX *)ddofx_ptr)) != DD_OK)
+      {
+         if (hr == DDERR_NOCOLORKEYHW)
+         {
+            Overlay_Colorkey = 0;
+            flags &= ~DDOVER_KEYDESTOVERRIDE;
+            ddofx_ptr = NULL;
+            goto overlay_nocolorkey;
+         }
+         char err[256];
+         sprintf(err,"IDirectDrawSurface7::UpdateOverlay failed: 0x%x", hr);
+         MessageBox(NULL, err, "DirectDraw Error", MB_ICONERROR);
+         DD_CFB->Release();
+         DD_CFB = NULL;
+         return FALSE;
+      }
+
+
+      if (Overlay_Colorkey)
+      {
+         ZeroMemory(&ddbfx, sizeof(DDBLTFX));
+         ddbfx.dwSize = sizeof(DDBLTFX);
+         ddbfx.dwFillColor = Overlay_Colorkey;
+
+         DD_Primary->Blt(&rc1, NULL, &rc1, DDBLT_COLORFILL | DDBLT_WAIT, &ddbfx);
+      }
+   }
+   else
+   {
+      ddsd2.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN;
+
 
    // create drawing surface
-   if (lpDD->CreateSurface(&ddsd2, &DD_CFB, NULL) != DD_OK)
-   {
-      MessageBox(NULL, "IDirectDraw7::CreateSurface failed.", "DirectDraw Error", MB_ICONERROR);
+      if(lpDD->CreateSurface(&ddsd2, &DD_CFB, NULL) != DD_OK)
+      {
+         MessageBox(NULL, "IDirectDraw7::CreateSurface failed.", "DirectDraw Error", MB_ICONERROR);
+      }
    }
-
    return TRUE;
 }
 
@@ -1247,8 +1510,11 @@ DWORD LockSurface()
 
 void UnlockSurface()
 {
-   DD_CFB->Unlock((struct tagRECT *)ddsd.lpSurface);
-   DrawScreen();
+   if (Overlay && (vsyncon == 1))
+      DD_BackBuffer->Unlock((struct tagRECT *)ddsd.lpSurface);
+   else
+      DD_CFB->Unlock((struct tagRECT *)ddsd.lpSurface);
+   DrawScreen(); 
 }
 
 extern "C" {
