@@ -1,21 +1,8 @@
-#ifdef __LINUX__ // AH
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <time.h>
 #include "SDL.h"
-#else   // __WIN32__
-#include <windows.h>
-#include <stdio.h>
-#include <ddraw.h>
-#include <initguid.h>
-#include <mmsystem.h>
-#include <math.h>
-#include <dsound.h>
-#include <dinput.h>
-#include <winuser.h>
-#include "resource.h"
-#endif  // __LINUX__
 
 #define BYTE   unsigned char
 #define WORD   unsigned short
@@ -1743,7 +1730,7 @@ void SetMouseY(int Y)
 void ZsnesPage()
 {
 #ifdef __LINUX__
-     STUB_FUNCTION;
+	STUB_FUNCTION;
 #else
      ShellExecute(NULL, NULL, "http://www.zsnes.com", NULL, NULL, 0);
 #endif // __LINUX__
