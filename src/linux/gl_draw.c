@@ -60,7 +60,6 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 	}
 
 	gl_clearwin();
-	SurfaceLocking = SDL_MUSTLOCK(surface);
 	SDL_WarpMouse(SurfaceX / 4, SurfaceY / 4);
 
 	// Grab mouse in fullscreen mode
@@ -108,19 +107,6 @@ void gl_end()
 {
 	glDeleteTextures(4, gltextures);
 	free(glvidbuffer);
-}
-
-static void LockSurface(void)
-{
-	if (SurfaceLocking)
-		SDL_LockSurface(surface);
-}
-
-static void UnlockSurface(void)
-{
-	if (SurfaceLocking)
-		SDL_UnlockSurface(surface);
-	SDL_GL_SwapBuffers();
 }
 
 extern DWORD AddEndBytes;
@@ -262,8 +248,6 @@ void gl_drawwin()
 	if (curblank != 0)
 		return;
 
-	LockSurface();
-
 	if (BilinearFilter)
 	{
 		glfilters = GL_LINEAR;
@@ -274,8 +258,6 @@ void gl_drawwin()
 	{
 		glfilters = GL_NEAREST;
 	}
-
-	glLoadIdentity();
 
 	if (En2xSaI)
 	{
@@ -416,21 +398,13 @@ void gl_drawwin()
 			{
 				glBegin(GL_QUADS);
 				glTexCoord1f(0.0f);
-				glVertex3f(-1.0f,
-					   (SurfaceY - i * 2.0) / SurfaceY,
-					   -1.0f);
+				glVertex3f(-1.0f, (SurfaceY - i * 2.0) / SurfaceY, -1.0f);
 				glTexCoord1f(0.0f);
-				glVertex3f(1.0f,
-					   (SurfaceY - i * 2.0) / SurfaceY,
-					   -1.0f);
+				glVertex3f(1.0f, (SurfaceY - i * 2.0) / SurfaceY, -1.0f);
 				glTexCoord1f(1.0f);
-				glVertex3f(1.0f,
-					   (SurfaceY -
-					    (i + 256) * 2.0) / SurfaceY, -1.0f);
+				glVertex3f(1.0f, (SurfaceY - (i + 256) * 2.0) / SurfaceY, -1.0f);
 				glTexCoord1f(1.0f);
-				glVertex3f(-1.0f,
-					   (SurfaceY -
-					    (i + 256) * 2.0) / SurfaceY, -1.0f);
+				glVertex3f(-1.0f, (SurfaceY - (i + 256) * 2.0) / SurfaceY, -1.0f);
 				glEnd();
 			}
 
@@ -438,5 +412,5 @@ void gl_drawwin()
 			glEnable(GL_TEXTURE_2D);
 		}
 	}
-	UnlockSurface();
+	SDL_GL_SwapBuffers();
 }
