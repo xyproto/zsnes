@@ -785,6 +785,8 @@ NEWSYM reg420Cw
     mov [nexthdma],al
     cmp al,0
     je near .nohdma
+    test al,80h
+    ja near .nohdma
     push ebx
     push esi
     push edi
