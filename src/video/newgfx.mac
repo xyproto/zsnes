@@ -3068,6 +3068,11 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     mov eax,[BG1SYl+ebx*2+%1*512]
     and eax,0FFFFh
     add eax,ebx
+    test byte[intrlng+ebx],01h
+    jz %%nointerl
+    add eax,ebx
+    add eax,[cfieldad]
+%%nointerl
     lea eax,[eax*8]
     and eax,38h
     mov [yposng],eax
@@ -3115,6 +3120,11 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     and ecx,0FFFFh
     mov dword[taddnfy16x16],0
     add ecx,ebx
+    test byte[intrlng+ebx],01h
+    jz %%nointerl2
+    add ecx,ebx
+    add ecx,[cfieldad]
+%%nointerl2
     mov dword[taddfy16x16],16
     test ecx,08h
     jz .nobottomy
@@ -3168,6 +3178,11 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     mov ecx,[BG1SYl+ebx*2+%1*512]
     and ecx,0FFFFh
     add ecx,ebx
+    test byte[intrlng+ebx],01h
+    jz %%nointerl3
+    add ecx,ebx
+    add ecx,[cfieldad]
+%%nointerl3
     mov dword[taddnfy16x16],0
     mov dword[taddfy16x16],16
     test ecx,08h
