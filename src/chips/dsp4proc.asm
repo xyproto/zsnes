@@ -22,6 +22,8 @@
 
 EXTSYM dsp4_address,dsp4_byte,DSP4GetByte,DSP4SetByte
 
+SECTION .text
+
 NEWSYM DSP4Read8b
     mov word[dsp4_address],cx
     pushad
@@ -53,10 +55,14 @@ NEWSYM DSP4Read16b
 NEWSYM DSP4Write16b
     mov word[dsp4_address],cx
     mov byte[dsp4_byte],al
+    mov byte[dsp4temp],ah
     pushad
     call DSP4SetByte
+    mov ah,byte[dsp4temp]
     mov byte[dsp4_byte],ah
     call DSP4SetByte
     popad
     ret
     
+SECTION .bss
+NEWSYM dsp4temp, resb 1
