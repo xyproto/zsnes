@@ -1,12 +1,203 @@
-04/04/2001  zsKnight <zsknight@zsnes.com>
-        * Fixed up new graphics engine memory leak, thanks to Trac for
-          reporting this!
-        * Updated version # in ui.asm
+2001-04-17  teuf
 
-04/04/2001  Erik Bourget <ebourg@po-box.mcgill.ca>
-	* made it compile cleanly up to linking on unix machines
-	  (fixed up some filename case problems, backslash->forward 
-	   slash issues)
-	* i don't know if this will break DOS stuff.  I assume it won't
-	  because some files asked for include files with the forward
-	  slash.
+	* src/linux/sdllink.c: Added some preliminary joystick support
+
+2001-04-17 07:29  theoddone33
+
+	* src/linux/zloaderw.c: Removed __NO_GETOPT, since the getopt stuff
+	is fixed now.
+
+2001-04-17 06:14  theoddone33
+
+	* src/cfgload.asm: Fixed GameDirectory in the config
+
+2001-04-17 05:43  theoddone33
+
+	* src/: cpu/dspproc.asm, gui/menu.asm, linux/winintrf.asm: Case
+	changes
+
+2001-04-17 05:06  theoddone33
+
+	* src/: ui.asm, gui/guiload.inc, linux/sdllink.c,
+	linux/winintrf.asm, linux/zfilew.c: Load dialog fixed up, big
+	thanks to relnev Remaining keys fixed in dialog
+
+2001-04-16 21:53  theoddone33
+
+	* src/linux/sdllink.c: clearwin works
+
+2001-04-16 20:38  theoddone33
+
+	* src/linux/sdllink.c: More changes to the Keyboard things, most
+	keys work in dialogs now.
+
+2001-04-16 08:05  theoddone33
+
+	* src/linux/sdllink.c: major changes.  relnev got auto bpp detect
+	working and implemented the remaining vidmodes.  I started work on
+	getting dialogs to work right.
+
+2001-04-16 04:39  theoddone33
+
+	* src/gui/: gui.asm, guimisc.inc: case fixes on the movie
+	extentions
+
+2001-04-16 02:02  theoddone33
+
+	* linux/AUTHORS, src/gui/guiload.inc, src/linux/zfilew.c: Start of
+	an authors file for those that have contributed to the Linux port. 
+	The start of additions from MrGrim's tree.
+
+2001-04-15 20:53  theoddone33
+
+	* src/: ui.asm, linux/sdllink.c, linux/zloaderw.c: This will
+	hopefully fix problems people have been having with getopt
+
+2001-04-15 10:21  zsknight
+
+	* src/gui/gui.asm: Win2k zip crash bug fix by Matthew Kendora
+	(memory leak bug fix)
+
+2001-04-15 10:18  zsknight
+
+	* src/: cpu/execute.asm, dos/debug.asm: Added SPC7110 logger
+
+2001-04-15 10:14  zsknight
+
+	* src/cpu/65816d.inc: Fixed b flag setting in BRK instruction in
+	6502 emulation mode
+
+2001-04-15 10:10  zsknight
+
+	* src/gui/: gui.asm, guimouse.inc, guiwindp.inc: GUI Addition for
+	Cubic Spline Sound Interpolation selection [Thanks AntiResonance!]
+
+2001-04-15 10:08  zsknight
+
+	* src/cpu/dspproc.asm: Cubic Spline Sound Interpolation [from
+	AntiResonance]
+
+2001-04-15 09:58  zsknight
+
+	* src/video/: newgfx16.asm, newgfx.asm: Variable write size error
+	[Thanks TRAC!]
+
+2001-04-15 09:49  zsknight
+
+	* src/link.win32: Updated to link the recent zip objects properly
+
+2001-04-15 09:35  zsknight
+
+	* src/: makefile.dos, makefile.win: Updated dos/win makefiles for
+	the updated zip sources by teuf.
+
+2001-04-15 09:33  zsknight
+
+	* src/ui.asm: Removed unnecessary extern for windows port
+	compatibility
+
+2001-04-15 09:31  zsknight
+
+	* src/zip/: zlib.h, zzip.c, unzip.c, unzip.h, zconf.h: Added ZIP
+	Sources
+
+2001-04-15 03:23  theoddone33
+
+	* src/: init.asm, ui.asm, linux/winintrf.asm, linux/zfilew.c,
+	linux/zloaderw.c: various fixes, the most significant being that
+	saving state now works.
+
+2001-04-14 21:07  theoddone33
+
+	* src/: ui.asm, linux/sdllink.c, linux/zloaderw.c: Added
+	eviltypeguy's significant patch to fixup command line arguments. 
+	Added a __NO_GETOPT define until we can find a resolution for
+	ragweed's problems Added a patch from relnev to fix some sound
+	problems where too many sounds are playing at once.
+
+2001-04-14 18:45  theoddone33
+
+	* src/linux/sdllink.c: Keys now map correctly
+
+2001-04-14 03:49  theoddone33
+
+	* src/linux/sdllink.c: Fix GUI updating
+
+2001-04-14 03:22  theoddone33
+
+	* src/linux/sdllink.c: Some more stuff from relnev, 640x480 enabled
+
+2001-04-14 03:09  theoddone33
+
+	* src/linux/sdllink.c: Large speed increase suggested by relnev
+
+2001-04-12 05:03  theoddone33
+
+	* src/linux/sdllink.c: Fixed non-AT&T syntax in some inline.
+
+2001-04-10 06:43  theoddone33
+
+	* src/linux/sdllink.c: sound fix
+
+2001-04-10 06:38  theoddone33
+
+	* src/win/Zsnes.ico: Fix corrupted file
+
+2001-04-10 06:28  theoddone33
+
+	* src/: cfgload.asm, endmem.asm, fixsin.h, init.asm, macros.mac,
+	makefile.dos, makefile.linux, ui.asm, vcache.asm, chips/dsp1emu.c,
+	chips/dsp1proc.asm, chips/fxemu2.asm, chips/fxemu2b.asm,
+	chips/fxemu2c.asm, chips/fxtable.asm, chips/sa1proc.asm,
+	chips/sa1regs.asm, chips/sfxproc.asm, cpu/65816dc.inc,
+	cpu/addrni.asm, cpu/dma.asm, cpu/dsp.asm, cpu/dspproc.asm,
+	cpu/e65816.inc, cpu/execute.asm, cpu/irq.asm, cpu/memory.asm,
+	cpu/regs.inc, cpu/spc700.asm, cpu/stable.asm, cpu/table.asm,
+	cpu/tableb.asm, cpu/tablec.asm, dos/debug.asm, dos/gppro.asm,
+	dos/initvid.asm, dos/joy.asm, dos/modemrtn.asm, dos/sw.asm,
+	dos/vesa12.asm, dos/vesa2.asm, gui/gui.asm, gui/guiwindp.inc,
+	gui/menu.asm, video/2xsaiw.asm, video/copyvid.inc,
+	video/m716text.asm, video/makev16b.asm, video/makev16t.asm,
+	video/makevid.asm, video/mode7.asm, video/mode716.asm,
+	video/mode716b.asm, video/mode716d.asm, video/mode716e.asm,
+	video/mode716t.asm, video/mode7ext.asm, video/mv16tms.asm,
+	video/newg162.asm, video/newgfx.asm, video/newgfx16.asm,
+	video/newgfx2.asm, video/procvid.asm: Linux commits
+
+2001-04-10 05:52  theoddone33
+
+	* src/linux/: copyvwin.asm, protect.c, resource.h, sdllink.c,
+	winintrf.asm, zfilew.c, zipxw.c, zloaderw.c, zsnes.rc, ztcp.c:
+	adding linux stuff
+
+2001-04-06 00:47  zsknight
+
+	* src/video/: newgfx16.asm, newgfx.asm: New graphics engine leak
+	fix (Thanks Trac!)
+
+2001-04-06 00:46  zsknight
+
+	* src/ui.asm: ZSNES Version # update
+
+2001-04-06 00:45  zsknight
+
+	* ChangeLog: New graphics engine leak / ZSNES Version # update
+
+2001-04-05 12:45  teuf
+
+	* src/obj/: dosbuff.o, ipx.o, unzip.o, unzip.obj, zipx.o, zzip.o,
+	zzip.obj: This time, these files should be ok
+
+2001-04-05 12:42  teuf
+
+	* src/obj/: dosbuff.o, ipx.o, unzip.o, unzip.obj, zipx.o, zzip.o,
+	zzip.obj: I stupidly corrupted those files just before the
+	release...
+
+2001-04-05 00:36  zsknight
+
+	* src/gui/guiwindp.inc: Changed version # (Winv0.85 -> Winv0.86)
+
+2001-04-05 00:34  zsknight
+
+	* src/ui.asm: Changed version # (v1.17 -> v1.18)
