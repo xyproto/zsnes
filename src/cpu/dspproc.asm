@@ -130,7 +130,7 @@ EXTSYM NoiseData,SoundCompD,Voice0Disable,csounddisable,dssel,spcRamcmp
 EXTSYM cfgecho,Surround,SoundBufEn
 EXTSYM echobuf,ENVDisable
 EXTSYM LowPassFilterType
-EXTSYM UseCubicSpline,NoiseDisTemp
+EXTSYM NoiseDisTemp
 
 NEWSYM DspProcAsmStart
 
@@ -5639,6 +5639,7 @@ NEWSYM LPFstereo
 ;    mov ecx, <------------------- # of samples to mix / 4
     mov ebx,[LPFsample1]
     mov edx,[LPFsample2]
+
 NEWSYM LPFstereoloop
     push ecx
     mov eax,[esi]
@@ -5664,7 +5665,49 @@ NEWSYM LPFstereoloop
     jnz near LPFstereoloop
     mov [LPFsample1],ebx
     mov [LPFsample2],edx
+
 NEWSYM LPFexit
+%ifndef __MSDOS__
+    cmp byte[Surround],1
+    jnz near .nosurround
+    cmp byte[StereoSound],1
+    jnz near .nosurround
+    mov esi,DSPBuffer
+    mov ecx,[BufferSizeB]
+    shr ecx,1
+.loop
+    mov eax,[esi]
+    mov edx,[esi+4]
+    add edx,eax
+    sar edx,1
+
+    sub eax,edx         ; possibly eliminate center
+    shl eax,3
+
+    mov ebx,[esi+4]
+    sub [esi+4],eax
+
+    sub ebx,edx         ; possibly eliminate center
+    shl ebx,3
+
+    sub [esi],ebx
+
+    sar dword[esi],1
+    sar dword[esi+4],1
+
+    mov eax,[esi]
+    mov edx,[esi+4]
+    add edx,eax
+    sar edx,1
+
+    add [esi],edx
+    add [esi+4],edx
+    
+    add esi,8
+    dec ecx
+    jnz near .loop
+.nosurround
+%endif
     ret
 
 NEWSYM stopsbsound16

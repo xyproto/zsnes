@@ -2171,13 +2171,8 @@ DisplayGUISound:
     GUIOuttextwin2u 6,26,116,GUISoundTextH,2
 ;    cmp byte[OSPort],3
 ;    je near .win32s2
-%ifdef __MSDOS__
     GUIOuttextwin2u 6,26,126,GUISoundTextI,1
-%endif
 ;.win32s2
-%ifdef __WIN32__
-    GUIOuttextwin2u 6,26,126,GUISoundTextO,1
-%endif
     GUIOuttextwin2u 6,26,136,GUISoundTextJ,6
     GUIOuttextwin2u 6,26,146,GUISoundTextK,0
     GUIOuttextwin2u 6,26,166,GUISoundTextQ,0
@@ -2199,13 +2194,8 @@ DisplayGUISound:
     GUIOuttextwin2 6,25,115,GUISoundTextH
 ;    cmp byte[OSPort],3
 ;    je near .win32s
-%ifdef __MSDOS__
     GUIOuttextwin2 6,25,125,GUISoundTextI
-%endif
 ;.win32s
-%ifdef __WIN32__
-    GUIOuttextwin2 6,25,125,GUISoundTextO
-%endif
     GUIOuttextwin2 6,25,135,GUISoundTextJ
     GUIOuttextwin2 6,25,145,GUISoundTextK
     GUIOuttextwin2 6,25,165,GUISoundTextQ
@@ -2243,6 +2233,7 @@ DisplayGUISound:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
     GUIDisplayIconWin 6,11,30,[GUITemp]
+%ifdef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[RaisePitch],0
     je .nocheckbox1b
@@ -2250,7 +2241,6 @@ DisplayGUISound:
 .nocheckbox1b
 ;    cmp byte[OSPort],3
 ;    je near .win32
-%ifdef __MSDOS__
     GUIDisplayIconWin 6,11,39,[GUITemp]
 %endif
 ;.win32
@@ -2266,24 +2256,14 @@ DisplayGUISound:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox3
     GUIDisplayIconWin 6,11,111,[GUITemp]
-%ifdef __WIN32__
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[ExclusiveSound],0
-    je .nocheckbox32
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox32
-    GUIDisplayIconWin 6,11,121,[GUITemp]
-%endif
 ;    cmp byte[OSPort],3
 ;    je near .nocheckbox42
-%ifdef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[Surround],0
     je .nocheckbox4
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox4
     GUIDisplayIconWin 6,11,121,[GUITemp]
-%endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SoundBufEn],0
     je .nocheckbox5
@@ -2419,7 +2399,6 @@ GUISoundTextH db 'REVERSE STEREO',0
 GUISoundTextI db 'SURROUND SOUND',0
 GUISoundTextJ db 'SOUND BUFFERING',0
 GUISoundTextK db 'DISABLE SPC EMULATION',0
-GUISoundTextO db 'EXCLUSIVE MODE',0
 GUISoundTextP db 'INTERPOLATION :',0
 GUISoundTextQ db 'GAUSSIAN',0
 GUISoundTextR db 'CUBIC SPLINE',0

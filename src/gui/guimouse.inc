@@ -2323,12 +2323,7 @@ DisplayGUISoundClick:
     GUIClickCButtonS 11,111,byte[RevStereo]
 ;    cmp byte[OSPort],3
 ;    je near .win32sound
-%ifdef __MSDOS__
     GUIClickCButton 11,121,byte[Surround]
-%endif
-%ifdef __WIN32__
-    GUIClickCButton 11,121,byte[ExclusiveSound]
-%endif
 ;.win32sound
     GUIClickCButton 11,131,byte[SoundBufEn]
     GUIClickCButton 11,141,byte[SPCDisable]

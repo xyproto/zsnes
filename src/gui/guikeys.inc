@@ -1226,18 +1226,10 @@ GUISoundKeys:
     jne .notrevst
     xor byte[RevStereo],1
 .notrevst
-%ifdef __MSDOS__
     cmp dh,'U'
     jne .nosurround
     xor byte[Surround],1
 .nosurround
-%endif
-%ifdef __WIN32__
-    cmp dh,'X'
-    jne .noexclusivesound
-    xor byte[ExclusiveSound],1
-.noexclusivesound
-%endif
     cmp dh,'B'
     jne .nosoundbuf
     xor byte[SoundBufEn],1

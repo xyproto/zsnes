@@ -318,7 +318,6 @@ void DosExit(void);
 extern BYTE GUIOn2;
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
-extern BYTE ExclusiveSound;
 extern BYTE HighPriority;
 extern BYTE AlwaysOnTop;
 extern BYTE SaveMainWindowPos;
@@ -628,18 +627,7 @@ InitSound()
 
       if (DS_OK == pDirectSoundCreate8(NULL, &lpDirectSound,NULL))
       {
-          if (ExclusiveSound == 0)
-          {
-             if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL))
-             {
-                if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
-                {
-                   SoundEnabled=0;
-                   return FALSE;
-                }
-             }
-          }
-          else
+          if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL))
           {
              if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
              {
