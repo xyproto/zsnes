@@ -2076,8 +2076,8 @@ void drawscreenwin(void)
    ScreenPtr=vidbuffer;
    ScreenPtr+=16*2+32*2+256*2;
 
-   if (resolutn == 224 && FullScreen == 0) BlitArea.bottom = SurfaceY+16;
-   if (resolutn == 239 && FullScreen == 0) BlitArea.bottom = SurfaceY+16;
+   if (resolutn == 224 && FullScreen == 0) BlitArea.bottom = SurfaceY-16;
+   if (resolutn == 239 && FullScreen == 0) BlitArea.bottom = SurfaceY-16;
 
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
