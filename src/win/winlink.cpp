@@ -31,7 +31,6 @@ extern "C" {
 #include <dinput.h>
 #include <winuser.h>
 #include "resource.h"
-//#include <fstream.h>
 
 DWORD WindowWidth = 256;
 DWORD WindowHeight = 224;
@@ -54,6 +53,7 @@ HWND hMainWindow;
 extern "C"
 {
 HINSTANCE hInst;
+unsigned char KitchenSync = 0;
 }
 
 LPDIRECTSOUND8          lpDirectSound = NULL;

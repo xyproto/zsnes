@@ -30,9 +30,9 @@ extern void ConvertJoyMap1(void);
 extern void ConvertJoyMap2(void);
 extern void displayparams(void);
 extern void makeextension(void);
+extern unsigned char KitchenSync;
 
 int pccmdline(void);
-extern int KitchenSync = 0;
 
 extern unsigned char Palette0, SPC700sh, OffBy1Line, DSPDisable,
                      MMXSupport, Force8b, ForcePal, GUIClick, MouseDis,
