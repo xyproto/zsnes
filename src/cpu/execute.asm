@@ -1521,10 +1521,10 @@ NEWSYM statesaver
     je .clearfirstinc
     mov eax,[statefileloc]
     mov dh,[fnamest+eax]
-%ifndef __LINUX__
-    cmp dh,'T'
-%else
+%ifdef __LINUX__
     cmp dh,'t'
+%else
+    cmp dh,'T'
 %endif
     je .secondstate
     cmp dh,'9'
@@ -1535,10 +1535,10 @@ NEWSYM statesaver
     mov dh,'1'
     jmp .donextstate
 .jumptofirststate
-%ifndef __LINUX__
-    mov dh,'T'
-%else
+%ifdef __LINUX__
     mov dh,'t'
+%else
+    mov dh,'T'
 %endif
 .donextstate
     mov byte[fnamest+eax],dh

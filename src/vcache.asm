@@ -695,6 +695,7 @@ NEWSYM cachevideo
     jne .nodisplayfps
     xor byte[FPSOn],1
 .nodisplayfps
+
     ; do state selects
     stateselcomp KeyStateSlc0,'0','T'
     stateselcomp KeyStateSlc1,'1','1'
@@ -715,15 +716,6 @@ NEWSYM cachevideo
     mov eax,[MsgCount]
     mov [MessageOn],eax
 .nostsl0
-    ; do sound disables
-    soundselcomp KeyDisableSC0,Voice0Disable,Voice0Status,'1'
-    soundselcomp KeyDisableSC1,Voice1Disable,Voice1Status,'2'
-    soundselcomp KeyDisableSC2,Voice2Disable,Voice2Status,'3'
-    soundselcomp KeyDisableSC3,Voice3Disable,Voice3Status,'4'
-    soundselcomp KeyDisableSC4,Voice4Disable,Voice4Status,'5'
-    soundselcomp KeyDisableSC5,Voice5Disable,Voice5Status,'6'
-    soundselcomp KeyDisableSC6,Voice6Disable,Voice6Status,'7'
-    soundselcomp KeyDisableSC7,Voice7Disable,Voice7Status,'8'
 
     mov eax,[KeyIncStateSlot]
     test byte[pressed+eax],1
@@ -731,10 +723,10 @@ NEWSYM cachevideo
     mov byte[pressed+eax],2
     mov eax,[statefileloc]
     mov dh,[fnamest+eax]
-%ifndef __LINUX__
-    cmp dh,'T'
-%else
+%ifdef __LINUX__
     cmp dh,'t'
+%else
+    cmp dh,'T'
 %endif
     je .secondstate
     cmp dh,'9'
@@ -745,17 +737,17 @@ NEWSYM cachevideo
     mov dh,'1'
     jmp .donextstate
 .jumptofirststate
-%ifndef __LINUX__
-    mov dh,'T'
-%else
+%ifdef __LINUX__
     mov dh,'t'
+%else
+    mov dh,'T'
 %endif
 .donextstate
     mov byte[fnamest+eax],dh
-%ifndef __LINUX__
-    cmp dh,'T'
-%else
+%ifdef __LINUX__
     cmp dh,'t'
+%else
+    cmp dh,'T'
 %endif
     je .firststatemsg
     mov byte[sselm+11],dh
@@ -775,30 +767,30 @@ NEWSYM cachevideo
     mov byte[pressed+eax],2
     mov eax,[statefileloc]
     mov dh,[fnamest+eax]
-%ifndef __LINUX__
-    cmp dh,'T'
-%else
+%ifdef __LINUX__
     cmp dh,'t'
+%else
+    cmp dh,'T'
 %endif
     je .jumptolaststate
     dec dh
     cmp dh,'0'
     jne .doprevstate
 .firststate
-%ifndef __LINUX__
-    mov dh,'T'
-%else
+%ifdef __LINUX__
     mov dh,'t'
+%else
+    mov dh,'T'
 %endif
     jmp .doprevstate
 .jumptolaststate
     mov dh,'9'
 .doprevstate
     mov byte[fnamest+eax],dh
-%ifndef __LINUX__
-    cmp dh,'T'
-%else
+%ifdef __LINUX__
     cmp dh,'t'
+%else
+    cmp dh,'T'
 %endif
     je .firststatemsg2
     mov byte[sselm+11],dh
@@ -811,6 +803,16 @@ NEWSYM cachevideo
     mov [MessageOn],eax
     xor dh,dh
 .nodecstateslot
+
+    ; do sound disables
+    soundselcomp KeyDisableSC0,Voice0Disable,Voice0Status,'1'
+    soundselcomp KeyDisableSC1,Voice1Disable,Voice1Status,'2'
+    soundselcomp KeyDisableSC2,Voice2Disable,Voice2Status,'3'
+    soundselcomp KeyDisableSC3,Voice3Disable,Voice3Status,'4'
+    soundselcomp KeyDisableSC4,Voice4Disable,Voice4Status,'5'
+    soundselcomp KeyDisableSC5,Voice5Disable,Voice5Status,'6'
+    soundselcomp KeyDisableSC6,Voice6Disable,Voice6Status,'7'
+    soundselcomp KeyDisableSC7,Voice7Disable,Voice7Status,'8'
 
 .finishchatskip
     cmp byte[curblank],0h
