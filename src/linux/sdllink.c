@@ -497,14 +497,14 @@ int startgame(void)
    if (surface == NULL) {
 	   if (BitDepth)
 		   fprintf (stderr, "Could not set %dx%dx%d video mode.\n",
-				   SurfaceX,SurfaceY,BitDepth);
+				   WindowWidth,WindowHeight,BitDepth);
 	   else
-	   	fprintf (stderr, "Could not set %dx%d video mode.\n",SurfaceX,
-				SurfaceY);
+	   	fprintf (stderr, "Could not set %dx%d video mode.\n",WindowWidth,
+				WindowHeight);
 	   return FALSE;
    }
    SurfaceLocking = SDL_MUSTLOCK(surface);
-   SDL_WarpMouse(0,0);
+   SDL_WarpMouse(SurfaceX/4,SurfaceY/4);
 
    // Grab mouse in fullscreen mode
    FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) : SDL_WM_GrabInput(SDL_GRAB_OFF);
@@ -1430,7 +1430,7 @@ void drawscreenwin(void)
 			   break;
 		   default:
 			   UnlockSurface();
-			   fprintf(stderr, "Mode only available in 16 and 32 bit color.\n");
+			   fprintf(stderr, "Mode only available in 16 bit color.\n");
 			   cvidmode=2;
 			   initwinvideo();
 			   sleep(1);
