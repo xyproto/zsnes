@@ -62,6 +62,7 @@ static int UseOpenGL = 0;
 static const int BitDepth = 16;
 DWORD FirstVid = 1;
 
+extern void SwitchFullScreen (void);
 extern BYTE GUIWFVID[];
 extern unsigned char cvidmode;
 
@@ -147,6 +148,11 @@ int Main_Proc(void)
 				IsActivated = event.active.gain;
 				break;
 			case SDL_KEYDOWN:
+				if ((event.key.keysym.sym == SDLK_RETURN) &&
+				    (event.key.keysym.mod & KMOD_ALT)) {
+					SwitchFullScreen();
+					break;
+				}
 				if (event.key.keysym.sym == SDLK_LSHIFT ||
 				    event.key.keysym.sym == SDLK_RSHIFT)
 					shiftptr = 1;
