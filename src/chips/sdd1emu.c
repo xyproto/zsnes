@@ -36,6 +36,12 @@
 
 #include <string.h>
 
+#ifndef __GNUC__
+#define INLINE __inline__
+#else
+#define INLINE static inline
+#endif
+
 static int valid_bits;
 static unsigned short in_stream;
 static unsigned char *in_buf;
@@ -99,7 +105,7 @@ static unsigned char run_table[128] = {
     113,  49,  81,  17,  97,  33,  65,   1
 };
 
-static inline unsigned char GetCodeword(int bits){
+INLINE unsigned char GetCodeword(int bits){
     unsigned char tmp;
 
     if(!valid_bits){
@@ -120,7 +126,7 @@ static inline unsigned char GetCodeword(int bits){
     return run_table[tmp];
 }
 
-static inline unsigned char GolombGetBit(int code_size){
+INLINE unsigned char GolombGetBit(int code_size){
     if(!bit_ctr[code_size]) bit_ctr[code_size]=GetCodeword(code_size);
     bit_ctr[code_size]--;
     if(bit_ctr[code_size]==0x80){
@@ -130,7 +136,7 @@ static inline unsigned char GolombGetBit(int code_size){
     return (bit_ctr[code_size]==0)?1:0;
 }
 
-static inline unsigned char ProbGetBit(unsigned char context){
+INLINE unsigned char ProbGetBit(unsigned char context){
     unsigned char state=context_states[context];
     unsigned char bit=GolombGetBit(evolution_table[state].code_size);
 
@@ -149,7 +155,7 @@ static inline unsigned char ProbGetBit(unsigned char context){
     return context_MPS[context]; /* we know bit is 0, so don't bother xoring */
 }
 
-static inline unsigned char GetBit(unsigned char cur_bitplane){
+INLINE unsigned char GetBit(unsigned char cur_bitplane){
     unsigned char bit;
     
     bit=ProbGetBit(((cur_bitplane&1)<<4)
