@@ -57,12 +57,8 @@ EXTSYM ZFFTimeFName,ZFTime,ZFDate,ZFileGetFTime
 ;EXTSYM kbhit
 EXTSYM keyboardhit
 EXTSYM GUIkeydelay2
-;EXTSYM _kbhit
-;EXTSYM _getch
-;EXTSYM _chdrive
 EXTSYM ZFileMKDir,ZFileCHDir,ZFileRMDir,CHPath,MKPath,RMPath
 EXTSYM ZFileGetDir,DriveNumber,DirName
-;EXTSYM _getdrive
 EXTSYM DTALoc,DTALocPos,ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
 EXTSYM NoSoundReinit,soundon,DSPDisable,SBInt,NoSoundReinit,PICMaskP,SBIrq
@@ -313,16 +309,6 @@ NEWSYM allocmem
 NEWSYM PrintChar
     ret
     ; print character at dl, push all modified registers
-;    pushad 
-;    push eax
-;    push edx
-;    call putchar
-;    pop edx
-;    mov ah,02h
-;    int 21h
-;    pop eax
-;    popad 
-;    ret
 
 NEWSYM PrintStr          ; Print ASCIIZ string
 
@@ -337,8 +323,6 @@ NEWSYM PrintStr          ; Print ASCIIZ string
     push edx
     call putchar
     pop edx
-;    mov ah,02h
-;    int 21h
     pop edx
     inc edx
     jmp .next
@@ -355,15 +339,12 @@ NEWSYM WaitForKey       ; Wait for a key to be pressed
     mov [wfkey],al
     popad
     mov al,[wfkey]
-    ;mov ah,7
-    ;int 21h
     ; return key in al
     ret
 
 
 NEWSYM OsExit
 NEWSYM OSExit
-    ;int 3h
     jmp DosExit
 
 NEWSYM MMXCheck
@@ -431,10 +412,6 @@ NEWSYM Open_File
     popad
     stc
     ret
-    ;mov ax,3D00h
-    ;int 21h
-    ; return bx = file handle, carry = error
-    ret
 
 NEWSYM Open_File_Write
     pushad
@@ -456,10 +433,6 @@ NEWSYM Open_File_Write
     popad
     stc
     ret
-    ;mov ax,3D01h
-    ;int 21h
-    ; return bx = file handle, carry = error
-    ret
 
 NEWSYM Create_File
     pushad
@@ -476,11 +449,6 @@ NEWSYM Create_File
 .error
     popad
     stc
-    ret
-    ;mov ah,3Ch
-    ;mov cx,0
-    ;int 21h
-    ; return bx = file handle
     ret
 
 NEWSYM Write_File
@@ -501,9 +469,6 @@ NEWSYM Write_File
     mov eax,0
     stc
     ret
-    ;mov ah,40h
-    ;int 21h
-    ret
 
 NEWSYM Read_File
     mov dword[ZFileReadHandle],0
@@ -517,18 +482,12 @@ NEWSYM Read_File
     mov eax,[TempVarSeek]
     clc
     ret
-    ;mov ah,3Fh
-    ;int 21h
-    ret
 
 NEWSYM Delete_File
     mov [ZFileDelFName],edx
     pushad
     call ZFileDelete
     popad
-    ret
-    ;mov ah,41h
-    ;int 21h
     ret
 
 NEWSYM Close_File
@@ -538,9 +497,6 @@ NEWSYM Close_File
     call ZCloseFile
     popad
     clc
-    ret
-    ;mov ah,3Eh
-    ;int 21h
     ret
 
 NEWSYM File_Seek
@@ -554,10 +510,6 @@ NEWSYM File_Seek
     popad
     mov ax,dx
     mov dx,cx
-    ret
-    ; seek to cx:dx from 0 position, return carry as error
-    ;mov ax,4200h
-    ;int 21h
     ret
 
 NEWSYM File_Seek_End
@@ -575,10 +527,6 @@ NEWSYM File_Seek_End
     popad
     mov ax,[TempVarSeek]
     mov dx,[TempVarSeek+2]
-    ret
-    ; seek to cx:dx from end position, and return file location in dx:ax
-    ;mov ax,4202h
-    ;int 21h
     ret
 
 NEWSYM Get_Time
@@ -600,8 +548,6 @@ NEWSYM Get_Date
     ; dl = day, dh = month, cx = year
     mov dx,0
     mov cx,0
-;    mov ah,2Ah
-;    int 21h
     ret
 
 NEWSYM Get_File_Date
@@ -611,11 +557,6 @@ NEWSYM Get_File_Date
     popad
     mov dx,[ZFDate]
     mov cx,[ZFTime]
-    ret
-    ; return packed date in dx:cx
-    ;mov ah,57h
-    ;mov al,00h
-    ;int 21h
     ret
 
 RefreshKeybBuffer:
@@ -672,12 +613,6 @@ RefreshKeybBuffer:
     cmp al,[Keybhead]
     je .none
     mov al,[Keybtail]
-;    mov cl,[KeyConvTable+ebx]
-;    cmp byte[shiftptr],0
-;    je .noshift
-;    mov cl,[KeyConvTableS+ebx]
-;.noshift
-;    mov [HoldKeyBuf+eax],cl
     inc al
     and al,0Fh
     mov [Keybtail],al
@@ -686,7 +621,6 @@ RefreshKeybBuffer:
 Keybhead db 0
 Keybtail db 0
 HoldKey dd 0
-HoldKeyBuf times 16 db 0
 PKeyBuf times 100h db 0
 
 NEWSYM CurKeyPos, dd 0
@@ -701,26 +635,6 @@ NEWSYM Check_Key
     ret
 .yeskey
     mov al,0FFh
-    ret
-    ; returns 0 if there are no keys in the keyboard buffer, 0xFF otherwise
-;    mov al,byte [keyboardhit]
-;    push eax
-;    xor eax,eax
-;    mov byte [keyboardhit],al
-;    pop eax
-;    pushad
-;    call kbhit
-;    call RefreshKeybBuffer
-;    mov byte[wfkey],0
-;    mov al,[Keybhead]
-;    cmp al,[Keybtail]
-;    je .nokeys
-;    mov byte[wfkey],0FFh
-;.nokeys
-;    popad
-;    mov al,[wfkey]
-;    mov ah,0Bh
-;    int 21h
     ret
 
 NEWSYM Get_Key
@@ -745,71 +659,7 @@ NEWSYM Get_Key
     xor al,al
     ret
 
-;    pushad
-;.nonewkey
-;    call RefreshKeybBuffer
-;    xor eax,eax
-;    mov al,[Keybhead]
-;    cmp al,[Keybtail]
-;    je .nonewkey
-;    mov bl,[HoldKeyBuf+eax]
-;    test bl,80h
-;    jz .notupperkey
-;    xor bl,bl
-;    sub byte[HoldKeyBuf+eax],80h
-;    jmp .yesupperkey
-;.notupperkey
-;    inc al
-;    and al,0Fh
-;    mov [Keybhead],al
-;.yesupperkey
-;;    call getch
-;    mov [wfkey],bl
-;    popad
-;    mov al,[wfkey]
-;    ;mov ah,7
-;    ;int 21h
-;    ; return key in al
-;    ret
-
-;KeyConvTable
-;   db 255,27 ,'1','2','3','4','5','6'  ; 00h
-;   db '7','8','9','0','-','=',8  ,9 
-;   db 'Q','W','E','R','T','Y','U','I'  ; 10h
-;   db 'O','P','[',']',13 ,255,'A','S'
-;   db 'D','F','G','H','J','K','L',';'  ; 20h
-;   db 39 ,'`',255,'\','Z','X','C','V'
-;   db 'B','N','M',',','.','/',255,'*'  ; 30h
-;   db 255,32 ,255,255,255,255,255,255
-;   db 255,255,255,255,255,255,255,255  ; 40h
-;   db 200,201,202,203,204,205,206,207
-;   db 208,209,210,211,255,255,255,255  ; 50h
-;KeyConvTableS
-;   db 255,27 ,'!','@','#','$','%','^'  ; 00h
-;   db '&','*','(',')','_','+',8  ,9 
-;   db 'Q','W','E','R','T','Y','U','I'  ; 10h
-;   db 'O','P','{','}',13 ,255,'A','S'
-;   db 'D','F','G','H','J','K','L',':'  ; 20h
-;   db '"','~',255,'|','Z','X','C','V'
-;   db 'B','N','M','<','>','?',255,'*'  ; 30h
-;   db 255,32 ,255,255,255,255,255,255
-;   db 255,255,255,255,255,255,255,255  ; 40h
-;   db 200,201,202,203,204,205,206,207
-;   db 208,209,210,211,255,255,255,255  ; 50h
-
-;    mov dl,[SRAMDrive]
-;    mov ebx,SRAMDir
-;    call Change_Dir
-
 NEWSYM Change_Drive
-    ; change to drive in dl (0 = A, 1 = B, etc.)
-    ;and edx,0FFh
-    ;add edx,1
-    ;push edx
-    ;call _chdrive
-    ;pop edx
-;    mov ah,0Eh
-;    int 21h
     ret
 
 NEWSYM Change_Single_Dir
@@ -824,10 +674,6 @@ NEWSYM Change_Single_Dir
 .notokay
     popad
     stc
-    ret
-    ; Dir in edx, return error in carry flag
-    ;mov ah,3Bh
-    ;int 21h
     ret
 
 NEWSYM Create_Dir
@@ -844,9 +690,6 @@ NEWSYM Create_Dir
     popad
     stc
     ret
-    ;mov ah,39h
-    ;int 21h
-    ret
 
 NEWSYM Remove_Dir
     ; remove dir in edx
@@ -862,31 +705,8 @@ NEWSYM Remove_Dir
     popad
     stc
     ret
-    ;mov ah,3Ah
-    ;int 21h
-    ret
 
-;    mov dl,[LoadDrive]
-;    mov ebx,LoadDir
-;    call Change_Dir
 NEWSYM Change_Dir
-    ;pushad
-
-    ; Not needed for Linux - DDOI
-    ;and edx,0FFh
-    ;add edx,1
-    ;push edx
-    ;call _chdrive
-    ;pop edx
-
-;    mov ah,0Eh
-;    int 21h
-;    jc .fail
-    ;mov dword[CHPath],gotoroot
-    ;call ZFileCHDir
-    ;or eax,eax
-    ;jnz .fail
-    ;popad
     mov [CHPath],ebx
     cmp byte[ebx],0
     je .nocdir
@@ -903,25 +723,6 @@ NEWSYM Change_Dir
     stc
     ret
 
-    ; dl = drive, ebx = dir
-;    push ebx
-;    mov ah,0Eh
-;    int 21h
-;    mov ah,3Bh
-;    mov edx,gotoroot
-;    int 21h
-;    pop ebx
-;    mov edx,ebx
-;    cmp byte[edx],0
-;    je .nodir
-;    mov ah,3Bh
-;    int 21h
-;.nodir
-;    ret
-
-;    mov ebx,LoadDir
-;    mov edx,LoadDrive
-;    call Get_Dir
 NEWSYM Get_Dir
     mov [DirName],ebx
     pushad
@@ -931,33 +732,15 @@ NEWSYM Get_Dir
     mov ecx,128
 .loop
     mov dl,[eax]
-    cmp dl,'/'
-    jne .noslash
+;    cmp dl,'/'
+;    jne .noslash
     ;mov dl,'\'
-.noslash
+;.noslash
     mov [eax],dl
     inc eax
     loop .loop
     popad
-;    push edx
-;    call _getdrive
-;    mov ah,19h
-;    int 21h
-;    sub al,1
-;    pop edx
-;    mov [edx],al
     ret
-
-;    push edx
-;    mov ah,47h
-;    mov dl,0
-;    mov esi,ebx
-;    int 21h
-;    mov ah,19h
-;    int 21h
-;    pop edx
-;    mov [edx],al
-;    ret
 
 NEWSYM Get_First_Entry
     ; cx = attributes, edx = pointer to wildcard
@@ -978,10 +761,6 @@ NEWSYM Get_First_Entry
     popad
     stc
     ret
-;    mov ah,4Eh
-;    mov al,0
-;    int 21h
-;    ret
 
 NEWSYM Get_Next_Entry
     mov dword[DTALocPos],DTALoc
@@ -996,22 +775,13 @@ NEWSYM Get_Next_Entry
     popad
     stc
     ret
-;    mov ah,04Fh
-;    int 21h
-;    ret
 
 NEWSYM Set_DTA_Address
     ; Only needed for dos stuff
-;    mov edx,DTALoc
-;    mov ah,1Ah
-;    int 21h
     ret
 
 NEWSYM Get_Memfree
     mov eax,02000000h
-;    mov ax,0500h
-;    mov edi,edx
-;    int 31h
     ret
 
 NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
@@ -1027,7 +797,6 @@ NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
     push edx
     call putchar
     pop edx
-;    int 21h     ; print dl
     popad
     ret
 .string
@@ -1065,11 +834,6 @@ NEWSYM InitPreGame   ; Executes before starting/continuing a game
     popad
     ret
 
-    ; set up interrupt handler
-    ; get old handler pmode mode address
-    ; Process stuff such as sound init, interrupt initialization
-;    ret
-
 NEWSYM SetupPreGame   ; Executes after pre-game init, can execute multiple
                       ; times after a single InitPreGame
     mov byte[pressed+1],2
@@ -1096,88 +860,11 @@ NEWSYM changepal  ; 8-bit palette set (changes only)
 NEWSYM displayfpspal
     ret
 
-;    mov al,128
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    mov al,63
-;    out dx,al
-;    out dx,al
-;    out dx,al
-;    mov al,128+64
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    mov al,0
-;    out dx,al
-;    out dx,al
-;    out dx,al
-;    ret
-
 NEWSYM superscopepal
     ret
 
-;    mov al,128+16
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    mov al,63
-;    out dx,al
-;    xor al,al
-;    out dx,al
-;    out dx,al
-;    ret
-
 NEWSYM saveselectpal
     ret
-
-    ; set palette of colors 128,144, and 160 to white, blue, and red
-;    mov al,128
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    mov al,63
-;    out dx,al
-;    out dx,al
-;    out dx,al
-;    mov al,144
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    xor al,al
-;    out dx,al
-;    out dx,al
-;    mov al,50
-;    out dx,al
-;    mov al,160
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    mov al,45
-;    out dx,al
-;    xor al,al
-;    out dx,al
-;    out dx,al
-;    mov al,176
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    mov al,47
-;    out dx,al
-;    xor al,al
-;    out dx,al
-;    out dx,al
-;    mov al,208
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    mov al,50
-;    out dx,al
-;    mov al,25
-;    out dx,al
-;    xor al,al
-;    out dx,al
-;    ret
 
 ; ** init video mode functions **
 NEWSYM firstvideo, dd 1
@@ -1223,17 +910,10 @@ NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
    ret
 
 
-;   pushad
-;   call genfulladdtabng
-;   popad
-;    jmp dosinitvideo
 NEWSYM initvideo2 ; ModeQ scanline re-init (Keep blank on non-dos ports)
     ret
-;    jmp dosinitvideo2
+
 NEWSYM deinitvideo
-;    mov al,[previdmode]
-;    mov ah,0
-;    int 10h
     ret
 
 ; ** copy video mode functions **
@@ -1266,7 +946,6 @@ NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
     popad
 
     ret
-;   jmp DosDrawScreen
 
 NEWSYM vidpastecopyscr       ; GUI screen render
    pushad
@@ -1294,7 +973,6 @@ NEWSYM vidpastecopyscr       ; GUI screen render
 ; ** Clear Screen function **
 NEWSYM ClearScreen
    ret
-
 
 ; ** Video Mode Variables **
 SECTION .data
@@ -1374,14 +1052,9 @@ SECTION .text
 ;   convert it back when writing to it back.
 
 NEWSYM UpdateDevices                    ; One-time input device init
-;        call WinUpdateDevices   
-;        call DosUpdateDevices
         ret
 
 NEWSYM JoyRead
-;        call SoundProcess               ; Put the sound stuff here since it's
-                                        ; called 60 times per second
-;        call DOSJoyRead
         pushad
         call UpdateVFrame
         popad
