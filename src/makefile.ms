@@ -102,6 +102,12 @@ ifeq (${OS},__WIN32__)
   OE=.obj
 endif
 
+ifeq (${DEBUG},yes)
+  CFLAGSORIG=-fno-omit-frame-pointer -ggdb3 -DDEBUG
+  COPT=-O0
+  ASMFLAGSORIG=-DDEBUG -g
+endif
+
 CFLAGS=${CFLAGSORIG} -D${OS}
 ASMFLAGS=${ASMFLAGSORIG} -f ${FILEFORMAT} -D${OS}
 
@@ -197,18 +203,16 @@ ALL: zsnes
 
 zsnes: ${OBJFIX} ${OBJS}
 ifneq ($(PLATFORM),msvc)
+ifneq (${DEBUG},yes)
 	${CPPC} -Ws -s -o ${EXE} ${OBJS} ${LIBS}
+else
+	${CPPC} -Ws -o zsnesd.exe ${OBJS} ${LIBS}
+endif
 else
 	 @echo /Fezsnesw.exe *.obj ${CPUDIR}\*.obj ${VIDEODIR}\*.obj ${CHIPDIR}\*.obj ${EFFECTSDIR}\*.obj ${ZIPDIR}\*.obj ${JMADIR}\*.obj ${DOSDIR}\*.obj ${WINDIR}\*.obj ${GUIDIR}\*.obj > link.vc
 	 @echo ${MSVCLIBS} >> link.vc
 	 cl @link.vc ${WINDIR}/zsnes.res /link
 endif
-
-debug: zsnesd
-
-zsnesd: ${OBJS}
-	${CPPC} -Ws -o zsnesd.exe ${OBJS} ${LIBS}
-
 
 vcache${OE}: $< macros.mac
 ui${OE}: $< macros.mac
