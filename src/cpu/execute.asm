@@ -230,6 +230,7 @@ NEWSYM LatencyV, times 256 db 0
 NEWSYM LatencyRecvPtr, dd 0
 NEWSYM LatencySendPtr, dd 0
 NEWSYM latencytimer, dd 0
+NEWSYM NetQuit, db 0
 NEWSYM BackState, db 1
 NEWSYM BackStateSize, dd 6
 NEWSYM nojoystickpoll, dd 0
@@ -2248,7 +2249,6 @@ NEWSYM nmistatus,    dd 0       ; 0 = none, 1 = waiting for nmi location,
                         ; 2 = found, disable at next line
 NEWSYM joycontren,   dd 0       ; joystick read control check
 NEWSYM NextLineCache, db 0
-NEWSYM NetQuit, db 0
 
 SECTION .text
 
