@@ -2257,6 +2257,8 @@ NEWSYM copyvesa2512x384x8b
     jne .startcopy
     ret
 .startcopy
+    cmp byte[smallscreenon],1
+    je near .smallscreen
     cmp byte[ForceNewGfxOff],0
     jne .nong16b
     cmp byte[newengen],0
@@ -2350,6 +2352,44 @@ NEWSYM copyvesa2512x384x8b
     dec ecx
     jnz .b2
     jmp .returnloop
+
+.smallscreen
+    push es
+    mov ax,[vesa2selec]
+    mov es,ax
+    mov esi,[vidbuffer]
+    mov edi,[VidStartDraw]
+    add esi,16+256+32
+    add edi,72*512+128
+    cmp byte[resolutn],224
+    jne .ssres239
+    add edi,8*512
+.ssres239
+    xor eax,eax
+    mov dl,[resolutn]
+    dec dl
+    dec dl
+    cmp byte[MMXSupport],1
+    je .ssloopb
+.ssloopa
+    mov ecx,64
+    rep movsd
+    add esi,32
+    add edi,128*2
+    dec dl
+    jnz .ssloopa
+    jmp .done
+.ssloopb
+    mov ecx,16
+    MMXStuff
+    add esi,32
+    add edi,128*2
+    dec dl
+    jnz .ssloopb
+    emms
+.done
+    pop es
+    ret
 
 SECTION .bss
 .scratio resb 1
@@ -5628,6 +5668,8 @@ NEWSYM copyvesa2512x384x16b
     jne .startcopy
     ret
 .startcopy
+    cmp byte[smallscreenon],1
+    je near .smallscreen
     push es
     mov byte[.lastrep],0
     mov ax,[vesa2selec]
@@ -5713,6 +5755,44 @@ NEWSYM copyvesa2512x384x16b
     dec ecx
     jnz .b2
     jmp .returnloop
+
+.smallscreen
+    push es
+    mov ax,[vesa2selec]
+    mov es,ax
+    mov esi,[vidbuffer]
+    mov edi,[VidStartDraw]
+    add esi,16*2+256*2+32*2
+    add edi,72*512*2+128*2
+    cmp byte[resolutn],224
+    jne .ssres239
+    add edi,8*512*2
+.ssres239
+    xor eax,eax
+    mov dl,[resolutn]
+    dec dl
+    dec dl
+    cmp byte[MMXSupport],1
+    je .ssloopb
+.ssloopa
+    mov ecx,64*2
+    rep movsd
+    add esi,32*2
+    add edi,128*2*2
+    dec dl
+    jnz .ssloopa
+    jmp .done
+.ssloopb
+    mov ecx,16*2
+    MMXStuff
+    add esi,32*2
+    add edi,128*2*2
+    dec dl
+    jnz .ssloopb
+    emms
+.done
+    pop es
+    ret
 
 SECTION .bss
 .scratio resb 1

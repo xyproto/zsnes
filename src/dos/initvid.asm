@@ -363,6 +363,7 @@ NEWSYM dosinitvideo
 
 .initvesa2512x384x8
     mov byte[res640],2
+    mov byte[cbitmode],0
     mov word[vesa2_x],512
     mov word[vesa2_y],384
     mov byte[vesa2_bits],8
