@@ -24,6 +24,7 @@ WINDIR=win
 OBJDIR=obj
 ZIPDIR=zip
 EFFECTSDIR=effects
+JMADIR=jma
 
 CHIPSOBJ=${CHIPDIR}/dsp1emu.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/sfxproc.o\
 	${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
