@@ -1684,7 +1684,7 @@ NEWSYM StartGUI
     mov eax,[KeyQuickLoad]
     test byte[pressed+eax],1
     jz near .noquickload
-    mov byte[GUIcmenupos],2
+    mov byte[GUIcmenupos],0
     loadmenuopen 1
 .noquickload
     mov esi,pressed
