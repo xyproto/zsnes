@@ -1252,6 +1252,7 @@ void TestJoy()
 extern "C" DWORD converta;
 extern "C" unsigned int BitConv32Ptr;
 extern "C" unsigned int RGBtoYUVPtr;
+int Refresh = 0;
 
 int InitDirectDraw()
 {
@@ -1325,7 +1326,7 @@ int InitDirectDraw()
          MessageBox(NULL, "IDirectDraw7::SetCooperativeLevel failed.", "DirectDraw Error", MB_ICONERROR);
          return FALSE;
       }
-      if (lpDD->SetDisplayMode(WindowWidth, WindowHeight, 16, 0, 0) != DD_OK)
+      if (lpDD->SetDisplayMode(WindowWidth, WindowHeight, 16, Refresh, 0) != DD_OK)
       {
          MessageBox(NULL, "IDirectDraw7::SetDisplayMode failed.\nMake sure your video card supports this mode.", "DirectDraw Error", MB_ICONERROR);
          return FALSE;
@@ -2210,6 +2211,8 @@ extern _int64 copymagic = 0x0008010000080100;
 extern _int64 coef = 0x0066009a0066009a;
 
 extern BYTE MotionBlur;
+extern BYTE KitchenSync;
+extern WORD totlines;
 
 void drawscreenwin(void)
 {
@@ -2270,6 +2273,30 @@ void drawscreenwin(void)
 
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
+
+   if (KitchenSync == 1 && Refresh == 0)
+   {
+      Refresh = 60;
+      InitDirectDraw();
+   }
+
+   if (KitchenSync == 0 && Refresh != 0)
+   {
+      Refresh = 0;
+      InitDirectDraw();
+   }
+
+   if (KitchenSync == 1 && Refresh != 120 && totlines == 263)
+   {
+      Refresh = 120;
+      InitDirectDraw();
+   }
+
+   if (KitchenSync == 1 && Refresh != 100 && totlines == 314)
+   {
+      Refresh = 100;
+      InitDirectDraw();
+   }
 
    if (SurfaceX == 256 && SurfaceY == 240)
    {
