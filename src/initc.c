@@ -1627,12 +1627,14 @@ extern unsigned char per2exec;
 
 void Setper2exec()
 {
-  opexec268 = (unsigned char)(opexec268*(per2exec*0.01));
-  opexec358 = (unsigned char)(opexec358*(per2exec*0.01));
-  opexec268b = (unsigned char)(opexec268b*(per2exec*0.01));
-  opexec358b = (unsigned char)(opexec358b*(per2exec*0.01));
-  opexec268cph = (unsigned char)(opexec268cph*(per2exec*0.01));
-  opexec358cph = (unsigned char)(opexec358cph*(per2exec*0.01));
+  if (per2exec != 100)
+  {	// Decrease standard % of execution by 5% to replace branch and 16bit
+	// cycle deductions
+    opexec268b = (unsigned char)((opexec268 * 95 * per2exec) / 10000);
+    opexec358b = (unsigned char)((opexec358 * 87 * per2exec) / 10000); // 82
+    opexec268cphb = (unsigned char)((opexec268cph * 95 * per2exec) / 10000);
+    opexec358cphb = (unsigned char)((opexec358cph * 87 * per2exec) / 10000); // 82
+  }
 }
 
 extern char FEOEZPath[1024];
