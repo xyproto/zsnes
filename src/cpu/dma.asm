@@ -476,9 +476,9 @@ NEWSYM setuphdma
     mov al,[esi]
     and al,00000111b
     cmp al,5
-    jne .notmode5dma
+    jb .notmode567dma
     sub al,4
-.notmode5dma
+.notmode567dma
     mov ah,[.addrnumt+eax]
     mov [edx+16],ah
     mov bl,al
@@ -580,9 +580,9 @@ NEWSYM setuphdmars
     mov al,[esi]
     and al,00000111b
     cmp al,5
-    jne .notmode5dma
+    jb .notmode567dma
     sub al,4
-.notmode5dma
+.notmode567dma
     mov ah,[.addrnumt+eax]
     mov [edx+16],ah
     mov bl,al
@@ -686,9 +686,9 @@ NEWSYM setuphdma2
     mov al,[esi]
     and al,00000111b
     cmp al,5
-    jne .notmode5dma
+    jb .notmode567dma
     sub al,4
-.notmode5dma
+.notmode567dma
     mov ah,[.addrnumt+eax]
     mov [edx+16],ah
     mov bl,al
