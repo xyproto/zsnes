@@ -35,12 +35,11 @@ EXTSYM Open_File, Get_File_Date, Close_File, Change_Dir, Get_Dir
 EXTSYM romloadskip
 EXTSYM cfgloadgdir,cfgloadsdir
 EXTSYM init18_2hz
+EXTSYM OSExit
 %ifdef __LINUX__
 EXTSYM LinuxExit
 EXTSYM GetFilename
 %endif
-
-EXTSYM OSExit
 
 NEWSYM UIAsmStart
 %include "betauser.mac"
@@ -1521,7 +1520,6 @@ NEWSYM DosExit ; Terminate Program
 	call LinuxExit
 %elifdef __MSDOS__
 	jmp .nodeallocate
-
 	mov ebx,memfreearray
 	.nextdeallocate
 	mov eax,[ebx]
