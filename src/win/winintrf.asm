@@ -264,8 +264,8 @@ NEWSYM PrintStr          ; Print ASCIIZ string
     ret
 
 
-SECTION .bss
-NEWSYM wfkey, resb 1
+SECTION .data
+NEWSYM wfkey, db 0
 SECTION .text
 
 NEWSYM WaitForKey       ; Wait for a key to be pressed
@@ -575,16 +575,16 @@ RefreshKeybBuffer:
 .none
     ret
 
-SECTION .bss
-Keybhead resb 1
-Keybtail resb 1
-HoldKey resd 1
-HoldKeyBuf resb 16
-PKeyBuf resb 100h
+SECTION .data
+Keybhead db 0
+Keybtail db 0
+HoldKey dd 0
+HoldKeyBuf times 16 db 0
+PKeyBuf times 100h db 0
+NEWSYM CurKeyPos, dd 0
+NEWSYM CurKeyReadPos, dd 0
+NEWSYM KeyBuffer, times 16 dd 0
 
-NEWSYM CurKeyPos, resd 1
-NEWSYM CurKeyReadPos, resd 1
-NEWSYM KeyBuffer, resd 16
 SECTION .text
 
 NEWSYM Check_Key
@@ -1141,8 +1141,8 @@ NEWSYM deinitvideo
     ret
 
 ; ** copy video mode functions **
-SECTION .bss
-NEWSYM converta, resd 1
+SECTION .data
+NEWSYM converta, dd 0
 SECTION .text
 
 NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
@@ -1409,9 +1409,9 @@ NEWSYM ScanCodeListing
 
 gotoroot db '\',0
 
-SECTION .bss
-NEWSYM ZSNESBase, resd 1
-TempVarSeek resd 1
+SECTION .data
+NEWSYM ZSNESBase, dd 0
+TempVarSeek dd 0
 SECTION .text
 
 ; ****************************
@@ -1423,12 +1423,12 @@ NEWSYM Init_Mouse
     mov eax,01h
     ret
 
-SECTION .bss
-NEWSYM WMouseX, resd 1
-NEWSYM WMouseY, resd 1
-NEWSYM WMouseMoveX, resd 1
-NEWSYM WMouseMoveY, resd 1
-NEWSYM WMouseButton, resd 1
+SECTION .data
+NEWSYM WMouseX, dd 0
+NEWSYM WMouseY, dd 0
+NEWSYM WMouseMoveX, dd 0
+NEWSYM WMouseMoveY, dd 0
+NEWSYM WMouseButton, dd 0
 
 SECTION .text
 
@@ -1729,20 +1729,21 @@ NEWSYM SetInputDevice
     ret
 
 
-SECTION .bss
+SECTION .data
+ALIGN32
 ; ****************************
 ; TCP/IP Stuff
 ; ****************************
 
 ; TCPIPPortNum
-NEWSYM TCPIPStatus, resb 1
-NEWSYM PacketSendSize, resd 1
-NEWSYM PacketRecvSize, resd 1
-NEWSYM PacketRecvPtr,  resd 1
-NEWSYM PacketSendArray, resb 2048+256
-NEWSYM PacketRecvArray, resb 2048+256
-NEWSYM IPAddrStr, resb 20
-NEWSYM RemoteDisconnect, resb 1
+NEWSYM TCPIPStatus, db 0
+NEWSYM PacketSendSize, dd 0
+NEWSYM PacketRecvSize, dd 0
+NEWSYM PacketRecvPtr,  dd 0
+NEWSYM PacketSendArray, times 2048+256 db 0
+NEWSYM PacketRecvArray, times 2048+256 db 0
+NEWSYM IPAddrStr, times 20 db 0
+NEWSYM RemoteDisconnect, db 0
 SECTION .text
 
 NEWSYM TCPIPStartServer
@@ -1789,8 +1790,8 @@ NEWSYM TCPIPWaitForConnection
     popad
     mov eax,-1
     ret
-SECTION .bss
-.temp resd 1
+SECTION .data
+.temp dd 0
 SECTION .text
 
 NEWSYM TCPIPInitConnectToServer
@@ -1844,8 +1845,8 @@ NEWSYM TCPIPConnectToServer
     popad
     mov eax,[.temp]
     ret
-SECTION .bss
-.temp resd 1
+SECTION .data
+.temp dd 1
 SECTION .text
 
 NEWSYM TCPIPConnectToServerW
@@ -1864,8 +1865,8 @@ NEWSYM TCPIPConnectToServerW
     popad
     mov eax,[.temp]
     ret
-SECTION .bss
-.temp resd 0
+SECTION .data
+.temp dd 0
 SECTION .text
 
 NEWSYM TCPIPStoreByte
