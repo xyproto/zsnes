@@ -1747,7 +1747,11 @@ NEWSYM LPFsample2, dd 0
 %%notgreater
 %endmacro
 
+NEWSYM lastblockbrr, times 8 dd 0
+NEWSYM curvoice, dd 0
+
 BRRDecode:
+    mov [curvoice],ecx
     mov byte[lastbl],0
     mov byte[loopbl],0
     cmp dword[esi],21FECD8Ah
@@ -1785,6 +1789,16 @@ BRRDecode:
     shr cl,4
     mov [filter0],ebx
     mov ebx,[Filter+eax*2+4]
+    push eax
+    cmp cl,12
+    jbe .noprevblock
+    mov eax,[curvoice]
+    mov cl,[lastblockbrr+eax]
+.noprevblock
+    mov [bshift],cl
+    mov eax,[curvoice]
+    mov [lastblockbrr+eax],cl
+    pop eax
     mov [bshift],cl
     mov [filter1],ebx
     mov byte[sampleleft],8
