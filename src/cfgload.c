@@ -425,23 +425,23 @@ void DOScreatenewcfg()
 
 #ifdef __WIN32__
   WRITE_LINE("; Video Mode, 0 - 32\r\n");
-  WRITE_LINE(";   0 = 256x224 R WIN         1 = 256x224 R FULL\r\n");
-  WRITE_LINE(";   2 = 512x448 R WIN         3 = 512x448 DR WIN\r\n");
-  WRITE_LINE(";   4 = 640x480 S WIN         5 = 640x480 DS WIN\r\n");
-  WRITE_LINE(";   6 = 640x480 DR FULL       7 = 640x480 DS FULL\r\n");
-  WRITE_LINE(";   8 = 640x480 S FULL        9 = 768x672 R WIN\r\n");
-  WRITE_LINE(";   10 = 768x672 DR WIN       11 = 800x600 S WIN\r\n");
-  WRITE_LINE(";   12 = 800x600 DS WIN       13 = 800x600 S FULL\r\n");
-  WRITE_LINE(";   14 = 800x600 DR FULL      15 = 800x600 DS FULL\r\n");
-  WRITE_LINE(";   16 = 1024x768 S WIN       17 = 1024x768 DS WIN\r\n");
-  WRITE_LINE(";   18 = 1024x768 S FULL      19 = 1024x768 DR FULL\r\n");
-  WRITE_LINE(";   20 = 1024x768 DS FULL     21 = 1024x896 R WIN\r\n");
-  WRITE_LINE(";   22 = 1024x896 DR WIN      23 = 1280x960 S WIN\r\n");
-  WRITE_LINE(";   24 = 1280x960 DS WIN      25 = 1280x960 S FULL\r\n");
-  WRITE_LINE(";   26 = 1280x960 DR FULL     27 = 1280x960 DS FULL\r\n");
-  WRITE_LINE(";   28 = 1280x1024 S WIN      29 = 1280x1024 DS WIN\r\n");
-  WRITE_LINE(";   30 = 1280x1024 S FULL     31 = 1280x1024 DR FULL\r\n");
-  WRITE_LINE(";   32 = 1280x1024 DS FULL\r\n\r\n");
+  WRITE_LINE(";   0 = 256x224   R WIN       1 = 256x224   R FULL\r\n");
+  WRITE_LINE(";   2 = 512x448   R WIN       3 = 512x448   DR WIN\r\n");
+  WRITE_LINE(";   4 = 640x480   S WIN       5 = 640x480   DS WIN\r\n");
+  WRITE_LINE(";   6 = 640x480   DR FULL     7 = 640x480   DS FULL\r\n");
+  WRITE_LINE(";   8 = 640x480   S FULL      9 = 768x672   R WIN\r\n");
+  WRITE_LINE(";  10 = 768x672   DR WIN     11 = 800x600   S WIN\r\n");
+  WRITE_LINE(";  12 = 800x600   DS WIN     13 = 800x600   S FULL\r\n");
+  WRITE_LINE(";  14 = 800x600   DR FULL    15 = 800x600   DS FULL\r\n");
+  WRITE_LINE(";  16 = 1024x768  S WIN      17 = 1024x768  DS WIN\r\n");
+  WRITE_LINE(";  18 = 1024x768  S FULL     19 = 1024x768  DR FULL\r\n");
+  WRITE_LINE(";  20 = 1024x768  DS FULL    21 = 1024x896  R WIN\r\n");
+  WRITE_LINE(";  22 = 1024x896  DR WIN     23 = 1280x960  S WIN\r\n");
+  WRITE_LINE(";  24 = 1280x960  DS WIN     25 = 1280x960  S FULL\r\n");
+  WRITE_LINE(";  26 = 1280x960  DR FULL    27 = 1280x960  DS FULL\r\n");
+  WRITE_LINE(";  28 = 1280x1024 S WIN      29 = 1280x1024 DS WIN\r\n");
+  WRITE_LINE(";  30 = 1280x1024 S FULL     31 = 1280x1024 DR FULL\r\n");
+  WRITE_LINE(";  32 = 1280x1024 DS FULL\r\n\r\n");
   sprintf(buffer, "VideoModeWin = %d\r\n\r\n", cfgcvidmode);
   SAVE_LINE(buffer);
 #endif
@@ -451,16 +451,16 @@ void DOScreatenewcfg()
 #else
   WRITE_LINE("; Video Mode, 0 - 3\r\n");
 #endif
-  WRITE_LINE(";   0 = 256x224 WIN           1 = 256x224 FULL\r\n");
-  WRITE_LINE(";   2 = 512x448 WIN           3 = 640x480 FULL\r\n");
+  WRITE_LINE(";   0 = 256x224   R WIN        1 = 256x224  R FULL\r\n");
+  WRITE_LINE(";   2 = 512x448   DR WIN       3 = 640x480  DS FULL\r\n");
 #ifdef __OPENGL__
-  WRITE_LINE(";   4 = 256x224  OR  WIN      5 = 512x448  ODR WIN\r\n");
-  WRITE_LINE(";   6 = 640x480  ODS FULL     7 = 640x480  ODS WIN\r\n");
-  WRITE_LINE(";   8 = 640x576  ODR WIN      9 = 768x672  ODR WIN\r\n");
-  WRITE_LINE(";  10 = 800x600  ODS FULL    11 = 800x600  ODS WIN\r\n");
-  WRITE_LINE(";  12 = 896x784  ODR FULL    13 = 1024x768  ODS WIN\r\n");
-  WRITE_LINE(";  14 = 1024x768  ODS WIN    15 = 1024x896 ODR WIN\r\n");
-  WRITE_LINE(";  16 = 1280x1024 OGL WIN    17 = VARIABLE ODS WIN\r\n");
+  WRITE_LINE(";   4 = 256x224   OR  WIN      5 = 512x448  ODR WIN\r\n");
+  WRITE_LINE(";   6 = 640x480   ODS FULL     7 = 640x480  ODS WIN\r\n");
+  WRITE_LINE(";   8 = 640x576   ODR WIN      9 = 768x672  ODR WIN\r\n");
+  WRITE_LINE(";  10 = 800x600   ODS FULL    11 = 800x600  ODS WIN\r\n");
+  WRITE_LINE(";  12 = 896x784   ODR WIN     13 = 1024x768 ODS FULL\r\n");
+  WRITE_LINE(";  14 = 1024x768  ODS WIN     15 = 1024x896 ODR WIN\r\n");
+  WRITE_LINE(";  16 = 1280x1024 ODS FULL    17 = VARIABLE ODR WIN\r\n");
 #endif
   sprintf(buffer, "\r\nVideoModeLin = %d\r\n\r\n", cfgcvidmode);
   SAVE_LINE(buffer);

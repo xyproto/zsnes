@@ -390,7 +390,7 @@ int Main_Proc(void)
 				break;
 #ifdef __OPENGL__
 			case SDL_VIDEORESIZE:
-				if(cvidmode != 16) {
+				if(cvidmode != 17) {
 				    surface = SDL_SetVideoMode(WindowWidth, WindowHeight,
 					    BitDepth, surface->flags & ~SDL_RESIZABLE);
 					adjustMouseXScale();
@@ -832,13 +832,13 @@ void initwinvideo(void)
 				break;
 			case 2:
 			case 5:
+			case 17:					// Variable
 				WindowWidth = 512;
 				WindowHeight = 448;
 				break;
 			case 3:
 			case 6:
 			case 7:
-			case 17:					// Variable
 				WindowWidth = 640;
 				WindowHeight = 480;
 				break;

@@ -906,7 +906,7 @@ NEWSYM GUIVideoModeNames
 db '256X224    R WIN ',0  ;0
 db '256x224    R FULL',0  ;1
 db '512X448   DR WIN ',0  ;2
-db '640x480   DR FULL',0  ;3
+db '640x480   DS FULL',0  ;3
 %ifdef __OPENGL__
 db '256x224   OR WIN ',0  ;4
 db '512x448  ODR WIN ',0  ;5
@@ -921,7 +921,7 @@ db '1024x768 ODS FULL',0  ;13
 db '1024x768 ODS WIN ',0  ;14
 db '1024x896 ODR WIN ',0  ;15
 db '1280x1024ODS FULL',0  ;16
-db 'VARIABLE ODS WIN ',0  ;17
+db 'VARIABLE ODR WIN ',0  ;17
 
 %endif	
 
@@ -948,7 +948,7 @@ NEWSYM GUIRATIO,  db 0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0
 NEWSYM GUIBIFIL,  db 0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1       ; binlinear = 1, nearest = 0
 NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Triple Buffering (Win)
 NEWSYM GUIMBVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-NEWSYM GUIHQ2X,   db 0,0,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,0       ; hq2x filter
+NEWSYM GUIHQ2X,   db 0,0,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1       ; hq2x filter
 NEWSYM GUIHQ3X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; hq3x filter
 NEWSYM GUIHQ4X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; hq4x filter
 
