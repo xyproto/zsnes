@@ -196,8 +196,8 @@ SECTION .text
 %%finished
 %endmacro
 
-SECTION .bss
-NEWSYM timer2upd, resd 1
+SECTION .data
+NEWSYM timer2upd, dd 0
 SECTION .text
 
 ; This function is called every scanline (262*60 times/sec)
