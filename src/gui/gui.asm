@@ -1528,10 +1528,6 @@ SECTION .text
 NEWSYM StartGUI
 ;    cmp byte[OSPort],1
 ;    jbe .dosport
-%ifndef __MSDOS__
-    mov byte[sampratenext+3],0
-%endif
-
     cmp byte[TripBufAvail],0
     jne .notexttb
     mov byte[Triplebufen],0
