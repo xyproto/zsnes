@@ -3541,7 +3541,6 @@ NEWSYM NewGfx16AsmEnd
     or ecx,ecx
     jnz near .startclippingb
     mov ecx,[edi]
-    dec ecx
     add edi,4
     jmp .noclipping
 .outsideclipping
