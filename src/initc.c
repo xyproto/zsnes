@@ -381,15 +381,15 @@ void MirrorROM()
 extern char *ZOpenFileName;
 bool Header512;
 
-void loadFile()
+void loadFile(char *filename)
 {
   bool multifile = false;
   char *incrementer = 0;
   unsigned char *ROM = (unsigned char *)romdata;
 
-  if (strlen(ZOpenFileName) >= 3) //Char + ".1"
+  if (strlen(filename) >= 3) //Char + ".1"
   {
-    char *ext = ZOpenFileName+strlen(ZOpenFileName)-2;
+    char *ext = filename+strlen(filename)-2;
     if (!strcmp(ext, ".1") || !strcasecmp(ext, ".A"))
     {
       incrementer = ext + 1;
@@ -400,12 +400,12 @@ void loadFile()
   for (;;)
   {
     struct stat stat_results;
-    stat(ZOpenFileName, &stat_results);
+    stat(filename, &stat_results);
 
     if ((unsigned int)stat_results.st_size <= maxromspace+512-curromspace)
     {
       FILE *fp = 0;
-      fp = fopen(ZOpenFileName, "rb");
+      fp = fopen(filename, "rb");
 
       if (!fp) { return; }
 
@@ -431,12 +431,12 @@ void loadFile()
   }
 }
 
-void loadGZipFile()
+void loadGZipFile(char *filename)
 {
   int size, err;
   gzFile GZipFile;
   FILE *fp = 0;
-  fp = fopen(ZOpenFileName, "rb");
+  fp = fopen(filename, "rb");
   if (!fp) { return; }
   fseek(fp, -4, SEEK_END);
   //Size is read like this due to VC screwing up with optimizations
@@ -449,7 +449,7 @@ void loadGZipFile()
   if ((unsigned int)size > maxromspace+512) { return; }
 
   //Open GZip file for decompression
-  GZipFile = gzopen(ZOpenFileName, "rb"); 
+  GZipFile = gzopen(filename, "rb"); 
     
   //Decompress file into memory
   err = gzread(GZipFile, romdata, size); 
@@ -468,14 +468,14 @@ void loadGZipFile()
 //             "call _Output_Text           \n");
 //system("pause");
 
-void loadZipFile()
+void loadZipFile(char *filename)
 {
   int err, fileSize;
   unsigned char *ROM = (unsigned char *)romdata;
   bool multifile = false, NSS = false;  
   char *incrementer = 0;
 
-  unzFile zipfile = unzOpen(ZOpenFileName); //Open zip file
+  unzFile zipfile = unzOpen(filename); //Open zip file
   int cFile = unzGoToFirstFile(zipfile); //Set cFile to first compressed file
   unz_file_info cFileInfo; //Create variable to hold info for a compressed file
 
@@ -609,15 +609,36 @@ void loadZipFile()
   }
 }
 
-void SplitSetup(const char *basefile, unsigned int MirrorSystem)
+void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
 {
   unsigned char *ROM = (unsigned char *)romdata;
 
   curromspace = 0;
   if (maxromspace < addOnStart+addOnSize) { return; }
   memcpy(ROM+addOnStart, ROM, addOnSize);  
-  strcpy(ZOpenFileName, basefile);
-  loadZipFile();
+
+  if (*basepath == 0)
+  {
+    loadZipFile(basefile);
+  }
+  else
+  {
+    unsigned int pathlen = strlen(basepath);
+    char *ext = basepath+pathlen-4;
+    if (pathlen >= 5 && !strcasecmp(ext, ".zip"))
+    {
+      loadZipFile(basepath);
+    }
+    else if (pathlen >= 4 && !strcasecmp(ext+1, ".gz"))
+    {
+      loadGZipFile(basepath);
+    }
+    else
+    {
+      loadFile(basepath);
+    }
+  }
+  
   if ((curromspace & 0x7FFF) == 512)
   {
     memmove(ROM, ROM+512, addOnStart);
@@ -647,6 +668,9 @@ void SplitSetup(const char *basefile, unsigned int MirrorSystem)
   SplittedROM = true;
 }
 
+char ST_Path[1024];
+char GNext_Path[1024];
+char SG_Path[1024];
 void SplitSupport()
 {
   unsigned char *ROM = (unsigned char *)romdata;
@@ -658,7 +682,7 @@ void SplitSupport()
   {
     addOnStart = 0x200000;
     addOnSize = 0x80000;
-    SplitSetup("SAMEGAME.ZIP", 1);
+    SplitSetup(SG_Path, "SAMEGAME.ZIP", 1);
   }          
 
   //SD Gundam G-Next add on  
@@ -667,7 +691,7 @@ void SplitSupport()
   {
     addOnStart = 0x400000;
     addOnSize = 0x80000;
-    SplitSetup("G-NEXT.ZIP", 2);
+    SplitSetup(GNext_Path, "G-NEXT.ZIP", 2);
     addOnStart = 0x200000;
   }          
 
@@ -676,7 +700,7 @@ void SplitSupport()
   {
     addOnStart = 0x100000;
     addOnSize = curromspace;
-    SplitSetup("STBIOS.ZIP", 3);
+    SplitSetup(ST_Path, "STBIOS.ZIP", 3);
   }          
 }
 
@@ -700,7 +724,7 @@ void loadROM()
     { 
       isCompressed = true;
       isZip = true;
-      loadZipFile();
+      loadZipFile(ZOpenFileName);
     }
   }
 
@@ -710,11 +734,11 @@ void loadROM()
     if (!strcasecmp(ext, ".gz"))
     { 
       isCompressed = true;
-      loadGZipFile();
+      loadGZipFile(ZOpenFileName);
     }
   }
   
-  if (!isCompressed) { loadFile(); }
+  if (!isCompressed) { loadFile(ZOpenFileName); }
 
   Header512 = false;
   

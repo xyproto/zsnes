@@ -126,6 +126,7 @@ EXTSYM SplittedROM
 EXTSYM addOnStart
 EXTSYM addOnSize
 
+EXTSYM STPath, ST_Path, GNextPath, GNext_Path, SGPath, SG_Path
 
 EXTSYM SetaCmdEnable,setaramdata
 EXTSYM setaaccessbankr8,setaaccessbankw8,setaaccessbankr8a,setaaccessbankw8a
@@ -3407,6 +3408,22 @@ NEWSYM loadfileGUI
 
     mov edx,fname+1
     mov dword[ZOpenFileName],edx
+
+    ;This is to get the C stuff to see these variables
+    xor ecx,ecx
+.pathcopy
+    mov edx,dword[STPath+ecx]
+    mov dword[ST_Path+ecx],edx
+    mov edx,dword[GNextPath+ecx]
+    mov dword[GNext_Path+ecx],edx
+    mov edx,dword[SGPath+ecx]
+    mov dword[SG_Path+ecx],edx
+    add ecx,4
+    cmp ecx,1024
+    je .donepathcopy
+    jmp .pathcopy
+
+.donepathcopy
     pushad
     call loadROM
     popad
