@@ -798,7 +798,7 @@ DisplayGUILoad:
     DrawGUIWinBox 1,160,135,228,135,dl
 
     mov dl,[GUIWincol]
-    DrawGUIWinBox 1,5,144,229,144,dl
+    DrawGUIWinBox 1,5,144,228,144,dl
     mov dl,[GUIWincol]
     add dl,1
     DrawGUIWinBox 1,4,144,3,152,dl
@@ -1440,13 +1440,6 @@ DisplayGUIOption:
     GUIOuttextwin2 4,25,190,GUIOptionTextL
 %endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[TimerEnable],0
-    je .nocheckboxt
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckboxt
-    GUIDisplayIconWin 4,11,106,[GUITemp]
-.nocheckboxtb
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[frameskip],0
     jne .nocheckbox
     mov dword[GUITemp],GUIIconDataCheckBoxC
@@ -1505,53 +1498,59 @@ DisplayGUIOption:
 .nocheckbox7
     GUIDisplayIconWin 4,11,96,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[FastFwdToggle],0
+    cmp byte[TimerEnable],0
     je .nocheckbox8
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox8
-    GUIDisplayIconWin 4,11,116,[GUITemp]
+    GUIDisplayIconWin 4,11,106,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[SRAMSave5Sec],0
+    cmp byte[FastFwdToggle],0
     je .nocheckbox9
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox9
-    GUIDisplayIconWin 4,11,126,[GUITemp]
+    GUIDisplayIconWin 4,11,116,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[OldGfxMode2],0
+    cmp byte[SRAMSave5Sec],0
     je .nocheckbox10
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox10
-    GUIDisplayIconWin 4,11,136,[GUITemp]
+    GUIDisplayIconWin 4,11,126,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[LatestSave],0
+    cmp byte[OldGfxMode2],0
     je .nocheckbox11
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox11
-    GUIDisplayIconWin 4,11,146,[GUITemp]
+    GUIDisplayIconWin 4,11,136,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[AutoState],0
+    cmp byte[LatestSave],0
     je .nocheckbox12
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox12
-    GUIDisplayIconWin 4,11,156,[GUITemp]
+    GUIDisplayIconWin 4,11,146,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[DontSavePath],0
+    cmp byte[AutoState],0
     je .nocheckbox13
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox13
+    GUIDisplayIconWin 4,11,156,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[DontSavePath],0
+    je .nocheckbox14
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox14
     GUIDisplayIconWin 4,11,166,[GUITemp]
 %ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[DisableScreenSaver],0
-    je .nocheckbox14
+    je .nocheckbox15
     mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox14
+.nocheckbox15
     GUIDisplayIconWin 4,11,176,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AlternateTimer],0
-    je .win323
+    je .nocheckbox16
     mov dword[GUITemp],GUIIconDataCheckBoxC
-.win323
+.nocheckbox16
     GUIDisplayIconWin 4,11,186,[GUITemp]
 %endif
     cmp byte[frameskip],0
@@ -1607,7 +1606,7 @@ GUIOptionText6 db 'MMX SUPPORT',0
 GUIOptionText7 db 'USE PL3/4 AS PL1/2',0
 GUIOptionTextA db 'SIDEWINDER FIX',0
 GUIOptionTextAb db 'HIGH PRIORITY MODE',0
-GUIOptionTextB db 'FPS AT START',0
+GUIOptionTextB db 'FPS AT PROGRAM START',0
 GUIOptionTextC db 'USE 30HZ FOR TURBO',0
 GUIOptionTextD db 'ENABLE GAME CLOCK',0
 GUIOptionTextE db 'TOGGLED FAST FWD/SLWDWN',0
