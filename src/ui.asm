@@ -159,7 +159,7 @@ NEWSYM welcome
                  db '  Assistant Coder : Pharos',13,10,13,10
                  db 'ZSNES comes with ABSOLUTELY NO WARRANTY. This is free software,',10,13
                  db 'and you are welcome to redistribute it under certain conditions;',10,13
-                 db 'check licence.txt.',10,13,10,13
+                 db 'check license.txt.',10,13,10,13
                  db 'Use ZSNES -? for command line definitions',13,10,13,10,0
 
 cpuidfname db 'nocpuzid.dat',0

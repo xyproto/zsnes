@@ -56,7 +56,7 @@ Voodoo:
 
 	Voodoo2 users might want to use:
 
-	make -f Makefile.X11 linux-386-opt-V2-glide
+	make -f Makefile.X11 linux-386-opt-glide
 
 	since that is optimized for Voodoo2 cards. According the the
 	XFree86 website, Voodoo3 users (and later) should have DRI
