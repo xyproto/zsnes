@@ -86,8 +86,8 @@ EXTSYM scaddtype,ScreenScale,vesa2red10,initvideo2,initvideo,pressed,UpdateDevic
 EXTSYM memtabler8,memtablew8,writeon,pl1contrl,pl2contrl,JoyRead,SetInputDevice
 EXTSYM SetInputDevice209,FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,WDSPReg2C
 EXTSYM WDSPReg3C,pl12s34,resolutn,delay,chaton,chatstrL,chatLpos,chatstrR,chatRTL
-EXTSYM InitDrive,InitDir,createnewcfg,Makemode7Table,SnowOn,MovieBuffSize
-EXTSYM MovieBuffFrame,vidbufferofsb,ZipSupport,wramdata,bgfixer,cfgnewgfx
+EXTSYM InitDrive,InitDir,createnewcfg,Makemode7Table,SnowOn
+EXTSYM vidbufferofsb,ZipSupport,wramdata,bgfixer,cfgnewgfx
 EXTSYM cfgdontsave,videotroub,Open_File,Read_File,Close_File,Write_File,Create_File
 EXTSYM File_Seek,File_Seek_End,Open_File_Write,Get_Date,Check_Key,Get_Key
 EXTSYM Change_Drive,Change_Single_Dir,Change_Dir,Get_Dir,Get_First_Entry
@@ -145,7 +145,6 @@ EXTSYM UDPConfig
 EXTSYM snesmouse
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Lk,pl1Rk,pl1Ak,pl1Bk
 EXTSYM outofmemfix,yesoutofmemory
-EXTSYM CReadHead,ReadHead,CFWriteHead,CFWriteStart
 EXTSYM JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209,JoyMaxX209
 EXTSYM JoyMinY209,JoyMaxY209,GetCoords,GetCoords3
 EXTSYM MultiTap,SFXEnable
@@ -629,9 +628,9 @@ NEWSYM KeyIncStateSlot, dd 0
 NEWSYM KeyDecStateSlot, dd 0
 NEWSYM KeyUsePlayer1234, dd 0
 NEWSYM hqFilter, db 0
-NEWSYM reserved, db 0
+NEWSYM reserved, db 0 ;old
 NEWSYM scale2xFilter, db 0
-NEWSYM st010difficulty,  db 0     ; place holder till we commit the other Seta 10 file
+NEWSYM st010difficulty,  db 0     ;old
 NEWSYM SnapPath, times 1024 db 0
 NEWSYM SPCPath, times 1024 db 0
 NEWSYM BSXPath, times 1024 db 0
