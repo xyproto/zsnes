@@ -35,7 +35,8 @@ EFFECTSDIR=effects
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.obj ${CHIPDIR}/fxemu2.obj ${CHIPDIR}/dsp1proc.obj\
 	 ${CHIPDIR}/fxemu2b.obj ${CHIPDIR}/fxemu2c.obj ${CHIPDIR}/fxtable.obj\
-	 ${CHIPDIR}/sa1proc.obj ${CHIPDIR}/sa1regs.obj ${CHIPDIR}/dsp1emu.obj
+	 ${CHIPDIR}/sa1proc.obj ${CHIPDIR}/sa1regs.obj ${CHIPDIR}/dsp1emu.obj\
+       ${CHIPDIR}/st10proc.obj
 
 CPUOBJ=${CPUDIR}/addrni.obj ${CPUDIR}/dma.obj ${CPUDIR}/dsp.obj ${CPUDIR}/dspproc.obj\
 	${CPUDIR}/execute.obj ${CPUDIR}/irq.obj ${CPUDIR}/memory.obj\
@@ -131,7 +132,8 @@ ${CHIPDIR}/sa1regs.obj: ${CHIPDIR}/sa1regs.asm macros.mac\
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
 ${CHIPDIR}/sfxproc.obj: ${CHIPDIR}/sfxproc.asm macros.mac\
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
-
+${CHIPDIR}/st10proc.obj: ${CHIPDIR}/st10proc.asm macros.mac\
+	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
 ${CHIPDIR}/dsp1emu.obj: ${CHIPDIR}/dsp1emu.c
 	${CC} ${CFLAGS} /Fo$@ $<
 ${CHIPDIR}/dsp1proc.obj: ${CHIPDIR}/dsp1proc.asm macros.mac
