@@ -2093,7 +2093,6 @@ extern void DrawWin256x224x16MB();
 extern void DrawWin256x224x32();
 extern void DrawWin256x224x32MB();
 extern void DrawWin320x240x16();
-extern BYTE blah;
 
 extern _int64 copymaskRB = 0x001FF800001FF800;
 extern _int64 copymaskG = 0x0000FC000000FC00;
@@ -2347,9 +2346,12 @@ void WinUpdateDevices()
    if (keys2[0x38] != 0 && keys2[0x3E] != 0) exit(0);
    if (keys2[0xB8] != 0 && keys2[0x1C] != 0 || keys2[0x38] != 0 && keys2[0x1C] != 0)
    {
-char buf[50];
-sprintf(buf, "%b", blah);
-MessageBox(NULL, buf, buf, MB_OK);
+      _asm
+      {
+         pushad
+         call SwitchFullScreen
+         popad
+      }
       return;
    }
 
