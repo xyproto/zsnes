@@ -563,8 +563,9 @@ NEWSYM SBHandler16
 
 
 Startprocsbdata:
+    push ebp
     call ProcessSoundBuffer
-
+    pop ebp
     pop es
     pop esi
     pop edi
