@@ -1748,7 +1748,7 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUIEAVID+eax],0
     je .notext4
-    GUIOuttextwin2u 5,26,83,GUIVideoText4,1
+    GUIOuttextwin2u 5,26,83,GUIVideoText4,9
 .notext4
     xor eax,eax
     mov al,[cvidmode]
