@@ -59,6 +59,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 		return FALSE;
 	}
 
+	glvidbuffer = malloc(512 * 512 * 2);
 	gl_clearwin();
 	SDL_WarpMouse(SurfaceX / 4, SurfaceY / 4);
 
@@ -70,7 +71,6 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 	SDL_ShowCursor(0);
 
 	/* Setup some GL stuff */
-	glvidbuffer = malloc(512 * 512 * 2);
 
 	glEnable(GL_TEXTURE_1D);
 	glEnable(GL_TEXTURE_2D);
