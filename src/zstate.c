@@ -941,8 +941,6 @@ bool zst_load(FILE *fp)
   memset(vidmemch4, 1, sizeof(vidmemch4));
   memset(vidmemch8, 1, sizeof(vidmemch8));
 
-  MovieProcessing = 0;
-
   repackfunct();
 
   //headerhack(); //Was in the asm, but why is this needed?
