@@ -2,7 +2,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-  <title>ZSNES Documentation - Windows v1.41 - Readme</title>
+  <title>ZSNES Documentation - Windows v1.42 - Readme</title>
   
   <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
@@ -12,7 +12,7 @@
 <div id="header">
  <h1><img src="images/zsneslogo.png" /></h1>
  <div id="header_oslogo"><img src="images/windowslogo.png" /></div>
- <h2>ZSNES Windows v1.41</h2>
+ <h2>ZSNES Windows v1.42</h2>
 </div>
   
 <div id="header_nav">
@@ -88,6 +88,26 @@
 
   <div class="content_body">
     <ul>
+      <li><span class="list_head">All Ports:</span></li>
+      <li>- Corrected output of BRR decode for invalid ange values (>12). [TRAC]</li>
+      <li>- Fixed sustain level 4 (5/8). [TRAC]</li>
+      <li>- Fixed label for Fullscreen/Widescreen options. [ipher]</li>
+      <li>- More window boxes now have borders. [ipher]</li>
+      <li>- Close zip files properly when IPS is not found in zip (fixes crashing with certain zlibs). [Nach]</li>
+      <li>- Cleaned up some code. [Nach, ipher, grinvader]</li>
+      <li>- Ported chip detection to C, improved BS detection. [Nach]</li>
+      <li>- Ported rewind to C (thanks Nach, TRAC). [grinvader]</li>
+      <li>- New reminder text. [grinvader, AspiringSquire]</li>
+      <li>- Rollback of "Improved accuracy of base rates used for ADSR, GAIN, noise, and echo emulation". [ipher]</li>
+    </ul>
+    <a id="previous_updates"></a>
+  </div>
+  
+  <h2>Previous Updates</h2>
+  
+  <div class="content_body">
+    <span class="previous_version_number">v1.41</span>
+    <ul>
       <li><span class="list_head">Windows Only:</span></li>
       <li>- Get_Date() now returns the proper value (it always returned the proper value in DOS). [Nach]</li>
       <li>- Correct timing when compiled with MinGW (Special thanks to Jonas Quinn for all his help in getting ZSNESw compiled with MinGW and working). [Nach]</li>
@@ -122,11 +142,8 @@
       <li>- Updated about box. [Nach, ipher]</li>
       <li>- Overhauled toaster support. [Nach]
     </ul>
-    <a id="previous_updates"></a>
   </div>
-  
-  <h2>Previous Updates</h2>
-  
+    
   <div class="content_body">
     <span class="previous_version_number">v1.40</span>
     <ul>
