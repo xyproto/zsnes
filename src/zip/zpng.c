@@ -34,12 +34,11 @@ int Png_Dump(const char * filename, unsigned short width, unsigned short height,
 	png_structp png_ptr;
 	png_infop info_ptr;
 	png_bytep * row_pointers;
-
 	/*Set scanline width for 32-bit color data*/
 	int scanline=width*4;
 	int i; /*counter.*/
 	int png_transforms=0;
-
+	png_color fake_pal;
 	/*Try to open the file.*/
 	FILE *fp = fopen(filename, "wb");
 	if (!fp)
@@ -47,21 +46,15 @@ int Png_Dump(const char * filename, unsigned short width, unsigned short height,
 		return (-1);
 	}
 	
+	fake_pal.red = 0;
+	fake_pal.green = 0;
+	fake_pal.blue = 0;
 	/*Try to create png write struct, fail if we cannot.*/
 	png_ptr = png_create_write_struct
 		(PNG_LIBPNG_VER_STRING, NULL,/*(png_voidp)user_error_ptr,
 		user_error_fn*/NULL, NULL/*user_warning_fn*/);
 		if (!png_ptr)
 			return (-1);
-		
-	/*try to create info struct. Fail and delete existing structs if info struct cannot be created.*/
-	info_ptr = png_create_info_struct(png_ptr);
-	if (!info_ptr)
-	{
-		png_destroy_write_struct(&png_ptr,
-			(png_infopp)NULL);
-			return (-1);
-	}
 						
 	/*set png I/O source.*/
 	png_init_io(png_ptr, fp);
@@ -77,14 +70,25 @@ int Png_Dump(const char * filename, unsigned short width, unsigned short height,
 	png_set_compression_window_bits(png_ptr, 15);
 	png_set_compression_method(png_ptr, 8);
 	png_set_compression_buffer_size(png_ptr, 8192);
+
+	/*try to create info struct. Fail and delete existing structs if info struct cannot be created.*/
+	info_ptr = png_create_info_struct(png_ptr);
+	if (!info_ptr)
+	{
+		png_destroy_write_struct(&png_ptr,
+			(png_infopp)NULL);
+			return (-1);
+	}
+
 	
 	/*set a lot of image info (code adapted from libpng documentation!)*/
 	png_set_IHDR(png_ptr, info_ptr, width, height,
 		8, PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE,
 		PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-		
+	
+	info_ptr->color_type=PNG_COLOR_TYPE_RGB_ALPHA;
 	/*Set palette and gamma (assume 1.0 gamma)*/
-	png_set_PLTE(png_ptr, info_ptr, NULL, 0);
+//	png_set_PLTE(png_ptr, info_ptr, &fake_pal, 1);
 	png_set_gAMA(png_ptr, info_ptr, ZPNG_GAMMA);
 
 	/*Allocate an array of scanline pointers*/
@@ -122,10 +126,76 @@ int Png_Dump(const char * filename, unsigned short width, unsigned short height,
 	return 0;
 }
 
+char *generate_filename(void)
+{
+	extern char fnames;
+	char *filename;
+	char *tmp = &fnames;
+	struct stat buf;
+	short i=0;
+#ifdef __WIN32__
+	SYSTEMTIME time;
+#endif
+
+#ifdef __MSDOS__
+	filename = (char *)malloc(14);
+	for(i=0;i<10000;i++)
+	{
+		if(i>1000)
+			sprintf(filename, "Image%03d.png", i);
+		else sprintf(filename, "Imag%04d.png", i);
+		if(stat(filename, &buf)==-1)
+			break;
+	}
+	return filename;
+#endif
+
+
+	tmp++;         // the first char is the string length
+	// removes the path if there is one
+	while (*tmp!=0) tmp++;
+	while ((*tmp!='/') && (tmp!=&fnames)) tmp--;
+	tmp++;
+	// I assume that fnames has already an extension
+	// allocates enough memory to store the filename
+#ifdef __LINUX__
+	filename = (char *)malloc(strlen(tmp)+6);
+#endif
+#ifdef __WIN32__
+	filename = (char *)malloc(strlen(tmp)+36);
+#endif
+	strcpy(filename, tmp);
+	tmp = filename;
+	while (*tmp!='.') tmp++;
+
+#ifdef __WIN32__
+	/*get system time.*/
+	GetLocalTime(&time);
+	
+	/*make filename from local time*/
+	wsprintf(tmp," %d_%02d_%02d_%02d-%02d-%02d-ScreenShot.png\0", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+#endif
+#ifdef __LINUX__
+	/*find first unused file*/
+
+	/*Note: this results in a 1000 image limit!*/
+
+	for(i=0;i<10000;i++)
+	{
+		if(i>1000)
+			sprintf(tmp, " %03d.png", i);
+		else sprintf(tmp, " %04d.png", i);
+		if(stat(filename, &buf)==-1)
+			break;
+	}
+#endif
+	return filename;
+}
+
 void Grab_PNG_Data(void)
 {
-	char filename[64];
-	bool is_bgr_data=true;
+	 char *filename;
+	 bool is_bgr_data=true;
 
 	/*These are the variables used to perform the 32-bit conversion*/
 	int i,j;
@@ -137,31 +207,8 @@ void Grab_PNG_Data(void)
 	unsigned int * lookup32=(unsigned int *)BitConv32Ptr;
 	unsigned int * DBits;
 
-#ifdef __WIN32__
-	SYSTEMTIME time;
-	/*get system time.*/
-	GetLocalTime(&time);
-	
-	/*make filename from local time*/
-	wsprintf(filename,"%d_%02d_%02d_%02d-%02d-%02d-ScreenShot.png\0", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+	filename = generate_filename();
 
-#else
-	/*find first unused file*/
-
-	/*Note: this results in a 1000 image limit!*/
-	struct stat buf;
-
-
-	for(i=0;i<10000;i++)
-	{
-		if(i>1000)
-			sprintf(filename, "Image%03d.png", i);
-		else sprintf(filename, "Imag%04d.png", i);
-		if(stat(filename, &buf)==-1)
-			break;
-	}
-#endif
-	
 	/*Allocate image buffer for DIB data*/
 	DIBits=(unsigned char*)malloc(scanline*224);
 
@@ -190,10 +237,12 @@ void Grab_PNG_Data(void)
 	Png_Dump(filename, 256, 224, DIBits, is_bgr_data);
 
 	free(DIBits);
+	free(filename);
 
 #ifdef __WIN32DBG__
 	_CrtDumpMemoryLeaks();
 #endif
+
 }
 
 #endif
