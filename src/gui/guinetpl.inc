@@ -1422,12 +1422,20 @@ SECTION .data
 SECTION .text
 
 transfersram:
-    cmp byte[SFXBATT],0
-    jne .nosram
+    ;Do players want SRAM sent?
+    cmp byte[UseRemoteSRAMData],0
+    je .nosram
+    
+    ;It has a battery, send it.
+    cmp byte[CHIPBATT],1
+    je .yessram
+    
+    ;If last if failed, no battery, so no SRAM sending for SA1 (SFX doesn't set ramsize)
     cmp byte[SA1Enable],1
     je .nosram
     cmp dword[ramsize],0
     je .nosram
+.yessram
     cmp byte[UseRemoteSRAMData],1
     je .uselocal
     cmp byte[UseRemoteSRAMData],2
@@ -1436,6 +1444,7 @@ transfersram:
     call clearsram
     ret
 
+    
 .uselocal
     call PreparePacket
     mov al,233

@@ -77,7 +77,7 @@ EXTSYM Voice0Status, Voice1Status, Voice2Status, Voice3Status, Voice4Status
 EXTSYM Voice5Status, Voice6Status, Voice7Status, romtype, SetIRQVectors
 EXTSYM ClearScreen, statesaver, loadstate2, vidbuffer, ASCII2Font, hirestiledat
 EXTSYM showallext, ROMTypeNOTFound, scanlines,statefileloc,pl1selk,pl2selk
-EXTSYM fnamest,sprlefttot,spritetablea,fnames,SFXBATT,sfxramdata,setaramdata,SETAEnable,cgram,srama
+EXTSYM fnamest,sprlefttot,spritetablea,fnames,CHIPBATT,sfxramdata,setaramdata,SETAEnable,cgram,srama
 EXTSYM tempco0,prevbright,maxbr,prevpal,coladdr,coladdg,coladdb
 EXTSYM scaddtype,ScreenScale,vesa2red10,initvideo2,initvideo,pressed,UpdateDevices
 EXTSYM memtabler8,memtablew8,writeon,pl1contrl,pl2contrl,JoyRead,SetInputDevice
@@ -821,7 +821,9 @@ clearsram:
     inc eax
     dec ecx
     jnz .loop
-    cmp byte[SFXBATT],0
+    cmp byte[SFXEnable],0
+    je .nosfxbatt
+    cmp byte[CHIPBATT],0
     je .nosfxbatt
     mov eax,[sfxramdata]
     mov ecx,65536
@@ -845,6 +847,8 @@ clearsram:
 
     cmp byte[SA1Enable],1
     jne .nosa1
+    cmp byte[CHIPBATT],1
+    jne .nosa1    
     mov eax,[SA1RAMArea]
     mov ecx,65536*2
 .loop3
@@ -1462,12 +1466,21 @@ SECTION .text
 
 
 NEWSYM SaveSramData
-    ; save sram
+    ; change to sram dir
+    mov dl,[SRAMDrive]
+    mov ebx,SRAMDir
+    call Change_Dir
+
+    clim
+    
+    cmp byte[SFXEnable],1    
+    je .nosram
+    cmp byte[SA1Enable],1
+    je .nosram
     cmp byte[sramsavedis],1
     je .nosram
     cmp dword[ramsize],0
     je .nosram
-    clim
     xor eax,eax
     xor ebx,ebx
     xor ecx,ecx
@@ -1478,14 +1491,60 @@ NEWSYM SaveSramData
     call Create_File
     jc .failed
     mov bx,ax
+    xor ecx,ecx
     mov ecx,[ramsize]
     mov edx,[sram]
     call Write_File
     call Close_File
+.nosram
+    cmp byte[SFXEnable],0
+    je .nosfxbatt
+    cmp byte[CHIPBATT],0
+    je .nosfxbatt
+    mov edx,fnames+1
+    call Create_File
+    jc .failed
+    mov bx,ax
+    mov ecx,65536
+    mov edx,[sfxramdata]
+    call Write_File
+    call Close_File
+.nosfxbatt
+
+    cmp byte[SETAEnable],0
+    je .nosetasram
+    mov edx,fnames+1
+    call Create_File
+    jc .failed
+    mov bx,ax
+    mov ecx,4096
+    mov edx,[setaramdata]
+    call Write_File
+    call Close_File
+.nosetasram
+
+    cmp byte[SA1Enable],1
+    jne .nosa1
+    cmp byte[CHIPBATT],1
+    jne .nosa1
+    mov edx,fnames+1
+    call Create_File
+    jc .failed
+    mov bx,ax
+    mov ecx,65536*2
+    mov edx,[SA1RAMArea]
+    call Write_File
+    call Close_File
+.nosa1
 .failed
     stim
-.nosram
+
     call SaveCombFile
+
+    ; change dir to InitDrive/InitDir
+    mov dl,[InitDrive]
+    mov ebx,InitDir
+    call Change_Dir
     ret
 
 NEWSYM ProcRewind
@@ -1798,7 +1857,9 @@ NEWSYM StartGUI
 
     call SaveSramData
 
-    cmp byte[SFXBATT],0
+    cmp byte[SFXEnable],0
+    je .nosfxbatt
+    cmp byte[CHIPBATT],0
     je .nosfxbatt
     clim
     mov edx,fnames+1

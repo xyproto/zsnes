@@ -117,6 +117,7 @@ EXTSYM SfxSFR,nosprincr
 EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 EXTSYM NetPlayNoMore
 EXTSYM statefileloc
+EXTSYM CHIPBATT,SaveSramData
 
 %ifdef OPENSPC
 EXTSYM OSPC_Run, ospc_cycle_frac
@@ -856,21 +857,15 @@ NetSaveState:
     ret
 
 %macro stim 0
-;    cmp byte[OSPort],1
-;    ja %%nosti
 %ifdef __MSDOS__
     sti
 %endif
-;%%nosti
 %endmacro
 
 %macro clim 0
-;    cmp byte[OSPort],1
-;    ja %%nocli
 %ifdef __MSDOS__
     cli
 %endif
-;%%nocli
 %endmacro
 
 %macro ProcessIRQStuffB 0
@@ -1346,74 +1341,8 @@ NEWSYM endprog
 ;    mov eax,[numinst]          ;Temporary
 ;    mov eax,[NumBRRconv]
 ;    call printnum
-    ; save sram
-
-    ; change to sram dir
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
-
-    cmp byte[sramsavedis],1
-    je .nosram
-    cmp dword[ramsize],0
-    je .nosram
-    xor eax,eax
-    xor ebx,ebx
-    xor ecx,ecx
-    xor edx,edx
-    xor esi,esi
-    xor edi,edi
-    mov edx,fnames+1
-    call Create_File
-    jc .nosram
-    mov bx,ax
-    xor ecx,ecx
-    mov ecx,[ramsize]
-    mov edx,[sram]
-    call Write_File
-    call Close_File
-.nosram
-    cmp byte[SFXBATT],0
-    je .nosfxbatt
-    mov edx,fnames+1
-    call Create_File
-    jc .nosfxbatt
-    mov bx,ax
-    mov ecx,65536
-    mov edx,[sfxramdata]
-    call Write_File
-    call Close_File
-.nosfxbatt
-
-    cmp byte[SETAEnable],0
-    je .nosetasram
-    mov edx,fnames+1
-    call Create_File
-    jc .nosetasram
-    mov bx,ax
-    mov ecx,4096
-    mov edx,[setaramdata]
-    call Write_File
-    call Close_File
-.nosetasram
-
-    cmp byte[SA1Enable],1
-    jne .nosa1
-    mov edx,fnames+1
-    call Create_File
-    jc .nosa1
-    mov bx,ax
-    mov ecx,65536*2
-    mov edx,[SA1RAMArea]
-    call Write_File
-    call Close_File
-.nosa1
-
-    ; change dir to InitDrive/InitDir
-    mov dl,[InitDrive]
-    mov ebx,InitDir
-    call Change_Dir
-
+    
+    call SaveSramData
     call createnewcfg
     call GUISaveVars
 
@@ -1497,7 +1426,6 @@ NEWSYM initaddrl, dd 0                  ; initial address location
 NEWSYM NetSent, dd 0
 NEWSYM nextframe, dd 0                  ; tick count for timer
 NEWSYM curfps,    db 0                  ; frame/sec for current screen
-NEWSYM SFXBATT,   db 0
 NEWSYM newgfxerror, db 'NEED MEMORY FOR GFX ENGINE',0
 NEWSYM newgfxerror2, db 'NEED 320x240 FOR NEW GFX 16B',0
 ;newgfxerror db 'NEW GFX IN 16BIT IS N/A',0
