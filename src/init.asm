@@ -111,7 +111,9 @@ EXTSYM sramaccessbankw8,sramaccessbankw8s,GenerateBank0TableSA1
 EXTSYM ScrDispl,wramreadptr,wramwriteptr
 EXTSYM pl1Ltk,pl1Rtk,pl2Ltk,pl2Rtk,pl3Ltk,pl3Rtk,pl4Ltk,pl4Rtk,pl5Ltk,pl5Rtk
 EXTSYM loadstate2, headerhack
+
 ;initc.c
+EXTSYM chip_detect
 EXTSYM clearmem,clearSPCRAM
 EXTSYM PatchUsingIPS
 EXTSYM loadZipFile
@@ -127,6 +129,8 @@ EXTSYM SPC7PackIndexLoad,SPC7110IndexSize
 EXTSYM DumpROMLoadInfo
 EXTSYM SetupSramSize
 EXTSYM IntlEHi
+EXTSYM CHIPBATT,SFXEnable,C4Enable,SPC7110Enable,RTCEnable,SA1Enable,SDD1Enable,OBCEnable
+EXTSYM SETAEnable,ST18Enable,SGBEnable,DSP1Enable,DSP2Enable,DSP3Enable,DSP4Enable,BSEnable
 
 EXTSYM SetaCmdEnable,setaramdata
 EXTSYM setaaccessbankr8,setaaccessbankw8,setaaccessbankr8a,setaaccessbankw8a
@@ -3278,185 +3282,10 @@ NEWSYM CheckROMType
     call SetAddressingModes
     call GenerateBank0Table
 
-    ; Chip Detection
-    mov byte[SFXEnable],0
-    mov byte[C4Enable],0
-    mov byte[SPC7110Enable],0
-    mov byte[RTCEnable],0
-    mov byte[SA1Enable],0
-    mov byte[SDD1Enable],0
-    mov byte[OBCEnable],0
-    mov byte[CHIPBATT],0
-    mov byte[SGBEnable],0
-    mov byte[SETAEnable],0
-    mov byte[ST18Enable],0
-    mov byte[DSP1Enable],0
-    mov byte[DSP2Enable],0
-    mov byte[DSP3Enable],0
-    mov byte[DSP4Enable],0
-    mov byte[BSEnable],0
-
-    mov esi,[romdata]
-    add esi,[infoloc]
-    add esi,21
-
-    mov ax,[esi]
-    cmp ax,02530h
-    jne .notOBC1
-    mov byte[OBCEnable],1
-    mov byte[CHIPBATT],1
-    jmp .endchpdtct
-.notOBC1      
-    cmp ax,04532h
-    jne .notSDD1A
-    mov byte[SDD1Enable],1
-    mov byte[CHIPBATT],1
-    jmp .endchpdtct
-.notSDD1A
-    cmp ax,04332h
-    jne .notSDD1B
-    mov byte[SDD1Enable],1
-    jmp .endchpdtct
-.notSDD1B
-    cmp ax,0E320h
-    jne .notSGB
-    mov byte[SGBEnable],1
-    jmp .endchpdtct
-.notSGB
-    cmp ax,0F320h
-    jne .notC4
-    mov byte[C4Enable],1
-    jmp .endchpdtct
-.notC4
-    cmp ax,03523h
-    jne .notSA1A
-    mov byte[SA1Enable],1
-    mov byte[CHIPBATT],1
-    jmp .endchpdtct
-.notSA1A
-    cmp ax,03423h
-    jne .notSA1B
-    mov byte[SA1Enable],1
-    jmp .endchpdtct
-.notSA1B
-    cmp ax,0F530h
-    jne .notSETAA
-    mov byte[ST18Enable],1
-    mov byte[CHIPBATT],1 ;Check later if this should be removed
-    jmp .endchpdtct
-.notSETAA
-    cmp ax,0F630h
-    jne .notSETAB
-    mov byte[SETAEnable],1
-    mov byte[CHIPBATT],1
-    jmp .endchpdtct
-.notSETAB
-;Super FX has SRAM, but only a battery to save it on the latter two
-    cmp ax,01320h
-    jne .notSFXA
-    mov byte[SFXEnable],1
-    jmp .endchpdtct
-.notSFXA
-    cmp ax,01420h
-    jne .notSFXB
-    mov byte[SFXEnable],1
-    jmp .endchpdtct
-.notSFXB
-    cmp ax,01520h
-    jne .notSFXC
-    mov byte[SFXEnable],1
-    mov byte[CHIPBATT],1 ;Contains Battery
-    jmp .endchpdtct
-.notSFXC
-    cmp ax,01A20h
-    jne .notSFXD
-    mov byte[SFXEnable],1
-    mov byte[CHIPBATT],1 ;Contains Battery
-    jmp .endchpdtct
-.notSFXD
-    cmp ax,05535h
-    jne .notRTCplain
-    mov byte[RTCEnable],1
-    mov byte[CHIPBATT],1
-    jmp .endchpdtct
-.notRTCplain
-    cmp ax,0F93Ah
-    jne .notSPC7A
-    mov byte[SPC7110Enable],1
-    mov byte[RTCEnable],1
-    mov byte[CHIPBATT],1
-    jmp .endchpdtct
-.notSPC7A
-    cmp ax,0F53Ah
-    jne .notSPC7B
-    mov byte[SPC7110Enable],1
-    mov byte[CHIPBATT],1
-    jmp .endchpdtct
-.notSPC7B
-    cmp ax,00520h
-    jne .notDSP2  
-    mov byte[DSP2Enable],1
-    mov byte[CHIPBATT],1
-    jmp .endchpdtct
-.notDSP2 
-    cmp ax,00330h
-    jne .notDSP4  
-    mov byte[DSP4Enable],1
-    jmp .endchpdtct
-.notDSP4
-    cmp ax,00530h
-    jne .notDSP3  
-    cmp byte[esi+5],0B2h ;Bandai only
-    jne .notDSP3  
-    mov byte[DSP3Enable],1
-    mov byte[CHIPBATT],1
-    jmp .endchpdtct
-.notDSP3
-    cmp ah,3
-    jne .notDSP1A  
-    mov byte[DSP1Enable],1
-    jmp .endchpdtct
-.notDSP1A
-    cmp ah,5
-    jne .notDSP1B
-    mov byte[DSP1Enable],1
-    mov byte[CHIPBATT],1
-    jmp .endchpdtct
-.notDSP1B
-    cmp byte[esi+5],033h
-    je .bsgoodDA
-    cmp byte[esi+5],0FFh
-    je .bsgoodDA
-    jmp .notBS
-.bsgoodDA
-    cmp al,0
-    je .bsgoodD5
-    mov bl,al
-    and bl,083h
-    cmp bl,080h
-    je .bsgoodD5
-    jmp .notBS
-.bsgoodD5
-    cmp ah,0FFh
-    jne .checkgooddate
-    cmp byte[esi+1],0FFh
-    je .validdate
-    jmp .notBS
-.checkgooddate
-    mov bh,ah
-    and bh,0Fh
-    jnz .notBS
-    mov bh,ah
-    shr bh,4
-    dec bh
-    cmp bh,12
-    jae .notBS
-.validdate
-    mov byte[BSEnable],1
-    jmp .endchpdtct
-.notBS
-.endchpdtct
-
+    pushad
+    call chip_detect
+    popad
+    
     ;Setup some Memmapping
     mov byte[DSP1Type],0
     mov esi,[romdata]
@@ -3699,22 +3528,6 @@ NEWSYM CheckROMType
     ret
 
 SECTION .bss
-NEWSYM CHIPBATT, resb 1
-NEWSYM SFXEnable, resb 1
-NEWSYM C4Enable, resb 1
-NEWSYM SPC7110Enable, resb 1
-NEWSYM RTCEnable, resb 1
-NEWSYM SA1Enable, resb 1
-NEWSYM SDD1Enable, resb 1
-NEWSYM OBCEnable, resb 1
-NEWSYM SETAEnable, resb 1 ;ST010 & 11
-NEWSYM ST18Enable, resb 1
-NEWSYM SGBEnable, resb 1
-NEWSYM DSP1Enable, resb 1
-NEWSYM DSP2Enable, resb 1
-NEWSYM DSP3Enable, resb 1
-NEWSYM DSP4Enable, resb 1
-NEWSYM BSEnable, resb 1
 NEWSYM C4RamR,   resd 1
 NEWSYM C4RamW,   resd 1
 NEWSYM C4Ram,   resd 1

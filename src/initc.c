@@ -45,7 +45,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define true 1
 #define false 0
 
-
+//NSRT Goodness
 #define Lo 0x7FC0
 #define Hi 0xFFC0
 #define EHi 0x40FFC0
@@ -53,6 +53,25 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define MB_bytes 0x100000
 #define Mbit_bytes 0x20000
 
+//Offsets to add to infoloc start to reach particular variable
+#define BankOffset       21 //Contains Speed as well
+#define TypeOffset       22
+#define ROMSizeOffset    23
+#define SRAMSizeOffset   24
+#define CountryOffset    25
+#define CompanyOffset    26
+#define VersionOffset    27
+#define InvCSLowOffset   28
+#define InvCSHiOffset    29
+#define CSLowOffset      30
+#define CSHiOffset       31
+//Additional defines for the BS header
+#define BSYearOffset     21 //Not sure how to calculate year yet
+#define BSMonthOffset    22
+#define BSDayOffset      23
+#define BSBankOffset     24
+#define BSSizeOffset     25 //Contains Type as well
+//26 - 31 is the same
 
 
 void Debug_WriteString(char *str)
@@ -89,8 +108,8 @@ unsigned int addOnSize;
 //Deinterleave functions
 bool validChecksum(unsigned char *ROM, int BankLoc)
 {
-  if (ROM[BankLoc + 28] + (ROM[BankLoc + 29] << 8) +
-      ROM[BankLoc + 30] + (ROM[BankLoc + 31] << 8) == 0xFFFF)
+  if (ROM[BankLoc + InvCSLowOffset] + (ROM[BankLoc + InvCSHiOffset] << 8) +
+      ROM[BankLoc + CSLowOffset] + (ROM[BankLoc + CSHiOffset] << 8) == 0xFFFF)
   {
     return(true);
   }
@@ -99,7 +118,7 @@ bool validChecksum(unsigned char *ROM, int BankLoc)
 
 bool EHiHeader(unsigned char *ROM, int BankLoc)
 {
-  if (validChecksum(ROM, BankLoc) && ROM[BankLoc+21] == 53)
+  if (validChecksum(ROM, BankLoc) && ROM[BankLoc+BankOffset] == 53)
   {
     return(true);
   }
@@ -154,20 +173,20 @@ void CheckIntl1(unsigned char *ROM)
   unsigned int ROMmidPoint = NumofBytes / 2;
   if (validChecksum(ROM, ROMmidPoint + Lo) &&
      !validChecksum(ROM, Lo) &&
-      ROM[ROMmidPoint+Lo+25] < 14) //Country Code
+      ROM[ROMmidPoint+Lo+CountryOffset] < 14) //Country Code
   {
     deintlv1();
     Interleaved = true;
   }
   else if (validChecksum(ROM, Lo) && !validChecksum(ROM, Hi) &&
-           ROM[Lo+25] < 14 && //Country code
+           ROM[Lo+CountryOffset] < 14 && //Country code
            //Rom make up
-          (ROM[Lo+21] == 33 || ROM[Lo+21] == 49 ||
-           ROM[Lo+21] == 53 || ROM[Lo+21] == 58))
+          (ROM[Lo+BankOffset] == 33 || ROM[Lo+BankOffset] == 49 ||
+           ROM[Lo+BankOffset] == 53 || ROM[Lo+BankOffset] == 58))
   {
     if (ROM[Lo+20] == 32 ||//Check that Header name did not overflow
-      !(ROM[Lo+21] == ROM[Lo+20] || ROM[Lo+21] == ROM[Lo+19] ||
-        ROM[Lo+21] == ROM[Lo+18] || ROM[Lo+21] == ROM[Lo+17]))
+      !(ROM[Lo+BankOffset] == ROM[Lo+20] || ROM[Lo+BankOffset] == ROM[Lo+19] ||
+        ROM[Lo+BankOffset] == ROM[Lo+18] || ROM[Lo+BankOffset] == ROM[Lo+17]))
     {
       deintlv1();
       Interleaved = true;
@@ -243,10 +262,10 @@ int InfoScore(unsigned char *Buffer)
 {
   int score = 0;
   if (validChecksum(Buffer, 0))      { score += 4; }
-  if (Buffer[26] == 0x33)            { score += 2; }
+  if (Buffer[CompanyOffset] == 0x33)            { score += 2; }
   if (!(Buffer[61] & 0x80))          { score -= 4; }
-  if ((1 << (Buffer[23] - 7)) > 48)  { score -= 1; }
-  if (Buffer[25] < 14)               { score += 1; }
+  if ((1 << (Buffer[ROMSizeOffset] - 7)) > 48)  { score -= 1; }
+  if (Buffer[CountryOffset] < 14)               { score += 1; }
   if (!AllASCII(Buffer, 20))         { score -= 1; }
   return(score);
 }
@@ -283,7 +302,7 @@ void BankCheck()
     loscore = InfoScore(ROM+Lo);
     hiscore = InfoScore(ROM+Hi);
 
-    switch(ROM[Lo + 21])
+    switch(ROM[Lo + BankOffset])
     {
       case 32: case 35: case 48: case 50:
         loscore += 2;
@@ -291,7 +310,7 @@ void BankCheck()
         loscore += 1;
         break;
     }
-    switch(ROM[Hi + 21])
+    switch(ROM[Hi + BankOffset])
     {
       case 33: case 49: case 53: case 58:
         hiscore += 2;
@@ -333,6 +352,193 @@ void BankCheck()
   }
 }
 
+//Chip detection functions
+bool CHIPBATT;
+bool BSEnable;
+bool C4Enable;
+bool DSP1Enable;
+bool DSP2Enable;
+bool DSP3Enable;
+bool DSP4Enable;
+bool OBCEnable;
+bool RTCEnable;
+bool SA1Enable;
+bool SDD1Enable;
+bool SETAEnable; //ST010 & 11
+bool SFXEnable;
+bool SGBEnable;
+bool SPC7110Enable;
+bool ST18Enable;
+
+bool valid_normal_bank(unsigned char bankbyte)
+{
+  switch (bankbyte)
+  {
+    case 32: case 33: case 48: case 49:
+    return(true);
+    break;
+  }
+  return(false);
+}
+
+void chip_detect()
+{
+  unsigned char *ROM = (unsigned char *)romdata;
+
+  C4Enable = false;
+  RTCEnable = false;
+  SA1Enable = false;
+  SDD1Enable = false;
+  OBCEnable = false;
+  CHIPBATT = false;
+  SGBEnable = false;
+  ST18Enable = false;
+  DSP1Enable = false;
+  DSP2Enable = false;
+  DSP3Enable = false;
+  DSP4Enable = false;
+  SPC7110Enable = false;
+  BSEnable = false;
+  SFXEnable = false;
+  SETAEnable = false;
+  
+  //DSP Family
+  if (ROM[infoloc+TypeOffset] == 3)
+  {
+    if (ROM[infoloc+BankOffset] == 48)
+    { 
+      DSP4Enable = true;
+    }
+    else
+    {
+      DSP1Enable = true;
+    }
+    return;
+  }  
+  if (ROM[infoloc+TypeOffset] == 5)
+  {
+    CHIPBATT = true;
+    if (ROM[infoloc+BankOffset] == 32)
+    { 
+      DSP2Enable = true;
+    }
+    else if (ROM[infoloc+BankOffset] == 48 && ROM[infoloc+CompanyOffset] == 0xB2) //Bandai
+    { 
+      DSP3Enable = true;
+    }
+    else
+    {
+      DSP1Enable = true;
+    }
+    return;
+  }
+
+  switch((unsigned short)ROM[infoloc+BankOffset] | (ROM[infoloc+TypeOffset] << 8))
+  {
+    case 0x1320:                             //Mario Chip 1
+    case 0x1420:                             //GSU-x
+      SFXEnable = true;
+      return;
+      break;
+      
+      
+    case 0x1520:                            //GSU-x + Battery
+    case 0x1A20:                            //GSU-1 + Battery + Start in 21MHz
+      SFXEnable = true;
+      CHIPBATT = true;    
+      return;
+      break;
+    
+    case 0x2530:
+      OBCEnable = true;
+      CHIPBATT = true;
+      return;
+      break;
+    
+    case 0x3423:
+      SA1Enable = true;
+      return;
+      break;
+    
+    case 0x3523:
+      SA1Enable = true;
+      CHIPBATT = true;
+      return;
+      break;
+
+    case 0x4332:
+      SDD1Enable = true;
+      return;
+      break;
+
+    case 0x4532:
+      SDD1Enable = true;
+      CHIPBATT = true;     
+      return;
+      break;
+      
+    case 0x5535:
+      RTCEnable = true;
+      CHIPBATT = true;
+      return;
+      break;
+      
+    case 0xE320:
+      SGBEnable = true;
+      return;
+      break;
+    
+    case 0xF320: 
+      C4Enable = true;
+      return;
+      break;
+    
+    case 0xF530: 
+      ST18Enable = true;
+      CHIPBATT = true; //Check later if this should be removed      
+      return;
+      break;
+    
+    case 0xF53A:
+      SPC7110Enable = true;
+      CHIPBATT = true;
+      return;
+      break;
+    
+    case 0xF630:
+      SETAEnable = true;
+      CHIPBATT = true;
+      return;
+      break;
+
+    case 0xF93A:
+      SPC7110Enable = true;
+      RTCEnable = true;      
+      CHIPBATT = true;
+      return;
+      break;
+  }
+
+  //BS Dump
+  if ((ROM[infoloc+CompanyOffset] == 0x33 || ROM[infoloc+CompanyOffset] == 0xFF) &&
+      (!ROM[infoloc+BSYearOffset] || (ROM[infoloc+BSYearOffset] & 131) == 128) &&
+      valid_normal_bank(ROM[infoloc+BSBankOffset]))
+  {
+    unsigned char m = ROM[infoloc+BSMonthOffset];
+    if (!m && !ROM[infoloc+BSDayOffset])
+    {
+      //BS Add-on cart
+      return;
+    }
+    if ((m == 0xFF && ROM[infoloc+BSDayOffset] == 0xFF) ||
+        (!(m & 0xF) && ((m >> 4) - 1 < 12)))
+    {
+      BSEnable = true;
+      return;
+    }
+  }
+
+}
 
 //Checksum functions
 unsigned short sum(unsigned char *array, unsigned int size)
@@ -353,8 +559,6 @@ unsigned short sum(unsigned char *array, unsigned int size)
   return(theSum);
 }
 
-extern bool SPC7110Enable;
-extern bool BSEnable;
 extern unsigned short Checksumvalue;
 void CalcChecksum()
 {
@@ -417,10 +621,6 @@ void MirrorROM()
   NumofBanks = curromspace >> 15;
 }
 
-#define SRAMSizeOffset   24 
-#define CompanyOffset    26
-extern bool SFXEnable;
-extern bool SETAEnable;
 void SetupSramSize()
 {
   unsigned char *ROM = (unsigned char *)romdata;
@@ -787,8 +987,8 @@ void SplitSupport()
   SplittedROM = false;
   
   //Same Game add on
-  if (ROM[Hi+26] == 0x33 && curromspace == 0x80000 &&
-      !ROM[Hi+21] && !ROM[Hi+22] && !ROM[Hi+23])
+  if (ROM[Hi+CompanyOffset] == 0x33 && curromspace == 0x80000 &&
+      !ROM[Hi+BankOffset] && !ROM[Hi+BSMonthOffset] && !ROM[Hi+BSDayOffset])
   {
     addOnStart = 0x200000;
     addOnSize = 0x80000;
@@ -796,8 +996,8 @@ void SplitSupport()
   }          
 
   //SD Gundam G-Next add on  
-  if (ROM[Lo+26] == 0x33 && curromspace == 0x80000 &&
-      !ROM[Lo+21] && !ROM[Lo+22] && !ROM[Lo+23] && !strncmp(ROM+Lo, "GNEXT", 5))
+  if (ROM[Lo+CompanyOffset] == 0x33 && curromspace == 0x80000 &&
+      !ROM[Lo+BankOffset] && !ROM[Lo+BSMonthOffset] && !ROM[Lo+BSDayOffset] && !strncmp(ROM+Lo, "GNEXT", 5))
   {
     addOnStart = 0x400000;
     addOnSize = 0x80000;
