@@ -152,8 +152,8 @@ CHIPSOBJ=${CHIPDIR}/dsp1emu${OE} ${CHIPDIR}/fxemu2${OE} ${CHIPDIR}/sfxproc${OE}\
 
 CPUOBJ=${CPUDIR}/dma${OE} ${CPUDIR}/dsp${OE} ${CPUDIR}/dspproc${OE}\
 	${CPUDIR}/execute${OE} ${CPUDIR}/irq${OE} ${CPUDIR}/memory${OE}\
-	${CPUDIR}/spc700${OE} ${CPUDIR}/stable${OE} ${CPUDIR}/table${OE}\
-	${CPUDIR}/tableb${OE} ${CPUDIR}/tablec${OE}
+	${CPUDIR}/memtable${OE} ${CPUDIR}/spc700${OE} ${CPUDIR}/stable${OE}\
+	${CPUDIR}/table${OE} ${CPUDIR}/tableb${OE} ${CPUDIR}/tablec${OE}
 
 GUIOBJ=${GUIDIR}/gui${OE} ${GUIDIR}/menu${OE}
 
@@ -164,11 +164,11 @@ VIDEOBJ=${VIDEODIR}/makev16b${OE} ${VIDEODIR}/makev16t${OE} ${VIDEODIR}/makevid$
 	${VIDEODIR}/newgfx16${OE} ${VIDEODIR}/newgfx2${OE} ${VIDEODIR}/newgfx${OE}\
 	${VIDEODIR}/m716text${OE} ${VIDEODIR}/procvid${OE} ${VIDEODIR}/procvidc${OE}
 
-#only used on Win32
 WINVIDOBJ=${VIDEODIR}/sw_draw${OE} ${VIDEODIR}/hq2x16${OE} ${VIDEODIR}/hq2x32${OE}\
 	${VIDEODIR}/2xsaiw${OE} ${VIDEODIR}/hq3x16${OE} ${VIDEODIR}/hq3x32${OE}\
 	${VIDEODIR}/hq4x16${OE} ${VIDEODIR}/hq4x32${OE}
 
+#only used on Win32
 WINOBJ=${WINDIR}/copyvwin${OE} ${DRESOBJ}\
 	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE} ${WINDIR}/zloaderw${OE}\
 	${WINDIR}/zipxw${OE} ${WINDIR}/zfilew${OE}
@@ -267,6 +267,7 @@ ${CPUDIR}/tablec${OE}: $< ${CPUDIR}/65816dc.inc ${CPUDIR}/address.inc ${CPUDIR}/
 ${CPUDIR}/stable${OE}: $< ${CPUDIR}/s65816d.inc ${CPUDIR}/saddress.inc ${CPUDIR}/saddrni.inc\
 	            ${CPUDIR}/se65816.inc macros.mac
 ${CPUDIR}/memory${OE}: $< macros.mac
+${CPUDIR}/memtable${OE}: $<
 ${CPUDIR}/dma${OE}: $< macros.mac
 ${CPUDIR}/irq${OE}: $< macros.mac
 ${CPUDIR}/dspproc${OE}: $< macros.mac
@@ -318,7 +319,7 @@ ${GUIDIR}/gui${OE}: $< ${GUIDIR}/guitools.inc\
 	${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guiwindp.inc\
 	${GUIDIR}/guinetpl.inc ${GUIDIR}/guikeys.inc ${GUIDIR}/guicheat.inc\
 	${GUIDIR}/guicombo.inc ${GUIDIR}/guiload.inc macros.mac
-${GUIDIR}/menu${OE}bj: ${GUIDIR}/menu.asm macros.mac
+${GUIDIR}/menu${OE}: $< macros.mac
 
 ${EFFECTSDIR}/water${OE}: $< ${EFFECTSDIR}/fixsin.h
 ${EFFECTSDIR}/smoke${OE}: $<

@@ -100,7 +100,7 @@ Key input  -  Repeated for all input / internal chapters
   1 bit  -  Chapter instead of input here
   1 bit  -  RLE instead of input
   1 bit  -  Command here
-  
+
 -If Command-
 Remaining 7 bits of flag determine command
 
@@ -226,11 +226,11 @@ static void zmv_header_write(struct zmv_header *zmv_head, FILE *fp)
       flag &= ~BIT(7);
       flag |= BIT(6);
       break;
-      
+
     case zmv_sm_clear_all:
       flag |= BIT(7);
       flag |= BIT(6);
-      break;  
+      break;
   }
 
   switch (zmv_head->zmv_flag.video_mode)
@@ -284,12 +284,12 @@ static bool zmv_header_read(struct zmv_header *zmv_head, FILE *fp)
       break;
 
     case BIT(7):
-       zmv_head->zmv_flag.start_method = zmv_sm_power;
-       break;
+      zmv_head->zmv_flag.start_method = zmv_sm_power;
+      break;
 
     case BIT(6):
-       zmv_head->zmv_flag.start_method = zmv_sm_reset;
-       break;
+      zmv_head->zmv_flag.start_method = zmv_sm_reset;
+      break;
 
     case BIT(7)|BIT(6):
       zmv_head->zmv_flag.start_method = zmv_sm_clear_all;
@@ -542,7 +542,7 @@ static void flush_input_buffer()
     fwrite(zmv_vars.write_buffer, zmv_vars.write_buffer_loc, 1, zmv_vars.fp);
     zmv_vars.write_buffer_loc = 0;
   }
-  
+
   if (zmv_vars.rle_count)
   {
     if (zmv_vars.rle_count > 5)
@@ -558,7 +558,7 @@ static void flush_input_buffer()
     }
     zmv_vars.rle_count = 0;
   }
-      
+
   zmv_vars.header.author_len = 0; //If we're writing, then author is erased if there
 }
 
@@ -650,7 +650,7 @@ static void zmv_record(bool slow, unsigned char combos_used)
   if (flag)
   {
     unsigned char buffer_used = (nibble/2) + (nibble&1);
-    
+
     if (zmv_vars.rle_count)
     {
       if (zmv_vars.rle_count > 5)
@@ -664,13 +664,13 @@ static void zmv_record(bool slow, unsigned char combos_used)
         memset(zmv_vars.write_buffer+zmv_vars.write_buffer_loc, 0, zmv_vars.rle_count);
         zmv_vars.write_buffer_loc += zmv_vars.rle_count;
       }
-      zmv_vars.rle_count = 0;      
-    }    
-  
+      zmv_vars.rle_count = 0;
+    }
+
     zmv_vars.write_buffer[zmv_vars.write_buffer_loc++] = flag;
     memcpy(zmv_vars.write_buffer+zmv_vars.write_buffer_loc, press_buf, buffer_used);
     zmv_vars.write_buffer_loc += buffer_used;
-  
+
     if (zmv_vars.write_buffer_loc > WRITE_BUFFER_SIZE - (6+sizeof(press_buf)))
     {
       flush_input_buffer();
@@ -863,21 +863,21 @@ static bool zmv_replay()
       unsigned char byte;
       bool mid_byte = false;
       zmv_vars.rle_count = 0;
-      
+
       fread(&flag, 1, 1, zmv_vars.fp);
 
       if (flag & BIT(0)) //Command
       {
-        
+
         return(zmv_replay());
       }
-      
+
       if (flag & BIT(1)) //RLE
       {
         zmv_vars.rle_count = fread4(zmv_vars.fp) - zmv_open_vars.frames_replayed;
         return(zmv_replay());
       }
-      
+
       if (flag & BIT(2)) //Internal Chapter
       {
         fseek(zmv_vars.fp, INT_CHAP_SIZE, SEEK_CUR);
@@ -890,9 +890,11 @@ static bool zmv_replay()
       REPLAY_PAD(zmv_vars.last_joy_state.D, JoyDOrig, 4);
       REPLAY_PAD(zmv_vars.last_joy_state.E, JoyEOrig, 3);
     }
+
     zmv_open_vars.frames_replayed++;
     return(true);
   }
+
   return(false);
 }
 
@@ -937,9 +939,11 @@ static bool zmv_next_chapter()
 
       fseek(zmv_vars.fp, next_external, SEEK_SET);
     }
+
     zmv_vars.rle_count = 0;
     return(true);
   }
+
   return(false);
 }
 
@@ -1098,14 +1102,14 @@ static void zmv_replay_to_record()
   zmv_vars.header.frames = zmv_open_vars.frames_replayed;
   zmv_vars.header.internal_chapters = internal_chapter_delete_after(&zmv_vars.internal_chapters, ftell(zmv_vars.fp));
   zmv_vars.last_internal_chapter_offset = internal_chapter_lesser(&zmv_vars.internal_chapters, ~0);
-  
+
   if (zmv_vars.rle_count)
   {
     fseek(zmv_vars.fp, -4, SEEK_CUR);
     fwrite4(zmv_vars.header.frames, zmv_vars.fp);
-    zmv_vars.rle_count = 0; 
+    zmv_vars.rle_count = 0;
   }
-  
+
   ftruncate(fileno(zmv_vars.fp), ftell(zmv_vars.fp));
 }
 
@@ -1172,7 +1176,7 @@ void zmv_rewind_load(size_t state, bool playback)
     zmv_vars.header.removed_frames += zmv_vars.header.frames - zmv_rewind_buffer[state].frames;
     zmv_vars.header.frames = zmv_rewind_buffer[state].frames;
     zmv_vars.rle_count = zmv_rewind_buffer[state].rle_count;
-    
+
     fseek(zmv_vars.fp, file_pos, SEEK_SET);
     ftruncate(fileno(zmv_vars.fp), file_pos);
 
@@ -1486,7 +1490,7 @@ char MovieFrameStr[10];
 void SRAMChdir();
 void ChangetoLOADdir();
 
-/* 
+/*
 
 Code to playback old ZMVs
 
@@ -1509,13 +1513,13 @@ struct
 static void OldMovieReplay()
 {
   unsigned char byte;
-  
+
   if (fread(&byte, 1, 1, old_movie.fp))
   {
     if (byte < 2) // 1 or 0 are correct values
     {
       char *sub;
-      
+
       if (byte == 0) // 0 means the input has changed
       {
         fread(&old_movie.last_joy_state.A, 1, 4, old_movie.fp);
@@ -1530,13 +1534,13 @@ static void OldMovieReplay()
       JoyCOrig = old_movie.last_joy_state.C;
       JoyDOrig = old_movie.last_joy_state.D;
       JoyEOrig = old_movie.last_joy_state.E;
-    
+
       if ((sub = MovieSub_GetData(old_movie.frames_replayed)))
       {
         Msgptr = sub;
         MessageOn = MovieSub_GetDuration();
       }
-    
+
       old_movie.frames_replayed++;
     }
     else // anything else is bad - the file isn't a movie.
@@ -1556,7 +1560,7 @@ static void OldMovieReplay()
     else
     {
       Msgptr = "STATE LOADED.";
-    }    
+    }
 
     MessageOn = MsgCount;
     SetMovieMode(MOVIE_OFF);
@@ -1573,11 +1577,11 @@ static void OldMoviePlay(FILE *fp)
   extern size_t Totalbyteloaded;
   extern unsigned int curexecstate;
   extern unsigned int nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
-  void loadstate2();    
-   
+  void loadstate2();
+
   memset(&old_movie, 0, sizeof(old_movie));
   old_movie.fp = fp;
-  
+
   loadstate2();
 
   fseek(fp, Totalbyteloaded, SEEK_SET);
@@ -1612,7 +1616,7 @@ static void OldMoviePlay(FILE *fp)
     DSPMem[0x58] = 0;
     DSPMem[0x68] = 0;
     DSPMem[0x78] = 0;
-  
+
     Msgptr = "OLD MOVIE REPLAYING.";
   }
   else
@@ -1620,9 +1624,8 @@ static void OldMoviePlay(FILE *fp)
     Msgptr = (!soundon) ? "MUST PLAY WITH SOUND ON." : "MUST PLAY WITH SOUND OFF.";
     fclose(fp);
   }
-  MessageOn = MsgCount;  
+  MessageOn = MsgCount;
 }
-
 
 void MovieInsertChapter()
 {
@@ -1642,9 +1645,9 @@ void MovieInsertChapter()
         Msgptr = "";
       }
       break;
-    case MOVIE_OLD_PLAY:  
+    case MOVIE_OLD_PLAY:
       Msgptr = "OLD MOVIES DO NOT SUPPORT CHAPTERS.";
-      break;    
+      break;
     default:	// no movie processing
       Msgptr = "NO MOVIE PROCESSING.";
   }
@@ -1663,9 +1666,9 @@ void MovieSeekAhead()
     case MOVIE_RECORD: // record will use MZTs
       Msgptr = "NO SEEKING DURING RECORD.";
       break;
-    case MOVIE_OLD_PLAY:  
+    case MOVIE_OLD_PLAY:
       Msgptr = "OLD MOVIES DO NOT SUPPORT CHAPTERS.";
-      break;        
+      break;
     default:
       Msgptr = "NO MOVIE PROCESSING.";
   }
@@ -1685,9 +1688,9 @@ void MovieSeekBehind()
     case MOVIE_RECORD: // record will use MZTs
       Msgptr = "NO SEEKING DURING RECORD.";
       break;
-    case MOVIE_OLD_PLAY:  
+    case MOVIE_OLD_PLAY:
       Msgptr = "OLD MOVIES DO NOT SUPPORT CHAPTERS.";
-      break;    
+      break;
     default:
       Msgptr = "NO MOVIE PROCESSING.";
   }
@@ -1771,9 +1774,9 @@ void MovieStop()
         fclose(old_movie.fp);
         MovieSub_Close();
         MessageOn = 0;
-        break; 
+        break;
     }
-    
+
     zmv_dealloc_rewind_buffer();
     SetMovieMode(MOVIE_OFF);
     SRAMState = PrevSRAMState;
@@ -1785,11 +1788,11 @@ void MoviePlay()
   if (!MovieProcessing)
   {
     unsigned char FileExt[4];
-    FILE *fp;   
+    FILE *fp;
 
     PrevSRAMState = SRAMState;
     SRAMState = true;
-        
+
     GUIQuit = 2;
     memcpy(FileExt, &fnamest[statefileloc-3], 4);
     memcpy(&fnamest[statefileloc-3], ".zmv", 4);
@@ -1801,7 +1804,7 @@ void MoviePlay()
     {
       char header_buf[3];
       fread(header_buf, 3, 1, fp);
-      
+
       if (!strncmp("ZMV", header_buf, 3)) //New Enhanced Format
       {
         fclose(fp);
@@ -1831,7 +1834,7 @@ void MoviePlay()
       Msgptr = "MOVIE COULD NOT BE OPENED.";
       MessageOn = MsgCount;
     }
-    
+
     memcpy(&fnamest[statefileloc-3], FileExt, 4);
     asm_call(ChangetoLOADdir);
   }
@@ -1866,7 +1869,7 @@ void MovieRecord()
     {
       PrevSRAMState = SRAMState;
       SRAMState = true;
-      
+
       zmv_create(fnamest+1);
       zmv_alloc_rewind_buffer(RewindStates);
       SetMovieMode(MOVIE_RECORD);
@@ -1898,6 +1901,6 @@ void GetMovieFrameStr()
       break;
     case MOVIE_OLD_PLAY:
       sprintf(MovieFrameStr, "%u",old_movie.frames_replayed);
-      break;  
+      break;
   }
 }

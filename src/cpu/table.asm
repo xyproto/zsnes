@@ -20,9 +20,6 @@
 
 %include "macros.mac"
 
-EXTSYM eramaccessbankr16,eramaccessbankr8,eramaccessbankw16
-EXTSYM eramaccessbankw8,memaccessbankr16,memaccessbankr8
-EXTSYM memaccessbankw16,memaccessbankw8
 EXTSYM mosjmptab,mosdraw10,mosdraw11,mosdraw12,mosdraw13
 EXTSYM mosdraw14,mosdraw15,mosdraw16,mosdraw2,mosdraw3
 EXTSYM mosdraw4,mosdraw5,mosdraw6,mosdraw7,mosdraw8
@@ -43,16 +40,7 @@ EXTSYM mosjmptab16bntms,mosdraw1016bntms,mosdraw1116bntms,mosdraw1216bntms,mosdr
 EXTSYM mosdraw1416bntms,mosdraw1516bntms,mosdraw1616bntms,mosdraw216bntms,mosdraw316bntms
 EXTSYM mosdraw416bntms,mosdraw516bntms,mosdraw616bntms,mosdraw716bntms,mosdraw816bntms
 EXTSYM mosdraw916bntms
-EXTSYM regaccessbankr16,regaccessbankw16,regaccessbankw8
-EXTSYM sramaccessbankr16,sramaccessbankr8,sramaccessbankw16
-EXTSYM sramaccessbankw8,tableA,tableB,tableC,tableD,tableE
-EXTSYM tableF,tableG,tableH,wramaccessbankr16
-EXTSYM wramaccessbankr8,wramaccessbankw16,wramaccessbankw8
-EXTSYM regaccessbankr8SA1,regaccessbankr16SA1,regaccessbankw8SA1
-EXTSYM regaccessbankw16SA1,SA1RAMaccessbankr8,SA1RAMaccessbankr16
-EXTSYM SA1RAMaccessbankw8,SA1RAMaccessbankw16
-EXTSYM SA1RAMaccessbankr8b,SA1RAMaccessbankr16b
-EXTSYM SA1RAMaccessbankw8b,SA1RAMaccessbankw16b
+EXTSYM tableA,tableB,tableC,tableD,tableE,tableF,tableG,tableH
 EXTSYM DPageR8,DPageW8,DPageR16,DPageW16
 EXTSYM SDD1Enable
 EXTSYM JoyAOrig,JoyANow,JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow
@@ -77,12 +65,12 @@ section .data
 ;tableF  times 256 dd 0             ; Table addresses (M:1,X:0,D:1)
 ;tableG  times 256 dd 0             ; Table addresses (M:0,X:1,D:1)
 ;tableH  times 256 dd 0             ; Table addresses (M:1,X:1,D:1)
-NEWSYM addrmdef, times 27 dd 0             ; Address modes
+NEWSYM addrmdef, times 27 dd 0      ; Address modes
 ;tablead times 256 dd 0             ; Table address location according to P
 ;memtabler8 times 256 dd 0          ; Memory Bank Locations for reading 8-bit
 ;memtablew8 times 256 dd 0          ; Memory Bank Locations for writing 8-bit
-;memtabler16 times 256 dd 0          ; Memory Bank Locations for reading 16-bit
-;memtablew16 times 256 dd 0          ; Memory Bank Locations for reading 16-bit
+;memtabler16 times 256 dd 0         ; Memory Bank Locations for reading 16-bit
+;memtablew16 times 256 dd 0         ; Memory Bank Locations for reading 16-bit
 
 section .text
 
@@ -332,286 +320,6 @@ NEWSYM inittable
     pop es
     ret
 
-NEWSYM SetAddressingModes
-    ; set 8-bit read memory tables
-    mov edi,memtabler8
-    ; banks 0-3Fh
-    mov eax,regaccessbankr8
-    mov ecx,$40
-    rep stosd
-    ; banks 40-6Fh
-    mov eax,memaccessbankr8
-    mov ecx,$30
-    rep stosd
-    ; bank 70-77h
-    mov eax,sramaccessbankr8
-    mov ecx,8
-    rep stosd
-    ; bank 78-7D
-    mov eax,memaccessbankr8
-    mov ecx,6
-    rep stosd
-    ; bank 7E
-    mov eax,wramaccessbankr8
-    stosd
-    ; bank 7F
-    mov eax,eramaccessbankr8
-    stosd
-    ; banks 80-BF
-    mov eax,regaccessbankr8
-    mov ecx,$40
-    rep stosd
-    ; banks C0-FFh
-    mov eax,memaccessbankr8
-    mov ecx,$40
-    rep stosd
-
-    ; set 8-bit write memory tables
-    mov edi,memtablew8
-    ; banks 0-3Fh
-    mov eax,regaccessbankw8
-    mov ecx,$40
-    rep stosd
-    ; banks 40-6Fh
-    mov eax,memaccessbankw8
-    mov ecx,$30
-    rep stosd
-    ; bank 70-77h
-    mov eax,sramaccessbankw8
-    mov ecx,8
-    rep stosd
-    ; bank 78-7D
-    mov eax,memaccessbankw8
-    mov ecx,6
-    rep stosd
-    ; bank 7E
-    mov eax,wramaccessbankw8
-    stosd
-    ; bank 7F
-    mov eax,eramaccessbankw8
-    stosd
-    ; banks 80-BF
-    mov eax,regaccessbankw8
-    mov ecx,$40
-    rep stosd
-    ; banks C0-FFh
-    mov eax,memaccessbankw8
-    mov ecx,$40
-    rep stosd
-
-    ; set 16-bit read memory tables
-    mov edi,memtabler16
-    ; banks 0-3Fh
-    mov eax,regaccessbankr16
-    mov ecx,$40
-    rep stosd
-    ; banks 40-6Fh
-    mov eax,memaccessbankr16
-    mov ecx,$30
-    rep stosd
-    ; bank 70-77h
-    mov eax,sramaccessbankr16
-    mov ecx,8
-    rep stosd
-    ; bank 78-7D
-    mov eax,memaccessbankr16
-    mov ecx,6
-    rep stosd
-    ; bank 7E
-    mov eax,wramaccessbankr16
-    stosd
-    ; bank 7F
-    mov eax,eramaccessbankr16
-    stosd
-    ; banks 80-BF
-    mov eax,regaccessbankr16
-    mov ecx,$40
-    rep stosd
-    ; banks C0-FFh
-    mov eax,memaccessbankr16
-    mov ecx,$40
-    rep stosd
-
-    ; set 16-bit write memory tables
-    mov edi,memtablew16
-    ; banks 0-3Fh
-    mov eax,regaccessbankw16
-    mov ecx,$40
-    rep stosd
-    ; banks 40-6Fh
-    mov eax,memaccessbankw16
-    mov ecx,$30
-    rep stosd
-    ; bank 70-77h
-    mov eax,sramaccessbankw16
-    mov ecx,8
-    rep stosd
-    ; bank 78-7D
-    mov eax,memaccessbankw16
-    mov ecx,6
-    rep stosd
-    ; bank 7E
-    mov eax,wramaccessbankw16
-    stosd
-    ; bank 7F
-    mov eax,eramaccessbankw16
-    stosd
-    ; banks 80-BF
-    mov eax,regaccessbankw16
-    mov ecx,$40
-    rep stosd
-    ; banks C0-FFh
-    mov eax,memaccessbankw16
-    mov ecx,$40
-    rep stosd
-    ret
-
-NEWSYM SetAddressingModesSA1
-    ; set 8-bit read memory tables
-    mov edi,memtabler8
-    ; banks 0-3Fh
-    mov eax,regaccessbankr8SA1
-    mov ecx,$40
-    rep stosd
-    ; banks 40-6Fh
-    mov eax,SA1RAMaccessbankr8
-    mov ecx,$20
-    rep stosd
-    mov eax,SA1RAMaccessbankr8b
-    mov ecx,$10
-    rep stosd
-    ; bank 70-77h
-    mov eax,sramaccessbankr8
-    mov ecx,8
-    rep stosd
-    ; bank 78-7D
-    mov eax,memaccessbankr8
-    mov ecx,6
-    rep stosd
-    ; bank 7E
-    mov eax,wramaccessbankr8
-    stosd
-    ; bank 7F
-    mov eax,eramaccessbankr8
-    stosd
-    ; banks 80-BF
-    mov eax,regaccessbankr8SA1
-    mov ecx,$40
-    rep stosd
-    ; banks C0-FFh
-    mov eax,memaccessbankr8
-    mov ecx,$40
-    rep stosd
-
-    ; set 8-bit write memory tables
-    mov edi,memtablew8
-    ; banks 0-3Fh
-    mov eax,regaccessbankw8SA1
-    mov ecx,$40
-    rep stosd
-    ; banks 40-6Fh
-    mov eax,SA1RAMaccessbankw8
-    mov ecx,$20
-    rep stosd
-    mov eax,SA1RAMaccessbankw8b
-    mov ecx,$10
-    rep stosd
-    ; bank 70-77h
-    mov eax,sramaccessbankw8
-    mov ecx,8
-    rep stosd
-    ; bank 78-7D
-    mov eax,memaccessbankw8
-    mov ecx,6
-    rep stosd
-    ; bank 7E
-    mov eax,wramaccessbankw8
-    stosd
-    ; bank 7F
-    mov eax,eramaccessbankw8
-    stosd
-    ; banks 80-BF
-    mov eax,regaccessbankw8SA1
-    mov ecx,$40
-    rep stosd
-    ; banks C0-FFh
-    mov eax,memaccessbankw8
-    mov ecx,$40
-    rep stosd
-
-    ; set 16-bit read memory tables
-    mov edi,memtabler16
-    ; banks 0-3Fh
-    mov eax,regaccessbankr16SA1
-    mov ecx,$40
-    rep stosd
-    ; banks 40-6Fh
-    mov eax,SA1RAMaccessbankr16
-    mov ecx,$20
-    rep stosd
-    mov eax,SA1RAMaccessbankr16b
-    mov ecx,$10
-    rep stosd
-    ; bank 70-77h
-    mov eax,sramaccessbankr16
-    mov ecx,8
-    rep stosd
-    ; bank 78-7D
-    mov eax,memaccessbankr16
-    mov ecx,6
-    rep stosd
-    ; bank 7E
-    mov eax,wramaccessbankr16
-    stosd
-    ; bank 7F
-    mov eax,eramaccessbankr16
-    stosd
-    ; banks 80-BF
-    mov eax,regaccessbankr16SA1
-    mov ecx,$40
-    rep stosd
-    ; banks C0-FFh
-    mov eax,memaccessbankr16
-    mov ecx,$40
-    rep stosd
-
-    ; set 16-bit write memory tables
-    mov edi,memtablew16
-    ; banks 0-3Fh
-    mov eax,regaccessbankw16SA1
-    mov ecx,$40
-    rep stosd
-    ; banks 40-6Fh
-    mov eax,SA1RAMaccessbankw16
-    mov ecx,$20
-    rep stosd
-    mov eax,SA1RAMaccessbankw16b
-    mov ecx,$10
-    rep stosd
-    ; bank 70-77h
-    mov eax,sramaccessbankw16
-    mov ecx,8
-    rep stosd
-    ; bank 78-7D
-    mov eax,memaccessbankw16
-    mov ecx,6
-    rep stosd
-    ; bank 7E
-    mov eax,wramaccessbankw16
-    stosd
-    ; bank 7F
-    mov eax,eramaccessbankw16
-    stosd
-    ; banks 80-BF
-    mov eax,regaccessbankw16SA1
-    mov ecx,$40
-    rep stosd
-    ; banks C0-FFh
-    mov eax,memaccessbankw16
-    mov ecx,$40
-    rep stosd
-    ret
-
 eopINVALID
     ret
 
@@ -637,22 +345,22 @@ NEWSYM cpucycle
          db 2, 5, 5, 7, 6, 4, 6, 6, 2, 4, 3, 3, 6, 4, 7, 5
          db 2, 6, 3, 4, 3, 3, 5, 6, 2, 2, 2, 3, 4, 4, 6, 5
          db 2, 5, 5, 7, 5, 4, 6, 6, 2, 4, 4, 2, 6, 4, 7, 5
-;  |  2 8  |  2 6   |  2 8   |   2 4    |  2 5   |  2 3   |  2 5   |   2 6   |  1 3  |  2 2   |  1 2  |  1 4  |  3 6   |  3 4   |  3 6   |   4 5   |
-;  |  2 2  |  2 5   |  2 5   |   2 7    |  2 5   |  2 4   |  2 6   |   2 6   |  1 2  |  3 4   |  1 2  |  1 2  |  3 6   |  3 4   |  3 7   |   4 5   |
-;  |  3 6  |  2 6   |  4 8   |   2 4    |  2 3   |  2 3   |  2 5   |  2 6    |  1 4  |  2 2   |  1 2  |  1 5  |  3 4   |  3 4   |  3 6   |   4 5   |
-;  |  2 2  |  2 5   |  2 5   |   2 7    |  2 4   |  2 4   |  2 6   |  2 6    |  1 2  |  3 4   |  1 2  |  1 2  |  3 4   |  3 4   |  3 7   |   4 5   |
-;  |  1 7  |  2 6   |  2 2   |   2 4    |  3 7   |  2 3   |  2 5   |  2 6    |  1 3  |  2 2   |  1 2  |  1 3  |  3 3   |  3 4   |  3 6   |   4 5   |
-;  |  2 2  |  2 5   |  2 5   |   2 7    |  3 7   |  2 4   |  2 6   |  2 6    |  1 2  |  3 4   |  1 3  |  1 2  |  4 4   |  3 4   |  3 7   |   4 5   |
-;  |  1 6  |  2 6   |  3 6   |   2 4    |  2 3   |  2 3   |  2 5   |  2 6    |  1 4  |  2 2   |  1 2  |  1 6  |  3 5   |  3 4   |  3 6   |   4 5   |
-;  |  2 2  |  2 5   |  2 5   |   2 7    |  2 4   |  2 4   |  2 6   |  2 6    |  1 2  |  3 4   |  1 4  |  1 2  |  3 6   |  3 4   |  3 7   |   4 5   |
-;  |  2 2  |  2 6   |  3 3   |   2 4    |  2 3   |  2 3   |  2 3   |  2 6    |  1 2  |  2 2   |  1 2  |  1 3  |  3 4   |  3 4   |  3 4   |   4 5   |
-;  |  2 2  |  2 6   |  2 5   |   2 7    |  2 4   |  2 4   |  2 4   |  2 6    |  1 2  |  3 5   |  1 2  |  1 2  |  3 4   |  3 5   |  3 5   |   4 5   |
-;  |  2 2  |  2 6   |  2 2   |   2 4    |  2 3   |  2 3   |  2 3   |  2 6    |  1 2  |  2 2   |  1 2  |  1 4  |  3 4   |  3 4   |  3 4   |   4 5   |
-;  |  2 2  |  2 5   |  2 5   |   2 7    |  2 4   |  2 4   |  2 4   |  2 6    |  1 2  |  3 4   |  1 2  |  1 2  |  3 4   |  3 4   |  3 4   |   4 5   |
-;  |  2 2  |  2 6   |  2 3   |   2 4    |  2 3   |  2 3   |  2 5   |  2 6    | 1 2   |  2 2   |  1 2  |  1 3  |  3 4   |  3 4   |  3 4   |   4 5   |
-;  |  2 2  |  2 5   |  2 5   |   2 7    |  2 6   |  2 4   |  2 6   |  2 6    |  1 2  |  3 4   |  1 3  |  1 3  |  3 6   |  3 4   |  3 7   |   4 5   |
-;  |  2 2  |  2 6   |  2 3   |   2 4    |  2 3   |  2 3   |  2 5   |  2 6    |  1 2  |  2 2   |  1 2  |  1 3  |  3 4   |  3 4   |  3 6   |   4 5   |
-;  |  2 2  |  2 5   |  2 5   |   2 7    |  3 5   |  2 4   |  2 6   |   2 6   |  1 2  |  3 4   |  1 4  |  1 2  |  3 6   |  3 4   |  3 7   |   4 5   |
+; 28 | 26 | 28 | 24 | 25 | 23 | 25 | 26 | 13 | 22 | 12 | 14 | 36 | 34 | 36 | 45
+; 22 | 25 | 25 | 27 | 25 | 24 | 26 | 26 | 12 | 34 | 12 | 12 | 36 | 34 | 37 | 45
+; 36 | 26 | 48 | 24 | 23 | 23 | 25 | 26 | 14 | 22 | 12 | 15 | 34 | 34 | 36 | 45
+; 22 | 25 | 25 | 27 | 24 | 24 | 26 | 26 | 12 | 34 | 12 | 12 | 34 | 34 | 37 | 45
+; 17 | 26 | 22 | 24 | 37 | 23 | 25 | 26 | 13 | 22 | 12 | 13 | 33 | 34 | 36 | 45
+; 22 | 25 | 25 | 27 | 37 | 24 | 26 | 26 | 12 | 34 | 13 | 12 | 44 | 34 | 37 | 45
+; 16 | 26 | 36 | 24 | 23 | 23 | 25 | 26 | 14 | 22 | 12 | 16 | 35 | 34 | 36 | 45
+; 22 | 25 | 25 | 27 | 24 | 24 | 26 | 26 | 12 | 34 | 14 | 12 | 36 | 34 | 37 | 45
+; 22 | 26 | 33 | 24 | 23 | 23 | 23 | 26 | 12 | 22 | 12 | 13 | 34 | 34 | 34 | 45
+; 22 | 26 | 25 | 27 | 24 | 24 | 24 | 26 | 12 | 35 | 12 | 12 | 34 | 35 | 35 | 45
+; 22 | 26 | 22 | 24 | 23 | 23 | 23 | 26 | 12 | 22 | 12 | 14 | 34 | 34 | 34 | 45
+; 22 | 25 | 25 | 27 | 24 | 24 | 24 | 26 | 12 | 34 | 12 | 12 | 34 | 34 | 34 | 45
+; 22 | 26 | 23 | 24 | 23 | 23 | 25 | 26 | 12 | 22 | 12 | 13 | 34 | 34 | 34 | 45
+; 22 | 25 | 25 | 27 | 26 | 24 | 26 | 26 | 12 | 34 | 13 | 13 | 36 | 34 | 37 | 45
+; 22 | 26 | 23 | 24 | 23 | 23 | 25 | 26 | 12 | 22 | 12 | 13 | 34 | 34 | 36 | 45
+; 22 | 25 | 25 | 27 | 35 | 24 | 26 | 26 | 12 | 34 | 14 | 12 | 36 | 34 | 37 | 45
 
 section .text
 
@@ -919,7 +627,7 @@ NEWSYM settables
     mov dword[edi+0FDh*4],COpFDm8nd
     mov dword[edi+0FEh*4],COpFEm8
     mov dword[edi+0FFh*4],COpFFm8nd
-    ret      
+    ret
 
 NEWSYM settablem16
     mov dword[edi+01h*4],COp01m16
@@ -1193,5 +901,3 @@ NEWSYM settableDm16
     mov dword[edi+0FDh*4],COpFDm16d
     mov dword[edi+0FFh*4],COpFFm16d
     ret
-
-

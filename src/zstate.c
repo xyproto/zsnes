@@ -42,6 +42,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define stim()
 #endif
 
+void SA1UpdateDPageC(), unpackfunct(), repackfunct();
+void PrepareOffset(), ResetOffset(), initpitch(), UpdateBanksSDD1();
+void procexecloop(), outofmemory();
+
 static void copy_snes_data(unsigned char **buffer, void (*copy_func)(unsigned char **, void *, size_t))
 {
   //65816 status, etc.
@@ -172,8 +176,12 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
       copy_func(&buffer, &tempebp, 4);
     }
   }
+  else
+  {
+    spcnumread = 0;
+    spchalted = 0xFFFFFFFF;
+  }
 }
-
 
 static void memcpyinc(unsigned char **dest, void *src, size_t len)
 {
@@ -277,8 +285,8 @@ extern unsigned char RewindFrames, romispal;
 extern unsigned char MovieProcessing;
 void zmv_rewind_save(size_t, bool);
 void zmv_rewind_load(size_t, bool);
-#define ActualRewindFrames (RewindFrames * (romispal ? 25 : 30))
 
+#define ActualRewindFrames (RewindFrames * (romispal ? 25 : 30))
 
 void BackupCVFrame()
 {
@@ -300,8 +308,6 @@ void RestoreCVFrame()
   RewindTimer = ActualRewindFrames;
 }
 
-void outofmemory();
-
 void SetupRewindBuffer()
 {
   if (StateBackup){ free(StateBackup); }
@@ -315,6 +321,7 @@ void SetupRewindBuffer()
 }
 
 static size_t state_size;
+
 static void state_size_tally(unsigned char **dest, void *src, size_t len)
 {
   state_size += len;
@@ -338,6 +345,7 @@ void InitRewindVars()
 
 //This is used to preserve system load state between loads
 static unsigned char BackupSystemBuffer[0x800000]; //Half a megabyte, should be enough for a while
+
 void BackupSystemVars()
 {
   unsigned char *buffer = BackupSystemBuffer;
@@ -355,55 +363,15 @@ void RestoreSystemVars()
   copy_extra_data(&buffer, memcpyrinc);
 }
 
-extern unsigned int Bank0datr8[256], Bank0datr16[256], Bank0datw8[256];
-extern unsigned int Bank0datw16[256], xd, DPageR8, DPageR16, DPageW8;
-extern unsigned int DPageW16;
-
-void UpdateDPageC()
-{
-    DPageR8 = Bank0datr8[(xd >> 8) & 0xFF];
-    DPageR16 = Bank0datr16[(xd >> 8) & 0xFF];
-    DPageW8 = Bank0datw8[(xd >> 8) & 0xFF];
-    DPageW16 = Bank0datw16[(xd >> 8) & 0xFF];
-}
-
-extern unsigned int SA1xd, SA1DPageR8, SA1DPageR16, SA1DPageW8, SA1DPageW16;
-
-void SA1UpdateDPageC()
-{
-    SA1DPageR8 = Bank0datr8[(SA1xd >> 8) & 0xFF];
-    SA1DPageR16 = Bank0datr16[(SA1xd >> 8) & 0xFF];
-    SA1DPageW8 = Bank0datw8[(SA1xd >> 8) & 0xFF];
-    SA1DPageW16 = Bank0datw16[(SA1xd >> 8) & 0xFF];
-}
-
-extern unsigned int xdb, xpb, xs, xx, xy;
-extern unsigned short oamaddrt, xat, xst, xdt, xxt, xyt;
-extern unsigned char xdbt, xpbt;
-
-void unpackfunct()
-{
-  oamaddrt = (oamaddr & 0xFFFF);
-  xat = (xa & 0xFFFF);
-  xdbt = (xdb & 0xFF);
-  xpbt = (xpb & 0xFF);
-  xst = (xs & 0xFFFF);
-  xdt = (xd & 0xFFFF);
-  xxt = (xx & 0xFFFF);
-  xyt = (xy & 0xFFFF);
-}
-
 extern unsigned int spcBuffera;
 extern unsigned int Voice0BufPtr, Voice1BufPtr, Voice2BufPtr, Voice3BufPtr;
 extern unsigned int Voice4BufPtr, Voice5BufPtr, Voice6BufPtr, Voice7BufPtr;
-extern unsigned int Curtableaddr, tableA[256], spcPCRam, spcRamDP;
+extern unsigned int spcPCRam, spcRamDP;
 
 void PrepareSaveState()
 {
-  unsigned int offst = (unsigned int)spcRam;
-
-  spcPCRam -= offst;
-  spcRamDP -= offst;
+  spcPCRam -= (unsigned int)spcRam;
+  spcRamDP -= (unsigned int)spcRam;
 
   Voice0BufPtr -= spcBuffera;
   Voice1BufPtr -= spcBuffera;
@@ -415,151 +383,14 @@ void PrepareSaveState()
   Voice7BufPtr -= spcBuffera;
 }
 
-#define byteset(byte, checkbit) (byte & (1 << checkbit)) ? 1 : 0
-
-extern unsigned int GlobalVL, GlobalVR, EchoVL, EchoVR, EchoRate[16], MaxEcho;
-extern unsigned int EchoFB, NoiseSpeeds[32], dspPAdj, NoiseInc, bg1ptrx;
-extern unsigned int bg1ptry, bg2ptrx, bg2ptry, bg3ptrx, bg3ptry, bg4ptrx;
-extern unsigned int bg4ptry;
-extern signed int FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4;
-extern signed int FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
-extern unsigned short VolumeConvTable[32768], bg1ptr, bg1ptrb, bg1ptrc;
-extern unsigned short bg2ptr, bg2ptrb, bg2ptrc, bg3ptr, bg3ptrb, bg3ptrc;
-extern unsigned short bg4ptr, bg4ptrb, bg4ptrc;
-extern unsigned char VolumeTableb[256], MusicVol, Voice0Status;
-extern unsigned char Voice1Status, Voice2Status, Voice3Status, Voice4Status;
-extern unsigned char Voice5Status, Voice6Status, Voice7Status, Voice0Noise;
-extern unsigned char Voice1Noise, Voice2Noise, Voice3Noise, Voice4Noise;
-extern unsigned char Voice5Noise, Voice6Noise, Voice7Noise, bgtilesz;
-extern unsigned char BG116x16t, BG216x16t, BG316x16t, BG416x16t, vramincby8on;
-extern unsigned char vramincr;
-
-extern void (**regptw)();
-void reg2118();
-void reg2118inc();
-void reg2118inc8();
-void reg2118inc8inc();
-void reg2119();
-void reg2119inc();
-void reg2119inc8();
-void reg2119inc8inc();
-
-void repackfunct()
-{
-  signed char val;
-  unsigned char block;
-
-  // Global/Echo Volumes
-  GlobalVL = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x0C]]] & 0xFF);
-  GlobalVR = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x1C]]] & 0xFF);
-  EchoVL = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x2C]]] & 0xFF);
-  EchoVR = (VolumeConvTable[(MusicVol << 8) + VolumeTableb[DSPMem[0x3C]]] & 0xFF);
-
-  // Echo Values
-  MaxEcho = EchoRate[(DSPMem[0x7D] & 0xF)];
-  EchoFB = VolumeTableb[DSPMem[0x0D]];
-
-  // FIR Filter Values
-  val = DSPMem[0x0F];
-  FIRTAPVal0 = (signed int)val;
-  val = DSPMem[0x1F];
-  FIRTAPVal1 = (signed int)val;
-  val = DSPMem[0x2F];
-  FIRTAPVal2 = (signed int)val;
-  val = DSPMem[0x3F];
-  FIRTAPVal3 = (signed int)val;
-  val = DSPMem[0x4F];
-  FIRTAPVal4 = (signed int)val;
-  val = DSPMem[0x5F];
-  FIRTAPVal5 = (signed int)val;
-  val = DSPMem[0x6F];
-  FIRTAPVal6 = (signed int)val;
-  val = DSPMem[0x7F];
-  FIRTAPVal7 = (signed int)val;
-
-  // Noise
-  block = DSPMem[0x6C];
-  DSPMem[0x6C] &= 0x7F;
-
-  if (block && 0xC0)
-  {
-    Voice0Status = Voice1Status = Voice2Status = Voice3Status = 0;
-    Voice4Status = Voice5Status = Voice6Status = Voice7Status = 0;
-  }
-
-  NoiseInc = (((NoiseSpeeds[(block & 0x1F)] * dspPAdj) >> 17) & 0xFFFFFFFF);
-
-  Voice0Noise = byteset (DSPMem[0x3D], 0);
-  Voice1Noise = byteset (DSPMem[0x3D], 1);
-  Voice2Noise = byteset (DSPMem[0x3D], 2);
-  Voice3Noise = byteset (DSPMem[0x3D], 3);
-  Voice4Noise = byteset (DSPMem[0x3D], 4);
-  Voice5Noise = byteset (DSPMem[0x3D], 5);
-  Voice6Noise = byteset (DSPMem[0x3D], 6);
-  Voice7Noise = byteset (DSPMem[0x3D], 7);
-
-  bg1ptrx = bg1ptrb - bg1ptr;
-  bg1ptry = bg1ptrc - bg1ptr;
-  bg2ptrx = bg2ptrb - bg2ptr;
-  bg2ptry = bg2ptrc - bg2ptr;
-  bg3ptrx = bg3ptrb - bg3ptr;
-  bg3ptry = bg3ptrc - bg3ptr;
-  bg4ptrx = bg4ptrb - bg4ptr;
-  bg4ptry = bg4ptrc - bg4ptr;
-
-  // 16x16 tiles
-  BG116x16t = byteset (bgtilesz, 0);
-  BG216x16t = byteset (bgtilesz, 1);
-  BG316x16t = byteset (bgtilesz, 2);
-  BG416x16t = byteset (bgtilesz, 3);
-
-  oamaddr = oamaddrt;
-  xa = xat;
-  xdb = xdbt;
-  xpb = xpbt;
-  xs = xst;
-  xd = xdt;
-  xx = xxt;
-  xy = xyt;
-
-  if (vramincby8on == 1)
-  {
-    if (vramincr == 1)
-    {
-      regptw[0x2118] = reg2118inc8inc;
-      regptw[0x2119] = reg2119inc8;
-    }
-    else
-    {
-      regptw[0x2118] = reg2118inc8;
-      regptw[0x2119] = reg2119inc8inc;
-    }
-  }
-  else
-  {
-    if (vramincr == 1)
-    {
-      regptw[0x2118] = reg2118inc;
-      regptw[0x2119] = reg2119;
-    }
-    else
-    {
-      regptw[0x2118] = reg2118;
-      regptw[0x2119] = reg2119inc;
-    }
-  }
-}
-
 extern unsigned int SA1Stat;
 extern unsigned char IRAM[2049], *SA1Ptr, *SA1RegPCS, *CurBWPtr, *SA1BWPtr;
 extern unsigned char *SNSBWPtr;
 
 void SaveSA1()
 {
-  unsigned int offst=(unsigned int)SA1RegPCS;
-
   SA1Stat &= 0xFFFFFF00;
-  SA1Ptr -= offst;
+  SA1Ptr -= (unsigned int)SA1RegPCS;
 
   if (SA1RegPCS == IRAM)
   {
@@ -571,21 +402,18 @@ void SaveSA1()
     SA1Stat = (SA1Stat & 0xFFFFFF00) + 2;
   }
 
-  offst = (unsigned int)romdata;
-  SA1RegPCS -= offst;
-  CurBWPtr -= offst;
-  SA1BWPtr -= offst;
-  SNSBWPtr -= offst;
+  SA1RegPCS -= (unsigned int)romdata;
+  CurBWPtr -= (unsigned int)romdata;
+  SA1BWPtr -= (unsigned int)romdata;
+  SNSBWPtr -= (unsigned int)romdata;
 }
 
 void RestoreSA1()
 {
-  unsigned int offst=(unsigned int)romdata;
-
-  SA1RegPCS += offst;
-  CurBWPtr += offst;
-  SA1BWPtr += offst;
-  SNSBWPtr += offst;
+  SA1RegPCS += (unsigned int)romdata;
+  CurBWPtr += (unsigned int)romdata;
+  SA1BWPtr += (unsigned int)romdata;
+  SNSBWPtr += (unsigned int)romdata;
 
   if ((SA1Stat & 0xFF) == 1)
   {
@@ -597,8 +425,7 @@ void RestoreSA1()
     SA1RegPCS = IRAM-0x3000;
   }
 
-  offst = (unsigned int)SA1RegPCS;
-  SA1Ptr += offst;
+  SA1Ptr += (unsigned int)SA1RegPCS;
   SA1RAMArea = romdata + 4096*1024;
 }
 
@@ -611,10 +438,8 @@ void RestoreSA1()
 
 void ResetState()
 {
-  unsigned int offst = (unsigned int)spcRam;
-
-  spcPCRam += offst;
-  spcRamDP += offst;
+  spcPCRam += (unsigned int)spcRam;
+  spcRamDP += (unsigned int)spcRam;
 
   ResState(Voice0BufPtr);
   ResState(Voice1BufPtr);
@@ -657,16 +482,6 @@ void calculate_state_sizes()
   zst_version = 60;
   copy_state_data(0, state_size_tally, true);
   old_zst_size = state_size + sizeof(zst_header_old)-1;
-}
-
-void PrepareOffset()
-{
-  Curtableaddr -= (unsigned int)tableA;
-}
-
-void ResetOffset()
-{
-  Curtableaddr += (unsigned int)tableA;
 }
 
 void zst_save(FILE *fp, bool Thumbnail)
@@ -784,118 +599,11 @@ void statesaver()
   stim();
 }
 
-extern unsigned int snesmmap[256], snesmap2[256];
-/*extern unsigned int NumofBanks;
-extern unsigned char SA1BankVal[4];
-
-void BankSwitchC (unsigned char bank, unsigned int offset1, unsigned int offset2, unsigned int pointer)
-{
-  unsigned int curbankval=SA1BankVal[bank], membankval, i;
-
-  if ((NumofBanks & 0xFF) == 64)	{ curbankval &= 1 ; }
-
-  curbankval &= 7;
-  curbankval <<= 20;
-
-  if (SA1BankVal[bank] & 0x80)
-  {
-    membankval = (pointer + (unsigned int)romdata - 0x8000);
-  }
-  else
-  {
-    membankval = (curbankval + (unsigned int)romdata - 0x8000);
-  }
-
-  for (i=0 ; i<32 ; i++)
-  {
-    snesmmap[offset1+i] = membankval;
-    membankval += 0x8000;
-  }
-
-  membankval = curbankval + (unsigned int)romdata;
-
-  for (i=0 ; i<16 ; i++)
-  {
-    snesmap2[offset2+i] = membankval;
-    snesmmap[offset2+i] = membankval;
-    membankval += 0x10000;
-  }
-}
-
-extern unsigned int SA1BankSw;
-
-void UpdateBanks()
-{
-  if ((SA1BankSw & 0xFF) == 1)
-  {
-    BankSwitchC (0, 0x000, 0x0C0, 0x000000) ;
-    BankSwitchC (1, 0x020, 0x0D0, 0x100000) ;
-    BankSwitchC (2, 0x080, 0x0E0, 0x200000) ;
-    BankSwitchC (3, 0x0A0, 0x0F0, 0x300000) ;
-  }
-}*/
-
-void BankSwitchSDD1C (unsigned char bankval, unsigned int offset)
-{
-  unsigned int curbankval = bankval, i;
-
-  curbankval &= 7;
-  curbankval <<= 20;
-  curbankval += (unsigned int)romdata;
-
-  for (i=0; i<16 ; i++)
-  {
-    snesmap2[offset+i] = curbankval;
-    snesmmap[offset+i] = curbankval;
-    curbankval += 0x10000;
-  }
-}
-
-extern unsigned char SDD1BankA, SDD1BankB, SDD1BankC, SDD1BankD;
-
-void UpdateBanksSDD1()
-{
-  if (SDD1BankA)
-  {
-    BankSwitchSDD1C(SDD1BankA, 0x0C0);
-    BankSwitchSDD1C(SDD1BankB, 0x0D0);
-    BankSwitchSDD1C(SDD1BankC, 0x0E0);
-    BankSwitchSDD1C(SDD1BankD, 0x0F0);
-  }
-}
-
-extern unsigned int Voice0Freq, Voice1Freq, Voice2Freq, Voice3Freq;
-extern unsigned int Voice4Freq, Voice5Freq, Voice6Freq, Voice7Freq;
-extern unsigned short Voice0Pitch, Voice1Pitch, Voice2Pitch, Voice3Pitch;
-extern unsigned short Voice4Pitch, Voice5Pitch, Voice6Pitch, Voice7Pitch;
-
-void initpitch()
-{
-  Voice0Pitch = DSPMem[2+0*0x10];
-  Voice0Freq = ((((Voice0Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-  Voice1Pitch = DSPMem[2+1*0x10];
-  Voice1Freq = ((((Voice1Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-  Voice2Pitch = DSPMem[2+2*0x10];
-  Voice2Freq = ((((Voice2Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-  Voice3Pitch = DSPMem[2+3*0x10];
-  Voice3Freq = ((((Voice3Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-  Voice4Pitch = DSPMem[2+4*0x10];
-  Voice4Freq = ((((Voice4Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-  Voice5Pitch = DSPMem[2+5*0x10];
-  Voice5Freq = ((((Voice5Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-  Voice6Pitch = DSPMem[2+6*0x10];
-  Voice6Freq = ((((Voice6Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-  Voice7Pitch = DSPMem[2+7*0x10];
-  Voice7Freq = ((((Voice7Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-}
-
 extern unsigned int KeyLoadState, Totalbyteloaded, SfxMemTable[256], SfxCPB;
 extern unsigned int SfxPBR, SfxROMBR, SfxRAMBR;
 extern unsigned char pressed[256+128+64], multchange, txtloadmsg[15];
 extern unsigned char txtconvmsg[16], txtnfndmsg[23], ioportval, SDD1Enable;
 extern unsigned char nexthdma;
-
-void procexecloop();
 
 static void read_save_state_data(unsigned char **dest, void *data, size_t len)
 {
@@ -912,7 +620,6 @@ bool zst_load(FILE *fp)
   {
     zst_version = 143; //v1.43+
   }
-  // the -2 means we only check the text - trust me, that's ok
   if (!memcmp(zst_header_check, zst_header_old, sizeof(zst_header_check)-2))
   {
     zst_version = 60; //v0.60 - v1.42
@@ -937,11 +644,6 @@ bool zst_load(FILE *fp)
   if (SA1Enable)
   {
     RestoreSA1(); //Convert back SA-1 stuff
-    /*
-    All UpdateBanks() seems to do is break Oshaberi Parodius...
-    The C port is still present, just commented out
-    */
-    //UpdateBanks();
     SA1UpdateDPageC();
   }
 

@@ -3229,50 +3229,6 @@ NEWSYM SA1UpdateDPage
     pop eax
     ret
 
-NEWSYM GenerateBank0Table
-    mov eax,Bank0datr8
-    writetobank0table membank0r8ram,20h
-    writetobank0table membank0r8reg,28h
-    writetobank0table membank0r8inv,17h
-    writetobank0table membank0r8chip,1Fh
-    writetobank0table membank0r8rom,81h
-    writetobank0table membank0r8romram,1h
-    mov eax,Bank0datw8
-    writetobank0table membank0w8ram,20h
-    writetobank0table membank0w8reg,28h
-    writetobank0table membank0w8inv,17h
-    writetobank0table membank0w8chip,1Fh
-    writetobank0table membank0w8rom,81h
-    writetobank0table membank0w8romram,1h
-    mov eax,Bank0datr16
-    writetobank0table membank0r16ram,1Fh
-    writetobank0table membank0r16ramh,1
-    writetobank0table membank0r16reg,28h
-    writetobank0table membank0r16inv,17h
-    writetobank0table membank0r16chip,1Fh
-    writetobank0table membank0r16rom,81h
-    writetobank0table membank0r16romram,1h
-    mov eax,Bank0datw16
-    writetobank0table membank0w16ram,1Fh
-    writetobank0table membank0w16ramh,1
-    writetobank0table membank0w16reg,28h
-    writetobank0table membank0w16inv,17h
-    writetobank0table membank0w16chip,1Fh
-    writetobank0table membank0w16rom,81h
-    writetobank0table membank0w16romram,1h
-    ret
-
-NEWSYM GenerateBank0TableSA1
-    mov eax,Bank0datr8
-    writetobank0table membank0r8ramSA1,20h
-    mov eax,Bank0datw8
-    writetobank0table membank0w8ramSA1,20h
-    mov eax,Bank0datr16
-    writetobank0table membank0r16ramSA1,20h
-    mov eax,Bank0datw16
-    writetobank0table membank0w16ramSA1,20h
-    ret
-
 ; SA1 Stuff
 NEWSYM membank0r8ramSA1             ; 0000-1FFF
     cmp byte[SA1Status],0

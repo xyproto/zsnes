@@ -26,6 +26,7 @@ source_files = Split("""
 	cpu/execute.asm
 	cpu/irq.asm
 	cpu/memory.asm
+	cpu/memtable.c
 	cpu/spc700.asm
 	cpu/stable.asm
 	cpu/table.asm

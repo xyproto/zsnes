@@ -39,8 +39,8 @@ CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
 
 CPUOBJ=${CPUDIR}/addrni.o ${CPUDIR}/dma.o ${CPUDIR}/dsp.o ${CPUDIR}/dspproc.o\
 	${CPUDIR}/execute.o ${CPUDIR}/irq.o ${CPUDIR}/memory.o\
-	${CPUDIR}/spc700.o ${CPUDIR}/stable.o ${CPUDIR}/table.o\
-	${CPUDIR}/tableb.o ${CPUDIR}/tablec.o
+	${CPUDIR}/memtable.o ${CPUDIR}/spc700.o ${CPUDIR}/stable.o\
+	${CPUDIR}/table.o ${CPUDIR}/tableb.o ${CPUDIR}/tablec.o
 
 GUIOBJ=${GUIDIR}/gui.o ${GUIDIR}/menu.o
 
@@ -148,6 +148,7 @@ ${CPUDIR}/stable.o: ${CPUDIR}/stable.asm ${CPUDIR}/s65816d.inc\
 	${CPUDIR}/saddress.inc ${CPUDIR}/saddrni.inc ${CPUDIR}/se65816.inc\
 	macros.mac
 ${CPUDIR}/memory.o: ${CPUDIR}/memory.asm macros.mac
+${CPUDIR}/memtable.o: ${CPUDIR}/memtable.c
 ${CPUDIR}/dma.o: ${CPUDIR}/dma.asm macros.mac
 ${DOSDIR}/dosintrf.o: ${DOSDIR}/dosintrf.asm macros.mac
 vcache.o:vcache.asm macros.mac
@@ -234,7 +235,3 @@ clean:
 
 distclean:
 	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${NETDIR}/*.o ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  ${EFFECTSDIR}/*.o  ${JMADIR}/*.o  *.o  @ZSNESEXE@ Makefile config.cache config.log config.status config.h
-
-
-
-

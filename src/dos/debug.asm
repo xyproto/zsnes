@@ -39,7 +39,7 @@ EXTSYM spcnumread
 EXTSYM Curtableaddr,fnamest,procexecloop,stateloader,tableA
 EXTSYM vidmemch2
 EXTSYM statesaver
-EXTSYM memtablew8,printhex8,writeon,SetAddressingModesSA1
+EXTSYM memtablew8,printhex8,writeon
 EXTSYM curcyc,dmadata,execsingle,initaddrl,memtabler8,pdh
 EXTSYM regaccessbankr8,selcB800,snesmap2,snesmmap
 EXTSYM ram7f

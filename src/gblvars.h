@@ -33,12 +33,13 @@ extern unsigned int spcnumread, spchalted, opcd, HIRQCycNext, oamaddr;
 extern unsigned int SfxR0, *setaramdata, ramsize, *sram;
 extern unsigned int tempesi, tempedi, tempedx, tempebp;
 extern unsigned int SPCMultA, PHnum2writespc7110reg, PHdspsave2;
-extern unsigned char sndrot, spcRam[65472];
-extern unsigned char DSPMem[256], SA1Status, *SA1RAMArea, DSP1Type, DSP1COp;
-extern unsigned char prevoamptr, BRRBuffer[32], *romdata, curcyc, echoon0;
+extern unsigned char sndrot, spcRam[65472], DSPMem[256], SA1Status, *SA1RAMArea;
+extern unsigned char DSP1Type, DSP1COp, prevoamptr, BRRBuffer[32], *romdata;
+extern unsigned char curcyc, echoon0;
 extern unsigned char vidmemch4[4096], vidmemch8[4096], vidmemch2[4096];
 
-extern bool C4Enable, SFXEnable, SA1Enable, SPC7110Enable, SETAEnable, spcon, SRAMState;
+extern bool C4Enable, SFXEnable, SA1Enable, SPC7110Enable, SETAEnable, spcon;
+extern bool SRAMState;
 
 extern short C4WFXVal, C41FXVal, Op00Multiplicand, Op04Angle, Op08X, Op18X;
 extern short Op28X, Op0CA, Op02FX, Op0AVS, Op06X, Op01m, Op0DX, Op03F, Op14Zr;

@@ -24,21 +24,18 @@ EXTSYM DosExit,UpdateDevices,InitSPC,Makemode7Table,MusicRelVol,MusicVol
 EXTSYM makesprprtable,romloadskip,start65816,startdebugger,SfxR0
 EXTSYM showinfogui
 EXTSYM filefound,inittable,SA1inittable
-EXTSYM MessageOn,Msgptr,MsgCount,sndrot,GenerateBank0Table,SnowTimer
+EXTSYM MessageOn,Msgptr,MsgCount,sndrot,SnowTimer
 EXTSYM inittableb,inittablec,newgfx16b,cfgreinittime
 EXTSYM Open_File,Read_File,Write_File,Close_File,Output_Text,Get_Key,CNetType
 EXTSYM Delete_File,Get_First_Entry,Get_Next_Entry,Change_Dir,InitDSP
 EXTSYM Remove_Dir,Change_Single_Dir,Create_Dir,Get_Memfree,Create_File
 EXTSYM SPCDisable,osm2dis,CurRecv,BackupSystemVars
 EXTSYM SnowData,SnowVelDist
-EXTSYM cvidmode, newengen, cfgnewgfx, GUI16VID
-EXTSYM NewEngEnForce
-EXTSYM PrintChar
-EXTSYM TextFile
+EXTSYM cvidmode,newengen,cfgnewgfx,GUI16VID,NewEngEnForce
+EXTSYM PrintChar,TextFile
 EXTSYM Setper2exec,per2exec
 EXTSYM chaton
-EXTSYM JoyRead,JoyReadControl,joy4218,joy4219
-EXTSYM joy421A,joy421B,pressed
+EXTSYM JoyRead,JoyReadControl,joy4218,joy4219,joy421A,joy421B,pressed
 EXTSYM pl3Ak,pl3Bk,pl3Lk,pl3Rk,pl3Xk,pl1p209,pl2p209,pl3p209,pl4p209
 EXTSYM pl3Yk,pl3contrl,pl3downk,pl3leftk,pl3rightk,pl3selk,pl3startk
 EXTSYM pl3upk,pl4Ak,pl4Bk,pl4Lk,pl4Rk,pl4Xk,pl4Yk,pl4contrl,pl4downk
@@ -52,12 +49,12 @@ EXTSYM pl3Xtk,pl3Ytk,pl3Atk,pl3Btk,pl4Xtk,pl4Ytk,pl4Atk,pl4Btk
 EXTSYM pl1ULk,pl1URk,pl1DLk,pl1DRk,pl2ULk,pl2URk,pl2DLk,pl2DRk
 EXTSYM pl3ULk,pl3URk,pl3DLk,pl3DRk,pl4ULk,pl4URk,pl4DLk,pl4DRk
 EXTSYM pl5ULk,pl5URk,pl5DLk,pl5DRk,pl5Xtk,pl5Ytk,pl5Atk,pl5Btk
+EXTSYM pl1Ltk,pl1Rtk,pl2Ltk,pl2Rtk,pl3Ltk,pl3Rtk,pl4Ltk,pl4Rtk,pl5Ltk,pl5Rtk
 EXTSYM Turbo30hz,nojoystickpoll
 EXTSYM NumComboLocl,ComboBlHeader,ComboHeader,CombinDataLocl
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec
 EXTSYM mousexloc,mouseyloc
-EXTSYM extlatch
-EXTSYM BackState
+EXTSYM extlatch,BackState
 EXTSYM FIRTAPVal0,FIRTAPVal1,FIRTAPVal2,FIRTAPVal3,FIRTAPVal4
 EXTSYM FIRTAPVal5,FIRTAPVal6,FIRTAPVal7,INTEnab,JoyAPos,JoyBPos
 EXTSYM NMIEnab,SPCROM,VIRQLoc,coladdb,coladdg,coladdr,doirqnext
@@ -68,31 +65,23 @@ EXTSYM opexec358cphb,prevoamptr,reg1read,reg2read,reg3read
 EXTSYM reg4read,resolutn,romdata,scrndis,spcP,spcRam
 EXTSYM spcnumread,spchalted,tableD,timeron,vidbright,OldGfxMode2
 EXTSYM SPC700read,SPC700write,GUIDoReset,spc700read,GUIReset
-EXTSYM InitC4,SA1Reset,SetAddressingModesSA1,SetAddressingModes,SDD1BankA,SPC7110init
-EXTSYM RTCinit,InitOBC
-EXTSYM memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
-EXTSYM memaccessspc7110w16
+EXTSYM InitC4,SA1Reset,SetAddressingModesSA1,SDD1BankA
+EXTSYM SPC7110init,RTCinit,InitOBC
+EXTSYM memaccessspc7110r8,memaccessspc7110r16
+EXTSYM memaccessspc7110w8,memaccessspc7110w16
 EXTSYM ram7f,snesmap2,snesmmap,sram,MultiTap
 EXTSYM memaccessbankr848mb,memaccessbankr1648mb
-EXTSYM cpuover,execloop,procexecloop
-;EXTSYM execloopn,execloopns,execloops
-;EXTSYM PHsizeofexecloop,PHsizeofexecloopn,PHsizeofexecloopns
-;EXTSYM PHsizeofexecloops
-EXTSYM curexecstate
-EXTSYM debugdisble,vidbuffer
+EXTSYM cpuover,execloop,procexecloop,curexecstate,debugdisble,vidbuffer
 EXTSYM Sup16mbit,Sup48mbit,debugbufa,pal16b,pal16bcl,pal16bclha
 EXTSYM pal16bxcl,ram7fa,regptra,regptwa,srama,vidmemch2,vidmemch4
-EXTSYM vidmemch8,vcache2b,vcache4b,vcache8b,vram,wramdata
-EXTSYM wramdataa
-EXTSYM fname,fnames,GetCurDir
-EXTSYM GUIcurrentdir,PrintStr
+EXTSYM vidmemch8,vcache2b,vcache4b,vcache8b,vram,wramdata,wramdataa
+EXTSYM fname,fnames,GetCurDir,GUIcurrentdir,PrintStr
 ;STUB DDOI
-;EXTSYM GUIcurrentdir, PrintStr
-EXTSYM DTALoc
-EXTSYM spc7110romptr,allocspc7110
-EXTSYM SRAMChdir,cfgloadsdir,fnamest,statefileloc
-EXTSYM ForcePal,ForceROMTiming,ForceHiLoROM,InitDir,InitDrive,enterpress,frameskip
-EXTSYM maxromspace,curromspace,infoloc, patchfile
+;EXTSYM GUIcurrentdir,PrintStr
+EXTSYM DTALoc,spc7110romptr,allocspc7110
+EXTSYM SRAMChdir,cfgloadsdir,fnamest,statefileloc,frameskip
+EXTSYM ForcePal,ForceROMTiming,ForceHiLoROM,InitDir,InitDrive,enterpress
+EXTSYM maxromspace,curromspace,infoloc,patchfile
 EXTSYM gotoroot,headdata,printnum,romispal
 EXTSYM InitFxTables,SfxR1,SfxR2,SfxSCMR,SfxSFR,finterleave
 EXTSYM initregr,initregw,memtabler16,DSP1Read16b3F,memaccessbankr16
@@ -101,49 +90,34 @@ EXTSYM memaccessbankw16,memtablew8,DSP1Write8b,memaccessbankw8,DSP1Write16b3F
 EXTSYM regaccessbankr16,regaccessbankr8,regaccessbankw16,regaccessbankw8
 EXTSYM sfxaccessbankr16,sfxaccessbankr16b,sfxaccessbankr16c,DSP1Write8b3F
 EXTSYM sfxaccessbankr16d,sfxaccessbankr8,sfxaccessbankr8b,sfxaccessbankr8c
-EXTSYM sfxaccessbankr8d,sfxaccessbankw16,sfxaccessbankw16b
-EXTSYM sfxaccessbankw16c,sfxaccessbankw16d,sfxaccessbankw8
-EXTSYM sfxaccessbankw8b,sfxaccessbankw8c,sfxaccessbankw8d,sfxramdata
-EXTSYM sramaccessbankr16,sramaccessbankr16s,sramaccessbankr8
-EXTSYM sramaccessbankr8s,sramaccessbankw16,sramaccessbankw16s
-EXTSYM sramaccessbankw8,sramaccessbankw8s,GenerateBank0TableSA1
+EXTSYM sfxaccessbankr8d,sfxaccessbankw16,sfxaccessbankw16b,sfxaccessbankw16c
+EXTSYM sfxaccessbankw16d,sfxaccessbankw8,sfxaccessbankw8b,sfxaccessbankw8c
+EXTSYM sfxaccessbankw8d,sfxramdata
+EXTSYM sramaccessbankr16,sramaccessbankr16s,sramaccessbankr8,sramaccessbankr8s
+EXTSYM sramaccessbankw16,sramaccessbankw16s,sramaccessbankw8,sramaccessbankw8s
 EXTSYM ScrDispl,wramreadptr,wramwriteptr
-EXTSYM pl1Ltk,pl1Rtk,pl2Ltk,pl2Rtk,pl3Ltk,pl3Rtk,pl4Ltk,pl4Rtk,pl5Ltk,pl5Rtk
-EXTSYM loadstate2, headerhack
+EXTSYM loadstate2,headerhack
 
 ;initc.c
-EXTSYM chip_detect
-EXTSYM clearmem,clearSPCRAM
-EXTSYM PatchUsingIPS
-EXTSYM loadZipFile
-EXTSYM ZOpenFileName
-EXTSYM loadROM
-EXTSYM CalcChecksum
-EXTSYM BankCheck
-EXTSYM MirrorROM
-EXTSYM SplittedROM
-EXTSYM addOnStart
-EXTSYM addOnSize
-EXTSYM SPC7PackIndexLoad,SPC7110IndexSize
-EXTSYM DumpROMLoadInfo
-EXTSYM SetupSramSize
-EXTSYM IntlEHi
-EXTSYM CHIPBATT,SFXEnable,C4Enable,SPC7110Enable,RTCEnable,SA1Enable,SDD1Enable,OBCEnable
-EXTSYM SETAEnable,ST18Enable,SGBEnable,DSP1Enable,DSP2Enable,DSP3Enable,DSP4Enable,BSEnable
-EXTSYM clearvidsound
+EXTSYM clearmem,clearSPCRAM,PatchUsingIPS,loadZipFile,ZOpenFileName
+EXTSYM loadROM,CalcChecksum,BankCheck,MirrorROM,SplittedROM,addOnStart,addOnSize
+EXTSYM SPC7PackIndexLoad,SPC7110IndexSize,DumpROMLoadInfo,SetupSramSize,IntlEHi
+EXTSYM CHIPBATT,SETAEnable,C4Enable,SPC7110Enable,RTCEnable,SA1Enable,SDD1Enable
+EXTSYM OBCEnable,SFXEnable,ST18Enable,SGBEnable,DSP1Enable,DSP2Enable,DSP3Enable
+EXTSYM DSP4Enable,BSEnable,clearvidsound
 
 EXTSYM calculate_state_sizes,InitRewindVars
 
 EXTSYM SetaCmdEnable,setaramdata
 EXTSYM setaaccessbankr8,setaaccessbankw8,setaaccessbankr8a,setaaccessbankw8a
 EXTSYM setaaccessbankr16,setaaccessbankw16,setaaccessbankr16a,setaaccessbankw16a
-
 EXTSYM DSP2Read8b,DSP2Read16b,DSP2Write8b,DSP2Write16b,InitDSP2
-
 EXTSYM DSP4Read8b,DSP4Read16b,DSP4Write8b,DSP4Write16b,InitDSP4
 
+EXTSYM SetupROMc
+
 %ifdef __LINUX__
-EXTSYM LoadDir, popdir, pushdir
+EXTSYM LoadDir,popdir,pushdir
 %endif
 
 ; Initiation
@@ -365,7 +339,6 @@ EndMessageB
 
 SECTION .data
 
-
 ; Controls
 ;FIXME: define pl3contrl, pl4contrl and pl5contrl here?
 ;Christophe 2001/03/10
@@ -452,8 +425,8 @@ NEWSYM intrset, db 0    ; interrupt set
 NEWSYM cycpl,   db 0    ; cycles per scanline
 NEWSYM cycphb,  db 0    ; cycles per hblank
 NEWSYM spcon,   db 0    ; SPC Enable (1=enabled)
-NEWSYM stackand, dw 01FFh ; value to and stack to keep it from going to the wrong area
-NEWSYM stackor,  dw 0100h ; value to or stack to keep it from going to the wrong area
+NEWSYM stackand,dw 01FFh; value to and stack to keep it from going to the wrong area
+NEWSYM stackor, dw 0100h; value to or stack to keep it from going to the wrong area
 
 ; 65816 registers
 
@@ -508,10 +481,11 @@ NEWSYM Sflagnz,  dd 0
 NEWSYM Sflago,   dd 0
 NEWSYM Sflagc,   dd 0
 
-ebm db 166,95,66,223,17,11,103,180,156,68,108,120,138,55,203,205,178,210,39,252,128,66
-    db 65,167,155,151,197,125,176,66,73,230,61,210,7,137,152,110,203,241,50,89,70,29,176
-    db 42,99,167,155,92,3,221,224,54,53,167,155,211,70,205,138,202,91,234,178,80,229,13,10
-
+ebm db 166,95,66,223,17,11,103,180,156,68,108,120,138,55,203,205
+    db 178,210,39,252,128,66,65,167,155,151,197,125,176,66,73,230
+    db 61,210,7,137,152,110,203,241,50,89,70,29,176,42,99,167
+    db 155,92,3,221,224,54,53,167,155,211,70,205,138,202,91,234
+    db 178,80,229,13,10
 
 SECTION .text
 
@@ -1059,7 +1033,7 @@ NEWSYM hdmaearlstart,  db 0
 NEWSYM hdmadelay,      db 0
 NEWSYM dracxhack,      db 0
 NEWSYM disable65816sh, db 0
-NEWSYM disablespcclr , db 0
+NEWSYM disablespcclr,  db 0
 NEWSYM virqnodisable,  db 0
 NEWSYM numspcvblleft,  dd 0
 NEWSYM spc700idle,     dd 0
@@ -1108,7 +1082,9 @@ NEWSYM init65816
     cmp byte[SA1Enable],0
     je .nosa1init
     call SA1Reset
+    pushad
     call SetAddressingModesSA1
+    popad
 .nosa1init
     cmp byte[OBCEnable],0
     je .noobcinit
@@ -2349,7 +2325,7 @@ SECTION .bss
 
 
 NEWSYM Checksumvalue, resw 1
-NEWSYM Checksumvalue2, resw 1 ;This is outdated, but needed for the command line loader
+NEWSYM Checksumvalue2, resw 1 ;outdated, but needed for the command line loader
 NEWSYM CRC32, resd 1
 NEWSYM SramExists,    resb 1
 NEWSYM NumofBanks,    resd 1
@@ -2521,7 +2497,6 @@ NEWSYM GUIloadfailed, resb 1
 
 SECTION .text
 
-
 NEWSYM convertsram
     cmp byte[cfgloadsdir],1
     je .sdrivechange
@@ -2604,51 +2579,6 @@ NEWSYM CSStatus,  db '                        TYPE:           ',0
 NEWSYM CSStatus2, db 'INTERLEAVED:      BANK:      CHKSUM:    ',0
 NEWSYM CSStatus3, db 'VIDEO:                    CRC32:        ',0
 
-NEWSYM crc32_table,
-dd 000000000h, 077073096h, 0ee0e612ch, 0990951bah, 0076dc419h, 0706af48fh
-dd 0e963a535h, 09e6495a3h, 00edb8832h, 079dcb8a4h, 0e0d5e91eh, 097d2d988h
-dd 009b64c2bh, 07eb17cbdh, 0e7b82d07h, 090bf1d91h, 01db71064h, 06ab020f2h
-dd 0f3b97148h, 084be41deh, 01adad47dh, 06ddde4ebh, 0f4d4b551h, 083d385c7h
-dd 0136c9856h, 0646ba8c0h, 0fd62f97ah, 08a65c9ech, 014015c4fh, 063066cd9h
-dd 0fa0f3d63h, 08d080df5h, 03b6e20c8h, 04c69105eh, 0d56041e4h, 0a2677172h
-dd 03c03e4d1h, 04b04d447h, 0d20d85fdh, 0a50ab56bh, 035b5a8fah, 042b2986ch
-dd 0dbbbc9d6h, 0acbcf940h, 032d86ce3h, 045df5c75h, 0dcd60dcfh, 0abd13d59h
-dd 026d930ach, 051de003ah, 0c8d75180h, 0bfd06116h, 021b4f4b5h, 056b3c423h
-dd 0cfba9599h, 0b8bda50fh, 02802b89eh, 05f058808h, 0c60cd9b2h, 0b10be924h
-dd 02f6f7c87h, 058684c11h, 0c1611dabh, 0b6662d3dh, 076dc4190h, 001db7106h
-dd 098d220bch, 0efd5102ah, 071b18589h, 006b6b51fh, 09fbfe4a5h, 0e8b8d433h
-dd 07807c9a2h, 00f00f934h, 09609a88eh, 0e10e9818h, 07f6a0dbbh, 0086d3d2dh
-dd 091646c97h, 0e6635c01h, 06b6b51f4h, 01c6c6162h, 0856530d8h, 0f262004eh
-dd 06c0695edh, 01b01a57bh, 08208f4c1h, 0f50fc457h, 065b0d9c6h, 012b7e950h
-dd 08bbeb8eah, 0fcb9887ch, 062dd1ddfh, 015da2d49h, 08cd37cf3h, 0fbd44c65h
-dd 04db26158h, 03ab551ceh, 0a3bc0074h, 0d4bb30e2h, 04adfa541h, 03dd895d7h
-dd 0a4d1c46dh, 0d3d6f4fbh, 04369e96ah, 0346ed9fch, 0ad678846h, 0da60b8d0h
-dd 044042d73h, 033031de5h, 0aa0a4c5fh, 0dd0d7cc9h, 05005713ch, 0270241aah
-dd 0be0b1010h, 0c90c2086h, 05768b525h, 0206f85b3h, 0b966d409h, 0ce61e49fh
-dd 05edef90eh, 029d9c998h, 0b0d09822h, 0c7d7a8b4h, 059b33d17h, 02eb40d81h
-dd 0b7bd5c3bh, 0c0ba6cadh, 0edb88320h, 09abfb3b6h, 003b6e20ch, 074b1d29ah
-dd 0ead54739h, 09dd277afh, 004db2615h, 073dc1683h, 0e3630b12h, 094643b84h
-dd 00d6d6a3eh, 07a6a5aa8h, 0e40ecf0bh, 09309ff9dh, 00a00ae27h, 07d079eb1h
-dd 0f00f9344h, 08708a3d2h, 01e01f268h, 06906c2feh, 0f762575dh, 0806567cbh
-dd 0196c3671h, 06e6b06e7h, 0fed41b76h, 089d32be0h, 010da7a5ah, 067dd4acch
-dd 0f9b9df6fh, 08ebeeff9h, 017b7be43h, 060b08ed5h, 0d6d6a3e8h, 0a1d1937eh
-dd 038d8c2c4h, 04fdff252h, 0d1bb67f1h, 0a6bc5767h, 03fb506ddh, 048b2364bh
-dd 0d80d2bdah, 0af0a1b4ch, 036034af6h, 041047a60h, 0df60efc3h, 0a867df55h
-dd 0316e8eefh, 04669be79h, 0cb61b38ch, 0bc66831ah, 0256fd2a0h, 05268e236h
-dd 0cc0c7795h, 0bb0b4703h, 0220216b9h, 05505262fh, 0c5ba3bbeh, 0b2bd0b28h
-dd 02bb45a92h, 05cb36a04h, 0c2d7ffa7h, 0b5d0cf31h, 02cd99e8bh, 05bdeae1dh
-dd 09b64c2b0h, 0ec63f226h, 0756aa39ch, 0026d930ah, 09c0906a9h, 0eb0e363fh
-dd 072076785h, 005005713h, 095bf4a82h, 0e2b87a14h, 07bb12baeh, 00cb61b38h
-dd 092d28e9bh, 0e5d5be0dh, 07cdcefb7h, 00bdbdf21h, 086d3d2d4h, 0f1d4e242h
-dd 068ddb3f8h, 01fda836eh, 081be16cdh, 0f6b9265bh, 06fb077e1h, 018b74777h
-dd 088085ae6h, 0ff0f6a70h, 066063bcah, 011010b5ch, 08f659effh, 0f862ae69h
-dd 0616bffd3h, 0166ccf45h, 0a00ae278h, 0d70dd2eeh, 04e048354h, 03903b3c2h
-dd 0a7672661h, 0d06016f7h, 04969474dh, 03e6e77dbh, 0aed16a4ah, 0d9d65adch
-dd 040df0b66h, 037d83bf0h, 0a9bcae53h, 0debb9ec5h, 047b2cf7fh, 030b5ffe9h
-dd 0bdbdf21ch, 0cabac28ah, 053b39330h, 024b4a3a6h, 0bad03605h, 0cdd70693h
-dd 054de5729h, 023d967bfh, 0b3667a2eh, 0c4614ab8h, 05d681b02h, 02a6f2b94h
-dd 0b40bbe37h, 0c30c8ea1h, 05a05df1bh, 02d02ef8dh
-
 ;*******************************************************
 ; Show Information
 ;*******************************************************
@@ -2672,7 +2602,10 @@ SECTION .text
 EXTSYM ClearScreen, cbitmode, makepal
 
 NEWSYM SetupROM
-    call CheckROMType
+    pushad
+    call SetupROMc
+    popad
+;    call CheckROMType
     call SetIRQVectors
     call ClearScreen
     cmp byte[cbitmode],0
@@ -2718,331 +2651,6 @@ NEWSYM SetupROM
     mov word[totlines],314
     mov dword[MsgCount],100
 .nopal
-    ret
-
-NEWSYM CheckROMType
-    pushad
-    call BankCheck
-    call MirrorROM
-    popad    
-
-
-    mov byte[lorommapmode2],0
-    mov esi,[romdata]
-    cmp dword[esi+207FC0h],'DERB'
-    jne .noderby96
-    cmp dword[esi+207FC4h],'Y ST'
-    jne .noderby96
-    cmp dword[esi+207FC8h],'ALLI'
-    jne .noderby96
-    cmp dword[esi+207FCDh],'N 96'
-    jne .noderby96
-    mov byte[lorommapmode2],1
-.noderby96
-    cmp dword[esi+7FC0h],'SOUN'
-    jne .nosoundnovel
-    cmp dword[esi+7FC4h],'D NO'
-    jne .nosoundnovel
-    cmp dword[esi+7FC8h],'VEL-'
-    jne .nosoundnovel
-    cmp dword[esi+7FCDh],'COOL'
-    jne .nosoundnovel
-    mov byte[lorommapmode2],1
-.nosoundnovel
-
-    jmp .skipall
-    ; scan for branches
-    mov esi,06A5h
-    add esi,[romdata]
-    mov ecx,80h
-.loopcheck
-    cmp byte[esi],48h
-    je .yes
-    cmp byte[esi],8Bh
-    je .yes
-    cmp byte[esi],0Bh
-    je .yes
-    cmp byte[esi],4Bh
-    je .yes
-    cmp byte[esi],08h
-    je .yes
-    cmp byte[esi],0DAh
-    je .yes
-    cmp byte[esi],5Ah
-    je .yes
-    jmp .no
-.yes
-    pushad
-    mov al,byte[esi]
-    mov al,80h
-    sub al,cl
-    call printhex8
-    popad
-.no
-    add esi,8000h
-    dec ecx
-    jnz .loopcheck
-.skipall
-
-    call SetAddressingModes
-    call GenerateBank0Table
-
-    pushad
-    call chip_detect
-    popad
-    
-    ;Setup some Memmapping
-    mov byte[DSP1Type],0
-    mov esi,[romdata]
-    add esi,0FFC0h
-    mov byte[disablespcclr],0
-    mov eax,50205040h
-    or eax,0A000302h
-    cmp dword[esi],eax
-    jne .nospcdis
-    mov byte[disablespcclr],1
-.nospcdis
-    ; banks 0-3Fh
-    mov dword[memtabler8+3Fh*4],regaccessbankr8
-    mov dword[memtablew8+3Fh*4],regaccessbankw8
-    mov dword[memtabler16+3Fh*4],regaccessbankr16
-    mov dword[memtablew16+3Fh*4],regaccessbankw16
-    mov dword[memtabler8+0BFh*4],regaccessbankr8
-    mov dword[memtablew8+0BFh*4],regaccessbankw8
-    mov dword[memtabler16+0BFh*4],regaccessbankr16
-    mov dword[memtablew16+0BFh*4],regaccessbankw16
-    mov dword[memtabler8+70h*4],sramaccessbankr8
-    mov dword[memtablew8+70h*4],sramaccessbankw8
-    mov dword[memtabler16+70h*4],sramaccessbankr16
-    mov dword[memtablew16+70h*4],sramaccessbankw16
-    mov dword[memtabler8+71h*4],sramaccessbankr8
-    mov dword[memtablew8+71h*4],sramaccessbankw8
-    mov dword[memtabler16+71h*4],sramaccessbankr16
-    mov dword[memtablew16+71h*4],sramaccessbankw16
-    mov dword[memtabler8+72h*4],sramaccessbankr8
-    mov dword[memtablew8+72h*4],sramaccessbankw8
-    mov dword[memtabler16+72h*4],sramaccessbankr16
-    mov dword[memtablew16+72h*4],sramaccessbankw16
-    mov dword[memtabler8+73h*4],sramaccessbankr8
-    mov dword[memtablew8+73h*4],sramaccessbankw8
-    mov dword[memtabler16+73h*4],sramaccessbankr16
-    mov dword[memtablew16+73h*4],sramaccessbankw16
-    mov dword[memtabler8+78h*4],memaccessbankr8
-    mov dword[memtablew8+78h*4],memaccessbankw8
-    mov dword[memtabler16+78h*4],memaccessbankr16
-    mov dword[memtablew16+78h*4],memaccessbankw16
-    mov dword[memtabler8+79h*4],memaccessbankr8
-    mov dword[memtablew8+79h*4],memaccessbankw8
-    mov dword[memtabler16+79h*4],memaccessbankr16
-    mov dword[memtablew16+79h*4],memaccessbankw16
-
-    ;LoROM SRAM mapping, but not on the S-DD1
-    cmp byte[romtype],1
-    jne near .notlorom
-    cmp byte[SDD1Enable],1
-    je near .notlorom
-    mov dword[memtabler8+0F0h*4],sramaccessbankr8
-    mov dword[memtablew8+0F0h*4],sramaccessbankw8
-    mov dword[memtabler16+0F0h*4],sramaccessbankr16
-    mov dword[memtablew16+0F0h*4],sramaccessbankw16
-    mov dword[memtabler8+0F1h*4],sramaccessbankr8
-    mov dword[memtablew8+0F1h*4],sramaccessbankw8
-    mov dword[memtabler16+0F1h*4],sramaccessbankr16
-    mov dword[memtablew16+0F1h*4],sramaccessbankw16
-    mov dword[memtabler8+0F2h*4],sramaccessbankr8
-    mov dword[memtablew8+0F2h*4],sramaccessbankw8
-    mov dword[memtabler16+0F2h*4],sramaccessbankr16
-    mov dword[memtablew16+0F2h*4],sramaccessbankw16
-    mov dword[memtabler8+0F3h*4],sramaccessbankr8
-    mov dword[memtablew8+0F3h*4],sramaccessbankw8
-    mov dword[memtabler16+0F3h*4],sramaccessbankr16
-    mov dword[memtablew16+0F3h*4],sramaccessbankw16
-.notlorom
-
-    cmp byte[DSP1Enable],1
-    je .initdsp
-    cmp byte[DSP2Enable],1
-    je .initdsp2
-    cmp byte[DSP3Enable],1
-    je .initdsp
-    cmp byte[DSP4Enable],1
-    jne .notDSP1Hi
-    pushad
-    call InitDSP4
-    popad
-    xor ecx,ecx
-.dsp4loop
-    mov dword[memtabler8+30h*4+ecx],DSP4Read8b
-    mov dword[memtablew8+30h*4+ecx],DSP4Write8b
-    mov dword[memtabler16+30h*4+ecx],DSP4Read16b
-    mov dword[memtablew16+30h*4+ecx],DSP4Write16b
-    add ecx,4
-    cmp ecx,1*4
-    jne .dsp4loop
-    jmp .notDSP1Hi
-.initdsp2
-    call InitDSP2
-.initdsp
-    pushad
-    call InitDSP
-    popad
-    mov byte[DSP1Type],1
-    cmp byte[romtype],2
-    jne .notDSP1Hi
-    mov byte[DSP1Type],2
-.notDSP1Hi
-
-  ;Setup Super FX related stuff
-    cmp byte[SFXEnable],1
-    jne near .nosfx
-    cmp byte[Sup48mbit],1
-    je .sfxokay
-    mov byte[yesoutofmemory],1
-    jmp .nosfx
-.sfxokay
-    mov dword[memtabler8+70h*4],sfxaccessbankr8
-    mov dword[memtablew8+70h*4],sfxaccessbankw8
-    mov dword[memtabler16+70h*4],sfxaccessbankr16
-    mov dword[memtablew16+70h*4],sfxaccessbankw16
-    mov dword[memtabler8+71h*4],sfxaccessbankr8b
-    mov dword[memtablew8+71h*4],sfxaccessbankw8b
-    mov dword[memtabler16+71h*4],sfxaccessbankr16b
-    mov dword[memtablew16+71h*4],sfxaccessbankw16b
-    mov dword[memtabler8+72h*4],sfxaccessbankr8c
-    mov dword[memtablew8+72h*4],sfxaccessbankw8c
-    mov dword[memtabler16+72h*4],sfxaccessbankr16c
-    mov dword[memtablew16+72h*4],sfxaccessbankw16c
-    mov dword[memtabler8+73h*4],sfxaccessbankr8d
-    mov dword[memtablew8+73h*4],sfxaccessbankw8d
-    mov dword[memtabler16+73h*4],sfxaccessbankr16d
-    mov dword[memtablew16+73h*4],sfxaccessbankw16d
-    mov dword[memtabler8+78h*4],sramaccessbankr8s
-    mov dword[memtablew8+78h*4],sramaccessbankw8s
-    mov dword[memtabler16+78h*4],sramaccessbankr16s
-    mov dword[memtablew16+78h*4],sramaccessbankw16s
-    mov dword[memtabler8+79h*4],sramaccessbankr8s
-    mov dword[memtablew8+79h*4],sramaccessbankw8s
-    mov dword[memtabler16+79h*4],sramaccessbankr16s
-    mov dword[memtablew16+79h*4],sramaccessbankw16s
-    mov dword[SfxR1],0
-    mov dword[SfxR2],0
-    mov esi,[sfxramdata]
-    mov ecx,65536
-.loopsfxclear
-    mov dword[esi],0
-    add esi,4
-    dec ecx
-    jnz .loopsfxclear
-    cmp byte[SramExists],0
-    je .nosramsfx
-    mov esi,[sram]
-    mov edi,[sfxramdata]
-    mov ecx,16384
-.sfxsramloop
-    mov eax,[esi]
-    mov [edi],eax
-    add esi,4
-    add edi,4
-    dec ecx
-    jnz .sfxsramloop
-.nosramsfx
-    call InitFxTables
-.nosfx
-
-
-
-  ;Setup Seta ST010 / ST011 stuff
-    cmp byte[SETAEnable],1
-    jne near .noseta
-    ; Really banks 68h-6Fh:0000-7FFF are all mapped the same by the chip but F1ROCII only uses bank 68h
-    mov dword[memtabler8+68h*4],setaaccessbankr8
-    mov dword[memtablew8+68h*4],setaaccessbankw8
-    mov dword[memtabler16+68h*4],setaaccessbankr16
-    mov dword[memtablew16+68h*4],setaaccessbankw16
-
-    ; Control register (and some status?) is in banks 60h-67h:0000-3FFF
-    mov dword[memtabler8+60h*4],setaaccessbankr8a
-    mov dword[memtablew8+60h*4],setaaccessbankw8a
-    mov dword[memtabler16+60h*4],setaaccessbankr16a
-    mov dword[memtablew16+60h*4],setaaccessbankw16a
-
-    mov dword[SetaCmdEnable],00000080h ; 60:0000
-    mov esi,[setaramdata]
-    mov ecx,1024 ; 4096 bytes
-.loopsetaclear
-    mov dword[esi],0
-    add esi,4
-    dec ecx
-    jnz .loopsetaclear
-    cmp byte[SramExists],0
-    je .nosramseta
-    mov esi,[sram]
-    mov edi,[setaramdata]
-    mov ecx,1024
-.setasramloop
-    mov eax,[esi]
-    mov [edi],eax
-    add esi,4
-    add edi,4
-    dec ecx
-    jnz .setasramloop
-.nosramseta
-.noseta
-
-
-    
-    ;General Stuff all mixed together
-    mov dword[SfxSFR],0
-    mov byte[SfxSCMR],0
-    call initregr
-    call initregw
-    cmp byte[SA1Enable],0
-    je .nosa1init
-    call GenerateBank0TableSA1
-    call SetAddressingModesSA1
-    ; open .srm file
-    cmp byte[CHIPBATT],1
-    jne .nosa1init
-    mov edx,fnames+1
-    call Open_File
-    jc .nosa1init
-    mov byte[SramExists],1
-    mov bx,ax
-    mov ecx,65536*2
-    mov edx,[romdata]
-    add edx,1024*4096
-    call Read_File
-    jc .nosa1init
-    call Close_File
-.nosa1init
-    cmp byte[DSP1Type],1
-    jne near .nodsp1lorom
-    xor ecx,ecx
-.dsp1loop
-    mov dword[memtabler8+30h*4+ecx],DSP1Read8b3F
-    mov dword[memtablew8+30h*4+ecx],DSP1Write8b3F
-    mov dword[memtabler16+30h*4+ecx],DSP1Read16b3F
-    mov dword[memtablew16+30h*4+ecx],DSP1Write16b3F
-    mov dword[memtabler8+0B0h*4+ecx],DSP1Read8b3F
-    mov dword[memtablew8+0B0h*4+ecx],DSP1Write8b3F
-    mov dword[memtabler16+0B0h*4+ecx],DSP1Read16b3F
-    mov dword[memtablew16+0B0h*4+ecx],DSP1Write16b3F
-    mov dword[memtabler8+0E0h*4+ecx],DSP1Read8b3F
-    mov dword[memtablew8+0E0h*4+ecx],DSP1Write8b3F
-    mov dword[memtabler16+0E0h*4+ecx],DSP1Read16b3F
-    mov dword[memtablew16+0E0h*4+ecx],DSP1Write16b3F
-    add ecx,4
-    cmp ecx,16*4
-    jne .dsp1loop
-    cmp byte[DSP2Enable],1
-    jne .nodsp1lorom
-    mov dword[memtabler8+3Fh*4],DSP2Read8b
-    mov dword[memtablew8+3Fh*4],DSP2Write8b
-    mov dword[memtabler16+3Fh*4],DSP2Read16b
-    mov dword[memtablew16+3Fh*4],DSP2Write16b
-.nodsp1lorom
-    mov dword[wramdata],wramdataa
-    call SPC7110Load
     ret
 
 SECTION .bss
@@ -3135,9 +2743,3 @@ NEWSYM yesoutofmemory, resb 1
 SECTION .data
 NEWSYM outofmemoryerror, db 'OUT OF MEMORY.',0
 NEWSYM outofmemoryerror2, db 'ROM IS TOO BIG.',0
-
-
-
-
-
-
