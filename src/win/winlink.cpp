@@ -1459,7 +1459,7 @@ void Stop36HZ(void)
 
 char WinMessage[256];
 extern unsigned char cvidmode;
-extern BYTE BlackAndWhite;
+extern BYTE GrayscaleMode;
 extern BYTE V8Mode;
 DWORD FirstVid=1;
 DWORD FirstFull=1;
@@ -1475,7 +1475,7 @@ void initwinvideo(void)
    RECT rc1, swrect;
    DWORD newmode=0;
 
-   V8Mode = (BlackAndWhite == 1);
+   V8Mode = (GrayscaleMode == 1);
 
    if (CurMode!=cvidmode)
    {

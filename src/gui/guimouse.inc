@@ -2164,7 +2164,7 @@ DisplayGUIVideoClick:
     GUIClickCButton5 11,163,byte[Triplebufen],1
 .nocheckboxttb
 %ifndef __MSDOS__
-    GUIClickCButton 11,183,byte[BlackAndWhite]
+    GUIClickCButton 11,183,byte[GrayscaleMode]
 %endif
     xor ebx,ebx
     mov bl,[cvidmode]

@@ -687,7 +687,7 @@ void Stop36HZ(void)
 DWORD FirstVid = 1;
 DWORD FirstFull = 1;
 extern BYTE GUIWFVID[];
-extern BYTE BlackAndWhite;
+extern BYTE GrayscaleMode;
 extern BYTE V8Mode;
 void clearwin();
 
@@ -695,7 +695,7 @@ void initwinvideo(void)
 {
 	DWORD newmode = 0;
 
-	V8Mode = (BlackAndWhite == 1);
+	V8Mode = (GrayscaleMode == 1);
 
 	if (CurMode != cvidmode)
 	{

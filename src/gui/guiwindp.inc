@@ -1929,7 +1929,7 @@ DisplayGUIVideo:
 .nocheckboxm72
 %ifndef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[BlackAndWhite],0
+    cmp byte[GrayscaleMode],0
     je .nocheckboxm73
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckboxm73
@@ -2093,7 +2093,7 @@ GUIVideoText5 db 'FULL SCREEN',0        ; -c
 GUIVideoText6 db 'SMALL SCREEN',0       ; -c
 GUIVideoText7 db 'TRIPLE BUFFERING',0       ; -c
 GUIVideoText8b db 'HI-RESOLUTION MODE7',0       ; -c
-GUIVideoText8c db 'BLACK AND WHITE MODE',0       ; -c
+GUIVideoText8c db 'GRAYSCALE MODE',0       ; -c
 GUIVideoText8 db 'SET',0                ; set button
 GUIVideoTextH db 'MODE : ',0
 GUIVideoTextw0 db 'LEGEND:',0

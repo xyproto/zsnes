@@ -575,7 +575,7 @@ NEWSYM GUIWRAdd,  db 8
 NEWSYM GUIWGAdd,  db 8
 NEWSYM GUIWBAdd,  db 25
 
-NEWSYM BlackAndWhite, db 0
+NEWSYM GrayscaleMode, db 0
 NEWSYM MouseWheel, db 1
 NEWSYM AlternateTimer, db 0
 NEWSYM AllowMultipleInst, db 0
