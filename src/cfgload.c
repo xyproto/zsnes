@@ -28,7 +28,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "gblhdr.h"
 #else
 #include <string.h>
-#include <unistd.h>
 #endif
 
 #define StringA "FRAMESKIP"
