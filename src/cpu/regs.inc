@@ -1083,6 +1083,10 @@ reg43XXr:
 
 regINVALID:     ; Invalid Register
     mov al,ch
+    cmp byte[SPC7110Enable],0
+    je .nospc7110
+    xor al,al
+.nospc7110
     ret
 
     mov al,[previdmode]
