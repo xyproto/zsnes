@@ -1929,15 +1929,15 @@ void DSP4_OP10()
         for (;;)
         {
           int16 distance;
-          int16 color;
+          int16 color, red, green, blue;
 
           distance = DSP4_READ_WORD();
           color = DSP4_READ_WORD();
 
           // U1+B5+G5+R5
-          int16 red = color & 0x1f;
-          int16 green = (color >> 5) & 0x1f;
-          int16 blue = (color >> 10) & 0x1f;
+          red = color & 0x1f;
+          green = (color >> 5) & 0x1f;
+          blue = (color >> 10) & 0x1f;
 
           // dynamic lighting
           red = (red * distance >> 15) & 0x1f;
