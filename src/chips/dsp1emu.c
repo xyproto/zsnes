@@ -15,15 +15,11 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#ifdef __LINUX__   
-#include "../gblhdr.h"   
-#else 
 #include <stdio.h>
 #include <stdarg.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
-#endif
 
 //#define DebugDSP1
 
@@ -104,11 +100,10 @@ double Atan(double x)
 		return (PI/2 - Atan(1/x));
 }
 
+#if 1 //0 in Snes9x
 /***************************************************************************\
 *  C4 C code                                                                *
 \***************************************************************************/
-
-
 short C4WFXVal;
 short C4WFYVal;
 short C4WFZVal;
@@ -228,6 +223,7 @@ void C4Op0D()
   C41FYVal=(short)(((double)C41FYVal*tanval)*0.99);
   C41FXVal=(short)(((double)C41FXVal*tanval)*0.98);
 }
+#endif
 
 /***************************************************************************\
 *  DSP1 code                                                                *
@@ -270,8 +266,82 @@ signed short Op10Coefficient;
 signed short Op10Exponent;
 signed short Op10CoefficientR;
 signed short Op10ExponentR;
-float Op10Temp;
+//float Op10Temp;
 
+short InvTable[128] = {
+	-0x8000,	0x7f02,	0x7e08,	0x7d12,	0x7c1f,	0x7b30,	0x7a45,	0x795d,
+	0x7878,	0x7797,	0x76ba,	0x75df,	0x7512,	0x7433,	0x7361,	0x7293,
+	0x71d7,	0x70fe,	0x7038,	0x6f75,	0x6eb4,	0x6df6,	0x6d3a,	0x6c81,
+	0x6bca,	0x6b16,	0x6a69,	0x69b4,	0x6907,	0x685b,	0x67b2,	0x670b,
+	0x6666,	0x65c4,	0x6523,	0x6484,	0x63e7,	0x634c,	0x62b3,	0x621c,
+	0x6186,	0x60f2,	0x6060,	0x5ffd,	0x5f41,	0x5eb5,	0x5e29,	0x5d9f,
+	0x5d17,	0x5c91,	0x5c0c,	0x5b88,	0x5b06,	0x5a85,	0x5a06,	0x5988,
+	0x5912,	0x5890,	0x5816,	0x57a8,	0x5726,	0x56b0,	0x563b,	0x55c8,
+	0x55a9,	0x54e4,	0x5474,	0x5405,	0x53a9,	0x532b,	0x52c8,	0x525e,
+	0x5231,	0x5183,	0x512a,	0x50b6,	0x5050,	0x4ffb,	0x4f89,	0x4f26,
+	0x4ec5,	0x4e64,	0x4e05,	0x4da6,	0x4d48,	0x4cec,	0x4c96,	0x4c34,
+	0x4bda,	0x4b81,	0x4b36,	0x4b30,	0x4a79,	0x4a77,	0x4a27,	0x4979,
+	0x494d,	0x48e9,	0x487f,	0x486a,	0x4851,	0x478c,	0x479a,	0x4751,
+	0x469f,	0x46b6,	0x4610,	0x45b8,	0x45d1,	0x4589,	0x452e,	0x44e1,
+	0x44ae,	0x4470,	0x4413,	0x43c7,	0x437e,	0x433f,	0x430c,	0x42a6,
+	0x4276,	0x4231,	0x41f3,	0x41c9,	0x417c,	0x413c,	0x4082,	0x40b6};
+
+void DSPOp10()
+{
+	// Hard to get bit accurate here but it's very close...
+	// within 2 lsb's on the coefficient of the DSP1B.  Emu is more accurate.
+
+	if (Op10Coefficient == 0x0000)
+	{
+		Op10CoefficientR = 0x7fff;
+		Op10ExponentR = 0x002f;
+	}
+	else
+	{
+		short Sign = 1;
+
+		if (Op10Coefficient < -32767)
+			Op10Coefficient = -32767;
+
+		if (Op10Coefficient < 0)
+		{		
+			Op10Coefficient = -Op10Coefficient;
+			Sign = -1;
+		}
+		
+		while (Op10Coefficient < 0x4000)
+		{
+			Op10Coefficient <<= 1;
+			Op10Exponent--;
+		}
+
+		if (Op10Coefficient == 0x4000)
+		{
+			if (Sign == 1)
+				Op10CoefficientR = 0x7fff;
+			else
+			{
+				Op10CoefficientR = -16384;//0xc000;
+				Op10Exponent--;
+			}
+		}
+		else {
+			short i = InvTable[(Op10Coefficient - 0x4000) >> 7];
+
+			i = (i << 1) + (((-i * ((Op10Coefficient * i) >> 15)) >> 15) << 1);
+			i = (i << 1) + (((-i * ((Op10Coefficient * i) >> 15)) >> 15) << 1);
+
+			Op10CoefficientR = i * Sign;
+		}
+
+		Op10ExponentR = 1 - Op10Exponent;
+	}
+
+	#ifdef DebugDSP1
+        Log_Message("OP10 INV %d*2^%d = %d*2^%d", Op10Coefficient, Op10Exponent, Op10CoefficientR, Op10ExponentR);
+	#endif
+}
+/*
 void DSPOp10()
 {
 	// Hard to get bit accurate here but it's very close...
@@ -300,13 +370,123 @@ void DSPOp10()
         Log_Message("OP10 INV %d*2^%d = %d*2^%d", Op10Coefficient, Op10Exponent, Op10CoefficientR, Op10ExponentR);
 	#endif
 }
-
+*/
 
 short Op04Angle;
 short Op04Radius;	// This is signed
 short Op04Sin;
 short Op04Cos;
 
+short MulTable[256] = {
+	0,	3,	6,	9,	12,	15,	18,	21,
+	25,	28,	31,	34,	37,	40,	43,	47,
+	50,	53,	56,	59,	62,	65,	69,	72,
+	75,	78,	81,	84,	87,	91,	94,	97,
+	100,	103,	106,	109,	113,	116,	119,	122,
+	125,	128,	131,	135,	138,	141,	144,	147,
+	150,	153,	157,	160,	163,	166,	169,	172,
+	175,	179,	182,	185,	188,	191,	194,	197,
+	201,	204,	207,	210,	213,	216,	219,	223,
+	226,	229,	232,	235,	238,	241,	245,	248,
+	251,	254,	257,	260,	263,	267,	270,	273,
+	276,	279,	282,	285,	289,	292,	295,	298,
+	301,	304,	307,	311,	314,	317,	320,	323,
+	326,	329,	333,	336,	339,	342,	345,	348,
+	351,	355,	358,	361,	364,	367,	370,	373,
+	376,	380,	383,	386,	389,	392,	395,	398,
+	402,	405,	408,	411,	414,	417,	420,	424,
+	427,	430,	433,	436,	439,	442,	446,	449,
+	452,	455,	458,	461,	464,	468,	471,	474,
+	477,	480,	483,	486,	490,	493,	496,	499,
+	502,	505,	508,	512,	515,	518,	521,	524,
+	527,	530,	534,	537,	540,	543,	546,	549,
+	552,	556,	559,	562,	565,	568,	571,	574,
+	578,	581,	584,	587,	590,	593,	596,	600,
+	603,	606,	609,	612,	615,	618,	622,	625,
+	628,	631,	634,	637,	640,	644,	647,	650,
+	653,	656,	659,	662,	666,	669,	672,	675,
+	678,	681,	684,	688,	691,	694,	697,	700,
+	703,	706,	710,	713,	716,	719,	722,	725,
+	728,	731,	735,	738,	741,	744,	747,	750,
+	753,	757,	760,	763,	766,	769,	772,	775,
+	779,	782,	785,	788,	791,	794,	797,	801};
+
+short SinTable[256] = {
+	0,	804,	1607,	2410,	3211,	4011,	4808,	5602,
+	6392,	7179,	7961,	8739,	9512,	10278,	11039,	11793,
+	12539,	13278,	14010,	14732,	15446,	16151,	16846,	17530,
+	18204,	18868,	19519,	20159,	20787,	21403,	22005,	22594,
+	23170,	23732,	24279,	24812,	25330,	25832,	26319,	26790,
+	27245,	27684,	28106,	28511,	28898,	29269,	29621,	29956,
+	30273,	30572,	30852,	31114,	31357,	31581,	31785,	31971,
+	32138,	32285,	32413,	32521,	32610,	32679,	32728,	32758,
+	32767,	32758,	32728,	32679,	32610,	32521,	32413,	32285,
+	32138,	31971,	31785,	31581,	31357,	31114,	30852,	30572,
+	30273,	29956,	29621,	29269,	28898,	28511,	28106,	27684,
+	27245,	26790,	26319,	25832,	25330,	24812,	24279,	23732,
+	23170,	22594,	22005,	21403,	20787,	20159,	19519,	18868,
+	18204,	17530,	16846,	16151,	15446,	14732,	14010,	13278,
+	12539,	11793,	11039,	10278,	9512,	8739,	7961,	7179,
+	6392,	5602,	4808,	4011,	3211,	2410,	1607,	804,
+	0,	-804,	-1607,	-2410,	-3211,	-4011,	-4808,	-5602,
+	-6392,	-7179,	-7961,	-8739,	-9512,	-10278,	-11039,	-11793,
+	-12539,	-13278,	-14010,	-14732,	-15446,	-16151,	-16846,	-17530,
+	-18204,	-18868,	-19519,	-20159,	-20787,	-21403,	-22005,	-22594,
+	-23170,	-23732,	-24279,	-24812,	-25330,	-25832,	-26319,	-26790,
+	-27245,	-27684,	-28106,	-28511,	-28898,	-29269,	-29621,	-29956,
+	-30273,	-30572,	-30852,	-31114,	-31357,	-31581,	-31785,	-31971,
+	-32138,	-32285,	-32413,	-32521,	-32610,	-32679,	-32728,	-32758,
+	-32767,	-32758,	-32728,	-32679,	-32610,	-32521,	-32413,	-32285,
+	-32138,	-31971,	-31785,	-31581,	-31357,	-31114,	-30852,	-30572,
+	-30273,	-29956,	-29621,	-29269,	-28898,	-28511,	-28106,	-27684,
+	-27245,	-26790,	-26319,	-25832,	-25330,	-24812,	-24279,	-23732,
+	-23170,	-22594,	-22005,	-21403,	-20787,	-20159,	-19519,	-18868,
+	-18204,	-17530,	-16846,	-16151,	-15446,	-14732,	-14010,	-13278,
+	-12539,	-11793,	-11039,	-10278,	-9512,	-8739,	-7961,	-7179,
+	-6392,	-5602,	-4808,	-4011,	-3211,	-2410,	-1607,	-804};
+
+
+#define Lo(x) (x & 0xff)
+#define Hi(x) (x >> 8)
+
+short SinInt(short Angle)
+{
+	if (Angle == -32768)
+		return 0;
+
+	if (Angle < 0) return -SinInt(-Angle);
+	else
+	{
+		int S = SinTable[Hi(Angle)]	+ ((MulTable[Lo(Angle)]	* SinTable[Hi((Angle + 0x4000))]) >> 15);
+		if (S > 32767)
+			S = 32767;
+		if (S < -32768)
+			S = -32767;
+		return (short) S;
+	}
+}
+
+short CosInt(short Angle)
+{
+	if (Angle == -32768) return -32768;
+
+	if (Angle < 0) Angle = -Angle;
+
+	int S = SinTable[Hi((Angle + 0x4000))] - ((MulTable[Lo(Angle)] * (-SinTable[Hi((Angle + 0x8000))])) >> 15);
+	if (S > 32767)
+		S = 32767;
+	if (S < -32768)
+		S = -32767;
+	return (short) S;
+}
+
+void DSPOp04()
+{
+	Op04Sin = SinInt(Op04Angle) * Op04Radius >> 15;
+	Op04Cos = CosInt(Op04Angle) * Op04Radius >> 15;
+}
+
+/*
 #ifdef __OPT04__
 
 void DSPOp04()
@@ -340,7 +520,27 @@ void DSPOp04()
    #endif
 }
 #endif 
+*/
+#define Op0CAngle Op0CA //Fix for name change -Nach
+short Op0CAngle; // Angles are signed
+short Op0CX1;
+short Op0CY1;
+short Op0CX2;
+short Op0CY2;
 
+
+void DSPOp0C()
+//{
+//	Op0CX2 = ((Op0CY1 * sin_int(Op0CAngle)) >> 15) + ((Op0CX1 * cos_int(Op0CAngle)) >> 15);
+//	Op0CY2 = ((Op0CY1 * cos_int(Op0CAngle)) >> 15) - ((Op0CX1 * sin_int(Op0CAngle)) >> 15);
+//}
+//void DSP1_Rotate(short Angle, short X1, short Y1, short &X2, short &Y2)
+{
+	Op0CX2 = (Op0CY1 * SinInt(Op0CAngle) >> 15) + (Op0CX1 * CosInt(Op0CAngle) >> 15);
+	Op0CY2 = (Op0CY1 * CosInt(Op0CAngle) >> 15) - (Op0CX1 * SinInt(Op0CAngle) >> 15);
+}
+
+/*
 unsigned short Op0CA;
 short Op0CX1;
 short Op0CY1;
@@ -368,7 +568,7 @@ void DSPOp0C()
 }
 
 #endif
-
+*/
 short Op02FX;
 short Op02FY;
 short Op02FZ;
@@ -718,7 +918,6 @@ double ObjPX2;
 double ObjPY2;
 double ObjPZ2;
 double DivideOp06;
-double d;
 int Temp;
 int tanval2;
 
@@ -758,7 +957,7 @@ void DSPOp06()
    {
       Op06H=(short)(-ObjPX2*Op02LES/-(ObjPZ2)); //-ObjPX2*256/-ObjPZ2;
       Op06V=(short)(-ObjPY2*Op02LES/-(ObjPZ2)); //-ObjPY2*256/-ObjPZ2;
-          d=(double)Op02LES;
+      double d=(double)Op02LES;
 	  d*=256.0;
 	  d/=(-ObjPZ2);
 	  if(d>65535.0)
@@ -1418,8 +1617,66 @@ short Op1CX2;
 short Op1CY2;
 short Op1CZ2;
 
+/*
+void DSP1_Op1C(short Az, short Ay, short Ax,  //<--notice input order
+			   short x1, short y1, short z1,
+			   short *x2, short *y2, short *z2)
+{
+	short x,y,z;
+	//Rotate around Z:
+	x = ((x1*CosInt(Az))>>15) + ((y1*SinInt(Az))>>15);
+	y =-((x1*SinInt(Az))>>15) + ((y1*CosInt(Az))>>15);
+	z = z1;
+	x1=x;
+	y1=y;
+	z1=z;
+	//Rotate around Y:
+	x = ((x1*CosInt(Ay))>>15) - ((z1*SinInt(Ay))>>15);
+	y = y1;
+	z = ((x1*SinInt(Ay))>>15) + ((z1*CosInt(Ay))>>15);
+	x1=x;
+	y1=y;
+	z1=z;
+	//Rotate around X:
+	x = x1;
+	y = ((y1*CosInt(Ax))>>15) + ((z1*SinInt(Ax))>>15);
+	z =-((y1*SinInt(Ax))>>15) + ((z1*CosInt(Ax))>>15);
+	x1=x;
+	y1=y;
+	z1=z;
+	//return result
+	*x2 = x1;
+	*y2 = y1;
+	*z2 = z1;
+}
+*/
+
 #ifdef __OPT1C__
 void DSPOp1C()
+{
+//   short ya,xa,za;
+//   ya = Angle(Op1CX);
+//   xa = Angle(Op1CY);
+//   za = Angle(Op1CZ);
+
+   // rotate around Z
+   Op1CX1=((Op1CXBR*CosInt(Op1CZ))>>15)+((Op1CYBR*SinInt(Op1CZ))>>15);
+   Op1CY1=-(((Op1CXBR*SinInt(Op1CZ))>>15)+((Op1CYBR*CosInt(Op1CZ))>>15));
+   Op1CZ1=Op1CZBR;
+   // rotate around Y
+   Op1CX2=((Op1CX1*CosInt(Op1CY))>>15)-((Op1CZ1*SinInt(Op1CY))>>15);
+   Op1CY2=Op1CY1;
+   Op1CZ2=((Op1CX1*SinInt(Op1CY))>>15)+((Op1CZ1*CosInt(Op1CY))>>15);
+   // rotate around X
+   Op1CXAR=Op1CX2;
+   Op1CYAR=((Op1CY2*CosInt(Op1CX))>>15)+((Op1CZ2*SinInt(Op1CX))>>15);
+   Op1CZAR=-(((Op1CY2*-SinInt(Op1CX))>>15)+((Op1CZ2*CosInt(Op1CX))>>15));
+
+   #ifdef DebugDSP1
+      Log_Message("OP1C Apply Matrix CX:%d CY:%d CZ",Op1CXAR,Op1CYAR,Op1CZAR);
+   #endif
+}
+/*void DSPOp1C()
 {
    short ya,xa,za;
    ya = Angle(Op1CX);
@@ -1443,6 +1700,7 @@ void DSPOp1C()
       Log_Message("OP1C Apply Matrix CX:%d CY:%d CZ",Op1CXAR,Op1CYAR,Op1CZAR);
    #endif
 }
+*/
 #else
 void DSPOp1C()
 {
@@ -1487,3 +1745,4 @@ void DSPOp0F()
       Log_Message("OP0F RAM Test Pass:%d", Op0FPass);
    #endif
 }
+
