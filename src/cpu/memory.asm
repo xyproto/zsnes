@@ -4157,7 +4157,7 @@ NEWSYM SA1RAMaccessbankw16b
     xor ebx,ebx
     ret
 
-NEWSYM SDD1Array, times 1 db 0
+NEWSYM SDD1Array, times 65536 db 0
 NEWSYM SDD1Entry, dd 0
 NEWSYM SDD1EntryPtr, dd 0
 
@@ -4190,7 +4190,7 @@ NEWSYM SDD1EntryPtr, dd 0
 NEWSYM LatestBank, dd 0FFFFh
 NEWSYM memaccessbankr8sdd1
 ;    TestSDD1
-    jmp debugdecompress
+;    jmp debugdecompress
     cmp byte[AddrNoIncr],0
     je near .failed
     cmp dword[Sdd1Mode],2
@@ -4208,6 +4208,7 @@ NEWSYM memaccessbankr8sdd1
     mov eax,ebx
     shl eax,16
     mov ax,cx
+    and eax,0FFFFFh
     shl eax,4
     GetBankLog cl
     or al,cl
@@ -4331,7 +4332,7 @@ debugdecompress:
     mov [Sdd1Addr],ecx
     mov [Sdd1NewAddr],ecx
     mov dword[Sdd1Mode],2
-    jmp .decompress             ; comment this out to activate array
+;    jmp .decompress             ; comment this out to activate array
     push eax
     mov eax,[SDD1Entry]
     cmp eax,65536
