@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 NSRT Team ( http://nsrt.edgeemu.com )
+Copyright (C) 2005 NSRT Team ( http://nsrt.edgeemu.com )
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <sstream>
 #include "jma.h"
 using namespace std;
 
@@ -28,7 +29,7 @@ namespace JMA
 {
   const char jma_magic[] = { 'J', 'M', 'A', 0, 'N' };
   const unsigned int jma_header_length = 5;  
-  const unsigned char jma_version = 0;
+  const unsigned char jma_version = 1;
   const unsigned int jma_version_length = 1;
   const unsigned int jma_total_header_length = jma_header_length + jma_version_length + UINT_SIZE;
   
@@ -72,8 +73,45 @@ namespace JMA
     //Seek to before file block so we can read the file block
     stream.seekg(-((int)file_block_size+UINT_SIZE),ios::end);
     
+    //This is needed if the file block is compressed
+    stringstream decompressed_file_block;
+    //Pointer to where to read file block from (file or decompressed buffer)
+    istream *file_block_stream;
+    
+    //Setup file info buffer and byte to read with
     jma_file_info file_info;
-    char byte;
+    char byte;   
+    
+    stream.get(byte);
+    if (!byte) //If file block is compressed
+    {
+      //Compressed size isn't counting the byte we just read or the UINT for compressed size
+      size_t compressed_size = file_block_size - (1+UINT_SIZE);
+      
+      //Read decompressed size / true file block size
+      stream.read((char *)uint_buffer, UINT_SIZE);
+      file_block_size = charp_to_uint(uint_buffer);
+      
+      //Setup access methods for decompression
+      ISequentialInStream_Istream compressed_data(stream);
+      ISequentialOutStream_Ostream decompressed_data(decompressed_file_block);
+      
+      //Decompress the data
+      if (!decompress_lzma_7z(compressed_data, compressed_size, decompressed_data, file_block_size))
+      {
+        throw(JMA_DECOMPRESS_FAILED);
+      }   
+      
+      //Go to beginning, setup pointer to buffer
+      decompressed_file_block.seekg(0, ios::beg);
+      file_block_stream = &decompressed_file_block;
+    }
+    else
+    {
+      stream.putback(byte); //Putback byte, byte is part of filename, not compressed indicator
+      file_block_stream = &stream;
+    }
+    
     
     //Minimum file name length is 2 bytes, a char and a null
     //Minimum comment length is 1 byte, a null
@@ -83,11 +121,11 @@ namespace JMA
       //First stored in the file block is the file name null terminated
       file_info.name = "";
       
-      stream.get(byte);
+      file_block_stream->get(byte);
       while (byte)
       {
         file_info.name += byte;
-        stream.get(byte);
+        file_block_stream->get(byte);
       }
 
       //There must be a file name or the file is bad
@@ -99,27 +137,27 @@ namespace JMA
       //Same trick as above for the comment
       file_info.comment = "";
 
-      stream.get(byte);
+      file_block_stream->get(byte);
       while (byte)
       {
         file_info.comment += byte;
-        stream.get(byte);
+        file_block_stream->get(byte);
       }
       
       //Next is a UINT representing the file's size
-      stream.read((char *)uint_buffer, UINT_SIZE);
+      file_block_stream->read((char *)uint_buffer, UINT_SIZE);
       file_info.size = charp_to_uint(uint_buffer);
       
       //Followed by CRC32
-      stream.read((char *)uint_buffer, UINT_SIZE);
+      file_block_stream->read((char *)uint_buffer, UINT_SIZE);
       file_info.crc32 = charp_to_uint(uint_buffer);
       
       //Special USHORT representation of file's date
-      stream.read((char *)ushort_buffer, USHORT_SIZE);
+      file_block_stream->read((char *)ushort_buffer, USHORT_SIZE);
       file_info.date = charp_to_ushort(ushort_buffer);
       
       //Special USHORT representation of file's time
-      stream.read((char *)ushort_buffer, USHORT_SIZE);
+      file_block_stream->read((char *)ushort_buffer, USHORT_SIZE);
       file_info.time = charp_to_ushort(ushort_buffer);
       
       file_info.buffer = 0; //Pointing to null till we decompress files
@@ -130,7 +168,6 @@ namespace JMA
       file_block_size -= file_info.name.length()+file_info.comment.length()+2+UINT_SIZE*2+USHORT_SIZE*2;
     }
   }
-
   
   //Constructor for opening JMA files for reading
   jma_open::jma_open(const char *compressed_file_name) throw (jma_errors) 
@@ -139,7 +176,7 @@ namespace JMA
     compressed_buffer = 0;
     
     stream.open(compressed_file_name, ios::in | ios::binary);
-    if (!stream)
+    if (!stream.is_open())
     {
       throw(JMA_NO_OPEN);
     }
@@ -154,7 +191,7 @@ namespace JMA
     
     //Not the cleanest code but logical
     stream.read((char *)header, 5);
-    if (*header == 0) //Version 0
+    if (*header <= jma_version)
     {
       chunk_size = charp_to_uint(header+1); //Chunk size is a UINT that follows version #
       retrieve_file_block();
@@ -168,7 +205,7 @@ namespace JMA
   //Destructor only has to close the stream if neccesary
   jma_open::~jma_open()
   {
-    if (stream)
+    if (stream.is_open())
     {
       stream.close();
     }
@@ -197,11 +234,14 @@ namespace JMA
   void jma_open::chunk_seek(unsigned int chunk_num) throw(jma_errors)
   {
     //Check the stream is open
-    if (!stream)
+    if (!stream.is_open())
     {
       throw(JMA_NO_OPEN);
     }
    
+    //Clear possible errors so the seek will work
+    stream.clear();
+    
     //Move forward over header
     stream.seekg(jma_total_header_length, ios::beg);
 
@@ -222,7 +262,7 @@ namespace JMA
   vector<unsigned char *> jma_open::get_all_files(unsigned char *buffer) throw(jma_errors)
   {
     //If there's no stream we can't read from it, so exit
-    if (!stream)
+    if (!stream.is_open())
     {
       throw(JMA_NO_OPEN);
     }
@@ -279,16 +319,35 @@ namespace JMA
           throw(JMA_DECOMPRESS_FAILED);
         }
         delete[] compressed_buffer;
+        
+        if (remaining_size <= chunk_size) //If we just decompressed the remainder
+        {
+          break;
+        }
       }
     }
     else //Solidly compressed JMA
     {
       unsigned char int4_buffer[UINT_SIZE]; 
       
-      //read the size of the compressed data
+      //Read the size of the compressed data
       stream.read((char *)int4_buffer, UINT_SIZE);
       size_t compressed_size = charp_to_uint(int4_buffer);
 
+      //Get decompressed size
+      size_t size = get_total_size(files);
+      
+      //Setup access methods for decompression
+      ISequentialInStream_Istream compressed_data(stream);
+      ISequentialOutStream_Array decompressed_data(reinterpret_cast<char*>(decompressed_buffer), size);
+      
+      //Decompress the data
+      if (!decompress_lzma_7z(compressed_data, compressed_size, decompressed_data, size))
+      {
+        throw(JMA_DECOMPRESS_FAILED);
+      }   
+      
+      /*
       //Allocate memory of the right size to hold the compressed data in the JMA
       try
       {
@@ -313,13 +372,14 @@ namespace JMA
         throw(JMA_BAD_FILE);
       }
 
-      //decompress the data
+      //Decompress the data
       if (!decompress_lzma_7z(compressed_buffer, compressed_size, decompressed_buffer, size))
       {
         delete[] compressed_buffer;
         throw(JMA_DECOMPRESS_FAILED);
       }
       delete[] compressed_buffer;
+      */
     }
   
     vector<unsigned char *> file_pointers;
@@ -340,7 +400,7 @@ namespace JMA
   //Extracts the file with a given name found in the archive to the given buffer
   void jma_open::extract_file(string& name, unsigned char *buffer) throw(jma_errors)
   {
-    if (!stream)
+    if (!stream.is_open())
     {
       throw(JMA_NO_OPEN);
     }
@@ -400,7 +460,7 @@ namespace JMA
       for (size_t i = 0; i < our_file_size;)
       {
         //Get size
-        stream.read((char *) int4_buffer, UINT_SIZE);
+        stream.read((char *)int4_buffer, UINT_SIZE);
         size_t compressed_size = charp_to_uint(int4_buffer);
         
         //Read all the compressed data in
@@ -422,14 +482,12 @@ namespace JMA
           delete[] comp_buffer;
           throw(JMA_DECOMPRESS_FAILED);
         }
-        else
-        {
-          size_t copy_amount = our_file_size-i > chunk_size ? chunk_size : our_file_size-i;
-          copy_amount -= first_chunk_offset;
-          memcpy(buffer+i, decomp_buffer+first_chunk_offset, copy_amount);
-          first_chunk_offset = 0;
-          i += copy_amount;
-        }
+  
+        size_t copy_amount = our_file_size-i > chunk_size-first_chunk_offset ? chunk_size-first_chunk_offset : our_file_size-i;
+                
+        memcpy(buffer+i, decomp_buffer+first_chunk_offset, copy_amount);
+        first_chunk_offset = 0; //Set to zero since this is only for the first iteration
+        i += copy_amount;
       }
       delete[] comp_buffer;
     }
@@ -451,6 +509,42 @@ namespace JMA
     
       delete[] decomp_buffer;
     }
+  }
+
+  bool jma_open::is_solid()
+  {
+    return(chunk_size ? false : true);
+  }
+  
+  const char *jma_error_text(jma_errors error)
+  {
+    switch (error)
+    {
+      case JMA_NO_CREATE:
+        return("JMA could not be created");
+      
+      case JMA_NO_MEM_ALLOC:
+        return("Memory for JMA could be allocated");
+      
+      case JMA_NO_OPEN:
+        return("JMA could not be opened");
+      
+      case JMA_BAD_FILE:
+        return("Invalid/Corrupt JMA");
+                    
+      case JMA_UNSUPPORTED_VERSION:
+        return("JMA version not supported");
+      
+      case JMA_COMPRESS_FAILED:
+        return("JMA compression failed");
+      
+      case JMA_DECOMPRESS_FAILED:
+        return("JMA decompression failed");
+                    
+      case JMA_FILE_NOT_FOUND:
+        return("File not found in JMA");
+    }
+    return("Unknown error");
   }
 
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 NSRT Team ( http://nsrt.edgeemu.com )
+Copyright (C) 2005 NSRT Team ( http://nsrt.edgeemu.com )
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -72,6 +72,7 @@ namespace JMA
     std::vector<jma_public_file_info> get_files_info();
     std::vector<unsigned char *> get_all_files(unsigned char *) throw(jma_errors);
     void extract_file(std::string& name, unsigned char *) throw(jma_errors);
+    bool is_solid();
     
     private:
     std::ifstream stream;
@@ -84,5 +85,6 @@ namespace JMA
     void retrieve_file_block() throw(jma_errors);
   };
   
+  const char *jma_error_text(jma_errors);
 }
 #endif
