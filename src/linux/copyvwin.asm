@@ -15,8 +15,6 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-ALIGN 32
-
 %include "macros.mac"
 
 EXTSYM vesa2selec,vidbuffer,GUIOn,MMXSupport,resolutn,En2xSaI,antienab,scanlines
@@ -30,7 +28,6 @@ EXTSYM HalfTransB,HalfTransC
 
 NEWSYM CopyVWinAsmStart
 
-
 SECTION .bss
 NEWSYM AddEndBytes, resd 1         ; Number of bytes between each line
 NEWSYM NumBytesPerLine, resd 1     ; Total number of bytes per line (1024+AddEndBytes)
@@ -41,17 +38,14 @@ NEWSYM copy640x480x16bwin
     cmp byte[curblank],40h
     jne .startcopy
     ret
+ALIGN4
 .startcopy
-    pushad
+    push es
+    mov ax,ds
+    mov es,ax
     mov esi,[vidbuffer]
     mov edi,[WinVidMemStart]
     add esi,16*2+256*2+32*2
-    cmp byte[GUIOn],1
-    je .not239
-    cmp byte[resolutn],239
-    jne .not239
-    add esi,8*288*2
-.not239
     xor eax,eax
     ; Check if interpolation mode
     cmp byte[FilteredGUI],0
@@ -62,36 +56,36 @@ NEWSYM copy640x480x16bwin
     cmp byte[MMXSupport],1
     jne .nommx
     cmp byte[En2xSaI],0
-    jne near Process2xSaIwin
+    jne Process2xSaIwin
 .nommx
     cmp byte[antienab],1
-    je near interpolate640x480x16bwin
+    je interpolate640x480x16bwin
 .nointerp
-    mov dl,224
-    dec dl
-    dec dl
+    mov dl,[resolutn]
+    sub dl,2
     cmp byte[scanlines],1
-    je near .scanlines
+    je .scanlines
     cmp byte[scanlines],3
-    je near .halfscanlines
+    je .halfscanlines
     cmp byte[scanlines],2
-    je near .quartscanlines
+    je .quartscanlines
 
     mov ebx,hirestiledat+1
     cmp byte[newengen],0
     je .loopa
     mov ebx,SpecialLine+1
+ALIGN4
 .loopa
     mov ecx,256
     cmp byte[ebx],1
-    je near .yeshires
+    je .yeshires
     cmp byte[GUIOn],1
     je .ignorehr
     cmp byte[ebx],1
-    ja near .yeshiresng
+    ja .yeshiresng
 .ignorehr
     cmp byte[MMXSupport],1
-    je near .mmx
+    je .mmx
 .a
     mov ax,[esi]
     shl eax,16
@@ -118,15 +112,17 @@ NEWSYM copy640x480x16bwin
     add edi,[AddEndBytes]
     inc ebx
     dec dl
-    jnz near .loopa
-    popad
+    jnz .loopa
+    pop es
     xor byte[res512switch],1
     cmp byte[MMXSupport],1
     je .mmx2
     ret
+ALIGN4
 .mmx2
     emms
     ret
+ALIGN4
 .yeshires
     mov byte[ebx],0
     test byte[res512switch],1
@@ -144,6 +140,7 @@ NEWSYM copy640x480x16bwin
     pop ebx
     add edi,[NumBytesPerLine]
     jmp .return
+ALIGN4
 .rightside
     push ebx
     mov ebx,[NumBytesPerLine]
@@ -158,6 +155,7 @@ NEWSYM copy640x480x16bwin
     pop ebx
     add edi,[NumBytesPerLine]
     jmp .return
+ALIGN4
 .mmx
     mov eax,[spritetablea]
     mov ecx,64
@@ -194,10 +192,12 @@ NEWSYM copy640x480x16bwin
     dec ecx
     jnz .mmxr2
     jmp .return
+ALIGN4
 .yeshiresng
     call HighResProc
     jmp .return
 
+ALIGN4
 .bng
     mov eax,[esi+75036*4-2]
     mov ax,[esi]
@@ -219,6 +219,7 @@ NEWSYM copy640x480x16bwin
     jnz .bngb
     jmp .return
 
+ALIGN4
 .scanlines
     mov ebx,hirestiledat+1
     cmp byte[GUIOn],1
@@ -226,17 +227,19 @@ NEWSYM copy640x480x16bwin
     cmp byte[newengen],0
     je .loopab
     mov ebx,SpecialLine+1
+ALIGN4
 .loopab
     mov ecx,256
     cmp byte[ebx],1
-    je near .yeshiresb
+    je .yeshiresb
     cmp byte[ebx],1
     jbe .ignorehrb
     call HighResProc
     jmp .returnb
+ALIGN4
 .ignorehrb
     cmp byte[MMXSupport],1
-    je near .mmxsl
+    je .mmxsl
 .ab
     mov ax,[esi]
     shl eax,16
@@ -250,6 +253,7 @@ NEWSYM copy640x480x16bwin
     add esi,64
     add edi,[AddEndBytes]
     mov ecx,256
+ALIGN4
 .fslloop
     mov dword[edi],0
     add edi,4
@@ -259,11 +263,12 @@ NEWSYM copy640x480x16bwin
     inc ebx
     dec dl
     jnz .loopab
-    popad
+    pop es
     xor byte[res512switch],1
     cmp byte[MMXSupport],1
-    je near .mmx2
+    je .mmx2
     ret
+ALIGN4
 .yeshiresb
     mov byte[ebx],0
     test byte[res512switch],1
@@ -276,6 +281,7 @@ NEWSYM copy640x480x16bwin
     dec ecx
     jnz .bb
     jmp .returnb
+ALIGN4
 .rightsideb
 .cb
     mov ax,[esi]
@@ -285,6 +291,7 @@ NEWSYM copy640x480x16bwin
     dec ecx
     jnz .cb
     jmp .returnb
+ALIGN4
 .mmxsl
     mov ecx,64
 .mmxrsl
@@ -301,6 +308,7 @@ NEWSYM copy640x480x16bwin
     jnz .mmxrsl
     jmp .returnb
 
+ALIGN4
 .halfscanlines
     mov ebx,hirestiledat+1
     cmp byte[GUIOn],1
@@ -308,14 +316,16 @@ NEWSYM copy640x480x16bwin
     cmp byte[newengen],0
     je .loopabh
     mov ebx,SpecialLine+1
+ALIGN4
 .loopabh
     cmp byte[ebx],1
     jbe .ignorehrbh
     call HighResProc
     jmp .returnbh
+ALIGN4
 .ignorehrbh
     cmp byte[MMXSupport],1
-    je near .mmxslh
+    je .mmxslh
     mov ecx,256
 .abh
     mov ax,[esi]
@@ -345,11 +355,12 @@ NEWSYM copy640x480x16bwin
     add edi,[AddEndBytes]
     inc ebx
     dec dl
-    jnz near .loopabh
-    popad
+    jnz .loopabh
+    pop es
     cmp byte[MMXSupport],1
-    je near .mmx2
+    je .mmx2
     ret
+ALIGN4
 .mmxslh
     mov eax,[spritetablea]
     mov ecx,64
@@ -396,6 +407,7 @@ NEWSYM copy640x480x16bwin
     jnz .mmxr2h
     jmp .returnbh
 
+ALIGN4
 .quartscanlines
     mov [lineleft],dl
     mov ebx,hirestiledat+1
@@ -404,14 +416,16 @@ NEWSYM copy640x480x16bwin
     cmp byte[newengen],0
     je .loopabh2
     mov ebx,SpecialLine+1
+ALIGN4
 .loopabh2
     cmp byte[ebx],1
     jbe .ignorehrbh2
     call HighResProc
     jmp .returnbh2
+ALIGN4
 .ignorehrbh2
     cmp byte[MMXSupport],1
-    je near .mmxslh2
+    je .mmxslh2
     mov ecx,256
 .abh2
     mov ax,[esi]
@@ -445,11 +459,12 @@ NEWSYM copy640x480x16bwin
     add edi,[AddEndBytes]
     inc ebx
     dec byte[lineleft]
-    jnz near .loopabh2
-    popad
+    jnz .loopabh2
+    pop es
     cmp byte[MMXSupport],1
-    je near .mmx2
+    je .mmx2
     ret
+ALIGN4
 .mmxslh2
     mov eax,[spritetablea]
     mov ecx,64
@@ -496,12 +511,13 @@ NEWSYM copy640x480x16bwin
     jnz .mmxr2h2
     jmp .returnbh2
 
+ALIGN4
 HighResProc:
     mov ecx,256
     cmp byte[ebx],3
-    je near .hiresmode7
+    je .hiresmode7
     cmp byte[ebx],7
-    je near .hiresmode7
+    je .hiresmode7
     test byte[ebx],4
     jz .nofield
     cmp byte[scanlines],0
@@ -511,7 +527,7 @@ HighResProc:
     add edi,[NumBytesPerLine]
 .nofield
     test byte[ebx],3
-    jnz near .hires
+    jnz .hires
 .a
     mov ax,[esi]
     shl eax,16
@@ -528,6 +544,7 @@ HighResProc:
     add edi,[NumBytesPerLine]
 .nofielde
     ret
+ALIGN4
 .hiresmode7
     cmp byte[MMXSupport],1
     je .yeshiresngmmxmode7
@@ -555,6 +572,7 @@ HighResProc:
     jnz .a2b
     sub esi,75036*4
     ret
+ALIGN4
 .yeshiresngmmxmode7
     mov ecx,64
 .mmxr
@@ -587,9 +605,10 @@ HighResProc:
     jnz .mmxrb
     sub esi,75036*4
     ret
+ALIGN4
 .hires
     cmp byte[MMXSupport],1
-    je near .yeshiresngmmx
+    je .yeshiresngmmx
 .bng
     mov eax,[esi+75036*4-2]
     mov ax,[esi]
@@ -607,13 +626,14 @@ HighResProc:
     add edi,[NumBytesPerLine]
 .lowerfield
     ret
+ALIGN4
 .nofieldb
     cmp byte[scanlines],1
-    je near .scanlines
+    je .scanlines
     cmp byte[scanlines],3
-    je near .halfscanlines
+    je .halfscanlines
     cmp byte[scanlines],2
-    je near .quartscanlines
+    je .quartscanlines
     add edi,[AddEndBytes]
     sub esi,256*2
     mov ecx,256
@@ -626,8 +646,10 @@ HighResProc:
     dec ecx
     jnz .bngb
     ret
+ALIGN4
 .scanlines
     ret
+ALIGN4
 .yeshiresngmmx
     mov eax,[spritetablea]
     mov ecx,64
@@ -656,19 +678,20 @@ HighResProc:
     add edi,[NumBytesPerLine]
 .lowerfieldb
     ret
+ALIGN4
 .nofieldc
     cmp byte[scanlines],1
-    je near .scanlines
+    je .scanlines
     cmp byte[scanlines],3
-    je near .halfscanlinesmmx
+    je .halfscanlinesmmx
     cmp byte[scanlines],2
-    je near .quartscanlinesmmx
+    je .quartscanlinesmmx
     test byte[ebx+1],3
     jz .noaa
     cmp byte[En2xSaI],0
-    jne near .antialias
+    jne .antialias
     cmp byte[antienab],0
-    jne near .antialias
+    jne .antialias
 .noaa
     add edi,[AddEndBytes]
     mov eax,[spritetablea]
@@ -688,6 +711,7 @@ HighResProc:
     dec ecx
     jnz .mmxr2
     ret
+ALIGN4
 .antialias
     add edi,[AddEndBytes]
     mov eax,[spritetablea]
@@ -721,6 +745,7 @@ HighResProc:
     dec ecx
     jnz .mmxr2aa
     ret
+ALIGN4
 .halfscanlines
     add edi,[AddEndBytes]
     sub esi,256*2
@@ -737,6 +762,7 @@ HighResProc:
     dec ecx
     jnz .abhs
     ret
+ALIGN4
 .quartscanlines
     add edi,[AddEndBytes]
     sub esi,256*2
@@ -756,6 +782,7 @@ HighResProc:
     dec ecx
     jnz .abhs2
     ret
+ALIGN4
 .halfscanlinesmmx
     mov eax,[spritetablea]
     mov ecx,32
@@ -784,6 +811,7 @@ HighResProc:
     dec ecx
     jnz .mmxr2h
     ret
+ALIGN4
 .quartscanlinesmmx
     mov eax,[spritetablea]
     mov ecx,64
@@ -811,9 +839,9 @@ HighResProc:
     add edi,16
     dec ecx
     jnz .mmxr2h2
-    popad
     ret
 
+ALIGN4
 Process2xSaIwin:
     mov ebx,hirestiledat+1
     cmp byte[GUIOn],1
@@ -821,11 +849,12 @@ Process2xSaIwin:
     cmp byte[newengen],0
     je .loopabi
     mov ebx,SpecialLine+1
+ALIGN4
 .loopabi
     mov [InterPtr],ebx
 
 ;    add edi,[VESAAddr]
-    mov dl,224
+    mov dl,[resolutn]
     sub dl,2    ; Compensate for top/bottom line + 2 lines in 2xSaI
     mov byte[lineleft],dl
     mov dword[esi+512],0
@@ -852,6 +881,7 @@ Process2xSaIwin:
     jnz .nextb
     pop ebx
     jmp .returninterp
+ALIGN4
 .ignorehr
 
 ;srcPtr        equ 8
@@ -881,9 +911,11 @@ Process2xSaIwin:
     je .super2xSaI
     call _2xSaILineW
     jmp .normal
+ALIGN4
 .supereagle
     call _2xSaISuperEagleLineW
     jmp .normal
+ALIGN4
 .super2xSaI
     call _2xSaISuper2xSaILineW
 .normal
@@ -895,28 +927,31 @@ Process2xSaIwin:
     add ebx,576
     inc dword[InterPtr]
     dec dword[lineleft]
-    jnz near .next
+    jnz .next
     mov ecx,256
     sub edi,[NumBytesPerLine]
+ALIGN4
 .loop
     mov dword[es:edi],0
     add edi,4
     dec ecx
     jnz .loop
+    pop es
     emms
-    popad
     ret
+ALIGN4
 .returninterp
     add esi,64
     inc dword[InterPtr]
     add edi,[AddEndBytes]
     add ebx,576
     dec byte[lineleft]
-    jnz near .next
+    jnz .next
     emms
-    popad
+    pop es
     ret
 
+ALIGN4
 MMXInterpolwin:
     mov ebx,hirestiledat+1
     cmp byte[GUIOn],1
@@ -924,19 +959,18 @@ MMXInterpolwin:
     cmp byte[newengen],0
     je .loopab
     mov ebx,SpecialLine+1
+ALIGN4
 .loopab
 
-    mov dl,224
-    dec dl
-    dec dl
-    dec dl
+    mov dl,[resolutn]
+    sub dl,3
     movq mm2,[HalfTransC]
     cmp byte[scanlines],1
-    je near .scanlines
+    je .scanlines
     cmp byte[scanlines],2
-    je near .scanlinesquart
+    je .scanlinesquart
     cmp byte[scanlines],3
-    je near .scanlineshalf
+    je .scanlineshalf
     inc ebx
     mov [lineleft],dl
     ; do scanlines
@@ -950,7 +984,7 @@ MMXInterpolwin:
     movq mm3,mm0
     movq mm4,mm0
     movq mm1,[esi+2]
-    pand mm3,mm1
+    por mm3,mm1
     pand mm0,mm2
     pand mm1,mm2
     psrlw mm0,1
@@ -979,6 +1013,7 @@ MMXInterpolwin:
     call HighResProc
     movq mm2,[HalfTransC]
     jmp .returninterp
+ALIGN4
 .ignorehr
     mov eax,[esi+510]
     mov ecx,64
@@ -991,7 +1026,7 @@ MMXInterpolwin:
     movq mm3,mm0
     movq mm4,mm0
     movq mm1,[esi+2]
-    pand mm3,mm1
+    por mm3,mm1
     pand mm0,mm2
     pand mm1,mm2
     psrlw mm0,1
@@ -1007,8 +1042,8 @@ MMXInterpolwin:
     punpckhwd mm5,mm0
     movq [edx],mm4
     movq [edx+8],mm5
-    pand mm0,mm4
     movq mm0,mm6
+    por mm0,mm4
     pand mm4,mm2
     pand mm6,mm2
     psrlw mm4,1
@@ -1017,7 +1052,7 @@ MMXInterpolwin:
     paddd mm4,mm6
     paddw mm4,mm0
     movq mm0,mm5
-    pand mm0,mm7
+    por mm0,mm7
     pand mm5,mm2
     pand mm7,mm2
     psrlw mm5,1
@@ -1031,7 +1066,7 @@ MMXInterpolwin:
     add edi,16
     add edx,16
     dec ecx
-    jnz near .a3
+    jnz .a3
     add edi,[AddEndBytes]
     mov edx,[spritetablea]
     add edx,512
@@ -1050,11 +1085,12 @@ MMXInterpolwin:
     add edi,[AddEndBytes]
     inc ebx
     dec byte[lineleft]
-    jnz near .a5
+    jnz .a5
     emms
-    popad
+    pop es
     ret
 
+ALIGN4
 .scanlines
     inc dl
     mov [lineleft],dl
@@ -1068,6 +1104,7 @@ MMXInterpolwin:
     call HighResProc
     movq mm2,[HalfTrans]
     jmp .returninterps
+ALIGN4
 .ignorehrs
 .a
     movq mm0,[esi]
@@ -1088,12 +1125,13 @@ MMXInterpolwin:
     add edi,16
     dec ecx
     jnz .a
-    mov eax,[esi+510]
-    mov [esi+512],eax
+;    mov eax,[esi+510]
+;    mov [esi+512],eax
 .returninterps
     add esi,64
     add edi,[AddEndBytes]
     mov ecx,256
+ALIGN4
 .fslloop
     mov dword[edi],0
     add edi,4
@@ -1103,11 +1141,12 @@ MMXInterpolwin:
     inc ebx
     mov ecx,64
     dec byte[lineleft]
-    jnz near .asl
+    jnz .asl
     emms
-    popad
+    pop es
     ret
 
+ALIGN4
 .scanlineshalf
     inc dl
     mov [lineleft],dl
@@ -1118,6 +1157,7 @@ MMXInterpolwin:
     call HighResProc
     movq mm2,[HalfTrans]
     jmp .returninterphs
+ALIGN4
 .ignorehrhs
     mov eax,[esi+510]
     mov ecx,64
@@ -1167,11 +1207,12 @@ MMXInterpolwin:
     add esi,64
     inc ebx
     dec byte[lineleft]
-    jnz near .ahb
+    jnz .ahb
     emms
-    popad
+    pop es
     ret
 
+ALIGN4
 .scanlinesquart
     inc dl
     mov [lineleft],dl
@@ -1182,6 +1223,7 @@ MMXInterpolwin:
     call HighResProc
     movq mm2,[HalfTransC]
     jmp .returninterpqs
+ALIGN4
 .ignorehrqs
     mov eax,[esi+510]
     mov ecx,64
@@ -1193,7 +1235,7 @@ MMXInterpolwin:
     movq mm3,mm0
     movq mm4,mm0
     movq mm1,[esi+2]
-    pand mm3,mm1
+    por mm3,mm1
     pand mm0,mm2
     pand mm1,mm2
     psrlw mm0,1
@@ -1217,6 +1259,8 @@ MMXInterpolwin:
     add edi,[AddEndBytes]
     sub edx,16*64
     mov ecx,64
+    movq mm3,mm2
+    
 .ahc2
     movq mm0,[edx]
     movq mm1,[edx+8]
@@ -1243,14 +1287,15 @@ MMXInterpolwin:
     add edi,[AddEndBytes]
     inc ebx
     dec byte[lineleft]
-    jnz near .ahb2
+    jnz .ahb2
     emms
-    popad
+    pop es
     ret
 
+ALIGN4
 NEWSYM interpolate640x480x16bwin
     cmp byte[MMXSupport],1
-    je near MMXInterpolwin
+    je MMXInterpolwin
 
     mov ebx,hirestiledat+1
     cmp byte[GUIOn],1
@@ -1258,19 +1303,18 @@ NEWSYM interpolate640x480x16bwin
     cmp byte[newengen],0
     je .loopabi
     mov ebx,SpecialLine+1
+ALIGN4
 .loopabi
     mov [InterPtr],ebx
 
-    mov dl,224
-    dec dl
-    dec dl
-    dec dl
+    mov dl,[resolutn]
+    sub dl,3
     cmp byte[scanlines],1
-    je near .scanlines
+    je .scanlines
     cmp byte[scanlines],2
-    je near .scanlinesquart
+    je .scanlinesquart
     cmp byte[scanlines],3
-    je near .scanlineshalf
+    je .scanlineshalf
     inc dword[InterPtr]
     mov [lineleft],dl
     ; do first line
@@ -1294,12 +1338,14 @@ NEWSYM interpolate640x480x16bwin
     add esi,66
     add edi,[AddEndBytes]
     add edi,4
+ALIGN4
 .loopb
     mov ebx,[InterPtr]
     cmp byte[ebx],1
     jbe .ignorehr
     call HighResProc
     jmp .returninterp
+ALIGN4
 .ignorehr
     mov ecx,255
     mov edx,[spritetablea]
@@ -1340,18 +1386,20 @@ NEWSYM interpolate640x480x16bwin
     add edi,[AddEndBytes]
     add edi,4
     dec byte[lineleft]
-    jnz near .loopb
-    popad
+    jnz .loopb
+    pop es
     ret
+ALIGN4
 .returninterp
     add esi,64
     inc dword[InterPtr]
     add edi,[AddEndBytes]
     dec byte[lineleft]
-    jnz near .loopb
-    popad
+    jnz .loopb
+    pop es
     ret
 
+ALIGN4
 .scanlines
     xor eax,eax
     mov ebx,hirestiledat+1
@@ -1360,6 +1408,7 @@ NEWSYM interpolate640x480x16bwin
     cmp byte[newengen],0
     je .loopabis
     mov ebx,SpecialLine+1
+ALIGN4
 .loopabis
 .loopab
     mov ecx,255
@@ -1367,9 +1416,10 @@ NEWSYM interpolate640x480x16bwin
     jbe .ignorehrs
     call HighResProc
     jmp .returninterps
+ALIGN4
 .ignorehrs
     cmp byte[ebx],1
-    je near .yeshiresb
+    je .yeshiresb
 .ignorehrb
     push ebx
 .ab
@@ -1391,6 +1441,7 @@ NEWSYM interpolate640x480x16bwin
     add edi,4
     add edi,[AddEndBytes]
     mov ecx,256
+ALIGN4
 .fslloop
     mov dword[edi],0
     add edi,4
@@ -1400,9 +1451,10 @@ NEWSYM interpolate640x480x16bwin
     inc ebx
     dec dl
     jnz .loopab
+    pop es
     xor byte[res512switch],1
-    popad
     ret
+ALIGN4
 .yeshiresb
     mov byte[ebx],0
     test byte[res512switch],1
@@ -1415,6 +1467,7 @@ NEWSYM interpolate640x480x16bwin
     dec ecx
     jnz .bb
     jmp .returnb
+ALIGN4
 .rightsideb
 .cb
     mov ax,[esi]
@@ -1424,11 +1477,13 @@ NEWSYM interpolate640x480x16bwin
     dec ecx
     jnz .cb
     jmp .returnb
+ALIGN4
 .returninterps
     add esi,64
     inc dword[InterPtr]
     add edi,[AddEndBytes]
     mov ecx,256
+ALIGN4
 .fslloop2
     mov dword[edi],0
     add edi,4
@@ -1436,19 +1491,22 @@ NEWSYM interpolate640x480x16bwin
     jnz .fslloop2
     add edi,[AddEndBytes]
     dec byte[lineleft]
-    jnz near .loopab
-    popad
+    jnz .loopab
+    pop es
     ret
 
+ALIGN4
 .scanlineshalf
     xor eax,eax
     mov [lineleft],dl
+ALIGN4
 .loopab2
     mov ebx,[InterPtr]
     cmp byte[ebx],1
     jbe .ignorehrhs
     call HighResProc
     jmp .returninterphs
+ALIGN4
 .ignorehrhs
     mov ecx,255
     mov edx,[spritetablea]
@@ -1487,27 +1545,31 @@ NEWSYM interpolate640x480x16bwin
     add edi,4
     add edi,[AddEndBytes]
     dec byte[lineleft]
-    jnz near .loopab2
-    popad
+    jnz .loopab2
+    pop es
     ret
+ALIGN4
 .returninterphs
     add esi,64
     inc dword[InterPtr]
     add edi,[AddEndBytes]
     dec byte[lineleft]
-    jnz near .loopab2
-    popad
+    jnz .loopab2
+    pop es
     ret
 
+ALIGN4
 .scanlinesquart
     xor eax,eax
     mov [lineleft],dl
+ALIGN4
 .loopab3
     mov ebx,[InterPtr]
     cmp byte[ebx],1
     jbe .ignorehrqs
     call HighResProc
     jmp .returninterpqs
+ALIGN4
 .ignorehrqs
     mov ecx,255
     mov edx,[spritetablea]
@@ -1550,21 +1612,23 @@ NEWSYM interpolate640x480x16bwin
     add edi,4
     add edi,[AddEndBytes]
     dec byte[lineleft]
-    jnz near .loopab3
-    popad
+    jnz .loopab3
+    pop es
     ret
+ALIGN4
 .returninterpqs
     add esi,64
     inc dword[InterPtr]
     add edi,[AddEndBytes]
     dec byte[lineleft]
-    jnz near .loopab3
-    popad
+    jnz .loopab3
+    pop es
     ret
 
 SECTION .bss
-;ALIGN32
 InterPtr resd 1
 SECTION .text
 
+
 NEWSYM CopyVWinAsmEnd
+
