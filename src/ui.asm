@@ -1429,35 +1429,35 @@ SECTION .data
 .noparams db 'Usage : ZSNES [-d,-f #, ... ] <filename.SMC>',13,10
           db '   Eg : ZSNES -s -r 2 game.smc',13,10,13,10
 %endif
-          db '  -0      Disable Color 0 modification in 256 color modes',13,10
+          db '  -0      Disable Color 0 modification in 8-bit modes',13,10
           db '  -1 #/-2 #   Select Player 1/2 Input :',13,10
           db '                0 = None       1 = Keyboard   2 = Joystick   3 = Gamepad',13,10
           db '                4 = 4Button    5 = 6Button    6 = Sidewinder   ',13,10
           db '  -7      Disable SPC700 speedhack',13,10
           db '  -8      Force 8-bit sound',13,10
           db '  -9      Off by 1 line fix',13,10
-          db '  -a      Turn on auto frame skip',13,10
+          db '  -a      Enable automatic frame rate',13,10
 %ifdef __LINUX__
-          db '  -cs     Scale to fit screen (320x240 VESA2/640x480 VESA2)',13,10
+          db '  -cs     Enable full/wide screen (when available)',13,10
 %else
-          db '  -c      Scale to fit screen (320x240 VESA2/640x480 VESA2)',13,10
+          db '  -c      Enable full screen (when available)',13,10
 %endif
           db '  -cb     Remove Background Color in 256 color video modes',13,10
-          db '  -cc     No image scale and center image in screen (640x480 only)',13,10
+          db '  -cc     Enable small screen (when available)',13,10
 
 ; debugger not available in linux version
 ; because of bios interrupt code
 %ifndef __LINUX__
-          db '  -d      Start with debugger',13,10
+          db '  -d      Start with debugger enabled',13,10
 %endif
           db '  -dd     Disable sound DSP emulation',13,10
 %ifndef __LINUX__
-          db '  -e      Skip enter key press at the beginning',13,10
+          ;db '  -e      Skip enter key press at the beginning',13,10
 %endif
-          db '  -f #    Turn on frame skip [0..9]',13,10
-          db '  -g #    Set Gamma Correction [0...15, 0 = 1.0, 15 = 2.0]',13,10
+          db '  -f #    Enable fixed frame rate [0...9]',13,10
 %ifndef __LINUX__
-          db '            - Only works properly in 256 color video modes',13,10
+          db '  -g #    Specify gamma correction value [0...15]',13,10
+          db '          (Only works properly in 8-bit modes)',13,10
 %endif
           db '  -h      Force HiROM',13,10
           db '  -i      Uninterleave ROM Image',13,10
@@ -1466,13 +1466,18 @@ SECTION .data
           db 'Press any key to continue.',0
 .noparms2 db 13,'  -l      Force LoROM        ',13,10
           db '  -m      Disable GUI',13,10
-          db '  -n      Turn scanlines on (640x480 only)',13,10
+%ifdef __LINUX__
+          db '  -n      Enable full scanlines (when available)',13,10
+%else
+          db '  -n #    Enable scanlines (when available)',13,10
+          db '          Where # is: 1 = full, 2 = 25%, 3 = 50%',13,10
+%endif
 %ifdef __LINUX__
           db '  -of     Enable FPU copy   ',13,10
 %else
 ;          db '  -o      Enable FPU copy   ',13,10
 %endif
-          db '  -om     Enable MMX copy',13,10
+          db '  -om     Enable MMX support (when available)',13,10
           db '  -p #    Percentage of instructions to execute [50..120]',13,10
           db '  -r #    Set Sampling Sound Blaster Sampling Rate & Bit :',13,10
           db '             0 = 8000Hz  1 = 11025Hz 2 = 22050Hz 3 = 44100Hz',13,10
@@ -1496,15 +1501,16 @@ SECTION .data
           db '          10 = 320x480x16B (VESA2) 11 = 512x384x8B (VESA2)',13,10
           db '          12 = 512x384x16B (VESA2) 13 = 640x400x8B (VESA2)',13,10
           db '          14 = 640x400x16B (VESA2) 15 = 640x480x8B (VESA2)',13,10
-          db '          16 = 640x480x16B (VESA2)',13,10
+          db '          16 = 640x480x16B (VESA2) 17 = 800x600x8B (VESA2)',13,10
+          db '          18 = 800x600x16B (VESA2)',13,10
 %endif
-          db '  -w      Enable VSync (disables Triple Buffering)',13,10
+          db '  -w      Enable vsync (disables triple buffering)',13,10
           db 'Press any key to continue.',0
 .noparms3 db 13,'  -y      Enable EAGLE (640x480x8B only) or Interpolation (640x480x16B only)',13,10
-          db '  -z      Enable Stereo Sound',13,10
 %ifdef __MSDOS__
-          db '  -3      Enable Triple Buffering (disables VSync)',13,10
+          db '  -3      Enable triple buffering (disables vsync)',13,10
 %endif
+          db '  -z      Enable Stereo Sound',13,10
           db '',13,10
           db '  File Formats Supported by GUI : .SMC,.SFC,.SWC,.FIG,.058,.078,.1,.USA,.JAP',13,10
 %ifdef __MSDOS__

@@ -261,7 +261,9 @@ int pccmdline(void)
         }
         case 'n':
         {
-          scanlines=1;
+          if(!hasroom) return 4;
+          scanlines=my_atoi(argv[p+1]);
+          p++;
           break;
         }
         case 's':

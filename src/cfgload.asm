@@ -619,7 +619,7 @@ db 'VideoModeLin = %U',13,10
 db '',13,10
 %endif
 %ifdef __MSDOS__
-db '; Video Mode, 0 - 16',13,10
+db '; Video Mode, 0 - 18',13,10
 db ';  0 = 256x224x8B  (MODEQ)  1 = 256x240x8B (MODEQ)',13,10
 db ';  2 = 256x256x8B  (MODEQ)  3 = 320x224x8B (MODEX)',13,10
 db ';  4 = 320x240x8B  (MODEX)  5 = 320x256x8B (MODEX)',13,10
@@ -628,7 +628,8 @@ db ';  8 = 320x240x16B (VESA2)  9 = 320x480x8B (VESA2)',13,10
 db '; 10 = 320x480x16B (VESA2) 11 = 512x384x8B (VESA2)',13,10
 db '; 12 = 512x384x16B (VESA2) 13 = 640x400x8B (VESA2)',13,10
 db '; 14 = 640x400x16B (VESA2) 15 = 640x480x8B (VESA2)',13,10
-db '; 16 = 640x480x16B (VESA2)',13,10
+db '; 16 = 640x480x16B (VESA2) 17 = 800x600x8B (VESA2)',13,10
+db '; 18 = 800x600x16B (VESA2)',13,10
 db '',13,10
 db 'VideoModeDos = %U',13,10
 db '',13,10
@@ -638,9 +639,9 @@ db '',13,10
 db 'Sound = %V',13,10
 db '',13,10
 db '; Sound Sampling Rate',13,10
-db ';   0 =  8000Hz, 1 = 11025Hz, 2 = 22050Hz, 3 = 44100Hz',13,10
-db ';   4 = 16000Hz, 5 = 32000Hz',13,10
-db '',13,10
+db ';   0 =  8,000 Hz, 1 = 11,025 Hz, 2 = 22,050 Hz',13,10
+db ';   3 = 44,100 Hz, 4 = 16,000 Hz, 5 = 32,000 Hz',13,10
+db '',13,10                               
 db 'SoundRate = %W',13,10
 db '',13,10
 db '; Stereo (0 = off, 1 = on)',13,10

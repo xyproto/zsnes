@@ -89,6 +89,10 @@ NEWSYM dosinitvideo
     je near .initvesa2640x480x8
     cmp byte[cvidmode],16
     je near .initvesa2640x480x16
+    cmp byte[cvidmode],17
+    je near .initvesa2800x600x8
+    cmp byte[cvidmode],18
+    je near .initvesa2800x600x16
     ret
 
 %include "dos/vga.inc"
@@ -296,6 +300,66 @@ NEWSYM dosinitvideo
     inc edi
     dec ecx
     jnz .loopd3
+    pop es
+    ret
+
+;*******************************************************
+; InitVESA2 800x600x8           Set up Linear 800x600x8b
+;*******************************************************
+
+.initvesa2800x600x8
+    mov byte[res640],1
+    mov byte[res480],1
+    mov word[vesa2_x],800
+    mov word[vesa2_y],600
+    mov byte[vesa2_bits],8
+    call InitVesa2
+    cmp byte[videotroub],1
+    jne .notrouble11
+    ret
+.notrouble11
+    call makepal
+    ; clear screen (800*600 bytes)
+    push es
+    mov ax,[vesa2selec]
+    mov es,ax
+    mov edi,0
+    mov ecx,800*600
+.looph2
+    mov byte[es:edi],0
+    inc edi
+    dec ecx
+    jnz .looph2
+    pop es
+    ret
+
+;*******************************************************
+; InitVESA2 800x600x16         Set up Linear 800x600x16b
+;*******************************************************
+
+.initvesa2800x600x16
+    mov byte[res640],1
+    mov byte[res480],1
+    mov byte[cbitmode],1
+    mov word[vesa2_x],800
+    mov word[vesa2_y],600
+    mov byte[vesa2_bits],16
+    call InitVesa2
+    cmp byte[videotroub],1
+    jne .notrouble12
+    ret
+.notrouble12
+    ; clear screen (800*600*2 bytes)
+    push es
+    mov ax,[vesa2selec]
+    mov es,ax
+    mov edi,0
+    mov ecx,800*600*2
+.looph3
+    mov byte[es:edi],0
+    inc edi
+    dec ecx
+    jnz .looph3
     pop es
     ret
 
