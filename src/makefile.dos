@@ -77,6 +77,8 @@ PP=gpp
 %.o: %.asm
 	${ASM} ${ASMFLAGS} -o $@ $<
 
+chips/dsp1emu.o: chips/dsp1emu.c
+	${CC} -O2 ${CFLAGS} -o $@ -c $<
 
 ALL: zsnes.exe
 

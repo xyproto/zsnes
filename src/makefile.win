@@ -85,6 +85,8 @@ CC=cl
 %.obj: %.asm
 	${ASM} ${ASMFLAGS} -o $@ $<
 
+chips/dsp1emu.obj : chips/dsp1emu.c
+	${CC} /O2t ${CFLAGS} /Fo$@ $<
 
 ALL: zsnesw.exe
 
