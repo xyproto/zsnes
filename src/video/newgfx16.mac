@@ -3131,7 +3131,10 @@ EXTSYM osm2dis
     shl edx,6
     xor eax,eax
     mov ax,[BGPT3+ebx*2]
+    cmp dx,0
+    jl .isneg1
     add ax,dx
+.isneg1
     xor edx,edx
     mov dx,[BG3SXl+ebx*2]
     and dx,0F8h
@@ -3299,11 +3302,11 @@ EXTSYM osm2dis
     shr edx,3
     shl edx,6
     xor eax,eax
-    cmp byte[BGMA+ebx],4
-    je .offsetmode4
     mov ax,[BGPT3+ebx*2]
-.offsetmode4
+    cmp dx,0
+    jl .isneg2
     add ax,dx
+.isneg2
     xor edx,edx
     mov dx,[BG3SXl+ebx*2]
     and dx,0F8h
@@ -3705,11 +3708,11 @@ EXTSYM osm2dis
     shr edx,3
     shl edx,6
     xor eax,eax
-    cmp byte[BGMA+ebx],4
-    je .offsetmode4
     mov ax,[BGPT3+ebx*2]
-.offsetmode4
+    cmp dx,0
+    jl .isneg3
     add ax,dx
+.isneg3
     xor edx,edx
     mov dx,[BG3SXl+ebx*2]
     and dx,0F8h
