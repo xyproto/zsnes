@@ -21,6 +21,7 @@
 #include <io.h>
 #include <direct.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <zlib.h>
 
 #define DWORD unsigned int
@@ -227,9 +228,14 @@ DWORD ZFileDelete()
 
 DWORD ZFileGetFTime()
 {
-  ZFDate=0;
+  struct _stat buf;
+
   ZFTime=0;
-  return(0);
+
+  if (_stat(ZFFTimeFName, &buf) < 0) ZFDate=0;
+     else ZFDate = buf.st_mtime;
+
+  return 0;
 }
 
 DWORD ZFileMKDir()
