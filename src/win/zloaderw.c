@@ -22,9 +22,6 @@
 #include <direct.h>
 #include <winuser.h>
 
-#include <dinput.h>
-#include <dsound.h>
-
 extern void ImportDirectX(void);
 
 extern void zstart(void);
