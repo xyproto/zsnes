@@ -1505,7 +1505,7 @@ NEWSYM SaveSramData
     call Create_File
     jc .failed
     mov bx,ax
-    mov ecx,65536
+    mov ecx,[ramsize]
     mov edx,[sfxramdata]
     call Write_File
     call Close_File
@@ -1531,7 +1531,7 @@ NEWSYM SaveSramData
     call Create_File
     jc .failed
     mov bx,ax
-    mov ecx,65536*2
+    mov ecx,[ramsize]
     mov edx,[SA1RAMArea]
     call Write_File
     call Close_File

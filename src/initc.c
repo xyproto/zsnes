@@ -73,6 +73,8 @@ extern unsigned char Interleaved;
 unsigned int maxromspace;
 unsigned int curromspace;
 unsigned int infoloc;
+unsigned int ramsize;
+unsigned int ramsizeand;
 
 bool SplittedROM;
 unsigned int addOnStart;
@@ -390,6 +392,31 @@ void MirrorROM()
   NumofBanks = curromspace >> 15;
 }
 
+#define SRAMSizeOffset   24 
+#define CompanyOffset    26
+extern bool SFXEnable;
+void SetupSramSize()
+{
+  unsigned char *ROM = (unsigned char *)romdata;
+  if (SFXEnable)
+  {
+    if (ROM[infoloc+CompanyOffset] == 0x33) //Extended header
+    {
+      ramsize = 8 << ((unsigned int)ROM[infoloc-3]);
+    }
+    else
+    {
+      ramsize = 256;
+    }
+  }
+  else
+  {
+    ramsize = ((ROM[infoloc+SRAMSizeOffset]) ? (8 << ((unsigned int)ROM[infoloc+SRAMSizeOffset])) : 0);
+  }
+  //Convert from Kb to bytes;
+  ramsize *= 128;
+  ramsizeand = ramsize-1;
+}
 
 //File loading code
 extern char *ZOpenFileName;

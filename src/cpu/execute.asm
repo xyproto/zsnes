@@ -1439,36 +1439,6 @@ SECTION .text
 ; Save/Load States
 ;*******************************************************
 
-NEWSYM sramsave
-    mov byte[pressed+1],0
-    mov byte[pressed+41],0
-    ; save sram
-    cmp byte[sramsavedis],1
-    je .nosram
-    cmp word[ramsize],0
-    je .nosram
-    mov edx,fnames+1
-    call Create_File
-    jc .nosram
-    mov bx,ax
-    xor ecx,ecx
-    mov cx,[ramsize]
-    mov edx,[sram]
-    call Write_File
-    call Close_File
-    mov dword[Msgptr],.savesrmmsg1
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    jmp reexecute
-.nosram
-    mov dword[Msgptr],.savesrmmsg2
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    jmp reexecute
-
-SECTION .data
-.savesrmmsg1 db 'SRAM DATA SAVED.',0
-.savesrmmsg2 db 'NO SRAM DATA.',0
 NEWSYM firstsaveinc, db 0
 
 SECTION .text

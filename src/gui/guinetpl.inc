@@ -1430,7 +1430,9 @@ transfersram:
     cmp byte[CHIPBATT],1
     je .yessram
     
-    ;If last if failed, no battery, so no SRAM sending for SA1 (SFX doesn't set ramsize)
+    ;If last if failed, no battery, so no SRAM sending for SA1 or SFX
+    cmp byte[SFXEnable],1
+    je .nosram
     cmp byte[SA1Enable],1
     je .nosram
     cmp dword[ramsize],0
@@ -1462,10 +1464,6 @@ transfersram:
 
     ; send sram
     mov ecx,[ramsize]
-    cmp byte[SFXEnable],1
-    jne .notsfx
-    mov ecx,65536
-.notsfx    
     mov ebx,[sram]
     xor esi,esi
 .loop
@@ -1516,9 +1514,6 @@ transfersram:
     ; receive sram
     mov ecx,[ramsize]
     mov ebx,[sram]
-    cmp byte[SFXEnable],1
-    jne .loopb
-    mov ecx,65536
 .loopb
 .getnext
     pushad

@@ -124,6 +124,7 @@ EXTSYM addOnStart
 EXTSYM addOnSize
 EXTSYM SPC7PackIndexLoad,SPC7110IndexSize
 EXTSYM DumpROMLoadInfo
+EXTSYM SetupSramSize
 
 EXTSYM SetaCmdEnable,setaramdata
 EXTSYM setaaccessbankr8,setaaccessbankw8,setaaccessbankr8a,setaaccessbankw8a
@@ -233,7 +234,7 @@ NEWSYM init
 .found
     mov byte[romloadskip],0
     call loadfile
-    call showinfo
+    call SetupROM
     call showinfogui
 .noloadfile
     call UpdateDevices
@@ -409,8 +410,6 @@ NEWSYM JoyLC,     db 5
 NEWSYM JoyRC,     db 6
 NEWSYM TurboSw,   db 0
 
-NEWSYM ramsize, dd 0    ; RAM size in bytes
-NEWSYM ramsizeand, dd 0    ; RAM size in bytes (used to and)
 NEWSYM romtype, db 0    ; ROM type in bytes
 NEWSYM resetv,  dw 0    ; reset vector
 NEWSYM abortv,  dw 0    ; abort vector
@@ -1578,29 +1577,7 @@ NEWSYM init65816
     mov word[xpc],ax
     mov ebx,[romdata]
     add eax,ebx
-    cmp word[xpc],8000h
-    jb .notrainer
-    cmp word[resetv],0F000h
-    jne .ntrchecka
-    jmp .yestrainer
-.ntrchecka
-    sub eax,8000h
-    cmp byte[eax],5Ch
-    jne .notrainer
-    cmp word[eax+2],80h
-    je .notrainer
-    cmp word[eax+2],8080h
-    je .notrainer
-    cmp word[eax+2],89h
-    je .notrainer
-    cmp word[eax+2],8089h
-    je .notrainer
-.yestrainer
-    mov dword[ramsize],32768
-    mov dword[ramsizeand],32767
-.notrainer
     pop ebx
-
     mov byte[intrset],0
     cmp byte[romtype],1
     je .nohirom
@@ -3521,6 +3498,7 @@ NEWSYM showinfogui
     mov dword[Msgptr],CSStatus
     mov eax,[MsgCount]
     ret
+
 ;*******************************************************
 ; Show Information
 ;*******************************************************
@@ -3535,462 +3513,8 @@ NEWSYM showinfogui
 ;                   *3=ROM,*4=ROM+RAM,*5=ROM+RAM+BATTERY,*6=ROM+BATTERY
 ;                   F3=C4
 
-; Convert to interleaved - If LoROM and offset 7FD5 contains 21h, then
-;                          uninterleave
-
-;This looks like the info it displays if loaded via the command line
-;Very outdated
-
-NEWSYM showinfo
-    mov edx,.romsizea
-    cmp byte[Sup48mbit],0
-    je .no48
-    mov edx,.romsizeb
-    cmp byte[newgfx16b],0
-    je .no48
-    mov edx,.romsized
-.no48
-    cmp byte[Sup16mbit],0
-    je .no16
-    mov edx,.romsizec
-.no16
-    mov ah,9
-    call Output_Text
-    mov edx,.filename
-    mov ah,9
-    call Output_Text
-    xor ecx,ecx
-    mov cl,[fname]
-    mov esi,fname+1
-    mov ah,2
-.loopa
-    lodsb
-    mov dl,al
-    call Output_Text
-    dec ecx
-    jnz .loopa
-    mov edx,.ret
-    mov ah,9         
-    call Output_Text
-    ; frameskip = ?
-    mov edx,.frameskip
-    mov ah,9         
-    call Output_Text
-    mov dl,[frameskip]
-    test dl,0FFh
-    jnz .yesfs
-    mov edx,.auto
-    mov ah,9         
-    call Output_Text          
-    jmp .skip
-.yesfs
-    mov ah,2
-    add dl,47
-    call Output_Text
-    mov edx,.ret
-    mov ah,9         
-    call Output_Text          
-.skip
-    ; debugger on/off
-    mov edx,.debugon
-    mov ah,9         
-    call Output_Text
-    mov al,[debugger]
-    test al,0FFh
-    jnz .debugron
-    mov edx,.off
-    mov ah,9
-    call Output_Text
-    jmp .skip2
-.debugron
-    mov edx,.on
-    mov ah,9         
-    call Output_Text          
-.skip2
-    mov edx,.ret
-    mov ah,9         
-    call Output_Text
-    ; memory free
-    mov edx,.memryfr
-    call Output_Text
-    mov edx,.memfree
-    call Get_Memfree
-    mov eax,[.memfree]
-    call printnum
-    mov edx,.ret
-    mov ah,9
-    call Output_Text
-    call Output_Text
-
-    ; ROM Information
-    mov edx,.smcname
-    mov ah,9
-    call Output_Text
-
-    ; determine whether hirom or lorom is used
-    cmp byte[romtype],0
-    jnz near .donecheck
-    call CheckROMType
-
-    cmp byte[ROMTypeNOTFound],0
-    je .donecheck
-    mov ah,09h
-    mov edx,.doh
-    call Output_Text
-    jmp DosExit
-
-.donecheck
-
-;        COP     Software        00FFF4,5    00FFE4,5    N/A
-;        ABORT   Hardware        00FFF8,9    00FFE8,9     2
-;        NMI     Hardware        00FFFA,B    00FFEA,B     3
-;        RES     Hardware        00FFFC.D    00FFFC,D     1
-;        BRK     Software        00FFFE,F    00FFE6,7    N/A
-;        IRQ     Hardware        00FFFE,F    00FFEE,F     4
-
-    call SetIRQVectors
-
-    ; Output Name
-    mov esi,[romdata]
-    add esi,[infoloc]
-
-    mov ecx,21
-.loopb
-    lodsb
-    mov dl,al
-    mov ah,2
-    call Output_Text
-    dec ecx
-    jnz .loopb
-    inc esi
-    mov edx,.ret
-
-    ; ROM Type
-    mov ah,9
-    call Output_Text
-    mov edx,.romtyp
-    call Output_Text
-    mov edx,.hirom
-    cmp byte[romtype],1
-    jne .nolorom
-    mov edx,.lorom
-.nolorom
-    call Output_Text
-    mov edx,.romtype
-    xor ebx,ebx
-    mov bl,[esi]
-
-;    xor eax,eax
-;    mov al,bl
-;    call printnum
-;    jmp DosExit
-
-    mov al,bl
-    inc esi
-    cmp al,055h
-    jne .noRTC
-    mov bl,12
-    jmp .nochip
-.noRTC
-    cmp al,0F5h
-    je .yesSPC7110
-    cmp al,0F9h
-    jne .noSPC7110
-.yesSPC7110
-    mov bl,11
-    jmp .nochip
-.noSPC7110
-    cmp al,0F3h
-    jne .noC4
-    mov bl,9
-    jmp .nochip
-.noC4
-    and bl,0F0h
-    cmp bl,10h
-    je .sfx
-    cmp bl,30h
-    je .sa1
-    cmp bl,40h
-    je .sdd1
-    mov bl,20
-    cmp al,5
-    ja .okay
-    mov bl,al
-.okay
-    jmp .nochip
-.sfx
-    mov bl,6
-    jmp .nochip
-.sa1
-    mov bl,7
-    jmp .nochip
-.sdd1
-    mov bl,10
-    jmp .nochip
-.nochip
-    cmp bl,20
-    je .unknown
-    shl bl,4
-    add edx,ebx
-    call Output_Text
-    jmp .nounknown
-.unknown
-    mov edx,.unknowns
-    call Output_Text
-    mov al,[esi-1]
-    call printhex8
-    mov edx,.brackets
-    mov ah,9
-    call Output_Text
-.nounknown
-    ; Memory Map
-;    cmp byte[intldone],0
-;    je .nointerl
-;    mov ah,09h
-;    mov edx,.intlvd
-;    call Output_Text
-;.nointerl
-
-    mov ah,09h
-    mov edx,.memmap
-    call Output_Text
-    push esi
-    mov esi,[romdata]
-    add esi,7FD5h
-    xor eax,eax
-    mov al,byte[esi]
-    and al,2Fh
-    pop esi
-    call printhex8
-    mov ah,09h
-    mov edx,.ret
-    call Output_Text
-
-    ; ROM Size
-    mov edx,.romsize
-    mov ah,9
-    call Output_Text
-    mov cl,[esi]
-    mov [curromsize],cl
-;    cmp byte[NumofBanks],160
-;    jb .not48
-;    mov byte[curromsize],13
-;.not48
-
-    inc esi
-    xor eax,eax
-    sub cl,7
-    mov al,1
-    shl al,cl
-    call printnum
-    mov edx,.megabit
-    mov ah,9
-    call Output_Text
-
-    ; RAM Size
-    mov edx,.sramsize
-    mov ah,9
-    call Output_Text
-    and eax,0FFFFh
-    mov cl,[esi]
-    inc esi
-    xor eax,eax
-    mov al,1
-    shl al,cl
-    cmp al,1
-    jne .yessram
-    mov al,0
-.yessram
-    call printnum
-    shl eax,10
-    cmp eax,65536*2
-    jbe .nosramc
-    mov eax,65536*2
-.nosramc
-    mov [ramsize],eax
-    dec eax
-    mov [ramsizeand],eax
-    mov edx,.kilobit
-    mov ah,9
-    call Output_Text
-    mov al,[ForceROMTiming]
-    mov byte[ForcePal],al
-    xor al,al
-    mov al,[esi]
-    cmp byte[ForcePal],1
-    jne .nontsc
-    mov al,0
-.nontsc
-    cmp byte[ForcePal],2
-    jne .nopal2
-    mov al,2
-.nopal2
-    mov byte[romispal],0
-    mov word[totlines],263
-    mov dword[MsgCount],120
-    cmp al,1
-    jbe .nopal
-    cmp al,0Dh
-    je .nopal
-    mov byte[romispal],1
-    mov word[totlines],314
-    mov dword[MsgCount],100
-    mov edx,.romtypep
-    mov ah,9
-    call Output_Text
-    jmp .yespal
-.nopal
-    mov edx,.romtypen
-    mov ah,9
-    call Output_Text
-.yespal
-    mov esi,[headdata]
-    add esi,7FBDh
-    cmp byte[romtype],2
-    jne .nohirom4
-    add esi,8000h
-.nohirom4
-    cmp byte[esi],0
-    je .nochipram
-    jmp .nochipram
-    mov edx,.ramsize
-    mov ah,9
-    call Output_Text
-    xor eax,eax
-    mov al,[esi]
-    shl eax,12
-    call printnum
-    mov edx,.kilobit
-    mov ah,9
-    call Output_Text
-.nochipram
-;FFBD (0=none, 1=16kbit, 3=64kbit, 5=256kbit,etc.
-    mov edx,.checksumc
-    mov ah,9
-    call Output_Text
-    mov ax,[Checksumvalue]
-    mov esi,[headdata]
-    add esi,7FDCh+2
-    cmp byte[romtype],2
-    jne .nohirom3
-    add esi,8000h
-.nohirom3
-    cmp ax,[esi]
-    jne .failed
-.cpassed2
-    mov edx,.cpassed
-    jmp .passed
-.failed
-    mov ax,[Checksumvalue2]
-    cmp ax,[esi]
-    je .cpassed2
-    mov edx,.cfailed
-.passed
-    mov ah,9
-    call Output_Text
-    ; Display NMI & Reset
-    mov edx,.nmidisp
-    mov ah,9
-    call Output_Text
-    xor eax,eax
-    mov ax,[nmiv]
-    call printhex
-    mov edx,.ret
-    mov ah,9
-    call Output_Text
-    mov edx,.resetdisp
-    mov ah,9
-    call Output_Text
-    mov ax,[resetv]
-    call printhex
-    mov edx,.ret
-    mov ah,9
-    call Output_Text
-    cmp byte[intldone],1
-    jne .nointerl
-    mov edx,.intlvd
-    mov ah,9
-    call Output_Text
-.nointerl
-    mov edx,.ret
-    mov ah,9
-    call Output_Text
-    mov edx,.waitkey
-    mov ah,9         
-    call Output_Text
-    ; wait for key
-    cmp byte[enterpress],0
-    jne .noesc
-;    cmp byte[OSPort],3
-;    je .noesc
-%ifdef __MSDOS__
-    call Get_Key
-    cmp al,27
-    jne .noesc
-    mov dl,[InitDrive]
-    mov ebx,InitDir
-    call Change_Dir
-    jmp DosExit
-%endif
-.noesc
-    mov edx,.ret
-    call Output_Text
-    ret
-
-SECTION .data
-.filename  db 'Filename    : ',0
-.frameskip db 'Frame Skip  : ',0
-.percexec  db '% to Exec   : ',0
-.debugon   db 'Debugger    : ',0
-.memryfr   db 'Memory Free : ',0
-.auto      db 'AUTO',13,10,0
-.on        db 'ON',13,10,0
-.off       db 'OFF',13,10,0
-.ret       db 13,10,0
-.waitkey   db 'Press Any Key to Continue.',0
-.smcname   db 'Cartridge name : ',0
-.romtyp    db 'ROM type       : ',0
-.memmap    db 'Memory Map     : ',0
-.hirom     db 'HIROM/',0
-.lorom     db 'LOROM/',0
-.romtype   db 'ROM          ',13,10,0
-           db 'ROM/RAM      ',13,10,0
-           db 'ROM/SRAM     ',13,10,0
-           db 'ROM/DSP1     ',13,10,0
-           db 'RAM/DSP1/RAM ',13,10,0
-           db 'ROM/DSP1/SRAM',13,10,0
-           db 'SFX          ',13,10,0
-           db 'SA-1         ',13,10,0
-           db 'SFX2/RAM     ',13,10,0
-           db 'C4/ROM       ',13,10,0
-           db 'SDD-1        ',13,10,0
-           db 'SPC7110      ',13,10,0
-           db 'S-RTC        ',13,10,0
-.unknowns  db 'UNKNOWN (',0
-.brackets  db ')',13,10,0
-.romsize   db 'ROM size       : ',0
-.sramsize  db 'SRAM size      : ',0
-.ramsize   db 'CartRAM size   : ',0
-.romtypep  db 'ROM Type       : PAL',13,10,0
-.romtypen  db 'ROM Type       : NTSC',13,10,0
-.checksumc db 'Checksum       : ',0
-.cpassed   db 'PASSED',13,10,0
-.cfailed   db 'FAILED',13,10,0
-.romsizea  db 13,10,'Max 32mbit ROM support',13,10,13,10,0
-.romsizeb  db 13,10,'Max 48mbit ROM support + SuperFX/C4 support',13,10,13,10,0
-.romsizec  db 13,10,'Max 16mbit ROM support',13,10,13,10,0
-.romsized  db 13,10,'Max 48mbit ROM support + SuperFX/C4 support + 16bit New Gfx Engine',13,10,13,10,0
-.megabit   db ' Megabits',13,10,0
-.kilobit   db ' Kilobytes',13,10,0
-.nmidisp   db 'NMI Vector Location   : ',0
-.resetdisp db 'Reset Vector Location : ',0
-.doh       db 'Cannot detect whether cartridge is HiROM or LoROM.',13,10,'Please use -h/-l',13,10,0
-.intlvd    db 'Image is uninterleaved.',13,10,0
 
 SECTION .bss
-
-.memfree resb 30
-
 NEWSYM DSP1Type, resb 1
 NEWSYM intldone, resb 1
 SECTION .text
@@ -4011,25 +3535,12 @@ NEWSYM SetupROM
     add esi,18h
     mov cl,[esi-1]
     mov [curromsize],cl
-    mov cl,[esi]
-    inc esi
-    xor eax,eax
-    mov al,1
-    shl al,cl
-    cmp al,1
-    jne .yessram
-    mov al,0
-.yessram
-    shl eax,10
-    cmp eax,65536
-    jbe .nosramc
-    mov eax,65536
-.nosramc
-    mov [ramsize],eax
-    dec eax
-    mov [ramsizeand],eax
+    pushad
+    call SetupSramSize
+    popad
 
     ; get pal/ntsc
+    inc esi
     mov al,[ForceROMTiming]
     mov byte[ForcePal],al
     xor al,al
@@ -4305,7 +3816,6 @@ NEWSYM CheckROMType
     jmp .endchpdtct
 .notBS
 .endchpdtct
-
 
     ;Setup some Memmapping
     mov byte[DSP1Type],0
