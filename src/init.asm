@@ -1434,8 +1434,7 @@ NEWSYM init65816
     mov byte[cycpblt],117
 
     cmp byte[SDD1Enable],0
-;   call SDD1CacheInit
-    jmp .nospecialtimer
+    je .nospecialtimer
 .specialtimer
     mov byte[cycpb268],69
     mov byte[cycpb358],81
