@@ -1129,8 +1129,6 @@ NEWSYM copyvesa2800x600x8b
     mov dl,[resolutn]
     dec dl
     dec dl
-    cmp byte[ScreenScale],1
-    je near .fullscreen
     cmp byte[smallscreenon],1
     je near .smallscreen
 
@@ -1190,44 +1188,6 @@ NEWSYM copyvesa2800x600x8b
     jnz .ssloopb
     jmp .done
 
-.fullscreen
-    sub edi,128
-    cmp byte[scanlines],1
-    je .fsloopa2
-.fsloopa
-    mov ecx,256/2
-    call .fsloopb
-    sub esi,256
-    add edi,16+16
-    mov ecx,256/2
-    call .fsloopb
-    add esi,16+16
-    add edi,16+16
-    dec dl
-    jnz .fsloopa
-    jmp .done
-.fsloopa2
-    mov ecx,256/2
-    call .fsloopb
-    add esi,16+16
-    add edi,16+800+16
-    dec dl
-    jnz .fsloopa2
-    jmp .done
-.fsloopb
-    mov al,[esi]
-    mov bl,[esi+1]
-    mov ah,al
-    mov bh,bl
-    mov [es:edi],ax
-    mov [es:edi+2],ax
-    mov [es:edi+4],bx
-    add esi,byte 2
-    add edi,byte 6
-    dec ecx
-    jnz .fsloopb
-    ret
-
 .done
     pop es
     ret
@@ -1258,8 +1218,6 @@ NEWSYM copyvesa2800x600x16b
     mov dl,[resolutn]
     dec dl
     dec dl
-    cmp byte[ScreenScale],1
-    je near .fullscreen
     cmp byte[smallscreenon],1
     je near .smallscreen
 
@@ -1320,46 +1278,6 @@ NEWSYM copyvesa2800x600x16b
     dec dl
     jnz .ssloopb
     jmp .done
-
-.fullscreen
-    sub edi,128*2
-    cmp byte[scanlines],1
-    je .fsloopa2
-.fsloopa
-    mov ecx,256/2
-    call .fsloopb
-    sub esi,256*2
-    add edi,16*2+16*2
-    mov ecx,256/2
-    call .fsloopb
-    add esi,16*2+16*2
-    add edi,16*2+16*2
-    dec dl
-    jnz .fsloopa
-    jmp .done
-.fsloopa2
-    mov ecx,256/2
-    call .fsloopb
-    add esi,16*2+16*2
-    add edi,16*2+800*2+16*2
-    dec dl
-    jnz .fsloopa2
-    jmp .done
-.fsloopb
-    mov ax,[esi]
-    mov bx,[esi+2]
-    shl ax,8
-    shl bx,8
-    mov ax,[esi]
-    mov bx,[esi+2]
-    mov [es:edi],eax
-    mov [es:edi+4],eax
-    mov [es:edi+8],ebx
-    add esi,byte 4
-    add edi,byte 12
-    dec ecx
-    jnz .fsloopb
-    ret
 
 .interpolate
     mov ecx,256
