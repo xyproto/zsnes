@@ -487,6 +487,7 @@ static struct
   struct internal_chapter_buf internal_chapters;
   size_t last_internal_chapter_offset;
   char *filename;
+  size_t rle_count;
 } zmv_vars;
 
 static void save_last_joy_state(unsigned char *buffer)
@@ -529,6 +530,23 @@ static void flush_input_buffer()
     fwrite(zmv_vars.write_buffer, zmv_vars.write_buffer_loc, 1, zmv_vars.fp);
     zmv_vars.write_buffer_loc = 0;
   }
+  
+  if (zmv_vars.rle_count)
+  {
+    if (zmv_vars.rle_count > 5)
+    {
+        zmv_vars.write_buffer[0] = BIT(1); //RLE bit
+        fwrite(zmv_vars.write_buffer, 1, 1, zmv_vars.fp);
+        fwrite4(zmv_vars.header.frames, zmv_vars.fp);
+    }
+    else
+    {
+      memset(zmv_vars.write_buffer, 0, zmv_vars.rle_count);
+      fwrite(zmv_vars.write_buffer, zmv_vars.rle_count, 1, zmv_vars.fp);
+    }
+    zmv_vars.rle_count = 0;
+  }
+      
   zmv_vars.header.author_len = 0; //If we're writing, then author is erased if there
 }
 
@@ -604,8 +622,6 @@ static void zmv_record(bool slow, unsigned char combos_used)
   unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
   unsigned char nibble = 0;
 
-  zmv_vars.header.frames++;
-
   if (slow) { zmv_vars.header.slow_frames++; }
 
   zmv_vars.header.key_combos += combos_used;
@@ -616,20 +632,40 @@ static void zmv_record(bool slow, unsigned char combos_used)
   RECORD_PAD(zmv_vars.last_joy_state.D, JoyDOrig, 4);
   RECORD_PAD(zmv_vars.last_joy_state.E, JoyEOrig, 3);
 
-  zmv_vars.write_buffer[zmv_vars.write_buffer_loc] = flag;
-  zmv_vars.write_buffer_loc++;
-
   if (flag)
   {
     unsigned char buffer_used = (nibble/2) + (nibble&1);
+    
+    if (zmv_vars.rle_count)
+    {
+      if (zmv_vars.rle_count > 5)
+      {
+        zmv_vars.write_buffer[zmv_vars.write_buffer_loc++] = BIT(1); //RLE bit
+        memcpy(zmv_vars.write_buffer+zmv_vars.write_buffer_loc, uint32_to_bytes(zmv_vars.header.frames), 4);
+        zmv_vars.write_buffer_loc += 4;
+      }
+      else
+      {
+        memset(zmv_vars.write_buffer+zmv_vars.write_buffer_loc, 0, zmv_vars.rle_count);
+        zmv_vars.write_buffer_loc += zmv_vars.rle_count;
+      }
+      zmv_vars.rle_count = 0;      
+    }    
+  
+    zmv_vars.write_buffer[zmv_vars.write_buffer_loc++] = flag;
     memcpy(zmv_vars.write_buffer+zmv_vars.write_buffer_loc, press_buf, buffer_used);
     zmv_vars.write_buffer_loc += buffer_used;
+  
+    if (zmv_vars.write_buffer_loc > WRITE_BUFFER_SIZE - (6+sizeof(press_buf)))
+    {
+      flush_input_buffer();
+    }
   }
-
-  if (zmv_vars.write_buffer_loc > WRITE_BUFFER_SIZE - (1+sizeof(press_buf)))
+  else
   {
-    flush_input_buffer();
+    zmv_vars.rle_count++;
   }
+  zmv_vars.header.frames++;
 }
 
 static bool zmv_insert_chapter()
@@ -766,6 +802,8 @@ static bool zmv_open(char *filename)
   return(false);
 }
 
+#define RESTORE_PAD(cur, prev) cur = (((unsigned int)prev) << 20) | 0x8000
+
 #define REPLAY_PAD(prev, cur, bit)                    \
   if (flag & BIT(bit))                                \
   {                                                   \
@@ -785,31 +823,54 @@ static bool zmv_open(char *filename)
       mid_byte = true;                                \
     }                                                 \
   }                                                   \
-  cur = (((unsigned int)prev) << 20) | 0x8000;
-
+  RESTORE_PAD(cur, prev)
 
 static bool zmv_replay()
 {
   if (zmv_open_vars.frames_replayed < zmv_vars.header.frames)
   {
-    unsigned char flag = 0;
-    unsigned char byte;
-    bool mid_byte = false;
-
-    fread(&flag, 1, 1, zmv_vars.fp);
-
-    if (flag & BIT(2))
+    if (zmv_vars.rle_count)
     {
-      fseek(zmv_vars.fp, INT_CHAP_SIZE, SEEK_CUR);
-      fread(&flag, 1, 1, zmv_vars.fp);
+      RESTORE_PAD(JoyAOrig, zmv_vars.last_joy_state.A);
+      RESTORE_PAD(JoyBOrig, zmv_vars.last_joy_state.B);
+      RESTORE_PAD(JoyCOrig, zmv_vars.last_joy_state.C);
+      RESTORE_PAD(JoyDOrig, zmv_vars.last_joy_state.D);
+      RESTORE_PAD(JoyEOrig, zmv_vars.last_joy_state.E);
+      zmv_vars.rle_count--;
     }
+    else
+    {
+      unsigned char flag = 0;
+      unsigned char byte;
+      bool mid_byte = false;
+      zmv_vars.rle_count = 0;
+      
+      fread(&flag, 1, 1, zmv_vars.fp);
 
-    REPLAY_PAD(zmv_vars.last_joy_state.A, JoyAOrig, 7);
-    REPLAY_PAD(zmv_vars.last_joy_state.B, JoyBOrig, 6);
-    REPLAY_PAD(zmv_vars.last_joy_state.C, JoyCOrig, 5);
-    REPLAY_PAD(zmv_vars.last_joy_state.D, JoyDOrig, 4);
-    REPLAY_PAD(zmv_vars.last_joy_state.E, JoyEOrig, 3);
+      if (flag & BIT(0)) //Command
+      {
+        
+        return(zmv_replay());
+      }
+      
+      if (flag & BIT(1)) //RLE
+      {
+        zmv_vars.rle_count = fread4(zmv_vars.fp) - zmv_open_vars.frames_replayed;
+        return(zmv_replay());
+      }
+      
+      if (flag & BIT(2)) //Internal Chapter
+      {
+        fseek(zmv_vars.fp, INT_CHAP_SIZE, SEEK_CUR);
+        return(zmv_replay());
+      }
 
+      REPLAY_PAD(zmv_vars.last_joy_state.A, JoyAOrig, 7);
+      REPLAY_PAD(zmv_vars.last_joy_state.B, JoyBOrig, 6);
+      REPLAY_PAD(zmv_vars.last_joy_state.C, JoyCOrig, 5);
+      REPLAY_PAD(zmv_vars.last_joy_state.D, JoyDOrig, 4);
+      REPLAY_PAD(zmv_vars.last_joy_state.E, JoyEOrig, 3);
+    }
     zmv_open_vars.frames_replayed++;
     return(true);
   }
@@ -857,6 +918,7 @@ static bool zmv_next_chapter()
 
       fseek(zmv_vars.fp, next_external, SEEK_SET);
     }
+    zmv_vars.rle_count = 0;
     return(true);
   }
   return(false);
@@ -868,6 +930,7 @@ static void zmv_rewind_playback()
   zst_load(zmv_vars.fp);
   zmv_open_vars.frames_replayed = 0;
   zmv_open_vars.last_chapter_frame = 0;
+  zmv_vars.rle_count = 0;
 }
 
 static void zmv_prev_chapter()
@@ -943,6 +1006,7 @@ static void zmv_prev_chapter()
     fseek(zmv_vars.fp, prev_external, SEEK_SET);
   }
   zmv_open_vars.last_chapter_frame = zmv_open_vars.frames_replayed;
+  zmv_vars.rle_count = 0;
 }
 
 static void zmv_add_chapter()
@@ -1015,6 +1079,14 @@ static void zmv_replay_to_record()
   zmv_vars.header.frames = zmv_open_vars.frames_replayed;
   zmv_vars.header.internal_chapters = internal_chapter_delete_after(&zmv_vars.internal_chapters, ftell(zmv_vars.fp));
   zmv_vars.last_internal_chapter_offset = internal_chapter_lesser(&zmv_vars.internal_chapters, ~0);
+  
+  if (zmv_vars.rle_count)
+  {
+    fseek(zmv_vars.fp, -4, SEEK_CUR);
+    fwrite4(zmv_vars.header.frames, zmv_vars.fp);
+    zmv_vars.rle_count = 0; 
+  }
+  
   ftruncate(fileno(zmv_vars.fp), ftell(zmv_vars.fp));
 }
 
@@ -1029,11 +1101,20 @@ Rewind related functions and vars
 
 */
 
-unsigned char *zmv_rewind_buffer = 0;
+struct zmv_rewind
+{
+  unsigned char last_joy_state[8];
+  size_t file_pos;
+  unsigned int frames;
+  size_t rle_count;
+};
+
+
+struct zmv_rewind *zmv_rewind_buffer = 0;
 
 static void zmv_alloc_rewind_buffer(unsigned char rewind_states)
 {
-  zmv_rewind_buffer = (unsigned char *)malloc(16*rewind_states);
+  zmv_rewind_buffer = (struct zmv_rewind *)malloc(sizeof(struct zmv_rewind)*rewind_states);
 }
 
 static void zmv_dealloc_rewind_buffer()
@@ -1047,37 +1128,32 @@ static void zmv_dealloc_rewind_buffer()
 
 void zmv_rewind_save(size_t state, bool playback)
 {
-  unsigned char *state_start_pos = zmv_rewind_buffer + 16*state;
-  size_t file_pos = ftell(zmv_vars.fp) + zmv_vars.write_buffer_loc;
-
-  save_last_joy_state(state_start_pos);
-  memcpy(state_start_pos+8, &file_pos, 4);
-  memcpy(state_start_pos+12, playback ? &zmv_open_vars.frames_replayed : &zmv_vars.header.frames, 4);
+  save_last_joy_state(zmv_rewind_buffer[state].last_joy_state);
+  zmv_rewind_buffer[state].file_pos = ftell(zmv_vars.fp) + zmv_vars.write_buffer_loc;
+  zmv_rewind_buffer[state].frames = playback ? zmv_open_vars.frames_replayed : zmv_vars.header.frames;
+  zmv_rewind_buffer[state].rle_count = zmv_vars.rle_count;
 }
 
 void zmv_rewind_load(size_t state, bool playback)
 {
-  unsigned char *state_start_pos = zmv_rewind_buffer + 16*state;
-  size_t file_pos = 0;
-
-  load_last_joy_state(state_start_pos);
-  memcpy(&file_pos, state_start_pos+8, 4);
+  size_t file_pos = zmv_rewind_buffer[state].file_pos;
+  load_last_joy_state(zmv_rewind_buffer[state].last_joy_state);
 
   if (playback)
   {
-    memcpy(&zmv_open_vars.frames_replayed, state_start_pos+12, 4);
+    zmv_open_vars.frames_replayed = zmv_rewind_buffer[state].frames;
     fseek(zmv_vars.fp, file_pos, SEEK_SET);
+    zmv_vars.rle_count = zmv_rewind_buffer[state].rle_count;
   }
   else
   {
-    size_t frame = 0;
-    memcpy(&frame, state_start_pos+12, 4);
-    zmv_vars.header.rerecords++;
-    zmv_vars.header.removed_frames += zmv_vars.header.frames - frame;
-    zmv_vars.header.frames = frame;
-
     flush_input_buffer();
 
+    zmv_vars.header.rerecords++;
+    zmv_vars.header.removed_frames += zmv_vars.header.frames - zmv_rewind_buffer[state].frames;
+    zmv_vars.header.frames = zmv_rewind_buffer[state].frames;
+    zmv_vars.rle_count = zmv_rewind_buffer[state].rle_count;
+    
     fseek(zmv_vars.fp, file_pos, SEEK_SET);
     ftruncate(fileno(zmv_vars.fp), file_pos);
 
@@ -1220,6 +1296,8 @@ bool mzt_load(char *statename, bool playback)
         read_last_joy_state(fp);
         rewind_point = fread4(fp);
         fclose(fp);
+
+        zmv_vars.rle_count = 0;
 
         if (!playback)
         {
