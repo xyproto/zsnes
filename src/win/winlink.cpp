@@ -1399,7 +1399,6 @@ int InitDirectDraw()
          else
          {
            KitchenSync = 0;
-           Force60hz = 0;
            Refresh = 0;
          }
       }
@@ -2433,7 +2432,7 @@ void drawscreenwin(void)
 
    if (Force60hz) Refresh = 60;
 
-   if (!KitchenSync && Refresh != 0)
+   if (!KitchenSync && Refresh !=0 && !Force60hz)
    {
       Refresh = 0;
       InitDirectDraw();
