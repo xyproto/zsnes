@@ -178,12 +178,4 @@ endmem.o: endmem.asm macros.mac
 ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
 
 clean:
-	rm ${CHIPDIR}/*.o
-	rm ${CPUDIR}/*.o
-	rm ${VIDEODIR}/*.o
-	rm ${GUIDIR}/*.o
-	rm ${DOSDIR}/*.o
-	rm ${WINDIR}/*.o
-	rm ${ZIPDIR}/*.o
-	rm *.o
-	rm zsnes
+	 rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  *.o  zsnes
