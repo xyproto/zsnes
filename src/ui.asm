@@ -643,9 +643,9 @@ SECTION .text
     jne near %3
 %endmacro
 
-NEWSYM allocspc7110
-    AllocmemFail 8192*1024+4096,spc7110romptr,outofmemoryb
-    ret
+;NEWSYM allocspc7110
+;    AllocmemFail 8192*1024+4096,spc7110romptr,outofmemoryb
+;    ret
 
 outofmemoryb
 ;    cmp byte[OSPort],1

@@ -57,7 +57,7 @@ WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/modemrtn.o ${DOSDIR}/vesa2
 
 ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
-MAINOBJ=cfgload.o endmem.o fixsin.o init.o initc.o patch.o ui.o vcache.o water.o smoke.o burn.o version.o
+MAINOBJ=cfgload.o endmem.o fixsin.o init.o initc.o uic.o patch.o ui.o vcache.o water.o smoke.o burn.o version.o
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ}
 
@@ -96,6 +96,7 @@ ui.o: ui.asm macros.mac
 cfgload.o:cfgload.asm macros.mac
 init.o:init.asm macros.mac
 initc.o:initc.c
+uic.o:uic.c
 patch.o:patch.c
 
 ALL:

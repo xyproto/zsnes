@@ -64,7 +64,7 @@ PREOBJ=
 
 ZIPOBJ=${ZIPDIR}/zzip.obj ${ZIPDIR}/unzip.obj ${ZIPDIR}/zpng.obj
 
-MAINOBJ=cfgload.obj endmem.obj fixsin.obj init.obj initc.obj patch.obj ui.obj vcache.obj water.obj smoke.obj burn.obj version.obj
+MAINOBJ=cfgload.obj endmem.obj fixsin.obj init.obj initc.obj uic.obj patch.obj ui.obj vcache.obj water.obj smoke.obj burn.obj version.obj
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ} ${WINDOSOBJ}
 LIBS=
@@ -131,6 +131,7 @@ ui.obj: ui.asm macros.mac
 cfgload.obj:cfgload.asm macros.mac
 init.obj:init.asm macros.mac
 initc.obj:initc.c
+uic.obj:uic.c
 patch.obj:patch.c
 ALL:
 	del version.obj

@@ -3472,10 +3472,10 @@ NEWSYM SPC7110Load
 .sdd1b
     cmp byte[SPC7110Allocated],0
     jne .notalloc
-    push edx
+    pushad
     call allocspc7110
+    popad
     mov byte[SPC7110Allocated],1
-    pop edx
 .notalloc
     call Change_Single_Dir
     jc near .nodir
