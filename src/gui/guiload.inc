@@ -16,8 +16,6 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-
-
 ; GUI File (Game) Loader
 
 %macro GUIGetEntry 1
@@ -272,6 +270,7 @@ GUIloadfilename:
     mov byte[NextLineCache],0
     mov byte[curexecstate],1
 
+    mov byte [romloadskip],1
     ; load file
     call loadfileGUI
     cmp byte[ZipSupport],2
