@@ -2560,7 +2560,6 @@ NEWSYM regaccessbankr8
 .invaccess
     cmp ecx,6000h
     jae .hiromsram
-    xor al,al
     mov al,ch
     ret
 .hiromsram
@@ -2577,11 +2576,11 @@ NEWSYM regaccessbankr8
     jb .dsp1
     cmp bl,30h
     jae .hiromsramok
-    mov al,080h
+    xor al,al
     xor ebx,ebx
     ret
 .dsp1
-    mov al,80h
+    xor al,al
     cmp byte[DSP1Type],2
     jne .nodsp1
     call DSP1Read8b
@@ -2665,7 +2664,6 @@ NEWSYM regaccessbankr16
 ;    jmp regexiter
     cmp ecx,6000h
     jae .hiromsram
-    xor ax,ax
     mov al,ch
     mov ah,ch
     ret
@@ -2683,11 +2681,11 @@ NEWSYM regaccessbankr16
     jb .dsp1
     cmp bl,30h
     jae .hiromsramok
-    mov ax,08080h
+    xor ax,ax
     xor ebx,ebx
     ret
 .dsp1
-    mov ax,8080h
+    xor ax,ax
     cmp byte[DSP1Type],2
     jne .nodsp1
     call DSP1Read16b
@@ -3116,7 +3114,7 @@ NEWSYM membank0r8chip            ; 6000-7FFF
     je .sfxram
     cmp byte[SA1Enable],1
     je .sa1ram
-    mov al,80h
+    xor al,al
     cmp byte[DSP1Type],2
     jne .nodsp1
     call DSP1Read8b
@@ -3183,6 +3181,7 @@ NEWSYM membank0r16inv             ; 4800-5FFF
     add ecx,ebx
     mov al,ch
     mov ah,ch
+    mov ax,8080h
     ret
 NEWSYM membank0r16chip            ; 6000-FFFF
     add ecx,ebx
@@ -3190,7 +3189,7 @@ NEWSYM membank0r16chip            ; 6000-FFFF
     je .sfxram
     cmp byte[SA1Enable],1
     je .sa1ram
-    mov ax,8080h
+    xor ax,ax
     cmp byte[DSP1Type],2
     jne .nodsp1
     call DSP1Read16b
@@ -3360,12 +3359,12 @@ NEWSYM membank0r8
 .invaccess
     cmp ecx,6000h
     jae .dsp1
-    mov al,80h
+    mov al,ch
     ret
 .dsp1
     cmp byte[SFXEnable],1
     je .sfxram
-    mov al,80h
+    xor al,al
     cmp byte[DSP1Type],2
     jne .nodsp1
     call DSP1Read8b
@@ -3419,12 +3418,12 @@ NEWSYM membank0r16
 .invaccess
     cmp ecx,6000h
     jae .dsp1
-    mov ax,8080h
+    xor ax,ax
     ret
 .dsp1
     cmp byte[SFXEnable],1
     je .sfxram
-    mov ax,8080h
+    xor ax,ax
     cmp byte[DSP1Type],2
     jne .nodsp1
     call DSP1Read16b
@@ -4416,7 +4415,7 @@ NEWSYM SDD1EntryPtr, dd 0
 NEWSYM LatestBank, dd 0FFFFh
 NEWSYM memaccessbankr8sdd1
 ;    TestSDD1
-    jmp debugdecompress
+;    jmp debugdecompress
 ;    call FillArray
     mov byte[.found4],0
 
