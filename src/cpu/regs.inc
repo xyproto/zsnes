@@ -895,13 +895,8 @@ reg2180r:
 ; Unknown register, used by test cart
 
 reg21C2r:
-    mov al,20h
-    ret
-
-; Unknown register, used by test cart
-
 reg21C3r:
-    xor al,al
+    mov al,21h
     ret
 
 ; Joystick Data for controller 1 and 2
