@@ -154,7 +154,7 @@ int Main_Proc(void)
 					numlockptr = 0;
 				if (event.key.keysym.scancode - 8 >= 0)
 				{
-					if (pressed[event.key.keysym.scancode - 8] != 2)
+					//if (pressed[event.key.keysym.scancode - 8] != 2)
 						pressed[event.key.keysym.scancode - 8] = 1;
 					ProcessKeyBuf(event.key.keysym.sym);
 				}
