@@ -5564,7 +5564,11 @@ DisplayGUIMovies:
     GUIOuttextwin2 15,9,136,GUIMovieTextE
     GUIOuttextwin2 15,9,146,GUIMovieTextF
     GUIOuttextwin2 15,9,156,GUIMovieTextG
-    GUIOuttextwin2 15,21,166,GUIMovieTextI    
+    GUIOuttextwin2 15,21,166,GUIMovieTextI
+    GUIOuttextwin2 15,9,176,GUIMovieTextJ
+    GUIOuttextwin2 15,21,186,GUIMovieTextK
+    GUIOuttextwin2 15,56,186,GUIMovieTextL
+    GUIOuttextwin2 15,101,186,GUIMovieTextM
     add byte[GUItextcolor],15
     GUIOuttextwin2 15,60,15,GUIMovieText4
     GUIOuttextwin2 15,6,114,GUIMovieTextA
@@ -5591,7 +5595,11 @@ DisplayGUIMovies:
     GUIOuttextwin2 15,8,135,GUIMovieTextE
     GUIOuttextwin2 15,8,145,GUIMovieTextF
     GUIOuttextwin2 15,8,155,GUIMovieTextG
-    GUIOuttextwin2 15,20,165,GUIMovieTextI    
+    GUIOuttextwin2 15,20,165,GUIMovieTextI
+    GUIOuttextwin2 15,8,175,GUIMovieTextJ
+    GUIOuttextwin2 15,20,185,GUIMovieTextK
+    GUIOuttextwin2 15,55,185,GUIMovieTextL
+    GUIOuttextwin2 15,100,185,GUIMovieTextM
     GUIDisplayButtonHole 15,60,25,byte[CMovieExt],'v'
     GUIDisplayButtonHole 15,80,25,byte[CMovieExt],'1'
     GUIDisplayButtonHole 15,100,25,byte[CMovieExt],'2'
@@ -5638,6 +5646,9 @@ DisplayGUIMovies:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckboxMDF
     GUIDisplayIconWin 15,8,162,[GUITemp]
+    GUIDisplayButtonHole 15,8,183,byte[MovieStartMethod],0
+    GUIDisplayButtonHole 15,43,183,byte[MovieStartMethod],1
+    GUIDisplayButtonHole 15,88,183,byte[MovieStartMethod],2
     ret
 
 SECTION .data
@@ -5659,6 +5670,10 @@ GUIMovieTextF db 'NEXT CHAPTER',0
 GUIMovieTextG db 'PREV CHAPTER',0
 GUIMovieTextH db 'MOVIE KEYS :',0
 GUIMovieTextI db 'DISPLAY FRAMES',0
+GUIMovieTextJ db 'START FROM:',0
+GUIMovieTextK db 'NOW',0
+GUIMovieTextL db 'POWER',0
+GUIMovieTextM db 'RESET',0
 NEWSYM CMovieExt, db 'v'
 
 SECTION .text

@@ -2123,6 +2123,9 @@ DisplayGUIMovieClick:
     DGOptnsProcBox 97,144,[KeyNextChap]
     DGOptnsProcBox 97,154,[KeyPrevChap]
     GUIClickCButton 8,162,byte[MovieDisplayFrame]
+    GUIPButtonHole 8,183,byte[MovieStartMethod],0
+    GUIPButtonHole 43,183,byte[MovieStartMethod],1
+    GUIPButtonHole 88,183,byte[MovieStartMethod],2
     ret
 
 
