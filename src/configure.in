@@ -74,7 +74,7 @@ else
 	AC_MSG_ERROR(zlib is required)
 fi
 
-AC_ARG_WITH(opengl,[  --without-opengl        Build without OpenGL support ],with_opengl=yes)
+AC_ARG_WITH(opengl,[  --without-opengl        Build without OpenGL support ],with_opengl=no)
 AC_MSG_CHECKING(for OpenGL support)
 if test x$with_opengl != xno; then
 	with_opengl=no
