@@ -680,12 +680,12 @@ InitSound()
 	{
 		lpDirectSound->Initialize(NULL);
 
-		if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_WRITEPRIMARY))
+		if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL)) //DSSCL_WRITEPRIMARY, fix this StatMat - make a toggle
 		{
 			if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
 				return FALSE;
 		}
-		else UsePrimaryBuffer=1;
+		else UsePrimaryBuffer=0; //1, fix this StatMat - make a toggle
 	}
 	else 
 	{
