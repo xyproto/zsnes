@@ -2001,6 +2001,10 @@ NEWSYM init65816
     sub eax,8000h
     cmp byte[eax],5Ch
     jne .notrainer
+    cmp word[eax+2],80h
+    je .notrainer
+    cmp word[eax+2],8080h
+    je .notrainer
 .yestrainer
     mov dword[ramsize],32768
     mov dword[ramsizeand],32767
