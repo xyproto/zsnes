@@ -1609,6 +1609,8 @@ NEWSYM TCPIPSendPacket
     pushad
     ; Send PacketSendArray with size of PacketSendSize
     ; SendData(int [PacketSendSize],char *PacketSendArray)
+    push eax ; required pushes to get correct stack
+    push eax
     call SendDataNop
     or eax,eax
     jnz .failed
@@ -1629,6 +1631,8 @@ NEWSYM TCPIPSendPacketUDP
     pushad
     ; Send PacketSendArray with size of PacketSendSize
     ; SendData(int [PacketSendSize],char *PacketSendArray)
+    push eax ; required pushes to get correct stack
+    push eax
     call SendDataUDPNop
     or eax,eax
     jnz .failed
@@ -1647,6 +1651,8 @@ NEWSYM TCPIPRecvPacket
     pushad
     ; Store packet to PacketRecvArray, size at PacketRecvSize
     ; int GetData(int 2048,char *PacketRecvArray)
+    push eax ; required pushes to get correct stack
+    push eax
     call GetDataNop
     cmp eax,-1
     je .failed
