@@ -1468,19 +1468,19 @@ NEWSYM headerhack
     mov esi,[romdata]
     add esi,0FFC0h
     cmp dword[esi],'HORA'
-    jne .nothorai-gakuen
+    jne .nothoraigakuen
     cmp dword[esi+4],'I-GA'
-    jne .nothorai-gakuen
+    jne .nothoraigakuen
     cmp dword[esi+8],'KUEN'
-    jne .nothorai-gakuen
+    jne .nothoraigakuen
     cmp dword[esi+12],'    '
-    jne .nothorai-gakuen
+    jne .nothoraigakuen
     mov al,0h
     mov edi,spcRam
     mov ecx,65472
     rep stosb
     ret
-.nothorai-gakuen
+.nothoraigakuen
 
     mov esi,[romdata]
     add esi,07FC0h
