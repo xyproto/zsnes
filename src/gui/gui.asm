@@ -592,7 +592,7 @@ NEWSYM TrapMouseCursor, db 1
 NEWSYM KeyQuickClock, dd 0
 NEWSYM KeyQuickMinimize, dd 0
 NEWSYM AutoIncSaveSlot, db 0
-NEWSYM TCPIPAddress, db '',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+NEWSYM TCPIPAddress, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 GUIsave equ $-GUIRAdd
 
