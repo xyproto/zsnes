@@ -1,6 +1,31 @@
 What's New :
 ------------
 
+v1.36
+       - Fixed Gunforce, added invalid HDMA modes. [_Demo_]
+         (Thanks Overload!)
+       - New BRR decoding method, this should resolve all the sound
+         issues introduced in 1.35 and fix new ones.
+         (Noise simulation isn't used anymore) [_Demo_]
+       - Fixed another bug with command-line netplay. (Windows only)
+         [pagefault]
+       - Fixed hang in NBA Live 95 and 96. [_Demo_] (Thanks Overload!)
+       - Fixed sound not working on first run. (Windows only) [pagefault]
+       - Fixed some more mode 4 issues in the new gfx engine. [pagefault]
+       - Added offset mode disable toggle to 8-bit new gfx engine.
+         [pagefault]
+       - Fixed SPC hang in 90 Minutes European Prime Goal
+         by clearing spcram. [_Demo_]
+       - Updated fix for Clayfighter to fix some bugs in battle. [_Demo_]
+       - Fixed crash with certain games. (SDL/*nix only) [theoddone33]
+       - Added better OBC1 detection. [_Demo_]
+       - Special hack for Samurai Showdown IRQ problem. [_Demo_]
+       - Special hack for Kamen Rider menu, requires special latch reading.
+         [_Demo_]
+       - Special hack for Super Famista 1 & 2 SPC bugs. [_Demo_]
+       - Fixed some more bugs in video code. (Windows only) [pagefault]
+       - Fixed Digital Devil Story hang. [_Demo_]
+
 v1.35
        - Fixed triple buffering corruption on some VESA 2.x video modes,
          a very nasty bug which accidentally slipped into version 1.337.
