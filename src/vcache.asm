@@ -314,14 +314,10 @@ NEWSYM cachevideo
     jne .nofocussave
     pushad
     call SaveSramData
-    popad
-;    mov dword[Msgptr],SaveRamSaved
-;    mov eax,[MsgCount]
-;    mov [MessageOn],eax
-    ; change dir to LoadDrive/LoadDir
     mov dl,[LoadDrive]
     mov ebx,LoadDir
     call Change_Dir
+    popad    
     jmp .nofocussave
 .nofocussaveb
     mov dword[sramb4save],0
