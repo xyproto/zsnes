@@ -2236,7 +2236,6 @@ NEWSYM handler9h
     iretd
 %endif
 
-SECTION .data ;ALIGN=32
 SECTION .bss ;ALIGN=32
 NEWSYM soundcycleft, resd 1
 NEWSYM curexecstate, resd 1
