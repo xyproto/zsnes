@@ -74,7 +74,7 @@ Header
 4 bytes  -  Number of frames with slow down
 4 bytes  -  Number of key combos
 2 bytes  -  Number of internal chapters
-20 bytes -  Author name
+2 bytes  -  Length of author name
 3 bytes  -  ZST size
 1 byte   -  Flag Byte
   2 bits -   Start from ZST/Power On/Reset
@@ -155,6 +155,11 @@ enum zmv_video_modes { zmv_vm_ntsc, zmv_vm_pal };
 #define INT_CHAP_INDEX_SIZE (zmv_vars.header.internal_chapters*4)
 #define EXT_CHAP_BLOCK_SIZE (zmv_open_vars.external_chapter_count*EXT_CHAP_SIZE + 2) 
 
+#define EXT_CHAP_END_DIST (EXT_CHAP_BLOCK_SIZE + (size_t)zmv_vars.header.author_len)
+#define INT_CHAP_END_DIST (INT_CHAP_INDEX_SIZE + EXT_CHAP_END_DIST)
+
+#define EXT_CHAP_COUNT_END_DIST ((size_t)zmv_vars.header.author_len + 2)
+
 struct zmv_header
 {
   char magic[3];
@@ -166,7 +171,7 @@ struct zmv_header
   unsigned int slow_frames;
   unsigned int key_combos;
   unsigned short internal_chapters;
-  char author[20];
+  unsigned short author_len;
   unsigned int zst_size; //We only read/write 3 bytes for this
   struct
   {
@@ -188,7 +193,7 @@ static void zmv_header_write(struct zmv_header *zmv_head, FILE *fp)
   fwrite4(zmv_head->slow_frames, fp);
   fwrite4(zmv_head->key_combos, fp);
   fwrite2(zmv_head->internal_chapters, fp);
-  fwrite(zmv_head->author, 20, 1, fp);
+  fwrite2(zmv_head->author_len, fp);
   fwrite3(zmv_head->zst_size, fp);
   
   switch (zmv_head->zmv_flag.start_method)
@@ -244,10 +249,10 @@ static bool zmv_header_read(struct zmv_header *zmv_head, FILE *fp)
   zmv_head->slow_frames = fread4(fp);
   zmv_head->key_combos = fread4(fp);
   zmv_head->internal_chapters = fread2(fp);
-  fread(zmv_head->author, 20, 1, fp);
+  zmv_head->author_len = fread2(fp);
   zmv_head->zst_size = fread3(fp);
   fread(&flag, 1, 1, fp);
-
+  
   if (feof(fp))
   {
     return(false);
@@ -514,6 +519,7 @@ static void flush_input_buffer()
     fwrite(zmv_vars.write_buffer, zmv_vars.write_buffer_loc, 1, zmv_vars.fp);
     zmv_vars.write_buffer_loc = 0;  
   }
+  zmv_vars.header.author_len = 0; //If we're writing, then author is erased if there
 }  
 
 /*
@@ -619,7 +625,7 @@ static bool zmv_insert_chapter()
     zst_save(zmv_vars.fp, false);
     fwrite4(zmv_vars.header.frames, zmv_vars.fp);
     write_last_joy_state(zmv_vars.fp); 
-  
+    
     return(true);
   }
   return(false);
@@ -689,10 +695,10 @@ static bool zmv_open(char *filename)
     zst_load(zmv_vars.fp);
     zmv_open_vars.input_start_pos = ftell(zmv_vars.fp);
     
-    fseek(zmv_vars.fp, -2, SEEK_END);
+    fseek(zmv_vars.fp, -(EXT_CHAP_COUNT_END_DIST), SEEK_END);
     zmv_open_vars.external_chapter_count = fread2(zmv_vars.fp);
     
-    fseek(zmv_vars.fp, -(INT_CHAP_INDEX_SIZE + EXT_CHAP_BLOCK_SIZE), SEEK_END);
+    fseek(zmv_vars.fp, -(INT_CHAP_END_DIST), SEEK_END);
 
     internal_chapter_read(&zmv_vars.internal_chapters, zmv_vars.fp, zmv_vars.header.internal_chapters);
     
@@ -796,7 +802,7 @@ static bool zmv_next_chapter()
     }
     else
     {
-      size_t ext_chapter_loc = EXT_CHAP_BLOCK_SIZE - internal_chapter_pos(&zmv_open_vars.external_chapters, next)*EXT_CHAP_SIZE;
+      size_t ext_chapter_loc = EXT_CHAP_END_DIST - internal_chapter_pos(&zmv_open_vars.external_chapters, next)*EXT_CHAP_SIZE;
       fseek(zmv_vars.fp, -(ext_chapter_loc), SEEK_END);
       zst_load(zmv_vars.fp);
       zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
@@ -881,7 +887,7 @@ static void zmv_prev_chapter()
   }
   else
   {
-    size_t ext_chapter_loc = EXT_CHAP_BLOCK_SIZE - internal_chapter_pos(&zmv_open_vars.external_chapters, prev)*EXT_CHAP_SIZE;  
+    size_t ext_chapter_loc = EXT_CHAP_END_DIST - internal_chapter_pos(&zmv_open_vars.external_chapters, prev)*EXT_CHAP_SIZE;  
     fseek(zmv_vars.fp, -(ext_chapter_loc), SEEK_END);
     zst_load(zmv_vars.fp);
     zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
@@ -908,10 +914,21 @@ static void zmv_add_chapter()
   
       if (!(flag & BIT(2)))
       {
+        char *author = 0;        
+
         internal_chapter_add_offset(&zmv_open_vars.external_chapters, current_loc);
         zmv_open_vars.external_chapter_count++;
 
-        fseek(zmv_vars.fp, -2, SEEK_END);
+        if (zmv_vars.header.author_len)
+        {
+          if ((author = (char *)malloc(zmv_vars.header.author_len)))
+          {
+            fseek(zmv_vars.fp, -(zmv_vars.header.author_len), SEEK_END);
+            fread(author, zmv_vars.header.author_len, 1, zmv_vars.fp);  
+          }
+        }
+
+        fseek(zmv_vars.fp, -(EXT_CHAP_COUNT_END_DIST), SEEK_END);
         zst_save(zmv_vars.fp, false);
         fwrite4(zmv_open_vars.frames_replayed, zmv_vars.fp);
         write_last_joy_state(zmv_vars.fp);
@@ -919,6 +936,12 @@ static void zmv_add_chapter()
 
         fwrite2(zmv_open_vars.external_chapter_count, zmv_vars.fp);
       
+        if (author)
+        {
+          fwrite(author, zmv_vars.header.author_len, 1, zmv_vars.fp);
+          free(author);
+        }
+
         fseek(zmv_vars.fp, current_loc, SEEK_SET); 
       }
       else //Just skip the internal
@@ -970,6 +993,7 @@ void mzt_chdir()
   chdir(zmv_vars.filename);
 }
 
+//Currently this doesn't work right in playback
 bool mzt_save(char *statename, bool thumb, bool playback)
 {
   size_t filename_len = strlen(zmv_vars.filename);
