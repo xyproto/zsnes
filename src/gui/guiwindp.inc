@@ -5537,9 +5537,9 @@ DisplayGUIMovies:
     DrawGUIButton 15,7,17,49,28,GUIMovieText1,16,0,0
     DrawGUIButton 15,7,33,49,44,GUIMovieText2,17,0,0
     DrawGUIButton 15,7,49,49,60,GUIMovieText3,18,0,0
-    DrawGUIButton 15,7,65,106,76,GUIMovieTextB,29,0,0
-    DrawGUIButton 15,7,81,106,92,GUIMovieTextC,30,0,0
-    DrawGUIButton 15,7,97,106,108,GUIMovieTextD,31,0,0
+    DrawGUIButton 15,7,65,109,76,GUIMovieTextB,29,0,0
+    DrawGUIButton 15,7,81,109,92,GUIMovieTextC,30,0,0
+    DrawGUIButton 15,7,97,109,108,GUIMovieTextD,31,0,0
     cmp byte[GUIWincoladd],0
     je .zero
     mov byte[GUItextcolor],211

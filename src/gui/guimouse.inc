@@ -2106,9 +2106,9 @@ DisplayGUIMovieClick:
     GUIPHoldbutton 7,17,49,28,16
     GUIPHoldbutton 7,33,49,44,17
     GUIPHoldbutton 7,49,49,60,18
-    GUIPHoldbutton 7,65,106,76,29
-    GUIPHoldbutton 7,81,106,92,30
-    GUIPHoldbutton 7,97,106,108,31
+    GUIPHoldbutton 7,65,109,76,29
+    GUIPHoldbutton 7,81,109,92,30
+    GUIPHoldbutton 7,97,109,108,31
     GUIPButtonHole 60,25,byte[CMovieExt],'v'
     GUIPButtonHole 80,25,byte[CMovieExt],'1'
     GUIPButtonHole 100,25,byte[CMovieExt],'2'
