@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <time.h>
 #include "SDL.h"
 #ifdef __OPENGL__
@@ -48,12 +49,14 @@ extern  unsigned char cvidmode;
 
 // OPENGL VARIABLES
 #ifdef __OPENGL__
-int     gl_inited = 0;
-unsigned short *glvidbuffer = 0;
-int     glvbtexture[1];
+unsigned short glvidbuffer[512*512];
+GLuint gltextures[3];
+int gl_inited = 0;
+int gltexture256, gltexture512;
 //float   ratiox = 1.0;
 int     UseOpenGL = 0;
 int     glfilters = GL_NEAREST;
+extern	Uint8 En2xSaI, scanlines;
 extern  Uint8 BilinearFilter;
 extern  Uint8 FilteredGUI;
 extern  Uint8 GUIOn2;
@@ -84,12 +87,28 @@ Uint8   MouseButton;
 DWORD   LastUsedPos = 0;
 DWORD   CurMode = -1;
 
-#define UPDATE_TICKS_GAME 1000/60     // milliseconds per world update
-#define UPDATE_TICKS_GAMEPAL 1000/50  // milliseconds per world update
-#define UPDATE_TICKS_GUI 1000/36      // milliseconds per world update
-#define UPDATE_TICKS_UDP 1000/60      // milliseconds per world update
+extern unsigned int vidbuffer;
+
+
+#define UPDATE_TICKS_GAME 1000000/60     // microseconds per world update
+#define UPDATE_TICKS_GAMEPAL 1000000/50  // microseconds per world update
+#define UPDATE_TICKS_GUI 1000000/36      // microseconds per world update
+#define UPDATE_TICKS_UDP 1000000/60      // microseconds per world update
 
 _int64 start, end, freq, update_ticks_pc, start2, end2, update_ticks_pc2;
+
+/* SDL's GetTicks function is only millisecond accuracy */
+static struct timeval start_time;
+
+static void zsnes_InitTicks() {
+    gettimeofday(&start_time, NULL);
+}
+
+static _int64 zsnes_GetTicks() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return (tv.tv_sec-start_time.tv_sec)*1000000L + (tv.tv_usec-start_time.tv_usec);
+}
 
 void drawscreenwin(void);
 void initwinvideo();
@@ -464,6 +483,7 @@ int startgame(void)
 	} else {
 	    sdl_inited = 1;
 	}
+	zsnes_InitTicks();
     }
     
     flags |= ( FullScreen ? SDL_FULLSCREEN : 0);
@@ -482,26 +502,19 @@ int startgame(void)
     }
     
 #ifdef __OPENGL__
+    if (gl_inited) {
+     /* this _SHOULD_ be safe even if they aren't generated:
+        "glDeleteTextures silently ignores 0's and names that do not correspond to existing textures."
+	However, nVidia's drivers are far less than perfect.
+     */
+     glDeleteTextures(3, gltextures);
+     gl_inited = 0;
+    }
     if (UseOpenGL) {
-	
      if (SurfaceY) glViewport(0,0, SurfaceX, SurfaceY);
      else glViewport(0,0, SurfaceX, 1); 
-     glMatrixMode(GL_PROJECTION);
-     glLoadIdentity();
-     glMatrixMode(GL_MODELVIEW);
-     glFlush();
-     
-     if (!gl_inited) {
-	 glGenTextures(1,&glvbtexture[0]);
-	 gl_inited = 1;
-	 glvidbuffer = malloc(256*256*2);
-	 // the *2 in 256*256*2 may need to be changed later on to account for the bitdepth
-     }
-    } else {
-	if (gl_inited) {
-	    free(glvidbuffer);
-	    gl_inited = 0;
-	}
+     glGenTextures(3, gltextures);
+     gl_inited = 1;
     }
 
     BitDepth = (UseOpenGL ? 16 : 0);
@@ -514,7 +527,11 @@ int startgame(void)
     FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) : SDL_WM_GrabInput(SDL_GRAB_OFF);
 
     /* Need to handle situations where BPP is not what we can handle */
+#ifdef __OPENGL__
+    SDL_WM_SetCaption (UseOpenGL?"ZSNES-GL Linux":"ZSNES Linux","ZSNES");
+#else
     SDL_WM_SetCaption ("ZSNES Linux","ZSNES");
+#endif
     SDL_ShowCursor(0);
 
     BitDepth = surface->format->BitsPerPixel;
@@ -597,7 +614,6 @@ short *Sound;
 //void WinUpdateDevices(); function removed since it was empty
 extern unsigned char romispal;
 
-
 void Start60HZ(void)
 {
     update_ticks_pc2 = UPDATE_TICKS_UDP;
@@ -607,8 +623,8 @@ void Start60HZ(void)
 	update_ticks_pc = UPDATE_TICKS_GAME;
     }
 
-    start = SDL_GetTicks();
-    start2 = SDL_GetTicks();
+    start = zsnes_GetTicks();
+    start2 = zsnes_GetTicks();
     //   QueryPerformanceCounter((LARGE_INTEGER*)&start);
     //   QueryPerformanceCounter((LARGE_INTEGER*)&start2);
     T36HZEnabled = 0;
@@ -627,8 +643,8 @@ void Start36HZ(void)
     //   QueryPerformanceCounter((LARGE_INTEGER*)&start);
     //   QueryPerformanceCounter((LARGE_INTEGER*)&start2);
 
-    start = SDL_GetTicks();
-    start2 = SDL_GetTicks();
+    start = zsnes_GetTicks();
+    start2 = zsnes_GetTicks();
     T60HZEnabled = 0;
     T36HZEnabled = 1;
 }
@@ -760,7 +776,7 @@ void CheckTimers(void)
 {
     int i;
     //QueryPerformanceCounter((LARGE_INTEGER*)&end2);
-    end2 = SDL_GetTicks();
+    end2 = zsnes_GetTicks();
     
     while ((end2 - start2) >= update_ticks_pc2)
 	{
@@ -777,7 +793,7 @@ void CheckTimers(void)
     
     if(T60HZEnabled) {
 	//QueryPerformanceCounter((LARGE_INTEGER*)&end);
-	end = SDL_GetTicks();
+	end = zsnes_GetTicks();
 	
 	while ((end - start) >= update_ticks_pc)
 	    {
@@ -795,7 +811,7 @@ void CheckTimers(void)
     
     if(T36HZEnabled) {
 	//QueryPerformanceCounter((LARGE_INTEGER*)&end);
-	end = SDL_GetTicks();
+	end = zsnes_GetTicks();
 	
 	while ((end - start) >= update_ticks_pc)
 	  {
@@ -896,27 +912,27 @@ extern unsigned char FPUCopy;
 extern unsigned char NGNoTransp;
 extern unsigned char newengen;
 extern void copy640x480x16bwin(void);
+extern unsigned char SpecialLine[224];
 
 void clearwin()
 {
     DWORD *SURFDW;
-    
+
+#ifdef __OPENGL__
+    if (UseOpenGL) {
+	glClear(GL_COLOR_BUFFER_BIT);
+	if (En2xSaI || scanlines)
+		memset(glvidbuffer, 0, 512*448*2);
+	return;
+    }
+#endif
+   
     Temp1 = LockSurface();
     if(Temp1 == 0) { return; }
     vidbuff_w = SurfaceX; vidbuff_h = SurfaceY;
 
-#ifdef __OPENGL__
-    if (!UseOpenGL) {
-#endif
-	SurfBufD = (DWORD) &SurfBuf[0];
-	SURFDW = (DWORD *) &SurfBuf[0];
-#ifdef __OPENGL__
-    } else {
-	SurfBufD = (DWORD) &glvidbuffer[0];
-	SURFDW = (DWORD *) &glvidbuffer[0];
-	vidbuff_w = 256; vidbuff_h = 224;
-    }
-#endif
+    SurfBufD = (DWORD) &SurfBuf[0];
+    SURFDW = (DWORD *) &SurfBuf[0];
 
     if (SurfBufD == 0) { UnlockSurface(); return; }
 
@@ -980,6 +996,100 @@ void LinuxExit (void)
     exit(0);
 }
 
+#ifdef __OPENGL__
+static void drawscreenwin_drawglblock(int hires, int start, int end)
+{
+    int i, j;
+    
+    if (hires) {
+	if (!gltexture512) {
+	    unsigned short *b288 = &((unsigned short*)vidbuffer)[16], *b576 = &((unsigned short*)vidbuffer)[75036*2 + 16];
+            unsigned short *p = &glvidbuffer[0];
+
+	    for (j = 0; j < 224; j++) {
+		for (i = 0; i < 256; i++) {
+		    *p++ = *b288++;
+		    *p++ = *b576++;
+		}
+		b288 += 32; b576 += 32;
+	    }
+
+	    glBindTexture(GL_TEXTURE_2D, gltextures[1]);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,glfilters);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,glfilters);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+	    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+	    glPixelStorei(GL_UNPACK_ROW_LENGTH, 512);
+	    glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
+	                 GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer + 512);
+
+	    glBindTexture(GL_TEXTURE_2D, gltextures[2]);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,glfilters);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,glfilters);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+	    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 256);
+	    glPixelStorei(GL_UNPACK_ROW_LENGTH, 512);
+            glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
+                         GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer + 512);
+
+	    gltexture512 = 1;
+	}
+
+	glBindTexture(GL_TEXTURE_2D, gltextures[1]);
+	glBegin(GL_QUADS);
+	    glTexCoord2f(0.0f, (224.0/256.0)*(start/224.0));
+		glVertex2f(-1.0f, (112-start)/112.0);
+	    glTexCoord2f(1.0f, (224.0/256.0)*(start/224.0));
+		glVertex2f( 0.0f, (112-start)/112.0);
+	    glTexCoord2f(1.0f, (224.0/256.0)*(end/224.0));
+		glVertex2f( 0.0f, (112-end)/112.0);
+	    glTexCoord2f(0.0f, (224.0/256.0)*(end/224.0));
+		glVertex2f(-1.0f, (112-end)/112.0);
+	glEnd();
+
+	glBindTexture(GL_TEXTURE_2D, gltextures[2]);
+	glBegin(GL_QUADS);
+	    glTexCoord2f(0.0f, (224.0/256.0)*(start/224.0));
+		glVertex2f( 0.0f, (112-start)/112.0);
+	    glTexCoord2f(1.0f, (224.0/256.0)*(start/224.0));
+		glVertex2f( 1.0f, (112-start)/112.0);
+	    glTexCoord2f(1.0f, (224.0/256.0)*(end/224.0));
+		glVertex2f( 1.0f, (112-end)/112.0);
+	    glTexCoord2f(0.0f, (224.0/256.0)*(end/224.0));
+		glVertex2f( 0.0f, (112-end)/112.0);
+	glEnd();
+    } else {
+	if (!gltexture256) {
+            glBindTexture(GL_TEXTURE_2D, gltextures[0]);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,glfilters);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,glfilters);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+	    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 16);
+	    glPixelStorei(GL_UNPACK_ROW_LENGTH, 288);
+	    glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
+			 GL_RGB, GL_UNSIGNED_SHORT_5_6_5, ((unsigned short*)vidbuffer) + 288);
+
+	    gltexture256 = 1;
+	}
+
+        glBindTexture(GL_TEXTURE_2D, gltextures[0]);
+	glBegin(GL_QUADS);
+	    glTexCoord2f(0.0f, (224.0/256.0)*(start/224.0));
+		glVertex2f(-1.0f, (112-start)/112.0);
+	    glTexCoord2f(1.0f, (224.0/256.0)*(start/224.0));
+		glVertex2f( 1.0f, (112-start)/112.0);
+	    glTexCoord2f(1.0f, (224.0/256.0)*(end/224.0));
+		glVertex2f( 1.0f, (112-end)/112.0);
+	    glTexCoord2f(0.0f, (224.0/256.0)*(end/224.0));
+		glVertex2f(-1.0f, (112-end)/112.0);
+	glEnd();
+    }
+}
+#endif
+
 void drawscreenwin(void)
 {
     DWORD i,j,color32;
@@ -1000,10 +1110,6 @@ void drawscreenwin(void)
     
 #ifdef __OPENGL__
     if (UseOpenGL) {
-	
-	for (j = 0; j<224; j++) {
-	    memcpy(glvidbuffer + 256*j, (short *) (vidbuffer) + 16 + 288 + (256+32)*j, 256*2);
-	}
 	if (BilinearFilter) {
 	    glfilters = GL_LINEAR;
 	    if (GUIOn2 && !FilteredGUI) glfilters = GL_NEAREST;
@@ -1011,29 +1117,89 @@ void drawscreenwin(void)
 	    glfilters = GL_NEAREST;
 	}
 
-	/*
-	if (FullScreen)
-	    ratiox = 0.875;
-	else
-	    ratiox = 1.0;
-	*/
-    
-	//glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 	glEnable(GL_TEXTURE_2D);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,glfilters);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,glfilters);
-	glBindTexture(GL_TEXTURE_2D, *glvbtexture);
-	glColor3f(1.0f,1.0f,1.0f);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
-		     GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer);
-	glBegin(GL_QUADS);
-	    glTexCoord2f(0.0f, 0.0f);         glVertex3f(-1.0f,  1.0f, -1.0f);
-	    glTexCoord2f(1.0f, 0.0f);         glVertex3f( 1.0f,  1.0f, -1.0f);
-	    glTexCoord2f(1.0f, 2.240/2.560);  glVertex3f( 1.0f, -1.0f, -1.0f);
-	    glTexCoord2f(0.0f, 2.240/2.560);  glVertex3f(-1.0f, -1.0f, -1.0f);
-	glEnd();
 
+	if (En2xSaI || scanlines) {
+	    AddEndBytes = 0;
+	    NumBytesPerLine = 1024;
+	    WinVidMemStart = (void*)glvidbuffer;
+	    __asm__ __volatile__ ("call copy640x480x16bwin"
+	    ::: "memory", "eax", "ebx", "ecx", "edx", "esi", "edi");
+
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,glfilters);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,glfilters);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+	    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
+
+	    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+            glPixelStorei(GL_UNPACK_ROW_LENGTH, 512);
+            glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
+                         GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer);
+
+	    glBegin(GL_QUADS);
+	        glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, 1.0f, -1.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f( 0.0f, 1.0f, -1.0f);
+		glTexCoord2f(1.0f, (224.0/256.0)); glVertex3f( 0.0f, 0.0f, -1.0f);
+		glTexCoord2f(0.0f, (224.0/256.0)); glVertex3f(-1.0f, 0.0f, -1.0f);
+	    glEnd();
+
+	    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+            glPixelStorei(GL_UNPACK_ROW_LENGTH, 512);
+            glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
+                         GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer + 256);
+
+	    glBegin(GL_QUADS);
+	        glTexCoord2f(0.0f, 0.0f); glVertex3f(0.0f, 1.0f, -1.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(1.0f, 1.0f, -1.0f);
+		glTexCoord2f(1.0f, (224.0/256.0)); glVertex3f(1.0f, 0.0f, -1.0f);
+		glTexCoord2f(0.0f, (224.0/256.0)); glVertex3f(0.0f, 0.0f, -1.0f);
+	    glEnd();
+
+	    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+            glPixelStorei(GL_UNPACK_ROW_LENGTH, 512);
+            glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
+                         GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer + 512*224);
+
+	    glBegin(GL_QUADS);
+	        glTexCoord2f(0.0f, 0.0f);	   glVertex3f(-1.0f,  0.0f, -1.0f);
+		glTexCoord2f(1.0f, 0.0f);	   glVertex3f( 0.0f,  0.0f, -1.0f);
+		glTexCoord2f(1.0f, (224.0/256.0)); glVertex3f( 0.0f, -1.0f, -1.0f);
+		glTexCoord2f(0.0f, (224.0/256.0)); glVertex3f(-1.0f, -1.0f, -1.0f);
+	    glEnd();
+
+            glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
+                         GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer + 512*224 + 256);
+
+	    glBegin(GL_QUADS);
+	        glTexCoord2f(0.0f, 0.0f);	   glVertex3f( 0.0f,  0.0f, -1.0f);
+		glTexCoord2f(1.0f, 0.0f);	   glVertex3f( 1.0f,  0.0f, -1.0f);
+		glTexCoord2f(1.0f, (224.0/256.0)); glVertex3f( 1.0f, -1.0f, -1.0f);
+		glTexCoord2f(0.0f, (224.0/256.0)); glVertex3f( 0.0f, -1.0f, -1.0f);
+	    glEnd();
+	} else {
+	    int lasthires, lasthires_line = 0;
+
+	    gltexture256 = gltexture512 = 0;
+
+	    lasthires = SpecialLine[1];
+	    for (i = 1; i < 222; i++) {
+		if (SpecialLine[i+1]) {
+		    if (lasthires) continue;
+		    drawscreenwin_drawglblock(lasthires, lasthires_line, i);
+
+		    lasthires = SpecialLine[i+1];
+		    lasthires_line = i;
+		} else {
+		    if (!lasthires) continue;
+		    drawscreenwin_drawglblock(lasthires, lasthires_line, i);
+
+		    lasthires = SpecialLine[i+1];
+		    lasthires_line = i;
+		}
+	    }
+	    drawscreenwin_drawglblock(lasthires, lasthires_line, i);
+	}
     } else {
 #endif
 
