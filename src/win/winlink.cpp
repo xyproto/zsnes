@@ -417,8 +417,8 @@ aquireagain:;
 
       if (SUCCEEDED(hr))
       {
-         MouseMoveX=dims.lX;
-         MouseMoveY=dims.lY;
+         MouseMoveX=(float)dims.lX;
+         MouseMoveY=(float)dims.lY;
 
          if (MouseWheel == 1)
          {
@@ -485,7 +485,9 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
    static bool shiftpr;
    bool accept;
    int vkeyval;
-   short zDelta;
+
+   //MK: unused 2003/08/31
+   //   short zDelta;
 
 	switch (uMsg)
    {
@@ -1298,8 +1300,9 @@ int InitDirectDraw()
 {
    DDSURFACEDESC2 ddsd2;
    DDPIXELFORMAT format;
-   HRESULT hr;
-   char message1[256];
+   //MK: unused 2003/08/31
+   //HRESULT hr;
+   //char message1[256];
    unsigned int color32,ScreenPtr2;
    int i, j, k, r, g, b, Y, u, v;
 
@@ -1653,7 +1656,7 @@ void Start60HZ(void)
    }
    else
    {
-      update_ticks_pc = UPDATE_TICKS_GAME * freq / 1000;
+      update_ticks_pc = (__int64) UPDATE_TICKS_GAME * freq / 1000;
    }
 
    QueryPerformanceCounter((LARGE_INTEGER*)&start);
@@ -1699,9 +1702,12 @@ char WinName[]={"ZSNESW\0"};
 
 void initwinvideo(void)
 {
-   RECT zwindowrect;
+   //MK: unused 2003/08/31
+   //RECT zwindowrect;
    WINDOWPLACEMENT wndpl;
-   RECT rc1, swrect;
+   RECT rc1;
+   //MK: unused 2003/08/31
+   //RECT swrect;
    DWORD newmode=0;
    DWORD HQ3XMode=0;
 
@@ -1938,9 +1944,9 @@ void initwinvideo(void)
    if (!FirstVid)
    {   
       if (X<0)X=0;
-      if (X>(GetSystemMetrics(SM_CXSCREEN) - WindowWidth)) X=(GetSystemMetrics(SM_CXSCREEN) - WindowWidth);
+      if (X>(int)(GetSystemMetrics(SM_CXSCREEN) - WindowWidth)) X=(GetSystemMetrics(SM_CXSCREEN) - WindowWidth);
       if (Y<0)Y=0;
-      if (Y>(GetSystemMetrics(SM_CYSCREEN) - WindowHeight)) Y=(GetSystemMetrics(SM_CYSCREEN) - WindowHeight);
+      if (Y>(int)(GetSystemMetrics(SM_CYSCREEN) - WindowHeight)) Y=(GetSystemMetrics(SM_CYSCREEN) - WindowHeight);
 
       if (FullScreen==1) {X=0; Y=0;}
 
@@ -2477,7 +2483,7 @@ void drawscreenwin(void)
                }
             }
 
-            for(j=8;j<(resolutn-1)+8;j++)
+            for(j=8;(int)j<(resolutn-1)+8;j++)
             {
                color32=0x7F000000;
                for(i=0;i<32;i++)
@@ -2624,7 +2630,8 @@ void WinUpdateDevices()
    int i,j;
    unsigned char * keys;
    unsigned char keys2[256];
-   HRESULT hRes;
+   //MK: unused 2003/08/31
+   //HRESULT hRes;
 
    for (i = 0; i<256; i++)
    keys2[i] = 0;
@@ -2747,7 +2754,7 @@ void WinUpdateDevices()
 
          if (!POVDisable[i])
          {
-            for (int p=0; p<NumPOV[i]; p++)
+            for (int p=0; (unsigned long)p<NumPOV[i]; p++)
             {
                switch (js[i].rgdwPOV[p])
                {
@@ -2784,7 +2791,7 @@ void WinUpdateDevices()
          }
 
          if (NumBTN[i])
-            for (j=0; j<NumBTN[i]; j++)
+            for (j=0; (unsigned long)j<NumBTN[i]; j++)
                if (js[i].rgbButtons[j]) keys[0x100 + i * 32 + 16 + j] = 1;
       }
       else
@@ -2811,16 +2818,16 @@ int GetMouseX(void)
 
       if (TrapMouseCursor == 1)
       {
-         if (abs(MouseMoveX) > 10 && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
+         if (abs((int)MouseMoveX) > 10 && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
          {
             MouseInput->Unacquire();
-            SetCursorPos(X + WindowWidth + 32, Y + (MouseY * WindowHeight / 224));
+            SetCursorPos(X + WindowWidth + 32, (int)(Y + (MouseY * WindowHeight / 224)));
          }
       }
       else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
       {
          MouseInput->Unacquire();
-         SetCursorPos(X + WindowWidth + 1, Y + (MouseY * WindowHeight / 224));
+         SetCursorPos(X + WindowWidth + 1, (int)(Y + (MouseY * WindowHeight / 224)));
       }
    }
 
@@ -2830,16 +2837,16 @@ int GetMouseX(void)
 
       if (TrapMouseCursor == 1)
       {
-         if (abs(MouseMoveX) > 10 && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
+         if (abs((int)MouseMoveX) > 10 && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
          {
             MouseInput->Unacquire();
-            SetCursorPos(X - 32, Y + (MouseY * WindowHeight / 224));
+            SetCursorPos(X - 32, (int)(Y + (MouseY * WindowHeight / 224)));
          }
       }
       else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
       {
          MouseInput->Unacquire();
-         SetCursorPos(X - 1, Y + (MouseY * WindowHeight / 224));
+         SetCursorPos(X - 1, (int)(Y + (MouseY * WindowHeight / 224)));
       }
    }
    return((int) MouseX);
@@ -2855,16 +2862,16 @@ int GetMouseY(void)
 
       if (TrapMouseCursor == 1)
       {
-         if (abs(MouseMoveY) > 10 && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
+         if (abs((int)MouseMoveY) > 10 && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
          {
             MouseInput->Unacquire();
-            SetCursorPos(X+(MouseX * WindowWidth / 256), Y + WindowHeight + 32);
+            SetCursorPos((int)(X+(MouseX * WindowWidth / 256)), Y + WindowHeight + 32);
          }
       }
       else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
       {
          MouseInput->Unacquire();
-         SetCursorPos(X+(MouseX * WindowWidth / 256), Y + WindowHeight + 1);
+         SetCursorPos((int)(X+(MouseX * WindowWidth / 256)), Y + WindowHeight + 1);
       }
    }
 
@@ -2874,16 +2881,16 @@ int GetMouseY(void)
 
       if (TrapMouseCursor == 1)
       {
-         if (abs(MouseMoveY) > 10 && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
+         if (abs((int)MouseMoveY) > 10 && T36HZEnabled == 1 && FullScreen == 0 && MouseButtonPressed == 0)
          {
             MouseInput->Unacquire();
-            SetCursorPos(X + (MouseX * WindowWidth / 256), Y - 32);
+            SetCursorPos((int)(X + (MouseX * WindowWidth / 256)), Y - 32);
          }
       }
       else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
       {
          MouseInput->Unacquire();
-         SetCursorPos(X + (MouseX * WindowWidth / 256), Y - 1);
+         SetCursorPos((int)(X + (MouseX * WindowWidth / 256)), Y - 1);
       }
    }
 
@@ -2892,19 +2899,20 @@ int GetMouseY(void)
 
 int GetMouseMoveX(void)
 {
-   MouseMove2X=MouseMoveX;
+   MouseMove2X=(int)MouseMoveX;
    return(MouseMove2X);
 }
 
 int GetMouseMoveY(void)
 {
-   MouseMove2Y=MouseMoveY;
+   MouseMove2Y=(int)MouseMoveY;
    return(MouseMove2Y);
 }
 
 int GetMouseButton(void)
 {
-   RECT rc1;
+   //MK: unused 2003/08/31
+	//RECT rc1;
    if (MouseButton == 1) MouseButtonPressed = 1;
       else MouseButtonPressed = 0;
    if (MouseButton&2)
@@ -2912,12 +2920,12 @@ int GetMouseButton(void)
    while (MouseButton != 0 && T36HZEnabled && FullScreen == 0)
    {
          Moving = 1;
-         X += MouseMoveX;
-         Y += MouseMoveY;
+         X += (int) MouseMoveX;
+         Y += (int) MouseMoveY;
          if (X < 0)X = 0;
-         if (X > (GetSystemMetrics(SM_CXSCREEN) - WindowWidth)) X = (GetSystemMetrics(SM_CXSCREEN) - WindowWidth);
+         if (X > (int)(GetSystemMetrics(SM_CXSCREEN) - WindowWidth)) X = (GetSystemMetrics(SM_CXSCREEN) - WindowWidth);
          if (Y < 0)Y=0;
-         if (Y > (GetSystemMetrics(SM_CYSCREEN) - WindowHeight)) Y = (GetSystemMetrics(SM_CYSCREEN) - WindowHeight);
+         if (Y > (int)(GetSystemMetrics(SM_CYSCREEN) - WindowHeight)) Y = (GetSystemMetrics(SM_CYSCREEN) - WindowHeight);
          InputRead();
          initwinvideo();
       }
@@ -2932,32 +2940,32 @@ int GetMouseButton(void)
 
 void SetMouseMinX(int MinX)
 {
-   MouseMinX = MinX;
+   MouseMinX = (float) MinX;
 }
 
 void SetMouseMaxX(int MaxX)
 {
-   MouseMaxX = MaxX;
+   MouseMaxX = (float) MaxX;
 }
 
 void SetMouseMinY(int MinY)
 {
-   MouseMinY = MinY;
+   MouseMinY = (float) MinY;
 }
 
 void SetMouseMaxY(int MaxY)
 {
-   MouseMaxY = MaxY;
+   MouseMaxY = (float) MaxY;
 }
 
 void SetMouseX(int X)
 {
-   MouseX = X;
+   MouseX = (float) X;
 }
 
 void SetMouseY(int Y)
 {
-   MouseY = Y;
+   MouseY = (float) Y;
 }
 
 void FrameSemaphore()
@@ -2967,7 +2975,7 @@ void FrameSemaphore()
       int delay;
       QueryPerformanceCounter((LARGE_INTEGER*)&end);
 
-      delay = ((update_ticks_pc - (end - start)) * 1000 / freq) - 3;
+      delay = (int) ((update_ticks_pc - (end - start)) * 1000 / freq) - 3;
    
       if (delay>0) WaitForSingleObject(hLock, delay);
 
