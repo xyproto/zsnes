@@ -59,13 +59,10 @@ MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o smoke.o
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ}
 
-.SUFFIXES: .c .cpp .asm 
+.SUFFIXES: .c .asm 
 
 %.o: %.c
 	@CC@ @CFLAGS@ -o $@ -c $<
-
-%.o: %.cpp
-	@CXX@ @CXXFLAGS@ -o $@ -c $<
 
 %.o: %.asm
 	@NASMPATH@ @NFLAGS@ -o $@ $<
