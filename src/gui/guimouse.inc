@@ -3246,6 +3246,10 @@ DisplayGUIPathsClick
     ;GUITextBoxInput 8,120,100,130,,16384
     ;GUITextBoxInput 135,95,235,105,,16384
     ;GUITextBoxInput 135,120,235,130,,16384
+    ;GUITextBoxInput 8,155,100,165,,16384
+    ;GUITextBoxInput 8,180,100,190,,16384
+    ;GUITextBoxInput 135,155,235,165,,16384
+    ;GUITextBoxInput 135,180,235,190,,16384
     ret
 
 DrawMouse:
