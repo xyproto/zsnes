@@ -1487,7 +1487,7 @@ NEWSYM SA1SHb,     dd 0
 NEWSYM NumberOfOpcodes2, dd 0
 NEWSYM ChangeOps, dd 0
 NEWSYM SFXProc,    dd 0
-
+NEWSYM EMUPause, db 0
 SECTION .text
 
 
