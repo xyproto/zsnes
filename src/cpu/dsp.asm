@@ -1473,7 +1473,10 @@ NEWSYM RDSPRegFF      ;
       mov ebx,eax
       mov eax,edx
       xor edx,edx
+      or eax,eax
+      jz .oopszero
       div ebx
+.oopszero
       mov [Voice0Time+%1*4],eax
       mov [GainDecBendDataTime+%1*4],eax
       pop eax
