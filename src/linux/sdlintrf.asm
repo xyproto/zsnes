@@ -970,7 +970,7 @@ SECTION .data
 
 ; Total Number of Video Modes
 %ifdef __OPENGL__
-NEWSYM NumVideoModes, dd 136
+NEWSYM NumVideoModes, dd 16
 %else
 NEWSYM NumVideoModes, dd 4
 %endif
@@ -1010,9 +1010,9 @@ NEWSYM GUIIEVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; (Interp | Eagle)
 NEWSYM GUIFSVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Full Screen
 NEWSYM GUISSVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Small Screen
 NEWSYM GUITBVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Triple Buffering
-NEWSYM GUIHSVID, db 0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0       ; Half/Quarter Scanlines
-NEWSYM GUI2xVID, db 0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0       ; 2xSaI/Super Eagle Engines
-NEWSYM GUIM7VID, db 0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0       ; ?Mode 7 video thing?
+NEWSYM GUIHSVID, db 0,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1       ; Half/Quarter Scanlines
+NEWSYM GUI2xVID, db 0,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1       ; 2xSaI/Super Eagle Engines
+NEWSYM GUIM7VID, db 0,0,1,1,0,1,1,1,1,1,1,1,1,1,1,1       ; ?Mode 7 video thing?
 NEWSYM GUIWFVID, db 0,1,0,1,0,0,1,0,0,0,0,1,1,0,0,0       ; If Windows Full Screen
 NEWSYM GUIDSIZE, db 0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0
 NEWSYM GUIRATIO, db 0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0
