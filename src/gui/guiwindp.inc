@@ -5053,7 +5053,7 @@ DisplayGUIAbout:
 ;    cmp byte[OSPort],3
 ;    jne .notwin32
 %ifndef __MSDOS__
-    mov dword[GUIwinsizey+11*4],124
+    mov dword[GUIwinsizey+11*4],130
 %endif
 ;.notwin32
     mov byte[GUIGUIAboutText1+1],'S'+136
@@ -5079,6 +5079,7 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,6,76,GUIGUIAboutText6
     GUIOuttextwin2 11,6,86,GUIGUIAboutText6b
     GUIOuttextwin2 11,6,96,GUIGUIAboutText6d
+    GUIOuttextwin2 11,6,106,GUIGUIAboutText6e
     add byte[GUItextcolor],15
     GUIOuttextwin2 11,5,15,GUIGUIAboutText1
     GUIOuttextwin2 11,5,35,GUIGUIAboutText3
@@ -5087,6 +5088,7 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,5,75,GUIGUIAboutText6
     GUIOuttextwin2 11,5,85,GUIGUIAboutText6b
     GUIOuttextwin2 11,5,95,GUIGUIAboutText6d
+    GUIOuttextwin2 11,5,105,GUIGUIAboutText6e
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 11,6,26,GUIGUIAboutText2
@@ -5100,7 +5102,7 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,5,65,GUIGUIAboutText5
     ret
 %else
-    DrawGUIButton 11,5,117,74,128,GUIGUIAboutText8,65,0,0
+    DrawGUIButton 11,5,125,74,136,GUIGUIAboutText8,65,0,0
     sub byte[GUItextcolor],15
     GUIOuttextwin2 11,6,16,GUIGUIAboutText1
     GUIOuttextwin2 11,6,26,GUIGUIAboutText7
@@ -5110,6 +5112,7 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,6,86,GUIGUIAboutText6
     GUIOuttextwin2 11,6,96,GUIGUIAboutText6b
     GUIOuttextwin2 11,6,106,GUIGUIAboutText6d
+    GUIOuttextwin2 11,6,116,GUIGUIAboutText6e
     add byte[GUItextcolor],15
     GUIOuttextwin2 11,5,15,GUIGUIAboutText1
     GUIOuttextwin2 11,5,25,GUIGUIAboutText7
@@ -5119,6 +5122,7 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,5,85,GUIGUIAboutText6
     GUIOuttextwin2 11,5,95,GUIGUIAboutText6b
     GUIOuttextwin2 11,5,105,GUIGUIAboutText6d
+    GUIOuttextwin2 11,5,115,GUIGUIAboutText6e
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 11,6,36,GUIGUIAboutText2
@@ -5137,11 +5141,13 @@ GUIGUIAboutText1 db 'ZSNES V0.Agh  ',0
 GUIGUIAboutText2 db 'CODED BY :  ',0
 GUIGUIAboutText3 db '    ZSKNIGHT',0
 GUIGUIAboutText4 db '    _DEMO_',0
+GUIGUIAboutText6c db '    PAGEFAULT',0
 GUIGUIAboutText5 db 'ASSISTANT CODERS :  ',0
 GUIGUIAboutText6 db '    PHAROS',0
 GUIGUIAboutText6b db '    TEUF',0
-GUIGUIAboutText6c db '    PAGEFAULT',0
 GUIGUIAboutText6d db '    THEODDONE33',0
+GUIGUIAboutText6e db '    STAINLESS',0
+
 %ifdef __WIN32__
 GUIGUIAboutText7 db 'WIN PORT V1.05',0
 %elifdef __LINUX__

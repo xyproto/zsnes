@@ -2893,7 +2893,7 @@ DisplayGUIAboutClick:
 ;    cmp byte[OSPort],3
 ;    jne near .nowin32
 %ifndef __MSDOS__
-    GUIPHoldbutton 5,117,74,128,65
+    GUIPHoldbutton 5,125,74,136,65
 %endif
 ;.nowin32
     ret
