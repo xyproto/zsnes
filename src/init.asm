@@ -2385,44 +2385,46 @@ NEWSYM init65816
 
     mov eax,055555555h
 
-    mov esi,[romdata]
-    add esi,07FC0h
-    cmp word[esi],'BS'  ; 7FFFFFA
-    jne .notbsx
-.yesbsx
-    mov eax,0FFFFFFFFh
-    pushad
-    xor edx,edx
-    mov eax,128
-    mov ebx,[NumofBanks]
-    div ebx
-    mov ecx,eax
-    dec ecx
-    jz .skipbsxmove
-    mov ebx,[NumofBanks]
-    shl ebx,15
-    mov edx,ebx
-    add ebx,[romdata]
-.loopbsx
-    mov esi,[romdata]
-    mov edi,edx
-.loopbsx2
-    mov al,[esi]
-    xor al,al
-    mov [ebx],al
-    inc esi
-    inc ebx
-    dec edi
-    jnz .loopbsx2
-    dec ecx
-    jnz .loopbsx
-.skipbsxmove
-    popad
-.notbsx
+    ;mov esi,[romdata]
+    ;add esi,07FC0h
+    ;cmp word[esi],'BS'  ; 7FFFFFA
+    ;jne .notbsx
+;.yesbsx
+    ;mov eax,0FFFFFFFFh
+    ;pushad
+    ;xor edx,edx
+    ;mov eax,128
+    ;mov ebx,[NumofBanks]
+    ;div ebx
+    ;mov ecx,eax
+    ;dec ecx
+    ;jz .skipbsxmove
+    ;mov ebx,[NumofBanks]
+    ;shl ebx,15
+    ;mov edx,ebx
+    ;add ebx,[romdata]
+;.loopbsx
+    ;mov esi,[romdata]
+    ;mov edi,edx
+;.loopbsx2
+    ;mov al,[esi]
+    ;xor al,al
+    ;mov [ebx],al
+    ;inc esi
+    ;inc ebx
+    ;dec edi
+    ;jnz .loopbsx2
+    ;dec ecx
+    ;jnz .loopbsx
+;.skipbsxmove
+    ;popad
+;.notbsx
 
     helpclearmem wramdataa, 65536
     helpclearmem ram7fa, 65536
-    cmp word[esi],'BS'
+    cmp byte[BSEnable],1
+    jne .notbsx2
+    cmp byte[romtype],1 ;Hack for BS HiROMs
     jne .notbsx2
     mov dword[ram7fa+65528],01010101h
     mov dword[ram7fa+65532],01010101h
@@ -2510,9 +2512,11 @@ NEWSYM initsnes
 
     mov esi,[romdata]
     add esi,7FC0h
-    cmp word[esi],'BS'  ; 7FFFFFA
+    cmp byte[BSEnable],1
+    jne .notbsx3
+    cmp byte[romtype],1 ;Hack for BS HiROMs
     je near .bslorom
-
+.notbsx3
     mov esi,[romdata]
     add esi,32704+22
     cmp byte[romtype],2
@@ -2532,16 +2536,14 @@ NEWSYM initsnes
     mov byte[MultiTap],0
 .mtap
 
-    mov al,[esi]
-    and al,0F0h
     cmp byte[romtype],1
     jne .nosfx
-    cmp al,10h
+    cmp byte[SFXEnable],1
     je near .sfx
 .nosfx
-    cmp al,30h
+    cmp byte[SA1Enable],1
     je near SA1memmap
-    cmp al,40h
+    cmp byte[SDD1Enable],1
     je near SDD1memmap
 
     cmp byte[SPC7110Enable],1
@@ -5415,6 +5417,15 @@ NEWSYM showinfogui
     mov dword[CSStatus+29],'SGB '
     mov dword[CSStatus+33],'    '
 .nosgb
+    cmp byte[BSEnable],0
+    je .nobs
+    mov dword[CSStatus+29],'BROA'
+    mov dword[CSStatus+33],'DCST'
+    ;dummy out date so CRC32 matches
+    sub esi,3
+    mov word[esi],042h ;42 is the answer, and the uCONSRT standard
+.nobs
+
     mov dword[CSStatus2+12],'No  '
     cmp byte[Interleaved],0
     je .nointlv
@@ -6291,6 +6302,8 @@ NEWSYM CheckROMType
     mov byte[DSP2Enable],0
     mov byte[DSP3Enable],0
     mov byte[DSP4Enable],0
+    mov byte[BSEnable],0
+
 
     mov esi,[romdata]
     cmp byte[NumofBanks],128
@@ -6433,6 +6446,38 @@ NEWSYM CheckROMType
     mov byte[CHIPSRAM],1
     jmp .endchpdtct
 .notDSP1B
+    cmp byte[esi+5],033h
+    je .bsgoodDA
+    cmp byte[esi+5],0FFh
+    je .bsgoodDA
+    jmp .notBS
+.bsgoodDA
+    cmp al,0
+    je .bsgoodD5
+    mov bl,al
+    and bl,083h
+    cmp bl,080h
+    je .bsgoodD5
+    jmp .notBS
+.bsgoodD5
+    cmp ah,0FFh
+    jne .checkgooddate
+    cmp byte[esi+1],0FFh
+    je .validdate
+    jmp .notBS
+.checkgooddate
+    mov bh,ah
+    and bh,0Fh
+    jnz .notBS
+    mov bh,ah
+    shr bh,4
+    dec bh
+    cmp bh,12
+    jae .notBS
+.validdate
+    mov byte[BSEnable],1
+    jmp .endchpdtct
+.notBS
 .endchpdtct
 
     cmp byte[DSP1Enable],1
@@ -6563,6 +6608,7 @@ NEWSYM DSP1Enable, resb 1
 NEWSYM DSP2Enable, resb 1
 NEWSYM DSP3Enable, resb 1
 NEWSYM DSP4Enable, resb 1
+NEWSYM BSEnable, resb 1
 NEWSYM C4RamR,   resd 1
 NEWSYM C4RamW,   resd 1
 NEWSYM C4Ram,   resd 1
