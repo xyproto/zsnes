@@ -1196,6 +1196,19 @@ GUIVideoKeys:
     je .nobilinearfilter
     xor byte[BilinearFilter],1
 .nobilinearfilter
+%ifdef __WIN32__
+    cmp dh,'T'
+    jne .notriplebufferwin
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUITBWVID+eax],0
+    je near .notriplebufferwin
+    xor byte[TripleBufferWin],1
+;    mov byte[vsyncon],0
+;    mov byte[cfgvsync],0
+    call initDirectDraw
+ .notriplebufferwin
+ %endif
 %ifdef __MSDOS__
     cmp dh,'T'
     jne .notriplebuffer

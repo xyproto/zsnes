@@ -2351,11 +2351,19 @@ DisplayGUIVideoClick:
     GUIClickCButton4 61,114,byte[scanlines],byte[cfgscanline],3
     GUIClickCButton4 101,114,byte[scanlines],byte[cfgscanline],2
 .nohsline
+%ifdef __WIN32__
+     xor ebx,ebx
+     mov bl,[cvidmode]
+     cmp byte[GUITBWVID+ebx],0
+     je near .notriplebufferwin
+     GUIClickCButtonf 11,123,byte[TripleBufferWin],initDirectDraw
+.notriplebufferwin
+%endif
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUIHQ3X+ebx],0
     je .nocheckboxhq3x
-    GUIClickCButtonHQ 11,123,byte[hq3xFilter]
+    GUIClickCButtonHQ 115,163,byte[hq3xFilter]
 .nocheckboxhq3x
     xor ebx,ebx
     mov bl,[cvidmode]

@@ -1760,7 +1760,7 @@ DisplayGUIVideo:
 .notext7
     cmp byte[GUITBWVID+eax],0
     je .notext77
-    GUIOuttextwin2u 5,98,178,GUIVideoText10,0
+    GUIOuttextwin2u 5,96,178,GUIVideoText10,0
 .notext77
     xor eax,eax
     mov al,[cvidmode]
@@ -1774,7 +1774,7 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUIHQ3X+eax],0
     je near .notext11
-    GUIOuttextwin2u 5,26,128,GUIVideoTexthq3x,1
+    GUIOuttextwin2u 5,130,168,GUIVideoTexthq3x,1
 .notext11
     GUIOuttextwin2u 5,26,188,GUIVideoText8c,0
 %ifndef __LINUX__
@@ -1885,7 +1885,7 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUIHQ3X+eax],0
     je near .notext11b
-    GUIOuttextwin2 5,25,127,GUIVideoTexthq3x
+    GUIOuttextwin2 5,129,167,GUIVideoTexthq3x
 .notext11b
     GUIOuttextwin2 5,25,187,GUIVideoText8c
 %ifndef __LINUX__
@@ -2079,7 +2079,7 @@ DisplayGUIVideo:
     je .nocheckbox1hq3x
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1hq3x
-    GUIDisplayIconWin 5,11,123,[GUITemp]
+    GUIDisplayIconWin 5,115,163,[GUITemp]
 .nocheckbox2hq3x
     DrawGUIWinBox 5,5,26,115,69,167
     DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],5,28,GUIVStA
@@ -2195,12 +2195,12 @@ GUIVideoTexta db 'FULL',0
 GUIVideoTexta2 db '50%',0
 GUIVideoTexta3 db '25%',0
 GUIVideoTextc db '2XSAI ENGINE',0
-GUIVideoTextd db 'SUPER EAGLE ENGINE',0
-GUIVideoTextd2 db 'SUPER 2XSAI ENGINE',0
+GUIVideoTextd db 'SUPER EAGLE',0
+GUIVideoTextd2 db 'SUPER 2XSAI',0
 GUIVideoTextbf db 'BILINEAR FILTER',0
 GUIVideoText3 db 'INTERPOLATION',0      ; -y
 GUIVideoText4 db 'EAGLE ENGINE',0       ; -y
-GUIVideoTexthq3x db 'HQ3X FILTER',0
+GUIVideoTexthq3x db 'HQ3X',0
 GUIVideoText5 db 'FULL SCREEN',0        ; -c
 GUIVideoText5b db 'WIDE SCREEN',0        ; -c
 GUIVideoText6 db 'SMALL SCREEN',0       ; -c
