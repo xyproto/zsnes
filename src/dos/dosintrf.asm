@@ -596,7 +596,9 @@ NEWSYM Get_Dir
 .noslash
     mov [eax],dl
     inc eax
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
     popad
     push edx
     mov ah,19h
@@ -999,7 +1001,9 @@ NEWSYM vidpastecopyscr       ; GUI screen render
    mov bx,[GUICPC+ebx*2]
    mov [eax+edx*2],bx
    dec edx
-   loop .loop
+;   loop .loop
+    dec ecx
+    jnz .loop
 .no16bconv
    popad
    jmp DosDrawScreenB

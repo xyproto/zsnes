@@ -178,7 +178,9 @@ NEWSYM GetCoords
   jz .XAxis
   inc dword[JoyX]
   inc dword[JoyY]
-  loop .loopa
+;  loop .loopa
+  dec ecx
+  jnz .loopa
   mov byte [JoyExists], 0
   mov dword[JoyX],0
   mov dword[JoyY],0
@@ -191,7 +193,9 @@ NEWSYM GetCoords
   nop
   inc dword[JoyY]
   nop
-  loop .YAxis
+;  loop .YAxis
+  dec ecx
+  jnz .YAxis
   mov byte [JoyExists], 0
   mov dword[JoyX],0
   mov dword[JoyY],0
@@ -205,7 +209,9 @@ NEWSYM GetCoords
   nop
   inc dword[JoyX]
   nop
-  loop .XAxis
+;  loop .XAxis
+  dec ecx
+  jnz .XAxis
   mov byte [JoyExists], 0
   mov dword[JoyX],0
   mov dword[JoyY],0

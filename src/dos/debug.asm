@@ -661,7 +661,9 @@ NEWSYM getstring
 .nz
     mov [edi],al
     inc edi
-    loop .nz
+;    loop .nz
+    dec ecx
+    jnz .nz
     xor ebx,ebx
 .tryinputagain
     ; input string
@@ -712,7 +714,9 @@ NEWSYM getstring
     dec esi
     mov [es:edi],al
     sub edi,2
-    loop .okloop
+;    loop .okloop
+    dec ecx
+    jnz .okloop
     inc bl
     jmp .tryinputagain
 .trybackspace
@@ -735,7 +739,9 @@ NEWSYM getstring
     dec esi
     mov [es:edi],al
     sub edi,2
-    loop .okloop2
+;    loop .okloop2
+    dec ecx
+    jnz .okloop2
 .noloop
     mov dl,[clearchar]
     mov byte[es:edi],dl
@@ -774,7 +780,9 @@ NEWSYM modify
     sub byte[wx],4
     add byte[wx2],4
     pop ecx
-    loop .loopa
+;    loop .loopa
+    dec ecx
+    jnz .loopa
     push es
     mov ax,[selcB800]
     mov es,ax
@@ -785,7 +793,9 @@ NEWSYM modify
 .loopb
     lodsb
     stosw
-    loop .loopb
+;    loop .loopb
+    dec ecx
+    jnz .loopb
     mov edi,12*160+29*2
     mov esi,.message2
     mov ecx,18
@@ -793,7 +803,9 @@ NEWSYM modify
 .loopc
     lodsb
     stosw
-    loop .loopc
+;    loop .loopc
+    dec ecx
+    jnz .loopc
     mov edi,14*160+29*2
     mov esi,.message3
     mov ecx,18
@@ -801,7 +813,9 @@ NEWSYM modify
 .loopd
     lodsb
     stosw
-    loop .loopd
+;    loop .loopd
+    dec ecx
+    jnz .loopd
     ; set cursor to (10,50)
     mov ah,02h
     mov bl,0
@@ -947,7 +961,9 @@ NEWSYM SPCmodify
     sub byte[wx],4
     add byte[wx2],4
     pop ecx
-    loop .loopa
+;    loop .loopa
+    dec ecx
+    jnz .loopa
     push es
     mov ax,[selcB800]
     mov es,ax
@@ -958,7 +974,9 @@ NEWSYM SPCmodify
 .loopb
     lodsb
     stosw
-    loop .loopb
+;    loop .loopb
+    dec ecx
+    jnz .loopb
     mov edi,12*160+30*2
     mov esi,.message2
     mov ecx,18
@@ -966,7 +984,9 @@ NEWSYM SPCmodify
 .loopc
     lodsb
     stosw
-    loop .loopc
+;    loop .loopc
+    dec ecx
+    jnz .loopc
     mov edi,14*160+30*2
     mov esi,.message3
     mov ecx,18
@@ -974,7 +994,9 @@ NEWSYM SPCmodify
 .loopd
     lodsb
     stosw
-    loop .loopd
+;    loop .loopd
+    dec ecx
+    jnz .loopd
     ; set cursor to (10,50)
     mov ah,02h
     mov bl,0
@@ -1117,7 +1139,9 @@ NEWSYM SPCbreakpoint
 .loopb
     lodsb
     stosw
-    loop .loopb
+;    loop .loopb
+    dec ecx
+    jnz .loopb
     ; set cursor to (10,50)
     mov ah,02h
     mov bl,0
@@ -1242,7 +1266,9 @@ NEWSYM breakpoint
 .loopb
     lodsb
     stosw
-    loop .loopb
+;    loop .loopb
+    dec ecx
+    jnz .loopb
     ; set cursor to (10,50)
     mov ah,02h
     mov bl,0
@@ -1345,7 +1371,9 @@ NEWSYM trace
 .loopb
     lodsb
     stosw
-    loop .loopb
+;    loop .loopb
+    dec ecx
+    jnz .loopb
     mov edi,12*160+52*2
     mov al,32
     mov ah,79
@@ -1434,7 +1462,9 @@ NEWSYM traceops
 .loopb
     lodsb
     stosw
-    loop .loopb
+;    loop .loopb
+    dec ecx
+    jnz .loopb
     xor eax,eax
     xor ebx,ebx
     xor ecx,ecx
@@ -1528,7 +1558,9 @@ NEWSYM SPCbreakops
 .loopb
     lodsb
     stosw
-    loop .loopb
+;    loop .loopb
+    dec ecx
+    jnz .loopb
     xor eax,eax
     xor ebx,ebx
     xor ecx,ecx
@@ -1624,7 +1656,9 @@ NEWSYM breakatsign
 .loopb
     lodsb
     stosw
-    loop .loopb
+;    loop .loopb
+    dec ecx
+    jnz .loopb
     xor eax,eax
     xor ebx,ebx
     xor ecx,ecx
@@ -1726,7 +1760,9 @@ NEWSYM breakatsignlog
 .loopb
     lodsb
     stosw
-    loop .loopb
+;    loop .loopb
+    dec ecx
+    jnz .loopb
 
     pushad
     mov ax,ds
@@ -2077,7 +2113,9 @@ NEWSYM breakops
 .loopb
     lodsb
     stosw
-    loop .loopb
+;    loop .loopb
+    dec ecx
+    jnz .loopb
     xor eax,eax
     xor ebx,ebx
     xor ecx,ecx
@@ -3593,7 +3631,9 @@ SECTION .text
     stosb
     pop ax
     shl ax,4
-    loop .loopa
+;    loop .loopa
+    dec ecx
+    jnz .loopa
     pop ecx
     ret
 
@@ -3611,7 +3651,9 @@ SECTION .text
     stosb
     pop ax
     shl ax,4
-    loop .loopb
+;    loop .loopb
+    dec ecx
+    jnz .loopb
     pop ecx
     ret
 
@@ -3808,7 +3850,9 @@ NEWSYM showdd
 .loopa
     lodsb
     stosw
-    loop .loopa
+;    loop .loopa
+    dec ecx
+    jnz .loopa
     add edi,6
     ; check if exceeded limit
     inc dx
@@ -4190,7 +4234,9 @@ NEWSYM nextspcopcode
     stosb
     pop ax
     shl ax,4
-    loop .loopa
+;    loop .loopa
+    dec ecx
+    jnz .loopa
     pop ecx
     sub ecx,2
     ret
@@ -4209,7 +4255,9 @@ NEWSYM nextspcopcode
     stosb
     pop ax
     shl ax,4
-    loop .loopb
+;    loop .loopb
+    dec ecx
+    jnz .loopb
     pop ecx
     ret
 

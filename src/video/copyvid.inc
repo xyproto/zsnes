@@ -259,13 +259,13 @@ NEWSYM DosDrawScreenB
 ScreenShow:
     cmp byte[debugdisble],0
     je .debug
+    cmp byte[cvidmode],2
+    je near copymodeq
+.debug
     cmp byte[cvidmode],0
     je near copymodeq224
     cmp byte[cvidmode],1
     je near copymodeq240
-    cmp byte[cvidmode],2
-    je near copymodeq
-.debug
     cmp byte[cvidmode],3
     je near copymodex
     cmp byte[cvidmode],4
@@ -1620,7 +1620,9 @@ NEWSYM draweagle
     mov [es:edi],eax
     add edx,4
     add edi,4
-    loop .copyloop
+;    loop .copyloop
+    dec ecx
+    jnz .copyloop
     xor eax,eax
 
     ; process EAGLE on the upper line
@@ -1694,7 +1696,9 @@ NEWSYM draweagle
     mov [es:edi],eax
     add edx,4
     add edi,4
-    loop .copyloop2
+;    loop .copyloop2
+    dec ecx
+    jnz .copyloop2
     xor eax,eax
 
     sub esi,256         ; move esi back to left side of the line
@@ -2295,7 +2299,9 @@ NEWSYM ConvertToAFormat
     or ebx,eax
     mov [esi],ebx
     add esi,4
-    loop .crgbloop2
+;    loop .crgbloop2
+    dec ecx
+    jnz .crgbloop2
     add esi,64
     dec dl
     jnz .crgbloop
@@ -2314,6 +2320,8 @@ NEWSYM ConvertToAFormat
     por mm0,mm1
     movq [esi],mm0
     add esi,8
+;    loop .crgbloop2m
+    dec ecx
     loop .crgbloop2m
     add esi,64
     dec dl
@@ -2339,7 +2347,9 @@ NEWSYM UnConvertToAFormat
     or ebx,eax
     mov [esi],ebx
     add esi,4
-    loop .crgbloop2
+;    loop .crgbloop2
+    dec ecx
+    jnz .crgbloop2
     add esi,64
     dec dl
     jnz .crgbloop
@@ -3871,6 +3881,8 @@ Process2xSaI:
 .nextb
     mov dword[ebx],0FFFFFFFFh
     add ebx,4
+;    loop .nextb
+    dec ecx
     loop .nextb
     pop ebx
     jmp .returninterp
@@ -3935,7 +3947,9 @@ Process2xSaI:
     movq [es:eax],mm0
     add edx,8
     add eax,8
-    loop .s2xsailoop
+;    loop .s2xsailoop
+    dec ecx
+    jnz .s2xsailoop
     mov edx,[spritetablea]
     add edx,512+1280
     add eax,128*2
@@ -3945,7 +3959,9 @@ Process2xSaI:
     movq [es:eax],mm0
     add edx,8
     add eax,8
-    loop .s2xsailoop2
+;    loop .s2xsailoop2
+    dec ecx
+    jnz .s2xsailoop2
     jmp .dones2xsai
 %endif
 
@@ -3964,7 +3980,9 @@ Process2xSaI:
 .loop
     mov dword[es:edi],0
     add edi,4
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
     emms
     pop es
     ret
@@ -4682,7 +4700,9 @@ NEWSYM interpolate640x480x16b
     add esi,2
     add edi,4
     add edx,4
-    loop .a
+;    loop .a
+    dec ecx
+    jnz .a
     add esi,66
     add edi,130*2
 .loopb
@@ -4713,7 +4733,9 @@ NEWSYM interpolate640x480x16b
     add esi,2
     add edi,4
     add edx,4
-    loop .c
+;    loop .c
+    dec ecx
+    jnz .c
     add edi,130*2
     mov edx,[spritetablea]
     mov ecx,255
@@ -4722,7 +4744,9 @@ NEWSYM interpolate640x480x16b
     mov [es:edi],eax
     add edx,4
     add edi,4
-    loop .d
+;    loop .d
+    dec ecx
+    jnz .d
     inc dword[InterPtr]
     add esi,66
     add edi,130*2
@@ -5708,7 +5732,9 @@ NEWSYM getcopyvesa2320x240x16b
     mov [esi],ax
     add edi,2
     add esi,2
-    loop .loop
+;   loop .loop
+    dec ecx
+    jnz .loop
     add edi,128
     add esi,64
     mov ecx,256
@@ -5737,7 +5763,9 @@ ConvertImageDatared10:
     or ax,dx
     mov [esi],ax
     add esi,2
-    loop .loop
+;    loop .loop
+    dec ecx
+    jnz .loop
     add esi,64
     mov ecx,256
     dec ebx
