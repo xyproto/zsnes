@@ -5321,7 +5321,11 @@ GUIGUIAboutTextB db 'NO WARRANTY.  This is free',0
 GUIGUIAboutTextC db 'software, and you are welcome',0
 GUIGUIAboutTextD db 'to redistribute it under',0
 GUIGUIAboutTextE db 'certain conditions; please',0
-GUIGUIAboutTextF db 'please read ',39,'LICENSE',39,0
+%ifndef __LINUX__
+GUIGUIAboutTextF db 'read ',39,'LICENSE.TXT',39,0
+%else
+GUIGUIAboutTextF db 'read ',39,'LICENSE',39,0
+%endif
 GUIGUIAboutTextG db 'thoroughly before using it.',0
 
 SECTION .text
