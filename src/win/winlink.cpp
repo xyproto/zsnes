@@ -468,6 +468,7 @@ int RegisterWinClass(void)
 
       if (hFindWindow != NULL)
       {
+         ShowWindow(hFindWindow, SW_SHOWNORMAL);
          SetForegroundWindow(hFindWindow);
          DosExit();
       }
