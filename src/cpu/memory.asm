@@ -4819,7 +4819,7 @@ NEWSYM SDD1EntryPtr, dd 0
 NEWSYM LatestBank, dd 0FFFFh
 NEWSYM memaccessbankr8sdd1
 ;    TestSDD1
-;    jmp debugdecompress
+    jmp debugdecompress
 ;    call FillArray
     mov byte[.found4],0
 
