@@ -188,7 +188,9 @@ NEWSYM newengine8b
     mov byte[bgallchange+eax],1
 .nobgma
 
-    mov byte[modeused+eax],1
+    ; new graphics fix, thanks to TRAC
+    and ebx,07h
+    mov byte[modeused+ebx],1
 
     ; Pointer to OBJ tile data
     mov ebx,[bg1objptr]
