@@ -27,8 +27,12 @@ EXTSYM StereoSound,antienab,cvidmode,enterpress,frameskip,guioff
 EXTSYM newengen,per2exec,pl1Ak,pl1Bk,pl1Lk,pl1Rk,pl1Xk,pl1Yk
 EXTSYM pl1contrl,pl1downk,pl1leftk,pl1rightk,scanlines,soundon
 EXTSYM spcon,vsyncon,Open_File,Read_File
-    EXTSYM Create_File,Write_File,Close_File
-
+EXTSYM Create_File,Write_File,Close_File
+%ifdef __LINUX__
+; if TextFile==0, zlib functions aren't used
+; useful to save the config file
+EXTSYM TextFile
+%endif
 
 NEWSYM CfgLoadAsmStart
 
@@ -272,6 +276,9 @@ NEWSYM DOScreatenewcfg
     push ecx
     ; Save .CFG file
     mov edx,CMDLineStr
+%ifdef _GZIP__
+    mov byte[TextFile], 1
+%endif
     call Create_File
     pop ecx
     jc .failed
@@ -280,6 +287,9 @@ NEWSYM DOScreatenewcfg
     mov edx,mode7tab
     call Write_File
     call Close_File
+%ifdef __GZIP__
+    mov byte[TextFile], 0
+%endif
 .failed
     ret
 
