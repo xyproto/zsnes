@@ -196,24 +196,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdSh
    // START FIX - STATMAT - 22/01/02
    //if((longueur!=0) && (!nofile))
    if(longueur != 0)   
-   {
-      /* REMOVED
-      char *fvar;
-      fvar=&fname;
-      
-      fvar[0] = longueur;
-      if(szCmdLine[0]=='"')
-      {
-         strncpy(&fvar[1],&szCmdLine[1],127);
-         fvar[longueur-1]=0;
-      }
-      else
-      {
-         strncpy(&fvar[1],szCmdLine,127);
-      }
-      makeextension();
-      REMOVED */
-      
+   {      
       argv = (char **) calloc(1, sizeof(char *));
       argv[0] = (char *) calloc(1, strlen(fname2) + strlen(ext) + 1);
       sprintf(argv[0], "%s%s\0", fname2, ext);
