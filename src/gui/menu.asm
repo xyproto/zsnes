@@ -33,6 +33,7 @@ EXTSYM Clear2xSaIBuffer
 EXTSYM romdata,romtype,ScreenShotFormat
 EXTSYM Voice0Disable,Voice1Disable,Voice2Disable,Voice3Disable
 EXTSYM Voice4Disable,Voice5Disable,Voice6Disable,Voice7Disable
+EXTSYM SRAMDrive, SRAMDir, SPCPath, Change_Dir
 %ifndef NO_PNG
 EXTSYM Grab_PNG_Data
 %endif
@@ -968,6 +969,12 @@ NEWSYM savespcdata
 ;  times 2  db 0 ; fade-out length in milliseconds
 ;  db 0          ; default channel enables
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    mov dl,[SRAMDrive] ; Need to get rid of this, no reason for it
+    mov ebx,SPCPath
+    call Change_Dir
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
     mov edx,.spcfname
     call Create_File
     mov bx,ax
@@ -1008,6 +1015,11 @@ NEWSYM savespcdata
 
 %endif
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    mov dl,[SRAMDrive]
+    mov ebx,SRAMDir
+    call Change_Dir
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ret
 
 SECTION .bss
