@@ -381,12 +381,6 @@ extern "C" void CheckAlwaysOnTop()
       else SetWindowPos(hMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 }
 
-extern "C" void CheckScreenSaver()
-{
-   if (DisableScreenSaver == 1 && IsActivated == 1) SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, 0, SPIF_SENDCHANGE);
-      else SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, TRUE, 0, SPIF_SENDCHANGE);
-}
-
 extern "C" void MinimizeWindow()
 {
    ShowWindow(hMainWindow, SW_MINIMIZE);
@@ -473,7 +467,6 @@ void ExitFunction()
       }
    }
    IsActivated = 0;
-   CheckScreenSaver();
    ReleaseDirectInput();
    ReleaseDirectSound();
    ReleaseDirectDraw();
@@ -598,34 +591,41 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             InputAcquire();
             if (FirstActivate == 1) FirstActivate = 0;
             CheckPriority();
-            CheckScreenSaver();
          }
          if (LOWORD(wParam) == WA_INACTIVE)
          {
             IsActivated = 0;
             InputDeAcquire();
             if (GUIOn2 == 1) SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
-            CheckScreenSaver();
          }
          break;
       case WM_SETFOCUS:
          if (FullScreen == 0) ShowWindow(hMainWindow, SW_SHOWNORMAL);
          CheckPriority();
-         CheckScreenSaver();
          InputAcquire();
          break;
       case WM_KILLFOCUS:
          InputDeAcquire();
          IsActivated = 0;
          if (GUIOn2 == 1) SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
-         CheckScreenSaver();
          break;
       case WM_DESTROY:
          break;
       case WM_CLOSE:
          break;
+	  case WM_SYSCOMMAND:
+		  { 
+			  switch (wParam)
+			  { 
+			  case SC_MONITORPOWER:
+				  return 0;
+			  } 
+		  }
+		break;
       default:
          return DefWindowProc(hWnd,uMsg,wParam,lParam);
+} 
+
    }
 	return 0;
 }
@@ -2061,7 +2061,6 @@ void initwinvideo(void)
 
       CheckPriority();
       CheckAlwaysOnTop();
-      CheckScreenSaver();
 
       if (!hMainWindow)
       { 
