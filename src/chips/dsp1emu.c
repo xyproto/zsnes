@@ -445,7 +445,7 @@ void DSPOp02()
    NAzsB = (Op02AZS-0x4000)*6.2832/65536.0;
    NAasB = Op02AAS*6.2832/65536.0;
 
-   if (tan(NAzsB)==0) return;
+   if (tan(NAzsB)==0) NAzsB=0.1;
 
    ScrDispl=0;
    if (NAzsB>-0.15) {NAzsB=-0.15;ScrDispl=Op02VVA-0xFFDA;}
@@ -514,8 +514,8 @@ void GetRXYPos(){
    NAzs = NAzsB - atan((RVPos) / (double)Op02LES);
    NAas = NAasB;// + atan(RHPos) / (double)Op02LES);
 
-   if (cos(NAzs)==0) return;
-   if (tan(NAzs)==0) return;
+   if (cos(NAzs)==0) NAzs+=0.001;
+   if (tan(NAzs)==0) NAzs+=0.001;
 
    RXRes = (-sin(NAas)*ViewerZc/(tan(NAzs))+ViewerXc);
    RYRes = (cos(NAas)*ViewerZc/(tan(NAzs))+ViewerYc);
@@ -1051,7 +1051,7 @@ void DSPOp0B()
 
 void DSPOp1B()
 {   
-        Op1BS = (Op1BX*matrixA2[0][0]+Op1BY*matrixA2[0][1]+Op1BZ*matrixA2[0][2])*sc2*50;
+        Op1BS = (Op1BX*matrixA2[0][0]+Op1BY*matrixA2[0][1]+Op1BZ*matrixA2[0][2])*sc2;
 #ifdef DebugDSP1
       Log_Message("OP1B X: %d Y: %d Z: %d S: %d",Op1BX,Op1BY,Op1BZ,Op1BS);
 #endif
