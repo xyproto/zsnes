@@ -272,18 +272,28 @@ void DDrawError(){
 extern "C" BYTE vsyncon;
 extern "C" BYTE KitchenSync;
 
+extern "C" BYTE TripleBufferWin;
+
 void DrawScreen()
 {
-  if (FullScreen == 1)
-  {
-    if ((DD_Primary != NULL) && (DD_BackBuffer != NULL))
-    {
-      if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
-        DD_Primary->Restore();
-
-      if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
-        DD_Primary->Restore();
-
+   if (FullScreen == 1)
+   {
+      if (TripleBufferWin == 1)
+      {
+         DD_BackBuffer->Blt(NULL, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
+         DD_Primary->Flip(NULL, DDFLIP_WAIT);
+      }
+      else
+      {
+         if (vsyncon == 1)
+         {
+            if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
+            {
+               DDrawError();
+            }
+         }
+         DD_Primary->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
+      }
       if (KitchenSync == 1)
       {
          if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
@@ -292,20 +302,18 @@ void DrawScreen()
          if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
            DD_Primary->Restore();
       }
-
-    }
-  }
-  else
-  {
-    if (vsyncon == 1)
-    {
-      if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
+   }
+   else
+   {
+      if (vsyncon == 1)
       {
-        DDrawError();
+         if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
+         {
+            DDrawError();
+         }
       }
-    }
-    DD_Primary->Blt(&rcWindow, AltSurface == 0 ? DD_CFB : DD_CFB16, &BlitArea, DDBLT_WAIT, NULL);
-  }
+         DD_Primary->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
+   }
 }
  
 DWORD InputEn=0;
