@@ -157,24 +157,26 @@ char *generate_filename(void)
 	while (*tmp!=0) tmp++;
 	while ((*tmp!='/') && (tmp!=&fnames)) tmp--;
 	tmp++;
-	// I assume that fnames has already an extension
 	// allocates enough memory to store the filename
 #ifdef __LINUX__
-	filename = (char *)malloc(strlen(tmp)+6);
+	filename = (char *)malloc(strlen(tmp)+10);
 #endif
 #ifdef __WIN32__
 	filename = (char *)malloc(strlen(tmp)+25);
 #endif
 	strcpy(filename, tmp);
 	tmp = filename;
-	while (*tmp!='.') tmp++;
+	while (*tmp!='.') {
+	  if (*tmp == ' ') *tmp = '_';
+	  tmp++;
+	}
 
 #ifdef __WIN32__
 	/*get system time.*/
 	GetLocalTime(&time);
 	
 	/*make filename from local time*/
-	wsprintf(tmp," %d_%02d_%02d_%02d-%02d-%02d.png\0", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
+	wsprintf(tmp," %d %02d_%02d %02d-%02d-%02d.png\0", time.wYear, time.wMonth, time.wDay, time.wHour, time.wMinute, time.wSecond);
 #endif
 #ifdef __LINUX__
 	/*find first unused file*/
@@ -183,11 +185,9 @@ char *generate_filename(void)
 
 	for(i=0;i<10000;i++)
 	{
-		if(i>1000)
-			sprintf(tmp, " %03d.png", i);
-		else sprintf(tmp, " %04d.png", i);
-		if(stat(filename, &buf)==-1)
-			break;
+	  sprintf(tmp, "_%04d.png", i);
+	  if(stat(filename, &buf)==-1)
+	    break;
 	}
 #endif
 	return filename;
