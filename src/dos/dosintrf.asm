@@ -1074,6 +1074,7 @@ NEWSYM GUIWFVID, db 0,0,0,0,0,0,0,0,0,0,0,0     ; If Windows Full Screen
 NEWSYM GUII2VID, db 0,0,0,0,0,0,0,0,0,0,0,0     ; Interpolation
 NEWSYM GUIM7VID, db 0,0,0,0,0,1,0,0,0,0,0,0     ; Interpolation
 NEWSYM GUIBIFIL, db 0,0,0,0,0,0,0,0,0,0,0,0     ; Bilinear Filtering
+NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0     ; Triple Buffering (Win)
 SECTION .text
 
 ; ****************************

@@ -1014,6 +1014,7 @@ NEWSYM GUIWFVID, db 0,1,0,1,0,0,1,0,0,0,0,1,1       ; If Windows Full Screen
 NEWSYM GUIDSIZE, db 0,0,1,1,0,0,0,0,0,0,0,0,0
 NEWSYM GUIRATIO, db 0,1,0,0,0,0,1,0,0,0,0,0,0
 NEWSYM GUIBIFIL, db 0,0,0,0,1,1,1,1,1,1,1,1,1       ; binlinear = 1, nearest = 0
+NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0       ; Triple Buffering (Win)
 	
 SECTION .text
 
