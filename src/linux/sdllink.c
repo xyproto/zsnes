@@ -580,6 +580,22 @@ BOOL InitInput()
 	return TRUE;
 }
 
+int saybitdepth()
+{
+  int MyBitsPerPixel;
+  const SDL_VideoInfo *info;
+  SDL_Init(SDL_INIT_VIDEO);
+  info = SDL_GetVideoInfo();
+  MyBitsPerPixel = info->vfmt->BitsPerPixel;
+  switch (MyBitsPerPixel)
+    {
+    case 0: printf("Cannot detect bitdepth. On fbcon and svgalib this is normal.\nTrying to force 16 bpp.\n\n"); break;
+    case 16: break;
+    default: printf("You are running in %d bpp, but ZSNES is forcing 16 bpp.\nYou may experience poor performance and/or crashing.\n\n", MyBitsPerPixel); break;
+    }
+  return 0;
+}
+
 int startgame(void)
 {
 	int status;
@@ -598,7 +614,7 @@ int startgame(void)
 	if (sdl_state == vid_soft) sw_end();
 #ifdef __OPENGL__
 	else if (sdl_state == vid_gl) gl_end();
-
+	saybitdepth();
 	if (UseOpenGL)
 	{
 		status = gl_start(WindowWidth, WindowHeight, BitDepth, FullScreen);
