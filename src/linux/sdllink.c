@@ -212,6 +212,7 @@ void LinuxExit(void);
 
 int Main_Proc(void)
 {
+	int j;
 	// TODO: Main event loop
 	SDL_Event event;
 	Uint8 JoyButton;
@@ -257,26 +258,20 @@ int Main_Proc(void)
  
 		case SDL_JOYAXISMOTION:
 			CurrentJoy = event.jaxis.which;
-			if( event.jaxis.axis == 0) {
-				if (event.jaxis.value < -16384) {
-					pressed[0x100 + CurrentJoy*32 + 1] = 1;
-				} else if (event.jaxis.value > 16384) {
-					pressed[0x100 + CurrentJoy*32 + 0] = 1;
-				} else {
-					pressed[0x100 + CurrentJoy*32 + 1] = 0;
-					pressed[0x100 + CurrentJoy*32 + 0] = 0;
+			for (j=0; j<3; j++) {
+				if (event.jaxis.axis == j) {
+					if (event.jaxis.value < -16384) {
+						pressed[0x100 + CurrentJoy*32 + 2*j + 1] = 1;
+						pressed[0x100 + CurrentJoy*32 + 2*j + 0] = 0;
+					} else if (event.jaxis.value > 16384) {
+						pressed[0x100 + CurrentJoy*32 + 2*j + 0] = 1;
+						pressed[0x100 + CurrentJoy*32 + 2*j + 1] = 0;
+					} else {
+						pressed[0x100 + CurrentJoy*32 + 2*j + 0] = 0;
+						pressed[0x100 + CurrentJoy*32 + 2*j + 1] = 0;
+					}
 				}
-			}
-			if( event.jaxis.axis == 1) {
-				if (event.jaxis.value < -16384)  {
-					pressed[0x100 + CurrentJoy*32 + 3] = 1;
-				} else if (event.jaxis.value > 16384) {
-					pressed[0x100 + CurrentJoy*32 + 2] = 1;
-				} else {
-					pressed[0x100 + CurrentJoy*32 + 3] = 0;
-					pressed[0x100 + CurrentJoy*32 + 2] = 0;
-				}
-			}        			
+			}						
 			break;
         		
 		case SDL_JOYBUTTONDOWN:
@@ -858,12 +853,18 @@ BOOL InitJoystickInput(void)
 	// before initialising SDL_INIT_JOYSTICK then
 	// this call can be replaced with SDL_InitSubSystem
    	if (!SDL_NumJoysticks()) {
-		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);		
+		printf ("ZSNES could not find any joysticks.\n");
+		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);	       
 		return FALSE;		
 	}
    	SDL_JoystickEventState(SDL_ENABLE);
-   	for (i=0; i<SDL_NumJoysticks(); i++)
+   	for (i=0; i<SDL_NumJoysticks(); i++) {
    		JoystickInput[i]=SDL_JoystickOpen(i);
+		printf ("Joystick %i (%i Buttons): %s\n", i, 
+			SDL_JoystickNumButtons(JoystickInput[i]), 
+			SDL_JoystickName(i));
+	}
+
    	return TRUE;
 }
 #else // __WIN32__
