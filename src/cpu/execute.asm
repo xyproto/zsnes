@@ -108,8 +108,8 @@ EXTSYM SfxSFR,nosprincr
 EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 EXTSYM NetPlayNoMore,MovieSeekBehind
 EXTSYM statefileloc,CHIPBATT,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
-EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead,ResetDuringMovie,MovieExitLoop
-EXTSYM EMUPauseKey,INCRFrameKey
+EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead,ResetDuringMovie
+EXTSYM EMUPauseKey,INCRFrameKey,MovieWaiting
 
 %ifdef __MSDOS__
 EXTSYM dssel
@@ -894,16 +894,6 @@ reexecuteb2:
     call DeInitPostGame
 .skippostgame
 
-    cmp byte[MovieExitLoop],1
-    jne .notmoviereset
-    mov byte[MovieExitLoop],0
-    ;mov byte[MovieProcessing],0
-    call GUIDoReset
-    mov byte[MovieProcessing],1    
-    mov byte[ReturnFromSPCStall],0
-    jmp continueprog    
-.notmoviereset
-    
     ; clear all keys
     call Check_Key
     cmp al,0
@@ -2003,6 +1993,25 @@ NEWSYM cpuover
     cmp byte[EMUPause],1
     je .nonewgfx
 .noemupause
+
+    cmp byte[MovieProcessing],0
+    je .noprocmovie
+    pushad
+    call ProcessMovies
+    popad
+    cmp byte[GUIReset],1
+    jne .notreset
+    mov byte[MovieWaiting],1
+    mov eax,[KeyQuickRst]
+    mov byte[pressed+eax],01h
+    jnz near exitloop
+.notreset    
+    cmp byte[MovieProcessing],0
+    jne .noprocmovie
+    cmp byte[ZMVZClose],1
+    jne .noprocmovie
+    jmp OSExit
+.noprocmovie    
         
     call UpdateRewind
 
@@ -2762,23 +2771,6 @@ NEWSYM cpuover
     mov byte[pressed+1],01h
     jmp exitloop
 .noquitb
-
-    cmp byte[MovieProcessing],0
-    je .noprocmovie
-    pushad
-    call ProcessMovies
-    popad
-    cmp byte[MovieProcessing],0
-    jne .notmoviedone
-    cmp byte[ZMVZClose],1
-    jne .notmoviedone
-    jmp OSExit
-.notmoviedone    
-    cmp byte[MovieExitLoop],1
-    jne .noprocmovie
-    mov byte[MovieProcessing],0
-    jmp reexecuteb
-.noprocmovie
 
     test byte[INTEnab],1
     jz .noresetjoy

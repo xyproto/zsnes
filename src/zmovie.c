@@ -882,14 +882,12 @@ static bool zmv_open(char *filename)
   return(false);
 }
 
-//If this returns true, the caller should not proccess another input
 static bool zmv_replay_command(enum zmv_commands command)
 {
   switch (command)
   {
-    case zmv_command_reset:
-      GUIReset = 1;
-      return(true);
+
+    default:
       break;
   }
   return(false);
@@ -942,11 +940,18 @@ static bool zmv_replay()
 
       if (flag & BIT(0)) //Command
       {
-        if (zmv_replay_command(flag >> 1));
+        unsigned char command = flag >> 1;
+        if (command == zmv_command_reset)
         {
+          GUIReset = 1;
+          ReturnFromSPCStall = 0;
           return(true);
+        }        
+        if (zmv_replay_command(command));
+        {
+          return(zmv_replay());
         }
-        return(zmv_replay());
+        return(false);
       }
 
       if (flag & BIT(1)) //RLE
@@ -1556,6 +1561,7 @@ static size_t MovieSub_GetDuration()
 
 /////////////////////////////////////////////////////////
 
+bool MovieWaiting = false;
 enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY };
 #define SetMovieMode(mode) (MovieProcessing = (unsigned char)mode)
 
@@ -1805,17 +1811,12 @@ void Replay()
   }
 }
 
-bool MovieExitLoop = false;
 void ProcessMovies()
 {
   switch (MovieProcessing)
   {
     case MOVIE_PLAYBACK:
       Replay();
-      if (GUIReset == 1)
-      {
-        MovieExitLoop = true;  
-      }
       break;
     case MOVIE_RECORD:
       zmv_record(SloMo50 ? true : false, ComboCounter);
@@ -1841,7 +1842,7 @@ void SkipMovie()
 
 void MovieStop()
 {
-  if (MovieProcessing)
+  if (MovieProcessing && !MovieWaiting)
   {
     switch (MovieProcessing)
     {
@@ -1870,6 +1871,7 @@ void MovieStop()
     SetMovieMode(MOVIE_OFF);
     SRAMState = PrevSRAMState;
   }
+  MovieWaiting = false;
 }
 
 void MoviePlay()
