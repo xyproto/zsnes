@@ -54,7 +54,6 @@ extern unsigned char	Palette0, SPC700sh, OffBy1Line, DSPDisable,
 int getopt(int argc, char *const argv[], const char *optstring);
 extern char *optarg;
 extern int optind, opterr, optopt;
-extern int BitDepth;
 
 void ccmdline(void);
 
@@ -99,7 +98,7 @@ int main (int argc, char *argv[]) {
 	char *fvar;
 
 	UnProtectMemory();
-	while((opt = getopt(argc, argv, "01:2:789ab:c:d:ef:g:hijk:lmno:p:r:s:tuv:wyz?")) != -1) {
+	while((opt = getopt(argc, argv, "01:2:789ac:d:ef:g:hijk:lmno:p:r:s:tuv:wyz?")) != -1) {
 		switch(opt) {
 			/* Palette 0 disable */
 			case '0': {
@@ -141,21 +140,6 @@ int main (int argc, char *argv[]) {
 			/* Off by 1 line */
 			case '9': {
 				OffBy1Line = 1;
-				break;
-			}
-
-			case 'b': {
-				// What was this? - DDOI	
-				//SoundCompD = 1;
-				if(optarg != NULL)
-					BitDepth = atoi(optarg);
-				if (BitDepth != 8 && BitDepth != 16 &&
-					BitDepth != 24 && BitDepth != 32)
-				{
-					printf ("%d is not a valid bit depth.\n", BitDepth);
-					exit(1);
-				}
-							
 				break;
 			}
 

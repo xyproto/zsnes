@@ -145,7 +145,7 @@ NEWSYM welcome
 %else
 %ifdef __LINUX__
                  db 'ZSNES v1.',ZVERSION,' beta (c)1997-2001 ZSNES Team (zsKnight - _Demo_)',13,10
-                 db 'Linux beta version, please report crashes to zsnes-devel@lists.sourceforge.net.',13,10
+                 db 'Linux version, please report crashes to zsnes-devel@lists.sourceforge.net.',13,10
                  db 'Compiled under NASM, GCC',13,10,13,10
 %else
                  db 'ZSNES v1.',ZVERSION,' beta (c)1997-2001 ZSNES Team (zsKnight - _Demo_)',13,10
@@ -1359,7 +1359,6 @@ SECTION .data
           db '  -9      Off by 1 line fix',13,10
           db '  -a      Turn on auto frame skip',13,10
 %ifdef __LINUX__
-          db '  -b #    Select bit depth',13,10
           db '  -cs     Scale to fit screen (320x240 VESA2/640x480 VESA2)',13,10
 %else
           db '  -c     Scale to fit screen (320x240 VESA2/640x480 VESA2)',13,10

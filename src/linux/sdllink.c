@@ -491,14 +491,11 @@ int startgame(void)
 
    surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, flags);
    if (surface == NULL) {
-	   if (BitDepth)
-		   fprintf (stderr, "Could not set %ld%ld%ld video mode.\n",
-				   WindowWidth,WindowHeight,BitDepth);
-	   else
-	   	fprintf (stderr, "Could not set %ldx%ld video mode.\n",WindowWidth,
-				WindowHeight);
-	   return FALSE;
+	fprintf (stderr, "Could not set %ldx%ld video mode.\n",WindowWidth,
+			WindowHeight);
+	return FALSE;
    }
+
    SurfaceLocking = SDL_MUSTLOCK(surface);
    SDL_WarpMouse(SurfaceX/4,SurfaceY/4);
 
@@ -1357,7 +1354,7 @@ void drawscreenwin(void)
 			   break;
 		   default:
 			   UnlockSurface();
-			   fprintf(stderr, "Mode only available in 16 bit color.\nTry running ZSNES with -b 16.\n");
+			   fprintf(stderr, "Mode only available in 16 bit color.\n");
 			   LinuxExit();
 			   /*
 			   cvidmode=2;
@@ -1380,7 +1377,7 @@ void drawscreenwin(void)
 			break;
 		default:
 			   UnlockSurface();
-			   fprintf(stderr, "Mode only available in 16 bit color.\nTry running ZSNES with -b 16.\n");
+			   fprintf(stderr, "Mode only available in 16 bit color.\n");
 			   LinuxExit();
 			   /*
 			   cvidmode=2;
