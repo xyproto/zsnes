@@ -167,7 +167,7 @@ EXTSYM GUIHQ4X
 EXTSYM firstsaveinc
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord,MovieInsertChapter
-EXTSYM MovieSeekAhead,MovieSeekBehind
+EXTSYM MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
 
 %ifdef __LINUX__
 EXTSYM numlockptr
@@ -3592,8 +3592,16 @@ LoadSecondState:
 GUIProcReset:
     cmp byte[GUICBHold],2
     jne .noreset
+    pushad
     mov byte[GUIReset],1
+    cmp byte[MovieProcessing],2 ;Recording
+    jne .nomovierecording
+    call ResetDuringMovie
+    jmp .movieendif
+.nomovierecording    
     call GUIDoReset
+.movieendif    
+    popad
     cmp byte[CNetType],20
     jne .noreset
     call PreparePacket
