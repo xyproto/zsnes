@@ -33,7 +33,7 @@ EXTSYM extbgdone
 EXTSYM FPUZero,coladdb,coladdg,coladdr,pal16b,vesa2_bpos
 EXTSYM V8Mode,doveg,pal16bcl,pal16bxcl,prevbright,prevpal,vesa2_clbit
 EXTSYM vesa2_gpos,vesa2_rpos,vesa2_usbit,vidbright
-EXTSYM cgmod,cgram,gammalevel16b
+EXTSYM cgmod,cgram,gammalevel16b,dovegrest
 EXTSYM winspdata
 EXTSYM csprbit,csprprlft,sprclprio,sprsingle,sprpriodata
 EXTSYM bgofwptr,bgsubby,bshifter,curmosaicsz,cwinptr,osm2dis,temp
@@ -889,6 +889,10 @@ NEWSYM setpalall
     jnz near .loopa
     mov al,[vidbright]
     mov [prevbright],al
+    cmp byte[V8Mode],1
+    jne .noveg2
+    call dovegrest
+.noveg2
     ret
 
 NEWSYM colleft16b, db 0
@@ -964,6 +968,10 @@ NEWSYM setpalette16b
     inc byte[colleft16b]
     jnz near .loopa
 .skipall
+    cmp byte[V8Mode],1
+    jne .noveg2
+    call dovegrest
+.noveg2
     ret
 
 ;pal16b   times 256 dw 0

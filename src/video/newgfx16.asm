@@ -57,7 +57,7 @@ EXTSYM ofsmval,ofsmvalh,hdmaearlstart,ofsmvalh,cbgval,drawlinengom4b16b
 EXTSYM drawsprngw,ignor512,winbg1envals,FillSubScr,scanlines
 EXTSYM drawmode7win16bd,SpecialLine,vidmemch2s
 EXTSYM smallscreenon,ScreenScale,SA1Enable,drawlinengom16x164b16b
-EXTSYM doveg,V8Mode
+EXTSYM doveg,V8Mode,dovegrest
 EXTSYM bgallchange,bg1change,bg2change,bg3change,bg4change
 EXTSYM ngwinptr,objwlrpos,objwen,objclineptr,CSprWinPtr
 EXTSYM BuildWindow2    
@@ -166,6 +166,10 @@ NEWSYM setpalallng
     pop eax
     pop esi
     xor ecx,ecx
+    cmp byte[V8Mode],1
+    jne .noveg2
+    call dovegrest
+.noveg2
     ret
 
 NEWSYM setpalette16bng
@@ -264,6 +268,10 @@ NEWSYM setpalette16bng
     pop esi
     xor ecx,ecx
 .skipall
+    cmp byte[V8Mode],1
+    jne .noveg2
+    call dovegrest
+.noveg2
     ret
 
 prevpal2 times 256 dw 0F00Fh

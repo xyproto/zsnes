@@ -2225,8 +2225,17 @@ NEWSYM testpressed8b
 ; MakePal                     Changes the entire palette
 ;*******************************************************
 ; set the brightness with [maxbr]
+NEWSYM cgramback, times 256 dw 0
 NEWSYM doveg
     pushad
+    ; backup cgram
+    mov ecx,128
+    xor ebx,ebx
+.loop
+    mov eax,[cgram+ebx]
+    mov [cgramback+ebx],eax
+    add ebx,4
+    loop .loop
     xor eax,eax
     mov al,[coladdr]
     add al,[coladdg]
@@ -2269,6 +2278,19 @@ NEWSYM doveg
     add eax,2
     cmp eax,200h
     jne .next
+    popad
+    ret
+
+NEWSYM dovegrest
+    pushad
+    ; backup cgram
+    mov ecx,128
+    xor ebx,ebx
+.loop
+    mov eax,[cgramback+ebx]
+    mov [cgram+ebx],eax
+    add ebx,4
+    loop .loop
     popad
     ret
 
@@ -2404,6 +2426,10 @@ NEWSYM makepalb
     out dx,al
     out dx,al
 .nochange128
+    cmp byte[V8Mode],1
+    jne .noveg2
+    call dovegrest
+.noveg2
     ret
 NEWSYM tempco0, dw 0
 
@@ -2540,6 +2566,10 @@ NEWSYM doschangepal
     out dx,al
     out dx,al
 .nochange128
+    cmp byte[V8Mode],1
+    jne .noveg2
+    call dovegrest
+.noveg2
     ret
 
 NEWSYM prevbright, db 0                 ; previous brightness
@@ -3019,42 +3049,51 @@ NEWSYM hextestoutput
     EXTSYM Op14Zr,Op14Xr,Op14Yr,Op14U,Op14F,Op14L
     EXTSYM Op02CX,Op02CY,bg1scrolx,bg1scroly
     EXTSYM TValDebug,TValDebug2,curhdma
-    mov al,[scaddset]
+    mov ebx,[C4Ram]
+    mov al,[ebx]
     call outputhex
     mov esi,216*288+32+16
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[scaddtype]
+    mov ebx,[C4Ram]
+    mov al,[ebx+1]
     call outputhex
     mov esi,216*288+70
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[scrnon]
+    mov ebx,[C4Ram]
+    mov al,[ebx+2]
     call outputhex
     mov esi,216*288+70+16
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[scrnon+1]
+    mov ebx,[C4Ram]
+    mov al,[ebx+3]
     call outputhex
     mov esi,216*288+108
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[bg1scrolx+1]
+    mov ebx,[C4Ram]
+    mov al,[ebx+4]
     call outputhex
     mov esi,216*288+108+16
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[bg1scrolx]
+    mov ebx,[C4Ram]
+    mov al,[ebx+9]
     call outputhex
     mov esi,216*288+146
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[bg1scroly+1]
+    mov ebx,[C4Ram]
+    mov al,[ebx+10]
     call outputhex
     xor eax,eax
     mov esi,216*288+146+16
     add esi,[vidbuffer]
     or al,[bg1scroly]
+    mov ebx,[C4Ram]
+    mov al,[ebx+11]
     call outputhex
     ret
 
