@@ -1998,9 +1998,6 @@ void clearwin()
    {
       case 16:
          _asm {
-            push es
-            mov ax,ds
-            mov es,ax
             xor eax,eax
             mov edi,SurfBufD
             xor ebx,ebx
@@ -2008,20 +2005,17 @@ void clearwin()
             xor eax,eax
             mov ecx,SurfaceX
             rep stosw
+            mov SurfaceX,edx
             add edi,Temp1
-            sub edi,SurfaceX
-            sub edi,SurfaceX
+            shl edx,1
             add ebx,1
+            sub edx,edi
             cmp ebx,SurfaceY
             jne Blank2
-            pop es  // BUGFIX
          }
          break;
       case 32:
          _asm {
-            push es
-            mov ax,ds
-            mov es,ax
             xor eax,eax
             mov edi,SurfBufD
             xor ebx,ebx
@@ -2037,7 +2031,6 @@ void clearwin()
             add ebx,1
             cmp ebx,SurfaceY
             jne Blank3
-            pop es  // BUGFIX
          }
          break;
    }
