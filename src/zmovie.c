@@ -440,7 +440,7 @@ size_t internal_chapter_pos(struct internal_chapter_buf *icb, size_t offset)
       }
     }
   } while ((icb = icb->next));
-  return(0);
+  return(~0);
 }
 
 size_t internal_chapter_greater(struct internal_chapter_buf *icb, size_t offset)
@@ -799,8 +799,8 @@ void zmv_add_chapter()
   {
     size_t current_loc = ftell(zmv_vars.fp);
     
-    if (!internal_chapter_pos(&zmv_vars.internal_chapters, current_loc-(cur_zst_size+4)) &&
-        !internal_chapter_pos(&zmv_open_vars.external_chapters, current_loc))
+    if ((internal_chapter_pos(&zmv_vars.internal_chapters, current_loc-(cur_zst_size+4)) != ~0) &&
+        (internal_chapter_pos(&zmv_open_vars.external_chapters, current_loc)) != ~0)
     {
       unsigned char flag;
       fread(&flag, 1, 1, zmv_vars.fp);
