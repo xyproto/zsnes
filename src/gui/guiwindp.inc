@@ -4737,7 +4737,7 @@ GUIGUIOptnsTextC dd 'ENABLE WATER EFFECT',0
 DisplayGUIAbout:
     cmp byte[OSPort],3
     jne .notwin32
-    mov dword[GUIwinsizey+11*4],104
+    mov dword[GUIwinsizey+11*4],124
 .notwin32
     mov byte[GUIGUIAboutText1+1],'S'+136
     mov byte[GUIGUIAboutText1+2],'N'-26
@@ -4758,13 +4758,17 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,6,36,GUIGUIAboutText3
     GUIOuttextwin2 11,6,46,GUIGUIAboutText4
     GUIOuttextwin2 11,6,66,GUIGUIAboutText6
-    GUIOuttextwin2 11,5,75,GUIGUIAboutText6b
+    GUIOuttextwin2 11,6,76,GUIGUIAboutText6b
+    GUIOuttextwin2 11,6,86,GUIGUIAboutText6c
+    GUIOuttextwin2 11,6,96,GUIGUIAboutText6d
     add byte[GUItextcolor],15
     GUIOuttextwin2 11,5,15,GUIGUIAboutText1
     GUIOuttextwin2 11,5,35,GUIGUIAboutText3
     GUIOuttextwin2 11,5,45,GUIGUIAboutText4
     GUIOuttextwin2 11,5,65,GUIGUIAboutText6
     GUIOuttextwin2 11,5,75,GUIGUIAboutText6b
+    GUIOuttextwin2 11,5,85,GUIGUIAboutText6c
+    GUIOuttextwin2 11,5,95,GUIGUIAboutText6d
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 11,6,26,GUIGUIAboutText2
@@ -4778,7 +4782,7 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,5,55,GUIGUIAboutText5
     ret
 .win32
-    DrawGUIButton 11,5,97,74,108,GUIGUIAboutText8,65,0,0
+    DrawGUIButton 11,5,117,74,128,GUIGUIAboutText8,65,0,0
     sub byte[GUItextcolor],15
     GUIOuttextwin2 11,6,16,GUIGUIAboutText1
     GUIOuttextwin2 11,6,26,GUIGUIAboutText7
@@ -4786,6 +4790,8 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,6,56,GUIGUIAboutText4
     GUIOuttextwin2 11,6,76,GUIGUIAboutText6
     GUIOuttextwin2 11,6,86,GUIGUIAboutText6b
+    GUIOuttextwin2 11,6,96,GUIGUIAboutText6c
+    GUIOuttextwin2 11,6,106,GUIGUIAboutText6d
     add byte[GUItextcolor],15
     GUIOuttextwin2 11,5,15,GUIGUIAboutText1
     GUIOuttextwin2 11,5,25,GUIGUIAboutText7
@@ -4793,6 +4799,8 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,5,55,GUIGUIAboutText4
     GUIOuttextwin2 11,5,75,GUIGUIAboutText6
     GUIOuttextwin2 11,5,85,GUIGUIAboutText6b
+    GUIOuttextwin2 11,5,95,GUIGUIAboutText6c
+    GUIOuttextwin2 11,5,105,GUIGUIAboutText6d
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 11,6,36,GUIGUIAboutText2
@@ -4813,6 +4821,8 @@ GUIGUIAboutText4 db '    _DEMO_',0
 GUIGUIAboutText5 db 'ASSISTANT CODERS :  ',0
 GUIGUIAboutText6 db '    PHAROS',0
 GUIGUIAboutText6b db '    TEUF',0
+GUIGUIAboutText6c db '    PAGEFAULT',0
+GUIGUIAboutText6d db '    THEODDONE33',0
 %ifdef __LINUX__
 GUIGUIAboutText7 db 'LINUX PORT V0.13',0
 %else
