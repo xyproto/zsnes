@@ -1603,12 +1603,18 @@ section .text
     mov cl,[bshift]
     mov al,[esi]
     %1
-    test al,08h
-    jz %%noneg
-    or eax,0FFFFFFF0h
-%%noneg
+    ;sign extend
+    xor eax,8
+    sub eax,8
+
+    cmp cl,12
+    ja %%invalid_range
     shl eax,cl
     sar eax,1
+    jmp %%got_delta
+%%invalid_range
+    and eax,~0x7FF
+%%got_delta
     mov edx,eax
 
     cmp dword [filter0],240
@@ -1896,7 +1902,6 @@ ALIGN16
 %endmacro
 
 section .bss
-NEWSYM lastblockbrr, resd 8
 NEWSYM curvoice, resd 1
 section .text
 
@@ -1921,19 +1926,9 @@ BRRDecode:
     mov ebx,[Filter+eax*2]
     shr cl,4
     mov [filter0],ebx
-    push eax
 	mov ebx,[Filter+eax*2+4]
-    cmp cl,12
-    jbe .noprevblock
-    mov eax,[curvoice]
-    mov cl,[lastblockbrr+eax]
-.noprevblock
     mov [bshift],cl
 	mov [filter1],ebx
-    mov eax,[curvoice]
-    mov [lastblockbrr+eax],cl
-    pop eax
-    mov [bshift],cl
     mov byte[sampleleft],8
     jmp .nextsample
     ALIGN16
@@ -1985,18 +1980,9 @@ BRRDecode:
     mov ebx,[Filter+eax*2]
     shr cl,4
     mov [filter0],ebx
-    push eax
 	mov ebx,[Filter+eax*2+4]
-    cmp cl,12
-    jbe .noprevblock2
-    mov eax,[curvoice]
-    mov cl,[lastblockbrr+eax]
-.noprevblock2
     mov [bshift],cl
 	mov [filter1],ebx
-;    mov eax,[curvoice]
-;    mov [lastblockbrr+eax],cl
-    pop eax
 
     ProcessSample ProcessA
     mov [BRRreadahead],dx
