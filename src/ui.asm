@@ -1372,7 +1372,7 @@ SECTION .data
 %ifdef __LINUX__
           db '  -cs     Scale to fit screen (320x240 VESA2/640x480 VESA2)',13,10
 %else
-          db '  -c     Scale to fit screen (320x240 VESA2/640x480 VESA2)',13,10
+          db '  -c      Scale to fit screen (320x240 VESA2/640x480 VESA2)',13,10
 %endif
           db '  -cb     Remove Background Color in 256 color video modes',13,10
           db '  -cc     No image scale and center image in screen (640x480 VESA2)',13,10
@@ -1410,7 +1410,7 @@ SECTION .data
 %ifdef __LINUX__
           db '  -se     Enable SPC700/DSP emulation (Sound)',13,10
 %else
-          db '  -s     Enable SPC700/DSP emulation (Sound)',13,10
+          db '  -s      Enable SPC700/DSP emulation (Sound)',13,10
 %endif
           db '  -sa     Show all extensions in GUI (*.*)',13,10
           db '  -sn     Enable Snowy GUI Background',13,10
