@@ -511,16 +511,17 @@ reg2102w:
 .skipstore
     cmp byte[nexthprior],1
     je .priorset
-    mov byte[objhipr],0
+;   mov byte[objhipr],0
     jmp .cachespr
 .priorset
-    mov bl,al
-    cmp bl,80h
-    jae .noreset
+    mov bx,[oamaddr]
+    shr bx,2
+    and bl,0x7F
+;    cmp bl,80h
+;    jae .noreset
 ;    xor bl,bl
 .noreset
     mov [objhipr],bl
-    mov byte[nexthprior],0
 .cachespr
     ret
 
@@ -547,6 +548,7 @@ reg2103w:
     mov [oamaddrs],bx
     test al,80h
     jnz .hipri
+    mov byte[nexthprior],0
     mov byte[NextLineCache],1
     ret
 .hipri
