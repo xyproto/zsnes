@@ -2,178 +2,177 @@ What's New :
 ------------
 
 v1.337 - This release is dedicated to zsKnight and his family
-        All ports
-        ---------
-        - Added a customizable key to toggle display of the game clock in game
-          keys [pagefault]
-        - Added support for up to 100 SPC file saves per game [pagefault]
-        - Added customisable keys to increment and decrement the save state
-          slot [pagefault]
-        - Added a customisable key to quickly save an SPC file [pagefault]
-        - Added force NTSC/PAL and force HiROM and LoROM options to GUI
-          [pagefault]
-        - Added a customisable key to toggle the display of the FPS counter
-          [pagefault]
-        - Added keyboard shortcuts to video options menu [pagefault]
-        - Added feature to automatically increment save state slot after each
-          save [pagefault]
-        - Added new 8-point sound interpolation and two new lowpass filters
-          (requires a fast processor, 8pt interpolation and high quality
-          lowpass requires an MMX processor) [kode54]
-        - Fixed an annoying bug when the menu selection bar would be floating
-          in thin air (Thanks to EMu LoRd for pointing this out) [pagefault]
-        - Fixed MMX toggle option, now saved when you restart ZSNES
-          [pagefault]
-        - Fixed freeze/crash when saving SPC files [pagefault]
-        - Fixed filtered GUI option with 2xSaI enabled not refreshing the
-          screen [pagefault]
-        - Fixed graphics when reseting a game with 2xSaI engine on and the FPS
-          counter and/or game clock on [pagefault]
-        - Fixed Vortex, Clayfighter 2, Mr. Nutz, Tenchi Wo Kurau Sangokushi
-          Gunyuden and others now working again [_Demo_]
-        - Fixed Umi Hara Kawa Se and Tin Tin in Tibet [_Demo_]
-        - Fixed LoROM/HiROM detection code, Star Trek: Deep Space Nine and
-          possibly others now working [pagefault]
-        - Fixed Front Mission: Gun Hazard and Pocky and Rocky, now working
-          again [_Demo_]
-        - Fixed Neugier and Battle Grand Prix freezing after a certain point
-          in the game. [_Demo_]
-        - Fixed Marko's Magical Football copy protection [pagefault]
-        - Fixed problem with Filtered GUI enabled and parts of game screen
-          would show up in GUI menus [pagefault]
-        - Fixed frameskip command-line offset [pagefault]
-        - Fixed Sim Earth, now loads but map is still not visible [_Demo_]
-        - Fixed crash in Home Alone when starting a new game [_Demo_]
-        - Fixed sprites in Super James Pond 2 and Kirby Avalanche (Thanks
-          Snes9X for the info) [_Demo_]
-        - Fixed 256x239 SNES resolution offset in Windows and Linux ports,
-          games that use this resolution should now be displayed properly in
-          these ports [_Demo_]
-        - Fixed freeze in Accelebrid after a few seconds of gameplay [_Demo_]
-        - Fixed cursor getting messed up in Windows and Linux ports when using
-          a 16-bit desktop [_Demo_]
-        - Fixed bugs when switching between fullscreen and windowed modes with
-          fullscreen button in Windows and Linux port [pagefault]
-        - Fixed Triple Buffering and vsync options so they can't be enabled at
-          the time (Triple buffering includes vsync automatically) [pagefault]
-        - Fixed sprite layer disappearing when changing screenshot formats or
-          moving the F1 menu [pagefault]
-        - Fixed a clipping offset bug in the new gfx engine [pagefault]
-        - Fixed BG3 issue with sub-screens in new graphics engine, fixes gfx
-          in Bahamut Lagoon's intro and lots of other games [pagefault]
-        - Fixed timing problem in Clock Tower that caused it to freeze
-          randomly in-game [pagefault]
-        - Optimised global code base, most people should see a performance
-          increase [pagefault, stainless]
-        - Moved vsync option from game options menu to video options
-          [pagefault]
-        - Improved S-DD1 decompressed pack loading and execution, increases
-          performance in S-DD1 decompressed pack games [pagefault]
-        - Lots of debugger fixes and additions [byuu, bongo]
-        - Removed disable screensaver text from DOS and Linux ports
-          [pagefault]
-        - Updated water effect code to using lighting effects
-          [stainless, kode54]
-        - Improved SPC700 sample processing, fixes sounds in numerous games
-          [_Demo_]
-        - Disabled H-DMA for Bahamut Lagoon and Mortal Kombat, fixes some gfx
-          problems [pagefault]
-        - Changed default keyboard layout for player 2 as some keys were
-          overlapping player 1 (Oops!), If you were having problems buying
-          things in FF4 or in other games make sure to change your keys for
-          player 2. [pagefault]
-        - Cleaned up config file in Windows and Linux ports, removed DOS
-          related comments [pagefault]
-        - MMX option now checks for a MMX processor when enabling it in the
-          GUI, also no longer crashes on processors without a cpuid when
-          detecting MMX [pagefault, kode54]
-        - Last netplay IP address used is now saved in Windows and Linux ports
-          [pagefault]
-        - Reorganized sound menu; removed sound interpolation checkbox and
-          made a new list of different types of interpolation: gaussian
-          (original interpolation with enable interpolation option), cubic
-          spline and 8-point interpolation. Also made a new list of lowpass
-          filters. [pagefault]
-        - Removed FPU copy from -? option on command line message, since it is
-          no longer supported. Also cleaned up that message in general
-          [stainless]
-        - FPS at program start option no longer enables FPS display when auto
-          framerate is not enabled [pagefault]
-        - Updated video interpolation code, now looks better than before
-          [kode54]
-        - Lots of misc GUI fixes and cosmetic tweaks [pagefault]
+       All ports
+       ---------
+       - Added a customizable key to toggle display of the game clock in game
+         keys [pagefault]
+       - Added support for up to 100 SPC file saves per game [pagefault]
+       - Added customisable keys to increment and decrement the save state
+         slot [pagefault]
+       - Added a customisable key to quickly save an SPC file [pagefault]
+       - Added force NTSC/PAL and force HiROM and LoROM options to GUI
+         [pagefault]
+       - Added a customisable key to toggle the display of the FPS counter
+         [pagefault]
+       - Added keyboard shortcuts to video options menu [pagefault]
+       - Added feature to automatically increment save state slot after each
+         save [pagefault]
+       - Added new 8-point sound interpolation and two new lowpass filters
+         (requires a fast processor, 8pt interpolation and high quality
+         lowpass requires an MMX processor) [kode54]
+       - Fixed an annoying bug when the menu selection bar would be floating
+         in thin air (Thanks to EMu LoRd for pointing this out) [pagefault]
+       - Fixed MMX toggle option, now saved when you restart ZSNES
+         [pagefault]
+       - Fixed freeze/crash when saving SPC files [pagefault]
+       - Fixed filtered GUI option with 2xSaI enabled not refreshing the
+         screen [pagefault]
+       - Fixed graphics when reseting a game with 2xSaI engine on and the FPS
+         counter and/or game clock on [pagefault]
+       - Fixed Vortex, Clayfighter 2, Mr. Nutz, Tenchi Wo Kurau Sangokushi
+         Gunyuden and others now working again [_Demo_]
+       - Fixed Umi Hara Kawa Se and Tin Tin in Tibet [_Demo_]
+       - Fixed LoROM/HiROM detection code, Star Trek: Deep Space Nine and
+         possibly others now working [pagefault]
+       - Fixed Front Mission: Gun Hazard and Pocky and Rocky, now working
+         again [_Demo_]
+       - Fixed Neugier and Battle Grand Prix freezing after a certain point
+         in the game. [_Demo_]
+       - Fixed Marko's Magical Football copy protection [pagefault]
+       - Fixed problem with Filtered GUI enabled and parts of game screen
+         would show up in GUI menus [pagefault]
+       - Fixed frameskip command-line offset [pagefault]
+       - Fixed Sim Earth, now loads but map is still not visible [_Demo_]
+       - Fixed crash in Home Alone when starting a new game [_Demo_]
+       - Fixed sprites in Super James Pond 2 and Kirby Avalanche (Thanks
+         Snes9X for the info) [_Demo_]
+       - Fixed 256x239 SNES resolution offset in Windows and Linux ports,
+         games that use this resolution should now be displayed properly in
+         these ports [_Demo_]
+       - Fixed freeze in Accelebrid after a few seconds of gameplay [_Demo_]
+       - Fixed cursor getting messed up in Windows and Linux ports when using
+         a 16-bit desktop [_Demo_]
+       - Fixed bugs when switching between fullscreen and windowed modes with
+         fullscreen button in Windows and Linux port [pagefault]
+       - Fixed Triple Buffering and vsync options so they can't be enabled at
+         the time (Triple buffering includes vsync automatically) [pagefault]
+       - Fixed sprite layer disappearing when changing screenshot formats or
+         moving the F1 menu [pagefault]
+       - Fixed a clipping offset bug in the new gfx engine [pagefault]
+       - Fixed BG3 issue with sub-screens in new graphics engine, fixes gfx
+         in Bahamut Lagoon's intro and lots of other games [pagefault]
+       - Fixed timing problem in Clock Tower that caused it to freeze
+         randomly in-game [pagefault]
+       - Optimised global code base, most people should see a performance
+         increase [pagefault, stainless]
+       - Moved vsync option from game options menu to video options
+         [pagefault]
+       - Improved S-DD1 decompressed pack loading and execution, increases
+         performance in S-DD1 decompressed pack games [pagefault]
+       - Lots of debugger fixes and additions [byuu, bongo]
+       - Removed disable screensaver text from DOS and Linux ports
+         [pagefault]
+       - Updated water effect code to using lighting effects
+         [stainless, kode54]
+       - Improved SPC700 sample processing, fixes sounds in numerous games
+         [_Demo_]
+       - Disabled H-DMA for Bahamut Lagoon and Mortal Kombat, fixes some gfx
+         problems [pagefault]
+       - Changed default keyboard layout for player 2 as some keys were
+         overlapping player 1 (Oops!), If you were having problems buying
+         things in FF4 or in other games make sure to change your keys for
+         player 2. [pagefault]
+       - Cleaned up config file in Windows and Linux ports, removed DOS
+         related comments [pagefault]
+       - MMX option now checks for a MMX processor when enabling it in the
+         GUI, also no longer crashes on processors without a cpuid when
+         detecting MMX [pagefault, kode54]
+       - Last netplay IP address used is now saved in Windows and Linux ports
+         [pagefault]
+       - Reorganized sound menu; removed sound interpolation checkbox and
+         made a new list of different types of interpolation: gaussian
+         (original interpolation with enable interpolation option), cubic
+         spline and 8-point interpolation. Also made a new list of lowpass
+         filters. [pagefault]
+       - Removed FPU copy from -? option on command line message, since it is
+         no longer supported. Also cleaned up that message in general
+         [stainless]
+       - FPS at program start option no longer enables FPS display when auto
+         framerate is not enabled [pagefault]
+       - Updated video interpolation code, now looks better than before
+         [kode54]
+       - Lots of misc GUI fixes and cosmetic tweaks [pagefault]
 
-        DOS v1.337
-        ----------
-        - Added grayscale mode toggle to GUI [pagefault]
-        - Added support for 5 SNES gamepads on LPT1 [ZDrumm]
-        - Added two new 256 color linear VGA video modes, 256x224 and 256x240
-          [stainless]
-        - Added proper gamma correction, now ranges from 0 (1.0) to 15 (~2.0)
-          in 8bpp modes [stainless]
-        - Fixed Filtered GUI option, now works [pagefault]
-        - Fixed full scanlines disappearing in some modes [pagefault]
-        - Fixed a handful of bugs in the joystick code which may cause the
-          joystick not to work if it has a driver installed under Win9x
-          control panel [stainless]
-        - Fixed date problem in S-RTC games not reporting the proper day of
-          the week [stainless]
-        - Fixed issue with some sound blaster compatible cards not working
-          properly in the DOS port [kode54]
-        - Reordered video modes in alphabetical order [stainless]
-        - Improved SNES pad reading routine, any speed hit now should be
-          minimum when using a snespad adaptor [pagefault]
-        - Improved interpolation performance [stainless]
-        - Default keys for player 1 are now the same as Windows and Linux
-          ports [pagefault]
-        - You can now use / in command line options in addition to the
-          previous - character [stainless]
+       DOS v1.337
+       ----------
+       - Added grayscale mode toggle to GUI [pagefault]
+       - Added support for 5 SNES gamepads on LPT1 [ZDrumm]
+       - Added two new 256 color linear VGA video modes, 256x224 and 256x240
+         [stainless]
+       - Added proper gamma correction, now ranges from 0 (1.0) to 15 (~2.0)
+         in 8bpp modes [stainless]
+       - Fixed Filtered GUI option, now works [pagefault]
+       - Fixed full scanlines disappearing in some modes [pagefault]
+       - Fixed a handful of bugs in the joystick code which may cause the
+         joystick not to work if it has a driver installed under Win9x
+         control panel [stainless]
+       - Fixed date problem in S-RTC games not reporting the proper day of
+         the week [stainless]
+       - Fixed issue with some sound blaster compatible cards not working
+         properly in the DOS port [kode54]
+       - Reordered video modes in alphabetical order [stainless]
+       - Improved SNES pad reading routine, any speed hit now should be
+         minimum when using a snespad adaptor [pagefault]
+       - Improved interpolation performance [stainless]
+       - Default keys for player 1 are now the same as Windows and Linux
+         ports [pagefault]
+       - You can now use / in command line options in addition to the
+         previous - character [stainless]
 
-        Win v1.05
-        ---------
-        - Added option to toggle the trap mouse cursor feature which prevents
-          the mouse cursor from leaving the window by accident [pagefault]
-        - Added 640x480 DS WIN; 1024x768 DR FULL; 1280x960 S/DS WIN, S FULL;
-          1280x1024 DR/R/DS WIN and FULL resolutions [pagefault]
-        - Added a more meaningful message when changing to a resolution isn't
-          supported [pagefault]
-        - Fixed problem with SRAM not being saved when pressing ALT-F4 in game
-          [pagefault]
-        - Updated icon yet again, looks really nice. [enigMa]
-        - Fixed possible crash when exiting [pagefault]
-        - Fixed bug when scrolling in scrollboxes in the GUI would not trap
-          the mouse cursor inside the scrollbox like the DOS port does
-          [pagefault]
-        - Either alt key can now be used when using the alt-enter combination
-          to switch to fullscreen [pagefault]
-        - Removed triple buffering option from windowed video modes (it does
-          not work in windowed mode) [pagefault]
-        - Optimised some Windows port specific code, should give a small speed
-          boost for most people [pagefault]
-        - Rewrote mouse input code, much more efficient now. [pagefault]
-        - Reordered video modes in alphabetical order; removed 64x52 and
-          128x112 resolutions (Thanks to Terrorcide and McGuiver for helping
-          me test this out) [pagefault]
-        - Improved performance in 32bpp windowed modes [pagefault]
-        - Rewrote some of the audio code to be much more efficient, also added
-          MMX optimisations [pagefault, kode54]
-        - When switching to windowed mode from fullscreen, the window position
-          is now remembered [pagefault]
-        - Removed large sound buffer and exclusive mode option, they shouldn't
-          be needed anymore [pagefault]
-        - Now uses idle task priority when in GUI and window is not active,
-          should also smooth task swtiching on slower computers [pagefault]
+       Win v1.05
+       ---------
+       - Added option to toggle the trap mouse cursor feature which prevents
+         the mouse cursor from leaving the window by accident [pagefault]
+       - Added 640x480 DS WIN; 1024x768 DR FULL; 1280x960 S/DS WIN, S FULL;
+         1280x1024 DR/R/DS WIN and FULL resolutions [pagefault]
+       - Added a more meaningful message when changing to a resolution isn't
+         supported [pagefault]
+       - Fixed problem with SRAM not being saved when pressing ALT-F4 in game
+         [pagefault]
+       - Updated icon yet again, looks really nice. [enigMa]
+       - Fixed possible crash when exiting [pagefault]
+       - Fixed bug when scrolling in scrollboxes in the GUI would not trap
+         the mouse cursor inside the scrollbox like the DOS port does
+         [pagefault]
+       - Either alt key can now be used when using the alt-enter combination
+         to switch to fullscreen [pagefault]
+       - Removed triple buffering option from windowed video modes (it does
+         not work in windowed mode) [pagefault]
+       - Optimised some Windows port specific code, should give a small speed
+         boost for most people [pagefault]
+       - Rewrote mouse input code, much more efficient now. [pagefault]
+       - Reordered video modes in alphabetical order; removed 64x52 and
+         128x112 resolutions (Thanks to Terrorcide and McGuiver for helping
+         me test this out) [pagefault]
+       - Improved performance in 32bpp windowed modes [pagefault]
+       - Rewrote some of the audio code to be much more efficient, also added
+         MMX optimisations [pagefault, kode54]
+       - When switching to windowed mode from fullscreen, the window position
+         is now remembered [pagefault]
+       - Removed large sound buffer and exclusive mode option, they shouldn't
+         be needed anymore [pagefault]
+       - Now uses idle task priority when in GUI and window is not active,
+         should also smooth task swtiching on slower computers [pagefault]
 
-        Linux v0.37
-        -----------
-        - Added autoconf support for easy compiling [Diablo-D3, amit,
-          theoddone33]
-        - Fixed sound buffering in linux port to improve sound on some cards
-          [Diablo-D3]
-        - Implemented S-RTC time functions, FEoEZ and other S-RTC games will
-          now report system time in game [pagefault]
-        - Now supports compiling with gcc 3.0.0 [EvilTypeGuy]
-
+       Linux v0.37
+       -----------
+       - Added autoconf support for easy compiling [Diablo-D3, amit,
+         theoddone33]
+       - Fixed sound buffering in linux port to improve sound on some cards
+         [Diablo-D3]
+       - Implemented S-RTC time functions, FEoEZ and other S-RTC games will
+         now report system time in game [pagefault]
+       - Now supports compiling with gcc 3.0.0 [EvilTypeGuy]
 
 v1.31b
        All ports
