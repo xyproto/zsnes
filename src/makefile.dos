@@ -61,7 +61,7 @@ MAINOBJ=cfgload.o endmem.o fixsin.o init.o initc.o patch.o ui.o vcache.o water.o
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${ZIPOBJ}
 LIBS=-lz -lm -lpng
 #CFLAGS=-O2 -Wall -Wno-unused -D__MSDOS__
-CFLAGS=-O3 -march=i586 -fno-rtti -fno-exceptions -ffast-math\
+CFLAGS=-O3 -march=i586 -fno-exceptions -ffast-math\
 -fomit-frame-pointer -fno-unroll-loops -Wall -Wno-unused -D__MSDOS__
 ASM=nasm
 ASMFLAGS=-O1 -f coff -D__MSDOS__
