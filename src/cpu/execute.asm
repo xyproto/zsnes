@@ -1303,6 +1303,7 @@ NEWSYM endprog
 
     EXTSYM SDD1Array,SDD1Entry,SDD1Sort
     call SDD1Sort
+    jmp .nodecomppack
     cmp byte[SDD1Enable],0
     jne .yesdecomppack
     cmp dword[SDD1Entry],0

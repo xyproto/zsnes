@@ -656,6 +656,7 @@ NEWSYM SprValAdd, db 0
 C4Data dd 0
 C4sprites dd 0
 OBClog dd 0
+NumSprites db 0
 
 NEWSYM InitOBC
     pushad
@@ -690,10 +691,11 @@ NEWSYM InitOBC
 
 OBCSprites:
     pushad
+    mov byte[NumSprites],0
     mov esi,[C4Ram]
     mov edi,esi
     add edi,1800h
-    add byte[OBCRegArray],1
+    add byte[OBCRegArray],2
     and byte[OBCRegArray],0FEh
 .loop
     cmp byte[OBCRegArray],0
@@ -709,12 +711,6 @@ OBCSprites:
     mov al,[esi+9]
     mov [edi+ebx+1],al
     mov al,[esi+10]       ;2,10
-;    cmp byte[esi+18],0
-;    je .zero
-;    mov al,[esi+17]
-;    mov [edi+ebx+1],al
-;    mov al,[esi+18]
-;.zero
     mov [edi+ebx+2],al
     mov al,[esi+0Bh]
     mov byte[edi+ebx+3],al
@@ -736,9 +732,15 @@ OBCSprites:
     and byte[edi+ebx],ah
     or byte[edi+ebx],al
 
+    inc byte[NumSprites]
     add esi,16
     jmp .loop
 .nomore
+
+    mov esi,[C4Ram]
+    mov edi,esi
+    add edi,1800h
+;    mov dword[edi+200h],0AAAAAAAAh
     popad
     ret
 
@@ -746,19 +748,20 @@ OBCClear:
     call OBCSprites
     mov dword[OBCRegArray],0
     mov dword[OBCRegArray+4],0
-    mov byte[OBCRegArray],0FFh
+    mov byte[OBCRegArray],0FEh
     mov byte[clearmem],1
     mov dword[OBClog],0
     ret
 
 ; Affected values: 0,1,2,3,4,6,7,9,A,B
-; 0,1 - Another X value?
-; 2   - OAM value?
+; 0,1 - Another X value (unused?)
+; 2   - OAM value
 ; 3/4 - X value (bits 0-8)
+; 5   - N/A (not written to)
 ; 6   - OAM #
 ; 7   - Always 0?
 ; 9   - Y value (bits 0-7)
-; A   - OAM value?
+; A   - OAM value
 ; B   - OAM Status
 ; X,Y,OAM,Attr / xhighbit / OAM highbit / Sprite size
 ;bit 0 = OAM b8, bit 1-3 = palette number bit 4,5 = playfield priority
@@ -779,7 +782,7 @@ OBCRegs:
     mov [ebx],cl
     cmp cl,6
     jne .notsix
-    add byte[OBCRegArray],1
+    add byte[OBCRegArray],2
     mov bl,[OBCRegArray]
     mov bh,bl
     mov [OBCRegArray+1],bl
@@ -800,15 +803,18 @@ OBCRegs:
 .noclearmem
     xor ebx,ebx
     mov bl,[OBCRegArray+ecx]
-;    mov dl,[OBCIncArray+ecx]
+    cmp byte[OBCIncArray+ecx],1
+    jne .noinc
     or byte[OBCRegArray+ecx],1
+.noinc
+    inc byte[OBCRegArray+ecx]
     shl ebx,3
     add ecx,ebx
     add ecx,[C4Ram]
     mov byte[ecx],al
 ;    cmp dl,1
 ;    jne .second
-;    mov byte[ecx+8],0FFh
+    mov byte[ecx+8],0FFh
 ;    jmp .first
 ;.second
 ;    mov byte[ecx+16],0FFh
@@ -4370,7 +4376,7 @@ NEWSYM SDD1EntryPtr, dd 0
 NEWSYM LatestBank, dd 0FFFFh
 NEWSYM memaccessbankr8sdd1
 ;    TestSDD1
-;    jmp debugdecompress
+    jmp debugdecompress
 ;    call FillArray
     mov byte[.found4],0
 
