@@ -79,9 +79,14 @@ EXTSYM TCPIPAddress
 ;   before GUIDeInit.
 
 
+;SECTION .data
+;NEWSYM OSPort, db 0      ; 0 = DOS (C), 1 = DOS (ASM), 2 = Linux, 3 = Win95
 
-SECTION .data
-NEWSYM OSPort, db 0      ; 0 = DOS (C), 1 = DOS (ASM), 2 = Linux, 3 = Win95
+SECTION .bss
+
+NEWSYM OSPort, resb 0
+
+
 SECTION .text
 
 NEWSYM StartUp
@@ -1467,12 +1472,19 @@ NEWSYM ScanCodeListing
         db 'P2B','P2Y','P2S','P2T','P2U','P2D','P2L','P2R'
         db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
 
-SECTION .text
+;SECTION .text
 
-SECTION .data
-NEWSYM ZSNESBase, dd 0
-TempVarSeek dd 0
+;SECTION .data
+;NEWSYM ZSNESBase, dd 0
+;TempVarSeek dd 0
 gotoroot db '\',0
+
+SECTION .bss
+
+NEWSYM ZSNESBase, resd 0
+TempVarSeek resd 0
+
+
 SECTION .text
 
 ; ****************************
@@ -1580,14 +1592,28 @@ NEWSYM Check60hz
 ; ****************************
 
 ; TCPIPPortNum
-NEWSYM TCPIPStatus, db 0
-NEWSYM PacketSendSize, dd 0
-NEWSYM PacketRecvSize, dd 0
-NEWSYM PacketRecvPtr,  dd 0
-NEWSYM PacketSendArray, times 256 db 0
-NEWSYM PacketRecvArray, times 256 db 0
-NEWSYM IPAddrStr, times 20 db 0
-NEWSYM RemoteDisconnect, db 0
+;NEWSYM TCPIPStatus, db 0
+;NEWSYM PacketSendSize, dd 0
+;NEWSYM PacketRecvSize, dd 0
+;NEWSYM PacketRecvPtr,  dd 0
+;NEWSYM PacketSendArray, times 256 db 0
+;NEWSYM PacketRecvArray, times 256 db 0
+;NEWSYM IPAddrStr, times 20 db 0
+;NEWSYM RemoteDisconnect, db 0
+
+SECTION .bss
+
+NEWSYM TCPIPStatus, resb 0
+NEWSYM PacketSendSize, resd 0
+NEWSYM PacketRecvSize, resd 0
+NEWSYM PacketRecvPtr,  resd 0
+NEWSYM PacketSendArray, times 256 resb 0
+NEWSYM PacketRecvArray, times 256 resb 0
+NEWSYM IPAddrStr, times 20 resb 0
+NEWSYM RemoteDisconnect, resb 0
+
+
+SECTION .text
 
 NEWSYM TCPIPStartServer
     mov dword[PacketSendSize],0
@@ -1762,7 +1788,14 @@ NEWSYM GetHostName
 
 NEWSYM hostname
 NEWSYM UDPConfig
-NEWSYM tcperr, dd 0,0,0,0
+;NEWSYM tcperr, dd 0,0,0,0
+
+SECTION .bss
+
+NEWSYM tcperr, resd 0
+
+
+SECTION .text
 
 NEWSYM ClearUDPStuff
 NEWSYM Wait1SecWin
