@@ -1174,50 +1174,9 @@ NEWSYM savepcx
     mov word[pcxheader+10],237
 .res224ph
 
-    ; get unused filename
-    mov byte[.filename+8],'.'
-    mov byte[.filename+9],'p'
-    mov byte[.filename+10],'c'
-    mov byte[.filename+11],'x'
-    mov byte[.filename+12],0
-    mov word[picnum],0
-.findagain
-    mov edx,.filename
-    call Open_File
-    jc near .nofile
-    mov bx,ax
-    call Close_File
+    mov ecx,0    ;GetFreeFile use ecx==0 to tell if it's PCX
+    call GetFreeFile
 
-    inc word[picnum]
-    cmp word[picnum],1000
-    je .nofile
-
-    mov ax,[picnum]
-    xor edx,edx
-    mov bx,100
-    div bx
-    mov cl,al
-    mov ax,dx
-    xor edx,edx
-    mov bx,10
-    div bx
-    mov esi,.filename+5
-    add cl,48
-    add al,48
-    add dl,48
-    mov byte[esi],cl
-    mov byte[esi+1],al
-    mov byte[esi+2],dl
-    add esi,3
-    mov byte[esi],'.'
-    mov byte[esi+1],'p'
-    mov byte[esi+2],'c'
-    mov byte[esi+3],'x'
-    mov byte[esi+4],0
-    jmp .findagain
-.nofile
-
-    mov edx,.filename
     call Create_File
     ; Save header
     mov bx,ax
@@ -1306,50 +1265,9 @@ NEWSYM savepcx
     mov word[pcxheader+20],238
 .res224b
 
-    ; get unused filename
-    mov byte[.filename2+8],'.'
-    mov byte[.filename2+9],'b'
-    mov byte[.filename2+10],'m'
-    mov byte[.filename2+11],'p'
-    mov byte[.filename2+12],0
-    mov word[picnum],0
-.findagain2
-    mov edx,.filename2
-    call Open_File
-    jc near .nofile2
-    mov bx,ax
-    call Close_File
+    mov ecx,1    ;GetFreeFile use ecx==1 to tell if it's BMP
+    call GetFreeFile
 
-    inc word[picnum]
-    cmp word[picnum],1000
-    je near .nofile2
-
-    mov ax,[picnum]
-    xor edx,edx
-    mov bx,100
-    div bx
-    mov cl,al
-    mov ax,dx
-    xor edx,edx
-    mov bx,10
-    div bx
-    mov esi,.filename2+5
-    add cl,48
-    add al,48
-    add dl,48
-    mov byte[esi],cl
-    mov byte[esi+1],al
-    mov byte[esi+2],dl
-    add esi,3
-    mov byte[esi],'.'
-    mov byte[esi+1],'b'
-    mov byte[esi+2],'m'
-    mov byte[esi+3],'p'
-    mov byte[esi+4],0
-    jmp .findagain2
-.nofile2
-
-    mov edx,.filename2
     call Create_File
     ; Save header
     mov bx,ax
@@ -1412,15 +1330,130 @@ NEWSYM savepcx
     call restore16b
     ret
 
-SECTION .data
-.pcxsaved db 'SNAPSHOT SAVED TO '
-.filename db 'image000.pcx',0,0,0,0
-.rawsaved db 'SNAPSHOT SAVED TO '
-.filename2 db 'image000.bmp',0,0,0,0
+
 SECTION .bss
 .rowsleft resb 1
 .curdptr resd 1
+
 SECTION .text
+
+NEWSYM GetFreeFile
+%ifdef __MSDOS__
+    cmp ecx,0
+    jne .isbmp
+    mov byte[.filename+9],'p'
+    mov byte[.filename+10],'c'
+    mov byte[.filename+11],'x'
+    jmp .doneextselect
+.isbmp
+    mov byte[.filename+9],'b'
+    mov byte[.filename+10],'m'
+    mov byte[.filename+11],'p'
+.doneextselect
+    mov byte[.filename+12],0
+    mov word[picnum],0
+.findagain
+    mov edx,.filename
+    call Open_File
+    jc near .nofile
+    mov bx,ax
+    call Close_File
+
+    inc word[picnum]
+    cmp word[picnum],1000
+    je .nofile
+
+    mov ax,[picnum]
+    xor edx,edx
+    mov bx,100
+    div bx
+    mov cl,al
+    mov ax,dx
+    xor edx,edx
+    mov bx,10
+    div bx
+    mov esi,.filename+5
+    add cl,48
+    add al,48
+    add dl,48
+    mov esi,.filename+5
+    mov byte[esi],cl
+    mov byte[esi+1],al
+    mov byte[esi+2],dl
+    jmp .findagain
+.nofile
+    mov edx,.filename
+
+%else
+    mov esi,fnames+1
+    mov ebx,.imagefname
+.next
+    mov al,[esi]
+    mov [ebx],al
+    inc esi
+    inc ebx
+    cmp al,'.'
+    jne .next
+    mov esi,ebx
+    mov byte[esi-1],' '
+    mov byte[esi],'0'
+    mov byte[esi+1],'0'
+    mov byte[esi+2],'0'
+    mov byte[esi+3],'.'
+    cmp ecx,0
+    jne .isbmp
+    mov byte[esi+4],'p'
+    mov byte[esi+5],'c'
+    mov byte[esi+6],'x'
+    jmp .doneextselect
+.isbmp
+    mov byte[esi+4],'b'
+    mov byte[esi+5],'m'
+    mov byte[esi+6],'p'
+.doneextselect
+    mov byte[esi+7],0
+
+    mov word[picnum],0
+.findagain
+    mov edx,.imagefname
+    call Open_File
+    jc near .nofile
+    mov bx,ax
+    call Close_File
+
+    inc word[picnum]
+    cmp word[picnum],1000
+    je .nofile
+
+    mov ax,[picnum]
+    xor edx,edx
+    mov bx,100
+    div bx
+    mov cl,al
+    mov ax,dx
+    xor edx,edx
+    mov bx,10
+    div bx
+    add cl,48
+    add al,48
+    add dl,48
+    mov byte[esi],cl
+    mov byte[esi+1],al
+    mov byte[esi+2],dl
+    jmp .findagain
+.nofile
+    mov edx,.imagefname
+%endif
+    ret
+
+SECTION .data
+.filename db 'image000.pcx',0,0,0,0
+;.pcxsaved db 'SNAPSHOT SAVED TO '
+;.rawsaved db 'SNAPSHOT SAVED TO '
+SECTION .bss
+.imagefname resb 128
+SECTION .text
+
 
 NEWSYM save16b2
     call prepare16b
@@ -1444,65 +1477,10 @@ NEWSYM save16b2
     mov word[pcxheader+22],1
     mov word[pcxheader+24],24
 
-    ; get unused filename
-    mov byte[.filename2+5],'.'
-    mov byte[.filename2+6],'b'
-    mov byte[.filename2+7],'m'
-    mov byte[.filename2+8],'p'
-    mov byte[.filename2+9],0
-    mov word[picnum],1
-.findagain2
-    mov edx,.filename2
-    call Open_File
-    jc near .nofile2
-    mov bx,ax
-    call Close_File
-
-    inc word[picnum]
-    cmp word[picnum],1000
-    je near .nofile2
-
-    mov ax,[picnum]
-    xor edx,edx
-    mov bx,100
-    div bx
-    mov cl,al
-    mov ax,dx
-    xor edx,edx
-    mov bx,10
-    div bx
-    mov esi,.filename2+5
-    add cl,48
-    add al,48
-    add dl,48
-    cmp cl,48
-    je .nohund2
-    mov byte[esi],cl
-    mov byte[esi+1],al
-    mov byte[esi+2],dl
-    add esi,3
-    jmp .finproc2
-.nohund2
-    cmp al,48
-    je .noten2
-    mov byte[esi],al
-    mov byte[esi+1],dl
-    add esi,2
-    jmp .finproc2
-.noten2
-    mov byte[esi],dl
-    inc esi
-.finproc2
-    mov byte[esi],'.'
-    mov byte[esi+1],'b'
-    mov byte[esi+2],'m'
-    mov byte[esi+3],'p'
-    mov byte[esi+4],0
-    jmp .findagain2
-.nofile2
+    mov ecx,1    ;GetFreeFile use ecx==1 to tell if it's BMP
+    call GetFreeFile
 
     mov cx,0
-    mov edx,.filename2
     call Create_File
     ; Save header
     mov bx,ax
@@ -1563,8 +1541,7 @@ NEWSYM save16b2
     ret
 
 SECTION .data
-.rawsaved db 'SNAPSHOT SAVED TO '
-.filename2 db 'image000.bmp',0,0,0,0
+;.rawsaved db 'SNAPSHOT SAVED TO '
 SECTION .bss
 .rowsleft resd 1
 .curdptr resd 1
