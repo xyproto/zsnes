@@ -5581,13 +5581,33 @@ SECTION .text
 
 %macro GUIOuttextwin2c 4        ; Boxed, green text
     mov byte[GUItextcolor],223
+    push ecx ;need to save register for when called by the following macro
     GUIOuttextwin2 %1,%2,%3,%4
+    pop ecx
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je %%zero
     mov byte[GUItextcolor],222
 %%zero
     GUIOuttextwin2 %1,%2-1,%3-1,%4
+%endmacro
+
+%macro GUIOuttextwin2d 5        ; Boxed, green text, limited to 5th param
+    push ecx
+    mov ecx,%4
+%%zero
+    cmp byte[ecx],0
+    je %%one
+    inc ecx
+    jmp %%zero
+%%one
+    sub ecx,%5
+    cmp ecx,%4
+    jae %%two
+    mov ecx,%4
+%%two
+    GUIOuttextwin2c %1,%2,%3,ecx
+    pop ecx
 %endmacro
 
 %macro DrawSlideBar 10
@@ -6360,13 +6380,13 @@ DisplayGUIPaths:
     DrawGUIWinBox  19,135,155,235,165,167
     DrawGUIWinBox  19,135,180,235,190,167
 
-    GUIOuttextwin2c 19,77,19,SRAMPath
-    GUIOuttextwin2c 19,77,39,SnapPath
-    GUIOuttextwin2c 19,77,59,SPCPath
-    GUIOuttextwin2c 19,10,99,BSXPath
-    GUIOuttextwin2c 19,10,124,SGPath
-    GUIOuttextwin2c 19,137,99,STPath
-    GUIOuttextwin2c 19,137,124,GNextPath
+    GUIOuttextwin2d 19,77,19,SRAMPath,26
+    GUIOuttextwin2d 19,77,39,SnapPath,26
+    GUIOuttextwin2d 19,77,59,SPCPath,26
+    GUIOuttextwin2d 19,10,99,BSXPath,15
+    GUIOuttextwin2d 19,10,124,SGPath,15
+    GUIOuttextwin2d 19,137,99,STPath,15
+    GUIOuttextwin2d 19,137,124,GNextPath,15
     ret
 
 SECTION .data
