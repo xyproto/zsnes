@@ -4682,16 +4682,17 @@ NEWSYM CheckROMType
     cmp byte[DSP1Enable],1
     je .initdsp
     cmp byte[DSP2Enable],1
-    je .initdsp
+    je .initdsp2
     cmp byte[DSP3Enable],1
     je .initdsp
     cmp byte[DSP4Enable],1
     je .initdsp
 ;   call InitDSP4
     jmp .notDSP1Hi
+.initdsp2
+    call InitDSP2
 .initdsp
     call InitDSP
-    call InitDSP2
     mov byte[DSP1Type],1
     cmp byte[romtype],2
     jne .notDSP1Hi
@@ -4840,6 +4841,8 @@ NEWSYM CheckROMType
     add ecx,4
     cmp ecx,16*4
     jne .dsp1loop
+    cmp byte[DSP2Enable],1
+    jne .nodsp1lorom
     mov dword[memtabler8+3Fh*4],DSP2Read8b
     mov dword[memtablew8+3Fh*4],DSP2Write8b
     mov dword[memtabler16+3Fh*4],DSP2Read16b
