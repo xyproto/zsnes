@@ -125,6 +125,7 @@ BYTE PrevStereoSound;
 DWORD PrevSoundQuality;
 
 int shiftptr = 0;
+int numlockptr;
 void ProcessKeyBuf(int scancode);
 void LinuxExit(void);
 
@@ -141,6 +142,8 @@ int Main_Proc(void)
 			if (event.key.keysym.sym == SDLK_LSHIFT ||
 			    event.key.keysym.sym == SDLK_RSHIFT)
 				shiftptr = 1;
+			if (event.key.keysym.mod == KMOD_NUM)
+				numlockptr = 1;
 			if (event.key.keysym.scancode-8 >= 0) {
 				if (pressed[event.key.keysym.scancode-8]!=2)
 					pressed[event.key.keysym.scancode-8]=1;
@@ -152,6 +155,8 @@ int Main_Proc(void)
 			if (event.key.keysym.sym == SDLK_LSHIFT ||
 			    event.key.keysym.sym == SDLK_RSHIFT)
 				shiftptr = 0;
+			if (event.key.keysym.mod == KMOD_NUM)
+				numlockptr = 0;
 			if (event.key.keysym.scancode-8 >= 0)
 				pressed[event.key.keysym.scancode-8]=0;
 			break;
@@ -296,8 +301,25 @@ void ProcessKeyBuf(int scancode)
       }
     }
     if ((scancode>=SDLK_KP0) && (scancode<=SDLK_KP9)) {
-      accept=true; vkeyval=scancode-SDLK_KP0+'0';
-    }
+
+      if (numlockptr) {
+        accept=true; vkeyval=scancode-SDLK_KP0+'0';
+      } else {
+
+       switch (scancode)
+         {
+         case SDLK_KP9: vkeyval=256+73; accept=true; break;
+         case SDLK_KP8: vkeyval=256+72; accept=true; break;
+         case SDLK_KP7: vkeyval=256+71; accept=true; break;
+         case SDLK_KP6: vkeyval=256+77; accept=true; break;
+         case SDLK_KP5: vkeyval=256+76; accept=true; break;
+         case SDLK_KP4: vkeyval=256+75; accept=true; break;
+         case SDLK_KP3: vkeyval=256+81; accept=true; break;
+         case SDLK_KP2: vkeyval=256+80; accept=true; break;
+         case SDLK_KP1: vkeyval=256+79; accept=true; break;
+         }
+      } // end no-numlock
+    } // end testing of keypad
     if (!shiftptr){
       switch (scancode) {
 	case SDLK_MINUS: vkeyval='-'; accept=true; break;
