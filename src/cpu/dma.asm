@@ -87,9 +87,9 @@ NEWSYM transdma
     xor ebx,ebx
     and al,00000111b
     cmp al,5
-    jne .notmode5dma
-    mov al,1
-.notmode5dma
+    jae .notmode567dma
+    sub al,4
+.notmode567dma
     mov bl,al
     shl bl,3
     add ebx,.addrwrite
