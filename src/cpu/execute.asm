@@ -2846,8 +2846,8 @@ NEWSYM cpuover
     mov [tempdh],dh
     xor dh,dh
 
-    mov al,[SFXIRQFlag]
-    mov byte[doirqnext],al
+;    mov al,[SFXIRQFlag]
+    mov byte[doirqnext],0
 
     call exechdma
     call exechdma

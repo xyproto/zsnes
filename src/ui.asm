@@ -1106,7 +1106,7 @@ SECTION .data
           db '  -k #    Set Volume Level (0 .. 100)',13,10
           db 'Press any key to continue.',0
 .noparms2 db 13,'  -l      Force LoROM        ',13,10
-          db '  -m      Disable GUI',13,10
+          db '  -m      Disable GUI (Must specify ROM filename)',13,10
 %ifdef __LINUX__
           db '  -n      Enable full scanlines (when available)',13,10
 %else
