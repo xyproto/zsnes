@@ -2336,8 +2336,8 @@ void WinUpdateDevices()
    unsigned char keys2[256];
    HRESULT hRes;
 
-   for (i=0;i<256;i++)
-      keys2[i]=0;
+   for (i = 0; i<256; i++)
+   keys2[i]=0;
    keys=(unsigned char *)&pressed;
 
    if (KeyboardInput&&InputEn==1)
@@ -2359,7 +2359,7 @@ void WinUpdateDevices()
       return;
    }
 
-   for(i=0;i<256;i++)
+   for(i=0; i<256; i++)
    {
       if (keys2[i]==0) keys[i]=0;
       if (keys2[i]!=0&&keys[i]==0) keys[i]=1;
@@ -2367,13 +2367,13 @@ void WinUpdateDevices()
 
    keys[0]=0;
 
-   for(i=0;i<5;i++)
+   for(i=0; i<5; i++)
    {
       if (JoystickInput[i])
       {
-         for(j=0;j<32;j++)
+         for(j=0; j<32; j++)
          {
-            keys[0x100+i*32+j]=0;
+            keys[0x100 + i * 32 + j] = 0;
          }
 
          JoystickInput[i]->Poll();
@@ -2386,107 +2386,107 @@ void WinUpdateDevices()
 
          if (!X1Disable[i])
          {
-            if (js[i].lX>0) keys[0x100+i*32+0]=1;
+            if (js[i].lX>0) keys[0x100 + i * 32 + 0] = 1;
          }
 
          if (!X2Disable[i])
          {
-            if (js[i].lX<0) keys[0x100+i*32+1]=1;
+            if (js[i].lX<0) keys[0x100 + i * 32 + 1] = 1;
          }
 
          if (!Y1Disable[i])
          {
-            if (js[i].lY>0) keys[0x100+i*32+2]=1;
+            if (js[i].lY>0) keys[0x100 + i * 32 + 2] = 1;
          }
 
          if (!Y2Disable[i])
          {
-            if (js[i].lY<0) keys[0x100+i*32+3]=1;
+            if (js[i].lY<0) keys[0x100 + i * 32 + 3] = 1;
          }
 
          if (!Z1Disable[i])
          {
-            if (js[i].lZ>0) keys[0x100+i*32+4]=1;
+            if (js[i].lZ>0) keys[0x100 + i * 32 + 4] = 1;
          }
 
          if (!Z2Disable[i])
          {
-            if (js[i].lZ<0) keys[0x100+i*32+5]=1;
+            if (js[i].lZ<0) keys[0x100 + i * 32 + 5] = 1;
          }
 
          if (!RY1Disable[i])
          {
-            if (js[i].lRy>0) keys[0x100+i*32+6]=1;
+            if (js[i].lRy>0) keys[0x100 + i * 32 + 6] = 1;
          }
 
          if (!RY2Disable[i])
          {
-            if (js[i].lRy<0) keys[0x100+i*32+7]=1;
+            if (js[i].lRy<0) keys[0x100 + i * 32 + 7] = 1;
          }
 
          if (!RZ1Disable[i])
          {
-            if (js[i].lRz>0) keys[0x100+i*32+8]=1;
+            if (js[i].lRz>0) keys[0x100 + i * 32 + 8] = 1;
          }
 
          if (!RZ2Disable[i])
          {
-            if (js[i].lRz<0) keys[0x100+i*32+9]=1;
+            if (js[i].lRz<0) keys[0x100 + i * 32 + 9] = 1;
          }
 
          if (!S01Disable[i])
          {
-            if (js[i].rglSlider[0]>0) keys[0x100+i*32+10]=1;
+            if (js[i].rglSlider[0]>0) keys[0x100 + i * 32 + 10] = 1;
          }
 
          if (!S02Disable[i])
          {
-            if (js[i].rglSlider[0]<0) keys[0x100+i*32+11]=1;
+            if (js[i].rglSlider[0]<0) keys[0x100 + i * 32 + 11] = 1;
          }
 
          if (!S11Disable[i])
          {
-            if (js[i].rglSlider[1]>0) keys[0x100+i*32+12]=1;
+            if (js[i].rglSlider[1]>0) keys[0x100 + i * 32 + 12] = 1;
          }
 
          if (!S12Disable[i])
          {
-            if (js[i].rglSlider[1]<0) keys[0x100+i*32+13]=1;
+            if (js[i].rglSlider[1]<0) keys[0x100 + i * 32 + 13] = 1;
          }
 
          if (!POVDisable[i])
          {
-            for (int i2=0; i2<NumPOV[i]; i++)
+            for (int p=0; p<NumPOV[i]; p++)
             {
-               switch (js[i].rgdwPOV[i2])
+               switch (js[i].rgdwPOV[p])
                {
                case 0:
-                  keys[0x100+i*32+3]=1;
+                  keys[0x100 + i * 32 + 3] = 1;
                   break;
                case 4500:
-                  keys[0x100+i*32+0]=1;
-                  keys[0x100+i*32+3]=1;
+                  keys[0x100 + i * 32 + 0] = 1;
+                  keys[0x100 + i * 32 + 3] = 1;
                   break; 
                case 9000:
-                  keys[0x100+i*32+0]=1;
+                  keys[0x100 + i * 32 + 0] = 1;
                   break;
                case 13500:
-                  keys[0x100+i*32+0]=1;
-                  keys[0x100+i*32+2]=1;
+                  keys[0x100 + i * 32 + 0] = 1;
+                  keys[0x100 + i * 32 + 2] = 1;
                   break;
                case 18000:
-                  keys[0x100+i*32+2]=1;
+                  keys[0x100 + i * 32 + 2] = 1;
                   break;
                case 22500:
-                  keys[0x100+i*32+1]=1;
-                  keys[0x100+i*32+2]=1;
+                  keys[0x100 + i * 32 + 1] = 1;
+                  keys[0x100 + i * 32 + 2] = 1;
                   break;
                case 27000:
-                  keys[0x100+i*32+1]=1;
+                  keys[0x100 + i * 32 + 1] = 1;
                   break;
                case 31500:
-                  keys[0x100+i*32+1]=1;
-                  keys[0x100+i*32+3]=1;
+                  keys[0x100 + i * 32 + 1] = 1;
+                  keys[0x100 + i * 32 + 3] = 1;
                   break;
                }
             }
@@ -2494,13 +2494,13 @@ void WinUpdateDevices()
 
          if (NumBTN[i])
             for (j=0; j<NumBTN[i]; j++)
-               if (js[i].rgbButtons[j]) keys[0x100+i*32+16+j]=1;
+               if (js[i].rgbButtons[j]) keys[0x100 + i * 32 + 16 + j] = 1;
       }
       else
       {
-         for(j=0;j<32;j++)
+         for(j=0; j<32; j++)
          {
-            keys[0x100+i*32+j]=0;
+            keys[0x100 + i * 32 + j] = 0;
          }
       }
    } 
