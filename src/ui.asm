@@ -760,18 +760,18 @@ SECTION .text
 ; Variable section
 ;*******************************************************
 
-SECTION .data
+SECTION .bss
 
 ALIGN32
 
-NEWSYM vrama,       times 65536 db 0
-NEWSYM mode7tab,    times 65536 db 0
-NEWSYM srama,       times 65536*2 db 0
-NEWSYM debugbufa,   times 10000 db 0
-NEWSYM wramreadptr, dd 0
-NEWSYM regptra,     times 49152 db 0
-NEWSYM wramwriteptr, dd 0
-NEWSYM regptwa,     times 49152 db 0
+NEWSYM vrama,       resb 65536
+NEWSYM mode7tab,    resb 65536 
+NEWSYM srama,       resb 65536*2
+NEWSYM debugbufa,   resb 10000
+NEWSYM wramreadptr, resd 1
+NEWSYM regptra,     resb 49152
+NEWSYM wramwriteptr, resd 1
+NEWSYM regptwa,     resb 49152
 
 ; vcache.asm
 
@@ -779,31 +779,31 @@ NEWSYM regptwa,     times 49152 db 0
 
 ; vesa2.asm
 
-NEWSYM fulladdtab, times 65536 dw 0
+NEWSYM fulladdtab, resw 65536
 
 ; init.asm
-NEWSYM echobuf,       times 90000 db 0
+NEWSYM echobuf,       resb 90000
 
 ; dspproc.asm
 
-NEWSYM spcRamcmp, times 65536 db 0
-NEWSYM VolumeConvTable, times 32768 dw 0
-NEWSYM dspWptr,  times 256 dd 0
-NEWSYM dspRptr,  times 256 dd 0
-NEWSYM NoiseData, times 32768 db 0
+NEWSYM spcRamcmp, resb 65536
+NEWSYM VolumeConvTable, resw 32768
+NEWSYM dspWptr,  resd 256
+NEWSYM dspRptr,  resd 256
+NEWSYM NoiseData, resb 32768
 
 ; makevid.asm
 
 ; makevid.asm
-NEWSYM vcache2ba,   times 262144+256 db 0
-NEWSYM vcache4ba,   times 131072+256 db 0
-NEWSYM vcache8ba,   times 65536+256 db 0
+NEWSYM vcache2ba,   resb 262144+256 
+NEWSYM vcache4ba,   resb 131072+256 
+NEWSYM vcache8ba,   resb 65536+256 
 
-ZSNESBase         dd 0
-BlockSize         dd 0  ; Set before calling
-LinearAddress     dd 0  ; Returned by function
-BlockHandle       dd 0  ; Returned by function
-ZSNESAddress      dd 0  ; Returned by function
+ZSNESBase         resd 1
+BlockSize         resd 1  ; Set before calling
+LinearAddress     resd 1  ; Returned by function
+BlockHandle       resd 1  ; Returned by function
+ZSNESAddress      resd 1  ; Returned by function
 
 SECTION .text
 
