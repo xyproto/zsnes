@@ -802,7 +802,7 @@ debblah:
     cmp byte[iohvlatch],1
     je .dolatch2
     test byte[ioportval],80h
-    jz .nolatch2
+    jz near .nolatch2
 .dolatch2
     xor ebx,ebx
     mov bl,[cycpl]

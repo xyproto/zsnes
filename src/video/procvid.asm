@@ -3565,7 +3565,7 @@ NEWSYM copyvid
     cmp dword[MessageOn],0
     je near .nomsg
     cmp byte[cbitmode],1
-    je .do16b
+    je near .do16b
 .no16b
     mov byte[ngfont],1
     mov edi,[Msgptr]
