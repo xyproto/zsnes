@@ -65,7 +65,7 @@ OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ}
 	@CC@ @CFLAGS@ -o $@ -c $<
 
 %.o: %.cpp
-	@CPP@ @CFLAGS@ -o $@ -c $<
+    @CXX@ @CFLAGS@ -o $@ -c $<
 
 %.o: %.asm
 	@NASMPATH@ @NFLAGS@ -o $@ $<
