@@ -4404,9 +4404,9 @@ NEWSYM SPC7110Load
     cmp byte[romtype],2
     jne .nothirom
     cmp al,0F9h
-    je .spc7110
+    je near .spc7110
     cmp al,0F5h
-    je .spc7110
+    je near .spc7110
 .nothirom
     cmp byte[romtype],1
     jne .notlorom
@@ -5256,7 +5256,7 @@ NEWSYM convertsram
 SECTION .data
 NEWSYM CSStatus, db '                        TYPE:           ',0
 NEWSYM CSStatus2, db 'INTERLEAVED:No    BANK:Lo     CHSUM:OK  ',0
-NEWSYM CSStatus3, db '                          CRC32:        ',0
+NEWSYM CSStatus3, db 'VIDEO:                    CRC32:        ',0
 
 crc32_table:
 dd 000000000h, 077073096h, 0ee0e612ch, 0990951bah, 0076dc419h, 0706af48fh
@@ -5337,6 +5337,17 @@ NEWSYM showinfogui
     inc edi
     dec ecx
     jnz .looprn
+
+    mov dword[CSStatus3+6], 'PAL '
+    add esi,5
+    cmp byte[esi],2    
+    jae .notntsc1
+    mov dword[CSStatus3+6], 'NTSC'
+.notntsc1
+    cmp byte[esi],13
+    jb .notntsc2
+    mov dword[CSStatus3+6], 'NTSC'
+.notntsc2
     mov dword[CSStatus+29],'NORM'
     mov dword[CSStatus+33],'AL  '
     cmp byte[SA1Enable],0
@@ -6151,7 +6162,7 @@ NEWSYM CheckROMType
     ; Interleave Detection
     mov byte[Interleaved],0
     cmp byte[NumofBanks],128
-    ja .nointerlcheck
+    ja near .nointerlcheck
 
     ;LoROM interleaved check
     mov esi,[romdata]
@@ -6519,7 +6530,7 @@ NEWSYM CheckROMType
     call Close_File
 .nosa1init
     cmp byte[DSP1Type],1
-    jne .nodsp1lorom
+    jne near .nodsp1lorom
     xor ecx,ecx
 .dsp1loop
     mov dword[memtabler8+30h*4+ecx],DSP1Read8b3F
