@@ -2356,8 +2356,8 @@ void WinUpdateDevices()
    HRESULT hRes;
 
    for (i = 0; i<256; i++)
-   keys2[i]=0;
-   keys=(unsigned char *)&pressed;
+   keys2[i] = 0;
+   keys = (unsigned char *)&pressed;
 
    if (KeyboardInput&&InputEn==1)
    {
@@ -2367,8 +2367,8 @@ void WinUpdateDevices()
    {
       return;
    }
-   if (keys2[0x38]!=0&&keys2[0x3E]!=0) exit(0);
-   if (keys2[0x38]!=0&&keys2[0x1c]!=0)
+   if (keys2[0x38] != 0 && keys2[0x3E] != 0) exit(0);
+   if (keys2[0xB8] != 0 && keys2[0x1C] != 0 || keys2[0x38] != 0 && keys2[0x1C] != 0)
    {
     _asm{
       pushad
@@ -2380,11 +2380,11 @@ void WinUpdateDevices()
 
    for(i=0; i<256; i++)
    {
-      if (keys2[i]==0) keys[i]=0;
-      if (keys2[i]!=0&&keys[i]==0) keys[i]=1;
+      if (keys2[i] == 0) keys[i] = 0;
+      if (keys2[i]!= 0 && keys[i] == 0) keys[i] = 1;
    }
 
-   keys[0]=0;
+   keys[0] = 0;
 
    for(i=0; i<5; i++)
    {
