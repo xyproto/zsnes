@@ -585,7 +585,7 @@ void zmv_record()
 void zmv_insert_chapter()
 {
   if ((zmv_vars.header.internal_chapters < 65535) && zmv_vars.header.frames &&
-      (zmv_vars.last_internal_chapter_offset != ftell(zmv_vars.fp)))
+      (zmv_vars.last_internal_chapter_offset != ftell(zmv_vars.fp) - (cur_zst_size+4)))
   {
     unsigned char flag = BIT(2);
   
@@ -597,7 +597,7 @@ void zmv_insert_chapter()
   
     fwrite(&flag, 1, 1, zmv_vars.fp);
   
-    internal_chapter_add_offset(&(zmv_vars.internal_chapters), ftell(zmv_vars.fp));
+    internal_chapter_add_offset(&zmv_vars.internal_chapters, ftell(zmv_vars.fp));
     zmv_vars.header.internal_chapters++;
     zmv_vars.last_internal_chapter_offset = ftell(zmv_vars.fp);
     
