@@ -189,7 +189,7 @@ RTC2800:
     ret
 
 RTC2801w:
-    mov byte[debstop3],1
+;    mov byte[debstop3],1
     mov dword[RTCRest],0
     mov dword[RTCPtr],0
     cmp al,0Eh
@@ -628,7 +628,7 @@ SPC4806w:
     mov [SPCDecmPtr+1],al
     cmp dword[SPCCompPtr],0124AD48h
     jne .nodata
-    mov byte[debstop3],1
+;    mov byte[debstop3],1
 .nodata
 
     pushad
@@ -1453,6 +1453,10 @@ SPC4842:
 ;$482F   MUL/DIV FINISHED STATUS: bit 7: on = processing, off = finished,
 ;            high bit is set after a write to multiplier or divisor regs $4825/$4827, defval:00
 
+
+; SA-1 Start
+; ----------
+
 ALIGN32
 
 ; IRQ Stuff
@@ -1490,7 +1494,12 @@ NEWSYM SA1IRQTemp, dd 0
 NEWSYM SA1BankSw, dd 1
 NEWSYM SA1BankVal, db 0,1,2,3
 
-SA1Reserved times 472 db 0
+NEWSYM BWShift, dd 0
+NEWSYM BWAndAddr, dd 0
+NEWSYM BWAnd, dd 0
+NEWSYM BWRAnd, dd 0
+
+SA1Reserved times 460 db 0
 
 ; SA1 Swap Stuff
 NEWSYM SA1xa, dd 0
@@ -1616,7 +1625,7 @@ NEWSYM SA1Reset
     mov dword[SA1IRQExec],0
     mov dword[SA1IRQEnable],0
     mov dword[SA1Message],0
-    mov byte[SA1Overflow],0
+    mov word[SA1Overflow],0
     ret
 
 NEWSYM UpdateBanks
@@ -1865,6 +1874,10 @@ NEWSYM sa12224w ; BWRAM
 .nosnes
     ret
 NEWSYM sa12225w ; BWRAM
+EXTSYM BWUsed2
+    mov [BWUsed2],al
+    test al,80h
+    jnz .upper
     mov bl,al
     and ebx,1Fh
     shl ebx,13
@@ -1872,9 +1885,41 @@ NEWSYM sa12225w ; BWRAM
     add ebx,1024*4096-6000h
     mov dword[SA1BWPtr],ebx
     cmp byte[SA1Status],0
+    je .nosa1b
+    mov dword[CurBWPtr],ebx
+.nosa1b
+    mov byte[BWShift],0
+    mov byte[BWAndAddr],0
+    mov byte[BWAnd],0FFh
+    mov byte[BWRAnd],0h
+    ret
+.upper
+    mov bl,al
+    and ebx,7Fh
+    test byte[SA1Overflow+1],80h
+    jz .16col
+    shl ebx,11
+    mov byte[BWShift],2
+    mov byte[BWAndAddr],03h
+    mov byte[BWAnd],03h
+    mov byte[BWRAnd],0FCh
+    jmp .4col
+.16col
+    mov byte[BWShift],1
+    mov byte[BWAndAddr],01h
+    mov byte[BWAnd],0Fh
+    mov byte[BWRAnd],0F0h
+    and ebx,3Fh
+    shl ebx,12
+.4col
+    add ebx,[romdata]
+    add ebx,1024*4096
+    mov dword[SA1BWPtr],ebx
+    cmp byte[SA1Status],0
     je .nosa1
     mov dword[CurBWPtr],ebx
 .nosa1
+    mov byte[debstop3],1
     ret
 NEWSYM sa12250w
     mov byte[SA1ARC],al
@@ -2297,11 +2342,22 @@ executesa1dma:
     pop edx
     ret
 
+
+tempblah db 0
+
+%macro setbit2b 2
+    test al,%1
+    jz %%nosb
+    or word[ebx],%2
+%%nosb
+%endmacro
+
 ; Character Conversion DMA
 sa1chconv:
 ;    or byte[SA1DoIRQ],4
     or byte[SA1DoIRQ],8
-    ret
+;    mov byte[debstop3],1
+
 
     mov ebx,[SA1DMADest]
     mov byte[debstop4],1
@@ -2329,107 +2385,70 @@ sa1chconv:
     push ecx
     pop ecx
     ret
+
 .2bit
-    push ecx
-    mov ecx,8
-    mov ebx,[sa1dmaptr]
-    push edx
+    pushad
     mov edx,[sa1dmaptrs]
-;    sub ebx,1000h
-    jmp .skipall
-    mov ecx,1000h
-.loops
-    and edx,07FFh
-    mov al,[ebx]
-    mov [IRAM+edx],al
-    inc ebx
-    inc edx
-    loop .loops
-    pop edx
-    pop ecx
-    ret
-.skipall
-    jmp .conv
-    ; repeat for 320 tiles
-    mov ecx,320
-.chl2
-    mov al,[ebx]
-    mov dword[.numrows],16
-.chl
-    mov [edx],al
-    inc edx
-    dec dword[.numrows]
-    jne .chl
-    inc ebx
-    dec ecx
-    jnz .chl2
-    pop edx
-    pop ecx
-    ret
-    ; Convert 10 rows into bitplane from ebx to edx
-.conv
-    mov dword[.numrows],10
-.cloop3
-    mov ch,32
-.cloop
-    mov cl,8
-.cloop2
-    mov ax,[ebx]
-    add ax,ax
-    rcl byte[edx+8],1
-    add ax,ax
-    rcl byte[edx],1
-    add ax,ax
-    rcl byte[edx+8],1
-    add ax,ax
-    rcl byte[edx],1
-    add ax,ax
-    rcl byte[edx+8],1
-    add ax,ax
-    rcl byte[edx],1
-    add ax,ax
-    rcl byte[edx+8],1
-    add ax,ax
-    rcl byte[edx],1
-    add ax,ax
-    rcl byte[edx+8],1
-    add ax,ax
-    rcl byte[edx],1
-    add ax,ax
-    rcl byte[edx+8],1
-    add ax,ax
-    rcl byte[edx],1
-    add ax,ax
-    rcl byte[edx+8],1
-    add ax,ax
-    rcl byte[edx],1
-    add ax,ax
-    rcl byte[edx+8],1
-    add ax,ax
-    rcl byte[edx],1
-    add ebx,64
-    inc edx
-    dec cl
-    jnz near .cloop2
-    add edx,8
-    sub ebx,64*8-2
-    dec ch
-    jnz near .cloop
-    sub ebx,2*32
-    add ebx,8*64
-    dec dword[.numrows]
-    jnz near .cloop3
-    pop edx
-    pop ecx
- 
-    mov ebx,[sa1dmaptr]
-    push ecx
+    mov ebx,[romdata]
+    add ebx,4096*1024+1024*1024
+    mov edi,16
+.loop3
+    push ebx
+    push edx
     mov ecx,32
 .loop
-;    mov dword[IRAM+ebx],0FFFFFFFFh
-    add ebx,4
-    loop .loop
-    pop ecx
+    mov esi,8
+    push ebx
+    push edx
+.loop2
+    mov word[ebx],0
+    mov al,[edx+1]
+    setbit2b 40h,0001h
+    setbit2b 80h,0100h
+    setbit2b 10h,0002h
+    setbit2b 20h,0200h
+    setbit2b 04h,0004h
+    setbit2b 08h,0400h
+    setbit2b 01h,0008h
+    setbit2b 02h,0800h
+    mov al,[edx]
+    setbit2b 40h,0010h
+    setbit2b 80h,1000h
+    setbit2b 10h,0020h
+    setbit2b 20h,2000h
+    setbit2b 04h,0040h
+    setbit2b 08h,4000h
+    setbit2b 01h,0080h
+    setbit2b 02h,8000h
+    add ebx,2
+    add edx,64
+    dec esi
+    jnz near .loop2
+    pop edx
+    pop ebx
+    add edx,2
+    add ebx,16
+    dec ecx
+    jnz near .loop
+    pop edx
+    pop ebx
+    add edx,64*8
+    add ebx,64*8
+    dec edi
+    jnz near .loop3
+
+    mov ecx,10*64*8
+    mov edx,[sa1dmaptrs]
+    mov ebx,[romdata]
+    add ebx,4096*1024+1024*1024
+.next
+    mov al,[ebx]
+    mov [edx],al
+    inc ebx
+    inc edx
+    loop .next
+
+    popad
     ret
 .numrows dd 0
 
@@ -2492,6 +2511,8 @@ NEWSYM initSA1regsw
 
     setregw 2224h*4,sa12224w
     setregw 2225h*4,sa12225w
+    ; Missing 2226-222A
+    ; Missing 2240-224F (Bitmap register file)
 
     setregw 2230h*4,sa12230w
     setregw 2231h*4,sa12231w
@@ -2552,7 +2573,7 @@ NEWSYM initSDD1regs
     ret
 
 dbstop:
-    mov byte[debstop3],1
+;    mov byte[debstop3],1
     ret
 
 NEWSYM sdd14801w
