@@ -58,10 +58,10 @@ MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o
 
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${ZIPOBJ}
-LIBS=-lz -lgcc -lm -lpng
-CFLAGS=-O2 -fomit-frame-pointer -Wall -D__MSDOS__
+LIBS=-Lobj -lz -lm -lpng
+CFLAGS=-O2 -g -Wall -D__MSDOS__
 ASM=nasm
-ASMFLAGS=-f coff -D__MSDOS__
+ASMFLAGS=-f coff -g -D__MSDOS__
 CC=gcc
 PP=gpp
 
@@ -79,8 +79,13 @@ PP=gpp
 
 ALL: zsnes.exe
 
+debug: zsnesd.exe
+
 zsnes.exe: ${OBJS}
-	${CC} -Ws -L./obj -s -o zsnes.exe ${OBJS}  ${LIBS}
+	${CC} -Ws -s -o zsnes.exe ${OBJS}  ${LIBS}
+
+zsnesd.exe: ${OBJS}
+	${CC} -Ws -o zsnesd.exe ${OBJS}  ${LIBS}
 
 ${DOSDIR}/zloader.o: ${DOSDIR}/zloader.c
 fixsin.o: fixsin.c
