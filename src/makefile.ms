@@ -65,7 +65,7 @@ endif
 
 ifeq (${CROSS},no)
   DELETECOMMAND = del
-  SLASH=\
+  SLASH=\ 
 endif
 
 ifeq (${OS},__MSDOS__)
