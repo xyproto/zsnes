@@ -18,7 +18,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include <string.h>
-#include <windows.h>
 
 //C++ style code in C
 #define bool unsigned char
