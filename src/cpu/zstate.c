@@ -61,7 +61,7 @@ extern unsigned char *StateBackup, sndrot, spcRam[65472];
 extern unsigned char DSPMem[256], SA1Status, *SA1RAMArea, DSP1Type, DSP1COp;
 extern unsigned char prevoamptr, BRRBuffer[32], *romdata, curcyc;
 
-extern bool C4Enable, SFXEnable, SA1Enable, SPC7110Enable, SETAEnable, spcon;
+extern bool C4Enable, SFXEnable, SA1Enable, SPC7110Enable, SETAEnable, spcon, SRAMState;
 
 extern short C4WFXVal, C41FXVal, Op00Multiplicand, Op04Angle, Op08X, Op18X;
 extern short Op28X, Op0CA, Op02FX, Op0AVS, Op06X, Op01m, Op0DX, Op03F, Op14Zr;
@@ -73,6 +73,7 @@ static unsigned int zst_version;
 
 //For compatibility with old save states (pre v1.43)
 #define loading_old_state (file && read && (zst_version == 60))
+#define loading_state_no_sram (file && read && !SRAMState)
 
 void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t), bool file, bool read)
 {
@@ -169,8 +170,11 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
   copy_func(&buffer, &prevoamptr, 1);  
   copy_func(&buffer, &ReadHead, 1*4);  
 
-  copy_func(&buffer, sram, ramsize);  
-
+  if (loading_state_no_sram)
+  {
+    copy_func(&buffer, sram, ramsize);  
+  }
+    
   if (!file)
   {
     copy_func(&buffer, &tempesi, 4);  
