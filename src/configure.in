@@ -124,7 +124,7 @@ if test x$debug = xyes; then
 	dnl It is actually easier to debug zsnes with no optimization
 	dnl enabled. 
 
-	CFLAGS="$CFLAGS -DDEBUG -O0 -fomit-frame-pointer -ggdb3"
+	CFLAGS="$CFLAGS -DDEBUG -O0 -fno-omit-frame-pointer -ggdb3"
 	NFLAGS="$NFLAGS -DDEBUG -g -s"
 	ZSNESEXE="zsnesd"
 else
@@ -134,10 +134,8 @@ else
 	dnl 	Because of the way zsnes is written, these options make
 	dnl zsnes more easily deal with small instruction caches, and more
 	dnl effectivly use branch prediction.
-	dnl NOTE: -fomit-frame-pointer causes some segfaults
-	dnl      DO NOT re-add it until they are fixed.
 	
-	CFLAGS="$CFLAGS -Os -ffast-math -fno-omit-frame-pointer -fschedule-insns2 -s"
+	CFLAGS="$CFLAGS -Os -ffast-math -fomit-frame-pointer -fschedule-insns2 -s"
 	ZSNESEXE="zsnes"
 fi
 
