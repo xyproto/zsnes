@@ -466,12 +466,13 @@ extern bool RomInfo;
 char *lastROMFileName;
 void DumpROMLoadInfo()
 {
+  FILE *fp = 0;
+  
   if (!RomInfo) //rominfo.txt info dumping enabled?
   {
     return;
   }
   
-  FILE *fp = 0;
   fp = fopen("rominfo.txt", "w");
   if (!fp) { return; }
   fputs("This is the info for the last game you ran.\n\nFile: ", fp);
