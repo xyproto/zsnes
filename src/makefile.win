@@ -37,7 +37,8 @@ JMADIR=jma
 CHIPSOBJ=${CHIPDIR}/sfxproc.obj ${CHIPDIR}/fxemu2.obj ${CHIPDIR}/dsp1proc.obj\
 	 ${CHIPDIR}/fxemu2b.obj ${CHIPDIR}/fxemu2c.obj ${CHIPDIR}/fxtable.obj\
 	 ${CHIPDIR}/sa1proc.obj ${CHIPDIR}/sa1regs.obj ${CHIPDIR}/dsp1emu.obj\
-         ${CHIPDIR}/st10proc.obj ${CHIPDIR}/seta10.obj ${CHIPDIR}/dsp2proc.obj
+         ${CHIPDIR}/st10proc.obj ${CHIPDIR}/seta10.obj ${CHIPDIR}/dsp2proc.obj\
+	 ${CHIPDIR}/sdd1emu.obj
 
 CPUOBJ=${CPUDIR}/addrni.obj ${CPUDIR}/dma.obj ${CPUDIR}/dsp.obj ${CPUDIR}/dspproc.obj\
 	${CPUDIR}/execute.obj ${CPUDIR}/irq.obj ${CPUDIR}/memory.obj\
@@ -142,6 +143,7 @@ ${CHIPDIR}/seta10.obj: ${CHIPDIR}/seta10.c
 ${CHIPDIR}/dsp1emu.obj: ${CHIPDIR}/dsp1emu.c
 	${CC} ${CFLAGS} /Fo$@ $<
 ${CHIPDIR}/dsp1proc.obj: ${CHIPDIR}/dsp1proc.asm macros.mac
+${CHIPDIR}/sdd1emu.obj: ${CHIPDIR}/sdd1emu.c
 ui.obj: ui.asm macros.mac
 cfgload.obj:cfgload.asm macros.mac
 init.obj:init.asm macros.mac
