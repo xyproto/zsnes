@@ -582,7 +582,7 @@ db '',13,10
 ;db 'CopyMethod = %o',13,10
 ;db '',13,10
 %ifdef __WIN32__
-db '; Video Mode, 0 - 23',13,10
+db '; Video Mode, 0 - 25',13,10
 db ';   0 = 64x56 R WIN           1 = 128x112 R WIN',13,10
 db ';   2 = 256X224 R WIN         3 = 256x224 R FULL',13,10
 db ';   4 = 512X448 R WIN         5 = 512X448 DR WIN',13,10
@@ -595,7 +595,7 @@ db ';   16 = 1024x768 S FULL      17 = 1024x768 DS FULL',13,10
 db ';   18 = 768x672 R WIN        19 = 768x672 DR WIN',13,10
 db ';   20 = 1024x896 R WIN       21 = 1024x896 DR WIN',13,10
 db ';   22 = 1280x960 DR FULL     23 = 1280x960 DS FULL',13,10
-db ';   24 = 800x600 DR FULL',13,10
+db ';   24 = 800x600 DR FULL      25 = 1024x768 DR FULL',13,10
 db '',13,10
 db 'VideoMode = %U',13,10
 db '',13,10
