@@ -1505,10 +1505,7 @@ void initwinvideo(void)
       ReInitSound();
 
    if (!FirstVid)
-   {
-//      sprintf(WinMessage,"FirstVid!=1 start\n\0");
-//      MessageBox (NULL, WinMessage, "Init", MB_ICONERROR );
-   
+   {   
       if (X<0)X=0;
       if (X>(GetSystemMetrics( SM_CXSCREEN )-WindowWidth)) X=(GetSystemMetrics( SM_CXSCREEN )-WindowWidth);
       if (Y<0)Y=0;
