@@ -1440,16 +1440,6 @@ NEWSYM init65816
     mov byte[cycpbl],117
     mov byte[cycpblt],117
 
-    cmp byte[SDD1Enable],0
-    je .nospecialtimer
-.specialtimer
-    mov byte[cycpb268],69
-    mov byte[cycpb358],81
-    mov byte[cycpbl2],69
-    mov byte[cycpblt2],69
-    mov byte[cycpbl],69
-    mov byte[cycpblt],69
-.nospecialtimer
     mov byte[SPCSkipXtraROM],0
     cmp byte[ReturnFromSPCStall],1
     jne near .nostall
