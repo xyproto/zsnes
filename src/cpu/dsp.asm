@@ -55,9 +55,9 @@ SECTION .text
     mov [DSPMem+00h+%1],al
 %endmacro
 
-SECTION .bss
-alignb 32
-NEWSYM DSPMem, resb 256
+SECTION .data
+ALIGN32
+NEWSYM DSPMem, times 256 db 0
 SECTION .text
 
 ;Read DSP Registers functions
