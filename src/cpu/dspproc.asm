@@ -2126,7 +2126,6 @@ BRRDecode:
     ret
 
 .dlpf
-
     ProcessDynamicLowPass
 
 section .data ;ALIGN=32
@@ -4823,13 +4822,16 @@ SECTION .text
     add edi,[spcBuffera]
     mov eax,[Voice0Prev0+%1*4]
     mov [Voice0BufPtr+%1*4],edi
+    push edi	; DDOI - this will avoid the crash bug hopefully
     mov dword [prev0],eax
     mov eax,[Voice0Prev1+%1*4]
     mov dword [prev1],eax
     mov ecx,%1
     call BRRDecode
+    pop edi
     pop esi
-    mov edi,[Voice0BufPtr+%1*4]
+    ;mov edi,[Voice0BufPtr+%1*4]
+    ;STUB_ASM_INT edi
 
     movsx eax,word [edi]
     mov [PSampleBuf+5*4+%1*26*4],eax
