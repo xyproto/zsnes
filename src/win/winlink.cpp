@@ -268,6 +268,7 @@ void DDrawError(){
 }
 
 extern "C" BYTE vsyncon;
+extern "C" BYTE KitchenSync;
 
 void DrawScreen()
 {
@@ -280,6 +281,16 @@ void DrawScreen()
 
       if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
         DD_Primary->Restore();
+
+      if (KitchenSync == 1)
+      {
+         if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
+           DD_Primary->Restore();
+
+         if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+           DD_Primary->Restore();
+      }
+
     }
   }
   else
@@ -2211,7 +2222,6 @@ extern _int64 copymagic = 0x0008010000080100;
 extern _int64 coef = 0x0066009a0066009a;
 
 extern BYTE MotionBlur;
-extern BYTE KitchenSync;
 extern WORD totlines;
 
 void drawscreenwin(void)
