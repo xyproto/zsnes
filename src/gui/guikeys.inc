@@ -1225,6 +1225,10 @@ GUIVideoKeys:
 ;    mov byte[Triplebufen],0
 %endif
 .novsync
+    cmp dh,'K'
+    jne .nokitchensync
+    xor byte[KitchenSync],1
+.nokitchensync
 %endif
     ret
 

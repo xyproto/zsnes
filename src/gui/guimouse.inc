@@ -2328,6 +2328,7 @@ DisplayGUIVideoClick:
     GUIClickCButton 11,183,byte[GrayscaleMode]
 %ifdef __WIN32__
     GUIClickCButtonf 115,183,byte[vsyncon],initDirectDraw
+    GUIClickCButton 83,173,byte[KitchenSync]
 %endif
 %ifdef __MSDOS__
     GUIClickCButtonT 115,183,byte[vsyncon],byte[Triplebufen]

@@ -1769,6 +1769,7 @@ DisplayGUIVideo:
     GUIOuttextwin2u 5,26,188,GUIVideoText8c,0
 %ifndef __LINUX__
     GUIOuttextwin2u 5,130,188,GUIVideoText9,0
+    GUIOuttextwin2u 5,98,178,GUIVideoText10,0
 %endif
     add byte[GUItextcolor],15
 
@@ -1870,6 +1871,7 @@ DisplayGUIVideo:
     GUIOuttextwin2 5,25,187,GUIVideoText8c
 %ifndef __LINUX__
     GUIOuttextwin2 5,129,187,GUIVideoText9
+    GUIOuttextwin2 5,97,177,GUIVideoText10
 %endif
     DrawGUIButton 5,128,60,164,71,GUIVideoText8,4,0,0
     mov al,[GUIWincol]
@@ -1994,6 +1996,12 @@ DisplayGUIVideo:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckboxm74
     GUIDisplayIconWin 5,115,183,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[KitchenSync],0
+    je .nocheckboxm75
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckboxm75
+    GUIDisplayIconWin 5,83,173,[GUITemp]
 %endif
     xor eax,eax
     mov al,[cvidmode]
@@ -2167,6 +2175,7 @@ GUIVideoText8b db 'HI-RES M7',0       ; -c
 GUIVideoText8c db 'GRAYSCALE MODE',0       ; -c
 GUIVideoText8 db 'SET',0                ; set button
 GUIVideoText9 db 'VSYNC',0       ; -c
+GUIVideoText10 db 'KITCHENSYNC',0       ; -c
 GUIVideoTextH db 'MODE : ',0
 GUIVideoTextw0 db 'LEGEND:',0
 GUIVideoTextw1 db ' S = SCALED TO FIT SCREEN',0

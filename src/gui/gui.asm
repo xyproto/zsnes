@@ -601,6 +601,7 @@ NEWSYM KeyIncStateSlot, dd 0
 NEWSYM KeyDecStateSlot, dd 0
 NEWSYM KeyUsePlayer1234, dd 0
 NEWSYM hq3xFilter, db 0
+NEWSYM KitchenSync, db 0
 
 GUIsave equ $-GUIRAdd
 
