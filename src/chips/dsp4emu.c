@@ -689,6 +689,10 @@ void DSP4_OP07()
 
 void DSP4_OP08()
 {
+  int16 win_left, win_right;
+  int16 view_x[2], view_y[2];
+  int16 envelope[2][2];
+
   DSP4.waiting4command = FALSE;
 
   // op flow control
@@ -702,10 +706,6 @@ void DSP4_OP08()
 
   ////////////////////////////////////////////////////
   // process initial inputs for two polygons
-
-  int16 win_left, win_right;
-  int16 view_x[2], view_y[2];
-  int16 envelope[2][2];
 
   // clip values
   poly_clipRt[0][0] = DSP4_READ_WORD();
