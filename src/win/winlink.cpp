@@ -731,6 +731,7 @@ int RegisterWinClass(void)
 
 BYTE PrevStereoSound;
 DWORD PrevSoundQuality;
+extern unsigned char PrimaryBuffer;
 
 BOOL InitSound()
 {
@@ -748,13 +749,25 @@ BOOL InitSound()
 	{
 		lpDirectSound->Initialize(NULL);
 
-		if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL)) //DSSCL_WRITEPRIMARY, fix this StatMat - make a toggle
-		{
-			if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
-				return FALSE;
-		}
-		else UsePrimaryBuffer=0; //1, fix this StatMat - make a toggle
-	}
+        if (PrimaryBuffer)
+        {
+		  if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_WRITEPRIMARY))
+		  {
+		  	if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
+			  	return FALSE;
+		  }
+		  else UsePrimaryBuffer=1;
+        }
+        else
+        {
+		  if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL))
+		  {
+		  	if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
+			  	return FALSE;
+		  }
+		  else UsePrimaryBuffer=0;
+        }
+    }
 	else 
 	{
 		return FALSE;
