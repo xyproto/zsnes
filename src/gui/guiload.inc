@@ -346,6 +346,8 @@ GUIloadfilename:
     mov dword[MsgCount],120
     cmp al,1
     jbe .nopal
+    cmp al,0Dh
+    je .nopal
     mov byte[romispal],1
     mov word[totlines],314
     mov dword[MsgCount],100
