@@ -5077,7 +5077,7 @@ GUIGUIAboutText6b db '    TEUF',0
 GUIGUIAboutText6c db '    PAGEFAULT',0
 GUIGUIAboutText6d db '    THEODDONE33',0
 %ifdef __WIN32__
-GUIGUIAboutText7 db 'WIN PORT V1.02',0
+GUIGUIAboutText7 db 'WIN PORT V1.03',0
 %elifdef __LINUX__
 GUIGUIAboutText7 db 'LINUX PORT V0.29',0
 %endif
