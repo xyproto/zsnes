@@ -45,4 +45,4 @@ section .text
   	%define %1 _%1
 %rotate 1
 %endrep
-%endmacro
+%endmacro

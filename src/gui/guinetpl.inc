@@ -1777,4 +1777,3 @@ loadstaterecv:
 StateLoadedOk db 10,13,'STATE LOADED.',10,13,10,13,0
 StateLoadedFail db 10,13,'LOAD FAILED.',10,13,10,13,0
 
-

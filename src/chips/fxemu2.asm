@@ -2680,4 +2680,3 @@ NEWSYM FXEndLoop
 SECTION .data
 NEWSYM fxtrace, db 0; times 65536 db 0
 
-

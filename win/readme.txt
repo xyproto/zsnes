@@ -489,4 +489,3 @@ Info on 256x256x256 scanlines mode is from the MAME source.  Thanks to
 Also, good luck to all those who are writing emulators, especially those
     who are writing snes emulators, including Snes9x, Nlke, SNEeSe, and
     SNEMul!  And also good luck to the makers of TheSE!
-

@@ -833,4 +833,3 @@ GUIDrawSlideBar:
     mov esi,%7
     call GUIDrawSlideBar
 %endmacro
-

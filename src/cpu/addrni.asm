@@ -406,4 +406,3 @@
     call dword near [memtabler16+ebx*4]
 %endmacro
 
-

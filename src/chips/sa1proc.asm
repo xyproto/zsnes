@@ -362,4 +362,3 @@ NEWSYM SA1switchtovirq
     mov [initaddrl],esi
     add esi,eax
     ret
-

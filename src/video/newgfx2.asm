@@ -671,4 +671,3 @@ Processwinclipom4b:
     cmp dword[ngcwinmode],1
     je near drawlinengom4bwin.winclipped
     jmp drawlinengom4bwin.loop
-

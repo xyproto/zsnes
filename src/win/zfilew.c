@@ -286,4 +286,4 @@ DWORD GetDate()
           +((newtime->tm_wday) << 28);
 
    return(value);
-}
+}

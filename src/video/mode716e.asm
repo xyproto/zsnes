@@ -1258,4 +1258,3 @@ NEWSYM drawmode716extbg2
     cmp dh,1
     jne near domosaic16b
     ret
-

@@ -720,4 +720,3 @@ settableDm16:
     mov dword[edi+0FFh*4],COpFFm16d
     ret
 
-

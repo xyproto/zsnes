@@ -667,4 +667,3 @@ NEWSYM sfxaccessbankw16d
     xor ebx,ebx
     ret
 
-

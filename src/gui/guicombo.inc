@@ -187,4 +187,3 @@ ComboRemoval:
 .global
     popad
     ret
-

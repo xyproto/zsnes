@@ -2183,4 +2183,3 @@ WaitForKey:
 .mousedis2
     mov byte[GUIpclicked],1
     ret
-

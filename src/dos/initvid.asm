@@ -618,4 +618,3 @@ NEWSYM dosinitvideo
     pop es
     ret
 
-

@@ -94,4 +94,3 @@
       add ebx,spcRam
       ReadByte
 %endmacro
-

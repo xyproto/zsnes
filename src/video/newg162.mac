@@ -869,4 +869,3 @@
     add word[ofsmtptr],bx
     jmp %%nextb
 %endmacro
-

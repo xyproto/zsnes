@@ -1499,4 +1499,3 @@ NEWSYM draw16x1616tswinonms
     dec byte[tileleft16b]
     jnz near .loopa
     ret
-

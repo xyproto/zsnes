@@ -5695,4 +5695,3 @@ GetCDMAPos:
     ja .loop
 
 .fin
-

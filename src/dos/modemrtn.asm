@@ -434,4 +434,3 @@ NEWSYM DeInitModemC
    sti
    ret
 
-

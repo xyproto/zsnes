@@ -5695,4 +5695,3 @@ NEWSYM Clear2xSaIBuffer
     add ebx,4
     loop .nextb
     ret
-

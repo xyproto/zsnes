@@ -809,4 +809,3 @@ EXTSYM SA1DPageR8,SA1DPageR16,SA1DPageW8,SA1DPageW16
 .np
     call dword near [memtablew16+ebx*4]
 %endmacro
-

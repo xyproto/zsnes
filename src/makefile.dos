@@ -182,4 +182,4 @@ clean:
 	del ${GUIDIR}\*.o
 	del ${DOSDIR}\*.o
 	del zsnes.exe
-	
+	

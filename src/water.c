@@ -335,4 +335,3 @@ void SineBlob(int x, int y, int radius, int height, int page)
     }
   }
 }
-

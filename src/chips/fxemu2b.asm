@@ -611,4 +611,3 @@ NEWSYM FxOpcBF      ; FROM rn   set source register
    mov byte[SfxOverflow],al
    CLRFLAGS
    ret
-

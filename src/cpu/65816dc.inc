@@ -1628,4 +1628,3 @@ emulRTI
     mov word[stackor],0100h
     endloop
 %endmacro
-

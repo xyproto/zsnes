@@ -1399,4 +1399,3 @@ drawlineng4b16bmsom16x16:
 drawlineng4b16bmsntom16x16
     drawline16bmacroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt
 
-

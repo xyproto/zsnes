@@ -361,4 +361,3 @@ NEWSYM drawmode716tb
 
 cwinptr2 dd 0
 
-

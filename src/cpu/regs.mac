@@ -98,4 +98,3 @@
     mov al,bl
 .ny7
 %endmacro
-

@@ -809,4 +809,3 @@ EXTSYM membank0w8ram
 .np
     call dword near [memtablew16+ebx*4]
 %endmacro
-

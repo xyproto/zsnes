@@ -2858,4 +2858,3 @@ DrawMouse:
     jnz near .next2
     ret
 
-

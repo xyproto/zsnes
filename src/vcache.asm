@@ -3762,4 +3762,3 @@ NEWSYM cachesingle8bng
     pop edi
     pop esi
     ret
-

@@ -2692,4 +2692,3 @@ NEWSYM Invalidopcode ; Invalid Opcode
       dec ebp
       ret
 
-

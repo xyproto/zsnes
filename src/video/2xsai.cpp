@@ -286,4 +286,3 @@ extern "C" void Super2xSaI(uint8 *srcPtr, uint8 *deltaPtr, uint32 srcPitch,
 	}; //endof: for (height; height; height--)
     }
 }
-

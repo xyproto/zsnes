@@ -684,4 +684,3 @@ NEWSYM processmode7hires16bd
 .nogo
     ret
 
-

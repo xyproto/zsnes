@@ -46,4 +46,3 @@ EXTSYM _ipx_read_packet        ; 80 bytes buffer of received packet
 
 EXTSYM _ipx_deinit             ; to deinit the ipx
 */
-

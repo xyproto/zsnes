@@ -1188,4 +1188,3 @@ Nextwinmode:
     add word[ofsmtptr],bx
     jmp %%next
 %endmacro
-

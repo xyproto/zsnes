@@ -209,4 +209,3 @@ NEWSYM ipxgetchar
     pop eax
     ret
 
-

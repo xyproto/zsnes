@@ -1181,4 +1181,3 @@ void WinErrorC2(void){
     MessageBox (NULL, message1, "Init Error" , MB_ICONERROR );
 }
 
-

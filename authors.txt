@@ -3,4 +3,4 @@ ZSNES Open Source Authors:
 
 zsKnight <zsknight@zsnes.com>
 _Demo_ <z_demo_z@users.sourceforge.net>
-
+

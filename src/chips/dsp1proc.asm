@@ -636,4 +636,3 @@ DSP1_14:  ; 3D angle rotation
     mov byte[DSP1RLeft],3
     pop eax
     ret
-

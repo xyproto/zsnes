@@ -789,4 +789,3 @@ EXTSYM DPageR8,DPageR16,DPageW8,DPageW16
 .np
     call dword near [memtablew16+ebx*4]
 %endmacro
-

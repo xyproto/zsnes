@@ -1818,4 +1818,3 @@ NEWSYM GetTimeInSeconds
     div ebx
     pop es
     ret
-

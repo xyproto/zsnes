@@ -165,4 +165,3 @@
       mov [spcNZ],al
       ret
 %endmacro
-

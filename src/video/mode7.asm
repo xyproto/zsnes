@@ -815,4 +815,3 @@ NEWSYM processmode7hires
     pop esi
 .nogo
     ret
-

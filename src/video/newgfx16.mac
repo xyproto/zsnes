@@ -3759,4 +3759,3 @@ EXTSYM osm2dis
     pop ebx
     ret
 %endmacro
-

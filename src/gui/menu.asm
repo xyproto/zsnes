@@ -1434,4 +1434,3 @@ restore16b:
    mov byte[vesa2_gpos],6
 .nored
    ret
-

@@ -1524,4 +1524,3 @@ NEWSYM interpolate640x480x16bwin
 ALIGN32
 InterPtr dd 0
 
-

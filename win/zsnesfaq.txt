@@ -371,4 +371,3 @@ A: The auto .IPS feature works by copying the .IPS file to the directory of
 Q: Where do I get the games?
 
 A: The ZSNES Team will *NOT* provide any games or any links to games.
-

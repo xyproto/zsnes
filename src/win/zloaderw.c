@@ -536,4 +536,3 @@ int pccmdline(void)
   }
   return 0;
 }
-

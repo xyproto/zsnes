@@ -1315,4 +1315,3 @@ NEWSYM drawmode7ngextbg2
     jne near domosaic
     ret
 
-

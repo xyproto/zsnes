@@ -230,4 +230,3 @@ ALIGN32
     Mode7Process Mode7Window, domosaic16b, 2
 .nextval3w
     Mode7ProcessB Mode7Window, domosaic16b, 2
-

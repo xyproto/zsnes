@@ -503,4 +503,3 @@ Save Cfg :
 About :
   Perform : Just displays the version # and the authors of ZSNES
 
-

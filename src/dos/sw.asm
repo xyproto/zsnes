@@ -223,4 +223,3 @@ ModeALoop:
    dec ecx
    jnz ModeALoop
    ret
-

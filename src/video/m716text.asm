@@ -991,4 +991,3 @@ extbg2sub:
     cmp dh,1
     jne near domosaic16b
     ret
-

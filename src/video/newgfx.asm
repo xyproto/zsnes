@@ -2334,4 +2334,3 @@ NEWSYM preparesprpr
 ALIGN32
 NEWSYM sprclprio,  dd 0
 NEWSYM sprsingle,  dd 0
-

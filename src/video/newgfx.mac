@@ -3317,4 +3317,3 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     pop ebx
     ret
 %endmacro
-

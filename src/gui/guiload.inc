@@ -1552,4 +1552,3 @@ loadquickfname:
     pop eax
     ret
 .temp times 256 dd 0
-

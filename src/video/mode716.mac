@@ -1901,4 +1901,3 @@ NEWSYM ProcessMode7ngwinD16b
     Mode7Processngw216b %1, domosaicng16b, 2, %2
 %endmacro
 
-

@@ -1614,4 +1614,3 @@ NEWSYM SetInputDevice209
 .exit
     ret
 
-

@@ -54,4 +54,4 @@ Then to build the executable, go to the src directory and type:
 make -f makefile.win
 
 You may also want to compress zsnesw.exe with upx (http://upx.tsx.org), it will 
-divide its size by 10.
+divide its size by 10.

@@ -1337,4 +1337,3 @@ guicheaterror4 db 'GOLD FINGER CODE.',0
 guicheaterror5 db 'PRESS ANY KEY.',0
 guicheatvalrep db 0
 
-

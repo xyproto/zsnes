@@ -2548,4 +2548,3 @@ NEWSYM FxOpdFFA2    ; SM (XX),RN   store word in RAM
    mov [eax+ebx],dh
    CLRFLAGS
    FXReturn
-

@@ -696,4 +696,3 @@ NEWSYM SA1settableDm16
     mov dword[edi+0FFh*4],SA1COpFFm16d
     ret
 
-

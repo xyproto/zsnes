@@ -832,4 +832,3 @@
    shr eax,2
    mov [SfxDREG],eax
 %endmacro
-
