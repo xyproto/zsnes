@@ -1445,6 +1445,29 @@ NEWSYM StartGUI
     mov byte[PrevFSMode],7
 .notvm5
 %endif
+
+    cmp byte[TripBufAvail],0
+    jne .notexttb
+    mov byte[Triplebufen],0
+.notexttb
+    cmp byte[FPUCopy],2
+    jne .2xSaIdis
+    cmp byte[newgfx16b],0
+    je .2xSaIdis
+    jmp .no2xSaIdis
+.2xSaIdis
+    mov byte[En2xSaI],0
+.no2xSaIdis
+    cmp byte[En2xSaI],0
+    je .no2xsaidis
+    mov byte[Triplebufen],0
+.no2xsaidis
+    cmp byte[En2xSaI],0
+    je .no2xsaien
+    mov byte[scanlines],0
+    mov byte[antienab],0
+.no2xsaien
+
 ;.dosport
     mov ecx,64
     mov eax,SpecialLine
