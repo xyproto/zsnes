@@ -1915,22 +1915,6 @@ NEWSYM headerhack
     ;   be removed since many of them were created very early in ZSNES
     ;   development.
 
-    mov byte[bgfixer],0
-    cmp byte[OldGfxMode2],0
-    je .nobgfixer
-    mov byte[bgfixer],1
-.nobgfixer
-    mov esi,[romdata]
-    cmp dword[esi+0FFC8h],'EST6'
-    jne .notdq
-    mov byte[CacheCheckSkip],1
-    mov byte[bgfixer],1
-.notdq
-    cmp dword[esi+07FC8h],'EST6'
-    jne .notdq2
-    mov byte[CacheCheckSkip],1
-    mov byte[bgfixer],1
-.notdq2
     cmp dword[esi+0FFC0h],'FINA'
     jne .notff
 .notff
