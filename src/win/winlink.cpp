@@ -31,7 +31,7 @@ extern "C" {
 #include <dinput.h>
 #include <winuser.h>
 #include "resource.h"
-#include <fstream.h>
+//#include <fstream.h>
 
 DWORD WindowWidth = 256;
 DWORD WindowHeight = 224;
