@@ -31,7 +31,7 @@ EXTSYM Sflagnz, Sflago, Sflagc,dmadata
 EXTSYM debuggeron
 
 %macro endloop 0
-    call sa1debug
+;    call sa1debug
     mov bl,[esi]
     inc esi
     sub dh,[cpucycle+ebx]
