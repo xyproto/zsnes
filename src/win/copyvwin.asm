@@ -28,6 +28,10 @@ EXTSYM vidbufferofsb
 EXTSYM HalfTransB,HalfTransC
 
 
+%ifdef __MINGW__
+NEWSYM CopyVWinAsmStart
+%endif
+
 
 NEWSYM AddEndBytes, dd 0         ; Number of bytes between each line
 NEWSYM NumBytesPerLine, dd 0     ; Total number of bytes per line (1024+AddEndBytes)

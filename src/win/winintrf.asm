@@ -137,6 +137,11 @@ EXTSYM PrevWinMode,PrevFSMode
 EXTSYM _imp__GetLocalTime@4
 
 
+%ifdef __MINGW__
+NEWSYM WinIntRFAsmStart
+%endif
+
+
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
 ;   made.  GUI36hzcall should be called at 36hz after a call GUIInit and
@@ -2040,3 +2045,8 @@ SystemTime:
 .wMinute		dw	0
 .wSecond		dw	0
 .wMilliseconds	dw	0
+
+
+%ifdef __MINGW__
+NEWSYM WinIntRFAsmEnd
+%endif
