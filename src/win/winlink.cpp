@@ -191,7 +191,7 @@ extern int CurKeyReadPos;
 extern int KeyBuffer[16];
 }
 
-extern "C" void CheckPriority ( void )
+extern "C" void CheckPriority()
 {
     if (HighPriority == 1) SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
        else SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
@@ -445,7 +445,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return TRUE;
 }
 
-int RegisterWinClass ( void )
+int RegisterWinClass(void)
 {
 	WNDCLASS wcl;
 
@@ -455,7 +455,6 @@ int RegisterWinClass ( void )
    wcl.hIcon         = LoadIcon(NULL,IDI_APPLICATION);
 	wcl.hCursor			= NULL;	
 	wcl.hInstance		= hInst;
-
 	wcl.lpfnWndProc		= (WNDPROC)Main_Proc;
    wcl.hbrBackground    = (HBRUSH)GetStockObject(BLACK_BRUSH);
    wcl.lpszMenuName     = NULL;
@@ -466,11 +465,6 @@ int RegisterWinClass ( void )
 	if (RegisterClass(&wcl)  == 0) return FALSE;
 
 	return TRUE;
-}
-
-void ShutdownApplication()
-{
-
 }
 
 InitSound()
@@ -664,7 +658,6 @@ ReInitSound()
 
 }
 
-
 BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 {
    LPDIRECTINPUT7 pdi = (LPDIRECTINPUT7)pvRef;
@@ -817,7 +810,6 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 
    return DIENUM_CONTINUE;
 }
-
 
 void endgame()
 {
@@ -1167,8 +1159,6 @@ void UnlockSurface()
    DD_CFB->Unlock(ddsd.lpSurface);
    DrawScreen(); 
 }
-
-
 
 extern "C" {
 
@@ -2053,8 +2043,6 @@ void drawscreenwin(void)
 
    UnlockSurface();
 }
-
-
 
 extern char fulladdtab[65536*2];
 extern WORD vesa2_usbit;
