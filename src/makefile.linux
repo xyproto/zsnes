@@ -22,6 +22,7 @@ GUIDIR=gui
 VIDEODIR=video
 WINDIR=linux
 OBJDIR=obj
+ZIPDIR=zip
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
 	 ${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
@@ -51,10 +52,12 @@ WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/modemrtn.o ${DOSDIR}/vesa2
 
 #PREOBJ=${OBJDIR}/unzip.o ${OBJDIR}/zzip.o ${DOSDIR}/zsipx.o
 
+ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o
+
 MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o
 
-OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ}
-LIBS=`sdl-config --libs`
+OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ}
+LIBS=`sdl-config --libs` -lz
 CFLAGS=-g -D__LINUX__ `sdl-config --cflags`
 ASM=nasm
 ASMFLAGS=-f elf -D__LINUX__ -g
@@ -63,7 +66,7 @@ PP=g++
 
 
 .SUFFIXES: .c .cpp .asm 
-	
+
 %.o: %.c
 	${CC} ${CFLAGS} -o $@ -c $<
 
@@ -72,13 +75,15 @@ PP=g++
 
 %.o: %.asm
 	${ASM} ${ASMFLAGS} -o $@ $<
-	
+
 
 ALL: zsnes
 
 zsnes: ${OBJS}
 	${CC} -o zsnes ${OBJS}  ${LIBS}
 
+${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/unzip.h
+${ZIPDIR}/zzip.o: ${ZIPDIR}/zzip.c ${ZIPDIR}/unzip.h
 ${DOSDIR}/zloader.o: ${DOSDIR}/zloader.c
 fixsin.o: fixsin.c
 water.o: water.c

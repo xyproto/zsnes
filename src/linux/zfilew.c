@@ -187,7 +187,7 @@ DWORD ZFileGetFTime()
 DWORD ZFileMKDir()
 {
 #ifdef __LINUX__
-  return(mkdir(MKPath, 0xff));
+  return(mkdir(MKPath, (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)));
 #else  
   return(mkdir(MKPath));
 #endif

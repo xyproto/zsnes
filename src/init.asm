@@ -83,9 +83,9 @@ EXTSYM pal16bxcl,ram7fa,regptra,regptwa,srama,vidmemch2,vidmemch4
 EXTSYM vidmemch8,vcache2b,vcache4b,vcache8b,vram,wramdata
 EXTSYM wramdataa
 EXTSYM fname,fnames,GetCurDir
-;EXTSYM GUIcurrentdir,extractzip,PrintStr
+EXTSYM GUIcurrentdir,extractzip,PrintStr
 ;STUB DDOI
-EXTSYM GUIcurrentdir, PrintStr
+;EXTSYM GUIcurrentdir, PrintStr
 EXTSYM GUIsmcfind,GUIsfcfind,GUIswcfind,GUIfigfind,GUIfind058,GUIfind078,GUIfindBIN
 ;EXTSYM GUIfindUSA,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall,ZipError
 EXTSYM GUIfindUSA,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall
@@ -3562,9 +3562,6 @@ InvalidZip db 'ZSNES Version A does not support .ZIP files.',13,10,'Please use V
 
 ZipError db 0
 
-extractzip:
-    ret
-  
 UnZipFile:
     cmp byte[OSPort],1
     jne .noasm
@@ -3575,14 +3572,24 @@ UnZipFile:
     jmp DosExit
 .noasm
     ; get Drive/Dir
+%ifdef __LINUX__
+    mov ebx,GUIcurrentdir
+%else
     mov ebx,GUIcurrentdir+3
+%endif
     mov edx,GUIcurrentdir
     call Get_Dir
+%ifndef __LINUX__
     add byte[GUIcurrentdir],65
+%endif
     cmp byte[InGUI],0
     je near .nochange
     ; locate end of string & append filename
+%ifdef __LINUX__
+    mov eax,GUIcurrentdir
+%else
     mov eax,GUIcurrentdir+3
+%endif
 .loop
     cmp byte[eax],0
     je .endfound
@@ -3591,7 +3598,11 @@ UnZipFile:
 .endfound
     cmp byte[eax-2],':'
     je .noaddslash
+%ifdef __LINUX__
+    mov byte[eax],'/'
+%else
     mov byte[eax],'\'
+%endif
     inc eax
 .noaddslash
     mov ebx,fname+1
