@@ -209,14 +209,14 @@ ${CHIPDIR}/sa1proc.o: ${CHIPDIR}/sa1proc.asm macros.mac
 endmem.o: endmem.asm macros.mac
 ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
 
-${JMADIR}/7zlzma.o: ${JMADIR}/7zlzma.cpp
+${JMADIR}/7zlzma.o: ${JMADIR}/7zlzma.cpp ${JMADIR}/iiostrm.h
 ${JMADIR}/crc32.o: ${JMADIR}/crc32.cpp ${JMADIR}/crc32.h
-${JMADIR}/iiostrm.o: ${JMADIR}/iiostrm.cpp
+${JMADIR}/iiostrm.o: ${JMADIR}/iiostrm.cpp ${JMADIR}/iiostrm.h ${JMADIR}/crc32.h
 ${JMADIR}/inbyte.o: ${JMADIR}/inbyte.cpp
-${JMADIR}/jma.o: ${JMADIR}/jma.cpp ${JMADIR}/jma.h ${JMADIR}/crc32.h ${JMADIR}/portable.h
+${JMADIR}/jma.o: ${JMADIR}/jma.cpp ${JMADIR}/jma.h ${JMADIR}/crc32.h ${JMADIR}/portable.h ${JMADIR}/iiostrm.h
 ${JMADIR}/lzma.o: ${JMADIR}/lzma.cpp
 ${JMADIR}/lzmadec.o: ${JMADIR}/lzmadec.cpp
-${JMADIR}/winout.o: ${JMADIR}/winout.cpp
+${JMADIR}/winout.o: ${JMADIR}/winout.cpp ${JMADIR}/iiostrm.h
 ${JMADIR}/zsnesjma.o: ${JMADIR}/zsnesjma.cpp ${JMADIR}/zsnesjma.h ${JMADIR}/jma.h
 
 install:
