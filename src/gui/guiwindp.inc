@@ -1374,7 +1374,7 @@ DisplayGUIOption:
     GUIOuttextwin2u 4,26,151,GUIOptionTextH,9
     GUIOuttextwin2u 4,26,161,GUIOptionTextI,15
     GUIOuttextwin2u 4,26,171,GUIOptionTextJ,0
-    GUIOuttextwin2u 4,26,181,GUIOptionTextK,6
+    GUIOuttextwin2u 4,26,181,GUIOptionTextK,1
     add byte[GUItextcolor],15
     GUIOuttextwin2 4,5,15,[GUITemp]
     GUIOuttextwin2 4,25,30,GUIOptionText2
@@ -1505,7 +1505,7 @@ DisplayGUIOption:
 .nocheckbox13
     GUIDisplayIconWin 4,11,166,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[OverlayEnabled],0
+    cmp byte[SPCDisable],0
     je .nocheckbox14
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox14
@@ -1580,7 +1580,7 @@ GUIOptionTextG db 'OLD GFX MODE 2',0
 GUIOptionTextH db 'START AT LATEST SAVE',0
 GUIOptionTextI db 'AUTO STATE SAVE/LOAD',0
 GUIOptionTextJ db 'DON',39,'T SAVE CURRENT PATH',0
-GUIOptionTextK db 'OVERLAY SUPPORT',0
+GUIOptionTextK db 'DISABLE SOUND CPU EMU',0
 GUIOptionTextL db 'USE ALTERNATE TIMER',0
 GUIOptionText8 db '-',0
 GUIOptionText9 db '+',0
@@ -2142,7 +2142,6 @@ DisplayGUISound:
     GUIOuttextwin2u 6,26,166,GUISoundTextM,0
 %ifdef __WIN32__
     GUIOuttextwin2u 6,26,176,GUISoundTextN,1
-    GUIOuttextwin2u 6,26,186,GUISoundTextO,0
 %endif
     add byte[GUItextcolor],15
     GUIOuttextwin2 6,25,25,GUISoundText1
@@ -2170,7 +2169,6 @@ DisplayGUISound:
     GUIOuttextwin2 6,25,165,GUISoundTextM
 %ifdef __WIN32__
     GUIOuttextwin2 6,25,175,GUISoundTextN
-    GUIOuttextwin2 6,25,185,GUISoundTextO
 %endif
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
@@ -2270,12 +2268,6 @@ DisplayGUISound:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox9
     GUIDisplayIconWin 6,11,171,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[OverlayEnabled],0
-    je .nocheckbox10
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox10
-    GUIDisplayIconWin 6,11,181,[GUITemp]
 %endif
     DrawGUIWinBox 6,15,61,69,69,167
     mov dword[GUITemp],GUISoundText7
@@ -2368,7 +2360,6 @@ GUISoundTextK db 'LOW PASS FILTER',0
 GUISoundTextL db 'SOUND BUFFERING',0
 GUISoundTextM db 'CUBIC SPLINE INTERP',0
 GUISoundTextN db 'EXCLUSIVE MODE',0
-GUISoundTextO db 'DISABLE SPC EMU',0
 
 DisplayGUICheatConv:
     mov eax,[ccheatnpos]

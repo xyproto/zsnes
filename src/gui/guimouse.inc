@@ -994,24 +994,6 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
-%ifdef __WIN32__
-%macro GUIClickCButtonov 3
-    cmp eax,%1+1
-    jl %%noclick
-    cmp edx,%2+3
-    jl %%noclick
-    cmp eax,%1+6
-    jg %%noclick
-    cmp edx,%2+8
-    jg %%noclick
-    xor %3,1
-    pushad
-    call initDirectDraw
-    popad
-%%noclick
-%endmacro
-%endif
-
 %macro GUIClickCButtonat 3
     cmp eax,%1+1
     jl %%noclick
@@ -1150,32 +1132,6 @@ GUIWinClicked:
     ret
 %%noclick
 %endmacro
-
-%ifndef __LINUX__
-%macro GUIClickCButton2ov 5
-    cmp eax,%1+1
-    jl %%noclick
-    cmp edx,%2+3
-    jl %%noclick
-    cmp eax,%1+6
-    jg %%noclick
-    cmp edx,%2+8
-    jg %%noclick
-    xor %3,%5
-    mov al,%3
-    mov %4,al
-%ifdef __WIN32__
-    cmp byte[OverlayEnabled],1
-    jne %%noinit
-    pushad
-    call initDirectDraw
-    popad
-%%noinit
-%endif
-    ret
-%%noclick
-%endmacro
-%endif
 
 %macro GUIClickCButton3 5
     cmp eax,%1+1
@@ -2144,7 +2100,7 @@ DisplayGUIOptionClick:
     GUIClickCButton2 11,36,byte[newengen],byte[cfgnewgfx],1
 .invalidng
 %ifndef __LINUX__
-    GUIClickCButton2ov 11,46,byte[vsyncon],byte[cfgvsync],1
+    GUIClickCButton2 11,46,byte[vsyncon],byte[cfgvsync],1
 %endif
     GUIClickCButton2 11,56,byte[FPUCopy],byte[cfgcopymethod],2
     GUIClickCButtonM 11,66,byte[pl12s34]
@@ -2163,8 +2119,8 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,146,byte[LatestSave]
     GUIClickCButton 11,156,byte[AutoState]
     GUIClickCButton 11,166,byte[DontSavePath]
+    GUIClickCButton 11,176,byte[SPCDisable]
 %ifdef __WIN32__
-    GUIClickCButtonov 11,176,byte[OverlayEnabled]
     GUIClickCButtonat 11,186,byte[AlternateTimer]
 %endif
     ; Frameskip = 0
@@ -2296,7 +2252,6 @@ DisplayGUISoundClick:
 %ifdef __WIN32__
     GUIClickCButton 11,171,byte[ExclusiveSound]
 %endif
-    GUIClickCButton 11,181,byte[SPCDisable]
     cmp eax,15
     jl near .nosrate
     cmp edx,61

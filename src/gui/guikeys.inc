@@ -818,13 +818,6 @@ GUIOptionKeys:
     xor byte[vsyncon],1
     mov al,[vsyncon]
     mov [cfgvsync],al
-%ifdef __WIN32__
-    cmp byte[OverlayEnabled],1
-    jne .novsync
-    pushad
-    call initDirectDraw
-    popad
-%endif
 .novsync
 %endif
     cmp dh,'M'
@@ -895,14 +888,11 @@ GUIOptionKeys:
     jne .nosavepath
     xor byte[DontSavePath],1
 .nosavepath
+    cmp dh,'I'
+    jne .nospcdisable
+    xor byte[SPCDisable],1
+.nospcdisable
 %ifdef __WIN32__
-    cmp dh,'Y'
-    jne .nooverlay
-    xor byte[OverlayEnabled],1
-    pushad
-    call initDirectDraw
-    popad
-.nooverlay
     cmp dh,'S'
     jne .noalttimer
     xor byte[AlternateTimer],1
@@ -1036,10 +1026,6 @@ GUISoundKeys:
     xor byte[ExclusiveSound],1
 .noexclusivesound
 %endif
-    cmp dh,'D'
-    jne .nospcdisable
-    xor byte[SPCDisable],1
-.nospcdisable
     ret
 
 .sampratenext db 1,4,5,6,2,3,0,0,0,0
