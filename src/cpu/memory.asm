@@ -37,7 +37,7 @@ EXTSYM ramsize,ramsizeand,sram
 EXTSYM ram7fa
 EXTSYM DosExit,invalid,invopcd,previdmode,printhex8
 EXTSYM SA1Status,IRAM,CurBWPtr,SA1RAMArea
-EXTSYM SA1Overflow
+EXTSYM SA1Overflow,OBCEnable
 EXTSYM Sdd1Mode,Sdd1Bank,Sdd1Addr,Sdd1NewAddr,memtabler8,AddrNoIncr,SDD1BankA
 EXTSYM SPC7110Entries,spc7110romptr
 
@@ -655,6 +655,38 @@ NEWSYM C4ProcessSprites
 NEWSYM SprValAdd, db 0
 C4Data dd 0
 C4sprites dd 0
+
+NEWSYM InitOBC
+    pushad
+    mov esi,[romdata]
+    add esi,4096*1024
+    mov [C4RamR],esi
+    mov [C4RamW],esi
+    mov [C4Ram],esi
+    add dword[C4RamW],8192*4
+    add dword[C4Ram],8192*8
+    mov ecx,8192
+.c4loop
+    mov dword[esi],OBCReadReg
+    mov dword[esi+8192*4],OBCWriteReg
+    mov dword[esi+8192*8],0
+    add esi,4
+    dec ecx
+    jnz .c4loop
+    popad
+    ret
+
+OBCReadReg:
+    add ecx,[C4Ram]
+    mov al,[ecx]
+    sub ecx,[C4Ram]
+    ret
+
+OBCWriteReg
+    add ecx,[C4Ram]
+    mov [ecx],al
+    sub ecx,[C4Ram]
+    ret
 
 NEWSYM InitC4
     pushad
@@ -2378,6 +2410,8 @@ NEWSYM regaccessbankr8
     je .sfxram
     cmp byte[C4Enable],1
     je near .c4ram
+    cmp byte[OBCEnable],1
+    je near .c4ram
     and ebx,7Fh
     cmp bl,10h
     jb .dsp1
@@ -2480,6 +2514,8 @@ NEWSYM regaccessbankr16
     je .sfxram
     cmp byte[C4Enable],1
     je near .c4ram
+    cmp byte[OBCEnable],1
+    je near .c4ram
     and ebx,7Fh
     cmp bl,10h
     jb .dsp1
@@ -2577,6 +2613,8 @@ NEWSYM regaccessbankw8
     cmp byte[SFXEnable],1
     je .sfxram
     cmp byte[C4Enable],1
+    je near .c4ram
+    cmp byte[OBCEnable],1
     je near .c4ram
     and ebx,7Fh
     cmp bl,10h
@@ -2677,6 +2715,8 @@ NEWSYM regaccessbankw16
     cmp byte[SFXEnable],1
     je .sfxram
     cmp byte[C4Enable],1
+    je near .c4ram
+    cmp byte[OBCEnable],1
     je near .c4ram
     and ebx,7Fh
     cmp bl,10h
@@ -3683,7 +3723,7 @@ NEWSYM sramaccessbankr8b
     xor ebx,ebx
     ret
 .noaccess
-    xor al,al
+    mov al,0FFh
     xor ebx,ebx
     ret
 
@@ -3701,7 +3741,7 @@ NEWSYM sramaccessbankr16b
     xor ebx,ebx
     ret
 .noaccess
-    xor ax,ax
+    mov ax,0FFFFh
     xor ebx,ebx
     ret
 
