@@ -29,15 +29,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #define SRAM setaramdata
 
-#ifdef __WIN32__
-extern "C" { 
-#endif
 extern unsigned char *setaramdata;
 void ST010DoCommand(void);
-#ifdef __WIN32__
-}
-#endif
-
 
 //C++ style code in C
 #define bool unsigned char
@@ -367,6 +360,9 @@ void ST010DoCommand(void)
       int16 ypos_new = ST010_WORD(0x00DE);
       int16 xpos_new = ST010_WORD(0x00E0);
 
+      //Backup speed
+      uint16 old_speed = speed;
+
       //Mask upper bit
       xpos_new &= 0x7FFF;
 
@@ -390,9 +386,6 @@ void ST010DoCommand(void)
         rot+=0x8000;
         wrap=true;
       }
-
-      uint16 old_speed;
-      old_speed = speed;
 
       //Special case
       if (abs(o1-rot)==0x8000)
