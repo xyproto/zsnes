@@ -217,6 +217,8 @@ extern "C" void MinimizeWindow()
    IsMinimized = TRUE;
 }
 
+extern "C" BYTE MouseWheel;
+
 BOOL InputRead(void)
 {
    static PrevZ=0;
@@ -245,27 +247,30 @@ aquireagain:;
          MouseMoveX=dims.lX;
          MouseMoveY=dims.lY;
 
-         long zDelta = dims.lZ-PrevZ;
-         if (!dims.lZ) zDelta=0;
-         while (zDelta>0){
-           zDelta-=40;
-           if (!((CurKeyPos+1==CurKeyReadPos) || ((CurKeyPos+1==16)
-              && (CurKeyReadPos==0)))){
-              KeyBuffer[CurKeyPos]=72+256;
-              CurKeyPos++;
-              if (CurKeyPos==16) CurKeyPos=0;
-           }
+         if (MouseWheel == 1)
+         {
+            long zDelta = dims.lZ-PrevZ;
+            if (!dims.lZ) zDelta=0;
+            while (zDelta>0){
+              zDelta-=40;
+              if (!((CurKeyPos+1==CurKeyReadPos) || ((CurKeyPos+1==16)
+                 && (CurKeyReadPos==0)))){
+                 KeyBuffer[CurKeyPos]=72+256;
+                 CurKeyPos++;
+                 if (CurKeyPos==16) CurKeyPos=0;
+              }
+            }
+            while (zDelta<0){
+              zDelta+=40;
+              if (!((CurKeyPos+1==CurKeyReadPos) || ((CurKeyPos+1==16)
+                 && (CurKeyReadPos==0)))){
+                 KeyBuffer[CurKeyPos]=80+256;
+                 CurKeyPos++;
+                 if (CurKeyPos==16) CurKeyPos=0;
+              }
+            }
+            PrevZ=dims.lZ;
          }
-         while (zDelta<0){
-           zDelta+=40;
-           if (!((CurKeyPos+1==CurKeyReadPos) || ((CurKeyPos+1==16)
-              && (CurKeyReadPos==0)))){
-              KeyBuffer[CurKeyPos]=80+256;
-              CurKeyPos++;
-              if (CurKeyPos==16) CurKeyPos=0;
-           }
-         }
-         PrevZ=dims.lZ;
 
          MouseButton=(dims.rgbButtons[0]>>7)|(dims.rgbButtons[1]>>6)|(dims.rgbButtons[2]>>5)|(dims.rgbButtons[3]>>4);
 		}

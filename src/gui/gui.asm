@@ -580,7 +580,7 @@ NEWSYM GUIWBAdd,  db 25
 
 NEWSYM BlackAndWhite, db 0
 
-NEWSYM MouseWheel, db 0
+NEWSYM MouseWheel, db 1
 
 GUIsave equ $-GUIRAdd
 
