@@ -479,7 +479,7 @@ static void handle_params(int argc, char *argv[])
         }
         #endif
 
-        else if (tolower(argv[i][1]) == 'm' && argv[i][2] == 'c') //Autoload save state
+        else if (tolower(argv[i][1]) == 'm' && argv[i][2] == 'c') //Close ZSNES when ZMV closes
         {
           ZMVZClose = 1;
         }
@@ -519,7 +519,7 @@ static void handle_params(int argc, char *argv[])
           }
         }
 
-        else if (tolower(argv[i][1]) == 'z' && argv[i][2] == 'm') //Autoload save state
+        else if (tolower(argv[i][1]) == 'z' && argv[i][2] == 'm') //Autoload movie
         {
           i++;
           if ((autoloadmovie = zatoi(argv[i])+1) > 10)
