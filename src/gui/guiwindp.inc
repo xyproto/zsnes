@@ -1417,8 +1417,8 @@ DisplayGUIOption:
     je .win323
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .win323
-%endif
     GUIDisplayIconWin 4,11,76,[GUITemp]
+%endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[FPSAtStart],0
     je .nocheckbox6
