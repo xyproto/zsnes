@@ -1518,7 +1518,7 @@ transfersram:
     mov ebx,[sram]
     cmp byte[SFXEnable],1
     jne .loopb
-    mov ebx,[sfxramdata]
+    mov ecx,65536
 .loopb
 .getnext
     pushad
