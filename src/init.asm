@@ -1652,7 +1652,75 @@ SECTION .text
     rep stosb
 %endmacro
 
+NEWSYM CSStatus, db '                    TYPE:     CHSUM:OK  ',0
+
 NEWSYM init65816
+    mov esi,[romdata]
+    add esi,7FC0h
+    cmp byte[romtype],2
+    jne .nohiromrn
+    add esi,8000h
+.nohiromrn
+    mov edi,CSStatus
+    mov ecx,20
+.looprn
+    mov al,[esi]
+    or al,al
+    jnz .okaysp
+    mov al,32
+.okaysp
+    mov [edi],al
+    inc esi
+    inc edi
+    loop .looprn
+    mov dword[CSStatus+25],'NRM '
+    cmp byte[SA1Enable],0
+    je .nosa1
+    mov dword[CSStatus+25],'SA1 '
+.nosa1
+    cmp byte[RTCEnable],0
+    je .nortc
+    mov dword[CSStatus+25],'RTC '
+.nortc
+    cmp byte[SPC7110Enable],0
+    je .nospc7110
+    mov dword[CSStatus+25],'SP7 '
+.nospc7110
+    cmp byte[SFXEnable],0
+    je .nosfx
+    mov dword[CSStatus+25],'SFX '
+.nosfx
+    cmp byte[C4Enable],0
+    je .noc4
+    mov dword[CSStatus+25],'C4  '
+.noc4
+    cmp byte[DSP1Type],0
+    je .nodsp1
+    mov dword[CSStatus+25],'DSP '
+.nodsp1
+    cmp byte[SDD1Enable],0
+    je .nosdd1
+    mov dword[CSStatus+25],'SDD '
+.nosdd1
+
+    mov ax,[Checksumvalue]
+    mov esi,[romdata]
+    add esi,7FDCh+2
+    cmp byte[romtype],2
+    jne .nohirom3
+    add esi,8000h
+.nohirom3
+    cmp ax,[esi]
+    jne .failed
+    mov dword[CSStatus+36],'OK  '
+    jmp .passed
+.failed
+    mov dword[CSStatus+36],'FAIL'
+.passed
+    mov dword[Msgptr],CSStatus
+    mov eax,[MsgCount]
+    mov [MessageOn],eax
+
     mov byte[osm2dis],0
     mov byte[bgfixer2],0
     mov word[ScrDispl],0
@@ -3562,7 +3630,7 @@ NEWSYM loadfile
     mov ecx,65536
     mov edx,[sram]
     call Read_File
-    jc .failed
+    jc near .failed
     call Close_File
     jc .failed
 .notexist
@@ -3570,18 +3638,32 @@ NEWSYM loadfile
     mov edx,.opened
     mov ah,9
     call Output_Text
-    ; Verify checksum
-    mov ecx,[.curfileofs]
-    mov esi,[headdata]
+
+    ; calculate checksum
+    mov eax,1
+.nextcr
+    add eax,eax
+    cmp eax,[.curfileofs]
+    jb .nextcr
+    mov ecx,eax
+    mov esi,[romdata]
     xor eax,eax
     xor ebx,ebx
+    xor edi,edi
+    mov edx,ecx
+    shr edx,1
 .nextcs
-    mov al,[esi]
-    inc esi
+    mov al,[esi+edi]
+    inc edi
     add ebx,eax
+    cmp edi,[.curfileofs]
+    jne .notcrs
+    mov edi,edx
+.notcrs
     dec ecx
     jnz .nextcs
     mov [Checksumvalue],bx
+
     mov eax,[.curfileofs]
     mov [NumofBytes],eax
     shr eax,15
@@ -4291,6 +4373,33 @@ NEWSYM loadfileGUI
     jne .nextmir
 .nomir
 
+    ; calculate checksum
+    mov eax,1
+.nextcr
+    add eax,eax
+    cmp eax,[.curromspace]
+    jb .nextcr
+
+    mov ecx,eax
+    mov esi,[romdata]
+    xor eax,eax
+    xor ebx,ebx
+    xor edi,edi
+    mov edx,ecx
+    shr edx,1
+.nextcs
+    mov al,[esi+edi]
+    inc edi
+    add ebx,eax
+    cmp edi,[.curromspace]
+    jne .notcrs
+    mov edi,edx
+.notcrs
+    dec ecx
+    jnz .nextcs
+    mov [Checksumvalue],bx
+
+
     cmp byte[ZipSupport],1
     jne .nottempdirdel
     call PatchIPS
@@ -4330,18 +4439,6 @@ NEWSYM loadfileGUI
     shr eax,15
     mov [NumofBanks],eax
 
-    ; calculate checksum
-    mov ecx,[.curfileofs]
-    mov esi,[headdata]
-    xor eax,eax
-    xor ebx,ebx
-.nextcs
-    mov al,[esi]
-    inc esi
-    add ebx,eax
-    dec ecx
-    jnz .nextcs
-    mov [Checksumvalue],bx
     mov eax,[.curfileofs]
     shr eax,15
     mov [NumofBanks],eax
@@ -4822,7 +4919,7 @@ NEWSYM showinfo
 ;FFBD (0=none, 1=16kbit, 3=64kbit, 5=256kbit,etc.
     mov edx,.checksumc
     mov ah,9
-;    call Output_Text
+    call Output_Text
     mov ax,[Checksumvalue]
     mov esi,[headdata]
     add esi,7FDCh+2
@@ -4838,7 +4935,7 @@ NEWSYM showinfo
     mov edx,.cfailed
 .passed
     mov ah,9
-;    call Output_Text
+    call Output_Text
     ; Display NMI & Reset
     mov edx,.nmidisp
     mov ah,9

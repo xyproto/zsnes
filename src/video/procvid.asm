@@ -58,7 +58,7 @@ EXTSYM ClearScreen
 EXTSYM Mode7HiRes,mosenng,mosszng,intrlng,mode7hr ;,VESAAddr
 EXTSYM GUICPC, newgfx16b
 EXTSYM vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3
-EXTSYM granadd
+EXTSYM granadd,CSStatus
 EXTSYM SpecialLine
 EXTSYM vidbufferofsb
 ;EXTSYM Super2xSaI
@@ -3019,22 +3019,22 @@ NEWSYM hextestoutput
     EXTSYM Op14Zr,Op14Xr,Op14Yr,Op14U,Op14F,Op14L
     EXTSYM Op02CX,Op02CY,bg1scrolx,bg1scroly
     EXTSYM TValDebug,TValDebug2,curhdma
-    mov al,[curhdma]
+    mov al,[scaddset]
     call outputhex
     mov esi,216*288+32+16
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[TValDebug]
+    mov al,[scaddtype]
     call outputhex
     mov esi,216*288+70
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[TValDebug2+1]
+    mov al,[scrnon]
     call outputhex
     mov esi,216*288+70+16
     add esi,[vidbuffer]
     xor eax,eax
-    mov al,[TValDebug2]
+    mov al,[scrnon+1]
     call outputhex
     mov esi,216*288+108
     add esi,[vidbuffer]
@@ -3468,7 +3468,13 @@ NEWSYM copyvid
     mov edi,[Msgptr]
     mov esi,200*288+32
     add esi,[vidbuffer]
+    cmp edi,CSStatus
+    je .fivex5b
     call OutputGraphicString.no16bit
+    jmp .nfivex5b
+.fivex5b
+    call OutputGraphicString5x5
+.nfivex5b
     dec dword[MessageOn]
     jnz .nomsg
     cmp byte[cbitmode],1
@@ -3479,7 +3485,13 @@ NEWSYM copyvid
     mov edi,[Msgptr]
     mov esi,200*288*2+32*2
     add esi,[vidbuffer]
+    cmp edi,CSStatus
+    je .fivex5
     call OutputGraphicString16b
+    jmp .nfivex5
+.fivex5
+    call OutputGraphicString16b5x5
+.nfivex5
     dec dword[MessageOn]
 .nomsg
     jmp vidpaste
