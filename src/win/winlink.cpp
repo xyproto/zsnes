@@ -1128,12 +1128,9 @@ int InitDirectDraw()
 
    ReleaseDirectDraw();
 
-   if(FullScreen == 0)
-   {
-      GetClientRect(hMainWindow, &rcWindow );
-      ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow );
-      ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow + 1 );
-   }
+   GetClientRect(hMainWindow, &rcWindow);
+   ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow);
+   ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow + 1);
 
    if(DirectDrawCreateEx(NULL, (void **)&lpDD, IID_IDirectDraw7, NULL) != DD_OK)
    {
