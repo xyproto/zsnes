@@ -131,7 +131,6 @@ _int64 start, end, freq, update_ticks_pc, start2, end2, update_ticks_pc2;
 extern "C"
 {
    void drawscreenwin(void);
-   //void Init_2xSaI(UINT32 BitFormat);
    DWORD LastUsedPos=0;
    DWORD CurMode=-1;
 }
@@ -197,25 +196,25 @@ extern int KeyBuffer[16];
 
 extern "C" void CheckPriority()
 {
-    if (HighPriority == 1) SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
-       else SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+   if (HighPriority == 1) SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
+      else SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
 }
 
 extern "C" void CheckAlwaysOnTop()
 {
-    if (AlwaysOnTop == 1) SetWindowPos(hMainWindow, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-       else SetWindowPos(hMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+   if (AlwaysOnTop == 1) SetWindowPos(hMainWindow, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+      else SetWindowPos(hMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 }
 
 BOOL IsMinimized = FALSE;
 
 extern "C" void MinimizeWindow()
 {
-    if (AlwaysOnTop == 1) SetWindowPos(hMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-    MoveWindow(hMainWindow, 0, 0, 0, 0, TRUE);
-    InputDeAcquire();
-    SetActiveWindow(0);
-    IsMinimized = TRUE;
+   if (AlwaysOnTop == 1) SetWindowPos(hMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+   MoveWindow(hMainWindow, 0, 0, 0, 0, TRUE);
+   InputDeAcquire();
+   SetActiveWindow(0);
+   IsMinimized = TRUE;
 }
 
 BOOL InputRead(void)
@@ -654,11 +653,11 @@ ReInitSound()
    wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
    wfx.cbSize=0;
     
-	memset(&dsbd, 0, sizeof(DSBUFFERDESC));
+   memset(&dsbd, 0, sizeof(DSBUFFERDESC));
    dsbd.dwSize = sizeof(DSBUFFERDESC);
    dsbd.dwFlags = DSBCAPS_STICKYFOCUS;
    dsbd.dwBufferBytes = SoundBufferSize;
-	dsbd.lpwfxFormat = &wfx;
+   dsbd.lpwfxFormat = &wfx;
     
    hr = lpDirectSound->CreateSoundBuffer(&dsbd, &SoundBuffer, NULL);
 
@@ -1127,7 +1126,6 @@ startgame()
    if(BitDepth==16&& GBitMask!=0x07E0)
    {
       converta=1;
-      //Init_2xSaI(555);
    }
    else
    {
