@@ -456,9 +456,9 @@ int RegisterWinClass ( void )
    wcl.lpszMenuName     = NULL;
    wcl.lpszClassName    = "ZSNESWIN";
 
-	if (RegisterClass(&wcl)  == 0) return FALSE;
+      if (HighPriority == 1) SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
 
-      if (HighPriority == 1) SetPriorityClass(hInst, HIGH_PRIORITY_CLASS);
+	if (RegisterClass(&wcl)  == 0) return FALSE;
 
 	return TRUE;
 }
