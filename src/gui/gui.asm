@@ -668,6 +668,8 @@ NEWSYM NetQuitAfter, db 0
 NEWSYM NetNewNick, times 16 db 0
 NEWSYM NetFilename, times 512 db 0
 
+NEWSYM UseOpenGL, dd 0
+
 NEWSYM CheatOn, dd 0
 NEWSYM NumCheats, dd 0
 NEWSYM cheatdataprev, times 28 db 0 ; leave contents blank
