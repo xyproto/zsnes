@@ -65,7 +65,7 @@
 	#ifdef _MSC_VER
 	#define STDC_HEADERS
 	#endif
-	#if STDC_HEADERS
+	#ifdef STDC_HEADERS
 	#include <stdlib.h>
 	#include <stdio.h>	
 	#include <stdarg.h>
