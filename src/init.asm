@@ -1843,7 +1843,7 @@ NEWSYM initsnes
     xor ebx,ebx
     mov bl,70h
 .nextsram
-    mov [snesmmap+ebx*4],eax
+    mov [snesmap2+ebx*4],eax
     inc bl
     cmp bl,77h
     jbe .nextsram
