@@ -1284,7 +1284,7 @@ int InitDirectDraw()
       ddsd2.ddsCaps.dwCaps |= DDSCAPS_FLIP | DDSCAPS_COMPLEX;
    }
 
-   if (lpDD->CreateSurface( &ddsd2, &DD_Primary, NULL) != DD_OK)
+   if (lpDD->CreateSurface(&ddsd2, &DD_Primary, NULL) != DD_OK)
    {
       MessageBox(NULL, "IDirectDraw7::CreateSurface failed.", "DirectDraw Error", MB_ICONERROR);
    }
