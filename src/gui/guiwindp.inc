@@ -2170,6 +2170,7 @@ DisplayGUISound:
 ;    cmp byte[OSPort],3
 ;    je near .win32b
 %ifdef __MSDOS__
+    GUIOuttextwin2u 6,116,26,GUISoundText1b,0
     GUIOuttextwin2u 6,26,44,GUISoundText2b,1
 %endif
 ;.win32b
@@ -2197,6 +2198,7 @@ DisplayGUISound:
 ;    cmp byte[OSPort],3
 ;    je near .win32c
 %ifdef __MSDOS__
+    GUIOuttextwin2 6,115,25,GUISoundText1b
     GUIOuttextwin2 6,25,43,GUISoundText2b
 %endif
 ;.win32c
@@ -2241,6 +2243,14 @@ DisplayGUISound:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox
     GUIDisplayIconWin 6,11,21,[GUITemp]
+%ifdef __MSDOS__
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[cfgforce8b],0
+    je .nocheckbox0
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox0
+    GUIDisplayIconWin 6,102,21,[GUITemp]
+%endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[cfgStereoSound],0
     je .nocheckbox1
@@ -2399,6 +2409,7 @@ DisplayGUISound:
     ret
 
 GUISoundText1 db 'ENABLE SOUND',0
+GUISoundText1b db 'FORCE 8-BIT',0
 GUISoundText2 db 'SAMPLING RATE :',0
 GUISoundText2b db 'RAISE PITCH LEVEL',0
 GUISoundText3 db 'STEREO SOUND',0

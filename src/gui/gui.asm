@@ -137,8 +137,8 @@ EXTSYM NumInputDevices,GUIInputNames
 EXTSYM GUIVideoModeNames
 EXTSYM GUISLVID,GUIINVID,GUIEAVID,GUIIEVID,GUIFSVID,GUIWSVID
 EXTSYM GUISSVID,GUITBVID,GUIHSVID,GUI2xVID,GUII2VID,GUIM7VID
-EXTSYM cfgsoundon,cfgSoundQuality,cfgStereoSound
-EXTSYM convertnum,converthex
+EXTSYM cfgsoundon,cfgSoundQuality,cfgStereoSound,cfgforce8b
+EXTSYM Force8b,convertnum,converthex
 EXTSYM per2exec
 EXTSYM hostname
 EXTSYM UDPConfig

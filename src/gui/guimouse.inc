@@ -2348,6 +2348,9 @@ DisplayGUISoundClick:
     mov edx,[GUImouseposy]
     sub edx,[GUIwinposy+6*4]
     GUIClickCButton 11,21,byte[cfgsoundon]
+%ifdef __MSDOS__
+    GUIClickCButton 102,21,byte[cfgforce8b]
+%endif
     GUIClickCButton 11,30,byte[cfgStereoSound]
     GUIClickCButton 11,39,byte[RaisePitch]
     GUIClickCButton 11,101,byte[SoundNoiseDis]

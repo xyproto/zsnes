@@ -1208,6 +1208,12 @@ GUISoundKeys:
     jne .notenablesound
     xor byte[cfgsoundon],1
 .notenablesound
+%ifdef __MSDOS__
+    cmp dh,'F'
+    jne .notforce8b
+    xor byte[cfgforce8b],1
+.notforce8b
+%endif
     cmp dh,'S'
     jne .notstereo
     xor byte[cfgStereoSound],1
