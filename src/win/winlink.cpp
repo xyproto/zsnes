@@ -1090,7 +1090,7 @@ void TestJoy()
 extern "C" DWORD converta;
 extern "C" unsigned int BitConv32Ptr;
 
-int InitDirectDraw() // formerly known as startgame()
+int InitDirectDraw()
 {
    DDSURFACEDESC2       ddsd2;
    DDPIXELFORMAT        format;
@@ -1251,7 +1251,7 @@ DWORD LockSurface()
 void UnlockSurface()
 {
    DD_CFB->Unlock((struct tagRECT *)ddsd.lpSurface);
-   DrawScreen(); 
+   DrawScreen();
 }
 
 extern "C" {
