@@ -664,7 +664,7 @@ NEWSYM SDD1BankD, db 3
 NEWSYM vramread2, db 0             ; previous character for vram read
 NEWSYM nosprincr, db 0
 NEWSYM poamaddrs, dw 0
-NEWSYM ioportval, db 0
+NEWSYM ioportval, db 255
 NEWSYM iohvlatch, db 0
 
 
@@ -738,6 +738,7 @@ NEWSYM ClearRegs
     mov word[bg2objptr],0
     mov word[bg3objptr],0
     mov word[bg4objptr],0
+    mov byte[ioportval],0FFh
     ret
 
 reg2100r:
@@ -771,7 +772,7 @@ reg2137r:
     cmp byte[iohvlatch],1
     je .dolatch
     test byte[ioportval],80h
-    jnz .nolatch
+    jz .nolatch
 .dolatch
     xor ebx,ebx
     mov bl,[cycpl]
@@ -801,7 +802,7 @@ debblah:
     cmp byte[iohvlatch],1
     je .dolatch2
     test byte[ioportval],80h
-    jnz .nolatch2
+    jz .nolatch2
 .dolatch2
     xor ebx,ebx
     mov bl,[cycpl]

@@ -104,6 +104,7 @@ EXTSYM JoyRead,ChatType2,chatstrR2,chatstrR3,chatstrR4,chatstrR5
 EXTSYM chatRTL2,chatRTL3,chatRTL4,chatRTL5
 EXTSYM NetLoadState
 EXTSYM ProcessMovies
+EXTSYM ioportval
 EXTSYM C4VBlank
 EXTSYM dsp1teststuff
 EXTSYM ReturnFromSPCStall,SPCStallSetting,cycpb268,cycpb358,HIRQSkip,scanlines
@@ -1779,7 +1780,7 @@ NEWSYM stateloader
     mov edx,zsmesg
     call Read_File
     cmp byte[versn],60
-    jne near .convert
+    jb near .convert
     ; Load SPC timers
     mov ecx,8
     add dword[Totalbyteloaded],ecx
@@ -1790,6 +1791,10 @@ NEWSYM stateloader
     add dword[Totalbyteloaded],ecx
     mov edx,sndrot
     call Read_File
+    cmp byte[versn],60
+    jne .not60
+    mov byte[ioportval],0FFh
+.not60
     ; Load RAM (WRAM(128k),VRAM(64k),SRAM)
     mov ecx,65536+65536
     add dword[Totalbyteloaded],ecx
