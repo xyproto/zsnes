@@ -1227,6 +1227,10 @@ GUIVideoKeys:
 .novsync
     cmp dh,'K'
     jne .nokitchensync
+    xor ebx,ebx
+    mov bl,[cvidmode]
+    cmp byte[GUITBVID+ebx],0
+    je .nokitchensync
     xor byte[KitchenSync],1
 .nokitchensync
 %endif

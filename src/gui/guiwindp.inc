@@ -1751,6 +1751,7 @@ DisplayGUIVideo:
     cmp byte[GUITBVID+eax],0
     je .notext7
     GUIOuttextwin2u 5,26,168,GUIVideoText7,0
+    GUIOuttextwin2u 5,98,178,GUIVideoText10,0
 .notext7
     xor eax,eax
     mov al,[cvidmode]
@@ -1769,7 +1770,6 @@ DisplayGUIVideo:
     GUIOuttextwin2u 5,26,188,GUIVideoText8c,0
 %ifndef __LINUX__
     GUIOuttextwin2u 5,130,188,GUIVideoText9,0
-    GUIOuttextwin2u 5,98,178,GUIVideoText10,0
 %endif
     add byte[GUItextcolor],15
 
@@ -1853,6 +1853,7 @@ DisplayGUIVideo:
     cmp byte[GUITBVID+eax],0
     je .notext7b
     GUIOuttextwin2 5,25,167,GUIVideoText7
+    GUIOuttextwin2 5,97,177,GUIVideoText10
 .notext7b
     xor eax,eax
     mov al,[cvidmode]
@@ -1871,7 +1872,6 @@ DisplayGUIVideo:
     GUIOuttextwin2 5,25,187,GUIVideoText8c
 %ifndef __LINUX__
     GUIOuttextwin2 5,129,187,GUIVideoText9
-    GUIOuttextwin2 5,97,177,GUIVideoText10
 %endif
     DrawGUIButton 5,128,60,164,71,GUIVideoText8,4,0,0
     mov al,[GUIWincol]
@@ -1996,13 +1996,18 @@ DisplayGUIVideo:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckboxm74
     GUIDisplayIconWin 5,115,183,[GUITemp]
+%endif
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUITBVID+eax],0
+    je .nocheckboxks2
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[KitchenSync],0
-    je .nocheckboxm75
+    je .nocheckboxks
     mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckboxm75
+.nocheckboxks
     GUIDisplayIconWin 5,83,173,[GUITemp]
-%endif
+.nocheckboxks2
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIIEVID+eax],0
