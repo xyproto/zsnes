@@ -262,7 +262,7 @@ NEWSYM WaterOn,  db 1
 ;The first byte is the number of fields on the right not including the seperators
 MenuDat1 db 12, 3,1,1,1,1,1,1,1,1,1,0,1,2,0
 MenuDat2 db 8,  3,1,1,0,1,1,1,0,2,0,0
-MenuDat3 db 12, 3,1,1,1,1,0,1,0,1,1,1,1,2,0
+MenuDat3 db 13, 3,1,1,1,1,0,1,1,0,1,1,1,1,2,0
 MenuDat4 db 2,  3,1,2,0
 MenuDat5 db 1,  3,2,0
 MenuDat6 db 6,  3,1,1,1,1,0,2,0
@@ -299,7 +299,7 @@ GUIConfigMenuData
         db 1,'INPUT #5    ',0
         db 0,'------------',0
         db 1,'ADD-ONS     ',0
-;       db 1,'CHIP CFG    ',0
+        db 1,'CHIP CFG    ',0
         db 0,'------------',0
         db 1,'OPTIONS     ',0
         db 1,'VIDEO       ',0
@@ -3398,9 +3398,9 @@ GUITryMenuItem:
     ;The number on the left is the window to open
     ;the number on the right is where in the drop down box we are
     GUICheckMenuItem 17, 6              ; Add-Ons
-;   GUICheckMenuItem 18, 7              ; Chip Config
-    GUICheckMenuItem 4, 8               ; Options
-    cmp byte[GUIcrowpos],9              ; Video
+    GUICheckMenuItem 18, 7              ; Chip Config
+    GUICheckMenuItem 4, 9               ; Options
+    cmp byte[GUIcrowpos],10              ; Video
     jne near .novideo
     ; set Video cursor location
     xor eax,eax
@@ -3416,9 +3416,9 @@ GUITryMenuItem:
     mov edx,5
     call CheckMenuItemHelp
 .novideo
-    GUICheckMenuItem 6, 10             ; Sound
-    GUICheckMenuItem 19, 11            ; Paths
-    GUICheckMenuItem 20, 12            ; Saves
+    GUICheckMenuItem 6, 11             ; Sound
+    GUICheckMenuItem 19, 12            ; Paths
+    GUICheckMenuItem 20, 13            ; Saves
 .noconfig
     cmp byte[romloadskip],0
     jne near .nocheat
@@ -3958,7 +3958,7 @@ DisplayMenu:
 .nomenu2
     cmp byte[GUIcmenupos],3
     jne near .nomenu3
-    GUIDrawMenuM 52,16,9,13,GUIConfigMenuData,54,57,22,149,42 ;19+13*10
+    GUIDrawMenuM 52,16,9,14,GUIConfigMenuData,54,57,22,159,42 ;19+14*10
     mov dword[GUICYLocPtr],MenuDat3
 .nomenu3
     cmp byte[GUIcmenupos],4
