@@ -4593,6 +4593,7 @@ NEWSYM CheckROMType
 
 
     ;Setup some Memmapping
+    mov byte[DSP1Type],0
     mov esi,[romdata]
     add esi,0FFC0h
     mov byte[disablespcclr],0
