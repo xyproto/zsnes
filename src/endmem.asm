@@ -183,6 +183,7 @@ NEWSYM mosszng,  resb 256
 NEWSYM mosenng,  resb 256 
 
 SECTION .data
+ALIGN32
 
 NEWSYM vidmemch2s, times 4096 db 0FFh
 NEWSYM vidmemch4s, times 2048 db 0FFh
@@ -238,6 +239,7 @@ NEWSYM FillSubScr, resb 256
 NEWSYM objclineptr, resd 256    ; l1,r1,l2,r2,en,log,ptr
 
 SECTION .data
+ALIGN32
 
 NEWSYM objwlrpos  , times 256 dd 0FFFFFFFFh
 NEWSYM objwen     , times 256 dw 0FFFFh    ; en,log
