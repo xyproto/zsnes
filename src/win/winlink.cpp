@@ -1083,15 +1083,18 @@ startgame()
    {
       return FALSE;
    }
-	
 
    if (FAILED(lpDD->CreateClipper(0,&lpDDClipper,NULL)))
    {
+      lpDD->Release();
+      lpDD=NULL;
       return FALSE;
    }
 
    if (FAILED(lpDDClipper->SetHWnd(0,hMainWindow)))
    {
+      lpDD->Release();
+      lpDD=NULL;
       return FALSE;
    }
 
@@ -1115,7 +1118,7 @@ startgame()
       exit(0);
    }
 
-   if(BitDepth==16&& GBitMask!=0x07E0)
+   if(BitDepth==16 && GBitMask!=0x07E0)
    {
       converta=1;
    }
@@ -1137,6 +1140,7 @@ startgame()
 
    if ( lpDD->CreateSurface( &ddsd, &DD_CFB, NULL ) != DD_OK )
    {
+      DD_CFB->Release();
       DD_CFB = NULL;
       return FALSE;
    }
@@ -1145,7 +1149,7 @@ startgame()
 }
 
 BYTE* SurfBuf;
-DDSURFACEDESC       ddsd;
+DDSURFACEDESC ddsd;
 
 DWORD LockSurface()
 {
