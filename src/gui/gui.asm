@@ -500,9 +500,10 @@ prevloadfnamel times 512*10 db 0
 NEWSYM PrevWinMode, db 0
 %ifdef __WIN32__
 NEWSYM PrevFSMode, db 6
-%endif
-%ifdef __LINUX__
+%elifdef __LINUX__
 NEWSYM PrevFSMode, db 3
+%else
+NEWSYM PrevFSMode, db 0
 %endif
 
 OldWinPos db 0
