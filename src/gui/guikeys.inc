@@ -1684,7 +1684,7 @@ GUIPathKeys:
 
     cmp dword[GUIInputBox],1
     jne .notBox1
-    mov byte[changedsavedir],1 ;Need this to know if we should save the path
+    mov byte[cfgloadsdir],1 ;Need this to know if we should save the path
     mov eax,SRAMDir
     jmp .boxselected
 .notBox1

@@ -141,9 +141,9 @@ extern unsigned int ZCloseFile(); //Close_File
 
 #ifdef __LINUX__
 extern char zcfgdir[1024];
-unsigned char changedsavedir = 1; //Set to yes, since savedir is always set and considered to be changed
+unsigned char cfgloadsdir = 1; //Set to yes, since savedir is always set and considered to be changed
 #else
-unsigned char changedsavedir = 0; //Only set to yes if modified in the paths window
+unsigned char cfgloadsdir = 0; //Only set to yes if modified in the paths window
 #endif
 
 
@@ -162,7 +162,6 @@ unsigned char cfgscanline = 0;
 unsigned char cfginterp = 0;
 unsigned char cfgenterskip = 0;
 unsigned char cfgforce8b = 0;
-unsigned char cfgloadsdir = 0;
 unsigned char cfgloadgdir = 0;
 unsigned char cfgnewgfx = 0;
 unsigned char cfgvsync = 0;
@@ -562,7 +561,7 @@ void DOScreatenewcfg()
   WRITE_LINE("; Savefile directory.  Leave it blank if you want the save files to be in the\r\n");
   WRITE_LINE("; same directory as the games.  It should be in a format like : C:\\dir\\dir\r\n\r\n");
 
-  if (changedsavedir || cfgloadsdir)
+  if (cfgloadsdir)
   {
     sprintf(buffer, "SaveDirectory = %s\r\n\r\n", SRAMDir);
   }
