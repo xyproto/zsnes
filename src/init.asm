@@ -1742,11 +1742,13 @@ NEWSYM headerhack
     jne .notyoshi
     cmp dword[esi+8],'ISLA'
     jne .notyoshi
+    jmp .yoshi
 .notyoshi
     cmp dword[esi],'YOSS'
     jne .notyoshi2
     cmp dword[esi+8],'ISLA'
     jne .notyoshi2
+.yoshi
     mov byte[hdmaearlstart],2
     mov byte[opexec268],116
     mov byte[opexec358],126
