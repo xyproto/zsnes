@@ -188,7 +188,7 @@ int ConnectGameServer(char *servername, unsigned int port)
     unsigned long addr1;
     int yesip;
     WSADATA wsadata;
-    int timeout=5000;
+    int timeout=10000;
 
     host1 = gethostbyname(servername);
     if (host1 == NULL)
