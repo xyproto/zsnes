@@ -30,6 +30,11 @@ Usage:
        
 That's all there is to it!!!
 
+
+Note: Make sure this is used on a line by itself if the file will ever be
+compiled with MSVC, since it's preproccessor won't parse the inline 
+assembly correctly if other stuff are on the line
+
 Note: This will not work with GCC when using the parameter -MASM=intel
 I'd fix that if anyone knows if that parameter defines something I can check
 

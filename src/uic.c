@@ -140,6 +140,8 @@ unsigned char *spc7110romptr;
 unsigned char MusicRelVol   = 75;
 unsigned char MusicVol      = 0;
 
+void outofmemory();
+
 void *doMemAlloc(size_t size)
 {
   void *ptr = NULL;
@@ -206,8 +208,6 @@ const unsigned int versionNumber = 0x0000008F; // 1.43
 unsigned char *ZVERSION = "Pre 1.43";
 unsigned char txtfailedalignd[25] = "Data Alignment Failure : ";
 unsigned char txtfailedalignc[25] = "Code Alignment Failure : ";
-
-void outofmemory();
 
 void zstart ()
 {
