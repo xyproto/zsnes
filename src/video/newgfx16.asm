@@ -2557,9 +2557,10 @@ NEWSYM drawsprng16b
     jz .nosubmain
     xor eax,eax
     mov al,[BGMS1+ebx*2]
-    sub al,[FillSubScr+ebx]
+    add al,[FillSubScr+ebx]
+    add al,[bgmode]
     test al,04h
-    jnz .nosub2
+    jz .nosub2
     xor eax,eax
 .nosub2
     test byte[BGMS1+ebx*2],1h
