@@ -57,7 +57,7 @@ BOOL sw_start(int width, int height, int req_depth, int FullScreen)
     flags |= (FullScreen ? SDL_FULLSCREEN : 0);
     
     SurfaceX = width; SurfaceY = height;
-    surface = SDL_SetVideoMode(SurfaceX, SurfaceY, 16, flags);
+    surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
     if (surface == NULL) {
 	fprintf (stderr, "Could not set %dx%d video mode.\n", SurfaceX, SurfaceY);
 	return FALSE;
