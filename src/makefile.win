@@ -252,7 +252,7 @@ clean:
 	del ${ZIPDIR}\*.obj
 	del ${DOSDIR}\*.obj
 	del ${EFFECTSDIR}\*.obj
-	del ${JMADIR}\*.obj	
+	del ${JMADIR}\*.obj
 	del zsnesw.exe
 	
 
