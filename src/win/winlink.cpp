@@ -2103,7 +2103,7 @@ void drawscreenwin(void)
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
 
-   if (SurfaceX==256 && SurfaceY == 240)
+   if (SurfaceX == 256 && SurfaceY == 240)
    {
       switch (BitDepth)
       {
