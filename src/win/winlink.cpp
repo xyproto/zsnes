@@ -41,6 +41,7 @@ DWORD SoundBufferSize=1024*18;
 DWORD FirstSound=1;
 
 int SoundEnabled=1;
+int UsePrimaryBuffer=0;
 
 DWORD FirstActivate = 1;
 
@@ -668,6 +669,7 @@ DWORD PrevSoundQuality;
 InitSound()
 {
    WAVEFORMATEX wfx;
+	DSBCAPS dsbcaps;
 
    if (cfgsoundon == 0) return FALSE;
 
@@ -676,14 +678,16 @@ InitSound()
    PrevSoundQuality=SoundQuality;
    PrevStereoSound=StereoSound;
 
-      if (DS_OK == pDirectSoundCreate8(NULL, &lpDirectSound,NULL))
+   if (DS_OK == pDirectSoundCreate8(NULL, &lpDirectSound,NULL))
 	{
 		lpDirectSound->Initialize(NULL);
-		if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL))
+
+		if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_WRITEPRIMARY))
 		{
 			if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
 				return FALSE;
 		}
+		else UsePrimaryBuffer=1;
 	}
 	else 
 	{
@@ -745,43 +749,64 @@ InitSound()
     
    memset(&dsbd, 0, sizeof(DSBUFFERDESC));
    dsbd.dwSize = sizeof(DSBUFFERDESC);
-   dsbd.dwFlags = DSBCAPS_STICKYFOCUS; // | DSBCAPS_PRIMARYBUFFER;
-   dsbd.dwBufferBytes = SoundBufferSize;
-   dsbd.lpwfxFormat = &wfx;
+   dsbd.dwFlags = DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_STICKYFOCUS;
+	if(UsePrimaryBuffer) dsbd.dwFlags |= DSBCAPS_PRIMARYBUFFER;
+   dsbd.dwBufferBytes = UsePrimaryBuffer ? 0 : SoundBufferSize;
+   dsbd.lpwfxFormat = UsePrimaryBuffer ? NULL : &wfx;
 
    if (DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &lpPrimaryBuffer, NULL))
 	{
-      if (DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
-      {
-         if (DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING))
-         {
-            return FALSE;
-         }
-         SoundEnabled=1;
-         FirstSound=0;
-         return TRUE;
-      }
-      else
-      {
-         return FALSE;
-      }
+		if(!UsePrimaryBuffer)
+		{
+	      if (DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
+	      {
+		      if (DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING))
+		      {
+		         return FALSE;
+		      }
+			}
+			else return FALSE;
+		}
+		else
+		{
+			lpPrimaryBuffer->SetFormat(&wfx);
+			dsbcaps.dwSize=sizeof(DSBCAPS);
+			lpPrimaryBuffer->GetCaps(&dsbcaps);
+			SoundBufferSize=dsbcaps.dwBufferBytes;
+
+	      if (DS_OK != lpPrimaryBuffer->Play(0,0,DSBPLAY_LOOPING))
+	      {
+	         return FALSE;
+	      }
+		}
+	
+      SoundEnabled=1;
+      FirstSound=0;
+      return TRUE;
    } 
    else 
    {
       return FALSE;
    }
-
 }
 
 ReInitSound()
 {
    WAVEFORMATEX wfx;
+	DSBCAPS dsbcaps;
 
    if (lpSoundBuffer)
    {
       lpSoundBuffer->Stop();
       lpSoundBuffer->Release();
       lpSoundBuffer = NULL;
+   }
+
+   if (lpPrimaryBuffer)
+   {
+      lpPrimaryBuffer->Stop();
+      lpPrimaryBuffer->Release();
+      lpPrimaryBuffer = NULL;
    }
 
    if (cfgsoundon == 0)
@@ -853,32 +878,45 @@ ReInitSound()
     
    memset(&dsbd, 0, sizeof(DSBUFFERDESC));
    dsbd.dwSize = sizeof(DSBUFFERDESC);
-   dsbd.dwFlags = DSBCAPS_STICKYFOCUS;
-   dsbd.dwBufferBytes = SoundBufferSize;
-   dsbd.lpwfxFormat = &wfx;
+   dsbd.dwFlags = DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_STICKYFOCUS;
+	if(UsePrimaryBuffer) dsbd.dwFlags |= DSBCAPS_PRIMARYBUFFER;
+   dsbd.dwBufferBytes = UsePrimaryBuffer ? 0 : SoundBufferSize;
+   dsbd.lpwfxFormat = UsePrimaryBuffer ? NULL : &wfx;
 
    if (DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &lpPrimaryBuffer, NULL))
 	{
-      if (DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
-      {
-         if (DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING ))
-         {
-            return FALSE;
-         }
-         SoundEnabled=1;
-         LastUsedPos=0;
-         return TRUE;
-      }
-      else
-      {
-         return FALSE;
-      }
+		if(!UsePrimaryBuffer)
+		{
+	      if (DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
+	      {
+		      if (DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING))
+		      {
+		         return FALSE;
+		      }
+			}
+			else return FALSE;
+		}
+		else
+		{
+			lpPrimaryBuffer->SetFormat(&wfx);
+			dsbcaps.dwSize=sizeof(DSBCAPS);
+			lpPrimaryBuffer->GetCaps(&dsbcaps);
+			SoundBufferSize=dsbcaps.dwBufferBytes;
+
+	      if (DS_OK != lpPrimaryBuffer->Play(0,0,DSBPLAY_LOOPING))
+	      {
+	         return FALSE;
+	      }
+		}
+	
+      SoundEnabled=1;
+      FirstSound=0;
+      return TRUE;
    } 
    else 
    {
       return FALSE;
    }
-
 }
 
 BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
@@ -2181,7 +2219,8 @@ void UpdateVFrame(void)
 
    if (SoundEnabled == 0) return;
 
-   lpSoundBuffer->GetCurrentPosition(&CurrentPos,&WritePos);
+   if(!UsePrimaryBuffer) lpSoundBuffer->GetCurrentPosition(&CurrentPos,&WritePos);
+	else lpPrimaryBuffer->GetCurrentPosition(&CurrentPos,&WritePos);
 
    if (LastUsedPos <= CurrentPos)
    {
@@ -2262,13 +2301,26 @@ _top_mmx:
                if (DSPBuffer1[i]<-32767)Buffer[i]=-32767;
             }
 
-      if (DS_OK!=lpSoundBuffer->Lock(LastUsedPos,
-                                  SPCSize*2, &lpvPtr1,
-                                  &dwBytes1, &lpvPtr2,
-                                  &dwBytes2, 0))
-      {
-         return;
-      }
+		if(!UsePrimaryBuffer)
+		{
+	      if (DS_OK!=lpSoundBuffer->Lock(LastUsedPos,
+	                                  SPCSize*2, &lpvPtr1,
+	  	                               &dwBytes1, &lpvPtr2,
+	                                  &dwBytes2, 0))
+	      {
+	         return;
+	      }
+		}
+		else
+		{
+	      if (DS_OK!=lpPrimaryBuffer->Lock(LastUsedPos,
+	                                  SPCSize*2, &lpvPtr1,
+	                                  &dwBytes1, &lpvPtr2,
+	                                  &dwBytes2, 0))
+	      {
+	         return;
+	      }
+		}
 
       Sound=(short *)lpvPtr1;
 
@@ -2279,10 +2331,20 @@ _top_mmx:
          CopyMemory(lpvPtr2, &Buffer[0]+dwBytes1, dwBytes2);
       }   
 
-      if (DS_OK != lpSoundBuffer->Unlock(lpvPtr1, dwBytes1, lpvPtr2, dwBytes2))
-      {
-         return;
-      }
+		if(!UsePrimaryBuffer)
+		{
+	      if (DS_OK != lpSoundBuffer->Unlock(lpvPtr1, dwBytes1, lpvPtr2, dwBytes2))
+	      {
+	         return;
+	      }
+		}
+		else
+		{
+	      if (DS_OK != lpPrimaryBuffer->Unlock(lpvPtr1, dwBytes1, lpvPtr2, dwBytes2))
+	      {
+	         return;
+	      }
+		}
 
       LastUsedPos+=SPCSize*2;
       if (LastUsedPos==SoundBufferSize) LastUsedPos=0;

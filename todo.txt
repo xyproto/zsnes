@@ -1,8 +1,6 @@
 Some Issues :
 
 Windows Port:
-- DirectSound in ZSNESw doesn't support the primary sound buffer.
-  Unfortunately, this causes 8-bit quality sounds on certain computers.
 - OpenGL, or Direct3D support would be nice
 - Use another (free) compiler for the windows version (cygwin?)
 - Auto-detect high/low latency connections and adjust settings accordingly
