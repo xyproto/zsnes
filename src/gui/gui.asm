@@ -1471,74 +1471,47 @@ NEWSYM SaveSramData
     mov ebx,SRAMDir
     call Change_Dir
 
+    cmp byte[sramsavedis],1
+    je .savesramdone
+
+    cmp dword[ramsize],0
+    je .savesramdone
+
+    mov edx,[sram]
+    cmp byte[SFXEnable],1    
+    jne .notsfx
+    mov edx,[sfxramdata]
+.notsfx    
+    cmp byte[SA1Enable],1
+    jne .notsa1
+    mov edx,[SA1RAMArea]
+.notsa1    
+    cmp byte[SETAEnable],1
+    jne .notseta
+    mov edx,[setaramdata]
+.notseta
+    cmp edx,[sram]    
+    je .notspecial
+    cmp byte[CHIPBATT],0
+    je .savesramdone
+.notspecial
+    
     clim
     
-    cmp byte[SFXEnable],1    
-    je .nosram
-    cmp byte[SA1Enable],1
-    je .nosram
-    cmp byte[sramsavedis],1
-    je .nosram
-    cmp dword[ramsize],0
-    je .nosram
-    xor eax,eax
-    xor ebx,ebx
-    xor ecx,ecx
-    xor edx,edx
-    xor esi,esi
-    xor edi,edi
+    push edx ;Backup data to save
     mov edx,fnames+1
     call Create_File
     jc .failed
     mov bx,ax
     xor ecx,ecx
     mov ecx,[ramsize]
-    mov edx,[sram]
+    pop edx ;Restore data to save
     call Write_File
     call Close_File
-.nosram
-    cmp byte[SFXEnable],0
-    je .nosfxbatt
-    cmp byte[CHIPBATT],0
-    je .nosfxbatt
-    mov edx,fnames+1
-    call Create_File
-    jc .failed
-    mov bx,ax
-    mov ecx,[ramsize]
-    mov edx,[sfxramdata]
-    call Write_File
-    call Close_File
-.nosfxbatt
-
-    cmp byte[SETAEnable],0
-    je .nosetasram
-    mov edx,fnames+1
-    call Create_File
-    jc .failed
-    mov bx,ax
-    mov ecx,4096
-    mov edx,[setaramdata]
-    call Write_File
-    call Close_File
-.nosetasram
-
-    cmp byte[SA1Enable],1
-    jne .nosa1
-    cmp byte[CHIPBATT],1
-    jne .nosa1
-    mov edx,fnames+1
-    call Create_File
-    jc .failed
-    mov bx,ax
-    mov ecx,[ramsize]
-    mov edx,[SA1RAMArea]
-    call Write_File
-    call Close_File
-.nosa1
-.failed
+.failed    
     stim
-
+.savesramdone
+    
     call SaveCombFile
 
     ; change dir to InitDrive/InitDir

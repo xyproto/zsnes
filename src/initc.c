@@ -395,6 +395,7 @@ void MirrorROM()
 #define SRAMSizeOffset   24 
 #define CompanyOffset    26
 extern bool SFXEnable;
+extern bool SETAEnable;
 void SetupSramSize()
 {
   unsigned char *ROM = (unsigned char *)romdata;
@@ -408,6 +409,10 @@ void SetupSramSize()
     {
       ramsize = 256;
     }
+  }
+  else if (SETAEnable)
+  {
+    ramsize = 32;
   }
   else
   {
