@@ -109,6 +109,7 @@ EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 EXTSYM NetPlayNoMore,MovieSeekBehind
 EXTSYM statefileloc,CHIPBATT,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead,ResetDuringMovie,MovieExitLoop
+EXTSYM EMUPauseKey,INCRFrameKey
 
 %ifdef __MSDOS__
 EXTSYM dssel
@@ -1505,6 +1506,7 @@ NEWSYM NumberOfOpcodes2, dd 0
 NEWSYM ChangeOps, dd 0
 NEWSYM SFXProc,    dd 0
 NEWSYM EMUPause, db 0
+NEWSYM INCRFrame, db 0
 SECTION .text
 
 
@@ -1912,6 +1914,22 @@ NEWSYM cpuover
     mov byte[pressed+eax],2
     jmp exitloop
 .nosavespckey
+    mov eax,dword[EMUPauseKey]
+    or eax,eax
+    jz .nopausekey
+    test byte[pressed+eax],1
+    jz .nopausekey
+    xor byte[EMUPause],1
+    mov byte[pressed+eax],2
+.nopausekey
+    mov eax,dword[INCRFrameKey]
+    or eax,eax
+    jz .noincrframekey
+    test byte[pressed+eax],1
+    jz .noincrframekey
+    xor byte[INCRFrame],1
+    mov byte[pressed+eax],2
+.noincrframekey    
     test byte[pressed+1],01h
     jnz near exitloop
     test byte[pressed+59],01h
@@ -1977,9 +1995,15 @@ NEWSYM cpuover
     call ReadInputDevice
 .noinputread
 
+    cmp byte[INCRFrame],1
+    jne .noframeincr
+    xor byte[INCRFrame],1
+    jmp .noemupause
+.noframeincr    
     cmp byte[EMUPause],1
     je .nonewgfx
-    
+.noemupause
+        
     call UpdateRewind
 
     mov byte[NetQuit],0
