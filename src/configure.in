@@ -5,8 +5,7 @@ dnl CC: Anyone else who cares
 dnl From: A FreeBSD user who wrote this autoconf setup.
 dnl
 dnl Please do not use global cflags for zsnes, they are
-dnl not optimized (especially -O other than -Os, and 
-dnl -funroll-loops) This has been tested on very many
+dnl not optimized. This has been tested on very many
 dnl different processors of the x86 architecture, and 
 dnl this has been proven correct, and I doubt you want
 dnl to annoy your users by having ports build un-
@@ -115,7 +114,7 @@ else
 	dnl zsnes more easily deal with small instruction caches, and more
 	dnl effectivly use branch prediction.
 	
-	CFLAGS="$CFLAGS -Os -fcse-follow-jumps -fcse-skip-blocks -frerun-cse-after-loop -ffast-math -fomit-frame-pointer -fstrength-reduce -fthread-jumps -fschedule-insns2 -s"
+	CFLAGS="$CFLAGS -O3 -funroll-loops -ffast-math -fomit-frame-pointer -fexpensive-optimizations  -fcse-follow-jumps -fcse-skip-blocks -frerun-cse-after-loop -fstrength-reduce -finline-functions -fforce-mem -fschedule-insns2  -s"
 	ZSNESEXE="zsnes"
 fi
 
