@@ -1359,10 +1359,10 @@ COPemulmode
     mov [xpc],ax
     test eax,8000h
     jz .loweraddr
+    mov byte[doirqnext],0
     mov esi,[snesmmap+ebx*4]
     mov [initaddrl],esi
     add esi,eax
-    mov byte[doirqnext],0
     cmp byte[esi],0CBh
     jne .notwai
     mov byte[intrset],2

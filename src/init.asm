@@ -1887,7 +1887,6 @@ NEWSYM headerhack
     mov word[ramsize],4096
     mov word[ramsizeand],4095
 .noromheaddk
-
     ret
 
 .ewj2head db 58,62,45,43,55,40,48,45,50,95,53,54,50,95,77,95,95,95,95,95
