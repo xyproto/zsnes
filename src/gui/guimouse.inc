@@ -2254,6 +2254,10 @@ DisplayGUIVideoClick:
     je .nocheckboxtm7
     GUIClickCButton5 11,173,byte[Mode7HiRes16b],1
 .nocheckboxtm7
+    cmp byte[GUIMBVID+ebx],0
+    je .nocheckboxtmb
+    GUIClickCButton5 11,173,byte[MotionBlur],1
+.nocheckboxtmb
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUIHSVID+ebx],0

@@ -132,41 +132,149 @@ NEWSYM DrawWin256x224x16
         popad
         ret
 
+EXTSYM copymaskRB,copymaskG,copymagic
+
 NEWSYM DrawWin256x224x32
         pushad
         mov  ax,ds
         mov  es,ax
         xor  eax,eax
-%ifdef __WIN32__
-        mov  ebx, [BitConv32Ptr]
-%endif
         mov  esi, [ScreenPtr]
         mov  edi, [SurfBufD]
+        movq mm4, [copymaskRB]
+        movq mm5, [copymaskG]
+        movq mm6, [copymagic]
 .Copying32b:
-        mov  ecx,256
-        push eax
-        xor  eax,eax
+        mov  ecx,64
 .CopyLoop32b:
-        mov  ax,[esi]
-        add  esi,2
-        mov  edx,[ebx+eax*4]
-        mov  [edi],edx
-        add  edi,4
+        movq mm0, [esi]
+        movq mm1,mm0
+        punpcklwd mm0,mm0
+        movq mm2,mm0
+        pand mm0,mm4
+        pmaddwd mm0,mm6
+        punpckhwd mm1,mm1
+        movq mm3,mm1
+        pand mm1,mm4
+        pmaddwd mm1,mm6
+        pslld mm2,5
+        pslld mm3,5
+        pand mm2,mm5
+        pand mm3,mm5
+        por  mm0,mm2
+        add  esi,8
+        por  mm1,mm3
+        movq [edi],mm0
+        movq [edi+8],mm1
+        add  edi,16
         dec  ecx
         jnz .CopyLoop32b
-        pop  eax
         inc  eax
         add  edi, [pitch]
         sub  edi,1024
         sub  esi,512
         add  esi,576
-%ifdef __WIN32__
         cmp  eax,239
-%else
-        cmp  eax,223
-%endif
         jne .Copying32b
         popad
+        emms
+        ret
+
+EXTSYM blur_buffer,blur_temp,coef
+
+NEWSYM DrawWin256x224x32MB
+        pushad
+        mov  ax,ds
+        mov  es,ax
+        xor  eax,eax
+        mov  esi,[ScreenPtr]
+        mov  edi,[blur_temp]
+        or   edi,edi
+        jnz .blur_it2
+        mov  edi,[SurfBufD]
+.blur_it2:
+        movq mm4, [copymaskRB]
+        movq mm5, [copymaskG]
+        movq mm6, [copymagic]
+.Copying32b:
+        mov  ecx,64 ;256
+.CopyLoop32b:
+        movq mm0,[esi]
+        movq mm1,mm0
+        punpcklwd mm0,mm0
+        movq mm2,mm0
+        pand mm0,mm4
+        pmaddwd mm0,mm6
+        punpckhwd mm1,mm1
+        movq mm3,mm1
+        pand mm1,mm4
+        pmaddwd mm1,mm6
+        pslld mm2,5
+        pslld mm3,5
+        pand mm2,mm5
+        pand mm3,mm5
+        por  mm0,mm2
+        add  esi, 8
+        por  mm1,mm3
+        movq [edi],mm0
+        movq [edi+8],mm1
+        add  edi,16
+        dec  ecx
+        jnz .CopyLoop32b
+        inc  eax
+        add  edi, [pitch]
+        sub  edi,1024
+        sub  esi,512
+        add  esi,576
+        cmp  eax,239
+        jne .Copying32b
+        mov  esi, [blur_buffer]
+        or   esi,esi
+        jz   near .no_blur2
+        mov  edi,[SurfBufD]
+        mov  ebx,[blur_temp]
+        add  esi,256*240*4
+        add  edi,256*240*4
+        add  ebx,256*240*4
+        mov  ecx,-(256*240)
+        movq mm5, [coef]
+        pxor mm6,mm6
+.blur_loop2:
+        movq mm0, [esi+ecx*4]
+        movq mm1, mm0
+        movq mm3, [ebx+ecx*4]
+        movq mm4, mm3
+        punpcklbw mm0,mm6
+        punpckhbw mm1,mm6
+        punpcklbw mm3,mm6
+        punpckhbw mm4,mm6
+        movq mm2, mm3
+        movq mm3, mm0
+        punpcklwd mm0,mm2
+        punpckhwd mm3,mm2
+        movq mm2, mm4
+        movq mm4, mm1
+        punpcklwd mm1,mm2
+        punpckhwd mm4,mm2
+        pmaddwd mm0,mm5
+        psrld mm0,8
+        pmaddwd mm1,mm5
+        psrld mm1,8
+        pmaddwd mm3,mm5
+        psrld mm3,8
+        pmaddwd mm4,mm5
+        psrld mm4,8
+        packssdw mm0,mm3
+        packssdw mm1,mm4
+        packuswb mm0,mm1
+        movq [esi+ecx*4],mm0
+        movq [edi+ecx*4],mm0
+        inc  ecx
+        inc  ecx
+        jnz .blur_loop2
+.no_blur2:
+        popad
+        emms
         ret
 
 NEWSYM DrawWin320x240x16

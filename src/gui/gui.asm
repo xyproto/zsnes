@@ -171,6 +171,10 @@ EXTSYM TCPIPGetByte,GUIBIFIL
 EXTSYM ModemSendChar
 EXTSYM firstsaveinc
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
+%ifndef __MSDOS__
+EXTSYM GUIMBVID
+%endif
+
 %ifdef __LINUX__
 EXTSYM numlockptr
 %endif
@@ -597,6 +601,7 @@ NEWSYM SoundInterpType, db 1
 NEWSYM KeyDisplayFPS, dd 0
 NEWSYM KeyIncStateSlot, dd 0
 NEWSYM KeyDecStateSlot, dd 0
+NEWSYM MotionBlur, dd 0
 
 GUIsave equ $-GUIRAdd
 
