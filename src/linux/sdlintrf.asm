@@ -549,8 +549,8 @@ NEWSYM Get_File_Date
     pushad
     call ZFileGetFTime
     popad
-    mov dx,[ZFDate]
-    mov cx,[ZFTime]
+    mov edx,[ZFDate]
+    mov ecx,[ZFTime]
     ret
 
 RefreshKeybBuffer:

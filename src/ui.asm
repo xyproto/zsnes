@@ -1255,8 +1255,10 @@ DetermineNew:
     mov bx,ax
     mov edx,fnamest+1
     call Get_File_Date
+%ifndef __LINUX__
     shl edx,16
     mov dx,cx
+%endif
     push edx
     call Close_File
     pop edx
