@@ -282,6 +282,7 @@ void findZipIPS(char *compressedfile)
   if (!FoundIPS)
   { 
     unzClose(IPSPatch.zipfile);
+    IPSPatch.zipfile = 0;
     return;
   }
 
