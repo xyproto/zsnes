@@ -21,6 +21,8 @@
 #include "sw_draw.h"
 #include "gl_draw.h"
 
+#include "SDL_thread.h"
+
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
 typedef unsigned long DWORD;
@@ -113,7 +115,7 @@ extern BYTE GUIOn2;
 static BYTE IsActivated = 1;
 
 /* TIMER VARIABLES/MACROS */
-#define UPDATE_TICKS_GAME (1000.0/59.95)// milliseconds per world update
+#define UPDATE_TICKS_GAME (1000.0/59.94)// milliseconds per world update
 #define UPDATE_TICKS_GAMEPAL (20)	// milliseconds per world update
 #define UPDATE_TICKS_GUI (1000.0/36.0)	// milliseconds per world update
 #define UPDATE_TICKS_UDP (1000.0/60.0)	// milliseconds per world update
@@ -123,9 +125,18 @@ int T36HZEnabled = 0;
 short SystemTimewHour;
 short SystemTimewMinute;
 short SystemTimewSecond;
-Uint32 end, end2;
-double start, start2;
-double update_ticks_pc, update_ticks_pc2;
+float end, end2;
+float start, start2;
+float update_ticks_pc, update_ticks_pc2;
+
+static SDL_sem *sem_frames = NULL;
+
+void sem_sleep_rdy(void);
+void sem_sleep_die(void);
+
+static struct timeval sem_start;
+// void sem_StartTicks(void);
+float sem_GetTicks(void);
 
 extern unsigned char romispal;
 
@@ -678,6 +689,8 @@ int startgame(void)
 		sdl_state = vid_none;
 	}
 
+	sem_sleep_rdy();
+
 	if (sdl_state == vid_soft) sw_end();
 #ifdef __OPENGL__
 	else if (sdl_state == vid_gl) gl_end();
@@ -704,6 +717,7 @@ void LinuxExit(void)
 	if (sdl_state != vid_null)
 	{
 		SDL_WM_GrabInput(SDL_GRAB_OFF);	// probably redundant
+		sem_sleep_die();
 		SDL_Quit();
 	}
 	exit(0);
@@ -727,8 +741,8 @@ void Start60HZ(void)
 		update_ticks_pc = UPDATE_TICKS_GAME;
 	}
 
-	start = SDL_GetTicks();
-	start2 = SDL_GetTicks();
+	start = sem_GetTicks();
+	start2 = sem_GetTicks();
 	T36HZEnabled = 0;
 	T60HZEnabled = 1;
 }
@@ -743,8 +757,8 @@ void Start36HZ(void)
 	update_ticks_pc2 = UPDATE_TICKS_UDP;
 	update_ticks_pc = UPDATE_TICKS_GUI;
 
-	start = SDL_GetTicks();
-	start2 = SDL_GetTicks();
+	start = sem_GetTicks();
+	start2 = sem_GetTicks();
 	T60HZEnabled = 0;
 	T36HZEnabled = 1;
 }
@@ -888,7 +902,7 @@ void CheckTimers(void)
 	int i;
 
 	//QueryPerformanceCounter((LARGE_INTEGER*)&end2);
-	end2 = SDL_GetTicks();
+	end2 = sem_GetTicks();
 
 	while ((end2 - start2) >= update_ticks_pc2)
 	{
@@ -910,7 +924,7 @@ void CheckTimers(void)
 	if (T60HZEnabled)
 	{
 		//QueryPerformanceCounter((LARGE_INTEGER*)&end);
-		end = SDL_GetTicks();
+		end = sem_GetTicks();
 
 		while ((end - start) >= update_ticks_pc)
 		{
@@ -922,6 +936,7 @@ void CheckTimers(void)
 			   }
 			 */
 			Game60hzcall();
+			SDL_SemPost(sem_frames);
 			start += update_ticks_pc;
 		}
 	}
@@ -929,7 +944,7 @@ void CheckTimers(void)
 	if (T36HZEnabled)
 	{
 		//QueryPerformanceCounter((LARGE_INTEGER*)&end);
-		end = SDL_GetTicks();
+		end = sem_GetTicks();
 
 		while ((end - start) >= update_ticks_pc)
 		{
@@ -964,6 +979,53 @@ void UpdateSound(void *userdata, Uint8 * stream, int len)
 		memcpy(stream, &Buffer[Buffer_head], len);
 		Buffer_head += len;
 		Buffer_fill -= len;
+	}
+}
+
+void sem_sleep(void)
+{
+	end = update_ticks_pc - (sem_GetTicks() - start) - .2f;
+	if (end>0.f) SDL_SemWaitTimeout(sem_frames, (int)end);
+}
+
+static SDL_Thread *sem_threadid = NULL;
+static int sem_threadrun;
+
+int sem_thread(void *param)
+{
+	while (sem_threadrun)
+	{
+		if (T60HZEnabled)
+		{
+			SDL_SemPost(sem_frames);
+			usleep(romispal ? 2000 : 1000);
+		}
+		else
+			usleep(20000);
+	}
+	return(0);
+}
+
+void sem_sleep_rdy(void)
+{
+	if (sem_frames) return;
+	sem_frames = SDL_CreateSemaphore(0);
+	sem_threadrun = 1;
+	sem_threadid = SDL_CreateThread(sem_thread, 0);
+}
+
+void sem_sleep_die(void)
+{
+	if (sem_threadid)
+	{
+		sem_threadrun = 0;
+		SDL_WaitThread(sem_threadid, NULL);
+		sem_threadid = NULL;
+	}
+	if (sem_frames)
+	{
+		SDL_DestroySemaphore(sem_frames);
+		sem_frames = NULL;
 	}
 }
 
@@ -1100,4 +1162,20 @@ void GetLocalTime()
 	SystemTimewHour = timeptr->tm_hour;
 	SystemTimewMinute = timeptr->tm_min;
 	SystemTimewSecond = timeptr->tm_sec;
+}
+
+/* evul, maybe should use something other than constructor method */
+void __attribute__ ((stdcall, constructor)) sem_StartTicks()
+{
+	gettimeofday(&sem_start, NULL);
+}
+
+float sem_GetTicks()
+{
+	struct timeval now;
+	float ticks;
+
+	gettimeofday(&now, NULL);
+	ticks=((float)(now.tv_sec-sem_start.tv_sec))*1000.f+((float)(now.tv_usec-sem_start.tv_usec))*.001f;
+	return(ticks);
 }

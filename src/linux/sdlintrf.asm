@@ -119,6 +119,7 @@ EXTSYM WinErrorA2,WinErrorB2,WinErrorC2
 EXTSYM GetLocalTime
 EXTSYM V8Mode,GrayscaleMode
 EXTSYM PrevWinMode,PrevFSMode
+EXTSYM sem_sleep
 
 NEWSYM WinIntRFAsmStart
 
@@ -1232,6 +1233,7 @@ NEWSYM Check60hz
     ; Call the timer update function here
     pushad
     call CheckTimers
+    call sem_sleep
     popad
     ret
 
