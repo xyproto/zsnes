@@ -657,6 +657,7 @@ C4Data dd 0
 C4sprites dd 0
 OBClog dd 0
 NumSprites db 0
+OBCOldRegArray db 0
 
 NEWSYM InitOBC
     pushad
@@ -697,6 +698,18 @@ OBCSprites:
     add edi,1800h
     add byte[OBCRegArray],2
     and byte[OBCRegArray],0FEh
+    cmp byte[OBCRegArray],0FEh
+    je .ohno
+    cmp byte[OBCRegArray],0
+    je .ohno
+    jmp .okay
+.ohno
+    mov al,[OBCOldRegArray]
+    mov [OBCRegArray],al
+    jmp .loop
+.okay
+    mov al,[OBCRegArray]
+    mov [OBCOldRegArray],al
 .loop
     cmp byte[OBCRegArray],0
     je .nomore
@@ -746,9 +759,6 @@ OBCSprites:
 
 OBCClear:
     call OBCSprites
-    mov dword[OBCRegArray],0
-    mov dword[OBCRegArray+4],0
-    mov byte[OBCRegArray],0FEh
     mov byte[clearmem],1
     mov dword[OBClog],0
     ret
@@ -775,6 +785,20 @@ clearmem db 0
 OBCRegs:
     pushad
     sub ecx,1FF0h
+
+    cmp byte[clearmem],0
+    je near .noclearmem
+    cmp ecx,6
+    je .okay
+    popad
+    ret
+.okay
+    mov dword[OBCRegArray],0
+    mov dword[OBCRegArray+4],0
+    mov byte[OBCRegArray],0FEh
+    mov byte[clearmem],0
+.noclearmem
+
     mov ebx,[C4Ram]
     add ebx,1000h
     add ebx,[OBClog]
@@ -790,17 +814,7 @@ OBCRegs:
     mov [OBCRegArray+4],bx
     mov [OBCRegArray+6],bx
 .notsix
-    cmp byte[clearmem],0
-    je near .noclearmem
-    mov ebx,[C4Ram]
-    mov edx,1000h
-.next
-    mov byte[ebx],0
-    inc ebx
-    dec edx
-    jnz .next
-    mov byte[clearmem],0
-.noclearmem
+
     xor ebx,ebx
     mov bl,[OBCRegArray+ecx]
     cmp byte[OBCIncArray+ecx],1
@@ -2901,8 +2915,8 @@ NEWSYM regaccessbankw16
     push ecx
     sub ecx,6000h
     and ecx,1fffh
-    mov ebx,[C4Ram]
-    mov [ebx+ecx],ax
+;    mov ebx,[C4Ram]
+;    mov [ebx+ecx],ax
     mov ebx,[C4RamW]
     push eax
     call dword near [ebx+ecx*4]
