@@ -88,7 +88,9 @@ it will divide its size by 10.
 
 Windows port with MinGW:
 - GNU Make : it comes with djgpp
-- NASM v0.98.39 : http://nasm.sf.net/
+- NASM v0.98.39 : http://nasm.sf.net/ 
+                  You will need to add the GNUWIN32 patch.
+                  To find the patch though, you'll have to do some searching.
 - MinGW : http://www.mingw.org
 - Latest Win32API : http://www.mingw.org
 - zlib : http://www.info-zip.org/pub/infozip/zlib/
