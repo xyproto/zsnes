@@ -416,8 +416,8 @@ NEWSYM SBToSPCSpeeds, dd 8000,11025,22050,44100,16000,32000,48000
 NEWSYM NumofSPCBlock, dd 626,456,228,114,314,156,104
 NEWSYM SPCBlockNum, dd 0
 NEWSYM NoiseSpeeds
-            dd 1,16,21,25,31,42,50,63,83,100,125,167,200,250,333,400,500,667,
-            dd 800,1000,1333,1600,2000,2667,3200,4000,5333,6400,8000,10667,
+            dd 1,16,21,25,31,42,50,63,83,100,125,170,200,250,333,400,500,667,
+            dd 800,1000,1300,1600,2000,2700,3200,4000,5300,6400,8000,10700,
             dd 16000,32000
 
 section .text
@@ -497,12 +497,8 @@ NEWSYM conv2speed
     mov eax,[edi]
     mov ebx,[SBToSPC]
     mul ebx
-    mov ebx,32000
+    mov ebx,11025
     div ebx
-    test eax,eax
-    jnz .notzero
-    inc eax
-.notzero
     mov [esi],eax
     add esi,4
     add edi,4
@@ -677,34 +673,36 @@ NEWSYM AdjustFrequency
       mov [dspPAdj],eax
 
       ; Init all rates
-      ;Echo rates
       mov esi,EchoRate
       mov edi,EchoRateO
       mov ecx,16
       call conv2speed
-      ;ADSR Attack rates
       mov esi,AttackRate
       mov edi,AttackRateO
       mov ecx,16
       call conv2speed
-      ;ADSR Decay rates
       mov esi,DecayRate
       mov edi,DecayRateO
       mov ecx,8
       call conv2speed
-      ;ADSR Sustain/GAIN Exponential Decrease rates
-      mov esi,DecreaseRateExp+4
-      mov edi,DecreaseRateExpO+4
+      mov esi,SustainRate+4
+      mov edi,SustainRateO+4
       mov ecx,31
       call conv2speed
-      ;GAIN Linear Increase/Decrease rates
-      mov esi,LinearRate+4
-      mov edi,LinearRateO+4
+      mov esi,Increase+4
+      mov edi,IncreaseO+4
       mov ecx,31
       call conv2speed
-      ;GAIN Bent Line Increase rates
       mov esi,IncreaseBent+4
       mov edi,IncreaseBentO+4
+      mov ecx,31
+      call conv2speed
+      mov esi,Decrease+4
+      mov edi,DecreaseO+4
+      mov ecx,31
+      call conv2speed
+      mov esi,DecreaseRateExp+4
+      mov edi,DecreaseRateExpO+4
       mov ecx,31
       call conv2speed
       mov dword[Voice0Pitch],0xFFFEFFFE
@@ -1612,9 +1610,9 @@ section .text
     shl eax,cl
     sar eax,1
     jmp %%got_delta
-%%invalid_range
+    %%invalid_range
     and eax,~0x7FF
-%%got_delta
+    %%got_delta
     mov edx,eax
 
     cmp dword [filter0],240
@@ -2019,164 +2017,43 @@ BRRDecode:
 section .data
 ALIGN32
 
-; All the values are in 1/32000
-
-%define Echo_ConvertSamplesToRate(samples,rate) \
- ((samples)*(rate)/32000)
-%define Rate_CounterToSamples(ticks,coeff,rate) \
- ((coeff)*30720*((rate)/32000)/(ticks))
-
 ; Original Values
 NEWSYM EchoRateO
-               dd Echo_ConvertSamplesToRate(1,32000)
-               dd Echo_ConvertSamplesToRate(512*1,32000)
-               dd Echo_ConvertSamplesToRate(512*2,32000)
-               dd Echo_ConvertSamplesToRate(512*3,32000)
-               dd Echo_ConvertSamplesToRate(512*4,32000)
-               dd Echo_ConvertSamplesToRate(512*5,32000)
-               dd Echo_ConvertSamplesToRate(512*6,32000)
-               dd Echo_ConvertSamplesToRate(512*7,32000)
-               dd Echo_ConvertSamplesToRate(512*8,32000)
-               dd Echo_ConvertSamplesToRate(512*9,32000)
-               dd Echo_ConvertSamplesToRate(512*10,32000)
-               dd Echo_ConvertSamplesToRate(512*11,32000)
-               dd Echo_ConvertSamplesToRate(512*12,32000)
-               dd Echo_ConvertSamplesToRate(512*13,32000)
-               dd Echo_ConvertSamplesToRate(512*14,32000)
-               dd Echo_ConvertSamplesToRate(512*15,32000)
-
+               dd 2,172,344,517,689,861,1033,1205,1378,1550,1722,1895,
+               dd 2067,2239,2412,2584
 NEWSYM AttackRateO
-               dd Rate_CounterToSamples(0x000F,64,32000)
-               dd Rate_CounterToSamples(0x0018,64,32000)
-               dd Rate_CounterToSamples(0x0028,64,32000)
-               dd Rate_CounterToSamples(0x003C,64,32000)
-               dd Rate_CounterToSamples(0x0060,64,32000)
-               dd Rate_CounterToSamples(0x00A0,64,32000)
-               dd Rate_CounterToSamples(0x00F0,64,32000)
-               dd Rate_CounterToSamples(0x0180,64,32000)
-               dd Rate_CounterToSamples(0x0280,64,32000)
-               dd Rate_CounterToSamples(0x03C0,64,32000)
-               dd Rate_CounterToSamples(0x0600,64,32000)
-               dd Rate_CounterToSamples(0x0A00,64,32000)
-               dd Rate_CounterToSamples(0x0F00,64,32000)
-               dd Rate_CounterToSamples(0x1800,64,32000)
-               dd Rate_CounterToSamples(0x2800,64,32000)
-               dd 2 ;Rate_CounterToSamples(0x7800,64,32000)
-
+               dd 45202,28665,16537,11025,7056,4189,2866,1764,1058,705,441
+               dd 264,176,110,66,4
 NEWSYM DecayRateO
-               dd Rate_CounterToSamples(0x01E0,600,32000)
-               dd Rate_CounterToSamples(0x0300,600,32000)
-               dd Rate_CounterToSamples(0x0500,600,32000)
-               dd Rate_CounterToSamples(0x0780,600,32000)
-               dd Rate_CounterToSamples(0x0C00,600,32000)
-               dd Rate_CounterToSamples(0x1400,600,32000)
-               dd Rate_CounterToSamples(0x1E00,600,32000)
-               dd Rate_CounterToSamples(0x3C00,600,32000)
-NEWSYM DecreaseRateExpO
+               dd 13230,8158,4851,2697,2284,1212,815,407
 NEWSYM SustainRateO
-               dd (0 - 1)
-               dd Rate_CounterToSamples(0x000F,600,32000)
-               dd Rate_CounterToSamples(0x0014,600,32000)
-               dd Rate_CounterToSamples(0x0018,600,32000)
-               dd Rate_CounterToSamples(0x001E,600,32000)
-               dd Rate_CounterToSamples(0x0028,600,32000)
-               dd Rate_CounterToSamples(0x0030,600,32000)
-               dd Rate_CounterToSamples(0x003C,600,32000)
-               dd Rate_CounterToSamples(0x0050,600,32000)
-               dd Rate_CounterToSamples(0x0060,600,32000)
-               dd Rate_CounterToSamples(0x0078,600,32000)
-               dd Rate_CounterToSamples(0x00A0,600,32000)
-               dd Rate_CounterToSamples(0x00C0,600,32000)
-               dd Rate_CounterToSamples(0x00F0,600,32000)
-               dd Rate_CounterToSamples(0x0140,600,32000)
-               dd Rate_CounterToSamples(0x0180,600,32000)
-               dd Rate_CounterToSamples(0x01E0,600,32000)
-               dd Rate_CounterToSamples(0x0280,600,32000)
-               dd Rate_CounterToSamples(0x0300,600,32000)
-               dd Rate_CounterToSamples(0x03C0,600,32000)
-               dd Rate_CounterToSamples(0x0500,600,32000)
-               dd Rate_CounterToSamples(0x0600,600,32000)
-               dd Rate_CounterToSamples(0x0780,600,32000)
-               dd Rate_CounterToSamples(0x0A00,600,32000)
-               dd Rate_CounterToSamples(0x0C00,600,32000)
-               dd Rate_CounterToSamples(0x0F00,600,32000)
-               dd Rate_CounterToSamples(0x1400,600,32000)
-               dd Rate_CounterToSamples(0x1800,600,32000)
-               dd Rate_CounterToSamples(0x1E00,600,32000)
-               dd Rate_CounterToSamples(0x2800,600,32000)
-               dd Rate_CounterToSamples(0x3C00,600,32000)
-               dd Rate_CounterToSamples(0x7800,600,32000)
+               dd 0FFFFFFFFh,418950,308700,265600,209475,154350,132300
+               dd 103635,78277,65047,51817,38587,31972,26460,19845,16537
+               dd 13230,9702,8158,6504,4851,3879,2697,2050
+               dd 1572,1212,1014,815,606,407,202,125
 
 NEWSYM SustainValueO
                db 15,31,47,63,79,95,111,127
-NEWSYM LinearRateO
 NEWSYM IncreaseO
-NEWSYM DecreaseO
-               dd (0 - 1)
-               dd Rate_CounterToSamples(0x000F,64,32000)
-               dd Rate_CounterToSamples(0x0014,64,32000)
-               dd Rate_CounterToSamples(0x0018,64,32000)
-               dd Rate_CounterToSamples(0x001E,64,32000)
-               dd Rate_CounterToSamples(0x0028,64,32000)
-               dd Rate_CounterToSamples(0x0030,64,32000)
-               dd Rate_CounterToSamples(0x003C,64,32000)
-               dd Rate_CounterToSamples(0x0050,64,32000)
-               dd Rate_CounterToSamples(0x0060,64,32000)
-               dd Rate_CounterToSamples(0x0078,64,32000)
-               dd Rate_CounterToSamples(0x00A0,64,32000)
-               dd Rate_CounterToSamples(0x00C0,64,32000)
-               dd Rate_CounterToSamples(0x00F0,64,32000)
-               dd Rate_CounterToSamples(0x0140,64,32000)
-               dd Rate_CounterToSamples(0x0180,64,32000)
-               dd Rate_CounterToSamples(0x01E0,64,32000)
-               dd Rate_CounterToSamples(0x0280,64,32000)
-               dd Rate_CounterToSamples(0x0300,64,32000)
-               dd Rate_CounterToSamples(0x03C0,64,32000)
-               dd Rate_CounterToSamples(0x0500,64,32000)
-               dd Rate_CounterToSamples(0x0600,64,32000)
-               dd Rate_CounterToSamples(0x0780,64,32000)
-               dd Rate_CounterToSamples(0x0A00,64,32000)
-               dd Rate_CounterToSamples(0x0C00,64,32000)
-               dd Rate_CounterToSamples(0x0F00,64,32000)
-               dd Rate_CounterToSamples(0x1400,64,32000)
-               dd Rate_CounterToSamples(0x1800,64,32000)
-               dd Rate_CounterToSamples(0x1E00,64,32000)
-               dd Rate_CounterToSamples(0x2800,64,32000)
-               dd Rate_CounterToSamples(0x3C00,64,32000)
-               dd Rate_CounterToSamples(0x7800,64,32000)
+               dd 0FFFFFFFFh,45202,34177,28665,22050,16537,14332,11025
+               dd 8489,7056,5622,4189,3528,2866,2094,1764
+               dd 1433,1058,882,705,529,441,352,264
+               dd 220,176,132,110,88,66,44,22
 NEWSYM IncreaseBentO
-               dd (0 - 1)
-               dd Rate_CounterToSamples(0x000F,112,32000)
-               dd Rate_CounterToSamples(0x0014,112,32000)
-               dd Rate_CounterToSamples(0x0018,112,32000)
-               dd Rate_CounterToSamples(0x001E,112,32000)
-               dd Rate_CounterToSamples(0x0028,112,32000)
-               dd Rate_CounterToSamples(0x0030,112,32000)
-               dd Rate_CounterToSamples(0x003C,112,32000)
-               dd Rate_CounterToSamples(0x0050,112,32000)
-               dd Rate_CounterToSamples(0x0060,112,32000)
-               dd Rate_CounterToSamples(0x0078,112,32000)
-               dd Rate_CounterToSamples(0x00A0,112,32000)
-               dd Rate_CounterToSamples(0x00C0,112,32000)
-               dd Rate_CounterToSamples(0x00F0,112,32000)
-               dd Rate_CounterToSamples(0x0140,112,32000)
-               dd Rate_CounterToSamples(0x0180,112,32000)
-               dd Rate_CounterToSamples(0x01E0,112,32000)
-               dd Rate_CounterToSamples(0x0280,112,32000)
-               dd Rate_CounterToSamples(0x0300,112,32000)
-               dd Rate_CounterToSamples(0x03C0,112,32000)
-               dd Rate_CounterToSamples(0x0500,112,32000)
-               dd Rate_CounterToSamples(0x0600,112,32000)
-               dd Rate_CounterToSamples(0x0780,112,32000)
-               dd Rate_CounterToSamples(0x0A00,112,32000)
-               dd Rate_CounterToSamples(0x0C00,112,32000)
-               dd Rate_CounterToSamples(0x0F00,112,32000)
-               dd Rate_CounterToSamples(0x1400,112,32000)
-               dd Rate_CounterToSamples(0x1800,112,32000)
-               dd Rate_CounterToSamples(0x1E00,112,32000)
-               dd Rate_CounterToSamples(0x2800,112,32000)
-               dd Rate_CounterToSamples(0x3C00,112,32000)
-               dd Rate_CounterToSamples(0x7800,112,32000)
+               dd 0FFFFFFFFh,79100,59535,50160,38580,28665,25000,19250
+               dd 14332,12127,9800,7320,6160,4961,3650,3060
+               dd 2425,1845,1540,1212,920,770,614,460
+               dd 383,306,229,190,152,113,75,36
+NEWSYM DecreaseO
+               dd 0FFFFFFFFh,45202,34177,28665,22050,16537,14332,11025
+               dd 8489,7056,5622,4189,3528,2866,2094,1764
+               dd 1433,1058,882,705,529,441,352,264
+               dd 220,176,132,110,88,66,44,22
+NEWSYM DecreaseRateExpO
+               dd 0FFFFFFFFh,418950,308700,264600,209470,154350,132300,103635
+               dd 78277,65047,51817,38587,31972,26460,19845,16537
+               dd 13230,9702,8158,6504,4851,4079,3197,2425
+               dd 1984,1653,1212,1014,815,606,407,198
 
 SECTION .bss
 NoisePtr           resd 1
@@ -2791,159 +2668,50 @@ SECTION .data
 ;    |F |  0        |                        |  F|  1.5        |1F| 28
 ;    ---------------                         ---------------------------
 
+; All the values are in 1/11025
+
 NEWSYM EchoRate
-               dd Echo_ConvertSamplesToRate(1,32000)
-               dd Echo_ConvertSamplesToRate(512*1,32000)
-               dd Echo_ConvertSamplesToRate(512*2,32000)
-               dd Echo_ConvertSamplesToRate(512*3,32000)
-               dd Echo_ConvertSamplesToRate(512*4,32000)
-               dd Echo_ConvertSamplesToRate(512*5,32000)
-               dd Echo_ConvertSamplesToRate(512*6,32000)
-               dd Echo_ConvertSamplesToRate(512*7,32000)
-               dd Echo_ConvertSamplesToRate(512*8,32000)
-               dd Echo_ConvertSamplesToRate(512*9,32000)
-               dd Echo_ConvertSamplesToRate(512*10,32000)
-               dd Echo_ConvertSamplesToRate(512*11,32000)
-               dd Echo_ConvertSamplesToRate(512*12,32000)
-               dd Echo_ConvertSamplesToRate(512*13,32000)
-               dd Echo_ConvertSamplesToRate(512*14,32000)
-               dd Echo_ConvertSamplesToRate(512*15,32000)
+               dd 2,172,344,517,689,861,1033,1205,1378,1550,1722,1895,
+               dd 2067,2239,2412,2584
 
 NEWSYM AttackRate
-               dd Rate_CounterToSamples(0x000F,64,32000)
-               dd Rate_CounterToSamples(0x0018,64,32000)
-               dd Rate_CounterToSamples(0x0028,64,32000)
-               dd Rate_CounterToSamples(0x003C,64,32000)
-               dd Rate_CounterToSamples(0x0060,64,32000)
-               dd Rate_CounterToSamples(0x00A0,64,32000)
-               dd Rate_CounterToSamples(0x00F0,64,32000)
-               dd Rate_CounterToSamples(0x0180,64,32000)
-               dd Rate_CounterToSamples(0x0280,64,32000)
-               dd Rate_CounterToSamples(0x03C0,64,32000)
-               dd Rate_CounterToSamples(0x0600,64,32000)
-               dd Rate_CounterToSamples(0x0A00,64,32000)
-               dd Rate_CounterToSamples(0x0F00,64,32000)
-               dd Rate_CounterToSamples(0x1800,64,32000)
-               dd Rate_CounterToSamples(0x2800,64,32000)
-               dd 2 ;Rate_CounterToSamples(0x7800,64,32000)
+               dd 45202,28665,16537,11025,7056,4189,2866,1764,1058,705,441
+               dd 264,176,110,66,4
 
 NEWSYM DecayRate
-               dd Rate_CounterToSamples(0x01E0,600,32000)
-               dd Rate_CounterToSamples(0x0300,600,32000)
-               dd Rate_CounterToSamples(0x0500,600,32000)
-               dd Rate_CounterToSamples(0x0780,600,32000)
-               dd Rate_CounterToSamples(0x0C00,600,32000)
-               dd Rate_CounterToSamples(0x1400,600,32000)
-               dd Rate_CounterToSamples(0x1E00,600,32000)
-               dd Rate_CounterToSamples(0x3C00,600,32000)
-
-NEWSYM DecreaseRateExp
+               dd 13230,8158,4851,2697,1984,815,407,125
 NEWSYM SustainRate
-               dd (0 - 1)
-               dd Rate_CounterToSamples(0x000F,600,32000)
-               dd Rate_CounterToSamples(0x0014,600,32000)
-               dd Rate_CounterToSamples(0x0018,600,32000)
-               dd Rate_CounterToSamples(0x001E,600,32000)
-               dd Rate_CounterToSamples(0x0028,600,32000)
-               dd Rate_CounterToSamples(0x0030,600,32000)
-               dd Rate_CounterToSamples(0x003C,600,32000)
-               dd Rate_CounterToSamples(0x0050,600,32000)
-               dd Rate_CounterToSamples(0x0060,600,32000)
-               dd Rate_CounterToSamples(0x0078,600,32000)
-               dd Rate_CounterToSamples(0x00A0,600,32000)
-               dd Rate_CounterToSamples(0x00C0,600,32000)
-               dd Rate_CounterToSamples(0x00F0,600,32000)
-               dd Rate_CounterToSamples(0x0140,600,32000)
-               dd Rate_CounterToSamples(0x0180,600,32000)
-               dd Rate_CounterToSamples(0x01E0,600,32000)
-               dd Rate_CounterToSamples(0x0280,600,32000)
-               dd Rate_CounterToSamples(0x0300,600,32000)
-               dd Rate_CounterToSamples(0x03C0,600,32000)
-               dd Rate_CounterToSamples(0x0500,600,32000)
-               dd Rate_CounterToSamples(0x0600,600,32000)
-               dd Rate_CounterToSamples(0x0780,600,32000)
-               dd Rate_CounterToSamples(0x0A00,600,32000)
-               dd Rate_CounterToSamples(0x0C00,600,32000)
-               dd Rate_CounterToSamples(0x0F00,600,32000)
-               dd Rate_CounterToSamples(0x1400,600,32000)
-               dd Rate_CounterToSamples(0x1800,600,32000)
-               dd Rate_CounterToSamples(0x1E00,600,32000)
-               dd Rate_CounterToSamples(0x2800,600,32000)
-               dd Rate_CounterToSamples(0x3C00,600,32000)
-               dd Rate_CounterToSamples(0x7800,600,32000)
+               dd 0FFFFFFFFh,418950,308700,265600,209475,154350,132300
+               dd 103635,78277,65047,51817,38587,31972,26460,19845,16537
+               dd 13230,9702,8158,6504,4851,3879,2697,1450
+               dd 1212,1014,815,606,407,202,125,70
 
 NEWSYM SustainValue
                db 15,31,47,63,79,95,111,127
 
-NEWSYM LinearRate
 NEWSYM Increase
-NEWSYM Decrease
-               dd (0 - 1)
-               dd Rate_CounterToSamples(0x000F,64,32000)
-               dd Rate_CounterToSamples(0x0014,64,32000)
-               dd Rate_CounterToSamples(0x0018,64,32000)
-               dd Rate_CounterToSamples(0x001E,64,32000)
-               dd Rate_CounterToSamples(0x0028,64,32000)
-               dd Rate_CounterToSamples(0x0030,64,32000)
-               dd Rate_CounterToSamples(0x003C,64,32000)
-               dd Rate_CounterToSamples(0x0050,64,32000)
-               dd Rate_CounterToSamples(0x0060,64,32000)
-               dd Rate_CounterToSamples(0x0078,64,32000)
-               dd Rate_CounterToSamples(0x00A0,64,32000)
-               dd Rate_CounterToSamples(0x00C0,64,32000)
-               dd Rate_CounterToSamples(0x00F0,64,32000)
-               dd Rate_CounterToSamples(0x0140,64,32000)
-               dd Rate_CounterToSamples(0x0180,64,32000)
-               dd Rate_CounterToSamples(0x01E0,64,32000)
-               dd Rate_CounterToSamples(0x0280,64,32000)
-               dd Rate_CounterToSamples(0x0300,64,32000)
-               dd Rate_CounterToSamples(0x03C0,64,32000)
-               dd Rate_CounterToSamples(0x0500,64,32000)
-               dd Rate_CounterToSamples(0x0600,64,32000)
-               dd Rate_CounterToSamples(0x0780,64,32000)
-               dd Rate_CounterToSamples(0x0A00,64,32000)
-               dd Rate_CounterToSamples(0x0C00,64,32000)
-               dd Rate_CounterToSamples(0x0F00,64,32000)
-               dd Rate_CounterToSamples(0x1400,64,32000)
-               dd Rate_CounterToSamples(0x1800,64,32000)
-               dd Rate_CounterToSamples(0x1E00,64,32000)
-               dd Rate_CounterToSamples(0x2800,64,32000)
-               dd Rate_CounterToSamples(0x3C00,64,32000)
-               dd Rate_CounterToSamples(0x7800,64,32000)
+               dd 0FFFFFFFFh,45202,34177,28665,22050,16537,14332,11025
+               dd 8489,7056,5622,4189,3528,2866,2094,1764
+               dd 1433,1058,882,705,529,441,352,264
+               dd 220,176,132,110,88,66,44,22
 
 NEWSYM IncreaseBent
-               dd (0 - 1)
-               dd Rate_CounterToSamples(0x000F,112,32000)
-               dd Rate_CounterToSamples(0x0014,112,32000)
-               dd Rate_CounterToSamples(0x0018,112,32000)
-               dd Rate_CounterToSamples(0x001E,112,32000)
-               dd Rate_CounterToSamples(0x0028,112,32000)
-               dd Rate_CounterToSamples(0x0030,112,32000)
-               dd Rate_CounterToSamples(0x003C,112,32000)
-               dd Rate_CounterToSamples(0x0050,112,32000)
-               dd Rate_CounterToSamples(0x0060,112,32000)
-               dd Rate_CounterToSamples(0x0078,112,32000)
-               dd Rate_CounterToSamples(0x00A0,112,32000)
-               dd Rate_CounterToSamples(0x00C0,112,32000)
-               dd Rate_CounterToSamples(0x00F0,112,32000)
-               dd Rate_CounterToSamples(0x0140,112,32000)
-               dd Rate_CounterToSamples(0x0180,112,32000)
-               dd Rate_CounterToSamples(0x01E0,112,32000)
-               dd Rate_CounterToSamples(0x0280,112,32000)
-               dd Rate_CounterToSamples(0x0300,112,32000)
-               dd Rate_CounterToSamples(0x03C0,112,32000)
-               dd Rate_CounterToSamples(0x0500,112,32000)
-               dd Rate_CounterToSamples(0x0600,112,32000)
-               dd Rate_CounterToSamples(0x0780,112,32000)
-               dd Rate_CounterToSamples(0x0A00,112,32000)
-               dd Rate_CounterToSamples(0x0C00,112,32000)
-               dd Rate_CounterToSamples(0x0F00,112,32000)
-               dd Rate_CounterToSamples(0x1400,112,32000)
-               dd Rate_CounterToSamples(0x1800,112,32000)
-               dd Rate_CounterToSamples(0x1E00,112,32000)
-               dd Rate_CounterToSamples(0x2800,112,32000)
-               dd Rate_CounterToSamples(0x3C00,112,32000)
-               dd Rate_CounterToSamples(0x7800,112,32000)
+               dd 0FFFFFFFFh,79100,59535,50160,38580,28665,25000,19250
+               dd 14332,12127,9800,7320,6160,4961,3650,3060
+               dd 2425,1845,1540,1212,920,770,614,460
+               dd 383,306,229,190,152,113,75,36
+
+NEWSYM Decrease
+               dd 0FFFFFFFFh,45202,34177,28665,22050,16537,14332,11025
+               dd 8489,7056,5622,4189,3528,2866,2094,1764
+               dd 1433,1058,882,705,529,441,352,264
+               dd 220,176,132,110,88,66,44,22
+
+NEWSYM DecreaseRateExp
+               dd 0FFFFFFFFh,418950,308700,264600,209470,154350,132300,103635
+               dd 78277,65047,51817,38587,31972,26460,19845,16537
+               dd 13230,9702,8158,6504,4851,4079,3197,2425
+               dd 1984,1653,1212,1014,815,606,407,198
 
 GainDecBendData db 118,110,102,95,89,83,77,72,67,62,58,54,50,47,44,41,38,35
                 db 33,30,28,26,24,23,21,20,18,17,16,15,14,13
@@ -5726,6 +5494,5 @@ NEWSYM LPFexit
     jnz .loop
 .nosurround
     ret
-
 
 
