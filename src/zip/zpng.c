@@ -189,7 +189,7 @@ void Grab_PNG_Data(void)
 	/*compress and write the PNG*/
 	Png_Dump(filename, 256, 224, DIBits, is_bgr_data);
 
-	free(&DIBits);
+	free(DIBits);
 
 #ifdef __WIN32DBG__
 	_CrtDumpMemoryLeaks();
