@@ -1187,8 +1187,7 @@ NEWSYM handler8hseg
 
 SECTION .data
 NEWSYM timeradj, dd 65536
-SECTION .bss
-NEWSYM t1cc,     resw 1
+NEWSYM t1cc, dw 0
 SECTION .text
 
 ;*******************************************************
