@@ -3440,12 +3440,58 @@ LoadDuplicFound db 0
     mov byte[GUItextcolor+4],44
 %%nohighlight
     GUIBox %1,3,%2,3,[GUItextcolor]
-    GUIBox %1,4,%2,12,[GUItextcolor+1]
-    GUIBox %1,13,%2,13,[GUItextcolor+2]
-    GUIBox %1,3,%1,12,[GUItextcolor+3]
-    GUIBox %2,4,%2,13,[GUItextcolor+4]
+    GUIBox %1,4,%2,13,[GUItextcolor+1]
+    GUIBox %1,14,%2,14,[GUItextcolor+2]
+    GUIBox %1,3,%1,13,[GUItextcolor+3]
+    GUIBox %2,4,%2,14,[GUItextcolor+4]
     GUIOuttext %1+3,7,%3,44
     GUIOuttext %1+2,6,%3,62
+%endmacro
+
+%macro GUIDMHelpB2 4
+    mov byte[GUItextcolor],46
+    mov byte[GUItextcolor+1],42
+    mov byte[GUItextcolor+2],38
+    mov byte[GUItextcolor+3],44
+    mov byte[GUItextcolor+4],40
+    cmp byte[GUIcwinpress],%4
+    jne %%nohighlight
+    mov byte[GUItextcolor],38
+    mov byte[GUItextcolor+1],40
+    mov byte[GUItextcolor+2],46
+    mov byte[GUItextcolor+3],40
+    mov byte[GUItextcolor+4],44
+%%nohighlight
+    GUIBox %1,3,%2,3,[GUItextcolor]
+    GUIBox %1,4,%2,6,[GUItextcolor+1]
+    GUIBox %1,7,%2,7,[GUItextcolor+2]
+    GUIBox %1,3,%1,6,[GUItextcolor+3]
+    GUIBox %2,4,%2,7,[GUItextcolor+4]
+    GUIOuttext %1+3,5,%3,44
+    GUIOuttext %1+2,4,%3,62
+%endmacro
+
+%macro GUIDMHelpB3 4
+    mov byte[GUItextcolor],46
+    mov byte[GUItextcolor+1],42
+    mov byte[GUItextcolor+2],38
+    mov byte[GUItextcolor+3],44
+    mov byte[GUItextcolor+4],40
+    cmp byte[GUIcwinpress],%4
+    jne %%nohighlight
+    mov byte[GUItextcolor],38
+    mov byte[GUItextcolor+1],40
+    mov byte[GUItextcolor+2],46
+    mov byte[GUItextcolor+3],40
+    mov byte[GUItextcolor+4],44
+%%nohighlight
+    GUIBox %1,9,%2,9,[GUItextcolor]
+    GUIBox %1,10,%2,12,[GUItextcolor+1]
+    GUIBox %1,13,%2,13,[GUItextcolor+2]
+    GUIBox %1,9,%1,12,[GUItextcolor+3]
+    GUIBox %2,10,%2,13,[GUItextcolor+4]
+    GUIOuttext %1+3,11,%3,44
+    GUIOuttext %1+2,10,%3,62
 %endmacro
 
 %macro GUIDrawMenuM 10
@@ -3518,14 +3564,17 @@ DisplayMenu:
 
     cmp byte[OSPort],3
     jne near .notwinpressa
-    GUIShadow 238,9,247,19
-    GUIShadow 249,9,256,19
+    GUIShadow 238,9,247,14
+    GUIShadow 238,16,247,20
+    GUIShadow 249,9,257,20
 .notwinpressa
 
     cmp byte[OSPort],3
     jne near .notwinpressb
     mov byte[GUIMenuItem+36],249
-    GUIDMHelpB 233,242,GUIMenuItem+36,1
+    GUIDMHelpB2 233,242,GUIMenuItem+36,1
+    mov byte[GUIMenuItem+36],248
+    GUIDMHelpB3 233,242,GUIMenuItem+36,3
     mov byte[GUIMenuItem+36],'x'
     GUIDMHelpB 244,253,GUIMenuItem+36,2
 .notwinpressb
@@ -4725,11 +4774,16 @@ NEWSYM GUIFontData
          db 00110000b
          db 00001000b
          db 10110000b; .5
-         db 11111000b
-         db 10001000b
-         db 10001000b
-         db 10001000b
-         db 11111000b; Maximize
+         db 11111100b
+         db 10000100b
+         db 11111100b
+         db 00000000b
+         db 00000000b; Maximize
+         db 00000000b
+         db 11111100b
+         db 00000000b
+         db 00000000b
+         db 00000000b; Minimize
 
 ; 189 .. 220
 GUIIconDataClose:

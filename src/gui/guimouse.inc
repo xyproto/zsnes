@@ -201,6 +201,37 @@ ProcessMouseButtons:
     call GUITryMenuItem
     jmp .noclick
 .nomenuitem
+
+    cmp word[GUImouseposy],3
+    jb near .noclickedw
+    cmp word[GUImouseposy],14
+    ja near .noclickedw
+    cmp word[GUImouseposx],230
+    jb near .noclickedw
+    cmp word[GUImouseposx],233
+    jb near .noclickedw
+    cmp word[GUImouseposx],242
+    ja .notfound7
+    cmp word[GUImouseposy],8
+    jb .clickawn
+    cmp word[GUImouseposy],8
+    ja .clickawn2
+.clickawn
+    mov byte[GUIcwinpress],1
+    jmp .noclick
+.clickawn2
+    mov byte[GUIcwinpress],3
+    jmp .noclick
+.notfound7
+    cmp word[GUImouseposx],244
+    jb near .noclickedw
+    cmp word[GUImouseposx],253
+    ja .notfound8
+    mov byte[GUIcwinpress],2
+    jmp .noclick
+.notfound8
+.noclickedw
+
     cmp word[GUImouseposy],15
     ja near .nomenu
     cmp word[GUImouseposy],3
@@ -261,24 +292,9 @@ ProcessMouseButtons:
     mov byte[GUIcrowpos],0
     jmp .noclick
 .notfound6
-    cmp word[GUImouseposx],230
-    jb near .noclicked
-    cmp word[GUImouseposx],233
-    jb near .noclick
-    cmp word[GUImouseposx],242
-    ja .notfound7
-    mov byte[GUIcwinpress],1
-    jmp .noclick
-.notfound7
-    cmp word[GUImouseposx],244
-    jb near .noclick
-    cmp word[GUImouseposx],253
-    ja .notfound8
-    mov byte[GUIcwinpress],2
-    jmp .noclick
-.notfound8
     jmp .noclick
 .noclicked
+
     cmp byte[OSPort],3
     jne .noclick
     mov byte[GUIpclicked],1
@@ -440,7 +456,7 @@ ProcessMouseButtons:
     mov byte[GUIcwinpress],0
     cmp word[GUImouseposy],3
     jb .notwinpressa
-    cmp word[GUImouseposy],13
+    cmp word[GUImouseposy],7
     ja .notwinpressa
     cmp word[GUImouseposx],233
     jb .notwinpressa
@@ -466,6 +482,23 @@ ProcessMouseButtons:
     mov byte[GUIQuit],1
     ret
 .notwinpressb
+
+    cmp byte[OSPort],3
+    jne .notwinpressc
+    cmp byte[GUIcwinpress],3
+    jne .notwinpressc
+    mov byte[GUIcwinpress],0
+    cmp word[GUImouseposy],9
+    jb .notwinpressc
+    cmp word[GUImouseposy],13
+    ja .notwinpressc
+    cmp word[GUImouseposx],233
+    jb .notwinpressc
+    cmp word[GUImouseposx],242
+    ja .notwinpressc
+;    call MinimizeWindow
+    ret
+.notwinpressc
 
     ; ButtonProcess
     cmp byte[GUICBHold],1

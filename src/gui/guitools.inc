@@ -119,20 +119,21 @@ GUIoutputchar:
     mov cl,5
 .loopa
     mov ah,[edi]
-    mov ch,5
+    mov ch,6
 .loopb
     test ah,80h
     jz .nowrite
     mov al,[GUItextcolor]
     sub al,cl
     sub al,ch
+    inc al
     mov byte[esi],al
 .nowrite
     shl ah,1
     inc esi
     dec ch
     jnz .loopb
-    add esi,283
+    add esi,282
     inc edi
     dec cl
     jnz .loopa
