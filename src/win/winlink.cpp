@@ -709,7 +709,6 @@ ReInitSound()
 BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 {
    LPDIRECTINPUT8 pdi = (LPDIRECTINPUT8)pvRef;
-//   fprintf(tempf,"Cur :%d %X\n",CurrentJoy,pdinst->guidInstance);
    GUID DeviceGuid = pdinst->guidInstance;
 
    if (CurrentJoy>3)
@@ -718,20 +717,17 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
    // Create the DirectInput joystick device.
    if (pdi->CreateDevice(DeviceGuid,&JoystickInput[CurrentJoy], NULL) != DI_OK)
    {
-//      fprintf(tempf,"IDirectInput7::CreateDeviceEx FAILED\n");
       return DIENUM_CONTINUE;
    }
 
    if (JoystickInput[CurrentJoy]->SetDataFormat(&c_dfDIJoystick) != DI_OK)
    {
-//      fprintf(tempf,"IDirectInputDevice7::SetDataFormat FAILED\n");
       JoystickInput[CurrentJoy]->Release();
       return DIENUM_CONTINUE;
    }
 
    if (JoystickInput[CurrentJoy]->SetCooperativeLevel(hMainWindow, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND) != DI_OK)
    {
-//      fprintf(tempf,"IDirectInputDevice7::SetCooperativeLevel FAILED\n");
       JoystickInput[CurrentJoy]->Release();
       return DIENUM_CONTINUE;
    }
@@ -747,9 +743,6 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 
    if FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph))
    {
-//      fprintf(tempf,"IDirectInputDevice7::SetProperty(DIPH_RANGE) FAILED\n");
-//      JoystickInput[CurrentJoy]->Release();
-//      return FALSE;
       X1Disable[CurrentJoy]=1;
       X2Disable[CurrentJoy]=1;
    }
@@ -758,9 +751,6 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 
    if FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph))
    {
-//      fprintf(tempf,"IDirectInputDevice7::SetProperty(DIPH_RANGE) FAILED\n");
-//      JoystickInput[CurrentJoy]->Release();
-//      return FALSE;
       Y1Disable[CurrentJoy]=1;
       Y2Disable[CurrentJoy]=1;
    }
