@@ -122,6 +122,10 @@ EXTSYM loadROM
 EXTSYM CalcChecksum
 EXTSYM BankCheck
 EXTSYM MirrorROM
+EXTSYM SplittedROM
+EXTSYM addOnStart
+EXTSYM addOnSize
+
 
 EXTSYM SetaCmdEnable,setaramdata
 EXTSYM setaaccessbankr8,setaaccessbankw8,setaaccessbankr8a,setaaccessbankw8a
@@ -3755,12 +3759,19 @@ NEWSYM showinfogui
     je .nointlv
     mov dword[CSStatus2+12],'Yes '
 .nointlv
-
+ 
     ; calculate CRC32
     xor edx,edx         
     mov eax,0FFFFFFFFh
     mov ecx,dword[NumofBytes]
     mov esi,[romdata]   
+
+    ;Only calculate Add on ROM?
+    cmp byte[SplittedROM],1
+    jne .calcloop
+    mov ecx,dword[addOnSize]
+    add esi,dword[addOnStart]
+
  .calcloop
     mov dl,byte[esi] 
     mov ebx,eax                     ;ebx = CRC32
@@ -3805,6 +3816,11 @@ NEWSYM showinfogui
     add esi,[infoloc]
     add esi,1Eh
     mov ax,[Checksumvalue]
+    ;On add on ROMs we check the add on
+    cmp byte[SplittedROM],1
+    jne .check
+    add esi,dword[addOnStart]
+.check
     cmp ax,[esi]
     jne .failed
 .passed2

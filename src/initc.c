@@ -61,6 +61,11 @@ unsigned int maxromspace;
 unsigned int curromspace;
 unsigned int infoloc;
 
+bool SplittedROM;
+unsigned int addOnStart;
+unsigned int addOnSize;
+
+
 //Deinterleave functions
 bool validChecksum(unsigned char *ROM, int BankLoc)
 {
@@ -314,7 +319,13 @@ extern unsigned short Checksumvalue;
 void CalcChecksum()
 {
   unsigned char *ROM = (unsigned char *)romdata;
-  if (SPC7110Enable)
+
+  if (SplittedROM)
+  {
+    Checksumvalue = sum(ROM+addOnStart, addOnSize);
+    Checksumvalue -= sum(&ROM[infoloc+addOnStart - 16], 48);
+  }
+  else if (SPC7110Enable)
   {
     Checksumvalue = sum(ROM, NumofBytes);
     if (NumofBanks == 96)
@@ -597,10 +608,6 @@ void loadZipFile()
     (*incrementer)++;
   }
 }
-
-bool SplittedROM;
-int addOnStart;
-int addOnSize;
 
 void SplitSetup(const char *basefile, unsigned int MirrorSystem)
 {
