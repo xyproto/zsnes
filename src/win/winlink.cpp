@@ -35,6 +35,8 @@ extern "C" {
 DWORD WindowWidth = 256;
 DWORD WindowHeight = 224;
 DWORD FullScreen = 0;
+int DrawOkay = 0;
+int TryAgain = 0;
 
 DWORD Moving= 0;
 DWORD SoundBufferSize=1024*18;
@@ -42,6 +44,7 @@ DWORD FirstSound=1;
 
 int AllowDefault=0;
 int SoundEnabled=1;
+int fullscreendisplay=0;
 
 #define BYTE   unsigned char
 #define WORD   unsigned short
@@ -69,6 +72,7 @@ LPDIRECTDRAW            BasiclpDD = NULL;
 LPDIRECTDRAW2           lpDD = NULL;
 LPDIRECTDRAWSURFACE     DD_Primary = NULL;
 LPDIRECTDRAWSURFACE     DD_CFB = NULL;
+LPDIRECTDRAWSURFACE     DD_BackBuffer = NULL;
 LPDIRECTDRAWCLIPPER     lpDDClipper =NULL;
 RECT                    rcWindow;
 
@@ -147,11 +151,24 @@ void DDrawError(){
 
 void DrawScreen()
 {
+   if (DD_Primary->IsLost() == DDERR_SURFACELOST) DD_Primary->Restore();
+
    if(DD_CFB==NULL) return;
-   if(DD_Primary->Blt(&rcWindow,DD_CFB,NULL,DDBLT_WAIT,NULL)!=DD_OK)
-   {
-      DDrawError();
-	}
+
+   if (fullscreendisplay){
+     if(DD_BackBuffer->Blt(&rcWindow,DD_CFB,NULL,DDBLT_WAIT,NULL)!=DD_OK)
+     {
+        DDrawError();
+     }
+
+     DD_Primary->Flip(NULL, DDFLIP_WAIT);
+  }
+  else {
+     if(DD_Primary->Blt(&rcWindow,DD_CFB,NULL,DDBLT_WAIT,NULL)!=DD_OK)
+     {
+        DDrawError();
+     }
+   }
 }
 
 DWORD InputEn=0;
@@ -446,6 +463,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          return DefWindowProc(hWnd,uMsg,wParam,lParam);
          break;
       default:
+         return DefWindowProc(hWnd,uMsg,wParam,lParam);
          break;
    }
 	return TRUE;
@@ -834,50 +852,42 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 
 void endgame()
 {
+   int released;
 
-MessageBox(NULL, "blah", "blah", MB_OK);
-   if(lpDirectSound)
+   released=(int)DD_BackBuffer;
+   while(released)
    {
-      lpDirectSound->Release();
-      lpDirectSound=NULL;
+      released=DD_BackBuffer->Release();
    }
+   DD_BackBuffer=NULL;
 
-   if(lpSoundBuffer)
+   released=(int)DD_Primary;
+   while(released)
    {
-      lpSoundBuffer->Release();
-      lpSoundBuffer=NULL;
+      released=DD_Primary->Release();
    }
+   DD_Primary=NULL;
 
-   if(lpPrimaryBuffer)
+   released=(int)DD_CFB;
+   while(released)
    {
-      lpPrimaryBuffer->Release();
-      lpPrimaryBuffer=NULL;
+      released=DD_CFB->Release();
    }
+   DD_CFB=NULL;
 
-   if(DD_CFB)
+   released=(int)lpDDClipper;
+   while(released)
    {
-      DD_CFB->Release();
-      DD_CFB=NULL;
+      released=lpDDClipper->Release();
    }
+   lpDDClipper=NULL;
 
-   if(lpDD)
+   released=(int)lpDD;
+   while(released)
    {
-      lpDD->Release();
-      lpDD=NULL;
+      released=lpDD->Release();
    }
-
-   if(lpDDClipper)
-   {
-      lpDDClipper->Release();
-      lpDDClipper=NULL;
-   }
-
-   if(DD_Primary)
-   {
-      DD_Primary->Release();
-      DD_Primary=NULL;
-   }
-
+   lpDD=NULL;
 }
 
 void DInputError(){
@@ -1051,12 +1061,16 @@ startgame()
    unsigned int color32,ScreenPtr2;
    int i;
 
+   DrawOkay=1;
+
+   fullscreendisplay = 0;
+
    ScreenPtr2=BitConv32Ptr;
    for(i=0;i<65536;i++)
    {
       color32=((i&0xF800)<<8)+
               ((i&0x07E0)<<5)+
-              ((i&0x001F)<<3)+0xFF000000;
+              ((i&0x001F)<<3)+0x7F000000;
               (*(unsigned int *)(ScreenPtr2))=color32;
       ScreenPtr2+=4;
    }
@@ -1067,53 +1081,61 @@ startgame()
 
    if(FAILED(DirectDrawCreate(NULL,&BasiclpDD,NULL)))
    {      
+      MessageBox(NULL,"Cannot Create DirectDraw","Error1",MB_OK);
       return FALSE;
    }
 
 
    if(FAILED(BasiclpDD->SetCooperativeLevel(hMainWindow, DDSCL_NORMAL )))
    {
+      MessageBox(NULL,"Cannot Set Cooperative Level","Error2",MB_OK);
       return FALSE;
    }
 
    if(FAILED(BasiclpDD->QueryInterface(IID_IDirectDraw2,(LPVOID *)&lpDD)))
    {
+      MessageBox(NULL,"Cannot Query Interface","Error3",MB_OK);
       return FALSE;
-	}
+   }
 	
-	BasiclpDD->Release();
+   BasiclpDD->Release();
 
+   ZeroMemory(&ddsd,sizeof(ddsd));
    ddsd.dwSize = sizeof( ddsd );
    ddsd.dwFlags = DDSD_CAPS;
    ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
 
    if (FAILED(lpDD->CreateSurface( &ddsd, &DD_Primary, NULL )))
    {
+     DrawOkay=0;
+     TryAgain=1;
+     return TRUE;
+      MessageBox(NULL,"Cannot Create Surface","Error4",MB_OK);
       return FALSE;
    }
 
    if (FAILED(lpDD->CreateClipper(0,&lpDDClipper,NULL)))
    {
-      lpDD->Release();
-      lpDD=NULL;
+      MessageBox(NULL,"Cannot Create Clipper","Error5",MB_OK);
       return FALSE;
    }
 
    if (FAILED(lpDDClipper->SetHWnd(0,hMainWindow)))
    {
-      lpDD->Release();
-      lpDD=NULL;
+      MessageBox(NULL,"Cannot Set HWnd on Clipper","Error6",MB_OK);
       return FALSE;
    }
 
    if (FAILED( DD_Primary->SetClipper(lpDDClipper)))
    {
+      MessageBox(NULL,"Cannot Set Clipper","Error7",MB_OK);
       return FALSE;
    }
     
-	format.dwSize = sizeof(DDPIXELFORMAT);
-	if (DD_Primary->GetPixelFormat(&format) != DD_OK)
+   format.dwSize = sizeof(DDPIXELFORMAT);
+   if (DD_Primary->GetPixelFormat(&format) != DD_OK)
    {
+      MessageBox(NULL,"Cannot Get Pixel Format","Error8",MB_OK);
       return FALSE;
    }
 	
@@ -1123,12 +1145,13 @@ startgame()
    if (BitDepth==24)
    {
       MessageBox(NULL,"ZSNESw does not support 24bit color.\nPlease change your resolution to either 16bit or 32bit color","Error",MB_OK);
-      exit(0);
+      return FALSE;
    }
 
-   if(BitDepth==16 && GBitMask!=0x07E0)
+   if(BitDepth==16&& GBitMask!=0x07E0)
    {
       converta=1;
+      //Init_2xSaI(555);
    }
    else
    {
@@ -1148,12 +1171,204 @@ startgame()
 
    if ( lpDD->CreateSurface( &ddsd, &DD_CFB, NULL ) != DD_OK )
    {
-      DD_CFB->Release();
+      MessageBox(NULL,"Cannot Create Surface Buffer","Error",MB_OK);
       DD_CFB = NULL;
       return FALSE;
    }
 
+     TryAgain=0;
 	return TRUE;
+}
+
+startgamefull()
+{
+   DDSURFACEDESC       ddsd;
+   DDPIXELFORMAT        format;
+   HRESULT hr;
+   char message1[256];
+   unsigned int color32,ScreenPtr2;
+   int i;
+
+   DrawOkay=0;
+
+
+   fullscreendisplay = 1;
+
+   ScreenPtr2=BitConv32Ptr;
+   for(i=0;i<65536;i++)
+   {
+      color32=((i&0xF800)<<8)+
+              ((i&0x07E0)<<5)+
+              ((i&0x001F)<<3)+0x7F000000;
+              (*(unsigned int *)(ScreenPtr2))=color32;
+      ScreenPtr2+=4;
+   }
+
+   GetClientRect(hMainWindow, &rcWindow );
+   ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow );
+   ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow + 1 );
+
+   if(FAILED(DirectDrawCreate(NULL,&BasiclpDD,NULL)))
+   {      
+      MessageBox(NULL,"Cannot Create DirectDraw","Error",MB_OK);
+      return FALSE;
+   }
+
+   hr = BasiclpDD->SetCooperativeLevel(hMainWindow,DDSCL_NORMAL);
+
+   hr = BasiclpDD->SetCooperativeLevel(hMainWindow,DDSCL_EXCLUSIVE | DDSCL_FULLSCREEN);
+
+   if(FAILED(hr))
+   {
+        sprintf(message1,"Unknown Error");
+        if (hr == DDERR_EXCLUSIVEMODEALREADYSET) sprintf(message1,"Exclusive Mode already set");
+        if (hr == DDERR_HWNDALREADYSET) sprintf(message1,"HWND already set");
+        if (hr == DDERR_HWNDSUBCLASSED) sprintf(message1,"HWND Sub Classed");
+        if (hr == DDERR_INVALIDOBJECT) sprintf(message1,"Invalid Object");
+        if (hr == DDERR_INVALIDPARAMS) sprintf(message1,"Invalid Params");
+        if (hr == DDERR_OUTOFMEMORY) sprintf(message1,"Out of Memory");
+
+//        MessageBox(NULL,message1,"Cannot Set Cooperative Level",MB_OK);
+        if ((hr == DDERR_EXCLUSIVEMODEALREADYSET) ||
+         (hr == DDERR_HWNDALREADYSET) ||
+         (hr == DDERR_HWNDSUBCLASSED)){
+          ddsd.dwSize = sizeof( ddsd );
+          ddsd.dwFlags = DDSD_CAPS | DDSD_HEIGHT |DDSD_WIDTH;
+          ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN ;
+
+          ddsd.dwWidth = SurfaceX;
+          ddsd.dwHeight = SurfaceY;
+
+          if ( lpDD->CreateSurface( &ddsd, &DD_CFB, NULL ) != DD_OK )
+          {
+             MessageBox(NULL,"Cannot Create Surface Buffer","Error",MB_OK);
+             DD_CFB = NULL;
+             return FALSE;
+          }
+
+          DrawOkay=1;
+
+         }
+         return TRUE;
+   }
+
+   if(FAILED(BasiclpDD->QueryInterface(IID_IDirectDraw2,(LPVOID *)&lpDD)))
+   {
+      MessageBox(NULL,"Cannot Query Interface","Error",MB_OK);
+      return FALSE;
+   }
+	
+   BasiclpDD->Release();
+
+   if (FAILED(lpDD->SetDisplayMode(WindowWidth, WindowHeight, 16,0,0)))
+   {
+      MessageBox(NULL,"Cannot Set Display Mode","Error",MB_OK);
+      return FALSE;
+   }
+
+   ZeroMemory(&ddsd,sizeof(ddsd));
+   ddsd.dwSize = sizeof( ddsd );
+   ddsd.dwFlags = DDSD_CAPS | DDSD_BACKBUFFERCOUNT;
+   ddsd.dwBackBufferCount = 2;
+   ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE |
+                         DDSCAPS_FLIP |
+                         DDSCAPS_COMPLEX |
+                         DDSCAPS_VIDEOMEMORY;
+
+   if (FAILED(hr=lpDD->CreateSurface( &ddsd, &DD_Primary, NULL )))
+   {
+       if (hr==DDERR_INCOMPATIBLEPRIMARY) sprintf(message1,"1");
+       if (hr==DDERR_INVALIDCAPS) sprintf(message1,"2");
+       if (hr==DDERR_INVALIDOBJECT) sprintf(message1,"3");
+       if (hr==DDERR_INVALIDPARAMS) sprintf(message1,"4");
+       if (hr==DDERR_INVALIDPIXELFORMAT) sprintf(message1,"5");
+       if (hr==DDERR_NOALPHAHW) sprintf(message1,"6");
+       if (hr==DDERR_NOCOOPERATIVELEVELSET) sprintf(message1,"7");
+       if (hr==DDERR_PRIMARYSURFACEALREADYEXISTS) sprintf(message1,"8");
+       if (hr==DDERR_UNSUPPORTEDMODE) sprintf(message1,"9");
+
+
+//       MessageBox(NULL,message1,"Error",MB_OK);
+
+      ddsd.dwBackBufferCount = 1;
+      if (FAILED(lpDD->CreateSurface( &ddsd, &DD_Primary, NULL ))){
+        ddsd.ddsCaps.dwCaps &= ~DDSCAPS_VIDEOMEMORY;
+        if (FAILED(lpDD->CreateSurface( &ddsd, &DD_Primary, NULL ))){
+           DrawOkay=0;
+           return TRUE;
+
+           MessageBox(NULL,"Cannot Create Primary Surface","Error",MB_OK);
+           return FALSE;
+         }
+      }
+   }
+
+   DDSCAPS caps;
+   caps.dwCaps = DDSCAPS_BACKBUFFER;
+   if (FAILED(DD_Primary->GetAttachedSurface(&caps, &DD_BackBuffer)))
+   {
+      MessageBox(NULL,"Cannot Obtain Back Buffer","Error",MB_OK);
+      return FALSE;
+   }
+
+   if (FAILED(lpDD->CreateClipper(0,&lpDDClipper,NULL)))
+   {
+      MessageBox(NULL,"Cannot Create Clipper","Error",MB_OK);
+      return FALSE;
+   }
+
+   if (FAILED(lpDDClipper->SetHWnd(0,hMainWindow)))
+   {
+      MessageBox(NULL,"Cannot Set HWnd on Clipper","Error",MB_OK);
+      return FALSE;
+   }
+
+   if (FAILED( DD_Primary->SetClipper(lpDDClipper)))
+   {
+      MessageBox(NULL,"Cannot Set Clipper","Error",MB_OK);
+      return FALSE;
+   }
+    
+   format.dwSize = sizeof(DDPIXELFORMAT);
+   if (DD_Primary->GetPixelFormat(&format) != DD_OK)
+   {
+      MessageBox(NULL,"Cannot Get Pixel Format","Error",MB_OK);
+      return FALSE;
+   }
+	
+   BitDepth=format.dwRGBBitCount;
+   GBitMask=format.dwGBitMask; // 0x07E0 or not
+
+   if(BitDepth==16&& GBitMask!=0x07E0)
+   {
+      converta=1;
+      //Init_2xSaI(555);
+   }
+   else
+   {
+      converta=0;
+   }
+
+   if(DD_CFB!=NULL) DD_CFB->Release();
+
+   DD_CFB=NULL;
+
+   ddsd.dwSize = sizeof( ddsd );
+   ddsd.dwFlags = DDSD_CAPS | DDSD_HEIGHT |DDSD_WIDTH;
+   ddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN ;
+
+   ddsd.dwWidth = SurfaceX;
+   ddsd.dwHeight = SurfaceY;
+
+   if ( lpDD->CreateSurface( &ddsd, &DD_CFB, NULL ) != DD_OK )
+   {
+      MessageBox(NULL,"Cannot Create Surface Buffer","Error",MB_OK);
+      DD_CFB = NULL;
+      return FALSE;
+   }
+
+   DrawOkay=1;
+   return TRUE;
 }
 
 BYTE* SurfBuf;
@@ -1279,6 +1494,7 @@ extern BYTE BlackAndWhite;
 extern BYTE V8Mode;
 DWORD FirstVid=1;
 DWORD FirstFull=1;
+BYTE PrevFull=0;
 extern BYTE GUIWFVID[];
 void clearwin();
 
@@ -1484,16 +1700,18 @@ void initwinvideo(void)
       CheckPriority();
       CheckAlwaysOnTop();
 
-      if(!hMainWindow) { return; }
+ //      if(!hMainWindow) { return; }
 
       ShowWindow(hMainWindow, SW_SHOWNORMAL);
       SetWindowText(hMainWindow,"ZSNESWIN");
+
+//      MessageBox (NULL, "Done", "Init", MB_ICONERROR );
+
       InitInput();
       InitSound();
       TestJoy();
    }
 
-      
    if(Moving==1) return;
    if(FullScreen==1)
    {
@@ -1501,6 +1719,7 @@ void initwinvideo(void)
       {
          atexit(ExitFunction);
       }
+      PrevFull = 1;
       mode.dmSize=sizeof(DEVMODE);
       mode.dmBitsPerPel=16;
       mode.dmPelsWidth=WindowWidth;
@@ -1508,15 +1727,29 @@ void initwinvideo(void)
       mode.dmDisplayFlags=0;
       mode.dmDisplayFrequency=0;
       mode.dmFields=DM_BITSPERPEL|DM_PELSWIDTH|DM_PELSHEIGHT;
-      ChangeDisplaySettings(&mode,0);
+//      ChangeDisplaySettings(&mode,0);
+      endgame();
+      if(startgamefull()!=TRUE) {
+        exit(0);
+      return; }
    }
    else
    {
       ChangeDisplaySettings(NULL,0);
-   }
-   //endgame();
 
-   if(startgame()!=TRUE) {return; }
+      if (PrevFull == 1) { PrevFull = 0; initwinvideo(); initwinvideo(); }
+
+      endgame();
+
+      if(startgame() != TRUE)
+      {
+         exit(0);
+         return;
+      }
+
+   }
+//   endgame();
+
    if(newmode==1) clearwin();
 //   MessageBox (NULL, "Done", "Init", MB_ICONERROR );
 }
