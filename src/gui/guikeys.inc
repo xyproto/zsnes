@@ -910,6 +910,10 @@ GUIOptionKeys:
     jne .nosmallmsgtext
     xor byte[SmallMsgText],1
 .nosmallmsgtext
+    cmp dh,'P'
+    jne .noautopatch
+    xor byte[AutoPatch],1
+.noautopatch   
 %ifdef __WIN32__
     cmp dh,'I'
     jne .noscreensaver

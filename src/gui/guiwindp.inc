@@ -1375,94 +1375,96 @@ DisplayGUIOption:
     jne .noauto
     mov dword[GUITemp],GUIOptionText3
 .noauto
-    GUIOuttextwin2 4,6,16,[GUITemp]
-    GUIOuttextwin2u 4,26,31,GUIOptionText2,0
-    GUIOuttextwin2u 4,26,41,GUIOptionText4,0
-    GUIOuttextwin2u 4,26,51,GUIOptionText5,2
-    GUIOuttextwin2u 4,26,61,GUIOptionText6,0
-    GUIOuttextwin2u 4,26,71,GUIOptionText7,0
+    GUIOuttextwin2 4,6,14,[GUITemp]
+    GUIOuttextwin2u 4,26,24,GUIOptionText2,0
+    GUIOuttextwin2u 4,26,34,GUIOptionText4,0
+    GUIOuttextwin2u 4,26,44,GUIOptionText5,2
+    GUIOuttextwin2u 4,26,54,GUIOptionText6,0
+    GUIOuttextwin2u 4,26,64,GUIOptionText7,0
 %ifdef __MSDOS__
-    GUIOuttextwin2u 4,26,81,GUIOptionTextA,0
+    GUIOuttextwin2u 4,26,74,GUIOptionTextA,0
 %endif
 %ifdef __WIN32__
-    GUIOuttextwin2u 4,26,81,GUIOptionTextAb,0
+    GUIOuttextwin2u 4,26,74,GUIOptionTextAb,0
 %endif
-    GUIOuttextwin2u 4,26,91,GUIOptionTextB,0
-    GUIOuttextwin2u 4,26,101,GUIOptionTextC,2
-    GUIOuttextwin2u 4,26,111,GUIOptionTextD,12
-    GUIOuttextwin2u 4,26,121,GUIOptionTextE,2
-    GUIOuttextwin2u 4,26,131,GUIOptionTextF,1
-    GUIOuttextwin2u 4,26,141,GUIOptionTextG,0
-    GUIOuttextwin2u 4,26,151,GUIOptionTextH,9
-    GUIOuttextwin2u 4,26,161,GUIOptionTextI,15
-    GUIOuttextwin2u 4,26,171,GUIOptionTextJ,0
-    GUIOuttextwin2u 4,26,181,GUIOptionTextK,1
+    GUIOuttextwin2u 4,26,84,GUIOptionTextB,0
+    GUIOuttextwin2u 4,26,94,GUIOptionTextC,2
+    GUIOuttextwin2u 4,26,104,GUIOptionTextD,12
+    GUIOuttextwin2u 4,26,114,GUIOptionTextE,2
+    GUIOuttextwin2u 4,26,124,GUIOptionTextF,1
+    GUIOuttextwin2u 4,26,134,GUIOptionTextG,0
+    GUIOuttextwin2u 4,26,144,GUIOptionTextH,9
+    GUIOuttextwin2u 4,26,154,GUIOptionTextI,15
+    GUIOuttextwin2u 4,26,164,GUIOptionTextJ,0
+    GUIOuttextwin2u 4,26,174,GUIOptionTextK,1
+    GUIOuttextwin2u 4,26,184,GUIOptionTextM,12
 %ifdef __WIN32__
-    GUIOuttextwin2u 4,26,191,GUIOptionTextL,1
+    GUIOuttextwin2u 4,26,194,GUIOptionTextL,1
 %endif
     add byte[GUItextcolor],15
-    GUIOuttextwin2 4,5,15,[GUITemp]
-    GUIOuttextwin2 4,25,30,GUIOptionText2
-    GUIOuttextwin2 4,25,40,GUIOptionText4
-    GUIOuttextwin2 4,25,50,GUIOptionText5
-    GUIOuttextwin2 4,25,60,GUIOptionText6
-    GUIOuttextwin2 4,25,70,GUIOptionText7
+    GUIOuttextwin2 4,5,13,[GUITemp]
+    GUIOuttextwin2 4,25,23,GUIOptionText2
+    GUIOuttextwin2 4,25,33,GUIOptionText4
+    GUIOuttextwin2 4,25,43,GUIOptionText5
+    GUIOuttextwin2 4,25,53,GUIOptionText6
+    GUIOuttextwin2 4,25,63,GUIOptionText7
 %ifdef __MSDOS__
-    GUIOuttextwin2 4,25,80,GUIOptionTextA
+    GUIOuttextwin2 4,25,73,GUIOptionTextA
 %endif
 %ifdef __WIN32__
-    GUIOuttextwin2 4,25,80,GUIOptionTextAb
+    GUIOuttextwin2 4,25,73,GUIOptionTextAb
 %endif
-    GUIOuttextwin2 4,25,90,GUIOptionTextB
-    GUIOuttextwin2 4,25,100,GUIOptionTextC
-    GUIOuttextwin2 4,25,120,GUIOptionTextE
-    GUIOuttextwin2 4,25,110,GUIOptionTextD
-    GUIOuttextwin2 4,25,130,GUIOptionTextF
-    GUIOuttextwin2 4,25,140,GUIOptionTextG
-    GUIOuttextwin2 4,25,150,GUIOptionTextH
-    GUIOuttextwin2 4,25,160,GUIOptionTextI
-    GUIOuttextwin2 4,25,170,GUIOptionTextJ
-    GUIOuttextwin2 4,25,180,GUIOptionTextK
+    GUIOuttextwin2 4,25,83,GUIOptionTextB
+    GUIOuttextwin2 4,25,93,GUIOptionTextC
+    GUIOuttextwin2 4,25,113,GUIOptionTextE
+    GUIOuttextwin2 4,25,103,GUIOptionTextD
+    GUIOuttextwin2 4,25,123,GUIOptionTextF
+    GUIOuttextwin2 4,25,133,GUIOptionTextG
+    GUIOuttextwin2 4,25,143,GUIOptionTextH
+    GUIOuttextwin2 4,25,153,GUIOptionTextI
+    GUIOuttextwin2 4,25,163,GUIOptionTextJ
+    GUIOuttextwin2 4,25,173,GUIOptionTextK
+    GUIOuttextwin2 4,25,183,GUIOptionTextM
 %ifdef __WIN32__
-    GUIOuttextwin2 4,25,190,GUIOptionTextL
+    GUIOuttextwin2 4,25,193,GUIOptionTextL
 %endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[frameskip],0
     jne .nocheckbox
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox
-    GUIDisplayIconWin 4,11,26,[GUITemp]
+    GUIDisplayIconWin 4,11,20,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[newengen],0
     je .nocheckbox1
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
-    GUIDisplayIconWin 4,11,36,[GUITemp]
+    GUIDisplayIconWin 4,11,30,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AutoIncSaveSlot],0
     je .nocheckbox2
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox2
-    GUIDisplayIconWin 4,11,46,[GUITemp]
+    GUIDisplayIconWin 4,11,40,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[MMXSupport],1
     jne .nocheckbox3
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox3
-    GUIDisplayIconWin 4,11,56,[GUITemp]
+    GUIDisplayIconWin 4,11,50,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[pl12s34],0
     je .nocheckbox4
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox4
-    GUIDisplayIconWin 4,11,66,[GUITemp]
+    GUIDisplayIconWin 4,11,60,[GUITemp]
 %ifdef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SidewinderFix],0
     je .nocheckbox5
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox5
-    GUIDisplayIconWin 4,11,76,[GUITemp]
+    GUIDisplayIconWin 4,11,70,[GUITemp]
 %endif
 %ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
@@ -1470,118 +1472,124 @@ DisplayGUIOption:
     je .nocheckbox5
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox5
-    GUIDisplayIconWin 4,11,76,[GUITemp]
+    GUIDisplayIconWin 4,11,70,[GUITemp]
 %endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[FPSAtStart],0
     je .nocheckbox6
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox6
-    GUIDisplayIconWin 4,11,86,[GUITemp]
+    GUIDisplayIconWin 4,11,80,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[Turbo30hz],0
     je .nocheckbox7
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox7
-    GUIDisplayIconWin 4,11,96,[GUITemp]
+    GUIDisplayIconWin 4,11,90,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[TimerEnable],0
     je .nocheckbox8
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox8
-    GUIDisplayIconWin 4,11,106,[GUITemp]
+    GUIDisplayIconWin 4,11,100,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[FastFwdToggle],0
     je .nocheckbox9
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox9
-    GUIDisplayIconWin 4,11,116,[GUITemp]
+    GUIDisplayIconWin 4,11,110,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SRAMSave5Sec],0
     je .nocheckbox10
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox10
-    GUIDisplayIconWin 4,11,126,[GUITemp]
+    GUIDisplayIconWin 4,11,120,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[OldGfxMode2],0
     je .nocheckbox11
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox11
-    GUIDisplayIconWin 4,11,136,[GUITemp]
+    GUIDisplayIconWin 4,11,130,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[LatestSave],0
     je .nocheckbox12
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox12
-    GUIDisplayIconWin 4,11,146,[GUITemp]
+    GUIDisplayIconWin 4,11,140,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AutoState],0
     je .nocheckbox13
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox13
-    GUIDisplayIconWin 4,11,156,[GUITemp]
+    GUIDisplayIconWin 4,11,150,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[DontSavePath],0
     je .nocheckbox14
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox14
-    GUIDisplayIconWin 4,11,166,[GUITemp]
+    GUIDisplayIconWin 4,11,160,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SmallMsgText],0
     je .nocheckbox15
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox15
-    GUIDisplayIconWin 4,11,176,[GUITemp]
-%ifdef __WIN32__
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[DisableScreenSaver],0
+    GUIDisplayIconWin 4,11,170,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC ;Autopatch Checkbox
+    cmp byte[AutoPatch],0
     je .nocheckbox16
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox16
-    GUIDisplayIconWin 4,11,186,[GUITemp]
+    GUIDisplayIconWin 4,11,180,[GUITemp]
+%ifdef __WIN32__
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[DisableScreenSaver],0
+    je .nocheckbox17
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox17
+    GUIDisplayIconWin 4,11,190,[GUITemp]
 %endif
     cmp byte[frameskip],0
     je near .auto
-    DrawGUIWinBox 4,75,13,93,21,167
+    DrawGUIWinBox 4,75,12,93,19,167
     mov al,[frameskip]
     add al,47
     mov [GUIOptionText8],al
     mov byte[GUItextcolor],223
-    GUIOuttextwin2 4,85,16,GUIOptionText8
+    GUIOuttextwin2 4,85,14,GUIOptionText8
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je .zero4
     mov byte[GUItextcolor],222
 .zero4
-    GUIOuttextwin2 4,84,15,GUIOptionText8
+    GUIOuttextwin2 4,84,13,GUIOptionText8
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
     je .zero6
     mov byte[GUItextcolor],211
 .zero6
-    DrawGUIButton 4,97,12,105,22,GUIOptionText9,12,-2,0
-    DrawGUIButton 4,108,12,116,22,GUIOptionText10,13,-2,0
+    DrawGUIButton 4,97,12,105,20,GUIOptionText9,12,-2,-1
+    DrawGUIButton 4,108,12,116,20,GUIOptionText10,13,-2,-1
     ret
 .auto
-    DrawGUIWinBox 4,96,13,114,21,167
+    DrawGUIWinBox 4,96,12,114,19,167
     mov al,[maxskip]
     add al,48
     mov [GUIOptionText8],al
     mov byte[GUItextcolor],223
-    GUIOuttextwin2 4,107,16,GUIOptionText8
+    GUIOuttextwin2 4,107,14,GUIOptionText8
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je .zero5
     mov byte[GUItextcolor],222
 .zero5
-    GUIOuttextwin2 4,106,15,GUIOptionText8
+    GUIOuttextwin2 4,106,13,GUIOptionText8
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
     je .zero7
     mov byte[GUItextcolor],211
 .zero7
-    DrawGUIButton 4,118,12,126,22,GUIOptionText9,12,-2,0
-    DrawGUIButton 4,129,12,137,22,GUIOptionText10,13,-2,0
+    DrawGUIButton 4,118,12,126,20,GUIOptionText9,12,-2,-1
+    DrawGUIButton 4,129,12,137,20,GUIOptionText10,13,-2,-1
     ret
 
 SECTION .data
@@ -1605,6 +1613,7 @@ GUIOptionTextI db 'AUTO STATE SAVE/LOAD',0
 GUIOptionTextJ db 'DON',39,'T SAVE CUR PATH',0
 GUIOptionTextK db 'USE SMALL MESSAGE TEXT',0
 GUIOptionTextL db 'DISABLE SCREENSAVER',0
+GUIOptionTextM db 'ENABLE AUTO-PATCH',0
 GUIOptionText8 db '-',0
 GUIOptionText9 db '+',0
 GUIOptionText10 db '-',0

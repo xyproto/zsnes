@@ -53,11 +53,9 @@ extern int NumofBanks;
 extern unsigned int *romdata;
 extern bool IPSPatched;
 extern unsigned char Header512;
+extern bool AutoPatch;
 void *doMemAlloc(int);
-
 char *patchfile;
-
-
 
 struct
 {
@@ -152,6 +150,12 @@ void PatchUsingIPS()
     
   IPSPatched = false;
 
+  if (!AutoPatch)
+  {
+    deinitPatch(); //Needed if the call to this function was done from findZipIPS()
+    return;
+  }
+  
   if (patchfile) //Regular file, not Zip
   { 
     if (!initPatch()) { goto IPSDone; }

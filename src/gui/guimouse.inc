@@ -2274,44 +2274,45 @@ DisplayGUIInputClick:
     ret
 
 DisplayGUIOptionClick:
-    GUIClickCButtonfr 11,26,byte[frameskip]
+    GUIClickCButtonfr 11,20,byte[frameskip]
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUINGVID+ebx],1
     jne near .invalidng
-    GUIClickCButton2 11,36,byte[newengen],byte[cfgnewgfx],1
+    GUIClickCButton2 11,30,byte[newengen],byte[cfgnewgfx],1
 .invalidng
-    GUIClickCButtonAS 11,46,byte[AutoIncSaveSlot]
-    GUIClickCButtonMMX 11,56,byte[MMXSupport]
-    GUIClickCButtonM 11,66,byte[pl12s34]
+    GUIClickCButtonAS 11,40,byte[AutoIncSaveSlot]
+    GUIClickCButtonMMX 11,50,byte[MMXSupport]
+    GUIClickCButtonM 11,60,byte[pl12s34]
 %ifdef __MSDOS__
-    GUIClickCButton 11,76,byte[SidewinderFix]
+    GUIClickCButton 11,70,byte[SidewinderFix]
 %endif
 %ifdef __WIN32__
-    GUIClickCButtonW 11,76,byte[HighPriority]
+    GUIClickCButtonW 11,70,byte[HighPriority]
 %endif
-    GUIClickCButton 11,86,byte[FPSAtStart]
-    GUIClickCButton 11,96,byte[Turbo30hz]
-    GUIClickCButton 11,106,byte[TimerEnable]
-    GUIClickCButton 11,116,byte[FastFwdToggle]
-    GUIClickCButton 11,126,byte[SRAMSave5Sec]
-    GUIClickCButtonO 11,136,byte[OldGfxMode2]
-    GUIClickCButton 11,146,byte[LatestSave]
-    GUIClickCButton 11,156,byte[AutoState]
-    GUIClickCButton 11,166,byte[DontSavePath]
-    GUIClickCButton 11,176,byte[SmallMsgText]
+    GUIClickCButton 11,80,byte[FPSAtStart]
+    GUIClickCButton 11,90,byte[Turbo30hz]
+    GUIClickCButton 11,100,byte[TimerEnable]
+    GUIClickCButton 11,110,byte[FastFwdToggle]
+    GUIClickCButton 11,120,byte[SRAMSave5Sec]
+    GUIClickCButtonO 11,130,byte[OldGfxMode2]
+    GUIClickCButton 11,140,byte[LatestSave]
+    GUIClickCButton 11,150,byte[AutoState]
+    GUIClickCButton 11,160,byte[DontSavePath]
+    GUIClickCButton 11,170,byte[SmallMsgText]
+    GUIClickCButton 11,180,byte[AutoPatch]
 %ifdef __WIN32__
-    GUIClickCButtonW 11,186,byte[DisableScreenSaver]
+    GUIClickCButtonW 11,190,byte[DisableScreenSaver]
 %endif
     ; Frameskip = 0
     cmp byte[frameskip],0
     je near .autopress
-    GUIPHoldbutton2 97,12,105,22,12,byte[frameskip],1,10
-    GUIPHoldbutton2 108,12,116,22,13,byte[frameskip],-1,1
+    GUIPHoldbutton2 97,12,105,20,12,byte[frameskip],1,10
+    GUIPHoldbutton2 108,12,116,20,13,byte[frameskip],-1,1
     ret
 .autopress
-    GUIPHoldbutton2 118,12,126,22,12,byte[maxskip],1,9
-    GUIPHoldbutton2 129,12,137,22,13,byte[maxskip],-1,0
+    GUIPHoldbutton2 118,12,126,20,12,byte[maxskip],1,9
+    GUIPHoldbutton2 129,12,137,20,13,byte[maxskip],-1,0
     ret
 
 DisplayGUIVideoClick2:
