@@ -30,8 +30,6 @@ EXTSYM fxbit01,fxbit23,fxbit45,fxbit67
 EXTSYM fxxand
 EXTSYM PLOTJmpa,PLOTJmpb
 
-NEWSYM FxEmu2CAsmStart
-
 %include "chips/fxemu2.mac"
 %include "chips/fxemu2b.mac"
 %include "chips/fxemu2c.mac"
@@ -2553,5 +2551,3 @@ NEWSYM FxOpdFFA2    ; SM (XX),RN   store word in RAM
    mov [eax+ebx],dh
    CLRFLAGS
    FXReturn
-
-NEWSYM FxEmu2CAsmEnd

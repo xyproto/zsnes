@@ -26,7 +26,6 @@ EXTSYM nglogicval,winlogicaval,ProcessMode7ngwinD,ProcessMode7ngwinC
 EXTSYM ngwinen, winbg1enval, BuildWindow, ngwintable, ngcwinptr
 EXTSYM ProcessMode7ngwin,ProcessMode7ngwinB
 
-NEWSYM Mode7ExtAsmStart
 %include "video/mode7.mac"
 
 
@@ -1322,5 +1321,3 @@ NEWSYM drawmode7ngextbg2
     cmp dh,1
     jne near domosaic
     ret
-
-NEWSYM Mode7ExtAsmEnd

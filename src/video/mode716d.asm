@@ -21,13 +21,7 @@ EXTSYM curmosaicsz,curvidoffset,domosaic16b,winptrref,scaddset
 EXTSYM mode7A,mode7B,mode7C,mode7D,mode7X0,mode7Y0,mode7set,cwinptr
 EXTSYM pal16b,vram,vrama,winon,mode7tab,xtravbuf,dcolortab,vidbright
 
-NEWSYM Mode716DAsmStart
 %include "video/mode7.mac"
-
-
-
-
-
 
 NEWSYM Gendcolortable
    ; generate Direct Color Table
@@ -235,4 +229,3 @@ SECTION .text
     Mode7Process Mode7Window, domosaic16b, 2
 .nextval3w
     Mode7ProcessB Mode7Window, domosaic16b, 2
-NEWSYM Mode716DAsmEnd

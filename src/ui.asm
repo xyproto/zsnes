@@ -45,13 +45,6 @@ EXTSYM GetFilename
 EXTSYM OSPC_Init
 %endif
 
-NEWSYM UIAsmStart
-
-
-
-
-
-
 ; Function 0501h
 ; User Interface
 
@@ -1311,5 +1304,3 @@ NEWSYM MMXCheck
 .noprintstr
 .nommx
     ret
-
-NEWSYM UIAsmEnd

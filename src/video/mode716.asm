@@ -27,15 +27,9 @@ EXTSYM scrndis
 EXTSYM vidbright,prevbrightdc,Gendcolortable
 EXTSYM mode7ab,mode7cd,BGMA
 EXTSYM BG1SXl,BG1SYl
-    EXTSYM processmode7hires
+EXTSYM processmode7hires
 
-NEWSYM Mode716AsmStart
 %include "video/mode716.mac"
-
-
-
-
-
 
 ;*******************************************************
 ; Processes & Draws Mode 7
@@ -690,5 +684,3 @@ NEWSYM processmode7hires16bd
     pop esi
 .nogo
     ret
-
-NEWSYM Mode716AsmEnd

@@ -34,13 +34,6 @@ EXTSYM Create_File,Write_File,Close_File
 EXTSYM TextFile, InitDir, InitDrive, Change_Dir
 %endif
 
-NEWSYM CfgLoadAsmStart
-
-
-
-; [BITS 32]
-; [ORG 0]
-
 ; .CFG variables
 SECTION .data
 NEWSYM cfgsoundon,      db 0
@@ -1955,7 +1948,3 @@ section .data
 .str3 dd 10
       db 'REINITTIME'
 .usespace db 0
-
-SECTION .text
-
-NEWSYM CfgLoadAsmEnd

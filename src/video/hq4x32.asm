@@ -37,10 +37,6 @@ EXTSYM w1, w2, w3, w4, w5, w6, w7, w8, w9
 EXTSYM c1, c2, c3, c4, c5, c6, c7, c8, c9
 EXTSYM reg_blank, const3, const5, const6, const7, cross, threshold
 
-%ifdef __MINGW__
-NEWSYM CopyVWinAsmStart
-%endif
-
 SECTION .text
 
 %macro AUXADDRESS 0
@@ -4207,6 +4203,3 @@ SECTION .bss
 InterPtr resd 1
 SECTION .text
 
-%ifdef __MINGW__
-NEWSYM CopyVWinAsmEnd
-%endif

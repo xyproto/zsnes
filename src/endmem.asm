@@ -251,4 +251,3 @@ NEWSYM bg4change, resb 256
 NEWSYM bgwinchange, resb 256 
 
 NEWSYM PrevPicture, resb 64*56*2
-NEWSYM EndMemAsmEnd

@@ -27,12 +27,6 @@ EXTSYM execloopdeb
 EXTSYM nmiv8
 EXTSYM membank0r8,membank0w8
 
-NEWSYM IrqAsmStart
-
-
-
-
-
 ;        NMI     Hardware        00FFFA,B    00FFEA,B     3  -> 000108
 ;        RES     Hardware        00FFFC.D    00FFFC,D     1
 ;        BRK     Software        00FFFE,F    00FFE6,7    N/A
@@ -556,4 +550,3 @@ NEWSYM NMIemulmodedeb
     add esi,eax
     jmp execloopdeb
 
-NEWSYM IrqAsmEnd

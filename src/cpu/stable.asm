@@ -21,17 +21,10 @@ EXTSYM SA1tableA,SA1tableB,SA1tableC,SA1tableD,SA1tableE
 EXTSYM SA1tableF,SA1tableG,SA1tableH,SA1tablead
 EXTSYM cpucycle, SA1UpdateDPage, intrset
 
-NEWSYM StableAsmStart
 %include "cpu/s65816d.inc"
 %include "cpu/saddress.inc"
 %include "cpu/saddrni.inc"
 %include "cpu/se65816.inc"
-
-
-
-
-
-
 
 ; global variables
 ;tableA  times 256             ; Table addresses (M:0,X:0,D:0)

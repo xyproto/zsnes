@@ -33,10 +33,6 @@ EXTSYM WinVidMemStart
 EXTSYM BitConv32Ptr
 EXTSYM RGBtoYUVPtr
 
-%ifdef __MINGW__
-NEWSYM CopyVWinAsmStart
-%endif
-
 SECTION .bss
 NEWSYM prevline, resd 1
 NEWSYM nextline, resd 1
@@ -2166,7 +2162,3 @@ FuncTable2
 SECTION .bss
 InterPtr resd 1
 SECTION .text
-
-%ifdef __MINGW__
-NEWSYM CopyVWinAsmEnd
-%endif

@@ -28,8 +28,6 @@ EXTSYM pal16bxcl
 EXTSYM coadder16
 EXTSYM a16x16xinc,a16x16yinc,curypos,yflipadd
 
-
-NEWSYM MV16TMSAsmStart
 %include "video/vidmacro.mac"
 
 
@@ -1501,4 +1499,3 @@ NEWSYM draw16x1616tswinonms
     dec byte[tileleft16b]
     jnz near .loopa
     ret
-NEWSYM MV16TMSAsmEnd

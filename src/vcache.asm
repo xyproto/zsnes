@@ -57,10 +57,6 @@ EXTSYM tltype2b
 EXTSYM tltype8b,objwlrpos
 EXTSYM snesinputdefault,cycleinputdevice
 
-
-NEWSYM VCacheAsmStart
-
-
 ; Process stuff & Cache sprites
 
 SECTION .bss
@@ -3917,4 +3913,3 @@ NEWSYM cachesingle8bng
     pop edi
     pop esi
     ret
-NEWSYM VCacheAsmEnd

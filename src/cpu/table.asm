@@ -54,7 +54,6 @@ EXTSYM DPageR8,DPageW8,DPageR16,DPageW16
 EXTSYM SDD1Enable
 EXTSYM JoyAOrig,JoyANow,JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow
 
-NEWSYM TableAsmStart
 %include "cpu/65816d.inc"
 %include "cpu/address.inc"
 %include "cpu/addrni.inc"
@@ -63,10 +62,6 @@ NEWSYM TableAsmStart
 %include "cpu/regsw.mac"
 %include "cpu/regs.inc"     ; start problem here
 %include "cpu/regsw.inc"
-
-
-
-
 
 section .data
 
@@ -1195,5 +1190,3 @@ NEWSYM settableDm16
     mov dword[edi+0FDh*4],COpFDm16d
     mov dword[edi+0FFh*4],COpFFm16d
     ret
-
-NEWSYM TableAsmEnd

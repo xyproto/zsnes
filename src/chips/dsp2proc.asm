@@ -29,10 +29,6 @@
 
 EXTSYM regaccessbankr8,regaccessbankr16,regaccessbankw8,regaccessbankw16
 
-NEWSYM Dsp2ProcAsmStart
-
-;%define _USE_DEVDSP2
-
 DSP2F_HALT              equ 1
 DSP2F_AUTO_BUFFER_SHIFT equ 2
 DSP2F_NO_ADDR_CHK       equ 4
@@ -610,5 +606,3 @@ NEWSYM DSP2Write16b
     xor eax,eax
 .leave
     ret
-
-NEWSYM Dsp2ProcAsmEnd

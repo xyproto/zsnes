@@ -36,10 +36,6 @@ EXTSYM prevline, nextline, deltaptr, xcounter
 EXTSYM w1, w2, w3, w4, w5, w6, w7, w8, w9
 EXTSYM reg_blank, const7, cross, threshold
 
-%ifdef __MINGW__
-NEWSYM CopyVWinAsmStart
-%endif
-
 SECTION .text
 
 %macro TestDiff 2
@@ -2755,7 +2751,3 @@ FuncTable2
 SECTION .bss
 InterPtr resd 1
 SECTION .text
-
-%ifdef __MINGW__
-NEWSYM CopyVWinAsmEnd
-%endif

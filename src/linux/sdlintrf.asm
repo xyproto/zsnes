@@ -121,8 +121,6 @@ EXTSYM V8Mode,GrayscaleMode
 EXTSYM PrevWinMode,PrevFSMode
 EXTSYM sem_sleep
 
-NEWSYM WinIntRFAsmStart
-
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
 ;   made.  GUI36hzcall should be called at 36hz after a call GUIInit and
@@ -273,7 +271,7 @@ NEWSYM OsExit
 NEWSYM OSExit
     jmp DosExit
 
-SECTION .data    
+SECTION .data
 NEWSYM TempHandle, dd 0
 
 SECTION .text
@@ -514,12 +512,12 @@ RefreshKeybBuffer:
     mov [Keybtail],al
 .none
     ret
+
+SECTION .data
 Keybhead db 0
 Keybtail db 0
 HoldKey dd 0
 PKeyBuf times 100h db 0
-
-SECTION .data
 NEWSYM CurKeyPos, dd 0
 NEWSYM CurKeyReadPos, dd 0
 NEWSYM KeyBuffer, times 16 dd 0
@@ -1118,7 +1116,7 @@ NEWSYM Init_Mouse
     mov eax,01h
     ret
 
-SECTION .data    
+SECTION .data
 NEWSYM WMouseX, dd 0
 NEWSYM WMouseY, dd 0
 NEWSYM WMouseMoveX, dd 0
@@ -1257,13 +1255,14 @@ NEWSYM Check60hz
     popad
     ret
 
+SECTION .data
 BitPosR db 11 
 BitPosG db 5
 BitPosB db 0
 BitSizeR db 5
 BitSizeG db 6
 BitSizeB db 5
-
+SECTION .text
 
 InitializeGfxStuff:
         ; Process Red Stuff
@@ -1490,7 +1489,9 @@ NEWSYM TCPIPWaitForConnection
     popad
     mov eax,-1
     ret
+SECTION .data
 .temp dd 0
+SECTION .text
 
 NEWSYM TCPIPInitConnectToServer
     pushad
@@ -1543,7 +1544,9 @@ NEWSYM TCPIPConnectToServer
     popad
     mov eax,[.temp]
     ret
+SECTION .data
 .temp dd 0
+SECTION .text
 
 NEWSYM TCPIPConnectToServerW
 ; int ConnectServer(char *servername, unsigned short port)
@@ -1561,7 +1564,9 @@ NEWSYM TCPIPConnectToServerW
     popad
     mov eax,[.temp]
     ret
+SECTION .data
 .temp dd 0
+SECTION .text
 
 NEWSYM TCPIPStoreByte
     ; Store al into the array
@@ -1743,5 +1748,3 @@ NEWSYM GetTimeInSeconds
     movzx ebx,word[SystemTimewSecond]
     add eax,ebx
     ret
-
-NEWSYM WinIntRFAsmEnd

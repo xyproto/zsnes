@@ -30,17 +30,10 @@ EXTSYM sramaccessbankw8,tableAc,tableBc,tableCc,tableDc,tableEc
 EXTSYM tableFc,tableGc,tableHc,wramaccessbankr16
 EXTSYM wramaccessbankr8,wramaccessbankw16,wramaccessbankw8,tableadc
 
-NEWSYM TableCAsmStart
 %include "cpu/65816dc.inc"
 %include "cpu/address.inc"
 %include "cpu/addrni.inc"
 %include "cpu/e65816c.inc"
-
-
-
-
-
-
 
 ; global variables
 
@@ -721,5 +714,3 @@ settableDm16:
     mov dword[edi+0FDh*4],COpFDm16d
     mov dword[edi+0FFh*4],COpFFm16d
     ret
-
-NEWSYM TableCAsmEnd

@@ -135,12 +135,6 @@ EXTSYM DSP2Read8b,DSP2Read16b,DSP2Write8b,DSP2Write16b,InitDSP2
 %ifdef __LINUX__
 EXTSYM LoadDir, popdir, pushdir
 %endif
-;EXTSYM InitDSP4
-NEWSYM InitAsmStart
-
-
-
-
 
 ; Initiation
 
@@ -3808,9 +3802,6 @@ NEWSYM yesoutofmemory, resb 1
 SECTION .data
 NEWSYM outofmemoryerror, db 'OUT OF MEMORY.',0
 NEWSYM outofmemoryerror2, db 'ROM IS TOO BIG.',0
-SECTION .text
-
-NEWSYM InitAsmEnd
 
 
 
