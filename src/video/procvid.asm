@@ -482,7 +482,7 @@ NEWSYM ASCII2Font
          db 00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
          db 00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
          db 00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-         db 00h,00h,00h,00h,00h,00h,00h,00h,4Ch,4Bh,4Ah,45h,46h,47h,48h,49h
+         db 00h,00h,00h,00h,00h,00h,00h,4Dh,4Ch,4Bh,4Ah,45h,46h,47h,48h,49h
 
 NEWSYM FontData
          db 0,0,0,0,0,0,0,0
