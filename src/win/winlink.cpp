@@ -1529,98 +1529,104 @@ void initwinvideo(void)
       case 5:
          WindowWidth=640;
          WindowHeight=480;
-         SurfaceX=640;
-         SurfaceY=480;
+         SurfaceX=512;
+         SurfaceY=448;
          break;
       case 6:
          WindowWidth=640;
          WindowHeight=480;
-         SurfaceX=512;
-         SurfaceY=448;
+         SurfaceX=640;
+         SurfaceY=480;
          break;
       case 7:
          WindowWidth=640;
          WindowHeight=480;
+         SurfaceX=512;
+         SurfaceY=448;
          break;
       case 8:
-         WindowWidth=768;
-         WindowHeight=672;
+         WindowWidth=640;
+         WindowHeight=480;
          break;
       case 9:
          WindowWidth=768;
          WindowHeight=672;
-         SurfaceX=512;
-         SurfaceY=448;
          break;
       case 10:
-         WindowWidth=800;
-         WindowHeight=600;
+         WindowWidth=768;
+         WindowHeight=672;
+         SurfaceX=512;
+         SurfaceY=448;
          break;
       case 11:
          WindowWidth=800;
          WindowHeight=600;
-         SurfaceX=512;
-         SurfaceY=448;
          break;
       case 12:
          WindowWidth=800;
          WindowHeight=600;
+         SurfaceX=512;
+         SurfaceY=448;
          break;
       case 13:
          WindowWidth=800;
          WindowHeight=600;
+         break;
+      case 14:
+         WindowWidth=800;
+         WindowHeight=600;
          SurfaceX=640;
          SurfaceY=480;
          break;
-      case 14:
+      case 15:
          WindowWidth=800;
          WindowHeight=600;
          SurfaceX=512;
          SurfaceY=448;
          break;
-      case 15:
+      case 16:
          WindowWidth=1024;
          WindowHeight=768;
          break;
-      case 16:
+      case 17:
          WindowWidth=1024;
          WindowHeight=768;
          SurfaceX=512;
          SurfaceY=448;
          break;
-      case 17:
+      case 18:
          WindowWidth=1024;
          WindowHeight=768;
          break;
-      case 18:
+      case 19:
          WindowWidth=1024;
          WindowHeight=768;
          SurfaceX=640;
          SurfaceY=480;
          break;
-      case 19:
+      case 20:
          WindowWidth=1024;
          WindowHeight=768;
          SurfaceX=512;
          SurfaceY=448;
          break;
-      case 20:
+      case 21:
          WindowWidth=1024;
          WindowHeight=896;
          break;
-      case 21:
+      case 22:
          WindowWidth=1024;
          WindowHeight=896;
          SurfaceX=512;
          SurfaceY=448;
          break;
-      case 22:
+      case 23:
          WindowWidth=1280;
          WindowHeight=960;
          SurfaceX=640;
          SurfaceY=480;
          break;
-      case 23:
+      case 24:
          WindowWidth=1280;
          WindowHeight=960;
          SurfaceX=512;

@@ -579,16 +579,17 @@ db '',13,10
 db '; Video Mode, 0 - 23',13,10
 db ';   0 = 256x224 R WIN         1 = 256x224 R FULL',13,10
 db ';   2 = 512x448 R WIN         3 = 512x448 DR WIN',13,10
-db ';   4 = 640x480 S WIN         5 = 640x480 DR FULL',13,10
-db ';   6 = 640x480 DS FULL       7 = 640x480 S FULL',13,10
-db ';   8 = 768x672 R WIN         9 = 768x672 DR WIN',13,10
-db ';   10 = 800x600 S WIN        11 = 800x600 DS WIN',13,10
-db ';   12 = 800x600 S FULL       13 = 800x600 DR FULL',13,10
-db ';   14 = 800x600 DS FULL      15 = 1024x768 S WIN',13,10
-db ';   16 = 1024x768 DS WIN      17 = 1024x768 S FULL',13,10
-db ';   18 = 1024x768 DR FULL     19 = 1024x768 DS FULL',13,10
-db ';   20 = 1024x896 R WIN       21 = 1024x896 DR WIN',13,10
-db ';   22 = 1280x960 DR FULL     23 = 1280x960 DS FULL',13,10
+db ';   4 = 640x480 S WIN         5 = 640x480 DS WIN',13,10
+db ';   6 = 640x480 DR FULL       7 = 640x480 DS FULL',13,10
+db ';   8 = 640x480 S FULL        9 = 768x672 R WIN',13,10
+db ';   10 = 768x672 DR WIN       11 = 800x600 S WIN',13,10
+db ';   12 = 800x600 DS WIN       13 = 800x600 S FULL',13,10
+db ';   14 = 800x600 DR FULL      15 = 800x600 DS FULL',13,10
+db ';   16 = 1024x768 S WIN       17 = 1024x768 DS WIN',13,10
+db ';   18 = 1024x768 S FULL      19 = 1024x768 DR FULL',13,10
+db ';   20 = 1024x768 DS FULL     21 = 1024x896 R WIN',13,10
+db ';   22 = 1024x896 DR WIN      23 = 1280x960 DR FULL',13,10
+db ';   24 = 1280x960 DS FULL',13,10
 db '',13,10
 db 'VideoModeWin = %U',13,10
 db '',13,10
