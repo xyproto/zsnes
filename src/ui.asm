@@ -47,7 +47,6 @@ NEWSYM UIAsmStart
 
 
 
-extern puts
 
 ; Function 0501h
 ; User Interface
