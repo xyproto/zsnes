@@ -60,9 +60,9 @@ ZIPOBJ=${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
 EFFECTSOBJ=${EFFECTSDIR}/burn.o ${EFFECTSDIR}/water.o ${EFFECTSDIR}/smoke.o
 
-JMAOBJ=${JMADIR}/7zlzma.obj ${JMADIR}/aribitcd.obj ${JMADIR}/crc32.obj ${JMADIR}/iiostrm.obj\
-       ${JMADIR}/inbyte.obj ${JMADIR}/jma.obj ${JMADIR}/lzma.obj ${JMADIR}/lzmadec.obj\
-       ${JMADIR}/outbyte.obj ${JMADIR}/winout.obj ${JMADIR}/zsnesjma.obj
+JMAOBJ=${JMADIR}/7zlzma.o ${JMADIR}/aribitcd.o ${JMADIR}/crc32.o ${JMADIR}/iiostrm.o\
+       ${JMADIR}/inbyte.o ${JMADIR}/jma.o ${JMADIR}/lzma.o ${JMADIR}/lzmadec.o\
+       ${JMADIR}/outbyte.o ${JMADIR}/winout.o ${JMADIR}/zsnesjma.o
        
 MAINOBJ=cfgload.o endmem.o init.o initc.o uic.o patch.o ui.o vcache.o version.o
 
@@ -203,17 +203,17 @@ ${CHIPDIR}/sa1proc.o: ${CHIPDIR}/sa1proc.asm macros.mac
 endmem.o: endmem.asm macros.mac
 ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
 
-${JMADIR}/7zlzma.obj: ${JMADIR}/7zlzma.cpp
-${JMADIR}/aribitcd.obj: ${JMADIR}/aribitcd.cpp
-${JMADIR}/crc32.obj: ${JMADIR}/crc32.cpp ${JMADIR}/crc32.h
-${JMADIR}/iiostrm.obj: ${JMADIR}/iiostrm.cpp
-${JMADIR}/inbyte.obj: ${JMADIR}/inbyte.cpp
-${JMADIR}/jma.obj: ${JMADIR}/jma.cpp ${JMADIR}/jma.h ${JMADIR}/crc32.h ${JMADIR}/portable.h
-${JMADIR}/lzma.obj: ${JMADIR}/lzma.cpp
-${JMADIR}/lzmadec.obj: ${JMADIR}/lzmadec.cpp
-${JMADIR}/outbyte.obj: ${JMADIR}/outbyte.cpp
-${JMADIR}/winout.obj: ${JMADIR}/winout.cpp
-${JMADIR}/zsnesjma.obj: ${JMADIR}/zsnesjma.cpp ${JMADIR}/zsnesjma.h ${JMADIR}/jma.h
+${JMADIR}/7zlzma.o: ${JMADIR}/7zlzma.cpp
+${JMADIR}/aribitcd.o: ${JMADIR}/aribitcd.cpp
+${JMADIR}/crc32.o: ${JMADIR}/crc32.cpp ${JMADIR}/crc32.h
+${JMADIR}/iiostrm.o: ${JMADIR}/iiostrm.cpp
+${JMADIR}/inbyte.o: ${JMADIR}/inbyte.cpp
+${JMADIR}/jma.o: ${JMADIR}/jma.cpp ${JMADIR}/jma.h ${JMADIR}/crc32.h ${JMADIR}/portable.h
+${JMADIR}/lzma.o: ${JMADIR}/lzma.cpp
+${JMADIR}/lzmadec.o: ${JMADIR}/lzmadec.cpp
+${JMADIR}/outbyte.o: ${JMADIR}/outbyte.cpp
+${JMADIR}/winout.o: ${JMADIR}/winout.cpp
+${JMADIR}/zsnesjma.o: ${JMADIR}/zsnesjma.cpp ${JMADIR}/zsnesjma.h ${JMADIR}/jma.h
 
 clean:
 	del *.o
@@ -224,7 +224,7 @@ clean:
 	del ${DOSDIR}\*.o
 	del ${ZIPDIR}\*.o
 	del ${EFFECTSDIR}\*.o
-	del ${JMADIR}\*.obj
+	del ${JMADIR}\*.o
 	del zsnes.exe
 
 
