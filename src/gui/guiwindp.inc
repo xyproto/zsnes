@@ -1524,8 +1524,32 @@ DisplayGUIOption:
 .nocheckbox14
     GUIDisplayIconWin 4,11,160,[GUITemp]
 %endif
+
+
     cmp byte[frameskip],0
     je near .auto
+    ; Draw borders
+    mov dword[GUIWincol],148+10
+    cmp byte[cwindrawn],1
+    jne .noone3
+    mov dword[GUIWincol],148+5
+.noone3
+    cmp byte[cwindrawn],0
+    jne .nozero3
+    mov dword[GUIWincol],148
+.nozero3
+    mov dl,[GUIWincol]
+    DrawGUIWinBox 4,74,11,94,11,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 4,73,11,73,19,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 4,74,20,94,20,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 4,95,12,94,19,dl
+    ; End draw borders  
     DrawGUIWinBox 4,75,12,93,19,167
     mov al,[frameskip]
     add al,47
@@ -1546,7 +1570,30 @@ DisplayGUIOption:
     DrawGUIButton 4,97,12,105,20,GUIOptionTextY,12,-2,-1
     DrawGUIButton 4,108,12,116,20,GUIOptionTextZ,13,-2,-1
     ret
+
 .auto
+    ; Draw borders
+    mov dword[GUIWincol],148+10
+    cmp byte[cwindrawn],1
+    jne .noone2
+    mov dword[GUIWincol],148+5
+.noone2
+    cmp byte[cwindrawn],0
+    jne .nozero2
+    mov dword[GUIWincol],148
+.nozero2
+    mov dl,[GUIWincol]
+    DrawGUIWinBox 4,95,11,115,11,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 4,94,11,93,19,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 4,95,20,115,20,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 4,115,12,115,19,dl
+    ; End draw borders  
     DrawGUIWinBox 4,96,12,114,19,167
     mov al,[maxskip]
     add al,48
