@@ -313,47 +313,6 @@ NEWSYM OSExit
     int 3h
     jmp DosExit
 
-NEWSYM MMXCheck
-    ; Check for cpu that doesn't support CPUID
-    mov edx,cpuidfname
-    call Open_File
-    jc .skipcheck
-    mov bx,ax
-    call Close_File
-    jmp .nommx2
-.skipcheck
-
-    ; Create file
-    mov edx,cpuidfname
-    call Create_File
-    mov bx,ax
-    call Close_File
-
-    mov edx,cpuidtext
-    call PrintStr
-
-    ; MMX support
-    mov byte[FPUCopy],0
-    mov eax,1
-    CPUID
-
-    push edx
-    mov edx,cpuidtext2
-    call PrintStr
-    pop edx
-
-    test edx,1 << 23
-    jz .nommx
-    mov byte[FPUCopy],2
-    mov edx,YesMMX
-    call PrintStr
-.nommx
-    ; Delete file
-    mov edx,cpuidfname
-    call Delete_File
-.nommx2
-    ret
-
 NEWSYM TempHandle, dd 0
 
 NEWSYM Open_File
@@ -1441,10 +1400,6 @@ SECTION .text
 
 SECTION .data
 NEWSYM ZSNESBase, dd 0
-cpuidfname db 'nocpuzid.dat',0
-cpuidtext db 'NOTE: If ZSNES crashes here, then please re-run. ',0
-cpuidtext2 db 13,'                                                 ',13,0
-YesMMX    db 'MMX support enabled.',13,10,13,10,0
 TempVarSeek dd 0
 gotoroot db '\',0
 SECTION .text

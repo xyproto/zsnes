@@ -19,7 +19,7 @@
 
 EXTSYM getcfg,soundon,SBHDMA,StereoSound,init,GUIRestoreVars,GUIClick,MouseDis
 EXTSYM ConvertJoyMap,ConvertJoyMap1,ConvertJoyMap2,printhex,InitSPC
-EXTSYM StartUp,PrintStr,WaitForKey,PrintChar,MMXCheck,ZFileSystemInit
+EXTSYM StartUp,PrintStr,WaitForKey,PrintChar,ZFileSystemInit
 EXTSYM SPCDisable,SystemInit,allocmem
 EXTSYM xa
 EXTSYM SBPort,SBInt,SBIrq,SBDMA,SBDMAPage,SBHDMAPage,getenv,vibracard
@@ -31,7 +31,7 @@ EXTSYM ADSRGAINSwitch,FPUCopy,ScreenScale,SoundQuality
 EXTSYM debugger,pl1contrl,pl2contrl,romtype,smallscreence
 EXTSYM smallscreenon,spcon
 EXTSYM statefileloc,LatestSave
-EXTSYM Open_File, Get_File_Date, Close_File, Change_Dir, Get_Dir
+EXTSYM Create_File,Delete_File,Open_File,Get_File_Date,Close_File,Change_Dir,Get_Dir
 EXTSYM romloadskip
 EXTSYM cfgloadgdir,cfgloadsdir
 EXTSYM init18_2hz
@@ -162,6 +162,10 @@ NEWSYM welcome
                  db 'check licence.txt.',10,13,10,13
                  db 'Use ZSNES -? for command line definitions',13,10,13,10,0
 
+cpuidfname db 'nocpuzid.dat',0
+cpuidtext db 'NOTE: If ZSNES crashes here, then please re-run. ',0
+cpuidtext2 db 13,'                                                 ',13,0
+YesMMX    db 'MMX support enabled.',13,10,13,10,0
 
 ; global variables
 NEWSYM string,  times 512 db 0
@@ -1561,4 +1565,46 @@ NEWSYM DosExit ; Terminate Program
 	mov    ax,4c00h            ;terminate
 	int    21h
 %endif
+
+NEWSYM MMXCheck
+    ; Check for cpu that doesn't support CPUID
+    mov edx,cpuidfname
+    call Open_File
+    jc .skipcheck
+    mov bx,ax
+    call Close_File
+    jmp .nommx2
+.skipcheck
+
+    ; Create file
+    mov edx,cpuidfname
+    call Create_File
+    mov bx,ax
+    call Close_File
+
+    mov edx,cpuidtext
+    call PrintStr
+
+    ; MMX support
+    mov byte[FPUCopy],0
+    mov eax,1
+    CPUID
+
+    push edx
+    mov edx,cpuidtext2
+    call PrintStr
+    pop edx
+
+    test edx,1 << 23
+    jz .nommx
+    mov byte[FPUCopy],2
+    mov edx,YesMMX
+    call PrintStr
+.nommx
+    ; Delete file
+    mov edx,cpuidfname
+    call Delete_File
+.nommx2
+    ret
+
 NEWSYM UIAsmEnd
