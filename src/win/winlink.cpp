@@ -1264,8 +1264,8 @@ int InitDirectDraw()
       }
       if (lpDD->SetDisplayMode(WindowWidth, WindowHeight, 16, 0, 0) != DD_OK)
       {
-         MessageBox(NULL, "IDirectDraw7::SetDisplayMode failed.", "DirectDraw Error", MB_ICONERROR);
-      }      
+         MessageBox(NULL, "IDirectDraw7::SetDisplayMode failed.\nMake sure your video card supports this mode.", "DirectDraw Error", MB_ICONERROR);
+      }
    }
    else
    {
