@@ -247,7 +247,7 @@ NEWSYM initregr
     ret
 
 ; global variables
-SECTION .data ;ALIGN=32
+SECTION .data
 NEWSYM invreg,    dw 0
 NEWSYM sndrot,    db 0             ; rotates to use A,X or Y for sound skip
 NEWSYM sndrot2,   db 0             ; rotates a random value for sound skip
@@ -898,7 +898,7 @@ reg4016r:
     rol dword[JoyANow],1
     ret
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM MultiTap, resb 1
 SECTION .text
 
@@ -1233,7 +1233,7 @@ regINVALID:     ; Invalid Register
     call printnum
     jmp DosExit
 
-SECTION .data ;ALIGN=32
+SECTION .data
 .invalidreg db 'Invalid Read Register : $'
 SECTION .text
 

@@ -27,10 +27,6 @@ EXTSYM curhdma,curypos,disablehdma,hdmadata,hdmadelay,hdmaearlstart
 EXTSYM resolutn
 EXTSYM memtabler16
 
-NEWSYM DmaAsmStart
-
-
-
 
 ;*******************************************************
 ; Transfer DMA                     Inits & Transfers DMA
@@ -153,9 +149,6 @@ NEWSYM transdma
 .nomap1
     and edx,0FFFFh
     mov ebx,[eax+ebx*4]
-
-;snesmmap times 256 dd 0         ; addresses 8000-FFFF
-;snesmap2 times 256 dd 0         ; addresses 0000-7FFF
 
     push esi
     mov esi,ebx
@@ -315,9 +308,6 @@ NEWSYM transdmappu2cpu
 .nomap1
     and edx,0FFFFh
     mov ebx,[eax+ebx*4]
-
-;snesmmap times 256 dd 0         ; addresses 8000-FFFF
-;snesmap2 times 256 dd 0         ; addresses 0000-7FFF
 
     push esi
     mov esi,ebx
@@ -1429,7 +1419,3 @@ NEWSYM exechdmars
 .nohdma
     mov byte[hdmarestart],0
     ret
-
-
-
-NEWSYM DmaAsmEnd

@@ -17,17 +17,10 @@
 
 %include "macros.mac"
 
-NEWSYM EndMemAsmStart
-
-
-
-
-
-NEWSYM romdatahere
-
 ; Much of this used to be in uninitialized space, until I discovered that
 ;   ZSNES was unstable because of them...  Odd.
 
+SECTION .data
 Stuff db 'ZSNES v?.??? / free software, programmed by zsKnight, _Demo_, and Pharos',13,10,0
 
 

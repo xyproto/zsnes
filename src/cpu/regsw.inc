@@ -36,7 +36,7 @@ EXTSYM printhex8
 
 
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM testgfxv1, resb 1
 NEWSYM testgfxv2, resb 1
 SECTION .text
@@ -286,9 +286,7 @@ NEWSYM initregw
     ret
 
 ; video memory change buffer for caching (65536/16=4096)
-;vidmemch2 times 4096 db 0
-;vidmemch4 times 4096 db 0
-;vidmemch8 times 4096 db 0
+;vidmemch2, vidmemch4, vidmemch8. 4096 bytes each
 
 
 NEWSYM unpackfunct
@@ -444,7 +442,7 @@ reg2100w:
     and byte[forceblnk],80h
     ret
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM prevoamptr, resb 1
 SECTION .text
 
@@ -489,7 +487,7 @@ reg2101w:
 .noproc
     ret
 
-SECTION .data ;ALIGN=32
+SECTION .data
 .objsize1 db 1,1,1,4,4,16,1,1
 .objsize2 db 4,16,64,16,64,64,4,4
 .objmovs1 db 2,2,2,2,2,4,2,2
@@ -497,7 +495,7 @@ SECTION .data ;ALIGN=32
 .objadds1 dw 14,14,14,14,14,12,14,14
 .objadds2 dw 14,12,8,12,8,8,14,14
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM oamlow, resb 1
 SECTION .text
 
@@ -803,7 +801,7 @@ reg210Ew:
     mov byte[bg1scroly+1],al
     ret
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 bgscroltemp resb 1
 SECTION .text
 
@@ -1131,7 +1129,7 @@ reg211Aw:
     mov [mode7set],al
     ret
 
-SECTION .data ;ALIGN=32
+SECTION .data
 NEWSYM multchange, db 1
 SECTION .text
 
@@ -1337,7 +1335,7 @@ reg2133w:
     mov word[resolutn],239
     ret
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM CleartheScreen, resb 1
 SECTION .text
 
@@ -1428,7 +1426,7 @@ reg2183w:
     ret
 
 ; Joystick 1 & 2 status bytes
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM MultiTapStat, resb 1
 SECTION .text
 
@@ -1857,11 +1855,11 @@ regexiter:
     call printnum
     jmp DosExit
 
-SECTION .data ;ALIGN=32
+SECTION .data
 .invalidreg db 'Invalid Write Register : $'
 .invalidaddr db ' at address $'
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 .invbank resb 1
 .invaddr resb 1
 SECTION .text

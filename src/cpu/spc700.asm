@@ -23,8 +23,6 @@ EXTSYM spc700read
 EXTSYM dspWptr
 EXTSYM changeexecloop,curexecstate,SA1Enable,tableadb
 
-NEWSYM Spc700AsmStart
-
 %include "cpu/regsw.mac"
 %include "cpu/spcdef.inc"
 %include "cpu/spcaddr.inc"
@@ -39,7 +37,7 @@ NEWSYM Spc700AsmStart
 ; Read byte : read al from [ebx]
 ; update timer : update the timers, called every scanline
 
-SECTION .data ;ALIGN=32
+SECTION .data
 
 ALIGN32
 
@@ -669,19 +667,6 @@ SECTION .text
   or byte [spcP],1
 .skipflags
 %endmacro
-
-;spcNF    db 0     ; The Negative Flag  128 or 127 80h
-;spcOF    db 0     ; The Overflow Flag   64 or 191 40h
-;spcDPF   db 0     ; Direct Page Flag    32 or 223 20h
-;spcUF    db 0     ; The Unused Flag ?   16 or 239 10h
-;spcHCF   db 0     ; The Half Carry Flag  8 or 247 08h
-;spcIF    db 0     ; The interrupt flag   4 or 251 04h
-;spcZF    db 0     ; The Zero Flag        2 or 253 02h
-;spcCF    db 0     ; The Carry Flag       1 or 254 01h
-;      test byte[spcP],08h
-;      jz .nohcarry
-;      or ah,00010000b
-;.nohcarry
 
 %macro SPCSetFlagnvhzc 0
   lahf
@@ -2769,15 +2754,6 @@ NEWSYM OpBE       ; DAS A     decimal adjust for sub  N......ZC
       mov [spcA],al
       SPCSetFlagnzc
 
-;spcNF    db 0     ; The Negative Flag  128 or 127
-;spcOF    db 0     ; The Overflow Flag   64 or 191
-;spcDPF   db 0     ; Direct Page Flag    32 or 223
-;spcUF    db 0     ; The Unused Flag ?   16 or 239
-;spcHCF   db 0     ; The Half Carry Flag  8 or 247
-;spcIF    db 0     ; The interrupt flag   4 or 251
-;spcZF    db 0     ; The Zero Flag        2 or 253
-;spcCF    db 0     ; The Carry Flag       1 or 254
-
 NEWSYM OpDF       ; DAA A        decimal adjust for add  N......ZC
       ; copy al flags into AH
       xor ah,ah
@@ -2806,5 +2782,3 @@ NEWSYM OpDF       ; DAA A        decimal adjust for add  N......ZC
 NEWSYM Invalidopcode ; Invalid Opcode
       dec ebp
       ret
-
-NEWSYM Spc700AsmEnd

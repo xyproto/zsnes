@@ -41,11 +41,6 @@ EXTSYM SA1Overflow,OBCEnable
 EXTSYM Sdd1Mode,Sdd1Bank,Sdd1Addr,Sdd1NewAddr,memtabler8,AddrNoIncr,SDD1BankA
 EXTSYM SPC7110Entries,spc7110romptr
 
-NEWSYM MemoryAsmStart
-
-
-
-
 ; C4SprScale
 
 ;*******************************************************
@@ -105,9 +100,6 @@ NEWSYM C4ObjSelec, resb 1
 NEWSYM C4SObjSelec, resb 1
 NEWSYM C4Pause, resb 1
 C4DataCopy resb 64
-;NEWSYM C4Data times 64*4096 db 0        ; 15 sprites, 4 bytes each
-                                        ; x,y,oamptr,stat (b0=oamb8,b1=16x16)
-                                        ; 4 byte header (#sobj,?,?,?)
 CObjNum resw 1
 C4Temp resd 1
 section .text
@@ -590,11 +582,6 @@ C4ConvOAM:
 .donemultispr
     pop esi
     pop ecx
-
-;NEWSYM C4Data times 64*4096 db 0       ; 15 sprites, 4 bytes each
-                                        ; x,y,oamptr,stat (b0=oamb8,b1=16x16)
-                                        ; 4 byte header (#sobj,?,?,?)
-
     add esi,16
     dec cl
     jnz near .loop
@@ -1650,13 +1637,6 @@ SECTION .bss
 SECTION .text
 
 C4DrawLine:
-;C4X1 dw 0
-;C4Y1 dw 0
-;C4Z1 dw 0
-;C4X2 dw 0
-;C4Y2 dw 0
-;C4Z2 dw 0
-;C4Col dw 0
     pushad
 
     ; transform both coordinates
@@ -5017,6 +4997,3 @@ NEWSYM memaccessbankr8sdd1
     jmp memaccessbankr8
 SECTION .bss
 .tmpbyte resb 1
-SECTION .text
-
-NEWSYM MemoryAsmEnd

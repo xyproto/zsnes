@@ -2460,31 +2460,6 @@ NEWSYM printhex8
     jnz .loopb
     ret
 
-;EXTSYM _imp__OutputDebugStringA@4
-
-;NEWSYM printhex32
-;    pushf
-;    mov ecx,8
-;.loopa
-;    mov ebx,eax
-;    and ebx,0Fh
-;    mov dl,[printhex.hexdat+ebx]
-;    mov [.hexout-1+ecx],dl
-;    shr eax,4
-;    dec ecx
-;    jnz .loopa
-
-;    push dword .hexout
-;    call [_imp__OutputDebugStringA@4]
-
-;    popf
-;    db 0C3h ; ret
-
-;section .bss
-;NEWSYM __debug_crap_address__, dd 0,0,0,0
-;.hexout db "blahblah",0
-;section .text
-
 ;*******************************************************
 ; Load File
 ;*******************************************************

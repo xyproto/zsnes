@@ -34,19 +34,19 @@ NEWSYM StableAsmStart
 
 
 ; global variables
-;tableA  times 256 dd 0             ; Table addresses (M:0,X:0,D:0)
-;tableB  times 256 dd 0             ; Table addresses (M:1,X:0,D:0)
-;tableC  times 256 dd 0             ; Table addresses (M:0,X:1,D:0)
-;tableD  times 256 dd 0             ; Table addresses (M:1,X:1,D:0)
-;tableE  times 256 dd 0             ; Table addresses (M:0,X:0,D:1)
-;tableF  times 256 dd 0             ; Table addresses (M:1,X:0,D:1)
-;tableG  times 256 dd 0             ; Table addresses (M:0,X:1,D:1)
-;tableH  times 256 dd 0             ; Table addresses (M:1,X:1,D:1)
-;tablead times 256 dd 0             ; Table address location according to P
-;memtabler8 times 256 dd 0          ; Memory Bank Locations for reading 8-bit
-;memtablew8 times 256 dd 0          ; Memory Bank Locations for writing 8-bit
-;memtabler16 times 256 dd 0          ; Memory Bank Locations for reading 16-bit
-;memtablew16 times 256 dd 0          ; Memory Bank Locations for reading 16-bit
+;tableA  times 256             ; Table addresses (M:0,X:0,D:0)
+;tableB  times 256             ; Table addresses (M:1,X:0,D:0)
+;tableC  times 256             ; Table addresses (M:0,X:1,D:0)
+;tableD  times 256             ; Table addresses (M:1,X:1,D:0)
+;tableE  times 256             ; Table addresses (M:0,X:0,D:1)
+;tableF  times 256             ; Table addresses (M:1,X:0,D:1)
+;tableG  times 256             ; Table addresses (M:0,X:1,D:1)
+;tableH  times 256             ; Table addresses (M:1,X:1,D:1)
+;tablead times 256             ; Table address location according to P
+;memtabler8 times 256          ; Memory Bank Locations for reading 8-bit
+;memtablew8 times 256          ; Memory Bank Locations for writing 8-bit
+;memtabler16 times 256          ; Memory Bank Locations for reading 16-bit
+;memtablew16 times 256          ; Memory Bank Locations for reading 16-bit
 
 ;*******************************************************
 ; Generate OpCode Table
@@ -697,5 +697,3 @@ NEWSYM SA1settableDm16
     mov dword[edi+0FDh*4],SA1COpFDm16d
     mov dword[edi+0FFh*4],SA1COpFFm16d
     ret
-
-NEWSYM StableAsmEnd

@@ -22,7 +22,6 @@ EXTSYM fxxand,sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc
 EXTSYM sfxramdata,fxbit45,fxbit67,SFXProc,ChangeOps
 EXTSYM PLOTJmpa,PLOTJmpb
 
-NEWSYM FxEmu2AsmStart
 
 %include "chips/fxemu2.mac"
 
@@ -40,7 +39,7 @@ NEWSYM FlushCache
 SECTION .bss
 NEWSYM tempsfx, resb 3
 
-SECTION .data ;ALIGN=32
+SECTION .data
 
 ; FxChip emulation by _Demo_
 ; Optimised by zsKnight
@@ -2648,7 +2647,7 @@ NEWSYM FxOpFFA2    ; SM (XX),RN   store word in RAM
    CLRFLAGS
    ret
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 
 NEWSYM NumberOfOpcodes, resd 1    ; Number of opcodes to execute
 NEWSYM NumberOfOpcodesBU, resd 1  ; Number of opcodes to execute backup value
@@ -2687,6 +2686,4 @@ NEWSYM FXEndLoop
 
 SECTION .data
 NEWSYM fxtrace, db 0; times 65536 db 0
-SECTION .text
 
-NEWSYM FxEmu2AsmEnd

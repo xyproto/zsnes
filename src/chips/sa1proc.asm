@@ -26,16 +26,11 @@ EXTSYM membank0w8,romdata,SA1LBound,SA1UBound,SA1SH,SA1SHb
 EXTSYM stackor,stackand,snesmmap,SA1xs,SA1IRQExec
 EXTSYM SA1Message,Sflagnz,Sflagc,Sflago
 
-NEWSYM Sa1ProcAsmStart
-
-
-
-
 ; In exec loop, jump to execloop if SA1Status != 0
 ; *** Disable spc700 if possible ***
 
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM SA1Status, resb 1  ; 0 = 65816, 1 = SA1A, 2 = SA1B
 
 NEWSYM CurrentExecSA1, resb 1
@@ -367,4 +362,3 @@ NEWSYM SA1switchtovirq
     add esi,eax
     ret
 
-NEWSYM Sa1ProcAsmEnd

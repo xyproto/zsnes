@@ -48,10 +48,6 @@ EXTSYM Op08X,Op08Y,Op08Z,Op08Ll,Op08Lh,DSPOp08
 EXTSYM Op18X,Op18Y,Op18Z,Op18R,Op18D,DSPOp18
 EXTSYM Op1CX,Op1CY,Op1CZ,Op1CXBR,Op1CYBR,Op1CZBR,Op1CXAR,Op1CYAR,Op1CZAR,DSPOp1C
 
-NEWSYM Dsp1ProcAsmStart
-
-
-
 
 SECTION .bss
 NEWSYM dsp1ptr, resd 1
@@ -486,13 +482,6 @@ DSP1_1C:  ; 3D Coordinate Rotation
 DSP1_02:  ; Vector Size
     or byte[DSPDet],10h
     push eax
-;Op02FX           dw 0
-;Op02FY           dw 0
-;Op02FZ           dw 0
-;Op02LFE          dw 0
-;Op02LES          dw 0
-;Op02AAS          dw 0
-;Op02AZS          dw 0
     mov ax,[DSP1VARS]
     mov [Op02FX],ax
     mov ax,[DSP1VARS+2]
@@ -510,10 +499,6 @@ DSP1_02:  ; Vector Size
     pushad
     call DSPOp02
     popad
-;Op02VOF          dw 0
-;Op02VVA          dw 0
-;Op02CX           dw 0
-;Op02CY           dw 0
     mov ax,[Op02VOF]
     mov [DSP1RET],ax
     mov ax,[Op02VVA]
@@ -895,4 +880,3 @@ DSP1_14:  ; 3D angle rotation
     pop eax
     ret
 
-NEWSYM Dsp1ProcAsmEnd

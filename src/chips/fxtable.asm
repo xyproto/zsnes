@@ -193,13 +193,7 @@ EXTSYM FxOpd4C1288bl,FxOpd4C1288bzl,FxOpd4C1288bdl,FxOpd4C1288bzdl
 EXTSYM fxxand,fxbit01,fxbit23,fxbit45,fxbit67
 
 
-NEWSYM FxTableAsmStart
-
-
-
-
-
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM sfx128lineloc, resd 1
 NEWSYM sfx160lineloc, resd 1
 NEWSYM sfx192lineloc, resd 1
@@ -3545,7 +3539,3 @@ NEWSYM sfxnametab
             db 'IWT R4  IWT R5  IWT R6  IWT R7  '
             db 'IWT R8  IWT R9  IWT R10 IWT R11 '
             db 'IWT R12 IWT R13 IWT R14 IWT R15 '
-
-SECTION .text
-
-NEWSYM FxTableAsmEnd

@@ -127,8 +127,6 @@ EXTSYM OSPC_Run, ospc_cycle_frac
 EXTSYM dssel
 %endif
 
-NEWSYM ExecuteAsmStart
-
 %macro BackupCVMacM 2
     mov edx,%1
     mov ecx,%2
@@ -526,9 +524,6 @@ NEWSYM RestoreSystemVars
     ret
 
 NEWSYM BackupCVFrame
-;NEWSYM StateBackup, dd 0
-;NEWSYM CBackupPos, dd 0
-;NEWSYM PBackupPos, dd 0
     push edx
     push eax
     mov ebx,[CBackupPos]
@@ -1128,20 +1123,6 @@ NEWSYM reexecuteb
     jnz .loopa
 %endif 
 reexecuteb2:
-    ; temporary sprite displayer
-;    mov edx,.sdispname
-;    call Open_File
-;    jc .failedsd
-;    mov bx,ax
-;    mov ecx,544
-;    mov edx,oamram
-;    call Read_File
-;    call Close_File
-;.failedsd
-;    jmp .skipsd
-;.sdispname db 'MMX3.SPR',0
-;.skipsd
-
     cmp byte[NoSoundReinit],1
     je .skippregame
     call SetupPreGame
@@ -1352,33 +1333,6 @@ NEWSYM endprog
     mov byte[MovieProcessing],0
     call Close_File
 .nomovieclose
-;NEWSYM tempstore, times 1024*1024 db 0
-;    mov esi,tempstore
-;    mov ecx,1024*1024
-;.loop
-;    mov al,[esi]
-;    cmp al,0
-;    jne .faulty
-;    inc esi
-;    dec ecx
-;    jnz .loop
-;    xor eax,eax
-;    jmp .notfaulty
-;.faulty
-;    mov eax,1
-;.notfaulty
-;    mov eax,[vidbufferofsa]
-;    call printnum
-;    mov dl,32
-;    mov ah,02h
-;    call Output_Text
-;    mov eax,[vidbufferofsb]
-;    call printnum
-;    mov dl,32
-;    mov ah,02h
-;    call Output_Text
-;    mov eax,[romdata]
-;    call printnum
 
     ; change dir to InitDrive/InitDir
     mov dl,[InitDrive]
@@ -1391,10 +1345,7 @@ NEWSYM endprog
     je .nodeinitmodem
     call DeInitModem
 .nodeinitmodem
-;    cmp byte[OSPort],1
-;    jae .nodeinitipx
     call deinitipx
-;.nodeinitipx
 %endif
     jmp OSExit
 
@@ -2111,7 +2062,7 @@ NEWSYM handler9h
     iretd
 %endif
 
-SECTION .data ;ALIGN=32
+SECTION .data
 NEWSYM soundcycleft, dd 0
 NEWSYM curexecstate, dd 0
 
@@ -2350,7 +2301,7 @@ NEWSYM execloop
 
 
 
-SECTION .data ;ALIGN=32
+SECTION .data
 ALIGN32
 NEWSYM ExecExitOkay, db 1
 NEWSYM JoyABack, dd 0
@@ -3135,21 +3086,6 @@ NEWSYM cpuover
     jne near .nocrupdate3       ; *************************
 .nobackstate2
     pop ebx
-;NEWSYM StateBackup, dd 0
-;NEWSYM CBackupPos, dd 0
-;NEWSYM PBackupPos, dd 0
-;NEWSYM PPValue, dd 0   ; Previous PValue
-;NEWSYM DPValue, dd 0   ; Destination PValue
-;NEWSYM CurRecv, dd 0   ; Set to 1 if Recovery mode is on
-; if CurRecv=1, then do not send tcp/ip data, always frame skip, do not
-;   draw to screen, do not key on, restore previous local key presses,
-;   when disabling key ons, divert dspmem write/read to a different
-;   array temporarly, then re-copy back in when finished
-;NEWSYM PPContrl, times 16 dd 0   ; Previous Controller 1 Data
-;NEWSYM PPContrl2, times 16 dd 0   ; Previous Controller 2 Data
-;NEWSYM PPContrl3, times 16 dd 0   ; Previous Controller 3 Data
-;NEWSYM PPContrl4, times 16 dd 0   ; Previous Controller 4 Data
-;NEWSYM PPContrl5, times 16 dd 0   ; Previous Controller 5 Data
 
     pushad
     mov byte[nojoystickpoll],1
@@ -3437,8 +3373,6 @@ NEWSYM cpuover
     or byte[NetQuit],1
 .quitlater
     pop ebx
-;NEWSYM NetQuitter, dd 0
-;NEWSYM QBackupPos, dd 0
 .noquit2b
     test dl,02h
     jz near .nocrupdate2b
@@ -3969,9 +3903,9 @@ NEWSYM cpuover
     pop eax
     jmp .returncheat
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 .numcheat resb 1
-SECTION .text ;ALIGN=32
+SECTION .text
 
 ALIGN16
 
@@ -4524,7 +4458,4 @@ NEWSYM execsingle
 .nointrset2
 ;    mov byte[debstop3],1
     jmp switchtovirqdeb
-
-
-NEWSYM ExecuteAsmEnd
 

@@ -38,27 +38,10 @@ EXTSYM MuteVoiceF,VoiceStarter
 EXTSYM DecayRate,SustainRate,SustainValue
 EXTSYM KeyOnStA,KeyOnStB,SoundTest
 
-NEWSYM DspAsmStart
-
-
-
-
-
-
-;none times 256 db 0
 
 SECTION .data
 identcode db 255,1,78,78
 SECTION .text
-;sardcode db 234,76,80,128,65,65 ; 6
-;efxcode db 17,47,62,97,26,126,98 ; 7
-;zopcode db 54,39,21,0,0,8,14,12,18 ; 9
-;yoshcode db 0,68,23,76,123,98,34,87,12,98,65 ; 11
-;deejcode db 78,39,240,150,15,78,39,68,89,54,32,33 ; 12
-;vmprcode db 127,127,127,127,255,255,255,255,0,0,0,0,1,0,1,0     ; 16
-;conjcode db 32,32,25,20,78,232,242,242,0,1,4,98,98,45,13,12,99   ; 17
-;wnelcode db 32,64,123,76,123,76,12,0,1,7,43,12,87,18,51,136,65,132 ; 18
-;crascode db 82,48,89,26,65,10,200,26,73,84,29,120,37,213,78,89,111,23,84,13,200 ; 21 - Crashman
 
 ; Digital Sound Processor of the SPC700 By _Demo_
 
@@ -69,7 +52,7 @@ SECTION .text
     mov [DSPMem+00h+%1],al
 %endmacro
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 alignb 32
 NEWSYM DSPMem, resb 256
 SECTION .text
@@ -2877,5 +2860,3 @@ NEWSYM WDSPRegFE       ;
 NEWSYM WDSPRegFF       ;
       mov [DSPMem+0FFh],al
       ret
-
-NEWSYM DspAsmEnd

@@ -53,17 +53,12 @@ EXTSYM curypos,CurrentExecSA1
 EXTSYM debstop3
 EXTSYM memaccessbankr8sdd1,memtabler8,AddrNoIncr
 EXTSYM NumofBanks
-NEWSYM Sa1RegsAsmStart
 
 %include "cpu/regs.mac"
 %include "cpu/regsw.mac"
 
 
-
-
-
-
-SECTION .data ;ALIGN=32
+SECTION .data
 
 NEWSYM SPCMultA, dd 0
 NEWSYM SPCMultB, dd 0
@@ -850,10 +845,6 @@ SPC480Bw:
     mov [SPCCompCommand],al
     ret
 
-;NEWSYM SPCROMPtr, dd 0
-;NEWSYM SPCROMAdj, dd 0
-;NEWSYM SPCROMInc, dd 0
-;NEWSYM SPCROMCom, dd 0
 ; 01,
 ;$4810   DATA ROM CONTINUOUS READ PORT: returns a byte from data rom at data
 ;            rom pointer location, defval:00
@@ -1252,8 +1243,6 @@ SPC4834:
     xor al,al
     ret
 
-;NEWSYM SPC7110RTCStat, dd 0
-;NEWSYM SPC7110RTC, db 00,00,00,00,00,00,01,00,01,00,00,00,00,01,0F,06
 ;$4840   RTC CHIP ENABLE/DISABLE: bit 0: on = enable, off = disable, defval:00
 ;$4841   RTC INDEX/DATA PORT:
 ;            first write after rtc enable: rtc command mode byte (see rtc command modes)
@@ -1483,7 +1472,7 @@ SPC4842:
 ; SA-1 Start
 ; ----------
 
-SECTION .data ;ALIGN=32
+SECTION .data
 
 ; IRQ Stuff
 NEWSYM SA1Mode, dd 0     ; 0 = SNES CPU, 1 = SA1 CPU
@@ -2733,5 +2722,3 @@ NEWSYM sdd14801w
     pop ebx
     pop eax
     ret
-
-NEWSYM Sa1RegsAsmEnd

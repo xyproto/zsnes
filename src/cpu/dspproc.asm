@@ -135,13 +135,8 @@ EXTSYM LowPassFilterType
 EXTSYM SB_alloc_dma,SB_quality_limiter,vibracard
 %endif
 
-NEWSYM DspProcAsmStart
-
-
 SECTION .data
-
 NEWSYM SBHDMA, db 0			; stupid legacy code ...
-
 
 SECTION .bss
 
@@ -389,15 +384,12 @@ CubicSpline:
 
 %include "cpu/fir_tables.inc"
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 
 NEWSYM spcWptr,  resd 16     ; SPC Write pointers (point to their own functions)
 NEWSYM spcRptr,  resd 16     ; SPC Read pointers (point to their own functions)
-
-;dspWptr  times 256 dd 0     ; DSP Write pointers (point to their own functions)
-;dspRptr  times 256 dd 0     ; DSP Read pointers (point to their own functions)
-
-SECTION .data ;ALIGN=32
+; 
+SECTION .data
 NEWSYM SoundQuality, dd 2
 NEWSYM StereoSound,    db 0
 NEWSYM SBToSPC,        dd 22050
@@ -2037,7 +2029,7 @@ BRRDecode:
 .dlpf
     ProcessDynamicLowPass
 
-section .data ;ALIGN=32
+section .data
 ALIGN32
 
 ; Original Values
@@ -2200,7 +2192,7 @@ NEWSYM VolumeTableb
 ;                db 1,1,1,1,1,1,1,1,1,1
 ;                db 1,1,1,1,1,1,1,1
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM DSPBuffer, resd 320*4 ; The play buffer...
 NEWSYM EchoBuffer, resd 320*4 ; The play buffer...
 NEWSYM PModBuffer, resd 320*4 ; The play buffer...
@@ -2223,15 +2215,6 @@ NEWSYM BRRTemp6,  resd 1             ; Keep this 0
 NEWSYM BRRPlace7, resd 1             ; Place in the BRRBuffer for Voice 0
 NEWSYM BRRTemp7,  resd 1             ; Keep this 0
 
-;NEWSYM Voice0Freq, dd 1            ; Frequency of Voice 0 (Delta Freq)
-;NEWSYM Voice1Freq, dd 1            ; Frequency of Voice 1 (Delta Freq)
-;NEWSYM Voice2Freq, dd 1            ; Frequency of Voice 2 (Delta Freq)
-;NEWSYM Voice3Freq, dd 1            ; Frequency of Voice 3 (Delta Freq)
-;NEWSYM Voice4Freq, dd 1            ; Frequency of Voice 4 (Delta Freq)
-;NEWSYM Voice5Freq, dd 1            ; Frequency of Voice 5 (Delta Freq)
-;NEWSYM Voice6Freq, dd 1            ; Frequency of Voice 6 (Delta Freq)
-;NEWSYM Voice7Freq, dd 1            ; Frequency of Voice 7 (Delta Freq)
-
 NEWSYM Voice0Freq, resd 1            ; Frequency of Voice 0 (Delta Freq)
 NEWSYM Voice1Freq, resd 1            ; Frequency of Voice 1 (Delta Freq)
 NEWSYM Voice2Freq, resd 1            ; Frequency of Voice 2 (Delta Freq)
@@ -2240,16 +2223,6 @@ NEWSYM Voice4Freq, resd 1            ; Frequency of Voice 4 (Delta Freq)
 NEWSYM Voice5Freq, resd 1            ; Frequency of Voice 5 (Delta Freq)
 NEWSYM Voice6Freq, resd 1            ; Frequency of Voice 6 (Delta Freq)
 NEWSYM Voice7Freq, resd 1            ; Frequency of Voice 7 (Delta Freq)
-
-; appears to only be used in dspproc.asm
-;Voice0Pitch dw 1            ; Previous Pitch for Voice 0
-;Voice1Pitch dw 1            ; Previous Pitch for Voice 1
-;Voice2Pitch dw 1            ; Previous Pitch for Voice 2
-;Voice3Pitch dw 1            ; Previous Pitch for Voice 3
-;Voice4Pitch dw 1            ; Previous Pitch for Voice 4
-;Voice5Pitch dw 1            ; Previous Pitch for Voice 5
-;Voice6Pitch dw 1            ; Previous Pitch for Voice 6
-;Voice7Pitch dw 1            ; Previous Pitch for Voice 7
 
 NEWSYM Voice0Pitch, resw 1            ; Previous Pitch for Voice 0
 Voice1Pitch resw 1            ; Previous Pitch for Voice 1
@@ -2332,15 +2305,6 @@ NEWSYM Voice5End,      resb 1
 NEWSYM Voice6End,      resb 1
 NEWSYM Voice7End,      resb 1
 
-;NEWSYM Voice0Noise,    db 1
-;NEWSYM Voice1Noise,    db 1
-;NEWSYM Voice2Noise,    db 1
-;NEWSYM Voice3Noise,    db 1
-;NEWSYM Voice4Noise,    db 1
-;NEWSYM Voice5Noise,    db 1
-;NEWSYM Voice6Noise,    db 1
-;NEWSYM Voice7Noise,    db 1
-
 NEWSYM Voice0Noise,    resb 1
 NEWSYM Voice1Noise,    resb 1
 NEWSYM Voice2Noise,    resb 1
@@ -2377,15 +2341,6 @@ NEWSYM Voice5VolumeL,   resb 1
 NEWSYM Voice6VolumeL,   resb 1
 NEWSYM Voice7VolumeL,   resb 1
 
-;NEWSYM Voice0Env,      db 1
-;NEWSYM Voice1Env,      db 1
-;NEWSYM Voice2Env,      db 1
-;NEWSYM Voice3Env,      db 1
-;NEWSYM Voice4Env,      db 1
-;NEWSYM Voice5Env,      db 1
-;NEWSYM Voice6Env,      db 1
-;NEWSYM Voice7Env,      db 1
-
 NEWSYM Voice0Env,      resb 1
 NEWSYM Voice1Env,      resb 1
 NEWSYM Voice2Env,      resb 1
@@ -2413,8 +2368,6 @@ NEWSYM Voice4State,   resb 1
 NEWSYM Voice5State,   resb 1
 NEWSYM Voice6State,   resb 1
 NEWSYM Voice7State,   resb 1
-
-; WAS all dd 1 before, down to next applicable comment
 
 NEWSYM Voice0Time,     resd 1
 NEWSYM Voice1Time,     resd 1
@@ -2849,9 +2802,7 @@ NEWSYM ResetState
     pop edi
     ret
 
-;VolumeConvTable times 32768 db 0
-
-SECTION .bss ;ALIGN=32
+SECTION .bss
 spc700temp resd 2
 SECTION .text
 
@@ -3239,7 +3190,7 @@ NEWSYM VoiceStarter
    VoiceStarterM 7
    ret
 
-section .bss ;ALIGN=32
+section .bss
 NEWSYM NoiseInc, resd 1
 NEWSYM NoisePointer, resd 1
 NEWSYM LastNoise, resd 1
@@ -5359,7 +5310,7 @@ NEWSYM EchoStereo
 %%Mono
 %endmacro
 
-section .bss ;ALIGN=32
+section .bss
 echowrittento resb 1
 section .text
 
@@ -5559,4 +5510,3 @@ NEWSYM LPFexit
 .nosurround
     ret
 
-NEWSYM DspProcAsmEnd
