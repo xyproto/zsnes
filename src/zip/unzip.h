@@ -45,9 +45,7 @@
 extern "C" {
 #endif
 
-#ifndef _ZLIB_H
-#include "zlib.h"
-#endif
+#include <zlib.h>
 
 #if defined(STRICTUNZIP) || defined(STRICTZIPUNZIP)
 /* like the STRICT of WIN32, we define a pointer that cannot be converted
