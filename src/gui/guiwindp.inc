@@ -5079,7 +5079,7 @@ GUIGUIAboutText6d db '    THEODDONE33',0
 %ifdef __WIN32__
 GUIGUIAboutText7 db 'WIN PORT V1.04',0
 %elifdef __LINUX__
-GUIGUIAboutText7 db 'LINUX PORT V0.29',0
+GUIGUIAboutText7 db 'LINUX PORT V0.31',0
 %endif
 
 GUIGUIAboutText8 db 'HOMEPAGE',0
