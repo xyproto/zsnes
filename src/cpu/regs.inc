@@ -896,12 +896,17 @@ reg4210r:
     mov byte[NMIEnab],01h
 .nmi
     mov byte[curnmi],0
+
     ret
 
 ; Video IRQ Register
 reg4211r:
     mov al,[irqon]
     mov byte[irqon],0
+    cmp dh,[cycphb]
+    jae .nohblank
+    or al,40h
+.nohblank
     ret
 
 ; H/V Blank Flag & Joystick Controller Enable Flag
