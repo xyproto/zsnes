@@ -143,9 +143,9 @@ int Main_Proc(void)
 			    event.key.keysym.sym == SDLK_RSHIFT)
 				shiftptr = 1;
 			if (event.key.keysym.mod & KMOD_NUM)
-				numlockptr = 0;
-			else
 				numlockptr = 1;
+			else
+				numlockptr = 0;
 			if (event.key.keysym.scancode-8 >= 0) {
 				if (pressed[event.key.keysym.scancode-8]!=2)
 					pressed[event.key.keysym.scancode-8]=1;
