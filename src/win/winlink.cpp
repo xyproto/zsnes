@@ -1357,25 +1357,35 @@ int InitDirectDraw()
      if ( GUIHQ4X[cvidmode] != 0 ) HQMode=4;
    }
 
-   if (FullScreen == 1 && DSMode == 0)
-   {
-     if ( HQMode != 0 )
-     {
-       int marginx = (rcWindow.right - rcWindow.left - BlitArea.right + BlitArea.left)/2;
-       int marginy = (rcWindow.bottom - rcWindow.top - BlitArea.bottom + BlitArea.top)/2;
-       if (marginx>0)
-       {
-         rcWindow.left += marginx;
-         rcWindow.right -= marginx;
-       }
-       if (marginy>0)
-       {
-         rcWindow.top += marginy;
-         rcWindow.bottom -= marginy;
-       }
-     }
-   }
-   
+  if (FullScreen == 1)
+  {
+    if (HQMode && !DSMode)
+    {
+      int marginx = (rcWindow.right - rcWindow.left - BlitArea.right + BlitArea.left)/2;
+      int marginy = (rcWindow.bottom - rcWindow.top - BlitArea.bottom + BlitArea.top)/2;
+      if (marginx>0)
+      {
+        rcWindow.left += marginx;
+        rcWindow.right -= marginx;
+      }
+      if (marginy>0)
+      {
+        rcWindow.top += marginy;
+        rcWindow.bottom -= marginy;
+      }
+    }
+    if (DSMode == 1 || SMode == 1)
+    {
+      int windowy = rcWindow.bottom - rcWindow.top;
+      int marginy = (windowy - (double(windowy)/240.0)*224.0)/2;
+      if (marginy>0)
+      {
+        rcWindow.top += marginy;
+        rcWindow.bottom -= marginy;
+      }
+    }
+  }
+
    if (pDirectDrawCreateEx(NULL, (void **)&lpDD, IID_IDirectDraw7, NULL) != DD_OK)
    {
       MessageBox(NULL, "DirectDrawCreateEx failed.", "DirectDraw Error", MB_ICONERROR);
@@ -1971,7 +1981,7 @@ void initwinvideo(void)
       ReInitSound();
 
    if (!FirstVid)
-   {   
+   {
       if (X<0)X=0;
       if (X>(int)(GetSystemMetrics(SM_CXSCREEN) - WindowWidth)) X=(GetSystemMetrics(SM_CXSCREEN) - WindowWidth);
       if (Y<0)Y=0;
@@ -1989,15 +1999,15 @@ void initwinvideo(void)
       SetRect(&rc1, 0, 0, WindowWidth, WindowHeight);
 
       AdjustWindowRectEx(&rc1,GetWindowLong(hMainWindow, GWL_STYLE),
-      GetMenu(hMainWindow) != NULL, GetWindowLong(hMainWindow, GWL_EXSTYLE)); 
-      
+      GetMenu(hMainWindow) != NULL, GetWindowLong(hMainWindow, GWL_EXSTYLE));
+
       GetClientRect(hMainWindow, &rcWindow);
       ClientToScreen(hMainWindow, (LPPOINT) &rcWindow);
       ClientToScreen(hMainWindow, (LPPOINT) &rcWindow + 1);
 
-      if (FullScreen == 1 && DSMode == 0)
+      if (FullScreen == 1)
       {
-        if ( HQMode != 0 )
+        if (HQMode && !DSMode)
         {
           int marginx = (rcWindow.right - rcWindow.left - BlitArea.right + BlitArea.left)/2;
           int marginy = (rcWindow.bottom - rcWindow.top - BlitArea.bottom + BlitArea.top)/2;
@@ -2011,8 +2021,18 @@ void initwinvideo(void)
             rcWindow.top += marginy;
             rcWindow.bottom -= marginy;
           }
-        }
-      }
+       }
+       if (DSMode == 1 || SMode == 1)
+       {
+         int windowy = rcWindow.bottom - rcWindow.top;
+         int marginy = (windowy - (double(windowy)/240.0)*224.0)/2;
+         if (marginy>0)
+         {
+           rcWindow.top += marginy;
+           rcWindow.bottom -= marginy;
+         }
+       }
+     }
    }
    else
    {
@@ -2021,7 +2041,7 @@ void initwinvideo(void)
       if (!QueryPerformanceFrequency((LARGE_INTEGER*)&freq)) return;
 
       if (!RegisterWinClass())
-      { 
+      {
           exit(1);
       }
       X=(GetSystemMetrics(SM_CXSCREEN) - WindowWidth) / 2;
@@ -2029,7 +2049,7 @@ void initwinvideo(void)
 
       if (FullScreen==1) {X=0; Y=0;}
 
-      if (hMainWindow) 
+      if (hMainWindow)
       {
          CloseWindow(hMainWindow);
       }
