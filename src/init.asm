@@ -1392,28 +1392,6 @@ NEWSYM ClearScreenSkip, db 0
 NEWSYM ENVDisable, db 0
 SECTION .text
 
-; hacks :
-; Breath of fire 2 : 100/130/25/35  -p 70
-; BToads vs DD     : 197/192/47/47  -p 130
-; Bubsy            ; 182/177/44/44  -p 120
-
-NEWSYM Checkheadersame
-    mov cl,20
-.next
-    mov al,[esi]
-    xor al,07Fh
-    cmp [edi],al
-    jne .noromhead
-    inc esi
-    inc edi
-    dec cl
-    jnz .next
-    mov al,0
-    ret
-.noromhead
-    mov al,1
-    ret
-
 NEWSYM Outputfilename
     mov esi,[romdata]
     add esi,0FFC0h
