@@ -459,7 +459,7 @@ DisplayGUILoad:
     GUIOuttextwin2 1,195,182,GUILoadTextE
     GUIOuttextwin2 1,195,192,GUILoadTextF
 
-    mov dword[cloadmaxlen],30
+    mov dword[cloadmaxlen],39
     cmp dword[GUIcurrentfilewin],0
     jne .nofiles
 ;    cmp byte[OSPort],2
@@ -493,7 +493,7 @@ DisplayGUILoad:
     GUIOuttextwin2 1,194,181,GUILoadTextE
     GUIOuttextwin2 1,194,191,GUILoadTextF
 
-    mov dword[cloadmaxlen],30
+    mov dword[cloadmaxlen],39
     cmp dword[GUIcurrentfilewin],0
     jne .nofilesb
 ;    cmp byte[OSPort],2
@@ -507,7 +507,7 @@ DisplayGUILoad:
 %endif
 .nofilesb
 
-    DrawGUIButton 1,186,157,228,168,GUILoadText9,1,0,0
+    DrawGUIButton 1,186,165,228,176,GUILoadText9,1,0,0
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
 ;    GUIOuttextwin2 1,6,16,GUILoadText1
@@ -820,7 +820,7 @@ GUILoadText7 db 'FILENAME',0
 GUILoadText8 db 'DIRECTORY',0
 GUILoadText9 db 'LOAD',0
 GUILoadTextA times 40 db 0
-GUILoadTextB db 'FORCE OPTIONS :',0
+GUILoadTextB db 'FORCE',0
 GUILoadTextC db 'NTSC',0
 GUILoadTextD db 'PAL',0
 GUILoadTextE db 'LOROM',0
