@@ -10,7 +10,7 @@ win version, I hope it will also work for you
 First, you need the following software:
 
 Dos port : 
-- NASM v0.98 : http://www.cryogen.com/nasm/
+- NASM v0.98 : http://www.kernel.org/pub/software/devel/nasm/
                    the version found on http://nasm.2y.net/ DOES NOT WORK
                    with zsnes sources. When you type nasm -r, you must get
                    'NASM version 0.98' and not 'NASM version 0.98.08' if you
@@ -31,7 +31,7 @@ it will divide its size by 10.
 
 Windows port : 
 - GNU Make : it comes with djgpp
-- NASM v0.98 : http://nasm.2y.net/ or http://www.cryogen.com/nasm/
+- NASM v0.98 : http://www.kernel.org/pub/software/devel/nasm/
 - MSVC++ 6.0 or higher : not freely available, you'll have to buy it
                    You need to run VCVARS32.BAT.  If you get an 
                    out of environment space error, type 'command /e:32768' 
@@ -53,8 +53,8 @@ Don't forget to set the correct path to the directx sdk in makefile.win!
 Then to build the executable, go to the src directory and type:
 make -f makefile.win
 
-You may also want to compress zsnesw.exe with upx (http://upx.tsx.org), it will 
-divide its size by 10.
+You may also want to compress zsnesw.exe with upx (http://upx.sourceforge.net),
+it will divide its size by 10.
 
 
 Linux port:
@@ -63,7 +63,7 @@ You'll also need :
 - SDL (Simple DirectMedia Layer) : check www.libsdl.org to grab SDL 1.2.0 or
                                    later. If you are using rpm packages, don't
                                    forget the -devel package.
-- NASM v0.98 : http://www.cryogen.com/nasm/
+- NASM v0.98 : http://www.kernel.org/pub/software/devel/nasm/
                    the version found on http://nasm.2y.net/ DOES NOT WORK
                    with zsnes sources. When you type nasm -r, you must get
                    'NASM version 0.98' and not 'NASM version 0.98.08' if you
@@ -78,6 +78,6 @@ You'll also need :
 Then to build the executable, go to the src directory and type:
 make -f makefile.linux
 
-You may also want to compress the zsnes executable with upx (http://upx.tsx.org)
-, it will divide its size by 10.
+You may also want to compress the zsnes executable with upx
+(http://upx.sourceforge.net), it will divide its size by 10.
                                 
