@@ -748,7 +748,6 @@ NetSaveState:
     call UpdateDPage
     call SA1UpdateDPage
     call Makemode7Table
-    call ReadSPC7110log
     cmp byte[SFXEnable],0
     je .nosfxud
     call UpdateSFX
@@ -1106,6 +1105,7 @@ reexecuteb2:
     call UpdateDPage
     call SA1UpdateDPage
     call Makemode7Table
+    call ReadSPC7110log
     cmp byte[SFXEnable],0
     je .nosfxud
     call UpdateSFX
@@ -1303,11 +1303,11 @@ NEWSYM endprog
 
     EXTSYM SDD1Array,SDD1Entry,SDD1Sort
     call SDD1Sort
-    jmp .nodecomppack
+;    jmp .nodecomppack
     cmp byte[SDD1Enable],0
     jne .yesdecomppack
     cmp dword[SDD1Entry],0
-    je .nodecomppack
+;    je .nodecomppack
 .yesdecomppack
     mov edx,.blah
     call Create_File
