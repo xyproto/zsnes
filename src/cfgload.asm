@@ -88,7 +88,6 @@ SECTION .text
 %3
 %endmacro
 
-
 %macro ConvertJoyMapHelp 2
     mov cl,[%1]
     cmp cl,bl
