@@ -2141,7 +2141,6 @@ DisplayGUIVideoClick:
     mov bl,[cvidmode]
     cmp byte[GUISLVID+ebx],0
     je near .nocheckboxb
-    GUIClickCButton4 11,103,byte[scanlines],byte[cfgscanline],1
 .nocheckboxb
     xor ebx,ebx
     mov bl,[cvidmode]
@@ -2162,8 +2161,9 @@ DisplayGUIVideoClick:
     mov bl,[cvidmode]
     cmp byte[GUIHSVID+ebx],0
     je near .nohsline
-    GUIClickCButton4 11,113,byte[scanlines],byte[cfgscanline],3
-    GUIClickCButton4 11,123,byte[scanlines],byte[cfgscanline],2
+    GUIClickCButton4 21,123,byte[scanlines],byte[cfgscanline],1
+    GUIClickCButton4 61,123,byte[scanlines],byte[cfgscanline],3
+    GUIClickCButton4 101,123,byte[scanlines],byte[cfgscanline],2
 .nohsline
     xor ebx,ebx
     mov bl,[cvidmode]
@@ -2177,19 +2177,19 @@ DisplayGUIVideoClick:
     mov bl,[cvidmode]
     cmp byte[GUIIEVID+ebx],0
     je .nocheckbox1b
-    GUIClickCButton3 11,73,byte[antienab],byte[cfginterp],1
+    GUIClickCButton3 11,78,byte[antienab],byte[cfginterp],1
 .nocheckbox1b
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUIFSVID+ebx],0
     je .nocheckbox2b
-    GUIClickCButton3 11,83,byte[ScreenScale],byte[GUIScreenScale],1
+    GUIClickCButton3 11,88,byte[ScreenScale],byte[GUIScreenScale],1
 .nocheckbox2b
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUISSVID+ebx],0
     je .nocheckbox3b
-    GUIClickCButton3 11,93,byte[smallscreenon],byte[GUIsmallscreenon],1
+    GUIClickCButton3 11,98,byte[smallscreenon],byte[GUIsmallscreenon],1
 .nocheckbox3b
     xor ebx,ebx
     mov bl,[cvidmode]

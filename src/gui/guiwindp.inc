@@ -1644,14 +1644,15 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUISLVID+eax],0
     je .notext2
-    GUIOuttextwin2 5,26,108,GUIVideoText2
 .notext2
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHSVID+eax],0
     je near .notexta
-    GUIOuttextwin2 5,26,118,GUIVideoTextb
-    GUIOuttextwin2 5,26,128,GUIVideoTexta
+    GUIOuttextwin2 5,13,118,GUIVideoTextb
+    GUIOuttextwin2 5,36,128,GUIVideoTexta
+    GUIOuttextwin2 5,76,128,GUIVideoTexta2
+    GUIOuttextwin2 5,116,128,GUIVideoTexta3
 .notexta
     xor eax,eax
     mov al,[cvidmode]
@@ -1671,25 +1672,25 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUIINVID+eax],0
     je .notext3
-    GUIOuttextwin2 5,26,78,GUIVideoText3
+    GUIOuttextwin2 5,26,83,GUIVideoText3
 .notext3
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIEAVID+eax],0
     je .notext4
-    GUIOuttextwin2 5,26,78,GUIVideoText4
+    GUIOuttextwin2 5,26,83,GUIVideoText4
 .notext4
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIFSVID+eax],0
     je .notext5
-    GUIOuttextwin2 5,26,88,GUIVideoText5
+    GUIOuttextwin2 5,26,93,GUIVideoText5
 .notext5
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUISSVID+eax],0
     je .notext6
-    GUIOuttextwin2 5,26,98,GUIVideoText6
+    GUIOuttextwin2 5,26,103,GUIVideoText6
 .notext6
     xor eax,eax
     mov al,[cvidmode]
@@ -1725,14 +1726,15 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUISLVID+eax],0
     je .notext2b
-    GUIOuttextwin2 5,25,107,GUIVideoText2
 .notext2b
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHSVID+eax],0
     je near .notextab
-    GUIOuttextwin2 5,25,117,GUIVideoTextb
-    GUIOuttextwin2 5,25,127,GUIVideoTexta
+    GUIOuttextwin2 5,12,117,GUIVideoTextb
+    GUIOuttextwin2 5,35,127,GUIVideoTexta
+    GUIOuttextwin2 5,75,127,GUIVideoTexta2
+    GUIOuttextwin2 5,115,127,GUIVideoTexta3
 .notextab
     xor eax,eax
     mov al,[cvidmode]
@@ -1752,25 +1754,25 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUIINVID+eax],0
     je .notext3b
-    GUIOuttextwin2 5,25,77,GUIVideoText3
+    GUIOuttextwin2 5,25,82,GUIVideoText3
 .notext3b
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIEAVID+eax],0
     je .notext4b
-    GUIOuttextwin2 5,25,77,GUIVideoText4
+    GUIOuttextwin2 5,25,82,GUIVideoText4
 .notext4b
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIFSVID+eax],0
     je .notext5b
-    GUIOuttextwin2 5,25,87,GUIVideoText5
+    GUIOuttextwin2 5,25,92,GUIVideoText5
 .notext5b
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUISSVID+eax],0
     je .notext6b
-    GUIOuttextwin2 5,25,97,GUIVideoText6
+    GUIOuttextwin2 5,25,102,GUIVideoText6
 .notext6b
     xor eax,eax
     mov al,[cvidmode]
@@ -1804,32 +1806,27 @@ DisplayGUIVideo:
 
     xor eax,eax
     mov al,[cvidmode]
-    cmp byte[GUISLVID+eax],0
-    je .nocheckboxb
+    cmp byte[GUIHSVID+eax],0
+    je near .nocheckboxw
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[scanlines],1
     jne .nocheckbox
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox
-    GUIDisplayIconWin 5,11,103,[GUITemp]
+    GUIDisplayIconWin 5,21,123,[GUITemp]
 .nocheckboxb
-
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUIHSVID+eax],0
-    je near .nocheckboxw
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[scanlines],3
     jne .nocheckboxv
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckboxv
-    GUIDisplayIconWin 5,11,113,[GUITemp]
+    GUIDisplayIconWin 5,61,123,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[scanlines],2
     jne .nocheckboxv2
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckboxv2
-    GUIDisplayIconWin 5,11,123,[GUITemp]
+    GUIDisplayIconWin 5,101,123,[GUITemp]
 .nocheckboxw
 
     xor eax,eax
@@ -1912,7 +1909,7 @@ DisplayGUIVideo:
     je .nocheckbox1
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
-    GUIDisplayIconWin 5,11,73,[GUITemp]
+    GUIDisplayIconWin 5,11,78,[GUITemp]
 .nocheckbox1b
 
     xor eax,eax
@@ -1924,7 +1921,7 @@ DisplayGUIVideo:
     je .nocheckbox2
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox2
-    GUIDisplayIconWin 5,11,83,[GUITemp]
+    GUIDisplayIconWin 5,11,88,[GUITemp]
 .nocheckbox2b
 
     xor eax,eax
@@ -1936,7 +1933,7 @@ DisplayGUIVideo:
     je .nocheckbox3
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox3
-    GUIDisplayIconWin 5,11,93,[GUITemp]
+    GUIDisplayIconWin 5,11,98,[GUITemp]
 .nocheckbox3b
 
     DrawGUIWinBox 5,5,26,115,69,167
@@ -2047,8 +2044,10 @@ DisplayGUIVideo:
 
 GUIVideoText1 db 'VIDEO MODES :',0
 GUIVideoText2 db 'FULL SCANLINES',0
-GUIVideoTexta db '25%  SCANLINES',0
-GUIVideoTextb db '50%  SCANLINES',0
+GUIVideoTextb db 'SCANLINES:',0
+GUIVideoTexta db 'FULL',0
+GUIVideoTexta2 db '50%',0
+GUIVideoTexta3 db '25%',0
 GUIVideoTextc db '2XSAI ENGINE',0
 GUIVideoTextd db 'SUPER EAGLE ENGINE',0
 GUIVideoTextd2 db 'SUPER 2XSAI ENGINE',0
