@@ -2149,13 +2149,15 @@ DisplayGUIVideoClick:
     je .nocheckboxttb
     GUIClickCButton5 11,163,byte[Triplebufen],1
 .nocheckboxttb
+%ifndef __MSDOS__
+    GUIClickCButton5 11,183,byte[BlackAndWhite],1
+%endif
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUIM7VID+ebx],0
     je .nocheckboxtm7
     GUIClickCButton5 11,173,byte[Mode7HiRes16b],1
 .nocheckboxtm7
-
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUIHSVID+ebx],0

@@ -1707,7 +1707,9 @@ DisplayGUIVideo:
     je .notext8
     GUIOuttextwin2 5,26,178,GUIVideoText8b
 .notext8
-
+%ifndef __MSDOS__
+    GUIOuttextwin2 5,26,188,GUIVideoText8c
+%endif
     add byte[GUItextcolor],15
 
 ;    cmp byte[OSPort],3
@@ -1786,6 +1788,9 @@ DisplayGUIVideo:
     je .notext8b
     GUIOuttextwin2 5,25,177,GUIVideoText8b
 .notext8b
+%ifndef __MSDOS__
+    GUIOuttextwin2 5,25,187,GUIVideoText8c
+%endif
     DrawGUIButton 5,128,60,164,71,GUIVideoText8,4,0,0
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
@@ -1890,7 +1895,14 @@ DisplayGUIVideo:
 .nocheckbox1m72
     GUIDisplayIconWin 5,11,173,[GUITemp]
 .nocheckboxm72
-
+%ifndef __MSDOS__
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[BlackAndWhite],0
+    je .nocheckboxm73
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckboxm73
+    GUIDisplayIconWin 5,11,183,[GUITemp]
+%endif
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIIEVID+eax],0
@@ -2022,15 +2034,15 @@ DisplayGUIVideo:
     mov dword[GUITemp],eax
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 5,7,189,GUIVideoTextH
-    GUIOuttextwin2 5,49,189,[GUITemp]
+    GUIOuttextwin2 5,7,196,GUIVideoTextH
+    GUIOuttextwin2 5,49,196,[GUITemp]
     mov byte[GUItextcolor],163
     cmp byte[GUIWincoladd],0
     je .zero6
     mov byte[GUItextcolor],164
 .zero6
-    GUIOuttextwin2 5,6,188,GUIVideoTextH
-    GUIOuttextwin2 5,48,188,[GUITemp]
+    GUIOuttextwin2 5,6,195,GUIVideoTextH
+    GUIOuttextwin2 5,48,195,[GUITemp]
     ret
 
 GUIVideoText1 db 'VIDEO MODES :',0
@@ -2046,6 +2058,7 @@ GUIVideoText5 db 'FULL SCREEN',0        ; -c
 GUIVideoText6 db 'SMALL SCREEN',0       ; -c
 GUIVideoText7 db 'TRIPLE BUFFERING',0       ; -c
 GUIVideoText8b db 'HI-RESOLUTION MODE7',0       ; -c
+GUIVideoText8c db 'BLACK AND WHITE MODE',0       ; -c
 GUIVideoText8 db 'SET',0                ; set button
 GUIVideoTextH db 'MODE : ',0
 GUIVideoTextw0 db 'LEGEND:',0

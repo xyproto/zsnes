@@ -638,6 +638,8 @@ void Stop36HZ(void)
 }
 
 extern unsigned char cvidmode;
+extern BYTE BlackAndWhite;
+extern BYTE V8Mode;
 DWORD FirstVid=1;
 DWORD FirstFull=1;
 extern BYTE GUIWFVID[];
@@ -650,6 +652,9 @@ void initwinvideo(void)
    //     WINDOWPLACEMENT wndpl;
    //RECT rc1, swrect;
    DWORD newmode=0;
+
+   if (BlackAndWhite == 1) V8Mode = 1;
+      else V8Mode = 0;
 
    //STUB_FUNCTION;
 
