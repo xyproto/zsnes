@@ -1530,7 +1530,6 @@ void initwinvideo(void)
    }
    else
    {
-      FirstVid=0;
       atexit(ExitFunction);
 
       AltTimer = AlternateTimer;
@@ -1561,8 +1560,6 @@ void initwinvideo(void)
 
       hMainWindow = CreateWindow( "ZSNESWIN", WinName, WS_VISIBLE|WS_POPUP,X,Y,  //WS_OVERLAPPED "ZSNESWIN"
                                  WindowWidth,WindowHeight,NULL,NULL,hInst,NULL);
-
-      if (FullScreen == 0) InitDirectDraw();
       
       CheckPriority();
       CheckAlwaysOnTop();
@@ -1579,23 +1576,38 @@ void initwinvideo(void)
       TestJoy();
    }
 
+   if (FirstVid == 1)
+   {
+      FirstVid = 0;
+      InitDirectDraw();
+      return;
+   }
+
+   if (Moving == 1) return;
+
    if (FullScreen == 0 && PrevFull == 1)
    {
       PrevFull = 0;
       ReleaseDirectDraw();
       InitDirectDraw();
    }
-   
-   if (FullScreen == 1 && PrevFull != 1) { PrevFull = 1; InitDirectDraw(); }
 
-   if (Moving == 1) return;
+   if (FullScreen == 1 && PrevFull != 1)
+   {
+      PrevFull = 1;
+      InitDirectDraw();
+   }
    
    if (FullScreen == 0 || newmode == 1)
    {
       if (newmode) clearwin();
    }
 
-   if (FullScreen == 1 && newmode == 1) { ReleaseDirectDraw(); InitDirectDraw(); }
+   if (FullScreen == 1 && newmode == 1)
+   {
+      ReleaseDirectDraw();
+      InitDirectDraw();
+   }
 
 }
 
