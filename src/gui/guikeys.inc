@@ -1004,6 +1004,11 @@ GUIGUIOptnsKeys:
     call ClearScreen
     call Clear2xSaIBuffer
 .guioptn15
+    cmp byte[hqFilter],0
+    je .guioptn16
+    call ClearScreen
+    call Clear2xSaIBuffer
+.guioptn16
     ret
 
 GUIVideoKeys:
