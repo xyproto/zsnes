@@ -1504,7 +1504,6 @@ NEWSYM TestSent
     ret
 .message db 0,0,0,0,' ',0,0,0,0,0,0,0
 
-
 NEWSYM StartGUI
 ;    cmp byte[OSPort],1
 ;    jbe .dosport
@@ -2265,7 +2264,6 @@ NEWSYM StartGUI
     mov byte[DSPMem+68h],0
     mov byte[DSPMem+78h],0
 
-
     mov byte[netdelayed],0
     mov dword[cnetptrhead],0
     mov dword[cnetptrtail],0
@@ -2301,7 +2299,6 @@ NEWSYM StartGUI
 
     mov dword[CBackupPos],0
     mov dword[PBackupPos],0
-
 
     mov ebx,[romdata]
     mov ecx,[NumofBanks]
@@ -2482,7 +2479,6 @@ NEWSYM StartGUI
 
 CheckSumVal dd 0
 WrongCheckSum db 10,13,'ROM Data Mismatch',10,13,10,13,0
-
 
 SRAMDirc:
     ; get LoadDrive/LoadDir
@@ -2800,7 +2796,6 @@ guipostvideo:
 guipostvidmsg1 db 'VIDEO MODE CHANGED.',0
 guipostvidmsg2 db 'PRESS ANY KEY',0
 
-
 guipostvideofail:
     mov dword[guipostvidptr],guipostvidmsg3b
     mov byte[guipostvidmsg3b],0
@@ -2992,7 +2987,6 @@ GUILoadManualDir
 
 ManualCPtr dd 0
 ManualStatus db 0
-
 
 NEWSYM MovieCounter, dd 0
 
