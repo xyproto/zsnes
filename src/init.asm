@@ -4454,6 +4454,34 @@ NEWSYM loadfileGUI
 
     ; Wizardry Gaiden 4?
     mov esi,[romdata]
+    cmp dword[esi+207FC0h],'DERB'
+    jne .noderby96
+    cmp dword[esi+207FC4h],'Y ST'
+    jne .noderby96
+    cmp dword[esi+207FC8h],'ALLI'
+    jne .noderby96
+    cmp dword[esi+207FCDh],'N 96'
+    jne .noderby96
+    mov eax,100000h
+.loopderby96
+    mov bl,[esi]
+    mov bh,[esi+200000h]
+    mov [esi+200000h],bl
+    mov [esi],bh
+    inc esi
+    dec eax
+    jnz .loopderby96
+    mov eax,100000h
+.loopderby962
+    mov bl,[esi+100000h]
+    mov bh,[esi+200000h]
+;    mov [esi+200000h],bl
+;    mov [esi],bh
+    inc esi
+    dec eax
+    jnz .loopderby962
+.noderby96
+
     cmp dword[esi+207FC0h],'WIZA'
     jne near .notwiz4
     cmp dword[esi+207FC4h],'RDRY'
@@ -4471,6 +4499,7 @@ NEWSYM loadfileGUI
     inc esi
     dec eax
     jnz .loopwiz4
+    jmp .notwiz4
 
     pushad
     mov edi,mode7tab+256
