@@ -5995,6 +5995,8 @@ NEWSYM CheckROMType
 
     cmp byte[romtype],1
     jne near .notlorom
+    cmp byte[SDD1Enable],1
+    je near .notlorom
     mov dword[memtabler8+0F0h*4],sramaccessbankr8
     mov dword[memtablew8+0F0h*4],sramaccessbankw8
     mov dword[memtabler16+0F0h*4],sramaccessbankr16
