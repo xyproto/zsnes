@@ -62,6 +62,41 @@ bool zst_load(FILE *);
 
 /////////////////////////////////////////////////////////
 
+#ifdef DEBUG_INPUT
+#define debug_input_start useda = usedb = usedc = usedd = usede = 0;
+#define debug_input print_bin(JoyAOrig, &useda); printf(" "); \
+                    print_bin(JoyBOrig, &usedb); printf(" "); \
+                    print_bin(JoyCOrig, &usedc); printf(" "); \
+                    print_bin(JoyDOrig, &usedd); printf(" "); \
+                    print_bin(JoyEOrig, &usede); printf("\n");                    
+
+static unsigned int useda, usedb, usedc, usedd, usede;
+void print_bin(unsigned int num, unsigned int *used)
+{
+  unsigned int mask = BIT(31);
+  while (mask)
+  {
+    *used |= num & mask;
+    printf(num & mask ? "1" : "0");
+    mask >>= 1;
+  }
+}
+
+#define debug_input_used printf("Used: ");\
+                         print_bin(useda, &useda); printf(" "); \
+                         print_bin(usedb, &usedb); printf(" "); \
+                         print_bin(usedc, &usedc); printf(" "); \
+                         print_bin(usedd, &usedd); printf(" "); \
+                         print_bin(usede, &usede); printf("\n");
+
+#else
+#define debug_input_start
+#define debug_input
+#define debug_input_used
+#endif
+
+/////////////////////////////////////////////////////////
+
 /*
 ZMV Format
 
@@ -611,6 +646,8 @@ static void zmv_create(char *filename)
     zst_save(zmv_vars.fp, false);
     zmv_vars.filename = (char *)malloc(filename_len+1); //+1 for null
     strcpy(zmv_vars.filename, filename);
+  
+    debug_input_start;
   }
   else
   {
@@ -678,6 +715,8 @@ static void zmv_record(bool slow, unsigned char combos_used)
 
   zmv_vars.header.key_combos += combos_used;
 
+  debug_input;
+    
   RECORD_PAD(zmv_vars.last_joy_state.A, JoyAOrig, 7);
   RECORD_PAD(zmv_vars.last_joy_state.B, JoyBOrig, 6);
   RECORD_PAD(zmv_vars.last_joy_state.C, JoyCOrig, 5);
@@ -742,6 +781,8 @@ static void zmv_record_finish()
   zmv_header_write(&zmv_vars.header, zmv_vars.fp);
 
   fclose(zmv_vars.fp);
+
+  debug_input_used;
 }
 
 static size_t zmv_frames_recorded()
