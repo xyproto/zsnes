@@ -1,9 +1,7 @@
 ;Copyright (C) 1997-2005 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 ;
-;zsknight@zsnes.com
-;_demo_@zsnes.com
-;pagefault@zsnes.com
-;n-a-c-h@users.sf.net
+;http://www.zsnes.com
+;http://sourceforge.net/projects/zsnes
 ;
 ;This program is free software; you can redistribute it and/or
 ;modify it under the terms of the GNU General Public License
@@ -5654,4 +5652,5 @@ db 137,176,166,37,192,241,169,84,32,85,112,168,154,7,247,146,183,225,246,173
 db 57,103,110,236,113,118,203,200,22,87,251,7,138,37,12,84,221,171,51,209
 db 242,37,89,73,151,162,139,189,131,209,221,96,107,144,175,79,199,123,98,138
 db 226,86,221,254,72,14,126,180,200,171,85,94,120,124,196,225,150,57,219,158
+
 

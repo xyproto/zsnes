@@ -1,9 +1,7 @@
 ;Copyright (C) 1997-2005 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 ;
-;zsknight@zsnes.com
-;_demo_@zsnes.com
-;pagefault@zsnes.com
-;n-a-c-h@users.sf.net
+;http://www.zsnes.com
+;http://sourceforge.net/projects/zsnes
 ;
 ;This program is free software; you can redistribute it and/or
 ;modify it under the terms of the GNU General Public License
@@ -1853,4 +1851,5 @@ SECTION .data
 StateLoadedOk db 10,13,'STATE LOADED.',10,13,10,13,0
 StateLoadedFail db 10,13,'LOAD FAILED.',10,13,10,13,0
 SECTION .text
+
 
