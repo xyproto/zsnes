@@ -84,7 +84,9 @@ if test x$opengl_prefix != x; then
 CFLAGS="$CFLAGS -I$opengl_prefix/include"
 LDFLAGS-"$LDFLAGS -L$opengl_prefix/lib"
 fi
+if test x$x_libraries != x; then
 LDFLAGS="$LDFLAGS -L$x_libraries"
+fi
 AC_CHECK_LIB(GL, glGetError,found_opengl="yes",,)
 if test x$found_opengl = xyes; then
         echo checking for OpenGL... yes
@@ -113,7 +115,7 @@ if test x$debug = xyes; then
 	dnl enabled. 
 
 	CFLAGS="$CFLAGS -DDEBUG -O0 -fno-omit-frame-pointer -ggdb3"
-	NFLAGS="$NFLAGS -DDEBUG -g -s -O1" dnl -O0 doesnt work
+	NFLAGS="$NFLAGS -DDEBUG -g -s -O0" dnl it works now
 	ZSNESEXE="zsnesd"
 else
 	AC_MSG_RESULT(no)
