@@ -1590,23 +1590,23 @@ void initwinvideo(void)
       PrevFull = 0;
       ReleaseDirectDraw();
       InitDirectDraw();
+      return;
    }
 
-   if (FullScreen == 1 && PrevFull != 1)
+   if (FullScreen == 1 && PrevFull != 1 || newmode == 1)
    {
       PrevFull = 1;
       InitDirectDraw();
+      clearwin();
+      return;
    }
    
-   if (FullScreen == 0 || newmode == 1)
-   {
-      if (newmode) clearwin();
-   }
-
    if (FullScreen == 1 && newmode == 1)
    {
       ReleaseDirectDraw();
       InitDirectDraw();
+      clearwin();
+      return;
    }
 
 }
