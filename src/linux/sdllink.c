@@ -280,15 +280,15 @@ void ProcessKeyBuf(int scancode)
     } else {
       switch (scancode) {
 	      // Fix these for proper SDL usage - DDOI
-	case SDLK_UNDERSCORE: vkeyval='_'; accept=true; break;
-	case SDLK_PLUS: vkeyval='+'; accept=true; break;
+	case SDLK_MINUS: vkeyval='_'; accept=true; break;
+	case SDLK_EQUALS: vkeyval='+'; accept=true; break;
 	case SDLK_LEFTBRACKET: vkeyval='{'; accept=true; break;
 	case SDLK_RIGHTBRACKET: vkeyval='}'; accept=true; break;
-	case SDLK_COLON: vkeyval=':'; accept=true; break;
-	case SDLK_QUOTEDBL: vkeyval='"'; accept=true; break;
-	case SDLK_LESS: vkeyval='<'; accept=true; break;
-	case SDLK_GREATER: vkeyval='>'; accept=true; break;
-	case SDLK_QUESTION: vkeyval='?'; accept=true; break;
+	case SDLK_SEMICOLON: vkeyval=':'; accept=true; break;
+	case SDLK_QUOTE: vkeyval='"'; accept=true; break;
+	case SDLK_COMMA: vkeyval='<'; accept=true; break;
+	case SDLK_PERIOD: vkeyval='>'; accept=true; break;
+	case SDLK_SLASH: vkeyval='?'; accept=true; break;
 	case SDLK_BACKQUOTE: vkeyval='~'; accept=true; break;
 	case SDLK_BACKSLASH: vkeyval='|'; accept=true; break;
       }

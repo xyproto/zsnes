@@ -1076,13 +1076,21 @@ Win95Failed db 0
 
 NEWSYM GetCurDir
     ; get Drive/Dir
+%ifndef __LINUX__
     mov ebx,GUIcurrentdir+3
+%else
+    mov ebx,GUIcurrentdir
+%endif
     mov edx,GUIcurrentdir
     call Get_Dir
+
+%ifndef __LINUX__
     add byte[GUIcurrentdir],65
 
     mov byte[GUIcurrentdir+1],':'
     mov byte[GUIcurrentdir+2],'\'
+%endif
+
     cmp byte[GUIcurrentdir+35],0
     je .nodotend
     mov byte[GUIcurrentdir+35],'.'
@@ -1341,6 +1349,7 @@ GUIGetDirs:
     je near .sortagain
     pop edi
 .nodirs
+%ifndef __LINUX__
     cmp byte[GUIloadfntype],0
     je near .drive2
     mov esi,[GUInumentries]
@@ -1368,6 +1377,7 @@ GUIGetDirs:
     dec ecx
     jnz .nextdriveb
 .nodrive
+%endif
     ret
 
 BubbleSorted      db 0

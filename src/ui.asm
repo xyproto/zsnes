@@ -341,8 +341,12 @@ NEWSYM getcmdline
 .next2
     cmp eax,edi
     je .nomore
+ %ifdef __LINUX__
+    cmp byte[eax],'/'
+%else
     cmp byte[eax],'\'
     je .found
+%endif
     cmp byte[eax],':'
     jne .next
 .found
@@ -493,7 +497,7 @@ NEWSYM getcmdline
 
 SECTION .data
 .string2s db 'CMDLINE',0
-.stringnf db 'SET CMDLINE LINE NOT FOUND!',13,10,0
+.stringnf db 'SET CMDLINE LINE NOT FOUND!',13,0
 
 NEWSYM CMDLineStr, times 256 db 0
 NEWSYM GUIFName, times 256 db 0

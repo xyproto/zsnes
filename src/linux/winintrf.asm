@@ -846,22 +846,23 @@ NEWSYM Remove_Dir
 ;    mov ebx,LoadDir
 ;    call Change_Dir
 NEWSYM Change_Dir
-    pushad
+    ;pushad
 
-    and edx,0FFh
-    add edx,1
-    push edx
-    call _chdrive
-    pop edx
+    ; Not needed for Linux - DDOI
+    ;and edx,0FFh
+    ;add edx,1
+    ;push edx
+    ;call _chdrive
+    ;pop edx
 
 ;    mov ah,0Eh
 ;    int 21h
 ;    jc .fail
-    mov dword[CHPath],gotoroot
-    call ZFileCHDir
-    or eax,eax
-    jnz .fail
-    popad
+    ;mov dword[CHPath],gotoroot
+    ;call ZFileCHDir
+    ;or eax,eax
+    ;jnz .fail
+    ;popad
     mov [CHPath],ebx
     cmp byte[ebx],0
     je .nocdir
@@ -903,9 +904,9 @@ NEWSYM Get_Dir
     call ZFileGetDir
     mov eax,[DirName]
     mov ebx,eax
-    mov ecx,125
+    mov ecx,128
 .loop
-    mov dl,[eax+3]
+    mov dl,[eax]
     cmp dl,'/'
     jne .noslash
     ;mov dl,'\'
@@ -914,13 +915,13 @@ NEWSYM Get_Dir
     inc eax
     loop .loop
     popad
-    push edx
-    call _getdrive
+;    push edx
+;    call _getdrive
 ;    mov ah,19h
 ;    int 21h
-    sub al,1
-    pop edx
-    mov [edx],al
+;    sub al,1
+;    pop edx
+;    mov [edx],al
     ret
 
     push edx
@@ -1459,7 +1460,7 @@ cpuidtext db 'NOTE: If ZSNES crashes here, then please re-run. ',0
 cpuidtext2 db 13,'                                                 ',13,0
 YesMMX    db 'MMX support enabled.',13,10,13,10,0
 TempVarSeek dd 0
-gotoroot db '\',0
+gotoroot db '/',0
 SECTION .text
 
 ; ****************************
