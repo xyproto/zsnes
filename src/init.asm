@@ -1638,6 +1638,21 @@ NEWSYM headerhack
 
     mov esi,[romdata]
     add esi,0FFC0h
+    cmp dword[esi],'CLAY'
+    jne .notclayfighter
+    cmp dword[esi+4],' FIG'
+    jne .notclayfighter
+    cmp dword[esi+8],'HTER'
+    jne .notclayfighter
+    cmp dword[esi+12],'    '
+    jne .notclayfighter
+    mov esi,[romdata]
+    add esi,01A10B9h
+    mov byte[esi],0DEh
+.notclayfighter
+
+    mov esi,[romdata]
+    add esi,0FFC0h
     cmp dword[esi],'Baha'
     jne .notbahamutlagoon
     cmp dword[esi+4],'mut '
