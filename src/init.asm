@@ -2427,8 +2427,8 @@ NEWSYM initsnes
 
     mov esi,[romdata]
     add esi,7FC0h
-    cmp byte[BSEnable],1
-    jne .notbsx3
+    cmp byte[BSEnable],0
+    je .notbsx3
     cmp byte[romtype],1 ;Hack for BS HiROMs
     je near .bslorom
 .notbsx3
