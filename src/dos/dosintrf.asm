@@ -84,7 +84,7 @@ EXTSYM TCPIPAddress
 
 SECTION .bss
 
-NEWSYM OSPort, resb 0
+NEWSYM OSPort, resb 1
 
 
 SECTION .text
@@ -1481,8 +1481,8 @@ gotoroot db '\',0
 
 SECTION .bss
 
-NEWSYM ZSNESBase, resd 0
-TempVarSeek resd 0
+NEWSYM ZSNESBase, resd 1
+TempVarSeek resd 1
 
 
 SECTION .text
@@ -1603,14 +1603,14 @@ NEWSYM Check60hz
 
 SECTION .bss
 
-NEWSYM TCPIPStatus, resb 0
-NEWSYM PacketSendSize, resd 0
-NEWSYM PacketRecvSize, resd 0
-NEWSYM PacketRecvPtr,  resd 0
-NEWSYM PacketSendArray, times 256 resb 0
-NEWSYM PacketRecvArray, times 256 resb 0
-NEWSYM IPAddrStr, times 20 resb 0
-NEWSYM RemoteDisconnect, resb 0
+NEWSYM TCPIPStatus, resb 1
+NEWSYM PacketSendSize, resd 1
+NEWSYM PacketRecvSize, resd 1
+NEWSYM PacketRecvPtr,  resd 1
+NEWSYM PacketSendArray, times 256 resb 1
+NEWSYM PacketRecvArray, times 256 resb 1
+NEWSYM IPAddrStr, times 20 resb 1
+NEWSYM RemoteDisconnect, resb 1
 
 
 SECTION .text
@@ -1792,7 +1792,7 @@ NEWSYM UDPConfig
 
 SECTION .bss
 
-NEWSYM tcperr, resd 0
+NEWSYM tcperr, resd 1
 
 
 SECTION .text
