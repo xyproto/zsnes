@@ -369,9 +369,6 @@ NEWSYM GUIDoReset
     call MovieStop
     call RestoreSystemVars
     popad
-pushad
-call clearSPCRAM
-popad
 
     ; reset the snes
     call init65816
