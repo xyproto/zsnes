@@ -13,7 +13,7 @@
 #endif
 
 #include "zlib.h"
-#include "unzip.h"
+#include "zunzip.h"
 
 #ifdef STDC
 #  include <stddef.h>

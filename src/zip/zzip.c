@@ -32,7 +32,7 @@
 #include <sys/stat.h>
 #endif
 
-#include "unzip.h"
+#include "zunzip.h"
 
 #define CASESENSITIVITY (0)
 #define WRITEBUFFERSIZE (8192)

@@ -73,8 +73,8 @@ ALL:	@ZSNESEXE@
 	@CC@ -o @ZSNESEXE@ ${OBJS} @CFLAGS@ @LDFLAGS@
 
 ${ZIPDIR}/zpng.o: ${ZIPDIR}/zpng.c ${ZIPDIR}/zpng.h
-${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/unzip.h
-${ZIPDIR}/zzip.o: ${ZIPDIR}/zzip.c ${ZIPDIR}/unzip.h
+${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/zunzip.h
+${ZIPDIR}/zzip.o: ${ZIPDIR}/zzip.c ${ZIPDIR}/zunzip.h
 fixsin.o: fixsin.c
 water.o: water.c
 smoke.o: smoke.c
