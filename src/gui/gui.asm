@@ -599,7 +599,7 @@ NEWSYM SoundInterpType, db 1
 NEWSYM KeyDisplayFPS, dd 0
 NEWSYM KeyIncStateSlot, dd 0
 NEWSYM KeyDecStateSlot, dd 0
-NEWSYM KeySwapPlayer1234, dd 0
+NEWSYM KeyUsePlayer1234, dd 0
 
 GUIsave equ $-GUIRAdd
 

@@ -4727,7 +4727,7 @@ DisplayGameOptns:
     DGOptnsDrawBox 27+45*2,24,[KeyBGDisble2]
     DGOptnsDrawBox 27+45*3,24,[KeyBGDisble3]
     DGOptnsDrawBox 27+45*4,24,[KeySprDisble]
-    DGOptnsDrawBox 78,44,[KeySwapPlayer1234]
+    DGOptnsDrawBox 78,44,[KeyUsePlayer1234]
     DGOptnsDrawBox 78,52,[KeyResetAll]
     DGOptnsDrawBox 78,60,[KeyExtraEnab]
     DGOptnsDrawBox 78,68,[KeyNewGfxSwt]
@@ -4818,7 +4818,7 @@ GUIGameOptnsTextV db 'SAVE SPC',0
 GUIGameOptnsTextX db 'DISPLAY FPS',0
 GUIGameOptnsTextY db 'ST+',0
 GUIGameOptnsTextZ db 'ST-',0
-GUIGameOptnsText1A db 'SW PL 12/34',0
+GUIGameOptnsText1A db 'USE PL 12/34',0
 SECTION .text
 
 DisplayGUIOptns:

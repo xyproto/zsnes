@@ -33,7 +33,7 @@ EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
 EXTSYM KeyResetAll,KeyExtraEnab,KeyWinDisble,KeyNewGfxSwt,KeyOffsetMSw
 EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
-EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySwapPlayer1234
+EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeyUsePlayer1234
 EXTSYM maxskip,DSPMem,SprValAdd,dsp1ptr,dsp1array,FastFwdToggle,SaveSramData
 EXTSYM ngextbg,Mode7HiRes,Check60hz,Get_MouseData,Get_MousePositionDisplacement
 EXTSYM WindowDisables,scanlines,romispal
@@ -792,19 +792,19 @@ NEWSYM cachevideo
     mov [MessageOn],eax
     xor dh,dh
 .nodecstateslot
-    mov eax,[KeySwapPlayer1234]
+    mov eax,[KeyUsePlayer1234]
     test byte[pressed+eax],1
-    je .noswpl1234
+    je .nousepl1234
     mov byte[pressed+eax],2
     xor byte[pl12s34],1
-    mov dword[Msgptr],plsw1234en
+    mov dword[Msgptr],pluse1234en
     cmp byte[pl12s34],1
-    je .swpl1234
-    mov dword[Msgptr],plsw1234dis
-.swpl1234
+    je .usepl1234
+    mov dword[Msgptr],pluse1234dis
+.usepl1234
     mov eax,[MsgCount]
     mov [MessageOn],eax
-.noswpl1234
+.nousepl1234
 
     ; do sound disables
     soundselcomp KeyDisableSC0,Voice0Disable,Voice0Status,'1'
@@ -994,8 +994,8 @@ NEWSYM sselm, db 'STATE SLOT 0 SELECTED',0
 NEWSYM vollv, db 'VOLUME LEVEL :    ',0
 NEWSYM frlev, db 'FRAME SKIP SET TO  ',0
 NEWSYM frlv0, db 'AUTO FRAMERATE ENABLED',0
-NEWSYM plsw1234en, db 'SWAPPED PLAYER 1/2 with 3/4',0
-NEWSYM plsw1234dis, db 'SWAPPED PLAYER 3/4 with 1/2',0
+NEWSYM pluse1234en, db 'USE PLAYER 1/2 with 3/4 ON',0
+NEWSYM pluse1234dis, db 'USE PLAYER 1/2 with 3/4 OFF',0
 sndchena db 'SOUND CH   ENABLED',0
 sndchdis db 'SOUND CH   DISABLED',0
 bg1layena db 'BG1 LAYER ENABLED',0
