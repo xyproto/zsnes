@@ -4148,16 +4148,6 @@ NEWSYM membank0w16SA1
 ;*******************************************************
 ; ROM Only Access Banks (40 - 6F) / (C0 - FF)
 ;*******************************************************
-%macro TestSDD1 0
-    cmp ebx,0DAh
-    jne %%nobank
-    cmp ecx,1C01h
-    jbe %%nobank
-    cmp ecx,[LatestBank]
-    ja %%nobank
-    mov [LatestBank],ecx
-%%nobank
-%endmacro
 
 NEWSYM memaccessspc7110r8
 
@@ -4220,14 +4210,12 @@ NEWSYM memaccessspc7110w16
     ret
 
 NEWSYM memaccessbankr8
-;    TestSDD1
     mov ebx,[snesmmap+ebx*4]
     mov al,[ebx+ecx]
     xor ebx,ebx
     ret
 
 NEWSYM memaccessbankr16
-;    TestSDD1
     mov ebx,[snesmmap+ebx*4]
     mov ax,[ebx+ecx]
     xor ebx,ebx

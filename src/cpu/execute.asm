@@ -115,7 +115,6 @@ EXTSYM SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,hdmaearlstart,SFXCounter
 EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67,fxbit67pcal
 EXTSYM SfxSFR,nosprincr
 EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
-EXTSYM ReadSPC7110log,WriteSPC7110log
 EXTSYM NetPlayNoMore
 EXTSYM statefileloc
 
@@ -1157,7 +1156,6 @@ reexecuteb2:
     call UpdateDPage
     call SA1UpdateDPage
     call Makemode7Table
-    call ReadSPC7110log
     cmp byte[SFXEnable],0
     je .nosfxud
     call UpdateSFX
@@ -1262,8 +1260,6 @@ reexecuteb2:
     je .skippostgame
     call DeInitPostGame
 .skippostgame
-
-    call WriteSPC7110log
 
     ; clear all keys
     call Check_Key
