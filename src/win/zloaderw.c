@@ -22,7 +22,6 @@
 #include <direct.h>
 #include <winuser.h>
 
-
 #include <dinput.h>
 #include <dsound.h>
 
@@ -109,7 +108,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdSh
 
    if (hM_dinput8 == NULL)
    {
-      if (MessageBox(NULL, "Sorry, you need DirectX v8.0 or higher to use\nZSNESW. Would you like to go to the DirectX homepage?", "Error", MB_ICONINFORMATION | MB_YESNO) == IDYES)
+      if (MessageBox(NULL, "Sorry, you need DirectX 8.0 or higher to use\nZSNESW. Would you like to go to the DirectX homepage?", "Error", MB_ICONINFORMATION | MB_YESNO) == IDYES)
          ShellExecute(NULL, NULL, "http://www.microsoft.com/directx/", NULL, NULL, 0);
       goto startup_error_exit;
    }
