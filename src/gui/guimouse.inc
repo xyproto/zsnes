@@ -2637,6 +2637,9 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 8+114+25,178,[KeyQuickExit]
     DGOptnsProcBox 8+25,188,[KeyQuickChat]
     DGOptnsProcBox 8+57+49,188,[KeyQuickSnapShot]
+%ifdef __WIN32__
+    DGOptnsProcBox 8+111+70,188,[KeyQuickMinimize]
+%endif
     ret
 
 DisplayGUIOptnsClick:
