@@ -497,7 +497,14 @@ InitSound()
 
 	if(DS_OK == DirectSoundCreate(NULL, &lpDirectSound,NULL))
 	{    
-          if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL)) {SoundEnabled=0; return FALSE;}
+          if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL))
+          {
+             if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
+             {
+                SoundEnabled=0;
+                return FALSE;
+             }
+          }
 	}
 	else 
 	{
