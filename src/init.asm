@@ -2436,14 +2436,6 @@ NEWSYM init65816
 
     mov eax,055555555h
 
-    ; Mario Paint, Clear WRAM w/ 0x00 (due to corrupt rom w/ trainer removed)
-    mov esi,[romdata]
-    add esi,07FC0h
-    cmp dword[esi],'MARI'
-    jne .notmpaint
-    xor eax,eax
-.notmpaint
-
     mov esi,[romdata]
     add esi,07FC0h
     cmp word[esi],'BS'  ; 7FFFFFA
