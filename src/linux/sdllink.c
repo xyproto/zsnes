@@ -130,7 +130,6 @@ void LinuxExit(void);
 int Main_Proc(void)
 {
 	int j;
-	// TODO: Main event loop
 	SDL_Event event;
 	Uint8 JoyButton;
 	//STUB_FUNCTION;
@@ -472,9 +471,9 @@ int startgame(void)
    for(i=0;i<65536;i++)
    {
       color32=((i&0xF800)<<8)+
-              ((i&0x07E0)<<5)+
-              ((i&0x001F)<<3)+0x7F000000;
-              (*(unsigned int *)(ScreenPtr2))=color32;
+	      ((i&0x07E0)<<5)+
+	      ((i&0x001F)<<3)+0x7F000000;
+      (*(unsigned int *)(ScreenPtr2))=color32;
       ScreenPtr2+=4;
    }
 
@@ -1098,7 +1097,6 @@ void drawscreenwin(void)
 	     }
              break;
       case 32:
-	     // Untested - DDOI
 	__asm__ __volatile__ ("
                      pushw %%es
 		     movw %%ds, %%ax
@@ -1352,9 +1350,49 @@ void drawscreenwin(void)
 			   WinVidMemStart=&SurfBuf[0];
 			   copy640x480x16bwin();
 			   break;
+		   case 32:
+	__asm__ __volatile__ ("
+                     pushw %%es
+		     movw %%ds, %%ax
+		     movw %%ax, %%es
+		     xorl %%eax, %%eax
+		     movl BitConv32Ptr, %%ebx
+		     movl ScreenPtr, %%esi
+		     movl SurfBufD, %%edi
+                  Copying32c:
+		     movl $256, %%ecx
+		     pushl %%eax
+		     xorl %%eax, %%eax
+                  CopyLoop32c:
+		     movw (%%esi), %%ax
+		     addl $2, %%esi
+		     movl (%%ebx, %%eax, 4), %%edx
+		     movl %%edx, (%%edi)
+		     addl $4, %%edi
+		     movl %%edx, (%%edi)
+		     addl $4, %%edi
+		     loop CopyLoop32c
+		     pushl %%esi
+		     movl %%edi, %%esi
+		     subl Temp1, %%esi
+		     movl $512, %%ecx
+		     rep
+		     movsl
+		     popl %%esi
+		     popl %%eax
+		     incl %%eax
+		     addl Temp1, %%edi
+		     subl $2048, %%edi
+		     subl $512, %%esi
+		     addl $576, %%esi
+		     cmpl $223, %%eax
+		     jne Copying32c
+                     popw %%es
+	" : : : "cc", "memory","eax","ebx","ecx","edx","edi","esi");
+			   break;
 		   default:
 			   UnlockSurface();
-			   fprintf(stderr, "Mode only available in 16 bit color.\n");
+			   fprintf(stderr, "Mode only available in 16 or 32 bit color.\n");
 			   LinuxExit();
 			   /*
 			   cvidmode=2;
@@ -1375,9 +1413,52 @@ void drawscreenwin(void)
 			WinVidMemStart=&SurfBuf[16*640*2+64*2];
 			copy640x480x16bwin();
 			break;
+		case 32:
+	__asm__ __volatile__ ("
+                     pushw %%es
+		     movw %%ds, %%ax
+		     movw %%ax, %%es
+		     xorl %%eax, %%eax
+		     movl BitConv32Ptr, %%ebx
+		     movl ScreenPtr, %%esi
+		     movl SurfBufD, %%edi
+		     addl $20608, %%edi
+                  Copying32d:
+		     movl $256, %%ecx
+		     pushl %%eax
+		     xorl %%eax, %%eax
+                  CopyLoop32d:
+		     movw (%%esi), %%ax
+		     addl $2, %%esi
+		     movl (%%ebx, %%eax, 4), %%edx
+		     movl %%edx, (%%edi)
+		     addl $4, %%edi
+		     movl %%edx, (%%edi)
+		     addl $4, %%edi
+		     loop CopyLoop32d
+		     pushl %%esi
+		     movl %%edi, %%esi
+		     subl Temp1, %%esi
+		     addl $256, %%edi
+		     movl $512, %%ecx
+		     rep
+		     movsl
+		     popl %%esi
+		     popl %%eax
+		     incl %%eax
+		     addl Temp1, %%edi
+		     addl $256, %%edi
+		     subl $2048, %%edi
+		     subl $512, %%esi
+		     addl $576, %%esi
+		     cmpl $223, %%eax
+		     jne Copying32d
+                     popw %%es
+	" : : : "cc", "memory","eax","ebx","ecx","edx","edi","esi");
+		     break;
 		default:
 			   UnlockSurface();
-			   fprintf(stderr, "Mode only available in 16 bit color.\n");
+			   fprintf(stderr, "Mode only available in 16 or 32 bit color.\n");
 			   LinuxExit();
 			   /*
 			   cvidmode=2;
