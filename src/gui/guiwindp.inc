@@ -2163,7 +2163,7 @@ GUIVideoText5 db 'FULL SCREEN',0        ; -c
 GUIVideoText5b db 'WIDE SCREEN',0        ; -c
 GUIVideoText6 db 'SMALL SCREEN',0       ; -c
 GUIVideoText7 db 'TRIPLE BUFFERING',0       ; -c
-GUIVideoText8b db 'HI-RESOLUTION MODE7',0       ; -c
+GUIVideoText8b db 'HI-RES M7',0       ; -c
 GUIVideoText8c db 'GRAYSCALE MODE',0       ; -c
 GUIVideoText8 db 'SET',0                ; set button
 GUIVideoText9 db 'VSYNC',0       ; -c
