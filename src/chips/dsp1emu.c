@@ -36,14 +36,8 @@
 //#define debug06
 
 #define __OPT__
-#define __OPT01__
 #define __OPT02__
-//#define __OPT04__
 #define __OPT06__
-#define __OPT0C__    // this optimisation may break pilotwings
-#define __OPT11__
-#define __OPT21__
-#define __OPT1C__
 
 #ifdef DebugDSP1
 
@@ -83,7 +77,6 @@ void Stop_Log (void)
 }
 
 #endif
-
 
 const unsigned short DSP1ROM[1024] = {
 	0x0000,	0x0000,	0x0000,	0x0000,	0x0000,	0x0000,	0x0000,	0x0000,	
@@ -215,7 +208,6 @@ const unsigned short DSP1ROM[1024] = {
 	0xffff,	0xffff,	0xffff,	0xffff,	0xffff,	0xffff,	0xffff,	0xffff,	
 	0xffff,	0xffff,	0xffff,	0xffff,	0xffff,	0xffff,	0xffff,	0xffff};
 
-
 /***************************************************************************\
 *  Math tables                                                              *
 \***************************************************************************/
@@ -224,7 +216,9 @@ const unsigned short DSP1ROM[1024] = {
 #define Angle(x) (((x)/(65536/INCR)) & (INCR-1))
 #define Cos(x) ((double) CosTable2[x])
 #define Sin(x) ((double) SinTable2[x])
+#ifdef PI
 #undef PI
+#endif
 #define PI 3.1415926535897932384626433832795
 double CosTable2[INCR];
 double SinTable2[INCR];
@@ -242,7 +236,6 @@ double Atan(double x)
 /***************************************************************************\
 *  C4 C code                                                                *
 \***************************************************************************/
-
 
 short C4WFXVal;
 short C4WFYVal;
@@ -369,13 +362,10 @@ void C4Op0D()
 *  DSP1 code                                                                *
 \***************************************************************************/
 
-
 void InitDSP(void)
 {
 #ifdef __OPT__
         unsigned int i;
-//	CosTable2 = (double *) malloc(INCR*sizeof(double));
-//	SinTable2 = (double *) malloc(INCR*sizeof(double));
 	for (i=0; i<INCR; i++){
 		CosTable2[i] = (cos((double)(2*PI*i/INCR)));
 		SinTable2[i] = (sin((double)(2*PI*i/INCR)));
@@ -387,32 +377,28 @@ void InitDSP(void)
 }
 
 
-short Op00Multiplicand;		// int16
-short Op00Multiplier;		// int16
-short Op00Result;		// int16
+short Op00Multiplicand;
+short Op00Multiplier;
+short Op00Result;
 
 void DSPOp00()
 {
-   // Use the shift 15, don't divide by 32768, it doesn't round the same.
+   Op00Result= Op00Multiplicand * Op00Multiplier >> 15;
 
-   // This expression is bit accurate to DSP1B on MSVC 6.
-   Op00Result=Op00Multiplicand*Op00Multiplier >> 15;
    #ifdef DebugDSP1
       Log_Message("OP00 MULT %d*%d/32768=%d",Op00Multiplicand,Op00Multiplier,Op00Result);
    #endif
 }
 
-short Op20Multiplicand;		// int16
-short Op20Multiplier;		// int16
-short Op20Result;		// int16
+short Op20Multiplicand;
+short Op20Multiplier;
+short Op20Result;
 
 void DSPOp20()
 {
-   // Use the shift 15, don't divide by 32768, it doesn't round the same.
-
-   // This expression is bit accurate to DSP1B on MSVC 6.
-   Op20Result=Op20Multiplicand*Op20Multiplier >> 15;
+   Op20Result= Op20Multiplicand * Op20Multiplier >> 15;
    Op20Result++;
+
    #ifdef DebugDSP1
       Log_Message("OP20 MULT %d*%d/32768=%d",Op20Multiplicand,Op20Multiplier,Op20Result);
    #endif
@@ -422,25 +408,6 @@ signed short Op10Coefficient;
 signed short Op10Exponent;
 signed short Op10CoefficientR;
 signed short Op10ExponentR;
-//float Op10Temp;
-
-short InvTable[128] = {
-	0x7fff,	0x7f02,	0x7e08,	0x7d12,	0x7c1f,	0x7b30,	0x7a45,	0x795d,
-	0x7878,	0x7797,	0x76ba,	0x75df,	0x7507,	0x7433,	0x7361,	0x7293,
-	0x71c7,	0x70fe,	0x7038,	0x6f75,	0x6eb4,	0x6df6,	0x6d3a,	0x6c81,
-	0x6bca,	0x6b16,	0x6a64,	0x69b4,	0x6907,	0x685b,	0x67b2,	0x670b,
-	0x6666,	0x65c4,	0x6523,	0x6484,	0x63e7,	0x634c,	0x62b3,	0x621c,
-	0x6186,	0x60f2,	0x6060,	0x5fd0,	0x5f41,	0x5eb5,	0x5e29,	0x5d9f,
-	0x5d17,	0x5c91,	0x5c0c,	0x5b88,	0x5b06,	0x5a85,	0x5a06,	0x5988,
-	0x590b,	0x5890,	0x5816,	0x579d,	0x5726,	0x56b0,	0x563b,	0x55c8,
-	0x5555,	0x54e4,	0x5474,	0x5405,	0x5398,	0x532b,	0x52bf,	0x5255,
-	0x51ec,	0x5183,	0x511c,	0x50b6,	0x5050,	0x4fec,	0x4f89,	0x4f26,
-	0x4ec5,	0x4e64,	0x4e05,	0x4da6,	0x4d48,	0x4cec,	0x4c90,	0x4c34,
-	0x4bda,	0x4b81,	0x4b28,	0x4ad0,	0x4a79,	0x4a23,	0x49cd,	0x4979,
-	0x4925,	0x48d1,	0x487f,	0x482d,	0x47dc,	0x478c,	0x473c,	0x46ed,
-	0x469f,	0x4651,	0x4604,	0x45b8,	0x456c,	0x4521,	0x44d7,	0x448d,
-	0x4444,	0x43fc,	0x43b4,	0x436d,	0x4326,	0x42e0,	0x429a,	0x4255,
-	0x4211,	0x41cd,	0x4189,	0x4146,	0x4104,	0x40c2,	0x4081,	0x4040};
 
 void DSP1_Inverse(short Coefficient, short Exponent, short *iCoefficient, short *iExponent)
 {
@@ -478,11 +445,11 @@ void DSP1_Inverse(short Coefficient, short Exponent, short *iCoefficient, short 
 			}
 		else {
 			// Step Five: Initial Guess
-			short i = InvTable[(Coefficient - 0x4000) >> 7];
+			short i = DSP1ROM[((Coefficient - 0x4000) >> 7) + 0x0065];
 
 			// Step Six: Iterate "estimated" Newton's Method
-			i = (i << 1) + (((-i * ((Coefficient * i) >> 15)) >> 15) << 1);
-			i = (i << 1) + (((-i * ((Coefficient * i) >> 15)) >> 15) << 1);
+			i = (i + (-i * (Coefficient * i >> 15) >> 15)) << 1;
+			i = (i + (-i * (Coefficient * i >> 15) >> 15)) << 1;
 
 			*iCoefficient = i * Sign;
 		}
@@ -490,7 +457,6 @@ void DSP1_Inverse(short Coefficient, short Exponent, short *iCoefficient, short 
 		*iExponent = 1 - Exponent;
 	}
 }
-
 
 void DSPOp10()
 {
@@ -501,132 +467,191 @@ void DSPOp10()
 }
 
 short Op04Angle;
-short Op04Radius;	// This is signed
+short Op04Radius;
 short Op04Sin;
 short Op04Cos;
 
-short MulTable[256] = {
-	0,	3,	6,	9,	12,	15,	18,	21,
-	25,	28,	31,	34,	37,	40,	43,	47,
-	50,	53,	56,	59,	62,	65,	69,	72,
-	75,	78,	81,	84,	87,	91,	94,	97,
-	100,	103,	106,	109,	113,	116,	119,	122,
-	125,	128,	131,	135,	138,	141,	144,	147,
-	150,	153,	157,	160,	163,	166,	169,	172,
-	175,	179,	182,	185,	188,	191,	194,	197,
-	201,	204,	207,	210,	213,	216,	219,	223,
-	226,	229,	232,	235,	238,	241,	245,	248,
-	251,	254,	257,	260,	263,	267,	270,	273,
-	276,	279,	282,	285,	289,	292,	295,	298,
-	301,	304,	307,	311,	314,	317,	320,	323,
-	326,	329,	333,	336,	339,	342,	345,	348,
-	351,	355,	358,	361,	364,	367,	370,	373,
-	376,	380,	383,	386,	389,	392,	395,	398,
-	402,	405,	408,	411,	414,	417,	420,	424,
-	427,	430,	433,	436,	439,	442,	446,	449,
-	452,	455,	458,	461,	464,	468,	471,	474,
-	477,	480,	483,	486,	490,	493,	496,	499,
-	502,	505,	508,	512,	515,	518,	521,	524,
-	527,	530,	534,	537,	540,	543,	546,	549,
-	552,	556,	559,	562,	565,	568,	571,	574,
-	578,	581,	584,	587,	590,	593,	596,	600,
-	603,	606,	609,	612,	615,	618,	622,	625,
-	628,	631,	634,	637,	640,	644,	647,	650,
-	653,	656,	659,	662,	666,	669,	672,	675,
-	678,	681,	684,	688,	691,	694,	697,	700,
-	703,	706,	710,	713,	716,	719,	722,	725,
-	728,	731,	735,	738,	741,	744,	747,	750,
-	753,	757,	760,	763,	766,	769,	772,	775,
-	779,	782,	785,	788,	791,	794,	797,	801};
+const short DSP1_MulTable[256] = {
+	  0x0000,  0x0003,  0x0006,  0x0009,  0x000c,  0x000f,  0x0012,  0x0015,
+	  0x0019,  0x001c,  0x001f,  0x0022,  0x0025,  0x0028,  0x002b,  0x002f,
+	  0x0032,  0x0035,  0x0038,  0x003b,  0x003e,  0x0041,  0x0045,  0x0048,
+	  0x004b,  0x004e,  0x0051,  0x0054,  0x0057,  0x005b,  0x005e,  0x0061,
+	  0x0064,  0x0067,  0x006a,  0x006d,  0x0071,  0x0074,  0x0077,  0x007a,
+	  0x007d,  0x0080,  0x0083,  0x0087,  0x008a,  0x008d,  0x0090,  0x0093,
+	  0x0096,  0x0099,  0x009d,  0x00a0,  0x00a3,  0x00a6,  0x00a9,  0x00ac,
+	  0x00af,  0x00b3,  0x00b6,  0x00b9,  0x00bc,  0x00bf,  0x00c2,  0x00c5,
+	  0x00c9,  0x00cc,  0x00cf,  0x00d2,  0x00d5,  0x00d8,  0x00db,  0x00df,
+	  0x00e2,  0x00e5,  0x00e8,  0x00eb,  0x00ee,  0x00f1,  0x00f5,  0x00f8,
+	  0x00fb,  0x00fe,  0x0101,  0x0104,  0x0107,  0x010b,  0x010e,  0x0111,
+	  0x0114,  0x0117,  0x011a,  0x011d,  0x0121,  0x0124,  0x0127,  0x012a,
+	  0x012d,  0x0130,  0x0133,  0x0137,  0x013a,  0x013d,  0x0140,  0x0143,
+	  0x0146,  0x0149,  0x014d,  0x0150,  0x0153,  0x0156,  0x0159,  0x015c,
+	  0x015f,  0x0163,  0x0166,  0x0169,  0x016c,  0x016f,  0x0172,  0x0175,
+	  0x0178,  0x017c,  0x017f,  0x0182,  0x0185,  0x0188,  0x018b,  0x018e,
+	  0x0192,  0x0195,  0x0198,  0x019b,  0x019e,  0x01a1,  0x01a4,  0x01a8,
+	  0x01ab,  0x01ae,  0x01b1,  0x01b4,  0x01b7,  0x01ba,  0x01be,  0x01c1,
+	  0x01c4,  0x01c7,  0x01ca,  0x01cd,  0x01d0,  0x01d4,  0x01d7,  0x01da,
+	  0x01dd,  0x01e0,  0x01e3,  0x01e6,  0x01ea,  0x01ed,  0x01f0,  0x01f3,
+	  0x01f6,  0x01f9,  0x01fc,  0x0200,  0x0203,  0x0206,  0x0209,  0x020c,
+	  0x020f,  0x0212,  0x0216,  0x0219,  0x021c,  0x021f,  0x0222,  0x0225,
+	  0x0228,  0x022c,  0x022f,  0x0232,  0x0235,  0x0238,  0x023b,  0x023e,
+	  0x0242,  0x0245,  0x0248,  0x024b,  0x024e,  0x0251,  0x0254,  0x0258,
+	  0x025b,  0x025e,  0x0261,  0x0264,  0x0267,  0x026a,  0x026e,  0x0271,
+	  0x0274,  0x0277,  0x027a,  0x027d,  0x0280,  0x0284,  0x0287,  0x028a,
+	  0x028d,  0x0290,  0x0293,  0x0296,  0x029a,  0x029d,  0x02a0,  0x02a3,
+	  0x02a6,  0x02a9,  0x02ac,  0x02b0,  0x02b3,  0x02b6,  0x02b9,  0x02bc,
+	  0x02bf,  0x02c2,  0x02c6,  0x02c9,  0x02cc,  0x02cf,  0x02d2,  0x02d5,
+	  0x02d8,  0x02db,  0x02df,  0x02e2,  0x02e5,  0x02e8,  0x02eb,  0x02ee,
+	  0x02f1,  0x02f5,  0x02f8,  0x02fb,  0x02fe,  0x0301,  0x0304,  0x0307,
+	  0x030b,  0x030e,  0x0311,  0x0314,  0x0317,  0x031a,  0x031d,  0x0321};
 
-short SinTable[256] = {
-	0,	804,	1607,	2410,	3211,	4011,	4808,	5602,
-	6392,	7179,	7961,	8739,	9512,	10278,	11039,	11793,
-	12539,	13278,	14010,	14732,	15446,	16151,	16846,	17530,
-	18204,	18868,	19519,	20159,	20787,	21403,	22005,	22594,
-	23170,	23732,	24279,	24812,	25330,	25832,	26319,	26790,
-	27245,	27684,	28106,	28511,	28898,	29269,	29621,	29956,
-	30273,	30572,	30852,	31114,	31357,	31581,	31785,	31971,
-	32138,	32285,	32413,	32521,	32610,	32679,	32728,	32758,
-	32767,	32758,	32728,	32679,	32610,	32521,	32413,	32285,
-	32138,	31971,	31785,	31581,	31357,	31114,	30852,	30572,
-	30273,	29956,	29621,	29269,	28898,	28511,	28106,	27684,
-	27245,	26790,	26319,	25832,	25330,	24812,	24279,	23732,
-	23170,	22594,	22005,	21403,	20787,	20159,	19519,	18868,
-	18204,	17530,	16846,	16151,	15446,	14732,	14010,	13278,
-	12539,	11793,	11039,	10278,	9512,	8739,	7961,	7179,
-	6392,	5602,	4808,	4011,	3211,	2410,	1607,	804,
-	0,	-804,	-1607,	-2410,	-3211,	-4011,	-4808,	-5602,
-	-6392,	-7179,	-7961,	-8739,	-9512,	-10278,	-11039,	-11793,
-	-12539,	-13278,	-14010,	-14732,	-15446,	-16151,	-16846,	-17530,
-	-18204,	-18868,	-19519,	-20159,	-20787,	-21403,	-22005,	-22594,
-	-23170,	-23732,	-24279,	-24812,	-25330,	-25832,	-26319,	-26790,
-	-27245,	-27684,	-28106,	-28511,	-28898,	-29269,	-29621,	-29956,
-	-30273,	-30572,	-30852,	-31114,	-31357,	-31581,	-31785,	-31971,
-	-32138,	-32285,	-32413,	-32521,	-32610,	-32679,	-32728,	-32758,
-	-32767,	-32758,	-32728,	-32679,	-32610,	-32521,	-32413,	-32285,
-	-32138,	-31971,	-31785,	-31581,	-31357,	-31114,	-30852,	-30572,
-	-30273,	-29956,	-29621,	-29269,	-28898,	-28511,	-28106,	-27684,
-	-27245,	-26790,	-26319,	-25832,	-25330,	-24812,	-24279,	-23732,
-	-23170,	-22594,	-22005,	-21403,	-20787,	-20159,	-19519,	-18868,
-	-18204,	-17530,	-16846,	-16151,	-15446,	-14732,	-14010,	-13278,
-	-12539,	-11793,	-11039,	-10278,	-9512,	-8739,	-7961,	-7179,
-	-6392,	-5602,	-4808,	-4011,	-3211,	-2410,	-1607,	-804};
+const short DSP1_SinTable[256] = {
+	  0x0000,  0x0324,  0x0647,  0x096a,  0x0c8b,  0x0fab,  0x12c8,  0x15e2,
+	  0x18f8,  0x1c0b,  0x1f19,  0x2223,  0x2528,  0x2826,  0x2b1f,  0x2e11,
+	  0x30fb,  0x33de,  0x36ba,  0x398c,  0x3c56,  0x3f17,  0x41ce,  0x447a,
+	  0x471c,  0x49b4,  0x4c3f,  0x4ebf,  0x5133,  0x539b,  0x55f5,  0x5842,
+	  0x5a82,  0x5cb4,  0x5ed7,  0x60ec,  0x62f2,  0x64e8,  0x66cf,  0x68a6,
+	  0x6a6d,  0x6c24,  0x6dca,  0x6f5f,  0x70e2,  0x7255,  0x73b5,  0x7504,
+	  0x7641,  0x776c,  0x7884,  0x798a,  0x7a7d,  0x7b5d,  0x7c29,  0x7ce3,
+	  0x7d8a,  0x7e1d,  0x7e9d,  0x7f09,  0x7f62,  0x7fa7,  0x7fd8,  0x7ff6,
+	  0x7fff,  0x7ff6,  0x7fd8,  0x7fa7,  0x7f62,  0x7f09,  0x7e9d,  0x7e1d,
+	  0x7d8a,  0x7ce3,  0x7c29,  0x7b5d,  0x7a7d,  0x798a,  0x7884,  0x776c,
+	  0x7641,  0x7504,  0x73b5,  0x7255,  0x70e2,  0x6f5f,  0x6dca,  0x6c24,
+	  0x6a6d,  0x68a6,  0x66cf,  0x64e8,  0x62f2,  0x60ec,  0x5ed7,  0x5cb4,
+	  0x5a82,  0x5842,  0x55f5,  0x539b,  0x5133,  0x4ebf,  0x4c3f,  0x49b4,
+	  0x471c,  0x447a,  0x41ce,  0x3f17,  0x3c56,  0x398c,  0x36ba,  0x33de,
+	  0x30fb,  0x2e11,  0x2b1f,  0x2826,  0x2528,  0x2223,  0x1f19,  0x1c0b,
+	  0x18f8,  0x15e2,  0x12c8,  0x0fab,  0x0c8b,  0x096a,  0x0647,  0x0324,
+	 -0x0000, -0x0324, -0x0647, -0x096a, -0x0c8b, -0x0fab, -0x12c8, -0x15e2,
+	 -0x18f8, -0x1c0b, -0x1f19, -0x2223, -0x2528, -0x2826, -0x2b1f, -0x2e11,
+	 -0x30fb, -0x33de, -0x36ba, -0x398c, -0x3c56, -0x3f17, -0x41ce, -0x447a,
+	 -0x471c, -0x49b4, -0x4c3f, -0x4ebf, -0x5133, -0x539b, -0x55f5, -0x5842,
+	 -0x5a82, -0x5cb4, -0x5ed7, -0x60ec, -0x62f2, -0x64e8, -0x66cf, -0x68a6,
+	 -0x6a6d, -0x6c24, -0x6dca, -0x6f5f, -0x70e2, -0x7255, -0x73b5, -0x7504,
+	 -0x7641, -0x776c, -0x7884, -0x798a, -0x7a7d, -0x7b5d, -0x7c29, -0x7ce3,
+	 -0x7d8a, -0x7e1d, -0x7e9d, -0x7f09, -0x7f62, -0x7fa7, -0x7fd8, -0x7ff6,
+	 -0x7fff, -0x7ff6, -0x7fd8, -0x7fa7, -0x7f62, -0x7f09, -0x7e9d, -0x7e1d,
+	 -0x7d8a, -0x7ce3, -0x7c29, -0x7b5d, -0x7a7d, -0x798a, -0x7884, -0x776c,
+	 -0x7641, -0x7504, -0x73b5, -0x7255, -0x70e2, -0x6f5f, -0x6dca, -0x6c24,
+	 -0x6a6d, -0x68a6, -0x66cf, -0x64e8, -0x62f2, -0x60ec, -0x5ed7, -0x5cb4,
+	 -0x5a82, -0x5842, -0x55f5, -0x539b, -0x5133, -0x4ebf, -0x4c3f, -0x49b4,
+	 -0x471c, -0x447a, -0x41ce, -0x3f17, -0x3c56, -0x398c, -0x36ba, -0x33de,
+	 -0x30fb, -0x2e11, -0x2b1f, -0x2826, -0x2528, -0x2223, -0x1f19, -0x1c0b,
+	 -0x18f8, -0x15e2, -0x12c8, -0x0fab, -0x0c8b, -0x096a, -0x0647, -0x0324};
 
-
-#define Lo(x) (x & 0xff)
-#define Hi(x) (x >> 8)
-
-short SinInt(short Angle)
+short DSP1_Sin(short Angle)
 {
-	if (Angle == -32768)
-		return 0;
-
-	if (Angle < 0)
-		return -SinInt(-Angle);
-	else
-	{
-		int S = SinTable[Hi(Angle)]	+ ((MulTable[Lo(Angle)]	* SinTable[Hi((Angle + 0x4000))]) >> 15);
-		if (S > 32767)
-			S = 32767;
-		if (S < -32768)
-			S = -32767;
-		return (short) S;
+	if (Angle < 0) {
+		if (Angle == -32768) return 0;
+		return -DSP1_Sin(-Angle);
 	}
+	int S = DSP1_SinTable[Angle >> 8] + (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[0x40 + (Angle >> 8)] >> 15);
+	if (S > 32767) S = 32767;
+	return (short) S;
 }
 
-short CosInt(short Angle)
+short DSP1_Cos(short Angle)
 {
-    int S;
-	if (Angle == -32768) return -32768;
-
-	if (Angle < 0) Angle = -Angle;
-
-	S = SinTable[Hi((Angle + 0x4000))] - ((MulTable[Lo(Angle)] * (-SinTable[Hi((Angle + 0x8000))])) >> 15);
-	if (S > 32767)
-		S = 32767;
-	if (S < -32768)
-		S = -32767;
+	if (Angle < 0) {
+		if (Angle == -32768) return -32768;
+		Angle = -Angle;
+	}
+	int S = DSP1_SinTable[0x40 + (Angle >> 8)] - (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[Angle >> 8] >> 15);
+	if (S < -32768) S = -32767;
 	return (short) S;
+}
+
+void DSP1_Normalize(short m, short *Coefficient, short *Exponent)
+{
+	short i = 0x4000;
+	short e = 0;
+
+	if (m < 0)
+		while ((m & i) && i) {
+			i >>= 1;
+			e++;
+		}
+	else
+		while (!(m & i) && i) {
+			i >>= 1;
+			e++;
+		}
+
+	if (e > 0)
+		*Coefficient = m * DSP1ROM[0x21 + e] << 1;
+	else
+		*Coefficient = m;
+
+	*Exponent -= e;
+}
+
+void DSP1_NormalizeDouble(int Product, short *Coefficient, short *Exponent)
+{
+	short n = Product & 0x7fff;
+	short m = Product >> 15;
+	short i = 0x4000;
+	short e = 0;
+
+	if (m < 0)
+		while ((m & i) && i) {
+			i >>= 1;
+			e++;
+		}
+	else
+		while (!(m & i) && i) {
+			i >>= 1;
+			e++;
+		}
+
+	if (e > 0)
+	{
+		*Coefficient = m * DSP1ROM[0x0021 + e] << 1;
+
+		if (e < 15)
+			*Coefficient += n * DSP1ROM[0x0040 - e] >> 15;
+		else
+		{
+			i = 0x4000;
+
+			if (m < 0)
+				while ((n & i) && i) {
+					i >>= 1;
+					e++;
+				}
+			else
+				while (!(n & i) && i) {
+					i >>= 1;
+					e++;
+				}
+
+			if (e > 15)
+				*Coefficient = n * DSP1ROM[0x0012 + e] << 1;
+			else
+				*Coefficient += n;
+		}
+	}
+	else
+		*Coefficient = m;
+
+	*Exponent = e;
 }
 
 void DSPOp04()
 {
-	Op04Sin = SinInt(Op04Angle) * Op04Radius >> 15;
-	Op04Cos = CosInt(Op04Angle) * Op04Radius >> 15;
+	Op04Sin = DSP1_Sin(Op04Angle) * Op04Radius >> 15;
+	Op04Cos = DSP1_Cos(Op04Angle) * Op04Radius >> 15;
 }
 
-short Op0CA; // Angles are signed
+short Op0CA;
 short Op0CX1;
 short Op0CY1;
 short Op0CX2;
 short Op0CY2;
 
-
 void DSPOp0C()
 {
-	Op0CX2 = (Op0CY1 * SinInt(Op0CA) >> 15) + (Op0CX1 * CosInt(Op0CA) >> 15);
-	Op0CY2 = (Op0CY1 * CosInt(Op0CA) >> 15) - (Op0CX1 * SinInt(Op0CA) >> 15);
+	Op0CX2 = (Op0CY1 * DSP1_Sin(Op0CA) >> 15) + (Op0CX1 * DSP1_Cos(Op0CA) >> 15);
+	Op0CY2 = (Op0CY1 * DSP1_Cos(Op0CA) >> 15) - (Op0CX1 * DSP1_Sin(Op0CA) >> 15);
 }
 
 
@@ -990,15 +1015,12 @@ void DSPOp06()
    ObjPY=Op06Y-Op02FY;
    ObjPZ=Op06Z-Op02FZ;
 
-
-
    // rotate around Z
    tanval2 = Angle(-Op02AAS+32768);
 //   tanval2 = (-Op02AAS+32768)/(65536/INCR);
    ObjPX1=(ObjPX*Cos(tanval2)+ObjPY*-Sin(tanval2));
    ObjPY1=(ObjPX*Sin(tanval2)+ObjPY*Cos(tanval2));
    ObjPZ1=ObjPZ;
-
 
    // rotate around X
 //   tanval2 = (-Op02AZS/(65536/INCR)) & 1023;
@@ -1096,7 +1118,6 @@ void DSPOp06()
       Op06S=0xFFFF;
    }
 
-
    #ifdef DebugDSP1
       Log_Message("OP06 X:%d Y:%d Z:%d",Op06X,Op06Y,Op06Z);
       Log_Message("OP06 H:%d V:%d S:%d",Op06H,Op06V,Op06S);
@@ -1121,16 +1142,15 @@ short Op21m;
 short Op21Zr;
 short Op21Xr;
 short Op21Yr;
-double sc,sc2,sc3;
 
-void DSPOp01  ()
+void DSPOp01()
 {
-	short SinAz = SinInt(Op01Zr);
-	short CosAz = CosInt(Op01Zr);
-	short SinAy = SinInt(Op01Yr);
-	short CosAy = CosInt(Op01Yr);
-	short SinAx = SinInt(Op01Xr);
-	short CosAx = CosInt(Op01Xr);
+	short SinAz = DSP1_Sin(Op01Zr);
+	short CosAz = DSP1_Cos(Op01Zr);
+	short SinAy = DSP1_Sin(Op01Yr);
+	short CosAy = DSP1_Cos(Op01Yr);
+	short SinAx = DSP1_Sin(Op01Xr);
+	short CosAx = DSP1_Cos(Op01Xr);
 
 	Op01m >>= 1;
 
@@ -1149,12 +1169,12 @@ void DSPOp01  ()
 
 void DSPOp11()
 {
-	short SinAz = SinInt(Op11Zr);
-	short CosAz = CosInt(Op11Zr);
-	short SinAy = SinInt(Op11Yr);
-	short CosAy = CosInt(Op11Yr);
-	short SinAx = SinInt(Op11Xr);
-	short CosAx = CosInt(Op11Xr);
+	short SinAz = DSP1_Sin(Op11Zr);
+	short CosAz = DSP1_Cos(Op11Zr);
+	short SinAy = DSP1_Sin(Op11Yr);
+	short CosAy = DSP1_Cos(Op11Yr);
+	short SinAx = DSP1_Sin(Op11Xr);
+	short CosAx = DSP1_Cos(Op11Xr);
 
 	Op11m >>= 1;
 
@@ -1173,12 +1193,12 @@ void DSPOp11()
 
 void DSPOp21()
 {
-	short SinAz = SinInt(Op21Zr);
-	short CosAz = CosInt(Op21Zr);
-	short SinAy = SinInt(Op21Yr);
-	short CosAy = CosInt(Op21Yr);
-	short SinAx = SinInt(Op21Xr);
-	short CosAx = CosInt(Op21Xr);
+	short SinAz = DSP1_Sin(Op21Zr);
+	short CosAz = DSP1_Cos(Op21Zr);
+	short SinAy = DSP1_Sin(Op21Yr);
+	short CosAy = DSP1_Cos(Op21Yr);
+	short SinAx = DSP1_Sin(Op21Xr);
+	short CosAx = DSP1_Cos(Op21Xr);
 
 	Op21m >>= 1;
 
@@ -1216,13 +1236,13 @@ short Op2DU;
 
 void DSPOp0D()
 {
-	Op0DF = (Op0DX * matrixA[0][0] >> 15) + (Op0DY * matrixA[0][1] >> 15) + (Op0DZ * matrixA[0][2] >> 15);
+    Op0DF = (Op0DX * matrixA[0][0] >> 15) + (Op0DY * matrixA[0][1] >> 15) + (Op0DZ * matrixA[0][2] >> 15);
 	Op0DL = (Op0DX * matrixA[1][0] >> 15) + (Op0DY * matrixA[1][1] >> 15) + (Op0DZ * matrixA[1][2] >> 15);
 	Op0DU = (Op0DX * matrixA[2][0] >> 15) + (Op0DY * matrixA[2][1] >> 15) + (Op0DZ * matrixA[2][2] >> 15);
 
-   #ifdef DebugDSP1
-      Log_Message("OP0D X: %d Y: %d Z: %d / F: %d L: %d U: %d",Op0DX,Op0DY,Op0DZ,Op0DF,Op0DL,Op0DU);
-   #endif
+	#ifdef DebugDSP1
+		Log_Message("OP0D X: %d Y: %d Z: %d / F: %d L: %d U: %d",Op0DX,Op0DY,Op0DZ,Op0DF,Op0DL,Op0DU);
+	#endif
 }
 
 void DSPOp1D()
@@ -1241,9 +1261,10 @@ void DSPOp2D()
 	Op2DF = (Op2DX * matrixC[0][0] >> 15) + (Op2DY * matrixC[0][1] >> 15) + (Op2DZ * matrixC[0][2] >> 15);
 	Op2DL = (Op2DX * matrixC[1][0] >> 15) + (Op2DY * matrixC[1][1] >> 15) + (Op2DZ * matrixC[1][2] >> 15);
 	Op2DU = (Op2DX * matrixC[2][0] >> 15) + (Op2DY * matrixC[2][1] >> 15) + (Op2DZ * matrixC[2][2] >> 15);
-#ifdef DebugDSP1
-      Log_Message("OP2D X: %d Y: %d Z: %d / F: %d L: %d U: %d",Op2DX,Op2DY,Op2DZ,Op2DF,Op2DL,Op2DU);
-   #endif
+
+	#ifdef DebugDSP1
+		Log_Message("OP2D X: %d Y: %d Z: %d / F: %d L: %d U: %d",Op2DX,Op2DY,Op2DZ,Op2DF,Op2DL,Op2DU);
+	#endif
 }
 
 short Op03F;
@@ -1271,9 +1292,9 @@ void DSPOp03()
 	Op03Y = (Op03F * matrixA[0][1] >> 15) + (Op03L * matrixA[1][1] >> 15) + (Op03U * matrixA[2][1] >> 15);
 	Op03Z = (Op03F * matrixA[0][2] >> 15) + (Op03L * matrixA[1][2] >> 15) + (Op03U * matrixA[2][2] >> 15);
 
-   #ifdef DebugDSP1
-      Log_Message("OP03 F: %d L: %d U: %d / X: %d Y: %d Z: %d",Op03F,Op03L,Op03U,Op03X,Op03Y,Op03Z);
-   #endif
+	#ifdef DebugDSP1
+		Log_Message("OP03 F: %d L: %d U: %d / X: %d Y: %d Z: %d",Op03F,Op03L,Op03U,Op03X,Op03Y,Op03Z);
+	#endif
 }
 
 void DSPOp13()
@@ -1281,9 +1302,10 @@ void DSPOp13()
 	Op13X = (Op13F * matrixB[0][0] >> 15) + (Op13L * matrixB[1][0] >> 15) + (Op13U * matrixB[2][0] >> 15);
 	Op13Y = (Op13F * matrixB[0][1] >> 15) + (Op13L * matrixB[1][1] >> 15) + (Op13U * matrixB[2][1] >> 15);
 	Op13Z = (Op13F * matrixB[0][2] >> 15) + (Op13L * matrixB[1][2] >> 15) + (Op13U * matrixB[2][2] >> 15);
-   #ifdef DebugDSP1
-      Log_Message("OP13 F: %d L: %d U: %d / X: %d Y: %d Z: %d",Op13F,Op13L,Op13U,Op13X,Op13Y,Op13Z);
-   #endif
+
+	#ifdef DebugDSP1
+		Log_Message("OP13 F: %d L: %d U: %d / X: %d Y: %d Z: %d",Op13F,Op13L,Op13U,Op13X,Op13Y,Op13Z);
+	#endif
 }
 
 void DSPOp23()
@@ -1291,9 +1313,10 @@ void DSPOp23()
 	Op23X = (Op23F * matrixC[0][0] >> 15) + (Op23L * matrixC[1][0] >> 15) + (Op23U * matrixC[2][0] >> 15);
 	Op23Y = (Op23F * matrixC[0][1] >> 15) + (Op23L * matrixC[1][1] >> 15) + (Op23U * matrixC[2][1] >> 15);
 	Op23Z = (Op23F * matrixC[0][2] >> 15) + (Op23L * matrixC[1][2] >> 15) + (Op23U * matrixC[2][2] >> 15);
-   #ifdef DebugDSP1
-      Log_Message("OP23 F: %d L: %d U: %d / X: %d Y: %d Z: %d",Op23F,Op23L,Op23U,Op23X,Op23Y,Op23Z);
-   #endif
+
+	#ifdef DebugDSP1
+		Log_Message("OP23 F: %d L: %d U: %d / X: %d Y: %d Z: %d",Op23F,Op23L,Op23U,Op23X,Op23Y,Op23Z);
+	#endif
 }
 
 short Op14Zr;
@@ -1308,32 +1331,46 @@ short Op14Yrr;
 
 void DSPOp14()
 {
-	short Coefficient;
-	short Exponent;
-	int Rtmp;
-
-	DSP1_Inverse(CosInt(Op14Xr), 0, &Coefficient, &Exponent);
-
+	short CSec, ESec, CTan, CSin, C, E;
+		
+	DSP1_Inverse(DSP1_Cos(Op14Xr), 0, &CSec, &ESec);
+	
 	// Rotation Around Z
-	Rtmp = ((Op14U * CosInt(Op14Yr)) >> 15) - ((Op14F * SinInt(Op14Yr)) >> 15);
-	Rtmp = (Coefficient * (short) Rtmp) >> (15 - Exponent);
-	if (Rtmp > 32767)
-		Rtmp = 32767;
-	if (Rtmp < -32768)
-		Rtmp = -32767;
-	Op14Zrr = Op14Zr + Rtmp;
+	DSP1_NormalizeDouble(Op14U * DSP1_Cos(Op14Yr) - Op14F * DSP1_Sin(Op14Yr), &C, &E);
+	
+	E = ESec - E;
+	
+	DSP1_Normalize(C * CSec >> 15, &C, &E);
+	
+	if (E > 0)	{
+		if (C > 0) C = 32767; else if (C < 0) C = -32767;
+	} else {
+		if (E < 0) C = C * DSP1ROM[0x31 + E] >> 15;
+	}
+	
+	Op14Zrr = Op14Zr + C;
 
 	// Rotation Around X
-	Op14Xrr = Op14Xr + ((Op14U * SinInt(Op14Yr)) >> 15) + ((Op14F * CosInt(Op14Yr)) >> 15);
+	Op14Xrr = Op14Xr + (Op14U * DSP1_Sin(Op14Yr) >> 15) + (Op14F * DSP1_Cos(Op14Yr) >> 15);
 
 	// Rotation Around Y
-	Rtmp = ((Op14U * CosInt(Op14Yr)) >> 15) + ((Op14F * SinInt(Op14Yr)) >> 15);
-	Rtmp = (((Coefficient * (short) Rtmp) >> 15) * SinInt(Op14Xr)) >> (15 - Exponent);
-	if (Rtmp > 32767)
-		Rtmp = 32767;
-	if (Rtmp < -32768)
-		Rtmp = -32767;
-	Op14Yrr = Op14Yr - Rtmp + Op14L;
+	DSP1_NormalizeDouble(Op14U * DSP1_Cos(Op14Yr) + Op14F * DSP1_Sin(Op14Yr), &C, &E);
+
+	E = ESec - E;
+
+	DSP1_Normalize(DSP1_Sin(Op14Xr), &CSin, &E);
+
+	CTan = CSec * CSin >> 15;
+
+	DSP1_Normalize(-(C * CTan >> 15), &C, &E);
+	
+	if (E > 0)	{
+		if (C > 0) C = 32767; else if (C < 0) C = -32767;
+	} else {
+		if (E < 0) C = C * DSP1ROM[0x31 + E] >> 15;
+	}
+
+	Op14Yrr = Op14Yr + C + Op14L;
 }
 
 short Op0EH;
@@ -1343,7 +1380,6 @@ short Op0EY;
 
 void DSPOp0E()
 {
-
    // screen Directions UP
    RVPos = Op0EV;
    RHPos = Op0EH;
@@ -1371,58 +1407,54 @@ short Op2BS;
 
 void DSPOp0B()
 {
-    Op0BS = ((Op0BX*matrixA[0][0]+Op0BY*matrixA[0][1]+Op0BZ*matrixA[0][2])>>15);
-#ifdef DebugDSP1
-        Log_Message("OP0B");
-#endif
+    Op0BS = (Op0BX * matrixA[0][0] + Op0BY * matrixA[0][1] + Op0BZ * matrixA[0][2]) >> 15;
+
+	#ifdef DebugDSP1
+		Log_Message("OP0B");
+	#endif
 }
 
 void DSPOp1B()
 {   
-    Op1BS = ((Op1BX*matrixB[0][0]+Op1BY*matrixB[0][1]+Op1BZ*matrixB[0][2])>>15);
-#ifdef DebugDSP1
-      Log_Message("OP1B X: %d Y: %d Z: %d S: %d",Op1BX,Op1BY,Op1BZ,Op1BS);
-      Log_Message("     MX: %d MY: %d MZ: %d Scale: %d",(short)(matrixB[0][0]*100),(short)(matrixB[0][1]*100),(short)(matrixB[0][2]*100),(short)(sc2*100));
-#endif
+    Op1BS = (Op1BX * matrixB[0][0] + Op1BY * matrixB[0][1] + Op1BZ * matrixB[0][2]) >> 15;
 
+	#ifdef DebugDSP1
+		Log_Message("OP1B X: %d Y: %d Z: %d S: %d",Op1BX,Op1BY,Op1BZ,Op1BS);
+		Log_Message("     MX: %d MY: %d MZ: %d Scale: %d",(short)(matrixB[0][0]*100),(short)(matrixB[0][1]*100),(short)(matrixB[0][2]*100),(short)(sc2*100));
+	#endif
 }
 
 void DSPOp2B()
 {
-    Op2BS = (short)((Op2BX*matrixC[0][0]+Op2BY*matrixC[0][1]+Op2BZ*matrixC[0][2])>>15);
-#ifdef DebugDSP1
-      Log_Message("OP2B");
-#endif
+    Op2BS = (Op2BX * matrixC[0][0] + Op2BY * matrixC[0][1] + Op2BZ * matrixC[0][2]) >> 15;
+
+	#ifdef DebugDSP1
+		Log_Message("OP2B");
+	#endif
 }
 
 short Op08X,Op08Y,Op08Z,Op08Ll,Op08Lh;
-long Op08Size;
 
 void DSPOp08()
 {
-   // This is bit accurate to DSP1B when compiled with VC 6 on a P4
+	int Op08Size = (Op08X * Op08X + Op08Y * Op08Y + Op08Z * Op08Z) << 1;
+	Op08Ll = Op08Size & 0xffff;
+	Op08Lh = (Op08Size >> 16) & 0xffff;
 
-   Op08Size=(Op08X*Op08X+Op08Y*Op08Y+Op08Z*Op08Z)*2;
-   Op08Ll = Op08Size&0xFFFF;
-   Op08Lh = (Op08Size>>16) & 0xFFFF;
-   #ifdef DebugDSP1
-      Log_Message("OP08 %d,%d,%d",Op08X,Op08Y,Op08Z);
-      Log_Message("OP08 ((Op08X^2)+(Op08Y^2)+(Op08X^2))=%x",Op08Size );
-   #endif
+	#ifdef DebugDSP1
+		Log_Message("OP08 %d,%d,%d",Op08X,Op08Y,Op08Z);
+		Log_Message("OP08 ((Op08X^2)+(Op08Y^2)+(Op08X^2))=%x",Op08Size );
+	#endif
 }
 
 short Op18X,Op18Y,Op18Z,Op18R,Op18D;
 
 void DSPOp18()
 {
-   // This is bit accurate to DSP1B when compiled with VC6 on a P4
+   Op18D = (Op18X * Op18X + Op18Y * Op18Y + Op18Z * Op18Z - Op18R * Op18R) >> 15;
 
-   int x,y,z,r;	// int32
-   x=Op18X; y=Op18Y; z=Op18Z; r=Op18R;
-   r = (x*x+y*y+z*z-r*r);
-   Op18D=(short) (r >> 15);
    #ifdef DebugDSP1
-      Log_Message("OP18 X: %d Y: %d Z: %d R: %D DIFF %d",Op18X,Op18Y,Op18Z,Op18D);
+      Log_Message("Op18 X: %d Y: %d Z: %d R: %D DIFF %d",Op18X,Op18Y,Op38Z,Op18D);
    #endif
 }
 
@@ -1430,18 +1462,13 @@ short Op38X,Op38Y,Op38Z,Op38R,Op38D;
 
 void DSPOp38()
 {
-   // This is bit accurate to DSP1B when compiled with VC6 on a P4
-
-   int x,y,z,r;	// int32
-   x=Op38X; y=Op38Y; z=Op38Z; r=Op38R;
-   r = (x*x+y*y+z*z-r*r);
-   Op38D=(short) (r >> 15);
+   Op38D = (Op38X * Op38X + Op38Y * Op38Y + Op38Z * Op38Z - Op38R * Op38R) >> 15;
    Op38D++;
+
    #ifdef DebugDSP1
       Log_Message("OP38 X: %d Y: %d Z: %d R: %D DIFF %d",Op38X,Op38Y,Op38Z,Op38D);
    #endif
 }
-
 
 short Op28X;
 short Op28Y;
@@ -1450,10 +1477,24 @@ short Op28R;
 
 void DSPOp28()
 {
-   // This works pretty good until r overflows from 0x7fff, then it goes to h*ll.
-   // Hopefully games don't count on overflow cases matching the DSP
+	int Radius = Op28X * Op28X + Op28Y * Op28Y + Op28Z * Op28Z;
 
-   Op28R=(short)sqrt(Op28X*Op28X+Op28Y*Op28Y+Op28Z*Op28Z);
+	if (Radius == 0) Op28R = 0;
+	else
+	{
+		short C, E;
+		DSP1_NormalizeDouble(Radius, &C, &E);
+		if (E & 1) C = C * 0x4000 >> 15;
+
+		short Pos = C * 0x0040 >> 15;
+
+		short Node1 = DSP1ROM[0x00d5 + Pos];
+		short Node2 = DSP1ROM[0x00d6 + Pos];
+
+		Op28R = ((Node2 - Node1) * (C & 0x1ff) >> 9) + Node1;
+		Op28R >>= (E >> 1);
+	}
+
    #ifdef DebugDSP1
       Log_Message("OP28 X:%d Y:%d Z:%d",Op28X,Op28Y,Op28Z);
       Log_Message("OP28 Vector Length %d",Op28R);
@@ -1471,34 +1512,33 @@ short Op1CZ2;
 
 void DSPOp1C()
 {
-   // rotate around Z
-   Op1CX1=((Op1CXBR*CosInt(Op1CZ))>>15)+((Op1CYBR*SinInt(Op1CZ))>>15);
-   Op1CY1=-(((Op1CXBR*SinInt(Op1CZ))>>15)+((Op1CYBR*CosInt(Op1CZ))>>15));
-   Op1CZ1=Op1CZBR;
-   // rotate around Y
-   Op1CX2=((Op1CX1*CosInt(Op1CY))>>15)-((Op1CZ1*SinInt(Op1CY))>>15);
-   Op1CY2=Op1CY1;
-   Op1CZ2=((Op1CX1*SinInt(Op1CY))>>15)+((Op1CZ1*CosInt(Op1CY))>>15);
-   // rotate around X
-   Op1CXAR=Op1CX2;
-   Op1CYAR=((Op1CY2*CosInt(Op1CX))>>15)+((Op1CZ2*SinInt(Op1CX))>>15);
-   Op1CZAR=-(((Op1CY2*-SinInt(Op1CX))>>15)+((Op1CZ2*CosInt(Op1CX))>>15));
 
-   #ifdef DebugDSP1
-      Log_Message("OP1C Apply Matrix CX:%d CY:%d CZ",Op1CXAR,Op1CYAR,Op1CZAR);
-   #endif
+	// Rotate Around Op1CZ1
+	Op1CX1 = (Op1CYBR * DSP1_Sin(Op1CZ) >> 15) + (Op1CXBR * DSP1_Cos(Op1CZ) >> 15);
+	Op1CY1 = (Op1CYBR * DSP1_Cos(Op1CZ) >> 15) - (Op1CXBR * DSP1_Sin(Op1CZ) >> 15);
+	Op1CXBR = Op1CX1; Op1CYBR = Op1CY1;
+
+	// Rotate Around Op1CY1
+	Op1CZ1 = (Op1CXBR * DSP1_Sin(Op1CY) >> 15) + (Op1CZBR * DSP1_Cos(Op1CY) >> 15);
+	Op1CX1 = (Op1CXBR * DSP1_Cos(Op1CY) >> 15) - (Op1CZBR * DSP1_Sin(Op1CY) >> 15);
+	Op1CXAR = Op1CX1; Op1CZBR = Op1CZ1;
+
+	// Rotate Around Op1CX1	
+	Op1CY1 = (Op1CZBR * DSP1_Sin(Op1CX) >> 15) + (Op1CYBR * DSP1_Cos(Op1CX) >> 15);
+	Op1CZ1 = (Op1CZBR * DSP1_Cos(Op1CX) >> 15) - (Op1CYBR * DSP1_Sin(Op1CX) >> 15);
+	Op1CYAR = Op1CY1; Op1CZAR = Op1CZ1;
+
+	#ifdef DebugDSP1
+		Log_Message("OP1C Apply Matrix CX:%d CY:%d CZ",Op1CXAR,Op1CYAR,Op1CZAR);
+	#endif
 }
-// Op 0F = Test DSP1 RAM
-//         Returns 0x0000 if RAM checks OK
 
 unsigned short Op0FRamsize;
 unsigned short Op0FPass;
 
 void DSPOp0F()
 {
-   // We use our PC's RAM, not DSP1 RAM but we need to pass the RAM check
    Op0FPass = 0x0000;
-   return;
 
    #ifdef DebugDSP1
       Log_Message("OP0F RAM Test Pass:%d", Op0FPass);
@@ -1512,4 +1552,3 @@ void DSPOp2F()
 {
 	Op2FSize=0x100;
 }
-
