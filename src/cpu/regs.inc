@@ -1323,7 +1323,6 @@ debblah2:
     pop edx
     ret
 
-
     mov bx,[resolutn]
     inc bx
     cmp word[curypos],bx
