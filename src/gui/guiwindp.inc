@@ -5186,7 +5186,9 @@ GUIGUIAboutText6b db '    TEUF',0
 GUIGUIAboutText6d db '    THEODDONE33',0
 GUIGUIAboutText6e db '    STAINLESS',0
 
-%ifdef __WIN32__
+%ifdef __MSDOS__
+GUIGUIAboutText7 db 'DOS VERSION',0
+%elifdef __WIN32__
 GUIGUIAboutText7 db 'WIN PORT V1.06',0
 %elifdef __LINUX__
 GUIGUIAboutText7 db 'LINUX PORT V0.37',0
@@ -5199,7 +5201,7 @@ GUIGUIAboutTextC db 'software, and you are welcome',0
 GUIGUIAboutTextD db 'to redistribute it under',0
 GUIGUIAboutTextE db 'certain conditions; please',0
 GUIGUIAboutTextF db 'please read ',39,'LICENSE',39,0
-GUIGUIAboutTextG db 'thoroughly before using it.',39,0
+GUIGUIAboutTextG db 'thoroughly before using it.',0
 
 DisplayGUIMovies:
     GUIDrawWindowBox 15,GUIMovieDisp
