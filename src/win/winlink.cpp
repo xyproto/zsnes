@@ -1622,13 +1622,27 @@ void initwinvideo(void)
          break;
       case 23:
          WindowWidth=1280;
-         WindowHeight=960;
-         SurfaceX=640;
-         SurfaceY=480;
+         WindowHeight=1024;
          break;
       case 24:
          WindowWidth=1280;
-         WindowHeight=960;
+         WindowHeight=1024;
+         SurfaceX=512;
+         SurfaceY=448;
+         break;
+      case 25:
+         WindowWidth=1280;
+         WindowHeight=1024;
+         break;
+      case 26:
+         WindowWidth=1280;
+         WindowHeight=1024;
+         SurfaceX=640;
+         SurfaceY=480;
+         break;
+      case 27:
+         WindowWidth=1280;
+         WindowHeight=1024;
          SurfaceX=512;
          SurfaceY=448;
          break;
