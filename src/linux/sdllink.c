@@ -1056,8 +1056,7 @@ void drawscreenwin(void)
 		incl %%eax
 		addl Temp1, %%edi
 		subl $512, %%edi
-		subl $512, %%esi
-		addl $576, %%esi
+		addl $64, %%esi
 		cmpl $223, %%eax
 		jne Copying3
 
@@ -1084,8 +1083,7 @@ void drawscreenwin(void)
 		incl %%eax
 		addl Temp1, %%edi
 		subl $512, %%edi
-		subl $512, %%esi
-		addl $576, %%esi
+		addl $64, %%esi
 		cmpl $223, %%eax
 		jne Copying
 		xorl %%eax, %%eax
@@ -1120,8 +1118,7 @@ void drawscreenwin(void)
 		     incl %%eax
 		     addl Temp1, %%edi
 		     subl $1024, %%edi
-		     subl $512, %%esi
-		     addl $576, %%esi
+		     addl $64, %%esi
 		     cmpl $223, %%eax
 		     jne Copying32b
                      popw %%es
@@ -1219,8 +1216,7 @@ void drawscreenwin(void)
                incl %%ebx
                addl Temp1, %%edi
                subl $640, %%edi
-               subl $512, %%esi
-               addl $576, %%esi
+               addl $564, %%esi
                cmpl $223, %%ebx
                jne Copying2MMX
                
@@ -1263,8 +1259,7 @@ void drawscreenwin(void)
                incl %%ebx
                addl Temp1, %%edi
                subl $640, %%edi
-               subl $512, %%esi
-               addl $576, %%esi
+               addl $64, %%esi
                cmpl $223, %%ebx
                jne Copying2
                
@@ -1368,9 +1363,8 @@ void drawscreenwin(void)
 		     addl $2, %%esi
 		     movl (%%ebx, %%eax, 4), %%edx
 		     movl %%edx, (%%edi)
-		     addl $4, %%edi
-		     movl %%edx, (%%edi)
-		     addl $4, %%edi
+		     movl %%edx, 4(%%edi)
+		     addl $8, %%edi
 		     loop CopyLoop32c
 		     pushl %%esi
 		     movl %%edi, %%esi
@@ -1381,15 +1375,16 @@ void drawscreenwin(void)
 		     popl %%esi
 		     popl %%eax
 		     incl %%eax
-		     addl Temp1, %%edi
-		     subl $2048, %%edi
-		     subl $512, %%esi
-		     addl $576, %%esi
+		     addl $64, %%esi
 		     cmpl $223, %%eax
 		     jne Copying32c
                      popw %%es
 	" : : : "cc", "memory","eax","ebx","ecx","edx","edi","esi");
 			   break;
+	/*
+		     addl Temp1, %%edi
+		     subl $2048, %%edi
+		     */
 		   default:
 			   UnlockSurface();
 			   fprintf(stderr, "Mode only available in 16 or 32 bit color.\n");
@@ -1432,30 +1427,30 @@ void drawscreenwin(void)
 		     addl $2, %%esi
 		     movl (%%ebx, %%eax, 4), %%edx
 		     movl %%edx, (%%edi)
-		     addl $4, %%edi
-		     movl %%edx, (%%edi)
-		     addl $4, %%edi
+		     movl %%edx, 4(%%edi)
+		     addl $8, %%edi
 		     loop CopyLoop32d
+		     addl $512, %%edi
 		     pushl %%esi
 		     movl %%edi, %%esi
 		     subl Temp1, %%esi
-		     addl $256, %%edi
 		     movl $512, %%ecx
 		     rep
 		     movsl
 		     popl %%esi
 		     popl %%eax
 		     incl %%eax
-		     addl Temp1, %%edi
-		     addl $256, %%edi
-		     subl $2048, %%edi
-		     subl $512, %%esi
-		     addl $576, %%esi
+		     addl $512, %%edi
+		     addl $64, %%esi
 		     cmpl $223, %%eax
 		     jne Copying32d
                      popw %%es
 	" : : : "cc", "memory","eax","ebx","ecx","edx","edi","esi");
 		     break;
+	/*
+		     addl Temp1, %%edi
+		     subl $2048, %%edi
+		     */
 		default:
 			   UnlockSurface();
 			   fprintf(stderr, "Mode only available in 16 or 32 bit color.\n");
