@@ -494,6 +494,7 @@ reg2101w:
 
 ; OAM address register
 reg2102w:
+    mov word[oamaddr],0
     shr word[oamaddr],1
     mov [oamaddr],al
     shl word[oamaddr],1
@@ -553,7 +554,7 @@ reg2104w:
     je .noinc
     inc dword[oamaddr]
     cmp ebx,544
-    je .overflow
+    jae .overflow
 .noinc
     mov [oamram+ebx],al
     ret
