@@ -1702,6 +1702,10 @@ NEWSYM init65816
     je .nosdd1
     mov dword[CSStatus+25],'SDD '
 .nosdd1
+    cmp byte[OBCEnable],0
+    je .noobc
+    mov dword[CSStatus+25],'OBC '
+.noobc
 
     mov ax,[Checksumvalue]
     mov esi,[romdata]
@@ -5296,6 +5300,7 @@ NEWSYM CheckROMType
     mov byte[SA1Enable],0
     mov byte[SDD1Enable],0
     mov byte[SFXSRAM],0
+    mov byte[OBCEnable],0
     mov al,[esi]
     cmp al,055h
     jne .noRTC
@@ -5337,6 +5342,13 @@ NEWSYM CheckROMType
     mov byte[yesoutofmemory],1
     jmp .nosfx
 .sfxokay
+    mov esi,[romdata]
+    add esi,32704
+    cmp dword[esi],'META'
+    jne .notsfx
+    mov byte[OBCEnable],1
+    jmp .nosfx
+.notsfx
     mov byte[SFXEnable],1
     mov dword[memtabler8+70h*4],sfxaccessbankr8
     mov dword[memtablew8+70h*4],sfxaccessbankw8
@@ -5436,6 +5448,7 @@ NEWSYM SPC7110Enable, db 0
 NEWSYM RTCEnable, db 0
 NEWSYM SA1Enable, db 0
 NEWSYM SDD1Enable, db 0
+NEWSYM OBCEnable, db 0
 NEWSYM C4RamR,   dd 0
 NEWSYM C4RamW,   dd 0
 NEWSYM C4Ram,   dd 0
