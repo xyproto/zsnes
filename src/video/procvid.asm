@@ -116,7 +116,7 @@ NEWSYM FPUZero
 .Zero dd 0,0
 .Zero2 dd 0,0
 
-NEWSYM FPUCopy, db 0
+NEWSYM FPUCopy, db 3
 
 ;*******************************************************
 ; ShowVideo                   Processes & displays video

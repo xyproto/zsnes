@@ -1568,6 +1568,8 @@ NEWSYM DosExit ; Terminate Program
 
 NEWSYM MMXCheck
     ; Check for cpu that doesn't support CPUID
+    cmp byte[FPUCopy],3
+    jne .nommx2
     mov edx,cpuidfname
     call Open_File
     jc .skipcheck
