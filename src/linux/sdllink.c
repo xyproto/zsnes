@@ -504,6 +504,7 @@ int startgame(void)
 	   return FALSE;
    }
    SurfaceLocking = SDL_MUSTLOCK(surface);
+   SDL_WarpMouse(0,0);
 
    // Grab mouse in fullscreen mode
    FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) : SDL_WM_GrabInput(SDL_GRAB_OFF);
