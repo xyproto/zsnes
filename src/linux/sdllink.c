@@ -2044,7 +2044,7 @@ void drawscreenwin(void)
       } // switch (BitDepth)
    } // if(SurfaceX==256&&SurfaceY==224)
    
-   if(SurfaceX==320&&SurfaceY==240)
+   else if(SurfaceX==320&&SurfaceY==240)
    {
 	   switch(BitDepth)
 	   {
@@ -2116,7 +2116,7 @@ void drawscreenwin(void)
 	   } // switch
    } // if
 
-   if(SurfaceX==512&&SurfaceY==448)
+   else if(SurfaceX==512&&SurfaceY==448)
    {
 	   switch(BitDepth)
 	   {
@@ -2136,8 +2136,27 @@ void drawscreenwin(void)
 			   break;
 	   } // switch
    } // if
+   else if (SurfaceX==640 && SurfaceY==480)
+   {
+   	switch(BitDepth)
+   	{
+   		case 16:
+   			AddEndBytes=Temp1-1024;
+			NumBytesPerLine=Temp1;
+			WinVidMemStart=&SurfBuf[16*640*2+64*2];
+			copy640x480x16bwin();
+			break;
+		default:
+			   UnlockSurface();
+			   fprintf(stderr, "Mode only available in 16 bit color.\n");
+			   cvidmode=2;
+			   initwinvideo();
+			   sleep(1000);
+			   drawscreenwin();
+			   break;
+	}
+   }
 
-				   
    UnlockSurface();
 #else
    UpdateVFrame();
