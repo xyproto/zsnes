@@ -1229,12 +1229,12 @@ GUIWinClicked:
 %%done
     mov al,%3
     mov %4,al
+    call ClearScreen
+%ifdef __MSDOS__
     cmp byte[En2xSaI],0
     jne %%nomodeq
-    call ClearScreen
 ;    cmp byte[OSPort],2
 ;    jae %%nomodeq
-%ifdef __MSDOS__
     cmp byte[cvidmode],2
     jne %%nomodeq
     jmp %%refresh
