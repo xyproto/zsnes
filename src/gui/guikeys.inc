@@ -192,8 +192,15 @@ GUIgetcurrentinput:
     xor al,al
 ;    GUIgetprkeys 72,72
 ;    GUIgetprkeys 80,80
+%ifdef __LINUX__
+    GUIgetprkeys 05Ch,75
+    GUIgetprkeys 05Eh,77
+    ;GUIgetprkeys 05Ch,92
+    ;GUIgetprkeys 05Eh,94
+%else
     GUIgetprkeys 75,75
     GUIgetprkeys 77,77
+%endif
     GUIgetprkeys 71,71
     GUIgetprkeys 79,79
     GUIgetprkeys 81,81
@@ -215,8 +222,8 @@ GUIgetcurrentinput:
 ;    GUIgetprkeys 0C8h,72
 ;    GUIgetprkeys 0D0h,80
 %ifdef __LINUX__
-    GUIgetprkeys 05Ch,75
-    GUIgetprkeys 05Eh,77
+    GUIgetprkeys 05Ch,92
+    GUIgetprkeys 05Eh,94
 %else
     GUIgetprkeys 0CBh,75
     GUIgetprkeys 0CDh,77
