@@ -2207,6 +2207,7 @@ DisplayGUIVideoClick:
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUISLVID+ebx],0
+    GUIClickCButton4 21,114,byte[scanlines],byte[cfgscanline],1
     je near .nocheckboxb
 .nocheckboxb
     xor ebx,ebx
@@ -2229,7 +2230,6 @@ DisplayGUIVideoClick:
     mov bl,[cvidmode]
     cmp byte[GUIHSVID+ebx],0
     je near .nohsline
-    GUIClickCButton4 21,114,byte[scanlines],byte[cfgscanline],1
     GUIClickCButton4 61,114,byte[scanlines],byte[cfgscanline],3
     GUIClickCButton4 101,114,byte[scanlines],byte[cfgscanline],2
 .nohsline

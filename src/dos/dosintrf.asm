@@ -1030,7 +1030,7 @@ db '                 ',0
 ; Left side starts with Video Mode 0
 NEWSYM GUI16VID, db 0,0,1,0,1,0,1,0,1,0,1,0     ; 16-bit mode
 NEWSYM GUINGVID, db 1,1,1,1,1,1,0,1,1,1,1,0     ; New Graphics Mode Available
-NEWSYM GUISLVID, db 1,0,1,0,0,1,1,0,0,1,1,0     ; Scanlines
+NEWSYM GUISLVID, db 0,0,1,0,0,1,1,0,0,1,1,0     ; Scanlines
 NEWSYM GUIINVID, db 0,0,0,0,0,0,0,0,0,0,1,0     ; Interpolation
 NEWSYM GUIEAVID, db 0,0,0,0,0,0,0,0,0,1,0,0     ; Eagle
 NEWSYM GUIIEVID, db 0,0,0,0,0,0,0,0,0,1,1,0     ; (Interp | Eagle)

@@ -1667,13 +1667,14 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUISLVID+eax],0
     je .notext2
+    GUIOuttextwin2 5,13,111,GUIVideoTextb
+    GUIOuttextwin2 5,36,119,GUIVideoTexta
 .notext2
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHSVID+eax],0
     je near .notexta
     GUIOuttextwin2 5,13,111,GUIVideoTextb
-    GUIOuttextwin2 5,36,119,GUIVideoTexta
     GUIOuttextwin2 5,76,119,GUIVideoTexta2
     GUIOuttextwin2 5,116,119,GUIVideoTexta3
 .notexta
@@ -1762,13 +1763,14 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUISLVID+eax],0
     je .notext2b
+    GUIOuttextwin2 5,12,110,GUIVideoTextb
+    GUIOuttextwin2 5,35,118,GUIVideoTexta
 .notext2b
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHSVID+eax],0
     je near .notextab
     GUIOuttextwin2 5,12,110,GUIVideoTextb
-    GUIOuttextwin2 5,35,118,GUIVideoTexta
     GUIOuttextwin2 5,75,118,GUIVideoTexta2
     GUIOuttextwin2 5,115,118,GUIVideoTexta3
 .notextab
@@ -1854,8 +1856,8 @@ DisplayGUIVideo:
     GUIOuttextwin2 5,5,15,GUIVideoText1
     xor eax,eax
     mov al,[cvidmode]
-    cmp byte[GUIHSVID+eax],0
-    je near .nocheckboxw
+    cmp byte[GUISLVID+eax],0
+    je near .nocheckboxb
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[scanlines],1
     jne .nocheckbox
@@ -1863,6 +1865,10 @@ DisplayGUIVideo:
 .nocheckbox
     GUIDisplayIconWin 5,21,114,[GUITemp]
 .nocheckboxb
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUIHSVID+eax],0
+    je .nocheckboxw
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[scanlines],3
     jne .nocheckboxv
