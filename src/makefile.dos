@@ -55,7 +55,7 @@ PREOBJ=${OBJDIR}/dosbuff.o ${OBJDIR}/ipx.o ${OBJDIR}/zipx.o
 
 ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
-MAINOBJ=cfgload.o endmem.o fixsin.o init.o initc.o ui.o vcache.o water.o smoke.o burn.o version.o
+MAINOBJ=cfgload.o endmem.o fixsin.o init.o initc.o patch.o ui.o vcache.o water.o smoke.o burn.o version.o
 
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${ZIPOBJ}
@@ -110,6 +110,7 @@ ui.o: ui.asm macros.mac
 cfgload.o:cfgload.asm macros.mac
 init.o:init.asm macros.mac
 initc.o:initc.c
+patch.o:patch.c
 
 ALL:
 	del version.o
@@ -201,5 +202,6 @@ clean:
 	del ${DOSDIR}\*.o
 	del ${ZIPDIR}\*.o
 	del zsnes.exe
+
 
 

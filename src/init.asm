@@ -95,7 +95,7 @@ EXTSYM GUIfindUSA,GUIfindEUR,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall
 EXTSYM spc7110romptr,allocspc7110
 EXTSYM SRAMDir,SRAMDrive,cfgloadsdir,fnamest,statefileloc
 EXTSYM ForcePal,ForceROMTiming,ForceHiLoROM,InitDir,InitDrive,enterpress,frameskip
-EXTSYM maxromspace,curromspace,infoloc
+EXTSYM maxromspace,curromspace,infoloc, patchfile
 EXTSYM gotoroot,headdata,printnum,romispal
 EXTSYM InitFxTables,SFXSRAM,SfxR1,SfxR2,SfxSCMR,SfxSFR,finterleave
 EXTSYM initregr,initregw,memtabler16,DSP1Read16b3F,memaccessbankr16
@@ -3642,63 +3642,12 @@ NEWSYM printhex8
 ;*******************************************************
 ; Search for header size first which is filesize MOD 32768
 
-NEWSYM RetrieveDataIPS
-    xor ah,ah
-    cmp ecx,10000
-    jne .notoverflow
-    push edx
-    push ecx
-    mov edx,wramdataa
-    mov ecx,10000
-    call Read_File
-    cmp eax,0
-    jne .notempty
-    mov ah,1
-    jmp .empty
-.notempty
-    xor ah,ah
-.empty
-    pop ecx
-    pop edx
-    xor ecx,ecx
-.notoverflow
-    mov al,[wramdataa+ecx]
-    inc ecx
-    ret
-
-
-SECTION .bss
-IPSSL resd 1
-SECTION .text
-
 NEWSYM PatchIPS
 %ifdef __LINUX__    
     pushad
     call pushdir
     popad
 %endif
-    mov byte[IPSPatched],0
-    mov dword[IPSOffset],0
-    cmp byte[Header512],0
-    je .no512head
-    mov dword[IPSOffset],512
-.no512head
-    mov dword[IPSLimit],4096*1024
-    cmp byte[Sup48mbit],0
-    je .not48
-    mov dword[IPSLimit],6144*1024
-.not48
-    cmp byte[Sup16mbit],0
-    je .not16
-    mov dword[IPSLimit],2048*1024
-.not16
-    ; 1965-1970, >1969*1024+712 (812/850/1000)
-    ; upper bound: 1969*1024+1024
-    ; between 1965-<1970 / 1968,1970
-;    mov dword[IPSLimit],208062h
-;    mov dword[IPSSL],208832h
-    ; font = 208062h-208832h
-
     mov eax,fname+1
     ; search for . or 0
 .next
@@ -3737,113 +3686,14 @@ NEWSYM PatchIPS
 .nochangedir:
 %endif
     mov edx,fname+1
-    call Open_File
-    jc near .failed
-    mov bx,ax
-    mov edx,Headchek
-    mov ecx,5
-    call Read_File
-    cmp dword[Headchek],'PATC'
-    jne near .ipsfaileddet
-    cmp byte[Headchek+4],'H'
-    jne near .ipsfaileddet
-    mov ecx,10000
-.ipxloop
-.findnext
-    xor edx,edx
-    call RetrieveDataIPS
-    cmp ah,0
-    jne near .ipsfailed
-    mov dh,al
-    shl edx,8
-    call RetrieveDataIPS
-    cmp ah,0
-    jne near .ipsfailed
-    mov dh,al
-    call RetrieveDataIPS
-    cmp ah,0
-    jne near .ipsfailed
-    mov dl,al
-    cmp edx,454F46h
-    je near .ipsokay
-    call RetrieveDataIPS
-    cmp ah,0
-    jne near .ipsfailed
-    sub edx,[IPSOffset]
-    mov [IPSCount+1],al
-    call RetrieveDataIPS
-    cmp ah,0
-    jne near .ipsfailed
-    mov [IPSCount],al
-    cmp word[IPSCount],0
-    je .ipsclear
-.loop
-    call RetrieveDataIPS
-    cmp ah,0
-    jne near .ipsfailed
-;    cmp edx,[IPSSL]
-;    jae .nolimit
-    cmp edx,[IPSLimit]
-    jae .limit
-.nolimit
-    mov esi,[romdata]
-    mov [esi+edx],al
-.limit
-    inc edx
-    dec word[IPSCount]
-    jnz .loop
-    jmp .findnext
-.ipsclear
-    call RetrieveDataIPS
-    cmp ah,0
-    jne near .ipsfailed
-    mov [IPSCount+1],al
-    call RetrieveDataIPS
-    cmp ah,0
-    jne near .ipsfailed
-    mov [IPSCount],al
-    call RetrieveDataIPS
-    cmp ah,0
-    jne near .ipsfailed
-    cmp word[IPSCount],0
-    je near .findnext
-    mov esi,[romdata]
-.loop2
-    cmp edx,[IPSLimit]
-    jae .limit2
-    mov [esi+edx],al
-.limit2
-    inc edx
-    dec word[IPSCount]
-    jnz .loop2
-    jmp .findnext
-.ipsokay
-    mov dword[Msgptr],.ipsokaymsg
-    mov dword[MessageOn],60*4
-    mov byte[IPSPatched],1
-    jmp .ipsfaileddet
-.ipsfailed
-    mov dword[Msgptr],.ipsnokaymsg
-    mov dword[MessageOn],60*4
-    mov byte[IPSPatched],1
-.ipsfaileddet
-    call Close_File
-.failed
+    mov [patchfile],edx
+    EXTSYM PatchUsingIPS
+    pushad
+    call PatchUsingIPS
+    popad
     pop eax
     mov ebx,[Prevextn]
     mov [eax],ebx
-    ; font = 208062h-208832h
-;    mov esi,[romdata]
-;    mov [esi+208062h],0
-    ;0-768, 3072-3072+256, 4096-4096+256
-;    mov edx,2079*1024 ;+2048+2048*40
-;    mov ecx,2048
-;    mov esi,[romdata]
-;.ltop
-;    mov byte[esi+edx],0
-;    inc edx
-;    dec ecx
-;    jnz .ltop
 %ifdef __LINUX__
     pushad
     call popdir
@@ -3851,18 +3701,10 @@ NEWSYM PatchIPS
 %endif
     ret
 
-SECTION .data
-.ipsokaymsg db 'IPS PATCHED.',0
-.ipsnokaymsg db 'IPS IS CORRUPT.',0
-
 SECTION .bss
 NEWSYM Header512, resb 1
 NEWSYM Prevextn,  resd 1
-NEWSYM Headchek,  resb 5
-NEWSYM IPSLimit,  resd 1
-NEWSYM IPSOffset, resd 1
-NEWSYM IPSCount,  resd 1
-IPSPatched resb 1
+NEWSYM IPSPatched, resb 1
 SECTION .text
 
 OpenCombFile:
@@ -6365,5 +6207,6 @@ NEWSYM outofmemoryerror2, db 'ROM IS TOO BIG.',0
 SECTION .text
 
 NEWSYM InitAsmEnd
+
 
 
