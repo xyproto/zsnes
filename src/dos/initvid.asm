@@ -41,7 +41,7 @@ SECTION .text
 NEWSYM dosinitvideo2
     cmp byte[cvidmode],2
     jne .nomodeq
-    jmp dosinitvideo.initmodeq
+    jmp dosinitvideo.initmodeq256
 .nomodeq
     ret
 
@@ -57,26 +57,30 @@ NEWSYM dosinitvideo
     cmp byte[cvidmode],1
     je near .initmodeq240
     cmp byte[cvidmode],2
-    je near .initmodeq
+    je near .initmodeq256
     cmp byte[cvidmode],3
-    je near .initmodex
+    je near .initmodex224
     cmp byte[cvidmode],4
-    je near .initvesa12640x480x16
+    je near .initmodex240
     cmp byte[cvidmode],5
-    je near .initvesa2320x240x8
+    je near .initmodex256
     cmp byte[cvidmode],6
-    je near .initvesa2320x240x16
+    je near .initvesa12640x480x16
     cmp byte[cvidmode],7
-    je near .initvesa2320x480x8
+    je near .initvesa2320x240x8
     cmp byte[cvidmode],8
-    je near .initvesa2320x480x16
+    je near .initvesa2320x240x16
     cmp byte[cvidmode],9
-    je near .initvesa2512x384x8
+    je near .initvesa2320x480x8
     cmp byte[cvidmode],10
-    je near .initvesa2512x384x16
+    je near .initvesa2320x480x16
     cmp byte[cvidmode],11
-    je near .initvesa2640x480x8
+    je near .initvesa2512x384x8
     cmp byte[cvidmode],12
+    je near .initvesa2512x384x16
+    cmp byte[cvidmode],13
+    je near .initvesa2640x480x8
+    cmp byte[cvidmode],14
     je near .initvesa2640x480x16
     ret
 
@@ -84,19 +88,7 @@ NEWSYM dosinitvideo
 
 
 ;*******************************************************
-; InitModeX               Sets up 320x240 unchained mode
-;*******************************************************
-
-.initmodex
-%ifdef __MSDOS__
-    SetVGAMode .Mode320x240
-    call cscopymodex
-%endif
-    call makepal
-    ret
-
-;*******************************************************
-; InitModeQ224              Sets up 256x224 chained mode
+; InitModeQ 224             Sets up 256x224 chained mode
 ;*******************************************************
 
 .initmodeq224
@@ -108,7 +100,7 @@ NEWSYM dosinitvideo
     ret
 
 ;*******************************************************
-; InitModeQ240              Sets up 256x240 chained mode
+; InitModeQ 240             Sets up 256x240 chained mode
 ;*******************************************************
 
 .initmodeq240
@@ -120,10 +112,10 @@ NEWSYM dosinitvideo
     ret
 
 ;*******************************************************
-; InitModeQ                 Sets up 256x256 chained mode
+; InitModeQ 256             Sets up 256x256 chained mode
 ;*******************************************************
 
-.initmodeq
+.initmodeq256
 %ifdef __MSDOS__
     cmp byte[scanlines],1
     jne .noscanlines
@@ -139,6 +131,44 @@ NEWSYM dosinitvideo
 %endif
     call makepal
     ret
+
+
+;*******************************************************
+; InitModeX 224           Sets up 320x224 unchained mode
+;*******************************************************
+
+.initmodex224
+%ifdef __MSDOS__
+    SetVGAMode .Mode320x224
+    call cscopymodex
+%endif
+    call makepal
+    ret
+
+;*******************************************************
+; InitModeX 240           Sets up 320x240 unchained mode
+;*******************************************************
+
+.initmodex240
+%ifdef __MSDOS__
+    SetVGAMode .Mode320x240
+    call cscopymodex
+%endif
+    call makepal
+    ret
+
+;*******************************************************
+; InitModeX 256           Sets up 320x256 unchained mode
+;*******************************************************
+
+.initmodex256
+%ifdef __MSDOS__
+    SetVGAMode .Mode320x256
+    call cscopymodex
+%endif
+    call makepal
+    ret
+
 
 ;*******************************************************
 ; InitVESA2 320x240x8           Set up Linear 320x240x8b

@@ -49,7 +49,7 @@ NEWSYM cfgStereoSound,  db 0
 NEWSYM cfgguioff,       db 0
 NEWSYM cfgper2exec,     db 100
 %ifdef __MSDOS__
-NEWSYM cfgcvidmode,     db 3
+NEWSYM cfgcvidmode,     db 4
 %else
 NEWSYM cfgcvidmode,     db 1
 %endif
@@ -626,12 +626,13 @@ db '',13,10
 %ifdef __MSDOS__
 db '; Video Mode, 0 - 10',13,10
 db ';  0 = 256x224x8B  (MODEQ)  1 = 256x240x8B (MODEQ)',13,10
-db ';  2 = 256x256x8B  (MODEQ)  3 = 320x240x8B (MODEX)',13,10
-db ';  4 = 640x480x16B (VESA1)  5 = 320x240x8B (VESA2)',13,10
-db ';  6 = 320x240x16B (VESA2)  7 = 320x480x8B (VESA2)',13,10
-db ';  8 = 320x480x16B (VESA2)  9 = 512x384x8B (VESA2)',13,10
-db '; 10 = 512x384x16B (VESA2) 11 = 640x480x8B (VESA2)',13,10
-db '; 12 = 640x480x16B (VESA2)',13,10
+db ';  2 = 256x256x8B  (MODEQ)  3 = 320x224x8B (MODEX)',13,10
+db ';  4 = 320x240x8B  (MODEX)  5 = 320x256x8B (MODEX)',13,10
+db ';  6 = 640x480x16B (VESA1)  7 = 320x240x8B (VESA2)',13,10
+db ';  8 = 320x240x16B (VESA2)  9 = 320x480x8B (VESA2)',13,10
+db '; 10 = 320x480x16B (VESA2) 11 = 512x384x8B (VESA2)',13,10
+db '; 12 = 512x384x16B (VESA2) 13 = 640x480x8B (VESA2)',13,10
+db '; 14 = 640x480x16B (VESA2)',13,10
 db '',13,10
 db 'VideoModeDos = %U',13,10
 db '',13,10

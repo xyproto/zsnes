@@ -224,12 +224,11 @@ PreTripleBuffer:
    ret
 %endif 
 
-; stupid fix :)
-VidModeSize dd 0,0,0,0,320*240,320*240*2,0,320*480,320*480*2
+VidModeSize dd 0,0,0,0,0,0,320*240,320*240*2,0,320*480,320*480*2
             dd 512*384,512*384*2,640*480,640*480*2
-VidModeLine dd 0,0,0,0,240,240,0,480,480,384,384,480,480
+VidModeLine dd 0,0,0,0,0,0,240,240,0,480,480,384,384,480,480
 NEWSYM VidStartDraw, dd 0
-VidModeComp db 0,0,0,0,0,1,1,1,1,1,1,1,1
+VidModeComp db 0,0,0,0,0,0,0,1,1,1,1,1,1,1,1
 CVidStartAd db 0
 ApplyStart db 4
 NEWSYM NextLineStart, dd 0
@@ -260,31 +259,35 @@ ScreenShow:
     cmp byte[debugdisble],0
     je .debug
     cmp byte[cvidmode],2
-    je near copymodeq
+    je near copymodeq256
 .debug
     cmp byte[cvidmode],0
     je near copymodeq224
     cmp byte[cvidmode],1
     je near copymodeq240
     cmp byte[cvidmode],3
-    je near copymodex
+    je near copymodex224
     cmp byte[cvidmode],4
-    je near copyvesa12640x480x16b
+    je near copymodex240
     cmp byte[cvidmode],5
-    je near copyvesa2320x240x8b
+    je near copymodex256
     cmp byte[cvidmode],6
-    je near copyvesa2320x240x16b
+    je near copyvesa12640x480x16b
     cmp byte[cvidmode],7
-    je near copyvesa2320x480x8b
+    je near copyvesa2320x240x8b
     cmp byte[cvidmode],8
-    je near copyvesa2320x480x16b
-    cmp byte[cvidmode],9       
-    je near copyvesa2512x384x8b
+    je near copyvesa2320x240x16b
+    cmp byte[cvidmode],9
+    je near copyvesa2320x480x8b
     cmp byte[cvidmode],10
-    je near copyvesa2512x384x16b
-    cmp byte[cvidmode],11
-    je near copyvesa2640x480x8b
+    je near copyvesa2320x480x16b
+    cmp byte[cvidmode],11       
+    je near copyvesa2512x384x8b
     cmp byte[cvidmode],12
+    je near copyvesa2512x384x16b
+    cmp byte[cvidmode],13
+    je near copyvesa2640x480x8b
+    cmp byte[cvidmode],14
     je near copyvesa2640x480x16b
     cmp byte[curblank],40h
     je .startcopy
@@ -292,7 +295,7 @@ ScreenShow:
 ;    call sounddisplay
     call hextestoutput
 .startcopy
-    jmp copymodeq
+    jmp copymodeq256
 
 NEWSYM dosvidpastecopyscr
    cmp byte[curblank],40h
@@ -308,50 +311,204 @@ ScreenShowGUI:
     cmp byte[cvidmode],1
     je near copymodeq240
     cmp byte[cvidmode],2
-    je near copymodeq
+    je near copymodeq256
     cmp byte[cvidmode],3
-    je near copymodex
+    je near copymodex224
     cmp byte[cvidmode],4
-    je near copyvesa12640x480x16bgui
+    je near copymodex240
     cmp byte[cvidmode],5
-    je near copyvesa2320x240x8b
+    je near copymodex256
     cmp byte[cvidmode],6
-    je near copyvesa2320x240x16bgui
+    je near copyvesa12640x480x16bgui
     cmp byte[cvidmode],7
-    je near copyvesa2320x480x8bgui
+    je near copyvesa2320x240x8b
     cmp byte[cvidmode],8
-    je near copyvesa2320x480x16bgui
+    je near copyvesa2320x240x16bgui
     cmp byte[cvidmode],9
-    je near copyvesa2512x384x8b
+    je near copyvesa2320x480x8bgui
     cmp byte[cvidmode],10
-    je near copyvesa2512x384x16bgui
+    je near copyvesa2320x480x16bgui
     cmp byte[cvidmode],11
-    je near copyvesa2640x480x8bgui
+    je near copyvesa2512x384x8b
     cmp byte[cvidmode],12
+    je near copyvesa2512x384x16bgui
+    cmp byte[cvidmode],13
+    je near copyvesa2640x480x8bgui
+    cmp byte[cvidmode],14
     je near copyvesa2640x480x16bgui
-    jmp copymodeq
+    jmp copymodeq256
 %endif
 
 
-;*******************************************************
-; CopyModeX         Copies buffer into unchained 320x240
-;*******************************************************
 %ifdef __MSDOS__
-NEWSYM copymodex
+;*******************************************************
+; CopyModeX 224     Copies buffer into unchained 320x224
+;*******************************************************
+
+NEWSYM copymodex224
     cmp byte[curblank],40h
     jne .startcopy
     ret
 .startcopy
-    ; select plane 1
     mov dx,03C4h
-    mov ax,0102h        ; set as plane 1
+    mov ax,0102h
+    out dx,ax
+    push es
+    mov ax,[selcA000]
+    mov es,ax
+    mov esi,[vidbuffer]
+    mov edi,8
+    add esi,16+256+32
+    cmp byte[whichpage],0
+    jne .pageb
+    add edi,19200
+.pageb
+    mov [.startesi],esi
+    mov [.startedi],edi
+    mov dl,222
+.loopa1
+    mov ecx,16
+.loopb1
+    mov ah,[esi+12]
+    mov al,[esi+8]
+    shl eax,16
+    mov ah,[esi+4]
+    mov al,[esi+0]
+    mov [es:edi],eax
+    add esi,16
+    add edi,4
+    dec ecx
+    jnz .loopb1
+    add esi,32
+    add edi,16
+    dec dl
+    jnz .loopa1
+    mov dx,03C4h
+    mov ax,0202h
+    out dx,ax
+    mov esi,[.startesi]
+    inc esi
+    mov edi,[.startedi]
+    mov dl,222
+.loopa2
+    mov ecx,16
+.loopb2
+    mov ah,[esi+12]
+    mov al,[esi+8]
+    shl eax,16
+    mov ah,[esi+4]
+    mov al,[esi+0]
+    mov [es:edi],eax
+    add esi,16
+    add edi,4
+    dec ecx
+    jnz .loopb2
+    add esi,32
+    add edi,16
+    dec dl
+    jnz .loopa2
+    mov dx,03C4h
+    mov ax,0402h
+    out dx,ax
+    mov esi,[.startesi]
+    add esi,2
+    mov edi,[.startedi]
+    mov dl,222
+.loopa3
+    mov ecx,16
+.loopb3
+    mov ah,[esi+12]
+    mov al,[esi+8]
+    shl eax,16
+    mov ah,[esi+4]
+    mov al,[esi+0]
+    mov [es:edi],eax
+    add esi,16
+    add edi,4
+    dec ecx
+    jnz .loopb3
+    add esi,32
+    add edi,16
+    dec dl
+    jnz .loopa3
+    mov dx,03C4h
+    mov ax,0802h
+    out dx,ax
+    mov esi,[.startesi]
+    add esi,3
+    mov edi,[.startedi]
+    mov dl,222
+.loopa4
+    mov ecx,16
+.loopb4
+    mov ah,[esi+12]
+    mov al,[esi+8]
+    shl eax,16
+    mov ah,[esi+4]
+    mov al,[esi+0]
+    mov [es:edi],eax
+    add esi,16
+    add edi,4
+    dec ecx
+    jnz .loopb4
+    add esi,32
+    add edi,16
+    dec dl
+    jnz .loopa4
+    pop es
+    cmp byte[whichpage],0
+    jne .setpageb
+    mov dx,03D4h
+    mov al,0Ch
+    out dx,al
+    inc dx
+    mov al,75
+    out dx,al
+    dec dx
+    mov al,0Dh
+    out dx,al
+    inc dx
+    xor al,al
+    out dx,al
+    mov byte[whichpage],1
+    ret
+.setpageb
+    mov dx,03D4h
+    mov al,0Ch
+    out dx,al
+    inc dx
+    xor al,al
+    out dx,al
+    dec dx
+    mov al,0Dh
+    out dx,al
+    inc dx
+    xor al,al
+    out dx,al
+    mov byte[whichpage],0
+    ret
+.startesi dd 0
+.startedi dd 0
+
+;*******************************************************
+; CopyModeX 240     Copies buffer into unchained 320x240
+;*******************************************************
+
+NEWSYM copymodex240
+    cmp byte[curblank],40h
+    jne .startcopy
+    ret
+.startcopy
+    ; select 1st plane
+    mov dx,03C4h
+    mov ax,0102h
     out dx,ax
     push es
     mov ax,[selcA000]
     mov es,ax
 
     mov esi,[vidbuffer]
-    mov edi,8                  ; Draw @ Y from 9 to 247
+    mov edi,8
     cmp word[resolutn],224
     jne .res239
     mov edi,8*80+8
@@ -496,13 +653,248 @@ NEWSYM copymodex
 .startesi dd 0
 .startedi dd 0
 
+;*******************************************************
+; CopyModeX 256     Copies buffer into unchained 320x256
+;*******************************************************
+
+NEWSYM copymodex256
+    cmp byte[curblank],40h
+    jne .startcopy
+    ret
+.startcopy
+    mov dx,03C4h
+    mov ax,0102h
+    out dx,ax
+    push es
+    mov ax,[selcA000]
+    mov es,ax
+    mov esi,[vidbuffer]
+    mov edi,8*80+8
+    cmp word[resolutn],224
+    jne .res239
+    add edi,8*80
+.res239
+    add esi,16+256+32
+    cmp byte[whichpage],0
+    jne .pageb
+    add edi,19200
+.pageb
+    mov [.startesi],esi
+    mov [.startedi],edi
+    mov dl,[resolutn]
+    sub dl,2
+.loopa1
+    mov ecx,16
+.loopb1
+    mov ah,[esi+12]
+    mov al,[esi+8]
+    shl eax,16
+    mov ah,[esi+4]
+    mov al,[esi+0]
+    mov [es:edi],eax
+    add esi,16
+    add edi,4
+    dec ecx
+    jnz .loopb1
+    add esi,32
+    add edi,16
+    dec dl
+    jnz .loopa1
+    mov dx,03C4h
+    mov ax,0202h
+    out dx,ax
+    mov esi,[.startesi]
+    inc esi
+    mov edi,[.startedi]
+    mov dl,[resolutn]
+    sub dl,2
+.loopa2
+    mov ecx,16
+.loopb2
+    mov ah,[esi+12]
+    mov al,[esi+8]
+    shl eax,16
+    mov ah,[esi+4]
+    mov al,[esi+0]
+    mov [es:edi],eax
+    add esi,16
+    add edi,4
+    dec ecx
+    jnz .loopb2
+    add esi,32
+    add edi,16
+    dec dl
+    jnz .loopa2
+    mov dx,03C4h
+    mov ax,0402h
+    out dx,ax
+    mov esi,[.startesi]
+    add esi,2
+    mov edi,[.startedi]
+    mov dl,[resolutn]
+    sub dl,2
+.loopa3
+    mov ecx,16
+.loopb3
+    mov ah,[esi+12]
+    mov al,[esi+8]
+    shl eax,16
+    mov ah,[esi+4]
+    mov al,[esi+0]
+    mov [es:edi],eax
+    add esi,16
+    add edi,4
+    dec ecx
+    jnz .loopb3
+    add esi,32
+    add edi,16
+    dec dl
+    jnz .loopa3
+    mov dx,03C4h
+    mov ax,0802h
+    out dx,ax
+    mov esi,[.startesi]
+    add esi,3
+    mov edi,[.startedi]
+    mov dl,[resolutn]
+    sub dl,2
+.loopa4
+    mov ecx,16
+.loopb4
+    mov ah,[esi+12]
+    mov al,[esi+8]
+    shl eax,16
+    mov ah,[esi+4]
+    mov al,[esi+0]
+    mov [es:edi],eax
+    add esi,16
+    add edi,4
+    dec ecx
+    jnz .loopb4
+    add esi,32
+    add edi,16
+    dec dl
+    jnz .loopa4
+    pop es
+    cmp byte[whichpage],0
+    jne .setpageb
+    mov dx,03D4h
+    mov al,0Ch
+    out dx,al
+    inc dx
+    mov al,75
+    out dx,al
+    dec dx
+    mov al,0Dh
+    out dx,al
+    inc dx
+    xor al,al
+    out dx,al
+    mov byte[whichpage],1
+    ret
+.setpageb
+    mov dx,03D4h
+    mov al,0Ch
+    out dx,al
+    inc dx
+    xor al,al
+    out dx,al
+    dec dx
+    mov al,0Dh
+    out dx,al
+    inc dx
+    xor al,al
+    out dx,al
+    mov byte[whichpage],0
+    ret
+.startesi dd 0
+.startedi dd 0
+
 NEWSYM whichpage, db 0          ; active page and visual page locations
 
+
 ;*******************************************************
-; CopyModeQ           Copies buffer into chained 256x256
+; CopyModeQ 224       Copies buffer into chained 256x224
 ;*******************************************************
 
-NEWSYM copymodeq
+NEWSYM copymodeq224
+    cmp byte[curblank],40h
+    jne .startcopy
+    ret
+.startcopy
+    push es
+    mov ax,[selcA000]
+    mov es,ax
+    mov esi,[vidbuffer]
+    add esi,16+256+32
+    mov edi,256
+    mov dl,222
+    cmp byte[FPUCopy],2
+    je near .loopb
+.loopa
+    mov ecx,64
+    rep movsd
+    add esi,32
+    dec dl
+    jnz .loopa
+    jmp .done
+.loopb
+    mov ecx,16
+    MMXStuff
+    add esi,32
+    dec dl
+    jnz .loopb
+    emms
+.done
+    pop es
+    ret
+
+;*******************************************************
+; CopyModeQ 240       Copies buffer into chained 256x240
+;*******************************************************
+
+NEWSYM copymodeq240
+    cmp byte[curblank],40h
+    jne .startcopy
+    ret
+.startcopy
+    push es
+    mov ax,[selcA000]
+    mov es,ax
+    mov esi,[vidbuffer]
+    mov edi,256
+    cmp word[resolutn],224
+    jne .res239
+    add edi,8*256
+.res239
+    add esi,16+256+32
+    mov dl,[resolutn]
+    sub dl,2
+    cmp byte[FPUCopy],2
+    je near .loopb
+.loopa
+    mov ecx,64
+    rep movsd
+    add esi,32
+    dec dl
+    jnz .loopa
+    jmp .done
+.loopb
+    mov ecx,16
+    MMXStuff
+    add esi,32
+    dec dl
+    jnz .loopb
+    emms
+.done
+    pop es
+    ret
+
+;********************************************************
+; CopyModeQ 256       Copies buffer into chained 256x256
+;********************************************************
+
+NEWSYM copymodeq256
     cmp byte[curblank],40h
     jne .startcopy
     ret
@@ -524,108 +916,25 @@ NEWSYM copymodeq
     dec dl
     dec dl
     cmp byte[FPUCopy],2
-    je near .loopc
+    je near .loopb
 .loopa
     mov ecx,64
     rep movsd
     add esi,32
     dec dl
     jnz .loopa
-    pop es
-    ret
-
-.loopc
+    jmp .done
+.loopb
     mov ecx,16
     MMXStuff
     add esi,32
     dec dl
-    jnz .loopc
-    emms
-    pop es
-    ret
-
-;*******************************************************
-; CopyModeQ224        Copies buffer into chained 256x224
-;*******************************************************
-
-NEWSYM copymodeq224
-    cmp byte[curblank],40h      ; Check for VBlank.
-    jne .startcopy              ; OK, no VBlank...
-    ret
-.startcopy
-    push es                     ; Backup ES register.
-;    mov ax,[selcA000]
-;    mov es,ax
-    mov es,[selcA000]           ; Get 0xA000 selector.
-    mov esi,[vidbuffer]         ; vidbuffer to source.
-;    mov ebp,[vidbufferm]
-    add esi,16+256+32           ; Skip top+bottom lines.
-;    add ebp,16+256+32
-    mov edi,256                 ; Start at second line.
-    mov edx,222                 ; Only copy 222 lines.
-    cmp byte[FPUCopy],2         ; Check for MMX enable.
-    je near .loopb
-.loopa
-    mov ecx,64
-    rep movsd                   ; Copy 64 32-bit words.
-    add esi,32                  ; Skip vidbuffer margins.
-    dec edx
-    jnz .loopa                  ; Loop for each line.
-    jmp .done
-.loopb
-    mov ecx,16
-    MMXStuff                    ; Copy 16 64-bit words.
-    add esi,32                  ; ...
-    dec edx
-    jnz .loopb                  ; ...
-    emms                        ; Empty MMX state.
-.done
-    pop es                      ; Restore ES register.
-    ret
-
-;*******************************************************
-; CopyModeQ240        Copies buffer into chained 256x240
-;*******************************************************
-
-NEWSYM copymodeq240
-    cmp byte[curblank],40h
-    jne .startcopy
-    ret
-.startcopy
-    push es
-;    mov ax,[selcA000]
-;    mov es,ax
-    mov es,[selcA000]
-    mov esi,[vidbuffer]
-;    mov ebp,[vidbufferm]
-    mov edi,256
-    cmp word[resolutn],224
-    jne .res239
-    add edi,8*256
-.res239
-    add esi,16+256+32
-;    add ebp,16+256+32
-    mov edx,[resolutn]
-    sub edx,2
-    cmp byte[FPUCopy],2
-    je near .loopb
-.loopa
-    mov ecx,64
-    rep movsd
-    add esi,32
-    dec edx
-    jnz .loopa
-    jmp .done
-.loopb
-    mov ecx,16
-    MMXStuff
-    add esi,32
-    dec edx
     jnz .loopb
     emms
 .done
     pop es
     ret
+
 
 ;*******************************************************
 ; Copy VESA2 320x240x8b  Copies buffer to 320x240x8bVBE2
@@ -5506,22 +5815,26 @@ NEWSYM DOSClearScreen
     cmp byte[cvidmode],3
     je near cscopymodex
     cmp byte[cvidmode],4
-    je near cscopyvesa12640x480x16b
+    je near cscopymodex
     cmp byte[cvidmode],5
-    je near cscopyvesa2320x240x8b
+    je near cscopymodex
     cmp byte[cvidmode],6
-    je near cscopyvesa2320x240x16b
+    je near cscopyvesa12640x480x16b
     cmp byte[cvidmode],7
-    je near cscopyvesa2320x480x8b
+    je near cscopyvesa2320x240x8b
     cmp byte[cvidmode],8
-    je near cscopyvesa2320x480x16b
+    je near cscopyvesa2320x240x16b
     cmp byte[cvidmode],9
-    je near cscopyvesa2512x384x8b
+    je near cscopyvesa2320x480x8b
     cmp byte[cvidmode],10
-    je near cscopyvesa2512x384x16b
+    je near cscopyvesa2320x480x16b
     cmp byte[cvidmode],11
-    je near cscopyvesa2640x480x8b
+    je near cscopyvesa2512x384x8b
     cmp byte[cvidmode],12
+    je near cscopyvesa2512x384x16b
+    cmp byte[cvidmode],13
+    je near cscopyvesa2640x480x8b
+    cmp byte[cvidmode],14
     je near cscopyvesa2640x480x16b
 %endif
     ret
