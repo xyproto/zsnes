@@ -123,9 +123,6 @@ void sw_clearwin()
     switch (BitDepth) {
 	case 16:
 	    __asm__ __volatile__ (
-	"	pushw %%es\n"					\
-	"	movw %%ds, %%ax\n"				\
-	"	movw %%ax, %%es\n"				\
 	"	xorl %%eax, %%eax\n"				\
 	"	movl SurfBufD, %%edi\n"				\
 	"	xorl %%ebx, %%ebx\n"				\
@@ -133,20 +130,17 @@ void sw_clearwin()
 	"	movl SurfaceX, %%ecx\n"				\
 	"	rep\n"						\
 	"	stosw\n"					\
+	"	movl SurfaceX, %%edx\n"				\
 	"	addl pitch, %%edi\n"				\
-	"	subl SurfaceX, %%edi\n"				\
-	"	subl SurfaceX, %%edi\n"				\
+	"	shll $1, %%edx\n"				\
 	"	addl $1, %%ebx\n"				\
+	"	subl %%edx, %%edi\n"				\
 	"	cmpl SurfaceY, %%ebx\n"				\
 	"	jne Blank2\n"					\
-	"	popw %%es\n"					\
-	: : : "cc", "memory", "eax", "ebx", "ecx", "edi");
+	: : : "cc", "memory", "eax", "ebx", "edx", "ecx", "edi");
 	    break;
 	case 32:
 	    __asm__ __volatile__ (
-	"	pushw %%es\n"					\
-	"	movw %%ds, %%ax\n"				\
-	"	movw %%ax, %%es\n"				\
 	"	xorl %%eax, %%eax\n"				\
 	"	movl SurfBufD, %%edi\n"				\
 	"	xorl %%ebx, %%ebx\n"				\
@@ -162,7 +156,6 @@ void sw_clearwin()
 	"	addl $1, %%ebx\n"				\
 	"	cmpl SurfaceY, %%ebx\n"				\
 	"	jne Blank3\n"					\
-	"	popw %%es\n"					\
 	: : : "cc", "memory", "eax", "ebx", "ecx","edi");
 	    break;
     }
