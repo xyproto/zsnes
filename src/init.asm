@@ -26,7 +26,7 @@ EXTSYM inittableb,inittablec,FPUCopy,newgfx16b,cfgreinittime,EndMessage
 EXTSYM Open_File,Read_File,Write_File,Close_File,Output_Text,Get_Key,CNetType
 EXTSYM Delete_File,Get_First_Entry,Get_Next_Entry,Change_Dir,Get_Dir,InitDSP
 EXTSYM Remove_Dir,Change_Single_Dir,Create_Dir,Get_Memfree,Create_File
-EXTSYM OSPort
+;EXTSYM OSPort
 EXTSYM SPCDisable,osm2dis,CurRecv,BackupSystemVars
 EXTSYM SnowData,SnowVelDist
 EXTSYM cvidmode, newengen, cfgnewgfx, GUI16VID
@@ -3647,14 +3647,14 @@ InvalidZip db 'ZSNES Version A does not support .ZIP files.',13,10,'Please use V
 ZipError db 0
 
 UnZipFile:
-    cmp byte[OSPort],1
-    jne .noasm
-    mov ax,03h
-    int 10h
-    mov edx,InvalidZip
-    call PrintStr
-    jmp DosExit
-.noasm
+;    cmp byte[OSPort],1
+;    jne .noasm
+;    mov ax,03h
+;    int 10h
+;    mov edx,InvalidZip
+;    call PrintStr
+;    jmp DosExit
+;.noasm
     ; get Drive/Dir
 %ifdef __LINUX__
     mov ebx,GUIcurrentdir

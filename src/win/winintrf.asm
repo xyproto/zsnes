@@ -152,7 +152,7 @@ EXTSYM _imp__GetLocalTime@4
 
 
 SECTION .data
-NEWSYM OSPort, db 3      ; 0 = DOS (C), 1 = DOS (ASM), 2 = Linux, 3 = Win95
+;NEWSYM OSPort, db 3      ; 0 = DOS (C), 1 = DOS (ASM), 2 = Linux, 3 = Win95
 SECTION .text
 
 NEWSYM StartUp

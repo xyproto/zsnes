@@ -162,8 +162,9 @@ GUIgetcurrentinput:
     GUIqcheckkeys 1
     GUIqcheckkeys 1Ch
 
-    cmp byte[OSPort],3
-    jne near .notwinport
+;    cmp byte[OSPort],3
+;    jne near .notwinport
+%ifndef __MSDOS__
     GUIqcheckkeys 0C8h
     GUIqcheckkeys 0D0h
     GUIqcheckkeys 0CBh
@@ -173,6 +174,7 @@ GUIgetcurrentinput:
     GUIqcheckkeys 0C7h
     GUIqcheckkeys 0CFh
     GUIqcheckkeys 09Ch
+%endif
 .notwinport
 
     cmp byte[JoyPad1Move],0
@@ -215,23 +217,30 @@ GUIgetcurrentinput:
     mov al,cl
 .notextkb
 
-    cmp byte[OSPort],3
-    jne near .notwinport2
+;    cmp byte[OSPort],3
+;    jne near .notwinport2
+
 ;    GUIgetprkeys 0C8h,72
 ;    GUIgetprkeys 0D0h,80
 %ifdef __LINUX__
     GUIgetprkeys 05Ch,92
     GUIgetprkeys 05Eh,94
-%else
-    GUIgetprkeys 0CBh,75
-    GUIgetprkeys 0CDh,77
-%endif
     GUIgetprkeys 0C9h,73
     GUIgetprkeys 0D1h,81
     GUIgetprkeys 0C7h,71
     GUIgetprkeys 0CFh,79
     GUIgetprkeys 09Ch,13
-.notwinport2
+%endif
+%ifdef __WIN32__
+    GUIgetprkeys 0CBh,75
+    GUIgetprkeys 0CDh,77
+    GUIgetprkeys 0C9h,73
+    GUIgetprkeys 0D1h,81
+    GUIgetprkeys 0C7h,71
+    GUIgetprkeys 0CFh,79
+    GUIgetprkeys 09Ch,13
+%endif
+;.notwinport2
 
     cmp byte[JoyPad1Move],0
     je near .nopad1b
@@ -296,8 +305,8 @@ GUIgetcurrentinput:
     jmp .nonetwin
 .yesnet15
     mov byte[CNetType],0
-    cmp byte[OSPort],1
-    je .nodeinitipx
+;    cmp byte[OSPort],1
+;    je .nodeinitipx
     call deinitipx
 .nodeinitipx
     jmp .closewin

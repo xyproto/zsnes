@@ -36,7 +36,7 @@ EXTSYM KeyOnStA,KeyOnStB,ProcessKeyOn,printnum,sramsavedis,DSPDisable,C4Enable
 EXTSYM IRQHack,HIRQLoc,Offby1line,splitflags,joinflags,KeyQuickSnapShot
 EXTSYM csounddisable,videotroub,Open_File,Close_File,Read_File,ResetTripleBuf
 EXTSYM Write_File,Output_Text,Create_File,Check_Key,Get_Key,Change_Dir,InitPreGame
-EXTSYM OSPort
+;EXTSYM OSPort
 ;    EXTSYM tempblah,romdata
 EXTSYM Curtableaddr,DeInitSPC,InitSB,PICMaskP,SBHandler,SBInt
 EXTSYM SBIrq,curcyc,debugdisble,dmadata,guioff,memtabler8,SetupPreGame
@@ -1394,10 +1394,12 @@ NEWSYM endprog
     je .nodeinitmodem
     call DeInitModem
 .nodeinitmodem
-    cmp byte[OSPort],1
-    jae .nodeinitipx
+;    cmp byte[OSPort],1
+;    jae .nodeinitipx
+%ifdef __MSDOS__
     call deinitipx
-.nodeinitipx
+%endif
+;.nodeinitipx
     jmp OSExit
 .blah db 'dsptrace.dat',0
 

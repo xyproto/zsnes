@@ -90,7 +90,8 @@ EXTSYM File_Seek,File_Seek_End,Open_File_Write,Get_Date,Check_Key,Get_Key
 EXTSYM Change_Drive,Change_Single_Dir,Change_Dir,Get_Dir,Get_First_Entry
 EXTSYM Get_Next_Entry,Set_DTA_Address,timer2upd,curexecstate,TripBufAvail
 EXTSYM nmiprevaddrl,nmiprevaddrh,nmirept,nmiprevline,nmistatus,spcnumread
-EXTSYM NextLineCache,OSPort,VidStartDraw,ResetTripleBuf,GUINGVID
+EXTSYM NextLineCache,VidStartDraw,ResetTripleBuf,GUINGVID
+;EXTSYM OSPort
 EXTSYM ScanCodeListing,AdjustFrequency,GUISaveVars,Init_Mouse
 EXTSYM Get_MouseData,Set_MouseXMax,Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement
 EXTSYM GUIInit,GUIDeInit,SpecialLine
@@ -672,7 +673,7 @@ NEWSYM GUICMessage, dd 0
 NEWSYM GUICTimer,   dd 0
 NEWSYM GUIOn,       db 0
 NEWSYM GUIOn2,       db 0
-GOSPort db 0
+;GOSPort db 0
 
 NEWSYM StartLL, dd 0
 NEWSYM StartLR, dd 0
@@ -685,17 +686,21 @@ NEWSYM NetLoadState, db 0
 ;ModemPTimer  db 0       ; Timer for modem process
 
 %macro stim 0
-    cmp byte[OSPort],1
-    ja %%nosti
+;    cmp byte[OSPort],1
+;    ja %%nosti
+%ifdef __MSDOS__
     sti
-%%nosti
+%endif
+;%%nosti
 %endmacro
 
 %macro clim 0
-    cmp byte[OSPort],1
-    ja %%nocli
+;    cmp byte[OSPort],1
+;    ja %%nocli
+%ifdef __MSDOS__
     cli
-%%nocli
+%endif
+;%%nocli
 %endmacro
 
 
@@ -744,19 +749,22 @@ GUIQuickLoadUpdate:
     mov byte[GUIPrevMenuData.onoff+17],'F'
 .on
     mov esi,prevloadfnamel
-    cmp byte[OSPort],2
-    jae .notdos
+;    cmp byte[OSPort],2
+;    jae .notdos
+%ifdef __MSDOS__
     mov esi,prevloadnames
-.notdos
+%endif
+;.notdos
     mov edi,GUIPrevMenuData+3
     mov edx,10
 .mainloop
     mov ecx,25
-    cmp byte[OSPort],2
-    jae .notdos3
+;    cmp byte[OSPort],2
+;    jae .notdos3
+%ifdef __MSDOS__
     mov ecx,16
-.notdos3
-
+%endif
+;.notdos3
     push edi
     push esi
     cmp byte[esi],32
@@ -795,10 +803,12 @@ GUIQuickLoadUpdate:
     pop esi
     pop edi
     add esi,512 ;16
-    cmp byte[OSPort],2
-    jae .notdos2
+;    cmp byte[OSPort],2
+;    jae .notdos2
+%ifdef __MSDOS__
     sub esi,512-16
-.notdos2
+%endif
+;.notdos2
     add edi,32
     dec edx
     jnz near .mainloop
@@ -1424,10 +1434,12 @@ NEWSYM TestSent
 
 
 NEWSYM StartGUI
-    cmp byte[OSPort],1
-    jbe .dosport
+;    cmp byte[OSPort],1
+;    jbe .dosport
+%ifndef __MSDOS__
     mov byte[sampratenext+3],0
-.dosport
+%endif
+;.dosport
     mov ecx,64
     mov eax,SpecialLine
 .slloop
@@ -1435,11 +1447,13 @@ NEWSYM StartGUI
     add eax,4
     loop .slloop
     ; Change GUI to suit the Win32 port
-    cmp byte[OSPort],3
-    jne .nowinport
+;    cmp byte[OSPort],3
+;    jne .nowinport
+%ifndef __MSDOS__
     mov dword[GUIGUIOptnsText8+12],' GUI'
     mov byte[GUIGUIOptnsText8+16],0
-.nowinport
+%endif
+;.nowinport
     cmp byte[OldWinPos],0
     jne .okayow
     xor esi,esi
@@ -1455,18 +1469,19 @@ NEWSYM StartGUI
     mov eax,[pl1p209b]
     mov [pl1p209],eax
 .okayow
-
-    mov al,[OSPort]
-    mov [GOSPort],al
-    cmp byte[GOSPort],3
-    jne .notwinport
+;    mov al,[OSPort]
+;    mov [GOSPort],al
+;    cmp byte[GOSPort],3
+;    jne .notwinport
+%ifndef __MSDOS__
     mov dword[GUINetPlayMenuData+1],'INTE'
     mov dword[GUINetPlayMenuData+5],'RNET'
     mov dword[GUINetPlayMenuData+1+14],'----'
     mov dword[GUINetPlayMenuData+5+14],'----'
     mov byte[MenuDat5],0
     mov byte[MenuDat5+1],2
-.notwinport
+%endif
+;.notwinport
     ; copy old quickfilename to new quickfilename
     cmp byte[prevloadl],0
     jne .noconvertlfqm
@@ -3037,11 +3052,11 @@ GUITryMenuItem:
     jne .noreset
     mov byte[GUICResetPos],1
 .noreset
-    cmp byte[OSPort],3
-    je .win32state
+;    cmp byte[OSPort],3
+;    je .win32state
 ;    cmp byte[CNetType],20
 ;    je near .noromloaded
-.win32state
+;.win32state
     cmp byte[CNetType],21
     je near .noromloaded
     cmp byte[CNetType],22
@@ -3121,8 +3136,9 @@ GUITryMenuItem:
 .nocheat
     cmp byte[GUIcmenupos],5
     jne near .nonet
-    cmp byte[GOSPort],3
-    je near .win32
+;    cmp byte[GOSPort],3
+;    je near .win32
+%ifdef __MSDOS__
     cmp byte[CNetType],10
     jae .nomod
     mov byte[CNetType],0
@@ -3139,7 +3155,8 @@ GUITryMenuItem:
     jne near .nonet
     mov byte[CNetType],1
     jmp .nonet
-.win32
+%endif
+;.win32
     GUICheckMenuItem 8, 0
     cmp byte[CNetType],10
     jae near .nonet
@@ -3562,32 +3579,37 @@ DisplayMenu:
     GUIBox 0,14,229,14,70
     GUIBox 0,15,229,15,71
 
-    cmp byte[OSPort],3
-    jne near .notwinpressa
+;    cmp byte[OSPort],3
+;    jne near .notwinpressa
     %ifdef __LINUX__
     GUIShadow 238,9,247,20
+    GUIShadow 249,9,257,20
     %endif
     %ifdef __WIN32__
     GUIShadow 238,9,247,14
     GUIShadow 238,16,247,20
-    %endif
     GUIShadow 249,9,257,20
+    %endif
 .notwinpressa
 
-    cmp byte[OSPort],3
-    jne near .notwinpressb
+;    cmp byte[OSPort],3
+;    jne near .notwinpressb
+
     %ifdef __LINUX__
     mov byte[GUIMenuItem+36],247
     GUIDMHelpB 233,242,GUIMenuItem+36,1
+    mov byte[GUIMenuItem+36],'x'
+    GUIDMHelpB 244,253,GUIMenuItem+36,2
     %endif
+
     %ifdef __WIN32__
     mov byte[GUIMenuItem+36],249
     GUIDMHelpB2 233,242,GUIMenuItem+36,1
     mov byte[GUIMenuItem+36],248
     GUIDMHelpB3 233,242,GUIMenuItem+36,3
-    %endif
     mov byte[GUIMenuItem+36],'x'
     GUIDMHelpB 244,253,GUIMenuItem+36,2
+    %endif
 .notwinpressb
 
     ; Display upper-left box
@@ -3630,11 +3652,13 @@ DisplayMenu:
 .nomenu4
     cmp byte[GUIcmenupos],5
     jne near .nomenu5
-    cmp byte[GOSPort],3
-    je near .menu5b
+;    cmp byte[GOSPort],3
+;    je near .menu5b
+%ifdef __MSDOS__
     GUIDrawMenuM 140,16,10,2,GUINetPlayMenuData,142,145,22,39,48 ;19+2*10
     mov dword[GUICYLocPtr],MenuDat5
     jmp .nomenu5
+%endif
 .menu5b
     GUIDrawMenuM 140,16,10,1,GUINetPlayMenuData,142,145,22,29,48 ;19+2*10
     mov dword[GUICYLocPtr],MenuDat5

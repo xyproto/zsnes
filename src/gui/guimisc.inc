@@ -403,11 +403,13 @@ SetDevice:
     mov byte[GUICBHold],0
     xor eax,eax
     mov al,[cplayernum]
-    cmp byte[OSPort],1
-    ja .notdos
+;    cmp byte[OSPort],1
+;    ja .notdos
+%ifdef __MSDOS__
     cmp byte[pl1p209+eax],0
     jne .port209
-.notdos
+%endif
+;.notdos
     mov dword[CalibXmin],0
     mov ecx,[DevicePtr+eax*4]
     mov eax,[GUIInputRefP+eax*4]

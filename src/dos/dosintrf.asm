@@ -80,7 +80,7 @@ EXTSYM GUINetTextk2
 
 
 SECTION .data
-NEWSYM OSPort, db 0      ; 0 = DOS (C), 1 = DOS (ASM), 2 = Linux, 3 = Win95
+;NEWSYM OSPort, db 0      ; 0 = DOS (C), 1 = DOS (ASM), 2 = Linux, 3 = Win95
 SECTION .text
 
 NEWSYM StartUp
@@ -1580,7 +1580,7 @@ NEWSYM StartSound
 
 
 NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
-    cmp byte[OSPort],1  ; Do not call in the dos port
+;    cmp byte[OSPort],1  ; Do not call in the dos port
 ;    ja .notdos
 .nosound
     ret

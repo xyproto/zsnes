@@ -574,10 +574,10 @@ GetNormalEntries2:
     GUIGetEntry2 GUIfindUSA
     GUIGetEntry2 GUIfindJAP
     GUIGetEntry2 GUIfindBIN
-    cmp byte[OSPort],1
-    je near .noasm
+;    cmp byte[OSPort],1
+;    je near .noasm
     GUIGetEntry2 GUIfindZIP
-.noasm
+;.noasm
     GUIGetEntry2 GUIfind1
     jmp .guiNext
 .guishowall
@@ -598,10 +598,10 @@ GetNormalEntries:
     GUIGetEntry GUIfindUSA
     GUIGetEntry GUIfindJAP
     GUIGetEntry GUIfindBIN
-    cmp byte[OSPort],1
-    je near .noasm
+;    cmp byte[OSPort],1
+;    je near .noasm
     GUIGetEntry GUIfindZIP
-.noasm
+;.noasm
     GUIGetEntry GUIfind1
     jmp .guiNext
 .guishowall
@@ -1118,15 +1118,17 @@ GetLoadData:
     mov dword[GUIcurrentdircursloc],0
     mov edi,spcRamcmp
     mov byte[Win95Failed],0
-    cmp byte[OSPort],1
-    ja .notdos
+;    cmp byte[OSPort],1
+;    ja .notdos
+%ifdef __MSDOS__
     cmp byte[GUIloadfntype],2
     jne .nowin95lfn
     clc
     mov ax,7100h
     int 21h
     jc .nowin95lfn
-.notdos
+%endif
+;.notdos
     mov byte[GUIloadfntype],0
 .nowin95lfn
     cmp byte[GUIloadfntype],2

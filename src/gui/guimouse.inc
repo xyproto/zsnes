@@ -300,8 +300,9 @@ ProcessMouseButtons:
     jmp .noclick
 .noclicked
 
-    cmp byte[OSPort],3
-    jne .noclick
+;    cmp byte[OSPort],3
+;    jne .noclick
+%ifndef __MSDOS__
     mov byte[GUIpclicked],1
     mov byte[GUIHold],255
     mov eax,[GUImouseposy]
@@ -316,6 +317,7 @@ ProcessMouseButtons:
     mov al,[GUIcmenupos]
     mov [GUIpmenupos],al
     mov byte[GUIcmenupos],0
+%endif
 .noclick
     mov byte[GUIpclicked],1
     xor eax,eax
@@ -454,31 +456,46 @@ ProcessMouseButtons:
     mov byte[GUIpclicked],0
     mov byte[GUIHold],0
 
-    cmp byte[OSPort],3
-    jne .notwinpressa
+;    cmp byte[OSPort],3
+;    jne .notwinpressa
+
+%ifdef __LINUX__
     cmp byte[GUIcwinpress],1
     jne .notwinpressa
     mov byte[GUIcwinpress],0
     cmp word[GUImouseposy],3
     jb .notwinpressa
-    %ifdef __LINUX__
     cmp word[GUImouseposy],13
     ja .notwinpressa
-    %endif
-    %ifdef __WIN32__
-    cmp word[GUImouseposy],7
-    ja .notwinpressa
-    %endif
     cmp word[GUImouseposx],233
     jb .notwinpressa
     cmp word[GUImouseposx],242
     ja .notwinpressa
     call SwitchFullScreen
     ret
+%endif
+
+%ifdef __WIN32__
+    cmp byte[GUIcwinpress],1
+    jne .notwinpressa
+    mov byte[GUIcwinpress],0
+    cmp word[GUImouseposy],3
+    jb .notwinpressa
+    cmp word[GUImouseposy],7
+    ja .notwinpressa
+    cmp word[GUImouseposx],233
+    jb .notwinpressa
+    cmp word[GUImouseposx],242
+    ja .notwinpressa
+    call SwitchFullScreen
+    ret
+%endif
+
 .notwinpressa
 
-    cmp byte[OSPort],3
-    jne .notwinpressb
+;    cmp byte[OSPort],3
+;    jne .notwinpressb
+%ifndef __MSDOS__
     cmp byte[GUIcwinpress],2
     jne .notwinpressb
     mov byte[GUIcwinpress],0
@@ -494,8 +511,8 @@ ProcessMouseButtons:
     ret
 .notwinpressb
 
-    cmp byte[OSPort],3
-    jne .notwinpressc
+;    cmp byte[OSPort],3
+;    jne .notwinpressc
     cmp byte[GUIcwinpress],3
     jne .notwinpressc
     mov byte[GUIcwinpress],0
@@ -507,6 +524,7 @@ ProcessMouseButtons:
     jb .notwinpressc
     cmp word[GUImouseposx],242
     ja .notwinpressc
+%endif
 %ifdef __WIN32__
     pushad
     call MinimizeWindow
@@ -764,8 +782,9 @@ ProcessMouseButtons:
 
 GUIProcVideo:
     mov al,[GUIcurrentvideocursloc]
-    cmp byte[OSPort],2
-    jae .yes16b
+;    cmp byte[OSPort],2
+;    jae .yes16b
+%ifdef __MSDOS__
     cmp al,3
     je .yes16b
     cmp al,5
@@ -776,6 +795,7 @@ GUIProcVideo:
     je .yes16b
     cmp al,8
     jne .no16b
+%endif
 .yes16b
 ;    mov byte[newengen],0
 ;    mov byte[cfgnewgfx],0
@@ -1193,14 +1213,16 @@ GUIWinClicked:
     cmp byte[En2xSaI],0
     jne %%nomodeq
     call ClearScreen
-    cmp byte[OSPort],2
-    jae %%nomodeq
+;    cmp byte[OSPort],2
+;    jae %%nomodeq
+%ifdef __MSDOS__
     cmp byte[cvidmode],1
     jne %%nomodeq
     mov byte[cbitmode],1
     call initvideo2
     mov byte[cbitmode],0
     call GUISetPal
+%endif
 %%nomodeq
     ret
 %%noclick
@@ -1833,14 +1855,16 @@ DisplayGUIMovieClick:
     cmp ebx,3Bh
     je %%cancelkey
     mov %3,ebx
-    cmp byte[OSPort],3
-    jne %%notwin32
+;    cmp byte[OSPort],3
+;    jne %%notwin32
+%ifndef __MSDOS__
     cmp dword[keycontrolval],0
     je %%notwin32
     push ebx
     mov ebx,[keycontrolval]
     mov byte[ebx],1
     pop ebx
+%endif
 %%notwin32
     ret
 %%cancelkey
@@ -1936,10 +1960,12 @@ DisplayGUIInputClick:
     ;x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
     GUIWinControl 5,36,107,34+5*8,GUIBlankVar,GUIcurrentinputviewloc,GUINumValue,35,8,GUIcurrentinputcursloc,4,3,0
     GUIPHoldbutton 125,34,155,45,14
-    cmp byte[OSPort],3
-    je near .win32
+;    cmp byte[OSPort],3
+;    je near .win32
+%ifdef __MSDOS__
     GUIPHoldbutton 125,50,185,61,15
-.win32
+%endif
+;.win32
     GUIPHoldbutton 125,66,185,77,40
     mov edi,pl1selk
     mov dword[keycontrolval],pl1contrl
@@ -2038,10 +2064,12 @@ DisplayGUIOptionClick:
     GUIClickCButton2 11,46,byte[vsyncon],byte[cfgvsync],1
     GUIClickCButton2 11,56,byte[FPUCopy],byte[cfgcopymethod],2
     GUIClickCButtonM 11,66,byte[pl12s34]
-    cmp byte[OSPort],3
-    je near .win32config
+;    cmp byte[OSPort],3
+;    je near .win32config
+%ifdef __MSDOS__
     GUIClickCButton 11,76,byte[SidewinderFix]
-.win32config
+%endif
+;.win32config
 %ifdef __WIN32__
     GUIClickCButton 11,76,byte[HighPriority]
 %endif
@@ -2160,10 +2188,12 @@ DisplayGUISoundClick:
     GUIClickCButton 11,39,byte[RaisePitch]
     GUIClickCButton 11,101,byte[SoundNoiseDis]
     GUIClickCButtonS 11,111,byte[RevStereo]
-    cmp byte[OSPort],3
-    je near .win32sound
+;    cmp byte[OSPort],3
+;    je near .win32sound
+%ifdef __MSDOS__
     GUIClickCButton 11,121,byte[Surround]
-.win32sound
+%endif
+;.win32sound
 %ifdef __WIN32__
     GUIClickCButton 11,121,byte[LargeSoundBuf]
 %endif
@@ -2522,10 +2552,12 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 178,68,[KeyVolDown]
     DGOptnsProcBox 178,76,[KeyFRateUp]
     DGOptnsProcBox 178,84,[KeyFRateDown]
-    cmp byte[OSPort],3
-    jne near .notwin32
+;    cmp byte[OSPort],3
+;    jne near .notwin32
+%ifndef __MSDOS__
     DGOptnsProcBox 178,44,[KeyRewind]
-.notwin32
+%endif
+;.notwin32
     DGOptnsProcBox 178,52,[KeyFastFrwrd]
     DGOptnsProcBox 27,112,[KeyDisableSC0]
     DGOptnsProcBox 27+45,112,[KeyDisableSC1]
@@ -2635,10 +2667,12 @@ DisplayGUIOptnsClick:
     ret
 
 DisplayGUIAboutClick:
-    cmp byte[OSPort],3
-    jne near .nowin32
+;    cmp byte[OSPort],3
+;    jne near .nowin32
+%ifndef __MSDOS__
     GUIPHoldbutton 5,117,74,128,65
-.nowin32
+%endif
+;.nowin32
     ret
 
 %macro ComboBoxProc 5
