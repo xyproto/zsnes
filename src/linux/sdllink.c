@@ -663,15 +663,6 @@ BOOL InitInput()
 	return TRUE;
 }
 
-int saybitdepth()
-{
-  int MyBitsPerPixel;
-  const SDL_VideoInfo *info;
-  SDL_Init(SDL_INIT_VIDEO);
-  info = SDL_GetVideoInfo();
-  return 0;
-}
-
 int startgame(void)
 {
 	int status;
@@ -690,7 +681,9 @@ int startgame(void)
 	if (sdl_state == vid_soft) sw_end();
 #ifdef __OPENGL__
 	else if (sdl_state == vid_gl) gl_end();
-	saybitdepth();
+
+	SDL_Init(SDL_INIT_VIDEO);
+
 	if (UseOpenGL)
 	{
 		status = gl_start(WindowWidth, WindowHeight, BitDepth, FullScreen);
