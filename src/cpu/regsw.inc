@@ -1464,7 +1464,7 @@ DetermineHIRQExec
 .hirqokay
     sub dh,cl
     add dh,30
-    add cl,30
+    add cl,16
     mov [HIRQCycNext],cl
     mov byte[HIRQNextExe],1
     pop ecx
