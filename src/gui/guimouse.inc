@@ -513,8 +513,8 @@ ProcessMouseButtons:
     ret
 .notwinpressb
 
-;    cmp byte[OSPort],3
-;    jne .notwinpressc
+    cmp byte[OSPort],3
+    jne .notwinpressc
     cmp byte[GUIcwinpress],3
     jne .notwinpressc
     mov byte[GUIcwinpress],0
@@ -532,7 +532,9 @@ ProcessMouseButtons:
     call MinimizeWindow
     popad
 %endif
+%ifndef __MSDOS__
     ret
+%endif
 .notwinpressc
 
     ; ButtonProcess
