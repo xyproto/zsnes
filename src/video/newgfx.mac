@@ -3254,7 +3254,10 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     shr edx,3
     shl edx,6
     xor eax,eax
+    cmp byte[BGMA+ebx],4
+    je .offsetmode4
     mov ax,[BGPT3+ebx*2]
+.offsetmode4
     add ax,dx
     xor edx,edx
     mov dx,[BG3SXl+ebx*2]
