@@ -91,13 +91,13 @@ char *MovieSub_GetData()
       if (!(num = strtok(MovieSub.linebuf, ":"))) { return(0); }
       for (i = num; *i; i++)
       {
-        if (!isascii(*i)) { return(0); }
+        if (!isdigit(*i)) { return(0); }
       }
       MovieSub.message_start = atoi(num);
       if (!(num = strtok(0, ":"))) { return(0); }
       for (i = num; *i; i++)
       {
-        if (!isascii(*i))
+        if (!isdigit(*i))
         { 
           MovieSub.message_start = 0;
           return(0);
