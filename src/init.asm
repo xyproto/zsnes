@@ -5315,12 +5315,16 @@ NEWSYM showinfogui
 .nosdd1
     cmp byte[OBCEnable],0
     je .noobc
-    mov dword[CSStatus+25],'OBC '
+    mov dword[CSStatus+25],'OBC1'
 .noobc
     cmp byte[SETAEnable],0
     je .noseta
     mov dword[CSStatus+25],'SETA'
 .noseta
+    cmp byte[ST18Enable],0
+    je .nost18
+    mov dword[CSStatus+25],'ST18'
+.nost18
     cmp byte[SGBEnable],0
     je .nosgb
     mov dword[CSStatus+25],'SGB '
@@ -5990,64 +5994,38 @@ NEWSYM CheckROMType
     mov byte[ROMTypeNOTFound],0
 .noforce
 
-    xor eax,eax
-    xor ebx,ebx
-    xor edx,edx
+    ;LoROM interleaved check
+    mov esi,[romdata]
+    add esi,07FDCh    ;Checksum area
+    mov bx,[esi]
+    xor bx,[esi + 2]
+    cmp bx,0FFFFh     ;Good LoROM?
+    je .interlcheck2  ;Forget it then
     mov eax,[NumofBanks]
     imul eax,32768
     shr eax,1
-    mov esi,[romdata]
-    add esi,7FC0h
-    add esi,eax
-    add esi,28
-    mov ebx,[esi]
-    inc esi
-    mov edx,[esi]
-    shl edx,16
-    add ebx,edx
-    inc esi
-    add ebx,[esi]
-    inc esi
-    mov edx,[esi]
-    shl edx,16
-    add ebx,edx
+    add esi,eax       ;Add midpoint
+    mov bx,[esi]
+    xor bx,[esi + 2]
     cmp bx,0FFFFh
     jne .interlcheck2
-    mov esi,[romdata]
-    add esi,7FC0h
-    add esi,eax
-    add esi,25
+    sub esi,3         ;Country code
     cmp byte[esi],14
     jae .interlcheck2
     jmp .interleaved
 
+    ;HiROM interleaved check
 .interlcheck2
-    xor ebx,ebx
-    xor edx,edx
     mov esi,[romdata]
-    add esi,7FC0h
-    add esi,28
-    mov ebx,[esi]
-    inc esi
-    mov edx,[esi]
-    shl edx,16
-    add ebx,edx
-    inc esi
-    add ebx,[esi]
-    inc esi
-    mov edx,[esi]
-    shl edx,16
-    add ebx,edx
+    add esi,07FDCh    ;Checksum area
+    mov bx,[esi]
+    xor bx,[esi + 2]
     cmp bx,0FFFFh
     jne near .nointerlcheck
-    mov esi,[romdata]
-    add esi,7FC0h
-    add esi,25
+    sub esi,3         ;Country code
     cmp byte[esi],14
     jae .nointerlcheck
-    mov esi,[romdata]
-    add esi,7FC0h
-    add esi,21
+    sub esi,4         ;ROM makeup
     cmp byte[esi],33
     je .overflowcheck
     cmp byte[esi],49
@@ -6145,6 +6123,7 @@ NEWSYM CheckROMType
     mov byte[CHIPSRAM],0
     mov byte[SGBEnable],0
     mov byte[SETAEnable],0
+    mov byte[ST18Enable],0
     mov byte[DSP1Enable],0
     mov byte[DSP2Enable],0
     mov byte[DSP3Enable],0
@@ -6208,13 +6187,14 @@ NEWSYM CheckROMType
 .notSA1B
     cmp ax,0F530h
     jne .notSETAA
-    mov byte[SETAEnable],1
-    mov byte[CHIPSRAM],1
+    mov byte[ST18Enable],1
+    mov byte[CHIPSRAM],1 ;Check later if this should be removed
     jmp .endchpdtct
 .notSETAA
     cmp ax,0F630h
     jne .notSETAB
     mov byte[SETAEnable],1
+    mov byte[CHIPSRAM],1 ;Check later if this should be removed
     jmp .endchpdtct
 .notSETAB
     cmp ax,01320h
@@ -6413,7 +6393,8 @@ NEWSYM RTCEnable, resb 1
 NEWSYM SA1Enable, resb 1
 NEWSYM SDD1Enable, resb 1
 NEWSYM OBCEnable, resb 1
-NEWSYM SETAEnable, resb 1
+NEWSYM SETAEnable, resb 1 ;ST010 & 11
+NEWSYM ST18Enable, resb 1
 NEWSYM SGBEnable, resb 1
 NEWSYM DSP1Enable, resb 1
 NEWSYM DSP2Enable, resb 1
