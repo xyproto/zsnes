@@ -1253,8 +1253,14 @@ NEWSYM copyvesa2640x480x8b
     je near smallscreen640x480x8b
     cmp byte[ScreenScale],1
     je near smallscreen640x480x8b.fullscreen
+    cmp byte[GUIOn],1
+    jne .nogui
+    cmp byte[FilteredGUI],1
+    jne .noeagle
+.nogui
     cmp byte[antienab],1
     je near proceagle
+.noeagle
     cmp byte[scanlines],1
     je near copyvesa2640x480x8bs
     mov byte[res640],1
