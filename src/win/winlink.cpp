@@ -2301,7 +2301,7 @@ void SetMouseY(int Y)
 
 void ZsnesPage()
 {
-     ShellExecute(NULL, NULL, "http://www.zsnes.com", NULL, NULL, 0);
+     ShellExecute(NULL, NULL, "http://www.zsnes.com/", NULL, NULL, 0);
 }
 
 
