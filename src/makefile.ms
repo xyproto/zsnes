@@ -40,7 +40,7 @@ CPUOPT=i586
 ifneq ($(CPU),)
 CPUOPT=$(CPU)
 endif
-CFLAGSORIG=-march=${CPUOPT} -ffast-math -fomit-frame-pointer -fno-unroll-loops -Wall -Wno-unused
+CFLAGSORIG=-march=${CPUOPT} -ffast-math -fomit-frame-pointer -fno-unroll-loops -Wall -Wno-unused -I.
 LIBSORIG=-lz -lpng
 DRESOBJ=${WINDIR}/zsnes.obj
 CROSS=no
@@ -233,7 +233,7 @@ patch${OE}: $<
 endmem${OE}: $< macros.mac
 
 ${CPUDIR}/execute${OE}: $< macros.mac
-${CPUDIR}/zstate${OE}: $<
+${CPUDIR}/zstate${OE}: $< gblvars.h
 ${CPUDIR}/table${OE}: $< ${CPUDIR}/65816d.inc ${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816.inc\
 	           ${CPUDIR}/regs.mac ${CPUDIR}/regs.inc ${CPUDIR}/regsw.mac ${CPUDIR}/regsw.inc macros.mac
 ${CPUDIR}/tableb${OE}: $< ${CPUDIR}/65816db.inc ${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816b.inc\

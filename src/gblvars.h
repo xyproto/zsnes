@@ -20,6 +20,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+//C++ style code in C
+#define bool unsigned char
+#define true 1
+#define false 0
+
 extern unsigned int cycpbl, PH65816regsize;
 extern unsigned int *wramdata, *vram, PHspcsave, PHdspsave, *C4Ram, *sfxramdata;
 extern unsigned int PHnum2writesa1reg, SA1Mode, prevedi, SA1xpc, sa1dmaptr;

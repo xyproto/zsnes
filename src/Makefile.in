@@ -80,7 +80,7 @@ OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ
 	@CXX@ @CFLAGS@ -o $@ -c $<
 
 %.o: %.c
-	@CC@ @CFLAGS@ -o $@ -c $<
+	@CC@ @CFLAGS@ -I. -o $@ -c $<
 
 %.o: %.asm
 	@NASMPATH@ @NFLAGS@ -o $@ $<
