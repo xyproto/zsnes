@@ -576,7 +576,7 @@ db '',13,10
 db 'Execute = %T',13,10
 db '',13,10
 %ifdef __WIN32__
-db '; Video Mode, 0 - 23',13,10
+db '; Video Mode, 0 - 24',13,10
 db ';   0 = 256x224 R WIN         1 = 256x224 R FULL',13,10
 db ';   2 = 512x448 R WIN         3 = 512x448 DR WIN',13,10
 db ';   4 = 640x480 S WIN         5 = 640x480 DS WIN',13,10
