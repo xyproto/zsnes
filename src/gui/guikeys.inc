@@ -889,6 +889,12 @@ GUIGUIOptnsKeys:
     jne .guioptn6
     xor byte[JoyPad1Move],1
 .guioptn6
+%ifdef __WIN32__
+    cmp dh,'H'
+    jne .guioptn7
+    xor byte[MouseWheel],1
+.guioptn7
+%endif
     ret
 
 GUISoundKeys:

@@ -4782,7 +4782,7 @@ DisplayGUIOptns:
 %ifdef __WIN32__
     GUIOuttextwin2 10,26,173,GUIGUIOptnsTextE
     GUIOuttextwin2 10,26,183,GUIGUIOptnsTextF
-    GUIOuttextwin2 10,138,28,GUIGUIOptnsTextJ
+    GUIOuttextwin2u 10,138,28,GUIGUIOptnsTextJ,1
 %endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,16,123,GUIGUIOptnsText6
