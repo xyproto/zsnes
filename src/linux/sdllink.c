@@ -38,8 +38,11 @@ int sdl_inited = 0;
 DWORD                   CurrentJoy=0;
 
 SDL_Joystick	*JoystickInput[4];
-
+#ifdef __OPENGL__
+DWORD                   BitDepth=16;	// Do NOT change this for ANY reason
+#else
 DWORD                   BitDepth=0;	// Do NOT change this for ANY reason
+#endif
 BYTE                    BackColor=0;
 
 float MouseMinX=0;
@@ -1057,7 +1060,7 @@ void clearwin()
      SurfBufD=(DWORD) &glvidbuffer[0];
      SURFDW=(DWORD *) &glvidbuffer[0];
      vidbuff_w=256; vidbuff_h=224;
-     Temp1 = (BitDepth/8*SurfaceX);	// Temp1 = 2 * SurfaceX
+     Temp1 = 512;
    }
 #endif
 
