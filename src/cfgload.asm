@@ -657,12 +657,10 @@ db '; Stereo Reversed.  Swaps left channel with right. (0 = off, 1 = L <-> R)',1
 db '',13,10
 db 'ReverseStereo = %s',13,10
 db '',13,10
-%ifdef __MSDOS__
 db '; GUI Disable (1 = Disable GUI, 0 = Enable GUI)',13,10
 db '',13,10
 db 'GUIDisable = %Y',13,10
 db '',13,10
-%endif
 db '; New Graphics Engine (1 = Enable, 0 = Disable)',13,10
 %ifdef __MSDOS__
 db '; All 256 color modes and 320x240x65536 supported',13,10
