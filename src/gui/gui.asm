@@ -95,7 +95,7 @@ EXTSYM NextLineCache,VidStartDraw,ResetTripleBuf,GUINGVID
 EXTSYM ScanCodeListing,AdjustFrequency,GUISaveVars,Init_Mouse
 EXTSYM Get_MouseData,Set_MouseXMax,Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement
 EXTSYM GUIInit,GUIDeInit,SpecialLine
-EXTSYM DrawWater,RemoteDisconnect,loadstate3
+EXTSYM DrawWater,DrawSmoke,RemoteDisconnect,loadstate3
 EXTSYM ModemClearBuffer,IPXSearchval
 EXTSYM ipxlookforconnect
 EXTSYM SA1Enable,SA1RAMArea
@@ -2036,6 +2036,10 @@ NEWSYM StartGUI
     jne .nowater2
     call DrawWater
 .nowater2
+    cmp byte[GUIEffect],4
+    jne .nosmoke
+    call DrawSmoke
+.nosmoke
 ;    call TestSent
     cmp byte[CNetType],20
     jne .noreceive

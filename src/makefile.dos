@@ -54,7 +54,7 @@ PREOBJ=${OBJDIR}/dosbuff.o ${OBJDIR}/ipx.o ${OBJDIR}/zipx.o
 
 ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
-MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o
+MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o smoke.o
 
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${ZIPOBJ}
@@ -90,6 +90,7 @@ zsnesd.exe: ${OBJS}
 ${DOSDIR}/zloader.o: ${DOSDIR}/zloader.c
 fixsin.o: fixsin.c
 water.o: water.c
+smoke.o: smoke.c
 ${DOSDIR}/zfile.o: ${DOSDIR}/zfile.c
 ${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/unzip.h
 ${ZIPDIR}/zzip.o: ${ZIPDIR}/zzip.c ${ZIPDIR}/unzip.h

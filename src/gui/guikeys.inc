@@ -942,8 +942,12 @@ GUIGUIOptnsKeys:
     xor byte[JoyPad1Move],1
 .guioptn6
     cmp dh,'N'
-    jne .guioptn7
+    jne .guioptn6b
     GUIkeystoggleoptn byte[GUIEffect],1
+.guioptn6b
+    cmp dh,'O'
+    jne .guioptn7
+    GUIkeystoggleoptn byte[GUIEffect],4
 .guioptn7
     cmp dh,'E'
     jne .guioptn7b

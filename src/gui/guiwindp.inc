@@ -4877,10 +4877,16 @@ DisplayGUIOptns:
     GUIDisplayIconWin 10,12,73,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[GUIEffect],1
+    jne .nocheck6b
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheck6b
+    GUIDisplayIconWin 10,12,83,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[GUIEffect],4
     jne .nocheck7
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck7
-    GUIDisplayIconWin 10,12,83,[GUITemp]
+    GUIDisplayIconWin 10,124,83,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[GUIEffect],2
     jne .nocheck7b
@@ -4958,6 +4964,7 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,100,111,GUIGUIOptnsTextH
     GUIOuttextwin2 10,147,111,GUIGUIOptnsTextI
     GUIOuttextwin2u 10,26,88,GUIGUIOptnsTextB,1
+    GUIOuttextwin2u 10,138,88,GUIGUIOptnsTextBb,2
     GUIOuttextwin2u 10,26,98,GUIGUIOptnsTextC,3
     GUIOuttextwin2u 10,138,98,GUIGUIOptnsTextCb,13
     GUIOuttextwin2u 10,138,28,GUIGUIOptnsTextJ,0
@@ -4986,6 +4993,7 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,99,110,GUIGUIOptnsTextH
     GUIOuttextwin2 10,146,110,GUIGUIOptnsTextI
     GUIOuttextwin2 10,25,87,GUIGUIOptnsTextB
+    GUIOuttextwin2 10,137,87,GUIGUIOptnsTextBb
     GUIOuttextwin2 10,25,97,GUIGUIOptnsTextC
     GUIOuttextwin2 10,137,97,GUIGUIOptnsTextCb
     GUIOuttextwin2 10,137,27,GUIGUIOptnsTextJ
@@ -5079,6 +5087,7 @@ GUIGUIOptnsText8 db 'CLICK ENTERS GUI',0
 GUIGUIOptnsText9 dd 0
 GUIGUIOptnsTextA db 'USE JOYPAD1',0
 GUIGUIOptnsTextB dd 'SNOW EFFECT',0
+GUIGUIOptnsTextBb dd 'SMOKE EFFECT',0
 GUIGUIOptnsTextC dd 'WATER EFFECT A',0
 GUIGUIOptnsTextCb dd 'WATER EFFECT B',0
 GUIGUIOptnsTextD dd 'MAIN WINDOW OPTIONS :',0
