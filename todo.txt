@@ -17,12 +17,6 @@ Windows Port:
 - Auto-detect high/low latency connections and adjust settings accordingly
 
 General
-- Maybe add in Cubic Spline Interpolation to the SNES DSP Sound processor
-  (DSPPROC.ASM) since some people like the clarity of it compared to
-  Gaussian Interpolation (even though that's the method the real snes uses) 
-  and also make a variable to select between those interpolations (If
-  someone can do this, I'll add an option to switch between them in the
-  GUI later)
 - Clean up the makefiles (get rid of this ugly link.win32)
   
 Compatibility
