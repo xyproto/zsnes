@@ -50,7 +50,8 @@ NEWSYM initregw
 .loopa
     mov [edi],eax
     add edi,4
-    loop .loopa
+    dec ecx
+    jnz .loopa
     ; Set all valid register accesses
     setregw 2100h*4,reg2100w
     setregw 2101h*4,reg2101w

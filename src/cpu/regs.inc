@@ -44,7 +44,8 @@ NEWSYM initregr
 .loopa
     mov [edi],eax
     add edi,4
-    loop .loopa
+    dec ecx
+    jnz .loopa
     ; Set all valid register accesses
     setreg 2100h*4,reg2100r
     setreg 2134h*4,reg2134r

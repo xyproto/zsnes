@@ -251,7 +251,8 @@ NEWSYM inittable
     mov eax,esi
     stosd
     pop eax
-    loop .loopa
+    dec ecx
+    jnz .loopa
 
     ; Set CPU addresses
     ; First, set all addresses to invalid

@@ -105,7 +105,8 @@ NEWSYM SA1inittable
     mov eax,esi
     stosd
     pop eax
-    loop .loopa
+    dec ecx
+    jnz .loopa
 
     ; Set CPU addresses
     mov edi,SA1tableA

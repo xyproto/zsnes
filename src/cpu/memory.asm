@@ -89,7 +89,8 @@ C4ProcessVectors:
     sub ah,80h
     add ax,bx
     inc esi
-    loop .spotloop
+    dec ecx
+    jnz .spotloop
     add edi,3
     dec dx
     jnz .loop
@@ -184,7 +185,8 @@ C4Edit:
 .next
     add ebx,4
     dec byte[ebx+1]
-    loop .next
+    dec ecx
+    jnz .next
     popad
 .notmove
     cmp byte[pressed+21h],0
@@ -199,7 +201,8 @@ C4Edit:
     add byte[ebx],2
 .noflipx
     dec byte[ebx]
-    loop .next2
+    dec ecx
+    jnz .next2
     popad
 .notmove2
     cmp byte[pressed+22h],0
@@ -210,7 +213,8 @@ C4Edit:
 .next3
     add ebx,4
     inc byte[ebx+1]
-    loop .next3
+    dec ecx
+    jnz .next3
     popad
 .notmove3
     cmp byte[pressed+23h],0
@@ -225,7 +229,8 @@ C4Edit:
     sub byte[ebx],2
 .noflipx2
     inc byte[ebx]
-    loop .next4
+    dec ecx
+    jnz .next4
     popad
 .notmove4
     cmp byte[pressed+10h],0
@@ -239,7 +244,8 @@ C4Edit:
     mov [edx],al
     inc ebx
     inc edx
-    loop .copylp
+    dec ecx
+    jnz .copylp
     popad
 .notcopy
     cmp byte[pressed+11h],0
@@ -253,7 +259,8 @@ C4Edit:
     mov [ebx],al
     inc ebx
     inc edx
-    loop .pastelp
+    dec ecx
+    jnz .pastelp
     popad
 .notpaste
 
@@ -594,7 +601,8 @@ C4ConvOAM:
     mov [esi],al
     inc edi
     inc esi
-    loop .next
+    dec ecx
+    jnz .next
     ret
 .addx dw 0
 .addy dw 0
@@ -873,7 +881,8 @@ NEWSYM InitC4
 .c4loopb
     mov dword[esi],0
     add esi,4
-    loop .c4loopb
+    dec ecx
+    jnz .c4loopb
     popad
     ret
 
@@ -1438,7 +1447,8 @@ C4SprDisintegrate:
 .lp
     mov byte[edi],0
     inc edi
-    loop .lp
+    dec ecx
+    jnz .lp
 
     mov esi,[C4Ram]
     add esi,2000h
@@ -1828,7 +1838,8 @@ WireFrameB:
 .loop
     mov dword[esi],0
     add esi,4
-    loop .loop
+    dec ecx
+    jnz .loop
     call DrawWireFrame
 
     mov esi,[C4Ram]
@@ -1893,7 +1904,8 @@ C4WireFrame:
     add ax,50h
     mov [esi+5],ax
     add esi,10h
-    loop .loop
+    dec ecx
+    jnz .loop
     ; Uses 6001,6005,6600,6602,6605
 
     mov esi,[C4Ram]
@@ -4876,7 +4888,8 @@ NEWSYM memaccessbankr8sdd1
     cmp dword[edx],eax
     je .found2
     add edx,12
-    loop .loop
+    dec ecx
+    jnz .loop
     jmp .notfound
 .found2
     mov eax,[edx+4]

@@ -527,7 +527,8 @@ NEWSYM AdjustFrequency
       mov [ebx],ax
       add ebx,2
       sub edx,2
-      loop .intrploop
+      dec ecx
+      jnz .intrploop
       jmp .notgaussian
 .cubicspline
       ; Copy from CubicSpline to DSPInterP
@@ -545,7 +546,8 @@ NEWSYM AdjustFrequency
       mov [edx],ax
       add ebx,2
       add edx,2
-      loop .intrploopb
+      dec ecx
+      jnz .intrploopb
 .notgaussian
 
 
@@ -2117,7 +2119,8 @@ BRRDecode:
     mov word[edi],ax
     mov word[edi+2],ax
     add edi,4
-    loop .nloop
+    dec ecx
+    jnz .nloop
     mov [NoisePtr],ebx
     pop ecx
     ret
@@ -5674,7 +5677,8 @@ NEWSYM ProcessVoice816
     mov [edi],ebx
     mov [edi+4],eax
     add edi,8
-    loop .revstloop
+    dec ecx
+    jnz .revstloop
 .norevstereo
 
     cmp byte[LowPassFilterType],1

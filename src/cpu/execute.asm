@@ -585,7 +585,8 @@ NEWSYM BackupCVFrame
     movq [ebx+8],mm1
     add edx,16
     add ebx,16
-    loop .loop
+    dec ecx
+    jnz .loop
 .end
 
     pop eax
@@ -679,7 +680,8 @@ NEWSYM RestoreCVFrame
     movq [edx+8],mm1
     add edx,16
     add ebx,16
-    loop .loop
+    dec ecx
+    jnz .loop
 .end
 
     pop eax
@@ -1040,7 +1042,8 @@ NEWSYM continueprog
 .loopa
     mov [esi],al
     inc esi
-    loop .loopa
+    dec ecx
+    jnz .loopa
 
     mov byte[romloadskip],0
     mov byte[debuggeron],0
@@ -1071,7 +1074,8 @@ NEWSYM reexecute
     mov [esi],al
 .notclear
     inc esi
-    loop .loopa
+    dec ecx
+    jnz .loopa
 reexecutenokeys
     jmp reexecuteb2
 
@@ -1088,7 +1092,8 @@ NEWSYM reexecuteb
     mov [esi],al
 .notclear
     inc esi
-    loop .loopa
+    dec ecx
+    jnz .loopa
 %endif 
 reexecuteb2:
     ; temporary sprite displayer
@@ -3040,7 +3045,8 @@ NEWSYM cpuover
     mov al,[ebx+1]
     mov [ebx],al
     inc ebx
-    loop .chatsendloop
+    dec ecx
+    jnz .chatsendloop
     mov byte[chatstrL],0
     mov dword[chatTL],10
     mov dword[chatRTL],8*60
@@ -3619,7 +3625,8 @@ NEWSYM cpuover
     mov al,[esi]
     add bx,ax
     inc esi
-    loop .quitloop
+    dec ecx
+    jnz .quitloop
     mov [valuea],bx
     popad
     add [valuea],dh
