@@ -41,7 +41,7 @@ static int Height[2][SCRW*SCRH];
 extern char NetPlayNoMore;
 
 static void DrawWaterNoLight(int *ptr);
-void DrawWaterWithLight(int *ptr,int light);
+static void DrawWaterWithLight(int *ptr,int light);
 static void SineBlob(int x, int y, int radius, int height, int page);
 static void CalcWater(int *nptr,int *optr,int density);
 
@@ -71,7 +71,7 @@ void DrawWater(void)
       }
       */
 
-#ifdef __WIN32__
+#if 0
         DrawWaterNoLight(Height[Hpage]);
 #else
         DrawWaterWithLight(Height[Hpage],1);
@@ -227,7 +227,6 @@ void DrawWaterNoLight(int *ptr)
 	
 }
 
-
 void DrawWaterWithLight(int *ptr,int light)
 {
 	int dx,dy;
@@ -249,34 +248,48 @@ void DrawWaterWithLight(int *ptr,int light)
 			dy=ptr[offset]-ptr[offset+SCRW];
 
 			p=offset+SCRW*(dy>>3)+(dx>>3);
-			if(p>(SCRH*SCRW))
+			if (p>(SCRH*SCRW)) p = (p % SCRW) + ((SCRH-((p - (SCRH*SCRW)) / SCRW)) * SCRW);
+			if (p<0) p = (SCRW + (p % SCRW)) + abs(p / SCRW) * SCRW;
+/*
+			if(p >= (SCRW*SCRH) )
 			{
-            for(;p<(SCRH*SCRW);p-=SCRW);
+				p=(SCRW*SCRH)-1;
 			}
-			if(p<0)
+			else
 			{
-				for(;p>=0;p+=SCRW);
+				if(p < 0)
+				{
+					p=0;
+				}
 			}
+*/
 			c=vidbuffer[p];
 			c-=(dx>>light);
-            (c<1) ? c=1 : (c > 31) ? c=31 : 0;
+			(c<1) ? c=1 : (c > 31) ? c=31 : 0;
 			vscr[offset]=c;
 			offset++;
 			dx=ptr[offset]-ptr[offset+1];
 			dy=ptr[offset]-ptr[offset+SCRW];
 			p=offset+SCRW*(dy>>3)+(dx>>3);
-			if(p>(SCRH*SCRW))
+			if (p>(SCRH*SCRW)) p = (p % SCRW) + ((SCRH-((p - (SCRH*SCRW)) / SCRW)) * SCRW);
+			if (p<0) p = (SCRW + (p % SCRW)) + abs(p / SCRW) * SCRW;
+/*
+			if(p >= (SCRW*SCRH) )
 			{
-            for(;p<(SCRH*SCRW);p-=SCRW);
+				p=(SCRW*SCRH)-1;
 			}
-			if(p<0)
+			else
 			{
-				for(;p>=0;p+=SCRW);
+				if(p < 0)
+				{
+					p=0;
+				}
 			}
+*/
 			c=vidbuffer[p];
 			
 			c-=(dx>>light);
-            (c<1) ? c=1 : (c > 31) ? c=31 : 0;
+			(c<1) ? c=1 : (c > 31) ? c=31 : 0;
 			vscr[offset]=c;
 		}
 	}
@@ -287,7 +300,6 @@ void DrawWaterWithLight(int *ptr,int light)
 
 
 }
-
 
 void CalcWater(int *nptr,int *optr,int density)
 {
@@ -328,6 +340,9 @@ void SineBlob(int x, int y, int radius, int height, int page)
   if(y<0) y = 1+radius+ rand()%(SCRH-2*radius-1);
 
 
+//  radsquare = (radius*radius) << 8;
+  radsquare = (radius*radius);
+
   /*
   if (NetPlayNoMore == 1)
   {
@@ -342,9 +357,7 @@ void SineBlob(int x, int y, int radius, int height, int page)
 
   radsquare = (radius*radius);
 
-#ifndef __WIN32__
-    height /= 8;
-#endif
+  height /= 8;
 
   left=-radius; right = radius;
   top=-radius; bottom = radius;
