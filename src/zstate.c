@@ -917,10 +917,11 @@ bool zst_load(FILE *fp)
   {
     zst_version = 143; //v1.43+
   }
+  // the -2 means we only check the text - trust me, that's ok
   if (!memcmp(zst_header_check, zst_header_old, sizeof(zst_header_check)-2))
   {
     zst_version = 60; //v0.60 - v1.42
-  } // the -2 means we only check the text - trust me, that's ok
+  }
 
   if (!zst_version) { return(false); } //Pre v0.60 saves are no longer loaded
 
@@ -928,7 +929,7 @@ bool zst_load(FILE *fp)
   fhandle = fp; //Set global file handle
   copy_state_data(0, read_save_state_data, true);
   Totalbyteloaded += load_save_size;
-
+  
   if (SFXEnable)
   {
     SfxCPB = SfxMemTable[(SfxPBR & 0xFF)];
@@ -959,6 +960,15 @@ bool zst_load(FILE *fp)
   memset(vidmemch4, 1, sizeof(vidmemch4));
   memset(vidmemch8, 1, sizeof(vidmemch8));
 
+  if (zst_version == 60) //Set new vars which old states did not have  
+  {    
+    prevoamptr = 0xFF;
+    ioportval = 0xFF;
+    spcnumread = 0;
+    spchalted = 0xFFFFFFFF;
+    nexthdma = 0;
+  }
+      
   repackfunct();
 
   initpitch();
