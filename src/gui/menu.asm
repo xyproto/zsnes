@@ -89,6 +89,7 @@ NEWSYM NoInputRead, db 0
 NEWSYM PrevMenuPos, db 0
 NEWSYM MenuDisplace, dd 0
 NEWSYM MenuDisplace16, dd 0
+NEWSYM MenuNoExit, db 0
 NEWSYM SPCSave, db 0
 
 NEWSYM showmenu
@@ -293,6 +294,7 @@ NEWSYM showmenu
     cmp byte[cbitmode],0
     je .noimagechange
     xor byte[ScreenShotFormat],1
+    mov byte[MenuNoExit],1
     mov byte[ExecExitOkay],0
     mov byte[nextmenupopup],1
     mov byte[NoInputRead],1
@@ -301,6 +303,7 @@ NEWSYM showmenu
 .noimagechange
     cmp dword[menucloc],60*288
     jne .nomovewin
+    mov byte[MenuNoExit],1
     mov byte[ExecExitOkay],0
     mov byte[nextmenupopup],1
     mov byte[NoInputRead],1
@@ -426,7 +429,12 @@ NEWSYM showmenu
     mov byte[ForceNonTransp],0
     mov byte[GUIOn],0
     call Clear2xSaIBuffer
+    cmp byte[MenuNoExit],1
+    je .noexitmenu
     jmp continueprognokeys
+.noexitmenu
+    mov byte[MenuNoExit],0
+    jmp showmenu
 
 .unablefps db 'NEED AUTO FRAMERATE ON',0
 .sndbufsav db 'BUFFER SAVED AS SOUNDDMP.RAW',0
