@@ -1,0 +1,141 @@
+body{
+ background-color:#ffffff;
+ font:normal 11px Verdana, Sans-Serif;
+ color:#000000;
+ margin:0px;
+}
+
+img {
+ border-width:0px;
+}
+
+.PHeader{
+ background-color:#C8CFD8;
+ color:#000000;
+ padding:3px;
+}
+.PSubHeader{
+ background-color:#A4A9B0;
+ color:#000000;
+ padding:3px;
+ font:bold 11px Verdana, Sans-Serif;
+ text-align:center;
+}
+
+a:link, a:active, a:visited{
+ background-color:transparent;
+ text-decoration:underline;
+ color:#203040;
+}
+a:hover{
+ background-color:#d0d0d0;
+ text-decoration:underline;
+ color:#506070;
+}
+
+.MMenu{
+ width:200px;
+ padding:10px;
+ padding-top:0px;
+ padding-right:0px;
+ vertical-align:top;
+}
+.MBody{
+ padding:10px;
+ padding-top:0px;
+ vertical-align:top;
+}
+
+.TBox{
+ background-color:#C8CFD8;
+ border:solid 1px #404040;
+ color:#000000;
+}
+.TBoxHead{
+ background-color:#A4A9B0;
+ color:#000000;
+ font:bold 14px Arial, Sans-Serif;
+ padding:0px;
+ padding-left:4px;
+ background-image: url( '../images/corner.png' );
+ background-position:top right;
+ background-repeat: no-repeat;
+ height:25px;
+}
+.TBoxSubHead{
+ background-color:#A4A9B0;
+ color:#000000;
+ font:bold 14px Arial, Sans-Serif;
+ padding-left: 5px;
+}
+.TBoxText{
+ background-color:#C8CFD8;
+ color:#000000;
+ font:normal 13px Verdana, Sans-Serif;
+ padding:5px;
+}
+.TBoxFoot{
+ background-color:#A4A9B0;
+ color:#000000;
+ font:bold 12px Verdana, Sans-Serif;
+ padding:4px;
+}
+
+.FListing{
+ background-color:#000000;
+ color:#ffffff;
+}
+.FListing td{
+ background-color:#e0e0e0;
+ color:#000000;
+ width: 30%;
+ text-align:center;
+}
+.FListing td.FLabel{
+ background-color:#000000;
+ color:#ffffff;
+ font:bold 11px Verdana, Sans-Serif;
+ width: 10%;
+ text-align:left;
+}
+.FListing th{
+ background-color:#405060;
+ color:#ffffff;
+ text-align:center;
+}
+ .small{
+ font-size:11px;
+}
+.big{
+ font-size:16px;
+}
+
+p{
+ text-indent: 12px;
+}
+
+input, textarea, select {
+ background-color:#ffffff;
+ color:#000000;
+ border:solid 1px #000000;
+ font:normal 12px Verdana, Sans-Serif;
+ padding:3px;
+}
+
+.indent_list{
+ margin-top: 0px;
+ margin-bottom: 0px;
+ list-style-type:none;
+ padding-left:24px;
+}
+
+.indent_list ul, li{
+ list-style-type:none;
+ margin-left: -12px;
+ /*padding-left: -12px;*/
+ text-indent: -12px;
+}
+
+abbr {
+cursor: help;
+}

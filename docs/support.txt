@@ -1,0 +1,32 @@
+
+    ** NOTE ** If you are looking to submit a bug report to the ZSNES
+    development team, this is the wrong document to be reading.
+
+    Please read the 'BUGINFO.TXT' that came with your distribution.
+
+  =========================
+   Getting help with ZSNES
+  =========================
+
+    To get help with ZSNES you can visit the ZSNES message boards.
+    Please, read the rules thoroughly before posting anything.
+
+    http://board.zsnes.com/phpBB2/
+
+    There are also several mailing lists devoted to ZSNES which are
+    kindly hosted by SourceForge.  They are usually low-traffic.
+
+    http://sourceforge.net/mail/?group_id=19677
+
+    And last, but not least, there are several IRC channels which
+    have been created for the sole purpose of worshiping ZSNES. :)
+
+  =================
+   #ZSNES on irc.freenode.net
+  =================
+
+    This is where all of the old developers of ZSNES used to hangout
+    (and probably where they met).  Some of the developers such as
+    _Demo_, pagefault, and stainless, and tons of ZSNES fans hangout
+    here.  Be warned that this channel is usually plagued with adult
+    humor, links and requests for warez and ROMs, and always off-topic.

@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+
+<head>
+ <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+ <link rel="stylesheet" type="text/css" href="style.css" />
+ <title>ZSNES Documentation - Linux v1.4 - Netplay</title>	
+</head>
+
+<body>
+ <table width='100%' cellspacing='0' cellpadding='0' border='0'>
+  <tr>
+   <td class='PHeader'>
+    <img src="images/zsneslogo.png" alt="ZSNES" /><br />
+    <b>ZSNES Linux v1.4</b>
+   </td>
+   <td class='PHeader' style="text-align:right;padding:14px;background-image:url(images/linuxlogo.png);">
+   </td>
+  </tr>
+  <tr>
+   <td colspan='2' class='PSubHeader'>
+    &nbsp;&nbsp;&nbsp;
+    [<a href='about.htm'>About</a>]
+    [<a href='credits.htm'>Credits</a>]
+    [<a href='http://www.zsnes.com'>ZSNES.com</a>]
+    [<a href='http://www.zsnes.com/index.php?page=donate'>Donate</a>]
+    [<a href='license.txt'>GPL</a>]
+   </td>
+  </tr>
+ </table>
+ <p></p>
+ <table width='100%' cellspacing='0' cellpadding='0' border='0'>
+  <tr>
+   <td class='MMenu'> 
+    <table class='TBox' width='200' cellspacing='1' cellpadding='2' border='0'>
+     <tr>
+      <td class='TBoxHead'>
+       Navigation
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <a href="readme.htm"><b>Readme</b></a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#new">What's New</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#disclaimer">Disclaimer</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#requirement">System Requirements</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#ttk">Things to Know</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#progress">Current Progress</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#defaultkeys">ZSNES Default Keys</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#f1">F1 Menu</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#config">Configuration File</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#cheater">Cheat Codes</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#extra">Extra Features</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#bugs">Bugs</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#contact">Contact Information</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#credits">Credits</a><br />
+       <a href="gui.htm"><b>GUI</b></a><br />
+       &nbsp;&nbsp;&nbsp;<a href="gui.htm#game">Game Menu</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="gui.htm#quick">Quick Menu</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="gui.htm#config">Config Menu</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="gui.htm#cheat">Cheat Menu</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="gui.htm#netplay">Netplay Menu</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="gui.htm#misc">Misc Menu</a><br />
+       <a href="netplay.htm"><b>Netplay</b></a><br />
+       &nbsp;&nbsp;&nbsp;<a href="netplay.htm#recommendations">Recommendations</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="netplay.htm#instructions">Simple Instructions</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="netplay.htm#ip">Getting the IP</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="netplay.htm#connecting">Connecting</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="netplay.htm#loading">Loading A Game</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="netplay.htm#configuring">Configuring</a><br />
+       <a href="bugreports.htm"><b>Bug Reports</b></a><br />
+       &nbsp;&nbsp;&nbsp;<a href="bugreports.htm#filing">Filing A Bug Report</a><br />
+       <a href="faq.htm"><b>FAQ</b></a><br />
+      </td>
+     </tr>
+    </table>
+    <br />
+    <a href="http://validator.w3.org/check?uri=referer"><img style="border:0;width:88px;height:31px;margin-left:auto;margin-right:auto;display:block;text-align:center;" src="images/valid-xhtml11.png" alt="Valid XHTML 1.1!" /></a>
+    <br />
+    <img style="border:0;width:88px;height:31px;margin-left:auto;margin-right:auto;display:block;text-align:center;" src="images/vcss.png" alt="Valid CSS!" />
+   </td>
+   <td class='MBody'>
+    <table width='100%' class='TBox' cellspacing='1' cellpadding='2' border='0'>
+     <tr>
+      <td class='TBoxHead'>
+       Netplay
+       <a id="filing"></a>
+      </td>
+     </tr>
+     <tr id="recommendations">
+      <td class='TBoxSubHead'>
+       System Recommendations
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       *** FOR SMOOTH NETPLAY, IT IS REQUIRED THAT BOTH SIDES HAVE FAST COMPUTERS (LOOK BELOW FOR REQUIREMENTS). IF ONE SIDE HAS A SLOW COMPUTER (EG. 200MHZ) WHILE THE OTHER HAS A FAST ONE (EG. 800MHZ), THE SLOW COMPUTER'S LOW FRAMERATE WILL BOG DOWN THE FAST COMPUTER, CAUSING POOR FRAME RATES ON THE FAST COMPUTER.  IT IS ALSO STRONGLY RECOMMENDED THAT YOU KEEP LATENCY AT 3 (OR REDUCE IT TO 2 FOR FAST PACED PLATFORM GAMES), ALLOW UDP CONNECTIONS, AND KEEP BACK BUFFER ENABLED.<br />
+       <br />
+       Also, the higher than ping time, the worse the netplay experience, since ping times measure the time it takes for data to get to the other side and back. You can expect a not so great performance if you have a ping time of 400 or greater.<br />
+       <br />
+       Note: You cannot use cheat codes, key combinations, or turbo keys in netplay.<br />
+       <br />
+       Note: Firewall users - You may need to disable your firewall (or just disable it for UDP port 7845) in order to get the UDP protocol that ZSNES's netplay uses to work.<br />
+       <br />
+       System Recommendations for Smooth Netplay:<br />
+       ------------------------------------------<br />
+       <ul>
+        <li>- Back Buffer must be enabled and the latency value must be 3 or 2.</li>
+        <li>- The games have to run at least 50 FPS on BOTH computers without netplay. This can completely depend on factors such as CPU, video card, video mode, and the game you are running.</li>
+        <li>- Your system should be able to handle the UDP protocol.  Without it, lost packets can cause lots of in-game pauses in your netplay experience.</li>
+        <li>- You can also try changing your resolution to different video modes and find the video mode that provides the optimal performance if the current performance isn't satisfactory.</li>
+        <li>- You will also need an Internet connection with ping times of less than 400ms between both connections.</li>
+       </ul>
+      </td>
+     </tr>
+     <tr id="instructions">
+      <td class='TBoxSubHead'>
+       Simple Instructions on How to Get it Working
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <ol>
+        <li>1.) Go to Netplay -> Internet.</li>
+        <li>2.) Decide who will be the server and who will be the client (Neither has the gameplay advantage since ZSNES treats both the same after a connection is established).</li>
+        <li>3.) If you're the server, send the IP that is shown to your friend (eg. through any chat program (ICQ, AIM, IRC, etc.)).  Then click on 'Start Server'.</li>
+        <li>4.) If you're the client, type in the IP address that your friend has given you and then click on 'Connect to Server'.</li>
+        <li>5.) Chat with your friend on what game to play.</li>
+        <li>6.) Once decided, make sure that the filename on both sides are the same and that the load window points to the directory where the filename is.</li>
+        <li>7.) Load the game.</li>
+        <li>8.) Have fun! (If it worked).</li>
+        <li>9.) If it said 'Checksum Mismatch', try unzipping the file if it is a .ZIP file.  If not, then both sides have a different version of that ROM (eg. One side has the Japanese version while the other has the English, or both versions are English, but are different version releases of the same game).</li>
+        <li>10.) If you want to chat in-game, press 'T' and type in your line. You can change this key in the Misc -> Game Keys options from the GUI.</li>
+       </ol>
+      </td>
+     </tr>
+     <tr id="ip">
+      <td class='TBoxSubHead'>
+       Getting the IP Address
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+      <br />
+       The IP address should be displayed on the connection window.  The person being the client has to somehow tell the person who is the server his own IP address in order to connect. However, if your system has multiple IP addresses, the one on the connection window probably isn't the correct one.<br />
+       <br />
+      </td>
+     </tr>
+     <tr id="connecting">
+      <td class='TBoxSubHead'>
+       Connecting
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <br />
+       When you're ready, select Internet from the Netplay menu.<br />
+       <br />
+       If you are the server, just click on 'Start Server' and wait for the client to connect.<br />
+       If you are the client, and after obtaining the IP of your friend (your friend has to send you his IP if you cannot figure out his IP on your own), type in the IP into the space provided and then click on 'Connect to Server'.  Once you click on it, your system may look as if it's frozen, but it actually isn't.  You just have to wait for a bit until it either connects or fails to connect.<br />
+       If it failed to connect, then check to make sure that the IP you entered is correct and that you are properly connected to the net.<br />
+       If the client says 'Found Client' and nothing else happens, chances are that your net connection does not support UDP.  If this is the case, both sides will need to deselect 'Allow UDP Connection'.  However, it is strongly recommended that you use this option if it is possible since it is much faster than without UDP.<br />
+       <br />
+      </td>
+     </tr>
+     <tr id="loading">
+      <td class='TBoxSubHead'>
+       Loading a Game
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <br />
+       Once successfully connected, the chat window should open up.  From there, you can load a game like how you normally load a game.  But in order to load a game, both sides have to have their load window pointing to the directory where the game is located and also have to have the filename the same on both sides.  Only one side has to load the game.  After that, the other side will automatically load the game without the user's interaction.  If an error pops up saying 'ROM data mismatch', then it means that either side has a different version of the ROM.  This error sometimes happens with zip files even when both files are the same, so it is recommended that you unzip the games and try again if this error occurs.<br />
+       <br />
+      </td>
+     </tr>
+     <tr id="configuring">
+      <td class='TBoxSubHead'>
+       Configuring the Options in the Chat Window
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <br />
+       The default settings are recommended.<br />
+       <br />
+       However, if your computer is slower than 266 MHz, then it is recommended that both sides play with back buffer disabled. However, disabling this would degrade controller response.<br />
+       <br />
+       You can increase the latency value if the average ping time between both connections is high (you can tell if the gameplay runs too jerky).<br />
+       <br />
+       Reducing the latency value when back buffer is enabled will improve controller response time.  But, however, this will cause the remote player to jump around more in order to keep both sides in sync.<br />
+       <br />
+       For controller options (PL1,PL2,PL3,..), the first checkmarked player would be using Input #1 of the local side.  The second checkmarked player would be using Input #2 and so on.  Players marked with an 'X' are checkmarked on the remote side.<br />
+      </td>
+     </tr>
+    </table>
+    <br />
+    <div style="margin-left:auto;margin-right:auto;display:block;text-align:center;">
+     Best viewed in a real web browser such as Firefox.<br />
+     <a href="http://www.spreadfirefox.com/?q=affiliates&amp;id=51657&amp;t=64" style="background-color:#ffffff;"><img style="border:0;margin-right:3px;" alt="Get Firefox!" title="Get Firefox!" src="images/safer.png" /><img style="border:0;margin-left:3px;" alt="Get Firefox!" title="Get Firefox!" src="images/get.png" /></a>
+    </div>
+   </td>
+  </tr>
+ </table>
+</body>
+
+</html>

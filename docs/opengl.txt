@@ -1,0 +1,100 @@
+This document is no longer up-to-date, but is a good start to
+understanding how the OpenGL code works for non-filtered modes.
+-------------------------------------------------------------------------
+
+     OpenGL is currently only available on Linux and via CVS. For the most
+part, it works and fairly stable. Please send all comments, suggestions,
+and bug fixes to hpsolo@my-deja.com. DO NOT EMAIL THE OTHER DEVELOPERS
+SINCE THEY ARE not INVOLVED WITH THIS CODE. And please make sure you've
+read through the list of known issues before sending your bug report.
+
+
+HOW OPENGL RENDERS THE SNES VIDEO BUFFER
+
+    The SNES video buffer has dimensions 288x224 (sometimes 288x239 for
+certain games; however I have not come across any). The first 16 and last
+16 column of pixels are not displayed (perhaps used as a scrolling
+buffer?), so the only important part of the video buffer is the middle
+256x224 pixels. The SNES video buffer pointer is vidbuffer. With OpenGL,
+only the visible 256x224 pixels are needed and they are cropped into
+glvidbuffer. glvidbuffer is then turned into a texture that gets bound to
+a QUAD whose size depends on whether ZSNES uses aspect ratio to display
+each frame.
+
+
+HI-RES FILTERS WITH OPENGL
+
+     The video mode selection is taken care of by SDL, including full
+screen mode. The current code does not allow for many hi-res filter
+options. While it is not difficult to implement the hi-res features using
+the current filtering code (in copyvwin.asm), it appears that the code for
+copy640x480x16bwin() causes memory corruption and sometimes segfaults when
+you exit ZSNES. For this reason, the filters have been left out. You can,
+however, add it in yourself by:
+
+     1. allocating enough memory space for glvidbuffer (use realloc)
+     2. assign glvidbuffer to the destination pointer SurfBufD (instead of
+        surface->pixels)
+     3. setting Temp1 to surface->pitch, i.e. Temp1 = 2*SurfaceX
+     4. calling copy640x480x16bwin()
+     5. correctly binding the glvidbuffer as a texture to a QUAD
+
+There is a old patch that enables these filters and it is located at:
+http://www.students.uiuc.edu/~handuong/opengl.patch2
+
+
+3DFX USERS (VOODOO2 AND OLDER HARDWARE)
+
+     Lord_Nightmare managed to get OpenGL to work on a Voodoo2. Some
+things you'll need to do in order to get ZSNES OpenGL to work on your
+Voodoo:
+
+     1. Make sure to have the latest Mesa drivers and compile it with
+        the following option:
+
+	make -f Makefile.X11 linux-386-glide
+
+	Voodoo2 users might want to use:
+
+	make -f Makefile.X11 linux-386-opt-glide
+
+	since that is optimized for Voodoo2 cards. According the the
+	XFree86 website, Voodoo3 users (and later) should have DRI
+	support via the tdfx driver so this might not be needed.
+
+     2. When you run ZSNES, make sure to set the environment variable
+        MESA_GLX_FX to either w or f (window/full screen). E.g. use
+
+	export MESA_GLX_FX=f
+
+	if you use a bash shell. Theoretically using the w option
+	should work, but it not only is slow (5fps) but seems
+	broken. Voodoo Rush users might be able to get by.
+
+Note that only the 640x480 full screen mode works on the Voodoo2 cards
+so please do not email me about the other video modes. Files which
+might be useful to have before compiling anything:
+
+Device3Dfx, Glide_SDK, Glide_V2 (or Glide_XXXX depending on your card)
+
+I believe Glide 2 is what you want, as Glide 3 doesn't work for older
+hardware. Also Device3Dfx may not be implemented the same way for 2.4.x
+kernels.
+
+
+KNOWN ISSUES (AND SOME WORK-AROUNDS)
+
+- after many video mode switches (all windowed), switching to full screen
+  then back to window mode cases an SDL parachute exit; try not to use too
+  many video mode changes, and restart ZSNES every once in a while if you
+  are just testing out video modes
+
+- segfault after having compiled the source -- this might be due to an old
+  zguicfg.dat file; delete this and see if the problem gets fixed
+
+
+TODO
+
+- use something like SDL_GL_UpdateRects with hi-res filters
+
+								-- hpsolo --

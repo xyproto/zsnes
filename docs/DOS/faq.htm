@@ -1,0 +1,878 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+
+<head>
+ <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+ <link rel="stylesheet" type="text/css" href="style.css" />
+ <title>ZSNES Documentation - DOS v1.4 - Frequently Asked Questions</title>	
+</head>
+
+<body>
+ <table width='100%' cellspacing='0' cellpadding='0' border='0'>
+  <tr>
+   <td class='PHeader'>
+    <img src="images/zsneslogo.png" alt="ZSNES" /><br />
+    <b>ZSNES DOS v1.4</b>
+   </td>
+   <td class='PHeader' style="text-align:right;padding:14px;">
+   </td>
+  </tr>
+  <tr>
+   <td colspan='2' class='PSubHeader'>
+    &nbsp;&nbsp;&nbsp;
+    [<a href='about.htm'>About</a>]
+    [<a href='credits.htm'>Credits</a>]
+    [<a href='http://www.zsnes.com'>ZSNES.com</a>]
+    [<a href='http://www.zsnes.com/index.php?page=donate'>Donate</a>]
+    [<a href='license.txt'>GPL</a>]
+   </td>
+  </tr>
+ </table>
+ <p></p>
+ <table width='100%' cellspacing='0' cellpadding='0' border='0'>
+  <tr>
+   <td class='MMenu'> 
+    <table class='TBox' width='200' cellspacing='1' cellpadding='2' border='0'>
+     <tr>
+      <td class='TBoxHead'>
+       Navigation
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <a href="readme.htm"><b>Readme</b></a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#new">What's New</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#disclaimer">Disclaimer</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#requirement">System Requirements</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#ttk">Things to Know</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#progress">Current Progress</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#defaultkeys">ZSNES Default Keys</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#f1">F1 Menu</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#config">Configuration File</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#cheater">Cheat Codes</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#extra">Extra Features</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#bugs">Bugs</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#contact">Contact Information</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="readme.htm#credits">Credits</a><br />
+       <a href="gui.htm"><b>GUI</b></a><br />
+       &nbsp;&nbsp;&nbsp;<a href="gui.htm#game">Game Menu</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="gui.htm#quick">Quick Menu</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="gui.htm#config">Config Menu</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="gui.htm#cheat">Cheat Menu</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="gui.htm#netplay">Netplay Menu</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="gui.htm#misc">Misc Menu</a><br />
+       <a href="bugreports.htm"><b>Bug Reports</b></a><br />
+       &nbsp;&nbsp;&nbsp;<a href="bugreports.htm#filing">Filing A Bug Report</a><br />
+       <a href="faq.htm"><b>FAQ</b></a><br />
+       &nbsp;&nbsp;&nbsp;<a href="faq.htm#sound">Sound Compatibility</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="faq.htm#transparency">Transparency Issues</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="faq.htm#game">Game Compatibility</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="faq.htm#speed">Speed Issues</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="faq.htm#kbd_joy">Keyboard/Joystick Issues</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="faq.htm#cheat">Cheat Issues</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="faq.htm#ingame_sound">In-Game Sound Issues</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="faq.htm#freezing">Freezing/Crashing Issues</a><br />
+       &nbsp;&nbsp;&nbsp;<a href="faq.htm#misc">Miscellaneous</a><br />
+      </td>
+     </tr>
+    </table>
+    <br />
+    <a href="http://validator.w3.org/check?uri=referer"><img style="border:0;width:88px;height:31px;margin-left:auto;margin-right:auto;display:block;text-align:center;" src="images/valid-xhtml11.png" alt="Valid XHTML 1.1!" /></a>
+    <br />
+    <img style="border:0;width:88px;height:31px;margin-left:auto;margin-right:auto;display:block;text-align:center;" src="images/vcss.png" alt="Valid CSS!" />
+   </td>
+   <td class='MBody'>
+    <table width='100%' class='TBox' cellspacing='1' cellpadding='2' border='0'>
+     <tr>
+      <td class='TBoxHead'>
+       FAQ
+       <a id="sound"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Sound Compatibility
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <b>Q:</b> <a href="#no_sound">How come I don't get any sound?</a><br />
+       <b>Q:</b> <a href="#gus_pas">When do you think you'll support GUS/PAS sound cards?</a><br />
+       <b>Q:</b> <a href="#sound_init_error">I get a sound initialization error using my SB Live! (or any other PCI card)  How do I fix it?</a><br />
+       <a id="transparency"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Transparency Issues
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <b>Q:</b> <a href="#transparencies">Are there transparencies in ZSNES?</a><br />
+       <b>Q:</b> <a href="#enable_trans">How do you enable transparencies?</a><br />
+       <b>Q:</b> <a href="#fog">There is this layer of fog blocking my view.  What's wrong?</a><br />
+       <a id="game"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Game Compatibility Issues
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <b>Q:</b> <a href="#doesnt_work">Why doesn't *name of game* work on zsnes?</a><br />
+       <b>Q:</b> <a href="#will_it_work">Can you get *name of game* working by the next release?</a><br />
+       <b>Q:</b> <a href="#no_longer_works">Why is *name of game* not working in v.*version #* of zsnes?  It was working before.</a><br />
+       <b>Q:</b> <a href="#special_chips">When do you think you will emulate the *DSP/SFX/C4* chip?  My favorite game *name of game with chip* won't run without it.</a><br />
+       <b>Q:</b> <a href="#multitap">This game tells me that it is not compatible with the MultiTap (or an external device attached).  What should I do?</a><br />
+       <b>Q:</b> <a href="#improve_compatibility">How do I improve the compatibility of ZSNES?</a><br />
+       <b>Q:</b> <a href="#mario_rpg">How come Mario RPG doesn't work?</a><br />
+       <b>Q:</b> <a href="#chrono_trigger">Why am I experiencing problems with Chrono Trigger?</a><br />
+       <b>Q:</b> <a href="#mmxtwo_mmxthree">Why doesn't MegamanX2/MegamanX3 work?</a><br />
+       <a id="speed"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Speed Issues
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <b>Q:</b> <a href="#speed_up">How do I speed up zsnes?</a><br />
+       <b>Q:</b> <a href="#dynamic_recomp">Can you implement dynamic recompilation into zsnes?</a><br />
+       <b>Q:</b> <a href="#slow_game_high_fps">Why does the game slow down even though I'm using auto frame rate and the FPS is pretty high?</a><br />
+       <a id="kbd_joy"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Keyboard/Joystick Issues
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <b>Q:</b> <a href="#two_keys">Why can't I press more than 2 keys at a time?</a><br />
+       <b>Q:</b> <a href="#sidewinder">How come my sidewinder pad doesn't work?</a><br />
+       <b>Q:</b> <a href="#multiple_sidewinders">How do I use more than one sidewinder pads?</a><br />
+       <b>Q:</b> <a href="#gamepad_pro">Why doesn't my Gamepad Pro work?</a><br />
+       <b>Q:</b> <a href="#joystick_no_longer_works">Why doesn't my joystick work anymore?</a><br />
+       <b>Q:</b> <a href="#button_sticking">How come my joystick keeps holding in one direction?</a><br />
+       <b>Q:</b> <a href="#keyboard_and_joystick">How do I use both my Keyboard and Joystick for the 1st player like v0.400?</a><br />
+       <b>Q:</b> <a href="#buttons_pressed">Why does JB5/JB6 keep getting pressed whenever I try to change a key?</a><br />
+       <a id="ingame_sound"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       In-Game Sound Issues
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <b>Q:</b> <a href="#static">Why does ZSNES produce a lot of static?</a><br />
+       <b>Q:</b> <a href="#reversed_stereo">How come stereo is reversed?</a><br />
+       <a id="cheat"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Cheat Issues
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <b>Q:</b> <a href="#game_genie_codes_dont_work">How come the game genie codes don't work?</a><br />
+       <b>Q:</b> <a href="#cht_files">How do I use .CHT files?</a><br />
+       <b>Q:</b> <a href="#multiline_codes">Why don't multi-part codes work?</a><br />
+       <a id="freezing"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Freezing/Crashing Issues
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <b>Q:</b> <a href="#pure_dos">How come ZSNES freezes when I run it under pure dos?</a><br />
+       <b>Q:</b> <a href="#crashes">When I load a ROM, how come ZSNES crashes?</a><br />
+       <b>Q:</b> <a href="#freezes">How come zsnes freezes when it tries to enter the GUI?</a><br />
+       <a id="misc"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Miscellaneous
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <b>Q:</b> <a href="#low_memory">ZSNES gives me an out of memory error and I only have 16MB of RAM.  How do I fix this?</a><br />
+       <b>Q:</b> <a href="#auto_patching">How does the auto .IPS patching feature work?</a><br />
+       <b>Q:</b> <a href="#modem_mode">Does the modem mode work well?</a><br />
+       <b>Q:</b> <a href="#modem_mode_slow">Why is modem mode so choppy and slow?</a><br />
+       <b>Q:</b> <a href="#ipx">Does the IPX support work well?</a><br />
+       <b>Q:</b> <a href="#blank_screen">Why does ZSNES display a blank (or messed) screen when I start it up on my laptop?</a><br />
+       <b>Q:</b> <a href="#commandline">Can I run .ZIP files from the commandline?</a><br />
+       <b>Q:</b> <a href="#sdd1dat">What is this "sdd1dat.dat" file?</a><br />
+       <b>Q:</b> <a href="#gimme_romzors">Where do I get the games?</a><br />
+      </td>
+     </tr>
+    </table>
+    <br />
+    <table width='100%' class='TBox' cellspacing='1' cellpadding='2' border='0'>
+     <tr>
+      <td class='TBoxHead'>
+       Answers
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Sound Compatibility Issues
+       <a id="no_sound"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <table border="0" cellspacing="2" cellpadding="0">
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>How come I don't get any sound?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>
+          There could be several situations:
+          <ul class="indent_list">
+           <li>1.) You haven't enabled sound.  You can enable it through the GUI</li>
+           <li>2.) Try ZSNES Version a instead of c (eg.  If you have ZSNES v0.900c, download ZSNES v0.900a)</li>
+           <li>3.) Your windows 95 doesn't create a SET BLASTER string.  To verify this, type SET in DOS and look for a string starting with BLASTER= If such a string exists, then this is not your problem.</li>
+           <li>4.) You don't have a SB2.0 compatible sound card.  If this is your case, then there is nothing you can do at the moment.  ZSNES uses auto-initialization mode for sound which requires SB2.0+</li>
+           <li>5.) Your SB IRQ conflicts with another device.  If this is the case, then you might want to check your sound card settings through Control Panel -> System.</li>
+           <li>6.) Zsnes doesn't like your sound card</li>
+          </ul>
+          <a id="gus_pas"></a>
+         </td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>When do you think you'll support GUS/PAS sound cards?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>We've considered implementing those sound cards, but a lack of time and also by the fact that we haven't really touched those cards before prevents us from implementing it.<a id="sound_init_error"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>I get a sound initialization error using my SB Live! (or any other PCI card).  How do I fix it?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>
+          Here is a solution: (Thanks CyberGodz for the post on the wwwboard!)<br />
+          <br />
+          SB Live uses what is known as a NMI or Non Maskable Interrupt to emulate SB 16 sound. Don't ask me exactly what it does (it's a type of IRQ) but that is pretty much all it is good for.<br />
+          <br />
+          The problem is that many boards either lack NMI support or don't have it enabled. (No NMI = No Dos Support)<br />
+          <br />
+          To try and solve this problem do the following:
+          <ul class="indent_list">
+           <li>1. Check your BIOS. If there is an option for RAM Parity Checking ENABLE IT.  It usually turns on NMI support. If there is something that says NMI turn it on.</li>
+           <li>2. If you don't find anything in your BIOS, then go to your motherboards website and download the latest BIOS flash. Install it and try your dos sound (You may still have to enable the stuff in the BIOS after).</li>
+           <li>3. Failing the first two things you will either have to get a new motherboard or install a SB 16, or other Compatible sound card alongside the Live. Just attach a cable from the Line Out of the SB 16 to the Line In of the Live. Enable line in on the mixer of your SB Live and it should route the sound through the old sound card (Don't use the SPDIF to connect the cards if you have one. Wave sound doesn't pass through SPDIF only MIDI).</li>
+          </ul>
+         </td>
+        </tr>
+       </table>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Transparency Issues
+       <a id="transparencies"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <table border="0" cellspacing="2" cellpadding="0">
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Are there transparencies in ZSNES?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>Yes.  Transparencies are in zsnes.<a id="enable_trans"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>How do you enable transparencies?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>First, try setting the video mode to a 16bit color video mode in the GUI (If 320x240x16b doesn't work, then try 640x480x16b).  If it gives you an error that says that your video card isn't compatible with vesa 2.0, you might want to get the Scitech Display Doctor which is located at www.scitechsoft.com which provides certain cards with vesa 2.0 support.  Running with transparencies on is definitely slower because of the extra math equations, memory, and video space involved.<a id="fog"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>There is this layer of fog blocking my view.  What's wrong?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>You need to either enable transparencies (see above) or you can disable certain backgrounds by pressing the 1,2,3, or 4 keys.  If you get lost while pressing those keys, press 6 to re-enable all the backgrounds.</td>
+        </tr>
+       </table>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Game Compatibility Issues
+       <a id="doesnt_work"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <table border="0" cellspacing="2" cellpadding="0">
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Why doesn't *name of game* work on zsnes?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>Getting the compatibility higher is a very hard task to do.  We're always trying to get more games working.<a id="will_it_work"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Can you get *name of game* working by the next release?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>We're always trying, but we can never guarantee a specific game will be working because of the difficulties involved in bug fixing.<a id="no_longer_works"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Why is *name of game* not working in v.*version #* of zsnes?  It was working before.</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>Whenever we change something in the emulation, whether it's optimization or bug fixes, it has a good potential to have caused a problem elsewhere. Usually, these problems aren't discovered until after a release.<a id="special_chips"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>When do you think you will emulate the *DSP/SFX/C4* chip?  My favorite game *name of game with chip* won't run without it.</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>We will consider emulating extra chips only if decent information on those chips are found.  However, even if we find info on them, we cannot guarantee to be able to implement them.<a id="multitap"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>This game tells me that it is not compatible with the MultiTap. What should I do?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>Set both Player 3 and Player 4's input device to 'None'<a id="improve_compatibility"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>How do I improve the compatibility of ZSNES?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>Turning on sound helps a lot here.  If you can't enable sound, run zsnes using the commandlines -s and -dd.  Also, try to keep the % of execution at 100%.  If a game still doesn't work, try tweaking the percentage of execution to both 120% or 80% in zsnes.cfg.  If that still doesn't work, then it's either a corrupt rom, a game that requires a special chip, or a bug in zsnes.<a id="mario_rpg"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>How come Mario RPG doesn't work?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>If the emulator crashes, then your rom file is corrupt.  If it only displays a blank screen, then you need to enable sound (or use -s -dd as the commandlines when running zsnes under dos)<a id="chrono_trigger"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Why am I experiencing problems with Chrono Trigger?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>
+          - If there is a layer of fog blocking the view, then you need to either enable transparencies or remove the fog layer by pressing one of the 1,2,3 keys.<br />
+          - If the game freezes after the switching character sequence, then you need to enable sound (or use -s -dd as the commandlines when running zsnes under dos) and do not load from a save state, instead load from the game selection menu when you start the game normally.<br />
+          - If you cannot press the L+R+A sequence, then you would need to assign both the L and R key as the same key such as set L and R to PageUp and set A to Home, then pressing PageUp+Home will be the same as pressing L, R, and A together.  This is a hardware limitation of the keyboard, not a bug in zsnes.
+          <a id="mmxtwo_mmxthree"></a>
+         </td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Why doesn't MegamanX2/MegamanX3 work?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>If it crashes after the Capcom logo, then you have a corrupt rom dump. The actual ROM size for both of them is about 2 megabytes.</td>
+        </tr>
+       </table>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Speed Issues
+       <a id="speed_up"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <table border="0" cellspacing="2" cellpadding="0">
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>How do I speed up zsnes?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>Running zsnes under pure dos instead of in a windows box would help for low-end systems.<a id="dynamic_recomp"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Can you implement dynamic recompilation into zsnes?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>There is no plans to implement it since it doesn't seem necessary. The snes only uses a 3mhz cpu compared to say a 33mhz on a playstation or a 93mhz on an n64.  Implementing a dynamic recompilation engine will be hard work and won't improve performance by much.<a id="slow_game_high_fps"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Why does the game slow down even though I'm using auto frame rate and the FPS is pretty high?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>A game slows down like that when it executes its code beyond the speed of cpu emulation that zsnes currently handles.  To reduce such slowdowns, increase the percentage of execution by using either -p or editing zsnes.cfg.</td>
+        </tr>
+       </table>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Keyboard/Joystick Issues
+       <a id="two_keys"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <table border="0" cellspacing="2" cellpadding="0">
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Why can't I press more than 2 keys at a time?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>It's mainly the limitation of the PC Keyboard.  If you want to press more than 2 keys at a time, either use a joystick or change the keyboard keys around until you find a combination where you can press more than 2 keys at a time.  Another technique that works is to set multiple buttons to a single key.  That way, pressing that key presses multiple buttons at the same time.<a id="sidewinder"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>How come my sidewinder pad doesn't work?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>
+          First, for non-USB Sidewinders, the first thing you should try is to first disable the sidewinder profiler from the Win9x icon tray, run ZSNES, set Input #1 as SidewinderPad1, then press the mode button a few times.  If it doesn't work, then try the following:<br />
+          - Disable the Win9x Sidewinder Profiler, run Zsnes and press the Mode button a few times<br />
+          - Try checking or unchecking the Sidewinder Fix in the Options menu of the GUI and repeat the above steps<br />
+          - Fully disable the Win9x Sidewinder Drivers by going to Control Panel/Game Controllers.  Then remove the sidewinder (Thanks Scarlet-Slider for this info!)<br />
+          - Run zsnes under pure dos<br />
+          - Try checking or unchecking the Sidewinder Fix in the Options menu of the GUI and repeat the above 2 steps<br />
+          - Make sure your sidewinder is plugged in and not broken<br />
+          <br />
+          For USB Joysticks, you can either set ZSNES as a 6-button joystick or simulate keyboard keys through the Sidewinder Profiler and set Input #1 as a keyboard with those defined keys.<br />
+          <a id="multiple_sidewinders"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>How do I use more than one sidewinder pads?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>First, run ZSNES, temporarily disconnect the second sidewinder pad from the first one, get the first one to work, then re-connect the second sidewinder pad.<a id="gamepad_pro"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Why doesn't my Gamepad Pro work?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>For the non-USB version, be sure to have your Gamepad Pro set on 'GrIP' mode.  Then set the input device as Gamepad Pro P0.  For the USB version, you can use a keyboard emulator which should be included with the software that came with your joystick.<a id="joystick_no_longer_works"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Why doesn't my joystick work anymore?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>You might have accidentally clicked the 'Use Joystick Port 209' check box. Just uncheck it.<a id="button_sticking"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>How come my joystick keeps holding in one direction?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>That happens when you hold a direction when ZSNES starts up. If that happens, then exit ZSNES and reload to recalibrate.  Clicking on SET in the input device window also calibrates the joystick, but it also resets the controls to the default joystick settings.<a id="keyboard_and_joystick"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>How do I use both my Keyboard and Joystick for the 1st player like v0.400?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>In the GUI, enter the CONFIG -> OPTIONS menu.  Then check 'USE Pl1/2 AS Pl3/4'.  Once you've done that, Player 3 controls will control Player 1 so if you have joystick set on Player 1, set Player 3 as keyboard.  This disables multitap emulation however.<a id="buttons_pressed"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Why does JB5/JB6 keep getting pressed whenever I try to change a key?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>Try changing your joystick type from a 6-button to a 4-button.</td>
+        </tr>
+       </table>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       In-Game Sound Issues
+       <a id="static"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <table border="0" cellspacing="2" cellpadding="0">
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Why does ZSNES produce a lot of static?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>Try reducing your sampling rate or disable stereo sound<a id="reversed_stereo"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>How come stereo is reversed?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>Click on the box by 'Reverse Stereo' in the Sound configuration in the GUI.</td>
+        </tr>
+       </table>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Cheat Issues
+       <a id="game_genie_codes_dont_work"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <table border="0" cellspacing="2" cellpadding="0">
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>How come the game genie codes don't work?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>You probably didn't insert the '-'.  Otherwise, try clicking on the FIX button once while the highlight is over the code.  If it still doesn't work, chances are that the code is for another version of the game you're trying to run or the code is a fake.<a id="cht_files"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>How do I use .CHT files?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>Copy the .CHT file to the ROM Directory or if you have a save directory defined, copy it to the Save Directory.  Then rename the .CHT file if necessary so that the filename before the . matches the ROM file.<a id="multiline_codes"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Why don't multi-line codes work?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>They do. Just enter each line as a code.</td>
+        </tr>
+       </table>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Freezing/Crashing Issues
+       <a id="pure_dos"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <table border="0" cellspacing="2" cellpadding="0">
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>How come ZSNES freezes when I run it under pure dos?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>Try loading your mouse driver or run zsnes using -j.  For the most compatible result, use the Microsoft Mouse driver if possible<a id="crashes"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>When I load a ROM, how come ZSNES crashes?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>It could be that ZSNES doesn't recognize your sound configuration so to fix it, disable sound or try changing your sound configuration. It could also be that the ROM you're loading isn't compatible with ZSNES.<a id="freezes"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>How come zsnes freezes when it tries to enter the GUI?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>Run zsnes using the commandline -j</td>
+        </tr>
+       </table>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxSubHead'>
+       Miscellaneous Issues
+       <a id="low_memory"></a>
+      </td>
+     </tr>
+     <tr>
+      <td class='TBoxText'>
+       <table border="0" cellspacing="2" cellpadding="0">
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>ZSNES gives me an out of memory error and I only have 16MB of RAM.  How do I fix this?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>
+          First, create a shortcut to the DOS Prompt on the desktop (the filename that it points at can be c:\command.com)<br />
+          <br />
+          Then right-click on the icon and go to properties.<br />
+          <br />
+          Select the memory tab and look below for Protected Mode (DPMI) settings and set a high value (like 20000).<br />
+          <br />
+          Then double click on that icon and load ZSNES as usual.<br />
+          <a id="auto_patching"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>How does the auto .IPS patching feature work?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>The auto .IPS feature works by copying the .IPS file to the directory of your ROM file or if you have a save directory defined, then the .IPS file goes into the save directory.  Next, rename the .IPS file so that it matches filename (eg.  If your ROM filename is THISGAME.SMC, then your .IPS filename is THISGAME.IPS.) A Zip file is patched by the name of the ROM it contains, not by the zip name itself (tg.zip containing THISGAME.SMC is patched the same as THISGAME.SMC)<a id="modem_mode"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Does the modem mode work well?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>It should work quite well.  First, make sure that you are using a modem that is compatible with dos (a non winmodem).  It is recommended that both sides has a modem that uses a 16550a UART, otherwise the game may go out of sync.  Also, be sure to load a fresh new Zsnes session before starting a modem session.  If it still doesn't work, then try running Zsnes under pure dos since some modems doesn't seem to work in windows in Zsnes while works in pure dos.<a id="modem_mode_slow"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Why is modem mode so choppy and slow?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>Try increasing the latency value one by one until the gameplay becomes smooth<a id="ipx"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Does the IPX support work well?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>No.  It does not work very well unless you have a very fast LAN.  Otherwise, the game will easily go out of sync.<a id="blank_screen"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Why does ZSNES display a blank (or messed) screen when I start it up on my laptop?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>Your laptop is probably not compatible with ZSNES default 256x256x256 resolution.  One way to fix it is to set the resolution to 320x240x256 by using the DOS commandline -v 0.<a id="commandline"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Can I run .ZIP files from the commandline?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>Yes.  But you have to specify the full path/drive (eg. ZSNES D:\GAMES\GAME.ZIP)<a id="sdd1dat"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>What is this "sdd1dat.dat" file?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>The debug log for S-DD1 partial emulation. It is not needed for proper functioning of ZSNES.<a id="gimme_romzors"></a></td>
+        </tr>
+        <tr>
+         <td>&nbsp;</td>
+         <td></td>
+        </tr>
+        <tr>
+         <td valign="top"><b>Q:</b></td>
+         <td><b>Where do I get the games?</b></td>
+        </tr>
+        <tr>
+         <td valign="top">A:</td>
+         <td>The ZSNES Team will *NOT* provide any games or any links to games.</td>
+        </tr>
+       </table>
+      </td>
+     </tr>
+    </table>
+    <br />
+    <div style="margin-left:auto;margin-right:auto;display:block;text-align:center;">
+     Best viewed in a real web browser such as Firefox.<br />
+     <a href="http://www.spreadfirefox.com/?q=affiliates&amp;id=51657&amp;t=64" style="background-color:#ffffff;"><img style="border:0;margin-right:3px;" alt="Get Firefox!" title="Get Firefox!" src="images/safer.png" /><img style="border:0;margin-left:3px;" alt="Get Firefox!" title="Get Firefox!" src="images/get.png" /></a>
+    </div>
+   </td>
+  </tr>
+ </table>
+</body>
+
+</html>
