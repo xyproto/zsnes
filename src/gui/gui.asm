@@ -606,6 +606,9 @@ NEWSYM ForceHiLoROM, db 0
 NEWSYM CombinDataGlob, times 3300 db 0 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff
 NEWSYM CombinDataLocl, times 3300 db 0
 
+NEWSYM CmdLineNetPlay, db 0
+NEWSYM CmdLineTCPIPAddress, times 29 db 0
+
 GUIwinorder times    18 db 0
 GUIwinpos   times    18 db 0
 GUIwinactiv times    18 db 0
@@ -891,9 +894,6 @@ CalcChecksum:
     xor bl,bh
     or bl,80h
     ret
-
-NEWSYM CmdLineNetPlay, db 0
-NEWSYM CmdLineTCPIPAddress, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
 NEWSYM GUIRestoreVars
     mov edx,GUIFName
