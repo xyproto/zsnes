@@ -2043,17 +2043,17 @@ NEWSYM GetTimeInSeconds
     add eax,ebx
     ret
 
-SECTION .bss
-
+SECTION .data
+ALIGN32
 SystemTime:
-.wYear                  resw    1
-.wMonth                 resw    1
-.wDayOfWeek             resw    1
-.wDay                   resw    1
-.wHour                  resw    1
-.wMinute                resw    1
-.wSecond                resw    1
-.wMilliseconds          resw    1
+.wYear                  dw    0
+.wMonth                 dw    0
+.wDayOfWeek             dw    0
+.wDay                   dw    0
+.wHour                  dw    0
+.wMinute                dw    0
+.wSecond                dw    0
+.wMilliseconds          dw    0
 
 
 SECTION .text
