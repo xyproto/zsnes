@@ -121,6 +121,7 @@ EXTSYM WinErrorA2,WinErrorB2,WinErrorC2
 EXTSYM ZsnesPage
 EXTSYM GetLocalTime
 EXTSYM V8Mode,GrayscaleMode
+EXTSYM PrevWinMode
 
 NEWSYM WinIntRFAsmStart
 
@@ -815,6 +816,13 @@ NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
    pushad
    call initwinvideo
    popad
+
+   xor eax,eax
+   mov al,[cvidmode]
+   cmp byte[GUIWFVID+eax],1
+   je .noprevwinmode
+   mov byte[PrevWinMode],al
+.noprevwinmode
 
    cmp dword[firstvideo],1
    je .skipinitgfx
