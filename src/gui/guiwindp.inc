@@ -1386,8 +1386,8 @@ DisplayGUIOption:
 %ifdef __WIN32__
     GUIOuttextwin2u 4,26,64,GUIOptionText6b,0
 %endif
-    GUIOuttextwin2u 4,26,74,GUIOptionText7,0 
-    GUIOuttextwin2u 4,26,84,GUIOptionText8,2 
+    GUIOuttextwin2u 4,26,74,GUIOptionText7,0
+    GUIOuttextwin2u 4,26,84,GUIOptionText8,2
     GUIOuttextwin2u 4,26,94,GUIOptionText9,12
     GUIOuttextwin2u 4,26,104,GUIOptionTextA,2
     GUIOuttextwin2u 4,26,114,GUIOptionTextB,0

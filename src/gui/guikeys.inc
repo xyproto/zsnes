@@ -916,7 +916,7 @@ GUIOptionKeys:
     jne .noautopatch
     xor byte[AutoPatch],1
 .noautopatch   
-    cmp dh,'.'
+    cmp dh,'T'
     jne .norominfo
     xor byte[RomInfo],1
 .norominfo   
