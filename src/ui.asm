@@ -156,7 +156,7 @@ NEWSYM welcome
 ;                 db 'PRIVATE BETA VERSION!!!  PLEASE DO NOT DISTRIBUTE!!!  Thank you!',13,10
 ;                 db 'Private Beta is Registered to : ',USERNAMEN,13,10
 ;%else
-                 db 'ZSNES v1.',ZVERSION,' beta (c) 1997-2001, ZSNES Team (zsKnight & _Demo_)',13,10
+                 db 'ZSNES v1.',ZVERSION,' beta (c) 1997-2002, ZSNES Team (zsKnight & _Demo_)',13,10
 %ifdef __LINUX__
                  db 'Compiled under NASM and GCC. (Linux/FreeBSD)',13,10,13,10
 %else
