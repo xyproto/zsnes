@@ -78,7 +78,7 @@ ALL:	@ZSNESEXE@
 ${ZIPDIR}/zpng.o: ${ZIPDIR}/zpng.c ${ZIPDIR}/zpng.h
 ${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/unzip.h
 ${ZIPDIR}/zzip.o: ${ZIPDIR}/zzip.c ${ZIPDIR}/unzip.h
-${ZIPDIR}/fir_interp.o: ${ZIPDIR}/fir_interp.cpp
+${ZIPDIR}/fir_proc.o: ${ZIPDIR}/fir_proc.cpp
 ${DOSDIR}/zloader.o: ${DOSDIR}/zloader.c
 fixsin.o: fixsin.c
 water.o: water.c
