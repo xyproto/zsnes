@@ -46,7 +46,7 @@ EXTSYM cnetptrhead,cnetptrtail,JoyBOrig,pl2neten,Voice6Ptr,HIRQLoc,SA1DoIRQ
 EXTSYM mode7A,mode7B,mode7C,mode7D,mode7set,winbg3en,winl1,winr1,SA1DMAInfo
 EXTSYM winl2,winr2,VIRQLoc,SA1Enable,mode7X0,mode7Y0,SA1Temp
 EXTSYM SA1IRQTemp,SA1IRQEnable,SA1DMADest,SA1DMAChar,SA1DMASource,SA1DMACount
-EXTSYM objptrn,Voice0State,TempValueSnd,nglogicval,bgtilesz,C4values
+EXTSYM objptrn,nglogicval,bgtilesz,C4values
 EXTSYM curexecstate,TempVidInfo,LatestBank,C4ObjSelec
 EXTSYM BGMS1,scadsng,winenabm,winenabs,vidbright
 EXTSYM genfulladdtab,genfulladdtabng

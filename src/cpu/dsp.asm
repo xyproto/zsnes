@@ -78,28 +78,28 @@ NEWSYM RDSPReg03       ; Voice  0  Pitch High
       mov al,[DSPMem+03h]
       ret
 
-NEWSYM RDSPReg04       ; Voice  0  SCRN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg04       ; Voice  0  SCRN
       mov al,[DSPMem+04h]
       ret
 
-NEWSYM RDSPReg05       ; Voice  0  ADSR (1)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg05       ; Voice  0  ADSR (1)
       mov al,[DSPMem+05h]
       ret
 
-NEWSYM RDSPReg06       ; Voice  0  ADSR (2)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg06       ; Voice  0  ADSR (2)
       mov al,[DSPMem+06h]
       ret
 
-NEWSYM RDSPReg07       ; Voice  0  GAIN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg07       ; Voice  0  GAIN
       mov al,[DSPMem+07h]
       ret
 
-NEWSYM RDSPReg08       ; Voice  0  ENVX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg08       ; Voice  0  ENVX
       mov al,[DSPMem+08h]
       xor al,al
       ret
 
-NEWSYM RDSPReg09       ; Voice  0  OUTX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg09       ; Voice  0  OUTX
       mov al,[DSPMem+09h]
       ret
 
@@ -123,48 +123,48 @@ NEWSYM RDSPReg0E       ;
       mov al,[DSPMem+0Eh]
       ret
 
-NEWSYM RDSPReg0F       ; Voice  0  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM RDSPReg0F       ; Voice  0  Echo coefficient
       mov al,[DSPMem+0Fh]
       ret
 
-NEWSYM RDSPReg10       ; Voice  1  Volume Left                                                                                                                                                                                                                                                     
+NEWSYM RDSPReg10       ; Voice  1  Volume Left
       mov al,[DSPMem+10h]
       ret
 
-NEWSYM RDSPReg11       ; Voice  1  Volume Right                                                                                                                                                                                                                                                    
+NEWSYM RDSPReg11       ; Voice  1  Volume Right
       mov al,[DSPMem+11h]
       ret
 
-NEWSYM RDSPReg12       ; Voice  1  Pitch Low                                                                                                                                                                                                                                                       
+NEWSYM RDSPReg12       ; Voice  1  Pitch Low
       mov al,[DSPMem+012h]
       ret
 
-NEWSYM RDSPReg13       ; Voice  1  Pitch High                                                                                                                                                                                                                                                      
+NEWSYM RDSPReg13       ; Voice  1  Pitch High
       mov al,[DSPMem+013h]
       ret
 
-NEWSYM RDSPReg14       ; Voice  1  SCRN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg14       ; Voice  1  SCRN
       mov al,[DSPMem+014h]
       ret
 
-NEWSYM RDSPReg15       ; Voice  1  ADSR (1)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg15       ; Voice  1  ADSR (1)
       mov al,[DSPMem+015h]
       ret
 
-NEWSYM RDSPReg16       ; Voice  1  ADSR (2)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg16       ; Voice  1  ADSR (2)
       mov al,[DSPMem+016h]
       ret
 
-NEWSYM RDSPReg17       ; Voice  1  GAIN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg17       ; Voice  1  GAIN
       mov al,[DSPMem+017h]
       ret
 
-NEWSYM RDSPReg18       ; Voice  1  ENVX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg18       ; Voice  1  ENVX
       mov al,[DSPMem+018h]
       xor al,al
       ret
 
-NEWSYM RDSPReg19       ; Voice  1  OUTX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg19       ; Voice  1  OUTX
       mov al,[DSPMem+019h]
       ret
 
@@ -188,48 +188,48 @@ NEWSYM RDSPReg1E       ;
       mov al,[DSPMem+01Eh]
       ret
 
-NEWSYM RDSPReg1F       ; Voice  1  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM RDSPReg1F       ; Voice  1  Echo coefficient
       mov al,[DSPMem+01Fh]
       ret
 
-NEWSYM RDSPReg20       ; Voice  2  Volume Left                                                                                                                                                                                                                                                     
+NEWSYM RDSPReg20       ; Voice  2  Volume Left
       mov al,[DSPMem+20h]
       ret
 
-NEWSYM RDSPReg21       ; Voice  2  Volume Right                                                                                                                                                                                                                                                    
+NEWSYM RDSPReg21       ; Voice  2  Volume Right
       mov al,[DSPMem+21h]
       ret
 
-NEWSYM RDSPReg22       ; Voice  2  Pitch Low                                                                                                                                                                                                                                                       
+NEWSYM RDSPReg22       ; Voice  2  Pitch Low
       mov al,[DSPMem+022h]
       ret
 
-NEWSYM RDSPReg23       ; Voice  2  Pitch High                                                                                                                                                                                                                                                      
+NEWSYM RDSPReg23       ; Voice  2  Pitch High
       mov al,[DSPMem+023h]
       ret
 
-NEWSYM RDSPReg24       ; Voice  2  SCRN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg24       ; Voice  2  SCRN
       mov al,[DSPMem+024h]
       ret
 
-NEWSYM RDSPReg25       ; Voice  2  ADSR (1)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg25       ; Voice  2  ADSR (1)
       mov al,[DSPMem+025h]
       ret
 
-NEWSYM RDSPReg26       ; Voice  2  ADSR (2)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg26       ; Voice  2  ADSR (2)
       mov al,[DSPMem+026h]
       ret
 
-NEWSYM RDSPReg27       ; Voice  2  GAIN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg27       ; Voice  2  GAIN
       mov al,[DSPMem+027h]
       ret
 
-NEWSYM RDSPReg28       ; Voice  2  ENVX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg28       ; Voice  2  ENVX
       mov al,[DSPMem+028h]
       xor al,al
       ret
 
-NEWSYM RDSPReg29       ; Voice  2  OUTX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg29       ; Voice  2  OUTX
       mov al,[DSPMem+029h]
       ret
 
@@ -253,48 +253,48 @@ NEWSYM RDSPReg2E       ;
       mov al,[DSPMem+02Eh]
       ret
 
-NEWSYM RDSPReg2F       ; Voice  2  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM RDSPReg2F       ; Voice  2  Echo coefficient
       mov al,[DSPMem+02Fh]
       ret
 
-NEWSYM RDSPReg30       ; Voice  3  Volume Left                                                                                                                                                                                                                                                     
+NEWSYM RDSPReg30       ; Voice  3  Volume Left
       mov al,[DSPMem+30h]
       ret
 
-NEWSYM RDSPReg31       ; Voice  3  Volume Right                                                                                                                                                                                                                                                    
+NEWSYM RDSPReg31       ; Voice  3  Volume Right
       mov al,[DSPMem+31h]
       ret
 
-NEWSYM RDSPReg32       ; Voice  3  Pitch Low                                                                                                                                                                                                                                                       
+NEWSYM RDSPReg32       ; Voice  3  Pitch Low
       mov al,[DSPMem+032h]
       ret
 
-NEWSYM RDSPReg33       ; Voice  3  Pitch High                                                                                                                                                                                                                                                      
+NEWSYM RDSPReg33       ; Voice  3  Pitch High
       mov al,[DSPMem+033h]
       ret
 
-NEWSYM RDSPReg34       ; Voice  3  SCRN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg34       ; Voice  3  SCRN
       mov al,[DSPMem+034h]
       ret
 
-NEWSYM RDSPReg35       ; Voice  3  ADSR (1)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg35       ; Voice  3  ADSR (1)
       mov al,[DSPMem+035h]
       ret
 
-NEWSYM RDSPReg36       ; Voice  3  ADSR (2)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg36       ; Voice  3  ADSR (2)
       mov al,[DSPMem+036h]
       ret
 
-NEWSYM RDSPReg37       ; Voice  3  GAIN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg37       ; Voice  3  GAIN
       mov al,[DSPMem+037h]
       ret
 
-NEWSYM RDSPReg38       ; Voice  3  ENVX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg38       ; Voice  3  ENVX
       mov al,[DSPMem+038h]
       xor al,al
       ret
 
-NEWSYM RDSPReg39       ; Voice  3  OUTX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg39       ; Voice  3  OUTX
       mov al,[DSPMem+039h]
       ret
 
@@ -318,48 +318,48 @@ NEWSYM RDSPReg3E       ;
       mov al,[DSPMem+03Eh]
       ret
 
-NEWSYM RDSPReg3F       ; Voice  3  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM RDSPReg3F       ; Voice  3  Echo coefficient
       mov al,[DSPMem+03Fh]
       ret
 
-NEWSYM RDSPReg40       ; Voice  4  Volume Left                                                                                                                                                                                                                                                     
+NEWSYM RDSPReg40       ; Voice  4  Volume Left
       mov al,[DSPMem+40h]
       ret
 
-NEWSYM RDSPReg41       ; Voice  4  Volume Right                                                                                                                                                                                                                                                    
+NEWSYM RDSPReg41       ; Voice  4  Volume Right
       mov al,[DSPMem+41h]
       ret
 
-NEWSYM RDSPReg42       ; Voice  4  Pitch Low                                                                                                                                                                                                                                                       
+NEWSYM RDSPReg42       ; Voice  4  Pitch Low
       mov al,[DSPMem+042h]
       ret
 
-NEWSYM RDSPReg43       ; Voice  4  Pitch High                                                                                                                                                                                                                                                      
+NEWSYM RDSPReg43       ; Voice  4  Pitch High
       mov al,[DSPMem+043h]
       ret
 
-NEWSYM RDSPReg44       ; Voice  4  SCRN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg44       ; Voice  4  SCRN
       mov al,[DSPMem+044h]
       ret
 
-NEWSYM RDSPReg45       ; Voice  4  ADSR (1)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg45       ; Voice  4  ADSR (1)
       mov al,[DSPMem+045h]
       ret
 
-NEWSYM RDSPReg46       ; Voice  4  ADSR (2)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg46       ; Voice  4  ADSR (2)
       mov al,[DSPMem+046h]
       ret
 
-NEWSYM RDSPReg47       ; Voice  4  GAIN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg47       ; Voice  4  GAIN
       mov al,[DSPMem+047h]
       ret
 
-NEWSYM RDSPReg48       ; Voice  4  ENVX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg48       ; Voice  4  ENVX
       mov al,[DSPMem+048h]
       xor al,al
       ret
 
-NEWSYM RDSPReg49       ; Voice  4  OUTX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg49       ; Voice  4  OUTX
       mov al,[DSPMem+049h]
       ret
 
@@ -383,48 +383,48 @@ NEWSYM RDSPReg4E       ;
       mov al,[DSPMem+04Eh]
       ret
 
-NEWSYM RDSPReg4F       ; Voice  4  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM RDSPReg4F       ; Voice  4  Echo coefficient
       mov al,[DSPMem+04Fh]
       ret
 
-NEWSYM RDSPReg50       ; Voice  5  Volume Left                                                                                                                                                                                                                                                     
+NEWSYM RDSPReg50       ; Voice  5  Volume Left
       mov al,[DSPMem+50h]
       ret
 
-NEWSYM RDSPReg51       ; Voice  5  Volume Right                                                                                                                                                                                                                                                    
+NEWSYM RDSPReg51       ; Voice  5  Volume Right
       mov al,[DSPMem+51h]
       ret
 
-NEWSYM RDSPReg52       ; Voice  5  Pitch Low                                                                                                                                                                                                                                                       
+NEWSYM RDSPReg52       ; Voice  5  Pitch Low
       mov al,[DSPMem+052h]
       ret
 
-NEWSYM RDSPReg53       ; Voice  5  Pitch High                                                                                                                                                                                                                                                      
+NEWSYM RDSPReg53       ; Voice  5  Pitch High
       mov al,[DSPMem+053h]
       ret
 
-NEWSYM RDSPReg54       ; Voice  5  SCRN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg54       ; Voice  5  SCRN
       mov al,[DSPMem+054h]
       ret
 
-NEWSYM RDSPReg55       ; Voice  5  ADSR (1)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg55       ; Voice  5  ADSR (1)
       mov al,[DSPMem+055h]
       ret
 
-NEWSYM RDSPReg56       ; Voice  5  ADSR (2)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg56       ; Voice  5  ADSR (2)
       mov al,[DSPMem+056h]
       ret
 
-NEWSYM RDSPReg57       ; Voice  5  GAIN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg57       ; Voice  5  GAIN
       mov al,[DSPMem+057h]
       ret
 
-NEWSYM RDSPReg58       ; Voice  5  ENVX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg58       ; Voice  5  ENVX
       mov al,[DSPMem+058h]
       xor al,al
       ret
 
-NEWSYM RDSPReg59       ; Voice  5  OUTX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg59       ; Voice  5  OUTX
       mov al,[DSPMem+059h]
       ret
 
@@ -448,48 +448,48 @@ NEWSYM RDSPReg5E       ;
       mov al,[DSPMem+05Eh]
       ret
 
-NEWSYM RDSPReg5F       ; Voice  5  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM RDSPReg5F       ; Voice  5  Echo coefficient
       mov al,[DSPMem+05Fh]
       ret
 
-NEWSYM RDSPReg60       ; Voice  6  Volume Left                                                                                                                                                                                                                                                     
+NEWSYM RDSPReg60       ; Voice  6  Volume Left
       mov al,[DSPMem+60h]
       ret
 
-NEWSYM RDSPReg61       ; Voice  6  Volume Right                                                                                                                                                                                                                                                    
+NEWSYM RDSPReg61       ; Voice  6  Volume Right
       mov al,[DSPMem+61h]
       ret
 
-NEWSYM RDSPReg62       ; Voice  6  Pitch Low                                                                                                                                                                                                                                                       
+NEWSYM RDSPReg62       ; Voice  6  Pitch Low
       mov al,[DSPMem+062h]
       ret
 
-NEWSYM RDSPReg63       ; Voice  6  Pitch High                                                                                                                                                                                                                                                      
+NEWSYM RDSPReg63       ; Voice  6  Pitch High
       mov al,[DSPMem+063h]
       ret
 
-NEWSYM RDSPReg64       ; Voice  6  SCRN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg64       ; Voice  6  SCRN
       mov al,[DSPMem+064h]
       ret
 
-NEWSYM RDSPReg65       ; Voice  6  ADSR (1)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg65       ; Voice  6  ADSR (1)
       mov al,[DSPMem+065h]
       ret
 
-NEWSYM RDSPReg66       ; Voice  6  ADSR (2)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg66       ; Voice  6  ADSR (2)
       mov al,[DSPMem+066h]
       ret
 
-NEWSYM RDSPReg67       ; Voice  6  GAIN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg67       ; Voice  6  GAIN
       mov al,[DSPMem+067h]
       ret
 
-NEWSYM RDSPReg68       ; Voice  6  ENVX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg68       ; Voice  6  ENVX
       mov al,[DSPMem+068h]
       xor al,al
       ret
 
-NEWSYM RDSPReg69       ; Voice  6  OUTX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg69       ; Voice  6  OUTX
       mov al,[DSPMem+069h]
       ret
 
@@ -513,48 +513,48 @@ NEWSYM RDSPReg6E       ;
       mov al,[DSPMem+06Eh]
       ret
 
-NEWSYM RDSPReg6F       ; Voice  6  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM RDSPReg6F       ; Voice  6  Echo coefficient
       mov al,[DSPMem+06Fh]
       ret
 
-NEWSYM RDSPReg70       ; Voice  7  Volume Left                                                                                                                                                                                                                                                     
+NEWSYM RDSPReg70       ; Voice  7  Volume Left
       mov al,[DSPMem+70h]
       ret
 
-NEWSYM RDSPReg71       ; Voice  7  Volume Right                                                                                                                                                                                                                                                    
+NEWSYM RDSPReg71       ; Voice  7  Volume Right
       mov al,[DSPMem+71h]
       ret
 
-NEWSYM RDSPReg72       ; Voice  7  Pitch Low                                                                                                                                                                                                                                                       
+NEWSYM RDSPReg72       ; Voice  7  Pitch Low
       mov al,[DSPMem+072h]
       ret
 
-NEWSYM RDSPReg73       ; Voice  7  Pitch High                                                                                                                                                                                                                                                      
+NEWSYM RDSPReg73       ; Voice  7  Pitch High
       mov al,[DSPMem+073h]
       ret
 
-NEWSYM RDSPReg74       ; Voice  7  SCRN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg74       ; Voice  7  SCRN
       mov al,[DSPMem+074h]
       ret
 
-NEWSYM RDSPReg75       ; Voice  7  ADSR (1)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg75       ; Voice  7  ADSR (1)
       mov al,[DSPMem+075h]
       ret
 
-NEWSYM RDSPReg76       ; Voice  7  ADSR (2)                                                                                                                                                                                                                                                        
+NEWSYM RDSPReg76       ; Voice  7  ADSR (2)
       mov al,[DSPMem+076h]
       ret
 
-NEWSYM RDSPReg77       ; Voice  7  GAIN                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg77       ; Voice  7  GAIN
       mov al,[DSPMem+077h]
       ret
 
-NEWSYM RDSPReg78       ; Voice  7  ENVX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg78       ; Voice  7  ENVX
       mov al,[DSPMem+078h]
       xor al,al
       ret
 
-NEWSYM RDSPReg79       ; Voice  7  OUTX                                                                                                                                                                                                                                                            
+NEWSYM RDSPReg79       ; Voice  7  OUTX
       mov al,[DSPMem+079h]
       ret
 
@@ -578,7 +578,7 @@ NEWSYM RDSPReg7E       ;
       mov al,[DSPMem+07Eh]
       ret
 
-NEWSYM RDSPReg7F       ; Voice  7  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM RDSPReg7F       ; Voice  7  Echo coefficient
       mov al,[DSPMem+07Fh]
       ret
 
@@ -1541,7 +1541,7 @@ NEWSYM RDSPRegFF      ;
 
 ;Write DSP Registers functions
 
-NEWSYM WDSPReg00       ; Voice  0  Volume Left                                                                                                                                                                                                                                                     
+NEWSYM WDSPReg00       ; Voice  0  Volume Left
 ;      cmp byte[RevStereo],1
 ;      je .rev
       mov [DSPMem+00h],al
@@ -1550,7 +1550,7 @@ NEWSYM WDSPReg00       ; Voice  0  Volume Left
       mov [DSPMem+01h],al
       ret
 
-NEWSYM WDSPReg01       ; Voice  0  Volume Right                                                                                                                                                                                                                                                    
+NEWSYM WDSPReg01       ; Voice  0  Volume Right
 ;      cmp byte[RevStereo],1
 ;      je .rev
       mov [DSPMem+01h],al
@@ -1559,34 +1559,27 @@ NEWSYM WDSPReg01       ; Voice  0  Volume Right
       mov [DSPMem+00h],al
       ret
 
-NEWSYM WDSPReg02       ; Voice  0  Pitch Low                                                                                                                                                                                                                                                       
+NEWSYM WDSPReg02       ; Voice  0  Pitch Low
       mov [DSPMem+02h],al
       ret
 
-NEWSYM WDSPReg03       ; Voice  0  Pitch High                                                                                                                                                                                                                                                      
+NEWSYM WDSPReg03       ; Voice  0  Pitch High
       mov [DSPMem+03h],al
       ret
 
-NEWSYM WDSPReg04       ; Voice  0  SCRN                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg04       ; Voice  0  SCRN
       mov [DSPMem+04h],al
       ret
 
-SECTION .bss
-NEWSYM TempValueSnd, resb 1
-SECTION .text
-
 NEWSYM WDSPReg05       ; Voice  0  ADSR (1)
-      inc byte[TempValueSnd]
       VoiceAdsr 0
       ret
 
-NEWSYM WDSPReg06       ; Voice  0  ADSR (2)                                                                                                                                                                                                                                                        
-      inc byte[TempValueSnd]
+NEWSYM WDSPReg06       ; Voice  0  ADSR (2)
       VoiceAdsr2 0
       ret
 
-NEWSYM WDSPReg07       ; Voice  0  GAIN                                                                                                                                                                                                                                                            
-      inc byte[TempValueSnd]
+NEWSYM WDSPReg07       ; Voice  0  GAIN
       VoiceGain 0
       ret
 
@@ -1598,15 +1591,15 @@ NEWSYM WDSPReg09       ; Voice  0  OUTX
       mov [DSPMem+09h],al
       ret
 
-NEWSYM WDSPReg0A       ; Voice  0                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg0A       ; Voice  0
       mov [DSPMem+0Ah],al
       ret
 
-NEWSYM WDSPReg0B       ; Voice  0                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg0B       ; Voice  0
       mov [DSPMem+0Bh],al
       ret
 
-NEWSYM WDSPReg0C       ; Voice  0                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg0C       ; Voice  0
       mov [DSPMem+0Ch],al
       push eax
       and eax,0FFh
@@ -1617,7 +1610,7 @@ NEWSYM WDSPReg0C       ; Voice  0
       pop eax
       ret
 
-NEWSYM WDSPReg0D       ; Echo Feedback                                                                                                                                                                                                                                                             
+NEWSYM WDSPReg0D       ; Echo Feedback
       mov [DSPMem+0Dh],al
       push eax
       and eax,0FFh
@@ -1626,11 +1619,11 @@ NEWSYM WDSPReg0D       ; Echo Feedback
       pop eax
       ret
 
-NEWSYM WDSPReg0E       ; Voice  0                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg0E       ; Voice  0
       mov [DSPMem+0Eh],al
       ret
 
-NEWSYM WDSPReg0F       ; Voice  0  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM WDSPReg0F       ; Voice  0  Echo coefficient
       mov [DSPMem+0Fh],al
       push eax
       movsx eax,al
@@ -1638,55 +1631,55 @@ NEWSYM WDSPReg0F       ; Voice  0  Echo coefficient
       pop eax
       ret
 
-NEWSYM WDSPReg10       ; Voice  1  Volume Left                                                                                                                                                                                                                                                     
+NEWSYM WDSPReg10       ; Voice  1  Volume Left
       mov [DSPMem+10h],al
       ret
 
-NEWSYM WDSPReg11       ; Voice  1  Volume Right                                                                                                                                                                                                                                                    
+NEWSYM WDSPReg11       ; Voice  1  Volume Right
       mov [DSPMem+11h],al
       ret
 
-NEWSYM WDSPReg12       ; Voice  1  Pitch Low                                                                                                                                                                                                                                                       
+NEWSYM WDSPReg12       ; Voice  1  Pitch Low
       mov [DSPMem+012h],al
       ret
 
-NEWSYM WDSPReg13       ; Voice  1  Pitch High                                                                                                                                                                                                                                                      
+NEWSYM WDSPReg13       ; Voice  1  Pitch High
       mov [DSPMem+013h],al
       ret
 
-NEWSYM WDSPReg14       ; Voice  1  SCRN                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg14       ; Voice  1  SCRN
       mov [DSPMem+14h],al
       ret
 
-NEWSYM WDSPReg15       ; Voice  1  ADSR (1)                                                                                                                                                                                                                                                        
+NEWSYM WDSPReg15       ; Voice  1  ADSR (1)
       VoiceAdsr 1
       ret
 
-NEWSYM WDSPReg16       ; Voice  1  ADSR (2)                                                                                                                                                                                                                                                        
+NEWSYM WDSPReg16       ; Voice  1  ADSR (2)
       VoiceAdsr2 1
       ret
 
-NEWSYM WDSPReg17       ; Voice  1  GAIN                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg17       ; Voice  1  GAIN
       VoiceGain 1
       ret
 
-NEWSYM WDSPReg18       ; Voice  1  ENVX                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg18       ; Voice  1  ENVX
       mov [DSPMem+018h],al
       ret
 
-NEWSYM WDSPReg19       ; Voice  1  OUTX                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg19       ; Voice  1  OUTX
       mov [DSPMem+019h],al
       ret
 
-NEWSYM WDSPReg1A       ; Voice  1                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg1A       ; Voice  1
       mov [DSPMem+01Ah],al
       ret
 
-NEWSYM WDSPReg1B       ; Voice  1                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg1B       ; Voice  1
       mov [DSPMem+01Bh],al
       ret
 
-NEWSYM WDSPReg1C       ; Voice  1                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg1C       ; Voice  1
       mov [DSPMem+01Ch],al
       push eax
       and eax,0FFh
@@ -1697,15 +1690,15 @@ NEWSYM WDSPReg1C       ; Voice  1
       pop eax
       ret
 
-NEWSYM WDSPReg1D       ; Voice  1                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg1D       ; Voice  1
       mov [DSPMem+01Dh],al
       ret
 
-NEWSYM WDSPReg1E       ; Voice  1                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg1E       ; Voice  1
       mov [DSPMem+01Eh],al
       ret
 
-NEWSYM WDSPReg1F       ; Voice  1  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM WDSPReg1F       ; Voice  1  Echo coefficient
       mov [DSPMem+01Fh],al
       push eax
       movsx eax,al
@@ -1713,55 +1706,55 @@ NEWSYM WDSPReg1F       ; Voice  1  Echo coefficient
       pop eax
       ret
 
-NEWSYM WDSPReg20       ; Voice  2  Volume Left                                                                                                                                                                                                                                                     
+NEWSYM WDSPReg20       ; Voice  2  Volume Left
       mov [DSPMem+20h],al
       ret
 
-NEWSYM WDSPReg21       ; Voice  2  Volume Right                                                                                                                                                                                                                                                    
+NEWSYM WDSPReg21       ; Voice  2  Volume Right
       mov [DSPMem+21h],al
       ret
 
-NEWSYM WDSPReg22       ; Voice  2  Pitch Low                                                                                                                                                                                                                                                       
+NEWSYM WDSPReg22       ; Voice  2  Pitch Low
       mov [DSPMem+022h],al
       ret
 
-NEWSYM WDSPReg23       ; Voice  2  Pitch High                                                                                                                                                                                                                                                      
+NEWSYM WDSPReg23       ; Voice  2  Pitch High
       mov [DSPMem+023h],al
       ret
 
-NEWSYM WDSPReg24       ; Voice  2  SCRN                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg24       ; Voice  2  SCRN
       mov [DSPMem+24h],al
       ret
 
-NEWSYM WDSPReg25       ; Voice  2  ADSR (1)                                                                                                                                                                                                                                                        
+NEWSYM WDSPReg25       ; Voice  2  ADSR (1)
       VoiceAdsr 2
       ret
 
-NEWSYM WDSPReg26       ; Voice  2  ADSR (2)                                                                                                                                                                                                                                                        
+NEWSYM WDSPReg26       ; Voice  2  ADSR (2)
       VoiceAdsr2 2
       ret
 
-NEWSYM WDSPReg27       ; Voice  2  GAIN                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg27       ; Voice  2  GAIN
       VoiceGain 2
       ret
 
-NEWSYM WDSPReg28       ; Voice  2  ENVX                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg28       ; Voice  2  ENVX
       mov [DSPMem+028h],al
       ret
 
-NEWSYM WDSPReg29       ; Voice  2  OUTX                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg29       ; Voice  2  OUTX
       mov [DSPMem+029h],al
       ret
 
-NEWSYM WDSPReg2A       ; Voice  2                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg2A       ; Voice  2
       mov [DSPMem+02Ah],al
       ret
 
-NEWSYM WDSPReg2B       ; Voice  2                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg2B       ; Voice  2
       mov [DSPMem+02Bh],al
       ret
 
-NEWSYM WDSPReg2C       ; Voice  2                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg2C       ; Voice  2
       mov [DSPMem+02Ch],al
       push eax
       and eax,0FFh
@@ -1772,15 +1765,15 @@ NEWSYM WDSPReg2C       ; Voice  2
       pop eax
       ret
 
-NEWSYM WDSPReg2D       ; Voice  2                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg2D       ; Voice  2
       mov [DSPMem+02Dh],al
       ret
 
-NEWSYM WDSPReg2E       ; Voice  2                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg2E       ; Voice  2
       mov [DSPMem+02Eh],al
       ret
 
-NEWSYM WDSPReg2F       ; Voice  2  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM WDSPReg2F       ; Voice  2  Echo coefficient
       mov [DSPMem+02Fh],al
       push eax
       movsx eax,al
@@ -1788,55 +1781,55 @@ NEWSYM WDSPReg2F       ; Voice  2  Echo coefficient
       pop eax
       ret
 
-NEWSYM WDSPReg30       ; Voice  3  Volume Left                                                                                                                                                                                                                                                     
+NEWSYM WDSPReg30       ; Voice  3  Volume Left
       mov [DSPMem+30h],al
       ret
 
-NEWSYM WDSPReg31       ; Voice  3  Volume Right                                                                                                                                                                                                                                                    
+NEWSYM WDSPReg31       ; Voice  3  Volume Right
       mov [DSPMem+31h],al
       ret
 
-NEWSYM WDSPReg32       ; Voice  3  Pitch Low                                                                                                                                                                                                                                                       
+NEWSYM WDSPReg32       ; Voice  3  Pitch Low
       mov [DSPMem+032h],al
       ret
 
-NEWSYM WDSPReg33       ; Voice  3  Pitch High                                                                                                                                                                                                                                                      
+NEWSYM WDSPReg33       ; Voice  3  Pitch High
       mov [DSPMem+033h],al
       ret
 
-NEWSYM WDSPReg34       ; Voice  3  SCRN                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg34       ; Voice  3  SCRN
       mov [DSPMem+34h],al
       ret
 
-NEWSYM WDSPReg35       ; Voice  3  ADSR (1)                                                                                                                                                                                                                                                        
+NEWSYM WDSPReg35       ; Voice  3  ADSR (1)
       VoiceAdsr 3
       ret
 
-NEWSYM WDSPReg36       ; Voice  3  ADSR (2)                                                                                                                                                                                                                                                        
+NEWSYM WDSPReg36       ; Voice  3  ADSR (2)
       VoiceAdsr2 3
       ret
 
-NEWSYM WDSPReg37       ; Voice  3  GAIN                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg37       ; Voice  3  GAIN
       VoiceGain 3
       ret
 
-NEWSYM WDSPReg38       ; Voice  3  ENVX                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg38       ; Voice  3  ENVX
       mov [DSPMem+038h],al
       ret
 
-NEWSYM WDSPReg39       ; Voice  3  OUTX                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg39       ; Voice  3  OUTX
       mov [DSPMem+039h],al
       ret
 
-NEWSYM WDSPReg3A       ; Voice  3                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg3A       ; Voice  3
       mov [DSPMem+03Ah],al
       ret
 
-NEWSYM WDSPReg3B       ; Voice  3                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg3B       ; Voice  3
       mov [DSPMem+03Bh],al
       ret
 
-NEWSYM WDSPReg3C       ; Voice  3                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg3C       ; Voice  3
       mov [DSPMem+03Ch],al
       push eax
       and eax,0FFh
@@ -1847,7 +1840,7 @@ NEWSYM WDSPReg3C       ; Voice  3
       pop eax
       ret
 
-NEWSYM WDSPReg3D       ; Voice  3                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg3D       ; Voice  3
       mov byte [Voice0Noise],0
       mov byte [Voice1Noise],0
       mov byte [Voice2Noise],0
@@ -1891,11 +1884,11 @@ NEWSYM WDSPReg3D       ; Voice  3
       mov [DSPMem+03Dh],al
       ret
 
-NEWSYM WDSPReg3E       ; Voice  3                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg3E       ; Voice  3
       mov [DSPMem+03Eh],al
       ret
 
-NEWSYM WDSPReg3F       ; Voice  3  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM WDSPReg3F       ; Voice  3  Echo coefficient
       mov [DSPMem+03Fh],al
       push eax
       movsx eax,al
@@ -1903,19 +1896,19 @@ NEWSYM WDSPReg3F       ; Voice  3  Echo coefficient
       pop eax
       ret
 
-NEWSYM WDSPReg40       ; Voice  4  Volume Left                                                                                                                                                                                                                                                     
+NEWSYM WDSPReg40       ; Voice  4  Volume Left
       mov [DSPMem+40h],al
       ret
 
-NEWSYM WDSPReg41       ; Voice  4  Volume Right                                                                                                                                                                                                                                                    
+NEWSYM WDSPReg41       ; Voice  4  Volume Right
       mov [DSPMem+41h],al
       ret
 
-NEWSYM WDSPReg42       ; Voice  4  Pitch Low                                                                                                                                                                                                                                                       
+NEWSYM WDSPReg42       ; Voice  4  Pitch Low
       mov [DSPMem+042h],al
       ret
 
-NEWSYM WDSPReg43       ; Voice  4  Pitch High                                                                                                                                                                                                                                                      
+NEWSYM WDSPReg43       ; Voice  4  Pitch High
       mov [DSPMem+043h],al
       ret
 
@@ -1923,31 +1916,31 @@ NEWSYM WDSPReg44       ; Voice  4  SCRN
       mov [DSPMem+44h],al
       ret
 
-NEWSYM WDSPReg45       ; Voice  4  ADSR (1)                                                                                                                                                                                                                                                        
+NEWSYM WDSPReg45       ; Voice  4  ADSR (1)
       VoiceAdsr 4
       ret
 
-NEWSYM WDSPReg46       ; Voice  4  ADSR (2)                                                                                                                                                                                                                                                        
+NEWSYM WDSPReg46       ; Voice  4  ADSR (2)
       VoiceAdsr2 4
       ret
 
-NEWSYM WDSPReg47       ; Voice  4  GAIN                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg47       ; Voice  4  GAIN
       VoiceGain 4
       ret
 
-NEWSYM WDSPReg48       ; Voice  4  ENVX                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg48       ; Voice  4  ENVX
       mov [DSPMem+048h],al
       ret
 
-NEWSYM WDSPReg49       ; Voice  4  OUTX                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg49       ; Voice  4  OUTX
       mov [DSPMem+049h],al
       ret
 
-NEWSYM WDSPReg4A       ; Voice  4                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg4A       ; Voice  4
       mov [DSPMem+04Ah],al
       ret
 
-NEWSYM WDSPReg4B       ; Voice  4                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg4B       ; Voice  4
       mov [DSPMem+04Bh],al
       ret
 
@@ -1968,7 +1961,7 @@ NEWSYM WDSPReg4C       ; Key On
       test al,80h
       jz .nokon
       inc byte[SoundTest]
-.nokon      
+.nokon
       mov [DSPMem+04Ch],al
       push eax
       xor al,0FFh
@@ -2031,15 +2024,15 @@ NEWSYM ProcessKeyOn
 .novoice
       ret
 
-NEWSYM WDSPReg4D       ; Voice  4                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg4D       ; Voice  4
       mov [DSPMem+04Dh],al
       ret
 
-NEWSYM WDSPReg4E       ; Voice  4                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg4E       ; Voice  4
       mov [DSPMem+04Eh],al
       ret
 
-NEWSYM WDSPReg4F       ; Voice  4  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM WDSPReg4F       ; Voice  4  Echo coefficient
       mov [DSPMem+04Fh],al
       push eax
       movsx eax,al
@@ -2047,51 +2040,51 @@ NEWSYM WDSPReg4F       ; Voice  4  Echo coefficient
       pop eax
       ret
 
-NEWSYM WDSPReg50       ; Voice  5  Volume Left                                                                                                                                                                                                                                                     
+NEWSYM WDSPReg50       ; Voice  5  Volume Left
       mov [DSPMem+50h],al
       ret
 
-NEWSYM WDSPReg51       ; Voice  5  Volume Right                                                                                                                                                                                                                                                    
+NEWSYM WDSPReg51       ; Voice  5  Volume Right
       mov [DSPMem+51h],al
       ret
 
-NEWSYM WDSPReg52       ; Voice  5  Pitch Low                                                                                                                                                                                                                                                       
+NEWSYM WDSPReg52       ; Voice  5  Pitch Low
       mov [DSPMem+052h],al
       ret
 
-NEWSYM WDSPReg53       ; Voice  5  Pitch High                                                                                                                                                                                                                                                      
+NEWSYM WDSPReg53       ; Voice  5  Pitch High
       mov [DSPMem+053h],al
       ret
 
-NEWSYM WDSPReg54       ; Voice  5  SCRN                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg54       ; Voice  5  SCRN
       mov [DSPMem+54h],al
       ret
 
-NEWSYM WDSPReg55       ; Voice  5  ADSR (1)                                                                                                                                                                                                                                                        
+NEWSYM WDSPReg55       ; Voice  5  ADSR (1)
       VoiceAdsr 5
       ret
 
-NEWSYM WDSPReg56       ; Voice  5  ADSR (2)                                                                                                                                                                                                                                                        
+NEWSYM WDSPReg56       ; Voice  5  ADSR (2)
       VoiceAdsr2 5
       ret
 
-NEWSYM WDSPReg57       ; Voice  5  GAIN                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg57       ; Voice  5  GAIN
       VoiceGain 5
       ret
 
-NEWSYM WDSPReg58       ; Voice  5  ENVX                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg58       ; Voice  5  ENVX
       mov [DSPMem+058h],al
       ret
 
-NEWSYM WDSPReg59       ; Voice  5  OUTX                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg59       ; Voice  5  OUTX
       mov [DSPMem+059h],al
       ret
 
-NEWSYM WDSPReg5A       ; Voice  5                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg5A       ; Voice  5
       mov [DSPMem+05Ah],al
       ret
 
-NEWSYM WDSPReg5B       ; Voice  5                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg5B       ; Voice  5
       mov [DSPMem+05Bh],al
       ret
 
@@ -2156,15 +2149,15 @@ NEWSYM WDSPReg5C       ; Key Off
       mov [DSPMem+05Ch],al
       ret
 
-NEWSYM WDSPReg5D       ; Voice  5                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg5D       ; Voice  5
       mov [DSPMem+05Dh],al
       ret
 
-NEWSYM WDSPReg5E       ; Voice  5                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg5E       ; Voice  5
       mov [DSPMem+05Eh],al
       ret
 
-NEWSYM WDSPReg5F       ; Voice  5  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM WDSPReg5F       ; Voice  5  Echo coefficient
       mov [DSPMem+05Fh],al
       push eax
       movsx eax,al
@@ -2172,51 +2165,51 @@ NEWSYM WDSPReg5F       ; Voice  5  Echo coefficient
       pop eax
       ret
 
-NEWSYM WDSPReg60       ; Voice  6  Volume Left                                                                                                                                                                                                                                                     
+NEWSYM WDSPReg60       ; Voice  6  Volume Left
       mov [DSPMem+60h],al
       ret
 
-NEWSYM WDSPReg61       ; Voice  6  Volume Right                                                                                                                                                                                                                                                    
+NEWSYM WDSPReg61       ; Voice  6  Volume Right
       mov [DSPMem+61h],al
       ret
 
-NEWSYM WDSPReg62       ; Voice  6  Pitch Low                                                                                                                                                                                                                                                       
+NEWSYM WDSPReg62       ; Voice  6  Pitch Low
       mov [DSPMem+062h],al
       ret
 
-NEWSYM WDSPReg63       ; Voice  6  Pitch High                                                                                                                                                                                                                                                      
+NEWSYM WDSPReg63       ; Voice  6  Pitch High
       mov [DSPMem+063h],al
       ret
 
-NEWSYM WDSPReg64       ; Voice  6  SCRN                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg64       ; Voice  6  SCRN
       mov [DSPMem+64h],al
       ret
 
-NEWSYM WDSPReg65       ; Voice  6  ADSR (1)                                                                                                                                                                                                                                                        
+NEWSYM WDSPReg65       ; Voice  6  ADSR (1)
       VoiceAdsr 6
       ret
 
-NEWSYM WDSPReg66       ; Voice  6  ADSR (2)                                                                                                                                                                                                                                                        
+NEWSYM WDSPReg66       ; Voice  6  ADSR (2)
       VoiceAdsr2 6
       ret
 
-NEWSYM WDSPReg67       ; Voice  6  GAIN                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg67       ; Voice  6  GAIN
       VoiceGain 6
       ret
 
-NEWSYM WDSPReg68       ; Voice  6  ENVX                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg68       ; Voice  6  ENVX
       mov [DSPMem+068h],al
       ret
 
-NEWSYM WDSPReg69       ; Voice  6  OUTX                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg69       ; Voice  6  OUTX
       mov [DSPMem+069h],al
       ret
 
-NEWSYM WDSPReg6A       ; Voice  6                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg6A       ; Voice  6
       mov [DSPMem+06Ah],al
       ret
 
-NEWSYM WDSPReg6B       ; Voice  6                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg6B       ; Voice  6
       mov [DSPMem+06Bh],al
       ret
 
@@ -2258,15 +2251,15 @@ NEWSYM WDSPReg6C       ; Voice  6
       pop eax
       ret
 
-NEWSYM WDSPReg6D       ; Voice  6                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg6D       ; Voice  6
       mov [DSPMem+06Dh],al
       ret
 
-NEWSYM WDSPReg6E       ; Voice  6                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg6E       ; Voice  6
       mov [DSPMem+06Eh],al
       ret
 
-NEWSYM WDSPReg6F       ; Voice  6  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM WDSPReg6F       ; Voice  6  Echo coefficient
       mov [DSPMem+06Fh],al
       push eax
       movsx eax,al
@@ -2274,31 +2267,31 @@ NEWSYM WDSPReg6F       ; Voice  6  Echo coefficient
       pop eax
       ret
 
-NEWSYM WDSPReg70       ; Voice  7  Volume Left                                                                                                                                                                                                                                                     
+NEWSYM WDSPReg70       ; Voice  7  Volume Left
       mov [DSPMem+70h],al
       ret
 
-NEWSYM WDSPReg71       ; Voice  7  Volume Right                                                                                                                                                                                                                                                    
+NEWSYM WDSPReg71       ; Voice  7  Volume Right
       mov [DSPMem+71h],al
       ret
 
-NEWSYM WDSPReg72       ; Voice  7  Pitch Low                                                                                                                                                                                                                                                       
+NEWSYM WDSPReg72       ; Voice  7  Pitch Low
       mov [DSPMem+072h],al
       ret
 
-NEWSYM WDSPReg73       ; Voice  7  Pitch High                                                                                                                                                                                                                                                      
+NEWSYM WDSPReg73       ; Voice  7  Pitch High
       mov [DSPMem+073h],al
       ret
 
-NEWSYM WDSPReg74       ; Voice  7  SCRN                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg74       ; Voice  7  SCRN
       mov [DSPMem+74h],al
       ret
 
-NEWSYM WDSPReg75       ; Voice  7  ADSR (1)                                                                                                                                                                                                                                                        
+NEWSYM WDSPReg75       ; Voice  7  ADSR (1)
       VoiceAdsr 7
       ret
 
-NEWSYM WDSPReg76       ; Voice  7  ADSR (2)                                                                                                                                                                                                                                                        
+NEWSYM WDSPReg76       ; Voice  7  ADSR (2)
       VoiceAdsr2 7
       ret
 
@@ -2306,19 +2299,19 @@ NEWSYM WDSPReg77       ; Voice  7  GAIN
       VoiceGain 7
       ret
 
-NEWSYM WDSPReg78       ; Voice  7  ENVX                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg78       ; Voice  7  ENVX
       mov [DSPMem+078h],al
       ret
 
-NEWSYM WDSPReg79       ; Voice  7  OUTX                                                                                                                                                                                                                                                            
+NEWSYM WDSPReg79       ; Voice  7  OUTX
       mov [DSPMem+079h],al
       ret
 
-NEWSYM WDSPReg7A       ; Voice  7                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg7A       ; Voice  7
       mov [DSPMem+07Ah],al
       ret
 
-NEWSYM WDSPReg7B       ; Voice  7                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg7B       ; Voice  7
       mov [DSPMem+07Bh],al
       ret
 
@@ -2326,7 +2319,7 @@ NEWSYM WDSPReg7C       ; ENDX
       mov byte [DSPMem+07Ch],0
       ret
 
-NEWSYM WDSPReg7D       ; Echo Delay                                                                                                                                                                                                                                                                
+NEWSYM WDSPReg7D       ; Echo Delay
       mov [DSPMem+07Dh],al
       push ebx
       mov ebx,eax
@@ -2336,11 +2329,11 @@ NEWSYM WDSPReg7D       ; Echo Delay
       pop ebx
       ret
 
-NEWSYM WDSPReg7E       ; Voice  7                                                                                                                                                                                                                                                                  
+NEWSYM WDSPReg7E       ; Voice  7
       mov [DSPMem+07Eh],al
       ret
 
-NEWSYM WDSPReg7F       ; Voice  7  Echo coefficient                                                                                                                                                                                                                                                
+NEWSYM WDSPReg7F       ; Voice  7  Echo coefficient
       mov [DSPMem+07Fh],al
       push eax
       movsx eax,al
