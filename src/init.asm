@@ -3538,9 +3538,10 @@ NEWSYM loadfileGUI
     mov edx,.failop
     mov ah,9
     call Output_Text
+    jmp DosExit
 .noguic
     mov byte[GUIloadfailed],1
-    jmp DosExit
+    ret
 
 SECTION .data
 .failop   db 'Error opening file!',13,10,0
