@@ -206,51 +206,45 @@ NEWSYM ExecuteAsmStart
     jnz %%loop
 %endmacro
 
-SECTION .bss
-NEWSYM CBackupPos, resd 1
-NEWSYM StateBackup, resd 1
-NEWSYM PBackupPos, resd 1
-NEWSYM PPValue, resd 1   ; Previous PValue
-NEWSYM DPValue, resd 1   ; Destination PValue
-NEWSYM CurRecv, resd 1   ; Set to 1 if Recovery mode is on
+SECTION .data
+NEWSYM CBackupPos, dd 0
+NEWSYM StateBackup, dd 0
+NEWSYM PBackupPos, dd 0
+NEWSYM PPValue, dd 0   ; Previous PValue
+NEWSYM DPValue, dd 0   ; Destination PValue
+NEWSYM CurRecv, dd 0   ; Set to 1 if Recovery mode is on
 ; if CurRecv=1, then do not send tcp/ip data, always frame skip, do not
 ;   draw to screen, do not key on, restore previous local key presses,
 ;   when disabling key ons, divert dspmem write/read to a different
 ;   array temporarly, then re-copy back in when finished
-NEWSYM PPContrl, resd 16   ; Previous Controller 1 Data
-NEWSYM PPContrl2, resd 16   ; Previous Controller 2 Data
-NEWSYM PPContrl3, resd 16   ; Previous Controller 3 Data
-NEWSYM PPContrl4, resd 16   ; Previous Controller 4 Data
-NEWSYM PPContrl5, resd 16   ; Previous Controller 5 Data
-NEWSYM tempedx, resd 1
-NEWSYM NetSent2, resd 1
-NEWSYM NetQuitter, resd 1
-NEWSYM QBackupPos, resd 1
-NEWSYM LatencyV, resb 256
-NEWSYM LatencyRecvPtr, resd 1
-NEWSYM LatencySendPtr, resd 1
-NEWSYM latencytimer, resd 1
-
-SECTION .data
+NEWSYM PPContrl, times 16 dd 0   ; Previous Controller 1 Data
+NEWSYM PPContrl2, times 16 dd 0   ; Previous Controller 2 Data
+NEWSYM PPContrl3, times 16 dd 0   ; Previous Controller 3 Data
+NEWSYM PPContrl4, times 16 dd 0   ; Previous Controller 4 Data
+NEWSYM PPContrl5, times 16 dd 0   ; Previous Controller 5 Data
+NEWSYM tempedx, dd 0
+NEWSYM NetSent2, dd 0
+NEWSYM NetQuitter, dd 0
+NEWSYM QBackupPos, dd 0
+NEWSYM LatencyV, times 256 db 0
+NEWSYM LatencyRecvPtr, dd 0
+NEWSYM LatencySendPtr, dd 0
+NEWSYM latencytimer, dd 0
 NEWSYM BackState, db 1
 NEWSYM BackStateSize, dd 6
-
-SECTION .bss
-NEWSYM nojoystickpoll, resd 1
-NEWSYM RemoteLValue, resb 1
-NEWSYM LocalLValue, resb 1
-NEWSYM chatstrLt, resb 15
-NEWSYM RewindOldPos, resd 1
-NEWSYM RewindPos, resd 1
-NEWSYM RewindTimer, resd 1
-
-SECTION .data
+NEWSYM nojoystickpoll, dd 0
+NEWSYM RemoteLValue, db 0
+NEWSYM LocalLValue, db 0
+NEWSYM chatstrLt, times 15 db 0
+NEWSYM RewindOldPos, dd 0
+NEWSYM RewindPos, dd 0
+NEWSYM RewindTimer, dd 0
 NEWSYM ResendTimer, dd 60
+NEWSYM valuea, dd 0
+NEWSYM valueb, dd 0
+NEWSYM valuet, dd 0
 
 SECTION .bss
-NEWSYM valuea, resd 1
-NEWSYM valueb, resd 1
-NEWSYM valuet, resd 1
 BackupArray resd 3000
 SECTION .text
 
