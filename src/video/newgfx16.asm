@@ -3536,7 +3536,10 @@ NEWSYM NewGfx16AsmEnd
     je near .outsideclipping
     mov edi,ngwintable
     mov ecx,[edi]
+    cmp ecx,0
+    je .nodec
     dec ecx
+.nodec
     add edi,4
     or ecx,ecx
     jnz near .startclippingb
@@ -3550,7 +3553,10 @@ NEWSYM NewGfx16AsmEnd
     or ecx,ecx
     jnz .noclipping
     mov ecx,[edi]
+    cmp ecx,0
+    je .nodec2
     dec ecx
+.nodec2
     add edi,4
     jmp .startclippingb
 .startclippingb
