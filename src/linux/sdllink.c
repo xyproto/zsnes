@@ -108,6 +108,7 @@ DWORD                   GBitMask;
 BYTE                    BackColor=0;
 DEVMODE mode;
 
+int DTimerCheck;
 float MouseMinX=0;
 float MouseMaxX=256;
 float MouseMinY=0;
@@ -1605,6 +1606,7 @@ void CheckTimers(void)
 //         call Game60hzcall
 //         popad
 //         }
+	      DTimerCheck = 1;
 	      Game60hzcall();
          start += update_ticks_pc;
       }
@@ -1674,7 +1676,11 @@ void UpdateVFrame(void)
    WinUpdateDevices();
    CheckTimers();
 
-   SDL_UpdateRect(surface,0,0,0,0);
+   if (DTimerCheck == 1)
+   {
+	   SDL_UpdateRect(surface,0,0,0,0);
+	   DTimerCheck = 0;
+   }
 #else
    int DataNeeded;
    int SPCSize=256;
