@@ -524,7 +524,8 @@ BackAreaFill:
     mov eax,128
 .nowinloop
     mov [ecx],ebx
-    add ecx,4
+    mov [ecx+4],ebx
+    add ecx,8
     dec eax
     jnz .nowinloop
     pop ecx
