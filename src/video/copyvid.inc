@@ -3042,13 +3042,13 @@ NEWSYM copyvesa2320x480x16b
     jne .startcopy
     ret
 .startcopy
-    mov eax,[vesa2_clbitng2]
-    mov [vesavaland],eax
-    mov [vesavaland+4],eax
-    cmp byte[vesa2red10],1
-    jne .nocopyvesa2r
-    call ConvertToAFormat
-.nocopyvesa2r
+;    mov eax,[vesa2_clbitng2]
+;    mov [vesavaland],eax
+;    mov [vesavaland+4],eax
+;    cmp byte[vesa2red10],1
+;    jne .nocopyvesa2r
+;    call ConvertToAFormat
+;.nocopyvesa2r
     push es
     mov ax,[vesa2selec]
     mov es,ax
@@ -3131,182 +3131,120 @@ NEWSYM copyvesa2320x480x16b
     jmp .done
 
 .halfscanlines
-.loopabh
-    cmp byte[MMXSupport],1
-    je near .mmxslh
-    mov ecx,128
-.abh
-    mov eax,[esi]
-    mov [es:edi],eax
-    add esi,4
-    add edi,4
-    dec ecx
-    jnz .abh
-    mov ecx,128
-    sub esi,512
-    add edi,64*2
-.abhs
-    mov eax,[esi]
-    and eax,[vesavaland]
-    shr eax,1
-    mov [es:edi],eax
-    add esi,4
-    add edi,4
-    dec ecx
-    jnz .abhs
-.returnbh
-    add esi,64
-    add edi,64*2
-    inc ebx
+    ;cmp byte[MMXSupport],1
+    ;je .hsloopb
+.hsloopa
+    mov ecx,256/4*2
+    rep movsd
+    sub esi,256*2
+    add edi,32*2+32*2
+    mov ecx,256/4
+    jmp .hsloopa3
+.hsloopa2
+    add esi,16*2+16*2
+    add edi,32*2+32*2
     dec dl
-    jnz .loopabh
-    pop es
-    cmp byte[MMXSupport],1
-    je near .mmx2
-    ret
-.mmxslh
-    mov ecx,32
-    add eax,512
-.mmxrslh
-    movq mm0,[esi]
-    movq mm1,[esi+8]
-    movq [es:edi],mm0
-    movq [es:edi+8],mm1
-    add esi,16
-    add edi,16
+    jnz .hsloopa
+    jmp .done
+.hsloopa3
+    push ecx
+    push edx
+    mov ax,[esi]
+    mov bx,[esi+2]
+    mov cx,[esi+4]
+    mov dx,[esi+6]
+    shr ax,byte 1
+    shr bx,byte 1
+    shr cx,byte 1
+    shr dx,byte 1
+    and ax,7befh
+    and bx,7befh
+    and cx,7befh
+    and dx,7befh
+    mov [es:edi],ax
+    mov [es:edi+2],bx
+    mov [es:edi+4],cx
+    mov [es:edi+6],dx
+    pop edx
+    pop ecx
+    add esi,byte 8
+    add edi,byte 8
     dec ecx
-    jnz .mmxrslh
-    mov ecx,16
-    sub esi,512
-    add eax,512
-    add edi,64*2
-    movq mm4,[vesavaland]
-.mmxr2h
-    movq mm0,[esi]
-    movq mm1,[esi+8]
-    movq mm2,[esi+16]
-    movq mm3,[esi+24]
-    pand mm0,mm4
-    pand mm1,mm4
-    pand mm2,mm4
-    pand mm3,mm4
-    psrlw mm0,1
-    psrlw mm1,1
-    psrlw mm2,1
-    psrlw mm3,1
-    movq [es:edi],mm0
-    movq [es:edi+8],mm1
-    movq [es:edi+16],mm2
-    movq [es:edi+24],mm3
-    add esi,32
-    add edi,32
-    dec ecx
-    jnz .mmxr2h
-    jmp .returnbh
+    jnz .hsloopa3
+    jmp .hsloopa2
 
 .quartscanlines
-    mov [lineleft],dl
-.loopabh2
-    cmp byte[MMXSupport],1
-    je near .mmxslh2
-    mov ecx,128
-.abh2
-    mov eax,[esi]
-    mov [es:edi],eax
-    add esi,4
-    add edi,4
+    ;cmp byte[MMXSupport],1
+    ;je .qsloopb
+.qsloopa
+    mov ecx,256/4*2
+    rep movsd
+    sub esi,256*2
+    add edi,32*2+32*2
+    mov ecx,256/2
+    jmp .qsloopa3
+.qsloopa2
+    add esi,16*2+16*2
+    add edi,32*2+32*2
+    dec dl
+    jnz .qsloopa
+    jmp .done
+.qsloopa3
+    push ecx
+    push edx
+    mov ax,[esi]
+    mov bx,[esi+2]
+    mov cx,ax
+    mov dx,bx
+    shr cx,byte 1
+    shr dx,byte 1
+    and cx,39e7h
+    and dx,39e7h
+    sub ax,cx
+    sub bx,dx
+    mov [es:edi],ax
+    mov [es:edi+2],bx
+    pop edx
+    pop ecx
+    add esi,byte 4
+    add edi,byte 4
     dec ecx
-    jnz .abh2
-    mov ecx,128
-    sub esi,512
-    add edi,64*2
-.abhs2
-    mov eax,[esi]
-    and eax,[vesavaland]
-    shr eax,1
-    mov edx,eax
-    and edx,[vesavaland]
-    shr edx,1
-    add eax,edx
-    mov [es:edi],eax
-    add esi,4
-    add edi,4
-    dec ecx
-    jnz .abhs2
-.returnbh2
-    add esi,64
-    add edi,64*2
-    inc ebx
-    dec byte[lineleft]
-    jnz near .loopabh2
-    pop es
-    cmp byte[MMXSupport],1
-    je near .mmx2
-    ret
-.mmxslh2
-    mov ecx,32
-    add eax,512
-.mmxrslh2
-    movq mm0,[esi]
-    movq mm1,[esi+8]
-    movq [es:edi],mm0
-    movq [es:edi+8],mm1
-    add esi,16
-    add edi,16
-    dec ecx
-    jnz .mmxrslh2
-    mov ecx,32
-    sub esi,512
-    add edi,64*2
-    movq mm4,[vesavaland]
-.mmxr2h2
-    movq mm0,[esi]
-    movq mm1,[esi+8]
-    pand mm0,mm4
-    pand mm1,mm4
-    psrlw mm0,1
-    psrlw mm1,1
-    movq mm2,mm0
-    movq mm3,mm1
-    pand mm2,mm4
-    pand mm3,mm4
-    psrlw mm2,1
-    psrlw mm3,1
-    paddd mm0,mm2
-    paddd mm1,mm3
-    movq [es:edi],mm0
-    movq [es:edi+8],mm1
-    add esi,16
-    add edi,16
-    dec ecx
-    jnz .mmxr2h2
-    jmp .returnbh2
-
-.mmx2
-    emms
-    ret
+    jnz .qsloopa3
+    jmp .qsloopa2
 
 .fullscreen
     sub edi,32*2
     cmp byte[scanlines],1
     je .fsloopa2
+    cmp byte[scanlines],3
+    je .fsloopa3
 .fsloopa
     mov ecx,256/4
     call .fsloopb
     sub esi,256*2
     mov ecx,256/4
     call .fsloopb
-    add esi,32*2
+    add esi,16*2+16*2
     dec dl
     jnz .fsloopa
     jmp .done
 .fsloopa2
     mov ecx,256/4
     call .fsloopb
-    add esi,32*2
+    add esi,16*2+16*2
     add edi,320*2
     dec dl
     jnz .fsloopa2
+    jmp .done
+.fsloopa3
+    mov ecx,256/4
+    call .fsloopb
+    sub esi,256*2
+    mov ecx,256/4
+    call .fsloopb2
+    add esi,16*2+16*2
+    dec dl
+    jnz .fsloopa3
     jmp .done
 .fsloopb
     mov eax,[esi]
@@ -3318,7 +3256,32 @@ NEWSYM copyvesa2320x480x16b
     dec ecx
     jnz .fsloopb
     ret
-    
+.fsloopb2
+    mov ax,[esi]
+    mov bx,[esi+2]
+    shr ax,byte 1
+    shr bx,byte 1
+    and ax,7befh
+    and bx,7befh
+    mov [es:edi],ax
+    mov [es:edi+2],ax
+    mov [es:edi+4],bx
+    add esi,byte 4
+    add edi,byte 6
+    mov ax,[esi]
+    mov bx,[esi+2]
+    shr ax,byte 1
+    shr bx,byte 1
+    and ax,7befh
+    and bx,7befh
+    mov [es:edi],ax
+    mov [es:edi+2],bx
+    add esi,byte 4
+    add edi,byte 4
+    dec ecx
+    jnz .fsloopb2
+    ret
+
 .interpolate
     cmp byte[scanlines],1
     je .inloopb
