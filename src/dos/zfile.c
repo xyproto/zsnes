@@ -293,7 +293,6 @@ DWORD ZFileFindEnd()  // for compatibility with windows later
 
 DWORD GetTime()
 {
-
    DWORD value;
    struct tm *newtime;
    time_t long_time;
@@ -309,7 +308,6 @@ DWORD GetTime()
 
 DWORD GetDate()
 {
-
    DWORD value;
    struct tm *newtime;
    time_t long_time;
