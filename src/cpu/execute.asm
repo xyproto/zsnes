@@ -3653,6 +3653,8 @@ NEWSYM cpuover
     mov ax,[VIRQLoc]
     cmp word[curypos],ax
     jne .novirqz
+    test byte[INTEnab],80h
+    jz .novirqz
     inc word[VIRQLoc]
 .novirqz
     mov ax,[oamaddrs]
