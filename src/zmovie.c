@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include "gblvars.h"
 #include "asm_call.h"
+#include "numconv.h"
 
 
 /*
@@ -123,14 +124,535 @@ size_t MovieSub_GetDuration()
 }
 
 
+/////////////////////////////////////////////////////////
+
+extern unsigned int versionNumber;
+extern unsigned int CRC32;
+extern unsigned int cur_zst_size;
+extern bool romispal;
+extern unsigned int PJoyAOrig, PJoyBOrig, PJoyCOrig, PJoyDOrig, PJoyEOrig;
+extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
+
+
+void zst_save(FILE *, bool);
+bool zst_load(FILE *);
+
+/////////////////////////////////////////////////////////
+
+/*
+ZMV Format
+
+-----------------------------------------------------------------
+Header
+-----------------------------------------------------------------
+
+3 bytes  -  "ZMV"
+2 bytes  -  ZMV Version # (version of ZSNES)
+4 bytes  -  CRC32 of ROM
+4 bytes  -  Number of frames in this movie
+4 bytes  -  Number of rerecords
+4 bytes  -  Number of frames removed by rerecord
+4 bytes  -  Number of frames with slow down
+4 bytes  -  Number of key combos
+2 bytes  -  Number of internal chapters
+20 bytes -  Author name
+3 bytes  -  ZST size
+1 byte   -  Flag Byte
+  2 bits -   Start from ZST/Power On/Reset
+  1 bit  -   NTSC or PAL
+  5 bits -   Reserved
+
+-If start from ZST-
+
+ZST size -  ZST (no thumbnail)
+
+
+-----------------------------------------------------------------
+Key input  -  Repeated for all input / internal chapters
+-----------------------------------------------------------------
+
+1 byte   - Flag Byte
+  1 bit  -  Controller 1 changed
+  1 bit  -  Controller 2 changed
+  1 bit  -  Controller 3 changed
+  1 bit  -  Controller 4 changed
+  1 bit  -  Controller 5 changed    
+  1 bit  -  Chapter instead of input here
+  2 bits -  Reserved
+
+-If Chapter-
+
+ZST size -  ZST
+
+-Else-
+
+variable - Input
+
+  12 bits per controller where input changed padded to next full byte size
+  Minimum 2 bytes (12 controller bits + 4 padded bits)
+  Maximum 8 bytes (60 controller bits [12*5] + 4 padded bits)
+
+
+-----------------------------------------------------------------
+Internal chapter offsets  -  Repeated for all internal chapters
+-----------------------------------------------------------------
+
+4 bytes  -  Offset to chapter from beginning of file
+
+
+-----------------------------------------------------------------
+External chapters  -  Repeated for all external chapters
+-----------------------------------------------------------------
+
+ZST Size -  ZST
+4 bytes  -  Offset to input for current chapter from beginning of file
+
+
+-----------------------------------------------------------------
+External chapter count
+-----------------------------------------------------------------
+
+2 bytes  - Number of external chapters
+
+*/
+
+
+/*
+
+ZMV header types, vars, and functions
+
+*/
+
+enum zmv_start_methods { zmv_sm_zst, zmv_sm_power, zmv_sm_reset };
+enum zmv_video_modes { zmv_vm_ntsc, zmv_vm_pal };
+
+struct zmv_header
+{
+  char magic[3];
+  unsigned short zsnes_version;
+  unsigned int rom_crc32;
+  unsigned int frames;
+  unsigned int rerecords;
+  unsigned int removed_frames;
+  unsigned int slow_frames;
+  unsigned int key_combos;
+  unsigned short internal_chapters;
+  char author[20];
+  unsigned int zst_size; //We only read/write 3 bytes for this
+  struct
+  {
+    enum zmv_start_methods start_method;
+    enum zmv_video_modes video_mode;
+  } zmv_flag;
+};
+
+void zmv_header_write(struct zmv_header *zmv_head, FILE *fp)
+{
+  unsigned char flag = 0;
+  
+  fwrite(zmv_head->magic, 3, 1, fp);
+  fwrite2(zmv_head->zsnes_version, fp);
+  fwrite4(zmv_head->rom_crc32, fp);
+  fwrite4(zmv_head->frames, fp);
+  fwrite4(zmv_head->rerecords, fp);
+  fwrite4(zmv_head->removed_frames, fp);
+  fwrite4(zmv_head->slow_frames, fp);
+  fwrite4(zmv_head->key_combos, fp);
+  fwrite2(zmv_head->internal_chapters, fp);
+  fwrite(zmv_head->author, 20, 1, fp);
+  fwrite3(zmv_head->zst_size, fp);
+  
+  switch (zmv_head->zmv_flag.start_method)
+  {
+    case zmv_sm_zst:
+      flag &= ~BIT(7);
+      flag &= ~BIT(6);
+      break;
+    
+    case zmv_sm_power:
+      flag |= BIT(7);
+      flag &= ~BIT(6);
+      break;        
+    
+    case zmv_sm_reset:
+      flag &= ~BIT(7);
+      flag |= BIT(6);
+      break;
+  }
+
+  switch (zmv_head->zmv_flag.video_mode)
+  {
+    case zmv_vm_ntsc:
+      flag &= ~BIT(5);
+      break;
+  
+    case zmv_vm_pal:
+      flag |= BIT(5);
+      break;  
+  }
+  
+  //Not needed, but oh well, it makes it easier to read for some.
+  //Reserved bits:
+  flag &= ~BIT(4);
+  flag &= ~BIT(3);
+  flag &= ~BIT(2);
+  flag &= ~BIT(1);
+  flag &= ~BIT(0);
+
+  fwrite(&flag, 1, 1, fp);
+}
+
+bool zmv_header_read(struct zmv_header *zmv_head, FILE *fp)
+{
+  unsigned char flag;
+  
+  fread(zmv_head->magic, 3, 1, fp);
+  zmv_head->zsnes_version = fread2(fp);
+  zmv_head->rom_crc32 = fread4(fp);
+  zmv_head->frames = fread4(fp);
+  zmv_head->rerecords = fread4(fp);
+  zmv_head->removed_frames = fread4(fp);
+  zmv_head->slow_frames = fread4(fp);
+  zmv_head->key_combos = fread4(fp);
+  zmv_head->internal_chapters = fread2(fp);
+  fread(zmv_head->author, 20, 1, fp);
+  zmv_head->zst_size = fread3(fp);
+  fread(&flag, 1, 1, fp);
+
+  if (feof(fp))
+  {
+    return(false);
+  }
+      
+  switch (flag & (BIT(7)|BIT(6)))
+  {
+    case 0:
+      zmv_head->zmv_flag.start_method = zmv_sm_zst;
+      break;
+      
+    case BIT(7):
+       zmv_head->zmv_flag.start_method = zmv_sm_power;
+       break;
+
+    case BIT(6):
+       zmv_head->zmv_flag.start_method = zmv_sm_reset;
+       break;         
+  
+    case BIT(7)|BIT(6):
+      return(false);
+      break;
+  }
+  
+  switch (flag & BIT(5))
+  {
+    case 0:
+      zmv_head->zmv_flag.video_mode = zmv_vm_ntsc;
+      break;
+      
+    case BIT(5):
+      zmv_head->zmv_flag.video_mode = zmv_vm_pal;
+      break;  
+  }
+  
+  if (flag & (BIT(4)|BIT(3)|BIT(2)|BIT(1)|BIT(0)))
+  {
+    return(false);
+  }
+
+  return(true);
+}
+
+/*
+
+Internal chapter types, vars, and functions
+
+*/
+
+#define INTERAL_CHAPTER_BUF_LIM 10
+struct internal_chapter_buf
+{
+  size_t offsets[INTERAL_CHAPTER_BUF_LIM];
+  unsigned char used;
+  struct internal_chapter_buf *next;
+};
+
+void interal_chapter_add_offset(struct internal_chapter_buf *icb, size_t offset)
+{
+  while (icb->next)
+  {
+    icb = icb->next;
+  }
+  
+  if (icb->used == INTERAL_CHAPTER_BUF_LIM)
+  {
+    icb->next = (struct internal_chapter_buf *)malloc(sizeof(struct internal_chapter_buf));
+    icb = icb->next;
+    memset(icb, 0, sizeof(struct internal_chapter_buf));
+  }
+  
+  icb->offsets[icb->used] = offset;
+  icb->used++;
+}
+
+void internal_chapter_free_chain(struct internal_chapter_buf *icb)
+{
+  if (icb->next)
+  {
+    internal_chapter_free_chain(icb->next);
+  }
+  free(icb);
+}
+
+void internal_chapter_write(struct internal_chapter_buf *icb, FILE *fp)
+{
+  unsigned char i;
+  for (i = 0; i < icb->used; i++)
+  {
+    fwrite4(icb->offsets[i], fp);
+  }
+  if (icb->next)
+  {
+    internal_chapter_write(icb->next, fp);
+  }
+}
+
+
+/*
+
+Shared var between record/replay functions
+
+*/
+
+#define WRITE_BUFFER_SIZE 512
+struct
+{
+  struct zmv_header header;
+  FILE *fp;
+  struct
+  {
+    unsigned short A;
+    unsigned short B;
+    unsigned short C;
+    unsigned short D;
+    unsigned short E;
+  } last_joy_state;
+  unsigned char write_buffer[WRITE_BUFFER_SIZE];
+  size_t write_buffer_loc;
+  struct internal_chapter_buf internal_chapters;
+  size_t last_internal_chapter_offset;
+} zmv_vars;
+
+/*
+
+Create and record ZMV
+
+*/
+
+void zmv_create(char *filename)
+{
+  memset(&zmv_vars, 0, sizeof(zmv_vars));
+  zmv_vars.fp = fopen(filename,"wb");
+  if (zmv_vars.fp) 
+  {
+    strncpy(zmv_vars.header.magic, "ZMV", 3);
+    zmv_vars.header.zsnes_version = versionNumber & 0xFFFF;
+    zmv_vars.header.rom_crc32 = CRC32;
+    zmv_vars.header.zst_size = cur_zst_size;
+    zmv_vars.header.zmv_flag.start_method = zmv_sm_zst;
+    zmv_vars.header.zmv_flag.video_mode = romispal ? zmv_vm_pal : zmv_vm_ntsc;
+    zmv_header_write(&zmv_vars.header, zmv_vars.fp);
+    zst_save(zmv_vars.fp, false);
+  }
+  else
+  {
+  
+  }
+}
+
+#define RECORD_PAD(prev, cur, bit)                                        \
+  if (cur != prev)                                                        \
+  {                                                                       \
+    prev = cur;                                                           \
+    flag |= BIT(bit);                                                     \
+                                                                          \
+    if (nibble & 1)                                                       \
+    {                                                                     \
+      press_buf[nibble/2] |= (unsigned char)(prev & 0x0F);                \
+      nibble++;                                                           \
+      press_buf[nibble/2] = (unsigned char)((prev >> 4) & 0xFF);          \
+      nibble += 2;                                                        \
+    }                                                                     \
+    else                                                                  \
+    {                                                                     \
+      press_buf[nibble/2] = (unsigned char)(prev & 0xFF);                 \
+      nibble += 2;                                                        \
+      press_buf[nibble/2] = ((unsigned char)((prev >> 8) & 0x0F)) << 4;   \
+      nibble++;                                                           \
+    }                                                                     \
+  }
+
+void zmv_record()
+{
+  unsigned char flag = 0;
+  unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0 }; 
+  unsigned char nibble = 0;
+  
+  zmv_vars.header.frames++;
+  
+  RECORD_PAD(zmv_vars.last_joy_state.A, PJoyAOrig, 7);
+  RECORD_PAD(zmv_vars.last_joy_state.B, PJoyBOrig, 6);
+  RECORD_PAD(zmv_vars.last_joy_state.C, PJoyCOrig, 5);
+  RECORD_PAD(zmv_vars.last_joy_state.D, PJoyDOrig, 4);
+  RECORD_PAD(zmv_vars.last_joy_state.E, PJoyEOrig, 3);
+
+  zmv_vars.write_buffer[zmv_vars.write_buffer_loc] = flag;
+  zmv_vars.write_buffer_loc++;
+  
+  if (flag)
+  {
+    unsigned char buffer_used = (nibble/2) + (nibble&1);
+    memcpy(zmv_vars.write_buffer+zmv_vars.write_buffer_loc, press_buf, buffer_used);
+    zmv_vars.write_buffer_loc += buffer_used;
+  }
+  
+  if (zmv_vars.write_buffer_loc > WRITE_BUFFER_SIZE - (1+sizeof(press_buf)))
+  {
+    fwrite(zmv_vars.write_buffer, zmv_vars.write_buffer_loc, 1, zmv_vars.fp);
+    zmv_vars.write_buffer_loc = 0;
+  }
+}
+
+void zmv_insert_chapter()
+{
+  if ((zmv_vars.header.internal_chapters < 65535) && 
+      (zmv_vars.last_internal_chapter_offset != ftell(zmv_vars.fp)))
+  {
+    unsigned char flag = BIT(2);
+  
+    if (zmv_vars.write_buffer_loc)
+    {
+      fwrite(zmv_vars.write_buffer, zmv_vars.write_buffer_loc, 1, zmv_vars.fp);
+      zmv_vars.write_buffer_loc = 0;  
+    }
+  
+    fwrite(&flag, 1, 1, zmv_vars.fp);
+  
+    interal_chapter_add_offset(&(zmv_vars.internal_chapters), ftell(zmv_vars.fp));
+    zmv_vars.header.internal_chapters++;
+    zmv_vars.last_internal_chapter_offset = ftell(zmv_vars.fp);
+    
+    zst_save(zmv_vars.fp, false);
+  }
+}
+
+void zmv_record_finish()
+{
+  if (zmv_vars.write_buffer_loc)
+  {
+    fwrite(zmv_vars.write_buffer, zmv_vars.write_buffer_loc, 1, zmv_vars.fp);
+    zmv_vars.write_buffer_loc = 0;  
+  }
+  
+  internal_chapter_write(&(zmv_vars.internal_chapters), zmv_vars.fp);
+  internal_chapter_free_chain(zmv_vars.internal_chapters.next);
+  
+  fwrite2(0, zmv_vars.fp); //External chapter count
+  
+  rewind(zmv_vars.fp);
+  zmv_header_write(&zmv_vars.header, zmv_vars.fp);
+  
+  fclose(zmv_vars.fp);
+}
+
+/*
+
+Open and replay ZMV
+
+*/
+
+bool zmv_open(char *filename)
+{
+  memset(&zmv_vars, 0, sizeof(zmv_vars));
+  zmv_vars.fp = fopen(filename,"r+b");
+  if (zmv_vars.fp && zmv_header_read(&zmv_vars.header, zmv_vars.fp) &&
+      !strncpy(zmv_vars.header.magic, "ZMV", 3)) 
+  {
+    if (zmv_vars.header.zsnes_version != (versionNumber & 0xFFFF))
+    {
+    
+    }
+    
+    if (zmv_vars.header.rom_crc32 != CRC32)
+    {
+    
+    }
+    
+    zst_load(zmv_vars.fp);
+    
+    return(true);
+  }
+  return(false);
+}
+
+#define REPLAY_PAD(cur, bit)                          \
+  if (flag & BIT(bit))                                \
+  {                                                   \
+    if (mid_byte)                                     \
+    {                                                 \
+      cur = byte & 0x0F;                              \
+      fread(&byte, 1, 1, zmv_vars.fp);                \
+      cur |= ((unsigned short)byte) << 4;             \
+      mid_byte = false;                               \
+    }                                                 \
+    else                                              \
+    {                                                 \
+      fread(&byte, 1, 1, zmv_vars.fp);                \
+      cur = byte;                                     \
+      fread(&byte, 1, 1, zmv_vars.fp);                \
+      cur |= ((unsigned short)(byte & 0xF0)) << 4;    \
+      mid_byte = true;                                \
+    }                                                 \
+  }
+
+void zmv_replay()
+{
+  unsigned char flag = 0;
+  bool mid_byte = false;
+  unsigned char byte;
+
+  fread(&flag, 1, 1, zmv_vars.fp);
+  
+  if (flag & BIT(2))
+  {
+    fseek(zmv_vars.fp, cur_zst_size, SEEK_CUR);
+    fread(&flag, 1, 1, zmv_vars.fp);
+  }
+  
+  REPLAY_PAD(PJoyAOrig, 7);
+  REPLAY_PAD(PJoyBOrig, 6);
+  REPLAY_PAD(PJoyCOrig, 5);
+  REPLAY_PAD(PJoyDOrig, 4);
+  REPLAY_PAD(PJoyEOrig, 3);
+}
+
+void zmv_next_chapter()
+{
+
+}
+
+void zmv_prev_chapter()
+{
+
+}
+
+void zmv_add_chapter()
+{
+
+}
 
 /////////////////////////////////////////////////////////
 
 
-
-
-extern unsigned int PJoyAOrig, PJoyBOrig, PJoyCOrig, PJoyDOrig, PJoyEOrig;
-extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
 extern unsigned int MsgCount, MessageOn;
 extern unsigned char MovieTemp, txtmovieended[15], MovieProcessing, *Msgptr;
 
@@ -453,7 +975,6 @@ void MoviePlay()
 }
 
 extern unsigned char NoPictureSave;
-extern unsigned int versionNumber;
 
 void statesaver();
 

@@ -744,7 +744,7 @@ void statesaver()
   
   if ((fhandle = fopen(fnamest+1,"wb")))
   {    
-    zst_save(fhandle, (cbitmode && !NoPictureSave) ? true : false)
+    zst_save(fhandle, (cbitmode && !NoPictureSave) ? true : false);
   
     fclose(fhandle);
   
@@ -889,10 +889,73 @@ static void read_save_state_data(unsigned char **dest, void *data, size_t len)
   load_save_size += fread(data, 1, len, fhandle);
 }
 
-void stateloader (unsigned char *statename, unsigned char keycheck, unsigned char xfercheck)
+bool zst_load(FILE *fhandle)
 {
   char zst_header_check[sizeof(zst_header_cur)-1];
+  zst_version = 0;
+    
+  Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fhandle);
+  if (!memcmp(zst_header_check, zst_header_cur, sizeof(zst_header_check)-2))
+  {
+    zst_version = 143; //v1.43+
+  }
+  if (!memcmp(zst_header_check, zst_header_old, sizeof(zst_header_check)-2))
+  {
+    zst_version = 60; //v0.60 - v1.42
+  } // the -2 means we only check the text - trust me, that's ok
+    
+  if (!zst_version) { return(false); } //Pre v0.60 saves are no longer loaded
+ 
+  load_save_size = 0;
+  copy_state_data(0, read_save_state_data, true);
+  Totalbyteloaded += load_save_size;
+      
+  if (SFXEnable)
+  {
+    SfxCPB = SfxMemTable[(SfxPBR & 0xFF)];
+    SfxCROM = SfxMemTable[(SfxROMBR & 0xFF)];
+    SfxRAMMem = (unsigned int)sfxramdata + ((SfxRAMBR & 0xFF) << 16);
+    SfxRomBuffer += SfxCROM;
+    SfxLastRamAdr += SfxRAMMem;
+  }
+
+  if (SA1Enable)
+  {
+    RestoreSA1(); //Convert back SA-1 stuff
+    /*
+    All UpdateBanks() seems to do is break Oshaberi Parodius...
+    The C port is still present, just commented out
+    */
+    //UpdateBanks(); 
+    SA1UpdateDPageC();
+  }
+    
+  if (SDD1Enable)
+  {
+    UpdateBanksSDD1();
+  }
+
+  //Clear cache check if state loaded
+  memset(vidmemch2, 1, sizeof(vidmemch2));
+  memset(vidmemch4, 1, sizeof(vidmemch4));
+  memset(vidmemch8, 1, sizeof(vidmemch8));
+
+  MovieProcessing = 0;
+
+  repackfunct();
+
+  //headerhack(); //Was in the asm, but why is this needed?
+
+  initpitch();
+  ResetOffset();
+  ResetState();
+  procexecloop();
   
+  return(true);
+}
+
+void stateloader (unsigned char *statename, unsigned char keycheck, unsigned char xfercheck)
+{
   if (keycheck)
   {
     unsigned char statevalue;
@@ -925,66 +988,10 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
   //Actual state loading code
   if ((fhandle = fopen(statename,"rb")) != NULL)
   {
-    zst_version = 0;
     if (xfercheck) { Totalbyteloaded = 0; }
-
-    Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fhandle);
-    if (!memcmp(zst_header_check, zst_header_cur, sizeof(zst_header_check)-2))
-    {
-      zst_version = 143; //v1.43+
-    }
-    if (!memcmp(zst_header_check, zst_header_old, sizeof(zst_header_check)-2))
-    {
-      zst_version = 60; //v0.60 - v1.42
-    } // the -2 means we only check the text - trust me, that's ok
     
-    if (zst_version) //Pre v0.60 saves are no longer loaded
+    if (zst_load(fhandle))
     {
-      load_save_size = 0;
-      copy_state_data(0, read_save_state_data, true);
-      Totalbyteloaded += load_save_size;
-      
-      if (SFXEnable)
-      {
-        SfxCPB = SfxMemTable[(SfxPBR & 0xFF)];
-        SfxCROM = SfxMemTable[(SfxROMBR & 0xFF)];
-        SfxRAMMem = (unsigned int)sfxramdata + ((SfxRAMBR & 0xFF) << 16);
-        SfxRomBuffer += SfxCROM;
-        SfxLastRamAdr += SfxRAMMem;
-      }
-
-      if (SA1Enable)
-      {
-        RestoreSA1(); //Convert back SA-1 stuff
-        /*
-        All UpdateBanks() seems to do is break Oshaberi Parodius...
-        The C port is still present, just commented out
-        */
-        //UpdateBanks(); 
-        SA1UpdateDPageC();
-      }
-    
-      if (SDD1Enable)
-      {
-        UpdateBanksSDD1();
-      }
-
-      //Clear cache check if state loaded
-      memset(vidmemch2, 1, sizeof(vidmemch2));
-      memset(vidmemch4, 1, sizeof(vidmemch4));
-      memset(vidmemch8, 1, sizeof(vidmemch8));
-
-      MovieProcessing = 0;
-
-      repackfunct();
-
-      //headerhack(); //Was in the asm, but why is this needed?
-
-      initpitch();
-      ResetOffset();
-      ResetState();
-      procexecloop();
-    
       Msgptr = txtloadmsg; // 'STATE X LOADED.'
     }
     else
