@@ -1,7 +1,6 @@
 #include "zpng.h"
 
 
-
 #ifdef __WIN32__
 	#include <windows.h>
 	
@@ -10,18 +9,15 @@
 	#endif
 #endif
 
-#ifdef __LINUX__
+#ifdef __MSDOS__
 	#include <sys/types.h>
 	#include <sys/stat.h>
 	#include <unistd.h>
 	#include <stdlib.h>
 #endif
 
-#ifdef __MSDOS__
-	#include <sys/types.h>
-	#include <sys/stat.h>
-	#include <unistd.h>
-	#include <stdlib.h>
+#ifdef __LINUX__
+#include "../gblhdr.h"
 #endif
 
 extern unsigned int vidbuffer;

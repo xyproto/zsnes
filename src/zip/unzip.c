@@ -4,10 +4,14 @@
    Read unzip.h for more info
 */
 
-
+#ifdef __LINUX__
+#include "../gblhdr.h"
+#else
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#endif
+
 #include "zlib.h"
 #include "unzip.h"
 
