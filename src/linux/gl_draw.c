@@ -389,6 +389,9 @@ void gl_scanlines(void)
 	{
 		scanbuffer[i][0] = scanbuffer[i][1] = scanbuffer[i][2] = j;
 		scanbuffer[i][3] = 0xFF;
+
+		scanbuffer[i+1][0] = scanbuffer[i+1][1] = scanbuffer[i+1][2] = 0xFF;
+		scanbuffer[i+1][3] = 0xFF;
 	}
 
 	glBindTexture(GL_TEXTURE_1D, gltextures[3]);
