@@ -64,8 +64,6 @@ PREOBJ=
 ZIPOBJ=${ZIPDIR}/zzip.obj ${ZIPDIR}/unzip.obj ${ZIPDIR}/zpng.obj
 
 MAINOBJ=cfgload.obj endmem.obj fixsin.obj init.obj ui.obj vcache.obj water.obj
-	
-
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ} ${WINDOSOBJ}
 LIBS=
