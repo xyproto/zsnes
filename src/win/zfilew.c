@@ -188,7 +188,7 @@ int ConnectGameServer(char *servername, unsigned int port)
     unsigned long addr1;
     int yesip;
     WSADATA wsadata;
-    int timeout=1000;
+    int timeout=5000;
 
     host1 = gethostbyname(servername);
     if (host1 == NULL)
@@ -357,6 +357,7 @@ OpenConnection(char *User, char *Password, char *FileName)
     char temp[513];
     int cur=0;
     HMODULE hModule = GetModuleHandle(NULL);
+    int retval
 
     ZLog_Message("Need to open %s",FileName);
 
@@ -444,10 +445,12 @@ OpenConnection(char *User, char *Password, char *FileName)
                                (IDD_LOADING), NULL, NULL);
 
 
-
     while(cur<FILESIZE[CurrentHandle])
     {
-        cur+=receiveData(FILEDATA[CurrentHandle]+cur,4096);
+        retval=receiveData(FILEDATA[CurrentHandle]+cur,4096);
+        if(retval<0)
+            return 0;
+        cur+=retval;
         ZLog_Message("Reading file at %d",cur);
         wsprintf(temp, "%7d/%7d", cur, FILESIZE[CurrentHandle]);
         SetDlgItemText(hwndNCD, IDC_PARTDONE,temp);
