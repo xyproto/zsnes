@@ -67,8 +67,7 @@ NEWSYM copy640x480x16bwin
     je near interpolate640x480x16bwin
 .nointerp
     mov dl,[resolutn]
-    dec dl
-    dec dl
+    sub dl,2
     cmp byte[scanlines],1
     je near .scanlines
     cmp byte[scanlines],3
@@ -925,9 +924,7 @@ MMXInterpolwin:
 .loopab
 
     mov dl,[resolutn]
-    dec dl
-    dec dl
-    dec dl
+    sub dl,3
     movq mm2,[HalfTransC]
     cmp byte[scanlines],1
     je near .scanlines
@@ -1260,9 +1257,7 @@ NEWSYM interpolate640x480x16bwin
     mov [InterPtr],ebx
 
     mov dl,[resolutn]
-    dec dl
-    dec dl
-    dec dl
+    sub dl,3
     cmp byte[scanlines],1
     je near .scanlines
     cmp byte[scanlines],2
