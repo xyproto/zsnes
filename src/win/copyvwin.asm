@@ -1566,3 +1566,8 @@ NEWSYM interpolate640x480x16bwin
 ALIGN32
 InterPtr dd 0
 
+
+%ifdef __MINGW__
+NEWSYM CopyVWinAsmEnd
+%endif
+
