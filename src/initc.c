@@ -841,7 +841,7 @@ void clearmem()
   clearmem2();
 }
 
-void clearmem2()
+void clearSPCRAM()
 {
   /*
   SPC RAM is filled with alternating 0x00 and 0xFF for 0x20 bytes.
@@ -862,8 +862,12 @@ void clearmem2()
     memset(spcRam+i, 0, 0x20);
     memset(spcRam+i+0x20, 0xFF, 0x20);
   }
+}
 
+void clearmem2()
+{
   memset(sram, 0xFF, 16384);
+  clearSPCRAM;
 }
 
 

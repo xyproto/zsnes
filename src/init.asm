@@ -114,7 +114,7 @@ EXTSYM ScrDispl,wramreadptr,wramwriteptr
 EXTSYM pl1Ltk,pl1Rtk,pl2Ltk,pl2Rtk,pl3Ltk,pl3Rtk,pl4Ltk,pl4Rtk,pl5Ltk,pl5Rtk
 EXTSYM loadstate2, headerhack
 ;initc.c
-EXTSYM clearmem,clearmem2
+EXTSYM clearmem,clearSPCRAM
 EXTSYM PatchUsingIPS
 EXTSYM loadZipFile
 EXTSYM ZOpenFileName
@@ -1492,7 +1492,7 @@ NEWSYM init65816
 
     ; Clear SPC Memory
     pushad
-    call clearmem2
+    call clearSPCRAM
     popad
 
     ; Clear Sound buffer
