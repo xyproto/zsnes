@@ -1864,6 +1864,10 @@ DisplayGUIConfirmClick:
     GUIPButtonHoleLoad 9,163,byte[GUIloadfntype],0
     GUIPButtonHoleLoad 9,171,byte[GUIloadfntype],1
     GUIPButtonHoleLoad 9,179,byte[GUIloadfntype],2
+    GUIClickCButton6 144,177,byte[ForceROMTiming],1
+    GUIClickCButton6 144,187,byte[ForceROMTiming],2
+    GUIClickCButton6 184,177,byte[ForceHiLoROM],1
+    GUIClickCButton6 184,187,byte[ForceHiLoROM],2
     ret
 
 DisplayGUIChoseSaveClick:
@@ -2173,8 +2177,6 @@ DisplayGUIOptionClick:
     GUIClickCButtonW 11,176,byte[DisableScreenSaver]
     GUIClickCButtonat 11,186,byte[AlternateTimer]
 %endif
-    GUIClickCButton6 145,26,byte[ForceROMTiming],1
-    GUIClickCButton6 145,36,byte[ForceROMTiming],2
     ; Frameskip = 0
     cmp byte[frameskip],0
     je near .autopress

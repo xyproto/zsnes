@@ -93,7 +93,7 @@ EXTSYM GUIsmcfind,GUIsfcfind,GUIswcfind,GUIfigfind,GUIfind058,GUIfind078,GUIfind
 EXTSYM GUIfindUSA,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall
 EXTSYM spc7110romptr,allocspc7110
 EXTSYM SRAMDir,SRAMDrive,cfgloadsdir,fnamest,statefileloc
-EXTSYM ForcePal,ForceROMTiming,InitDir,InitDrive,enterpress,frameskip
+EXTSYM ForcePal,ForceROMTiming,ForceHiLoROM,InitDir,InitDrive,enterpress,frameskip
 EXTSYM gotoroot,headdata,printnum,romispal
 EXTSYM InitFxTables,SFXSRAM,SfxR1,SfxR2,SfxSCMR,SfxSFR,finterleave
 EXTSYM initregr,initregw,memtabler16,DSP1Read16b3F,memaccessbankr16
@@ -5598,7 +5598,9 @@ NEWSYM CheckROMType
 
     mov byte[ROMTypeNOTFound],1
 .donecheck
-
+    mov al,[ForceHiLoROM]
+    mov byte[forceromtype],al
+    xor al,al
     cmp byte[forceromtype],0
     je .noforce
     mov al,[forceromtype]

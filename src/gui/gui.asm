@@ -585,6 +585,7 @@ NEWSYM TrapMouseCursor, db 1
 NEWSYM KeyQuickClock, dd 0
 NEWSYM KeyQuickMinimize, dd 0
 NEWSYM ForceROMTiming, db 0
+NEWSYM ForceHiLoROM, db 0
 
 GUIsave equ $-GUIRAdd
 
@@ -954,7 +955,7 @@ NEWSYM GUIRestoreVars
 .failb
     ret
 
-SECTION .data   
+SECTION .data
 NEWSYM ComboHeader, db 'Key Combination File',26,1,0
 NEWSYM ComboBlHeader, times 23 db 0
 SECTION .text
@@ -976,7 +977,6 @@ NEWSYM ExecGUISaveVars
     call Write_File
     call Close_File
 .failed
-
     mov al,[NumComboGlob]
     or al,al
     jz .failb

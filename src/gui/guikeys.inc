@@ -907,14 +907,6 @@ GUIOptionKeys:
     call guimustrestartmsg
 .noalttimer
 %endif
-    cmp dh,'T'
-    jne .noforcentsc
-    GUIkeystoggleoptn byte[ForceROMTiming],1
-.noforcentsc
-    cmp dh,'P'
-    jne .noforcepal
-    GUIkeystoggleoptn byte[ForceROMTiming],2
-.noforcepal
     ret
 
 GUIGUIOptnsKeys:

@@ -453,6 +453,12 @@ DisplayGUILoad:
     GUIOuttextwin2 1,161,16,GUILoadText8
     GUIOuttextwin2 1,6,138,GUIcurrentdir
 
+    GUIOuttextwin2 1,146,172,GUILoadTextB
+    GUIOuttextwin2 1,155,182,GUILoadTextC
+    GUIOuttextwin2 1,155,192,GUILoadTextD
+    GUIOuttextwin2 1,195,182,GUILoadTextE
+    GUIOuttextwin2 1,195,192,GUILoadTextF
+
     mov dword[cloadmaxlen],39
     cmp dword[GUIcurrentfilewin],0
     jne .nofiles
@@ -481,6 +487,12 @@ DisplayGUILoad:
     GUIOuttextwin2 1,160,15,GUILoadText8
     GUIOuttextwin2 1,5,137,GUIcurrentdir
 
+    GUIOuttextwin2 1,145,171,GUILoadTextB
+    GUIOuttextwin2 1,154,181,GUILoadTextC
+    GUIOuttextwin2 1,154,191,GUILoadTextD
+    GUIOuttextwin2 1,194,181,GUILoadTextE
+    GUIOuttextwin2 1,194,191,GUILoadTextF
+
     mov dword[cloadmaxlen],39
     cmp dword[GUIcurrentfilewin],0
     jne .nofilesb
@@ -495,7 +507,7 @@ DisplayGUILoad:
 %endif
 .nofilesb
 
-    DrawGUIButton 1,186,167,228,178,GUILoadText9,1,0,0
+    DrawGUIButton 1,186,157,228,168,GUILoadText9,1,0,0
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
 ;    GUIOuttextwin2 1,6,16,GUILoadText1
@@ -688,10 +700,34 @@ DisplayGUILoad:
 .noloadtype
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[showallext],1
-    jne .nocheck
+    jne .noshowallext
     mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheck
+.noshowallext
     GUIDisplayIconWin 1,10,187,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[ForceROMTiming],1
+    jne .noforcentsc
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.noforcentsc
+    GUIDisplayIconWin 1,144,177,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[ForceROMTiming],2
+    jne .noforcepal
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.noforcepal
+    GUIDisplayIconWin 1,144,187,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[ForceHiLoROM],1
+    jne .noforcelorom
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.noforcelorom
+    GUIDisplayIconWin 1,184,177,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[ForceHiLoROM],2
+    jne .noforcehirom
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.noforcehirom
+    GUIDisplayIconWin 1,184,187,[GUITemp]
 
     ; win#,X,Y start, %4-List Loc, %5-List size, %6-Screen size, %7-Bar Size
     DrawSlideBarWin 1,146,33,[GUIcurrentviewloc],[GUIfileentries],15,94,GUILStA
@@ -779,11 +815,16 @@ GUILoadText2 db 'DISPLAY TYPE :',0
 GUILoadText3 db 'NORMAL 8.3 FORMAT',0
 GUILoadText4 db 'SNES HEADER NAME',0
 GUILoadText5 db 'WIN95 LONG FILENAME',0
-GUILoadText6 db 'SHOW ALL EXTENSIONS',0
+GUILoadText6 db 'SHOW ALL EXTENIONS',0
 GUILoadText7 db 'FILENAME',0
 GUILoadText8 db 'DIRECTORY',0
 GUILoadText9 db 'LOAD',0
 GUILoadTextA times 40 db 0
+GUILoadTextB db 'FORCE OPTIONS :',0
+GUILoadTextC db 'NTSC',0
+GUILoadTextD db 'PAL',0
+GUILoadTextE db 'LOROM',0
+GUILoadTextF db 'HIROM',0
 GUILStA dd 0,0,0
 GUILStB dd 0,0,0
 GUILoadPos db 0
@@ -1372,8 +1413,6 @@ DisplayGUIOption:
     GUIOuttextwin2u 4,26,181,GUIOptionTextK,1
     GUIOuttextwin2u 4,26,191,GUIOptionTextL,1
 %endif
-    GUIOuttextwin2u 4,160,31,GUIOptionTextM,7
-    GUIOuttextwin2u 4,160,41,GUIOptionTextN,6
     add byte[GUItextcolor],15
     GUIOuttextwin2 4,5,15,[GUITemp]
     GUIOuttextwin2 4,25,30,GUIOptionText2
@@ -1400,8 +1439,6 @@ DisplayGUIOption:
     GUIOuttextwin2 4,25,180,GUIOptionTextK
     GUIOuttextwin2 4,25,190,GUIOptionTextL
 %endif
-    GUIOuttextwin2 4,159,30,GUIOptionTextM
-    GUIOuttextwin2 4,159,40,GUIOptionTextN
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[TimerEnable],0
     je .nocheckboxt
@@ -1517,18 +1554,6 @@ DisplayGUIOption:
 .win323
     GUIDisplayIconWin 4,11,186,[GUITemp]
 %endif
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[ForceROMTiming],1
-    jne .nocheckbox15
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox15
-    GUIDisplayIconWin 4,145,26,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[ForceROMTiming],2
-    jne .nocheckbox16
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox16
-    GUIDisplayIconWin 4,145,36,[GUITemp]
     cmp byte[frameskip],0
     je near .auto
     DrawGUIWinBox 4,75,13,93,21,167
@@ -1593,8 +1618,6 @@ GUIOptionTextI db 'AUTO STATE SAVE/LOAD',0
 GUIOptionTextJ db 'DON',39,'T SAVE CUR PATH',0
 GUIOptionTextK db 'DISABLE SCREENSAVER',0
 GUIOptionTextL db 'USE ALTERNATE TIMER',0
-GUIOptionTextM db 'FORCE NTSC ROM',0
-GUIOptionTextN db 'FORCE PAL ROM',0
 GUIOptionText8 db '-',0
 GUIOptionText9 db '+',0
 GUIOptionText10 db '-',0
