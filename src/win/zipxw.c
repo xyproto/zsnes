@@ -17,12 +17,22 @@
 
 
 #include <windows.h>
+#include <wsipx.h>
 
-void ipx_init(){};
-void sendpacket(){};
-void checkpacket(){};
-void read_packet(){};
-void ipx_deinit(){};
+void ipx_init() {
+}
+
+void sendpacket() {
+}
+
+void checkpacket() {
+}
+
+void read_packet() {
+}
+
+void ipx_deinit() {
+}
 
 unsigned short ipx_initcode;
 unsigned int ipx_packet;
