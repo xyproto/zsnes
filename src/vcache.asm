@@ -51,7 +51,7 @@ EXTSYM spritetablea,sprleftpr,sprlefttot,vcache4b
 EXTSYM objadds1,objadds2,objmovs1,objmovs2,tltype4b,vidmemch4,vram
 EXTSYM bgptr,bgptrc,bgptrd,curtileptr,vcache2b
 EXTSYM vcache8b,vidmemch8
-EXTSYM offsetmshl
+EXTSYM offsetmshl,NextLineCache
 EXTSYM tltype2b,UpdateSoundAgain
 EXTSYM tltype8b,objwlrpos
 
@@ -240,6 +240,7 @@ SaveRamSaved db 'SAVED SRAM DATA',0
 NEWSYM CSprWinPtr, dd 0
 
 NEWSYM cachevideo
+    mov byte[NextLineCache],0
     mov dword[objwlrpos],0FFFFFFFFh
     mov dword[CSprWinPtr],0
     mov byte[pressed],0

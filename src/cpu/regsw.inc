@@ -497,8 +497,11 @@ reg2102w:
     shr word[oamaddr],1
     mov [oamaddr],al
     shl word[oamaddr],1
+    or al,al
+    jz .skipstore
     mov bx,[oamaddr]
     mov [oamaddrs],bx
+.skipstore
     cmp byte[nexthprior],1
     je .priorset
     mov byte[objhipr],0
@@ -516,11 +519,18 @@ reg2102w:
 
 ; OAM address register
 reg2103w:
+    mov byte[debstop3],1
     mov bl,al
     and bl,01h
     shr word[oamaddr],1
     mov [oamaddr+1],bl
     shl word[oamaddr],1
+    cmp word[oamaddr],200h
+    jne .notinvptr
+    mov bx,[oamaddrs]
+    dec bx
+    mov [oamaddr],bx
+.notinvptr
     mov bx,[oamaddr]
     mov [oamaddrs],bx
     test al,80h
@@ -534,6 +544,8 @@ reg2103w:
 
 ; OAM data register
 reg2104w:
+    mov byte[debstop3],1
+    mov byte[NextLineCache],1
     mov ebx,[oamaddr]
     inc dword[oamaddr]
     cmp ebx,544
@@ -921,31 +933,21 @@ reg2117w:
 
 ; Video port data (Low)
 reg2118:
-    cmp dword[vramaddr],0E000h
-    jb .skip
-    mov byte[debstop],1
-.skip
     mov ebx,[vramaddr]
-;    cmp [vrama+ebx],al
-;    je .nochange
     mov [vrama+ebx],al
     shr ebx,4
     mov byte[vidmemch2+ebx],1
     mov byte[vidmemch4+ebx],1
     mov byte[vidmemch8+ebx],1
-.nochange
     ret
 
 reg2118inc:
     mov ebx,[vramaddr]
-;    cmp [vrama+ebx],al
-;    je .nochange
     mov [vrama+ebx],al
     shr ebx,4
     mov byte[vidmemch2+ebx],1
     mov byte[vidmemch4+ebx],1
     mov byte[vidmemch8+ebx],1
-.nochange
     mov ebx,[addrincr]
     add [vramaddr],bx
     ret
