@@ -231,7 +231,7 @@ void zstart ()
 	
 	allocmem ();
 
-	if (!soundon || !SPCDisable)
+	if (!soundon && !SPCDisable)
 	{
 		soundon = 1;
 		spcon = 1;
