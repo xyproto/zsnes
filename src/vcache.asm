@@ -55,7 +55,7 @@ EXTSYM vcache8b,vidmemch8
 EXTSYM offsetmshl,NextLineCache
 EXTSYM tltype2b
 EXTSYM tltype8b,objwlrpos
-
+EXTSYM snesinputdefault 
 
 NEWSYM VCacheAsmStart
 
@@ -522,7 +522,10 @@ NEWSYM cachevideo
     mov byte[Voice6Disable],01h
     mov byte[Voice7Disable],01h
     mov byte[scrndis],00h
-    mov byte[snesmouse],0
+    push eax
+    mov al,byte[snesinputdefault]
+    mov byte[snesmouse],al
+    pop eax
     mov dword[Msgptr],panickeyp
     mov eax,[MsgCount]
     mov [MessageOn],eax

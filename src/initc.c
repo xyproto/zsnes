@@ -710,7 +710,7 @@ bool NSRTHead(unsigned char *ROM)
 
   if (!strncmp("NSRT", (char*)&NSRTHead[24],4) && NSRTHead[28] == 22)
   {
-    if (sum(NSRTHead, 32) & 0xFF != NSRTHead[30] ||
+    if ((sum(NSRTHead, 32) & 0xFF) != NSRTHead[30] ||
         NSRTHead[30] + NSRTHead[31] !=  255 ||
         (NSRTHead[0] & 0x0F) > 13 ||
         ((NSRTHead[0] & 0xF0) >> 4) > 3 ||
@@ -726,6 +726,7 @@ bool NSRTHead(unsigned char *ROM)
 extern bool Sup48mbit;
 extern bool Sup16mbit;
 extern unsigned char snesmouse;
+unsigned char snesinputdefault;
 void findZipIPS(char *);
 void loadROM()
 {
@@ -836,6 +837,8 @@ void loadROM()
     curromspace -= 512;
     memmove((unsigned char *)romdata, ((unsigned char *)romdata)+512, curromspace);  
   }
+
+  snesinputdefault = snesmouse;
 
   SplitSupport();
 
