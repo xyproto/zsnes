@@ -279,8 +279,11 @@ void DrawScreen()
    {
       if (TripleBufferWin == 1 || KitchenSync == 1)
       {
-         DD_BackBuffer->Blt(NULL, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
-         DD_Primary->Flip(NULL, DDFLIP_WAIT);
+         if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
+           DD_Primary->Restore();
+
+         if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+           DD_Primary->Restore();
 
          if (KitchenSync == 1)
          {
@@ -2231,54 +2234,27 @@ extern void ClearWin32();
 
 void clearwin()
 {
-  HRESULT hRes;
+   pitch=LockSurface();
+   if (pitch==0) { return; }
 
-  if (DD_CFB != NULL)
-  {
-    memset(&ddsd,0,sizeof(ddsd));
-    ddsd.dwSize = sizeof(ddsd);
+   SurfBufD=(DWORD) &SurfBuf[0];
 
-    hRes = DD_CFB->Lock(NULL,&ddsd,DDLOCK_WAIT,NULL);
-
-    if (hRes == DD_OK)
-    {
-      SurfBufD=(DWORD)ddsd.lpSurface;
-      pitch = ddsd.lPitch;
-
-      switch (BitDepth)
-      {
+   if (AltSurface == 0)
+   {
+     switch (BitDepth)
+     {
         case 16:
-          ClearWin16();
-          break;
+        ClearWin16();
+           break;
         case 32:
-          ClearWin32();
-          break;
-      }
-      DD_CFB->Unlock((struct tagRECT *)ddsd.lpSurface);
-    }
-    else
-      if (hRes == DDERR_SURFACELOST)
-        DD_CFB->Restore();
-  }
+        ClearWin32();
+           break;
+     }
+   }
+   else
+     ClearWin16();
 
-  if (DD_CFB16 != NULL)
-  {
-    memset(&ddsd,0,sizeof(ddsd));
-    ddsd.dwSize = sizeof(ddsd);
-
-    hRes = DD_CFB16->Lock(NULL,&ddsd,DDLOCK_WAIT,NULL);
-
-    if (hRes == DD_OK)
-    {
-      SurfBufD=(DWORD)ddsd.lpSurface;
-      pitch = ddsd.lPitch;
-      ClearWin16();
-      DD_CFB16->Unlock((struct tagRECT *)ddsd.lpSurface);
-    }
-    else
-      if (hRes == DDERR_SURFACELOST)
-        DD_CFB16->Restore();
-  }
+   UnlockSurface();
 }
 
 void clear_display()
