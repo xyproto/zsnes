@@ -52,7 +52,7 @@ EXTSYM nextmenupopup
 EXTSYM MovieProcessing
 EXTSYM MovieFileHand, PrintStr
 EXTSYM OSExit,DosExit,InitDir,InitDrive,createnewcfg,fnames,gotoroot,previdmode
-EXTSYM ramsize,sfxramdata,setaramdata,SETAEnable,sram,SRAMChdir,welcome
+EXTSYM ramsize,sfxramdata,setaramdata,SETAEnable,sram,SRAMChdir
 ;    EXTSYM tempstore
 EXTSYM printhex
 %ifdef __MSDOS__
