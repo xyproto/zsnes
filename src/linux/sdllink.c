@@ -125,15 +125,6 @@ extern int KeyBuffer[16];
 BYTE PrevStereoSound;
 DWORD PrevSoundQuality;
 
-void ExitFunction(void)
-{
-#ifdef __LINUX__
-   STUB_FUNCTION;
-#else   
-   ChangeDisplaySettings(NULL,0);
-#endif // __LINUX__   
-}
-
 int shiftptr = 0;
 void ProcessKeyBuf(int scancode);
 void LinuxExit(void);
@@ -638,7 +629,6 @@ DWORD FirstFull=1;
 extern BYTE GUIWFVID[];
 void clearwin();
 
-char WinName[]={"ZSNESW\0"};
 void initwinvideo(void)
 {
 #ifdef __LINUX__
@@ -703,92 +693,6 @@ void initwinvideo(void)
 	}
 	if(((PrevStereoSound!=StereoSound)||(PrevSoundQuality!=SoundQuality)))
 	      ReInitSound();	
-#else
-   if(FirstVid!=1)
-   {
-//      sprintf(WinMessage,"FirstVid!=1 start\n\0");
-//      MessageBox (NULL, WinMessage, "Init", MB_ICONERROR );
-
-      if(X<0)X=0;
-      if(X>(GetSystemMetrics( SM_CXSCREEN )-WindowWidth)) X=(GetSystemMetrics(
-SM_CXSCREEN )-WindowWidth);
-      if(Y<0)Y=0;
-      if(Y>(GetSystemMetrics( SM_CYSCREEN )-WindowHeight)) Y=(GetSystemMetrics(
-SM_CYSCREEN )-WindowHeight);
-      if(FullScreen==1) {X=0; Y=0;}
-
-      MoveWindow( hMainWindow, X, Y,
-                  WindowWidth, WindowHeight, TRUE );
-
-      wndpl.length = sizeof(wndpl);
-      GetWindowPlacement( hMainWindow, &wndpl);
-      SetRect( &rc1, 0, 0, WindowWidth, WindowHeight );
-
-      AdjustWindowRectEx( &rc1,GetWindowLong( hMainWindow, GWL_STYLE ),
-      GetMenu( hMainWindow ) != NULL, GetWindowLong( hMainWindow, GWL_EXSTYLE )
-);
-//      X=(GetSystemMetrics( SM_CXSCREEN ) - WindowWidth) / 2;
-//      Y=(GetSystemMetrics( SM_CYSCREEN ) - WindowHeight) / 2;
-
-      GetClientRect( hMainWindow, &rc1 );
-      ClientToScreen( hMainWindow, ( LPPOINT )&rc1 );
-      ClientToScreen( hMainWindow, ( LPPOINT )&rc1 + 1 );
-//      return;
-//      sprintf(WinMessage,"FirstVid!=1 end\n\0");
-//      MessageBox (NULL, WinMessage, "Init", MB_ICONERROR );
-
-//      MoveScreen(wndpl.rcNormalPosition.left, wndpl.rcNormalPosition.top);
-   }
-   else
-   {
-      FirstVid=0;
-      if (!QueryPerformanceFrequency((LARGE_INTEGER*)&freq)) return;
-//      hInst=GetModuleHandle(0);
-      if ( !RegisterWinClass() ); // { return; }
-      X=(GetSystemMetrics( SM_CXSCREEN ) - WindowWidth) / 2;
-      Y=(GetSystemMetrics( SM_CYSCREEN ) - WindowHeight) / 2;
-      if(FullScreen==1) {X=0; Y=0;}
-      if(hMainWindow) CloseWindow(hMainWindow);
-
-      hMainWindow = CreateWindow( "ZSNESWIN", WinName, WS_VISIBLE|WS_POPUP,X,Y, 
-//WS_OVERLAPPED "ZSNESWIN"
-                                 WindowWidth,WindowHeight,NULL,NULL,hInst,NULL);
-
-      if(!hMainWindow) { return; }
-
-      ShowWindow(hMainWindow, SW_SHOWNORMAL);
-      SetWindowText(hMainWindow,"ZSNESWIN");
-      InitInput();
-      InitSound();
-      TestJoy();
-   }
-
-
-   if(Moving==1) return;
-   if(FullScreen==1)
-   {
-      if(FirstFull==1)
-      {
-         atexit(ExitFunction);
-      }
-      mode.dmSize=sizeof(DEVMODE);
-      mode.dmBitsPerPel=16;
-      mode.dmPelsWidth=WindowWidth;
-      mode.dmPelsHeight=WindowHeight;
-      mode.dmDisplayFlags=0;
-      mode.dmDisplayFrequency=0;
-      mode.dmFields=DM_BITSPERPEL|DM_PELSWIDTH|DM_PELSHEIGHT;
-      ChangeDisplaySettings(&mode,0);
-   }
-   else
-   {
-      ChangeDisplaySettings(NULL,0);
-   }
-   //endgame();
-
-   if(startgame()!=TRUE) {return; }
-   if(newmode==1) clearwin();
-//   MessageBox (NULL, "Done", "Init", MB_ICONERROR );
 #endif // __LINUX__
 }
 
