@@ -65,12 +65,12 @@ NEWSYM DSP4Read16b
     mov word[dsp4_address],cx
     pushad
     call DSP4GetByte
-    popad
     mov al,byte[dsp4_byte]  
+    mov byte[dsp4temp],al
     inc word[dsp4_address]
-    pushad
     call DSP4GetByte
     popad    
+    mov al,byte[dsp4temp]
     mov ah,byte[dsp4_byte]    
     ret
 
