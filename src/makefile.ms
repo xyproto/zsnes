@@ -65,7 +65,7 @@ ifeq ($(PLATFORM),win32-cross)
 endif
 
 ifeq (${CROSS},no)
-  DELETECOMMAND = del
+  DELETECOMMAND=del
   SLASH=\${BLAHBLAHBLAH}
 endif
 
@@ -293,6 +293,7 @@ ${WINDIR}/winlink.o: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
 	${CPPC} -O0 ${CFLAGS} -masm=intel -o $@ -c ${WINDIR}/winlink.cpp
 
 clean: 
+ifeq (${DELETECOMMAND},del)
 	${DELETECOMMAND} ${EXE}
 	${DELETECOMMAND} *.o
 	${DELETECOMMAND} ${CPUDIR}${SLASH}*.o
@@ -304,6 +305,13 @@ clean:
 	${DELETECOMMAND} ${DOSDIR}${SLASH}*.o
 	${DELETECOMMAND} ${WINDIR}${SLASH}*.o
 	${DELETECOMMAND} ${GUIDIR}${SLASH}*.o
+endif
+
+ifeq (${DELETECOMMAND},rm)
+	${DELETECOMMAND} ${EXE} *.o ${CPUDIR}${SLASH}*.o ${VIDEODIR}${SLASH}*.o ${CHIPDIR}${SLASH}*.o\
+	${EFFECTSDIR}${SLASH}*.o ${ZIPDIR}${SLASH}*.o ${JMADIR}${SLASH}*.o ${DOSDIR}${SLASH}*.o\
+	${WINDIR}${SLASH}*.o ${GUIDIR}${SLASH}*.o
+endif
 
 help:
 	@echo Please specify which platform to compile for with PLATFORM=platform_name
