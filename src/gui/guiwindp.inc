@@ -6438,6 +6438,22 @@ DisplayGUIPaths:
     GUIOuttextwin2d 19,137,184,SPL4Path,15
     ret
 
+SECTION .data
+GUIPathsText1 db 'SAVES:',0
+GUIPathsText2 db 'SNAPSHOTS:',0
+GUIPathsText3 db 'SPCS:',0
+GUIPathsText4 db '--BIOS/BASE CARTS--',0
+GUIPathsText5 db 'BS-X:',0
+GUIPathsText6 db 'SUFAMI TURBO:',0
+GUIPathsText7 db 'SD GUNDAM G-NEXT:',0
+GUIPathsText8 db 'SAME GAME:',0
+GUIPathsText9 db '--SPC7110 GRAPHIC PACKS--',0
+GUIPathsTextA db 'FEOEZ:',0
+GUIPathsTextB db 'FEOEZ - SJNS:',0
+GUIPathsTextC db 'MDH:',0
+GUIPathsTextD db 'SPL4:',0
+NEWSYM GUIBlinkCursor, times 2 db 0
+
 DisplayGUISave:
     GUIDrawWindowBox 20,GUISaveDisp
     mov byte[GUItextcolor],217
@@ -6490,24 +6506,6 @@ GUISaveText3 db 'START AT LATEST SAVE',0
 GUISaveText4 db 'AUTO STATE SAVE/LOAD',0
 
 SECTION .text
-ret
-
-SECTION .data
-GUIPathsText1 db 'SAVES:',0
-GUIPathsText2 db 'SNAPSHOTS:',0
-GUIPathsText3 db 'SPCS:',0
-GUIPathsText4 db '--BIOS/BASE CARTS--',0
-GUIPathsText5 db 'BS-X:',0
-GUIPathsText6 db 'SUFAMI TURBO:',0
-GUIPathsText7 db 'SD GUNDAM G-NEXT:',0
-GUIPathsText8 db 'SAME GAME:',0
-GUIPathsText9 db '--SPC7110 GRAPHIC PACKS--',0
-GUIPathsTextA db 'FEOEZ:',0
-GUIPathsTextB db 'FEOEZ - SJNS:',0
-GUIPathsTextC db 'MDH:',0
-GUIPathsTextD db 'SPL4:',0
-NEWSYM GUIBlinkCursor, times 2 db 0
-
 
 ;General data
 GUILoadDisp     db 'LOAD GAME',0
