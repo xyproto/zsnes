@@ -2045,6 +2045,7 @@ NEWSYM GetTimeInSeconds
 
 SECTION .data
 ALIGN32
+
 SystemTime:
 .wYear                  dw    0
 .wMonth                 dw    0
