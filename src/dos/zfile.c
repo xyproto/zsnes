@@ -319,12 +319,11 @@ DWORD GetDate()
    struct tm *newtime;
    time_t long_time;
 
-   /*time( &long_time );*/
-   long_time = time (NULL);
+   time( &long_time );
    newtime = localtime( &long_time );
    value = ((newtime->tm_mday) % 10)+((newtime->tm_mday)/10)*16
           +(((newtime->tm_mon)+1) << 8)
-          +((((newtime->tm_year) % 10)+((newtime->tm_year)/10)*16) << 16);
+          +((((newtime->tm_year) % 10)+((newtime->tm_year)/10)*16) << 16)
           +((newtime->tm_wday) << 28);
 
    return(value);
