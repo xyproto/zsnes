@@ -37,7 +37,7 @@ static DWORD FullScreen = 0;
 static int sdl_inited = 0;
 static int UseOpenGL = 0;
 extern unsigned char cvidmode;
-DWORD BitDepth = 0;	// Do NOT change this for ANY reason!
+DWORD BitDepth = 16;
 // JOYSTICK AND KEYBOARD INPUT
 SDL_Joystick *JoystickInput[5];
 //DWORD CurrentJoy = 0;
@@ -580,8 +580,6 @@ int startgame(void)
 		sdl_inited = -1;
 	}
 
-	BitDepth = (UseOpenGL ? 16 : 0);
-
 	if (sdl_inited == 1) sw_end();
 #ifdef __OPENGL__
 	else if (sdl_inited == 2) gl_end();
@@ -756,7 +754,7 @@ void initwinvideo(void)
 
 	if (startgame() != TRUE)
 	{
-		return;
+		LinuxExit ();
 	}
 
 	if (newmode == 1)
