@@ -755,6 +755,9 @@ void Start36HZ(void)
 	update_ticks_pc2 = UPDATE_TICKS_UDP;
 	update_ticks_pc = UPDATE_TICKS_GUI;
 
+	//Quick fix for GUI CPU usage
+	usleep(1000);
+
 	start = sem_GetTicks();
 	start2 = sem_GetTicks();
 	T60HZEnabled = 0;
