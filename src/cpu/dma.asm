@@ -87,9 +87,9 @@ NEWSYM transdma
     xor ebx,ebx
     and al,00000111b
     cmp al,5
-    jae .notmode567dma
+    jne .notmode5dma
     sub al,4
-.notmode567dma
+.notmode5dma
     mov bl,al
     shl bl,3
     add ebx,.addrwrite
@@ -475,6 +475,10 @@ NEWSYM setuphdma
     xor ecx,ecx
     mov al,[esi]
     and al,00000111b
+    cmp al,5
+    jne .notmode5dma
+    sub al,4
+.notmode5dma
     mov ah,[.addrnumt+eax]
     mov [edx+16],ah
     mov bl,al
@@ -575,6 +579,10 @@ NEWSYM setuphdmars
     xor ecx,ecx
     mov al,[esi]
     and al,00000111b
+    cmp al,5
+    jne .notmode5dma
+    sub al,4
+.notmode5dma
     mov ah,[.addrnumt+eax]
     mov [edx+16],ah
     mov bl,al
@@ -677,6 +685,10 @@ NEWSYM setuphdma2
     xor ecx,ecx
     mov al,[esi]
     and al,00000111b
+    cmp al,5
+    jne .notmode5dma
+    sub al,4
+.notmode5dma
     mov ah,[.addrnumt+eax]
     mov [edx+16],ah
     mov bl,al
