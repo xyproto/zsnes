@@ -4009,11 +4009,15 @@ NEWSYM SDD1Offset, dd 65536*3
 NEWSYM SDD1nfname, db '        \_00000-0.bin',0
 NEWSYM SDD1ifname, db 'sdd1gfx.idx',0
 NEWSYM SDD1dfname, db 'sdd1gfx.dat',0
+NEWSYM SDD1pfname, db 'sdd1gfx.pat',0
 NEWSYM SPC7110nfname, db '        \      .bin',0
 NEWSYM SPC7110IndexSize, dd 0
 NEWSYM SPC7110Entries, dd 0
 spc7110notfound db 'DECOMPRESSED PACK NOT FOUND',0
 spc7110notfoundb db 'INDEX DATA NOT FOUND',0
+SDD1PatchAddr dd 0
+SDD1PatchOfs dd 0
+SDD1PatchLen dd 0
 
 NEWSYM SPC7110Load
     mov dword[SPC7110Entries],0
@@ -4198,6 +4202,52 @@ NEWSYM SPC7110Load
     popad
     call Get_Next_Entry
     jnc near .moreentries
+
+    ; Load patch (Address, offset, length)
+    mov edx,SDD1pfname
+    call Open_File
+    jc near .nopatch
+    mov bx,ax
+    mov ecx,4
+    mov edx,SDD1PatchAddr
+    call Read_File
+    or eax,eax
+    jz .donepatch
+    mov ecx,4
+    mov edx,SDD1PatchOfs
+    call Read_File
+    mov ecx,4
+    mov edx,SDD1PatchLen
+    call Read_File
+    pushad
+    mov ecx,[SPC7110Entries]
+    mov edx,[spc7110romptr]
+.patloop
+    mov eax,[edx]
+    cmp eax,[SDD1PatchAddr]
+    jne .notaddress
+    mov eax,[edx+4]
+    add eax,[SDD1PatchOfs]
+    pushad
+    mov edx,eax
+    mov ecx,[SDD1PatchLen]
+    call Read_File
+    popad
+    jmp .foundaddr
+.notaddress
+    add edx,12
+    loop .patloop
+    ; not found
+    pushad
+    mov edx,[SPC7110CPtr2]
+    mov ecx,[SDD1PatchLen]
+    call Read_File
+    popad
+.foundaddr
+    popad
+.donepatch
+    call Close_File
+.nopatch
 
     ; Save Datafile
     jmp .nosavedatafile
@@ -5574,14 +5624,19 @@ NEWSYM CheckROMType
 .nosa1init
     cmp byte[DSP1Type],1
     jne .nodsp1lorom
-    mov dword[memtabler8+3Fh*4],DSP1Read8b3F
-    mov dword[memtablew8+3Fh*4],DSP1Write8b3F
-    mov dword[memtabler16+3Fh*4],DSP1Read16b3F
-    mov dword[memtablew16+3Fh*4],DSP1Write16b3F
-    mov dword[memtabler8+0BFh*4],DSP1Read8b3F
-    mov dword[memtablew8+0BFh*4],DSP1Write8b3F
-    mov dword[memtabler16+0BFh*4],DSP1Read16b3F
-    mov dword[memtablew16+0BFh*4],DSP1Write16b3F
+    xor ecx,ecx
+.dsp1loop
+    mov dword[memtabler8+30h*4+ecx],DSP1Read8b3F
+    mov dword[memtablew8+30h*4+ecx],DSP1Write8b3F
+    mov dword[memtabler16+30h*4+ecx],DSP1Read16b3F
+    mov dword[memtablew16+30h*4+ecx],DSP1Write16b3F
+    mov dword[memtabler8+0B0h*4+ecx],DSP1Read8b3F
+    mov dword[memtablew8+0B0h*4+ecx],DSP1Write8b3F
+    mov dword[memtabler16+0B0h*4+ecx],DSP1Read16b3F
+    mov dword[memtablew16+0B0h*4+ecx],DSP1Write16b3F
+    add ecx,4
+    cmp ecx,16*4
+    jne .dsp1loop
 .nodsp1lorom
     mov dword[wramdata],wramdataa
     call SPC7110Load
