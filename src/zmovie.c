@@ -72,8 +72,11 @@ void MovieSub_Open(const char *filename)
 
 void MovieSub_Close()
 {
-  fclose(MovieSub.fp);
-  MovieSub.fp = 0;
+  if (MovieSub.fp)
+  {
+    fclose(MovieSub.fp);
+    MovieSub.fp = 0;
+  }
 }
 
 char *MovieSub_GetData()
