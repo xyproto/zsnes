@@ -1455,6 +1455,23 @@ NEWSYM headerhack
 
     mov esi,[romdata]
     add esi,07FC0h
+    cmp dword[esi],'ACCE'
+    jne .notaccelebrid
+    cmp dword[esi+4],'LEBR'
+    jne .notaccelebrid
+    cmp dword[esi+8],'ID  '
+    jne .notaccelebrid
+    mov esi,[romdata]
+    add esi,034DA2h
+    mov byte[esi],000h
+    mov esi,[romdata]
+    add esi,034DA3h
+    mov byte[esi],000h
+
+.notaccelebrid
+
+    mov esi,[romdata]
+    add esi,07FC0h
     cmp dword[esi],'BATT'
     jne .notbattlegp
     cmp dword[esi+4],'LE G'
