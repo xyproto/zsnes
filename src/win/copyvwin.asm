@@ -26,10 +26,6 @@ EXTSYM SpecialLine
 EXTSYM vidbufferofsb
 EXTSYM HalfTransB,HalfTransC
 
-%ifdef __MINGW__
-NEWSYM CopyVWinAsmStart
-%endif
-
 SECTION .bss
 NEWSYM AddEndBytes, resd 1         ; Number of bytes between each line
 NEWSYM NumBytesPerLine, resd 1     ; Total number of bytes per line (1024+AddEndBytes)
@@ -1553,9 +1549,3 @@ NEWSYM interpolate640x480x16bwin
 SECTION .data
 InterPtr dd 0
 SECTION .text
-
-
-%ifdef __MINGW__
-NEWSYM CopyVWinAsmEnd
-%endif
-

@@ -40,8 +40,9 @@ EXTSYM modembuffer, modemhead, modemtail
 
 
 
-
+SECTION .data
 NEWSYM ipxinited, db 0
+SECTION .text
 
 NEWSYM initipx
     mov dword[modemhead],0
@@ -65,7 +66,9 @@ NEWSYM deinitipx
 .notinitialized
     ret
 
+SECTION .data
 NEWSYM PacketPointer, dd 0
+SECTION .text
 
 NEWSYM PreparePacketIPX
     cmp byte[ipxinited],1
@@ -89,7 +92,10 @@ NEWSYM ipxsendchar    ; prepare packet
     pop esi
     ret
 
+SECTION .data
 NEWSYM IPXSearchval, db 0
+SECTION .text
+
 NEWSYM ipxlookforconnect
     cmp byte[ipxinited],0
     je .initialized

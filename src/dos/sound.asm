@@ -431,7 +431,7 @@ NEWSYM stopsbsound
     sti
     iretd
 
-section .bss ;ALIGN=32
+section .bss
 NEWSYM sbhandexec, resd 1
 section .text
 
@@ -650,7 +650,7 @@ NEWSYM stopsbsound16
 ; Sound Blaster Initialization Stuff
 ;****************************************************
 
-section .bss ;ALIGN=32
+section .bss
 NEWSYM memoryloc, resd 1        ; Memory offset in conventional memory
 NEWSYM memoryloc2, resd 1       ; Memory offset in conventional memory
 NEWSYM sbselec,   resw 1        ; Selector of Memory location
@@ -805,7 +805,7 @@ NEWSYM InitSB
     call SB_dsp_write
     jmp .fixsurround
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 .Versionnum resw 1
 SECTION .text
 

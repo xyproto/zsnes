@@ -28,21 +28,11 @@ EXTSYM InitDrive,gotoroot,InitDir,fulladdtab
 EXTSYM LFBpointer,noblocks,bytesperscanline,vesamode,VESAmodelist
 
 
-NEWSYM Vesa12AsmStart
-
-
-
 ; add 0214h video mode
 
-;NEWSYM granularity, dw 0
-;NEWSYM granadd, dd 0
-
 SECTION .bss
-
 NEWSYM granularity, resw 1
 NEWSYM granadd, resd 1
-
-
 SECTION .text
 
 NEWSYM VESA12EXITTODOS
@@ -66,32 +56,30 @@ NEWSYM VESA12EXITTODOS
         mov byte[videotroub],1
         jmp DosExit
 
+
+SECTION .data
 .exitfromvesa12 db 'Unable to Initialize VESA1.2 $'
 .return db 10,13,'$'
+SECTION .text
 
 ;*******************************************************
 ;	Set up Vesa 2
 ;*******************************************************
 
 NEWSYM InitVesa12
-	   ;-------------------------------------------------;
-	    ; First - allocate some bytes in DOS memory for ;
-	    ; communication with VBE			    ;
-	   ;-------------------------------------------------;
+;-------------------------------------------------;
+; First - allocate some bytes in DOS memory for ;
+; communication with VBE			    ;
+;-------------------------------------------------;
 
-	mov eax,0100h
-	mov ebx,512/16			; 512 bytes
-	int 31h				; Function 31h,100h - Allocate
-					; DOS memory (512 bytes)
-	jnc .gotmem
-	    mov edx,.nomemmessage
-            jmp VESA12EXITTODOS
-	    .nomemmessage
-            db ': Unable to locate DOS memory.$'
-
-	.gotmem
-	mov fs,dx			; FS now points to the DOS
-					; buffer
+        mov eax,0100h
+        mov ebx,512/16 ; 512 bytes
+        int 31h        ; Function 31h,100h - Allocate DOS memory (512 bytes)
+        jnc .gotmem
+        mov edx,.nomemmessage
+        jmp VESA12EXITTODOS
+    .gotmem
+        mov fs,dx          ; FS now points to the DOS buffer
 
 
 	   ;--------------------------------------------------;
@@ -118,8 +106,6 @@ NEWSYM InitVesa12
 	jnc .int1ok
 	    mov edx,.noint1message
             jmp VESA12EXITTODOS
-	    .noint1message
-            db ': Simulated real mode interrupt failed.$'
 
 	.int1ok			; Real mode int successful!!!
 	mov eax,[RMREGS.eax]
@@ -127,24 +113,19 @@ NEWSYM InitVesa12
 	jz .vbedetected
 	    mov edx,.novbemessage
             jmp VESA12EXITTODOS
-	    .novbemessage
-            db ': VBE not detected!!$'
 
 	.vbedetected
 	cmp dword[fs:0000],'VESA'
 	jz .vesadetected	; Check for presence of vesa
 	    mov edx,.novesamessage
             jmp VESA12EXITTODOS
-	    .novesamessage
-            db ': VESA not detected!$'
+
 
 	.vesadetected
         cmp word[fs:0004],102h
         jae .vesa12detected      ; Check we've got VESA 1.2 or greater
 	    mov edx,.novesa2message
             jmp VESA12EXITTODOS
-	    .novesa2message
-            db ': VESA 1.2 or greater required!$'
 
 
 		;-----------------------------------------------------;
@@ -162,8 +143,6 @@ NEWSYM InitVesa12
 	jnc .wegottheselector
 	    mov edx, .oopsnoselector
             jmp VESA12EXITTODOS
-	    .oopsnoselector
-                db ': Failed to allocate vesa display selector!$'
 
 	.wegottheselector
 
@@ -187,8 +166,6 @@ NEWSYM InitVesa12
 		.outofmodelistspace
 		mov edx,.outofmodelistspacemessage
                 jmp VESA12EXITTODOS
-		.outofmodelistspacemessage
-                db ': Out of VESA mode list space!$'
 
 		   ;----------------------------------------------;
 		    ; OK - Scan the mode list to find a matching ;
@@ -207,9 +184,6 @@ NEWSYM InitVesa12
 
 	    mov edx,.endoflist
             jmp VESA12EXITTODOS
-
-            .endoflist db ': VESA 1.2 mode does not work on your video card/driver.$'
-            .whichwin db 0
 
     .notendoflist
 
@@ -230,8 +204,6 @@ NEWSYM InitVesa12
 	jnc .modecheckok
 	    mov edx,.modecheckfail
             jmp VESA12EXITTODOS
-	    .modecheckfail
-            db ': Real mode interrupt failure while checking vesa mode$'
 
 	.modecheckok
 	add ebp,2
@@ -492,11 +464,6 @@ NEWSYM InitVesa12
         div bx
         mov [granadd],ax
 
-
-;vesa2_rtrcl     dw 0            ; red transparency clear     (bit+4)
-;vesa2_rtrcla    dw 0            ; red transparency (AND) clear (not(bit+4))
-;vesa2_rfull     dw 0            ; red max (or (bit-1)*1Fh)
-
         call genfulladdtab
 
 	xor eax,eax
@@ -510,7 +477,6 @@ NEWSYM InitVesa12
 	jz .modesetok
             mov edx,.unableset
             jmp VESA12EXITTODOS               ; Failure!!!
-        .unableset db 'Unable to initialize video mode.$'
 
 	.modesetok
 ;******************************* EXTRA BIT ****************************
@@ -534,34 +500,24 @@ NEWSYM InitVesa12
 	jz .correctwidth
             mov edx, .unablescan
             jmp VESA12EXITTODOS          ; Failure!!!
-        .unablescan db 'Unable to set scan line length.$'
 
 	.correctwidth
 
         ret
 
-
-;RMREGS
-;.edi  dd 0
-;.esi  dd 0
-;.ebp  dd 0
-;.esp  dd 0
-;.ebx  dd 0
-;.edx  dd 0
-;.ecx  dd 0
-;.eax  dd 0
-;.flags   dw 0
-;.es   dw 0
-;.ds   dw 0 
-;.fs   dw 0
-;.gs   dw 0
-;.ip   dw 0
-;.cs   dw 0
-;.sp   dw 0
-;.ss   dw 0
-;.spare   times 20 dd 0
-
-
+SECTION .data
+.nomemmessage db ': Unable to locate DOS memory.$'
+.noint1message db ': Simulated real mode interrupt failed.$'
+.oopsnoselector db ': Failed to allocate vesa display selector!$'
+.novesa2message db ': VESA 1.2 or greater required!$'
+.novbemessage db ': VBE not detected!!$'
+.novesamessage db ': VESA not detected!$'
+.outofmodelistspacemessage db ': Out of VESA mode list space!$'
+.endoflist db ': VESA 1.2 mode does not work on your video card/driver.$'
+.whichwin db 0
+.modecheckfail db ': Real mode interrupt failure while checking vesa mode$'
+.unableset db 'Unable to initialize video mode.$'
+.unablescan db 'Unable to set scan line length.$'
 SECTION .bss
 
 RMREGS
@@ -583,5 +539,3 @@ RMREGS
 .sp   resw 1
 .ss   resw 1
 .spare   times 20 resd 1
-
-NEWSYM Vesa12AsmEnd

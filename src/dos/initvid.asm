@@ -26,9 +26,6 @@ EXTSYM vesa2selec,InitVesa12,videotroub
 EXTSYM cscopymodeq,cscopymodex
 %endif
 
-NEWSYM InitVidAsmStart
-
-
 SECTION .bss
 
 NEWSYM clearfilter, resw 1
@@ -572,5 +569,3 @@ NEWSYM dosinitvideo
     mov ecx,6144
     pop es
     ret
-
-NEWSYM InitVidAsmEnd

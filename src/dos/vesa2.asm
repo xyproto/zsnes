@@ -28,11 +28,7 @@ EXTSYM UnusedBit,HalfTrans,UnusedBitXor,ngrposng,nggposng,ngbposng
 
 EXTSYM Init_2xSaIMMX
 
-NEWSYM Vesa2AsmStart
-
-
 SECTION .data
-
 ; add 0214h video mode
 anticrash times 10 db 0
 
@@ -162,8 +158,10 @@ NEWSYM VESA2EXITTODOS
         call Change_Dir
         jmp DosExit
 
+SECTION .data
 .exitfromvesa2 db 'Unable to Initialize VESA2 : ',0
 .return db 10,13,0
+SECTION .text
 
 ;*******************************************************
 ;	Set up Vesa 2
@@ -182,8 +180,6 @@ NEWSYM InitVesa2
 	jnc .gotmem
 	    mov edx,.nomemmessage
             jmp VESA2EXITTODOS
-	    .nomemmessage
-            db 'Unable to locate DOS memory.',0
 
 	.gotmem
 	mov fs,dx			; FS now points to the DOS
@@ -214,8 +210,7 @@ NEWSYM InitVesa2
 	jnc .int1ok
 	    mov edx,.noint1message
             jmp VESA2EXITTODOS
-	    .noint1message
-            db 'Simulated real mode interrupt failed.',0
+	    
 
 	.int1ok			; Real mode int successful!!!
 	mov eax,[RMREGS.eax]
@@ -223,24 +218,19 @@ NEWSYM InitVesa2
 	jz .vbedetected
 	    mov edx,.novbemessage
             jmp VESA2EXITTODOS
-	    .novbemessage
-            db 'VBE not detected!!',0
 
 	.vbedetected
 	cmp dword[fs:0000],'VESA'
 	jz .vesadetected	; Check for presence of vesa
 	    mov edx,.novesamessage
             jmp VESA2EXITTODOS
-	    .novesamessage
-            db 'VESA not detected!',0
+	    
 
 	.vesadetected
 	cmp word[fs:0004],200h
 	jae .vesa2detected	; Check we've got VESA 2.0 or greater
 	    mov edx,.novesa2message
             jmp VESA2EXITTODOS
-	    .novesa2message
-            db 'VESA 2.0 or greater required!',0
 
 
 		;-----------------------------------------------------;
@@ -263,8 +253,6 @@ NEWSYM InitVesa2
 	jnc .wegottheselector
 	    mov edx, .oopsnoselector
             jmp VESA2EXITTODOS
-	    .oopsnoselector
-                db 'Failed to allocate vesa display selector!',0
 
 	.wegottheselector
 
@@ -288,8 +276,6 @@ NEWSYM InitVesa2
 		.outofmodelistspace
 		mov edx,.outofmodelistspacemessage
                 jmp VESA2EXITTODOS
-		.outofmodelistspacemessage
-                db 'Out of VESA2 mode list space!',0
 
 		   ;----------------------------------------------;
 		    ; OK - Scan the mode list to find a matching ;
@@ -308,9 +294,6 @@ NEWSYM InitVesa2
 
 	    mov edx,.endoflist
             jmp VESA2EXITTODOS
-
-            .endoflist db 'This VESA2 mode does not work on your video card / driver.',0
-            .whichwin db 0
 
     .notendoflist
 
@@ -331,8 +314,6 @@ NEWSYM InitVesa2
 	jnc .modecheckok
 	    mov edx,.modecheckfail
             jmp VESA2EXITTODOS
-	    .modecheckfail
-            db 'Real mode interrupt failure while checking vesa mode',0
 
 	.modecheckok
 	add ebp,2
@@ -622,17 +603,12 @@ NEWSYM InitVesa2
 
         xor word[vesa2_clbit],0FFFFh
 
-;vesa2_rtrcl     dw 0            ; red transparency clear     (bit+4)
-;vesa2_rtrcla    dw 0            ; red transparency (AND) clear (not(bit+4))
-;vesa2_rfull     dw 0            ; red max (or (bit-1)*1Fh)
-
         call genfulladdtab
 
 	test word[fs:0h],10000000b	; Check if linear available
 	jnz .linearavailable
             mov edx,.nolframebuffer
             jmp VESA2EXITTODOS               ; None available
-        .nolframebuffer db 'Linear Frame Buffer not Detected.',0
 
 		;---------------------------------------------;
 		 ; OK - now set the vesa 2 mode based on the ;
@@ -655,7 +631,6 @@ NEWSYM InitVesa2
 	jnc .mappedphysicalarea
             mov edx,.unablemap
             jmp VESA2EXITTODOS               ; Failure!!!
-        .unablemap db 'Unable to map physical area.',0
 
 	.mappedphysicalarea
 	shl ebx,16
@@ -676,8 +651,7 @@ NEWSYM InitVesa2
 	jz .modesetok
             mov edx,.unableset
             jmp VESA2EXITTODOS               ; Failure!!!
-        .unableset db 'Unable to initialize video mode.',0
-
+	    
 	.modesetok
 ;******************************* EXTRA BIT ****************************
 
@@ -708,7 +682,6 @@ NEWSYM InitVesa2
 	jz .correctwidth
             mov edx, .unablescan
 	    jmp VESA2EXITTODOS		; Failure!!!
-        .unablescan db 'Unable to set scan line length.',0
 
 	.correctwidth
 
@@ -728,7 +701,6 @@ NEWSYM InitVesa2
 	jnc .selectornowset
                 mov edx,.unablelfb
                 jmp VESA2EXITTODOS           ; Failure!!!
-        .unablelfb db 'Unable to set selector to LFB.',0
 
 	.selectornowset
 
@@ -744,7 +716,6 @@ NEWSYM InitVesa2
 	jnc .ok
                 mov edx,.unablesets
                 jmp VESA2EXITTODOS           ; Failure!!!
-        .unablesets db 'Unable to set size of selector.',0
 
 	.ok
 	lar ecx,ebx
@@ -757,7 +728,6 @@ NEWSYM InitVesa2
 	jnc .accessrightsset
                 mov edx,.unablesetar
                 jmp VESA2EXITTODOS
-        .unablesetar db 'Unable to set selector access rights.',0
 
 	.accessrightsset
         mov [vesa2selec],bx
@@ -776,6 +746,23 @@ NEWSYM InitVesa2
 
 
 SECTION .data
+.nomemmessage db 'Unable to locate DOS memory.',0
+.noint1message db 'Simulated real mode interrupt failed.',0
+.novbemessage db 'VBE not detected!!',0
+.novesamessage db 'VESA not detected!',0
+.novesa2message db 'VESA 2.0 or greater required!',0
+.oopsnoselector db 'Failed to allocate vesa display selector!',0
+.outofmodelistspacemessage db 'Out of VESA2 mode list space!',0
+.endoflist db 'This VESA2 mode does not work on your video card / driver.',0
+.whichwin db 0
+.modecheckfail db 'Real mode interrupt failure while checking vesa mode',0
+.nolframebuffer db 'Linear Frame Buffer not Detected.',0
+.unablemap db 'Unable to map physical area.',0
+.unableset db 'Unable to initialize video mode.',0
+.unablescan db 'Unable to set scan line length.',0
+.unablelfb db 'Unable to set selector to LFB.',0
+.unablesets db 'Unable to set size of selector.',0
+.unablesetar db 'Unable to set selector access rights.',0
 
 NEWSYM LFBpointer
 	dd 0
@@ -794,29 +781,6 @@ NEWSYM vesamode
 SECTION .bss
 
 NEWSYM VESAmodelist, times 512 resw 1
-
-
-;NEWSYM RMREGS
-;.edi  dd 0
-;.esi  dd 0
-;.ebp  dd 0
-;.esp  dd 0
-;.ebx  dd 0
-;.edx  dd 0
-;.ecx  dd 0
-;.eax  dd 0
-;
-;.flags   dw 0
-;.es   dw 0
-;.ds   dw 0 
-;.fs   dw 0
-;.gs   dw 0
-;.ip   dw 0
-;.cs   dw 0
-;.sp   dw 0
-;.ss   dw 0
-;.spare   times 20 dd 0
-
 NEWSYM RMREGS
 .edi  resd 1
 .esi  resd 1
@@ -838,4 +802,3 @@ NEWSYM RMREGS
 .ss   resw 1
 .spare   times 20 resd 1
 ;----------------------------------------------------------------------
-NEWSYM Vesa2AsmEnd

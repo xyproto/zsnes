@@ -49,12 +49,6 @@ EXTSYM cycpbl,debugbuf,soundon,spcA,spcNZ,spcP,spcPCRam
 EXTSYM spcRam,spcRamDP,spcS,spcX,spcY
 EXTSYM CurPtrVal,SPC7110Enable
 
-NEWSYM DebugAsmStart
-
-
-
-
-
 ; debstop at regsw.asm 2118/2119
 
 
@@ -94,48 +88,6 @@ NEWSYM startdebugger
     EXTSYM oamram
     mov edx,oamram
     mov ecx,544
-;    mov ecx,2048*4
-;    mov edx,[C4Ram]
-;    mov ecx,32768
-;    mov edx,[romdata]
-;    add edx,65536*13h
-;    mov ecx,2EFh
-;    mov edx,SDD1Array
-;    mov ecx,[SDD1Entry]
-;    mov edx,[romdata]
-;    add edx,32768*40
-;    mov edx,cnetplaybuf
-;    mov ecx,512
-;    mov edx,[sfxramdata]
-;    add edx,65536
-;    mov edx,fxtrace
-;    mov ecx,65536
-;    mov edx,[wramdata]
-;    mov ecx,544
-;    mov edx,oamram
-;    mov ecx,256
-;    mov edx,DSPFuncUsed
-
-;    mov edx,fulladdtab
-;    mov ecx,65536*2
-
-;    mov ecx,17*4
-;    mov edx,_ViewerZ
-;    mov ecx,512
-;    mov edx,cgram
-;    mov ecx,256*4
-;    mov edx,fxtrace
-;NEWSYM DecompArray, times 65536 db 0
-;NEWSYM DecompAPtr, dd 0
-;    mov edx,DecompArray
-;    mov ecx,[DecompAPtr]
-;    shl ecx,3
-;    mov edx,[romdata]
-;    add edx,3E5CCEh
-;    mov ecx,0022h
-;    mov edx,[romdata]
-;    add edx,1024*4096
-;    mov ecx,65536
 
     or ecx,ecx
     jz .nofilecontents
@@ -174,10 +126,10 @@ NEWSYM startdebugger
 
     jmp DosExit
 
+SECTION .data
 .fname2 db 9,'vram.dat',0
 .fname3 db 9,'vram2.dat',0
 
-SECTION .data
 ; global variables
 NEWSYM debugh,  dw 0            ; debug head
 NEWSYM debugt,  dw 0            ; debug tail
@@ -261,7 +213,9 @@ NEWSYM loadtempstuff
     mov [timinl2],al
     ret
 
+SECTION .data
 .spcfname db 'temp.spc',0
+SECTION .text
 
 ;*******************************************************
 ; Debug Loop
@@ -445,8 +399,11 @@ NEWSYM debugdump
     call Write_File
     call Close_File
     jmp debugloopb
+
+SECTION .data
 .fname db 'SPCRAM.DMP',0
 .fname2 db 'DSP.DMP',0
+SECTION .text
 
 ;*******************************************************
 ; Debug save/load states
@@ -1416,7 +1373,9 @@ NEWSYM traceops
     mov [xpc],si
     ret
 
+SECTION .data
 .message1  db 'Tracing.  Press ESC to stop.'
+SECTION .text
 
 ;*******************************************************
 ; SPCBreakOps                 Breaks at Breakpoint @ SPC
@@ -1511,7 +1470,9 @@ NEWSYM SPCbreakops
     mov [xpc],si
     ret
 
+SECTION .data
 .message1  db 'Locating Breakpoint ... Press ESC to stop.'
+SECTION .text
 
 ;*******************************************************
 ; BreakatSign                Breaks whenever debstop = 1
@@ -1614,7 +1575,9 @@ NEWSYM breakatsign
     pop es
     jmp debugloopa
 
+SECTION .data
 .message1  db 'Waiting for Signal .... Press ESC to stop.'
+SECTION .text
 
 ;*******************************************************
 ; BreakatSign&Log            Breaks whenever debstop = 1
@@ -1790,6 +1753,7 @@ NEWSYM breakatsignlog
     mov bx,[.handle]
     call Close_File
 
+SECTION .data
 .loggeddata times 128 db 0
 .message1  db 'Waiting for Signal .... Press ESC to stop.',0
 .handle dw 0
@@ -1798,7 +1762,6 @@ NEWSYM breakatsignlog
 ;*******************************************************
 ; BreakatSignB               Breaks whenever keyonsn = 1
 ;*******************************************************
-SECTION .data
 NEWSYM keyonsn, db 0
 NEWSYM prbreak, db 0
 SECTION .text
@@ -2239,7 +2202,8 @@ NEWSYM startdisplay
     jmp .loopprint
 .doneprint    
     ret
-    
+
+SECTION .data
 .debuginfo db '- @5Z@4S@3N@2E@6S@7 debugger -$'
 .D65816    db ' 65816 $'
 .mbar      db '@4(@6T@4)@7race for  @4(@6B@4)@7reakpoint  '
@@ -2250,7 +2214,6 @@ NEWSYM startdisplay
 ; Next Opcode              Writes the next opcode & regs
 ;*******************************************************
 ; 008000 STZ $123456,x A:0000 X:0000 Y:0000 S:01FF DB:00 D:0000 P:33 E+
-SECTION .data
 NEWSYM debugsa1, db 0
 NEWSYM skipdebugsa1, db 1
 SECTION .text
@@ -3545,7 +3508,7 @@ SECTION .text
     pop ecx
     ret
 
-SECTION .data    
+SECTION .data
 .hexdat db '0123456789ABCDEF'
 SECTION .text
 
@@ -3610,7 +3573,10 @@ NEWSYM nextopcodesa1
     mov dl,0
     int 10h
     ret
+
+SECTION .data
 .blah db 0
+SECTION .text
 
 .outputtobuffer
     ; output pb/pc
@@ -4406,4 +4372,3 @@ NEWSYM ArgumentTable
 ;     F0 F1 F2 F3 F4 F5 F6 F7 F8 F9 FA FB FC FD FE FF
    db 14,01,02,03,15,16,17,18,35,64,09,65,31,66,67,00
 SECTION .text
-NEWSYM DebugAsmEnd

@@ -54,7 +54,7 @@ WINOBJ=${WINDIR}/copyvwin.o \
 	${WINDIR}/sdlintrf.o ${WINDIR}/sdllink.o \
 	@GL_DRAW@ ${WINDIR}/sw_draw.o \
 	${WINDIR}/zloaderw.o ${WINDIR}/ztcp.o ${WINDIR}/zipxw.o \
-	${WINDIR}/zfilew.o ${WINDIR}/protect.o
+	${WINDIR}/zfilew.o
 
 WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/modemrtn.o ${DOSDIR}/vesa2.o\
 	${DOSDIR}/initvid.o ${DOSDIR}/sw.o ${DOSDIR}/gppro.o ${DOSDIR}/vesa12.o

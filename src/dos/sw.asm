@@ -19,11 +19,6 @@
 
 EXTSYM SidewinderFix
 
-NEWSYM SWAsmStart
-
-
-
-
 %macro ParityCheckSW 1
    mov ecx,ebx
    xor cl,ch
@@ -223,4 +218,3 @@ ModeALoop:
    dec ecx
    jnz ModeALoop
    ret
-NEWSYM SWAsmEnd

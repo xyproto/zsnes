@@ -77,18 +77,8 @@ EXTSYM TCPIPAddress
 ;   made.  GUI36hzcall should be called at 36hz after a call GUIInit and
 ;   before GUIDeInit.
 
-
-;SECTION .data
-;NEWSYM OSPort, db 0      ; 0 = DOS (C), 1 = DOS (ASM), 2 = Linux, 3 = Win95
-
-SECTION .bss
-
-NEWSYM OSPort, resb 1
-
 SECTION .data
-
 NEWSYM dssel, dw 0
-
 SECTION .text
 
 NEWSYM StartUp
@@ -444,11 +434,6 @@ NEWSYM Get_File_Date
     and byte[prval],%2^0FFh
 %%prskip
 %endmacro
-
-;SECTION .data
-;NEWSYM prval, db 0
-;NEWSYM prres, db 0
-;SECTION .text
 
 NEWSYM Check_Key
 ;    xor al,al
@@ -1609,16 +1594,6 @@ NEWSYM Check60hz
 ; TCP/IP Stuff
 ; ****************************
 
-; TCPIPPortNum
-;NEWSYM TCPIPStatus, db 0
-;NEWSYM PacketSendSize, dd 0
-;NEWSYM PacketRecvSize, dd 0
-;NEWSYM PacketRecvPtr,  dd 0
-;NEWSYM PacketSendArray, times 256 db 0
-;NEWSYM PacketRecvArray, times 256 db 0
-;NEWSYM IPAddrStr, times 20 db 0
-;NEWSYM RemoteDisconnect, db 0
-
 SECTION .bss
 
 NEWSYM TCPIPStatus, resb 1
@@ -1806,7 +1781,6 @@ NEWSYM GetHostName
 
 NEWSYM hostname
 NEWSYM UDPConfig
-;NEWSYM tcperr, dd 0,0,0,0
 
 SECTION .bss
 

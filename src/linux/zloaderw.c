@@ -90,14 +90,11 @@ int my_atoi(char *nptr) {
 	return atoi(nptr);
 }
 
-extern void UnProtectMemory (void);
-
 int main (int argc, char *argv[]) {
 	int opt,p,pp;
 
 	char *fvar;
 
-	UnProtectMemory();
 	while((opt = getopt(argc, argv, "01:2:789a:c:d:ef:g:hijk:lmno:p:r:s:tuv:wyz?")) != -1) {
 		switch(opt) {
 			/* Palette 0 disable */

@@ -33,7 +33,7 @@
 ;Flat memory mode (Protected mode extender required!  Tested with DOS32)
 ;Tested with TASM 4.0+
 
-
+SECTION .data
 SW1 dd 0                ;SW #1's button status
 SW2 dd 0                ;SW #2's button status
 SW3 dd 0                ;SW #3's button status
@@ -47,6 +47,7 @@ SWSetup dd 0            ;Tell the driver what polling mode to use
 
 gDump times 100h db 0   ;SW Status dump buffer (space for 256 bytes, uses 200)
 bDump times 80h db 0    ;buffer to hold button data (Modes A and B, all SW)
+SECTION .text
 
 ;This macro calculates parity for the buttons and compares it to the SW's
 ; parity bit.  If they don't match, the button data is discarded.

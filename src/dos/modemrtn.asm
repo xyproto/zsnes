@@ -27,13 +27,6 @@ EXTSYM delay
 EXTSYM dssel
 %endif
 
-NEWSYM DosModemRTNAsmStart
-
-
-
-
-
-
 SECTION .bss
 NEWSYM UartType, resb 1
 
@@ -457,5 +450,3 @@ NEWSYM DeInitModemC
    out dx,al
    sti
    ret
-
-NEWSYM DosModemRTNAsmEnd
