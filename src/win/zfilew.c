@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <time.h>
 #include <io.h>
+#include <direct.h>
+#include <string.h>
 
 #define DWORD unsigned int
 #define BYTE unsigned char

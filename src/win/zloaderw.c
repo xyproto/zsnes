@@ -19,6 +19,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <direct.h>
 
 extern void zstart(void);
 extern void DosExit(void);
