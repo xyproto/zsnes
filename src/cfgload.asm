@@ -636,9 +636,9 @@ db '; Stereo Reversed.  Swaps left channel with right. (0 = off, 1 = L <-> R)',1
 db '',13,10
 db 'ReverseStereo = %s',13,10
 db '',13,10
+%ifdef __MSDOS__
 db '; GUI Disable (1 = Disable GUI, 0 = Enable GUI)',13,10
 db '',13,10
-%ifdef __MSDOS__
 db 'GUIDisable = %Y',13,10
 db '',13,10
 %endif
@@ -670,9 +670,9 @@ db '; Force 8-bit sound on  (1 = Yes, 0 = No)',13,10
 db '',13,10
 db 'Force8bit = %c',13,10
 db '',13,10
+%endif
 db '; Disable Echo  (1 = Yes, 0 = No)',13,10
 db '',13,10
-%endif
 db 'EchoDisable = %r',13,10
 db '',13,10
 db '; Sound Volume Level (0 .. 100)',13,10
