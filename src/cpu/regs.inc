@@ -354,7 +354,7 @@ NEWSYM compmult,  dd 0             ; Complement Multiplication for Mode 7
 NEWSYM joyalt,    db 0             ; temporary joystick alternation
 
 NEWSYM wramrwadr, dd 0             ; continuous read/write to wram address
-NEWSYM dmadata, times 129 db 0h  ; dma data (written from ports 43xx)
+NEWSYM dmadata, times 129 db 0FFh  ; dma data (written from ports 43xx)
 NEWSYM irqon,     db 0             ; if IRQ has been called (80h) or not (0)
 NEWSYM nexthdma,  db 0             ; HDMA data to execute once vblank ends
 NEWSYM curhdma,   db 0             ; Currently executed hdma
