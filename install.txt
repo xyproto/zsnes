@@ -76,7 +76,7 @@ You'll also need :
                                    or go to the page above
                                    
 Then to build the executable, go to the src directory and type:
-make -f makefile.win
+make -f makefile.linux
 
 You may also want to compress the zsnes executable with upx (http://upx.tsx.org)
 , it will divide its size by 10.
