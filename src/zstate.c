@@ -176,11 +176,6 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
       copy_func(&buffer, &tempebp, 4);
     }
   }
-  else
-  {
-    spcnumread = 0;
-    spchalted = 0xFFFFFFFF;
-  }
 }
 
 static void memcpyinc(unsigned char **dest, void *src, size_t len)
