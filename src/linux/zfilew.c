@@ -230,7 +230,7 @@ DWORD ZFileTell()
 {
 	int res = 0;
 	if (TextFile) {
-		res = gztell(FILEHANDLE[ZFileTellHandle]);
+		res = ftell(FILEHANDLE[ZFileTellHandle]);
 		if (res == -1) fprintf(stderr, "Oups!! gzTell\n");
 		return(res);
 	} else return gztell(FILEHANDLE[ZFileTellHandle]);

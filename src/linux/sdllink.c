@@ -420,13 +420,13 @@ BOOL InitInput()
 {
 #ifdef __LINUX__ // AH	
 	InitJoystickInput();
-	InputAcquire();
+	//InputAcquire();
 #endif // __LINUX__
    return TRUE;
 
 }
 
-int SurfaceLocking;
+int SurfaceLocking = 0;
 
 void TestJoy()
 {
