@@ -1957,7 +1957,6 @@ NEWSYM StartGUI
     pushad
     mov dword[CBackupPos],0
     call BackupCVFrame
-    emms
     popad
 
     call DisableSUDPPacket
@@ -2345,10 +2344,6 @@ NEWSYM StartGUI
     pushad
     mov dword[PBackupPos],0
     call RestoreCVFrame
-    mov esi,[tempesi]
-    mov edi,[tempedi]
-    mov ebp,[tempebp]
-    emms
     popad
 .norestoreval
 
