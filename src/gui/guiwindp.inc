@@ -5258,7 +5258,7 @@ DisplayGUIAbout:
     ret
 
 SECTION .data
-GUIGUIAboutText1 db 'ZSNES V',ZVERSION,0
+GUIGUIAboutText1 db 'ZSNES V',ZVERSION,' CVS',0
 GUIGUIAboutText2 db 'CODED BY :  ',0
 GUIGUIAboutText3 db '    ZSKNIGHT',0
 GUIGUIAboutText4 db '    _DEMO_',0
