@@ -1117,8 +1117,8 @@ reg43XXr:
     ret
 
 regINVALID:     ; Invalid Register
-    cmp cx,2000h
-    je .cleared
+    cmp cx,2050h
+    jb .cleared
     mov al,ch
     cmp byte[SPC7110Enable],0
     je .nospc7110
