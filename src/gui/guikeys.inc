@@ -1544,6 +1544,12 @@ GUIPathKeys:
     ret
 .notbackspace
     
+    cmp dh,13    ;Enter
+    jne .notenter
+    mov dword[GUIInputBox],0
+    ret
+.notenter
+
     ;check if we're at the end
     add ecx,dword[GUIInputLimit]
     cmp eax,ecx
