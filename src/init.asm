@@ -1411,6 +1411,11 @@ NEWSYM headerhack
     mov dword[WindowDisables],0
     mov byte[ClearScreenSkip],0
 
+    cmp byte[DSP1Type],0
+    je .notdis
+    mov byte[disablehdma],1
+.notdis
+
     ; Here are the individual game hacks.  Some of these probably can
     ;   be removed since many of them were created very early in ZSNES
     ;   development.
