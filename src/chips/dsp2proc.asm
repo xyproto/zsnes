@@ -138,7 +138,7 @@ SECTION .text
 ;*******************************************************
 %macro CommandJmp 2
     cmp al,%1
-    je %2
+    je near %2
 %endmacro
 
 %macro DevWriteX 1
@@ -246,7 +246,7 @@ NEWSYM DSP2Write8b
 .enter
     ; Tests halt flag
     test byte[dsp2state],DSP2F_HALT
-    jnz .halt
+    jnz near .halt
 
     ; *** Locates current predicator store
     mov byte[dsp2input],al
@@ -263,7 +263,7 @@ NEWSYM DSP2Write8b
     jnz .noaddrchk
     ; *** Tests whether cx points expected address
     cmp [dsp2enforcer+4],cx
-    jne .gohalt
+    jne near .gohalt
 .noaddrchk
     ; *** Reads next inside command should be proceeded
     mov al,[dsp2enforcer]
@@ -300,7 +300,7 @@ NEWSYM DSP2Write8b
     mov byte[dsp2f0dSizeNew],al
 
     test al,al
-    jz .gohalt
+    jz near .gohalt
 
     xor ecx,ecx
     xor eax,eax
@@ -332,7 +332,7 @@ NEWSYM DSP2Write8b
     mov byte[dsp2f0dSizeOrg],al
 
     test al,al
-    jz .gohalt
+    jz near .gohalt
 
     mov dword[dsp2enforcer+0],0Ah
     mov dword[dsp2enforcer+4],8000h
@@ -374,7 +374,7 @@ NEWSYM DSP2Write8b
     EnterInsideCommand 6
 
     cmp byte[dsp2input],0
-    je .gohalt
+    je near .gohalt
 
     xor eax,eax
     xor ecx,ecx
@@ -435,7 +435,7 @@ NEWSYM DSP2Write8b
     EnterInsideCommand 3
 
     cmp byte[dsp2input],0
-    je .gohalt
+    je near .gohalt
 
     xor eax,eax
 .w03aloop

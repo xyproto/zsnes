@@ -5621,7 +5621,7 @@ SECTION .text
     call BlinkCursorCheck
     cmp ebx,%4
     pop ebx
-    jne %%fixreg
+    jne near %%fixreg
     cmp byte[GUIBlinkCursor],' '
     je %%three
     mov byte[GUIBlinkCursor],' '

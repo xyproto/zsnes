@@ -167,22 +167,26 @@ void CheckIntl1(unsigned char *ROM)
   }
 }
 
+void SwapData(unsigned int *loc1, unsigned int *loc2, unsigned int amount)
+{
+  unsigned int temp, i;
+  for (i = 0; i < amount; i++)
+  {
+    temp = loc1[i];
+    loc1[i] = loc2[i];
+    loc2[i] = temp;
+  }
+}
+
 void CheckIntlEHi(unsigned char *ROM)
 {
   if (EHiHeader(ROM, Lo))
   {
-    unsigned int temp, i, oldNumBanks = NumofBanks,
-                *loc1 = romdata,
-                *loc2 = romdata + ((NumofBytes - 0x400000)/4);
+    unsigned int oldNumBanks = NumofBanks;
 
     //Swap 4MB ROM with the other one
-    for (i = 0; i < 0x100000; i++)
-    {
-      temp = loc1[i];
-      loc1[i] = loc2[i];
-      loc2[i] = temp;
-    }
-
+    SwapData(romdata, romdata+((NumofBytes-0x400000)/4), 0x100000);
+    
     //Deinterleave the 4MB ROM first
     NumofBanks = 128;
     deintlv1();
@@ -216,24 +220,8 @@ void intlv1()
 //This is a mess, I wish we didn't need this, but it kicks the old asm code
 void IntlEHi()
 {
-  unsigned int temp, i,
-                *loc1 = romdata,
-                *loc2 = romdata + 0x100000;
-
-    for (i = 0; i < 0x80000; i++)
-    {
-      temp = loc1[i];
-      loc1[i] = loc2[i];
-      loc2[i] = temp;
-    }
-    loc1 = romdata + 0x80000;
-    loc2 = romdata + 0x100000;
-    for (i = 0; i < 0x80000; i++)
-    {
-      temp = loc1[i];
-      loc1[i] = loc2[i];
-      loc2[i] = temp;
-    }
+  SwapData(romdata, romdata + 0x100000, 0x80000);
+  SwapData(romdata + 0x80000, romdata + 0x100000, 0x80000);
     
   NumofBanks = 64;
   intlv1();
@@ -1467,7 +1455,7 @@ void SPC7_Convert_Upper()
   char *i = SPC7110filep;
   while (*i)
   {
-    if (islower(*i)) { *i = toupper(*i); } //To make extension Upper case
+    *i = toupper(*i); //To make extension Upper case
     i++;
   }
 }
@@ -1477,7 +1465,7 @@ void SPC7_Convert_Lower()
   char *i = SPC7110filep;
   while (*i)
   {
-    if (isupper(*i)) { *i = tolower(*i); } //To make everything Lower case
+    *i = tolower(*i); //To make everything Lower case
     i++;
   }
 }

@@ -2194,7 +2194,7 @@ DisplayGUIInputClick:
     mov eax,dword[keycontrolval]
     cmp dword[eax],0
     pop eax
-    je .lockInputChange
+    je near .lockInputChange
 
     DGOptnsProcBox 45,150,[edi]
     DGOptnsProcBox 45,140,[edi+4]

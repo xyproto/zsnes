@@ -1609,9 +1609,9 @@ SECTION .text
 
 GUIPathKeys:
     cmp dh,0
-    je .nokeypressed
+    je near .nokeypressed
     cmp dword[GUIInputBox],0
-    je .nokeypressed
+    je near .nokeypressed
 
     cmp dword[GUIInputBox],1
     jne .notBox1
