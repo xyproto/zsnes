@@ -1492,7 +1492,7 @@ DWORD SMode=0;
 DWORD DSMode=0;
 extern BYTE GUIWFVID[];
 extern BYTE GUISMODE[];
-extern BYTE GUIDSIZE[];
+extern BYTE GUIDSMODE[];
 extern unsigned short resolutn;
 void clearwin();
 
@@ -1515,7 +1515,7 @@ void initwinvideo(void)
       Y=0;
       FullScreen=GUIWFVID[cvidmode];
       SMode=GUISMODE[cvidmode];
-      DSMode=GUIDSIZE[cvidmode];
+      DSMode=GUIDSMODE[cvidmode];
 
       switch (cvidmode)
       {
@@ -1699,12 +1699,25 @@ void initwinvideo(void)
       BlitArea.left = 0;
       BlitArea.right = SurfaceX;
 
-     if (FullScreen == 0 && DSMode == 0)
-         BlitArea.bottom = (SurfaceY/240)*resolutn;
-     else
-         BlitArea.bottom = SurfaceY;
 
-      if (PrevRes == 0) PrevRes = resolutn;
+     if (FullScreen == 0)
+     {
+        if (SurfaceX == 256) BlitArea.bottom = (SurfaceY/240)*resolutn;
+        if (SurfaceX == 512)
+        {
+           BlitArea.bottom = (SurfaceY/240)*resolutn;
+           if (DSMode == 1) BlitArea.bottom = SurfaceY;
+        }
+     }
+     else
+     {
+        if (SMode == 1)
+           BlitArea.bottom = (SurfaceY/240)*resolutn;
+        else
+           BlitArea.bottom = SurfaceY;
+     }
+
+     if (PrevRes == 0) PrevRes = resolutn;
 
    }
 
@@ -2092,18 +2105,18 @@ void drawscreenwin(void)
 
    if (resolutn == 224 && FullScreen == 0 && PrevRes != resolutn)
    {
-      if (DSMode == 0) BlitArea.bottom = (SurfaceY/240)*224;
-         else BlitArea.bottom = SurfaceY;
-      if (SMode == 0) WindowHeight = (WindowHeight/239)*224;
+      BlitArea.bottom = (SurfaceY/240)*224;
+      if (SurfaceX == 512 && DSMode == 1) BlitArea.bottom = SurfaceY;
+      if ((SurfaceX == 256 || SurfaceX == 512) && (SMode == 0 && DSMode == 0)) WindowHeight = (WindowHeight/239)*224;
       initwinvideo();
       PrevRes = resolutn;
    }
 
    if (resolutn == 239 && FullScreen == 0 && PrevRes != resolutn)
    {
-      if (DSMode == 0) BlitArea.bottom = (SurfaceY/240)*224;
-         else BlitArea.bottom = SurfaceY;
-      if (SMode == 0) WindowHeight = (WindowHeight/239)*224;
+      BlitArea.bottom = (SurfaceY/240)*239;
+      if (SurfaceX == 512 && DSMode == 1) BlitArea.bottom = SurfaceY;
+      if ((SurfaceX == 256 || SurfaceX == 512) && (SMode == 0 && DSMode == 0)) WindowHeight = (WindowHeight/224)*239;
       initwinvideo();
       PrevRes = resolutn;
    }
