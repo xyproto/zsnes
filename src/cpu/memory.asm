@@ -655,6 +655,7 @@ NEWSYM C4ProcessSprites
 NEWSYM SprValAdd, db 0
 C4Data dd 0
 C4sprites dd 0
+OBClog dd 0
 
 NEWSYM InitOBC
     pushad
@@ -673,6 +674,145 @@ NEWSYM InitOBC
     add esi,4
     dec ecx
     jnz .c4loop
+    mov esi,[romdata]
+    add esi,4096*1024
+    mov dword[esi+3A1Eh*4],OBCClear
+    mov dword[esi+3FF0h*4],OBCRegs
+    mov dword[esi+3FF1h*4],OBCRegs
+    mov dword[esi+3FF2h*4],OBCRegs
+    mov dword[esi+3FF3h*4],OBCRegs
+    mov dword[esi+3FF4h*4],OBCRegs
+    mov dword[esi+3FF5h*4],OBCRegs
+    mov dword[esi+3FF6h*4],OBCRegs
+    mov dword[esi+3FF7h*4],OBCRegs
+    popad
+    ret
+
+OBCSprites:
+    pushad
+    mov esi,[C4Ram]
+    mov edi,esi
+    add edi,1800h
+    add byte[OBCRegArray],1
+    and byte[OBCRegArray],0FEh
+.loop
+    cmp byte[OBCRegArray],0
+    je .nomore
+    sub byte[OBCRegArray],2
+    xor ebx,ebx
+    mov bl,[esi+6]
+    shl ebx,2
+
+    ; Get X,Y,OAM, and Attr
+    mov al,[esi+3]         ;0,3
+    mov [edi+ebx],al
+    mov al,[esi+9]
+    mov [edi+ebx+1],al
+    mov al,[esi+10]       ;2,10
+;    cmp byte[esi+18],0
+;    je .zero
+;    mov al,[esi+17]
+;    mov [edi+ebx+1],al
+;    mov al,[esi+18]
+;.zero
+    mov [edi+ebx+2],al
+    mov al,[esi+0Bh]
+    mov byte[edi+ebx+3],al
+
+    xor ebx,ebx
+    mov bl,[esi+6]
+    shr ebx,2
+    add ebx,512
+    mov cl,[esi+6]
+    and cl,03h
+    add cl,cl
+
+    xor al,al
+    mov ah,0FCh
+    mov al,byte[esi+4]   ;1,4
+    and al,03h
+    shl al,cl
+    rol ah,cl
+    and byte[edi+ebx],ah
+    or byte[edi+ebx],al
+
+    add esi,16
+    jmp .loop
+.nomore
+    popad
+    ret
+
+OBCClear:
+    call OBCSprites
+    mov dword[OBCRegArray],0
+    mov dword[OBCRegArray+4],0
+    mov byte[OBCRegArray],0FFh
+    mov byte[clearmem],1
+    mov dword[OBClog],0
+    ret
+
+; Affected values: 0,1,2,3,4,6,7,9,A,B
+; 0,1 - Another X value?
+; 2   - OAM value?
+; 3/4 - X value (bits 0-8)
+; 6   - OAM #
+; 7   - Always 0?
+; 9   - Y value (bits 0-7)
+; A   - OAM value?
+; B   - OAM Status
+; X,Y,OAM,Attr / xhighbit / OAM highbit / Sprite size
+;bit 0 = OAM b8, bit 1-3 = palette number bit 4,5 = playfield priority
+;bit 6   = horizontal flip bit 7   = horizonal flip
+; Extra: bit 0 = X bit 8, bit 1 = Larger sprite size
+
+OBCRegArray times 8 db 0
+OBCIncArray db 2,1,1,1,2,2,2,2
+clearmem db 0
+
+OBCRegs:
+    pushad
+    sub ecx,1FF0h
+    mov ebx,[C4Ram]
+    add ebx,1000h
+    add ebx,[OBClog]
+    inc dword[OBClog]
+    mov [ebx],cl
+    cmp cl,6
+    jne .notsix
+    add byte[OBCRegArray],1
+    mov bl,[OBCRegArray]
+    mov bh,bl
+    mov [OBCRegArray+1],bl
+    mov [OBCRegArray+2],bx
+    mov [OBCRegArray+4],bx
+    mov [OBCRegArray+6],bx
+.notsix
+    cmp byte[clearmem],0
+    je near .noclearmem
+    mov ebx,[C4Ram]
+    mov edx,1000h
+.next
+    mov byte[ebx],0
+    inc ebx
+    dec edx
+    jnz .next
+    mov byte[clearmem],0
+.noclearmem
+    xor ebx,ebx
+    mov bl,[OBCRegArray+ecx]
+;    mov dl,[OBCIncArray+ecx]
+    or byte[OBCRegArray+ecx],1
+    shl ebx,3
+    add ecx,ebx
+    add ecx,[C4Ram]
+    mov byte[ecx],al
+;    cmp dl,1
+;    jne .second
+;    mov byte[ecx+8],0FFh
+;    jmp .first
+;.second
+;    mov byte[ecx+16],0FFh
+;.first
     popad
     ret
 
