@@ -17,63 +17,12 @@
 
 
 #include <windows.h>
-#include <wsipx.h>
-#include <wsnwlink.h>
 
-void ipx_init() {
-int          iAdapters,iOpt=sizeof(iAdapters),iSize=sizeof(SOCKADDR_IPX);
-SOCKET       skNum;
-SOCKADDR_IPX Addr;
-WSADATA      Wsa;
-
-// Init Winsock and get IPX address
-
-if (WSAStartup(0x0101,&Wsa)) return;
-if ((skNum=socket(AF_IPX,SOCK_DGRAM,NSPROTO_IPX)) != INVALID_SOCKET)
-   {
-   memset(&Addr,0,sizeof(Addr));
-   Addr.sa_family=AF_IPX;
-   if (bind(skNum,(SOCKADDR *)&Addr,iSize)!=SOCKET_ERROR)
-      {
-      if (getsockopt(skNum,NSPROTO_IPX,IPX_MAX_ADAPTER_NUM,
-                     (char *)&iAdapters,&iOpt)!=SOCKET_ERROR)
-         {
-         while(iAdapters)
-            {
-            IPX_ADDRESS_DATA Data;
-            memset(&Data,0,sizeof(Data));
-            Data.adapternum=iAdapters-1;
-            iOpt=sizeof(Data);
-            if (getsockopt(skNum,NSPROTO_IPX,IPX_ADDRESS, (char *) &Data, 
-                &iOpt)!=SOCKET_ERROR)
-               {
-//               sprintf("Addr: %02X%02X%02X%02X:%02X%02X%02X%02X%02X%02X\n",
-//               (int)Data.netnum[0],(int)Data.netnum[1],(int)Data.netnum[2],
-//               (int)Data.netnum[3],(int)Data.netnum[4],(int)Data.netnum[5],
-//               (int)Data.netnum[6],(int)Data.netnum[7],(int)Data.netnum[8],
-//               (int)Data.netnum[9]);
-               }
-            iAdapters--;
-            }
-         }
-      }
-   closesocket(skNum);
-   }
-WSACleanup();
-
-}
-
-void sendpacket() {
-}
-
-void checkpacket() {
-}
-
-void read_packet() {
-}
-
-void ipx_deinit() {
-}
+void ipx_init(){};
+void sendpacket(){};
+void checkpacket(){};
+void read_packet(){};
+void ipx_deinit(){};
 
 unsigned short ipx_initcode;
 unsigned int ipx_packet;
