@@ -46,8 +46,8 @@ namespace JMA
   
   struct jma_file_info : jma_file_info_base
   {
-    unsigned int date;
-    unsigned int time;
+    unsigned short date;
+    unsigned short time;
     const unsigned char *buffer;
   };
 

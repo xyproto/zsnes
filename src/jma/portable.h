@@ -62,6 +62,7 @@ template <class T> inline T MyMax(T a, T b) {
 
 
 #define UINT_SIZE (4)
+#define USHORT_SIZE (2)
 
 //Convert an array of 4 bytes back into an integer
 inline unsigned int charp_to_uint(const unsigned char buffer[UINT_SIZE])
@@ -70,6 +71,14 @@ inline unsigned int charp_to_uint(const unsigned char buffer[UINT_SIZE])
   num |= ((unsigned int)buffer[2]) << 8;
   num |= ((unsigned int)buffer[1]) << 16;
   num |= ((unsigned int)buffer[0]) << 24;
+  return(num);
+}
+
+//Convert an array of 2 bytes back into a short integer
+inline unsigned short charp_to_ushort(const unsigned char buffer[USHORT_SIZE])
+{
+  unsigned short num = (unsigned short)buffer[1];
+  num |= ((unsigned short)buffer[0]) << 8;
   return(num);
 }
 

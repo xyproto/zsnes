@@ -29,10 +29,11 @@ namespace JMA
   const char jma_magic[] = { 'J', 'M', 'A', 0, 'N' };
   const unsigned int jma_header_length = 5;  
   const unsigned char jma_version = 0;
-  const unsigned char jma_null = 0;
+  const unsigned int jma_version_length = 1;
+  const unsigned int jma_total_header_length = jma_header_length + jma_version_length + UINT_SIZE;
   
   //Convert zip/JMA integer time to to time_t
-  time_t uint_to_time(unsigned int date, unsigned int time)
+  time_t uint_to_time(unsigned short date, unsigned short time)
   {
     tm formatted_time;
   
@@ -47,7 +48,6 @@ namespace JMA
   }
     
   
-  
   //Retreive the file block, what else?
   void jma_open::retrieve_file_block() throw(jma_errors)
   {
@@ -61,9 +61,9 @@ namespace JMA
     //Currently at the end of the file, so that's the file size
     size_t jma_file_size = stream.tellg();
     
-    //The file block can't be larger than the JMA file.
+    //The file block can't be larger than the JMA file without it's header.
     //This if can probably be improved
-    if (file_block_size >= jma_file_size)
+    if (file_block_size >= jma_file_size-jma_total_header_length)
     {
       throw(JMA_BAD_FILE);
     }
@@ -74,7 +74,10 @@ namespace JMA
     jma_file_info file_info;
     char byte;
     
-    while (file_block_size)
+    //Minimum file name length is 2 bytes, a char and a null
+    //Minimum comment length is 1 byte, a null
+    //There are currently 2 UINTs and 2 USHORTs per file
+    while (file_block_size > 2+1+UINT_SIZE*2+USHORT_SIZE*2) //This does allow for a gap, but that's okay
     {
       //First stored in the file block is the file name null terminated
       file_info.name = "";
@@ -112,20 +115,21 @@ namespace JMA
       
       //Special UINT representation of file's date
       stream.read((char *)uint_buffer, UINT_SIZE);
-      file_info.date = charp_to_uint(uint_buffer);
+      file_info.date = charp_to_ushort(uint_buffer);
       
       //Special UINT representation of file's time
       stream.read((char *)uint_buffer, UINT_SIZE);
-      file_info.time = charp_to_uint(uint_buffer);
+      file_info.time = charp_to_ushort(uint_buffer);
       
       file_info.buffer = 0; //Pointing to null till we decompress files
       
       files.push_back(file_info); //Put file info into our structure
       
       //Subtract size of the file info we just read
-      file_block_size -= file_info.name.length()+file_info.comment.length()+2+UINT_SIZE*4;    
+      file_block_size -= file_info.name.length()+file_info.comment.length()+2+UINT_SIZE*2+USHORT_SIZE*2;
     }
   }
+
   
   //Constructor for opening JMA files for reading
   jma_open::jma_open(const char *compressed_file_name) throw (jma_errors) 
@@ -198,7 +202,7 @@ namespace JMA
     }
    
     //Move forward over header
-    stream.seekg(10, ios::beg);
+    stream.seekg(jma_total_header_length, ios::beg);
 
     unsigned char int4_buffer[UINT_SIZE]; 
     
