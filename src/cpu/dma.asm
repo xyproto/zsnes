@@ -23,7 +23,7 @@ EXTSYM memtablew8,regptr
 EXTSYM dmadata
 EXTSYM hdmatype
 EXTSYM nexthdma
-EXTSYM curhdma,curypos,hdmadata,hdmadelay,hdmaearlstart
+EXTSYM curhdma,curypos,hdmadata,hdmadelay,hdmaearlstart,nohdmaoff
 EXTSYM resolutn
 EXTSYM memtabler16
 
@@ -856,6 +856,10 @@ NEWSYM reg420Cw
     pop ebx
 ;    call exechdma
 ;    call exechdma
+    cmp byte[hdmaearlstart],2
+    je .nohdma
+    cmp byte[nohdmaoff],1
+    je .nohdma
     mov byte[hdmaoff],1
 .nohdma
     mov byte[hdmarestart],0
