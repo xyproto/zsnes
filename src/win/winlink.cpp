@@ -2080,7 +2080,7 @@ void drawscreenwin(void)
       switch (BitDepth)
       {
          case 16:
-             if (FPUCopy){
+             if (FPUCopy == 2) {
                   _asm {
                      push es
                      mov ax,ds
@@ -2208,7 +2208,7 @@ void drawscreenwin(void)
       switch (BitDepth)
       {
          case 16:
-             if (FPUCopy){
+             if (FPUCopy == 2) {
                   _asm {
                      push es
                      mov ax,ds
