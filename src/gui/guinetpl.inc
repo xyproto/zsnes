@@ -1462,6 +1462,10 @@ transfersram:
 
     ; send sram
     mov ecx,[ramsize]
+    cmp byte[SFXEnable],1
+    jne .notsfx
+    mov ecx,65536
+.notsfx    
     mov ebx,[sram]
     xor esi,esi
 .loop
