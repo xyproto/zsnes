@@ -2670,6 +2670,8 @@ NEWSYM copyvesa2320x240x16b
     mov dl,[resolutn]
     dec dl
     dec dl
+    cmp byte[ScreenScale],1
+    je near .fullscreen
     cmp byte[GUIOn],1
     jne .nogui
     cmp byte[FilteredGUI],1
@@ -2678,8 +2680,6 @@ NEWSYM copyvesa2320x240x16b
     cmp byte[antienab],1
     je near .interpolate
 .nointerp
-    cmp byte[ScreenScale],1
-    je near .fullscreen
     cmp byte[MMXSupport],1
     je near .loopb
 .loopa
@@ -3061,6 +3061,14 @@ NEWSYM copyvesa2320x480x16b
     dec dl
     cmp byte[ScreenScale],1
     je near .fullscreen
+    cmp byte[GUIOn],1
+    jne .nogui
+    cmp byte[FilteredGUI],1
+    jne .nointerp
+.nogui
+    cmp byte[antienab],1
+    je near .interpolate
+.nointerp
     cmp byte[scanlines],1
     je near .scanlines
     cmp byte[scanlines],3
@@ -3332,6 +3340,60 @@ NEWSYM copyvesa2320x480x16b
     movsd
     dec ecx
     jnz .fsloopb
+    ret
+    
+.interpolate
+    cmp byte[scanlines],1
+    je .inloopb
+.inloopa
+    call .inloopc
+    sub esi,256*2
+    add edi,64*2
+    call .inloopc
+    add esi,32*2
+    add edi,64*2
+    dec dl
+    jnz .inloopa
+    jmp .done
+.inloopb
+    call .inloopc
+    add esi,32*2
+    add edi,32*2+320*2+32*2
+    dec dl
+    jnz .inloopb
+    jmp .done
+.inloopc
+    mov bx,[esi]
+    mov ecx,254
+    mov ax,[esi+2]
+    add esi,byte 2
+    mov [es:edi],bx
+    add edi,byte 2
+    call .inloopc2
+    mov ax,[esi]
+    add esi,byte 2
+    mov [es:edi],ax
+    add edi,byte 2
+    ret
+.inloopc2
+    push eax
+    mov ebp,[esi+2]
+    shr eax,byte 1
+    push ebp
+    shr ebx,byte 2
+    and eax,7befh
+    shr ebp,byte 2
+    and ebx,39e7h
+    add eax,ebx
+    and ebp,39e7h
+    add eax,ebp
+    mov [es:edi],ax
+    pop eax
+    pop ebx
+    add esi,byte 2
+    add edi,byte 2
+    dec ecx
+    jnz .inloopc2
     ret
 
 .done
