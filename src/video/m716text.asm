@@ -24,11 +24,6 @@ EXTSYM vesa2_clbit,vram,vrama,winon,xtravbuf,winptrref,scaddset
 EXTSYM fulladdtab
 EXTSYM cwinptr
 
-NEWSYM M716TExtAsmStart
-
-
-
-
 ;*******************************************************
 ; Processes & Draws Mode 7
 ;*******************************************************
@@ -670,7 +665,7 @@ NEWSYM M716TExtAsmStart
     jnz near .offscrtrc
     jmp .goon
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 .temp        resd 1       ; for byte move left
 .mode7xpos   resd 1       ; x position
 .tempa2      resd 1       ; keep this blank!
@@ -998,4 +993,4 @@ extbg2sub:
     cmp dh,1
     jne near domosaic16b
     ret
-NEWSYM M716TExtAsmEnd
+

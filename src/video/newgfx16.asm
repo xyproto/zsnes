@@ -65,8 +65,6 @@ EXTSYM NGNumSpr
 EXTSYM fulladdtab
 EXTSYM MMXSupport,bgtxadd2
 
-NEWSYM NewGfx16AsmStart
-
 %include "video/vidmacro.mac"
 %include "video/newgfx16.mac"
 %include "video/newg162.mac"
@@ -906,29 +904,22 @@ NEWSYM newengine16b
     mov byte[bgallchange+eax],1
 .noscads
 
-    ; Windowing Stuff
-;NEWSYM winl1,     db 0             ; window 1 left position
-;NEWSYM winr1,     db 0             ; window 1 right position
-;NEWSYM winl2,     db 0             ; window 2 left position
-;NEWSYM winr2,     db 0             ; window 2 right position
-;NEWSYM winbg1en,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG1
-;NEWSYM winbg2en,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG2
-;NEWSYM winbg3en,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG3
-;NEWSYM winbg4en,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG4
-;NEWSYM winobjen,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on sprites
-;NEWSYM wincolen,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on backarea
-;NEWSYM winlogica, db 0             ; Window logic type for BG1 to 4
-;NEWSYM winlogicb, db 0             ; Window logic type for Sprites and Backarea
-;NEWSYM winenabm,  db 0             ; Window logic enable for main screen
-;NEWSYM winenabs,  db 0             ; Window logic enable for sub screen
-
-;NEWSYM winboundary, times 256 dd 0
-;NEWSYM winbg1enval, times 256 db 0
-;NEWSYM winbg2enval, times 256 db 0
-;NEWSYM winbg3enval, times 256 db 0
-;NEWSYM winbg4enval, times 256 db 0
-;NEWSYM winbgobjenval, times 256 db 0
-;NEWSYM winlogicaval, times 256 dw 0
+; Windowing Stuff
+;NEWSYM winl1,      0             ; window 1 left position
+;NEWSYM winr1,      0             ; window 1 right position
+;NEWSYM winl2,      0             ; window 2 left position
+;NEWSYM winr2,      0             ; window 2 right position
+;NEWSYM winbg1en,   0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG1
+;NEWSYM winbg2en,   0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG2
+;NEWSYM winbg3en,   0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG3
+;NEWSYM winbg4en,   0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG4
+;NEWSYM winobjen,   0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on sprites
+;NEWSYM wincolen,   0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on backarea
+;NEWSYM winlogica,  0             ; Window logic type for BG1 to 4
+;NEWSYM winlogicb,  0             ; Window logic type for Sprites and Backarea
+;NEWSYM winenabm,   0             ; Window logic enable for main screen
+;NEWSYM winenabs,   0             ; Window logic enable for sub screen
+ 
     mov byte[bgwinchange+eax],0
     cmp byte[disableeffects],1
     je near .finishwin
@@ -1035,9 +1026,6 @@ NEWSYM newengine16b
     jmp .procnotempty
 .done
     pop eax
-;NEWSYM objwlrpos  , times 256 dd 0
-;NEWSYM objwen     , times 256 dw 0    ; en,log
-;NEWSYM objclineptr, times 256 dd 0    ; l1,r1,l2,r2,en,log,ptr
     jmp .skipobjw
 .usecurrent
     mov ecx,[objclineptr+eax*4]
@@ -2406,7 +2394,6 @@ NEWSYM drawbg4linepr116b
 %macro normalwsprng16b 2
 ;    cmp byte[winbg1enval+eax+4*256],0
 ;    je near .skipobjw
-;NEWSYM objclineptr, times 256 dd 0    ; l1,r1,l2,r2,en,log,ptr
     xor eax,eax
     mov [NGNumSpr],cl
     mov ecx,[objclineptr+ebx*4]

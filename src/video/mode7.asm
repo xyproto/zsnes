@@ -25,8 +25,6 @@ EXTSYM pesimpng
 EXTSYM mode7hr
 EXTSYM BGMA, mode7ab, mode7cd, BG1SYl, BG1SXl, mosenng, mosszng
 
-
-NEWSYM Mode7AsmStart
 %include "video/mode7.mac"
 
 
@@ -72,8 +70,6 @@ NEWSYM Makemode7Table
     dec ax
     jnz .nextentry
     ret
-
-;mode7tab times 65536 db 0
 
 ; backup mode7X0, mode7Y0, Mode7A, and Mode7B
 NEWSYM drawmode7
@@ -827,4 +823,3 @@ NEWSYM processmode7hires
     pop esi
 .nogo
     ret
-NEWSYM Mode7AsmEnd

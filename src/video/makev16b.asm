@@ -51,7 +51,6 @@ EXTSYM ofsmcptr,ofsmady,ofsmadx,yposng,yposngom,flipyposng,flipyposngom
 EXTSYM ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
 EXTSYM a16x16xinc,a16x16yinc
 
-NEWSYM MakeV16BAsmStart
 %include "video/vidmacro.mac"
 
 
@@ -969,11 +968,6 @@ NEWSYM setpalette16b
     call dovegrest
 .noveg2
     ret
-
-;pal16b   times 256 dw 0
-;pal16bcl times 256 dw 0         ; w/ cl bit
-;pal16bclha times 256 dw 0         ; w/ cl bit
-;pal16bxcl times 256 dw 0FFFFh         ; xored w/ cl bit
 
 NEWSYM setpalallgamma
     xor esi,esi
@@ -3091,4 +3085,3 @@ draw16x1616bwinon:
     jne near domosaic16b
     ret
 
-NEWSYM MakeV16BAsmEnd

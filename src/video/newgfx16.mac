@@ -2068,7 +2068,6 @@ EXTSYM osm2dis
     jz %%nowindowing
     push eax
     push ebx
-;NEWSYM winlogicaval, times 256 dw 0
     mov al,[winlogicaval+ebx*2]
     shr al,%1*2
     and al,03h

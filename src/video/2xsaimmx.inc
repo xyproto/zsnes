@@ -2035,7 +2035,7 @@ end1:
 ;-------------------------------------------------------------------------
 ;-------------------------------------------------------------------------
 
-	SECTION .data
+SECTION .data
 ;Some constants
 colorMask     dd 0xF7DEF7DE, 0xF7DEF7DE
 lowPixelMask  dd 0x08210821, 0x08210821
@@ -2048,7 +2048,7 @@ TRUE          dd 0xffffffff, 0xffffffff
 ONE           dd 0x00010001, 0x00010001
 
 
-        SECTION .bss
+SECTION .bss
 ACPixel       resb 8
 Mask1         resb 8
 Mask2         resb 8

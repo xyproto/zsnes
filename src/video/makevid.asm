@@ -41,8 +41,6 @@ EXTSYM tempoffset,vidmemch2,vidmemch4,vidmemch8
 EXTSYM ofsmcptr,ofsmady,ofsmadx,yposng,yposngom,flipyposng,flipyposngom
 EXTSYM ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
 
-NEWSYM MakeVidAsmStart
-
 %include "video/vidmacro.mac"
 
 
@@ -738,10 +736,6 @@ NEWSYM dualwinxnor
     ret
 
 SECTION .bss
-;pwinspenab db 0
-;pwinsptype dd 0
-;winonstype db 0
-;dualwinsp  db 0
 NEWSYM winonsp, resb 1
 SECTION .text
 
@@ -3607,9 +3601,6 @@ NEWSYM domosaicwin
 .doneloop
     ret
 
-;windowdata times 16 db 0
-;numwin db 0
-
 NEWSYM dowindow
     mov ebx,windowdata
     mov esi,xtravbuf+16
@@ -3670,9 +3661,6 @@ NEWSYM dowindow
 .finishwin
     xor eax,eax
     ret
-
-;xtravbuf   times 576 db 0
-; bytes to add to match y coordinates
 
 ALIGN32
 
@@ -4421,7 +4409,4 @@ NEWSYM temp,       resb 1
 NEWSYM bshifter,   resb 1
 NEWSYM a16x16xinc, resb 1
 NEWSYM a16x16yinc, resb 1
-SECTION .text
 
-
-NEWSYM MakeVidAsmEnd

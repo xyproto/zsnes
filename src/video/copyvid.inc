@@ -2748,18 +2748,6 @@ NEWSYM copyvesa2320x240x16b
     pop es
     ret
 
-;SECTION .bss
-;NEWSYM palresvalng, resd 2
-;NEWSYM palresvalngb, resd 2
-;SECTION .text
-
-;%macro copya320x240 0
-;    mov [es:edi],dx
-;%endmacro
-
-;%macro copyb320x240 0
-;    mov [es:edi+2],dx
-;%endmacro
 %endif
 
 SECTION .bss
@@ -5002,7 +4990,7 @@ MMXInterpolFS:
     pop es
     ret
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 .interpspad resd 8
 SECTION .text
 
@@ -5334,7 +5322,7 @@ SECTION .text
     pop es
     ret
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM InterPtr, resd 1
 SECTION .text
 
@@ -5700,10 +5688,6 @@ SECTION .text
 ;    pop es
 ;    ret
 ;
-;SECTION .bss
-;.scratio resb 1
-;.lastrep resb 1
-;SECTION .text
 
 NEWSYM copyvesa2512x384x16b
     cmp byte[vesa2red10],1

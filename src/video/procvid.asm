@@ -69,9 +69,6 @@ EXTSYM HalfTransB,HalfTransC
 EXTSYM SB_blank
 %endif
 
-
-NEWSYM ProcVidAsmStart
-
 SECTION .bss
 NEWSYM ScreenScale, resb 1        ; If horizontal is scaled or not
 NEWSYM TempDebugV, resw 1       ; Temporary Debugging variable
@@ -1833,7 +1830,7 @@ NEWSYM saveselect
     mov byte[ForceNonTransp],0
     ret
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 .allred resw 1
 .allgrn resw 1
 .allgrnb resw 1
@@ -2248,7 +2245,7 @@ NEWSYM testpressed8b
 ; MakePal                     Changes the entire palette
 ;*******************************************************
 ; set the brightness with [maxbr]
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM cgramback, resw 256
 SECTION .text
 
@@ -2322,7 +2319,7 @@ NEWSYM dovegrest
     popad
     ret
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 blahblahblah resw 1
 SECTION .text
 
@@ -2461,7 +2458,8 @@ NEWSYM makepalb
     call dovegrest
 .noveg2
     ret
-SECTION .bss ;ALIGN=32
+
+SECTION .bss
 NEWSYM tempco0, resw 1
 SECTION .text
 
@@ -2729,7 +2727,7 @@ NEWSYM showfps
     call outputhex
     ret
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM spcdebugaddr, resd 1
 NEWSYM tempoffset, resw 1
 
@@ -3624,7 +3622,7 @@ NEWSYM copyvid
     dec dword[MessageOn]
 .nomsg
     jmp vidpaste
-SECTION .bss ;ALIGN=32
+SECTION .bss
 .sdrawptr resd 1
 SECTION .text
 
@@ -3748,7 +3746,7 @@ NEWSYM vidpaste
     jnz .ssloopb
     jmp .returnfromdraw
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 .SSRedCo resw 1
 SECTION .text
 
@@ -3799,7 +3797,3 @@ db 0,0,0,0,0,1,1,0,0,1,0,0,1,1,0,0,0,0,0,0
 db 0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0
 db 0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0
 db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-
-SECTION .text
-
-NEWSYM ProcVidAsmEnd

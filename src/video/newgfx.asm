@@ -47,8 +47,6 @@ EXTSYM winlogicb
 EXTSYM ngwinptr,objwlrpos,objwen,objclineptr,CSprWinPtr
 EXTSYM WindowRedraw
 
-NEWSYM NewGfxAsmStart
-
 %include "video/vidmacro.mac"
 %include "video/newgfx2.mac"
 %include "video/newgfx.mac"
@@ -367,29 +365,22 @@ NEWSYM newengine8b
     mov ebx,[interlval]
     mov [intrlng+eax],ebx
 
-    ; Windowing Stuff
-;NEWSYM winl1,     db 0             ; window 1 left position
-;NEWSYM winr1,     db 0             ; window 1 right position
-;NEWSYM winl2,     db 0             ; window 2 left position
-;NEWSYM winr2,     db 0             ; window 2 right position
-;NEWSYM winbg1en,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG1
-;NEWSYM winbg2en,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG2
-;NEWSYM winbg3en,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG3
-;NEWSYM winbg4en,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG4
-;NEWSYM winobjen,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on sprites
-;NEWSYM wincolen,  db 0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on backarea
-;NEWSYM winlogica, db 0             ; Window logic type for BG1 to 4
-;NEWSYM winlogicb, db 0             ; Window logic type for Sprites and Backarea
-;NEWSYM winenabm,  db 0             ; Window logic enable for main screen
-;NEWSYM winenabs,  db 0             ; Window logic enable for sub screen
+; Windowing Stuff
+;NEWSYM winl1,      0             ; window 1 left position
+;NEWSYM winr1,      0             ; window 1 right position
+;NEWSYM winl2,      0             ; window 2 left position
+;NEWSYM winr2,      0             ; window 2 right position
+;NEWSYM winbg1en,   0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG1
+;NEWSYM winbg2en,   0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG2
+;NEWSYM winbg3en,   0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG3
+;NEWSYM winbg4en,   0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on BG4
+;NEWSYM winobjen,   0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on sprites
+;NEWSYM wincolen,   0             ; Win1 on (IN/OUT) or Win2 on (IN/OUT) on backarea
+;NEWSYM winlogica,  0             ; Window logic type for BG1 to 4
+;NEWSYM winlogicb,  0             ; Window logic type for Sprites and Backarea
+;NEWSYM winenabm,   0             ; Window logic enable for main screen
+;NEWSYM winenabs,   0             ; Window logic enable for sub screen
 
-;NEWSYM winboundary, times 256 dd 0
-;NEWSYM winbg1enval, times 256 db 0
-;NEWSYM winbg2enval, times 256 db 0
-;NEWSYM winbg3enval, times 256 db 0
-;NEWSYM winbg4enval, times 256 db 0
-;NEWSYM winbgobjenval, times 256 db 0
-;NEWSYM winlogicaval, times 256 dw 0
     mov byte[bgwinchange+eax],0
     cmp byte[disableeffects],1
     je near .finishwin
@@ -492,9 +483,6 @@ NEWSYM newengine8b
     jmp .procnotempty
 .done
     pop eax
-;NEWSYM objwlrpos  , times 256 dd 0
-;NEWSYM objwen     , times 256 dw 0    ; en,log
-;NEWSYM objclineptr, times 256 dd 0    ; l1,r1,l2,r2,en,log,ptr
     jmp .skipobjw
 .usecurrent
     mov ecx,[objclineptr+eax*4]
@@ -890,14 +878,14 @@ NEWSYM BuildWindow
     pop edx
     ret
 
-SECTION .data ;ALIGN=32
+SECTION .data
 NEWSYM firstdrawn, db 0
 
 NEWSYM bgusedng
          dd 01010101h,00010101h,00000101h,00000101h,00000101h,00000101h
          dd 00000001h,00000001h
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM bgcmsung, resd 1
 NEWSYM modeused, resd 2
 NEWSYM reslbyl,  resd 1
@@ -914,7 +902,7 @@ NEWSYM ofsmady,  resd 1
 NEWSYM ofsmadx,  resd 1
 NEWSYM mosoldtab, resd 15
 
-SECTION .data ;ALIGN=32
+SECTION .data
 NEWSYM ngwintable, times 16 dd 0EE00h
 NEWSYM ngwintableb, times 16 dd 0EE00h
 NEWSYM ngwintablec, times 16 dd 0EE00h
@@ -922,7 +910,7 @@ NEWSYM ngwintabled, times 16 dd 0EE00h
 NEWSYM valtemp, dd 0EE00h, 0EE00h
 NEWSYM ngcwinptr, dd ngwintable
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM ngwinen, resd 1
 NEWSYM ngcwinmode, resd 1
 NEWSYM ngcpixleft, resd 1
@@ -935,22 +923,22 @@ NEWSYM cbgval, resd 1
 NEWSYM ofsmval, resd 1
 NEWSYM ofsmvalh, resd 1
 
-SECTION .data ;ALIGN=32
+SECTION .data
 NEWSYM pwinen, dd 0FFFFh
 NEWSYM pngwinen, dd 0FFFFh
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM pwinbound, resd 1
 NEWSYM WinPtrAPos, resd 1
 NEWSYM WinPtrBPos, resd 1
 
-SECTION .data ;ALIGN=32
+SECTION .data
 NEWSYM OrLogicTable, db 0,1,1,0
 NEWSYM AndLogicTable, db 0,0,1,0
 NEWSYM XorLogicTable, db 0,1,0,0
 NEWSYM XNorLogicTable, db 1,0,1,0
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM nglogicval, resd 1
 NEWSYM pnglogicval, resd 1
 NEWSYM mosjmptab, resd 15
@@ -1728,7 +1716,7 @@ NEWSYM drawbg4linepr1
     drawbglinengpr1 3,1
 
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM bgtxadd,  resd 1
 NEWSYM bgcyval,  resd 1
 NEWSYM bgcxval,  resd 1
@@ -2033,9 +2021,6 @@ SECTION .bss
 NEWSYM NGNumSpr, resb 1
 SECTION .text
 
-;    cmp byte[winbg1enval+eax+4*256],0
-;    je near .skipobjw
-;NEWSYM objclineptr, times 256 dd 0    ; l1,r1,l2,r2,en,log,ptr
 NEWSYM drawsprngw
     mov [NGNumSpr],cl
     mov ecx,[objclineptr+ebx*4]
@@ -2361,9 +2346,6 @@ NEWSYM preparesprpr
     mov dword[sprsingle],1
     ret
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM sprclprio,  resd 1
 NEWSYM sprsingle,  resd 1
-SECTION .text
-
-NEWSYM NewGfxAsmEnd

@@ -24,8 +24,6 @@ EXTSYM pal16b,pal16bcl,pal16bxcl,scaddtype,scrnon,transpbuf,drawmode716b
 EXTSYM vesa2_clbit,vram,vrama,winon,xtravbuf,winptrref,scaddset
 EXTSYM fulladdtab
 
-
-NEWSYM Mode716TAsmStart
 %include "video/mode7.mac"
 
 
@@ -363,8 +361,5 @@ NEWSYM drawmode716tb
     mov [cwinptr2],esi
     mode716tmacro mode7mainsub,mode7mainsubwinon
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 cwinptr2 resd 1
-SECTION .text
-
-NEWSYM Mode716TAsmEnd
