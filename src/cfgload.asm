@@ -591,7 +591,7 @@ db ';   20 = 1024x896 R WIN       21 = 1024x896 DR WIN',13,10
 db ';   22 = 1280x960 DR FULL     23 = 1280x960 DS FULL',13,10
 db ';   24 = 800x600 DR FULL      25 = 1024x768 DR FULL',13,10
 db '',13,10
-db 'VideoMode = %U',13,10
+db 'VideoModeWin = %U',13,10
 db '',13,10
 %elifdef __LINUX__
 %ifdef __OPENGL__
@@ -611,9 +611,10 @@ db ';  14 = 800x600  OGL WIN     15 = 1024x768 OGL WIN',13,10
 db ';  16 = VARIABLE OGL WIN',13,10
 %endif
 db '',13,10
-db 'VideoMode = %U',13,10
+db 'VideoModeLin = %U',13,10
 db '',13,10
-%elifdef __MSDOS__
+%endif
+%ifdef __MSDOS__
 db '; Video Mode, 0 - 10',13,10
 db ';   0 = 320x240x256           1 = 256x256x256',13,10
 db ';   2 = 320x240x256 VESA2     3 = 320x240x65536 VESA2',13,10
@@ -1887,7 +1888,15 @@ SECTION .data
 .strh dd 9
       db 'SOUNDRATE'
 .stri dd 9
+%ifdef __WIN32__
+      db 'VIDEOMODEWIN'
+%endif
+%ifdef __LINUX__
+      db 'VIDEOMODELIN'
+%endif
+%ifdef __MSDOS__
       db 'VIDEOMODE'
+%endif
 .strj dd 7
       db 'EXECUTE'
 .strk dd 15
