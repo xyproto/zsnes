@@ -1797,7 +1797,7 @@ NEWSYM getcfg
     cmp byte[.stringb],'1'
     jne .nofpu
     mov byte[FPUCopy],0
-    mov byte[cfgcopymethod],1
+    mov byte[cfgcopymethod],0
     jmp .nocopymethod
 .nofpu
     cmp byte[.stringb],'2'

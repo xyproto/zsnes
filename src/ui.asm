@@ -33,7 +33,7 @@ EXTSYM smallscreenon,spcon
 EXTSYM statefileloc,LatestSave
 EXTSYM Create_File,Delete_File,Open_File,Get_File_Date,Close_File,Change_Dir,Get_Dir
 EXTSYM romloadskip
-EXTSYM cfgloadgdir,cfgloadsdir
+EXTSYM cfgloadgdir,cfgloadsdir,cfgcopymethod
 EXTSYM init18_2hz
 EXTSYM OSExit
 %ifdef __LINUX__
@@ -1569,7 +1569,7 @@ NEWSYM DosExit ; Terminate Program
 NEWSYM MMXCheck
     ; Check for cpu that doesn't support CPUID
     cmp byte[FPUCopy],3
-    jne .nommx2
+    jne near .nommx2
     mov edx,cpuidfname
     call Open_File
     jc .skipcheck
@@ -1589,6 +1589,7 @@ NEWSYM MMXCheck
 
     ; MMX support
     mov byte[FPUCopy],0
+    mov byte[cfgcopymethod],0
     mov eax,1
     CPUID
 
@@ -1600,6 +1601,7 @@ NEWSYM MMXCheck
     test edx,1 << 23
     jz .nommx
     mov byte[FPUCopy],2
+    mov byte[cfgcopymethod],2
     mov edx,YesMMX
     call PrintStr
 .nommx
