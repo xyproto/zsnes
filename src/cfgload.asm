@@ -281,7 +281,7 @@ NEWSYM DOScreatenewcfg
     push ecx
     ; Save .CFG file
     mov edx,CMDLineStr
-%ifdef _GZIP__
+%ifdef __GZIP__
     mov byte[TextFile], 1
 %endif
     call Create_File
