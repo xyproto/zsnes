@@ -20,7 +20,7 @@
 EXTSYM DosExit,UpdateDevices,InitSPC,Makemode7Table,MusicRelVol,MusicVol
 EXTSYM makesprprtable,romloadskip,start65816,startdebugger,SfxR0
 EXTSYM MovieProcessing
-EXTSYM MovieFileHand,filefound,inittable,SA1inittable
+EXTSYM MovieFileHand,filefound,inittable,Sinittable
 EXTSYM MessageOn,Msgptr,MsgCount,sndrot,GenerateBank0Table,SnowTimer
 EXTSYM inittableb,inittablec,newgfx16b,cfgreinittime,EndMessage
 EXTSYM Open_File,Read_File,Write_File,Close_File,Output_Text,Get_Key,CNetType
@@ -1398,7 +1398,6 @@ SECTION .text
 ; Breath of fire 2 : 100/130/25/35  -p 70
 ; BToads vs DD     : 197/192/47/47  -p 130
 ; Bubsy            ; 182/177/44/44  -p 120
-; EWJim2           : execatzerovirq = 1
 
 NEWSYM Checkheadersame
     mov cl,20
@@ -2247,7 +2246,6 @@ NEWSYM init65816
     rep stosd
 
     mov byte[prevoamptr],0FFh
-    mov byte[execatzerovirq],0
     mov byte[disablehdma],0
     mov byte[disableeffects],0
     mov byte[dracxhack],0
