@@ -544,7 +544,6 @@ int pccmdline(void)
           SoundCompD=1;
           break;
         }
-
         case 'c':
         {
           if(nn == 'c')
@@ -558,7 +557,6 @@ int pccmdline(void)
           }
           break;
         }
-
         case 'y':
         {
           antienab=1;
