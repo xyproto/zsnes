@@ -1626,6 +1626,12 @@ reg4209w:
 reg420Aw:
     and al,01h
     mov [VIRQLoc+1],al
+    mov bx,[totlines]
+    sub bx,1
+    cmp word[VIRQLoc],bx
+    jb .okvirqpos
+    mov word[VIRQLoc],07FFFh
+.okvirqpos
     cmp byte[HIRQNextExe],1
     je .nohirq
     ret
