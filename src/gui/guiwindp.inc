@@ -4241,6 +4241,52 @@ DisplayNetIPXInvalid:
 %endif
 
 DisplayNetOptnsTCPIP:
+
+; Draw borders 
+    mov dword[GUIWincol],148+10
+    cmp byte[cwindrawn],1
+    jne .noone3
+    mov dword[GUIWincol],148+5
+.noone3
+    cmp byte[cwindrawn],0
+    jne .nozero3
+    mov dword[GUIWincol],148
+.nozero3
+    mov dl,[GUIWincol]                 ; Port
+    DrawGUIWinBox 8,55,12,95,12,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 8,54,13,53,21,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 8,55,22,95,22,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 8,97,13,96,21,dl
+    mov dl,[GUIWincol]                 ; Nickname
+    DrawGUIWinBox 8,55,23,119,23,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 8,54,24,53,32,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 8,55,33,119,33,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 8,121,24,120,32,dl
+    mov dl,[GUIWincol]                 ; IP
+    DrawGUIWinBox 8,26,57,191,57,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 8,25,58,24,66,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 8,26,67,191,67,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 8,193,58,192,66,dl
+   ; End draw borders  
+    
     ; Your IP:
     ; Port:
     ; Start as Server
@@ -4280,7 +4326,7 @@ DisplayNetOptnsTCPIP:
     GUIOuttextwin2 8,5,60,GUINetTexti2
     DrawGUIButton 8,5,70,129,81,GUINetTextj2,26,0,0
     DrawGUIWinBox 8,55,13,95,21,167
-    DrawGUIWinBox 8,55,23,119,31,167
+    DrawGUIWinBox 8,55,24,119,32,167
     DrawGUIWinBox 8,26,58,191,66,167
     GUIOuttextwin2 8,17,97,GUINetTextp2
     GUIOuttextwin2 8,5,87,hostname
@@ -4292,7 +4338,7 @@ DisplayNetOptnsTCPIP:
 .zero2
     GUIOuttextwin2 8,59,15,GUINetTextl2
     GUIOuttextwin2 8,30,60,TCPIPAddress
-    GUIOuttextwin2 8,59,25,ChatNick
+    GUIOuttextwin2 8,59,26,ChatNick
     mov byte[GUINetTextn2],'_'
     test byte[GUINetTextm2+2],8
     jz .yesus
@@ -4320,7 +4366,7 @@ DisplayNetOptnsTCPIP:
     jmp .loopc
 .donec
     add eax,59
-    GUIOuttextwin2 8,eax,15,GUINetTextn2
+    GUIOuttextwin2 8,eax,16,GUINetTextn2
     jmp .cursor1
 .cursor3
     xor eax,eax
@@ -4333,7 +4379,7 @@ DisplayNetOptnsTCPIP:
     jmp .loopc2
 .donec2
     add eax,59
-    GUIOuttextwin2 8,eax,25,GUINetTextn2
+    GUIOuttextwin2 8,eax,27,GUINetTextn2
 .cursor1
 
     mov dword[GUITemp],GUIIconDataCheckBoxUC

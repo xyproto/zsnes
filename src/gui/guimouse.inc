@@ -2598,7 +2598,7 @@ DisplayNetOptnsClick:
     GUIPHoldbutton 5,70,129,81,26
     GUITextBoxInputB 55,13,95,21,1
     GUITextBoxInputB 26,58,191,66,0
-    GUITextBoxInputB 55,23,119,31,2
+    GUITextBoxInputB 55,24,119,32,2
 
     GUIClickCButton 5,93,byte[UDPConfig]
 .notcpip
