@@ -483,7 +483,7 @@ NEWSYM pl4URk,    dd 0
 NEWSYM pl4DLk,    dd 0
 NEWSYM pl4DRk,    dd 0
 
-NEWSYM LowPassFilter,  db 0
+NEWSYM LowPassFilterType,  db 0
 NEWSYM DontSavePath,  db 0
 NEWSYM ReCalib, db 1
 NEWSYM GUIComboGameSpec, db 0
@@ -616,9 +616,9 @@ ModemPTimer  dd 0       ; Timer for modem process
 ModemOKStat  db 0       ; OK is detected on modem status
 
 ;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO
-GUIwinposxo dd 0,5   ,60  ,30  ,55  ,50  ,65  ,5   ,30  ,20   ,10   ,80  ,65  ,20  ,70  ,50  ,3   ,50
+GUIwinposxo dd 0,5   ,60  ,30  ,55  ,50  ,35  ,5   ,30  ,20   ,10   ,80  ,65  ,20  ,70  ,50  ,3   ,50
 GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,20   ,20   ,50  ,60  ,30  ,65  ,50  ,22  ,60
-GUIwinsizex dd 0,244 ,126 ,189 ,167 ,170 ,148 ,244 ,8*16,224  ,240  ,7*16,9*16,8*16,9*16,140 ,250 ,160
+GUIwinsizex dd 0,244 ,126 ,189 ,167 ,170 ,188 ,244 ,8*16,224  ,240  ,7*16,9*16,8*16,9*16,140 ,250 ,160
 GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,184 ,191 ,40  ,189  ,192  ,98  ,42  ,40  ,42  ,70  ,190 ,60
 GUIwinptr   db 0
 

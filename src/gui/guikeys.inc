@@ -1258,6 +1258,18 @@ GUISoundKeys:
     jne .no8ptinterp
     GUIkeystoggleoptn byte[SoundInterpType],3
 .no8ptinterp
+    cmp dh,'I'
+    jne .nosimplefilter
+    GUIkeystoggleoptn byte[LowPassFilterType],1
+.nosimplefilter
+    cmp dh,'Y'
+    jne .nodynamicfilter
+    GUIkeystoggleoptn byte[LowPassFilterType],2
+.nodynamicfilter
+    cmp dh,'H'
+    jne .nohiqualityfilter
+    GUIkeystoggleoptn byte[LowPassFilterType],3
+.nohiqualityfilter
     ret
 
 .sampratenext db 1,4,5,6,2,3,0,0,0,0

@@ -2335,6 +2335,9 @@ DisplayGUISoundClick:
     GUIClickCButton6 11,161,byte[SoundInterpType],1
     GUIClickCButton6 11,171,byte[SoundInterpType],2
     GUIClickCButton6 11,181,byte[SoundInterpType],3
+    GUIClickCButton6 111,161,byte[LowPassFilterType],1
+    GUIClickCButton6 111,171,byte[LowPassFilterType],2
+    GUIClickCButton6 111,181,byte[LowPassFilterType],3
     cmp eax,15
     jl near .nosrate
     cmp edx,61

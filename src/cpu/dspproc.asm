@@ -129,7 +129,7 @@ EXTSYM InterSound
 EXTSYM NoiseData,SoundCompD,Voice0Disable,csounddisable,dssel,spcRamcmp
 EXTSYM cfgecho,Surround,SoundBufEn
 EXTSYM echobuf,ENVDisable
-EXTSYM LowPassFilter
+EXTSYM LowPassFilterType
 EXTSYM UseCubicSpline,NoiseDisTemp
 
 NEWSYM DspProcAsmStart
@@ -5334,7 +5334,7 @@ NEWSYM ProcessVoice816
     loop .revstloop
 .norevstereo
 
-    cmp byte[LowPassFilter],0
+    cmp byte[LowPassFilterType],0
     je near LPFexit
     mov esi,DSPBuffer
     cmp byte[StereoSound],1
