@@ -1612,22 +1612,6 @@ NEWSYM DosExit ; Terminate Program
 
 NEWSYM MMXCheck
     ; Check for cpu that doesn't support CPUID
-;    mov edx,cpuidfname
-;    call Open_File
-;    jc .skipcheck
-;    mov bx,ax
-;    call Close_File
-;    jmp .nommx2
-;.skipcheck
-
-    ; Create file
-;    mov edx,cpuidfname
-;    call Create_File
-;    mov bx,ax
-;    call Close_File
-
-;    mov edx,cpuidtext
-;    call PrintStr
 
     cmp byte[MMXSupport],0
     je .nommx
@@ -1649,21 +1633,12 @@ NEWSYM MMXCheck
     mov eax,1
     CPUID
 
-;    push edx
-;    mov edx,cpuidtext2
-;    call PrintStr
-;    pop edx
-
     test edx,1 << 23
     jz .nommx
     mov byte[MMXSupport],1
     mov edx,YesMMX
     call PrintStr
 .nommx
-;    ; Delete file
-;    mov edx,cpuidfname
-;    call Delete_File
-;.nommx2
     ret
 
 NEWSYM UIAsmEnd
