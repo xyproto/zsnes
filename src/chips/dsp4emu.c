@@ -907,6 +907,9 @@ void DSP4_OP08()
       // scan next command if no SR check needed
       if (segments)
       {
+        int32 win_left, win_right;
+
+
         ///////////////////////////////////////////////
         // left side of polygon
 
@@ -941,8 +944,6 @@ void DSP4_OP08()
 
         ///////////////////////////////////////////////
         // update each point on the line
-
-        int32 win_left, win_right;
 
         win_left = SEX16(poly_cx[polygon][0] - poly_start[polygon] + env[0][0]);
         win_right = SEX16(poly_cx[polygon][1] - poly_start[polygon] + env[1][0]);
