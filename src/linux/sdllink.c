@@ -118,6 +118,7 @@ float MouseYScale = 1.0;
 DWORD LastUsedPos = 0;
 DWORD CurMode = -1;
 
+extern BYTE GUIOn;
 extern BYTE GUIOn2;
 static BYTE IsActivated = 1;
 
@@ -1046,7 +1047,7 @@ void UpdateVFrame(void)
 	int i;
 
 	//Quick fix for GUI CPU usage
-	if (GUIOn2) usleep(6000);
+	if (GUIOn | GUIOn2) usleep(6000);
 
 	CheckTimers();
 	Main_Proc();
