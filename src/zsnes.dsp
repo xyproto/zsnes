@@ -39,17 +39,17 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /O3 /c
-# ADD CPP /nologo /G6 /W3 /Gi /O2 /D "NDEBUG" /D "__WIN32__" /D "WIN32" /D "_WINDOWS" /YX /FD /O3 /c
+# ADD CPP /nologo /G6 /W3 /Gi /O2 /D "NDEBUG" /D "__WIN32__" /D "WIN32" /D "_WINDOWS" /Fp"Release/zsness.pch" /YX /FD /O3 /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
-# ADD RSC /l 0x409 /d "NDEBUG"
+# ADD RSC /l 0x409 /fo"Release/zsnesw.res" /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shell32.lib winmm.lib ddraw.lib dsound.lib dinput8.lib d3dx.lib /nologo /subsystem:windows /pdb:"Release/zsnesw.pdb" /machine:I386 /section:.text,erw
+# ADD LINK32 zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shell32.lib winmm.lib ddraw.lib dsound.lib dinput8.lib d3dx.lib /nologo /subsystem:windows /machine:I386 /out:"Release/zsnesw.exe" /section:.text,erw
 # SUBTRACT LINK32 /pdb:none
 # Begin Target
 
