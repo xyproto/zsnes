@@ -727,6 +727,12 @@ extern bool Sup48mbit;
 extern bool Sup16mbit;
 extern unsigned char snesmouse;
 unsigned char snesinputdefault;
+bool input1gp;
+bool input1mouse;
+bool input2gp;
+bool input2mouse;
+bool input2scope;
+bool input2just;
 void findZipIPS(char *);
 void loadROM()
 {
@@ -809,6 +815,12 @@ void loadROM()
   }
 
   snesmouse = 0;     
+  input1gp = true;
+  input1mouse = true;
+  input2gp = true;
+  input2mouse = true;
+  input2scope = true;
+  input2just = true;
 
   if (Header512)
   {   
@@ -817,18 +829,84 @@ void loadROM()
     {
       switch (ROM[0x1ED]) 
       {
-        case 0: default: break;
+        default: break;
 
-        case 0x01: snesmouse = 2; break; //Mouse port 2
-        case 0x03: snesmouse = 3; break; //Super Scope port 2
-        case 0x04: break; //Super Scope or Gamepad port 2
-        case 0x05: snesmouse = 4; break; //Justifier (Lethal Enforcer gun) port 2
-        case 0x06: break; //Multitap port 2
-        case 0x08: break; //Mouse or Multitap port 2
-        case 0x10: snesmouse = 1; break; //Mouse port 1
-        case 0x20: break; //Mouse or Gamepad port 1
-        case 0x22: break; //Mouse or Gamepad port 1 and port 2
-        case 0x27: break; //Mouse or Gamepad port 1, Mouse, Super Scope, or Gamepad port 2
+        case 0:
+          input1mouse = false;
+          input2mouse = false;
+          input2scope = false;
+          input2just = false;
+          break;
+
+        case 0x01: //Mouse port 2
+          snesmouse = 2;
+          input2gp = false;
+          input2scope = false;
+          input2just = false;
+          input1mouse = false;
+          break; 
+
+        case 0x03: //Super Scope port 2
+          snesmouse = 3;
+          input2gp = false;
+          input2mouse = false;
+          input2just = false;
+          input1mouse = false;
+          break;
+
+        case 0x04: //Super Scope or Gamepad port 2
+          snesmouse = 3;
+          input2mouse = false;
+          input2just = false;
+          input1mouse = false;
+          break;
+
+        case 0x05: //Justifier (Lethal Enforcer gun) port 2
+          snesmouse = 4;
+          input2mouse = false;
+          input2scope = false;
+          input1mouse = false;
+          break;
+
+        case 0x06: //Multitap port 2
+          input2gp = false;
+          input2mouse = false;
+          input2just = false;
+          input2scope = false;
+          input1mouse = false;
+          break;
+
+        case 0x08: //Mouse or Multitap port 2
+          snesmouse = 2;
+          input2just = false;
+          input2scope = false;
+          input1mouse = false;
+          break;
+
+        case 0x10: //Mouse port 1
+          snesmouse = 1;
+          input2mouse = false;
+          input2just = false;
+          input2scope = false;
+          input1gp = false;
+          break;
+
+        case 0x20: //Mouse or Gamepad port 1
+          snesmouse = 1;
+          input2mouse = false;
+          input2just = false;
+          input2scope = false;
+          break;
+
+        case 0x22: //Mouse or Gamepad port 1 and port 2
+          snesmouse = 1;
+          input2just = false;
+          input2scope = false;
+          break;
+
+        case 0x27: //Mouse or Gamepad port 1, Mouse, Super Scope, or Gamepad port 2
+          input2just = false;
+          break;
 
         case 0x99: break; //Lasabirdie
         case 0x0A: break; //Barcode Battler

@@ -55,10 +55,10 @@ EXTSYM vcache8b,vidmemch8
 EXTSYM offsetmshl,NextLineCache
 EXTSYM tltype2b
 EXTSYM tltype8b,objwlrpos
-EXTSYM snesinputdefault 
+EXTSYM snesinputdefault,cycleinputdevice
+
 
 NEWSYM VCacheAsmStart
-
 
 
 ; Process stuff & Cache sprites
@@ -534,11 +534,9 @@ NEWSYM cachevideo
     test byte[pressed+eax],1
     je near .nodis7
     mov byte[pressed+eax],2
-    inc byte[snesmouse]
-    cmp byte[snesmouse],5
-    jne .mousewrap
-    mov byte[snesmouse],0
-.mousewrap
+    pushad
+    call cycleinputdevice
+    popad
     mov dword[Msgptr],snesle
     cmp byte[snesmouse],0
     jne .nom0

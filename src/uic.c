@@ -52,3 +52,46 @@ void allocspc7110()
 {
   spc7110romptr = (unsigned char *)doMemAlloc(8192*1024+4096);
 }
+
+extern bool input1gp;
+extern bool input1mouse;
+extern bool input2gp;
+extern bool input2mouse;
+extern bool input2scope;
+extern bool input2just;
+extern unsigned char snesmouse;
+void cycleinputdevice()
+{
+  for (;;)
+  {
+    snesmouse++;
+    if (snesmouse >= 5)
+    {
+      snesmouse = 0;
+    }
+    if (snesmouse == 0)
+    {
+      if (input1gp && input2gp) { return; }
+      snesmouse++;   
+    }
+    if (snesmouse == 1)
+    {
+      if (input1mouse) { return; }
+      snesmouse++;   
+    }
+    if (snesmouse == 2)
+    {
+      if (input2mouse) { return; }
+      snesmouse++;   
+    }
+    if (snesmouse == 3)
+    {
+      if (input2scope) { return; }
+      snesmouse++;   
+    }
+    if (snesmouse == 4)
+    {
+      if (input2just) { return; }
+    }
+  }
+}
