@@ -71,17 +71,16 @@ void Start_Log (void)
    LogFile = fopen(LogFileName,"wb");
 }
 
-void Stop_Log (void)
+void Stop_Log(void)
 {
-   if (LogFile)
-   {
-      fclose(LogFile);
-      LogFile = NULL;
-	}
+ if(LogFile)
+ {
+  fclose(LogFile);
+  LogFile=NULL;
+ }
 }
 
 #endif
-
 
 /***************************************************************************\
 *  Math tables                                                              *
@@ -93,6 +92,10 @@ double *SinTable2;
 #define Angle(x) (((x)/(65536/INCR)) & (INCR-1))
 #define Cos(x) ((double) CosTable2[x])
 #define Sin(x) ((double) SinTable2[x])
+// gcc warning fix
+#ifdef PI
+#undef PI
+#endif
 #define PI 3.14159265358979323846264338327
 
 double Atan(double x)
