@@ -5897,7 +5897,7 @@ NEWSYM CheckROMType
     add esi,25
     cmp byte[esi],14
     jae .interlcheck2
-    je near .interleaved
+    jmp .interleaved
 
 .interlcheck2
     xor ebx,ebx
