@@ -1271,7 +1271,10 @@ int startgame(void)
 			   SurfaceY);
 	   return FALSE;
    }
-   
+
+   // Grab mouse in fullscreen mode
+   FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) : SDL_WM_GrabInput(SDL_GRAB_OFF);
+
    /* Need to handle situations where BPP is not what we can handle */
    SDL_WM_SetCaption ("ZSNES Linux","ZSNES");
    SDL_ShowCursor(0);
@@ -2399,7 +2402,11 @@ void drawscreenwin(void)
 
 void LinuxExit (void)
 {
-	if (sdl_inited) SDL_Quit();
+	if (sdl_inited)
+	{
+		SDL_WM_GrabInput(SDL_GRAB_OFF);	// probably redundant
+		SDL_Quit();
+	}
 	exit(0);
 }
 
