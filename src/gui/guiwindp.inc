@@ -6280,7 +6280,7 @@ GUIAddOnTextC db 'DIP 6',0
 
 SECTION .text
 
-DisplayGUIChip:
+DisplayGUIChipConfig:
     GUIDrawWindowBox 18,GUIChipConfigDisp
     sub byte[GUItextcolor],15
     GUIOuttextwin2 18,15,18,GUIChipText1

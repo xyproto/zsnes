@@ -985,6 +985,8 @@ GUIWinClicked:
     je near DisplayGUIComboClick
     cmp ebx,17
     je near DisplayGUIAddOnClick
+    cmp ebx,18
+    je near DisplayGUIChipClick
     ret
 
 %macro GUIClickCButton 3
@@ -3227,6 +3229,11 @@ DisplayGUIAddOnClick:
     GUIClickCButton 9,93,byte[nssdip4]
     GUIClickCButton 59,93,byte[nssdip5]
     GUIClickCButton 109,93,byte[nssdip6]
+    ret
+
+DisplayGUIChipClick
+    GUIPButtonHole 20,25,byte[st010difficulty],0
+    GUIPButtonHole 75,25,byte[st010difficulty],1
     ret
 
 DrawMouse:

@@ -3582,7 +3582,7 @@ DisplayBoxes:
 .noaddon
     cmp al,18
     jne .nochipconfig
-    call DisplayGUIChip
+    call DisplayGUIChipConfig
     jmp .finstuff
 .nochipconfig
     cmp al,19
