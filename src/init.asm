@@ -1466,6 +1466,20 @@ NEWSYM headerhack
     mov byte[ENVDisable],0
     mov byte[MMXSRAMFix],0
 
+    mov dword[Reg4212hack],0
+
+    mov esi,[romdata]
+    add esi,07FC0h
+    cmp dword[esi],'Cu-O'
+    jne .notcuonpa
+    cmp dword[esi+4],'n-Pa'
+    jne .notcuonpa
+    cmp dword[esi+8],' SFC'
+    jne .notcuonpa
+    mov dword[Reg4212hack],4
+
+.notcuonpa
+
     mov esi,[romdata]
     add esi,07FC0h
     cmp dword[esi],'ACCE'
@@ -1764,7 +1778,6 @@ NEWSYM headerhack
     mov byte[opexec358],100
 .noromheadadm3
 
-    mov byte[Reg4212hack],0
     ; Bubsy -p 115
     mov esi,[romdata]
     add esi,07FC0h
