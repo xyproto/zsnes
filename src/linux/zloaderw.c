@@ -264,10 +264,7 @@ int main (int argc, char *argv[]) {
 			}
 
 			case 's': {
-				if (strcmp(optarg,"p") == 0) {
-					DisplayS = 1;
-					pp++;
-				} else if (strcmp(optarg,"a") == 0) {
+				if (strcmp(optarg,"a") == 0) {
 					showallext = 1;
 					pp++;
 				} else if (strcmp(optarg,"n") == 0) {
