@@ -1375,7 +1375,6 @@ NEWSYM StoreBuffer, resb 128*32
 ;*******************************************************
 
 SECTION .data
-NEWSYM execatzerovirq, db 0
 NEWSYM disablehdma,    db 0
 NEWSYM disableeffects, db 0
 NEWSYM hdmaearlstart,  db 0

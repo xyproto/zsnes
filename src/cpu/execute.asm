@@ -80,7 +80,7 @@ EXTSYM cpuoverptr
 EXTSYM CheatOn,INTEnab,JoyAPos,JoyBPos,JoyCRead,NMIEnab,NumCheats,CurrentExecSA1
 EXTSYM ReadInputDevice,StartDrawNewGfx,VIRQLoc,cachevideo,cfield
 EXTSYM cheatdata,curblank,curnmi,curypos,cycpl,doirqnext,drawline
-EXTSYM execatzerovirq,exechdma,hdmadelay,intrset,newengen,oamaddr
+EXTSYM exechdma,hdmadelay,intrset,newengen,oamaddr
 EXTSYM oamaddrs,processmouse,resolutn,showvideo,snesmouse,starthdma
 EXTSYM switchtonmi,switchtovirq,totlines,updatetimer,SA1Swap,SA1DoIRQ
 EXTSYM JoyAOrig,JoyANow,JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow
@@ -3901,10 +3901,7 @@ NEWSYM cpuover
 
 
     ; check for VIRQ/HIRQ/NMI
-    cmp byte[execatzerovirq],1
-    je near .noexecatzero
     ProcessIRQStuff
-.noexecatzero
 
     C4Paused
     xor ebx,ebx
