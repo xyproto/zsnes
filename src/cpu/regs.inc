@@ -46,6 +46,7 @@ NEWSYM initregr
     add edi,4
     loop .loopa
     ; Set all valid register accesses
+    setreg 2100h*4,reg2100r
     setreg 2134h*4,reg2134r
     setreg 2135h*4,reg2135r
     setreg 2136h*4,reg2136r
@@ -210,6 +211,9 @@ NEWSYM initregr
     setreg 437Dh*4,reg43XXr
     setreg 437Eh*4,reg43XXr
     setreg 437Fh*4,reg43XXr
+
+    setreg 3030h*4,reg3030r
+
     cmp byte[SFXEnable],0
     je .nosfx
     call initsfxregsr
@@ -452,6 +456,11 @@ NEWSYM ClearRegs
     mov word[bg2objptr],0
     mov word[bg3objptr],0
     mov word[bg4objptr],0
+    ret
+
+reg2100r:
+    mov al,[vidbright]
+    or al,[forceblnk]
     ret
 
 ; Multiply Result Low
@@ -1072,6 +1081,10 @@ reg43XXr:
     mov bx,cx
     sub bx,4300h
     mov al,[dmadata+ebx]
+    ret
+
+reg3030r:
+    mov al,0FFh
     ret
 
 regINVALID:     ; Invalid Register
