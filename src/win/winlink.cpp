@@ -2018,7 +2018,7 @@ void drawscreenwin(void)
                {
                   color32=(((*(WORD *)(ScreenPtr))&0xF800)<<8)+
                           (((*(WORD *)(ScreenPtr))&0x07E0)<<5)+
-                          (((*(WORD *)(ScreenPtr))&0x001F)<<3)+0x7F000000;
+                          (((*(WORD *)(ScreenPtr))&0x001F)<<3)+0xFF000000;
 //                  SURFDW[i]=color32;
                   ScreenPtr+=2;
                }
