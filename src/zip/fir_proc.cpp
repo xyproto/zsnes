@@ -9,8 +9,12 @@
  *          
 */
 
+#ifdef __LINUX__
+#include "../gblhdr.h"
+#else
 #include <math.h>
 #include <stdio.h>
+#endif
 
 #ifndef log2
 inline float log2(float f) {
