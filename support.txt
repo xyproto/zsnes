@@ -22,7 +22,7 @@
     have been created for the sole purpose of worshiping ZSNES. :)
 
   =================
-   #ZSNES on EFnet
+   #ZSNES on irc.freenode.net
   =================
 
     This is where all of the old developers of ZSNES used to hangout
@@ -30,14 +30,3 @@
     _Demo_, pagefault, and stainless, and tons of ZSNES fans hangout
     here.  Be warned that this channel is usually plagued with adult
     humor, links and requests for warez and ROMs, and always off-topic.
-
-  ==================
-   #ZSNES on DALnet
-  ==================
-    
-    I recommend this one, since you probably won't encounter all of
-    the illegal stuff and adult content (though, I'm sure not going
-    to complain about it :P).  You probably won't find many of the
-    ZSNES developers such as _Demo_ or pagefault in there, but then
-    again you really don't need to be bugging them anyway.
-
