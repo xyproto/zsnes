@@ -156,7 +156,7 @@ struct zmv_header
   unsigned int frames;
   unsigned int rerecords;
   unsigned int removed_frames;
-  unsigned int slow_frames;
+  unsigned int slow50_frames;
   unsigned int key_combos;
   unsigned short internal_chapters;
   char author[20];
@@ -178,7 +178,7 @@ static void zmv_header_write(struct zmv_header *zmv_head, FILE *fp)
   fwrite4(zmv_head->frames, fp);
   fwrite4(zmv_head->rerecords, fp);
   fwrite4(zmv_head->removed_frames, fp);
-  fwrite4(zmv_head->slow_frames, fp);
+  fwrite4(zmv_head->slow50_frames, fp);
   fwrite4(zmv_head->key_combos, fp);
   fwrite2(zmv_head->internal_chapters, fp);
   fwrite(zmv_head->author, 20, 1, fp);
@@ -234,7 +234,7 @@ static bool zmv_header_read(struct zmv_header *zmv_head, FILE *fp)
   zmv_head->frames = fread4(fp);
   zmv_head->rerecords = fread4(fp);
   zmv_head->removed_frames = fread4(fp);
-  zmv_head->slow_frames = fread4(fp);
+  zmv_head->slow50_frames = fread4(fp);
   zmv_head->key_combos = fread4(fp);
   zmv_head->internal_chapters = fread2(fp);
   fread(zmv_head->author, 20, 1, fp);
@@ -516,6 +516,8 @@ static void zmv_create(char *filename)
     }                                                                 \
   }
 
+extern bool SloMo50;
+
 static void zmv_record()
 {
   unsigned char flag = 0;
@@ -523,6 +525,8 @@ static void zmv_record()
   unsigned char nibble = 0;
   
   zmv_vars.header.frames++;
+
+  if (SloMo50)	{ zmv_vars.header.slow50_frames++; }
   
   RECORD_PAD(zmv_vars.last_joy_state.A, JoyAOrig, 7);
   RECORD_PAD(zmv_vars.last_joy_state.B, JoyBOrig, 6);

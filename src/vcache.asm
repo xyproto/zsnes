@@ -245,6 +245,7 @@ FastForwardLock resb 1
 SlowDownLock resb 1
 FastForwardLockp resb 1
 NEWSYM CSprWinPtr, resd 1
+NEWSYM SloMo50, resb 1
 section .text
 
 NEWSYM cachevideo
@@ -356,9 +357,11 @@ NEWSYM cachevideo
     jmp .sdskip
 .slowdwn
     mov ax,2
+    mov byte[SloMo50],1
     jmp .skipnoslowdown
 .sdskip
     mov ax,1
+    mov byte[SloMo50],0
 .skipnoslowdown
 
     cmp byte[frameskip],0
