@@ -17,7 +17,6 @@
 
 %include "macros.mac"
 
-NEWSYM TwoxSaiWAsmStart
 
 ;/*---------------------------------------------------------------------*
 ; * The following (piece of) code, (part of) the 2xSaI engine,          *
@@ -188,7 +187,7 @@ NEWSYM _2xSaISuper2xSaILineW
          paddw mm0, mm1
 
          pand mm3, mm2
-         paddw mm0, mm3                ;mm0 contains the interpolated values
+         paddw mm0, mm3		            ;mm0 contains the interpolated values
          movq [I5556Pixel], mm0
          ;--------------------
 
@@ -270,7 +269,6 @@ NEWSYM _2xSaISuper2xSaILineW
          pand mm3, mm2
          paddw mm0, mm3
          movq [I2333Pixel], mm0
-
 
          ;--------------------
 ;////////////////////////////////
@@ -488,7 +486,6 @@ NEWSYM _2xSaISuper2xSaILineW
 		 pand mm7, mm6
 
 
-
 		 movq mm6, [eax+ebx+ebx+color3]
 		 movq mm5, [eax+ebx+ebx+color2]
 		 movq mm4, [eax+ebx+ebx+color1]
@@ -591,7 +588,6 @@ NEWSYM _2xSaISuper2xSaILineW
                    else
                       product1b = INTERPOLATE (color5, color6);
 %endif
-
 		 push eax
 		 add eax, ebx
 		 pxor mm7, mm7
@@ -614,8 +610,13 @@ NEWSYM _2xSaISuper2xSaILineW
 		 pand mm6, mm1
 		 pand mm0, mm6
 
-		 movq mm4, [eax+ebx+color2]
-		 movq mm5, [eax+ebx+ebx+color5]
+
+		 push eax
+		 add eax, ebx
+		 movq mm1, [eax+ebx+ebx+colorA1]
+		 pop eax
+		 movq mm4, [eax+ebx+ebx+color2]
+		 movq mm5, [eax+ebx+color5]
 		 movq mm6, [eax+ebx+ebx+color3]
 
 		 pcmpeqw mm5, mm4
@@ -628,12 +629,26 @@ NEWSYM _2xSaISuper2xSaILineW
 		 pand mm1, mm3
 		 pand mm1, mm2
 
+
+		 movq mm7, mm0
+		 por mm7, mm1
+
+		 movq mm4, [Mask35]
+		 movq mm3, [Mask26]
+		 
+		 movq mm6, mm4
+		 pand mm6, mm7
+		 pxor mm4, mm6
+
+		 movq mm6, mm3
+		 pand mm6, mm7
+		 pxor mm3, mm6
+
 		 movq mm2, mm0
 		 movq mm7, [I2333Pixel]
 		 movq mm6, [I2223Pixel]
 		 movq mm5, [I23Pixel]
-		 movq mm4, [Mask35]
-		 movq mm3, [Mask26]
+
 
 		 por mm2, mm4
 		 pand mm4, [eax+ebx+ebx+color3]
@@ -673,6 +688,7 @@ NEWSYM _2xSaISuper2xSaILineW
 		 pand mm6, mm1
 		 pand mm0, mm6
 
+		 movq mm1, [eax+colorB1]
 		 movq mm4, [eax+ebx+color5]
 		 movq mm5, [eax+ebx+ebx+color2]
 		 movq mm6, [eax+ebx+color6]
@@ -687,12 +703,26 @@ NEWSYM _2xSaISuper2xSaILineW
 		 pand mm1, mm3
 		 pand mm1, mm2
 
+
+		 movq mm7, mm0
+		 por mm7, mm1
+
+		 movq mm4, [Mask35]
+		 movq mm3, [Mask26]
+		 
+		 movq mm6, mm4
+		 pand mm6, mm7
+		 pxor mm4, mm6
+
+		 movq mm6, mm3
+		 pand mm6, mm7
+		 pxor mm3, mm6
+
 		 movq mm2, mm0
 		 movq mm7, [I5666Pixel]
 		 movq mm6, [I5556Pixel]
 		 movq mm5, [I56Pixel]
-		 movq mm4, [Mask35]
-		 movq mm3, [Mask26]
+
 
 		 por mm2, mm4
 		 pand mm4, [eax+ebx+color5]
@@ -716,6 +746,7 @@ NEWSYM _2xSaISuper2xSaILineW
 		 movq mm4, [final2a]
 		 movq mm2, [final1b]
 		 movq mm6, [final2b]
+
 
 		 movq mm1, mm0
 		 movq mm5, mm4
@@ -1173,9 +1204,9 @@ NEWSYM _2xSaISuperEagleLineW
          pcmpgtw mm0, mm1
 
          por mm7, [Mask35]
-         por mm1, [Mask26]
+         por mm0, [Mask26]
          movq [Mask35], mm7
-         movq [Mask26], mm1
+         movq [Mask26], mm0
 
 .SKIP_GUESS:
          ;Start the ASSEMBLY !!!
@@ -1838,9 +1869,9 @@ NEWSYM _2xSaILineW
          pcmpgtw mm0, mm1
 
          por mm7, [Mask1]
-         por mm1, [Mask2]
+         por mm0, [Mask2]
          movq [Mask1], mm7
-         movq [Mask2], mm1
+         movq [Mask2], mm0
 
 .SKIP_GUESS:
          ;----------------------------
@@ -2050,5 +2081,3 @@ final1a       resb 8
 final1b       resb 8
 final2a       resb 8
 final2b       resb 8
-
-NEWSYM TwoxSaiWAsmEnd
