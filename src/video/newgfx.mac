@@ -2611,15 +2611,17 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     add ecx,ebx
     jmp %%yesmosaic
 %%nomosaic
+
     cmp byte[BGMA+ebx],5
     jae near .tiles16x8
 %%yesmosaic
+
     cmp byte[t16x161+ebx+%1*256],1
     je near .tiles16x16
     cmp byte[BGMA+ebx],2
     je near .offsetm
-;    cmp byte[BGMA+ebx],4
-;    je near .offsetm
+    cmp byte[BGMA+ebx],4
+    je near .offsetm
     mov eax,[BGPT1+ebx*2+%1*512]
     test ecx,100h
     jz .noyinc
@@ -2901,12 +2903,13 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     shr dx,5
     add ax,dx
 .nooma
-    cmp byte[BGMA+ebx],4
-    je .offsetm4
+;    cmp byte[BGMA+ebx],4
+;    je .offsetm4
     add eax,40h
-.offsetm4
+;.offsetm4
     mov edx,eax
     and edx,0FFFFFFC0h
+    mov word[BGPT3B+ebx*2],dx
     add edx,[vram]
     mov [ofsmcptr],edx
     and eax,3Fh
@@ -3063,8 +3066,8 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     je near .tiles16x16
     cmp byte[BGMA+ebx],2
     je near .offsetm
-;    cmp byte[BGMA+ebx],4
-;    je near .offsetm
+    cmp byte[BGMA+ebx],4
+    je near .offsetm
     mov eax,[BG1SYl+ebx*2+%1*512]
     and eax,0FFFFh
     add eax,ebx
@@ -3251,10 +3254,10 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     add ax,dx
 .nooma
     mov edx,eax
-    cmp byte[BGMA+ebx],4
-    je .offsetm4
+;    cmp byte[BGMA+ebx],4
+;    je .offsetm4
     add edx,40h
-.offsetm4
+;.offsetm4
     and edx,0FFC0h
     add edx,[vram]
     mov [ofsmcptr],edx

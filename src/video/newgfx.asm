@@ -47,6 +47,8 @@ EXTSYM winlogicb
 EXTSYM ngwinptr,objwlrpos,objwen,objclineptr,CSprWinPtr
 EXTSYM WindowRedraw
 
+NEWSYM BGPT3B, times 256 dw 0
+
 NEWSYM NewGfxAsmStart
 
 %include "video/vidmacro.mac"
@@ -185,8 +187,11 @@ NEWSYM newengine8b
     mov bl,[bgmode]
     and ebx,07h
     mov [BGMA+eax],bl
+    cmp bl,4
+    je .changedmode4
     cmp [BGMA+eax-1],bl
     je .nobgma
+.changedmode4
     mov byte[bgallchange+eax],1
 .nobgma
 
