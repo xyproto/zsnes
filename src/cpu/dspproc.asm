@@ -510,7 +510,6 @@ NEWSYM conv2speed
     jnz .next
     ret
 
-
 NEWSYM AdjustFrequency
       mov al,[SoundInterpType]
       or al,al
@@ -551,7 +550,6 @@ NEWSYM AdjustFrequency
       dec ecx
       jnz .intrploopb
 .notgaussian
-
 
       cmp byte[StereoSound],1
       jne .nostereo8b
