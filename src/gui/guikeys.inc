@@ -1467,7 +1467,8 @@ SECTION .text
 GUIPathKeys:
     cmp dh,0
     je .nokeypressed
-
+    cmp dh,13
+    je .nokeypressed
     cmp dword[GUIInputBox],1
     jne .notBox1
     mov eax,SRAMPath
