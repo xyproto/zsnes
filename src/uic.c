@@ -141,6 +141,14 @@ unsigned char MusicRelVol   = 75;
 unsigned char MusicVol      = 0;
 
 void outofmemory();
+void init();
+void WaitForKey();
+void MMXCheck();
+void allocmem();
+void InitSPC();
+void setnoise();
+void SystemInit();
+void StartUp();
 
 void *doMemAlloc(size_t size)
 {
