@@ -63,7 +63,7 @@ WINDOSOBJ=${DOSDIR}/debug.obj ${DOSDIR}/joy.obj ${DOSDIR}/modemrtn.obj ${DOSDIR}
 
 PREOBJ=
 
-ZIPOBJ=${ZIPDIR}/zzip.obj ${ZIPDIR}/unzip.obj ${ZIPDIR}/zpng.obj
+ZIPOBJ=${ZIPDIR}/unzip.obj ${ZIPDIR}/zpng.obj
 
 EFFECTSOBJ=${EFFECTSDIR}/burn.obj ${EFFECTSDIR}/water.obj ${EFFECTSDIR}/smoke.obj
 
@@ -103,7 +103,6 @@ ${WINDIR}/zloaderw.obj: ${WINDIR}/zloaderw.c
 ${WINDIR}/ztcp.obj: ${WINDIR}/ztcp.c
 ${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
 ${ZIPDIR}/unzip.obj: ${ZIPDIR}/unzip.c ${ZIPDIR}/zunzip.h 
-${ZIPDIR}/zzip.obj: ${ZIPDIR}/zzip.c ${ZIPDIR}/zunzip.h
 ${ZIPDIR}/zpng.obj: ${ZIPDIR}/zpng.c  ${ZIPDIR}/zpng.h
 ${DOSDIR}/initvid.o:${DOSDIR}/initvid.asm macros.mac
 ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac

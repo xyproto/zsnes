@@ -54,7 +54,7 @@ WINOBJ=${WINDIR}/copywin.o ${WINDIR}/winintrf.o ${WINDIR}/winlink.o\
 
 PREOBJ=${OBJDIR}/dosbuff.o ${OBJDIR}/ipx.o ${OBJDIR}/zipx.o
 
-ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
+ZIPOBJ=${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
 EFFECTSOBJ=${EFFECTSDIR}/burn.o ${EFFECTSDIR}/water.o ${EFFECTSDIR}/smoke.o
 
@@ -100,7 +100,6 @@ ${EFFECTSDIR}/smoke.o: ${EFFECTSDIR}/smoke.c
 ${EFFECTSDIR}/burn.o: ${EFFECTSDIR}/burn.c
 ${DOSDIR}/zfile.o: ${DOSDIR}/zfile.c
 ${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/zunzip.h
-${ZIPDIR}/zzip.o: ${ZIPDIR}/zzip.c ${ZIPDIR}/zunzip.h
 ${ZIPDIR}/zpng.o: ${ZIPDIR}/zpng.c  ${ZIPDIR}/zpng.h
 ${VIDEODIR}/procvid.o: ${VIDEODIR}/procvid.asm macros.mac ${VIDEODIR}/copyvid.inc ${VIDEODIR}/2xSaImmx.inc
 ${CHIPDIR}/dsp1proc.o: ${CHIPDIR}/dsp1proc.asm macros.mac

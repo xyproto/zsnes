@@ -17,7 +17,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#ifdef __LINUX__
+#include "gblhdr.h"
+#else
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#endif
+
+#include <sys/stat.h>
+#include "zip/zunzip.h"
+
+#ifndef __GNUC__
+#define strcasecmp stricmp
+#endif
 
 //C++ style code in C
 #define bool unsigned char
@@ -348,6 +361,310 @@ void MirrorROM()
   for (StartMirror = 0; ROMSize < maxromspace;)
   {
     ROM[ROMSize++] = ROM[StartMirror++];
+  }
+}
+
+//File loading code
+extern char *ZOpenFileName;
+bool Header512;
+
+void loadFile()
+{
+  bool multifile = false;
+  char *incrementer = 0;
+  unsigned char *ROM = (unsigned char *)romdata;
+
+  if (strlen(ZOpenFileName) >= 3) //Char + ".1"
+  {
+    char *ext = ZOpenFileName+strlen(ZOpenFileName)-2;
+    if (!strcmp(ext, ".1") || !strcasecmp(ext, ".A"))
+    {
+      incrementer = ext + 1;
+      multifile = true;
+    }
+  }
+
+  for (;;)
+  {
+    struct stat stat_results;
+    stat(ZOpenFileName, &stat_results);
+
+    if (stat_results.st_size <= maxromspace+512-curromspace)
+    {
+      FILE *fp = 0;
+      fp = fopen(ZOpenFileName, "rb");
+
+      if (!fp) { return; }
+
+      if (curromspace && ((stat_results.st_size & 0x7FFF) == 512))
+      {
+        stat_results.st_size -= 512;
+        fseek(fp, 512, SEEK_SET);
+      }
+        
+      fread(ROM+curromspace, stat_results.st_size, 1, fp);
+      fclose(fp);
+  
+      curromspace += stat_results.st_size;
+      
+      if (!multifile) { return; }
+      
+      (*incrementer)++;
+    }  
+    else
+    {
+      return;
+    }
+  }
+}
+
+void loadGZipFile()
+{
+  int size, err;
+  FILE *fp = 0;
+  fp = fopen(ZOpenFileName, "rb");
+  if (!fp) { return; }
+  fseek(fp, -4, SEEK_END);
+  size = fgetc(fp) | (fgetc(fp) << 8) | (fgetc(fp) << 16) | (fgetc(fp) << 24);
+  fclose(fp);
+
+  if (size > maxromspace+512) { return; }
+
+  //Open GZip file for decompression
+  gzFile GZipFile = gzopen(ZOpenFileName, "rb"); 
+    
+  //Decompress file into memory
+  err = gzread(GZipFile, romdata, size); 
+  
+  //Close compressed file
+  gzclose(GZipFile);
+
+  if (err != size) { return; }
+  
+  curromspace = size;
+}
+
+//void Output_Text();
+//asm volatile("movl _ZOpenFileName, %edx   \n"
+//             "movb $9, %ah                \n"
+//             "call _Output_Text           \n");
+//system("pause");
+
+void loadZipFile()
+{
+  int err, fileSize;
+  unsigned char *ROM = (unsigned char *)romdata;
+  bool multifile = false;  
+  char *incrementer = 0;
+
+  unzFile zipfile = unzOpen(ZOpenFileName); //Open zip file
+  int cFile = unzGoToFirstFile(zipfile); //Set cFile to first compressed file
+  unz_file_info cFileInfo; //Create variable to hold info for a compressed file
+
+  int LargestGoodFile = 0; //To keep track of largest file
+  
+  //Variables for the file we pick
+  char ourFile[256];
+  ourFile[0] = '\n';
+  
+  while(cFile == UNZ_OK) //While not at end of compressed file list
+  {
+    //Temporary char array for file name
+    char cFileName[256];
+
+    //Gets info on current file, and places it in cFileInfo
+    unzGetCurrentFileInfo(zipfile, &cFileInfo, cFileName, 256, NULL, 0, NULL, 0);
+
+    //Get the file's size
+    fileSize = cFileInfo.uncompressed_size;
+
+    //Find split files
+    if (strlen(cFileName) >= 3) //Char + ".1"
+    {
+      char *ext = cFileName+strlen(cFileName)-2;
+      if (!strcmp(ext, ".1") || !strcasecmp(ext, ".A"))
+      {
+        strcpy(ourFile, cFileName);
+        incrementer = ourFile+strlen(ourFile)-1;
+        multifile = true;
+        break;
+      } 
+    }
+
+    //Find Nintendo Super System ROMs
+    if (strlen(cFileName) >= 5) //Char + ".IC2"
+    {
+      char *ext = cFileName+strlen(cFileName)-4;  
+      if (!strcasecmp(ext, ".IC3"))
+      {
+        strcpy(ourFile, cFileName);
+        incrementer = ourFile+strlen(ourFile)-1;
+        multifile = true;
+        break;
+      }
+    }
+
+    //Check for valid ROM based on size
+    if ((fileSize < maxromspace+512) && fileSize > LargestGoodFile)
+    {
+      strcpy(ourFile, cFileName);
+      LargestGoodFile = fileSize;
+    }    
+
+    //Go to next file in zip file 
+    cFile = unzGoToNextFile(zipfile); 
+  }
+  
+  //No files found
+  if (ourFile[0] == '\n')
+  {
+    unzClose(zipfile);
+    return;
+  }
+
+  for (;;)
+  {
+    //Sets current file to the file we liked before
+    if (unzLocateFile(zipfile, ourFile, 1) != UNZ_OK)
+    { 
+      unzClose(zipfile);
+      return;
+    }
+
+    //Gets info on current file, and places it in cFileInfo
+    unzGetCurrentFileInfo(zipfile, &cFileInfo, ourFile, 256, NULL, 0, NULL, 0);
+
+    //Get the file's size
+    fileSize = cFileInfo.uncompressed_size;
+
+    //Too big?
+    if (curromspace + fileSize > maxromspace+512)
+    { 
+      unzClose(zipfile);
+      return;
+    }
+
+    //Open file
+    unzOpenCurrentFile(zipfile);
+    
+    //Read file into memory
+    err = unzReadCurrentFile(zipfile, ROM+curromspace, fileSize);
+
+    //Close file
+    unzCloseCurrentFile(zipfile);
+
+    //Encountered error?
+    if (err != fileSize)
+    { 
+      unzClose(zipfile);
+      return;
+    }
+
+    if (curromspace && ((fileSize & 0x7FFF) == 512))
+    {
+      fileSize -= 512;
+      memmove(ROM+curromspace, ROM+curromspace+512, fileSize);
+    }
+
+    curromspace += fileSize;
+
+    if (!multifile)
+    { 
+      unzClose(zipfile);
+      return;
+    }
+
+    (*incrementer)++;
+    //Code to find next ROM for NSS games
+    if ((incrementer[-1] == 'C' || incrementer[-1] == 'c'))
+    {
+      if (*incrementer == '4') { *incrementer = '2'; }
+      if (*incrementer == '3') { *incrementer = '8'; }
+    }
+  }
+}
+
+extern bool Sup48mbit;
+extern bool Sup16mbit;
+void loadROM()
+{
+  bool isCompressed = false;
+
+  curromspace = 0;
+
+  maxromspace = 4194304;
+  if (Sup48mbit) { maxromspace += 2097152; }
+  if (Sup16mbit) { maxromspace -= 2097152; } //I don't get it either
+
+  if (strlen(ZOpenFileName) >= 5) //Char + ".zip"
+  {
+    char *ext = ZOpenFileName+strlen(ZOpenFileName)-4;
+    if (!strcasecmp(ext, ".zip"))
+    { 
+      isCompressed = true;
+      loadZipFile();
+    }
+  }
+
+  if (strlen(ZOpenFileName) >= 4) //Char + ".gz"
+  {
+    char *ext = ZOpenFileName+strlen(ZOpenFileName)-3;
+    if (!strcasecmp(ext, ".gz"))
+    { 
+      isCompressed = true;
+      loadGZipFile();
+    }
+  }
+  
+  if (!isCompressed) { loadFile(); }
+
+  Header512 = false;
+  
+  if (!curromspace) { return; }
+  
+  if (!strncmp("GAME DOCTOR SF 3", (char *)romdata, 16) ||
+      !strncmp("SUPERUFO", (char *)romdata+8, 8))
+  {    
+    Header512 = true;
+  } 
+  else
+  {
+    int HeadRemain = (curromspace & 0x7FFF);
+	switch(HeadRemain)
+    {
+      case 0:
+	  break;
+				
+	  case 512:
+      Header512 = true;
+      break;
+    
+      default:
+      //SMC/SWC header
+      if (romdata[8] == 0xAA && romdata[9]==0xBB && romdata[10]== 4)
+      {
+        Header512 = true;
+      }
+      //FIG header
+      else if ((romdata[4] == 0x77 && romdata[5] == 0x83) ||
+               (romdata[4] == 0xDD && romdata[5] == 0x82) ||
+               (romdata[4] == 0xDD && romdata[5] == 2) ||
+               (romdata[4] == 0xF7 && romdata[5] == 0x83) ||
+               (romdata[4] == 0xFD && romdata[5] == 0x82) ||
+               (romdata[4] == 0x00 && romdata[5] == 0x80) ||
+               (romdata[4] == 0x47 && romdata[5] == 0x83) ||
+               (romdata[4] == 0x11 && romdata[5] == 2))
+      {
+        Header512 = true;
+      }
+      break;
+    }
+  }
+     
+  if (Header512)
+  {   
+    curromspace -= 512;
+    memmove((unsigned char *)romdata, ((unsigned char *)romdata)+512, curromspace);  
   }
 }
 
@@ -687,3 +1004,4 @@ void Setper2exec()
     opexec268cph = opexec268cph*(per2exec*0.01);
     opexec358cph = opexec358cph*(per2exec*0.01);
 }
+

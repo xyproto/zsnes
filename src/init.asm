@@ -113,6 +113,16 @@ EXTSYM sramaccessbankw8,sramaccessbankw8s,GenerateBank0TableSA1
 EXTSYM ScrDispl,wramreadptr,wramwriteptr
 EXTSYM pl1Ltk,pl1Rtk,pl2Ltk,pl2Rtk,pl3Ltk,pl3Rtk,pl4Ltk,pl4Rtk,pl5Ltk,pl5Rtk
 EXTSYM loadstate2, headerhack
+;initc.c
+EXTSYM clearmem
+EXTSYM PatchUsingIPS
+EXTSYM loadZipFile
+EXTSYM ZOpenFileName
+EXTSYM loadROM
+EXTSYM CalcChecksum
+EXTSYM BankCheck
+EXTSYM MirrorROM
+
 %ifdef __LINUX__
 EXTSYM LoadDir, popdir, pushdir
 %endif
@@ -192,7 +202,6 @@ NEWSYM init
     dec ecx
     jnz .rbackupl
     mov byte[virqnodisable],0
-    EXTSYM clearmem
     pushad
     call clearmem
     popad
@@ -487,6 +496,7 @@ ebm db 166,95,66,223,17,11,103,180,156,68,108,120,138,55,203,205,178,210,39,252,
 
 
 SECTION .text
+
 
 ;*******************************************************
 ; Read Input Device            Reads from Keyboard, etc.
@@ -1700,12 +1710,15 @@ setwram1fff:
 SECTION .bss
 NEWSYM curromsize, resb 1
 NEWSYM cromptradd, resd 1
+NEWSYM NoiseDisTemp, resd 2
 NEWSYM lorommapmode2, resb 1
 NEWSYM MMXSRAMFix, resb 1
 SECTION .text
 
 NEWSYM initsnes
     mov byte[ForceNewGfxOff],0
+    mov dword[NoiseDisTemp],0
+    mov dword[NoiseDisTemp+4],0
     mov byte[MMXSRAMFix],0
 
     ;Megaman/Rockman X
@@ -1961,6 +1974,8 @@ NEWSYM initsnes
     mov byte[opexec358],187
     mov byte[opexec268cph],30
     mov byte[opexec358cph],30
+    mov dword[NoiseDisTemp],01000101h
+    mov dword[NoiseDisTemp+4],01h
 
     mov edi,memtabler8+40h*4
     mov ecx,30h
@@ -2879,7 +2894,6 @@ NEWSYM PatchIPS
 %endif
     mov edx,fname+1
     mov [patchfile],edx
-    EXTSYM PatchUsingIPS
     pushad
     call PatchUsingIPS
     popad
@@ -2894,7 +2908,6 @@ NEWSYM PatchIPS
     ret
 
 SECTION .bss
-NEWSYM Header512, resb 1
 NEWSYM Prevextn,  resd 1
 NEWSYM IPSPatched, resb 1
 SECTION .text
@@ -2999,8 +3012,6 @@ SECTION .data
 .opened db 'File opened successfully!',13,10,0
 .mult   db 'Multiple file format detected.',13,10,13,10,0
 SECTION .bss
-.multfound resb 1
-.first resb 1
 .cchar resb 1
 .dotpos resd 1
 .curfileofs resd 1
@@ -3020,278 +3031,15 @@ InGUI resb 1
 
 SECTION .data
 
-%ifdef __LINUX__
-tempdirname db '/tmp/zziptmp',0
-%else
-tempdirname db 'zziptmp_.__z',0
-%endif
 PrevDir db '..',0
-
-
 GUIfindBlank db '*.',0
 
 SECTION .text
-
-%macro UnZipSearch 1
-    mov cx,20h
-    mov edx,%1
-    call Get_First_Entry
-    jc %%notfound
-    test byte[DTALoc+15h],10h
-    jnz %%notfound
-    jmp .found
-%%notfound
-%endmacro
 
 SECTION .bss
 ZipError resb 1
 
 SECTION .text
-
-UnZipFile:
-;    cmp byte[OSPort],1
-;    jne .noasm
-;    mov ax,03h
-;    int 10h
-;    mov edx,InvalidZip
-;    call PrintStr
-;    jmp DosExit
-;.noasm
-    ; get Drive/Dir
-%ifdef __LINUX__
-    mov ebx,GUIcurrentdir
-%else
-    mov ebx,GUIcurrentdir+3
-%endif
-    mov edx,GUIcurrentdir
-    call Get_Dir
-%ifndef __LINUX__
-    add byte[GUIcurrentdir],65
-%endif
-    cmp byte[InGUI],0
-    je near .nochange
-    ; locate end of string & append filename
-%ifdef __LINUX__
-    mov eax,GUIcurrentdir
-%else
-    mov eax,GUIcurrentdir+3
-%endif
-.loop
-    cmp byte[eax],0
-    je .endfound
-    inc eax
-    jmp .loop
-.endfound
-    cmp byte[eax-2],':'
-    je .noaddslash
-%ifdef __LINUX__
-    mov byte[eax],'/'
-%else
-    mov byte[eax],'\'
-%endif
-    inc eax
-.noaddslash
-    mov ebx,fname+1
-.loopb
-    mov cl,[ebx]
-    mov [eax],cl
-    or cl,cl
-    jz .zero
-    inc eax
-    inc ebx
-    jmp .loopb
-.zero
-    ; Change to Save Directory
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
-.nochange
-    ; Change to Temp Directory
-    mov edx,tempdirname
-    call Change_Single_Dir
-    jnc near .notfail
-    ; Create Temp Directory
-    mov edx,tempdirname
-    call Create_Dir
-;    jc near .fail
-    ; Change to Temp Directory
-    mov edx,tempdirname
-    call Change_Single_Dir
-    jc near .fail
-.notfail
-
-;    mov ax,03h
-;    int 10h
-;    mov edx,GUIcurrentdir
-;    call PrintStr
-;    jmp DosExit
-
-    ; Erase contents of the zip directory if there are any stuff
-    mov esi,mode7tab
-    call ZipDeleteRecurse
-
-    ; UnZip File
-    mov eax,GUIcurrentdir
-    cmp byte[InGUI],1
-    je .nogui
-    mov eax,fname+1
-.nogui
-    push eax
-    call extractzip
-    pop eax
-    cmp byte[ZipError],0
-    jne near .failed
-
-
-    ; Find valid rom file
-    UnZipSearch GUIsmcfind
-    UnZipSearch GUIsfcfind
-    UnZipSearch GUIswcfind
-    UnZipSearch GUIfigfind
-    UnZipSearch GUImgdfind
-    UnZipSearch GUIufofind
-    UnZipSearch GUIfind058
-    UnZipSearch GUIfind078
-    UnZipSearch GUIfindUSA
-    UnZipSearch GUIfindEUR
-    UnZipSearch GUIfindJAP
-    UnZipSearch GUIfindBIN
-    UnZipSearch GUIfindZIP
-    UnZipSearch GUIfind1
-    UnZipSearch GUIfindIC7
-    UnZipSearch GUIfindIC6
-    UnZipSearch GUIfindIC5
-    UnZipSearch GUIfindIC4
-    UnZipSearch GUIfindIC3
-    UnZipSearch GUIfindIC2
-    UnZipSearch GUIfindIC1
-    UnZipSearch GUIfindBlank
-.failed
-    call ZipDelete
-    jmp .fail
-.found
-    mov byte[ZipSupport],1
-    mov edx,DTALoc+1Eh
-    mov eax,fname+1
-.continue
-    mov bl,[edx]
-    mov [eax],bl
-    inc eax
-    inc edx
-    or bl,bl
-    jnz .continue
-    ret
-    mov ax,3
-    int 10h
-    mov edx,DTALoc+1Eh
-;    mov edx,GUIcurrentdir
-    call PrintStr
-    jmp DosExit
-.fail
-    mov byte[ZipSupport],2
-    ret
-
-%ifdef __LINUX__
-GUIfindIC7 db '*.[Ii][Cc]7',0
-GUIfindIC6 db '*.[Ii][Cc]6',0
-GUIfindIC5 db '*.[Ii][Cc]5',0
-GUIfindIC4 db '*.[Ii][Cc]4',0
-GUIfindIC3 db '*.[Ii][Cc]3',0
-GUIfindIC2 db '*.[Ii][Cc]2',0
-GUIfindIC1 db '*.[Ii][Cc]1',0
-%else
-GUIfindIC7 db '*.iC7',0
-GUIfindIC6 db '*.iC6',0
-GUIfindIC5 db '*.iC5',0
-GUIfindIC4 db '*.iC4',0
-GUIfindIC3 db '*.iC3',0
-GUIfindIC2 db '*.iC2',0
-GUIfindIC1 db '*.iC1',0
-%endif
-
-ZipDelete:
-    mov esi,mode7tab
-    call ZipDeleteRecurse
-    mov edx,PrevDir
-    call Change_Single_Dir
-    mov edx,tempdirname
-    call Remove_Dir
-    call Makemode7Table
-    ret
-
-SECTION .bss
-tempzip resb 1
-SECTION .text
-
-ZipDeleteRecurse:
-    ; Find all directories
-    mov edx,GUIfindall
-    mov cx,10h
-    call Get_First_Entry
-    jc near .notfounddir
-.moreentries2
-    test byte[DTALoc+15h],10h
-    jz .nodir
-    cmp byte[DTALoc+1Eh],'.'
-    jne .founddir
-.nodir
-    call Get_Next_Entry
-    jnc .moreentries2
-    jmp .notfounddir
-.founddir
-
-    cmp byte[tempzip],3
-    jne .notone
-%ifndef __LINUX__ 
-    mov ax,03h
-    int 10h
-%endif
-    jmp DosExit
-.notone
-
-    push edx
-    mov ecx,43
-    mov edi,DTALoc
-.loop
-    mov al,[edi]
-    mov [esi],al
-    inc edi
-    inc esi
-    dec ecx
-    jnz .loop
-    mov edx,DTALoc+1Eh
-    call Change_Single_Dir
-
-    inc byte[tempzip]
-
-    call ZipDeleteRecurse
-    sub esi,43
-    mov edx,PrevDir
-    call Change_Single_Dir
-    mov edx,esi
-    add edx,1Eh
-    call Remove_Dir
-    jc .faildirdel
-    pop edx
-    jmp ZipDeleteRecurse
-.faildirdel
-    pop edx
-.notfounddir
-
-    ; ah = 41h, edx = ptr to file
-    mov cx,20h
-    mov edx,GUIfindall
-    call Get_First_Entry
-    jc .notfound
-.moreentries
-    push edx
-    mov edx,DTALoc+1Eh
-    call Delete_File
-    pop edx
-    call Get_Next_Entry
-    jnc .moreentries
-.notfound
-    ret
 
 SECTION .data
 
@@ -3653,246 +3401,27 @@ NEWSYM loadfileGUI
     je .nosound
     mov byte[spcon],1
 .nosound
-    ; determine if it's a .zip file or not
-    mov eax,fname
-    mov byte[ZipSupport],0
-.ziploop
-    inc eax
-    cmp byte[eax],0
-    jne .ziploop
-    sub eax,4
-;    cmp byte[eax+1],'.'
-;    jne .finishzipd2
-;    cmp byte[eax+2],'g'
-;    je .zokay4
-;    cmp byte[eax+2],'G'
-;    jne .finishzipd2
-;.zokay4
-;    cmp byte[eax+3],'z'
-;    je .zokay5
-;    cmp byte[eax+3],'Z'
-;    jne .finishzipd2
-;.zokay5
-;    jmp .zokay3
-.finishzipd2
-    cmp byte[eax],'.'
-    jne near .finishzipd
-    inc eax
-    cmp byte[eax],'z'
-    je .zokay1
-    cmp byte[eax],'Z'
-    jne .finishzipd
-.zokay1
-    inc eax
-    cmp byte[eax],'i'
-    je .zokay2
-    cmp byte[eax],'I'
-    jne .finishzipd
-.zokay2
-    inc eax
-    cmp byte[eax],'p'
-    je .zokay3
-    cmp byte[eax],'P'
-    jne .finishzipd
-.zokay3
-    call UnZipFile
-    cmp byte[ZipSupport],2
-    jne .finishzipd
-    cmp byte[InGUI],1
-    je .zipfail
-    jmp .failed
-.zipfail
-    ret
-.finishzipd
+
     mov byte[TextFile], 0
     mov dword[MessageOn],0
     mov byte[loadedfromgui],1
-    mov byte[Header512],0
     mov byte[yesoutofmemory],0
     mov byte[.fail],0
-    ; determine header size
-    mov dword[.curfileofs],0
-    mov byte[.first],1
-    mov byte[.multfound],0
-    mov dword[curromspace],0
-    ; open file
-    mov edx,fname+1
-    call Open_File
-    jc near .failed
-.nextfile
-    cmp byte[.first],1
-    je .nomul
-    cmp byte[.multfound],0
-    jne .nomul
-    push eax
-    push edx
-    mov byte[.multfound],1
-    cmp byte[InGUI],1
-    je .ingui
-;    mov edx,.mult
-;    mov ah,9         
-;    call Output_Text
-.ingui
-    pop edx
-    pop eax
-.nomul
-    mov bx,ax
-    mov ecx,4194304+32768
-    cmp byte[Sup48mbit],0
-    je .no48mb
-    add ecx,2097152
-.no48mb
-    cmp byte[Sup16mbit],0
-    je .no16mb
-    sub ecx,2097152
-.no16mb
-    mov [maxromspace],ecx
-    sub dword[maxromspace],32768
-    sub ecx,[.curfileofs]
-    jnc .nooverflow
-    xor ecx,ecx
-.nooverflow
-    mov edx,[headdata]
-    add edx,[.curfileofs]
-    call Read_File
-    jc near .failed
 
-    or eax,eax
-    jz near .success2
-    add dword[curromspace],eax
-    mov esi,[headdata]
-    add esi,[.curfileofs]
-    mov edi,[headdata]
-    add edi,[.curfileofs]
-    add [.curfileofs],eax
-    mov ecx,eax
-    and ecx,32767
-    cmp ecx,512
-    je near .yesheader
-    ; check if .smc header
-    push esi
-    push eax
-    push ebx
-    xor ecx,ecx
-    mov ebx,512
-.nextzerocheck
-    cmp byte[esi],0
-    jne .notzero
-    inc ecx
-.notzero
-    inc esi
-    dec ebx
-    jnz .nextzerocheck
-    pop ebx
-    pop eax
-    pop esi
-    cmp ecx,450
-    jb .nomove
-.yesheader
-    mov byte[Header512],1
-    mov edi,esi
-    add edi,512
-    sub eax,512
-    ; move eax # of bytes from edi to esi
-    sub dword[curromspace],512
-    sub dword[.curfileofs],512
-.next
-    mov cl,[edi]
-    mov [esi],cl
-    inc esi
-    inc edi
-    dec eax
-    jnz .next
-.nomove
-    mov ecx,1
-    mov edx,.temp
-    call Read_File
-    cmp eax,0
-    je .success
-    mov byte[.fail],1
-    jmp .success
-.success2
-    mov byte[.fail],0
-.success
-    call Close_File
-    jc near .failed
-    ; check for 2nd+ part of file
-    mov edi,fname+1
-    mov byte[.cchar],'\'
-    ; get position of . or \ (You suck nasm)
-.nextsearch
-    cmp byte[edi],0
-    je .nomore
-    cmp byte[edi],'.'
-    jne .notdot
-    mov byte[.cchar],'.'
-    mov [.dotpos],edi
-.notdot
-    cmp byte[edi],'\'
-    jne .notslash
-    mov byte[.cchar],'\'
-.notslash
-    inc edi
-    jmp .nextsearch
-.nomore
-    cmp byte[.cchar],'\'
-    jne .noslashb
-    mov [.dotpos],edi
-.noslashb
-    mov edi,[.dotpos]
-    ; search for .1, .2, etc.
-    cmp byte[edi],'.'
-    jne .nonumer
-    cmp byte[edi+1],'1'
-    jb .nonumer
-    cmp byte[edi+1],'8'
-    ja .nonumer
-    cmp byte[edi+2],0
-    jne .nonumer
-    inc byte[edi+1]
-    xor ecx,ecx
-    mov byte[.first],2
     mov edx,fname+1
-    call Open_File
-    jnc near .nextfile
-    dec byte[edi+1]
-.nonumer
-    mov edi,[.dotpos]
-    ; search for ICx files
-    cmp byte[edi],'.'
-    jne .noicfile
-    cmp byte[edi+3],'1'
-    jb .noicfile
-    cmp byte[edi+3],'7'
-    ja .noicfile
-    cmp byte[edi+4],0
-    jne .noicfile
-    dec byte[edi+3]
-    xor ecx,ecx
-    mov byte[.first],2
-    mov edx,fname+1
-    call Open_File
-    jnc near .nextfile
-    inc byte[edi+3]
-.noicfile
-    ; search for A,B,C, etc.
-    cmp byte[.first],0
-    je .yesgd
-    cmp byte[edi-1],'A'
-    je .yesgd
-    cmp byte[edi-1],'a'
-    je .yesgd
-    jmp .nogdformat
-.yesgd
-    mov byte[.first],0
-    inc byte[edi-1]
-    mov edx,fname+1
-    call Open_File
-    jnc near .nextfile
-    dec byte[edi-1]
-.nogdformat
-    mov byte[TextFile], 1
-    mov byte[IPSPatched],0
+    mov dword[ZOpenFileName],edx
+    pushad
+    call loadROM
+    popad
+
+    cmp dword[curromspace],0
+    je .failed
+
+
+    ;dec dword[curromspace]
+    mov eax,dword[curromspace]
+    mov dword[.curfileofs],eax
+    dec dword[.curfileofs]
 
     mov byte[lorommapmode2],0
     mov esi,[romdata]
@@ -3950,12 +3479,6 @@ NEWSYM loadfileGUI
     dec ecx
     jnz .loopcheck
 .skipall
-
-    cmp byte[ZipSupport],1
-    jne .nottempdirdel
-    call PatchIPS
-    call ZipDelete
-.nottempdirdel
 
     call convertsram
     mov byte[SramExists],0
@@ -4019,10 +3542,6 @@ NEWSYM loadfileGUI
     ret
 
 .failed
-    cmp byte[ZipSupport],1
-    jne .nottempdirdelb
-    call ZipDelete
-.nottempdirdelb
 .failed2
     cmp byte[InGUI],1
     je .noguic
@@ -4040,8 +3559,6 @@ SECTION .data
 
 SECTION .bss
 
-.multfound resb 1
-.first resb 1
 .cchar resb 1
 .dotpos resd 1
 .curfileofs resd 1
@@ -4350,7 +3867,6 @@ NEWSYM showinfogui
     shr ecx,2
     jnz .crcprintloop
 
-    EXTSYM CalcChecksum
     pushad
     call CalcChecksum
     popad
@@ -4911,12 +4427,10 @@ NEWSYM CheckROMType
     call SetAddressingModes
     call GenerateBank0Table
 
-    EXTSYM BankCheck
     pushad
     call BankCheck
     popad    
 
-    EXTSYM MirrorROM
     pushad
     call MirrorROM
     popad    
@@ -5175,8 +4689,8 @@ NEWSYM CheckROMType
     je .initdsp
     cmp byte[DSP3Enable],1
     je .initdsp
-    cmp byte[DSP4Enable],1
-    je .initdsp
+    cmp byte[DSP4Enable],0
+    je .notDSP1Hi
 ;   call InitDSP4
     jmp .notDSP1Hi
 .initdsp
