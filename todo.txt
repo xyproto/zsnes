@@ -14,6 +14,7 @@ Windows Port:
 - Glide,OpenGL, or Direct3D support would be nice
 - .ZIPed files seems to not work on certain Win2K configurations
 - Use another (free) compiler for the windows version (cygwin?)
+- Auto-detect high/low latency connections and adjust settings accordingly
 
 General
 - Maybe add in Cubic Spline Interpolation to the SNES DSP Sound processor
