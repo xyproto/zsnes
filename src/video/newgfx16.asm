@@ -3511,7 +3511,6 @@ MainScreenClip:
     add esi,288*2
     cmp [resolutn],bx
     jne near .nextline
-;    ret
 
 SubScreenClip:
     mov esi,[vidbuffer]
