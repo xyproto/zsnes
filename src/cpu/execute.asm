@@ -391,7 +391,7 @@ NEWSYM ResetExecStuff
   mov dword[nmistatus],0
   mov byte[NextLineCache],0
   mov dword[spcnumread],0
-;  mov dword[spchalted],-1
+  mov dword[spchalted],-1
   mov dword[timer2upd],0
   mov dword[HIRQCycNext],0
   mov byte[HIRQNextExe],0
