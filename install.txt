@@ -12,11 +12,7 @@ win version, I hope it will also work for you
 First, you need the following software:
 
 Dos port : 
-- NASM v0.98 : http://www.kernel.org/pub/software/devel/nasm/
-                   the version found on http://nasm.2y.net/ DOES NOT WORK
-                   with zsnes sources. When you type nasm -r, you must get
-                   'NASM version 0.98' and not 'NASM version 0.98.08' if you
-                   have the correct version
+- NASM v0.98 or higher
 - DJGPP v2 or higher, (GCC also installed) : http://www.delorie.com/djgpp/
                    using the zip picker, the default choices are ok if you
                    check C and C++ in the programming languages. You also need 
