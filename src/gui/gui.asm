@@ -2825,13 +2825,6 @@ guipostvideo:
     dec ecx
     jnz .loop
 
-    xor ebx,ebx
-    mov ecx,256
-.a
-    mov byte[pressed+ebx],0
-    inc ebx
-    dec ecx
-    jnz .a
     mov dword[GUIkeydelay],36*10
 
 .pressedfail
@@ -2853,6 +2846,7 @@ guipostvideo:
     cmp dword[GUIkeydelay],0
     je .pressedokay
     
+    mov byte[pressed+39h],0    
     call JoyRead
     cmp byte[pressed+39h],0
     jne .pressedokay
