@@ -298,24 +298,13 @@ short Op04Cos;
 
 void DSPOp04()
 {
-   Op04Sin=SinTable2[(Op04Angle/256)&255]*Op04Radius/65536;
-   Op04Cos=CosTable2[(Op04Angle/256)&255]*Op04Radius/65536;
+   Op04Sin=sin(Op04Angle*6.2832/65536.0)*Op04Radius;
+   Op04Cos=cos(Op04Angle*6.2832/65536.0)*Op04Radius;
    #ifdef DebugDSP1
       Log_Message("OP04 Angle:%d Radius:%d",(Op04Angle/256)&255,Op04Radius);
       Log_Message("OP04 SIN:%d COS:%d",Op04Sin,Op04Cos);
    #endif
 }
-
-
-/*DSPOp08Radius()
-{
-   Op08Size=(Op08X*Op08X+Op08Y*Op08Y+Op08Z*Op08Z)*2;
-
-   #ifdef DebugDSP1
-      Log_Message("OP08 %d,%d,%d",Op08X,Op08Y,Op08Z);
-      Log_Message("OP08 ((Op08X^2)+(Op08Y^2)+(Op08X^2))*2=%d",Op08Size );
-   #endif
-}*/
 
 unsigned short Op0CA;
 short Op0CX1;
@@ -325,8 +314,8 @@ short Op0CY2;
 
 void DSPOp0C()
 {
-   Op0CX2=(Op0CX1*CosTable2[(Op0CA/256)&255]+Op0CY1*SinTable2[(Op0CA/256)&255])/65536;
-   Op0CY2=(Op0CX1*-SinTable2[(Op0CA/256)&255]+Op0CY1*CosTable2[(Op0CA/256)&255])/65536;
+   Op0CX2=(Op0CX1*cos(Op0CA*6.2832/65536.0)+Op0CY1*sin(Op0CA*6.2832/65536.0))/65536.0;
+   Op0CY2=(Op0CX1*-sin(Op0CA*6.2832/65536.0)+Op0CY1*cos(Op0CA*6.2832/65536.0))/65536.0;
    #ifdef DebugDSP1
       Log_Message("OP0C Angle:%d X:%d Y:%d CX:%d CY:%d",(Op0CA/256)&255,Op0CX1,Op0CY1,Op0CX2,Op0CY2);
    #endif
@@ -584,41 +573,6 @@ int Temp;
 
 void DSPOp06()
 {
-
-/*   ObjPX=(Op06X-CenterX);
-   ObjPY=-(Op06Y-CenterY);
-   ObjPZ=-(Op06Z-0);
-
-   // rotate around Z
-   tanval = (Op02AAS)/65536.0*6.2832;
-   ObjPX1=(ObjPX*cos(tanval)+ObjPY*-sin(tanval));
-   ObjPY1=(ObjPX*sin(tanval)+ObjPY*cos(tanval));
-   ObjPZ1=ObjPZ;
-
-   // rotate around Y
-//   ObjPX2=ObjPX1;
-//   ObjPY2=(ObjPY1*cos((-Op02AZS)/65536.0*6.2832)+ObjPZ1*-sin((-Op02AZS)/65536.0*6.2832));
-//   ObjPZ2=(ObjPY1*sin((-Op02AZS)/65536.0*6.2832)+ObjPZ1*cos((-Op02AZS)/65536.0*6.2832));
-   // Rotate around X
-   tanval=((Op02AZS-16384.0))/65536.0*6.2832;
-   ObjPX2=ObjPX1;
-   ObjPY2=ObjPY1*cos(tanval)+ObjPZ1*-sin(tanval);
-   ObjPZ2=ObjPY1*sin(tanval)+ObjPZ1*cos(tanval);
-
-//   ObjPZ2=ObjPZ2-Op02LFE;
-
-   if (ObjPY2>0)
-   {
-      Op06H=(short)(ObjPX2*Op02LES/(ObjPY2)); //-ObjPX2*256/-ObjPZ2;
-      Op06V=(short)(ObjPZ2*Op02LES/(ObjPY2)); //-ObjPY2*256/-ObjPZ2;
-      Op06S=(unsigned short)(256*(double)Op02LES/ObjPY2);
-   }
-   else
-   {
-      Op06H=0;
-      Op06V=14*16;
-   }*/
-
 
    ObjPX=Op06X-Op02FX;
    ObjPY=Op06Y-Op02FY;
