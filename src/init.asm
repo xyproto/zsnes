@@ -34,7 +34,7 @@ EXTSYM NewEngEnForce
 EXTSYM PrintChar
 EXTSYM TextFile
 EXTSYM mode7tab
-EXTSYM per2exec
+EXTSYM Setper2exec,per2exec
 EXTSYM MovieCounter
 EXTSYM chaton
 EXTSYM JoyRead,JoyReadControl,joy4218,joy4219
@@ -204,7 +204,9 @@ NEWSYM init
     call copyexecloop
     call procexecloop
     ; SNES Init
+    pushad
     call Setper2exec
+    popad
     call Makemode7Table
     call makesprprtable
     cmp byte[fname],0
@@ -485,62 +487,6 @@ ebm db 166,95,66,223,17,11,103,180,156,68,108,120,138,55,203,205,178,210,39,252,
 
 
 SECTION .text
-
-;*******************************************************
-; Set percent to execute
-;*******************************************************
-NEWSYM Setper2exec
-    cmp byte[per2exec],100
-    jne .not100
-    ret
-.not100
-    ; Decrease standard % of execution by 5% to replace branch and 16bit
-    ;   cycle deductions
-    xor ax,ax
-    mov al,[opexec268]
-    mov bl,95
-    mul bl
-    mov bl,100
-    div bl
-    mov bl,[per2exec]
-    mul bl
-    mov bl,100
-    div bl
-    mov [opexec268b],al
-    xor ax,ax
-    mov al,[opexec358]
-    mov bl,87 ;82
-    mul bl
-    mov bl,100
-    div bl
-    mov bl,[per2exec]
-    mul bl
-    mov bl,100
-    div bl
-    mov [opexec358b],al
-    xor ax,ax
-    mov al,[opexec268cph]
-    mov bl,95
-    mul bl
-    mov bl,100
-    div bl
-    mov bl,[per2exec]
-    mul bl
-    mov bl,100
-    div bl
-    mov [opexec268cphb],al
-    xor ax,ax
-    mov al,[opexec358cph]
-    mov bl,87 ;82
-    mul bl
-    mov bl,100
-    div bl
-    mov bl,[per2exec]
-    mul bl
-    mov bl,100
-    div bl
-    mov [opexec358cphb],al
-    ret
 
 ;*******************************************************
 ; Read Input Device            Reads from Keyboard, etc.

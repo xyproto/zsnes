@@ -18,6 +18,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include <string.h>
+#include <windows.h>
 
 //C++ style code in C
 #define bool unsigned char
@@ -678,3 +679,12 @@ void headerhack()
   return;
 }
 
+extern unsigned char per2exec;
+
+void Setper2exec()
+{
+    opexec268 = opexec268*(per2exec*0.01);
+    opexec358 = opexec358*(per2exec*0.01);
+    opexec268cph = opexec268cph*(per2exec*0.01);
+    opexec358cph = opexec358cph*(per2exec*0.01);
+}
