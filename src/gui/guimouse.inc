@@ -3272,6 +3272,8 @@ DisplayGUISaveClick:
     GUIClickCButton 11,80,byte[SRAMState]
     GUIPHoldbutton2 143,22,151,30,70,byte[RewindStates],1,25
     GUIPHoldbutton2 154,22,162,30,71,byte[RewindStates],-1,0
+    GUIPHoldbutton2 173,32,181,40,72,byte[RewindFrames],1,40
+    GUIPHoldbutton2 184,32,192,40,73,byte[RewindFrames],-1,0
     ret
 
 DrawMouse:
