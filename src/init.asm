@@ -1466,6 +1466,23 @@ NEWSYM headerhack
     mov byte[MMXSRAMFix],0
 
     mov esi,[romdata]
+    add esi,0FFC0h
+    cmp dword[esi],'HORA'
+    jne .nothorai-gakuen
+    cmp dword[esi+4],'I-GA'
+    jne .nothorai-gakuen
+    cmp dword[esi+8],'KUEN'
+    jne .nothorai-gakuen
+    cmp dword[esi+12],'    '
+    jne .nothorai-gakuen
+    mov al,0h
+    mov edi,spcRam
+    mov ecx,65472
+    rep stosb
+    ret
+.nothorai-gakuen
+
+    mov esi,[romdata]
     add esi,07FC0h
     cmp dword[esi],'DIGI'
     jne .notdigitaldevilstory
