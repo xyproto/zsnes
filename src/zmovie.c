@@ -488,34 +488,37 @@ static struct
   char *filename;
 } zmv_vars;
 
+static void save_last_joy_state(unsigned char *buffer)
+{
+  buffer[0] = (zmv_vars.last_joy_state.A >> 4) & 0xFF;
+  buffer[1] = ((zmv_vars.last_joy_state.A << 4) & 0xF0) | ((zmv_vars.last_joy_state.B >> 8) & 0x0F);
+  buffer[2] = zmv_vars.last_joy_state.B & 0xFF;
+  buffer[3] = (zmv_vars.last_joy_state.C >> 4) & 0xFF;
+  buffer[4] = ((zmv_vars.last_joy_state.C << 4) & 0xF0) | ((zmv_vars.last_joy_state.D >> 8) & 0x0F);
+  buffer[5] = zmv_vars.last_joy_state.D & 0xFF;
+  buffer[6] = (zmv_vars.last_joy_state.E >> 4) & 0xFF;
+  buffer[7] = (zmv_vars.last_joy_state.E << 4) & 0xF0;
+}
+
+static void load_last_joy_state(unsigned char *buffer)
+{
+  zmv_vars.last_joy_state.A = (((unsigned short)(buffer[0])) << 4) | ((buffer[1] & 0xF0) >> 4);
+  zmv_vars.last_joy_state.B = (((unsigned short)(buffer[1] & 0x0F)) << 8) | buffer[2];
+  zmv_vars.last_joy_state.C = (((unsigned short)(buffer[3])) << 4) | ((buffer[4] & 0xF0) >> 4);
+  zmv_vars.last_joy_state.D = (((unsigned short)(buffer[4] & 0x0F)) << 8) | buffer[5];
+  zmv_vars.last_joy_state.E = (((unsigned short)(buffer[6])) << 4) | ((buffer[7] & 0xF0) >> 4);
+}
+
 static void write_last_joy_state(FILE *fp)
 {
-  zmv_vars.write_buffer[0] = (zmv_vars.last_joy_state.A >> 4) & 0xFF;
-  zmv_vars.write_buffer[1] = ((zmv_vars.last_joy_state.A << 4) & 0xF0) | ((zmv_vars.last_joy_state.B >> 8) & 0x0F);
-  zmv_vars.write_buffer[2] = zmv_vars.last_joy_state.B & 0xFF;
-  zmv_vars.write_buffer[3] = (zmv_vars.last_joy_state.C >> 4) & 0xFF;
-  zmv_vars.write_buffer[4] = ((zmv_vars.last_joy_state.C << 4) & 0xF0) | ((zmv_vars.last_joy_state.D >> 8) & 0x0F);
-  zmv_vars.write_buffer[5] = zmv_vars.last_joy_state.D & 0xFF;
-  zmv_vars.write_buffer[6] = (zmv_vars.last_joy_state.E >> 4) & 0xFF;
-  zmv_vars.write_buffer[7] = (zmv_vars.last_joy_state.E << 4) & 0xF0;
-  
+  save_last_joy_state(zmv_vars.write_buffer);
   fwrite(zmv_vars.write_buffer, 8, 1, fp);
 }
 
 static void read_last_joy_state(FILE *fp)
 {
   fread(zmv_vars.write_buffer, 8, 1, fp);
-  
-  zmv_vars.last_joy_state.A = (((unsigned short)(zmv_vars.write_buffer[0])) << 4) | 
-                              ((zmv_vars.write_buffer[1] & 0xF0) >> 4);
-  zmv_vars.last_joy_state.B = (((unsigned short)(zmv_vars.write_buffer[1] & 0x0F)) << 8) |
-                              zmv_vars.write_buffer[2];
-  zmv_vars.last_joy_state.C = (((unsigned short)(zmv_vars.write_buffer[3])) << 4) | 
-                              ((zmv_vars.write_buffer[4] & 0xF0) >> 4);
-  zmv_vars.last_joy_state.D = (((unsigned short)(zmv_vars.write_buffer[4] & 0x0F)) << 8) |
-                              zmv_vars.write_buffer[5];
-  zmv_vars.last_joy_state.E = (((unsigned short)(zmv_vars.write_buffer[6])) << 4) | 
-                              ((zmv_vars.write_buffer[7] & 0xF0) >> 4);
+  load_last_joy_state(zmv_vars.write_buffer);
 }
 
 static void flush_input_buffer()
@@ -984,6 +987,69 @@ static size_t zmv_frames_replayed()
 
 /*
 
+Rewind related functions and vars
+
+*/
+
+unsigned char *zmv_rewind_buffer = 0;
+
+static void zmv_alloc_rewind_buffer(unsigned char rewind_states)
+{
+  zmv_rewind_buffer = (unsigned char *)malloc(16*rewind_states);
+}
+
+static void zmv_dealloc_rewind_buffer()
+{
+  if (zmv_rewind_buffer)
+  {
+    free(zmv_rewind_buffer);
+    zmv_rewind_buffer = 0;
+  }
+}
+
+void zmv_rewind_save(size_t state, bool playback)
+{
+  unsigned char *state_start_pos = zmv_rewind_buffer + 16*state;
+  size_t file_pos = ftell(zmv_vars.fp) + zmv_vars.write_buffer_loc;
+  
+  save_last_joy_state(state_start_pos);
+  memcpy(state_start_pos+8, &file_pos, 4);
+  memcpy(state_start_pos+12, playback ? &zmv_open_vars.frames_replayed : &zmv_vars.header.frames, 4);
+}
+
+void zmv_rewind_load(size_t state, bool playback)
+{
+  unsigned char *state_start_pos = zmv_rewind_buffer + 16*state;
+  size_t file_pos = 0;
+  
+  load_last_joy_state(state_start_pos);  
+  memcpy(&file_pos, state_start_pos+8, 4);
+  
+  if (playback)
+  {
+    memcpy(&zmv_open_vars.frames_replayed, state_start_pos+12, 4);
+    fseek(zmv_vars.fp, file_pos, SEEK_SET);
+  }
+  else
+  {
+    size_t frame = 0;
+    memcpy(&frame, state_start_pos+12, 4);
+    zmv_vars.header.rerecords++;
+    zmv_vars.header.removed_frames += zmv_vars.header.frames - frame;
+    zmv_vars.header.frames = frame;
+    
+    flush_input_buffer();
+    
+    fseek(zmv_vars.fp, file_pos, SEEK_SET);
+    ftruncate(fileno(zmv_vars.fp), file_pos);
+    
+    zmv_vars.header.internal_chapters = internal_chapter_delete_after(&zmv_vars.internal_chapters, file_pos);
+    zmv_vars.last_internal_chapter_offset = internal_chapter_lesser(&zmv_vars.internal_chapters, ~0);
+  }
+}
+
+/*
+
 Save and load MZT
 
 */
@@ -1378,6 +1444,7 @@ void Replay()
     MovieProcessing = 0;
     
     zmv_replay_finished();
+    zmv_dealloc_rewind_buffer();
     MovieSub_Close();  
     SRAMState = PrevSRAMState;
   }
@@ -1420,6 +1487,7 @@ void MovieStop()
       }
       break;
   }
+  zmv_dealloc_rewind_buffer();
   MovieProcessing = 0;
 }
 
@@ -1428,6 +1496,7 @@ extern unsigned int nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
 extern unsigned char GUIQuit, fnamest[512], CMovieExt, RecData[16], soundon;
 extern unsigned char NextLineCache, sramsavedis, UseRemoteSRAMData;
 extern unsigned char UnableMovie2[24], UnableMovie3[23];
+extern unsigned char RewindStates;
 
 void SRAMChdir();
 void loadstate2();
@@ -1451,6 +1520,7 @@ void MoviePlay()
 
     if (zmv_open(fnamest+1))
     {
+      zmv_alloc_rewind_buffer(RewindStates);
       MovieProcessing = 1;
       memcpy(&fnamest[statefileloc-3], ".sub", 4);
       if (isdigit(CMovieExt)) { fnamest[statefileloc] = CMovieExt; }
@@ -1497,6 +1567,7 @@ void MovieRecord()
     if (!(tempfhandle = fopen(fnamest+1,"rb")))
     {
       zmv_create(fnamest+1);
+      zmv_alloc_rewind_buffer(RewindStates);
       MovieProcessing = 2;
       Msgptr = "MOVIE RECORDING.";
       MessageOn = MsgCount;    
