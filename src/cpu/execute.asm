@@ -118,6 +118,7 @@ EXTSYM ReadSPC7110log,WriteSPC7110log
 NEWSYM ExecuteAsmStart
 EXTSYM NetPlayNoMore
 
+EXTSYM statefileloc
 
 %macro BackupCVMacM 2
     mov edx,%1
@@ -1603,6 +1604,19 @@ NEWSYM statesaver
     call ResetState
     call initrevst
     stim
+
+    ; Get the state number
+    mov ebx,[statefileloc]
+    mov cl,[fnamest+ebx]
+    cmp cl,'T'
+    je  .stateiszero
+    cmp cl,'t'
+    jne .writewhichstate
+.stateiszero
+    mov cl,'0'
+.writewhichstate
+    mov [.savemsg+6],cl
+	
     mov dword[Msgptr],.savemsg
     mov eax,[MsgCount]
     mov [MessageOn],eax
@@ -1619,7 +1633,7 @@ NEWSYM statesaver
     mov [MessageOn],eax
     ret
 
-.savemsg db 'STATE SAVED.',0
+.savemsg db 'STATE - SAVED.',0
 .savemsgfail db 'UNABLE TO SAVE.',0
 
 NEWSYM savestate
@@ -1865,6 +1879,20 @@ NEWSYM loadstate
     call Change_Dir
 %endif
 
+    ; Get the state number
+    mov ebx,[statefileloc]
+    mov cl,[fnamest+ebx]
+    cmp cl,'T'
+    je  .stateiszero
+    cmp cl,'t'
+    jne .writewhichstate
+.stateiszero
+    mov cl,'0'
+.writewhichstate
+    mov [.loadmsg+6],cl
+    mov [.convmsg+6],cl
+    mov [.nfndmsg+21],cl
+	
     mov edx,fnamest+1
     call Open_File
     jc near .nofile
@@ -1903,9 +1931,9 @@ NEWSYM loadstate
     stim
     jmp reexecuteb
 
-.loadmsg db 'STATE LOADED.',0
-.convmsg db 'STATE LOADED/CONVERTED',0
-.nfndmsg db 'UNABLE TO LOAD.',0
+.loadmsg db 'STATE - LOADED.',0
+.convmsg db 'STATE - LOADED/CONVERTED',0
+.nfndmsg db 'UNABLE TO LOAD STATE -.',0
 
 NEWSYM loadstate2
     mov edx,fnamest+1
