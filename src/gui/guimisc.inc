@@ -256,8 +256,10 @@ CalibrateDev1:
     mov ebx,[GUIInputRefP+eax*4]
     mov bl,[ebx]
     mov byte[GUICBHold],0
+%ifndef __LINUX__
     cmp byte[pl1p209+eax],0
     jne near .port209
+%endif
     cmp bl,1
     jbe .nojoy
     cmp bl,18

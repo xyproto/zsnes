@@ -1971,10 +1971,11 @@ DisplayGUIInputClick:
     DGOptnsProcBoxb 165,145,[edi+4]
     DGOptnsProcBoxb 125,135,[edi+8]
     DGOptnsProcBoxb 125,145,[edi+12]
-
+%ifndef __LINUX__
     xor ebx,ebx
     mov bl,[cplayernum]
     GUIClickCButtonID 5,162,byte[pl1p209+ebx]
+%endif
     ret
 
 

@@ -1017,7 +1017,9 @@ DisplayGUIInput:
     GUIOuttextwin2 3,76,132,GUIInputTextA
     GUIOuttextwin2 3,76,142,GUIInputTextB
     GUIOuttextwin2 3,76,152,GUIInputTextC
+%ifndef __LINUX__
     GUIOuttextwin2 3,20,167,GUIInputTextW
+%endif
     GUIOuttextwin2 3,156,102,GUIInputText7
     GUIOuttextwin2 3,156,112,GUIInputText8
     GUIOuttextwin2 3,116,102,GUIInputText9
@@ -1039,7 +1041,9 @@ DisplayGUIInput:
     GUIOuttextwin2 3,75,131,GUIInputTextA
     GUIOuttextwin2 3,75,141,GUIInputTextB
     GUIOuttextwin2 3,75,151,GUIInputTextC
-    GUIOuttextwin2 3,19,166,GUIInputTextW
+%ifndef __LINUX__
+    GUIOuttextwin2 3,20,167,GUIInputTextW
+%endif
     GUIOuttextwin2 3,155,101,GUIInputText7
     GUIOuttextwin2 3,155,111,GUIInputText8
     GUIOuttextwin2 3,115,101,GUIInputText9
@@ -1048,6 +1052,7 @@ DisplayGUIInput:
     GUIOuttextwin2 3,152,146,GUIInputTexte
     GUIOuttextwin2 3,112,136,GUIInputTextf
     GUIOuttextwin2 3,112,146,GUIInputTextg
+%ifndef __LINUX__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     xor eax,eax
     mov al,[cplayernum]
@@ -1056,6 +1061,7 @@ DisplayGUIInput:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox2
     GUIDisplayIconWin 3,5,162,[GUITemp]
+%endif
     DrawGUIButton 3,125,34,155,45,GUIInputTextV,14,0,0
     cmp byte[OSPort],3
     je near .win32
