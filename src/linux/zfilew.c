@@ -451,4 +451,38 @@ int _getdrive( void )
 {
 //	STUB_FUNCTION;
 }
+
+extern char SRAMDir;
+extern char InitDir;
+extern char LoadDir;
+
+void obtaindir()
+{
+	char *cfgdir = NULL;
+	char *homedir = NULL;
+	DIR *tmp;
+
+	if ((homedir = (char *)getenv("HOME"))==NULL) {
+		homedir = (char *)malloc(128);
+		getcwd(homedir, 128);
+	}
+	cfgdir = (char *)malloc(strlen(homedir)+strlen("/.zsnes"));	
+	strcpy(cfgdir, homedir);
+	strcat(cfgdir, "/.zsnes");
+	tmp = opendir(cfgdir);
+	if (tmp == NULL) {
+		MKPath = cfgdir;
+		ZFileMKDir();
+	} else {
+		closedir(tmp);
+	}
+	strcpy(&InitDir, cfgdir);
+	if (SRAMDir == 0){
+		strcpy(&SRAMDir, cfgdir);
+	}
+	free(cfgdir);
+	if (LoadDir == 0) {
+		getcwd(&LoadDir, 128);
+	}
+}
 #endif

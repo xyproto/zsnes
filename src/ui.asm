@@ -1369,8 +1369,8 @@ SECTION .data
 
 SECTION .text
 
-NEWSYM obtaindir
 %ifndef __LINUX__
+NEWSYM obtaindir
     cmp byte[cfgloadsdir],1
     je .nosdriveb
     mov ebx,SRAMDir
@@ -1383,8 +1383,9 @@ NEWSYM obtaindir
     mov edx,LoadDrive
     call Get_Dir
 .noldriveb
-%endif
     ret
+%endif
+
 
 NEWSYM preparedir
 ;Function 47h - Get current directory
@@ -1434,6 +1435,7 @@ NEWSYM preparedir
 .nosdrivec
 %endif
     ret
+
 
 SECTION .data
 .sramerrorm db 'Invalid SRAM Directory in ZSNES.CFG!',13,10,13,10

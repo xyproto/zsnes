@@ -241,11 +241,13 @@ GUIloadfilename:
     mov ebx,LoadDir
     mov edx,LoadDrive
     call Get_Dir
+%ifndef __LINUX__
     cmp byte[cfgloadsdir],0
     jne .nosdrive
     mov ebx,SRAMDir
     mov edx,SRAMDrive
     call Get_Dir
+%endif
 .nosdrive
 
     ; create .srm header

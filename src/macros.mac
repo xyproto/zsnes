@@ -102,3 +102,65 @@ call fflush
 add esp, 20
 popad
 %endmacro
+
+
+; same as above but prints the string
+; whose address is the argument to the macros
+%macro STUB_ASM_STR 1
+%ifndef __PRINTF__
+%define __PRINTF__
+EXTSYM printf
+EXTSYM fflush
+EXTSYM stdout
+%endif
+[section .data] 
+%%strformat: db '%s in %s line %u',13, 10,0
+%%filename: db __FILE__, 0
+__SECT__
+;stubasm:
+pushad
+mov eax, __LINE__
+push eax
+mov eax, %%filename
+push eax
+mov eax, %1
+push eax
+mov eax, %%strformat
+push eax
+call printf
+mov eax, [stdout]
+push eax
+call fflush
+add esp, 20
+popad
+%endmacro
+
+; same as above but prints a number
+%macro STUB_ASM_INT 1
+%ifndef __PRINTF__
+%define __PRINTF__
+EXTSYM printf
+EXTSYM fflush
+EXTSYM stdout
+%endif
+[section .data] 
+%%strformat: db '%x in %s line %u',13, 10,0
+%%filename: db __FILE__, 0
+__SECT__
+;stubasm:
+pushad
+mov eax, __LINE__
+push eax
+mov eax, %%filename
+push eax
+mov eax, %1
+push eax
+mov eax, %%strformat
+push eax
+call printf
+mov eax, [stdout]
+push eax
+call fflush
+add esp, 20
+popad
+%endmacro

@@ -20,6 +20,7 @@
 EXTSYM dssel, selcA000, selcB800, selc0040, previdmode, DosExit, ZFileSystemInit
 EXTSYM getcmdline,GUIRestoreVars,getcfg,obtaindir,ConvertJoyMap,tparms
 EXTSYM preparedir,getblaster,Force8b,SBHDMA
+EXTSYM SRAMDir
 EXTSYM ccmdline
 EXTSYM FilenameStart
 EXTSYM spcon
@@ -249,20 +250,33 @@ NEWSYM SystemInit
     mov byte[cfgsoundon],1
 
     ; Get and set the initial directory
+%ifdef __LINUX__
+    call obtaindir
+%else
     mov ebx,InitDir
     mov edx,InitDrive
     call Get_Dir
+%endif
     mov dl,[InitDrive]
     mov ebx,InitDir
     call Change_Dir
 
+	
     call GUIRestoreVars                 ; Load GUI stuff
+
     call getcfg                         ; Load cfg stuff
+
     call obtaindir                      ; Get Save/Init Directories
+
     call ConvertJoyMap                  ; Mini joystick init
     call ccmdline
     call tparms
+%ifndef __LINUX__
     call preparedir
+%else
+    mov ebx,SRAMDir
+    call Change_Dir
+%endif	
     mov byte[soundon],0
 ;    call getblaster                     ; get set blaster environment
 ;    cmp byte[Force8b],1
