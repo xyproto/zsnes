@@ -5105,9 +5105,6 @@ GUIGUIOptnsTextN db 'TRAP MOUSE CURSOR',0
 DisplayGUIAbout:
 ;    cmp byte[OSPort],3
 ;    jne .notwin32
-%ifndef __MSDOS__
-    mov dword[GUIwinsizey+11*4],130
-%endif
 ;.notwin32
     mov byte[GUIGUIAboutText1+1],'S'+136
     mov byte[GUIGUIAboutText1+2],'N'-26
@@ -5123,40 +5120,8 @@ DisplayGUIAbout:
     add byte[GUIGUIAboutText1+4],97
 ;    cmp byte[OSPort],3
 ;    je near .win32
-%ifdef __MSDOS__
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2 11,6,16,GUIGUIAboutText1
-    GUIOuttextwin2 11,6,36,GUIGUIAboutText3
-    GUIOuttextwin2 11,6,46,GUIGUIAboutText4
-    GUIOuttextwin2 11,6,56,GUIGUIAboutText6c
-    GUIOuttextwin2 11,6,76,GUIGUIAboutText6
-    GUIOuttextwin2 11,6,86,GUIGUIAboutText6b
-    GUIOuttextwin2 11,6,96,GUIGUIAboutText6d
-    GUIOuttextwin2 11,6,106,GUIGUIAboutText6e
-    add byte[GUItextcolor],15
-    GUIOuttextwin2 11,5,15,GUIGUIAboutText1
-    GUIOuttextwin2 11,5,35,GUIGUIAboutText3
-    GUIOuttextwin2 11,5,45,GUIGUIAboutText4
-    GUIOuttextwin2 11,5,55,GUIGUIAboutText6c
-    GUIOuttextwin2 11,5,75,GUIGUIAboutText6
-    GUIOuttextwin2 11,5,85,GUIGUIAboutText6b
-    GUIOuttextwin2 11,5,95,GUIGUIAboutText6d
-    GUIOuttextwin2 11,5,105,GUIGUIAboutText6e
-    mov al,[GUIWincol]
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 11,6,26,GUIGUIAboutText2
-    GUIOuttextwin2 11,6,66,GUIGUIAboutText5
-    mov byte[GUItextcolor],163
-    cmp byte[GUIWincoladd],0
-    je .zero
-    mov byte[GUItextcolor],164
-.zero
-    GUIOuttextwin2 11,5,25,GUIGUIAboutText2
-    GUIOuttextwin2 11,5,65,GUIGUIAboutText5
-    ret
-%else
 %ifndef __LINUX__
-    DrawGUIButton 11,5,125,74,136,GUIGUIAboutText8,65,0,0
+    DrawGUIButton 11,90,50,175,60,GUIGUIAboutText8,65,0,0
 %else
     sub byte[GUItextcolor],15
     GUIOuttextwin2 11,6,126,GUIGUIAboutText8
@@ -5173,6 +5138,13 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,6,96,GUIGUIAboutText6b
     GUIOuttextwin2 11,6,106,GUIGUIAboutText6d
     GUIOuttextwin2 11,6,116,GUIGUIAboutText6e
+    GUIOuttextwin2 11,6,131,GUIGUIAboutTextA
+    GUIOuttextwin2 11,6,141,GUIGUIAboutTextB
+    GUIOuttextwin2 11,6,151,GUIGUIAboutTextC
+    GUIOuttextwin2 11,6,161,GUIGUIAboutTextD
+    GUIOuttextwin2 11,6,171,GUIGUIAboutTextE
+    GUIOuttextwin2 11,6,181,GUIGUIAboutTextF
+    GUIOuttextwin2 11,6,191,GUIGUIAboutTextG
     add byte[GUItextcolor],15
     GUIOuttextwin2 11,5,15,GUIGUIAboutText1
     GUIOuttextwin2 11,5,25,GUIGUIAboutText7
@@ -5183,19 +5155,25 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,5,95,GUIGUIAboutText6b
     GUIOuttextwin2 11,5,105,GUIGUIAboutText6d
     GUIOuttextwin2 11,5,115,GUIGUIAboutText6e
+    GUIOuttextwin2 11,6,130,GUIGUIAboutTextA
+    GUIOuttextwin2 11,6,140,GUIGUIAboutTextB
+    GUIOuttextwin2 11,6,150,GUIGUIAboutTextC
+    GUIOuttextwin2 11,6,160,GUIGUIAboutTextD
+    GUIOuttextwin2 11,6,170,GUIGUIAboutTextE
+    GUIOuttextwin2 11,6,180,GUIGUIAboutTextF
+    GUIOuttextwin2 11,6,190,GUIGUIAboutTextG
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 11,6,36,GUIGUIAboutText2
     GUIOuttextwin2 11,6,76,GUIGUIAboutText5
     mov byte[GUItextcolor],163
     cmp byte[GUIWincoladd],0
-    je .zero2b
+    je .zero
     mov byte[GUItextcolor],164
-.zero2b
+.zero
     GUIOuttextwin2 11,5,35,GUIGUIAboutText2
     GUIOuttextwin2 11,5,75,GUIGUIAboutText5
     ret
-%endif 
 
 GUIGUIAboutText1 db 'ZSNES V0.Agh  ',0
 GUIGUIAboutText2 db 'CODED BY :  ',0
@@ -5214,11 +5192,14 @@ GUIGUIAboutText7 db 'WIN PORT V1.06',0
 GUIGUIAboutText7 db 'LINUX PORT V0.37',0
 %endif
 
-%ifndef __LINUX__
-GUIGUIAboutText8 db 'HOMEPAGE',0
-%else
 GUIGUIAboutText8 db 'WWW.ZSNES.COM',0
-%endif
+GUIGUIAboutTextA db 'ZSNES comes with ABSOLUTELY',0
+GUIGUIAboutTextB db 'NO WARRANTY.  This is free',0
+GUIGUIAboutTextC db 'software, and you are welcome',0
+GUIGUIAboutTextD db 'to redistribute it under',0
+GUIGUIAboutTextE db 'certain conditions; please',0
+GUIGUIAboutTextF db 'please read ',39,'LICENSE',39,0
+GUIGUIAboutTextG db 'thoroughly before using it.',39,0
 
 DisplayGUIMovies:
     GUIDrawWindowBox 15,GUIMovieDisp
