@@ -59,7 +59,7 @@ MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${ZIPOBJ}
 LIBS=-Lobj -lz -lm -lpng
-CFLAGS=-O2 -g -Wall -D__MSDOS__
+CFLAGS=-Id:/zsnes/zlib -O2 -g -Wall -D__MSDOS__
 ASM=nasm
 ASMFLAGS=-f coff -g -D__MSDOS__
 CC=gcc
@@ -123,7 +123,7 @@ ${CPUDIR}/memory.o: ${CPUDIR}/memory.asm macros.mac
 ${CPUDIR}/dma.o: ${CPUDIR}/dma.asm macros.mac
 ${DOSDIR}/dosintrf.o: ${DOSDIR}/dosintrf.asm macros.mac
 vcache.o:vcache.asm macros.mac
-${DOSDIR}/initvid.o:${DOSDIR}/initvid.asm macros.mac
+${DOSDIR}/initvid.o:${DOSDIR}/initvid.asm macros.mac ${DOSDIR}/vga.inc
 ${VIDEODIR}/makevid.o: ${VIDEODIR}/makevid.asm ${VIDEODIR}/vidmacro.mac\
 	macros.mac
 ${VIDEODIR}/makev16b.o: ${VIDEODIR}/makev16b.asm ${VIDEODIR}/vidmacro.mac\

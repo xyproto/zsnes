@@ -21,18 +21,13 @@ EXTSYM AddSub256,InitVesa2,cbitmode,cvidmode,makepal
 EXTSYM scanlines,selcA000,vesa2_bits,vesa2_bpos,vesa2_clbit
 EXTSYM vesa2_gpos,vesa2_rpos,vesa2_usbit,vesa2_x,vesa2_y
 EXTSYM vesa2selec,InitVesa12,videotroub
+
 %ifdef __MSDOS__
-EXTSYM cscopymodeq
+EXTSYM cscopymodeq,cscopymodex
 %endif
 
 NEWSYM InitVidAsmStart
 
-
-
-
-;NEWSYM clearfilter, dw 0
-;NEWSYM res640,      db 0
-;NEWSYM res480,      db 0
 
 SECTION .bss
 
@@ -44,7 +39,7 @@ NEWSYM res480, resb 1
 SECTION .text
 
 NEWSYM dosinitvideo2
-       jmp dosinitvideo.noaddsub
+;       jmp dosinitvideo.noaddsub
 
 ;*******************************************************
 ; InitVideo
@@ -81,63 +76,42 @@ NEWSYM dosinitvideo
     je near .initvesa2640x480x16
     ret
 
+%include "dos/vga.inc"
+
+
 ;*******************************************************
 ; InitModeX               Sets up 320x240 unchained mode
 ;*******************************************************
 
 .initmodex
-    mov byte[cbitmode],0
-    mov ax,0013h
-    int 10h
+%ifdef __MSDOS__
+    SetVGAMode .Mode320x240
+    call cscopymodex
+%endif
+    call makepal
+    ret
 
-    mov dx,03C4h
-    mov ax,0604h
-    out dx,ax
-    mov dx,03D4h
-    mov ax,0E317h 
-    out dx,ax
-    mov ax,0014h 
-    out dx,ax
-    mov dx,03C4h
-    mov ax,0F02h
-    out dx,ax
+;*******************************************************
+; InitModeQ224              Sets up 256x224 chained mode
+;*******************************************************
 
-    mov dx,03C2h
-    mov al,0E3h
-    out dx,al
-    mov dx,03D4h
-    mov ax,2C11h
-    out dx,ax
-    mov ax,0D06h
-    out dx,ax
-    mov ax,3E07h
-    out dx,ax
-    mov ax,0EA10h
-    out dx,ax
-    mov ax,0AC11h
-    out dx,ax
-    mov ax,0DF12h
-    out dx,ax
-    mov ax,0E715h
-    out dx,ax
-    mov ax,0616h
-    out dx,ax
+.initmodeq224
+%ifdef __MSDOS__
+    SetVGAMode .Mode256x224c
+    call cscopymodeq
+%endif
+    call makepal
+    ret
 
-    mov dx,03C6h
-    mov al,0FFh
-    out dx,al
-    mov dx,03C4h
-    ; select all 4 planes and clear
-    mov ax,0F02h
-    out dx,ax
-    push es
-    mov ax,[selcA000]
-    mov es,ax
-    xor edi,edi
-    mov ecx,65536/4
-    xor eax,eax
-    rep stosd
-    pop es
+;*******************************************************
+; InitModeQ240              Sets up 256x240 chained mode
+;*******************************************************
+
+.initmodeq240
+%ifdef __MSDOS__
+    SetVGAMode .Mode256x240c
+    call cscopymodeq
+%endif
     call makepal
     ret
 
@@ -146,481 +120,20 @@ NEWSYM dosinitvideo
 ;*******************************************************
 
 .initmodeq
-    mov byte[cbitmode],0
-    cmp byte[AddSub256],1
-    jne .noaddsub
-    mov byte[cbitmode],1
-.noaddsub
-    mov byte[vesa2_rpos],11      ; Red bit position 128,256,512,1024,2048
-    mov byte[vesa2_gpos],6       ; Green bit position 2^6 = 64
-    mov byte[vesa2_bpos],0       ; Blue bit position
-    mov word[vesa2_usbit],0020h  ; Unused bit in proper bit location
-    mov word[vesa2_clbit],0F7DFh ; clear all bit 0's if AND is used
-    mov word[clearfilter],0F7DFh ; Filter out unnecessary bits
-
-;    cmp byte[scanlines],1
-;    je near .scanlines
-    mov ax,0013h
-    int 10h
-    mov dx,03D4h
-    mov al,11h
-    out dx,al
-
-    inc dx
-    in al,dx
-    and al,7Fh
-    mov ah,al
-    dec dx
-    mov al,11h
-    out dx,al
-    inc dx
-    mov al,ah
-    out dx,al
-
-    mov dx,03C2h
-    mov al,0E3h
-    out dx,al
-    mov dx,03D4h
-    mov ax,5F00h
-    out dx,ax
-    mov ax,3F01h
-    out dx,ax
-    mov ax,4002h
-    out dx,ax
-    mov ax,8203h
-    out dx,ax
-    mov ax,4A04h
-    out dx,ax
-    mov ax,9A05h
-    out dx,ax
-    mov ax,2306h
-    out dx,ax
-    mov ax,0B207h
-    out dx,ax
-    mov ax,0008h
-    out dx,ax
-    mov ax,6109h
-    out dx,ax
-    mov ax,0A10h
-    out dx,ax
-    mov ax,0AC11h
-    out dx,ax
-    mov ax,0FF12h
-    out dx,ax
-    mov ax,2013h
-    out dx,ax
-    mov ax,4014h
-    out dx,ax
-    mov ax,0715h
-    out dx,ax
-    mov ax,1A16h
-    out dx,ax
-    mov ax,0A317h
-    out dx,ax
-    mov dx,03C4h
-    mov ax,0101h
-    out dx,ax
-    mov ax,0E04h
-    out dx,ax
-    mov dx,03CEh
-    mov ax,4005h
-    out dx,ax
-    mov ax,0506h
-    out dx,ax
-
-    mov dx,03DAh
-    in al,dx
-    mov dx,03C0h
-    mov al,30h
-    out dx,al
-    mov al,41h
-    out dx,al
-
-    mov dx,03DAh
-    in al,dx
-    mov dx,03C0h
-    mov al,33h
-    out dx,al
-    mov al,0h
-    out dx,al
-
-    mov dx,03C6h
-    mov al,0FFh
-    out dx,al
-    cmp byte[cbitmode],1
-    je .nopal
-    call makepal
-.nopal
-    ; clear screen
-    push es
-    mov ax,[selcA000]
-    mov es,ax
-    xor edi,edi
-    mov ecx,256*64
-    xor eax,eax
-    rep stosd
-    pop es
-    ret
-
-;.scanlines
-;    mov ax,0013h
-;    int 10h
-;    mov dx,03D4h
-;    mov al,11h
-;    out dx,al
-;
-;    inc dx
-;    in al,dx
-;    and al,7Fh
-;    mov ah,al
-;    dec dx
-;    mov al,11h
-;    out dx,al
-;    inc dx
-;    mov al,ah
-;    out dx,al
-;
-;    mov dx,03C2h
-;    mov al,0E3h
-;    out dx,al
-;    mov dx,03D4h
-;    mov ax,5F00h
-;    out dx,ax
-;    mov ax,3F01h
-;    out dx,ax
-;    mov ax,4002h
-;    out dx,ax
-;    mov ax,8203h
-;    out dx,ax
-;    mov ax,4A04h
-;    out dx,ax
-;    mov ax,9A05h
-;    out dx,ax
-;    mov ax,2306h
-;    out dx,ax
-;    mov ax,01D07h
-;    out dx,ax
-;    mov ax,0008h
-;    out dx,ax
-;    mov ax,6009h
-;    out dx,ax
-;    mov ax,0A10h
-;    out dx,ax
-;    mov ax,0AC11h
-;    out dx,ax
-;    mov ax,0FF12h
-;    out dx,ax
-;    mov ax,2013h
-;    out dx,ax
-;    mov ax,4014h
-;    out dx,ax
-;    mov ax,0715h
-;    out dx,ax
-;    mov ax,1A16h
-;    out dx,ax
-;    mov ax,0A317h
-;    out dx,ax
-;    mov dx,03C4h
-;    mov ax,0101h
-;    out dx,ax
-;    mov ax,0E04h
-;    out dx,ax
-;    mov dx,03CEh
-;    mov ax,4005h
-;    out dx,ax
-;    mov ax,0506h
-;    out dx,ax
-;
-;    mov dx,03DAh
-;    in al,dx
-;    mov dx,03C0h
-;    mov al,30h
-;    out dx,al
-;    mov al,41h
-;    out dx,al
-;
-;    mov dx,03DAh
-;    in al,dx
-;    mov dx,03C0h
-;    mov al,33h
-;    out dx,al
-;    mov al,0h
-;    out dx,al
-;
-;    mov dx,03C6h
-;    mov al,0FFh
-;    out dx,al
-;    cmp byte[cbitmode],1
-;    je .nopalb
-;    call makepal
-;.nopalb
-;    ; clear screen
-;    push es
-;    mov ax,[selcA000]
-;    mov es,ax
-;    xor edi,edi
-;    mov ecx,256*64
-;    xor eax,eax
-;    rep stosd
-;    pop es
-;    ret
-
-;*******************************************************
-; InitModeQ224              Sets up 256x224 chained mode
-;*******************************************************
-
-.initmodeq224
-    mov byte[cbitmode],0
-
-    mov ax,0013h
-    int 10h
-
-    ; enable writes
-    mov dx,03d4h
-    mov ax,0011h
-    out dx,ax
-    inc dx
-    in ax,dx
-    and ax,007fh
-    push ax
-    mov dx,03d4h
-    mov ax,0011h
-    out dx,ax
-    inc dx
-    pop ax
-    out dx,ax
-
-    ; tweak regs
-    mov dx,03c2h
-    mov ax,00e3h
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,1
-    out dx,ax
-    inc dx
-    mov ax,003fh
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,2
-    out dx,ax
-    inc dx
-    mov ax,0040h
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,4
-    out dx,ax
-    inc dx
-    mov ax,004ah
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,5
-    out dx,ax
-    inc dx
-    mov ax,009ah
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,6
-    out dx,ax
-    inc dx
-    mov ax,000bh
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,7
-    out dx,ax
-    inc dx
-    mov ax,003eh
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,9
-    out dx,ax
-    inc dx
-    mov ax,0061h
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,0010h
-    out dx,ax
-    inc dx
-    mov ax,00dah
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,0011h
-    out dx,ax
-    inc dx
-    mov ax,009ah
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,0012h
-    out dx,ax
-    inc dx
-    mov ax,00bfh
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,0013h
-    out dx,ax
-    inc dx
-    mov ax,0020h
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,0015h
-    out dx,ax
-    inc dx
-    mov ax,0007h
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,0016h
-    out dx,ax
-    inc dx
-    mov ax,001ah
-    out dx,ax
-
 %ifdef __MSDOS__
+    cmp byte[scanlines],1
+    jnz .noscanlines
+    jmp .scanlines
+.noscanlines
+    SetVGAMode .Mode256x256c
+    jmp .done    
+.scanlines
+    SetVGAMode .Mode256x256cs
+    jmp .done    
+.done
     call cscopymodeq
 %endif
-
     call makepal
-
-    ret
-
-;*******************************************************
-; InitModeQ240              Sets up 256x240 chained mode
-;*******************************************************
-
-.initmodeq240
-    mov byte[cbitmode],0
-
-    mov ax,0013h
-    int 10h
-
-    ; enable writes
-    mov dx,03d4h
-    mov ax,0011h
-    out dx,ax
-    inc dx
-    in ax,dx
-    and ax,007fh
-    push ax
-    mov dx,03d4h
-    mov ax,0011h
-    out dx,ax
-    inc dx
-    pop ax
-    out dx,ax
-
-    ; tweak regs
-    mov dx,03c2h
-    mov ax,00e3h
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,1
-    out dx,ax
-    inc dx
-    mov ax,003fh
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,2
-    out dx,ax
-    inc dx
-    mov ax,0040h
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,4
-    out dx,ax
-    inc dx
-    mov ax,004ah
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,5
-    out dx,ax
-    inc dx
-    mov ax,009ah
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,6
-    out dx,ax
-    inc dx
-    mov ax,000dh
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,7
-    out dx,ax
-    inc dx
-    mov ax,003eh
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,9
-    out dx,ax
-    inc dx
-    mov ax,0041h
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,0010h
-    out dx,ax
-    inc dx
-    mov ax,00eah
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,0011h
-    out dx,ax
-    inc dx
-    mov ax,00ach
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,0012h
-    out dx,ax
-    inc dx
-    mov ax,00dfh
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,0013h
-    out dx,ax
-    inc dx
-    mov ax,0020h
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,0015h
-    out dx,ax
-    inc dx
-    mov ax,00e7h
-    out dx,ax
-
-    mov dx,03d4h
-    mov ax,0016h
-    out dx,ax
-    inc dx
-    mov ax,0006h
-    out dx,ax
-
-%ifdef __MSDOS__
-    call cscopymodeq
-%endif
-
-    call makepal
-
     ret
 
 ;*******************************************************
