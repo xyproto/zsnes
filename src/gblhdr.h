@@ -105,18 +105,7 @@
 	#include <netdb.h>
 	#include <utime.h>
 	#include <zlib.h>
-	#endif
-
-	#ifdef _MSC_VER
-	#include <io.h>
-	#include <windows.h>
-	#include <winsock.h>
-	#include <winuser.h>
-	#include <dsound.h>
-	#include <dinput.h>
-	#include <direct.h>
-	#include <sys/stat.h>
-	#include <zlib.h>
+	#include <png.h>
 	#endif
 
 	#ifdef __LINUX__
@@ -125,8 +114,4 @@
 	#else
 	#include <sys/filio.h>
 	#endif
-	#endif
-		
-	#ifdef ZDOS
-	#include <dos.h>
 	#endif
