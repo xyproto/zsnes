@@ -435,72 +435,50 @@ void ShutdownApplication()
 }
 
 #ifdef __LINUX__
+
 void UpdateSound(void *userdata, Uint8 *stream, int len);
 
 int InitSound (void)
 {
-   static SDL_AudioSpec wanted;
+   SDL_AudioSpec wanted;
+   const int freqtab[7] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
+   const int samptab[7] = { 64, 64, 128, 256, 128, 256, 256 };
    
+   SDL_LockAudio(); /* wait for callback to finish */
+      
    SDL_CloseAudio();
 
    if (!SoundEnabled) return FALSE;
 
    PrevSoundQuality = SoundQuality;
    PrevStereoSound = StereoSound;
-         
-   switch(SoundQuality) {
-   	case 0:
-   		wanted.freq = 8000;
-   		wanted.samples = 1024*2;
-   		break;
-   	case 1:
-   		wanted.freq = 11025;
-   		wanted.samples = 1024*2;
-   		break;
-   	case 2:
-   		wanted.freq = 22050;
-   		wanted.samples = 1024*4;
-   		break;
-   	case 3:
-   		wanted.freq = 44100;
-   		wanted.samples = 1024*8;
-   		break;
-   	case 4:
-   		wanted.freq = 16000;
-   		wanted.samples = 1024*4;
-   		break;
-   	case 5:
-   		wanted.freq = 32000;
-   		wanted.samples = 1024*8;
-   		break;
-   	case 6:
-   		wanted.freq = 48000;
-   		wanted.samples = 1024*8;
-   		break;
-   	default:
-   		wanted.freq = 11025;
-   		wanted.samples = 1024*2;
-   		break;
-   }
+   
+   if (SoundQuality > 6)
+   	SoundQuality = 1;
+   wanted.freq = freqtab[SoundQuality];
+
    if (StereoSound) {
    	wanted.channels = 2;
-   	wanted.samples *= 2;
    } else {
    	wanted.channels = 1;
    }
   
-   wanted.samples /= 8;
-   
+   //wanted.samples = (wanted.freq / 60) * 2 * wanted.channels;
+   wanted.samples = samptab[SoundQuality] * 2 * wanted.channels;
    wanted.format = AUDIO_S16LSB;
    wanted.userdata = NULL;
    wanted.callback = UpdateSound;
 
    if (SDL_OpenAudio(&wanted, NULL) < 0) {
+   	fprintf(stderr, "Sound init failed!\n");
+   	fprintf(stderr, "freq: %d, channels: %d, samples: %d\n", wanted.freq, wanted.channels, wanted.samples);
    	SoundEnabled = 0;
    	return FALSE;
    }
    SDL_PauseAudio(0);
 
+   SDL_UnlockAudio();
+   
    return TRUE;
 }
 #else // __WIN32__
@@ -1256,8 +1234,6 @@ void UnlockSurface(void)
 
 void WinUpdateDevices();
 
-DWORD NeedBuffer=1;
-short Buffer[1800*2];
 int Running=0;
 
 unsigned char Noise[]={
@@ -1561,8 +1537,7 @@ SM_CYSCREEN )-WindowHeight);
 
 extern unsigned int vidbuffer;
 extern void SoundProcess();
-extern int DSPBuffer;
-int * DSPBuffer1;
+extern int DSPBuffer[];
 DWORD ScreenPtr;
 DWORD ScreenPtr2;
 extern int GUI36hzcall(void);
@@ -1628,39 +1603,73 @@ void CheckTimers(void)
    }
 }
 
+/* should we clear these on sound reset? */
+DWORD BufferLeftOver=0;
+short Buffer[1800*2];
+
 #ifdef __LINUX__
 void UpdateSound(void *userdata, Uint8 *stream, int len)
 {
-	int SPCSize = 256;
+	const int SPCSize = 256;
 	int DataNeeded;
 	int i;
 	Uint8 *ptr;
 	
+	len /= 2; /* only 16bit here */
+	
 	ptr = stream;
 	DataNeeded = len;
 	
-	//DataNeeded /= (SPCSize * 2);
-	//DataNeeded *= (SPCSize * 2);
+	/* take care of the things we left behind last time */
+	if (BufferLeftOver) {
+		DataNeeded -= BufferLeftOver;
+		
+		memcpy(ptr, &Buffer[BufferLeftOver], (SPCSize-BufferLeftOver)*2);
+		
+		ptr += (SPCSize-BufferLeftOver)*2;
+		BufferLeftOver = 0;
+	}
 	
+	if (len & 255) { /* we'll save the rest first */
+		DataNeeded -= 256;
+	}
+		
 	while (DataNeeded > 0) {
 		SoundProcess();
-		
-		DSPBuffer1=(int *)&DSPBuffer;
 		
 		for (i = 0; i < SPCSize; i++) {
 			if (T36HZEnabled) {
 				Buffer[i]=0;
 			} else {
-				if(DSPBuffer1[i]>32767)Buffer[i]=32767;
-				else if(DSPBuffer1[i]<-32767)Buffer[i]=-32767;
-				else Buffer[i]=DSPBuffer1[i];
+				if(DSPBuffer[i]>32767)Buffer[i]=32767;
+				else if(DSPBuffer[i]<-32767)Buffer[i]=-32767;
+				else Buffer[i]=DSPBuffer[i];
 			}
 		}
 		
 		memcpy(ptr, &Buffer[0], SPCSize*2);
 		ptr += SPCSize*2;
 		
-		DataNeeded -= (SPCSize*2);
+		DataNeeded -= SPCSize;
+	}
+	
+	if (DataNeeded) {
+		DataNeeded += 256;
+		BufferLeftOver = DataNeeded;
+		
+		SoundProcess();
+		
+		for (i = 0; i < SPCSize; i++) {
+			if (T36HZEnabled) {
+				Buffer[i] = 0;
+			} else {
+				if(DSPBuffer[i]>32767)Buffer[i]=32767;
+				else if(DSPBuffer[i]<-32767)Buffer[i]=-32767;
+				else Buffer[i]=DSPBuffer[i];
+			}
+		}
+		
+		memcpy(ptr, &Buffer[0], DataNeeded*2);
 	}
 }
 #endif

@@ -36,6 +36,10 @@ EXTSYM romloadskip
 EXTSYM cfgloadgdir,cfgloadsdir
 EXTSYM init18_2hz
 
+%ifdef __LINUX__
+EXTSYM SDL_Quit
+%endif
+
 NEWSYM UIAsmStart
 %include "betauser.mac"
 
@@ -43,6 +47,7 @@ NEWSYM UIAsmStart
 
 
 
+extern puts
 
 ; Function 0501h
 ; User Interface
@@ -50,73 +55,77 @@ NEWSYM UIAsmStart
 SECTION .text
 
 NEWSYM zstart
-    call StartUp
+	call StartUp
 
-    mov edx,welcome         ;welcome message
-    call PrintStr
+	mov edx,mydebug
+	call PrintStr
 
-    call SystemInit
+	mov edx,welcome         ;welcome message
+	call PrintStr
 
-    cld                     ;clear direction flag
+	call SystemInit
 
-    call setnoise
-    call InitSPC
-    mov byte[soundon],1
-    call allocmem           ;allocate memory
+	cld                     ;clear direction flag
 
-;    xor eax,eax
-;    mov al,[soundon]
-;    call printnum
+	call setnoise
+	call InitSPC
+	mov byte[soundon],1
+	call allocmem           ;allocate memory
 
-;    jmp DosExit
+	;    xor eax,eax
+	;    mov al,[soundon]
+	;    call printnum
 
-    cmp byte[soundon],0
-    jne .yessound
-    cmp byte[SPCDisable],1
-    je .yessound
-    mov byte[soundon],1
-    mov byte[spcon],1
-    mov byte[DSPDisable],1
+	;    jmp DosExit
+
+	cmp byte[soundon],0
+	jne .yessound
+	cmp byte[SPCDisable],1
+	je .yessound
+	mov byte[soundon],1
+	mov byte[spcon],1
+	mov byte[DSPDisable],1
 .yessound
-    cmp byte[SPCDisable],1
-    jne .nodissound
-    mov byte[soundon],0
-    mov byte[spcon],0
+	cmp byte[SPCDisable],1
+	jne .nodissound
+	mov byte[soundon],0
+	mov byte[spcon],0
 .nodissound
 
-    mov al,[gammalevel]
-    shr al,1
-    mov [gammalevel16b],al
-    call MMXCheck
+	mov al,[gammalevel]
+	shr al,1
+	mov [gammalevel16b],al
+	call MMXCheck
 
-    mov edx,.failedalignc
-    mov eax,outofmemory
-    test eax,3h
-    jnz .failalign
-    mov edx,.failedalignd
-    mov eax,xa
-    test eax,3h
-    jnz .failalign
-    jmp init
+	mov edx,.failedalignc
+	mov eax,outofmemory
+	test eax,3h
+	jnz .failalign
+	mov edx,.failedalignd
+	mov eax,xa
+	test eax,3h
+	jnz .failalign
+	jmp init
 .failalign
-    push eax
-    call PrintStr
-    pop eax
-    and eax,1Fh
-    call printnum
-    call WaitForKey
-    jmp init
+	push eax
+	call PrintStr
+	pop eax
+	and eax,1Fh
+	call printnum
+	call WaitForKey
+	jmp init
 
 .failedalignd db 'Data Alignment Failure : ',0
 .failedalignc db 'Code Alignment Failure : ',0
 
 ALIGN32
-NEWSYM outofmemory
-    mov edx,outofmem
-    call PrintStr
-    jmp DosExit
+NEWSYM	outofmemory
+	mov edx,outofmem
+	call PrintStr
+	jmp DosExit
 
 SECTION .data
+NEWSYM mydebug, db '',13,10,0
 NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,10,0
 %define ZVERSION '18   '
 ;%define ZBETA    0
@@ -128,8 +137,14 @@ NEWSYM welcome
                  db 'PRIVATE BETA VERSION!!!  PLEASE DO NOT DISTRIBUTE!!!  Thank you!',13,10
                  db 'Private Beta is Registered to : ',USERNAMEN,13,10
 %else
+%ifdef __LINUX__
+                 db 'ZSNES v1.',ZVERSION,' beta (c)1997-2001 ZSNES Team (zsKnight - _Demo_)',13,10
+                 db 'LINUX BETA VERSION!!!  EXPECT CRASHES!!!  Thank you!',13,10
+                 db 'Compiled under NASM, GCC',13,10,13,10
+%else
                  db 'ZSNES v1.',ZVERSION,' beta (c)1997-2001 ZSNES Team (zsKnight - _Demo_)',13,10
                  db 'Compiled under NASM, GCC, and WDOSX',13,10,13,10
+%endif
 %endif
                  db '  Programmers     : zsKnight, _Demo_',13,10
                  db '  Assistant Coder : Pharos',13,10,13,10
@@ -278,6 +293,7 @@ SECTION .text
 ;*******************************************************
 
 NEWSYM AllocMem
+%ifndef __LINUX__
     mov ax,0501h
     mov cx,bx
     shr ebx,16
@@ -286,6 +302,7 @@ NEWSYM AllocMem
     mov ax,bx
     shl eax,16
     mov ax,cx
+%endif
     ret
 
 ;*******************************************************
@@ -1250,17 +1267,30 @@ SECTION .text
 NEWSYM displayparams
     mov edx,.noparams        ;use extended
     call PrintStr
+%ifndef __LINUX__
     call WaitForKey
+%endif
     mov edx,.noparms2        ;use extended
     call PrintStr
+%ifndef __LINUX__
     call WaitForKey
+%endif
     mov edx,.noparms3        ;use extended
     call PrintStr
     jmp DosExit
 
+; yes it sucks, i had to change the one character options to have at least two characters
+; that way i could distinguish from the other two character options that share the same
+; first letter...only way getopt works correctly :|
+; EvilTypeGuy
 SECTION .data
+%ifdef __LINUX__
+.noparams db 'Usage : zsnes [-d,-f #, ... ] <filename.smc>',13,10
+          db '   Eg : zsnes -s -r 2 game.smc',13,10,13,10
+%else
 .noparams db 'Usage : ZSNES [-d,-f #, ... ] <filename.SMC>',13,10
           db '   Eg : ZSNES -s -r 2 game.smc',13,10,13,10
+%endif
           db '  -0      Disable Color 0 modification in 256 color modes',13,10
           db '  -1 #/-2 #   Select Player 1/2 Input :',13,10
           db '                0 = None       1 = Keyboard   2 = Joystick   3 = Gamepad',13,10
@@ -1269,12 +1299,24 @@ SECTION .data
           db '  -8      Force 8-bit sound',13,10
           db '  -9      Off by 1 line fix',13,10
           db '  -a      Turn on auto frame skip',13,10
-          db '  -c      Scale to fit screen (320x240 VESA2/640x480 VESA2)',13,10
+%ifdef __LINUX__
+          db '  -cs     Scale to fit screen (320x240 VESA2/640x480 VESA2)',13,10
+%else
+          db '  -c     Scale to fit screen (320x240 VESA2/640x480 VESA2)',13,10
+%endif
           db '  -cb     Remove Background Color in 256 color video modes',13,10
           db '  -cc     No image scale and center image in screen (640x480 VESA2)',13,10
+
+; debugger not available in linux version
+; because of bios interrupt code
+%ifndef __LINUX__
           db '  -d      Start with debugger',13,10
+%endif
+
           db '  -dd     Disable sound DSP emulation',13,10
+%ifndef __LINUX__
           db '  -e      Skip enter key press at the beginning',13,10
+%endif
           db '  -f #    Turn on frame skip [0..9]',13,10
           db '  -g #    Set Gamma Correction [0..5, 0 = Normal]',13,10
           db '  -h      Force HiROM',13,10
@@ -1285,17 +1327,26 @@ SECTION .data
 .noparms2 db 13,'  -l      Force LoROM        ',13,10
           db '  -m      Disable GUI',13,10
           db '  -n      Turn scanlines on (256x256 and 640x480 only)',13,10
+%ifdef __LINUX__
+          db '  -of     Enable FPU copy   ',13,10
+%else
           db '  -o      Enable FPU copy   ',13,10
+%endif
           db '  -om     Enable MMX copy',13,10
           db '  -p #    Percentage of instructions to execute [50..120]',13,10
           db '  -r #    Set Sampling Sound Blaster Sampling Rate & Bit :',13,10
           db '             0 = 8000Hz  1 = 11025Hz 2 = 22050Hz 3 = 44100Hz',13,10
           db '             4 = 16000Hz 5 = 32000Hz',13,10
-          db '  -s      Enable SPC700/DSP emulation (Sound)',13,10
+%ifdef __LINUX__
+          db '  -se     Enable SPC700/DSP emulation (Sound)',13,10
+%else
+          db '  -s     Enable SPC700/DSP emulation (Sound)',13,10
+%endif
           db '  -sa     Show all extensions in GUI (*.*)',13,10
           db '  -sn     Enable Snowy GUI Background',13,10
           db '  -t      Force NTSC timing',13,10
           db '  -u      Force PAL timing',13,10
+%ifndef __LINUX__
           db '  -v #    Select Video Mode :',13,10
           db '            0 = 320x240x256           1 = 256x256x256',13,10
           db '            2 = 320x240x256(VESA2)    3 = 320x240x16b(VESA2) ',13,10
@@ -1303,9 +1354,10 @@ SECTION .data
           db '            6 = 512x384x256(VESA2)    7 = 512x384x16b(VESA2) ',13,10
           db '            8 = 640x480x16b(VESA1.2)  9 = 320x480x256(VESA2) ',13,10
           db '            10 = 320x480x65536(VESA2)',13,10
+%endif
           db '  -w      Enable VSync',13,10
           db 'Press any key to continue.',0
-.noparms3 db 13,'  -y      Enable EAGLE (640x480x256 only) or Interpolation (640x480x65536 only)',13,10
+.noparms3 db 13,'  -y      Enable EAGLE (640x480x256 only) or Interpolation (640x480x65536 only)',13,10          
           db '  -z      Enable Stereo Sound',13,10
           db '',13,10
           db '  File Formats Supported by GUI : .SMC,.SFC,.SWC,.FIG,.058,.078,.1,.USA,.JAP',13,10
@@ -1314,6 +1366,7 @@ SECTION .data
 SECTION .text
 
 NEWSYM obtaindir
+%ifndef __LINUX__
     cmp byte[cfgloadsdir],1
     je .nosdriveb
     mov ebx,SRAMDir
@@ -1326,6 +1379,7 @@ NEWSYM obtaindir
     mov edx,LoadDrive
     call Get_Dir
 .noldriveb
+%endif
     ret
 
 NEWSYM preparedir
@@ -1337,6 +1391,7 @@ NEWSYM preparedir
 ;     DS:ESI -> 64 byte buffer to receive ASCIZ pathname
 ; get current drive, ah = 19h, al = A=0,B=1, etc.
 
+%ifndef __LINUX__
     cmp byte[cfgloadsdir],0
     je near .nosdrivec
     ; verify sram drive/directory exists
@@ -1373,12 +1428,13 @@ NEWSYM preparedir
     mov ebx,InitDir
     call Change_Dir
 .nosdrivec
+%endif
     ret
 
 SECTION .data
 .sramerrorm db 'Invalid SRAM Directory in ZSNES.CFG!',13,10,13,10
-           db 'Press any key to continue.',0
-.enter     db 13,10,0
+            db 'Press any key to continue.',0
+.enter      db 13,10,0
 
 NEWSYM InitDrive, db 2
 NEWSYM InitDir, times 512 db 0
@@ -1387,29 +1443,38 @@ NEWSYM SRAMDir, times 512 db 0
 NEWSYM LoadDrive, db 2
 NEWSYM LoadDir, times 512 db 0
 
+%ifdef __LINUX__
+NEWSYM gotoroot, db '/',0
+%else
 NEWSYM gotoroot, db '\',0
+%endif
 
 SECTION .text
 
+NEWSYM DosExit ; Terminate Program
+%ifdef __LINUX__
+	call	SDL_Quit	; Properly terminate video stuff
+	mov	ebx,0		; first syscall argument: exit code
+	mov	eax,1		; system call number (sys_exit)
+	int	0x80		; call kernel
+%else
+	jmp .nodeallocate
 
-NEWSYM DosExit          ; Terminate Program
-    jmp .nodeallocate
-
-    mov ebx,memfreearray
-.nextdeallocate
-    mov eax,[ebx]
-    or eax,eax
-    jz .nodeallocate
-    push ebx
-    push eax
-    call free
-    pop eax
-    pop ebx
-    add ebx,4
-    jmp .nextdeallocate
+	mov ebx,memfreearray
+	.nextdeallocate
+	mov eax,[ebx]
+	or eax,eax
+	jz .nodeallocate
+	push ebx
+	push eax
+	call free
+	pop eax
+	pop ebx
+	add ebx,4
+	jmp .nextdeallocate
 .nodeallocate
-    call init18_2hz
-    mov    ax,4c00h            ;terminate
-    int    21h
-
+	call init18_2hz
+	mov    ax,4c00h            ;terminate
+	int    21h
+%endif
 NEWSYM UIAsmEnd
