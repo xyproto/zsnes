@@ -1758,10 +1758,6 @@ DisplayGUIVideo:
     je .notext7
     GUIOuttextwin2u 5,26,168,GUIVideoText7,0
 .notext7
-;    cmp byte[GUITBWVID+eax],0
-;    je .notext77
-;    GUIOuttextwin2u 5,96,178,GUIVideoText10,0
-;.notext77
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIM7VID+eax],0
@@ -1875,10 +1871,6 @@ DisplayGUIVideo:
     je .notext7b
     GUIOuttextwin2 5,25,167,GUIVideoText7
 .notext7b
-;    cmp byte[GUITBWVID+eax],0
-;    je .notext7c
-;    GUIOuttextwin2 5,95,177,GUIVideoText10
-;.notext7c
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIM7VID+eax],0
@@ -2038,17 +2030,6 @@ DisplayGUIVideo:
 .nocheckboxm74
     GUIDisplayIconWin 5,115,183,[GUITemp]
 %endif
-;    xor eax,eax
-;    mov al,[cvidmode]
-;    cmp byte[GUITBWVID+eax],0
-;    je .nocheckboxks2
-;    mov dword[GUITemp],GUIIconDataCheckBoxUC
-;    cmp byte[KitchenSync],0
-;    je .nocheckboxks
-;    mov dword[GUITemp],GUIIconDataCheckBoxC
-;.nocheckboxks
-;    GUIDisplayIconWin 5,83,173,[GUITemp]
-;.nocheckboxks2
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIIEVID+eax],0
@@ -2229,11 +2210,10 @@ GUIVideoText5 db 'FULL SCREEN',0        ; -c
 GUIVideoText5b db 'WIDE SCREEN',0        ; -c
 GUIVideoText6 db 'SMALL SCREEN',0       ; -c
 GUIVideoText7 db 'TRIPLE BUFFERING',0       ; -c
-GUIVideoText8b db 'HI-RES M7',0       ; -c
+GUIVideoText8b db 'HI-RES MODE 7',0       ; -c
 GUIVideoText8c db 'GRAYSCALE MODE',0       ; -c
 GUIVideoText8 db 'SET',0                ; set button
 GUIVideoText9 db 'VSYNC',0       ; -c
-;GUIVideoText10 db 'KITCHENSYNC',0       ; -c
 GUIVideoTextH db 'MODE : ',0
 GUIVideoTextw0 db 'LEGEND:',0
 GUIVideoTextw1 db ' S = SCALED TO FIT SCREEN',0

@@ -1238,14 +1238,6 @@ GUIVideoKeys:
 ;    mov byte[Triplebufen],0
 %endif
 .novsync
-;    cmp dh,'K'
-;    jne .nokitchensync
-;    xor ebx,ebx
-;    mov bl,[cvidmode]
-;    cmp byte[GUITBWVID+ebx],0
-;    je .nokitchensync
-;    xor byte[KitchenSync],1
-;.nokitchensync
 %endif
     ret
 
