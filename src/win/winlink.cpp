@@ -343,8 +343,8 @@ extern "C" void CheckAlwaysOnTop()
 
 extern "C" void CheckScreenSaver()
 {
-   if (DisableScreenSaver == 1 && IsActivated == 1) SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, 0, SPIF_SENDWININICHANGE);
-      else SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, TRUE, 0, SPIF_SENDWININICHANGE);
+   if (DisableScreenSaver == 1 && IsActivated == 1) SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, 0, SPIF_SENDCHANGE);
+      else SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, TRUE, 0, SPIF_SENDCHANGE);
 }
 
 extern "C" void MinimizeWindow()
