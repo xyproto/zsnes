@@ -1092,6 +1092,12 @@ startgame()
    BitDepth=format.dwRGBBitCount;
    GBitMask=format.dwGBitMask; // 0x07E0 or not
 
+   if (BitDepth==24)
+   {
+      MessageBox(NULL,"ZSNESw does not support 24bit color.\nPlease change your resolution to either 16bit or 32bit color","Error",MB_OK);
+      exit(0);
+   }
+
    if(BitDepth==16&& GBitMask!=0x07E0)
    {
       converta=1;
