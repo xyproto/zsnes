@@ -2830,17 +2830,17 @@ EXTSYM osm2dis
     je .nooffsetm
     cmp byte[BGMA+ebx],2
     je near .offsetm
+    cmp byte[bgmode],4
+    je .nooffsetm4
+    cmp byte[BGMA+ebx],4
+    je near .offsetm
+.nooffsetm4
     cmp byte[t16x161+ebx+%1*256],1
     je near .tiles16x16
 .nooffsetm
     mov eax,[BGPT1+ebx*2+%1*512]
     test ecx,100h
     jz .noyinc
-    cmp byte[osm2dis],1
-    je .nooffsetm4
-    cmp byte[BGMA+ebx],4
-    je near .offsetm
-.nooffsetm4
     add eax,[BGPT1Y+ebx*2+%1*512]
 .noyinc
     lea ecx,[ecx*8]
