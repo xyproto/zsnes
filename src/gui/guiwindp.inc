@@ -1017,7 +1017,7 @@ DisplayGUIInput:
     GUIOuttextwin2 3,76,132,GUIInputTextA
     GUIOuttextwin2 3,76,142,GUIInputTextB
     GUIOuttextwin2 3,76,152,GUIInputTextC
-%ifndef __LINUX__
+%ifdef __MSDOS__
     GUIOuttextwin2 3,20,167,GUIInputTextW
 %endif
     GUIOuttextwin2 3,156,102,GUIInputText7
@@ -1041,7 +1041,7 @@ DisplayGUIInput:
     GUIOuttextwin2 3,75,131,GUIInputTextA
     GUIOuttextwin2 3,75,141,GUIInputTextB
     GUIOuttextwin2 3,75,151,GUIInputTextC
-%ifndef __LINUX__
+%ifdef __MSDOS__
     GUIOuttextwin2 3,20,167,GUIInputTextW
 %endif
     GUIOuttextwin2 3,155,101,GUIInputText7
@@ -1052,7 +1052,7 @@ DisplayGUIInput:
     GUIOuttextwin2 3,152,146,GUIInputTexte
     GUIOuttextwin2 3,112,136,GUIInputTextf
     GUIOuttextwin2 3,112,146,GUIInputTextg
-%ifndef __LINUX__
+%ifdef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     xor eax,eax
     mov al,[cplayernum]

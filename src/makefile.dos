@@ -59,9 +59,9 @@ MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${ZIPOBJ}
 LIBS=-lz -lgcc -lm
-CFLAGS=
+CFLAGS=-D__MSDOS__
 ASM=nasm
-ASMFLAGS=-f coff
+ASMFLAGS=-f coff -D__MSDOS__
 CC=gcc
 PP=gpp
 
