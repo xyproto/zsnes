@@ -381,15 +381,15 @@ void DOScreatenewcfg()
   }
 
   WRITE_LINE("; ZSNES Configuration file\r\n\r\n");
-  WRITE_LINE("; Frame Skip = 0 .. 9\r\n\r\n");
+  WRITE_LINE("; Frame Skip: 0 = Auto, 1-10 = Skip 0 .. 9\r\n\r\n");
 
   sprintf(buffer, "FrameSkip = %d\r\n\r\n", frameskip);
   SAVE_LINE(buffer);
 
-  WRITE_LINE("; Auto Frame Skip = 0 or 1 (1 = ON)\r\n\r\n");
+//  WRITE_LINE("; Auto Frame Skip = 0 or 1 (1 = ON)\r\n\r\n");
 
-  sprintf(buffer, "AutoFrameSkip = %d\r\n\r\n", (frameskip == 0) ? 1 : 0);
-  SAVE_LINE(buffer);
+//  sprintf(buffer, "AutoFrameSkip = %d\r\n\r\n", (frameskip == 0) ? 1 : 0);
+//  SAVE_LINE(buffer);
 
   WRITE_LINE("; Player 1/2 Input Device.  Use the GUI to set these values\r\n");
   WRITE_LINE("; NOTE : Using this to select joysticks manually will NOT work!\r\n\r\n");
@@ -742,7 +742,7 @@ void getcfg()
                   {
                     if (_forceauto != 1)
                     {
-                      frameskip = *_stringb - 47;//shouldn't this be 48??
+                      frameskip = *_stringb - 48;//shouldn't this be 48??
                     }
                   }
                 }
