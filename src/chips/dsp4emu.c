@@ -1947,7 +1947,8 @@ void DSP4_OP10()
 
           DSP4_CLEAR_OUT();
           DSP4_WRITE_WORD(color);
-        }
+          break;
+	}
       }
     }
 
@@ -2137,6 +2138,7 @@ void DSP4SetByte()
       DSP4.out_index = 0;
       DSP4.in_index = 0;
 
+      printf("DSP4 Command: %u\n", DSP4.command);
       switch (DSP4.command)
       {
           // 16-bit multiplication
@@ -2193,8 +2195,8 @@ void DSP4SetByte()
           int16 in3a = DSP4_READ_WORD();
           int16 out1a, out2a, out3a, out4a;
           
-          DSP4_OP0A(in2a, &out2a, &out1a, &out4a, &out3a);
-          //DSP4_OP0A(in2a, &out1a, &out2a, &out3a, &out4a);
+          //DSP4_OP0A(in2a, &out2a, &out1a, &out4a, &out3a);
+          DSP4_OP0A(in2a, &out1a, &out2a, &out3a, &out4a);
 
           DSP4_CLEAR_OUT();
           DSP4_WRITE_WORD(out1a);
@@ -2246,7 +2248,7 @@ void DSP4SetByte()
           a = DSP4_READ_WORD();
 
           DSP4_OP11(a, b, c, d, &m);
-              
+          
           DSP4_CLEAR_OUT();
           DSP4_WRITE_WORD(m);
 
