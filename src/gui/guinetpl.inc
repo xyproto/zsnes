@@ -116,7 +116,7 @@ ProcessModem:
     call .writestr
     mov esi,.tcpipip2
     call .writestr
-    mov esi,GUINetTextk2
+    mov esi,TCPIPAddress
     call .writestr
     mov esi,.tcpipret
     call .writestr
@@ -972,11 +972,11 @@ ProcessRemoteCommand:
     call RemoteDeInit
     ret
 .loadfail
-    cmp dword[GUINetTextk2],'127.'
+    cmp dword[TCPIPAddress],'127.'
     jne .nonum
-    cmp dword[GUINetTextk2+4],'0.0.'
+    cmp dword[TCPIPAddress+4],'0.0.'
     jne .nonum
-    cmp byte[GUINetTextk2+8],'1'
+    cmp byte[TCPIPAddress+8],'1'
     je near .startloadingb
 .nonum
     mov esi,.filenotu

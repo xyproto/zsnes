@@ -3848,7 +3848,7 @@ DisplayNetOptnsTCPIP:
     mov byte[GUItextcolor],222
 .zero2
     GUIOuttextwin2 8,59,15,GUINetTextl2
-    GUIOuttextwin2 8,30,60,GUINetTextk2
+    GUIOuttextwin2 8,30,60,TCPIPAddress
     GUIOuttextwin2 8,59,25,ChatNick
     mov byte[GUINetTextn2],'_'
     test byte[GUINetTextm2+2],8
@@ -4389,7 +4389,6 @@ GUINetTextg2 db 'START AS SERVER',0
 GUINetTexth2 db 'CLIENT OPTIONS:',0
 GUINetTexti2 db 'IP:',0
 GUINetTextj2 db 'CONNECT TO SERVER',0
-NEWSYM GUINetTextk2, db '',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 GUINetTextl2 db '7845',0,0,0
 GUINetTextm2 db 0,0,0
 GUINetTextn2 db '_',0

@@ -120,7 +120,7 @@ EXTSYM InitTCP
 EXTSYM StartServerCycle
 EXTSYM ServerCheckNewClient
 EXTSYM acceptzuser
-EXTSYM GUINetTextk2
+EXTSYM TCPIPAddress
 EXTSYM ConnectServer
 EXTSYM WaitForServer
 EXTSYM SendData
@@ -1789,8 +1789,8 @@ NEWSYM TCPIPInitConnectToServer
     or eax,eax
     jnz .failed
     mov byte[TCPIPStatus],1
-    ; Convert GUINetTextk2 to IPAddrStr
-    mov ebx,GUINetTextk2
+    ; Convert TCPIPAddress to IPAddrStr
+    mov ebx,TCPIPAddress
     mov edx,IPAddrStr
 .notend
     mov al,[ebx]

@@ -644,7 +644,7 @@ GUITCPIPKeys:
 ;GUINetTextm2 db 0,0,0
     cmp byte[GUINetTextm2],1
     je near .section2
-    mov edi,GUINetTextk2
+    mov edi,TCPIPAddress
     mov esi,26
     cmp byte[GUINetTextm2],2
     jne .notsecondstring

@@ -45,7 +45,7 @@ extern unsigned char	Palette0, SPC700sh, OffBy1Line, DSPDisable,
 			romtype, scanlines, showallext, smallscreenon, soundon,
 			spcon, vsyncon, DisplayS, fname, filefound, SnowOn,
 			NetChatFirst,NetServer,NetNewNick,
-			NetFilename,GUINetTextk2,NetQuitAfter,UDPConfig;
+			NetFilename,TCPIPAddress,NetQuitAfter,UDPConfig;
 
 int getopt(int argc, char *const argv[], const char *optstring);
 extern char *optarg;
