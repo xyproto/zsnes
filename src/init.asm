@@ -2153,6 +2153,7 @@ SECTION .data
 NEWSYM curromsize, db 0
 NEWSYM cromptradd, dd 0
 NEWSYM NoiseDisTemp, dd 0,0
+NEWSYM lorommapmode2, db 0
 SECTION .text
 
 NEWSYM initsnes
@@ -2257,12 +2258,25 @@ NEWSYM initsnes
     loop .loopb
     ; set banks 80-BF (40h x 32KB ROM banks @ 8000h)
     mov eax,[romdata]
+    cmp byte[lorommapmode2],0
+    je .notlorommode2
+    add eax,200000h
+.notlorommode2
     sub eax,8000h
-    mov cx,40h
+    mov cx,20h
 .loopc
     stosd
     add eax,8000h
     loop .loopc
+    cmp byte[lorommapmode2],0
+    je .notlorommode2b
+    sub eax,200000h
+.notlorommode2b
+    mov cx,20h
+.loopclr
+    stosd
+    add eax,8000h
+    loop .loopclr
     ; set banks C0-FF (40h x 64KB ROM banks @ 0000h)
     mov ecx,40h
 .loopd
@@ -4453,6 +4467,7 @@ NEWSYM loadfileGUI
     mov byte[IPSPatched],0
 
     ; Wizardry Gaiden 4?
+    mov byte[lorommapmode2],0
     mov esi,[romdata]
     cmp dword[esi+207FC0h],'DERB'
     jne .noderby96
@@ -4462,25 +4477,18 @@ NEWSYM loadfileGUI
     jne .noderby96
     cmp dword[esi+207FCDh],'N 96'
     jne .noderby96
-    mov eax,100000h
-.loopderby96
-    mov bl,[esi]
-    mov bh,[esi+200000h]
-    mov [esi+200000h],bl
-    mov [esi],bh
-    inc esi
-    dec eax
-    jnz .loopderby96
-    mov eax,100000h
-.loopderby962
-    mov bl,[esi+100000h]
-    mov bh,[esi+200000h]
-;    mov [esi+200000h],bl
-;    mov [esi],bh
-    inc esi
-    dec eax
-    jnz .loopderby962
+    mov byte[lorommapmode2],1
 .noderby96
+    cmp dword[esi+7FC0h],'SOUN'
+    jne .nosoundnovel
+    cmp dword[esi+7FC4h],'D NO'
+    jne .nosoundnovel
+    cmp dword[esi+7FC8h],'VEL-'
+    jne .nosoundnovel
+    cmp dword[esi+7FCDh],'COOL'
+    jne .nosoundnovel
+    mov byte[lorommapmode2],1
+.nosoundnovel
 
     cmp dword[esi+207FC0h],'WIZA'
     jne near .notwiz4
