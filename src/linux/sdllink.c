@@ -1327,7 +1327,7 @@ void initwinvideo(void)
    //RECT rc1, swrect;
    DWORD newmode=0;
 
-   STUB_FUNCTION;
+   //STUB_FUNCTION;
 
    if(CurMode!=cvidmode)
    {
@@ -2218,7 +2218,11 @@ void drawscreenwin(void)
    UnlockSurface();
 }
 
-
+void LinuxExit (void)
+{
+	SDL_Quit();
+	exit(0);
+}
 
 extern char fulladdtab[65536*2];
 extern WORD vesa2_usbit;

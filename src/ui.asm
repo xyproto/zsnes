@@ -37,7 +37,7 @@ EXTSYM cfgloadgdir,cfgloadsdir
 EXTSYM init18_2hz
 
 %ifdef __LINUX__
-EXTSYM SDL_Quit
+EXTSYM LinuxExit
 %endif
 
 NEWSYM UIAsmStart
@@ -1452,10 +1452,7 @@ SECTION .text
 
 NEWSYM DosExit ; Terminate Program
 %ifdef __LINUX__
-	call	SDL_Quit	; Properly terminate video stuff
-	mov	ebx,0		; first syscall argument: exit code
-	mov	eax,1		; system call number (sys_exit)
-	int	0x80		; call kernel
+	call LinuxExit
 %else
 	jmp .nodeallocate
 
