@@ -141,7 +141,7 @@ NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,
 NEWSYM welcome
 
 
-                 db 'ZSNES v',ZVERSION,' (c) 1997-2002, ZSNES Team (zsKnight & _Demo_)',13,10,13,10
+                 db 'ZSNES v',ZVERSION,' (c) 1997-2004, ZSNES Team',13,10,13,10
                  db 'Be sure to check http://www.zsnes.com/ for the latest version.',13,10
                  db 'Please report crashes to zsnes-devel@lists.sourceforge.net.',13,10,13,10
                  db 'ZSNES is written by the ZSNES Team (See AUTHORS.TXT)',13,10
