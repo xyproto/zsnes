@@ -52,7 +52,7 @@ EXTSYM objadds1,objadds2,objmovs1,objmovs2,tltype4b,vidmemch4,vram
 EXTSYM bgptr,bgptrc,bgptrd,curtileptr,vcache2b
 EXTSYM vcache8b,vidmemch8
 EXTSYM offsetmshl,NextLineCache
-EXTSYM tltype2b,UpdateSoundAgain
+EXTSYM tltype2b
 EXTSYM tltype8b,objwlrpos
 
 
@@ -307,8 +307,6 @@ NEWSYM cachevideo
 .nofocussaveb
     mov dword[sramb4save],0
 .nofocussave
-
-;    call UpdateSoundAgain
 
     cmp byte[CNetType],20
     je near .sdskip
