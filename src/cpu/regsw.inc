@@ -650,17 +650,22 @@ reg210Cw:
 
 ; BG1 horizontal scroll register
 reg210Dw:
-    mov bl,byte[bg1scrolx+1]
-    mov byte[bg1scrolx],bl
-    mov byte[bg1scrolx+1],al
+    xor ebx,ebx
+    mov byte[bg1scrolx],al
+    shl word[bg1scrolx],8
+    mov bl,[bgscroltemp]
+    add word[bg1scrolx],bx
+    mov byte[bgscroltemp],al
     ret
 
 ; BG1 vertical scroll register
 reg210Ew:
-    mov bl,byte[bg1scroly+1]
-    add bl,[bgscroltemp]
-    mov byte[bg1scroly],bl
-    mov byte[bg1scroly+1],al
+    xor ebx,ebx
+    mov byte[bg1scroly],al
+    shl word[bg1scroly],8
+    mov bl,[bgscroltemp]
+    add word[bg1scroly],bx
+    mov byte[bgscroltemp],al
     ret
 
 SECTION .bss
@@ -669,47 +674,67 @@ SECTION .text
 
 ; BG2 horizontal scroll register
 reg210Fw:
-    mov bl,byte[bg2scrolx+1]
-    mov byte[bg2scrolx],bl
-    mov byte[bg2scrolx+1],al
+    xor ebx,ebx
+    mov byte[bg2scrolx],al
+    shl word[bg2scrolx],8
+    mov bl,[bgscroltemp]
+    add word[bg2scrolx],bx
+    mov byte[bgscroltemp],al
     ret
 
 ; BG2 vertical scroll register
 reg2110w:
-    mov bl,byte[bg2scroly+1]
-    add bl,[bgscroltemp]
-    mov byte[bg2scroly],bl
-    mov byte[bg2scroly+1],al
+    xor ebx,ebx
+    mov byte[bg2scroly],al
+    shl word[bg2scroly],8
+    mov bl,[bgscroltemp]
+    add word[bg2scroly],bx
+    mov byte[bgscroltemp],al
     ret
 
 ; BG3 horizontal scroll register
 reg2111w:
-    mov bl,byte[bg3scrolx+1]
-    mov byte[bg3scrolx],bl
-    mov byte[bg3scrolx+1],al
+    xor ebx,ebx
+    mov byte[bg3scrolx],al
+    shl word[bg3scrolx],8
+    mov bl,[bgscroltemp]
+    add word[bg3scrolx],bx
+    mov byte[bgscroltemp],al
     ret
+
+section .data
+NEWSYM latchbg3, db 0
+
+section .text
 
 ; BG3 vertical scroll register
 reg2112w:
-    mov bl,byte[bg3scroly+1]
-    add bl,[bgscroltemp]
-    mov byte[bg3scroly],bl
-    mov byte[bg3scroly+1],al
+    xor ebx,ebx
+    mov byte[bg3scroly],al
+    shl word[bg3scroly],8
+    mov bl,[bgscroltemp]
+    add word[bg3scroly],bx
+    mov byte[bgscroltemp],al
     ret
 
 ; BG4 horizontal scroll register
 reg2113w:
-    mov bl,byte[bg4scrolx+1]
-    mov byte[bg4scrolx],bl
-    mov byte[bg4scrolx+1],al
+    xor ebx,ebx
+    mov byte[bg4scrolx],al
+    shl word[bg4scrolx],8
+    mov bl,[bgscroltemp]
+    add word[bg4scrolx],bx
+    mov byte[bgscroltemp],al
     ret
 
 ; BG4 vertical scroll register
 reg2114w:
-    mov bl,byte[bg4scroly+1]
-    add bl,[bgscroltemp]
-    mov byte[bg4scroly],bl
-    mov byte[bg4scroly+1],al
+    xor ebx,ebx
+    mov byte[bg4scroly],al
+    shl word[bg4scroly],8
+    mov bl,[bgscroltemp]
+    add word[bg4scroly],bx
+    mov byte[bgscroltemp],al
     ret
 
 ; Video port control
