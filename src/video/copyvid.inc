@@ -3010,8 +3010,11 @@ NEWSYM copyvesa2640x480x16b
     add esi,16*2+256*2+32*2
     xor eax,eax
     ; Check if interpolation mode
+    cmp byte[FilteredGUI],1
+    je .yi
     cmp byte[GUIOn],1
     je .nointerp
+.yi
     cmp byte[FPUCopy],2
     jne .nommx
     cmp byte[newgfx16b],0

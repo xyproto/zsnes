@@ -53,7 +53,7 @@ EXTSYM ClearScreenSkip,debugdisble,cmovietimeint
 EXTSYM ChatNick
 EXTSYM StringLength
 EXTSYM chatstrLt
-EXTSYM GUIOn,HalfTrans
+EXTSYM GUIOn,FilteredGUI,HalfTrans
 EXTSYM ClearScreen
 EXTSYM Mode7HiRes,mosenng,mosszng,intrlng,mode7hr ;,VESAAddr
 EXTSYM GUICPC, newgfx16b
