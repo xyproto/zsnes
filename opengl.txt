@@ -39,6 +39,38 @@ There is a old patch that enables these filters and it is located at:
 http://www.students.uiuc.edu/~handuong/opengl.patch2
 
 
+3DFX USERS (VOODOO2 AND OLDER HARDWARE)
+
+     Lord_Nightmare managed to get OpenGL to work on a Voodoo2. Some
+things you'll need to do in order to get ZSNES OpenGL to work on your
+Voodoo:
+
+     1. Make sure to have the latest Mesa drivers and compile it with
+        the following option:
+
+	make -f Makefile.X11 linux-386-glide
+
+	Voodoo2 users might want to use:
+
+	make -f Makefile.X11 linux-386-opt-V2-glide
+
+	since that is optimized for Voodoo2 cards. According the the
+	XFree86 website, Voodoo3 users (and later) should have DRI
+	support via the tdfx driver so this might not be needed.
+
+     2. When you run ZSNES, make sure to set the environment variable
+        MESA_GLX_FX to either w or f (window/full screen). E.g. use
+
+	export MESA_GLX_FX=f
+
+	if you use a bash shell. Theoretically using the w option
+	should work, but it not only is slow (5fps) but seems
+	broken. Voodoo Rush users might be able to get by.
+
+Note that only the 640x480 full screen mode works on the Voodoo2 cards
+so please do not email me about the other video modes.
+
+
 KNOWN ISSUES (AND SOME WORK-AROUNDS)
 
 - after many video mode switches (all windowed), switching to full screen
