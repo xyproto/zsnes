@@ -804,6 +804,7 @@ DisplayGUILoad:
     DrawGUIWinBox 1,229,144,228,152,dl
     ret
 
+SECTION .data
 GUILoadText1 db 'SELECT FILE TO LOAD :',0
 GUILoadText2 db 'DISPLAY TYPE :',0
 GUILoadText3 db 'NORMAL 8.3 FORMAT',0
@@ -819,9 +820,12 @@ GUILoadTextC db 'NTSC',0
 GUILoadTextD db 'PAL',0
 GUILoadTextE db 'LOROM',0
 GUILoadTextF db 'HIROM',0
-GUILStA dd 0,0,0
-GUILStB dd 0,0,0
-GUILoadPos db 0
+
+SECTION .bss
+GUILStA resd 3
+GUILStB resd 3
+GUILoadPos resb 1
+SECTION .text
 
 DisplayGUIReset:
     GUIDrawWindowBox 12,GUIResetDisp
@@ -854,9 +858,11 @@ DisplayGUIReset:
     GUIOuttextwin2 12,5,15,GUIResetText1
     ret
 
+SECTION .data
 GUIResetText1 db 'RESET : ARE YOU SURE ?',0
 GUIResetText2 db 'YES',0
 GUIResetText3 db 'NO',0
+SECTION .text
 
 DisplayGUIStates:
     GUIDrawWindowBox 14,GUIStatesDisp
@@ -901,11 +907,13 @@ DisplayGUIStates:
 .save2
     ret
 
+SECTION .data
 GUIStatesText1 db 'OKAY TO SAVE STATE?',0
 GUIStatesText2 db 'OKAY TO LOAD STATE?',0
 GUIStatesText3 db 'YES',0
 GUIStatesText4 db 'NO',0
 GUIStatesText5 db 0
+SECTION .text
 
 DisplayGUIChoseSave:
     GUIDrawWindowBox 2,GUIStateSelDisp
@@ -980,8 +988,10 @@ DisplayGUIChoseSave:
     GUIDisplayButtonHole 2,90,43,byte[GUIChoseSaveText2],'9'
     ret
 
+SECTION .data
 GUIChoseSaveText1 db 'SELECT SAVE SLOT :',0
 GUIChoseSaveText2 db '-',0
+SECTION .text
 
 %macro DGOptnsDrawBox 3
     mov eax,dword[GUIwinposx+9*4]
@@ -1333,6 +1343,7 @@ DisplayGUIInput:
     DrawGUIWinBox 3,5,78,107,78,dl
     ret
 
+SECTION .data
 GUIInputRefF db 0,1,2,3,5,18,6,7,8,9,10,11,14,15,16,17
 GUIInputRefB db 0,1,2,3,3,4,6,7,8,9,10,11,11,11,12,13,14,15,5
 GUIInputRefP dd pl1contrl,pl2contrl,pl3contrl,pl4contrl,pl5contrl
@@ -1363,10 +1374,13 @@ GUIInputTextd db 'UL',0
 GUIInputTexte db 'UR',0
 GUIInputTextf db 'DL',0
 GUIInputTextg db 'DR',0
-GUIIStA dd 0,0,0
 
-GUIcurrentinputviewloc dd 0
-GUIcurrentinputcursloc dd 0
+SECTION .bss
+GUIIStA resd 3
+
+GUIcurrentinputviewloc resd 1
+GUIcurrentinputcursloc resd 1
+SECTION .text
 
 DisplayGUIOption:
     ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engine/Save Confirm
@@ -1591,6 +1605,7 @@ DisplayGUIOption:
     DrawGUIButton 4,129,12,137,22,GUIOptionText10,13,-2,0
     ret
 
+SECTION .data
 GUIOptionText1 db 'FRAME RATE',0
 GUIOptionText2 db 'AUTO FRAME RATE',0
 GUIOptionText3 db 'MAX FRAME SKIP',0
@@ -1614,6 +1629,7 @@ GUIOptionTextL db 'USE ALTERNATE TIMER',0
 GUIOptionText8 db '-',0
 GUIOptionText9 db '+',0
 GUIOptionText10 db '-',0
+SECTION .text
 
 DisplayGUIVideo:
     cmp byte[TripBufAvail],0
@@ -1742,13 +1758,6 @@ DisplayGUIVideo:
     je .notext8
     GUIOuttextwin2u 5,26,178,GUIVideoText8b,0
 .notext8
-%ifndef __MSDOS__
-    mov al,[cvidmode]
-    cmp byte[GUIMBVID+eax],0
-    je .notext82
-    GUIOuttextwin2u 5,26,178,GUIVideoText8b2,0
-.notext82
-%endif
     GUIOuttextwin2u 5,26,188,GUIVideoText8c,0
 %ifndef __LINUX__
     GUIOuttextwin2u 5,130,188,GUIVideoText9,0
@@ -1850,13 +1859,6 @@ DisplayGUIVideo:
     je .notext8b
     GUIOuttextwin2 5,25,177,GUIVideoText8b
 .notext8b
-%ifndef __MSDOS__
-    mov al,[cvidmode]
-    cmp byte[GUIMBVID+eax],0
-    je .notext8b2
-    GUIOuttextwin2 5,25,177,GUIVideoText8b2
-.notext8b2
-%endif
     GUIOuttextwin2 5,25,187,GUIVideoText8c
 %ifndef __LINUX__
     GUIOuttextwin2 5,129,187,GUIVideoText9
@@ -1982,18 +1984,6 @@ DisplayGUIVideo:
 .nocheckbox1m72
     GUIDisplayIconWin 5,11,173,[GUITemp]
 .nocheckboxm72
-%ifndef __MSDOS__
-    mov al,[cvidmode]
-    cmp byte[GUIMBVID+eax],0
-    je .nocheckboxmb2
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[MotionBlur],0
-    je .nocheckboxmb
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckboxmb
-    GUIDisplayIconWin 5,11,173,[GUITemp]
-.nocheckboxmb2
-%endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[GrayscaleMode],0
     je .nocheckboxm73
@@ -2147,6 +2137,7 @@ DisplayGUIVideo:
     GUIOuttextwin2 5,48,195,[GUITemp]
     ret
 
+SECTION .data
 GUIVideoText1 db 'VIDEO MODES :',0
 GUIVideoText2 db 'FULL SCANLINES',0
 GUIVideoTextb db 'SCANLINES:',0
@@ -2164,7 +2155,6 @@ GUIVideoText5b db 'WIDE SCREEN',0        ; -c
 GUIVideoText6 db 'SMALL SCREEN',0       ; -c
 GUIVideoText7 db 'TRIPLE BUFFERING',0       ; -c
 GUIVideoText8b db 'HI-RESOLUTION MODE7',0       ; -c
-GUIVideoText8b2 db 'MOTION BLUR',0       ; -c
 GUIVideoText8c db 'GRAYSCALE MODE',0       ; -c
 GUIVideoText8 db 'SET',0                ; set button
 GUIVideoText9 db 'VSYNC',0       ; -c
@@ -2173,10 +2163,14 @@ GUIVideoTextw0 db 'LEGEND:',0
 GUIVideoTextw1 db ' S = SCALED TO FIT SCREEN',0
 GUIVideoTextw2 db ' R = MATCHED SCREEN RATIO',0
 GUIVideoTextw3 db ' D = ALLOW 2XSAI,HIRES,ETC',0
-GUIVStA dd 0,0,0
 
-GUIcurrentvideoviewloc dd 0
-GUIcurrentvideocursloc dd 0
+SECTION .bss
+GUIVStA resd 3
+
+GUIcurrentvideoviewloc resd 1
+GUIcurrentvideocursloc resd 1
+
+SECTION .text
 
 
 DisplayGUISound:
@@ -2433,6 +2427,7 @@ DisplayGUISound:
     GUIOuttextwin2 6,118,88,[GUITemp]
     ret
 
+SECTION .data
 GUISoundText1 db 'ENABLE SOUND',0
 GUISoundText1b db 'FORCE 8-BIT',0
 GUISoundText2 db 'SAMPLING RATE :',0
@@ -2461,7 +2456,7 @@ GUISoundTextT db 'LOWPASS :',0
 GUISoundTextU db 'SIMPLE',0
 GUISoundTextV db 'DYNAMIC',0
 GUISoundTextW db 'HI QUALITY',0
-
+SECTION .text
 
 
 DisplayGUICheatConv:
@@ -2775,6 +2770,7 @@ DisplayGUICheat:
     GUIDisplayIconWin 7,11,186,[GUITemp]
     ret
 
+SECTION .data
 GUICheatText1 db 'ENTER CODE :',0
 GUICheatText2 db 'DESCRIPTION:',0
 GUICheatText3 db 'ADDRESS CV PV TGL DESCRIPTION',0
@@ -2793,14 +2789,16 @@ GUICheatTextE db 'NOTE : YOU MAY HAVE TO RESET THE GAME',0
 GUICheatTextF db ' AFTER ENTERING THE CODE. REMEMBER TO',0
 GUICheatTextG db ' INSERT THE "-" FOR GAME GENIE CODES',0
 GUICheatTextJ db 'AUTO-LOAD .CHT FILE AT GAME LOAD',0
-GUICheatPosA db 0
-GUICheatPosB db 0
-GUICStA dd 0,0,0
-GUIcurrentcheatviewloc dd 0
-GUIcurrentcheatcursloc dd 0
-GUIcurrentcheatwin     dd 0
-ccheatnpos             dd 0
-ccheatnleft            dd 0
+SECTION .bss
+GUICheatPosA resb 1
+GUICheatPosB resb 1
+GUICStA resd 3
+GUIcurrentcheatviewloc resd 1
+GUIcurrentcheatcursloc resd 1
+GUIcurrentcheatwin     resd 1
+ccheatnpos             resd 1
+ccheatnleft            resd 1
+SECTION .text
 
 DrawWindowSearch:
     GUIDrawWindowBox 13,GUISearchDisp
@@ -3440,29 +3438,35 @@ Cheatmodeadd:
 ;CheatSrcByteSize db 0
 ;CheatSrcByteBase db 0
 ;CheatSrcSearchType db 0
-CheatWinMode db 0
-CheatSearchStatus db 0
-CheatCompareValue dd 0
-NumCheatSrc       dd 0
-GUIcurrentchtsrcviewloc dd 0
-GUIcurrentchtsrccursloc dd 0
-CSStartEntry      dd 0
-CSCurEntry      dd 0
-CheatSearchXPos   dd 0
-CheatSearchYPos   dd 0
-CheatLooped       dd 0
-ccheatnleftb      dd 0
-CurCStextpos      dd 0
+SECTION .bss
+CheatWinMode resb 1
+CheatSearchStatus resb 1
+CheatCompareValue resd 1
+NumCheatSrc       resd 1
+GUIcurrentchtsrcviewloc resd 1
+GUIcurrentchtsrccursloc resd 1
+CSStartEntry      resd 1
+CSCurEntry      resd 1
+CheatSearchXPos   resd 1
+CheatSearchYPos   resd 1
+CheatLooped       resd 1
+ccheatnleftb      resd 1
+CurCStextpos      resd 1
+
+SECTION .data
 SrcMask dd 0FFh,0FFFFh,0FFFFFFh,0FFFFFFFFh
 CSInputDisplay db '_',0,'         ',0
 CSDescDisplay  db '                  ',0,0
-curentryval dd 0
-curentryleft dd 0
-curaddrvalcs dd 0
-curvaluecs dd 0
 
-GUICSStA dd 0,0,0
+SECTION .bss
+curentryval resd 1
+curentryleft resd 1
+curaddrvalcs resd 1
+curvaluecs resd 1
 
+GUICSStA resd 3
+
+SECTION .data
 GUISrcText1 db 'CHEAT SEARCH',0
 GUISrcText2 db 'HAS NOT BEEN',0
 GUISrcText3 db 'IMPLEMENTED YET',0
@@ -3500,6 +3504,7 @@ GUICSrcTextV db 'ENTER NEW VALUE:',0
 GUICSrcTextW db 'ENTER CHEAT DESCRIPTION:',0
 GUICSrcTextX db 'PAR CODE EQUIVALENT:',0
 GUICSrcTextY db 'USE ONLY UPPER BYTE',0
+SECTION .text
 
 
 NEWSYM NetAddChar             ; dl = color, dh = char
@@ -3621,13 +3626,16 @@ NEWSYM NetAddChar             ; dl = color, dh = char
     ret
 
 
-CCursLoc dd 0
-CViewLoc dd 0
-NViewLoc dd 0
-TViewLoc dd 0
+section .bss
+CCursLoc resd 1
+CViewLoc resd 1
+NViewLoc resd 1
+TViewLoc resd 1
+section .text
 
 
 DisplayNetOptns:
+
     mov dword[GUIwinsizex+8*4],7*16
     mov dword[GUIwinsizey+8*4],57
     mov dword[GUINetDisp],'IPX '
@@ -3641,6 +3649,7 @@ DisplayNetOptns:
     mov dword[GUINetDisp+4],'R!  '
     jmp .nomodem
 .netokay
+%ifdef __MSDOS__
     cmp byte[CNetType],8
     jne .noipxinvalid
     mov dword[GUIwinsizex+8*4],7*16
@@ -3648,6 +3657,7 @@ DisplayNetOptns:
     mov dword[GUINetDisp],'ERRO'
     mov dword[GUINetDisp+4],'R!  '
 .noipxinvalid
+%endif
 
     cmp byte[CNetType],22
     je .yesstate
@@ -3703,6 +3713,7 @@ DisplayNetOptns:
     mov dword[GUIwinsizex+8*4],201
     mov dword[GUIwinsizey+8*4],48
 .notcpip
+%ifdef __MSDOS__
     cmp byte[CNetType],3
     je .yesmodem
     cmp byte[CNetType],1
@@ -3729,6 +3740,7 @@ DisplayNetOptns:
     mov dword[GUINetDisp+8],'TTIN'
     mov word[GUINetDisp+12],'GS'
     mov byte[GUINetDisp+14],0
+%endif
 .nomodem
     GUIDrawWindowBox 8,GUINetDisp
     cmp byte[per2exec],99
@@ -3739,12 +3751,14 @@ DisplayNetOptns:
     cmp byte[CNetType],21
     je near DisplayNetTCPIPState
 
+%ifdef __MSDOS__
     cmp byte[CNetType],1
     je near DisplayNetOptnsModem
     cmp byte[CNetType],2
     je near DisplayNetOptnsModemConfig
     cmp byte[CNetType],3
     je near DisplayNetOptnsModemDial
+%endif
     cmp byte[CNetType],4
     je near DisplayNetOptnsTCPIP
     cmp byte[CNetType],10
@@ -3757,6 +3771,7 @@ DisplayNetOptns:
     je near DisplayNetOptnsModemTerm
     cmp byte[CNetType],20
     je near DisplayNetOptnsChatWindow
+%ifdef __MSDOS__
     cmp byte[CNetType],7
     je near DisplayNetIPXStart
     cmp byte[CNetType],8
@@ -3785,6 +3800,7 @@ DisplayNetOptns:
     GUIOuttextwin2 8,5,15,GUINetText1
     GUIOuttextwin2 8,5,25,GUINetText2
     ret
+%endif
 
 DisplayNetTCPIPState:
     DrawGUIButton 8,73,48,127,59,GUITCPStateText3,64,0,0
@@ -3833,10 +3849,13 @@ DisplayNetTCPIPState:
     DrawGUIWinBox 8,122,30,121,40,dl ; 2,0,1,0
     ret
 
+SECTION .data
 GUITCPStateText1 db 'SENDING STATUS',0
 GUITCPStateText2 db 'RECEIVING STATUS',0
 GUITCPStateText3 db 'CANCEL',0
+SECTION .text
 
+%ifdef __MSDOS
 DisplayNetIPXStart:
     DrawGUIButton 8,53,48,87,59,GUINetTextZ,34,0,0
     sub byte[GUItextcolor],15
@@ -3851,6 +3870,7 @@ DisplayNetIPXStart:
 
 DisplayNetIPXInvalid:
     ret
+%endif
 
 DisplayNetOptnsTCPIP:
     ; Your IP:
@@ -3973,6 +3993,7 @@ DisplayNetOptnsInvalid:
     GUIOuttextwin2 8,5,25,GUINetText2b
     GUIOuttextwin2 8,5,35,GUINetText3b
     ret
+%ifdef __MSDOS__
 DisplayNetOptnsModem:
     mov dword[GUIEditStringcWin],0
     DrawGUIButton 8,5,15,89,26,GUINetTextG,21,0,0
@@ -4101,6 +4122,7 @@ DisplayNetOptnsModemDial:
 ;    mov dword[GUIEditStringmLenM],27
     mov dword[GUIEditStringcWin],1
     ret
+%endif
 DisplayNetOptnsModemTerm:
     DrawGUIWinBox 8,6,15,181,127,167
     ; draw borders
@@ -4378,23 +4400,30 @@ DisplayNetOptnsChatWindow:
 ;    DrawSlideBarWin 8,181,15,[NViewLoc],[TViewLoc],12,97,GUINCStA
     ret
 
-NEWSYM GUINCStA, dd 0,0,0
-NEWSYM CNetType, db 0
+SECTION .bss
+NEWSYM GUINCStA, resd 3
+NEWSYM CNetType, resb 1
+SECTION .data
 NEWSYM Latency, db 2
 NEWSYM Latencytochange, db 2
 NEWSYM LatencyLeft, db 2
-NEWSYM NetSwap, db 0
-RemCNetType db 0
-UseRemoteSRAMData db 0
-ChatString times 276 db 0
-FileNameMod times 512 db 0
-CurCStringPos dd 0
+SECTION .bss
+NEWSYM NetSwap, resb 1
+RemCNetType resb 1
+UseRemoteSRAMData resb 1
+ChatString resb 276
+FileNameMod resb 512
+CurCStringPos resd 1
 
+SECTION .data
+%ifdef __MSDOS__
 GUINetText1 db 'IPX HAS NOT BEEN',0
 GUINetText2 db 'IMPLEMENTED YET',0
+%endif
 GUINetText1b db 'PLEASE SET THE',0
 GUINetText2b db 'PERCENTAGE OF',0
 GUINetText3b db 'EXECUTION TO 100',0
+%ifdef __MSDOS__
 GUINetText1c db 'IPX IS IN BETA',0
 GUINetText2c db 'STAGES.  IT MAY',0
 GUINetText3c db 'NOT WORK RIGHT!',0
@@ -4403,9 +4432,11 @@ GUINetText4 db 'COM2 (2F8)',0
 GUINetText5 db 'COM3 (3E8)',0
 GUINetText6 db 'COM4 (2E8)',0
 GUINetText7 db 'IRQ ',0
+%endif
 GUINetText8 db '00',0
 GUINetText9 db '+',0
 GUINetTextA db '-',0
+%ifdef __MSDOS__
 GUINetTextC db 'TONE (ATDT)',0
 GUINetTextD db 'PULSE (ATDP)',0
 GUINetTextE db 'INIT STRINGS :',0
@@ -4425,12 +4456,17 @@ GUINetTextO db '57600',0
 GUINetTextP db '115200',0
 GUINetTextQ db 'BAUDRATE (BPS) :',0
 GUINetTextR db 'COMPORT :',0
+%endif
 GUINetTextS db 'CANCEL',0
+%ifdef __MSDOS__
 GUINetTextT db 'DIAL',0
+%endif
 GUINetTextU db 'DISCONNECT',0
 GUINetTextV db 'PLAYER SELECT :',0
 GUINetTextW db '1',0,'2',0,'3',0,'4',0,'5',0
+%ifdef __MSDOS__
 GUINetTextX db 'USE FOSSIL DRIVER',0
+%endif
 GUINetTextY db 'LATENCY',0
 GUINetTextZ db 'OKAY',0
 GUINetTexta db 'SAVE DATA :',0
@@ -4453,7 +4489,11 @@ GUINetTextr1 db 'PLEASE RESTART ZSNESW',0
 GUINetTextr2 db 'BEFORE STARTING A NEW',0
 GUINetTextr3 db 'NETPLAY SESSION',0
 
+%ifdef __MSDOS__
 BaudVal  dd 9600,14400,19200,28800,38400,57600,115200
+%endif
+
+SECTION .text
 
 DisplayGameOptns:
     ; Key redefinition for :
@@ -4735,9 +4775,12 @@ DisplayGameOptns:
     DGOptnsDrawBox 8+108+70,188,[KeyQuickSaveSPC]
     ret
 
-GUIGameOptnsColA db 0
-GUIGameOptnsColB db 0
-GUIGameDisplayKy dd 0
+SECTION .bss
+GUIGameOptnsColA resb 1
+GUIGameOptnsColB resb 1
+GUIGameDisplayKy resd 1
+
+SECTION .data
 GUIGameOptnsText1 db 'SOUND DISABLES :',0
 GUIGameOptnsText2 db 'CH#',0
 GUIGameOptnsText3 db 'BG DISABLES :',0
@@ -4772,6 +4815,7 @@ GUIGameOptnsTextV db 'SAVE SPC',0
 GUIGameOptnsTextX db 'DISPLAY FPS',0
 GUIGameOptnsTextY db 'ST+',0
 GUIGameOptnsTextZ db 'ST-',0
+SECTION .text
 
 DisplayGUIOptns:
 %ifdef __WIN32__
@@ -5101,6 +5145,7 @@ DisplayGUIOptns:
 ;lastcursres db 0        ; 0 = go to load, 1 = go to previous menu, 2 = no menu
 ;resetposn   db 1        ; 0 = no window reset, 1 = window reset
 
+SECTION .data
 GUIGUIOptnsText1 db 'COLOR:',0
 GUIGUIOptnsText2 db 'MOUSE WRAP',0
 GUIGUIOptnsText3 db 'MOUSE SHADOW',0
@@ -5112,7 +5157,7 @@ GUIGUIOptnsText8 db 'CLICK ENTERS GUI',0
 GUIGUIOptnsText9 dd 0
 GUIGUIOptnsTextA db 'USE JOYPAD1',0
 GUIGUIOptnsTextB dd 'SNOW EFFECT',0
-GUIGUIOptnsTextBb dd 'SMOKE EFFECT',0
+GUIGUIOptnsTextBb dd 'BURNING EFFECT',0
 GUIGUIOptnsTextC dd 'WATER EFFECT A',0
 GUIGUIOptnsTextCb dd 'WATER EFFECT B',0
 GUIGUIOptnsTextD dd 'MAIN WINDOW OPTIONS :',0
@@ -5126,6 +5171,7 @@ GUIGUIOptnsTextK db 'WHEEL MOUSE',0
 GUIGUIOptnsTextL db 'ALLOW MULTIPLE INSTANCES',0
 GUIGUIOptnsTextM db 'FILTERED GUI',0
 GUIGUIOptnsTextN db 'TRAP MOUSE CURSOR',0
+SECTION .text
 
 DisplayGUIAbout:
     GUIDrawWindowBox 11,GUIAboutDisp
@@ -5184,6 +5230,7 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,5,75,GUIGUIAboutText5
     ret
 
+SECTION .data
 GUIGUIAboutText1 db 'ZSNES V',ZVERSION,0
 GUIGUIAboutText2 db 'CODED BY :  ',0
 GUIGUIAboutText3 db '    ZSKNIGHT',0
@@ -5211,6 +5258,8 @@ GUIGUIAboutTextD db 'to redistribute it under',0
 GUIGUIAboutTextE db 'certain conditions; please',0
 GUIGUIAboutTextF db 'please read ',39,'LICENSE',39,0
 GUIGUIAboutTextG db 'thoroughly before using it.',0
+
+SECTION .text
 
 DisplayGUIMovies:
     GUIDrawWindowBox 15,GUIMovieDisp
@@ -5312,6 +5361,7 @@ DisplayGUIMovies:
     GUIDisplayButtonHole 15,80,55,byte[CMovieExt],'9'
     ret
 
+SECTION .data
 GUIMovieText1 db 'PLAY',0
 GUIMovieText2 db 'RECORD',0
 GUIMovieText3 db 'STOP',0
@@ -5323,6 +5373,8 @@ GUIMovieText8 db 'YES',0
 GUIMovieText9 db 'NO',0
 GUIMovieTextA db 'STATUS :           ',0
 CMovieExt db 'v'
+
+SECTION .text
 
 ; Key types: Up, Down, Left, Right, A, B, X, Y, L, R (Press/Relase/P+R)
 ; Frame delays: 1 frame, 2, 3, 4, 5, 1 sec., 2, 3 ,4 ,5
@@ -5712,6 +5764,15 @@ DisplayGUICombo:
     mov byte[GUIGameDisplayKy+3],0
     GUIOuttextwin2c 16,139,94,GUIGameDisplayKy
 
+    ; Buttons
+    mov al,[TextColorSp+2]
+    add al,15
+    mov byte[GUItextcolor],al
+    DrawGUIButton 16,202,20,246,31,GUIComboTextA,60,-1,0
+    DrawGUIButton 16,202,35,246,46,GUIComboTextB,61,-1,0
+    DrawGUIButton 16,202,50,246,61,GUIComboTextC,62,-1,0
+    DrawGUIButton 16,202,65,246,76,GUIComboTextD,63,-1,0
+
     ; Hole Switches
     GUIDisplayButtonHole 16,178,82,byte[GUIComboPNum],0
     GUIDisplayButtonHole 16,196,82,byte[GUIComboPNum],1
@@ -5921,27 +5982,28 @@ DisplayGUICombo:
 .noscrolldisplay
     ret
 
-
-GUIccombviewloc dd 0
-GUIccombcursloc dd 0
-GUIccomblcursloc dd 0
-NEWSYM NumCombo,     dd 0
-NumComboGlob    dd 0
-NEWSYM NumComboLocl, dd 0
-GUICSStC        dd 0,0,0
-GUIComboKey     dd 0
-GUIComboPos     db 0
-GUIComboPNum    db 0
-GUIComboLHorz   db 0
-NEWSYM GUINumCombo, db 0
-GUIComboData times 50 db 0
-GUIScrolBufA times 21 db 0
-GUIScrolBufB times 10 db 0
+SECTION .bss
+GUIccombviewloc resd 1
+GUIccombcursloc resd 1
+GUIccomblcursloc resd 1
+NEWSYM NumCombo,     resd 1
+NumComboGlob    resd 1
+NEWSYM NumComboLocl, resd 1
+GUICSStC        resd 3
+GUIComboKey     resd 1
+GUIComboPos     resb 1
+GUIComboPNum    resb 1
+GUIComboLHorz   resb 1
+NEWSYM GUINumCombo, resb 1
+GUIComboData resb 50
+GUIScrolBufA resb 21
+GUIScrolBufB resb 10
 
 
 ;CombinDataGlob times 3300 db 0 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff
 ;CombinDataLocl times 3300 db 0
 
+SECTION .data
 GUIComboText1 db 'DESCRIPTION',0
 GUIComboText2 db 'KEY P# LH',0
 GUIComboText3 db ' ',0
@@ -6024,6 +6086,8 @@ GUIIconDataComboSecond:
     db 0  ,48 ,46 ,44 ,42 ,0  ,0  ,0  ,0  ,0
     db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
 
+SECTION .text
+
 DisplayGUIAddOns:
     GUIDrawWindowBox 17,GUIAddOnsDisp
     sub byte[GUItextcolor],15
@@ -6095,6 +6159,7 @@ DisplayGUIAddOns:
     GUIDisplayIconWin 17,109,93,[GUITemp]
     ret
 
+SECTION .data
 GUIAddOnText1 db 'NONE',0
 GUIAddOnText2 db 'SNES MOUSE AT PORT #1',0
 GUIAddOnText3 db 'SNES MOUSE AT PORT #2',0
@@ -6126,9 +6191,11 @@ GUIStatesDisp db 'STATE CONFIRM',0
 GUIComboDisp db 'KEY COMBINATION EDITOR',0
 GUIAddOnsDisp db 'ADD-ON SELECTOR',0
 
-GUIItemBoxColor dd 0
-TextColorSp dd 0
+SECTION .bss
+GUIItemBoxColor resd 1
+TextColorSp resd 1
 
+SECTION .data
 NEWSYM GUIMenuItem, db 'GAME  ',0
             db 'CONFIG',0
             db 'CHEAT ',0
@@ -6136,3 +6203,4 @@ NEWSYM GUIMenuItem, db 'GAME  ',0
             db 'MISC  ',0
             db 25,0
 
+SECTION .text

@@ -64,9 +64,9 @@
 
 %include "macros.mac"
 
-EXTSYM dssel, curblank, vidpastecopyscr, frameskip, newengen, vsyncon, cantinitmodem
+EXTSYM curblank, vidpastecopyscr, frameskip, newengen, vsyncon
 EXTSYM cvidmode, antienab, smallscreenon, smallscreence,NetQuit
-EXTSYM soundon, StereoSound, SoundCompD, SoundQuality, MusicRelVol,UartType
+EXTSYM soundon, StereoSound, SoundCompD, SoundQuality, MusicRelVol
 EXTSYM endprog, continueprog, spcBuffera, spcRamcmp, cbitmode, makepal
 EXTSYM t1cc, LoadDir, SRAMDir, LoadDrive,SRAMDrive, initsnes, romloadskip
 EXTSYM fname, makeextension, sram, clearmem2, loadfileGUI, GUIloadfailed
@@ -89,14 +89,12 @@ EXTSYM cfgdontsave,videotroub,Open_File,Read_File,Close_File,Write_File,Create_F
 EXTSYM File_Seek,File_Seek_End,Open_File_Write,Get_Date,Check_Key,Get_Key
 EXTSYM Change_Drive,Change_Single_Dir,Change_Dir,Get_Dir,Get_First_Entry
 EXTSYM Get_Next_Entry,Set_DTA_Address,timer2upd,curexecstate,TripBufAvail
-EXTSYM nmiprevaddrl,nmiprevaddrh,nmirept,nmiprevline,nmistatus,spcnumread
+EXTSYM nmiprevaddrl,nmiprevaddrh,nmirept,nmiprevline,nmistatus,spcnumread,spchalted
 EXTSYM NextLineCache,VidStartDraw,ResetTripleBuf,GUINGVID
 EXTSYM ScanCodeListing,AdjustFrequency,GUISaveVars,Init_Mouse
 EXTSYM Get_MouseData,Set_MouseXMax,Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement
 EXTSYM GUIInit,GUIDeInit,SpecialLine
-EXTSYM DrawWater,DrawSmoke,RemoteDisconnect,loadstate3
-EXTSYM ModemClearBuffer,IPXSearchval
-EXTSYM ipxlookforconnect
+EXTSYM DrawWater,DrawBurn,RemoteDisconnect,loadstate3
 EXTSYM SA1Enable,SA1RAMArea
 EXTSYM GUIFName,GUICName
 EXTSYM printnum
@@ -108,7 +106,6 @@ EXTSYM showinfogui
 EXTSYM BackupCVFrame
 EXTSYM Wait1SecWin,ClearUDPStuff
 EXTSYM DisableSUDPPacket,EnableSUDPPacket
-EXTSYM ModemGetChar
 EXTSYM BackStateSize
 EXTSYM ResetExecStuff
 EXTSYM RestoreCVFrame
@@ -141,11 +138,8 @@ EXTSYM Force8b,convertnum,converthex
 EXTSYM per2exec
 EXTSYM hostname
 EXTSYM UDPConfig
-EXTSYM DeInitModem
 EXTSYM snesmouse
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Lk,pl1Rk,pl1Ak,pl1Bk
-EXTSYM deinitipx
-EXTSYM InitModem
 EXTSYM outofmemfix,yesoutofmemory
 EXTSYM CReadHead,ReadHead,CFWriteHead,CFWriteStart
 EXTSYM JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209,JoyMaxX209
@@ -158,25 +152,28 @@ EXTSYM TCPIPWaitForConnection
 EXTSYM tcperr
 EXTSYM TCPIPConnectToServer
 EXTSYM TCPIPConnectToServerW
-EXTSYM initipx
 EXTSYM selc0040
-EXTSYM ModemCheckRing
-EXTSYM ModemCheckDCD
-EXTSYM PreparePacketIPX,TCPIPPreparePacket
-EXTSYM SendPacketIPX,TCPIPSendPacket,TCPIPSendPacketUDP
+EXTSYM TCPIPPreparePacket
+EXTSYM TCPIPSendPacket,TCPIPSendPacketUDP
 EXTSYM TCPIPDisconnect,TCPIPStatus
-EXTSYM DeInitModemC
-EXTSYM ipxgetchar,ipxsendchar,TCPIPStoreByte
+EXTSYM TCPIPStoreByte
 EXTSYM TCPIPGetByte,GUIBIFIL
-EXTSYM ModemSendChar
 EXTSYM firstsaveinc
 EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
-%ifndef __MSDOS__
-EXTSYM GUIMBVID
-%endif
-
 %ifdef __LINUX__
 EXTSYM numlockptr
+%endif
+%ifdef __WIN32__
+EXTSYM initDirectDraw
+EXTSYM reInitSound
+%endif
+
+%ifdef __MSDOS__
+EXTSYM dssel, cantinitmodem, ModemClearBuffer, ModemGetChar
+EXTSYM InitModem, DeInitModem, ModemCheckRing, ModemCheckDCD
+EXTSYM DeInitModemC, ModemSendChar, UartType
+EXTSYM deinitipx, IPXSearchval, ipxlookforconnect, initipx
+EXTSYM PreparePacketIPX,SendPacketIPX,ipxgetchar,ipxsendchar
 %endif
 
 NEWSYM GuiAsmStart
@@ -193,6 +190,7 @@ NEWSYM GuiAsmStart
 
 
 
+SECTION .data
 
 
 ; ProcessRemoteCommand
@@ -597,33 +595,37 @@ NEWSYM KeyQuickClock, dd 0
 NEWSYM KeyQuickSaveSPC, dd 0
 NEWSYM AutoIncSaveSlot, db 0
 NEWSYM TCPIPAddress, times 29 db 0
-NEWSYM SoundInterpType, db 1
+NEWSYM SoundInterpType, db 2
 NEWSYM KeyDisplayFPS, dd 0
 NEWSYM KeyIncStateSlot, dd 0
 NEWSYM KeyDecStateSlot, dd 0
-NEWSYM MotionBlur, dd 0
 
 GUIsave equ $-GUIRAdd
 
-NEWSYM ForceROMTiming, db 0
-NEWSYM ForceHiLoROM, db 0
+section .bss
 
-NEWSYM CombinDataGlob, times 3300 db 0 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff
-NEWSYM CombinDataLocl, times 3300 db 0
+NEWSYM ForceROMTiming, resb 1
+NEWSYM ForceHiLoROM, resb 1
 
+NEWSYM CombinDataGlob, resb 3300 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff
+NEWSYM CombinDataLocl, resb 3300
+
+section .data
 NEWSYM CmdLineNetPlay, db 0
 NEWSYM CmdLineTCPIPAddress, times 29 db 0
+section .bss
 
-GUIwinorder times    18 db 0
-GUIwinpos   times    18 db 0
-GUIwinactiv times    18 db 0
-DialNumber  times    40 db 0
-ViewBuffer  times 50*32 db 0
-NEWSYM ModemInitStat, db 0
-ModemProcess db 0       ; Shows current dial/answer process
-ModemPTimer  dd 0       ; Timer for modem process
-ModemOKStat  db 0       ; OK is detected on modem status
+GUIwinorder resb 18
+GUIwinpos   resb 18
+GUIwinactiv resb 18
+DialNumber  resb 40
+ViewBuffer  resb 50*32
+NEWSYM ModemInitStat, resb 1
+ModemProcess resb 1       ; Shows current dial/answer process
+ModemPTimer  resd 1       ; Timer for modem process
+ModemOKStat  resb 1       ; OK is detected on modem status
 
+SECTION .data
 ;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO
 GUIwinposxo dd 0,5   ,60  ,30  ,55  ,50  ,35  ,5   ,30  ,10   ,10   ,50  ,65  ,20  ,70  ,50  ,3   ,50
 GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,20   ,20   ,20  ,60  ,30  ,65  ,50  ,22  ,60
@@ -631,125 +633,133 @@ GUIwinsizex dd 0,244 ,126 ,189 ,167 ,170 ,188 ,244 ,8*16,235  ,240  ,190 ,9*16,8
 GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,189  ,150  ,190 ,42  ,40  ,42  ,70  ,190 ,100
 GUIwinptr   db 0
 
-GUItextcolor db 0,0,0,0,0
-GUIcmenupos  db 0
-GUIescpress  db 0
-GUIcwinpress db 0
-GUIpmenupos  db 0
-GUIcrowpos   dd 0
-GUIpclicked  db 0
-GUImouseposx dd 0
-GUImouseposy dd 0
-GUICYLocPtr  dd 0
-GUIMenuL     dd 0
-GUIMenuR     dd 0
-GUIMenuD     dd 0
-GUIOnMenuItm db 0
-NEWSYM GUIQuit, db 0
-GUIHold      db 0
-GUIHoldx     dd 0
-GUIHoldy     dd 0
-GUIHoldxm    dd 0
-GUIHoldym    dd 0
-GUIcolscaleval dd 0
-cwindrawn    db 0
-GUIWincol    dd 0
-GUIWincoladd dd 0
-GUITemp      dd 0
-GUIHoldXlimL dd 0
-GUIHoldXlimR dd 0
-GUIHoldYlim  dd 0
-GUIHoldYlimR dd 0
-cloadnpos    dd 0
-cloadnposb   dd 0
-cloadmaxlen  dd 0
-cloadnleft   dd 0
-cplayernum   db 0
-vbuflimtop   dd 0
-vbuflimbot   dd 0
-GUIScrolTim1 dd 0
-GUIScrolTim2 dd 0
-GUICHold     dd 0
-GUICBHold    dd 0
-GUICBHold2   dd 0
-GUIDClickTL  dd 0
-GUIDClCWin   dd 0
-GUIDClCEntry dd 0
-GUICResetPos dd 0
-GUICStatePos dd 0
-GUICCFlash   db 0
-GUILDFlash   db 0
-GUIPalConv   dd 0
-PrevResoln   dw 0
-SnowMover    dd 0
-keycontrolval dd 0
-NEWSYM CheatBDoor,   db 0
-NEWSYM ShowTimer,    db 0
-NEWSYM MousePRClick, db 0
-NEWSYM MouseDis, db 0
-NEWSYM NetPlayNoMore, db 0
-RestoreValues db 0
-NEWSYM NetChatFirst, db 0
-NEWSYM NetServer, db 0
-NEWSYM NetQuitAfter, db 0
-NEWSYM NetNewNick, times 16 db 0
-NEWSYM NetFilename, times 512 db 0
+section .bss
+GUItextcolor resb 5
+GUIcmenupos  resb 1
+GUIescpress  resb 1
+GUIcwinpress resb 1
+GUIpmenupos  resb 1
+GUIcrowpos   resd 1
+GUIpclicked  resb 1
+GUImouseposx resd 1
+GUImouseposy resd 1
+GUICYLocPtr  resd 1
+GUIMenuL     resd 1
+GUIMenuR     resd 1
+GUIMenuD     resd 1
+GUIOnMenuItm resb 1
+NEWSYM GUIQuit, resb 1
+GUIHold      resb 1
+GUIHoldx     resd 1
+GUIHoldy     resd 1
+GUIHoldxm    resd 1
+GUIHoldym    resd 1
+GUIcolscaleval resd 1
+cwindrawn    resb 1
+GUIWincol    resd 1
+GUIWincoladd resd 1
+GUITemp      resd 1
+GUIHoldXlimL resd 1
+GUIHoldXlimR resd 1
+GUIHoldYlim  resd 1
+GUIHoldYlimR resd 1
+cloadnpos    resd 1
+cloadnposb   resd 1
+cloadmaxlen  resd 1
+cloadnleft   resd 1
+cplayernum   resb 1
+vbuflimtop   resd 1
+vbuflimbot   resd 1
+GUIScrolTim1 resd 1
+GUIScrolTim2 resd 1
+GUICHold     resd 1
+GUICBHold    resd 1
+GUICBHold2   resd 1
+GUIDClickTL  resd 1
+GUIDClCWin   resd 1
+GUIDClCEntry resd 1
+GUICResetPos resd 1
+GUICStatePos resd 1
+GUICCFlash   resb 1
+GUILDFlash   resb 1
+GUIPalConv   resd 1
+PrevResoln   resw 1
+SnowMover    resd 1
+keycontrolval resd 1
+NEWSYM CheatBDoor,   resb 1
+NEWSYM ShowTimer,    resb 1
+NEWSYM MousePRClick, resb 1
+NEWSYM MouseDis, resb 1
+NEWSYM NetPlayNoMore, resb 1
+RestoreValues resb 1
+NEWSYM NetChatFirst, resb 1
+NEWSYM NetServer, resb 1
+NEWSYM NetQuitAfter, resb 1
+NEWSYM NetNewNick, resb 16
+NEWSYM NetFilename, resb 512
 
-NEWSYM CheatOn, dd 0
-NEWSYM NumCheats, dd 0
-NEWSYM cheatdataprev, times 28 db 0 ; leave contents blank
-NEWSYM cheatdata, times 28*255+56 db 0 ; toggle, value, address, pvalue, name(22)
+NEWSYM CheatOn, resd 1
+NEWSYM NumCheats, resd 1
+NEWSYM cheatdataprev, resb 28 ; leave contents blank
+NEWSYM cheatdata, resb 28*255+56 ; toggle, value, address, pvalue, name(22)
 
-NEWSYM GUIcurrentdir, times 131 db 0
+NEWSYM GUIcurrentdir, resb 131
 
-numdrives dd 26
-curgsval db 0
+curgsval resb 1
+
+SECTION .data
+NEWSYM numdrives, dd 26
 SubPalTable times 256 db 1      ; Corresponding Gray Scale Color
-WhichRemote dd 0                ; Modem = 1, IPX = 2, TCP/IP = 4
-Connected   dd 0
-IDCheckPos  dd 0
 
-NEWSYM pl1neten,    db 0
-NEWSYM pl2neten,    db 0
-NEWSYM pl3neten,    db 0
-NEWSYM pl4neten,    db 0
-NEWSYM pl5neten,    db 0
-NEWSYM cnetplaybuf, times 512 db 0
-NEWSYM cnetptrhead, dd 0
-NEWSYM cnetptrtail, dd 0
-NEWSYM prevp1net,   dd 0
-NEWSYM prevp2net,   dd 0
-NEWSYM prevp3net,   dd 0
-NEWSYM prevp4net,   dd 0
-NEWSYM prevp5net,   dd 0
-NEWSYM netdelayed,  db 0
-NEWSYM ChatProgress,dd 0
-NEWSYM RecvProgress,dd 0
-NEWSYM IPXInfoStr,  dw 0
-NEWSYM IPXInfoStrR, dw 0
-NEWSYM GUICMessage, dd 0
-NEWSYM GUICTimer,   dd 0
-NEWSYM GUIOn,       db 0
-NEWSYM GUIOn2,      db 0
-NEWSYM GUIReset,    db 0
+SECTION .bss
+WhichRemote resd 1                ; Modem = 1, IPX = 2, TCP/IP = 4
+Connected   resd 1
+IDCheckPos  resd 1
+
+NEWSYM pl1neten,    resb 1
+NEWSYM pl2neten,    resb 1
+NEWSYM pl3neten,    resb 1
+NEWSYM pl4neten,    resb 1
+NEWSYM pl5neten,    resb 1
+NEWSYM cnetplaybuf, resb 512
+NEWSYM cnetptrhead, resd 1
+NEWSYM cnetptrtail, resd 1
+NEWSYM prevp1net,   resd 1
+NEWSYM prevp2net,   resd 1
+NEWSYM prevp3net,   resd 1
+NEWSYM prevp4net,   resd 1
+NEWSYM prevp5net,   resd 1
+NEWSYM netdelayed,  resb 1
+NEWSYM ChatProgress,resd 1
+NEWSYM RecvProgress,resd 1
+NEWSYM IPXInfoStr,  resw 1
+NEWSYM IPXInfoStrR, resw 1
+NEWSYM GUICMessage, resd 1
+NEWSYM GUICTimer,   resd 1
+NEWSYM GUIOn,       resb 1
+NEWSYM GUIOn2,      resb 1
+NEWSYM GUIReset,    resb 1
 ;GOSPort db 0
-NEWSYM CurPalSelect, db 0
+NEWSYM CurPalSelect, resb 1
+NEWSYM MotionBlur, resb 1
 
-NEWSYM StartLL, dd 0
-NEWSYM StartLR, dd 0
-NEWSYM LatencyVal, times 32 db 0
+NEWSYM StartLL, resd 1
+NEWSYM StartLR, resd 1
+NEWSYM LatencyVal, resb 32
 
-NEWSYM NetLoadState, db 0
+NEWSYM NetLoadState, resb 1
 
-NEWSYM TRVal, dw 0
-NEWSYM TGVal, dw 0
-NEWSYM TBVal, dw 0
-NEWSYM TRVali, dw 0
-NEWSYM TGVali, dw 0
-NEWSYM TBVali, dw 0
-NEWSYM TRVal2, dw 0
-NEWSYM TGVal2, dw 0
-NEWSYM TBVal2, dw 0
+NEWSYM TRVal, resw 1
+NEWSYM TGVal, resw 1
+NEWSYM TBVal, resw 1
+NEWSYM TRVali, resw 1
+NEWSYM TGVali, resw 1
+NEWSYM TBVali, resw 1
+NEWSYM TRVal2, resw 1
+NEWSYM TGVal2, resw 1
+NEWSYM TBVal2, resw 1
+
+SECTION .text
 
 %macro stim 0
 %ifdef __MSDOS__
@@ -1032,14 +1042,14 @@ NEWSYM ExecGUISaveVars
     call GUIDeInit
 %endmacro
 
-SECTION .data
-NEWSYM GUIoldhand9o, dd 0
-NEWSYM GUIoldhand9s, dw 0
-NEWSYM GUIoldhand8o, dd 0
-NEWSYM GUIoldhand8s, dw 0
-GUIt1cc dd 0
-GUIt1ccSwap db 0
-GUIskipnextkey42 db 0
+SECTION .bss
+NEWSYM GUIoldhand9o, resd 1
+NEWSYM GUIoldhand9s, resw 1
+NEWSYM GUIoldhand8o, resd 1
+NEWSYM GUIoldhand8s, resw 1
+GUIt1cc resd 1
+GUIt1ccSwap resb 1
+GUIskipnextkey42 resb 1
 
 SECTION .text
 NEWSYM GUIinit18_2hz
@@ -1099,6 +1109,7 @@ NEWSYM GUI36hzcall
     and byte[GUINetTextm2+2],0Fh
     ret
 
+%ifdef __MSDOS__
 NEWSYM GUIhandler8h
     cli
     push ds
@@ -1166,6 +1177,7 @@ NEWSYM GUIhandler9h
     pop ds
     sti
     iretd
+%endif
 
 %macro loadmenuopen 1
     mov al,[GUIcmenupos]
@@ -1211,7 +1223,9 @@ loadnetopen:
     loadmenuopen 8
     ret
 
-MouseInitOkay db 0
+SECTION .bss
+MouseInitOkay resb 1
+SECTION .text
 
 LoadDetermine:
     mov byte[GUIGameMenuData+14],1
@@ -1333,7 +1347,9 @@ DrawSnow:
 .nomore
     ret
 
+SECTION .data
 .giftmsg db 'A GIFT TO YOU IN THE OPTIONS!',0
+SECTION .text
 
 ProcessSnowVelocity:
     cmp dword[MsgGiftLeft],0
@@ -1388,8 +1404,11 @@ ProcessSnowVelocity:
     jnz .loop
     ret
 
-OkaySC db 0
+SECTION .bss
+OkaySC resb 1
+SECTION .data
 cstempfname db 'tmpchtsr.___',0
+SECTION .text
 
 
 NEWSYM SaveSramData
@@ -1465,7 +1484,9 @@ NEWSYM ProcRewind
     mov dword[eax+8],0
 .noteq
     ret
-.temp dd 0,0
+section .bss
+.temp resd 2
+section .text
 
 %macro ProcessOneDigit 1
     cmp dl,9
@@ -1500,7 +1521,9 @@ NEWSYM TestSent
     mov dword[GUICMessage],.message
     mov dword[GUICTimer],100000
     ret
+SECTION .data
 .message db 0,0,0,0,' ',0,0,0,0,0,0,0
+SECTION .text
 
 NEWSYM StartGUI
 ;    cmp byte[OSPort],1
@@ -1846,12 +1869,14 @@ NEWSYM StartGUI
     mov byte[GUIcmenupos],0
     mov byte[GUIcrowpos],0
     call loadnetopen
+%ifdef __MSDOS__
     cmp byte[WhichRemote],1
     jne .yesdcd
     call ModemCheckDCD
     cmp al,1
     jne near .nostat20
 .yesdcd
+%endif
 
     mov byte[RestoreValues],1
     pushad
@@ -2029,7 +2054,8 @@ NEWSYM StartGUI
 .nowater2
     cmp byte[GUIEffect],4
     jne .nosmoke
-    call DrawSmoke
+;    call DrawSmoke
+    call DrawBurn
 .nosmoke
 ;    call TestSent
     cmp byte[CNetType],20
@@ -2087,6 +2113,7 @@ NEWSYM StartGUI
     jne near .nomodem
 .modem
     call ProcessModem
+%ifdef __MSDOS__
     cmp byte[Connected],1
     je near .nomodem
     call ModemGetChar
@@ -2121,6 +2148,7 @@ NEWSYM StartGUI
 .skipstat
     mov dh,0
     call NetAddChar
+%endif
 .nomodem
 
     cmp dword[GUIEditStringcWin],0
@@ -2249,7 +2277,8 @@ NEWSYM StartGUI
     mov dword[nmirept],0
     mov dword[nmiprevline],224
     mov dword[nmistatus],0
-    mov byte[spcnumread],0
+    mov dword[spcnumread],0
+	mov dword[spchalted],-1
     mov byte[NextLineCache],0
     mov byte[DSPMem+08h],0
     mov byte[DSPMem+18h],0
@@ -2474,8 +2503,12 @@ NEWSYM StartGUI
     call WinErrorB
     jmp continueprog
 
-CheckSumVal dd 0
+SECTION .bss
+CheckSumVal resd 1
+SECTION .data
 WrongCheckSum db 10,13,'ROM Data Mismatch',10,13,10,13,0
+SECTION .text
+
 
 SRAMDirc:
     ; get LoadDrive/LoadDir
@@ -2550,6 +2583,7 @@ guifirsttimemsg:
 .mousedis2
     ret
 
+SECTION .data
 guiftimemsg1 db 'ONE TIME USER REMINDER :',0
 guiftimemsg2 db 'PLEASE BE SURE TO READ',0
 guiftimemsg3 db 'GUINOTES.TXT FOR AN',0
@@ -2558,6 +2592,7 @@ guiftimemsg5 db 'ALSO, WHENEVER YOU HAVE',0
 guiftimemsg6 db 'PROBLEMS, BE SURE TO READ',0
 guiftimemsg7 db 'ZSNES.FAQ AND README.TXT',0
 guiftimemsg8 db 'PRESS "Z" TO CONTINUE.',0
+SECTION .text
 
 guimustrestartmsg:
     xor ebx,ebx
@@ -2623,11 +2658,13 @@ guimustrestartmsg:
     mov byte[GUIQuit],1
     ret
 
+SECTION .data
 guiqtimemsg1 db 'ZSNES MUST BE RESTARTED',0
 guiqtimemsg2 db 'TO USE THIS OPTION.',0
 guiqtimemsg3 db 'THIS PROGRAM WILL NOW',0
 guiqtimemsg4 db 'EXIT.',0
 guiqtimemsg8 db 'PRESS ANY KEY.',0
+SECTION .text
 
 guiprevideo:
     xor ebx,ebx
@@ -2695,6 +2732,7 @@ guiprevideo:
 .mousedis2
     ret
 
+SECTION .data
 guiprevidmsg1 db 'ZSNES WILL NOW ATTEMPT',0
 guiprevidmsg2 db 'TO CHANGE YOUR VIDEO',0
 guiprevidmsg3 db 'MODE.  IF THE CHANGE',0
@@ -2702,6 +2740,7 @@ guiprevidmsg4 db 'IS UNSUCCESSFUL, WAIT',0
 guiprevidmsg5 db '10 SECONDS AND VIDEO',0
 guiprevidmsg6 db 'MODE WILL BE RESET',0
 guiprevidmsg7 db 'PRESS ANY KEY',0
+SECTION .text
 
 guipostvideo:
     mov ecx,255*144
@@ -2790,8 +2829,10 @@ guipostvideo:
     mov byte[GUIpclicked],1
     ret
 
+SECTION .data
 guipostvidmsg1 db 'VIDEO MODE CHANGED.',0
 guipostvidmsg2 db 'PRESS ANY KEY',0
+SECTION .text
 
 guipostvideofail:
     mov dword[guipostvidptr],guipostvidmsg3b
@@ -2883,13 +2924,16 @@ guipostvideofail:
 %endif
     jmp guipostvideo.pressedfail
 
+SECTION .data
 guipostvidmsg1b db 'VIDEO MODE CHANGE FAILED.',0
 guipostvidmsg2b db 'UNABLE TO INIT VESA2:',0
 guipostvidmsg3b db 'AAAAAAAAAAAAAAAAAAAAAAAAA',0
 guipostvidmsg4b db 'AAAAAAAAAAAAAAAAAAAAAAAAA',0
 guipostvidmsg5b db 'AAAAAAAAAAAAAAAAAAAAAAAAA',0
 guipostvidmsg8b db 'PRESS ANY KEY',0
-guipostvidptr dd 0
+SECTION .bss
+guipostvidptr resd 1
+SECTION .text
 
 GUILoadManualDir
     mov ebx,GUILoadTextA
@@ -2982,13 +3026,17 @@ GUILoadManualDir
 .norefresh
     ret
 
-ManualCPtr dd 0
-ManualStatus db 0
+SECTION .bss
+ManualCPtr resd 1
+ManualStatus resb 1
 
-NEWSYM MovieCounter, dd 0
+NEWSYM MovieCounter, resd 1
 
+SECTION .data
 UnableMovie2 db 'MUST PLAY WITH SOUND OFF',0
 UnableMovie3 db 'MUST PLAY WITH SOUND ON',0
+
+SECTION .text
 
 MoviePlay:
     cmp byte[CNetType],20
@@ -3029,7 +3077,8 @@ MoviePlay:
     mov dword[nmirept],0
     mov dword[nmiprevline],224
     mov dword[nmistatus],0
-    mov byte[spcnumread],0
+    mov dword[spcnumread],0
+	mov dword[spchalted],-1
     mov byte[NextLineCache],0
 .noextra
     mov al,[RecData]
@@ -3077,11 +3126,14 @@ MoviePlay:
     pop eax
     ret
 
-NEWSYM Totalbyteloaded, dd 0
-NEWSYM sramsavedis, db 0
+SECTION .bss
+NEWSYM Totalbyteloaded, resd 1
+NEWSYM sramsavedis, resb 1
 
-
+SECTION .data
 DevicePtr dd pl1selk,pl2selk,pl3selk,pl4selk,pl5selk
+
+SECTION .text
 
 CheckMenuItemHelp:
     mov al,[GUIcmenupos]
@@ -3370,7 +3422,9 @@ GUITryMenuItem:
 .nomisc
     ret
 
+SECTION .data
 .message1 db 'CONFIGURATION FILES SAVED.',0
+SECTION .text
 
 DisplayBoxes:
     xor esi,esi
@@ -3585,8 +3639,9 @@ GUIProcReset:
     dec byte[GUIwinptr]
     ret
 
-LoadDuplicFound db 0
-
+SECTION .bss
+LoadDuplicFound resb 1
+SECTION .text
 
 %macro GUIDMHelp 4
     mov byte[GUItextcolor],46
@@ -4289,7 +4344,9 @@ GUISetPal:
     jnz .next
     ret
 
-NEWSYM GUICPC, times 256 dw 0
+SECTION .bss ;ALIGN=32
+NEWSYM GUICPC, resw 256
+SECTION .text
 
 %macro GUIPal16b 4
     mov ax,%2
@@ -4746,9 +4803,11 @@ GUISetPal16:
     jnz .next
     ret
 
+SECTION .data
 .multab db 1,1,1,2,2,3,4,4,5,6,6,7,8,8,9,10,10,11,12,12,13,14,14,15,16,16,
         db 17,18,18,19,20,20,21,22,22,23,24,24,25,26,26,27,28,28,29,30,30,
         db 31
+SECTION .text
 
 GUIBufferData:
     mov ecx,16384
@@ -4906,6 +4965,7 @@ GUIconvpal:
     mov [cgram],ax
     ret
 
+SECTION .data
 GUIMousePtr db 50+88,47+88,45+88,43+88,42+88,00,00,00
             db 53+88,52+88,46+88,42+88,00,00,00,00
             db 55+88,54+88,54+88,44+88,00,00,00,00
@@ -5504,5 +5564,7 @@ db 137,176,166,37,192,241,169,84,32,85,112,168,154,7,247,146,183,225,246,173
 db 57,103,110,236,113,118,203,200,22,87,251,7,138,37,12,84,221,171,51,209
 db 242,37,89,73,151,162,139,189,131,209,221,96,107,144,175,79,199,123,98,138
 db 226,86,221,254,72,14,126,180,200,171,85,94,120,124,196,225,150,57,219,158
+
+SECTION .text
 
 NEWSYM GuiAsmEnd

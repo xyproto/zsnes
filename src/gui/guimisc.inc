@@ -90,7 +90,8 @@ MovieRecord:
     mov dword[nmirept],0
     mov dword[nmiprevline],224
     mov dword[nmistatus],0
-    mov byte[spcnumread],0
+    mov dword[spcnumread],0
+	mov dword[spchalted],-1
     mov byte[NextLineCache],0
     mov dword[PJoyAOrig],0
     mov dword[PJoyBOrig],0
@@ -114,12 +115,15 @@ MovieRecord:
 .dontrecord
     ret
 
-MovieRecordWinVal db 0
-NEWSYM MovieProcessing, db 0
-NEWSYM MovieFileHand, dw 0
-NEWSYM RepeatFrame, db 0
-NEWSYM RecData, times 16 db 0
-NEWSYM NoPictureSave, db 0
+SECTION .bss
+MovieRecordWinVal resb 1
+NEWSYM MovieProcessing, resb 1
+NEWSYM MovieFileHand, resw 1
+NEWSYM RepeatFrame, resb 1
+NEWSYM RecData, resb 16
+NEWSYM NoPictureSave, resb 1
+
+SECTION .text
 
 SkipMovie:
     mov byte[MovieRecordWinVal],0
@@ -190,6 +194,7 @@ CalibrateDispB:
     call WaitForKey
     ret
 
+SECTION .data
 guicalberror1 db 'PRESS THE TOP LEFT',0
 guicalberror2 db 'CORNER AND PRESS A',0
 guicalberror3 db 'BUTTON OR KEY',0
@@ -197,6 +202,7 @@ guicalberror4 db 'PRESS THE BOTTOM',0
 guicalberror5 db 'RIGHT CORNER AND',0
 guicalberror6 db 'PRESS A BUTTON OR',0
 guicalberror7 db 'KEY',0
+SECTION .text
 
 
 SetAllKeys:
@@ -247,7 +253,9 @@ SetAllKeys:
     dec ecx
     jnz .loop
     ret
+SECTION .data
 .ordercalb dd 2,3,4,5,1,0,7,10,6,9,8,11
+SECTION .text
 
 CalibrateDev1:
     xor eax,eax
@@ -392,10 +400,12 @@ CalibrateDev1:
     mov [JoyMaxY209],eax
     mov [CalibYmax209],eax
     ret
-.joyblx dd 0
-.joybly dd 0
-.joybcx dd 0
-.joybcy dd 0
+SECTION .bss
+.joyblx resd 1
+.joybly resd 1
+.joybcx resd 1
+.joybcy resd 1
+SECTION .text
 
 
 SetDevice:

@@ -17,9 +17,9 @@
 
 %include "macros.mac"
 
-EXTSYM dssel,selcA000,selcB800,selc0040,previdmode,DosExit,ZFileSystemInit
+EXTSYM previdmode,DosExit,ZFileSystemInit
 EXTSYM getcmdline,GUIRestoreVars,getcfg,obtaindir,ConvertJoyMap,tparms
-EXTSYM preparedir,getblaster,Force8b,SBHDMA
+EXTSYM preparedir,SBHDMA
 EXTSYM ccmdline
 EXTSYM FilenameStart
 EXTSYM spcon
@@ -51,9 +51,8 @@ EXTSYM ZFileMKDir,ZFileCHDir,ZFileRMDir,CHPath,MKPath,RMPath
 EXTSYM ZFileGetDir,DriveNumber,DirName
 EXTSYM _getdrive
 EXTSYM DTALoc,DTALocPos,ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
-EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
-EXTSYM NoSoundReinit,soundon,DSPDisable,SBInt,NoSoundReinit,PICMaskP,SBIrq
-EXTSYM SBHandler,InitSB,handler8h,handler9h,init60hz,Interror,init18_2hz,DeInitSPC
+EXTSYM NoSoundReinit,soundon,DSPDisable,NoSoundReinit
+EXTSYM init60hz,init18_2hz
 EXTSYM Start60HZ
 EXTSYM pressed
 EXTSYM RaisePitch,AdjustFrequency
@@ -104,7 +103,7 @@ EXTSYM SetMouseX,SetMouseY
 EXTSYM T36HZEnabled
 EXTSYM MouseButton
 EXTSYM GUIinit36_4hz,GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o
-EXTSYM GUIhandler9h,GUIhandler8h,GUIinit18_2hz
+EXTSYM GUIinit18_2hz
 EXTSYM Start36HZ
 EXTSYM Stop36HZ
 EXTSYM BufferSizeW,BufferSizeB,ProcessSoundBuffer
@@ -134,6 +133,7 @@ EXTSYM V8Mode,GrayscaleMode
 EXTSYM PrevWinMode,PrevFSMode
 EXTSYM _imp__GetLocalTime@4
 
+;EXTSYM FrameSemaphore
 
 %ifdef __MINGW__
 NEWSYM WinIntRFAsmStart
@@ -269,7 +269,9 @@ NEWSYM PrintStr          ; Print ASCIIZ string
     ret
 
 
-NEWSYM wfkey, db 0
+SECTION .bss
+NEWSYM wfkey, resb 1
+SECTION .text
 
 NEWSYM WaitForKey       ; Wait for a key to be pressed
     pushad
@@ -288,7 +290,9 @@ NEWSYM OSExit
     call exit
     jmp DosExit
 
-NEWSYM TempHandle, dd 0
+SECTION .bss
+NEWSYM TempHandle, resd 1
+SECTION .text
 
 NEWSYM Open_File
     pushad
@@ -310,10 +314,10 @@ NEWSYM Open_File
     popad
     stc
     ret
-    mov ax,3D00h
-    int 21h
+;    mov ax,3D00h
+;    int 21h
     ; return bx = file handle, carry = error
-    ret
+;    ret
 
 NEWSYM Open_File_Write
     pushad
@@ -335,10 +339,10 @@ NEWSYM Open_File_Write
     popad
     stc
     ret
-    mov ax,3D01h
-    int 21h
+;    mov ax,3D01h
+;    int 21h
     ; return bx = file handle, carry = error
-    ret
+;    ret
 
 NEWSYM Create_File
     pushad
@@ -356,11 +360,11 @@ NEWSYM Create_File
     popad
     stc
     ret
-    mov ah,3Ch
-    mov cx,0
-    int 21h
+;    mov ah,3Ch
+;    mov cx,0
+;    int 21h
     ; return bx = file handle
-    ret
+;    ret
 
 NEWSYM Write_File
     mov dword[ZFileWriteHandle],0
@@ -380,9 +384,9 @@ NEWSYM Write_File
     mov eax,0
     stc
     ret
-    mov ah,40h
-    int 21h
-    ret
+;    mov ah,40h
+;    int 21h
+;    ret
 
 NEWSYM Read_File
     mov dword[ZFileReadHandle],0
@@ -396,9 +400,9 @@ NEWSYM Read_File
     mov eax,[TempVarSeek]
     clc
     ret
-    mov ah,3Fh
-    int 21h
-    ret
+;    mov ah,3Fh
+;    int 21h
+;    ret
 
 NEWSYM Delete_File
     mov [ZFileDelFName],edx
@@ -406,9 +410,9 @@ NEWSYM Delete_File
     call ZFileDelete
     popad
     ret
-    mov ah,41h
-    int 21h
-    ret
+;    mov ah,41h
+;    int 21h
+;    ret
 
 NEWSYM Close_File
     mov dword[ZCloseFileHandle],0
@@ -418,9 +422,9 @@ NEWSYM Close_File
     popad
     clc
     ret
-    mov ah,3Eh
-    int 21h
-    ret
+;    mov ah,3Eh
+;    int 21h
+;    ret
 
 NEWSYM File_Seek
     mov word[ZFileSeekPos+2],cx
@@ -435,9 +439,9 @@ NEWSYM File_Seek
     mov dx,cx
     ret
     ; seek to cx:dx from 0 position, return carry as error
-    mov ax,4200h
-    int 21h
-    ret
+;    mov ax,4200h
+;    int 21h
+;    ret
 
 NEWSYM File_Seek_End
     mov word[ZFileSeekPos+2],cx
@@ -456,9 +460,9 @@ NEWSYM File_Seek_End
     mov dx,[TempVarSeek+2]
     ret
     ; seek to cx:dx from end position, and return file location in dx:ax
-    mov ax,4202h
-    int 21h
-    ret
+;    mov ax,4202h
+;    int 21h
+;    ret
 
 NEWSYM Get_Time
     pushad
@@ -493,10 +497,10 @@ NEWSYM Get_File_Date
     mov ecx,[ZFTime]
     ret
     ; return packed date in dx:cx
-    mov ah,57h
-    mov al,00h
-    int 21h
-    ret
+;    mov ah,57h
+;    mov al,00h
+;    int 21h
+;    ret
 
 
 RefreshKeybBuffer:
@@ -542,7 +546,7 @@ RefreshKeybBuffer:
     mov ebx,[HoldKey]
     cmp ebx,0A8h
     jb .skipdecval
-    sub ebx,80h
+    add ebx,-80h
 .skipdecval
     cmp ebx,58h
     jae .none
@@ -567,15 +571,18 @@ RefreshKeybBuffer:
     mov [Keybtail],al
 .none
     ret
-Keybhead db 0
-Keybtail db 0
-HoldKey dd 0
-HoldKeyBuf times 16 db 0
-PKeyBuf times 100h db 0
 
-NEWSYM CurKeyPos, dd 0
-NEWSYM CurKeyReadPos, dd 0
-NEWSYM KeyBuffer, times 16 dd 0
+SECTION .bss
+Keybhead resb 1
+Keybtail resb 1
+HoldKey resd 1
+HoldKeyBuf resb 16
+PKeyBuf resb 100h
+
+NEWSYM CurKeyPos, resd 1
+NEWSYM CurKeyReadPos, resd 1
+NEWSYM KeyBuffer, resd 16
+SECTION .text
 
 NEWSYM Check_Key
     mov al,[CurKeyPos]
@@ -618,7 +625,7 @@ NEWSYM Get_Key
     and dword[CurKeyReadPos],0Fh
     ret
 .upper
-    sub word[KeyBuffer+eax*4],100h
+    add word[KeyBuffer+eax*4],-100h
     xor al,al
     ret
 
@@ -633,7 +640,7 @@ NEWSYM Get_Key
     test bl,80h
     jz .notupperkey
     xor bl,bl
-    sub byte[HoldKeyBuf+eax],80h
+    add byte[HoldKeyBuf+eax],-80h
     jmp .yesupperkey
 .notupperkey
     inc al
@@ -649,6 +656,7 @@ NEWSYM Get_Key
     ; return key in al
     ret
 
+SECTION .data
 KeyConvTable
    db 255,27 ,'1','2','3','4','5','6'  ; 00h
    db '7','8','9','0','-','=',8  ,9 
@@ -673,6 +681,7 @@ KeyConvTableS
    db 255,255,255,255,255,255,255,255  ; 40h
    db 200,201,202,203,204,205,206,207
    db 208,209,210,211,255,255,255,255  ; 50h
+SECTION .text
 
 ;    mov dl,[SRAMDrive]
 ;    mov ebx,SRAMDir
@@ -703,9 +712,9 @@ NEWSYM Change_Single_Dir
     stc
     ret
     ; Dir in edx, return error in carry flag
-    mov ah,3Bh
-    int 21h
-    ret
+;    mov ah,3Bh
+;    int 21h
+;    ret
 
 NEWSYM Create_Dir
     ; change to dir in edx
@@ -721,9 +730,9 @@ NEWSYM Create_Dir
     popad
     stc
     ret
-    mov ah,39h
-    int 21h
-    ret
+;    mov ah,39h
+;    int 21h
+;    ret
 
 NEWSYM Remove_Dir
     ; remove dir in edx
@@ -739,9 +748,9 @@ NEWSYM Remove_Dir
     popad
     stc
     ret
-    mov ah,3Ah
-    int 21h
-    ret
+;    mov ah,3Ah
+;    int 21h
+;    ret
 
 ;    mov dl,[LoadDrive]
 ;    mov ebx,LoadDir
@@ -780,20 +789,20 @@ NEWSYM Change_Dir
     ret
 
     ; dl = drive, ebx = dir
-    push ebx
-    mov ah,0Eh
-    int 21h
-    mov ah,3Bh
-    mov edx,gotoroot
-    int 21h
-    pop ebx
-    mov edx,ebx
-    cmp byte[edx],0
-    je .nodir
-    mov ah,3Bh
-    int 21h
-.nodir
-    ret
+;    push ebx
+;    mov ah,0Eh
+;    int 21h
+;    mov ah,3Bh
+;    mov edx,gotoroot
+;    int 21h
+;    pop ebx
+;    mov edx,ebx
+;    cmp byte[edx],0
+;    je .nodir
+;    mov ah,3Bh
+;    int 21h
+;.nodir
+;    ret
 
 ;    mov ebx,LoadDir
 ;    mov edx,LoadDrive
@@ -820,21 +829,21 @@ NEWSYM Get_Dir
     call _getdrive
 ;    mov ah,19h
 ;    int 21h
-    sub al,1
+    add al,-1
     pop edx
     mov [edx],al
     ret
 
-    push edx
-    mov ah,47h
-    mov dl,0
-    mov esi,ebx
-    int 21h
-    mov ah,19h
-    int 21h
-    pop edx
-    mov [edx],al
-    ret
+;    push edx
+;    mov ah,47h
+;    mov dl,0
+;    mov esi,ebx
+;    int 21h
+;    mov ah,19h
+;    int 21h
+;    pop edx
+;    mov [edx],al
+;    ret
 
 NEWSYM Get_First_Entry
     ; cx = attributes, edx = pointer to wildcard
@@ -855,10 +864,10 @@ NEWSYM Get_First_Entry
     popad
     stc
     ret
-    mov ah,4Eh
-    mov al,0
-    int 21h
-    ret
+;    mov ah,4Eh
+;    mov al,0
+;    int 21h
+;    ret
 
 NEWSYM Get_Next_Entry
     mov dword[DTALocPos],DTALoc
@@ -873,9 +882,9 @@ NEWSYM Get_Next_Entry
     popad
     stc
     ret
-    mov ah,04Fh
-    int 21h
-    ret
+;    mov ah,04Fh
+;    int 21h
+;    ret
 
 NEWSYM Set_DTA_Address
     ; Only needed for dos stuff
@@ -980,91 +989,93 @@ NEWSYM changepal  ; 8-bit palette set (changes only)
 NEWSYM displayfpspal
     ret
 
-    mov al,128
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,63
-    out dx,al
-    out dx,al
-    out dx,al
-    mov al,128+64
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,0
-    out dx,al
-    out dx,al
-    out dx,al
-    ret
+;    mov al,128
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    mov al,63
+;    out dx,al
+;    out dx,al
+;    out dx,al
+;    mov al,128+64
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    mov al,0
+;    out dx,al
+;    out dx,al
+;    out dx,al
+;    ret
 
 NEWSYM superscopepal
     ret
 
-    mov al,128+16
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,63
-    out dx,al
-    xor al,al
-    out dx,al
-    out dx,al
-    ret
+;    mov al,128+16
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    mov al,63
+;    out dx,al
+;    xor al,al
+;    out dx,al
+;    out dx,al
+;    ret
 
 NEWSYM saveselectpal
     ret
 
     ; set palette of colors 128,144, and 160 to white, blue, and red
-    mov al,128
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,63
-    out dx,al
-    out dx,al
-    out dx,al
-    mov al,144
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    xor al,al
-    out dx,al
-    out dx,al
-    mov al,50
-    out dx,al
-    mov al,160
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,45
-    out dx,al
-    xor al,al
-    out dx,al
-    out dx,al
-    mov al,176
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,47
-    out dx,al
-    xor al,al
-    out dx,al
-    out dx,al
-    mov al,208
-    mov dx,03C8h
-    out dx,al
-    inc dx
-    mov al,50
-    out dx,al
-    mov al,25
-    out dx,al
-    xor al,al
-    out dx,al
-    ret
+;    mov al,128
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    mov al,63
+;    out dx,al
+;    out dx,al
+;    out dx,al
+;    mov al,144
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    xor al,al
+;    out dx,al
+;    out dx,al
+;    mov al,50
+;    out dx,al
+;    mov al,160
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    mov al,45
+;    out dx,al
+;    xor al,al
+;    out dx,al
+;    out dx,al
+;    mov al,176
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    mov al,47
+;    out dx,al
+;    xor al,al
+;    out dx,al
+;    out dx,al
+;    mov al,208
+;    mov dx,03C8h
+;    out dx,al
+;    inc dx
+;    mov al,50
+;    out dx,al
+;    mov al,25
+;    out dx,al
+;    xor al,al
+;    out dx,al
+;    ret
 
 ; ** init video mode functions **
+SECTION .data
 NEWSYM firstvideo, dd 1
+SECTION .text
 
 
 NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
@@ -1131,7 +1142,10 @@ NEWSYM deinitvideo
     ret
 
 ; ** copy video mode functions **
-NEWSYM converta, dd 0
+SECTION .bss
+NEWSYM converta, resd 1
+SECTION .text
+
 NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
     cmp dword [converta],1
     jne near .skipconv
@@ -1171,7 +1185,7 @@ NEWSYM vidpastecopyscr       ; GUI screen render
    mov eax,[vidbuffer]
    mov ecx,224*288
    mov edx,ecx
-   sub ecx,288
+   add ecx,-288
    dec edx
 .loop
    xor ebx,ebx
@@ -1257,7 +1271,6 @@ NEWSYM GUIBIFIL, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 NEWSYM GUITBWVID, db 0,1,0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1      ; Triple Buffering (Win)
 NEWSYM GUISMODE, db 0,0,0,0,1,0,0,0,1,0,0,1,0,1,0,0,1,0,1,0,0,0,0,1,0,1,0,0,1,0,1,0,0
 NEWSYM GUIDSMODE, db 0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,1,0,1,0,0,1,0,0,0,1,0,0,1,0,1,0,0,1
-NEWSYM GUIMBVID, db 1,1,1,0,1,0,0,0,1,1,0,1,0,1,0,0,1,0,1,0,0,1,0,1,0,1,0,0,1,0,1,0,0
 
 
 SECTION .text
@@ -1391,12 +1404,11 @@ NEWSYM ScanCodeListing
         db 'P2B','P2Y','P2S','P2T','P2U','P2D','P2L','P2R'
         db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
 
-SECTION .text
-
-SECTION .data
-NEWSYM ZSNESBase, dd 0
-TempVarSeek dd 0
 gotoroot db '\',0
+
+SECTION .bss
+NEWSYM ZSNESBase, resd 1
+TempVarSeek resd 1
 SECTION .text
 
 ; ****************************
@@ -1408,13 +1420,14 @@ NEWSYM Init_Mouse
     mov eax,01h
     ret
 
-NEWSYM WMouseX, dd 0
-NEWSYM WMouseY, dd 0
-NEWSYM WMouseMoveX, dd 0
-NEWSYM WMouseMoveY, dd 0
-NEWSYM WMouseButton, dd 0
+SECTION .bss
+NEWSYM WMouseX, resd 1
+NEWSYM WMouseY, resd 1
+NEWSYM WMouseMoveX, resd 1
+NEWSYM WMouseMoveY, resd 1
+NEWSYM WMouseButton, resd 1
 
-
+SECTION .text
 
 
 NEWSYM Get_MouseData         ; Returns both pressed and coordinates
@@ -1543,15 +1556,18 @@ NEWSYM Check60hz
     ; Call the timer update function here
     pushad
     call CheckTimers
+;    call FrameSemaphore
     popad
     ret
 
+SECTION .data
 BitPosR db 11 
 BitPosG db 5
 BitPosB db 0
 BitSizeR db 5
 BitSizeG db 6
 BitSizeB db 5
+SECTION .text
 
 
 InitializeGfxStuff:
@@ -1714,19 +1730,22 @@ NEWSYM SetInputDevice
     mov dword[eax+44],46
     ret
 
+
+SECTION .bss
 ; ****************************
 ; TCP/IP Stuff
 ; ****************************
 
 ; TCPIPPortNum
-NEWSYM TCPIPStatus, db 0
-NEWSYM PacketSendSize, dd 0
-NEWSYM PacketRecvSize, dd 0
-NEWSYM PacketRecvPtr,  dd 0
-NEWSYM PacketSendArray, times 2048+256 db 0
-NEWSYM PacketRecvArray, times 2048+256 db 0
-NEWSYM IPAddrStr, times 20 db 0
-NEWSYM RemoteDisconnect, db 0
+NEWSYM TCPIPStatus, resb 1
+NEWSYM PacketSendSize, resd 1
+NEWSYM PacketRecvSize, resd 1
+NEWSYM PacketRecvPtr,  resd 1
+NEWSYM PacketSendArray, resb 2048+256
+NEWSYM PacketRecvArray, resb 2048+256
+NEWSYM IPAddrStr, resb 20
+NEWSYM RemoteDisconnect, resb 1
+SECTION .text
 
 NEWSYM TCPIPStartServer
     mov byte[RemoteDisconnect],0
@@ -1772,7 +1791,9 @@ NEWSYM TCPIPWaitForConnection
     popad
     mov eax,-1
     ret
-.temp dd 0
+SECTION .bss
+.temp resd 1
+SECTION .text
 
 NEWSYM TCPIPInitConnectToServer
     pushad
@@ -1825,7 +1846,9 @@ NEWSYM TCPIPConnectToServer
     popad
     mov eax,[.temp]
     ret
-.temp dd 0
+SECTION .bss
+.temp resd 1
+SECTION .text
 
 NEWSYM TCPIPConnectToServerW
 ; int ConnectServer(char *servername, unsigned short port)
@@ -1843,7 +1866,9 @@ NEWSYM TCPIPConnectToServerW
     popad
     mov eax,[.temp]
     ret
-.temp dd 0
+SECTION .bss
+.temp resd 0
+SECTION .text
 
 NEWSYM TCPIPStoreByte
     ; Store al into the array
@@ -2025,17 +2050,93 @@ NEWSYM GetTimeInSeconds
     add eax,ebx
     ret
 
+SECTION .bss
+
 SystemTime:
-.wYear			dw	0
-.wMonth			dw	0
-.wDayOfWeek		dw	0
-.wDay			dw	0
-.wHour			dw	0
-.wMinute		dw	0
-.wSecond		dw	0
-.wMilliseconds	dw	0
+.wYear                  resw    1
+.wMonth                 resw    1
+.wDayOfWeek             resw    1
+.wDay                   resw    1
+.wHour                  resw    1
+.wMinute                resw    1
+.wSecond                resw    1
+.wMilliseconds          resw    1
 
 
+SECTION .text
 %ifdef __MINGW__
 NEWSYM WinIntRFAsmEnd
+%endif
+
+%if 0
+
+; here's some code to blur a 512x448 region inside a 640x wide buffer
+; code "borrowed" from KEGA 0.04b
+
+%macro blurcrap 0
+	mov			eax,ebx
+	mov			ebx,ecx
+	mov			ecx,dword [edi+4]
+	shr			ecx,1
+	and			ecx,ebp
+	mov			edx,ecx
+	add			edx,eax
+	shr			edx,1
+	and			edx,ebp
+	add			edx,ebx
+	mov			word [edi+2],dx
+	push		edx
+	shr			edx,1
+	shr			esi,1
+	and			edx,ebp
+	and			esi,ebp
+	add			edx,esi
+	mov			word [edi],dx
+	pop			esi
+	add			edi,4
+%endmacro
+
+NEWSYM fastblur
+	push		ebx
+	push		ecx
+	push		edx
+	push		esi
+	push		edi
+	push		ebp
+	mov			ebp, 0111101111101111b
+	cmp			dword [converta], 1
+	jne			.565
+	mov			ebp, 0011110111101111b
+.565
+	mov			edi, [esp+1Ch]
+	mov			ecx, 448
+
+.loop
+	push		ecx
+
+	xor			ebx, ebx
+	mov			ecx, dword [edi]
+	xor			esi, esi
+	shr			ecx, 1
+	and			ecx, ebp
+
+%rep 256
+	blurcrap
+%endrep
+
+	pop			ecx
+
+	add			edi, 256
+
+	dec			ecx
+	jne			.loop
+
+	pop			ebp
+	pop			edi
+	pop			esi
+	pop			edx
+	pop			ecx
+	pop			ebx
+	ret
+
 %endif

@@ -346,7 +346,7 @@ void SineBlob(int x, int y, int radius, int height, int page)
   int left,top,right,bottom;
   int square, dist;
   int radsquare = radius * radius;
-  float length = (1024.0/(float)radius)*(1024.0/(float)radius);
+  float length = (1024.0f/(float)radius)*(1024.0f/(float)radius);
 
   if(x<0) x = 1+radius+ rand()%(SCRW-2*radius-1);
   if(y<0) y = 1+radius+ rand()%(SCRH-2*radius-1);

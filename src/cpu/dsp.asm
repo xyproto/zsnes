@@ -21,7 +21,7 @@ EXTSYM BRRPlace0,BRRPlace1,BRRPlace2,BRRPlace3,BRRPlace4,BRRPlace5,BRRPlace6
 EXTSYM BRRPlace7,Decrease,DecreaseRateExp,EchoFB,EchoRate,EchoVL,EchoVR
 EXTSYM FIRTAPVal0,FIRTAPVal1,FIRTAPVal2,FIRTAPVal3,FIRTAPVal4,FIRTAPVal5
 EXTSYM FIRTAPVal6,FIRTAPVal7,GlobalVL,GlobalVR,Increase,IncreaseBent
-EXTSYM MaxEcho,MusicVol,NoiseInc,NoiseSpeeds,SBToSPC,Voice0End,Voice0EnvInc
+EXTSYM MaxEcho,MusicVol,NoiseInc,NoiseSpeeds,dspPAdj,Voice0End,Voice0EnvInc
 EXTSYM Voice0IncNumber,Voice0Loop,Voice0Noise,Voice0Prev0,Voice0Prev1
 EXTSYM Voice0Start,Voice0State,Voice0Status,Voice0Time,Voice1End,Voice1Noise
 EXTSYM Voice1Prev0,Voice1Prev1,Voice1Start,Voice2End,Voice2Noise,Voice2Prev0
@@ -47,7 +47,9 @@ NEWSYM DspAsmStart
 
 ;none times 256 db 0
 
+SECTION .data
 identcode db 255,1,78,78
+SECTION .text
 ;sardcode db 234,76,80,128,65,65 ; 6
 ;efxcode db 17,47,62,97,26,126,98 ; 7
 ;zopcode db 54,39,21,0,0,8,14,12,18 ; 9
@@ -67,9 +69,10 @@ identcode db 255,1,78,78
     mov [DSPMem+00h+%1],al
 %endmacro
 
-ALIGN32
-
-NEWSYM DSPMem, times 256 db 0
+SECTION .bss ;ALIGN=32
+alignb 32
+NEWSYM DSPMem, resb 256
+SECTION .text
 
 ;Read DSP Registers functions
 
@@ -1114,7 +1117,7 @@ NEWSYM RDSPRegFF      ;
       test byte [DSPMem+07h+%1*10h],40h
       jnz near %%Increase
       test byte [DSPMem+07h+%1*10h],20h
-      jz near %%LinearDec
+      jz %%LinearDec
       xor eax,eax
       mov al,[DSPMem+07h+%1*10h]
       and al,1Fh
@@ -1216,7 +1219,7 @@ NEWSYM RDSPRegFF      ;
       test byte [DSPMem+07h+%1*10h],40h
       jnz near %%Increase
       test byte [DSPMem+07h+%1*10h],20h
-      jz near %%LinearDec
+      jz %%LinearDec
       xor eax,eax
       mov al,[DSPMem+07h+%1*10h]
       and al,1Fh
@@ -1524,11 +1527,11 @@ NEWSYM RDSPRegFF      ;
 
 %macro VoiceGain 1
       test byte[MuteVoiceF],1 << %1
-      jnz near .nogain
+      jnz .nogain
       cmp byte[Voice0State+%1],200
-      je near .nogain
+      je .nogain
       cmp [DSPMem+07h+%1*10h],al
-      je near .nogain
+      je .nogain
       mov [DSPMem+07h+%1*10h],al
       cmp byte[Voice0Status+%1],1
       jne .nogain
@@ -1550,7 +1553,9 @@ NEWSYM RDSPRegFF      ;
       ProcessGain2 %1
 %endmacro
 
-NEWSYM ADSRGAINSwitch, db 0
+SECTION .bss
+NEWSYM ADSRGAINSwitch, resb 1
+SECTION .text
 
 ;Write DSP Registers functions
 
@@ -1584,7 +1589,9 @@ NEWSYM WDSPReg04       ; Voice  0  SCRN
       mov [DSPMem+04h],al
       ret
 
-NEWSYM TempValueSnd, db 0
+SECTION .bss
+NEWSYM TempValueSnd, resb 1
+SECTION .text
 
 NEWSYM WDSPReg05       ; Voice  0  ADSR (1)
       inc byte[TempValueSnd]
@@ -2231,7 +2238,9 @@ NEWSYM WDSPReg6B       ; Voice  6
       mov [DSPMem+06Bh],al
       ret
 
-spcres db 0
+SECTION .bss
+spcres resb 1
+SECTION .text
 
 NEWSYM WDSPReg6C       ; Voice  6
       mov [DSPMem+06Ch],al
@@ -2258,10 +2267,8 @@ NEWSYM WDSPReg6C       ; Voice  6
       and eax,1Fh
       xor edx,edx
       mov eax,[NoiseSpeeds+eax*4]
-      mov ebx,[SBToSPC]
-      shl eax,16
-      div ebx
-      shl eax,2
+      Mul dword [dspPAdj]
+      ShrD EAX, EDX, 17
       mov [NoiseInc],eax
       pop edx
       pop ecx

@@ -222,8 +222,10 @@ CheatCodeSearchProcess:
     mov byte[CopyRamToggle],1
     ret
 
-CopyRamToggle db 0
-FirstSearch   db 0
+SECTION .bss
+CopyRamToggle resb 1
+FirstSearch   resb 1
+SECTION .text
 
 CheatCodeSearchInit:
     mov byte[CSInputDisplay],'_'
@@ -1189,7 +1191,9 @@ decodegg:
     mov dword[GUIcurrentcheatviewloc],0
 .noview
     ret
+SECTION .data
 .GG2Norm db 04h,06h,0Dh,0Eh,02h,07h,08h,03h,0Bh,05h,0Ch,09h,0Ah,00h,0Fh,01h
+SECTION .text
 
 decodepar:
     ; convert code to number format
@@ -1344,10 +1348,12 @@ guicheaterror:
     mov dword[GUIcurrentcheatwin],1
     mov byte[GUIpclicked],1
     ret
+SECTION .data
 guicheaterror1 db 'INVALID CODE!  YOU',0
 guicheaterror2 db 'MUST ENTER A VALID',0
 guicheaterror3 db 'GAME GENIE,PAR, OR',0
 guicheaterror4 db 'GOLD FINGER CODE.',0
 guicheaterror5 db 'PRESS ANY KEY.',0
-guicheatvalrep db 0
-
+SECTION .bss
+guicheatvalrep resb 1
+SECTION .text

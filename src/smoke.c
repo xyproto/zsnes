@@ -1,12 +1,8 @@
 
 
-#ifdef __LINUX__
-#   include "gblhdr.h"
-#else
 #   include <stdlib.h>
 #   include <string.h>
 #   include <time.h>
-#endif
 
 
 /*

@@ -44,8 +44,9 @@ VIDEOBJ=${VIDEODIR}/makev16b.o ${VIDEODIR}/makev16t.o ${VIDEODIR}/makevid.o\
 
 DOSOBJ= ${DOSDIR}/dosintrf.o ${DOSDIR}/gppro.o ${DOSDIR}/debug.o\
 	${DOSDIR}/initvid.o ${DOSDIR}/modemrtn.o ${DOSDIR}/sw32.o\
-	${DOSDIR}/joy.o ${DOSDIR}/sw.o ${DOSDIR}/vesa12.o ${DOSDIR}/vesa2.o\
-	${DOSDIR}/zloader.o ${DOSDIR}/zsipx.o ${DOSDIR}/zfile.o
+	${DOSDIR}/joy.o ${DOSDIR}/sound.o ${DOSDIR}/sw.o ${DOSDIR}/vesa12.o\
+	${DOSDIR}/vesa2.o ${DOSDIR}/zloader.o ${DOSDIR}/zsipx.o\
+	${DOSDIR}/zfile.o
 
 WINOBJ=${WINDIR}/copywin.o ${WINDIR}/winintrf.o ${WINDIR}/winlink.o\
 	${WINDIR}/zloaderw.o ${WINDIR}/ztcp.o ${WINDIR}/zipxw.o
@@ -60,7 +61,7 @@ MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o smoke.o
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${ZIPOBJ}
 LIBS=-lz -lm -lpng
 #CFLAGS=-O2 -Wall -Wno-unused -D__MSDOS__
-CFLAGS=-O3 -march=i486 -fno-rtti -fno-exceptions -ffast-math\
+CFLAGS=-O3 -march=i586 -fno-rtti -fno-exceptions -ffast-math\
 -fomit-frame-pointer -fno-unroll-loops -Wall -Wno-unused -D__MSDOS__
 ASM=nasm
 ASMFLAGS=-f coff -D__MSDOS__

@@ -28,8 +28,8 @@ EXTSYM Op08X,Op18X,Op28X,Op0CA,Op02FX,Op0AVS,Op06X,Op0DX,Op03F,Op14Zr
 EXTSYM Op0EH,DSP1Type,Op01m
 EXTSYM Voice0Status
 EXTSYM UpdateDPage
-EXTSYM Interror,MessageOn,MsgCount,Msgptr,StartGUI,cbitmode,debuggeron,romdata
-EXTSYM frameskip,initvideo,newgfx16b,oldhandSBo,oldhandSBs,soundon,cvidmode
+EXTSYM MessageOn,MsgCount,Msgptr,StartGUI,cbitmode,debuggeron,romdata
+EXTSYM frameskip,initvideo,newgfx16b,soundon,cvidmode
 EXTSYM vidbuffer,vidbufferofsa,vidbufferofsb,disable65816sh,GUISaveVars,virqnodisable
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst,GUIDoReset
 EXTSYM KeyOnStA,KeyOnStB,ProcessKeyOn,printnum,sramsavedis,DSPDisable,C4Enable
@@ -39,8 +39,8 @@ EXTSYM csounddisable,videotroub,Open_File,Close_File,Read_File,ResetTripleBuf
 EXTSYM Write_File,Output_Text,Create_File,Check_Key,Get_Key,Change_Dir,InitPreGame
 ;EXTSYM OSPort
 ;    EXTSYM tempblah,romdata
-EXTSYM Curtableaddr,DeInitSPC,InitSB,PICMaskP,SBHandler,SBInt
-EXTSYM SBIrq,curcyc,debugdisble,dmadata,guioff,memtabler8,SetupPreGame
+EXTSYM Curtableaddr
+EXTSYM curcyc,debugdisble,dmadata,guioff,memtabler8,SetupPreGame
 EXTSYM memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap,DeInitPostGame
 EXTSYM spcPCRam,startdebugger,xp,xpb,xpc,tablead,tableadb,tableadc
 ;    EXTSYM oamram
@@ -53,8 +53,10 @@ EXTSYM OSExit,DosExit,InitDir,InitDrive,createnewcfg,fnames,gotoroot,previdmode
 EXTSYM ramsize,sfxramdata,sram,SRAMDrive,SRAMDir,welcome
 ;    EXTSYM tempstore
 EXTSYM printhex
+%ifdef __MSDOS__
 EXTSYM ModemInitStat, DeInitModem
 EXTSYM deinitipx
+%endif
 EXTSYM deinitvideo
 EXTSYM BRRBuffer,DSPMem,PrepareSaveState,ResetState,SFXEnable,PHdspsave
 EXTSYM fnamest,sndrot,spcRam,spcRamDP,tableA,unpackfunct,vram,wramdata
@@ -67,11 +69,10 @@ EXTSYM CapturePicture,PrevPicture,NoPictureSave
 EXTSYM BRRPlace0,SfxCPB,SfxCROM,SfxLastRamAdr,SfxMemTable,Totalbyteloaded
 EXTSYM SfxRAMBR,SfxRAMMem,SfxROMBR,SfxRomBuffer,Voice0Freq
 EXTSYM cycpbl,cycpbl2,cycpblt,cycpblt2,irqon,nexthdma
-EXTSYM repackfunct,spcnumread,spcon,versn,headerhack,initpitch
+EXTSYM repackfunct,spcnumread,spchalted,spcon,versn,headerhack,initpitch
 EXTSYM SPCMultA,PHnum2writespc7110reg
 EXTSYM multchange,procexecloop,vidmemch2
 EXTSYM romispal
-EXTSYM dssel
 EXTSYM scrndis,sprlefttot,sprleftpr,processsprites,cachesprites
 EXTSYM NextLineStart,FlipWait,LastLineStart
 EXTSYM opcjmptab
@@ -118,6 +119,14 @@ EXTSYM ReadSPC7110log,WriteSPC7110log
 EXTSYM NetPlayNoMore
 EXTSYM statefileloc
 
+%ifdef OPENSPC
+EXTSYM OSPC_Run, ospc_cycle_frac
+%endif
+
+%ifdef __MSDOS__
+EXTSYM dssel
+%endif
+
 NEWSYM ExecuteAsmStart
 
 %macro BackupCVMacM 2
@@ -130,7 +139,8 @@ NEWSYM ExecuteAsmStart
     movq [ebx+8],mm1
     add edx,16
     add ebx,16
-    loop %%loop
+    dec ecx
+    jnz %%loop
 %endmacro
 
 %macro BackupCVMac 2
@@ -141,7 +151,8 @@ NEWSYM ExecuteAsmStart
     mov [ebx],eax
     add edx,4
     add ebx,4
-    loop %%loop
+    dec ecx
+    jnz %%loop
 %endmacro
 
 %macro BackupCVMacB 2
@@ -152,7 +163,8 @@ NEWSYM ExecuteAsmStart
     mov [ebx],al
     inc edx
     inc ebx
-    loop %%loop
+    dec ecx
+    jnz %%loop
 %endmacro
 
 %macro BackupCVRMacM 2
@@ -165,7 +177,8 @@ NEWSYM ExecuteAsmStart
     movq [edx+8],mm1
     add edx,16
     add ebx,16
-    loop %%loop
+    dec ecx
+    jnz %%loop
 %endmacro
 
 %macro BackupCVRMac 2
@@ -176,7 +189,8 @@ NEWSYM ExecuteAsmStart
     mov [edx],eax
     add edx,4
     add ebx,4
-    loop %%loop
+    dec ecx
+    jnz %%loop
 %endmacro
 
 %macro BackupCVRMacB 2
@@ -187,46 +201,57 @@ NEWSYM ExecuteAsmStart
     mov [edx],al
     inc edx
     inc ebx
-    loop %%loop
+    dec ecx
+    jnz %%loop
 %endmacro
 
-NEWSYM CBackupPos, dd 0
-NEWSYM StateBackup, dd 0
-NEWSYM PBackupPos, dd 0
-NEWSYM PPValue, dd 0   ; Previous PValue
-NEWSYM DPValue, dd 0   ; Destination PValue
-NEWSYM CurRecv, dd 0   ; Set to 1 if Recovery mode is on
+SECTION .bss
+NEWSYM CBackupPos, resd 1
+NEWSYM StateBackup, resd 1
+NEWSYM PBackupPos, resd 1
+NEWSYM PPValue, resd 1   ; Previous PValue
+NEWSYM DPValue, resd 1   ; Destination PValue
+NEWSYM CurRecv, resd 1   ; Set to 1 if Recovery mode is on
 ; if CurRecv=1, then do not send tcp/ip data, always frame skip, do not
 ;   draw to screen, do not key on, restore previous local key presses,
 ;   when disabling key ons, divert dspmem write/read to a different
 ;   array temporarly, then re-copy back in when finished
-NEWSYM PPContrl, times 16 dd 0   ; Previous Controller 1 Data
-NEWSYM PPContrl2, times 16 dd 0   ; Previous Controller 2 Data
-NEWSYM PPContrl3, times 16 dd 0   ; Previous Controller 3 Data
-NEWSYM PPContrl4, times 16 dd 0   ; Previous Controller 4 Data
-NEWSYM PPContrl5, times 16 dd 0   ; Previous Controller 5 Data
-NEWSYM tempedx, dd 0
-NEWSYM NetSent2, dd 0
-NEWSYM NetQuitter, dd 0
-NEWSYM QBackupPos, dd 0
-NEWSYM LatencyV, times 256 db 0
-NEWSYM LatencyRecvPtr, dd 0
-NEWSYM LatencySendPtr, dd 0
-NEWSYM latencytimer, dd 0
+NEWSYM PPContrl, resd 16   ; Previous Controller 1 Data
+NEWSYM PPContrl2, resd 16   ; Previous Controller 2 Data
+NEWSYM PPContrl3, resd 16   ; Previous Controller 3 Data
+NEWSYM PPContrl4, resd 16   ; Previous Controller 4 Data
+NEWSYM PPContrl5, resd 16   ; Previous Controller 5 Data
+NEWSYM tempedx, resd 1
+NEWSYM NetSent2, resd 1
+NEWSYM NetQuitter, resd 1
+NEWSYM QBackupPos, resd 1
+NEWSYM LatencyV, resb 256
+NEWSYM LatencyRecvPtr, resd 1
+NEWSYM LatencySendPtr, resd 1
+NEWSYM latencytimer, resd 1
+
+SECTION .data
 NEWSYM BackState, db 1
 NEWSYM BackStateSize, dd 6
-NEWSYM nojoystickpoll, dd 0
-NEWSYM RemoteLValue, db 0
-NEWSYM LocalLValue, db 0
-NEWSYM chatstrLt, times 15 db 0
-NEWSYM RewindOldPos, dd 0
-NEWSYM RewindPos, dd 0
-NEWSYM RewindTimer, dd 0
+
+SECTION .bss
+NEWSYM nojoystickpoll, resd 1
+NEWSYM RemoteLValue, resb 1
+NEWSYM LocalLValue, resb 1
+NEWSYM chatstrLt, resb 15
+NEWSYM RewindOldPos, resd 1
+NEWSYM RewindPos, resd 1
+NEWSYM RewindTimer, resd 1
+
+SECTION .data
 NEWSYM ResendTimer, dd 60
-NEWSYM valuea, dd 0
-NEWSYM valueb, dd 0
-NEWSYM valuet, dd 0
-BackupArray times 2000 dd 0
+
+SECTION .bss
+NEWSYM valuea, resd 1
+NEWSYM valueb, resd 1
+NEWSYM valuet, resd 1
+BackupArray resd 3000
+SECTION .text
 
 NEWSYM SplitStringChat
     push ebx
@@ -352,7 +377,9 @@ NEWSYM GenLatencyDisplay
     mov [chatstrLt+4],dl
     mov [chatstrLt+3],al
     ret
-.temp dd 0
+SECTION .bss
+.temp resd 1
+SECTION .text
 
 NEWSYM ResetExecStuff
   mov dword[soundcycleft],0
@@ -363,7 +390,8 @@ NEWSYM ResetExecStuff
   mov dword[nmiprevline],224
   mov dword[nmistatus],0
   mov byte[NextLineCache],0
-  mov byte[spcnumread],0
+  mov dword[spcnumread],0
+  mov dword[spchalted],-1
   mov dword[timer2upd],0
   mov dword[HIRQCycNext],0
   mov byte[HIRQNextExe],0
@@ -465,7 +493,8 @@ NEWSYM BackupSystemVars
     BackupCVMac spc700read,10
     BackupCVMac timer2upd,1
     BackupCVMac xa,14
-    BackupCVMacB spcnumread,1
+    BackupCVMacB spcnumread,4
+	BackupCVMacB spchalted,4
     BackupCVMac opcd,6
     BackupCVMacB HIRQCycNext,5
     BackupCVMac oamaddr,14
@@ -487,7 +516,8 @@ NEWSYM RestoreSystemVars
     BackupCVRMac spc700read,10
     BackupCVRMac timer2upd,1
     BackupCVRMac xa,14
-    BackupCVRMacB spcnumread,1
+    BackupCVRMacB spcnumread,4
+	BackupCVRMacB spchalted,4
     BackupCVRMac opcd,6
     BackupCVRMacB HIRQCycNext,5
     BackupCVRMac oamaddr,14
@@ -560,7 +590,8 @@ NEWSYM BackupCVFrame
     BackupCVMac spc700read,10
     BackupCVMac timer2upd,1
     BackupCVMac xa,14
-    BackupCVMacB spcnumread,1
+    BackupCVMacB spcnumread,4
+	BackupCVMacB spchalted,4
     BackupCVMac opcd,6
     BackupCVMacB HIRQCycNext,5
     BackupCVMac oamaddr,14
@@ -654,7 +685,8 @@ NEWSYM RestoreCVFrame
     BackupCVRMac spc700read,10
     BackupCVRMac timer2upd,1
     BackupCVRMac xa,14
-    BackupCVRMacB spcnumread,1
+    BackupCVRMacB spcnumread,4
+	BackupCVRMacB spchalted,4
     BackupCVRMac opcd,6
     BackupCVRMacB HIRQCycNext,5
     BackupCVRMac oamaddr,14
@@ -689,7 +721,9 @@ NEWSYM RestoreCVFrame
     emms
     ret
 
-NEWSYM MuteVoiceF, db 0
+SECTION .bss
+NEWSYM MuteVoiceF, resb 0
+SECTION .text
 
 VoiceEndMute:
     mov byte[MuteVoiceF],0
@@ -973,19 +1007,22 @@ NetSaveState:
 ; pexecs
 ; *** Copy to PC whenever a non-relative jump is executed
 
-NEWSYM romloadskip, db 0
-NEWSYM abcdefg,     dd 0
-NEWSYM abcdefg1,    dd 0
-NEWSYM abcdefg2,    dd 0
-NEWSYM abcdefg3,    dd 0
-NEWSYM SSKeyPressed, dd 0
-NEWSYM SPCKeyPressed, dd 0
-NEWSYM NoSoundReinit, dd 0
-NEWSYM NextNGDisplay, db 0
-NEWSYM TempVidInfo, dd 0
+SECTION .bss
+NEWSYM romloadskip, resb 1
+NEWSYM abcdefg,     resd 1
+NEWSYM abcdefg1,    resd 1
+NEWSYM abcdefg2,    resd 1
+NEWSYM abcdefg3,    resd 1
+NEWSYM SSKeyPressed, resd 1
+NEWSYM SPCKeyPressed, resd 1
+NEWSYM NoSoundReinit, resd 1
+NEWSYM NextNGDisplay, resb 1
+NEWSYM TempVidInfo, resd 1
 
 
-NEWSYM tempdh, db 0
+NEWSYM tempdh, resb 1
+
+SECTION .text
 
 NEWSYM start65816
 
@@ -1282,8 +1319,10 @@ reexecuteb2:
     jnz near endprog
     jmp StartGUI
 
+SECTION .data
 NEWSYM EndMessage
 db '                                                                   ',13,10,0
+SECTION .text
 
 NEWSYM endprog
     call deinitvideo
@@ -1417,6 +1456,7 @@ NEWSYM endprog
     mov ebx,InitDir
     call Change_Dir
 
+%ifdef __MSDOS__
     ; Deinit modem if necessary
     cmp byte[ModemInitStat],0
     je .nodeinitmodem
@@ -1424,12 +1464,13 @@ NEWSYM endprog
 .nodeinitmodem
 ;    cmp byte[OSPort],1
 ;    jae .nodeinitipx
-%ifdef __MSDOS__
     call deinitipx
-%endif
 ;.nodeinitipx
+%endif
     jmp OSExit
+SECTION .data
 NEWSYM sdd1fname, db 'sdd1dat.dat',0,0
+SECTION .text
 
 NEWSYM interror
     stim
@@ -1439,31 +1480,38 @@ NEWSYM interror
     call Output_Text                 ;to print a string
     jmp DosExit
 
+SECTION .data
 .nohand db 'Cannot process interrupt handler!',13,10,0
 
+SECTION .bss
 ; global variables
-NEWSYM invalid, db 0
-NEWSYM invopcd, db 0
-NEWSYM pressed, times 256+128+64 db 0          ; keyboard pressed keys in scancode
-NEWSYM exiter, db 0
-NEWSYM oldhand9o, dd 0
-NEWSYM oldhand9s, dw 0
-NEWSYM oldhand8o, dd 0
-NEWSYM oldhand8s, dw 0
-NEWSYM opcd,      dd 0
-NEWSYM pdh,       dd 0
-NEWSYM pcury,     dd 0
-NEWSYM timercount, dd 0
-NEWSYM initaddrl, dd 0                  ; initial address location
-NEWSYM NetSent, dd 0
-NEWSYM nextframe, dd 0                  ; tick count for timer
-NEWSYM curfps,    db 0                  ; frame/sec for current screen
-NEWSYM SFXSRAM,   db 0
+NEWSYM invalid, resb 1
+NEWSYM invopcd, resb 1
+NEWSYM pressed, resb 256+128+64          ; keyboard pressed keys in scancode
+NEWSYM exiter, resb 1
+NEWSYM oldhand9o, resd 1
+NEWSYM oldhand9s, resw 1
+NEWSYM oldhand8o, resd 1
+NEWSYM oldhand8s, resw 1
+NEWSYM opcd,      resd 1
+NEWSYM pdh,       resd 1
+NEWSYM pcury,     resd 1
+NEWSYM timercount, resd 1
+NEWSYM initaddrl, resd 1                  ; initial address location
+NEWSYM NetSent, resd 1
+NEWSYM nextframe, resd 1                  ; tick count for timer
+NEWSYM curfps,    resb 1                  ; frame/sec for current screen
+NEWSYM SFXSRAM,   resb 1
+
+SECTION .data
 NEWSYM newgfxerror, db 'NEED MEMORY FOR GFX ENGINE',0
 NEWSYM newgfxerror2, db 'NEED 320x240 FOR NEW GFX 16B',0
 ;newgfxerror db 'NEW GFX IN 16BIT IS N/A',0
-NEWSYM HIRQCycNext,   dd 0
-NEWSYM HIRQNextExe,   db 0
+
+SECTION .bss
+NEWSYM HIRQCycNext,   resd 1
+NEWSYM HIRQNextExe,   resb 1
+SECTION .text
 
 ;*******************************************************
 ; Save/Load States
@@ -1496,10 +1544,13 @@ NEWSYM sramsave
     mov [MessageOn],eax
     jmp reexecute
 
+SECTION .data
 .savesrmmsg1 db 'SRAM DATA SAVED.',0
 .savesrmmsg2 db 'NO SRAM DATA.',0
 
-NEWSYM firstsaveinc, db 0
+SECTION .bss
+NEWSYM firstsaveinc, resb 1
+SECTION .text
 
 NEWSYM statesaver
     clim
@@ -1671,8 +1722,10 @@ NEWSYM statesaver
     mov [MessageOn],eax
     ret
 
+SECTION .data
 .savemsg db 'STATE - SAVED.',0
 .savemsgfail db 'UNABLE TO SAVE.',0
+SECTION .text
 
 NEWSYM savestate
     jmp .save
@@ -1708,9 +1761,12 @@ NEWSYM savestate
     call statesaver
     jmp reexecuteb
 
+SECTION .data
 .fname2 db 9,'image.dat',0
 
-cycpblblah dd 0,0
+SECTION .bss
+cycpblblah resd 2
+SECTION .text
 
     ; Load State
 NEWSYM stateloader
@@ -1835,7 +1891,8 @@ NEWSYM stateloader
 .nosdd1
     call Close_File
     call repackfunct
-    mov byte[spcnumread],0
+    mov dword[spcnumread],0
+	mov dword[spchalted],-1
     mov byte[nexthdma],0
 
 ;    call headerhack
@@ -1900,7 +1957,8 @@ NEWSYM stateloader
     call Close_File
     call repackfunct
     mov dword[cycpbl],0
-    mov byte[spcnumread],0
+    mov dword[spcnumread],0
+	mov dword[spchalted],-1
     mov byte[nexthdma],0
     call headerhack
     call initpitch
@@ -1964,9 +2022,11 @@ NEWSYM loadstate
     stim
     jmp reexecuteb
 
+SECTION .data
 .loadmsg db 'STATE - LOADED.',0
 .convmsg db 'STATE - LOADED/CONVERTED',0
 .nfndmsg db 'UNABLE TO LOAD STATE -.',0
+SECTION .text
 
 NEWSYM loadstate2
     mov edx,fnamest+1
@@ -2034,6 +2094,7 @@ NEWSYM Game60hzcall
     inc byte[nextframe]
     ret
 
+%ifdef __MSDOS__
 NEWSYM handler8h
     cli
     push ds
@@ -2056,16 +2117,23 @@ NEWSYM handler8hseg
     pop ds
     sti
     iretd
+%endif
 
+SECTION .data
 NEWSYM timeradj, dd 65536
-NEWSYM t1cc,     dw 0
+SECTION .bss
+NEWSYM t1cc,     resw 1
+SECTION .text
 
 ;*******************************************************
 ; Int 09h vector
 ;*******************************************************
 
-NEWSYM skipnextkey42, db 0
+SECTION .bss
+NEWSYM skipnextkey42, resb 1
+SECTION .text
 
+%ifdef __MSDOS__
 NEWSYM handler9h
     cli
     push ds
@@ -2127,21 +2195,26 @@ NEWSYM handler9h
     pop ds
     sti
     iretd
+%endif
 
-ALIGN32
+SECTION .bss ;ALIGN=32
+NEWSYM soundcycleft, resd 1
+NEWSYM curexecstate, resd 1
 
-NEWSYM soundcycleft, dd 0
-NEWSYM curexecstate, dd 0
+NEWSYM nmiprevaddrl, resd 1       ; observed address -5
+NEWSYM nmiprevaddrh, resd 1       ; observed address +5
+NEWSYM nmirept,      resd 1       ; NMI repeat check, if 6 then okay
 
-NEWSYM nmiprevaddrl, dd 0       ; observed address -5
-NEWSYM nmiprevaddrh, dd 0       ; observed address +5
-NEWSYM nmirept,      dd 0       ; NMI repeat check, if 6 then okay
+SECTION .data
 NEWSYM nmiprevline,  dd 224     ; previous line
-NEWSYM nmistatus,    dd 0       ; 0 = none, 1 = waiting for nmi location,
+
+SECTION .bss
+NEWSYM nmistatus,    resd 1       ; 0 = none, 1 = waiting for nmi location,
                         ; 2 = found, disable at next line
-NEWSYM joycontren,   dd 0       ; joystick read control check
-NEWSYM NextLineCache, db 0
-NEWSYM NetQuit, db 0
+NEWSYM joycontren,   resd 1       ; joystick read control check
+NEWSYM NextLineCache, resb 1
+NEWSYM NetQuit, resb 1
+SECTION .text
 
 Donextlinecache:
     cmp word[curypos],0
@@ -2235,6 +2308,8 @@ Donextlinecache:
 ; 65816 execution
 ;*******************************************************
 
+SECTION .data
+
 SpeedHackSafeTable
        db 1,0,1,0,0,0,1,0,1,0,1,1,0,0,0,0
        db 0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0
@@ -2252,6 +2327,7 @@ SpeedHackSafeTable
        db 0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0
        db 0,1,0,1,0,1,1,1,1,1,0,0,0,1,1,1
        db 0,1,1,1,0,1,1,1,0,1,0,0,0,1,1,1
+SECTION .text
 
 NEWSYM exitloop2
    mov byte[ExecExitOkay],0
@@ -2316,7 +2392,6 @@ ALIGN16
 %%noflip
 %endmacro
 
-
 NEWSYM execute
 NEWSYM execloop
    mov bl,dl
@@ -2333,6 +2408,17 @@ NEWSYM execloop
    jmp cpuover
 .sound
    mov edi,[tableadc+ebx*4]
+%ifdef OPENSPC
+   pushad
+   mov bl,[esi]
+   movzx eax,byte[cpucycle+ebx]
+   mov ebx,0xC3A13DE6
+   mul ebx
+   add [ospc_cycle_frac],eax
+   adc [SPC_Cycles],edx
+   call OSPC_Run
+   popad
+%else
    sub dword[cycpbl],55
    jnc .skipallspc
    mov eax,[cycpblt]
@@ -2343,6 +2429,7 @@ NEWSYM execloop
    call dword near [opcjmptab+ebx*4]
    xor ebx,ebx
 .skipallspc
+%endif
    mov bl,[esi]
    inc esi
    sub dh,[cpucycle+ebx]
@@ -2353,25 +2440,27 @@ NEWSYM execloop
 
 
 
-SECTION .data
+SECTION .data ;ALIGN=32
 ALIGN32
 NEWSYM ExecExitOkay, db 1
-NEWSYM JoyABack, dd 0
-NEWSYM JoyBBack, dd 0
-NEWSYM JoyCBack, dd 0
-NEWSYM JoyDBack, dd 0
-NEWSYM JoyEBack, dd 0
-NEWSYM NetCommand, dd 0
-NEWSYM spc700read, dd 0
-NEWSYM lowestspc,  dd 0
-NEWSYM highestspc, dd 0
-NEWSYM SA1UBound,  dd 0
-NEWSYM SA1LBound,  dd 0
-NEWSYM SA1SH,      dd 0
-NEWSYM SA1SHb,     dd 0
-NEWSYM NumberOfOpcodes2, dd 0
-NEWSYM ChangeOps, dd 0
-NEWSYM SFXProc,    dd 0
+
+SECTION .bss ;ALIGN=32
+NEWSYM JoyABack, resd 1
+NEWSYM JoyBBack, resd 1
+NEWSYM JoyCBack, resd 1
+NEWSYM JoyDBack, resd 1
+NEWSYM JoyEBack, resd 1
+NEWSYM NetCommand, resd 1
+NEWSYM spc700read, resd 1
+NEWSYM lowestspc,  resd 1
+NEWSYM highestspc, resd 1
+NEWSYM SA1UBound,  resd 1
+NEWSYM SA1LBound,  resd 1
+NEWSYM SA1SH,      resd 1
+NEWSYM SA1SHb,     resd 1
+NEWSYM NumberOfOpcodes2, resd 1
+NEWSYM ChangeOps, resd 1
+NEWSYM SFXProc,    resd 1
 SECTION .text
 
 
@@ -2388,7 +2477,7 @@ NEWSYM cpuover
     dec esi
     cmp byte[HIRQNextExe],0
     je .nohirq
-    mov dh,[HIRQCycNext]
+    add dh,[HIRQCycNext]
     mov byte[HIRQCycNext],0
     jmp .hirq
 .nohirq
@@ -3974,7 +4063,9 @@ NEWSYM cpuover
     pop eax
     jmp .returncheat
 
-.numcheat db 0
+SECTION .bss ;ALIGN=32
+.numcheat resb 1
+SECTION .text ;ALIGN=32
 
 ALIGN16
 

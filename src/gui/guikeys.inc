@@ -122,14 +122,17 @@
 %%noclick
 %endmacro
 
-GUIfirstkey dd 0
-GUIlastkey dd 0
-NEWSYM GUIkeydelay, dd 0
-NEWSYM GUIkeydelay2, dd 0
-GUInextkeydelay dd 0
-GUIJoyPadnk db 0,0,0,0,0,0,0,0
-NEWSYM GUIDelayB, db 0
-UseExtKey db 0
+SECTION .bss
+GUIfirstkey resd 1
+GUIlastkey resd 1
+NEWSYM GUIkeydelay, resd 1
+NEWSYM GUIkeydelay2, resd 1
+GUInextkeydelay resd 1
+GUIJoyPadnk resb 8
+NEWSYM GUIDelayB, resb 1
+UseExtKey resb 1
+
+SECTION .text
 
 GUIgetcurrentinput:
     cmp byte[HoldCommand],2
@@ -331,8 +334,10 @@ GUIgetcurrentinput:
     cmp dh,32
     jb .noprocess7
 .ret
+%ifdef __MSDOS__
     mov al,dh
     call ModemSendChar
+%endif
     ret
 .noprocess7
     cmp dl,27
@@ -352,17 +357,21 @@ GUIgetcurrentinput:
     jmp .nonetwin
 .yesnet15
     mov byte[CNetType],0
+%ifdef __MSDOS__
 ;    cmp byte[OSPort],1
 ;    je .nodeinitipx
     call deinitipx
 .nodeinitipx
+%endif
     jmp .closewin
 .yesnetwin
+%ifdef __MSDOS__
     cmp byte[ModemInitStat],0
     je .nodeinitmodem
     call DeInitModemC
     mov byte[ModemInitStat],0
 .nodeinitmodem
+%endif
     mov byte[CNetType],1
     ret
 .nonetwin
@@ -795,7 +804,9 @@ GUITCPIPKeys:
     ret
 
 
+SECTION .data
 NEWSYM TCPIPPortNum, dd 7845
+SECTION .text
 
 GUIOptionKeys:
     cmp dh,'a'
@@ -1158,16 +1169,6 @@ GUIVideoKeys:
     je .nohiresmode7
     xor byte[Mode7HiRes16b],1
 .nohiresmode7
-%ifndef __MSDOS__
-    cmp dh,'M'
-    jne .nomotionblur
-    xor ebx,ebx
-    mov bl,[cvidmode]
-    cmp byte[GUIMBVID+ebx],0
-    je .nomotionblur
-    xor byte[MotionBlur],1
-.nomotionblur
-%endif
     cmp dh,'B'
     jne .nobilinearfilter
     xor ebx,ebx
@@ -1176,6 +1177,7 @@ GUIVideoKeys:
     je .nobilinearfilter
     xor byte[BilinearFilter],1
 .nobilinearfilter
+%ifdef __WIN32__
     cmp dh,'T'
     jne .notriplebufferwin
     xor eax,eax
@@ -1183,9 +1185,12 @@ GUIVideoKeys:
     cmp byte[GUITBWVID+eax],0
     je near .notriplebufferwin
     xor byte[TripleBufferWin],1
-    mov byte[vsyncon],0
-    mov byte[cfgvsync],0
+;    mov byte[vsyncon],0
+;    mov byte[cfgvsync],0
+    call initDirectDraw
 .notriplebufferwin
+%endif
+%ifdef __MSDOS__
     cmp dh,'T'
     jne .notriplebuffer
     xor ebx,ebx
@@ -1193,9 +1198,10 @@ GUIVideoKeys:
     cmp byte[GUITBVID+ebx],0
     je .notriplebuffer
     xor byte[Triplebufen],1
-    mov byte[vsyncon],0
-    mov byte[cfgvsync],0
+;    mov byte[vsyncon],0
+;    mov byte[cfgvsync],0
 .notriplebuffer
+%endif
     cmp dh,'G'
     jne .nograyscale
     xor byte[GrayscaleMode],1
@@ -1207,10 +1213,11 @@ GUIVideoKeys:
     mov al,[vsyncon]
     mov [cfgvsync],al
 %ifdef __WIN32__
-    mov byte[TripleBufferWin],0
+;    mov byte[TripleBufferWin],0
+    call initDirectDraw
 %endif
 %ifdef __MSDOS__
-    mov byte[Triplebufen],0
+;    mov byte[Triplebufen],0
 %endif
 .novsync
 %endif
@@ -1226,6 +1233,11 @@ GUISoundKeys:
     cmp dh,'E'
     jne .notenablesound
     xor byte[cfgsoundon],1
+%ifdef __WIN32__
+    pushad
+    call reInitSound
+    popad
+%endif
 .notenablesound
 %ifdef __MSDOS__
     cmp dh,'F'
@@ -1300,7 +1312,9 @@ GUISoundKeys:
 %endif
     ret
 
+SECTION .data
 .sampratenext db 1,4,5,6,2,3,0,0,0,0
+SECTION .text
 
 GUINetMenuKeys1:
     cmp dh,'a'
@@ -1321,22 +1335,26 @@ GUINetMenuKeys1:
     jne .notmanual
     mov byte[CNetType],12
     mov byte[ModemProcess],0
+%ifdef __MSDOS__
     cmp byte[ModemInitStat],1
     je .noinit
     call InitModem
     mov byte[ModemInitStat],1
 .noinit
+%endif
     ret
 .notmanual
     cmp dh,'W'
     jne .notwait
     mov byte[CNetType],10
     mov byte[ModemProcess],0
+%ifdef __MSDOS__
     cmp byte[ModemInitStat],1
     je .noinit2
     call InitModem
     mov byte[ModemInitStat],1
 .noinit2
+%endif
     ret
 .notwait
     ret
@@ -1357,10 +1375,12 @@ GUIGetInputLine:
     jne .nodial
     mov byte[CNetType],11
     mov byte[ModemProcess],0
+%ifdef __MSDOS__
     cmp byte[ModemInitStat],1
     je .noinit
     call InitModem
     mov byte[ModemInitStat],1
+%endif
 .noedit
     ret
 .noinit
@@ -1409,12 +1429,14 @@ GUIGetInputLine:
     mov [GUIEditStringcLen],eax
     ret
 
-GUIEditString dd 0              ; Pointer to string
-GUIEditStringcLen dd 0          ; Pointer to end of string (done in function)
-GUIEditStringmLen dd 0          ; Max length of string
-GUIEditStringLTxt dd 0          ; blink value, should be set to 0 when box selected
-GUIEditStringLstb dd 0          ; if cursor is placed (set in main function)
-GUIEditStringcWin dd 0          ; 0 = no text window selected
+SECTION .bss
+GUIEditString resd 1              ; Pointer to string
+GUIEditStringcLen resd 1          ; Pointer to end of string (done in function)
+GUIEditStringmLen resd 1          ; Max length of string
+GUIEditStringLTxt resd 1          ; blink value, should be set to 0 when box selected
+GUIEditStringLstb resd 1          ; if cursor is placed (set in main function)
+GUIEditStringcWin resd 1          ; 0 = no text window selected
+SECTION .text
 
 GUIComboKeys:
     ; Calculate Position
@@ -1837,8 +1859,10 @@ InsertSearchCharacter:
     pop edx
     ret
 
-CSOverValue db 0
-CSCurValue  dd 0
+SECTION .bss
+CSOverValue resb 1
+CSCurValue  resd 1
+SECTION .text
 
 InsertSearchDescription:
     mov eax,CSDescDisplay
@@ -2792,9 +2816,11 @@ GUILoadKeys:
     call GUILoadData
 .notdirectload
     ret
-.foundval dd 0
-.numfound dd 0
-.maxfound dd 0
+SECTION .bss
+.foundval resd 1
+.numfound resd 1
+.maxfound resd 1
+SECTION .text
 
 .dirwin
 %ifdef __LINUX__

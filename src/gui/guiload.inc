@@ -166,7 +166,9 @@
 
 ;LGUI
 
-netlastloaded db 0
+SECTION .bss
+netlastloaded resb 1
+SECTION .text
 
 GUIloadfilename:
     cmp byte[CNetType],15
@@ -266,7 +268,8 @@ GUIloadfilename:
     mov dword[nmirept],0
     mov dword[nmiprevline],224
     mov dword[nmistatus],0
-    mov byte[spcnumread],0
+    mov dword[spcnumread],0
+	mov dword[spchalted],-1
     mov byte[NextLineCache],0
     mov byte[curexecstate],1
 
@@ -339,14 +342,12 @@ GUIloadfilename:
     mov al,2
 .nopal2
     mov byte[romispal],0
-    mov word[totlines],262
+    mov word[totlines],263
     mov dword[MsgCount],120
     cmp al,1
     jbe .nopal
-    cmp al,0Dh
-    je .nopal
     mov byte[romispal],1
-    mov word[totlines],314
+    mov word[totlines],313
     mov dword[MsgCount],100
 .nopal
     call showinfogui
@@ -565,7 +566,9 @@ GUILoadData:
     mov byte[GUIwinorder+eax],0
     dec byte[GUIwinptr]
     ret
+SECTION .data
 .drivefn db 'A:\temp.tmp',0
+SECTION .text
 
 GetNormalEntries2:
     cmp byte[showallext],1
@@ -781,8 +784,10 @@ GetLoadLfn:
     pop edi
     ret
 
-LFNData times 400 db 0
-LFNHandle dw 0
+SECTION .bss
+LFNData resb 400
+LFNHandle resw 1
+SECTION .text
 
 GetLoadNormal:
     call GetNormalEntries2
@@ -1035,8 +1040,11 @@ GetLoadHeader:
     jnz .loop3
     ret
 
+SECTION .data
 .invfile db ' ** INVALID FILE **',0
-fnameheadtemp times 22 db 0
+SECTION .bss
+fnameheadtemp resb 22
+SECTION .text
 
 GetNormalDirEntries2:
     GUIGetDir2
@@ -1090,7 +1098,9 @@ GetLoadDirNormallfn:
     pop edi
     ret
 
-Win95Failed db 0
+SECTION .bss
+Win95Failed resb 1
+SECTION .text
 
 NEWSYM GetCurDir
     ; get Drive/Dir
@@ -1400,16 +1410,19 @@ GUIGetDirs:
 %endif
     ret
 
-BubbleSorted      db 0
-GUIcurrentfilewin dd 0
-GUIcurrentviewloc dd 0
-GUIcurrentcursloc dd 0
-GUIcurrentdirviewloc dd 0
-GUIcurrentdircursloc dd 0
-GUIdirStartLoc    dd 0
-GUInumentries dd 0
-GUIdirentries dd 0
-GUIfileentries dd 0
+SECTION .bss
+BubbleSorted      resb 1
+GUIcurrentfilewin resd 1
+GUIcurrentviewloc resd 1
+GUIcurrentcursloc resd 1
+GUIcurrentdirviewloc resd 1
+GUIcurrentdircursloc resd 1
+GUIdirStartLoc    resd 1
+GUInumentries resd 1
+GUIdirentries resd 1
+GUIfileentries resd 0
+
+SECTION .data
 %ifdef __LINUX__
 NEWSYM GUIsmcfind,    db '*.[sS][mM][cC]',0
 NEWSYM GUIsfcfind,    db '*.[sS][fF][cC]',0
@@ -1444,7 +1457,11 @@ NEWSYM GUIfindall,    db '*',0
 GUIfindDIR    db '*.*',0
 NEWSYM GUIfindall,    db '*.*',0
 %endif
+
+SECTION .data
 NEWSYM DTALoc, times 2048+32 db 0
+
+SECTION .text
 
 ; Routines to load from the Quick Menu
 loadquickfname:
@@ -1622,4 +1639,7 @@ loadquickfname:
 .failed
     pop eax
     ret
-.temp times 256 dd 0
+
+SECTION .bss
+.temp resd 256
+SECTION .text

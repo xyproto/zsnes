@@ -55,7 +55,7 @@ WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/modemrtn.o ${DOSDIR}/vesa2
 
 ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
-MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o smoke.o
+MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o smoke.o burn.o
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ}
 
@@ -78,6 +78,7 @@ ${ZIPDIR}/zzip.o: ${ZIPDIR}/zzip.c ${ZIPDIR}/zunzip.h
 fixsin.o: fixsin.c
 water.o: water.c
 smoke.o: smoke.c
+burn.o: burn.c
 ${VIDEODIR}/procvid.o: ${VIDEODIR}/procvid.asm macros.mac ${VIDEODIR}/copyvid.inc ${VIDEODIR}/2xsaimmx.inc
 ${CHIPDIR}/dsp1proc.o: ${CHIPDIR}/dsp1proc.asm macros.mac
 ${CHIPDIR}/sa1regs.o: ${CHIPDIR}/sa1regs.asm macros.mac\

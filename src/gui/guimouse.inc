@@ -23,10 +23,12 @@ EXTSYM CheckScreenSaver
 EXTSYM MinimizeWindow
 %endif
 
-lastmouseholded db 0
-mousebuttonstat dw 0
-MouseMoveOkay   db 0
-LastHoldEnable  db 0
+SECTION .bss
+lastmouseholded resb 1
+mousebuttonstat resw 1
+MouseMoveOkay   resb 1
+LastHoldEnable  resb 1
+SECTION .text
 
 ProcessMouse:
     ; Process holds
@@ -832,6 +834,9 @@ GUIProcVideo:
     je .failed2
     mov dword[GUIkeydelay],0
     ret
+.fullsc
+    mov [PrevFSMode],al
+    ret
 .failed
     mov byte[videotroub],0
     mov al,[.prevvid]
@@ -851,7 +856,9 @@ GUIProcVideo:
     call GUISetPal
     mov dword[GUIkeydelay],0
     ret
-.prevvid db 0
+SECTION .bss
+.prevvid resb 1
+SECTION .text
 
 NEWSYM SwitchFullScreen
     pushad
@@ -1007,6 +1014,43 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
+%macro GUIClickCButtonf 4
+    cmp eax,%1+1
+    jl %%noclick
+    cmp edx,%2+3
+    jl %%noclick
+    cmp eax,%1+6
+    jg %%noclick
+    cmp edx,%2+8
+    jg %%noclick
+    xor %3,1
+%ifdef __WIN32__
+    pushad
+    call %4
+    popad
+%endif
+%%noclick
+%endmacro
+
+%macro GUIClickCButtonfT 5
+    cmp eax,%1+1
+    jl %%noclick
+    cmp edx,%2+3
+    jl %%noclick
+    cmp eax,%1+6
+    jg %%noclick
+    cmp edx,%2+8
+    jg %%noclick
+    xor %3,1
+    mov %4,0
+%ifdef __WIN32__
+    pushad
+    call %5
+    popad
+%endif
+%%noclick
+%endmacro
+
 %macro GUIClickCButtonC 3
     cmp eax,%1+1
     jl %%noclick
@@ -1107,6 +1151,29 @@ GUIWinClicked:
     ret
 %%noclick
 %endmacro
+
+%ifndef __LINUX__
+%macro GUIClickCButton2r 5
+    cmp eax,%1+1
+    jl %%noclick
+    cmp edx,%2+3
+    jl %%noclick
+    cmp eax,%1+6
+    jg %%noclick
+    cmp edx,%2+8
+    jg %%noclick
+    xor %3,%5
+    mov al,%3
+    mov %4,al
+%ifdef __WIN32__
+    pushad
+    call initDirectDraw
+    popad
+%endif
+    ret
+%%noclick
+%endmacro
+%endif
 
 %macro GUIClickCButton3 5
     cmp eax,%1+1
@@ -1443,11 +1510,13 @@ GUIWinClicked:
 %%nolower
 %endmacro
 
-GUIlastdispval dd 0
-GUIdispmode    dd 0
-GUIlastypos    dd 0
-GUIlastcpos    dd 0
-GUIlastvpos    dd 0
+SECTION .bss
+GUIlastdispval resd 1
+GUIdispmode    resd 1
+GUIlastypos    resd 1
+GUIlastcpos    resd 1
+GUIlastvpos    resd 1
+SECTION .text
 
 %macro GUISlidebarImpl 10 ; x1,y1,x2,y2,GUI?StA,ScrnSize,ViewLoc,CursLoc,Entries,win#
     mov dword[GUIdispmode],0
@@ -2243,7 +2312,7 @@ DisplayGUIVideoClick:
 .nocheckboxttb
     GUIClickCButton 11,183,byte[GrayscaleMode]
 %ifdef __WIN32__
-    GUIClickCButtonT 115,183,byte[vsyncon],byte[TripleBufferWin]
+    GUIClickCButtonf 115,183,byte[vsyncon],initDirectDraw
 %endif
 %ifdef __MSDOS__
     GUIClickCButtonT 115,183,byte[vsyncon],byte[Triplebufen]
@@ -2251,16 +2320,9 @@ DisplayGUIVideoClick:
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUIM7VID+ebx],0
-    je .nocheckboxm7
+    je .nocheckboxtm7
     GUIClickCButton5 11,173,byte[Mode7HiRes16b],1
-.nocheckboxm7
-%ifndef __MSDOS__
-    mov bl,[cvidmode]
-    cmp byte[GUIMBVID+ebx],0
-    je .nocheckboxmb
-    GUIClickCButton5 11,173,byte[MotionBlur],1
-.nocheckboxmb
-%endif
+.nocheckboxtm7
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUIHSVID+ebx],0
@@ -2273,7 +2335,7 @@ DisplayGUIVideoClick:
     mov bl,[cvidmode]
     cmp byte[GUITBWVID+ebx],0
     je near .notriplebufferwin
-    GUIClickCButtonT 11,123,byte[TripleBufferWin],byte[vsyncon]
+    GUIClickCButtonf 11,123,byte[TripleBufferWin],initDirectDraw
 .notriplebufferwin
 %endif
     xor ebx,ebx
@@ -2320,15 +2382,17 @@ DisplayGUIVideoClick:
     xor al,al
     ret
 
-GUINumValue dd 0
-GUIBlankVar dd 0
+SECTION .bss
+GUINumValue resd 1
+GUIBlankVar resd 1
+SECTION .text
 
 DisplayGUISoundClick:
     mov eax,[GUImouseposx]
     sub eax,[GUIwinposx+6*4]
     mov edx,[GUImouseposy]
     sub edx,[GUIwinposy+6*4]
-    GUIClickCButton 11,21,byte[cfgsoundon]
+    GUIClickCButtonf 11,21,byte[cfgsoundon],reInitSound
 %ifdef __MSDOS__
     GUIClickCButton 102,21,byte[cfgforce8b]
 %endif
@@ -2404,7 +2468,9 @@ DisplayGUISoundClick:
 .nomovebar
     ret
 
+SECTION .data
 sampratenext db 1,4,5,6,2,3,0,0,0,0
+SECTION .text
 
 %macro GUIBoxVar 6
     cmp eax,%1
@@ -2600,9 +2666,11 @@ guipresstest:
 ;    pop ebx
     ret
 
+SECTION .data
 guipresstext1 db 'ENTER THE KEY',0
 guipresstext2 db 'OR BUTTON TO USE',0
 guipresstext3 db '(ESC TO CLEAR)',0
+SECTION .text
 
 guipresstestb:
     call GUIUnBuffer
@@ -2674,6 +2742,7 @@ guipresstestb:
 ;    pop ebx
     ret
 
+SECTION .data
 guipresstext3b db '(ESC TO SKIP)',0
 guipresstext4b db 'FOR UP              ',0
 db 'FOR DOWN            ',0
@@ -2687,8 +2756,10 @@ db 'FOR X (TOP BUTTON)  ',0
 db 'FOR Y (LEFT BUTTON) ',0
 db 'FOR THE L BUTTON    ',0
 db 'FOR THE R BUTTON    ',0
-guipressptr dd 0
-guicpressptr dd 0
+SECTION .bss
+guipressptr resd 1
+guicpressptr resd 1
+SECTION .text
 
 DisplayGameOptnsClick:
     ; Process boxes

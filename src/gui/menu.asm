@@ -85,14 +85,25 @@ GUIUnBuffer:
     jnz .loop
     ret
 
+SECTION .bss
+NEWSYM nextmenupopup, resb 1
+NEWSYM NoInputRead, resb 1
+NEWSYM PrevMenuPos, resb 1
+NEWSYM MenuDisplace, resd 1
+NEWSYM MenuDisplace16, resd 1
+NEWSYM MenuNoExit, resb 1
+NEWSYM SPCSave, resb 1
 
-NEWSYM nextmenupopup, db 0
-NEWSYM NoInputRead, db 0
-NEWSYM PrevMenuPos, db 0
-NEWSYM MenuDisplace, dd 0
-NEWSYM MenuDisplace16, dd 0
-NEWSYM MenuNoExit, db 0
-NEWSYM SPCSave, db 0
+%ifdef SPCDUMP
+SECTION .data
+NEWSYM SPCSave_dump, db 0
+SECTION .bss
+
+EXTSYM SPCSave_buffer, SPCSave_ports
+NEWSYM SPCSave_handle, resd 1
+%endif
+
+SECTION .text
 
 NEWSYM showmenu
     mov byte[ForceNonTransp],1
@@ -160,13 +171,13 @@ NEWSYM showmenu
     call savepcx
     jmp .nopalwrite
 .nosskey
+    cmp byte[SPCKeyPressed],1
+    je near .savespckey
     test byte[pressed+14],1
     jz .nof12
     call savepcx
     jmp .nopalwrite
 .nof12
-    cmp byte[SPCKeyPressed],1
-    je near .savespckey
     mov dword[menucloc],0
     cmp byte[nextmenupopup],0
     je .nomenuinc2
@@ -237,10 +248,10 @@ NEWSYM showmenu
 .nogoup
     sub dword[menucloc],10*288
     call menudrawbox8b
-    mov al,[newengen]
-    mov byte[newengen],0
+;    mov al,[newengen]                  ; WTF?
+;    mov byte[newengen],0
 
-    mov [newengen],al
+;    mov [newengen],al
     jmp .nextkey
 .noup
     cmp al,80
@@ -251,12 +262,12 @@ NEWSYM showmenu
 .nogodown
     add dword[menucloc],10*288
     call menudrawbox8b
-    mov al,[newengen]
-    mov byte[newengen],0
-    push eax
+;    mov al,[newengen]
+;    mov byte[newengen],0
+;    push eax
     call copyvid
-    pop eax
-    mov [newengen],al
+;    pop eax
+;    mov [newengen],al
     jmp .nextkey
 .nodown
     jmp .nextkey
@@ -268,12 +279,12 @@ NEWSYM showmenu
     jmp .nextkey
 .done
     call GUIUnBuffer
-    mov al,[newengen]
-    mov byte[newengen],0
-    push eax
+;    mov al,[newengen]
+;    mov byte[newengen],0
+;    push eax
     call copyvid
-    pop eax
-    mov [newengen],al
+;    pop eax
+;    mov [newengen],al
     cmp dword[menucloc],0
     jne .nosavepcx
     call savepcx
@@ -340,17 +351,34 @@ NEWSYM showmenu
 .savespckey
     cmp byte[spcon],0
     je .nospc
-    cmp byte[newengen],1
+
+%ifdef SPCDUMP
+	cmp byte[SPCSave_dump], 1
+	jne .start_dump
+
+	mov ebx, [SPCSave_handle]
+	mov eax, -1
+	mov [SPCSave_buffer], eax
+	mov ecx, 4
+	mov edx, SPCSave_buffer
+	call Write_File
+	call Close_File
+	mov byte[SPCSave_dump], 0
+	jmp .nospcsave
+.start_dump
+%endif
+
+;    cmp byte[newengen],1
 ;    je .unablespc
     mov dword[Msgptr],.search
     mov eax,[MsgCount]
     mov [MessageOn],eax
-    mov al,[newengen]
-    mov byte[newengen],0
-    push eax
+;    mov al,[newengen]
+;    mov byte[newengen],0
+;    push eax
     call copyvid
-    pop eax
-    mov [newengen],al
+;    pop eax
+;    mov [newengen],al
 ;    call breakatsignc
 ;    cmp byte[prbreak],1
 ;    je .yesesc
@@ -360,6 +388,7 @@ NEWSYM showmenu
 ;    cmp byte[prbreak],1
 ;    je .yesesc
     call savespcdata
+
     mov byte[curblank],40h
     mov dword[Msgptr],.saved
     mov eax,[MsgCount]
@@ -393,12 +422,12 @@ NEWSYM showmenu
     jmp .nopalwrite
 .exitloop
     call GUIUnBuffer
-    mov al,[newengen]
-    mov byte[newengen],0
-    push eax
+;    mov al,[newengen]
+;    mov byte[newengen],0
+;    push eax
     call copyvid
-    pop eax
-    mov [newengen],al
+;    pop eax
+;    mov [newengen],al
     cmp byte[cbitmode],1
     je near .nopalwrite
     mov edi,[vidbuffer]
@@ -447,6 +476,7 @@ NEWSYM showmenu
     mov byte[MenuNoExit],0
     jmp showmenu
 
+SECTION .data
 .unablefps db 'NEED AUTO FRAMERATE ON',0
 .sndbufsav db 'BUFFER SAVED AS SOUNDDMP.RAW',0
 .search    db 'SEARCHING FOR SONG START.',0
@@ -454,6 +484,7 @@ NEWSYM showmenu
 .unable    db 'CANNOT USE IN NEW GFX ENGINE.',0
 .escpress  db 'ESC TERMINATED SEARCH.',0
 .saved     db '.SPC FILE SAVED.',0
+SECTION .text
 
 NEWSYM menudrawbox8b
     cmp byte[cbitmode],1
@@ -551,14 +582,15 @@ NEWSYM menudrawbox8b
     add esi,[MenuDisplace]
     mov edi,.stringi
     call OutputGraphicString
-    mov al,[newengen]
-    mov byte[newengen],0
-    push eax
+;    mov al,[newengen]
+;    mov byte[newengen],0
+;    push eax
     call copyvid
-    pop eax
-    mov [newengen],al
+;    pop eax
+;    mov [newengen],al
     ret
 
+SECTION .data
 .string db 'MISC OPTIONS',0
 .stringa db 'SAVE SNAPSHOT',0
 .stringb db 'SHOW FPS',0
@@ -569,6 +601,7 @@ NEWSYM menudrawbox8b
 .stringg db 'INCR FRAME ONLY',0
 .stringh db 'MOVE THIS WINDOW',0
 .stringi db 'IMAGE FORMAT: ---',0
+SECTION .text
 
 NEWSYM menudrawcursor8b
     cmp byte[cbitmode],1
@@ -592,7 +625,9 @@ NEWSYM menudrawcursor8b
     mov al,128
     ret
 
-NEWSYM menucloc, dd 0
+SECTION .bss ;ALIGN=32
+NEWSYM menucloc, resd 1
+SECTION .text
 
 NEWSYM menudrawbox16b
     ; draw shadow behind box
@@ -736,19 +771,22 @@ NEWSYM menudrawbox16b
     add esi,[MenuDisplace16]
     mov edi,menudrawbox8b.stringi
     call OutputGraphicString16b
-    mov al,[newengen]
-    mov byte[newengen],0
-    push eax
+;    mov al,[newengen]
+;    mov byte[newengen],0
+;    push eax
     call copyvid
-    pop eax
-    mov [newengen],al
+;    pop eax
+;    mov [newengen],al
     ret
 
-.allred dw 0
-.blue   dw 0
-.stepb  dw 0
+SECTION .bss
+.allred resw 1
+.blue   resw 1
+.stepb  resw 1
 
-NEWSYM menu16btrans, db 0
+NEWSYM menu16btrans, resb 1
+
+SECTION .text
 
 NEWSYM menudrawcursor16b
     ; draw a small red box
@@ -944,13 +982,38 @@ NEWSYM savespcdata
     mov ecx,256
     mov edx,DSPMem
     call Write_File
+
+%ifdef SPCDUMP
+	mov [SPCSave_handle], ebx
+%else
     call Close_File
+%endif
+
     add dword[spcPCRam],spcRam
     add dword[spcRamDP],spcRam
     call ResetState
+
+%ifdef SPCDUMP
+
+; w00t, reg dump crapola
+; using a time reference because I don't feel like adding
+; cycle counting to the SPC emulation just for this
+
+	mov byte[SPCSave_dump],1
+
+	mov eax, [spcRam+0F4h]
+	mov [SPCSave_ports], eax
+	xor eax, eax
+	mov [SPCSave_buffer], eax
+
+%endif
+
     ret
 
-.spcfname times 128 db 0
+SECTION .bss
+.spcfname resb 128
+
+SECTION .data
 ;.SPC File Format
 
 ;Offset 00000h - File Header : SNES-SPC700 Sound File Data v0.10
@@ -1016,6 +1079,8 @@ NEWSYM ssdatst
   ; SPCRAM (offset 256), 64k
   ; DSPRAM (offset 256+65536), 256 bytes
 
+SECTION .text
+
 NEWSYM dumpsound
     mov cx,0
     mov edx,.filename
@@ -1058,6 +1123,7 @@ NEWSYM dumpsound
     xor esi,esi
     jmp .return
 
+SECTION .data
 .filename db 'SOUNDDMP.RAW',0
 
 NEWSYM pcxheader
@@ -1069,7 +1135,11 @@ NEWSYM pcxheader
 .bpline   dw 256
           times 128-68 db 0
 
-NEWSYM picnum, dw 0
+SECTION .bss
+
+NEWSYM picnum, resw 1
+
+SECTION .data
 
 NEWSYM savepcx
 %ifndef NO_PNG
@@ -1370,12 +1440,15 @@ NEWSYM savepcx
     call restore16b
     ret
 
+SECTION .data
 .pcxsaved db 'SNAPSHOT SAVED TO '
 .filename db 'image.pcx',0,0,0,0
 .rawsaved db 'SNAPSHOT SAVED TO '
 .filename2 db 'image.bmp',0,0,0,0
-.rowsleft db 0
-.curdptr dd 0
+SECTION .bss
+.rowsleft resb 1
+.curdptr resd 1
+SECTION .text
 
 NEWSYM save16b2
     call prepare16b
@@ -1517,10 +1590,13 @@ NEWSYM save16b2
     call restore16b
     ret
 
+SECTION .data
 .rawsaved db 'SNAPSHOT SAVED TO '
 .filename2 db 'image.bmp',0,0,0,0
-.rowsleft dd 0
-.curdptr dd 0
+SECTION .bss
+.rowsleft resd 1
+.curdptr resd 1
+SECTION .text
 
 prepare16b:
    cmp byte[vesa2red10],1

@@ -18,10 +18,14 @@
 %include "macros.mac"
 
 EXTSYM ComNum, ComIRQ, BaudRate
-EXTSYM dssel,FossilUse
+EXTSYM FossilUse
 EXTSYM GUIinit18_2hz,GUIinit36_4hz
 EXTSYM GUIMenuItem
-   EXTSYM delay
+EXTSYM delay
+
+%ifdef __MSDOS__
+EXTSYM dssel
+%endif
 
 NEWSYM DosModemRTNAsmStart
 
@@ -30,20 +34,36 @@ NEWSYM DosModemRTNAsmStart
 
 
 
+SECTION .bss
+NEWSYM UartType, resb 1
 
-NEWSYM UartType, db 0
+SECTION .data
 NEWSYM cantinitmodem, db 1
-NEWSYM ModemInited, db 0
 
+SECTION .bss
+NEWSYM ModemInited, resb 1
+
+SECTION .data
 ComPort dw 2E8h  ; 1=3F8,2=2F8,3=3E8,4=2E8
 PortData dw 0,3F8h,2F8h,3E8h,2E8h
-ComInt  db 0
+
+SECTION .bss
+ComInt  resb 1
+
+SECTION .data
 BRateSel dw 000Ch,0008h,0006h,0004h,0003h,0002h,0001h
-oldhandmodems dw 0
-oldhandmodemo dd 0
+
+SECTION .bss
+oldhandmodems resw 1
+oldhandmodemo resd 1
+
+SECTION .data
 PICMaskPm   db 21h
-PortNum       dw 0
-CharStore     db 0
+
+SECTION .bss
+PortNum       resw 1
+CharStore     resb 1
+SECTION .text
 
 NEWSYM ModemGetChar
    cmp byte[UartType],2
@@ -164,7 +184,6 @@ FossilSendChar:
    int 14h
    popad
    ret
-
 
 NEWSYM InitModem
    mov byte[ModemInited],1
@@ -302,7 +321,9 @@ InitFossil:
 modemhandler:
    push ds
    push eax
+%ifdef __MSDOS__
    mov ax,[cs:dssel]
+%endif
    mov ds,ax
    push edx
    mov dx,[ComPort]
@@ -349,9 +370,11 @@ NEWSYM ModemClearBuffer
     mov dword[modemtail],0
     ret
 
-NEWSYM modembuffer, times 2048 db 0
-NEWSYM modemhead, dd 0
-NEWSYM modemtail, dd 0
+SECTION .bss
+NEWSYM modembuffer, resb 2048
+NEWSYM modemhead, resd 1
+NEWSYM modemtail, resd 1
+SECTION .text
 
 NEWSYM DeInitModem
    cmp byte[ModemInited],1

@@ -23,7 +23,6 @@ EXTSYM StartUp,PrintStr,WaitForKey,PrintChar,ZFileSystemInit
 EXTSYM SPCDisable,SystemInit,allocmem
 EXTSYM FPSOn,FPSAtStart,cfgsoundon
 EXTSYM xa
-EXTSYM SBPort,SBInt,SBIrq,SBDMA,SBDMAPage,SBHDMAPage,getenv,vibracard
 EXTSYM ram7fa,wramdataa
 EXTSYM malloc,free
 EXTSYM StateBackup
@@ -40,6 +39,10 @@ EXTSYM OSExit,GUIOn2
 %ifdef __LINUX__
 EXTSYM LinuxExit
 EXTSYM GetFilename
+%endif
+
+%ifdef OPENSPC
+EXTSYM OSPC_Init
 %endif
 
 NEWSYM UIAsmStart
@@ -69,8 +72,12 @@ NEWSYM zstart
 
 	cld                     ;clear direction flag
 
+%ifdef OPENSPC
+	call OSPC_Init
+%else
 	call setnoise
 	call InitSPC
+%endif
 	call allocmem           ;allocate memory
 
 	cmp byte[soundon],0
@@ -130,12 +137,6 @@ NEWSYM	outofmemory
 SECTION .data
 NEWSYM mydebug, db '',13,10,0
 NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,10,0
-
-; Line added by Peter Santing
-NEWSYM vibradetect
-                 db 'Creative ViBRA16X PnP card detected (support coded by Peter Santing)', 13, 10
-                 db 'High-DMA is below dma #4', 13, 10
-                 db 13,10, 'you have now full 16-bit stereo sound with the surround option!', 13, 10, 0
 
 NEWSYM welcome
 
@@ -243,7 +244,6 @@ NEWSYM SecondPort,    db 0              ; Secondary Joystick Port Enabled (209h)
 ; New Variables
 NEWSYM ForcePal,      db 0              ; 1 = NTSC, 2 = PAL
 NEWSYM Force8b,       db 0              ; Force 8-bit sound on
-NEWSYM dssel,         dw 0
 NEWSYM Doublevbuf,    db 1              ; Double video buffer
 NEWSYM V8Mode,        db 0              ; Vegetable mode! =)
 NEWSYM fastmemptr,    db 0
@@ -323,11 +323,23 @@ NEWSYM AllocMem
 ; Get Command Line       Locates SET CMDLINE environment
 ;*******************************************************
 
+%ifdef __WIN32__
+EXTSYM _imp__GetModuleFileNameA@12
+EXTSYM memcpy
+%elifdef __MSDOS__
+EXTSYM argv
+%endif
+
 NEWSYM getcmdline
+%ifdef __MSDOS__
+%if 0
     mov edx,.string2s
     push edx
     call getenv
     pop edx
+%else
+    mov eax,[argv]
+%endif
     cmp eax,0
     je near .nfound
     mov esi,eax
@@ -344,6 +356,7 @@ NEWSYM getcmdline
 .nocap
     mov [edi],dl
     mov [edi+256],dl
+    mov [edi+512],dl
     inc esi
     inc edi
     cmp dl,32
@@ -351,8 +364,31 @@ NEWSYM getcmdline
     cmp dl,0
     jne .a
 .b
+%elifdef __WIN32__
+    push dword 256
+    push dword CMDLineStr
+    push byte +0
+    call [_imp__GetModuleFileNameA@12]
+    push eax
+    push eax
+    push dword CMDLineStr
+    push dword GUIFName
+    call memcpy
+    add esp,+12
+    mov eax,[esp]
+    push eax
+    push dword CMDLineStr
+    push dword GUICName
+    call memcpy
+    add esp,+12
+    pop edi
+    add edi,CMDLineStr
+%else
     mov esi,CMDLineStr
-    mov eax,CMDLineStr
+    ret ; *sigh*
+%endif
+    mov esi,CMDLineStr
+    mov eax,esi
 .next2
     cmp eax,edi
     je .nomore
@@ -402,7 +438,7 @@ NEWSYM getcmdline
     mov byte[esi+5+512],'c'
     mov byte[esi+6+512],'m'
     mov byte[esi+7+512],'b'
-    mov byte[esI+8+512],0
+    mov byte[esi+8+512],0
     ret
 .nfound
     mov edx,.stringnf
@@ -439,7 +475,7 @@ NEWSYM getcmdline
     mov byte[esi+5+512],'c'
     mov byte[esi+6+512],'m'
     mov byte[esi+7+512],'b'
-    mov byte[esI+8+512],0
+    mov byte[esi+8+512],0
     ret
 
 SECTION .data
@@ -452,249 +488,6 @@ NEWSYM GUIFName, resb 256
 NEWSYM GUICName, resb 256
 NEWSYM FilenameStart, resd 1
 
-SECTION .text
-
-;*******************************************************
-; Get Blaster            Locates SET BLASTER environment
-;*******************************************************
-NEWSYM getblaster
-%ifndef __LINUX__
-    mov edx,.string2s
-    push edx
-    call getenv
-    pop edx
-    cmp eax,0
-    je near .nfound
-
-    mov esi,eax
-    mov byte[.cursetting],0
-.a
-    mov dl,[esi]
-    cmp dl,'a'
-    jb .nocap
-    cmp dl,'z'
-    ja .nocap
-    sub dl,'a'-'A'
-.nocap
-    inc esi
-    mov byte[.blfound],1
-    cmp dl,'A'
-    jne .afound
-    mov byte[.cursetting],1
-    mov word[SBPort],0
-    jmp .src
-.afound
-    cmp dl,'I'
-    jne .ifound
-    mov byte[.cursetting],2
-    mov byte[SBIrq],0
-    jmp .src
-.ifound
-    cmp dl,'D'
-    jne .dfound
-    mov byte[.cursetting],3
-    mov byte[SBDMA],0
-    jmp .src
-.dfound
-    cmp dl,'H'
-    jne .hfound
-    mov byte[.cursetting],4
-    mov byte[SBHDMA],0
-    jmp .src
-.hfound
-    cmp dl,' '
-    je .src2
-    cmp dl,0
-    je .src2
-    jmp .src3
-.src2
-    mov byte[.cursetting],0
-    jmp .src
-.src3
-    cmp byte[.cursetting],1
-    jne .nproca
-    shl word[SBPort],4
-    sub dl,48
-    add byte[SBPort],dl
-    add dl,48
-.nproca
-    cmp byte[.cursetting],2
-    jne .nproci
-    cmp byte[SBIrq],1
-    jne .no1
-    mov byte[SBIrq],10
-.no1
-    sub dl,48
-    add [SBIrq],dl
-    add dl,48
-.nproci
-    cmp byte[.cursetting],3
-    jne .nprocd
-    sub dl,48
-    mov [SBDMA],dl
-    add dl,48
-.nprocd
-    cmp byte[.cursetting],4
-    jne .nproch
-    sub dl,48
-    mov [SBHDMA],dl
-    add dl,48
-.nproch
-.src
-    cmp dl,0
-    jne near .a
-    cmp byte[.blfound],0
-    je near .nfound
-    cmp byte[SBIrq],2
-    jne .noirq9
-    mov byte[SBIrq],9
-.noirq9
-    mov al,[SBIrq]
-    add al,08h
-    cmp byte[SBIrq],7
-    jbe .nohighirq
-    add al,60h
-    add byte[PICRotateP],80h
-    add byte[PICMaskP],80h
-.nohighirq
-    mov [SBInt],al
-    cmp byte[SBDMA],0
-    jne .dma0
-    mov byte[SBDMAPage],87h
-.dma0
-    cmp byte[SBDMA],1
-    jne .dma1
-    mov byte[SBDMAPage],83h
-.dma1
-    cmp byte[SBDMA],2
-    jne .dma2
-    mov byte[SBDMAPage],81h
-.dma2
-    cmp byte[SBDMA],3
-    jne .dma3
-    mov byte[SBDMAPage],82h
-.dma3
-; ******************************************************
-; **** this piece of code is added by Peter Santing ****
-; **** it will enable ZSNES to use the full STEREO  ****
-; **** capability of the ViBRA16X line of creative  ****
-; **** instead of playing 8-bit MONOURAL sound      ****
-; ******************************************************
-;       cmp byte [SBHDMA], 0
-;       jne .vibradma0
-;       mov byte [SBDMAPage], 87h
-;       mov byte [vibracard], 1         ; set ViBRA16X mode
-.vibradma0
-        cmp byte [SBHDMA], 1
-        jne .vibradma1
-        mov byte [SBDMAPage], 83h
-        mov byte [vibracard], 1         ; set ViBRA16X mode
-.vibradma1
-        cmp byte [SBHDMA], 2
-        jne .vibradma2
-        mov byte [SBDMAPage], 81h
-        mov byte [vibracard], 1         ; set ViBRA16X mode
-.vibradma2
-        cmp byte [SBHDMA], 3
-        jne .vibradma3
-        mov byte [SBDMAPage], 82h
-        mov byte [vibracard], 1         ; set ViBRA16X mode
-.vibradma3
-        cmp byte [vibracard], 1
-        jne .vibrafix
-        push ax
-        mov  al, [SBHDMA]
-        mov  [SBDMA], al
-        pop  ax
-.vibrafix
-        cmp byte [SBHDMA],4
-        jae .hdma
-        ; vibra implementation (make sure that zSNES doesn't go back
-        ; to eight-bit-mode mono)
-        mov byte [SBHDMA],0
-        cmp byte[vibracard], 1
-        jne .hdma
-        push edx
-        mov edx, vibradetect
-        call PrintStr
-        ;call WaitForKey
-        pop  edx
-
-; ********** END OF ViBRA16X implementation code **********
-.hdma
-    cmp byte[SBHDMA],4
-    jne .hdma4
-    mov byte[SBHDMAPage],8Fh
-.hdma4
-    cmp byte[SBHDMA],5
-    jne .hdma5
-    mov byte[SBHDMAPage],8Bh
-.hdma5
-    cmp byte[SBHDMA],6
-    jne .hdma6
-    mov byte[SBHDMAPage],89h
-.hdma6
-    cmp byte[SBHDMA],7
-    jne .hdma7
-    mov byte[SBHDMAPage],8Ah
-.hdma7
-    cmp byte[DisplayS],1
-    je .displaysoundstuff
-    ret
-.nfound
-    cmp byte[soundon],0
-    je .nosound
-    mov byte[soundon],0
-    mov edx, .blasterstr
-    call PrintStr
-    call WaitForKey
-.nosound
-    ret
-.displaysoundstuff
-    mov edx,.blasterinfo
-    call PrintStr
-    xor eax,eax
-    mov ax,[SBPort]
-    call printhex
-    mov edx,.blinfob
-    call PrintStr
-    xor eax,eax
-    mov al,[SBIrq]
-    call printnum
-    mov edx,.blinfoc
-    call PrintStr
-    xor eax,eax
-    mov al,[SBDMA]
-    call printnum
-    mov edx,.blinfod
-    call PrintStr
-    xor eax,eax
-    mov al,[SBHDMA]
-    call printnum
-    mov edx,.blasterstr2b
-    call PrintStr
-    call WaitForKey
-%endif
-    ret
-
-SECTION .bss
-.blfound  resb 1
-.cursetting resb 1
-
-SECTION .data
-.string2s db 'BLASTER',0
-.blasterstr db 'ERROR : SET BLASTER environment NOT found!',10,13
-.blasterstr2 db 'Unable to enable sound.'
-.blasterstr2b db 10,13,10,13
-.blasterstr3 db 'Press any key to continue.',0
-.blasterinfo db 'Sound Blaster Detection Values : ',10,13,10,13
-.blinfoa db 'PORT  : ',0
-.blinfob db 13,10,'IRQ   : ',0
-.blinfoc db 13,10,'DMA   : ',0
-.blinfod db 13,10,'HDMA  : ',0
-
-NEWSYM PICRotateP, db 20h
-NEWSYM PICMaskP,   db 21h
 ;SECTION .text
 ;*******************************************************
 ; Variable section

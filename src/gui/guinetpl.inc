@@ -19,6 +19,7 @@
 ; GUI NetPlay Routines (Modem,IPX,UDP+TCP/IP)
 
 ProcessModem:
+%ifdef __WIN32__
     cmp byte[ModemProcess],40
     jne near .noprocess40
     cmp byte[maxskip],3
@@ -28,7 +29,7 @@ ProcessModem:
     mov byte[frameskip],0
     mov byte[Latencytochange],3
     mov byte[Latency],3
-    mov byte[IPXSearchval],0
+;    mov byte[IPXSearchval],0
     mov byte[RemoteDisconnect],0
     mov byte[HoldCommand],1
     mov byte[RemoteCommand],1
@@ -63,6 +64,7 @@ ProcessModem:
     call .writestr
     mov byte[ModemProcess],42
     ret
+SECTION .data
 .tcpipdones db 'DONE',13,10,13,10,'WAITING FOR CLIENT...',0
 .tcpipdonec db 'DONE',13,10,13,10,'CONNECTING TO SERVER...',0
 .tcpipdones2 db 13,10,13,10,'FOUND CLIENT.',0
@@ -77,6 +79,8 @@ ProcessModem:
 .errorinit db 'FAILED NET INIT',0
 .errorinit2 db 'CANNOT START SERVER',0
 .errorinit3 db 'CANNOT CONNECT',0
+SECTION .text
+
 .noprocess40
     cmp byte[ModemProcess],41
     jne near .noprocess41
@@ -87,7 +91,7 @@ ProcessModem:
     mov byte[frameskip],0
     mov byte[Latencytochange],3
     mov byte[Latency],3
-    mov byte[IPXSearchval],0
+;    mov byte[IPXSearchval],0
     mov byte[RemoteDisconnect],0
     mov byte[HoldCommand],1
     mov byte[RemoteCommand],1
@@ -226,6 +230,8 @@ ProcessModem:
     mov byte[ModemProcess],66
     ret
 .noprocess47
+%endif
+%ifdef __MSDOS__
     cmp byte[ModemProcess],30
     jne near .noprocess30
     mov byte[Latencytochange],2
@@ -477,6 +483,7 @@ ProcessModem:
 .nocdc7
     ret
 .noprocess7
+%endif
 
     ; Connect initialization
     cmp byte[ModemProcess],64
@@ -746,7 +753,9 @@ ProcessModem:
     mov dl,[.hexval+edx]
     call NetAddChar
     ret
+SECTION .data
 .hexval db '0123456789ABCDEF'
+%ifdef __MSDOS__
 .unableinit db 'CANNOT INIT DRIVER!',13,10,0
 .init db 'ZSNES MODEM TERMINAL',13,10,0
 .initb db 13,10,'INITIALIZING MODEM :',13,10,13,10,0
@@ -757,21 +766,28 @@ ProcessModem:
 .tout db 'MODEM RESPONSE TIMEOUT',13,10,0
 .ata db 'ATA',13,0
 .cdet db 'CARRIER DETECTED',13,10,0
-.invver db 13,10,'INCOMPATIBLE VERSION!',13,10,0
 .rdet db 'WAITING FOR RING...',13,10,0
-.invsnd db 'INVALID SOUND SETTING!',13,10,0
 .noipx db 13,10,13,10,'UNABLE TO INIT IPX!',13,10,0
 .yesipx db 13,10,13,10,'IPX INITIALIZED.',13,10,13,10,'WAITING FOR REMOTE',13,10,0
 .localid db 'LOCAL ID  : ',0
 .remoteid db 'REMOTE ID : ',0
 .connectest db 'CONNECTION ESTABLISHED',13,10,0
+%endif
+.invver db 13,10,'INCOMPATIBLE VERSION!',13,10,0
+.invsnd db 'INVALID SOUND SETTING!',13,10,0
+%ifdef __WIN32__
 .tcpipinit db 'ZSNES NET INTERFACE',13,10,13,10,0
 .tcpipserv db 'INIT SERVER ... ',0
 .tcpipclie db 'INIT CLIENT ... ',0
-InitStr1Done db 0
+%endif
+SECTION .bss
+InitStr1Done resb 1
+SECTION .text
 
 NEWSYM PreparePacket
+%ifdef __MSDOS__
     call PreparePacketIPX
+%endif
     cmp byte[WhichRemote],4
     jne .nottcpip
     call TCPIPPreparePacket
@@ -779,7 +795,9 @@ NEWSYM PreparePacket
     ret
 
 NEWSYM SendPacket
+%ifdef __MSDOS__
     call SendPacketIPX
+%endif
     cmp byte[WhichRemote],4
     jne .nottcpip
     call TCPIPSendPacket
@@ -787,7 +805,9 @@ NEWSYM SendPacket
     ret
 
 NEWSYM SendPacketUDP
+%ifdef __MSDOS__
     call SendPacketIPX
+%endif
     cmp byte[WhichRemote],4
     jne .nottcpip
     call TCPIPSendPacketUDP
@@ -807,15 +827,19 @@ NEWSYM WritetochatBuffer
 .nomore
     ret
 
-NEWSYM RemoteCommand, db 0
-HoldCommand db 0
+SECTION .bss
+NEWSYM RemoteCommand, resb 1
+HoldCommand resb 1
+SECTION .text
 
 RemoteDeInit:
+%ifdef __MSDOS__
     cmp byte[ModemInitStat],0
     je .nodeinitmodem
     call DeInitModemC
     mov byte[ModemInitStat],0
 .nodeinitmodem
+%endif
     mov byte[CNetType],1
     cmp byte[WhichRemote],2
     jne .noipx
@@ -850,9 +874,12 @@ Checkfileexist:
 .failed
     mov eax,1
     ret
-.temp db 0
+SECTION .bss
+.temp resb 1
+SECTION .text
 
 ProcessRemoteCommand:
+%ifdef __MSDOS__
     cmp byte[WhichRemote],1
     jne .notmodem
     push edx
@@ -861,6 +888,7 @@ ProcessRemoteCommand:
     cmp al,1
     jne near .nomulti
 .notmodem
+%endif
     cmp byte[RemoteDisconnect],1
     je near .nomulti
     call ProcRewind
@@ -1379,6 +1407,7 @@ ProcessRemoteCommand:
     mov byte[RemoteCommand],1
     ret
 
+SECTION .data
 .chatinitial db '>',0
 .actinitial db '*',0
 .actinitial2 db ' ',0
@@ -1390,6 +1419,7 @@ ProcessRemoteCommand:
 .strinvalid db '** INVALID NICK **',13,10,0
 .strtoolong db '** NICK IS TOO LONG **',13,10,0
 .nickchangeb db ' IS NOW KNOWN AS ',0
+SECTION .text
 
 transfersram:
     cmp byte[SFXSRAM],0
@@ -1528,6 +1558,7 @@ NEWSYM RemoteGetEAX
 
 
 NEWSYM RemoteSendChar
+%ifdef __MSDOS__
     cmp byte[WhichRemote],1
     jne .nomodem
     call ModemSendChar
@@ -1536,6 +1567,7 @@ NEWSYM RemoteSendChar
     jne .noipx
     call ipxsendchar
 .noipx
+%endif
     cmp byte[WhichRemote],4
     jne .notcpip
     call TCPIPStoreByte
@@ -1543,6 +1575,7 @@ NEWSYM RemoteSendChar
     ret
 
 NEWSYM RemoteGetChar
+%ifdef __MSDOS
     cmp byte[WhichRemote],1
     jne .nomodem
     call ModemGetChar
@@ -1551,12 +1584,14 @@ NEWSYM RemoteGetChar
     jne .noipx
     call ipxgetchar
 .noipx
+%endif
     cmp byte[WhichRemote],4
     jne .notcpip
     call TCPIPGetByte
 .notcpip
     ret
 
+%ifdef __MSDOS__
 ModemSendStr:
 .loop
     mov al,[esi]
@@ -1567,13 +1602,17 @@ ModemSendStr:
     jmp .loop
 .nomore
     ret
+%endif
 
-NetLoadHandle dw 0
-NetStateSize dd 0
-NetStateTotal dd 0
-NetStateQuit db 0
-NetStateBuffer times 2048 db 0
+SECTION .bss
+NetLoadHandle resw 1
+NetStateSize resd 1
+NetStateTotal resd 1
+NetStateQuit resb 1
+NetStateBuffer resb 2048
+SECTION .data
 Netfname db 'nettemp.zst',0
+SECTION .text
 
 NetLoadStuff:
     call loadnetopen
@@ -1783,6 +1822,7 @@ loadstaterecv:
 .notzero
     ret
 
+SECTION .data
 StateLoadedOk db 10,13,'STATE LOADED.',10,13,10,13,0
 StateLoadedFail db 10,13,'LOAD FAILED.',10,13,10,13,0
-
+SECTION .text

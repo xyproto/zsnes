@@ -241,6 +241,16 @@ extern "C"
    void drawscreenwin(void);
    DWORD LastUsedPos=0;
    DWORD CurMode=-1;
+int InitDirectDraw();
+int ReInitSound();
+   void initDirectDraw()
+   {
+      InitDirectDraw();
+   }
+   void reInitSound()
+   {
+      ReInitSound();
+   }
 }
 
 void DDrawError(){

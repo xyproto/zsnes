@@ -22,7 +22,7 @@ EXTSYM ccud,cfield,cgfxmod,cgram,coladdb,coladdg,coladdr,cpalval,curblank
 EXTSYM curfps,cvidmode,delay,draw16bnng,extlatch,fnamest,fulladdtab,En2xSaI
 EXTSYM gammalevel,hirestiledat,ignor512,latchx,latchy,maxbr,ForceNewGfxOff
 EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,res640
-EXTSYM resolutn,romispal,sbpmofs,sbselec,scaddtype,scadtng,scanlines
+EXTSYM resolutn,romispal,scaddtype,scadtng,scanlines
 EXTSYM scbcong,selcA000,snesmouse,t1cc,vcache4b,vesa2_bpos,spritetablea
 EXTSYM vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10,vesa2selec,vidbuffer
 EXTSYM vidbufferm,vram,vsyncon,vbufdptr,KeyStateSelct,forceblnk,soundon
@@ -64,11 +64,17 @@ EXTSYM vidbufferofsb
 ;EXTSYM Super2xSaI
 EXTSYM HalfTransB,HalfTransC
 
+%ifdef __MSDOS__
+EXTSYM SB_blank
+%endif
+
 
 NEWSYM ProcVidAsmStart
 
-NEWSYM ScreenScale, db 0        ; If horizontal is scaled or not
-NEWSYM TempDebugV, dw 0       ; Temporary Debugging variable
+SECTION .bss
+NEWSYM ScreenScale, resb 1        ; If horizontal is scaled or not
+NEWSYM TempDebugV, resw 1       ; Temporary Debugging variable
+SECTION .text
 
 
 %macro MMXStuff 0
@@ -98,6 +104,9 @@ NEWSYM TempDebugV, dw 0       ; Temporary Debugging variable
 
 SECTION  .text
 NEWSYM FPUZero
+%if 0
+
+; omg this is lame ;P
     mov [.Zero],eax
     mov [.Zero+4],eax
     mov [.Zero2],eax
@@ -111,10 +120,25 @@ NEWSYM FPUZero
     ADD EDI,16
     DEC ECX
     JNZ .TopOfLoop
+%else
+    fld1
+    fsub st0,st0
+.TopOfLoop
+    fst qword [edi]
+    fst qword [edi+8]
+    add edi,16
+    dec ecx
+    jnz .TopOfLoop
+    fstp st0
+%endif    
     ret
 
-.Zero dd 0,0
-.Zero2 dd 0,0
+%if 0
+SECTION .bss
+.Zero resd 2
+.Zero2 resd 2
+SECTION .text
+%endif
 
 ;*******************************************************
 ; ShowVideo                   Processes & displays video
@@ -240,19 +264,24 @@ NEWSYM processmouse
     pop esi
     ret
 
+SECTION .data
 .ssautoen db 'AUTOFIRE ENABLED.',0
 .ssautodi db 'AUTOFIRE DISABLED.',0
 
 NEWSYM ssautosw,     db 20h
-NEWSYM ssautoswb,    db 0
-NEWSYM mousebuttons, dw 0
-NEWSYM mousexpos,    dw 0
-NEWSYM mousexdir,    db 0
-NEWSYM mouseypos,    dw 0
-NEWSYM mouseydir,    db 0
-NEWSYM mousechan,    db 0
+
 NEWSYM mousexloc,    dw 128
 NEWSYM mouseyloc,    dw 112
+
+SECTION .bss
+NEWSYM ssautoswb,    resb 1
+NEWSYM mousebuttons, resw 1
+NEWSYM mousexpos,    resw 1
+NEWSYM mousexdir,    resb 1
+NEWSYM mouseypos,    resw 1
+NEWSYM mouseydir,    resb 1
+NEWSYM mousechan,    resb 1
+SECTION .text
 
 ;*******************************************************
 ; Output Hex                 Outputs the hex in al @ esi
@@ -464,6 +493,7 @@ NEWSYM outputhex16
     pop edi
     ret
 
+SECTION .data
 NEWSYM ASCII2Font
          db 00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
          db 00h,00h,00h,00h,00h,00h,00h,00h,00h,30h,00h,00h,00h,00h,00h,00h
@@ -595,6 +625,8 @@ NEWSYM FontData
          ; +, 38  `, 41  .5,4A
          ; ,, 39  ^, 42
 
+SECTION .text
+
 ;*******************************************************
 ; Output Char                   Outputs char in al @ esi
 ;*******************************************************
@@ -657,8 +689,10 @@ NEWSYM outputchar16b
     pop edi
     ret
 
+SECTION .data
 NEWSYM textcolor, db 128
 NEWSYM textcolor16b, dw 0FFFFh
+SECTION .text
 
 NEWSYM outputchar5x5
     push edi
@@ -1155,13 +1189,15 @@ NEWSYM OutputGraphicString16bb
 ;*******************************************************
 ; For Save State
 
-NEWSYM csounddisable, db 0
-NEWSYM statefileloc,  dd 0
-newestfileloc db 0
-newestfiledate dd 0
-f3menuen db 0
-PrevPictureVal db 0
-CurPictureVal db 0
+SECTION .bss
+NEWSYM csounddisable, resb 1
+NEWSYM statefileloc,  resd 1
+newestfileloc resb 1
+newestfiledate resd 1
+f3menuen resb 1
+PrevPictureVal resb 1
+CurPictureVal resb 1
+SECTION .text
 
 NEWSYM drawhline
 .loop
@@ -1591,16 +1627,7 @@ NEWSYM saveselect
     ;cmp byte[OSPort],1
     ;ja .nosound
 %ifdef __MSDOS__
-    push es
-    mov es,[sbselec]
-    mov edi,[sbpmofs]
-    mov ecx,320
-.loopa
-    mov dword[es:edi],0
-    add edi,4
-    dec ecx
-    jnz .loopa
-    pop es
+    call SB_blank
 %endif
 .nosound
     cmp byte[cbitmode],1
@@ -1805,11 +1832,13 @@ NEWSYM saveselect
     mov byte[ForceNonTransp],0
     ret
 
-.allred dw 0
-.allgrn dw 0
-.allgrnb dw 0
-.blue   dw 0
-.stepb  dw 0
+SECTION .bss ;ALIGN=32
+.allred resw 1
+.allgrn resw 1
+.allgrnb resw 1
+.blue   resw 1
+.stepb  resw 1
+SECTION .text
 
 ; Start 16-bit stuff here
 .16b
@@ -2110,13 +2139,17 @@ NEWSYM saveselect
     call Clear2xSaIBuffer
     ret
 
+SECTION .data
 .stringa db 'PLEASE SELECT',0
 .stringb db 'SAVE STATE SLOT',0
 .stringc db 'USE CURSOR KEYS',0
 .stringd db 'TO MOVE AND',0
 .stringe db 'ENTER TO SELECT',0
 
-NEWSYM ForceNonTransp, db 0
+SECTION .bss
+NEWSYM ForceNonTransp, resb 1
+
+SECTION .text
 
 NEWSYM testpressed8b
     test byte[pressed+2],1
@@ -2214,7 +2247,10 @@ NEWSYM testpressed8b
 ; MakePal                     Changes the entire palette
 ;*******************************************************
 ; set the brightness with [maxbr]
-NEWSYM cgramback, times 256 dw 0
+SECTION .bss ;ALIGN=32
+NEWSYM cgramback, resw 256
+SECTION .text
+
 NEWSYM doveg
     pushad
     ; backup cgram
@@ -2285,7 +2321,9 @@ NEWSYM dovegrest
     popad
     ret
 
-blahblahblah dw 0
+SECTION .bss ;ALIGN=32
+blahblahblah resw 1
+SECTION .text
 
 NEWSYM dosmakepal
     cmp byte[V8Mode],1
@@ -2422,7 +2460,9 @@ NEWSYM makepalb
     call dovegrest
 .noveg2
     ret
-NEWSYM tempco0, dw 0
+SECTION .bss ;ALIGN=32
+NEWSYM tempco0, resw 1
+SECTION .text
 
 ;*******************************************************
 ; ChangePal                          Sets up the palette
@@ -2563,7 +2603,9 @@ NEWSYM doschangepal
 .noveg2
     ret
 
-NEWSYM prevbright, db 0                 ; previous brightness
+SECTION .bss
+NEWSYM prevbright, resb 1                 ; previous brightness
+SECTION .text
 
 ;*******************************************************
 ; CopyVid                       Copies buffer into video
@@ -2686,10 +2728,12 @@ NEWSYM showfps
     call outputhex
     ret
 
-NEWSYM spcdebugaddr, dd 0
-NEWSYM tempoffset, dw 0
+SECTION .bss ;ALIGN=32
+NEWSYM spcdebugaddr, resd 1
+NEWSYM tempoffset, resw 1
 
-NEWSYM Testval, dd 0
+NEWSYM Testval, resd 1
+SECTION .text
 
 
 NEWSYM ClockOutput
@@ -2989,13 +3033,16 @@ NEWSYM ClockOutputB
     popad
     ret
 
-
+SECTION .data
 hextestfilen db 'DSP1DUMP.DAT',0
 
-NEWSYM SoundTest, db 0
+SECTION .bss
+NEWSYM SoundTest, resb 1
 
 
-blahrnr dw 0
+blahrnr resw 1
+
+SECTION .text
 
 NEWSYM hextestoutput
 
@@ -3106,15 +3153,17 @@ NEWSYM hextestoutput
     call outputhex
     ret
 
-NEWSYM SoundPlayed0, db 0
-NEWSYM SoundPlayed1, db 0
-NEWSYM SoundPlayed2, db 0
-NEWSYM SoundPlayed3, db 0
-NEWSYM SoundPlayed4, db 0
-NEWSYM SoundPlayed5, db 0
-NEWSYM SoundPlayed6, db 0
-NEWSYM SoundPlayed7, db 0
-NEWSYM ngfont,       db 0
+SECTION .bss
+NEWSYM SoundPlayed0, resb 1
+NEWSYM SoundPlayed1, resb 1
+NEWSYM SoundPlayed2, resb 1
+NEWSYM SoundPlayed3, resb 1
+NEWSYM SoundPlayed4, resb 1
+NEWSYM SoundPlayed5, resb 1
+NEWSYM SoundPlayed6, resb 1
+NEWSYM SoundPlayed7, resb 1
+NEWSYM ngfont,       resb 1
+SECTION .text
 
 NEWSYM ShowSound
     add esi,[vidbuffer]
@@ -3207,21 +3256,26 @@ NEWSYM waitvsync
     jz .loop2               ;updating the screen
     ret
 
+SECTION .data
 NEWSYM prevengval, db 10
-NEWSYM chaton, db 0
-NEWSYM chatstrL, times 140 db 0
-NEWSYM chatLpos, dd 0
-NEWSYM chatstrR, times 140 db 0
-NEWSYM chatstrR2, times 140 db 0
-NEWSYM chatstrR3, times 140 db 0
-NEWSYM chatstrR4, times 140 db 0
-NEWSYM chatstrR5, times 140 db 0
-NEWSYM chatRTL, dd 0
-NEWSYM chatRTL2, dd 0
-NEWSYM chatRTL3, dd 0
-NEWSYM chatRTL4, dd 0
-NEWSYM chatRTL5, dd 0
-NEWSYM chatTL, dd 0
+
+SECTION .bss
+NEWSYM chaton, resb 1
+NEWSYM chatstrL, resb 140
+NEWSYM chatLpos, resd 1
+NEWSYM chatstrR, resb 140
+NEWSYM chatstrR2, resb 140
+NEWSYM chatstrR3, resb 140
+NEWSYM chatstrR4, resb 140
+NEWSYM chatstrR5, resb 140
+NEWSYM chatRTL, resd 1
+NEWSYM chatRTL2, resd 1
+NEWSYM chatRTL3, resd 1
+NEWSYM chatRTL4, resd 1
+NEWSYM chatRTL5, resd 1
+NEWSYM chatTL, resd 1
+
+SECTION .data
 NEWSYM chatreqtable
     db 0  ,2  ,'1','2','3','4','5','6','7','8','9','0','-','=',8  ,0 
     db 'Q','W','E','R','T','Y','U','I','O','P','[',']',13 ,0  ,'A','S'
@@ -3233,6 +3287,7 @@ NEWSYM chatreqtable
     db 'D','F','G','H','J','K','L',':','"','~',1  ,'|','Z','X','C','V'
     db 'B','N','M','<','>','?',1  ,0  ,0  ,' ',0  ,0  ,0  ,0  ,0  ,0
 
+SECTION .text
 
 ; Letters transferred & string cleared when chatstrL[0]!=0 and chaton=0
 ; Disable all transfers when chaton=1 (except joysticks and upper keyboard
@@ -3542,7 +3597,9 @@ NEWSYM copyvid
     dec dword[MessageOn]
 .nomsg
     jmp vidpaste
-.sdrawptr dd 0
+SECTION .bss ;ALIGN=32
+.sdrawptr resd 1
+SECTION .text
 
 NEWSYM vidpaste
     cmp byte[vsyncon],0
@@ -3664,7 +3721,9 @@ NEWSYM vidpaste
     jnz .ssloopb
     jmp .returnfromdraw
 
-.SSRedCo dw 0
+SECTION .bss ;ALIGN=32
+.SSRedCo resw 1
+SECTION .text
 
 
 NEWSYM Clear2xSaIBuffer
@@ -3678,14 +3737,18 @@ NEWSYM Clear2xSaIBuffer
     jnz .nextb
     ret
 
-
-NEWSYM lastfps,   db 0                  ; stores the last fps encountered
-NEWSYM lastfps2,  db 0                  ; stores the last fps encountered
-NEWSYM curfps2,   db 0                  ; current video refresh fps
-NEWSYM Msgptr,    dd 0                  ; Pointer to message
-NEWSYM MessageOn, dd 0                  ; Message On Countdown
+SECTION .data
 NEWSYM MsgCount,  dd 120                ; How long message will stay (PAL = 100)
-NEWSYM FPSOn,     db 0
+
+SECTION .bss
+NEWSYM lastfps,   resb 1                  ; stores the last fps encountered
+NEWSYM lastfps2,  resb 1                  ; stores the last fps encountered
+NEWSYM curfps2,   resb 1                  ; current video refresh fps
+NEWSYM Msgptr,    resd 1                  ; Pointer to message
+NEWSYM MessageOn, resd 1                  ; Message On Countdown
+NEWSYM FPSOn,     resb 1
+
+SECTION .data
 prevresolutn dd 224
 
 NEWSYM SScopeCursor
@@ -3709,5 +3772,7 @@ db 0,0,0,0,0,1,1,0,0,1,0,0,1,1,0,0,0,0,0,0
 db 0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0
 db 0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0
 db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+SECTION .text
 
 NEWSYM ProcVidAsmEnd

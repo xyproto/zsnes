@@ -31,9 +31,6 @@ NEWSYM Spc700AsmStart
 
 
 
-
-
-
 ; SPC 700 Emulation by _Demo_
 ; Version 2.0
 
@@ -42,6 +39,7 @@ NEWSYM Spc700AsmStart
 ; Read byte : read al from [ebx]
 ; update timer : update the timers, called every scanline
 
+SECTION .data ;ALIGN=32
 
 ALIGN32
 
@@ -126,72 +124,81 @@ NEWSYM SPCROM
    db 0CBh,0F4h,0D7h,000h,0FCh,0D0h,0F3h,0ABh,001h,010h,0EFh,07Eh,0F4h,010h,0EBh,0BAh
    db 0F6h,0DAh,000h,0BAh,0F4h,0C4h,0F4h,0DDh,05Dh,0D0h,0DBh,01Fh,000h,000h,0C0h,0FFh
 
+SECTION .text
+
 %macro WriteByte 0
   cmp ebx,0ffh+spcRam
-  ja .extramem
+  ja %%extramem
   cmp ebx,0f0h+spcRam
-  jb .normalmem
+  jb %%normalmem
   sub ebx,spcRam
-  call dword near [spcWptr+ebx*4-0f0h*4]
-  jmp .finished
-.extramem
+  push dword %%finished
+  jmp dword near [spcWptr+ebx*4-0f0h*4]
+;  call dword near [spcWptr+ebx*4-0f0h*4]
+;  jmp .finished
+%%extramem
   cmp ebx,0ffc0h+spcRam
-  jb .normalmem
+  jb %%normalmem
   mov [spcextraram+ebx-0FFC0h-spcRam],al
   test byte[spcRam+0F1h],80h
-  jnz .finished
+  jnz %%finished
 ;  push ecx
 ;  mov cl,[DSPMem+06Ch]
 ;  test cl,20h
 ;  pop ecx
 ;  jz .finished
-.normalmem
+%%normalmem
   mov [ebx],al
-.finished
+%%finished
 %endmacro
 
 %macro ReadByte 0
   cmp ebx,0f0h+spcRam
-  jb .rnormalmem2
+  jb %%normalmem2
   cmp ebx,0ffh+spcRam
-  ja .rnormalmem
+  ja %%normalmem
   sub ebx,spcRam
-  call dword near [spcRptr+ebx*4-0f0h*4]
-  jmp .rfinished
-.rnormalmem
+  push dword %%finished
+  jmp dword near [spcRptr+ebx*4-0f0h*4]
+;  call dword near [spcRptr+ebx*4-0f0h*4]
+;  jmp .rfinished
+%%normalmem
 ;  cmp ebx,0ffc0h+spcRam
 ;  jb .rnormalmem2
 ;  test byte [DSPMem+6Ch],10h
 ;  jz .rnormalmem2
 ;  mov al,[spcextraram+ebx-0FFC0h-spcRam]
 ;  jmp .rfinished
-.rnormalmem2
+%%normalmem2
    mov al,[ebx]
-.rfinished
+%%finished
 %endmacro
 
 %macro ReadByte2 0
   cmp ebx,0f0h+spcRam
-  jb .rnormalmem2
+  jb %%normalmem2
   cmp ebx,0ffh+spcRam
-  ja .rnormalmem
+  ja %%normalmem
   sub ebx,spcRam
   call dword near [spcRptr+ebx*4-0f0h*4]
   add ebx,spcRam
-  jmp .rfinished
-.rnormalmem
+  jmp %%finished
+%%normalmem
 ;  cmp ebx,0ffc0h+spcRam
 ;  jb .rnormalmem2
 ;  test byte [DSPMem+6Ch],10h
 ;  jz .rnormalmem2
 ;  mov al,[spcextraram+ebx-0FFC0h-spcRam]
 ;  jmp .rfinished
-.rnormalmem2
+%%normalmem2
    mov al,[ebx]
-.rfinished
+%%finished
 %endmacro
 
-NEWSYM timer2upd, dd 0
+SECTION .bss
+NEWSYM timer2upd, resd 1
+SECTION .text
+
 ; This function is called every scanline (262*60 times/sec)
 ; Make it call 0.9825 times (393/400) (skip when divisible by 64)
 ; 2 8khz, 1 64khz
@@ -223,6 +230,8 @@ NEWSYM updatetimer
       mov [timinl0],al
       cmp byte[spcRam+0FDh],1
       jne .noin0
+      cmp byte[spchalted],0
+      jz .noin0
       reenablespc
       mov dword[cycpbl],0
 .noin0
@@ -235,6 +244,8 @@ NEWSYM updatetimer
       mov [timinl1],al
       cmp byte[spcRam+0FEh],1
       jne .noin1
+      cmp byte[spchalted+1],0
+      jz .noin1
       reenablespc
       mov dword[cycpbl],0
 .noin1
@@ -248,6 +259,8 @@ NEWSYM updatetimer
       mov [timinl2],al
       cmp byte[spcRam+0FFh],1
       jne .noin2
+      cmp byte[spchalted+2],0
+      jz .noin2
       reenablespc
       mov dword[cycpbl],0
 .noin2
@@ -258,6 +271,8 @@ NEWSYM updatetimer
       mov [timinl2],al
       cmp byte[spcRam+0FFh],1
       jne .noin2b
+      cmp byte[spchalted+2],0
+      jz .noin2b
       reenablespc
       mov dword[cycpbl],0
 .noin2b
@@ -268,6 +283,8 @@ NEWSYM updatetimer
       mov [timinl2],al
       cmp byte[spcRam+0FFh],1
       jne .noin2c
+      cmp byte[spchalted+2],0
+      jz .noin2c
       reenablespc
       mov dword[cycpbl],0
 .noin2c
@@ -278,6 +295,8 @@ NEWSYM updatetimer
       mov [timinl2],al
       cmp byte[spcRam+0FFh],1
       jne .noin2d
+      cmp byte[spchalted+2],0
+      jz .noin2d
       reenablespc
       mov dword[cycpbl],0
 .noin2d
@@ -438,17 +457,63 @@ NEWSYM RSPCRegF2
 NEWSYM RSPCRegF3
       mov al,[spcRam+0f3h]
       ret
+
+%ifdef SPCDUMP
+SECTION .bss
+ALIGNB 4
+NEWSYM SPCSave_start, resd 2
+NEWSYM SPCSave_buffer, resb 4
+NEWSYM SPCSave_ports, resb 4
+SECTION .text
+
+EXTSYM SPCSave_dump, SPCSave_handle, Write_File
+
+%macro spcdump 1
+	cmp byte[SPCSave_dump], 1
+	jne %%nodump
+
+	inc dword[SPCSave_buffer]
+	cmp [SPCSave_ports+%1], al
+	je %%nodump
+	mov [SPCSave_ports+%1], al
+	pushad
+	mov byte[SPCSave_buffer+2], %1
+	mov byte[SPCSave_buffer+3], al
+	mov ebx, [SPCSave_handle]
+	mov ecx, 4
+	mov edx, SPCSave_buffer
+	call Write_File
+	xor eax, eax
+	mov [SPCSave_buffer], eax
+
+	popad
+%%nodump
+%endmacro
+%endif
+
 NEWSYM RSPCRegF4
       mov al,[spcRam+0f4h]
+%ifdef SPCDUMP
+	  spcdump 0
+%endif
       ret
 NEWSYM RSPCRegF5
       mov al,[spcRam+0f5h]
+%ifdef SPCDUMP
+	  spcdump 1
+%endif
       ret
 NEWSYM RSPCRegF6
       mov al,[spcRam+0f6h]
+%ifdef SPCDUMP
+	  spcdump 2
+%endif
       ret
 NEWSYM RSPCRegF7
       mov al,[spcRam+0f7h]
+%ifdef SPCDUMP
+	  spcdump 3
+%endif
       ret
 NEWSYM RSPCRegF8
       mov al,0 ;[spcRam+0f8h]
@@ -465,30 +530,74 @@ NEWSYM RSPCRegFB
 NEWSYM RSPCRegFC
       mov al,[spcRam+0fch]
       ret
+
+%macro skipmacro 1
+.spcnextskip
+  	  test byte[timeron],1<<%1
+	  je .ret
+	  cmp byte[timincr0+%1],0
+	  je .ret
+	  ;cmp byte[SpeedHack],0
+	  ;je .ret
+      inc byte[spcnumread+%1]
+	  cmp byte[spcnumread+%1],8h
+      je near haltspc
+	  .ret
+      ret
+%endmacro
+
+ALIGN16
+NEWSYM haltspc
+      cmp byte[SPC700sh],1
+      je .nochangestate
+      mov dword[cycpbl],0FFFFFFFFh
+      test byte[curexecstate],02h
+      jz .nochangestate
+      and byte[curexecstate],0FDh
+      push ebx
+
+	  mov ebx,[spcnumread]
+	  mov [spchalted],ebx
+
+      xor ebx,ebx
+      mov bl,dl
+      mov edi,[tableadb+ebx*4]
+      pop ebx
+.nochangestate
+      mov dword[spcnumread],0
+      ret
+
 NEWSYM RSPCRegFD
       mov al,[spcRam+0fdh]
       and al,0Fh
       cmp byte[spcRam+0fdh],0
-      je spcnextskip
+      je .spcnextskip
       mov byte [spcRam+0fdh],0
       mov byte [spcnumread],0
       ret
+	  skipmacro 0
+
 NEWSYM RSPCRegFE
       mov al,[spcRam+0feh]
       and al,0Fh
       cmp byte[spcRam+0feh],0
-      je spcnextskip
+      je .spcnextskip
       mov byte [spcRam+0feh],0
-      mov byte [spcnumread],0
+      mov byte [spcnumread+1],0
       ret
+	  skipmacro 1
+
 NEWSYM RSPCRegFF
       mov al,[spcRam+0ffh]
       and al,0Fh
       cmp byte[spcRam+0ffh],0
-      je spcnextskip
+      je .spcnextskip
       mov byte [spcRam+0ffh],0
-      mov byte [spcnumread],0
+      mov byte [spcnumread+2],0
       ret
+	  skipmacro 2
+
+%if 0
 NEWSYM spcnextskip
       inc byte[spcnumread]
       cmp byte[spcnumread],5
@@ -510,9 +619,12 @@ NEWSYM haltspc
 .nochangestate
       mov byte[spcnumread],0
       ret
+%endif
 
-NEWSYM spcnumread, db 0
-
+SECTION .data
+NEWSYM spcnumread, dd 0
+NEWSYM spchalted, dd 0
+SECTION .text
 
 %macro SPCSetFlagnzc 0
   js .setsignflag
