@@ -1422,14 +1422,19 @@ reg4016w:
     test byte[INTEnab],1
     jnz .nointenab
     mov ebx,[JoyAOrig]
+    or ebx,0FFFFh
     mov [JoyANow],ebx
     mov ebx,[JoyBOrig]
+    or ebx,0FFFFh
     mov [JoyBNow],ebx
     mov ebx,[JoyCOrig]
+    or ebx,0FFFFh
     mov [JoyCNow],ebx
     mov ebx,[JoyDOrig]
+    or ebx,0FFFFh
     mov [JoyDNow],ebx
     mov ebx,[JoyEOrig]
+    or ebx,0FFFFh
     mov [JoyENow],ebx
     cmp al,01h
     jne .noreset
@@ -1447,20 +1452,29 @@ reg4016w:
 .noone
     and byte[MultiTapStat],0FEh
     cmp al,0
-    jne .nozero
+    jne near .nozero
     or byte[JoyCRead],1
     cmp byte[JoyCRead],3
-    jne .nozero
+    jne near .nozero
 .resetports
     mov ebx,[JoyAOrig]
+    or ebx,0FFFFh
     mov [JoyANow],ebx
+    or ebx,0FFFFh
     mov ebx,[JoyBOrig]
+    or ebx,0FFFFh
     mov [JoyBNow],ebx
+    or ebx,0FFFFh
     mov ebx,[JoyCOrig]
+    or ebx,0FFFFh
     mov [JoyCNow],ebx
+    or ebx,0FFFFh
     mov ebx,[JoyDOrig]
+    or ebx,0FFFFh
     mov [JoyDNow],ebx
+    or ebx,0FFFFh
     mov ebx,[JoyEOrig]
+    or ebx,0FFFFh
     mov [JoyENow],ebx
 .nozero
     ret
