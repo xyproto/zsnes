@@ -949,11 +949,15 @@ GUIGUIOptnsKeys:
     jne .guioptn10
     xor byte[MouseWheel],1
 .guioptn10
+    cmp dh,'R'
+    jne .guioptn11
+    xor byte[TrapMouseCursor],1
+.guioptn11
 %endif
     cmp dh,'T'
-    jne .guioptn11
+    jne .guioptn12
     xor byte[GUIEnableTransp],1
-.guioptn11
+.guioptn12
     ret
 
 GUISoundKeys:

@@ -4743,14 +4743,6 @@ DisplayGUIOptns:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckt
     GUIDisplayIconWin 10,124,23,[GUITemp]
-%ifdef __WIN32__
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[MouseWheel],1
-    jne .nocheckr
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckr
-    GUIDisplayIconWin 10,124,33,[GUITemp]
-%endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[FilteredGUI],1
     jne .nocheckfg
@@ -4807,22 +4799,28 @@ DisplayGUIOptns:
     GUIDisplayIconWin 10,12,93,[GUITemp]
 %ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[AlwaysOnTop],1
+    cmp byte[MouseWheel],1
     jne .nocheck9
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck9
+    GUIDisplayIconWin 10,124,33,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[AlwaysOnTop],1
+    jne .nocheck10
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheck10
     GUIDisplayIconWin 10,12,168,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SaveMainWindowPos],1
     jne .nocheck10
     mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheck10
+.nocheck11
     GUIDisplayIconWin 10,12,178,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AllowMultipleInst],1
-    jne .nocheck11
+    jne .nocheck12
     mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheck11
+.nocheck12
     GUIDisplayIconWin 10,12,188,[GUITemp]
 %endif
     mov al,[GUIWincol]
@@ -4831,6 +4829,12 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,6,16,GUIGUIOptnsText5
 %ifdef __WIN32__
     GUIOuttextwin2 10,6,160,GUIGUIOptnsTextD
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[TrapMouseCursor],1
+    jne .nocheck13
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheck13
+    GUIDisplayIconWin 10,124,53,[GUITemp]
 %endif
     mov byte[GUItextcolor],163
     cmp byte[GUIWincoladd],0
@@ -4866,6 +4870,7 @@ DisplayGUIOptns:
     GUIOuttextwin2u 10,26,183,GUIGUIOptnsTextF,2
     GUIOuttextwin2u 10,138,38,GUIGUIOptnsTextK,1
     GUIOuttextwin2u 10,26,193,GUIGUIOptnsTextL,1
+    GUIOuttextwin2u 10,138,58,GUIGUIOptnsTextN,1
 %endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,16,123,GUIGUIOptnsText6
@@ -4892,6 +4897,7 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,25,182,GUIGUIOptnsTextF
     GUIOuttextwin2 10,137,37,GUIGUIOptnsTextK
     GUIOuttextwin2 10,25,192,GUIGUIOptnsTextL
+    GUIOuttextwin2 10,137,57,GUIGUIOptnsTextN
 %endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,15,122,GUIGUIOptnsText6
@@ -4986,6 +4992,7 @@ GUIGUIOptnsTextJ db 'TRANSPARENT MSGS',0
 GUIGUIOptnsTextK db 'WHEEL MOUSE',0
 GUIGUIOptnsTextL db 'ALLOW MULTIPLE INSTANCES',0
 GUIGUIOptnsTextM db 'FILTERED GUI',0
+GUIGUIOptnsTextN db 'TRAP MOUSE CURSOR',0
 
 DisplayGUIAbout:
 ;    cmp byte[OSPort],3

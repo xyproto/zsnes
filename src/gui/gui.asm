@@ -586,6 +586,7 @@ NEWSYM TripleBufferWin, db 0
 
 NEWSYM ExclusiveSound, db 0
 NEWSYM DisableScreenSaver, db 0
+NEWSYM TrapMouseCursor, db 1
 
 GUIsave equ $-GUIRAdd
 

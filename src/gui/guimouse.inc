@@ -2658,6 +2658,7 @@ DisplayGUIOptnsClick:
     GUIClickCButton 12,178,byte[SaveMainWindowPos]
     GUIClickCButton 12,188,byte[AllowMultipleInst]
     GUIClickCButton 124,33,byte[MouseWheel]
+    GUIClickCButton 124,53,byte[TrapMouseCursor]
 %endif
     GUIClickCButton 124,43,byte[FilteredGUI]
     GUIPButtonHole 48,108,byte[CurPalSelect],0

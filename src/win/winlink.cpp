@@ -325,6 +325,7 @@ extern BYTE SaveMainWindowPos;
 extern BYTE AlternateTimer;
 extern BYTE AllowMultipleInst;
 extern BYTE DisableScreenSaver;
+extern BYTE TrapMouseCursor;
 extern signed short int MainWindowX;
 extern signed short int MainWindowY;
 extern int CurKeyPos;
@@ -2532,51 +2533,91 @@ void WinUpdateDevices()
 int GetMouseX(void)
 {
    InputRead();
-   MouseX+=MouseMoveX;
-   if (MouseX>MouseMaxX)
+   MouseX += MouseMoveX;
+
+   if (MouseX > MouseMaxX)
    {
-      if (abs(MouseMoveX)>10&&T36HZEnabled&&(FullScreen==0))
+      MouseX = MouseMaxX;
+
+      if (TrapMouseCursor == 1 && FullScreen == 0)
+      {
+         if (abs(MouseMoveX) > 10 && T36HZEnabled)
+         {
+            MouseInput->Unacquire();
+            SetCursorPos(X + WindowWidth + 32, Y + (MouseY * WindowHeight / 224));
+         }
+      }
+      else
       {
          MouseInput->Unacquire();
-         SetCursorPos(X+WindowWidth+32,Y+(MouseY*WindowHeight/224));
+         SetCursorPos(X + WindowWidth + 1, Y + (MouseY * WindowHeight / 224));
       }
-      MouseX=MouseMaxX;
    }
 
-   if (MouseX<MouseMinX)
+   if (MouseX < MouseMinX)
    {
-      if (abs(MouseMoveX)>10&&T36HZEnabled&&(FullScreen==0))
+      MouseX = MouseMinX;
+
+      if (TrapMouseCursor == 1 && FullScreen == 0)
+      {
+         if (abs(MouseMoveX) > 10 && T36HZEnabled)
+         {
+            MouseInput->Unacquire();
+            SetCursorPos(X - 32, Y + (MouseY * WindowHeight / 224));
+         }
+      }
+      else
       {
          MouseInput->Unacquire();
-         SetCursorPos(X-32,Y+(MouseY*WindowHeight/224));
+         SetCursorPos(X - 1, Y + (MouseY * WindowHeight / 224));
       }
-      MouseX=MouseMinX;
    }
-   return((int)MouseX);
+   return((int) MouseX);
 }
 
 int GetMouseY(void)
 {
-   MouseY+=MouseMoveY;
-   if (MouseY>MouseMaxY)
+   MouseY += MouseMoveY;
+
+   if (MouseY > MouseMaxY)
    {
-      MouseY=MouseMaxY;
-      if (abs(MouseMoveY)>10&&T36HZEnabled&&(FullScreen==0))
+      MouseY = MouseMaxY;
+
+      if (TrapMouseCursor == 1 && FullScreen == 0)
+      {
+         if (abs(MouseMoveY) > 10 && T36HZEnabled)
+         {
+            MouseInput->Unacquire();
+            SetCursorPos(X+(MouseX * WindowWidth / 256), Y + WindowHeight + 32);
+         }
+      }
+      else
       {
          MouseInput->Unacquire();
-         SetCursorPos(X+(MouseX*WindowWidth/256), Y+WindowHeight+32);
+         SetCursorPos(X+(MouseX * WindowWidth / 256), Y + WindowHeight + 1);
       }
    }
-   if (MouseY<MouseMinY)
+
+   if (MouseY < MouseMinY)
    {
-      MouseY=MouseMinY;
-      if (abs(MouseMoveY)>10&&T36HZEnabled&&(FullScreen==0))
+      MouseY = MouseMinY;
+
+      if (TrapMouseCursor == 1 && FullScreen == 0)
+      {
+         if (abs(MouseMoveY) > 10 && T36HZEnabled)
+         {
+            MouseInput->Unacquire();
+            SetCursorPos(X + (MouseX * WindowWidth / 256), Y - 32);
+         }
+      }
+      else
       {
          MouseInput->Unacquire();
-         SetCursorPos(X+(MouseX*WindowWidth/256), Y-32);
+         SetCursorPos(X + (MouseX * WindowWidth / 256), Y - 1);
       }
    }
-   return((int)MouseY);
+
+   return((int) MouseY);
 }
 
 int GetMouseMoveX(void)
