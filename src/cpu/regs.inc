@@ -27,7 +27,7 @@ EXTSYM reg3read
 EXTSYM reg4read
 EXTSYM JoyEOrig,JoyENow
 EXTSYM snesmouse
-EXTSYM cycphb,joycontren
+EXTSYM cycphb,joycontren,totlines
 EXTSYM DosExit,invalid,numinst,previdmode,printhex,printnum
 
 
@@ -914,7 +914,9 @@ reg4212r:
     inc bx
     cmp word[curypos],bx
     jb .novbl
-    cmp word[curypos],261
+    mov bx,[totlines]
+    dec bx
+    cmp word[curypos],bx
     jae .novbl
     or al,80h
 ;    jmp .nohblank
@@ -943,7 +945,9 @@ debblah2:
     inc bx
     cmp word[curypos],bx
     jb .novbl
-    cmp word[curypos],261
+    mov bx,[totlines]
+    dec bx
+    cmp word[curypos],bx
     jae .novbl
     or al,80h
 ;    jmp .nohblank
