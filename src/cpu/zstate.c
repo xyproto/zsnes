@@ -303,14 +303,14 @@ extern unsigned char BG116x16t, BG216x16t, BG316x16t, BG416x16t, vramincby8on;
 extern unsigned char vramincr;
 
 extern void (**regptw)();
-extern void reg2118();
-extern void reg2118inc();
-extern void reg2118inc8();
-extern void reg2118inc8inc();
-extern void reg2119();
-extern void reg2119inc();
-extern void reg2119inc8();
-extern void reg2119inc8inc();
+void reg2118();
+void reg2118inc();
+void reg2118inc8();
+void reg2118inc8inc();
+void reg2119();
+void reg2119inc();
+void reg2119inc8();
+void reg2119inc8inc();
 
 void repackfunct()
 {
@@ -504,8 +504,8 @@ extern unsigned char *Msgptr, txtsavemsgfail[15];
 extern unsigned short PrevPicture[64*56];
 
 FILE *fhandle;
-extern void SRAMChdir();
-extern void CapturePicture();
+void SRAMChdir();
+void CapturePicture();
 
 void statesaver()
 {
@@ -750,7 +750,7 @@ extern unsigned char txtconvmsg[16], txtnfndmsg[23], vidmemch2[4096];
 extern unsigned char vidmemch4[4096], vidmemch8[4096], versn, MovieProcessing;
 extern unsigned char ioportval, SDD1Enable, nexthdma;
 
-extern void procexecloop();
+void procexecloop();
 
 void stateloader (unsigned char *statename, unsigned char keycheck, unsigned char xfercheck)
 {
