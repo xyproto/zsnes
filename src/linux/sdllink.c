@@ -561,6 +561,11 @@ int startgame(void)
        gl_inited = 1;
        glvidbuffer = malloc(256*256*2);
      }
+   } else {
+     if (gl_inited) {
+       free(glvidbuffer);
+       gl_inited = 0;
+     }
    }
 #endif
 
@@ -1063,7 +1068,7 @@ void clearwin()
      SurfBufD=(DWORD) &glvidbuffer[0];
      SURFDW=(DWORD *) &glvidbuffer[0];
      vidbuff_w=256; vidbuff_h=224;
-     Temp1 = 512;
+     //     Temp1 = 512;
    }
 #endif
 
