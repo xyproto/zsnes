@@ -582,15 +582,7 @@ ProcessMouseButtons:
     cmp byte[GUICBHold],20
     je near SkipMovie
     cmp byte[GUICBHold],40
-    jne .notClickedSetKeys
-    push ebx
-    mov ebx,[GUIcurrentinputcursloc]
-    mov bl,[GUIInputRefF+ebx]
-    cmp bl,0
-    pop ebx
-    je .notClickedSetKeys
-    jmp near SetAllKeys
-.notClickedSetKeys
+    je near SetAllKeys
     cmp byte[GUICBHold],50
     jne .notstartcheat
     call CheatCodeSearchInit
@@ -2197,11 +2189,11 @@ DisplayGUIInputClick:
     mov dword[keycontrolval],pl5contrl
 .nopl5
     
-    push ebx
-    mov ebx,[GUIcurrentinputcursloc]
-    mov bl,[GUIInputRefF+ebx]
-    cmp bl,0
-    pop ebx
+    ;Check if controller is set
+    push eax
+    mov eax,dword[keycontrolval]
+    cmp dword[eax],0
+    pop eax
     je .lockInputChange
 
     DGOptnsProcBox 45,150,[edi]
@@ -2216,8 +2208,6 @@ DisplayGUIInputClick:
     DGOptnsProcBox 85,130,[edi+36]
     DGOptnsProcBox 85,110,[edi+40]
     DGOptnsProcBox 85,150,[edi+44]
-
-.lockInputChange
 
     mov edi,pl1Atk
     cmp byte[cplayernum],1
@@ -2237,19 +2227,10 @@ DisplayGUIInputClick:
     mov edi,pl5Atk
 .nopl5t
 
-    push ebx
-    mov ebx,[GUIcurrentinputcursloc]
-    mov bl,[GUIInputRefF+ebx]
-    cmp bl,0
-    pop ebx
-    je .lockInputChange2
-
     DGOptnsProcBox 165,100,[edi]      ; A Turbo
     DGOptnsProcBox 165,110,[edi+4]    ; B Turbo
     DGOptnsProcBox 125,100,[edi+8]    ; X Turbo
     DGOptnsProcBox 125,110,[edi+12]   ; Y Turbo
-
-.lockInputChange2
 
     mov edi,pl1Ltk
     cmp byte[cplayernum],1
@@ -2269,17 +2250,8 @@ DisplayGUIInputClick:
     mov edi,pl5Ltk
 .nopl5tl
 
-    push ebx
-    mov ebx,[GUIcurrentinputcursloc]
-    mov bl,[GUIInputRefF+ebx]
-    cmp bl,0
-    pop ebx
-    je .lockInputChange3
-
     DGOptnsProcBox 125,120,[edi]      ; L Turbo
     DGOptnsProcBox 165,120,[edi+4]    ; R Turbo
-
-.lockInputChange3
 
     mov edi,pl1ULk
     cmp byte[cplayernum],1
@@ -2299,19 +2271,12 @@ DisplayGUIInputClick:
     mov edi,pl5ULk
 .nopl5tb
 
-    push ebx
-    mov ebx,[GUIcurrentinputcursloc]
-    mov bl,[GUIInputRefF+ebx]
-    cmp bl,0
-    pop ebx
-    je .lockInputChange4
-
     DGOptnsProcBoxb 165,140,[edi]
     DGOptnsProcBoxb 165,150,[edi+4]
     DGOptnsProcBoxb 125,140,[edi+8]
     DGOptnsProcBoxb 125,150,[edi+12]
 
-.lockInputChange4
+.lockInputChange
 
 %ifdef __MSDOS__
     xor ebx,ebx

@@ -229,22 +229,36 @@ SetAllKeys:
 
     mov byte[GUICBHold],0
     mov edi,pl1selk
+    mov dword[keycontrolval],pl1contrl
     cmp byte[cplayernum],1
     jne .nopl2
     mov edi,pl2selk
+    mov dword[keycontrolval],pl2contrl
 .nopl2
     cmp byte[cplayernum],2
     jne .nopl3
     mov edi,pl3selk
+    mov dword[keycontrolval],pl3contrl
 .nopl3
     cmp byte[cplayernum],3
     jne .nopl4
     mov edi,pl4selk
+    mov dword[keycontrolval],pl4contrl
 .nopl4
     cmp byte[cplayernum],4
     jne .nopl5
     mov edi,pl5selk
+    mov dword[keycontrolval],pl5contrl
 .nopl5
+    
+    ;Check if controller is set
+    push eax
+    mov eax,dword[keycontrolval]
+    cmp dword[eax],0
+    pop eax
+    jne .noLockInputChange
+    ret
+.noLockInputChange    
     mov dword[guicpressptr],edi
     xor ebx,ebx
     mov ecx,12
