@@ -139,11 +139,11 @@ website and download the latest BIOS flash. Install it and try your dos
 sound. (You may still have to enable the stuff in the BIOS after)
 
 3. Failing the first two things you will either have to get a new
-motherboard or install a SB 16, or other Compatable sound card alongside
+motherboard or install a SB 16, or other Compatible sound card alongside
 the Live. Just attach a cable from the Line Out of the SB 16 to the Line In
 of the Live. Enable line in on the mixer of your SB Live and it should route
 the sound through the old sound card. (Don't use the SPDIF to connect the
-cards if you have one. Wave sound dosn't pass through SPDIF only MIDI)
+cards if you have one. Wave sound doesn't pass through SPDIF only MIDI)
 
 อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
 ************* TRANSPARENCY ISSUES: *************
@@ -195,7 +195,7 @@ A : We're always trying, but we can never guarantee a specific game will be
 Q : Why is *name of game* not working in v.*version #* of zsnes?  It
     was working before.
 
-A : Whenever we change something in the emulation, whether it's optimisation
+A : Whenever we change something in the emulation, whether it's optimization
     or bug fixes, it has a good potential to have caused a problem elsewhere.
     Usually, these problems aren't discovered until after a release.
 
@@ -245,7 +245,7 @@ A : - If there is a layer of fog blocking the view, then you need to either
     you need to enable sound (or use -s -dd as the commandlines when running
     zsnes under dos) and do not load from a save state, instead load from
     the game selection menu when you start the game normally.
-    - If you cannot press the L+R+A seqence, then you would need to assign
+    - If you cannot press the L+R+A sequence, then you would need to assign
     both the L and R key as the same key such as set L and R to PageUp and
     set A to Home, then pressing PageUp+Home will be the same as pressing
     L,R, and A together.  This is a hardware limitation of the keyboard,
@@ -364,7 +364,7 @@ A : For the non-USB version, be sure to have your Gamepad Pro set on 'GrIP'
 
 Q : Why doesn't my joystick work anymore?
 
-A : You might have accidently clicked the 'Use Joystick Port 209' check box.
+A : You might have accidentally clicked the 'Use Joystick Port 209' check box.
     Just uncheck it.
 
 อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
@@ -413,7 +413,7 @@ A : Click on the box by 'Reverse Stereo' in the Sound configuration in the
 
 Q : How come the game genie codes don't work?
 
-A : You probabily didn't insert the '-'.  Otherwise, try clicking on the FIX
+A : You probably didn't insert the '-'.  Otherwise, try clicking on the FIX
     button once while the highlight is over the code.  If it still doesn't
     work, chances are that the code is for another version of the game you're
     trying to run or the code is a fake.
@@ -530,7 +530,7 @@ A : Yes.  But you have to specify the full path/drive
 
 อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
 
-Q : What is theis "sdd1dat.dat" file?
+Q : What is this "sdd1dat.dat" file?
 
 A : The debug log for S-DD1 partial emulation. It is not needed
     for proper functioning of ZSNES.

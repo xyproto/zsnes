@@ -110,7 +110,7 @@ Options :
        Sets the maximum allowable frame skip in auto framerate mode
      New Gfx Engine - Enables/Disables the New Graphics engine
        in 256 color modes or 320x240x65536 mode
-     VSync - Syncronizes drawing to the monitor's refresh rate. This may
+     VSync - Synchronizes drawing to the monitor's refresh rate. This may
        reduce frame rate on your computer, but will reduce tearing.
      MMX Support - Enables MMX Copying routines for a slight speed
        increase (MMX processors only)
@@ -198,7 +198,7 @@ Sound :
   Perform : Allows user to change the sound configurations of ZSNES
   Usage :
      Enable Sound - Setting this turns on the sound
-     Stereo Sound - Enables Stereo Sound (Noticably slower though unless
+     Stereo Sound - Enables Stereo Sound (Noticeably slower though unless
        you have a fast cpu)
      Sound Rate - To change the sound rate, just click on the box
        containing the value to rotate through all the
@@ -287,7 +287,7 @@ Search :
            search engine also looks for value - 1 since even if a game
            tells you that you have 3 lives left, it stores the value as
            2 in memory.
-         Comparitive Search - In this mode, you select whether the value
+         Comparative Search - In this mode, you select whether the value
            is less than, greater than, equal to, or not equal to the
            previous value.  Such as if you have a life bar and if the life
            bar suddenly goes down, go back to the cheat search engine and
@@ -387,7 +387,7 @@ Key Comb. (Key Combination Editor) :
       mean the last left or right direction the user presses in the game and
       the symbol < is the opposite of that direction.  When disabled, > means
       right and < means left.
-    Game Specfic (Game Specific) - Enabling this will tell Zsnes to use
+    Game Specific (Game Specific) - Enabling this will tell Zsnes to use
       separate Key Combination files for each individual game.
     Clear - Clears the current key combination field
     Add - Adds the key combination fields below as a new entry

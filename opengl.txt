@@ -2,7 +2,7 @@ This document is no longer up-to-date, but is a good start to
 understanding how the OpenGL code works for non-filtered modes.
 -------------------------------------------------------------------------
 
-     OpenGL is currently only avialable on Linux and via CVS. For the most
+     OpenGL is currently only available on Linux and via CVS. For the most
 part, it works and fairly stable. Please send all comments, suggestions,
 and bug fixes to hpsolo@my-deja.com. DO NOT EMAIL THE OTHER DEVELOPERS
 SINCE THEY ARE not INVOLVED WITH THIS CODE. And please make sure you've
@@ -73,7 +73,7 @@ Voodoo:
 
 Note that only the 640x480 full screen mode works on the Voodoo2 cards
 so please do not email me about the other video modes. Files which
-might be usefull to have before compiling anything:
+might be useful to have before compiling anything:
 
 Device3Dfx, Glide_SDK, Glide_V2 (or Glide_XXXX depending on your card)
 

@@ -130,7 +130,7 @@ Q: How come I don't get any sound?
 
 A: There could be several situations :
 
-A: Either you accidently disabled sound (You can enable it through the GUI)
+A: Either you accidentally disabled sound (You can enable it through the GUI)
    or you don't have a sound card or the sound drivers aren't properly
    installed in your system.
 
@@ -166,7 +166,7 @@ A: There are four different sets of letters which are R, S, DR, and DS.  R
    stands for ratio as these modes will retain the screen size ratio to the
    output of a real SNES.  S stands for stretched, any of these modes will
    stretch the image to the exact size of the resolution you have chosen.
-   The D in DR/DS meants high resolution which allows for the use of
+   The D in DR/DS means high resolution which allows for the use of
    interpolation, 25/50% scanlines, 2xSai, and Super Eagle modes. 
 
 Q: Will ZSNES Windows support a 3DFX graphics mode?
@@ -205,7 +205,7 @@ A: We're always trying, but we can never guarantee a specific game will be
 Q: Why is *name of game* not working in v.*version #* of ZSNES?  It was
    working before.
 
-A: Whenever we change something in the emulation, whether it's optimisation
+A: Whenever we change something in the emulation, whether it's optimization
    or bug fixes, it has a good potential to have caused a problem elsewhere.
    Usually, these problems aren't discovered until after a release.
 
@@ -235,7 +235,7 @@ A: Turning on sound helps a lot here.  Also, try in the ZSNES configuration
 
 Q: Why am I experiencing problems with Chrono Trigger?
 
-A: If you cannot press the L+R+A seqence, then you would need to assign
+A: If you cannot press the L+R+A sequence, then you would need to assign
    both the L and R key as the same key such as set L and R to PageUp and
    set A to Home, then pressing PageUp+Home will be the same as pressing
    L,R, and A together.  This is a hardware limitation of the keyboard,
@@ -298,7 +298,7 @@ A: For the Windows version, you might want to change your video mode in
 Q: Can you please make ZSNES faster?
 
 A: We're always trying and there are still a lot of room left for
-   optimisation, but a lack of time keeps us from implementing them.
+   optimization, but a lack of time keeps us from implementing them.
 
 
 Q: Can you implement dynamic recompilation into ZSNES?
@@ -381,7 +381,7 @@ A: For ZSNESWin, you first might want to see if you have any other major
    www.microsoft.com/directx
 
    Odds are, if the emulator crashes as you load a ROM then it is probably
-   not compatable with ZSNES Windows due to it being incomplete, a bad
+   not compatible with ZSNES Windows due to it being incomplete, a bad
    header, or for some other reason making it broken.
 
 

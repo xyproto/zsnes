@@ -357,7 +357,7 @@ IPS patcher :
    Rename your .IPS file to the rom filename with the .IPS extension
    (eg. If your rom is SD3.SMC and your ips is SD3V05.IPS, rename SD3V05.IPS
         to SD3.IPS)
-   and ZSNES will patch the rom realtime without modifying the rom file's
+   and ZSNES will patch the rom in realtime without modifying the rom file's
    contents. Zipped roms are patched according to the unzipped name.
    (eg. Seiken3.zip containing SD3.smc is patched by SD3.ips, not Seiken3.ips)
    
@@ -389,7 +389,7 @@ README.TXT, and GUINOTES.TXT to make sure the answer isn't there.
 And your question is NOT a ROM Request or asking about a newer
 version, you can post your question at the zsnes www board located at :
 
-http://www.zsnes.com/board/
+http://board.zsnes.com
 
 Remember : This board should be mainly used for zsnes related questions.
 ROM requests (or asking for games, a link to a rom site, or where to
@@ -477,7 +477,7 @@ Also Thanks to :
   Sardu for some great info and help!
   Lord Esnes for some great help!
   Robert Grubbs for the sidewinder info!
-  Nerlaska for some useful info on optimising and also for some help!
+  Nerlaska for some useful info on optimizing and also for some help!
   Diskdude for writing sneskart which we used for the info on cheat codes!
   DarkForce for some great help!
   Pharos for some keyboard coding help!

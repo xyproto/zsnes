@@ -6,7 +6,7 @@ is a quick guide (based on my own experience and on a doc written by zsKnight)
 explaining how to compile zsnes. With these tools, I can build both dos and
 win version, I hope it will also work for you
 
-(slighty updated by stainless)
+(slightly updated by stainless)
 
 
 First, you need the following software:
@@ -41,7 +41,7 @@ Windows port :
                    out of environment space error, type 'command /e:32768' 
                    (to create a new command.com entity with more 
                    environment space)
-                   I have been able to sucessfully build ZSNES using the
+                   I have been able to successfully build ZSNES using the
                    Intel C++ drop-in replacement for Microsoft's C++ compiler
                    that comes with MSVC++ 5 and above.  Since ZSNES contains
                    relatively small amounts of C, I don't see how Intel's
