@@ -497,8 +497,8 @@ prevloadl db 0
 prevloaddnamel times 512*10 db 0
 prevloadfnamel times 512*10 db 0
 
-NEWSYM PrevWinMode, db 1
-NEWSYM PrevFSMode, db 5
+NEWSYM PrevWinMode, db 0
+NEWSYM PrevFSMode, db 0
 
 OldWinPos db 0
 GUIwinposx  dd 0,5   ,60  ,30  ,55  ,50  ,65  ,5   ,30  ,20  ,10   ,80  ,65  ,20  ,70  ,50  ,3   ,50
