@@ -32,6 +32,10 @@ case "$target" in
 		CFLAGS="$CFLAGS -D__LINUX__"
         	NFLAGS="$NFLAGS -D__LINUX__ -f elf -DELF"
 		;;
+	*-*-beos*)
+		CFLAGS="$CFLAGS -D__LINUX__ -D__BEOS__"
+        	NFLAGS="$NFLAGS -D__LINUX__ -D__BEOS__ -f elf -DELF"
+		;;
 	*-*-*openbsd*)
 		CFLAGS="$CFLAGS -D__LINUX__ -D__FreeBSD__"
 		NFLAGS="$NFLAGS -D__LINUX__ -D__FreeBSD__ -D__OpenBSD__ -f aoutb"

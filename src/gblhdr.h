@@ -88,15 +88,17 @@
 	
 	#ifdef __LINUX__
 	#include "SDL.h"
-	#include <sys/mman.h>
 	#include <limits.h>
+#ifndef __BEOS__
+	#include <sys/mman.h>
 	#include <glob.h>
+	#include <arpa/inet.h>
+#endif
 	#include <sys/stat.h>
 	#include <sys/ioctl.h>
 	#include <sys/socket.h>
 	#include <sys/types.h>
 	#include <netinet/in.h>
-	#include <arpa/inet.h>
 	#include <netdb.h>
 	#include <utime.h>
 	#include <zlib.h>
@@ -106,7 +108,7 @@
 	#endif
 
 	#ifdef __LINUX__
-	#ifndef __FreeBSD__
+	#if !defined(__FreeBSD__) && !defined(__BEOS__)
 	#include <asm/ioctls.h>
 	#else
 	#include <sys/filio.h>
