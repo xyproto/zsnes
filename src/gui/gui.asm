@@ -723,7 +723,8 @@ NEWSYM IPXInfoStrR, dw 0
 NEWSYM GUICMessage, dd 0
 NEWSYM GUICTimer,   dd 0
 NEWSYM GUIOn,       db 0
-NEWSYM GUIOn2,       db 0
+NEWSYM GUIOn2,      db 0
+NEWSYM GUIReset,    db 0
 ;GOSPort db 0
 NEWSYM CurPalSelect, db 0
 
@@ -2487,6 +2488,7 @@ NEWSYM StartGUI
     call AdjustFrequency
     mov byte[GUIOn],0
     mov byte[GUIOn2],0
+    mov byte[GUIReset],0
     mov dword[StartLL],0
     mov dword[StartLR],0
     mov byte[NetLoadState],0
@@ -3422,6 +3424,8 @@ DisplayBoxes:
     push esi
     cmp al,1
     jne .noguiconfirm
+    cmp byte[GUIReset],1
+    je near .finstuff
     call DisplayGUILoad
     jmp .finstuff
 .noguiconfirm
@@ -3601,6 +3605,7 @@ LoadSecondState:
 GUIProcReset:
     cmp byte[GUICBHold],2
     jne .noreset
+    mov byte[GUIReset],1
     call GUIDoReset
     cmp byte[CNetType],20
     jne .noreset
