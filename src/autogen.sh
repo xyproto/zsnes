@@ -1,4 +1,4 @@
-#!/bin/ah
+#!/bin/sh
 
 echo "Generating build information using aclocal, automake and autoconf"
 echo "This may take a while ..."
