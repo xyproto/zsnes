@@ -192,11 +192,31 @@ int Main_Proc(void)
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:
-			MouseButton = MouseButton | event.button.button;
+			if (event.button.button < 4)
+				MouseButton = MouseButton | event.button.button;
+			else if (event.button.button == 4)
+			  {
+			    pressed[72] = 1;
+			    ProcessKeyBuf(SDLK_UP);
+			  }
+			else if (event.button.button == 5)
+			  {
+			    pressed[80] = 1;
+			    ProcessKeyBuf(SDLK_DOWN);
+			  }
 			break;
 
 		case SDL_MOUSEBUTTONUP:
-			MouseButton = MouseButton & ~event.button.button;
+			if (event.button.button < 4)
+				MouseButton = MouseButton & ~event.button.button;
+			else if (event.button.button == 4)
+			{
+				pressed[72] = 0;
+			}
+			else if (event.button.button == 5)
+			{
+				pressed[80] = 0;
+			}
 			break;
 
 		/*
