@@ -3981,6 +3981,13 @@ UnZipFile:
     UnZipSearch GUIfindBIN
     UnZipSearch GUIfindZIP
     UnZipSearch GUIfind1
+    UnZipSearch GUIfindIC7
+    UnZipSearch GUIfindIC6
+    UnZipSearch GUIfindIC5
+    UnZipSearch GUIfindIC4
+    UnZipSearch GUIfindIC3
+    UnZipSearch GUIfindIC2
+    UnZipSearch GUIfindIC1
     UnZipSearch GUIfindBlank
 .failed
     call ZipDelete
@@ -4006,6 +4013,14 @@ UnZipFile:
 .fail
     mov byte[ZipSupport],2
     ret
+
+GUIfindIC7 db '*.IC7',0
+GUIfindIC6 db '*.IC6',0
+GUIfindIC5 db '*.IC5',0
+GUIfindIC4 db '*.IC4',0
+GUIfindIC3 db '*.IC3',0
+GUIfindIC2 db '*.IC2',0
+GUIfindIC1 db '*.IC1',0
 
 ZipDelete:
     mov esi,mode7tab
@@ -4625,6 +4640,24 @@ NEWSYM loadfileGUI
     jnc near .nextfile
     dec byte[edi+1]
 .nonumer
+    mov edi,[.dotpos]
+    ; search for ICx files
+    cmp byte[edi],'.'
+    jne .noicfile
+    cmp byte[edi+3],'1'
+    jb .noicfile
+    cmp byte[edi+3],'7'
+    ja .noicfile
+    cmp byte[edi+4],0
+    jne .noicfile
+    dec byte[edi+3]
+    xor ecx,ecx
+    mov byte[.first],2
+    mov edx,fname+1
+    call Open_File
+    jnc near .nextfile
+    inc byte[edi+3]
+.noicfile
     ; search for A,B,C, etc.
     cmp byte[.first],0
     je .yesgd

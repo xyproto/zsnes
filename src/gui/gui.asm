@@ -171,6 +171,7 @@ EXTSYM ipxgetchar,ipxsendchar,TCPIPStoreByte
 EXTSYM TCPIPGetByte,GUIBIFIL
 EXTSYM ModemSendChar
 EXTSYM firstsaveinc
+EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
 %ifdef __LINUX__
 EXTSYM numlockptr
 %endif
@@ -620,7 +621,7 @@ ModemOKStat  db 0       ; OK is detected on modem status
 GUIwinposxo dd 0,5   ,60  ,30  ,55  ,50  ,35  ,5   ,30  ,10   ,10   ,50  ,65  ,20  ,70  ,50  ,3   ,50
 GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,20   ,20   ,20  ,60  ,30  ,65  ,50  ,22  ,60
 GUIwinsizex dd 0,244 ,126 ,189 ,167 ,170 ,188 ,244 ,8*16,235  ,240  ,190 ,9*16,8*16,9*16,140 ,250 ,160
-GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,189  ,150  ,190 ,42  ,40  ,42  ,70  ,190 ,60
+GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,189  ,150  ,190 ,42  ,40  ,42  ,70  ,190 ,100
 GUIwinptr   db 0
 
 GUItextcolor db 0,0,0,0,0

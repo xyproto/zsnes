@@ -327,6 +327,8 @@ NEWSYM initregr
     setreg 4016h*4,reg4016r
     setreg 4017h*4,reg4017r
 
+    setreg 4100h*4,reg4100r
+
     setreg 420Ah*4,reg420Ar
     setreg 420Bh*4,reg420Br
     setreg 420Ch*4,reg420Cr
@@ -702,6 +704,13 @@ NEWSYM SPC700read, dd 0
 NEWSYM SPC700write, dd 0
 
 NEWSYM JoyCRead, db 0
+
+NEWSYM nssdip1, db 0
+NEWSYM nssdip2, db 0
+NEWSYM nssdip3, db 0
+NEWSYM nssdip4, db 0
+NEWSYM nssdip5, db 0
+NEWSYM nssdip6, db 0
 
 NEWSYM ClearRegs
     mov word[VIRQLoc],0
@@ -1169,6 +1178,33 @@ reg4017r:
     rol dword[JoyDNow],1
     rol dword[JoyENow],1
     ret
+
+reg4100r:
+   cmp byte[nssdip1],1
+   je .nodip1
+   mov al,1
+.nodip1
+   cmp byte[nssdip1],1
+   je .nodip2
+   or al,02h
+.nodip2
+   cmp byte[nssdip3],1
+   je .nodip3
+   or al,04h
+.nodip3
+   cmp byte[nssdip4],1
+   je .nodip4
+   or al,08h
+.nodip4
+   cmp byte[nssdip5],1
+   je .nodip5
+   or al,10h
+.nodip5
+   cmp byte[nssdip6],1
+   je .nodip6
+   or al,20h
+.nodip6
+   ret
 
 reg420Ar:
 reg420Br:
