@@ -22,8 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef __LINUX__
 #include "gblhdr.h"
 #else
-#include <stdio.h>
-#include <string.h>
+#include <math.h>
 #endif
 
 #define ABS(x) ((x)<0?-(x):(x))
@@ -45,13 +44,12 @@ void ST010DoCommand(void);
 #define true 1
 #define false 0
 
-typedef signed char int8;
-typedef unsigned char uint8;
-typedef signed short int16;
-typedef unsigned short uint16;
-typedef int  int32;
-typedef unsigned  uint32;
-
+typedef signed char     int8;
+typedef unsigned char   uint8;
+typedef signed short    int16;
+typedef unsigned short  uint16;
+typedef int             int32;
+typedef unsigned int    uint32;
 
 // Mode 7 scaling constants for all raster lines
 const int16 ST010_M7Scale[176] = {
@@ -78,9 +76,6 @@ const int16 ST010_M7Scale[176] = {
 	0x002f,  0x002e,  0x002e,  0x002e,  0x002e,  0x002d,  0x002d,  0x002d,
 	0x002d,  0x002c,  0x002c,  0x002c,  0x002c,  0x002b,  0x002b,  0x002b
 };
-
-//temporary Op04 requirement
-#include <math.h>
 
 const int16 ST010_SinTable[256] = {
 	 0x0000,  0x0324,  0x0648,  0x096a,  0x0c8c,  0x0fab,  0x12c8,  0x15e2,
@@ -299,7 +294,7 @@ void ST010DoCommand(void)
     {
       SRAM[0x0006] = SRAM[0x0002];
       SRAM[0x0007] = SRAM[0x0003];
-      ST010_OP01(*(short*)&SRAM[0x0000], *(short*)&SRAM[0x0002], (short *)SRAM, (short *)SRAM+2, (short *)SRAM+4, (short *)SRAM+10);
+      ST010_OP01(*(short*)&SRAM[0x0000], *(short*)&SRAM[0x0002], (short *)SRAM, (short *)&SRAM[2], (short *)&SRAM[4], (short *)&SRAM[0x10]);
     }
     break;
 
@@ -307,7 +302,7 @@ void ST010DoCommand(void)
     
     case 0x02:
     {
-      ST010_SortDrivers(*(short*)&SRAM[0x0024], (uint16*) (SRAM + 0x0040), (uint16*) (SRAM + 0x0080));
+      ST010_SortDrivers(*(short*)&SRAM[0x0024], (uint16*)&SRAM[0x0040], (uint16*)&SRAM[0x0080]);
     }
     break;
     
@@ -325,7 +320,7 @@ void ST010DoCommand(void)
     
     case 0x03:
     {
-      ST010_Scale(*(short*)&SRAM[0x0004], *(short*)&SRAM[0x0000], *(short*)&SRAM[0x0002], (int *)SRAM+10, (int *)SRAM+14);
+      ST010_Scale(*(short*)&SRAM[0x0004], *(short*)&SRAM[0x0000], *(short*)&SRAM[0x0002], (int *)&SRAM[0x10], (int *)&SRAM[0x14]);
     }
     break;
 
@@ -498,7 +493,7 @@ void ST010DoCommand(void)
 
     case 0x06:
     {
-      ST010_Multiply(*(short*)&SRAM[0x0000], *(short*)&SRAM[0x0002], (int *)SRAM+10);
+      ST010_Multiply(*(short*)&SRAM[0x0000], *(short*)&SRAM[0x0002], (int *)&SRAM[0x10]);
     }
     break;
 
@@ -563,7 +558,7 @@ void ST010DoCommand(void)
     
     case 0x08:
     {
-      ST010_Rotate(*(short*)&SRAM[0x0004], *(short*)&SRAM[0x0000], *(short*)&SRAM[0x0002], (short *)SRAM+10, (short *)SRAM+12);
+      ST010_Rotate(*(short*)&SRAM[0x0004], *(short*)&SRAM[0x0000], *(short*)&SRAM[0x0002], (short *)&SRAM[0x10], (short *)&SRAM[0x12]);
     }
     break;
 
