@@ -270,18 +270,10 @@ int main (int argc, char *argv[]) {
 				if (strcmp(optarg,"p") == 0) {
 					DisplayS = 1;
 					pp++;
-				}
-
-				else
-
-				if (strcmp(optarg,"a") == 0) {
+				} else if (strcmp(optarg,"a") == 0) {
 					showallext = 1;
 					pp++;
-				}
-
-				else
-
-				if (strcmp(optarg,"n") == 0) {
+				} else if (strcmp(optarg,"n") == 0) {
 					SnowOn = 1;
 					pp++;
 				} else {
