@@ -1,3 +1,27 @@
+2001-04-19 00:52  pagefault
+
+	* src/win/winlink.cpp: Fixed sound buffer bug
+
+2001-04-18 21:15  pagefault
+
+	* src/win/zogl.c: Started work on OpenGL support
+
+2001-04-18 19:25  pagefault
+
+	* src/win/zipxw.c: More work on Win32 IPX support
+
+2001-04-18 02:12  pagefault
+
+	* src/win/zipxw.c: Started work on Win32 IPX support
+
+2001-04-18 00:57  pagefault
+
+	* src/win/winlink.cpp: Added more meaningful error messages
+
+2001-04-18 00:37  pagefault
+
+	* src/win/winlink.cpp: Fixed problem with non IE/Netscape browsers
+
 2001-04-17  teuf
 
 	* src/linux/sdllink.c: Added some preliminary joystick support
