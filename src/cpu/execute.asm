@@ -1394,17 +1394,17 @@ NEWSYM endprog
     call Write_File
     call Close_File
 .nosram
-    cmp byte[SFXSRAM],0
-    je .nosfxsram
+    cmp byte[SFXBATT],0
+    je .nosfxbatt
     mov edx,fnames+1
     call Create_File
-    jc .nosfxsram
+    jc .nosfxbatt
     mov bx,ax
     mov ecx,65536
     mov edx,[sfxramdata]
     call Write_File
     call Close_File
-.nosfxsram
+.nosfxbatt
 
     cmp byte[SETAEnable],0
     je .nosetasram
@@ -1521,7 +1521,7 @@ NEWSYM initaddrl, dd 0                  ; initial address location
 NEWSYM NetSent, dd 0
 NEWSYM nextframe, dd 0                  ; tick count for timer
 NEWSYM curfps,    db 0                  ; frame/sec for current screen
-NEWSYM SFXSRAM,   db 0
+NEWSYM SFXBATT,   db 0
 NEWSYM newgfxerror, db 'NEED MEMORY FOR GFX ENGINE',0
 NEWSYM newgfxerror2, db 'NEED 320x240 FOR NEW GFX 16B',0
 ;newgfxerror db 'NEW GFX IN 16BIT IS N/A',0

@@ -97,7 +97,7 @@ EXTSYM SRAMDir,SRAMDrive,cfgloadsdir,fnamest,statefileloc
 EXTSYM ForcePal,ForceROMTiming,ForceHiLoROM,InitDir,InitDrive,enterpress,frameskip
 EXTSYM maxromspace,curromspace,infoloc, patchfile
 EXTSYM gotoroot,headdata,printnum,romispal
-EXTSYM InitFxTables,SFXSRAM,SfxR1,SfxR2,SfxSCMR,SfxSFR,finterleave
+EXTSYM InitFxTables,SFXBATT,SfxR1,SfxR2,SfxSCMR,SfxSFR,finterleave
 EXTSYM initregr,initregw,memtabler16,DSP1Read16b3F,memaccessbankr16
 EXTSYM memtabler8,DSP1Read8b3F,memaccessbankr8,memtablew16,DSP1Write16b
 EXTSYM memaccessbankw16,memtablew8,DSP1Write8b,memaccessbankw8,DSP1Write16b3F
@@ -294,7 +294,7 @@ NEWSYM init
     ; above (by placing two digits in the extension). This is so
     ; as not to break any other code later on which depends
     ; on it being present.
-	 mov ebx,[statefileloc]
+  mov ebx,[statefileloc]
 %ifdef __LINUX__
     mov word[fnamest+ebx-1],'st'
 %else
@@ -4424,7 +4424,7 @@ NEWSYM CheckROMType
     mov byte[RTCEnable],0
     mov byte[SA1Enable],0
     mov byte[SDD1Enable],0
-    mov byte[SFXSRAM],0
+    mov byte[SFXBATT],0
     mov byte[OBCEnable],0
     mov byte[CHIPSRAM],0
     mov byte[SGBEnable],0
@@ -4507,14 +4507,14 @@ int 3h
     cmp ax,01520h
     jne .notSFXC
     mov byte[SFXEnable],1
-    mov byte[SFXSRAM],1 ;Contains Battery
+    mov byte[SFXBATT],1 ;Contains Battery
     jmp .endchpdtct
 .notSFXC
     cmp ax,01A20h
     jne .notSFXD
     mov byte[SFXEnable],1
+    mov byte[SFXBATT],1 ;Contains Battery
     mov byte[SFXIRQFlag],1
-    mov byte[SFXSRAM],1 ;Contains Battery
     jmp .endchpdtct
 .notSFXD
     cmp ax,05535h

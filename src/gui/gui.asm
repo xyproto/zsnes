@@ -15,7 +15,7 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-	
+ 
 ; Sorry.  The GUI code is a total mess.  One problem I encountered is that
 ;   there seems to be a bug in nasm with using math calculations combined
 ;   with macros within macros, so in some macro definitions, I had to
@@ -60,7 +60,7 @@
 ;   ButtonProcess         - routines that processes boxed buttons
 ;   CheatCodeSearchInit
 ;   guiwincontrol
-	
+ 
 
 %include "macros.mac"
 
@@ -77,7 +77,7 @@ EXTSYM Voice0Status, Voice1Status, Voice2Status, Voice3Status, Voice4Status
 EXTSYM Voice5Status, Voice6Status, Voice7Status, romtype, SetIRQVectors
 EXTSYM ClearScreen, statesaver, loadstate2, vidbuffer, ASCII2Font, hirestiledat
 EXTSYM showallext, ROMTypeNOTFound, scanlines,statefileloc,pl1selk,pl2selk
-EXTSYM fnamest,sprlefttot,spritetablea,fnames,SFXSRAM,sfxramdata,setaramdata,SETAEnable,cgram,srama
+EXTSYM fnamest,sprlefttot,spritetablea,fnames,SFXBATT,sfxramdata,setaramdata,SETAEnable,cgram,srama
 EXTSYM tempco0,prevbright,maxbr,prevpal,coladdr,coladdg,coladdb
 EXTSYM scaddtype,ScreenScale,vesa2red10,initvideo2,initvideo,pressed,UpdateDevices
 EXTSYM memtabler8,memtablew8,writeon,pl1contrl,pl2contrl,JoyRead,SetInputDevice
@@ -145,7 +145,7 @@ EXTSYM CReadHead,ReadHead,CFWriteHead,CFWriteStart
 EXTSYM JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209,JoyMaxX209
 EXTSYM JoyMinY209,JoyMaxY209,GetCoords,GetCoords3
 EXTSYM MultiTap,SFXEnable
-EXTSYM RestoreSystemVars	
+EXTSYM RestoreSystemVars 
 EXTSYM TCPIPStartServer
 EXTSYM TCPIPInitConnectToServer
 EXTSYM TCPIPWaitForConnection
@@ -807,8 +807,6 @@ clearsram:
     inc eax
     dec ecx
     jnz .loop
-    cmp byte[SFXSRAM],0
-    je .nosfxsram
     mov eax,[sfxramdata]
     mov ecx,65536
 .loop2
@@ -816,7 +814,6 @@ clearsram:
     inc eax
     dec ecx
     jnz .loop2
-.nosfxsram
 
     cmp byte[SETAEnable],0
     je .nosetasram
@@ -1784,8 +1781,6 @@ NEWSYM StartGUI
 
     call SaveSramData
 
-    cmp byte[SFXSRAM],0
-    je .nosfxsram
     clim
     mov edx,fnames+1
     call Create_File
@@ -1797,7 +1792,6 @@ NEWSYM StartGUI
     call Close_File
 .nosfxramwrite
     stim
-.nosfxsram
 
     cmp byte[SETAEnable],0
     je .nosetasram

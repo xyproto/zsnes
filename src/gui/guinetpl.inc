@@ -1422,7 +1422,7 @@ SECTION .data
 SECTION .text
 
 transfersram:
-    cmp byte[SFXSRAM],0
+    cmp byte[SFXBATT],0
     jne .nosram
     cmp byte[SA1Enable],1
     je .nosram
