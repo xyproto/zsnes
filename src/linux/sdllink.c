@@ -1313,7 +1313,7 @@ int startgame(void)
 	   }
    }
 
-   flags != ( FullScreen ? SDL_FULLSCREEN : 0);
+   flags |= ( FullScreen ? SDL_FULLSCREEN : 0);
 
    surface = SDL_SetVideoMode(WindowWidth, WindowHeight, 0, flags);
    if (surface == NULL) {
