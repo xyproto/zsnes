@@ -32,60 +32,120 @@ EXTSYM CalibYmin209, CalibXmax209, CalibYmax209
 
 NEWSYM JoyAsmStart
 
-NEWSYM joy4218, db 0
-NEWSYM joy4219, db 0
-NEWSYM joy4218j, db 0
-NEWSYM joy4219j, db 0
-NEWSYM joy421A, db 0
-NEWSYM joy421B, db 0
-NEWSYM joy421Aj, db 0
-NEWSYM joy421Bj, db 0
 
-NEWSYM JoyCenterX, dd 0
-NEWSYM JoyCenterY, dd 0
-NEWSYM JoyMaxX,    dd 0
-NEWSYM JoyMaxY,    dd 0
-NEWSYM JoyMinX,    dd 0
-NEWSYM JoyMinY,    dd 0
-NEWSYM JoyExists,  db 0
-NEWSYM JoyX,       dd 0
-NEWSYM JoyY,       dd 0
-NEWSYM JoyCenterX2, dd 0
-NEWSYM JoyCenterY2, dd 0
-NEWSYM JoyMaxX2,    dd 0
-NEWSYM JoyMaxY2,    dd 0
-NEWSYM JoyMinX2,    dd 0
-NEWSYM JoyMinY2,    dd 0
-NEWSYM JoyExists2,  db 0
-NEWSYM JoyX2,       dd 0
-NEWSYM JoyY2,       dd 0
-NEWSYM JoyAltrn,   db 0
+SECTION .data
+
+;NEWSYM joy4218, db 0
+;NEWSYM joy4219, db 0
+;NEWSYM joy4218j, db 0
+;NEWSYM joy4219j, db 0
+;NEWSYM joy421A, db 0
+;NEWSYM joy421B, db 0
+;NEWSYM joy421Aj, db 0
+;NEWSYM joy421Bj, db 0
+
+;NEWSYM JoyCenterX, dd 0
+;NEWSYM JoyCenterY, dd 0
+;NEWSYM JoyMaxX,    dd 0
+;NEWSYM JoyMaxY,    dd 0
+;NEWSYM JoyMinX,    dd 0
+;NEWSYM JoyMinY,    dd 0
+;NEWSYM JoyExists,  db 0
+;NEWSYM JoyX,       dd 0
+;NEWSYM JoyY,       dd 0
+;NEWSYM JoyCenterX2, dd 0
+;NEWSYM JoyCenterY2, dd 0
+;NEWSYM JoyMaxX2,    dd 0
+;NEWSYM JoyMaxY2,    dd 0
+;NEWSYM JoyMinX2,    dd 0
+;NEWSYM JoyMinY2,    dd 0
+;NEWSYM JoyExists2,  db 0
+;NEWSYM JoyX2,       dd 0
+;NEWSYM JoyY2,       dd 0
+;NEWSYM JoyAltrn,   db 0
 NEWSYM JoyAltrn2,  db 2
-NEWSYM JoyCenterX209, dd 0
-NEWSYM JoyCenterY209, dd 0
-NEWSYM JoyMaxX209,    dd 0
-NEWSYM JoyMaxY209,    dd 0
-NEWSYM JoyMinX209,    dd 0
-NEWSYM JoyMinY209,    dd 0
-NEWSYM JoyCenterX2209, dd 0
-NEWSYM JoyCenterY2209, dd 0
-NEWSYM JoyMaxX2209,    dd 0
-NEWSYM JoyMaxY2209,    dd 0
-NEWSYM JoyMinX2209,    dd 0
-NEWSYM JoyMinY2209,    dd 0
+;NEWSYM JoyCenterX209, dd 0
+;NEWSYM JoyCenterY209, dd 0
+;NEWSYM JoyMaxX209,    dd 0
+;NEWSYM JoyMaxY209,    dd 0
+;NEWSYM JoyMinX209,    dd 0
+;NEWSYM JoyMinY209,    dd 0
+;NEWSYM JoyCenterX2209, dd 0
+;NEWSYM JoyCenterY2209, dd 0
+;NEWSYM JoyMaxX2209,    dd 0
+;NEWSYM JoyMaxY2209,    dd 0
+;NEWSYM JoyMinX2209,    dd 0
+;NEWSYM JoyMinY2209,    dd 0
 
-JoyQuant    db 0
-JoyBQuant   db 0
-NumSWs      db 0
-NumGRiPs    db 0
-PPad        db 0        ; b0 = pp0, b1 = pp1
+;JoyQuant    db 0
+;JoyBQuant   db 0
+;NumSWs      db 0
+;NumGRiPs    db 0
+;PPad        db 0        ; b0 = pp0, b1 = pp1
 
-JoyQuant209    db 0
-JoyBQuant209   db 0
-NumSWs209      db 0
-NumGRiPs209    db 0
-Buttons6       db 0
-Buttons6209    db 0
+;JoyQuant209    db 0
+;JoyBQuant209   db 0
+;NumSWs209      db 0
+;NumGRiPs209    db 0
+;Buttons6       db 0
+;Buttons6209    db 0
+
+
+SECTION .bss
+
+NEWSYM joy4218, resb 1
+NEWSYM joy4219, resb 1
+NEWSYM joy4218j, resb 1
+NEWSYM joy4219j, resb 1
+NEWSYM joy421A, resb 1
+NEWSYM joy421B, resb 1
+NEWSYM joy421Aj, resb 1
+NEWSYM joy421Bj, resb 1
+
+NEWSYM JoyCenterX, resd 1
+NEWSYM JoyCenterY, resd 1
+NEWSYM JoyMaxX,    resd 1
+NEWSYM JoyMaxY,    resd 1
+NEWSYM JoyMinX,    resd 1
+NEWSYM JoyMinY,    resd 1
+NEWSYM JoyExists,  resb 1
+NEWSYM JoyX,       resd 1
+NEWSYM JoyY,       resd 1
+NEWSYM JoyCenterX2, resd 1
+NEWSYM JoyCenterY2, resd 1
+NEWSYM JoyMaxX2,    resd 1
+NEWSYM JoyMaxY2,    resd 1
+NEWSYM JoyMinX2,    resd 1
+NEWSYM JoyMinY2,    resd 1
+NEWSYM JoyExists2,  resb 1
+NEWSYM JoyX2,       resd 1
+NEWSYM JoyY2,       resd 1
+NEWSYM JoyAltrn,   resb 1
+NEWSYM JoyCenterX209, resd 1
+NEWSYM JoyCenterY209, resd 1
+NEWSYM JoyMaxX209,    resd 1
+NEWSYM JoyMaxY209,    resd 1
+NEWSYM JoyMinX209,    resd 1
+NEWSYM JoyMinY209,    resd 1
+NEWSYM JoyCenterX2209, resd 1
+NEWSYM JoyCenterY2209, resd 1
+NEWSYM JoyMaxX2209,    resd 1
+NEWSYM JoyMaxY2209,    resd 1
+NEWSYM JoyMinX2209,    resd 1
+NEWSYM JoyMinY2209,    resd 1
+
+JoyQuant    resb 1
+JoyBQuant   resb 1
+NumSWs      resb 1
+NumGRiPs    resb 1
+PPad        resb 1        ; b0 = pp0, b1 = pp1
+
+JoyQuant209    resb 1
+JoyBQuant209   resb 1
+NumSWs209      resb 1
+NumGRiPs209    resb 1
+Buttons6       resb 1
+Buttons6209    resb 1
 
 ;NEWSYM pl3selk,   dd 0   ; 3SELECT = SHIFT
 ;NEWSYM pl3startk, dd 0   ; 3START = ENTER
@@ -100,6 +160,8 @@ Buttons6209    db 0
 ;NEWSYM pl3Ak,     dd 0   ; 3B = END
 ;NEWSYM pl3Rk,     dd 0   ; 3R = PAGE DOWN
 
+
+SECTION .text
 
 NEWSYM GetCoords
   mov dword[JoyX],0

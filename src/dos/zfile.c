@@ -24,9 +24,6 @@
 #include <share.h>
 #include <sys/stat.h>
 #include <unistd.h>
-/* #ifdef ZDOS
-#include <dos.h>
-#endif */
 
 
 #define DWORD unsigned int
