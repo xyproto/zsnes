@@ -422,7 +422,6 @@ NEWSYM ProcessRewind
     push ebx
     pushad
     call RestoreCVFrame
-    emms
     popad
     mov esi,[tempesi]
     mov edi,[tempedi]
@@ -470,7 +469,6 @@ NEWSYM UpdateRewind
     mov [tempebp],ebp
     pushad
     call BackupCVFrame
-    emms
     popad
     inc dword[RewindPos]
     and dword[RewindPos],0Fh
@@ -2803,7 +2801,6 @@ NEWSYM cpuover
     jne .nobackstate
     pushad
     call BackupCVFrame
-    emms
     popad
 .nobackupcvframe
     mov ebx,[CBackupPos]
@@ -2998,7 +2995,6 @@ NEWSYM cpuover
     je .noquit2
     pushad
     call RestoreCVFrame
-    emms
     popad
     mov esi,[tempesi]
     mov edi,[tempedi]
@@ -3021,7 +3017,6 @@ NEWSYM cpuover
     je .noupdate
     pushad
     call RestoreCVFrame
-    emms
     popad
     mov esi,[tempesi]
     mov edi,[tempedi]
