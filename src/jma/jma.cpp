@@ -362,6 +362,13 @@ namespace JMA
       throw(JMA_FILE_NOT_FOUND);
     }
 
+    //If the JMA only contains one file, we can skip a lot of overhead
+    if (files.size() == 1)
+    {
+      get_all_files(buffer);
+      return;
+    }
+    
     if (chunk_size) //we are using non-solid archive..
     {
       unsigned int chunks_to_skip = size_to_skip / chunk_size;
