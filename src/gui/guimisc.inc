@@ -21,9 +21,10 @@
 
 MovieRecord:
     mov byte[GUICBHold],0
-    mov dword[MovieCounter],0
     cmp byte[MovieProcessing],0
-    jne near .dontrecord
+    jne .noreset
+    mov dword[MovieCounter],0
+.noreset
     ; check if movie exists already
     mov ebx,[statefileloc]
     mov eax,[fnamest+ebx-3]
@@ -43,14 +44,20 @@ MovieRecord:
     mov byte[MovieRecordWinVal],1
     jmp .skipstate
 .nocheck
+    cmp byte[MovieProcessing],0
+    jne near .nocheckit
     mov dword[CFWriteHead],0
     mov dword[CReadHead],0
     mov dword[ReadHead],0
     mov dword[CFWriteStart],64
+.nocheckit
     mov byte[MovieRecordWinVal],0
     call ChangetoSRAMdir
     mov byte[NoPictureSave],1
+    cmp byte[MovieProcessing],0
+    jne .nostatesaver
     call statesaver
+.nostatesaver
     mov byte[NoPictureSave],0
     mov edx,fnamest+1
     call Open_File_Write
@@ -59,6 +66,8 @@ MovieRecord:
     mov cx,0
     mov dx,0
     call File_Seek_End
+    cmp byte[MovieProcessing],0
+    jne near .netstuff
     mov al,[soundon]
     mov [RecData],al
     mov eax,[welcome+8]
@@ -107,6 +116,7 @@ MovieRecord:
     mov byte[DSPMem+68h],0
     mov byte[DSPMem+78h],0
 .netstuff
+    mov byte[MovieProcessing],2
     call ChangetoLOADdir
 .skipstate
     pop eax
