@@ -84,7 +84,7 @@ OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ
 ALL:	@ZSNESEXE@
 
 @ZSNESEXE@:  ${OBJS}
-	g++ -o @ZSNESEXE@ ${OBJS} @CFLAGS@ @LDFLAGS@
+	@CXX@ -o @ZSNESEXE@ ${OBJS} @CFLAGS@ @LDFLAGS@
 
 ${ZIPDIR}/zpng.o: ${ZIPDIR}/zpng.c ${ZIPDIR}/zpng.h
 ${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/zunzip.h
