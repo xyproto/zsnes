@@ -187,7 +187,6 @@ CheatCodeSearchProcess:
     inc esi
     dec ecx
     jnz .exactloop
-; CSCurValue  dd 0
     mov byte[CopyRamToggle],1
     mov byte[CheatSearchStatus],1
 .nodisplay

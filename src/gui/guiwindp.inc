@@ -3523,9 +3523,6 @@ Cheatmodeadd:
 .nodisplay
     ret
 
-;CheatSrcByteSize db 0
-;CheatSrcByteBase db 0
-;CheatSrcSearchType db 0
 SECTION .bss
 CheatWinMode resb 1
 CheatSearchStatus resb 1
@@ -4474,18 +4471,6 @@ DisplayNetOptnsChatWindow:
 .zero
     GUIOuttextwin2 8,6,130,GUINetTextV
     GUIOuttextwin2 8,110,130,GUINetTexta
-
-    ; #############
-;    mov eax,[CViewLoc]
-;    shr eax,5
-;    add eax,12
-;    mov [TViewLoc],eax
-;    181,112,167
-;CViewLoc dd 0
-;NViewLoc dd 0
-;TViewLoc dd 0
-;    15,181,112
-;    DrawSlideBarWin 8,181,15,[NViewLoc],[TViewLoc],12,97,GUINCStA
     ret
 
 SECTION .bss
@@ -5232,10 +5217,10 @@ DisplayGUIOptns:
     mov byte[GUItextcolor],223
     ret
 
-;mousewrap db 0          ; 0 = mouse boundries, 1 = mouse wrap
-;mouseshad db 1          ; 0 = no mouse shadow, 1 = mouse shadow
-;lastcursres db 0        ; 0 = go to load, 1 = go to previous menu, 2 = no menu
-;resetposn   db 1        ; 0 = no window reset, 1 = window reset
+;mousewrap   0      ; 0 = mouse boundries, 1 = mouse wrap
+;mouseshad   1      ; 0 = no mouse shadow, 1 = mouse shadow
+;lastcursres 0      ; 0 = go to load, 1 = go to previous menu, 2 = no menu
+;resetposn   1      ; 0 = no window reset, 1 = window reset
 
 SECTION .data
 GUIGUIOptnsText1 db 'COLOR:',0
@@ -6152,10 +6137,6 @@ NEWSYM GUINumCombo, resb 1
 GUIComboData resb 50
 GUIScrolBufA resb 21
 GUIScrolBufB resb 10
-
-
-;CombinDataGlob times 3300 db 0 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff
-;CombinDataLocl times 3300 db 0
 
 SECTION .data
 GUIComboText1 db 'DESCRIPTION',0

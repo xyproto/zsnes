@@ -180,8 +180,6 @@ EXTSYM deinitipx, IPXSearchval, ipxlookforconnect, initipx
 EXTSYM PreparePacketIPX,SendPacketIPX,ipxgetchar,ipxsendchar
 %endif
 
-NEWSYM GuiAsmStart
-
 %include "gui/guitools.inc"
 %include "gui/guimisc.inc"
 %include "gui/guimouse.inc"
@@ -777,7 +775,6 @@ NEWSYM GUICTimer,   resd 1
 NEWSYM GUIOn,       resb 1
 NEWSYM GUIOn2,      resb 1
 NEWSYM GUIReset,    resb 0
-;GOSPort db 0
 NEWSYM CurPalSelect, resb 1
 NEWSYM MotionBlur, resb 1
 
@@ -1915,12 +1912,6 @@ NEWSYM StartGUI
     jnz .nickloop
     mov byte[NetNewNick],0
 .nonewnick
-
-;NEWSYM NetChatFirst, db 0
-;NEWSYM NetServer, db 0
-;NEWSYM NetQuitAfter, db 0
-;NEWSYM NetNewNick, times 16 db 0
-;NEWSYM NetFilename, times 512 db 0
 
     cmp byte[CNetType],20
     je near .noautostate
@@ -4444,7 +4435,7 @@ GUISetPal:
     jnz .next
     ret
 
-SECTION .bss ;ALIGN=32
+SECTION .bss
 NEWSYM GUICPC, resw 256
 SECTION .text
 
@@ -5664,7 +5655,3 @@ db 137,176,166,37,192,241,169,84,32,85,112,168,154,7,247,146,183,225,246,173
 db 57,103,110,236,113,118,203,200,22,87,251,7,138,37,12,84,221,171,51,209
 db 242,37,89,73,151,162,139,189,131,209,221,96,107,144,175,79,199,123,98,138
 db 226,86,221,254,72,14,126,180,200,171,85,94,120,124,196,225,150,57,219,158
-
-SECTION .text
-
-NEWSYM GuiAsmEnd

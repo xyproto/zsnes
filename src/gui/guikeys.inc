@@ -650,9 +650,6 @@ GUIgetcurrentinput:
     ret
 
 GUITCPIPKeys:
-;GUINetTextk2 db '  0.  0.  0.  0',0
-;GUINetTextl2 db '7845',0
-;GUINetTextm2 db 0,0,0
     cmp byte[GUINetTextm2],1
     je near .section2
     mov edi,TCPIPAddress

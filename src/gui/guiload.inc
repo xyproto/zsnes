@@ -189,7 +189,6 @@ GUIloadfilename:
     cmp byte[CNetType],20
     jne near .nocnettype
     mov byte[netlastloaded],1
-; FileNameMod times 29 db 0
     cmp byte[GUIcmenupos],1
     jne .nomenuout
     mov byte[GUIcmenupos],0

@@ -1385,7 +1385,6 @@ ProcessRemoteCommand:
     call RemoteSendChar
     jmp .finsend2
 .nolatencych
-; FileNameMod times 29 db 0
     cmp al,10
     jne .nosendfn
     xor ebx,ebx
