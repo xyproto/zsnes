@@ -33,6 +33,25 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #endif
 
+#ifndef __MSDOS__
+extern unsigned char NetChatFirst, NetServer, NetNewNick, NetFilename[512], CmdLineTCPIPAddress,
+                     NetQuitAfter, UDPConfig, CmdLineNetPlay;
+#endif
+
+#ifdef __WIN32__
+extern unsigned char KitchenSync, Force60hz;
+
+#endif
+
+extern unsigned char Palette0, pl1contrl, pl2contrl, MMXSupport, Force8b, ForcePal, GUIClick,
+                     MouseDis, MusicRelVol, ScreenScale, SoundQuality, StereoSound, V8Mode,
+                     antienab, cvidmode, debugdisble, debugger, enterpress, vsyncon, DisplayS,
+                     fname, SnowOn, Triplebufen, SPC700sh, OffBy1Line, DSPDisable, frameskip,
+                     gammalevel, guioff, forceromtype, per2exec, scanlines, soundon, spcon,
+                     showallext, autoloadstate, smallscreenon;
+
+void ConvertJoyMap1(), ConvertJoyMap2(), zstart(), makeextension();
+
 static void display_help()
 {
   puts("Usage : zsnes [-d,-f #, ... ] <filename.sfc>");
@@ -43,6 +62,9 @@ static void display_help()
   puts("                0 = None       1 = Keyboard   2 = Joystick   3 = Gamepad");
   puts("                4 = 4Button    5 = 6Button    6 = Sidewinder   ");
   puts("  -3      Enable triple buffering (disables vsync)");
+#ifdef __WIN32__
+  puts("  -6      Force 60Hz refresh rate");
+#endif
   puts("  -7      Disable SPC700 speedhack");
   puts("  -8      Force 8-bit sound");
   puts("  -9      Off by 1 line fix");
@@ -64,6 +86,9 @@ static void display_help()
   puts("  -h      Force HiROM");
   puts("  -j      Disable Mouse (Automatically turns off right mouse click)");
   puts("  -k #    Set Volume Level (0 .. 100)");
+#ifdef __WIN32__
+  puts("  -ks     Enable the KitchenSync");
+#endif
   puts("  -l      Force LoROM");
   puts("  -m      Disable GUI (Must specify ROM filename)");
   puts("  -n #    Enable scanlines (when available)");
@@ -145,7 +170,7 @@ static void display_help()
 
 static size_t zatoi(const char *str)
 {
-  char *orig_str = str;
+  const char *orig_str = str;
   while (*str++)
   {
     if (!isdigit(*str)) { return(~0); }
@@ -153,7 +178,7 @@ static size_t zatoi(const char *str)
   return((size_t)atoi(orig_str));
 }
 
-static void handle_params(argc, argv)
+static void handle_params(int argc, const char **argv)
 {
   int i;
 
@@ -165,7 +190,7 @@ static void handle_params(argc, argv)
   if (argv[1][0] == '/' && strlen(argv[1]) == 6)
   {
     size_t i = 0, j = 0;
-    char *strp;
+    char *strp, *p;
 
     if (toupper(argv[1][1]) == 'T') UDPConfig=0;
     if (toupper(argv[1][2]) == 'S') NetServer=1;
@@ -213,12 +238,11 @@ static void handle_params(argc, argv)
     }
     strp[j] = 0;
 
-    strp = &NetFilename;
-    strncpy(strp, argv[3], 512);
-    strp[511] = 0;
+    strncpy(NetFilename, argv[3], 512);
+    NetFilename[511] = 0;
     if (NetServer == 2)
     {
-      if (strptr < 4)
+      if (argc < 5)
       {
         NetServer = 0;
       }
@@ -230,7 +254,7 @@ static void handle_params(argc, argv)
       }
     }
 
-    for (p = NetFilename+strlen(NetFilename)-1; (p > NetFilename) && (*p != DIR_SLASH); p--);
+    for (p = NetFilename+strlen(NetFilename)-1; (p > (char *)NetFilename) && (*p != DIR_SLASH); p--);
     *p = 0;
     chdir(NetFilename);
     *p = DIR_SLASH;
@@ -281,6 +305,12 @@ static void handle_params(argc, argv)
             vsyncon = 0;
             Triplebufen = 1;
             break;
+
+          #ifdef __WIN32__
+          case '6': //Force 60Hz
+            Force60hz = 1;
+            break;
+          #endif
 
           case '7': //SPC700 speed hack disable
             SPC700sh = 1;
@@ -421,67 +451,77 @@ static void handle_params(argc, argv)
             display_help();
             break;
         }
-        else if (!argv[i][3]) //- followed by a two letters
+      }
+      else if (!argv[i][3]) //- followed by a two letters
+      {
+        if (tolower(argv[i][1]) == 'c' && tolower(argv[i][2]) == 'c') //Enable small screen
         {
-          if (tolower(argv[i][1]) == 'c' && tolower(argv[i][2]) == 'c') //Enable small screen
-          {
-            smallscreenon = 1;
-          }
-
-          else if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 'd') //Disable sound DSP emulation
-          {
-            DSPDisable = 1;
-          }
-
-          else if (tolower(argv[i][1]) == 'o' && tolower(argv[i][2]) == 'm') //Enable MMX support
-          {
-            MMXSupport = 1;
-          }
-
-          else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'p') //Display sound information
-          {
-            DisplayS = 1;
-          }
-
-          else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'a') //Show all extensions in GUI
-          {
-            showallext = 1;
-          }
-
-          else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'n') //Enable Snowy GUI Background
-          {
-            SnowOn = 1;
-          }
-
-          else if (tolower(argv[i][1]) == 'v' && argv[i][2] == '8') //V8 Mode
-          {
-            V8Mode = 1;
-          }
-
-          else if (tolower(argv[i][1]) == 'z' && argv[i][2] == 's') //Autoload save state
-          {
-            i++;
-            if ((autoloadstate = zatoi(argv[i])+1) > 10)
-            {
-              puts("State load position must be a value of 0 to 9!");
-              exit(1);
-            }
-          }
-          default:
-            display_help();
-            break;
+          smallscreenon = 1;
         }
-        else //- followed by more than 2 letters
+
+        else if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 'd') //Disable sound DSP emulation
+        {
+          DSPDisable = 1;
+        }
+
+        #ifdef __WIN32__
+        else if (tolower(argv[i][1]) == 'k' && tolower(argv[i][2]) == 's') //Enable KitchenSync
+        {
+          KitchenSync = 1;
+        }
+        #endif
+
+        else if (tolower(argv[i][1]) == 'o' && tolower(argv[i][2]) == 'm') //Enable MMX support
+        {
+          MMXSupport = 1;
+        }
+
+        else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'p') //Display sound information
+        {
+          DisplayS = 1;
+        }
+
+        else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'a') //Show all extensions in GUI
+        {
+          showallext = 1;
+        }
+
+        else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'n') //Enable Snowy GUI Background
+        {
+          SnowOn = 1;
+        }
+
+        else if (tolower(argv[i][1]) == 'v' && argv[i][2] == '8') //V8 Mode
+        {
+          V8Mode = 1;
+        }
+
+        else if (tolower(argv[i][1]) == 'z' && argv[i][2] == 's') //Autoload save state
+        {
+          i++;
+          if ((autoloadstate = zatoi(argv[i])+1) > 10)
+          {
+            puts("State load position must be a value of 0 to 9!");
+            exit(1);
+          }
+        }
+
+        else
         {
           display_help();
+          break;
         }
+      }
+      else //- followed by more than 2 letters
+      {
+        display_help();
       }
     }
     else //Param with no - or / prefix
     {
       char *fvar = &fname;
-      fvar[0] = strlen(argv[p]);
-      strncpy(&fvar[1],argv[p],127);
+      fvar[0] = strlen(argv[i]);
+      strncpy(&fvar[1],argv[i],127);
       break;
     }
   }
