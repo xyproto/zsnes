@@ -49,7 +49,7 @@ extern  unsigned char cvidmode;
 
 // OPENGL VARIABLES
 #ifdef __OPENGL__
-unsigned short glvidbuffer[512*512];
+unsigned short *glvidbuffer = 0;
 GLuint gltextures[3];
 int gl_inited = 0;
 int gltexture256, gltexture512;
@@ -502,19 +502,20 @@ int startgame(void)
     }
     
 #ifdef __OPENGL__
-    if (gl_inited) {
-     /* this _SHOULD_ be safe even if they aren't generated:
-        "glDeleteTextures silently ignores 0's and names that do not correspond to existing textures."
-	However, nVidia's drivers are far less than perfect.
-     */
-     glDeleteTextures(3, gltextures);
-     gl_inited = 0;
-    }
     if (UseOpenGL) {
-     if (SurfaceY) glViewport(0,0, SurfaceX, SurfaceY);
-     else glViewport(0,0, SurfaceX, 1); 
-     glGenTextures(3, gltextures);
-     gl_inited = 1;
+        if (SurfaceY) glViewport(0,0, SurfaceX, SurfaceY);
+	else glViewport(0,0, SurfaceX, 1); 
+        if (!gl_inited) {
+	    glGenTextures(3, gltextures);
+	    glvidbuffer = malloc(512*512*2);
+	    gl_inited = 1;
+	}
+    } else {
+       if (gl_inited) {
+	    glDeleteTextures(3, gltextures);
+	    free(glvidbuffer);
+	    gl_inited = 0;
+	}
     }
 
     BitDepth = (UseOpenGL ? 16 : 0);
@@ -1003,15 +1004,16 @@ static void drawscreenwin_drawglblock(int hires, int start, int end)
     
     if (hires) {
 	if (!gltexture512) {
-	    unsigned short *b288 = &((unsigned short*)vidbuffer)[16], *b576 = &((unsigned short*)vidbuffer)[75036*2 + 16];
-            unsigned short *p = &glvidbuffer[0];
+	    unsigned short *vbuf1 = &((unsigned short*)vidbuffer)[16];
+	    unsigned short *vbuf2 = &((unsigned short*)vidbuffer)[75036*2 + 16];
+            unsigned short *vbuf = &glvidbuffer[0];
 
 	    for (j = 0; j < 224; j++) {
 		for (i = 0; i < 256; i++) {
-		    *p++ = *b288++;
-		    *p++ = *b576++;
+		    *vbuf++ = *vbuf1++;
+		    *vbuf++ = *vbuf2++;
 		}
-		b288 += 32; b576 += 32;
+		vbuf1 += 32; vbuf2 += 32; // skip the two 16-pixel-wide columns
 	    }
 
 	    glBindTexture(GL_TEXTURE_2D, gltextures[1]);
