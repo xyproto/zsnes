@@ -837,6 +837,17 @@ void zmv_replay_finished()
 
 /////////////////////////////////////////////////////////
 
+/*
+ZSNES movie related vars:
+
+MovieProcessing
+0 = nothing movie related in progress
+1 = movie playback in progress
+2 = movie recording in progress
+
+
+*/
+
 
 extern unsigned int MsgCount, MessageOn;
 extern unsigned char MovieTemp, txtmovieended[15], MovieProcessing, *Msgptr;
@@ -891,7 +902,7 @@ void Replay()
   }
 }
 
-extern unsigned int MovieBuffFrame, MovieBuffSize;
+unsigned int MovieBuffFrame, MovieBuffSize;
 unsigned char MovieBuffer[21*60];
 
 void IncFrameWriteBuffer()
@@ -922,7 +933,7 @@ unsigned int bytemerger (unsigned char heaviest, unsigned char heavy, unsigned c
   return ((heaviest << 24) | (heavy << 16) | (light << 8) | (lightest));
 }
 
-extern unsigned int CReadHead, ReadHead, CFWriteStart, CFWriteHead;
+unsigned int CReadHead, ReadHead, CFWriteStart = 64+30, CFWriteHead;
 extern unsigned char BackState, CNetType, StoreBuffer[128*32];
 
 void Record()

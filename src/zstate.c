@@ -72,7 +72,6 @@ static void copy_extra_data(unsigned char **buffer, void (*copy_func)(unsigned c
   copy_func(buffer, &HIRQCycNext, 5);
   copy_func(buffer, &oamaddr, 14*4);
   copy_func(buffer, &prevoamptr, 1);
-  copy_func(buffer, &ReadHead, 1*4);
 }
 
 static size_t load_save_size;

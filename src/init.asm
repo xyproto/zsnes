@@ -1048,14 +1048,8 @@ NEWSYM ReadInputDevice
 
 SECTION .data
 NEWSYM txtmovieended, db 'MOVIE FINISHED.',0
-NEWSYM CFWriteStart, dd 64+30
 
 SECTION .bss
-NEWSYM MovieBuffSize, resd 1
-NEWSYM MovieBuffFrame, resd 1
-NEWSYM CReadHead, resd 1
-NEWSYM ReadHead, resd 1
-NEWSYM CFWriteHead, resd 1
 NEWSYM StoreBuffer, resb 128*32
 
 ;*******************************************************
@@ -2887,7 +2881,7 @@ NEWSYM CheckROMType
     mov dword[memtabler16+30h*4+ecx],DSP4Read16b
     mov dword[memtablew16+30h*4+ecx],DSP4Write16b
     add ecx,4
-    cmp ecx,16*4
+    cmp ecx,1*4
     jne .dsp4loop
     jmp .notDSP1Hi
 .initdsp2

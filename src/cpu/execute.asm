@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM StringLength,Get_Time,objhipr,KeyRewind,statesaver
-EXTSYM xa,timer2upd,prevoamptr,ReadHead
+EXTSYM xa,timer2upd,prevoamptr
 EXTSYM prevedi,SA1xpc,SA1RAMArea,sa1dmaptr
 EXTSYM DSP1COp,C4WFXVal,C41FXVal,Op00Multiplicand,Op10Coefficient,Op04Angle
 EXTSYM Op08X,Op18X,Op28X,Op0CA,Op02FX,Op0AVS,Op06X,Op0DX,Op03F,Op14Zr
