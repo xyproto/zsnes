@@ -93,7 +93,7 @@ EXTSYM GUIsmcfind,GUIsfcfind,GUIswcfind,GUIfigfind,GUIfind058,GUIfind078,GUIfind
 EXTSYM GUIfindUSA,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall
 EXTSYM spc7110romptr,allocspc7110
 EXTSYM SRAMDir,SRAMDrive,cfgloadsdir,fnamest,statefileloc
-EXTSYM ForcePal,InitDir,InitDrive,enterpress,frameskip
+EXTSYM ForcePal,ForceROMTiming,InitDir,InitDrive,enterpress,frameskip
 EXTSYM gotoroot,headdata,printnum,romispal
 EXTSYM InitFxTables,SFXSRAM,SfxR1,SfxR2,SfxSCMR,SfxSFR,finterleave
 EXTSYM initregr,initregw,memtabler16,DSP1Read16b3F,memaccessbankr16
@@ -5274,6 +5274,9 @@ NEWSYM showinfo
     mov edx,.kilobit
     mov ah,9
     call Output_Text
+    mov al,[ForceROMTiming]
+    mov byte[ForcePal],al
+    xor al,al
     mov al,[esi]
     cmp byte[ForcePal],1
     jne .nontsc

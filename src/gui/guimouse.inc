@@ -2173,6 +2173,8 @@ DisplayGUIOptionClick:
     GUIClickCButtonW 11,176,byte[DisableScreenSaver]
     GUIClickCButtonat 11,186,byte[AlternateTimer]
 %endif
+    GUIClickCButton6 145,26,byte[ForceROMTiming],1
+    GUIClickCButton6 145,36,byte[ForceROMTiming],2
     ; Frameskip = 0
     cmp byte[frameskip],0
     je near .autopress

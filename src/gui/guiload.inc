@@ -327,6 +327,9 @@ GUIloadfilename:
     mov [ramsizeand],eax
 
     ; get pal/ntsc
+    mov al,[ForceROMTiming]
+    mov byte[ForcePal],al
+    xor al,al
     mov al,[esi]
     cmp byte[ForcePal],1
     jne .nontsc
