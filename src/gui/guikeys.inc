@@ -1004,7 +1004,12 @@ GUIVideoKeys:
     GUIkeystoggleoptn byte[scanlines],1
 %ifdef __MSDOS__
     cmp byte[cvidmode],2
-    jne .nofullscanlines
+    jne .nomodeq
+    jmp .refresh
+.nomodeq
+    cmp byte[cvidmode],5
+    jne .nofullscanlines    
+.refresh
     mov byte[cbitmode],1
     call initvideo2
     mov byte[cbitmode],0
@@ -1022,12 +1027,12 @@ GUIVideoKeys:
     call ClearScreen
     GUIkeystoggleoptn byte[scanlines],3
 %ifdef __MSDOS__
-    cmp byte[cvidmode],2
-    jne .nohalfscanlines
-    mov byte[cbitmode],1
-    call initvideo2
-    mov byte[cbitmode],0
-    call GUISetPal
+    ;cmp byte[cvidmode],2
+    ;jne .nohalfscanlines
+    ;mov byte[cbitmode],1
+    ;call initvideo2
+    ;mov byte[cbitmode],0
+    ;call GUISetPal
 %endif
 .nohalfscanlines
     cmp dh,'2'
@@ -1037,12 +1042,12 @@ GUIVideoKeys:
     call ClearScreen
     GUIkeystoggleoptn byte[scanlines],2
 %ifdef __MSDOS__
-    cmp byte[cvidmode],2
-    jne .noquarterscanlines
-    mov byte[cbitmode],1
-    call initvideo2
-    mov byte[cbitmode],0
-    call GUISetPal
+    ;cmp byte[cvidmode],2
+    ;jne .noquarterscanlines
+    ;mov byte[cbitmode],1
+    ;call initvideo2
+    ;mov byte[cbitmode],0
+    ;call GUISetPal
 %endif
 .noquarterscanlines
     cmp dh,'X'

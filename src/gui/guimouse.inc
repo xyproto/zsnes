@@ -1237,12 +1237,17 @@ GUIWinClicked:
 %ifdef __MSDOS__
     cmp byte[cvidmode],2
     jne %%nomodeq
+    jmp %%refresh
+%%nomodeq
+    cmp byte[cvidmode],5
+    jne %%nomodex
+%%refresh
     mov byte[cbitmode],1
     call initvideo2
     mov byte[cbitmode],0
     call GUISetPal
 %endif
-%%nomodeq
+%%nomodex
     ret
 %%noclick
 %endmacro

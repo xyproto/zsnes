@@ -123,6 +123,14 @@ SECTION .data
     dw 03c4h,00604h,03ceh,04005h,03ceh,00506h,03c0h,04110h,03c0h,00013h
     dd 0
 
+.Mode320x256s
+    dw 03c2h,0e300h,03d4h,05f00h,03d4h,04f01h,03d4h,05002h,03d4h,08203h
+    dw 03d4h,05404h,03d4h,08005h,03d4h,02306h,03d4h,01d07h,03d4h,00008h
+    dw 03d4h,06009h,03d4h,00a10h,03d4h,0ac11h,03d4h,0ff12h,03d4h,02813h
+    dw 03d4h,00014h,03d4h,00715h,03d4h,01a16h,03d4h,0e317h,03c4h,00101h
+    dw 03c4h,00604h,03ceh,04005h,03ceh,00506h,03c0h,04110h,03c0h,00013h
+    dd 0
+
 
 SECTION .text
 %endif

@@ -39,7 +39,14 @@ NEWSYM res480, resb 1
 SECTION .text
 
 NEWSYM dosinitvideo2
+    cmp byte[cvidmode],2
+    jne .nomodeq
     jmp dosinitvideo.initmodeq256
+.nomodeq
+    cmp byte[cvidmode],5
+    jne .nomodex
+    jmp dosinitvideo.initmodex256
+.nomodex
 
 ;*******************************************************
 ; InitVideo
@@ -157,7 +164,14 @@ NEWSYM dosinitvideo
 
 .initmodex256
 %ifdef __MSDOS__
+    cmp byte[scanlines],1
+    je near .scanlines2
     SetVGAMode .Mode320x256
+    jmp .done2    
+.scanlines2
+    SetVGAMode .Mode320x256s
+    jmp .done2
+.done2
     call cscopymodex
 %endif
     call makepal
