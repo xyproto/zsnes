@@ -869,7 +869,7 @@ void clearSPCRAM()
 void clearmem2()
 {
   memset(sram, 0xFF, 16384);
-  clearSPCRAM;
+  clearSPCRAM();
 }
 
 
