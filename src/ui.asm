@@ -55,11 +55,6 @@ NEWSYM UIAsmStart
 
 ; Search for CMDLINE= for commandline entry
 
-
-NEWSYM CmdLineNetPlay, db 0
-NEWSYM CmdLineTCPIPAddress, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-EXTSYM TCPIPAddress
-
 SECTION .text
 
 NEWSYM zstart
@@ -74,21 +69,6 @@ NEWSYM zstart
 	call SystemInit
 
 	cld                     ;clear direction flag
-
-	cmp byte[CmdLineNetPlay],0
-	je .nocmdlinenetplay
-	mov ecx,28/4
-	mov esi,CmdLineTCPIPAddress
-	mov edi,TCPIPAddress
-.netplayloop
-	mov eax,[esi]
-	add esi,byte 4
-	mov [edi],eax
-	add edi,byte 4
-	dec ecx
-	jnz .netplayloop
-	xor eax,eax
-.nocmdlinenetplay
 
 %ifndef __MSDOS__
         cmp byte[FirstTimeData],1

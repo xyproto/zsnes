@@ -1255,6 +1255,7 @@ int InitDirectDraw()
    if (pDirectDrawCreateEx(NULL, (void **)&lpDD, IID_IDirectDraw7, NULL) != DD_OK)
    {
       MessageBox(NULL, "DirectDrawCreateEx failed.", "DirectDraw Error", MB_ICONERROR);
+      return FALSE;
    }
 
    if (FullScreen == 1)
@@ -1262,10 +1263,12 @@ int InitDirectDraw()
       if (lpDD->SetCooperativeLevel(hMainWindow, DDSCL_FULLSCREEN | DDSCL_EXCLUSIVE | DDSCL_ALLOWREBOOT) != DD_OK)
       {
          MessageBox(NULL, "IDirectDraw7::SetCooperativeLevel failed.", "DirectDraw Error", MB_ICONERROR);
+         return FALSE;
       }
       if (lpDD->SetDisplayMode(WindowWidth, WindowHeight, 16, 0, 0) != DD_OK)
       {
          MessageBox(NULL, "IDirectDraw7::SetDisplayMode failed.\nMake sure your video card supports this mode.", "DirectDraw Error", MB_ICONERROR);
+         return FALSE;
       }
    }
    else
@@ -1273,6 +1276,7 @@ int InitDirectDraw()
       if (lpDD->SetCooperativeLevel(hMainWindow, DDSCL_NORMAL) != DD_OK)
       {
          MessageBox(NULL, "IDirectDraw7::SetCooperativeLevel failed.", "DirectDraw Error", MB_ICONERROR);
+         return FALSE;
       }
       CheckAlwaysOnTop();
    }
@@ -1292,6 +1296,7 @@ int InitDirectDraw()
    if (lpDD->CreateSurface(&ddsd2, &DD_Primary, NULL) != DD_OK)
    {
       MessageBox(NULL, "IDirectDraw7::CreateSurface failed.", "DirectDraw Error", MB_ICONERROR);
+      return FALSE;
    }
 
    if (FullScreen == 1)
@@ -1300,6 +1305,7 @@ int InitDirectDraw()
       if (DD_Primary->GetAttachedSurface(&ddsd2.ddsCaps, &DD_BackBuffer) != DD_OK)
       {
          MessageBox(NULL, "IDirectDrawSurface7::GetAttachedSurface failed.", "DirectDraw Error", MB_ICONERROR);
+         return FALSE;
       }
    }
    else
@@ -1329,6 +1335,7 @@ int InitDirectDraw()
    if (DD_Primary->GetPixelFormat(&format) != DD_OK)
    {
       MessageBox(NULL, "IDirectDrawSurface7::GetPixelFormat failed.", "DirectDraw Error", MB_ICONERROR);
+      return FALSE;
    }
 	
    BitDepth=format.dwRGBBitCount;
@@ -1352,6 +1359,7 @@ int InitDirectDraw()
    if (lpDD->CreateSurface(&ddsd2, &DD_CFB, NULL) != DD_OK)
    {
       MessageBox(NULL, "IDirectDraw7::CreateSurface failed.", "DirectDraw Error", MB_ICONERROR);
+      return FALSE;
    }
 
    return TRUE;

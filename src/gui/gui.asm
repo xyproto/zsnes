@@ -913,6 +913,9 @@ CalcChecksum:
     or bl,80h
     ret
 
+NEWSYM CmdLineNetPlay, db 0
+NEWSYM CmdLineTCPIPAddress, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
 NEWSYM GUIRestoreVars
     mov edx,GUIFName
     call Open_File
@@ -927,6 +930,20 @@ NEWSYM GUIRestoreVars
     mov [smallscreenon],al
     mov al,[GUIScreenScale]
     mov [ScreenScale],al
+    cmp byte[CmdLineNetPlay],0
+    je .nocmdlinenetplay
+    mov ecx,28/4
+    mov esi,CmdLineTCPIPAddress
+    mov edi,TCPIPAddress
+.netplayloop
+    mov eax,[esi]
+    add esi,byte 4
+    mov [edi],eax
+    add edi,byte 4
+    dec ecx
+    jnz .netplayloop
+    xor eax,eax
+.nocmdlinenetplay
     call CalcChecksum
     cmp byte[TimeChecker],bl
     jne .nottimer
