@@ -20,7 +20,7 @@
 #include <stdarg.h>
 #include <math.h>
 #include <string.h>
-
+#include <stdlib.h>
 //#define DebugDSP1
 
 // uncomment some lines to test
@@ -29,6 +29,13 @@
 //#define debug0A
 //#define debug06
 
+#define __OPT__
+#define __OPT01__
+#define __OPT02__
+#define __OPT06__
+#define __OPT11__
+#define __OPT21__
+#define __OPT1C__
 
 #ifdef DebugDSP1
 
@@ -74,6 +81,14 @@ void Stop_Log (void)
 *  Math tables                                                              *
 \***************************************************************************/
 
+#ifdef __OPT__
+double *CosTable2;
+double *SinTable2;
+#define INCR 1024
+#define Angle(x) (((x)/(65536/INCR)) & (INCR-1))
+#define Cos(x) ((double) CosTable2[x])
+#define Sin(x) ((double) SinTable2[x])
+#else
 int CosTable2[256]={65536,65516,65457,65358,65220,65043,64826,64571,64276,63943,63571,63161,62713,62227,61704,61144,60546,59912,59243,58537,57796,
 57020,56210,55367,54489,53579,52637,51663,50658,49622,48556,47461,46338,45187,44008,42803,41572,
 40316,39036,37732,36406,35057,33688,32298,30889,29461,28015,26553,25074,23581,22073,20552,19018,17473,15918,14353,12779,11198,9610,8016,6417,4814,
@@ -106,8 +121,17 @@ int SinTable2[256]={0,1608,3215,4821,6424,8022,9616,11204,12786,14359,15924,1748
 -49609,-48543,-47447,-46324,-45172,-43993,-42788,-41556,-40300,-39020,-37716,-36389,-35040,-33670,
 -32280,-30871,-29443,-27997,-26534,-25056,-23562,-22054,-20532,-18999,-17454,-15898,-14333,-12759,
 -11178,-9589,-7995,-6397,-4794,-3188,-1581};
+#endif
 
+#define PI 3.14159265358979323846264338327
 
+double Atan(double x)
+{
+	if ((x>=1) || (x<=1)) 
+		return (x/(1+0.28*x*x));
+	else
+		return (PI/2 - Atan(1/x));
+}
 
 /***************************************************************************\
 *  C4 C code                                                                *
@@ -132,17 +156,17 @@ void C4TransfWireFrame()
   c4z=(double)C4WFZVal-0x95;
 
   // Rotate X
-  tanval=-(double)C4WFX2Val*3.14159265*2/128;
+  tanval=-(double)C4WFX2Val*PI*2/128;
   c4y2=c4y*cos(tanval)-c4z*sin(tanval);
   c4z2=c4y*sin(tanval)+c4z*cos(tanval);
 
   // Rotate Y
-  tanval=-(double)C4WFY2Val*3.14159265*2/128;
+  tanval=-(double)C4WFY2Val*PI*2/128;
   c4x2=c4x*cos(tanval)+c4z2*sin(tanval);
   c4z=c4x*-sin(tanval)+c4z2*cos(tanval);
 
   // Rotate Z
-  tanval=-(double)C4WFDist*3.14159265*2/128;
+  tanval=-(double)C4WFDist*PI*2/128;
   c4x=c4x2*cos(tanval)-c4y2*sin(tanval);
   c4y=c4x2*sin(tanval)+c4y2*cos(tanval);
 
@@ -158,17 +182,17 @@ void C4TransfWireFrame2()
   c4z=(double)C4WFZVal;
 
   // Rotate X
-  tanval=-(double)C4WFX2Val*3.14159265*2/128;
+  tanval=-(double)C4WFX2Val*PI*2/128;
   c4y2=c4y*cos(tanval)-c4z*sin(tanval);
   c4z2=c4y*sin(tanval)+c4z*cos(tanval);
 
   // Rotate Y
-  tanval=-(double)C4WFY2Val*3.14159265*2/128;
+  tanval=-(double)C4WFY2Val*PI*2/128;
   c4x2=c4x*cos(tanval)+c4z2*sin(tanval);
   c4z=c4x*-sin(tanval)+c4z2*cos(tanval);
 
   // Rotate Z
-  tanval=-(double)C4WFDist*3.14159265*2/128;
+  tanval=-(double)C4WFDist*PI*2/128;
   c4x=c4x2*cos(tanval)-c4y2*sin(tanval);
   c4y=c4x2*sin(tanval)+c4y2*cos(tanval);
 
@@ -211,7 +235,7 @@ void C4Op1F()
   }
   else {
     tanval = ((double)C41FYVal)/((double)C41FXVal);
-    C41FAngleRes=(short)(atan(tanval)/(3.141592675*2)*512);
+    C41FAngleRes=(short)(atan(tanval)/(PI*2)*512);
     C41FAngleRes=C41FAngleRes;
     if (C41FXVal<0) C41FAngleRes+=0x100;
     C41FAngleRes&=0x1FF;
@@ -242,8 +266,17 @@ void C4Op0D()
 
 void InitDSP(void)
 {
+#ifdef __OPT__
+	unsigned short i;
+	CosTable2 = malloc(INCR*sizeof(double));
+	SinTable2 = malloc(INCR*sizeof(double));
+	for (i=0; i<INCR; i++){
+		CosTable2[i] = (cos((double)(2*PI*i/INCR)));
+		SinTable2[i] = (sin((double)(2*PI*i/INCR)));
+	}
+#endif
 #ifdef DebugDSP1
-   Start_Log();
+	Start_Log();
 #endif
 }
 
@@ -298,13 +331,19 @@ short Op04Cos;
 
 void DSPOp04()
 {
-   Op04Sin=sin(Op04Angle*6.2832/65536.0)*Op04Radius;
-   Op04Cos=cos(Op04Angle*6.2832/65536.0)*Op04Radius;
+   int angle;
+   
+   angle = Angle(Op04Angle);
+
+   Op04Sin = Sin(angle) * Op04Radius;
+   Op04Cos = Cos(angle) * Op04Radius;
+
    #ifdef DebugDSP1
       Log_Message("OP04 Angle:%d Radius:%d",(Op04Angle/256)&255,Op04Radius);
       Log_Message("OP04 SIN:%d COS:%d",Op04Sin,Op04Cos);
    #endif
 }
+
 
 unsigned short Op0CA;
 short Op0CX1;
@@ -314,8 +353,8 @@ short Op0CY2;
 
 void DSPOp0C()
 {
-   Op0CX2=(Op0CX1*cos(Op0CA*6.2832/65536.0)+Op0CY1*sin(Op0CA*6.2832/65536.0))/65536.0;
-   Op0CY2=(Op0CX1*-sin(Op0CA*6.2832/65536.0)+Op0CY1*cos(Op0CA*6.2832/65536.0))/65536.0;
+   Op0CX2=(Op0CX1*Cos(Angle(Op0CA))+Op0CY1*Sin(Angle(Op0CA)));
+   Op0CY2=(Op0CX1*-Sin(Angle(Op0CA))+Op0CY1*Cos(Angle(Op0CA)));
    #ifdef DebugDSP1
       Log_Message("OP0C Angle:%d X:%d Y:%d CX:%d CY:%d",(Op0CA/256)&255,Op0CX1,Op0CY1,Op0CX2,Op0CY2);
    #endif
@@ -378,6 +417,99 @@ double CXdistance;
 
 short TValDebug,TValDebug2;
 short ScrDispl;
+
+
+#ifdef __OPT02__
+void DSPOp02()
+{
+	ViewerZ1=-Cos(Angle(Op02AZS));
+	ViewerX1=Sin(Angle(Op02AZS))*Sin(Angle(Op02AAS));
+	ViewerY1=Sin(Angle(Op02AZS))*Cos(Angle(Op02AAS));
+
+	
+   #ifdef debug02
+   printf("\nViewerX1 : %f ViewerY1 : %f ViewerZ1 : %f\n",ViewerX1,ViewerY1,
+                                                                   ViewerZ1);
+   getch();
+   #endif
+   ViewerX=Op02FX-ViewerX1*Op02LFE;
+   ViewerY=Op02FY-ViewerY1*Op02LFE;
+   ViewerZ=Op02FZ-ViewerZ1*Op02LFE;
+
+   ScreenX=Op02FX+ViewerX1*(Op02LES-Op02LFE);
+   ScreenY=Op02FY+ViewerY1*(Op02LES-Op02LFE);
+   ScreenZ=Op02FZ+ViewerZ1*(Op02LES-Op02LFE);
+
+   #ifdef debug02
+   printf("ViewerX : %f ViewerY : %f ViewerZ : %f\n",ViewerX,ViewerY,ViewerZ);
+   printf("Op02FX : %d Op02FY : %d Op02FZ : %d\n",Op02FX,Op02FY,Op02FZ);
+   printf("ScreenX : %f ScreenY : %f ScreenZ : %f\n",ScreenX,ScreenY,ScreenZ);
+   getch();
+   #endif
+   if (ViewerZ1==0)ViewerZ1++;
+   NumberOfSlope=ViewerZ/-ViewerZ1;
+
+   Op02CX=(short)(Op02CXF=ViewerX+ViewerX1*NumberOfSlope);
+   Op02CY=(short)(Op02CYF=ViewerY+ViewerY1*NumberOfSlope);
+
+   ViewerXc=ViewerX;//-Op02FX);
+   ViewerYc=ViewerY;//-Op02FY);
+   ViewerZc=ViewerZ;//-Op02FZ);
+
+   Op02VOF=0x0000;
+   ReversedLES=0;
+   Op02LESb=Op02LES;
+   if ((Op02LES>=VofAngle+16384.0) && (Op02LES<VofAngle+32768.0)) {
+     ReversedLES=1;
+     Op02LESb=VofAngle+0x4000-(Op02LES-(VofAngle+0x4000));
+   }
+   Op02VVA = (short)(Op02LESb * tan((Op02AZS-0x4000)*6.2832/65536.0));
+   if ((Op02LESb>=VofAngle) && (Op02LESb<=VofAngle+0x4000)) {
+      Op02VOF= (short)(Op02LESb * tan((Op02AZS-0x4000-VofAngle)*6.2832/65536.0));
+      Op02VVA-=Op02VOF;
+   }
+   if (ReversedLES){
+     Op02VOF=-Op02VOF;
+   }
+
+   NAzsB = (Op02AZS-0x4000)*6.2832/65536.0;
+   NAasB = Op02AAS*6.2832/65536.0;
+
+   if (tan(NAzsB)==0) NAzsB=0.1;
+
+   ScrDispl=0;
+   if (NAzsB>-0.15) {NAzsB=-0.15;ScrDispl=Op02VVA-0xFFDA;}
+
+   CXdistance=1/tan(NAzsB);
+
+   CenterX = (-sin(NAasB)*ViewerZc*CXdistance)+ViewerXc;
+   if (CenterX<-32768) CenterX = -32768; if (CenterX>32767) CenterX=32767;
+   Op02CX = (short)CenterX;
+   CenterY = (cos(NAasB)*ViewerZc*CXdistance)+ViewerYc;
+   if (CenterY<-32768) CenterY = -32768; if (CenterY>32767) CenterY=32767;
+   Op02CY = (short)CenterY;
+
+   TValDebug = (NAzsB*65536/6.28);
+   TValDebug2 = ScrDispl;
+
+//   if (Op02CY < 0) {Op02CYSup = Op02CY/256; Op02CY = 0;}
+//   if (Op02CX < 0) {Op02CXSup = Op02CX/256; Op02CX = 0;}
+
+//  [4/15/2001]   (ViewerX+ViewerX1*NumberOfSlope);
+//  [4/15/2001]   (ViewerY+ViewerY1*NumberOfSlope);
+
+//   if(Op02LFE==0x2200)Op02VVA=0xFECD;
+//   else Op02VVA=0xFFB2;
+
+
+   #ifdef DebugDSP1
+      Log_Message("OP02 FX:%d FY:%d FZ:%d LFE:%d LES:%d",Op02FX,Op02FY,Op02FZ,Op02LFE,Op02LES);
+      Log_Message("     AAS:%d AZS:%d VOF:%d VVA:%d",Op02AAS,Op02AZS,Op02VOF,Op02VVA);
+      Log_Message("     VX:%d VY:%d VZ:%d",(short)ViewerX,(short)ViewerY,(short)ViewerZ);
+   #endif
+
+}
+#else
 
 void DSPOp02()
 {
@@ -467,6 +599,7 @@ void DSPOp02()
    #endif
 
 }
+#endif
 
 short Op0AVS;
 short Op0AA;
@@ -499,8 +632,8 @@ void GetRXYPos(){
    if (Op02LES==0) return;
 
 
-   NAzs = NAzsB - atan((RVPos) / (double)Op02LES);
-   NAas = NAasB;// + atan(RHPos) / (double)Op02LES);
+   NAzs = NAzsB - Atan((RVPos) / (double)Op02LES);
+   NAas = NAasB;// + Atan(RHPos) / (double)Op02LES);
 
    if (cos(NAzs)==0) NAzs+=0.001;
    if (tan(NAzs)==0) NAzs+=0.001;
@@ -508,8 +641,8 @@ void GetRXYPos(){
    RXRes = (-sin(NAas)*ViewerZc/(tan(NAzs))+ViewerXc);
    RYRes = (cos(NAas)*ViewerZc/(tan(NAzs))+ViewerYc);
    scalar = ((ViewerZc/sin(NAzs))/(double)Op02LES);
-   RXRes += scalar*-sin(NAas+3.14159/2)*RHPos;
-   RYRes += scalar*cos(NAas+3.14159/2)*RHPos;
+   RXRes += scalar*-sin(NAas+PI/2)*RHPos;
+   RYRes += scalar*cos(NAas+PI/2)*RHPos;
 }
 
 void DSPOp0A()
@@ -570,7 +703,9 @@ double ObjPY2;
 double ObjPZ2;
 double DivideOp06;
 int Temp;
+int tanval2;
 
+#ifdef __OPT06__
 void DSPOp06()
 {
 
@@ -578,20 +713,26 @@ void DSPOp06()
    ObjPY=Op06Y-Op02FY;
    ObjPZ=Op06Z-Op02FZ;
 
+
+
    // rotate around Z
-   tanval = (-Op02AAS+32768)/65536.0*6.2832;
-   ObjPX1=(ObjPX*cos(tanval)+ObjPY*-sin(tanval));
-   ObjPY1=(ObjPX*sin(tanval)+ObjPY*cos(tanval));
+   tanval2 = Angle(-Op02AAS+32768);
+//   tanval2 = (-Op02AAS+32768)/(65536/INCR);
+   ObjPX1=(ObjPX*Cos(tanval2)+ObjPY*-Sin(tanval2));
+   ObjPY1=(ObjPX*Sin(tanval2)+ObjPY*Cos(tanval2));
    ObjPZ1=ObjPZ;
 
+
    // rotate around X
-   tanval = (-Op02AZS)/65536.0*6.2832;
+//   tanval2 = (-Op02AZS/(65536/INCR)) & 1023;
+   tanval2 = Angle(-Op02AZS);
+//   tanval2 = (-Op02AZS)/256;
    ObjPX2=ObjPX1;
-   ObjPY2=(ObjPY1*cos(tanval)+ObjPZ1*-sin(tanval));
-   ObjPZ2=(ObjPY1*sin(tanval)+ObjPZ1*cos(tanval));
+   ObjPY2=(ObjPY1*Cos(tanval2)+ObjPZ1*-Sin(tanval2));
+   ObjPZ2=(ObjPY1*Sin(tanval2)+ObjPZ1*Cos(tanval2));
 
    #ifdef debug06
-   printf("ObjPX2: %f ObjPY2: %f ObjPZ2: %f\n",ObjPX2,ObjPY2,ObjPZ2);
+   Log_Message("ObjPX2: %f ObjPY2: %f ObjPZ2: %f\n",ObjPX2,ObjPY2,ObjPZ2);
    #endif
 
    ObjPZ2=ObjPZ2-Op02LFE;
@@ -615,6 +756,60 @@ void DSPOp06()
       Log_Message("OP06 H:%d V:%d S:%d",Op06H,Op06V,Op06S);
    #endif
 }
+#else
+
+void DSPOp06()
+{
+   ObjPX=Op06X-Op02FX;
+   ObjPY=Op06Y-Op02FY;
+   ObjPZ=Op06Z-Op02FZ;
+
+   // rotate around Z
+   tanval = (-Op02AAS+32768)/65536.0*6.2832;
+   ObjPX1=(ObjPX*cos(tanval)+ObjPY*-sin(tanval));
+   ObjPY1=(ObjPX*sin(tanval)+ObjPY*cos(tanval));
+   ObjPZ1=ObjPZ;
+
+   #ifdef debug06
+   Log_Message("Angle : %f", tanval);
+   Log_Message("ObjPX1: %f ObjPY1: %f ObjPZ1: %f\n",ObjPX1,ObjPY1,ObjPZ1);
+   Log_Message("cos(tanval) : %f  sin(tanval) : %f", cos(tanval), sin(tanval));
+   #endif
+
+   // rotate around X
+   tanval = (-Op02AZS)/65536.0*6.2832;
+   ObjPX2=ObjPX1;
+   ObjPY2=(ObjPY1*cos(tanval)+ObjPZ1*-sin(tanval));
+   ObjPZ2=(ObjPY1*sin(tanval)+ObjPZ1*cos(tanval));
+
+   #ifdef debug06
+   Log_Message("ObjPX2: %f ObjPY2: %f ObjPZ2: %f\n",ObjPX2,ObjPY2,ObjPZ2);
+   #endif
+
+   ObjPZ2=ObjPZ2-Op02LFE;
+
+   if (ObjPZ2<0)
+   {
+      Op06H=(short)(-ObjPX2*Op02LES/-(ObjPZ2)); //-ObjPX2*256/-ObjPZ2;
+      Op06V=(short)(-ObjPY2*Op02LES/-(ObjPZ2)); //-ObjPY2*256/-ObjPZ2;
+      Op06S=(unsigned short)(256*(double)Op02LES/-ObjPZ2);
+   }
+   else
+   {
+      Op06H=0;
+      Op06V=14*16;
+      Op06S=0xFFFF;
+   }
+
+
+   #ifdef DebugDSP1
+      Log_Message("OP06 X:%d Y:%d Z:%d",Op06X,Op06Y,Op06Z);
+      Log_Message("OP06 H:%d V:%d S:%d",Op06H,Op06V,Op06S);
+   #endif
+}
+#endif 
+
+
 
 double matrixB[3][3];
 double matrixB2[3][3];
@@ -626,26 +821,17 @@ double matrixA3[3][3];
 
 void MultMatrixB(double result[3][3],double mat1[3][3],double mat2[3][3])
 {
-   result[0][0]=0;
-   result[0][0]+=(mat1[0][0]*mat2[0][0]+mat1[0][1]*mat2[1][0]+mat1[0][2]*mat2[2][0]);
-   result[0][1]=0;
-   result[0][1]+=(mat1[0][0]*mat2[0][1]+mat1[0][1]*mat2[1][1]+mat1[0][2]*mat2[2][1]);
-   result[0][2]=0;
-   result[0][2]+=(mat1[0][0]*mat2[0][2]+mat1[0][1]*mat2[1][2]+mat1[0][2]*mat2[2][2]);
+   result[0][0]=(mat1[0][0]*mat2[0][0]+mat1[0][1]*mat2[1][0]+mat1[0][2]*mat2[2][0]);
+   result[0][1]=(mat1[0][0]*mat2[0][1]+mat1[0][1]*mat2[1][1]+mat1[0][2]*mat2[2][1]);
+   result[0][2]=(mat1[0][0]*mat2[0][2]+mat1[0][1]*mat2[1][2]+mat1[0][2]*mat2[2][2]);
 
-   result[1][0]=0;
-   result[1][0]+=(mat1[1][0]*mat2[0][0]+mat1[1][1]*mat2[1][0]+mat1[1][2]*mat2[2][0]);
-   result[1][1]=0;
-   result[1][1]+=(mat1[1][0]*mat2[0][1]+mat1[1][1]*mat2[1][1]+mat1[1][2]*mat2[2][1]);
-   result[1][2]=0;
-   result[1][2]+=(mat1[1][0]*mat2[0][2]+mat1[1][1]*mat2[1][2]+mat1[1][2]*mat2[2][2]);
+   result[1][0]=(mat1[1][0]*mat2[0][0]+mat1[1][1]*mat2[1][0]+mat1[1][2]*mat2[2][0]);
+   result[1][1]=(mat1[1][0]*mat2[0][1]+mat1[1][1]*mat2[1][1]+mat1[1][2]*mat2[2][1]);
+   result[1][2]=(mat1[1][0]*mat2[0][2]+mat1[1][1]*mat2[1][2]+mat1[1][2]*mat2[2][2]);
    
-   result[2][0]=0;
-   result[2][0]+=(mat1[2][0]*mat2[0][0]+mat1[2][1]*mat2[1][0]+mat1[2][2]*mat2[2][0]);
-   result[2][1]=0;
-   result[2][1]+=(mat1[2][0]*mat2[0][1]+mat1[2][1]*mat2[1][1]+mat1[2][2]*mat2[2][1]);
-   result[2][2]=0;
-   result[2][2]+=(mat1[2][0]*mat2[0][2]+mat1[2][1]*mat2[1][2]+mat1[2][2]*mat2[2][2]);
+   result[2][0]=(mat1[2][0]*mat2[0][0]+mat1[2][1]*mat2[1][0]+mat1[2][2]*mat2[2][0]);
+   result[2][1]=(mat1[2][0]*mat2[0][1]+mat1[2][1]*mat2[1][1]+mat1[2][2]*mat2[2][1]);
+   result[2][2]=(mat1[2][0]*mat2[0][2]+mat1[2][1]*mat2[1][2]+mat1[2][2]*mat2[2][2]);
 
 }
 
@@ -663,6 +849,46 @@ short Op21Zr;
 short Op21Xr;
 short Op21Yr;
 double sc,sc2,sc3;
+
+
+
+#ifdef __OPT01__
+void DSPOp01()
+{
+   unsigned short zr,yr,xr;
+
+   zr = Angle(Op01Zr);
+   xr = Angle(Op01Yr);
+   yr = Angle(Op01Xr);
+
+   matrixB[0][0]=1;       matrixB[0][1]=0;        matrixB[0][2]=0;       
+   matrixB[1][0]=0;       matrixB[1][1]=Cos(xr);  matrixB[1][2]=-Sin(xr);
+   matrixB[2][0]=0;       matrixB[2][1]=Sin(xr);  matrixB[2][2]=Cos(xr);
+
+   matrixB2[0][0]=Cos(yr);   matrixB2[0][1]=0;    matrixB2[0][2]=Sin(yr);
+   matrixB2[1][0]=0;         matrixB2[1][1]=1;    matrixB2[1][2]=0;
+   matrixB2[2][0]=-Sin(yr);  matrixB2[2][1]=0;    matrixB2[2][2]=Cos(yr);
+
+   MultMatrixB(matrixB3,matrixB,matrixB2);
+
+   matrixB2[0][0]=Cos(zr); matrixB2[0][1]=-Sin(zr); matrixB2[0][2]=0;
+   matrixB2[1][0]=Sin(zr); matrixB2[1][1]=Cos(zr);  matrixB2[1][2]=0;
+   matrixB2[2][0]=0;       matrixB2[2][1]=0;        matrixB2[2][2]=1;
+
+   MultMatrixB(matrixB,matrixB3,matrixB2);
+
+   sc = ((double)Op01m)/32768.0;
+
+   matrixA[0][0]=matrixB[0][0]; matrixA[0][1]=matrixB[0][1]; matrixA[0][2]=matrixB[0][2]; 
+   matrixA[1][0]=matrixB[1][0]; matrixA[1][1]=matrixB[1][1]; matrixA[1][2]=matrixB[1][2]; 
+   matrixA[2][0]=matrixB[2][0]; matrixA[2][1]=matrixB[2][1]; matrixA[2][2]=matrixB[2][2]; 
+
+   #ifdef DebugDSP1
+      Log_Message("OP01 ZR: %d XR: %d YR: %d",Op01Zr,Op01Xr,Op01Yr);
+   #endif
+}
+
+#else
 
 void DSPOp01()
 {
@@ -698,6 +924,44 @@ void DSPOp01()
       Log_Message("OP01 ZR: %d XR: %d YR: %d",Op01Zr,Op01Xr,Op01Yr);
    #endif
 }
+#endif
+
+
+#ifdef __OPT11__
+void DSPOp11()
+{
+   short zr,yr,xr;
+
+   zr = Angle(Op11Zr);
+   xr = Angle(Op11Yr);
+   yr = Angle(Op11Xr);
+
+   matrixB[0][0]=1;       matrixB[0][1]=0;        matrixB[0][2]=0;       
+   matrixB[1][0]=0;       matrixB[1][1]=Cos(xr);  matrixB[1][2]=-Sin(xr);
+   matrixB[2][0]=0;       matrixB[2][1]=Sin(xr);  matrixB[2][2]=Cos(xr);
+
+   matrixB2[0][0]=Cos(yr);  matrixB2[0][1]=0; matrixB2[0][2]=Sin(yr);
+   matrixB2[1][0]=0;        matrixB2[1][1]=1; matrixB2[1][2]=0;
+   matrixB2[2][0]=-Sin(yr); matrixB2[2][1]=0; matrixB2[2][2]=Cos(yr);
+
+   MultMatrixB(matrixB3,matrixB,matrixB2);
+
+   matrixB2[0][0]=Cos(zr); matrixB2[0][1]=-Sin(zr); matrixB2[0][2]=0;
+   matrixB2[1][0]=Sin(zr); matrixB2[1][1]=Cos(zr);  matrixB2[1][2]=0;
+   matrixB2[2][0]=0;       matrixB2[2][1]=0;        matrixB2[2][2]=1;
+
+   MultMatrixB(matrixB,matrixB3,matrixB2);
+
+   sc2 = ((double)Op11m)/32768.0;
+
+   matrixA2[0][0]=matrixB[0][0]; matrixA2[0][1]=matrixB[0][1]; matrixA2[0][2]=matrixB[0][2]; 
+   matrixA2[1][0]=matrixB[1][0]; matrixA2[1][1]=matrixB[1][1]; matrixA2[1][2]=matrixB[1][2]; 
+   matrixA2[2][0]=matrixB[2][0]; matrixA2[2][1]=matrixB[2][1]; matrixA2[2][2]=matrixB[2][2]; 
+   #ifdef DebugDSP1
+      Log_Message("OP11 ZR: %d XR: %d YR: %d SC: %d",Op11Zr,Op11Xr,Op11Yr,Op11m);
+   #endif
+}
+#else
 
 void DSPOp11()
 {
@@ -732,6 +996,45 @@ void DSPOp11()
       Log_Message("OP11 ZR: %d XR: %d YR: %d SC: %d",Op11Zr,Op11Xr,Op11Yr,Op11m);
    #endif
 }
+#endif
+
+
+#ifdef __OPT21__
+void DSPOp21()
+{
+   short zr,yr,xr;
+
+   zr = Angle(Op21Zr);
+   xr = Angle(Op21Yr);
+   yr = Angle(Op21Xr);
+
+
+   matrixB[0][0]=1;       matrixB[0][1]=0;        matrixB[0][2]=0;       
+   matrixB[1][0]=0;       matrixB[1][1]=Cos(xr);  matrixB[1][2]=-Sin(xr);
+   matrixB[2][0]=0;       matrixB[2][1]=Sin(xr);  matrixB[2][2]=Cos(xr);
+
+   matrixB2[0][0]=Cos(yr);  matrixB2[0][1]=0; matrixB2[0][2]=Sin(yr);
+   matrixB2[1][0]=0;        matrixB2[1][1]=1; matrixB2[1][2]=0;
+   matrixB2[2][0]=-Sin(yr); matrixB2[2][1]=0; matrixB2[2][2]=Cos(yr);
+
+   MultMatrixB(matrixB3,matrixB,matrixB2);
+
+   matrixB2[0][0]=Cos(zr); matrixB2[0][1]=-Sin(zr); matrixB2[0][2]=0;
+   matrixB2[1][0]=Sin(zr); matrixB2[1][1]=Cos(zr);  matrixB2[1][2]=0;
+   matrixB2[2][0]=0;       matrixB2[2][1]=0;        matrixB2[2][2]=1;
+
+   MultMatrixB(matrixB,matrixB3,matrixB2);
+
+   sc3 = ((double)Op21m)/32768.0;
+
+   matrixA3[0][0]=matrixB[0][0]; matrixA3[0][1]=matrixB[0][1]; matrixA3[0][2]=matrixB[0][2]; 
+   matrixA3[1][0]=matrixB[1][0]; matrixA3[1][1]=matrixB[1][1]; matrixA3[1][2]=matrixB[1][2]; 
+   matrixA3[2][0]=matrixB[2][0]; matrixA3[2][1]=matrixB[2][1]; matrixA3[2][2]=matrixB[2][2]; 
+   #ifdef DebugDSP1
+      Log_Message("OP21 ZR: %d XR: %d YR: %d",Op21Zr,Op21Xr,Op21Yr);
+   #endif
+}
+#else
 
 void DSPOp21()
 {
@@ -766,6 +1069,7 @@ void DSPOp21()
       Log_Message("OP21 ZR: %d XR: %d YR: %d",Op21Zr,Op21Xr,Op21Yr);
    #endif
 }
+#endif
 
 short Op0DX;
 short Op0DY;
@@ -1073,12 +1377,38 @@ short Op1CX2;
 short Op1CY2;
 short Op1CZ2;
 
+#ifdef __OPT1C__
+void DSPOp1C()
+{
+   short ya,xa,za;
+   ya = Angle(Op1CX);
+   xa = Angle(Op1CY);
+   za = Angle(Op1CZ);
+
+   // rotate around Z
+   Op1CX1=(Op1CXBR*Cos(za)+Op1CYBR*Sin(za));
+   Op1CY1=(Op1CXBR*-Sin(za)+Op1CYBR*Cos(za));
+   Op1CZ1=Op1CZBR;
+   // rotate around Y
+   Op1CX2=(Op1CX1*Cos(ya)+Op1CZ1*-Sin(ya));
+   Op1CY2=Op1CY1;
+   Op1CZ2=(Op1CX1*Sin(ya)+Op1CZ1*Cos(ya));
+   // rotate around X
+   Op1CXAR=Op1CX2;
+   Op1CYAR=(Op1CY2*Cos(xa)+Op1CZ2*Sin(xa));
+   Op1CZAR=(Op1CY2*-Sin(xa)+Op1CZ2*Cos(xa));
+
+   #ifdef DebugDSP1
+      Log_Message("OP1C Apply Matrix CX:%d CY:%d CZ",Op1CXAR,Op1CYAR,Op1CZAR);
+   #endif
+}
+#else
 void DSPOp1C()
 {
    double ya,xa,za;
-   ya = Op1CX/65536.0*3.1415*2;
-   xa = Op1CY/65536.0*3.1415*2;
-   za = Op1CZ/65536.0*3.1415*2;
+   ya = Op1CX/65536.0*PI*2;
+   xa = Op1CY/65536.0*PI*2;
+   za = Op1CZ/65536.0*PI*2;
    // rotate around Z
    Op1CX1=(Op1CXBR*cos(za)+Op1CYBR*sin(za));
    Op1CY1=(Op1CXBR*-sin(za)+Op1CYBR*cos(za));
@@ -1097,3 +1427,4 @@ void DSPOp1C()
    #endif
 }
 
+#endif
