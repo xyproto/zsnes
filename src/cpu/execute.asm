@@ -61,7 +61,7 @@ EXTSYM deinitipx
 %endif
 EXTSYM deinitvideo
 EXTSYM BRRBuffer,DSPMem,PrepareSaveState,ResetState,SFXEnable,PHdspsave
-EXTSYM fnamest,sndrot,spcRam,spcRamDP,tableA,unpackfunct,vram,wramdata
+EXTSYM fnamest,sndrot,spcRam,spcRamDP,tableA,vram,wramdata
 EXTSYM PHnum2writesfxreg,SfxR0,PHspcsave
 EXTSYM C4Ram
 EXTSYM SPC7110Enable

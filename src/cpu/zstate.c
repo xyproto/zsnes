@@ -45,8 +45,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define stim()
 #endif
 
-/*Let's start converting stuff from execute.asm ^_^;
-Big thanks to Nach, TRAC and anomie for helping me out on porting !!*/
+//static unsigned char save_state_buffer[0x80000]; //Save state should never exceed half a megabyte
 
 extern unsigned int CBackupPos, PBackupPos, cycpbl;
 extern unsigned int *wramdata, *vram, PHspcsave, PHdspsave, *C4Ram, *sfxramdata;
@@ -68,33 +67,19 @@ extern short Op28X, Op0CA, Op02FX, Op0AVS, Op06X, Op01m, Op0DX, Op03F, Op14Zr;
 extern short Op0EH;
 extern signed short Op10Coefficient;
 
-void memcpyinc(unsigned char **dest, void *src, size_t len)
-{
-  memcpy(*dest, src, len);
-  *dest += len;
-}
-
-void memcpyrinc(unsigned char **src, void *dest, size_t len)
-{
-  memcpy(*src, dest, len);
-  *src += len;
-}
-
-char zsmesg[] = "ZSNES Save State File V0.6";
-
 void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t), bool file)
 {
-  if (file)
-  {
-    copy_func(&buffer, zsmesg, sizeof(zsmesg)-1);
-  }
+  //65816 status, etc.
   
+  //SPC Timers
   copy_func(&buffer, &cycpbl, 2*4);    
+  //SNES PPU Register status
   copy_func(&buffer, &sndrot, 3019);    
+  //WRAM (128k), VRAM (64k)
   copy_func(&buffer, wramdata, 8192*16);    
   copy_func(&buffer, vram, 4096*16);    
-
-  if (spcon)
+  
+  if (spcon) //SPC stuff, DSP stuff
   {
     copy_func(&buffer, spcRam, PHspcsave);    
     copy_func(&buffer, BRRBuffer, PHdspsave);
@@ -118,7 +103,6 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
     copy_func(&buffer, SA1RAMArea, 8192*16);
     copy_func(&buffer, &SA1Status, 3);
     copy_func(&buffer, &SA1xpc, 1*4);
-    copy_func(&buffer, &SA1RAMArea, 6*4);
     copy_func(&buffer, &sa1dmaptr, 2*4);
   }
     
@@ -147,6 +131,9 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
   if (SETAEnable)
   { 
     copy_func(&buffer, setaramdata, 256*16);
+    
+    //Todo: save the SetaCmdEnable?  For completeness we should do it
+    //but currently we ignore it anyway.
   }
 
   if (SPC7110Enable)
@@ -178,10 +165,23 @@ void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, 
   }
 }
 
+
+static void memcpyinc(unsigned char **dest, void *src, size_t len)
+{
+  memcpy(*dest, src, len);
+  *dest += len;
+}
+
 void BackupCVFrame()
 {
   unsigned char *curpos = StateBackup + (CBackupPos << 19) + 1024;
   copy_state_data(curpos, memcpyinc, false);
+}
+
+static void memcpyrinc(unsigned char **src, void *dest, size_t len)
+{
+  memcpy(dest, *src, len);
+  *src += len;
 }
 
 void RestoreCVFrame()
@@ -213,36 +213,47 @@ void SA1UpdateDPageC()
 }
 
 
-extern unsigned int spcBuffera;
-extern unsigned int Voice0BufPtr, Voice1BufPtr, Voice2BufPtr, Voice3BufPtr;
-extern unsigned int Voice4BufPtr, Voice5BufPtr, Voice6BufPtr, Voice7BufPtr;
-
-void PrepareSaveState()
-{
-    Voice0BufPtr -= spcBuffera;
-    Voice1BufPtr -= spcBuffera;
-    Voice2BufPtr -= spcBuffera;
-    Voice3BufPtr -= spcBuffera;
-    Voice4BufPtr -= spcBuffera;
-    Voice5BufPtr -= spcBuffera;
-    Voice6BufPtr -= spcBuffera;
-    Voice7BufPtr -= spcBuffera;
-}
-
 extern unsigned int xdb, xpb, xs, xx, xy;
 extern unsigned short oamaddrt, xat, xst, xdt, xxt, xyt;
 extern unsigned char xdbt, xpbt;
 
 void unpackfunct()
 {
-    oamaddrt = (oamaddr & 0xFFFF);
-    xat = (xa & 0xFFFF);
-    xdbt = (xdb & 0xFF);
-    xpbt = (xpb & 0xFF);
-    xst = (xs & 0xFFFF);
-    xdt = (xd & 0xFFFF);
-    xxt = (xx & 0xFFFF);
-    xyt = (xy & 0xFFFF);
+  oamaddrt = (oamaddr & 0xFFFF);
+  xat = (xa & 0xFFFF);
+  xdbt = (xdb & 0xFF);
+  xpbt = (xpb & 0xFF);
+  xst = (xs & 0xFFFF);
+  xdt = (xd & 0xFFFF);
+  xxt = (xx & 0xFFFF);
+  xyt = (xy & 0xFFFF);
+}
+
+extern unsigned int spcBuffera;
+extern unsigned int Voice0BufPtr, Voice1BufPtr, Voice2BufPtr, Voice3BufPtr;
+extern unsigned int Voice4BufPtr, Voice5BufPtr, Voice6BufPtr, Voice7BufPtr;
+extern unsigned int Curtableaddr, tableA[256], spcPCRam, spcRamDP;
+
+void PrepareSaveState()
+{
+  unsigned int offst;
+
+  offst = (unsigned int)tableA;
+  Curtableaddr -= offst;
+  offst = (unsigned int)spcRam;
+  spcPCRam -= offst;
+  spcRamDP -= offst;
+
+  Voice0BufPtr -= spcBuffera;
+  Voice1BufPtr -= spcBuffera;
+  Voice2BufPtr -= spcBuffera;
+  Voice3BufPtr -= spcBuffera;
+  Voice4BufPtr -= spcBuffera;
+  Voice5BufPtr -= spcBuffera;
+  Voice6BufPtr -= spcBuffera;
+  Voice7BufPtr -= spcBuffera;
+
+  unpackfunct();
 }
 
 #define byteset(byte, checkbit) (byte & (1 << checkbit)) ? 1 : 0
@@ -388,72 +399,79 @@ extern unsigned char *SNSBWPtr;
 
 void SaveSA1()
 {
-    unsigned int offst=(unsigned int)SA1RegPCS;
+  unsigned int offst=(unsigned int)SA1RegPCS;
 
-    SA1Stat &= 0xFFFFFF00;
-    SA1Ptr -= offst;
+  SA1Stat &= 0xFFFFFF00;
+  SA1Ptr -= offst;
 
-    if (SA1RegPCS == IRAM)
-    {
-	SA1Stat = (SA1Stat & 0xFFFFFF00) + 1;
-    }
+  if (SA1RegPCS == IRAM)
+  {
+    SA1Stat = (SA1Stat & 0xFFFFFF00) + 1;
+  }
 
-    if (SA1RegPCS == IRAM-0x3000)
-    {
-	SA1Stat = (SA1Stat & 0xFFFFFF00) + 2;
-    }
+  if (SA1RegPCS == IRAM-0x3000)
+  {
+    SA1Stat = (SA1Stat & 0xFFFFFF00) + 2;
+  }
 
-    offst = (unsigned int)romdata;
-    SA1RegPCS -= offst;
-    CurBWPtr -= offst;
-    SA1BWPtr -= offst;
-    SNSBWPtr -= offst;
+  offst = (unsigned int)romdata;
+  SA1RegPCS -= offst;
+  CurBWPtr -= offst;
+  SA1BWPtr -= offst;
+  SNSBWPtr -= offst;
 }
 
 void RestoreSA1()
 {
-    unsigned int offst=(unsigned int)romdata;
+  unsigned int offst=(unsigned int)romdata;
 
-    SA1RegPCS += offst;
-    CurBWPtr += offst;
-    SA1BWPtr += offst;
-    SNSBWPtr += offst;
+  SA1RegPCS += offst;
+  CurBWPtr += offst;
+  SA1BWPtr += offst;
+  SNSBWPtr += offst;
 
-    if ((SA1Stat & 0xFF) == 1)
-    {
-	SA1RegPCS = IRAM;
-    }
+  if ((SA1Stat & 0xFF) == 1)
+  {
+    SA1RegPCS = IRAM;
+  }
 
-    if ((SA1Stat & 0xFF) == 2)
-    {
-	SA1RegPCS = IRAM-0x3000;
-    }
+  if ((SA1Stat & 0xFF) == 2)
+  {
+    SA1RegPCS = IRAM-0x3000;
+  }
 
-    offst = (unsigned int)SA1RegPCS;
-    SA1Ptr += offst;
-    SA1RAMArea = romdata + 4096*1024;
+  offst = (unsigned int)SA1RegPCS;
+  SA1Ptr += offst;
+  SA1RAMArea = romdata + 4096*1024;
 }
 
 #define ResState(Voice_BufPtr) \
-    Voice_BufPtr += spcBuffera; \
-    if (Voice_BufPtr >= spcBuffera + 65536*4) \
-    { \
-	Voice_BufPtr = spcBuffera; \
-    }
+  Voice_BufPtr += spcBuffera; \
+  if (Voice_BufPtr >= spcBuffera + 65536*4) \
+  { \
+    Voice_BufPtr = spcBuffera; \
+  }
 
 void ResetState()
 {
-    ResState(Voice0BufPtr);
-    ResState(Voice1BufPtr);
-    ResState(Voice2BufPtr);
-    ResState(Voice3BufPtr);
-    ResState(Voice4BufPtr);
-    ResState(Voice5BufPtr);
-    ResState(Voice6BufPtr);
-    ResState(Voice7BufPtr);
+  unsigned int offst;
+  
+  offst = (unsigned int)tableA;
+  Curtableaddr += offst;
+  offst = (unsigned int)spcRam;
+  spcPCRam += offst;
+  spcRamDP += offst;
+
+  ResState(Voice0BufPtr);
+  ResState(Voice1BufPtr);
+  ResState(Voice2BufPtr);
+  ResState(Voice3BufPtr);
+  ResState(Voice4BufPtr);
+  ResState(Voice5BufPtr);
+  ResState(Voice6BufPtr);
+  ResState(Voice7BufPtr);
 }
 
-extern unsigned int Curtableaddr, tableA[256], spcPCRam, spcRamDP;
 extern unsigned int statefileloc, CurrentHandle, SfxRomBuffer;
 extern unsigned int SfxCROM, SfxLastRamAdr, SfxRAMMem;
 extern unsigned int MsgCount, MessageOn;
@@ -464,138 +482,110 @@ extern unsigned char *Msgptr, txtsavemsgfail[15];
 
 extern unsigned short PrevPicture[64*56];
 
-FILE *fhandle;
+static FILE *fhandle;
 void SRAMChdir();
 void CapturePicture();
 
+static void write_save_state_data(unsigned char **dest, void *data, size_t len)
+{
+  fwrite(data, 1, len, fhandle);  
+}
+
+static const char zsmesg[] = "ZSNES Save State File V0.6";
+
 void statesaver()
 {
-    unsigned int offst;
-
-    clim();
-
-    offst = (unsigned int)tableA;
-    Curtableaddr -= offst;
-    offst = (unsigned int)spcRam;
-    spcPCRam -= offst;
-    spcRamDP -= offst;
-
-    PrepareSaveState();
-    unpackfunct();
-
-// 'Auto increment savestate slot' code
-
-    if (AutoIncSaveSlot)
+  //'Auto increment savestate slot' code
+  if (AutoIncSaveSlot)
+  {
+    if (firstsaveinc)
     {
-	if (firstsaveinc)
-	{
-	    firstsaveinc = 0;
-	}
-	else
-	{
-	    switch (fnamest[statefileloc])
-	    {
-	      case 't':
-		fnamest[statefileloc] = '1';
-		break;
-	      case '9':
-		fnamest[statefileloc] = 't';
-		break;
-	      default:
-		fnamest[statefileloc]++;
-	    }
-	}
-    }
-
-// Save State code
-
-    #ifdef __LINUX__
-    SRAMChdir();
-    #endif
-
-    if ((fhandle = fopen(fnamest+1,"wb")) != NULL)
-    {
-	// Save 65816 status, etc.
-	fwrite (zsmesg, 1, sizeof(zsmesg)-1, fhandle);
-	fwrite (&cycpbl, 1, 2*4, fhandle);
-	fwrite (&sndrot, 1, 3019, fhandle);	// Save SNES PPU Register status
-	fwrite (wramdata, 1, 8192*16, fhandle);
-	fwrite (vram, 1, 4096*16, fhandle);
-
-	if (spcon)	// SPC stuff, DSP stuff
-	{
-	    fwrite (spcRam, 1, PHspcsave, fhandle);
-	    fwrite (BRRBuffer, 1, PHdspsave, fhandle);
-	    fwrite (DSPMem, 1, 16*16, fhandle);
-	}
-
-	if (C4Enable)	{ fwrite (C4Ram, 1, 2048*4, fhandle); }
-
-	if (SFXEnable)
-	{
-	    SfxRomBuffer -= SfxCROM;
-	    SfxLastRamAdr -= SfxRAMMem;
-	    fwrite (sfxramdata, 1, 8192*16, fhandle);
-	    fwrite (&SfxR0, 1, PHnum2writesfxreg, fhandle);
-	    SfxRomBuffer += SfxCROM;
-	    SfxLastRamAdr += SfxRAMMem;
-	}
-
-	if (SETAEnable)	{ fwrite (setaramdata, 1, 256*16, fhandle); }
-	// TODO: save the SetaCmdEnable?  For completeness we should do it
-	// but currently we ignore it anyway.
-
-	if (SPC7110Enable)
-	{
-	    fwrite (romdata+0x510000, 1, 65536, fhandle);
-	    fwrite (&SPCMultA, 1, PHnum2writespc7110reg, fhandle);
-	}
-
-	if (SA1Enable)
-	{
-	    SaveSA1();// Convert SA-1 stuff to standard, non displacement format
-
-	    fwrite (&SA1Mode, 1, PHnum2writesa1reg, fhandle);
-	    fwrite (SA1RAMArea, 1, 8192*16, fhandle);
-
-	    RestoreSA1();	// Convert back SA-1 stuff
-	}
-
-	if (cbitmode && !NoPictureSave)
-	{
-	    CapturePicture();
-
-	    fwrite (PrevPicture, 1, 64*56*2, fhandle);
-	}
-
-	fclose (fhandle);
-
-	if (fnamest[statefileloc] == 't')
-	{
-	    txtsavemsg[6]='0';
-	}
-	else
-	{
-	    txtsavemsg[6]=fnamest[statefileloc];
-	}
-
-	Msgptr = txtsavemsg;
-	MessageOn = MsgCount;
+      firstsaveinc = 0;
     }
     else
     {
-	Msgptr = txtsavemsgfail;
-	MessageOn = MsgCount;
+      switch (fnamest[statefileloc])
+      {
+        case 't':
+          fnamest[statefileloc] = '1';
+          break;
+        case '9':
+          fnamest[statefileloc] = 't';
+          break;
+        default:
+          fnamest[statefileloc]++;
+      }
+    }
+  }
+
+  //Save State code
+  
+  #ifdef __LINUX__
+  SRAMChdir();
+  #endif
+
+  clim ()
+  
+  if ((fhandle = fopen(fnamest+1,"wb")))
+  {
+    fwrite(zsmesg, 1, sizeof(zsmesg)-1, fhandle);
+    
+    PrepareSaveState();
+    
+    if (SFXEnable)
+    {
+      SfxRomBuffer -= SfxCROM;
+      SfxLastRamAdr -= SfxRAMMem;
+    }
+    
+    if (SA1Enable)
+    {
+      SaveSA1(); //Convert SA-1 stuff to standard, non displacement format
+    }
+      
+    copy_state_data(0, write_save_state_data, true);
+
+    if (SFXEnable)
+    {
+      SfxRomBuffer += SfxCROM;
+      SfxLastRamAdr += SfxRAMMem;
     }
 
-    offst = (unsigned int)tableA;
-    Curtableaddr += offst;
-    offst = (unsigned int)spcRam;
-    spcPCRam += offst;
-    spcRamDP += offst;
+    if (SA1Enable)
+    {
+      RestoreSA1(); //Convert back SA-1 stuff
+    }
+    
+    if (cbitmode && !NoPictureSave)
+    {
+      CapturePicture();
+      fwrite (PrevPicture, 1, 64*56*2, fhandle);
+    }
+    
+    fclose (fhandle);
+  
+    //Display message on the screen, State X Saved
+    if (fnamest[statefileloc] == 't')
+    {
+      txtsavemsg[6]='0';
+    }
+    else
+    {
+      txtsavemsg[6]=fnamest[statefileloc];
+    }
 
+    Msgptr = txtsavemsg;
+    MessageOn = MsgCount;
+  
     ResetState();
-    stim();
+  }  
+  else
+  {
+    Msgptr = txtsavemsgfail;
+    MessageOn = MsgCount;
+  }
+  
+  stim();
 }
 
 extern unsigned int snesmmap[256], snesmap2[256];
@@ -651,31 +641,31 @@ void UpdateBanks()
 
 void BankSwitchSDD1C (unsigned char bankval, unsigned int offset)
 {
-    unsigned int curbankval = bankval, i;
+  unsigned int curbankval = bankval, i;
 
-    curbankval &= 7;
-    curbankval <<= 20;
-    curbankval += (unsigned int)romdata;
+  curbankval &= 7;
+  curbankval <<= 20;
+  curbankval += (unsigned int)romdata;
 
-    for (i=0 ; i<16 ; i++)
-    {
-	snesmap2[offset+i] = curbankval;
-	snesmmap[offset+i] = curbankval;
-	curbankval += 0x10000;
-    }
+  for (i=0; i<16 ; i++)
+  {
+    snesmap2[offset+i] = curbankval;
+    snesmmap[offset+i] = curbankval;
+    curbankval += 0x10000;
+  }
 }
 
 extern unsigned char SDD1BankA, SDD1BankB, SDD1BankC, SDD1BankD;
 
 void UpdateBanksSDD1()
 {
-    if (SDD1BankA)
-    {
-	BankSwitchSDD1C (SDD1BankA, 0x0C0);
-	BankSwitchSDD1C (SDD1BankB, 0x0D0);
-	BankSwitchSDD1C (SDD1BankC, 0x0E0);
-	BankSwitchSDD1C (SDD1BankD, 0x0F0);
-    }
+  if (SDD1BankA)
+  {
+    BankSwitchSDD1C(SDD1BankA, 0x0C0);
+    BankSwitchSDD1C(SDD1BankB, 0x0D0);
+    BankSwitchSDD1C(SDD1BankC, 0x0E0);
+    BankSwitchSDD1C(SDD1BankD, 0x0F0);
+  }
 }
 
 extern unsigned int Voice0Freq, Voice1Freq, Voice2Freq, Voice3Freq;
@@ -685,22 +675,22 @@ extern unsigned short Voice4Pitch, Voice5Pitch, Voice6Pitch, Voice7Pitch;
 
 void initpitch()
 {
-	Voice0Pitch = DSPMem[2+0*0x10];
-	Voice0Freq = ((((Voice0Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-	Voice1Pitch = DSPMem[2+1*0x10];
-	Voice1Freq = ((((Voice1Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-	Voice2Pitch = DSPMem[2+2*0x10];
-	Voice2Freq = ((((Voice2Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-	Voice3Pitch = DSPMem[2+3*0x10];
-	Voice3Freq = ((((Voice3Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-	Voice4Pitch = DSPMem[2+4*0x10];
-	Voice4Freq = ((((Voice4Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-	Voice5Pitch = DSPMem[2+5*0x10];
-	Voice5Freq = ((((Voice5Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-	Voice6Pitch = DSPMem[2+6*0x10];
-	Voice6Freq = ((((Voice6Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
-	Voice7Pitch = DSPMem[2+7*0x10];
-	Voice7Freq = ((((Voice7Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
+  Voice0Pitch = DSPMem[2+0*0x10];
+  Voice0Freq = ((((Voice0Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
+  Voice1Pitch = DSPMem[2+1*0x10];
+  Voice1Freq = ((((Voice1Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
+  Voice2Pitch = DSPMem[2+2*0x10];
+  Voice2Freq = ((((Voice2Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
+  Voice3Pitch = DSPMem[2+3*0x10];
+  Voice3Freq = ((((Voice3Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
+  Voice4Pitch = DSPMem[2+4*0x10];
+  Voice4Freq = ((((Voice4Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
+  Voice5Pitch = DSPMem[2+5*0x10];
+  Voice5Freq = ((((Voice5Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
+  Voice6Pitch = DSPMem[2+6*0x10];
+  Voice6Freq = ((((Voice6Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
+  Voice7Pitch = DSPMem[2+7*0x10];
+  Voice7Freq = ((((Voice7Pitch & 0x3FFF) * dspPAdj) >> 8) & 0xFFFFFFFF);
 }
 
 extern unsigned int KeyLoadState, Totalbyteloaded, SfxMemTable[256], SfxCPB;
@@ -712,172 +702,143 @@ extern unsigned char ioportval, SDD1Enable, nexthdma;
 
 void procexecloop();
 
+size_t load_save_size;
+static void read_save_state_data(unsigned char **dest, void *data, size_t len)
+{
+  load_save_size += fread(data, 1, len, fhandle);  
+}
+
 void stateloader (unsigned char *statename, unsigned char keycheck, unsigned char xfercheck)
 {
-    unsigned int offst;
+  char zsmesgcheck[sizeof(zsmesg)-1];
+  
+  if (keycheck)
+  {
     unsigned char statevalue;
-    char zsmesgcheck[sizeof(zsmesg)-1];
-    if (keycheck)
+    
+    pressed[1] = 0;
+    pressed[KeyLoadState] = 2;
+    multchange = 1;
+
+    //Get the state number
+    if (fnamest[statefileloc] == 't')
     {
-	pressed[1] = 0;
-	pressed[KeyLoadState] = 2;
-	multchange = 1;
-
-	clim();
-	#ifdef __LINUX__
-	SRAMChdir();
-	#endif
-
-	// Get the state number
-	if (fnamest[statefileloc] == 't')
-	{
-	    statevalue = '0';
-	}
-	else
-	{
-	    statevalue = fnamest[statefileloc];
-	}
-
-	txtloadmsg[6] = statevalue;
-	txtconvmsg[6] = statevalue;
-	txtnfndmsg[21] = statevalue;
-    }
-
-    // Actual state loading code
-    if ((fhandle = fopen(statename,"rb")) != NULL)
-    {
-	if (xfercheck)	{ Totalbyteloaded = 0; }
-
-	MovieProcessing = 0;
-	prevoamptr = 0xFF;
-
-	// Load 65816 status, etc.
-	Totalbyteloaded += fread (zsmesgcheck, 1, sizeof(zsmesgcheck), fhandle);
-	if (!memcmp(zsmesgcheck, zsmesg, sizeof(zsmesgcheck)))	// just drop older states
-	{
-	    // Load SPC timers
-	    Totalbyteloaded += fread (&cycpbl, 1, 2*4, fhandle);
-	    // Load SNES PPU Register status
-	    Totalbyteloaded += fread (&sndrot, 1, 3019, fhandle);
-	    ioportval = 0xFF;
-	    // Load WRAM (128k), VRAM (64k)
-	    Totalbyteloaded += fread (wramdata, 1, 8192*16, fhandle);
-	    Totalbyteloaded += fread (vram, 1, 4096*16, fhandle);
-
-	    if (spcon)	// SPC stuff, DSP stuff
-	    {
-		Totalbyteloaded += fread (spcRam, 1, PHspcsave, fhandle);
-		Totalbyteloaded += fread (BRRBuffer, 1, PHdspsave, fhandle);
-		Totalbyteloaded += fread (DSPMem, 1, 16*16, fhandle);
-	    }
-
-	    if (C4Enable) { Totalbyteloaded += fread (C4Ram, 1, 2048*4, fhandle); }
-
-	    if (SFXEnable)
-	    {
-		Totalbyteloaded += fread (sfxramdata, 1, 8192*16, fhandle);
-		Totalbyteloaded += fread (&SfxR0, 1, PHnum2writesfxreg, fhandle);
-		SfxCPB = SfxMemTable[(SfxPBR & 0xFF)];
-		SfxCROM = SfxMemTable[(SfxROMBR & 0xFF)];
-		SfxRAMMem = (unsigned int)sfxramdata + ((SfxRAMBR & 0xFF) << 16);
-		SfxRomBuffer += SfxCROM;
-		SfxLastRamAdr += SfxRAMMem;
-	    }
-
-	    if (SETAEnable) { Totalbyteloaded += fread (setaramdata, 1, 256*16, fhandle); }
-	// TODO: load the SetaCmdEnable?  For completeness we should do it
-	// but currently we ignore it anyway.
-
-	    if (SPC7110Enable)
-	    {
-		Totalbyteloaded += fread (romdata+0x510000, 1, 65536, fhandle);
-		Totalbyteloaded += fread (&SPCMultA, 1, PHnum2writespc7110reg, fhandle);
-	    }
-
-	    if (SA1Enable)
-	    {
-		Totalbyteloaded += fread (&SA1Mode, 1, PHnum2writesa1reg, fhandle);
-		Totalbyteloaded += fread (SA1RAMArea, 1, 8192*16, fhandle);
-
-		RestoreSA1();	// Convert back SA-1 stuff
-//		UpdateBanks();
-// It was in the asm, but the only thing it does is break Oshaberi Parodius...
-// The C port is still present, just commented out.
-		SA1UpdateDPageC();
-	    }
-
-	    if (SDD1Enable)
-	    {
-		UpdateBanksSDD1();
-	    }
-
-	    fclose (fhandle);
-	    repackfunct();
-
-	    spcnumread = 0;
-	    spchalted = 0xFFFFFFFF;
-	    nexthdma = 0;
-
-//	    ;call headerhack	; ASM ONLY ! I'm not porting hacks ever.
-	    initpitch();
-	    
-	    // Clear cache check if state loaded
-	    memset (vidmemch2, 1, 4096);
-	    memset (vidmemch4, 1, 4096);
-	    memset (vidmemch8, 1, 4096);
-
-	    offst = (unsigned int)tableA;
-	    Curtableaddr += offst;
-	    offst = (unsigned int)spcRam;
-	    spcPCRam += offst;
-	    spcRamDP += offst;
-
-	    ResetState();
-	    procexecloop();
-
-	    if (keycheck)	{ stim(); }
-	}
-
-	if (keycheck)
-	{
-	    if (!xfercheck)
-	    {
-		if (!memcmp(zsmesgcheck, zsmesg, sizeof(zsmesgcheck)))	{ Msgptr = txtconvmsg; }
-	    	else	{ Msgptr = txtloadmsg; }
-	    }
-
-	MessageOn = MsgCount;
-	}	
+      statevalue = '0';
     }
     else
     {
-	if (keycheck)
-	{
-	    Msgptr = txtnfndmsg;
-	    MessageOn = MsgCount;
-	    stim();
-	}
+      statevalue = fnamest[statefileloc];
     }
+
+    txtloadmsg[6] = statevalue;
+    txtconvmsg[6] = statevalue;
+    txtnfndmsg[21] = statevalue;
+  }
+
+  #ifdef __LINUX__
+  SRAMChdir();
+  #endif
+
+  clim();
+  
+  //Actual state loading code
+  if ((fhandle = fopen(statename,"rb")) != NULL)
+  {
+    if (xfercheck) { Totalbyteloaded = 0; }
+
+    Totalbyteloaded += fread(zsmesgcheck, 1, sizeof(zsmesgcheck), fhandle);
+    if (!memcmp(zsmesgcheck, zsmesg, sizeof(zsmesgcheck))) //Just drop older states
+    {
+      load_save_size = 0;
+      copy_state_data(0, read_save_state_data, true);
+      Totalbyteloaded += load_save_size;
+      
+      if (SFXEnable)
+      {
+        SfxCPB = SfxMemTable[(SfxPBR & 0xFF)];
+        SfxCROM = SfxMemTable[(SfxROMBR & 0xFF)];
+        SfxRAMMem = (unsigned int)sfxramdata + ((SfxRAMBR & 0xFF) << 16);
+        SfxRomBuffer += SfxCROM;
+        SfxLastRamAdr += SfxRAMMem;
+      }
+
+      if (SA1Enable)
+      {
+        RestoreSA1(); //Convert back SA-1 stuff
+        /*
+        All UpdateBanks() seems to do is break Oshaberi Parodius...
+        The C port is still present, just commented out
+        */
+        //UpdateBanks(); 
+        SA1UpdateDPageC();
+      }
+    
+      if (SDD1Enable)
+      {
+        UpdateBanksSDD1();
+      }
+
+      //Clear cache check if state loaded
+      memset(vidmemch2, 1, sizeof(vidmemch2));
+      memset(vidmemch4, 1, sizeof(vidmemch4));
+      memset(vidmemch8, 1, sizeof(vidmemch8));
+    
+      MovieProcessing = 0;
+      prevoamptr = 0xFF;
+      ioportval = 0xFF;
+
+      repackfunct();
+ 
+      spcnumread = 0;
+      spchalted = 0xFFFFFFFF;
+      nexthdma = 0;
+
+      //headerhack(); //Was in the asm, but why is this needed?
+
+      initpitch();
+      ResetState();
+      procexecloop();
+    
+      Msgptr = txtloadmsg;
+    }
+    else
+    {
+      Msgptr = txtconvmsg;
+    }
+    
+    fclose(fhandle);
+  }
+  else
+  {
+    Msgptr = txtnfndmsg;
+  }
+  
+  stim();
+
+  if (keycheck)
+  {
+    MessageOn = MsgCount;
+  }
 }
 
 void debugloadstate()
 {
-    stateloader (fnamest+1, 0, 0);
+  stateloader(fnamest+1, 0, 0);
 }
 
 void loadstate()
 {
-    stateloader (fnamest+1, 1, 0);
+  stateloader(fnamest+1, 1, 0);
 }
 
 void loadstate2()
 {
-    stateloader (fnamest+1, 0, 1);
+  stateloader(fnamest+1, 0, 1);
 }
 
 extern unsigned char Netfname[11];
 
 void loadstate3()
 {
-    stateloader (Netfname, 0, 1);
+  stateloader(Netfname, 0, 1);
 }
