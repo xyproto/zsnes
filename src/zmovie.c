@@ -53,7 +53,6 @@ extern unsigned char MovieStartMethod, GUIReset, ReturnFromSPCStall, GUIQuit;
 extern unsigned char MovieProcessing, *Msgptr, fnamest[512];
 extern unsigned char CMovieExt;
 extern bool romispal;
-bool firstloop;
 
 void GUIDoReset();
 void powercycle(bool);
@@ -570,7 +569,6 @@ static void zmv_create(char *filename)
     zst_save(zmv_vars.fp, false);
     zmv_vars.filename = (char *)malloc(filename_len+1); //+1 for null
     strcpy(zmv_vars.filename, filename);
-    firstloop = true;
   }
   else
   {
@@ -743,8 +741,6 @@ static bool zmv_open(char *filename)
       zmv_open_vars.input_start_pos = ftell(zmv_vars.fp);
       Msgptr = "MOVIE STARTED.";
     }
-
-    firstloop = true;
 
     fseek(zmv_vars.fp, -(EXT_CHAP_COUNT_END_DIST), SEEK_END);
     zmv_open_vars.external_chapter_count = fread2(zmv_vars.fp);
@@ -1656,7 +1652,7 @@ void SkipMovie()
 
 void MovieStop()
 {
-  if (firstloop)
+  if (MovieProcessing)
   {
     switch (MovieProcessing)
     {
@@ -1680,12 +1676,11 @@ void MovieStop()
         MessageOn = 0;
         break; 
     }
-
+    
     zmv_dealloc_rewind_buffer();
     SetMovieMode(MOVIE_OFF);
     SRAMState = PrevSRAMState;
   }
-  else { firstloop = true; }
 }
 
 void MoviePlay()
