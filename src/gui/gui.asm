@@ -3450,7 +3450,11 @@ SaveSecondState:
     call ChangetoSRAMdir
     mov ebx,[statefileloc]
     mov al,[fnamest+ebx]
+%ifdef __LINUX__
+    mov byte[fnamest+ebx],'s'
+%else
     mov byte[fnamest+ebx],'S'
+%endif
     push eax
     call statesaver
     pop eax
@@ -3463,7 +3467,11 @@ LoadSecondState:
     call ChangetoSRAMdir
     mov ebx,[statefileloc]
     mov al,[fnamest+ebx]
+%ifdef __LINUX__
+    mov byte[fnamest+ebx],'s'
+%else
     mov byte[fnamest+ebx],'S'
+%endif
     push eax
     call loadstate2
     pop eax
