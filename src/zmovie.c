@@ -34,6 +34,75 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "gblvars.h"
 #include "asm_call.h"
 
+#define bool unsigned char
+
+struct
+{
+  FILE *fp;
+  char linebuf[256];
+  size_t frame_current;
+  size_t message_start;
+  size_t message_duration;
+} MovieSub;
+
+void MovieSub_Open()
+{
+  MovieSub.fp = fopen("movie.sub", "r");
+  MovieSub.frame_current = 0;
+  MovieSub.message_start = 0;
+  MovieSub.message_duration = 0;
+}
+
+void MovieSub_Close()
+{
+  fclose(MovieSub.fp);
+  MovieSub.fp = 0;
+}
+
+char *MovieSub_GetData()
+{
+  if (MovieSub.fp)
+  {
+    char *i, *num;
+    
+    MovieSub.frame_current++;
+        
+    if (MovieSub.frame_current > MovieSub.message_start + MovieSub.message_duration)
+    {
+      MovieSub.message_duration = 0;
+      fgets(MovieSub.linebuf, 256, MovieSub.fp);
+      if (!(num = strtok(MovieSub.linebuf, ":"))) { return(0); }
+      for (i = num; *i; i++)
+      {
+        if (!isascii(*i)) { return(0); }
+      }
+      MovieSub.message_start = atoi(num);
+      if (!(num = strtok(0, ":"))) { return(0); }
+      for (i = num; *i; i++)
+      {
+        if (!isascii(*i))
+        { 
+          MovieSub.message_start = 0;
+          return(0);
+        }
+      }
+      MovieSub.message_duration = atoi(num);
+    }
+  
+    if (MovieSub.frame_current == MovieSub.message_start)
+    {
+      return(strtok(0, ":"));
+    }
+  }
+  return(0);
+}
+
+size_t MovieSub_GetDuration()
+{
+  return(MovieSub.message_duration);
+}
+
+
 extern unsigned int PJoyAOrig, PJoyBOrig, PJoyCOrig, PJoyDOrig, PJoyEOrig;
 extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
 extern unsigned int MsgCount, MessageOn;
@@ -47,6 +116,8 @@ void Replay()
   {
     if (MovieTemp < 2) // 1 or 0 are correct values
     {
+      char *sub;
+      
       if (MovieTemp == 0) // 0 means the input has changed
       {
 	fread(&PJoyAOrig, 1, 4, movfhandle);
@@ -61,12 +132,19 @@ void Replay()
       JoyCOrig = PJoyCOrig;
       JoyDOrig = PJoyDOrig;
       JoyEOrig = PJoyEOrig;
+    
+      if ((sub = MovieSub_GetData()))
+      {
+        Msgptr = sub;
+        MessageOn = MovieSub_GetDuration();
+      }
     }
     else // anything else is bad - the file isn't a movie.
     {
       MovieProcessing = 0;
 
       fclose(movfhandle);
+      MovieSub_Close();
     }
   }
   else
@@ -76,6 +154,7 @@ void Replay()
     MovieProcessing = 0;
 
     fclose(movfhandle);
+    MovieSub_Close();
   }
 }
 
@@ -291,6 +370,7 @@ void MoviePlay()
 
       if ((movfhandle = fopen(fnamest+1,"rb")) != NULL)
       {
+	MovieSub_Open();
 	fseek(movfhandle, Totalbyteloaded, SEEK_SET);
 	fread(RecData, 1, 16, movfhandle);
 	printf("Movie made with version: %d\n", RecData[1]);
