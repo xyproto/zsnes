@@ -1391,7 +1391,7 @@ DisplayGUIOption:
     GUIOuttextwin2 4,6,16,[GUITemp]
     GUIOuttextwin2u 4,26,31,GUIOptionText2,0
     GUIOuttextwin2u 4,26,41,GUIOptionText4,0
-;    GUIOuttextwin2u 4,26,51,GUIOptionText5,0
+    GUIOuttextwin2u 4,26,51,GUIOptionText5,2
     GUIOuttextwin2u 4,26,61,GUIOptionText6,0
     GUIOuttextwin2u 4,26,71,GUIOptionText7,0
 %ifdef __MSDOS__
@@ -1417,7 +1417,7 @@ DisplayGUIOption:
     GUIOuttextwin2 4,5,15,[GUITemp]
     GUIOuttextwin2 4,25,30,GUIOptionText2
     GUIOuttextwin2 4,25,40,GUIOptionText4
-;    GUIOuttextwin2 4,25,50,GUIOptionText5
+    GUIOuttextwin2 4,25,50,GUIOptionText5
     GUIOuttextwin2 4,25,60,GUIOptionText6
     GUIOuttextwin2 4,25,70,GUIOptionText7
 %ifdef __MSDOS__
@@ -1458,12 +1458,12 @@ DisplayGUIOption:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
     GUIDisplayIconWin 4,11,36,[GUITemp]
-;    mov dword[GUITemp],GUIIconDataCheckBoxUC
-;    cmp byte[vsyncon],0
-;    je .nocheckbox2
-;    mov dword[GUITemp],GUIIconDataCheckBoxC
-;.nocheckbox2
-;    GUIDisplayIconWin 4,11,46,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[AutoIncSaveSlot],0
+    je .nocheckbox2
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox2
+    GUIDisplayIconWin 4,11,46,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[FPUCopy],2
     jne .nocheckbox3
@@ -1602,7 +1602,7 @@ GUIOptionText1 db 'FRAME RATE',0
 GUIOptionText2 db 'AUTO FRAME RATE',0
 GUIOptionText3 db 'MAX FRAME SKIP',0
 GUIOptionText4 db 'NEW GFX ENGINE',0
-;GUIOptionText5 db 'VSYNC',0
+GUIOptionText5 db 'AUTO INCRMNT SAVE SLOT',0
 GUIOptionText6 db 'MMX SUPPORT',0
 GUIOptionText7 db 'USE PL3/4 AS PL1/2',0
 GUIOptionTextA db 'SIDEWINDER FIX',0

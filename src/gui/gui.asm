@@ -170,6 +170,7 @@ EXTSYM DeInitModemC
 EXTSYM ipxgetchar,ipxsendchar,TCPIPStoreByte
 EXTSYM TCPIPGetByte,GUIBIFIL
 EXTSYM ModemSendChar
+EXTSYM firstsaveinc
 %ifdef __LINUX__
 EXTSYM numlockptr
 %endif
@@ -584,6 +585,7 @@ NEWSYM DisableScreenSaver, db 0
 NEWSYM TrapMouseCursor, db 1
 NEWSYM KeyQuickClock, dd 0
 NEWSYM KeyQuickMinimize, dd 0
+NEWSYM AutoIncSaveSlot, db 0
 
 GUIsave equ $-GUIRAdd
 

@@ -33,7 +33,7 @@ EXTSYM frameskip,initvideo,newgfx16b,oldhandSBo,oldhandSBs,soundon,cvidmode
 EXTSYM vidbuffer,vidbufferofsa,vidbufferofsb,disable65816sh,GUISaveVars,virqnodisable
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst,GUIDoReset
 EXTSYM KeyOnStA,KeyOnStB,ProcessKeyOn,printnum,sramsavedis,DSPDisable,C4Enable
-EXTSYM KeyQuickClock,KeyQuickMinimize,TimerEnable
+EXTSYM KeyQuickClock,KeyQuickMinimize,TimerEnable,AutoIncSaveSlot
 EXTSYM IRQHack,HIRQLoc,Offby1line,splitflags,joinflags,KeyQuickSnapShot
 EXTSYM csounddisable,videotroub,Open_File,Close_File,Read_File,ResetTripleBuf
 EXTSYM Write_File,Output_Text,Create_File,Check_Key,Get_Key,Change_Dir,InitPreGame
@@ -1498,11 +1498,10 @@ NEWSYM sramsave
 .savesrmmsg1 db 'SRAM DATA SAVED.',0
 .savesrmmsg2 db 'NO SRAM DATA.',0
 
-
+NEWSYM firstsaveinc, db 0
 
 NEWSYM statesaver
     clim
-
 
     sub dword[Curtableaddr],tableA
     sub dword[spcPCRam],spcRam
@@ -1510,6 +1509,42 @@ NEWSYM statesaver
     call PrepareSaveState
     call unpackfunct
     call initrevst
+
+    ; Auto increment save state slot
+
+    cmp byte[AutoIncSaveSlot],0
+    je .donesaveinc
+    cmp byte[firstsaveinc],1
+    je .clearfirstinc
+    mov eax,[statefileloc]
+    mov dh,[fnamest+eax]
+%ifndef __LINUX__
+    cmp dh,'T'
+%else
+    cmp dh,'t'
+%endif
+    je .secondstate
+    cmp dh,'9'
+    je .jumptofirststate
+    inc dh
+    jmp .donextstate
+.secondstate
+    mov dh,'1'
+    jmp .donextstate
+.jumptofirststate
+%ifndef __LINUX__
+    mov dh,'T'
+%else
+    mov dh,'t'
+%endif
+.donextstate
+    mov byte[fnamest+eax],dh
+    xor dh,dh
+    jmp .donesaveinc
+.clearfirstinc
+    mov byte[firstsaveinc],0
+.donesaveinc
+
 ;    jmp .skipsaves
     ; Save State
 %ifdef __LINUX__
@@ -1636,6 +1671,7 @@ NEWSYM statesaver
     mov eax,[MsgCount]
     mov [MessageOn],eax
     ret
+
 .nosavestuff
     add dword[Curtableaddr],tableA
     add dword[spcPCRam],spcRam

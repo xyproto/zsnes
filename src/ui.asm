@@ -30,7 +30,7 @@ EXTSYM StateBackup
 EXTSYM ADSRGAINSwitch,FPUCopy,ScreenScale,SoundQuality
 EXTSYM debugger,pl1contrl,pl2contrl,romtype,smallscreence
 EXTSYM smallscreenon,spcon
-EXTSYM statefileloc,LatestSave
+EXTSYM statefileloc,LatestSave,firstsaveinc
 EXTSYM Create_File,Delete_File,Open_File,Get_File_Date,Close_File,Change_Dir,Get_Dir
 EXTSYM romloadskip
 EXTSYM cfgloadgdir,cfgloadsdir
@@ -1224,10 +1224,11 @@ NEWSYM makeextension
     mov [fnames],ah
     mov [fnamest],ah
 %ifdef __LINUX__
-	pushad
-	call GetFilename
-	popad
+    pushad
+    call GetFilename
+    popad
 %endif
+    mov byte[firstsaveinc],1
     cmp byte[LatestSave],1
     je .latestsave
     ret
