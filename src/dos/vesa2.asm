@@ -31,7 +31,7 @@ EXTSYM Init_2xSaIMMX
 NEWSYM Vesa2AsmStart
 
 
-
+SECTION .data
 
 ; add 0214h video mode
 anticrash times 10 db 0
@@ -72,7 +72,15 @@ NEWSYM ErrorPointer,    dd 0
 NEWSYM TripBufAvail,    db 0
 
 
-NEWSYM dcolortab, times 256 dd 0
+;NEWSYM dcolortab, times 256 dd 0
+
+
+SECTION .bss
+
+NEWSYM dcolortab, times 256 resd 1
+
+
+SECTION .text
 
 NEWSYM genfulladdtab
         ; Write to buffer
@@ -766,6 +774,9 @@ NEWSYM InitVesa2
         pop eax
         ret
 
+
+SECTION .data
+
 NEWSYM LFBpointer
 	dd 0
 NEWSYM noblocks
@@ -775,28 +786,56 @@ NEWSYM bytesperscanline
 NEWSYM vesamode
 	dw 0
 ;----------------------------------------------------------------------
-NEWSYM VESAmodelist
-	times 512 dw 0
+;NEWSYM VESAmodelist
+;   times 512 dw 0
 ;----------------------------------------------------------------------
-NEWSYM RMREGS
-.edi	dd 0
-.esi	dd 0
-.ebp	dd 0
-.esp	dd 0
-.ebx	dd 0
-.edx	dd 0
-.ecx	dd 0
-.eax	dd 0
 
-.flags	dw 0
-.es	dw 0
-.ds	dw 0 
-.fs	dw 0
-.gs	dw 0
-.ip	dw 0
-.cs	dw 0
-.sp	dw 0
-.ss	dw 0
-.spare	times 20 dd 0
+
+SECTION .bss
+
+NEWSYM VESAmodelist, times 512 resw 1
+
+
+;NEWSYM RMREGS
+;.edi  dd 0
+;.esi  dd 0
+;.ebp  dd 0
+;.esp  dd 0
+;.ebx  dd 0
+;.edx  dd 0
+;.ecx  dd 0
+;.eax  dd 0
+;
+;.flags   dw 0
+;.es   dw 0
+;.ds   dw 0 
+;.fs   dw 0
+;.gs   dw 0
+;.ip   dw 0
+;.cs   dw 0
+;.sp   dw 0
+;.ss   dw 0
+;.spare   times 20 dd 0
+
+NEWSYM RMREGS
+.edi  resd 1
+.esi  resd 1
+.ebp  resd 1
+.esp  resd 1
+.ebx  resd 1
+.edx  resd 1
+.ecx  resd 1
+.eax  resd 1
+
+.flags   resw 1
+.es   resw 1
+.ds   resw 1 
+.fs   resw 1
+.gs   resw 1
+.ip   resw 1
+.cs   resw 1
+.sp   resw 1
+.ss   resw 1
+.spare   times 20 resd 1
 ;----------------------------------------------------------------------
 NEWSYM Vesa2AsmEnd
