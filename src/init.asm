@@ -1724,7 +1724,7 @@ NEWSYM initsnes
     jne .notmmx
     cmp dword[esi+8],'X   '
     jne .notmmx
-    mov byte[MMXSRAMFix],1
+;    mov byte[MMXSRAMFix],1
 .notmmx
 
     mov esi,[romdata]
@@ -1855,7 +1855,7 @@ NEWSYM initsnes
     xor ebx,ebx
     mov bl,70h
 .nextsram
-    mov [snesmap2+ebx*4],eax
+    mov [snesmmap+ebx*4],eax
     inc bl
     cmp bl,77h
     jbe .nextsram
