@@ -595,7 +595,7 @@ NEWSYM copymodeq240
     push es
 ;    mov ax,[selcA000]
 ;    mov es,ax
-`   mov es,[selcA000]
+    mov es,[selcA000]
     mov esi,[vidbuffer]
 ;    mov ebp,[vidbufferm]
     mov edi,256
