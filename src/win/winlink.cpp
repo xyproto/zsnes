@@ -1491,6 +1491,7 @@ extern unsigned char cvidmode;
 DWORD FirstVid=1;
 DWORD FirstFull=1;
 extern BYTE GUIWFVID[];
+extern BYTE PrevWinMode;
 void clearwin();
 
 char WinName[]={"ZSNESW\0"};
@@ -1511,6 +1512,7 @@ void initwinvideo(void)
       X=0;
       Y=0;
       FullScreen=GUIWFVID[cvidmode];
+      if (GUIWFVID[cvidmode] == 0) PrevWinMode = cvidmode;
 
       switch (cvidmode)
       {

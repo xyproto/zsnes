@@ -833,10 +833,10 @@ GUIProcVideo:
     mov al,[cvidmode]
     cmp byte[GUIWFVID+eax],1
     je .fullsc
-    mov [PrevWinMode],al
+    mov byte[PrevWinMode],al
     ret
 .fullsc
-    mov [PrevFSMode],al
+    mov byte[PrevFSMode],al
     ret
 .failed
     mov byte[videotroub],0

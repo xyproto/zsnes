@@ -497,8 +497,8 @@ prevloadl db 0
 prevloaddnamel times 512*10 db 0
 prevloadfnamel times 512*10 db 0
 
-PrevWinMode db 1
-PrevFSMode db 5
+NEWSYM PrevWinMode, db 1
+NEWSYM PrevFSMode, db 5
 
 OldWinPos db 0
 GUIwinposx  dd 0,5   ,60  ,30  ,55  ,50  ,65  ,5   ,30  ,20  ,10   ,80  ,65  ,20  ,70  ,50  ,3   ,50
@@ -1490,12 +1490,6 @@ NEWSYM StartGUI
 ;    jbe .dosport
 %ifndef __MSDOS__
     mov byte[sampratenext+3],0
-%endif
-%ifdef __WIN32__
-    cmp byte[PrevFSMode],5
-    jne .notvm5
-    mov byte[PrevFSMode],7
-.notvm5
 %endif
 
     cmp byte[TripBufAvail],0
