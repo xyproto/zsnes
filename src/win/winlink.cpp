@@ -36,9 +36,9 @@ extern "C" {
 DWORD WindowWidth = 256;
 DWORD WindowHeight = 224;
 
-DWORD FullScreen = 0;
-
-DWORD Moving= 0;
+DWORD FullScreen=0;
+DWORD PrevFull=0;
+DWORD Moving=0;
 DWORD SoundBufferSize=1024*18;
 DWORD FirstSound=1;
 
@@ -1525,9 +1525,10 @@ void initwinvideo(void)
       AdjustWindowRectEx( &rc1,GetWindowLong( hMainWindow, GWL_STYLE ),
       GetMenu( hMainWindow ) != NULL, GetWindowLong( hMainWindow, GWL_EXSTYLE ) ); 
 
-      GetClientRect( hMainWindow, &rc1 );
-      ClientToScreen( hMainWindow, ( LPPOINT )&rc1 );
-      ClientToScreen( hMainWindow, ( LPPOINT )&rc1 + 1 );
+      GetClientRect(hMainWindow, &rcWindow);
+      ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow);
+      ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow + 1);
+
 //      return;
 //      sprintf(WinMessage,"FirstVid!=1 end\n\0");
 //      MessageBox (NULL, WinMessage, "Init", MB_ICONERROR );
@@ -1567,6 +1568,8 @@ void initwinvideo(void)
 
       hMainWindow = CreateWindow( "ZSNESWIN", WinName, WS_VISIBLE|WS_POPUP,X,Y,  //WS_OVERLAPPED "ZSNESWIN"
                                  WindowWidth,WindowHeight,NULL,NULL,hInst,NULL);
+
+      if (FullScreen == 0) InitDirectDraw();
       
       CheckPriority();
       CheckAlwaysOnTop();
@@ -1582,15 +1585,20 @@ void initwinvideo(void)
       InitSound();
       TestJoy();
    }
+
+   if (PrevFull == 1)
+   {
+      PrevFull = 0;
+      ReleaseDirectDraw();
+      InitDirectDraw();
+   }
    
+   if (FullScreen == 1) { PrevFull = 1; InitDirectDraw(); }
+
    if (Moving == 1) return;
    
    if (FullScreen == 0 || newmode == 1)
    {
-      if (InitDirectDraw() != TRUE)
-      {
-         exit(1);
-      }
       if (newmode) clearwin();
    }
 }
