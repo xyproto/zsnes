@@ -134,14 +134,14 @@ dnl --->
 
 AC_ARG_WITH(libpng-prefix,[  --with-libpng-prefix=PFX Prefix where libpng is installed (optional)], libpng_prefix="$withval", libpng_prefix="")
 
-min_libpng_version=ifelse([$1], ,1.0.0,$1)
+min_libpng_version=ifelse([$1], ,1.2.0,$1)
 tempLIBS="$LIBS"
 tempCFLAGS="$CFLAGS"
 if test x$libpng_prefix != x ; then
 LIBPNG_LIBS="-L$libpng_prefix"
 LIBPNG_CFLAGS="-I$libpng_prefix"
 fi
-LIBPNG_LIBS="$LIBPNG_LIBS -lpng"
+LIBPNG_LIBS="$LIBPNG_LIBS -lpng -lm"
 LIBS="$LIBS $LIBPNG_LIBS"
 CFLAGS="$CFLAGS $LIBPNG_CFLAGS"
 
