@@ -29,7 +29,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 #define DIR_SLASH "\\"
 #endif
 
@@ -46,7 +45,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define stim()
 #endif
 
-extern unsigned int CBackupPos, PBackupPos, cycpbl, PH65816regsize;
+extern unsigned int cycpbl, PH65816regsize;
 extern unsigned int *wramdata, *vram, PHspcsave, PHdspsave, *C4Ram, *sfxramdata;
 extern unsigned int PHnum2writesa1reg, SA1Mode, prevedi, SA1xpc, sa1dmaptr;
 extern unsigned int soundcycleft, spc700read, timer2upd, xa, PHnum2writesfxreg;
@@ -54,10 +53,10 @@ extern unsigned int spcnumread, spchalted, opcd, HIRQCycNext, oamaddr;
 extern unsigned int SfxR0, ReadHead, *setaramdata, ramsize, *sram;
 extern unsigned int tempesi, tempedi, tempedx, tempebp;
 extern unsigned int SPCMultA, PHnum2writespc7110reg;
-
-extern unsigned char *StateBackup, sndrot, spcRam[65472];
+extern unsigned char sndrot, spcRam[65472];
 extern unsigned char DSPMem[256], SA1Status, *SA1RAMArea, DSP1Type, DSP1COp;
 extern unsigned char prevoamptr, BRRBuffer[32], *romdata, curcyc;
+extern unsigned char vidmemch4[4096], vidmemch8[4096], vidmemch2[4096];
 
 extern bool C4Enable, SFXEnable, SA1Enable, SPC7110Enable, SETAEnable, spcon, SRAMState;
 
@@ -200,16 +199,11 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
   }
 }
 
+
 static void memcpyinc(unsigned char **dest, void *src, size_t len)
 {
   memcpy(*dest, src, len);
   *dest += len;
-}
-
-void BackupCVFrame()
-{
-  unsigned char *curpos = StateBackup + (CBackupPos << 19) + 1024;
-  copy_state_data(curpos, memcpyinc, false);
 }
 
 static void memcpyrinc(unsigned char **src, void *dest, size_t len)
@@ -218,19 +212,121 @@ static void memcpyrinc(unsigned char **src, void *dest, size_t len)
   *src += len;
 }
 
-void RestoreCVFrame()
+extern unsigned int RewindTimer;
+extern unsigned char RewindStates;
+unsigned char *StateBackup = 0;
+size_t rewind_state_size, cur_zst_size, old_zst_size;
+
+/* A nice idea, but needs more ported from the assembly first.
+size_t RewindPos, RewindEarliestPos;
+
+void BackupCVFrame()
 {
-  unsigned char *curpos = StateBackup + (PBackupPos << 19) + 1024;
-  copy_state_data(curpos, memcpyrinc, true);
+  unsigned char *RewindBufferPos = StateBackup + RewindPos*rewind_state_size;
+  printf("Backing up rewind in slot #%u\n", RewindPos);
+  copy_state_data(RewindBufferPos, memcpyinc, false);
+  RewindPos++;
+  if (RewindPos == RewindStates)
+  {
+    RewindPos = 0;
+  }
+  if (RewindPos == RewindEarliestPos)
+  {
+    RewindEarliestPos++;
+    if (RewindEarliestPos == RewindStates)
+    {
+      RewindEarliestPos = 0;
+    }
+  }
+  RewindTimer = 60*3;
 }
 
-extern unsigned int RewindPos, RewindOldPos, RewindTimer;
+void RestoreCVFrame()
+{
+  if (RewindPos != RewindEarliestPos)
+  {
+    unsigned char *RewindBufferPos;
+    
+    if (!RewindPos)
+    {
+      RewindPos = RewindStates;
+    }
+    RewindPos--;
 
+    RewindBufferPos = StateBackup + RewindPos*rewind_state_size;
+    printf("Restoring rewind in slot #%u\n", RewindPos);
+    copy_state_data(RewindBufferPos, memcpyrinc, true);
+      
+    //Clear Cache Check
+    memset(vidmemch2, 1, sizeof(vidmemch2));
+    memset(vidmemch4, 1, sizeof(vidmemch4));
+    memset(vidmemch8, 1, sizeof(vidmemch8));
+    
+    RewindTimer = 60*3;
+  }
+}
+
+void MultipleFrameBack(unsigned int i)
+{
+  while (i--)
+  {
+    if (RewindPos != RewindEarliestPos)
+    {
+      if (!RewindPos)
+      {
+        RewindPos = RewindStates;
+      }
+      RewindPos--;
+    }
+    else
+    {
+      break;
+    }
+  }  
+}
+
+void SetupRewindBuffer()
+{
+  if (StateBackup){ free(StateBackup); }
+  for (; RewindStates; RewindStates--)
+  {
+    StateBackup = 0;
+    StateBackup = (unsigned char *)malloc(rewind_state_size*RewindStates);
+    if (StateBackup) { break; }
+  }
+}
+*/
+
+extern unsigned int CBackupPos, PBackupPos, RewindPos, RewindOldPos;
+
+void BackupCVFrame()
+{
+  unsigned char *RewindBufferPos = StateBackup + (CBackupPos << 19) + 1024;
+  copy_state_data(RewindBufferPos, memcpyinc, false);
+}
+  
+void RestoreCVFrame()
+{
+  unsigned char *RewindBufferPos = StateBackup + (PBackupPos << 19) + 1024;
+  copy_state_data(RewindBufferPos, memcpyrinc, true);
+}
+
+void SetupRewindBuffer()
+{
+  extern void outofmemory();
+  if (!StateBackup)
+  {
+    StateBackup = (unsigned char *)malloc(4096*128*16);
+  }
+  if (!StateBackup) { outofmemory(); }
+}
 
 void InitRewindVars()
 {
+  SetupRewindBuffer();
   RewindPos = 0;
   RewindOldPos = 0;
+  //RewindEarliestPos = 0;
   RewindTimer = 60*4;
 }
 
@@ -552,7 +648,6 @@ static void state_size_tally(unsigned char **dest, void *src, size_t len)
   state_size += len;
 }
 
-size_t rewind_state_size, cur_zst_size, old_zst_size;
 void calculate_state_sizes()
 {
   state_size = 0;
@@ -794,9 +889,7 @@ void initpitch()
 extern unsigned int KeyLoadState, Totalbyteloaded, SfxMemTable[256], SfxCPB;
 extern unsigned int SfxPBR, SfxROMBR, SfxRAMBR;
 extern unsigned char pressed[256+128+64], multchange, txtloadmsg[15];
-extern unsigned char txtconvmsg[16], txtnfndmsg[23], vidmemch2[4096];
-extern unsigned char vidmemch4[4096], vidmemch8[4096], 
-MovieProcessing;
+extern unsigned char txtconvmsg[16], txtnfndmsg[23], MovieProcessing;
 extern unsigned char ioportval, SDD1Enable, nexthdma;
 
 void procexecloop();

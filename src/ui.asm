@@ -28,7 +28,6 @@ EXTSYM FPSOn,FPSAtStart,cfgsoundon
 EXTSYM xa
 EXTSYM ram7fa,wramdataa
 EXTSYM malloc,free
-EXTSYM StateBackup
 EXTSYM ADSRGAINSwitch,MMXSupport,ScreenScale,SoundQuality
 EXTSYM debugger,pl1contrl,pl2contrl,romtype,smallscreence
 EXTSYM smallscreenon,spcon
@@ -656,10 +655,7 @@ NEWSYM allocptr
 
 
 %ifndef __MSDOS__
-    AllocmemFail 4096*128*16+4096+65536*16,StateBackup,outofmemory
-    mov eax,[StateBackup]
-    add eax,4096*128*16
-    mov [BitConv32Ptr],eax
+    AllocmemFail 4096+65536*16,BitConv32Ptr,outofmemory
 %endif
 
     ; Memory Allocation

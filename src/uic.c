@@ -31,7 +31,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 extern void outofmemory();
 extern unsigned char *spc7110romptr;
-extern unsigned char *StateBackup;
 extern unsigned char *spcBuffera;
 extern unsigned char *spritetablea;
 extern unsigned char *vbufaptr;

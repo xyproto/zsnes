@@ -121,7 +121,6 @@ EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 EXTSYM NetPlayNoMore
 EXTSYM statefileloc
 EXTSYM CHIPBATT,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
-EXTSYM InitRewindVars
 
 %ifdef __MSDOS__
 EXTSYM dssel
@@ -129,7 +128,6 @@ EXTSYM dssel
 
 SECTION .data
 NEWSYM CBackupPos, dd 0
-NEWSYM StateBackup, dd 0
 NEWSYM PBackupPos, dd 0
 NEWSYM PPValue, dd 0   ; Previous PValue
 NEWSYM DPValue, dd 0   ; Destination PValue
@@ -734,12 +732,6 @@ NEWSYM start65816
 ;    rep stosd
     cmp byte[romloadskip],1
     je near StartGUI
-
-    ; Initialize the rewind vars so that the rewind feature works
-    ; when ZSnes is launched with a commandline filename
-    pushad
-    call InitRewindVars
-    popad
     
 NEWSYM continueprog
 

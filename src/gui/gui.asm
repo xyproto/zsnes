@@ -642,6 +642,7 @@ NEWSYM SPL4Path, times 1024 db 0
 NEWSYM AutoPatch, db 1
 NEWSYM RomInfo, db 1
 NEWSYM SRAMState, db 0
+NEWSYM RewindStates, db 16
 
 GUIsave equ $-GUIRAdd
 

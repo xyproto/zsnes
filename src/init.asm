@@ -132,7 +132,7 @@ EXTSYM IntlEHi
 EXTSYM CHIPBATT,SFXEnable,C4Enable,SPC7110Enable,RTCEnable,SA1Enable,SDD1Enable,OBCEnable
 EXTSYM SETAEnable,ST18Enable,SGBEnable,DSP1Enable,DSP2Enable,DSP3Enable,DSP4Enable,BSEnable
 
-EXTSYM calculate_state_sizes
+EXTSYM calculate_state_sizes,InitRewindVars
 
 EXTSYM SetaCmdEnable,setaramdata
 EXTSYM setaaccessbankr8,setaaccessbankw8,setaaccessbankr8a,setaaccessbankw8a
@@ -3169,6 +3169,7 @@ NEWSYM SetupROM
     pushad
     call SetupSramSize
     call calculate_state_sizes
+    call InitRewindVars
     popad
 
     ; get pal/ntsc
