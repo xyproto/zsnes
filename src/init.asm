@@ -2440,8 +2440,6 @@ SDD1memmap:
 
 SECTION .data
 NEWSYM memdest, dd 0
-NEWSYM SFXIRQFlag, db 0
-NEWSYM SFXCounter, dd 0
 SECTION .text
 
 NEWSYM prepare48mbit
@@ -2579,6 +2577,12 @@ NEWSYM ProcessSwapTable
 
     call Makemode7Table
     ret
+
+SECTION .data
+NEWSYM SFXCounter, dd 0
+NEWSYM SFXIRQFlag, db 0
+
+SECTION .text
 
 NEWSYM preparesfx
     mov byte[SFXCounter],0
