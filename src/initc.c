@@ -32,6 +32,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <sys/stat.h>
 #define DIR_SLASH "\\"
 #endif
+#include "cpu/memtable.h"
 #include "zip/zunzip.h"
 #include "jma/zsnesjma.h"
 #include "asm_call.h"
@@ -1937,20 +1938,6 @@ void InitDSP(), InitDSP2(), InitDSP4(), InitFxTables(), initregr(), initregw();
 void SPC7110Load();
 void rep_stosd(void (**fptrarray)(), void (*fptr), unsigned int);
 
-extern void (*memtabler8[256])(), (*memtablew8[256])();
-extern void (*memtabler16[256])(), (*memtablew16[256])();
-void sramaccessbankr8(), sramaccessbankw8(), DSP4Read8b(), DSP4Write8b();
-void sramaccessbankr16(), sramaccessbankw16(), DSP4Read16b(), DSP4Write16b();
-void sfxaccessbankr8(), sfxaccessbankw8(), sfxaccessbankr16(), sfxaccessbankw16();
-void sfxaccessbankr8b(), sfxaccessbankw8b(), sfxaccessbankr16b(), sfxaccessbankw16b();
-void sfxaccessbankr8c(), sfxaccessbankw8c(), sfxaccessbankr16c(), sfxaccessbankw16c();
-void sfxaccessbankr8d(), sfxaccessbankw8d(), sfxaccessbankr16d(), sfxaccessbankw16d();
-void sramaccessbankr8s(), sramaccessbankw8s(), sramaccessbankr16s(), sramaccessbankw16s();
-void setaaccessbankr8(), setaaccessbankw8(), setaaccessbankr16(), setaaccessbankw16();
-void setaaccessbankr8a(), setaaccessbankw8a(), setaaccessbankr16a(), setaaccessbankw16a();
-void DSP1Read8b3F(), DSP1Write8b3F(), DSP1Read16b3F(), DSP1Write16b3F();
-void DSP2Read8b(), DSP2Write8b(), DSP2Read16b(), DSP2Write16b();
-
 void CheckROMTypeC()
 {
   unsigned char *ROM = (unsigned char *)romdata;
@@ -1959,75 +1946,56 @@ void CheckROMTypeC()
   MirrorROM();
 
   lorommapmode2 = 0;
-  if (!strncmp(ROM+0x207FC0, "DERBY STALLION 96", 17))	{ lorommapmode2 = 1; }
-  if (!strncmp(ROM+0x7FC0, "SOUND NOVEL-TCOOL", 17))	{ lorommapmode2 = 1; }
+  if (!strncmp(ROM+0x207FC0, "DERBY STALLION 96", 17) || !strncmp(ROM+Lo, "SOUND NOVEL-TCOOL", 17))
+  { 
+    lorommapmode2 = 1;
+  }
 
   // Setup memmapping
   SetAddressingModes();
   GenerateBank0Table();
   chip_detect();
 
-  disablespcclr = (memcmp(ROM+0xFFC0, "\0x42\0x53\0x20\0x5A", 4)) ? 0 : 1;
+  disablespcclr = (memcmp(ROM+Hi, "\0x42\0x53\0x20\0x5A", 4)) ? 0 : 1;
 
   if ((romtype == 1) && (!SDD1Enable))
   {  // Non-SDD1 LoROM SRAM mapping, banks F0 - F3
-    rep_stosd(memtabler8+0xF0,  sramaccessbankr8,  4);
-    rep_stosd(memtablew8+0xF0,  sramaccessbankw8,  4);
-    rep_stosd(memtabler16+0xF0, sramaccessbankr16, 4);
-    rep_stosd(memtablew16+0xF0, sramaccessbankw16, 4);
+    map_mem(0xF0, &srambank, 4);
   }
 
   // Setup DSP-X stuff
   DSP1Type = 0;
 
-  if (DSP1Enable ||  DSP2Enable || DSP3Enable)
+  if (DSP1Enable || DSP2Enable || DSP3Enable)
   {
-    if (DSP2Enable)	{ asm_call(InitDSP2); }
+    if (DSP2Enable) { asm_call(InitDSP2); }
     InitDSP();
 
     DSP1Type = (romtype == 2) ? 2 : 1;
   }
 
   if (DSP4Enable)
-  {	// DSP-4 mapping, banks 30 - 3F
+  {
     InitDSP4();
 
-    rep_stosd(memtabler8+0x30,  DSP4Read8b,   0x10);
-    rep_stosd(memtablew8+0x30,  DSP4Write8b,  0x10);
-    rep_stosd(memtabler16+0x30, DSP4Read16b,  0x10);
-    rep_stosd(memtablew16+0x30, DSP4Write16b, 0x10);
+    // DSP-4 mapping, banks 30 - 3F
+    map_mem(0x30, &dsp4bank, 0x10);
   }
 
   if (SFXEnable)
-  {	// Setup SuperFX stuff
+  { 
+    // Setup SuperFX stuff
     if (Sup48mbit)
     {
-      // banks 70
-      memtabler8[0x70] = sfxaccessbankr8;
-      memtablew8[0x70] = sfxaccessbankw8;
-      memtabler16[0x70] = sfxaccessbankr16;
-      memtablew16[0x70] = sfxaccessbankw16;
-      // banks 71
-      memtabler8[0x71] = sfxaccessbankr8b;
-      memtablew8[0x71] = sfxaccessbankw8b;
-      memtabler16[0x71] = sfxaccessbankr16b;
-      memtablew16[0x71] = sfxaccessbankw16b;
-      // banks 72
-      memtabler8[0x72] = sfxaccessbankr8c;
-      memtablew8[0x72] = sfxaccessbankw8c;
-      memtabler16[0x72] = sfxaccessbankr16c;
-      memtablew16[0x72] = sfxaccessbankw16c;
-      // banks 73
-      memtabler8[0x73] = sfxaccessbankr8d;
-      memtablew8[0x73] = sfxaccessbankw8d;
-      memtabler16[0x73] = sfxaccessbankr16d;
-      memtablew16[0x73] = sfxaccessbankw16d;
-      // banks 78 - 79
-      rep_stosd(memtabler8+0x78,  sramaccessbankr8s,  2);
-      rep_stosd(memtablew8+0x78,  sramaccessbankw8s,  2);
-      rep_stosd(memtabler16+0x78, sramaccessbankr16s, 2);
-      rep_stosd(memtablew16+0x78, sramaccessbankw16s, 2);
-
+      //SuperFX mapping, banks 70 - 73
+      map_mem(0x70, &sfxbank, 1);
+      map_mem(0x71, &sfxbankb, 1);
+      map_mem(0x72, &sfxbankc, 1);
+      map_mem(0x73, &sfxbankd, 1);
+      
+      //SRAM mapping, banks 78 - 79
+      map_mem(0x78, &sramsbank, 2);
+      
       SfxR1 = 0;
       SfxR2 = 0;
       memset(sfxramdata, 0, 262144); // clear 256kB SFX ram
@@ -2046,24 +2014,24 @@ void CheckROMTypeC()
   }
 
   if (SETAEnable)
-  {	// Setup SETA 010/011 stuff
+  {
+    // Setup SETA 010/011 stuff
+    
     // Really banks 68h-6Fh:0000-7FFF are all mapped the same by the chip but
     // F1 ROC II only uses bank 68h
-    memtabler8[0x68] = setaaccessbankr8;
-    memtablew8[0x68] = setaaccessbankw8;
-    memtabler16[0x68] = setaaccessbankr16;
-    memtablew16[0x68] = setaaccessbankw16;
+    map_mem(0x68, &setabank, 1);
+    
     // Control register (and some status?) is in banks 60h-67h:0000-3FFF
-    memtabler8[0x60] = setaaccessbankr8a;
-    memtablew8[0x60] = setaaccessbankw8a;
-    memtabler16[0x60] = setaaccessbankr16a;
-    memtablew16[0x60] = setaaccessbankw16a;
+    map_mem(0x60, &setabanka, 1);
 
     SetaCmdEnable = 0x00000080; // 60:0000
     memset(setaramdata, 0, 4096); // clear 4kB SETA ram
 
     // proper SETA sram area
-    if (SramExists)	{ memcpy(setaramdata, sram, 4096); }
+    if (SramExists)
+    { 
+      memcpy(setaramdata, sram, 4096);
+    }
   }
 
   // General stuff all mixed together [... wouldn't it be cool to clean that]
@@ -2088,27 +2056,13 @@ void CheckROMTypeC()
 
   if (DSP1Type == 1)
   {
-    rep_stosd(memtabler8+0x30,  DSP1Read8b3F,   0x10);
-    rep_stosd(memtablew8+0x30,  DSP1Write8b3F,  0x10);
-    rep_stosd(memtabler16+0x30, DSP1Read16b3F,  0x10);
-    rep_stosd(memtablew16+0x30, DSP1Write16b3F, 0x10);
-
-    rep_stosd(memtabler8+0xB0,  DSP1Read8b3F,   0x10);
-    rep_stosd(memtablew8+0xB0,  DSP1Write8b3F,  0x10);
-    rep_stosd(memtabler16+0xB0, DSP1Read16b3F,  0x10);
-    rep_stosd(memtablew16+0xB0, DSP1Write16b3F, 0x10);
-
-    rep_stosd(memtabler8+0xE0,  DSP1Read8b3F,   0x10);
-    rep_stosd(memtablew8+0xE0,  DSP1Write8b3F,  0x10);
-    rep_stosd(memtabler16+0xE0, DSP1Read16b3F,  0x10);
-    rep_stosd(memtablew16+0xE0, DSP1Write16b3F, 0x10);
-
+    map_mem(0x30, &dsp1bank, 0x10);
+    map_mem(0xB0, &dsp1bank, 0x10);
+    map_mem(0xE0, &dsp1bank, 0x10);
+    
     if (DSP2Enable)
     {
-      memtabler8[0x3F] = DSP2Read8b;
-      memtablew8[0x3F] = DSP2Write8b;
-      memtabler16[0x3F] = DSP2Read16b;
-      memtablew16[0x3F] = DSP2Write16b;
+      map_mem(0x3F, &dsp2bank, 1);
     }
   }
 

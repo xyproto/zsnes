@@ -250,7 +250,7 @@ vcache${OE}: $< macros.mac
 ui${OE}: $< macros.mac
 cfgload${OE}: $< macros.mac
 init${OE}: $< macros.mac
-initc${OE}: $< ${JMADIR}/zsnesjma.h
+initc${OE}: $< ${CPUDIR}/memtable.h ${JMADIR}/zsnesjma.h
 uic${OE}: $<
 patch${OE}: $<
 endmem${OE}: $< macros.mac
@@ -267,7 +267,7 @@ ${CPUDIR}/tablec${OE}: $< ${CPUDIR}/65816dc.inc ${CPUDIR}/address.inc ${CPUDIR}/
 ${CPUDIR}/stable${OE}: $< ${CPUDIR}/s65816d.inc ${CPUDIR}/saddress.inc ${CPUDIR}/saddrni.inc\
 	            ${CPUDIR}/se65816.inc macros.mac
 ${CPUDIR}/memory${OE}: $< macros.mac
-${CPUDIR}/memtable${OE}: $<
+${CPUDIR}/memtable${OE}: ${CPUDIR}/memtable.h $<
 ${CPUDIR}/dma${OE}: $< macros.mac
 ${CPUDIR}/irq${OE}: $< macros.mac
 ${CPUDIR}/dspproc${OE}: $< macros.mac

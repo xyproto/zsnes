@@ -122,7 +122,7 @@ ${CHIPDIR}/dsp4emu.o: ${CHIPDIR}/dsp4emu.c
 ui.o: ui.asm macros.mac
 cfgload.o:cfgload.c macros.mac
 init.o:init.asm macros.mac
-initc.o:initc.c ${JMADIR}/zsnesjma.h
+initc.o:initc.c ${CPUDIR}/memtable.h ${JMADIR}/zsnesjma.h
 uic.o:uic.c
 patch.o:patch.c
 zmovie.o:zmovie.c
@@ -147,7 +147,7 @@ ${CPUDIR}/tablec.o: ${CPUDIR}/tablec.asm ${CPUDIR}/65816dc.inc\
 ${CPUDIR}/stable.o: ${CPUDIR}/stable.asm ${CPUDIR}/s65816d.inc\
 	${CPUDIR}/saddress.inc ${CPUDIR}/saddrni.inc ${CPUDIR}/se65816.inc\
 	macros.mac
-${CPUDIR}/memory.o: ${CPUDIR}/memory.asm macros.mac
+${CPUDIR}/memory.o: ${CPUDIR}/memtable.h ${CPUDIR}/memory.asm macros.mac
 ${CPUDIR}/memtable.o: ${CPUDIR}/memtable.c
 ${CPUDIR}/dma.o: ${CPUDIR}/dma.asm macros.mac
 ${DOSDIR}/dosintrf.o: ${DOSDIR}/dosintrf.asm macros.mac

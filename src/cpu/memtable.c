@@ -32,6 +32,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <sys/stat.h>
 #define DIR_SLASH "\\"
 #endif
+#include "memtable.h"
 #include "gblvars.h"
 
 extern unsigned int Curtableaddr, tableA[256];
@@ -77,8 +78,9 @@ void UpdateBanksSDD1()
   }
 }
 
-extern void (*Bank0datr8[256])(), (*Bank0datr16[256])(), (*Bank0datw8[256])();
-extern void (*Bank0datw16[256])(), *DPageR8, *DPageR16, *DPageW8, *DPageW16;
+extern void (*Bank0datr8[256])(), (*Bank0datr16[256])(), (*Bank0datw8[256])(), (*Bank0datw16[256])();
+extern void *DPageR8, *DPageR16, *DPageW8, *DPageW16;
+
 extern unsigned int xdb, xpb, xs, xx, xy, xd;
 extern unsigned short oamaddrt, xat, xst, xdt, xxt, xyt;
 extern unsigned char xdbt, xpbt;
@@ -249,184 +251,110 @@ void repackfunct()
   }
 }
 
-extern void (*memtabler8[256])();
-extern void (*memtablew8[256])();
-extern void (*memtabler16[256])();
-extern void (*memtablew16[256])();
+void regaccessbankr8(), regaccessbankw8(), regaccessbankr16(), regaccessbankw16();
+void memaccessbankr8(), memaccessbankw8(), memaccessbankr16(), memaccessbankw16(); 
+void wramaccessbankr8(), wramaccessbankw8(), wramaccessbankr16(), wramaccessbankw16(); 
+void sramaccessbankr8(), sramaccessbankw8(), sramaccessbankr16(), sramaccessbankw16(); 
+void eramaccessbankr8(), eramaccessbankw8(), eramaccessbankr16(), eramaccessbankw16(); 
 
-void regaccessbankr8(), regaccessbankr8SA1();
-void memaccessbankr8();
-void sramaccessbankr8(), SA1RAMaccessbankr8(), SA1RAMaccessbankr8b();
-void wramaccessbankr8(), eramaccessbankr8();
+void regaccessbankr8SA1(), regaccessbankw8SA1(), regaccessbankr16SA1(), regaccessbankw16SA1();
+void SA1RAMaccessbankr8(), SA1RAMaccessbankw8(), SA1RAMaccessbankr16(), SA1RAMaccessbankw16(); 
+void SA1RAMaccessbankr8b(), SA1RAMaccessbankw8b(), SA1RAMaccessbankr16b(), SA1RAMaccessbankw16b(); 
 
-void regaccessbankw8(), regaccessbankw8SA1();
-void memaccessbankw8();
-void sramaccessbankw8(), SA1RAMaccessbankw8(), SA1RAMaccessbankw8b();
-void wramaccessbankw8(), eramaccessbankw8();
+void sramaccessbankr8s(), sramaccessbankw8s(), sramaccessbankr16s(), sramaccessbankw16s();
+void DSP1Read8b3F(), DSP1Write8b3F(), DSP1Read16b3F(), DSP1Write16b3F();
+void DSP2Read8b(), DSP2Write8b(), DSP2Read16b(), DSP2Write16b();
+void DSP4Read8b(), DSP4Write8b(), DSP4Read16b(), DSP4Write16b();
+void setaaccessbankr8(), setaaccessbankw8(), setaaccessbankr16(), setaaccessbankw16();
+void setaaccessbankr8a(), setaaccessbankw8a(), setaaccessbankr16a(), setaaccessbankw16a();
+void sfxaccessbankr8(), sfxaccessbankw8(), sfxaccessbankr16(), sfxaccessbankw16();
+void sfxaccessbankr8b(), sfxaccessbankw8b(), sfxaccessbankr16b(), sfxaccessbankw16b();
+void sfxaccessbankr8c(), sfxaccessbankw8c(), sfxaccessbankr16c(), sfxaccessbankw16c();
+void sfxaccessbankr8d(), sfxaccessbankw8d(), sfxaccessbankr16d(), sfxaccessbankw16d();
 
-void regaccessbankr16(), regaccessbankr16SA1();
-void memaccessbankr16();
-void sramaccessbankr16(), SA1RAMaccessbankr16(), SA1RAMaccessbankr16b();
-void wramaccessbankr16(), eramaccessbankr16();
+mrwp regbank = { regaccessbankr8, regaccessbankw8, regaccessbankr16, regaccessbankw16 }; 
+mrwp membank = { memaccessbankr8, memaccessbankw8, memaccessbankr16, memaccessbankw16 };
+mrwp wrambank = { wramaccessbankr8, wramaccessbankw8, wramaccessbankr16, wramaccessbankw16 };
+mrwp srambank = { sramaccessbankr8, sramaccessbankw8, sramaccessbankr16, sramaccessbankw16 };
+mrwp erambank = { eramaccessbankr8, eramaccessbankw8, eramaccessbankr16, eramaccessbankw16 };
 
-void regaccessbankw16(), regaccessbankw16SA1();
-void memaccessbankw16();
-void sramaccessbankw16(), SA1RAMaccessbankw16(), SA1RAMaccessbankw16b();
-void wramaccessbankw16(), eramaccessbankw16();
+mrwp sa1regbank = { regaccessbankr8SA1, regaccessbankw8SA1, regaccessbankr16SA1, regaccessbankw16SA1 }; 
+mrwp sa1rambank = { SA1RAMaccessbankr8, SA1RAMaccessbankw8, SA1RAMaccessbankr16, SA1RAMaccessbankw16 };
+mrwp sa1rambankb = { SA1RAMaccessbankr8b, SA1RAMaccessbankw8b, SA1RAMaccessbankr16b, SA1RAMaccessbankw16b };
 
-/*
-rep_stosd is my name for a 'copy <num> times a function pointer <func_ptr> into
-a function pointer array <dest>' function, in honour of the almighty asm
-instruction rep stosd, which is able to do that (and much more).
-Since ZSNES is just full of func pointer arrays, it'll probably come in handy.
-*/
+mrwp sramsbank = { sramaccessbankr8s, sramaccessbankw8s, sramaccessbankr16s, sramaccessbankw16s };
+mrwp dsp1bank = { DSP1Read8b3F, DSP1Write8b3F, DSP1Read16b3F, DSP1Write16b3F };
+mrwp dsp2bank = { DSP2Read8b, DSP2Write8b, DSP2Read16b, DSP2Write16b };
+mrwp dsp4bank = { DSP4Read8b, DSP4Write8b, DSP4Read16b, DSP4Write16b };
+mrwp setabank = { setaaccessbankr8, setaaccessbankw8, setaaccessbankr16, setaaccessbankw16 };
+mrwp setabanka = { setaaccessbankr8a, setaaccessbankw8a, setaaccessbankr16a, setaaccessbankw16a };
+mrwp sfxbank = { sfxaccessbankr8, sfxaccessbankw8, sfxaccessbankr16, sfxaccessbankw16 };
+mrwp sfxbankb = { sfxaccessbankr8b, sfxaccessbankw8b, sfxaccessbankr16b, sfxaccessbankw16b };
+mrwp sfxbankc = { sfxaccessbankr8c, sfxaccessbankw8c, sfxaccessbankr16c, sfxaccessbankw16c };
+mrwp sfxbankd = { sfxaccessbankr8d, sfxaccessbankw8d, sfxaccessbankr16d, sfxaccessbankw16d };
 
-void rep_stosd(void (**dest)(), void (*func_ptr), unsigned int num)
-{
-  while (num--)	{ dest[num] = func_ptr; }
-}
 
 void SetAddressingModes()
 {
-	// set 8-bit read memory tables                    banks
-  rep_stosd(memtabler8+0x00, regaccessbankr8,  0x40);   // 00 - 3F
-  rep_stosd(memtabler8+0x40, memaccessbankr8,  0x30);   // 40 - 6F
-  rep_stosd(memtabler8+0x70, sramaccessbankr8, 0x08);   // 70 - 77
-  rep_stosd(memtabler8+0x78, memaccessbankr8,  0x06);   // 78 - 7D
-  memtabler8[0x7E] = wramaccessbankr8;                  // 7E
-  memtabler8[0x7F] = eramaccessbankr8;                  // 7F
-  rep_stosd(memtabler8+0x80, regaccessbankr8,  0x40);   // 80 - BF
-  rep_stosd(memtabler8+0xC0, memaccessbankr8,  0x40);   // C0 - FF
-
-	// set 8-bit write memory tables                   banks
-  rep_stosd(memtablew8+0x00, regaccessbankw8,  0x40);   // 00 - 3F
-  rep_stosd(memtablew8+0x40, memaccessbankw8,  0x30);   // 40 - 6F
-  rep_stosd(memtablew8+0x70, sramaccessbankw8, 0x08);   // 70 - 77
-  rep_stosd(memtablew8+0x78, memaccessbankw8,  0x06);   // 78 - 7D
-  memtablew8[0x7E] = wramaccessbankw8;                  // 7E
-  memtablew8[0x7F] = eramaccessbankw8;                  // 7F
-  rep_stosd(memtablew8+0x80, regaccessbankw8,  0x40);   // 80 - BF
-  rep_stosd(memtablew8+0xC0, memaccessbankw8,  0x40);   // C0 - FF
-
-	// set 16-bit read memory tables                   banks
-  rep_stosd(memtabler16+0x00, regaccessbankr16,  0x40); // 00 - 3F
-  rep_stosd(memtabler16+0x40, memaccessbankr16,  0x30); // 40 - 6F
-  rep_stosd(memtabler16+0x70, sramaccessbankr16, 0x08); // 70 - 77
-  rep_stosd(memtabler16+0x78, memaccessbankr16,  0x06); // 78 - 7D
-  memtabler16[0x7E] = wramaccessbankr16;                // 7E
-  memtabler16[0x7F] = eramaccessbankr16;                // 7F
-  rep_stosd(memtabler16+0x80, regaccessbankr16,  0x40); // 80 - BF
-  rep_stosd(memtabler16+0xC0, memaccessbankr16,  0x40); // C0 - FF
-
-	// set 16-bit write memory tables                  banks
-  rep_stosd(memtablew16+0x00, regaccessbankw16,  0x40); // 00 - 3F
-  rep_stosd(memtablew16+0x40, memaccessbankw16,  0x30); // 40 - 6F
-  rep_stosd(memtablew16+0x70, sramaccessbankw16, 0x08); // 70 - 77
-  rep_stosd(memtablew16+0x78, memaccessbankw16,  0x06); // 78 - 7D
-  memtablew16[0x7E] = wramaccessbankw16;                // 7E
-  memtablew16[0x7F] = eramaccessbankw16;                // 7F
-  rep_stosd(memtablew16+0x80, regaccessbankw16,  0x40); // 80 - BF
-  rep_stosd(memtablew16+0xC0, memaccessbankw16,  0x40); // C0 - FF
+                                        //  Banks
+  map_mem(0x00, &regbank,  0x40);       // 00 - 3F
+  map_mem(0x40, &membank,  0x30);       // 49 - 6F
+  map_mem(0x70, &srambank, 0x08);       // 70 - 77
+  map_mem(0x78, &membank,  0x06);       // 78 - 7D
+  map_mem(0x7E, &wrambank, 0x01);       // 7E
+  map_mem(0x7F, &erambank, 0x01);       // 7F
+  map_mem(0x80, &regbank,  0x40);       // 80 - BF
+  map_mem(0xC0, &membank,  0x40);       // C0 - FF
 }
 
 void SetAddressingModesSA1()
 {
-	// set 8-bit read memory tables                       banks
-  rep_stosd(memtabler8+0x00, regaccessbankr8SA1,  0x40);   // 00 - 3F
-  rep_stosd(memtabler8+0x40, SA1RAMaccessbankr8,  0x20);   // 40 - 5F
-  rep_stosd(memtabler8+0x60, SA1RAMaccessbankr8b, 0x10);   // 60 - 6F
-  rep_stosd(memtabler8+0x70, sramaccessbankr8,    0x08);   // 70 - 77
-  rep_stosd(memtabler8+0x78, memaccessbankr8,     0x06);   // 78 - 7D
-  memtabler8[0x7E] = wramaccessbankr8;                     // 7E
-  memtabler8[0x7F] = eramaccessbankr8;                     // 7F
-  rep_stosd(memtabler8+0x80, regaccessbankr8SA1,  0x40);   // 80 - BF
-  rep_stosd(memtabler8+0xC0, memaccessbankr8,     0x40);   // C0 - FF
-
-	// set 8-bit write memory tables                      banks
-  rep_stosd(memtablew8+0x00, regaccessbankw8SA1,  0x40);   // 00 - 3F
-  rep_stosd(memtablew8+0x40, SA1RAMaccessbankw8,  0x20);   // 40 - 5F
-  rep_stosd(memtablew8+0x60, SA1RAMaccessbankw8b, 0x10);   // 60 - 6F
-  rep_stosd(memtablew8+0x70, sramaccessbankw8,    0x08);   // 70 - 77
-  rep_stosd(memtablew8+0x78, memaccessbankw8,     0x06);   // 78 - 7D
-  memtablew8[0x7E] = wramaccessbankw8;                     // 7E
-  memtablew8[0x7F] = eramaccessbankw8;                     // 7F
-  rep_stosd(memtablew8+0x80, regaccessbankw8SA1,  0x40);   // 80 - BF
-  rep_stosd(memtablew8+0xC0, memaccessbankw8,     0x40);   // C0 - FF
-
-	// set 16-bit read memory tables                      banks
-  rep_stosd(memtabler16+0x00, regaccessbankr16SA1,  0x40); // 00 - 3F
-  rep_stosd(memtabler16+0x40, SA1RAMaccessbankr16,  0x20); // 40 - 5F
-  rep_stosd(memtabler16+0x60, SA1RAMaccessbankr16b, 0x10); // 60 - 6F
-  rep_stosd(memtabler16+0x70, sramaccessbankr16,    0x08); // 70 - 77
-  rep_stosd(memtabler16+0x78, memaccessbankr16,     0x06); // 78 - 7D
-  memtabler16[0x7E] = wramaccessbankr16;                   // 7E
-  memtabler16[0x7F] = eramaccessbankr16;                   // 7F
-  rep_stosd(memtabler16+0x80, regaccessbankr16SA1,  0x40); // 80 - BF
-  rep_stosd(memtabler16+0xC0, memaccessbankr16,     0x40); // C0 - FF
-
-	// set 16-bit write memory tables                     banks
-  rep_stosd(memtablew16+0x00, regaccessbankw16SA1,  0x40); // 00 - 3F
-  rep_stosd(memtablew16+0x40, SA1RAMaccessbankw16,  0x20); // 40 - 5F
-  rep_stosd(memtablew16+0x60, SA1RAMaccessbankw16b, 0x10); // 60 - 6F
-  rep_stosd(memtablew16+0x70, sramaccessbankw16,    0x08); // 70 - 77
-  rep_stosd(memtablew16+0x78, memaccessbankw16,     0x06); // 78 - 7D
-  memtablew16[0x7E] = wramaccessbankw16;                   // 7E
-  memtablew16[0x7F] = eramaccessbankw16;                   // 7F
-  rep_stosd(memtablew16+0x80, regaccessbankw16SA1,  0x40); // 80 - BF
-  rep_stosd(memtablew16+0xC0, memaccessbankw16,     0x40); // C0 - FF
+                                        //  Banks
+  map_mem(0x00, &sa1regbank,  0x40);    // 00 - 3F
+  map_mem(0x40, &sa1rambank,  0x30);    // 49 - 6F
+  map_mem(0x70, &sa1rambankb, 0x08);    // 70 - 77
+  map_mem(0x78, &membank,     0x06);    // 78 - 7D
+  map_mem(0x7E, &wrambank,    0x01);    // 7E
+  map_mem(0x7F, &erambank,    0x01);    // 7F
+  map_mem(0x80, &sa1regbank,  0x40);    // 80 - BF
+  map_mem(0xC0, &membank,     0x40);    // C0 - FF
 }
 
-void membank0r8ram(), membank0r8ramSA1();
-void membank0r8reg(), membank0r8inv(), membank0r8chip();
-void membank0r8rom(), membank0r8romram();
+void membank0r8reg(), membank0w8reg(), membank0r16reg(), membank0w16reg();
+void membank0r8ram(), membank0w8ram(), membank0r16ram(), membank0w16ram();
+void membank0r8rom(), membank0w8rom(), membank0r16rom(), membank0w16rom();
+void membank0r8romram(), membank0w8romram(), membank0r16romram(), membank0w16romram();
+void membank0r8inv(), membank0w8inv(), membank0r16inv(), membank0w16inv();
+void membank0r8chip(), membank0w8chip(), membank0r16chip(), membank0w16chip();
+void membank0r8ramSA1(), membank0w8ramSA1(), membank0r16ramSA1(), membank0w16ramSA1();
 
-void membank0w8ram(), membank0w8ramSA1();
-void membank0w8reg(), membank0w8inv(), membank0w8chip();
-void membank0w8rom(), membank0w8romram();
+mrwp regbank0 = { membank0r8reg, membank0w8reg, membank0r16reg, membank0w16reg };
+mrwp rambank0 = { membank0r8ram, membank0w8ram, membank0r16ram, membank0w16ram };
+mrwp rombank0 = { membank0r8rom, membank0w8rom, membank0r16rom, membank0w16rom };
+mrwp romrambank0 = { membank0r8romram, membank0w8romram, membank0r16romram, membank0w16romram };
+mrwp invbank0 = { membank0r8inv, membank0w8inv, membank0r16inv, membank0w16inv };
+mrwp chipbank0 = { membank0r8chip, membank0w8chip, membank0r16chip, membank0w16chip };
+mrwp sa1rambank0 = { membank0r8ramSA1, membank0w8ramSA1, membank0r16ramSA1, membank0w16ramSA1 };
 
-void membank0r16ram(), membank0r16ramSA1();
-void membank0r16reg(), membank0r16inv(), membank0r16chip();
-void membank0r16rom(), membank0r16romram();
-
-void membank0w16ram(), membank0w16ramSA1();
-void membank0w16reg(), membank0w16inv(), membank0w16chip();
-void membank0w16rom(), membank0w16romram();
+static void map_bank0(size_t dest, mrwp *src, size_t num)
+{
+  rep_stosd(Bank0datr8+dest, src->memr8, num);
+  rep_stosd(Bank0datw8+dest, src->memw8, num);
+  rep_stosd(Bank0datr16+dest, src->memr16, num);
+  rep_stosd(Bank0datw16+dest, src->memw16, num);
+}
 
 void GenerateBank0Table()
 {
-  rep_stosd(Bank0datr8+0x00, membank0r8ram,  0x20);   // 00 - 1F
-  rep_stosd(Bank0datr8+0x20, membank0r8reg,  0x28);   // 20 - 47
-  rep_stosd(Bank0datr8+0x48, membank0r8inv,  0x17);   // 48 - 5E
-  rep_stosd(Bank0datr8+0x5F, membank0r8chip, 0x1F);   // 5F - 7D
-  rep_stosd(Bank0datr8+0x7E, membank0r8rom,  0x81);   // 7E - FE
-  Bank0datr8[0xFF] = membank0r8romram;                // FF
-
-  rep_stosd(Bank0datw8+0x00, membank0w8ram,  0x20);   // 00 - 1F
-  rep_stosd(Bank0datw8+0x20, membank0w8reg,  0x28);   // 20 - 47
-  rep_stosd(Bank0datw8+0x48, membank0w8inv,  0x17);   // 48 - 5E
-  rep_stosd(Bank0datw8+0x5F, membank0w8chip, 0x1F);   // 5F - 7D
-  rep_stosd(Bank0datw8+0x7E, membank0w8rom,  0x81);   // 7E - FE
-  Bank0datw8[0xFF] = membank0w8romram;                // FF
-
-  rep_stosd(Bank0datr16+0x00, membank0r16ram,  0x20); // 00 - 1F
-  rep_stosd(Bank0datr16+0x20, membank0r16reg,  0x28); // 20 - 47
-  rep_stosd(Bank0datr16+0x48, membank0r16inv,  0x17); // 48 - 5E
-  rep_stosd(Bank0datr16+0x5F, membank0r16chip, 0x1F); // 5F - 7D
-  rep_stosd(Bank0datr16+0x7E, membank0r16rom,  0x81); // 7E - FE
-  Bank0datr16[0xFF] = membank0r16romram;              // FF
-
-  rep_stosd(Bank0datw16+0x00, membank0w16ram,  0x20); // 00 - 1F
-  rep_stosd(Bank0datw16+0x20, membank0w16reg,  0x28); // 20 - 47
-  rep_stosd(Bank0datw16+0x48, membank0w16inv,  0x17); // 48 - 5E
-  rep_stosd(Bank0datw16+0x5F, membank0w16chip, 0x1F); // 5F - 7D
-  rep_stosd(Bank0datw16+0x7E, membank0w16rom,  0x81); // 7E - FE
-  Bank0datw16[0xFF] = membank0w16romram;              // FF
+  map_bank0(0x00, &rambank0,    0x20);   // 00 - 1F
+  map_bank0(0x20, &regbank0,    0x28);   // 20 - 47
+  map_bank0(0x48, &invbank0,    0x17);   // 48 - 5E
+  map_bank0(0x5F, &chipbank0,   0x1F);   // 5F - 7D
+  map_bank0(0x7E, &rombank0,    0x81);   // 7E - FE
+  map_bank0(0xFF, &romrambank0, 0x01);   // FF
 }
 
 void GenerateBank0TableSA1()
 {
-  rep_stosd(Bank0datr8,  membank0r8ramSA1,  0x20); // 00 - 1F
-  rep_stosd(Bank0datw8,  membank0w8ramSA1,  0x20); // 00 - 1F
-  rep_stosd(Bank0datr16, membank0r16ramSA1, 0x20); // 00 - 1F
-  rep_stosd(Bank0datw16, membank0w16ramSA1, 0x20); // 00 - 1F
+  map_bank0(0x00, &sa1rambank0, 0x20);   // 00 - 1F
 }
