@@ -2197,23 +2197,21 @@ C4activate:
     pushad
     mov esi,[C4Ram]
     xor eax,eax
-    xor ebx,ebx
     xor ecx,ecx
     mov cx,[esi+1F80h]
     and ecx,1FFh
     movsx ebx,word[CosTable+ecx*2]
     mov ax,[esi+1F83h]
-    imul ebx,2
+    add ebx,ebx
     imul eax,ebx
     sar eax,8
     mov [esi+1F86h],ax
     sar eax,16
     mov [esi+1F88h],al
     xor eax,eax
-    xor ebx,ebx
     movsx ebx,word[SinTable+ecx*2]
     mov ax,[esi+1F83h]
-    imul ebx,2
+    add ebx,ebx
     imul eax,ebx
     sar eax,8
     mov [esi+1F89h],ax
