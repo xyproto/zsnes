@@ -1075,7 +1075,7 @@ NEWSYM savepcx
 .notpng
     
     mov byte[pressed+1],0
-    mov byte[pressed+59],2
+    mov byte[pressed+59],0
     cmp byte[cbitmode],1
     je near .save16b
     mov edi,pcxheader
