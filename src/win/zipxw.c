@@ -33,16 +33,12 @@ unsigned int ipx_read_packet;
 /*
 EXTSYM _ipx_init               ; To init ipx
 EXTSYM _ipx_initcode           ; return 0 if everything is ok (int)
-
 EXTSYM _ipx_packet             ; 80 bytes buffer to send
 EXTSYM _ipx_packet_size        ; size to send (max 80 bytes) (dword)
 EXTSYM _sendpacket             ; to send a packet
-
 EXTSYM _checkpacket            ; check if a packet is ready to receive
 EXTSYM _ipx_packet_ready       ; return 1 if there is a packet ready (byte)
-
 EXTSYM _read_packet            ; to read an incoming packet
 EXTSYM _ipx_read_packet        ; 80 bytes buffer of received packet
-
 EXTSYM _ipx_deinit             ; to deinit the ipx
 */
