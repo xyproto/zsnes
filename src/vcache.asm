@@ -56,7 +56,7 @@ EXTSYM tltype2b
 EXTSYM tltype8b
 
 
-
+NEWSYM VCacheAsmStart
 
 
 
@@ -3762,3 +3762,4 @@ NEWSYM cachesingle8bng
     pop edi
     pop esi
     ret
+NEWSYM VCacheAsmEnd

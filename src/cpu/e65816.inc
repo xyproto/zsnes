@@ -27,7 +27,7 @@ EXTSYM debstop3
 
 
 
-
+NEWSYM E65816IncStart
 
 
 ; B = ( or )
@@ -1992,3 +1992,5 @@ COpFB:   ; XCE i
 COp42:   ; WDM
     inc esi
     endloop
+
+NEWSYM E65816IncEnd

@@ -23,7 +23,7 @@ EXTSYM pal16b,vram,vrama,winon,mode7tab,xtravbuf,drawmode7dcolor
 EXTSYM cwinptr 
 
 
-
+NEWSYM Mode716EAsmStart
 
 
 
@@ -1258,3 +1258,4 @@ NEWSYM drawmode716extbg2
     cmp dh,1
     jne near domosaic16b
     ret
+NEWSYM Mode716EAsmEnd

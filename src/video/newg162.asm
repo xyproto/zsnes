@@ -31,6 +31,8 @@ EXTSYM vidmemch2s,vidmemch4s,vidmemch8s
 EXTSYM cpalval
 EXTSYM SpecialLine
 
+NEWSYM NewG162AsmStart
+
 %include "video/vidmacro.mac"
 %include "video/newg162.mac"
 %include "video/newgfx16.mac"
@@ -1399,3 +1401,4 @@ drawlineng4b16bmsom16x16:
 drawlineng4b16bmsntom16x16
     drawline16bmacroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt
 
+NEWSYM NewG162AsmEnd

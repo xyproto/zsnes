@@ -38,6 +38,8 @@ EXTSYM MuteVoiceF,VoiceStarter
 EXTSYM DecayRate,SustainRate,SustainValue
 EXTSYM KeyOnStA,KeyOnStB,SoundTest
 
+NEWSYM DspAsmStart
+
 %include "betauser.mac"
 
 
@@ -3051,3 +3053,4 @@ NEWSYM WDSPRegFF       ;
       mov [DSPMem+0FFh],al
       ret
 
+NEWSYM DspAsmEnd

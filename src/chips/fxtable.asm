@@ -193,7 +193,7 @@ EXTSYM FxOpd4C1288bl,FxOpd4C1288bzl,FxOpd4C1288bdl,FxOpd4C1288bzdl
 EXTSYM fxxand,fxbit01,fxbit23,fxbit45,fxbit67
 
 
-
+NEWSYM FxTableAsmStart
 
 
 
@@ -3543,3 +3543,4 @@ NEWSYM sfxnametab
             db 'IWT R8  IWT R9  IWT R10 IWT R11 '
             db 'IWT R12 IWT R13 IWT R14 IWT R15 '
 
+NEWSYM FxTableAsmEnd

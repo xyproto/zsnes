@@ -22,6 +22,7 @@ EXTSYM mode7A,mode7B,mode7C,mode7D,mode7X0,mode7Y0,mode7set
 EXTSYM pal16b,vram,vrama,winon,mode7tab,xtravbuf,drawmode7dcolor
 EXTSYM cwinptr
 
+NEWSYM Mode716BAsmStart
 %include "video/mode7.mac"
 
 
@@ -186,3 +187,4 @@ ALIGN32
     Mode7Process Mode7Window, domosaic16b, 2
 .nextval3w
     Mode7ProcessB Mode7Window, domosaic16b, 2
+NEWSYM Mode716BAsmEnd

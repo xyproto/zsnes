@@ -22,7 +22,7 @@ EXTSYM scanlines,selcA000,vesa2_bits,vesa2_bpos,vesa2_clbit
 EXTSYM vesa2_gpos,vesa2_rpos,vesa2_usbit,vesa2_x,vesa2_y
 EXTSYM vesa2selec,InitVesa12,videotroub
 
-
+NEWSYM InitVidAsmStart
 
 
 
@@ -618,3 +618,4 @@ NEWSYM dosinitvideo
     pop es
     ret
 
+NEWSYM InitVidAsmEnd

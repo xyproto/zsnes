@@ -27,7 +27,7 @@ EXTSYM curhdma,curypos,disablehdma,hdmadata,hdmadelay,hdmaearlstart
 EXTSYM resolutn
 EXTSYM memtabler16
 
-
+NEWSYM DmaAsmStart
 
 
 
@@ -1352,3 +1352,4 @@ NEWSYM exechdmars
 
 
 
+NEWSYM DmaAsmEnd

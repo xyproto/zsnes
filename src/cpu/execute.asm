@@ -114,7 +114,7 @@ EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67,fxbit
 EXTSYM SfxSFR
 EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 
-
+NEWSYM ExecuteAsmStart
 
 
 
@@ -4368,6 +4368,4 @@ NEWSYM execsingle
     jmp switchtovirqdeb
 
 
-
-
-
+NEWSYM ExecuteAsmEnd

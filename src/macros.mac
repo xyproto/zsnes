@@ -19,6 +19,27 @@
 bits 32
 section .text
 ; Zsnes required macros
+
+%ifdef __LINUX__
+%imacro newsym 1
+  GLOBAL %1
+  %1:
+%endmacro
+%imacro newsym 2+
+  GLOBAL %1
+  %1: %2
+%endmacro
+%define EXTSYM EXTERN
+%macro ALIGN32 0
+  times ($$-$) & 1Fh nop    ; Long word alignment
+%endmacro
+
+%macro ALIGN16 0
+  times ($$-$) & 1Fh nop    ; Long word alignment
+%endmacro
+
+%else
+
 %imacro newsym 1
   GLOBAL _%1
   _%1:
@@ -46,3 +67,4 @@ section .text
 %rotate 1
 %endrep
 %endmacro
+%endif

@@ -20,15 +20,15 @@ CPUDIR=cpu
 DOSDIR=dos
 GUIDIR=gui
 VIDEODIR=video
-WINDIR=win
+WINDIR=linux
 OBJDIR=obj
 
-CHIPSOBJ=${CHIPDIR}/dsp1emu.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/sfxproc.o\
-	${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
-	${CHIPDIR}/sa1proc.o ${CHIPDIR}/sa1regs.o ${CHIPDIR}/dsp1proc.o
+CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
+	 ${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
+	 ${CHIPDIR}/sa1proc.o ${CHIPDIR}/sa1regs.o ${CHIPDIR}/dsp1emu.o
 
 CPUOBJ=${CPUDIR}/addrni.o ${CPUDIR}/dma.o ${CPUDIR}/dsp.o ${CPUDIR}/dspproc.o\
-	${CPUDIR}/execute.o ${CPUDIR}/irq.o ${CPUDIR}/memory.o\
+	${CPUDIR}/execute.o ${CPUDIR}/irq.o ${CPUDIR}/memory.o \
 	${CPUDIR}/spc700.o ${CPUDIR}/stable.o ${CPUDIR}/table.o\
 	${CPUDIR}/tableb.o ${CPUDIR}/tablec.o 
 
@@ -39,32 +39,31 @@ VIDEOBJ=${VIDEODIR}/makev16b.o ${VIDEODIR}/makev16t.o ${VIDEODIR}/makevid.o\
 	${VIDEODIR}/mode716e.o ${VIDEODIR}/mode716t.o ${VIDEODIR}/mode7.o\
 	${VIDEODIR}/mode7ext.o ${VIDEODIR}/mv16tms.o ${VIDEODIR}/newg162.o\
 	${VIDEODIR}/newgfx16.o ${VIDEODIR}/newgfx2.o ${VIDEODIR}/newgfx.o\
-	${VIDEODIR}/m716text.o ${VIDEODIR}/2xsai.o ${VIDEODIR}/procvid.o
+	${VIDEODIR}/m716text.o ${VIDEODIR}/2xsaiw.o ${VIDEODIR}/2xsai.o\
+	${VIDEODIR}/procvid.o
 
-DOSOBJ= ${DOSDIR}/dosintrf.o ${DOSDIR}/gppro.o ${DOSDIR}/debug.o\
-	${DOSDIR}/initvid.o ${DOSDIR}/modemrtn.o ${DOSDIR}/sw32.o\
-	${DOSDIR}/joy.o ${DOSDIR}/sw.o ${DOSDIR}/vesa12.o ${DOSDIR}/vesa2.o\
-	${DOSDIR}/zloader.o ${DOSDIR}/zsipx.o ${DOSDIR}/zfile.o
+WINOBJ=${WINDIR}/copyvwin.o ${WINDIR}/winintrf.o ${WINDIR}/sdllink.o\
+	${WINDIR}/zloaderw.o ${WINDIR}/ztcp.o ${WINDIR}/zipxw.o\
+	${WINDIR}/zfilew.o ${WINDIR}/protect.o
 
-WINOBJ=${WINDIR}/copywin.o ${WINDIR}/winintrf.o ${WINDIR}/winlink.o\
-	${WINDIR}/zloaderw.o ${WINDIR}/ztcp.o ${WINDIR}/zipxw.o
+WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/modemrtn.o ${DOSDIR}/vesa2.o\
+	${DOSDIR}/initvid.o ${DOSDIR}/sw.o ${DOSDIR}/gppro.o ${DOSDIR}/vesa12.o
 
-PREOBJ=
+#PREOBJ=${OBJDIR}/unzip.o ${OBJDIR}/zzip.o ${DOSDIR}/zsipx.o
 
 MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o
 
-
-OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ}
-LIBS=-lz -lgcc -lm
-CFLAGS=
+OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ}
+LIBS=`sdl-config --libs`
+CFLAGS=-g -D__LINUX__ `sdl-config --cflags`
 ASM=nasm
-ASMFLAGS=-f elf
+ASMFLAGS=-f elf -D__LINUX__ -g
 CC=gcc
 PP=g++
 
 
 .SUFFIXES: .c .cpp .asm 
-
+	
 %.o: %.c
 	${CC} ${CFLAGS} -o $@ -c $<
 
@@ -73,12 +72,12 @@ PP=g++
 
 %.o: %.asm
 	${ASM} ${ASMFLAGS} -o $@ $<
-
+	
 
 ALL: zsnes
 
 zsnes: ${OBJS}
-	${CC} -Ws -s -o zsnes ${OBJS}  ${LIBS}
+	${CC} -o zsnes ${OBJS}  ${LIBS}
 
 ${DOSDIR}/zloader.o: ${DOSDIR}/zloader.c
 fixsin.o: fixsin.c
@@ -174,12 +173,11 @@ endmem.o: endmem.asm macros.mac
 ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
 
 clean:
-	rm *.o
 	rm ${CHIPDIR}/*.o
 	rm ${CPUDIR}/*.o
 	rm ${VIDEODIR}/*.o
 	rm ${GUIDIR}/*.o
 	rm ${DOSDIR}/*.o
+	rm ${WINDIR}/*.o
+	rm *.o
 	rm zsnes
-
-

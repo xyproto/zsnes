@@ -30,7 +30,7 @@ EXTSYM spcon,vsyncon,Open_File,Read_File
     EXTSYM Create_File,Write_File,Close_File
 
 
-
+NEWSYM CfgLoadAsmStart
 
 
 
@@ -1871,3 +1871,4 @@ SECTION .data
 
 SECTION .text
 
+NEWSYM CfgLoadAsmEnd

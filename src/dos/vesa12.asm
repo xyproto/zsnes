@@ -28,7 +28,7 @@ EXTSYM InitDrive,gotoroot,InitDir,fulladdtab
 EXTSYM LFBpointer,noblocks,bytesperscanline,vesamode,VESAmodelist
 
 
-
+NEWSYM Vesa12AsmStart
 
 
 
@@ -552,3 +552,5 @@ RMREGS
 .sp	dw 0
 .ss	dw 0
 .spare	times 20 dd 0
+
+NEWSYM Vesa12AsmEnd

@@ -170,7 +170,7 @@ EXTSYM ipxgetchar,ipxsendchar,TCPIPStoreByte
 EXTSYM TCPIPGetByte
 EXTSYM ModemSendChar
 
-
+NEWSYM GuiAsmStart
 
 %include "gui/guitools.inc"
 %include "gui/guimisc.inc"
@@ -184,6 +184,8 @@ EXTSYM ModemSendChar
 
 
 
+
+
 ; ProcessRemoteCommand
 ; NetLoadStuff  ; Send 14 to initiate, Send 15 to cancel (either way)
 ;    call PreparePacket
@@ -192,10 +194,7 @@ EXTSYM ModemSendChar
 ;    call SendPacket
 ; NetAddChar
 
-
-
 NEWSYM WaterOn,  db 1
-
 
 ; Things to do :
 ;
@@ -885,9 +884,10 @@ NEWSYM GUIRestoreVars
 .failb
     ret
 
+SECTION .data   
 NEWSYM ComboHeader, db 'Key Combination File',26,1,0
 NEWSYM ComboBlHeader, times 23 db 0
-
+SECTION .text
 
 NEWSYM ExecGUISaveVars
     cmp byte[ShowTimer],1
@@ -944,6 +944,7 @@ NEWSYM ExecGUISaveVars
     call GUIDeInit
 %endmacro
 
+SECTION .data
 NEWSYM GUIoldhand9o, dd 0
 NEWSYM GUIoldhand9s, dw 0
 NEWSYM GUIoldhand8o, dd 0
@@ -952,6 +953,7 @@ GUIt1cc dd 0
 GUIt1ccSwap db 0
 GUIskipnextkey42 db 0
 
+SECTION .text
 NEWSYM GUIinit18_2hz
     mov al,00110110b
     out 43H,al
@@ -1156,6 +1158,7 @@ LoadDetermine:
 .noromloaded
     ret
 
+SECTION .data
 SantaData:
 db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
@@ -1171,6 +1174,7 @@ SantaNextT dd 36*15
 NumSnow dd 0
 NEWSYM SnowTimer, dd 36*30
 MsgGiftLeft dd 0
+SECTION .text
 
 DrawSnow:
     cmp byte[OkaySC],0
@@ -4890,6 +4894,4 @@ db 57,103,110,236,113,118,203,200,22,87,251,7,138,37,12,84,221,171,51,209
 db 242,37,89,73,151,162,139,189,131,209,221,96,107,144,175,79,199,123,98,138
 db 226,86,221,254,72,14,126,180,200,171,85,94,120,124,196,225,150,57,219,158
 
-
-
-	
+NEWSYM GuiAsmEnd

@@ -26,6 +26,7 @@ EXTSYM irqv8
 EXTSYM execloopdeb
 EXTSYM nmiv8
 
+NEWSYM IrqAsmStart
 
 
 
@@ -521,3 +522,4 @@ NEWSYM NMIemulmodedeb
     add esi,eax
     jmp execloopdeb
 
+NEWSYM IrqAsmEnd

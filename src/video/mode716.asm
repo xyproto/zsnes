@@ -29,6 +29,7 @@ EXTSYM mode7ab,mode7cd,BGMA
 EXTSYM BG1SXl,BG1SYl
     EXTSYM processmode7hires
 
+NEWSYM Mode716AsmStart
 %include "video/mode716.mac"
 
 
@@ -684,3 +685,4 @@ NEWSYM processmode7hires16bd
 .nogo
     ret
 
+NEWSYM Mode716AsmEnd

@@ -21,6 +21,7 @@ EXTSYM SA1tableA,SA1tableB,SA1tableC,SA1tableD,SA1tableE
 EXTSYM SA1tableF,SA1tableG,SA1tableH,SA1tablead
 EXTSYM cpucycle, SA1UpdateDPage, intrset
 
+NEWSYM StableAsmStart
 %include "cpu/s65816d.inc"
 %include "cpu/saddress.inc"
 %include "cpu/saddrni.inc"
@@ -696,3 +697,4 @@ NEWSYM SA1settableDm16
     mov dword[edi+0FFh*4],SA1COpFFm16d
     ret
 
+NEWSYM StableAsmEnd

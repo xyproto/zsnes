@@ -60,6 +60,7 @@ EXTSYM ofsmcptr,ofsmady,ofsmadx,yposng,yposngom,flipyposng,flipyposngom
 EXTSYM ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
 EXTSYM a16x16xinc,a16x16yinc
 
+NEWSYM MakeV16TAsmStart
 %include "video/vidmacro.mac"
 
 
@@ -5310,3 +5311,4 @@ NEWSYM draw16x1616tswinon
     dec byte[tileleft16b]
     jnz near .loopa
     ret
+NEWSYM MakeV16TAsmEnd

@@ -41,7 +41,7 @@ EXTSYM SA1Overflow
 EXTSYM Sdd1Mode,Sdd1Bank,Sdd1Addr,Sdd1NewAddr,memtabler8,AddrNoIncr,SDD1BankA
 EXTSYM SPC7110Entries,spc7110romptr
 
-
+NEWSYM MemoryAsmStart
 
 
 
@@ -4403,3 +4403,5 @@ debugdecompress:
     call .nomoredec
     pop ebx
     jmp memaccessbankr8
+
+NEWSYM MemoryAsmEnd

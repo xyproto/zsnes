@@ -52,8 +52,16 @@ EXTSYM curypos,CurrentExecSA1
 EXTSYM debstop3
 EXTSYM memaccessbankr8sdd1,memtabler8,AddrNoIncr
 
+NEWSYM Sa1RegsAsmStart
+
 %include "cpu/regs.mac"
 %include "cpu/regsw.mac"
+
+
+
+
+
+
 
 
 ALIGN32
@@ -1422,11 +1430,11 @@ SPC4842:
 
 
 ;$4820   16 BIT MULTIPLICAND: ($00FF) low byte, defval:00
-;        32 BIT DIVIDEND: ($000000FF) low byte of low word, defval:00
+;        32 BIT DIVI: ($000000FF) low byte of low word, defval:00
 ;$4821   16 BIT MULTIPLICAND: ($FF00) high byte, defval:00
-;        32 BIT DIVIDEND: ($0000FF00) high byte of low word, defval:00
-;$4822   32 BIT DIVIDEND: ($00FF0000) low byte of high word, defval:00
-;$4823   32 BIT DIVIDEND: ($FF000000) high byte of high word, defval:00
+;        32 BIT DIVI: ($0000FF00) high byte of low word, defval:00
+;$4822   32 BIT DIVI: ($00FF0000) low byte of high word, defval:00
+;$4823   32 BIT DIVI: ($FF000000) high byte of high word, defval:00
 ;$4824   16 BIT MULTIPLIER: ($00FF) low byte, defval:00
 ;$4825   16 BIT MULTIPLIER: ($FF00) high byte, defval:00
 ;$4826   16 BIT DIVISOR: ($00FF), defval:00
@@ -1515,7 +1523,6 @@ NEWSYM SNSBWPtr,dd 0
 NEWSYM SNSPtr, dd 0     ; Current PC, SNES
 
 NEWSYM IRAM, times 2049 db 0    ;2 kbytes of iram
-
 num2writesa1reg equ $-SA1Mode
 NEWSYM PHnum2writesa1reg, dd num2writesa1reg
 
@@ -2568,3 +2575,5 @@ NEWSYM sdd14801w
     pop ebx
     pop eax
     ret
+
+NEWSYM Sa1RegsAsmEnd

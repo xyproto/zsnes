@@ -23,6 +23,8 @@ EXTSYM spc700read
 EXTSYM dspWptr
 EXTSYM changeexecloop,curexecstate,SA1Enable,tableadb
 
+NEWSYM Spc700AsmStart
+
 %include "cpu/regsw.mac"
 %include "cpu/spcdef.inc"
 %include "cpu/spcaddr.inc"
@@ -2692,3 +2694,4 @@ NEWSYM Invalidopcode ; Invalid Opcode
       dec ebp
       ret
 
+NEWSYM Spc700AsmEnd

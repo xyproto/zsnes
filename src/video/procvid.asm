@@ -54,9 +54,11 @@ EXTSYM ChatNick
 EXTSYM StringLength
 EXTSYM chatstrLt
 
+NEWSYM ProcVidAsmStart
 
 NEWSYM ScreenScale, db 0        ; If horizontal is scaled or not
 NEWSYM TempDebugV, dw 0       ; Temporary Debugging variable
+
 
 %macro MMXStuff 0
 %%1
@@ -3571,6 +3573,7 @@ NEWSYM vidpaste
 
 .SSRedCo dw 0
 
+
 NEWSYM lastfps,   db 0                  ; stores the last fps encountered
 NEWSYM lastfps2,  db 0                  ; stores the last fps encountered
 NEWSYM curfps2,   db 0                  ; current video refresh fps
@@ -3602,3 +3605,4 @@ db 0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0
 db 0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0
 db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 
+NEWSYM ProcVidAsmEnd

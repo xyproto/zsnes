@@ -26,7 +26,7 @@ EXTSYM membank0w8,romdata,SA1LBound,SA1UBound,SA1SH,SA1SHb
 EXTSYM stackor,stackand,snesmmap,SA1xs,SA1IRQExec
 EXTSYM SA1Message,Sflagnz,Sflagc,Sflago
 
-
+NEWSYM Sa1ProcAsmStart
 
 
 
@@ -362,3 +362,5 @@ NEWSYM SA1switchtovirq
     mov [initaddrl],esi
     add esi,eax
     ret
+
+NEWSYM Sa1ProcAsmEnd

@@ -24,7 +24,7 @@ EXTSYM vesa2_clbit,vram,vrama,winon,xtravbuf,winptrref,scaddset
 EXTSYM fulladdtab
 EXTSYM cwinptr
 
-
+NEWSYM M716TExtAsmStart
 
 
 
@@ -991,3 +991,4 @@ extbg2sub:
     cmp dh,1
     jne near domosaic16b
     ret
+NEWSYM M716TExtAsmEnd

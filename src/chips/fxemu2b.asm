@@ -20,6 +20,8 @@
 EXTSYM FxTable,FxTableb,FxTablec,SfxB,SfxCPB,SfxCROM,SfxCarry,SfxOverflow
 EXTSYM SfxR0,SfxR14,SfxR15,SfxRomBuffer,SfxSignZero,withr15sk
 
+NEWSYM FxEmu2BAsmStart
+
 %include "chips/fxemu2.mac"
 %include "chips/fxemu2b.mac"
 
@@ -611,3 +613,5 @@ NEWSYM FxOpcBF      ; FROM rn   set source register
    mov byte[SfxOverflow],al
    CLRFLAGS
    ret
+
+NEWSYM FxEmu2BAsmEnd

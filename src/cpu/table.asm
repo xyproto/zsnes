@@ -54,6 +54,7 @@ EXTSYM DPageR8,DPageW8,DPageR16,DPageW16
 EXTSYM SDD1Enable
 EXTSYM JoyAOrig,JoyANow,JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow
 
+NEWSYM TableAsmStart
 %include "cpu/65816d.inc"
 %include "cpu/address.inc"
 %include "cpu/addrni.inc"
@@ -1188,3 +1189,4 @@ NEWSYM settableDm16
     mov dword[edi+0FFh*4],COpFFm16d
     ret
 
+NEWSYM TableAsmEnd

@@ -51,6 +51,7 @@ EXTSYM ofsmcptr,ofsmady,ofsmadx,yposng,yposngom,flipyposng,flipyposngom
 EXTSYM ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
 EXTSYM a16x16xinc,a16x16yinc
 
+NEWSYM MakeV16BAsmStart
 %include "video/vidmacro.mac"
 
 
@@ -3082,3 +3083,4 @@ draw16x1616bwinon:
     jne near domosaic16b
     ret
 
+NEWSYM MakeV16BAsmEnd

@@ -47,6 +47,8 @@ EXTSYM winlogicb
 EXTSYM ngwinptr,objwlrpos,objwen,objclineptr,CSprWinPtr
 EXTSYM WindowRedraw
 
+NEWSYM NewGfxAsmStart
+
 %include "video/vidmacro.mac"
 %include "video/newgfx2.mac"
 %include "video/newgfx.mac"
@@ -2336,3 +2338,5 @@ NEWSYM preparesprpr
 ALIGN32
 NEWSYM sprclprio,  dd 0
 NEWSYM sprsingle,  dd 0
+
+NEWSYM NewGfxAsmEnd

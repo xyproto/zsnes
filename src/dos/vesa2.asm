@@ -27,7 +27,7 @@ EXTSYM UnusedBit,HalfTrans,UnusedBitXor,ngrposng,nggposng,ngbposng
 ;        EXTSYM printhex
 EXTSYM Init_2xSaIMMX,Init_2xSaI
 
-
+NEWSYM Vesa2AsmStart
 
 
 
@@ -799,3 +799,4 @@ NEWSYM RMREGS
 .ss	dw 0
 .spare	times 20 dd 0
 ;----------------------------------------------------------------------
+NEWSYM Vesa2AsmEnd

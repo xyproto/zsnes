@@ -4763,7 +4763,7 @@ GUIGUIAboutText3 db '    ZSKNIGHT',0
 GUIGUIAboutText4 db '    _DEMO_',0
 GUIGUIAboutText5 db 'ASSISTANT CODER :  ',0
 GUIGUIAboutText6 db '    PHAROS',0
-GUIGUIAboutText7 db 'WIN PORT V0.86',0
+GUIGUIAboutText7 db 'WIN PORT V0.85',0
 GUIGUIAboutText8 db 'HOMEPAGE',0
 
 DisplayGUIMovies:
@@ -5463,6 +5463,7 @@ DisplayGUICombo:
 .noscrolldisplay
     ret
 
+
 GUIccombviewloc dd 0
 GUIccombcursloc dd 0
 GUIccomblcursloc dd 0
@@ -5619,3 +5620,4 @@ NEWSYM GUIMenuItem, db 'GAME  ',0
             db 'NETPLAY',0
             db 'MISC  ',0
             db 25,0
+

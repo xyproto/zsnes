@@ -21,4 +21,3 @@ extern int FCosTab[2048];
 #define FSINMAX 2047
 #define FSin(x) FSinTab[(x)&FSINMAX]
 #define FCos(x) FCosTab[(x)&FSINMAX]
-

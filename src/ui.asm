@@ -36,6 +36,7 @@ EXTSYM romloadskip
 EXTSYM cfgloadgdir,cfgloadsdir
 EXTSYM init18_2hz
 
+NEWSYM UIAsmStart
 %include "betauser.mac"
 
 
@@ -115,7 +116,7 @@ NEWSYM outofmemory
     call PrintStr
     jmp DosExit
 
-;SECTION .data
+SECTION .data
 NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,10,0
 %define ZVERSION '18   '
 ;%define ZBETA    0
@@ -336,6 +337,39 @@ NEWSYM getcmdline
     jmp .next2
 .nomore
     mov [FilenameStart],esi
+%ifdef __LINUX__
+    mov byte[esi],'z'
+    mov byte[esi+1],'s'
+    mov byte[esi+2],'n'
+    mov byte[esi+3],'e'
+    mov byte[esi+4],'s'
+    mov byte[esi+5],'.'
+    mov byte[esi+6],'c'
+    mov byte[esi+7],'f'
+    mov byte[esi+8],'g'
+    mov byte[esi+9],0
+    mov byte[esi+256],'z'
+    mov byte[esi+1+256],'g'
+    mov byte[esi+2+256],'u'
+    mov byte[esi+3+256],'i'
+    mov byte[esi+4+256],'c'
+    mov byte[esi+5+256],'f'
+    mov byte[esi+6+256],'g'
+    mov byte[esi+7+256],'.'
+    mov byte[esi+8+256],'d'
+    mov byte[esi+9+256],'a'
+    mov byte[esi+10+256],'t'
+    mov byte[esi+11+256],0
+    mov byte[esi+512],'d'
+    mov byte[esi+1+512],'a'
+    mov byte[esi+2+512],'t'
+    mov byte[esi+3+512],'a'
+    mov byte[esi+4+512],'.'
+    mov byte[esi+5+512],'c'
+    mov byte[esi+6+512],'m'
+    mov byte[esi+7+512],'b'
+    mov byte[esI+8+512],0
+%else
     mov byte[esi],'Z'
     mov byte[esi+1],'S'
     mov byte[esi+2],'N'
@@ -367,12 +401,46 @@ NEWSYM getcmdline
     mov byte[esi+6+512],'M'
     mov byte[esi+7+512],'B'
     mov byte[esI+8+512],0
+%endif
     ret
 .nfound
     mov edx,.stringnf
     call PrintStr
     mov esi,CMDLineStr
     mov [FilenameStart],esi
+%ifdef __LINUX__
+    mov byte[esi],'z'
+    mov byte[esi+1],'s'
+    mov byte[esi+2],'n'
+    mov byte[esi+3],'e'
+    mov byte[esi+4],'s'
+    mov byte[esi+5],'.'
+    mov byte[esi+6],'c'
+    mov byte[esi+7],'f'
+    mov byte[esi+8],'g'
+    mov byte[esi+9],0
+    mov byte[esi+256],'z'
+    mov byte[esi+1+256],'g'
+    mov byte[esi+2+256],'u'
+    mov byte[esi+3+256],'i'
+    mov byte[esi+4+256],'c'
+    mov byte[esi+5+256],'f'
+    mov byte[esi+6+256],'g'
+    mov byte[esi+7+256],'.'
+    mov byte[esi+8+256],'d'
+    mov byte[esi+9+256],'a'
+    mov byte[esi+10+256],'t'
+    mov byte[esi+11+256],0
+    mov byte[esi+512],'d'
+    mov byte[esi+1+512],'a'
+    mov byte[esi+2+512],'t'
+    mov byte[esi+3+512],'a'
+    mov byte[esi+4+512],'.'
+    mov byte[esi+5+512],'c'
+    mov byte[esi+6+512],'m'
+    mov byte[esi+7+512],'b'
+    mov byte[esI+8+512],0
+%else
     mov byte[esi],'Z'
     mov byte[esi+1],'S'
     mov byte[esi+2],'N'
@@ -404,6 +472,7 @@ NEWSYM getcmdline
     mov byte[esi+6+512],'M'
     mov byte[esi+7+512],'B'
     mov byte[esI+8+512],0
+%endif
     ret
 
 SECTION .data
@@ -1020,7 +1089,11 @@ NEWSYM makeextension
 .loopz
     dec edx
     mov al,[fnames+edx]
+%ifdef __LINUX__
+    cmp al, '/'
+%else
     cmp al,'\'
+%endif
     je .addext
     cmp al,'.'
     je .addb
@@ -1033,6 +1106,17 @@ NEWSYM makeextension
     mov byte[fnames+ebx],'.'
     mov byte[fnamest+ebx],'.'
     inc ebx
+%ifdef __LINUX__
+    mov byte[fnames+ebx],'s'
+    mov byte[fnamest+ebx],'z'
+    inc ebx
+    mov byte[fnames+ebx],'r'
+    mov byte[fnamest+ebx],'s'
+    inc ebx
+    mov byte[fnames+ebx],'m'
+    mov byte[fnamest+ebx],'t'
+    mov dword[statefileloc],ebx
+%else
     mov byte[fnames+ebx],'S'
     mov byte[fnamest+ebx],'Z'
     inc ebx
@@ -1042,6 +1126,7 @@ NEWSYM makeextension
     mov byte[fnames+ebx],'M'
     mov byte[fnamest+ebx],'T'
     mov dword[statefileloc],ebx
+%endif
     inc ebx
     mov byte[fnames+ebx],0
     mov byte[fnamest+ebx],0
@@ -1327,3 +1412,4 @@ NEWSYM DosExit          ; Terminate Program
     mov    ax,4c00h            ;terminate
     int    21h
 
+NEWSYM UIAsmEnd

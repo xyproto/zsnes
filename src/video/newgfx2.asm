@@ -26,6 +26,8 @@ EXTSYM ngpalcon2b,tleftnb,tltype2b,tltype4b,tltype8b,yposng,flipyposng
 EXTSYM ofsmcptr,ofsmtptr,ofsmmptr,ofsmcyps,ofsmady,ofsmadx
 EXTSYM yposngom,flipyposngom,cbgval,ofsmval,ofsmvalh,vram
 
+NEWSYM NewGfx2AsmStart
+
 %include "video/vidmacro.mac"
 %include "video/newgfx2.mac"
 %include "video/newgfx.mac"
@@ -671,3 +673,4 @@ Processwinclipom4b:
     cmp dword[ngcwinmode],1
     je near drawlinengom4bwin.winclipped
     jmp drawlinengom4bwin.loop
+NEWSYM NewGfx2AsmEnd

@@ -41,6 +41,8 @@ EXTSYM tempoffset,vidmemch2,vidmemch4,vidmemch8
 EXTSYM ofsmcptr,ofsmady,ofsmadx,yposng,yposngom,flipyposng,flipyposngom
 EXTSYM ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
 
+NEWSYM MakeVidAsmStart
+
 %include "video/vidmacro.mac"
 
 
@@ -4383,3 +4385,4 @@ NEWSYM a16x16xinc, db 0
 NEWSYM a16x16yinc, db 0
 
 
+NEWSYM MakeVidAsmEnd

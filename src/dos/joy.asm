@@ -30,6 +30,7 @@ EXTSYM pl5contrl,pl5p209
 EXTSYM CalibXmin, CalibYmin, CalibXmax, CalibYmax, CalibXmin209
 EXTSYM CalibYmin209, CalibXmax209, CalibYmax209
 
+NEWSYM JoyAsmStart
 
 NEWSYM joy4218, db 0
 NEWSYM joy4219, db 0
@@ -1614,3 +1615,4 @@ NEWSYM SetInputDevice209
 .exit
     ret
 
+NEWSYM JoyAsmEnd

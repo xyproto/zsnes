@@ -17,7 +17,7 @@
 
 %include "macros.mac"
 
-
+NEWSYM TwoxSaiWAsmStart
 ;/*---------------------------------------------------------------------*
 ; * The following (piece of) code, (part of) the 2xSaI engine,          *
 ; * copyright (c) 1999 by Derek Liauw Kie Fa.                           *
@@ -1342,3 +1342,6 @@ final1a       times 8 db 0
 final1b       times 8 db 0
 final2a       times 8 db 0
 final2b       times 8 db 0
+
+SECTION .text
+NEWSYM TwoxSaiWAsmEnd

@@ -49,7 +49,7 @@ EXTSYM SA1xpb,SA1xpc,SA1xa,SA1xx,SA1xy,SA1xd,SA1xdb,SA1xs
 EXTSYM cycpbl,debugbuf,soundon,spcA,spcNZ,spcP,spcPCRam
 EXTSYM spcRam,spcRamDP,spcS,spcX,spcY
 
-
+NEWSYM DebugAsmStart
 
 
 
@@ -3846,3 +3846,5 @@ NEWSYM ArgumentTable
    db 00,01,02,03,04,05,06,07,08,24,63,32,30,00,31,00
 ;     F0 F1 F2 F3 F4 F5 F6 F7 F8 F9 FA FB FC FD FE FF
    db 14,01,02,03,15,16,17,18,35,64,09,65,31,66,67,00
+
+NEWSYM DebugAsmEnd

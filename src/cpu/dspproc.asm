@@ -131,7 +131,7 @@ EXTSYM cfgecho,Surround,SoundBufEn
     EXTSYM echobuf
     EXTSYM LowPassFilter
 
-
+NEWSYM DspProcAsmStart
 
 
 
@@ -2342,7 +2342,6 @@ AdsrBendData db 122,118,114,110,106,102,99,95,92,89,86,83,80,77,74,72,69,67
              db 2,2,1,1,1,1,1,1,1,1,1,1,1,1,255
 
 NEWSYM AdsrSustLevLoc, db 58,39,27,19,13,8,3,1
-
 
 dspsave equ marksave-BRRBuffer
 dspconvb equ marksave-Voice0Freq
@@ -5695,3 +5694,4 @@ GetCDMAPos:
     ja .loop
 
 .fin
+NEWSYM DspProcAsmEnd

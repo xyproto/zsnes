@@ -831,6 +831,7 @@ copyvesa2320x480x8ng:
 ;*******************************************************
 
 ALIGN32
+SECTION .data
 NEWSYM EagleHold, dd 0
 NEWSYM smallscreenon, dd 0
 NEWSYM smallscreence, dd 0
@@ -838,7 +839,7 @@ NEWSYM CurrentGUIOn, dd 0
 vesavaland dd 0,0
 mmxvalanda dd 11111111110000001111111111000000b,11111111110000001111111111000000b
 mmxvalandb dd 00000000000111110000000000011111b,00000000000111110000000000011111b
-
+SECTION .text
 NEWSYM copyvesa2640x480x8bgui
     mov byte[CurrentGUIOn],1
     cmp byte[smallscreenon],1
@@ -5695,3 +5696,4 @@ NEWSYM Clear2xSaIBuffer
     add ebx,4
     loop .nextb
     ret
+

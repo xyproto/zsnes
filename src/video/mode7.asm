@@ -25,6 +25,8 @@ EXTSYM pesimpng
 EXTSYM mode7hr
 EXTSYM BGMA, mode7ab, mode7cd, BG1SYl, BG1SXl, mosenng, mosszng
 
+
+NEWSYM Mode7AsmStart
 %include "video/mode7.mac"
 
 
@@ -815,3 +817,4 @@ NEWSYM processmode7hires
     pop esi
 .nogo
     ret
+NEWSYM Mode7AsmEnd

@@ -17,6 +17,7 @@
 
 %include "macros.mac"
 
+NEWSYM GPProAsmStart
 section .data
 sample times 60 db 0
 clock_mask db 0
@@ -153,3 +154,4 @@ GPP_ERR:
    pop ebx
    mov eax,1
    ret
+NEWSYM GPProAsmEnd

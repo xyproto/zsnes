@@ -22,6 +22,8 @@ EXTSYM fxxand,sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc
 EXTSYM sfxramdata,fxbit45,fxbit67,SFXProc,ChangeOps
 EXTSYM PLOTJmpa,PLOTJmpb
 
+NEWSYM FxEmu2AsmStart
+
 %include "chips/fxemu2.mac"
 
 
@@ -117,6 +119,7 @@ NEWSYM SfxB,           dd 0  ; B flag  (1 when with instruction executed)
 NEWSYM SfxOverflow,    dd 0  ; Overflow flag
 
 NEWSYM SfxCACHERAM, times 512 db 0    ; 512 bytes of GSU cache memory
+SECTION .data
 num2writesfxreg  equ $-SfxR0
 ; pharos equ hack *sigh*
 NEWSYM PHnum2writesfxreg, dd num2writesfxreg
@@ -2644,6 +2647,7 @@ NEWSYM FxOpFFA2    ; SM (XX),RN   store word in RAM
    ret
 
 ALIGN32
+
 NEWSYM NumberOfOpcodes, dd 0    ; Number of opcodes to execute
 NEWSYM NumberOfOpcodesBU, dd 0  ; Number of opcodes to execute backup value
 NEWSYM sfxwarningb, db 0
@@ -2679,4 +2683,6 @@ NEWSYM FXEndLoop
 
 SECTION .data
 NEWSYM fxtrace, db 0; times 65536 db 0
+SECTION .text
 
+NEWSYM FxEmu2AsmEnd

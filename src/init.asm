@@ -83,9 +83,12 @@ EXTSYM pal16bxcl,ram7fa,regptra,regptwa,srama,vidmemch2,vidmemch4
 EXTSYM vidmemch8,vcache2b,vcache4b,vcache8b,vram,wramdata
 EXTSYM wramdataa
 EXTSYM fname,fnames,GetCurDir
-EXTSYM GUIcurrentdir,extractzip,PrintStr
+;EXTSYM GUIcurrentdir,extractzip,PrintStr
+;STUB DDOI
+EXTSYM GUIcurrentdir, PrintStr
 EXTSYM GUIsmcfind,GUIsfcfind,GUIswcfind,GUIfigfind,GUIfind058,GUIfind078,GUIfindBIN
-EXTSYM GUIfindUSA,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall,ZipError
+;EXTSYM GUIfindUSA,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall,ZipError
+EXTSYM GUIfindUSA,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall
 EXTSYM spc7110romptr,allocspc7110
 EXTSYM SRAMDir,SRAMDrive,cfgloadsdir,fnamest,statefileloc
 EXTSYM ForcePal,InitDir,InitDrive,enterpress,frameskip
@@ -105,7 +108,7 @@ EXTSYM sramaccessbankr8s,sramaccessbankw16,sramaccessbankw16s
 EXTSYM sramaccessbankw8,sramaccessbankw8s,GenerateBank0TableSA1
 
 
-
+NEWSYM InitAsmStart
 
 
 
@@ -3545,6 +3548,11 @@ GUIfindBlank db '*.',0
 
 InvalidZip db 'ZSNES Version A does not support .ZIP files.',13,10,'Please use Version C for this feature.',10,13,0
 
+ZipError db 0
+
+extractzip:
+    ret
+  
 UnZipFile:
     cmp byte[OSPort],1
     jne .noasm
@@ -5324,3 +5332,4 @@ NEWSYM outofmemoryerror, db 'OUT OF MEMORY.',0
 NEWSYM outofmemoryerror2, db 'ROM IS TOO BIG.',0
 SECTION .text
 
+NEWSYM InitAsmEnd

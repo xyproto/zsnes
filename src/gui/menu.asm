@@ -35,7 +35,7 @@ EXTSYM Voice0Disable,Voice1Disable,Voice2Disable,Voice3Disable
 EXTSYM Voice4Disable,Voice5Disable,Voice6Disable,Voice7Disable
 
 
-
+NEWSYM MenuAsmStart
 
 
 
@@ -1434,3 +1434,4 @@ restore16b:
    mov byte[vesa2_gpos],6
 .nored
    ret
+NEWSYM MenuAsmEnd

@@ -19,7 +19,7 @@
 
 EXTSYM SidewinderFix
 
-
+NEWSYM SWAsmStart
 
 
 
@@ -223,3 +223,4 @@ ModeALoop:
    dec ecx
    jnz ModeALoop
    ret
+NEWSYM SWAsmEnd

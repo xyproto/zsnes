@@ -949,4 +949,3 @@ DSPOp0E()
       Log_Message("                X:%d Y:%d",Op0EX,Op0EY);
    #endif
 }
-

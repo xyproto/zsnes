@@ -36,7 +36,7 @@ EXTSYM Op03X, Op03Y, Op03Z, Op03F, Op03L, Op03U, DSPOp03
 EXTSYM Op14Zr, Op14Xr, Op14Yr, Op14U, Op14F, Op14L
 EXTSYM Op14Zrr,Op14Xrr,Op14Yrr, DSPOp14
 
-
+NEWSYM Dsp1ProcAsmStart
 
 
 
@@ -636,3 +636,5 @@ DSP1_14:  ; 3D angle rotation
     mov byte[DSP1RLeft],3
     pop eax
     ret
+
+NEWSYM Dsp1ProcAsmEnd

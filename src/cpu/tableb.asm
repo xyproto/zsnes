@@ -30,6 +30,7 @@ EXTSYM sramaccessbankw8,tableAb,tableBb,tableCb,tableDb,tableEb
 EXTSYM tableFb,tableGb,tableHb,wramaccessbankr16
 EXTSYM wramaccessbankr8,wramaccessbankw16,wramaccessbankw8,tableadb
 
+NEWSYM TableBAsmStart
 %include "cpu/65816db.inc"
 %include "cpu/address.inc"
 %include "cpu/addrni.inc"
@@ -720,3 +721,4 @@ settableDm16:
     mov dword[edi+0FFh*4],COpFFm16d
     ret
 
+NEWSYM TableBAsmEnd

@@ -23,7 +23,7 @@ EXTSYM GUIinit18_2hz,GUIinit36_4hz
 EXTSYM GUIMenuItem
    EXTSYM delay
 
-
+NEWSYM DosModemRTNAsmStart
 
 
 
@@ -434,3 +434,4 @@ NEWSYM DeInitModemC
    sti
    ret
 
+NEWSYM DosModemRTNAsmEnd

@@ -17,7 +17,7 @@
 
 %include "macros.mac"
 
-
+NEWSYM EndMemAsmStart
 
 
 
@@ -247,3 +247,4 @@ NEWSYM bg4change, times 256 db 0
 NEWSYM bgwinchange, times 256 db 0
 
 NEWSYM PrevPicture, times 64*56*2 db 0
+NEWSYM EndMemAsmEnd
