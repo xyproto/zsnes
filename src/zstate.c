@@ -290,10 +290,8 @@ void BackupCVFrame()
   unsigned char *RewindBufferPos = StateBackup + CBackupPos*rewind_state_size;
   //printf("Backing up rewind in slot #%u\n", CBackupPos);
   copy_state_data(RewindBufferPos, memcpyinc, false);
-  if (MovieProcessing)
-  {
-    zmv_rewind_save(CBackupPos, MovieProcessing == 1 ? true : false);
-  }
+  if (MovieProcessing == 1) { zmv_rewind_save(CBackupPos, true); }
+  else if (MovieProcessing == 1) { zmv_rewind_save(CBackupPos, false); }
   RewindTimer = ActualRewindFrames;
 }
 
@@ -302,10 +300,8 @@ void RestoreCVFrame()
   unsigned char *RewindBufferPos = StateBackup + PBackupPos*rewind_state_size;
   //printf("Restoring rewind in slot #%u\n", PBackupPos);
   copy_state_data(RewindBufferPos, memcpyrinc, true);
-  if (MovieProcessing)
-  {
-    zmv_rewind_load(PBackupPos, MovieProcessing == 1 ? true : false);
-  }
+  if (MovieProcessing == 1) { zmv_rewind_save(CBackupPos, true); }
+  else if (MovieProcessing == 1) { zmv_rewind_save(CBackupPos, false); }
   RewindTimer = ActualRewindFrames;
 }
 
