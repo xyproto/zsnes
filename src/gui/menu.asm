@@ -27,7 +27,7 @@ EXTSYM spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2selec
 EXTSYM vidbuffer,spritetablea,sprlefttot,newengen,spcextraram,resolutn
 EXTSYM Open_File,Close_File,Read_File,Write_File,Create_File,Get_Key,Get_Date
 EXTSYM continueprognokeys,ForceNonTransp,GUIOn,Check_Key,JoyRead
-EXTSYM GetScreen, SSKeyPressed, StopSound, StartSound    
+EXTSYM GetScreen,SSKeyPressed,SaveSPCKeyPressed,StopSound,StartSound    
 EXTSYM ExecExitOkay,t1cc
 EXTSYM Clear2xSaIBuffer
 EXTSYM romdata,romtype,ScreenShotFormat
@@ -158,6 +158,8 @@ NEWSYM showmenu
     call savepcx
     jmp .nopalwrite
 .nosskey
+    cmp byte[SaveSPCKeyPressed],1
+    je near .savespckey
     test byte[pressed+14],1
     jz .nof12
     call savepcx
@@ -331,6 +333,7 @@ NEWSYM showmenu
 .nofps
     cmp dword[menucloc],20*288
     jne near .nospcsave
+.savespckey
     cmp byte[spcon],0
     je .nospc
     cmp byte[newengen],1
@@ -380,6 +383,10 @@ NEWSYM showmenu
     mov eax,[MsgCount]
     mov [MessageOn],eax
 .nosnddmp
+    cmp byte[SaveSPCKeyPressed],1
+    jne .exitloop
+    mov byte[SaveSPCKeyPressed],0
+    jmp .nopalwrite
 .exitloop
     call GUIUnBuffer
     mov al,[newengen]

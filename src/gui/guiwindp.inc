@@ -4512,9 +4512,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,9,190,GUIGameOptnsTextQ
     GUIOuttextwin2 9,9+52,190,GUIGameOptnsTextR
     GUIOuttextwin2 9,9+160,180,GUIGameOptnsTextU
-%ifdef __WIN32__
     GUIOuttextwin2 9,137,190,GUIGameOptnsTextV
-%endif
 
     mov byte[GUIGameOptnsColA],163
     mov byte[GUIGameOptnsColB],217
@@ -4620,9 +4618,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8,189,GUIGameOptnsTextQ
     GUIOuttextwin2 9,8+52,189,GUIGameOptnsTextR
     GUIOuttextwin2 9,8+160,179,GUIGameOptnsTextU
-%ifdef __WIN32__
     GUIOuttextwin2 9,136,189,GUIGameOptnsTextV
-%endif
 
     ; Draw black boxes
     DGOptnsDrawBox 27,24,[KeyBGDisble0]
@@ -4675,9 +4671,7 @@ DisplayGameOptns:
     DGOptnsDrawBox 8+114+78,178,[KeyQuickClock]
     DGOptnsDrawBox 8+25,188,[KeyQuickChat]
     DGOptnsDrawBox 8+57+45,188,[KeyQuickSnapShot]
-%ifdef __WIN32__
-    DGOptnsDrawBox 8+108+70,188,[KeyQuickMinimize]
-%endif
+    DGOptnsDrawBox 8+108+70,188,[KeyQuickSaveSPC]
     ret
 
 GUIGameOptnsColA db 0
@@ -4713,7 +4707,7 @@ GUIGameOptnsTextR db 'SNAPSHOT',0
 GUIGameOptnsTextS db 'REWIND KEY',0
 GUIGameOptnsTextT db 'SLOWDWN KEY',0
 GUIGameOptnsTextU db 'CLOCK',0
-GUIGameOptnsTextV db 'MINIMIZE',0
+GUIGameOptnsTextV db 'SAVE SPC',0
 GUIGameOptnsTextX db 'DISPLAY FPS',0
 
 DisplayGUIOptns:

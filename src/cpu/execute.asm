@@ -33,7 +33,7 @@ EXTSYM frameskip,initvideo,newgfx16b,oldhandSBo,oldhandSBs,soundon,cvidmode
 EXTSYM vidbuffer,vidbufferofsa,vidbufferofsb,disable65816sh,GUISaveVars,virqnodisable
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst,GUIDoReset
 EXTSYM KeyOnStA,KeyOnStB,ProcessKeyOn,printnum,sramsavedis,DSPDisable,C4Enable
-EXTSYM KeyQuickClock,KeyQuickMinimize,TimerEnable,AutoIncSaveSlot
+EXTSYM KeyQuickClock,KeyQuickSaveSPC,TimerEnable,AutoIncSaveSlot
 EXTSYM IRQHack,HIRQLoc,Offby1line,splitflags,joinflags,KeyQuickSnapShot
 EXTSYM csounddisable,videotroub,Open_File,Close_File,Read_File,ResetTripleBuf
 EXTSYM Write_File,Output_Text,Create_File,Check_Key,Get_Key,Change_Dir,InitPreGame
@@ -115,15 +115,10 @@ EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67,fxbit
 EXTSYM SfxSFR,nosprincr,hirqmode2
 EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 EXTSYM ReadSPC7110log,WriteSPC7110log
-
-NEWSYM ExecuteAsmStart
+EXTSYM statefileloc
 EXTSYM NetPlayNoMore
 
-%ifdef __WIN32__
-EXTSYM MinimizeWindow
-%endif
-
-EXTSYM statefileloc
+NEWSYM ExecuteAsmStart
 
 %macro BackupCVMacM 2
     mov edx,%1
@@ -986,6 +981,7 @@ NEWSYM abcdefg1,    dd 0
 NEWSYM abcdefg2,    dd 0
 NEWSYM abcdefg3,    dd 0
 NEWSYM SSKeyPressed, dd 0
+NEWSYM SaveSPCKeyPressed, dd 0
 NEWSYM NoSoundReinit, dd 0
 NEWSYM NextNGDisplay, db 0
 NEWSYM TempVidInfo, dd 0
@@ -1260,6 +1256,8 @@ reexecuteb2:
     test byte[pressed+eax],1
     jnz near loadstate
     cmp byte[SSKeyPressed],1
+    je near showmenu
+    cmp byte[SaveSPCKeyPressed],1
     je near showmenu
     cmp byte[debugdisble],0
     jne .nodebugger
@@ -2301,9 +2299,10 @@ NEWSYM exitloop
    mov byte[pressed+eax],0
    mov eax,[KeyQuickClock]
    mov byte[pressed+eax],0
-   mov eax,[KeyQuickMinimize]
+   mov eax,[KeyQuickSaveSPC]
    mov byte[pressed+eax],0
    mov byte[SSKeyPressed],0
+   mov byte[SaveSPCKeyPressed],0
    jmp cpuover.returntoloop
 .okay
    mov byte[ExecExitOkay],5
@@ -2790,19 +2789,15 @@ NEWSYM cpuover
     xor byte[TimerEnable],1
     mov byte[pressed+eax],2
 .noclockkey
-%ifdef __WIN32__
-    mov eax,dword[KeyQuickMinimize]
+    mov eax,dword[KeyQuickSaveSPC]
     or eax,eax
-    jz .nominimizekey
+    jz .nosavespckey
     test byte[pressed+eax],1
-    jz .nominimizekey
-    pushad
-    call MinimizeWindow
-    popad
+    jz .nosavespckey
+    mov byte[SaveSPCKeyPressed],1
     mov byte[pressed+eax],2
     jmp exitloop
-.nominimizekey
-%endif
+.nosavespckey
     test byte[pressed+1],01h
     jnz near exitloop
     test byte[pressed+59],01h
