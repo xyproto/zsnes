@@ -23,14 +23,14 @@ ALIGN 32
 
 EXTSYM SurfaceX,SurfaceY
 EXTSYM ScreenPtr,SurfBufD
-EXTSYM pitch
+EXTSYM pitch, MMXSupport
 
 SECTION .text
 
 NEWSYM ClearWin16
         pushad
-        xor  eax,eax
         mov  edi, [SurfBufD]
+        xor  eax,eax
         xor  ebx,ebx
 .Blank2: 
         mov  ecx, [SurfaceX]
@@ -47,24 +47,24 @@ NEWSYM ClearWin16
 
 NEWSYM DrawWin256x224x16
         pushad
-        xor  eax,eax
         mov  esi, [ScreenPtr]
         mov  edi, [SurfBufD]
+        xor  eax,eax
 .Copying3: 
         mov  ecx,32
 .CopyLoop: 
         movq mm0,[esi]
-        movq [edi],mm0
         movq mm1,[esi+8]
+        movq [edi],mm0
         movq [edi+8],mm1
-        dec  ecx
         add  esi,16
         add  edi,16
+        dec  ecx
         jnz .CopyLoop
         inc  eax
         add  edi, [pitch]
-        add  esi,64
         sub  edi,512
+        add  esi,64
         cmp  eax,223
         jne .Copying3
         xor  eax,eax
