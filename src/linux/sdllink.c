@@ -195,7 +195,35 @@ int Main_Proc(void)
 		case SDL_MOUSEBUTTONUP:
 			MouseButton = MouseButton & ~event.button.button;
 			break;
- 
+
+		/*
+		  joystick trackball code untested; change the test values
+		  if the motion is too sensitive (or not sensitive enough);
+		  only the first trackball is supported for now. we could get
+	          really general here, but this may break the format of 'pressed'
+		*/
+		case SDL_JOYBALLMOTION:
+		        CurrentJoy = event.jball.which;
+			if (event.jball.jball == 0) {
+			        if (event.jball.xrel < -100) {
+			                pressed[0x100 + CurrentJoy*32 + 6] = 0;
+					pressed[0x100 + CurrentJoy*32 + 7] = 1;
+				}
+				if (event.jball.xrel > 100) {
+				        pressed[0x100 + CurrentJoy*32 + 6] = 1;
+					pressed[0x100 + CurrentJoy*32 + 7] = 0;
+				}
+				if (event.jball.yrel < -100) {
+				        pressed[0x100 + CurrentJoy*32 + 8] = 0;
+				        pressed[0x100 + CurrentJoy*32 + 9] = 1;
+				}
+				if (event.jball.yrel > 100) {
+				        pressed[0x100 + CurrentJoy*32 + 8] = 1;
+					pressed[0x100 + CurrentJoy*32 + 9] = 0;
+				}
+			}
+			break;
+
 		case SDL_JOYAXISMOTION:
 			CurrentJoy = event.jaxis.which;
 			for (j=0; j<3; j++) {
