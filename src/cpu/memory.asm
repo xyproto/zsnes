@@ -2194,29 +2194,27 @@ C4activate:
     popad
     ret
 .polarcord2
-    pushad
+pushad
     mov esi,[C4Ram]
-    xor eax,eax
     xor ecx,ecx
     mov cx,[esi+1F80h]
     and ecx,1FFh
+    movsx eax,word[esi+1F83h]
+    add eax,eax
     movsx ebx,word[CosTable+ecx*2]
-    mov ax,[esi+1F83h]
-    add ebx,ebx
-    imul eax,ebx
-    sar eax,8
-    mov [esi+1F86h],ax
-    sar eax,16
-    mov [esi+1F88h],al
-    xor eax,eax
+    imul ebx,eax
+    sar ebx,8
+    adc ebx,0
+    mov [esi+1F86h],bx
+    sar ebx,16
+    mov [esi+1F88h],bl
     movsx ebx,word[SinTable+ecx*2]
-    mov ax,[esi+1F83h]
-    add ebx,ebx
-    imul eax,ebx
-    sar eax,8
-    mov [esi+1F89h],ax
-    sar eax,16
-    mov [esi+1F8Bh],al
+    imul ebx,eax
+    sar ebx,8
+    adc ebx,0
+    mov [esi+1F89h],bx
+    sar ebx,16
+    mov [esi+1F8Bh],bl
     popad
     ret
 .dosprites
