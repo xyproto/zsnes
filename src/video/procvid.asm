@@ -1306,16 +1306,17 @@ GetPicture:
     call File_Seek_End
     shl edx,16
     mov dx,ax
-    cmp edx,266879+64*56*2
-    je .draw
-    cmp edx,398643+64*56*2
-    je .draw
-    cmp edx,400692+64*56*2
-    je .draw
-    cmp edx,275071+64*56*2
-    je .draw
-    jmp .nodraw
-.draw
+    ;Just draw! - If you want to make it exact, you set all the sizes
+    ;cmp edx,266879+64*56*2
+    ;je .draw
+    ;cmp edx,398643+64*56*2
+    ;je .draw
+    ;cmp edx,400692+64*56*2
+    ;je .draw
+    ;cmp edx,275071+64*56*2
+    ;je .draw
+    ;jmp .nodraw
+;.draw
     sub edx,64*56*2
     mov ax,dx
     shr edx,16
