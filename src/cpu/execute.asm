@@ -4232,7 +4232,6 @@ NEWSYM StartSFX
     test byte[SfxCLSR],01h
     jnz .nofastsfx
     mov byte[SfxAC],1
-    mov byte[cycpbl],20
     mov byte[cycpl],126
 .nofastsfx
     mov eax,[NumberOfOpcodes2]
