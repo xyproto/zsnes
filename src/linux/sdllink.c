@@ -479,10 +479,10 @@ void UpdateSound(void *userdata, Uint8 * stream, int len);
 int InitSound(void)
 {
 	SDL_AudioSpec wanted;
-	const int freqtab[7] =
-		{ 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
-	// const int samptab[7] = { 134, 184, 368, 735, 267, 534, 800 };
-	const int samptab[7] = { 1, 1, 2, 8, 2, 4, 8 };
+	const int samptab[7] = { 1, 1, 2, 4, 2, 4, 4 };
+	const int freqtab[7] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
+
+
 	SDL_CloseAudio();
 
 	if (!SoundEnabled)
@@ -506,9 +506,7 @@ int InitSound(void)
 		wanted.channels = 1;
 	}
 
-	//wanted.samples = (wanted.freq / 60) * 2 * wanted.channels;
-	//wanted.samples = samptab[SoundQuality] * 2 * wanted.channels;
-	wanted.samples = samptab[SoundQuality] * 256 * wanted.channels;
+	wanted.samples = samptab[SoundQuality] * 128 * wanted.channels;
 	wanted.format = AUDIO_S16LSB;
 	//wanted.format = AUDIO_S16;
 	wanted.userdata = NULL;

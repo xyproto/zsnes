@@ -17,9 +17,7 @@ AC_INIT(init.asm)
 AC_CONFIG_HEADER(config.h)	
 echo -- Where is our compiler, and who are we compiling for?
 CFLAGS="-pipe -I. -Wall"
-CXXFLAGS=$CFLAGS
 AC_PROG_CC
-AC_PROG_CXX
 AC_PATH_PROG(NASMPATH,nasm,[AC_MSG_ERROR(nasm 0.98 is required)])
 NFLAGS="$NFLAGS -w-orphan-labels"
 AC_PROG_INSTALL
@@ -181,7 +179,6 @@ dnl Checks for library functions.
 AC_SUBST(ZSNESEXE)
 AC_SUBST(GL_DRAW)
 AC_SUBST(NFLAGS)
-CXXFLAGS=$CFLAGS
 AC_OUTPUT(Makefile)
 echo 
 echo You may now run make to compile $ZSNESEXE
