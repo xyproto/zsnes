@@ -192,31 +192,32 @@ int Main_Proc(void)
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:
-			if (event.button.button < 4)
-				MouseButton = MouseButton | event.button.button;
-			else if (event.button.button == 4)
+			/*
+			  button 2 = enter (i.e. select)
+			  button 4 = mouse wheel up (treat as "up" key)
+			  button 5 = mouse wheel down (treat as "down" key)
+			*/
+			switch (event.button.button)
 			  {
-			    pressed[72] = 1;
-			    ProcessKeyBuf(SDLK_UP);
+			    case 4:
+			      ProcessKeyBuf(SDLK_UP);
+			      break;
+			      
+			    case 5:
+			      ProcessKeyBuf(SDLK_DOWN);
+			      break;
+			    case 2:
+			      ProcessKeyBuf(SDLK_RETURN);
+			      // Yes, this is intentional - DDOI
+			  default:
+			      MouseButton = MouseButton | event.button.button;
+			      break;
 			  }
-			else if (event.button.button == 5)
-			  {
-			    pressed[80] = 1;
-			    ProcessKeyBuf(SDLK_DOWN);
-			  }
+
 			break;
 
 		case SDL_MOUSEBUTTONUP:
-			if (event.button.button < 4)
-				MouseButton = MouseButton & ~event.button.button;
-			else if (event.button.button == 4)
-			{
-				pressed[72] = 0;
-			}
-			else if (event.button.button == 5)
-			{
-				pressed[80] = 0;
-			}
+			MouseButton = MouseButton & ~event.button.button;
 			break;
 
 		/*
