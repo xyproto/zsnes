@@ -69,7 +69,7 @@ EXTSYM reg4read,resolutn,romdata,scrndis,spcBuffera,spcP,spcRam
 EXTSYM spcnumread,tableD,timeron,vidbright,DSPMem,OldGfxMode2
 EXTSYM SPC700read,SPC700write,GUIDoReset,spc700read
 EXTSYM InitC4,SA1Reset,SetAddressingModesSA1,SetAddressingModes,SDD1BankA,SPC7110init
-EXTSYM RTCinit,InitOBC,hdmaoff
+EXTSYM RTCinit,InitOBC
 EXTSYM memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
 EXTSYM memaccessspc7110w16
 EXTSYM ram7f,snesmap2,snesmmap,sram,MultiTap
@@ -1321,6 +1321,7 @@ NEWSYM StoreBuffer, times 128*32 db 0
 
 SECTION .data
 NEWSYM execatzerovirq, db 0
+NEWSYM disablehdma,    db 0
 NEWSYM disableeffects, db 0
 NEWSYM hdmaearlstart,  db 0
 NEWSYM hdmadelay,      db 0
@@ -1339,7 +1340,6 @@ NEWSYM ClearScreenSkip, db 0
 NEWSYM hirqmode2, db 0
 NEWSYM ENVDisable, db 0
 NEWSYM MMXSRAMFix, db 0
-NEWSYM nohdmaoff, db 0
 SECTION .text
 
 ; hacks :
@@ -1454,6 +1454,7 @@ headerhack2:
 .mmx2head db 50,58,56,62,50,62,49,95,39,77,95,95,95,95,95,95,95,95,95,95
 
 NEWSYM headerhack
+    mov byte[disablehdma],0
     mov byte[Offby1line],0
     mov byte[CacheCheckSkip],0
     mov word[IRQHack],0
@@ -1463,7 +1464,6 @@ NEWSYM headerhack
     mov byte[hirqmode2],0
     mov byte[ENVDisable],0
     mov byte[MMXSRAMFix],0
-    mov byte[nohdmaoff],0
 
     mov esi,[romdata]
     add esi,07FC0h
@@ -1479,6 +1479,7 @@ NEWSYM headerhack
     mov esi,[romdata]
     add esi,034DA3h
     mov byte[esi],000h
+
 .notaccelebrid
 
     mov esi,[romdata]
@@ -1606,17 +1607,6 @@ NEWSYM headerhack
 .notmmx
 
     mov esi,[romdata]
-    add esi,0FFC0h
-    cmp dword[esi],'Stre'
-    jne .notsf
-    cmp dword[esi+4],'et F'
-    jne .notsf
-    cmp dword[esi+8],'ight'
-    jne .notsf
-    mov byte[nohdmaoff],1
-.notsf
-
-    mov esi,[romdata]
     add esi,07FC0h
     cmp dword[esi],'STAR'
     jne .notds9
@@ -1627,6 +1617,30 @@ NEWSYM headerhack
     mov byte[opexec268],187
     mov byte[opexec358],187
 .notds9
+
+    mov esi,[romdata]
+    add esi,0FFC0h
+    cmp dword[esi],'Baha'
+    jne .notbahamutlagoon
+    cmp dword[esi+4],'mut '
+    jne .notbahamutlagoon
+    cmp dword[esi+8],'Lago'
+    jne .notbahamutlagoon
+    mov byte[disablehdma],1
+.notbahamutlagoon
+
+    mov esi,[romdata]
+    add esi,07FC0h
+    cmp dword[esi],'MORT'
+    jne .notmk
+    cmp dword[esi+4],'AL K'
+    jne .notmk
+    cmp dword[esi+8],'OMBA'
+    jne .notmk
+    cmp dword[esi+12],'T   '
+    jne .notmk
+    mov byte[disablehdma],1
+.notmk
 
     mov esi,[romdata]
     add esi,0FFC0h
@@ -1677,6 +1691,11 @@ NEWSYM headerhack
     mov byte[cycpbl],75
     mov byte[cycpblt],75
 .nottuffenuff
+
+    cmp byte[DSP1Type],0
+    je .notdis
+    mov byte[disablehdma],1
+.notdis
 
     ; Here are the individual game hacks.  Some of these probably can
     ;   be removed since many of them were created very early in ZSNES
@@ -1803,6 +1822,16 @@ NEWSYM headerhack
     mov byte[opexec268cph],44
     mov byte[opexec358cph],44
 .noromhead5
+
+    ; PunchOut - Disable HDMA start in middle of screen
+    mov esi,[romdata]
+    add esi,07FC0h
+    mov edi,.pouthead
+    call Checkheadersame
+    cmp al,0
+    jne .noromhead7
+    mov byte[disablehdma],1
+.noromhead7
 
     ; Front Mission - -p 140
     mov esi,[romdata]
@@ -2094,6 +2123,7 @@ NEWSYM init65816
 
     mov byte[prevoamptr],0FFh
     mov byte[execatzerovirq],0
+    mov byte[disablehdma],0
     mov byte[disableeffects],0
     mov byte[dracxhack],0
     mov al,[opexec268b]
@@ -2142,7 +2172,6 @@ NEWSYM init65816
     mov byte[NMIEnab],1
     mov word[VIRQLoc],0
     mov byte[doirqnext],0
-    mov byte[hdmaoff],0
     mov dword[reg1read],0
     mov word[resolutn],224
     mov byte[vidbright],0
