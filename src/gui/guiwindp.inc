@@ -4451,6 +4451,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,109,70,GUIGameOptnsTextN
     GUIOuttextwin2 9,109,78,GUIGameOptnsTextO
     GUIOuttextwin2 9,109,86,GUIGameOptnsTextP
+    GUIOuttextwin2 9,109,94,GUIGameOptnsTextX
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 9,6,104,GUIGameOptnsText1
@@ -4546,7 +4547,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8,69,GUIGameOptnsTextE
     GUIOuttextwin2 9,8,77,GUIGameOptnsTextF
     GUIOuttextwin2 9,8,85,GUIGameOptnsTextG
-    GUIOuttextwin2 9,8,94,GUIGameOptnsTextT
+    GUIOuttextwin2 9,8,93,GUIGameOptnsTextT
 ;    cmp byte[OSPort],3
 ;    jne near .notwin32b
 %ifndef __MSDOS__
@@ -4558,6 +4559,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,108,69,GUIGameOptnsTextN
     GUIOuttextwin2 9,108,77,GUIGameOptnsTextO
     GUIOuttextwin2 9,108,85,GUIGameOptnsTextP
+    GUIOuttextwin2 9,108,93,GUIGameOptnsTextX
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 9,5,103,GUIGameOptnsText1
@@ -4645,6 +4647,7 @@ DisplayGameOptns:
     DGOptnsDrawBox 178,68,[KeyVolDown]
     DGOptnsDrawBox 178,76,[KeyFRateUp]
     DGOptnsDrawBox 178,84,[KeyFRateDown]
+    DGOptnsDrawBox 178,92,[KeyDisplayFPS]
     DGOptnsDrawBox 27,112,[KeyDisableSC0]
     DGOptnsDrawBox 27+45,112,[KeyDisableSC1]
     DGOptnsDrawBox 27+45*2,112,[KeyDisableSC2]
@@ -4711,6 +4714,7 @@ GUIGameOptnsTextS db 'REWIND KEY',0
 GUIGameOptnsTextT db 'SLOWDWN KEY',0
 GUIGameOptnsTextU db 'CLOCK',0
 GUIGameOptnsTextV db 'MINIMIZE',0
+GUIGameOptnsTextX db 'DISPLAY FPS',0
 
 DisplayGUIOptns:
     GUIDrawWindowBox 10,GUIGUIDisp

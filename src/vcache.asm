@@ -44,7 +44,7 @@ EXTSYM CNetType
 EXTSYM KeySlowDown
 EXTSYM chaton
 EXTSYM genfulladdtab
-EXTSYM KeyFRateDown,KeyFRateUp,KeyVolUp,KeyVolDown,FPSOn
+EXTSYM KeyFRateDown,KeyFRateUp,KeyVolUp,KeyVolDown,KeyDisplayFPS,FPSOn
 EXTSYM bg1ptr,bg2ptr,bg3ptr,bg4ptr,cachebg1,resolutn
 EXTSYM curypos,oamram,objhipr,objptr,objptrn,objsize1,objsize2
 EXTSYM spritetablea,sprleftpr,sprlefttot,vcache4b
@@ -686,6 +686,14 @@ NEWSYM cachevideo
     mov eax,[MsgCount]
     mov [MessageOn],eax
 .nofrdown
+    mov eax,[KeyDisplayFPS]
+    test byte[pressed+eax],1
+    je .nodisplayfps
+    mov byte[pressed+eax],2
+    cmp byte[frameskip],0
+    jne .nodisplayfps
+    xor byte[FPSOn],1
+.nodisplayfps
     ; do state selects
     stateselcomp KeyStateSlc0,'0','T'
     stateselcomp KeyStateSlc1,'1','1'

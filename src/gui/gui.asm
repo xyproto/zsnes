@@ -596,6 +596,7 @@ NEWSYM KeyQuickMinimize, dd 0
 NEWSYM AutoIncSaveSlot, db 0
 NEWSYM TCPIPAddress, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 NEWSYM SoundInterpType, db 2
+NEWSYM KeyDisplayFPS, dd 0
 
 GUIsave equ $-GUIRAdd
 

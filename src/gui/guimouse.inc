@@ -2694,6 +2694,7 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 178,68,[KeyVolDown]
     DGOptnsProcBox 178,76,[KeyFRateUp]
     DGOptnsProcBox 178,84,[KeyFRateDown]
+    DGOptnsProcBox 178,92,[KeyDisplayFPS]
 ;    cmp byte[OSPort],3
 ;    jne near .notwin32
 %ifndef __MSDOS__
