@@ -846,7 +846,6 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
    JoystickInput[CurrentJoy]->SetProperty(DIPROP_AXISMODE, &dipdw.diph);
 
    CurrentJoy+=1;
-//   fprintf(tempf,"joystick initialized!\n");
 
    return DIENUM_CONTINUE;
 }
