@@ -807,7 +807,6 @@ OBCRegs:
     jne .noinc
     or byte[OBCRegArray+ecx],1
 .noinc
-    inc byte[OBCRegArray+ecx]
     shl ebx,3
     add ecx,ebx
     add ecx,[C4Ram]
