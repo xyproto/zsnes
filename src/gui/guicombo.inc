@@ -59,7 +59,6 @@ ComboAdder:
     mov [eax],dl
     inc ebx
     inc eax
-;    loop .loop
     dec ecx
     jnz .loop
     mov ecx,42  ; copy combination code
@@ -69,7 +68,6 @@ ComboAdder:
     mov [eax],dl
     inc ebx
     inc eax
-;    loop .loop2
     dec ecx
     jnz .loop2
     mov dx,[GUIComboKey]
@@ -122,7 +120,6 @@ ComboReplace:
     mov [eax],dl
     inc ebx
     inc eax
-;    loop .loop
     dec ecx
     jnz .loop
     mov ecx,42  ; copy combination code
@@ -132,7 +129,6 @@ ComboReplace:
     mov [eax],dl
     inc ebx
     inc eax
-;    loop .loop2
     dec ecx
     jnz .loop2
     mov dx,[GUIComboKey]
@@ -169,7 +165,6 @@ ComboRemoval:
     inc eax
     dec ebx
     jnz .loop
-;    loop .loop2
     dec ecx
     jnz .loop2
 .nomove

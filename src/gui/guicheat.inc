@@ -185,7 +185,6 @@ CheatCodeSearchProcess:
     rol bl,1
     rol bh,1
     inc esi
-;    loop .exactloop
     dec ecx
     jnz .exactloop
 ; CSCurValue  dd 0
@@ -243,7 +242,6 @@ CheatCodeSearchInit:
     mov [eax],edx
     add ebx,4
     add eax,4
-;    loop .loop
     dec ecx
     jnz .loop
     ; fill searched buffer with 0xFF
@@ -253,7 +251,6 @@ CheatCodeSearchInit:
 .loop2
     mov dword[eax],0FFFFFFFFh
     add eax,4
-;    loop .loop2
     dec ecx
     jnz .loop2
     cmp byte[CheatSrcSearchType],1
@@ -678,7 +675,6 @@ AddCheatCode:
     mov [eax+18*2+2],dl
     inc ebx
     inc eax
-;    loop .dloop
     dec ecx
     jnz .dloop
     pop edx
@@ -737,7 +733,6 @@ ProcessCheatCode:
     mov [eax+18*2+2],dl
     inc ebx
     inc eax
-;    loop .dloop
     dec ecx
     jnz .dloop
     ; determine whether it is gamegenie, par, or GF
@@ -754,7 +749,6 @@ ProcessCheatCode:
     mov [eax],bl
 .nolower
     inc eax
-;    loop .loop
     dec ecx
     jnz .loop
     mov byte[guicheatvalrep],0
@@ -790,7 +784,6 @@ ProcessCheatCode:
     ja .invalidpar
 .okaypar
     inc eax
-;    loop .looppar
     dec ecx
     jnz .looppar
     jmp decodepar
@@ -819,7 +812,6 @@ ProcessCheatCode:
     ja .invalidgg
 .okaygg
     inc eax
-;    loop .loopgg
     dec ecx
     jnz .loopgg
     jmp decodegg
@@ -842,7 +834,6 @@ ProcessCheatCode:
     ja .invalidgf
 .okaygf
     inc eax
-;    loop .loopgf
     dec ecx
     jnz .loopgf
     mov eax,GUICheatText9+5
@@ -861,7 +852,6 @@ ProcessCheatCode:
     ja near .invalidgf
 .okaygf2
     inc eax
-;    loop .loopgf2
     dec ecx
     jnz .loopgf2
     mov bl,[GUICheatText9+13]
@@ -1298,7 +1288,6 @@ guicheaterror:
 .a
     mov byte[pressed+ebx],0
     inc ebx
-;    loop .a
     dec ecx
     jnz .a
 .again
@@ -1328,7 +1317,6 @@ guicheaterror:
     cmp byte[pressed+ebx],0
     jne .pressedokay
     inc ebx
-;    loop .b
     dec ecx
     jnz .b
     cmp byte[MouseDis],1

@@ -38,7 +38,6 @@ ProcessModem:
 .clooptcpip
     mov byte[eax],0
     inc eax
-;    loop .clooptcpip
     dec ecx
     jnz .clooptcpip
     mov dword[CCursLoc],0
@@ -98,7 +97,6 @@ ProcessModem:
 .clooptcpip2
     mov byte[eax],0
     inc eax
-;    loop .clooptcpip2
     dec ecx
     jnz .clooptcpip2
     mov dword[CCursLoc],0
@@ -239,7 +237,6 @@ ProcessModem:
 .cloopipx
     mov byte[eax],0
     inc eax
-;    loop .cloopipx
     dec ecx
     jnz .cloopipx
     mov dword[CCursLoc],0
@@ -313,7 +310,6 @@ ProcessModem:
 .cloop
     mov byte[eax],0
     inc eax
-;    loop .cloop
     dec ecx
     jnz .cloop
     mov dword[CCursLoc],0
@@ -696,7 +692,6 @@ ProcessModem:
 .cloop2
     mov byte[eax],0
     inc eax
-;    loop .cloop2
     dec ecx
     jnz .cloop2
     mov dword[CCursLoc],0
@@ -1455,7 +1450,6 @@ transfersram:
     pop ebx
     inc esi
     inc ebx
-;    loop .loop
     dec ecx
     jnz .loop
     mov byte[sramsavedis],0
@@ -1489,7 +1483,6 @@ transfersram:
     je .getnext
     mov [ebx],dl
     inc ebx
-;    loop .loopb
     dec ecx
     jnz .loopb
     ret
@@ -1695,7 +1688,6 @@ loadstatesend:
     pop ecx
     pop edx
     inc edx
-;    loop .loop
     dec ecx
     jnz .loop
     call SendPacket
@@ -1764,7 +1756,6 @@ loadstaterecv:
     pop edx
     mov [edx],al
     inc edx
-;    loop .loop
     dec ecx
     jnz .loop
     pop ecx

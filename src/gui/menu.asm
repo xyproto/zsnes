@@ -411,7 +411,6 @@ NEWSYM showmenu
     mov byte[eax],2
 .notpr
     inc eax
-;    loop .looppr
     dec ecx
     jnz .looppr
 ;    mov byte[pressed+1],2
@@ -449,7 +448,6 @@ NEWSYM menudrawbox8b
 .loop
     mov byte[esi],144
     inc esi
-;    loop .loop
     dec ecx
     jnz .loop
     add esi,288-150
@@ -566,7 +564,6 @@ NEWSYM menudrawcursor8b
 .loop
     mov byte[esi],160
     inc esi
-;    loop .loop
     dec ecx
     jnz .loop
     add esi,288-148
@@ -595,7 +592,6 @@ NEWSYM menudrawbox16b
     shr dx,1
     mov [esi],dx
     add esi,2
-;    loop .loop16b2
     dec ecx
     jnz .loop16b2
     add esi,288*2-150*2
@@ -631,7 +627,6 @@ NEWSYM menudrawbox16b
 .loop16b
     mov [esi],dx
     add esi,2
-;    loop .loop16b
     dec ecx
     jnz .loop16b
     add esi,288*2-150*2
@@ -749,7 +744,6 @@ NEWSYM menudrawcursor16b
 .loop
     mov [esi],bx
     add esi,2
-;    loop .loop
     dec ecx
     jnz .loop
     add esi,288*2-148*2
@@ -850,7 +844,6 @@ NEWSYM savespcdata
     mov [edi],al
     inc esi
     inc edi
-;    loop .romloop
     dec ecx
     jnz .romloop
     ; Copy Date of spc dumped

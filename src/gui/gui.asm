@@ -774,7 +774,6 @@ clearsram:
 .loop
     mov byte[eax],0FFh
     inc eax
-;    loop .loop
     dec ecx
     jnz .loop
     cmp byte[SFXSRAM],0
@@ -784,7 +783,6 @@ clearsram:
 .loop2
     mov byte[eax],0FFh
     inc eax
-;    loop .loop2
     dec ecx
     jnz .loop2
 .nosfxsram
@@ -795,7 +793,6 @@ clearsram:
 .loop3
     mov byte[eax],0FFh
     inc eax
-;    loop .loop3
     dec ecx
     jnz .loop3
 .nosa1
@@ -892,7 +889,6 @@ CalcChecksum:
     mov bl,[eax]
     add edx,ebx
     inc eax
-;    loop .loop
     dec ecx
     jnz .loop
     mov ebx,edx
@@ -1028,7 +1024,6 @@ NEWSYM ExecGUISaveVars
 .loopa
     mov [esi],al
     inc esi
-;    loop .loopa
     dec ecx
     jnz .loopa
 %endmacro
@@ -1298,7 +1293,6 @@ DrawSnow:
 .transp
     inc esi
     inc edx
-;    loop .sloop
     dec ecx
     jnz .sloop
     add esi,272
@@ -1327,7 +1321,6 @@ DrawSnow:
     mov byte[esi+eax],bl
 .nosnow
     inc edx
-;    loop .loop
     dec ecx
     jnz .loop
     ; Change Snow Displacement Values
@@ -1391,7 +1384,6 @@ ProcessSnowVelocity:
     or byte[SnowVelDist+edx*2],8
 .nosdata
     inc edx
-;    loop .loop
     dec ecx
     jnz .loop
     ret
@@ -1546,7 +1538,6 @@ NEWSYM StartGUI
 .slloop
     mov dword[eax],0
     add eax,4
-;    loop .slloop
     dec ecx
     jnz .slloop
     cmp byte[OldWinPos],0
@@ -1559,7 +1550,6 @@ NEWSYM StartGUI
     mov eax,[GUIwinposy2+esi*4]
     mov [GUIwinposy+esi*4],eax
     inc esi
-;    loop .nextow
     dec ecx
     jnz .nextow
     mov byte[OldWinPos],1
@@ -1608,9 +1598,8 @@ NEWSYM StartGUI
     inc eax
     dec bl
     jnz .convlfnlp2b
-;    loop .convlfnlp
     dec ecx
-    loop .convlfnlp
+    jnz .convlfnlp
 .noconvertlfqm
 
     mov byte[GUIOn],1
@@ -1665,7 +1654,6 @@ NEWSYM StartGUI
 .loop
     mov dword[eax],0
     add eax,4
-;    loop .loop
     dec ecx
     jnz .loop
 .nong
@@ -1724,7 +1712,6 @@ NEWSYM StartGUI
 .pclear
     mov dword[esi],0
     add esi,4
-;    loop .pclear
     dec ecx
     jnz .pclear
     mov byte[pressed+1],2
@@ -2304,7 +2291,6 @@ NEWSYM StartGUI
 .loop20
     mov byte[eax],0
     inc eax
-;    loop .loop20
     dec ecx
     jnz .loop20
     mov al,[Latency]
@@ -2325,7 +2311,6 @@ NEWSYM StartGUI
     add al,[ebx]
     adc ah,0
     inc ebx
-;    loop .csumloop
     dec ecx
     jnz .csumloop
 .nocsumloop
@@ -2436,7 +2421,6 @@ NEWSYM StartGUI
     mov [eax],edx
     add ebx,4
     add eax,4
-;    loop .loopcr
     dec ecx
     jnz .loopcr
 .nocopyram
@@ -2470,7 +2454,6 @@ NEWSYM StartGUI
 .loopcl
     mov dword[eax],0
     add eax,4
-;    loop .loopcl
     dec ecx
     jnz .loopcl
 
@@ -2522,7 +2505,6 @@ guifirsttimemsg:
 .a
     mov byte[pressed+ebx],0
     inc ebx
-;    loop .a
     dec ecx
     jnz .a
     mov byte[pressed+2Ch],0
@@ -2591,7 +2573,6 @@ guimustrestartmsg:
     mov byte[pressed+ebx],2
 .npr1
     inc ebx
-;    loop .a
     dec ecx
     jnz .a
     mov byte[pressed+2Ch],0
@@ -2626,7 +2607,6 @@ guimustrestartmsg:
     cmp byte[pressed+ebx],1
     je .pressedokay
     inc ebx
-;    loop .b
     dec ecx
     jnz .b
     jmp .again
@@ -2660,7 +2640,6 @@ guiprevideo:
 .a
     mov byte[pressed+ebx],0
     inc ebx
-;    loop .a
     dec ecx
     jnz .a
     call GUIUnBuffer
@@ -2695,7 +2674,6 @@ guiprevideo:
     cmp byte[pressed+ebx],0
     jne .pressedokay
     inc ebx
-;    loop .b
     dec ecx
     jnz .b
     cmp byte[MouseDis],1
@@ -2736,7 +2714,6 @@ guipostvideo:
 .loop
     mov dword[eax],0FFFFFFFFh
     add eax,4
-;    loop .loop
     dec ecx
     jnz .loop
 
@@ -2745,7 +2722,6 @@ guipostvideo:
 .a
     mov byte[pressed+ebx],0
     inc ebx
-;    loop .a
     dec ecx
     jnz .a
     mov dword[GUIkeydelay],36*10
@@ -2773,7 +2749,6 @@ guipostvideo:
     cmp byte[pressed+ebx],0
     jne near .pressedfail
     inc ebx
-;    loop .b2
     dec ecx
     jnz .b2
     cmp byte[MouseDis],1
@@ -2791,7 +2766,6 @@ guipostvideo:
     cmp byte[pressed+ebx],0
     jne .pressedokay
     inc ebx
-;    loop .b
     dec ecx
     jnz .b
     cmp byte[MouseDis],1
@@ -2882,7 +2856,6 @@ guipostvideofail:
 .a
     mov byte[pressed+ebx],0
     inc ebx
-;    loop .a
     dec ecx
     jnz .a
     call GUIUnBuffer

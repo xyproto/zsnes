@@ -2428,7 +2428,6 @@ DisplayGUICheatConv:
     mov [edx],bl
     add edx,2
     dec eax
-;    loop .loop
     dec ecx
     jnz .loop
     mov eax,[ccheatnpos]
@@ -2489,7 +2488,6 @@ DisplayGUICheatConv:
     mov [edx],bl
     inc eax
     inc edx
-;    loop .loop2
     dec ecx
     jnz .loop2
     ret
@@ -2997,7 +2995,6 @@ FindChtSrcRes:
     dec dh
     jnz .sloop2
     inc eax
-;    loop .searchloop
     dec ecx
     jnz .searchloop
     mov eax,ebx
@@ -5494,7 +5491,6 @@ DisplayGUICombo:
     jz .donecomp
     inc esi
     inc edi
-;    loop .comploop
     dec ecx
     jnz .comploop
 .donecomp
