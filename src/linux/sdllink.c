@@ -927,6 +927,8 @@ void UpdateVFrame(void)
 
 void clearwin()
 {
+    if (!sdl_inited) return;
+
 #ifdef __OPENGL__
 	if (UseOpenGL)
 		gl_clearwin();
