@@ -23,9 +23,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#endif
-
 #include <sys/stat.h>
+#endif
 #include "zip/zunzip.h"
 
 #ifndef __GNUC__
@@ -599,9 +598,10 @@ void loadZipFile()
 
 extern bool Sup48mbit;
 extern bool Sup16mbit;
+void findZipIPS(char *);
 void loadROM()
 {
-  bool isCompressed = false;
+  bool isCompressed = false, isZip = false;
 
   curromspace = 0;
 
@@ -615,6 +615,7 @@ void loadROM()
     if (!strcasecmp(ext, ".zip"))
     { 
       isCompressed = true;
+      isZip = true;
       loadZipFile();
     }
   }
@@ -679,6 +680,8 @@ void loadROM()
     curromspace -= 512;
     memmove((unsigned char *)romdata, ((unsigned char *)romdata)+512, curromspace);  
   }
+
+  if (isZip) { findZipIPS(ZOpenFileName); }
 }
 
 

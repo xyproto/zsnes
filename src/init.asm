@@ -3527,9 +3527,9 @@ NEWSYM loadfileGUI
     or dl,dl
     jnz .loopsc
 .nosramtof
+    mov byte[TextFile], 1
     cmp byte[IPSPatched],0
     jne .patched
-    mov byte[TextFile], 1
     call PatchIPS
 .patched
     ret

@@ -17,9 +17,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#ifdef __LINUX__
+#include "gblhdr.h"
+#else
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
+#endif
+#include "zip/zunzip.h"
+
+#ifndef __GNUC__
+#define strcasecmp stricmp
+#define strncasecmp strnicmp
+#endif
 
 //C++ style code in C
 #define bool unsigned char
@@ -49,15 +60,27 @@ struct
   unsigned int buffer_total;
   unsigned int proccessed;
 
+  unzFile zipfile;
   FILE *fp;
 } IPSPatch;
+
 
 bool reloadBuffer()
 {
   if (IPSPatch.proccessed == IPSPatch.file_size) { return(false); }
-  IPSPatch.buffer_total = fread(IPSPatch.data, 1, BUFFER_SIZE, IPSPatch.fp);
+
+  IPSPatch.buffer_total = IPSPatch.fp ?
+  /* Regular Files */     fread(IPSPatch.data, 1, BUFFER_SIZE, IPSPatch.fp) :  
+  /* Zip Files     */     unzReadCurrentFile(IPSPatch.zipfile, IPSPatch.data, BUFFER_SIZE);
+
   IPSPatch.current = IPSPatch.data;
-  return(true);
+  if (IPSPatch.buffer_total && (IPSPatch.buffer_total <= BUFFER_SIZE))
+  {
+    return(true);
+  }
+
+  IPSPatch.buffer_total = 0;
+  return(false);
 }
 
 int IPSget()
@@ -82,6 +105,8 @@ bool initPatch()
   IPSPatch.data = (unsigned char *)doMemAlloc(BUFFER_SIZE);
   IPSPatch.proccessed = 0;
 
+  IPSPatch.zipfile = 0;
+
   IPSPatch.fp = 0;
   IPSPatch.fp = fopen(patchfile, "rb");
   if (!IPSPatch.fp) { return(false); }
@@ -102,7 +127,15 @@ void deinitPatch()
     fclose(IPSPatch.fp);
     IPSPatch.fp = 0;
   }
+
+  if (IPSPatch.zipfile)
+  {
+    unzCloseCurrentFile(IPSPatch.zipfile);
+    unzClose(IPSPatch.zipfile);
+    IPSPatch.zipfile = 0;
+  }
 }
+
 
 void PatchUsingIPS()
 {
@@ -112,7 +145,10 @@ void PatchUsingIPS()
     
   IPSPatched = false;
 
-  if (!initPatch()) { goto IPSDone; }
+  if (patchfile) //Regular file, not Zip
+  { 
+    if (!initPatch()) { goto IPSDone; }
+  }
 
   //Yup, it's goto! :)
   //See 'IPSDone:' for explanation
@@ -200,4 +236,53 @@ void PatchUsingIPS()
   */
 }  
 
+void findZipIPS(char *compressedfile)
+{
+  bool FoundIPS = false;
+  unz_file_info cFileInfo; //Create variable to hold info for a compressed file
+  int cFile;
+
+  IPSPatch.zipfile = unzOpen(compressedfile); //Open zip file
+  cFile = unzGoToFirstFile(IPSPatch.zipfile); //Set cFile to first compressed file
+
+  while(cFile == UNZ_OK) //While not at end of compressed file list
+  {
+    //Temporary char array for file name
+    char cFileName[256];
+
+    //Gets info on current file, and places it in cFileInfo
+    unzGetCurrentFileInfo(IPSPatch.zipfile, &cFileInfo, cFileName, 256, NULL, 0, NULL, 0);
+
+    //Find IPS file    
+    if (strlen(cFileName) >= 5) //Char + ".IPS"
+    {
+      char *ext = cFileName+strlen(cFileName)-4;  
+      if (!strncasecmp(ext, ".IPS", 4))
+      {
+        FoundIPS = true;
+        break;
+      }
+    }
+
+    //Go to next file in zip file 
+    cFile = unzGoToNextFile(IPSPatch.zipfile); 
+  }
+
+  if (!FoundIPS)
+  { 
+    unzClose(IPSPatch.zipfile);
+    return;
+  }
+
+  //Open file
+  unzOpenCurrentFile(IPSPatch.zipfile);
+
+  patchfile = 0;
+  IPSPatch.file_size = (unsigned int)cFileInfo.uncompressed_size;
+  IPSPatch.data = (unsigned char *)doMemAlloc(BUFFER_SIZE);
+  IPSPatch.proccessed = 0;
+  IPSPatch.fp = 0;
+  reloadBuffer();
+  PatchUsingIPS();
+}
 
