@@ -2147,12 +2147,11 @@ NEWSYM init65816
     mov byte[cycpbl],117
     mov byte[cycpblt],117
 
-    cmp byte[SPC7110Enable],0
-    jne .specialtimer
     cmp byte[SDD1Enable],0
     jne .specialtimer
     jmp .nospecialtimer
 .specialtimer
+; Which games require that?!? (_Demo_)
     mov byte[cycpb268],69
     mov byte[cycpb358],81
     mov byte[cycpbl2],69
