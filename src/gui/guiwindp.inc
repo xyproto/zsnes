@@ -4719,6 +4719,9 @@ GUIGameOptnsTextY db 'ST+',0
 GUIGameOptnsTextZ db 'ST-',0
 
 DisplayGUIOptns:
+%ifdef __WIN32__
+    mov dword[GUIwinsizey+10*4],192
+%endif
     GUIDrawWindowBox 10,GUIGUIDisp
 
     push eax

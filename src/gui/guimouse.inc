@@ -1358,6 +1358,28 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
+%macro GUIClickCButton5MMX 4
+    cmp eax,%1+1
+    jl %%noclick
+    cmp edx,%2+3
+    jl %%noclick
+    cmp eax,%1+6
+    jg %%noclick
+    cmp edx,%2+8
+    jg %%noclick
+    cmp byte[MMXSupport],0
+    je %%clear
+    cmp %3,%4
+    jne %%set
+    xor %3,%4
+    jmp %%clear
+%%set
+    mov %3,%4
+%%clear
+    ret
+%%noclick
+%endmacro
+
 %macro GUISlidebarPostImpl 13 ; x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
     cmp dword[%11],0
     je near %%nolower
@@ -1888,10 +1910,10 @@ DisplayGUIConfirmClick:
     GUIPButtonHoleLoad 9,163,byte[GUIloadfntype],0
     GUIPButtonHoleLoad 9,171,byte[GUIloadfntype],1
     GUIPButtonHoleLoad 9,179,byte[GUIloadfntype],2
-    GUIClickCButton6 144,177,byte[ForceROMTiming],1
-    GUIClickCButton6 144,187,byte[ForceROMTiming],2
-    GUIClickCButton6 184,177,byte[ForceHiLoROM],1
-    GUIClickCButton6 184,187,byte[ForceHiLoROM],2
+    GUIClickCButton5 144,177,byte[ForceROMTiming],1
+    GUIClickCButton5 144,187,byte[ForceROMTiming],2
+    GUIClickCButton5 184,177,byte[ForceHiLoROM],1
+    GUIClickCButton5 184,187,byte[ForceHiLoROM],2
     ret
 
 DisplayGUIChoseSaveClick:
@@ -2333,12 +2355,12 @@ DisplayGUISoundClick:
 ;.win32sound
     GUIClickCButton 11,131,byte[SoundBufEn]
     GUIClickCButton 11,141,byte[SPCDisable]
-    GUIClickCButton6 11,161,byte[SoundInterpType],1
-    GUIClickCButton6 11,171,byte[SoundInterpType],2
-    GUIClickCButton6 11,181,byte[SoundInterpType],3
-    GUIClickCButton6 111,161,byte[LowPassFilterType],1
-    GUIClickCButton6 111,171,byte[LowPassFilterType],2
-    GUIClickCButton6 111,181,byte[LowPassFilterType],3
+    GUIClickCButton5 11,161,byte[SoundInterpType],1
+    GUIClickCButton5 11,171,byte[SoundInterpType],2
+    GUIClickCButton5MMX 11,181,byte[SoundInterpType],3
+    GUIClickCButton5 111,161,byte[LowPassFilterType],1
+    GUIClickCButton5 111,171,byte[LowPassFilterType],2
+    GUIClickCButton5 111,181,byte[LowPassFilterType],3
     cmp eax,15
     jl near .nosrate
     cmp edx,61

@@ -1250,6 +1250,8 @@ GUISoundKeys:
 .nocubicinterp
     cmp dh,'8'
     jne .no8ptinterp
+    cmp byte[MMXSupport],0
+    je .no8ptinterp
     GUIkeystoggleoptn byte[SoundInterpType],3
 .no8ptinterp
     cmp dh,'I'

@@ -2615,7 +2615,7 @@ int GetMouseX(void)
             SetCursorPos(X + WindowWidth + 32, Y + (MouseY * WindowHeight / 224));
          }
       }
-      else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 || GUIOn2 == 1)
+      else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
       {
          MouseInput->Unacquire();
          SetCursorPos(X + WindowWidth + 1, Y + (MouseY * WindowHeight / 224));
@@ -2634,7 +2634,7 @@ int GetMouseX(void)
             SetCursorPos(X - 32, Y + (MouseY * WindowHeight / 224));
          }
       }
-      else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 || GUIOn2 == 1)
+      else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
       {
          MouseInput->Unacquire();
          SetCursorPos(X - 1, Y + (MouseY * WindowHeight / 224));
@@ -2659,7 +2659,7 @@ int GetMouseY(void)
             SetCursorPos(X+(MouseX * WindowWidth / 256), Y + WindowHeight + 32);
          }
       }
-      else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 || GUIOn2 == 1)
+      else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
       {
          MouseInput->Unacquire();
          SetCursorPos(X+(MouseX * WindowWidth / 256), Y + WindowHeight + 1);
@@ -2678,7 +2678,7 @@ int GetMouseY(void)
             SetCursorPos(X + (MouseX * WindowWidth / 256), Y - 32);
          }
       }
-      else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 || GUIOn2 == 1)
+      else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
       {
          MouseInput->Unacquire();
          SetCursorPos(X + (MouseX * WindowWidth / 256), Y - 1);
