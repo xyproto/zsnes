@@ -4834,7 +4834,8 @@ DisplayGameOptns:
     GUIOuttextwin2 9,9+52,149,GUIGameOptnsTextR
     GUIOuttextwin2 9,9+160,139,GUIGameOptnsTextU
     GUIOuttextwin2 9,137,149,GUIGameOptnsTextV
-
+    GUIOuttextwin2 9,9,159,GUIGameOptnsTextI
+    GUIOuttextwin2 9,129,159,GUIGameOptnsTextJ
     mov byte[GUIGameOptnsColA],163
     mov byte[GUIGameOptnsColB],217
     cmp byte[GUIWincoladd],0
@@ -4915,6 +4916,8 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8+52,148,GUIGameOptnsTextR
     GUIOuttextwin2 9,8+160,138,GUIGameOptnsTextU
     GUIOuttextwin2 9,136,148,GUIGameOptnsTextV
+	GUIOuttextwin2 9,8,158,GUIGameOptnsTextI
+	GUIOuttextwin2 9,128,158,GUIGameOptnsTextJ
 	;Draw Borders
     DGOptnsBorderBox 9,26,22
     DGOptnsBorderBox 9,71,22
@@ -4990,6 +4993,8 @@ DisplayGameOptns:
     DGOptnsDrawBox 8+25,147,[KeyQuickChat]
     DGOptnsDrawBox 8+57+45,147,[KeyQuickSnapShot]
     DGOptnsDrawBox 8+108+70,147,[KeyQuickSaveSPC]
+    DGOptnsDrawBox 103,157,[EMUPauseKey]
+    DGOptnsDrawBox 190,157,[INCRFrameKey]
     ret
 
 SECTION .bss
@@ -5015,9 +5020,11 @@ GUIGameOptnsTextE db 'NEW GFX ENG',0
 GUIGameOptnsTextF db 'BG WINDOW',0
 GUIGameOptnsTextG db 'OFFSET MODE',0
 GUIGameOptnsTextH db 'FASTFWD KEY',0
-GUIGameOptnsTextI db 'INSERT CHAPTER',0
-GUIGameOptnsTextJ db 'NEXT CHAPTER',0
-GUIGameOptnsTextK db 'PREV CHAPTER',0
+GUIGameOptnsTextI db 'PAUSE EMULATION',0
+GUIGameOptnsTextJ db 'INCR FRAME',0
+;GUIGameOptnsTextI db 'INSERT CHAPTER',0
+;GUIGameOptnsTextJ db 'NEXT CHAPTER',0
+;GUIGameOptnsTextK db 'PREV CHAPTER',0
 ;GUIGameOptnsTextI db 'SAVE',0
 ;GUIGameOptnsTextJ db 'LOAD',0
 ;GUIGameOptnsTextK db 'PICK',0

@@ -2922,6 +2922,8 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 8+25,148,[KeyQuickChat]
     DGOptnsProcBox 8+57+45,148,[KeyQuickSnapShot]
     DGOptnsProcBox 8+108+70,148,[KeyQuickSaveSPC]
+    DGOptnsProcBox 103,157,[EMUPauseKey]
+    DGOptnsProcBox 190,157,[INCRFrameKey]
     ret
 
 DisplayGUIOptnsClick:
