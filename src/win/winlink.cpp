@@ -211,6 +211,7 @@ extern "C" void MinimizeWindow()
 {
     MoveWindow(hMainWindow, 0, 0, 0, 0, TRUE);
     InputDeAcquire();
+    SetActiveWindow(0);
 }
 
 BOOL InputRead(void)
