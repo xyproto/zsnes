@@ -371,147 +371,33 @@ NEWSYM copymodex224
     jne .startcopy
     ret
 .startcopy
+    ; select 1st plane
     mov dx,03C4h
     mov ax,0102h
     out dx,ax
+
+    ; video memory selector
     push es
     mov ax,[selcA000]
     mov es,ax
+
     mov esi,[vidbuffer]
-    mov edi,8
-    add esi,16+256+32
+
+    ; center on output screen
+    mov edi,(320-256)/2/4
+
+    ; address of first source line to copy
+    add esi,(16+256+16)+16
+
+    ; select output video page
+    xor eax,eax
     cmp byte[whichpage],0
     jne .pageb
-    add edi,19200
+    mov eax,(320*225)/4
 .pageb
-    mov [.startesi],esi
-    mov [.startedi],edi
+
     mov dl,222
-.loopa1
-    mov ecx,16
-.loopb1
-    mov ah,[esi+12]
-    mov al,[esi+8]
-    shl eax,16
-    mov ah,[esi+4]
-    mov al,[esi+0]
-    mov [es:edi],eax
-    add esi,16
-    add edi,4
-    dec ecx
-    jnz .loopb1
-    add esi,32
-    add edi,16
-    dec dl
-    jnz .loopa1
-    mov dx,03C4h
-    mov ax,0202h
-    out dx,ax
-    mov esi,[.startesi]
-    inc esi
-    mov edi,[.startedi]
-    mov dl,222
-.loopa2
-    mov ecx,16
-.loopb2
-    mov ah,[esi+12]
-    mov al,[esi+8]
-    shl eax,16
-    mov ah,[esi+4]
-    mov al,[esi+0]
-    mov [es:edi],eax
-    add esi,16
-    add edi,4
-    dec ecx
-    jnz .loopb2
-    add esi,32
-    add edi,16
-    dec dl
-    jnz .loopa2
-    mov dx,03C4h
-    mov ax,0402h
-    out dx,ax
-    mov esi,[.startesi]
-    add esi,2
-    mov edi,[.startedi]
-    mov dl,222
-.loopa3
-    mov ecx,16
-.loopb3
-    mov ah,[esi+12]
-    mov al,[esi+8]
-    shl eax,16
-    mov ah,[esi+4]
-    mov al,[esi+0]
-    mov [es:edi],eax
-    add esi,16
-    add edi,4
-    dec ecx
-    jnz .loopb3
-    add esi,32
-    add edi,16
-    dec dl
-    jnz .loopa3
-    mov dx,03C4h
-    mov ax,0802h
-    out dx,ax
-    mov esi,[.startesi]
-    add esi,3
-    mov edi,[.startedi]
-    mov dl,222
-.loopa4
-    mov ecx,16
-.loopb4
-    mov ah,[esi+12]
-    mov al,[esi+8]
-    shl eax,16
-    mov ah,[esi+4]
-    mov al,[esi+0]
-    mov [es:edi],eax
-    add esi,16
-    add edi,4
-    dec ecx
-    jnz .loopb4
-    add esi,32
-    add edi,16
-    dec dl
-    jnz .loopa4
-    pop es
-    cmp byte[whichpage],0
-    jne .setpageb
-    mov dx,03D4h
-    mov al,0Ch
-    out dx,al
-    inc dx
-    mov al,75
-    out dx,al
-    dec dx
-    mov al,0Dh
-    out dx,al
-    inc dx
-    xor al,al
-    out dx,al
-    mov byte[whichpage],1
-    ret
-.setpageb
-    mov dx,03D4h
-    mov al,0Ch
-    out dx,al
-    inc dx
-    xor al,al
-    out dx,al
-    dec dx
-    mov al,0Dh
-    out dx,al
-    inc dx
-    xor al,al
-    out dx,al
-    mov byte[whichpage],0
-    ret
-SECTION .bss
-.startesi resd 1
-.startedi resd 1
-SECTION .text
+    jmp copymodexloop
 
 ;*******************************************************
 ; CopyModeX 240     Copies buffer into unchained 320x240
@@ -526,158 +412,35 @@ NEWSYM copymodex240
     mov dx,03C4h
     mov ax,0102h
     out dx,ax
+
+    ; video memory selector
     push es
     mov ax,[selcA000]
     mov es,ax
 
     mov esi,[vidbuffer]
-    mov edi,8
+
+    ; center on output screen
+    mov edi,(320-256)/2/4
+
     cmp word[resolutn],224
     jne .res239
-    mov edi,8*80+8
+    mov edi,(8*320+32)/4
 .res239
-     add esi,16+256+32
+
+    ; address of first source line to copy
+    add esi,(16+256+16)+16
+
+    ; select output video page
+    xor eax,eax
     cmp byte[whichpage],0
     jne .pageb
-    add edi,19200
+    mov eax,(320*240)/4
 .pageb
-    mov [.startesi],esi
-    mov [.startedi],edi
-    mov dl,[resolutn]
-    dec dl
-    dec dl
-.loopa
-    mov ecx,16
-.loopb
-    mov ah,[esi+12]
-    mov al,[esi+8]
-    shl eax,16
-    mov ah,[esi+4]
-    mov al,[esi+0]
-    mov [es:edi],eax
-    add esi,16
-    add edi,4
-    dec ecx
-    jnz .loopb
-    add esi,32
-    add edi,16
-    dec dl
-    jnz .loopa
-    mov dx,03C4h
-    mov ax,0202h        ; set as plane 2
-    out dx,ax
-    mov esi,[.startesi]
-    inc esi
-    mov edi,[.startedi]
-    mov dl,[resolutn]
-    dec dl
-    dec dl
-.loopa2
-    mov ecx,16
-.loopb2
-    mov ah,[esi+12]
-    mov al,[esi+8]
-    shl eax,16
-    mov ah,[esi+4]
-    mov al,[esi+0]
-    mov [es:edi],eax
-    add esi,16
-    add edi,4
-    dec ecx
-    jnz .loopb2
-    add esi,32
-    add edi,16
-    dec dl
-    jnz .loopa2
-    mov dx,03C4h
-    mov ax,0402h        ; set as plane 3
-    out dx,ax
-    mov esi,[.startesi]
-    add esi,2
-    mov edi,[.startedi]
-    mov dl,[resolutn]
-    dec dl
-    dec dl
-.loopa3
-    mov ecx,16
-.loopb3
-    mov ah,[esi+12]
-    mov al,[esi+8]
-    shl eax,16
-    mov ah,[esi+4]
-    mov al,[esi+0]
-    mov [es:edi],eax
-    add esi,16
-    add edi,4
-    dec ecx
-    jnz .loopb3
-    add esi,32
-    add edi,16
-    dec dl
-    jnz .loopa3
-    mov dx,03C4h
-    mov ax,0802h        ; set as plane 4
-    out dx,ax
-    mov esi,[.startesi]
-    add esi,3
-    mov edi,[.startedi]
-    mov dl,[resolutn]
-    dec dl
-    dec dl
-.loopa4 
-    mov ecx,16
-.loopb4
-    mov ah,[esi+12]
-    mov al,[esi+8]
-    shl eax,16
-    mov ah,[esi+4]
-    mov al,[esi+0]
-    mov [es:edi],eax
-    add esi,16
-    add edi,4
-    dec ecx
-    jnz .loopb4
-    add esi,32
-    add edi,16
-    dec dl
-    jnz .loopa4
-    pop es
-    cmp byte[whichpage],0
-    jne .setpageb
-    mov dx,03D4h
-    mov al,0Ch
-    out dx,al
-    inc dx
-    mov al,75
-    out dx,al
-    dec dx
-    mov al,0Dh
-    out dx,al
-    inc dx
-    xor al,al
-    out dx,al
-    mov byte[whichpage],1
-    ret
-.setpageb
-    mov dx,03D4h
-    mov al,0Ch
-    out dx,al
-    inc dx
-    xor al,al
-    out dx,al
-    dec dx
-    mov al,0Dh
-    out dx,al
-    inc dx
-    xor al,al
-    out dx,al
-    mov byte[whichpage],0
-    ret
-SECTION .bss
-.startesi resd 1
-.startedi resd 1
 
-SECTION .text
+    mov dl,[resolutn]
+    sub dl,2
+    jmp copymodexloop
 
 ;*******************************************************
 ; CopyModeX 256     Copies buffer into unchained 320x256
@@ -688,27 +451,51 @@ NEWSYM copymodex256
     jne .startcopy
     ret
 .startcopy
+    ; select 1st plane
     mov dx,03C4h
     mov ax,0102h
     out dx,ax
+
+    ; video memory selector
     push es
     mov ax,[selcA000]
     mov es,ax
+
     mov esi,[vidbuffer]
-    mov edi,8*80+8
+
+    ; center on output screen
+    mov edi,(8*320+(320-256)/2)/4
+
     cmp word[resolutn],224
     jne .res239
-    add edi,8*80
+    mov edi,(16*320+(320-256)/2)/4
 .res239
-    add esi,16+256+32
+
+    ; address of first source line to copy
+    add esi,(16+256+16)+16
+
+    ; select output video page
+    xor eax,eax
     cmp byte[whichpage],0
     jne .pageb
-    add edi,19200
+    mov eax,(320*256)/4
 .pageb
-    mov [.startesi],esi
-    mov [.startedi],edi
+
     mov dl,[resolutn]
     sub dl,2
+    jmp copymodexloop
+
+;eax = VGA address of output page
+;edi = offset in current page of first line
+;esi = address of first line to be copied
+;dl = number of lines to copy
+NEWSYM copymodexloop
+    add edi,eax
+    mov [.pageaddress],eax
+    mov [.linecount],dl
+    mov [.startesi],esi
+    mov [.startedi],edi
+
 .loopa1
     mov ecx,16
 .loopb1
@@ -732,8 +519,7 @@ NEWSYM copymodex256
     mov esi,[.startesi]
     inc esi
     mov edi,[.startedi]
-    mov dl,[resolutn]
-    sub dl,2
+    mov dl,[.linecount]
 .loopa2
     mov ecx,16
 .loopb2
@@ -757,8 +543,7 @@ NEWSYM copymodex256
     mov esi,[.startesi]
     add esi,2
     mov edi,[.startedi]
-    mov dl,[resolutn]
-    sub dl,2
+    mov dl,[.linecount]
 .loopa3
     mov ecx,16
 .loopb3
@@ -782,8 +567,7 @@ NEWSYM copymodex256
     mov esi,[.startesi]
     add esi,3
     mov edi,[.startedi]
-    mov dl,[resolutn]
-    sub dl,2
+    mov dl,[.linecount]
 .loopa4
     mov ecx,16
 .loopb4
@@ -801,44 +585,40 @@ NEWSYM copymodex256
     add edi,16
     dec dl
     jnz .loopa4
+
     pop es
-    cmp byte[whichpage],0
+
+    ; flip pages by setting new offset
+    mov dx,03D4h
+    mov al,0Ch
+    out dx,al
+    inc dx
+    mov al,[.pageaddress+1]
+    out dx,al
+    dec dx
+    mov al,0Dh
+    out dx,al
+    inc dx
+    mov al,[.pageaddress]
+    out dx,al
+
+    mov al,[whichpage]
+    test al,al
+    mov al,0
     jne .setpageb
-    mov dx,03D4h
-    mov al,0Ch
-    out dx,al
-    inc dx
-    mov al,75
-    out dx,al
-    dec dx
-    mov al,0Dh
-    out dx,al
-    inc dx
-    xor al,al
-    out dx,al
-    mov byte[whichpage],1
-    ret
+    mov al,1
 .setpageb
-    mov dx,03D4h
-    mov al,0Ch
-    out dx,al
-    inc dx
-    xor al,al
-    out dx,al
-    dec dx
-    mov al,0Dh
-    out dx,al
-    inc dx
-    xor al,al
-    out dx,al
-    mov byte[whichpage],0
+    mov [whichpage],al
     ret
 SECTION .bss
 .startesi resd 1
 .startedi resd 1
+.pageaddress resd 1
+.linecount resd 1
 
 NEWSYM whichpage, resb 1          ; active page and visual page locations
 SECTION .text
+
 
 ;*******************************************************
 ; CopyModeQ 224       Copies buffer into chained 256x224
@@ -858,26 +638,8 @@ NEWSYM copymodeq224
     mov edi,256
     mov dl,224-2
 
-    cmp byte[MMXSupport],1
-    je near .loopb
-.loopa
-    mov ecx,256/4
-    rep movsd
-    add esi,16+16
-    dec dl
-    jnz .loopa
-    jmp .done
-.loopb
-    mov ecx,256/16
-    MMXStuff
-    add esi,16+16
-    dec dl
-    jnz .loopb
-    emms
+    jmp copymodeqloop
 
-.done
-    pop es
-    ret
 
 ;*******************************************************
 ; CopyModeQ 240       Copies buffer into chained 256x240
@@ -903,26 +665,8 @@ NEWSYM copymodeq240
     dec dl
     dec dl
 
-    cmp byte[MMXSupport],1
-    je near .loopb
-.loopa
-    mov ecx,256/4
-    rep movsd
-    add esi,16+16
-    dec dl
-    jnz .loopa
-    jmp .done
-.loopb
-    mov ecx,256/16
-    MMXStuff
-    add esi,16+16
-    dec dl
-    jnz .loopb
-    emms
+    jmp copymodeqloop
 
-.done
-    pop es
-    ret
 
 ;********************************************************
 ; CopyModeQ 256       Copies buffer into chained 256x256
@@ -949,6 +693,7 @@ NEWSYM copymodeq256
     dec dl
     dec dl
 
+copymodeqloop:
     cmp byte[MMXSupport],1
     je near .loopb
 .loopa
