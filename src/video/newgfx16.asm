@@ -945,6 +945,8 @@ NEWSYM newengine16b
     mov dh,[winlogicb]
     and dh,03h
     ; Same as previous line?
+    cmp dword[objwlrpos+eax*4-4],0FFFFFFFFh
+    je .changed
     cmp [objwlrpos+eax*4-4],ebx
     jne .changedb
     cmp [objwen+eax*2-2],dx
