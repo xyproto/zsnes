@@ -2727,26 +2727,32 @@ int GetMouseButton(void)
 
 void SetMouseMinX(int MinX)
 {
+   MouseMinX = MinX;
 }
 
 void SetMouseMaxX(int MaxX)
 {
+   MouseMaxX = MaxX;
 }
 
 void SetMouseMinY(int MinY)
 {
+   MouseMinY = MinY;
 }
 
 void SetMouseMaxY(int MaxY)
 {
+   MouseMaxY = MaxY;
 }
 
 void SetMouseX(int X)
 {
+   MouseX = X;
 }
 
 void SetMouseY(int Y)
 {
+   MouseY = Y;
 }
 
 void ZsnesPage()

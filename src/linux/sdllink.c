@@ -1014,14 +1014,13 @@ void SetMouseMaxY(int MaxY)
 	MouseMaxY = MaxY;
 	adjustMouseYScale();
 }
-
-// we can probably get rid of these functions since they are no
-// longer called in sdlintrf.asm
 void SetMouseX(int X)
-{				/* MouseX=X; */
+{
+	MouseX = X;
 }
 void SetMouseY(int Y)
-{				/* MouseY=Y; */
+{
+	MouseY = Y;
 }
 
 void ZsnesPage()
