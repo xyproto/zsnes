@@ -109,6 +109,7 @@ NEWSYM initregw
     setregw 2141h*4,reg2141w
     setregw 2142h*4,reg2142w
     setregw 2143h*4,reg2143w
+    setregw 2144h*4,reg2140w
     setregw 2180h*4,reg2180w
     setregw 2181h*4,reg2181w
     setregw 2182h*4,reg2182w
