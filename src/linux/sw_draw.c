@@ -69,7 +69,7 @@ BOOL sw_start(int width, int height, int req_depth, int FullScreen)
     // Grab mouse in fullscreen mode
     FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) : SDL_WM_GrabInput(SDL_GRAB_OFF);
 
-    SDL_WM_SetCaption ("ZSNES Linux","ZSNES");
+    SDL_WM_SetCaption ("ZSNES","ZSNES");
     SDL_ShowCursor(0);
 
     // Check hardware for 565/555

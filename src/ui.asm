@@ -152,7 +152,7 @@ NEWSYM welcome
 
                  db 'ZSNES v1.',ZVERSION,' beta (c) 1997-2002, ZSNES Team (zsKnight & _Demo_)',13,10
 %ifdef __LINUX__
-                 db 'Compiled under NASM and GCC. (Linux/FreeBSD)',13,10,13,10
+                 db 'Compiled under NASM and GCC. (*nix)',13,10,13,10
 %else
 %ifdef __WIN32__
                  db 'Compiled under NASM and MSVC++. (Windows)',13,10,13,10

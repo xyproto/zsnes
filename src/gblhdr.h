@@ -98,14 +98,16 @@
 	#include <glob.h>
 	#include <sys/stat.h>
 	#include <sys/ioctl.h>
-	#include <arpa/inet.h>
-	#include <netinet/in.h>
-	#include <sys/types.h>
 	#include <sys/socket.h>
+	#include <sys/types.h>
+	#include <netinet/in.h>
+	#include <arpa/inet.h>
 	#include <netdb.h>
 	#include <utime.h>
 	#include <zlib.h>
-	#include <png.h>
+	#ifndef NO_PNG
+		#include <png.h>
+	#endif
 	#endif
 
 	#ifdef __LINUX__

@@ -33,7 +33,9 @@ EXTSYM Clear2xSaIBuffer
 EXTSYM romdata,romtype,ScreenShotFormat
 EXTSYM Voice0Disable,Voice1Disable,Voice2Disable,Voice3Disable
 EXTSYM Voice4Disable,Voice5Disable,Voice6Disable,Voice7Disable
+%ifndef NO_PNG
 EXTSYM Grab_PNG_Data
+%endif
 
 NEWSYM MenuAsmStart
 
@@ -184,9 +186,11 @@ NEWSYM showmenu
 .nomenuinc3
 
     mov dword[menudrawbox8b.stringi+13],' BMP'
+%ifndef NO_PNG 
     cmp byte[ScreenShotFormat],0
     je .normalscrn
     mov dword[menudrawbox8b.stringi+13],' PNG'
+%endif
 .normalscrn
     cmp byte[cbitmode],1
     je near .nopcx
@@ -1068,11 +1072,13 @@ NEWSYM pcxheader
 NEWSYM picnum, dw 0
 
 NEWSYM savepcx
+%ifndef NO_PNG
         cmp byte[ScreenShotFormat],1
         jne .notpng
         call Grab_PNG_Data
 	ret
 .notpng
+%endif
     
     mov byte[pressed+1],0
     mov byte[pressed+59],0
