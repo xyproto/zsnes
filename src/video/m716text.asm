@@ -830,7 +830,8 @@ NEWSYM drawmode716textbg2
 .nopr2
     add esi,2
     add edi,2
-    loop .loop
+    dec ecx
+    jnz .loop
     xor eax,eax
     mov dh,byte[curmosaicsz]
     cmp dh,1
@@ -863,7 +864,8 @@ NEWSYM drawmode716textbg2
     add esi,2
     add edi,2
     inc ebp
-    loop .loop2
+    dec ecx
+    jnz .loop2
     xor eax,eax
     mov dh,byte[curmosaicsz]
     cmp dh,1
@@ -893,7 +895,8 @@ extbg2add:
 .nopr2
     add esi,2
     add edi,2
-    loop .loop
+    dec ecx
+    jnz .loop
     xor eax,eax
     mov dh,byte[curmosaicsz]
     cmp dh,1
@@ -923,7 +926,8 @@ extbg2add:
     add esi,2
     add edi,2
     inc ebp
-    loop .loop2
+    dec ecx
+    jnz .loop2
     xor eax,eax
     mov dh,byte[curmosaicsz]
     cmp dh,1
@@ -954,7 +958,8 @@ extbg2sub:
 .nopr2
     add esi,2
     add edi,2
-    loop .loop
+    dec ecx
+    jnz .loop
     xor eax,eax
     mov dh,byte[curmosaicsz]
     cmp dh,1
@@ -985,7 +990,8 @@ extbg2sub:
     add esi,2
     add edi,2
     inc ebp
-    loop .loop2
+    dec ecx
+    jnz .loop2
     xor eax,eax
     mov dh,byte[curmosaicsz]
     cmp dh,1

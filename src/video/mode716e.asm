@@ -1228,7 +1228,8 @@ NEWSYM drawmode716extbg2
     mov [esi],bx
 .nopr2
     add esi,2
-    loop .loop
+    dec ecx
+    jnz .loop
     xor eax,eax
     mov dh,byte[curmosaicsz]
     cmp dh,1
@@ -1252,7 +1253,8 @@ NEWSYM drawmode716extbg2
 .nopr2b
     add esi,2
     inc ebp
-    loop .loop2
+    dec ecx
+    jnz .loop2
     xor eax,eax
     mov dh,byte[curmosaicsz]
     cmp dh,1

@@ -406,7 +406,8 @@ NEWSYM drawmode7ngextbg16b
 .loop
     mov byte[esi+75036*8],0
     add esi,2
-    loop .loop
+    dec ecx
+    jnz .loop
     pop ecx
 
     cmp byte[mode7hr+ebx],1
@@ -473,7 +474,8 @@ drawmode7w16bsnte
     %1
 .nopr2
     add esi,2
-    loop .loop
+    dec ecx
+    jnz .loop
     xor eax,eax
     ret
 %endmacro

@@ -1620,7 +1620,6 @@ NEWSYM draweagle
     mov [es:edi],eax
     add edx,4
     add edi,4
-;    loop .copyloop
     dec ecx
     jnz .copyloop
     xor eax,eax
@@ -1696,7 +1695,6 @@ NEWSYM draweagle
     mov [es:edi],eax
     add edx,4
     add edi,4
-;    loop .copyloop2
     dec ecx
     jnz .copyloop2
     xor eax,eax
@@ -2299,7 +2297,6 @@ NEWSYM ConvertToAFormat
     or ebx,eax
     mov [esi],ebx
     add esi,4
-;    loop .crgbloop2
     dec ecx
     jnz .crgbloop2
     add esi,64
@@ -2320,7 +2317,6 @@ NEWSYM ConvertToAFormat
     por mm0,mm1
     movq [esi],mm0
     add esi,8
-;    loop .crgbloop2m
     dec ecx
     loop .crgbloop2m
     add esi,64
@@ -2347,7 +2343,6 @@ NEWSYM UnConvertToAFormat
     or ebx,eax
     mov [esi],ebx
     add esi,4
-;    loop .crgbloop2
     dec ecx
     jnz .crgbloop2
     add esi,64
@@ -3881,9 +3876,8 @@ Process2xSaI:
 .nextb
     mov dword[ebx],0FFFFFFFFh
     add ebx,4
-;    loop .nextb
     dec ecx
-    loop .nextb
+    jnz .nextb
     pop ebx
     jmp .returninterp
 .ignorehr
@@ -3947,7 +3941,6 @@ Process2xSaI:
     movq [es:eax],mm0
     add edx,8
     add eax,8
-;    loop .s2xsailoop
     dec ecx
     jnz .s2xsailoop
     mov edx,[spritetablea]
@@ -3959,7 +3952,6 @@ Process2xSaI:
     movq [es:eax],mm0
     add edx,8
     add eax,8
-;    loop .s2xsailoop2
     dec ecx
     jnz .s2xsailoop2
     jmp .dones2xsai
@@ -3980,7 +3972,6 @@ Process2xSaI:
 .loop
     mov dword[es:edi],0
     add edi,4
-;    loop .loop
     dec ecx
     jnz .loop
     emms
@@ -4700,7 +4691,6 @@ NEWSYM interpolate640x480x16b
     add esi,2
     add edi,4
     add edx,4
-;    loop .a
     dec ecx
     jnz .a
     add esi,66
@@ -4733,7 +4723,6 @@ NEWSYM interpolate640x480x16b
     add esi,2
     add edi,4
     add edx,4
-;    loop .c
     dec ecx
     jnz .c
     add edi,130*2
@@ -4744,7 +4733,6 @@ NEWSYM interpolate640x480x16b
     mov [es:edi],eax
     add edx,4
     add edi,4
-;    loop .d
     dec ecx
     jnz .d
     inc dword[InterPtr]
@@ -5732,7 +5720,6 @@ NEWSYM getcopyvesa2320x240x16b
     mov [esi],ax
     add edi,2
     add esi,2
-;   loop .loop
     dec ecx
     jnz .loop
     add edi,128
@@ -5763,7 +5750,6 @@ ConvertImageDatared10:
     or ax,dx
     mov [esi],ax
     add esi,2
-;    loop .loop
     dec ecx
     jnz .loop
     add esi,64

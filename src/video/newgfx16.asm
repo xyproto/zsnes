@@ -543,7 +543,8 @@ NEWSYM newengine16b
 .loopcc
     mov dword[ebx],eax
     add ebx,4
-    loop .loopcc
+    dec ecx
+    jnz .loopcc
     pop ecx
     pop eax
     mov dword[startlinet],0
@@ -2815,7 +2816,8 @@ ProcessTransparencies:
     shr eax,1
     mov [esi],ax
     add esi,2
-    loop .next2
+    dec ecx
+    jnz .next2
 .done
     pop ebx
     pop esi
@@ -2844,7 +2846,8 @@ ProcessTransparencies:
     shr eax,1
     mov [esi],ax
     add esi,2
-    loop .next2c
+    dec ecx
+    jnz .next2c
 .donec
     pop ebx
     pop esi
@@ -2857,7 +2860,8 @@ ProcessTransparencies:
     mov ax,[fulladdtab+eax*2]
     mov [esi],ax
     add esi,2
-    loop .next2c
+    dec ecx
+    jnz .next2c
     pop ebx
     pop esi
     jmp .donetransp
@@ -2890,7 +2894,8 @@ ProcessTransparencies:
     mov [esi],dx
 .notranspfshs
     add esi,2
-    loop .nextfshs
+    dec ecx
+    jnz .nextfshs
     pop esi
     pop ebx
     jmp .donetransp
@@ -2917,7 +2922,8 @@ ProcessTransparencies:
     mov [esi],dx
 .notranspfa
     add esi,2
-    loop .nextfa
+    dec ecx
+    jnz .nextfa
     pop esi
     pop ebx
     jmp .donetransp
@@ -2945,7 +2951,8 @@ ProcessTransparencies:
     mov [esi],dx
 .notranspfs
     add esi,2
-    loop .nextfs
+    dec ecx
+    jnz .nextfs
     pop esi
     pop ebx
 .donetransp
@@ -2991,7 +2998,8 @@ ProcessTransparencies:
     test dword[esi+4],eax
     jnz near .faddloopbh
     add esi,8
-    loop .faddl2h
+    dec ecx
+    jnz .faddl2h
     jmp .faddloopdoneh
 .prochalfadd
     test dword[esi+75036*2],eax
@@ -3016,7 +3024,8 @@ ProcessTransparencies:
     paddw mm0,mm1
     movq [esi],mm0
     add esi,8
-    loop .prochalfadd
+    dec ecx
+    jnz .prochalfadd
     jmp .faddloopdoneh
 .procfulladd
     mov ebx,[esi]
@@ -3168,7 +3177,8 @@ ProcessTransparencies:
     test dword[esi+4],eax
     jnz .fsubloopbh
     add esi,8
-    loop .fsubl2h
+    dec ecx
+    jnz .fsubl2h
     jmp .fsubloopdoneh
 .fsublooph
     test dword[esi],eax
@@ -3245,7 +3255,8 @@ ProcessTransparencies:
     test dword[esi+4],eax
     jnz .faddloopb
     add esi,8
-    loop .faddl2
+    dec ecx
+    jnz .faddl2
     jmp .faddloopdone
 .faddloop
     test dword[esi],eax
@@ -3306,7 +3317,8 @@ ProcessTransparencies:
     test dword[esi+4],eax
     jnz .fsubloopb
     add esi,8
-    loop .fsubl2
+    dec ecx
+    jnz .fsubl2
     jmp .fsubloopdone
 .fsubloop
     test dword[esi],eax
@@ -3565,7 +3577,8 @@ NEWSYM NewGfx16AsmEnd
 .loopclipfull
     %4
     add esi,4
-    loop .loopclipfull
+    dec ecx
+    jnz .loopclipfull
 .finclipping
     pop ebx
     pop esi
