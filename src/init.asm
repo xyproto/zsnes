@@ -1327,7 +1327,7 @@ NEWSYM HIRQSkip,     db 0
 NEWSYM ClearScreenSkip, db 0
 NEWSYM hirqmode2, db 0
 NEWSYM ENVDisable, db 0
-NEWSYM MMXSRAMHack, db 0
+NEWSYM MMXSRAMFix, db 0
 SECTION .text
 
 ; hacks :
@@ -1451,7 +1451,7 @@ NEWSYM headerhack
     mov byte[ClearScreenSkip],0
     mov byte[hirqmode2],0
     mov byte[ENVDisable],0
-    mov byte[MMXSRAMHack],0
+    mov byte[MMXSRAMFix],0
 
     mov esi,[romdata]
     add esi,07FC0h
@@ -1527,7 +1527,7 @@ NEWSYM headerhack
     jne .notmmx
     cmp dword[esi+8],'X   '
     jne .notmmx
-    mov byte[MMXSRAMHack],1
+    mov byte[MMXSRAMFix],1
 .notmmx
 
     mov esi,[romdata]

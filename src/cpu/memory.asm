@@ -4230,7 +4230,7 @@ NEWSYM sramaccessbankw16s
     pop ecx
     ret
 
-EXTSYM MMXSRAMHack
+EXTSYM MMXSRAMFix
 
 NEWSYM sramaccessbankr8b
     cmp dword[ramsize],0
@@ -4243,13 +4243,13 @@ NEWSYM sramaccessbankr8b
     xor ebx,ebx
     ret
 .noaccess
-    cmp byte[MMXSRAMHack],1
-    je .mmxsramhack
+    cmp byte[MMXSRAMFix],1
+    je .MMXSRAMFix
     xor al,al
     xor ebx,ebx
     ret
 
-.mmxsramhack
+.MMXSRAMFix
     mov al,0FFh
     xor ebx,ebx
     ret
@@ -4268,13 +4268,13 @@ NEWSYM sramaccessbankr16b
     xor ebx,ebx
     ret
 .noaccess
-    cmp byte[MMXSRAMHack],1
-    je .mmxsramhack
+    cmp byte[MMXSRAMFix],1
+    je .MMXSRAMFix
     xor ax,ax
     xor ebx,ebx
     ret
 
-.mmxsramhack
+.MMXSRAMFix
     mov ax,0FFFFh
     xor ebx,ebx
     ret
