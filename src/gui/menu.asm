@@ -857,6 +857,7 @@ NEWSYM savespcdata
     mov [ssdatst+43],al
     add dword[spcPCRam],spcRam
 .savestuff
+    ChangeDir SPCPath
     sub dword[spcPCRam],spcRam
     sub dword[spcRamDP],spcRam
     call PrepareSaveState
@@ -988,7 +989,6 @@ NEWSYM savespcdata
 ;  times 2  db 0 ; fade-out length in milliseconds
 ;  db 0          ; default channel enables
 
-    ChangeDir SPCPath
     mov edx,.spcfname
     call Create_File
     mov bx,ax
