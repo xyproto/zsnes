@@ -6242,7 +6242,51 @@ GUIIconDataComboSecond:
 
 SECTION .text
 
+
+DisplayGUIAddOnsEE:
+    GUIDrawWindowBox 17,GUIAddOnsDispAlt
+    sub byte[GUItextcolor],15
+    GUIOuttextwin2 17,21,18,GUIAddOnText1Alt
+    GUIOuttextwin2 17,21,28,GUIAddOnText2Alt
+    GUIOuttextwin2 17,21,38,GUIAddOnText3Alt
+    GUIOuttextwin2 17,21,48,GUIAddOnText4Alt
+    GUIOuttextwin2 17,21,58,GUIAddOnText5Alt
+    GUIOuttextwin2 17,10,78,GUIAddOnText6Alt
+    GUIOuttextwin2 17,21,88,GUIAddOnText7Alt
+    GUIOuttextwin2 17,71,88,GUIAddOnText8Alt
+    GUIOuttextwin2 17,121,88,GUIAddOnText9Alt
+    GUIOuttextwin2 17,21,98,GUIAddOnTextAAlt
+    GUIOuttextwin2 17,71,98,GUIAddOnTextBAlt
+    GUIOuttextwin2 17,121,98,GUIAddOnTextCAlt
+    add byte[GUItextcolor],15
+    GUIOuttextwin2 17,20,17,GUIAddOnText1Alt
+    GUIOuttextwin2 17,20,27,GUIAddOnText2Alt
+    GUIOuttextwin2 17,20,37,GUIAddOnText3Alt
+    GUIOuttextwin2 17,20,47,GUIAddOnText4Alt
+    GUIOuttextwin2 17,20,57,GUIAddOnText5Alt
+    GUIOuttextwin2 17,9,77,GUIAddOnText6Alt
+    GUIOuttextwin2 17,20,87,GUIAddOnText7Alt
+    GUIOuttextwin2 17,70,87,GUIAddOnText8Alt
+    GUIOuttextwin2 17,120,87,GUIAddOnText9Alt
+    GUIOuttextwin2 17,20,97,GUIAddOnTextAAlt
+    GUIOuttextwin2 17,70,97,GUIAddOnTextBAlt
+    GUIOuttextwin2 17,120,97,GUIAddOnTextCAlt
+    ret
+    
 DisplayGUIAddOns:
+    
+    ;EE
+    pushad
+    call GetTime
+    cmp eax,360
+    popad
+    ja .noEE
+    call DisplayGUIAddOnsEE
+    jmp .endEE
+
+.noEE
+
+    ;Regular
     GUIDrawWindowBox 17,GUIAddOnsDisp
     sub byte[GUItextcolor],15
     GUIOuttextwin2 17,21,18,GUIAddOnText1
@@ -6270,6 +6314,10 @@ DisplayGUIAddOns:
     GUIOuttextwin2 17,20,97,GUIAddOnTextA
     GUIOuttextwin2 17,70,97,GUIAddOnTextB
     GUIOuttextwin2 17,120,97,GUIAddOnTextC
+
+.endEE    
+    
+    
     GUIDisplayButtonHole 17,9,15,byte[snesmouse],0
     GUIDisplayButtonHole 17,9,25,byte[snesmouse],1
     GUIDisplayButtonHole 17,9,35,byte[snesmouse],2
@@ -6326,6 +6374,20 @@ GUIAddOnText9 db 'DIP 3',0
 GUIAddOnTextA db 'DIP 4',0
 GUIAddOnTextB db 'DIP 5',0
 GUIAddOnTextC db 'DIP 6',0
+
+;EE
+GUIAddOnText1Alt db 79,70,70,0
+GUIAddOnText2Alt db 84,79,65,83,84,32,77,89,32,66,82,69,65,68,0
+GUIAddOnText3Alt db 71,73,77, 77,69,32,70,82,73,69,83,32,87,73,84,72,32,84,72,65,84,0
+GUIAddOnText4Alt db 65,78,68,32,65,32,77,85,70,70,73,78,0
+GUIAddOnText5Alt db 87,73,84,72,32,86,73,84,65,77,73,78,83,0
+GUIAddOnText6Alt db 69,88,84,82,65,83,0
+GUIAddOnText7Alt db 83,65,76,84,0
+GUIAddOnText8Alt db 71,65,82,76,73,67,0
+GUIAddOnText9Alt db 80,69,80,80,69,82,0
+GUIAddOnTextAAlt db 67,72,69,69,83,69,0
+GUIAddOnTextBAlt db 66,85,84,84,69,82,0
+GUIAddOnTextCAlt db 67,65,84,83,85,80,0
 
 SECTION .text
 
@@ -6520,6 +6582,7 @@ GUIMovieDisp db 'MOVIE OPTIONS',0
 GUIStatesDisp db 'STATE CONFIRM',0
 GUIComboDisp db 'KEY COMBINATION EDITOR',0
 GUIAddOnsDisp db 'ADD-ON SELECTOR',0
+GUIAddOnsDispAlt db 84,79,65,83,84,69,82,32,80,76,85,71,73,78,83,0
 GUIChipConfigDisp db 'CONFIGURE CHIPS',0
 GUIPathsDisp db 'SETUP PATHS',0
 

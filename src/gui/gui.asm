@@ -117,7 +117,7 @@ EXTSYM WinErrorA,WinErrorB,WinErrorC
 EXTSYM ErrorPointer
 EXTSYM MessageOn,Msgptr,MsgCount
 EXTSYM PJoyAOrig,PJoyBOrig,PJoyCOrig,PJoyDOrig,PJoyEOrig
-EXTSYM GetHostName
+EXTSYM GetHostName,GetTime
 EXTSYM vramaddr,curypos,ClearRegs,vram,sndrot,regsbackup
 EXTSYM GetScreen,GUITBWVID
 EXTSYM Clear2xSaIBuffer
