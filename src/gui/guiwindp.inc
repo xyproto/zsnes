@@ -6278,6 +6278,15 @@ GUIAddOnTextA db 'DIP 4',0
 GUIAddOnTextB db 'DIP 5',0
 GUIAddOnTextC db 'DIP 6',0
 
+SECTION .text
+
+DisplayGUIChip:
+    GUIDrawWindowBox 18,GUIChipConfigDisp
+    ret
+
+SECTION .data
+
+;General data
 GUILoadDisp     db 'LOAD GAME',0
 GUIResetDisp    db 'RESET GAME',0
 GUIStateSelDisp db 'STATE SELECT',0
@@ -6295,6 +6304,7 @@ GUIMovieDisp db 'MOVIE OPTIONS',0
 GUIStatesDisp db 'STATE CONFIRM',0
 GUIComboDisp db 'KEY COMBINATION EDITOR',0
 GUIAddOnsDisp db 'ADD-ON SELECTOR',0
+GUIChipConfigDisp db 'Configure Chips',0
 
 SECTION .bss
 GUIItemBoxColor resd 1

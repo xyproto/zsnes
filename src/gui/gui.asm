@@ -315,8 +315,8 @@ mouseshad db 1          ; 0 = no mouse shadow, 1 = mouse shadow
 lastcursres db 0        ; 0 = go to load, 1 = go to previous menu, 2 = no menu
 resetposn   db 1        ; 0 = no window reset, 1 = window reset
 NEWSYM GUIClick, db 0   ; 1 = mouse click enters/exits gui
-GUIwinposx2 dd 0,5   ,60  ,30  ,55  ,50  ,65  ,5   ,30  ,20  ,10   ,80  ,65  ,20  ,70  ,50  ,3   ,0
-GUIwinposy2 dd 0,20  ,70  ,30  ,20  ,22  ,36  ,20  ,30  ,20  ,40   ,70  ,60  ,30  ,65  ,50  ,22  ,0
+GUIwinposx2 dd 0,5   ,60  ,30  ,55  ,50  ,65  ,5   ,30  ,20  ,10   ,80  ,65  ,20  ,70  ,50  ,3 ,0
+GUIwinposy2 dd 0,20  ,70  ,30  ,20  ,22  ,36  ,20  ,30  ,20  ,40   ,70  ,60  ,30  ,65  ,50  ,22,0
 
 ; Default keys
 ; Sound Channels 0 .. 7, Save/Select/Load States, Fast Forward
@@ -635,11 +635,11 @@ ModemPTimer  resd 1       ; Timer for modem process
 ModemOKStat  resb 1       ; OK is detected on modem status
 
 SECTION .data
-;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO
-GUIwinposxo dd 0,5   ,60  ,30  ,55  ,50  ,35  ,5   ,30  ,10   ,10   ,50  ,65  ,20  ,70  ,50  ,3   ,50
-GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,20   ,20   ,20  ,60  ,30  ,65  ,50  ,22  ,60
-GUIwinsizex dd 0,244 ,126 ,189 ,167 ,180 ,188 ,244 ,8*16,235  ,240  ,190 ,9*16,8*16,9*16,140 ,250 ,160
-GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,189  ,150  ,190 ,42  ,40  ,42  ,70  ,190 ,100
+;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP
+GUIwinposxo dd 0,5   ,60  ,30  ,55  ,50  ,35  ,5   ,30  ,10   ,10   ,50  ,65  ,20  ,70  ,50  ,3   ,50  ,50
+GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,20   ,20   ,20  ,60  ,30  ,65  ,50  ,22  ,60  ,60
+GUIwinsizex dd 0,244 ,126 ,189 ,167 ,180 ,188 ,244 ,8*16,235  ,240  ,190 ,9*16,8*16,9*16,140 ,250 ,160 ,160
+GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,189  ,150  ,190 ,42  ,40  ,42  ,70  ,190 ,100 ,100
 GUIwinptr   db 0
 
 section .bss
@@ -3367,6 +3367,7 @@ GUITryMenuItem:
     ;The number on the left is the window to open
     ;the number on the right is where in the drop down box we are
     GUICheckMenuItem 17, 6
+    GUICheckMenuItem 18, 7
     GUICheckMenuItem 4, 9
     GUICheckMenuItem 5, 10
     GUICheckMenuItem 6, 11
@@ -3576,6 +3577,11 @@ DisplayBoxes:
     call DisplayGUIAddOns
     jmp .finstuff
 .noaddon
+    cmp al,18
+    jne .nochipconfig
+    call DisplayGUIChip
+    jmp .finstuff
+.nochipconfig
 .finstuff
     pop esi
     inc esi
