@@ -1940,7 +1940,8 @@ void drawscreenwin(void)
 
 		xorl %%eax, %%eax
 		movl $128, %%ecx
-		rep stosl
+		rep
+	        stosl
 		popw %%es
 		emms
 	" : : : "cc", "memory", "eax", "ebx", "ecx","edi", "esi");
@@ -1955,7 +1956,8 @@ void drawscreenwin(void)
 		movl SurfBufD, %%edi
 	Copying:
 		movl $128, %%ecx
-		rep movsl
+		rep
+		movsl
 		incl %%eax
 		addl Temp1, %%edi
 		subl $512, %%edi
@@ -1965,7 +1967,8 @@ void drawscreenwin(void)
 		jne Copying
 		xorl %%eax, %%eax
 		movl $128, %%ecx
-		rep stosl
+		rep
+		stosl
 		popw %%es
 	" : : : "cc", "memory", "eax", "ebx", "ecx","edi", "esi");
 	     }
