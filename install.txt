@@ -1,7 +1,7 @@
 Compiling the Source Code:
 --------------------------
 
-Well, for the moment, zsnes sources may be a little hard to compile. Here 
+Well, for the moment, zsnes source may be a little hard to compile. Here 
 is a quick guide (based on my own experience and on a doc written by zsKnight)
 explaining how to compile zsnes. With these tools, I can build both dos and
 win version, I hope it will also work for you
