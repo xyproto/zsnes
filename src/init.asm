@@ -240,7 +240,7 @@ NEWSYM init
     mov byte[cfgnewgfx],1
 .noforce
 
-;    mov ebx,ebm
+    mov ebx,ebm
     mov eax,EndMessage
     mov dh,17h
     mov ch,67
