@@ -23,7 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
 #ifdef __LINUX__
-#include "gblhdr.h"
+#include "../gblhdr.h"
 #define DIR_SLASH "/"
 #else
 #include <stdio.h>
@@ -33,7 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIR_SLASH "\\"
 #endif
 #include "memtable.h"
-#include "gblvars.h"
+#include "../gblvars.h"
 
 extern unsigned int Curtableaddr, tableA[256];
 
