@@ -404,6 +404,8 @@ GUIgetcurrentinput:
     je near GUIStateKeys
     cmp ebx,16
     je near GUIComboKeys
+    cmp ebx,18
+    je near GUIChipKeys
     cmp ebx,19
     je near GUIPathKeys
     cmp ebx,20
@@ -958,6 +960,39 @@ GUISaveKeys:
 .nosramstate
     ret
 
+
+GUIChipKeys:
+    cmp dh,'a'
+    jb .nocap
+    cmp dh,'z'
+    ja .nocap
+    sub dh,'z'-'Z'
+.nocap
+    cmp dh,'1'
+    jne .nonssdip1
+    xor byte[nssdip1],1
+.nonssdip1
+    cmp dh,'2'
+    jne .nonssdip2
+    xor byte[nssdip2],1
+.nonssdip2
+    cmp dh,'3'
+    jne .nonssdip3
+    xor byte[nssdip3],1
+.nonssdip3
+    cmp dh,'4'
+    jne .nonssdip4
+    xor byte[nssdip4],1
+.nonssdip4
+    cmp dh,'5'
+    jne .nonssdip5
+    xor byte[nssdip5],1
+.nonssdip5
+    cmp dh,'6'
+    jne .nonssdip6
+    xor byte[nssdip6],1
+.nonssdip6
+    ret
 
 GUIGUIOptnsKeys:
     cmp dh,'a'

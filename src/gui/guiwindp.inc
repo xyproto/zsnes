@@ -6195,26 +6195,14 @@ DisplayGUIAddOns:
     GUIOuttextwin2 17,21,38,GUIAddOnText3
     GUIOuttextwin2 17,21,48,GUIAddOnText4
     GUIOuttextwin2 17,21,58,GUIAddOnText5
-    GUIOuttextwin2 17,10,78,GUIAddOnText6
-    GUIOuttextwin2 17,21,88,GUIAddOnText7
-    GUIOuttextwin2 17,71,88,GUIAddOnText8
-    GUIOuttextwin2 17,121,88,GUIAddOnText9
-    GUIOuttextwin2 17,21,98,GUIAddOnTextA
-    GUIOuttextwin2 17,71,98,GUIAddOnTextB
-    GUIOuttextwin2 17,121,98,GUIAddOnTextC
+    
     add byte[GUItextcolor],15
     GUIOuttextwin2 17,20,17,GUIAddOnText1
     GUIOuttextwin2 17,20,27,GUIAddOnText2
     GUIOuttextwin2 17,20,37,GUIAddOnText3
     GUIOuttextwin2 17,20,47,GUIAddOnText4
     GUIOuttextwin2 17,20,57,GUIAddOnText5
-    GUIOuttextwin2 17,9,77,GUIAddOnText6
-    GUIOuttextwin2 17,20,87,GUIAddOnText7
-    GUIOuttextwin2 17,70,87,GUIAddOnText8
-    GUIOuttextwin2 17,120,87,GUIAddOnText9
-    GUIOuttextwin2 17,20,97,GUIAddOnTextA
-    GUIOuttextwin2 17,70,97,GUIAddOnTextB
-    GUIOuttextwin2 17,120,97,GUIAddOnTextC
+    
 
 .endEE    
     
@@ -6224,42 +6212,6 @@ DisplayGUIAddOns:
     GUIDisplayButtonHole 17,9,35,byte[snesmouse],2
     GUIDisplayButtonHole 17,9,45,byte[snesmouse],3
     GUIDisplayButtonHole 17,9,55,byte[snesmouse],4
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[nssdip1],0
-    je .nodip1
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nodip1
-    GUIDisplayIconWin 17,9,83,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[nssdip2],0
-    je .nodip2
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nodip2
-    GUIDisplayIconWin 17,59,83,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[nssdip3],0
-    je .nodip3
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nodip3
-    GUIDisplayIconWin 17,109,83,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[nssdip4],0
-    je .nodip4
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nodip4
-    GUIDisplayIconWin 17,9,93,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[nssdip5],0
-    je .nodip5
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nodip5
-    GUIDisplayIconWin 17,59,93,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[nssdip6],0
-    je .nodip6
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nodip6
-    GUIDisplayIconWin 17,109,93,[GUITemp]
     ret
 
 SECTION .data
@@ -6268,13 +6220,7 @@ GUIAddOnText2 db 'SNES MOUSE AT PORT #1',0
 GUIAddOnText3 db 'SNES MOUSE AT PORT #2',0
 GUIAddOnText4 db 'SUPER SCOPE',0
 GUIAddOnText5 db 'LETHAL ENFORCER GUN',0
-GUIAddOnText6 db 'SUPER SYSTEM',0
-GUIAddOnText7 db 'DIP 1',0
-GUIAddOnText8 db 'DIP 2',0
-GUIAddOnText9 db 'DIP 3',0
-GUIAddOnTextA db 'DIP 4',0
-GUIAddOnTextB db 'DIP 5',0
-GUIAddOnTextC db 'DIP 6',0
+
 
 ;EE
 GUIAddOnText1Alt db 79,70,70,0
@@ -6290,26 +6236,81 @@ GUIAddOnTextAAlt db 67,72,69,69,83,69,0
 GUIAddOnTextBAlt db 66,85,84,84,69,82,0
 GUIAddOnTextCAlt db 67,65,84,83,85,80,0
 
+
+
 SECTION .text
 
 DisplayGUIChipConfig:
     GUIDrawWindowBox 18,GUIChipConfigDisp
+    mov byte[GUItextcolor],217
+    cmp byte[GUIWincoladd],0
+    je .zero
+    mov byte[GUItextcolor],211
+.zero
     sub byte[GUItextcolor],15
-    GUIOuttextwin2 18,15,18,GUIChipText1
-    GUIOuttextwin2 18,35,28,GUIChipText2
-    GUIOuttextwin2 18,90,28,GUIChipText3
+    GUIOuttextwin2 18,10,38,GUIChipText1
+    GUIOuttextwin2u 18,21,48,GUIChipText2,4
+    GUIOuttextwin2u 18,71,48,GUIChipText3,4
+    GUIOuttextwin2u 18,121,48,GUIChipText4,4
+    GUIOuttextwin2u 18,21,58,GUIChipText5,4
+    GUIOuttextwin2u 18,71,58,GUIChipText6,4
+    GUIOuttextwin2u 18,121,58,GUIChipText7,4
     add byte[GUItextcolor],15
-    GUIOuttextwin2 18,14,17,GUIChipText1
-    GUIOuttextwin2 18,34,27,GUIChipText2
-    GUIOuttextwin2 18,89,27,GUIChipText3
-    GUIDisplayButtonHole 18,20,25,byte[st010difficulty],0
-    GUIDisplayButtonHole 18,75,25,byte[st010difficulty],1
+    GUIOuttextwin2 18,9,37,GUIChipText1
+    GUIOuttextwin2 18,20,47,GUIChipText2
+    GUIOuttextwin2 18,70,47,GUIChipText3
+    GUIOuttextwin2 18,120,47,GUIChipText4
+    GUIOuttextwin2 18,20,57,GUIChipText5
+    GUIOuttextwin2 18,70,57,GUIChipText6
+    GUIOuttextwin2 18,120,57,GUIChipText7
+
+
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[nssdip1],0
+    je .nodip1
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nodip1
+    GUIDisplayIconWin 18,9,43,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[nssdip2],0
+    je .nodip2
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nodip2
+    GUIDisplayIconWin 18,59,43,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[nssdip3],0
+    je .nodip3
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nodip3
+    GUIDisplayIconWin 18,109,43,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[nssdip4],0
+    je .nodip4
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nodip4
+    GUIDisplayIconWin 18,9,53,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[nssdip5],0
+    je .nodip5
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nodip5
+    GUIDisplayIconWin 18,59,53,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[nssdip6],0
+    je .nodip6
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nodip6
+    GUIDisplayIconWin 18,109,53,[GUITemp]
     ret
 
 SECTION .data
-GUIChipText1 db 'SETA 10 DIFFICULTY:',0
-GUIChipText2 db 'NORMAL',0
-GUIChipText3 db 'HARD',0
+GUIChipText1 db 'SUPER SYSTEM',0
+GUIChipText2 db 'DIP 1',0
+GUIChipText3 db 'DIP 2',0
+GUIChipText4 db 'DIP 3',0
+GUIChipText5 db 'DIP 4',0
+GUIChipText6 db 'DIP 5',0
+GUIChipText7 db 'DIP 6',0
 
 SECTION .text
 

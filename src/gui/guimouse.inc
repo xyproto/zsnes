@@ -3227,17 +3227,16 @@ DisplayGUIAddOnClick:
     GUIPButtonHole 9,35,byte[snesmouse],2
     GUIPButtonHole 9,45,byte[snesmouse],3
     GUIPButtonHole 9,55,byte[snesmouse],4
-    GUIClickCButton 9,83,byte[nssdip1]
-    GUIClickCButton 59,83,byte[nssdip2]
-    GUIClickCButton 109,83,byte[nssdip3]
-    GUIClickCButton 9,93,byte[nssdip4]
-    GUIClickCButton 59,93,byte[nssdip5]
-    GUIClickCButton 109,93,byte[nssdip6]
+
     ret
 
 DisplayGUIChipClick
-    GUIPButtonHole 20,25,byte[st010difficulty],0
-    GUIPButtonHole 75,25,byte[st010difficulty],1
+    GUIClickCButton 9,43,byte[nssdip1]
+    GUIClickCButton 59,43,byte[nssdip2]
+    GUIClickCButton 109,43,byte[nssdip3]
+    GUIClickCButton 9,53,byte[nssdip4]
+    GUIClickCButton 59,53,byte[nssdip5]
+    GUIClickCButton 109,53,byte[nssdip6]
     ret
 
 DisplayGUIPathsClick
