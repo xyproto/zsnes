@@ -409,7 +409,7 @@ NEWSYM CalibYmin209, dd 0
 NEWSYM CalibXmax209, dd 0
 NEWSYM CalibYmax209, dd 0
 NEWSYM maxskip,      db 9
-FPSAtStart           db 0
+NEWSYM FPSAtStart,   db 0
 NEWSYM SidewinderFix, db 0
 GUIInitSt1 db 'ATZ'
 .rest times 47 db 0
@@ -926,11 +926,6 @@ NEWSYM GUIRestoreVars
     mov [smallscreenon],al
     mov al,[GUIScreenScale]
     mov [ScreenScale],al
-    cmp byte[newengen],1
-    jne .nofpsatstart
-    mov al,[FPSAtStart]
-    mov [FPSOn],al
-.nofpsatstart
     call CalcChecksum
     cmp byte[TimeChecker],bl
     jne .nottimer

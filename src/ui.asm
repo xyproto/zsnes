@@ -21,6 +21,7 @@ EXTSYM getcfg,soundon,SBHDMA,StereoSound,init,GUIRestoreVars,GUIClick,MouseDis
 EXTSYM ConvertJoyMap,ConvertJoyMap1,ConvertJoyMap2,printhex,InitSPC
 EXTSYM StartUp,PrintStr,WaitForKey,PrintChar,ZFileSystemInit
 EXTSYM SPCDisable,SystemInit,allocmem
+EXTSYM FPSOn,FPSAtStart
 EXTSYM xa
 EXTSYM SBPort,SBInt,SBIrq,SBDMA,SBDMAPage,SBHDMAPage,getenv,vibracard
 EXTSYM ram7fa,wramdataa
@@ -93,6 +94,12 @@ NEWSYM zstart
 	mov byte[soundon],0
 	mov byte[spcon],0
 .nodissound
+        cmp byte[frameskip],0
+        jne .nofpsatstart
+        mov al,[FPSAtStart]
+        mov [FPSOn],al
+        xor al,al
+.nofpsatstart
 
 	mov al,[gammalevel]
 	shr al,1
