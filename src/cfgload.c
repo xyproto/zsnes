@@ -139,6 +139,7 @@ extern unsigned int ZFileReadSize;
 extern unsigned int ZOpenFile(); //Create_File. Open_File
 extern unsigned int ZFileWrite(); //Write_File();
 extern unsigned int ZCloseFile(); //Close_File
+
 #ifdef __LINUX__
 extern char zcfgdir[1024];
 #endif
@@ -352,17 +353,16 @@ void ConvertJoyMap()
   }
   return;
 }
-#define SAVE_LINE(a) ZFileWriteSize=strlen(a);\
-  ZFileWrite();
 
+#define SAVE_LINE(a) fwrite(a, 1, strlen(a), fp)
 #define WRITE_LINE(a) sprintf(buffer, a);\
   SAVE_LINE(buffer);
 
 
 void DOScreatenewcfg()
 {
-  int i;
-  char buffer[1024];
+  char buffer[4096];
+  FILE *fp = 0;
   
   if (cfgdontsave == 1)
   {
@@ -373,16 +373,11 @@ void DOScreatenewcfg()
   chdir(zcfgdir);
 #endif  
   
-  ZOpenFileName = CMDLineStr;
-  ZOpenMode = 1;
-  ZFileWriteBlock = buffer;
-  i = ZOpenFile();
-  
-  if (i == -1)
+  fp = fopen(CMDLineStr, "wb");
+  if (!fp)
   {
     return;
   }
-  ZFileWriteHandle = i;
 
   WRITE_LINE("; ZSNES Configuration file\r\n\r\n");
   WRITE_LINE("; Frame Skip = 0 .. 9\r\n\r\n");
@@ -589,7 +584,7 @@ void DOScreatenewcfg()
 #endif
   }
   SAVE_LINE(buffer);
-  ZCloseFile();
+  fclose(fp);
 }
 
 unsigned char _per2exec;
