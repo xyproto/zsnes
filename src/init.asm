@@ -1524,6 +1524,24 @@ NEWSYM headerhack
     mov word[latchxr],0
 .notvortex
 
+    mov esi,[romdata]
+    add esi,07FC0h
+    cmp dword[esi],'MR.N'
+    jne .notmrnutz
+    mov word[latchxr],0
+.notmrnutz
+
+    mov esi,[romdata]
+    add esi,07FC0h
+    cmp dword[esi],'TENC'
+    jne .nottenchiwokurau
+    cmp dword[esi+4],'HI W'
+    jne .nottenchiwokurau
+    cmp dword[esi+8],'O KU'
+    jne .nottenchiwokurau
+    mov word[latchxr],0
+.nottenchiwokurau
+
     ; Lamborgini Challenge - -p 110
     mov esi,[romdata]
     add esi,07FC0h
@@ -1727,6 +1745,7 @@ NEWSYM headerhack
     mov byte[opexec358],182
     mov byte[opexec268cph],47
     mov byte[opexec358cph],47
+    mov word[latchxr],0
 .noromheadcf2
 
     mov esi,[romdata]
