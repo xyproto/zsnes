@@ -80,9 +80,6 @@ Header
   2 bits -   Start from ZST/Power On/Reset
   1 bit  -   NTSC or PAL
   5 bits -   Reserved
-
--If start from ZST-
-
 ZST size -  ZST (no thumbnail)
 
 
@@ -714,29 +711,31 @@ static bool zmv_open(char *filename)
 
     }
 
-    MovieStartMethod = (unsigned char)zmv_vars.header.zmv_flag.start_method;
-
-    switch (MovieStartMethod)
+    if (zmv_vars.header.zsnes_version != (versionNumber & 0xFFFF))
     {
-      case 0: // from zst
-        zst_load(zmv_vars.fp);
-        break;
-      case 1: // from power-on
-        powercycle();
-        break;
-      case 2: // from reset
-        // resetcycle(); // not done yet
-        break;
+      zst_load(zmv_vars.fp);
+      //Also need to display a warning of some sort
     }
-
-    if (MovieStartMethod)
+    else
     {
-      if (zmv_vars.header.zsnes_version != (versionNumber & 0xFFFF))
-	{ zst_load(zmv_vars.fp); }
-      else	{ fseek(zmv_vars.fp, zmv_vars.header.zst_size, SEEK_CUR); }
+      switch (zmv_vars.header.zmv_flag.start_method)
+      {
+        case zmv_sm_zst:
+          zst_load(zmv_vars.fp);
+          break;
+        case zmv_sm_power:
+          powercycle();
+          fseek(zmv_vars.fp, zmv_vars.header.zst_size, SEEK_CUR);
+          break;
+        case zmv_sm_reset:
+          //resetcycle(); // not done yet
+          //fseek(zmv_vars.fp, zmv_vars.header.zst_size, SEEK_CUR);
+          break;
+      }
     }
-
+    
     firstloop = true;
+    
     zmv_open_vars.input_start_pos = ftell(zmv_vars.fp);
 
     fseek(zmv_vars.fp, -(EXT_CHAP_COUNT_END_DIST), SEEK_END);
