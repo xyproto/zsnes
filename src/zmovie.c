@@ -741,7 +741,7 @@ void zmv_next_chapter()
   size_t current_loc = ftell(zmv_vars.fp);
   size_t next_internal = internal_chapter_greater(&zmv_vars.internal_chapters, current_loc);
   size_t next_external = internal_chapter_greater(&zmv_open_vars.external_chapters, current_loc);
-  size_t next = (next_internal < next_external) ? next_internal : next_external;
+  size_t next = ((next_internal < next_external) && (next_internal != current_loc)) ? next_internal : next_external;
 
   if (next != current_loc)
   {
@@ -772,7 +772,7 @@ void zmv_prev_chapter()
   size_t current_loc = ftell(zmv_vars.fp);
   size_t prev_internal = internal_chapter_lesser(&zmv_vars.internal_chapters, current_loc);
   size_t prev_external = internal_chapter_lesser(&zmv_open_vars.external_chapters, current_loc);
-  size_t prev = (prev_internal > prev_external) ? prev_internal : prev_external;
+  size_t prev = ((prev_internal > prev_external) && (prev_internal != current_loc)) ? prev_internal : prev_external;
 
   if (prev != current_loc)
   {
