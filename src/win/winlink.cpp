@@ -488,8 +488,7 @@ int RegisterWinClass(void)
 
 InitSound()
 {
-   HRESULT hr;
-	WAVEFORMATEX wfx;
+   WAVEFORMATEX wfx;
 
    if (!SoundEnabled) return FALSE;
 
@@ -498,8 +497,7 @@ InitSound()
 
 	if(DS_OK == DirectSoundCreate(NULL, &lpDirectSound,NULL))
 	{    
-          hr = lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL );
-          if (hr != DS_OK) {SoundEnabled=0; return FALSE;}
+          if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL)) {SoundEnabled=0; return FALSE;}
 	}
 	else 
 	{
@@ -507,6 +505,7 @@ InitSound()
 	}
 
    wfx.wFormatTag = WAVE_FORMAT_PCM;
+
    switch(SoundQuality)
    {
       case 0:
@@ -563,15 +562,13 @@ InitSound()
    wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
    wfx.cbSize=0;
     
-	memset(&dsbd, 0, sizeof(DSBUFFERDESC));
+   memset(&dsbd, 0, sizeof(DSBUFFERDESC));
    dsbd.dwSize = sizeof(DSBUFFERDESC);
    dsbd.dwFlags = DSBCAPS_STICKYFOCUS; // | DSBCAPS_PRIMARYBUFFER;
    dsbd.dwBufferBytes = SoundBufferSize;
-	dsbd.lpwfxFormat = &wfx;
+   dsbd.lpwfxFormat = &wfx;
     
-   hr = lpDirectSound->CreateSoundBuffer(&dsbd, &SoundBuffer, NULL);
-
-   if(DS_OK == hr)
+   if(DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &SoundBuffer, NULL))
 	{
       if(DS_OK  != SoundBuffer->Play(0,0,DSBPLAY_LOOPING ))
       {
@@ -589,8 +586,7 @@ InitSound()
 
 ReInitSound()
 {
-   HRESULT hr;
-	WAVEFORMATEX wfx;
+   WAVEFORMATEX wfx;
 
    if (!SoundEnabled) return FALSE;
 
@@ -600,8 +596,8 @@ ReInitSound()
    PrevSoundQuality=SoundQuality;
    PrevStereoSound=StereoSound;
 
+   wfx.wFormatTag = WAVE_FORMAT_PCM;
 
-	wfx.wFormatTag = WAVE_FORMAT_PCM;
    switch(SoundQuality)
    {
       case 0:
@@ -658,10 +654,8 @@ ReInitSound()
    dsbd.dwFlags = DSBCAPS_STICKYFOCUS;
    dsbd.dwBufferBytes = SoundBufferSize;
    dsbd.lpwfxFormat = &wfx;
-    
-   hr = lpDirectSound->CreateSoundBuffer(&dsbd, &SoundBuffer, NULL);
 
-   if(DS_OK == hr)
+   if(DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &SoundBuffer, NULL))
 	{
       if(DS_OK  != SoundBuffer->Play(0,0,DSBPLAY_LOOPING ))
       {
