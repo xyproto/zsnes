@@ -2773,7 +2773,6 @@ drawsprngw16bmsnthr:
     xor edi,edi
     normalwsprng16b sprdrawprawb16bngmsnthr,sprdrawprbwb16bngmsnthr
 
-
 ProcessTransparencies:
     cmp byte[NGNoTransp],0
     je .yestransp
@@ -2910,6 +2909,7 @@ ProcessTransparencies:
     jnz near .fullsubtract
     push ebx
     push esi
+    push edi ;
     mov ecx,256
     mov ebp,[HalfTrans]
     xor edx,edx
@@ -2920,16 +2920,50 @@ ProcessTransparencies:
     test ax,bx
     jz .notranspfa
     mov dx,[esi+75036*2]
+
+ mov ebp,((1<<5)+(1<<10)+(1<<15))
+ mov edi,edx
+
+ ; get LSBs
+ and edi,ebp
+ and edx,~((1<<5)+(1<<10)+(1<<15))
+ and ebp,eax
+ and eax,~((1<<5)+(1<<10)+(1<<15))
+ ; add LSBs
+ add ebp,edi
+ mov edi,((2<<5)+(2<<10)+(2<<15))
+ ; add colors
+ add edx,eax
+ and edi,ebp
+ mov eax,((1<<5)+(1<<10)+(1<<15))
+ add edx,edi
+ and ebp,eax
+ and eax,edx
+ add edx,ebp
+ ; Perform saturation
+
+ ; save carry bits
+ mov edi,eax
+ ; correct for carry/overflow into LSBs of adjacent color components
+ sub edx,eax
+ shr edi,5      ; shift carry bits down to color LSBs
+ neg edi        ; subtract from zero to get mask...
+ add edi,eax    ; add in carry bits to correct for borrows
+ or edx,edi     ; apply saturation mask
+
+%if 0
     and eax,ebp
     and edx,ebp
     add edx,eax
     shr edx,1
     mov dx,[fulladdtab+edx*2]
+%endif
     mov [esi],dx
 .notranspfa
     add esi,2
     dec ecx
     jnz .nextfa
+    pop edi ;
     pop esi
     pop ebx
     jmp .donetransp
@@ -3007,10 +3041,13 @@ ProcessTransparencies:
     dec ecx
     jnz .faddl2h
     jmp .faddloopdoneh
+
+.prochalfaddnext
+    movq [esi-8],mm0
 .prochalfadd
-    test dword[esi+75036*2],eax
+    test [esi+75036*2],eax
     jnz near .faddloopbh
-    test dword[esi+75036*2+4],eax
+    test [esi+75036*2+4],eax
     jnz near .faddloopbh
     mov ebx,[esi]
     and ebx,eax
@@ -3022,18 +3059,19 @@ ProcessTransparencies:
     jne near .faddlooph
 .prochalfadddo
     movq mm0,[esi]
-    movq mm1,[esi+75036*2]
     pand mm0,[HalfTrans]
-    pand mm1,[HalfTrans]
+    movq mm1,[esi+75036*2]
     psrlw mm0,1
+    pand mm1,[HalfTrans]
     psrlw mm1,1
     paddw mm0,mm1
-    movq [esi],mm0
-    add esi,8
+    add esi,byte 8
     dec ecx
-    jnz .prochalfadd
+    jnz .prochalfaddnext
+    movq [esi-8],mm0
     jmp .faddloopdoneh
-.procfulladdnext:
+
+.procfulladdnext
     movq [esi-8],mm0
 .procfulladd
     mov ebx,[esi]
@@ -3068,34 +3106,36 @@ ProcessTransparencies:
     psllw mm2,%2
     paddusw mm0,mm1
     pand mm0,[FullBitAnd]
+    psllw mm3,%3
     movq mm1,mm4
     psllw mm4,%2
-    add esi,byte 8
+    paddusw mm2,mm4
     %if %1>0
     psrlw mm0,%1
     %endif
-    paddusw mm2,mm4
-    psllw mm3,%3
     pand mm2,[FullBitAnd]
     psllw mm1,%3
     psrlw mm2,%2
     paddusw mm3,mm1
-    por mm0,mm2
     pand mm3,[FullBitAnd]
+    por mm0,mm2
     psrlw mm3,%3
+    add esi,byte 8
     por mm0,mm3
     dec ecx
     jnz near .procfulladdnext
-    movq [esi],mm0
+    movq [esi-8],mm0
     jmp .faddloopdoneh
+.faddloophnext
+    movq [esi-8],mm0
 .faddlooph
-    mov ebx,dword[esi]
+    mov ebx,[esi]
     test ebx,eax
     jz near .faddl2h
     and ebx,eax
     cmp ebx,eax
     jne .faddloopbh
-    mov ebx,dword[esi+4]
+    mov ebx,[esi+4]
     and ebx,eax
     cmp ebx,eax
     jne .faddloopbh
@@ -3111,66 +3151,67 @@ ProcessTransparencies:
     jne .faddloopbh
     jmp .procfulladddo
 .faddla
-    test dword[esi+75036*2+4],eax
+    test [esi+75036*2+4],eax
     jz near .prochalfadddo
 .faddloopbh
     movq mm0,[esi]
-    movq mm5,mm0
-    movq mm6,mm0
-    pand mm5,[UnusedBitXor]
     movq mm1,[esi+75036*2]
+    movq mm5,mm0
+    pand mm5,[UnusedBitXor]
     movq mm7,mm1
-    movq mm2,mm0
     pand mm1,[UnusedBitXor]
-    movq mm3,mm0
+    movq mm2,mm0
     movq mm4,mm1
     %if %1>0
     psllw mm0,%1
     psllw mm1,%1
     %endif
+    movq mm3,mm2
+    psllw mm2,%2
+    movq mm6,mm3
+    psllw mm3,%3
     paddusw mm0,mm1
-    pand mm0,[FullBitAnd]
     movq mm1,mm4
+    psllw mm4,%2
+    pand mm0,[FullBitAnd]
+    paddusw mm2,mm4
+    movq mm4,mm1
+    psllw mm1,%3
+    pand mm2,[FullBitAnd]
+    paddusw mm3,mm1
+    psrlw mm2,%2
     %if %1>0
     psrlw mm0,%1
     %endif
-    psllw mm2,%2
-    psllw mm1,%2
-    paddusw mm2,mm1
-    pand mm2,[FullBitAnd]
-    movq mm1,mm4
-    psrlw mm2,%2
-    psllw mm3,%3
-    psllw mm1,%3
-    paddusw mm3,mm1
     pand mm3,[FullBitAnd]
-    psrlw mm3,%3
-    por mm0,mm3
     por mm0,mm2
     pand mm6,[UnusedBit]
+    psrlw mm3,%3
     pcmpeqw mm6,[UnusedBit]
+    por mm0,mm3
+    pand mm7,[UnusedBit]
+    pand mm4,mm6
+    pand mm4,[HalfTrans]
     pand mm0,mm6
     movq mm1,mm5
-    pand mm1,mm6
-    pand mm4,mm6
-    pxor mm6,[UnusedBitXor]
     pand mm5,mm6
-    pand mm7,[UnusedBit]
-    pand mm4,[HalfTrans]
-    pand mm1,[HalfTrans]
-    psrlw mm1,1
+    pand mm5,[HalfTrans]
     psrlw mm4,1
-    paddw mm1,mm4
     pcmpeqw mm7,[UnusedBit]
+    psrlw mm5,1
+;   pxor mm6,[UnusedBitXor]
     pand mm0,mm7
     pxor mm7,[UnusedBitXor]
-    pand mm1,mm7
-    por mm0,mm1
+    paddw mm5,mm4
+;   pand mm6,mm1
+    pandn mm6,mm1
+    pand mm5,mm7
+    por mm0,mm6
     por mm0,mm5
-    movq [esi],mm0
-    add esi,8
+    add esi,byte 8
     dec ecx
-    jnz near .faddlooph
+    jnz near .faddloophnext
+    movq [esi-8],mm0
 .faddloopdoneh
     pop ebx
     pop esi
@@ -3182,71 +3223,75 @@ ProcessTransparencies:
     mov ecx,64
     mov eax,[UnusedBit]
 .fsubl2h
-    test dword[esi],eax
+    test [esi],eax
     jnz .fsubloopbh
-    test dword[esi+4],eax
+.fsubl2h_2
+    test [esi+4],eax
     jnz .fsubloopbh
-    add esi,8
+    add esi,byte 8
     dec ecx
     jnz .fsubl2h
     jmp .fsubloopdoneh
+.fsubloophnext
+    movq [esi-8],mm0
 .fsublooph
-    test dword[esi],eax
-    jz .fsubl2h
+    test [esi],eax
+    jz .fsubl2h_2
 .fsubloopbh
     movq mm0,[esi]
-    movq mm5,mm0
-    movq mm6,mm0
-    pxor mm0,[UnusedBitXor]
-    pand mm5,[UnusedBitXor]
     movq mm1,[esi+75036*2]
+    movq mm5,mm0
+    pxor mm0,[UnusedBitXor]
     movq mm7,mm1
-    movq mm2,mm0
     pand mm1,[UnusedBitXor]
-    movq mm3,mm0
+    movq mm2,mm0
     movq mm4,mm1
     %if %1>0
     psllw mm0,%1
     psllw mm1,%1
     %endif
+    movq mm3,mm2
     paddusw mm0,mm1
+    psllw mm2,%2
     pand mm0,[FullBitAnd]
     movq mm1,mm4
+    psllw mm4,%2
+    movq mm6,mm5
+    paddusw mm2,mm4
+    psllw mm3,%3
+    pand mm2,[FullBitAnd]
+    psllw mm1,%3
     %if %1>0
     psrlw mm0,%1
     %endif
-    psllw mm2,%2
-    psllw mm1,%2
-    paddusw mm2,mm1
-    pand mm2,[FullBitAnd]
-    psrlw mm2,%2
-    psllw mm3,%3
-    psllw mm4,%3
-    paddusw mm3,mm4
+    paddusw mm3,mm1
     pand mm3,[FullBitAnd]
+    psrlw mm2,%2
+    pand mm5,[UnusedBitXor]
     psrlw mm3,%3
-    por mm0,mm3
-    por mm0,mm2
     pand mm6,[UnusedBit]
-    pxor mm0,[UnusedBitXor]
+    por mm0,mm2
     pcmpeqw mm6,[UnusedBit]
+    por mm0,mm3
+    pxor mm0,[UnusedBitXor]
     pand mm0,mm6
-    pxor mm6,[UnusedBitXor]
-    pand mm5,mm6
-    pand mm7,[UnusedBit]
+    add esi,byte 8
+;   pxor mm6,[UnusedBitXor]
     movq mm1,mm0
-    pand mm1,[HalfTrans]
-    psrlw mm1,1
+    pand mm7,[UnusedBit]
+;   pand mm6,mm5
+    pandn mm6,mm5
+    pand mm0,[HalfTrans]
+    psrlw mm0,1
     pcmpeqw mm7,[UnusedBit]
-    pand mm0,mm7
-    pxor mm7,[UnusedBitXor]
     pand mm1,mm7
+    pxor mm7,[UnusedBitXor]
+    por mm1,mm6
+    pand mm0,mm7
     por mm0,mm1
-    por mm0,mm5
-    movq [esi],mm0
-    add esi,8
     dec ecx
-    jnz near .fsublooph
+    jnz near .fsubloophnext
+    movq [esi-8],mm0
 .fsubloopdoneh
     pop esi
     pop ebx
@@ -3260,23 +3305,24 @@ ProcessTransparencies:
     mov ecx,64
     mov eax,[UnusedBit]
 .faddl2
-    test dword[esi],eax
+    test [esi],eax
     jnz .faddloopb
 .faddl2_2
-    test dword[esi+4],eax
+    test [esi+4],eax
     jnz .faddloopb
-    add esi,8
+    add esi,byte 8
     dec ecx
     jnz .faddl2
     jmp .faddloopdone
 .faddloopnext
     movq [esi-8],mm0
 .faddloop
-    test dword[esi],eax
+    test [esi],eax
     jz .faddl2_2
 .faddloopb
     movq mm0,[esi]
     movq mm1,[esi+75036*2]
+    ; save old pixels to preserve any not needing arithmetic
     movq mm6,mm0
     pand mm0,[UnusedBitXor]
     movq mm4,mm1
@@ -3285,9 +3331,11 @@ ProcessTransparencies:
     psllw mm0,%1
     psllw mm1,%1
     movq mm3,mm2
+    pand mm1,[FullBitAnd]   ;*
     movq mm5,mm2
     %else
     movq mm3,mm0
+    pand mm1,[FullBitAnd]   ;*
     movq mm5,mm0
     %endif
     paddusw mm0,mm1
@@ -3295,10 +3343,12 @@ ProcessTransparencies:
     psllw mm2,%2
     movq mm1,mm4
     psllw mm4,%2
+    pand mm4,[FullBitAnd]   ;*
     paddusw mm2,mm4
     psllw mm3,%3
     pand mm2,[FullBitAnd]
     psllw mm1,%3
+    pand mm1,[FullBitAnd]   ;*
     psrlw mm2,%2
     paddusw mm3,mm1
     pand mm3,[FullBitAnd]
@@ -3306,15 +3356,18 @@ ProcessTransparencies:
     psrlw mm0,%1
     %endif
     psrlw mm3,%3
+    ; get alpha bits
     pand mm6,[UnusedBit]
     por mm0,mm2
+    ; generate mask for combining pixels with and without arithmetic
     pcmpeqw mm6,[UnusedBit]
     por mm0,mm3
     pand mm0,mm6
-    pxor mm6,[UnusedBitXor]
-    pand mm5,mm6
+;   pxor mm6,[UnusedBitXor]
+;   pand mm6,mm5
+    pandn mm6,mm5
     add esi,byte 8
-    por mm0,mm5
+    por mm0,mm6
     dec ecx
     jnz near .faddloopnext
     movq [esi-8],mm0
@@ -3322,67 +3375,72 @@ ProcessTransparencies:
     pop esi
     pop ebx
     jmp .donetransp
+
 .fullsubtract
     push ebx
     push esi
     mov ecx,64
     mov eax,[UnusedBit]
 .fsubl2
-    test dword[esi],eax
+    test [esi],eax
     jnz .fsubloopb
-    test dword[esi+4],eax
+.fsubl2_2
+    test [esi+4],eax
     jnz .fsubloopb
-    add esi,8
+    add esi,byte 8
     dec ecx
     jnz .fsubl2
     jmp .fsubloopdone
+.fsubloopnext
+    movq [esi-8],mm0
 .fsubloop
-    test dword[esi],eax
-    jz .fsubl2
+    test [esi],eax
+    jz .fsubl2_2
 .fsubloopb
     movq mm0,[esi]
-    movq mm5,mm0
-    movq mm6,mm0
-    pxor mm0,[UnusedBitXor]
-    pand mm5,[UnusedBitXor]
     movq mm1,[esi+75036*2]
-    movq mm2,mm0
+    movq mm5,mm0
+    pxor mm0,[UnusedBitXor]
+    movq mm6,mm5
     pand mm1,[UnusedBitXor]
-    movq mm3,mm0
+    movq mm2,mm0
     movq mm4,mm1
     %if %1>0
     psllw mm0,%1
     psllw mm1,%1
     %endif
+    movq mm3,mm2
     paddusw mm0,mm1
+    psllw mm2,%2
     pand mm0,[FullBitAnd]
     movq mm1,mm4
+    pand mm5,[UnusedBitXor]
+    psllw mm4,%2
+    paddusw mm2,mm4
     %if %1>0
     psrlw mm0,%1
     %endif
-    psllw mm2,%2
-    psllw mm1,%2
-    paddusw mm2,mm1
     pand mm2,[FullBitAnd]
-    psrlw mm2,%2
     psllw mm3,%3
-    psllw mm4,%3
-    paddusw mm3,mm4
+    psllw mm1,%3
+    add esi,byte 8
+    psrlw mm2,%2
+    paddusw mm3,mm1
     pand mm3,[FullBitAnd]
-    psrlw mm3,%3
-    por mm0,mm3
     por mm0,mm2
+    psrlw mm3,%3
     pand mm6,[UnusedBit]
+    por mm0,mm3
     pxor mm0,[UnusedBitXor]
     pcmpeqw mm6,[UnusedBit]
     pand mm0,mm6
-    pxor mm6,[UnusedBitXor]
-    pand mm5,mm6
-    por mm0,mm5
-    movq [esi],mm0
-    add esi,8
+;   pxor mm6,[UnusedBitXor]
+;   pand mm6,mm5
+    pandn mm6,mm5
+    por mm0,mm6
     dec ecx
-    jnz near .fsubloop
+    jnz near .fsubloopnext
+    movq [esi-8],mm0
 .fsubloopdone
     pop esi
     pop ebx
