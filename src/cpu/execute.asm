@@ -4231,7 +4231,7 @@ NEWSYM StartSFX
     mov eax,[NumberOfOpcodes2]
     test byte[SfxCLSR],0
     jnz .nofastsfx
-    add eax,500000
+    add eax,200000
 .nofastsfx
     mov [NumberOfOpcodes],eax
     call MainLoop
