@@ -582,6 +582,7 @@ NEWSYM BlackAndWhite, db 0
 NEWSYM MouseWheel, db 1
 NEWSYM AlternateTimer, db 0
 NEWSYM AllowMultipleInst, db 0
+NEWSYM FilteredGUI, db 0
 
 GUIsave equ $-GUIRAdd
 
@@ -2691,6 +2692,13 @@ guiprevidmsg6 db 'MODE WILL BE RESET',0
 guiprevidmsg7 db 'PRESS ANY KEY',0
 
 guipostvideo:
+    mov ecx,255*144
+    mov eax,[vidbufferofsb]
+.loop
+    mov dword[eax],0FFFFFFFFh
+    add eax,4
+    loop .loop
+
     xor ebx,ebx
     mov ecx,256
 .a

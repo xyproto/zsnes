@@ -4677,6 +4677,12 @@ DisplayGUIOptns:
     GUIDisplayIconWin 10,124,33,[GUITemp]
 %endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[FilteredGUI],1
+    jne .nocheckfg
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckfg
+    GUIDisplayIconWin 10,124,43,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[mousewrap],1
     jne .nocheck
     mov dword[GUITemp],GUIIconDataCheckBoxC
@@ -4783,6 +4789,7 @@ DisplayGUIOptns:
     GUIOuttextwin2u 10,26,173,GUIGUIOptnsTextE,0
     GUIOuttextwin2u 10,26,183,GUIGUIOptnsTextF,2
     GUIOuttextwin2u 10,138,38,GUIGUIOptnsTextK,1
+    GUIOuttextwin2u 10,138,48,GUIGUIOptnsTextM,1
     GUIOuttextwin2u 10,26,193,GUIGUIOptnsTextL,1
 %endif
     mov byte[GUIGUIOptnsText6],'R'
@@ -4808,6 +4815,7 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,25,172,GUIGUIOptnsTextE
     GUIOuttextwin2 10,25,182,GUIGUIOptnsTextF
     GUIOuttextwin2 10,137,37,GUIGUIOptnsTextK
+    GUIOuttextwin2 10,137,47,GUIGUIOptnsTextM
     GUIOuttextwin2 10,25,192,GUIGUIOptnsTextL
 %endif
     mov byte[GUIGUIOptnsText6],'R'
@@ -4902,6 +4910,7 @@ GUIGUIOptnsTextI db 'WIN',0
 GUIGUIOptnsTextJ db 'TRANSPARENT MSGS',0
 GUIGUIOptnsTextK db 'WHEEL MOUSE',0
 GUIGUIOptnsTextL db 'ALLOW MULTIPLE INSTANCES',0
+GUIGUIOptnsTextM db 'FILTERED GUI',0
 
 DisplayGUIAbout:
 ;    cmp byte[OSPort],3

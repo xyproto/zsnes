@@ -21,7 +21,7 @@ EXTSYM vesa2selec,vidbuffer,GUIOn,FPUCopy,resolutn,En2xSaI,antienab,scanlines
 EXTSYM hirestiledat,res512switch,curblank,spritetablea
 EXTSYM lineleft,_2xSaILineW,_2xSaISuperEagleLineW, _2xSaISuper2xSaILineW
 EXTSYM newengen,cfield,HalfTrans
-EXTSYM GUIOn2
+EXTSYM GUIOn2,FilteredGUI
 EXTSYM SpecialLine
 EXTSYM vidbufferofsb
 EXTSYM HalfTransB,HalfTransC
@@ -46,8 +46,11 @@ NEWSYM copy640x480x16bwin
     add esi,16*2+256*2+32*2
     xor eax,eax
     ; Check if interpolation mode
+    cmp byte[FilteredGUI],0
+    jne .yi
     cmp byte[GUIOn2],1
     je .nointerp
+.yi
     cmp byte[FPUCopy],2
     jne .nommx
     cmp byte[En2xSaI],0
