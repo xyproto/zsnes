@@ -53,7 +53,7 @@ EXTSYM bgptr,bgptrc,bgptrd,curtileptr,vcache2b
 EXTSYM vcache8b,vidmemch8
 EXTSYM offsetmshl
 EXTSYM tltype2b
-EXTSYM tltype8b
+EXTSYM tltype8b,objwlrpos
 
 
 NEWSYM VCacheAsmStart
@@ -240,6 +240,7 @@ SaveRamSaved db 'SAVED SRAM DATA',0
 NEWSYM CSprWinPtr, dd 0
 
 NEWSYM cachevideo
+    mov dword[objwlrpos],0FFFFFFFFh
     mov dword[CSprWinPtr],0
     mov byte[pressed],0
     mov dword[objvramadder],0
