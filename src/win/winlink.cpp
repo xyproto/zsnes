@@ -1291,11 +1291,11 @@ DWORD FirstFull=1;
 DWORD SMode=0;
 DWORD DSMode=0;
 DWORD prevHQ3XMode=-1;
+WORD Refresh = 0;
 extern "C" BYTE GUIWFVID[];
 extern "C" BYTE GUISMODE[];
 extern "C" BYTE GUIDSMODE[];
 extern "C" BYTE GUIHQ3X[];
-int Refresh = 0;
 
 int InitDirectDraw()
 {
