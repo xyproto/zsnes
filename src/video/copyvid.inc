@@ -19,6 +19,50 @@
 
 SECTION .text
 
+%macro FilterTest 1
+    cmp byte[GUIOn],1
+    jne %%nogui
+    cmp byte[FilteredGUI],1
+    jne %%nofilter
+%%nogui
+    cmp byte[antienab],1
+    je near %1
+%%nofilter
+%endmacro
+
+%macro SSInterpLine 0
+    mov ax,[esi]
+    mov [es:edi],ax
+    add esi,byte 2
+    add edi,byte 2
+    mov ecx,254
+%%loopb
+    mov ax,[esi]
+    mov bx,[esi-2]
+    cmp ax,bx
+    jne %%loopb2
+    mov [es:edi],ax
+    mov [es:edi-2],bx
+    jmp %%loopb3
+%%loopb2
+    shr ax,byte 1
+    shr bx,byte 1
+    and ax,7befh
+    and bx,7befh
+    add ax,bx
+    mov [es:edi],ax
+    mov [es:edi-2],ax
+%%loopb3
+    add esi,byte 2
+    add edi,byte 2
+    dec ecx
+    jnz %%loopb
+    mov ax,[esi]
+    mov [es:edi],ax
+    add esi,byte 2
+    add edi,byte 2
+%endmacro
+
 %macro FlipCheck 0
    cmp byte[FlipWait],0
    je %%noflip
@@ -310,54 +354,54 @@ ScreenShow:
 .startcopy
     jmp copymodeq256
 
-NEWSYM dosvidpastecopyscr
-   cmp byte[curblank],40h
-   je .nocopy
-   call GUITripleBuffer
-.nocopy
-   call ScreenShowGUI
-   ret
+;NEWSYM dosvidpastecopyscr
+;   cmp byte[curblank],40h
+;   je .nocopy
+;   call GUITripleBuffer
+;.nocopy
+;   call ScreenShowGUI
+;   ret
 
-ScreenShowGUI:
-    cmp byte[cvidmode],0
-    je near copymodeq224
-    cmp byte[cvidmode],1
-    je near copymodeq240
-    cmp byte[cvidmode],2
-    je near copymodeq256
-    cmp byte[cvidmode],3
-    je near copymodex224
-    cmp byte[cvidmode],4
-    je near copymodex240
-    cmp byte[cvidmode],5
-    je near copymodex256
-    cmp byte[cvidmode],6
-    je near copyvesa12640x480x16bgui
-    cmp byte[cvidmode],7
-    je near copyvesa2320x240x8b
-    cmp byte[cvidmode],8
-    je near copyvesa2320x240x16bgui
-    cmp byte[cvidmode],9
-    je near copyvesa2320x480x8bgui
-    cmp byte[cvidmode],10
-    je near copyvesa2320x480x16bgui
-    cmp byte[cvidmode],11
-    je near copyvesa2512x384x8b
-    cmp byte[cvidmode],12
-    je near copyvesa2512x384x16bgui
-    cmp byte[cvidmode],13
-    je near copyvesa2640x400x8b
-    cmp byte[cvidmode],14
-    je near copyvesa2640x400x16b
-    cmp byte[cvidmode],15
-    je near copyvesa2640x480x8bgui
-    cmp byte[cvidmode],16
-    je near copyvesa2640x480x16bgui
-    cmp byte[cvidmode],17
-    je near copyvesa2800x600x8b
-    cmp byte[cvidmode],18
-    je near copyvesa2800x600x16b
-    jmp copymodeq256
+;ScreenShowGUI:
+;    cmp byte[cvidmode],0
+;    je near copymodeq224
+;    cmp byte[cvidmode],1
+;    je near copymodeq240
+;    cmp byte[cvidmode],2
+;    je near copymodeq256
+;    cmp byte[cvidmode],3
+;    je near copymodex224
+;    cmp byte[cvidmode],4
+;    je near copymodex240
+;    cmp byte[cvidmode],5
+;    je near copymodex256
+;    cmp byte[cvidmode],6
+;    je near copyvesa12640x480x16bgui
+;    cmp byte[cvidmode],7
+;    je near copyvesa2320x240x8b
+;    cmp byte[cvidmode],8
+;    je near copyvesa2320x240x16bgui
+;    cmp byte[cvidmode],9
+;    je near copyvesa2320x480x8bgui
+;    cmp byte[cvidmode],10
+;    je near copyvesa2320x480x16bgui
+;    cmp byte[cvidmode],11
+;    je near copyvesa2512x384x8b
+;    cmp byte[cvidmode],12
+;    je near copyvesa2512x384x16bgui
+;    cmp byte[cvidmode],13
+;    je near copyvesa2640x400x8b
+;    cmp byte[cvidmode],14
+;    je near copyvesa2640x400x16b
+;    cmp byte[cvidmode],15
+;    je near copyvesa2640x480x8bgui
+;    cmp byte[cvidmode],16
+;    je near copyvesa2640x480x16bgui
+;    cmp byte[cvidmode],17
+;    je near copyvesa2800x600x8b
+;    cmp byte[cvidmode],18
+;    je near copyvesa2800x600x16b
+;    jmp copymodeq256
 %endif
 
 
@@ -717,7 +761,8 @@ NEWSYM copyvesa2320x240x8b
     add esi,16+256+16+16
     xor eax,eax
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     cmp byte[ScreenScale],1
     je .fullscreen
 
@@ -746,11 +791,6 @@ NEWSYM copyvesa2320x240x8b
 .fsloopa
     mov ecx,256/4
     jmp .fsloopb
-.fsloopa2
-    add esi,16+16
-    dec dl
-    jnz .fsloopa
-    jmp .done
 .fsloopb
     mov eax,[esi]
     mov [es:edi],al
@@ -759,7 +799,9 @@ NEWSYM copyvesa2320x240x8b
     add edi,byte 5
     dec ecx
     jnz .fsloopb
-    jmp .fsloopa2
+    add esi,16+16
+    dec dl
+    jnz .fsloopa
 
 .done
     pop es
@@ -770,8 +812,8 @@ NEWSYM copyvesa2320x240x8b
 ; Copy VESA2 320x480x8b  Copies buffer to 320x480x8bVBE2
 ;*******************************************************
 
-NEWSYM copyvesa2320x480x8bgui
-    jmp copyvesa2320x480x8b
+;NEWSYM copyvesa2320x480x8bgui
+;    jmp copyvesa2320x480x8b
 ;    mov byte[CurrentGUIOn],1
 ;    jmp copyvesa2320x480x8b.nogui
 
@@ -796,7 +838,8 @@ NEWSYM copyvesa2320x480x8b
     add esi,16+256+16+16
     xor eax,eax
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     cmp byte[ScreenScale],1
     je near .fullscreen
     cmp byte[scanlines],1
@@ -1012,7 +1055,8 @@ NEWSYM copyvesa2800x600x8b
     add esi,16+256+16+16
     xor eax,eax
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     cmp byte[ScreenScale],1
     je near .fullscreen
     cmp byte[smallscreenon],1
@@ -1151,7 +1195,8 @@ NEWSYM copyvesa2800x600x16b
     add esi,16*2+256*2+16*2+16*2
     xor eax,eax
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     cmp byte[ScreenScale],1
     je near .fullscreen
     cmp byte[smallscreenon],1
@@ -1294,7 +1339,8 @@ NEWSYM copyvesa2640x400x8b
     add esi,16+256+16+16
     xor eax,eax
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     cmp byte[ScreenScale],1
     je near .fullscreen
     cmp byte[smallscreenon],1
@@ -1313,14 +1359,15 @@ NEWSYM copyvesa2640x400x8b
     call .loopa2
     add esi,16+16
     add edi,64+64
-    sub dl,2
+    dec dl
+    dec dl
     jnz .loopa
     jmp .done
 .loopa2
     mov al,[esi]
     mov [es:edi],al
-    inc esi
     mov [es:edi+1],al
+    inc esi
     add edi,byte 2
     dec ecx
     jnz .loopa2
@@ -1360,7 +1407,8 @@ NEWSYM copyvesa2640x400x8b
     mov ecx,256/4
     call .fsloopb
     add esi,16+16
-    sub dl,2
+    dec dl
+    dec dl
     jnz .fsloopa
     jmp .done
 .fsloopb
@@ -1406,7 +1454,8 @@ NEWSYM copyvesa2640x400x16b
     add esi,16*2+256*2+16*2+16*2
     xor eax,eax
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     cmp byte[ScreenScale],1
     je near .fullscreen
     cmp byte[smallscreenon],1
@@ -1425,7 +1474,8 @@ NEWSYM copyvesa2640x400x16b
     call .loopa2
     add esi,16*2+16*2
     add edi,64*2+64*2
-    sub dl,2
+    dec dl
+    dec dl
     jnz .loopa
     jmp .done
 .loopa2
@@ -1472,7 +1522,8 @@ NEWSYM copyvesa2640x400x16b
     mov ecx,256/4
     call .fsloopb
     add esi,16*2+16*2
-    sub dl,2
+    dec dl
+    dec dl
     jnz .fsloopa
     jmp .done
 .fsloopb
@@ -1538,14 +1589,9 @@ NEWSYM copyvesa2640x480x8b
     je near smallscreen640x480x8b
     cmp byte[ScreenScale],1
     je near smallscreen640x480x8b.fullscreen
-    cmp byte[GUIOn],1
-    jne .nogui
-    cmp byte[FilteredGUI],1
-    jne .noeagle
-.nogui
-    cmp byte[antienab],1
-    je near proceagle
-.noeagle
+
+    FilterTest proceagle
+
     cmp byte[scanlines],1
     je near copyvesa2640x480x8bs
     mov byte[res640],1
@@ -1575,7 +1621,8 @@ NEWSYM copyvesa2640x480x8b
     xor eax,eax
     mov ebx,hirestiledat+1
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
 .loopa
     cmp byte[Triplebufen],1
     je .ignorehr
@@ -1663,7 +1710,8 @@ NEWSYM copyvesa2640x480x8ng
     xor eax,eax
     mov ebx,1
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
 .loopa
     mov ecx,256
     cmp dword[ignor512],0
@@ -1896,7 +1944,8 @@ NEWSYM smallscreen640x480x8b
     xor eax,eax
     mov ebx,hirestiledat+1
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
 .loopa
     mov ecx,64
     rep movsd
@@ -1927,7 +1976,8 @@ NEWSYM smallscreen640x480x8b
     xor eax,eax
     mov ebx,hirestiledat+1
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     cmp byte[scanlines],1
     je near .scanlines
 .loopa3
@@ -2000,7 +2050,8 @@ NEWSYM copyvesa2640x480x8bs
     xor eax,eax
     mov ebx,hirestiledat+1
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     cmp byte[CurrentGUIOn],1
     je .loopa
     cmp byte[ForceNewGfxOff],0
@@ -2350,7 +2401,8 @@ NEWSYM copyvesa2512x384x8b
     xor eax,eax
     mov ebx,hirestiledat+1
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     xor dh,dh
 .loopa
     mov al,[ebx]
@@ -2436,7 +2488,8 @@ NEWSYM copyvesa2512x384x8b
 .ssres239
     xor eax,eax
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     cmp byte[MMXSupport],1
     je .ssloopb
 .ssloopa
@@ -2481,7 +2534,8 @@ NEWSYM copyvesa2512x384x8ng
     xor eax,eax
     mov ebx,1
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     xor dh,dh
 .loopa
     cmp dword[ignor512],0
@@ -2549,8 +2603,7 @@ SECTION .text
 ;*******************************************************
 
 
-copyvesa2320x240x16bgui:
-    jmp copyvesa2320x240x16b
+;copyvesa2320x240x16bgui:
 ;    cmp byte[curblank],40h
 ;    jne .startcopy
 ;    ret
@@ -2654,17 +2707,12 @@ NEWSYM copyvesa2320x240x16b
     add esi,16*2+256*2+16*2+16*2
     xor eax,eax
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     cmp byte[ScreenScale],1
     je near .fullscreen
-    cmp byte[GUIOn],1
-    jne .nogui
-    cmp byte[FilteredGUI],1
-    jne .nointerp
-.nogui
-    cmp byte[antienab],1
-    je near .interpolate
-.nointerp
+
+    FilterTest .interpolate
 
     cmp byte[MMXSupport],1
     je near .loopb
@@ -2690,12 +2738,6 @@ NEWSYM copyvesa2320x240x16b
     sub edi,32*2
 .fsloopa
     mov ecx,256/4
-    jmp .fsloopb
-.fsloopa2
-    add esi,16*2+16*2
-    dec dl
-    jnz .fsloopa
-    jmp .done
 .fsloopb
     mov eax,[esi]
     mov [es:edi],ax
@@ -2705,69 +2747,37 @@ NEWSYM copyvesa2320x240x16b
     movsd
     dec ecx
     jnz .fsloopb
-    jmp .fsloopa2
+    add esi,16*2+16*2
+    dec dl
+    jnz .fsloopa
+    jmp .done
 
 .interpolate
-    ;cmp byte[ScreenScale],1
-    ;je .infsloopa
-.inloopa
-    mov ax,[esi]
-    mov [es:edi],ax
-    add esi,byte 2
-    add edi,byte 2
-    mov ecx,254
-    jmp .inloopb
-.inloopa2
-    mov ax,[esi]
-    mov [es:edi],ax
-    add esi,32*2+2
-    add edi,64*2+2
+    SSInterpLine
+    add esi,16*2+16*2
+    add edi,32*2+32*2
     dec dl
-    jnz .inloopa
-    jmp .done
-.inloopb
-    mov ax,[esi]
-    mov bx,[esi-2]
-    cmp ax,bx
-    jne .inloopb2
-    mov [es:edi],ax
-    mov [es:edi-2],bx
-    jmp .inloopb3
-.inloopb2
-    shr ax,byte 1
-    shr bx,byte 1
-    and ax,7befh
-    and bx,7befh
-    add ax,bx
-    mov [es:edi],ax
-    mov [es:edi-2],ax
-    jmp .inloopb3
-.inloopb3
-    add esi,byte 2
-    add edi,byte 2
-    dec ecx
-    jnz .inloopb
-    jmp .inloopa2
+    jnz .interpolate
 
 .done
     pop es
     ret
 
-SECTION .bss
-NEWSYM palresvalng, resd 2
-NEWSYM palresvalngb, resd 2
-SECTION .text
+;SECTION .bss
+;NEWSYM palresvalng, resd 2
+;NEWSYM palresvalngb, resd 2
+;SECTION .text
 
-%macro copya320x240 0
-    mov [es:edi],dx
-%endmacro
+;%macro copya320x240 0
+;    mov [es:edi],dx
+;%endmacro
 
-%macro copyb320x240 0
-    mov [es:edi+2],dx
-%endmacro
+;%macro copyb320x240 0
+;    mov [es:edi+2],dx
+;%endmacro
 %endif
 
-SECTION .bss ALIGN = 32
+SECTION .bss ;ALIGN = 32
 NEWSYM rescompareng, resd 1
 NEWSYM nextdrawallng, resd 1
 NEWSYM prevcol0ng, resd 1
@@ -2782,8 +2792,7 @@ SECTION .text
 ; Copy VESA2 320x480x16b Copies buffer to 320x480x16bVB2
 ;*******************************************************
 
-NEWSYM copyvesa2320x480x16bgui
-    jmp copyvesa2320x480x16b
+;NEWSYM copyvesa2320x480x16bgui
 ;    cmp byte[curblank],40h
 ;    jne .startcopy
 ;    ret
@@ -2951,7 +2960,8 @@ NEWSYM ConvertToAFormat
     mov esi,[vidbuffer]
     add esi,16*2+256*2+32*2
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     cmp byte[MMXSupport],1
     je near .mmxconv
 .crgbloop
@@ -2998,7 +3008,8 @@ NEWSYM UnConvertToAFormat
     mov esi,[vidbuffer]
     add esi,16*2+256*2+32*2
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
 .crgbloop
     mov ecx,128
 .crgbloop2
@@ -3022,6 +3033,7 @@ NEWSYM copyvesa2320x480x16b
     cmp byte[curblank],40h
     jne .startcopy
     ret
+
 .startcopy
 ;    mov eax,[vesa2_clbitng2]
 ;    mov [vesavaland],eax
@@ -3043,17 +3055,13 @@ NEWSYM copyvesa2320x480x16b
     add esi,16*2+256*2+16*2+16*2
     xor eax,eax
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     cmp byte[ScreenScale],1
     je near .fullscreen
-    cmp byte[GUIOn],1
-    jne .nogui
-    cmp byte[FilteredGUI],1
-    jne .nointerp
-.nogui
-    cmp byte[antienab],1
-    je near .interpolate
-.nointerp
+
+    FilterTest .interpolate
+
     cmp byte[scanlines],1
     je near .scanlines
     cmp byte[scanlines],3
@@ -3111,47 +3119,32 @@ NEWSYM copyvesa2320x480x16b
     jmp .done
 
 .halfscanlines
-    ;cmp byte[MMXSupport],1
-    ;je .hsloopb
+    ;cmp byte[MMXSupport]
+    ;je near .hsloopb
 .hsloopa
     mov ecx,256/4*2
     rep movsd
     sub esi,256*2
     add edi,32*2+32*2
-    mov ecx,256/4
-    jmp .hsloopa3
+    mov ecx,256/2
 .hsloopa2
+    mov ax,[esi]
+    mov bx,[esi+2]
+    shr ax,byte 1
+    shr bx,byte 1
+    and ax,7befh
+    and bx,7befh
+    mov [es:edi],ax
+    mov [es:edi+2],bx
+    add esi,byte 4
+    add edi,byte 4
+    dec ecx
+    jnz .hsloopa2
     add esi,16*2+16*2
     add edi,32*2+32*2
     dec dl
     jnz .hsloopa
     jmp .done
-.hsloopa3
-    push ecx
-    push edx
-    mov ax,[esi]
-    mov bx,[esi+2]
-    mov cx,[esi+4]
-    mov dx,[esi+6]
-    shr ax,byte 1
-    shr bx,byte 1
-    shr cx,byte 1
-    shr dx,byte 1
-    and ax,7befh
-    and bx,7befh
-    and cx,7befh
-    and dx,7befh
-    mov [es:edi],ax
-    mov [es:edi+2],bx
-    mov [es:edi+4],cx
-    mov [es:edi+6],dx
-    pop edx
-    pop ecx
-    add esi,byte 8
-    add edi,byte 8
-    dec ecx
-    jnz .hsloopa3
-    jmp .hsloopa2
 
 .quartscanlines
     ;cmp byte[MMXSupport],1
@@ -3162,14 +3155,7 @@ NEWSYM copyvesa2320x480x16b
     sub esi,256*2
     add edi,32*2+32*2
     mov ecx,256/2
-    jmp .qsloopa3
 .qsloopa2
-    add esi,16*2+16*2
-    add edi,32*2+32*2
-    dec dl
-    jnz .qsloopa
-    jmp .done
-.qsloopa3
     push ecx
     push edx
     mov ax,[esi]
@@ -3189,8 +3175,12 @@ NEWSYM copyvesa2320x480x16b
     add esi,byte 4
     add edi,byte 4
     dec ecx
-    jnz .qsloopa3
-    jmp .qsloopa2
+    jnz .qsloopa2
+    add esi,16*2+16*2
+    add edi,32*2+32*2
+    dec dl
+    jnz .qsloopa
+    jmp .done
 
 .fullscreen
     sub edi,32*2
@@ -3249,29 +3239,27 @@ NEWSYM copyvesa2320x480x16b
     jnz .fsloopb
     ret
 .fsloopb2
-    push ecx
-    push edx
     mov ax,[esi]
     mov bx,[esi+2]
-    mov cx,[esi+4]
-    mov dx,[esi+6]
     shr ax,byte 1
     shr bx,byte 1
-    shr cx,byte 1
-    shr dx,byte 1
     and ax,7befh
     and bx,7befh
-    and cx,7befh
-    and dx,7befh
     mov [es:edi],ax
     mov [es:edi+2],ax
     mov [es:edi+4],bx
-    mov [es:edi+6],cx
-    mov [es:edi+8],dx
-    pop edx
-    pop ecx
-    add esi,byte 8
-    add edi,byte 8+2
+    add esi,byte 4
+    add edi,byte 6
+    mov ax,[esi]
+    mov bx,[esi+2]
+    shr ax,byte 1
+    shr bx,byte 1
+    and ax,7befh
+    and bx,7befh
+    mov [es:edi],ax
+    mov [es:edi+2],bx
+    add esi,byte 4
+    add edi,byte 4
     dec ecx
     jnz .fsloopb2
     ret
@@ -3291,8 +3279,10 @@ NEWSYM copyvesa2320x480x16b
     mov [es:edi],ax
     mov [es:edi+2],ax
     mov [es:edi+4],bx
-    mov ax,[esi+4]
-    mov bx,[esi+6]
+    add esi,byte 4
+    add edi,byte 6
+    mov ax,[esi]
+    mov bx,[esi+2]
     mov cx,ax
     mov dx,bx
     shr cx,byte 2
@@ -3301,77 +3291,35 @@ NEWSYM copyvesa2320x480x16b
     and dx,39e7h
     sub ax,cx
     sub bx,dx
-    mov [es:edi+6],ax
-    mov [es:edi+8],bx
+    mov [es:edi],ax
+    mov [es:edi+2],bx
+    add esi,byte 4
+    add edi,byte 4
     pop edx
     pop ecx
-    add esi,byte 8
-    add edi,byte 8+2
     dec ecx
     jnz .fsloopb3
     ret
 
 .interpolate
     cmp byte[scanlines],1
-    je .inloopa2
+    je near .inloopa2
 .inloopa
-    mov ax,[esi]
-    mov [es:edi],ax
-    add esi,byte 2
-    add edi,byte 2
-    mov ecx,254
-    call .inloopb
-    mov ax,[esi]
-    mov [es:edi],ax
-    sub esi,256*2-2
-    add edi,64*2+2
-    mov ax,[esi]
-    mov [es:edi],ax
-    add esi,byte 2
-    add edi,byte 2
-    mov ecx,254
-    call .inloopb
-    add esi,32*2+2
-    add edi,64*2+2
+    SSInterpLine
+    sub esi,256*2
+    add edi,32*2+32*2
+    SSInterpLine
+    add esi,16*2+16*2
+    add edi,32*2+32*2
     dec dl
-    jnz .inloopa
+    jnz near .inloopa
     jmp .done
 .inloopa2
-    mov ax,[esi]
-    mov [es:edi],ax
-    add esi,byte 2
-    add edi,byte 2
-    mov ecx,254
-    call .inloopb
-    mov ax,[esi]
-    mov [es:edi],ax
-    add esi,16*2+16*2+2
-    add edi,32*2+320*2+32*2+2
+    SSInterpLine
+    add esi,16*2+16*2
+    add edi,32*2+320*2+32*2
     dec dl
     jnz .inloopa2
-    jmp .done
-.inloopb
-    mov ax,[esi]
-    mov bx,[esi-2]
-    cmp ax,bx
-    jne .inloopb2
-    mov [es:edi],ax
-    mov [es:edi-2],bx
-    jmp .inloopb3
-.inloopb2
-    shr ax,byte 1
-    shr bx,byte 1
-    and ax,7befh
-    and bx,7befh
-    add ax,bx
-    mov [es:edi],ax
-    mov [es:edi-2],ax
-.inloopb3
-    add esi,byte 2
-    add edi,byte 2
-    dec ecx
-    jnz .inloopb
-    ret
 
 .done
     pop es
@@ -3431,8 +3379,7 @@ NEWSYM copyvesa2320x480x16b
 %%nobankswitch
 %endmacro
 
-NEWSYM copyvesa12640x480x16bgui
-    jmp copyvesa12640x480x16b
+;NEWSYM copyvesa12640x480x16bgui
 ;    cmp byte[curblank],40h
 ;    jne .startcopy
 ;    ret
@@ -3553,8 +3500,7 @@ VESA12Bankswitch:
     sub edi,65536
     ret
 
-NEWSYM copyvesa2640x480x16bgui
-    jmp copyvesa2640x480x16b
+;NEWSYM copyvesa2640x480x16bgui
 ;    je near smallscreen640x480x16bgui.fullscreen
 ;    cmp byte[curblank],40h
 ;    jne .startcopy
@@ -3878,7 +3824,8 @@ NEWSYM copyvesa2640x480x16b
     je near interpolate640x480x16b
 .nointerp
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     cmp byte[scanlines],1
     je near .scanlines
     cmp byte[scanlines],3
@@ -4610,7 +4557,8 @@ Process2xSaI:
 
 ;    add edi,[VESAAddr]
     mov dl,[resolutn]
-    sub dl,2    ; Compensate for top/bottom line + 2 lines in 2xSaI
+    dec dl
+    dec dl    ; Compensate for top/bottom line + 2 lines in 2xSaI
     mov byte[lineleft],dl
     mov dword[esi+512],0
     mov dword[esi+512+576*2],0
@@ -4763,7 +4711,8 @@ NEWSYM smallscreen640x480x16b
     xor eax,eax
     mov ebx,hirestiledat+1
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
 .loopa
     mov ecx,128
     rep movsd
@@ -4800,7 +4749,8 @@ NEWSYM smallscreen640x480x16b
     add esi,16*2+256*2+32*2
     xor eax,eax
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     cmp byte[scanlines],1
     je near .scanlines
 .loopa2
@@ -5713,8 +5663,7 @@ SECTION .text
 ; Copy VESA2 512x384x16b  Copies buffer to 512x384x16bV2
 ;*******************************************************
 
-NEWSYM copyvesa2512x384x16bgui
-    jmp copyvesa2512x384x16b
+;NEWSYM copyvesa2512x384x16bgui
 ;    cmp byte[curblank],40h
 ;    jne .startcopy
 ;    ret
@@ -5797,7 +5746,8 @@ NEWSYM copyvesa2512x384x16b
     xor eax,eax
     mov ebx,hirestiledat+1
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     xor dh,dh
 .loopa
     mov al,[ebx]
@@ -5881,7 +5831,8 @@ NEWSYM copyvesa2512x384x16b
 .ssres239
     xor eax,eax
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     cmp byte[MMXSupport],1
     je .ssloopb
 .ssloopa
@@ -6202,7 +6153,8 @@ NEWSYM copyvesa12640x480x16b
     ; Check if interpolation mode
 .nommx
     mov dl,[resolutn]
-    sub dl,2
+    dec dl
+    dec dl
     mov [lineleft],dl
     mov edx,65536
     sub edx,edi
