@@ -1490,10 +1490,27 @@ NEWSYM headerhack
 
     mov esi,[romdata]
     add esi,07FC0h
+    cmp dword[esi],'Neug'
+    jne .notneugiertrans
+    cmp dword[esi+4],'ier '
+    jne .notneugiertrans
+    cmp dword[esi+8],'(tr.'
+    jne .notneugiertrans
+
+    mov esi,[romdata]
+    add esi,0D4150h
+    mov byte[esi],0F9h
+.notneugiertrans
+
+    mov esi,[romdata]
+    add esi,07FC0h
     cmp dword[esi],'NEUG'
     jne .notneugier
     cmp dword[esi+4],'IER '
     jne .notneugier
+    cmp dword[esi+8],'    '
+    jne .notneugier
+
     mov esi,[romdata]
     add esi,0D4150h
     mov byte[esi],0F9h
