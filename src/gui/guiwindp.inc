@@ -5224,7 +5224,7 @@ GUIGameOptnsTextV db 'SAVE SPC',0
 GUIGameOptnsTextX db 'DISPLAY FPS',0
 GUIGameOptnsTextY db 'ST+',0
 GUIGameOptnsTextZ db 'ST-',0
-GUIGameOptnsText1A db 'USE PL 12/34',0
+GUIGameOptnsText1A db 'USE PL12/34',0
 SECTION .text
 
 DisplayGUIOptns:
