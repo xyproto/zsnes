@@ -970,6 +970,9 @@ GUIGUIOptnsKeys:
     cmp dh,'F'
     jne .guioptn13
     xor byte[FilteredGUI],1
+    cmp byte[En2xSaI],1
+    jnae .guioptn13
+    call Clear2xSaIBuffer
 .guioptn13
     cmp dh,'R'
     jne .guioptn14

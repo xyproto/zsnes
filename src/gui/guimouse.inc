@@ -15,6 +15,7 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+EXTSYM Clear2xSaIBuffer
 %ifdef __WIN32__
 EXTSYM CheckPriority
 EXTSYM CheckAlwaysOnTop
@@ -1302,6 +1303,22 @@ GUIWinClicked:
     call CheckScreenSaver
     popad
 %endif
+%endmacro
+
+%macro GUIClickCButtonI 3
+    cmp eax,%1+1
+    jl %%noclick
+    cmp edx,%2+3
+    jl %%noclick
+    cmp eax,%1+6
+    jg %%noclick
+    cmp edx,%2+8
+    jg %%noclick
+    xor %3,1
+    cmp byte[En2xSaI],1
+    jnae %%noclick
+    call Clear2xSaIBuffer
+%%noclick
 %endmacro
 
 %macro GUISlidebarPostImpl 13 ; x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
@@ -2692,7 +2709,7 @@ DisplayGUIOptnsClick:
     GUIClickCButton 124,33,byte[MouseWheel]
     GUIClickCButton 124,53,byte[TrapMouseCursor]
 %endif
-    GUIClickCButton 124,43,byte[FilteredGUI]
+    GUIClickCButtonI 124,43,byte[FilteredGUI]
     GUIPButtonHole 48,108,byte[CurPalSelect],0
     GUIPButtonHole 88,108,byte[CurPalSelect],1
     GUIPButtonHole 135,108,byte[CurPalSelect],2
