@@ -295,7 +295,6 @@ NEWSYM DOScreatenewcfg
 %ifdef __GZIP__
     mov byte[TextFile], 0
 %endif
-    mov byte[FPUCopy],3
 .failed
     ret
 
@@ -734,6 +733,7 @@ NEWSYM getcfg
 
 .failed
     call DOScreatenewcfg
+    mov byte[FPUCopy],3
     ret
 
 .readstring:
