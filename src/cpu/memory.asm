@@ -2040,8 +2040,8 @@ C4activate:
     je near .equatevelocity
     cmp al,10h          ; supply angle+distance, return x/y displacement
     je near .direction
-    cmp al,13h          ; ?
-    je near .something2
+    cmp al,13h          ; Convert polar coordinates to rectangular 2 (similar to 10)
+    je near .polarcord2
     cmp al,15h          ; ?
     je near .calcdistance
     cmp al,1Fh          ; supply x/y displacement, return angle (+distance?)
@@ -2052,10 +2052,14 @@ C4activate:
     je near .multiply
     cmp al,2Dh          ; ???
     je near .transform
-    cmp al,89h
-    je near .immediaterom
+    cmp al,40h
+    je near .sum
+    cmp al,54h
+    je near .square
     cmp al,5Ch
     je near .immediatereg
+    cmp al,89h
+    je near .immediaterom
     ret
 .dowireframe
     call WireFrameB
@@ -2189,40 +2193,33 @@ C4activate:
 
     popad
     ret
-.something2
+.polarcord2
     pushad
     mov esi,[C4Ram]
+    xor eax,eax
+    xor ebx,ebx
     xor ecx,ecx
-    mov ax,[esi+1F80h]
-    and eax,1FFh
-    mov bx,[CosTable+eax*2]
+    mov cx,[esi+1F80h]
+    and ecx,1FFh
+    movsx ebx,word[CosTable+ecx*2]
     mov ax,[esi+1F83h]
-    imul bx
-    add ax,ax
-    adc dx,dx
-    mov ax,dx
-    movsx edx,dx
-    mov [esi+1F87h],edx
-    mov ax,[esi+1F80h]
-    and eax,1FFh
-    mov bx,[SinTable+eax*2]
+    imul ebx,2
+    imul eax,ebx
+    sar eax,8
+    mov [esi+1F86h],ax
+    sar eax,16
+    mov [esi+1F88h],al
+    xor eax,eax
+    xor ebx,ebx
+    movsx ebx,word[SinTable+ecx*2]
     mov ax,[esi+1F83h]
-    imul bx
-    add ax,ax
-    adc dx,dx
-    mov ax,dx
-    movsx edx,dx
-    mov al,[esi+198Dh]
-    mov [esi+1F8Ah],edx
-    mov [esi+198Dh],al
-;    mov cx,[esi+1F83h]
-;    mov [C4values+4],cx
-;    mov cx,[esi+1F86h]
-;    mov [C4values],cx
-;    mov cx,[esi+1F89h]
-;    mov [C4values+2],cx
+    imul ebx,2
+    imul eax,ebx
+    sar eax,8
+    mov [esi+1F89h],ax
+    sar eax,16
+    mov [esi+1F8Bh],al
     popad
-    ret
     ret
 .dosprites
 ;    mov byte[debstop3],0
@@ -2328,6 +2325,14 @@ C4activate:
     ;imul ebx
     ;mov [esi+1F80h],eax
     ;mov [esi+1F84h],dx
+    popad
+    ret
+.sum
+    pushad
+    popad
+    ret
+.square
+    pushad
     popad
     ret
 .equatevelocity
