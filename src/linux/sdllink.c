@@ -1868,10 +1868,9 @@ void UpdateSound(void *userdata, Uint8 *stream, int len)
 			if (T36HZEnabled) {
 				Buffer[i]=0;
 			} else {
-//				if(DSPBuffer[i]>32767)Buffer[i]=32767;
-//				else if(DSPBuffer[i]<-32767)Buffer[i]=-32767;
-//				else Buffer[i]=DSPBuffer[i];
-				Buffer[i]=DSPBuffer[i] & 0xFFFF;
+				if(DSPBuffer[i]>32767)Buffer[i]=32767;
+				else if(DSPBuffer[i]<-32767)Buffer[i]=-32767;
+				else Buffer[i]=DSPBuffer[i];
 			}
 		}
 		
