@@ -19,7 +19,7 @@
 ; GUI NetPlay Routines (Modem,IPX,UDP+TCP/IP)
 
 ProcessModem:
-%ifdef __WIN32__
+%ifndef __MSDOS__
     cmp byte[ModemProcess],40
     jne near .noprocess40
     cmp byte[maxskip],3
@@ -775,7 +775,7 @@ SECTION .data
 %endif
 .invver db 13,10,'INCOMPATIBLE VERSION!',13,10,0
 .invsnd db 'INVALID SOUND SETTING!',13,10,0
-%ifdef __WIN32__
+%ifndef __MSDOS__
 .tcpipinit db 'ZSNES NET INTERFACE',13,10,13,10,0
 .tcpipserv db 'INIT SERVER ... ',0
 .tcpipclie db 'INIT CLIENT ... ',0
