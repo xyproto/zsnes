@@ -48,7 +48,7 @@ static void CalcWater(int *nptr,int *optr,int density);
 //static int x,y;
 static int ox=80,oy=60;
 static int xang,yang;
-static int density=4;
+static int density=5;
 static int Hpage=0;
 static int mode=0x0001;
 static int offset;
@@ -60,6 +60,7 @@ void DrawWater(void)
 	//		tslast=tscurrent;
 //		tscurrent=time(NULL);
 			
+      /*
       if (NetPlayNoMore == 1)
       {
         DrawWaterNoLight(Height[Hpage]);
@@ -68,7 +69,15 @@ void DrawWater(void)
       {
         DrawWaterWithLight(Height[Hpage],1);
       }
-		if(mode&2)	//  && (tscurrent-tslast))
+      */
+
+#ifdef __WIN32__
+        DrawWaterNoLight(Height[Hpage]);
+#else
+        DrawWaterWithLight(Height[Hpage],1);
+#endif
+
+    	if(mode&2)	//  && (tscurrent-tslast))
 		{
 			int x,y;
          x=rand()%(SCRW-2)+1;
@@ -250,7 +259,7 @@ void DrawWaterWithLight(int *ptr,int light)
 			}
 			c=vidbuffer[p];
 			c-=(dx>>light);
-			(c<0) ? c=0 : (c > 255) ? c=255 : 0;
+            (c<1) ? c=1 : (c > 31) ? c=31 : 0;
 			vscr[offset]=c;
 			offset++;
 			dx=ptr[offset]-ptr[offset+1];
@@ -267,7 +276,7 @@ void DrawWaterWithLight(int *ptr,int light)
 			c=vidbuffer[p];
 			
 			c-=(dx>>light);
-			(c<0) ? c=0 : (c > 255) ? c=255 : 0;
+            (c<1) ? c=1 : (c > 31) ? c=31 : 0;
 			vscr[offset]=c;
 		}
 	}
@@ -319,6 +328,7 @@ void SineBlob(int x, int y, int radius, int height, int page)
   if(y<0) y = 1+radius+ rand()%(SCRH-2*radius-1);
 
 
+  /*
   if (NetPlayNoMore == 1)
   {
     radsquare = (radius*radius);
@@ -328,6 +338,13 @@ void SineBlob(int x, int y, int radius, int height, int page)
     radsquare = (radius*radius) << 8;
     height /= 8;
   }
+  */
+
+  radsquare = (radius*radius);
+
+#ifndef __WIN32__
+    height /= 8;
+#endif
 
   left=-radius; right = radius;
   top=-radius; bottom = radius;
