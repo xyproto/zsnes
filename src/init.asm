@@ -69,7 +69,7 @@ EXTSYM reg4read,resolutn,romdata,scrndis,spcBuffera,spcP,spcRam
 EXTSYM spcnumread,tableD,timeron,vidbright,DSPMem,OldGfxMode2
 EXTSYM SPC700read,SPC700write,GUIDoReset,spc700read
 EXTSYM InitC4,SA1Reset,SetAddressingModesSA1,SetAddressingModes,SDD1BankA,SPC7110init
-EXTSYM RTCinit
+EXTSYM RTCinit,InitOBC
 EXTSYM memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
 EXTSYM memaccessspc7110w16
 EXTSYM ram7f,snesmap2,snesmmap,sram,MultiTap
@@ -1733,6 +1733,10 @@ NEWSYM init65816
     call SA1Reset
     call SetAddressingModesSA1
 .nosa1init
+    cmp byte[OBCEnable],0
+    je .noobcinit
+    call InitOBC
+.noobcinit
     cmp byte[C4Enable],0
     je .noc4init
     mov byte[osm2dis],1
@@ -2047,6 +2051,18 @@ NEWSYM initsnes
     jne .mmxc
     mov byte[esi+2241Bh],080h
 .mmxc
+    cmp byte[esi+824Fh],0F0h
+    jne .mmxd
+    mov byte[esi+824Fh],080h
+.mmxd
+    cmp byte[esi+21FC8h],0F0h
+    jne .mmxe
+    mov byte[esi+21FC8h],080h
+.mmxe
+    cmp byte[esi+22420h],0F0h
+    jne .mmxf
+    mov byte[esi+22420h],080h
+.mmxf
 .notmmx
 
     mov esi,[romdata]
