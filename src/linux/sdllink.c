@@ -20,7 +20,7 @@ int AllowDefault=0;
 int SoundEnabled=1;
 
 #ifdef __LINUX__ // AH
-typedef enum {TRUE, FALSE} BOOL;
+typedef enum {FALSE, TRUE} BOOL;
 typedef Uint32 UINT32;
 typedef long long _int64;
 typedef long long LARGE_INTEGER;
