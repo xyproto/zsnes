@@ -2547,7 +2547,7 @@ DisplayGUISound:
 %ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[PrimaryBuffer],0
-    jne .nocheckbox13
+    je .nocheckbox13
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox13
     GUIDisplayIconWin 6,11,101,[GUITemp]
