@@ -432,11 +432,14 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          ValidateRect(hWnd,NULL);
          break;
       case WM_ACTIVATE: 
-         IsActivated = 1;
          if (LOWORD(wParam) != WA_INACTIVE)
+         {
+            IsActivated = 1;
             if (!FirstActivate) initwinvideo(); 
-         InputAcquire();
-         if (FirstActivate == 1) FirstActivate = 0;
+            InputAcquire();
+            if (FirstActivate == 1) FirstActivate = 0;
+         }
+         if (LOWORD(wParam) == WA_INACTIVE) IsActivated = 0;
          break;
       case WM_SETFOCUS:
          if (FullScreen == 0) ShowWindow(hMainWindow, SW_SHOWNORMAL);
