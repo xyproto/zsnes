@@ -21,10 +21,15 @@
 %include "macros.mac"
 
 EXTSYM dsp4_address,dsp4_byte,DSP4GetByte,DSP4SetByte
+EXTSYM regaccessbankr16,regaccessbankr8,regaccessbankw16,regaccessbankw8 
 
 SECTION .text
 
 NEWSYM DSP4Read8b
+    test ecx,8000h
+    jnz .dsp4area
+    jmp regaccessbankr8
+.dsp4area   
     mov word[dsp4_address],cx
     pushad
     call DSP4GetByte
@@ -33,6 +38,10 @@ NEWSYM DSP4Read8b
     ret
 
 NEWSYM DSP4Write8b
+    test ecx,8000h
+    jnz .dsp4area
+    jmp regaccessbankw8
+.dsp4area       
     mov word[dsp4_address],cx
     mov byte[dsp4_byte],al
     pushad
@@ -41,11 +50,15 @@ NEWSYM DSP4Write8b
     ret
     
 NEWSYM DSP4Read16b
+    test ecx,8000h
+    jnz .dsp4area
+    jmp regaccessbankr16
+.dsp4area       
     mov word[dsp4_address],cx
     pushad
     call DSP4GetByte
     popad
-    mov al,byte[dsp4_byte]
+    mov al,byte[dsp4_byte]  
     inc word[dsp4_address]
     pushad
     call DSP4GetByte
@@ -54,6 +67,10 @@ NEWSYM DSP4Read16b
     ret
 
 NEWSYM DSP4Write16b
+    test ecx,8000h
+    jnz .dsp4area
+    jmp regaccessbankw16
+.dsp4area       
     mov word[dsp4_address],cx
     mov byte[dsp4_byte],al
     mov byte[dsp4temp],ah

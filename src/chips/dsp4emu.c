@@ -1175,11 +1175,13 @@ void DSP4_OP09()
       int16 sp_dx, sp_dy;
       int16 pixels;
 
-      bool8 draw = TRUE;
+      bool8 draw;
       
       DSP4.in_count = 2;
       DSP4_WAIT(5) resume5 :  
 
+      draw = TRUE;
+      
       // opcode termination
       raster = DSP4_READ_WORD();
       if (raster == -0x8000)
@@ -1211,6 +1213,8 @@ void DSP4_OP09()
       DSP4.in_count = 4;
       DSP4_WAIT(6) resume6 :  
 
+      draw = TRUE;
+      
       /////////////////////////////////////
       // process tile data
 
@@ -2047,7 +2051,6 @@ void DSP4_OP11(int16 A, int16 B, int16 C, int16 D, int16 *M)
 /////////////////////////////////////////////////////////////
 //Processing Code
 /////////////////////////////////////////////////////////////
-
 uint8 dsp4_byte;
 uint16 dsp4_address;
 
@@ -2060,7 +2063,7 @@ void InitDSP4()
 void DSP4SetByte()
 {
   if ((dsp4_address & 0xf000) == 0x6000 || (dsp4_address >= 0x8000 && dsp4_address < 0xc000))
-  {
+  {    
     // clear pending read
     if (DSP4.out_index < DSP4.out_count)
     {
@@ -2138,7 +2141,6 @@ void DSP4SetByte()
       DSP4.out_index = 0;
       DSP4.in_index = 0;
 
-      printf("DSP4 Command: %u\n", DSP4.command);
       switch (DSP4.command)
       {
           // 16-bit multiplication
@@ -2147,12 +2149,11 @@ void DSP4SetByte()
           int16 multiplier, multiplicand;
           int32 product;
 
-
           multiplier = DSP4_READ_WORD();
           multiplicand = DSP4_READ_WORD();
 
           DSP4_Multiply(multiplicand, multiplier, &product);
-
+          
           DSP4_CLEAR_OUT();
           DSP4_WRITE_WORD(product);
           DSP4_WRITE_WORD(product >> 16);
@@ -2195,8 +2196,7 @@ void DSP4SetByte()
           int16 in3a = DSP4_READ_WORD();
           int16 out1a, out2a, out3a, out4a;
           
-          //DSP4_OP0A(in2a, &out2a, &out1a, &out4a, &out3a);
-          DSP4_OP0A(in2a, &out1a, &out2a, &out3a, &out4a);
+          DSP4_OP0A(in2a, &out2a, &out1a, &out4a, &out3a);
 
           DSP4_CLEAR_OUT();
           DSP4_WRITE_WORD(out1a);
