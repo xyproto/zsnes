@@ -196,10 +196,19 @@ extern int CurKeyReadPos;
 extern int KeyBuffer[16];
 }
 
+BYTE IsActivated = 1;
+
 extern "C" void CheckPriority()
 {
-   if (HighPriority == 1) SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
-      else SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+   if (IsActivated == 1)
+   {
+      if (HighPriority == 1) SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
+         else SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+   }
+   else
+   {
+      SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
+   }
 }
 
 extern "C" void CheckAlwaysOnTop()
@@ -402,6 +411,8 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          ValidateRect(hWnd,NULL);
          break;
       case WM_ACTIVATE: 
+        IsActivated = 1;
+        CheckPriority();
         if(LOWORD(wParam)==WA_INACTIVE)
          {
             ChangeDisplaySettings(NULL,0);
@@ -428,7 +439,9 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       case WM_KILLFOCUS:
          ChangeDisplaySettings(NULL,0);
          InputDeAcquire();
-         break;         
+         IsActivated = 0;
+         CheckPriority();
+         break;
       case WM_DESTROY:
          ChangeDisplaySettings(NULL,0);
          PostQuitMessage(0);
