@@ -709,8 +709,22 @@ void zst_save(FILE *fp, bool Thumbnail)
   ResetState();
 }
 
+extern unsigned char MovieProcessing;
+
 void statesaver()
 {
+  //Save State code  
+  #ifdef __LINUX__
+  SRAMChdir();
+  #endif
+
+  if (MovieProcessing == 2)
+  {
+    bool mzt_save(char *, bool);
+    mzt_save(fnamest+1, (cbitmode && !NoPictureSave) ? true : false);
+    return;
+  } 
+  
   //'Auto increment savestate slot' code
   if (AutoIncSaveSlot)
   {
@@ -734,13 +748,7 @@ void statesaver()
     }
   }
 
-  //Save State code
-  
-  #ifdef __LINUX__
-  SRAMChdir();
-  #endif
-
-  clim ()
+  clim();
   
   if ((fhandle = fopen(fnamest+1,"wb")))
   {    
@@ -891,7 +899,7 @@ static void read_save_state_data(unsigned char **dest, void *data, size_t len)
 
 bool zst_load(FILE *fp)
 {
-  char zst_header_check[sizeof(zst_header_cur)-1];
+  char zst_header_check[sizeof(zst_header_cur)-1];  
   zst_version = 0;
     
   Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fp);
@@ -953,6 +961,10 @@ bool zst_load(FILE *fp)
 
 void stateloader (unsigned char *statename, unsigned char keycheck, unsigned char xfercheck)
 {
+  #ifdef __LINUX__
+  SRAMChdir();
+  #endif
+
   if (keycheck)
   {
     unsigned char statevalue;
@@ -975,11 +987,20 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
     txtconvmsg[6] = statevalue;
     txtnfndmsg[21] = statevalue;
   }
-
-  #ifdef __LINUX__
-  SRAMChdir();
-  #endif
-
+      
+  switch (MovieProcessing)
+  {
+    bool mzt_load(char *, bool);
+    
+    case 1:
+      mzt_load(statename, true);
+      return;
+  
+    case 2:
+      mzt_load(statename, false);
+      return;
+  }  
+  
   clim();
   
   //Actual state loading code

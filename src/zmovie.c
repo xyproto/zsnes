@@ -30,13 +30,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/stat.h>
+#include <zlib.h>
 #define DIR_SLASH "\\"
 #endif
 #include "gblvars.h"
 #include "asm_call.h"
 #include "numconv.h"
 
-
+#ifndef __WIN32__
+#define mkdir(path) mkdir(path, (S_IRWXU|S_IRWXG|S_IRWXO)) //0777
+#endif
 
 extern unsigned int versionNumber;
 extern unsigned int CRC32;
@@ -419,9 +423,10 @@ static struct
   size_t write_buffer_loc;
   struct internal_chapter_buf internal_chapters;
   size_t last_internal_chapter_offset;
+  char *filename;
 } zmv_vars;
 
-static void write_last_joy_state()
+static void write_last_joy_state(FILE *fp)
 {
   zmv_vars.write_buffer[0] = (zmv_vars.last_joy_state.A >> 4) & 0xFF;
   zmv_vars.write_buffer[1] = ((zmv_vars.last_joy_state.A << 4) & 0xF0) | ((zmv_vars.last_joy_state.B >> 8) & 0x0F);
@@ -432,12 +437,12 @@ static void write_last_joy_state()
   zmv_vars.write_buffer[6] = (zmv_vars.last_joy_state.E >> 4) & 0xFF;
   zmv_vars.write_buffer[7] = (zmv_vars.last_joy_state.E << 4) & 0xF0;
   
-  fwrite(zmv_vars.write_buffer, 8, 1, zmv_vars.fp);
+  fwrite(zmv_vars.write_buffer, 8, 1, fp);
 }
 
-static void read_last_joy_state()
+static void read_last_joy_state(FILE *fp)
 {
-  fread(zmv_vars.write_buffer, 8, 1, zmv_vars.fp);
+  fread(zmv_vars.write_buffer, 8, 1, fp);
   
   zmv_vars.last_joy_state.A = (((unsigned short)(zmv_vars.write_buffer[0])) << 4) | 
                               ((zmv_vars.write_buffer[1] & 0xF0) >> 4);
@@ -451,6 +456,15 @@ static void read_last_joy_state()
                               ((zmv_vars.write_buffer[7] & 0xF0) >> 4);
 }
 
+static void flush_input_buffer()
+{    
+  if (zmv_vars.write_buffer_loc)
+  {
+    fwrite(zmv_vars.write_buffer, zmv_vars.write_buffer_loc, 1, zmv_vars.fp);
+    zmv_vars.write_buffer_loc = 0;  
+  }
+}  
+
 /*
 
 Create and record ZMV
@@ -460,8 +474,9 @@ Create and record ZMV
 static void zmv_create(char *filename)
 {
   memset(&zmv_vars, 0, sizeof(zmv_vars));
-  if ((zmv_vars.fp = fopen(filename,"wb")))
+  if ((zmv_vars.fp = fopen(filename,"w+b")))
   {
+    size_t filename_len = strlen(filename);
     strncpy(zmv_vars.header.magic, "ZMV", 3);
     zmv_vars.header.zsnes_version = versionNumber & 0xFFFF;
     zmv_vars.header.rom_crc32 = CRC32;
@@ -470,6 +485,8 @@ static void zmv_create(char *filename)
     zmv_vars.header.zmv_flag.video_mode = romispal ? zmv_vm_pal : zmv_vm_ntsc;
     zmv_header_write(&zmv_vars.header, zmv_vars.fp);
     zst_save(zmv_vars.fp, false);
+    zmv_vars.filename = (char *)malloc(filename_len+1); //+1 for null
+    strcpy(zmv_vars.filename, filename);
   }
   else
   {
@@ -525,8 +542,7 @@ static void zmv_record()
   
   if (zmv_vars.write_buffer_loc > WRITE_BUFFER_SIZE - (1+sizeof(press_buf)))
   {
-    fwrite(zmv_vars.write_buffer, zmv_vars.write_buffer_loc, 1, zmv_vars.fp);
-    zmv_vars.write_buffer_loc = 0;
+    flush_input_buffer();
   }
 }
 
@@ -537,12 +553,8 @@ static void zmv_insert_chapter()
   {
     unsigned char flag = BIT(2);
   
-    if (zmv_vars.write_buffer_loc)
-    {
-      fwrite(zmv_vars.write_buffer, zmv_vars.write_buffer_loc, 1, zmv_vars.fp);
-      zmv_vars.write_buffer_loc = 0;  
-    }
-  
+    flush_input_buffer();
+    
     fwrite(&flag, 1, 1, zmv_vars.fp);
   
     internal_chapter_add_offset(&zmv_vars.internal_chapters, ftell(zmv_vars.fp));
@@ -551,20 +563,18 @@ static void zmv_insert_chapter()
     
     zst_save(zmv_vars.fp, false);
     fwrite4(zmv_vars.header.frames, zmv_vars.fp);
-    write_last_joy_state(); 
+    write_last_joy_state(zmv_vars.fp); 
   }
 }
 
 static void zmv_record_finish()
 {
-  if (zmv_vars.write_buffer_loc)
-  {
-    fwrite(zmv_vars.write_buffer, zmv_vars.write_buffer_loc, 1, zmv_vars.fp);
-    zmv_vars.write_buffer_loc = 0;  
-  }
+  flush_input_buffer();
   
   internal_chapter_write(&zmv_vars.internal_chapters, zmv_vars.fp);
   internal_chapter_free_chain(zmv_vars.internal_chapters.next);
+  
+  free(zmv_vars.filename);
   
   fwrite2(0, zmv_vars.fp); //External chapter count
   
@@ -606,6 +616,7 @@ static bool zmv_open(char *filename)
       !strncmp(zmv_vars.header.magic, "ZMV", 3)) 
   {
     unsigned short i;
+    size_t filename_len = strlen(filename);
     
     if (zmv_vars.header.zsnes_version != (versionNumber & 0xFFFF))
     {
@@ -634,7 +645,10 @@ static bool zmv_open(char *filename)
     }
     
     fseek(zmv_vars.fp, zmv_open_vars.input_start_pos, SEEK_SET);
-    
+ 
+    zmv_vars.filename = (char *)malloc(filename_len+1); //+1 for null
+    strcpy(zmv_vars.filename, filename);
+           
     return(true);
   }
   return(false);
@@ -719,7 +733,7 @@ static bool zmv_next_chapter()
       fseek(zmv_vars.fp, next_internal, SEEK_SET);
       zst_load(zmv_vars.fp);
       zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
-      read_last_joy_state();
+      read_last_joy_state(zmv_vars.fp);
     }
     else
     {
@@ -731,7 +745,7 @@ static bool zmv_next_chapter()
       fseek(zmv_vars.fp, -(ext_chapter_loc), SEEK_END);
       zst_load(zmv_vars.fp);
       zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
-      read_last_joy_state();
+      read_last_joy_state(zmv_vars.fp);
       
       fseek(zmv_vars.fp, next_external, SEEK_SET);
     }
@@ -808,7 +822,7 @@ static void zmv_prev_chapter()
     fseek(zmv_vars.fp, prev_internal, SEEK_SET);
     zst_load(zmv_vars.fp);
     zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
-    read_last_joy_state();
+    read_last_joy_state(zmv_vars.fp);
   }
   else
   {
@@ -820,7 +834,7 @@ static void zmv_prev_chapter()
     fseek(zmv_vars.fp, -(ext_chapter_loc), SEEK_END);
     zst_load(zmv_vars.fp);
     zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
-    read_last_joy_state();
+    read_last_joy_state(zmv_vars.fp);
       
     fseek(zmv_vars.fp, prev_external, SEEK_SET);
   }
@@ -849,7 +863,7 @@ static void zmv_add_chapter()
         fseek(zmv_vars.fp, -2, SEEK_END);
         zst_save(zmv_vars.fp, false);
         fwrite4(zmv_open_vars.frames_replayed, zmv_vars.fp);
-        write_last_joy_state();
+        write_last_joy_state(zmv_vars.fp);
         fwrite4(current_loc, zmv_vars.fp);
 
         fwrite2(zmv_open_vars.external_chapter_count, zmv_vars.fp);
@@ -868,6 +882,7 @@ static void zmv_replay_finished()
 {
   internal_chapter_free_chain(zmv_vars.internal_chapters.next);
   internal_chapter_free_chain(zmv_open_vars.external_chapters.next);  
+  free(zmv_vars.filename);
   fclose(zmv_vars.fp);
 }
 
@@ -876,8 +891,184 @@ static size_t zmv_frames_replayed()
   return(zmv_open_vars.frames_replayed);
 }
 
-/////////////////////////////////////////////////////////
+/*
 
+Save and load MZT
+
+*/
+
+bool mzt_save(char *statename, bool thumb)
+{
+  size_t filename_len = strlen(zmv_vars.filename);
+  struct stat stat_buffer;
+  bool mzt_saved = false;
+  
+  memcpy(zmv_vars.filename+filename_len-3, "mz", 2);
+  if (!isdigit(zmv_vars.filename[filename_len-1]))
+  {
+    zmv_vars.filename[filename_len-1] = 't';
+  }
+    
+  if (stat(zmv_vars.filename, &stat_buffer))
+  {
+    mkdir(zmv_vars.filename);
+  } 
+  
+  if (!chdir(zmv_vars.filename))
+  {
+    FILE *fp = 0;
+     
+    if ((fp = fopen(statename,"wb")))
+    {    
+      char FileExt[3];
+      gzFile gzp = 0;
+      size_t rewind_point;
+      
+      zst_save(fp, thumb);
+      fclose(fp);
+  
+      flush_input_buffer();
+      rewind_point = ftell(zmv_vars.fp);
+      internal_chapter_write(&zmv_vars.internal_chapters, zmv_vars.fp);
+        
+      memcpy(FileExt, statename+filename_len-3, 3);
+      memcpy(statename+filename_len-3, "zm", 2);
+      if (!isdigit(statename[filename_len-1]))
+      {
+        statename[filename_len-1] = 'v';
+      }      
+      
+      if ((gzp = gzopen(statename, "wb9")))
+      {
+        rewind(zmv_vars.fp);
+        zmv_header_write(&zmv_vars.header, zmv_vars.fp);        
+        rewind(zmv_vars.fp);
+        
+        while (!feof(zmv_vars.fp))
+        {
+          size_t amount_read = fread(zmv_vars.write_buffer, 1, WRITE_BUFFER_SIZE, zmv_vars.fp);
+          gzwrite(gzp, zmv_vars.write_buffer, amount_read);
+        }
+        gzclose(gzp);
+      
+        memcpy(statename+filename_len-3, "mz", 2);
+        if (!isdigit(statename[filename_len-1]))
+        {
+          statename[filename_len-1] = 'i';
+        }      
+
+        if ((fp = fopen(statename,"wb")))
+        {    
+          fwrite4(zmv_open_vars.frames_replayed, fp);
+          write_last_joy_state(fp);
+          fwrite4(rewind_point, fp);
+          fclose(fp);
+
+          mzt_saved = true;
+        }
+
+        fseek(zmv_vars.fp, rewind_point, SEEK_SET);
+      }
+      memcpy(statename+filename_len-3, FileExt, 3);
+    }
+    chdir("..");
+  }
+  return(mzt_saved);  
+}
+
+bool mzt_load(char *statename, bool playback)
+{
+  size_t filename_len = strlen(zmv_vars.filename);
+  bool mzt_saved = false;
+  
+  memcpy(zmv_vars.filename+filename_len-3, "mz", 2);
+  if (!isdigit(zmv_vars.filename[filename_len-1]))
+  {
+    zmv_vars.filename[filename_len-1] = 't';
+  }
+  
+  if (!chdir(zmv_vars.filename))
+  {
+    FILE *fp = 0;
+     
+    if ((fp = fopen(statename,"rb")))
+    {    
+      char FileExt[3];
+      
+      zst_load(fp);
+      fclose(fp);
+     
+      memcpy(FileExt, statename+filename_len-3, 3);    
+      memcpy(statename+filename_len-3, "mz", 2);
+      if (!isdigit(statename[filename_len-1]))
+      {
+        statename[filename_len-1] = 'i';
+      }      
+
+      if ((fp = fopen(statename,"rb")))
+      {    
+        size_t rewind_point;
+
+        size_t current_frame = fread4(fp);
+        read_last_joy_state(fp);
+        rewind_point = fread4(fp);
+        fclose(fp);
+      
+        if (!playback)
+        {
+          gzFile gzp = 0;
+        
+          memcpy(statename+filename_len-3, "zm", 2);
+          if (!isdigit(statename[filename_len-1]))
+          {
+            statename[filename_len-1] = 'v';
+          }      
+      
+          if ((gzp = gzopen(statename, "rb")))
+          {
+            size_t rerecords = zmv_vars.header.rerecords+1;
+            size_t removed_frames = zmv_vars.header.removed_frames + (zmv_vars.header.frames - current_frame);
+            size_t end_zmv_loc = 0;
+
+            internal_chapter_free_chain(zmv_vars.internal_chapters.next);
+            memset(&zmv_vars.internal_chapters, 0, sizeof(struct internal_chapter_buf));
+
+            rewind(zmv_vars.fp);
+            while (!gzeof(gzp))
+            {
+              size_t amount_read = gzread(gzp, zmv_vars.write_buffer, WRITE_BUFFER_SIZE);
+              fwrite(zmv_vars.write_buffer, 1, amount_read, zmv_vars.fp);
+            }
+            gzclose(gzp);            
+
+            end_zmv_loc = ftell(zmv_vars.fp);
+
+            rewind(zmv_vars.fp);
+            zmv_header_read(&zmv_vars.header, zmv_vars.fp);
+            zmv_vars.header.removed_frames = removed_frames;
+            zmv_vars.header.rerecords = rerecords;
+            zmv_vars.write_buffer_loc = 0;
+
+            fseek(zmv_vars.fp, -(end_zmv_loc - zmv_vars.header.internal_chapters*4), SEEK_END);
+            internal_chapter_read(&zmv_vars.internal_chapters, zmv_vars.fp, zmv_vars.header.internal_chapters);
+          }
+        }
+        else
+        {
+          zmv_open_vars.frames_replayed = current_frame;
+        }
+        
+        fseek(zmv_vars.fp, rewind_point, SEEK_SET);
+        mzt_saved = true;
+      }
+      memcpy(statename+filename_len-3, FileExt, 3);
+    }  
+    chdir("..");
+  }
+  return(mzt_saved);
+}
+
+/////////////////////////////////////////////////////////
 
 /*
 Nach's insane subtitle library for movies files :)
@@ -1128,8 +1319,8 @@ void MoviePlay()
   if (!MovieProcessing)
   {
     GUIQuit = 2;
-    memcpy (FileExt, &fnamest[statefileloc-3], 4);
-    memcpy (&fnamest[statefileloc-3], ".zmv", 4);
+    memcpy(FileExt, &fnamest[statefileloc-3], 4);
+    memcpy(&fnamest[statefileloc-3], ".zmv", 4);
     fnamest[statefileloc] = CMovieExt;
 
     SRAMChdir();
