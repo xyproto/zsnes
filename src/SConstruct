@@ -93,6 +93,7 @@ source_files = Split("""
 	version.c
 	zmovie.c
 	zstate.c
+	zloader.c
 """)
 
 linux_source_files = Split("""
@@ -100,7 +101,6 @@ linux_source_files = Split("""
 	linux/sdlintrf.asm
 	linux/sdllink.c
 	linux/sw_draw.c
-	linux/zloaderw.c
 	linux/zipxw.c
 	linux/zfilew.c
 """)
