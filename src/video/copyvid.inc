@@ -224,12 +224,12 @@ PreTripleBuffer:
    ret
 %endif 
 
-VidModeSize dd 0,0,320*240,320*240*2,640*480,640*480*2,512*384,512*384*2
-            dd 0,320*480,320*480*2
-VidModeLine dd 0,0,240,240,480,480,384,384
-            dd 0,480,480
+; stupid fix :)
+VidModeSize dd 0,0,0,0,320*240,320*240*2,0,320*480,320*480*2
+            dd 512*384,512*384*2,640*480,640*480*2
+VidModeLine dd 0,0,0,0,240,240,0,480,480,384,384,480,480
 NEWSYM VidStartDraw, dd 0
-VidModeComp db 0,0,1,1,1,1,1,1,0,1,1
+VidModeComp db 0,0,0,0,0,1,1,1,1,1,1,1,1
 CVidStartAd db 0
 ApplyStart db 4
 NEWSYM NextLineStart, dd 0
