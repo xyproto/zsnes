@@ -1192,7 +1192,6 @@ MovieProcessing
 
 */
 
-
 extern unsigned int MsgCount, MessageOn;
 extern unsigned char MovieProcessing, *Msgptr;
 
@@ -1404,3 +1403,19 @@ void MovieRecord()
     memcpy (&fnamest[statefileloc-3], FileExt, 4);
   }
 }
+
+char MovieFrameStr[10];
+void GetMovieFrameStr()
+{
+  *MovieFrameStr = 0;
+  switch (MovieProcessing)
+  {
+    case 1:
+      sprintf(MovieFrameStr, "%u",zmv_frames_replayed());
+      break;
+    case 2:
+      sprintf(MovieFrameStr, "%u",zmv_frames_recorded());
+      break;  
+  }
+}
+

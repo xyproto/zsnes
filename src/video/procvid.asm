@@ -2724,7 +2724,7 @@ NEWSYM ClockOutput
     dec ebx
     jnz .loop2b
 .do8b
-	call GetTimeInSeconds
+    call GetTimeInSeconds
     xor edx,edx
     mov ebx,60
     div ebx
@@ -3568,6 +3568,24 @@ NEWSYM copyvid
 .nfivex5
     dec dword[MessageOn]
 .nomsg
+    EXTSYM MovieFrameStr,GetMovieFrameStr
+    cmp byte[MovieProcessing],0
+    jz .nomovie4
+    pushad
+    call GetMovieFrameStr
+    popad
+    mov edi,MovieFrameStr
+    cmp byte[cbitmode],1
+    jne .not16bframe
+    mov esi,216*288*2+32*2
+    add esi,[vidbuffer]
+    call OutputGraphicString16b5x5    
+    jmp .nomovie4
+.not16bframe
+    mov esi,216*288+32
+    add esi,[vidbuffer]
+    call OutputGraphicString5x5
+.nomovie4    
     jmp vidpaste
 SECTION .bss
 .sdrawptr resd 1
