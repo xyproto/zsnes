@@ -517,7 +517,7 @@ reg2102w:
 .skipstore
     cmp byte[nexthprior],1
     je .priorset
-    mov byte[objhipr],0
+;    mov byte[objhipr],0
     jmp .cachespr
 .priorset
     mov bx,[oamaddr]
