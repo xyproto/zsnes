@@ -258,40 +258,42 @@ void ProcessKeyBuf(int scancode)
 	}
       }
     }
-    if ((scancode>=256) && (scancode<=265)) {
-      accept=true; vkeyval=scancode-256+'0';
+    if ((scancode>=SDLK_KP0) && (scancode<=SDLK_KP9)) {
+      accept=true; vkeyval=scancode-SDLK_KP0+'0';
     }
     if (!shiftptr){
       switch (scancode) {
 	      // Fix these for proper SDL usage - DDOI
-	case 189: vkeyval='-'; accept=true; break;
-	case 187: vkeyval='='; accept=true; break;
-	case 219: vkeyval='['; accept=true; break;
-	case 221: vkeyval=']'; accept=true; break;
-	case 186: vkeyval=';'; accept=true; break;
-	case 222: vkeyval=39; accept=true; break;
-	case 188: vkeyval=','; accept=true; break;
-	case 190: vkeyval='.'; accept=true; break;
-	case 191: vkeyval='/'; accept=true; break;
-	case 192: vkeyval='`'; accept=true; break;
-	case 220: vkeyval=92; accept=true; break;
+	case SDLK_MINUS: vkeyval='-'; accept=true; break;
+	case SDLK_EQUALS: vkeyval='='; accept=true; break;
+	case SDLK_LEFTBRACKET: vkeyval='['; accept=true; break;
+	case SDLK_RIGHTBRACKET: vkeyval=']'; accept=true; break;
+	case SDLK_SEMICOLON: vkeyval=';'; accept=true; break;
+	// ??? - DDOI
+        //case 222: vkeyval=39; accept=true; break;
+	//case 220: vkeyval=92; accept=true; break;
+	case SDLK_COMMA: vkeyval=','; accept=true; break;
+	case SDLK_PERIOD: vkeyval='.'; accept=true; break;
+	case SDLK_SLASH: vkeyval='/'; accept=true; break;
+	case SDLK_QUOTE: vkeyval='`'; accept=true; break;
       }
     } else {
       switch (scancode) {
 	      // Fix these for proper SDL usage - DDOI
-	case 189: vkeyval='_'; accept=true; break;
-	case 187: vkeyval='+'; accept=true; break;
-	case 219: vkeyval='{'; accept=true; break;
-	case 221: vkeyval='}'; accept=true; break;
-	case 186: vkeyval=':'; accept=true; break;
-	case 222: vkeyval='"'; accept=true; break;
-	case 188: vkeyval='<'; accept=true; break;
-	case 190: vkeyval='>'; accept=true; break;
-	case 191: vkeyval='?'; accept=true; break;
-	case 192: vkeyval='~'; accept=true; break;
-	case 220: vkeyval='|'; accept=true; break;
+	case SDLK_UNDERSCORE: vkeyval='_'; accept=true; break;
+	case SDLK_PLUS: vkeyval='+'; accept=true; break;
+	case SDLK_LEFTBRACKET: vkeyval='{'; accept=true; break;
+	case SDLK_RIGHTBRACKET: vkeyval='}'; accept=true; break;
+	case SDLK_COLON: vkeyval=':'; accept=true; break;
+	case SDLK_QUOTEDBL: vkeyval='"'; accept=true; break;
+	case SDLK_LESS: vkeyval='<'; accept=true; break;
+	case SDLK_GREATER: vkeyval='>'; accept=true; break;
+	case SDLK_QUESTION: vkeyval='?'; accept=true; break;
+	case SDLK_BACKQUOTE: vkeyval='~'; accept=true; break;
+	case SDLK_BACKSLASH: vkeyval='|'; accept=true; break;
       }
     }
+    /* TODO Figure out what all these are supposed to be - DDOI
     switch (scancode) {
 	      // Fix these for proper SDL usage - DDOI
       case 33: vkeyval=256+73; accept=true; break;
@@ -309,6 +311,7 @@ void ProcessKeyBuf(int scancode)
       case 111: vkeyval='/'; accept=true; break;
       case 110: vkeyval='.'; accept=true; break;
     }
+    */
     if (accept){
       KeyBuffer[CurKeyPos]=vkeyval;
       CurKeyPos++;
