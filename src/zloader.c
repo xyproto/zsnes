@@ -56,135 +56,144 @@ extern unsigned char Palette0, pl1contrl, pl2contrl, MMXSupport, Force8b, ForceP
 
 void ConvertJoyMap1(), ConvertJoyMap2(), zstart(), makeextension();
 
+#define put_line(x)                          \
+if (lines_out == 22)                         \
+{                                            \
+  puts("  -- Press Enter to Continue --");   \
+  getchar();                                 \
+  lines_out = 0;                             \
+}                                            \
+puts(x);                                     \
+lines_out++;
+
 static void display_help()
 {
-  puts("Usage : zsnes [-d,-f #, ... ] <filename.sfc>");
-  puts("   Eg : zsnes -s -r 2 game.sfc");
-  puts("");
-  puts("  -0      Disable Color 0 modification in 8-bit modes");
-  puts("  -1 #/-2 #   Select Player 1/2 Input :");
-  puts("                0 = None       1 = Keyboard   2 = Joystick   3 = Gamepad");
-  puts("                4 = 4Button    5 = 6Button    6 = Sidewinder   ");
-  puts("  -3      Enable triple buffering (disables vsync)");
+  size_t lines_out = 0;
+
+  put_line("Usage : zsnes [-d,-f #, ... ] <filename.sfc>");
+  put_line("   Eg : zsnes -s -r 2 game.sfc");
+  put_line("");
+  put_line("  -0      Disable Color 0 modification in 8-bit modes");
+  put_line("  -1 #/-2 #   Select Player 1/2 Input :");
+  put_line("                0 = None       1 = Keyboard   2 = Joystick   3 = Gamepad");
+  put_line("                4 = 4Button    5 = 6Button    6 = Sidewinder   ");
+  put_line("  -3      Enable triple buffering (disables vsync)");
 #ifdef __WIN32__
-  puts("  -6      Force 60Hz refresh rate");
+  put_line("  -6      Force 60Hz refresh rate");
 #endif
-  puts("  -7      Disable SPC700 speedhack");
-  puts("  -8      Force 8-bit sound");
-  puts("  -9      Off by 1 line fix");
-  puts("  -c      Enable full/wide screen (when available)");
-  puts("  -cc     Enable small screen (when available)");
+  put_line("  -7      Disable SPC700 speedhack");
+  put_line("  -8      Force 8-bit sound");
+  put_line("  -9      Off by 1 line fix");
+  put_line("  -c      Enable full/wide screen (when available)");
+  put_line("  -cc     Enable small screen (when available)");
 #ifdef __MSDOS__
-  puts("  -d      Start with debugger enabled");
+  put_line("  -d      Start with debugger enabled");
 #endif
-  puts("  -dd     Disable sound DSP emulation");
+  put_line("  -dd     Disable sound DSP emulation");
 #ifdef __MSDOS__
-  puts("  -e      Skip enter key press at the beginning");
+  put_line("  -e      Skip enter key press at the beginning");
 #endif
-  puts("  -f #    Enable fixed frame rate [0...9]");
-  getchar();
+  put_line("  -f #    Enable fixed frame rate [0...9]");
 #ifdef __MSDOS__
-  puts("  -g #    Specify gamma correction value [0...15]");
-  puts("          (Only works properly in 8-bit modes)");
+  put_line("  -g #    Specify gamma correction value [0...15]");
+  put_line("          (Only works properly in 8-bit modes)");
 #endif
-  puts("  -h      Force HiROM");
-  puts("  -j      Disable Mouse (Automatically turns off right mouse click)");
-  puts("  -k #    Set Volume Level (0 .. 100)");
+  put_line("  -h      Force HiROM");
+  put_line("  -j      Disable Mouse (Automatically turns off right mouse click)");
+  put_line("  -k #    Set Volume Level (0 .. 100)");
 #ifdef __WIN32__
-  puts("  -ks     Enable the KitchenSync");
+  put_line("  -ks     Enable the KitchenSync");
 #endif
-  puts("  -l      Force LoROM");
-  puts("  -m      Disable GUI (Must specify ROM filename)");
-  puts("  -mc     Exit ZSNES when closing a movie");
-  puts("  -n #    Enable scanlines (when available)");
-  puts("          Where # is: 1 = full, 2 = 25%, 3 = 50%");
-  puts("  -om     Enable MMX support (when available)");
-  puts("  -p #    Percentage of instructions to execute [50..120]");
-  puts("  -r #    Set Sampling Sound Blaster Sampling Rate & Bit :");
-  puts("             0 = 8000Hz  1 = 11025Hz 2 = 22050Hz 3 = 44100Hz");
-  puts("             4 = 16000Hz 5 = 32000Hz 6 = 48000Hz");
-  puts("  -s      Enable SPC700/DSP emulation (Sound)");
-  puts("  -sa     Show all extensions in GUI (*.*)");
-  puts("  -sn     Enable Snowy GUI Background");
-  puts("  -t      Force NTSC timing");
-  puts("  -u      Force PAL timing");
-  getchar();
-  puts("  -v #    Select Video Mode :");
+  put_line("  -l      Force LoROM");
+  put_line("  -m      Disable GUI (Must specify ROM filename)");
+  put_line("  -mc     Exit ZSNES when closing a movie");
+  put_line("  -n #    Enable scanlines (when available)");
+  put_line("          Where # is: 1 = full, 2 = 25%, 3 = 50%");
+  put_line("  -om     Enable MMX support (when available)");
+  put_line("  -p #    Percentage of instructions to execute [50..120]");
+  put_line("  -r #    Set Sampling Sound Blaster Sampling Rate & Bit :");
+  put_line("             0 = 8000Hz  1 = 11025Hz 2 = 22050Hz 3 = 44100Hz");
+  put_line("             4 = 16000Hz 5 = 32000Hz 6 = 48000Hz");
+  put_line("  -s      Enable SPC700/DSP emulation (Sound)");
+  put_line("  -sa     Show all extensions in GUI (*.*)");
+  put_line("  -sn     Enable Snowy GUI Background");
+  put_line("  -t      Force NTSC timing");
+  put_line("  -u      Force PAL timing");
+  put_line("  -v #    Select Video Mode :");
 #ifdef __WIN32__
 #define VIDEO_MODE_COUNT 32
-  puts("          0 = 256x224   R WIN       1 = 256x224   R FULL");
-  puts("          2 = 512x448   R WIN       3 = 512x448   DR WIN");
-  puts("          4 = 640x480   S WIN       5 = 640x480   DS WIN");
-  puts("          6 = 640x480   DR FULL     7 = 640x480   DS FULL");
-  puts("          8 = 640x480   S FULL      9 = 768x672   R WIN");
-  puts("         10 = 768x672   DR WIN     11 = 800x600   S WIN");
-  puts("         12 = 800x600   DS WIN     13 = 800x600   S FULL");
-  puts("         14 = 800x600   DR FULL    15 = 800x600   DS FULL");
-  puts("         16 = 1024x768  S WIN      17 = 1024x768  DS WIN");
-  puts("         18 = 1024x768  S FULL     19 = 1024x768  DR FULL");
-  puts("         20 = 1024x768  DS FULL    21 = 1024x896  R WIN");
-  puts("         22 = 1024x896  DR WIN     23 = 1280x960  S WIN");
-  puts("         24 = 1280x960  DS WIN     25 = 1280x960  S FULL");
-  puts("         26 = 1280x960  DR FULL    27 = 1280x960  DS FULL");
-  puts("         28 = 1280x1024 S WIN      29 = 1280x1024 DS WIN");
-  puts("         30 = 1280x1024 S FULL     31 = 1280x1024 DR FULL");
-  puts("         32 = 1280x1024 DS FULL");
+  put_line("          0 = 256x224   R WIN       1 = 256x224   R FULL");
+  put_line("          2 = 512x448   R WIN       3 = 512x448   DR WIN");
+  put_line("          4 = 640x480   S WIN       5 = 640x480   DS WIN");
+  put_line("          6 = 640x480   DR FULL     7 = 640x480   DS FULL");
+  put_line("          8 = 640x480   S FULL      9 = 768x672   R WIN");
+  put_line("         10 = 768x672   DR WIN     11 = 800x600   S WIN");
+  put_line("         12 = 800x600   DS WIN     13 = 800x600   S FULL");
+  put_line("         14 = 800x600   DR FULL    15 = 800x600   DS FULL");
+  put_line("         16 = 1024x768  S WIN      17 = 1024x768  DS WIN");
+  put_line("         18 = 1024x768  S FULL     19 = 1024x768  DR FULL");
+  put_line("         20 = 1024x768  DS FULL    21 = 1024x896  R WIN");
+  put_line("         22 = 1024x896  DR WIN     23 = 1280x960  S WIN");
+  put_line("         24 = 1280x960  DS WIN     25 = 1280x960  S FULL");
+  put_line("         26 = 1280x960  DR FULL    27 = 1280x960  DS FULL");
+  put_line("         28 = 1280x1024 S WIN      29 = 1280x1024 DS WIN");
+  put_line("         30 = 1280x1024 S FULL     31 = 1280x1024 DR FULL");
+  put_line("         32 = 1280x1024 DS FULL");
 #endif
 #ifdef __LINUX__
-  puts("          0 = 256x224   R WIN        1 = 256x224  R FULL");
-  puts("          2 = 512x448   DR WIN       3 = 640x480  DS FULL");
+  put_line("          0 = 256x224   R WIN        1 = 256x224  R FULL");
+  put_line("          2 = 512x448   DR WIN       3 = 640x480  DS FULL");
 #ifndef __OPENGL__
 #define VIDEO_MODE_COUNT 3
 #else
 #define VIDEO_MODE_COUNT 18
-  puts("          4 = 256x224   OR  WIN      5 = 512x448   ODR WIN");
-  puts("          6 = 640x480   ODS FULL     7 = 640x480   ODS WIN");
-  puts("          8 = 640x576   ODR WIN      9 = 768x672   ODR WIN");
-  puts("         10 = 800x600   ODS FULL    11 = 800x600   ODS WIN");
-  puts("         12 = 896x784   ODR WIN     13 = 1024x768  ODS FULL");
-  puts("         14 = 1024x768  ODS WIN     15 = 1024x896  ODR WIN");
-  puts("         16 = 1280x1024 ODS FULL    17 = 1600x1200 ODR FULL");
-  puts("         18 = VARIABLE  ODS WIN");
+  put_line("          4 = 256x224   OR  WIN      5 = 512x448   ODR WIN");
+  put_line("          6 = 640x480   ODS FULL     7 = 640x480   ODS WIN");
+  put_line("          8 = 640x576   ODR WIN      9 = 768x672   ODR WIN");
+  put_line("         10 = 800x600   ODS FULL    11 = 800x600   ODS WIN");
+  put_line("         12 = 896x784   ODR WIN     13 = 1024x768  ODS FULL");
+  put_line("         14 = 1024x768  ODS WIN     15 = 1024x896  ODR WIN");
+  put_line("         16 = 1280x1024 ODS FULL    17 = 1600x1200 ODR FULL");
+  put_line("         18 = VARIABLE  ODS WIN");
 #endif
 #endif
 #ifdef __MSDOS__
 #define VIDEO_MODE_COUNT 18
-  puts("          0 = 256x224x8B  (MODEQ)  1 = 256x240x8B (MODEQ)");
-  puts("          2 = 256x256x8B  (MODEQ)  3 = 320x224x8B (MODEX)");
-  puts("          4 = 320x240x8B  (MODEX)  5 = 320x256x8B (MODEX)");
-  puts("          6 = 640x480x16B (VESA1)  7 = 320x240x8B (VESA2)");
-  puts("          8 = 320x240x16B (VESA2)  9 = 320x480x8B (VESA2)");
-  puts("         10 = 320x480x16B (VESA2) 11 = 512x384x8B (VESA2)");
-  puts("         12 = 512x384x16B (VESA2) 13 = 640x400x8B (VESA2)");
-  puts("         14 = 640x400x16B (VESA2) 15 = 640x480x8B (VESA2)");
-  puts("         16 = 640x480x16B (VESA2) 17 = 800x600x8B (VESA2)");
-  puts("         18 = 800x600x16B (VESA2)");
+  put_line("          0 = 256x224x8B  (MODEQ)  1 = 256x240x8B (MODEQ)");
+  put_line("          2 = 256x256x8B  (MODEQ)  3 = 320x224x8B (MODEX)");
+  put_line("          4 = 320x240x8B  (MODEX)  5 = 320x256x8B (MODEX)");
+  put_line("          6 = 640x480x16B (VESA1)  7 = 320x240x8B (VESA2)");
+  put_line("          8 = 320x240x16B (VESA2)  9 = 320x480x8B (VESA2)");
+  put_line("         10 = 320x480x16B (VESA2) 11 = 512x384x8B (VESA2)");
+  put_line("         12 = 512x384x16B (VESA2) 13 = 640x400x8B (VESA2)");
+  put_line("         14 = 640x400x16B (VESA2) 15 = 640x480x8B (VESA2)");
+  put_line("         16 = 640x480x16B (VESA2) 17 = 800x600x8B (VESA2)");
+  put_line("         18 = 800x600x16B (VESA2)");
 #endif
-  getchar();
-  puts("  -w      Enable vsync (disables triple buffering)");
-  puts("  -y      Enable Anti-Aliasing");
-  puts("  -z      Disable Stereo Sound");
-  puts("  -zm #   Auto load specified movie slot on startup ");
-  puts("  -zs #   Auto load specified save state slot on startup ");
-  puts("");
-  puts("  File Formats Supported by GUI : SMC,SFC,SWC,FIG,MGD,UFO,BIN,");
-  puts("                                  058,078,1,USA,EUR,JAP,ZIP,JMA");
-  puts("");
+  put_line("  -w      Enable vsync (disables triple buffering)");
+  put_line("  -y      Enable Anti-Aliasing");
+  put_line("  -z      Disable Stereo Sound");
+  put_line("  -zm #   Auto load specified movie slot on startup ");
+  put_line("  -zs #   Auto load specified save state slot on startup ");
+  put_line("");
+  put_line("  File Formats Supported by GUI : SMC,SFC,SWC,FIG,MGD,UFO,BIN,");
+  put_line("                                  058,078,1,USA,EUR,JAP,ZIP,JMA");
+  put_line("");
 #ifndef __LINUX__
-  puts("  Microsoft-style options (/option) are also accepted");
+  put_line("  Microsoft-style options (/option) are also accepted");
 #endif
 #ifndef __MSDOS__
-  puts("               --Netplay Parameters--");
-  puts(" Commandline: /ABCDE <nickname> <fname> <IP Addy>");
-  puts("   nickname = user nickname");
-  puts("   fname = filename w/ full path (if L) or path name (if C)");
-  puts("   IP Addy = IP Address (Client Only)");
-  puts(" A = U (UDP - Recommended if works), T (TCP/IP)");
-  puts(" B = S (Server), C (Client)");
-  puts(" C = C (Chat first), L (load game first)");
-  puts(" D = N (Stay in ZSNESw after disconnect), Q (Quit after disconnect)");
-  puts(" E = # of connections (Keep it 2 for now)");
-  puts("   eg: ZSNESW /UCCN2 nickname d:\snesroms 202.36.124.28");
+  put_line("               --Netplay Parameters--");
+  put_line(" Commandline: /ABCDE <nickname> <fname> <IP Addy>");
+  put_line("   nickname = user nickname");
+  put_line("   fname = filename w/ full path (if L) or path name (if C)");
+  put_line("   IP Addy = IP Address (Client Only)");
+  put_line(" A = U (UDP - Recommended if works), T (TCP/IP)");
+  put_line(" B = S (Server), C (Client)");
+  put_line(" C = C (Chat first), L (load game first)");
+  put_line(" D = N (Stay in ZSNESw after disconnect), Q (Quit after disconnect)");
+  put_line(" E = # of connections (Keep it 2 for now)");
+  put_line("   eg: ZSNESW /UCCN2 nickname d:\snesroms 202.36.124.28");
 #endif
    
   exit(1);
