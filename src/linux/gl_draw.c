@@ -78,7 +78,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 	FullScreen ? SDL_WM_GrabInput(SDL_GRAB_ON) :
 		SDL_WM_GrabInput(SDL_GRAB_OFF);
 
-	SDL_WM_SetCaption("ZSNES-GL Linux", "ZSNES");
+	SDL_WM_SetCaption("ZSNES", "ZSNES");
 	SDL_ShowCursor(0);
 
 	/* Setup some GL stuff */
