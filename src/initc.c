@@ -427,7 +427,11 @@ void loadGZipFile()
   fp = fopen(ZOpenFileName, "rb");
   if (!fp) { return; }
   fseek(fp, -4, SEEK_END);
-  size = fgetc(fp) | (fgetc(fp) << 8) | (fgetc(fp) << 16) | (fgetc(fp) << 24);
+  //Size is read like this due to VC screwing up with optimizations
+  size = fgetc(fp);
+  size |= fgetc(fp) << 8;
+  size |= fgetc(fp) << 16;
+  size |= fgetc(fp) << 24;
   fclose(fp);
 
   if (size > maxromspace+512) { return; }
