@@ -105,6 +105,7 @@ extern unsigned char *WinVidMemStart;
 extern unsigned char FPUCopy;
 extern unsigned char NGNoTransp;
 extern unsigned char newengen;
+extern unsigned short resolutn;
 extern void copy640x480x16bwin(void);
 
 /* FIXME: Figure out how to make these locals */
@@ -112,7 +113,6 @@ static DWORD ScreenPtr;
 static DWORD SurfBufD;
 static DWORD *SURFDW;
 static DWORD pitch;
-extern BYTE resolutn;
 
 void sw_clearwin()
 {
