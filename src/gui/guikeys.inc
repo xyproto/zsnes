@@ -381,6 +381,8 @@ GUIgetcurrentinput:
     je near GUIStateSelKeys
     cmp ebx,4
     je near GUIOptionKeys
+    cmp ebx,5
+    je near GUIVideoKeys
     cmp ebx,6
     je near GUISoundKeys
     cmp ebx,7
@@ -979,8 +981,204 @@ GUIGUIOptnsKeys:
     xor byte[FilteredGUI],1
     cmp byte[En2xSaI],1
     jnae .guioptn15
+    call ClearScreen
     call Clear2xSaIBuffer
 .guioptn15
+    ret
+
+GUIVideoKeys:
+    cmp dh,'a'
+    jb .nocap
+    cmp dh,'z'
+    ja .nocap
+    sub dh,'z'-'Z'
+.nocap
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUISLVID+eax],0
+    je .nofullscanlines
+    cmp dh,'F'
+    jne .nofullscanlines
+    cmp byte[En2xSaI],0
+    jne .nofullscanlines
+    call ClearScreen
+    GUIkeystoggleoptn byte[scanlines],1
+%ifdef __MSDOS__
+    cmp byte[cvidmode],1
+    jne .nofullscanlines
+    mov byte[cbitmode],1
+    call initvideo2
+    mov byte[cbitmode],0
+    call GUISetPal
+%endif
+.nofullscanlines
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUIHSVID+eax],0
+    je near .noquarterscanlines
+    cmp dh,'5'
+    jne .nohalfscanlines
+    cmp byte[En2xSaI],0
+    jne .nohalfscanlines
+    call ClearScreen
+    GUIkeystoggleoptn byte[scanlines],3
+%ifdef __MSDOS__
+    cmp byte[cvidmode],1
+    jne .nohalfscanlines
+    mov byte[cbitmode],1
+    call initvideo2
+    mov byte[cbitmode],0
+    call GUISetPal
+%endif
+.nohalfscanlines
+    cmp dh,'2'
+    jne .noquarterscanlines
+    cmp byte[En2xSaI],0
+    jne .noquarterscanlines
+    call ClearScreen
+    GUIkeystoggleoptn byte[scanlines],2
+%ifdef __MSDOS__
+    cmp byte[cvidmode],1
+    jne .noquarterscanlines
+    mov byte[cbitmode],1
+    call initvideo2
+    mov byte[cbitmode],0
+    call GUISetPal
+%endif
+.noquarterscanlines
+    cmp dh,'X'
+    jne .no2xsai
+    xor ebx,ebx
+    mov bl,[cvidmode]
+    cmp byte[GUI2xVID+ebx],0
+    je near .no2xsai
+    call Clear2xSaIBuffer
+    GUIkeystoggleoptn byte[En2xSaI],1
+.no2xsai
+    cmp dh,'E'
+    jne .nosupereagle
+    xor ebx,ebx
+    mov bl,[cvidmode]
+    cmp byte[GUI2xVID+ebx],0
+    je near .nosupereagle
+    call Clear2xSaIBuffer
+    GUIkeystoggleoptn byte[En2xSaI],2
+.nosupereagle
+    cmp dh,'S'
+    jne .nosuper2xsai
+    xor ebx,ebx
+    mov bl,[cvidmode]
+    cmp byte[GUI2xVID+ebx],0
+    je near .nosuper2xsai
+    call Clear2xSaIBuffer
+    GUIkeystoggleoptn byte[En2xSaI],3
+.nosuper2xsai
+    cmp dh,'I'
+    jne .nointerpolationwin
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUII2VID+eax],0
+    je .nointerpolationwin
+    xor byte[antienab],1
+    mov al,[antienab]
+    mov [cfginterp],al
+.nointerpolationwin
+    cmp dh,'I'
+    jne .nointerpolation
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUIIEVID+eax],0
+    je .nointerpolation
+    xor byte[antienab],1
+    mov al,[antienab]
+    mov [cfginterp],al
+.nointerpolation
+    cmp dh,'U'
+    jne .nofullscreen
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUIFSVID+eax],0
+    je .nofullscreen
+    call ClearScreen
+    xor byte[ScreenScale],1
+    mov al,[ScreenScale]
+    mov [GUIScreenScale],al
+    push eax
+    push ecx
+    mov eax,[vidbufferofsb]
+    mov ecx,288*128
+.fsloop
+    mov dword[eax],0
+    add eax,4
+    loop .fsloop
+    pop ecx
+    pop eax
+.nofullscreen
+    cmp dh,'M'
+    jne .nosmallscreen
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUISSVID+eax],0
+    je .nosmallscreen
+    call ClearScreen
+    xor byte[smallscreenon],1
+    mov al,[smallscreenon]
+    mov [GUIsmallscreenon],al
+    push eax
+    push ecx
+    mov eax,[vidbufferofsb]
+    mov ecx,288*128
+.ssloop
+    mov dword[eax],0
+    add eax,4
+    loop .ssloop
+    pop ecx
+    pop eax
+.nosmallscreen
+    cmp dh,'H'
+    jne .nohiresmode7
+    xor ebx,ebx
+    mov bl,[cvidmode]
+    cmp byte[GUIM7VID+ebx],0
+    je .nohiresmode7
+    xor byte[Mode7HiRes16b],1
+.nohiresmode7
+    cmp dh,'B'
+    jne .nobilinearfilter
+    xor ebx,ebx
+    mov bl,[cvidmode]
+    cmp byte[GUIBIFIL+ebx],0
+    je .nobilinearfilter
+    xor byte[BilinearFilter],1
+.nobilinearfilter
+    cmp dh,'T'
+    jne .notriplebufferwin
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUITBWVID+eax],0
+    je near .notriplebufferwin
+    xor byte[TripleBufferWin],1
+.notriplebufferwin
+    cmp dh,'T'
+    jne .notriplebuffer
+    xor ebx,ebx
+    mov bl,[cvidmode]
+    cmp byte[GUITBVID+ebx],0
+    je .notriplebuffer
+    xor byte[Triplebufen],1
+.notriplebuffer
+    cmp dh,'G'
+    jne .nograyscale
+    xor byte[GrayscaleMode],1
+.nograyscale
+%ifndef __LINUX__
+    cmp dh,'V'
+    jne .novsync
+    xor byte[vsyncon],1
+    mov al,[vsyncon]
+    mov [cfgvsync],al
+.novsync
+%endif
     ret
 
 GUISoundKeys:

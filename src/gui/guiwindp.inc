@@ -1666,67 +1666,67 @@ DisplayGUIVideo:
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUISLVID+eax],0
-    je .notext2
+    je near .notext2
     GUIOuttextwin2 5,13,111,GUIVideoTextb
-    GUIOuttextwin2 5,36,119,GUIVideoTexta
+    GUIOuttextwin2u 5,36,119,GUIVideoTexta,0
 .notext2
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHSVID+eax],0
     je near .notexta
     GUIOuttextwin2 5,13,111,GUIVideoTextb
-    GUIOuttextwin2 5,76,119,GUIVideoTexta2
-    GUIOuttextwin2 5,116,119,GUIVideoTexta3
+    GUIOuttextwin2u 5,76,119,GUIVideoTexta2,0
+    GUIOuttextwin2u 5,116,119,GUIVideoTexta3,0
 .notexta
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUITBWVID+eax],0
     je near .nottbw
-    GUIOuttextwin2 5,26,128,GUIVideoText7
+    GUIOuttextwin2u 5,26,128,GUIVideoText7,0
 .nottbw
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUI2xVID+eax],0
     je near .notextb
-    GUIOuttextwin2 5,26,138,GUIVideoTextc
-    GUIOuttextwin2 5,26,148,GUIVideoTextd
-    GUIOuttextwin2 5,26,158,GUIVideoTextd2
+    GUIOuttextwin2u 5,26,138,GUIVideoTextc,1
+    GUIOuttextwin2u 5,26,148,GUIVideoTextd,6
+    GUIOuttextwin2u 5,26,158,GUIVideoTextd2,0
 .notextb
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUII2VID+eax],0
     je near .notextb2
-    GUIOuttextwin2 5,26,168,GUIVideoText3
+    GUIOuttextwin2u 5,26,168,GUIVideoText3,0
 .notextb2
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIBIFIL+eax],0
     je near .notextbf2
-    GUIOuttextwin2 5,26,168,GUIVideoTextbf
+    GUIOuttextwin2u 5,26,168,GUIVideoTextbf,0
 .notextbf2
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIINVID+eax],0
     je .notext3
-    GUIOuttextwin2 5,26,83,GUIVideoText3
+    GUIOuttextwin2u 5,26,83,GUIVideoText3,0
 .notext3
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIEAVID+eax],0
     je .notext4
-    GUIOuttextwin2 5,26,83,GUIVideoText4
+    GUIOuttextwin2u 5,26,83,GUIVideoText4,1
 .notext4
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIFSVID+eax],0
     je .notext5
-    GUIOuttextwin2 5,26,93,GUIVideoText5
+    GUIOuttextwin2u 5,26,93,GUIVideoText5,1
 .notext5
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUISSVID+eax],0
     je .notext6
-    GUIOuttextwin2 5,26,103,GUIVideoText6
+    GUIOuttextwin2u 5,26,103,GUIVideoText6,1
 .notext6
     xor eax,eax
     mov al,[cvidmode]
@@ -1734,7 +1734,7 @@ DisplayGUIVideo:
     je near .notext7
     cmp byte[GUITBVID+eax],0
     je .notext7
-    GUIOuttextwin2 5,26,168,GUIVideoText7
+    GUIOuttextwin2u 5,26,168,GUIVideoText7,0
 .notext7
     xor eax,eax
     mov al,[cvidmode]
@@ -1742,11 +1742,11 @@ DisplayGUIVideo:
     je .notext8
     cmp byte[newengen],0
     je .notext8
-    GUIOuttextwin2 5,26,178,GUIVideoText8b
+    GUIOuttextwin2u 5,26,178,GUIVideoText8b,0
 .notext8
-    GUIOuttextwin2 5,26,188,GUIVideoText8c
+    GUIOuttextwin2u 5,26,188,GUIVideoText8c,0
 %ifndef __LINUX__
-    GUIOuttextwin2 5,130,188,GUIVideoText9
+    GUIOuttextwin2u 5,130,188,GUIVideoText9,0
 %endif
     add byte[GUItextcolor],15
 
