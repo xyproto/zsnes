@@ -383,10 +383,15 @@ double ViewerXc;
 double ViewerYc;
 double ViewerZc;
 double CenterX,CenterY;
+short Op02CYSup,Op02CXSup;
+double CXdistance;
 
 #define VofAngle 0x3880
 
-DSPOp02()
+short TValDebug,TValDebug2;
+short ScrDispl;
+
+void DSPOp02()
 {
    ViewerZ1=-cos(Op02AZS*6.2832/65536.0);
    ViewerX1=sin(Op02AZS*6.2832/65536.0)*sin(Op02AAS*6.2832/65536.0);
@@ -421,21 +426,7 @@ DSPOp02()
    ViewerYc=ViewerY;//-Op02FY);
    ViewerZc=ViewerZ;//-Op02FZ);
 
-   NAzsB = (Op02AZS-0x4000)*6.2832/65536.0;
-   NAasB = Op02AAS*6.2832/65536.0;
-
-   CenterX = (-sin(NAasB)*ViewerZc/(tan(NAzsB))+ViewerXc);
-   Op02CX = (short)CenterX;
-   CenterY = (cos(NAasB)*ViewerZc/(tan(NAzsB))+ViewerYc);
-   Op02CY = (short)CenterY;
-
-//  [4/15/2001]   (ViewerX+ViewerX1*NumberOfSlope);
-//  [4/15/2001]   (ViewerY+ViewerY1*NumberOfSlope);
-
    Op02VOF=0x0000;
-//   if(Op02LFE==0x2200)Op02VVA=0xFECD;
-//   else Op02VVA=0xFFB2;
-
    ReversedLES=0;
    Op02LESb=Op02LES;
    if ((Op02LES>=VofAngle+16384.0) && (Op02LES<VofAngle+32768.0)) {
@@ -450,6 +441,36 @@ DSPOp02()
    if (ReversedLES){
      Op02VOF=-Op02VOF;
    }
+
+   NAzsB = (Op02AZS-0x4000)*6.2832/65536.0;
+   NAasB = Op02AAS*6.2832/65536.0;
+
+   if (tan(NAzsB)==0) return;
+
+   ScrDispl=0;
+   if (NAzsB>-0.15) {NAzsB=-0.15;ScrDispl=Op02VVA-0xFFDA;}
+
+   CXdistance=1/tan(NAzsB);
+
+   CenterX = (-sin(NAasB)*ViewerZc*CXdistance)+ViewerXc;
+   if (CenterX<-32768) CenterX = -32768; if (CenterX>32767) CenterX=32767;
+   Op02CX = (short)CenterX;
+   CenterY = (cos(NAasB)*ViewerZc*CXdistance)+ViewerYc;
+   if (CenterY<-32768) CenterY = -32768; if (CenterY>32767) CenterY=32767;
+   Op02CY = (short)CenterY;
+
+   TValDebug = (NAzsB*65536/6.28);
+   TValDebug2 = ScrDispl;
+
+//   if (Op02CY < 0) {Op02CYSup = Op02CY/256; Op02CY = 0;}
+//   if (Op02CX < 0) {Op02CXSup = Op02CX/256; Op02CX = 0;}
+
+//  [4/15/2001]   (ViewerX+ViewerX1*NumberOfSlope);
+//  [4/15/2001]   (ViewerY+ViewerY1*NumberOfSlope);
+
+//   if(Op02LFE==0x2200)Op02VVA=0xFECD;
+//   else Op02VVA=0xFFB2;
+
 
    #ifdef DebugDSP1
 //      Log_Message("OP02 FX:%d FY:%d FZ:%d LFE:%d LES:%d",Op02FX,Op02FY,Op02FZ,Op02LFE,Op02LES);
@@ -482,14 +503,17 @@ double Distance;
 double NAzs,NAas;
 double RVPos,RHPos,RXRes,RYRes;
 
+
 void GetRXYPos(){
    double scalar;
 
    if (Op02LES==0) return;
 
-   NAzs = NAzsB - atan(RVPos / (double)Op02LES);
-   NAas = NAasB;// + atan(RHPos / (double)Op02LES);
 
+   NAzs = NAzsB - atan((RVPos) / (double)Op02LES);
+   NAas = NAasB;// + atan(RHPos) / (double)Op02LES);
+
+   if (cos(NAzs)==0) return;
    if (tan(NAzs)==0) return;
 
    RXRes = (-sin(NAas)*ViewerZc/(tan(NAzs))+ViewerXc);
@@ -501,34 +525,39 @@ void GetRXYPos(){
 
 void DSPOp0A()
 {
-  double x2,y2,x3,y3,x4,y4;
+  double x2,y2,x3,y3,x4,y4,m,ypos;
 
 
    if(Op0AVS==0) {Op0AVS++; return;}
+   ypos=Op0AVS-ScrDispl;
    // CenterX,CenterX = Center (x1,y1)
    // Get (0,Vs) coords (x2,y2)
-   RVPos = Op0AVS; RHPos = 0;
+   RVPos = ypos; RHPos = 0;
    GetRXYPos(); x2 = RXRes; y2 = RYRes;
    // Get (-128,Vs) coords (x3,y3)
-   RVPos = Op0AVS; RHPos = -128;
+   RVPos = ypos; RHPos = -128;
    GetRXYPos(); x3 = RXRes; y3 = RYRes;
    // Get (127,Vs) coords (x4,y4)
-   RVPos = Op0AVS; RHPos = 127;
+   RVPos = ypos; RHPos = 127;
    GetRXYPos(); x4 = RXRes; y4 = RYRes;
 
    // A = (x4-x3)/256
-   Op0AA = (short)((x4-x3)/256*256);
+   m = (x4-x3)/256*256; if (m>32767) m=32767; if (m<-32768) m=-32768;
+   Op0AA = (short)(m);
    // C = (y4-y3)/256
-   Op0AC = (short)((y4-y3)/256*256);
-   if (!Op0AVS){
+   m = (y4-y3)/256*256; if (m>32767) m=32767; if (m<-32768) m=-32768;
+   Op0AC = (short)(m);
+   if (ypos==0){
      Op0AB = 0;
      Op0AD = 0;
    }
    else {
      // B = (x2-x1)/Vs
-     Op0AB = (short)((x2-CenterX)/Op0AVS*256);
+     m = (x2-CenterX)/ypos*256; if (m>32767) m=32767; if (m<-32768) m=-32768;
+     Op0AB = (short)(m);
      // D = (y2-y1)/Vs
-     Op0AD = (short)((y2-CenterY)/Op0AVS*256);
+     m = (y2-CenterY)/ypos*256; if (m>32767) m=32767; if (m<-32768) m=-32768;
+     Op0AD = (short)(m);
    }
 
    Op0AVS+=1;
@@ -682,16 +711,16 @@ DSPOp11()
    double zr,yr,xr;
 
    zr = ((double)Op11Zr)*6.2832/65536;
-   yr = ((double)Op11Yr)*6.2832/65536;
-   xr = ((double)Op11Xr)*6.2832/65536;
+   xr = ((double)Op11Yr)*6.2832/65536;
+   yr = ((double)Op11Xr)*6.2832/65536;
 
-   matrixB[0][0]=cos(yr); matrixB[0][1]=0; matrixB[0][2]=-sin(yr);
-   matrixB[1][0]=0;       matrixB[1][1]=1; matrixB[1][2]=0;
-   matrixB[2][0]=sin(yr); matrixB[2][1]=0; matrixB[2][2]=cos(yr);
+   matrixB[0][0]=1;       matrixB[0][1]=0;        matrixB[0][2]=0;       
+   matrixB[1][0]=0;       matrixB[1][1]=cos(xr);  matrixB[1][2]=-sin(xr);
+   matrixB[2][0]=0;       matrixB[2][1]=sin(xr);  matrixB[2][2]=cos(xr);
 
-   matrixB2[0][0]=1;       matrixB2[0][1]=0;        matrixB2[0][2]=0;       
-   matrixB2[1][0]=0;       matrixB2[1][1]=cos(xr);  matrixB2[1][2]=sin(xr);
-   matrixB2[2][0]=0;       matrixB2[2][1]=-sin(xr); matrixB2[2][2]=cos(xr);
+   matrixB2[0][0]=cos(yr);  matrixB2[0][1]=0; matrixB2[0][2]=sin(yr);
+   matrixB2[1][0]=0;        matrixB2[1][1]=1; matrixB2[1][2]=0;
+   matrixB2[2][0]=-sin(yr); matrixB2[2][1]=0; matrixB2[2][2]=cos(yr);
 
    MultMatrixB(matrixB3,matrixB,matrixB2);
 
@@ -716,16 +745,16 @@ DSPOp21()
    double zr,yr,xr;
 
    zr = ((double)Op21Zr)*6.2832/65536;
-   yr = ((double)Op21Yr)*6.2832/65536;
-   xr = ((double)Op21Xr)*6.2832/65536;
+   xr = ((double)Op21Yr)*6.2832/65536;
+   yr = ((double)Op21Xr)*6.2832/65536;
 
-   matrixB[0][0]=cos(yr); matrixB[0][1]=0; matrixB[0][2]=-sin(yr);
-   matrixB[1][0]=0;       matrixB[1][1]=1; matrixB[1][2]=0;
-   matrixB[2][0]=sin(yr); matrixB[2][1]=0; matrixB[2][2]=cos(yr);
+   matrixB[0][0]=1;       matrixB[0][1]=0;        matrixB[0][2]=0;       
+   matrixB[1][0]=0;       matrixB[1][1]=cos(xr);  matrixB[1][2]=-sin(xr);
+   matrixB[2][0]=0;       matrixB[2][1]=sin(xr);  matrixB[2][2]=cos(xr);
 
-   matrixB2[0][0]=1;       matrixB2[0][1]=0;        matrixB2[0][2]=0;       
-   matrixB2[1][0]=0;       matrixB2[1][1]=cos(xr);  matrixB2[1][2]=sin(xr);
-   matrixB2[2][0]=0;       matrixB2[2][1]=-sin(xr); matrixB2[2][2]=cos(xr);
+   matrixB2[0][0]=cos(yr);  matrixB2[0][1]=0; matrixB2[0][2]=sin(yr);
+   matrixB2[1][0]=0;        matrixB2[1][1]=1; matrixB2[1][2]=0;
+   matrixB2[2][0]=-sin(yr); matrixB2[2][1]=0; matrixB2[2][2]=cos(yr);
 
    MultMatrixB(matrixB3,matrixB,matrixB2);
 

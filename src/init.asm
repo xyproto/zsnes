@@ -107,7 +107,7 @@ EXTSYM sfxaccessbankw8b,sfxaccessbankw8c,sfxaccessbankw8d,sfxramdata
 EXTSYM sramaccessbankr16,sramaccessbankr16s,sramaccessbankr8
 EXTSYM sramaccessbankr8s,sramaccessbankw16,sramaccessbankw16s
 EXTSYM sramaccessbankw8,sramaccessbankw8s,GenerateBank0TableSA1
-
+EXTSYM ScrDispl
 
 NEWSYM InitAsmStart
 
@@ -1651,6 +1651,7 @@ SECTION .text
 NEWSYM init65816
     mov byte[osm2dis],0
     mov byte[bgfixer2],0
+    mov word[ScrDispl],0
     cmp byte[SA1Enable],0
     je .nosa1init
     call SA1Reset

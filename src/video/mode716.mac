@@ -18,10 +18,7 @@
 
 EXTSYM BGMS1,FillSubScr,CMainWinScr,CSubWinScr,scadtng
 EXTSYM ngwinen, winbg1enval, BuildWindow, ngwintable, ngcwinptr, domosaicng16b
-EXTSYM pesimpng
-
-
-
+EXTSYM pesimpng,ScrDispl
 
 
 
@@ -125,6 +122,7 @@ EXTSYM pesimpng
     jz .nonegc
     or bx,1110000000000000b
 .nonegc
+    sub bx,[ScrDispl]
     mov [mcyloc],bx
     mov bx,[mode7Y0]
     and bx,0001111111111111b    ; 13 -> 16 bit signed value
@@ -190,6 +188,7 @@ EXTSYM pesimpng
     and bx,0001111111111111b    ; 13 -> 16 bit signed value
     test bx,0001000000000000b
     jz .nonegacb
+    or word[mode7X0],1110000000000000b    
     or bx,1110000000000000b    
 .nonegacb
     mov [mcxloc],bx
@@ -211,6 +210,7 @@ EXTSYM pesimpng
     and bx,0001111111111111b    ; 13 -> 16 bit signed value
     test bx,0001000000000000b
     jz .nonegdcb
+    or word[mode7Y0],1110000000000000b    
     or bx,1110000000000000b
 .nonegdcb
     add bx,bx

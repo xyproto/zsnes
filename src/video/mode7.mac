@@ -17,6 +17,7 @@
 
 
 
+EXTSYM ScrDispl
 
 
 
@@ -47,6 +48,7 @@
     jz .nonegc
     or bx,1110000000000000b
 .nonegc
+    sub bx,[ScrDispl]
     mov [.cyloc],bx
     mov bx,[mode7Y0]
     and bx,0001111111111111b    ; 13 -> 16 bit signed value
@@ -129,6 +131,7 @@
     jz .nonegc
     or bx,1100000000000000b
 .nonegc
+    sub bx,[ScrDispl]
     mov [.cyloc],bx
     mov bx,[mode7Y0]
     and bx,0001111111111111b    ; 13 -> 16 bit signed value

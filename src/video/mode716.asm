@@ -650,6 +650,8 @@ CalculateNewValues:
 .noflip
     add ax,[BG1SYl+ebx*2+2]
     add eax,ecx
+    sub ax,[ScrDispl]
+    sub ax,[ScrDispl]
     ret
 
 
