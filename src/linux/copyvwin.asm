@@ -28,7 +28,6 @@ EXTSYM HalfTransB,HalfTransC
 
 NEWSYM CopyVWinAsmStart
 
-
 SECTION .bss
 NEWSYM AddEndBytes, resd 1         ; Number of bytes between each line
 NEWSYM NumBytesPerLine, resd 1     ; Total number of bytes per line (1024+AddEndBytes)

@@ -24,7 +24,6 @@ EXTSYM newengen,cfield,HalfTrans
 EXTSYM GUIOn2,FilteredGUI
 EXTSYM SpecialLine
 EXTSYM vidbufferofsb
-;EXTSYM Super2xSaI
 EXTSYM HalfTransB,HalfTransC
 
 %ifdef __MINGW__

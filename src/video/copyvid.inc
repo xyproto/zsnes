@@ -2436,7 +2436,6 @@ NEWSYM lineleft2, resd 1
 bankpos resd 1
 SECTION .text
 
-
 %ifdef __MSDOS__
 ;*******************************************************
 ; Copy VESA2 320x480x16b Copies buffer to 320x480x16bVB2
