@@ -78,6 +78,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdSh
    char path_buffer[_MAX_PATH], drive[_MAX_DRIVE] ,dir[_MAX_DIR];
    char fname2[_MAX_FNAME],ext[_MAX_EXT], File[_MAX_PATH];
    DWORD dwRead;
+   DWORD drivebits;
 
    char * strp;
 
