@@ -77,23 +77,17 @@ NEWSYM zstart
 
 	cmp byte[CmdLineNetPlay],0
 	je .nocmdlinenetplay
-	mov eax,[CmdLineTCPIPAddress]
-	mov [TCPIPAddress],eax
-	mov eax,[CmdLineTCPIPAddress+4]
-	mov [TCPIPAddress+4],eax
-	mov eax,[CmdLineTCPIPAddress+8]
-	mov [TCPIPAddress+8],eax
-	mov eax,[CmdLineTCPIPAddress+12]
-	mov [TCPIPAddress+12],eax
-	mov eax,[CmdLineTCPIPAddress+16]
-	mov [TCPIPAddress+16],eax
-	mov eax,[CmdLineTCPIPAddress+20]
-	mov [TCPIPAddress+20],eax
-	mov eax,[CmdLineTCPIPAddress+24]
-	mov [TCPIPAddress+24],eax
-	mov eax,[CmdLineTCPIPAddress+28]
-	mov [TCPIPAddress+28],eax
-        xor eax,eax
+	mov ecx,28/4
+	mov esi,CmdLineTCPIPAddress
+	mov edi,TCPIPAddress
+.netplayloop
+	mov eax,[esi]
+	add esi,byte 4
+	mov [edi],eax
+	add edi,byte 4
+	dec ecx
+	jnz .netplayloop
+	xor eax,eax
 .nocmdlinenetplay
 
 	call setnoise
