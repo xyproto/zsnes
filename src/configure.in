@@ -21,11 +21,20 @@ AC_SUBST(VERSION)
 AC_ARG_WITH(nasm-prefix,[  --with-nasm-prefix=PFX Prefix where nasm is installed (optional)], nasm_prefix="$withval", nasm_prefix="")
 
 dnl -- Where is our compiler, and who are we compiling for?
-CFLAGS="-pipe -I. -Wall"
+CFLAGS="$CFLAGS -pipe -I. -Wall -I/usr/local/include -I/usr/include"
+
+dnl -- You might wanna change -I/usr/include if you're trying to do this with
+dnl Mingw, because it doesnt have a standard file tree. Maybe if ming do this
+dnl else do -I/usr/include. Or some shit. You figure it out.
+
+LDFLAGS="$LDFLAGS -L/usr/local/lib -L/usr/lib"
+
+dnl -- Same thing here.
+
 AC_CANONICAL_SYSTEM
 AC_PROG_CC
-AC_CHECK_TOOL(NASMPATH,nasm,"no",[$nasm_prefix:$PATH])
-if test x$nasmpath = xno; then
+AC_CHECK_TOOL(NASMPATH,nasm,"no",$nasm_prefix:$PATH)
+if test x$NASMPATH = xno; then
 AC_MSG_ERROR(You need NASM installed to compile ZSNES)
 fi
 NFLAGS="$NFLAGS -w-orphan-labels"
@@ -74,8 +83,12 @@ AC_ARG_WITH(opengl-prefix,[  --with-opengl-prefix=PFX Prefix where opengl is ins
 
 if test x$enable_opengl != xno; then
 AC_PATH_X
-CFLAGS="$CFLAGS -I$opengl_prefix/includes -I$x_includes"
-LDFLAGS="$LDFLAGS -L$opengl_prefix/lib -L$x_libraries"
+if test x$opengl_prefix != x; then
+CFLAGS="$CFLAGS -I$opengl_prefix/include"
+LDFLAGS-"$LDFLAGS -L$opengl_prefix/lib"
+fi
+CFLAGS="$CFLAGS -I$x_includes"
+LDFLAGS="$LDFLAGS -L$x_libraries"
 AC_CHECK_LIB(GL, glGetError,found_opengl="yes",,)
 if test x$found_opengl = xyes; then
         echo checking for OpenGL... yes
