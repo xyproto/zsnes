@@ -251,8 +251,8 @@ void ST010_SortDrivers(uint16 Positions, uint16 Places[32], uint16 Drivers[32])
   {
     do
     {
-      Sorted = true;
       int i;
+      Sorted = true;
       for (i = 0; i < Positions - 1; i++)
       {
         if (Places[i] < Places[i + 1]) 
