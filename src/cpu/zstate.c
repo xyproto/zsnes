@@ -40,13 +40,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define stim()
 #endif
 
-#define memcpyinc(dest, src, size) memcpy(dest, src, size); dest += size;
-#define memcpyrinc(src, dest, size) memcpy(dest, src, size); src += size;
-
 /*Let's start converting stuff from execute.asm ^_^;
 Big thanks to Nach, TRAC and anomie for helping me out on porting !!*/
 
-extern unsigned int CBackupPos, PHnum2writecpureg, cycpbl;
+extern unsigned int CBackupPos, PBackupPos, PHnum2writecpureg, cycpbl;
 extern unsigned int *wramdata, *vram, PHspcsave, PHdspsave, *C4Ram, *sfxramdata;
 extern unsigned int PHnum2writesa1reg, SA1Mode, prevedi, SA1xpc, sa1dmaptr;
 extern unsigned int soundcycleft, spc700read, timer2upd, xa, PHnum2writesfxreg;
@@ -64,84 +61,110 @@ extern short Op28X, Op0CA, Op02FX, Op0AVS, Op06X, Op01m, Op0DX, Op03F, Op14Zr;
 extern short Op0EH;
 extern signed short Op10Coefficient;
 
+void memcpyinc(unsigned char **dest, void *src, size_t len)
+{
+  memcpy(*dest, src, len);
+  *dest += len;
+}
+
+void memcpyrinc(unsigned char **src, void *dest, size_t len)
+{
+  memcpy(*src, dest, len);
+  *src += len;
+}
+
+void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t))
+{
+  copy_func(&buffer, zsmesg, PHnum2writecpureg);
+  copy_func(&buffer, &cycpbl, 2*4);    
+  copy_func(&buffer, &sndrot, 3019);    
+  copy_func(&buffer, wramdata, 8192*16);    
+  copy_func(&buffer, vram, 4096*16);    
+
+  if (spcon)
+  {
+    copy_func(&buffer, spcRam, PHspcsave);    
+    copy_func(&buffer, BRRBuffer, PHdspsave);
+    copy_func(&buffer, DSPMem, 16*16);
+  }
+  
+  if (C4Enable)
+  { 
+    copy_func(&buffer, C4Ram, 2048*4);
+  }
+    
+  if (SFXEnable)
+  {
+    copy_func(&buffer, sfxramdata, 8192*16);
+    copy_func(&buffer, &SfxR0, PHnum2writesfxreg);
+  }
+    
+  if (SA1Enable)
+  {
+    copy_func(&buffer, &SA1Mode, PHnum2writesa1reg);
+    copy_func(&buffer, SA1RAMArea, 8192*16);
+    copy_func(&buffer, &SA1Status, 3);
+    copy_func(&buffer, &prevedi, 1*4);
+    copy_func(&buffer, &SA1xpc, 1*4);
+    copy_func(&buffer, &SA1RAMArea, 6*4);
+    copy_func(&buffer, &sa1dmaptr, 2*4);
+  }
+    
+  if (DSP1Type)
+  {
+    copy_func(&buffer, &DSP1COp, 70+128);
+    copy_func(&buffer, &C4WFXVal, 7*4+7*8+128);
+    copy_func(&buffer, &C41FXVal, 5*4+128);
+    copy_func(&buffer, &Op00Multiplicand, 3*4+128);
+    copy_func(&buffer, &Op10Coefficient, 4*4+128);
+    copy_func(&buffer, &Op04Angle, 4*4+128);
+    copy_func(&buffer, &Op08X, 5*4+128);
+    copy_func(&buffer, &Op18X, 5*4+128);
+    copy_func(&buffer, &Op28X, 4*4+128);
+    copy_func(&buffer, &Op0CA, 5*4+128);
+    copy_func(&buffer, &Op02FX, 11*4+3*4+28*8+128);
+    copy_func(&buffer, &Op0AVS, 5*4+14*8+128);
+    copy_func(&buffer, &Op06X, 6*4+10*8+4+128);
+    copy_func(&buffer, &Op01m, 4*4+128);
+    copy_func(&buffer, &Op0DX, 6*4+128);
+    copy_func(&buffer, &Op03F, 6*4+128);
+    copy_func(&buffer, &Op14Zr, 9*4+128);
+    copy_func(&buffer, &Op0EH, 4*4+128);
+  }
+
+  copy_func(&buffer, &soundcycleft, 33);
+  copy_func(&buffer, &spc700read, 10*4);  
+  copy_func(&buffer, &timer2upd, 1*4);  
+  copy_func(&buffer, &xa, 14*4);  
+  copy_func(&buffer, &spcnumread, 4);  
+  copy_func(&buffer, &spchalted, 4);  
+  copy_func(&buffer, &opcd, 6*4);  
+  copy_func(&buffer, &HIRQCycNext, 5);  
+  copy_func(&buffer, &oamaddr, 14*4);  
+  copy_func(&buffer, &prevoamptr, 1);  
+  copy_func(&buffer, &ReadHead, 1*4);  
+
+  if (SETAEnable)
+  { 
+    copy_func(&buffer, setaramdata, 256*16);
+  }
+  copy_func(&buffer, sram, ramsize);  
+  copy_func(&buffer, &tempesi, 4);  
+  copy_func(&buffer, &tempedi, 4);  
+  copy_func(&buffer, &tempedx, 4);  
+  copy_func(&buffer, &tempebp, 4);  
+}
+
 void BackupCVFrame()
 {
-    unsigned char *curpos;
+  unsigned char *curpos = StateBackup + (CBackupPos << 19) + 1024;
+  copy_state_data(curpos, memcpyinc);
+}
 
-    curpos = StateBackup + (CBackupPos << 19) + 1024;
-    memcpyinc (curpos, zsmesg, PHnum2writecpureg);
-    memcpyinc (curpos, &cycpbl, 2*4);
-    memcpyinc (curpos, &sndrot, 3019);
-    memcpyinc (curpos, wramdata, 8192*16);
-    memcpyinc (curpos, vram, 4096*16);
-
-    if (spcon)
-    {
-	memcpyinc (curpos, spcRam, PHspcsave);
-	memcpyinc (curpos, BRRBuffer, PHdspsave);
-	memcpyinc (curpos, DSPMem, 16*16);
-    }
-
-    if (C4Enable)	{ memcpyinc (curpos, C4Ram, 2048*4); }
-
-    if (SFXEnable)
-    {
-	memcpyinc (curpos, sfxramdata, 8192*16);
-	memcpyinc (curpos, &SfxR0, PHnum2writesfxreg);
-    }
-
-    if (SA1Enable)
-    {
-	memcpyinc (curpos, &SA1Mode, PHnum2writesa1reg);
-	memcpyinc (curpos, SA1RAMArea, 8192*16);
-	memcpyinc (curpos, &SA1Status, 3);
-	memcpyinc (curpos, &prevedi, 1*4);
-	memcpyinc (curpos, &SA1xpc, 1*4);
-	memcpyinc (curpos, &SA1RAMArea, 6*4);
-	memcpyinc (curpos, &sa1dmaptr, 2*4);
-    }
-
-    if (DSP1Type)
-    {
-	memcpyinc (curpos, &DSP1COp, 70+128);
-	memcpyinc (curpos, &C4WFXVal, 7*4+7*8+128);
-	memcpyinc (curpos, &C41FXVal, 5*4+128);
-	memcpyinc (curpos, &Op00Multiplicand, 3*4+128);
-	memcpyinc (curpos, &Op10Coefficient, 4*4+128);
-	memcpyinc (curpos, &Op04Angle, 4*4+128);
-	memcpyinc (curpos, &Op08X, 5*4+128);
-	memcpyinc (curpos, &Op18X, 5*4+128);
-	memcpyinc (curpos, &Op28X, 4*4+128);
-	memcpyinc (curpos, &Op0CA, 5*4+128);
-	memcpyinc (curpos, &Op02FX, 11*4+3*4+28*8+128);
-	memcpyinc (curpos, &Op0AVS, 5*4+14*8+128);
-	memcpyinc (curpos, &Op06X, 6*4+10*8+4+128);
-	memcpyinc (curpos, &Op01m, 4*4+128);
-	memcpyinc (curpos, &Op0DX, 6*4+128);
-	memcpyinc (curpos, &Op03F, 6*4+128);
-	memcpyinc (curpos, &Op14Zr, 9*4+128);
-	memcpyinc (curpos, &Op0EH, 4*4+128);
-    }
-
-    memcpyinc (curpos, &soundcycleft, 33);
-    memcpyinc (curpos, &spc700read, 10*4);
-    memcpyinc (curpos, &timer2upd, 1*4);
-    memcpyinc (curpos, &xa, 14*4);
-    memcpyinc (curpos, &spcnumread, 4);
-    memcpyinc (curpos, &spchalted, 4);
-    memcpyinc (curpos, &opcd, 6*4);
-    memcpyinc (curpos, &HIRQCycNext, 5);
-    memcpyinc (curpos, &oamaddr, 14*4);
-    memcpyinc (curpos, &prevoamptr, 1);
-    memcpyinc (curpos, &ReadHead, 1*4);
-
-    if (SETAEnable)	{ memcpyinc (curpos, setaramdata, 256*16); }
-
-    memcpyinc (curpos, sram, ramsize);
-    memcpyinc (curpos, &tempesi, 4);
-    memcpyinc (curpos, &tempedi, 4);
-    memcpyinc (curpos, &tempedx, 4);
-    memcpyinc (curpos, &tempebp, 4);
+void RestoreCVFrame()
+{
+  unsigned char *curpos = StateBackup + (PBackupPos << 19) + 1024;
+  copy_state_data(curpos, memcpyrinc);
 }
 
 extern unsigned int Bank0datr8[256], Bank0datr16[256], Bank0datw8[256];
@@ -166,90 +189,6 @@ void SA1UpdateDPageC()
     SA1DPageW16 = Bank0datw16[(SA1xd >> 8) & 0xFF];
 }
 
-extern unsigned int PBackupPos;
-
-void RestoreCVFrame()
-{
-    unsigned char *curpos;
-
-    curpos = StateBackup + (PBackupPos << 19) + 1024;
-    memcpyrinc (curpos, zsmesg, PHnum2writecpureg);
-    memcpyrinc (curpos, &cycpbl, 2*4);
-    memcpyrinc (curpos, &sndrot, 3019);
-    memcpyrinc (curpos, wramdata, 8192*16);
-    memcpyrinc (curpos, vram, 4096*16);
-
-    if (spcon)
-    {
-	memcpyrinc (curpos, spcRam, PHspcsave);
-	memcpyrinc (curpos, BRRBuffer, PHdspsave);
-	memcpyrinc (curpos, DSPMem, 16*16);
-    }
-
-    if (C4Enable)	{ memcpyrinc (curpos, C4Ram, 2048*4); }
-
-    if (SFXEnable)
-    {
-	memcpyrinc (curpos, sfxramdata, 8192*16);
-	memcpyrinc (curpos, &SfxR0, PHnum2writesfxreg);
-    }
-
-    if (SA1Enable)
-    {
-	memcpyrinc (curpos, &SA1Mode, PHnum2writesa1reg);
-	memcpyrinc (curpos, SA1RAMArea, 8192*16);
-	memcpyrinc (curpos, &SA1Status, 3);
-	memcpyrinc (curpos, &prevedi, 1*4);
-	memcpyrinc (curpos, &SA1xpc, 1*4);
-	memcpyrinc (curpos, &SA1RAMArea, 6*4);
-	memcpyrinc (curpos, &sa1dmaptr, 2*4);
-    }
-
-    if (DSP1Type)
-    {
-	memcpyrinc (curpos, &DSP1COp, 70+128);
-	memcpyrinc (curpos, &C4WFXVal, 7*4+7*8+128);
-	memcpyrinc (curpos, &C41FXVal, 5*4+128);
-	memcpyrinc (curpos, &Op00Multiplicand, 3*4+128);
-	memcpyrinc (curpos, &Op10Coefficient, 4*4+128);
-	memcpyrinc (curpos, &Op04Angle, 4*4+128);
-	memcpyrinc (curpos, &Op08X, 5*4+128);
-	memcpyrinc (curpos, &Op18X, 5*4+128);
-	memcpyrinc (curpos, &Op28X, 4*4+128);
-	memcpyrinc (curpos, &Op0CA, 5*4+128);
-	memcpyrinc (curpos, &Op02FX, 11*4+3*4+28*8+128);
-	memcpyrinc (curpos, &Op0AVS, 5*4+14*8+128);
-	memcpyrinc (curpos, &Op06X, 6*4+10*8+4+128);
-	memcpyrinc (curpos, &Op01m, 4*4+128);
-	memcpyrinc (curpos, &Op0DX, 6*4+128);
-	memcpyrinc (curpos, &Op03F, 6*4+128);
-	memcpyrinc (curpos, &Op14Zr, 9*4+128);
-	memcpyrinc (curpos, &Op0EH, 4*4+128);
-    }
-
-    memcpyrinc (curpos, &soundcycleft, 33);
-    memcpyrinc (curpos, &spc700read, 10*4);
-    memcpyrinc (curpos, &timer2upd, 1*4);
-    memcpyrinc (curpos, &xa, 14*4);
-    memcpyrinc (curpos, &spcnumread, 4);
-    memcpyrinc (curpos, &spchalted, 4);
-    memcpyrinc (curpos, &opcd, 6*4);
-    memcpyrinc (curpos, &HIRQCycNext, 5);
-    memcpyrinc (curpos, &oamaddr, 14*4);
-    memcpyrinc (curpos, &prevoamptr, 1);
-    memcpyrinc (curpos, &ReadHead, 1*4);
-
-    if (SETAEnable)	{ memcpyrinc (curpos, setaramdata, 256*16); }
-
-    memcpyrinc (curpos, sram, ramsize);
-    memcpyrinc (curpos, &tempesi, 4);
-    memcpyrinc (curpos, &tempedi, 4);
-    memcpyrinc (curpos, &tempedx, 4);
-    memcpyrinc (curpos, &tempebp, 4);
-
-    UpdateDPageC();
-    SA1UpdateDPageC();
-}
 
 extern unsigned int spcBuffera;
 extern unsigned int Voice0BufPtr, Voice1BufPtr, Voice2BufPtr, Voice3BufPtr;
