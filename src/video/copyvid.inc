@@ -999,7 +999,7 @@ NEWSYM copyvesa2320x240x8b
     add esi,32
     add edi,64
     dec dl
-    jnz .loopc
+    jnz .loopb
     emms
     pop es
     ret
@@ -2353,7 +2353,7 @@ NEWSYM copyvesa2320x240x16b
     add esi,64
     add edi,128
     dec dl
-    jnz .loopc
+    jnz .loopb
     emms
     pop es
     ret
