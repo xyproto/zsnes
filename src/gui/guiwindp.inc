@@ -5647,7 +5647,7 @@ GUIGUIAboutText6e db '    IPHER         GRINVADER',0
 %ifdef __MSDOS__
 GUIGUIAboutText7 db 'DOS VERSION',0
 %elifdef __WIN32__
-GUIGUIAboutText7 db 'WIN32 VERSION',0
+GUIGUIAboutText7 db 'WIN VERSION',0
 %elifdef __LINUX__
 GUIGUIAboutText7 db 'SDL VERSION',0
 %endif
