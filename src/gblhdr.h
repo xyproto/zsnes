@@ -57,16 +57,11 @@
 	# endif
 	#endif
 
-// General stdc header stuff, including memory.h stuff, like the fact that
-//	memcpy, and memmove are easily definable...
+// more standard stuff
 	
 	#include <stdlib.h>
 	#include <stdio.h>	
 	#include <stdarg.h>
-	# ifndef HAVE_MEMCPY
-	#define memcpy(d, s, n) bcopy ((s), (d), (n))
-	#define memmove(d, s, n) bcopy ((s), (d), (n))
-	# endif
 
 // unistd.h stuff
 
