@@ -1554,7 +1554,11 @@ NEWSYM getcfg
     jne .nostereo
     mov byte[StereoSound],1
     mov byte[cfgStereoSound],1
+    jmp .yesstereo
 .nostereo
+    mov byte[StereoSound],0
+    mov byte[cfgStereoSound],0
+.yesstereo    
     ret
 
 .guidisable
