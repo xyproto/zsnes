@@ -22,11 +22,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include "aribitcd.h"
 
-typedef NCompression::NArithmetic::CRangeEncoder CMyRangeEncoder;
-typedef NCompression::NArithmetic::CRangeDecoder CMyRangeDecoder;
 
-template <int aNumMoveBits> class CMyBitEncoder: 
-    public NCompression::NArithmetic::CBitEncoder<aNumMoveBits> {};
+typedef NCompression::NArithmetic::CRangeDecoder CMyRangeDecoder;
 template <int aNumMoveBits> class CMyBitDecoder: 
     public NCompression::NArithmetic::CBitDecoder<aNumMoveBits> {};
 
