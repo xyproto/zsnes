@@ -28,6 +28,17 @@ extern void outofmemory();
 extern int *spc7110romptr;
 extern int *StateBackup;
 extern int *spcBuffera;
+extern int *spritetablea;
+extern int *vbufaptr;
+extern int *vbufeptr;
+extern int *ngwinptrb;
+extern int *vbufdptr;
+extern int *vcache2bs;
+extern int *vcache4bs;
+extern int *vcache8bs;
+extern int *RGBtoYUVPtr;
+extern int *romaptr;
+
 
 int doMemAlloc(int *ptr, int size)
 {
