@@ -26,7 +26,9 @@ EXTSYM SpecialLine
 EXTSYM vidbufferofsb
 EXTSYM HalfTransB,HalfTransC
 
+%ifdef __MINGW__
 NEWSYM CopyVWinAsmStart
+%endif
 
 SECTION .bss
 NEWSYM AddEndBytes, resd 1         ; Number of bytes between each line
@@ -1630,5 +1632,7 @@ InterPtr resd 1
 SECTION .text
 
 
+%ifdef __MINGW__
 NEWSYM CopyVWinAsmEnd
+%endif
 
