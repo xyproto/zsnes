@@ -39,11 +39,7 @@ NEWSYM res480, resb 1
 SECTION .text
 
 NEWSYM dosinitvideo2
-    cmp byte[cvidmode],2
-    jne .nomodeq
     jmp dosinitvideo.initmodeq256
-.nomodeq
-    ret
 
 ;*******************************************************
 ; InitVideo
