@@ -68,7 +68,7 @@ MovieRecord:
     call File_Seek_End
     cmp byte[MovieProcessing],0
     je .noappend
-    mov byte[MovieProcessing],1
+    mov byte[MovieProcessing],2
     jmp .netstuff
 .noappend
     mov al,[soundon]
