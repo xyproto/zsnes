@@ -16,7 +16,7 @@
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 // Enable use of network loaded games with zsnes:// file names
-#define CCBETA
+//#define CCBETA
 
 // Enable debug of network loaded games
 //#define CCDEBUG
