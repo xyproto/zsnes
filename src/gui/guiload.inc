@@ -1433,6 +1433,25 @@ NEWSYM DTALoc, times 2048+32 db 0
 
 ; Routines to load from the Quick Menu
 loadquickfname:
+.trynext
+    cmp byte[GUIwinptr],0
+    je near .noclose
+    xor eax,eax
+    mov al,[GUIwinptr]
+    dec eax
+    xor ebx,ebx
+    mov bl,[GUIwinorder+eax]
+    ; close window
+    mov byte[GUIwinorder+eax],0
+    mov byte[GUIwinactiv+ebx],0
+    dec byte[GUIwinptr]
+    cmp byte[GUIwinptr],0
+    jne .noclose
+    mov al,[GUIpmenupos]
+    mov [GUIcmenupos],al
+    jmp .trynext
+.noclose
+
     ; move menuitem to top
     cmp ecx,0
     je near .nomove
