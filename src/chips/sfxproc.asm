@@ -507,10 +507,8 @@ NEWSYM reg3030w
     ; Disassemble Flags
     test al,20h
     jz .noexec
-    pushad
     mov dword [NumberOfOpcodes],100
     call StartSFX
-    popad
 .noexec
     ret
 NEWSYM reg3031w
