@@ -1391,7 +1391,7 @@ NEWSYM GUIswcfind,    db '*.SWC',0
 NEWSYM GUIfigfind,    db '*.FIG',0
 NEWSYM GUImgdfind,    db '*.MGD',0
 NEWSYM GUIufofind,    db '*.UFO',0
-NEWSYM GUIjmafind,    db '*.GD3',0
+NEWSYM GUIgd3find,    db '*.GD3',0
 %endif
 NEWSYM GUIfind058,    db '*.058',0
 NEWSYM GUIfind078,    db '*.078',0
