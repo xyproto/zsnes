@@ -64,6 +64,9 @@ WINDOSOBJ=${DOSDIR}/debug.obj ${DOSDIR}/joy.obj ${DOSDIR}/modemrtn.obj ${DOSDIR}
 	${DOSDIR}/initvid.obj ${DOSDIR}/sw.obj ${DOSDIR}/gppro.obj ${DOSDIR}/vesa12.obj\
         ${DOSDIR}/zsipx.obj
 
+JMAOBJ=${JMADIR}/7zlzma.obj ${JMADIR}/aribitcd.obj ${JMADIR}/crc32.obj ${JMADIR}/iiostrm.obj\
+       ${JMADIR}/inbyte.obj ${JMADIR}/jma.obj ${JMADIR}/lzma.obj ${JMADIR}/lzmadec.obj\
+       ${JMADIR}/outbyte.obj ${JMADIR}/winout.obj ${JMADIR}/zsnesjma.obj
 PREOBJ=
 
 ZIPOBJ=${ZIPDIR}/unzip.obj ${ZIPDIR}/zpng.obj
@@ -73,7 +76,7 @@ EFFECTSOBJ=${EFFECTSDIR}/burn.obj ${EFFECTSDIR}/water.obj ${EFFECTSDIR}/smoke.ob
 MAINOBJ=cfgload.obj endmem.obj init.obj initc.obj uic.obj patch.obj ui.obj vcache.obj version.obj
 
 
-OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ} ${WINDOSOBJ} ${EFFECTSOBJ}
+OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ} ${WINDOSOBJ} ${EFFECTSOBJ} ${JMAOBJ}
 LIBS=
 CFLAGS=/Ox /G6 /c /D__WIN32__
 ASM=nasm
@@ -141,7 +144,7 @@ ${CHIPDIR}/dsp1proc.obj: ${CHIPDIR}/dsp1proc.asm macros.mac
 ui.obj: ui.asm macros.mac
 cfgload.obj:cfgload.asm macros.mac
 init.obj:init.asm macros.mac
-initc.obj:initc.c
+initc.obj:initc.c ${JMADIR}/zsnesjma.h
 uic.obj:uic.c
 patch.obj:patch.c
 ALL:
@@ -226,6 +229,18 @@ ${CHIPDIR}/sa1proc.obj: ${CHIPDIR}/sa1proc.asm macros.mac
 endmem.obj: endmem.asm macros.mac
 ${DOSDIR}/modemrtn.obj: ${DOSDIR}/modemrtn.asm macros.mac
 
+${JMADIR}/7zlzma.obj: ${JMADIR}/7zlzma.cpp
+${JMADIR}/aribitcd.obj: ${JMADIR}/aribitcd.cpp
+${JMADIR}/crc32.obj: ${JMADIR}/crc32.cpp ${JMADIR}/crc32.h
+${JMADIR}/iiostrm.obj: ${JMADIR}/iiostrm.cpp
+${JMADIR}/inbyte.obj: ${JMADIR}/inbyte.cpp
+${JMADIR}/jma.obj: ${JMADIR}/jma.cpp ${JMADIR}/jma.h ${JMADIR}/crc32.h ${JMADIR}/portable.h
+${JMADIR}/lzma.obj: ${JMADIR}/lzma.cpp
+${JMADIR}/lzmadec.obj: ${JMADIR}/lzmadec.cpp
+${JMADIR}/outbyte.obj: ${JMADIR}/outbyte.cpp
+${JMADIR}/winout.obj: ${JMADIR}/winout.cpp
+${JMADIR}/zsnesjma.obj: ${JMADIR}/zsnesjma.cpp ${JMADIR}/zsnesjma.h ${JMADIR}/jma.h
+
 clean:
 	del *.obj
 	del ${CHIPDIR}\*.obj
@@ -237,6 +252,7 @@ clean:
 	del ${ZIPDIR}\*.obj
 	del ${DOSDIR}\*.obj
 	del ${EFFECTSDIR}\*.obj
+	del ${JMADIR}\*.obj	
 	del zsnesw.exe
 	
 
