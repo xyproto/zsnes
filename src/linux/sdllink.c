@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <time.h>
 #include "SDL.h"
 #else   // __WIN32__
 #include <windows.h>
@@ -1713,9 +1714,19 @@ void ZsnesPage()
 }
 
 #ifdef __LINUX__
-void GetLocalTime(void *pointer)
+short SystemTimewHour;
+short SystemTimewMinute;
+short SystemTimewSecond; 
+
+void GetLocalTime()
 {
-	STUB_FUNCTION;
+	time_t current;
+	struct tm *timeptr;
+	time (&current);
+	timeptr = localtime(&current);
+	SystemTimewHour = timeptr->tm_hour;
+	SystemTimewMinute = timeptr->tm_min;
+	SystemTimewSecond = timeptr->tm_sec;
 }
 #endif
 

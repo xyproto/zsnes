@@ -2115,28 +2115,21 @@ NEWSYM GotoHomepage
     popad
     ret
 
+EXTSYM SystemTimewHour
+EXTSYM SystemTimewMinute
+EXTSYM SystemTimewSecond
+    
 NEWSYM GetTimeInSeconds
-	push dword SystemTime
-	call [GetLocalTime]
-	movzx eax,word [SystemTime.wHour]
+	call GetLocalTime
+	movzx eax,word [SystemTimewHour]
 	mov ebx,60
 	mul ebx
-	movzx ebx,word [SystemTime.wMinute]
+	movzx ebx,word [SystemTimewMinute]
 	add eax,ebx
 	mov ebx,60
 	mul ebx
-	movzx ebx,word [SystemTime.wSecond]
+	movzx ebx,word [SystemTimewSecond]
 	add eax,ebx
 	ret
-
-SystemTime:
-.wYear			dw	0
-.wMonth			dw	0
-.wDayOfWeek		dw	0
-.wDay			dw	0
-.wHour			dw	0
-.wMinute		dw	0
-.wSecond		dw	0
-.wMilliseconds	dw	0
 
 NEWSYM WinIntRFAsmEnd
