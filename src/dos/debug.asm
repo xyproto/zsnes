@@ -21,7 +21,6 @@ EXTSYM DosExit,curblank,previdmode,start65816,wramdata,C4Ram,cnetplaybuf
 EXTSYM UpdateDPage,SA1Enable,splitflags,joinflags,delay
 EXTSYM Open_File,Read_File,Create_File,Write_File,Close_File,romdata
 EXTSYM Check_Key,Get_Key
-;EXTSYM SDD1Array, SDD1Entry
 EXTSYM LastLog
 EXTSYM fulladdtab
 EXTSYM DecompArray,DecompAPtr
@@ -616,12 +615,12 @@ NEWSYM drawwindow
     cmp bl,[wy2]
     je .last
     ; middle
-    mov al,'³'
+    mov al,''
     stosw
     mov al,' '
     sub cx,2
     rep stosw
-    mov al,'³'
+    mov al,''
     stosw
     jmp .addnext
 .first
