@@ -4816,7 +4816,7 @@ DisplayGUIOptns:
     GUIOuttextwin2u 10,138,38,GUIGUIOptnsTextK,1
     GUIOuttextwin2u 10,26,193,GUIGUIOptnsTextL,1
 %endif
-    GUIOuttextwin2u 10,138,48,GUIGUIOptnsTextM,1
+    GUIOuttextwin2 10,138,48,GUIGUIOptnsTextM
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,16,123,GUIGUIOptnsText6
     mov byte[GUIGUIOptnsText6],'G'
