@@ -1519,28 +1519,15 @@ NEWSYM headerhack
 
     mov esi,[romdata]
     add esi,07FC0h
-    cmp dword[esi],'VORT'
-    jne .notvortex
-    mov word[latchxr],0
-.notvortex
-
-    mov esi,[romdata]
-    add esi,07FC0h
-    cmp dword[esi],'MR.N'
-    jne .notmrnutz
-    mov word[latchxr],0
-.notmrnutz
-
-    mov esi,[romdata]
-    add esi,07FC0h
-    cmp dword[esi],'TENC'
-    jne .nottenchiwokurau
-    cmp dword[esi+4],'HI W'
-    jne .nottenchiwokurau
-    cmp dword[esi+8],'O KU'
-    jne .nottenchiwokurau
-    mov word[latchxr],0
-.nottenchiwokurau
+    cmp dword[esi],'STAR'
+    jne .notds9
+    cmp dword[esi+4],' TRE'
+    jne .notds9
+    cmp dword[esi+8],'K: D'
+    jne .notds9
+    mov byte[opexec268],187
+    mov byte[opexec358],187
+.notds9
 
     ; Lamborgini Challenge - -p 110
     mov esi,[romdata]
@@ -1745,7 +1732,6 @@ NEWSYM headerhack
     mov byte[opexec358],182
     mov byte[opexec268cph],47
     mov byte[opexec358cph],47
-    mov word[latchxr],0
 .noromheadcf2
 
     mov esi,[romdata]
@@ -5544,7 +5530,7 @@ NEWSYM CheckROMType
     cmp bx,0FFFFh
     jne .cantcheck
     mov byte[romtype],2
-    jmp .donecheck
+    jmp .cantcheck
 .cantcheck
     ; check for a header with mostly letters or spaces
     mov esi,[romdata]
