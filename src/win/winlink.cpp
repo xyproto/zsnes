@@ -1570,6 +1570,7 @@ void initwinvideo(void)
    {
       FirstVid = 0;
       InitDirectDraw();
+      clearwin();
       return;
    }
 
@@ -1580,6 +1581,7 @@ void initwinvideo(void)
       PrevFull = 0;
       ReleaseDirectDraw();
       InitDirectDraw();
+      clearwin();
       return;
    }
 
