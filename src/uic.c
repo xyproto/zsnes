@@ -24,9 +24,22 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define true 1
 #define false 0
 
+extern void outofmemory();
 extern int *spc7110romptr;
+extern int *StateBackup;
+extern int *spcBuffera;
+
+int doMemAlloc(int *ptr, int size)
+{
+	int result = 0;
+
+	ptr = malloc(size);
+	if (ptr) result = 1;
+
+	return result;
+}
 
 void allocspc7110()
 {
-	spc7110romptr = malloc(8192*1024+4096);
+	if (!doMemAlloc(spc7110romptr, 8192*1024+4096)) outofmemory();
 }
