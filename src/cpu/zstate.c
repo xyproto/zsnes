@@ -763,7 +763,8 @@ extern unsigned int KeyLoadState, Totalbyteloaded, SfxMemTable[256], SfxCPB;
 extern unsigned int SfxPBR, SfxROMBR, SfxRAMBR;
 extern unsigned char pressed[256+128+64], multchange, txtloadmsg[15];
 extern unsigned char txtconvmsg[16], txtnfndmsg[23], vidmemch2[4096];
-extern unsigned char vidmemch4[4096], vidmemch8[4096], versn, MovieProcessing;
+extern unsigned char vidmemch4[4096], vidmemch8[4096], 
+MovieProcessing;
 extern unsigned char ioportval, SDD1Enable, nexthdma;
 
 void procexecloop();

@@ -71,7 +71,7 @@ EXTSYM CapturePicture,PrevPicture,NoPictureSave
 EXTSYM BRRPlace0,SfxCPB,SfxCROM,SfxLastRamAdr,SfxMemTable,Totalbyteloaded
 EXTSYM SfxRAMBR,SfxRAMMem,SfxROMBR,SfxRomBuffer,Voice0Freq
 EXTSYM cycpbl,cycpbl2,cycpblt,cycpblt2,irqon,nexthdma
-EXTSYM repackfunct,spcnumread,spchalted,spcon,versn,headerhack,initpitch
+EXTSYM repackfunct,spcnumread,spchalted,spcon,headerhack,initpitch
 EXTSYM SPCMultA,PHnum2writespc7110reg
 EXTSYM multchange,procexecloop,vidmemch2
 EXTSYM romispal

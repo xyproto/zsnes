@@ -37,7 +37,7 @@ EXTSYM ssdatst,timeron,timincr0,timincr1,timincr2,timinl0
 EXTSYM timinl1,timinl2,vram
 EXTSYM spcnumread
 EXTSYM Curtableaddr,fnamest,procexecloop,stateloader,tableA
-EXTSYM versn,vidmemch2
+EXTSYM vidmemch2
 EXTSYM statesaver
 EXTSYM memtablew8,printhex8,writeon,SetAddressingModesSA1
 EXTSYM curcyc,dmadata,execsingle,initaddrl,memtabler8,pdh
