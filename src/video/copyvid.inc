@@ -28,6 +28,20 @@
 %endmacro
 
 
+; Blends two 16-bit pixels at 50%.
+
+; ax = first pixel, bx = second pixel
+; ax (after) = resulting pixel
+
+%macro SSHalfBlend 0
+    shr eax,byte 1
+    shr ebx,byte 1
+    and eax,7befh
+    and ebx,7befh
+    add eax,ebx
+%endmacro
+
+
 ; Horizontal recursive anti-aliasing,
 ; blurs edges without increasing size.
 
@@ -49,11 +63,7 @@
     mov [es:edi-2],bx
     jmp %%loop3
 %%loop2
-    shr ax,byte 1
-    shr bx,byte 1
-    and ax,7befh
-    and bx,7befh
-    add ax,bx
+    SSHalfBlend
     mov [es:edi],ax
     mov [es:edi-2],ax
 %%loop3
@@ -70,7 +80,7 @@
 
 ; Used for 640x400 16bit...
 
-; Reduces the vertical stretch effect.
+; Kills the vertical stretch effect.
 
 ; ax = current pixel, bx = working pixel
 ; ecx = number of pixels (passed)
@@ -81,11 +91,7 @@
     mov bx,[esi-(288*2)]
     cmp ax,bx
     je %%loop2
-    shr ax,byte 1
-    shr bx,byte 1
-    and ax,7befh
-    and bx,7befh
-    add ax,bx
+    SSHalfBlend
 %%loop2
     mov [es:edi],ax
     mov [es:edi+2],ax
@@ -109,29 +115,20 @@
     mov ax,[esi]
     mov [es:edi],ax
     mov bx,[esi+2]
-    call %%loop2
+    SSHalfBlend
     mov [es:edi+2],ax
     mov ax,[esi]
     mov bx,[esi+(288*2)]
-    call %%loop2
+    SSHalfBlend
     mov [es:edi+(%1*2)],ax
     mov ax,[esi]
     mov bx,[esi+(288*2)+2]
-    call %%loop2
+    SSHalfBlend
     mov [es:edi+(%1*2)+2],ax
     add esi,byte 2
     add edi,byte 4
     dec ecx
     jnz %%loop
-    jmp %%done
-%%loop2
-    shr ax,byte 1
-    shr bx,byte 1
-    and ax,7befh
-    and bx,7befh
-    add ax,bx
-    ret    
-%%done
 %endmacro
 
 
@@ -1370,7 +1367,7 @@ NEWSYM copyvesa2800x600x16b
     add esi,16*2+16*2
     add edi,144*2+800*2+144*2
     dec dl
-    jnz .interpolate
+    jnz near .interpolate
     
 .done
     pop es

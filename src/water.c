@@ -137,15 +137,18 @@ void DrawWater(void)
 		
 		if(mode&4)
 		{
+            int x,y;
             srand(time(0));
-            if(rand()%20 == 0)
+            if(rand()%14 == 7)
 			{
 /*
 				if(mode & 0x4000)
 //					HeightBlob(-1, -1, radius/2, pheight, Hpage);
 				else
-*/
-					SineBlob(-1, -1, radius, -pheight*6, Hpage);
+*/              
+                     x=rand()%(SCRW-2)+1;
+                     y=rand()%(SCRH-2)+1;
+                    SineBlob(x, y, radius, -pheight*6, Hpage);
 			}
 		}	
         CalcWater(Height[Hpage^1], Height[Hpage], density);
