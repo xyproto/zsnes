@@ -1046,12 +1046,6 @@ NEWSYM ReadInputDevice
 .nopl24
     ret
 
-SECTION .data
-NEWSYM txtmovieended, db 'MOVIE FINISHED.',0
-
-SECTION .bss
-NEWSYM StoreBuffer, resb 128*32
-
 ;*******************************************************
 ; Init 65816                   Initializes the Registers
 ;*******************************************************

@@ -850,7 +850,8 @@ MovieProcessing
 
 
 extern unsigned int MsgCount, MessageOn;
-extern unsigned char MovieTemp, txtmovieended[15], MovieProcessing, *Msgptr;
+extern unsigned char MovieTemp, MovieProcessing, *Msgptr;
+char *txtmovieended = "MOVIE FINISHED.";
 
 static FILE *movfhandle;
 
@@ -934,7 +935,8 @@ unsigned int bytemerger (unsigned char heaviest, unsigned char heavy, unsigned c
 }
 
 unsigned int CReadHead, ReadHead, CFWriteStart = 64+30, CFWriteHead;
-extern unsigned char BackState, CNetType, StoreBuffer[128*32];
+extern unsigned char BackState, CNetType;
+unsigned char StoreBuffer[128*32];
 
 void Record()
 {
