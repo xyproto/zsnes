@@ -4196,7 +4196,6 @@ NEWSYM UpdateCLSR
    test byte[SfxCLSR],01h
    jz .nohighsfx
    mov dword [NumberOfOpcodes2],700 ;700
-int 3h
 .nohighsfx
     cmp byte[SFXCounter],1
     je .noyi
