@@ -1425,19 +1425,29 @@ transfersram:
     ;Do players want SRAM sent?
     cmp byte[UseRemoteSRAMData],0
     je .nosram
-    
-    ;It has a battery, send it.
-    cmp byte[CHIPBATT],1
-    je .yessram
-    
-    ;If last if failed, no battery, so no SRAM sending for SA1 or SFX
-    cmp byte[SFXEnable],1
-    je .nosram
-    cmp byte[SA1Enable],1
-    je .nosram
+
     cmp dword[ramsize],0
     je .nosram
-.yessram
+    
+    mov ebx,[sram]
+    cmp byte[SFXEnable],1    
+    jne .notsfx
+    mov ebx,[sfxramdata]
+.notsfx    
+    cmp byte[SA1Enable],1
+    jne .notsa1
+    mov ebx,[SA1RAMArea]
+.notsa1    
+    cmp byte[SETAEnable],1
+    jne .notseta
+    mov ebx,[setaramdata]
+.notseta
+    cmp ebx,[sram]    
+    je .notspecial
+    cmp byte[CHIPBATT],0
+    je .nosram
+.notspecial
+    push ebx ;Save .srm register
     cmp byte[UseRemoteSRAMData],1
     je .uselocal
     cmp byte[UseRemoteSRAMData],2
@@ -1464,7 +1474,7 @@ transfersram:
 
     ; send sram
     mov ecx,[ramsize]
-    mov ebx,[sram]
+    pop ebx ;Restore .srm register
     xor esi,esi
 .loop
     push ebx
@@ -1513,7 +1523,7 @@ transfersram:
 
     ; receive sram
     mov ecx,[ramsize]
-    mov ebx,[sram]
+    pop ebx ;Restore .srm register
 .loopb
 .getnext
     pushad
