@@ -3259,8 +3259,8 @@ DisplayGUIPathsClick
     GUITextBoxInputNach 135,95,235,105,6,1024     ;STPath
     GUITextBoxInputNach 135,120,235,130,7,1024    ;GNextPath
     GUITextBoxInputNach 8,155,100,165,8,1024      ;FEOEZPath
-    GUITextBoxInputNach 8,180,100,190,9,1024      ;SJNSPath
-    GUITextBoxInputNach 135,155,235,165,10,1024   ;MDHPath
+    GUITextBoxInputNach 135,155,235,165,9,1024    ;SJNSPath
+    GUITextBoxInputNach 8,180,100,190,10,1024     ;MDHPath
     GUITextBoxInputNach 135,180,235,190,11,1024   ;SPL4Path
     ret
 
