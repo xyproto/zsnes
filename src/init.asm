@@ -3922,7 +3922,11 @@ ZipDeleteRecurse:
 SPC7110Allocated db 0
 SPC7110DIRA db 'FEOEZSP7',0
 SPC7110DIRB db 'SMHT-SP7',0
+%ifdef __LINUX__
+SDD1DIRA db 'socnsdd1',0
+%else
 SDD1DIRA db 'SOCNSDD1',0
+%endif
 SDD1DIRB db 'SFA2SDD1',0
 SPC7110IndexName db 'INDEX.BIN',0
 SPC7110DirEntry db '*.BIN',0
