@@ -269,7 +269,7 @@ void gl_drawwin()
 		glfilters = GL_NEAREST;
 	}
 
-	if (En2xSaI)
+	if (En2xSaI && SurfaceX != 256)
 	{
 		/* We have to use copy640x480x16bwin for 2xSaI */
 		AddEndBytes = 0;
