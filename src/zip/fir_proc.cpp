@@ -70,7 +70,7 @@ inline float log2(float f) {
 // cutoff (1.0 == pi/2)
 #define WFIR_CUTOFF			0.90f
 #define WFIR_CUTOFFBITS		12
-#define WFIR_CUTOFFLEN		(1L<<(WFIR_CUTOFFBITS))
+#define WFIR_CUTOFFLEN		((1L<<(WFIR_CUTOFFBITS))+1)
 // wfir type
 #define WFIR_HANN			0
 #define WFIR_HAMMING		1
@@ -139,11 +139,11 @@ class CzWINDOWEDFIR
 			return (float)(_LWc*_LSi);
 		}
 		static signed short lut[WFIR_LUTLEN*WFIR_WIDTH];
-		static signed int lut_co[WFIR_CUTOFFLEN*WFIR_WIDTH];
+		static signed short lut_co[WFIR_CUTOFFLEN*WFIR_WIDTH];
 };
 
 signed short CzWINDOWEDFIR::lut[WFIR_LUTLEN*WFIR_WIDTH];
-signed int CzWINDOWEDFIR::lut_co[WFIR_CUTOFFLEN*WFIR_WIDTH];
+signed short CzWINDOWEDFIR::lut_co[WFIR_CUTOFFLEN*WFIR_WIDTH];
 
 CzWINDOWEDFIR::CzWINDOWEDFIR()
 {	int _LPcl;
@@ -177,7 +177,7 @@ CzWINDOWEDFIR::CzWINDOWEDFIR()
 		for( _LCc=0; _LCc<WFIR_WIDTH;_LCc++ )
 		{
 			float _LCoef = (float)floor( 0.5 + _LScale*_LCoefs[_LCc]*_LGain );
-			lut_co[_LIdx+_LCc] = (signed int)( (_LCoef<-_LScale)?-_LScale:((_LCoef>_LScale)?_LScale:_LCoef) );
+			lut_co[_LIdx+_LCc] = (signed short)( (_LCoef<-_LScale)?-_LScale:((_LCoef>_LScale)?_LScale:_LCoef) );
 		}
 	}
 }
@@ -239,6 +239,7 @@ float coef( int _PCnr, float _POfs, float _PCut, int _PWidth, int _PType ) //flo
 CzWINDOWEDFIR sfir;
 
 extern "C" signed short *fir_lut = &CzWINDOWEDFIR::lut[0];
+extern "C" signed short *fir_lut_co = &CzWINDOWEDFIR::lut_co[0];
 
 
 #if 0
@@ -273,8 +274,10 @@ extern "C" int fir_interpolate(unsigned int nPos, int *p)
 
 #endif
 
-#define WFIR_CUTOFFSHIFT	(32-(WFIR_CUTOFFBITS+WFIR_LOG2WIDTH))
-#define WFIR_CUTOFFMASK	((((1L<<(32-WFIR_CUTOFFSHIFT))-1)&~((1L<<WFIR_LOG2WIDTH)-1)))
+#if 0
+
+#define WFIR_CUTOFFSHIFT	(32-(WFIR_CUTOFFBITS+1+WFIR_LOG2WIDTH))
+#define WFIR_CUTOFFMASK	((((1L<<(33-WFIR_CUTOFFSHIFT))-1)&~((1L<<WFIR_LOG2WIDTH)-1)))
 #define WFIR_CUTOFFHALVE	(1L<<(32-(WFIR_CUTOFFBITS+1)))
 
 inline void __fir_downsample(unsigned int freq, signed int *p, signed short *out)
@@ -328,3 +331,5 @@ extern "C" void fir_downsample(unsigned int freq, signed int *p, signed short *o
 {
 	__fir_downsample(freq, p, out);
 }
+
+#endif

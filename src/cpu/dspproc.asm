@@ -1764,7 +1764,8 @@ section .text
     mov [prev0],edx
 %endmacro
 
-EXTSYM fir_downsample
+;EXTSYM fir_downsample
+EXTSYM fir_lut_co
 
 %macro ProcessDynamicLowPass 0
     mov ecx,[curvoice]
@@ -1948,6 +1949,42 @@ ALIGN16
     mov [ebx+20*4],eax
     mov [ebx+25*4],eax
 
+%if 1
+    mov ecx,16
+    sub edx,0F80000h
+    shr edx,15
+    and edx,7FFF0h
+    add edx,[fir_lut_co]
+    movq mm2,[edx]
+    movq mm3,[edx+8]
+%%DLPF_fir_loop
+    movq mm0,[ebx]
+    packssdw mm0,[ebx+8]
+    movq mm1,[ebx+16]
+    packssdw mm1,[ebx+24]
+    pmaddwd mm0,mm2
+    pmaddwd mm1,mm3
+    paddd mm0,mm1
+    movq [fir_tmp],mm0
+    mov edx,[fir_tmp]
+    add edx,[fir_tmp+4]
+    sar edx,14
+    cmp edx,32767
+    jle %%DLPF_fir_clip
+    mov edx,32767
+%%DLPF_fir_clip
+    cmp edx,-32768
+    jge %%DLPF_fir_clip2
+    mov edx,-32768
+%%DLPF_fir_clip2
+    mov [edi],dx
+    add edi,2
+    add ebx,4
+    dec ecx
+    jnz %%DLPF_fir_loop
+    emms
+
+%else
 
     push edi
     push ebx
@@ -1955,6 +1992,7 @@ ALIGN16
     call fir_downsample
     add esp,+12
     add edi,32
+%endif
     ret
 %endmacro
 
