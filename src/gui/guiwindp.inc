@@ -5230,6 +5230,15 @@ GUIGUIOptnsTextN db 'TRAP MOUSE CURSOR',0
 SECTION .text
 
 DisplayGUIAbout:
+
+    ;This will attach compile date onto the end of GUIGUIAboutText1
+    pushad
+    EXTSYM VERSION_STR, placedate
+    mov eax,GUIGUIAboutText1
+    mov [VERSION_STR],eax
+    call placedate
+    popad
+
     GUIDrawWindowBox 11,GUIAboutDisp
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
@@ -5287,7 +5296,7 @@ DisplayGUIAbout:
     ret
 
 SECTION .data
-GUIGUIAboutText1 db 'ZSNES V',ZVERSION,'',0
+GUIGUIAboutText1 db 'ZSNES V',ZVERSION,'             ',0 ;Need room for date
 GUIGUIAboutText2 db 'CODED BY :  ',0
 GUIGUIAboutText3 db '    ZSKNIGHT',0
 GUIGUIAboutText4 db '    _DEMO_',0
@@ -6260,3 +6269,4 @@ NEWSYM GUIMenuItem, db 'GAME  ',0
             db 25,0
 
 SECTION .text
+

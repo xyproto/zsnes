@@ -64,7 +64,7 @@ PREOBJ=
 
 ZIPOBJ=${ZIPDIR}/zzip.obj ${ZIPDIR}/unzip.obj ${ZIPDIR}/zpng.obj
 
-MAINOBJ=cfgload.obj endmem.obj fixsin.obj init.obj initc.obj ui.obj vcache.obj water.obj smoke.obj burn.obj
+MAINOBJ=cfgload.obj endmem.obj fixsin.obj init.obj initc.obj ui.obj vcache.obj water.obj smoke.obj burn.obj version.obj
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ} ${WINDOSOBJ}
 LIBS=
@@ -131,6 +131,11 @@ ui.obj: ui.asm macros.mac
 cfgload.obj:cfgload.asm macros.mac
 init.obj:init.asm macros.mac
 initc.obj:initc.c
+
+ALL:
+	del version.obj
+version.obj:version.c
+
 ${DOSDIR}/debug.obj: ${DOSDIR}/debug.asm macros.mac
 ${CPUDIR}/addrni.obj: ${CPUDIR}/addrni.asm
 ${CPUDIR}/execute.obj: ${CPUDIR}/execute.asm macros.mac
@@ -221,5 +226,6 @@ clean:
 	del ${DOSDIR}\*.obj
 	del zsnesw.exe
 	
+
 
 
