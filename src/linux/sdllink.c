@@ -1109,6 +1109,16 @@ void clearwin()
    UnlockSurface();
 }
 
+void LinuxExit (void)
+{
+	if (sdl_inited)
+	{
+		SDL_WM_GrabInput(SDL_GRAB_OFF);	// probably redundant
+		SDL_Quit();
+	}
+	exit(0);
+}
+
 void drawscreenwin(void)
 {
    DWORD i,j,color32;
@@ -1252,19 +1262,25 @@ void drawscreenwin(void)
                }
             break;
       case 24:
-	    fprintf (stderr, "Sorry, ZSNES does not work in windowed 24 bit color modes.\nSwitching to fullscreen mode\n");
+	    fprintf (stderr, "Sorry, this mode does not work in 24 bit color\n");
+	    LinuxExit();
+	    /*
 	    cvidmode=3;
 	    initwinvideo();
 	    sleep(1);
 	    drawscreenwin();
+	    */
 	    break;
       default:
 	    UnlockSurface();
 	    fprintf(stderr, "Mode only available in 16 and 32 bit color.\n");
+	    LinuxExit();
+	    /*
 	    cvidmode=2;
 	    initwinvideo();
 	    sleep(1);
 	    drawscreenwin();
+	    */
 	    break;
       } // switch (BitDepth)
    } // if(SurfaceX==256&&SurfaceY==224)
@@ -1432,10 +1448,13 @@ void drawscreenwin(void)
 		   default:
 			    UnlockSurface();
 			    fprintf(stderr, "Mode only available in 16 and 32 bit color.\n");
+			    LinuxExit();
+			    /*
 			    cvidmode=2;
 			    initwinvideo();
 			    sleep(1);
 			    drawscreenwin();
+			    */
 			    break;
 	   } // switch
    } // if
@@ -1452,11 +1471,14 @@ void drawscreenwin(void)
 			   break;
 		   default:
 			   UnlockSurface();
-			   fprintf(stderr, "Mode only available in 16 bit color.\n");
+			   fprintf(stderr, "Mode only available in 16 bit color.\nTry running ZSNES with -b 16.");
+			   LinuxExit();
+			   /*
 			   cvidmode=2;
 			   initwinvideo();
 			   sleep(1);
 			   drawscreenwin();
+			   */
 			   break;
 	   } // switch
    } // if
@@ -1472,26 +1494,19 @@ void drawscreenwin(void)
 			break;
 		default:
 			   UnlockSurface();
-			   fprintf(stderr, "Mode only available in 16 bit color.\n");
+			   fprintf(stderr, "Mode only available in 16 bit color.\nTry running ZSNES with -b 16.");
+			   LinuxExit();
+			   /*
 			   cvidmode=2;
 			   initwinvideo();
 			   sleep(1);
 			   drawscreenwin();
+			   */
 			   break;
 	}
    }
 
    UnlockSurface();
-}
-
-void LinuxExit (void)
-{
-	if (sdl_inited)
-	{
-		SDL_WM_GrabInput(SDL_GRAB_OFF);	// probably redundant
-		SDL_Quit();
-	}
-	exit(0);
 }
 
 extern char fulladdtab[65536*2];
