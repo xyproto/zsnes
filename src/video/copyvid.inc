@@ -3176,43 +3176,41 @@ NEWSYM copyvesa2320x480x16b
 .quartscanlines
     ;cmp byte[MMXSupport],1
     ;je .qsloopb
-
-    push edx
-    mov dh,0
-    push ebp
-
 .qsloopa
     mov ecx,256/4*2
     rep movsd
     sub esi,256*2
     add edi,32*2+32*2
-
-.qsloopa3
-    mov eax,[esi]
-    mov ebx,[esi+4]
-    mov ecx,eax
-    mov ebp,ebx
-    shr ecx,byte 2
-    and ebp,39e739e7h * 4
-    shr ebp,byte 2
-    and ecx,39e739e7h * 4
-    sub eax,ecx
-    sub ebx,ebp
-    mov [es:edi],eax
-    mov [es:edi+4],ebx
-    add esi,byte 8
-    add edi,byte 8
-    sub dh,4
-    jnz .qsloopa3
+    mov ecx,256/2
+    jmp .qsloopa3
 .qsloopa2
     add esi,16*2+16*2
     add edi,32*2+32*2
     dec dl
     jnz .qsloopa
-    pop ebp
-    pop edx
-    mov dl,0
     jmp .done
+.qsloopa3
+    push ecx
+    push edx
+    mov ax,[esi]
+    mov bx,[esi+2]
+    mov cx,ax
+    mov dx,bx
+    shr cx,byte 2
+    shr dx,byte 2
+    and cx,39e7h
+    and dx,39e7h
+    sub ax,cx
+    sub bx,dx
+    mov [es:edi],ax
+    mov [es:edi+2],bx
+    pop edx
+    pop ecx
+    add esi,byte 4
+    add edi,byte 4
+    dec ecx
+    jnz .qsloopa3
+    jmp .qsloopa2
 
 .fullscreen
     sub edi,32*2
@@ -3220,6 +3218,8 @@ NEWSYM copyvesa2320x480x16b
     je .fsloopa2
     cmp byte[scanlines],3
     je .fsloopa3
+    cmp byte[scanlines],2
+    je .fsloopa4
 .fsloopa
     mov ecx,256/4
     call .fsloopb
@@ -3248,6 +3248,16 @@ NEWSYM copyvesa2320x480x16b
     dec dl
     jnz .fsloopa3
     jmp .done
+.fsloopa4
+    mov ecx,256/4
+    call .fsloopb
+    sub esi,256*2
+    mov ecx,256/4
+    call .fsloopb3
+    add esi,16*2+16*2
+    dec dl
+    jnz .fsloopa4
+    jmp .done
 .fsloopb
     mov eax,[esi]
     mov [es:edi],ax
@@ -3259,29 +3269,66 @@ NEWSYM copyvesa2320x480x16b
     jnz .fsloopb
     ret
 .fsloopb2
+    push ecx
+    push edx
     mov ax,[esi]
     mov bx,[esi+2]
+    mov cx,[esi+4]
+    mov dx,[esi+6]
     shr ax,byte 1
     shr bx,byte 1
+    shr cx,byte 1
+    shr dx,byte 1
     and ax,7befh
     and bx,7befh
+    and cx,7befh
+    and dx,7befh
     mov [es:edi],ax
     mov [es:edi+2],ax
     mov [es:edi+4],bx
-    add esi,byte 4
-    add edi,byte 6
-    mov ax,[esi]
-    mov bx,[esi+2]
-    shr ax,byte 1
-    shr bx,byte 1
-    and ax,7befh
-    and bx,7befh
-    mov [es:edi],ax
-    mov [es:edi+2],bx
-    add esi,byte 4
-    add edi,byte 4
+    mov [es:edi+6],cx
+    mov [es:edi+8],dx
+    pop edx
+    pop ecx
+    add esi,byte 8
+    add edi,byte 8+2
     dec ecx
     jnz .fsloopb2
+    ret
+.fsloopb3
+    push ecx
+    push edx
+    mov ax,[esi]
+    mov bx,[esi+2]
+    mov cx,ax
+    mov dx,bx
+    shr cx,byte 2
+    shr dx,byte 2
+    and cx,39e7h
+    and dx,39e7h
+    sub ax,cx
+    sub bx,dx
+    mov [es:edi],ax
+    mov [es:edi+2],ax
+    mov [es:edi+4],bx
+    mov ax,[esi+4]
+    mov bx,[esi+6]
+    mov cx,ax
+    mov dx,bx
+    shr cx,byte 2
+    shr dx,byte 2
+    and cx,39e7h
+    and dx,39e7h
+    sub ax,cx
+    sub bx,dx
+    mov [es:edi+6],ax
+    mov [es:edi+8],bx
+    pop edx
+    pop ecx
+    add esi,byte 8
+    add edi,byte 8+2
+    dec ecx
+    jnz .fsloopb3
     ret
 
 .interpolate
