@@ -1137,36 +1137,36 @@ NEWSYM Get_MouseData         ; Returns both pressed and coordinates
     ret
 
 NEWSYM Set_MouseXMax    ; Sets the X boundaries (ecx = left, edx = right)
-    pushad
-    push ecx
-    call SetMouseMinX
-    pop ecx
-    push edx
-    call SetMouseMaxX
-    pop edx
-    popad
+    ;pushad
+    ;push ecx
+    ;call SetMouseMinX
+    ;pop ecx
+    ;push edx
+    ;call SetMouseMaxX
+    ;pop edx
+    ;popad
     ret
 
 NEWSYM Set_MouseYMax    ; Sets the Y boundaries (ecx = left, edx = right)
-    pushad
-    push ecx
-    call SetMouseMinY
-    pop ecx
-    push edx
-    call SetMouseMaxY
-    pop edx
-    popad
+    ;pushad
+    ;push ecx
+    ;call SetMouseMinY
+    ;pop ecx
+    ;push edx
+    ;call SetMouseMaxY
+    ;pop edx
+    ;popad
     ret
 
 NEWSYM Set_MousePosition        ; Sets Mouse Position (x:cx,y:dx)
-    pushad
-    push ecx
-    call SetMouseX
-    pop ecx
-    push edx
-    call SetMouseY
-    pop edx
-    popad
+    ;pushad
+    ;push ecx
+    ;call SetMouse
+    ;pop ecx
+    ;push edx
+    ;call SetMouseY
+    ;pop edx
+    ;popad
     ret
 
 NEWSYM Get_MousePositionDisplacement
