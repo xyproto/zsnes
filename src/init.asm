@@ -1779,12 +1779,12 @@ NEWSYM init65816
     add eax,4
     loop .spc7110clear
 .nospc7110init
-    mov byte[cycpb268],125
-    mov byte[cycpb358],147
-    mov byte[cycpbl2],125
-    mov byte[cycpblt2],125
-    mov byte[cycpbl],125
-    mov byte[cycpblt],125
+    mov byte[cycpb268],105
+    mov byte[cycpb358],117
+    mov byte[cycpbl2],105
+    mov byte[cycpblt2],105
+    mov byte[cycpbl],105
+    mov byte[cycpblt],105
 
     cmp byte[SPC7110Enable],0
     jne .specialtimer
