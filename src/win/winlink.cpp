@@ -1700,6 +1700,7 @@ void Stop36HZ(void)
 char WinMessage[256];
 extern unsigned short resolutn;
 void clearwin();
+void Clear2xSaIBuffer();
 void clear_display();
 
 char WinName[]={"ZSNESW\0"};
@@ -2032,6 +2033,12 @@ void initwinvideo(void)
       FirstVid = 0;
       InitDirectDraw();
       clearwin();
+      _asm
+      {
+         pushad
+         call Clear2xSaIBuffer
+         popad
+      }
       clear_display();
       return;
    }
@@ -2043,6 +2050,12 @@ void initwinvideo(void)
       ReleaseDirectDraw();
       InitDirectDraw();
       clearwin();
+      _asm
+      {
+         pushad
+         call Clear2xSaIBuffer
+         popad
+      }
       clear_display();
       return;
    }
