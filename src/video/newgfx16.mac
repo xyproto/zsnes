@@ -1635,6 +1635,7 @@ EXTSYM osm2dis
     add ax,[BG1SYl+ebx*2]
     mov [curvidoffset],esi
     push esi
+    jmp %%drawb
     cmp byte[esi-1],1
     je %%drawb
     call drawmode7ngextbg16b

@@ -1480,7 +1480,7 @@ NEWSYM StartDrawNewGfx16b
     je near .noextbgsc
     test dword[bgcmsung],300h
     jz near .noextbgsc
-    ProcMode7ngextbg16b ngsub, 1h
+    ProcMode7ngextbg16b ngsub, 3h
 .noextbgsc
 
     ; draw sprites mode 2-7
@@ -1666,9 +1666,9 @@ NEWSYM StartDrawNewGfx16b
     ; draw mode 7 extbg pr 0
     cmp byte[ngextbg],0
     je near .noextbgmn
-    test dword[bgcmsung],101h
+    test dword[bgcmsung],303h
     jz near .noextbgmn
-    ProcMode7ngextbg16b ngmain ,1h
+    ProcMode7ngextbg16b ngmain ,3h
 .noextbgmn
 
     ; draw sprites mode 2-7
