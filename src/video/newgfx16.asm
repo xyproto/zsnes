@@ -425,76 +425,6 @@ BackAreaFillCol dd 0
 clinemainsub    dd 0
 
 BackAreaFill:
-    cmp byte[winbg1enval+eax+5*256],0
-    je near .nowindowb
-    mov ebx,[BackAreaFillCol]
-    cmp ebx,[BackAreaUnFillCol]
-    je near .nowindowb
-    push ecx
-    push edx
-    push eax
-    push edi
-
-    mov ebx,eax
-    mov ecx,[vidbuffer]
-    add ecx,16*2
-    shl eax,9
-    add ecx,eax
-    mov eax,ebx
-    shl eax,6
-    add ecx,eax
-    add ecx,[BackAreaAdd]
-
-    ; Construct Window in ecx
-    mov edi,ngwintable
-    sub ecx,2
-    mov eax,256
-.procnotemptyb
-    mov edx,[edi]
-    add edi,4
-    or edx,edx
-    jz .procemptyb
-    dec edx
-    mov ebx,[BackAreaUnFillCol]
-.swloopb
-    mov dword[ecx],ebx
-    mov dword[ecx+4],ebx
-    add ecx,8
-    sub eax,4
-    jc .doneb
-    sub edx,4
-    jnc .swloopb
-    sub eax,edx
-    add ecx,edx
-    add ecx,edx
-    dec eax
-    add ecx,2
-.procemptyb
-    mov edx,[edi]
-    dec edx
-    add edi,4
-    mov ebx,[BackAreaFillCol]
-.swloop2b
-    mov dword[ecx],ebx
-    mov dword[ecx+4],ebx
-    add ecx,8
-    sub eax,4
-    jc .doneb
-    sub edx,4
-    jnc .swloop2b
-    sub eax,edx
-    add ecx,edx
-    add ecx,edx
-    dec eax
-    add ecx,2
-    jmp .procnotemptyb
-.doneb
-    pop edi
-    pop eax
-    pop edx
-    pop ecx
-    jmp .yeswindowb
-.nowindowb
     push eax
     push ecx
     mov ebx,eax
@@ -507,7 +437,7 @@ BackAreaFill:
     shl eax,6
     add ecx,eax
     add ecx,[BackAreaAdd]
-    mov ebx,[BackAreaUnFillCol]
+    mov ebx,[BackAreaFillCol]
     mov eax,128
 .nowinloop
     mov [ecx],ebx
@@ -1106,48 +1036,23 @@ NEWSYM newengine16b
     mov dword[ngwinen],0
     push ecx
     push edx
-    cmp byte[winbg1enval+eax+5*256],0
-    je .nowindowb
-    mov bl,[winlogicb]
-    shr bl,2
-    and bl,03h
-    mov [nglogicval],bl
-    mov ebx,5*256
-    add ebx,eax
-    call BuildWindow2
+;    cmp byte[winbg1enval+eax+5*256],0
+;    je .nowindowb
+;    mov bl,[winlogicb]
+;    shr bl,2
+;    and bl,03h
+;    mov [nglogicval],bl
+;    mov ebx,5*256
+;    add ebx,eax
+;    call BuildWindow2
 .nowindowb
     mov dword[BackAreaAdd],0
 
     cmp byte[clinemainsub],1
     jne near .domainscreen
     mov ebx,[ColResult]
-    or ebx,[UnusedBit]
-    mov edx,[UnusedBit]
-    mov cl,[scaddset]
 .filledscreen
-    ; get sub-screen colors
-    test cl,10h
-    jnz .inside
-    test cl,20h
-    jnz .outside
-.insideb
-    mov dword[BackAreaUnFillCol],ebx
     mov dword[BackAreaFillCol],ebx
-    jmp .donesubscreen
-.inside
-    test cl,20h
-    jnz .filled
-    mov dword[BackAreaUnFillCol],edx
-    mov [BackAreaFillCol],ebx
-    jmp .donesubscreen
-.outside
-    mov [BackAreaUnFillCol],ebx
-    mov dword[BackAreaFillCol],edx
-    jmp .donesubscreen
-.filled
-    xor ebx,ebx
-    mov [BackAreaUnFillCol],edx
-    mov [BackAreaFillCol],edx
     jmp .donesubscreen
 .domainscreen
     mov ebx,[vbufdptr]
@@ -1162,60 +1067,20 @@ NEWSYM newengine16b
     test byte[scaddtype],20h
     jz .notaddbackub
     or ebx,[UnusedBit]
-    mov edx,[UnusedBit]
 .notaddbackub
-    jmp .filledscreen
+    mov dword[BackAreaFillCol],ebx
 .donesubscreen
-    cmp dword[ngwinen],0
-    jne .nowinsc2
-    mov edx,[BackAreaUnFillCol]
-    mov [BackAreaFillCol],edx
-.nowinsc2
-    cmp byte[forceblnk],0
-    je .notforceblanked
-    mov dword[BackAreaUnFillCol],0
-    mov dword[BackAreaFillCol],0
-.notforceblanked
     call BackAreaFill
+
     test byte[FillSubScr+eax],1
     jz near .nosubscreen2
     mov dword[BackAreaAdd],75036*2
     mov ebx,[ColResult]
-    mov edx,[UnusedBit]
     test byte[scaddset],02h
     jz .notbackfixed
     or ebx,[UnusedBit]
 .notbackfixed
-    mov cl,[scaddset]
-    ; get sub-screen colors
-    test cl,10h
-    jnz .inside2
-    test cl,20h
-    jnz .outside2
-.inside2b
-    mov dword[BackAreaUnFillCol],ebx
     mov dword[BackAreaFillCol],ebx
-    jmp .donesubscreen2
-.inside2
-    test cl,20h
-    jnz .filled2
-    mov dword[BackAreaUnFillCol],edx
-    mov [BackAreaFillCol],ebx
-    jmp .donesubscreen2
-.outside2
-    mov [BackAreaUnFillCol],ebx
-    mov dword[BackAreaFillCol],edx
-    jmp .donesubscreen2
-.filled2
-    xor ebx,ebx
-    mov [BackAreaUnFillCol],edx
-    mov [BackAreaFillCol],edx
-.donesubscreen2
-    cmp dword[ngwinen],0
-    jne .nowinsc
-    mov edx,[BackAreaUnFillCol]
-    mov [BackAreaFillCol],edx
-.nowinsc
     call BackAreaFill
 .nosubscreen2
     pop edx
@@ -3527,6 +3392,7 @@ SubScreenClip:
     cmp al,0C0h
     jne .notentire
     mov ebx,[UnusedBit]
+    xor ebx,0FFFFFFFFh
     mov ecx,256
     mov edx,256
     jmp .startclipping
@@ -3550,6 +3416,7 @@ SubScreenClip:
 .nowindowing
 
     mov ebx,[UnusedBit]
+    xor ebx,0FFFFFFFFh
     mov edx,256
     cmp dword[ngwinen],0
     jne .windowenabled
@@ -3579,7 +3446,7 @@ SubScreenClip:
     jmp .startclipping
 
 .startclipping
-    mov word[esi+75036*2],bx
+    and word[esi],bx
     add esi,2
     dec edx
     jz .finclipping
