@@ -47,9 +47,6 @@ NEWSYM ClearWin16
 
 NEWSYM DrawWin256x224x16
         pushad
-        push  es
-        mov  ax,ds
-        mov  es,ax
         xor  eax,eax
         mov  esi, [ScreenPtr]
         mov  edi, [SurfBufD]
@@ -57,32 +54,28 @@ NEWSYM DrawWin256x224x16
         mov  ecx,32
 .CopyLoop: 
         movq mm0,[esi]
-        movq mm1,[esi+8]
         movq [edi],mm0
+        movq mm1,[esi+8]
         movq [edi+8],mm1
+        dec  ecx
         add  esi,16
         add  edi,16
-        dec  ecx
         jnz .CopyLoop
         inc  eax
         add  edi, [pitch]
-        sub  edi,512
         add  esi,64
+        sub  edi,512
         cmp  eax,223
         jne .Copying3
         xor  eax,eax
         mov  ecx,128
         rep stosd
-        pop  es
         emms
         popad
         ret
 
 NEWSYM DrawWin320x240x16
         pushad
-        push  es
-        mov  ax,ds
-        mov  es,ax
         xor  eax,eax
         xor  ebx,ebx
         mov  esi, [ScreenPtr]
@@ -130,7 +123,6 @@ NEWSYM DrawWin320x240x16
         jne .Copying2MMX
         mov  ecx,128
         rep stosd
-        pop  es
         emms
         popad
         ret
