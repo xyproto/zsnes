@@ -1,20 +1,12 @@
 Some Issues :
 
 Windows Port:
-- For some reason DirectDraw runs very slow on 3dfx cards.
-  Is this possible to fix?  Or maybe implementing a glide mode would fix it.
-  DirectDraw blit routines are probably not handled in an optimal way
 - DirectSound in ZSNESw doesn't support the primary sound buffer.
   Unfortunately, this causes 8-bit quality sounds on certain computers.
-- DirectInput seems to cause some systems to really slow down for some
-  odd reason.  When those systems that are affected disables their joystick
-  from the control panel, the framerate suddenenly goes up from choppy to
-  smooth.
-- VSync or triple buffering not implemented
-- Glide,OpenGL, or Direct3D support would be nice
-- .ZIPed files seems to not work on certain Win2K configurations
+- OpenGL, or Direct3D support would be nice
 - Use another (free) compiler for the windows version (cygwin?)
 - Auto-detect high/low latency connections and adjust settings accordingly
+- Add support to use filters in a 32-bit windowed mode
 
 General
 - Clean up the makefiles (get rid of this ugly link.win32)
