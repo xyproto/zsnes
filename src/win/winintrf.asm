@@ -1257,7 +1257,7 @@ NEWSYM GUIIEVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; (Int
 NEWSYM GUIFSVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Full Screen
 NEWSYM GUISSVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Small Screen
 NEWSYM GUITBVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Triple Buffering
-NEWSYM GUIHSVID, db 0,0,0,1,0,1,0,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1       ; Half/Quarter Scanlines
+NEWSYM GUIHSVID, db 0,0,0,1,0,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1       ; Half/Quarter Scanlines
 NEWSYM GUI2xVID, db 0,0,0,1,0,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1       ; 2xSaI/Super Eagle Engines
 NEWSYM GUIM7VID, db 0,0,0,1,0,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1       ; ?Mode 7 video thing?
 NEWSYM GUIWFVID, db 0,1,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,0,0,1,1       ; If Windows Full Screen
