@@ -2771,6 +2771,7 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 27+45*2,24,[KeyBGDisble2]
     DGOptnsProcBox 27+45*3,24,[KeyBGDisble3]
     DGOptnsProcBox 27+45*4,24,[KeySprDisble]
+    DGOptnsProcBox 78,44,[KeySwapPlayer1234]
     DGOptnsProcBox 78,52,[KeyResetAll]
     DGOptnsProcBox 78,60,[KeyExtraEnab]
     DGOptnsProcBox 78,68,[KeyNewGfxSwt]

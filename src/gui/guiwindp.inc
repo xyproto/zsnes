@@ -4526,9 +4526,10 @@ DisplayGameOptns:
     GUIOuttextwin2 9,9+180,26,GUIGameOptnsText5
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,6,44,GUIGameOptnsTextC
+    GUIOuttextwin2 9,6,36,GUIGameOptnsTextC
     mov al,byte[GUIGameOptnsColB]
     mov byte[GUItextcolor],al
+    GUIOuttextwin2 9,9,46,GUIGameOptnsText1A
     GUIOuttextwin2 9,9,54,GUIGameOptnsTextD
     GUIOuttextwin2 9,9,62,GUIGameOptnsTextL
     GUIOuttextwin2 9,9,70,GUIGameOptnsTextE
@@ -4634,9 +4635,10 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8+180,25,GUIGameOptnsText5
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,5,43,GUIGameOptnsTextC
+    GUIOuttextwin2 9,5,35,GUIGameOptnsTextC
     mov al,byte[GUIGameOptnsColB]
     mov byte[GUItextcolor],al
+    GUIOuttextwin2 9,8,45,GUIGameOptnsText1A
     GUIOuttextwin2 9,8,53,GUIGameOptnsTextD
     GUIOuttextwin2 9,8,61,GUIGameOptnsTextL
     GUIOuttextwin2 9,8,69,GUIGameOptnsTextE
@@ -4725,6 +4727,7 @@ DisplayGameOptns:
     DGOptnsDrawBox 27+45*2,24,[KeyBGDisble2]
     DGOptnsDrawBox 27+45*3,24,[KeyBGDisble3]
     DGOptnsDrawBox 27+45*4,24,[KeySprDisble]
+    DGOptnsDrawBox 78,44,[KeySwapPlayer1234]
     DGOptnsDrawBox 78,52,[KeyResetAll]
     DGOptnsDrawBox 78,60,[KeyExtraEnab]
     DGOptnsDrawBox 78,68,[KeyNewGfxSwt]
@@ -4815,6 +4818,7 @@ GUIGameOptnsTextV db 'SAVE SPC',0
 GUIGameOptnsTextX db 'DISPLAY FPS',0
 GUIGameOptnsTextY db 'ST+',0
 GUIGameOptnsTextZ db 'ST-',0
+GUIGameOptnsText1A db 'SW PL 12/34',0
 SECTION .text
 
 DisplayGUIOptns:
