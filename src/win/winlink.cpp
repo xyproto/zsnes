@@ -219,6 +219,20 @@ extern "C" void MinimizeWindow()
    IsMinimized = TRUE;
 }
 
+extern "C" void ReInitTimer()
+{
+   if (AlternateTimer == 0)
+   {
+      QueryPerformanceCounter((LARGE_INTEGER*)&start);
+      QueryPerformanceCounter((LARGE_INTEGER*)&start2);
+   }
+   else
+   {
+      start = timeGetTime();
+      start2 = timeGetTime();
+   }
+}
+
 extern "C" BYTE MouseWheel;
 
 BOOL InputRead(void)
