@@ -59,26 +59,19 @@
 // General stdc header stuff, including memory.h stuff, like the fact that
 //	memcpy, and memmove are easily definable...
 	
-	#ifdef ZDOS
-	#define STDC_HEADERS
-	#endif
-	#ifdef _MSC_VER
-	#define STDC_HEADERS
-	#endif
-	#ifdef STDC_HEADERS
 	#include <stdlib.h>
 	#include <stdio.h>	
 	#include <stdarg.h>
-	#else
 	# ifndef HAVE_MEMCPY
 	#define memcpy(d, s, n) bcopy ((s), (d), (n))
 	#define memmove(d, s, n) bcopy ((s), (d), (n))
 	# endif
-	#endif
 
 // unistd.h stuff
 
-	#if HAVE_UNISTD_H
+	//#if HAVE_UNISTD_H
+	//Small hack for now
+	#if unix
 	#include <sys/types.h>
 	#include <unistd.h>
 	#endif

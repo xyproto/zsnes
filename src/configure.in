@@ -15,7 +15,7 @@ dnl See also: remarks supplied in the debug checking area below
 
 AC_INIT(init.asm)
 echo -- Where is our compiler, and who are we compiling for?
-CFLAGS="-pipe -I."
+CFLAGS="-pipe -I. -Wall"
 AC_PROG_CC
 AC_PATH_PROG(NASMPATH,nasm,[AC_MSG_ERROR(nasm 0.98 is required)])
 NFLAGS="$NFLAGS -w-orphan-labels"
@@ -33,7 +33,6 @@ case "$target" in
 	*-*-cygwin* | *-*-*ming*)
 		CFLAGS="$CFLAGS -D__LINUX__"
 		NFLAGS="$NFLAGS -D__LINUX__ -f win32"
-		ZSNESEXE=".exe"
 		;;
 	*)
 		AC_MSG_ERROR(This Target is Not Supported)
@@ -124,9 +123,9 @@ if test x$debug = xyes; then
 	dnl It is actually easier to debug zsnes with no optimization
 	dnl enabled. 
 
-	CFLAGS="$CFLAGS -Wall -O0 -fno-omit-frame-pointer -ggdb3"
-	NFLAGS="$NFLAGS -g -s"
-	ZSNESEXE="zsnes-debug$ZSNESEXE"
+	CFLAGS="$CFLAGS -DDEBUG -O0 -fno-omit-frame-pointer -ggdb3"
+	NFLAGS="$NFLAGS -DDEBUG -g -s"
+	ZSNESEXE="zsnesd"
 else
 	AC_MSG_RESULT(no)
 	
@@ -136,7 +135,7 @@ else
 	dnl effectivly use branch prediction.
 	
 	CFLAGS="$CFLAGS -Os -ffast-math -fomit-frame-pointer -fschedule-insns2 -s"
-	ZSNESEXE="zsnes$ZSNESEXE"
+	ZSNESEXE="zsnes"
 fi
 
 AC_MSG_CHECKING(which processor class to optimize for)
@@ -181,7 +180,6 @@ AC_SUBST(GL_DRAW)
 AC_SUBST(NFLAGS)
 AC_OUTPUT(Makefile)
 echo 
-echo You may now type gmake to compile $ZSNESEXE
-echo Please make sure you use gmake, as other makes tend not to function
-echo correctly with zsnes\'s makefiles.
+echo You may now run make to compile $ZSNESEXE
+echo Make sure you use GNU make when compiling.
 
