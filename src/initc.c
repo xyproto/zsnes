@@ -435,10 +435,6 @@ Would be nice to trash this section in the future
 
 
 extern unsigned char  disablehdma;
-extern unsigned char  Offby1line;
-extern unsigned char  CacheCheckSkip;
-extern unsigned short IRQHack;
-extern unsigned char  HIRQSkip;
 extern unsigned char  hdmaearlstart;
 extern unsigned int   WindowDisables;
 extern unsigned char  ClearScreenSkip;
@@ -462,10 +458,6 @@ void headerhack()
 {
   char *RomData = (char *)romdata;
   disablehdma = 0;
-  Offby1line = 0;
-  CacheCheckSkip = 0;
-  IRQHack = 0;
-  HIRQSkip = 0;
   hdmaearlstart = 0;
   WindowDisables = 0;
   ClearScreenSkip = 0;
