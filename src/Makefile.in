@@ -183,8 +183,8 @@ endmem.o: endmem.asm macros.mac
 ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
 
 install:
-	@INSTALL@ -D -m 0755 @ZSNESEXE@ @prefix@/bin
-	@INSTALL@ -D -m 0644 linux/zsnes.1 @prefix@/man/man1
+	@INSTALL@ -m 0755 @ZSNESEXE@ @prefix@/bin
+	@INSTALL@ -m 0644 linux/zsnes.1 @prefix@/man/man1
 
 uninstall:
 	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man5/zsnes.5
