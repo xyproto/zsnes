@@ -2829,7 +2829,6 @@ NEWSYM cpuover
 
     call UpdateRewind
 
-
     mov byte[NetQuit],0
     cmp byte[CNetType],20
     jne near .nozerons
