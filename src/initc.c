@@ -1220,6 +1220,7 @@ void headerhack()
   //Final Fantasy 3 (extent unknown!)
   if (romdata[0x26AC] == 0xF00F2908)
   {
+    //asm volatile("int $3");
     opexec268 = 163;
     opexec358 = 157;
     opexec268cph = 39;
