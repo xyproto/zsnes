@@ -1646,8 +1646,18 @@ NEWSYM headerhack
     jne .notclayfighter
     cmp dword[esi+12],'    '
     jne .notclayfighter
-    mov esi,[romdata]
+    mov esi,[romdata]  ; In intro
     add esi,01A10B9h
+    mov byte[esi],0DEh
+
+    mov esi,[romdata]  ; In game
+    add esi,01A1996h
+    mov byte[esi],0DEh
+    mov esi,[romdata]
+    add esi,01AE563h
+    mov byte[esi],0DEh
+    mov esi,[romdata]
+    add esi,01AE600h
     mov byte[esi],0DEh
 .notclayfighter
 
