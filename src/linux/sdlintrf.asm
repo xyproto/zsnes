@@ -193,7 +193,7 @@ NEWSYM SystemInit
     call Change_Dir
 %endif
 
-	
+
     call GUIRestoreVars                 ; Load GUI stuff
 
     call getcfg                         ; Load cfg stuff
@@ -201,7 +201,6 @@ NEWSYM SystemInit
     call obtaindir                      ; Get Save/Init Directories
 
     call ConvertJoyMap                  ; Mini joystick init
-    call ccmdline
     call tparms
     pushad
     call SRAMChdir
@@ -316,7 +315,7 @@ NEWSYM Open_File_Write
 NEWSYM Create_File
     pushad
     mov dword[ZOpenMode],1
-    mov dword[ZOpenFileName],edx    
+    mov dword[ZOpenFileName],edx
     call ZOpenFile
     cmp eax,0FFFFFFFFh
     je .error
@@ -432,7 +431,7 @@ NEWSYM Get_Date
     popad
     mov eax,[TempVarSeek]
     movzx edx,al ;Move day into edx, day is in BCD
-    shr edx,4    ;Chop off the second digit 
+    shr edx,4    ;Chop off the second digit
     imul edx,10  ;Multiply first digit by 10, since we want decimal
     and al,0xF   ;Remove first BCD digit
     add dl,al    ;Add second digit to first*10
@@ -678,7 +677,7 @@ NEWSYM Get_Memfree
     ret
 
 NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
-    pushad 
+    pushad
 
     ; This function usually displays an error message on-screen
     cmp ah,02h
@@ -922,7 +921,7 @@ db '1280x1024   ODS F',0  ;16
 db '1600x1200   ODS F',0  ;17
 db 'VARIABLE    ODR W',0  ;18
 
-%endif	
+%endif
 
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)
 ; Left side starts with Video Mode 0
@@ -1050,7 +1049,7 @@ NEWSYM ScanCodeListing
         db 'A0H','A1H','A2H','A3H','A4H','A5H','A6H','A7H'  ; A0h
         db 'A8H','A9H','AAH','ABH','ACH','ADH','AEH','AFH'
         db 'B0H','B1H','B2H','B3H','B4H','B5H','B6H','B7H'  ; B0h
-        db 'B8H','B9H','BAH','BBH','BCH','BDH','BEH','BFH'  
+        db 'B8H','B9H','BAH','BBH','BCH','BDH','BEH','BFH'
         db 'C0H','C1H','C2H','C3H','C4H','C5H','C6H','C7H'  ; C0h
         db 'C8H','C9H','CAH','CBH','CCH','CDH','CEH','CFH'
         db 'D0H','D1H','D2H','D3H','D4H','D5H','D6H','D7H'  ; D0h
@@ -1085,7 +1084,7 @@ NEWSYM ScanCodeListing
         db 'JA0','JA1','JA2','JA3','JA4','JA5','JA6','JA7'  ; 2A0h
         db 'JA8','JA9','JAA','JAB','JAC','JAD','JAE','JAF'
         db 'JB0','JB1','JB2','JB3','JB4','JB5','JB6','JB7'  ; 2B0h
-        db 'JB8','JB9','JBA','JBB','JBC','JBD','JBE','JBF' 
+        db 'JB8','JB9','JBA','JBB','JBC','JBD','JBE','JBF'
 %else
         ; Extra Stuff (180h) (Parallel Port)
         db 'PPB','PPY','PSL','PST','PUP','PDN','PLT','PRT'  ; 180h
@@ -1095,7 +1094,7 @@ NEWSYM ScanCodeListing
         db 'PPB','PPY','PSL','PST','PUP','PDN','PLT','PRT'  ; 2A0h
         db 'PPA','PPX','PPL','PPR','   ','   ','   ','   '
         db 'P2B','P2Y','P2S','P2T','P2U','P2D','P2L','P2R'  ; 2B0h
-        db 'P2A','P2X','P2L','P2R','   ','   ','   ','   ' 
+        db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
 %endif
 
 SECTION .text
@@ -1236,7 +1235,7 @@ NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
     popad
     ; DSPBuffer should contain the processed buffer in the specified size
     ; You will have to convert/clip it to 16-bit for actual sound process
-.nosound    
+.nosound
     popad
     ret
 
@@ -1252,7 +1251,7 @@ NEWSYM Check60hz
     ret
 
 SECTION .data
-BitPosR db 11 
+BitPosR db 11
 BitPosG db 5
 BitPosB db 0
 BitSizeR db 5
@@ -1723,13 +1722,13 @@ NEWSYM WinErrorC
 NEWSYM GotoHomepage
     pushad
     call ZsnesPage
-    popad    
+    popad
     ret
 
 EXTSYM SystemTimewHour
 EXTSYM SystemTimewMinute
 EXTSYM SystemTimewSecond
-    
+
 NEWSYM GetTimeInSeconds
     call GetLocalTime
     movzx eax,word[SystemTimewHour]

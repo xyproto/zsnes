@@ -47,7 +47,7 @@ extern unsigned char Palette0, pl1contrl, pl2contrl, MMXSupport, Force8b, ForceP
                      MouseDis, MusicRelVol, ScreenScale, SoundQuality, StereoSound, V8Mode,
                      antienab, cvidmode, debugdisble, debugger, enterpress, vsyncon, DisplayS,
                      fname, SnowOn, Triplebufen, SPC700sh, OffBy1Line, DSPDisable, frameskip,
-                     gammalevel, guioff, forceromtype, per2exec, scanlines, soundon, spcon,
+                     gammalevel, guioff, romtype, per2exec, scanlines, soundon, spcon,
                      showallext, autoloadstate, smallscreenon;
 
 void ConvertJoyMap1(), ConvertJoyMap2(), zstart(), makeextension();
@@ -164,16 +164,18 @@ static void display_help()
   puts("  File Formats Supported by GUI : SMC,SFC,SWC,FIG,MGD,UFO,BIN,");
   puts("                                  058,078,1,USA,EUR,JAP,ZIP,JMA");
   puts("");
+#ifndef __LINUX__
   puts("  Microsoft-style options (/option) are also accepted");
+#endif
   exit(1);
 }
 
 static size_t zatoi(const char *str)
 {
   const char *orig_str = str;
-  while (*str++)
+  while (*str)
   {
-    if (!isdigit(*str)) { return(~0); }
+    if (!isdigit(*str++)) { return(~0); }
   }
   return((size_t)atoi(orig_str));
 }
@@ -187,7 +189,7 @@ static void handle_params(int argc, const char **argv)
   NetChatFirst=0;
   NetQuitAfter=0;
 
-  if (argv[1][0] == '/' && strlen(argv[1]) == 6)
+  if (argc >= 5 && argv[1][0] == '/' && strlen(argv[1]) == 6)
   {
     size_t i = 0, j = 0;
     char *strp, *p;
@@ -261,7 +263,7 @@ static void handle_params(int argc, const char **argv)
   }
   #endif
 
-  for (i = 0; i < argc; i++)
+  for (i = 1; i < argc; i++)
   {
     #ifndef __LINUX__
     if (argv[i][0] == '-' || argv[i][0] == '/')
@@ -356,7 +358,7 @@ static void handle_params(int argc, const char **argv)
             break;
 
           case 'h': //Force HiROM
-            forceromtype = 2;
+            romtype = 2;
             break;
 
           case 'j': //Disable Mouse
@@ -374,7 +376,7 @@ static void handle_params(int argc, const char **argv)
             break;
 
           case 'l': //Force LoROM
-            forceromtype = 1;
+            romtype = 1;
             break;
 
           case 'm': //Disables GUI
@@ -522,6 +524,7 @@ static void handle_params(int argc, const char **argv)
       char *fvar = &fname;
       fvar[0] = strlen(argv[i]);
       strncpy(&fvar[1],argv[i],127);
+      makeextension();
       break;
     }
   }
@@ -544,7 +547,6 @@ int main(int argc, const char **argv)
 {
   handle_params(argc, argv);
 
-  makeextension();
   zstart();
   return(0);
 }
