@@ -293,7 +293,7 @@ NEWSYM bg3scroly, dw 0             ; background 3 y position
 NEWSYM bg4scroly, dw 0             ; background 4 y position
 NEWSYM addrincr,  dw 2             ; vram increment (2,64,128,256)
 NEWSYM vramincr,  db 0             ; 0 = inrement at 2118/2139, 1 = 2119,213A
-NEWSYM vramread,  db 0             ; 0 = address set, 1 = already read once
+NEWSYM vramread,  db 0             ; previous character for vram read
 NEWSYM vramaddr,  dd 0             ; vram address
 NEWSYM cgaddr,    dw 0             ; cg (palette) address
 NEWSYM cgmod,     db 0             ; if cgram is modified or not
@@ -389,8 +389,9 @@ NEWSYM SDD1BankA, db 0
 NEWSYM SDD1BankB, db 1
 NEWSYM SDD1BankC, db 2
 NEWSYM SDD1BankD, db 3
+NEWSYM vramread2, db 0             ; previous character for vram read
 
-NEWSYM tempdat, times 484 db 0     ; expandable area
+NEWSYM tempdat, times 483 db 0     ; expandable area
 
 num2writeppureg equ $-sndrot
 ; pharos equ hack *sigh*
@@ -573,11 +574,11 @@ reg2139r:
     xor ebx,ebx
     mov bx,[vramaddr]
     add ebx,[vram]
-    mov al,[ebx]
+    mov bl,[ebx]
+    mov al,[vramread]
+    mov [vramread],bl
     cmp byte[vramincr],0
     je .noincr
-    cmp byte[vramread],0
-    je .noincr2
     mov bx,[addrincr]
     add [vramaddr],bx
     cmp byte[vramincby8on],1
@@ -596,9 +597,6 @@ reg2139r:
     mov byte[vramincby8rowl],8
     sub word[vramaddr],16
 .noincr
-    ret
-.noincr2
-    mov byte[vramread],1
     ret
 
 ; Read VRAM Data (High)
@@ -606,11 +604,11 @@ reg213Ar:
     xor ebx,ebx
     mov bx,[vramaddr]
     add ebx,[vram]
-    mov al,[ebx+1]
+    mov bl,[ebx+1]
+    mov al,[vramread2]
+    mov [vramread2],bl
     cmp byte[vramincr],1
     je .noincr
-    cmp byte[vramread],0
-    je .noincr2
     mov bx,[addrincr]
     add [vramaddr],bx
     cmp byte[vramincby8on],1
@@ -629,9 +627,6 @@ reg213Ar:
     mov byte[vramincby8rowl],8
     sub word[vramaddr],16
 .noincr
-    ret
-.noincr2
-    mov byte[vramread],1
     ret
 
 ; Read CGRAM Data
