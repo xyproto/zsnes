@@ -2266,6 +2266,7 @@ void WinUpdateDevices()
 
 //         memset(&js[i], 0, sizeof(DIJOYSTATE));
          JoystickInput[i]->Poll();
+
          if (IDirectInputDevice7_GetDeviceState(JoystickInput[i],sizeof(DIJOYSTATE), &js[i])==DIERR_INPUTLOST)
          {
             if (JoystickInput[i]) JoystickInput[i]->Acquire();
@@ -2281,7 +2282,6 @@ void WinUpdateDevices()
          {
             if (js[i].lX<0) keys[0x100+i*32+1]=1;
          }
-
 
          if (!Y1Disable[i])
          {
@@ -2302,38 +2302,47 @@ void WinUpdateDevices()
          {
             if (js[i].lZ<0) keys[0x100+i*32+5]=1;
          }
+
          if (!RY1Disable[i])
          {
             if (js[i].lRy>0) keys[0x100+i*32+6]=1;
          }
+
          if (!RY2Disable[i])
          {
             if (js[i].lRy<0) keys[0x100+i*32+7]=1;
          }
+
          if (!RZ1Disable[i])
          {
             if (js[i].lRz>0) keys[0x100+i*32+8]=1;
          }
+
          if (!RZ2Disable[i])
          {
             if (js[i].lRz<0) keys[0x100+i*32+9]=1;
          }
+
          if (!S01Disable[i])
          {
             if (js[i].rglSlider[0]>0) keys[0x100+i*32+10]=1;
          }
+
          if (!S02Disable[i])
          {
             if (js[i].rglSlider[0]<0) keys[0x100+i*32+11]=1;
          }
+
          if (!S11Disable[i])
          {
             if (js[i].rglSlider[1]>0) keys[0x100+i*32+12]=1;
          }
+
          if (!S12Disable[i])
          {
             if (js[i].rglSlider[1]<0) keys[0x100+i*32+13]=1;
          }
+
          if (js[i].rgbButtons[0]) keys[0x100+i*32+16]=1;
          if (js[i].rgbButtons[1]) keys[0x100+i*32+17]=1;
          if (js[i].rgbButtons[2]) keys[0x100+i*32+18]=1;
