@@ -157,7 +157,7 @@ NEWSYM SA1Swap
     mov dword[snesmap2],eax
     mov edi,[prevedi]
     xor eax,eax
-    add dh,51
+    add dh,34
     inc byte[CurrentExecSA1]
     mov byte[SA1Status],0
     add dword[SA1TimerVal],23
@@ -191,7 +191,7 @@ NEWSYM SA1Swap
     mov byte[SA1Status],0
     add dword[SA1TimerVal],23
 ;    xor dh,dh
-    add dh,63
+    add dh,35
     cmp esi,dword[SA1LBound]
     jb .stoph
     cmp esi,dword[SA1UBound]
