@@ -274,7 +274,7 @@ NEWSYM cachevideo
     je .nohires
     cmp byte[cvidmode],9
     je .yeshires
-    cmp byte[cvidmode],13
+    cmp byte[cvidmode],15
     jne .nohires
 .yeshires
     mov byte[Mode7HiRes],1

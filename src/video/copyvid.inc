@@ -227,10 +227,10 @@ PreTripleBuffer:
 SECTION .data
 ; Please don't break this again. :)
 VidModeSize dd 0,0,0,0,0,0,0,320*240,320*240*2,320*480,320*480*2
-            dd 512*384,512*384*2,640*480,640*480*2
-VidModeLine dd 0,0,0,0,0,0,0,240,240,480,480,384,384,480,480
+            dd 512*384,512*384*2,640*400,640*400*2,640*480,640*480*2
+VidModeLine dd 0,0,0,0,0,0,0,240,240,480,480,384,384,400,400,480,480
 NEWSYM VidStartDraw, dd 0
-VidModeComp db 0,0,0,0,0,0,0,1,1,1,1,1,1,1,1
+VidModeComp db 0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1
 CVidStartAd db 0
 ApplyStart db 4
 
@@ -291,8 +291,12 @@ ScreenShow:
     cmp byte[cvidmode],12
     je near copyvesa2512x384x16b
     cmp byte[cvidmode],13
-    je near copyvesa2640x480x8b
+    je near copyvesa2640x400x8b
     cmp byte[cvidmode],14
+    je near copyvesa2640x400x16b
+    cmp byte[cvidmode],15
+    je near copyvesa2640x480x8b
+    cmp byte[cvidmode],16
     je near copyvesa2640x480x16b
     cmp byte[curblank],40h
     je .startcopy
@@ -338,8 +342,12 @@ ScreenShowGUI:
     cmp byte[cvidmode],12
     je near copyvesa2512x384x16bgui
     cmp byte[cvidmode],13
-    je near copyvesa2640x480x8bgui
+    je near copyvesa2640x400x8b
     cmp byte[cvidmode],14
+    je near copyvesa2640x400x16b
+    cmp byte[cvidmode],15
+    je near copyvesa2640x480x8bgui
+    cmp byte[cvidmode],16
     je near copyvesa2640x480x16bgui
     jmp copymodeq256
 %endif
@@ -1258,6 +1266,162 @@ copyvesa2320x480x8ng:
     add edi,320
 .bi
     jmp .returnloop
+
+
+;*******************************************************
+; Copy VESA2 640x400x8b  Copies buffer to 640x400x8bVBE2
+;*******************************************************
+
+NEWSYM copyvesa2640x400x8b
+    cmp byte[curblank],40h
+    jne .startcopy
+    ret
+.startcopy
+    push es
+    mov ax,[vesa2selec]
+    mov es,ax
+    mov esi,[vidbuffer]
+    mov edi,20*640+64
+    cmp word[resolutn],224
+    jne .res239
+    mov edi,32*640+64
+.res239
+    add edi,[VidStartDraw]
+    add esi,16+256+32
+    xor eax,eax
+    mov dl,[resolutn]
+    dec dl
+    dec dl
+    cmp byte[smallscreenon],1
+    je .smallscreen
+.loopa
+    mov ecx,256
+    call .loopa2
+    add esi,32
+    add edi,64*2
+    mov ecx,256
+    call .loopa2
+    sub esi,256
+    add edi,64*2
+    mov ecx,256
+    call .loopa2
+    add esi,32
+    add edi,64*2
+    dec dl
+    dec dl
+    jnz .loopa
+    jmp .done
+.loopa2
+    mov al,[esi]
+    mov [es:edi],al
+    inc edi
+    mov [es:edi],al
+    inc esi
+    inc edi
+    dec ecx
+    jnz .loopa2
+    ret
+
+.smallscreen
+    add edi,60*640+128
+    cmp byte[MMXSupport],1
+    je .ssloopb
+.ssloopa
+    mov ecx,64
+    rep movsd
+    add esi,32
+    add edi,192*2
+    dec dl
+    jnz .ssloopa
+    jmp .done
+.ssloopb
+    mov ecx,16
+    MMXStuff
+    add esi,32
+    add edi,192*2
+    dec dl
+    jnz .ssloopb
+    emms
+
+.done
+    pop es
+    ret
+
+
+NEWSYM copyvesa2640x400x16b
+    cmp byte[curblank],40h
+    jne .startcopy
+    ret
+.startcopy
+    push es
+    mov ax,[vesa2selec]
+    mov es,ax
+    mov esi,[vidbuffer]
+    mov edi,20*640*2+64*2
+    cmp word[resolutn],224
+    jne .res239
+    mov edi,32*640*2+64*2
+.res239
+    add edi,[VidStartDraw]
+    add esi,16*2+256*2+32*2
+    xor eax,eax
+    mov dl,[resolutn]
+    dec dl
+    dec dl
+    cmp byte[smallscreenon],1
+    je .smallscreen
+.loopa
+    mov ecx,256
+    call .loopa2
+    add esi,32*2
+    add edi,64*2*2
+    mov ecx,256
+    call .loopa2
+    sub esi,256*2
+    add edi,64*2*2
+    mov ecx,256
+    call .loopa2
+    add esi,32*2
+    add edi,64*2*2
+    dec dl
+    dec dl
+    jnz .loopa
+    jmp .done
+.loopa2
+    mov ax,[esi]
+    mov [es:edi],ax
+    add edi,2
+    mov [es:edi],ax
+    add esi,2
+    add edi,2
+    dec ecx
+    jnz .loopa2
+    ret
+
+.smallscreen
+    add edi,60*640*2+128*2
+    cmp byte[MMXSupport],1
+    je .ssloopb
+.ssloopa
+    mov ecx,64*2
+    rep movsd
+    add esi,32*2
+    add edi,192*2*2
+    dec dl
+    jnz .ssloopa
+    jmp .done
+.ssloopb
+    mov ecx,16*2
+    MMXStuff
+    add esi,32*2
+    add edi,192*2*2
+    dec dl
+    jnz .ssloopb
+    emms
+
+.done
+    pop es
+    ret
 
 ;*******************************************************
 ; Copy VESA2 640x480x8b  Copies buffer to 640x480x8bVBE2
@@ -5966,8 +6130,12 @@ NEWSYM DOSClearScreen
     cmp byte[cvidmode],12
     je near cscopyvesa2512x384x16b
     cmp byte[cvidmode],13
-    je near cscopyvesa2640x480x8b
+    je near cscopyvesa2640x400x8b
     cmp byte[cvidmode],14
+    je near cscopyvesa2640x400x16b
+    cmp byte[cvidmode],15
+    je near cscopyvesa2640x480x8b
+    cmp byte[cvidmode],16
     je near cscopyvesa2640x480x16b
 %endif
     ret
@@ -6061,6 +6229,36 @@ NEWSYM cscopyvesa2640x480x16b
     mov es,ax
     mov edi,[VidStartDraw]
     mov ecx,640*480*2
+    TripleBufferClear
+.loopb
+    mov byte[es:edi],0
+    inc edi
+    dec ecx
+    jnz .loopb
+    pop es
+    ret
+
+NEWSYM cscopyvesa2640x400x8b
+    push es
+    mov ax,[vesa2selec]
+    mov es,ax
+    mov edi,[VidStartDraw]
+    mov ecx,640*400
+    TripleBufferClear
+.loopb
+    mov byte[es:edi],0
+    inc edi
+    dec ecx
+    jnz .loopb
+    pop es
+    ret
+
+NEWSYM cscopyvesa2640x400x16b
+    push es
+    mov ax,[vesa2selec]
+    mov es,ax
+    mov edi,[VidStartDraw]
+    mov ecx,640*400*2
     TripleBufferClear
 .loopb
     mov byte[es:edi],0

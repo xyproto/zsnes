@@ -1495,8 +1495,9 @@ SECTION .data
           db '           6 = 640x480x16B (VESA1)  7 = 320x240x8B (VESA2)',13,10
           db '           8 = 320x240x16B (VESA2)  9 = 320x480x8B (VESA2)',13,10
           db '          10 = 320x480x16B (VESA2) 11 = 512x384x8B (VESA2)',13,10
-          db '          12 = 512x384x16B (VESA2) 13 = 640x480x8B (VESA2)',13,10
-          db '          14 = 640x480x16B (VESA2)',13,10
+          db '          12 = 512x384x16B (VESA2) 13 = 640x400x8B (VESA2)',13,10
+          db '          14 = 640x400x16B (VESA2) 15 = 640x480x8B (VESA2)',13,10
+          db '          16 = 640x480x16B (VESA2)',13,10
 %endif
           db '  -w      Enable VSync (disables Triple Buffering)',13,10
           db 'Press any key to continue.',0

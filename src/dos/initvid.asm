@@ -82,8 +82,12 @@ NEWSYM dosinitvideo
     cmp byte[cvidmode],12
     je near .initvesa2512x384x16
     cmp byte[cvidmode],13
-    je near .initvesa2640x480x8
+    je near .initvesa2640x400x8
     cmp byte[cvidmode],14
+    je near .initvesa2640x400x16
+    cmp byte[cvidmode],15
+    je near .initvesa2640x480x8
+    cmp byte[cvidmode],16
     je near .initvesa2640x480x16
     ret
 
@@ -411,6 +415,63 @@ NEWSYM dosinitvideo
     pop es
     ret
 
+;*******************************************************
+; InitVESA2 640x400x8           Set up Linear 640x400x8b
+;*******************************************************
+
+.initvesa2640x400x8
+    mov byte[res640],2
+    mov word[vesa2_x],640
+    mov word[vesa2_y],400
+    mov byte[vesa2_bits],8
+    call InitVesa2
+    cmp byte[videotroub],1
+    jne .notrouble9
+    ret
+.notrouble9
+    call makepal
+    ; clear screen (640*400 bytes)
+    push es
+    mov ax,[vesa2selec]
+    mov es,ax
+    mov edi,0
+    mov ecx,640*400
+.loopg
+    mov byte[es:edi],0
+    inc edi
+    dec ecx
+    jnz .loopg
+    pop es
+    ret
+
+;*******************************************************
+; InitVESA2 640x400x16         Set up Linear 640x400x16b
+;*******************************************************
+
+.initvesa2640x400x16
+    mov byte[res640],2
+    mov byte[cbitmode],1
+    mov word[vesa2_x],640
+    mov word[vesa2_y],400
+    mov byte[vesa2_bits],16
+    call InitVesa2
+    cmp byte[videotroub],1
+    jne .notrouble10
+    ret
+.notrouble10
+    ; clear screen (640*400*2 bytes)
+    push es
+    mov ax,[vesa2selec]
+    mov es,ax
+    mov edi,0
+    mov ecx,640*400*2
+.looph
+    mov byte[es:edi],0
+    inc edi
+    dec ecx
+    jnz .looph
+    pop es
+    ret
 
 ;*******************************************************
 ; InitVESA1.2 640x480x16              Set up 640x480x16b
@@ -435,11 +496,11 @@ NEWSYM dosinitvideo
     
     xor edi,edi
     mov ecx,16384
-.loopg
+.loopi
     mov byte[es:edi],0
     inc edi
     dec ecx
-    jnz .loopg
+    jnz .loopi
     dec ebx
     jnz .loopbanks
 
