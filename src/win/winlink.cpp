@@ -518,6 +518,7 @@ InitSound()
          break;
       default:
          wfx.nSamplesPerSec = 11025;
+         SoundBufferSize=1024*2;
    }
 
    if(StereoSound==1)
@@ -852,7 +853,7 @@ bool InitInput()
    if(FAILED(hr=DirectInputCreate(hInst,DIRECTINPUT_VERSION,&DInput,NULL)))
    {
       sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 7.0a or higher located at www.microsoft.com/directx \0");
-      MessageBox (NULL, message1, "Init Error" , MB_ICONERROR );
+      MessageBox (NULL, message1, "DirectInput Error" , MB_ICONERROR );
 
       switch(hr)
       {
