@@ -32,7 +32,7 @@ extern void displayparams(void);
 extern void makeextension(void);
 
 extern unsigned char Palette0, SPC700sh, OffBy1Line, DSPDisable,
-                     FPUCopy, Force8b, ForcePal, GUIClick, MouseDis,
+                     MMXSupport, Force8b, ForcePal, GUIClick, MouseDis,
                      MusicRelVol, ScreenScale, SoundCompD, SoundQuality,
                      StereoSound, V8Mode, antienab, cvidmode, debugdisble,
                      debugger, enterpress, finterleave, frameskip,
@@ -483,12 +483,12 @@ int pccmdline(void)
         {
           if(nn == 'm')
           {
-            FPUCopy=2;
+            MMXSupport=1;
             pp++;
           }
           else
           {
-            FPUCopy=0;
+            MMXSupport=0;
           }
           break;
         }

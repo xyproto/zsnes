@@ -833,7 +833,7 @@ GUIOptionKeys:
 .noautoincsave
     cmp dh,'M'
     jne .nommxcopy
-    xor byte[FPUCopy],2
+    xor byte[MMXSupport],1
 .nommxcopy
     cmp dh,'U'
     jne .nousepl34

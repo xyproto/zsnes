@@ -28,7 +28,7 @@ EXTSYM ram7fa,wramdataa
 EXTSYM malloc,free
 EXTSYM StateBackup
 ;EXTSYM OSPort
-EXTSYM ADSRGAINSwitch,FPUCopy,ScreenScale,SoundQuality
+EXTSYM ADSRGAINSwitch,MMXSupport,ScreenScale,SoundQuality
 EXTSYM debugger,pl1contrl,pl2contrl,romtype,smallscreence
 EXTSYM smallscreenon,spcon
 EXTSYM statefileloc,LatestSave,firstsaveinc
@@ -1642,7 +1642,7 @@ NEWSYM MMXCheck
     jz .nommx
 
     ; MMX support
-    mov byte[FPUCopy],0
+    mov byte[MMXSupport],0
     mov eax,1
     CPUID
 
@@ -1653,7 +1653,7 @@ NEWSYM MMXCheck
 
     test edx,1 << 23
     jz .nommx
-    mov byte[FPUCopy],2
+    mov byte[MMXSupport],1
     mov edx,YesMMX
     call PrintStr
 .nommx

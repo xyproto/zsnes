@@ -895,8 +895,6 @@ NEWSYM docache
     je .skipbgclear
     cmp byte[newengen],1
     jne .skipbgclear
-;    cmp byte[FPUCopy],1
-;    je near ClearBGFPUCopy
     mov edi,[vidbuffer]
     xor eax,eax
     add edi,16
@@ -911,33 +909,6 @@ NEWSYM docache
     xor ecx,ecx
     pop es
 NEWSYM yesblank
-    pop edx
-    pop edi
-    pop esi
-    pop ebx
-    ret
-
-NEWSYM ClearBGFPUCopy
-    mov edi,[vidbuffer]
-    xor eax,eax
-    add edi,16
-    mov dl,[resolutn]
-.loopa
-    mov ecx,16
-.TopOfLoop
-    FLDZ
-    FLDZ
-    FISTP QWORD [EDI]
-    FISTP QWORD [EDI+8]
-    ADD EDI,16
-    DEC ECX
-    JNZ .TopOfLoop
-    add edi,32
-    dec dl
-    jnz .loopa
-.skipbgclear
-    xor ecx,ecx
-    pop es
     pop edx
     pop edi
     pop esi

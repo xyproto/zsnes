@@ -32,7 +32,6 @@ EXTSYM allocptr
 extsym putchar
 EXTSYM getch
 EXTSYM exit
-EXTSYM FPUCopy
 EXTSYM ZOpenFile,ZOpenMode,CurrentHandle,ZFileSeek,ZOpenFileName,ZFileSeekMode
 EXTSYM ZFileSeekPos,ZFileSeekHandle
 EXTSYM ZFileWriteHandle,ZFileWriteSize,ZFileWriteBlock,ZFileWrite

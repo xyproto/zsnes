@@ -1458,7 +1458,7 @@ DisplayGUIOption:
 .nocheckbox2
     GUIDisplayIconWin 4,11,46,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     jne .nocheckbox3
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox3
@@ -1626,7 +1626,7 @@ DisplayGUIVideo:
     jne .notexttb
     mov byte[Triplebufen],0
 .notexttb
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     jne .2xSaIdis
     cmp byte[newgfx16b],0
     je .2xSaIdis

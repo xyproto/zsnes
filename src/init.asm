@@ -22,7 +22,7 @@ EXTSYM makesprprtable,romloadskip,start65816,startdebugger,SfxR0
 EXTSYM MovieProcessing
 EXTSYM MovieFileHand,filefound,inittable,SA1inittable
 EXTSYM MessageOn,Msgptr,MsgCount,sndrot,GenerateBank0Table,SnowTimer
-EXTSYM inittableb,inittablec,FPUCopy,newgfx16b,cfgreinittime,EndMessage
+EXTSYM inittableb,inittablec,newgfx16b,cfgreinittime,EndMessage
 EXTSYM Open_File,Read_File,Write_File,Close_File,Output_Text,Get_Key,CNetType
 EXTSYM Delete_File,Get_First_Entry,Get_Next_Entry,Change_Dir,Get_Dir,InitDSP
 EXTSYM Remove_Dir,Change_Single_Dir,Create_Dir,Get_Memfree,Create_File

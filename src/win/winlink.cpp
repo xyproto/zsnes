@@ -1842,7 +1842,7 @@ void CheckTimers(void)
    }
 }
 
-extern "C" BYTE FPUCopy;
+extern unsigned char MMXSupport;
 
 void UpdateVFrame(void)
 {
@@ -1892,7 +1892,7 @@ void UpdateVFrame(void)
       int buffer_ptr = (int)&Buffer[0];
 
       if (T36HZEnabled == 1)
-         if (FPUCopy == 2)
+         if (MMXSupport == 1)
             _asm
             {
                mov edi,buffer_ptr
@@ -1920,7 +1920,7 @@ _blank_top:
                jne _blank_top
             }
       else
-         if (FPUCopy == 2)
+         if (MMXSupport == 1)
             _asm
             {
                mov esi,DSPBuffer1
@@ -1979,7 +1979,7 @@ extern DWORD AddEndBytes;
 extern DWORD NumBytesPerLine;
 extern unsigned char * WinVidMemStart;
 extern void copy640x480x16bwin(void);
-extern unsigned char FPUCopy;
+extern unsigned char MMXSupport;
 extern unsigned char NGNoTransp;
 extern unsigned char newengen;
 
@@ -2080,7 +2080,7 @@ void drawscreenwin(void)
       switch (BitDepth)
       {
          case 16:
-             if (FPUCopy == 2) {
+             if (MMXSupport == 1) {
                   _asm {
                      push es
                      mov ax,ds
@@ -2208,7 +2208,7 @@ void drawscreenwin(void)
       switch (BitDepth)
       {
          case 16:
-             if (FPUCopy == 2) {
+             if (MMXSupport == 1) {
                   _asm {
                      push es
                      mov ax,ds

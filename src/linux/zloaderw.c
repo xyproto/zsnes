@@ -37,7 +37,7 @@ extern void displayparams(void);
 extern void makeextension(void);
 
 extern unsigned char	Palette0, SPC700sh, OffBy1Line, DSPDisable,
-			FPUCopy, Force8b, ForcePal, ForceNTSC, GUIClick, MouseDis,
+			MMXSupport, Force8b, ForcePal, ForceNTSC, GUIClick, MouseDis,
 			MusicRelVol, ScreenScale, SoundCompD, SoundQuality,
 			StereoSound, V8Mode, antienab, cvidmode, debugdisble,
 			debugger, enterpress, finterleave, frameskip,
@@ -249,10 +249,10 @@ int main (int argc, char *argv[]) {
 
 			case 'o': {
 				if (strcmp(optarg,"m") == 0) {
-					FPUCopy = 2;
+					MMXSupport = 1;
 					pp++;
 				} else {
-					FPUCopy = 0;
+					MMXSupport = 0;
 				}
 				break;
 			}

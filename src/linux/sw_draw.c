@@ -102,7 +102,7 @@ static void UnlockSurface(void)
 extern DWORD AddEndBytes;
 extern DWORD NumBytesPerLine;
 extern unsigned char *WinVidMemStart;
-extern unsigned char FPUCopy;
+extern unsigned char MMXSupport;
 extern unsigned char NGNoTransp;
 extern unsigned char newengen;
 extern unsigned short resolutn;
@@ -196,7 +196,7 @@ void sw_drawwin()
     if (SurfaceX == 256 && SurfaceY == 224) {
 	switch(BitDepth) {
 	    case 16:
-		if (FPUCopy){
+		if (MMXSupport){
 		    __asm__ __volatile__ (
 		"	pushw %%es\n"					\
 		"	movw %%ds, %%ax\n"				\
@@ -329,7 +329,7 @@ void sw_drawwin()
     } else if (SurfaceX == 320 && SurfaceY == 240) {
 	switch(BitDepth) {
 	    case 16:
-		if (FPUCopy) {
+		if (MMXSupport) {
 		    __asm__ __volatile__ (
 		"	pushw %%es\n"					\
 		"	movw %%ds, %%ax\n"				\

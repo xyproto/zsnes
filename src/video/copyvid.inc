@@ -839,7 +839,7 @@ NEWSYM copymodeq224
     add esi,16+256+32
     mov edi,256
     mov dl,222
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .loopb
 .loopa
     mov ecx,64
@@ -880,7 +880,7 @@ NEWSYM copymodeq240
     add esi,16+256+32
     mov dl,[resolutn]
     sub dl,2
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .loopb
 .loopa
     mov ecx,64
@@ -925,7 +925,7 @@ NEWSYM copymodeq256
     mov dl,[resolutn]
     dec dl
     dec dl
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .loopb
 .loopa
     mov ecx,64
@@ -982,10 +982,8 @@ NEWSYM copyvesa2320x240x8b
     mov dl,[resolutn]
     dec dl
     dec dl
-    cmp byte[FPUCopy],1
-    je .loopb
-    cmp byte[FPUCopy],2
-    je near .loopc
+    cmp byte[MMXSupport],1
+    je near .loopb
 .loopa
     mov ecx,64
     rep movsd
@@ -996,14 +994,6 @@ NEWSYM copyvesa2320x240x8b
     pop es
     ret
 .loopb
-    CopyFPU
-    add esi,32
-    add edi,64
-    dec dl
-    jnz near .loopa
-    pop es
-    ret
-.loopc
     mov ecx,16
     MMXStuff
     add esi,32
@@ -2346,10 +2336,8 @@ NEWSYM copyvesa2320x240x16b
     mov dl,[resolutn]
     dec dl
     dec dl
-    cmp byte[FPUCopy],1
-    je .loopb
-    cmp byte[FPUCopy],2
-    je near .loopc
+    cmp byte[MMXSupport],1
+    je near .loopb
 .loopa
     mov ecx,128
     rep movsd
@@ -2360,15 +2348,6 @@ NEWSYM copyvesa2320x240x16b
     pop es
     ret
 .loopb
-    CopyFPU
-    CopyFPU
-    add esi,64
-    add edi,128
-    dec dl
-    jnz near .loopb
-    pop es
-    ret
-.loopc
     mov ecx,32
     MMXStuff
     add esi,64
@@ -2612,7 +2591,7 @@ NEWSYM ConvertToAFormat
     mov dl,[resolutn]
     dec dl
     dec dl
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmxconv
 .crgbloop
     mov ecx,128
@@ -2714,7 +2693,7 @@ NEWSYM copyvesa2320x480x16b
     je near .quartscanlines
 .loopa
     mov ecx,128
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmx
     rep movsd
     sub esi,256*2
@@ -2728,7 +2707,7 @@ NEWSYM copyvesa2320x480x16b
     dec dl
     jnz .loopa
     pop es
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je .mmx2
     ret
 .mmx2
@@ -2762,7 +2741,7 @@ NEWSYM copyvesa2320x480x16b
 .scanlines
 .loopab
     mov ecx,128
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmxsl
 .ab
     mov eax,[esi]
@@ -2778,7 +2757,7 @@ NEWSYM copyvesa2320x480x16b
     dec dl
     jnz .loopab
     pop es
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmx2
     ret
 .mmxsl
@@ -2796,7 +2775,7 @@ NEWSYM copyvesa2320x480x16b
 
 .halfscanlines
 .loopabh
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmxslh
     mov ecx,128
 .abh
@@ -2825,7 +2804,7 @@ NEWSYM copyvesa2320x480x16b
     dec dl
     jnz .loopabh
     pop es
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmx2
     ret
 .mmxslh
@@ -2871,7 +2850,7 @@ NEWSYM copyvesa2320x480x16b
 .quartscanlines
     mov [lineleft],dl
 .loopabh2
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmxslh2
     mov ecx,128
 .abh2
@@ -2904,7 +2883,7 @@ NEWSYM copyvesa2320x480x16b
     dec byte[lineleft]
     jnz near .loopabh2
     pop es
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmx2
     ret
 .mmxslh2
@@ -3438,7 +3417,7 @@ NEWSYM copyvesa2640x480x16b
     cmp byte[GUIOn],1
     je .nointerp
 .yi
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     jne .nommx
     cmp byte[newgfx16b],0
     je .nommx
@@ -3472,7 +3451,7 @@ NEWSYM copyvesa2640x480x16b
     cmp byte[ebx],1
     ja near .yeshiresng
 .ignorehr
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmx
 .a
     mov ax,[esi]
@@ -3506,7 +3485,7 @@ NEWSYM copyvesa2640x480x16b
     je .ignorehr2
     xor byte[res512switch],1
 .ignorehr2
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je .mmx2
     ret
 .mmx2
@@ -3596,7 +3575,7 @@ NEWSYM copyvesa2640x480x16b
     call HighResProc
     jmp .returnb
 .ignorehrb
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmxsl
 .ab
     mov ax,[esi]
@@ -3618,7 +3597,7 @@ NEWSYM copyvesa2640x480x16b
     je .ignorehr2b
     xor byte[res512switch],1
 .ignorehr2b
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmx2
     ret
 .yeshiresb
@@ -3671,7 +3650,7 @@ NEWSYM copyvesa2640x480x16b
     call HighResProc
     jmp .returnbh
 .ignorehrbh
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmxslh
     mov ecx,256
 .abh
@@ -3704,7 +3683,7 @@ NEWSYM copyvesa2640x480x16b
     dec dl
     jnz near .loopabh
     pop es
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmx2
     ret
 .mmxslh
@@ -3767,7 +3746,7 @@ NEWSYM copyvesa2640x480x16b
     call HighResProc
     jmp .returnbh2
 .ignorehrbh2
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmxslh2
     mov ecx,256
 .abh2
@@ -3804,7 +3783,7 @@ NEWSYM copyvesa2640x480x16b
     dec byte[lineleft]
     jnz near .loopabh2
     pop es
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmx2
     ret
 .mmxslh2
@@ -3886,7 +3865,7 @@ HighResProc:
 .nofielde
     ret
 .hiresmode7
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je .yeshiresngmmxmode7
 .a2
     mov ax,[esi]
@@ -3945,7 +3924,7 @@ HighResProc:
     sub esi,75036*4
     ret
 .hires
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .yeshiresngmmx
 .bng
     mov eax,[esi+75036*4-2]
@@ -4357,7 +4336,7 @@ NEWSYM smallscreen640x480x16b
     je .nointerpolat
     cmp byte[antienab],1
     jne .nointerpolat
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near MMXInterpolFS
 .nointerpolat
     push es
@@ -4982,9 +4961,9 @@ NEWSYM InterPtr, resd 1
 SECTION .text
 
 NEWSYM interpolate640x480x16b
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near MMXInterpol
-    mov byte[FPUCopy],0
+    mov byte[MMXSupport],0
 
     mov ebx,hirestiledat+1
     cmp byte[GUIOn],1

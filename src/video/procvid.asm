@@ -28,7 +28,7 @@ EXTSYM vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10,vesa2selec,vidbuffer
 EXTSYM vidbufferm,vram,vsyncon,vbufdptr,KeyStateSelct,forceblnk,soundon
 EXTSYM Open_File,Read_File,Close_File,Create_File,Write_File,Get_File_Date
 EXTSYM Triplebufen,makepal,changepal,saveselectpal,displayfpspal,superscopepal
-EXTSYM DrawScreen
+EXTSYM DrawScreen,MMXSupport
 EXTSYM Get_MouseData,Get_MousePositionDisplacement
 EXTSYM GUIEnableTransp
 EXTSYM GUIFontData
@@ -115,8 +115,6 @@ NEWSYM FPUZero
 
 .Zero dd 0,0
 .Zero2 dd 0,0
-
-NEWSYM FPUCopy, db 0
 
 ;*******************************************************
 ; ShowVideo                   Processes & displays video

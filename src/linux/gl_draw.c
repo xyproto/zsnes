@@ -122,7 +122,7 @@ void gl_end()
 extern DWORD AddEndBytes;
 extern DWORD NumBytesPerLine;
 extern unsigned char *WinVidMemStart;
-extern unsigned char FPUCopy;
+extern unsigned char MMXSupport;
 extern unsigned char NGNoTransp;
 extern unsigned char newengen;
 extern void copy640x480x16bwin(void);

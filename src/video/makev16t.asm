@@ -19,7 +19,7 @@
 
 EXTSYM cwinptr,dualstartprocess,dualwinbg,dualwinsp,dwinptrproc,pwinbgenab
 EXTSYM pwinbgtype,pwinspenab,pwinsptype,winbgdata,winlogicb,winonbtype
-EXTSYM winonstype,winspdata,interlval,FPUCopy
+EXTSYM winonstype,winspdata,interlval,MMXSupport
 EXTSYM bg1scrolx,bg1scroly,curmosaicsz,curypos,drawmode716t,makewindow
 EXTSYM mode7set,mosaicon,mosaicsz,scrnon,winbg1en,winenabm
 EXTSYM drawmode716textbg,drawmode716textbg2
@@ -1469,7 +1469,7 @@ NEWSYM clearback16bts
     mov edi,[curvidoffset]
     or eax,eax
     jz near clearback16bts0.clearing
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je .dommxclear
     mov ecx,128
     rep stosd
@@ -1540,7 +1540,7 @@ NEWSYM clearback16bts0b
     mov edi,[curvidoffset]
     or eax,eax
     jz near clearback16bts0.clearing
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je .dommxclear
     mov ecx,128
     rep stosd
@@ -1574,7 +1574,7 @@ NEWSYM clearback16bts0
     jnz .notnotransp
     mov byte[DoTransp],1
 .notnotransp
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je .dommxclear
     mov ecx,128
     rep stosd
@@ -2036,7 +2036,7 @@ NEWSYM clearback16t
     xor eax,eax
     ret
 .subcopy
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je .dommxcopy
     mov ecx,128
     xor ebx,ebx
@@ -2068,7 +2068,7 @@ NEWSYM clearback16t
     mov ax,[pal16b]
     shl eax,16
     mov ax,[pal16b]
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je .dommxclear
     rep stosd
     xor eax,eax

@@ -24,7 +24,6 @@ EXTSYM ccmdline
 EXTSYM InitDir,InitDrive
 EXTSYM DOScreatenewcfg,ExecGUISaveVars
 EXTSYM allocptr
-EXTSYM FPUCopy
 EXTSYM ZOpenFile,ZOpenMode,CurrentHandle,ZFileSeek,ZOpenFileName,ZFileSeekMode
 EXTSYM ZFileSeekPos,ZFileSeekHandle
 EXTSYM ZFileWriteHandle,ZFileWriteSize,ZFileWriteBlock,ZFileWrite

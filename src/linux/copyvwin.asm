@@ -17,7 +17,7 @@
 
 %include "macros.mac"
 
-EXTSYM vesa2selec,vidbuffer,GUIOn,FPUCopy,resolutn,En2xSaI,antienab,scanlines
+EXTSYM vesa2selec,vidbuffer,GUIOn,MMXSupport,resolutn,En2xSaI,antienab,scanlines
 EXTSYM hirestiledat,res512switch,curblank,spritetablea
 EXTSYM lineleft,_2xSaILineW,_2xSaISuperEagleLineW, _2xSaISuper2xSaILineW
 EXTSYM newengen,cfield,HalfTrans
@@ -58,7 +58,7 @@ NEWSYM copy640x480x16bwin
     cmp byte[GUIOn2],1
     je .nointerp
 .yi
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     jne .nommx
     cmp byte[En2xSaI],0
     jne near Process2xSaIwin
@@ -89,7 +89,7 @@ NEWSYM copy640x480x16bwin
     cmp byte[ebx],1
     ja near .yeshiresng
 .ignorehr
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmx
 .a
     mov ax,[esi]
@@ -120,7 +120,7 @@ NEWSYM copy640x480x16bwin
     jnz near .loopa
     pop es
     xor byte[res512switch],1
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je .mmx2
     ret
 .mmx2
@@ -234,7 +234,7 @@ NEWSYM copy640x480x16bwin
     call HighResProc
     jmp .returnb
 .ignorehrb
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmxsl
 .ab
     mov ax,[esi]
@@ -260,7 +260,7 @@ NEWSYM copy640x480x16bwin
     jnz .loopab
     pop es
     xor byte[res512switch],1
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmx2
     ret
 .yeshiresb
@@ -313,7 +313,7 @@ NEWSYM copy640x480x16bwin
     call HighResProc
     jmp .returnbh
 .ignorehrbh
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmxslh
     mov ecx,256
 .abh
@@ -346,7 +346,7 @@ NEWSYM copy640x480x16bwin
     dec dl
     jnz near .loopabh
     pop es
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmx2
     ret
 .mmxslh
@@ -409,7 +409,7 @@ NEWSYM copy640x480x16bwin
     call HighResProc
     jmp .returnbh2
 .ignorehrbh2
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmxslh2
     mov ecx,256
 .abh2
@@ -446,7 +446,7 @@ NEWSYM copy640x480x16bwin
     dec byte[lineleft]
     jnz near .loopabh2
     pop es
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .mmx2
     ret
 .mmxslh2
@@ -528,7 +528,7 @@ HighResProc:
 .nofielde
     ret
 .hiresmode7
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je .yeshiresngmmxmode7
 .a2
     mov ax,[esi]
@@ -587,7 +587,7 @@ HighResProc:
     sub esi,75036*4
     ret
 .hires
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near .yeshiresngmmx
 .bng
     mov eax,[esi+75036*4-2]
@@ -1247,7 +1247,7 @@ MMXInterpolwin:
     ret
 
 NEWSYM interpolate640x480x16bwin
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near MMXInterpolwin
 
     mov ebx,hirestiledat+1

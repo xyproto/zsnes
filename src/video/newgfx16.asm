@@ -63,7 +63,7 @@ EXTSYM ngwinptr,objwlrpos,objwen,objclineptr,CSprWinPtr
 EXTSYM BuildWindow2    
 EXTSYM NGNumSpr
 EXTSYM fulladdtab
-EXTSYM FPUCopy,bgtxadd2
+EXTSYM MMXSupport,bgtxadd2
 
 NEWSYM NewGfx16AsmStart
 
@@ -2773,7 +2773,7 @@ ProcessTransparencies:
     je .yestransp
     ret
 .yestransp
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     je near ProcessTransparenciesMMX
     mov esi,[vidbuffer]
     add esi,16*2+288*2

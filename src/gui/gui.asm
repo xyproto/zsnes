@@ -65,7 +65,7 @@
 %include "macros.mac"
 
 EXTSYM dssel, curblank, vidpastecopyscr, frameskip, newengen, vsyncon, cantinitmodem
-EXTSYM FPUCopy, cvidmode, antienab, smallscreenon, smallscreence,NetQuit
+EXTSYM cvidmode, antienab, smallscreenon, smallscreence,NetQuit
 EXTSYM soundon, StereoSound, SoundCompD, SoundQuality, MusicRelVol,UartType
 EXTSYM endprog, continueprog, spcBuffera, spcRamcmp, cbitmode, makepal
 EXTSYM t1cc, LoadDir, SRAMDir, LoadDrive,SRAMDrive, initsnes, romloadskip
@@ -551,7 +551,7 @@ NEWSYM KeyRewind, dd 0
 NEWSYM ChatNick, times 16 db 0
 NEWSYM KeySlowDown, dd 0
 
-NEWSYM UseCubicSpline, db 1
+NEWSYM MMXSupport, db 1
 
 NEWSYM LargeSoundBuf, db 0
 NEWSYM HighPriority, db 0
@@ -1516,7 +1516,7 @@ NEWSYM StartGUI
     jne .notexttb
     mov byte[Triplebufen],0
 .notexttb
-    cmp byte[FPUCopy],2
+    cmp byte[MMXSupport],1
     jne .2xSaIdis
     cmp byte[newgfx16b],0
     je .2xSaIdis

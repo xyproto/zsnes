@@ -802,8 +802,6 @@ NEWSYM clearback16b
     shl eax,16
     mov ax,bx
     mov edi,[curvidoffset]
-;    cmp byte[FPUCopy],1
-;    je .dofpuclear
     mov ecx,128
     rep stosd
     xor eax,eax
@@ -813,15 +811,8 @@ NEWSYM clearback16b
     mov ax,[pal16b]
     shl eax,16
     mov ax,[pal16b]
-;    cmp byte[FPUCopy],1
-;    je .dofpuclear
     mov ecx,128
     rep stosd
-    xor eax,eax
-    ret
-.dofpuclear
-    mov ecx,32
-    call FPUZero
     xor eax,eax
     ret
 
