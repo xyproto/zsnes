@@ -173,11 +173,6 @@ EXTSYM ModemSendChar
 %ifdef __LINUX__
 EXTSYM numlockptr
 %endif
-%ifdef __WIN32__
-EXTSYM CheckPriority
-EXTSYM CheckAlwaysOnTop
-EXTSYM CheckScreenSaver
-%endif
 
 NEWSYM GuiAsmStart
 
@@ -3390,12 +3385,6 @@ DisplayBoxes:
     cmp al,4
     jne .noguioption
     call DisplayGUIOption
-%ifdef __WIN32__
-    pushad
-    call CheckPriority
-    call CheckScreenSaver
-    popad
-%endif
     jmp .finstuff
 .noguioption
     cmp al,5

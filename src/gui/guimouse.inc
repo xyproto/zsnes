@@ -16,6 +16,9 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 %ifdef __WIN32__
+EXTSYM CheckPriority
+EXTSYM CheckAlwaysOnTop
+EXTSYM CheckScreenSaver
 EXTSYM MinimizeWindow
 %endif
 
@@ -1282,6 +1285,25 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
+%macro GUIClickCButtonW 3
+    cmp eax,%1+1
+    jl %%noclick
+    cmp edx,%2+3
+    jl %%noclick
+    cmp eax,%1+6
+    jg %%noclick
+    cmp edx,%2+8
+    jg %%noclick
+    xor %3,1
+%%noclick
+%ifdef __WIN32__
+    pushad
+    call CheckPriority
+    call CheckScreenSaver
+    popad
+%endif
+%endmacro
+
 %macro GUISlidebarPostImpl 13 ; x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
     cmp dword[%11],0
     je near %%nolower
@@ -2108,7 +2130,7 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,76,byte[SidewinderFix]
 %endif
 %ifdef __WIN32__
-    GUIClickCButton 11,76,byte[HighPriority]
+    GUIClickCButtonW 11,76,byte[HighPriority]
 %endif
     GUIClickCButton 11,86,byte[FPSAtStart]
     GUIClickCButton 11,96,byte[Turbo30hz]
@@ -2120,7 +2142,7 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,156,byte[AutoState]
     GUIClickCButton 11,166,byte[DontSavePath]
 %ifdef __WIN32__
-    GUIClickCButton 11,176,byte[DisableScreenSaver]
+    GUIClickCButtonW 11,176,byte[DisableScreenSaver]
     GUIClickCButtonat 11,186,byte[AlternateTimer]
 %endif
     ; Frameskip = 0
