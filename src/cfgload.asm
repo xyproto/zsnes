@@ -458,6 +458,7 @@ NEWSYM DOScreatenewcfg
     je .yesloadsdir
     jmp .loop
 .yesloadsdir
+%ifndef __LINUX__
     mov al,[SRAMDrive]
     add al,65
     mov [edi],al
@@ -465,6 +466,7 @@ NEWSYM DOScreatenewcfg
     mov byte[edi+2],'\'
     add edi,3
     add ecx,3
+%endif    
     mov ebx,SRAMDir
 .nextinsertdira
     mov al,[ebx]
@@ -481,6 +483,7 @@ NEWSYM DOScreatenewcfg
 .insertdirb
     cmp byte[DontSavePath],1
     je .insertdirc
+%ifndef __LINUX__  
     mov al,[LoadDrive]
     add al,65
     mov [edi],al
@@ -488,6 +491,7 @@ NEWSYM DOScreatenewcfg
     mov byte[edi+2],'\'
     add edi,3
     add ecx,3
+%endif    
     mov ebx,LoadDir
 .nextinsertdir
     mov al,[ebx]
@@ -502,6 +506,7 @@ NEWSYM DOScreatenewcfg
     jmp .loop
 
 .insertdirc
+%ifndef __LINUX__
     mov al,[LoadDriveB]
     add al,65
     mov [edi],al
@@ -509,6 +514,7 @@ NEWSYM DOScreatenewcfg
     mov byte[edi+2],'\'
     add edi,3
     add ecx,3
+%endif    
     mov ebx,LoadDirB
 .nextinsertdirc
     mov al,[ebx]
@@ -638,7 +644,7 @@ db '',13,10
 db 'SaveDirectory = %d',13,10
 db '',13,10
 db '; Game directory.  This is the directory where the GUI starts at.',13,10
-db '; ZSNES automatically writes the current directory here apon exit.',13,10
+db '; ZSNES automatically writes the current directory here upon exit.',13,10
 db '',13,10
 db 'GameDirectory = %e',13,10
 .cfgfilesize equ $-.cfgfiledata
@@ -768,11 +774,13 @@ NEWSYM getcfg
     cmp dl,' '
     je .skipcopyb
 .nospaceskip
+%ifndef __LINUX__
     cmp dl,'a'
     jb .nocapneededb
     cmp dl,'z'
     ja .nocapneededb
     sub dl,'a'-'A'
+%endif    
 .nocapneededb
     mov byte[.usespace],1
     mov [.stringb+ebx],dl
@@ -1548,6 +1556,7 @@ NEWSYM getcfg
 .getsavedir
     cmp dword[.strlenb],3
     jb .nosavedir
+%ifndef __LINUX__
     cmp byte[.stringb+1],':'
     jne .nosavedir
     cmp byte[.stringb+2],'\'
@@ -1556,12 +1565,19 @@ NEWSYM getcfg
     mov al,[.stringb]
     sub al,65
     mov [SRAMDrive],al
+%else
+    mov byte[cfgloadsdir],1
+%endif    
     push ecx
     push esi
     push edi
     mov ecx,[.strlenb]
+%ifndef __LINUX__    
     sub ecx,3
     mov esi,.stringb+3
+%else
+    mov esi,.stringb
+%endif        
     mov edi,SRAMDir
     cmp ecx,0
     je .ndird
@@ -1583,6 +1599,7 @@ NEWSYM getcfg
 .getloaddir
     cmp dword[.strlenb],3
     jb .noloaddir
+%ifndef __LINUX__    
     cmp byte[.stringb+1],':'
     jne .noloaddir
     cmp byte[.stringb+2],'\'
@@ -1592,13 +1609,20 @@ NEWSYM getcfg
     sub al,65
     mov [LoadDrive],al
     mov [LoadDriveB],al
+%else
+    mov byte[cfgloadgdir],1
+%endif        
     push ecx
     push esi
     push edi
     push ebx
     mov ecx,[.strlenb]
+%ifndef __LINUX__    
     sub ecx,3
     mov esi,.stringb+3
+%else
+    mov esi,.stringb
+%endif        
     mov edi,LoadDir
     mov ebx,LoadDirB
     cmp ecx,0
