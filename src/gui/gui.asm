@@ -1090,20 +1090,20 @@ GUIskipnextkey42 resb 1
 SECTION .text
 NEWSYM GUIinit18_2hz
     mov al,00110110b
-    out 43H,al
+    out 43h,al
     mov ax,0
-    out 40H,al
+    out 40h,al
     mov al,ah
-    out 40H,al
+    out 40h,al
     ret
 
 NEWSYM GUIinit36_4hz
     mov al,00110110b
-    out 43H,al
+    out 43h,al
     mov ax,32768
-    out 40H,al
+    out 40h,al
     mov al,ah
-    out 40H,al
+    out 40h,al
     ret
 
 NEWSYM GUI36hzcall

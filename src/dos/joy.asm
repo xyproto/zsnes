@@ -172,9 +172,9 @@ NEWSYM GetCoords
   mov ecx,00FFFFh
 .loopa
   in al,dx
-  test al,01H
+  test al,01h
   jz .YAxis
-  test al,02H
+  test al,02h
   jz .XAxis
   inc dword[JoyX]
   inc dword[JoyY]
@@ -230,22 +230,22 @@ NEWSYM GetCoords3
   mov ecx,01FFFFh
 .loopa
   in al,dx
-  test al,01H
+  test al,01h
   jz .YAxis
   inc dword[JoyX]
   nop
 .YAxis
-  test al,02H
+  test al,02h
   jz .XAxis
   inc dword[JoyY]
   nop
 .XAxis
-  test al,04H
+  test al,04h
   jz .YAxis2
   inc dword[JoyX2]
   nop
 .YAxis2
-  test al,08H
+  test al,08h
   jz .XAxis2
   inc dword[JoyY2]
   nop
