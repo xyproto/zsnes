@@ -114,8 +114,8 @@ if test x$debug = xyes; then
 	dnl It is actually easier to debug zsnes with no optimization
 	dnl enabled. 
 
-	CFLAGS="$CFLAGS -DDEBUG -O0 -fno-omit-frame-pointer -ggdb3"
-	NFLAGS="$NFLAGS -DDEBUG -g -s -O0" dnl it works now
+	CFLAGS="$CFLAGS -DDEBUG -O0 -fno-omit-frame-pointer -gstabs"
+	NFLAGS="$NFLAGS -DDEBUG -g -F stabs -s -O0"
 	ZSNESEXE="zsnesd"
 else
 	AC_MSG_RESULT(no)
@@ -137,8 +137,7 @@ if test x$debug != xyes; then
 			AC_MSG_RESULT(586)
 			;;
 		i686-*-*)
-			CFLAGS="$CFLAGS -march=pentiumpro"
-			dnl CFLAGS="$CFLAGS -march=pentium3 -mmmx -msse -mfpmath=sse,387"
+			CFLAGS="$CFLAGS -march=pentium4 -mcpu=pentium4"
 			AC_MSG_RESULT(686)
 			;;
 		*)
