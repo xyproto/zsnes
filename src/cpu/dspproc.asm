@@ -5355,39 +5355,6 @@ NEWSYM handlersbseg
     dec ecx
     jnz .loopb
     jmp .sbend
-%ifdef _I_LIKE_SUCKY_FILTERS_          ;bwahaha
-.surroundstereo
-    shr ecx,1
-.loopbs
-    mov eax,[esi]
-    cmp eax,-32768
-    jge .noneg3s
-    mov eax,-32768
-.noneg3s
-    cmp eax,32767
-    jle .noneg4s
-    mov eax,32767
-.noneg4s
-    xor ah,80h
-    mov [es:edi],ah
-    mov eax,[esi+4]
-    cmp eax,-32768
-    jge .noneg3s2
-    mov eax,-32768
-.noneg3s2
-    cmp eax,32767
-    jle .noneg4s2
-    mov eax,32767
-.noneg4s2
-    neg ah
-    xor ah,80h
-    mov [es:edi+1],ah
-    add esi,8
-    add edi,2
-    dec ecx
-    jnz .loopbs
-    jmp .sbend
-%endif
 .surroundmono
     cmp byte[SBswitch],0
     je .1stblock

@@ -1264,6 +1264,8 @@ GUISoundKeys:
 .nodynamicfilter
     cmp dh,'H'
     jne .nohiqualityfilter
+    cmp byte[MMXSupport],0
+    je .nohiqualityfilter
     GUIkeystoggleoptn byte[LowPassFilterType],3
 .nohiqualityfilter
     ret
