@@ -28,7 +28,7 @@ EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,res640
 EXTSYM resolutn,romispal,scaddtype,scadtng,scanlines
 EXTSYM scbcong,selcA000,snesmouse,t1cc,vcache4b,vesa2_bpos,spritetablea
 EXTSYM vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10,vesa2selec,vidbuffer
-EXTSYM vidbufferm,vram,vsyncon,vbufdptr,KeyStateSelct,forceblnk,soundon
+EXTSYM vram,vsyncon,vbufdptr,KeyStateSelct,forceblnk,soundon
 EXTSYM Open_File,Read_File,Close_File,Create_File,Write_File,Get_File_Date
 EXTSYM Triplebufen,makepal,changepal,saveselectpal,displayfpspal,superscopepal
 EXTSYM DrawScreen,MMXSupport

@@ -38,6 +38,12 @@ EXTSYM cfgloadgdir,cfgloadsdir
 EXTSYM init18_2hz
 EXTSYM OSExit,GUIOn2
 EXTSYM SRAMDirCurDir,SRAMChdir,SRAMChdirFail
+EXTSYM frameskip,BitConv32Ptr,spcBuffera,spritetablea,vcache2bs
+EXTSYM vcache4bs,vcache8bs,RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa
+EXTSYM vidbufferofsmos,ngwinptr,vidbufferofsb,headdata,romdata,sfxramdata
+EXTSYM setaramdata,wramdata,ram7f,vram,sram,debugbuf,regptr,regptw,vcache2b
+EXTSYM vcache4b,vcache8b,fname,fnames,fnamest,filefound,vidbufferofsc,DSPDisable
+EXTSYM gammalevel,gammalevel16b,Sup48mbit,Sup16mbit,guioff
 
 %ifdef __LINUX__
 EXTSYM LinuxExit
@@ -135,126 +141,21 @@ NEWSYM mydebug, db '',13,10,0
 NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,10,0
 
 NEWSYM welcome
-
-
-                 db 'ZSNES v',ZVERSION,' (c) 1997-2005, ZSNES Team',13,10,13,10
-                 db 'Be sure to check http://www.zsnes.com/ for the latest version.',13,10
-                 db 'Please report crashes to zsnes-devel@lists.sourceforge.net.',13,10,13,10
-                 db 'ZSNES is written by the ZSNES Team (See AUTHORS.TXT)',13,10
-                 db 'ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,',10,13
-                 db 'and you are welcome to redistribute it under certain conditions;',10,13
-%ifdef __LINUX__
-                 db 'please read ',39,'LICENSE',39,' thoroughly before doing so.',10,13,10,13
-%else
-                 db 'please read ',39,'LICENSE.TXT',39,' thoroughly before doing so.',10,13,10,13
-%endif
-                 db 'Use ZSNES -? for command line definitions.',13,10,13,10,0
+  db 'ZSNES v',ZVERSION,' (c) 1997-2005, ZSNES Team',13,10,13,10
+  db 'Be sure to check http://www.zsnes.com/ for the latest version.',13,10
+  db 'Please report crashes to zsnes-devel@lists.sourceforge.net.',13,10,13,10
+  db 'ZSNES is written by the ZSNES Team (See AUTHORS.TXT)',13,10
+  db 'ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,',10,13
+  db 'and you are welcome to redistribute it under certain conditions;',10,13
+  db 'please read ',39,'LICENSE.TXT',39,' thoroughly before doing so.',10,13,10,13
+  db 'Use ZSNES -? for command line definitions.',13,10,13,10,0
 
 ;cpuidfname db 'nocpuzid.dat',0
 ;cpuidtext db 'NOTE: If ZSNES crashes here, then please re-run. ',0
 ;cpuidtext2 db 13,'                                                 ',13,0
-YesMMX    db 'MMX support found and enabled.',13,10,13,10,0
-
-; global variables
-
-NEWSYM per2exec,      dd 100            ; percentage of opcodes to execute
-
-%ifdef __MSDOS__
-NEWSYM cvidmode,      db 4              ; video mode, 0=320x240, 1=256x256
-%else
-NEWSYM cvidmode,      db 1              ; video mode, 0=320x240, 1=256x256
-%endif
-
-section .bss
-NEWSYM string,  resb 512
-NEWSYM fname,   resb 512
-NEWSYM fnames,  resb 512  ; sram filename
-NEWSYM fnamest, resb 512  ; state filename
-
-NEWSYM prevvid,       resd 1
-NEWSYM selc0040,      resd 1
-NEWSYM selcA000,      resd 1
-NEWSYM selcB800,      resd 1
-NEWSYM filefound,     resd 1            ; Parameter String Found
-NEWSYM prevdash,      resd 1            ; Previous Dash Value
-NEWSYM frameskip,     resd 1            ; 0 = Auto, 1-10 = Skip 0 .. 9
-NEWSYM vidbuffer,     resd 1            ; video buffer (1024x239 = 244736)
-NEWSYM ngwinptr,      resd 1
-NEWSYM vidbufferm,    resd 1            ; video buffer mirror
-NEWSYM vidbufferofsa, resd 1            ; offset 1
-NEWSYM vidbufferofsb, resd 1            ; offset 2
-NEWSYM vidbufferofsc, resd 1            ; offset 2
-NEWSYM vidbufferofsmos, resd 1          ; mosaic offset for new graphics engine
-NEWSYM headdata,      resd 1
-NEWSYM romdata,       resd 1            ; rom data  (4MB = 4194304)
-NEWSYM sfxramdata,    resd 1            ; SuperFX Ram Data
-NEWSYM setaramdata,   resd 1            ; Seta ST010/ST011 SRam Data
-NEWSYM wramdata,      resd 1            ; stack (64K = 32768)
-NEWSYM ram7f,         resd 1            ; ram @ 7f = 65536
-NEWSYM vram,          resd 1            ; vram = 65536
-NEWSYM sram,          resd 1            ; sram = 32768
-NEWSYM spritetablea,  resd 1            ; 
-NEWSYM spcBuffera,    resd 1            ; 
-NEWSYM debugbuf,      resd 1            ; debug buffer = 38x1000 = 38000
-NEWSYM regptr,        resd 1            ; pointer to registers
-NEWSYM regptw,        resd 1            ; pointer to registers
-NEWSYM vcache2b,      resd 1            ; 2-bit video cache
-NEWSYM vcache4b,      resd 1            ; 4-bit video cache
-NEWSYM vcache8b,      resd 1            ; 8-bit video cache
-NEWSYM vcache2bs,     resd 1            ; 2-bit video secondary cache
-NEWSYM vcache4bs,     resd 1            ; 4-bit video secondary cache
-NEWSYM vcache8bs,     resd 1            ; 8-bit video secondary cache
-NEWSYM romispal,      resb 1            ; 0 = NTSC, 1 = PAL
-NEWSYM enterpress,    resb 1            ; if enter is to be issued (0 = yes)
-NEWSYM newgfx16b,     resb 1
-NEWSYM BitConv32Ptr,     resd 1
-NEWSYM RGBtoYUVPtr,   resd 1
-
-NEWSYM previdmode,    resb 1            ; previous video mode
-NEWSYM cbitmode,      resb 1            ; bit mode, 0=8bit, 1=16bit
-
-SECTION .data
-
-NEWSYM opexec268,     db 168            ; # of opcodes/scanline in 2.68Mhz mode
-NEWSYM opexec358,     db 180            ; # of opcodes/scanline in 3.58Mhz mode (228/180)
-NEWSYM opexec268cph,  db 42             ; # of opcodes/hblank in 2.68Mhz mode
-NEWSYM opexec358cph,  db 45             ; # of opcodes/hblank in 3.58Mhz mode (56/50)
-NEWSYM opexec268b,    db 168            ; # of opcodes/scanline in 2.68Mhz mode
-NEWSYM opexec358b,    db 180            ; # of opcodes/scanline in 3.58Mhz mode (228/180)
-NEWSYM opexec268cphb, db 42             ; # of opcodes/hblank in 2.68Mhz mode
-NEWSYM opexec358cphb, db 45             ; # of opcodes/hblank in 3.58Mhz mode (56/50)
-NEWSYM debugdisble,   db 1              ; debugger disable.  0 = no, 1 = yes
-NEWSYM gammalevel,    db 0              ; gamma level
-NEWSYM gammalevel16b, db 0              ; gamma level
-NEWSYM scanlines,     db 0              ; scanlines on/off
-NEWSYM vsyncon,       db 0              ; vsync on/off
-NEWSYM guioff,        db 0              ; gui off (1)
-NEWSYM AddSub256,     db 0              ; screen add/sub in 256 colors
-NEWSYM Sup48mbit,     db 1              ; Support 48mbit roms
-NEWSYM Sup16mbit,     db 0              ; Support 16mbit roms
-NEWSYM dmadeddis,     db 0              ; DMA deduction
-NEWSYM antienab,      db 0              ; Interpolation Enabled
-NEWSYM snesmouse,     db 0              ; Mouse enabled (=1)
-NEWSYM OldStyle,      db 1              ; Old style joystick on
-NEWSYM SecondPort,    db 0              ; Secondary Joystick Port Enabled (209h)
+NEWSYM YesMMX, db 'MMX support found and enabled.',13,10,13,10,0
 
 ; New Variables
-NEWSYM ForcePal,      db 0              ; 1 = NTSC, 2 = PAL
-NEWSYM Force8b,       db 0              ; Force 8-bit sound on
-NEWSYM Doublevbuf,    db 1              ; Double video buffer
-NEWSYM V8Mode,        db 0              ; Vegetable mode! =)
-NEWSYM fastmemptr,    db 0
-NEWSYM showallext,    db 0
-NEWSYM finterleave,   db 0
-NEWSYM DSPDisable,    db 0
-NEWSYM Palette0,      db 0
-NEWSYM DisplayS,      db 0
-NEWSYM SPC700sh,      db 0
-NEWSYM OffBy1Line,    db 0
-NEWSYM spc7110romptr, dd 0
-
-NEWSYM MusicRelVol,   db 75
-NEWSYM MusicVol,      db 0
 ;NEWSYM BetaUser, db 37,38,210,56,78,23,7,7,0
 
 SECTION .text

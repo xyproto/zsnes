@@ -5633,7 +5633,7 @@ DisplayGUIAbout:
     ret
 
 SECTION .data
-GUIGUIAboutText1  db 'ZSNES V',ZVERSION,'             ',0 ;Need room for date
+GUIGUIAboutText1  db 'ZSNES ',ZVERSION,'             ',0 ;Need room for date
 GUIGUIAboutText2  db 'CODED BY :  ',0
 GUIGUIAboutText3  db '    ZSKNIGHT      _DEMO_',0
 GUIGUIAboutText4  db '    PAGEFAULT     NACH',0

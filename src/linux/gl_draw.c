@@ -46,7 +46,7 @@ extern DWORD BitDepth;
 static unsigned short *glvidbuffer = 0;
 static GLuint gltextures[4];
 static int gltexture256, gltexture512;
-static int glfilters = GL_LINEAR;
+static int glfilters = GL_NEAREST;
 static int glscanready = 0;
 extern Uint8 En2xSaI, scanlines;
 extern Uint8 BilinearFilter;
