@@ -30,10 +30,6 @@ EXTSYM snesmouse
 EXTSYM cycphb,joycontren,totlines
 EXTSYM DosExit,invalid,numinst,previdmode,printhex,printnum
 
-%ifdef OPENSPC
-EXTSYM SPC_PORT0W, SPC_PORT1W, SPC_PORT2W, SPC_PORT3W
-%endif
-
 
 
 
@@ -990,10 +986,6 @@ reg213Fr:
 
 ; Sound Reg #1
 reg2140r:
-%ifdef OPENSPC
-	mov al,[SPC_PORT0W]
-	ret
-%else
     cmp byte[spcon],0
     je .nosound
     inc dword[SPC700read]
@@ -1031,14 +1023,9 @@ reg2140r:
     mov al,[xa]
 .n
     ret
-%endif
 
 ; Sound Reg #2
 reg2141r:
-%ifdef OPENSPC
-	mov al,[SPC_PORT1W]
-	ret
-%else
     cmp byte[spcon],0
     je .nosound
     inc dword[SPC700read]
@@ -1068,14 +1055,9 @@ reg2141r:
     mov al,[xa]
 .n
     ret
-%endif
 
 ; Sound Reg #3
 reg2142r:
-%ifdef OPENSPC
-	mov al,[SPC_PORT2W]
-	ret
-%else
     cmp byte[spcon],0
     je .nosound
     inc dword[SPC700read]
@@ -1104,14 +1086,9 @@ reg2142r:
     mov al,[xa+1]
 .n
     ret
-%endif
 
 ; Sound Reg #4
 reg2143r:
-%ifdef OPENSPC
-	mov al,[SPC_PORT3W]
-	ret
-%else
     cmp byte[spcon],0
     je .nosound
     inc dword[SPC700read]
@@ -1136,7 +1113,6 @@ reg2143r:
 .notfound
     mov al,[xa+1]
     ret
-%endif
 
 reg2144r:
     xor al,al

@@ -32,9 +32,6 @@ EXTSYM opexec358,opexec358cph
 EXTSYM hdmarestart
 EXTSYM printhex8
 
-%ifdef OPENSPC
-EXTSYM SPC_PORT0R, SPC_PORT1R, SPC_PORT2R, SPC_PORT3R
-%endif
 
 
 
@@ -1351,13 +1348,9 @@ reg2140w:
     jne .n
     mov byte[nmirept],0
 .n
-%ifdef OPENSPC
-	mov byte[SPC_PORT0R],al
-%else
     mov byte[spcRam+0F4h],al
     inc dword[SPC700write]
     reenablespc
-%endif
     ret
 ;    cmp dword[cycpbl],0FFFFh
 ;    ja .spcreset
@@ -1369,13 +1362,9 @@ reg2140w:
 ; Sound Register #2
 reg2141w:
     mov byte[sndwrit],1
-%ifdef OPENSPC
-	mov byte[SPC_PORT1R],al
-%else
     mov byte[spcRam+0F5h],al
     inc dword[SPC700write]
     reenablespc
-%endif
     ret
 ;    cmp dword[cycpbl],0FFFFh
 ;    ja .spcreset
@@ -1387,13 +1376,9 @@ reg2141w:
 ; Sound Register #3
 reg2142w:
     mov byte[sndwrit],1
-%ifdef OPENSPC
-	mov byte[SPC_PORT2R],al
-%else
     mov byte[spcRam+0F6h],al
     inc dword[SPC700write]
     reenablespc
-%endif
     ret
 ;    cmp dword[cycpbl],0FFFFh
 ;    ja .spcreset
@@ -1405,13 +1390,9 @@ reg2142w:
 ; Sound Register #4
 reg2143w:
     mov byte[sndwrit],1
-%ifdef OPENSPC
-	mov byte[SPC_PORT3R],al
-%else
     mov byte[spcRam+0F7h],al
     inc dword[SPC700write]
     reenablespc
-%endif
     ret
 ;    cmp dword[cycpbl],0FFFFh
 ;    ja .spcreset
