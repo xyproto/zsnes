@@ -159,21 +159,32 @@ extern "C" BYTE vsyncon;
 
 void DrawScreen()
 {
-   if(FullScreen == 1)
+   if (vsyncon == 1)
    {
-      DD_BackBuffer->Blt(NULL, DD_CFB, NULL, DDBLT_WAIT, NULL);
-      DD_Primary->Flip(NULL, DDFLIP_WAIT);
-   }
-   else
-   {
-      if (vsyncon == 1)
+      if(FullScreen == 1)
+      {
+         DD_BackBuffer->Blt(NULL, DD_CFB, NULL, DDBLT_WAIT, NULL);
+         DD_Primary->Flip(NULL, DDFLIP_WAIT);
+      }
+      else
       {
          if(lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
          {
             DDrawError();
          }
       }
-      DD_Primary->Blt(&rcWindow, DD_CFB, NULL, DDBLT_WAIT, NULL);
+   }
+   else
+   {
+      if(FullScreen == 1)
+      {
+         DD_BackBuffer->Blt(NULL, DD_CFB, NULL, DDBLT_WAIT, NULL);
+         DD_Primary->Flip(NULL, DDFLIP_NOVSYNC);
+      }
+      else
+      {
+         DD_Primary->Blt(&rcWindow, DD_CFB, NULL, DDBLT_WAIT, NULL);
+      }
    }
 }
  
