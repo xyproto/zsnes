@@ -4932,48 +4932,48 @@ DisplayGameOptns:
     mov al,byte[GUIGameOptnsColB]
     mov byte[GUItextcolor],al
     mov byte[GUIGameOptnsText4+2],'1'
-    GUIOuttextwin2 9,9,26,GUIGameOptnsText4
+    GUIOuttextwin2 9,9,25,GUIGameOptnsText4
     mov byte[GUIGameOptnsText4+2],'2'
-    GUIOuttextwin2 9,9+45,26,GUIGameOptnsText4
+    GUIOuttextwin2 9,9+45,25,GUIGameOptnsText4
     mov byte[GUIGameOptnsText4+2],'3'
-    GUIOuttextwin2 9,9+90,26,GUIGameOptnsText4
+    GUIOuttextwin2 9,9+90,25,GUIGameOptnsText4
     mov byte[GUIGameOptnsText4+2],'4'
-    GUIOuttextwin2 9,9+135,26,GUIGameOptnsText4
-    GUIOuttextwin2 9,9+180,26,GUIGameOptnsText5
+    GUIOuttextwin2 9,9+135,25,GUIGameOptnsText4
+    GUIOuttextwin2 9,9+180,25,GUIGameOptnsText5
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,6,36,GUIGameOptnsTextC
+    GUIOuttextwin2 9,6,34,GUIGameOptnsTextC
     mov al,byte[GUIGameOptnsColB]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,9,46,GUIGameOptnsText1A
-    GUIOuttextwin2 9,9,54,GUIGameOptnsTextD
-    GUIOuttextwin2 9,9,62,GUIGameOptnsTextL
-    GUIOuttextwin2 9,9,70,GUIGameOptnsTextE
+    GUIOuttextwin2 9,9,42,GUIGameOptnsText1A
+    GUIOuttextwin2 9,9,51,GUIGameOptnsTextD
+    GUIOuttextwin2 9,9,60,GUIGameOptnsTextL
+    GUIOuttextwin2 9,9,69,GUIGameOptnsTextE
     GUIOuttextwin2 9,9,78,GUIGameOptnsTextF
-    GUIOuttextwin2 9,9,86,GUIGameOptnsTextG
-    GUIOuttextwin2 9,9,94,GUIGameOptnsTextT
+    GUIOuttextwin2 9,9,87,GUIGameOptnsTextG
+    GUIOuttextwin2 9,9,96,GUIGameOptnsTextT
 %ifndef __MSDOS__
-    GUIOuttextwin2 9,109,46,GUIGameOptnsTextS
+    GUIOuttextwin2 9,109,42,GUIGameOptnsTextS
 %endif
-    GUIOuttextwin2 9,109,54,GUIGameOptnsTextH
-    GUIOuttextwin2 9,109,62,GUIGameOptnsTextM
-    GUIOuttextwin2 9,109,70,GUIGameOptnsTextN
+    GUIOuttextwin2 9,109,51,GUIGameOptnsTextH
+    GUIOuttextwin2 9,109,60,GUIGameOptnsTextM
+    GUIOuttextwin2 9,109,69,GUIGameOptnsTextN
     GUIOuttextwin2 9,109,78,GUIGameOptnsTextO
-    GUIOuttextwin2 9,109,86,GUIGameOptnsTextP
-    GUIOuttextwin2 9,109,94,GUIGameOptnsTextX
+    GUIOuttextwin2 9,109,87,GUIGameOptnsTextP
+    GUIOuttextwin2 9,109,96,GUIGameOptnsTextX
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 9,6,104,GUIGameOptnsText1
     mov al,byte[GUIGameOptnsColB]
     mov byte[GUItextcolor],al
     mov byte[GUIGameOptnsText2+2],'1'
-    GUIOuttextwin2 9,9,114,GUIGameOptnsText2
+    GUIOuttextwin2 9,9,113,GUIGameOptnsText2
     mov byte[GUIGameOptnsText2+2],'2'
-    GUIOuttextwin2 9,9+45,114,GUIGameOptnsText2
+    GUIOuttextwin2 9,9+45,113,GUIGameOptnsText2
     mov byte[GUIGameOptnsText2+2],'3'
-    GUIOuttextwin2 9,9+45*2,114,GUIGameOptnsText2
+    GUIOuttextwin2 9,9+45*2,113,GUIGameOptnsText2
     mov byte[GUIGameOptnsText2+2],'4'
-    GUIOuttextwin2 9,9+45*3,114,GUIGameOptnsText2
+    GUIOuttextwin2 9,9+45*3,113,GUIGameOptnsText2
     mov byte[GUIGameOptnsText2+2],'5'
     GUIOuttextwin2 9,9,122,GUIGameOptnsText2
     mov byte[GUIGameOptnsText2+2],'6'
@@ -4988,10 +4988,10 @@ DisplayGameOptns:
     mov al,byte[GUIGameOptnsColB]
     mov byte[GUItextcolor],al
     mov byte[GUIGameOptnsText7+2],'0'
-    GUIOuttextwin2 9,9+45*2,134,GUIGameOptnsText7
+    GUIOuttextwin2 9,9+45*2,133,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'1'
-    GUIOuttextwin2 9,9+45*3,134,GUIGameOptnsText7
-    GUIOuttextwin2 9,9+45*4,134,GUIGameOptnsTextY
+    GUIOuttextwin2 9,9+45*3,133,GUIGameOptnsText7
+    GUIOuttextwin2 9,9+45*4,133,GUIGameOptnsTextY
     mov byte[GUIGameOptnsText7+2],'2'
     GUIOuttextwin2 9,9,141,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'3'
@@ -5002,13 +5002,13 @@ DisplayGameOptns:
     GUIOuttextwin2 9,9+45*3,142,GUIGameOptnsText7
     GUIOuttextwin2 9,9+45*4,142,GUIGameOptnsTextZ
     mov byte[GUIGameOptnsText7+2],'6'
-    GUIOuttextwin2 9,9,150,GUIGameOptnsText7
+    GUIOuttextwin2 9,9,151,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'7'
-    GUIOuttextwin2 9,9+45,150,GUIGameOptnsText7
+    GUIOuttextwin2 9,9+45,151,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'8'
-    GUIOuttextwin2 9,9+45*2,150,GUIGameOptnsText7
+    GUIOuttextwin2 9,9+45*2,151,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'9'
-    GUIOuttextwin2 9,9+45*3,150,GUIGameOptnsText7
+    GUIOuttextwin2 9,9+45*3,151,GUIGameOptnsText7
     GUIOuttextwin2 9,9,160,GUIGameOptnsTextI
     GUIOuttextwin2 9,9+57,160,GUIGameOptnsTextJ
     GUIOuttextwin2 9,9+114,160,GUIGameOptnsTextK
@@ -5038,48 +5038,48 @@ DisplayGameOptns:
     mov al,byte[GUIGameOptnsColB]
     mov byte[GUItextcolor],al
     mov byte[GUIGameOptnsText4+2],'1'
-    GUIOuttextwin2 9,8,25,GUIGameOptnsText4
+    GUIOuttextwin2 9,8,24,GUIGameOptnsText4
     mov byte[GUIGameOptnsText4+2],'2'
-    GUIOuttextwin2 9,8+45,25,GUIGameOptnsText4
+    GUIOuttextwin2 9,8+45,24,GUIGameOptnsText4
     mov byte[GUIGameOptnsText4+2],'3'
-    GUIOuttextwin2 9,8+90,25,GUIGameOptnsText4
+    GUIOuttextwin2 9,8+90,24,GUIGameOptnsText4
     mov byte[GUIGameOptnsText4+2],'4'
-    GUIOuttextwin2 9,8+135,25,GUIGameOptnsText4
-    GUIOuttextwin2 9,8+180,25,GUIGameOptnsText5
+    GUIOuttextwin2 9,8+135,24,GUIGameOptnsText4
+    GUIOuttextwin2 9,8+180,24,GUIGameOptnsText5
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,5,35,GUIGameOptnsTextC
+    GUIOuttextwin2 9,5,33,GUIGameOptnsTextC
     mov al,byte[GUIGameOptnsColB]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,8,45,GUIGameOptnsText1A
-    GUIOuttextwin2 9,8,53,GUIGameOptnsTextD
-    GUIOuttextwin2 9,8,61,GUIGameOptnsTextL
-    GUIOuttextwin2 9,8,69,GUIGameOptnsTextE
+    GUIOuttextwin2 9,8,41,GUIGameOptnsText1A
+    GUIOuttextwin2 9,8,50,GUIGameOptnsTextD
+    GUIOuttextwin2 9,8,59,GUIGameOptnsTextL
+    GUIOuttextwin2 9,8,68,GUIGameOptnsTextE
     GUIOuttextwin2 9,8,77,GUIGameOptnsTextF
-    GUIOuttextwin2 9,8,85,GUIGameOptnsTextG
-    GUIOuttextwin2 9,8,93,GUIGameOptnsTextT
+    GUIOuttextwin2 9,8,86,GUIGameOptnsTextG
+    GUIOuttextwin2 9,8,95,GUIGameOptnsTextT
 %ifndef __MSDOS__
-    GUIOuttextwin2 9,108,45,GUIGameOptnsTextS
+    GUIOuttextwin2 9,108,41,GUIGameOptnsTextS
 %endif
-    GUIOuttextwin2 9,108,53,GUIGameOptnsTextH
-    GUIOuttextwin2 9,108,61,GUIGameOptnsTextM
-    GUIOuttextwin2 9,108,69,GUIGameOptnsTextN
+    GUIOuttextwin2 9,108,50,GUIGameOptnsTextH
+    GUIOuttextwin2 9,108,59,GUIGameOptnsTextM
+    GUIOuttextwin2 9,108,68,GUIGameOptnsTextN
     GUIOuttextwin2 9,108,77,GUIGameOptnsTextO
-    GUIOuttextwin2 9,108,85,GUIGameOptnsTextP
-    GUIOuttextwin2 9,108,93,GUIGameOptnsTextX
+    GUIOuttextwin2 9,108,86,GUIGameOptnsTextP
+    GUIOuttextwin2 9,108,95,GUIGameOptnsTextX
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 9,5,103,GUIGameOptnsText1
     mov al,byte[GUIGameOptnsColB]
     mov byte[GUItextcolor],al
     mov byte[GUIGameOptnsText2+2],'1'
-    GUIOuttextwin2 9,8,113,GUIGameOptnsText2
+    GUIOuttextwin2 9,8,112,GUIGameOptnsText2
     mov byte[GUIGameOptnsText2+2],'2'
-    GUIOuttextwin2 9,8+45,113,GUIGameOptnsText2
+    GUIOuttextwin2 9,8+45,112,GUIGameOptnsText2
     mov byte[GUIGameOptnsText2+2],'3'
-    GUIOuttextwin2 9,8+45*2,113,GUIGameOptnsText2
+    GUIOuttextwin2 9,8+45*2,112,GUIGameOptnsText2
     mov byte[GUIGameOptnsText2+2],'4'
-    GUIOuttextwin2 9,8+45*3,113,GUIGameOptnsText2
+    GUIOuttextwin2 9,8+45*3,112,GUIGameOptnsText2
     mov byte[GUIGameOptnsText2+2],'5'
     GUIOuttextwin2 9,8,121,GUIGameOptnsText2
     mov byte[GUIGameOptnsText2+2],'6'
@@ -5094,10 +5094,10 @@ DisplayGameOptns:
     mov al,byte[GUIGameOptnsColB]
     mov byte[GUItextcolor],al
     mov byte[GUIGameOptnsText7+2],'0'
-    GUIOuttextwin2 9,8+45*2,133,GUIGameOptnsText7
+    GUIOuttextwin2 9,8+45*2,132,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'1'
-    GUIOuttextwin2 9,8+45*3,133,GUIGameOptnsText7
-    GUIOuttextwin2 9,8+45*4,133,GUIGameOptnsTextY
+    GUIOuttextwin2 9,8+45*3,132,GUIGameOptnsText7
+    GUIOuttextwin2 9,8+45*4,132,GUIGameOptnsTextY
     mov byte[GUIGameOptnsText7+2],'2'
     GUIOuttextwin2 9,8,141,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'3'
@@ -5108,13 +5108,13 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8+45*3,141,GUIGameOptnsText7
     GUIOuttextwin2 9,8+45*4,141,GUIGameOptnsTextZ
     mov byte[GUIGameOptnsText7+2],'6'
-    GUIOuttextwin2 9,8,149,GUIGameOptnsText7
+    GUIOuttextwin2 9,8,150,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'7'
-    GUIOuttextwin2 9,8+45,149,GUIGameOptnsText7
+    GUIOuttextwin2 9,8+45,150,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'8'
-    GUIOuttextwin2 9,8+45*2,149,GUIGameOptnsText7
+    GUIOuttextwin2 9,8+45*2,150,GUIGameOptnsText7
     mov byte[GUIGameOptnsText7+2],'9'
-    GUIOuttextwin2 9,8+45*3,149,GUIGameOptnsText7
+    GUIOuttextwin2 9,8+45*3,150,GUIGameOptnsText7
     GUIOuttextwin2 9,8,159,GUIGameOptnsTextI
     GUIOuttextwin2 9,8+57,159,GUIGameOptnsTextJ
     GUIOuttextwin2 9,8+114,159,GUIGameOptnsTextK
@@ -5132,47 +5132,47 @@ DisplayGameOptns:
     GUIOuttextwin2 9,136,189,GUIGameOptnsTextV
 
     ; Draw black boxes
-    DGOptnsDrawBox 27,24,[KeyBGDisble0]
-    DGOptnsDrawBox 27+45,24,[KeyBGDisble1]
-    DGOptnsDrawBox 27+45*2,24,[KeyBGDisble2]
-    DGOptnsDrawBox 27+45*3,24,[KeyBGDisble3]
-    DGOptnsDrawBox 27+45*4,24,[KeySprDisble]
-    DGOptnsDrawBox 78,44,[KeyUsePlayer1234]
-    DGOptnsDrawBox 78,52,[KeyResetAll]
-    DGOptnsDrawBox 78,60,[KeyExtraEnab]
-    DGOptnsDrawBox 78,68,[KeyNewGfxSwt]
+    DGOptnsDrawBox 27,23,[KeyBGDisble0]
+    DGOptnsDrawBox 27+45,23,[KeyBGDisble1]
+    DGOptnsDrawBox 27+45*2,23,[KeyBGDisble2]
+    DGOptnsDrawBox 27+45*3,23,[KeyBGDisble3]
+    DGOptnsDrawBox 27+45*4,23,[KeySprDisble]
+    DGOptnsDrawBox 78,40,[KeyUsePlayer1234]
+    DGOptnsDrawBox 78,49,[KeyResetAll]
+    DGOptnsDrawBox 78,58,[KeyExtraEnab]
+    DGOptnsDrawBox 78,67,[KeyNewGfxSwt]
     DGOptnsDrawBox 78,76,[KeyWinDisble]
-    DGOptnsDrawBox 78,84,[KeyOffsetMSw]
-    DGOptnsDrawBox 78,92,[KeySlowDown]
+    DGOptnsDrawBox 78,85,[KeyOffsetMSw]
+    DGOptnsDrawBox 78,94,[KeySlowDown]
 %ifndef __MSDOS__
-    DGOptnsDrawBox 178,44,[KeyRewind]
+    DGOptnsDrawBox 178,40,[KeyRewind]
 %endif
-    DGOptnsDrawBox 178,52,[KeyFastFrwrd]
-    DGOptnsDrawBox 178,60,[KeyVolUp]
-    DGOptnsDrawBox 178,68,[KeyVolDown]
+    DGOptnsDrawBox 178,49,[KeyFastFrwrd]
+    DGOptnsDrawBox 178,58,[KeyVolUp]
+    DGOptnsDrawBox 178,67,[KeyVolDown]
     DGOptnsDrawBox 178,76,[KeyFRateUp]
-    DGOptnsDrawBox 178,84,[KeyFRateDown]
-    DGOptnsDrawBox 178,92,[KeyDisplayFPS]
-    DGOptnsDrawBox 27,112,[KeyDisableSC0]
-    DGOptnsDrawBox 27+45,112,[KeyDisableSC1]
-    DGOptnsDrawBox 27+45*2,112,[KeyDisableSC2]
-    DGOptnsDrawBox 27+45*3,112,[KeyDisableSC3]
+    DGOptnsDrawBox 178,85,[KeyFRateDown]
+    DGOptnsDrawBox 178,94,[KeyDisplayFPS]
+    DGOptnsDrawBox 27,111,[KeyDisableSC0]
+    DGOptnsDrawBox 27+45,111,[KeyDisableSC1]
+    DGOptnsDrawBox 27+45*2,111,[KeyDisableSC2]
+    DGOptnsDrawBox 27+45*3,111,[KeyDisableSC3]
     DGOptnsDrawBox 27,120,[KeyDisableSC4]
     DGOptnsDrawBox 27+45,120,[KeyDisableSC5]
     DGOptnsDrawBox 27+45*2,120,[KeyDisableSC6]
     DGOptnsDrawBox 27+45*3,120,[KeyDisableSC7]
-    DGOptnsDrawBox 27+45*2,132,[KeyStateSlc0]
-    DGOptnsDrawBox 27+45*3,132,[KeyStateSlc1]
-    DGOptnsDrawBox 27+45*4,132,[KeyIncStateSlot]
+    DGOptnsDrawBox 27+45*2,131,[KeyStateSlc0]
+    DGOptnsDrawBox 27+45*3,131,[KeyStateSlc1]
+    DGOptnsDrawBox 27+45*4,131,[KeyIncStateSlot]
     DGOptnsDrawBox 27,140,[KeyStateSlc2]
     DGOptnsDrawBox 27+45,140,[KeyStateSlc3]
     DGOptnsDrawBox 27+45*2,140,[KeyStateSlc4]
     DGOptnsDrawBox 27+45*3,140,[KeyStateSlc5]
     DGOptnsDrawBox 27+45*4,140,[KeyDecStateSlot]
-    DGOptnsDrawBox 27,148,[KeyStateSlc6]
-    DGOptnsDrawBox 27+45,148,[KeyStateSlc7]
-    DGOptnsDrawBox 27+45*2,148,[KeyStateSlc8]
-    DGOptnsDrawBox 27+45*3,148,[KeyStateSlc9]
+    DGOptnsDrawBox 27,149,[KeyStateSlc6]
+    DGOptnsDrawBox 27+45,149,[KeyStateSlc7]
+    DGOptnsDrawBox 27+45*2,149,[KeyStateSlc8]
+    DGOptnsDrawBox 27+45*3,149,[KeyStateSlc9]
     DGOptnsDrawBox 8+25,158,[KeySaveState]
     DGOptnsDrawBox 8+57+25,158,[KeyLoadState]
     DGOptnsDrawBox 8+114+25,158,[KeyStateSelct]
