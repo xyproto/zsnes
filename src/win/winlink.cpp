@@ -1793,6 +1793,7 @@ extern int DSPBuffer;
 int * DSPBuffer1;
 DWORD ScreenPtr;
 DWORD ScreenPtr2;
+extern BYTE resolutn;
 extern GUI36hzcall(void);
 extern Game60hzcall(void);
 extern int packettimeleft[256];
@@ -2027,7 +2028,10 @@ void drawscreenwin(void)
    }
 
    ScreenPtr=vidbuffer;
-   ScreenPtr+=16*2+32*2+256*2; 
+   ScreenPtr+=16*2+32*2+256*2;
+
+   if (resolutn == 239) ScreenPtr+=8*288*2;
+
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
 

@@ -112,6 +112,7 @@ static DWORD ScreenPtr;
 static DWORD SurfBufD;
 static DWORD *SURFDW;
 static DWORD pitch;
+extern BYTE resolutn;
 
 void sw_clearwin()
 {
@@ -187,6 +188,8 @@ void sw_drawwin()
 
     ScreenPtr = vidbuffer;
     ScreenPtr += 16*2+32*2+256*2;
+
+    if (resolutn == 239) ScreenPtr+=8*288*2;
 
     pitch = surface->pitch;
     SurfBufD = (DWORD) surface->pixels;
