@@ -15,7 +15,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#This file depends on link.win32 so if you modify this makefile, 
+#This file depends on link.win32 so if you modify this makefile,
 #don't forget to update link.win32
 #it is quite ugly but without that trick, the compilation didn't
 #work for me (command line too long)
@@ -30,6 +30,7 @@ GUIDIR=gui
 VIDEODIR=video
 WINDIR=win
 OBJDIR=obj
+ZIPDIR=zip
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.obj ${CHIPDIR}/fxemu2.obj ${CHIPDIR}/dsp1proc.obj\
 	 ${CHIPDIR}/fxemu2b.obj ${CHIPDIR}/fxemu2c.obj ${CHIPDIR}/fxtable.obj\
@@ -38,7 +39,7 @@ CHIPSOBJ=${CHIPDIR}/sfxproc.obj ${CHIPDIR}/fxemu2.obj ${CHIPDIR}/dsp1proc.obj\
 CPUOBJ=${CPUDIR}/addrni.obj ${CPUDIR}/dma.obj ${CPUDIR}/dsp.obj ${CPUDIR}/dspproc.obj\
 	${CPUDIR}/execute.obj ${CPUDIR}/irq.obj ${CPUDIR}/memory.obj \
 	${CPUDIR}/spc700.obj ${CPUDIR}/stable.obj ${CPUDIR}/table.obj\
-	${CPUDIR}/tableb.obj ${CPUDIR}/tablec.obj 
+	${CPUDIR}/tableb.obj ${CPUDIR}/tablec.obj
 
 GUIOBJ=${GUIDIR}/gui.obj ${GUIDIR}/menu.obj
 
@@ -55,23 +56,26 @@ WINOBJ=${WINDIR}/copyvwin.obj ${WINDIR}/winintrf.obj ${WINDIR}/winlink.obj\
 	${WINDIR}/zfilew.obj
 
 WINDOSOBJ=${DOSDIR}/debug.obj ${DOSDIR}/joy.obj ${DOSDIR}/modemrtn.obj ${DOSDIR}/vesa2.obj\
-	${DOSDIR}/initvid.obj ${DOSDIR}/sw.obj ${DOSDIR}/gppro.obj ${DOSDIR}/vesa12.obj
+	${DOSDIR}/initvid.obj ${DOSDIR}/sw.obj ${DOSDIR}/gppro.obj ${DOSDIR}/vesa12.obj\
+        ${DOSDIR}/zsipx.obj
 
-PREOBJ=${OBJDIR}/unzip.obj ${OBJDIR}/zzip.obj ${DOSDIR}/zsipx.obj
+PREOBJ=
+
+ZIPOBJ=${ZIPDIR}/zzip.obj ${ZIPDIR}/unzip.obj
 
 MAINOBJ=cfgload.obj endmem.obj fixsin.obj init.obj ui.obj vcache.obj water.obj
-	
 
 
-OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${WINDOSOBJ}
+
+OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ} ${WINDOSOBJ}
 LIBS=
 CFLAGS=/c
 ASM=nasm
 ASMFLAGS=-f win32
 CC=cl
 
-.SUFFIXES: .c .cpp .asm 
-	
+.SUFFIXES: .c .cpp .asm
+
 %.obj : %.c
 	${CC} ${CFLAGS} /Fo$@ $<
 
@@ -96,6 +100,8 @@ ${WINDIR}/zipxw.obj: ${WINDIR}/zipxw.c
 ${WINDIR}/zloaderw.obj: ${WINDIR}/zloaderw.c
 ${WINDIR}/ztcp.obj: ${WINDIR}/ztcp.c
 ${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
+${ZIPDIR}/unzip.obj: ${ZIPDIR}/unzip.c ${ZIPDIR}/unzip.h
+${ZIPDIR}/zzip.obj: ${ZIPDIR}/zzip.c ${ZIPDIR}/unzip.h
 ${DOSDIR}/initvid.o:${DOSDIR}/initvid.asm macros.mac
 ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
 ${DOSDIR}/zsipx.o: ${DOSDIR}/zsipx.asm
@@ -208,4 +214,4 @@ clean:
 	del ${WINDIR}\zsnes.res
 	del ${DOSDIR}\*.obj
 	del zsnesw.exe
-	
+

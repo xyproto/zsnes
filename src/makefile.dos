@@ -22,6 +22,7 @@ GUIDIR=gui
 VIDEODIR=video
 WINDIR=win
 OBJDIR=obj
+ZIPDIR=zip
 
 CHIPSOBJ=${CHIPDIR}/dsp1emu.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/sfxproc.o\
 	${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
@@ -30,7 +31,7 @@ CHIPSOBJ=${CHIPDIR}/dsp1emu.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/sfxproc.o\
 CPUOBJ=${CPUDIR}/addrni.o ${CPUDIR}/dma.o ${CPUDIR}/dsp.o ${CPUDIR}/dspproc.o\
 	${CPUDIR}/execute.o ${CPUDIR}/irq.o ${CPUDIR}/memory.o\
 	${CPUDIR}/spc700.o ${CPUDIR}/stable.o ${CPUDIR}/table.o\
-	${CPUDIR}/tableb.o ${CPUDIR}/tablec.o 
+	${CPUDIR}/tableb.o ${CPUDIR}/tablec.o
 
 GUIOBJ=${GUIDIR}/gui.o ${GUIDIR}/menu.o
 
@@ -49,13 +50,14 @@ DOSOBJ= ${DOSDIR}/dosintrf.o ${DOSDIR}/gppro.o ${DOSDIR}/debug.o\
 WINOBJ=${WINDIR}/copywin.o ${WINDIR}/winintrf.o ${WINDIR}/winlink.o\
 	${WINDIR}/zloaderw.o ${WINDIR}/ztcp.o ${WINDIR}/zipxw.o
 
-PREOBJ=${OBJDIR}/dosbuff.o ${OBJDIR}/ipx.o ${OBJDIR}/unzip.o\
-	${OBJDIR}/zipx.o ${OBJDIR}/zzip.o
+PREOBJ=${OBJDIR}/dosbuff.o ${OBJDIR}/ipx.o ${OBJDIR}/zipx.o
+
+ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o
 
 MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o
 
 
-OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ}
+OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${ZIPOBJ}
 LIBS=-lz -lgcc -lm
 CFLAGS=
 ASM=nasm
@@ -64,8 +66,8 @@ CC=gcc
 PP=gpp
 
 
-.SUFFIXES: .c .cpp .asm 
-	
+.SUFFIXES: .c .cpp .asm
+
 %.o: %.c
 	${CC} ${CFLAGS} -o $@ -c $<
 
@@ -74,7 +76,7 @@ PP=gpp
 
 %.o: %.asm
 	${ASM} ${ASMFLAGS} -o $@ $<
-	
+
 
 ALL: zsnes.exe
 
@@ -85,6 +87,8 @@ ${DOSDIR}/zloader.o: ${DOSDIR}/zloader.c
 fixsin.o: fixsin.c
 water.o: water.c
 ${DOSDIR}/zfile.o: ${DOSDIR}/zfile.c
+${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/unzip.h
+${ZIPDIR}/zzip.o: ${ZIPDIR}/zzip.c ${ZIPDIR}/unzip.h
 ${VIDEODIR}/2xsai.o: ${VIDEODIR}/2xsai.cpp
 ${VIDEODIR}/procvid.o: ${VIDEODIR}/procvid.asm macros.mac ${VIDEODIR}/copyvid.inc ${VIDEODIR}/2xSaImmx.inc
 ${CHIPDIR}/dsp1proc.o: ${CHIPDIR}/dsp1proc.asm macros.mac
@@ -182,4 +186,4 @@ clean:
 	del ${GUIDIR}\*.o
 	del ${DOSDIR}\*.o
 	del zsnes.exe
-	
+
