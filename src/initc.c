@@ -407,14 +407,6 @@ void headerhack()
 
   //These next fiew look like RAM init hacks, should be looked into
 
-  //Horai Gakuen no Bouken! (J)
-  //90 Minutes - European Prime Goal (E)
-  if (!strncmp((RomData+Hi), "HORAI-GAKUEN    ", 16) ||
-      !strncmp((RomData+Lo), "EUROPEAN PRIME G", 16))
-  {
-    memset(spcRam, 0, 65472);
-  }
-
   //Should be Super Famista (J), uses non-standard characters
   if (!strncmp((RomData+Lo),"\x0bd\x0b0\x0ca\x0df\x0b0\x0cc\x0a7\x0d0\x0bd\x0c0      " ,16))
   {
@@ -578,18 +570,6 @@ void headerhack()
     opexec358cph = 47;
   }
 
-  /*
-  Shin Megami Tensei (J), Shin Megami Tensei if... (J),
-  Shin Megami Tensei II (J), but does not fix AGTP translations.
-  
-  Asm says "Lamborgini Challenge - -p 110" and "jne .nodigitaldevil"
-  */ 
-  if (!strncmp((RomData+Lo),"DIGI" ,4))
-  {
-    opexec268 = 187;
-    opexec358 = 187;
-  }
-
   //Super Final Match Tennis (J)
   if (!strncmp((RomData+Lo),"SP F", 4))
   {
@@ -704,14 +684,6 @@ void headerhack()
     opexec358 = 182;
     opexec268cph = 47;
     opexec358cph = 47;
-  }
-
-  //Which game is this?
-  if (!strncmp((RomData+Hi), "Donk", 4) && ramsize == 2048)
-  {
-    //asm volatile("int $3");
-    ramsize = 4096;
-    ramsizeand = 4095;
   }
 
   return;
