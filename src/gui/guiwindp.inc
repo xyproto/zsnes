@@ -7154,8 +7154,8 @@ DisplayGUISave:
     mov byte[GUItextcolor],211    
 .zero6
 
-    DrawGUIButton 20,173,22,181,30,GUISaveTextY,70,-2,-1
-    DrawGUIButton 20,184,22,192,30,GUISaveTextZ,71,-2,-1
+    DrawGUIButton 20,173,17,181,25,GUISaveTextY,70,-2,-1
+    DrawGUIButton 20,184,17,192,25,GUISaveTextZ,71,-2,-1
     DrawGUIButton 20,173,32,181,40,GUISaveTextV,72,-2,-1
     DrawGUIButton 20,184,32,192,40,GUISaveTextW,73,-2,-1
     ret
