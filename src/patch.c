@@ -18,41 +18,114 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+
+//C++ style code in C
+#define bool unsigned char
+#define true 1
+#define false 0
+
+#define BUFFER_SIZE 2048
 
 extern int maxromspace;
 extern int curromspace;
 extern int NumofBytes;
 extern int NumofBanks;
 extern unsigned int *romdata;
-extern unsigned char IPSPatched;
+extern bool IPSPatched;
 extern unsigned char Header512;
+void *doMemAlloc(int);
 
 char *patchfile;
+
+
+
+struct
+{
+  unsigned int file_size;
+  unsigned char *data;
+  unsigned char *current;
+  unsigned int buffer_total;
+  unsigned int proccessed;
+
+  FILE *fp;
+} IPSPatch;
+
+bool reloadBuffer()
+{
+  if (IPSPatch.proccessed == IPSPatch.file_size) { return(false); }
+  IPSPatch.buffer_total = fread(IPSPatch.data, 1, BUFFER_SIZE, IPSPatch.fp);
+  IPSPatch.current = IPSPatch.data;
+  return(true);
+}
+
+int IPSget()
+{
+  int retVal;
+  if (IPSPatch.current == IPSPatch.data + IPSPatch.buffer_total)
+  {
+    if (!reloadBuffer()) { return(-1); }
+  }
+  IPSPatch.proccessed++;
+  retVal = *IPSPatch.current;
+  IPSPatch.current++;
+  return(retVal);
+}
+
+bool initPatch()
+{
+  struct stat stat_results;
+  stat(patchfile, &stat_results);
+
+  IPSPatch.file_size = (unsigned int)stat_results.st_size;
+  IPSPatch.data = (unsigned char *)doMemAlloc(BUFFER_SIZE);
+  IPSPatch.proccessed = 0;
+
+  IPSPatch.fp = 0;
+  IPSPatch.fp = fopen(patchfile, "rb");
+  if (!IPSPatch.fp) { return(false); }
+ 
+  return(reloadBuffer());
+}
+
+void deinitPatch()
+{
+  if (IPSPatch.data)
+  { 
+    free(IPSPatch.data);
+    IPSPatch.data = 0;
+  }
+
+  if (IPSPatch.fp)
+  { 
+    fclose(IPSPatch.fp);
+    IPSPatch.fp = 0;
+  }
+}
 
 void PatchUsingIPS()
 {
   unsigned char *ROM = (unsigned char *)romdata;
   int location = 0, length = 0;
   int sub = Header512 ? 512 : 0;
-  
-  FILE *fp = 0;
-  fp = fopen(patchfile, "rb");
-  if (!fp) { return; }
-  
-  IPSPatched = 0;
+    
+  IPSPatched = false;
+
+  if (!initPatch()) { goto IPSDone; }
 
   //Yup, it's goto! :)
   //See 'IPSDone:' for explanation
-  if (fgetc(fp) != 'P') { goto IPSDone; }
-  if (fgetc(fp) != 'A') { goto IPSDone; }
-  if (fgetc(fp) != 'T') { goto IPSDone; }
-  if (fgetc(fp) != 'C') { goto IPSDone; }
-  if (fgetc(fp) != 'H') { goto IPSDone; }
+  if (IPSget() != 'P') { goto IPSDone; }
+  if (IPSget() != 'A') { goto IPSDone; }
+  if (IPSget() != 'T') { goto IPSDone; }
+  if (IPSget() != 'C') { goto IPSDone; }
+  if (IPSget() != 'H') { goto IPSDone; }
 
-  while (!feof(fp))
+  while (IPSPatch.proccessed != IPSPatch.file_size)
   {
     //Location is a 3 byte value (max 16MB)
-    int inloc = (fgetc(fp) << 16) | (fgetc(fp) << 8) | fgetc(fp);
+    int inloc = (IPSget() << 16) | (IPSget() << 8) | IPSget();
 
     if (inloc == 0x454f46) //EOF
     { 
@@ -63,7 +136,7 @@ void PatchUsingIPS()
     location = inloc - sub;
 
     //Length is a 2 byte value (max 64KB)
-    length = (fgetc(fp) << 8) | fgetc(fp);
+    length = (IPSget() << 8) | IPSget();
 
     if (length) // Not RLE 
     {
@@ -73,11 +146,11 @@ void PatchUsingIPS()
         if (location >= 0)
         {
           if (location >= maxromspace) { goto IPSDone; }
-          ROM[location] = (unsigned char)fgetc(fp);
+          ROM[location] = (unsigned char)IPSget();
         }
         else
         {
-          fgetc(fp); //Need to skip the bytes that write to header
+          IPSget(); //Need to skip the bytes that write to header
         }
       }
     }
@@ -85,8 +158,8 @@ void PatchUsingIPS()
     {
       int i;
       unsigned char newVal;
-      length = (fgetc(fp) << 8) | fgetc(fp); 
-      newVal = (unsigned char)fgetc(fp);
+      length = (IPSget() << 8) | IPSget(); 
+      newVal = (unsigned char)IPSget();
       for (i = 0; i < length; i++, location++)
       {
         if (location >= 0)
@@ -103,8 +176,9 @@ void PatchUsingIPS()
   //some cases like this one, goto is the way to go.
   IPSDone:
   
-  fclose(fp);
-  IPSPatched = 1;
+  deinitPatch();
+  
+  IPSPatched = true;
   
   //Adjust size values if the ROM was expanded
   if (location > curromspace  && location <= maxromspace)
@@ -116,10 +190,13 @@ void PatchUsingIPS()
 
   /*
   //Write out patched ROM
-  fp = fopen("zsnes.rom", "wb");
-  if (!fp) { asm volatile("int $3"); }
-  fwrite(ROM, 1, curromspace, fp);
-  fclose(fp);
+  {
+    FILE *fp = 0;
+    fp = fopen("zsnes.rom", "wb");
+    if (!fp) { asm volatile("int $3"); }
+    fwrite(ROM, 1, curromspace, fp);
+    fclose(fp);
+  }
   */
 }  
 
