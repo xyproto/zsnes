@@ -1599,6 +1599,12 @@ NEWSYM SBHDMA, db 0
 NEWSYM SBHDMAPage, db 0
 NEWSYM vibracard, db 0
 
+; ViBRA16X fixes!
+EXTSYM MsgCount         ; points to counter
+EXTSYM MessageOn        ; points to "message" delay counter
+EXTSYM Msgptr           ; points to the message to be displayed
+NEWSYM vibmsg, db 'VIBRA16X MODE ENABLED', 0
+
 NEWSYM ResetSBDSP
     mov dx,[SBPort]
     add dl,06h
@@ -5063,7 +5069,10 @@ NEWSYM SBHandler16
     push es
     inc dword[sbhandexec]
 
+    cmp byte [vibracard], 1
+    je  .donotcallcmdapos      
     call GetCDMAPos
+.donotcallcmdapos
 
     cmp byte[csounddisable],1
     je near stopsbsound16
@@ -5583,6 +5592,13 @@ NEWSYM initSB
 ; and modified it.
 
 .vibrafix2
+    ; notify user that we're in ViBRA16x mode..
+    push eax
+    mov  dword [Msgptr], vibmsg
+    mov  eax, [MsgCount]
+    mov  [MessageOn], eax
+    pop  eax
+
     ; Set Time-Constant Data ( = 256 - (1000000/sampling rate) )
     ; 8000=131, 22050=210, 44100=233, 11025=165
 

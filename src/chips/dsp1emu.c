@@ -958,31 +958,48 @@ short Op0BX;
 short Op0BY;
 short Op0BZ;
 short Op0BS;
+
+void DSPOp0B()
+{
+   Op0BS=(short)Op0BX*matrixA[0][0]+Op0BY*matrixA[0][1]+Op0BZ*matrixA[0][2];
+   #ifdef DebugDSP1
+      Log_Message("OP0B X: %d Y: %d Z: %d S: %d", Op0BX,Op0BY,Op0BZ,Op0BS);
+   #endif
+}
+
 short Op1BX;
 short Op1BY;
 short Op1BZ;
 short Op1BS;
+
+void DSPOp1B()
+{
+   Op1BS=(short)Op1BX*matrixA2[0][0]+Op1BY*matrixA2[0][1]+Op1BZ*matrixA2[0][2];
+   #ifdef DebugDSP1
+      Log_Message("OP1B X: %d Y: %d Z: %d S: %d", Op1BX,Op1BY,Op1BZ,Op1BS);
+   #endif
+}
+
 short Op2BX;
 short Op2BY;
 short Op2BZ;
 short Op2BS;
 
-void DSPOp0B()
-{
-}
-
-void DSPOp1B()
-{
-}
-
 void DSPOp2B()
 {
+   Op2BS=(short)Op2BX*matrixA3[0][0]+Op2BY*matrixA3[0][1]+Op2BZ*matrixA3[0][2];
+   #ifdef DebugDSP1
+      Log_Message("OP2B X: %d Y: %d Z: %d S: %d", Op2BX,Op2BY,Op2BZ,Op2BS);
+   #endif
 }
 
 short Op08X,Op08Y,Op08Z,Op08Ll,Op08Lh;
 
 void DSPOp08()
 {
+   #ifdef DebugDSP1
+      Log_Message("OP08");
+   #endif
 }
 
 short Op18X,Op18Y,Op18Z,Op18R,Op18D;

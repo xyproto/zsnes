@@ -133,8 +133,7 @@ NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,
 NEWSYM vibradetect
                  db 'Creative ViBRA16X PnP card detected (support coded by Peter Santing)', 13, 10
                  db 'High-DMA is below dma #4', 13, 10
-                 db 13,10, 'you have now full 16-bit stereo sound with the surround option!', 13, 10
-                 db 13,10, 'Press any key to continue', 13, 10,0
+                 db 13,10, 'you have now full 16-bit stereo sound with the surround option!', 13, 10, 0
 
 NEWSYM welcome
 
@@ -676,7 +675,7 @@ NEWSYM getblaster
         push edx
         mov edx, vibradetect
         call PrintStr
-        call WaitForKey
+        ;call WaitForKey
         pop  edx
 
 ; ********** END OF ViBRA16X implementation code **********
