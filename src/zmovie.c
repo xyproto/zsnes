@@ -98,9 +98,16 @@ Key input  -  Repeated for all input / internal chapters
   1 bit  -  Controller 4 changed
   1 bit  -  Controller 5 changed
   1 bit  -  Chapter instead of input here
-  2 bits -  Reserved
+  1 bit  -  RLE instead of input
+  1 bit  -  Command here
+  
+-If Command-
+Remaining 7 bits of flag determine command
 
--If Chapter-
+-Else If RLE-
+4 bytes  -  Frame # to repeat previous input to
+
+-Else If Chapter-
 
 ZST size -  ZST
 4 bytes  -  Frame #
