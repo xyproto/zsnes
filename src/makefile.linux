@@ -40,7 +40,7 @@ VIDEOBJ=${VIDEODIR}/makev16b.o ${VIDEODIR}/makev16t.o ${VIDEODIR}/makevid.o\
 	${VIDEODIR}/mode716e.o ${VIDEODIR}/mode716t.o ${VIDEODIR}/mode7.o\
 	${VIDEODIR}/mode7ext.o ${VIDEODIR}/mv16tms.o ${VIDEODIR}/newg162.o\
 	${VIDEODIR}/newgfx16.o ${VIDEODIR}/newgfx2.o ${VIDEODIR}/newgfx.o\
-	${VIDEODIR}/m716text.o ${VIDEODIR}/2xsaiw.o ${VIDEODIR}/2xsai.o\
+	${VIDEODIR}/m716text.o ${VIDEODIR}/2xsaiw.o\
 	${VIDEODIR}/procvid.o
 
 WINOBJ=${WINDIR}/copyvwin.o ${WINDIR}/winintrf.o ${WINDIR}/sdllink.o\
@@ -88,7 +88,6 @@ ${DOSDIR}/zloader.o: ${DOSDIR}/zloader.c
 fixsin.o: fixsin.c
 water.o: water.c
 ${DOSDIR}/zfile.o: ${DOSDIR}/zfile.c
-${VIDEODIR}/2xsai.o: ${VIDEODIR}/2xsai.cpp
 ${VIDEODIR}/procvid.o: ${VIDEODIR}/procvid.asm macros.mac ${VIDEODIR}/copyvid.inc ${VIDEODIR}/2xsaimmx.inc
 ${CHIPDIR}/dsp1proc.o: ${CHIPDIR}/dsp1proc.asm macros.mac
 ${CHIPDIR}/sa1regs.o: ${CHIPDIR}/sa1regs.asm macros.mac\
