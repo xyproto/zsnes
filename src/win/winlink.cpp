@@ -863,12 +863,12 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 
    DIPROPRANGE diprg;
 
-   diprg.diph.dwSize       = sizeof(diprg);
+   diprg.diph.dwSize = sizeof(diprg);
    diprg.diph.dwHeaderSize = sizeof(diprg.diph);
-   diprg.diph.dwObj        = DIJOFS_X;
-   diprg.diph.dwHow        = DIPH_BYOFFSET;
-   diprg.lMin              = -1000;
-   diprg.lMax              = +1000;
+   diprg.diph.dwObj = DIJOFS_X;
+   diprg.diph.dwHow = DIPH_BYOFFSET;
+   diprg.lMin = -1000;
+   diprg.lMax = +1000;
 
    if FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph))
    {
