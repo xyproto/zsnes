@@ -2494,7 +2494,7 @@ NEWSYM cpuover
     test byte[SA1Control],60h
     jnz near .nosa1
     call SA1Swap
-    cmp byte[CurrentExecSA1],15
+    cmp byte[CurrentExecSA1],60
     ja .nocontinueexec
     xor ebx,ebx
     mov bl,[esi]
@@ -4426,7 +4426,7 @@ NEWSYM execsingle
     inc esi
     mov [pdh],dh
     xor dh,dh
-    cmp byte[CurrentExecSA1],17
+    cmp byte[CurrentExecSA1],62
     jb near cpuover
     mov byte[CurrentExecSA1],0
     mov byte[cycpl],5
