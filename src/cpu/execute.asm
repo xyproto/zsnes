@@ -1564,9 +1564,8 @@ NEWSYM sramsave
 SECTION .data
 .savesrmmsg1 db 'SRAM DATA SAVED.',0
 .savesrmmsg2 db 'NO SRAM DATA.',0
+NEWSYM firstsaveinc, db 0
 
-SECTION .bss
-NEWSYM firstsaveinc, resb 1
 SECTION .text
 
 NEWSYM statesaver
