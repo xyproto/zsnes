@@ -134,6 +134,10 @@ EXTSYM UseCubicSpline,NoiseDisTemp
 
 NEWSYM DspProcAsmStart
 
+
+
+
+
 tempstuff db 0
 ; MixEcho
 ; modpitch
