@@ -299,6 +299,8 @@ void RestoreCVFrame()
   RewindTimer = ActualRewindFrames;
 }
 
+void outofmemory();
+
 void SetupRewindBuffer()
 {
   if (StateBackup){ free(StateBackup); }
