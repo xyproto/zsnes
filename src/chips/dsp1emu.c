@@ -224,6 +224,7 @@ const unsigned short DSP1ROM[1024] = {
 #define Angle(x) (((x)/(65536/INCR)) & (INCR-1))
 #define Cos(x) ((double) CosTable2[x])
 #define Sin(x) ((double) SinTable2[x])
+#undef PI
 #define PI 3.1415926535897932384626433832795
 double CosTable2[INCR];
 double SinTable2[INCR];
@@ -1511,3 +1512,4 @@ void DSPOp2F()
 {
 	Op2FSize=0x100;
 }
+
