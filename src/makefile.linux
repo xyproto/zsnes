@@ -57,8 +57,10 @@ ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o
 MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ}
-LIBS=`sdl-config --libs` -lz
-CFLAGS=-g -D__LINUX__ `sdl-config --cflags`
+SDLLIBS := $(shell sdl-config --libs)
+SDLCFLAGS := $(shell sdl-config --cflags)
+LIBS=${SDLLIBS} -lz
+CFLAGS=-g -Wall -D__LINUX__ ${SDLCFLAGS}
 ASM=nasm
 ASMFLAGS=-f elf -D__LINUX__ -g -w-orphan-labels
 CC=gcc

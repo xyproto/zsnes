@@ -22,6 +22,8 @@ Initial Linux Command Line Parsing by EvilTypeGuy (drevil@warpcore.org) April 20
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
 
 #define STUB_FUNCTION fprintf(stderr,"STUB: %s at " __FILE__ ", line %d, thread %d\n",__FUNCTION__,__LINE__,getpid())
 #define DWORD unsigned long
@@ -76,8 +78,23 @@ char ucase(char ch){
   return(ch);
 }
 
+int my_atoi(char *nptr) {
+	int p,c;
+
+	c = 0;	
+	for(p = 0; nptr[p]; p++) {
+		if ( !isdigit(nptr[p]) ) c += 1;
+	}
+		
+	if (c) return -1;
+
+	return atoi(nptr);
+}
+
+extern void UnProtectMemory (void);
+
 int main (int argc, char *argv[]) {
-	int opt,hasroom,p,pp,arg;
+	int opt,hasroom,p,pp;
 
 	char *fvar;
 
@@ -342,22 +359,12 @@ int main (int argc, char *argv[]) {
 	}
 
 	zstart();
+	return 0;
 }
 
 
-int my_atoi(char *nptr) {
-	int p,c;
-
-	c = 0;	
-	for(p = 0; nptr[p]; p++) {
-		if ( !isdigit(nptr[p]) ) c += 1;
-	}
-		
-	if (c) return -1;
-
-	else
-
-	return atoi(nptr);
+int pccmdline(void) {
+	return 0;
 }
 
 
@@ -388,8 +395,4 @@ void ccmdline(void) {
   
 	printf("cmdline returned %i\n",p);
 	DosExit();
-}
-
-int pccmdline(void) {
-	return 0;
 }

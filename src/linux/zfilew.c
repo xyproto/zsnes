@@ -17,6 +17,8 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <zlib.h>
 
@@ -171,7 +173,6 @@ DWORD ZCloseFile()
 
 DWORD ZFileSeek()
 {
-	int res = 0;
 	int mode = 0;
 	if (ZFileSeekMode==0)
 		mode = SEEK_SET;
@@ -319,7 +320,7 @@ DWORD ZFileFindNext()
    stat ( globbuf.gl_pathv[globcur], &filetype );
    
    if(ZFileFindATTRIB&0x10 && !S_ISDIR ( filetype.st_mode )) return(ZFileFindNext());
-   if((ZFileFindATTRIB&0x10==0) && S_ISDIR ( filetype.st_mode )) return(ZFileFindNext());
+   if(((ZFileFindATTRIB&0x10)==0) && S_ISDIR ( filetype.st_mode )) return(ZFileFindNext());
    
    if ( S_ISDIR ( filetype.st_mode ))
      *(char *)(DTALocPos + 0x15) = 0x10;
@@ -362,7 +363,7 @@ DWORD ZFileFindFirst()
    stat ( globbuf.gl_pathv[globcur], &filetype );
    
    if(ZFileFindATTRIB&0x10 && !S_ISDIR ( filetype.st_mode )) return(ZFileFindNext());
-   if((ZFileFindATTRIB&0x10==0) && S_ISDIR ( filetype.st_mode )) return(ZFileFindNext());
+   if(((ZFileFindATTRIB&0x10)==0) && S_ISDIR ( filetype.st_mode )) return(ZFileFindNext());
    
    if ( S_ISDIR ( filetype.st_mode ))
      *(char *)(DTALocPos + 0x15) = 0x10;
@@ -441,14 +442,6 @@ DWORD GetDate()
 }
 
 #ifdef __LINUX__
-int _chdrive( int drive )
-{
-//	STUB_FUNCTION;
-}
-int _getdrive( void )
-{
-//	STUB_FUNCTION;
-}
 
 extern char SRAMDir;
 extern char InitDir;

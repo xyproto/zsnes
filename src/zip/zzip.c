@@ -20,6 +20,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#ifdef __LINUX__
+#include <utime.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#endif
 #include <errno.h>
 #include <fcntl.h>
 
@@ -37,10 +42,12 @@ unsigned int ZipError=0;
 // 5 : Error opening file
 // 6 : Error Writing file
 
+#ifndef __LINUX__
 struct utimbuf {
   time_t actime;
   time_t modtime;
 };
+#endif
 
 void change_file_date(const char *filename,uLong dosdate,tm_unz tmu_date)
 {
@@ -64,9 +71,11 @@ void change_file_date(const char *filename,uLong dosdate,tm_unz tmu_date)
 
 int mymkdir(const char *dirname)
 {
-   int ret=0;
-	ret = mkdir (dirname);
-	return ret;
+#ifdef __LINUX__
+  return(mkdir(dirname, (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)));
+#else
+  return(mkdir(dirname));
+#endif
 }
 
 int makedir (char *newdir)
@@ -129,7 +138,6 @@ int do_extract_currentfile(unzFile uf,
     uInt size_buf;
 
 	unz_file_info file_info;
-	uLong ratio=0;
 	err = unzGetCurrentFileInfo(uf,&file_info,filename_inzip,sizeof(filename_inzip),NULL,0,NULL,0);
 
 	if (err!=UNZ_OK)
@@ -263,7 +271,6 @@ int do_extract(unzFile uf,int opt_extract_without_path,int opt_overwrite)
 	uLong i;
 	unz_global_info gi;
 	int err;
-	FILE* fout=NULL;
 
 	err = unzGetGlobalInfo (uf,&gi);
 	if (err!=UNZ_OK)

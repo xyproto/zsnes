@@ -69,7 +69,7 @@ MAINOBJ=cfgload.obj endmem.obj fixsin.obj init.obj ui.obj vcache.obj water.obj
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ} ${WINDOSOBJ}
 LIBS=
-CFLAGS=/c /D__WIN32__
+CFLAGS=/c /Wall /D__WIN32__
 ASM=nasm
 ASMFLAGS=-f win32 -D__WIN32__
 CC=cl

@@ -125,7 +125,7 @@ double tanval;
 double c4x,c4y,c4z;
 double c4x2,c4y2,c4z2;
 
-C4TransfWireFrame()
+void C4TransfWireFrame()
 {
   c4x=(double)C4WFXVal;
   c4y=(double)C4WFYVal;
@@ -151,7 +151,7 @@ C4TransfWireFrame()
   C4WFYVal=(short)(c4y*C4WFScale/(0x90*(c4z+0x95))*0x95);
 }
 
-C4TransfWireFrame2()
+void C4TransfWireFrame2()
 {
   c4x=(double)C4WFXVal;
   c4y=(double)C4WFYVal;
@@ -177,7 +177,7 @@ C4TransfWireFrame2()
   C4WFYVal=(short)(c4y*C4WFScale/0x100);
 }
 
-C4CalcWireFrame()
+void C4CalcWireFrame()
 {
   C4WFXVal=C4WFX2Val-C4WFXVal;
   C4WFYVal=C4WFY2Val-C4WFYVal;
@@ -203,7 +203,7 @@ short C41FAngleRes;
 short C41FDist;
 short C41FDistVal;
 
-C4Op1F()
+void C4Op1F()
 {
   if (C41FXVal == 0) {
     if (C41FYVal>0) C41FAngleRes=0x80;
@@ -218,14 +218,14 @@ C4Op1F()
   }
 }
 
-C4Op15()
+void C4Op15()
 {
   tanval=sqrt(((double)C41FYVal)*((double)C41FYVal)+((double)C41FXVal)*
     ((double)C41FXVal));
   C41FDist=(short)tanval;
 }
 
-C4Op0D()
+void C4Op0D()
 {
   tanval=sqrt(((double)C41FYVal)*((double)C41FYVal)+((double)C41FXVal)*
     ((double)C41FXVal));
@@ -252,7 +252,7 @@ short Op00Multiplicand;
 short Op00Multiplier;
 short Op00Result;
 
-DSPOp00()
+void DSPOp00()
 {
    Op00Result=Op00Multiplicand*Op00Multiplier/32768;
    #ifdef DebugDSP1
@@ -266,7 +266,7 @@ signed short Op10CoefficientR;
 signed short Op10ExponentR;
 float Op10Temp;
 
-DSPOp10()
+void DSPOp10()
 {
         Op10ExponentR=-Op10Exponent;
         Op10Temp = Op10Coefficient / 32768.0;
@@ -296,7 +296,7 @@ unsigned short Op04Radius;
 short Op04Sin;
 short Op04Cos;
 
-DSPOp04()
+void DSPOp04()
 {
    Op04Sin=SinTable2[(Op04Angle/256)&255]*Op04Radius/65536;
    Op04Cos=CosTable2[(Op04Angle/256)&255]*Op04Radius/65536;
@@ -323,7 +323,7 @@ short Op0CY1;
 short Op0CX2;
 short Op0CY2;
 
-DSPOp0C()
+void DSPOp0C()
 {
    Op0CX2=(Op0CX1*CosTable2[(Op0CA/256)&255]+Op0CY1*SinTable2[(Op0CA/256)&255])/65536;
    Op0CY2=(Op0CX1*-SinTable2[(Op0CA/256)&255]+Op0CY1*CosTable2[(Op0CA/256)&255])/65536;
@@ -582,7 +582,7 @@ double ObjPZ2;
 double DivideOp06;
 int Temp;
 
-DSPOp06()
+void DSPOp06()
 {
 
 /*   ObjPX=(Op06X-CenterX);
@@ -710,7 +710,7 @@ short Op21Xr;
 short Op21Yr;
 double sc,sc2,sc3;
 
-DSPOp01()
+void DSPOp01()
 {
    double zr,yr,xr;
 
@@ -745,7 +745,7 @@ DSPOp01()
    #endif
 }
 
-DSPOp11()
+void DSPOp11()
 {
    double zr,yr,xr;
 
@@ -779,7 +779,7 @@ DSPOp11()
    #endif
 }
 
-DSPOp21()
+void DSPOp21()
 {
    double zr,yr,xr;
 
@@ -973,7 +973,7 @@ void DSPOp13()
    #endif
 }
 
-DSPOp23()
+void DSPOp23()
 {
    double F,L,U;
    F=Op23F; L=Op23L; U=Op23U;
@@ -996,7 +996,7 @@ short Op14Xrr;
 short Op14Yrr;
 
 double Op14Temp;
-DSPOp14()
+void DSPOp14()
 {
    Op14Temp=(Op14Zr*6.2832/65536.0)+(1/cos(Op14Xr*6.2832/65536.0))*((Op14U*6.2832/65536.0)*cos(Op14Yr*6.2832/65536.0)-(Op14F*6.2832/65536.0)*sin(Op14Yr*6.2832/65536.0));
    Op14Zrr=(short)(Op14Temp*65536.0/6.2832);
@@ -1015,7 +1015,7 @@ short Op0EV;
 short Op0EX;
 short Op0EY;
 
-DSPOp0E()
+void DSPOp0E()
 {
 
    // screen Directions UP
@@ -1100,7 +1100,7 @@ short Op28Y;
 short Op28Z;
 short Op28R;
 
-DSPOp28()
+void DSPOp28()
 {
    Op28R=(short)sqrt(Op28X*Op28X+Op28Y*Op28Y+Op28Z*Op28Z);
    #ifdef DebugDSP1

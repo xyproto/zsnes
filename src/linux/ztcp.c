@@ -81,6 +81,7 @@
 //   In-game chat will be moved to a separate packet in TCP/IP
 
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 #ifdef __LINUX__
 #include <sys/time.h>
@@ -234,7 +235,6 @@ void DeInitTCP()
 
 void GetUDPStatus() {
   int retval;
-  char NoSend = 0;
 
   UDPEnable=UDPConfig;
 
@@ -268,7 +268,6 @@ void GetUDPStatus() {
 
 int isipval(char *name){
   int i;
-  int tcperr;
   i=0;
   while(name[i]!=0){
     if (!((name[i]=='.') || ((name[i]>='0') && (name[i]<='9'))))
@@ -283,7 +282,6 @@ int ConnectServer(char *servername, unsigned int port)
    char blah[255];
    int retval,i;
    LPHOSTENT host1;
-   unsigned long addr1;
    int yesip;
 #ifndef __LINUX__
    WSADATA wsadata;
@@ -451,7 +449,7 @@ int WaitForServer(){
   int i;
 
   if (UDPEnable){
-    if (i=GetData(1,blah)){
+    if ((i=GetData(1,blah))){
       if ((i==1) && (blah[0]==1))
         return(1);
     }
@@ -492,7 +490,7 @@ void Disconnect()
 
 int StartServerCycle(unsigned short port)
 {
-   int retval,sizet,i;
+   int retval,i;
 
    portval = port;
    packetnum = 0;
@@ -621,10 +619,6 @@ int StartServerCycle(unsigned short port)
 
 int acceptzuser()
 {
-   int retval,r,i;
-   LPHOSTENT host1;
-   int yesip;
-
    if (UDPEnable)
    {
      return(0);
@@ -721,6 +715,32 @@ void StopServer()
    PacketCounter=0;
    closesocket(gamesocket);
    closesocket(serversocket);
+}
+
+
+int GetLeftUDP()
+{
+#ifdef __LINUX__
+	fd_set zrf;
+#else
+   FD_SET zrf;
+#endif
+   struct timeval nto;
+   int r;
+
+   nto.tv_sec=0;
+   nto.tv_usec=0; /* return immediately */
+
+   FD_ZERO(&zrf);
+   FD_SET(userversocket,&zrf);
+   r=select(userversocket+1,&zrf,0,0,&nto);
+
+   if (r == SOCKET_ERROR)
+	{
+      closesocket(userversocket);
+      return(-1);
+	}
+   return(r);
 }
 
 
@@ -887,7 +907,6 @@ extern void UpdateVFrame(void);
 int SendData(int dsize,unsigned char *dptr)
 {
    int retval;
-    char message1[256];
 
    if (UDPEnable){
 /*      retval = sendto(ugamesocket,dptr,dsize,0,(struct sockaddr *)&ugameaddress,sizeof(ugameaddress));
@@ -1103,32 +1122,6 @@ int GetLeft()
       return(-1);
 	}
    return(tempsize);
-}
-
-int GetLeftUDP()
-{
-#ifdef __LINUX__
-	fd_set zrf;
-#else
-   FD_SET zrf;
-#endif
-   struct timeval nto;
-   int r;
-   int tempsize;
-
-   nto.tv_sec=0;
-   nto.tv_usec=0; /* return immediately */
-
-   FD_ZERO(&zrf);
-   FD_SET(userversocket,&zrf);
-   r=select(userversocket+1,&zrf,0,0,&nto);
-
-   if (r == SOCKET_ERROR)
-	{
-      closesocket(userversocket);
-      return(-1);
-	}
-   return(r);
 }
 
 

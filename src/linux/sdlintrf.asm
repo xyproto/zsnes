@@ -59,7 +59,7 @@ EXTSYM keyboardhit
 EXTSYM GUIkeydelay2
 ;EXTSYM _kbhit
 ;EXTSYM _getch
-EXTSYM _chdrive
+;EXTSYM _chdrive
 EXTSYM ZFileMKDir,ZFileCHDir,ZFileRMDir,CHPath,MKPath,RMPath
 EXTSYM ZFileGetDir,DriveNumber,DirName
 EXTSYM _getdrive
@@ -799,11 +799,11 @@ KeyConvTableS
 
 NEWSYM Change_Drive
     ; change to drive in dl (0 = A, 1 = B, etc.)
-    and edx,0FFh
-    add edx,1
-    push edx
-    call _chdrive
-    pop edx
+    ;and edx,0FFh
+    ;add edx,1
+    ;push edx
+    ;call _chdrive
+    ;pop edx
 ;    mov ah,0Eh
 ;    int 21h
     ret

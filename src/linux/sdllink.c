@@ -411,7 +411,6 @@ int ReInitSound(void)
 BOOL InitJoystickInput(void)
 {
 	int i;
-	SDL_Event *event;
 
 //   	STUB_FUNCTION;
    	
@@ -498,10 +497,10 @@ int startgame(void)
    surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, flags);
    if (surface == NULL) {
 	   if (BitDepth)
-		   fprintf (stderr, "Could not set %dx%dx%d video mode.\n",
+		   fprintf (stderr, "Could not set %ld%ld%ld video mode.\n",
 				   WindowWidth,WindowHeight,BitDepth);
 	   else
-	   	fprintf (stderr, "Could not set %dx%d video mode.\n",WindowWidth,
+	   	fprintf (stderr, "Could not set %ldx%ld video mode.\n",WindowWidth,
 				WindowHeight);
 	   return FALSE;
    }
@@ -1027,7 +1026,6 @@ extern unsigned char newengen;
 
 void clearwin()
 {
-   DWORD i,j,color32;
    DWORD *SURFDW;
 
    Temp1=LockSurface();
@@ -1475,21 +1473,6 @@ void LinuxExit (void)
 }
 
 extern char fulladdtab[65536*2];
-extern WORD vesa2_usbit;
-extern WORD vesa2_clbit;
-extern WORD vesa2_rpos;
-extern WORD vesa2_rfull;
-extern WORD vesa2_rtrcl;
-extern WORD vesa2_rtrcla;
-extern WORD vesa2_gpos;
-extern WORD vesa2_gfull;
-extern WORD vesa2_gtrcl;
-extern WORD vesa2_gtrcla;
-extern WORD vesa2_bpos;
-extern WORD vesa2_bfull;
-extern WORD vesa2_btrcl;
-extern WORD vesa2_btrcla;
-extern WORD nojoystickpoll;
 
 extern void SwitchFullScreen(void);
 
@@ -1531,8 +1514,6 @@ void WinUpdateDevices()
    }
 //   keys[1]=keys[16];
    keys[0]=0;
-
-//   if (nojoystickpoll) return;
 
    for(i=0;i<4;i++)
    {
