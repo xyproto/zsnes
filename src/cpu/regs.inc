@@ -948,6 +948,8 @@ reg213Cr:
 
 ; V counter data by external or software latch
 reg213Dr:
+    cmp byte[latchyr],2 ; hack for games that don't read 213F
+    je .noreset
     cmp byte[latchyr],1
     je .highv
     mov al,byte[latchy]
@@ -959,7 +961,11 @@ reg213Dr:
     or  al,byte[latchy+1]
     mov byte[latchyr],0
     ret
-
+.noreset
+    mov al,byte[latchy]
+    and al,0FEh    
+    or  al,byte[latchy+1]
+    ret
 ; PPU Status Flag & Version number (OBJ over flags)
 reg213Er:
     mov al,01h
@@ -1426,7 +1432,7 @@ reg43XXr:
     ret
 
 regINVALID:     ; Invalid Register
-    cmp cx,2050h
+    cmp cx,2100h
     jb .cleared
     mov al,ch
     cmp byte[SPC7110Enable],0

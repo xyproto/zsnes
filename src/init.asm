@@ -1451,6 +1451,7 @@ headerhack2:
 .mmx2head db 50,58,56,62,50,62,49,95,39,77,95,95,95,95,95,95,95,95,95,95
 
 EXTSYM ewj2hack
+EXTSYM latchyr
 
 NEWSYM headerhack
     mov byte[disablehdma],0
@@ -1463,6 +1464,19 @@ NEWSYM headerhack
     mov byte[hirqmode2],0
     mov byte[ENVDisable],0
     mov byte[MMXSRAMFix],0
+
+    mov esi,[romdata]
+    add esi,07FC0h
+    cmp dword[esi],20434653h
+    jne .notkamenrider
+    cmp dword[esi+4],0D7DDD2B6h
+    jne .notkamenrider
+    cmp dword[esi+8],0B0DEC0B2h
+    jne .notkamenrider
+    cmp dword[esi+12],20202020h
+    jne .notkamenrider
+    mov byte[latchyr],2
+.notkamenrider
 
     mov esi,[romdata]
     add esi,07FC0h
@@ -1479,8 +1493,6 @@ NEWSYM headerhack
     mov ecx,65472
     rep stosb
     ret
-
-
 .noteuropeanprimegoal
 
     mov esi,[romdata]
