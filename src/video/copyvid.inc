@@ -593,18 +593,18 @@ NEWSYM copymodeq240
     ret
 .startcopy
     push es
-    mov ax,[selcA000]
-    mov es,ax
+;    mov ax,[selcA000]
+;    mov es,ax
+`   mov es,[selcA000]
     mov esi,[vidbuffer]
-    mov ebp,[vidbufferm]
-    xor edi,edi
-    add edi,256
+;    mov ebp,[vidbufferm]
+    mov edi,256
     cmp word[resolutn],224
     jne .res239
     add edi,8*256
 .res239
     add esi,16+256+32
-    add ebp,16+256+32
+;    add ebp,16+256+32
     mov edx,[resolutn]
     sub edx,2
     cmp byte[FPUCopy],2
