@@ -1750,12 +1750,14 @@ section .text
     mov [prev1],eax
     cmp edx,-32768
     jnl %%notless
-    mov edx,-32768
+    mov dx,0
+;    mov edx,-32768
     mov byte[filteron],1
 %%notless
     cmp edx,32767
     jng %%notgreater
-    mov edx,32767
+    mov dx,0
+;    mov edx,32767
     mov byte[filteron],1
 %%notgreater
     movsx edx,dx
