@@ -1451,6 +1451,7 @@ NEWSYM headerhack
     mov byte[ENVDisable],0
 
     EXTSYM latchxr
+    EXTSYM latchyr
     mov esi,[romdata]
     add esi,07FC0h
     cmp dword[esi],'Supe'
@@ -1516,6 +1517,18 @@ NEWSYM headerhack
     jmp .notrend
 .marvelous
 .notrend
+
+    mov esi,[romdata]
+    add esi,07FC0h
+    cmp dword[esi],'Spin'
+    jne .notspindizzy
+    cmp dword[esi+4],' Diz'
+    jne .notspindizzy
+    cmp dword[esi+8],'zy W'
+    jne .notspindizzy
+    mov word[latchxr],1
+    mov word[latchyr],1
+.notspindizzy
 
     ; Lamborgini Challenge - -p 110
     mov esi,[romdata]

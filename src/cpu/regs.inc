@@ -317,8 +317,8 @@ NEWSYM divres,    dw 0             ; quotent of divc/divb
 NEWSYM multres,   dw 0             ; result of multa * multb/remainder of divc/divb
 NEWSYM latchx,    dw 0             ; latched x value
 NEWSYM latchy,    dw 0             ; latched y value
-NEWSYM latchxr,   db 1             ; low or high byte read for x value
-NEWSYM latchyr,   db 1             ; low or high byte read for y value
+NEWSYM latchxr,   db 0             ; low or high byte read for x value
+NEWSYM latchyr,   db 0             ; low or high byte read for y value
 NEWSYM frskipper, db 0             ; used to control frame skipping
 NEWSYM winl1,     db 0             ; window 1 left position
 NEWSYM winr1,     db 0             ; window 1 right position
