@@ -225,12 +225,12 @@ NEWSYM PPContrl5, times 16 dd 0   ; Previous Controller 5 Data
 NEWSYM tempedx, dd 0
 NEWSYM NetSent2, dd 0
 NEWSYM NetQuitter, dd 0
+NEWSYM NetQuit, db 0
 NEWSYM QBackupPos, dd 0
 NEWSYM LatencyV, times 256 db 0
 NEWSYM LatencyRecvPtr, dd 0
 NEWSYM LatencySendPtr, dd 0
 NEWSYM latencytimer, dd 0
-NEWSYM NetQuit, db 0
 NEWSYM BackState, db 1
 NEWSYM BackStateSize, dd 6
 NEWSYM nojoystickpoll, dd 0
