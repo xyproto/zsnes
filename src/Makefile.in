@@ -171,7 +171,7 @@ ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
 
 install:
 	@INSTALL@ -m 0755 @ZSNESEXE@ @prefix@/bin
-	@INSTALL@ -m 0644 linux/zsnes.5 @prefix@/man5
+	@INSTALL@ -m 0644 linux/zsnes.5 @prefix@/man/man5
 
 clean:
 	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  *.o  @ZSNESEXE@
