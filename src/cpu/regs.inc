@@ -412,7 +412,7 @@ NEWSYM iohvlatch, db 0
 NEWSYM ppustatus, db 0
 
 
-NEWSYM tempdat, times 478 db 0     ; expandable area
+NEWSYM tempdat, times 477 db 0     ; expandable area
 
 num2writeppureg equ $-sndrot
 ; pharos equ hack *sigh*
