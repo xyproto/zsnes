@@ -271,7 +271,6 @@ DSPOp10()
         Op10ExponentR=-Op10Exponent;
         Op10Temp = Op10Coefficient / 32768.0;
 	if (Op10Temp == 0) {
-		Log_Message("OP10 : DIVISION BY ZERO :(");
 		Op10CoefficientR = 0;
 	} else
 		Op10Temp = 1/Op10Temp;	
@@ -1047,7 +1046,9 @@ short Op2BS;
 void DSPOp0B()
 {
     Op0BS = (Op0BX*matrixA[0][0]+Op0BY*matrixA2[0][1]+Op0BZ*matrixA2[0][2]);
+#ifdef DebugDSP1
         Log_Message("OP0B");
+#endif
 }
 
 void DSPOp1B()
