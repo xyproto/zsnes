@@ -135,7 +135,7 @@ DWORD ZOpenFile()
 		if (TextFile) 
 			FILEHANDLE[CurrentHandle]=fopen(ZOpenFileName,"r+b");
 		else
-			FILEHANDLE[CurrentHandle]=gzopen(ZOpenFileName,"r+b");
+			FILEHANDLE[CurrentHandle]=(FILE *)gzopen(ZOpenFileName,"r+b");
 		if(FILEHANDLE[CurrentHandle]!=NULL)	       
 		{
 			CurrentHandle+=1;
