@@ -681,9 +681,9 @@ db '; Note : Setting this too high can cause sound overflow which degrades quali
 db '',13,10
 db 'Volume = %q',13,10
 db '',13,10
+%endif
 db '; Set this to 1 if you do not want ZSNES to save the configuration files.',13,10
 db '',13,10
-%endif
 db 'DontSave = %u',13,10
 db '',13,10
 db '; Savefile directory.  Leave it blank if you want the save files to be in the',13,10
