@@ -59,7 +59,7 @@ MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${ZIPOBJ}
 LIBS=-lz -lgcc -lm -lpng
-CFLAGS=-D__MSDOS__
+CFLAGS=-D__MSDOS__ -O2
 ASM=nasm
 ASMFLAGS=-f coff -D__MSDOS__
 CC=gcc
@@ -96,7 +96,6 @@ ${CHIPDIR}/sa1regs.o: ${CHIPDIR}/sa1regs.asm macros.mac\
 ${CHIPDIR}/sfxproc.o: ${CHIPDIR}/sfxproc.asm macros.mac\
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
 ${CHIPDIR}/dsp1emu.o: ${CHIPDIR}/dsp1emu.c betauser.mac
-	${CC} ${CFLAGS} -O2 -o $@ -c $<
 ui.o: ui.asm macros.mac betauser.mac
 cfgload.o:cfgload.asm macros.mac
 init.o:init.asm macros.mac
