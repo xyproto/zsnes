@@ -183,10 +183,10 @@ static int32 DSP4_READ_DWORD()
 { memcpy(DSP4.output + DSP4.out_count, ( d ), 32); DSP4.out_count += 32; }
 #else
 #define DSP4_WRITE_16_WORD( d )                         \
-{ int16 *p = ( d );                                     \
-  for (; p != ( d )+16; p++)                            \
+{ int16 *p = ( d ), *end = ( d )+16;                    \
+  for (; p != end; p++)                                 \
   {                                                     \
-    WRITE_WORD( DSP4.output + DSP4.out_count, *p ); \
+    WRITE_WORD( DSP4.output + DSP4.out_count, *p );     \
   }                                                     \
   DSP4.out_count += 32;                                 \
 }
