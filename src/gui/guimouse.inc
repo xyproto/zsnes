@@ -2119,8 +2119,8 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,146,byte[LatestSave]
     GUIClickCButton 11,156,byte[AutoState]
     GUIClickCButton 11,166,byte[DontSavePath]
-    GUIClickCButton 11,176,byte[SPCDisable]
 %ifdef __WIN32__
+    GUIClickCButton 11,176,byte[DisableScreenSaver]
     GUIClickCButtonat 11,186,byte[AlternateTimer]
 %endif
     ; Frameskip = 0
@@ -2249,8 +2249,9 @@ DisplayGUISoundClick:
     GUIClickCButton 11,141,byte[LowPassFilter]
     GUIClickCButton 11,151,byte[SoundBufEn]
     GUIClickCButton 11,161,byte[UseCubicSpline]
+    GUIClickCButton 11,171,byte[SPCDisable]
 %ifdef __WIN32__
-    GUIClickCButton 11,171,byte[ExclusiveSound]
+    GUIClickCButton 11,181,byte[ExclusiveSound]
 %endif
     cmp eax,15
     jl near .nosrate

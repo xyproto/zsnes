@@ -888,11 +888,11 @@ GUIOptionKeys:
     jne .nosavepath
     xor byte[DontSavePath],1
 .nosavepath
-    cmp dh,'I'
-    jne .nospcdisable
-    xor byte[SPCDisable],1
-.nospcdisable
 %ifdef __WIN32__
+    cmp dh,'I'
+    jne .noscreensaver
+    xor byte[DisableScreenSaver],1
+.noscreensaver
     cmp dh,'S'
     jne .noalttimer
     xor byte[AlternateTimer],1
@@ -1020,6 +1020,10 @@ GUISoundKeys:
     jne .nocubic
     xor byte[UseCubicSpline],1
 .nocubic
+    cmp dh,'D'
+    jne .nospcdisable
+    xor byte[SPCDisable],1
+.nospcdisable
 %ifdef __WIN32__
     cmp dh,'X'
     jne .noexclusivesound

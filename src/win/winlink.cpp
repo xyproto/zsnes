@@ -321,6 +321,7 @@ extern BYTE AlwaysOnTop;
 extern BYTE SaveMainWindowPos;
 extern BYTE AlternateTimer;
 extern BYTE AllowMultipleInst;
+extern BYTE DisableScreenSaver;
 extern signed short int MainWindowX;
 extern signed short int MainWindowY;
 extern int CurKeyPos;
@@ -338,6 +339,12 @@ extern "C" void CheckAlwaysOnTop()
 {
    if (AlwaysOnTop == 1) SetWindowPos(hMainWindow, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
       else SetWindowPos(hMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+}
+
+extern "C" void CheckScreenSaver()
+{
+   if (DisableScreenSaver == 1 && IsActivated == 1) SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, 0, SPIF_SENDWININICHANGE);
+      else SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, TRUE, 0, SPIF_SENDWININICHANGE);
 }
 
 extern "C" void MinimizeWindow()
@@ -412,6 +419,8 @@ aquireagain:;
 
 void ExitFunction()
 {
+   IsActivated = 0;
+   CheckScreenSaver();
    ReleaseDirectInput();
    ReleaseDirectSound();
    ReleaseDirectDraw();
@@ -530,8 +539,13 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (FirstActivate == 0) initwinvideo(); 
             InputAcquire();
             if (FirstActivate == 1) FirstActivate = 0;
+            CheckScreenSaver();
          }
-         if (LOWORD(wParam) == WA_INACTIVE) IsActivated = 0;
+         if (LOWORD(wParam) == WA_INACTIVE)
+         {
+            IsActivated = 0;
+            CheckScreenSaver();
+         }
          break;
       case WM_SETFOCUS:
          if (FullScreen == 0) ShowWindow(hMainWindow, SW_SHOWNORMAL);
@@ -540,6 +554,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       case WM_KILLFOCUS:
          InputDeAcquire();
          IsActivated = 0;
+         CheckScreenSaver();
          break;
       case WM_DESTROY:
          break;
@@ -1684,6 +1699,7 @@ void initwinvideo(void)
       
       CheckPriority();
       CheckAlwaysOnTop();
+      CheckScreenSaver();
 
       if (!hMainWindow)
       { 

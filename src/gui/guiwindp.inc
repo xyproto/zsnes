@@ -1504,13 +1504,13 @@ DisplayGUIOption:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox13
     GUIDisplayIconWin 4,11,166,[GUITemp]
+%ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[SPCDisable],0
+    cmp byte[DisableScreenSaver],0
     je .nocheckbox14
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox14
     GUIDisplayIconWin 4,11,176,[GUITemp]
-%ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AlternateTimer],0
     je .win323
@@ -1580,7 +1580,7 @@ GUIOptionTextG db 'OLD GFX MODE 2',0
 GUIOptionTextH db 'START AT LATEST SAVE',0
 GUIOptionTextI db 'AUTO STATE SAVE/LOAD',0
 GUIOptionTextJ db 'DON',39,'T SAVE CURRENT PATH',0
-GUIOptionTextK db 'DISABLE SOUND CPU EMU',0
+GUIOptionTextK db 'DISABLE SCREENSAVER',0
 GUIOptionTextL db 'USE ALTERNATE TIMER',0
 GUIOptionText8 db '-',0
 GUIOptionText9 db '+',0
@@ -2140,8 +2140,9 @@ DisplayGUISound:
     GUIOuttextwin2u 6,26,146,GUISoundTextK,0
     GUIOuttextwin2u 6,26,156,GUISoundTextL,6
     GUIOuttextwin2u 6,26,166,GUISoundTextM,0
+    GUIOuttextwin2u 6,26,176,GUISoundTextN,0
 %ifdef __WIN32__
-    GUIOuttextwin2u 6,26,176,GUISoundTextN,1
+    GUIOuttextwin2u 6,26,186,GUISoundTextO,1
 %endif
     add byte[GUItextcolor],15
     GUIOuttextwin2 6,25,25,GUISoundText1
@@ -2167,8 +2168,9 @@ DisplayGUISound:
     GUIOuttextwin2 6,25,145,GUISoundTextK
     GUIOuttextwin2 6,25,155,GUISoundTextL
     GUIOuttextwin2 6,25,165,GUISoundTextM
-%ifdef __WIN32__
     GUIOuttextwin2 6,25,175,GUISoundTextN
+%ifdef __WIN32__
+    GUIOuttextwin2 6,25,185,GUISoundTextO
 %endif
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
@@ -2261,13 +2263,19 @@ DisplayGUISound:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox8
     GUIDisplayIconWin 6,11,161,[GUITemp]
-%ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[ExclusiveSound],0
+    cmp byte[SPCDisable],0
     je .nocheckbox9
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox9
     GUIDisplayIconWin 6,11,171,[GUITemp]
+%ifdef __WIN32__
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[ExclusiveSound],0
+    je .nocheckbox10
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox10
+    GUIDisplayIconWin 6,11,181,[GUITemp]
 %endif
     DrawGUIWinBox 6,15,61,69,69,167
     mov dword[GUITemp],GUISoundText7
@@ -2359,7 +2367,8 @@ GUISoundTextJ db 'SOUND INTERPOLATION',0
 GUISoundTextK db 'LOW PASS FILTER',0
 GUISoundTextL db 'SOUND BUFFERING',0
 GUISoundTextM db 'CUBIC SPLINE INTERP',0
-GUISoundTextN db 'EXCLUSIVE MODE',0
+GUISoundTextN db 'DISABLE SPC EMU',0
+GUISoundTextO db 'EXCLUSIVE MODE',0
 
 DisplayGUICheatConv:
     mov eax,[ccheatnpos]
