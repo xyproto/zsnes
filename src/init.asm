@@ -5421,8 +5421,21 @@ NEWSYM showinfogui
     je .nobs
     mov dword[CSStatus+29],'BROA'
     mov dword[CSStatus+33],'DCST'
+    ;Get checksum of header alone for subtraction
+    sub esi,41
+    xor eax,eax
+    mov ecx,48
+.bssubloop
+    movzx ebx,byte[esi]
+    add ax,bx
+    inc esi
+    dec ecx
+    jnz .bssubloop
+    mov bx,[Checksumvalue]
+    sub bx,ax
+    mov [Checksumvalue],bx
     ;dummy out date so CRC32 matches
-    sub esi,3
+    sub esi,10
     mov word[esi],042h ;42 is the answer, and the uCONSRT standard
 .nobs
 
