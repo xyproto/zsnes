@@ -722,11 +722,12 @@ NEWSYM InitPreGame   ; Executes before starting/continuing a game
     pushad
     call clearwin
     popad
+    mov byte[pressed+1],0
     ret
 
 NEWSYM SetupPreGame   ; Executes after pre-game init, can execute multiple
                       ; times after a single InitPreGame
-    mov byte[pressed+1],2
+    ;mov byte[pressed+1],2
     ret
 
 
