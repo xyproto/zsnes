@@ -121,7 +121,7 @@ NEWSYM SA1Swap
     ; Check if IRQ is executed on SA-1
     xor eax,eax
     mov al,dl
-    add dh,100
+    add dh,35
     mov edi,[SA1tablead+eax*4]
     mov byte[SA1Status],1
     test dword[SA1DoIRQ],0FF000003h
