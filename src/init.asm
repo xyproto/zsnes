@@ -3980,11 +3980,11 @@ SPC7110DirEntry db '*.BIN',0
 SPC7110CPtr dd 0
 SPC7110CPtr2 dd 0
 NEWSYM SDD1Offset, dd 65536*8
-NEWSYM SDD1nfname, db '        \_00000-0.bin',0
+NEWSYM SDD1nfname, db '        \_00000-0.BIN',0
 NEWSYM SDD1ifname, db 'sdd1gfx.idx',0
 NEWSYM SDD1dfname, db 'sdd1gfx.dat',0
 NEWSYM SDD1pfname, db 'sdd1gfx.pat',0
-NEWSYM SPC7110nfname, db '        \      .bin',0
+NEWSYM SPC7110nfname, db '        \      .BIN',0
 NEWSYM SPC7110IndexSize, dd 0
 NEWSYM SPC7110Entries, dd 0
 spc7110notfound db 'DECOMPRESSED PACK NOT FOUND',0
@@ -3992,6 +3992,8 @@ spc7110notfoundb db 'INDEX DATA NOT FOUND',0
 SDD1PatchAddr dd 0
 SDD1PatchOfs dd 0
 SDD1PatchLen dd 0
+
+EXTSYM sdd1fname
 
 NEWSYM SPC7110Load
     mov dword[SPC7110Entries],0
@@ -4021,11 +4023,13 @@ NEWSYM SPC7110Load
     cmp al,043h
     jne .noSDD1
     mov edx,SDD1DIRB
+    mov dword[sdd1fname],'sfa2'
     jmp .sdd1b
 .noSDD1
     cmp al,045h
     jne .noSDD1b
     mov edx,SDD1DIRA
+    mov dword[sdd1fname],'sdd1'
     jmp .sdd1b
 .noSDD1b
     ret

@@ -1315,7 +1315,7 @@ NEWSYM endprog
     cmp dword[SDD1Entry],0
     je .nodecomppack
 .yesdecomppack
-    mov edx,.blah
+    mov edx,sdd1fname
     call Create_File
     mov bx,ax
     mov edx,SDD1Array
@@ -1426,7 +1426,7 @@ NEWSYM endprog
 %endif
 ;.nodeinitipx
     jmp OSExit
-.blah db 'sdd1dat.dat',0
+NEWSYM sdd1fname, db 'sdd1dat.dat',0,0
 
 NEWSYM interror
     stim
