@@ -3564,20 +3564,32 @@ DisplayMenu:
 
     cmp byte[OSPort],3
     jne near .notwinpressa
+    %ifdef __LINUX__
+    GUIShadow 238,9,247,20
+    %endif
+    %ifdef __WIN32__
     GUIShadow 238,9,247,14
     GUIShadow 238,16,247,20
+    %endif
     GUIShadow 249,9,257,20
 .notwinpressa
 
     cmp byte[OSPort],3
     jne near .notwinpressb
+    %ifdef __LINUX__
+    mov byte[GUIMenuItem+36],247
+    GUIDMHelpB 233,242,GUIMenuItem+36,1
+    %endif
+    %ifdef __WIN32__
     mov byte[GUIMenuItem+36],249
     GUIDMHelpB2 233,242,GUIMenuItem+36,1
     mov byte[GUIMenuItem+36],248
     GUIDMHelpB3 233,242,GUIMenuItem+36,3
+    %endif
     mov byte[GUIMenuItem+36],'x'
     GUIDMHelpB 244,253,GUIMenuItem+36,2
 .notwinpressb
+
     ; Display upper-left box
     mov byte[GUIMenuItem+36],25
     GUIDMHelp 4,12,GUIMenuItem+6,1
@@ -4784,6 +4796,11 @@ NEWSYM GUIFontData
          db 00000000b
          db 00000000b
          db 00000000b; Minimize
+         db 11111000b
+         db 10001000b
+         db 10001000b
+         db 10001000b
+         db 11111000b; Maximize (Linux)
 
 ; 189 .. 220
 GUIIconDataClose:

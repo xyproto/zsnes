@@ -212,6 +212,9 @@ ProcessMouseButtons:
     jb near .noclickedw
     cmp word[GUImouseposx],242
     ja .notfound7
+    %ifdef __LINUX__
+    jmp .clickawn
+    %endif
     cmp word[GUImouseposy],8
     jb .clickawn
     cmp word[GUImouseposy],8
@@ -456,8 +459,14 @@ ProcessMouseButtons:
     mov byte[GUIcwinpress],0
     cmp word[GUImouseposy],3
     jb .notwinpressa
+    %ifdef __LINUX__
+    cmp word[GUImouseposy],13
+    ja .notwinpressa
+    %endif
+    %ifdef __WIN32__
     cmp word[GUImouseposy],7
     ja .notwinpressa
+    %endif
     cmp word[GUImouseposx],233
     jb .notwinpressa
     cmp word[GUImouseposx],242
