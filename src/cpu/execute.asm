@@ -3743,6 +3743,7 @@ NEWSYM cpuover
 
 
 .overy
+    shr dh,1
     cmp byte[smallscreenon],1
     je .nocfield
     cmp byte[ScreenScale],1
@@ -4474,6 +4475,7 @@ NEWSYM execsingle
     jmp dword near [edi+ebx*4]
 
 .overy
+    shr dh,1
     mov word[curypos],0
     mov byte[NMIEnab],01h
     add dword[opcd],170*262

@@ -406,7 +406,7 @@ NEWSYM cycpb358, db 149  ; 155
 NEWSYM cycpbl2,  db 109  ; percentage left of CPU/SPC to run  (3.58 = 175)
 NEWSYM cycpblt2, db 149  ; percentage of CPU/SPC to run
 NEWSYM writeon, db 0    ; Write enable/disable on snes rom memory
-NEWSYM totlines, dw 263 ; total # of lines
+NEWSYM totlines, dw 262 ; total # of lines
 NEWSYM soundon, db 0    ; Current sound enabled (1=enabled)
 NEWSYM zsmesg,  db 'ZSNES Save State File V0.6',26
 NEWSYM versn,   db 60   ; version #/100
@@ -5768,14 +5768,14 @@ NEWSYM showinfo
     mov al,2
 .nopal2
     mov byte[romispal],0
-    mov word[totlines],263
+    mov word[totlines],262
     mov dword[MsgCount],120
     cmp al,1
     jbe .nopal
     cmp al,0Dh
     je .nopal
     mov byte[romispal],1
-    mov word[totlines],313
+    mov word[totlines],314
     mov dword[MsgCount],100
     mov edx,.romtypep
     mov ah,9
