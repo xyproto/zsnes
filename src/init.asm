@@ -573,7 +573,6 @@ SECTION .text
 %%no
 %endmacro
 
-
 %macro ProcSNESMouse 1
     test byte[mousebuttons],02h
     jz %%n
@@ -759,7 +758,6 @@ CombContDatN dd 08000000h,04000000h,02000000h,01000000h,00800000h,80000000h
 CombContDatR dd 08000000h,04000000h,01000000h,02000000h,00800000h,80000000h
              dd 00400000h,40000000h,00200000h,00100000h,10000000h,20000000h
 SECTION .text
-
 
 %macro PlayerDeviceFix 1
    mov eax,[%1]
@@ -1414,7 +1412,6 @@ NEWSYM Outputfilename
 
     call Get_Key
     ret
-
 
 ; Header hacks
 
