@@ -30,6 +30,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifndef __GNUC__
 #define strcasecmp stricmp
+#define strncasecmp strnicmp
 #endif
 
 //C++ style code in C
