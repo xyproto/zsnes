@@ -3377,10 +3377,11 @@ NEWSYM NonEchoStereoPM
     movsx eax,ax
     add dword [DSPBuffer+esi*4],eax
     xor eax,eax
-    mov al,[Voice0VolumeL+ebp]
 %ifdef __MSDOS__
+    mov al,[ds:Voice0VolumeL+ebp]
     mov ah,[ds:Voice0EnvInc+ebp*4+2]
 %else
+    mov al,[Voice0VolumeL+ebp]
     mov ah,[Voice0EnvInc+ebp*4+2]
 %endif
     add esi,2
@@ -3832,7 +3833,11 @@ NEWSYM EchoMonoInterpolated
 %endif
     mov cx,[VolumeConvTable+edx*2]
 
+%ifdef __MSDOS__
+    add [ds:BRRPlace0+ebp*8],ebx    ; ***
+%else
     add [BRRPlace0+ebp*8],ebx    ; ***
+%endif
     add esi,2                   ; ***
     mov ebx,eax
 
@@ -3925,7 +3930,7 @@ NEWSYM NonEchoStereoInterpolated
     movsx eax,ax
     add dword [DSPBuffer+esi*4-4],eax
 %ifdef __MSDOS__
-    add [BRRPlace0+ebp*8],ebx
+    add [ds:BRRPlace0+ebp*8],ebx
 %else
     add [BRRPlace0+ebp*8],ebx
 %endif
@@ -4033,7 +4038,7 @@ NEWSYM EchoStereoInterpolated
 
     add esi,2
 %ifdef __MSDOS__
-    add [BRRPlace0+ebp*8],ebx
+    add [ds:BRRPlace0+ebp*8],ebx
 %else
     add [BRRPlace0+ebp*8],ebx
 %endif
@@ -4205,7 +4210,7 @@ NEWSYM EchoMono
 
     add esi,2
 %ifdef __MSDOS__
-    add [BRRPlace0+ebp*8],ebx
+    add [ds:BRRPlace0+ebp*8],ebx
 %else
     add [BRRPlace0+ebp*8],ebx
 %endif
