@@ -1697,26 +1697,27 @@ void initwinvideo(void)
    if (!FirstVid)
    {   
       if (X<0)X=0;
-      if (X>(GetSystemMetrics( SM_CXSCREEN )-WindowWidth)) X=(GetSystemMetrics( SM_CXSCREEN )-WindowWidth);
+      if (X>(GetSystemMetrics(SM_CXSCREEN) - WindowWidth)) X=(GetSystemMetrics(SM_CXSCREEN) - WindowWidth);
       if (Y<0)Y=0;
-      if (Y>(GetSystemMetrics( SM_CYSCREEN )-WindowHeight)) Y=(GetSystemMetrics( SM_CYSCREEN )-WindowHeight);
+      if (Y>(GetSystemMetrics(SM_CYSCREEN) - WindowHeight)) Y=(GetSystemMetrics(SM_CYSCREEN) - WindowHeight);
+
       if (FullScreen==1) {X=0; Y=0;}
 
-      MainWindowX = X; MainWindowY = Y;
+      if (FullScreen==0 && newmode == 1) { X = MainWindowX; Y = MainWindowY; }
+         else if (FullScreen==0) { MainWindowX = X; MainWindowY = Y; }
 
-      MoveWindow( hMainWindow, X, Y,
-                  WindowWidth, WindowHeight, TRUE );
+      MoveWindow(hMainWindow, X, Y, WindowWidth, WindowHeight, TRUE);
 
       wndpl.length = sizeof(wndpl);
-      GetWindowPlacement( hMainWindow, &wndpl);
-      SetRect( &rc1, 0, 0, WindowWidth, WindowHeight );
+      GetWindowPlacement(hMainWindow, &wndpl);
+      SetRect(&rc1, 0, 0, WindowWidth, WindowHeight);
 
-      AdjustWindowRectEx( &rc1,GetWindowLong( hMainWindow, GWL_STYLE ),
-      GetMenu( hMainWindow ) != NULL, GetWindowLong( hMainWindow, GWL_EXSTYLE ) ); 
+      AdjustWindowRectEx(&rc1,GetWindowLong(hMainWindow, GWL_STYLE),
+      GetMenu(hMainWindow) != NULL, GetWindowLong(hMainWindow, GWL_EXSTYLE)); 
 
       GetClientRect(hMainWindow, &rcWindow);
-      ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow);
-      ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow + 1);
+      ClientToScreen(hMainWindow, (LPPOINT) &rcWindow);
+      ClientToScreen(hMainWindow, (LPPOINT) &rcWindow + 1);
    }
    else
    {
@@ -1737,8 +1738,9 @@ void initwinvideo(void)
       { 
           exit(1);
       }
-      X=(GetSystemMetrics( SM_CXSCREEN ) - WindowWidth) / 2;
-      Y=(GetSystemMetrics( SM_CYSCREEN ) - WindowHeight) / 2;
+      X=(GetSystemMetrics(SM_CXSCREEN) - WindowWidth) / 2;
+      Y=(GetSystemMetrics(SM_CYSCREEN) - WindowHeight) / 2;
+
       if (FullScreen==1) {X=0; Y=0;}
 
       if (hMainWindow) 
