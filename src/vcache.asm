@@ -697,7 +697,11 @@ NEWSYM cachevideo
 .nodisplayfps
 
     ; do state selects
+%ifdef __LINUX__
+    stateselcomp KeyStateSlc0,'0','t'
+%else
     stateselcomp KeyStateSlc0,'0','T'
+%endif
     stateselcomp KeyStateSlc1,'1','1'
     stateselcomp KeyStateSlc2,'2','2'
     stateselcomp KeyStateSlc3,'3','3'
