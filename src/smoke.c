@@ -46,7 +46,7 @@ static unsigned char fire_buffer [SCRW * SCRH];
 static int fire_init_flag;
 
 
-static __inline__ void draw_bottom_line_of_fire (void)
+static void draw_bottom_line_of_fire (void)
 {
     int count, count2;
 
@@ -90,7 +90,7 @@ static __inline__ void draw_bottom_line_of_fire (void)
 }
 
 
-static __inline__ void init_fire (void)
+static void init_fire (void)
 {
     int x, y, pixel, count;
 
