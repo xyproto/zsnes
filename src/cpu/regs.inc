@@ -767,11 +767,8 @@ reg2137r:
 ;    mov byte[debstop3],1
     cmp byte[debuggeron],1
     je .debugger
-    cmp byte[iocounteren],1
-    je .dolatch
     test byte[ioportval],80h
     jnz .nolatch
-.dolatch
     xor ebx,ebx
     mov bl,[cycpl]
     sub bl,dh
