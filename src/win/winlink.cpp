@@ -2051,6 +2051,7 @@ void clearwin()
 }
 
 extern void DrawWin256x224x16();
+extern void DrawWin256x224x16MB();
 extern void DrawWin256x224x32();
 extern void DrawWin256x224x32MB();
 extern void DrawWin320x240x16();
@@ -2115,7 +2116,8 @@ void drawscreenwin(void)
       {
          case 16:
          {
-            DrawWin256x224x16();
+            if (MotionBlur == 1) DrawWin256x224x16MB();
+               else DrawWin256x224x16();
             break;
          }
       case 32:
