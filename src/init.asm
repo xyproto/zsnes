@@ -3788,7 +3788,7 @@ NEWSYM SaveCombFile
     je .found2
     jmp .found
 .found2
-    mov dword[edx],'.CMB'
+    mov dword[edx],'.cmb'
     push edx
     mov al,[NumComboLocl]
     or al,al
