@@ -37,7 +37,9 @@ NEWSYM DmaAsmStart
 ;*******************************************************
 ; DMA transfer register
 
-NEWSYM AddrNoIncr, db 0
+section .bss
+NEWSYM AddrNoIncr, resb 1
+section .text
 
 %macro ExecSPCCycles 0
     xor ebx,ebx
@@ -220,6 +222,7 @@ NEWSYM transdma
     mov byte[AddrNoIncr],0
     ret
 
+section .data
 ALIGN32
 
 .curbank   dd 0
@@ -233,6 +236,7 @@ ALIGN32
 .regptrd   dd 0
 .readaddr  dd 0
 .cebx      dd 0
+section .text
 
 NEWSYM transdmappu2cpu
     ; set address increment value
@@ -379,6 +383,7 @@ NEWSYM transdmappu2cpu
     pop eax
     ret
 
+section .data
 ALIGN32
 
 .curbank   dd 0
@@ -392,6 +397,7 @@ ALIGN32
 .regptrd   dd 0
 .writeaddr dd 0
 .cebx      dd 0
+section .text
 
 %macro TestDMA 0
 %endmacro
@@ -566,9 +572,11 @@ NEWSYM setuphdma
     or [hdmatype],ah
     ret
 
+section .data
 .addrwrite dw 0,0,0,0, 0,1,0,1, 0,0,0,0, 0,0,1,1, 0,1,2,3, 0,1,2,3, 0,1,2,3
            dw 0,1,2,3
 .addrnumt  db 1,2,2,4,4,4,4,4
+section .text
 
 NEWSYM setuphdmars
     push eax
@@ -666,9 +674,11 @@ NEWSYM setuphdmars
     pop eax
     ret
 
+section .data
 .addrwrite dw 0,0,0,0, 0,1,0,1, 0,0,0,0, 0,0,1,1, 0,1,2,3, 0,1,2,3, 0,1,2,3
            dw 0,1,2,3
 .addrnumt  db 1,2,2,4,4,4,4,4
+section .text
 
 NEWSYM setuphdma2
     push eax
@@ -777,12 +787,17 @@ NEWSYM setuphdma2
     and [nexthdma],ah
     ret
 
+section .data
 .addrwrite dw 0,0,0,0, 0,1,0,1, 0,0,0,0, 0,0,1,1, 0,1,2,3, 0,1,2,3, 0,1,2,3
            dw 0,1,2,3
 .addrnumt  db 1,2,2,4,4,4,4,4
 
-NEWSYM hdmastartsc, db 0
-NEWSYM hdmarestart, db 0
+section .bss
+
+NEWSYM hdmastartsc, resb 1
+NEWSYM hdmarestart, resb 1
+
+section .text
 
 NEWSYM reg420Cw
 
@@ -1024,7 +1039,9 @@ NEWSYM dohdma
     pop eax
     ret
 
-.tempdecr db 0
+section .bss
+.tempdecr resd 1
+section .text
 
 NEWSYM hdmatype2
     mov al,[edx+16]
@@ -1067,7 +1084,9 @@ NEWSYM hdmatype2
     dec byte[esi+10]
     ret
 
-.tempdecr db 0
+section .bss
+.tempdecr resd 1
+section .text
 
 NEWSYM indirectaddr
     push eax
@@ -1128,7 +1147,7 @@ NEWSYM indirectaddr
     mov bl,[esi+7]
     mov cx,[esi+5]         ; increment/decrement/keep pointer location
     add cx,3
-    call dword near [memtabler8+ebx*4]
+	call dword near [memtabler8+ebx*4]
     call dword near [edx+12]
     jmp .finhdma
 .nozero
@@ -1146,11 +1165,17 @@ NEWSYM indirectaddr
     pop eax
     ret
 
-.tempdecr db 0
+section .bss
+.tempdecr resd 1
+
+section .data
 .fname2 db 9,'vram2.dat',0
+section .text
 
 EXTSYM spcRam
+section .data
 NEWSYM ewj2hack, dd 0
+section .text
 
 NEWSYM hdmatype2indirect
     cmp dword [ewj2hack],1
@@ -1243,8 +1268,10 @@ NEWSYM hdmatype2indirect
     dec byte[esi+10]
     ret
 
-.dest dd 0
-.tempdecr db 0
+section .bss
+.tempdecr resd 1
+.dest resd 1
+section .text
 
 NEWSYM exechdma
     cmp byte[hdmarestart],1

@@ -32,14 +32,17 @@ EXTSYM opexec358,opexec358cph
 EXTSYM hdmarestart
 EXTSYM printhex8
 
+%ifdef OPENSPC
+EXTSYM SPC_PORT0R, SPC_PORT1R, SPC_PORT2R, SPC_PORT3R
+%endif
 
 
 
 
-
-NEWSYM testgfxv1, db 0
-NEWSYM testgfxv2, db 0
-
+SECTION .bss ;ALIGN=32
+NEWSYM testgfxv1, resb 1
+NEWSYM testgfxv2, resb 1
+SECTION .text
 
 NEWSYM initregw
     ; Fill register pointer with invalid register accesses
@@ -444,7 +447,9 @@ reg2100w:
     and byte[forceblnk],80h
     ret
 
-NEWSYM prevoamptr, db 0
+SECTION .bss ;ALIGN=32
+NEWSYM prevoamptr, resb 1
+SECTION .text
 
 ; OAM size register
 reg2101w:
@@ -487,6 +492,7 @@ reg2101w:
 .noproc
     ret
 
+SECTION .data ;ALIGN=32
 .objsize1 db 1,1,1,4,4,16,1,1
 .objsize2 db 4,16,64,16,64,64,4,4
 .objmovs1 db 2,2,2,2,2,4,2,2
@@ -494,7 +500,9 @@ reg2101w:
 .objadds1 dw 14,14,14,14,14,12,14,14
 .objadds2 dw 14,12,8,12,8,8,14,14
 
-NEWSYM oamlow, db 0
+SECTION .bss ;ALIGN=32
+NEWSYM oamlow, resb 1
+SECTION .text
 
 ; OAM address register
 reg2102w:
@@ -798,7 +806,9 @@ reg210Ew:
     mov byte[bg1scroly+1],al
     ret
 
-bgscroltemp db 0
+SECTION .bss ;ALIGN=32
+bgscroltemp resb 1
+SECTION .text
 
 ; BG2 horizontal scroll register
 reg210Fw:
@@ -1124,7 +1134,9 @@ reg211Aw:
     mov [mode7set],al
     ret
 
+SECTION .data ;ALIGN=32
 NEWSYM multchange, db 1
+SECTION .text
 
 ; COS (COSINE) rotate angle / X Expansion
 reg211Bw:
@@ -1328,7 +1340,9 @@ reg2133w:
     mov word[resolutn],239
     ret
 
-NEWSYM CleartheScreen, db 0
+SECTION .bss ;ALIGN=32
+NEWSYM CleartheScreen, resb 1
+SECTION .text
 
 ; Sound Register #1
 reg2140w:
@@ -1337,9 +1351,13 @@ reg2140w:
     jne .n
     mov byte[nmirept],0
 .n
+%ifdef OPENSPC
+	mov byte[SPC_PORT0R],al
+%else
     mov byte[spcRam+0F4h],al
     inc dword[SPC700write]
     reenablespc
+%endif
     ret
 ;    cmp dword[cycpbl],0FFFFh
 ;    ja .spcreset
@@ -1351,9 +1369,13 @@ reg2140w:
 ; Sound Register #2
 reg2141w:
     mov byte[sndwrit],1
+%ifdef OPENSPC
+	mov byte[SPC_PORT1R],al
+%else
     mov byte[spcRam+0F5h],al
     inc dword[SPC700write]
     reenablespc
+%endif
     ret
 ;    cmp dword[cycpbl],0FFFFh
 ;    ja .spcreset
@@ -1365,9 +1387,13 @@ reg2141w:
 ; Sound Register #3
 reg2142w:
     mov byte[sndwrit],1
+%ifdef OPENSPC
+	mov byte[SPC_PORT2R],al
+%else
     mov byte[spcRam+0F6h],al
     inc dword[SPC700write]
     reenablespc
+%endif
     ret
 ;    cmp dword[cycpbl],0FFFFh
 ;    ja .spcreset
@@ -1379,9 +1405,13 @@ reg2142w:
 ; Sound Register #4
 reg2143w:
     mov byte[sndwrit],1
+%ifdef OPENSPC
+	mov byte[SPC_PORT3R],al
+%else
     mov byte[spcRam+0F7h],al
     inc dword[SPC700write]
     reenablespc
+%endif
     ret
 ;    cmp dword[cycpbl],0FFFFh
 ;    ja .spcreset
@@ -1417,7 +1447,9 @@ reg2183w:
     ret
 
 ; Joystick 1 & 2 status bytes
-NEWSYM MultiTapStat, db 0
+SECTION .bss ;ALIGN=32
+NEWSYM MultiTapStat, resb 1
+SECTION .text
 
 reg4016w:
     test byte[INTEnab],1
@@ -1831,7 +1863,11 @@ regexiter:
     call printnum
     jmp DosExit
 
+SECTION .data ;ALIGN=32
 .invalidreg db 'Invalid Write Register : $'
 .invalidaddr db ' at address $'
-.invbank db 0
-.invaddr db 0
+
+SECTION .bss ;ALIGN=32
+.invbank resb 1
+.invaddr resb 1
+SECTION .text

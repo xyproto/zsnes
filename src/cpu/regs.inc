@@ -21,7 +21,7 @@ EXTSYM SPC7110Enable,initSPC7110regs,RTCEnable,RTCReset
 EXTSYM curypos,cycpl,debuggeron,pdh
 EXTSYM vram
 EXTSYM romispal
-EXTSYM reg1read,spcnumread,spcon
+EXTSYM reg1read,spcnumread,spchalted,spcon
 EXTSYM reg2read
 EXTSYM reg3read
 EXTSYM reg4read
@@ -30,6 +30,9 @@ EXTSYM snesmouse
 EXTSYM cycphb,joycontren,totlines
 EXTSYM DosExit,invalid,numinst,previdmode,printhex,printnum
 
+%ifdef OPENSPC
+EXTSYM SPC_PORT0W, SPC_PORT1W, SPC_PORT2W, SPC_PORT3W
+%endif
 
 
 
@@ -505,6 +508,7 @@ NEWSYM initregr
     ret
 
 ; global variables
+SECTION .data ;ALIGN=32
 NEWSYM invreg,    dw 0
 NEWSYM sndrot,    db 0             ; rotates to use A,X or Y for sound skip
 NEWSYM sndrot2,   db 0             ; rotates a random value for sound skip
@@ -711,6 +715,8 @@ NEWSYM nssdip3, db 0
 NEWSYM nssdip4, db 0
 NEWSYM nssdip5, db 0
 NEWSYM nssdip6, db 0
+
+SECTION .text
 
 NEWSYM ClearRegs
     mov word[VIRQLoc],0
@@ -984,11 +990,16 @@ reg213Fr:
 
 ; Sound Reg #1
 reg2140r:
+%ifdef OPENSPC
+	mov al,[SPC_PORT0W]
+	ret
+%else
     cmp byte[spcon],0
     je .nosound
     inc dword[SPC700read]
     mov al,[reg1read]
-    mov byte[spcnumread],0
+    mov dword[spcnumread],0
+;	mov dword[spchalted],-1
     ret
 .nosound
     ; Find for D0
@@ -1020,14 +1031,20 @@ reg2140r:
     mov al,[xa]
 .n
     ret
+%endif
 
 ; Sound Reg #2
 reg2141r:
+%ifdef OPENSPC
+	mov al,[SPC_PORT1W]
+	ret
+%else
     cmp byte[spcon],0
     je .nosound
     inc dword[SPC700read]
     mov al,[reg2read]
-    mov byte[spcnumread],0
+    mov dword[spcnumread],0
+;	mov dword[spchalted],-1
     ret
 .nosound
     ; Find for D0
@@ -1051,14 +1068,20 @@ reg2141r:
     mov al,[xa]
 .n
     ret
+%endif
 
 ; Sound Reg #3
 reg2142r:
+%ifdef OPENSPC
+	mov al,[SPC_PORT2W]
+	ret
+%else
     cmp byte[spcon],0
     je .nosound
     inc dword[SPC700read]
     mov al,[reg3read]
-    mov byte[spcnumread],0
+    mov dword[spcnumread],0
+;	mov dword[spchalted],-1
     ret
 .nosound
     ; Find for D0
@@ -1081,14 +1104,20 @@ reg2142r:
     mov al,[xa+1]
 .n
     ret
+%endif
 
 ; Sound Reg #4
 reg2143r:
+%ifdef OPENSPC
+	mov al,[SPC_PORT3W]
+	ret
+%else
     cmp byte[spcon],0
     je .nosound
     inc dword[SPC700read]
     mov al,[reg4read]
-    mov byte[spcnumread],0
+    mov dword[spcnumread],0
+;	mov dword[spchalted],-1
     ret
 .nosound
     ; Find for D0
@@ -1107,6 +1136,7 @@ reg2143r:
 .notfound
     mov al,[xa+1]
     ret
+%endif
 
 reg2144r:
     xor al,al
@@ -1136,7 +1166,10 @@ reg4016r:
     rol dword[JoyANow],1
     ret
 
-NEWSYM MultiTap, db 0
+SECTION .bss ;ALIGN=32
+NEWSYM MultiTap, resb 1
+SECTION .text
+
 ; Joystick Data for controller 2 and 4
 reg4017r:
     cmp byte[snesmouse],0
@@ -1242,6 +1275,10 @@ reg4211r:
 .nohblank
     ret
 
+SECTION .bss
+NEWSYM hblank, resb 1
+SECTION .text
+
 ; H/V Blank Flag & Joystick Controller Enable Flag
 ; bit 7 = vblank, 0=out,1=in, bit 6 = hblank, 0=out,1=in, bit 0 = joystick on
 reg4212r:
@@ -1275,8 +1312,10 @@ reg4212r:
     or al,80h
 ;    jmp .nohblank
 .novbl
+    mov byte[hblank],0
     cmp dh,[cycphb]
     jae .nohblank
+    mov byte[hblank],1
     or al,40h
 .nohblank
     test byte[INTEnab],01h
@@ -1464,6 +1503,8 @@ regINVALID:     ; Invalid Register
     call printnum
     jmp DosExit
 
+SECTION .data ;ALIGN=32
 .invalidreg db 'Invalid Read Register : $'
+SECTION .text
 
 

@@ -66,7 +66,7 @@ EXTSYM nmirept,nmistatus,opexec268,opexec268b,opexec268cph
 EXTSYM opexec268cphb,opexec358,opexec358b,opexec358cph,spcextraram
 EXTSYM opexec358cphb,prevoamptr,reg1read,reg2read,reg3read
 EXTSYM reg4read,resolutn,romdata,scrndis,spcBuffera,spcP,spcRam
-EXTSYM spcnumread,tableD,timeron,vidbright,DSPMem,OldGfxMode2
+EXTSYM spcnumread,spchalted,tableD,timeron,vidbright,DSPMem,OldGfxMode2
 EXTSYM SPC700read,SPC700write,GUIDoReset,spc700read
 EXTSYM InitC4,SA1Reset,SetAddressingModesSA1,SetAddressingModes,SDD1BankA,SPC7110init
 EXTSYM RTCinit,InitOBC
@@ -223,13 +223,14 @@ NEWSYM init
     xor edx,edx
     mov al,[MusicRelVol]
     shl eax,7
-    mov ebx,100
-    div ebx
-    cmp al,127
+    mov ebx,0A3D70A3Dh
+    mul ebx
+    shr edx,6
+    cmp dl,127
     jb .noof
-    mov al,127
+    mov dl,127
 .noof
-    mov [MusicVol],al
+    mov [MusicVol],dl
 
 ; FIX STATMAT
     ; Here's the auto-load ZST file stuff
@@ -406,7 +407,7 @@ NEWSYM cycpb358, db 149  ; 155
 NEWSYM cycpbl2,  db 109  ; percentage left of CPU/SPC to run  (3.58 = 175)
 NEWSYM cycpblt2, db 149  ; percentage of CPU/SPC to run
 NEWSYM writeon, db 0    ; Write enable/disable on snes rom memory
-NEWSYM totlines, dw 262 ; total # of lines
+NEWSYM totlines, dw 263 ; total # of lines
 NEWSYM soundon, db 0    ; Current sound enabled (1=enabled)
 NEWSYM zsmesg,  db 'ZSNES Save State File V0.6',26
 NEWSYM versn,   db 60   ; version #/100
@@ -585,29 +586,29 @@ NEWSYM Setper2exec
 ; Read Input Device            Reads from Keyboard, etc.
 ;*******************************************************
 
-SECTION .data
-NEWSYM WhichSW, db 0
-NEWSYM WhichGR, db 0
-NEWSYM autofr,  db 0
-TurboCB db 0
+SECTION .bss
+NEWSYM WhichSW, resb 1
+NEWSYM WhichGR, resb 1
+NEWSYM autofr,  resb 1
+TurboCB resb 1
 
-NEWSYM MovieTemp, db 0
-NEWSYM JoyAOrig, dd 0
-NEWSYM JoyBOrig, dd 0
-NEWSYM JoyCOrig, dd 0
-NEWSYM JoyDOrig, dd 0
-NEWSYM JoyEOrig, dd 0
-NEWSYM JoyANow, dd 0
-NEWSYM JoyBNow, dd 0
-NEWSYM JoyCNow, dd 0
-NEWSYM JoyDNow, dd 0
-NEWSYM JoyENow, dd 0
-NEWSYM PJoyAOrig, dd 0
-NEWSYM PJoyBOrig, dd 0
-NEWSYM PJoyCOrig, dd 0
-NEWSYM PJoyDOrig, dd 0
-NEWSYM PJoyEOrig, dd 0
-NEWSYM LethEnData, dd 0
+NEWSYM MovieTemp, resb 1
+NEWSYM JoyAOrig, resd 1
+NEWSYM JoyBOrig, resd 1
+NEWSYM JoyCOrig, resd 1
+NEWSYM JoyDOrig, resd 1
+NEWSYM JoyEOrig, resd 1
+NEWSYM JoyANow, resd 1
+NEWSYM JoyBNow, resd 1
+NEWSYM JoyCNow, resd 1
+NEWSYM JoyDNow, resd 1
+NEWSYM JoyENow, resd 1
+NEWSYM PJoyAOrig, resd 1
+NEWSYM PJoyBOrig, resd 1
+NEWSYM PJoyCOrig, resd 1
+NEWSYM PJoyDOrig, resd 1
+NEWSYM PJoyEOrig, resd 1
+NEWSYM LethEnData, resd 1
 SECTION .text
 
 %macro PlayerDeviceHelp 3
@@ -682,7 +683,8 @@ SECTION .text
     je %%startprogress
 %%nopress
     add eax,66
-    loop %%loop
+    dec ecx
+    jnz %%loop
     jmp %%endcomb
 %%startprogress
     mov byte[pressed+ebx],2
@@ -1355,15 +1357,20 @@ NEWSYM ProcessMovies
     call .writebuffertodisk
     ret
 
+SECTION .data
+
 .movieended db 'MOVIE FINISHED.',0
-NEWSYM MovieBuffSize, dd 0
-NEWSYM MovieBuffFrame, dd 0
-MovieBuffer times 21*60 dd 0
 NEWSYM CFWriteStart, dd 64+30
-NEWSYM CReadHead, dd 0
-NEWSYM ReadHead, dd 0
-NEWSYM CFWriteHead, dd 0
-NEWSYM StoreBuffer, times 128*32 db 0
+
+SECTION .bss
+NEWSYM MovieBuffSize, resd 1
+NEWSYM MovieBuffFrame, resd 1
+MovieBuffer resd 21*60
+NEWSYM CReadHead, resd 1
+NEWSYM ReadHead, resd 1
+NEWSYM CFWriteHead, resd 1
+NEWSYM StoreBuffer, resb 128*32
+
 ;*******************************************************
 ; Init 65816                   Initializes the Registers
 ;*******************************************************
@@ -1498,7 +1505,9 @@ headerhack2:
 .nokingofrally    
     ret
 
+SECTION .data
 .mmx2head db 50,58,56,62,50,62,49,95,39,77,95,95,95,95,95,95,95,95,95,95
+SECTION .text
 
 EXTSYM ewj2hack
 EXTSYM latchyr
@@ -1747,16 +1756,16 @@ NEWSYM headerhack
     mov byte[esi+1],0BCh ; RTS instead of jumping to a rts 
 .nothomealone
 
-    mov esi,[romdata]
-    add esi,0FFC0h
-    cmp dword[esi],'EMER'
-    jne .notemeralddragon
-    cmp dword[esi+4],'ALD '
-    jne .notemeralddragon
-    cmp dword[esi+8],'DRAG'
-    jne .notemeralddragon
-    mov byte[ENVDisable],1
-.notemeralddragon
+;    mov esi,[romdata]
+;    add esi,0FFC0h
+;    cmp dword[esi],'EMER'
+;    jne .notemeralddragon
+;    cmp dword[esi+4],'ALD '
+;    jne .notemeralddragon
+;    cmp dword[esi+8],'DRAG'
+;    jne .notemeralddragon
+;    mov byte[ENVDisable],1
+;.notemeralddragon
 
     mov esi,[romdata]
     add esi,7FC0h
@@ -2124,6 +2133,8 @@ NEWSYM headerhack
 .noromheaddk
     ret
 
+SECTION .data
+
 .ewj2head db 58,62,45,43,55,40,48,45,50,95,53,54,50,95,77,95,95,95,95,95
 .bubshead db 61,10,29,12,06,95,95,95,95,95,95,95,95,95,95,95,95,95,95,95
 .btvdhead db 61,62,43,43,51,58,43,48,62,59,44,95,59,81,59,81,95,95,95,95
@@ -2136,6 +2147,7 @@ NEWSYM headerhack
 .adm3head db 62,59,59,62,50,44,95,57,62,50,54,51,38,95,41,62,51,42,58,44
 .fmishead db 57,13,16,17,11,95,50,22,12,12,22,16,17,95,87,58,86,95,95,95
 
+SECTION .text
 
 
 NEWSYM idledetectspc
@@ -2151,13 +2163,15 @@ NEWSYM idledetectspc
     mov eax,[MsgCount]
     mov [MessageOn],eax
     ret
-.unableskip db 'SPC700 STALL DETECTED.',0
 
 SECTION .data
-NEWSYM ReturnFromSPCStall, db 0
-NEWSYM SPCStallSetting, db 0
-NEWSYM SPCSkipXtraROM, db 0
-NEWSYM WindowDisables, dd 0
+.unableskip db 'SPC700 STALL DETECTED.',0
+
+SECTION .bss
+NEWSYM ReturnFromSPCStall, resb 1
+NEWSYM SPCStallSetting, resb 1
+NEWSYM SPCSkipXtraROM, resb 1
+NEWSYM WindowDisables, resd 1
 SECTION .text
 
 %macro helpclearmem 2
@@ -2327,7 +2341,8 @@ NEWSYM init65816
     mov byte [reg3read],0
     mov byte [reg4read],0
     mov dword[cycpbl],0
-    mov byte[spcnumread],0
+    mov dword[spcnumread],0
+	mov dword[spchalted],-1
     mov dword[coladdr],0
     mov byte[NMIEnab],1
     mov word[VIRQLoc],0
@@ -2481,7 +2496,9 @@ NEWSYM init65816
     mov dword[wramwriteptr],setwram1fff
     ret
 
+SECTION .data
 .boffound db '.....',0
+SECTION .text
 
 getwram1fff:
     mov al,[wramdataa+1fffh]
@@ -2500,11 +2517,11 @@ setwram1fff:
 ;   Bank  7E          : WRAM (0000h-FFFFh)
 ;   Bank  7F          : ExtendRAM (0000h-FFFFh)
 
-SECTION .data
-NEWSYM curromsize, db 0
-NEWSYM cromptradd, dd 0
-NEWSYM NoiseDisTemp, dd 0,0
-NEWSYM lorommapmode2, db 0
+SECTION .bss
+NEWSYM curromsize, resb 1
+NEWSYM cromptradd, resd 1
+NEWSYM NoiseDisTemp, resd 2
+NEWSYM lorommapmode2, resb 1
 SECTION .text
 
 NEWSYM initsnes
@@ -3719,7 +3736,9 @@ NEWSYM printhex
     jnz .loopa
     ret
 
+SECTION .data
 .hexdat db '0123456789ABCDEF'
+SECTION .text
 
 NEWSYM printhex8
     mov ecx,2
@@ -3728,7 +3747,7 @@ NEWSYM printhex8
     mov bx,ax
     and bx,0F0h
     shr bx,4
-    mov dl,[.hexdat+ebx]
+    mov dl,[printhex.hexdat+ebx]
     push ax
     mov ah,02h
     call Output_Text
@@ -3738,7 +3757,31 @@ NEWSYM printhex8
     jnz .loopb
     ret
 
-.hexdat db '0123456789ABCDEF'
+;EXTSYM _imp__OutputDebugStringA@4
+
+;NEWSYM printhex32
+;    pushf
+;    mov ecx,8
+;.loopa
+;    mov ebx,eax
+;    and ebx,0Fh
+;    mov dl,[printhex.hexdat+ebx]
+;    mov [.hexout-1+ecx],dl
+;    shr eax,4
+;    dec ecx
+;    jnz .loopa
+
+;    push dword .hexout
+;    call [_imp__OutputDebugStringA@4]
+
+;    popf
+;    db 0C3h ; ret
+
+;section .bss
+;NEWSYM __debug_crap_address__, dd 0,0,0,0
+;.hexout db "blahblah",0
+;section .text
+
 ;*******************************************************
 ; Load File
 ;*******************************************************
@@ -3768,7 +3811,10 @@ NEWSYM RetrieveDataIPS
     inc ecx
     ret
 
-IPSSL dd 0
+
+SECTION .bss
+IPSSL resd 1
+SECTION .text
 
 NEWSYM PatchIPS
 %ifdef __LINUX__    
@@ -3941,25 +3987,28 @@ NEWSYM PatchIPS
 ;.ltop
 ;    mov byte[esi+edx],0
 ;    inc edx
-;    loop .ltop
+;    dec ecx
+;    jnz .ltop
 %ifdef __LINUX__
     pushad
     call popdir
     popad
 %endif
     ret
+
+SECTION .data
 .ipsokaymsg db 'IPS PATCHED.',0
 .ipsnokaymsg db 'IPS IS CORRUPT.',0
 
-section .data
-NEWSYM Header512, db 0
-NEWSYM Prevextn,  dd 0
-NEWSYM Headchek,  db 0,0,0,0,0
-NEWSYM IPSLimit,  dd 0
-NEWSYM IPSOffset, dd 0
-NEWSYM IPSCount,  dd 0
-IPSPatched db 0
-section .text
+SECTION .bss
+NEWSYM Header512, resb 1
+NEWSYM Prevextn,  resd 1
+NEWSYM Headchek,  resb 5
+NEWSYM IPSLimit,  resd 1
+NEWSYM IPSOffset, resd 1
+NEWSYM IPSCount,  resd 1
+IPSPatched resb 1
+SECTION .text
 
 OpenCombFile:
     mov edx,fnames+1
@@ -4057,36 +4106,41 @@ NEWSYM loadfile
     jmp loadfileGUI.nogui
 
 SECTION .data
-.multfound db 0
-.first db 0
-.cchar db 0
-.dotpos dd 0
-.curfileofs dd 0
-.filehand dw 0
 .failop   db 'Error opening file!',13,10,0
 .opened db 'File opened successfully!',13,10,0
 .mult   db 'Multiple file format detected.',13,10,13,10,0
-.temp   db 0
-.fail   db 0
+SECTION .bss
+.multfound resb 1
+.first resb 1
+.cchar resb 1
+.dotpos resd 1
+.curfileofs resd 1
+.filehand resw 1
+.temp   resb 1
+.fail   resb 1
 
 
-NEWSYM Checksumvalue, dw 0
-NEWSYM Checksumvalue2, dw 0
-NEWSYM SramExists,    db 0
-NEWSYM NumofBanks,    dd 0
-NEWSYM NumofBytes,    dd 0
-NEWSYM ZipSupport, db 0
-InGUI db 0
+NEWSYM Checksumvalue, resw 1
+NEWSYM Checksumvalue2, resw 1
+NEWSYM SramExists,    resb 1
+NEWSYM NumofBanks,    resd 1
+NEWSYM NumofBytes,    resd 1
+NEWSYM ZipSupport, resb 1
+InGUI resb 1
+
+SECTION .data
+
 %ifdef __LINUX__
 tempdirname db '/tmp/zziptmp',0
 %else
 tempdirname db 'zziptmp_.__z',0
 %endif
 PrevDir db '..',0
-SECTION .text
 
 
 GUIfindBlank db '*.',0
+
+SECTION .text
 
 %macro UnZipSearch 1
     mov cx,20h
@@ -4099,9 +4153,13 @@ GUIfindBlank db '*.',0
 %%notfound
 %endmacro
 
+SECTION .data
 InvalidZip db 'ZSNES Version A does not support .ZIP files.',13,10,'Please use Version C for this feature.',10,13,0
 
-ZipError db 0
+SECTION .bss
+ZipError resb 1
+
+SECTION .text
 
 UnZipFile:
 ;    cmp byte[OSPort],1
@@ -4271,7 +4329,9 @@ ZipDelete:
     call Makemode7Table
     ret
 
-tempzip db 0
+SECTION .bss
+tempzip resb 1
+SECTION .text
 
 ZipDeleteRecurse:
     ; Find all directories
@@ -4343,15 +4403,14 @@ ZipDeleteRecurse:
 .notfound
     ret
 
-SPC7110Allocated db 0
+SECTION .data
+
 SPC7110DIRA db 'FEOEZSP7',0
 SPC7110DIRB db 'SMHT-SP7',0
 SDD1DIRA db 'SOCNSDD1',0
 SDD1DIRB db 'SFA2SDD1',0
 SPC7110IndexName db 'index.bin',0
 SPC7110DirEntry db '*.bin',0
-SPC7110CPtr dd 0
-SPC7110CPtr2 dd 0
 NEWSYM SDD1Offset, dd 65536*8
 %ifndef __LINUX__
 NEWSYM SDD1nfname, db '        \_00000-0.bin',0
@@ -4363,13 +4422,21 @@ NEWSYM SPC7110nfname, db '        /      .bin',0
 NEWSYM SDD1ifname, db 'sdd1gfx.idx',0
 NEWSYM SDD1dfname, db 'sdd1gfx.dat',0
 NEWSYM SDD1pfname, db 'sdd1gfx.pat',0
-NEWSYM SPC7110IndexSize, dd 0
-NEWSYM SPC7110Entries, dd 0
 spc7110notfound db 'DECOMPRESSED PACK NOT FOUND',0
 spc7110notfoundb db 'INDEX DATA NOT FOUND',0
-SDD1PatchAddr dd 0
-SDD1PatchOfs dd 0
-SDD1PatchLen dd 0
+
+SECTION .bss
+
+SPC7110Allocated resb 1
+SPC7110CPtr resd 1
+SPC7110CPtr2 resd 1
+NEWSYM SPC7110IndexSize, resd 1
+NEWSYM SPC7110Entries, resd 1
+SDD1PatchAddr resd 1
+SDD1PatchOfs resd 1
+SDD1PatchLen resd 1
+
+SECTION .text
 
 EXTSYM sdd1fname
 
@@ -5111,8 +5178,13 @@ NEWSYM loadfileGUI
 
     jmp near .notwiz4
 
-.romtable times 128 db 0
-.romtableb times 128 db 0
+SECTION .bss
+
+.romtable resb 128
+.romtableb resb 128
+
+SECTION .text
+
 .notwiz4
 
     jmp .skipall
@@ -5290,20 +5362,23 @@ NEWSYM loadfileGUI
     jmp DosExit
 
 SECTION .data
-.multfound db 0
-.first db 0
-.cchar db 0
-.dotpos dd 0
-.curfileofs dd 0
-.filehand dw 0
-.temp db 0
-.fail db 0
 .failop   db 'Error opening file!',13,10,0
 .opened db 'File opened successfully!',13,10,0
 .mult   db 'Multiple file format detected.',13,10,13,10,0
-.maxromspace dd 0
-.curromspace dd 0
-NEWSYM GUIloadfailed, db 0
+
+SECTION .bss
+
+.multfound resb 1
+.first resb 1
+.cchar resb 1
+.dotpos resd 1
+.curfileofs resd 1
+.filehand resw 1
+.temp resb 1
+.fail resb 1
+.maxromspace resd 1
+.curromspace resd 1
+NEWSYM GUIloadfailed, resb 1
 
 SECTION .text
 
@@ -5385,7 +5460,9 @@ NEWSYM convertsram
     call Change_Dir
     ret
 
+SECTION .data
 NEWSYM CSStatus, db '                    TYPE:     CHSUM:OK  ',0
+SECTION .text
 
 NEWSYM showinfogui
     mov esi,[romdata]
@@ -5880,7 +5957,6 @@ NEWSYM showinfo
     ret
 
 SECTION .data
-.memfree times 30 db 0
 .filename  db 'Filename    : ',0
 .frameskip db 'Frame Skip  : ',0
 .percexec  db '% to Exec   : ',0
@@ -5930,8 +6006,12 @@ SECTION .data
 .doh       db 'Cannot detect whether cartridge is HiROM or LoROM.',13,10,'Please use -h/-l',13,10,0
 .intlvd    db 'Image is uninterleaved.',13,10,0
 
-NEWSYM DSP1Type, db 0
-NEWSYM intldone, db 0
+SECTION .bss
+
+.memfree resb 30
+
+NEWSYM DSP1Type, resb 1
+NEWSYM intldone, resb 1
 SECTION .text
 
 NEWSYM CheckROMType
@@ -6371,18 +6451,18 @@ NEWSYM CheckROMType
     call SPC7110Load
     ret
 
-SECTION .data
-NEWSYM SFXEnable, db 0
-NEWSYM C4Enable, db 0
-NEWSYM SPC7110Enable, db 0
-NEWSYM RTCEnable, db 0
-NEWSYM SA1Enable, db 0
-NEWSYM SDD1Enable, db 0
-NEWSYM OBCEnable, db 0
-NEWSYM C4RamR,   dd 0
-NEWSYM C4RamW,   dd 0
-NEWSYM C4Ram,   dd 0
-NEWSYM ROMTypeNOTFound, db 0
+SECTION .bss
+NEWSYM SFXEnable, resb 1
+NEWSYM C4Enable, resb 1
+NEWSYM SPC7110Enable, resb 1
+NEWSYM RTCEnable, resb 1
+NEWSYM SA1Enable, resb 1
+NEWSYM SDD1Enable, resb 1
+NEWSYM OBCEnable, resb 1
+NEWSYM C4RamR,   resd 1
+NEWSYM C4RamW,   resd 1
+NEWSYM C4Ram,   resd 1
+NEWSYM ROMTypeNOTFound, resb 1
 SECTION .text
 
 NEWSYM SetIRQVectors
@@ -6482,8 +6562,9 @@ NEWSYM outofmemfix
     mov dword[MessageOn],0FFFFFFFFh
     ret
 
+SECTION .bss
+NEWSYM yesoutofmemory, resb 1
 SECTION .data
-NEWSYM yesoutofmemory, db 0
 NEWSYM outofmemoryerror, db 'OUT OF MEMORY.',0
 NEWSYM outofmemoryerror2, db 'ROM IS TOO BIG.',0
 SECTION .text
