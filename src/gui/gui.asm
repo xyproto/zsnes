@@ -172,18 +172,15 @@ EXTSYM ModemSendChar
 
 
 
-
 %include "gui/guitools.inc"
-%include "gui/GUIMisc.inc"
-%include "gui/GUIMouse.inc"
-%include "gui/GUIWinDp.inc"
+%include "gui/guimisc.inc"
+%include "gui/guimouse.inc"
+%include "gui/guiwindp.inc"
 %include "gui/guinetpl.inc"
-%include "gui/GUIKeys.inc"
-%include "gui/GUICheat.inc"
-%include "gui/GUICombo.inc"
-%include "gui/GUILoad.inc"
-
-
+%include "gui/guikeys.inc"
+%include "gui/guicheat.inc"
+%include "gui/guicombo.inc"
+%include "gui/guiload.inc"
 
 
 

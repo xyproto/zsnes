@@ -25,12 +25,8 @@ EXTSYM SfxSignZero,SfxnRamBanks,StartSFX,regptr,regptw,sfxramdata,ChangeOps
 EXTSYM SfxPOR,sfxclineloc,UpdatePORSCMR,UpdateCLSR,UpdateSCBRCOLR,SfxAC
 EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,SFXProc
 
-%include "cpu\regs.mac"
-%include "cpu\regsw.mac"
-
-
-
-
+%include "cpu/regs.mac"
+%include "cpu/regsw.mac"
 
 
 %macro AssembleSFXFlags 0

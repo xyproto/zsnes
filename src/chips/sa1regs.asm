@@ -52,14 +52,8 @@ EXTSYM curypos,CurrentExecSA1
 EXTSYM debstop3
 EXTSYM memaccessbankr8sdd1,memtabler8,AddrNoIncr
 
-%include "cpu\regs.mac"
-%include "cpu\regsw.mac"
-
-
-
-
-
-
+%include "cpu/regs.mac"
+%include "cpu/regsw.mac"
 
 
 ALIGN32

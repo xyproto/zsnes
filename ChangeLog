@@ -1,0 +1,7 @@
+04/04/2001  Erik Bourget <ebourg@po-box.mcgill.ca>
+	* made it compile cleanly up to linking on unix machines
+	  (fixed up some filename case problems, backslash->forward 
+	   slash issues)
+	* i don't know if this will break DOS stuff.  I assume it won't
+	  because some files asked for include files with the forward
+	  slash.
