@@ -130,7 +130,7 @@ EXTSYM NoiseData,SoundCompD,Voice0Disable,csounddisable,dssel,spcRamcmp
 EXTSYM cfgecho,Surround,SoundBufEn
     EXTSYM echobuf
     EXTSYM LowPassFilter
-EXTSYM UseCubicSpline
+EXTSYM UseCubicSpline,NoiseDisTemp
 
 NEWSYM DspProcAsmStart
 
@@ -1804,6 +1804,8 @@ BRRDecode:
     inc byte[VoiceNoiseEn+ecx]
 .nofilter2
     cmp byte[filteron],1
+    jne .nofilter
+    cmp byte[NoiseDisTemp+ecx],0
     jne .nofilter
     cmp byte[VoiceNoiseEn+ecx],100
     je .strfilter
