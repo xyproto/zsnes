@@ -163,7 +163,7 @@ int do_extract_currentfile(unzFile uf,
 	}
 	else
 	{
-		const char* write_filename;
+                char* write_filename;
 		int skip=0;
 
 		if ((*popt_extract_without_path)==0)
