@@ -59,6 +59,7 @@ EXTSYM offsetmshl,NextLineCache
 EXTSYM tltype2b
 EXTSYM tltype8b,objwlrpos
 EXTSYM snesinputdefault,cycleinputdevice
+EXTSYM Change_Dir,LoadDrive,LoadDir
 
 ; Process stuff & Cache sprites
 
