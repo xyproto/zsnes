@@ -136,12 +136,19 @@ extern "C"
    DWORD CurMode=-1;
 }
 
+void DDrawError(){
+   char message1[256];
+
+   sprintf(message1,"Error drawing to the screen\nMake sure the device is not being used by another process \0");
+   MessageBox (NULL, message1, "DirectDraw Error" , MB_ICONERROR );
+}
+
 void DrawScreen()
 {
    if(DD_CFB==NULL) return;
    if(DD_Primary->Blt(&rcWindow,DD_CFB,NULL,DDBLT_WAIT,NULL)!=DD_OK)
    {
-      // Error!!!
+      DDrawError();
 	}
 }
 
@@ -601,7 +608,8 @@ ReInitSound()
 
       default:
          wfx.nSamplesPerSec = 11025;
-   }
+         SoundBufferSize=1024*2;
+  }
 
    if(StereoSound==1)
    {
@@ -834,7 +842,7 @@ void DInputError(){
    char message1[256];
 
    sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 7.0a or higher located at www.microsoft.com/directx \0");
-   MessageBox (NULL, message1, "Init Error" , MB_ICONERROR );
+   MessageBox (NULL, message1, "DirectInput Error" , MB_ICONERROR );
 }
 
 bool InitInput()
@@ -845,7 +853,7 @@ bool InitInput()
    if(FAILED(hr=DirectInputCreate(hInst,DIRECTINPUT_VERSION,&DInput,NULL)))
    {
       sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 7.0a or higher located at www.microsoft.com/directx \0");
-      MessageBox (NULL, message1, "Init Error" , MB_ICONERROR );
+      MessageBox (NULL, message1, "DirectInput Error" , MB_ICONERROR );
 
       switch(hr)
       {
@@ -2301,7 +2309,7 @@ void SetMouseY(int Y)
 
 void ZsnesPage()
 {
-     ShellExecute(NULL, NULL, "http://www.zsnes.com", NULL, NULL, 0);
+     ShellExecute(NULL, NULL, "http://www.zsnes.com/", NULL, NULL, 0);
 }
 
 

@@ -21,7 +21,7 @@
 #work for me (command line too long)
 
 #put the correct path to your directx sdk here
-DXDIR=c:\dxvcsdk
+DXDIR=f:\mssdk
 
 CHIPDIR=chips
 CPUDIR=cpu
@@ -30,13 +30,14 @@ GUIDIR=gui
 VIDEODIR=video
 WINDIR=win
 OBJDIR=obj
+ZIPDIR=zip
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.obj ${CHIPDIR}/fxemu2.obj ${CHIPDIR}/dsp1proc.obj\
 	 ${CHIPDIR}/fxemu2b.obj ${CHIPDIR}/fxemu2c.obj ${CHIPDIR}/fxtable.obj\
 	 ${CHIPDIR}/sa1proc.obj ${CHIPDIR}/sa1regs.obj ${CHIPDIR}/dsp1emu.obj
 
 CPUOBJ=${CPUDIR}/addrni.obj ${CPUDIR}/dma.obj ${CPUDIR}/dsp.obj ${CPUDIR}/dspproc.obj\
-	${CPUDIR}/execute.obj ${CPUDIR}/irq.obj ${CPUDIR}/memory.obj \
+	${CPUDIR}/execute.obj ${CPUDIR}/irq.obj ${CPUDIR}/memory.obj\
 	${CPUDIR}/spc700.obj ${CPUDIR}/stable.obj ${CPUDIR}/table.obj\
 	${CPUDIR}/tableb.obj ${CPUDIR}/tablec.obj 
 
@@ -47,7 +48,7 @@ VIDEOBJ=${VIDEODIR}/makev16b.obj ${VIDEODIR}/makev16t.obj ${VIDEODIR}/makevid.ob
 	${VIDEODIR}/mode716e.obj ${VIDEODIR}/mode716t.obj ${VIDEODIR}/mode7.obj\
 	${VIDEODIR}/mode7ext.obj ${VIDEODIR}/mv16tms.obj ${VIDEODIR}/newg162.obj\
 	${VIDEODIR}/newgfx16.obj ${VIDEODIR}/newgfx2.obj ${VIDEODIR}/newgfx.obj\
-        ${VIDEODIR}/m716text.obj ${VIDEODIR}/2xsaiw.obj \
+        ${VIDEODIR}/m716text.obj ${VIDEODIR}/2xsaiw.obj\
 	${VIDEODIR}/procvid.obj
 
 WINOBJ=${WINDIR}/copyvwin.obj ${WINDIR}/winintrf.obj ${WINDIR}/winlink.obj\
@@ -55,15 +56,18 @@ WINOBJ=${WINDIR}/copyvwin.obj ${WINDIR}/winintrf.obj ${WINDIR}/winlink.obj\
 	${WINDIR}/zfilew.obj
 
 WINDOSOBJ=${DOSDIR}/debug.obj ${DOSDIR}/joy.obj ${DOSDIR}/modemrtn.obj ${DOSDIR}/vesa2.obj\
-	${DOSDIR}/initvid.obj ${DOSDIR}/sw.obj ${DOSDIR}/gppro.obj ${DOSDIR}/vesa12.obj
+	${DOSDIR}/initvid.obj ${DOSDIR}/sw.obj ${DOSDIR}/gppro.obj ${DOSDIR}/vesa12.obj\
+        ${DOSDIR}/zsipx.obj
 
-PREOBJ=${OBJDIR}/unzip.obj ${OBJDIR}/zzip.obj ${DOSDIR}/zsipx.obj
+PREOBJ=
+
+ZIPOBJ=${ZIPDIR}/zzip.obj ${ZIPDIR}/unzip.obj
 
 MAINOBJ=cfgload.obj endmem.obj fixsin.obj init.obj ui.obj vcache.obj water.obj
 	
 
 
-OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${WINDOSOBJ}
+OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ} ${WINDOSOBJ}
 LIBS=
 CFLAGS=/c
 ASM=nasm
@@ -96,6 +100,8 @@ ${WINDIR}/zipxw.obj: ${WINDIR}/zipxw.c
 ${WINDIR}/zloaderw.obj: ${WINDIR}/zloaderw.c
 ${WINDIR}/ztcp.obj: ${WINDIR}/ztcp.c
 ${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
+${ZIPDIR}/unzip.obj: ${ZIPDIR}/unzip.c ${ZIPDIR}/unzip.h 
+${ZIPDIR}/zzip.obj: ${ZIPDIR}/zzip.c ${ZIPDIR}/unzip.h 
 ${DOSDIR}/initvid.o:${DOSDIR}/initvid.asm macros.mac
 ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
 ${DOSDIR}/zsipx.o: ${DOSDIR}/zsipx.asm
