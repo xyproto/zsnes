@@ -17,7 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <iostream>
 #include <sstream>
 #include "jma.h"
 using namespace std;
@@ -29,6 +28,7 @@ using namespace std;
 namespace JMA
 {
   const char jma_magic[] = { 'J', 'M', 'A', 0, 'N' };
+  const unsigned int jma_header_length = 5;  
   const unsigned char jma_version = 0;
   const unsigned char jma_null = 0;
   
@@ -141,9 +141,9 @@ namespace JMA
     }
 
     //Header is "JMA\0N"
-    unsigned char header[5];
-    stream.read((char *)header, 5);
-    if (memcmp(jma_magic, header, 5))
+    unsigned char header[jma_header_length];
+    stream.read((char *)header, jma_header_length);
+    if (memcmp(jma_magic, header, jma_header_length))
     {
       throw(JMA_BAD_FILE);
     }
