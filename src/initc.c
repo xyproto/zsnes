@@ -1063,6 +1063,8 @@ extern unsigned char  cycpbl;
 extern unsigned char  cycpblt;
 extern unsigned char  opexec268;
 extern unsigned char  opexec358;
+extern unsigned char  opexec268b;
+extern unsigned char  opexec358b;
 extern unsigned char  opexec268cph;
 extern unsigned char  opexec358cph;
 extern unsigned char  DSP1Type;
@@ -1309,8 +1311,8 @@ void Setper2exec()
 {
   opexec268 = (unsigned char)(opexec268*(per2exec*0.01));
   opexec358 = (unsigned char)(opexec358*(per2exec*0.01));
-  opexec268cph = (unsigned char)(opexec268cph*(per2exec*0.01));
-  opexec358cph = (unsigned char)(opexec358cph*(per2exec*0.01));
+  opexec268b = (unsigned char)(opexec268b*(per2exec*0.01));
+  opexec358b = (unsigned char)(opexec358b*(per2exec*0.01));
 }
 
 extern char FEOEZPath[1024];
