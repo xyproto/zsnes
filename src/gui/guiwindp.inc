@@ -973,6 +973,29 @@ GUIChoseSaveText1 db 'SELECT SAVE SLOT :',0
 GUIChoseSaveText2 db '-',0
 SECTION .text
 
+%macro DGOptnsBorderBox 3
+    mov dword[GUIWincol],148+10
+    cmp byte[cwindrawn],1
+    jne %%noone
+    mov dword[GUIWincol],148+5
+%%noone
+    cmp byte[cwindrawn],0
+    jne %%nozero
+    mov dword[GUIWincol],148
+%%nozero
+mov dl,[GUIWincol]
+    DrawGUIWinBox %1,%2+1,%3,%2+18,%3,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox %1,%2,%3+1,%2-1,%3+5,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox %1,%2+1,%3+1,%2+18,%3+6,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox %1,%2+1,%3+1,%2+19,%3+5,dl
+%endmacro
+
 %macro DGOptnsDrawBox 3
     mov eax,dword[GUIwinposx+9*4]
     mov ebx,dword[GUIwinposy+9*4]
@@ -5130,7 +5153,59 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8+52,189,GUIGameOptnsTextR
     GUIOuttextwin2 9,8+160,179,GUIGameOptnsTextU
     GUIOuttextwin2 9,136,189,GUIGameOptnsTextV
-
+	;Draw Borders
+    DGOptnsBorderBox 9,26,22
+    DGOptnsBorderBox 9,71,22
+    DGOptnsBorderBox 9,116,22
+    DGOptnsBorderBox 9,161,22
+    DGOptnsBorderBox 9,206,22
+    DGOptnsBorderBox 9,77,39
+    DGOptnsBorderBox 9,77,48
+    DGOptnsBorderBox 9,77,57
+    DGOptnsBorderBox 9,77,66
+    DGOptnsBorderBox 9,77,75
+    DGOptnsBorderBox 9,77,84
+    DGOptnsBorderBox 9,77,93
+%ifndef __MSDOS__
+    DGOptnsBorderBox 9,177,39
+%endif
+    DGOptnsBorderBox 9,177,48
+    DGOptnsBorderBox 9,177,57
+    DGOptnsBorderBox 9,177,66
+    DGOptnsBorderBox 9,177,75
+    DGOptnsBorderBox 9,177,84
+    DGOptnsBorderBox 9,177,93
+    DGOptnsBorderBox 9,26,110
+    DGOptnsBorderBox 9,71,110
+    DGOptnsBorderBox 9,116,110
+    DGOptnsBorderBox 9,161,110
+    DGOptnsBorderBox 9,26,119
+    DGOptnsBorderBox 9,71,119
+    DGOptnsBorderBox 9,116,119
+    DGOptnsBorderBox 9,161,119
+    DGOptnsBorderBox 9,116,130
+    DGOptnsBorderBox 9,161,130
+    DGOptnsBorderBox 9,206,130
+    DGOptnsBorderBox 9,26,139
+    DGOptnsBorderBox 9,71,139
+    DGOptnsBorderBox 9,116,139
+    DGOptnsBorderBox 9,161,139
+    DGOptnsBorderBox 9,206,139
+    DGOptnsBorderBox 9,26,148
+    DGOptnsBorderBox 9,71,148
+    DGOptnsBorderBox 9,116,148
+    DGOptnsBorderBox 9,161,148
+    DGOptnsBorderBox 9,32,157
+    DGOptnsBorderBox 9,89,157
+    DGOptnsBorderBox 9,146,157
+    DGOptnsBorderBox 9,33,177
+    DGOptnsBorderBox 9,90,177
+    DGOptnsBorderBox 9,141,177
+    DGOptnsBorderBox 9,199,177
+    DGOptnsBorderBox 9,32,187
+    DGOptnsBorderBox 9,109,187
+    DGOptnsBorderBox 9,185,187
+    
     ; Draw black boxes
     DGOptnsDrawBox 27,23,[KeyBGDisble0]
     DGOptnsDrawBox 27+45,23,[KeyBGDisble1]
@@ -7209,6 +7284,3 @@ NEWSYM GUIMenuItem, db 'GAME  ',0
             db 25,0
 
 SECTION .text
-
-
-
