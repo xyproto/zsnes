@@ -1732,6 +1732,7 @@ section .text
     or eax,0FFFFFFF0h
 %%noneg
     shl eax,cl
+    and eax,0fffffffeh
     mov edx,eax
 
     mov eax,[prev1]
@@ -1748,33 +1749,18 @@ section .text
     and eax,0fffffffeh
     add edx,eax
 
-    cmp dword [filter0],488
-    jne %%notfilter2
-
-    mov eax,[prev0]
-    movsx eax,ax
-    mov [prev1],eax
-    mov eax,edx
-    and eax,0fffffffeh
-    mov [prev0],eax
-    jmp %%skipclamp
-
-%%notfilter2
     mov eax,[prev0]
     mov [prev1],eax
-    cmp edx,-32768
+    cmp edx,-65536
     jnl %%notless
-    mov edx,-32768
-    mov byte[filteron],1
+    mov edx,-65536
 %%notless
-    cmp edx,32767
+    cmp edx,65535
     jng %%notgreater
-    mov edx,32767
-    mov byte[filteron],1
+    mov edx,65535
 %%notgreater
     movsx edx,dx
     mov [prev0],edx
-%%skipclamp
 %endmacro
 
 %macro ProcessDynamicLowPass 0
