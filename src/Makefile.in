@@ -210,8 +210,9 @@ ${JMADIR}/winout.o: ${JMADIR}/winout.cpp
 ${JMADIR}/zsnesjma.o: ${JMADIR}/zsnesjma.cpp ${JMADIR}/zsnesjma.h ${JMADIR}/jma.h
 
 install:
-	@INSTALL@ -m 0755 @ZSNESEXE@ ${DESTDIR}/@prefix@/bin
-	@INSTALL@ -m 0644 linux/zsnes.1 ${DESTDIR}/@prefix@/man/man1
+	mkdir -p ${DESTDIR}/@prefix/bin ${DESTDIR}/@prefix@/man/man1
+	@INSTALL@ -D -m 0755 @ZSNESEXE@ ${DESTDIR}/@prefix@/bin
+	@INSTALL@ -D -m 0644 linux/zsnes.1 ${DESTDIR}/@prefix@/man/man1
 
 uninstall:
 	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man5/zsnes.5
