@@ -2478,8 +2478,6 @@ NEWSYM execloop
 SECTION .data ;ALIGN=32
 ALIGN32
 NEWSYM ExecExitOkay, db 1
-
-SECTION .data ;ALIGN=32
 NEWSYM JoyABack, dd 0
 NEWSYM JoyBBack, dd 0
 NEWSYM JoyCBack, dd 0
