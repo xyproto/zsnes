@@ -101,16 +101,17 @@ static void UnlockSurface(void)
 extern DWORD AddEndBytes;
 extern DWORD NumBytesPerLine;
 extern unsigned char *WinVidMemStart;
-extern unsigned char MMXSupport;
 extern unsigned char NGNoTransp;
 extern unsigned char newengen;
 extern unsigned short resolutn;
 extern void copy640x480x16bwin(void);
+extern void ClearWin16 (void);
+extern void DrawWin256x224x16(void);
+extern void DrawWin320x240x16(void);
 
-/* FIXME: Figure out how to make these locals */
-static DWORD ScreenPtr;
-static DWORD SurfBufD;
-static DWORD pitch;
+DWORD ScreenPtr;
+DWORD SurfBufD;
+DWORD pitch;
 
 void sw_clearwin()
 {
@@ -118,22 +119,7 @@ void sw_clearwin()
     SurfBufD = (DWORD) surface->pixels;
 
     LockSurface();
-    __asm__ __volatile__ (
-	"	xorl %%eax, %%eax\n"				\
-	"	xorl %%ebx, %%ebx\n"				\
-        "Blank2:\n"						\
-	"	movl %1, %%ecx\n"				\
-	"	rep\n"						\
-	"	stosw\n"					\
-	"	movl %1, %%edx\n"				\
-	"	addl %0, %%edi\n"				\
-	"	shll $1, %%edx\n"				\
-	"	addl $1, %%ebx\n"				\
-	"	subl %%edx, %%edi\n"				\
-	"	cmpl %2, %%ebx\n"				\
-	"	jne Blank2\n"					\
-    : : "g" (pitch), "g" (SurfaceX), "g" (SurfaceY), "D" (SurfBufD)
-    : "cc", "memory", "eax", "ebx", "edx", "ecx");
+    ClearWin16();
     UnlockSurface();
 }
 
@@ -165,144 +151,9 @@ void sw_drawwin()
     }
 
     if (SurfaceX == 256 && SurfaceY == 224) {
-	if (MMXSupport){
-	    __asm__ __volatile__ (
-		"	xorl %%eax, %%eax\n"				\
-		"Copying3:\n"						\
-		"	movl $32, %%ecx\n"				\
-		"CopyLoop:\n"						\
-		"	movq (%%esi), %%mm0\n"				\
-		"	movq 8(%%esi), %%mm1\n"				\
-		"	movq %%mm0, (%%edi)\n"				\
-		"	movq %%mm1, 8(%%edi)\n"				\
-		"	addl $16, %%esi\n"				\
-		"	addl $16, %%edi\n"				\
-		"	decl %%ecx\n"					\
-		"	jnz CopyLoop\n"					\
-		"	incl %%eax\n"					\
-		"	addl %0, %%edi\n"				\
-		"	subl $512, %%edi\n"				\
-		"	addl $64, %%esi\n"				\
-		"	cmpl $223, %%eax\n"				\
-		"	jne Copying3\n"					\
-		
-		"	xorl %%eax, %%eax\n"				\
-		"	movl $128, %%ecx\n"				\
-		"	rep\n"						\
-		"	stosl\n"					\
-		"	emms\n"						\
-	    : : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD) : "cc", "memory", "eax", "ecx");
-	} else {
-	    __asm__ __volatile__ (
-		"	xorl %%eax, %%eax\n"				\
-		"Copying:\n"						\
-		"	movl $128, %%ecx\n"				\
-		"	rep\n"						\
-		"	movsl\n"					\
-		"	incl %%eax\n"					\
-		"	addl %0, %%edi\n"				\
-		"	subl $512, %%edi\n"				\
-		"	addl $64, %%esi\n"				\
-		"	cmpl $223, %%eax\n"				\
-		"	jne Copying\n"					\
-		"	xorl %%eax, %%eax\n"				\
-		"	movl $128, %%ecx\n"				\
-		"	rep\n"						\
-		"	stosl\n"					\
-	    : : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD)
-	    : "cc", "memory", "eax", "ecx");
-	}
+	    DrawWin256x224x16();
     } else if (SurfaceX == 320 && SurfaceY == 240) {
-	if (MMXSupport) {
-	    __asm__ __volatile__ (
-		"	xor %%eax, %%eax\n"				\
-		"	xor %%ebx, %%ebx\n"				\
-		"Blank1MMX:\n"						\
-		"	mov $160, %%ecx\n"				\
-		"	rep\n"						\
-		"	stosl\n"					\
-		"	subl $160, %%edi\n"				\
-		"	addl %0, %%edi\n"				\
-		"	addl $1, %%ebx\n"				\
-		"	cmpl $8, %%ebx\n"				\
-		"	jne Blank1MMX\n"				\
-		"	xor %%ebx, %%ebx\n"				\
-		"	pxor %%mm0, %%mm0\n"				\
-		"Copying2MMX:\n"					\
-		"	mov $4, %%ecx\n"				\
-		"MMXLoopA:\n"						\
-		"	movq %%mm0, 0(%%edi)\n"				\
-		"	movq %%mm0, 8(%%edi)\n"				\
-		"	addl $16, %%edi\n"				\
-		"	dec %%ecx\n"					\
-		"	jnz MMXLoopA\n"					\
-		"	mov $32, %%ecx\n"				\
-		"MMXLoopB:\n"						\
-		"	movq 0(%%esi), %%mm1\n"				\
-		"	movq 8(%%esi), %%mm2\n"				\
-		"	movq %%mm1, 0(%%edi)\n"				\
-		"	movq %%mm2, 8(%%edi)\n"				\
-		"	addl $16, %%esi\n"				\
-		"	addl $16, %%edi\n"				\
-		"	decl %%ecx\n"					\
-		"	jnz MMXLoopB\n"					\
-		"	mov $4, %%ecx\n"				\
-		"MMXLoopC:\n"						\
-		"	movq %%mm0, 0(%%edi)\n"				\
-		"	movq %%mm0, 8(%%edi)\n"				\
-		"	addl $16, %%edi\n"				\
-		"	decl %%ecx\n"					\
-		"	jnz MMXLoopC\n"					\
-		"	incl %%ebx\n"					\
-		"	addl %0, %%edi\n"				\
-		"	subl $640, %%edi\n"				\
-		"	addl $64, %%esi\n"				\
-		"	cmpl $223, %%ebx\n"				\
-		"	jne Copying2MMX\n"				\
-
-		"	movl $128, %%ecx\n"				\
-		"	rep\n"						\
-		"	stosl\n"					\
-		"	emms\n"						\
-	    : : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD)
-	    : "cc", "memory", "eax", "ebx", "ecx");
-	} else {
-	    __asm__ __volatile__ (
-		"	xorl %%eax, %%eax\n"				\
-		"	xorl %%ebx, %%ebx\n"				\
-		"Blank1:\n"						\
-		"	movl $160, %%ecx\n"				\
-		"	rep\n"						\
-		"	stosl\n"					\
-		"	subl $640, %%edi\n"				\
-		"	addl %0, %%edi\n"				\
-		"	addl $1, %%ebx\n"				\
-		"	cmpl $8, %%ebx\n"				\
-		"jne Blank1\n"						\
-		"	xor %%ebx, %%ebx\n"				\
-		"Copying2:\n"						\
-		"	movl $16, %%ecx\n"				\
-		"	rep\n"						\
-		"	stosl\n"					\
-		"	movl $128, %%ecx\n"				\
-		"	rep\n"						\
-		"	movsl\n"					\
-		"	movl $16, %%ecx\n"				\
-		"	rep\n"						\
-		"	stosl\n"					\
-		"	incl %%ebx\n"					\
-		"	addl %0, %%edi\n"				\
-		"	subl $640, %%edi\n"				\
-		"	addl $64, %%esi\n"				\
-		"	cmpl $223, %%ebx\n"				\
-		"	jne Copying2\n"					\
-
-		"	movl $128, %%ecx\n"				\
-		"	rep\n"						\
-		"	stosl\n"					\
-	    : : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD)
-	    : "cc", "memory", "eax", "ebx", "ecx");
-	}
+	    DrawWin320x240x16();
     } else if(SurfaceX == 512 && SurfaceY == 448) {
 	AddEndBytes = pitch-1024;
 	NumBytesPerLine = pitch;
