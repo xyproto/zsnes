@@ -20,7 +20,10 @@
 EXTSYM AddSub256,InitVesa2,cbitmode,cvidmode,makepal
 EXTSYM scanlines,selcA000,vesa2_bits,vesa2_bpos,vesa2_clbit
 EXTSYM vesa2_gpos,vesa2_rpos,vesa2_usbit,vesa2_x,vesa2_y
-EXTSYM vesa2selec,InitVesa12,videotroub,cscopymodeq
+EXTSYM vesa2selec,InitVesa12,videotroub
+%ifdef __MSDOS__
+EXTSYM cscopymodeq
+%endif
 
 NEWSYM InitVidAsmStart
 
