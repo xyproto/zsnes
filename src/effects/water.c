@@ -1,5 +1,5 @@
 /*
-Copyright (C) 1997-2003 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
+Copyright (C) 1997-2004 ZSNES Team ( zsknight@zsnes.com / _demo_@zsnes.com )
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
