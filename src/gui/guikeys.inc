@@ -1158,6 +1158,7 @@ GUIVideoKeys:
     je .nohiresmode7
     xor byte[Mode7HiRes16b],1
 .nohiresmode7
+%ifndef __MSDOS__
     cmp dh,'M'
     jne .nomotionblur
     xor ebx,ebx
@@ -1165,6 +1166,7 @@ GUIVideoKeys:
     je .nomotionblur
     xor byte[MotionBlur],1
 .nomotionblur
+%endif
     cmp dh,'B'
     jne .nobilinearfilter
     xor ebx,ebx

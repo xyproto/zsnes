@@ -2251,13 +2251,15 @@ DisplayGUIVideoClick:
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUIM7VID+ebx],0
-    je .nocheckboxtm7
+    je .nocheckboxm7
     GUIClickCButton5 11,173,byte[Mode7HiRes16b],1
-.nocheckboxtm7
+.nocheckboxm7
+%ifndef __MSDOS__
     cmp byte[GUIMBVID+ebx],0
-    je .nocheckboxtmb
+    je .nocheckboxmb
     GUIClickCButton5 11,173,byte[MotionBlur],1
-.nocheckboxtmb
+.nocheckboxmb
+%endif
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUIHSVID+ebx],0

@@ -1742,10 +1742,12 @@ DisplayGUIVideo:
     je .notext8
     GUIOuttextwin2u 5,26,178,GUIVideoText8b,0
 .notext8
+%ifndef __MSDOS__
     cmp byte[GUIMBVID+eax],0
     je .notext82
     GUIOuttextwin2u 5,26,178,GUIVideoText8b2,0
 .notext82
+%endif
     GUIOuttextwin2u 5,26,188,GUIVideoText8c,0
 %ifndef __LINUX__
     GUIOuttextwin2u 5,130,188,GUIVideoText9,0
@@ -1847,10 +1849,12 @@ DisplayGUIVideo:
     je .notext8b
     GUIOuttextwin2 5,25,177,GUIVideoText8b
 .notext8b
+%ifndef __MSDOS__
     cmp byte[GUIMBVID+eax],0
     je .notext8b2
     GUIOuttextwin2 5,25,177,GUIVideoText8b2
 .notext8b2
+%endif
     GUIOuttextwin2 5,25,187,GUIVideoText8c
 %ifndef __LINUX__
     GUIOuttextwin2 5,129,187,GUIVideoText9
@@ -1976,6 +1980,7 @@ DisplayGUIVideo:
 .nocheckbox1m72
     GUIDisplayIconWin 5,11,173,[GUITemp]
 .nocheckboxm72
+%ifndef __MSDOS__
     cmp byte[GUIMBVID+eax],0
     je .nocheckboxmb2
     mov dword[GUITemp],GUIIconDataCheckBoxUC
@@ -1985,13 +1990,14 @@ DisplayGUIVideo:
 .nocheckboxmb
     GUIDisplayIconWin 5,11,173,[GUITemp]
 .nocheckboxmb2
+%endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[GrayscaleMode],0
     je .nocheckboxm73
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckboxm73
     GUIDisplayIconWin 5,11,183,[GUITemp]
-%ifndef __LINUX__s
+%ifndef __LINUX__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[vsyncon],0
     je .nocheckboxm74
