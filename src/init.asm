@@ -2014,6 +2014,10 @@ NEWSYM init65816
     je .notrainer
     cmp word[eax+2],8080h
     je .notrainer
+    cmp word[eax+2],89h
+    je .notrainer
+    cmp word[eax+2],8089h
+    je .notrainer
 .yestrainer
     mov dword[ramsize],32768
     mov dword[ramsizeand],32767
