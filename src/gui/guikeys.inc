@@ -1058,7 +1058,7 @@ GUIGUIOptnsKeys:
     jne .guioptn12
     xor byte[MouseWheel],1
 .guioptn12
-    cmp dh,'R'
+    cmp dh,'P'
     jne .guioptn13
     xor byte[TrapMouseCursor],1
 .guioptn13
