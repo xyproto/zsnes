@@ -255,7 +255,7 @@ int ConnectServer(char *servername, unsigned int port)
 {
    char blah[255];
    int retval,i;
-   LPHOSTENT host1;
+   LPHOSTENT host1=NULL;
    //MK:unused 2003/08/31
    //unsigned long addr1;
    int yesip;
@@ -409,7 +409,7 @@ int WaitForServer(){
   int i;
 
   if (UDPEnable){
-    if (i=GetData(1,blah)){
+    if ((i=GetData(1,blah))){
       if ((i==1) && (blah[0]==1))
         return(1);
     }
