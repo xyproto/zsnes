@@ -6392,6 +6392,10 @@ NEWSYM CheckROMType
     mov dword[memtablew8+0B0h*4+ecx],DSP1Write8b3F
     mov dword[memtabler16+0B0h*4+ecx],DSP1Read16b3F
     mov dword[memtablew16+0B0h*4+ecx],DSP1Write16b3F
+    mov dword[memtabler8+0E0h*4+ecx],DSP1Read8b3F
+    mov dword[memtablew8+0E0h*4+ecx],DSP1Write8b3F
+    mov dword[memtabler16+0E0h*4+ecx],DSP1Read16b3F
+    mov dword[memtablew16+0E0h*4+ecx],DSP1Write16b3F
     add ecx,4
     cmp ecx,16*4
     jne .dsp1loop

@@ -66,21 +66,21 @@ SECTION .text
 NEWSYM DSP1Read8b3F
     test ecx,8000h
     jnz .dsp1area
+    cmp bl,0E0h
+    je .dsp1area
     jmp regaccessbankr8
 .dsp1area
-    cmp ecx,0C000h
-    jae .doC000
-    mov al,080h
-    ret
-.doC000
     mov al,80h
     ret
 
 NEWSYM DSP1Read16b3F
     test ecx,8000h
     jnz .dsp1area
+    cmp bl,0E0h
+    je .dsp1area
     jmp regaccessbankr16
 .dsp1area
+    or ecx,08000h
     cmp ecx,0C000h
     jae .doC000
     cmp byte[DSP1RLeft],0
@@ -199,6 +199,8 @@ NEWSYM DSP1Read16b
 NEWSYM DSP1Write8b3F
     test ecx,8000h
     jnz .dsp1area
+    cmp bl,0E0h
+    je .dsp1area
     jmp regaccessbankw8
 .dsp1area
     call DSP1Write8b
@@ -207,6 +209,8 @@ NEWSYM DSP1Write8b3F
 NEWSYM DSP1Write16b3F
     test ecx,8000h
     jnz .dsp1area
+    cmp bl,0E0h
+    je .dsp1area
     jmp regaccessbankw16
 .dsp1area
     call DSP1Write16b
