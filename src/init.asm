@@ -1466,6 +1466,25 @@ NEWSYM headerhack
 
     mov esi,[romdata]
     add esi,07FC0h
+    cmp dword[esi],'EURO'
+    jne .noteuropeanprimegoal
+    cmp dword[esi+4],'PEAN'
+    jne .noteuropeanprimegoal
+    cmp dword[esi+8],' PRI'
+    jne .noteuropeanprimegoal
+    cmp dword[esi+12],'ME G'
+    jne .noteuropeanprimegoal
+    mov al,0h
+    mov edi,spcRam
+    mov ecx,65472
+    rep stosb
+    ret
+
+
+.noteuropeanprimegoal
+
+    mov esi,[romdata]
+    add esi,07FC0h
     cmp dword[esi],'CYBE'
     jne .notcyberknight2
     cmp dword[esi+4],'R KN'
@@ -1473,6 +1492,7 @@ NEWSYM headerhack
     cmp dword[esi+8],'IGHT'
     jne .notcyberknight2
     cmp dword[esi+12],' 2  '
+    jne .notcyberknight2
     mov byte[cycpb268],75
     mov byte[cycpb358],77
     mov byte[cycpbl2],75
