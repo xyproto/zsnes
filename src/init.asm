@@ -85,7 +85,7 @@ EXTSYM pal16bxcl,ram7fa,regptra,regptwa,srama,vidmemch2,vidmemch4
 EXTSYM vidmemch8,vcache2b,vcache4b,vcache8b,vram,wramdata
 EXTSYM wramdataa
 EXTSYM fname,fnames,GetCurDir
-EXTSYM GUIcurrentdir,extractzip,PrintStr
+EXTSYM GUIcurrentdir,PrintStr
 ;STUB DDOI
 ;EXTSYM GUIcurrentdir, PrintStr
 EXTSYM GUIsmcfind,GUIsfcfind,GUIswcfind,GUIfigfind,GUIfind058,GUIfind078,GUIfindBIN
@@ -3415,7 +3415,7 @@ NEWSYM loadfileGUI
     popad
 
     cmp dword[curromspace],0
-    je .failed
+    je near .failed
 
 
     ;dec dword[curromspace]
