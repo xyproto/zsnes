@@ -5362,7 +5362,7 @@ GUIGUIAboutTextF db 'read ',39,'LICENSE.TXT',39,0
 %else
 GUIGUIAboutTextF db 'read ',39,'LICENSE',39,0
 %endif
-GUIGUIAboutTextG db 'thoroughly before using it.',0
+GUIGUIAboutTextG db 'thoroughly before doing so.',0
 
 SECTION .text
 
