@@ -6,7 +6,6 @@ Windows Port:
 - OpenGL, or Direct3D support would be nice
 - Use another (free) compiler for the windows version (cygwin?)
 - Auto-detect high/low latency connections and adjust settings accordingly
-- Add support to use filters in a 32-bit windowed mode
 
 Compatibility
 - Game not working - Guikuden 1 (and some more)
