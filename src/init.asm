@@ -6047,6 +6047,8 @@ NEWSYM CheckROMType
     call GenerateBank0TableSA1
     call SetAddressingModesSA1
     ; open .srm file
+    cmp byte[CHIPSRAM],1
+    jne .nosa1init
     mov edx,fnames+1
     call Open_File
     jc .nosa1init
