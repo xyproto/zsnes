@@ -22,7 +22,8 @@
 MovieRecord:
     mov byte[GUICBHold],0
     cmp byte[MovieProcessing],0
-    jne .noreset
+    jne near .dontrecord
+    ;jne .noreset
     mov dword[MovieCounter],0
 .noreset
     ; check if movie exists already
