@@ -16,13 +16,8 @@
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-#include <stdio.h>
-#include <time.h>
-#include <zlib.h>
-#ifdef ZDOS
-#include <dos.h>
-#endif
 
+#include "gblhdr.h"
 
 #define DWORD unsigned int
 #define BYTE unsigned char

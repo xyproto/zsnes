@@ -80,10 +80,7 @@
 //     only be done if the requested packet is within the past 64 packets.
 //   In-game chat will be moved to a separate packet in TCP/IP
 
-#include <stdio.h>
-#include <time.h>
-#include <windows.h>
-#include <winsock.h>
+#include "../gblhdr.h"
 
 int RecvPtr;
 int RecvPtr2;

@@ -15,19 +15,7 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-#include <stdio.h>
-#ifdef __FreeBSD__
-#include <sys/types.h>
-#endif
-#include <sys/mman.h>
-#include <limits.h>
-#include <unistd.h>
-
-#ifdef __QNXNTO__ 
-/* QNX6 has getpagesize() commented out in unistd.h, 
-however it's a static value that we can just define */ 
-#define getpagesize() 4096 
-#endif 
+#include "gblhdr.h"
 
 extern void GuiAsmStart();
 extern void GuiAsmEnd();

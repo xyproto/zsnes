@@ -80,27 +80,7 @@
 //     only be done if the requested packet is within the past 64 packets.
 //   In-game chat will be moved to a separate packet in TCP/IP
 
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#ifdef __LINUX__
-#include <sys/time.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <unistd.h>
-#include <sys/ioctl.h>
-#ifndef __FreeBSD__
-#include <asm/ioctls.h> // for FIONREAD
-#else
-#include <sys/filio.h> // for FIONREAD
-#endif
-#else
-#include <windows.h>
-#include <winsock.h>
-#endif
+#include "gblhdr.h"
 
 #ifdef __LINUX__
 #define closesocket(A) close(A)

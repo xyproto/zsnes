@@ -19,11 +19,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 Initial Linux Command Line Parsing by EvilTypeGuy (drevil@warpcore.org) April 2001
 */
 
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
+#include "gblhdr.h"
 
 #define STUB_FUNCTION fprintf(stderr,"STUB: %s at " __FILE__ ", line %d, thread %d\n",__FUNCTION__,__LINE__,getpid())
 #define DWORD unsigned long

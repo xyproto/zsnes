@@ -76,7 +76,12 @@ You'll also need :
                                    or go to the page above
                                    
 Then to build the executable, go to the src directory and type:
-make -f makefile.linux
+./configure && gmake && gmake install
+
+Note: you require root to install zsnes to the the default (/usr/local/*) 
+directory
+
+Also Note: libpng (optional) needs to be recent, or zsnes will not use it 
 
 You may also want to compress the zsnes executable with upx
 (http://upx.sourceforge.net), it will divide its size by 10.

@@ -54,6 +54,7 @@ VCACHE.ASM      ; Performs tile caching and also vframe initialization stuff
 MENU.ASM        ; F1 Menu routines
 ENDMEM.ASM      ; Where those large arrays go
 ZFILE.C         ; File Access Routines
+GBLHDR.H        ; Global Header Stuff
 
 ; ZSNES GUI Stuff
 GUI.ASM         ; Main GUI file

@@ -16,7 +16,7 @@
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-#include <windows.h>
+#include "../gblhdr.h"
 
 void ipx_init(){};
 void sendpacket(){};

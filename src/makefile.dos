@@ -59,7 +59,7 @@ MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${ZIPOBJ}
 LIBS=-lz -lgcc -lm -lpng
-CFLAGS=-D__MSDOS__ -O2
+CFLAGS=-D__MSDOS__ -I. -Os -ffast-math -fomit-frame-pointer -fschedule-insns2 -s 
 ASM=nasm
 ASMFLAGS=-f coff -D__MSDOS__
 CC=gcc

@@ -15,13 +15,7 @@
 //along with this program; if not, write to the Free Software
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <math.h>
-#include <memory.h>
-
+#include "gblhdr.h"
 #include "fixsin.h"
 
 extern char *vidbuffer;
