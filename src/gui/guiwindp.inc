@@ -4523,7 +4523,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,9+90,26,GUIGameOptnsText4
     mov byte[GUIGameOptnsText4+2],'4'
     GUIOuttextwin2 9,9+135,26,GUIGameOptnsText4
-    GUIOuttextwin2 9,9,34,GUIGameOptnsText5
+    GUIOuttextwin2 9,9+180,26,GUIGameOptnsText5
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 9,6,44,GUIGameOptnsTextC
@@ -4631,7 +4631,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8+90,25,GUIGameOptnsText4
     mov byte[GUIGameOptnsText4+2],'4'
     GUIOuttextwin2 9,8+135,25,GUIGameOptnsText4
-    GUIOuttextwin2 9,8,33,GUIGameOptnsText5
+    GUIOuttextwin2 9,8+180,25,GUIGameOptnsText5
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 9,5,43,GUIGameOptnsTextC
@@ -4724,7 +4724,7 @@ DisplayGameOptns:
     DGOptnsDrawBox 27+45,24,[KeyBGDisble1]
     DGOptnsDrawBox 27+45*2,24,[KeyBGDisble2]
     DGOptnsDrawBox 27+45*3,24,[KeyBGDisble3]
-    DGOptnsDrawBox 27,32,[KeySprDisble]
+    DGOptnsDrawBox 27+45*4,24,[KeySprDisble]
     DGOptnsDrawBox 78,52,[KeyResetAll]
     DGOptnsDrawBox 78,60,[KeyExtraEnab]
     DGOptnsDrawBox 78,68,[KeyNewGfxSwt]
