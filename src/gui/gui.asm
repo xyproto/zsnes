@@ -1175,7 +1175,7 @@ NEWSYM GUIhandler9h
     mov ds,ax
 
     xor ebx,ebx
-    in al,60H                 ; get keyboard scan code
+    in al,60h                 ; get keyboard scan code
     cmp al,42
     jne .no42
     cmp byte[GUIskipnextkey42],0

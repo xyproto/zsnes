@@ -2182,7 +2182,7 @@ NEWSYM handler9h
     mov ax,[cs:dssel]
     mov ds,ax
     xor ebx,ebx
-    in al,60H                 ; get keyboard scan code
+    in al,60h                 ; get keyboard scan code
     cmp al,42
     jne .no42
     cmp byte[skipnextkey42],0
@@ -2228,8 +2228,8 @@ NEWSYM handler9h
     mov ah,al
     or al,80h
     out 61h,al
-    mov al,20H                ; turn off interrupt mode
-    out 20H,al
+    mov al,20h                ; turn off interrupt mode
+    out 20h,al
     pop ebx                          ; Pop registers off
     pop eax                          ; stack in correct
     pop ds
