@@ -1517,10 +1517,10 @@ SECTION .text
 NEWSYM DosExit ; Terminate Program
 %ifdef __LINUX__
 	call LinuxExit
-%else
+%endif
 %ifdef __WIN32__
 	call OSExit
-	%else
+%else
 	jmp .nodeallocate
 
 	mov ebx,memfreearray
@@ -1539,6 +1539,5 @@ NEWSYM DosExit ; Terminate Program
 	call init18_2hz
 	mov    ax,4c00h            ;terminate
 	int    21h
-%endif
 %endif
 NEWSYM UIAsmEnd
