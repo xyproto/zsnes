@@ -1,6 +1,81 @@
 What's New :
 ------------
 
+v1.35
+       - Fixed triple buffering corruption on some VESA 2.x video modes,
+         a very nasty bug which accidentally slipped into version 1.337.
+         [stainless] (DOS only)
+       - Added full scanlines to 320x256x8b Mode-X.  Uses the same timings
+         as the 256x256x8b full scanlines, so it may or may not work
+         correctly depending on your video card.
+         [stainless] (DOS only)
+       - Linked the EAGLE engine to the filtered GUI option and fixed
+         guassian interpolation which has been broken since version 1.71b.
+         [stainless, kode54] (DOS only/all ports)        
+       - Cleaned up the 320x480x8b and 320x240x16b blitters and added
+         MMX support to 320x480x8b for a nice speed increase.
+         [stainless] (DOS only)        
+       - Added 640x400 alternatives to 512x384 video modes for video
+         cards which don't have them.  Added a small screen option to
+         the 512x384 and 640x400 video modes with MMX support.  Also
+         added a "wide screen" option to 640x400 video modes.
+         [stainless] (DOS only)        
+       - Added a full screen option to the 320x480 video modes, along
+         with a basic interpolation to 320x240x16b and 320x480x16b
+         Full screen in 320x480x16b has full/25%/50% scanlines and
+         interpolation has full scanlines.
+         [stainless] (DOS only)        
+       - Added experimental 800x600 video modes.  Fixed 'n' command-line
+         option to allow toggling of 25%/50% in addition to full, also
+         cleaned up the command-line options message and the config file.
+         Noticed some video modes were way off-centered, fixed that
+         too, should now be perfect.
+         [stainless] (DOS only)        
+       - Fixed printing of MMX enabled message on the GUI background if
+         you checked MMX SUPPORT under CONFIG -> OPTIONS.  Also, if you
+         check MMX SUPPORT by using the keyboard shortcut it will now
+         attempt to actually detect MMX before enabling it. :)
+         [stainless, pagefault] (DOS only)        
+       - Added several new goodies to the GUI, which include a force
+         8-bit sound option (fixes a few cards under WinMe), a second
+         water effect, and an experimental smoke effect.
+         [stainless] (DOS only/all ports)        
+       - [_TRAC_] commented, unified, and cleaned up the Mode-Q and Mode-X
+         blitters.  I did a major overhaul to the DOS video code, I cleaned
+         up and reorganized it alot, and there seem to be no problems as of
+         yet. [stainless, TRAC] (DOS only)        
+       - Fixed a bug in sprite priority rotation. (fix damage in FFMQ) [TRAC]        
+       - Fixed long delay between battles and fixed flickering colours
+         on map in Front Mission. [pagefault]        
+       - Fixed hang when picking up apples in Equinox. [pagefault]        
+       - Fixed keyon bug in DSP code, fixes sounds in Flaskback 3
+         Language Edition (Thanks neviski) [_Demo_]        
+       - Fixed "disco colours" in NBA Hangtime when the ball drops.
+         [pagefault]
+       - Fixed an NMI issue with register $4212, fixes hang in Cu-On-Pa,
+         Bubsy and others. [pagefault]        
+       - Fixed a mode 4 bug in the new graphics engine that was causing
+         the title screen in The Lost Vikings to be scrambled. [pagefault]        
+       - Added support for Super System arcade system, set DIP switches
+         in add-on's menu in GUI. Games MUST be zipped in order to load.
+         [pagefault]
+       - Added special support for Earthworm Jim 2 sound effects. [_Demo_]        
+       - Added hack for Deaetonosama Apareitiban. [_Demo_]        
+       - Fixed super scope position reading. [_Demo_]        
+       - Modified a few timing things. [_Demo_]        
+       - Fixed some 65816 instructions in processor emulation mode. [_Demo_]        
+       - Added special timing for Grand Prix 3. [_Demo_]        
+       - Modified sound decoding another time (helps various noise
+         sounds like DQ6). [_Demo_]        
+       - Modified joypad reading for VS Collection. [_Demo_]        
+       - Special modification for Bahamut Lagoon and Clay Fighter to
+         delay write to the hdma register. (those games need dma delay
+         implemented) [_Demo_]        
+       - Many changes for ports [theoddone33, Thorsten Glaser, Wilbern Cobb]        
+       - Command line support in windows port [Statmat]        
+       - Lots of other minor fixes.
+
+
 v1.337 - This release is dedicated to zsKnight and his family
 
        All ports
