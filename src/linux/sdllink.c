@@ -1670,6 +1670,7 @@ void initwinvideo(void)
 		FirstVid = 0;
 		
 		InitSound();
+		InitInput();
 	}
 	if(((PrevStereoSound!=StereoSound)||(PrevSoundQuality!=SoundQuality)))
 	      ReInitSound();	
