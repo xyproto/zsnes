@@ -1326,6 +1326,7 @@ NEWSYM CacheCheckSkip,     db 0
 NEWSYM HIRQSkip,     db 0
 NEWSYM ClearScreenSkip, db 0
 NEWSYM hirqmode2, db 0
+NEWSYM ENVDisable, db 0
 SECTION .text
 
 ; hacks :
@@ -1428,6 +1429,18 @@ NEWSYM headerhack
     mov dword[WindowDisables],0
     mov byte[ClearScreenSkip],0
     mov byte[hirqmode2],0
+    mov byte[ENVDisable],0
+
+    mov esi,[romdata]
+    add esi,0FFC0h
+    cmp dword[esi],'EMER'
+    jne .notemeralddragon
+    cmp dword[esi+4],'ALD '
+    jne .notemeralddragon
+    cmp dword[esi+8],'DRAG'
+    jne .notemeralddragon
+    mov byte[ENVDisable],1
+.notemeralddragon
 
     mov esi,[romdata]
     add esi,7FC0h
@@ -1435,6 +1448,13 @@ NEWSYM headerhack
     jne .notffmq
     mov byte[hirqmode2],1
 .notffmq
+
+;    mov byte[cycpb268],145
+;    mov byte[cycpb358],147
+;    mov byte[cycpbl2],145
+;    mov byte[cycpblt2],145
+;    mov byte[cycpbl],145
+;    mov byte[cycpblt],145
 
     mov esi,[romdata]
     add esi,0FFC0h

@@ -128,7 +128,7 @@ EXTSYM DSPMem
 EXTSYM InterSound
 EXTSYM NoiseData,SoundCompD,Voice0Disable,csounddisable,dssel,spcRamcmp
 EXTSYM cfgecho,Surround,SoundBufEn
-EXTSYM echobuf
+EXTSYM echobuf,ENVDisable
 EXTSYM LowPassFilter
 EXTSYM UseCubicSpline,NoiseDisTemp
 
@@ -4096,8 +4096,11 @@ WaveIndex  times 8 dd 0
     mov dword[Voice0IncNumber+%1*4],0
     mov byte [Voice0Status+%1],0
     mov byte [Voice0State+%1],0
+    cmp byte[ENVDisable],1
+    je %%noSkipStuff
     cmp byte[CNetType],20
     je %%SkipStuff
+%%noSkipStuff
     mov byte [DSPMem+08h+%1*10h],0
     mov byte [DSPMem+09h+%1*10h],0
     or byte [DSPMem+7Ch],%3
@@ -4107,8 +4110,11 @@ WaveIndex  times 8 dd 0
     mov dword[Voice0EnvInc+%1*4],0
     mov dword[Voice0IncNumber+%1*4],0
     mov byte [Voice0State+%1],0
+    cmp byte[ENVDisable],1
+    je %%noSkipStuff2
     cmp byte[CNetType],20
     je %%SkipStuff2
+%%noSkipStuff2
     mov byte [DSPMem+08h+%1*10h],0
     mov byte [DSPMem+09h+%1*10h],0
     or byte [DSPMem+7Ch],%3
@@ -4231,6 +4237,8 @@ WaveIndex  times 8 dd 0
 ;    mov [DSPMem+09h+%1*10h],ah
     mov al,[Voice0EnvInc+%1*4+2]
     mov [DSPMem+08h+%1*10h],al
+    cmp byte[ENVDisable],1
+    je %%clearenv
     cmp byte[CNetType],20
     je %%clearenv
     cmp byte[MovieProcessing],0
@@ -4253,6 +4261,8 @@ WaveIndex  times 8 dd 0
 ;    mov [DSPMem+09h+%1*10h],ah
     mov al,[Voice0EnvInc+%1*4+2]
     mov [DSPMem+08h+%1*10h],al
+    cmp byte[ENVDisable],1
+    je %%clearenvsi
     cmp byte[CNetType],20
     je %%clearenvsi
     cmp byte[MovieProcessing],0
@@ -4275,6 +4285,8 @@ WaveIndex  times 8 dd 0
 ;    mov [DSPMem+09h+%1*10h],ah
     mov al,[Voice0EnvInc+%1*4+2]
     mov [DSPMem+08h+%1*10h],al
+    cmp byte[ENVDisable],1
+    je %%clearenvi
     cmp byte[CNetType],20
     je %%clearenvi
     cmp byte[MovieProcessing],0
@@ -4297,6 +4309,8 @@ WaveIndex  times 8 dd 0
 ;    mov [DSPMem+09h+%1*10h],ah
     mov al,[Voice0EnvInc+%1*4+2]
     mov [DSPMem+08h+%1*10h],al
+    cmp byte[ENVDisable],1
+    je %%clearenv2
     cmp byte[CNetType],20
     je %%clearenv2
     cmp byte[MovieProcessing],0
@@ -4525,8 +4539,11 @@ WaveIndex  times 8 dd 0
 ;    mov [Voice0Prev1+%1*4],eax
     jmp %%Decode1Block
 %%EndSample
+    cmp byte[ENVDisable],1
+    je %%noSkipStuff4
     cmp byte[CNetType],20
     je %%SkipStuff4
+%%noSkipStuff4
     or byte [DSPMem+7Ch],%3
     mov byte [DSPMem+08h+%1*10h],0
 %%SkipStuff4
