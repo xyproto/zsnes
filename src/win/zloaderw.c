@@ -379,6 +379,8 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
       free(argv);
    }
    // END FIX - STATMAT - 22/01/02   
+
+  return(0);
 }
 
 int my_atoi(char *nptr)
