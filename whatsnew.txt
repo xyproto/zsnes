@@ -39,6 +39,8 @@ v1.337 - This release is dedicated to zsKnight and his family
          again [_Demo_]
        - Fixed Neugier and Battle Grand Prix freezing after a certain point
          in the game. [_Demo_]
+       - Fixed bug in rom header information and checksum status display,
+         fixes Tales of Phantasia and others [pagefault]
        - Fixed Marko's Magical Football copy protection [pagefault]
        - Fixed problem with Filtered GUI enabled and parts of game screen
          would show up in GUI menus [pagefault]
