@@ -1683,12 +1683,6 @@ NEWSYM StartGUI
     mov byte[OkaySC],1
 .noxmas
     mov byte[lastmouseholded],1
-    mov eax,[welcome+8]
-    mov [GUIGUIAboutText1+8],eax
-    mov al,[welcome+12]
-    mov [GUIGUIAboutText1+12],al
-    mov al,[welcome+7]
-    mov [GUIGUIAboutText1+7],al
     cmp dword[GUIwinposx+15*4],0
     jne .nomoviemenufix
     mov dword[GUIwinposx+15*4],50
@@ -1699,10 +1693,6 @@ NEWSYM StartGUI
     mov word[resolutn],224
 
     mov byte[GUIPalConv],0
-    mov byte[GUIGUIAboutText1],'Z'-86
-    add byte[GUIGUIAboutText1],86
-    mov byte[GUIGUIAboutText1+3],'E'-89
-    add byte[GUIGUIAboutText1+3],89
     mov byte[MousePRClick],1
 
     pushad

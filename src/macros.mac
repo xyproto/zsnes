@@ -20,6 +20,8 @@ bits 32
 section .text
 ; Zsnes required macros
 
+%define ZVERSION '1.337'
+
 %ifdef __LINUX__
 %imacro newsym 1
   GLOBAL %1

@@ -138,8 +138,6 @@ NEWSYM	outofmemory
 SECTION .data
 NEWSYM mydebug, db '',13,10,0
 NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,10,0
-%define ZVERSION '337'
-;%define ZBETA    0
 
 ; Line added by Peter Santing
 NEWSYM vibradetect
@@ -150,7 +148,7 @@ NEWSYM vibradetect
 NEWSYM welcome
 
 
-                 db 'ZSNES v1.',ZVERSION,' beta (c) 1997-2002, ZSNES Team (zsKnight & _Demo_)',13,10
+                 db 'ZSNES v',ZVERSION,' (c) 1997-2002, ZSNES Team (zsKnight & _Demo_)',13,10
 %ifdef __LINUX__
                  db 'Compiled under NASM and GCC. (*nix)',13,10,13,10
 %else

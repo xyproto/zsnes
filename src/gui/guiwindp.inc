@@ -16,8 +16,6 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-
-
 ; Window Display Routines
 ; Last button value used = 65
 
@@ -2975,7 +2973,7 @@ CheatSearching:
     jmp DisplayChtSrcRes
 
 CheatSearchingComp:
-    ; Comparitive search
+    ; Comparative search
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 13,6,16,GUICSrcTextE
@@ -3450,7 +3448,7 @@ GUICSrcText6 db 'DEC (BASE 10)',0
 GUICSrcText7 db 'HEX (BASE 16)',0
 GUICSrcText8 db 'SELECT SEARCH TYPE:',0
 GUICSrcText9 db 'EXACT VALUE SEARCH',0
-GUICSrcTextA db 'COMPARITIVE SEARCH',0
+GUICSrcTextA db 'COMPARATIVE SEARCH',0
 GUICSrcTextB db 'START',0
 GUICSrcTextD db 'ENTER VALUE:',0
 GUICSrcTextE db 'SELECT COMPARISON:',0
@@ -5103,30 +5101,14 @@ GUIGUIOptnsTextM db 'FILTERED GUI',0
 GUIGUIOptnsTextN db 'TRAP MOUSE CURSOR',0
 
 DisplayGUIAbout:
-;    cmp byte[OSPort],3
-;    jne .notwin32
-;.notwin32
-    mov byte[GUIGUIAboutText1+1],'S'+136
-    mov byte[GUIGUIAboutText1+2],'N'-26
-    add byte[GUIGUIAboutText1+2],26
-    sub byte[GUIGUIAboutText1+1],136
-    mov byte[GUIGUIAboutText1+4],'S'-97
     GUIDrawWindowBox 11,GUIAboutDisp
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUItextcolor],211
 .zero3
-    add byte[GUIGUIAboutText1+4],97
-;    cmp byte[OSPort],3
-;    je near .win32
 %ifndef __LINUX__
     DrawGUIButton 11,90,50,175,60,GUIGUIAboutText8,65,0,0
-%else
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2 11,6,126,GUIGUIAboutText8
-    add byte[GUItextcolor],15
-    GUIOuttextwin2 11,5,125,GUIGUIAboutText8
 %endif
     sub byte[GUItextcolor],15
     GUIOuttextwin2 11,6,16,GUIGUIAboutText1
@@ -5175,7 +5157,7 @@ DisplayGUIAbout:
     GUIOuttextwin2 11,5,75,GUIGUIAboutText5
     ret
 
-GUIGUIAboutText1 db 'ZSNES V0.Agh  ',0
+GUIGUIAboutText1 db 'ZSNES V',ZVERSION,0
 GUIGUIAboutText2 db 'CODED BY :  ',0
 GUIGUIAboutText3 db '    ZSKNIGHT',0
 GUIGUIAboutText4 db '    _DEMO_',0
@@ -5191,7 +5173,7 @@ GUIGUIAboutText7 db 'DOS VERSION',0
 %elifdef __WIN32__
 GUIGUIAboutText7 db 'WIN PORT V1.06',0
 %elifdef __LINUX__
-GUIGUIAboutText7 db 'LINUX PORT V0.37',0
+GUIGUIAboutText7 db 'LINUX VERSION',0
 %endif
 
 GUIGUIAboutText8 db 'WWW.ZSNES.COM',0
