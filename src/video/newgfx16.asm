@@ -2575,10 +2575,10 @@ NEWSYM drawsprng16b
     mov edi,[CSubWinScr]
 .main2
     test byte[FillSubScr+ebx],1
-    jnz .nodo
+    jnz .nowinsprite
     cmp byte[edi+ebx+4*256],0
     jne near drawsprngw16b
-.nodo
+.nowinsprite
     test byte[FillSubScr+ebx],1
     jz .main
     test byte[BGMS1+ebx*2],10h
