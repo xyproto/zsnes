@@ -1112,11 +1112,6 @@ SECTION .data
           db '  -n #    Enable scanlines (when available)',13,10
           db '          Where # is: 1 = full, 2 = 25%, 3 = 50%',13,10
 %endif
-%ifdef __LINUX__
-          db '  -of     Enable FPU copy   ',13,10
-%else
-;          db '  -o      Enable FPU copy   ',13,10
-%endif
           db '  -om     Enable MMX support (when available)',13,10
           db '  -p #    Percentage of instructions to execute [50..120]',13,10
           db '  -r #    Set Sampling Sound Blaster Sampling Rate & Bit :',13,10
