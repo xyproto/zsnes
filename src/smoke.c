@@ -181,7 +181,8 @@ void DrawSmoke (void)
             }
             else
             {
-                vidbuffer [(y * SCRW) + x] = (pixel | pixel2);
+                vidbuffer [(y * SCRW) + x] =
+                    (((pixel + pixel2) / 2) + 1);
             }
         }
     }
