@@ -2028,6 +2028,29 @@ NEWSYM initsnes
 
     mov esi,[romdata]
     add esi,7FC0h
+    cmp dword[esi],'MEGA'
+    jne .notmmx
+    cmp dword[esi+4],'MAN '
+    jne .notmmx
+    cmp dword[esi+8],'X   '
+    jne .notmmx
+    mov esi,[romdata]
+    cmp byte[esi+824Ah],0F0h
+    jne .mmxa
+    mov byte[esi+824Ah],080h
+.mmxa
+    cmp byte[esi+21FC3h],0F0h
+    jne .mmxb
+    mov byte[esi+21FC3h],080h
+.mmxb
+    cmp byte[esi+2241Bh],0F0h
+    jne .mmxc
+    mov byte[esi+2241Bh],080h
+.mmxc
+.notmmx
+
+    mov esi,[romdata]
+    add esi,7FC0h
     cmp word[esi],'BS'  ; 7FFFFFA
     je near .bslorom
 
