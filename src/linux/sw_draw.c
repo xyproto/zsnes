@@ -95,9 +95,12 @@ extern unsigned char NGNoTransp;
 extern unsigned char newengen;
 extern unsigned short resolutn;
 extern void copy640x480x16bwin(void);
+extern void hq2x_16b(void);
 extern void ClearWin16 (void);
 extern void DrawWin256x224x16(void);
 extern void DrawWin320x240x16(void);
+
+extern char hqFilter;
 
 DWORD ScreenPtr;
 DWORD SurfBufD;
@@ -148,12 +151,20 @@ void sw_drawwin()
 	AddEndBytes = pitch-1024;
 	NumBytesPerLine = pitch;
 	WinVidMemStart = (void*)SurfBufD;
-	copy640x480x16bwin();
+	if (hqFilter) {
+		hq2x_16b();
+	} else {
+		copy640x480x16bwin();
+	}
     } else if (SurfaceX == 640 && SurfaceY == 480) {
 	AddEndBytes = pitch-1024;
 	NumBytesPerLine = pitch;
 	WinVidMemStart = (void*) (SurfBufD + 16*640*2 + 64*2);
-	copy640x480x16bwin();
+	if (hqFilter) {
+		hq2x_16b();
+	} else {
+		copy640x480x16bwin();
+	}
     }
     UnlockSurface();
 }

@@ -25,6 +25,10 @@ typedef enum
 { FALSE = 0, TRUE = !FALSE }
 BOOL;
 
+// FUNCTIONS
+extern void hq2x_16b(void);
+extern char hqFilter;
+
 // VIDEO VARIABLES
 extern unsigned char cvidmode;
 extern SDL_Surface *surface;
@@ -37,6 +41,7 @@ static unsigned short *glvidbuffer = 0;
 static GLuint gltextures[4];
 static int gltexture256, gltexture512;
 static int glfilters = GL_NEAREST;
+static int glscanready = 0;
 extern Uint8 En2xSaI, scanlines;
 extern Uint8 BilinearFilter;
 extern Uint8 FilteredGUI;
@@ -48,11 +53,12 @@ extern unsigned char curblank;
 void gl_clearwin();
 void UpdateVFrame(void);
 
+void gl_scanlines(void);
+
 int gl_start(int width, int height, int req_depth, int FullScreen)
 {
 	Uint32 flags =
 		SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_OPENGL;
-	GLubyte scanbuffer[256];
 	int i;
 
 	flags |= (cvidmode == 16 ? SDL_RESIZABLE : 0);
@@ -90,26 +96,19 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 
 	/*
 	 * gltextures[0]: 2D texture, 256x224
-	 * gltextures[1]: 2D texture, Left half of 512x224
-	 * gltextures[2]: 2D texture, Right half of 512x224
+	 * gltextures[1]: 2D texture, 512x224
 	 * gltextures[3]: 1D texture, 256 lines of alternating alpha
 	 */
 	glGenTextures(4, gltextures);
-
-	/* Initialize the scanline texture (alternating opaque/transparent) */
-	for (i = 0; i < 256; i += 2)
-	{
-		scanbuffer[i] = 0xff;
-		scanbuffer[i + 1] = 0;
+	for (i = 0; i < 3; i++) {
+		glBindTexture(GL_TEXTURE_2D, gltextures[i]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glfilters);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glfilters);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	}
 
-	glBindTexture(GL_TEXTURE_1D, gltextures[3]);
-	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-	glPixelStorei(GL_UNPACK_ROW_LENGTH, 256);
-	glTexImage1D(GL_TEXTURE_1D, 0, GL_LUMINANCE_ALPHA, 256, 0, GL_ALPHA,
-		     GL_UNSIGNED_BYTE, scanbuffer);
+	if (scanlines) gl_scanlines();
 
 	return TRUE;
 }
@@ -145,48 +144,65 @@ static void gl_drawspan(int hires, int start, int end)
 {
 	int i, j;
 
+	switch (hires)
+	{
+		case 0:
+			break;
+		case 3:
+		case 7:
+			hires = 2;
+			break;
+		default:
+			hires = 1;
+			break;
+	}
+
 	if (hires)
 	{
-		if (!gltexture512)
+		if (hires != gltexture512)
 		{
 			unsigned short *vbuf1 = &((unsigned short *) vidbuffer)[16];
 			unsigned short *vbuf2 = &((unsigned short *) vidbuffer)[75036 * 2 + 16];
 			unsigned short *vbuf = &glvidbuffer[0];
 
-			for (j = 0; j < 224; j++)
+			if (hires>1) // mode 7
 			{
-				for (i = 0; i < 256; i++)
+				for (j = 224; j--;)
 				{
-					*vbuf++ = *vbuf1++;
-					*vbuf++ = *vbuf2++;
+					for (i = 256; i--;)
+						*vbuf++ = *vbuf1++;
+					for (i = 256; i--;)
+						*vbuf++ = *vbuf2++;
+					vbuf1 += 32;
+					vbuf2 += 32;
 				}
-				vbuf1 += 32;
-				vbuf2 += 32;	// skip the two 16-pixel-wide columns
+				glBindTexture(GL_TEXTURE_2D, gltextures[1]);
+				glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 512, 0,
+					     GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
+					     glvidbuffer);
+
+				gltexture512 = 2;
 			}
+			else
+			{
+				for (j = 224; j--;)
+				{
+					for (i = 256; i--;)
+					{
+						*vbuf++ = *vbuf1++;
+						*vbuf++ = *vbuf2++;
+					}
+					vbuf1 += 32;
+					vbuf2 += 32;	// skip the two 16-pixel-wide columns
+				}
 
-			glBindTexture(GL_TEXTURE_2D, gltextures[1]);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glfilters);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glfilters);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-			glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-			glPixelStorei(GL_UNPACK_ROW_LENGTH, 512);
-			glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
-				     GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
-				     glvidbuffer + 512);
+				glBindTexture(GL_TEXTURE_2D, gltextures[1]);
+				glTexImage2D(GL_TEXTURE_2D, 0, 3, 512, 256, 0,
+					     GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
+					     glvidbuffer);
 
-			glBindTexture(GL_TEXTURE_2D, gltextures[2]);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glfilters);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glfilters);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-			glPixelStorei(GL_UNPACK_SKIP_PIXELS, 256);
-			glPixelStorei(GL_UNPACK_ROW_LENGTH, 512);
-			glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
-				     GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
-				     glvidbuffer + 512);
-
-			gltexture512 = 1;
+				gltexture512 = 1;
+			}
 		}
 
 		glBindTexture(GL_TEXTURE_2D, gltextures[1]);
@@ -194,23 +210,11 @@ static void gl_drawspan(int hires, int start, int end)
 			glTexCoord2f(0.0f, (224.0 / 256.0) * (start / 224.0));
 			glVertex2f(-1.0f, (112 - start) / 112.0);
 			glTexCoord2f(1.0f, (224.0 / 256.0) * (start / 224.0));
-			glVertex2f(0.0f, (112 - start) / 112.0);
-			glTexCoord2f(1.0f, (224.0 / 256.0) * (end / 224.0));
-			glVertex2f(0.0f, (112 - end) / 112.0);
-			glTexCoord2f(0.0f, (224.0 / 256.0) * (end / 224.0));
-			glVertex2f(-1.0f, (112 - end) / 112.0);
-		glEnd();
-
-		glBindTexture(GL_TEXTURE_2D, gltextures[2]);
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, (224.0 / 256.0) * (start / 224.0));
-			glVertex2f(0.0f, (112 - start) / 112.0);
-			glTexCoord2f(1.0f, (224.0 / 256.0) * (start / 224.0));
 			glVertex2f(1.0f, (112 - start) / 112.0);
 			glTexCoord2f(1.0f, (224.0 / 256.0) * (end / 224.0));
 			glVertex2f(1.0f, (112 - end) / 112.0);
 			glTexCoord2f(0.0f, (224.0 / 256.0) * (end / 224.0));
-			glVertex2f(0.0f, (112 - end) / 112.0);
+			glVertex2f(-1.0f, (112 - end) / 112.0);
 		glEnd();
 	}
 	else
@@ -218,15 +222,15 @@ static void gl_drawspan(int hires, int start, int end)
 		glBindTexture(GL_TEXTURE_2D, gltextures[0]);
 		if (!gltexture256)
 		{
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glfilters);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glfilters);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 			glPixelStorei(GL_UNPACK_SKIP_PIXELS, 16);
 			glPixelStorei(GL_UNPACK_ROW_LENGTH, 288);
+
 			glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
 				     GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
 				     ((unsigned short *) vidbuffer) + 288);
+
+			glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+			glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 
 			gltexture256 = 1;
 		}
@@ -270,87 +274,37 @@ void gl_drawwin()
 		glfilters = GL_NEAREST;
 	}
 
-	if (En2xSaI && SurfaceX != 256)
+	if (SurfaceX >= 512 && (hqFilter || En2xSaI))
 	{
-		/* We have to use copy640x480x16bwin for 2xSaI */
 		AddEndBytes = 0;
 		NumBytesPerLine = 1024;
 		WinVidMemStart = (void *) glvidbuffer;
-		copy640x480x16bwin();
 
-		/* Display 4 256x256 quads for the 512x448 buffer */
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, glfilters);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, glfilters);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		if (hqFilter) {
+			hq2x_16b();
+		} else {
+			copy640x480x16bwin();
+		}
 
-		/* Upper left quad */
-		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, 512);
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
-			     GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer);
+		/* Display 1 512x448 quad for the 512x448 buffer */
+		glBindTexture(GL_TEXTURE_2D, gltextures[1]);
+		glTexEnvi(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, GL_DECAL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 512, 512, 0,
+			        GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer);
+
+		glDisable (GL_DEPTH_TEST);
+		glDisable (GL_LIGHTING);
+		glDisable (GL_BLEND);
 
 		glBegin(GL_QUADS);
 			glTexCoord2f(0.0f, 0.0f);
 			glVertex3f(-1.0f, 1.0f, -1.0f);
 			glTexCoord2f(1.0f, 0.0f);
-			glVertex3f(0.0f, 1.0f, -1.0f);
-			glTexCoord2f(1.0f, (224.0 / 256.0));
-			glVertex3f(0.0f, 0.0f, -1.0f);
-			glTexCoord2f(0.0f, (224.0 / 256.0));
-			glVertex3f(-1.0f, 0.0f, -1.0f);
-		glEnd();
-
-		/* Upper right quad */
-		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, 512);
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
-			     GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
-			     glvidbuffer + 256);
-
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f);
-			glVertex3f(0.0f, 1.0f, -1.0f);
-			glTexCoord2f(1.0f, 0.0f);
 			glVertex3f(1.0f, 1.0f, -1.0f);
-			glTexCoord2f(1.0f, (224.0 / 256.0));
-			glVertex3f(1.0f, 0.0f, -1.0f);
-			glTexCoord2f(0.0f, (224.0 / 256.0));
-			glVertex3f(0.0f, 0.0f, -1.0f);
-		glEnd();
-
-		/* Lower left quad */
-		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, 512);
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
-			     GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
-			     glvidbuffer + 512 * 224);
-
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f);
-			glVertex3f(-1.0f, 0.0f, -1.0f);
-			glTexCoord2f(1.0f, 0.0f);
-			glVertex3f(0.0f, 0.0f, -1.0f);
-			glTexCoord2f(1.0f, (224.0 / 256.0));
-			glVertex3f(0.0f, -1.0f, -1.0f);
-			glTexCoord2f(0.0f, (224.0 / 256.0));
-			glVertex3f(-1.0f, -1.0f, -1.0f);
-		glEnd();
-
-		/* Lower right quad */
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
-			     GL_RGB, GL_UNSIGNED_SHORT_5_6_5,
-			     glvidbuffer + 512 * 224 + 256);
-
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f);
-			glVertex3f(0.0f, 0.0f, -1.0f);
-			glTexCoord2f(1.0f, 0.0f);
-			glVertex3f(1.0f, 0.0f, -1.0f);
-			glTexCoord2f(1.0f, (224.0 / 256.0));
+			glTexCoord2f(1.0f, 448.0f / 512.0f);
 			glVertex3f(1.0f, -1.0f, -1.0f);
-			glTexCoord2f(0.0f, (224.0 / 256.0));
-			glVertex3f(0.0f, -1.0f, -1.0f);
+			glTexCoord2f(0.0f, 448.0f / 512.0f);
+			glVertex3f(-1.0f, -1.0f, -1.0f);
 		glEnd();
 	}
 	else
@@ -364,7 +318,7 @@ void gl_drawwin()
 		gltexture256 = gltexture512 = 0;
 
 		lasthires = SpecialLine[1];
-		for (i = 1; i < 222; i++)
+		for (i = 0; i < 224; i++)
 		{
 			if (SpecialLine[i + 1])
 			{
@@ -385,7 +339,9 @@ void gl_drawwin()
 				lasthires_line = i;
 			}
 		}
-		gl_drawspan(lasthires, lasthires_line, i);
+
+		if (i - lasthires_line > 1)
+			gl_drawspan(lasthires, lasthires_line, i);
 
 		/*
 		 * This is here rather than right outside this if because the
@@ -399,14 +355,13 @@ void gl_drawwin()
 			glDisable(GL_TEXTURE_2D);
 			glEnable(GL_BLEND);
 
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			if (scanlines != glscanready) gl_scanlines();
+
+			glBlendFunc(GL_DST_COLOR, GL_ZERO);
 			glBindTexture(GL_TEXTURE_1D, gltextures[3]);
-			glColor4f(1.0f, 1.0f, 1.0f,
-				  scanlines == 1 ? 1.0f : (scanlines ==
-							   2 ? 0.25f : 0.50f));
+			glBegin(GL_QUADS);
 			for (i = 0; i < SurfaceY; i += 256)
 			{
-				glBegin(GL_QUADS);
 				glTexCoord1f(0.0f);
 				glVertex3f(-1.0f, (SurfaceY - i * 2.0) / SurfaceY, -1.0f);
 				glTexCoord1f(0.0f);
@@ -415,12 +370,32 @@ void gl_drawwin()
 				glVertex3f(1.0f, (SurfaceY - (i + 256) * 2.0) / SurfaceY, -1.0f);
 				glTexCoord1f(1.0f);
 				glVertex3f(-1.0f, (SurfaceY - (i + 256) * 2.0) / SurfaceY, -1.0f);
-				glEnd();
 			}
+			glEnd();
 
 			glDisable(GL_BLEND);
 			glEnable(GL_TEXTURE_2D);
 		}
 	}
 	SDL_GL_SwapBuffers();
+}
+
+void gl_scanlines(void)
+{
+	GLubyte scanbuffer[256][4];
+	int i, j = scanlines==1 ? 0 : (scanlines==2 ? 192 : 128);
+
+	for (i = 0; i < 256; i += 2)
+	{
+		scanbuffer[i][0] = scanbuffer[i][1] = scanbuffer[i][2] = j;
+		scanbuffer[i][3] = 0xFF;
+	}
+
+	glBindTexture(GL_TEXTURE_1D, gltextures[3]);
+	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA, 256, 0, GL_RGBA,
+		     GL_UNSIGNED_BYTE, scanbuffer);
+
+	glscanready = scanlines;
 }

@@ -68,6 +68,11 @@ DWORD SMode=0;
 DWORD DSMode=0;
 DWORD prevHQMode=-1;
 
+extern DWORD converta;
+extern DWORD *BitConv32Ptr;
+extern DWORD *RGBtoYUVPtr;
+extern unsigned char hqFilter;
+
 extern BYTE GUIWFVID[];
 extern BYTE GUISMODE[];
 extern BYTE GUIDSMODE[];
@@ -545,14 +550,14 @@ int InitSound(void)
 
 	wanted.samples = (freqtab[SoundQuality] * wanted.channels)/32;
 
-	//printf("InitSound: %dhz, requesting %d sized buffer, " , freqtab[SoundQuality], wanted.samples);
+	printf("InitSound: %dhz, requesting %d sized buffer, " , freqtab[SoundQuality], wanted.samples);
 	
 	if (wanted.samples < 256) { wanted.samples = 256; } 
 	else if(wanted.samples < 512) { wanted.samples = 512; }
 	else if(wanted.samples < 1024) { wanted.samples = 1024; }
 	else { wanted.samples = 2048; } // never exceed this.
 
-	//printf("getting %d.\n",wanted.samples);
+	printf("getting %d.\n",wanted.samples);
 	wanted.format = AUDIO_S16LSB;
 	wanted.userdata = NULL;
 	wanted.callback = UpdateSound;
@@ -763,9 +768,38 @@ void Stop36HZ(void)
 	T36HZEnabled = 0;
 }
 
+void init_hqNx(void)
+{
+	DWORD color32;
+	DWORD *p;
+	int i, j, k, r, g, b, Y, u, v;
+
+	for(i = 0, p = BitConv32Ptr; i < 65536; i++, p++) {
+		color32=((i&0xF800)<<8)+
+		        ((i&0x07E0)<<5)+
+		        ((i&0x001F)<<3)+0xFF000000;
+
+		*p = color32;
+	}
+
+	for (i=0; i<32; i++)
+	for (j=0; j<64; j++)
+	for (k=0; k<32; k++) {
+		r = i << 3;
+		g = j << 2;
+		b = k << 3;
+		Y = (r + g + b) >> 2;
+		u = 128 + ((r - b) >> 2);
+		v = 128 + ((-r + 2*g -b)>>3);
+		RGBtoYUVPtr[(i << 11) + (j << 5) + k] = (Y<<16) + (u<<8) + v;
+	}
+}
+
 void initwinvideo(void)
 {
 	DWORD newmode = 0;
+
+	init_hqNx();
 
 	if (CurMode != cvidmode)
 	{
@@ -888,7 +922,7 @@ void CheckTimers(void)
 	}
 
 	if (T60HZEnabled)
-{
+	{
 		//QueryPerformanceCounter((LARGE_INTEGER*)&end);
 		end = SDL_GetTicks();
 
