@@ -4,32 +4,21 @@
 
 # Source file list
 source_files = Split("""
-	chips/dsp1emu.c
-	chips/seta10.c
-	chips/sdd1emu.c
-	chips/c4emu.c
-	chips/dsp1proc.asm
-	chips/dsp2proc.asm
+	chips/sfxproc.asm
 	chips/fxemu2.asm
+	chips/dsp1proc.asm
 	chips/fxemu2b.asm
 	chips/fxemu2c.asm
 	chips/fxtable.asm
 	chips/sa1proc.asm
 	chips/sa1regs.asm
-	chips/sfxproc.asm
+	chips/dsp1emu.c
 	chips/st10proc.asm
-	cfgload.c
-	debug.c
-	initc.c
-	patch.c
-	uic.c
-	version.c
-	endmem.asm
-	init.asm
-	ui.asm
-	vcache.asm
+	chips/seta10.c
+	chips/dsp2proc.asm
+	chips/sdd1emu.c
+	chips/c4emu.c
 	net/ztcp.c
-	cpu/zstate.c
 	cpu/addrni.asm
 	cpu/dma.asm
 	cpu/dsp.asm
@@ -42,48 +31,76 @@ source_files = Split("""
 	cpu/table.asm
 	cpu/tableb.asm
 	cpu/tablec.asm
+	cpu/zstate.c
+	dos/debug.asm
+	dos/joy.asm
+	dos/modemrtn.asm
+	dos/vesa2.asm
+	dos/initvid.asm
+	dos/sw.asm
+	dos/gppro.asm
+	dos/vesa12.asm
 	effects/burn.c
-	effects/smoke.c
 	effects/water.c
+	effects/smoke.c
 	gui/gui.asm
 	gui/menu.asm
-	video/procvidc.c
+	video/makev16b.asm
+	video/makev16t.asm
+	video/makevid.asm
+	video/mode716.asm
+	video/mode716b.asm
+	video/mode716d.asm
+	video/mode716e.asm
+	video/mode716t.asm
+	video/mode7.asm
+	video/mode7ext.asm
+	video/mv16tms.asm
+	video/newg162.asm
+	video/newgfx16.asm
+	video/newgfx2.asm
+	video/newgfx.asm
+	video/m716text.asm
 	video/2xsaiw.asm
+	video/procvid.asm
+	video/procvidc.c
+	video/sw_draw.asm
 	video/hq2x16.asm
 	video/hq2x32.asm
 	video/hq3x16.asm
 	video/hq3x32.asm
 	video/hq4x16.asm
 	video/hq4x32.asm
-	video/m716text.asm
-	video/makev16b.asm
-	video/makev16t.asm
-	video/makevid.asm
-	video/mode7.asm
-	video/mode716.asm
-	video/mode716b.asm
-	video/mode716d.asm
-	video/mode716e.asm
-	video/mode716t.asm
-	video/mode7ext.asm
-	video/mv16tms.asm
-	video/newg162.asm
-	video/newgfx.asm
-	video/newgfx16.asm
-	video/newgfx2.asm
-	video/procvid.asm
-	video/sw_draw.asm
 	zip/unzip.c
 	zip/zpng.c
+	cfgload.c
+	endmem.asm
+	init.asm
+	initc.c
+	jma/7zlzma.cpp
+	jma/crc32.cpp
+	jma/iiostrm.cpp
+	jma/inbyte.cpp
+	jma/jma.cpp
+	jma/lzma.cpp
+	jma/lzmadec.cpp
+	jma/winout.cpp
+	jma/zsnesjma.cpp
+	uic.c
+	patch.c
+	ui.asm
+	vcache.asm
+	version.c
 """)
 
 linux_source_files = Split("""
-	linux/sdllink.c
-	linux/sw_draw.c
-	linux/zfilew.c
-	linux/zloaderw.c
 	linux/copyvwin.asm
 	linux/sdlintrf.asm
+	linux/sdllink.c
+	linux/sw_draw.c
+	linux/zloaderw.c
+	linux/zipxw.c
+	linux/zfilew.c
 """)
 
 zsnes = Environment ()
@@ -106,6 +123,10 @@ if not conf.CheckLib ('SDL', 'SDL_Init'):
 
 if not conf.CheckLib ('png'):
 	print 'libpng not found! Please install libpng and try again.'
+	Exit (1)
+
+if not conf.CheckLib ('z'):
+	print 'zlib not found! Please install zlib and try again.'
 	Exit (1)
 
 # Check for nasm's existence
