@@ -2851,62 +2851,18 @@ guipostvideo:
     call vidpastecopyscr
     ; Wait for all mouse and input data to be 0
 
+.again    
     call JoyRead
-    xor ebx,ebx
-    mov ecx,256+128+64
-.b2
-    cmp byte[pressed+ebx],0
-    jne near .pressedfail
-    inc ebx
-    dec ecx
-    jnz .b2
-    cmp byte[MouseDis],1
-    je .mousedis3
-    call Get_MouseData
-    test bx,01h
-    jnz near .pressedfail
-.mousedis3
-
-.again
-    call JoyRead
-    xor ebx,ebx
-    mov ecx,256+128+64
-.b
-    cmp byte[pressed+ebx],0
+    cmp byte[pressed+39h],0
     jne .pressedokay
-    inc ebx
-    dec ecx
-    jnz .b
-    cmp byte[MouseDis],1
-    je .mousedis
-    call Get_MouseData
-    test bx,01h
-    jnz .pressedokay
-.mousedis
-    cmp dword[GUIkeydelay],0
-    je .pressedokay
     jmp .again
 .pressedokay
-.again2
-    call Check_Key
-    or al,al
-    jz .nokey
-    call Get_Key
-    jmp .again2
-.nokey
-    cmp byte[MouseDis],1
-    je .mousedis2
-    push ebx
-;    mov eax,0Bh
-;    int 33h
-    pop ebx
-.mousedis2
     mov byte[GUIpclicked],1
     ret
 
 SECTION .data
 guipostvidmsg1 db 'VIDEO MODE CHANGED.',0
-guipostvidmsg2 db 'PRESS ANY KEY',0
+guipostvidmsg2 db 'PRESS SPACEBAR',0
 SECTION .text
 
 guipostvideofail:
