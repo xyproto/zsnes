@@ -4462,7 +4462,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,9+52,180,GUIGameOptnsTextA
     GUIOuttextwin2 9,9+109,180,GUIGameOptnsTextB
     GUIOuttextwin2 9,9,190,GUIGameOptnsTextQ
-    GUIOuttextwin2 9,9+53,190,GUIGameOptnsTextR
+    GUIOuttextwin2 9,9+52,190,GUIGameOptnsTextR
     GUIOuttextwin2 9,9+160,180,GUIGameOptnsTextU
 %ifdef __WIN32__
     GUIOuttextwin2 9,137,190,GUIGameOptnsTextV
@@ -4569,7 +4569,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8+52,179,GUIGameOptnsTextA
     GUIOuttextwin2 9,8+109,179,GUIGameOptnsTextB
     GUIOuttextwin2 9,8,189,GUIGameOptnsTextQ
-    GUIOuttextwin2 9,8+53,189,GUIGameOptnsTextR
+    GUIOuttextwin2 9,8+52,189,GUIGameOptnsTextR
     GUIOuttextwin2 9,8+160,179,GUIGameOptnsTextU
 %ifdef __WIN32__
     GUIOuttextwin2 9,136,189,GUIGameOptnsTextV
@@ -4624,7 +4624,7 @@ DisplayGameOptns:
     DGOptnsDrawBox 8+114+20,178,[KeyQuickExit]
     DGOptnsDrawBox 8+114+78,178,[KeyQuickClock]
     DGOptnsDrawBox 8+25,188,[KeyQuickChat]
-    DGOptnsDrawBox 8+57+46,188,[KeyQuickSnapShot]
+    DGOptnsDrawBox 8+57+45,188,[KeyQuickSnapShot]
 %ifdef __WIN32__
     DGOptnsDrawBox 8+108+70,188,[KeyQuickMinimize]
 %endif
