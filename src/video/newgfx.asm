@@ -1313,17 +1313,6 @@ NEWSYM StartDrawNewGfx
     ProcMode7ngextbg2 2h, 0
 .noextbgmn2
 
-    test byte[scrndis],2h
-    jnz near .nodobg2mb
-    test dword[bgcmsung],2h
-    jz near .nodobg2mb
-    mov eax,[bg2totng]
-    cmp eax,[bg2drwng]
-    je near .nodobg2mb
-    mov dword[mode0ads],20202020h
-    Procbgpr1 1, drawbg2linepr1, drawbg2tilepr1, prdata, 2h, 0
-.nodobg2mb
-
     ; draw sprites mode 2-7
     test byte[scrndis],10h
     jnz near .nosprprme
@@ -1355,6 +1344,17 @@ NEWSYM StartDrawNewGfx
     jz near .nosprprmf
     Procsprng 10h, 0
 .nosprprmf
+
+    test byte[scrndis],2h
+    jnz near .nodobg2mb
+    test dword[bgcmsung],2h
+    jz near .nodobg2mb
+    mov eax,[bg2totng]
+    cmp eax,[bg2drwng]
+    je near .nodobg2mb
+    mov dword[mode0ads],20202020h
+    Procbgpr1 1, drawbg2linepr1, drawbg2tilepr1, prdata, 2h, 0
+.nodobg2mb
 
     test byte[scrndis],4h
     jnz near .nodobg3mb2
