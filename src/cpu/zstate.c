@@ -301,33 +301,46 @@ extern unsigned int CBackupPos, PBackupPos, RewindPos, RewindOldPos;
 
 void BackupCVFrame()
 {
-  unsigned char *RewindBufferPos = StateBackup + (CBackupPos << 19) + 1024;
+  unsigned char *RewindBufferPos = StateBackup + CBackupPos*rewind_state_size;
+  //printf("Backing up rewind in slot #%u\n", CBackupPos);
   copy_state_data(RewindBufferPos, memcpyinc, false);
 }
   
 void RestoreCVFrame()
 {
-  unsigned char *RewindBufferPos = StateBackup + (PBackupPos << 19) + 1024;
+  unsigned char *RewindBufferPos = StateBackup + PBackupPos*rewind_state_size;
+  //printf("Restoring rewind in slot #%u\n", PBackupPos);
   copy_state_data(RewindBufferPos, memcpyrinc, true);
 }
 
 void SetupRewindBuffer()
 {
   extern void outofmemory();
-  if (!StateBackup)
-  {
-    StateBackup = (unsigned char *)malloc(4096*128*16);
-  }
+  if (StateBackup){ free(StateBackup); }
+  StateBackup = 0;
+  StateBackup = (unsigned char *)malloc(rewind_state_size*16);
   if (!StateBackup) { outofmemory(); }
 }
 
+static size_t state_size;
+static void state_size_tally(unsigned char **dest, void *src, size_t len)
+{
+  state_size += len;
+}
 void InitRewindVars()
 {
+#ifndef __MSDOS__  //When all the code is ported to C, we can make this work with DOS too
+  unsigned char almost_useless_array[1]; //An array is needed for copy_state_data to give the correct size
+  state_size = 0;
+  copy_state_data(almost_useless_array, state_size_tally, false);
+  rewind_state_size = state_size;
+
   SetupRewindBuffer();
   RewindPos = 0;
   RewindOldPos = 0;
   //RewindEarliestPos = 0;
   RewindTimer = 60*4;
+#endif
 }
 
 //This is used to preserve system load state between loads
@@ -642,18 +655,8 @@ static void write_save_state_data(unsigned char **dest, void *data, size_t len)
 static const char zst_header_old[] = "ZSNES Save State File V0.6\x1a\x3c";
 static const char zst_header_cur[] = "ZSNES Save State File V143\x1a\x3c";
 
-static size_t state_size;
-static void state_size_tally(unsigned char **dest, void *src, size_t len)
-{
-  state_size += len;
-}
-
 void calculate_state_sizes()
-{
-  state_size = 0;
-  copy_state_data(StateBackup, state_size_tally, false);
-  rewind_state_size = state_size;
-  
+{  
   state_size = 0;
   zst_version = 143;
   copy_state_data(0, state_size_tally, false);
@@ -663,13 +666,6 @@ void calculate_state_sizes()
   zst_version = 60;
   copy_state_data(0, state_size_tally, true);
   old_zst_size = state_size + sizeof(zst_header_old)-1;
-
-  /*
-  printf("Rewind size: %u; ZST v1.43 size: %u; ZST v0.60 size: %u\n"
-         "ZST sizes with thumbnails. v1.43 size: %u; v0.60 size: %u\n", 
-         rewind_state_size, cur_zst_size, old_zst_size,
-         cur_zst_size + 64*56*sizeof(unsigned short), old_zst_size + 64*56*sizeof(unsigned short));
-  */
 }
 
 void PrepareOffset()
