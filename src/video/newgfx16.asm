@@ -3066,6 +3066,7 @@ ProcessTransparencies:
     movq mm3,mm0
     %endif
     psllw mm2,%2
+    pand mm1,[FullBitAnd]
     paddusw mm0,mm1
     pand mm0,[FullBitAnd]
     movq mm1,mm4
@@ -3079,6 +3080,7 @@ ProcessTransparencies:
     pand mm2,[FullBitAnd]
     psllw mm1,%3
     psrlw mm2,%2
+    pand mm1,[FullBitAnd]
     paddusw mm3,mm1
     por mm0,mm2
     pand mm3,[FullBitAnd]
@@ -3128,6 +3130,7 @@ ProcessTransparencies:
     psllw mm0,%1
     psllw mm1,%1
     %endif
+    pand mm1,[FullBitAnd]
     paddusw mm0,mm1
     pand mm0,[FullBitAnd]
     movq mm1,mm4
@@ -3136,6 +3139,7 @@ ProcessTransparencies:
     %endif
     psllw mm2,%2
     psllw mm1,%2
+    pand mm1,[FullBitAnd]
     paddusw mm2,mm1
     pand mm2,[FullBitAnd]
     movq mm1,mm4
@@ -3209,6 +3213,7 @@ ProcessTransparencies:
     psllw mm0,%1
     psllw mm1,%1
     %endif
+    pand mm1,[FullBitAnd]
     paddusw mm0,mm1
     pand mm0,[FullBitAnd]
     movq mm1,mm4
@@ -3222,6 +3227,7 @@ ProcessTransparencies:
     psrlw mm2,%2
     psllw mm3,%3
     psllw mm4,%3
+    pand mm4,[FullBitAnd]
     paddusw mm3,mm4
     pand mm3,[FullBitAnd]
     psrlw mm3,%3
@@ -3290,6 +3296,7 @@ ProcessTransparencies:
     movq mm3,mm0
     movq mm5,mm0
     %endif
+    pand mm1,[FullBitAnd]
     paddusw mm0,mm1
     pand mm0,[FullBitAnd]
     psllw mm2,%2
@@ -3300,6 +3307,7 @@ ProcessTransparencies:
     pand mm2,[FullBitAnd]
     psllw mm1,%3
     psrlw mm2,%2
+    pand mm1,[FullBitAnd]
     paddusw mm3,mm1
     pand mm3,[FullBitAnd]
     %if %1>0
@@ -3354,6 +3362,7 @@ ProcessTransparencies:
     psllw mm0,%1
     psllw mm1,%1
     %endif
+    pand mm1,[FullBitAnd]
     paddusw mm0,mm1
     pand mm0,[FullBitAnd]
     movq mm1,mm4
@@ -3367,6 +3376,7 @@ ProcessTransparencies:
     psrlw mm2,%2
     psllw mm3,%3
     psllw mm4,%3
+    pand mm4,[FullBitAnd]
     paddusw mm3,mm4
     pand mm3,[FullBitAnd]
     psrlw mm3,%3
