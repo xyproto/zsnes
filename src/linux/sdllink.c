@@ -39,7 +39,6 @@ SDL_Joystick	*JoystickInput[4];
 DWORD                   BitDepth=0;
 BYTE                    BackColor=0;
 
-int DTimerCheck;
 float MouseMinX=0;
 float MouseMaxX=256;
 float MouseMinY=0;
@@ -276,7 +275,7 @@ int Main_Proc(void)
 void ProcessKeyBuf(int scancode)
 {
 	int accept = 0;
-	int vkeyval;
+	int vkeyval = 0;
 
     if (((scancode>='A') && (scancode<='Z')) ||
 	((scancode>='a') && (scancode<='z')) ||
@@ -504,7 +503,7 @@ int startgame(void)
    }
 
    if (sdl_inited == 0) {
-	   if (SDL_Init(SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_JOYSTICK) < 0) {
+	   if (SDL_Init(SDL_INIT_AUDIO|SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_JOYSTICK) < 0) {
 		 fprintf(stderr, "Could not initialize SDL!\n");
 		 return FALSE;
 	   } else {
@@ -559,6 +558,7 @@ DWORD LockSurface(void)
 void UnlockSurface(void)
 {
     if (SurfaceLocking) SDL_UnlockSurface(surface);
+    SDL_UpdateRect(surface,0,0,0,0);
     SurfBuf = surface->pixels;
 }
 
@@ -596,15 +596,14 @@ extern unsigned char romispal;
 
 void Start60HZ(void)
 {
-	freq = 1000;
-   update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000;
+   update_ticks_pc2 = UPDATE_TICKS_UDP;
    if(romispal==1)
    {
-   update_ticks_pc = UPDATE_TICKS_GAMEPAL * freq / 1000;
+   update_ticks_pc = UPDATE_TICKS_GAMEPAL;
    }
    else
    {
-   update_ticks_pc = UPDATE_TICKS_GAME * freq / 1000;
+   update_ticks_pc = UPDATE_TICKS_GAME;
    }
 
    start = SDL_GetTicks();
@@ -622,9 +621,8 @@ void Stop60HZ(void)
 
 void Start36HZ(void)
 {
-	freq = 1000;
-   update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000;
-   update_ticks_pc = UPDATE_TICKS_GUI * freq / 1000;
+   update_ticks_pc2 = UPDATE_TICKS_UDP;
+   update_ticks_pc = UPDATE_TICKS_GUI;
 //   QueryPerformanceCounter((LARGE_INTEGER*)&start);
 //   QueryPerformanceCounter((LARGE_INTEGER*)&start2);
 
@@ -639,7 +637,6 @@ void Stop36HZ(void)
    T36HZEnabled=0;
 }
 
-char WinMessage[256];
 extern unsigned char cvidmode;
 DWORD FirstVid=1;
 DWORD FirstFull=1;
@@ -756,7 +753,6 @@ void CheckTimers(void)
 //         call Game60hzcall
 //         popad
 //         }
-	      DTimerCheck = 1;
 	      Game60hzcall();
          start += update_ticks_pc;
       }
@@ -775,7 +771,6 @@ void CheckTimers(void)
 //         popad
 //         }
 	      GUI36hzcall();
-	      DTimerCheck = 1;
          start += update_ticks_pc;
       }
    }
@@ -860,12 +855,6 @@ void UpdateVFrame(void)
 
    WinUpdateDevices();
    CheckTimers();
-
-   if (DTimerCheck == 1)
-   {
-	   SDL_UpdateRect(surface,0,0,0,0);
-	   DTimerCheck = 0;
-   }
 #else
    int DataNeeded;
    int SPCSize=256;
