@@ -21,7 +21,7 @@
 #include <math.h>
 #include <string.h>
 
-#define DebugDSP1
+//#define DebugDSP1
 
 // uncomment some lines to test
 //#define printinfo
