@@ -70,12 +70,12 @@ bool EHiHeader(unsigned char *ROM, int BankLoc)
 
 void swapBlocks(char *blocks)
 {
-  int i,j,k;
+  unsigned int i,j,k;
   for (i = 0; i < NumofBanks; i++)
   {
     for (j = 0; j < NumofBanks; j++)
     {
-      if (blocks[j] == i)
+      if (blocks[j] == (char)i)
       {
         char b;
         unsigned int temp,
@@ -168,7 +168,7 @@ void CheckIntlEHi(unsigned char *ROM)
 }
 
 //ROM loading functions, which some strangly enough were in guiload.inc
-bool AllASCII(char *b, int size)
+bool AllASCII(unsigned char *b, int size)
 {
   int i;
   for (i = 0; i < size; i++)
@@ -181,12 +181,11 @@ bool AllASCII(char *b, int size)
   return(true);
 }
 
-int InfoScore(char *Buffer)
+int InfoScore(unsigned char *Buffer)
 {
   int score = 0;
-  if (validChecksum(Buffer, 0))      { score += 3; }
+  if (validChecksum(Buffer, 0))      { score += 4; }
   if (Buffer[26] == 0x33)            { score += 2; }
-  if ((Buffer[21] & 0xf) < 4)        { score += 2; }
   if (!(Buffer[61] & 0x80))          { score -= 4; }
   if ((1 << (Buffer[23] - 7)) > 48)  { score -= 1; }
   if (Buffer[25] < 14)               { score += 1; }
@@ -217,6 +216,7 @@ void BankCheck()
 
   if (!infoloc)
   {
+    static bool CommandLineForce2 = false;
     int loscore, hiscore;
 
     //Deinterleave if neccesary
@@ -228,6 +228,7 @@ void BankCheck()
     switch(ROM[Lo + 21])
     {
       case 32: case 35: case 48: case 50:
+        loscore += 2;      
       case 128: case 156: case 176: case 188: case 252: //BS
         loscore += 1;      
         break;
@@ -235,16 +236,30 @@ void BankCheck()
     switch(ROM[Hi + 21])
     {
       case 33: case 49: case 53: case 58:
+        hiscore += 2;
       case 128: case 156: case 176: case 188: case 252: //BS
         hiscore += 1;      
         break;
     }
     
-    if (ForceHiLoROM)
-    {
-      //asm volatile("int $3");
-      if (forceromtype == 1) { loscore += 50; }
-      else if (forceromtype == 2) { hiscore += 50; }
+    /*
+    Force code.
+    ForceHiLoROM is from the GUI.
+    forceromtype is from Command line, we have a static var
+    to prevent forcing a secong game loaded from the GUI when
+    the first was loaded from the command line with forcing.
+    */
+    if (ForceHiLoROM == 1 ||
+        (forceromtype == 1 && !CommandLineForce2))
+    { 
+      CommandLineForce2 = true;
+      loscore += 50;
+    }
+    else if (ForceHiLoROM == 2 ||
+             (forceromtype == 2 && !CommandLineForce2))
+    { 
+      CommandLineForce2 = true;
+      hiscore += 50;
     }
 
     if (hiscore > loscore)
@@ -312,12 +327,12 @@ void CalcChecksum()
 void MirrorROM()
 {
   unsigned char *ROM = (unsigned char *)romdata;
-  int size, StartMirror = 0, ROMSize = curromspace;
+  unsigned int size, StartMirror = 0, ROMSize = curromspace;
   //This will mirror up non power of two ROMs to powers of two
   for (size = 1; size <= 64; size +=size)
   {
-    int fullSize = size * Mbit_bytes,
-        halfSize = fullSize >> 1;
+    unsigned int fullSize = size * Mbit_bytes,
+                 halfSize = fullSize >> 1;
     if ((ROMSize > halfSize) && (ROMSize < fullSize))
     {
       for (StartMirror = halfSize;
