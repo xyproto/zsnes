@@ -23,9 +23,11 @@ v1.36
        - Special hack for Kamen Rider menu, requires special latch reading.
          [_Demo_]
        - Special hack for Super Famista 1 & 2 SPC bugs. [_Demo_]
-       - Fixed some more bugs in video code. (Windows only) [pagefault]
+       - Fixed some more bugs in video code. (Thanks Perryman for the video
+         table) (Windows only) [pagefault]
        - Fixed Digital Devil Story hang by modifying the spc code.
          You must start a new game for the fix to work. [_Demo_]
+       - Modified work ram init value to 0x55. (Thanks TRAC)
 
 v1.35
        - Fixed triple buffering corruption on some VESA 2.x video modes,
