@@ -5581,13 +5581,16 @@ DisplayGUIMovies:
     DrawGUIButton 15,7,17,49,28,GUIMovieText1,16,0,0
     DrawGUIButton 15,7,33,49,44,GUIMovieText2,17,0,0
     DrawGUIButton 15,7,49,49,60,GUIMovieText3,18,0,0
+    DrawGUIButton 15,7,65,106,76,GUIMovieTextB,29,0,0
+    DrawGUIButton 15,7,81,106,92,GUIMovieTextC,30,0,0
+    DrawGUIButton 15,7,97,106,108,GUIMovieTextD,31,0,0
     cmp byte[GUIWincoladd],0
     je .zero
     mov byte[GUItextcolor],211
 .zero
     sub byte[GUItextcolor],15
     GUIOuttextwin2 15,61,16,GUIMovieText4
-    GUIOuttextwin2 15,7,70,GUIMovieTextA
+    GUIOuttextwin2 15,7,115,GUIMovieTextA
     mov byte[GUIChoseSaveText2],'0'
     GUIOuttextwin2 15,71,28,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'1'
@@ -5610,7 +5613,7 @@ DisplayGUIMovies:
     GUIOuttextwin2 15,91,58,GUIChoseSaveText2
     add byte[GUItextcolor],15
     GUIOuttextwin2 15,60,15,GUIMovieText4
-    GUIOuttextwin2 15,6,69,GUIMovieTextA
+    GUIOuttextwin2 15,6,114,GUIMovieTextA
     mov byte[GUIChoseSaveText2],'0'
     GUIOuttextwin2 15,70,27,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'1'
@@ -5654,6 +5657,9 @@ GUIMovieText7 db 'OKAY TO OVERWRITE?',0
 GUIMovieText8 db 'YES',0
 GUIMovieText9 db 'NO',0
 GUIMovieTextA db 'STATUS :           ',0
+GUIMovieTextB db 'INSERT CHAPTER',0
+GUIMovieTextC db 'PREVIOUS CHAPTER',0
+GUIMovieTextD db 'NEXT CHAPTER',0
 NEWSYM CMovieExt, db 'v'
 
 SECTION .text
