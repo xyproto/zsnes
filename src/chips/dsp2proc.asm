@@ -20,6 +20,10 @@
 ;   coding hints are based on DSP2 function overview at http://users.tpg.com.au/trauma/dsp/dsp2.html maintained by Overload.
 ;   i have stolen the useful technical info there to implement DSP2 codes without any permission from its author.
 ;   i do NOT know and peep the s9x source codes for either DSP2 or any purpose.
+; May 02, 2004
+;   bug fix for Dungeon Master.
+;   Command 05h fixed.
+;   when you got the magic missile damage such as fireball, DSP2 support in prior version entered halt state.
 
 %include "macros.mac"
 
@@ -28,6 +32,10 @@ EXTSYM regaccessbankr8,regaccessbankr16,regaccessbankw8,regaccessbankw16
 NEWSYM Dsp2ProcAsmStart
 
 ;%define _USE_DEVDSP2
+
+DSP2F_HALT              equ 1
+DSP2F_AUTO_BUFFER_SHIFT equ 2
+DSP2F_NO_ADDR_CHK       equ 4
 
 ;*******************************************************
 ; .bss section
@@ -46,7 +54,7 @@ NEWSYM dsp2f03KeyHi, db 0   ; Current transparent-color in higher-byte
 
 NEWSYM dsp2enforcerReaderCursor, dd 0   ; T/O
 NEWSYM dsp2enforcerWriterCursor, dd 1   ; T/O
-NEWSYM dsp2state, dd 1                  ; Flags: 1=HALT, 2=AUTO_BUFFER_SHIFT
+NEWSYM dsp2state, dd 1                  ; Flags: 1=HALT, 2=AUTO_BUFFER_SHIFT, 4=NO_ADDR_CHK
 NEWSYM dsp2input, dd 0                  ; Saving input 8-bit data
 NEWSYM dsp2inputTemp, dd 0              ; Temporary variable
 NEWSYM dsp2f0dSizeOrg, dd 0             ; Command 0D, Original BMP width
@@ -178,7 +186,7 @@ NEWSYM InitDSP2
 
 NEWSYM DSP2Read8b
 .enter
-    test byte[dsp2state],1
+    test byte[dsp2state],DSP2F_HALT
     jnz .halt
 
     test cx,8000h
@@ -190,7 +198,7 @@ NEWSYM DSP2Read8b
     mov al,byte[dsp2buffer+ecx]
     xor ecx,ecx
 
-    test byte[dsp2state],2
+    test byte[dsp2state],DSP2F_AUTO_BUFFER_SHIFT
     jnz .shiftbuffer
     jmp .leave
 
@@ -237,10 +245,8 @@ NEWSYM _DSP2Add2Queue
 NEWSYM DSP2Write8b
 .enter
     ; Tests halt flag
-    test byte[dsp2state],1
+    test byte[dsp2state],DSP2F_HALT
     jnz .halt
-
-    and byte[dsp2state],255-2
 
     ; *** Locates current predicator store
     mov byte[dsp2input],al
@@ -252,9 +258,13 @@ NEWSYM DSP2Write8b
     mov eax,[ebx+4]
     mov [dsp2enforcer+4],eax
     xor ebx,ebx
+    ; *** About some commands need to be relaxed the write address check
+    test byte[dsp2state],DSP2F_NO_ADDR_CHK
+    jnz .noaddrchk
     ; *** Tests whether cx points expected address
     cmp [dsp2enforcer+4],cx
     jne .gohalt
+.noaddrchk
     ; *** Reads next inside command should be proceeded
     mov al,[dsp2enforcer]
     ; *** Branches to inside commands respectively
@@ -344,7 +354,7 @@ NEWSYM DSP2Write8b
     mul byte[dsp2buffer+2]
 
     mov [dsp2buffer],eax
-    or byte[dsp2state],2
+    or byte[dsp2state],DSP2F_AUTO_BUFFER_SHIFT
 
 .w08done
     jmp .done
@@ -494,6 +504,8 @@ NEWSYM DSP2Write8b
 .w00 ; ---
     EnterInsideCommand 0
 
+    and byte[dsp2state],~(DSP2F_AUTO_BUFFER_SHIFT|DSP2F_NO_ADDR_CHK)
+
     mov al,[dsp2input]
     CommandJmp 01h,.w00p01
     CommandJmp 03h,.w00p03
@@ -535,6 +547,8 @@ NEWSYM DSP2Write8b
     jmp .done
 
 .w00p05 ; ----
+    or byte[dsp2state],DSP2F_NO_ADDR_CHK
+
     QueueInsideCommand 05h
     mov dword[dsp2enforcer+0],3
     mov dword[dsp2enforcer+4],8000h
@@ -585,7 +599,7 @@ NEWSYM DSP2Write8b
     jmp .leave
 .gohalt
     QueueInsideCommand 0ffh
-    or byte[dsp2state],1
+    or byte[dsp2state],DSP2F_HALT
 .halt
     xor eax,eax
 .leave
