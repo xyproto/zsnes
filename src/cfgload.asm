@@ -22,7 +22,7 @@ EXTSYM JoyXC,JoyYC,LoadDir,LoadDrive,SRAMDrive,mode7tab
 EXTSYM pl1selk,pl1startk,pl1upk,pl2Ak,pl2Bk,pl2Lk,pl2Rk
 EXTSYM pl2Xk,pl2Yk,pl2contrl,pl2downk,pl2leftk,pl2rightk
 EXTSYM pl2selk,pl2startk,pl2upk,DontSavePath
-EXTSYM Force8b,MusicRelVol,SRAMDir,SoundCompD,SoundQuality
+EXTSYM Force8b,MusicRelVol,SRAMDir,SoundQuality
 EXTSYM StereoSound,antienab,cvidmode,enterpress,frameskip,guioff
 EXTSYM newengen,per2exec,pl1Ak,pl1Bk,pl1Lk,pl1Rk,pl1Xk,pl1Yk
 EXTSYM pl1contrl,pl1downk,pl1leftk,pl1rightk,scanlines,soundon
@@ -1557,15 +1557,6 @@ NEWSYM getcfg
     mov al,[.per2exec]
     mov [cfgreinittime],al
 .nogetreinit
-    ret
-
-.getbufdisable
-    cmp dword[.strlenb],1
-    jne .nobufdisable
-    cmp byte[.stringb],'1'
-    jne .nobufdisable
-    mov byte[SoundCompD],1
-.nobufdisable
     ret
 
 .getstereo

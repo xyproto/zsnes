@@ -38,7 +38,7 @@ extern void makeextension(void);
 
 extern unsigned char	Palette0, SPC700sh, OffBy1Line, DSPDisable,
 			MMXSupport, Force8b, ForcePal, ForceNTSC, GUIClick, MouseDis,
-			MusicRelVol, ScreenScale, SoundCompD, SoundQuality,
+			MusicRelVol, ScreeScale, SoundQuality,
 			StereoSound, V8Mode, antienab, cvidmode, debugdisble,
 			debugger, enterpress, finterleave, frameskip,
 			gammalevel, guioff, per2exec, pl1contrl, pl2contrl,

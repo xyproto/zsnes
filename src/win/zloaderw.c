@@ -35,7 +35,7 @@ int pccmdline(void);
 
 extern unsigned char Palette0, SPC700sh, OffBy1Line, DSPDisable,
                      MMXSupport, Force8b, ForcePal, GUIClick, MouseDis,
-                     MusicRelVol, ScreenScale, SoundCompD, SoundQuality,
+                     MusicRelVol, ScreenScale, SoundQuality,
                      StereoSound, V8Mode, antienab, cvidmode, debugdisble,
                      debugger, enterpress, finterleave, frameskip,
                      gammalevel, guioff, per2exec, pl1contrl, pl2contrl,
@@ -627,11 +627,6 @@ int pccmdline(void)
 //            debugger=1;
 //            debugdisble=0;
 //          }
-          break;
-        }
-        case 'b':
-        {
-          SoundCompD=1;
           break;
         }
         case 'c':

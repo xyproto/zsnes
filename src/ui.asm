@@ -162,7 +162,6 @@ YesMMX    db 'MMX support found and enabled.',13,10,13,10,0
 ; global variables
 
 NEWSYM per2exec,      dd 100            ; percentage of opcodes to execute
-NEWSYM SoundCompD,    db 1              ; Disable Sound Compression Buffering (1=y)
 
 %ifdef __MSDOS__
 NEWSYM cvidmode,      db 4              ; video mode, 0=320x240, 1=256x256

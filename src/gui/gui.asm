@@ -66,7 +66,7 @@
 
 EXTSYM curblank, vidpastecopyscr, frameskip, newengen, vsyncon
 EXTSYM cvidmode, antienab, smallscreenon, smallscreence,NetQuit
-EXTSYM soundon, StereoSound, SoundCompD, SoundQuality, MusicRelVol
+EXTSYM soundon, StereoSound, SoundQuality, MusicRelVol
 EXTSYM endprog, continueprog, spcBuffera, spcRamcmp, cbitmode, makepal
 EXTSYM t1cc, LoadDir, SRAMDir, LoadDrive,SRAMDrive, initsnes, romloadskip
 EXTSYM fname, makeextension, sram, clearmem2, loadfileGUI, GUIloadfailed

@@ -126,7 +126,7 @@ EXTSYM delay
 EXTSYM spcBuffera
 EXTSYM DSPMem
 EXTSYM SoundInterpType
-EXTSYM NoiseData,SoundCompD,Voice0Disable,csounddisable,spcRamcmp
+EXTSYM NoiseData,Voice0Disable,csounddisable,spcRamcmp
 EXTSYM cfgecho,Surround,SoundBufEn
 EXTSYM echobuf,ENVDisable
 EXTSYM LowPassFilterType
