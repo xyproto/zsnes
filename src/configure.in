@@ -25,7 +25,7 @@ AC_CHECK_TOOL(NASMPATH,nasm,"no",$nasm_prefix:$PATH)
 if test x$NASMPATH = xno; then
 AC_MSG_ERROR(You need NASM installed to compile ZSNES)
 fi
-NFLAGS="$NFLAGS -O1 -w-orphan-labels"
+NFLAGS="$NFLAGS -w-orphan-labels"
 AC_PROG_INSTALL
 case "$target" in
 	*-*-linux*)
@@ -108,36 +108,37 @@ if test x$debug = xyes; then
 	dnl enabled. 
 
 	CFLAGS="$CFLAGS -DDEBUG -O0 -fno-omit-frame-pointer -ggdb3"
-	NFLAGS="$NFLAGS -DDEBUG -g -s"
+	NFLAGS="$NFLAGS -DDEBUG -g -s -O1" dnl -O0 doesnt work
 	ZSNESEXE="zsnesd"
 else
 	AC_MSG_RESULT(no)
 	
 	CFLAGS="$CFLAGS -O3 -ffast-math -fomit-frame-pointer -fexpensive-optimizations -s"
+	NFLAGS="$NFLAGS -O1"
 	ZSNESEXE="zsnes"
 fi
 
 AC_MSG_CHECKING(which processor class to optimize for)
 if test x$debug != xyes; then
-			case "$target" in
-				i486-*-*)
-					CFLAGS="$CFLAGS -march=i486"
-					AC_MSG_RESULT(486)
-					;;
-				i586-*-*)
-					CFLAGS="$CFLAGS -march=pentium"
-					AC_MSG_RESULT(586)
-					;;
-				i686-*-*)
-					CFLAGS="$CFLAGS -march=pentiumpro"
-					AC_MSG_RESULT(686)
-					;;
-				*)
-					AC_MSG_RESULT(386)
-					AC_MSG_WARN(*** This is probably not what you want use --target)
-					;;
-			esac
-
+	case "$target" in
+		i486-*-*)
+			CFLAGS="$CFLAGS -march=i486"
+			AC_MSG_RESULT(486)
+			;;
+		i586-*-*)
+			CFLAGS="$CFLAGS -march=pentium"
+			AC_MSG_RESULT(586)
+			;;
+		i686-*-*)
+			CFLAGS="$CFLAGS -march=pentiumpro"
+			dnl CFLAGS="$CFLAGS -march=pentium3 -mmmx -msse -mfpmath=sse,387"
+			AC_MSG_RESULT(686)
+			;;
+		*)
+			AC_MSG_RESULT(386)
+			AC_MSG_WARN(*** This is probably not what you want use --target)
+			;;
+	esac
 else
 	AC_MSG_RESULT(no optimization because debug enabled)
 fi
