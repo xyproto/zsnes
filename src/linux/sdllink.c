@@ -966,25 +966,31 @@ void CheckTimers(void)
 	}
 }
 
+//Why in the world did someone make this use signed values??? -Nach
 void UpdateSound(void *userdata, Uint8 * stream, int len)
 {
-	int left;
+  int left = Buffer_len - Buffer_head;
 
-	left = Buffer_len - Buffer_head;
+  if (left < 0)
+  {
+    return;
+  }
+  
+  if (left <= len)
+  {
+    memcpy(stream, &Buffer[Buffer_head], left);
+    stream += left;
+    len -= left;
+    Buffer_head = 0;
+    Buffer_fill -= left;
+  }
 
-	if (left <= len) {
-		memcpy(stream, &Buffer[Buffer_head], left);
-		stream += left;
-		len -= left;
-		Buffer_head = 0;
-		Buffer_fill -= left;
-	}
-
-	if (len) {
-		memcpy(stream, &Buffer[Buffer_head], len);
-		Buffer_head += len;
-		Buffer_fill -= len;
-	}
+  if (len) 
+  {
+    memcpy(stream, &Buffer[Buffer_head], len);
+    Buffer_head += len;
+    Buffer_fill -= len;
+  }
 }
 
 void sem_sleep(void)
