@@ -145,10 +145,19 @@ void DDrawError(){
    MessageBox (NULL, message1, "DirectDraw Error" , MB_ICONERROR );
 }
 
+extern "C" BYTE vsyncon;
+
 void DrawScreen()
 {
    if(DD_CFB==NULL) return;
-   if(DD_Primary->Blt(&rcWindow,DD_CFB,NULL,DDBLT_WAIT,NULL)!=DD_OK)
+   if (vsyncon == 1)
+   {
+   if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
+      {
+         DDrawError();
+      }
+   }
+   if(DD_Primary->Blt(&rcWindow,DD_CFB,NULL,DDBLT_WAIT,NULL) != DD_OK)
    {
       DDrawError();
 	}

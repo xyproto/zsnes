@@ -1350,25 +1350,20 @@ DisplayGUIOption:
     GUIOuttextwin2 4,6,16,[GUITemp]
     GUIOuttextwin2u 4,26,31,GUIOptionText2,0
     GUIOuttextwin2u 4,26,41,GUIOptionText4,0
-;    cmp byte[OSPort],3
-;    je near .win32b
-%ifdef __MSDOS__
+%ifndef __LINUX__
     GUIOuttextwin2u 4,26,51,GUIOptionText5,0
 %endif
 %ifdef __WIN32__
-    GUIOuttextwin2u 4,26,51,GUIOptionText5b,0
+    GUIOuttextwin2u 4,26,191,GUIOptionTextL,1
 %endif
-;.win32b
     GUIOuttextwin2u 4,26,61,GUIOptionText6,0
     GUIOuttextwin2u 4,26,71,GUIOptionText7,0
-;    cmp byte[OSPort],3
-;    je near .win32b2
 %ifdef __MSDOS__
     GUIOuttextwin2u 4,26,81,GUIOptionTextA,0
 %endif
-;.win32b2
 %ifdef __WIN32__
-    GUIOuttextwin2u 4,26,81,GUIOptionTextAb,1
+    GUIOuttextwin2u 4,26,81,GUIOptionTextAb,0
+    GUIOuttextwin2u 4,26,191,GUIOptionTextL,1
 %endif
     GUIOuttextwin2u 4,26,91,GUIOptionTextB,0
     GUIOuttextwin2u 4,26,101,GUIOptionTextC,2
@@ -1380,30 +1375,21 @@ DisplayGUIOption:
     GUIOuttextwin2u 4,26,161,GUIOptionTextI,15
     GUIOuttextwin2u 4,26,171,GUIOptionTextJ,0
     GUIOuttextwin2u 4,26,181,GUIOptionTextK,1
-    GUIOuttextwin2u 4,26,191,GUIOptionTextL,5
     add byte[GUItextcolor],15
     GUIOuttextwin2 4,5,15,[GUITemp]
     GUIOuttextwin2 4,25,30,GUIOptionText2
     GUIOuttextwin2 4,25,40,GUIOptionText4
-;    cmp byte[OSPort],3
-;    je near .win32c
-%ifdef __MSDOS__
+%ifndef __LINUX__
     GUIOuttextwin2 4,25,50,GUIOptionText5
 %endif
-%ifdef __WIN32__
-    GUIOuttextwin2 4,25,50,GUIOptionText5b
-%endif
-;.win32c
     GUIOuttextwin2 4,25,60,GUIOptionText6
     GUIOuttextwin2 4,25,70,GUIOptionText7
-;    cmp byte[OSPort],3
-;    je near .win32c2
 %ifdef __MSDOS__
     GUIOuttextwin2 4,25,80,GUIOptionTextA
 %endif
-;.win32c2
 %ifdef __WIN32__
     GUIOuttextwin2 4,25,80,GUIOptionTextAb
+    GUIOuttextwin2 4,25,190,GUIOptionTextL
 %endif
     GUIOuttextwin2 4,25,90,GUIOptionTextB
     GUIOuttextwin2 4,25,100,GUIOptionTextC
@@ -1415,7 +1401,6 @@ DisplayGUIOption:
     GUIOuttextwin2 4,25,160,GUIOptionTextI
     GUIOuttextwin2 4,25,170,GUIOptionTextJ
     GUIOuttextwin2 4,25,180,GUIOptionTextK
-    GUIOuttextwin2 4,25,190,GUIOptionTextL
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[TimerEnable],0
     je .nocheckboxt
@@ -1435,24 +1420,14 @@ DisplayGUIOption:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
     GUIDisplayIconWin 4,11,36,[GUITemp]
-%ifdef __MSDOS__
+%ifndef __LINUX__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[vsyncon],0
     je .nocheckbox2
     mov dword[GUITemp],GUIIconDataCheckBoxC
-;    cmp byte[OSPort],3
-;    je near .win32
-    GUIDisplayIconWin 4,11,46,[GUITemp]
-%endif
-;.win32
-%ifdef __WIN32__
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[HighPriority],0
-    je .nocheckbox2
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-%endif
 .nocheckbox2
     GUIDisplayIconWin 4,11,46,[GUITemp]
+%endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[FPUCopy],2
     jne .nocheckbox3
@@ -1465,23 +1440,20 @@ DisplayGUIOption:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox4
     GUIDisplayIconWin 4,11,66,[GUITemp]
+%ifdef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SidewinderFix],0
     je .nocheckbox5
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox5
-;    cmp byte[OSPort],3
-;    je near .win322
-%ifdef __MSDOS__
     GUIDisplayIconWin 4,11,76,[GUITemp]
 %endif
-;.win322
 %ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[AlternateTimer],0
-    je .win323
+    cmp byte[HighPriority],0
+    je .nocheckbox5
     mov dword[GUITemp],GUIIconDataCheckBoxC
-.win323
+.nocheckbox5
     GUIDisplayIconWin 4,11,76,[GUITemp]
 %endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
@@ -1538,12 +1510,14 @@ DisplayGUIOption:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox14
     GUIDisplayIconWin 4,11,176,[GUITemp]
+%ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[GUIEnableTransp],0
-    je .nocheckbox15
+    cmp byte[AlternateTimer],0
+    je .win323
     mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox15
+.win323
     GUIDisplayIconWin 4,11,186,[GUITemp]
+%endif
     cmp byte[frameskip],0
     je near .auto
     DrawGUIWinBox 4,75,13,93,21,167
@@ -1593,11 +1567,10 @@ GUIOptionText2 db 'AUTO FRAME RATE',0
 GUIOptionText3 db 'MAX FRAME SKIP',0
 GUIOptionText4 db 'NEW GFX ENGINE',0
 GUIOptionText5 db 'VSYNC',0
-GUIOptionText5b db 'HIGH PRIORITY MODE',0
 GUIOptionText6 db 'MMX SUPPORT',0
 GUIOptionText7 db 'USE PL3/4 AS PL1/2',0
 GUIOptionTextA db 'SIDEWINDER FIX',0
-GUIOptionTextAb db 'USE ALTERNATE TIMER',0
+GUIOptionTextAb db 'HIGH PRIORITY MODE',0
 GUIOptionTextB db 'FPS AT START',0
 GUIOptionTextC db 'USE 30HZ FOR TURBO',0
 GUIOptionTextD db 'ENABLE GAME CLOCK',0
@@ -1608,7 +1581,7 @@ GUIOptionTextH db 'START AT LATEST SAVE',0
 GUIOptionTextI db 'AUTO STATE SAVE/LOAD',0
 GUIOptionTextJ db 'DON',39,'T SAVE CURRENT PATH',0
 GUIOptionTextK db 'DISABLE SOUND CPU EMU',0
-GUIOptionTextL db 'TRANSPARENT MESSAGES',0
+GUIOptionTextL db 'USE ALTERNATE TIMER',0
 GUIOptionText8 db '-',0
 GUIOptionText9 db '+',0
 GUIOptionText10 db '-',0
@@ -4688,14 +4661,20 @@ DisplayGUIOptns:
     mov dword[GUITemp],22
     add [GUITemp],eax
     GUIDisplayIconWin 10,[GUITemp],144,GUIIconDataSlideBar
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
 
+    cmp byte[GUIEnableTransp],1
+    jne .nocheckt
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckt
+    GUIDisplayIconWin 10,124,23,[GUITemp]
 %ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[MouseWheel],1
     jne .nocheckr
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckr
-    GUIDisplayIconWin 10,124,23,[GUITemp]
+    GUIDisplayIconWin 10,124,33,[GUITemp]
 %endif
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[mousewrap],1
@@ -4799,11 +4778,12 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,147,111,GUIGUIOptnsTextI
     GUIOuttextwin2 10,26,88,GUIGUIOptnsTextB
     GUIOuttextwin2 10,26,98,GUIGUIOptnsTextC
+    GUIOuttextwin2 10,138,28,GUIGUIOptnsTextJ
 %ifdef __WIN32__
     GUIOuttextwin2 10,26,173,GUIGUIOptnsTextE
     GUIOuttextwin2 10,26,183,GUIGUIOptnsTextF
-    GUIOuttextwin2u 10,138,28,GUIGUIOptnsTextJ,1
-    GUIOuttextwin2 10,26,193,GUIGUIOptnsTextK
+    GUIOuttextwin2u 10,138,38,GUIGUIOptnsTextK,1
+    GUIOuttextwin2 10,26,193,GUIGUIOptnsTextL
 %endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,16,123,GUIGUIOptnsText6
@@ -4823,11 +4803,12 @@ DisplayGUIOptns:
     GUIOuttextwin2 10,146,110,GUIGUIOptnsTextI
     GUIOuttextwin2 10,25,87,GUIGUIOptnsTextB
     GUIOuttextwin2 10,25,97,GUIGUIOptnsTextC
+    GUIOuttextwin2 10,137,27,GUIGUIOptnsTextJ
 %ifdef __WIN32__
     GUIOuttextwin2 10,25,172,GUIGUIOptnsTextE
     GUIOuttextwin2 10,25,182,GUIGUIOptnsTextF
-    GUIOuttextwin2 10,137,27,GUIGUIOptnsTextJ
-    GUIOuttextwin2 10,25,192,GUIGUIOptnsTextK
+    GUIOuttextwin2 10,137,37,GUIGUIOptnsTextK
+    GUIOuttextwin2 10,25,192,GUIGUIOptnsTextL
 %endif
     mov byte[GUIGUIOptnsText6],'R'
     GUIOuttextwin2 10,15,122,GUIGUIOptnsText6
@@ -4918,8 +4899,9 @@ GUIGUIOptnsTextF db 'SAVE MAIN WINDOW POSITION',0
 GUIGUIOptnsTextG db 'BACK',0
 GUIGUIOptnsTextH db 'TITLE',0
 GUIGUIOptnsTextI db 'WIN',0
-GUIGUIOptnsTextJ db 'WHEEL MOUSE',0
-GUIGUIOptnsTextK db 'ALLOW MULTIPLE INSTANCES',0
+GUIGUIOptnsTextJ db 'TRANSPARENT MSGS',0
+GUIGUIOptnsTextK db 'WHEEL MOUSE',0
+GUIGUIOptnsTextL db 'ALLOW MULTIPLE INSTANCES',0
 
 DisplayGUIAbout:
 ;    cmp byte[OSPort],3

@@ -659,11 +659,13 @@ db '; This option also Enables EAGLE          - 640x480x256 mode only',13,10
 db '',13,10
 db 'Interpolation = %a',13,10
 db '',13,10
-%ifdef __MSDOS__
+%ifndef __LINUX__
 db '; VSync (1 = Enable, 0 = Disable) - Wait for Vertical Sync (Fast cpu reqd)',13,10
 db '',13,10
 db 'VSync = %p',13,10
 db '',13,10
+%endif
+%ifdef __MSDOS__
 db '; Skip Enter Press at Beginning  (1 = Yes, 0 = No)',13,10
 db '',13,10
 db 'EnterSkip = %b',13,10

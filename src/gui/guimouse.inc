@@ -2085,22 +2085,16 @@ DisplayGUIOptionClick:
     jne near .invalidng
     GUIClickCButton2 11,36,byte[newengen],byte[cfgnewgfx],1
 .invalidng
-%ifdef __MSDOS__
+%ifndef __LINUX__
     GUIClickCButton2 11,46,byte[vsyncon],byte[cfgvsync],1
-%endif
-%ifdef __WIN32__
-    GUIClickCButton 11,46,byte[HighPriority]
 %endif
     GUIClickCButton2 11,56,byte[FPUCopy],byte[cfgcopymethod],2
     GUIClickCButtonM 11,66,byte[pl12s34]
-;    cmp byte[OSPort],3
-;    je near .win32config
 %ifdef __MSDOS__
     GUIClickCButton 11,76,byte[SidewinderFix]
 %endif
-;.win32config
 %ifdef __WIN32__
-    GUIClickCButton 11,76,byte[AlternateTimer]
+    GUIClickCButton 11,76,byte[HighPriority]
 %endif
     GUIClickCButton 11,86,byte[FPSAtStart]
     GUIClickCButton 11,96,byte[Turbo30hz]
@@ -2112,7 +2106,9 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,156,byte[AutoState]
     GUIClickCButton 11,166,byte[DontSavePath]
     GUIClickCButton 11,176,byte[SPCDisable]
-    GUIClickCButton 11,186,byte[GUIEnableTransp]
+%ifdef __WIN32__
+    GUIClickCButton 11,186,byte[AlternateTimer]
+%endif
     ; Frameskip = 0
     cmp byte[frameskip],0
     je near .autopress
@@ -2631,13 +2627,13 @@ DisplayGUIOptnsClick:
     GUIClickCButton 12,73,byte[JoyPad1Move]
     GUIClickCButton6 12,83,byte[GUIEffect],1
     GUIClickCButton6 12,93,byte[GUIEffect],2
+    GUIClickCButton 124,23,byte[GUIEnableTransp]
 %ifdef __WIN32__
     GUIClickCButton 12,168,byte[AlwaysOnTop]
     GUIClickCButton 12,178,byte[SaveMainWindowPos]
     GUIClickCButton 12,188,byte[AllowMultipleInst]
-    GUIClickCButton 124,23,byte[MouseWheel]
+    GUIClickCButton 124,33,byte[MouseWheel]
 %endif
-
     GUIPButtonHole 48,108,byte[CurPalSelect],0
     GUIPButtonHole 88,108,byte[CurPalSelect],1
     GUIPButtonHole 135,108,byte[CurPalSelect],2
