@@ -58,7 +58,6 @@ void Debug_WriteString(char *str)
   fclose(fp);
 }
 
-
 //I want to port over the more complicated
 //functions from init.asm, or replace with
 //better versions from NSRT. -Nach
@@ -390,9 +389,34 @@ void MirrorROM()
   NumofBanks = curromspace >> 15;
 }
 
+
 //File loading code
 extern char *ZOpenFileName;
 bool Header512;
+
+
+extern char CSStatus[41];
+extern char CSStatus2[41];
+extern char CSStatus3[41];
+char *lastROMFileName;
+void DumpROMLoadInfo()
+{
+  FILE *fp = 0;
+  fp = fopen("rominfo.txt", "w");
+  if (!fp) { return; }
+  fputs("This is the info for the last game you ran.\n\nFile: ", fp);
+  fputs(lastROMFileName, fp);
+  fputs(" Header: ", fp);
+  fputs(Header512 ? "Yes\n" : "No\n", fp);
+  fputs(CSStatus, fp);
+  fputs("\n", fp);
+  fputs(CSStatus2, fp);
+  fputs("\n", fp);
+  fputs(CSStatus3, fp);
+  fputs("\n", fp);
+  fclose(fp);
+}
+
 
 void loadFile(char *filename)
 {
@@ -756,6 +780,8 @@ void loadROM()
   maxromspace = 4194304;
   if (Sup48mbit) { maxromspace += 2097152; }
   if (Sup16mbit) { maxromspace -= 2097152; } //I don't get it either
+
+  lastROMFileName = ZOpenFileName;
 
   if (strlen(ZOpenFileName) >= 5) //Char + ".zip"
   {

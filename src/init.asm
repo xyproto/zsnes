@@ -126,6 +126,7 @@ EXTSYM SplittedROM
 EXTSYM addOnStart
 EXTSYM addOnSize
 EXTSYM SPC7PackIndexLoad,SPC7110IndexSize
+EXTSYM DumpROMLoadInfo
 
 EXTSYM SetaCmdEnable,setaramdata
 EXTSYM setaaccessbankr8,setaaccessbankw8,setaaccessbankr8a,setaaccessbankw8a
@@ -3551,7 +3552,7 @@ NEWSYM convertsram
 
 SECTION .data
 NEWSYM CSStatus, db '                        TYPE:           ',0
-NEWSYM CSStatus2, db 'INTERLEAVED:No    BANK:Lo     CHSUM:OK  ',0
+NEWSYM CSStatus2, db 'INTERLEAVED:No    BANK:Lo    CHKSUM:OK  ',0
 NEWSYM CSStatus3, db 'VIDEO:                    CRC32:        ',0
 
 crc32_table:
@@ -3797,6 +3798,9 @@ NEWSYM showinfogui
 .failed
     mov dword[CSStatus2+36],'FAIL'
 .passed
+    pushad
+    call DumpROMLoadInfo
+    popad
     mov dword[MessageOn],300
     mov dword[Msgptr],CSStatus
     mov eax,[MsgCount]
