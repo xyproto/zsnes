@@ -2354,7 +2354,7 @@ NEWSYM init65816
     mov byte[nmiprevline],224
     mov byte[nmistatus],0
 
-    mov eax,080808080h
+    mov eax,055555555h
 
     ; Mario Paint, Clear WRAM w/ 0x00 (due to corrupt rom w/ trainer removed)
     mov esi,[romdata]
