@@ -256,7 +256,6 @@ NEWSYM showmenu
 .nodown
     jmp .nextkey
 .processextend
-
     cmp al,27
     je near .exitloop
     cmp al,13
