@@ -6560,7 +6560,7 @@ DisplayGUIAddOns:
     
     call EEMode
     cmp eax,0
-    je .noEE
+    je near .noEE
     GUIOuttextwin2 17,21,18,GUIAddOnText1Alt
     GUIOuttextwin2 17,21,28,GUIAddOnText2Alt
     GUIOuttextwin2 17,21,38,GUIAddOnText3Alt
@@ -6578,7 +6578,7 @@ DisplayGUIAddOns:
     
     call EEMode
     cmp eax,0
-    je .noEE2
+    je near .noEE2
     GUIOuttextwin2 17,20,17,GUIAddOnText1Alt
     GUIOuttextwin2 17,20,27,GUIAddOnText2Alt
     GUIOuttextwin2 17,20,37,GUIAddOnText3Alt
@@ -6626,7 +6626,7 @@ DisplayGUIChipConfig:
 
     call EEMode
     cmp eax,0
-    je .noEE
+    je near .noEE
     GUIOuttextwin2 18,10,38,GUIChipText1Alt
     GUIOuttextwin2 18,21,48,GUIChipText2Alt
     GUIOuttextwin2 18,71,48,GUIChipText3Alt
@@ -6648,7 +6648,7 @@ DisplayGUIChipConfig:
     
     call EEMode
     cmp eax,0
-    je .noEE2
+    je near .noEE2
     GUIOuttextwin2 18,9,37,GUIChipText1Alt
     GUIOuttextwin2 18,20,47,GUIChipText2Alt
     GUIOuttextwin2 18,70,47,GUIChipText3Alt

@@ -111,9 +111,9 @@ CHIPSOBJ=${CHIPDIR}/dsp1emu${OE} ${CHIPDIR}/fxemu2${OE} ${CHIPDIR}/sfxproc${OE}\
 	${CHIPDIR}/sdd1emu${OE}
 
 CPUOBJ=${CPUDIR}/dma${OE} ${CPUDIR}/dsp${OE} ${CPUDIR}/dspproc${OE}\
-	${CPUDIR}/execute${OE} ${CPUDIR}/irq${OE} ${CPUDIR}/memory${OE}\
-	${CPUDIR}/spc700${OE} ${CPUDIR}/stable${OE} ${CPUDIR}/table${OE}\
-	${CPUDIR}/tableb${OE} ${CPUDIR}/tablec${OE}
+	${CPUDIR}/execute${OE} ${CPUDIR}/executec${OE} ${CPUDIR}/irq${OE}\
+	${CPUDIR}/memory${OE} ${CPUDIR}/spc700${OE} ${CPUDIR}/stable${OE}\
+	${CPUDIR}/table${OE} ${CPUDIR}/tableb${OE} ${CPUDIR}/tablec${OE}
 
 GUIOBJ=${GUIDIR}/gui${OE} ${GUIDIR}/menu${OE}
 
@@ -215,6 +215,7 @@ patch${OE}: $<
 endmem${OE}: $< macros.mac
 
 ${CPUDIR}/execute${OE}: $< macros.mac
+${CPUDIR}/executec${OE}: $<
 ${CPUDIR}/table${OE}: $< ${CPUDIR}/65816d.inc ${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816.inc\
 	           ${CPUDIR}/regs.mac ${CPUDIR}/regs.inc ${CPUDIR}/regsw.mac ${CPUDIR}/regsw.inc macros.mac
 ${CPUDIR}/tableb${OE}: $< ${CPUDIR}/65816db.inc ${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816b.inc\

@@ -36,9 +36,9 @@ CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
          ${CHIPDIR}/sdd1emu.o
 
 CPUOBJ=${CPUDIR}/addrni.o ${CPUDIR}/dma.o ${CPUDIR}/dsp.o ${CPUDIR}/dspproc.o\
-	${CPUDIR}/execute.o ${CPUDIR}/irq.o ${CPUDIR}/memory.o \
-	${CPUDIR}/spc700.o ${CPUDIR}/stable.o ${CPUDIR}/table.o\
-	${CPUDIR}/tableb.o ${CPUDIR}/tablec.o 
+	${CPUDIR}/execute.o ${CPUDIR}/executec.o ${CPUDIR}/irq.o\
+	${CPUDIR}/memory.o ${CPUDIR}/spc700.o ${CPUDIR}/stable.o\
+	${CPUDIR}/table.o ${CPUDIR}/tableb.o ${CPUDIR}/tablec.o
 
 GUIOBJ=${GUIDIR}/gui.o ${GUIDIR}/menu.o
 
@@ -124,6 +124,7 @@ version.o:version.c
 
 ${DOSDIR}/debug.o: ${DOSDIR}/debug.asm macros.mac
 ${CPUDIR}/execute.o: ${CPUDIR}/execute.asm macros.mac
+${CPUDIR}/executec.o: ${CPUDIR}/executec.c
 ${CPUDIR}/table.o: ${CPUDIR}/table.asm ${CPUDIR}/65816d.inc\
 	${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816.inc\
 	${CPUDIR}/regs.mac ${CPUDIR}/regs.inc ${CPUDIR}/regsw.mac\

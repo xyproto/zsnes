@@ -106,7 +106,7 @@ EXTSYM SaveCombFile
 EXTSYM NetSent,valuea
 EXTSYM welcome
 EXTSYM showinfogui
-EXTSYM BackupCVFrame
+EXTSYM BackupCVFrame, tempedx, tempesi, tempedi, tempebp
 EXTSYM Wait1SecWin,ClearUDPStuff
 EXTSYM DisableSUDPPacket,EnableSUDPPacket
 EXTSYM BackStateSize
@@ -1948,9 +1948,14 @@ NEWSYM StartGUI
 %endif
 
     mov byte[RestoreValues],1
+    mov [tempedx],edx
+    mov [tempesi],esi
+    mov [tempedi],edi
+    mov [tempebp],ebp
     pushad
     mov dword[CBackupPos],0
     call BackupCVFrame
+    emms
     popad
 
     call DisableSUDPPacket
@@ -2338,6 +2343,10 @@ NEWSYM StartGUI
     pushad
     mov dword[PBackupPos],0
     call RestoreCVFrame
+    mov esi,[tempesi]
+    mov edi,[tempedi]
+    mov ebp,[tempebp]
+    emms
     popad
 .norestoreval
 
@@ -2611,22 +2620,22 @@ guifirsttimemsg:
     GUIBox 43,75,43,163,161
     GUIBox 213,75,213,163,159
     GUIBox 43,163,213,163,158
-    GUIOuttext 56,81,guiftimemsg1,220-15
-    GUIOuttext 55,80,guiftimemsg1,220
-    GUIOuttext 56,96,guiftimemsg2,220-15
-    GUIOuttext 55,95,guiftimemsg2,220
-    GUIOuttext 56,104,guiftimemsg3,220-15
-    GUIOuttext 55,103,guiftimemsg3,220
-    GUIOuttext 56,112,guiftimemsg4,220-15
-    GUIOuttext 55,111,guiftimemsg4,220
-    GUIOuttext 56,120,guiftimemsg5,220-15
-    GUIOuttext 55,119,guiftimemsg5,220
-    GUIOuttext 56,128,guiftimemsg6,220-15
-    GUIOuttext 55,127,guiftimemsg6,220
-    GUIOuttext 56,136,guiftimemsg7,220-15
-    GUIOuttext 55,135,guiftimemsg7,220
-    GUIOuttext 56,151,guiftimemsg8,220-15
-    GUIOuttext 55,150,guiftimemsg8,220
+    GUIOuttext 52,81,guiftimemsg1,220-15
+    GUIOuttext 51,80,guiftimemsg1,220
+    GUIOuttext 52,96,guiftimemsg2,220-15
+    GUIOuttext 51,95,guiftimemsg2,220
+    GUIOuttext 52,104,guiftimemsg3,220-15
+    GUIOuttext 51,103,guiftimemsg3,220
+    GUIOuttext 52,112,guiftimemsg4,220-15
+    GUIOuttext 51,111,guiftimemsg4,220
+    GUIOuttext 52,120,guiftimemsg5,220-15
+    GUIOuttext 51,119,guiftimemsg5,220
+    GUIOuttext 52,128,guiftimemsg6,220-15
+    GUIOuttext 51,127,guiftimemsg6,220
+    GUIOuttext 52,136,guiftimemsg7,220-15
+    GUIOuttext 51,135,guiftimemsg7,220
+    GUIOuttext 52,151,guiftimemsg8,220-15
+    GUIOuttext 51,150,guiftimemsg8,220
     call vidpastecopyscr
     call GUIUnBuffer
     call DisplayBoxes
@@ -2653,14 +2662,14 @@ guifirsttimemsg:
     ret
 
 SECTION .data
-guiftimemsg1 db 'ONE TIME USER REMINDER :',0
-guiftimemsg2 db ' PLEASE BE SURE TO READ',0
-guiftimemsg3 db ' THE DOCUMENTATION THAT',0
-guiftimemsg4 db '    COMES WITH ZSNES.',0
-guiftimemsg5 db 'MOST COMMON PROBLEMS ARE',0
-guiftimemsg6 db 'ANSWERED IN THE INCLUDED',0
-guiftimemsg7 db '     DOCUMENTATION.',0
-guiftimemsg8 db 'PUSH SPACEBAR TO PROCEED.',0
+guiftimemsg1 db ' ONE-TIME USER REMINDER : ',0
+guiftimemsg2 db '  PLEASE BE SURE TO READ  ',0
+guiftimemsg3 db 'THE DOCUMENTATION INCLUDED',0
+guiftimemsg4 db ' WITH ZSNES FOR IMPORTANT',0
+guiftimemsg5 db ' INFORMATION AND ANSWERS',0
+guiftimemsg6 db '    TO COMMON PROBLEMS',0
+guiftimemsg7 db '      AND QUESTIONS.',0
+guiftimemsg8 db 'PRESS SPACEBAR TO PROCEED.',0
 SECTION .text
 
 guimustrestartmsg:
@@ -5652,5 +5661,3 @@ db 137,176,166,37,192,241,169,84,32,85,112,168,154,7,247,146,183,225,246,173
 db 57,103,110,236,113,118,203,200,22,87,251,7,138,37,12,84,221,171,51,209
 db 242,37,89,73,151,162,139,189,131,209,221,96,107,144,175,79,199,123,98,138
 db 226,86,221,254,72,14,126,180,200,171,85,94,120,124,196,225,150,57,219,158
-
-

@@ -120,7 +120,7 @@ EXTSYM SfxSFR,nosprincr
 EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
 EXTSYM NetPlayNoMore
 EXTSYM statefileloc
-EXTSYM CHIPBATT,SaveSramData
+EXTSYM CHIPBATT,SaveSramData, BackupCVFrame, RestoreCVFrame
 
 %ifdef OPENSPC
 EXTSYM OSPC_Run, ospc_cycle_frac
@@ -223,6 +223,9 @@ NEWSYM PPContrl3, times 16 dd 0   ; Previous Controller 3 Data
 NEWSYM PPContrl4, times 16 dd 0   ; Previous Controller 4 Data
 NEWSYM PPContrl5, times 16 dd 0   ; Previous Controller 5 Data
 NEWSYM tempedx, dd 0
+NEWSYM tempesi, dd 0
+NEWSYM tempedi, dd 0
+NEWSYM tempebp, dd 0
 NEWSYM NetSent2, dd 0
 NEWSYM NetQuitter, dd 0
 NEWSYM NetQuit, db 0
@@ -405,7 +408,7 @@ NEWSYM ProcessRewind
     mov byte[pressed+eax],2
     mov eax,[RewindOldPos]
     cmp [RewindPos],eax
-    je .notokay
+    je near .notokay
     dec dword[RewindPos]
     and dword[RewindPos],0Fh
     mov eax,[RewindOldPos]
@@ -417,7 +420,13 @@ NEWSYM ProcessRewind
     mov [PBackupPos],eax
     push ecx
     push ebx
+    pushad
     call RestoreCVFrame
+    emms
+    popad
+    mov esi,[tempesi]
+    mov edi,[tempedi]
+    mov ebp,[tempebp]
     ; Clear Cache Check
     mov ebx,vidmemch2
     mov ecx,4096+4096+4096
@@ -456,11 +465,13 @@ NEWSYM UpdateRewind
     mov eax,[RewindPos]
     mov [CBackupPos],eax
     mov [tempedx],edx
-    push ecx
-    push ebx
+    mov [tempesi],esi
+    mov [tempedi],edi
+    mov [tempebp],ebp
+    pushad
     call BackupCVFrame
-    pop ebx
-    pop ecx
+    emms
+    popad
     inc dword[RewindPos]
     and dword[RewindPos],0Fh
     mov eax,[RewindOldPos]
@@ -519,208 +530,6 @@ NEWSYM RestoreSystemVars
     BackupCVRMacB prevoamptr,1
     BackupCVRMac ReadHead,1
     popad
-    ret
-
-NEWSYM BackupCVFrame
-    push edx
-    push eax
-    mov ebx,[CBackupPos]
-    shl ebx,19
-    add ebx,[StateBackup]
-    add ebx,1024
-
-    BackupCVMacB zsmesg,[PHnum2writecpureg]
-    BackupCVMac cycpbl,2
-    BackupCVMacB sndrot,3019
-    BackupCVMacM [wramdata],8192
-    BackupCVMacM [vram],4096
-    cmp byte[spcon],0
-    je .nospcon
-    BackupCVMacB spcRam,[PHspcsave]
-    BackupCVMacM DSPMem,16
-.nospcon
-    cmp byte[C4Enable],1
-    jne .noc4
-    BackupCVMac [C4Ram],800h
-.noc4
-    cmp byte[SFXEnable],1
-    jne .nosfx
-    BackupCVMacM [sfxramdata],8192
-.nosfx
-    cmp byte[SA1Enable],1
-    jne near .nossa1
-    BackupCVMacB SA1Mode,[PHnum2writesa1reg]
-    BackupCVMacM [SA1RAMArea],8192
-    BackupCVMacB SA1Status,3
-    BackupCVMac prevedi,1
-    BackupCVMac SA1xpc,1
-    BackupCVMac SA1RAMArea,6
-    BackupCVMac sa1dmaptr,2
-.nossa1
-    cmp byte[DSP1Type],0
-    je near .nodsp1type
-    BackupCVMacB DSP1COp,70+128
-    BackupCVMacB C4WFXVal,7*4+7*8+128
-    BackupCVMacB C41FXVal,5*4+128
-    BackupCVMacB Op00Multiplicand,3*4+128
-    BackupCVMacB Op10Coefficient,4*4+128
-    BackupCVMacB Op04Angle,4*4+128
-    BackupCVMacB Op08X,5*4+128
-    BackupCVMacB Op18X,5*4+128
-    BackupCVMacB Op28X,4*4+128
-    BackupCVMacB Op0CA,5*4+128
-    BackupCVMacB Op02FX,11*4+3*4+28*8+128
-    BackupCVMacB Op0AVS,5*4+14*8+128
-    BackupCVMacB Op06X,6*4+10*8+4+128
-    BackupCVMacB Op01m,4*4+128
-    BackupCVMacB Op0DX,6*4+128
-    BackupCVMacB Op03F,6*4+128
-    BackupCVMacB Op14Zr,9*4+128
-    BackupCVMacB Op0EH,4*4+128
-.nodsp1type
-    BackupCVMacB soundcycleft,33
-    BackupCVMac spc700read,10
-    BackupCVMac timer2upd,1
-    BackupCVMac xa,14
-    BackupCVMacB spcnumread,4
- BackupCVMacB spchalted,4
-    BackupCVMac opcd,6
-    BackupCVMacB HIRQCycNext,5
-    BackupCVMac oamaddr,14
-    BackupCVMacB prevoamptr,1
-    BackupCVMac ReadHead,1
-
-    cmp byte[SETAEnable],1
-    jne .noseta
-    BackupCVMacM [setaramdata],256
-.noseta
-
-    mov edx,[sram]
-    mov ecx,[ramsize]
-    shr ecx,4
-    or ecx,ecx
-    jz .end
-.loop
-    movq mm0,[edx]
-    movq mm1,[edx+8]
-    movq [ebx],mm0
-    movq [ebx+8],mm1
-    add edx,16
-    add ebx,16
-    dec ecx
-    jnz .loop
-.end
-
-    pop eax
-    pop edx
-    mov [ebx],esi
-    mov [ebx+4],edi
-    mov ecx,[tempedx]
-    mov [ebx+8],ecx
-    mov [ebx+12],ebp
-    emms
-    ret
-
-NEWSYM RestoreCVFrame
-    push edx
-    push eax
-    mov ebx,[PBackupPos]
-    shl ebx,19
-    add ebx,[StateBackup]
-    add ebx,1024
-
-    BackupCVRMacB zsmesg,[PHnum2writecpureg]
-    BackupCVRMac cycpbl,2
-    BackupCVRMacB sndrot,3019
-    BackupCVRMacM [wramdata],8192
-    BackupCVRMacM [vram],4096
-    cmp byte[spcon],0
-    je .nospcon
-    BackupCVRMacB spcRam,[PHspcsave]
-    BackupCVRMacM DSPMem,16
-.nospcon
-    cmp byte[C4Enable],1
-    jne .noc4
-    BackupCVRMac [C4Ram],800h
-.noc4
-    cmp byte[SFXEnable],1
-    jne .nosfx
-    BackupCVRMacM [sfxramdata],8192
-.nosfx
-    cmp byte[SA1Enable],1
-    jne near .nossa1
-    BackupCVRMacB SA1Mode,[PHnum2writesa1reg]
-    BackupCVRMacM [SA1RAMArea],8192
-    BackupCVRMacB SA1Status,3
-    BackupCVRMac prevedi,1
-    BackupCVRMac SA1xpc,1
-    BackupCVRMac SA1RAMArea,6
-    BackupCVRMac sa1dmaptr,2
-.nossa1
-    cmp byte[DSP1Type],0
-    je near .nodsp1type
-    BackupCVRMacB DSP1COp,70+128
-    BackupCVRMacB C4WFXVal,7*4+7*8+128
-    BackupCVRMacB C41FXVal,5*4+128
-    BackupCVRMacB Op00Multiplicand,3*4+128
-    BackupCVRMacB Op10Coefficient,4*4+128
-    BackupCVRMacB Op04Angle,4*4+128
-    BackupCVRMacB Op08X,5*4+128
-    BackupCVRMacB Op18X,5*4+128
-    BackupCVRMacB Op28X,4*4+128
-    BackupCVRMacB Op0CA,5*4+128
-    BackupCVRMacB Op02FX,11*4+3*4+28*8+128
-    BackupCVRMacB Op0AVS,5*4+14*8+128
-    BackupCVRMacB Op06X,6*4+10*8+4+128
-    BackupCVRMacB Op01m,4*4+128
-    BackupCVRMacB Op0DX,6*4+128
-    BackupCVRMacB Op03F,6*4+128
-    BackupCVRMacB Op14Zr,9*4+128
-    BackupCVRMacB Op0EH,4*4+128
-.nodsp1type
-    BackupCVRMacB soundcycleft,33
-    BackupCVRMac spc700read,10
-    BackupCVRMac timer2upd,1
-    BackupCVRMac xa,14
-    BackupCVRMacB spcnumread,4
-	BackupCVRMacB spchalted,4
-    BackupCVRMac opcd,6
-    BackupCVRMacB HIRQCycNext,5
-    BackupCVRMac oamaddr,14
-    BackupCVRMacB prevoamptr,1
-    BackupCVRMac ReadHead,1
-
-    cmp byte[SETAEnable],1
-    jne .noseta
-    BackupCVRMacM [setaramdata],256
-.noseta
-
-    mov edx,[sram]
-    mov ecx,[ramsize]
-    shr ecx,4
-    or ecx,ecx
-    jz .end
-.loop
-    movq mm0,[ebx]
-    movq mm1,[ebx+8]
-    movq [edx],mm0
-    movq [edx+8],mm1
-    add edx,16
-    add ebx,16
-    dec ecx
-    jnz .loop
-.end
-
-    pop eax
-    pop edx
-    mov esi,[ebx]
-    mov edi,[ebx+4]
-    mov ecx,[ebx+8]
-    mov [tempedx],ecx
-    mov ebp,[ebx+12]
-    call UpdateDPage
-    call SA1UpdateDPage
-    emms
     ret
 
 SECTION .bss
@@ -1822,6 +1631,7 @@ NEWSYM stateloader
     call headerhack
     call initpitch
     ret
+
 NEWSYM loadstate
     mov byte[pressed+1],0
     mov eax,[KeyLoadState]
@@ -2982,13 +2792,19 @@ NEWSYM cpuover
     jne near .latencyleft
 
     mov [tempedx],edx
+    mov [tempesi],esi
+    mov [tempedi],edi
+    mov [tempebp],ebp
 
     push ecx
     push ebx
 %ifndef __MSDOS__
     cmp byte[BackState],1
     jne .nobackstate
+    pushad
     call BackupCVFrame
+    emms
+    popad
 .nobackupcvframe
     mov ebx,[CBackupPos]
     inc ebx
@@ -3180,7 +2996,13 @@ NEWSYM cpuover
     and ebx,0Fh
     cmp ebx,[CBackupPos]
     je .noquit2
+    pushad
     call RestoreCVFrame
+    emms
+    popad
+    mov esi,[tempesi]
+    mov edi,[tempedi]
+    mov ebp,[tempebp]
     add dword[NetSent],1000
 .noquit2
     pop edx
@@ -3197,7 +3019,13 @@ NEWSYM cpuover
     and ebx,0Fh
     cmp ebx,[CBackupPos]
     je .noupdate
+    pushad
     call RestoreCVFrame
+    emms
+    popad
+    mov esi,[tempesi]
+    mov edi,[tempedi]
+    mov ebp,[tempebp]
     mov ebx,[PBackupPos]                ; *****************
     inc ebx
     and ebx,0Fh
