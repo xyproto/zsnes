@@ -219,11 +219,11 @@ NEWSYM cbitmode,      resb 1            ; bit mode, 0=8bit, 1=16bit
 
 SECTION .data
 
-NEWSYM opexec268,     db 167            ; # of opcodes/scanline in 2.68Mhz mode
+NEWSYM opexec268,     db 168            ; # of opcodes/scanline in 2.68Mhz mode
 NEWSYM opexec358,     db 180            ; # of opcodes/scanline in 3.58Mhz mode (228/180)
 NEWSYM opexec268cph,  db 42             ; # of opcodes/hblank in 2.68Mhz mode
 NEWSYM opexec358cph,  db 45             ; # of opcodes/hblank in 3.58Mhz mode (56/50)
-NEWSYM opexec268b,    db 167            ; # of opcodes/scanline in 2.68Mhz mode
+NEWSYM opexec268b,    db 168            ; # of opcodes/scanline in 2.68Mhz mode
 NEWSYM opexec358b,    db 180            ; # of opcodes/scanline in 3.58Mhz mode (228/180)
 NEWSYM opexec268cphb, db 42             ; # of opcodes/hblank in 2.68Mhz mode
 NEWSYM opexec358cphb, db 45             ; # of opcodes/hblank in 3.58Mhz mode (56/50)
