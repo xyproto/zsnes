@@ -138,7 +138,6 @@ NEWSYM DspProcAsmStart
 
 
 SECTION .bss
-tempstuff resb 0
 
 ; MixEcho
 ; modpitch
@@ -170,8 +169,6 @@ tempstuff resb 0
 ; Move A into X
 ; If A is not zero, goto FFD6
 ; Jump to Address [0000]
-
-section .bss
 
 DSPInterP:
   resw 1024
@@ -1765,8 +1762,6 @@ section .text
     mov [prev0],edx
 %endmacro
 
-;EXTSYM fir_downsample
-
 %macro ProcessDynamicLowPass 0
     mov ecx,[curvoice]
     mov edx, [Voice0Freq+ecx*4]
@@ -1949,7 +1944,6 @@ ALIGN16
     mov [ebx+20*4],eax
     mov [ebx+25*4],eax
 
-%if 1
     mov ecx,16
     sub edx,0F80000h
     shr edx,15
@@ -1983,16 +1977,6 @@ ALIGN16
     dec ecx
     jnz %%DLPF_fir_loop
     emms
-
-%else
-
-    push edi
-    push ebx
-    push edx
-    call fir_downsample
-    add esp,+12
-    add edi,32
-%endif
     ret
 %endmacro
 
