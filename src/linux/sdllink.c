@@ -10,6 +10,10 @@
 #include "sw_draw.h"
 #include "gl_draw.h"
 
+#ifdef __OPENGL__
+#include <GL/gl.h>
+#endif
+
 #define BYTE  unsigned char
 #define WORD  unsigned short
 #define DWORD unsigned long
@@ -33,6 +37,11 @@ DWORD PrevSoundQuality;
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
 
+// SDL VIDEO VARIABLES
+SDL_Surface *surface;
+int SurfaceLocking = 0;
+int SurfaceX, SurfaceY;
+
 // VIDEO VARIABLES
 static DWORD WindowWidth = 256;
 static DWORD WindowHeight = 224;
@@ -44,7 +53,7 @@ DWORD BitDepth = 0;	// Do NOT change this for ANY reason
 
 // JOYSTICK AND KEYBOARD INPUT
 SDL_Joystick *JoystickInput[4];
-DWORD CurrentJoy = 0;
+//DWORD CurrentJoy = 0;
 unsigned char keyboardhit = 0;
 int shiftptr = 0;
 DWORD numlockptr;
@@ -86,9 +95,8 @@ static _int64 zsnes_GetTicks()
 	struct timeval tv;
 
 	gettimeofday(&tv, NULL);
-	return (tv.tv_sec - start_time.tv_sec) * 1000000L + (tv.tv_usec -
-							     start_time.
-							     tv_usec);
+	return (tv.tv_sec - start_time.tv_sec) * 1000000L + 
+	    (tv.tv_usec - start_time.tv_usec);
 }
 
 void drawscreenwin(void);
@@ -100,7 +108,7 @@ int Main_Proc(void)
 {
 	int j;
 	SDL_Event event;
-	Uint8 JoyButton;
+	//Uint8 JoyButton;
 
 	while (SDL_PollEvent(&event))
 	{
@@ -116,11 +124,8 @@ int Main_Proc(void)
 					numlockptr = 0;
 				if (event.key.keysym.scancode - 8 >= 0)
 				{
-					if (pressed
-					    [event.key.keysym.scancode - 8] !=
-					    2)
-						pressed[event.key.keysym.
-							scancode - 8] = 1;
+					if (pressed[event.key.keysym.scancode - 8] != 2)
+						pressed[event.key.keysym.scancode - 8] = 1;
 					ProcessKeyBuf(event.key.keysym.sym);
 				}
 				break;
@@ -130,21 +135,16 @@ int Main_Proc(void)
 				    event.key.keysym.sym == SDLK_RSHIFT)
 					shiftptr = 0;
 				if (event.key.keysym.scancode - 8 >= 0)
-					pressed[event.key.keysym.scancode - 8] =
-						0;
+					pressed[event.key.keysym.scancode - 8] = 0;
 				break;
 
 			case SDL_MOUSEMOTION:
 				MouseX = event.motion.x;
 				MouseY = event.motion.y;
-				if (MouseX < MouseMinX)
-					MouseX = MouseMinX;
-				if (MouseX > MouseMaxX)
-					MouseX = MouseMaxX;
-				if (MouseY < MouseMinY)
-					MouseY = MouseMinY;
-				if (MouseY > MouseMaxY)
-					MouseY = MouseMaxY;
+				if (MouseX < MouseMinX) MouseX = MouseMinX;
+				if (MouseX > MouseMaxX) MouseX = MouseMaxX;
+				if (MouseY < MouseMinY) MouseY = MouseMinY;
+				if (MouseY > MouseMaxY) MouseY = MouseMaxY;
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
@@ -165,9 +165,7 @@ int Main_Proc(void)
 						ProcessKeyBuf(SDLK_RETURN);
 						// Yes, this is intentional - DDOI
 					default:
-						MouseButton =
-							MouseButton | event.
-							button.button;
+						MouseButton = MouseButton | event.button.button;
 						break;
 				}
 
@@ -185,50 +183,34 @@ int Main_Proc(void)
 				   really general here, but this may break the format of 'pressed'
 				 */
 			case SDL_JOYBALLMOTION:
-				CurrentJoy = event.jball.which;
+			    //CurrentJoy = event.jball.which;
 				if (event.jball.ball == 0)
 				{
 					if (event.jball.xrel < -100)
 					{
-						pressed[0x100 +
-							CurrentJoy * 32 + 6] =
-							0;
-						pressed[0x100 +
-							CurrentJoy * 32 + 7] =
-							1;
+						pressed[0x100 + event.jball.which * 32 + 6] = 0;
+						pressed[0x100 +	event.jball.which * 32 + 7] = 1;
 					}
 					if (event.jball.xrel > 100)
 					{
-						pressed[0x100 +
-							CurrentJoy * 32 + 6] =
-							1;
-						pressed[0x100 +
-							CurrentJoy * 32 + 7] =
-							0;
+						pressed[0x100 + event.jball.which * 32 + 6] = 1;
+						pressed[0x100 +	event.jball.which * 32 + 7] = 0;
 					}
 					if (event.jball.yrel < -100)
 					{
-						pressed[0x100 +
-							CurrentJoy * 32 + 8] =
-							0;
-						pressed[0x100 +
-							CurrentJoy * 32 + 9] =
-							1;
+						pressed[0x100 + event.jball.which * 32 + 8] = 0;
+						pressed[0x100 + event.jball.which * 32 + 9] = 1;
 					}
 					if (event.jball.yrel > 100)
 					{
-						pressed[0x100 +
-							CurrentJoy * 32 + 8] =
-							1;
-						pressed[0x100 +
-							CurrentJoy * 32 + 9] =
-							0;
+						pressed[0x100 + event.jball.which * 32 + 8] = 1;
+						pressed[0x100 + event.jball.which * 32 + 9] = 0;
 					}
 				}
 				break;
 
 			case SDL_JOYAXISMOTION:
-				CurrentJoy = event.jaxis.which;
+			    //CurrentJoy = event.jaxis.which;
 				for (j = 0; j < 3; j++)
 				{
 					if (event.jaxis.axis == j)
@@ -236,57 +218,59 @@ int Main_Proc(void)
 						if (event.jaxis.value < -16384)
 						{
 							pressed[0x100 +
-								CurrentJoy *
-								32 + 2 * j +
-								1] = 1;
+								event.jaxis.which *	32 + 2 * j + 1] = 1;
 							pressed[0x100 +
-								CurrentJoy *
-								32 + 2 * j +
-								0] = 0;
+								event.jaxis.which * 32 + 2 * j + 0] = 0;
 						}
-						else if (event.jaxis.value >
-							 16384)
+						else if (event.jaxis.value > 16384)
 						{
 							pressed[0x100 +
-								CurrentJoy *
-								32 + 2 * j +
-								0] = 1;
+								event.jaxis.which * 32 + 2 * j + 0] = 1;
 							pressed[0x100 +
-								CurrentJoy *
-								32 + 2 * j +
-								1] = 0;
+								event.jaxis.which * 32 + 2 * j + 1] = 0;
 						}
 						else
 						{
 							pressed[0x100 +
-								CurrentJoy *
-								32 + 2 * j +
-								0] = 0;
+								event.jaxis.which * 32 + 2 * j + 0] = 0;
 							pressed[0x100 +
-								CurrentJoy *
-								32 + 2 * j +
-								1] = 0;
+								event.jaxis.which * 32 + 2 * j + 1] = 0;
 						}
 					}
 				}
 				break;
 
 			case SDL_JOYBUTTONDOWN:
-				CurrentJoy = event.jbutton.which;
-				JoyButton = event.jbutton.button;
-				pressed[0x100 + CurrentJoy * 32 + 16 +
-					JoyButton] = 1;
+			    //CurrentJoy = event.jbutton.which;
+			    //JoyButton = event.jbutton.button;
+				pressed[0x100 + event.jbutton.which * 32 + 16 +
+					event.jbutton.button] = 1;
 				break;
 
 			case SDL_JOYBUTTONUP:
-				CurrentJoy = event.jbutton.which;
-				JoyButton = event.jbutton.button;
-				pressed[0x100 + CurrentJoy * 32 + 16 +
-					JoyButton] = 0;
+			    //CurrentJoy = event.jbutton.which;
+			    //JoyButton = event.jbutton.button;
+				pressed[0x100 + event.jbutton.which * 32 + 16 +
+					event.jbutton.button] = 0;
 				break;
 			case SDL_QUIT:
 				LinuxExit();
 				break;
+#ifdef __OPENGL__
+			case SDL_VIDEORESIZE:
+				if(cvidmode != 16) {
+				    surface = SDL_SetVideoMode(WindowWidth, WindowHeight,
+					    BitDepth, surface->flags & ~SDL_RESIZABLE);
+				    break;
+				}
+				WindowWidth = SurfaceX = event.resize.w;
+				WindowHeight = SurfaceY = event.resize.h;
+				surface = SDL_SetVideoMode(WindowWidth,
+				    WindowHeight, BitDepth, surface->flags);
+				glViewport(0,0, WindowWidth, WindowHeight);
+				glFlush();
+				break;
+#endif
 			default:
 				break;
 		}
@@ -324,42 +308,21 @@ void ProcessKeyBuf(int scancode)
 		{
 			switch (scancode)
 			{
-				case '1':
-					vkeyval = '!';
-					break;
-				case '2':
-					vkeyval = '@';
-					break;
-				case '3':
-					vkeyval = '#';
-					break;
-				case '4':
-					vkeyval = '$';
-					break;
-				case '5':
-					vkeyval = '%';
-					break;
-				case '6':
-					vkeyval = '^';
-					break;
-				case '7':
-					vkeyval = '&';
-					break;
-				case '8':
-					vkeyval = '*';
-					break;
-				case '9':
-					vkeyval = '(';
-					break;
-				case '0':
-					vkeyval = ')';
-					break;
+				case '1': vkeyval = '!'; break;
+				case '2': vkeyval = '@'; break;
+				case '3': vkeyval = '#'; break;
+				case '4': vkeyval = '$'; break;
+				case '5': vkeyval = '%'; break;
+				case '6': vkeyval = '^'; break;
+				case '7': vkeyval = '&'; break;
+				case '8': vkeyval = '*'; break;
+				case '9': vkeyval = '('; break;
+				case '0': vkeyval = ')'; break;
 			}
 		}
 	}
 	if ((scancode >= SDLK_KP0) && (scancode <= SDLK_KP9))
 	{
-
 		if (numlockptr)
 		{
 			accept = true;
@@ -370,42 +333,15 @@ void ProcessKeyBuf(int scancode)
 
 			switch (scancode)
 			{
-				case SDLK_KP9:
-					vkeyval = 256 + 73;
-					accept = true;
-					break;
-				case SDLK_KP8:
-					vkeyval = 256 + 72;
-					accept = true;
-					break;
-				case SDLK_KP7:
-					vkeyval = 256 + 71;
-					accept = true;
-					break;
-				case SDLK_KP6:
-					vkeyval = 256 + 77;
-					accept = true;
-					break;
-				case SDLK_KP5:
-					vkeyval = 256 + 76;
-					accept = true;
-					break;
-				case SDLK_KP4:
-					vkeyval = 256 + 75;
-					accept = true;
-					break;
-				case SDLK_KP3:
-					vkeyval = 256 + 81;
-					accept = true;
-					break;
-				case SDLK_KP2:
-					vkeyval = 256 + 80;
-					accept = true;
-					break;
-				case SDLK_KP1:
-					vkeyval = 256 + 79;
-					accept = true;
-					break;
+				case SDLK_KP9: vkeyval = 256 + 73; accept = true; break;
+				case SDLK_KP8: vkeyval = 256 + 72; accept = true; break;
+				case SDLK_KP7: vkeyval = 256 + 71; accept = true; break;
+				case SDLK_KP6: vkeyval = 256 + 77; accept = true; break;
+				case SDLK_KP5: vkeyval = 256 + 76; accept = true; break;
+				case SDLK_KP4: vkeyval = 256 + 75; accept = true; break;
+				case SDLK_KP3: vkeyval = 256 + 81; accept = true; break;
+				case SDLK_KP2: vkeyval = 256 + 80; accept = true; break;
+				case SDLK_KP1: vkeyval = 256 + 79; accept = true; break;
 			}
 		}		// end no-numlock
 	}			// end testing of keypad
@@ -413,153 +349,54 @@ void ProcessKeyBuf(int scancode)
 	{
 		switch (scancode)
 		{
-			case SDLK_MINUS:
-				vkeyval = '-';
-				accept = true;
-				break;
-			case SDLK_EQUALS:
-				vkeyval = '=';
-				accept = true;
-				break;
-			case SDLK_LEFTBRACKET:
-				vkeyval = '[';
-				accept = true;
-				break;
-			case SDLK_RIGHTBRACKET:
-				vkeyval = ']';
-				accept = true;
-				break;
-			case SDLK_SEMICOLON:
-				vkeyval = ';';
-				accept = true;
-				break;
+			case SDLK_MINUS:        vkeyval = '-'; accept = true; break;
+			case SDLK_EQUALS:       vkeyval = '='; accept = true; break;
+			case SDLK_LEFTBRACKET:  vkeyval = '['; accept = true; break;
+			case SDLK_RIGHTBRACKET: vkeyval = ']'; accept = true; break;
+			case SDLK_SEMICOLON:    vkeyval = ';'; accept = true; break;
 				// ??? - DDOI
 				//case 222: vkeyval=39; accept = true; break;
 				//case 220: vkeyval=92; accept = true; break;
-			case SDLK_COMMA:
-				vkeyval = ',';
-				accept = true;
-				break;
-			case SDLK_PERIOD:
-				vkeyval = '.';
-				accept = true;
-				break;
-			case SDLK_SLASH:
-				vkeyval = '/';
-				accept = true;
-				break;
-			case SDLK_QUOTE:
-				vkeyval = '`';
-				accept = true;
-				break;
+			case SDLK_COMMA:        vkeyval = ','; accept = true; break;
+			case SDLK_PERIOD:       vkeyval = '.'; accept = true; break;
+			case SDLK_SLASH:        vkeyval = '/'; accept = true; break;
+			case SDLK_QUOTE:        vkeyval = '`'; accept = true; break;
 		}
 	}
 	else
 	{
 		switch (scancode)
 		{
-			case SDLK_MINUS:
-				vkeyval = '_';
-				accept = true;
-				break;
-			case SDLK_EQUALS:
-				vkeyval = '+';
-				accept = true;
-				break;
-			case SDLK_LEFTBRACKET:
-				vkeyval = '{';
-				accept = true;
-				break;
-			case SDLK_RIGHTBRACKET:
-				vkeyval = '}';
-				accept = true;
-				break;
-			case SDLK_SEMICOLON:
-				vkeyval = ':';
-				accept = true;
-				break;
-			case SDLK_QUOTE:
-				vkeyval = '"';
-				accept = true;
-				break;
-			case SDLK_COMMA:
-				vkeyval = '<';
-				accept = true;
-				break;
-			case SDLK_PERIOD:
-				vkeyval = '>';
-				accept = true;
-				break;
-			case SDLK_SLASH:
-				vkeyval = '?';
-				accept = true;
-				break;
-			case SDLK_BACKQUOTE:
-				vkeyval = '~';
-				accept = true;
-				break;
-			case SDLK_BACKSLASH:
-				vkeyval = '|';
-				accept = true;
-				break;
+			case SDLK_MINUS:        vkeyval = '_'; accept = true; break;
+			case SDLK_EQUALS:       vkeyval = '+'; accept = true; break;
+			case SDLK_LEFTBRACKET:  vkeyval = '{'; accept = true; break;
+			case SDLK_RIGHTBRACKET: vkeyval = '}'; accept = true; break;
+			case SDLK_SEMICOLON:    vkeyval = ':'; accept = true; break;
+			case SDLK_QUOTE:        vkeyval = '"'; accept = true; break;
+			case SDLK_COMMA:        vkeyval = '<'; accept = true; break;
+			case SDLK_PERIOD:       vkeyval = '>'; accept = true; break;
+			case SDLK_SLASH:        vkeyval = '?'; accept = true; break;
+			case SDLK_BACKQUOTE:    vkeyval = '~'; accept = true; break;
+			case SDLK_BACKSLASH:    vkeyval = '|'; accept = true; break;
 		}
 	}
 	// TODO Figure out what the rest these are supposed to be - DDOI
 	switch (scancode)
 	{
-		case SDLK_PAGEUP:
-			vkeyval = 256 + 73;
-			accept = true;
-			break;
-		case SDLK_UP:
-			vkeyval = 256 + 72;
-			accept = true;
-			break;
-		case SDLK_HOME:
-			vkeyval = 256 + 71;
-			accept = true;
-			break;
-		case SDLK_RIGHT:
-			vkeyval = 256 + 77;
-			accept = true;
-			break;
+		case SDLK_PAGEUP:      vkeyval = 256 + 73; accept = true; break;
+		case SDLK_UP:          vkeyval = 256 + 72; accept = true; break;
+		case SDLK_HOME:        vkeyval = 256 + 71; accept = true; break;
+		case SDLK_RIGHT:       vkeyval = 256 + 77; accept = true; break;
 			//case 12: vkeyval = 256+76; accept = true; break;
-		case SDLK_LEFT:
-			vkeyval = 256 + 75;
-			accept = true;
-			break;
-		case SDLK_PAGEDOWN:
-			vkeyval = 256 + 81;
-			accept = true;
-			break;
-		case SDLK_DOWN:
-			vkeyval = 256 + 80;
-			accept = true;
-			break;
-		case SDLK_END:
-			vkeyval = 256 + 79;
-			accept = true;
-			break;
-		case SDLK_KP_PLUS:
-			vkeyval = '+';
-			accept = true;
-			break;
-		case SDLK_KP_MINUS:
-			vkeyval = '-';
-			accept = true;
-			break;
-		case SDLK_KP_MULTIPLY:
-			vkeyval = '*';
-			accept = true;
-			break;
-		case SDLK_KP_DIVIDE:
-			vkeyval = '/';
-			accept = true;
-			break;
-		case SDLK_KP_PERIOD:
-			vkeyval = '.';
-			accept = true;
-			break;
+		case SDLK_LEFT:        vkeyval = 256 + 75; accept = true; break;
+		case SDLK_PAGEDOWN:    vkeyval = 256 + 81; accept = true; break;
+		case SDLK_DOWN:        vkeyval = 256 + 80; accept = true; break;
+		case SDLK_END:         vkeyval = 256 + 79; accept = true; break;
+		case SDLK_KP_PLUS:     vkeyval = '+'; accept = true; break;
+		case SDLK_KP_MINUS:    vkeyval = '-'; accept = true; break;
+		case SDLK_KP_MULTIPLY: vkeyval = '*'; accept = true; break;
+		case SDLK_KP_DIVIDE:   vkeyval = '/'; accept = true; break;
+		case SDLK_KP_PERIOD:   vkeyval = '.'; accept = true; break;
 	}
 
 	if (accept)
@@ -666,7 +503,8 @@ int startgame(void)
 
 	if (!sdl_inited)
 	{
-		if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
+		if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER |
+	        SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
 		{
 			fprintf(stderr, "Could not initialize SDL!\n");
 			return FALSE;
@@ -677,29 +515,22 @@ int startgame(void)
 
 	BitDepth = (UseOpenGL ? 16 : 0);
 
-	if (sdl_inited == 1)
-		sw_end();
+	if (sdl_inited == 1) sw_end();
 #ifdef __OPENGL__
-	else if (sdl_inited == 2)
-		gl_end();
+	else if (sdl_inited == 2) gl_end();
 
 	if (UseOpenGL)
 	{
-		status = gl_start(WindowWidth, WindowHeight, BitDepth,
-				  FullScreen);
+		status = gl_start(WindowWidth, WindowHeight, BitDepth, FullScreen);
 	}
 	else
 #endif
 	{
-		status = sw_start(WindowWidth, WindowHeight, BitDepth,
-				  FullScreen);
+		status = sw_start(WindowWidth, WindowHeight, BitDepth, FullScreen);
 	}
 
-	if (!status)
-		return FALSE;
-
+	if (!status) return FALSE;
 	sdl_inited = UseOpenGL + 1;
-
 	return TRUE;
 }
 
@@ -806,7 +637,7 @@ void initwinvideo(void)
 		   UseOpenGL = 1;
 #else
 		if (cvidmode > 3)
-		   cvidmode = 0;
+		  cvidmode = 2; // set it to the default 512x448 W
 #endif
 
 		switch (cvidmode)
@@ -822,12 +653,13 @@ void initwinvideo(void)
 				break;
 			case 2:
 			case 5:
+			case 13:
 				WindowWidth = 512;
 				WindowHeight = 448;
 				break;
 			case 3:
 			case 6:
-			case 13:
+			case 16:
 				WindowWidth = 640;
 				WindowHeight = 480;
 				break;

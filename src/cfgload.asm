@@ -612,6 +612,7 @@ db ';   8 = 768x672  OGL WIN      9 = 896x784  OGL WIN',13,10
 db ';  10 = 1024x896 OGL WIN     11 = 800x600  OGL FULL',13,10
 db ';  12 = 1024x768 OGL FULL    13 = 640x480  OGL WIN',13,10
 db ';  14 = 800x600  OGL WIN     15 = 1024x768 OGL WIN',13,10
+db ';  16 = VARIABLE OGL WIN',13,10
 %endif
 db '',13,10
 db 'VideoMode = %U',13,10

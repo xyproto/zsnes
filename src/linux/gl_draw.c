@@ -15,10 +15,12 @@ typedef enum
 { FALSE = 0, TRUE = !FALSE }
 BOOL;
 
-// SDL VIDEO VARIOABLES
-static SDL_Surface *surface;
-static int SurfaceX, SurfaceY;
-static int SurfaceLocking = 0;
+// VIDEO VARIABLES
+extern unsigned char cvidmode;
+extern SDL_Surface *surface;
+extern int SurfaceX, SurfaceY;
+extern int SurfaceLocking;
+extern DWORD BitDepth;
 
 // OPENGL VARIABLES
 static unsigned short *glvidbuffer = 0;
@@ -39,6 +41,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 	GLubyte scanbuffer[256];
 	int i;
 
+	flags |= (cvidmode == 16 ? SDL_RESIZABLE : 0);
 	flags |= (FullScreen ? SDL_FULLSCREEN : 0);
 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -142,10 +145,8 @@ static void gl_drawspan(int hires, int start, int end)
 	{
 		if (!gltexture512)
 		{
-			unsigned short *vbuf1 =
-				&((unsigned short *) vidbuffer)[16];
-			unsigned short *vbuf2 =
-				&((unsigned short *) vidbuffer)[75036 * 2 + 16];
+			unsigned short *vbuf1 = &((unsigned short *) vidbuffer)[16];
+			unsigned short *vbuf2 = &((unsigned short *) vidbuffer)[75036 * 2 + 16];
 			unsigned short *vbuf = &glvidbuffer[0];
 
 			for (j = 0; j < 224; j++)

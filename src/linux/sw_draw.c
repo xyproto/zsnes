@@ -10,13 +10,14 @@
 
 typedef enum { FALSE = 0, TRUE = !FALSE } BOOL;
 
-extern void LinuxExit();
+// VIDEO VARIABLES
+extern unsigned char cvidmode;
+extern SDL_Surface *surface;
+extern int SurfaceX, SurfaceY;
+extern int SurfaceLocking;
+extern DWORD BitDepth;
 
-// SDL VIDEO VARIOABLES
-static SDL_Surface *surface;
-static int SurfaceLocking = 0;
-static int SurfaceX, SurfaceY;
-static DWORD BitDepth = 0;	// Do NOT change this for ANY reason
+extern void LinuxExit();
 
 extern unsigned int vidbuffer;
 extern DWORD converta;
@@ -31,11 +32,9 @@ BOOL sw_start(int width, int height, int req_depth, int FullScreen)
     
     p = BitConv32Ptr;
     for(i=0; i<65536; i++) {
-        color32 = ((i&0xF800)<<8)+
-	    ((i&0x07E0)<<5)+
-	    ((i&0x001F)<<3)+0xFF000000;
-	(*(unsigned int *)(p)) = color32;
-	p += 4;
+        color32 = ((i&0xF800)<<8) + ((i&0x07E0)<<5) + ((i&0x001F)<<3)+0xFF000000;
+	    (*(unsigned int *)(p)) = color32;
+	    p += 4;
     }
     
     flags |= (FullScreen ? SDL_FULLSCREEN : 0);
@@ -43,8 +42,8 @@ BOOL sw_start(int width, int height, int req_depth, int FullScreen)
     SurfaceX = width; SurfaceY = height;
     surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
     if (surface == NULL) {
-	fprintf (stderr, "Could not set %dx%d video mode.\n", SurfaceX, SurfaceY);
-	return FALSE;
+        fprintf (stderr, "Could not set %dx%d video mode.\n", SurfaceX, SurfaceY);
+	    return FALSE;
     }
     
     SurfaceLocking = SDL_MUSTLOCK(surface);
