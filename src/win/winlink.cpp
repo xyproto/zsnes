@@ -2042,6 +2042,9 @@ void clearwin()
    UnlockSurface();
 }
 
+extern void DrawWin256x224x16();
+extern void DrawWin256x224x32();
+
 void drawscreenwin(void)
 {
    DWORD i,j,color32;
@@ -2094,66 +2097,9 @@ void drawscreenwin(void)
       switch (BitDepth)
       {
          case 16:
-             if (MMXSupport == 1) {
-                  _asm {
-                     push es
-                     mov ax,ds
-                     mov es,ax
-                     xor eax,eax
-                     mov esi,ScreenPtr
-                     mov edi,SurfBufD
-                     movsx edx,resolutn
-                     sub edx,2
-                  Copying3:
-                     mov ecx,32
-                  CopyLoop:
-                     movq mm0,[esi]
-                     movq mm1,[esi+8]
-                     movq [edi],mm0
-                     movq [edi+8],mm1
-                     add esi,16
-                     add edi,16
-                     dec ecx
-                     jnz CopyLoop
-                     inc eax            
-                     add edi,pitch
-                     sub edi,512
-                     sub esi,512
-                     add esi,576
-                     cmp eax,edx
-                     jne Copying3
-                     xor eax,eax
-                     mov ecx,128
-                     rep stosd
-                     pop es
-                     emms
-                  }
-             } else {
-                  _asm {
-                     push es
-                     mov ax,ds
-                     mov es,ax
-                     xor eax,eax
-                     mov esi,ScreenPtr
-                     mov edi,SurfBufD
-                     movsx edx,resolutn
-                     sub edx,2
-                  Copying:
-                     mov ecx,128
-                     rep movsd
-                     inc eax            
-                     add edi,pitch
-                     sub edi,512
-                     sub esi,512
-                     add esi,576
-                     cmp eax,239
-                     jne Copying
-                     xor eax,edx
-                     mov ecx,128
-                     rep stosd
-                     pop es
-                  }
-            }
+         {
+               DrawWin256x224x16();
+         }
             break;
       case 32:
                   _asm {

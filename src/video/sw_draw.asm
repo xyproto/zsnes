@@ -23,7 +23,7 @@ ALIGN 32
 
 EXTSYM SurfaceX,SurfaceY
 EXTSYM ScreenPtr,SurfBufD
-EXTSYM pitch,MMXSupport
+EXTSYM pitch,MMXSupport,resolutn
 
 SECTION .text
 
@@ -69,6 +69,8 @@ NEWSYM ClearWin32
 
 NEWSYM DrawWin256x224x16
         pushad
+        cmp byte[MMXSupport],0
+        je  .nommx
         mov  esi, [ScreenPtr]
         mov  edi, [SurfBufD]
         xor  eax,eax
@@ -87,12 +89,43 @@ NEWSYM DrawWin256x224x16
         add  edi, [pitch]
         sub  edi,512
         add  esi,64
+%ifdef __WIN32__
+        cmp  eax,239
+%else
         cmp  eax,223
-        jne .Copying3
+%endif
+        jne  .Copying3
         xor  eax,eax
         mov  ecx,128
-        rep stosd
+        rep  stosd
         emms
+        popad
+        ret
+.nommx
+        mov  ax,ds
+        mov  es,ax
+        xor  eax,eax
+        mov  esi, [ScreenPtr]
+        mov  edi, [SurfBufD]
+        movsx edx, word[resolutn]
+        sub  edx,2
+.Copying:
+        mov  ecx,128
+        rep  movsd
+        inc  eax            
+        add  edi, [pitch]
+        sub  edi,512
+        sub  esi,512
+        add  esi,576
+%ifdef __WIN32__
+        cmp  eax,239
+%else
+        cmp  eax,223
+%endif
+        jne  .Copying
+        xor  eax,edx
+        mov  ecx,128
+        rep  stosd
         popad
         ret
 
