@@ -63,7 +63,9 @@ v1.337 - This release is dedicated to zsKnight and his family
        - Fixed BG3 issue with sub-screens in new graphics engine, fixes gfx
          in Bahamut Lagoon's intro and lots of other games [pagefault]
        - Fixed timing problem in Clock Tower that caused it to freeze
-         randomly in-game [pagefault]
+         randomly in-game, implemented a hack for now [pagefault]
+       - Fixed Cu-On-Pa freezing when starting a new game (Thanks to Lordtech
+         for the help) [_Demo_]
        - Optimised global code base, most people should see a performance
          increase [pagefault, stainless]
        - Moved vsync option from game options menu to video options
