@@ -296,6 +296,11 @@ int Main_Proc(void)
 		default: break;
 	   }
    }
+   // TODO Fix these so	
+   if(pressed[0x38]!=0&&pressed[0x3E]!=0)
+	   LinuxExit();
+   if(pressed[0x38]!=0&&pressed[0x1c]!=0)
+	   SwitchFullScreen();
    return TRUE;
 }
 #define true 1
@@ -1869,7 +1874,7 @@ void UpdateVFrame(void)
    //STUB_FUNCTION;
    Main_Proc();
 
-//   WinUpdateDevices();
+   WinUpdateDevices();
    CheckTimers();
 
    if (DTimerCheck == 1)
@@ -2435,15 +2440,13 @@ extern void SwitchFullScreen(void);
 
 void WinUpdateDevices()
 {
+#ifdef __LINUX__
+#else
    int i,j;
    unsigned char * keys;
    unsigned char keys2[256];
    HRESULT hRes;
 
-#ifdef __LINUX__
-   //STUB_FUNCTION;
-   //MouseButton = SDL_GetMouseState( &MouseX, &MouseY);
-#else
    for (i=0;i<256;i++)
       keys2[i]=0;
    keys=(unsigned char *)&pressed;
