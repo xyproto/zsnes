@@ -105,8 +105,8 @@ unsigned char opexec358b    = 180;	// # of opcodes/scanline in 3.58Mhz mode (228
 unsigned char opexec268cphb = 42;	// # of opcodes/hblank in 2.68Mhz mode
 unsigned char opexec358cphb = 45;	// # of opcodes/hblank in 3.58Mhz mode (56/50)
 unsigned char debugdisble   = 1;	// debugger disable.  0 = no, 1 = yes
-unsigned char gammalevel    = 0;	// gamma level
-unsigned char gammalevel16b = 0;	// gamma level
+unsigned char gammalevel    = 0;	// gamma level (8-bit engine)
+unsigned char gammalevel16b = 0;	// gamma level (16-bit engine)
 unsigned char scanlines     = 0;	// scanlines on/off
 unsigned char vsyncon       = 0;	// vsync on/off
 unsigned char guioff        = 0;	// gui on/off (1 = off)
@@ -117,17 +117,17 @@ unsigned char dmadeddis     = 0;	// DMA deduction
 unsigned char antienab      = 0;	// Interpolation Enabled
 unsigned char snesmouse     = 0;	// Mouse status (1 = enabled)
 unsigned char OldStyle      = 1;	// Old style joystick on
-unsigned char SecondPort    = 0;	// Secondary Joystick Port Enabled (209h)
+unsigned char SecondPort    = 0;	// Secondary Joystick Port Enabled (209h) (DOS port only)
 
 // New Variables
 unsigned char ForcePal      = 0;	// 1 = NTSC, 2 = PAL
 unsigned char Force8b       = 0;	// Force 8-bit sound on
 unsigned char Doublevbuf    = 1;	// Double video buffer
-unsigned char V8Mode        = 0;	// Vegetable mode! =)
+unsigned char V8Mode        = 0;	// Vegetable mode! =) (Greyscale mode)
 unsigned char fastmemptr    = 0;
-unsigned char showallext    = 0;
+unsigned char showallext    = 0;	// Show all extensions in GUI load dialog
 unsigned char finterleave   = 0;
-unsigned char DSPDisable    = 0;
+unsigned char DSPDisable    = 0;	// Disable DSP emulation
 unsigned char Palette0      = 0;
 unsigned char DisplayS      = 0;
 unsigned char SPC700sh      = 0;
