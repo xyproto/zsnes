@@ -664,7 +664,7 @@ NEWSYM SDD1BankD, db 3
 NEWSYM vramread2, db 0             ; previous character for vram read
 NEWSYM nosprincr, db 0
 NEWSYM poamaddrs, dw 0
-NEWSYM rdioval, db 0
+NEWSYM ioportval, db 0
 
 
 NEWSYM tempdat, times 479 db 0     ; expandable area
@@ -767,6 +767,11 @@ reg2137r:
 ;    mov byte[debstop3],1
     cmp byte[debuggeron],1
     je .debugger
+    cmp byte[iocounteren],1
+    je .dolatch
+    test byte[ioportval],80h
+    jnz .nolatch
+.dolatch
     xor ebx,ebx
     mov bl,[cycpl]
     sub bl,dh
@@ -786,11 +791,14 @@ reg2137r:
     inc word[latchy]
 .novhirq
 .noincly
+.nolatch
     xor al,al
     mov byte[extlatch],0
     ret
 .debugger
 debblah:
+    test byte[ioportval],80h
+    jnz .nolatch2
     xor ebx,ebx
     mov bl,[cycpl]
     sub bl,[pdh]
@@ -842,6 +850,7 @@ debblah:
     inc word[latchy]
 .novhirq2
 .noincly2
+.nolatch2
     xor al,al
     mov byte[extlatch],0
     ret
@@ -1372,7 +1381,7 @@ debblah2:
 
 ; Programmable I/O port
 reg4213r:
-    mov al,[rdioval]
+    mov al,[ioportval]
     ret
 
 ; Quotent of Divide Result (Low)
