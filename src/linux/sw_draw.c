@@ -102,6 +102,8 @@ extern unsigned char newengen;
 extern unsigned short resolutn;
 extern void copy640x480x16bwin(void);
 extern void hq2x_16b(void);
+extern void hq3x_16b(void);
+extern void hq4x_16b(void);
 extern void ClearWin16 (void);
 extern void DrawWin256x224x16(void);
 extern void DrawWin320x240x16(void);
@@ -167,7 +169,20 @@ void sw_drawwin()
 	NumBytesPerLine = pitch;
 	WinVidMemStart = (void*) (SurfBufD + 16*640*2 + 64*2);
 	if (hqFilter) {
-		hq2x_16b();
+		switch (hqFilter)
+		{
+		case 1:
+			hq2x_16b();
+			break;
+		case 2:
+			//hq3x_16b();
+			break;
+		case 3:
+			//hq4x_16b();
+			break;
+		default:
+			break;
+		}		
 	} else {
 		copy640x480x16bwin();
 	}
