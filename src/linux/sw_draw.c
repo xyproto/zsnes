@@ -22,6 +22,8 @@ extern void LinuxExit();
 extern unsigned int vidbuffer;
 extern DWORD converta;
 extern unsigned int BitConv32Ptr;
+extern unsigned char curblank;
+void UpdateVFrame(void);
 
 BOOL sw_start(int width, int height, int req_depth, int FullScreen)
 {
@@ -164,6 +166,10 @@ void sw_drawwin()
                                 // the value of newengen is equal to 1.
                                 // (see ProcessTransparencies in newgfx16.asm
                                 //  for ZSNES' current transparency code)
+	UpdateVFrame();
+	if (curblank != 0)
+		return;
+
     LockSurface();
 
     ScreenPtr = vidbuffer;

@@ -865,7 +865,6 @@ void UpdateSound(void *userdata, Uint8 * stream, int len)
 void UpdateVFrame(void)
 {
 	Main_Proc();
-	// WinUpdateDevices(); removed since it is an empty function
 	CheckTimers();
 }
 
@@ -879,14 +878,8 @@ void clearwin()
 		sw_clearwin();
 }
 
-extern unsigned char curblank;
-
 void drawscreenwin(void)
 {
-	UpdateVFrame();
-	if (curblank != 0)
-		return;
-
 #ifdef __OPENGL__
 	if (UseOpenGL)
 		gl_drawwin();

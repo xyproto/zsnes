@@ -33,8 +33,10 @@ extern Uint8 FilteredGUI;
 extern Uint8 GUIOn2;
 
 extern unsigned int vidbuffer;
+extern unsigned char curblank;
 
 void gl_clearwin();
+void UpdateVFrame(void);
 
 int gl_start(int width, int height, int req_depth, int FullScreen)
 {
@@ -256,6 +258,9 @@ void gl_drawwin()
 				// the value of newengen is equal to 1.
 				// (see ProcessTransparencies in newgfx16.asm
 				//  for ZSNES' current transparency code)
+	UpdateVFrame();
+	if (curblank != 0)
+		return;
 
 	LockSurface();
 
