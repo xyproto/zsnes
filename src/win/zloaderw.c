@@ -32,6 +32,7 @@ extern void displayparams(void);
 extern void makeextension(void);
 
 int pccmdline(void);
+extern int KitchenSync = 0;
 
 extern unsigned char Palette0, SPC700sh, OffBy1Line, DSPDisable,
                      MMXSupport, Force8b, ForcePal, GUIClick, MouseDis,
@@ -669,6 +670,11 @@ int pccmdline(void)
         {
           GUIClick=0;
           MouseDis=1;
+          break;
+        }
+        case 'K':
+        {
+          KitchenSync=1;
           break;
         }
         case '?':
