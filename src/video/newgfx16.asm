@@ -1740,6 +1740,17 @@ NEWSYM StartDrawNewGfx16b
     ProcMode7ngextbg216b ngmain ,2h
 .noextbgmn2
 
+    test byte[scrndis],2h
+    jnz near .nodobg2mb
+    test dword[bgcmsung],202h
+    jz near .nodobg2mb
+    mov eax,[bg2totng]
+    cmp eax,[bg2drwng]
+    je near .nodobg2mb
+    mov dword[mode0ads],20202020h
+    Procbgpr116b 1, drawbg2linepr116b, drawbg2tilepr116b, prdata, ngmain, 2h
+.nodobg2mb
+
     ; draw sprites mode 2-7
     test byte[scrndis],10h
     jnz near .nosprprme
@@ -1771,17 +1782,6 @@ NEWSYM StartDrawNewGfx16b
     jz near .nosprprmf
     Procsprng16b ngmain, 10h
 .nosprprmf
-
-    test byte[scrndis],2h
-    jnz near .nodobg2mb
-    test dword[bgcmsung],202h
-    jz near .nodobg2mb
-    mov eax,[bg2totng]
-    cmp eax,[bg2drwng]
-    je near .nodobg2mb
-    mov dword[mode0ads],20202020h
-    Procbgpr116b 1, drawbg2linepr116b, drawbg2tilepr116b, prdata, ngmain, 2h
-.nodobg2mb
 
     test byte[scrndis],4h
     jnz near .nodobg3mb2
