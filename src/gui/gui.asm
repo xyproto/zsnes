@@ -93,6 +93,7 @@ EXTSYM File_Seek,File_Seek_End,Open_File_Write,Get_Date,Check_Key,Get_Key
 EXTSYM Change_Drive,Change_Single_Dir,Change_Dir,Get_Dir,Get_First_Entry
 EXTSYM Get_Next_Entry,Set_DTA_Address,timer2upd,curexecstate,TripBufAvail
 EXTSYM nmiprevaddrl,nmiprevaddrh,nmirept,nmiprevline,nmistatus,spcnumread,spchalted
+EXTSYM versionNumber
 EXTSYM NextLineCache,VidStartDraw,ResetTripleBuf,GUINGVID
 EXTSYM ScanCodeListing,AdjustFrequency,GUISaveVars,Init_Mouse
 EXTSYM Get_MouseData,Set_MouseXMax,Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement
@@ -104,7 +105,6 @@ EXTSYM printnum
 EXTSYM MMXCheck
 EXTSYM SaveCombFile
 EXTSYM NetSent,valuea
-EXTSYM welcome
 EXTSYM showinfogui
 EXTSYM BackupCVFrame, tempedx, tempesi, tempedi, tempebp
 EXTSYM Wait1SecWin,ClearUDPStuff

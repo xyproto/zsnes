@@ -81,7 +81,7 @@ MovieRecord:
 .noappend
     mov al,[soundon]
     mov [RecData],al
-    mov eax,[welcome+8]
+    mov eax,[versionNumber]
     mov [RecData+1],eax
     mov byte[RecData+2],1
     mov eax,[timer2upd]

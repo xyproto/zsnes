@@ -975,24 +975,10 @@ reexecuteb2:
     jnz near endprog
     jmp StartGUI
 
-SECTION .data
-NEWSYM EndMessage
-db '                                                                   ',13,10,0
-SECTION .text
-
 NEWSYM endprog
     call deinitvideo
 
     cmp byte[previdmode],3
-    jne .noendmessage
-    mov byte[EndMessage+13],','
-    mov eax,[welcome+9]
-    mov [EndMessage+9],eax
-    mov ax,[welcome+7]
-    mov [EndMessage+7],ax
-    mov edx,EndMessage
-    call PrintStr
-.noendmessage
 
 ;    mov eax,[opcd]
 ;    mov eax,[numinst]          ;Temporary

@@ -25,7 +25,7 @@ EXTSYM makesprprtable,romloadskip,start65816,startdebugger,SfxR0
 EXTSYM MovieProcessing
 EXTSYM MovieFileHand,filefound,inittable,SA1inittable
 EXTSYM MessageOn,Msgptr,MsgCount,sndrot,GenerateBank0Table,SnowTimer
-EXTSYM inittableb,inittablec,newgfx16b,cfgreinittime,EndMessage
+EXTSYM inittableb,inittablec,newgfx16b,cfgreinittime
 EXTSYM Open_File,Read_File,Write_File,Close_File,Output_Text,Get_Key,CNetType
 EXTSYM Delete_File,Get_First_Entry,Get_Next_Entry,Change_Dir,InitDSP
 EXTSYM Remove_Dir,Change_Single_Dir,Create_Dir,Get_Memfree,Create_File
@@ -322,7 +322,9 @@ NEWSYM init
     mov byte[newengen],1
     mov byte[cfgnewgfx],1
 .noforce
-
+	; Dan - I don't know what this is, but all it seems to do is update
+	; EndMessage which I've nuked.
+%if 0
     mov ebx,ebm
     mov eax,EndMessage
     mov dh,17h
@@ -344,7 +346,7 @@ NEWSYM init
     inc ebx
     dec ch
     jnz .loopen
-
+%endif
 
     cmp byte[yesoutofmemory],1
     jne .noout

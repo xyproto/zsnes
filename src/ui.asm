@@ -20,11 +20,11 @@
 
 %include "macros.mac"
 
-EXTSYM getcfg,soundon,SBHDMA,StereoSound,init,GUIRestoreVars,GUIClick,MouseDis
-EXTSYM ConvertJoyMap,ConvertJoyMap1,ConvertJoyMap2,printhex,InitSPC
+EXTSYM getcfg,SBHDMA,StereoSound,init,GUIRestoreVars,GUIClick,MouseDis
+EXTSYM ConvertJoyMap,ConvertJoyMap1,ConvertJoyMap2,printhex
 EXTSYM StartUp,PrintStr,WaitForKey,PrintChar,ZFileSystemInit
-EXTSYM SPCDisable,SystemInit,allocmem
-EXTSYM FPSOn,FPSAtStart,cfgsoundon
+EXTSYM SystemInit,allocmem
+EXTSYM cfgsoundon
 EXTSYM xa
 EXTSYM ram7fa,wramdataa
 EXTSYM malloc,free
@@ -42,16 +42,12 @@ EXTSYM frameskip,BitConv32Ptr,spcBuffera,spritetablea,vcache2bs
 EXTSYM vcache4bs,vcache8bs,RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa
 EXTSYM vidbufferofsmos,ngwinptr,vidbufferofsb,headdata,romdata,sfxramdata
 EXTSYM setaramdata,wramdata,ram7f,vram,sram,debugbuf,regptr,regptw,vcache2b
-EXTSYM vcache4b,vcache8b,fname,fnames,fnamest,filefound,vidbufferofsc,DSPDisable
-EXTSYM gammalevel,gammalevel16b,Sup48mbit,Sup16mbit,guioff
+EXTSYM vcache4b,vcache8b,fname,fnames,fnamest,filefound,vidbufferofsc
+EXTSYM Sup48mbit,Sup16mbit,guioff
 
 %ifdef __LINUX__
 EXTSYM LinuxExit
 EXTSYM GetFilename
-%endif
-
-%ifdef OPENSPC
-EXTSYM OSPC_Init
 %endif
 
 ; Function 0501h
@@ -70,16 +66,6 @@ NEWSYM	outofmemory
 SECTION .data
 NEWSYM mydebug, db '',13,10,0
 NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,10,0
-
-NEWSYM welcome
-  db 'ZSNES v',ZVERSION,' (c) 1997-2005, ZSNES Team',13,10,13,10
-  db 'Be sure to check http://www.zsnes.com/ for the latest version.',13,10
-  db 'Please report crashes to zsnes-devel@lists.sourceforge.net.',13,10,13,10
-  db 'ZSNES is written by the ZSNES Team (See AUTHORS.TXT)',13,10
-  db 'ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,',10,13
-  db 'and you are welcome to redistribute it under certain conditions;',10,13
-  db 'please read ',39,'LICENSE.TXT',39,' thoroughly before doing so.',10,13,10,13
-  db 'Use ZSNES -? for command line definitions.',13,10,13,10,0
 
 ;cpuidfname db 'nocpuzid.dat',0
 ;cpuidtext db 'NOTE: If ZSNES crashes here, then please re-run. ',0

@@ -199,6 +199,7 @@ extern unsigned char spcon;
 extern unsigned char FPSOn;
 extern unsigned char FPSAtStart;
 
+const unsigned int versionNumber = 0x00000143;
 const char* ZVERSION = "Pre 1.43";
 
 void zstart ()
