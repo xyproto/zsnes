@@ -53,7 +53,7 @@ WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/modemrtn.o ${DOSDIR}/vesa2
 
 #PREOBJ=${OBJDIR}/unzip.o ${OBJDIR}/zzip.o ${DOSDIR}/zsipx.o
 
-ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o
+ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
 MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o
 
@@ -61,7 +61,7 @@ OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ}
 SDLLIBS := $(shell sdl-config --libs)
 SDLCFLAGS := $(shell sdl-config --cflags)
 #LIBS=-static -pg ${SDLLIBS} -lz
-LIBS=${SDLLIBS} -lz
+LIBS=${SDLLIBS} -lz -lpng
 #CFLAGS=-pg -g -Wall -D__LINUX__ ${SDLCFLAGS}
 CFLAGS=-g -Wall -D__LINUX__ ${SDLCFLAGS}
 ASM=nasm

@@ -33,7 +33,7 @@ EXTSYM Clear2xSaIBuffer
 EXTSYM romdata,romtype,ScreenShotFormat
 EXTSYM Voice0Disable,Voice1Disable,Voice2Disable,Voice3Disable
 EXTSYM Voice4Disable,Voice5Disable,Voice6Disable,Voice7Disable
-
+EXTSYM Grab_PNG_Data
 
 NEWSYM MenuAsmStart
 
@@ -1029,6 +1029,12 @@ NEWSYM pcxheader
 NEWSYM picnum, dw 0
 
 NEWSYM savepcx
+	cmp dword[ScreenShotFormat],1
+	jne .notpng
+	call Grab_PNG_Data
+	ret
+.notpng
+    
     mov byte[pressed+1],0
     mov byte[pressed+59],2
     cmp byte[cbitmode],1

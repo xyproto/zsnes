@@ -21,7 +21,7 @@
 #work for me (command line too long)
 
 #put the correct path to your directx sdk here
-DXDIR=f:\mssdk
+DXDIR=c:\mssdk
 
 CHIPDIR=chips
 CPUDIR=cpu
@@ -29,6 +29,7 @@ DOSDIR=dos
 GUIDIR=gui
 VIDEODIR=video
 WINDIR=win
+OBJDIR=obj
 ZIPDIR=zip
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.obj ${CHIPDIR}/fxemu2.obj ${CHIPDIR}/dsp1proc.obj\
@@ -58,13 +59,17 @@ WINDOSOBJ=${DOSDIR}/debug.obj ${DOSDIR}/joy.obj ${DOSDIR}/modemrtn.obj ${DOSDIR}
 	${DOSDIR}/initvid.obj ${DOSDIR}/sw.obj ${DOSDIR}/gppro.obj ${DOSDIR}/vesa12.obj\
         ${DOSDIR}/zsipx.obj
 
-ZIPOBJ=${ZIPDIR}/zzip.obj ${ZIPDIR}/unzip.obj
+PREOBJ=
+
+ZIPOBJ=${ZIPDIR}/zzip.obj ${ZIPDIR}/unzip.obj ${ZIPDIR}/zpng.obj
 
 MAINOBJ=cfgload.obj endmem.obj fixsin.obj init.obj ui.obj vcache.obj water.obj
+	
+
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ} ${WINDOSOBJ}
 LIBS=
-CFLAGS=/c /D__WIN32__
+CFLAGS=/G6 /c /D__WIN32__
 ASM=nasm
 ASMFLAGS=-f win32 -D__WIN32__
 CC=cl
@@ -96,7 +101,8 @@ ${WINDIR}/zloaderw.obj: ${WINDIR}/zloaderw.c
 ${WINDIR}/ztcp.obj: ${WINDIR}/ztcp.c
 ${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
 ${ZIPDIR}/unzip.obj: ${ZIPDIR}/unzip.c ${ZIPDIR}/unzip.h 
-${ZIPDIR}/zzip.obj: ${ZIPDIR}/zzip.c ${ZIPDIR}/unzip.h 
+${ZIPDIR}/zzip.obj: ${ZIPDIR}/zzip.c ${ZIPDIR}/unzip.h
+${ZIPDIR}/zpng.obj: ${ZIPDIR}/zpng.c  ${ZIPDIR}/zpng.h ${ZIPDIR}/png.h
 ${DOSDIR}/initvid.o:${DOSDIR}/initvid.asm macros.mac
 ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
 ${DOSDIR}/zsipx.o: ${DOSDIR}/zsipx.asm
