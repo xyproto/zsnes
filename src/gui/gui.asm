@@ -584,10 +584,11 @@ NEWSYM DisableScreenSaver, db 0
 NEWSYM TrapMouseCursor, db 1
 NEWSYM KeyQuickClock, dd 0
 NEWSYM KeyQuickMinimize, dd 0
-NEWSYM ForceROMTiming, db 0
-NEWSYM ForceHiLoROM, db 0
 
 GUIsave equ $-GUIRAdd
+
+NEWSYM ForceROMTiming, db 0
+NEWSYM ForceHiLoROM, db 0
 
 NEWSYM CombinDataGlob, times 3300 db 0 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff
 NEWSYM CombinDataLocl, times 3300 db 0
