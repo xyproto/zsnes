@@ -140,7 +140,7 @@ void deinitPatch()
 void PatchUsingIPS()
 {
   unsigned char *ROM = (unsigned char *)romdata;
-  int location = 0, length = 0;
+  int location = 0, length = 0, last = 0;
   int sub = Header512 ? 512 : 0;
     
   IPSPatched = false;
@@ -183,6 +183,7 @@ void PatchUsingIPS()
         {
           if (location >= maxromspace) { goto IPSDone; }
           ROM[location] = (unsigned char)IPSget();
+          if (location > last) { last = location; }
         }
         else
         {
@@ -202,6 +203,7 @@ void PatchUsingIPS()
         {
           if (location >= maxromspace) { goto IPSDone; }
           ROM[location] = newVal;
+          if (location > last) { last = location; }
         }
       }
     }
@@ -217,10 +219,10 @@ void PatchUsingIPS()
   IPSPatched = true;
   
   //Adjust size values if the ROM was expanded
-  if (location > curromspace  && location <= maxromspace)
+  if (last > curromspace)
   {
-    curromspace = location;
-    NumofBytes = location;
+    curromspace = last;
+    NumofBytes = last;
     NumofBanks = NumofBytes/32768;
   }
 
@@ -234,7 +236,7 @@ void PatchUsingIPS()
     fclose(fp);
   }
   */
-}  
+}
 
 void findZipIPS(char *compressedfile)
 {
