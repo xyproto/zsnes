@@ -35,9 +35,9 @@ EXTSYM Open_File, Get_File_Date, Close_File, Change_Dir, Get_Dir
 EXTSYM romloadskip
 EXTSYM cfgloadgdir,cfgloadsdir
 EXTSYM init18_2hz
-
 %ifdef __LINUX__
 EXTSYM LinuxExit
+EXTSYM GetFilename
 %endif
 
 NEWSYM UIAsmStart
@@ -1204,6 +1204,11 @@ NEWSYM makeextension
     add ah,4
     mov [fnames],ah
     mov [fnamest],ah
+%ifdef __LINUX__
+	pushad
+	call GetFilename
+	popad
+%endif
     cmp byte[LatestSave],1
     je .latestsave
     ret

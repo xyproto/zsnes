@@ -3366,9 +3366,15 @@ NEWSYM loadfile
     mov byte[TextFile], 0
     call GetCurDir
     mov byte[InGUI],0
+%ifdef __LINUX__
+    mov dl,[InitDrive]
+    mov ebx,InitDir
+    call Change_Dir
+%endif
+
     jmp loadfileGUI.nogui
 
-
+%ifndef __LINUX__
     mov dword[MessageOn],0
     mov byte[loadedfromgui],0
     mov byte[yesoutofmemory],0
@@ -3564,7 +3570,7 @@ NEWSYM loadfile
     mov ah,9
     call Output_Text
     jmp DosExit
-
+%endif
 SECTION .data
 .multfound db 0
 .first db 0

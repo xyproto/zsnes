@@ -256,6 +256,11 @@ DWORD ZFileMKDir()
 #endif
 }
 
+extern char SRAMDir;
+extern char InitDir;
+extern char LoadDir;
+
+
 DWORD ZFileCHDir()
 {
   return(chdir(CHPath));
@@ -443,9 +448,6 @@ DWORD GetDate()
 
 #ifdef __LINUX__
 
-extern char SRAMDir;
-extern char InitDir;
-extern char LoadDir;
 
 void obtaindir()
 {
@@ -467,7 +469,8 @@ void obtaindir()
 	} else {
 		closedir(tmp);
 	}
-	strcpy(&InitDir, cfgdir);
+//	strcpy(&InitDir, cfgdir);
+//	getcwd(&InitDir, 128);
 	if (SRAMDir == 0){
 		strcpy(&SRAMDir, cfgdir);
 	}
@@ -476,4 +479,29 @@ void obtaindir()
 		getcwd(&LoadDir, 128);
 	}
 }
+
+extern char fnamest, fnames;
+
+void GetFilename()
+{
+	char *tmp = &fnamest;
+	char size;
+
+	*tmp = '/';
+	while (*tmp!=0) tmp++;
+	while (*tmp!='/') tmp--;
+	size = (strlen(tmp)-1) & 0xFF;
+	strcpy(&fnamest, tmp);
+	fnamest = size;
+
+	tmp = &fnames;
+	*tmp = '/';
+	while (*tmp!=0) tmp++;
+	while (*tmp!='/') tmp--;
+	size = (strlen(tmp)-1) & 0xFF;
+	strcpy(&fnames, tmp);
+	fnames = size;
+}
+	
 #endif
+

@@ -31,7 +31,7 @@ EXTSYM Create_File,Write_File,Close_File
 %ifdef __LINUX__
 ; if TextFile==0, zlib functions aren't used
 ; useful to save the config file
-EXTSYM TextFile
+EXTSYM TextFile, InitDir, InitDrive, Change_Dir
 %endif
 
 NEWSYM CfgLoadAsmStart
@@ -257,6 +257,11 @@ NEWSYM ConvertJoyMap2
 NEWSYM DOScreatenewcfg
     ; make a new file
     ; copy .cfgfiledata to mode7tab, replacing each %
+%ifdef __LINUX__
+    mov dl,[SRAMDrive]
+    mov ebx,SRAMDir
+    call Change_Dir
+%endif
     mov esi,.cfgfiledata
     mov edi,mode7tab
     xor ecx,ecx

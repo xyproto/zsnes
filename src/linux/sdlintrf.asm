@@ -39,7 +39,7 @@ EXTSYM pl1Bk
 EXTSYM pl1Rk
 EXTSYM cfgcvidmode
 EXTSYM pl1contrl,pl2contrl
-EXTSYM InitDir,InitDrive
+EXTSYM InitDir,InitDrive, SRAMDir, SRAMDrive
 EXTSYM DOScreatenewcfg,ExecGUISaveVars
 EXTSYM allocptr
 EXTSYM putchar
@@ -252,14 +252,22 @@ NEWSYM SystemInit
     ; Get and set the initial directory
 %ifdef __LINUX__
     call obtaindir
+    mov ebx,InitDir
+    mov edx,InitDrive
+    call Get_Dir
+
+    mov dl,[SRAMDrive]
+    mov ebx,SRAMDir
+    call Change_Dir
 %else
     mov ebx,InitDir
     mov edx,InitDrive
     call Get_Dir
-%endif
+
     mov dl,[InitDrive]
     mov ebx,InitDir
     call Change_Dir
+%endif
 
 	
     call GUIRestoreVars                 ; Load GUI stuff

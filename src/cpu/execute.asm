@@ -1454,6 +1454,8 @@ NEWSYM sramsave
 
 NEWSYM statesaver
     clim
+
+
     sub dword[Curtableaddr],tableA
     sub dword[spcPCRam],spcRam
     sub dword[spcRamDP],spcRam
@@ -1462,6 +1464,11 @@ NEWSYM statesaver
     call initrevst
 ;    jmp .skipsaves
     ; Save State
+%ifdef __LINUX__
+    mov dl,[SRAMDrive]
+    mov ebx,SRAMDir
+    call Change_Dir
+%endif
     mov edx,fnamest+1
     call Create_File
     jc near .nosavestuff
@@ -1820,6 +1827,12 @@ NEWSYM loadstate
     mov byte[pressed+eax],2
     mov byte[multchange],1
     clim
+%ifdef __LINUX__
+    mov dl,[SRAMDrive]
+    mov ebx,SRAMDir
+    call Change_Dir
+%endif
+
     mov edx,fnamest+1
     call Open_File
     jc near .nofile
