@@ -503,12 +503,9 @@ NEWSYM GUIDoReset
 .skipfileend
     pushad
     call RestoreSystemVars
+    call ClearSPCRAM
     popad
-    ; clear spc700 ram
-    mov al,0FFh
-    mov edi,spcRam
-    mov ecx,65472
-    rep stosb
+
     ; clear dsp ram
     xor al,al
     mov edi,DSPMem

@@ -112,6 +112,7 @@ EXTSYM DisableSUDPPacket,EnableSUDPPacket
 EXTSYM BackStateSize
 EXTSYM ResetExecStuff
 EXTSYM RestoreCVFrame
+EXTSYM ClearSPCRAM
 EXTSYM CurRecv,BackState,CBackupPos,PBackupPos,PPValue,DPValue,NetQuitter
 EXTSYM LatencyV
 EXTSYM LatencyRecvPtr,LatencySendPtr
