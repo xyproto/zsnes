@@ -127,39 +127,37 @@ void sw_clearwin()
 	case 16:
 	    __asm__ __volatile__ (
 	"	xorl %%eax, %%eax\n"				\
-	"	movl SurfBufD, %%edi\n"				\
 	"	xorl %%ebx, %%ebx\n"				\
         "Blank2:\n"						\
-	"	movl SurfaceX, %%ecx\n"				\
+	"	movl %1, %%ecx\n"				\
 	"	rep\n"						\
 	"	stosw\n"					\
-	"	movl SurfaceX, %%edx\n"				\
-	"	addl pitch, %%edi\n"				\
+	"	movl %1, %%edx\n"				\
+	"	addl %0, %%edi\n"				\
 	"	shll $1, %%edx\n"				\
 	"	addl $1, %%ebx\n"				\
 	"	subl %%edx, %%edi\n"				\
-	"	cmpl SurfaceY, %%ebx\n"				\
+	"	cmpl %2, %%ebx\n"				\
 	"	jne Blank2\n"					\
-	: : : "cc", "memory", "eax", "ebx", "edx", "ecx", "edi");
+	: : "g" (pitch), "g" (SurfaceX), "g" (SurfaceY), "D" (SurfBufD) : "cc", "memory", "eax", "ebx", "edx", "ecx");
 	    break;
 	case 32:
 	    __asm__ __volatile__ (
 	"	xorl %%eax, %%eax\n"				\
-	"	movl SurfBufD, %%edi\n"				\
 	"	xorl %%ebx, %%ebx\n"				\
 	"Blank3:\n"						\
-	"	movl SurfaceX, %%ecx\n"				\
+	"	movl %1, %%ecx\n"				\
 	"	rep\n"						\
 	"	stosl\n"					\
-	"	addl pitch, %%edi\n"				\
-	"	subl SurfaceX, %%edi\n"				\
-	"	subl SurfaceX, %%edi\n"				\
-	"	subl SurfaceX, %%edi\n"				\
-	"	subl SurfaceX, %%edi\n"				\
+	"	addl %0, %%edi\n"				\
+	"	subl %1, %%edi\n"				\
+	"	subl %1, %%edi\n"				\
+	"	subl %1, %%edi\n"				\
+	"	subl %1, %%edi\n"				\
 	"	addl $1, %%ebx\n"				\
-	"	cmpl SurfaceY, %%ebx\n"				\
+	"	cmpl %2, %%ebx\n"				\
 	"	jne Blank3\n"					\
-	: : : "cc", "memory", "eax", "ebx", "ecx","edi");
+	: : "g" (pitch), "g" (SurfaceX), "g" (SurfaceY), "D" (SurfBufD) : "cc", "memory", "eax", "ebx", "ecx");
 	    break;
     }
     UnlockSurface();
@@ -201,12 +199,7 @@ void sw_drawwin()
 	    case 16:
 		if (MMXSupport){
 		    __asm__ __volatile__ (
-		"	pushw %%es\n"					\
-		"	movw %%ds, %%ax\n"				\
-		"	movw %%ax, %%es\n"				\
 		"	xorl %%eax, %%eax\n"				\
-		"	movl ScreenPtr, %%esi\n"			\
-		"	movl SurfBufD, %%edi\n"				\
 		"Copying3:\n"						\
 		"	movl $32, %%ecx\n"				\
 		"CopyLoop:\n"						\
@@ -219,7 +212,7 @@ void sw_drawwin()
 		"	decl %%ecx\n"					\
 		"	jnz CopyLoop\n"					\
 		"	incl %%eax\n"					\
-		"	addl pitch, %%edi\n"				\
+		"	addl %0, %%edi\n"				\
 		"	subl $512, %%edi\n"				\
 		"	addl $64, %%esi\n"				\
 		"	cmpl $223, %%eax\n"				\
@@ -229,24 +222,18 @@ void sw_drawwin()
 		"	movl $128, %%ecx\n"				\
 		"	rep\n"						\
 		"	stosl\n"					\
-		"	popw %%es\n"					\
 		"	emms\n"						\
-		: : : "cc", "memory", "eax", "ebx", "ecx","edi", "esi");
+		: : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD) : "cc", "memory", "eax", "ebx", "ecx");
 		} else {
 		    // Doesn't seem to work - DDOI
 		    __asm__ __volatile__ (
-		"	pushw %%es\n"					\
-		"	movw %%ds, %%ax\n"				\
-		"	movw %%ax, %%es\n"				\
 		"	xorl %%eax, %%eax\n"				\
-		"	movl ScreenPtr, %%esi\n"			\
-		"	movl SurfBufD, %%edi\n"				\
 		"Copying:\n"						\
 		"	movl $128, %%ecx\n"				\
 		"	rep\n"						\
 		"	movsl\n"					\
 		"	incl %%eax\n"					\
-		"	addl pitch, %%edi\n"				\
+		"	addl %0, %%edi\n"				\
 		"	subl $512, %%edi\n"				\
 		"	addl $64, %%esi\n"				\
 		"	cmpl $223, %%eax\n"				\
@@ -255,20 +242,13 @@ void sw_drawwin()
 		"	movl $128, %%ecx\n"				\
 		"	rep\n"						\
 		"	stosl\n"					\
-		"	popw %%es\n"					\
-		: : : "cc", "memory", "eax", "ebx", "ecx","edi", "esi");
+		: : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD) : "cc", "memory", "eax", "ecx");
 		}
 		break;
 
 	    case 32:
 		__asm__ __volatile__ (
-		"	pushw %%es\n"					\
-		"	movw %%ds, %%ax\n"				\
-		"	movw %%ax, %%es\n"				\
 		"	xorl %%eax, %%eax\n"				\
-		"	movl BitConv32Ptr, %%ebx\n"			\
-		"	movl ScreenPtr, %%esi\n"			\
-		"	movl SurfBufD, %%edi\n"				\
 		"Copying32b:\n"						\
 		"	movl $256, %%ecx\n"				\
 		"	pushl %%eax\n"					\
@@ -283,13 +263,12 @@ void sw_drawwin()
 		"	jnz CopyLoop32b\n"				\
 		"	popl %%eax\n"					\
 		"	incl %%eax\n"					\
-		"	addl pitch, %%edi\n"				\
+		"	addl %0, %%edi\n"				\
 		"	subl $1024, %%edi\n"				\
 		"	addl $64, %%esi\n"				\
 		"	cmpl $223, %%eax\n"				\
 		"	jne Copying32b\n"				\
-		"	popw %%es\n"					\
-		: : : "cc", "memory", "eax", "ebx", "ecx","edi", "esi");
+		: : "g" (pitch), "b" (BitConv32Ptr), "S" (ScreenPtr), "D" (SurfBufD) : "cc", "memory", "eax", "ecx","edx");
 		SURFDW = (DWORD *) SurfBufD + 222*pitch;
 		color32 = 0x7F000000;
 	
@@ -334,19 +313,14 @@ void sw_drawwin()
 	    case 16:
 		if (MMXSupport) {
 		    __asm__ __volatile__ (
-		"	pushw %%es\n"					\
-		"	movw %%ds, %%ax\n"				\
-		"	movw %%ax, %%es\n"				\
 		"	xor %%eax, %%eax\n"				\
 		"	xor %%ebx, %%ebx\n"				\
-		"	movl ScreenPtr, %%esi\n"			\
-		"	movl SurfBufD, %%edi\n"				\
 		"Blank1MMX:\n"						\
 		"	mov $160, %%ecx\n"				\
 		"	rep\n"						\
 		"	stosl\n"					\
 		"	subl $160, %%edi\n"				\
-		"	addl pitch, %%edi\n"				\
+		"	addl %0, %%edi\n"				\
 		"	addl $1, %%ebx\n"				\
 		"	cmpl $8, %%ebx\n"				\
 		"	jne Blank1MMX\n"				\
@@ -378,7 +352,7 @@ void sw_drawwin()
 		"	decl %%ecx\n"					\
 		"	jnz MMXLoopC\n"					\
 		"	incl %%ebx\n"					\
-		"	addl pitch, %%edi\n"				\
+		"	addl %0, %%edi\n"				\
 		"	subl $640, %%edi\n"				\
 		"	addl $64, %%esi\n"				\
 		"	cmpl $223, %%ebx\n"				\
@@ -387,25 +361,19 @@ void sw_drawwin()
 		"	movl $128, %%ecx\n"				\
 		"	rep\n"						\
 		"	stosl\n"					\
-		"	pop %%es\n"					\
 		"	emms\n"						\
-		: : : "cc", "memory", "eax", "ebx", "ecx","edi", "esi");
+		: : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD) : "cc", "memory", "eax", "ebx", "ecx");
 
 		} else {
 		    __asm__ __volatile__ (
-		"	push %%es\n"					\
-		"	movw %%ds, %%ax\n"				\
-		"	movw %%ax, %%es\n"				\
 		"	xorl %%eax, %%eax\n"				\
 		"	xorl %%ebx, %%ebx\n"				\
-		"	movl ScreenPtr, %%esi\n"			\
-		"	movl SurfBufD, %%edi\n"				\
 		"Blank1:\n"						\
 		"	movl $160, %%ecx\n"				\
 		"	rep\n"						\
 		"	stosl\n"					\
 		"	subl $640, %%edi\n"				\
-		"	addl pitch, %%edi\n"				\
+		"	addl %0, %%edi\n"				\
 		"	addl $1, %%ebx\n"				\
 		"	cmpl $8, %%ebx\n"				\
 		"jne Blank1\n"						\
@@ -421,7 +389,7 @@ void sw_drawwin()
 		"	rep\n"						\
 		"	stosl\n"					\
 		"	incl %%ebx\n"					\
-		"	addl pitch, %%edi\n"				\
+		"	addl %0, %%edi\n"				\
 		"	subl $640, %%edi\n"				\
 		"	addl $64, %%esi\n"				\
 		"	cmpl $223, %%ebx\n"				\
@@ -430,8 +398,7 @@ void sw_drawwin()
 		"	movl $128, %%ecx\n"				\
 		"	rep\n"						\
 		"	stosl\n"					\
-		"	pop %%es\n"					\
-		: : : "cc", "memory", "eax", "ebx", "ecx","edi", "esi");
+		: : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD) : "cc", "memory", "eax", "ebx", "ecx");
 
 		}
 		break;
@@ -509,13 +476,7 @@ void sw_drawwin()
 
 	    case 32:
 		__asm__ __volatile__ (
-		"	pushw %%es\n"					\
-		"	movw %%ds, %%ax\n"				\
-		"	movw %%ax, %%es\n"				\
 		"	xorl %%eax, %%eax\n"				\
-		"	movl BitConv32Ptr, %%ebx\n"			\
-		"	movl ScreenPtr, %%esi\n"			\
-		"	movl SurfBufD, %%edi\n"				\
 		"Copying32c:\n"						\
 		"	movl $256, %%ecx\n"				\
 		"	pushl %%eax\n"					\
@@ -530,7 +491,7 @@ void sw_drawwin()
 		"	loop CopyLoop32c\n"				\
 		"	pushl %%esi\n"					\
 		"	movl %%edi, %%esi\n"				\
-		"	subl pitch, %%esi\n"				\
+		"	subl %0, %%esi\n"				\
 		"	movl $512, %%ecx\n"				\
 		"	rep\n"						\
 		"	movsl\n"					\
@@ -540,8 +501,7 @@ void sw_drawwin()
 		"	addl $64, %%esi\n"				\
 		"	cmpl $223, %%eax\n"				\
 		"	jne Copying32c\n"				\
-		"	popw %%es\n"					\
-		: : : "cc", "memory","eax","ebx","ecx","edx","edi","esi");
+		: : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD), "b" (BitConv32Ptr) : "cc", "memory","eax","ecx","edx");
 		break;
 		/*
 		  addl pitch, %%edi
@@ -571,13 +531,7 @@ void sw_drawwin()
 
 	    case 32:
 		__asm__ __volatile__ (
-		"	pushw %%es\n"					\
-		"	movw %%ds, %%ax\n"				\
-		"	movw %%ax, %%es\n"				\
 		"	xorl %%eax, %%eax\n"				\
-		"	movl BitConv32Ptr, %%ebx\n"			\
-		"	movl ScreenPtr, %%esi\n"			\
-		"	movl SurfBufD, %%edi\n"				\
 		"	addl $20608, %%edi\n"				\
 		"Copying32d:\n"						\
 		"	movl $256, %%ecx\n"				\
@@ -594,7 +548,7 @@ void sw_drawwin()
 		"	addl $512, %%edi\n"				\
 		"	pushl %%esi\n"					\
 		"	movl %%edi, %%esi\n"				\
-		"	subl pitch, %%esi\n"				\
+		"	subl %0, %%esi\n"				\
 		"	movl $512, %%ecx\n"				\
 		"	rep\n"						\
 		"	movsl\n"					\
@@ -605,8 +559,7 @@ void sw_drawwin()
 		"	addl $64, %%esi\n"				\
 		"	cmpl $223, %%eax\n"				\
 		"	jne Copying32d\n"				\
-		"	popw %%es\n"					\
-		: : : "cc", "memory","eax","ebx","ecx","edx","edi","esi");
+		: : "g" (pitch), "S" (ScreenPtr), "D" (SurfBufD), "b" (BitConv32Ptr) : "cc", "memory","eax","ecx","edx");
 		break;
 		/*
 		  addl pitch, %%edi
