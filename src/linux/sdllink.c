@@ -75,29 +75,14 @@ Uint8 MouseButton;
 DWORD LastUsedPos = 0;
 DWORD CurMode = -1;
 
-#define UPDATE_TICKS_GAME 1000000/60	// microseconds per world update
-#define UPDATE_TICKS_GAMEPAL 1000000/50	// microseconds per world update
-#define UPDATE_TICKS_GUI 1000000/36	// microseconds per world update
-#define UPDATE_TICKS_UDP 1000000/60	// microseconds per world update
+#define UPDATE_TICKS_GAME (1000/60.0)	// milliseconds per world update
+#define UPDATE_TICKS_GAMEPAL (1000/50.0)// milliseconds per world update
+#define UPDATE_TICKS_GUI (1000/36.0)	// milliseconds per world update
+#define UPDATE_TICKS_UDP (1000/60.0)	// milliseconds per world update
 
-_int64 start, end, freq, update_ticks_pc, start2, end2, update_ticks_pc2;
-
-/* SDL's GetTicks function is only millisecond accuracy */
-static struct timeval start_time;
-
-static void zsnes_InitTicks()
-{
-	gettimeofday(&start_time, NULL);
-}
-
-static _int64 zsnes_GetTicks()
-{
-	struct timeval tv;
-
-	gettimeofday(&tv, NULL);
-	return (tv.tv_sec - start_time.tv_sec) * 1000000L + 
-	    (tv.tv_usec - start_time.tv_usec);
-}
+Uint32 end, end2;
+double start, start2;
+double update_ticks_pc, update_ticks_pc2;
 
 void drawscreenwin(void);
 void initwinvideo();
@@ -509,7 +494,6 @@ int startgame(void)
 			fprintf(stderr, "Could not initialize SDL!\n");
 			return FALSE;
 		}
-		zsnes_InitTicks();
 		sdl_inited = -1;
 	}
 
@@ -576,8 +560,8 @@ void Start60HZ(void)
 		update_ticks_pc = UPDATE_TICKS_GAME;
 	}
 
-	start = zsnes_GetTicks();
-	start2 = zsnes_GetTicks();
+	start = SDL_GetTicks();
+	start2 = SDL_GetTicks();
 	//   QueryPerformanceCounter((LARGE_INTEGER*)&start);
 	//   QueryPerformanceCounter((LARGE_INTEGER*)&start2);
 	T36HZEnabled = 0;
@@ -596,8 +580,8 @@ void Start36HZ(void)
 	//   QueryPerformanceCounter((LARGE_INTEGER*)&start);
 	//   QueryPerformanceCounter((LARGE_INTEGER*)&start2);
 
-	start = zsnes_GetTicks();
-	start2 = zsnes_GetTicks();
+	start = SDL_GetTicks();
+	start2 = SDL_GetTicks();
 	T60HZEnabled = 0;
 	T36HZEnabled = 1;
 }
@@ -727,7 +711,7 @@ void CheckTimers(void)
 	int i;
 
 	//QueryPerformanceCounter((LARGE_INTEGER*)&end2);
-	end2 = zsnes_GetTicks();
+	end2 = SDL_GetTicks();
 
 	while ((end2 - start2) >= update_ticks_pc2)
 	{
@@ -749,7 +733,7 @@ void CheckTimers(void)
 	if (T60HZEnabled)
 	{
 		//QueryPerformanceCounter((LARGE_INTEGER*)&end);
-		end = zsnes_GetTicks();
+		end = SDL_GetTicks();
 
 		while ((end - start) >= update_ticks_pc)
 		{
@@ -768,7 +752,7 @@ void CheckTimers(void)
 	if (T36HZEnabled)
 	{
 		//QueryPerformanceCounter((LARGE_INTEGER*)&end);
-		end = zsnes_GetTicks();
+		end = SDL_GetTicks();
 
 		while ((end - start) >= update_ticks_pc)
 		{
