@@ -33,7 +33,6 @@ extern void LinuxExit();
 
 extern unsigned int vidbuffer;
 extern DWORD converta;
-extern unsigned int BitConv32Ptr;
 extern unsigned char curblank;
 void UpdateVFrame(void);
 
@@ -43,13 +42,6 @@ BOOL sw_start(int width, int height, int req_depth, int FullScreen)
     int i;
     Uint32 flags = SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE;
     DWORD GBitMask;
-    
-    p = BitConv32Ptr;
-    for(i=0; i<65536; i++) {
-        color32 = ((i&0xF800)<<8) + ((i&0x07E0)<<5) + ((i&0x001F)<<3)+0xFF000000;
-	    (*(unsigned int *)(p)) = color32;
-	    p += 4;
-    }
     
     flags |= (FullScreen ? SDL_FULLSCREEN : 0);
     

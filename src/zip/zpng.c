@@ -198,7 +198,6 @@ void Grab_PNG_Data(void)
 	/*Set scanline width for 32-bit color data: 4*256 = 1024*/
 	int scanline=1024;
 	unsigned char *DIBits;
-	unsigned int * lookup32=(unsigned int *)BitConv32Ptr;
 	unsigned int * DBits;
 
 	filename = generate_filename();
@@ -217,13 +216,9 @@ void Grab_PNG_Data(void)
 		{
 
 			conv_pixel=pixel[(i*288)+j+16];
-#ifndef __MSDOS__
-			DBits[i*256+j]=lookup32[conv_pixel];
-#else
-			DBits[i*256+j]=((conv_pixel&0xF800)<<8)+
-              ((conv_pixel&0x07E0)<<5)+
-              ((conv_pixel&0x001F)<<3)+0xFF000000;
-#endif
+			DBits[i*256+j]=((conv_pixel&0xF800)<<8)|
+				       ((conv_pixel&0x07E0)<<5)|
+				       ((conv_pixel&0x001F)<<3)|0xFF000000;
 		}
 	}
 
