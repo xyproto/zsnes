@@ -331,9 +331,6 @@ aquireagain:;
 	return TRUE;
 }
 
-BYTE PrevStereoSound;
-DWORD PrevSoundQuality;
-
 void ExitFunction()
 {
    ReleaseDirectInput();
@@ -472,8 +469,6 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-
-
 int RegisterWinClass(void)
 {
    if (AllowMultipleInst == 0)
@@ -505,6 +500,9 @@ int RegisterWinClass(void)
 
    return TRUE;
 }
+
+BYTE PrevStereoSound;
+DWORD PrevSoundQuality;
 
 InitSound()
 {
