@@ -1804,7 +1804,7 @@ void CheckTimers(void)
          start2 += update_ticks_pc2;
       }                                     
 
-   if (T60HZEnabled)
+   if (T60HZEnabled == 1)
    {
       if (AltTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
          else end = timeGetTime();
@@ -1820,7 +1820,7 @@ void CheckTimers(void)
       }                                     
    }
 
-   if (T36HZEnabled)
+   if (T36HZEnabled == 1)
    {
       if (AltTimer == 0) QueryPerformanceCounter((LARGE_INTEGER*)&end);
          else end = timeGetTime();
@@ -1836,6 +1836,8 @@ void CheckTimers(void)
       }                                     
    }
 }
+
+extern "C" BYTE FPUCopy;
 
 void UpdateVFrame(void)
 {
@@ -1882,13 +1884,61 @@ void UpdateVFrame(void)
 
       DSPBuffer1=(int *)&DSPBuffer;
 
-      for(i=0;i<SPCSize;i++)
-      {
-         Buffer[i]=DSPBuffer1[i];
-         if (DSPBuffer1[i]>32767)Buffer[i]=32767;
-         if (DSPBuffer1[i]<-32767)Buffer[i]=-32767;
-         if (T36HZEnabled)Buffer[i]=0;
-      }
+      int buffer_ptr = (int)&Buffer[0];
+
+      if (T36HZEnabled == 1)
+         if (FPUCopy == 2)
+            _asm
+            {
+               mov edi,buffer_ptr
+               mov ecx,SPCSize
+               shr ecx,2
+               pxor mm0,mm0
+_blank_top_fpu:
+               movq [edi],mm0
+               add edi,8
+               dec ecx
+               jne _blank_top_fpu
+               emms
+            }
+         else
+            _asm
+            {
+               mov edi,buffer_ptr
+               mov ecx,SPCSize
+               shr ecx,1
+               xor eax,eax
+_blank_top:
+               mov [edi],eax
+               add edi,4
+               dec ecx
+               jne _blank_top
+            }
+      else
+         if (FPUCopy == 2)
+            _asm
+            {
+               mov esi,DSPBuffer1
+               mov edi,buffer_ptr
+               mov ecx,SPCSize
+               shr ecx,2
+_top_mmx:
+               movq mm0,[esi]
+               packssdw mm0,[esi+8]
+               movq [edi],mm0
+               add esi,16
+               add edi,8
+               dec ecx
+               jne _top_mmx
+               emms
+            }
+         else
+            for(i=0;i<SPCSize;i++)
+            {
+               Buffer[i]=DSPBuffer1[i];
+               if (DSPBuffer1[i]>32767)Buffer[i]=32767;
+               if (DSPBuffer1[i]<-32767)Buffer[i]=-32767;
+            }
 
       if (DS_OK!=lpSoundBuffer->Lock(LastUsedPos,
                                   SPCSize*2, &lpvPtr1,
