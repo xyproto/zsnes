@@ -11,7 +11,7 @@ v1.337 - This release is dedicated to zsKnight and his family
        - Added customisable keys to increment and decrement the save state
          slot [pagefault]
        - Added a customisable key to quickly save an SPC file [pagefault]
-       - Added force NTSC/PAL and force HiROM and LoROM options to GUI
+       - Added force NTSC/PAL and force HiROM/LoROM options to GUI
          [pagefault]
        - Added a customisable key to toggle the display of the FPS counter
          [pagefault]
