@@ -6195,7 +6195,13 @@ NEWSYM CheckROMType
 .endchpdtct
 
     cmp byte[DSP1Enable],1
-    jae .notDSP1Hi
+    jne .notDSP1Hi
+    cmp byte[DSP2Enable],1
+    jne .notDSP1Hi
+    cmp byte[DSP3Enable],1
+    jne .notDSP1Hi
+    cmp byte[DSP4Enable],1
+    jne .notDSP1Hi
     call InitDSP
     mov byte[DSP1Type],1
     cmp byte[romtype],2
