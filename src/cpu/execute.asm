@@ -818,7 +818,6 @@ NetSaveState:
     call splitflags
     ret
 
-
 %macro stim 0
 ;    cmp byte[OSPort],1
 ;    ja %%nosti
@@ -1000,7 +999,6 @@ NEWSYM start65816
     jne .notrouble
     ret
 .notrouble
-
 
 ;    cmp byte[OSPort],2
 ;    jae .nonewgfxcheck
@@ -1285,7 +1283,6 @@ reexecuteb2:
 
 NEWSYM EndMessage
 db '                                                                   ',13,10,0
-
 
 NEWSYM endprog
     call deinitvideo
@@ -1898,7 +1895,6 @@ NEWSYM loadstate
     mov ebx,SRAMDir
     call Change_Dir
 %endif
-
     ; Get the state number
     mov ebx,[statefileloc]
     mov cl,[fnamest+ebx]
@@ -1912,7 +1908,6 @@ NEWSYM loadstate
     mov [.loadmsg+6],cl
     mov [.convmsg+6],cl
     mov [.nfndmsg+21],cl
-	
     mov edx,fnamest+1
     call Open_File
     jc near .nofile
