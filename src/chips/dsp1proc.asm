@@ -461,9 +461,9 @@ DSP1_1C:  ; 3D Coordinate Rotation
     mov ax,[DSP1VARS]
     mov [Op1CZ],ax
     mov ax,[DSP1VARS+2]
-    mov [Op1CX],ax
-    mov ax,[DSP1VARS+4]
     mov [Op1CY],ax
+    mov ax,[DSP1VARS+4]
+    mov [Op1CX],ax
     mov ax,[DSP1VARS+6]
     mov [Op1CXBR],ax
     mov ax,[DSP1VARS+8]
@@ -638,9 +638,9 @@ DSP1_01:  ; Set Attitude Matrix A
     mov ax,[DSP1VARS+2]
     mov [Op01Zr],ax
     mov ax,[DSP1VARS+4]
-    mov [Op01Xr],ax
-    mov ax,[DSP1VARS+6]
     mov [Op01Yr],ax
+    mov ax,[DSP1VARS+6]
+    mov [Op01Xr],ax
     pushad
     call DSPOp01
     popad
@@ -654,9 +654,9 @@ DSP1_11:  ; Set Attitude Matrix B
     mov ax,[DSP1VARS+2]
     mov [Op11Zr],ax
     mov ax,[DSP1VARS+4]
-    mov [Op11Xr],ax
-    mov ax,[DSP1VARS+6]
     mov [Op11Yr],ax
+    mov ax,[DSP1VARS+6]
+    mov [Op11Xr],ax
     pushad
     call DSPOp11
     popad
@@ -670,9 +670,9 @@ DSP1_21:  ; Set Attitude Matrix C
     mov ax,[DSP1VARS+2]
     mov [Op21Zr],ax
     mov ax,[DSP1VARS+4]
-    mov [Op21Xr],ax
-    mov ax,[DSP1VARS+6]
     mov [Op21Yr],ax
+    mov ax,[DSP1VARS+6]
+    mov [Op21Xr],ax
     pushad
     call DSPOp21
     popad
