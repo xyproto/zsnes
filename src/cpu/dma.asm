@@ -472,6 +472,14 @@ NEWSYM setuphdma
     mov bl,[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi]
+    cmp bx,2118h
+    je .notnormalhdma1
+    cmp bx,2119h
+    je .notnormalhdma1
+    jmp .normalhdma1
+.notnormalhdma1
+    mov bx,2200h        ; bad hack _Demo_
+.normalhdma1
     shl ebx,2
     add ebx,[regptw]
     mov eax,[ebx]
@@ -482,6 +490,14 @@ NEWSYM setuphdma
     mov bl,[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+2]
+    cmp bx,2118h
+    je .notnormalhdma2
+    cmp bx,2119h
+    je .notnormalhdma2
+    jmp .normalhdma2
+.notnormalhdma2
+    mov bx,2200h        ; bad hack _Demo_
+.normalhdma2
     shl ebx,2
     add ebx,[regptw]
     mov eax,[ebx]
@@ -492,6 +508,15 @@ NEWSYM setuphdma
     mov bl,[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+4]
+    cmp bx,2118h
+    je .notnormalhdma3
+    cmp bx,2119h
+    je .notnormalhdma3
+    jmp .normalhdma3
+.notnormalhdma3
+    mov bx,2200h        ; bad hack _Demo_
+.normalhdma3
+
     shl ebx,2
     add ebx,[regptw]
     mov eax,[ebx]
@@ -502,6 +527,15 @@ NEWSYM setuphdma
     mov bl,[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+6]
+    cmp bx,2118h
+    je .notnormalhdma4
+    cmp bx,2119h
+    je .notnormalhdma4
+    jmp .normalhdma4
+.notnormalhdma4
+    mov bx,2200h        ; bad hack _Demo_
+.normalhdma4
+
     shl ebx,2
     add ebx,[regptw]
     mov eax,[ebx]
@@ -538,6 +572,14 @@ NEWSYM setuphdmars
     mov bl,[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi]
+    cmp bx,2118h
+    je .notnormalhdma1
+    cmp bx,2119h
+    je .notnormalhdma1
+    jmp .normalhdma1
+.notnormalhdma1
+    mov bx,2200h        ; bad hack _Demo_
+.normalhdma1
     shl ebx,2
     add ebx,[regptw]
     mov eax,[ebx]
@@ -548,6 +590,14 @@ NEWSYM setuphdmars
     mov bl,[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+2]
+    cmp bx,2118h
+    je .notnormalhdma2
+    cmp bx,2119h
+    je .notnormalhdma2
+    jmp .normalhdma2
+.notnormalhdma2
+    mov bx,2200h        ; bad hack _Demo_
+.normalhdma2
     shl ebx,2
     add ebx,[regptw]
     mov eax,[ebx]
@@ -558,6 +608,14 @@ NEWSYM setuphdmars
     mov bl,[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+4]
+    cmp bx,2118h
+    je .notnormalhdma3
+    cmp bx,2119h
+    je .notnormalhdma3
+    jmp .normalhdma3
+.notnormalhdma3
+    mov bx,2200h        ; bad hack _Demo_
+.normalhdma3
     shl ebx,2
     add ebx,[regptw]
     mov eax,[ebx]
@@ -568,6 +626,14 @@ NEWSYM setuphdmars
     mov bl,[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+6]
+    cmp bx,2118h
+    je .notnormalhdma4
+    cmp bx,2119h
+    je .notnormalhdma4
+    jmp .normalhdma4
+.notnormalhdma4
+    mov bx,2200h        ; bad hack _Demo_
+.normalhdma4
     shl ebx,2
     add ebx,[regptw]
     mov eax,[ebx]
@@ -608,6 +674,15 @@ NEWSYM setuphdma2
     mov bl,[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi]
+    cmp bx,2118h
+    je .notnormalhdma1
+    cmp bx,2119h
+    je .notnormalhdma1
+    jmp .normalhdma1
+.notnormalhdma1
+    mov bx,2200h        ; bad hack _Demo_
+.normalhdma1
+
     shl ebx,2
     add ebx,[regptw]
     mov eax,[ebx]
@@ -618,16 +693,31 @@ NEWSYM setuphdma2
     mov bl,[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+2]
+    cmp bx,2118h
+    je .notnormalhdma2
+    cmp bx,2119h
+    je .notnormalhdma2
+    jmp .normalhdma2
+.notnormalhdma2
+    mov bx,2200h        ; bad hack _Demo_
+.normalhdma2
     shl ebx,2
     add ebx,[regptw]
     mov eax,[ebx]
     mov [edx+4],eax
-
     ; get pointer #3
     xor ebx,ebx
     mov bl,[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+4]
+    cmp bx,2118h
+    je .notnormalhdma3
+    cmp bx,2119h
+    je .notnormalhdma3
+    jmp .normalhdma3
+.notnormalhdma3
+    mov bx,2200h        ; bad hack _Demo_
+.normalhdma3
     shl ebx,2
     add ebx,[regptw]
     mov eax,[ebx]
@@ -638,6 +728,14 @@ NEWSYM setuphdma2
     mov bl,[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+6]
+    cmp bx,2118h
+    je .notnormalhdma4
+    cmp bx,2119h
+    je .notnormalhdma4
+    jmp .normalhdma4
+.notnormalhdma4
+    mov bx,2200h        ; bad hack _Demo_
+.normalhdma4
     shl ebx,2
     add ebx,[regptw]
     mov eax,[ebx]
