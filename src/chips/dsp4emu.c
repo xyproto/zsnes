@@ -2058,10 +2058,7 @@ void InitDSP4()
 
 void DSP4SetByte()
 {
-  uint8 byte = dsp4_byte;
-  uint16 address = dsp4_address;
-   
-  if ((address & 0xf000) == 0x6000 || (address >= 0x8000 && address < 0xc000))
+  if ((dsp4_address & 0xf000) == 0x6000 || (dsp4_address >= 0x8000 && dsp4_address < 0xc000))
   {
     // clear pending read
     if (DSP4.out_index < DSP4.out_count)
@@ -2074,7 +2071,7 @@ void DSP4SetByte()
     {
       if (DSP4.half_command)
       {
-        DSP4.command |= (byte << 8);
+        DSP4.command |= (dsp4_byte << 8);
         DSP4.in_index = 0;
         DSP4.waiting4command = FALSE;
         DSP4.half_command = FALSE;
@@ -2123,13 +2120,13 @@ void DSP4SetByte()
       }
       else
       {
-        DSP4.command = byte;
+        DSP4.command = dsp4_byte;
         DSP4.half_command = TRUE;
       }
     }
     else
     {
-      DSP4.parameters[DSP4.in_index] = byte;
+      DSP4.parameters[DSP4.in_index] = dsp4_byte;
       DSP4.in_index++;
     }
      
