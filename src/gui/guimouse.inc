@@ -2324,10 +2324,13 @@ DisplayGUIVideoClick:
     cmp byte[GUITBVID+ebx],0
     je .nocheckboxttb
     GUIClickCButtonT 11,163,byte[Triplebufen],byte[vsyncon]
-%ifdef __WIN32__
-    GUIClickCButton 83,173,byte[KitchenSync]
-%endif
 .nocheckboxttb
+    xor ebx,ebx
+    mov bl,[cvidmode]
+    cmp byte[GUITBVID+ebx],0
+    je .nocheckboxks
+    GUIClickCButton 83,173,byte[KitchenSync]
+.nocheckboxks
     GUIClickCButton 11,183,byte[GrayscaleMode]
 %ifdef __WIN32__
     GUIClickCButtonf 115,183,byte[vsyncon],initDirectDraw

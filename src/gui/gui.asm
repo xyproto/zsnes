@@ -586,6 +586,7 @@ NEWSYM SmallMsgText, db 0
 NEWSYM AllowMultipleInst, db 0
 NEWSYM FilteredGUI, db 0
 NEWSYM BilinearFilter, db 0
+NEWSYM TripleBufferWin, db 0
 
 NEWSYM ExclusiveSound, db 0
 NEWSYM DisableScreenSaver, db 0

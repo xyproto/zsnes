@@ -1697,6 +1697,12 @@ DisplayGUIVideo:
 .notexta
     xor eax,eax
     mov al,[cvidmode]
+    cmp byte[GUITBWVID+eax],0
+    je near .nottbw
+    GUIOuttextwin2u 5,26,128,GUIVideoText7,0
+.nottbw
+    xor eax,eax
+    mov al,[cvidmode]
     cmp byte[GUI2xVID+eax],0
     je near .notextb
     GUIOuttextwin2u 5,26,138,GUIVideoTextc,1
@@ -1751,8 +1757,11 @@ DisplayGUIVideo:
     cmp byte[GUITBVID+eax],0
     je .notext7
     GUIOuttextwin2u 5,26,168,GUIVideoText7,0
-    GUIOuttextwin2u 5,98,178,GUIVideoText10,0
 .notext7
+    cmp byte[GUITBWVID+eax],0
+    je .notext77
+    GUIOuttextwin2u 5,98,178,GUIVideoText10,0
+.notext77
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIM7VID+eax],0
@@ -1797,6 +1806,12 @@ DisplayGUIVideo:
     GUIOuttextwin2 5,75,118,GUIVideoTexta2
     GUIOuttextwin2 5,115,118,GUIVideoTexta3
 .notextab
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUITBWVID+eax],0
+    je near .nottbwb
+    GUIOuttextwin2 5,25,127,GUIVideoText7
+.nottbwb
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUI2xVID+eax],0
@@ -1853,8 +1868,11 @@ DisplayGUIVideo:
     cmp byte[GUITBVID+eax],0
     je .notext7b
     GUIOuttextwin2 5,25,167,GUIVideoText7
-    GUIOuttextwin2 5,97,177,GUIVideoText10
 .notext7b
+    cmp byte[GUITBWVID+eax],0
+    je .notext7c
+    GUIOuttextwin2 5,97,177,GUIVideoText10
+.notext7c
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIM7VID+eax],0
@@ -1911,6 +1929,17 @@ DisplayGUIVideo:
 .nocheckboxv2
     GUIDisplayIconWin 5,101,114,[GUITemp]
 .nocheckboxw
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUITBWVID+eax],0
+    je near .nocheckboxslw2
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[TripleBufferWin],1
+    jne .nocheckboxslw
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckboxslw
+    GUIDisplayIconWin 5,11,123,[GUITemp]
+.nocheckboxslw2
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUI2xVID+eax],0
@@ -1999,7 +2028,7 @@ DisplayGUIVideo:
 %endif
     xor eax,eax
     mov al,[cvidmode]
-    cmp byte[GUITBVID+eax],0
+    cmp byte[GUITBWVID+eax],0
     je .nocheckboxks2
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[KitchenSync],0
