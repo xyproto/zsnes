@@ -116,7 +116,7 @@ EXTSYM loadstate2
 %ifdef __LINUX__
 EXTSYM LoadDir, popdir, pushdir
 %endif
-
+;EXTSYM InitDSP4
 NEWSYM InitAsmStart
 
 
@@ -5953,8 +5953,9 @@ NEWSYM CheckROMType
     je .initdsp
     cmp byte[DSP3Enable],1
     je .initdsp
-    cmp byte[DSP4Enable],1
-    je .initdsp   
+    cmp byte[DSP4Enable],0
+    je .notDSP1Hi
+;   call InitDSP4
     jmp .notDSP1Hi
 .initdsp
     call InitDSP
