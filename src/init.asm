@@ -1320,7 +1320,6 @@ NEWSYM StoreBuffer, times 128*32 db 0
 
 SECTION .data
 NEWSYM execatzerovirq, db 0
-NEWSYM disablehdma,    db 0
 NEWSYM disableeffects, db 0
 NEWSYM hdmaearlstart,  db 0
 NEWSYM hdmadelay,      db 0
@@ -1452,7 +1451,6 @@ headerhack2:
 .mmx2head db 50,58,56,62,50,62,49,95,39,77,95,95,95,95,95,95,95,95,95,95
 
 NEWSYM headerhack
-    mov byte[disablehdma],0
     mov byte[Offby1line],0
     mov byte[CacheCheckSkip],0
     mov word[IRQHack],0
@@ -1620,30 +1618,6 @@ NEWSYM headerhack
 
     mov esi,[romdata]
     add esi,0FFC0h
-    cmp dword[esi],'Baha'
-    jne .notbahamutlagoon
-    cmp dword[esi+4],'mut '
-    jne .notbahamutlagoon
-    cmp dword[esi+8],'Lago'
-    jne .notbahamutlagoon
-    mov byte[disablehdma],1
-.notbahamutlagoon
-
-    mov esi,[romdata]
-    add esi,07FC0h
-    cmp dword[esi],'MORT'
-    jne .notmk
-    cmp dword[esi+4],'AL K'
-    jne .notmk
-    cmp dword[esi+8],'OMBA'
-    jne .notmk
-    cmp dword[esi+12],'T   '
-    jne .notmk
-    mov byte[disablehdma],1
-.notmk
-
-    mov esi,[romdata]
-    add esi,0FFC0h
     cmp dword[esi],'CLOC'
     jne .notclocktower
     cmp dword[esi+4],'K TO'
@@ -1717,11 +1691,6 @@ NEWSYM headerhack
     mov byte[cycpbl],75
     mov byte[cycpblt],75
 .nottuffenuff
-
-    cmp byte[DSP1Type],0
-    je .notdis
-    mov byte[disablehdma],1
-.notdis
 
     ; Here are the individual game hacks.  Some of these probably can
     ;   be removed since many of them were created very early in ZSNES
@@ -1847,16 +1816,6 @@ NEWSYM headerhack
     mov byte[opexec268cph],44
     mov byte[opexec358cph],44
 .noromhead5
-
-    ; PunchOut - Disable HDMA start in middle of screen
-    mov esi,[romdata]
-    add esi,07FC0h
-    mov edi,.pouthead
-    call Checkheadersame
-    cmp al,0
-    jne .noromhead7
-    mov byte[disablehdma],1
-.noromhead7
 
     ; Front Mission - -p 140
     mov esi,[romdata]
@@ -2069,7 +2028,6 @@ NEWSYM init65816
 
     mov byte[prevoamptr],0FFh
     mov byte[execatzerovirq],0
-    mov byte[disablehdma],0
     mov byte[disableeffects],0
     mov byte[dracxhack],0
     mov al,[opexec268b]
