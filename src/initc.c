@@ -1239,20 +1239,6 @@ void headerhack()
     cycpblt  = 145;
   }
 
-  //Tuff E Nuff (U/E), Dead Dance (J),
-  //Cyber Knight II - Tikyu Teikoku no Yabou (J)
-  if (!strncmp((RomData+Lo),"CYBER KNIGHT 2  " ,16) ||
-      !strncmp((RomData+Lo),"DEAD", 4) ||
-      !strncmp((RomData+Lo),"TUFF", 4))
-  {
-    cycpb268 = 75;
-    cycpb358 = 77;
-    cycpbl2  = 75;
-    cycpblt2 = 75;
-    cycpbl   = 75;
-    cycpblt  = 75;
-  }
-
   //Okaaay...
   if(DSP1Type) { disablehdma = true; }
 
