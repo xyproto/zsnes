@@ -39,6 +39,7 @@ DWORD FullScreen = 0;
 DWORD Moving= 0;
 DWORD SoundBufferSize=1024*18;
 DWORD FirstSound=1;
+DWORD CurrentTimer=0;
 
 int AllowDefault=0;
 int SoundEnabled=1;
@@ -217,20 +218,6 @@ extern "C" void MinimizeWindow()
    InputDeAcquire();
    SetActiveWindow(0);
    IsMinimized = TRUE;
-}
-
-extern "C" void ReInitTimer()
-{
-   if (AlternateTimer == 0)
-   {
-      QueryPerformanceCounter((LARGE_INTEGER*)&start);
-      QueryPerformanceCounter((LARGE_INTEGER*)&start2);
-   }
-   else
-   {
-      start = timeGetTime();
-      start2 = timeGetTime();
-   }
 }
 
 extern "C" BYTE MouseWheel;
@@ -2279,6 +2266,17 @@ void WinUpdateDevices()
       }
    } 
 
+}
+
+extern "C" void DosExit();
+
+extern "C" void RestartTimer()
+{
+   if (CurrentTimer != AlternateTimer)
+   {
+      MessageBox(hMainWindow, "ZSNESW must be restarted to use this option", "Info", MB_OK);
+      DosExit();
+   }
 }
 
 int GetMouseX(void)

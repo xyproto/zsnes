@@ -176,7 +176,7 @@ EXTSYM numlockptr
 %ifdef __WIN32__
 EXTSYM CheckPriority
 EXTSYM CheckAlwaysOnTop
-EXTSYM ReInitTimer
+EXTSYM RestartTimer
 %endif
 %ifdef __LINUX__
 EXTSYM numlockptr
@@ -3321,7 +3321,7 @@ DisplayBoxes:
 %ifdef __WIN32__
     pushad
     call CheckPriority
-    call ReInitTimer
+    call RestartTimer
     popad
 %endif
     jmp .finstuff
