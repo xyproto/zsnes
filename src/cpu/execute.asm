@@ -981,7 +981,7 @@ NEWSYM abcdefg1,    dd 0
 NEWSYM abcdefg2,    dd 0
 NEWSYM abcdefg3,    dd 0
 NEWSYM SSKeyPressed, dd 0
-NEWSYM SaveSPCKeyPressed, dd 0
+NEWSYM SPCKeyPressed, dd 0
 NEWSYM NoSoundReinit, dd 0
 NEWSYM NextNGDisplay, db 0
 NEWSYM TempVidInfo, dd 0
@@ -1257,7 +1257,7 @@ reexecuteb2:
     jnz near loadstate
     cmp byte[SSKeyPressed],1
     je near showmenu
-    cmp byte[SaveSPCKeyPressed],1
+    cmp byte[SPCKeyPressed],1
     je near showmenu
     cmp byte[debugdisble],0
     jne .nodebugger
@@ -2302,7 +2302,7 @@ NEWSYM exitloop
    mov eax,[KeyQuickSaveSPC]
    mov byte[pressed+eax],0
    mov byte[SSKeyPressed],0
-   mov byte[SaveSPCKeyPressed],0
+   mov byte[SPCKeyPressed],0
    jmp cpuover.returntoloop
 .okay
    mov byte[ExecExitOkay],5
@@ -2794,7 +2794,7 @@ NEWSYM cpuover
     jz .nosavespckey
     test byte[pressed+eax],1
     jz .nosavespckey
-    mov byte[SaveSPCKeyPressed],1
+    mov byte[SPCKeyPressed],1
     mov byte[pressed+eax],2
     jmp exitloop
 .nosavespckey
