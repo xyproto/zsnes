@@ -341,9 +341,9 @@ void CalcChecksum()
   else if (SPC7110Enable)
   {
     Checksumvalue = sum(ROM, NumofBytes);
-    if (NumofBanks == 96)
+    if (NumofBytes == 0x300000) //Fix for 24Mb SPC7110 ROMs
     {
-      Checksumvalue += Checksumvalue; //Fix for 24Mb SPC7110 ROMs
+      Checksumvalue += Checksumvalue;
     }
   }
   else
