@@ -664,11 +664,7 @@ NEWSYM allocptr
 ;    cmp byte[OSPort],3
 ;    jne near .nostate
 %ifndef __MSDOS__
-EXTSYM allocblah
-pushad
-call allocblah
-popad
-;    AllocmemFail 4096*128*16+4096+65536*16,StateBackup,outofmemory
+    AllocmemFail 4096*128*16+4096+65536*16,StateBackup,outofmemory
     mov eax,[StateBackup]
     add eax,4096*128*16
     mov [BitConv32Ptr],eax
