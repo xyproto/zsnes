@@ -121,6 +121,10 @@ ifeq (${DEBUG},yes)
   STRIP=
 endif
 
+ifeq (${RELEASEGRADE},yes)
+  ASMOPT=-O9999
+endif
+
 CFLAGS=${CFLAGSORIG} -D${OS}
 ASMFLAGS=${ASMFLAGSORIG} -f ${FILEFORMAT} -D${OS}
 
