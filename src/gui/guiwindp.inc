@@ -5348,7 +5348,7 @@ GUIGUIAboutText7 db 'DOS VERSION',0
 %elifdef __WIN32__
 GUIGUIAboutText7 db 'WIN VERSION',0
 %elifdef __LINUX__
-GUIGUIAboutText7 db 'LINUX VERSION',0
+GUIGUIAboutText7 db 'SDL VERSION',0
 %endif
 
 GUIGUIAboutText8 db 'WWW.ZSNES.COM',0
