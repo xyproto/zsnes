@@ -2081,6 +2081,18 @@ NEWSYM initsnes
 
     mov esi,[romdata]
     add esi,7FC0h
+    cmp dword[esi],'TUFF'
+    jne .nottuffenuff
+    mov byte[cycpb268],75
+    mov byte[cycpb358],77
+    mov byte[cycpbl2],75
+    mov byte[cycpblt2],75
+    mov byte[cycpbl],75
+    mov byte[cycpblt],75
+.nottuffenuff
+
+    mov esi,[romdata]
+    add esi,7FC0h
     cmp dword[esi],'MEGA'
     jne .notmmx
     cmp dword[esi+4],'MAN '
