@@ -34,6 +34,8 @@ extern Uint8 GUIOn2;
 
 extern unsigned int vidbuffer;
 
+void gl_clearwin();
+
 int gl_start(int width, int height, int req_depth, int FullScreen)
 {
 	Uint32 flags =
@@ -55,6 +57,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 		return FALSE;
 	}
 
+	gl_clearwin();
 	SurfaceLocking = SDL_MUSTLOCK(surface);
 	SDL_WarpMouse(SurfaceX / 4, SurfaceY / 4);
 

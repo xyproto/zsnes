@@ -89,6 +89,10 @@ void initwinvideo();
 void ProcessKeyBuf(int scancode);
 void LinuxExit(void);
 
+#ifdef __OPENGL__
+extern void gl_clearwin();
+#endif
+
 int Main_Proc(void)
 {
 	int j;
@@ -254,6 +258,7 @@ int Main_Proc(void)
 				    WindowHeight, BitDepth, surface->flags);
 				glViewport(0,0, WindowWidth, WindowHeight);
 				glFlush();
+				gl_clearwin();
 				break;
 #endif
 			default:
