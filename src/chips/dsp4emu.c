@@ -178,6 +178,20 @@ static int32 DSP4_READ_DWORD()
 #define DSP4_WRITE_WORD( d ) \
 { WRITE_WORD( DSP4.output + DSP4.out_count, ( d ) ); DSP4.out_count += 2; }
 
+#ifndef BIG_ENDIAN
+#define DSP4_WRITE_16_WORD( d ) \
+{ memcpy(DSP4.output + DSP4.out_count, ( d ), 32); DSP4.out_count += 32; }
+#else
+#define DSP4_WRITE_16_WORD( d )                         \
+{ int16 i = 16;                                         \
+  while (i--)                                           \
+  {                                                     \
+    WRITE_WORD( DSP4.output + DSP4.out_count, ( d ) );  \
+  }                                                     \
+  DSP4.out_count += 32;                                 \
+}
+#endif
+
 #ifdef PRINT_OP
 #define DSP4_WRITE_DEBUG( x, d ) \
   WRITE_WORD( nop + x, d );
@@ -497,13 +511,8 @@ void DSP4_OP05()
 
 void DSP4_OP06()
 {
-  int16 lcv;
   DSP4_CLEAR_OUT();
-
-  for (lcv = 0; lcv < 16; lcv++)
-  {
-    DSP4_WRITE_WORD(OAM_attr[lcv]);
-  }
+  DSP4_WRITE_16_WORD(OAM_attr);
 }
 
 //////////////////////////////////////////////////////////////
