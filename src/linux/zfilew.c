@@ -32,10 +32,9 @@
 #ifdef __LINUX__
 #define STUB_FUNCTION fprintf(stderr,"STUB: %s at " __FILE__ ", line %d, thread %d\n",__FUNCTION__,__LINE__,getpid())
 #endif
-
+#include <errno.h>
 FILE *FILEHANDLE[16];
 DWORD CurrentHandle=0;
-
 
 
 // ZFileSystemInit
@@ -315,14 +314,10 @@ DWORD GetDate()
 #ifdef __LINUX__
 int _chdrive( int drive )
 {
-	STUB_FUNCTION;
+//	STUB_FUNCTION;
 }
 int _getdrive( void )
 {
-	STUB_FUNCTION;
-}
-void _splitpath( const char *path, char *drive, char *dir, char *fname, char *ext )
-{
-	STUB_FUNCTION;
+//	STUB_FUNCTION;
 }
 #endif

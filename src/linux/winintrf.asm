@@ -335,7 +335,7 @@ NEWSYM WaitForKey       ; Wait for a key to be pressed
 NEWSYM OsExit
 NEWSYM OSExit
     call exit
-    int 3h
+    ;int 3h
     jmp DosExit
 
 NEWSYM MMXCheck
@@ -403,8 +403,8 @@ NEWSYM Open_File
     popad
     stc
     ret
-    mov ax,3D00h
-    int 21h
+    ;mov ax,3D00h
+    ;int 21h
     ; return bx = file handle, carry = error
     ret
 
@@ -428,8 +428,8 @@ NEWSYM Open_File_Write
     popad
     stc
     ret
-    mov ax,3D01h
-    int 21h
+    ;mov ax,3D01h
+    ;int 21h
     ; return bx = file handle, carry = error
     ret
 
@@ -449,9 +449,9 @@ NEWSYM Create_File
     popad
     stc
     ret
-    mov ah,3Ch
-    mov cx,0
-    int 21h
+    ;mov ah,3Ch
+    ;mov cx,0
+    ;int 21h
     ; return bx = file handle
     ret
 
@@ -473,8 +473,8 @@ NEWSYM Write_File
     mov eax,0
     stc
     ret
-    mov ah,40h
-    int 21h
+    ;mov ah,40h
+    ;int 21h
     ret
 
 NEWSYM Read_File
@@ -489,8 +489,8 @@ NEWSYM Read_File
     mov eax,[TempVarSeek]
     clc
     ret
-    mov ah,3Fh
-    int 21h
+    ;mov ah,3Fh
+    ;int 21h
     ret
 
 NEWSYM Delete_File
@@ -499,8 +499,8 @@ NEWSYM Delete_File
     call ZFileDelete
     popad
     ret
-    mov ah,41h
-    int 21h
+    ;mov ah,41h
+    ;int 21h
     ret
 
 NEWSYM Close_File
@@ -511,8 +511,8 @@ NEWSYM Close_File
     popad
     clc
     ret
-    mov ah,3Eh
-    int 21h
+    ;mov ah,3Eh
+    ;int 21h
     ret
 
 NEWSYM File_Seek
@@ -528,8 +528,8 @@ NEWSYM File_Seek
     mov dx,cx
     ret
     ; seek to cx:dx from 0 position, return carry as error
-    mov ax,4200h
-    int 21h
+    ;mov ax,4200h
+    ;int 21h
     ret
 
 NEWSYM File_Seek_End
@@ -549,8 +549,8 @@ NEWSYM File_Seek_End
     mov dx,[TempVarSeek+2]
     ret
     ; seek to cx:dx from end position, and return file location in dx:ax
-    mov ax,4202h
-    int 21h
+    ;mov ax,4202h
+    ;int 21h
     ret
 
 NEWSYM Get_Time
@@ -585,9 +585,9 @@ NEWSYM Get_File_Date
     mov cx,[ZFTime]
     ret
     ; return packed date in dx:cx
-    mov ah,57h
-    mov al,00h
-    int 21h
+    ;mov ah,57h
+    ;mov al,00h
+    ;int 21h
     ret
 
 
@@ -802,8 +802,8 @@ NEWSYM Change_Single_Dir
     stc
     ret
     ; Dir in edx, return error in carry flag
-    mov ah,3Bh
-    int 21h
+    ;mov ah,3Bh
+    ;int 21h
     ret
 
 NEWSYM Create_Dir
@@ -820,8 +820,8 @@ NEWSYM Create_Dir
     popad
     stc
     ret
-    mov ah,39h
-    int 21h
+    ;mov ah,39h
+    ;int 21h
     ret
 
 NEWSYM Remove_Dir
@@ -838,8 +838,8 @@ NEWSYM Remove_Dir
     popad
     stc
     ret
-    mov ah,3Ah
-    int 21h
+    ;mov ah,3Ah
+    ;int 21h
     ret
 
 ;    mov dl,[LoadDrive]
@@ -908,7 +908,7 @@ NEWSYM Get_Dir
     mov dl,[eax+3]
     cmp dl,'/'
     jne .noslash
-    mov dl,'\'
+    ;mov dl,'\'
 .noslash
     mov [eax],dl
     inc eax

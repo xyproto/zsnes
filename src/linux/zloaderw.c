@@ -336,7 +336,7 @@ int main (int argc, char *argv[]) {
 #endif
 		{
 			fvar=&fname;
-			fvar[0] = 10;
+			fvar[0] = strlen(argv[optind]);
 			strncpy(&fvar[1], argv[optind],127);
 			makeextension();
 		}

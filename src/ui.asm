@@ -494,7 +494,7 @@ NEWSYM getcmdline
 
 SECTION .data
 .string2s db 'CMDLINE',0
-.stringnf db 'SET CMDLINE LINE NOT FOUND!',0
+.stringnf db 'SET CMDLINE LINE NOT FOUND!',13,10,0
 
 NEWSYM CMDLineStr, times 256 db 0
 NEWSYM GUIFName, times 256 db 0
