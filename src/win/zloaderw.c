@@ -485,7 +485,7 @@ int pccmdline(void)
         {
           if(!hasroom) return 4;
           SoundQuality=my_atoi(argv[p+1]);
-          if(SoundQuality > 5) return 12;
+          if(SoundQuality > 6) return 12;
           p++;
           break;
         }
