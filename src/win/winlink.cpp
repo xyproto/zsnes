@@ -327,7 +327,6 @@ DWORD PrevSoundQuality;
 
 void ExitFunction()
 {
-   // seems that WM_CLOSE and WM_DESTROY are never called, so cleanup goes here
    ReleaseDirectInput();
    ReleaseDirectSound();
    ReleaseDirectDraw();
