@@ -71,6 +71,7 @@ LPDIRECTDRAW            BasiclpDD = NULL;
 LPDIRECTDRAW7           lpDD = NULL;
 LPDIRECTDRAWSURFACE7    DD_Primary = NULL;
 LPDIRECTDRAWSURFACE7    DD_CFB = NULL;
+LPDIRECTDRAWSURFACE7    DD_CFB16 = NULL;
 LPDIRECTDRAWSURFACE7    DD_BackBuffer = NULL;
 LPDIRECTDRAWCLIPPER     lpDDClipper = NULL;
 RECT                    rcWindow;
@@ -124,6 +125,7 @@ BYTE                    IsActivated=1;
 
 WORD                    PrevRes=0;
 RECT                    BlitArea;
+BYTE                    AltSurface=0;
 
 extern "C" {
 DWORD                   MouseButton;
@@ -302,7 +304,7 @@ void DrawScreen()
         DDrawError();
       }
     }
-    DD_Primary->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
+    DD_Primary->Blt(&rcWindow, AltSurface == 0 ? DD_CFB : DD_CFB16, &BlitArea, DDBLT_WAIT, NULL);
   }
 }
  
@@ -1077,6 +1079,12 @@ void ReleaseDirectDraw()
       DD_CFB = NULL;
    }
 
+   if (DD_CFB16)
+   {
+      DD_CFB16->Release();
+      DD_CFB16 = NULL;
+   }
+
    if (lpDDClipper)
    {
       lpDDClipper->Release();
@@ -1462,6 +1470,24 @@ int InitDirectDraw()
       return FALSE;
    }
 
+   // create alt. drawing surface
+   if ( BitDepth == 32 )
+   {
+     ddsd2.dwFlags |= DDSD_PIXELFORMAT;
+     ddsd2.ddpfPixelFormat.dwSize        = sizeof(DDPIXELFORMAT);
+     ddsd2.ddpfPixelFormat.dwFlags       = DDPF_RGB;
+     ddsd2.ddpfPixelFormat.dwRGBBitCount = 16;
+     ddsd2.ddpfPixelFormat.dwRBitMask    = 0xF800;
+     ddsd2.ddpfPixelFormat.dwGBitMask    = 0x07E0;
+     ddsd2.ddpfPixelFormat.dwBBitMask    = 0x001F;
+
+     if (lpDD->CreateSurface(&ddsd2, &DD_CFB16, NULL) != DD_OK)
+     {
+        MessageBox(NULL, "IDirectDraw7::CreateSurface failed.", "DirectDraw Error", MB_ICONERROR);
+        return FALSE;
+     }
+   }
+
       if (!blur_buffer) blur_buffer = malloc(SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
 	  else blur_buffer = realloc(blur_buffer, SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
 	  if (!blur_temp) blur_temp = malloc(SurfaceX * SurfaceY * (BitDepth == 16 ? 2 : 4));
@@ -1475,25 +1501,66 @@ DDSURFACEDESC2 ddsd;
 
 DWORD LockSurface()
 {
+  HRESULT hRes;
 
-   if (DD_CFB == NULL) return(0);
-    
-   memset(&ddsd,0,sizeof(ddsd));
-   ddsd.dwSize = sizeof( ddsd );
-   ddsd.dwFlags = DDSD_LPSURFACE | DDSD_PITCH;
-   if (DD_CFB->Lock(NULL,&ddsd,DDLOCK_WAIT,NULL) != DD_OK)
-   {
+  if (AltSurface == 0)
+  {
+    if (DD_CFB != NULL)
+    {
+      memset(&ddsd,0,sizeof(ddsd));
+      ddsd.dwSize = sizeof( ddsd );
+      ddsd.dwFlags = DDSD_LPSURFACE | DDSD_PITCH;
+
+      hRes = DD_CFB->Lock(NULL,&ddsd,DDLOCK_WAIT,NULL);
+
+      if (hRes == DD_OK)
+      {
+        SurfBuf = (BYTE*)ddsd.lpSurface;
+        return(ddsd.lPitch);
+      }
+      else
+      {
+        if (hRes == DDERR_SURFACELOST)
+          DD_CFB->Restore();
+        return(0);
+      }
+    }
+    else
       return(0);
-   }
+  }
+  else
+  {
+    if (DD_CFB16 != NULL)
+    {
+      memset(&ddsd,0,sizeof(ddsd));
+      ddsd.dwSize = sizeof( ddsd );
+      ddsd.dwFlags = DDSD_LPSURFACE | DDSD_PITCH;
 
-   SurfBuf = (BYTE*)ddsd.lpSurface;
-   return(ddsd.lPitch);
+      hRes = DD_CFB16->Lock(NULL,&ddsd,DDLOCK_WAIT,NULL);
+
+      if (hRes == DD_OK)
+      {
+        SurfBuf = (BYTE*)ddsd.lpSurface;
+        return(ddsd.lPitch);
+      }
+      else
+      {
+        if (hRes == DDERR_SURFACELOST)
+          DD_CFB16->Restore();
+        return(0);
+      }
+    }
+    else
+      return(0);
+  }  
 }
 
 void UnlockSurface()
 {
-   DD_CFB->Unlock((struct tagRECT *)ddsd.lpSurface);
-   DrawScreen();
+  if (AltSurface == 0)
+    DD_CFB->Unlock((struct tagRECT *)ddsd.lpSurface);
+  else
+    DD_CFB16->Unlock((struct tagRECT *)ddsd.lpSurface);
 }
 
 extern "C" {
@@ -2154,25 +2221,54 @@ extern void ClearWin32();
 
 void clearwin()
 {
-   DWORD i,j,color32;
-   DWORD *SURFDW;
+  HRESULT hRes;
 
-   pitch=LockSurface();
-   if (pitch==0) { return; }
+  if (DD_CFB != NULL)
+  {
+    memset(&ddsd,0,sizeof(ddsd));
+    ddsd.dwSize = sizeof(ddsd);
 
-   SurfBufD=(DWORD) &SurfBuf[0];
-   SURFDW=(DWORD *) &SurfBuf[0];
+    hRes = DD_CFB->Lock(NULL,&ddsd,DDLOCK_WAIT,NULL);
 
-   switch (BitDepth)
-   {
-      case 16:
+    if (hRes == DD_OK)
+    {
+      SurfBufD=(DWORD)ddsd.lpSurface;
+      pitch = ddsd.lPitch;
+
+      switch (BitDepth)
+      {
+        case 16:
+          ClearWin16();
+          break;
+        case 32:
+          ClearWin32();
+          break;
+      }
+      DD_CFB->Unlock((struct tagRECT *)ddsd.lpSurface);
+    }
+    else
+      if (hRes == DDERR_SURFACELOST)
+        DD_CFB->Restore();
+  }
+
+  if (DD_CFB16 != NULL)
+  {
+    memset(&ddsd,0,sizeof(ddsd));
+    ddsd.dwSize = sizeof(ddsd);
+
+    hRes = DD_CFB16->Lock(NULL,&ddsd,DDLOCK_WAIT,NULL);
+
+    if (hRes == DD_OK)
+    {
+      SurfBufD=(DWORD)ddsd.lpSurface;
+      pitch = ddsd.lPitch;
       ClearWin16();
-         break;
-      case 32:
-      ClearWin32();
-         break;
-   }
-   UnlockSurface();
+      DD_CFB16->Unlock((struct tagRECT *)ddsd.lpSurface);
+    }
+    else
+      if (hRes == DDERR_SURFACELOST)
+        DD_CFB16->Restore();
+  }
 }
 
 void clear_display()
@@ -2234,12 +2330,13 @@ void drawscreenwin(void)
    UpdateVFrame();
    if (curblank!=0) return;
 
+   AltSurface = 0;
+
+   if ( ((SurfaceX==512) || (SurfaceX==640)) && (BitDepth == 32) )
+     AltSurface = 1;
+
    if (!(pitch = LockSurface()))
-   { 
-      DD_Primary->Restore();
-      DD_CFB->Restore();
       return;
-   }
 
    ScreenPtr=vidbuffer;
    ScreenPtr+=16*2+32*2+256*2;
@@ -2306,18 +2403,18 @@ void drawscreenwin(void)
    {
       switch (BitDepth)
       {
-         case 16:
-         {
-            if (MotionBlur == 1) DrawWin256x224x16MB();
-               else DrawWin256x224x16();
-            break;
-         }
-      case 32:
-         {
-            if (MotionBlur == 1) DrawWin256x224x32MB();
-               else DrawWin256x224x32();
-           break;
-         }
+        case 16:
+        {
+          if (MotionBlur == 1) DrawWin256x224x16MB();
+            else DrawWin256x224x16();
+          break;
+        }
+        case 32:
+        {
+          if (MotionBlur == 1) DrawWin256x224x32MB();
+            else DrawWin256x224x32();
+          break;
+        }
 
             SURFDW=(DWORD *) &SurfBuf[(resolutn-1)*pitch];
             color32=0x7F000000;
@@ -2335,14 +2432,14 @@ void drawscreenwin(void)
                   SURFDW[i]=color32;
                }         
             break;
-      case 24:
+        case 24:
             MessageBox (NULL, "Sorry.  ZSNESw does not work in windowed 24 bit color modes. \nClick 'OK' to switch to a full screen mode.", "DDRAW Error" , MB_ICONERROR );
             cvidmode=3;
             initwinvideo();
             Sleep(1000);
             drawscreenwin();
             break;
-      default:
+        default:
             UnlockSurface();
             MessageBox (NULL, "Mode only available in 16 and 32 bit color", "DDRAW Error" , MB_ICONERROR );
             cvidmode=2;
@@ -2357,12 +2454,12 @@ void drawscreenwin(void)
    {
       switch (BitDepth)
       {
-         case 16:
-         {
-            DrawWin320x240x16();
-            break;
-         }
-      case 32:
+        case 16:
+        {
+          DrawWin320x240x16();
+          break;
+        }
+        case 32:
             for(j=0;j<8;j++)
             {
                SURFDW=(DWORD *) &SurfBuf[j*pitch];
@@ -2412,7 +2509,7 @@ void drawscreenwin(void)
                }
             }
             break;
-      default:
+        default:
             UnlockSurface();
             MessageBox (NULL, "Mode only available in 16 and 32 bit color", "DDRAW Error" , MB_ICONERROR );
             cvidmode=2;
@@ -2428,6 +2525,7 @@ void drawscreenwin(void)
       switch (BitDepth)
       {
          case 16:
+         case 32: // using 16bpp AltSurface
             AddEndBytes=pitch-1024;
             NumBytesPerLine=pitch;
             WinVidMemStart=&SurfBuf[0];
@@ -2440,7 +2538,7 @@ void drawscreenwin(void)
             break;
          default:
             UnlockSurface();
-            MessageBox (NULL, "Mode only available in 16 bit color", "DDRAW Error" , MB_ICONERROR );
+            MessageBox (NULL, "Mode only available in 16 and 32 bit color", "DDRAW Error" , MB_ICONERROR );
             cvidmode=2;
             initwinvideo();
             Sleep(1000);
@@ -2453,6 +2551,7 @@ void drawscreenwin(void)
       switch (BitDepth)
       {
          case 16:
+         case 32: // using 16bpp AltSurface
             AddEndBytes=pitch-1024;
             NumBytesPerLine=pitch;
             WinVidMemStart=&SurfBuf[16*640*2+64*2];
@@ -2465,12 +2564,12 @@ void drawscreenwin(void)
             break;
          default:
             UnlockSurface();
-            MessageBox (NULL, "Mode only available in 16 bit color", "DDRAW Error" , MB_ICONERROR );
+            MessageBox (NULL, "Mode only available in 16 and 32 bit color", "DDRAW Error" , MB_ICONERROR );
             cvidmode=2;
             initwinvideo();
             Sleep(1000);
             drawscreenwin();
-         }
+      }
    }
    if (SurfaceX == 768 && SurfaceY == 720)
    {
@@ -2505,10 +2604,11 @@ void drawscreenwin(void)
             initwinvideo();
             Sleep(1000);
             drawscreenwin();
-         }
+      }
    }
 
    UnlockSurface();
+   DrawScreen();
 }
 
 extern void SwitchFullScreen(void);

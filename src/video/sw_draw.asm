@@ -462,9 +462,9 @@ NEWSYM DrawWin320x240x16
         sub  edi,640
         add  esi,64
 %ifdef __WIN32__
-        cmp  eax,239
+        cmp  ebx,239
 %else
-        cmp  eax,223
+        cmp  ebx,223
 %endif
         jne .Copying2MMX
         mov  ecx,128
