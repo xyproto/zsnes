@@ -1,8 +1,9 @@
-This is a list of people primarily responsible for the Linux port.
-
-Christophe "teuf" Fergeau
-Steven "relnev" Fuller
-Andrew "prometheus" Henderson
-Dan "theoddone33" Olson
-Shawn "EvilTypeGuy" Walker
-Aaron Lehmann
+Coding:
+	Christophe "teuf" Fergeau
+	Steven "relnev" Fuller
+	Andrew "prometheus" Henderson
+	Dan "theoddone33" Olson
+	Shawn "EvilTypeGuy" Walker
+	Aaron Lehmann
+Miscellanious Contributions:
+	Mitchell Mebane - manpage
