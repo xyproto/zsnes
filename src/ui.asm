@@ -124,8 +124,10 @@ NEWSYM zstart
 	call WaitForKey
 	jmp init
 
+section .data
 .failedalignd db 'Data Alignment Failure : ',0
 .failedalignc db 'Code Alignment Failure : ',0
+section .text
 
 ALIGN32
 NEWSYM	outofmemory
@@ -170,64 +172,70 @@ NEWSYM welcome
                  db 'check license.txt.',10,13,10,13
                  db 'Use ZSNES -? for command line definitions',13,10,13,10,0
 
-cpuidfname db 'nocpuzid.dat',0
-cpuidtext db 'NOTE: If ZSNES crashes here, then please re-run. ',0
-cpuidtext2 db 13,'                                                 ',13,0
+;cpuidfname db 'nocpuzid.dat',0
+;cpuidtext db 'NOTE: If ZSNES crashes here, then please re-run. ',0
+;cpuidtext2 db 13,'                                                 ',13,0
 YesMMX    db 'MMX support enabled.',13,10,13,10,0
 
 ; global variables
-NEWSYM string,  times 512 db 0
-NEWSYM fname,   times 512 db 0
-NEWSYM fnames,  times 512 db 0  ; sram filename
-NEWSYM fnamest, times 512 db 0  ; state filename
 
-ALIGN32
-NEWSYM prevvid,       dd 0
-NEWSYM selc0040,      dd 0
-NEWSYM selcA000,      dd 0
-NEWSYM selcB800,      dd 0
-NEWSYM filefound,     dd 0              ; Parameter String Found
-NEWSYM prevdash,      dd 0              ; Previous Dash Value
-NEWSYM frameskip,     dd 0              ; 0 = Auto, 1-10 = Skip 0 .. 9
 NEWSYM per2exec,      dd 100            ; percentage of opcodes to execute
-NEWSYM vidbuffer,     dd 0              ; video buffer (1024x239 = 244736)
-NEWSYM ngwinptr,      dd 0
-NEWSYM vidbufferm,    dd 0              ; video buffer mirror
-NEWSYM vidbufferofsa, dd 0              ; offset 1
-NEWSYM vidbufferofsb, dd 0              ; offset 2
-NEWSYM vidbufferofsc, dd 0              ; offset 2
-NEWSYM vidbufferofsmos, dd 0            ; mosaic offset for new graphics engine
-NEWSYM headdata,      dd 0
-NEWSYM romdata,       dd 0              ; rom data  (4MB = 4194304)
-NEWSYM sfxramdata,    dd 0              ; SuperFX Ram Data
-NEWSYM wramdata,      dd 0              ; stack (64K = 32768)
-NEWSYM ram7f,         dd 0              ; ram @ 7f = 65536
-NEWSYM vram,          dd 0              ; vram = 65536
-NEWSYM sram,          dd 0              ; sram = 32768
-NEWSYM spritetablea,  dd 0              ; 
-NEWSYM spcBuffera,    dd 0              ; 
-NEWSYM debugbuf,      dd 0              ; debug buffer = 38x1000 = 38000
-NEWSYM regptr,        dd 0              ; pointer to registers
-NEWSYM regptw,        dd 0              ; pointer to registers
-NEWSYM vcache2b,      dd 0              ; 2-bit video cache
-NEWSYM vcache4b,      dd 0              ; 4-bit video cache
-NEWSYM vcache8b,      dd 0              ; 8-bit video cache
-NEWSYM vcache2bs,     dd 0              ; 2-bit video secondary cache
-NEWSYM vcache4bs,     dd 0              ; 4-bit video secondary cache
-NEWSYM vcache8bs,     dd 0              ; 8-bit video secondary cache
-NEWSYM romispal,      db 0              ; 0 = NTSC, 1 = PAL
-NEWSYM enterpress,    db 0              ; if enter is to be issued (0 = yes)
 NEWSYM SoundCompD,    db 1              ; Disable Sound Compression Buffering (1=y)
-NEWSYM newgfx16b,     db 0
-NEWSYM BitConv32Ptr,     dd 0
 
-NEWSYM previdmode,    db 0              ; previous video mode
 %ifdef __MSDOS__
 NEWSYM cvidmode,      db 4              ; video mode, 0=320x240, 1=256x256
 %else
 NEWSYM cvidmode,      db 1              ; video mode, 0=320x240, 1=256x256
 %endif
-NEWSYM cbitmode,      db 0              ; bit mode, 0=8bit, 1=16bit
+
+section .bss
+NEWSYM string,  resb 512
+NEWSYM fname,   resb 512
+NEWSYM fnames,  resb 512  ; sram filename
+NEWSYM fnamest, resb 512  ; state filename
+
+NEWSYM prevvid,       resd 1
+NEWSYM selc0040,      resd 1
+NEWSYM selcA000,      resd 1
+NEWSYM selcB800,      resd 1
+NEWSYM filefound,     resd 1            ; Parameter String Found
+NEWSYM prevdash,      resd 1            ; Previous Dash Value
+NEWSYM frameskip,     resd 1            ; 0 = Auto, 1-10 = Skip 0 .. 9
+NEWSYM vidbuffer,     resd 1            ; video buffer (1024x239 = 244736)
+NEWSYM ngwinptr,      resd 1
+NEWSYM vidbufferm,    resd 1            ; video buffer mirror
+NEWSYM vidbufferofsa, resd 1            ; offset 1
+NEWSYM vidbufferofsb, resd 1            ; offset 2
+NEWSYM vidbufferofsc, resd 1            ; offset 2
+NEWSYM vidbufferofsmos, resd 1          ; mosaic offset for new graphics engine
+NEWSYM headdata,      resd 1
+NEWSYM romdata,       resd 1            ; rom data  (4MB = 4194304)
+NEWSYM sfxramdata,    resd 1            ; SuperFX Ram Data
+NEWSYM wramdata,      resd 1            ; stack (64K = 32768)
+NEWSYM ram7f,         resd 1            ; ram @ 7f = 65536
+NEWSYM vram,          resd 1            ; vram = 65536
+NEWSYM sram,          resd 1            ; sram = 32768
+NEWSYM spritetablea,  resd 1            ; 
+NEWSYM spcBuffera,    resd 1            ; 
+NEWSYM debugbuf,      resd 1            ; debug buffer = 38x1000 = 38000
+NEWSYM regptr,        resd 1            ; pointer to registers
+NEWSYM regptw,        resd 1            ; pointer to registers
+NEWSYM vcache2b,      resd 1            ; 2-bit video cache
+NEWSYM vcache4b,      resd 1            ; 4-bit video cache
+NEWSYM vcache8b,      resd 1            ; 8-bit video cache
+NEWSYM vcache2bs,     resd 1            ; 2-bit video secondary cache
+NEWSYM vcache4bs,     resd 1            ; 4-bit video secondary cache
+NEWSYM vcache8bs,     resd 1            ; 8-bit video secondary cache
+NEWSYM romispal,      resb 1            ; 0 = NTSC, 1 = PAL
+NEWSYM enterpress,    resb 1            ; if enter is to be issued (0 = yes)
+NEWSYM newgfx16b,     resb 1
+NEWSYM BitConv32Ptr,     resd 1
+
+NEWSYM previdmode,    resb 1            ; previous video mode
+NEWSYM cbitmode,      resb 1            ; bit mode, 0=8bit, 1=16bit
+
+SECTION .data
+
 NEWSYM opexec268,     db 171            ; # of opcodes/scanline in 2.68Mhz mode
 NEWSYM opexec358,     db 180            ; # of opcodes/scanline in 3.58Mhz mode (228/180)
 NEWSYM opexec268cph,  db 42             ; # of opcodes/hblank in 2.68Mhz mode
@@ -272,7 +280,7 @@ NEWSYM MusicRelVol,   db 75
 NEWSYM MusicVol,      db 0
 ;NEWSYM BetaUser, db 37,38,210,56,78,23,7,7,0
 
-;SECTION .text
+SECTION .text
 
 ;*******************************************************
 ; Set Noise Data
@@ -525,10 +533,11 @@ SECTION .data
 .string2s db 'CMDLINE',0
 .stringnf db 'SET CMDLINE LINE NOT FOUND!',13,0
 
-NEWSYM CMDLineStr, times 256 db 0
-NEWSYM GUIFName, times 256 db 0
-NEWSYM GUICName, times 256 db 0
-NEWSYM FilenameStart, dd 0
+SECTION .bss
+NEWSYM CMDLineStr, resb 256
+NEWSYM GUIFName, resb 256
+NEWSYM GUICName, resb 256
+NEWSYM FilenameStart, resd 1
 
 SECTION .text
 
@@ -755,9 +764,12 @@ NEWSYM getblaster
 %endif
     ret
 
+SECTION .bss
+.blfound  resb 1
+.cursetting resb 1
+
 SECTION .data
 .string2s db 'BLASTER',0
-.blfound  db 0
 .blasterstr db 'ERROR : SET BLASTER environment NOT found!',10,13
 .blasterstr2 db 'Unable to enable sound.'
 .blasterstr2b db 10,13,10,13
@@ -767,18 +779,17 @@ SECTION .data
 .blinfob db 13,10,'IRQ   : ',0
 .blinfoc db 13,10,'DMA   : ',0
 .blinfod db 13,10,'HDMA  : ',0
-.cursetting db 0
 
 NEWSYM PICRotateP, db 20h
 NEWSYM PICMaskP,   db 21h
-SECTION .text
+;SECTION .text
 ;*******************************************************
 ; Variable section
 ;*******************************************************
 
 SECTION .bss
 
-ALIGN32
+;ALIGN32
 
 NEWSYM vrama,       resb 65536
 NEWSYM mode7tab,    resb 65536 
@@ -869,20 +880,20 @@ AllocateBlock:
    ret
 
 
-SECTION .data
+SECTION .bss
 
-ALIGN32
-vbufaptr dd 0
-vbufeptr dd 0
-ngwinptrb dd 0
-romaptr  dd 0
-vbufcptr dd 0
-NEWSYM vbufdptr, dd 0
-vc2bptr  dd 0
-vc4bptr  dd 0
-vc8bptr  dd 0
-cmemallocptr dd 0
-memfreearray times 12 dd 0
+;ALIGN32
+vbufaptr resd 1
+vbufeptr resd 1
+ngwinptrb resd 1
+romaptr  resd 1
+vbufcptr resd 1
+NEWSYM vbufdptr, resd 1
+vc2bptr  resd 1
+vc4bptr  resd 1
+vc8bptr  resd 1
+cmemallocptr resd 1
+memfreearray resd 12
 
 SECTION .text
 
@@ -1134,6 +1145,7 @@ NEWSYM converthex
     mov byte[esi],0
     ret
 
+section .data
 .hexdat db '0123456789ABCDEF'
 
 ;*******************************************************
@@ -1166,8 +1178,9 @@ ShowIdentStr:
 
 SECTION .data
 .idstrdata db USERNAMEC
-newestfileloc db 0
-newestfiledate dd 0
+SECTION .bss
+newestfileloc resb 1
+newestfiledate resd 1
 SECTION .text
 
 NEWSYM makeextension
@@ -1360,8 +1373,10 @@ NEWSYM tparms
     mov byte[romloadskip],1
     ret
 
+SECTION .bss
+.numparam resb 1
+
 SECTION .data
-.numparam db 0
 .nostr db 'This emulator will not work without a filename!',13,10,0
 .waitkey   db 'Press Any Key to Continue.',0
 .ret       db 13,10,0
@@ -1554,17 +1569,19 @@ SECTION .data
 .enter      db 13,10,0
 
 NEWSYM InitDrive, db 2
-NEWSYM InitDir, times 512 db 0
 NEWSYM SRAMDrive, db 2
-NEWSYM SRAMDir, times 512 db 0
 NEWSYM LoadDrive, db 2
-NEWSYM LoadDir, times 512 db 0
 
 %ifdef __LINUX__
 NEWSYM gotoroot, db '/',0
 %else
 NEWSYM gotoroot, db '\',0
 %endif
+
+SECTION .bss
+NEWSYM InitDir, resb 512
+NEWSYM SRAMDir, resb 512
+NEWSYM LoadDir, resb 512
 
 SECTION .text
 
@@ -1595,32 +1612,44 @@ NEWSYM DosExit ; Terminate Program
 
 NEWSYM MMXCheck
     ; Check for cpu that doesn't support CPUID
-    mov edx,cpuidfname
-    call Open_File
-    jc .skipcheck
-    mov bx,ax
-    call Close_File
-    jmp .nommx2
-.skipcheck
+;    mov edx,cpuidfname
+;    call Open_File
+;    jc .skipcheck
+;    mov bx,ax
+;    call Close_File
+;    jmp .nommx2
+;.skipcheck
 
     ; Create file
-    mov edx,cpuidfname
-    call Create_File
-    mov bx,ax
-    call Close_File
+;    mov edx,cpuidfname
+;    call Create_File
+;    mov bx,ax
+;    call Close_File
 
-    mov edx,cpuidtext
-    call PrintStr
+;    mov edx,cpuidtext
+;    call PrintStr
+
+    ; Real way to check for presence of CPUID instruction  -kode54
+    pushfd
+    pop eax
+    mov edx,eax
+    xor eax,1 << 21
+    push eax
+    popfd
+    pushfd
+    pop eax
+    xor eax,edx
+    jz .nommx
 
     ; MMX support
     mov byte[FPUCopy],0
     mov eax,1
     CPUID
 
-    push edx
-    mov edx,cpuidtext2
-    call PrintStr
-    pop edx
+;    push edx
+;    mov edx,cpuidtext2
+;    call PrintStr
+;    pop edx
 
     test edx,1 << 23
     jz .nommx
@@ -1628,10 +1657,10 @@ NEWSYM MMXCheck
     mov edx,YesMMX
     call PrintStr
 .nommx
-    ; Delete file
-    mov edx,cpuidfname
-    call Delete_File
-.nommx2
+;    ; Delete file
+;    mov edx,cpuidfname
+;    call Delete_File
+;.nommx2
     ret
 
 NEWSYM UIAsmEnd
