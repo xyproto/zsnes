@@ -1177,7 +1177,6 @@ int InitDirectDraw()
       {
          MessageBox(NULL, "IDirectDrawSurface7::GetAttachedSurface failed.", "DirectDraw Error", MB_ICONERROR);
       }
-
    }
    else
    {
@@ -1202,6 +1201,7 @@ int InitDirectDraw()
    }
     
    format.dwSize = sizeof(DDPIXELFORMAT);
+
    if(DD_Primary->GetPixelFormat(&format) != DD_OK)
    {
       MessageBox(NULL, "IDirectDrawSurface7::GetPixelFormat failed.", "DirectDraw Error", MB_ICONERROR);
@@ -1215,12 +1215,12 @@ int InitDirectDraw()
       MessageBox(NULL,"ZSNESw does not support 24bit color.\nPlease change your resolution to either 16bit or 32bit color","Error",MB_OK);
       exit(0);
    }
+
    converta = (BitDepth==16 && GBitMask!=0x07E0);
 
    ddsd2.dwSize = sizeof(ddsd2);
    ddsd2.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
    ddsd2.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN;
-
    ddsd2.dwWidth = SurfaceX;
    ddsd2.dwHeight = SurfaceY;
 
@@ -1296,13 +1296,14 @@ extern unsigned char romispal;
 void Start60HZ(void)
 {
    update_ticks_pc2 = UPDATE_TICKS_UDP * freq / 1000;
+
    if(romispal==1)
    {
-   update_ticks_pc = UPDATE_TICKS_GAMEPAL * freq / 1000;
+      update_ticks_pc = UPDATE_TICKS_GAMEPAL * freq / 1000;
    }
    else
    {
-   update_ticks_pc = UPDATE_TICKS_GAME * freq / 1000;
+      update_ticks_pc = UPDATE_TICKS_GAME * freq / 1000;
    }
 
    if (AltTimer == 0)
@@ -1364,7 +1365,7 @@ char WinName[]={"ZSNESW\0"};
 void initwinvideo(void)
 {
    RECT zwindowrect;
-	WINDOWPLACEMENT wndpl;
+   WINDOWPLACEMENT wndpl;
    RECT rc1, swrect;
    DWORD newmode=0;
 
@@ -2315,7 +2316,6 @@ void WinUpdateDevices()
          {
             if(js[i].lRy<0) keys[0x100+i*32+7]=1;
          }
-
          if(!RZ1Disable[i])
          {
             if(js[i].lRz>0) keys[0x100+i*32+8]=1;
