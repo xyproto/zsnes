@@ -577,10 +577,10 @@ db '; Percent to Execute [50 .. 150]',13,10
 db '',13,10
 db 'Execute = %T',13,10
 db '',13,10
-;db '; Copy Method, 0 = Normal, 2 = MMX',13,10
-;db '',13,10
-;db 'CopyMethod = %o',13,10
-;db '',13,10
+db '; Copy Method, 0 = Normal, 2 = MMX',13,10
+db '',13,10
+db 'CopyMethod = %o',13,10
+db '',13,10
 %ifdef __WIN32__
 db '; Video Mode, 0 - 25',13,10
 db ';   0 = 64x56 R WIN           1 = 128x112 R WIN',13,10
