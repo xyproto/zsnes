@@ -52,13 +52,13 @@ WINOBJ=${WINDIR}/copywin.o ${WINDIR}/winintrf.o ${WINDIR}/winlink.o\
 
 PREOBJ=${OBJDIR}/dosbuff.o ${OBJDIR}/ipx.o ${OBJDIR}/zipx.o
 
-ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o
+ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.obj
 
 MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o
 
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${ZIPOBJ}
-LIBS=-lz -lgcc -lm
+LIBS=-lz -lgcc -lm -lpng
 CFLAGS=-D__MSDOS__
 ASM=nasm
 ASMFLAGS=-f coff -D__MSDOS__
@@ -81,7 +81,7 @@ PP=gpp
 ALL: zsnes.exe
 
 zsnes.exe: ${OBJS}
-	${CC} -Ws -s -o zsnes.exe ${OBJS}  ${LIBS}
+	${CC} -Ws -L./obj -s -o zsnes.exe ${OBJS}  ${LIBS}
 
 ${DOSDIR}/zloader.o: ${DOSDIR}/zloader.c
 fixsin.o: fixsin.c
@@ -89,6 +89,7 @@ water.o: water.c
 ${DOSDIR}/zfile.o: ${DOSDIR}/zfile.c
 ${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/unzip.h
 ${ZIPDIR}/zzip.o: ${ZIPDIR}/zzip.c ${ZIPDIR}/unzip.h
+${ZIPDIR}/zpng.obj: ${ZIPDIR}/zpng.c  ${ZIPDIR}/zpng.h ${ZIPDIR}/png.h
 ${VIDEODIR}/procvid.o: ${VIDEODIR}/procvid.asm macros.mac ${VIDEODIR}/copyvid.inc ${VIDEODIR}/2xSaImmx.inc
 ${CHIPDIR}/dsp1proc.o: ${CHIPDIR}/dsp1proc.asm macros.mac
 ${CHIPDIR}/sa1regs.o: ${CHIPDIR}/sa1regs.asm macros.mac\
