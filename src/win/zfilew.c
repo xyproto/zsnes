@@ -764,9 +764,12 @@ DWORD ZFileWrite()
     else
     {    
 #endif
+
+		//MK: this will fail if we write 2GB files
+		//so here's hoping we never need to.
         int res=0;
         if (TextFile)
-            res = fwrite(ZFileWriteBlock,
+            res = (int) fwrite(ZFileWriteBlock,
                      1,
                      ZFileWriteSize,
                      FILEHANDLE[ZFileWriteHandle]);
@@ -775,7 +778,7 @@ DWORD ZFileWrite()
                       ZFileWriteBlock, 
                       ZFileWriteSize);
          
-        if (res!=ZFileWriteSize) 
+        if (res!=(int)ZFileWriteSize) 
             return(0xFFFFFFFF);
 #ifdef CCBETA
     }
