@@ -160,7 +160,7 @@ NEWSYM welcome
 %else
                  db 'ZSNES v1.',ZVERSION,' beta (c)1997-2001 ZSNES Team (zsKnight - _Demo_)',13,10
                  ; ZSNES DOS doesn't use WDOSX anymore
-                 db 'Compiled under NASM, GCC',13,10,13,10
+                 db 'Compiled under NASM, GCC (DOS+DPMI)',13,10,13,10
 %endif
 ;%endif
                  db '  Programmers     : zsKnight, _Demo_',13,10
