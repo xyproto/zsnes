@@ -1315,8 +1315,6 @@ GUIWinClicked:
     cmp edx,%2+8
     jg %%noclick
     xor %3,1
-    cmp byte[En2xSaI],1
-    jnae %%noclick
     call Clear2xSaIBuffer
 %%noclick
 %endmacro
