@@ -3364,10 +3364,12 @@ GUITryMenuItem:
     jne .noplay5
     mov byte[cplayernum],4
 .noplay5
+    ;The number on the left is the window to open
+    ;the number on the right is where in the drop down box we are
     GUICheckMenuItem 17, 6
-    GUICheckMenuItem 4, 8
-    GUICheckMenuItem 5, 9
-    GUICheckMenuItem 6, 10
+    GUICheckMenuItem 4, 9
+    GUICheckMenuItem 5, 10
+    GUICheckMenuItem 6, 11
 .noconfig
     cmp byte[romloadskip],0
     jne near .nocheat
