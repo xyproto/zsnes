@@ -59,21 +59,29 @@ MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${ZIPOBJ} ${MAINOBJ}
 
+CFLAGS=@CFLAGS@
+ASM=@NASMPATH@
+ASMFLAGS=@NASMD@ 
+LIBS=@LIBS@
+CC=@CC@
+INSTALL=@INSTALL@
+prefix=@prefix@
+
 .SUFFIXES: .c .cpp .asm 
 
 %.o: %.c
-	@CC@ @CFLAGS@ -o $@ -c $<
+	${CC} ${CFLAGS} -o $@ -c $<
 
 %.o: %.cpp
-	@CPP@ @CFLAGS@ -o $@ -c $<
+	${PP} ${CFLAGS} -o $@ -c $<
 
 %.o: %.asm
-	@NASMPATH@ @NFLAGS@ -o $@ $<
+	${ASM} ${ASMFLAGS} -o $@ $<
 
 ALL:	@ZSNESEXE@
 
 @ZSNESEXE@:  ${OBJS}
-	@CC@ -o @ZSNESEXE@ ${OBJS} @CFLAGS@ @LDFLAGS@
+	${CC} -o @ZSNESEXE@ ${OBJS}  ${LIBS}
 
 ${ZIPDIR}/zpng.o: ${ZIPDIR}/zpng.c ${ZIPDIR}/zpng.h
 ${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/unzip.h
@@ -171,8 +179,8 @@ endmem.o: endmem.asm macros.mac
 ${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
 
 install:
-	@INSTALL@ -m 0755 @ZSNESEXE@ @prefix@/bin
-	@INSTALL@ -m 0644 linux/zsnes.man @prefix@/man
+	@INSTALL@ -m 0755 @ZSNESEXE@ ${prefix}/bin
+	@INSTALL@ -m 0644 linux/zsnes.man ${prefix}/man
 
 clean:
 	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  *.o  @ZSNESEXE@

@@ -16,7 +16,14 @@
 //Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-#include "../gblhdr.h"
+#include <windows.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <direct.h>
+#include <winuser.h>
+
+#include <dinput.h>
+#include <dsound.h>
 
 extern void ImportDirectX(void);
 
