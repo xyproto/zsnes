@@ -337,7 +337,6 @@ void ProcessKeyBuf(int scancode)
     }
     if (!shiftptr){
       switch (scancode) {
-	      // Fix these for proper SDL usage - DDOI
 	case SDLK_MINUS: vkeyval='-'; accept=true; break;
 	case SDLK_EQUALS: vkeyval='='; accept=true; break;
 	case SDLK_LEFTBRACKET: vkeyval='['; accept=true; break;
@@ -353,7 +352,6 @@ void ProcessKeyBuf(int scancode)
       }
     } else {
       switch (scancode) {
-	      // Fix these for proper SDL usage - DDOI
 	case SDLK_MINUS: vkeyval='_'; accept=true; break;
 	case SDLK_EQUALS: vkeyval='+'; accept=true; break;
 	case SDLK_LEFTBRACKET: vkeyval='{'; accept=true; break;
@@ -367,25 +365,23 @@ void ProcessKeyBuf(int scancode)
 	case SDLK_BACKSLASH: vkeyval='|'; accept=true; break;
       }
     }
-    /* TODO Figure out what all these are supposed to be - DDOI
+    // TODO Figure out what the rest these are supposed to be - DDOI
     switch (scancode) {
-	      // Fix these for proper SDL usage - DDOI
-      case 33: vkeyval=256+73; accept=true; break;
-      case 38: vkeyval=256+72; accept=true; break;
-      case 36: vkeyval=256+71; accept=true; break;
-      case 39: vkeyval=256+77; accept=true; break;
-      case 12: vkeyval=256+76; accept=true; break;
-      case 37: vkeyval=256+75; accept=true; break;
-      case 34: vkeyval=256+81; accept=true; break;
-      case 40: vkeyval=256+80; accept=true; break;
-      case 35: vkeyval=256+79; accept=true; break;
-      case 107: vkeyval='+'; accept=true; break;
-      case 109: vkeyval='-'; accept=true; break;
-      case 106: vkeyval='*'; accept=true; break;
-      case 111: vkeyval='/'; accept=true; break;
-      case 110: vkeyval='.'; accept=true; break;
+      //case 33: vkeyval=256+73; accept=true; break;
+      case SDLK_UP: vkeyval=256+72; accept=true; break;
+      case SDLK_HOME: vkeyval=256+71; accept=true; break;
+      case SDLK_RIGHT: vkeyval=256+77; accept=true; break;
+      //case 12: vkeyval=256+76; accept=true; break;
+      case SDLK_LEFT: vkeyval=256+75; accept=true; break;
+      //case 34: vkeyval=256+81; accept=true; break;
+      case SDLK_DOWN: vkeyval=256+80; accept=true; break;
+      case SDLK_END: vkeyval=256+79; accept=true; break;
+      case SDLK_KP_PLUS: vkeyval='+'; accept=true; break;
+      case SDLK_KP_MINUS: vkeyval='-'; accept=true; break;
+      case SDLK_KP_MULTIPLY: vkeyval='*'; accept=true; break;
+      case SDLK_KP_DIVIDE: vkeyval='/'; accept=true; break;
+      case SDLK_KP_PERIOD: vkeyval='.'; accept=true; break;
     }
-    */
     if (accept){
       KeyBuffer[CurKeyPos]=vkeyval;
       CurKeyPos++;
