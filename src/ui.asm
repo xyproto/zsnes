@@ -215,7 +215,11 @@ NEWSYM newgfx16b,     db 0
 NEWSYM BitConv32Ptr,     dd 0
 
 NEWSYM previdmode,    db 0              ; previous video mode
+%ifdef __MSDOS__
+NEWSYM cvidmode,      db 3              ; video mode, 0=320x240, 1=256x256
+%else
 NEWSYM cvidmode,      db 1              ; video mode, 0=320x240, 1=256x256
+%endif
 NEWSYM cbitmode,      db 0              ; bit mode, 0=8bit, 1=16bit
 NEWSYM opexec268,     db 171            ; # of opcodes/scanline in 2.68Mhz mode
 NEWSYM opexec358,     db 180            ; # of opcodes/scanline in 3.58Mhz mode (228/180)

@@ -48,7 +48,11 @@ NEWSYM cfgSoundQuality, db 2
 NEWSYM cfgStereoSound,  db 0
 NEWSYM cfgguioff,       db 0
 NEWSYM cfgper2exec,     db 100
+%ifdef __MSDOS__
+NEWSYM cfgcvidmode,     db 3
+%else
 NEWSYM cfgcvidmode,     db 1
+%endif
 NEWSYM cfgscanline,     db 0
 NEWSYM cfginterp,       db 0
 NEWSYM cfgenterskip,    db 0
