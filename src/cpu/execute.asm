@@ -1023,9 +1023,6 @@ NEWSYM start65816
     cmp byte[romloadskip],1
     je near StartGUI
 NEWSYM continueprog
-    mov byte[romloadskip],0
-    mov byte[debuggeron],0
-    mov byte[exiter],0
 
     ; clear keyboard presses
     mov esi,pressed
@@ -1036,8 +1033,20 @@ NEWSYM continueprog
     inc esi
     loop .loopa
 
+    mov byte[romloadskip],0
+    mov byte[debuggeron],0
+    mov byte[exiter],0
 
     call InitPreGame
+    jmp reexecute
+
+NEWSYM continueprognokeys
+    mov byte[romloadskip],0
+    mov byte[debuggeron],0
+    mov byte[exiter],0
+
+    call InitPreGame
+    jmp reexecutenokeys
 
 ; Incorrect
 
@@ -1054,6 +1063,7 @@ NEWSYM reexecute
 .notclear
     inc esi
     loop .loopa
+reexecutenokeys
     jmp reexecuteb2
 
 NEWSYM reexecuteb
@@ -1290,14 +1300,15 @@ NEWSYM endprog
     mov ebx,SRAMDir
     call Change_Dir
 
-;    mov edx,.blah
-;    call Create_File
-;    mov bx,ax
-;    EXTSYM DSPFuncUsed
-;    mov edx,DSPFuncUsed
-;    mov ecx,256
-;    call Write_File
-;    call Close_File
+    EXTSYM SDD1Array,SDD1Entry,SDD1Sort
+    call SDD1Sort
+    mov edx,.blah
+    call Create_File
+    mov bx,ax
+    mov edx,SDD1Array
+    mov ecx,[SDD1Entry]
+    call Write_File
+    call Close_File
 
     cmp byte[sramsavedis],1
     je .nosram
@@ -1401,7 +1412,7 @@ NEWSYM endprog
 %endif
 ;.nodeinitipx
     jmp OSExit
-.blah db 'dsptrace.dat',0
+.blah db 'sdd1dat.dat',0
 
 NEWSYM interror
     stim
@@ -4363,7 +4374,7 @@ NEWSYM execsingle
     jne .nointrset
     mov byte[intrset],2
 .nointrset
-    mov byte[debstop3],1
+;    mov byte[debstop3],1
     jmp switchtonmideb
 .nonmi
     cmp byte[intrset],1
@@ -4419,7 +4430,7 @@ NEWSYM execsingle
     jne .nointrset2
     mov byte[intrset],2
 .nointrset2
-    mov byte[debstop3],1
+;    mov byte[debstop3],1
     jmp switchtovirqdeb
 
 
