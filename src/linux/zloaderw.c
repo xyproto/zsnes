@@ -339,15 +339,14 @@ printf("Hello the gui should now be off.");
 	}
 
 	/* execute rom filename: file.x */
-	if  (optopt == '?')
+	/* getopt permutates argv until all non options are at the end of argv.	*/
+	/* since we only expect one non option, it should be the last argument.	*/
+	if ( optind == argc - 1 && argv[optind] != NULL)
 	{
-		if (argv[optind] != NULL)
-		{
-			fvar=&fname;
-			fvar[0] = strlen(argv[optind]);
-			strncpy(&fvar[1], argv[optind],127);
-			makeextension();
-		}
+		fvar=&fname;
+		fvar[0] = strlen(argv[optind]);
+		strncpy(&fvar[1], argv[optind],127);
+		makeextension();
 	}
 
 	zstart();
