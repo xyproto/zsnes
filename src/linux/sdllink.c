@@ -699,6 +699,7 @@ InitSound()
          break;
       default:
          wfx.nSamplesPerSec = 11025;
+         SoundBufferSize=1024*2;
    }
 
    if(StereoSound==1)
