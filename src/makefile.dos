@@ -55,7 +55,7 @@ PREOBJ=${OBJDIR}/dosbuff.o ${OBJDIR}/ipx.o ${OBJDIR}/zipx.o
 
 ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
-MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o smoke.o burn.o
+MAINOBJ=cfgload.o endmem.o fixsin.o init.o initc.o ui.o vcache.o water.o smoke.o burn.o
 
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${DOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${PREOBJ} ${MAINOBJ} ${ZIPOBJ}
@@ -109,6 +109,7 @@ ${CHIPDIR}/dsp1emu.o: ${CHIPDIR}/dsp1emu.c
 ui.o: ui.asm macros.mac
 cfgload.o:cfgload.asm macros.mac
 init.o:init.asm macros.mac
+initc.o:initc.c
 ${DOSDIR}/debug.o: ${DOSDIR}/debug.asm macros.mac
 ${CPUDIR}/execute.o: ${CPUDIR}/execute.asm macros.mac
 ${CPUDIR}/table.o: ${CPUDIR}/table.asm ${CPUDIR}/65816d.inc\

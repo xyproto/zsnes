@@ -95,6 +95,7 @@ EXTSYM GUIfindUSA,GUIfindEUR,GUIfindJAP,GUIfindZIP,GUIfind1,DTALoc,GUIfindall
 EXTSYM spc7110romptr,allocspc7110
 EXTSYM SRAMDir,SRAMDrive,cfgloadsdir,fnamest,statefileloc
 EXTSYM ForcePal,ForceROMTiming,ForceHiLoROM,InitDir,InitDrive,enterpress,frameskip
+EXTSYM infoloc
 EXTSYM gotoroot,headdata,printnum,romispal
 EXTSYM InitFxTables,SFXSRAM,SfxR1,SfxR2,SfxSCMR,SfxSFR,finterleave
 EXTSYM initregr,initregw,memtabler16,DSP1Read16b3F,memaccessbankr16
@@ -2527,11 +2528,8 @@ NEWSYM initsnes
     je near .bslorom
 .notbsx3
     mov esi,[romdata]
-    add esi,32704+22
-    cmp byte[romtype],2
-    jne .nohirom2b
-    add esi,8000h
-.nohirom2b
+    add esi,[infoloc]
+    add esi,22
     mov byte[MultiTap],1
     cmp byte[pl12s34],1
     je .nomtap
@@ -3247,6 +3245,7 @@ NEWSYM SFXCounter, dd 0
 SECTION .text
 
 NEWSYM prepare48mbit
+    mov dword[NumofBanks],192
     ; make table 2 (64,0,65,1,...)
     mov edi,mode7tab+128
     mov ecx,64
@@ -3467,41 +3466,6 @@ NEWSYM preparesfx
     inc edi
     dec ecx
     jnz .n
-    ret
-
-NEWSYM UnInterleave
-    pushad
-
-    ; NumofBanks contains # of 32k banks
-
-    ; make table 2 (0 .. 255)
-    mov edi,mode7tab+256
-    mov ecx,256
-    xor al,al
-.nextlb2
-    mov [edi],al
-    inc al
-    inc edi
-    dec ecx
-    jnz .nextlb2
-
-    mov eax,[NumofBanks]
-    shr eax,1
-    mov edi,mode7tab+256
-    mov ecx,eax
-    mov bl,al
-    xor bh,bh
-.nextl
-    mov [edi],bl
-    mov [edi+1],bh
-    inc bl
-    inc bh
-    add edi,2
-    dec ecx
-    jnz .nextl
-
-    call SwapTable256
-    popad
     ret
 
 SwapTable256:
@@ -4077,7 +4041,7 @@ SECTION .bss
 
 
 NEWSYM Checksumvalue, resw 1
-NEWSYM Checksumvalue2, resw 1
+NEWSYM Checksumvalue2, resw 1 ;This is outdated, but needed for the command line loader
 NEWSYM CRC32, resd 1
 NEWSYM SramExists,    resb 1
 NEWSYM NumofBanks,    resd 1
@@ -5021,64 +4985,6 @@ NEWSYM loadfileGUI
     jnz .loopcheck
 .skipall
 
-    ; mirror image
-    mov eax,[.curromspace]
-    cmp dword[.maxromspace],eax
-    jbe .nomir
-    mov edx,[romdata]
-    mov ebx,[romdata]
-    add edx,[.curromspace]
-    mov ecx,[.curromspace]
-.nextmir
-    mov al,[ebx]
-    mov [edx],al
-    inc ebx
-    inc edx
-    inc ecx
-    cmp ecx,[.maxromspace]
-    jne .nextmir
- .nomir
-
-    ; calculate checksum
-    mov eax,1
-.nextcr
-    add eax,eax
-    cmp eax,[.curromspace]
-    jb .nextcr
-
-    mov ecx,eax
-    mov esi,[romdata]
-    xor eax,eax
-    xor ebx,ebx
-    xor edi,edi
-    mov edx,ecx
-    shr edx,1
-.nextcs
-    mov al,[esi+edi]
-    inc edi
-    add ebx,eax
-    cmp edi,[.curromspace]
-    jne .notcrs
-    mov edi,edx
-.notcrs
-    dec ecx
-    jnz .nextcs
-    mov [Checksumvalue],bx
-
-    mov esi,[romdata]
-    mov ecx,[.curfileofs]
-    xor eax,eax
-    xor ebx,ebx
-    xor edi,edi
-.nextcs3
-    mov al,[esi+edi]
-    inc edi
-    add ebx,eax
-    cmp edi,ecx
-    jne .nextcs3
-    mov [Checksumvalue2],bx
-
-
     cmp byte[ZipSupport],1
     jne .nottempdirdel
     call PatchIPS
@@ -5314,23 +5220,19 @@ SECTION .text
 
 NEWSYM showinfogui
     mov esi,[romdata]
-    cmp byte[NumofBanks],128
-    jbe .notEHi1
-    mov ax,word[esi + 040FFDEh]
-    xor ax,word[esi + 040FFDCh]
-    cmp ax,0FFFFh
+    add esi,[infoloc]
+
+    cmp dword[infoloc],40FFC0h
     jne .notEHi1
-    add esi,040FFC0h
     mov dword[CSStatus2+23], 'EHi '
     jmp .nohiromrn
 .notEHi1
-    add esi,7FC0h
     mov dword[CSStatus2+23], 'Lo  '
     cmp byte[romtype],2
     jne .nohiromrn
     mov dword[CSStatus2+23], 'Hi  '
-    add esi,8000h
 .nohiromrn
+
     mov edi,CSStatus
     mov ecx,20
 .looprn
@@ -5432,21 +5334,8 @@ NEWSYM showinfogui
     je .nobs
     mov dword[CSStatus+29],'BROA'
     mov dword[CSStatus+33],'DCST'
-    ;Get checksum of header alone for subtraction
-    sub esi,41
-    xor eax,eax
-    mov ecx,48
-.bssubloop
-    movzx ebx,byte[esi]
-    add ax,bx
-    inc esi
-    dec ecx
-    jnz .bssubloop
-    mov bx,[Checksumvalue]
-    sub bx,ax
-    mov [Checksumvalue],bx
     ;dummy out date so CRC32 matches
-    sub esi,10
+    sub esi,3
     mov word[esi],042h ;42 is the answer, and the uCONSRT standard
 .nobs
 
@@ -5497,21 +5386,14 @@ NEWSYM showinfogui
     shr ecx,2
     jnz .crcprintloop
 
+    EXTSYM CalcChecksum
+    pushad
+    call CalcChecksum
+    popad
+
     mov esi,[romdata]
-    cmp byte[NumofBanks],128
-    jbe .notEHi2
-    mov ax,word[esi + 040FFDEh]
-    xor ax,word[esi + 040FFDCh]
-    cmp ax,0FFFFh
-    jne .notEHi2
-    add esi,040FFDEh
-    jmp .nohirom3
-.notEHi2    
-    add esi,7FDEh
-    cmp byte[romtype],2
-    jne .nohirom3
-    add esi,8000h
-.nohirom3
+    add esi,[infoloc]
+    add esi,1Eh
     mov ax,[Checksumvalue]
     cmp ax,[esi]
     jne .failed
@@ -5519,32 +5401,8 @@ NEWSYM showinfogui
     mov dword[CSStatus2+36],'OK  '
     jmp .passed
 .failed
-    mov ax,[Checksumvalue2]
-        cmp byte[SPC7110Enable],1
-    jne .nospc7110en
-    cmp byte[NumofBanks],96
-    jne .nospc7110en
-    shl ax,1
-.nospc7110en
-    cmp ax,[esi]
-    je .passed2
     mov dword[CSStatus2+36],'FAIL'
 .passed
-    cmp byte[NumofBanks],128
-    jbe .notopint
-    mov esi,[romdata]
-    mov ax,word[esi + 0207FDEh]
-    xor ax,word[esi + 0207FDCh]
-    cmp ax,0FFFFh
-    jne .notopint    
-    mov dword[CSStatus2+12],'Yes '
-    mov dword[CSStatus3+32],'????'
-    mov dword[CSStatus3+36],'????'
-    mov dword[CSStatus2+23], 'EHi '
-    cmp word[Checksumvalue2],047C9h
-    jne .notopint
-    mov dword[CSStatus2+36],'OK  '
-.notopint
     mov dword[MessageOn],300
     mov dword[Msgptr],CSStatus
     mov eax,[MsgCount]
@@ -5565,6 +5423,9 @@ NEWSYM showinfogui
 
 ; Convert to interleaved - If LoROM and offset 7FD5 contains 21h, then
 ;                          uninterleave
+
+;This looks like the info it displays if loaded via the command line
+;Very outdated
 
 NEWSYM showinfo
     mov edx,.romsizea
@@ -5677,11 +5538,8 @@ NEWSYM showinfo
 
     ; Output Name
     mov esi,[romdata]
-    add esi,7FC0h
-    cmp byte[romtype],2
-    jne .nohirom2
-    add esi,8000h
-.nohirom2
+    add esi,[infoloc]
+
     mov ecx,21
 .loopb
     lodsb
@@ -6023,248 +5881,74 @@ NEWSYM DSP1Type, resb 1
 NEWSYM intldone, resb 1
 SECTION .text
 
+EXTSYM ClearScreen, cbitmode, makepal
+
+NEWSYM SetupROM
+    call CheckROMType
+    call SetIRQVectors
+    call ClearScreen
+    cmp byte[cbitmode],0
+    jne .nomakepal
+    call makepal
+.nomakepal
+    ; get ROM and SRAM size
+    mov esi,[romdata]
+    add esi,[infoloc]
+    add esi,18h
+    mov cl,[esi-1]
+    mov [curromsize],cl
+    mov cl,[esi]
+    inc esi
+    xor eax,eax
+    mov al,1
+    shl al,cl
+    cmp al,1
+    jne .yessram
+    mov al,0
+.yessram
+    shl eax,10
+    cmp eax,65536
+    jbe .nosramc
+    mov eax,65536
+.nosramc
+    mov [ramsize],eax
+    dec eax
+    mov [ramsizeand],eax
+
+    ; get pal/ntsc
+    mov al,[ForceROMTiming]
+    mov byte[ForcePal],al
+    xor al,al
+    mov al,[esi]
+    cmp byte[ForcePal],1
+    jne .nontsc
+    mov al,0
+.nontsc
+    cmp byte[ForcePal],2
+    jne .nopal2
+    mov al,2
+.nopal2
+    mov byte[romispal],0
+    mov word[totlines],263
+    mov dword[MsgCount],120
+    cmp byte[BSEnable],1
+    je .nopal
+    cmp al,1
+    jbe .nopal
+    cmp al,0Dh
+    jae .nopal
+    mov byte[romispal],1
+    mov word[totlines],314
+    mov dword[MsgCount],100
+.nopal
+    ret
+
 NEWSYM CheckROMType
     call SetAddressingModes
     call GenerateBank0Table
 
-    mov byte[intldone],0
-    mov byte[ROMTypeNOTFound],0
-    ; check reset vectors
-;        RES     Hardware        00FFFC.D    00FFFC,D     1
-    mov esi,[romdata]
-    mov ax,[esi+0FFFCh]
-    mov bx,[esi+07FFCh]
-    cmp bx,8000h
-    jne .notrv1
-    cmp ax,8011h
-    je .yeslorom
-.notrv1
-    test ax,8000h
-    jnz .checkloarea
-    test bx,8000h
-    jz .notfound2
-.yeslorom
-    mov byte[romtype],1
-    jmp .donecheck
-.checkloarea
-    test bx,8000h
-    jnz .notfound2
-    mov byte[romtype],2
-    jmp .donecheck
-.notfound2
-
-    mov esi,[romdata]
-    add esi,7FECh
-;    cmp word[esi],8000h
-;    jb .checkhirom
-    mov esi,[romdata]
-    add esi,32704+23
-    cmp byte[esi],32
-    ja .checkhirom
-    mov esi,[romdata]
-    add esi,7FDCh
-    lodsw
-    mov bx,ax
-    lodsw
-    xor bx,ax
-    cmp bx,0FFFFh
-    jne .checkhirom
-    cmp ax,0
-    je .checkhirom
-    cmp ax,0FFFFh
-    je .checkhirom
-    mov byte[romtype],1
-    jmp .donecheck
-.checkhirom
-    mov esi,[romdata]
-    add esi,32704+23+32768
-    cmp byte[esi],32
-    ja .cantcheck
-    mov esi,[romdata]
-    add esi,0FFDCh
-    lodsw
-    mov bx,ax
-    lodsw
-    xor bx,ax
-    cmp bx,0FFFFh
-    jne .cantcheck
-    mov byte[romtype],2
-    jmp .donecheck
-.cantcheck
-    ; check for a header with mostly letters or spaces
-    mov esi,[romdata]
-    add esi,32704
-    mov ecx,21
-    mov al,0
-.nextletter
-    cmp byte[esi],32
-    je .yesletter
-    cmp byte[esi],'0'
-    jb .noletter
-    cmp byte[esi],'9'
-    jbe .yesletter
-    cmp byte[esi],'A'
-    jb .noletter
-    cmp byte[esi],'Z'
-    jbe .yesletter
-    cmp byte[esi],'a'
-    jb .noletter
-    cmp byte[esi],'z'
-    ja .noletter
-.yesletter
-    inc al
-.noletter
-    inc esi
-    dec ecx
-    jnz .nextletter
-    cmp al,12
-    jna .checkhiromletter
-    mov byte[romtype],1
-    jmp .donecheck    
-.checkhiromletter
-    mov esi,[romdata]
-    add esi,65472
-    mov ecx,21
-    mov al,0
-.nextletterb
-    cmp byte[esi],32
-    je .yesletterb
-    cmp byte[esi],'0'
-    jb .noletterb
-    cmp byte[esi],'9'
-    jbe .yesletterb
-    cmp byte[esi],'A'
-    jb .noletterb
-    cmp byte[esi],'Z'
-    jbe .yesletterb
-    cmp byte[esi],'a'
-    jb .noletterb
-    cmp byte[esi],'z'
-    ja .noletterb
-.yesletterb
-    inc al
-.noletterb
-    inc esi
-    dec ecx
-    jnz .nextletterb
-    cmp al,12
-    jna .notfound
-    mov byte[romtype],2
-    jmp .donecheck
-.notfound
-
-    mov esi,[romdata]
-    mov ax,[esi+0FFFCh]
-    mov bx,[esi+07FFCh]
-    cmp ax,8000h
-    jne .checkloarea8000
-    cmp bx,8000h
-    je .notfound28000
-    mov byte[romtype],2
-    jmp .donecheck
-.checkloarea8000
-    cmp bx,8000h
-    jne .notfound28000
-    mov byte[romtype],1
-    jmp .donecheck
-.notfound28000
-
-    mov byte[ROMTypeNOTFound],1
-.donecheck
-
-    cmp byte[ForceHiLoROM],0
-    je .noguiforce
-    mov al,[ForceHiLoROM]
-    mov byte[forceromtype],al
-    xor al,al
-.noguiforce
-
-    cmp byte[forceromtype],0
-    je .noforce
-    mov al,[forceromtype]
-    mov [romtype],al
-    mov byte[forceromtype],0
-    mov byte[ROMTypeNOTFound],0
-.noforce
-
-
-    ; Interleave Detection
-    mov byte[Interleaved],0
-    cmp byte[NumofBanks],128
-    ja near .nointerlcheck
-
-    ;LoROM interleaved check
-    mov esi,[romdata]
-    add esi,07FDCh    ;Checksum area
-    mov bx,[esi]
-    xor bx,[esi + 2]
-    cmp bx,0FFFFh     ;Good LoROM?
-    je .interlcheck2  ;Forget it then
-    mov eax,[NumofBanks]
-    imul eax,32768
-    shr eax,1
-    add esi,eax       ;Add midpoint
-    mov bx,[esi]
-    xor bx,[esi + 2]
-    cmp bx,0FFFFh
-    jne .interlcheck2
-    sub esi,3         ;Country code
-    cmp byte[esi],14
-    jae .interlcheck2
-    jmp .interleaved
-
-    ;HiROM interleaved check
-.interlcheck2
-    mov esi,[romdata]
-    add esi,07FDCh    ;Checksum area
-    mov bx,[esi]
-    xor bx,[esi + 2]
-    cmp bx,0FFFFh
-    jne near .nointerlcheck
-    sub esi,3         ;Country code
-    cmp byte[esi],14
-    jae .nointerlcheck
-    sub esi,4         ;ROM makeup
-    cmp byte[esi],33
-    je .overflowcheck
-    cmp byte[esi],49
-    je .overflowcheck
-    cmp byte[esi],53
-    je .overflowcheck
-    cmp byte[esi],58
-    je .overflowcheck
-    jmp .nointerlcheck
-
-.overflowcheck
-    mov edx,[esi]
-    dec esi
-    cmp byte[esi],32
-    je .interleaved
-    cmp byte[esi],dl
-    je .nointerlcheck
-    dec esi
-    cmp byte[esi],dl
-    je .nointerlcheck
-    dec esi
-    cmp byte[esi],dl
-    je .nointerlcheck
-    dec esi
-    cmp byte[esi],dl
-    je .nointerlcheck
-    
-.interleaved
-    cmp byte[finterleave],1
-    je .doneinterl
-.interleaved2
-    mov byte[intldone],1
-    call UnInterleave
-    mov byte[Interleaved],1
-    mov byte[romtype],2
-    jmp .doneinterl
-.nointerlcheck
-    cmp byte[finterleave],1
-    je .interleaved2
-.doneinterl
+    EXTSYM BankCheck
+    call BankCheck
 
     mov esi,[romdata]
     add esi,0FFC0h
@@ -6328,24 +6012,10 @@ NEWSYM CheckROMType
     mov byte[DSP4Enable],0
     mov byte[BSEnable],0
 
-
     mov esi,[romdata]
-    cmp byte[NumofBanks],128
-    jbe .notEHi
-    mov ax,word[esi + 040FFDEh]
-    xor ax,word[esi + 040FFDCh]
-    cmp ax,0FFFFh
-    jne  .notEHi
-    add esi,040FFD5h
-    jmp .cntnchpdtct
-.notEHi
-    cmp byte[romtype],2     ;HiROM?
-    jne .nohirom2b
-    add esi,0FFD5h  
-    jmp .cntnchpdtct
-.nohirom2b
-    add esi,07FD5h     
-.cntnchpdtct
+    add esi,[infoloc]
+    add esi,21
+
     mov ax,[esi]
     cmp ax,02530h
     jne .notOBC1
@@ -6643,11 +6313,8 @@ SECTION .text
 NEWSYM SetIRQVectors
     ; Get Vectors (NMI & Reset)
     mov esi,[romdata]
-    add esi,32704+21
-    cmp byte[romtype],2
-    jne .nohirom9
-    add esi,8000h
-.nohirom9
+    add esi,[infoloc]
+    add esi,21
     mov al,[esi]
     test al,0F0h
     jnz .yesfastrom
@@ -6658,12 +6325,7 @@ NEWSYM SetIRQVectors
     mov al,[cycpb268]
     mov [cycpb358],al
 .yesfastrom
-    mov esi,[romdata]
-    add esi,7FE4h
-    cmp byte[romtype],2
-    jne .nohirom
-    add esi,8000h
-.nohirom
+    add esi,0Fh
     cmp word[esi+24],0FFFFh
     jne .notreseterror
     mov word[esi+6],0FF9Ch
@@ -6709,7 +6371,9 @@ NEWSYM SetIRQVectors
 NEWSYM outofmemfix
     mov esi,[romdata]
     cmp byte[romtype],2
-    je .hirom
+    jne .nhirom
+    add esi,8000h
+.nhirom
     mov word[resetv],8000h
     mov word[xpc],8000h
     mov byte[esi],58h
@@ -6720,20 +6384,6 @@ NEWSYM outofmemfix
     jne .notso
     mov dword[Msgptr],outofmemoryerror2
 .notso
-    mov dword[MessageOn],0FFFFFFFFh
-    ret
-.hirom
-    add esi,8000h
-    mov word[resetv],8000h
-    mov word[xpc],8000h
-    mov byte[esi],58h
-    mov byte[esi+1],80h
-    mov byte[esi+2],0FEh
-    mov dword[Msgptr],outofmemoryerror
-    cmp byte[newgfx16b],1
-    jne .notso2
-    mov dword[Msgptr],outofmemoryerror2
-.notso2
     mov dword[MessageOn],0FFFFFFFFh
     ret
 

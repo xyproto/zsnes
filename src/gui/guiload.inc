@@ -289,69 +289,7 @@ GUIloadfilename:
     mov byte[CheatWinMode],0
     mov byte[CheatSearchStatus],0
 
-    call CheckROMType
-    cmp byte[ROMTypeNOTFound],0
-    je .foundromtype
-    mov byte[romtype],1
-.foundromtype
-    call SetIRQVectors
-    call ClearScreen
-    cmp byte[cbitmode],0
-    jne .nomakepal
-    call makepal
-.nomakepal
-    ; get sram size
-    mov esi,[romdata]
-    add esi,7FD8h
-    cmp byte[romtype],2
-    jne .nohirom2
-    add esi,8000h
-.nohirom2
-    mov cl,[esi-1]
-    mov [curromsize],cl
-
-    mov cl,[esi]
-    inc esi
-    xor eax,eax
-    mov al,1
-    shl al,cl
-    cmp al,1
-    jne .yessram
-    mov al,0
-.yessram
-    shl eax,10
-    cmp eax,65536
-    jbe .nosramc
-    mov eax,65536
-.nosramc
-    mov [ramsize],eax
-    dec eax
-    mov [ramsizeand],eax
-
-    ; get pal/ntsc
-    mov al,[ForceROMTiming]
-    mov byte[ForcePal],al
-    xor al,al
-    mov al,[esi]
-    cmp byte[ForcePal],1
-    jne .nontsc
-    mov al,0
-.nontsc
-    cmp byte[ForcePal],2
-    jne .nopal2
-    mov al,2
-.nopal2
-    mov byte[romispal],0
-    mov word[totlines],263
-    mov dword[MsgCount],120
-    cmp al,1
-    jbe .nopal
-    cmp al,0Dh
-    je .nopal
-    mov byte[romispal],1
-    mov word[totlines],314
-    mov dword[MsgCount],100
-.nopal
+    call SetupROM
     call showinfogui
     call initsnes
     mov byte[snesmouse],0
