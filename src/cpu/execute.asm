@@ -3740,9 +3740,7 @@ NEWSYM cpuover
     mov ax,[VIRQLoc]
     cmp word[curypos],ax
     jne .novirqz
-    test byte[INTEnab],80h
-    jz .novirqz
-    inc word[VIRQLoc]
+    mov byte[doirqnext],1
 .novirqz
     mov ax,[oamaddrs]
     mov [oamaddr],ax
