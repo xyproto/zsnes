@@ -1858,3 +1858,6 @@ void powercycle(bool sramload)
 
   asm_call(GUIDoReset);
 }
+#ifdef _MSC_VER // Don't know why MSVC needs an extra }, but it does.
+}
+#endif
