@@ -6524,8 +6524,6 @@ GUISaveText3 db 'START AT LATEST SAVE',0
 GUISaveText4 db 'AUTO STATE SAVE/LOAD',0
 GUISaveText5 db 'LOAD SAVESTATE W/SRAM',0
 
-SECTION .text
-
 ;General data
 GUILoadDisp     db 'LOAD GAME',0
 GUIResetDisp    db 'RESET GAME',0
