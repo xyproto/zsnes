@@ -737,9 +737,9 @@ BOOL InitSound()
    WAVEFORMATEX wfx;
 	DSBCAPS dsbcaps;
 
-   if (cfgsoundon == 0) return FALSE;
-
    SoundEnabled = 0;
+
+   if (cfgsoundon == 0) return FALSE;
 
    PrevSoundQuality=SoundQuality;
    PrevStereoSound=StereoSound;
