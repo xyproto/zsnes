@@ -146,7 +146,7 @@ DOSOBJORIG=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/modemrtn.o ${DOSDIR}/vesa
        ${DOSDIR}/zsipx.o
 
 
-OBJSORIG=${CHIPSOBJ} ${CPUOBJ} ${GUIOBJ} ${VIDEOBJ} {MAINOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
+OBJSORIG=${CHIPSOBJ} ${CPUOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
 
 ifeq (${OS},__MSDOS__)
 DOSOBJ=${DOSOBJORIG} ${DOSDIR}/dosintrf.o ${DOSDIR}/sound.o ${DOSDIR}/zloader.o ${DOSDIR}/zfile.o
@@ -246,10 +246,11 @@ ${CHIPSDIR}/fxemu2c.o: $< macros.mac ${CHIPDIR}/fxemu2.mac ${CHIPDIR}/fxemu2b.ma
 ${CHIPDIR}/fxtable.o: $< macros.mac
 ${CHIPDIR}/sa1proc.o: $< macros.mac
 
-${GUIDIR}/gui.o: $< ${GUIDIR}/guitools.inc ${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc\ 
-	${GUIDIR}/guiwindp.inc ${GUIDIR}/guinetpl.inc ${GUIDIR}/guikeys.inc ${GUIDIR}/guicheat.inc\
+${GUIDIR}/gui.o: $< ${GUIDIR}/guitools.inc\
+	${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guiwindp.inc\
+	${GUIDIR}/guinetpl.inc ${GUIDIR}/guikeys.inc ${GUIDIR}/guicheat.inc\
 	${GUIDIR}/guicombo.inc ${GUIDIR}/guiload.inc macros.mac
-${GUIDIR}/menu.o: ${GUIDIR}/menu.asm macros.mac
+${GUIDIR}/menu.obj: ${GUIDIR}/menu.asm macros.mac${GUIDIR}/menu.o: ${GUIDIR}/menu.asm macros.mac
 
 ${EFFECTSDIR}/water.o: $< ${EFFECTSDIR}/fixsin.h
 ${EFFECTSDIR}/smoke.o: $<
