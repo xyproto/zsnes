@@ -534,29 +534,29 @@ BRKemulmode
     mov ebx,esi
     sub ebx,eax
     mov [xpc],bx
-    mov eax,[wramdata]
-    mov bx,[SA1xs]
-    mov cl,[SA1xpb]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc+1]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov cl,[xpc]
-    mov [eax+ebx],cl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
+
+    mov cx,[SA1xs]
+    mov al,[SA1xpb]
+    call membank0w8
+    dec cx
+    mov al,[xpc+1]
+    call membank0w8
+    dec cx
+    or cx,word[stackor]
+
+    mov al,[xpc]
+    call membank0w8
+    dec cx
+    or cx,word[stackor]
+
     makedl
-    mov [eax+ebx],dl
-    dec bx
-    and bx,word[stackand]
-    or bx,word[stackor]
-    mov [SA1xs],bx
+    mov al,dl
+    call membank0w8
+    dec cx
+    or cx,word[stackor]
+
+    mov [SA1xs],cx
+
     xor bh,bh
     mov bl,byte[xirqb]
     mov [SA1xpb],bl

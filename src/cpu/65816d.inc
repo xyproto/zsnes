@@ -521,6 +521,7 @@ BRKemulmode
 %endmacro
 
 %macro COPMacro 0
+    int 3h
     inc esi
     test byte[xe],1
     jne near COPemulmode
@@ -790,21 +791,25 @@ COPemulmode
     sub ebx,[initaddrl]
     add bx,2
     mov [xpc],bx
-    mov eax,[wramdata]
-    mov bx,[xs]
-    mov cl,[xpb]
-    mov [eax+ebx],cl
-    dec bx
-    or bx,word[stackor]
-    mov cl,[xpc+1]
-    mov [eax+ebx],cl
-    dec bx
-    or bx,word[stackor]
-    mov cl,[xpc]
-    mov [eax+ebx],cl
-    dec bx
-    or bx,word[stackor]
-    mov [xs],bx
+
+    mov cx,[xs]
+    mov al,[xpb]
+    call membank0w8
+
+    dec cx
+    or cx,word[stackor]
+    mov al,[xpc+1]
+    call membank0w8
+
+    dec cx
+    or cx,word[stackor]
+    mov al,[xpc]
+    call membank0w8
+
+    dec cx
+    or cx,word[stackor]
+
+    mov [xs],cx
     xor eax,eax
     xor bh,bh
     mov ax,[esi]
@@ -829,20 +834,25 @@ COPemulmode
     sub ebx,[initaddrl]
     inc bx
     mov [xpc],bx
-    mov eax,[wramdata]
-    mov bx,[xs]
-    mov cl,[xpc+1]
-    mov [eax+ebx],cl
-    dec bx
-    or bx,word[stackor]
-    mov cl,[xpc]
-    mov [eax+ebx],cl
-    dec bx
-    or bx,word[stackor]
+
+    mov cx,[xs]
+    mov al,[xpc+1]
+    call membank0w8
+
+    dec cx
+    or cx,word[stackor]
+    mov al,[xpc]
+    call membank0w8
+
+    dec cx
+    or cx,word[stackor]
+
     xor eax,eax
-    mov [xs],bx
+    mov [xs],cx
+
     mov ax,[esi]
     xor bh,bh
+
     mov [xpc],ax
     mov bl,[xpb]
     test eax,8000h
@@ -876,17 +886,23 @@ COPemulmode
     sub ebx,[initaddrl]
     inc bx
     mov [xpc],bx
-    mov eax,[wramdata]
-    mov bx,[xs]
-    mov cl,[xpc+1]
-    mov [eax+ebx],cl
-    dec bx
-    or bx,word[stackor]
-    mov cl,[xpc]
-    mov [eax+ebx],cl
-    dec bx
-    or bx,word[stackor]
-    mov [xs],bx
+
+    mov cx,[xs]
+    mov al,[xpc+1]
+    call membank0w8
+
+    dec cx
+    or cx,word[stackor]
+    mov al,[xpc]
+    call membank0w8
+
+    dec cx
+    or cx,word[stackor]
+
+    xor eax,eax
+    mov [xs],cx
+
+
     xor eax,eax
     xor bh,bh
     mov cx,[esi]
@@ -1034,7 +1050,6 @@ COPemulmode
 %endmacro
 
 %macro PUSHMacro8b 1
-    mov eax,[wramdata]
     mov cx,[xs]
     mov al,%1
     call membank0w8
@@ -1045,7 +1060,6 @@ COPemulmode
 %endmacro
 
 %macro PUSHMacro8bp 0
-    mov eax,[wramdata]
     makedl
     mov cx,[xs]
     mov al,dl
@@ -1155,7 +1169,6 @@ COPemulmode
 %endmacro
 
 %macro POPMacro8b 1
-    mov eax,[wramdata]
     mov cx,[xs]
     inc cx
     and cx,word[stackand]
@@ -1167,7 +1180,6 @@ COPemulmode
 %endmacro
 
 %macro POPMacro16b 2
-    mov eax,[wramdata]
     mov cx,[xs]
     inc cx
     and cx,word[stackand]
@@ -1185,7 +1197,6 @@ COPemulmode
 %endmacro
 
 %macro POPMacro16bd 2
-    mov eax,[wramdata]
     mov cx,[xs]
     inc cx
     and cx,word[stackand]
@@ -1204,14 +1215,15 @@ COPemulmode
 %endmacro
 
 %macro POPMacroP 0
-    mov eax,[wramdata]
-    mov bx,[xs]
-    inc bx
-    and bx,word[stackand]
-    mov cl,[eax+ebx]
-    mov [xs],bx
+
+    mov cx,[xs]
+    inc cx
+    and cx,word[stackand]
+    call membank0r8
+    mov [xs],cx
+
     xor bh,bh
-    mov dl,cl
+    mov dl,al
     restoredl
     test byte[xe],01h
     jnz .emul
@@ -1311,26 +1323,38 @@ COPemulmode
     mov byte[curnmi],0
     test byte[xe],1
     jne near emulRTI
-    mov eax,[wramdata]
-    mov bx,[xs]
-    inc bx
-    and bx,word[stackand]
-    mov dl,[eax+ebx]
+
+    mov cx,[xs]
+    inc cx
+    and cx,word[stackand]
+    call membank0r8
+    mov [xs],cx
+    mov dl,al
     restoredl
-    inc bx
-    and bx,word[stackand]
-    mov cl,[eax+ebx]
-    inc bx
-    and bx,word[stackand]
-    mov ch,[eax+ebx]
-    inc bx
-    and bx,word[stackand]
-    mov al,[eax+ebx]
+
+    mov cx,[xs]
+    inc cx
+    and cx,word[stackand]
+    xor eax,eax
+    call membank0r8
+    mov [xpc],al
+
+    inc cx
+    and cx,word[stackand]
+    xor eax,eax
+    call membank0r8
+    mov [xpc+1],al
+   
+    inc cx
+    and cx,word[stackand]
+    xor eax,eax
+    call membank0r8
     mov [xpb],al
-    mov [xs],bx
+    mov [xs],cx
+
     xor bh,bh
     xor eax,eax
-    mov ax,cx
+    mov ax,[xpc]
     mov bl,dl
     mov edi,[tablead+ebx*4]
     mov bl,[xpb]
@@ -1373,23 +1397,34 @@ COPemulmode
     endloop
 
 emulRTI
-    mov eax,[wramdata]
-    mov bx,[xs]
-    inc bx
-    and bx,word[stackand]
-    mov dl,[eax+ebx]
+    mov cx,[xs]
+    inc cx
+    and cx,word[stackand]
+    call membank0r8
+    mov [xs],cx
+
+    mov dl,al
     or dl,00110000b
     restoredl
-    inc bx
-    and bx,word[stackand]
-    mov cl,[eax+ebx]
-    inc bx
-    and bx,word[stackand]
-    mov ch,[eax+ebx]
-    mov [xs],bx
+
+    mov cx,[xs]
+    inc cx
+    and cx,word[stackand]
+    xor eax,eax
+    call membank0r8
+    mov [xpc],al
+
+    inc cx
+    and cx,word[stackand]
+    xor eax,eax
+    call membank0r8
+    mov [xpc+1],al
+    mov [xs],cx
+
+
     xor bh,bh
     xor eax,eax
-    mov ax,cx
+    mov ax,[xpc]
     mov bl,dl
     mov edi,[tablead+ebx*4]
     xor bl,bl
@@ -1408,22 +1443,43 @@ emulRTI
 %endmacro
 
 %macro RTLMacro 0
-    mov eax,[wramdata]
-    mov bx,[xs]
-    inc bx
-    and bx,word[stackand]
-    mov cl,[eax+ebx]
-    inc bx
-    and bx,word[stackand]
-    mov ch,[eax+ebx]
-    inc bx
-    and bx,word[stackand]
-    mov al,[eax+ebx]
+    mov cx,[xs]
+    inc cx
+    and cx,word[stackand]
+    xor eax,eax
+    call membank0r8
+    mov [xpc],al
+
+    inc cx
+    and cx,word[stackand]
+    xor eax,eax
+    call membank0r8
+    mov [xpc+1],al
+   
+    inc cx
+    and cx,word[stackand]
+    xor eax,eax
+    call membank0r8
     mov [xpb],al
-    mov [xs],bx
+
+;    inc bx
+;    and bx,word[stackand]
+;    mov cl,[eax+ebx]
+
+;    inc bx
+;    and bx,word[stackand]
+;    mov ch,[eax+ebx]
+
+;    inc bx
+;    and bx,word[stackand]
+;    mov al,[eax+ebx]
+
+;    mov [xpb],al
+
+    mov [xs],cx
     xor bh,bh
     xor eax,eax
-    mov ax,cx
+    mov ax,[xpc]
     inc ax
     mov bl,[xpb]
     mov [xpc],ax
@@ -1441,18 +1497,22 @@ emulRTI
 %endmacro
 
 %macro RTSMacro 0
-    mov eax,[wramdata]
-    mov bx,[xs]
-    inc bx
-    and bx,word[stackand]
-    mov cl,[eax+ebx]
-    inc bx
-    and bx,word[stackand]
-    mov ch,[eax+ebx]
-    mov [xs],bx
+
+    mov cx,[xs]
+    inc cx
+    and cx,word[stackand]
+    call membank0r8
+    mov [xpc],al
+
+    inc cx
+    and cx,word[stackand]
+    call membank0r8
+    mov [xpc+1],al
+
+    mov [xs],cx
     xor bh,bh
     xor eax,eax
-    mov ax,cx
+    mov ax,[xpc]
     inc ax
     mov [xpc],ax
     mov bl,[xpb]

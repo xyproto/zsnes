@@ -51,7 +51,7 @@ EXTSYM snesmmap,snesmap2
 EXTSYM curypos,CurrentExecSA1
 EXTSYM debstop3
 EXTSYM memaccessbankr8sdd1,memtabler8,AddrNoIncr
-
+EXTSYM NumofBanks
 NEWSYM Sa1RegsAsmStart
 
 %include "cpu/regs.mac"
@@ -1667,11 +1667,19 @@ NEWSYM UpdateBanksSDD1
     mov ebx,snesmmap+%2*4
     test al,80h
     jz .noupper
+    cmp byte [NumofBanks],64
+    jne .BSBigBank
+    and eax,1
+.BSBigBank
     and eax,07h
     shl eax,20
     push eax
     jmp .yesupper
 .noupper
+    cmp byte [NumofBanks],64
+    jne .BSBigBank2
+    and eax,1
+.BSBigBank2
     and eax,07h
     shl eax,20
     push eax

@@ -3922,11 +3922,7 @@ ZipDeleteRecurse:
 SPC7110Allocated db 0
 SPC7110DIRA db 'FEOEZSP7',0
 SPC7110DIRB db 'SMHT-SP7',0
-%ifdef __LINUX__
-SDD1DIRA db 'socnsdd1',0
-%else
 SDD1DIRA db 'SOCNSDD1',0
-%endif
 SDD1DIRB db 'SFA2SDD1',0
 SPC7110IndexName db 'INDEX.BIN',0
 SPC7110DirEntry db '*.BIN',0
@@ -4494,6 +4490,90 @@ NEWSYM loadfileGUI
     mov byte[lorommapmode2],1
 .nosoundnovel
 
+    cmp dword[esi+7FC0h],'HONK'
+    jne near .nothonk
+    cmp dword[esi+7FC4h],'AKUH'
+    jne near .nothonk
+    cmp dword[esi+7FC8h],'A IG'
+    jne near .nothonk
+    cmp dword[esi+7FCCh],'O GO'
+    jne near .nothonk
+    cmp dword[esi+7FD0h],'SEI '
+    jne near .nothonk
+
+    mov esi,.romtable
+    mov eax,16
+    mov ebx,16
+.honkl1
+    mov [esi],bl
+    add esi,2
+    add ebx,1
+    sub eax,1
+    jne .honkl1
+
+    mov esi,.romtable
+    inc esi
+    mov eax,16
+    mov ebx,0
+.honkl2
+    mov [esi],bl
+    add esi,2
+    add ebx,1
+    sub eax,1
+    jne .honkl2
+
+    mov esi,.romtableb
+    mov eax,32
+    mov ebx,0
+.honkl3
+    mov [esi],bl
+    add esi,1
+    add ebx,1
+    sub eax,1
+    jne .honkl3
+
+    xor eax,eax
+    xor ebx,ebx
+
+    mov eax,0              ; current dest bank
+.honkswapbanks
+    mov bl,[.romtable+eax] ; current source bank
+
+    xor ecx,ecx
+.honkfindbank
+    inc ecx
+    cmp byte [.romtableb-1+ecx],bl
+    jne .honkfindbank
+    dec ecx
+
+    mov dl, [.romtableb+eax]
+    mov byte [.romtableb+ecx],dl
+    mov byte [.romtableb+eax],cl
+
+    mov esi,eax
+    shl esi,15
+    add esi,[romdata]
+
+    mov edi,ecx
+    shl edi,15
+    add edi,[romdata]
+
+    mov edx,0
+.honkcopybank
+    mov bl,[esi+edx]
+    mov bh,[edi+edx]
+    mov [esi+edx],bh
+    mov [edi+edx],bl
+    inc edx
+    cmp edx,32768
+    jne .honkcopybank
+
+    inc eax
+    cmp eax,32
+    jne .honkswapbanks
+
+.nothonk
+
     cmp dword[esi+207FC0h],'WIZA'
     jne near .notwiz4
     cmp dword[esi+207FC4h],'RDRY'
@@ -4502,58 +4582,82 @@ NEWSYM loadfileGUI
     jne near .notwiz4
     cmp dword[esi+207FCDh],'EN 4'
     jne near .notwiz4
-    mov eax,100000h
 .loopwiz4
-    mov bl,[esi]
-    mov bh,[esi+200000h]
-    mov [esi+200000h],bl
-    mov [esi],bh
-    inc esi
-    dec eax
-    jnz .loopwiz4
-    jmp .notwiz4
+    mov esi,.romtable
+    mov eax,64
+    mov ebx,64
+.wiz4l1
+    mov [esi],bl
+    add esi,2
+    add ebx,1
+    sub eax,1
+    jne .wiz4l1
 
-    pushad
-    mov edi,mode7tab+256
-    mov ecx,256
-    xor al,al
-.nextlb2
-    mov [edi],al
-    inc al
-    inc edi
+    mov esi,.romtable
+    inc esi
+    mov eax,64
+    mov ebx,0
+.wiz4l2
+    mov [esi],bl
+    add esi,2
+    add ebx,1
+    sub eax,1
+    jne .wiz4l2
+
+    mov esi,.romtableb
+    mov eax,128
+    mov ebx,0
+.wiz4l3
+    mov [esi],bl
+    add esi,1
+    add ebx,1
+    sub eax,1
+    jne .wiz4l3
+
+    xor eax,eax
+    xor ebx,ebx
+
+    mov eax,0              ; current dest bank
+.wiz4swapbanks
+    mov bl,[.romtable+eax] ; current source bank
+
+    xor ecx,ecx
+.wiz4findbank
+    inc ecx
+    cmp byte [.romtableb-1+ecx],bl
+    jne .wiz4findbank
     dec ecx
-    jnz .nextlb2
-    mov edi,mode7tab+256
-    ; 0,4,8,C
-    ; 0,64,1,65,2,... (1st 3MB, 1st 1MB)
-    ; (2nd 4MB?, 2nd 2MB)
-    mov dl,4
-.nextl2
-    mov eax,4
-    sub al,dl
-    mov bl,[.table+eax*2]
-    mov bh,[.table+eax*2+1]
-    mov ecx,16
-.nextl
-    mov [edi],bl
-    mov [edi+1],bh
-    inc bl
-    inc bh
-    add edi,2
-    dec ecx
-    jnz .nextl
-    add bl,16
-    add bh,16
-    dec dl
-    jnz .nextl2
-    jmp .skiptable
-;         O O  O     O     ?  ?  ?    ?
-.table db 0,64,96+16,32+16,32,96,0+16,64+16
-.skiptable
-    mov dword[NumofBanks],20h*4
-    call SwapTable256
-    call UnInterleave
-    popad
+
+    mov dl, [.romtableb+eax]
+    mov byte [.romtableb+ecx],dl
+    mov byte [.romtableb+eax],cl
+
+    mov esi,eax
+    shl esi,15
+    add esi,[romdata]
+
+    mov edi,ecx
+    shl edi,15
+    add edi,[romdata]
+
+    mov edx,0
+.wiz4copybank
+    mov bl,[esi+edx]
+    mov bh,[edi+edx]
+    mov [esi+edx],bh
+    mov [edi+edx],bl
+    inc edx
+    cmp edx,32768
+    jne .wiz4copybank
+
+    inc eax
+    cmp eax,128
+    jne .wiz4swapbanks
+
+    jmp near .notwiz4
+
+.romtable times 128 db 0
+.romtableb times 128 db 0
 .notwiz4
 
     jmp .skipall

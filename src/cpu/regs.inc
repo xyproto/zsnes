@@ -66,6 +66,14 @@ NEWSYM initregr
     setreg 2180h*4,reg2180r
     setreg 4016h*4,reg4016r
     setreg 4017h*4,reg4017r
+
+    setreg 420Ah*4,reg420Ar
+    setreg 420Bh*4,reg420Br
+    setreg 420Ch*4,reg420Cr
+    setreg 420Dh*4,reg420Dr
+    setreg 420Eh*4,reg420Er
+    setreg 420Fh*4,reg420Fr
+
     setreg 4210h*4,reg4210r
     setreg 4211h*4,reg4211r
     setreg 4212h*4,reg4212r
@@ -888,6 +896,15 @@ reg4017r:
     rol dword[JoyENow],1
     ret
 
+reg420Ar:
+reg420Br:
+reg420Cr:
+reg420Dr:
+reg420Er:
+reg420Fr:
+    xor al,al
+    ret
+
 ; NMI Check Register
 reg4210r:
     mov al,[NMIEnab]
@@ -896,17 +913,12 @@ reg4210r:
     mov byte[NMIEnab],01h
 .nmi
     mov byte[curnmi],0
-
     ret
 
 ; Video IRQ Register
 reg4211r:
     mov al,[irqon]
     mov byte[irqon],0
-    cmp dh,[cycphb]
-    jae .nohblank
-    or al,40h
-.nohblank
     ret
 
 ; H/V Blank Flag & Joystick Controller Enable Flag
