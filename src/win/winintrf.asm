@@ -53,6 +53,8 @@ EXTSYM ZFileDelFName,ZFileDelete
 EXTSYM ZCloseFileHandle,ZCloseFile
 EXTSYM ZFileTellHandle,ZFileTell
 EXTSYM ZFFTimeFName,ZFTime,ZFDate,ZFileGetFTime
+EXTSYM GetTime
+EXTSYM GetDate
 extsym kbhit
 extsym keyboardhit
 extsym GUIkeydelay2
@@ -525,14 +527,14 @@ NEWSYM File_Seek_End
 
 NEWSYM Get_Time
     pushad
-;    call GetTime
+    call GetTime
     mov [TempVarSeek],eax
     popad
     mov eax,[TempVarSeek]
     ret
 NEWSYM Get_TimeDate
     pushad
-;    call GetDate
+    call GetDate
     mov [TempVarSeek],eax
     popad
     mov eax,[TempVarSeek]
