@@ -1473,7 +1473,7 @@ NEWSYM RDSPRegFF      ;
       mov ebx,eax
       mov eax,edx
       xor edx,edx
-      or eax,eax
+      or ebx,ebx
       jz .oopszero
       div ebx
 .oopszero
