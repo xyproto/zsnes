@@ -2172,7 +2172,7 @@ DisplayGUISound:
     GUIOuttextwin2u 6,26,44,GUISoundText2b,1
 %endif
 ;.win32b
-    GUIOuttextwin2u 6,26,106,GUISoundText4,8
+;    GUIOuttextwin2u 6,26,106,GUISoundText4,8
     GUIOuttextwin2u 6,26,116,GUISoundTextH,2
 ;    cmp byte[OSPort],3
 ;    je near .win32s2
@@ -2200,7 +2200,7 @@ DisplayGUISound:
     GUIOuttextwin2 6,25,43,GUISoundText2b
 %endif
 ;.win32c
-    GUIOuttextwin2 6,25,105,GUISoundText4
+;    GUIOuttextwin2 6,25,105,GUISoundText4
     GUIOuttextwin2 6,25,115,GUISoundTextH
 ;    cmp byte[OSPort],3
 ;    je near .win32s
@@ -2266,11 +2266,11 @@ DisplayGUISound:
     GUIDisplayIconWin 6,11,39,[GUITemp]
 %endif
 ;.win32
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[SoundNoiseDis],0
-    je .nocheckbox2
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox2
+;    mov dword[GUITemp],GUIIconDataCheckBoxUC
+;    cmp byte[SoundNoiseDis],0
+;    je .nocheckbox2
+;    mov dword[GUITemp],GUIIconDataCheckBoxC
+;.nocheckbox2
     GUIDisplayIconWin 6,11,101,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[RevStereo],0
@@ -2411,7 +2411,7 @@ GUISoundText1b db 'FORCE 8-BIT',0
 GUISoundText2 db 'SAMPLING RATE :',0
 GUISoundText2b db 'RAISE PITCH LEVEL',0
 GUISoundText3 db 'STEREO SOUND',0
-GUISoundText4 db 'DISABLE NOISE SIMULATION',0
+GUISoundText4 db '',0
 GUISoundText5 db 'VOLUME LEVEL :',0
 GUISoundText6 db 'SOUND SWITCHES :',0
 GUISoundText7 db ' 8000HZ',0

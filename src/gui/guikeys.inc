@@ -1233,10 +1233,6 @@ GUISoundKeys:
     xor byte[RaisePitch],1
 .noraisepitch
 %endif
-    cmp dh,'N'
-    jne .notnoise
-    xor byte[SoundNoiseDis],1
-.notnoise
     cmp dh,'R'
     jne .notsrate
     xor eax,eax

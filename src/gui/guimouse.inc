@@ -2327,7 +2327,7 @@ DisplayGUISoundClick:
 %endif
     GUIClickCButton 11,30,byte[cfgStereoSound]
     GUIClickCButton 11,39,byte[RaisePitch]
-    GUIClickCButton 11,101,byte[SoundNoiseDis]
+;    GUIClickCButton 11,101,byte[SoundNoiseDis]
     GUIClickCButton 11,111,byte[RevStereo]
 ;    cmp byte[OSPort],3
 ;    je near .win32sound
