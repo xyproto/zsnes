@@ -457,6 +457,7 @@ aquireagain:;
 }
 
 extern "C" void SaveSramData(void);
+extern "C" void GUISaveVars(void);
 
 void ExitFunction()
 {
@@ -466,6 +467,7 @@ void ExitFunction()
       {
          pushad
          call SaveSramData
+         call GUISaveVars
          popad
       }
    }
