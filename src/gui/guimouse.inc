@@ -3138,17 +3138,18 @@ DisplayGUIComboClick:
     ;x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
     GUIWinControl2 10,23,190,22+8*7,GUIBlankVar,GUIccombviewloc,NumCombo,23,7,GUIccombcursloc,6,16,0
 
-    GUIPButtonHole 178,82,byte[GUIComboPNum],0
-    GUIPButtonHole 196,82,byte[GUIComboPNum],1
-    GUIPButtonHole 214,82,byte[GUIComboPNum],2
-    GUIPButtonHole 232,82,byte[GUIComboPNum],3
+    GUIPButtonHole 158,82,byte[GUIComboPNum],0
+    GUIPButtonHole 176,82,byte[GUIComboPNum],1
+    GUIPButtonHole 194,82,byte[GUIComboPNum],2
+    GUIPButtonHole 212,82,byte[GUIComboPNum],3
+    GUIPButtonHole 230,82,byte[GUIComboPNum],4
     GUIClickCButton 163,88,byte[GUIComboLHorz]
     GUIClickCButtonC 163,96,byte[GUIComboGameSpec]
     GUIPHoldbutton 202,20,246,31,60
     GUIPHoldbutton 202,35,246,46,61
     GUIPHoldbutton 202,50,246,61,62
     GUIPHoldbutton 202,65,246,76,63
-    DGOptnsProcBoxc 135,91,157,99,[GUIComboKey]
+    DGOptnsProcBoxc 10,91,32,99,[GUIComboKey]
 
     ComboBoxProc 75,150,85,157,1
     ComboBoxProc 89,150,99,157,2

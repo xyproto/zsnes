@@ -5987,8 +5987,8 @@ DisplayGUICombo:
     GUIDrawWindowBox 16,GUIComboDisp
 
     DrawBorderedBox 16,10,20,190,80,19
-    DrawBorderedBox 16,10,91,130,99,90
-    DrawBorderedBox 16,135,91,157,99,90
+    DrawBorderedBox 16,37,91,157,99,90
+    DrawBorderedBox 16,10,91,32,99,90
     DrawBorderedBox 16,10,110,220,146,109
 
     ; Draw SlideBar
@@ -6060,8 +6060,8 @@ DisplayGUICombo:
     sub byte[GUItextcolor],15
     GUIOuttextwin2 16,10,13,GUIComboText1
     GUIOuttextwin2 16,138,13,GUIComboText2
-    GUIOuttextwin2 16,10,84,GUIComboTextE
-    GUIOuttextwin2 16,138,84,GUIComboTextF
+    GUIOuttextwin2 16,38,84,GUIComboTextE
+    GUIOuttextwin2 16,10,84,GUIComboTextF
     GUIOuttextwin2 16,10,103,GUIComboText4
     GUIOuttextwin2 16,10,152,GUIComboText5
     GUIOuttextwin2 16,10,162,GUIComboText6
@@ -6069,15 +6069,15 @@ DisplayGUICombo:
     GUIOuttextwin2 16,10,182,GUIComboText8
     GUIOuttextwin2 16,114,182,GUIComboText9
     GUIOuttextwin2 16,204,182,GUIComboTextG
-    GUIOuttextwin2 16,165,85,GUIComboTextI
+    GUIOuttextwin2 16,145,85,GUIComboTextI
     GUIOuttextwin2 16,176,93,GUIComboTextJ
     GUIOuttextwin2 16,176,101,GUIComboTextK
 
     add byte[GUItextcolor],15
     GUIOuttextwin2 16,9,12,GUIComboText1
     GUIOuttextwin2 16,137,12,GUIComboText2
-    GUIOuttextwin2 16,9,83,GUIComboTextE
-    GUIOuttextwin2 16,137,83,GUIComboTextF
+    GUIOuttextwin2 16,37,83,GUIComboTextE
+    GUIOuttextwin2 16,9,83,GUIComboTextF
     GUIOuttextwin2 16,9,102,GUIComboText4
     GUIOuttextwin2 16,9,151,GUIComboText5
     GUIOuttextwin2 16,9,161,GUIComboText6
@@ -6085,7 +6085,7 @@ DisplayGUICombo:
     GUIOuttextwin2 16,9,181,GUIComboText8
     GUIOuttextwin2 16,113,181,GUIComboText9
     GUIOuttextwin2 16,203,181,GUIComboTextG
-    GUIOuttextwin2 16,164,84,GUIComboTextI
+    GUIOuttextwin2 16,144,84,GUIComboTextI
     GUIOuttextwin2 16,175,92,GUIComboTextJ
     GUIOuttextwin2 16,175,100,GUIComboTextK
 
@@ -6109,7 +6109,7 @@ DisplayGUICombo:
     mov byte[GUIComboTextH+eax],'_'
     mov byte[GUIComboTextH+eax+1],0
 .nound
-    GUIOuttextwin2c 16,12,94,GUIComboTextH
+    GUIOuttextwin2c 16,39,94,GUIComboTextH
     xor eax,eax
     mov al,[GUIComboPos]
     mov byte[GUIComboTextH+eax],0
@@ -6119,7 +6119,7 @@ DisplayGUICombo:
     mov ebx,[ScanCodeListing+eax*3]
     mov [GUIGameDisplayKy],ebx
     mov byte[GUIGameDisplayKy+3],0
-    GUIOuttextwin2c 16,139,94,GUIGameDisplayKy
+    GUIOuttextwin2c 16,14,94,GUIGameDisplayKy
 
     ; Buttons
     mov al,[TextColorSp+2]
@@ -6131,11 +6131,11 @@ DisplayGUICombo:
     DrawGUIButton 16,202,65,246,76,GUIComboTextD,63,-1,0
 
     ; Hole Switches
-    GUIDisplayButtonHole 16,178,82,byte[GUIComboPNum],0
-    GUIDisplayButtonHole 16,196,82,byte[GUIComboPNum],1
-    GUIDisplayButtonHole 16,214,82,byte[GUIComboPNum],2
-    GUIDisplayButtonHole 16,232,82,byte[GUIComboPNum],3
-
+    GUIDisplayButtonHole 16,158,82,byte[GUIComboPNum],0
+    GUIDisplayButtonHole 16,176,82,byte[GUIComboPNum],1
+    GUIDisplayButtonHole 16,194,82,byte[GUIComboPNum],2
+    GUIDisplayButtonHole 16,212,82,byte[GUIComboPNum],3
+    GUIDisplayButtonHole 16,230,82,byte[GUIComboPNum],4
     ; Check Box
     DrawCheckBox 16,163,88,GUIComboLHorz
     DrawCheckBox 16,163,96,GUIComboGameSpec
@@ -6375,7 +6375,7 @@ GUIComboTextE db 'DESCRIPTION:',0
 GUIComboTextF db 'KEY:',0
 GUIComboTextG db 'DEL',0
 GUIComboTextH db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-GUIComboTextI db 'P#  1  2  3  4',0
+GUIComboTextI db 'P#  1  2  3  4  5',0
 GUIComboTextJ db 254,' = LAST ',253,'/',254,0
 GUIComboTextK db 'GAME SPECFIC',0
 
