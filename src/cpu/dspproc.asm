@@ -2732,61 +2732,6 @@ dspconvb equ marksave-Voice0Freq
 NEWSYM PHdspsave, dd dspsave
 NEWSYM PHdspconvb, dd dspconvb
 
-section .text
-
-NEWSYM PrepareSaveState
-    push edi
-    mov edi,[Voice0BufPtr]
-    sub edi,[spcBuffera]
-    mov [Voice0BufPtr],edi
-    mov edi,[Voice1BufPtr]
-    sub edi,[spcBuffera]
-    mov [Voice1BufPtr],edi
-    mov edi,[Voice2BufPtr]
-    sub edi,[spcBuffera]
-    mov [Voice2BufPtr],edi
-    mov edi,[Voice3BufPtr]
-    sub edi,[spcBuffera]
-    mov [Voice3BufPtr],edi
-    mov edi,[Voice4BufPtr]
-    sub edi,[spcBuffera]
-    mov [Voice4BufPtr],edi
-    mov edi,[Voice5BufPtr]
-    sub edi,[spcBuffera]
-    mov [Voice5BufPtr],edi
-    mov edi,[Voice6BufPtr]
-    sub edi,[spcBuffera]
-    mov [Voice6BufPtr],edi
-    mov edi,[Voice7BufPtr]
-    sub edi,[spcBuffera]
-    mov [Voice7BufPtr],edi
-    pop edi
-    ret
-
-%macro ResState 1
-    mov edi,%1
-    add edi,[spcBuffera]
-    mov eax,[spcBuffera]
-    add eax,65536*4
-    cmp edi,eax
-    jb %%noof
-    mov edi,[spcBuffera]
-%%noof
-    mov %1,edi
-%endmacro
-NEWSYM ResetState
-    push edi
-    ResState [Voice0BufPtr]
-    ResState [Voice1BufPtr]
-    ResState [Voice2BufPtr]
-    ResState [Voice3BufPtr]
-    ResState [Voice4BufPtr]
-    ResState [Voice5BufPtr]
-    ResState [Voice6BufPtr]
-    ResState [Voice7BufPtr]
-    pop edi
-    ret
-
 SECTION .bss
 spc700temp resd 2
 SECTION .text

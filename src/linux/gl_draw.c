@@ -46,7 +46,7 @@ extern DWORD BitDepth;
 static unsigned short *glvidbuffer = 0;
 static GLuint gltextures[4];
 static int gltexture256, gltexture512;
-static int glfilters = GL_NEAREST;
+static int glfilters = GL_LINEAR;
 static int glscanready = 0;
 extern Uint8 En2xSaI, scanlines;
 extern Uint8 BilinearFilter;
@@ -55,6 +55,7 @@ extern Uint8 GUIOn2;
 
 extern unsigned int vidbuffer;
 extern unsigned char curblank;
+extern BYTE GUIRESIZE[];
 
 void gl_clearwin();
 void UpdateVFrame(void);
@@ -67,7 +68,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 		SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_OPENGL;
 	int i;
 
-	flags |= (cvidmode == 16 ? SDL_RESIZABLE : 0);
+	flags |= (GUIRESIZE[cvidmode] ? SDL_RESIZABLE : 0);
 	flags |= (FullScreen ? SDL_FULLSCREEN : 0);
 
 

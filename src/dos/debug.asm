@@ -173,7 +173,9 @@ NEWSYM loadtempstuff
     call Close_File
     add dword[spcPCRam],spcRam
     add dword[spcRamDP],spcRam
+    pushad
     call ResetState
+    popad
     ret
     mov dword[spcPCRam],0
     xor eax,eax
@@ -435,13 +437,17 @@ NEWSYM debugloadstate
     add dword[Curtableaddr],tableA
     add dword[spcPCRam],spcRam
     add dword[spcRamDP],spcRam
+    pushad
     call ResetState
+    popad
     call procexecloop
 .nofile
     jmp debugloopa
 
 NEWSYM debugsavestate
+    pushad
     call statesaver
+    popad
     jmp debugloopb
 
 ;*******************************************************

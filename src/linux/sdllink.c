@@ -87,6 +87,7 @@ extern BYTE GUIDSMODE[];
 extern BYTE GUIHQ2X[];
 extern BYTE GUIHQ3X[];
 extern BYTE GUIHQ4X[];
+extern BYTE GUIRESIZE[];
 
 /* JOYSTICK AND KEYBOARD INPUT */
 SDL_Joystick *JoystickInput[5];
@@ -388,7 +389,7 @@ int Main_Proc(void)
 				break;
 #ifdef __OPENGL__
 			case SDL_VIDEORESIZE:
-				if(cvidmode != 17) {
+				if(!GUIRESIZE[cvidmode]) {
 				    surface = SDL_SetVideoMode(WindowWidth, WindowHeight,
 					    BitDepth, surface->flags & ~SDL_RESIZABLE);
 					adjustMouseXScale();
@@ -830,7 +831,7 @@ void initwinvideo(void)
 				break;
 			case 2:
 			case 5:
-			case 17:					// Variable
+			case 18:					// Variable
 				WindowWidth = 512;
 				WindowHeight = 448;
 				break;
@@ -869,6 +870,10 @@ void initwinvideo(void)
 			case 16:
 				WindowWidth = 1280;
 				WindowHeight = 1024;
+				break;
+			case 17:
+				WindowWidth = 1600;
+				WindowHeight = 1200;
 				break;
 		}
 		adjustMouseXScale();

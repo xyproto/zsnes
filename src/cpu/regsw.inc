@@ -291,28 +291,6 @@ NEWSYM initregw
 ; video memory change buffer for caching (65536/16=4096)
 ;vidmemch2, vidmemch4, vidmemch8. 4096 bytes each
 
-
-NEWSYM unpackfunct
-    mov ebx,[oamaddr]
-    mov [oamaddrt],bx
-
-    mov ax,[xa]
-    mov [xat],ax
-    mov al,[xdb]
-    mov [xdbt],al
-    mov al,[xpb]
-    mov [xpbt],al
-    mov ax,[xs]
-    mov [xst],ax
-    mov ax,[xd]
-    mov [xdt],ax
-    mov ax,[xx]
-    mov [xxt],ax
-    mov ax,[xy]
-    mov [xyt],ax
-    ret
-
-
 NEWSYM repackfunct
     ; Global/Echo Volumes
     mov al,[DSPMem+0Ch]

@@ -62,7 +62,9 @@ MovieRecord:
     mov byte[NoPictureSave],1
     cmp byte[MovieProcessing],0
     jne .nostatesaver
+    pushad
     call statesaver
+    popad
 .nostatesaver
     mov byte[NoPictureSave],0
     mov edx,fnamest+1

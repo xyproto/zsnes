@@ -1569,50 +1569,6 @@ NEWSYM %1
     ret
 %endmacro
 
-NEWSYM RestoreSA1
-    mov eax,[romdata]
-    add [SA1RegPCS],eax
-    add [CurBWPtr],eax
-    add [SA1BWPtr],eax
-    add [SNSBWPtr],eax
-    cmp byte[SA1Stat],1
-    jne .notsa1stat
-    mov dword[SA1RegPCS],IRAM
-.notsa1stat
-    cmp byte[SA1Stat],2
-    jne .notsa1stat2
-    mov dword[SA1RegPCS],IRAM-3000h
-.notsa1stat2
-    mov eax,[SA1RegPCS]
-    add [SA1Ptr],eax
-    mov eax,[romdata]
-    add eax,4096*1024
-    mov [SA1RAMArea],eax
-    pushad
-    call UpdateBanks
-    popad
-    ret
-
-NEWSYM SaveSA1
-    mov byte[SA1Stat],0
-    mov eax,[SA1RegPCS]
-    sub [SA1Ptr],eax
-    cmp dword[SA1RegPCS],IRAM
-    jne .notiram
-    mov byte[SA1Stat],1
-.notiram
-    cmp dword[SA1RegPCS],IRAM-3000h
-    jne .notiram2
-    mov byte[SA1Stat],2
-.notiram2
-    mov eax,[romdata]
-    sub [SA1RegPCS],eax
-    sub [CurBWPtr],eax
-    sub [SA1BWPtr],eax
-    sub [SNSBWPtr],eax
-    ret
-
-
 NEWSYM SA1Reset
     mov byte[SA1IRQData+1],0
     mov byte[SA1Mode],0
@@ -1647,20 +1603,6 @@ NEWSYM SA1Reset
     mov dword[SA1IRQEnable],0
     mov dword[SA1Message],0
     mov word[SA1Overflow],0
-    ret
-
-NEWSYM UpdateBanks
-    cmp byte[SA1BankSw],1
-    jne .noswap
-    mov al,[SA1BankVal]
-    call sa12220w
-    mov al,[SA1BankVal+1]
-    call sa12221w
-    mov al,[SA1BankVal+2]
-    call sa12222w
-    mov al,[SA1BankVal+3]
-    call sa12223w
-.noswap
     ret
 
 NEWSYM UpdateBanksSDD1

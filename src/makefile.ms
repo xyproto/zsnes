@@ -113,9 +113,9 @@ CHIPSOBJ=${CHIPDIR}/dsp1emu${OE} ${CHIPDIR}/fxemu2${OE} ${CHIPDIR}/sfxproc${OE}\
 	${CHIPDIR}/sdd1emu${OE} ${CHIPDIR}/c4emu${OE}
 
 CPUOBJ=${CPUDIR}/dma${OE} ${CPUDIR}/dsp${OE} ${CPUDIR}/dspproc${OE}\
-	${CPUDIR}/execute${OE} ${CPUDIR}/executec${OE} ${CPUDIR}/irq${OE}\
-	${CPUDIR}/memory${OE} ${CPUDIR}/spc700${OE} ${CPUDIR}/stable${OE}\
-	${CPUDIR}/table${OE} ${CPUDIR}/tableb${OE} ${CPUDIR}/tablec${OE}
+	${CPUDIR}/execute${OE} ${CPUDIR}/irq${OE} ${CPUDIR}/memory${OE}\
+	${CPUDIR}/spc700${OE} ${CPUDIR}/stable${OE} ${CPUDIR}/table${OE}\
+	${CPUDIR}/tableb${OE} ${CPUDIR}/tablec${OE} ${CPUDIR}/zstate${OE}
 
 GUIOBJ=${GUIDIR}/gui${OE} ${GUIDIR}/menu${OE}
 
@@ -124,7 +124,7 @@ VIDEOBJ=${VIDEODIR}/makev16b${OE} ${VIDEODIR}/makev16t${OE} ${VIDEODIR}/makevid$
 	${VIDEODIR}/mode716e${OE} ${VIDEODIR}/mode716t${OE} ${VIDEODIR}/mode7${OE}\
 	${VIDEODIR}/mode7ext${OE} ${VIDEODIR}/mv16tms${OE} ${VIDEODIR}/newg162${OE}\
 	${VIDEODIR}/newgfx16${OE} ${VIDEODIR}/newgfx2${OE} ${VIDEODIR}/newgfx${OE}\
-	${VIDEODIR}/m716text${OE} ${VIDEODIR}/procvid${OE}
+	${VIDEODIR}/m716text${OE} ${VIDEODIR}/procvid${OE} ${VIDEODIR}/procvidc${OE}
 
 #only used on Win32
 WINVIDOBJ=${VIDEODIR}/sw_draw${OE} ${VIDEODIR}/hq2x16${OE} ${VIDEODIR}/hq2x32${OE}\
@@ -220,7 +220,7 @@ patch${OE}: $<
 endmem${OE}: $< macros.mac
 
 ${CPUDIR}/execute${OE}: $< macros.mac
-${CPUDIR}/executec${OE}: $<
+${CPUDIR}/zstate${OE}: $<
 ${CPUDIR}/table${OE}: $< ${CPUDIR}/65816d.inc ${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816.inc\
 	           ${CPUDIR}/regs.mac ${CPUDIR}/regs.inc ${CPUDIR}/regsw.mac ${CPUDIR}/regsw.inc macros.mac
 ${CPUDIR}/tableb${OE}: $< ${CPUDIR}/65816db.inc ${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816b.inc\
@@ -249,6 +249,7 @@ ${VIDEODIR}/mode7ext${OE}: $< macros.mac
 ${VIDEODIR}/mode716e${OE}: $< macros.mac
 ${VIDEODIR}/m716text${OE}: $< ${VIDEODIR}/mode7.mac macros.mac
 ${VIDEODIR}/procvid${OE}: $< macros.mac ${VIDEODIR}/copyvid.inc ${VIDEODIR}/2xsaimmx.inc
+${VIDEODIR}/procvidc${OE}: $<
 
 ${VIDEODIR}/2xsaiw${OE}: $< macros.mac
 ${VIDEODIR}/sw_draw${OE}: $< macros.mac

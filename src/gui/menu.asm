@@ -857,7 +857,9 @@ NEWSYM savespcdata
     ChangeDir SPCPath
     sub dword[spcPCRam],spcRam
     sub dword[spcRamDP],spcRam
+    pushad
     call PrepareSaveState
+    popad
     ; Copy from fnames to .spcfname, replacing .srm with .spc
     mov esi,fnames+1
     mov edi,.spcfname
@@ -1009,7 +1011,9 @@ NEWSYM savespcdata
 
     add dword[spcPCRam],spcRam
     add dword[spcRamDP],spcRam
+    pushad
     call ResetState
+    popad
 
 %ifdef SPCDUMP
 

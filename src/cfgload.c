@@ -446,20 +446,21 @@ void DOScreatenewcfg()
 #endif
 #ifdef __LINUX__
 #ifdef __OPENGL__
-  WRITE_LINE("; Video Mode, 0 - 15\r\n");
+  WRITE_LINE("; Video Mode, 0 - 18\r\n");
 #else
   WRITE_LINE("; Video Mode, 0 - 3\r\n");
 #endif
   WRITE_LINE(";   0 = 256x224   R WIN        1 = 256x224  R FULL\r\n");
   WRITE_LINE(";   2 = 512x448   DR WIN       3 = 640x480  DS FULL\r\n");
 #ifdef __OPENGL__
-  WRITE_LINE(";   4 = 256x224   OR  WIN      5 = 512x448  ODR WIN\r\n");
-  WRITE_LINE(";   6 = 640x480   ODS FULL     7 = 640x480  ODS WIN\r\n");
-  WRITE_LINE(";   8 = 640x576   ODR WIN      9 = 768x672  ODR WIN\r\n");
-  WRITE_LINE(";  10 = 800x600   ODS FULL    11 = 800x600  ODS WIN\r\n");
-  WRITE_LINE(";  12 = 896x784   ODR WIN     13 = 1024x768 ODS FULL\r\n");
-  WRITE_LINE(";  14 = 1024x768  ODS WIN     15 = 1024x896 ODR WIN\r\n");
-  WRITE_LINE(";  16 = 1280x1024 ODS FULL    17 = VARIABLE ODR WIN\r\n");
+  WRITE_LINE(";   4 = 256x224   OR  WIN      5 = 512x448   ODR WIN\r\n");
+  WRITE_LINE(";   6 = 640x480   ODS FULL     7 = 640x480   ODS WIN\r\n");
+  WRITE_LINE(";   8 = 640x576   ODR WIN      9 = 768x672   ODR WIN\r\n");
+  WRITE_LINE(";  10 = 800x600   ODS FULL    11 = 800x600   ODS WIN\r\n");
+  WRITE_LINE(";  12 = 896x784   ODR WIN     13 = 1024x768  ODS FULL\r\n");
+  WRITE_LINE(";  14 = 1024x768  ODS WIN     15 = 1024x896  ODR WIN\r\n");
+  WRITE_LINE(";  16 = 1280x1024 ODS FULL    17 = 1600x1200 ODR FULL\r\n");
+  WRITE_LINE(";  18 = VARIABLE  ODS WIN\r\n");
 #endif
   sprintf(buffer, "\r\nVideoModeLin = %d\r\n\r\n", cfgcvidmode);
   SAVE_LINE(buffer);

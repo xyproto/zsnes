@@ -23,7 +23,7 @@
 EXTSYM StringLength
 EXTSYM Get_Time
 EXTSYM objhipr
-EXTSYM KeyRewind
+EXTSYM KeyRewind, statesaver
 EXTSYM xa,timer2upd,prevoamptr,ReadHead
 EXTSYM prevedi,SA1xpc,SA1RAMArea,sa1dmaptr
 EXTSYM DSP1COp,C4WFXVal,C41FXVal,Op00Multiplicand,Op10Coefficient,Op04Angle
@@ -585,7 +585,9 @@ NetSaveState:
     mov byte[csounddisable],1
 .skipsoundreinit
 
+    pushad
     call statesaver
+    popad
 
     ; initialize variables (Copy from variables)
     call UpdateDPage
@@ -1192,191 +1194,8 @@ NEWSYM HIRQNextExe,   db 0
 
 SECTION .data
 NEWSYM firstsaveinc, db 0
-
-SECTION .text
-
-NEWSYM statesaver
-    clim
-
-    sub dword[Curtableaddr],tableA
-    sub dword[spcPCRam],spcRam
-    sub dword[spcRamDP],spcRam
-    call PrepareSaveState
-    call unpackfunct
-
-    ; Auto increment save state slot
-
-    cmp byte[AutoIncSaveSlot],0
-    je .donesaveinc
-    cmp byte[firstsaveinc],1
-    je .clearfirstinc
-    mov eax,[statefileloc]
-    mov dh,[fnamest+eax]
-    cmp dh,'t'
-    je .secondstate
-    cmp dh,'9'
-    je .jumptofirststate
-    inc dh
-    jmp .donextstate
-.secondstate
-    mov dh,'1'
-    jmp .donextstate
-.jumptofirststate
-    mov dh,'t'
-.donextstate
-    mov byte[fnamest+eax],dh
-    xor dh,dh
-    jmp .donesaveinc
-.clearfirstinc
-    mov byte[firstsaveinc],0
-.donesaveinc
-
-;    jmp .skipsaves
-    ; Save State
-%ifdef __LINUX__
-    pushad
-    call SRAMChdir
-    popad
-%endif
-    mov edx,fnamest+1
-    call Create_File
-    jc near .nosavestuff
-    ; Save 65816 status, etc.
-    mov bx,ax
-    mov ecx,[PHnum2writecpureg]
-    mov edx,zsmesg
-    call Write_File
-    mov ecx,8
-    mov edx,cycpbl
-    call Write_File
-    ; Save SNES PPU Register status
-    mov ecx,3019
-    mov edx,sndrot
-    call Write_File
-    ; Save RAM (WRAM(128k),VRAM(64k),SRAM)
-;    xor ecx,ecx
-;    mov cx,[ramsize]
-    mov ecx,65536+65536
-    mov edx,[wramdata]
-    call Write_File
-    mov ecx,65536
-    mov edx,[vram]
-    call Write_File
-    cmp byte[spcon],0
-    je .nospcon
-    ; Save SPC stuff
-    mov ecx,[PHspcsave]
-    mov edx,spcRam
-    call Write_File
-    ; Save DSP stuff
-    mov ecx,[PHdspsave]
-    mov edx,BRRBuffer
-    call Write_File
-    ; Save DSP Mem
-    mov ecx,256
-    mov edx,DSPMem
-    call Write_File
-.nospcon
-    cmp byte[C4Enable],1
-    jne .noc4
-    mov ecx,2000h
-    mov edx,[C4Ram]
-    call Write_File
-.noc4
-    cmp byte[SFXEnable],1
-    jne .nosfx
-    mov ecx,[SfxCROM]
-    sub [SfxRomBuffer],ecx
-    mov ecx,[SfxRAMMem]
-    sub [SfxLastRamAdr],ecx
-    mov ecx,65536*2
-    mov edx,[sfxramdata]
-    call Write_File
-    ; uncomment the following
-    mov ecx,[PHnum2writesfxreg]
-    mov edx,SfxR0
-    call Write_File
-    mov ecx,[SfxCROM]
-    add [SfxRomBuffer],ecx
-    mov ecx,[SfxRAMMem]
-    add [SfxLastRamAdr],ecx
-.nosfx
-
-    cmp byte[SETAEnable],1
-    jne .noseta
-    mov ecx,4096
-    mov edx,[setaramdata]
-    call Write_File
-.noseta
-
-    cmp byte[SPC7110Enable],1
-    jne .nospc7110
-    mov edx,[romdata]
-    add edx,510000h
-    mov ecx,65536
-    call Write_File
-    mov edx,SPCMultA
-    mov ecx,[PHnum2writespc7110reg]
-    call Write_File
-.nospc7110
-    cmp byte[SA1Enable],1
-    jne .nossa1
-    ; Convert SA-1 stuff to standard, non displacement format
-    call SaveSA1
-    mov ecx,[PHnum2writesa1reg]
-    mov edx,SA1Mode
-    call Write_File
-    mov ecx,65536*2
-    mov edx,[SA1RAMArea]
-    call Write_File
-    ; Convert back SA-1 stuff
-    call RestoreSA1
-.nossa1
-    cmp byte[cbitmode],0
-    je .nocapturepicture
-    cmp byte[NoPictureSave],1
-    je .nocapturepicture
-    call CapturePicture
-    mov ecx,64*56*2
-    mov edx,PrevPicture
-    call Write_File
-.nocapturepicture
-
-    call Close_File
-    add dword[Curtableaddr],tableA
-    add dword[spcPCRam],spcRam
-    add dword[spcRamDP],spcRam
-    call ResetState
-    stim
-
-    ; Get the state number
-    mov ebx,[statefileloc]
-    mov cl,[fnamest+ebx]
-    cmp cl,'t'
-    jne .writewhichstate
-    mov cl,'0'
-.writewhichstate
-    mov [.savemsg+6],cl
-	
-    mov dword[Msgptr],.savemsg
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    ret
-
-.nosavestuff
-    add dword[Curtableaddr],tableA
-    add dword[spcPCRam],spcRam
-    add dword[spcRamDP],spcRam
-    call ResetState
-    stim
-    mov dword[Msgptr],.savemsgfail
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    ret
-
-SECTION .data
-.savemsg db 'STATE - SAVED.',0
-.savemsgfail db 'UNABLE TO SAVE.',0
+NEWSYM txtsavemsg, db 'STATE - SAVED.',0
+NEWSYM txtsavemsgfail, db 'UNABLE TO SAVE.',0
 SECTION .text
 
 NEWSYM savestate
@@ -1410,7 +1229,9 @@ NEWSYM savestate
     mov byte[pressed+1],0
     mov eax,[KeySaveState]
     mov byte[pressed+eax],2
+    pushad
     call statesaver
+    popad
     jmp reexecuteb
 
 SECTION .data
@@ -1545,9 +1366,9 @@ NEWSYM stateloader
     mov edx,[SA1RAMArea]
     call Read_File
     ; Convert back SA-1 stuff
-    push ebx
+    pushad
     call RestoreSA1
-    pop ebx
+    popad
     call SA1UpdateDPage
 .nossa1
     cmp byte[SDD1Enable],1
@@ -1678,7 +1499,9 @@ NEWSYM loadstate
     add dword[Curtableaddr],tableA
     add dword[spcPCRam],spcRam
     add dword[spcRamDP],spcRam
+    pushad
     call ResetState
+    popad
     call procexecloop
     stim
     jmp reexecuteb
@@ -1714,7 +1537,9 @@ NEWSYM loadstate3
     add dword[Curtableaddr],tableA
     add dword[spcPCRam],spcRam
     add dword[spcRamDP],spcRam
+    pushad
     call ResetState
+    popad
     call procexecloop
     ret
 .nofile

@@ -3677,7 +3677,9 @@ GUIProcStates:
     popad
     cmp byte[GUIStatesText5],1
     je .loadstate
+    pushad
     call statesaver
+    popad
     jmp .changedir
 .loadstate
     cmp byte[CNetType],20
@@ -3698,9 +3700,9 @@ SaveSecondState:
     mov ebx,[statefileloc]
     mov al,[fnamest+ebx]
     mov byte[fnamest+ebx],'s'
-    push eax
+    pushad
     call statesaver
-    pop eax
+    popad
     mov ebx,[statefileloc]
     mov [fnamest+ebx],al
     call ChangetoLOADdir
