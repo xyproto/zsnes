@@ -6180,21 +6180,88 @@ NEWSYM CheckROMType
 
     mov byte[intldone],0
     cmp byte[romtype],1
-    jne .nointerlcheck
+    je near .hirominterlcheck
+    mov eax,[curromsize]
+    imul eax,1048576
+    shr eax,3
+    shr eax,4
+    imul eax,[curromsize]
     mov esi,[romdata]
-    add esi,7FD5h
-    cmp byte[esi],21h
+    add esi,7FC0h
+    add esi,eax
+    add esi,28
+    mov ebx,[esi]
+    inc esi
+    mov edx,[esi]
+    shl edx,8
+    add ebx,edx
+    inc esi
+    add ebx,[esi]
+    inc esi
+    mov edx,[esi]
+    shl edx,8
+    add ebx,edx
+    cmp ebx,0FFFFh
+    jne near .nointerlcheck
+    mov esi,[romdata]
+    add esi,7FC0h
+    add esi,eax
+    add esi,25
+    cmp byte[esi],14
+    jb near .nointerlcheck
+    mov esi,[romdata]
+    add esi,7FC0h
+    add esi,eax
+    add esi,21
+    cmp byte[esi],32
+    je near .interleaved
+    cmp byte[esi],35
+    je near .interleaved
+    cmp byte[esi],48
+    je near .interleaved
+    cmp byte[esi],50
+    je near .interleaved
+    cmp byte[esi],83
+    je near .interleaved
+    jmp .nointerlcheck
+.hirominterlcheck
+    mov esi,[romdata]
+    add esi,0FFC0h
+    add esi,28
+    mov ebx,[esi]
+    inc esi
+    mov edx,[esi]
+    shl edx,8
+    add ebx,edx
+    inc esi
+    add ebx,[esi]
+    inc esi
+    mov edx,[esi]
+    shl edx,8
+    add ebx,edx
+    cmp ebx,0FFFFh
+    jne near .nointerlcheck
+    mov esi,[romdata]
+    add esi,0FFC0h
+    add esi,eax
+    add esi,25
+    cmp byte[esi],14
+    jb .nointerlcheck
+    mov esi,[romdata]
+    add esi,0FFC0h
+    add esi,eax
+    add esi,21
+    cmp byte[esi],33
     je .interleaved
-    cmp byte[esi],92h
+    cmp byte[esi],49
     je .interleaved
-    mov eax,[romdata]
-    add eax,07FC0h
-    cmp dword[eax+8],'EST3'
+    cmp byte[esi],53
     je .interleaved
-    cmp byte[eax],'T'
-    je .nointerlcheck
-    cmp byte[esi],31h
-    jne .nointerlcheck
+    cmp byte[esi],50
+    je .interleaved
+    cmp byte[esi],58
+    je .interleaved
+    jmp .nointerlcheck
 .interleaved
     cmp byte[finterleave],1
     je .doneinterl
