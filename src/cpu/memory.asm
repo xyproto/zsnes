@@ -4860,6 +4860,7 @@ SECTION .bss
 NEWSYM SDD1Array, resb 65536
 NEWSYM SDD1Entry, resd 1
 NEWSYM SDD1EntryPtr, resd 1
+NEWSYM SDD1IdxXferSize, resd 1
 SECTION .text
 
 %macro GetBankLog 1
@@ -4934,6 +4935,8 @@ NEWSYM memaccessbankr8sdd1
     jnz .loop
     jmp .notfound
 .found2
+    mov eax,[edx+8]
+    mov [SDD1IdxXferSize],eax
     mov eax,[edx+4]
     mov [SDD1EntryPtr],eax
     mov byte[.found4],1
@@ -4943,8 +4946,13 @@ NEWSYM memaccessbankr8sdd1
     pop edx
 
     push eax
+
     cmp byte[.found4],1
-    je near .nomore
+    jne near .logit
+    cmp edx,[SDD1IdxXferSize]
+    jbe near .nomore
+
+.logit
     mov eax,[SDD1Entry]
     cmp eax,65536
     je near .nomore
