@@ -526,15 +526,14 @@ reg2102w:
 ; OAM address register
 reg2103w:
     cmp byte[oamlow],1
-    je  .afteroamlow
-    ret
-.afteroamlow
+    jne  .afteroamlow
     mov byte[oamlow],0
     mov bl,al
     and bl,01h
     shr word[oamaddr],1
     mov [oamaddr+1],bl
     shl word[oamaddr],1
+.afteroamlow
     cmp word[poamaddrs],200h
     jbe .notinvptr
     cmp word[oamaddr],200h
