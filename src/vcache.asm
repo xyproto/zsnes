@@ -196,7 +196,8 @@ NEWSYM dsp1teststuff
 .cvloop
     mov byte[eax],0
     inc eax
-    loop .cvloop
+    dec ecx
+    jnz .cvloop
     pop ecx
     pop eax
     ret

@@ -2151,7 +2151,8 @@ void drawscreenwin(void)
                      mov edx,[ebx+eax*4]
                      mov [edi],edx
                      add edi,4
-                     loop CopyLoop32b
+                     dec ecx
+                     jnz CopyLoop32b
                      pop eax
                      inc eax
                      add edi,Temp1

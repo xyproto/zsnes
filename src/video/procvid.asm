@@ -1169,28 +1169,32 @@ NEWSYM drawhline
 .loop
     mov byte[esi],al
     inc esi
-    loop .loop
+    dec ecx
+    jnz .loop
     ret
 
 NEWSYM drawhline16b
 .loop
     mov [esi],ax
     add esi,2
-    loop .loop
+    dec ecx
+    jnz .loop
     ret
 
 NEWSYM drawvline
 .loop
     mov byte[esi],al
     add esi,288
-    loop .loop
+    dec ecx
+    jnz .loop
     ret
 
 NEWSYM drawvline16b
 .loop
     mov [esi],ax
     add esi,288*2
-    loop .loop
+    dec ecx
+    jnz .loop
     ret
 
 %macro determinenewhelp 2
@@ -1291,7 +1295,8 @@ NEWSYM CapturePicture
     mov [edi],ax
     add esi,8
     add edi,2
-    loop .loop
+    dec ecx
+    jnz .loop
     pop edx
     pop esi
     add esi,288*2*4
@@ -1312,7 +1317,8 @@ NEWSYM CapturePicture
     or bx,ax
     mov [edx],bx
     add edx,2
-    loop .loop2
+    dec ecx
+    jnz .loop2
 .noneweng
     popad
     ret
@@ -1329,7 +1335,8 @@ GetPicture:
 .loop
     mov byte[edx],0
     inc edx
-    loop .loop
+    dec ecx
+    jnz .loop
     mov edx,fnamest+1
     call Open_File
     jc near .nodraw2
@@ -1377,7 +1384,8 @@ GetPicture:
     or bx,ax
     mov [edx],bx
     add edx,2
-    loop .loop2
+    dec ecx
+    jnz .loop2
 .noneweng
     ; draw border
     mov esi,75*2+9*288*2
@@ -1389,7 +1397,8 @@ GetPicture:
 .ploopb
     mov word[esi],0FFFFh
     add esi,2
-    loop .ploopb
+    dec ecx
+    jnz .ploopb
     pop esi
     add esi,288*2
     dec edx
@@ -1407,7 +1416,8 @@ GetPicture:
     mov word[esi],ax
     add esi,2
     add edi,2
-    loop .ploopb2
+    dec ecx
+    jnz .ploopb2
     pop esi
     add esi,288*2
     dec edx
@@ -1610,7 +1620,8 @@ NEWSYM saveselect
 .loop
     mov byte[esi],144
     inc esi
-    loop .loop
+    dec ecx
+    jnz .loop
     add esi,288-150
     dec al
     mov ecx,150
@@ -1797,7 +1808,8 @@ NEWSYM saveselect
     mov byte[eax],2
 .notpr
     inc eax
-    loop .looppr
+    dec ecx
+    jnz .looppr
     %ifdef __MSDOS__
     mov byte[pressed+1],0
     %endif
@@ -1835,7 +1847,8 @@ NEWSYM saveselect
     shr dx,1
     mov [esi],dx
     add esi,2
-    loop .loop16b2
+    dec ecx
+    jnz .loop16b2
     add esi,288*2-150*2
     dec al
     mov ecx,150
@@ -1881,7 +1894,8 @@ NEWSYM saveselect
 .loop16b
     mov [esi],dx
     add esi,2
-    loop .loop16b
+    dec ecx
+    jnz .loop16b
     add esi,288*2-150*2
     dec ah
     jnz .nocolinc16b
@@ -2115,7 +2129,8 @@ NEWSYM saveselect
     mov byte[eax],2
 .notpr2
     inc eax
-    loop .looppr2
+    dec ecx
+    jnz .looppr2
 .prwin
     %ifdef __MSDOS__
     mov byte[pressed+1],0
@@ -2243,7 +2258,8 @@ NEWSYM doveg
     mov eax,[cgram+ebx]
     mov [cgramback+ebx],eax
     add ebx,4
-    loop .loop
+    dec ecx
+    jnz .loop
     xor eax,eax
     mov al,[coladdr]
     add al,[coladdg]
@@ -2298,7 +2314,8 @@ NEWSYM dovegrest
     mov eax,[cgramback+ebx]
     mov [cgram+ebx],eax
     add ebx,4
-    loop .loop
+    dec ecx
+    jnz .loop
     popad
     ret
 
@@ -2724,7 +2741,8 @@ NEWSYM ClockOutput
 .loop
     mov dword[esi],0C0C0C0C0h
     add esi,4
-    loop .loop
+    dec ecx
+    jnz .loop
     add esi,288-48
     dec ebx
     jnz .loop2
@@ -2741,7 +2759,8 @@ NEWSYM ClockOutput
     mov dword[esi],0
     mov dword[esi+75036*4],0
     add esi,4
-    loop .loopb
+    dec ecx
+    jnz .loopb
     add esi,288*2-48*2
     dec ebx
     jnz .loop2b
@@ -2871,7 +2890,8 @@ NEWSYM ClockOutputB
 .loop
     mov dword[esi],0C0C0C0C0h
     add esi,4
-    loop .loop
+    dec ecx
+    jnz .loop
     add esi,288-48
     dec ebx
     jnz .loop2
@@ -2888,7 +2908,8 @@ NEWSYM ClockOutputB
     mov dword[esi],0
     mov dword[esi+75036*4],0
     add esi,4
-    loop .loopb
+    dec ecx
+    jnz .loopb
     add esi,288*2-48*2
     dec ebx
     jnz .loop2b
@@ -3059,7 +3080,8 @@ NEWSYM hextestoutput
 .loop
 ;    mov word[esi],ax
     add esi,2
-    loop .loop
+    dec ecx
+    jnz .loop
     inc word[blahrnr]
     mov esi,216*288+32
     add esi,[vidbuffer]
@@ -3686,7 +3708,8 @@ NEWSYM Clear2xSaIBuffer
 .nextb
     mov dword[ebx],0FFFFFFFFh
     add ebx,4
-    loop .nextb
+    dec ecx
+    jnz .nextb
     ret
 
 
