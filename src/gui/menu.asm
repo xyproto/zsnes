@@ -33,10 +33,29 @@ EXTSYM Clear2xSaIBuffer
 EXTSYM romdata,romtype,ScreenShotFormat
 EXTSYM Voice0Disable,Voice1Disable,Voice2Disable,Voice3Disable
 EXTSYM Voice4Disable,Voice5Disable,Voice6Disable,Voice7Disable
-EXTSYM SRAMDrive, SRAMDir, SPCPath, SnapPath, Change_Dir
+EXTSYM SRAMDrive, SRAMDir, SPCPath, SnapPath, Change_Dir, CHPath, ZFileCHDir
 %ifndef NO_PNG
 EXTSYM Grab_PNG_Data
 %endif
+
+%macro ChangeDir 1
+    cmp byte[%1],0
+    je %%end
+    pushad
+    mov ebx,%1
+    mov [CHPath],ebx
+    call ZFileCHDir
+    popad
+%%end
+%endmacro
+
+%macro ChangeDirSRAM 0
+    pushad
+    mov dl,[SRAMDrive]
+    mov ebx,SRAMDir
+    call Change_Dir
+    popad
+%endmacro
 
 NEWSYM MenuAsmStart
 
@@ -969,12 +988,7 @@ NEWSYM savespcdata
 ;  times 2  db 0 ; fade-out length in milliseconds
 ;  db 0          ; default channel enables
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    mov dl,[SRAMDrive] ; Need to get rid of this, no reason for it
-    mov ebx,SPCPath
-    call Change_Dir
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+    ChangeDir SPCPath
     mov edx,.spcfname
     call Create_File
     mov bx,ax
@@ -1014,12 +1028,7 @@ NEWSYM savespcdata
 	mov [SPCSave_buffer], eax
 
 %endif
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ChangeDirSRAM
     ret
 
 SECTION .bss
@@ -1157,15 +1166,11 @@ NEWSYM savepcx
 %ifndef NO_PNG
     cmp byte[ScreenShotFormat],1
     jne .notpng
+    ChangeDir SnapPath
     pushad
-    mov dl,[SRAMDrive] ; Need to get rid of this, no reason for it
-    mov ebx,SnapPath
-    call Change_Dir
     call Grab_PNG_Data
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
     popad
+    ChangeDirSRAM
     ret
 .notpng
 %endif
@@ -1194,13 +1199,7 @@ NEWSYM savepcx
     mov word[pcxheader+10],237
 .res224ph
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    pushad
-    mov dl,[SRAMDrive] ; Need to get rid of this, no reason for it
-    mov ebx,SnapPath
-    call Change_Dir
-    popad
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ChangeDir SnapPath
 
     mov ecx,0    ;GetFreeFile use ecx==0 to tell if it's PCX
     call GetFreeFile
@@ -1262,11 +1261,7 @@ NEWSYM savepcx
 ;    mov dword[Msgptr],.pcxsaved
 ;    mov eax,[MsgCount]
 ;    mov [MessageOn],eax
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ChangeDirSRAM
     ret
 
 .save16b
@@ -1298,11 +1293,7 @@ NEWSYM savepcx
     mov word[pcxheader+20],238
 .res224b
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    mov dl,[SRAMDrive] ; Need to get rid of this, no reason for it
-    mov ebx,SnapPath
-    call Change_Dir
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ChangeDir SnapPath
 
     mov ecx,1    ;GetFreeFile use ecx==1 to tell if it's BMP
     call GetFreeFile
@@ -1367,11 +1358,7 @@ NEWSYM savepcx
 ;    mov eax,[MsgCount]
 ;    mov [MessageOn],eax
     call restore16b
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ChangeDirSRAM
     ret
 
 
@@ -1521,11 +1508,7 @@ NEWSYM save16b2
     mov word[pcxheader+22],1
     mov word[pcxheader+24],24
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    mov dl,[SRAMDrive] ; Need to get rid of this, no reason for it
-    mov ebx,SnapPath
-    call Change_Dir
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ChangeDir SnapPath
 
     mov ecx,1    ;GetFreeFile use ecx==1 to tell if it's BMP
     call GetFreeFile
@@ -1588,11 +1571,7 @@ NEWSYM save16b2
 ;    mov [MessageOn],eax
     pop es
     call restore16b
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    mov dl,[SRAMDrive]
-    mov ebx,SRAMDir
-    call Change_Dir
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ChangeDirSRAM
     ret
 
 SECTION .data
