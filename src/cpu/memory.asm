@@ -2635,7 +2635,7 @@ NEWSYM regaccessbankr16
     xor ebx,ebx
     ret
 .regacc
-    cmp ecx,2000h
+    cmp ecx,1FFFh
     jae .regs
     mov ax,[wramdataa+ecx]
     ret
@@ -2832,7 +2832,7 @@ NEWSYM regaccessbankw8
 NEWSYM regaccessbankw16
     test ecx,8000h
     jnz .romacc
-    cmp ecx,2000h
+    cmp ecx,1FFFh
     jae .regs
     mov [wramdataa+ecx],ax
     ret
@@ -3016,14 +3016,16 @@ NEWSYM GenerateBank0Table
     writetobank0table membank0w8rom,81h
     writetobank0table membank0w8romram,1h
     mov eax,Bank0datr16
-    writetobank0table membank0r16ram,20h
+    writetobank0table membank0r16ram,1Fh
+    writetobank0table membank0r16ramh,1
     writetobank0table membank0r16reg,28h
     writetobank0table membank0r16inv,17h
     writetobank0table membank0r16chip,1Fh
     writetobank0table membank0r16rom,81h
     writetobank0table membank0r16romram,1h
     mov eax,Bank0datw16
-    writetobank0table membank0w16ram,20h
+    writetobank0table membank0w16ram,1Fh
+    writetobank0table membank0w16ramh,1
     writetobank0table membank0w16reg,28h
     writetobank0table membank0w16inv,17h
     writetobank0table membank0w16chip,1Fh
@@ -3148,8 +3150,18 @@ NEWSYM membank0r8romram             ; 0000-1FFF
     ret
 
 ; --- 16 BIT READ STUFF ---
-NEWSYM membank0r16ram             ; 0000-1FFF
+NEWSYM membank0r16ram             ; 0000-1EFF
     mov ax,[wramdataa+ebx+ecx]
+    ret
+NEWSYM membank0r16ramh            ; 1F00-1FFF
+    add ecx,ebx
+    cmp ecx,1FFFh
+    je .over
+    mov ax,[wramdataa+ecx]
+    ret
+.over
+    mov al,[wramdataa+ecx]
+    xor ah,ah
     ret
 NEWSYM membank0r16reg             ; 2000-48FF
     add ecx,ebx
@@ -3257,8 +3269,17 @@ NEWSYM membank0w8romram             ; 0000-1FFF
     ret
 
 ; --- 16 BIT WRITE STUFF ---
-NEWSYM membank0w16ram             ; 0000-1FFF
+NEWSYM membank0w16ram             ; 0000-1EFF
     mov [wramdataa+ebx+ecx],ax
+    ret
+NEWSYM membank0w16ramh            ; 1F00-1FFF
+    add ecx,ebx
+    cmp ecx,1FFFh
+    je .over
+    mov [wramdataa+ecx],ax
+    ret
+.over
+    mov [wramdataa+ecx],al
     ret
 NEWSYM membank0w16reg             ; 2000-48FF
     add ecx,ebx
