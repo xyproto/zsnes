@@ -137,7 +137,9 @@ NEWSYM DrawWin256x224x32
         mov  ax,ds
         mov  es,ax
         xor  eax,eax
+%ifdef __WIN32__
         mov  ebx, [BitConv32Ptr]
+%endif
         mov  esi, [ScreenPtr]
         mov  edi, [SurfBufD]
 .Copying32b:
