@@ -1,3 +1,8 @@
+04/04/2001  zsKnight <zsknight@zsnes.com>
+        * Fixed up new graphics engine memory leak, thanks to Trac for
+          reporting this!
+        * Updated version # in ui.asm
+
 04/04/2001  Erik Bourget <ebourg@po-box.mcgill.ca>
 	* made it compile cleanly up to linking on unix machines
 	  (fixed up some filename case problems, backslash->forward 
