@@ -1843,8 +1843,21 @@ NEWSYM headerhack
     mov esi,[romdata]
     add esi,0FFC0h
     cmp dword[esi],0C4DDDBCCh
-    jne .noromheadfm2
+    jne .noromheadfm
     cmp dword[esi+4],0AEBCAFD0h
+    jne .noromheadfm
+    mov byte[opexec268],226
+    mov byte[opexec358],226
+    mov byte[opexec268cph],80
+    mov byte[opexec358cph],80
+.noromheadfm
+
+    ; Front Mission - -p 140
+    mov esi,[romdata]
+    add esi,0FFC0h
+    cmp dword[esi],'FRON'
+    jne .noromheadfm2
+    cmp dword[esi+4],'T MI'
     jne .noromheadfm2
     mov byte[opexec268],226
     mov byte[opexec358],226
@@ -1874,19 +1887,6 @@ NEWSYM headerhack
     mov word[ramsize],4096
     mov word[ramsizeand],4095
 .noromheaddk
-
-    ; Front Mission - -p 140
-    mov esi,[romdata]
-    add esi,0FFC0h
-    cmp dword[esi],'FRON'
-    jne .noromheadfm
-    cmp dword[esi+4],'T MI'
-    jne .noromheadfm
-    mov byte[opexec268],226
-    mov byte[opexec358],226
-    mov byte[opexec268cph],80
-    mov byte[opexec358cph],80
-.noromheadfm
 
     ret
 

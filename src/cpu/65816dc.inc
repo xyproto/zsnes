@@ -1319,7 +1319,6 @@ COPemulmode
 %endmacro
 
 %macro RTIMacro 0
-;    mov byte[doirqnext],0
     cmp byte[nmistatus],3
     jne near .nodis658162
     test byte[curexecstate],01h
@@ -1377,6 +1376,7 @@ COPemulmode
     mov esi,[snesmmap+ebx*4]
     mov [initaddrl],esi
     add esi,eax
+    mov byte[doirqnext],0
     cmp byte[esi],0CBh
     jne .notwai
     mov byte[intrset],2
