@@ -1756,16 +1756,16 @@ EXTSYM SystemTimewMinute
 EXTSYM SystemTimewSecond
     
 NEWSYM GetTimeInSeconds
-	call GetLocalTime
-	movzx eax,word [SystemTimewHour]
-	mov ebx,60
-	mul ebx
-	movzx ebx,word [SystemTimewMinute]
-	add eax,ebx
-	mov ebx,60
-	mul ebx
-	movzx ebx,word [SystemTimewSecond]
-	add eax,ebx
-	ret
+    call GetLocalTime
+    movzx eax,word[SystemTimewHour]
+    mov ebx,60
+    mul ebx
+    movzx ebx,word[SystemTimewMinute]
+    add eax,ebx
+    mov ebx,60
+    mul ebx
+    movzx ebx,word[SystemTimewSecond]
+    add eax,ebx
+    ret
 
 NEWSYM WinIntRFAsmEnd

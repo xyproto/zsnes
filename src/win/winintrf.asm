@@ -2028,18 +2028,18 @@ NEWSYM GotoHomepage
     ret
 
 NEWSYM GetTimeInSeconds
-	push dword SystemTime
-	call [_imp__GetLocalTime@4]
-	movzx eax,word [SystemTime.wHour]
-	mov ebx,60
-	mul ebx
-	movzx ebx,word [SystemTime.wMinute]
-	add eax,ebx
-	mov ebx,60
-	mul ebx
-	movzx ebx,word [SystemTime.wSecond]
-	add eax,ebx
-	ret
+    push dword SystemTime
+    call [_imp__GetLocalTime@4]
+    movzx eax,word[SystemTime.wHour]
+    mov ebx,60
+    mul ebx
+    movzx ebx,word[SystemTime.wMinute]
+    add eax,ebx
+    mov ebx,60
+    mul ebx
+    movzx ebx,word[SystemTime.wSecond]
+    add eax,ebx
+    ret
 
 SystemTime:
 .wYear			dw	0
