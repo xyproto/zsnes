@@ -104,7 +104,6 @@ DWORD                   S12Disable[]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 DWORD                   CurrentJoy=0;
 
 DWORD                   BitDepth;
-DWORD                   GBitMask;
 BYTE                    BackColor=0;
 DEVMODE mode;
 
@@ -197,6 +196,9 @@ void ExitFunction(void)
 }
 
 #ifdef __LINUX__ // AH
+int shiftptr = 0;
+void ProcessKeyBuf(int scancode);
+
 int Main_Proc(void)
 {
    // TODO: Main event loop
@@ -207,18 +209,111 @@ int Main_Proc(void)
 	   switch(event.type)
 	   {
 		   case SDL_KEYDOWN:
+			   if (event.key.keysym.sym == SDLK_LSHIFT ||
+			       event.key.keysym.sym == SDLK_RSHIFT)
+				   shiftptr = 1;
 			   if (event.key.keysym.scancode-8 > 0) {
 				   if (pressed[event.key.keysym.scancode-8]!=2)
 					   pressed[event.key.keysym.scancode-8]=1;
+				   ProcessKeyBuf(event.key.keysym.sym);
 			   }
 			   break;
 		   case SDL_KEYUP:
+			   if (event.key.keysym.sym == SDLK_LSHIFT ||
+			       event.key.keysym.sym == SDLK_RSHIFT)
+				   shiftptr = 0;
 			   if (event.key.keysym.scancode-8 > 0)
 				   pressed[event.key.keysym.scancode-8]=0;
 			   break;
 	   }
    }
    return TRUE;
+}
+#define true 1
+
+void ProcessKeyBuf(int scancode)
+{
+	int accept = 0;
+	int vkeyval;
+
+    if (((scancode>='A') && (scancode<='Z')) ||
+	((scancode>='a') && (scancode<='z')) || (scancode==27) ||
+	(scancode==32) || (scancode==8) || (scancode==13) || (scancode==9)) {
+      accept=true; vkeyval=scancode;
+    }
+    if ((scancode>='0') && (scancode<='9')) {
+      accept=1; vkeyval=scancode;
+      if (shiftptr) {
+	switch (scancode) {
+	  case '1': vkeyval='!'; break;
+	  case '2': vkeyval='@'; break;
+	  case '3': vkeyval='#'; break;
+	  case '4': vkeyval='$'; break;
+	  case '5': vkeyval='%'; break;
+	  case '6': vkeyval='^'; break;
+	  case '7': vkeyval='&'; break;
+	  case '8': vkeyval='*'; break;
+	  case '9': vkeyval='('; break;
+	  case '0': vkeyval=')'; break;
+	}
+      }
+    }
+    if ((scancode>=256) && (scancode<=265)) {
+      accept=true; vkeyval=scancode-256+'0';
+    }
+    if (!shiftptr){
+      switch (scancode) {
+	      // Fix these for proper SDL usage - DDOI
+	case 189: vkeyval='-'; accept=true; break;
+	case 187: vkeyval='='; accept=true; break;
+	case 219: vkeyval='['; accept=true; break;
+	case 221: vkeyval=']'; accept=true; break;
+	case 186: vkeyval=';'; accept=true; break;
+	case 222: vkeyval=39; accept=true; break;
+	case 188: vkeyval=','; accept=true; break;
+	case 190: vkeyval='.'; accept=true; break;
+	case 191: vkeyval='/'; accept=true; break;
+	case 192: vkeyval='`'; accept=true; break;
+	case 220: vkeyval=92; accept=true; break;
+      }
+    } else {
+      switch (scancode) {
+	      // Fix these for proper SDL usage - DDOI
+	case 189: vkeyval='_'; accept=true; break;
+	case 187: vkeyval='+'; accept=true; break;
+	case 219: vkeyval='{'; accept=true; break;
+	case 221: vkeyval='}'; accept=true; break;
+	case 186: vkeyval=':'; accept=true; break;
+	case 222: vkeyval='"'; accept=true; break;
+	case 188: vkeyval='<'; accept=true; break;
+	case 190: vkeyval='>'; accept=true; break;
+	case 191: vkeyval='?'; accept=true; break;
+	case 192: vkeyval='~'; accept=true; break;
+	case 220: vkeyval='|'; accept=true; break;
+      }
+    }
+    switch (scancode) {
+	      // Fix these for proper SDL usage - DDOI
+      case 33: vkeyval=256+73; accept=true; break;
+      case 38: vkeyval=256+72; accept=true; break;
+      case 36: vkeyval=256+71; accept=true; break;
+      case 39: vkeyval=256+77; accept=true; break;
+      case 12: vkeyval=256+76; accept=true; break;
+      case 37: vkeyval=256+75; accept=true; break;
+      case 34: vkeyval=256+81; accept=true; break;
+      case 40: vkeyval=256+80; accept=true; break;
+      case 35: vkeyval=256+79; accept=true; break;
+      case 107: vkeyval='+'; accept=true; break;
+      case 109: vkeyval='-'; accept=true; break;
+      case 106: vkeyval='*'; accept=true; break;
+      case 111: vkeyval='/'; accept=true; break;
+      case 110: vkeyval='.'; accept=true; break;
+    }
+    if (accept){
+      KeyBuffer[CurKeyPos]=vkeyval;
+      CurKeyPos++;
+      if (CurKeyPos==16) CurKeyPos=0;
+    }
 }
 #else // __WIN32__
 LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -1062,9 +1157,9 @@ int startgame(void)
    unsigned int color32,ScreenPtr2;
    int i;
    Uint32 flags = SDL_SWSURFACE | SDL_HWPALETTE;
-
+   DWORD GBitMask;
+   
    //STUB_FUNCTION;
-   // This was crashing zsnes for some strange reason
    ScreenPtr2=BitConv32Ptr;
    for(i=0;i<65536;i++)
    {
@@ -1073,20 +1168,6 @@ int startgame(void)
               ((i&0x001F)<<3)+0x7F000000;
               (*(unsigned int *)(ScreenPtr2))=color32;
       ScreenPtr2+=4;
-   }
-   // Temporary I hope - DDOI
-   BitDepth = 16;
-   // Check hardware for 565/555
-   GBitMask = 0x07E0;
-
-   if(BitDepth==16 && GBitMask!=0x07E0)
-   {
-      converta=1;
-      Init_2xSaI(555);
-   }
-   else
-   {
-      converta=0;
    }
 
    if (sdl_inited == 0) {
@@ -1100,14 +1181,31 @@ int startgame(void)
 
    flags != ( FullScreen ? SDL_FULLSCREEN : 0);
 
-   surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, flags);
+   surface = SDL_SetVideoMode(WindowWidth, WindowHeight, 0, flags);
    if (surface == NULL) {
-	   fprintf (stderr, "Could not set %dx%dx%d video mode.\n",SurfaceX,
-			   SurfaceY, BitDepth);
+	   fprintf (stderr, "Could not set %dx%d video mode.\n",SurfaceX,
+			   SurfaceY);
 	   return FALSE;
    }
+   
+   /* Need to handle situations where BPP is not what we can handle */
+   
    SDL_WM_SetCaption ("ZSNES Linux","ZSNES");
    SDL_ShowCursor(0);
+
+   BitDepth = surface->format->BitsPerPixel;
+   // Check hardware for 565/555
+   GBitMask = surface->format->Gmask;
+
+   if(BitDepth==16 && GBitMask!=0x07E0)
+   {
+      converta=1;
+      Init_2xSaI(555);
+   }
+   else
+   {
+      converta=0;
+   }
    return TRUE;
 }
 #else // __WIN32__
@@ -1789,7 +1887,7 @@ void clearwin()
    switch(BitDepth)
    {
       case 16:
-	      // TODO - This code crashes zsnes - DDOI
+	      // Still crashes - DDOI
 	      STUB_FUNCTION;
 	      /*
 	__asm__ __volatile__ ("
@@ -1800,7 +1898,6 @@ void clearwin()
 		movl SurfBufD, %%edi
 		xorl %%ebx, %%ebx
 	Blank2:
-		xorl %%eax, %%eax
 		movl SurfaceX, %%ecx
 		rep
 		stosw
@@ -1808,37 +1905,34 @@ void clearwin()
 		subl SurfaceX, %%edi
 		subl SurfaceX, %%edi
 		addl $1, %%ebx
-		cmpl SurfaceX, %%ebx
+		cmpl SurfaceY, %%ebx
 		jne Blank2
 		popw %%es
-	" : : : "cc", "memory", "eax", "ebx", "ecx","edi", "esi");
-	*/
+	" : : : "cc", "memory", "eax", "ebx", "ecx", "edi");
          break;
       case 32:
-	// TODO - intel2gas this - DDOI
-	STUB_FUNCTION;
-	/*
-         _asm {
-            push es
-            mov ax,ds
-            mov es,ax
-            xor eax,eax
-            mov edi,SurfBufD
-            xor ebx,ebx
-         Blank3:
-            xor eax,eax
-            mov ecx,SurfaceX
-            rep stosd
-            add edi,Temp1
-            sub edi,SurfaceX
-            sub edi,SurfaceX
-            sub edi,SurfaceX
-            sub edi,SurfaceX
-            add ebx,1
-            cmp ebx,SurfaceY
-            jne Blank3
-         }
-	 */
+       __asm__ __volatile__ ("
+               pushw %%es
+               movw %%ds, %%ax
+               movw %%ax, %%es
+               xorl %%eax, %%eax
+               movl SurfBufD, %%edi
+               xorl %%ebx, %%ebx
+       Blank3:
+               movl SurfaceX, %%ecx
+               rep
+               stosl
+               addl Temp1, %%edi
+               subl SurfaceX, %%edi
+               subl SurfaceX, %%edi
+               subl SurfaceX, %%edi
+               subl SurfaceX, %%edi
+               addl $1, %%ebx
+               cmpl SurfaceY, %%ebx
+               jne Blank3
+               popw %%es       
+       " : : : "cc", "memory", "eax", "ebx", "ecx","edi");
+*/
          break;
    }
    UnlockSurface();
@@ -1866,6 +1960,11 @@ void drawscreenwin(void)
    ScreenPtr+=16*2+32*2+256*2;
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
+
+   if (SurfBufD == 0) {
+         UnlockSurface();
+         return;
+   }
 
    if(SurfaceX==256&&SurfaceY==224)
    {
@@ -1985,7 +2084,7 @@ void drawscreenwin(void)
 	    fprintf (stderr, "Sorry, ZSNES does not work in windowed 24 bit color modes.\nSwitching to fullscreen mode\n");
 	    cvidmode=3;
 	    initwinvideo();
-	    sleep(1000);
+	    sleep(1);
 	    drawscreenwin();
 	    break;
       default:
@@ -1993,7 +2092,7 @@ void drawscreenwin(void)
 	    fprintf(stderr, "Mode only available in 16 and 32 bit color.\n");
 	    cvidmode=2;
 	    initwinvideo();
-	    sleep(1000);
+	    sleep(1);
 	    drawscreenwin();
 	    break;
       } // switch (BitDepth)
@@ -2004,113 +2103,109 @@ void drawscreenwin(void)
 	   switch(BitDepth)
 	   {
 		   case 16:
-			   // TODO - convert this assembly - DDOI
 			   if (FPUCopy) {
-				   STUB_FUNCTION;
-				   /*
-                  _asm {
-                     push es
-                     mov ax,ds
-                     mov es,ax
-                     xor eax,eax
-                     xor ebx,ebx
-                     mov esi,ScreenPtr
-                     mov edi,SurfBufD
-                  Blank1MMX:
-                     xor eax,eax
-                     mov ecx,160
-                     rep stosd
-                     sub edi,640
-                     add edi,Temp1
-                     add ebx,1
-                     cmp ebx,8
-                     jne Blank1MMX
-                     xor ebx,ebx
-                     pxor mm0,mm0
-                  Copying2MMX:
-                     mov ecx,4
-                  MMXLoopA:
-                     movq [edi],mm0
-                     movq [edi+8],mm0
-                     add edi,16
-                     dec ecx
-                     jnz MMXLoopA
-                     mov ecx,32
-                  MMXLoopB:
-                     movq mm1,[esi]
-                     movq mm2,[esi+8]
-                     movq [edi],mm1
-                     movq [edi+8],mm2
-                     add esi,16
-                     add edi,16
-                     dec ecx
-                     jnz MMXLoopB
-                     mov ecx,4
-                  MMXLoopC:
-                     movq [edi],mm0
-                     movq [edi+8],mm0
-                     add edi,16
-                     dec ecx
-                     jnz MMXLoopC
-                     inc ebx
-                     add edi,Temp1
-                     sub edi,640
-                     sub esi,512
-                     add esi,576
-                     cmp ebx,223
-                     jne Copying2MMX
+        __asm__ __volatile__ ("
+               pushw %%es
+               movw %%ds, %%ax
+               movw %%ax, %%es
+               xor %%eax, %%eax
+               xor %%ebx, %%ebx
+               movl ScreenPtr, %%esi
+               movl SurfBufD, %%edi
+        Blank1MMX:
+               mov $160, %%ecx
+               rep
+               stosl
+               subl $160, %%edi
+               addl Temp1, %%edi
+               addl $1, %%ebx
+               cmpl $8, %%ebx
+               jne Blank1MMX
+               xor %%ebx, %%ebx
+               pxor %%mm0, %%mm0
+        Copying2MMX:
+               mov $4, %%ecx
+        MMXLoopA:
+               movq %%mm0, 0(%%edi)
+               movq %%mm0, 8(%%edi)
+               addl $16, %%edi
+               dec %%ecx
+               jnz MMXLoopA
+               mov $32, %%ecx
+        MMXLoopB:
+               movq 0(%%esi), %%mm1
+               movq 8(%%esi), %%mm2
+               movq %%mm1, 0(%%edi)
+               movq %%mm2, 8(%%edi)
+               addl $16, %%esi
+               addl $16, %%edi
+               decl %%ecx
+               jnz MMXLoopB
+               mov $4, %%ecx
+        MMXLoopC:
+               movq %%mm0, 0(%%edi)
+               movq %%mm0, 8(%%edi)
+               addl $16, %%edi
+               decl %%ecx
+               jnz MMXLoopC
+               incl %%ebx
+               addl Temp1, %%edi
+               subl $640, %%edi
+               subl $512, %%esi
+               addl $576, %%esi
+               cmpl $223, %%ebx
+               jne Copying2MMX
+               
+               movl $128, %%ecx
+               rep
+               stosl
+               pop %%es
+               emms
+       " : : : "cc", "memory", "eax", "ebx", "ecx","edi", "esi");
 
-                     xor eax,eax
-                     mov ecx,128
-                     rep stosd
-                     pop es
-                     emms
-                  }
-			   */
 			   } else {
-				   STUB_FUNCTION;
-				   /*
-                  _asm {
-                     push es
-                     mov ax,ds
-                     mov es,ax
-                     xor eax,eax
-                     xor ebx,ebx
-                     mov esi,ScreenPtr
-                     mov edi,SurfBufD
-                  Blank1:
-                     xor eax,eax
-                     mov ecx,160
-                     rep stosd
-                     sub edi,640
-                     add edi,Temp1
-                     add ebx,1
-                     cmp ebx,8
-                     jne Blank1
-                     xor ebx,ebx
-                  Copying2:
-                     xor eax,eax
-                     mov ecx,16
-                     rep stosd
-                     mov ecx,128
-                     rep movsd
-                     xor eax,eax
-                     mov ecx,16
-                     rep stosd
-                     inc ebx
-                     add edi,Temp1
-                     sub edi,640
-                     sub esi,512
-                     add esi,576
-                     cmp ebx,223
-                     jne Copying2
+       __asm__ __volatile__ ("
+               push %%es
+               movw %%ds, %%ax
+               movw %%ax, %%es
+               xorl %%eax, %%eax
+               xorl %%ebx, %%ebx
+               movl ScreenPtr, %%esi
+               movl SurfBufD, %%edi
+       Blank1:
+               movl $160, %%ecx
+               rep
+               stosl
+               subl $640, %%edi
+               addl Temp1, %%edi
+               addl $1, %%ebx
+               cmpl $8, %%ebx 
+               jne Blank1
+               xor %%ebx, %%ebx
+       Copying2:
+               movl $16, %%ecx
+               rep
+               stosl
+               movl $128, %%ecx
+               rep
+               movsl
+               movl $16, %%ecx
+               rep
+               stosl
+               incl %%ebx
+               addl Temp1, %%edi
+               subl $640, %%edi
+               subl $512, %%esi
+               addl $576, %%esi
+               cmpl $223, %%ebx
+               jne Copying2
+               
+               movl $128, %%ecx
+               rep
+               stosl
+               pop %%es
+       " : : : "cc", "memory", "eax", "ebx", "ecx","edi", "esi");
 
-                     xor eax,eax
-                     mov ecx,128
-                     rep stosd
-                     pop es
-                  }
-			   */
 			   }
 			   break;
 		   case 32:
@@ -2138,7 +2233,7 @@ void drawscreenwin(void)
 				  color32=(((*(WORD *)(ScreenPtr))&0xF800)<<8)+
 					  (((*(WORD *)(ScreenPtr))&0x07E0)<<5)+
 					  (((*(WORD *)(ScreenPtr))&0x001F)<<3)+0x7F000000;
-		//                  SURFDW[i]=color32;
+		                  SURFDW[i]=color32;
 				  ScreenPtr+=2;
 			       }
 
@@ -2168,7 +2263,7 @@ void drawscreenwin(void)
 			    fprintf(stderr, "Mode only available in 16 and 32 bit color.\n");
 			    cvidmode=2;
 			    initwinvideo();
-			    sleep(1000);
+			    sleep(1);
 			    drawscreenwin();
 			    break;
 	   } // switch
@@ -2189,7 +2284,7 @@ void drawscreenwin(void)
 			   fprintf(stderr, "Mode only available in 16 and 32 bit color.\n");
 			   cvidmode=2;
 			   initwinvideo();
-			   sleep(1000);
+			   sleep(1);
 			   drawscreenwin();
 			   break;
 	   } // switch
@@ -2209,7 +2304,7 @@ void drawscreenwin(void)
 			   fprintf(stderr, "Mode only available in 16 bit color.\n");
 			   cvidmode=2;
 			   initwinvideo();
-			   sleep(1000);
+			   sleep(1);
 			   drawscreenwin();
 			   break;
 	}
