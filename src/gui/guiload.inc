@@ -1028,7 +1028,7 @@ GetLoadHeader:
     jnz .loop3
     ret
 
-.invfile db 255,'** INVALID FILE **',0
+.invfile db ' ** INVALID FILE **',0
 fnameheadtemp times 22 db 0
 
 GetNormalDirEntries2:
@@ -1441,6 +1441,7 @@ NEWSYM DTALoc, times 2048+32 db 0
 
 ; Routines to load from the Quick Menu
 loadquickfname:
+    pushad
 .trynext
     cmp byte[GUIwinptr],0
     je near .noclose
@@ -1459,6 +1460,7 @@ loadquickfname:
     mov [GUIcmenupos],al
     jmp .trynext
 .noclose
+    popad
 
     ; move menuitem to top
     cmp ecx,0
