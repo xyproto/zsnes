@@ -35,34 +35,34 @@ EFFECTSDIR=effects
 JMADIR=jma
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.obj ${CHIPDIR}/fxemu2.obj ${CHIPDIR}/dsp1proc.obj\
-  ${CHIPDIR}/fxemu2b.obj ${CHIPDIR}/fxemu2c.obj ${CHIPDIR}/fxtable.obj\
-  ${CHIPDIR}/sa1proc.obj ${CHIPDIR}/sa1regs.obj ${CHIPDIR}/dsp1emu.obj\
+	 ${CHIPDIR}/fxemu2b.obj ${CHIPDIR}/fxemu2c.obj ${CHIPDIR}/fxtable.obj\
+	 ${CHIPDIR}/sa1proc.obj ${CHIPDIR}/sa1regs.obj ${CHIPDIR}/dsp1emu.obj\
          ${CHIPDIR}/st10proc.obj ${CHIPDIR}/seta10.obj ${CHIPDIR}/dsp2proc.obj
 
 CPUOBJ=${CPUDIR}/addrni.obj ${CPUDIR}/dma.obj ${CPUDIR}/dsp.obj ${CPUDIR}/dspproc.obj\
- ${CPUDIR}/execute.obj ${CPUDIR}/irq.obj ${CPUDIR}/memory.obj\
- ${CPUDIR}/spc700.obj ${CPUDIR}/stable.obj ${CPUDIR}/table.obj\
- ${CPUDIR}/tableb.obj ${CPUDIR}/tablec.obj 
+	${CPUDIR}/execute.obj ${CPUDIR}/irq.obj ${CPUDIR}/memory.obj\
+	${CPUDIR}/spc700.obj ${CPUDIR}/stable.obj ${CPUDIR}/table.obj\
+	${CPUDIR}/tableb.obj ${CPUDIR}/tablec.obj 
 
 GUIOBJ=${GUIDIR}/gui.obj ${GUIDIR}/menu.obj
 
 VIDEOBJ=${VIDEODIR}/makev16b.obj ${VIDEODIR}/makev16t.obj ${VIDEODIR}/makevid.obj\
- ${VIDEODIR}/mode716.obj ${VIDEODIR}/mode716b.obj ${VIDEODIR}/mode716d.obj\
- ${VIDEODIR}/mode716e.obj ${VIDEODIR}/mode716t.obj ${VIDEODIR}/mode7.obj\
- ${VIDEODIR}/mode7ext.obj ${VIDEODIR}/mv16tms.obj ${VIDEODIR}/newg162.obj\
- ${VIDEODIR}/newgfx16.obj ${VIDEODIR}/newgfx2.obj ${VIDEODIR}/newgfx.obj\
+	${VIDEODIR}/mode716.obj ${VIDEODIR}/mode716b.obj ${VIDEODIR}/mode716d.obj\
+	${VIDEODIR}/mode716e.obj ${VIDEODIR}/mode716t.obj ${VIDEODIR}/mode7.obj\
+	${VIDEODIR}/mode7ext.obj ${VIDEODIR}/mv16tms.obj ${VIDEODIR}/newg162.obj\
+	${VIDEODIR}/newgfx16.obj ${VIDEODIR}/newgfx2.obj ${VIDEODIR}/newgfx.obj\
         ${VIDEODIR}/m716text.obj ${VIDEODIR}/2xsaiw.obj\
- ${VIDEODIR}/procvid.obj ${VIDEODIR}/sw_draw.obj\
+	${VIDEODIR}/procvid.obj ${VIDEODIR}/sw_draw.obj\
         ${VIDEODIR}/hq2x16.obj ${VIDEODIR}/hq2x32.obj\
         ${VIDEODIR}/hq3x16.obj ${VIDEODIR}/hq3x32.obj\
         ${VIDEODIR}/hq4x16.obj ${VIDEODIR}/hq4x32.obj
 
 WINOBJ=${WINDIR}/copyvwin.obj \
- ${WINDIR}/winintrf.obj ${WINDIR}/winlink.obj ${WINDIR}/zloaderw.obj\
- ${WINDIR}/ztcp.obj ${WINDIR}/zipxw.obj ${WINDIR}/zfilew.obj
+	${WINDIR}/winintrf.obj ${WINDIR}/winlink.obj ${WINDIR}/zloaderw.obj\
+	${WINDIR}/ztcp.obj ${WINDIR}/zipxw.obj ${WINDIR}/zfilew.obj
 
 WINDOSOBJ=${DOSDIR}/debug.obj ${DOSDIR}/joy.obj ${DOSDIR}/modemrtn.obj ${DOSDIR}/vesa2.obj\
- ${DOSDIR}/initvid.obj ${DOSDIR}/sw.obj ${DOSDIR}/gppro.obj ${DOSDIR}/vesa12.obj\
+	${DOSDIR}/initvid.obj ${DOSDIR}/sw.obj ${DOSDIR}/gppro.obj ${DOSDIR}/vesa12.obj\
         ${DOSDIR}/zsipx.obj
 
 JMAOBJ=${JMADIR}/7zlzma.obj ${JMADIR}/crc32.obj ${JMADIR}/iiostrm.obj\
@@ -85,23 +85,23 @@ ASMFLAGS=-O1 -f win32 -D__WIN32__
 CC=cl
 
 .SUFFIXES: .c .cpp .asm 
- 
+	
 %.obj : %.c
- ${CC} ${CFLAGS} /Fo$@ $<
+	${CC} ${CFLAGS} /Fo$@ $<
 
 %.obj: %.cpp
- ${CC} ${CFLAGS} /Fo$@ $<
+	${CC} ${CFLAGS} /Fo$@ $<
 
 %.obj: %.asm
- ${ASM} ${ASMFLAGS} -o $@ $<
+	${ASM} ${ASMFLAGS} -o $@ $<
 
 ALL: zsnesw.exe
 
 zsnesw.exe: ${OBJS} ${WINDIR}/zsnes.res
- cl @link.win32 ${WINDIR}/zsnes.res /link /libpath:${DXDIR}\lib
+	cl @link.win32 ${WINDIR}/zsnes.res /link /libpath:${DXDIR}\lib
 
 ${WINDIR}/zsnes.res: ${WINDIR}/zsnes.rc
- rc ${WINDIR}/zsnes.rc
+	rc ${WINDIR}/zsnes.rc
 ${WINDIR}/copyvwin.obj: ${WINDIR}/copyvwin.asm macros.mac
 ${WINDIR}/winintrf.obj: ${WINDIR}/winintrf.asm macros.mac
 ${WINDIR}/zfilew.obj: ${WINDIR}/zfilew.c
@@ -156,73 +156,73 @@ ${DOSDIR}/debug.obj: ${DOSDIR}/debug.asm macros.mac
 ${CPUDIR}/addrni.obj: ${CPUDIR}/addrni.asm
 ${CPUDIR}/execute.obj: ${CPUDIR}/execute.asm macros.mac
 ${CPUDIR}/table.obj: ${CPUDIR}/table.asm ${CPUDIR}/65816d.inc\
- ${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816.inc\
- ${CPUDIR}/regs.mac ${CPUDIR}/regs.inc ${CPUDIR}/regsw.mac\
- ${CPUDIR}/regsw.inc macros.mac
+	${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816.inc\
+	${CPUDIR}/regs.mac ${CPUDIR}/regs.inc ${CPUDIR}/regsw.mac\
+	${CPUDIR}/regsw.inc macros.mac
 ${CPUDIR}/tableb.obj: ${CPUDIR}/tableb.asm ${CPUDIR}/65816db.inc\
- ${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816b.inc\
- ${CPUDIR}/regs.mac macros.mac
+	${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816b.inc\
+	${CPUDIR}/regs.mac macros.mac
 ${CPUDIR}/tablec.obj: ${CPUDIR}/tablec.asm ${CPUDIR}/65816dc.inc\
- ${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816c.inc\
- ${CPUDIR}/regs.mac macros.mac
+	${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816c.inc\
+	${CPUDIR}/regs.mac macros.mac
 ${CPUDIR}/stable.obj: ${CPUDIR}/stable.asm ${CPUDIR}/s65816d.inc\
- ${CPUDIR}/saddress.inc ${CPUDIR}/saddrni.inc ${CPUDIR}/se65816.inc\
- macros.mac
+	${CPUDIR}/saddress.inc ${CPUDIR}/saddrni.inc ${CPUDIR}/se65816.inc\
+	macros.mac
 ${CPUDIR}/memory.obj: ${CPUDIR}/memory.asm macros.mac
 ${CPUDIR}/dma.obj: ${CPUDIR}/dma.asm macros.mac
 ${DOSDIR}/dosintrf.obj: ${DOSDIR}/dosintrf.asm macros.mac
 vcache.obj:vcache.asm macros.mac
 ${DOSDIR}/initvid.obj:${DOSDIR}/initvid.asm macros.mac
 ${VIDEODIR}/makevid.obj: ${VIDEODIR}/makevid.asm ${VIDEODIR}/vidmacro.mac\
- macros.mac
+	macros.mac
 ${VIDEODIR}/makev16b.obj: ${VIDEODIR}/makev16b.asm ${VIDEODIR}/vidmacro.mac\
- macros.mac
+	macros.mac
 ${VIDEODIR}/makev16t.obj: ${VIDEODIR}/makev16t.asm ${VIDEODIR}/vidmacro.mac\
- macros.mac
+	macros.mac
 ${VIDEODIR}/mv16tms.obj: ${VIDEODIR}/mv16tms.asm ${VIDEODIR}/vidmacro.mac\
- macros.mac
+	macros.mac
 ${VIDEODIR}/mode7.obj: ${VIDEODIR}/mode7.asm ${VIDEODIR}/mode7.mac\
- macros.mac
+	macros.mac
 ${VIDEODIR}/mode716.obj: ${VIDEODIR}/mode716.asm ${VIDEODIR}/mode716.mac\
- macros.mac
+	macros.mac
 ${VIDEODIR}/mode716b.obj:${VIDEODIR}/mode716b.asm ${VIDEODIR}/mode7.mac\
- macros.mac
+	macros.mac
 ${VIDEODIR}/mode716t.obj:${VIDEODIR}/mode716t.asm ${VIDEODIR}/mode7.mac\
- macros.mac
+	macros.mac
 ${VIDEODIR}/mode716d.obj:${VIDEODIR}/mode716d.asm ${VIDEODIR}/mode7.mac\
- macros.mac
+	macros.mac
 ${VIDEODIR}/mode7ext.obj:${VIDEODIR}/mode7ext.asm macros.mac
 ${VIDEODIR}/mode716e.obj:${VIDEODIR}/mode716e.asm macros.mac
 ${VIDEODIR}/m716text.obj:${VIDEODIR}/m716text.asm ${VIDEODIR}/mode7.mac\
- macros.mac
+	macros.mac
 ${CPUDIR}/irq.obj: ${CPUDIR}/irq.asm macros.mac
 ${CPUDIR}/dspproc.obj: ${CPUDIR}/dspproc.asm macros.mac
 ${CPUDIR}/spc700.obj:${CPUDIR}/spc700.asm macros.mac\
- ${CPUDIR}/regsw.mac ${CPUDIR}/spcdef.inc ${CPUDIR}/spcaddr.inc
+	${CPUDIR}/regsw.mac ${CPUDIR}/spcdef.inc ${CPUDIR}/spcaddr.inc
 ${CPUDIR}/dsp.obj: ${CPUDIR}/dsp.asm macros.mac
 ${DOSDIR}/vesa2.obj: ${DOSDIR}/vesa2.asm macros.mac
 ${DOSDIR}/vesa12.obj: ${DOSDIR}/vesa12.asm macros.mac
 ${DOSDIR}/joy.obj: ${DOSDIR}/joy.asm macros.mac
 ${DOSDIR}/sw.obj: ${DOSDIR}/sw.asm macros.mac
 ${GUIDIR}/gui.obj: ${GUIDIR}/gui.asm ${GUIDIR}/guitools.inc\
- ${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guiwindp.inc\
- ${GUIDIR}/guinetpl.inc ${GUIDIR}/guikeys.inc ${GUIDIR}/guicheat.inc\
- ${GUIDIR}/guicombo.inc ${GUIDIR}/guiload.inc macros.mac
+	${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guiwindp.inc\
+	${GUIDIR}/guinetpl.inc ${GUIDIR}/guikeys.inc ${GUIDIR}/guicheat.inc\
+	${GUIDIR}/guicombo.inc ${GUIDIR}/guiload.inc macros.mac
 ${GUIDIR}/menu.obj: ${GUIDIR}/menu.asm macros.mac
 ${VIDEODIR}/newgfx.obj:${VIDEODIR}/newgfx.asm ${VIDEODIR}/vidmacro.mac\
- ${VIDEODIR}/newgfx2.mac ${VIDEODIR}/newgfx.mac macros.mac
+	${VIDEODIR}/newgfx2.mac ${VIDEODIR}/newgfx.mac macros.mac
 ${VIDEODIR}/newgfx2.obj:${VIDEODIR}/newgfx2.asm ${VIDEODIR}/newgfxwn.mac\
- ${VIDEODIR}/newgfx.mac macros.mac
+	${VIDEODIR}/newgfx.mac macros.mac
 ${VIDEODIR}/newgfx16.obj: ${VIDEODIR}/newgfx16.asm macros.mac ${VIDEODIR}/vidmacro.mac\
- ${VIDEODIR}/newgfx16.mac ${VIDEODIR}/newg162.mac
+	${VIDEODIR}/newgfx16.mac ${VIDEODIR}/newg162.mac
 ${VIDEODIR}/newg162.obj: macros.mac ${VIDEODIR}/newg162.asm ${VIDEODIR}/newg162.mac\
- ${VIDEODIR}/vidmacro.mac ${VIDEODIR}/newg16wn.mac
+	${VIDEODIR}/vidmacro.mac ${VIDEODIR}/newg16wn.mac
 ${CHIPDIR}/fxemu2.obj: ${CHIPDIR}/fxemu2.asm ${CHIPDIR}/fxemu2.mac\
- macros.mac
+	macros.mac
 ${CHIPDIR}/fxemu2b.obj: ${CHIPDIR}/fxemu2b.asm ${CHIPDIR}/fxemu2.mac\
- ${CHIPDIR}/fxemu2b.mac
+	${CHIPDIR}/fxemu2b.mac
 ${CHIPDIR}/fxemu2c.obj: ${CHIPDIR}/fxemu2c.asm macros.mac ${CHIPDIR}/fxemu2.mac\
- ${CHIPDIR}/fxemu2b.mac ${CHIPDIR}/fxemu2c.mac
+	${CHIPDIR}/fxemu2b.mac ${CHIPDIR}/fxemu2c.mac
 ${CHIPDIR}/fxtable.obj: ${CHIPDIR}/fxtable.asm macros.mac
 ${DOSDIR}/gppro.obj: ${DOSDIR}/gppro.asm macros.mac
 ${DOSDIR}/zsipx.obj: ${DOSDIR}/zsipx.asm
@@ -241,19 +241,19 @@ ${JMADIR}/winout.obj: ${JMADIR}/winout.cpp
 ${JMADIR}/zsnesjma.obj: ${JMADIR}/zsnesjma.cpp ${JMADIR}/zsnesjma.h ${JMADIR}/jma.h
 
 clean:
- del *.obj
- del ${CHIPDIR}\*.obj
- del ${CPUDIR}\*.obj
- del ${VIDEODIR}\*.obj
- del ${GUIDIR}\*.obj
- del ${WINDIR}\*.obj
- del ${WINDIR}\zsnes.res
- del ${ZIPDIR}\*.obj
- del ${DOSDIR}\*.obj
- del ${EFFECTSDIR}\*.obj
- del ${JMADIR}\*.obj
- del zsnesw.exe
- 
+	del *.obj
+	del ${CHIPDIR}\*.obj
+	del ${CPUDIR}\*.obj
+	del ${VIDEODIR}\*.obj
+	del ${GUIDIR}\*.obj
+	del ${WINDIR}\*.obj
+	del ${WINDIR}\zsnes.res
+	del ${ZIPDIR}\*.obj
+	del ${DOSDIR}\*.obj
+	del ${EFFECTSDIR}\*.obj
+	del ${JMADIR}\*.obj
+	del zsnesw.exe
+	
 
 
 
