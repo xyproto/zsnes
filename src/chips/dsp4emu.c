@@ -476,13 +476,8 @@ void DSP4_OP01()
 
 void DSP4_OP03()
 {
-  int16 i;
   OAM_RowMax = 33;
-
-  for (i = 0; i < 32; i++)
-  {
-    OAM_Row[i] = 0;
-  }
+  memset(OAM_Row, 0, 64);
 }
 
 
@@ -491,13 +486,9 @@ void DSP4_OP03()
 
 void DSP4_OP05()
 {
-  int16 lcv;
   OAM_index = 0;
   OAM_bits = 0;
-  for (lcv = 0; lcv < 16; lcv++)
-  {
-    OAM_attr[lcv] = 0;
-  }
+  memset(OAM_attr, 0, 32);
   sprite_count = 0;
 }
 
@@ -1558,13 +1549,8 @@ void DSP4_OP0D()
 
 void DSP4_OP0E()
 {
-  int16 i;
   OAM_RowMax = 16;
-
-  for (i = 0; i < 32; i++)
-  {
-    OAM_Row[i] = 0;
-  }
+  memset(OAM_Row, 0, 64);
 }
 
 
