@@ -423,7 +423,7 @@ void headerhack()
   } 
 
   //Should be Super Famista 2 (J), uses non-standard characters
-  if (0==strncmp((RomData+Lo),"\x0bd\x0b0\x0ca\x0df\x0b0\x0cc\x0a7\x0d0\x0bd\x0c0 \x032     " ,16))
+  if (!strncmp((RomData+Lo),"\x0bd\x0b0\x0ca\x0df\x0b0\x0cc\x0a7\x0d0\x0bd\x0c0 \x032     " ,16))
   {
     //Skip a check for value FF at 2140 when spc not initialized yet?!?
     RomData[0x6CED] = 0xEA;
@@ -621,9 +621,10 @@ void headerhack()
    
   //In asm, but doesn't do anything - if(!strncmp((RomData+Hi), "FINA", 4) 
     
-  //Asm says .notff3 (Final Fantasy 3? Final Fight 3?)
+  //Final Fantasy 3 (extent unknown!)
   if (romdata[0x26AC] == 0xF00F2908)
   {
+    //asm volatile("int $3");
     opexec268 = 163;
     opexec358 = 157;
     opexec268cph = 39;
