@@ -329,6 +329,7 @@ extern "C" {
 void initwinvideo();
 void DosExit(void);
 extern BYTE GUIOn2;
+extern BYTE cfgsoundon;
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
 extern BYTE HighPriority;
@@ -644,28 +645,28 @@ InitSound()
 {
    WAVEFORMATEX wfx;
 
-   if (!SoundEnabled) return FALSE;
+   if (cfgsoundon == 0) return FALSE;
+
+   SoundEnabled = 0;
 
    PrevSoundQuality=SoundQuality;
    PrevStereoSound=StereoSound;
 
       if (DS_OK == pDirectSoundCreate8(NULL, &lpDirectSound,NULL))
-      {
-          if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL))
-          {
-             if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
-             {
-                SoundEnabled=0;
-                return FALSE;
-             }
-          }
-      }
-      else 
-      {
-          SoundEnabled=0; return FALSE;
-      }
+	{
+		lpDirectSound->Initialize(NULL);
+		if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL))
+		{
+			if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
+				return FALSE;
+		}
+	}
+	else 
+	{
+		return FALSE;
+	}
 
-   wfx.wFormatTag = WAVE_FORMAT_PCM;
+	wfx.wFormatTag = WAVE_FORMAT_PCM;
 
    switch (SoundQuality)
    {
@@ -730,19 +731,20 @@ InitSound()
       {
          if (DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING))
          {
-            SoundEnabled=0; return FALSE;
+            return FALSE;
          }
+         SoundEnabled=1;
          FirstSound=0;
          return TRUE;
       }
       else
       {
-         SoundEnabled=0; return FALSE;
+         return FALSE;
       }
    } 
    else 
    {
-      SoundEnabled=0; return FALSE;
+      return FALSE;
    }
 
 }
@@ -751,8 +753,23 @@ ReInitSound()
 {
    WAVEFORMATEX wfx;
 
-   lpSoundBuffer->Stop();
-   lpSoundBuffer->Release();
+   if (lpSoundBuffer)
+   {
+      lpSoundBuffer->Stop();
+      lpSoundBuffer->Release();
+      lpSoundBuffer = NULL;
+   }
+
+   if (cfgsoundon == 0)
+   {
+      SoundEnabled = 0;
+      ReleaseDirectSound();
+      return FALSE;
+   }
+   else if (SoundEnabled == 0)
+      return InitSound();
+
+   SoundEnabled = 0;
 
    PrevSoundQuality=SoundQuality;
    PrevStereoSound=StereoSound;
@@ -824,6 +841,7 @@ ReInitSound()
          {
             return FALSE;
          }
+         SoundEnabled=1;
          LastUsedPos=0;
          return TRUE;
       }
