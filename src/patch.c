@@ -33,12 +33,12 @@ void PatchUsingIPS()
   unsigned char *ROM = (unsigned char *)romdata;
   int location = 0, length = 0;
   
-  IPSPatched = 0;
-  
   FILE *fp = 0;
   fp = fopen(patchfile, "rb");
   if (!fp) { return; }
   
+  IPSPatched = 0;
+
   //Yup, it's goto! :)
   //See 'IPSDone:' for explanation
   if (fgetc(fp) != 'P') { goto IPSDone; }
@@ -120,4 +120,5 @@ void PatchUsingIPS()
   fclose(fp);
   */
 }  
+
 
