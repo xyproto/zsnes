@@ -3020,7 +3020,7 @@ DisplayGUIOptnsClick:
 
 DisplayGUIAboutClick:
 %ifndef __MSDOS__
-    GUIPHoldbutton 90,50,175,60,65
+    GUIPHoldbutton 90,30,175,40,65
 %endif
     ret
 
