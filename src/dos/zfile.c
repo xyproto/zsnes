@@ -18,7 +18,7 @@
 
 #include <stdio.h>
 #include <time.h>
-
+#include <zlib.h>
 #ifdef ZDOS
 #include <dos.h>
 #endif
@@ -30,6 +30,9 @@
 FILE *FILEHANDLE[16];
 DWORD CurrentHandle=0;
 
+//Indicate whether the file must be opened using
+//zlib or not (used for gzip support)
+BYTE TextFile;
 
 
 // ZFileSystemInit
@@ -86,81 +89,136 @@ DWORD DriveNumber;
 BYTE * ZFileDelFName;
 // return current position
 
+
 DWORD ZFileSystemInit()
 {
-   CurrentHandle=0;
-   return(0);
+#ifdef __GZIP__
+	TextFile = 0;
+#else
+	TextFile = 1;
+#endif
+	CurrentHandle=0;
+	return(0);
 }
+
 
 DWORD ZOpenFile()
 {
-   if(ZOpenMode==0)
-   {
-      if((FILEHANDLE[CurrentHandle]=fopen(ZOpenFileName,"rb"))!=NULL)
-      {
-         CurrentHandle+=1;
-         return(CurrentHandle-1);
-      }
-      return(0xFFFFFFFF);
-   }
-   if(ZOpenMode==1)
-   {
-      if((FILEHANDLE[CurrentHandle]=fopen(ZOpenFileName,"wb"))!=NULL)
-      {
-         CurrentHandle+=1;
-         return(CurrentHandle-1);
-      }
-      return(0xFFFFFFFF);
-   }
-   if(ZOpenMode==2)
-   {
-      if((FILEHANDLE[CurrentHandle]=fopen(ZOpenFileName,"r+b"))!=NULL)
-      {
-         CurrentHandle+=1;
-         return(CurrentHandle-1);
-      }
-      return(0xFFFFFFFF);
-   }
-   return(0xFFFFFFFF);
+	if(ZOpenMode==0)
+	{
+		if (TextFile) 
+			FILEHANDLE[CurrentHandle]=fopen(ZOpenFileName,"rb");
+		else
+			FILEHANDLE[CurrentHandle]=(FILE *)gzopen(ZOpenFileName,"rb");
+		if(FILEHANDLE[CurrentHandle]!=NULL)
+		{
+			CurrentHandle+=1;
+			return(CurrentHandle-1);
+		}
+		return(0xFFFFFFFF);
+	}
+	if(ZOpenMode==1)
+	{
+		if (TextFile) 
+			FILEHANDLE[CurrentHandle]=fopen(ZOpenFileName,"wb");
+		else
+			FILEHANDLE[CurrentHandle]=(FILE *)gzopen(ZOpenFileName,"wb");
+		if(FILEHANDLE[CurrentHandle]!=NULL)	       
+		{
+			CurrentHandle+=1;
+			return(CurrentHandle-1);
+		}
+		return(0xFFFFFFFF);
+	}
+	if(ZOpenMode==2)
+	{
+		if (TextFile) 
+			FILEHANDLE[CurrentHandle]=fopen(ZOpenFileName,"r+b");
+		else
+			FILEHANDLE[CurrentHandle]=gzopen(ZOpenFileName,"r+b");
+		if(FILEHANDLE[CurrentHandle]!=NULL)	       
+		{
+			CurrentHandle+=1;
+			return(CurrentHandle-1);
+		}
+		return(0xFFFFFFFF);
+	}
+	return(0xFFFFFFFF);
 }
 
 DWORD ZCloseFile()
 {
-   fclose(FILEHANDLE[ZCloseFileHandle]);
-   CurrentHandle-=1;
-   return(0);
+	if (TextFile)
+		fclose(FILEHANDLE[ZCloseFileHandle]);
+	else
+		gzclose(FILEHANDLE[ZCloseFileHandle]);
+	CurrentHandle-=1;
+	return(0);
 }
 
 DWORD ZFileSeek()
 {
-   if(ZFileSeekMode==0)
-   {
-      fseek(FILEHANDLE[ZFileSeekHandle],ZFileSeekPos,SEEK_SET);
-      return(0);
-   }
-   if(ZFileSeekMode==1)
-   {
-      fseek(FILEHANDLE[ZFileSeekHandle],ZFileSeekPos,SEEK_END);
-      return(0);
-   }
-   return(0xFFFFFFFF);
+	int res = 0;
+	int mode = 0;
+	if (ZFileSeekMode==0)
+		mode = SEEK_SET;
+	else if (ZFileSeekMode==1) {
+		mode = SEEK_END;
+		if (TextFile==0) 
+			printf("Warning : gzseek(SEEK_END) not supported");
+	} else return (0xFFFFFFFF);
+
+	if (TextFile) {
+		fseek(FILEHANDLE[ZFileSeekHandle], ZFileSeekPos, mode);
+		return 0;
+	} else {
+		gzseek(FILEHANDLE[ZFileSeekHandle], ZFileSeekPos, mode);
+		return 0;
+	}
+	return(0xFFFFFFFF);
 }
 
 DWORD ZFileRead()
 {
-   return(fread(ZFileReadBlock,1,ZFileReadSize,FILEHANDLE[ZFileReadHandle]));
+	if (TextFile)
+		return(fread(ZFileReadBlock,
+			     1,
+			     ZFileReadSize,
+			     FILEHANDLE[ZFileReadHandle]));
+	else
+		return(gzread(FILEHANDLE[ZFileReadHandle], 
+			      ZFileReadBlock, 
+			      ZFileReadSize));
 }
 
 
 DWORD ZFileWrite()
 {
-   if((fwrite(ZFileWriteBlock,1,ZFileWriteSize,FILEHANDLE[ZFileWriteHandle]))!=ZFileWriteSize) return(0xFFFFFFFF);
-   return(0);
+	int res=0;
+	if (TextFile)
+		res = fwrite(ZFileWriteBlock,
+			     1,
+			     ZFileWriteSize,
+			     FILEHANDLE[ZFileWriteHandle]);
+	else
+		res = gzwrite(FILEHANDLE[ZFileWriteHandle], 
+			      ZFileWriteBlock, 
+			      ZFileWriteSize);
+		
+	if (res!=ZFileWriteSize) 
+		return(0xFFFFFFFF);
+
+	return(0);
 }
 
 DWORD ZFileTell()
 {
-   return(ftell(FILEHANDLE[ZFileTellHandle]));
+	int res = 0;
+	if (TextFile) {
+		res = ftell(FILEHANDLE[ZFileTellHandle]);
+		if (res == -1) fprintf(stderr, "Oups!! gzTell\n");
+		return(res);
+	} else return gztell(FILEHANDLE[ZFileTellHandle]);
 }
 
 DWORD ZFileDelete()
