@@ -1553,6 +1553,19 @@ NEWSYM headerhack
     mov byte[disablehdma],1
 .notbahamutlagoon
 
+    mov esi,[romdata]
+    add esi,07FC0h
+    cmp dword[esi],'MORT'
+    jne .notmk
+    cmp dword[esi+4],'AL K'
+    jne .notmk
+    cmp dword[esi+8],'OMBA'
+    jne .notmk
+    cmp dword[esi+12],'T   '
+    jne .notmk
+    mov byte[disablehdma],1
+.notmk
+
     ; Lamborgini Challenge - -p 110
     mov esi,[romdata]
     add esi,07FC0h
