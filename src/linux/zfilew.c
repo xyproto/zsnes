@@ -242,11 +242,11 @@ DWORD ZFileDelete()
 
 DWORD ZFileGetFTime()
 {
-  struct _stat filestat;
+  struct stat filestat;
 
   ZFTime=0;
 
-  if (_stat(ZFFTimeFName, &filestat) < 0) ZFDate=0;
+  if (stat(ZFFTimeFName, &filestat) < 0) ZFDate=0;
      else ZFDate = filestat.st_mtime;
 
   return(0);
