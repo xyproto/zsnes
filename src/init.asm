@@ -1710,15 +1710,12 @@ setwram1fff:
 SECTION .bss
 NEWSYM curromsize, resb 1
 NEWSYM cromptradd, resd 1
-NEWSYM NoiseDisTemp, resd 2
 NEWSYM lorommapmode2, resb 1
 NEWSYM MMXSRAMFix, resb 1
 SECTION .text
 
 NEWSYM initsnes
     mov byte[ForceNewGfxOff],0
-    mov dword[NoiseDisTemp],0
-    mov dword[NoiseDisTemp+4],0
     mov byte[MMXSRAMFix],0
 
     ;Megaman/Rockman X
@@ -1974,8 +1971,6 @@ NEWSYM initsnes
     mov byte[opexec358],187
     mov byte[opexec268cph],30
     mov byte[opexec358cph],30
-    mov dword[NoiseDisTemp],01000101h
-    mov dword[NoiseDisTemp+4],01h
 
     mov edi,memtabler8+40h*4
     mov ecx,30h
@@ -4689,8 +4684,8 @@ NEWSYM CheckROMType
     je .initdsp
     cmp byte[DSP3Enable],1
     je .initdsp
-    cmp byte[DSP4Enable],0
-    je .notDSP1Hi
+    cmp byte[DSP4Enable],1
+    je .initdsp
 ;   call InitDSP4
     jmp .notDSP1Hi
 .initdsp
