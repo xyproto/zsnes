@@ -37,94 +37,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "numconv.h"
 
 
-/*
-Nach's insane subtitle library for movies files :)
-
-The filename would be gamename.sub in the same directory the ZMV would be in.
-If you're playing gamename.zm1, then the sub file will be gamename.su1 etc...
-
-Format of the sub file:
-Start Frame:Frame Duration:Message
-
-Example:
-1:180:Hi how are you?
-300:180:Isn't this cool?
-700:180:This is great :)
-2500:375:Kill 'em!
-3500:20:Did you see this?
-*/
-
-static struct
-{
-  FILE *fp;
-  char linebuf[256];
-  size_t frame_current;
-  size_t message_start;
-  size_t message_duration;
-} MovieSub;
-
-static void MovieSub_Open(const char *filename)
-{
-  MovieSub.fp = fopen(filename, "r");
-  MovieSub.frame_current = 0;
-  MovieSub.message_start = 0;
-  MovieSub.message_duration = 0;
-}
-
-static void MovieSub_Close()
-{
-  if (MovieSub.fp)
-  {
-    fclose(MovieSub.fp);
-    MovieSub.fp = 0;
-  }
-}
-
-static char *MovieSub_GetData()
-{
-  if (MovieSub.fp)
-  {
-    char *i, *num;
-    
-    MovieSub.frame_current++;
-        
-    if (MovieSub.frame_current > MovieSub.message_start + MovieSub.message_duration)
-    {
-      MovieSub.message_duration = 0;
-      fgets(MovieSub.linebuf, 256, MovieSub.fp);
-      if (!(num = strtok(MovieSub.linebuf, ":"))) { return(0); }
-      for (i = num; *i; i++)
-      {
-        if (!isdigit(*i)) { return(0); }
-      }
-      MovieSub.message_start = atoi(num);
-      if (!(num = strtok(0, ":"))) { return(0); }
-      for (i = num; *i; i++)
-      {
-        if (!isdigit(*i))
-        { 
-          MovieSub.message_start = 0;
-          return(0);
-        }
-      }
-      MovieSub.message_duration = atoi(num);
-    }
-  
-    if (MovieSub.frame_current == MovieSub.message_start)
-    {
-      return(strtok(0, ":"));
-    }
-  }
-  return(0);
-}
-
-static size_t MovieSub_GetDuration()
-{
-  return(MovieSub.message_duration);
-}
-
-
-/////////////////////////////////////////////////////////
 
 extern unsigned int versionNumber;
 extern unsigned int CRC32;
@@ -676,6 +588,7 @@ static struct
   unsigned short external_chapter_count;
   unsigned int frames_replayed;
   size_t last_chapter_frame;
+  size_t input_start_pos;
 } zmv_open_vars; //Additional vars for open/replay of a ZMV
 
 static bool zmv_open(char *filename)
@@ -687,7 +600,6 @@ static bool zmv_open(char *filename)
   if (zmv_vars.fp && zmv_header_read(&zmv_vars.header, zmv_vars.fp) &&
       !strncmp(zmv_vars.header.magic, "ZMV", 3)) 
   {
-    size_t input_start_pos;
     unsigned short i;
     
     if (zmv_vars.header.zsnes_version != (versionNumber & 0xFFFF))
@@ -701,7 +613,7 @@ static bool zmv_open(char *filename)
     }
     
     zst_load(zmv_vars.fp);
-    input_start_pos = ftell(zmv_vars.fp);
+    zmv_open_vars.input_start_pos = ftell(zmv_vars.fp);
     
     fseek(zmv_vars.fp, -2, SEEK_END);
     zmv_open_vars.external_chapter_count = fread2(zmv_vars.fp);
@@ -716,7 +628,7 @@ static bool zmv_open(char *filename)
       internal_chapter_add_offset(&zmv_open_vars.external_chapters, fread4(zmv_vars.fp));
     }
     
-    fseek(zmv_vars.fp, input_start_pos, SEEK_SET);
+    fseek(zmv_vars.fp, zmv_open_vars.input_start_pos, SEEK_SET);
     
     return(true);
   }
@@ -773,7 +685,7 @@ static bool zmv_replay()
   return(false);
 }
 
-static void zmv_next_chapter()
+static bool zmv_next_chapter()
 {
   size_t current_loc = ftell(zmv_vars.fp);
   
@@ -818,7 +730,17 @@ static void zmv_next_chapter()
       
       fseek(zmv_vars.fp, next_external, SEEK_SET);
     }
+    return(true);
   }
+  return(false);
+}
+
+static void zmv_rewind_playback()
+{
+  fseek(zmv_vars.fp, zmv_open_vars.input_start_pos - cur_zst_size, SEEK_SET);
+  zst_load(zmv_vars.fp);
+  zmv_open_vars.frames_replayed = 0;
+  zmv_open_vars.last_chapter_frame = 0;
 }
 
 static void zmv_prev_chapter()
@@ -842,14 +764,26 @@ static void zmv_prev_chapter()
   { 
     prev = prev_external;
   }
-
+  
+  if (!prev)
+  {
+    zmv_rewind_playback();
+    return;
+  }
+  
   //Code to go back before the previous chapter if the previous chapter was loaded recently
-  if (zmv_open_vars.frames_replayed - zmv_open_vars.last_chapter_frame < 90) //1.5 seconds NTSC
+  if (zmv_open_vars.frames_replayed - zmv_open_vars.last_chapter_frame < 150) //2.5 seconds NTSC
   {
     size_t pprev = prev-1;
     size_t pprev_internal = internal_chapter_lesser(&zmv_vars.internal_chapters, pprev);
     size_t pprev_external = internal_chapter_lesser(&zmv_open_vars.external_chapters, pprev);
   
+    if ((pprev_internal == pprev) && (pprev_external == pprev))
+    {
+      zmv_rewind_playback();
+      return;    
+    }
+    
     if (pprev_internal != pprev)
     { 
       prev = prev_internal = pprev_internal;
@@ -863,32 +797,29 @@ static void zmv_prev_chapter()
       prev = prev_external = pprev_external;
     }  
   }
-    
-  if (prev)
+      
+  if (prev == prev_internal)
   {
-    if (prev == prev_internal)
-    {
-      fseek(zmv_vars.fp, prev_internal, SEEK_SET);
-      zst_load(zmv_vars.fp);
-      zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
-      read_last_joy_state();
-    }
-    else
-    {
-      size_t ext_chapter_loc = zmv_open_vars.external_chapter_count;
-      ext_chapter_loc -= internal_chapter_pos(&zmv_open_vars.external_chapters, prev);
-      ext_chapter_loc *= EXT_CHAP_SIZE;
-      ext_chapter_loc += 2;
-      
-      fseek(zmv_vars.fp, -(ext_chapter_loc), SEEK_END);
-      zst_load(zmv_vars.fp);
-      zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
-      read_last_joy_state();
-      
-      fseek(zmv_vars.fp, prev_external, SEEK_SET);
-    }
-    zmv_open_vars.last_chapter_frame = zmv_open_vars.frames_replayed;
+    fseek(zmv_vars.fp, prev_internal, SEEK_SET);
+    zst_load(zmv_vars.fp);
+    zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
+    read_last_joy_state();
   }
+  else
+  {
+    size_t ext_chapter_loc = zmv_open_vars.external_chapter_count;
+    ext_chapter_loc -= internal_chapter_pos(&zmv_open_vars.external_chapters, prev);
+    ext_chapter_loc *= EXT_CHAP_SIZE;
+    ext_chapter_loc += 2;
+      
+    fseek(zmv_vars.fp, -(ext_chapter_loc), SEEK_END);
+    zst_load(zmv_vars.fp);
+    zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
+    read_last_joy_state();
+      
+    fseek(zmv_vars.fp, prev_external, SEEK_SET);
+  }
+  zmv_open_vars.last_chapter_frame = zmv_open_vars.frames_replayed;
 }
 
 static void zmv_add_chapter()
@@ -897,9 +828,11 @@ static void zmv_add_chapter()
   {
     size_t current_loc = ftell(zmv_vars.fp);
     
+    //Check if previous input contained internal chapter to here, or if there is external here already
     if ((internal_chapter_pos(&zmv_vars.internal_chapters, current_loc-(INT_CHAP_SIZE)) == ~0) &&
         (internal_chapter_pos(&zmv_open_vars.external_chapters, current_loc)) == ~0)
     {
+      //Check if we have internal right here
       unsigned char flag;
       fread(&flag, 1, 1, zmv_vars.fp);
   
@@ -918,7 +851,7 @@ static void zmv_add_chapter()
       
         fseek(zmv_vars.fp, current_loc, SEEK_SET); 
       }
-      else
+      else //Just skip the internal
       {
         fseek(zmv_vars.fp, INT_CHAP_SIZE, SEEK_CUR);
       }
@@ -935,6 +868,104 @@ static void zmv_replay_finished()
 
 /////////////////////////////////////////////////////////
 
+
+/*
+Nach's insane subtitle library for movies files :)
+
+The filename would be gamename.sub in the same directory the ZMV would be in.
+If you're playing gamename.zm1, then the sub file will be gamename.su1 etc...
+
+Format of the sub file:
+Start Frame:Frame Duration:Message
+
+Example:
+1:180:Hi how are you?
+300:180:Isn't this cool?
+700:180:This is great :)
+2500:375:Kill 'em!
+3500:20:Did you see this? Of course not
+*/
+
+static struct
+{
+  FILE *fp;
+  char linebuf[256];
+  size_t message_start;
+  size_t message_duration;
+} MovieSub;
+
+static void MovieSub_Open(const char *filename)
+{
+  memset(&MovieSub, 0, sizeof(MovieSub));
+  MovieSub.fp = fopen(filename, "r");
+}
+
+static void MovieSub_Close()
+{
+  if (MovieSub.fp)
+  {
+    fclose(MovieSub.fp);
+    MovieSub.fp = 0;
+  }
+}
+
+static char *MovieSub_GetData()
+{
+  if (MovieSub.fp)
+  {
+    char *i, *num;
+            
+    if (zmv_open_vars.frames_replayed > MovieSub.message_start + MovieSub.message_duration)
+    {
+      MovieSub.message_duration = 0;
+      do
+      {
+        if (!fgets(MovieSub.linebuf, 256, MovieSub.fp))
+        {
+          return(0);
+        }
+        if (!(num = strtok(MovieSub.linebuf, ":"))) { return(0); }
+        for (i = num; *i; i++)
+        {
+          if (!isdigit(*i)) { return(0); }
+        }
+        MovieSub.message_start = atoi(num);
+      } while(MovieSub.message_start < zmv_open_vars.frames_replayed );
+      if (!(num = strtok(0, ":"))) { return(0); }
+      for (i = num; *i; i++)
+      {
+        if (!isdigit(*i))
+        { 
+          MovieSub.message_start = 0;
+          return(0);
+        }
+      }
+      MovieSub.message_duration = atoi(num);
+    }
+  
+    if (zmv_open_vars.frames_replayed == MovieSub.message_start)
+    {
+      return(strtok(0, ":"));
+    }
+  }
+  return(0);
+}
+
+static size_t MovieSub_GetDuration()
+{
+  return(MovieSub.message_duration);
+}
+
+static void MovieSub_ResetStream()
+{
+  rewind(MovieSub.fp);
+  MovieSub.message_start = 0;
+  MovieSub.message_duration = 0;
+}
+
+/////////////////////////////////////////////////////////
+
+
 /*
 ZSNES movie related vars:
 
@@ -949,28 +980,21 @@ MovieProcessing
 
 extern unsigned int MsgCount, MessageOn;
 extern unsigned char MovieProcessing, *Msgptr;
-char *txtmovieended = "MOVIE FINISHED.";
-char *txtaddintchap = "INTERNAL CHAPTER ADDED.";
-char *txtaddextchap = "EXTERNAL CHAPTER ADDED.";
-char *txtnomovie = "NO MOVIE PROCESSING.";
-char *txtseeknext = "NEXT CHAPTER LOADED.";
-char *txtseekprev = "PREVIOUS CHAPTER LOADED.";
-char *txtseekrecord = "NO SEEKING DURING RECORD.";
- 
+
 void MovieInsertChapter()
 {
   switch (MovieProcessing)
   {
     case 1:	// replaying - external
       zmv_add_chapter();
-      Msgptr = txtaddextchap;
+      Msgptr = "INTERNAL CHAPTER ADDED.";
       break;
     case 2:	// recording - internal
       zmv_insert_chapter();
-      Msgptr = txtaddintchap;
+      Msgptr = "INTERNAL CHAPTER ADDED.";
       break;
     default:	// no movie processing
-      Msgptr = txtnomovie;
+      Msgptr = "NO MOVIE PROCESSING.";
   }
 
   MessageOn = MsgCount;
@@ -978,36 +1002,31 @@ void MovieInsertChapter()
 
 void MovieSeekAhead()
 {
-  switch (MovieProcessing)
+  if (MovieProcessing == 1) // replaying only - record can use ZMTs
   {
-    case 1:	// replaying ok
-      zmv_next_chapter();
-      Msgptr = txtseeknext;
-      break;
-    case 2:	// recording will use MZTs
-      Msgptr = txtseekrecord;
-      break;
-    default:	// can't seek without a movie
-      Msgptr = txtnomovie;
+    if (zmv_next_chapter())
+    {
+      Msgptr = "NEXT CHAPTER LOADED.";
+    }  
+    else
+    {
+      Msgptr = "NO CHAPTERS AHEAD.";
+    }
   }
+  else	{ Msgptr = "NO MOVIE PROCESSING."; }
 
   MessageOn = MsgCount;
 }
 
 void MovieSeekBehind()
 {
-  switch (MovieProcessing)
+  if (MovieProcessing == 1) // replaying only - record can use ZMTs
   {
-    case 1:	// replaying ok
-      zmv_prev_chapter();
-      Msgptr = txtseekprev;
-      break;
-    case 2:	// recording will use MZTs
-      Msgptr = txtseekrecord;
-      break;
-    default:	// can't seek without a movie
-      Msgptr = txtnomovie;
+    zmv_prev_chapter();
+    MovieSub_ResetStream();
+    Msgptr = "PREVIOUS CHAPTER LOADED.";
   }
+  else { Msgptr = "NO MOVIE PROCESSING."; }
 
   MessageOn = MsgCount;
 }
@@ -1025,7 +1044,7 @@ void Replay()
   }
   else
   {
-    Msgptr = txtmovieended;
+    Msgptr = "MOVIE FINISHED.";
     MessageOn = MsgCount;
     MovieProcessing = 0;
     
