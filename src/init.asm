@@ -1702,16 +1702,16 @@ NEWSYM headerhack
     mov byte[esi+1],0BCh ; RTS instead of jumping to a rts 
 .nothomealone
 
-;    mov esi,[romdata]
-;    add esi,0FFC0h
-;    cmp dword[esi],'EMER'
-;    jne .notemeralddragon
-;    cmp dword[esi+4],'ALD '
-;    jne .notemeralddragon
-;    cmp dword[esi+8],'DRAG'
-;    jne .notemeralddragon
-;    mov byte[ENVDisable],1
-;.notemeralddragon
+    mov esi,[romdata]
+    add esi,0FFC0h
+    cmp dword[esi],'EMER'
+    jne .notemeralddragon
+    cmp dword[esi+4],'ALD '
+    jne .notemeralddragon
+    cmp dword[esi+8],'DRAG'
+    jne .notemeralddragon
+    mov byte[ENVDisable],1
+.notemeralddragon
 
     mov esi,[romdata]
     add esi,07FC0h
