@@ -844,6 +844,7 @@ GUIProcVideo:
     mov [cfgcvidmode],al
     call initvideo
     call GUISetPal
+    call vidpastecopyscr
     mov dword[GUIkeydelay],0
     ret
 SECTION .bss

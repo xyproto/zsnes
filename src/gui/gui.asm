@@ -2851,11 +2851,13 @@ guipostvideo:
     call vidpastecopyscr
     ; Wait for all mouse and input data to be 0
 
-.again    
+    cmp dword[GUIkeydelay],0
+    je .pressedokay
+    
     call JoyRead
     cmp byte[pressed+39h],0
     jne .pressedokay
-    jmp .again
+    jmp .pressedfail
 .pressedokay
     mov byte[GUIpclicked],1
     ret
