@@ -940,10 +940,10 @@ GUIGUIOptnsKeys:
     je .nosnoweffect
     cmp byte[GUIEffect],2
     je .snoweffect
-    je .guioptn7
+    jmp .guioptn7
 .nosnoweffect
     mov byte[GUIEffect],0
-    je .guioptn7
+    jmp .guioptn7
 .snoweffect
     mov byte[GUIEffect],1
 .guioptn7
@@ -955,10 +955,10 @@ GUIGUIOptnsKeys:
     je .watereffect
     cmp byte[GUIEffect],2
     je .nowatereffect
-    je .guioptn8
+    jmp .guioptn8
 .nowatereffect
     mov byte[GUIEffect],0
-    je .guioptn8
+    jmp .guioptn8
 .watereffect
     mov byte[GUIEffect],2
 .guioptn8
