@@ -782,8 +782,9 @@ NEWSYM newengine16b
     jne .dontdraw
     mov dword[scfbl],0
 .dontdraw
-    mov [BGFB+eax],ebx
-    cmp [BGFB+eax-1],bx
+    ; Variable size write error fix [TRAC]
+    mov [BGFB+eax],bl
+    cmp [BGFB+eax-1],bl
     je .nosbgfb
     mov byte[bgallchange+eax],1
 .nosbgfb
