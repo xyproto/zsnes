@@ -487,50 +487,6 @@ ebm db 166,95,66,223,17,11,103,180,156,68,108,120,138,55,203,205,178,210,39,252,
 SECTION .text
 
 ;*******************************************************
-; Timing check
-;*******************************************************
-NEWSYM Timecheck
-   in al,61h
-   and al,10h
-   mov ah,al
-.loopa
-   in al,61h
-   and al,10h
-   cmp al,ah
-   jz .loopa
-   mov ah,al
-   mov esi,mode7tab
-   mov ecx,2000
-.loopc
-   xor ebx,ebx
-.loopb
-   in al,61h
-   and al,10h
-   inc ebx
-   cmp al,ah
-   jz .loopb
-.loopd
-   in al,61h
-   and al,10h
-   inc ebx
-   cmp al,ah
-   jnz .loopd
-.loope
-   in al,61h
-   and al,10h
-   inc ebx
-   cmp al,ah
-   jz .loope
-   mov ah,al
-   mov [esi],ebx
-   add esi,4
-   dec ecx
-   jnz .loopc
-   mov eax,[mode7tab+16]
-   call printnum
-   ret
-
-;*******************************************************
 ; Set percent to execute
 ;*******************************************************
 NEWSYM Setper2exec
