@@ -51,7 +51,7 @@ extern  unsigned char cvidmode;
 int     gl_inited = 0;
 unsigned short *glvidbuffer = 0;
 int     glvbtexture[1];
-float   ratiox = 1.0;
+//float   ratiox = 1.0;
 int     UseOpenGL = 0;
 int     glfilters = GL_NEAREST;
 extern  Uint8 BilinearFilter;
@@ -1011,10 +1011,12 @@ void drawscreenwin(void)
 	    glfilters = GL_NEAREST;
 	}
 
+	/*
 	if (FullScreen)
 	    ratiox = 0.875;
 	else
 	    ratiox = 1.0;
+	*/
     
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
@@ -1026,10 +1028,10 @@ void drawscreenwin(void)
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0,
 		     GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glvidbuffer);
 	glBegin(GL_QUADS);
-	    glTexCoord2f(0.0f, 0.0f);         glVertex3f(-ratiox,  1.0f, -1.0f);
-	    glTexCoord2f(1.0f, 0.0f);         glVertex3f( ratiox,  1.0f, -1.0f);
-	    glTexCoord2f(1.0f, 2.240/2.560);  glVertex3f( ratiox, -1.0f, -1.0f);
-	    glTexCoord2f(0.0f, 2.240/2.560);  glVertex3f(-ratiox, -1.0f, -1.0f);
+	    glTexCoord2f(0.0f, 0.0f);         glVertex3f(-1.0f,  1.0f, -1.0f);
+	    glTexCoord2f(1.0f, 0.0f);         glVertex3f( 1.0f,  1.0f, -1.0f);
+	    glTexCoord2f(1.0f, 2.240/2.560);  glVertex3f( 1.0f, -1.0f, -1.0f);
+	    glTexCoord2f(0.0f, 2.240/2.560);  glVertex3f(-1.0f, -1.0f, -1.0f);
 	glEnd();
 
     } else {
