@@ -24,6 +24,7 @@
 #include <ctype.h>
 #include <math.h>
 #include <memory.h>
+#include <time.h>
 #endif
 
 #include "fixsin.h"
@@ -82,7 +83,7 @@ void DrawWater(void)
         if (GUIEffect==2) { mode=0x0001; }
         else { mode = 0x0004; }
 
-    	if(mode&2)	//  && (tscurrent-tslast))
+        if(mode&2)  //  && (tscurrent-tslast))
 		{
 			int x,y;
          x=rand()%(SCRW-2)+1;
@@ -136,7 +137,8 @@ void DrawWater(void)
 		
 		if(mode&4)
 		{
-			if(rand()%20 == 0)
+            srand(time(0));
+            if(rand()%20 == 0)
 			{
 /*
 				if(mode & 0x4000)
@@ -146,7 +148,7 @@ void DrawWater(void)
 					SineBlob(-1, -1, radius, -pheight*6, Hpage);
 			}
 		}	
-		CalcWater(Height[Hpage^1], Height[Hpage], density);
+        CalcWater(Height[Hpage^1], Height[Hpage], density);
 		Hpage ^= 1; /* flip flop */	
 
 }
