@@ -81,7 +81,6 @@ int main (int argc, char *argv[]) {
 	char *fvar;
 
 	UnProtectMemory();
-#ifndef __NO_GETOPT	
 	while((opt = getopt(argc, argv, "01:2:789ac:d:ef:g:hijk:lmno:p:r:s:tuv:wyz?")) != -1) {
 		switch(opt) {
 			/* Palette 0 disable */
@@ -331,18 +330,13 @@ int main (int argc, char *argv[]) {
 	if  (optopt == '?')
 	{
 		if (argv[optind] != NULL)
-#else
-			optind = 1;
-#endif
 		{
 			fvar=&fname;
 			fvar[0] = strlen(argv[optind]);
 			strncpy(&fvar[1], argv[optind],127);
 			makeextension();
 		}
-#ifndef __NO_GETOPT
 	}
-#endif
 
 	zstart();
 }
