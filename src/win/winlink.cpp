@@ -305,6 +305,7 @@ void DrawScreen()
             }
          }
          DD_Primary->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
+         DD_Primary->Restore();
       }
 
    }
