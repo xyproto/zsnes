@@ -335,7 +335,6 @@ void ProcessKeyBuf(int scancode)
       }
     }
     // TODO Figure out what the rest these are supposed to be - DDOI
-    //    printf("Scancode : %i      Left : %i      Right : %i\n", scancode, SDLK_LEFT, SDLK_RIGHT);
     switch (scancode) {
       case SDLK_PAGEUP: vkeyval=256+73; accept=true; break;
       case SDLK_UP: vkeyval=256+72; accept=true; break;
@@ -481,7 +480,7 @@ int startgame(void)
    {
       color32=((i&0xF800)<<8)+
 	      ((i&0x07E0)<<5)+
-	      ((i&0x001F)<<3)+0x7F000000;
+	      ((i&0x001F)<<3)+0xFF000000;
       (*(unsigned int *)(ScreenPtr2))=color32;
       ScreenPtr2+=4;
    }

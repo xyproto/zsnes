@@ -1045,7 +1045,7 @@ startgame()
    {
       color32=((i&0xF800)<<8)+
               ((i&0x07E0)<<5)+
-              ((i&0x001F)<<3)+0x7F000000;
+              ((i&0x001F)<<3)+0xFF000000;
               (*(unsigned int *)(ScreenPtr2))=color32;
       ScreenPtr2+=4;
    }
