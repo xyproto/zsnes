@@ -2975,7 +2975,7 @@ CheatSearching:
     jmp DisplayChtSrcRes
 
 CheatSearchingComp:
-    ; Comparative search
+    ; Comparitive search
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 13,6,16,GUICSrcTextE
