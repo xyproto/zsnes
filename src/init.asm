@@ -285,33 +285,33 @@ NEWSYM numjoy,    db 0   ; number of joysticks (1 = 1, 2 = 2)
 NEWSYM pl1contrl, db 1   ; player 1 device
 NEWSYM pl1keya,   dd 0
 NEWSYM pl1keyb,   dd 0
-NEWSYM pl1selk,   dd 54  ; 1SELECT = SHIFT
-NEWSYM pl1startk, dd 28  ; 1START = ENTER
-NEWSYM pl1upk,    dd 72  ; 1UP = up 
-NEWSYM pl1downk,  dd 80  ; 1DOWN = down 
-NEWSYM pl1leftk,  dd 75  ; 1LEFT = left 
-NEWSYM pl1rightk, dd 77  ; 1RIGHT = right 
-NEWSYM pl1Xk,     dd 82  ; 1X = INS
-NEWSYM pl1Ak,     dd 71  ; 1A = HOME
-NEWSYM pl1Lk,     dd 73  ; 1L = PAGE UP
-NEWSYM pl1Yk,     dd 83  ; 1Y = DELETE
-NEWSYM pl1Bk,     dd 79  ; 1B = END
-NEWSYM pl1Rk,     dd 81  ; 1R = PAGE DOWN
+NEWSYM pl1selk,   dd 54
+NEWSYM pl1startk, dd 28
+NEWSYM pl1upk,    dd 72
+NEWSYM pl1downk,  dd 80
+NEWSYM pl1leftk,  dd 75 
+NEWSYM pl1rightk, dd 77
+NEWSYM pl1Xk,     dd 31
+NEWSYM pl1Ak,     dd 45
+NEWSYM pl1Lk,     dd 32
+NEWSYM pl1Yk,     dd 30
+NEWSYM pl1Bk,     dd 44
+NEWSYM pl1Rk,     dd 46
 NEWSYM pl2contrl, db 0   ; player 2 device
 NEWSYM pl2keya,   dd 0
 NEWSYM pl2keyb,   dd 0
-NEWSYM pl2selk,   dd 56   ; 2SELECT = alt
-NEWSYM pl2startk, dd 29   ; 2START = ctrl
-NEWSYM pl2upk,    dd 37   ; 2UP = k
-NEWSYM pl2downk,  dd 50   ; 2DOWN = m
-NEWSYM pl2leftk,  dd 49   ; 2LEFT = n
-NEWSYM pl2rightk, dd 51   ; 2RIGHT = ,
-NEWSYM pl2Xk,     dd 31   ; 2X = S
-NEWSYM pl2Ak,     dd 32   ; 2A = D
-NEWSYM pl2Lk,     dd 33   ; 2L = F
-NEWSYM pl2Yk,     dd 44   ; 2Y = Z
-NEWSYM pl2Bk,     dd 45   ; 2B = X
-NEWSYM pl2Rk,     dd 46   ; 2R = C
+NEWSYM pl2selk,   dd 27
+NEWSYM pl2startk, dd 26
+NEWSYM pl2upk,    dd 199
+NEWSYM pl2downk,  dd 207
+NEWSYM pl2leftk,  dd 211
+NEWSYM pl2rightk, dd 209
+NEWSYM pl2Xk,     dd 24
+NEWSYM pl2Ak,     dd 25
+NEWSYM pl2Lk,     dd 23
+NEWSYM pl2Yk,     dd 37
+NEWSYM pl2Bk,     dd 38
+NEWSYM pl2Rk,     dd 36
 NEWSYM JoyStart,  db 0
 NEWSYM JoySelec,  db 0
 NEWSYM JoyBC,     db 1

@@ -24,18 +24,6 @@ EXTSYM ccmdline
 EXTSYM FilenameStart
 EXTSYM spcon
 EXTSYM cfgsoundon
-EXTSYM pl1selk
-EXTSYM pl1startk
-EXTSYM pl1upk
-EXTSYM pl1downk
-EXTSYM pl1leftk
-EXTSYM pl1rightk
-EXTSYM pl1Xk
-EXTSYM pl1Ak
-EXTSYM pl1Lk
-EXTSYM pl1Yk
-EXTSYM pl1Bk
-EXTSYM pl1Rk
 EXTSYM cfgcvidmode
 EXTSYM pl1contrl,pl2contrl
 EXTSYM InitDir,InitDrive
@@ -196,21 +184,6 @@ NEWSYM SystemInit
     mov byte[esi+10+256],'A'
     mov byte[esi+11+256],'T'
     mov byte[esi+12+256],0
-
-    mov byte[pl1selk],54
-    mov byte[pl1startk],28  ; 1START = ENTER
-    mov byte[pl1upk],200  ; 1UP = up 
-    mov byte[pl1downk],208  ; 1DOWN = down 
-    mov byte[pl1leftk],203  ; 1LEFT = left 
-    mov byte[pl1rightk],205  ; 1RIGHT = right 
-    mov byte[pl1Xk],31  ; 1X = INS
-    mov byte[pl1Ak],45  ; 1A = HOME
-    mov byte[pl1Lk],32  ; 1L = PAGE UP
-    mov byte[pl1Yk],30  ; 1Y = DELETE
-    mov byte[pl1Bk],44  ; 1B = END
-    mov byte[pl1Rk],46  ; 1R = PAGE DOWN
-    mov byte[pl1contrl],1
-    mov byte[pl2contrl],1
 
     mov byte[spcon],1
     mov byte[soundon],1
