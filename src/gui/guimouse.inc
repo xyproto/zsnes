@@ -1305,19 +1305,6 @@ GUIWinClicked:
 %endif
 %endmacro
 
-%macro GUIClickCButtonMMX 3
-    cmp eax,%1+1
-    jl %%noclick
-    cmp edx,%2+3
-    jl %%noclick
-    cmp eax,%1+6
-    jg %%noclick
-    cmp edx,%2+8
-    jg %%noclick
-    xor %3,2
-%%noclick
-%endmacro
-
 %macro GUIClickCButtonI 3
     cmp eax,%1+1
     jl %%noclick
@@ -1331,6 +1318,19 @@ GUIWinClicked:
     cmp byte[En2xSaI],1
     jnae %%noclick
     call Clear2xSaIBuffer
+%%noclick
+%endmacro
+
+%macro GUIClickCButtonMMX 3
+    cmp eax,%1+1
+    jl %%noclick
+    cmp edx,%2+3
+    jl %%noclick
+    cmp eax,%1+6
+    jg %%noclick
+    cmp edx,%2+8
+    jg %%noclick
+    xor %3,2
 %%noclick
 %endmacro
 
