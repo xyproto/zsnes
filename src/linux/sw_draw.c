@@ -42,7 +42,9 @@ BOOL sw_start(int width, int height, int req_depth, int FullScreen)
 {
     unsigned int color32, p;
     int i;
-    Uint32 flags = SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE;
+    Uint32 flags = SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE | SDL_ANYFORMAT
+
+;
     DWORD GBitMask;
     
     p = BitConv32Ptr;
@@ -55,10 +57,11 @@ BOOL sw_start(int width, int height, int req_depth, int FullScreen)
     flags |= (FullScreen ? SDL_FULLSCREEN : 0);
     
     SurfaceX = width; SurfaceY = height;
-    surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
+    surface = SDL_SetVideoMode(SurfaceX, SurfaceY, 16, flags);
     if (surface == NULL) {
-        fprintf (stderr, "Could not set %dx%d video mode.\n", SurfaceX, SurfaceY);
-	    return FALSE;
+	fprintf (stderr, "Could not set %dx%d video mode.\n", SurfaceX, SurfaceY);
+	return FALSE;
+      
     }
     
     SurfaceLocking = SDL_MUSTLOCK(surface);
