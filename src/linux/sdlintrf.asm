@@ -770,6 +770,7 @@ NEWSYM InitPreGame   ; Executes before starting/continuing a game
     cmp al,[V8Mode]
     je .nochangemode
     xor byte[V8Mode],1
+    xor al,al
 .nochangemode
 
     mov byte[RaisePitch],1
