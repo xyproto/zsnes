@@ -1437,6 +1437,20 @@ NEWSYM headerhack
 .notffmq
 
     mov esi,[romdata]
+    add esi,0FFC0h
+    cmp dword[esi],'BUBS'
+    jne .notbubsy2
+    cmp dword[esi+4],'Y II'
+    jne .notbubsy2
+    mov byte[cycpb268],125
+    mov byte[cycpb358],147
+    mov byte[cycpbl2],125
+    mov byte[cycpblt2],125
+    mov byte[cycpbl],125
+    mov byte[cycpblt],125
+.notbubsy2
+
+    mov esi,[romdata]
     add esi,7FC0h
     cmp dword[esi],0DEB3B0CFh
     je .marvelous
