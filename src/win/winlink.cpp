@@ -1263,6 +1263,17 @@ void TestJoy()
 extern "C" DWORD converta;
 extern "C" unsigned int BitConv32Ptr;
 extern "C" unsigned int RGBtoYUVPtr;
+extern "C" unsigned char cvidmode;
+extern "C" unsigned char hq3xFilter;
+DWORD FirstVid=1;
+DWORD FirstFull=1;
+DWORD SMode=0;
+DWORD DSMode=0;
+DWORD prevHQ3XMode=-1;
+extern "C" BYTE GUIWFVID[];
+extern "C" BYTE GUISMODE[];
+extern "C" BYTE GUIDSMODE[];
+extern "C" BYTE GUIHQ3X[];
 int Refresh = 0;
 
 int InitDirectDraw()
@@ -1308,20 +1319,26 @@ int InitDirectDraw()
    ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow);
    ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow + 1);
 
-   if (SurfaceX == 768 && SurfaceY == 720)
+   FullScreen=GUIWFVID[cvidmode];
+   DSMode=GUIDSMODE[cvidmode];
+
+   if (FullScreen == 1 && DSMode == 0)
    {
-      int marginx = (rcWindow.right - rcWindow.left - BlitArea.right + BlitArea.left)/2;
-      int marginy = (rcWindow.bottom - rcWindow.top - BlitArea.bottom + BlitArea.top)/2;
-      if (marginx>0)
-      {
-        rcWindow.left += marginx;
-        rcWindow.right -= marginx;
-      }
-      if (marginy>0)
-      {
-        rcWindow.top += marginy;
-        rcWindow.bottom -= marginy;
-      }
+     if (SurfaceX == 768 && SurfaceY == 720)
+     {
+       int marginx = (rcWindow.right - rcWindow.left - BlitArea.right + BlitArea.left)/2;
+       int marginy = (rcWindow.bottom - rcWindow.top - BlitArea.bottom + BlitArea.top)/2;
+       if (marginx>0)
+       {
+         rcWindow.left += marginx;
+         rcWindow.right -= marginx;
+       }
+       if (marginy>0)
+       {
+         rcWindow.top += marginy;
+         rcWindow.bottom -= marginy;
+       }
+     }
    }
    
    if (pDirectDrawCreateEx(NULL, (void **)&lpDD, IID_IDirectDraw7, NULL) != DD_OK)
@@ -1588,17 +1605,6 @@ void Stop36HZ(void)
 }
 
 char WinMessage[256];
-extern unsigned char cvidmode;
-extern unsigned char hq3xFilter;
-DWORD FirstVid=1;
-DWORD FirstFull=1;
-DWORD SMode=0;
-DWORD DSMode=0;
-DWORD prevHQ3XMode=-1;
-extern BYTE GUIWFVID[];
-extern BYTE GUISMODE[];
-extern BYTE GUIDSMODE[];
-extern BYTE GUIHQ3X[];
 extern unsigned short resolutn;
 void clearwin();
 void clear_display();
@@ -1684,16 +1690,8 @@ void initwinvideo(void)
       case 10:
          WindowWidth=768;
          WindowHeight=672;
-         if (HQ3XMode!=0)
-         {
-           SurfaceX=768;
-           SurfaceY=720;
-         }
-         else
-         {
-           SurfaceX=512;
-           SurfaceY=480;
-         }
+         SurfaceX=512;
+         SurfaceY=480;
          break;
       case 11:
          WindowWidth=800;
@@ -1712,16 +1710,8 @@ void initwinvideo(void)
       case 14:
          WindowWidth=800;
          WindowHeight=600;
-         if (HQ3XMode!=0)
-         {
-           SurfaceX=768;
-           SurfaceY=720;
-         }
-         else
-         {
-           SurfaceX=640;
-           SurfaceY=480;
-         }
+         SurfaceX=640;
+         SurfaceY=480;
          break;
       case 15:
          WindowWidth=800;
@@ -1746,16 +1736,8 @@ void initwinvideo(void)
       case 19:
          WindowWidth=1024;
          WindowHeight=768;
-         if (HQ3XMode!=0)
-         {
-           SurfaceX=768;
-           SurfaceY=720;
-         }
-         else
-         {
-           SurfaceX=640;
-           SurfaceY=480;
-         }
+         SurfaceX=640;
+         SurfaceY=480;
          break;
       case 20:
          WindowWidth=1024;
@@ -1831,6 +1813,12 @@ void initwinvideo(void)
          break;
       }
 
+      if (HQ3XMode!=0)
+      {
+        SurfaceX=768;
+        SurfaceY=720;
+      }
+
       BlitArea.top = 0;
       BlitArea.left = 0;
       BlitArea.right = SurfaceX;
@@ -1887,20 +1875,23 @@ void initwinvideo(void)
       ClientToScreen(hMainWindow, (LPPOINT) &rcWindow);
       ClientToScreen(hMainWindow, (LPPOINT) &rcWindow + 1);
 
-      if (SurfaceX == 768 && SurfaceY == 720)
+      if (FullScreen == 1 && DSMode == 0)
       {
-         int marginx = (rcWindow.right - rcWindow.left - BlitArea.right + BlitArea.left)/2;
-         int marginy = (rcWindow.bottom - rcWindow.top - BlitArea.bottom + BlitArea.top)/2;
-         if (marginx>0)
-         {
-           rcWindow.left += marginx;
-           rcWindow.right -= marginx;
-         }
-         if (marginy>0)
-         {
-           rcWindow.top += marginy;
-           rcWindow.bottom -= marginy;
-         }
+        if (SurfaceX == 768 && SurfaceY == 720)
+        {
+          int marginx = (rcWindow.right - rcWindow.left - BlitArea.right + BlitArea.left)/2;
+          int marginy = (rcWindow.bottom - rcWindow.top - BlitArea.bottom + BlitArea.top)/2;
+          if (marginx>0)
+          {
+            rcWindow.left += marginx;
+            rcWindow.right -= marginx;
+          }
+          if (marginy>0)
+          {
+            rcWindow.top += marginy;
+            rcWindow.bottom -= marginy;
+          }
+        }
       }
    }
    else
@@ -2186,27 +2177,30 @@ void clearwin()
 
 void clear_display()
 {
-  if ((DD_Primary != NULL) && (DD_BackBuffer != NULL))
+  if (FullScreen == 1)
   {
-    DDBLTFX ddbltfx;
+    if ((DD_Primary != NULL) && (DD_BackBuffer != NULL))
+    {
+      DDBLTFX ddbltfx;
 
-    ddbltfx.dwSize = sizeof(ddbltfx);
-    ddbltfx.dwFillColor = 0;
+      ddbltfx.dwSize = sizeof(ddbltfx);
+      ddbltfx.dwFillColor = 0;
 
-    if (DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
-      DD_Primary->Restore();
+      if (DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
+        DD_Primary->Restore();
 
-    if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
-      DD_Primary->Restore();
+      if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+        DD_Primary->Restore();
 
-    if (DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
-      DD_Primary->Restore();
+      if (DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
+        DD_Primary->Restore();
 
-    if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
-      DD_Primary->Restore();
+      if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
+        DD_Primary->Restore();
 
-    if (DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
-      DD_Primary->Restore();
+      if (DD_BackBuffer->Blt( NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx ) == DDERR_SURFACELOST)
+        DD_Primary->Restore();
+    }
   }
 }
 

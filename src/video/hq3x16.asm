@@ -492,7 +492,6 @@ hq3x:
     mov [w8],edx
     mov [w9],edx
 .loopx
-    mov ebx,[BitConv32Ptr]
     mov eax,[w2]
     mov [w1],eax
     mov eax,[w5]
