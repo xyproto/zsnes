@@ -200,6 +200,46 @@ void CheckIntlEHi(unsigned char *ROM)
   }
 }
 
+//These two functions interleave, yes interleave, because ZSNES has it's large ROM map backwards
+void intlv1()
+{
+  char blocks[256];
+  int i, numblocks = NumofBanks/2;
+  for (i = 0; i < numblocks; i++)
+  {
+    blocks[i + numblocks] = i * 2;
+    blocks[i] = i * 2 + 1;
+  }
+  swapBlocks(blocks);
+}
+
+//This is a mess, I wish we didn't need this, but it kicks the old asm code
+void IntlEHi()
+{
+  unsigned int temp, i,
+                *loc1 = romdata,
+                *loc2 = romdata + 0x100000;
+
+    for (i = 0; i < 0x80000; i++)
+    {
+      temp = loc1[i];
+      loc1[i] = loc2[i];
+      loc2[i] = temp;
+    }
+    loc1 = romdata + 0x80000;
+    loc2 = romdata + 0x100000;
+    for (i = 0; i < 0x80000; i++)
+    {
+      temp = loc1[i];
+      loc1[i] = loc2[i];
+      loc2[i] = temp;
+    }
+    
+  NumofBanks = 64;
+  intlv1();
+  NumofBanks = 192;
+}
+
 //ROM loading functions, which some strangly enough were in guiload.inc
 bool AllASCII(unsigned char *b, int size)
 {

@@ -33,7 +33,6 @@ EXTSYM cvidmode, newengen, cfgnewgfx, GUI16VID
 EXTSYM NewEngEnForce
 EXTSYM PrintChar
 EXTSYM TextFile
-EXTSYM mode7tab
 EXTSYM Setper2exec,per2exec
 EXTSYM MovieCounter
 EXTSYM chaton
@@ -125,6 +124,7 @@ EXTSYM addOnSize
 EXTSYM SPC7PackIndexLoad,SPC7110IndexSize
 EXTSYM DumpROMLoadInfo
 EXTSYM SetupSramSize
+EXTSYM IntlEHi
 
 EXTSYM SetaCmdEnable,setaramdata
 EXTSYM setaaccessbankr8,setaaccessbankw8,setaaccessbankr8a,setaaccessbankw8a
@@ -1956,7 +1956,9 @@ NEWSYM initsnes
     mov eax,[ram7f]
     mov [snesmmap+7Fh*4],eax
     mov [snesmap2+7Fh*4],eax
-    call prepare48mbit
+    pushad
+    call IntlEHi ;Interleave 48Mb ROM, because the map is broken
+    popad
     ret
 .hirom
     ; set addresses 8000-FFFF
@@ -2328,150 +2330,6 @@ SDD1memmap:
     mov [snesmap2+7Fh*4],eax
     ret
 
-;*******************************************************
-; Prepare 48mbit          Moves blocks around for 48mbit
-;*******************************************************
-
-SECTION .data
-NEWSYM memdest, dd 0
-SECTION .text
-
-NEWSYM prepare48mbit
-    mov dword[NumofBanks],192
-    ; make table 2 (64,0,65,1,...)
-    mov edi,mode7tab+128
-    mov ecx,64
-    mov al,64
-    mov ah,0
-.nextl2
-    mov [edi],al
-    mov [edi+1],ah
-    inc al
-    inc ah
-    add edi,2
-    dec ecx
-    jnz .nextl2
-    mov eax,[romdata]
-    add eax,200000h
-    mov [memdest],eax
-    call ProcessSwapTable
-    cmp byte[romtype],1
-    je .nothirom
-    call UnInterleave48mbit
-.nothirom
-    ret
-
-UnInterleave48mbit:
-    pushad
-    ; make table 2 (0 .. 255)
-    mov edi,mode7tab+256
-    mov ecx,256
-    xor al,al
-.nextlb2
-    mov [edi],al
-    inc al
-    inc edi
-    dec ecx
-    jnz .nextlb2
-
-    mov esi,mode7tab+256
-    mov ecx,40h
-    xor al,al
-.loop
-    mov [esi+40h],al
-    inc al
-    inc esi
-    dec ecx
-    jnz .loop
-    mov esi,mode7tab+256
-    mov ecx,40h
-    mov al,40h+1
-.loop2
-    mov [esi+80h],al
-    add al,2
-    inc esi
-    dec ecx
-    jnz .loop2
-    mov esi,mode7tab+256
-    mov ecx,20h
-    mov al,40h
-.loop3
-    mov [esi+20h],al
-    add al,2
-    mov [esi],al
-    add al,2
-    inc esi
-    dec ecx
-    jnz .loop3
-    call SwapTable256
-    popad
-    ret
-
-NEWSYM ProcessSwapTable
-    ; make table 1 (0 .. 127)
-    mov edi,mode7tab
-    mov ecx,128
-    xor al,al
-.nextl
-    mov [edi],al
-    inc al
-    inc edi
-    dec ecx
-    jnz .nextl
-
-    xor eax,eax
-    xor ebx,ebx
-    ; sort memory
-    ; start at first entry in table 2
-    mov esi,mode7tab+128
-    mov ecx,128
-.nextentry
-    ; find which blocks to swap
-    ; search entry from table 2 in table 1
-    mov al,[esi]
-    mov edi,mode7tab
-.findnext
-    mov bl,[edi]
-    cmp bl,al
-    je .foundit
-    inc edi
-    jmp .findnext
-.foundit
-    mov bl,[esi-128]
-    mov [esi-128],al
-    mov [edi],bl
-    mov eax,esi
-    sub eax,mode7tab+128
-    mov ebx,edi
-    sub ebx,mode7tab
-    ; swap blocks at memory location $200000+al*8000h with $200000+bl*8000h
-    shl eax,15
-    add eax,[memdest]
-    shl ebx,15
-    add ebx,[memdest]
-    push esi
-    mov esi,eax
-    mov edi,ebx
-    mov edx,2000h
-.loopa
-    mov eax,[esi]
-    mov ebx,[edi]
-    mov [esi],ebx
-    mov [edi],eax
-    add esi,4
-    add edi,4
-    dec edx
-    jnz .loopa
-    pop esi
-    xor eax,eax
-    xor ebx,ebx
-    inc esi
-    dec ecx
-    jnz near .nextentry
-
-    call Makemode7Table
-    ret
-
 SECTION .data
 NEWSYM SFXCounter, dd 0
 
@@ -2499,35 +2357,6 @@ NEWSYM preparesfx
     jne .noac
     mov byte[SfxAC],1
 .noac
-    cmp dword[eax+0EFFBBh], 21066396h
-    je .yesinterleaved
-    cmp dword[eax+048000h],0E702E1F6h
-    je .yesinterleaved
-    jmp .noswapper
-.yesinterleaved
-    mov edi,mode7tab+128
-    mov ecx,128
-    mov al,0
-.nextl2
-    mov ah,al
-    and ah,11100001b
-    mov bl,al
-    and bl,00000110b
-    shl bl,2
-    or ah,bl
-    mov bl,al
-    and bl,00011000b
-    shr bl,2
-    or ah,bl
-    mov [edi],ah
-    inc al
-    inc edi
-    dec ecx
-    jnz .nextl2
-    mov eax,[romdata]
-    mov [memdest],eax
-    call ProcessSwapTable
-.noswapper
     ; duplicate sfx data
     mov esi,[romdata]
     mov edi,[romdata]
@@ -2563,80 +2392,6 @@ NEWSYM preparesfx
     inc edi
     dec ecx
     jnz .n
-    ret
-
-SwapTable256:
-    ; make table 1 (0 .. 255)
-    mov edi,mode7tab
-    mov ecx,256
-    xor al,al
-.nextlb
-    mov [edi],al
-    inc al
-    inc edi
-    dec ecx
-    jnz .nextlb
-
-    xor eax,eax
-    xor ebx,ebx
-    ; sort memory
-    ; start at first entry in table 2
-    mov esi,mode7tab+256
-    mov ecx,[NumofBanks]
-    shr ecx,1
-    add ecx,ecx
-.nextentry
-    ; find which blocks to swap
-    ; search entry from table 2 in table 1
-    mov al,[esi]
-    mov edi,mode7tab
-.findnext
-    mov bl,[edi]
-    cmp bl,al
-    je .foundit
-    inc edi
-    jmp .findnext
-.foundit
-    mov bl,[esi-256]
-    mov [esi-256],al
-    mov [edi],bl
-
-    mov eax,edi
-    add eax,256
-    cmp eax,esi
-    je near .skipthis
-
-    mov eax,esi
-    sub eax,mode7tab+256
-    mov ebx,edi
-    sub ebx,mode7tab
-    ; swap blocks at memory location $200000+al*8000h with $200000+bl*8000h
-    shl eax,15
-    add eax,[romdata]
-    shl ebx,15
-    add ebx,[romdata]
-    push esi
-    mov esi,eax
-    mov edi,ebx
-    mov edx,2000h
-.loopa
-    mov eax,[esi]
-    mov ebx,[edi]
-    mov [esi],ebx
-    mov [edi],eax
-    add esi,4
-    add edi,4
-    dec edx
-    jnz .loopa
-    pop esi
-.skipthis
-    xor eax,eax
-    xor ebx,ebx
-    inc esi
-    dec ecx
-    jnz near .nextentry
-.endthis
-    call Makemode7Table
     ret
 
 ;*******************************************************
