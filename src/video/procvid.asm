@@ -54,6 +54,7 @@ EXTSYM ChatNick
 EXTSYM StringLength
 EXTSYM chatstrLt
 EXTSYM GUIOn,FilteredGUI,HalfTrans
+EXTSYM SmallMsgText
 EXTSYM ClearScreen
 EXTSYM Mode7HiRes,mosenng,mosszng,intrlng,mode7hr ;,VESAAddr
 EXTSYM GUICPC, newgfx16b
@@ -3572,6 +3573,8 @@ NEWSYM copyvid
     add esi,[vidbuffer]
     cmp edi,CSStatus
     je .fivex5b
+    cmp byte[SmallMsgText],1
+    je .fivex5b
     call OutputGraphicString.no16bit
     jmp .nfivex5b
 .fivex5b
@@ -3588,6 +3591,8 @@ NEWSYM copyvid
     mov esi,200*288*2+32*2
     add esi,[vidbuffer]
     cmp edi,CSStatus
+    je .fivex5
+    cmp byte[SmallMsgText],1
     je .fivex5
     call OutputGraphicString16b
     jmp .nfivex5

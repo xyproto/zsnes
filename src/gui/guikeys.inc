@@ -909,6 +909,10 @@ GUIOptionKeys:
     jne .nosavepath
     xor byte[DontSavePath],1
 .nosavepath
+    cmp dh,'S'
+    jne .nosmallmsgtext
+    xor byte[SmallMsgText],1
+.nosmallmsgtext
 %ifdef __WIN32__
     cmp dh,'I'
     jne .noscreensaver

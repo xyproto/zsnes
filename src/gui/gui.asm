@@ -581,7 +581,7 @@ NEWSYM GUIWBAdd,  db 25
 
 NEWSYM GrayscaleMode, db 0
 NEWSYM MouseWheel, db 1
-NEWSYM AlternateTimer, db 0
+NEWSYM SmallMsgText, db 0
 NEWSYM AllowMultipleInst, db 0
 NEWSYM FilteredGUI, db 0
 NEWSYM BilinearFilter, db 0

@@ -2266,6 +2266,7 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,146,byte[LatestSave]
     GUIClickCButton 11,156,byte[AutoState]
     GUIClickCButton 11,166,byte[DontSavePath]
+    GUIClickCButton 11,176,byte[SmallMsgText]
 %ifdef __WIN32__
     GUIClickCButtonW 11,186,byte[DisableScreenSaver]
 %endif

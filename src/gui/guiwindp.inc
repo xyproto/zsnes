@@ -1417,7 +1417,7 @@ DisplayGUIOption:
     GUIOuttextwin2u 4,26,151,GUIOptionTextH,9
     GUIOuttextwin2u 4,26,161,GUIOptionTextI,15
     GUIOuttextwin2u 4,26,171,GUIOptionTextJ,0
-;    GUIOuttextwin2u 4,26,181,GUIOptionTextK,1
+    GUIOuttextwin2u 4,26,181,GUIOptionTextK,1
 %ifdef __WIN32__
     GUIOuttextwin2u 4,26,191,GUIOptionTextL,1
 %endif
@@ -1443,7 +1443,7 @@ DisplayGUIOption:
     GUIOuttextwin2 4,25,150,GUIOptionTextH
     GUIOuttextwin2 4,25,160,GUIOptionTextI
     GUIOuttextwin2 4,25,170,GUIOptionTextJ
-;    GUIOuttextwin2 4,25,180,GUIOptionTextK
+    GUIOuttextwin2 4,25,180,GUIOptionTextK
 %ifdef __WIN32__
     GUIOuttextwin2 4,25,190,GUIOptionTextL
 %endif
@@ -1547,18 +1547,18 @@ DisplayGUIOption:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox14
     GUIDisplayIconWin 4,11,166,[GUITemp]
-%ifdef __WIN32__
-;    mov dword[GUITemp],GUIIconDataCheckBoxUC
-;    cmp byte[AlternateTimer],0
-;    je .nocheckbox16
-;    mov dword[GUITemp],GUIIconDataCheckBoxC
-;.nocheckbox16
-;    GUIDisplayIconWin 4,11,186,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[DisableScreenSaver],0
+    cmp byte[SmallMsgText],0
     je .nocheckbox15
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox15
+    GUIDisplayIconWin 4,11,176,[GUITemp]
+%ifdef __WIN32__
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[DisableScreenSaver],0
+    je .nocheckbox16
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox16
     GUIDisplayIconWin 4,11,186,[GUITemp]
 %endif
     cmp byte[frameskip],0
@@ -1624,7 +1624,7 @@ GUIOptionTextG db 'OLD GFX MODE 2',0
 GUIOptionTextH db 'START AT LATEST SAVE',0
 GUIOptionTextI db 'AUTO STATE SAVE/LOAD',0
 GUIOptionTextJ db 'DON',39,'T SAVE CUR PATH',0
-GUIOptionTextK db 'BLANK SPACE',0
+GUIOptionTextK db 'USE SMALL MESSAGE TEXT',0
 GUIOptionTextL db 'DISABLE SCREENSAVER',0
 GUIOptionText8 db '-',0
 GUIOptionText9 db '+',0
