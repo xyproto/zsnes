@@ -1933,7 +1933,6 @@ NEWSYM headerhack
 .notdq2
     cmp dword[esi+0FFC0h],'FINA'
     jne .notff
-;    mov dword[WindowDisables],180
 .notff
     mov esi,[romdata]
     add esi,9AB0h
