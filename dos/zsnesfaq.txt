@@ -62,6 +62,7 @@ CHEAT ISSUES:
 อออออออออออออ
 Q : How come the game genie codes don't work?
 Q : How do I use .CHT files?
+Q : Why don't multi-part codes work?
 
 FREEZING/CRASHING ISSUES:
 อออออออออออออออออออออออออ
@@ -80,6 +81,7 @@ Q : Does the IPX support work well?
 Q : Why does ZSNES display a blank (or messed) screen when I start it up on
     my laptop?
 Q : Can I run .ZIP files from the commandline?
+Q : What is this "sdd1dat.dat" file?
 Q : Where do I get the games?
 
 อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
@@ -251,7 +253,7 @@ A : - If there is a layer of fog blocking the view, then you need to either
 
 อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
 
-Q : Why doesn't MegamanX2/MegamanX3/Star Ocean/Street Fighter Alpha 2 work?
+Q : Why doesn't Star Ocean/Street Fighter Alpha 2 work?
 
 A : Star Ocean and Street Fighter Alpha 2 both uses the S-DD1 chip, which
     uses an unknown compression routine that has to be figured out before
@@ -271,7 +273,8 @@ Q : Can you guys get Star Ocean/Street Fighter Alpha 2
 
 A : We have already worked on them to an extent, however, we cannot go much
     further until we gain knowledge on how to get them to work.
-    Unfortunately, we are not magicians.
+    Unfortunately, we are not magicians. However, they may be supported by
+    decompression packs now or in the near future.
 
 อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
 ************* SPEED ISSUES: *************
@@ -425,6 +428,12 @@ A : Copy the .CHT file to the ROM Directory or if you have a save
     the ROM file.
 
 อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
+
+Q : Why don't multi-line codes work?
+
+A : They do. Just enter each line as a code.
+
+อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
 ************* FREEZING/CRASHING ISSUES: *************
 อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
 
@@ -473,7 +482,9 @@ A : The auto .IPS feature works by copying the .IPS file to the directory
     of your ROM file or if you have a save directory defined, then the
     .IPS file goes into the save directory.  Next, rename the .IPS file
     so that it matches filename (eg.  If your ROM filename is THISGAME.SMC,
-    then your .IPS filename is THISGAME.IPS.)
+    then your .IPS filename is THISGAME.IPS.) A Zip file is patched by the
+    name of the ROM it contains, not by the zip name itself (tg.zip 
+    containing THISGAME.SMC is patched the same as THISGAME.SMC)
 
 อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
 
@@ -516,6 +527,13 @@ Q : Can I run .ZIP files from the commandline?
 
 A : Yes.  But you have to specify the full path/drive
     (eg. ZSNES D:\GAMES\GAME.ZIP)
+
+อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
+
+Q : What is theis "sdd1dat.dat" file?
+
+A : The debug log for S-DD1 partial emulation. It is not needed
+    for proper functioning of ZSNES.
 
 อออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออออ
 

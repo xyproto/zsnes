@@ -41,8 +41,9 @@ Q: This game tells me that it is not compatible with the MultiTap (or an
    external device attached).  What should I do?
 Q: How do I improve the compatibility of ZSNES?
 Q: Why am I experiencing problems with Chrono Trigger?
-Q: Why doesn't Pilotwings/Star Ocean/Street Fighter Alpha 2 work?
-Q: Can you guys get Pilotwings/Star Ocean/Street Fighter Alpha 2 to work?
+Q: What games use which DSP chip? How much of the DSP-1 is emulated?
+Q: Why doesn't Star Ocean/Street Fighter Alpha 2 work?
+Q: Can you guys get Star Ocean/Street Fighter Alpha 2 to work?
 
 
 [SPEED ISSUES:]
@@ -66,6 +67,7 @@ Q: How do I use both my Keyboard and Joystick for the 1st player?
 
 Q: How come the game genie codes don't work?
 Q: How do I use .CHT files?
+Q: Why doesn't ZSNES support multi-line codes?
 
 
 [FREEZING/CRASHING ISSUES:]
@@ -76,6 +78,7 @@ Q: When I load a ROM, how come ZSNES crashes?
 [MISC:]
 
 Q: How does the auto .IPS patching feature work?
+Q: What is this sdd1dat.dat file I keep getting?
 Q: Where do I get the games?
 
 
@@ -87,7 +90,7 @@ A: If you get this error, download and install the latest version of DirectX
    which is located at www.microsoft.com/directx
    If you already have the newest version of directx installed for
    a while, try re-installing it (and make sure that you're installing
-   DirectX v7.0a or higher).
+   DirectX v8.0a or higher).
 
 Q: Why do I get a black (or corrupted) box when I start up ZSNESw?
 
@@ -100,10 +103,7 @@ A: First of all, make sure that you have the latest version of DirectX
 Q: Why in the GUI under Config/Options are some of the choices gone?
 
 A: Basically they have become obsolete due to the abilities of Windows.
-   One such removed option is "vsync" because Direct Draw renders the
-   screen in synch without a speed loss as with the DOS version so it was
-   not needed anymore.
-
+   
 Q: How do I use CD-ROMs with ZSNESw?
 
 A: You need to define a save directory that points to your hard drive.
@@ -176,7 +176,8 @@ A: Probably not as the author has little interest in adding support for it.
 
 Q: Are there transparencies in ZSNES?
 
-A: Yes.  Transparencies are in ZSNES.
+A: Yes. Transparencies are in ZSNES. If something is not showing that should,
+   try pressing '6', which is the default to turn on all layers.
 
 
 Q: How come the graphics are really screwed up?
@@ -241,16 +242,36 @@ A: If you cannot press the L+R+A seqence, then you would need to assign
    not a bug in ZSNES.
 
 
-Q: Why doesn't Pilotwings/Star Ocean/Street Fighter Alpha 2 work?
+Q: What games use which DSP chip? How much of the DSP-1 is emulated?
 
-A: Pilotwings uses the DSP1 chip which as of yet is not completely figured
-   out.  So far the only DSP1 game which will run is Super Mario Kart.
-   Star Ocean and Street Fighter Alpha 2 both use the SDD-1 chip, which
+A: Known DSP versions are DSP-1,1A,1b, 2, and 4. Known games for each:
+
+   DSP1: Pilotwings, Mario Kart
+
+   DSP1A: Suzuka 8 Hours, Lock On, Michael Andretti's Indy Car Challenge,
+          Super Bases Loaded 2
+
+   DSP1B: Ballz
+
+   DSP2: Dungeon Master
+
+   DSP4: Top Gear 3000
+
+   In addition, there is a SETA DSP chip, which is totally different.
+
+   Pilotwings and Mario Kart are both compatible with the DSP emulation
+   in ZSNES. These routines are not perfect yet, however, and are not
+   sufficient to play other games, at the moment.
+
+Q: Why doesn't Star Ocean/Street Fighter Alpha 2 work?
+
+A: Star Ocean and Street Fighter Alpha 2 both use the SDD-1 chip, which
    uses an unknown compression routine that has to be figured out before
-   it can be emulated.
+   it can be emulated. Star Ocean is currently supported via a third-party
+   decompression pack, and you should follow their directions.
 
 
-Q: Can you guys get Pilotwings/Star Ocean/Street Fighter Alpha 2 to work?
+Q: Can you guys get Star Ocean/Street Fighter Alpha 2 to work?
 
 A: We have already worked on them to an extent, however, we cannot go much
    further until we gain knowledge on how to get them to work.
@@ -269,6 +290,9 @@ A: For the Windows version, you might want to change your video mode in
    by default uses a tile/line engine which is newly completed in v1.0.
    This engine is faster than the old so if the speed isn't up to par you
    may try a solution below, or your computer just may be too slow.
+
+   Vsync, by nature of syncing to the monitor is also slower. So if speed
+   is paramount to you, Vsync should be disabled.
 
 
 Q: Can you please make ZSNES faster?
@@ -340,6 +364,10 @@ A: Copy the .CHT file to the ROM Directory or if you have a save directory
    defined, copy it to the Save Directory.  Then rename the .CHT file if
    necessary so that the filename before the . matches the ROM file.
 
+Q: Why doesn't ZSNES support multi-line codes?
+ 
+A: It does. Just enter each line as a code.
+
 
 _[ FREEZING/CRASHING ISSUES ]______________________________________________
 
@@ -365,8 +393,14 @@ A: The auto .IPS feature works by copying the .IPS file to the directory of
    your ROM file or if you have a save directory defined, then the .IPS
    file goes into the save directory.  Next, rename the .IPS file so that
    it matches filename (eg.  If your ROM filename is THISGAME.SMC, then
-   your .IPS filename is THISGAME.IPS.)
+   your .IPS filename is THISGAME.IPS.) ZSNES uses the ROM file name, even
+   with zipped files. (So TG.ZIP containing THISGAME.SMC is still patched
+   by THISGAME.IPS)
 
+Q: What is this "sdd1dat.dat" file I keep getting?
+
+A: It's the debug log for S-DD1 games. This file is not essential to ZSNES
+   and may be removed if you so desire.
 
 Q: Where do I get the games?
 

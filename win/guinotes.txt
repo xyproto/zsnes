@@ -99,14 +99,6 @@ Input #1-#5 :
            mouse and then press the key or joystick button/pad
            which you want to change it to.  Pressing ESC disables
            the game key.
-        Joystick 209h usage :
-           Some dual joystick cards support dual joystick ports
-           (port 201h and 209h) which allows for 2 6-button joysticks
-           or 2 different types of joysticks (sidewinder and a
-           standard joystick).  If you have one of these, check
-           the 'Use joystick port 209h' box.  If you do not have
-           a dual joystick/dual port card and if you check the box,
-           then the joystick will not work.
 
 Options :
   Perform : Allows the user to select some in-game options
@@ -118,17 +110,17 @@ Options :
        Sets the maximum allowable frame skip in auto framerate mode
      New Gfx Engine - Enables/Disables the New Graphics engine
        in 256 color modes or 320x240x65536 mode
-     VSync - Enables vertical sync wait to reduce sheering of the
-       screen.  Requires a very fast computer.
-     MMX Copy - Enables MMX Copying routines for a slight speed
+     VSync - Syncronizes drawing to the monitor's refresh rate. This may
+       reduce frame rate on your computer, but will reduce tearing.
+     MMX Support - Enables MMX Copying routines for a slight speed
        increase (MMX processors only)
      Use Pl1/2 as Pl3/4 - Allows the user to use 2 devices for 1 player
        such as the keyboard and the joystick. (set keyboard as input
        device 1 and joystick as input device 3).  This, however, disables
        multitap support
-     Sidewinder Fix - Click this when your sidewinder doesn't work
-       after disabling the sidewinder profiler and pressed the
-       mode button twice
+     High Priority Mode - Enabling this will allow ZSNESw to take up more
+       of the cpu resources to increase speed.  But it will reduce the
+       amount of resources given to applications running in the background.
      FPS at Start - Checking this would make the FPS appear whenever
        you start ZSNES
      Use 30Hz for Turbo - When activated, Turbo will change at 30hz NTSC
@@ -157,6 +149,10 @@ Options :
        that controls the sound.  Using this would speed up emulation,
        but the drawback is that you won't have sound and the gane
        compatibility rate would be lower.
+     Use Alternative Timer - Uses an alternative window timer to sync
+       the game to 50 or 60FPS.  Should be used if the game runs
+       too fast with auto frame rate enabled.
+
 Add-ons:
   Perform : Changes the current special input selected for the game
   Usage :
@@ -174,43 +170,29 @@ Video :
       and click 'SET'.  When the video mode changes and if the result
       doesn't look right, wait for 10 seconds without pressing any key
       or button and the display will return to the previous one.
-    Scanlines - Only available in 256x256x256 and VESA2 640x480 modes.
-      This mode adds a blank line in between every line to produce
-      a scanline effect similar, if not exact, to a TV.
-    Eagle Engine - Only available in VESA2 320x240x256.  Setting
-      this would enable the Eagle Engine designed by Dirk Stevens
-      which basically locates 3 similar colored pixels together
-      and places a small dot in between to smooth out some graphics.
-    Interpolation - Only available in VESA2 640x480x65536.  Setting
-      this enable interpolation which basically blends all the
-      inbetween colors to produce a blurry effect.  However, this
-      slows down emulation.
-    Full Screen - Only available in VESA2 320x240 and 640x480 modes.
-      Setting this would scale the image to fit the screen.  This,
-      however, slows down emulation.
-    Small Screen - Only available in VESA2 640x480 modes.  Setting
-      this would display the image in a small, centered screen.  This
-      greatly improves performance in 640x480 modes.
-    50% Scanlines - Only available in 640x480x65536 video mode.  This
-      will enable scanline mode except that each line is 50% darker than
-      the line above it.
-    25% Scanlines - Only available in 640x480x65536 video mode.  This
-      will enable scanline mode except that each line is 25% darker than
-      the line above it.
+    Full Scanlines - This mode adds a blank line in between every line
+      to produce a scanline effect similar, if not exact, to a TV.
+    Interpolation - Setting this enable interpolation which basically
+      blends all the inbetween colors to produce a blurry effect.
+      However, this slows down emulation.
+    50% Scanlines - This will enable scanline mode except that each line
+      is 50% darker than the line above it.
+    25% Scanlines - This will enable scanline mode except that each line
+      is 25% darker than the line above it.
     2xSaI Engine - Setting this would enable Kreed's 2x Scale Advanced
       Interpolation engine.
     Super Eagle - Setting this would enable Kreed's Super Eagle engine.
     Super 2xSaI Engine - Setting this would enable Kreed's Super 2x Scale
-      Advanced Interpolation engine.  This mode would require a lot of
-      cpu power since it is written in C.
-    Triple Buffering - This will enable Triple Buffering if it is available
-      on your VESA drivers/Video Card.  If it isn't available, then Zsnes
-      will use simulated Triple Buffering which is slower, but still does
-      the job.  Note that Triple Buffering will not work with 2xSaI/Super
-      Eagle.
+      Advanced Interpolation engine.
     Hi-resolution Mode 7 - Enabling this would activate high resolution
       mode 7 whenever standard mode 7 is used within a game.  This mode
       is only available in video modes that support it.
+    Black and White mode - Makes the game display in monochrome color.
+      This option is just there for fun and not something that you probably
+      want to keep on using.
+    Triple Buffering - Uses an extra buffer for drawing. Thus, a buffer can
+      be drawn on while on is pending VSync, and another is being drawn. The
+      primary use is to reduce the impact of Vsync on slower systems
 
 Sound :
   Perform : Allows user to change the sound configurations of ZSNES
@@ -230,9 +212,14 @@ Sound :
        the wave forms of lower frequency sounds
      Reverse Stereo - This function swaps the L & R volume levels
        in stereo mode
+     Large Sound Buffer - Provides a larger sound buffer for soundcards
+       that has problems with the sound.
      Low Pass Filter - The Low Pass Filter, when enabled, will produce
        better bass in certain sound effects.  However, the side effect
        is that the sound will overall be more muffled.
+     Cubic Spline Interp - If this is checked, it will use Cubic Spline
+       Interpolation for the sound.  Otherwise, it will use Gaussian
+       Interpolation.
 
 ----------------------------------------------------------------------------
 
@@ -312,54 +299,22 @@ Search :
 - V.) The NetPlay Menu -
 ------------------------
 
-Modem Mode :
-
-NOTE #1 : DOS Compatible modem is REQUIRED!
-       If you don't know your modem settings and you're in win95/98, go to
-       Control Panel -> System -> Device Manager -> Modem and select
-       your modem.  Then click on your resources tab and the settings should
-       be there.
-
-  1.) Dial Menu     - Allows you to enter the phone number to dial and then
-                      dials and connects
-  2.) Wait for Ring - Waits for ring
-  3.) Config Modem  - Allows you to configure your modem :
-                        ComPort, IRQ, Baudrate - Sets your modem settings
-                        Use Fossil Driver - Set this option if you want
-                          ZSNES to use your a fossil driver.  If you don't
-                          know what a fossil driver is, just leave this
-                          option unchecked and pretend it doesn't exist.
-  4.) Manual        - Allows you to connect manually through the terminal.
-                      However, if both remote and local users select manual,
-                      the player numbers will not be assigned.
-
-IPX :
-
-  IPX mode currently connects at the first remote connection it detects.
-  This will probabily change in the future if there is a demand.
-
-Chat Mode :
-
-  Latency - The lower the number, the better the control response time.
-            But setting it too low can cause a lot of frame skip problems.
-            This value should vary depending on the traffic of the connection
-            you are using.  A value of 2 or 3 is recommended for modem.  The
-            value for IPX varies.  Latency is basically the amount of time
-            between a user input and that input being affected in the actual
-            game.  The delay should be higher than the time it takes for data
-            to move from one end to the other. Latency value of 1 is
-            equivalent to 1/30th of a second on NTSC games or 1/25th of a
-            second on PAL games.
-  Player # boxes - This will allow you to select up to a 5 player multiplayer
-            game.  Anything that is checked will be controlled locally
-            starting from player 1 as the lowest checked player.  Anything
-            marked with an X will be controlled remotely.
-            For example, if players 2,3,5 are checked and 1,4 are X'ed :
-              local player 1 will control player 2
-              local player 2 will control player 3
-              local player 3 will control player 5
-              remote player 1 will control player 1
-              remote player 2 will control player 4
+Internet-
+  Port - This is the port ZSNES will communicate on. While the number
+     can range from 0 to 65535, it is recommended you stay above
+     5000 to avoid conflicts with other services.
+  Nickname - What you will be called.
+  Start As Server - This will start the ZSNES Server. Your opponent
+     can then join via the Connect to Server option.
+  IP - This is the IP of the server you wish to connect to. You will
+     need to receive this information from the person you are connecting to.
+  Connect to Server - This will connect you to another ZSNES user, if the port
+     and server are correct. This is only used on the client side.
+  Your IP - This is your IP. the client doesn't really need to do anything with it.
+     The server needs to give this information to the client.
+  Allow UDP Connections - UDP is slightly faster than TCP, and should provide
+     a better experience. Some users, however, can only use TCP. Turn this off
+     if you are experiencing connection problems in mid-game, and see if it helps.
 
 ----------------------------------------------------------------------------
 
@@ -405,6 +360,18 @@ GUI Options :
                   SNES R = PageDown
      Enable Water Effect - Enables the water effect in the GUI background
      Enable Snow Effect  - Enables the snow effect in the GUI background
+     Always on Top - Puts the ZSNES window on top of almost all
+       other windows applications at all times
+     Save Main Window Position - Saves the window position when you exit
+       and restores it when you load ZSNES again
+     Allow Multiple Instances - Allows you to load more than 1 ZSNES
+       window at a time
+     Transparent Messages - Makes in-game messages appear transparent
+     Mouse Wheel - Enables or Disables the mouse wheel
+     Filtered GUI - use your favorite ZSNES display filters in the GUI.
+       ZSNES, 2xSaI style!
+     Color - Allows you to customize your ZSNES GUI colors. Background, Title
+       Bar, and Window colors are supported.
 
 Key Comb. (Key Combination Editor) :
   Perform : Allows you to specify certain keyboard combination routines

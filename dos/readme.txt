@@ -1,7 +1,8 @@
 
                                  ZSNES
-                    by zsKnight, _Demo_, and Pharos
-                         http://www.zsnes.com/
+                    by zsKnight, _Demo_, and pagefault
+             with help from Pharos, Teuf, theoddone33 and stainless
+                         http://www.zsnes.com
 
 
 ZSNES is a Super Nintendo Entertainment System emulator written mostly
@@ -93,21 +94,12 @@ Recommended System for SA-1 support : (Mario RPG)
 For SuperFX and SA-1 emulation, 17.0 megabytes of free memory is required
 to run.
 
-Overall Recommended System :
-
-- Pentium processor (P233MMX or higher)
-- 64MB of RAM (min 17.0MB free)
-- SVGA card w/full VESA 2.0 support
-- Sound Blaster 16 or 100% compatible
-- DOS capable gamepad or joystick
-
-
 ---------------------------------------------------------------------------
 4.) Things you should know about ZSNES
 ---------------------------------------------------------------------------
 
 - You can use both keyboard and joystick for player 1 or 2 with some
-  configuration adjustments.  Refer to ZSNESFAQ.TXT for details
+  configuration adjustments.  Refer to zsnes.faq for details
 - If your sidewinder support doesn't work, a quick way of getting it to
   work is to fully disable the windows driver from the control panel
 - For modem mode, if you don't have a 16550A UART compatible modem
@@ -117,12 +109,10 @@ Overall Recommended System :
   configurations which causes both sides to go out of sync
 - Several special chip emulation (SA-1) have unknown bugs to
   them
-- Transparency effects are only available in 16-bit color mode
+- Transparency effects are only available in 65536 color mode
 - Using 320x240 resolution modes are faster than 640x480 modes.  Use
   640x480 modes only if you can't run 320x240 modes or if you want the
   added features of 640x480 modes
-- Using the ModeQ variants is much faster than using the ModeX variants,
-  only use ModeX if your monitor has a problem with the ModeQ timings.
 - To view 512 resolutions properly, use 640x480 mode.  Only a few games
     uses 512 resolution.  One way to find out is to see if a game has
     that feature is to look for text that looks squished.
@@ -133,8 +123,8 @@ Overall Recommended System :
     emulated as well as the snes emulation
 - Screen Snapshot and FPS counter are available through a menu by pressing
     F1 during emulation
-- Screen Snapshot currently saves as IMAGE.PCX (256 colors) and IMAGE.BMP
-    or IMAGE.PNG (16-bit color).  This may change in the future.
+- Screen Snapshot currently saves as Image.PCX (256 colors) and Image.BMP
+    (65536 colors).  This may change in the future.
 - FPS counter currently only works when auto frame rate is on.
 - To use the cheat function, be sure to have the ROM which you want to
     patch loaded already.
@@ -142,13 +132,12 @@ Overall Recommended System :
     version of the rom that was originally used to create them or the codes
     are converted incorrectly from other code formats.
 - Certain video cards/monitors cannot support ModeQ (default resolution)
-    If your video card/monitor doesn't support it, run ZSNES with -v 4.
-    If -v 4 doesn't work, try using -v 6 (vesa 1.2 required)
-- If you don't have a fairly newer chipset on your video card, then 16-bit
-    mode in ZSNES may require Scitech Display Doctor (v5.3+) to provide
-    high color, low resolution video modes.  You can obtain this software at
-    www.scitechsoft.com.  If your video card already supports low resolution
-    high color video modes, then don't worry about getting this software.
+    If your video card/monitor doesn't support it, run ZSNES with -v 0.
+    If -v 0 doesn't work, use -v 2 (vesa 2 required)
+- 16 bit mode in ZSNES requires a Scitech Display Doctor (v5.3+) to provide
+    high color, low resolution modes.  You can obtain this software at
+    www.scitechsoft.com.  If your video card already supports lo-res,
+    hi-color, then don't worry about getting this driver.
 - There are still many bugs left in ZSNES so don't expect it to run all
     your favorite games.
 - VSync won't run well unless you specify a frame skip (eg. -f 0)  But
@@ -188,7 +177,7 @@ The following are implemented in the new graphics engine 8 bit :
 - Sprite Priorities
 - Add/sub of back area
 - Mosaic Effects
-- Offset per tile mode (mode 2/vertical only)
+- Offset per tile mode (mode 2/vertical only, mode 4)
 - High res 512 resolution and 448/478 vertical resolution
 - Windowing effects
 - High res Mode 7 (only in 640x480x256 video mode/disable Eagle/Scanlines)
@@ -245,8 +234,10 @@ The following are extra features emulated :
 - SuperFX support (Still has a bug or 2 left)
 - MultiTap (Multiplayer 5) support (4 players on a single computer, 5 players
                                     remote (ipx/modem))
-- DSP1 emulation (not complete)
+- DSP1 emulation
 - SA-1 emulation (not complete)
+- S-DD1 support (via decompression packs)
+- SPC7110 (via decompression packs)
 
 The following are the features present in ZSNES :
 
@@ -263,16 +254,19 @@ The following features are missing :
   (Haven't seen any game that uses them yet)
 - Some modes in Offset Per Tile Mode
 - Some Direct Color Modes (Haven't seen any game that uses them yet)
+- True SPC7110/S-DD1 decompression
 
 What will not run (or not play properly) :
 
 - Some Super FX games such as Dirt Trax FX or Winter Gold (causes instability)
-- DSP1 games such as Pilotwings
-- Games with other special chips such Street Fighter Alpha 2, Star
-  Ocean (S-DD1), and Far East of Eden 2 (SPC7110)
+- Games that use unknown coprocessors.
+- Games with other special chips such Street Fighter Alpha 2, which lack
+  decompression packs (S-DD1)
 - Games which doesn't have a valid header
 - Games that hit a severe bug in the 65816/PPU/SPC700/DSP routines
 - Games that require special timing
+- Games that use unemulated features or varities of the DSP chip,
+  like Top Gear 3000 (DSP-4)
 
 ---------------------------------------------------------------------------
 6.) Future Progress
@@ -331,7 +325,7 @@ To run it in 16-bit mode (VESA2 w/ video card that supports 320x240x65536
 ---------------------------------------------------------------------------
 
 Save Snapshot - Saves a snapshot as either .PCX (8-bit color) or .BMP
-                (16-bit color) or .PNG (if you select it instead of BMP).
+                (16-bit color)
 
 Show/Hide FPS - Shows or hides the frame per second display which appears
                 on the bottom-left corner of the screen.  This can only
@@ -354,9 +348,6 @@ Sound Buffer Dump - This dumps the sound buffer in zsnes and also filters
 
 Snapshot/Increment Frame - Same as snapshot, but it returns to the F1 menu
                 after a couple frames.  Useful for making animations.
-
-Screenshot Format - Changes format to/from BMP and PNG for screenshots.
-                Only works in 16-bit color of course. :)
 
 ---------------------------------------------------------------------------
 9.) Configuration File (ZSNES.CFG)
@@ -399,10 +390,6 @@ Here are the controls for the Super Scope :
   Enable/Disable Autofire = =/+ key on keyboard, should be located to the
                        left of the backspace key
 
-DSP1 is enabled automatically.  Currently, it runs mario kart and some other
-    games, but it does not run pilotwings due to a lack of dsp1 functions
-    that are implemented.
-
 Zsnes auto-detects the SFX emulation from the header and enables it when
    found.  Also, take note that the SFX is an additional 10Mhz(Ver1) or
    20Mhz(Ver2) chip which also has to be emulated with the snes and will
@@ -442,7 +429,7 @@ IPS patcher :
 
 The ZSNES homepage is located at : http://www.zsnes.com
 
-If you have any questions about zsnes and you have read ZSNESFAQ.TXT,
+If you have any questions about zsnes and you have read ZSNES.FAQ,
 README.TXT, and GUINOTES.TXT to make sure the answer isn't there.
 And your question is NOT a ROM Request or asking about a newer
 version, you can post your question at the zsnes www board located at :
@@ -458,9 +445,11 @@ If you wish to contact the authors, you may contact them through :
 (Remember - No ROM requests please! and don't send any files without
  permission!)
 
-zsknight@zsnes.com
-_demo_@zsnes.com
-pharos@zsnes.com
+midnight@umich.edu (Tech Support guy)
+zsknight@zsnes.com (Main Coder)
+_demo_@zsnes.com (Main Coder)
+pagefault@users.sourceforge.net (Assistant Coder, Windows Port Developer)
+pharos@zsnes.com (Assistant Coder)
 
 Try not to send a copy of your e-mail to all of us since that will just
   waste our time.  Also, don't expect to get a reply since we are often
@@ -546,8 +535,8 @@ After Connection (Modem and IPX Mode) :
 16.) Credits
 ---------------------------------------------------------------------------
 
-ZSNES uses NASM, DJGPP, and optionally CWSDPMI (source codes & binary updates
-      located at http://www.dbit.com/pub/cwsdpmi) as the compilers and DOS
+ZSNES uses NASM, DJGPP, WDOSX, and CWSDPMI (source codes & binary updates
+      located at http://www.dbit.com/pub/cwsdpmi ) as the compilers and dos
       extenders.  Thanks to those who produced these fine programs!
 
 Special thanks to wnelson!  Without him, ZSNES would have never existed!
@@ -604,7 +593,7 @@ Also Thanks to :
   All those people who helped us by either sending us docs,
     helping us, supporting us, and reporting bugs!
   Special Thanks to : Ashley, Barubary, CyberWarriorX, DCX, DooMStalK,
-    Fanwen, GreenImp, Hucard, Kaiden, Stalphos Knight, Star Creator,
+    Fanwen, GreenImp, Hucard, Kaiden, PolestaR, Stalphos Knight, Star Creator,
     TeleKawaru, Tuxedo Mask, the people in #zsnes efnet, and the regulars
     of the ZSNES message board!
   And also to all those whom we forgot!

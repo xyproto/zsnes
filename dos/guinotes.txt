@@ -246,6 +246,9 @@ Sound :
      Low Pass Filter - The Low Pass Filter, when enabled, will produce
        better bass in certain sound effects.  However, the side effect
        is that the sound will overall be more muffled.
+     Cubic Spline Interp - If this is checked, it will use Cubic Spline
+       Interpolation for the sound.  Otherwise, it will use Gaussian
+       Interpolation.
 
 ----------------------------------------------------------------------------
 

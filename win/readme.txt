@@ -1,6 +1,7 @@
 
                                  ZSNES
-                    by zsKnight, _Demo_, and Pharos
+                    by zsKnight, _Demo_, and pagefault
+             with help from Pharos, Teuf, theoddone33 and stainless
                          http://www.zsnes.com
 
 
@@ -53,21 +54,30 @@ with ROMs.
 - Fast Pentium processor strongly recommended
 - 32MB of RAM
 - Windows 95/98/ME/2000 or compatible
-- DirectX 7.0 or higher
+- DirectX 8.0 or higher
 
 Recommended System for SFX support :
 
 - Fast Pentium processor (P200 - P2-300 (depending on the game))
 - 32MB of RAM
 - Windows 95/98/ME/2000 or compatible
-- DirectX 7.0 or higher
+- DirectX 8.0 or higher
 
 Recommended System for SA-1 support : (Mario RPG)
 
 - Fast Pentium processor (P200 or higher)
 - 32MB of RAM
 - Windows 95/98/ME/2000 or compatible
-- DirectX 7.0 or higher
+- DirectX 8.0 or higher
+
+Requirements for netplay:
+
+- WinSock 2.2 (Included with most Windows versions, or from
+  http://www.microsoft.com/windows95/downloads/ )
+
+Please note that while 32 MB is a recommendation for minimum RAM,
+additional RAM may be beneficial, especially for 40 or 48 megabit
+ROMS, or games that require decompression packs.
 
 *An FPU is required for DSP1 emulation
 *You can download directx at www.microsoft.com/directx/
@@ -78,14 +88,15 @@ Recommended System for SA-1 support : (Mario RPG)
 
 - You can use both keyboard and joystick for player 1 or 2 with some
   configuration adjustments.  Refer to zsnes.faq for details
-- Several special chip emulation (SA-1) have unknown bugs to
+- Several special chip emulation routines (SA-1) have unknown bugs to
   them
 - SuperFX can be slow because it is an extra 10/20mhz cpu that has to be
     emulated as well as the snes emulation
-- Screen Snapshot and FPS counter are available through a menu by pressing
+- Screen Snapshot, Snapshot Format, and FPS counter are available through a menu by pressing
     F1 during emulation
-- Screen Snapshot currently saves as Image.PCX (256 colors) and Image.BMP
-    (65536 colors).  This may change in the future.
+- Screen Snapshot currently saves as Image.BMP (65536 colors). Also, a PNG
+    mode is available that saves in 32 bit ARGB color, as
+    <rom name> <date> <time>.png
 - FPS counter currently only works when auto frame rate is on.
 - To use the cheat function, be sure to have the ROM which you want to
     patch loaded already.
@@ -128,7 +139,7 @@ The following are implemented in the new graphics engine 8 bit :
 - Sprite Priorities
 - Add/sub of back area
 - Mosaic Effects
-- Offset per tile mode (mode 2/vertical only)
+- Offset per tile mode (mode 2/vertical only, Mode 4)
 - High res 512 resolution and 448/478 vertical resolution
 - Windowing effects
 - High res Mode 7 (only in 640x480x256 video mode/disable Eagle/Scanlines)
@@ -185,8 +196,11 @@ The following are extra features emulated :
 - SuperFX support (Still has a bug or 2 left)
 - MultiTap (Multiplayer 5) support (4 players on a single computer, 5 players
                                     remote (ipx/modem))
-- DSP1 emulation (not complete)
+- DSP1 emulation (incomplete)
 - SA-1 emulation (not complete)
+- OBC1 emulation (still may have bugs)
+- S-DD1 emulation (through decompression packs)
+- SPC7110 emulation (also via decompression packs)
 
 The following are the features present in ZSNES :
 
@@ -203,16 +217,19 @@ The following features are missing :
   (Haven't seen any game that uses them yet)
 - Some modes in Offset Per Tile Mode
 - Some Direct Color Modes (Haven't seen any game that uses them yet)
+- True SPC7110/S-DD1 decompression
 
 What will not run (or not play properly) :
 
 - Some Super FX games such as Dirt Trax FX or Winter Gold (causes instability)
-- DSP1 games such as Pilotwings
-- Games with other special chips such Street Fighter Alpha 2, Star
-  Ocean (S-DD1), and Far East of Eden 2 (SPC7110)
+- Games with unknown co-processors
+- Games with other special chips such Street Fighter Alpha 2, Momotarou's
+  Happy Train that do not yet have decompression packs. (S-DD1/SPC7110)
 - Games which doesn't have a valid header
 - Games that hit a severe bug in the 65816/PPU/SPC700/DSP routines
 - Games that require special timing
+- Games that use functions not yet supported by the DSP-1, or that
+  use other flavors of the DSP chip (ex. Top Gear 3000)
 
 ---------------------------------------------------------------------------
 6.) Future Progress
@@ -280,11 +297,16 @@ Sound Buffer Dump - This dumps the sound buffer in zsnes and also filters
 Snapshot/Increment Frame - Same as snapshot, but it returns to the F1 menu
                 after a couple frames.  Useful for making animations.
 
+Screen Shot Format - chooses what format to use for screen shots. Choices
+                are BMP (bitmap) and PNG (Portable Network Graphic)
+
 ---------------------------------------------------------------------------
 9.) Configuration File (ZSNESW.CFG)
 ---------------------------------------------------------------------------
 
-Almost everything in zsnes.cfg should now be editable through the gui
+Almost everything in zsnesw.cfg should now be editable through the gui
+The exception is the temp folder, which is needed to use games from a
+read-only medium.
 
 ---------------------------------------------------------------------------
 10.) Cheat Codes
@@ -321,10 +343,6 @@ Here are the controls for the Super Scope :
   Enable/Disable Autofire = =/+ key on keyboard, should be located to the
                        left of the backspace key
 
-DSP1 is enabled automatically.  Currently, it runs mario kart and some other
-    games, but it does not run pilotwings due to a lack of dsp1 functions
-    that are implemented.
-
 Zsnes auto-detects the SFX emulation from the header and enables it when
    found.  Also, take note that the SFX is an additional 10Mhz(Ver1) or
    20Mhz(Ver2) chip which also has to be emulated with the snes and will
@@ -337,11 +355,12 @@ Sometimes, the Multitap isn't compatible with some games.  If that happens,
 
 IPS patcher :
    Rename your .IPS file to the rom filename with the .IPS extension
-   (eg.  If your rom is SD3.SMC and your rom is SD3V05.IPS, rename SD3V05.IPS
-         to SD3.IPS)
+   (eg. If your rom is SD3.SMC and your ips is SD3V05.IPS, rename SD3V05.IPS
+        to SD3.IPS)
    and ZSNES will patch the rom realtime without modifying the rom file's
-   contents.
-
+   contents. Zipped roms are patched according to the unzipped name.
+   (eg. Seiken3.zip containing SD3.smc is patched by SD3.ips, not Seiken3.ips)
+   
 ---------------------------------------------------------------------------
 12.) Bugs Section
 ---------------------------------------------------------------------------
@@ -356,7 +375,8 @@ IPS patcher :
   There is no plans on re-writing the 65816 timing yet.
 - Games sometimes tend to not display things properly because of graphic
   features that aren't implemented yet
-- The Sound DSP chip still has its bugs (not many though)
+- The Sound DSP chip still has its bugs (not many though). Most noticeably,
+  no one knows the exact timing of the SPC700 chip.
 
 ---------------------------------------------------------------------------
 13.) Contact Information
@@ -380,13 +400,16 @@ If you wish to contact the authors, you may contact them through :
 (Remember - No ROM requests please! and don't send any files without
  permission!)
 
-zsknight@zsnes.com
-_demo_@zsnes.com
-pharos@zsnes.com
+midnight@umich.edu (Tech Support guy)
+zsknight@zsnes.com (Main Coder)
+_demo_@zsnes.com (Main Coder)
+pagefault@users.sourceforge.net (Assistant Coder, Windows Port Developer)
+pharos@zsnes.com (Assistant Coder)
 
 Try not to send a copy of your e-mail to all of us since that will just
   waste our time.  Also, don't expect to get a reply since we are often
   busy.
+
 
 ---------------------------------------------------------------------------
 14.) The Debugger
@@ -421,9 +444,12 @@ ESC : Exit entire program
 16.) Credits
 ---------------------------------------------------------------------------
 
-ZSNES uses NASM, DJGPP, and CWSDPMI (source codes & binary updates
+ZSNES uses NASM, DJGPP, WDOSX, and CWSDPMI (source codes & binary updates
       located at http://www.dbit.com/pub/cwsdpmi ) as the compilers and dos
       extenders.  Thanks to those who produced these fine programs!
+
+ZSNESW uses Visual C++ 6, NASM .98, DirectX 8, GNU Make, and UPX to compile,
+      link, compress, and execute. Thanks for the work put into these programs.
 
 Special thanks to wnelson!  Without him, ZSNES would have never existed!
 Also to Y0SHi for his excellent snes docs, his help, and his excellent
@@ -477,7 +503,7 @@ Also Thanks to :
   All those people who helped us by either sending us docs,
     helping us, supporting us, and reporting bugs!
   Special Thanks to : Ashley, Barubary, CyberWarriorX, DCX, DooMStalK,
-    Fanwen, GreenImp, Hucard, Kaiden, Stalphos Knight, Star Creator,
+    Fanwen, GreenImp, Hucard, Kaiden, PolestaR, Stalphos Knight, Star Creator,
     TeleKawaru, the people in #zsnes efnet, and the regulars of the
     ZSNES message board!
   And also to all those whom we forgot!
