@@ -381,6 +381,8 @@ CubicSpline:
   dw   -3,  -3,  -2,  -2,  -2,  -1,  -1,  -1
   dw    0,   0,   0,   0,   0,   0,   0,   0
 
+%include "cpu/fir_tables.inc"
+
 ALIGN32
 
 NEWSYM spcWptr,  times 16 dd 0     ; SPC Write pointers (point to their own functions)
@@ -1765,7 +1767,6 @@ section .text
 %endmacro
 
 ;EXTSYM fir_downsample
-EXTSYM fir_lut_co
 
 %macro ProcessDynamicLowPass 0
     mov ecx,[curvoice]
@@ -1954,7 +1955,7 @@ ALIGN16
     sub edx,0F80000h
     shr edx,15
     and edx,7FFF0h
-    add edx,[fir_lut_co]
+    add edx,fir_lut_co
     movq mm2,[edx]
     movq mm3,[edx+8]
 %%DLPF_fir_loop
@@ -3550,8 +3551,6 @@ WaveIndex  times 8 dd 0
 ;    add eax,edx                ;
 ;%%DontFilter1                  ;
 
-EXTSYM fir_lut
-
 section .data
 NEWSYM fir_tmp,dd 0,0
 section .text
@@ -3609,7 +3608,7 @@ section .text
     add ebx,1000h
     shr ebx,9
     and ebx,0FFF0h
-    add ebx,[fir_lut]
+    add ebx,fir_lut
     movq mm0,[eax+PSampleBuf+(%1*26*4)]
     packssdw mm0,[eax+PSampleBuf+(%1*26*4)+8]
     movq mm1,[eax+PSampleBuf+(%1*26*4)+16]

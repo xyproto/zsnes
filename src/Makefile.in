@@ -53,7 +53,7 @@ WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/modemrtn.o ${DOSDIR}/vesa2
 
 #PREOBJ=${OBJDIR}/unzip.o ${OBJDIR}/zzip.o ${DOSDIR}/zsipx.o
 
-ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o ${ZIPDIR}/fir_proc.o
+ZIPOBJ=${ZIPDIR}/zzip.o ${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
 MAINOBJ=cfgload.o endmem.o fixsin.o init.o ui.o vcache.o water.o
 
@@ -78,7 +78,6 @@ ALL:	@ZSNESEXE@
 ${ZIPDIR}/zpng.o: ${ZIPDIR}/zpng.c ${ZIPDIR}/zpng.h
 ${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/unzip.h
 ${ZIPDIR}/zzip.o: ${ZIPDIR}/zzip.c ${ZIPDIR}/unzip.h
-${ZIPDIR}/fir_proc.o: ${ZIPDIR}/fir_proc.cpp
 fixsin.o: fixsin.c
 water.o: water.c
 ${VIDEODIR}/procvid.o: ${VIDEODIR}/procvid.asm macros.mac ${VIDEODIR}/copyvid.inc ${VIDEODIR}/2xsaimmx.inc
