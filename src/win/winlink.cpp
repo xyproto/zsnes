@@ -438,6 +438,7 @@ void ExitFunction()
    ReleaseDirectInput();
    ReleaseDirectSound();
    ReleaseDirectDraw();
+   FreeDirectX();
    DestroyWindow(hMainWindow);
 }
 
