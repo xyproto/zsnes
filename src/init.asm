@@ -3379,8 +3379,8 @@ NEWSYM preparesfx
     mov byte[SFXCounter],0
     mov esi,[romdata]
     add esi,07FC0h
-;    cmp dword[esi],'FX S'
-;    je .yessfxcounter
+    cmp dword[esi],'FX S'
+    je .yessfxcounter
     cmp dword[esi],'Stun'
     jne .nosfxcounter
     mov byte[ForceNewGfxOff],1
