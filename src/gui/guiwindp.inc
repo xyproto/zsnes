@@ -2271,7 +2271,7 @@ DisplayGUISound:
 ;    je .nocheckbox2
 ;    mov dword[GUITemp],GUIIconDataCheckBoxC
 ;.nocheckbox2
-    GUIDisplayIconWin 6,11,101,[GUITemp]
+;    GUIDisplayIconWin 6,11,101,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[RevStereo],0
     je .nocheckbox3
