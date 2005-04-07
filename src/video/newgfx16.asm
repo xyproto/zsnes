@@ -2555,15 +2555,12 @@ NEWSYM drawbg4linepr116b
 NEWSYM drawsprng16b
     test byte[BGMS1+ebx*2],10h
     jz .nosubmain
-    test byte[BGMS1+ebx*2],1h
-    jz .submain
     test byte[FillSubScr+ebx],2
     jnz .submain
     mov edi,[CMainWinScr]
     cmp byte[edi+ebx+4*256],0
     je .submain
-    test byte[scaddtype],20h
-    jz .nosubmain
+    jmp .nosubmain
 .submain
     test byte[FillSubScr+ebx],1
     jne near drawsprng16bt
