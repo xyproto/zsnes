@@ -30,7 +30,7 @@ EXTSYM spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2selec
 EXTSYM vidbuffer,spritetablea,sprlefttot,newengen,spcextraram,resolutn
 EXTSYM Open_File,Close_File,Read_File,Write_File,Create_File,Get_Key,Get_Date
 EXTSYM continueprognokeys,ForceNonTransp,GUIOn,Check_Key,JoyRead
-EXTSYM GetScreen,SSKeyPressed,SPCKeyPressed,StopSound,StartSound    
+EXTSYM GetScreen,SSKeyPressed,SPCKeyPressed,StopSound,StartSound
 EXTSYM ExecExitOkay,t1cc
 EXTSYM Clear2xSaIBuffer
 EXTSYM romdata,romtype,ScreenShotFormat
@@ -213,7 +213,7 @@ NEWSYM showmenu
 .nomenuinc3
 
     mov dword[menudrawbox8b.stringi+13],' BMP'
-%ifndef NO_PNG 
+%ifndef NO_PNG
     cmp byte[ScreenShotFormat],0
     je .normalscrn
     mov dword[menudrawbox8b.stringi+13],' PNG'
@@ -484,7 +484,9 @@ NEWSYM showmenu
     call StartSound
     mov byte[ForceNonTransp],0
     mov byte[GUIOn],0
+    pushad
     call Clear2xSaIBuffer
+    popad
     cmp byte[MenuNoExit],1
     je .noexitmenu
     jmp continueprognokeys
@@ -1172,7 +1174,7 @@ NEWSYM savepcx
     ret
 .notpng
 %endif
-    
+
     mov byte[pressed+1],0
     mov byte[pressed+59],0
     cmp byte[cbitmode],1

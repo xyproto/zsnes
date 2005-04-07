@@ -915,11 +915,11 @@ GUIOptionKeys:
     cmp dh,'P'
     jne .noautopatch
     xor byte[AutoPatch],1
-.noautopatch   
+.noautopatch
     cmp dh,'T'
     jne .norominfo
     xor byte[RomInfo],1
-.norominfo   
+.norominfo
 %ifdef __WIN32__
     cmp dh,'I'
     jne .noscreensaver
@@ -927,7 +927,7 @@ GUIOptionKeys:
 .noscreensaver
 %endif
     ret
-    
+
 GUISaveKeys:
     cmp dh,'a'
     jb .nocap
@@ -1071,12 +1071,16 @@ GUIGUIOptnsKeys:
     cmp byte[En2xSaI],1
     jnae .guioptn15
     call ClearScreen
+    pushad
     call Clear2xSaIBuffer
+    popad
 .guioptn15
     cmp byte[hqFilter],0
     je .guioptn16
     call ClearScreen
+    pushad
     call Clear2xSaIBuffer
+    popad
 .guioptn16
     ret
 
@@ -1105,7 +1109,7 @@ GUIVideoKeys:
     jmp .refresh
 .nomodeq
     cmp byte[cvidmode],5
-    jne .nofullscanlines    
+    jne .nofullscanlines
 .refresh
     mov byte[cbitmode],1
     call initvideo2
@@ -1177,7 +1181,9 @@ GUIVideoKeys:
     mov bl,[cvidmode]
     cmp byte[GUI2xVID+ebx],0
     je near .no2xsai
+    pushad
     call Clear2xSaIBuffer
+    popad
     GUIkeystoggleoptn byte[En2xSaI],1
 .no2xsai
     cmp dh,'E'
@@ -1186,7 +1192,9 @@ GUIVideoKeys:
     mov bl,[cvidmode]
     cmp byte[GUI2xVID+ebx],0
     je near .nosupereagle
+    pushad
     call Clear2xSaIBuffer
+    popad
     GUIkeystoggleoptn byte[En2xSaI],2
 .nosupereagle
     cmp dh,'S'
@@ -1195,7 +1203,9 @@ GUIVideoKeys:
     mov bl,[cvidmode]
     cmp byte[GUI2xVID+ebx],0
     je near .nosuper2xsai
+    pushad
     call Clear2xSaIBuffer
+    popad
     GUIkeystoggleoptn byte[En2xSaI],3
 .nosuper2xsai
     cmp dh,'I'
@@ -1371,7 +1381,7 @@ GUIVideoKeys:
     cmp dl,72
     jne .noup
 %endif
-.up    
+.up
     cmp dword[GUIcurrentvideocursloc],0
     je .noup
     mov ebx,[GUIcurrentvideocursloc]
@@ -1754,7 +1764,7 @@ GUIPathKeys:
     jmp .findend
 .foundend
 
-    cmp dh,8    ;Backspace     
+    cmp dh,8    ;Backspace
     jne .notbackspace
     cmp eax,ecx
     je .cantback
@@ -1762,7 +1772,7 @@ GUIPathKeys:
 .cantback
     ret
 .notbackspace
-    
+
     cmp dh,13    ;Enter
     jne .notenter
     mov dword[GUIInputBox],0

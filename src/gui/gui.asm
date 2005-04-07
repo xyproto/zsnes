@@ -18,7 +18,7 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
- 
+
 ; Sorry.  The GUI code is a total mess.  One problem I encountered is that
 ;   there seems to be a bug in nasm with using math calculations combined
 ;   with macros within macros, so in some macro definitions, I had to
@@ -63,23 +63,23 @@
 ;   ButtonProcess         - routines that processes boxed buttons
 ;   CheatCodeSearchInit
 ;   guiwincontrol
- 
+
 
 %include "macros.mac"
 
-EXTSYM curblank, vidpastecopyscr, frameskip, newengen, vsyncon
-EXTSYM cvidmode, antienab, smallscreenon, smallscreence,NetQuit
-EXTSYM soundon, StereoSound, SoundQuality, MusicRelVol
-EXTSYM endprog, continueprog, spcBuffera, spcRamcmp, cbitmode, makepal
-EXTSYM t1cc, LoadDir, LoadDrive, SRAMDir, SRAMChdir, SRAMDirCurDir, initsnes, romloadskip
-EXTSYM fname, makeextension, sram, loadfileGUI, GUIloadfailed
-EXTSYM SetupROM, romdata, ForcePal, ramsize, ramsizeand, curromsize
-EXTSYM romispal, totlines, cfgloadsdir, init65816, procexecloop
-EXTSYM spcRam, spcPCRam, spcS, spcRamDP, spcA, spcX, spcY, spcP, spcNZ
-EXTSYM Voice0Status, Voice1Status, Voice2Status, Voice3Status, Voice4Status
-EXTSYM Voice5Status, Voice6Status, Voice7Status, romtype, SetIRQVectors
-EXTSYM ClearScreen, statesaver, loadstate2, vidbuffer, ASCII2Font, hirestiledat
-EXTSYM showallext, ROMTypeNOTFound, scanlines,statefileloc,pl1selk,pl2selk
+EXTSYM curblank,vidpastecopyscr,frameskip,newengen,vsyncon
+EXTSYM cvidmode,antienab, smallscreenon, smallscreence,NetQuit
+EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
+EXTSYM endprog,continueprog,spcBuffera,spcRamcmp,cbitmode,makepal
+EXTSYM t1cc,LoadDir,LoadDrive,SRAMDir,SRAMChdir,SRAMDirCurDir,initsnes
+EXTSYM fname,makeextension,sram,loadfileGUI,GUIloadfailed,romloadskip
+EXTSYM SetupROM,romdata,ForcePal,ramsize,ramsizeand,curromsize
+EXTSYM romispal,totlines,cfgloadsdir,init65816,procexecloop
+EXTSYM spcRam,spcPCRam,spcS,spcRamDP,spcA,spcX,spcY,spcP,spcNZ
+EXTSYM Voice0Status,Voice1Status,Voice2Status,Voice3Status,Voice4Status
+EXTSYM Voice5Status,Voice6Status,Voice7Status,romtype
+EXTSYM ClearScreen,statesaver,loadstate2,vidbuffer,ASCII2Font,hirestiledat
+EXTSYM showallext,ROMTypeNOTFound,scanlines,statefileloc,pl1selk,pl2selk
 EXTSYM fnamest,sprlefttot,spritetablea,fnames,CHIPBATT,sfxramdata,setaramdata,SETAEnable,cgram,srama
 EXTSYM tempco0,prevbright,maxbr,prevpal,coladdr,coladdg,coladdb
 EXTSYM scaddtype,ScreenScale,vesa2red10,initvideo2,initvideo,pressed,UpdateDevices
@@ -148,7 +148,7 @@ EXTSYM outofmemfix,yesoutofmemory
 EXTSYM JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209,JoyMaxX209
 EXTSYM JoyMinY209,JoyMaxY209,GetCoords,GetCoords3
 EXTSYM MultiTap,SFXEnable
-EXTSYM RestoreSystemVars 
+EXTSYM RestoreSystemVars
 EXTSYM TCPIPStartServer
 EXTSYM TCPIPInitConnectToServer
 EXTSYM TCPIPWaitForConnection
@@ -234,7 +234,7 @@ NEWSYM WaterOn,  db 1
 ;                Video
 ;                Sound
 ;                Paths
-;                Saves        
+;                Saves
 
 ; MultiPlay only has "Internet" for Windows/Linux
 
@@ -386,10 +386,10 @@ GUIloadfntype    db 0
 
 NEWSYM pl3selk,   dd 0   ; 3SELECT = SHIFT
 NEWSYM pl3startk, dd 0   ; 3START = ENTER
-NEWSYM pl3upk,    dd 0   ; 3UP = up 
-NEWSYM pl3downk,  dd 0   ; 3DOWN = down 
-NEWSYM pl3leftk,  dd 0   ; 3LEFT = left 
-NEWSYM pl3rightk, dd 0   ; 3RIGHT = right 
+NEWSYM pl3upk,    dd 0   ; 3UP = up
+NEWSYM pl3downk,  dd 0   ; 3DOWN = down
+NEWSYM pl3leftk,  dd 0   ; 3LEFT = left
+NEWSYM pl3rightk, dd 0   ; 3RIGHT = right
 NEWSYM pl3Xk,     dd 0   ; 3X = INS
 NEWSYM pl3Ak,     dd 0   ; 3A = HOME
 NEWSYM pl3Lk,     dd 0   ; 3L = PAGE UP
@@ -398,10 +398,10 @@ NEWSYM pl3Bk,     dd 0   ; 3B = END
 NEWSYM pl3Rk,     dd 0   ; 3R = PAGE DOWN
 NEWSYM pl4selk,   dd 0   ; 4SELECT = SHIFT
 NEWSYM pl4startk, dd 0   ; 4START = ENTER
-NEWSYM pl4upk,    dd 0   ; 4UP = up 
-NEWSYM pl4downk,  dd 0   ; 4DOWN = down 
-NEWSYM pl4leftk,  dd 0   ; 4LEFT = left 
-NEWSYM pl4rightk, dd 0   ; 4RIGHT = right 
+NEWSYM pl4upk,    dd 0   ; 4UP = up
+NEWSYM pl4downk,  dd 0   ; 4DOWN = down
+NEWSYM pl4leftk,  dd 0   ; 4LEFT = left
+NEWSYM pl4rightk, dd 0   ; 4RIGHT = right
 NEWSYM pl4Xk,     dd 0   ; 4X = INS
 NEWSYM pl4Ak,     dd 0   ; 4A = HOME
 NEWSYM pl4Lk,     dd 0   ; 4L = PAGE UP
@@ -544,10 +544,10 @@ NEWSYM GUIEffect, db 0
 
 NEWSYM pl5selk,   dd 0   ; 4SELECT = SHIFT
 NEWSYM pl5startk, dd 0   ; 4START = ENTER
-NEWSYM pl5upk,    dd 0   ; 4UP = up 
-NEWSYM pl5downk,  dd 0   ; 4DOWN = down 
-NEWSYM pl5leftk,  dd 0   ; 4LEFT = left 
-NEWSYM pl5rightk, dd 0   ; 4RIGHT = right 
+NEWSYM pl5upk,    dd 0   ; 4UP = up
+NEWSYM pl5downk,  dd 0   ; 4DOWN = down
+NEWSYM pl5leftk,  dd 0   ; 4LEFT = left
+NEWSYM pl5rightk, dd 0   ; 4RIGHT = right
 NEWSYM pl5Xk,     dd 0   ; 4X = INS
 NEWSYM pl5Ak,     dd 0   ; 4A = HOME
 NEWSYM pl5Lk,     dd 0   ; 4L = PAGE UP
@@ -851,7 +851,7 @@ clearsram:
     dec ecx
     jnz .loop2
 .nosfxbatt
-    
+
     cmp byte[SETAEnable],0
     je .nosetasram
     mov eax,[setaramdata]
@@ -866,7 +866,7 @@ clearsram:
     cmp byte[SA1Enable],1
     jne .nosa1
     cmp byte[CHIPBATT],1
-    jne .nosa1    
+    jne .nosa1
     mov eax,[SA1RAMArea]
     mov ecx,65536*2
 .loop3
@@ -1496,26 +1496,26 @@ NEWSYM SaveSramData
     je .savesramdone
 
     mov edx,[sram]
-    cmp byte[SFXEnable],1    
+    cmp byte[SFXEnable],1
     jne .notsfx
     mov edx,[sfxramdata]
-.notsfx    
+.notsfx
     cmp byte[SA1Enable],1
     jne .notsa1
     mov edx,[SA1RAMArea]
-.notsa1    
+.notsa1
     cmp byte[SETAEnable],1
     jne .notseta
     mov edx,[setaramdata]
 .notseta
-    cmp edx,[sram]    
+    cmp edx,[sram]
     je .notspecial
     cmp byte[CHIPBATT],0
     je .savesramdone
 .notspecial
-    
+
     clim
-    
+
     push edx ;Backup data to save
     mov edx,fnames+1
     call Create_File
@@ -1527,11 +1527,11 @@ NEWSYM SaveSramData
     call Write_File
     call Close_File
     push edx ;Dirty hack for the next line
-.failed    
+.failed
     pop edx ;This is needed here because if the jump to failed is carried out, edx is never popped
     stim
 .savesramdone
-    
+
     call SaveCombFile
 
     ; change dir to InitDrive/InitDir
@@ -1852,7 +1852,7 @@ NEWSYM StartGUI
 
     call GUIQuickLoadUpdate
     call LoadDetermine
-    
+
     ; change dir to LoadDrive/LoadDir
     mov dl,[LoadDrive]
     mov ebx,LoadDir
@@ -2357,8 +2357,8 @@ NEWSYM StartGUI
     mov dword[PBackupPos],0
     call RestoreCVFrame
     popad
-    mov esi,[tempesi] 	 
-    mov edi,[tempedi] 	 
+    mov esi,[tempesi] 	
+    mov edi,[tempedi] 	
     mov ebp,[tempebp]
 .norestoreval
 
@@ -2861,8 +2861,8 @@ guipostvideo:
 
     cmp dword[GUIkeydelay],0
     je .pressedokay
-    
-    mov byte[pressed+39h],0    
+
+    mov byte[pressed+39h],0
     call JoyRead
     cmp byte[pressed+39h],0
     jne .pressedokay
@@ -3415,10 +3415,10 @@ DisplayBoxes:
     jmp .finstuff
 .noguichosesave
     cmp al,3
-    jne .noguiinput 
-    call DisplayGUIInput 
+    jne .noguiinput
+    call DisplayGUIInput
     jmp .finstuff
-.noguiinput 
+.noguiinput
     cmp al,4
     jne .noguioption
     call DisplayGUIOption
@@ -3598,9 +3598,9 @@ GUIProcReset:
     jne .nomovierecording
     call ResetDuringMovie
     jmp .movieendif
-.nomovierecording    
+.nomovierecording
     call GUIDoReset
-.movieendif    
+.movieendif
     popad
     cmp byte[CNetType],20
     jne .noreset
@@ -3940,7 +3940,9 @@ InitGUI:
     call GetScreen
 .nong16b
     call ClearScreen
+    pushad
     call Clear2xSaIBuffer
+    popad
     call GUISetPal
     call GUIBufferData
     ret
@@ -5408,7 +5410,7 @@ GUIIconDataCheckBoxUC:
 
 GUIIconDataCheckBoxC:
     db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,165,0
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,165,0  ,0  
+    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,165,0  ,0
     db 0  ,0  ,0  ,0  ,0  ,0  ,165,0  ,0  ,0
     db 0  ,220,219,218,217,165,215,0  ,0  ,0
     db 0  ,165,165,217,165,165,214,202,0  ,0

@@ -63,7 +63,7 @@ EXTSYM GUICPC, newgfx16b
 EXTSYM vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3
 EXTSYM granadd,CSStatus,CSStatus2,CSStatus3
 EXTSYM SpecialLine
-EXTSYM vidbufferofsb
+EXTSYM Clear2xSaIBuffer
 ;EXTSYM Super2xSaI
 EXTSYM HalfTransB,HalfTransC
 
@@ -134,7 +134,7 @@ NEWSYM FPUZero
     dec ecx
     jnz .TopOfLoop
     fstp st0
-%endif    
+%endif
     ret
 
 %if 0
@@ -553,11 +553,11 @@ NEWSYM FontData
          db 01111100b,11000110b,11000000b,11000000b     ; G, 11
          db 11001110b,11000110b,01111100b,00000000b
          db 11000110b,11000110b,11000110b,11111110b     ; H, 12
-         db 11000110b,11000110b,11000110b,00000000b     
+         db 11000110b,11000110b,11000110b,00000000b
          db 00111100b,00011000b,00011000b,00011000b     ; I, 13
-         db 00011000b,00011000b,00111100b,00000000b     
+         db 00011000b,00011000b,00111100b,00000000b
          db 00011110b,00001100b,00001100b,00001100b     ; J, 14
-         db 00001100b,11001100b,00111100b,00000000b     
+         db 00001100b,11001100b,00111100b,00000000b
          db 11001100b,11011000b,11110000b,11100000b     ; K, 15
          db 11110000b,11011000b,11001100b,00000000b
          db 11000000b,11000000b,11000000b,11000000b     ; L, 16
@@ -622,7 +622,7 @@ NEWSYM FontData
          ; #, 31  (, 3A  {, 43
          ; =, 32  ), 3B  }, 44
          ; ", 33  @, 3C  Up,45
-         ; \, 34  ', 3D  Dn,46 
+         ; \, 34  ', 3D  Dn,46
          ; *, 35  !, 3E  Lt,47
          ; ?, 36  $, 3F  Rt,48
          ; %, 37  ;, 40  Bk,49
@@ -1540,7 +1540,7 @@ NEWSYM saveselect
     pushad
     call mzt_chdir
     popad
-.nomovie    
+.nomovie
     mov byte[f3menuen],1
     mov byte[ForceNonTransp],1
     cmp byte[ForceNewGfxOff],0
@@ -1774,7 +1774,7 @@ NEWSYM saveselect
     pushad
     call UpChdir
     popad
-.nomovie2    
+.nomovie2
     ret
 
 SECTION .bss
@@ -2081,13 +2081,15 @@ SECTION .text
     mov byte[f3menuen],0
     mov byte[ForceNonTransp],0
     mov byte[GUIOn],0
+    pushad
     call Clear2xSaIBuffer
+    popad
     cmp byte[MovieProcessing],0
     jz .nomovie3
     pushad
     call UpChdir
     popad
-.nomovie3    
+.nomovie3
     ret
 
 SECTION .data
@@ -3227,12 +3229,12 @@ NEWSYM chatTL, resd 1
 
 SECTION .data
 NEWSYM chatreqtable
-    db 0  ,2  ,'1','2','3','4','5','6','7','8','9','0','-','=',8  ,0 
+    db 0  ,2  ,'1','2','3','4','5','6','7','8','9','0','-','=',8  ,0
     db 'Q','W','E','R','T','Y','U','I','O','P','[',']',13 ,0  ,'A','S'
     db 'D','F','G','H','J','K','L',';',27h,'`',1  ,'\','Z','X','C','V'
     db 'B','N','M',',','.','/',1  ,0  ,0  ,' ',0  ,0  ,0  ,0  ,0  ,0
     ; Shift Key Presses
-    db 0  ,2  ,'!','@','#','$','%','^','&','*','(',')','_','+',8  ,0 
+    db 0  ,2  ,'!','@','#','$','%','^','&','*','(',')','_','+',8  ,0
     db 'Q','W','E','R','T','Y','U','I','O','P','{','}',13 ,0  ,'A','S'
     db 'D','F','G','H','J','K','L',':','"','~',1  ,'|','Z','X','C','V'
     db 'B','N','M','<','>','?',1  ,0  ,0  ,' ',0  ,0  ,0  ,0  ,0  ,0
@@ -3581,13 +3583,13 @@ NEWSYM copyvid
     jne .not16bframe
     mov esi,216*288*2+32*2
     add esi,[vidbuffer]
-    call OutputGraphicString16b5x5    
+    call OutputGraphicString16b5x5
     jmp .nomovie4
 .not16bframe
     mov esi,216*288+32
     add esi,[vidbuffer]
     call OutputGraphicString5x5
-.nomovie4    
+.nomovie4
     jmp vidpaste
 SECTION .bss
 .sdrawptr resd 1
@@ -3711,19 +3713,6 @@ NEWSYM vidpaste
 
 SECTION .bss
 .SSRedCo resw 1
-SECTION .text
-
-
-NEWSYM Clear2xSaIBuffer
-    mov ebx,[vidbufferofsb]
-    add ebx,288*2
-    mov ecx,144*239
-.nextb
-    mov dword[ebx],0FFFFFFFFh
-    add ebx,4
-    dec ecx
-    jnz .nextb
-    ret
 
 SECTION .data
 NEWSYM MsgCount,  dd 120                ; How long message will stay (PAL = 100)

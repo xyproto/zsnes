@@ -96,25 +96,12 @@ EXTSYM sfxaccessbankw8d,sfxramdata
 EXTSYM sramaccessbankr16,sramaccessbankr16s,sramaccessbankr8,sramaccessbankr8s
 EXTSYM sramaccessbankw16,sramaccessbankw16s,sramaccessbankw8,sramaccessbankw8s
 EXTSYM ScrDispl,wramreadptr,wramwriteptr
-EXTSYM loadstate2,headerhack
+EXTSYM loadstate2,CMovieExt,MoviePlay
 
 ;initc.c
-EXTSYM clearmem,clearSPCRAM,PatchUsingIPS,loadZipFile,ZOpenFileName
-EXTSYM loadROM,CalcChecksum,BankCheck,MirrorROM,SplittedROM,addOnStart,addOnSize
-EXTSYM SPC7PackIndexLoad,SPC7110IndexSize,DumpROMLoadInfo,SetupSramSize,IntlEHi
-EXTSYM CHIPBATT,SETAEnable,C4Enable,SPC7110Enable,RTCEnable,SA1Enable,SDD1Enable
-EXTSYM OBCEnable,SFXEnable,ST18Enable,SGBEnable,DSP1Enable,DSP2Enable,DSP3Enable
-EXTSYM DSP4Enable,BSEnable,clearvidsound
-
-EXTSYM calculate_state_sizes,InitRewindVars
-
-EXTSYM SetaCmdEnable,setaramdata
-EXTSYM setaaccessbankr8,setaaccessbankw8,setaaccessbankr8a,setaaccessbankw8a
-EXTSYM setaaccessbankr16,setaaccessbankw16,setaaccessbankr16a,setaaccessbankw16a
-EXTSYM DSP2Read8b,DSP2Read16b,DSP2Write8b,DSP2Write16b,InitDSP2
-EXTSYM DSP4Read8b,DSP4Read16b,DSP4Write8b,DSP4Write16b,InitDSP4
-
-EXTSYM SetupROMc,CMovieExt,MoviePlay
+EXTSYM clearmem,clearSPCRAM,PatchUsingIPS,ZOpenFileName,loadROM,SPC7110IndexSize
+EXTSYM SPC7PackIndexLoad,IntlEHi,C4Enable,SPC7110Enable,RTCEnable,SA1Enable
+EXTSYM SDD1Enable,OBCEnable,SFXEnable,BSEnable,clearvidsound,headerhack,SetupROM
 
 %ifdef __LINUX__
 EXTSYM LoadDir,popdir,pushdir
@@ -137,7 +124,7 @@ blah times 450 db 0
 NEWSYM autoloadstate, db 0        ; auto load state slot number
 NEWSYM autoloadmovie, db 0
 
-NEWSYM EndMessage 	 
+NEWSYM EndMessage 	
  db '                                                                   ',13,10,0
 
 SECTION .text
@@ -170,7 +157,7 @@ NEWSYM init
     pushad
     call BackupSystemVars
     popad
-    
+
     xor eax,eax
     mov al,[cfgreinittime]
     mov ebx,50
@@ -218,8 +205,8 @@ NEWSYM init
 .found
     mov byte[romloadskip],0
     call loadfile
-    call SetupROM
     pushad
+    call SetupROM
     call showinfogui
     popad
 .noloadfile
@@ -254,7 +241,7 @@ NEWSYM init
     jge .2digits
     mov al,byte[autoloadstate]
     add al,48
-    mov byte[fnamest+ebx],al    
+    mov byte[fnamest+ebx],al
     jmp .enddigits
 .2digits
     xor eax,eax
@@ -300,13 +287,13 @@ NEWSYM init
     mov al,'v'
 .notzero1
     mov byte[CMovieExt],al
-        
+
     pushad
     call MoviePlay
     popad
-    
+
 .noautloadmovie
-    
+
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUI16VID+eax],1
@@ -379,7 +366,7 @@ NEWSYM pl1selk,   dd 54
 NEWSYM pl1startk, dd 28
 NEWSYM pl1upk,    dd 200
 NEWSYM pl1downk,  dd 208
-NEWSYM pl1leftk,  dd 203 
+NEWSYM pl1leftk,  dd 203
 NEWSYM pl1rightk, dd 205
 %endif
 NEWSYM pl1Xk,     dd 31
@@ -1307,7 +1294,7 @@ NEWSYM init65816
     jne .notbsx2
     mov eax,0FFFFFFFFh
     helpclearmem wramdataa, 65536
-    helpclearmem ram7fa, 65536    
+    helpclearmem ram7fa, 65536
     cmp byte[romtype],1 ;Hack for BS HiROMs
     jne .notbsx2
     mov dword[ram7fa+65528],01010101h
@@ -1710,7 +1697,7 @@ NEWSYM initsnes
     stosd
     add eax,10000h
     dec ecx
-    jnz .loopbb 
+    jnz .loopbb
     ; set banks 80-BF (40h x 32KB ROM banks @ 8000h)
     mov eax,[romdata]
     mov ecx,40h
@@ -2173,7 +2160,7 @@ NEWSYM printhex8
 ; Search for header size first which is filesize MOD 32768
 
 NEWSYM PatchIPS
-%ifdef __LINUX__    
+%ifdef __LINUX__
     pushad
     call pushdir
     popad
@@ -2601,7 +2588,7 @@ NEWSYM CSStatus3, db 'VIDEO:                    CRC32:        ',0
 ;*******************************************************
 ; Show Information
 ;*******************************************************
-; 
+;
 ; Maker Code = FFB0-FFB1
 ; Game Code = FFB2-FFB5
 ; Expansion RAM Size = FFBD (0=none, 1=16kbit, 3=64kbit, 5=256kbit,etc.
@@ -2616,127 +2603,12 @@ NEWSYM CSStatus3, db 'VIDEO:                    CRC32:        ',0
 SECTION .bss
 NEWSYM DSP1Type, resb 1
 NEWSYM intldone, resb 1
-SECTION .text
-
-EXTSYM ClearScreen, cbitmode, makepal
-
-NEWSYM SetupROM
-    pushad
-    call SetupROMc
-    popad
-;    call CheckROMType
-    call SetIRQVectors
-    call ClearScreen
-    cmp byte[cbitmode],0
-    jne .nomakepal
-    call makepal
-.nomakepal
-    ; get ROM and SRAM size
-    mov esi,[romdata]
-    add esi,[infoloc]
-    add esi,18h
-    mov cl,[esi-1]
-    mov [curromsize],cl
-    pushad
-    call SetupSramSize
-    call calculate_state_sizes
-    call InitRewindVars
-    popad
-
-    ; get pal/ntsc
-    inc esi
-    mov al,[ForceROMTiming]
-    mov byte[ForcePal],al
-    xor al,al
-    mov al,[esi]
-    cmp byte[ForcePal],1
-    jne .nontsc
-    mov al,0
-.nontsc
-    cmp byte[ForcePal],2
-    jne .nopal2
-    mov al,2
-.nopal2
-    mov byte[romispal],0
-    mov word[totlines],263
-    mov dword[MsgCount],120
-    cmp byte[BSEnable],1
-    je .nopal
-    cmp al,1
-    jbe .nopal
-    cmp al,0Dh
-    jae .nopal
-    mov byte[romispal],1
-    mov word[totlines],314
-    mov dword[MsgCount],100
-.nopal
-    ret
-
-SECTION .bss
 NEWSYM C4RamR,   resd 1
 NEWSYM C4RamW,   resd 1
 NEWSYM C4Ram,   resd 1
 NEWSYM ROMTypeNOTFound, resb 1
 NEWSYM Interleaved, resb 1
 SECTION .text
-
-NEWSYM SetIRQVectors
-    ; Get Vectors (NMI & Reset)
-    mov esi,[romdata]
-    add esi,[infoloc]
-    add esi,21
-    mov al,[esi]
-    test al,0F0h
-    jnz .yesfastrom
-    mov al,[opexec268]
-    mov [opexec358],al
-    mov al,[opexec268cph]
-    mov [opexec358cph],al
-    mov al,[cycpb268]
-    mov [cycpb358],al
-.yesfastrom
-    add esi,0Fh
-    cmp word[esi+24],0FFFFh
-    jne .notreseterror
-    mov word[esi+6],0FF9Ch
-    mov word[esi+24],0FF80h
-.notreseterror
-    lodsw
-    mov [copv],ax
-    lodsw
-    mov [brkv],ax
-    lodsw
-    mov [abortv],ax
-    lodsw
-    mov [nmiv],ax
-    mov [nmiv2],ax
-    add esi,2
-    lodsw
-    mov [irqv],ax
-    mov [irqv2],ax
-    add esi,4
-    ; 8-bit and reset
-    lodsw
-    mov [copv8],ax
-    inc esi
-    inc esi
-    lodsw
-    mov [abortv8],ax
-    lodsw
-    mov [nmiv8],ax
-    lodsw
-    mov [resetv],ax
-    lodsw
-    mov [brkv8],ax
-    mov [irqv8],ax
-    cmp byte[yesoutofmemory],0
-    je .notfailed
-    mov word[resetv],8000h
-    mov esi,[romdata]
-    mov word[esi],0FE80h
-    mov word[esi+8000h],0FE80h
-.notfailed
-    ret
 
 NEWSYM outofmemfix
     mov esi,[romdata]

@@ -273,7 +273,7 @@ GUIloadfilename:
     mov dword[nmiprevline],224
     mov dword[nmistatus],0
     mov dword[spcnumread],0
-	mov dword[spchalted],-1
+    mov dword[spchalted],-1
     mov byte[NextLineCache],0
     mov byte[curexecstate],1
 
@@ -293,8 +293,8 @@ GUIloadfilename:
     mov byte[CheatWinMode],0
     mov byte[CheatSearchStatus],0
 
-    call SetupROM
     pushad
+    call SetupROM
     call showinfogui
     popad
     call initsnes

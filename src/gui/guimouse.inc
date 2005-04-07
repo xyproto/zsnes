@@ -1411,7 +1411,9 @@ GUIWinClicked:
     cmp edx,%2+8
     jg %%noclick
     xor %3,1
+    pushad
     call Clear2xSaIBuffer
+    popad
 %%noclick
 %endmacro
 
@@ -2119,7 +2121,7 @@ DisplayGUIMovieClick:
     GUIPButtonHole 100,40,byte[CMovieExt],'7'
     GUIPButtonHole 120,40,byte[CMovieExt],'8'
     GUIPButtonHole 140,40,byte[CMovieExt],'9'
-    
+
     DGOptnsProcBox 116,68,[KeyInsrtChap]
     DGOptnsProcBox 116,84,[KeyNextChap]
     DGOptnsProcBox 116,100,[KeyPrevChap]
@@ -2244,7 +2246,7 @@ DisplayGUIInputClick:
     mov edi,pl5selk
     mov dword[keycontrolval],pl5contrl
 .nopl5
-    
+
     ;Check if controller is set
     push eax
     mov eax,dword[keycontrolval]
@@ -3333,9 +3335,9 @@ DisplayGUISaveClick:
     GUIPHoldbutton2 173,32,181,40,72,byte[RewindFrames],1,40
     GUIPHoldbutton2 184,32,192,40,73,byte[RewindFrames],-1,0
     DGOptnsProcBox 27,121,[KeyStateSlc0]
-    DGOptnsProcBox 27+45,121,[KeyStateSlc1]    
+    DGOptnsProcBox 27+45,121,[KeyStateSlc1]
     DGOptnsProcBox 27+45*2,121,[KeyStateSlc2]
-    DGOptnsProcBox 27+45*3,121,[KeyStateSlc3]   
+    DGOptnsProcBox 27+45*3,121,[KeyStateSlc3]
     DGOptnsProcBox 27,130,[KeyStateSlc4]
     DGOptnsProcBox 27+45,130,[KeyStateSlc5]
     DGOptnsProcBox 27+45*2,130,[KeyStateSlc6]

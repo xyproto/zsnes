@@ -128,7 +128,7 @@ SetAllKeys:
     mov edi,pl5selk
     mov dword[keycontrolval],pl5contrl
 .nopl5
-    
+
     ;Check if controller is set
     push eax
     mov eax,dword[keycontrolval]
@@ -136,7 +136,7 @@ SetAllKeys:
     pop eax
     jne .noLockInputChange
     ret
-.noLockInputChange    
+.noLockInputChange
     mov dword[guicpressptr],edi
     xor ebx,ebx
     mov ecx,12
@@ -361,7 +361,9 @@ SetDevice:
 
 NEWSYM GUIDoReset
     call ClearScreen
+    pushad
     call Clear2xSaIBuffer
+    popad
 ;    mov byte[NetPlayNoMore],1
     mov byte[RestoreValues],0
 

@@ -22,8 +22,20 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
 
+#ifdef __LINUX__
+#include "gblhdr.h"
+#define DIR_SLASH "/"
+#else
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
+#include <sys/stat.h>
+#define DIR_SLASH "\\"
+#endif
+
 extern unsigned int newengen, nggposng[2];
-extern unsigned short PrevPicture[64*56], *vidbuffer;
+extern unsigned short PrevPicture[64*56], *vidbuffer, *vidbufferofsb;
 
 void CapturePicture()
 {
@@ -60,4 +72,9 @@ void CapturePicture()
 	    PrevPicture[pppos] = ((PrevPicture[pppos] & 0x7FE0)<<1)|(PrevPicture[pppos] & 0x001F);
 	} // 0111 1111 1110 0000 and 0000 0000 0001 1111
     }
+}
+
+void Clear2xSaIBuffer()
+{
+  memset(vidbufferofsb+576, 0xFF, 576*239);
 }

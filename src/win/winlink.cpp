@@ -26,7 +26,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 extern "C" {
    #include <windows.h>
    #include <stdio.h>
-   #include <ddraw.h> 
+   #include <ddraw.h>
    //#include <initguid.h>
    #include <mmsystem.h>
    #include <time.h>
@@ -390,7 +390,7 @@ void DrawScreen()
       DD_Primary->Blt(&rcWindow, AltSurface == 0 ? DD_CFB : DD_CFB16, &BlitArea, DDBLT_WAIT, NULL);
    }
 }
- 
+
 DWORD InputEn=0;
 
 BOOL InputAcquire(void)
@@ -652,11 +652,11 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       case WM_PAINT:
          ValidateRect(hWnd,NULL);
          break;
-      case WM_ACTIVATE: 
+      case WM_ACTIVATE:
          if (LOWORD(wParam) != WA_INACTIVE)
          {
             IsActivated = 1;
-            if (FirstActivate == 0) initwinvideo(); 
+            if (FirstActivate == 0) initwinvideo();
             InputAcquire();
             if (FirstActivate == 1) FirstActivate = 0;
             CheckPriority();
@@ -769,7 +769,7 @@ BOOL InitSound()
 		  else UsePrimaryBuffer=0;
         }
     }
-	else 
+	else
 	{
 		return FALSE;
 	}
@@ -826,7 +826,7 @@ BOOL InitSound()
    wfx.wBitsPerSample = 16;
    wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
    wfx.cbSize=0;
-    
+
    memset(&dsbd, 0, sizeof(DSBUFFERDESC));
    dsbd.dwSize = sizeof(DSBUFFERDESC);
    dsbd.dwFlags = DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_STICKYFOCUS;
@@ -863,8 +863,8 @@ BOOL InitSound()
       SoundEnabled=1;
       FirstSound=0;
       return TRUE;
-   } 
-   else 
+   }
+   else
    {
       return FALSE;
    }
@@ -955,7 +955,7 @@ BOOL ReInitSound()
    wfx.wBitsPerSample = 16;
    wfx.nAvgBytesPerSec = wfx.nSamplesPerSec * wfx.nBlockAlign;
    wfx.cbSize=0;
-    
+
    memset(&dsbd, 0, sizeof(DSBUFFERDESC));
    dsbd.dwSize = sizeof(DSBUFFERDESC);
    dsbd.dwFlags = DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_STICKYFOCUS;
@@ -992,8 +992,8 @@ BOOL ReInitSound()
       SoundEnabled=1;
       FirstSound=0;
       return TRUE;
-   } 
-   else 
+   }
+   else
    {
       return FALSE;
    }
@@ -1100,7 +1100,7 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
       return DIENUM_CONTINUE;
    }
 
-   if (didc.dwButtons <= 16)   
+   if (didc.dwButtons <= 16)
       NumBTN[CurrentJoy] = didc.dwButtons;
    else
       NumBTN[CurrentJoy] = 16;
@@ -1396,7 +1396,7 @@ void TestJoy()
          }
 
       }
-   } 
+   }
 
 }
 
@@ -1462,7 +1462,7 @@ int InitDirectDraw()
    }
 
    ReleaseDirectDraw();
-   
+
    GetClientRect(hMainWindow, &rcWindow);
    ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow);
    ClientToScreen(hMainWindow, ( LPPOINT )&rcWindow + 1);
@@ -1550,7 +1550,7 @@ int InitDirectDraw()
    ddsd2.dwSize = sizeof(DDSURFACEDESC2);
    ddsd2.dwFlags = DDSD_CAPS;
    ddsd2.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
-   
+
    if (FullScreen == 1)
    {
       ddsd2.dwFlags |= DDSD_BACKBUFFERCOUNT;
@@ -1592,20 +1592,20 @@ int InitDirectDraw()
          lpDD=NULL;
          return FALSE;
       }
-      
+
       if (lpDDClipper->SetHWnd(0,hMainWindow) != DD_OK)
       {
          lpDD->Release();
          lpDD=NULL;
          return FALSE;
       }
-      
+
       if (DD_Primary->SetClipper(lpDDClipper) != DD_OK)
       {
          return FALSE;
       }
    }
-    
+
    format.dwSize = sizeof(DDPIXELFORMAT);
 
    if (DD_Primary->GetPixelFormat(&format) != DD_OK)
@@ -1720,7 +1720,7 @@ DWORD LockSurface()
     }
     else
       return(0);
-  }  
+  }
 }
 
 void UnlockSurface()
@@ -1948,8 +1948,8 @@ void initwinvideo(void)
       if (DMode == 1)
       {
         if ((DSMode == 1) || (FullScreen == 0))
-          SurfaceX = 512; 
-        else 
+          SurfaceX = 512;
+        else
           SurfaceX = 640;
         SurfaceY=480;
       }
@@ -2078,7 +2078,7 @@ void initwinvideo(void)
       CheckAlwaysOnTop();
 
       if (!hMainWindow)
-      { 
+      {
          return;
       }
 
@@ -2098,7 +2098,7 @@ void initwinvideo(void)
       if (Force60hz) Refresh = 60;
       InitDirectDraw();
       clearwin();
-      asm_call(Clear2xSaIBuffer);
+      Clear2xSaIBuffer();
       clear_display();
       return;
    }
@@ -2110,11 +2110,10 @@ void initwinvideo(void)
       ReleaseDirectDraw();
       InitDirectDraw();
       clearwin();
-      asm_call(Clear2xSaIBuffer);
+      Clear2xSaIBuffer();
       clear_display();
       return;
    }
-
 }
 
 extern unsigned int vidbuffer;
@@ -2149,7 +2148,7 @@ void CheckTimers(void)
            }
          }
          start2 += update_ticks_pc2;
-      }                                     
+      }
 
    if (T60HZEnabled == 1)
    {
@@ -2159,7 +2158,7 @@ void CheckTimers(void)
       {
          Game60hzcall();
          start += update_ticks_pc;
-      }                                     
+      }
    }
 
    if (T36HZEnabled == 1)
@@ -2170,7 +2169,7 @@ void CheckTimers(void)
       {
          GUI36hzcall();
          start += update_ticks_pc;
-      }                                     
+      }
    }
 }
 
@@ -2533,7 +2532,7 @@ void drawscreenwin(void)
 
            SURFDW=(DWORD *) &SurfBuf[(resolutn-1)*pitch];
            color32=0x7F000000;
-            
+
            for(i=0;i<256;i++)
            {
              SURFDW[i]=color32;
@@ -2541,11 +2540,11 @@ void drawscreenwin(void)
 
            SURFDW=(DWORD *) &SurfBuf[resolutn*pitch];
            color32=0x7F000000;
-         
+
            for(i=0;i<256;i++)
            {
              SURFDW[i]=color32;
-           }         
+           }
            break;
          case 24:
             MessageBox (NULL, "Sorry.  ZSNESw does not work in windowed 24 bit color modes. \nClick 'OK' to switch to a full screen mode.", "DDRAW Error" , MB_ICONERROR );
@@ -2579,7 +2578,7 @@ void drawscreenwin(void)
             {
               SURFDW=(DWORD *) &SurfBuf[j*pitch];
               color32=0x7F000000;
-             
+
               for(i=0;i<320;i++)
               {
                 SURFDW[i]=color32;
@@ -2612,7 +2611,7 @@ void drawscreenwin(void)
                ScreenPtr=ScreenPtr+576-512;
                SURFDW=(DWORD *) &SurfBuf[(j)*pitch];
             }
-   
+
             for(j=((resolutn-1)+8);j<240;j++)
             {
                SURFDW=(DWORD *) &SurfBuf[j*pitch];
@@ -2856,7 +2855,7 @@ void WinUpdateDevices()
                case 4500:
                   keys[0x100 + i * 32 + 0] = 1;
                   keys[0x100 + i * 32 + 3] = 1;
-                  break; 
+                  break;
                case 9000:
                   keys[0x100 + i * 32 + 0] = 1;
                   break;
@@ -2893,7 +2892,7 @@ void WinUpdateDevices()
             keys[0x100 + i * 32 + j] = 0;
          }
       }
-   } 
+   }
 
 }
 
@@ -3068,7 +3067,7 @@ void FrameSemaphore()
       QueryPerformanceCounter((LARGE_INTEGER*)&end);
 
       delay = ((update_ticks_pc - (end - start)) * 1000.0 / freq) - 3.0;
-   
+
       if (delay>0.0) WaitForSingleObject(hLock, (unsigned int)delay);
 
    }

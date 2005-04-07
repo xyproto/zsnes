@@ -252,14 +252,14 @@ void repackfunct()
 }
 
 void regaccessbankr8(), regaccessbankw8(), regaccessbankr16(), regaccessbankw16();
-void memaccessbankr8(), memaccessbankw8(), memaccessbankr16(), memaccessbankw16(); 
-void wramaccessbankr8(), wramaccessbankw8(), wramaccessbankr16(), wramaccessbankw16(); 
-void sramaccessbankr8(), sramaccessbankw8(), sramaccessbankr16(), sramaccessbankw16(); 
-void eramaccessbankr8(), eramaccessbankw8(), eramaccessbankr16(), eramaccessbankw16(); 
+void memaccessbankr8(), memaccessbankw8(), memaccessbankr16(), memaccessbankw16();
+void wramaccessbankr8(), wramaccessbankw8(), wramaccessbankr16(), wramaccessbankw16();
+void sramaccessbankr8(), sramaccessbankw8(), sramaccessbankr16(), sramaccessbankw16();
+void eramaccessbankr8(), eramaccessbankw8(), eramaccessbankr16(), eramaccessbankw16();
 
 void regaccessbankr8SA1(), regaccessbankw8SA1(), regaccessbankr16SA1(), regaccessbankw16SA1();
-void SA1RAMaccessbankr8(), SA1RAMaccessbankw8(), SA1RAMaccessbankr16(), SA1RAMaccessbankw16(); 
-void SA1RAMaccessbankr8b(), SA1RAMaccessbankw8b(), SA1RAMaccessbankr16b(), SA1RAMaccessbankw16b(); 
+void SA1RAMaccessbankr8(), SA1RAMaccessbankw8(), SA1RAMaccessbankr16(), SA1RAMaccessbankw16();
+void SA1RAMaccessbankr8b(), SA1RAMaccessbankw8b(), SA1RAMaccessbankr16b(), SA1RAMaccessbankw16b();
 
 void sramaccessbankr8s(), sramaccessbankw8s(), sramaccessbankr16s(), sramaccessbankw16s();
 void DSP1Read8b3F(), DSP1Write8b3F(), DSP1Read16b3F(), DSP1Write16b3F();
@@ -272,13 +272,13 @@ void sfxaccessbankr8b(), sfxaccessbankw8b(), sfxaccessbankr16b(), sfxaccessbankw
 void sfxaccessbankr8c(), sfxaccessbankw8c(), sfxaccessbankr16c(), sfxaccessbankw16c();
 void sfxaccessbankr8d(), sfxaccessbankw8d(), sfxaccessbankr16d(), sfxaccessbankw16d();
 
-mrwp regbank = { regaccessbankr8, regaccessbankw8, regaccessbankr16, regaccessbankw16 }; 
+mrwp regbank = { regaccessbankr8, regaccessbankw8, regaccessbankr16, regaccessbankw16 };
 mrwp membank = { memaccessbankr8, memaccessbankw8, memaccessbankr16, memaccessbankw16 };
 mrwp wrambank = { wramaccessbankr8, wramaccessbankw8, wramaccessbankr16, wramaccessbankw16 };
 mrwp srambank = { sramaccessbankr8, sramaccessbankw8, sramaccessbankr16, sramaccessbankw16 };
 mrwp erambank = { eramaccessbankr8, eramaccessbankw8, eramaccessbankr16, eramaccessbankw16 };
 
-mrwp sa1regbank = { regaccessbankr8SA1, regaccessbankw8SA1, regaccessbankr16SA1, regaccessbankw16SA1 }; 
+mrwp sa1regbank = { regaccessbankr8SA1, regaccessbankw8SA1, regaccessbankr16SA1, regaccessbankw16SA1 };
 mrwp sa1rambank = { SA1RAMaccessbankr8, SA1RAMaccessbankw8, SA1RAMaccessbankr16, SA1RAMaccessbankw16 };
 mrwp sa1rambankb = { SA1RAMaccessbankr8b, SA1RAMaccessbankw8b, SA1RAMaccessbankr16b, SA1RAMaccessbankw16b };
 
@@ -295,8 +295,7 @@ mrwp sfxbankd = { sfxaccessbankr8d, sfxaccessbankw8d, sfxaccessbankr16d, sfxacce
 
 
 void SetAddressingModes()
-{
-                                        //  Banks
+{                                       //  Banks
   map_mem(0x00, &regbank,  0x40);       // 00 - 3F
   map_mem(0x40, &membank,  0x30);       // 49 - 6F
   map_mem(0x70, &srambank, 0x08);       // 70 - 77
@@ -309,7 +308,6 @@ void SetAddressingModes()
 
 void SetAddressingModesSA1()
 {
-                                        //  Banks
   map_mem(0x00, &sa1regbank,  0x40);    // 00 - 3F
   map_mem(0x40, &sa1rambank,  0x30);    // 49 - 6F
   map_mem(0x70, &sa1rambankb, 0x08);    // 70 - 77
