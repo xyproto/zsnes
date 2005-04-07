@@ -1993,7 +1993,9 @@ NEWSYM cpuover
 .noframeincr    
     cmp byte[EMUPause],1
     jne .noemupause
+    pushad
     call copyvid ;Update screen
+    popad
     jmp .nonewgfx
 .noemupause
 
