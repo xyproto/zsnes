@@ -186,8 +186,7 @@ MAINOBJ=cfgload${OE} endmem${OE} init${OE} initc${OE} uic${OE} patch${OE}\
 	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE}
 
 DOSOBJORIG=${DOSDIR}/debug${OE} ${DOSDIR}/joy${OE} ${DOSDIR}/modemrtn${OE} ${DOSDIR}/vesa2${OE}\
-       ${DOSDIR}/initvid${OE} ${DOSDIR}/sw${OE} ${DOSDIR}/gppro${OE} ${DOSDIR}/vesa12${OE}\
-       ${DOSDIR}/zsipx${OE}
+       ${DOSDIR}/initvid${OE} ${DOSDIR}/sw${OE} ${DOSDIR}/gppro${OE} ${DOSDIR}/vesa12${OE}
 
 
 OBJSORIG=${CHIPSOBJ} ${CPUOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
@@ -344,7 +343,6 @@ ${DOSDIR}/vesa12${OE}: $< macros.mac
 ${DOSDIR}/joy${OE}: $< macros.mac
 ${DOSDIR}/sw${OE}: $< macros.mac
 ${DOSDIR}/gppro${OE}: $< macros.mac
-${DOSDIR}/zsipx${OE}: $<
 ${DOSDIR}/modemrtn${OE}: $< macros.mac
 
 ${NETDIR}/ztcp${OE}: $<
