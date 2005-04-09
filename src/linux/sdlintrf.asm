@@ -1453,7 +1453,7 @@ NEWSYM TCPIPStartServer
     mov byte[TCPIPStatus],1
 ;    StartServer(unsigned short port)
     xor eax,eax
-    mov ax,[TCPIPPortNum]
+;    mov ax,[TCPIPPortNum]
     push eax
     call StartServerCycle
     add esp,4
@@ -1499,7 +1499,7 @@ NEWSYM TCPIPInitConnectToServer
     jnz .failed
     mov byte[TCPIPStatus],1
     ; Convert TCPIPAddress to IPAddrStr
-    mov ebx,TCPIPAddress
+;    mov ebx,TCPIPAddress
     mov edx,IPAddrStr
 .notend
     mov al,[ebx]
@@ -1523,7 +1523,7 @@ NEWSYM TCPIPConnectToServer
 ; int ConnectServer(char *servername, unsigned short port)
     pushad
     xor eax,eax
-    mov ax,[TCPIPPortNum]
+;    mov ax,[TCPIPPortNum]
     push eax
     mov eax,IPAddrStr
     push eax

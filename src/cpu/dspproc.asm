@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM spcRam, spcPCRam, spcRamDP, spcS, spcX, MovieProcessing
-EXTSYM CNetType, soundon, RevStereo
+EXTSYM soundon, RevStereo
 EXTSYM PitchModEn,SoundNoiseDis
 EXTSYM DosExit,Invalidopcode,RSPCRegF0,RSPCRegF1,RSPCRegF2,RSPCRegF3
 EXTSYM RSPCRegF4,RSPCRegF5,RSPCRegF6,RSPCRegF7,RSPCRegF8,RSPCRegF9

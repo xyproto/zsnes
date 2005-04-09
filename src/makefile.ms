@@ -43,7 +43,6 @@ GUIDIR=gui
 VIDEODIR=video
 WINDIR=win
 NETDIR=net
-OBJDIR=obj
 ZIPDIR=zip
 EFFECTSDIR=effects
 JMADIR=jma
@@ -175,9 +174,6 @@ WINOBJ=${WINDIR}/copyvwin${OE} ${DRESOBJ}\
 
 NETOBJ=${NETDIR}/ztcp${OE}
 
-#only used on DOS
-PREOBJ=${OBJDIR}/dosbuff.o ${OBJDIR}/ipx.o ${OBJDIR}/zipx.o
-
 ZIPOBJ=${ZIPDIR}/unzip${OE} ${ZIPDIR}/zpng${OE}
 
 EFFECTSOBJ=${EFFECTSDIR}/burn${OE} ${EFFECTSDIR}/water${OE} ${EFFECTSDIR}/smoke${OE}
@@ -198,7 +194,7 @@ OBJSORIG=${CHIPSOBJ} ${CPUOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${ZIPOBJ} ${EFFEC
 
 ifeq (${OS},__MSDOS__)
 DOSOBJ=${DOSOBJORIG} ${DOSDIR}/dosintrf${OE} ${DOSDIR}/sound${OE} ${DOSDIR}/zfile${OE}
-OBJS=${OBJSORIG} ${DOSOBJ} ${PREOBJ}
+OBJS=${OBJSORIG} ${DOSOBJ}
 DELETEOBJS=${OBJSORIG} ${DOSOBJ}
 endif
 
@@ -383,6 +379,7 @@ clean:
 	${DELETECOMMAND} ${DOSDIR}${SLASH}*${OE} ${TRUTH}
 	${DELETECOMMAND} ${WINDIR}${SLASH}*${OE} ${TRUTH}
 	${DELETECOMMAND} ${GUIDIR}${SLASH}*${OE} ${TRUTH}
+	${DELETECOMMAND} ${NETDIR}${SLASH}*${OE} ${TRUTH}
 
 else  #else no ENV specified
 help:

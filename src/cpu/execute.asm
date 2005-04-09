@@ -48,10 +48,6 @@ EXTSYM OSExit,DosExit,InitDir,InitDrive,createnewcfg,fnames,gotoroot,previdmode
 EXTSYM ramsize,sfxramdata,setaramdata,SETAEnable,sram,SRAMChdir
 ;    EXTSYM tempstore
 EXTSYM printhex
-%ifdef __MSDOS__
-EXTSYM ModemInitStat, DeInitModem
-EXTSYM deinitipx
-%endif
 EXTSYM deinitvideo
 EXTSYM BRRBuffer,DSPMem,PrepareSaveState,ResetState,SFXEnable,PHdspsave
 EXTSYM fnamest,sndrot,spcRam,spcRamDP,tableA,vram,wramdata
@@ -84,17 +80,7 @@ EXTSYM ForceNewGfxOff,LethEnData,C4Pause,GUIQuit
 EXTSYM IRAM,SA1Ptr,SA1BWPtr
 EXTSYM scrnon,scaddset
 EXTSYM outofmemfix,yesoutofmemory
-EXTSYM CNetType,Latency,LatencyLeft,NetSwap
-;    EXTSYM vesa2selec
-EXTSYM RemoteSendChar,RemoteGetChar,pl1neten,pl2neten,pl3neten,pl4neten
-EXTSYM pl5neten,RemoteSendEAX,prevp1net,prevp2net,prevp3net,prevp4net
-EXTSYM RemoteGetEAX,cnetplaybuf,netdelayed,cnetptrtail,cnetptrhead
-EXTSYM ChatProgress,RecvProgress,chatTL,WritetochatBuffer,NetAddChar
-EXTSYM PreparePacket,SendPacket,NoInputRead,RemoteDisconnect
-EXTSYM SendPacketUDP,ChatNick
-EXTSYM JoyRead,ChatType2,chatstrR2,chatstrR3,chatstrR4,chatstrR5
-EXTSYM chatRTL2,chatRTL3,chatRTL4,chatRTL5
-EXTSYM NetLoadState,ProcessMovies,MovieStop
+EXTSYM ProcessMovies,MovieStop
 EXTSYM ioportval,ppustatus
 EXTSYM C4VBlank,dsp1teststuff
 EXTSYM ReturnFromSPCStall,SPCStallSetting,cycpb268,cycpb358,HIRQSkip,scanlines
@@ -106,10 +92,10 @@ EXTSYM SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,hdmaearlstart,SFXCounter
 EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67,fxbit67pcal
 EXTSYM SfxSFR,nosprincr
 EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
-EXTSYM NetPlayNoMore,MovieSeekBehind
+EXTSYM MovieSeekBehind
 EXTSYM statefileloc,CHIPBATT,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead,ResetDuringMovie
-EXTSYM EMUPauseKey,INCRFrameKey,MovieWaiting
+EXTSYM EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM copyvid
 
 %ifdef __MSDOS__
@@ -119,172 +105,15 @@ EXTSYM dssel
 SECTION .data
 NEWSYM CBackupPos, dd 0
 NEWSYM PBackupPos, dd 0
-NEWSYM PPValue, dd 0   ; Previous PValue
-NEWSYM DPValue, dd 0   ; Destination PValue
-NEWSYM CurRecv, dd 0   ; Set to 1 if Recovery mode is on
-; if CurRecv=1, then do not send tcp/ip data, always frame skip, do not
-;   draw to screen, do not key on, restore previous local key presses,
-;   when disabling key ons, divert dspmem write/read to a different
-;   array temporarly, then re-copy back in when finished
-NEWSYM PPContrl, times 16 dd 0   ; Previous Controller 1 Data
-NEWSYM PPContrl2, times 16 dd 0   ; Previous Controller 2 Data
-NEWSYM PPContrl3, times 16 dd 0   ; Previous Controller 3 Data
-NEWSYM PPContrl4, times 16 dd 0   ; Previous Controller 4 Data
-NEWSYM PPContrl5, times 16 dd 0   ; Previous Controller 5 Data
 NEWSYM tempedx, dd 0
 NEWSYM tempesi, dd 0
 NEWSYM tempedi, dd 0
 NEWSYM tempebp, dd 0
-NEWSYM NetSent2, dd 0
-NEWSYM NetQuitter, dd 0
-NEWSYM NetQuit, db 0
-NEWSYM QBackupPos, dd 0
-NEWSYM LatencyV, times 256 db 0
-NEWSYM LatencyRecvPtr, dd 0
-NEWSYM LatencySendPtr, dd 0
-NEWSYM latencytimer, dd 0
-NEWSYM BackState, db 1
-NEWSYM BackStateSize, dd 6
-NEWSYM nojoystickpoll, dd 0
-NEWSYM RemoteLValue, db 0
-NEWSYM LocalLValue, db 0
-NEWSYM chatstrLt, times 15 db 0
 NEWSYM RewindOldPos, dd 0
 NEWSYM RewindPos, dd 0
 NEWSYM RewindTimer, dd 0
-NEWSYM ResendTimer, dd 60
-NEWSYM valuea, dd 0
-NEWSYM valueb, dd 0
-NEWSYM valuet, dd 0
-
-SECTION .text
-
-NEWSYM SplitStringChat
-    push ebx
-    push eax
-    push ecx
-    mov eax,chatstrR
-    call StringLength
-    cmp ecx,42
-    jbe near .noneed
-    mov eax,42
-.next2
-    cmp byte[chatstrR+eax],' '
-    je near .space
-    cmp eax,33
-    jb .dontclipearly
-    dec eax
-    jmp .next2
-.space
-    inc eax
-    jmp .processclip
-.dontclipearly
-    mov eax,42
-.processclip
-    push eax
-    mov ebx,[chatRTL4]
-    mov [chatRTL5],ebx
-    mov ebx,[chatRTL3]
-    mov [chatRTL4],ebx
-    mov ebx,[chatRTL2]
-    mov [chatRTL3],ebx
-    mov ebx,[chatRTL]
-    mov [chatRTL2],ebx
-    xor ecx,ecx
-.chatcpyloop
-    mov al,[chatstrR4+ecx]
-    mov [chatstrR5+ecx],al
-    mov al,[chatstrR3+ecx]
-    mov [chatstrR4+ecx],al
-    mov al,[chatstrR2+ecx]
-    mov [chatstrR3+ecx],al
-    mov al,[chatstrR+ecx]
-    mov [chatstrR2+ecx],al
-    inc ecx
-    cmp ecx,100
-    jnz .chatcpyloop
-    pop eax
-    push eax
-    xor ecx,ecx
-    mov byte[chatstrR],' '
-    inc ecx
-.next
-    mov bl,[chatstrR2+eax]
-    mov [chatstrR+ecx],bl
-    inc eax
-    inc ecx
-    or bl,bl
-    jnz .next
-    pop eax
-    mov byte[chatstrR2+eax],0
-.noneed
-    pop ecx
-    pop eax
-    pop ebx
-    ret
-
-NEWSYM MoveStringChat
-    mov ebx,[chatRTL4]
-    mov [chatRTL5],ebx
-    mov ebx,[chatRTL3]
-    mov [chatRTL4],ebx
-    mov ebx,[chatRTL2]
-    mov [chatRTL3],ebx
-    mov ebx,[chatRTL]
-    mov [chatRTL2],ebx
-    push eax
-    push ecx
-    xor ecx,ecx
-.chatcpyloop
-    mov al,[chatstrR4+ecx]
-    mov [chatstrR5+ecx],al
-    mov al,[chatstrR3+ecx]
-    mov [chatstrR4+ecx],al
-    mov al,[chatstrR2+ecx]
-    mov [chatstrR3+ecx],al
-    mov al,[chatstrR+ecx]
-    mov [chatstrR2+ecx],al
-    inc ecx
-    cmp ecx,100
-    jnz .chatcpyloop
-    pop ecx
-    pop eax
-    ret
-
-NEWSYM GenLatencyDisplay
-    call Get_Time
-    mov [.temp],eax
-    mov ebx,16
-    xor eax,eax
-    xor edx,edx
-    mov al,[valuea]
-    mov al,[.temp]
-    div ebx
-    add al,48
-    add dl,48
-    mov byte[chatstrLt+2],32
-    cmp al,9
-    jbe .bel9
-;    sub al,10
-.bel9
-    mov [chatstrLt+1],dl
-    mov [chatstrLt],al
-    mov ebx,16
-    xor eax,eax
-    xor edx,edx
-    mov al,[.temp+1]
-    div ebx
-    add al,48
-    add dl,48
-    cmp al,9
-    jbe .bel9b
-;    sub al,10
-.bel9b
-    mov [chatstrLt+4],dl
-    mov [chatstrLt+3],al
-    ret
-SECTION .bss
-.temp resd 1
+NEWSYM BackState, db 1
+NEWSYM BackStateSize, dd 6
 SECTION .text
 
 NEWSYM ResetExecStuff
@@ -304,14 +133,9 @@ NEWSYM ResetExecStuff
   ret
 
 NEWSYM ProcessRewind
-    cmp byte[CNetType],20
-    jb .okay
-.notokayb
-    ret
-.okay
     mov eax,dword[KeyRewind]
     cmp byte[pressed+eax],1
-    jne .notokayb
+    jne near .notokay
     mov byte[pressed+eax],2
     mov eax,[RewindOldPos]
     cmp [RewindPos],eax
@@ -354,15 +178,13 @@ NEWSYM ProcessRewind
     ret
 
 NEWSYM UpdateRewind
-%ifndef __MSDOS__
     push eax
     cmp dword[KeyRewind],0
     je .notftimer
     call ProcessRewind
     dec dword[RewindTimer]
     jnz .notftimer
-    cmp byte[CNetType],20
-    jb .okay
+    jmp .okay
 .notftimer
     pop eax
     ret
@@ -385,7 +207,6 @@ NEWSYM UpdateRewind
     and dword[RewindOldPos],0Fh
 .noteq
     pop eax
-%endif
     ret
 
 SECTION .data
@@ -419,112 +240,10 @@ VoiceStartMute:
     pop eax
     ret
 
-NetSaveState:
-    call joinflags
-    ; de-init variables (copy to variables)
-    mov [spcPCRam],ebp
-    mov [Curtableaddr],edi
-    mov [xp],dl
-    mov [curcyc],dh
-    mov eax,[initaddrl]
-    sub esi,eax                 ; subtract program counter by address
-    mov [xpc],si
-    call ResetTripleBuf
-    mov eax,[KeySaveState]
-    cmp byte[CNetType],20
-    je .skipsoundreinit
-    test byte[pressed+eax],1
-    jnz .soundreinit
-    mov eax,[KeyLoadState]
-    test byte[pressed+eax],1
-    jz .skipsoundreinit
-.soundreinit
-    mov byte[NoSoundReinit],1
-    mov byte[csounddisable],1
-.skipsoundreinit
-
-    pushad
-    call statesaver
-    popad
-
-    ; initialize variables (Copy from variables)
-    call UpdateDPage
-    call SA1UpdateDPage
-    call Makemode7Table
-    cmp byte[SFXEnable],0
-    je .nosfxud
-    call UpdateSFX
-.nosfxud
-    xor eax,eax
-    xor ebx,ebx
-    xor ecx,ecx
-    xor edx,edx
-    mov bl,[xpb]
-    mov ax,[xpc]
-    test ax,8000h
-    jz .loweraddr
-    mov esi,[snesmmap+ebx*4]
-    jmp .skiplower
-.loweraddr
-    cmp ax,4300h
-    jb .lower
-    cmp dword[memtabler8+ebx*4],regaccessbankr8
-    je .dma
-.lower
-    mov esi,[snesmap2+ebx*4]
-    jmp .skiplower
-.dma
-    mov esi,dmadata-4300h
-.skiplower
-    mov [initaddrl],esi
-    add esi,eax                 ; add program counter to address
-    mov dl,[xp]                 ; set flags
-    mov dh,[curcyc]             ; set cycles
-
-    mov bl,dl
-;    cmp byte[CNetType],20
-;    je .skipmovie
-;    cmp byte[CNetType],21
-;    je .skipmovie
-;    jmp .skipmovie
-;    cmp byte[MovieProcessing],0
-;    jne .movie
-;.skipmovie
-    cmp byte[spcon],0
-    je .nosoundta
-    mov edi,[tableadc+ebx*4]
-    or byte[curexecstate],2
-    jmp .soundta
-.nosoundta
-    mov edi,[tableadb+ebx*4]
-    and byte[curexecstate],0FDh
-.soundta
-    jmp .nomovie
-.movie
-    mov edi,[tableadc+ebx*4]
-    test byte[curexecstate],2
-    jnz .nomovie
-    mov edi,[tableadb+ebx*4]
-.nomovie
-
-    mov ebp,[spcPCRam]
-
-    mov byte[NoSoundReinit],0
-    mov byte[csounddisable],0
-    mov byte[NextNGDisplay],0
-
-    call splitflags
-    ret
 
 %macro stim 0
 %ifdef __MSDOS__
     sti
-%endif
-%endmacro
-
-%macro clim 0
-%ifdef __MSDOS__
-    cli
 %endif
 %endmacro
 
@@ -821,14 +540,6 @@ reexecuteb2:
     mov dh,[curcyc]             ; set cycles
 
     mov bl,dl
-;    cmp byte[CNetType],20
-;    je .skipmovie
-;    cmp byte[CNetType],21
-;    je .skipmovie
-;    jmp .skipmovie
-;    cmp byte[MovieProcessing],0
-;    jne .movie
-;.skipmovie
     cmp byte[spcon],0
     je .nosoundta
     mov edi,[tableadc+ebx*4]
@@ -851,7 +562,6 @@ reexecuteb2:
     mov byte[NoSoundReinit],0
     mov byte[csounddisable],0
     mov byte[NextNGDisplay],0
-    mov byte[NetPlayNoMore],1
 
     call splitflags
 
@@ -878,8 +588,6 @@ reexecuteb2:
     call ResetTripleBuf
 
     mov eax,[KeySaveState]
-    cmp byte[CNetType],20
-    je .skipsoundreinit
     test byte[pressed+eax],1
     jnz .soundreinit
     mov eax,[KeyLoadState]
@@ -920,8 +628,6 @@ reexecuteb2:
     cmp byte[ReturnFromSPCStall],1
     je near .activatereset
     mov eax,[KeySaveState]
-    cmp byte[CNetType],20
-    je near .net
     test byte[pressed+eax],1
     jnz near savestate
     mov eax,[KeyLoadState]
@@ -973,7 +679,6 @@ reexecuteb2:
     test byte[pressed+59],1
     jne near showmenu
     mov eax,[KeyQuickRst]
-.net
     test byte[pressed+eax],1
     jz .noreset
 .activatereset
@@ -1018,14 +723,6 @@ NEWSYM endprog
     mov ebx,InitDir
     call Change_Dir
 
-%ifdef __MSDOS__
-    ; Deinit modem if necessary
-    cmp byte[ModemInitStat],0
-    je .nodeinitmodem
-    call DeInitModem
-.nodeinitmodem
-    call deinitipx
-%endif
     jmp OSExit
 
 NEWSYM interror
@@ -1315,60 +1012,6 @@ Donextlinecache:
 .nocache
     mov byte[NextLineCache],0
     ret
-
-%macro NetHelpExecSend 1
-    cmp byte[pl1neten+%1],1
-    jne %%nopl
-    mov eax,[ecx]
-    mov [cnetplaybuf+ebx],al
-    inc ebx
-    and ebx,1FFh
-    mov [cnetplaybuf+ebx],ah
-    inc ebx
-    and ebx,1FFh
-    ror eax,16
-    mov [cnetplaybuf+ebx],al
-    inc ebx
-    and ebx,1FFh
-    mov [cnetplaybuf+ebx],ah
-    inc ebx
-    and ebx,1FFh
-    ror eax,16
-    call RemoteSendEAX
-    add ecx,4
-%%nopl
-%endmacro
-
-%macro NetHelpExecRecv 1
-    cmp byte[pl1neten+%1],2
-    jne %%nopl
-    call RemoteGetEAX
-    mov [ecx],eax
-%%nopl
-    add ecx,4
-%endmacro
-
-%macro NetHelpExecRecv2 1
-    cmp byte[pl1neten+%1],1
-    jne %%nopl
-    mov al,[cnetplaybuf+ebx]
-    inc ebx
-    and ebx,1FFh
-    mov ah,[cnetplaybuf+ebx]
-    inc ebx
-    and ebx,1FFh
-    ror eax,16
-    mov al,[cnetplaybuf+ebx]
-    inc ebx
-    and ebx,1FFh
-    mov ah,[cnetplaybuf+ebx]
-    inc ebx
-    and ebx,1FFh
-    ror eax,16
-    mov [ecx],eax
-%%nopl
-    add ecx,4
-%endmacro
 
 ;*******************************************************
 ; 65816 execution
@@ -1829,19 +1472,10 @@ NEWSYM cpuover
 .nmi
     mov byte[irqon],80h
     mov byte[doirqnext],0
-    inc dword[NetSent]
     cmp byte[yesoutofmemory],1
     jne .noout
     call outofmemfix
 .noout
-
-;    pushad
-;    call GenLatencyDisplay
-;    popad
-
-
-    ; NetCommand : bit 0 = Okay (should be 1), bit 1 = control update,
-    ;  bit 2 = print update, bit 3 = quit, bit 4 = reset
 
     dec word[curypos]
     mov [tempdh],dh
@@ -1853,15 +1487,6 @@ NEWSYM cpuover
     call exechdma
     call exechdma
 
-;    push es
-;    cmp byte[cbitmode],1
-;    jne .nodisptest
-;    mov es,[vesa2selec]
-;    mov word[es:10+640],1111111111111111b
-;.nodisptest
-;    pop es
-
-    mov byte[NetCommand],0
     mov byte[NextNGDisplay],1
     cmp byte[newengen],0
     je .nonewgfx
@@ -1873,10 +1498,6 @@ NEWSYM cpuover
 ;    je .nonewgfx
     call StartDrawNewGfx
 .nonewgfx
-    cmp byte[chaton],1
-    je near .nonet
-    cmp byte[CNetType],20
-    je near .net
     cmp byte[GUIQuit],1
     je near endprog
     mov eax,dword[KeyQuickSnapShot]
@@ -1959,28 +1580,8 @@ NEWSYM cpuover
     je .returntoloop
     dec byte[ExecExitOkay]
 .returntoloop
-    jmp .nonet
-.net
-    test byte[pressed+1],01h
-    jz .nonetexit
-    or byte[NetCommand],08h
-.nonetexit
-    mov eax,[KeySaveState]
-    test byte[pressed+eax],01h
-    jz .notnetsave
-    mov byte[pressed+eax],2
-    call NetSaveState
-.notnetsave
-    mov eax,[KeyLoadState]
-    test byte[pressed+eax],01h
-    jz .notnetload
-    or byte[NetCommand],88h
-.notnetload
-.nonet
     mov dh,[tempdh]
     inc word[curypos]
-    cmp byte[CurRecv],1
-    je .noinputread
     cmp byte[NoInputRead],1
     je .noinputread
     call ReadInputDevice
@@ -2020,762 +1621,11 @@ NEWSYM cpuover
         
     call UpdateRewind
 
-    mov byte[NetQuit],0
-    cmp byte[CNetType],20
-    jne near .nozerons
-    test byte[NetSwap],1
-    jnz near .noonens
-
-    cmp byte[CurRecv],1
-    je near .noreceiveb2
-
-    mov eax,[JoyAOrig]
-    cmp eax,[prevp1net]
-    je .nochange1
-    or byte[NetCommand],02h
-    mov [prevp1net],eax
-.nochange1
-    mov eax,[JoyBOrig]
-    cmp eax,[prevp2net]
-    je .nochange2
-    or byte[NetCommand],02h
-    mov [prevp2net],eax
-.nochange2
-    mov eax,[JoyCOrig]
-    cmp eax,[prevp3net]
-    je .nochange3
-    or byte[NetCommand],02h
-    mov [prevp3net],eax
-.nochange3
-    mov eax,[JoyDOrig]
-    cmp eax,[prevp4net]
-    je .nochange4
-    or byte[NetCommand],02h
-    mov [prevp4net],eax
-.nochange4
-    test byte[NetCommand],02h
-    jz .nochangeatall
-    mov dword[ResendTimer],60
-    jmp .yeschanged
-.nochangeatall
-    dec dword[ResendTimer]
-    jnz .yeschanged
-    or byte[NetCommand],02h
-    mov dword[ResendTimer],60
-.yeschanged
-    ; Send command & store command
-    call PreparePacket
-    push ebx
-    push ecx
-    mov al,[NetCommand]
-    mov ebx,[cnetptrhead]
-    mov [cnetplaybuf+ebx],al
-    call RemoteSendChar
-    ; ##################
-    ; Send latency value
-%ifndef __MSDOS__ 
-    cmp byte[BackState],1
-    jne .nolatencysend
-    mov ebx,[LatencySendPtr]
-    and ebx,0FFh
-    inc dword[LatencySendPtr]
-    mov byte[LatencyV+ebx],0
-    mov ebx,[PBackupPos]
-    mov al,[LocalLValue]
-;    inc al
-    call RemoteSendChar
-%endif
-.nolatencysend
-    mov ebx,[cnetptrhead]
-    mov ecx,JoyAOrig
-    inc ebx
-    and ebx,1FFh
-    test byte[NetCommand],02h
-    jz near .nosendextra
-    NetHelpExecSend 0
-    NetHelpExecSend 1
-    NetHelpExecSend 2
-    NetHelpExecSend 3
-    NetHelpExecSend 4
-.nosendextra
-    mov [cnetptrhead],ebx
-
-    call SendPacketUDP
-
-    cmp byte[chaton],0
-    jne .nosendchats
-    cmp byte[chatstrL],0
-    je .nosendchats
-    cmp dword[chatTL],0
-    jne .nosendchats
-    mov byte[NetCommand],04h
-.nosendchats
-
-    ; send chat string
-    test byte[NetCommand],04h
-    jz near .nosendchatsend
-    call PreparePacket
-    mov al,04h
-    call RemoteSendChar
-
-    call MoveStringChat
-
-    push esi
-    mov esi,chatstrR
-
-%ifdef __MSDOS__
-    mov byte[esi],'L'
-    mov byte[esi+1],'>'
-    add esi,2
-%else
-    ;jmp .skipsendnick
-;.notwin32b
-    cmp dword[chatstrL+1],'/ME '
-    jne .noaction
-    mov al,'*'
-    push ebx
-    push eax
-    mov [esi],al
-    inc esi
-    call RemoteSendChar
-    pop eax
-    pop ebx
-.noaction
-    mov ebx,ChatNick
-.nextchatc2
-    mov al,[ebx]
-    cmp al,0
-    je .nonextchat
-    push ebx
-    push eax
-    mov [esi],al
-    inc esi
-    call RemoteSendChar
-    pop eax
-    pop ebx
-    inc ebx
-    cmp byte[ebx-1],0
-    jne .nextchatc2
-.nonextchat
-    mov al,'>'
-    cmp dword[chatstrL+1],'/ME '
-    jne .noaction2
-    mov al,' '
-.noaction2
-    push ebx
-    push eax
-    mov [esi],al
-    inc esi
-    call RemoteSendChar
-    pop eax
-    pop ebx
-%endif
-.skipsendnick
-    mov ebx,chatstrL+1
-%ifndef __MSDOS__
-    cmp dword[chatstrL+1],'/ME '
-    jne .noaction3
-    mov ebx,chatstrL+5
-%endif
-.noaction3
-.nextchatc
-    mov al,[ebx]
-    push ebx
-    push eax
-    mov [esi],al
-    inc esi
-    call RemoteSendChar
-    pop eax
-    pop ebx
-    inc ebx
-    cmp byte[ebx-1],0
-    jne .nextchatc
-    mov byte[esi],0
-    pop esi
-    mov ecx,45
-    mov ebx,chatstrL
-.chatsendloop
-    mov al,[ebx+1]
-    mov [ebx],al
-    inc ebx
-    dec ecx
-    jnz .chatsendloop
-    mov byte[chatstrL],0
-    mov dword[chatTL],10
-    mov dword[chatRTL],8*60
-    call SplitStringChat
-    call SendPacket
-.nosendchatsend
-    pop ecx
-    pop ebx
-    jmp .noreceiveb3
-.noreceiveb2
-.noreceiveb3
-
-    mov dword[JoyAOrig],0
-    mov dword[JoyBOrig],0
-    mov dword[JoyCOrig],0
-    mov dword[JoyDOrig],0
-    mov dword[JoyEOrig],0
-
-    cmp byte[LatencyLeft],0
-    jne near .latencyleft
-
-    mov [tempedx],edx
-    mov [tempesi],esi
-    mov [tempedi],edi
-    mov [tempebp],ebp
-
-    push ecx
-    push ebx
-%ifndef __MSDOS__
-    cmp byte[BackState],1
-    jne .nobackstate
-    pushad
-    call BackupCVFrame
-    popad
-.nobackupcvframe
-    mov ebx,[CBackupPos]
-    inc ebx
-    and ebx,0Fh
-    mov [CBackupPos],ebx
-%endif
-.nobackstate
-    pop ebx
-    pop ecx
-
-    push ebx
-    push ecx
-
-    cmp dword[CurRecv],1
-    je .yesreceive2
-    xor ebx,ebx
-.latencyloop
-    add dword[LatencyV+ebx*4],01010101h
-    inc ebx
-    cmp ebx,64
-    jne .latencyloop
-.yesreceive2
-
-    cmp dword[CurRecv],1
-    jne near .notreceive
-    mov ebx,[PPValue]
-    inc ebx
-    and ebx,0Fh
-    mov [PPValue],ebx
-    cmp ebx,[DPValue]
-    jne near .notreceive
-    mov dword[CurRecv],0
-    call VoiceEndMute
-    cmp byte[t1cc],4
-    jbe .noframesskippedb
-    mov byte[t1cc],4
-.noframesskippedb
-    jmp .received
-.notreceive
-.received
-    pop ecx
-    pop ebx
-
-    ; Receive command from net and process
-    push ebx
-    push ecx
-
-    cmp byte[CurRecv],1
-    je near .nocrupdate3b
-
-    xor bl,bl
-    mov cx,[t1cc]
-    add cx,60*15
-.notfoundchar
-.onlychatchar
-    call RemoteGetChar
-;    cmp [t1cc],cx
-;    jne .notor
-    jmp .notor
-.netquit2
-    or byte[NetQuit],80h
-    mov byte[RemoteDisconnect],1
-    jmp .skipallnet
-.notor
-    cmp dh,0
-    jne .foundchar
-%ifndef __MSDOS__
-    push ebx
-    cmp byte[BackState],1
-    jne .nobackstate2
-    mov ebx,[CBackupPos]
-    dec ebx
-    sub ebx,[PBackupPos]
-    sub ebx,[BackStateSize]
-    and ebx,0Fh
-;    inc ebx
-;    and ebx,0Fh
-;    cmp ebx,[PBackupPos]
-    jne near .nocrupdate3       ; *************************
-.nobackstate2
-    pop ebx
-
-    pushad
-    mov byte[nojoystickpoll],1
-    call JoyRead
-    mov byte[nojoystickpoll],0
-;    call ChatType2
-    popad
-    cmp word[t1cc],4*60
-    jb .notwin32
-    cmp byte[pressed+1],1
-    je .netquit2
-%endif
-.notwin32
-    mov bl,1
-    jmp .notfoundchar
-.foundchar
-    cmp dl,04h
-    jne .notchatchar
-    jmp .recvchats
-.notchatchar
-    cmp byte[t1cc],4
-    jbe .noframesskipped
-    mov byte[t1cc],4
-.noframesskipped
-
-    inc byte[netdelayed]
-    cmp bl,0
-    jne .yesdelay
-    mov byte[netdelayed],0
-.yesdelay
-    cmp byte[netdelayed],10
-    jne .nodelayfix
-    mov byte[netdelayed],0
-    cmp byte[t1cc],0
-    je .nodelayfix
-    dec byte[t1cc]
-.nodelayfix
-    mov [NetCommand],dl
-
-    pushad
-    ; Receive latency value
-    ; #####################
-%ifndef __MSDOS__
-    cmp byte[BackState],1
-    jne near .nolatencyrecv2
-.tryagainlatency
-    call RemoteGetChar         ; **********
-    cmp byte[RemoteDisconnect],1
-    je near .netquit
-    cmp dh,0
-    je .tryagainlatency
-    mov ebx,[LatencyRecvPtr]
-    and ebx,0FFh
-    inc dword[LatencyRecvPtr]
-    mov al,[LatencyV+ebx]
-    mov [RemoteLValue],dl
-    mov [LocalLValue],al
-    cmp al,dl
-    jbe .nolatencyrecv3
-    ; incr t1cc -> make local speed faster if local latency > remote
-    inc dword[latencytimer]
-    cmp dword[latencytimer],5
-    jb .nolatencyrecv2
-    mov dword[latencytimer],0
-    cmp byte[t1cc],0
-    je .nolatencyrecv2
-    dec byte[t1cc]
-    jmp .nolatencyrecv2
-.nolatencyrecv3
-    cmp al,dl
-    je .nolatencyrecv2
-    inc dword[latencytimer]
-    cmp dword[latencytimer],5
-    jb .nolatencyrecv2
-    mov dword[latencytimer],0
-    inc byte[t1cc]
-%endif
-.nolatencyrecv2
-    popad
-    inc dword[NetSent2]
-
-    test dl,01h
-    jnz near .netfailed
-    test dl,070h
-    jnz near .netfailed
-
-    cmp dword[NetQuitter],0
-    je .noforcequit
-    mov ebx,[PBackupPos]
-    inc ebx
-    and ebx,0Fh
-    cmp ebx,[QBackupPos]
-    je .forcequit
-.noforcequit
-    test dl,08h
-    jz .noquit
-.forcequit
-    test dl,80h
-    jz .noloadstate
-    mov byte[NetLoadState],1
-.noloadstate
-    or byte[NetQuit],1
-    cmp byte[BackState],1
-    jne .noquit
-    push edx
-    mov ebx,[PBackupPos]
-    inc ebx
-    and ebx,0Fh
-    cmp ebx,[CBackupPos]
-    je .noquit2
-    pushad
-    call RestoreCVFrame
-    popad
-    mov esi,[tempesi]
-    mov edi,[tempedi]
-    mov ebp,[tempebp]
-    add dword[NetSent],1000
-.noquit2
-    pop edx
-.noquit
-    test dl,02h
-    jz near .nocrupdate2
-
-%ifndef __MSDOS__
-    cmp byte[BackState],1
-    jne .notwin32d
-    push edx
-    mov ebx,[PBackupPos]
-    inc ebx
-    and ebx,0Fh
-    cmp ebx,[CBackupPos]
-    je .noupdate
-    pushad
-    call RestoreCVFrame
-    popad
-    mov esi,[tempesi]
-    mov edi,[tempedi]
-    mov ebp,[tempebp]
-    mov ebx,[PBackupPos]                ; *****************
-    inc ebx
-    and ebx,0Fh
-    mov [PPValue],ebx
-    mov ebx,[CBackupPos]
-    mov [DPValue],ebx
-    mov ebx,[PPValue]
-    mov [CBackupPos],ebx
-    mov dword[CurRecv],1               ; *****************
-    call VoiceStartMute
-.noupdate
-    mov ebx,[PBackupPos]
-    inc ebx
-    and ebx,0Fh
-    mov [PBackupPos],ebx
-    pop edx
-%endif
-.notwin32d
-    mov ecx,JoyAOrig
-    NetHelpExecRecv 0
-    NetHelpExecRecv 1
-    NetHelpExecRecv 2
-    NetHelpExecRecv 3
-    NetHelpExecRecv 4
-    jmp .donecrupdate
-.nocrupdate3
-    pop ebx
-.nocrupdate3b
-    mov byte[NetCommand],0
-    jmp .nocrupdate
-.nocrupdate2
-    mov ebx,[PBackupPos]
-    inc ebx
-    and ebx,0Fh
-    mov [PBackupPos],ebx
-.nocrupdate
-    cmp byte[pl1neten],2
-    jne .nopl1recv
-    mov eax,[JoyABack]
-    mov [JoyAOrig],eax
-.nopl1recv
-    cmp byte[pl2neten],2
-    jne .nopl2recv
-    mov eax,[JoyBBack]
-    mov [JoyBOrig],eax
-.nopl2recv
-    cmp byte[pl3neten],2
-    jne .nopl3recv
-    mov eax,[JoyCBack]
-    mov [JoyCOrig],eax
-.nopl3recv
-    cmp byte[pl4neten],2
-    jne .nopl4recv
-    mov eax,[JoyDBack]
-    mov [JoyDOrig],eax
-.nopl4recv
-    cmp byte[pl5neten],2
-    jne .nopl5recv
-    mov eax,[JoyEBack]
-    mov [JoyEOrig],eax
-.nopl5recv
-.donecrupdate
-
-    jmp .norecvchats
-.recvchats
-    push ebx
-
-    call MoveStringChat
-
-    mov ebx,chatstrR
-    push edx
-.nextchatcr
-    push ebx
-    push ecx
-    mov cx,[t1cc]
-    add cx,60*10
-.tryagainchatc
-    call RemoteGetChar         ; **********
-    cmp byte[RemoteDisconnect],1
-    je .netquit
-    cmp [t1cc],cx
-    jne .noto
-.netquit
-    or byte[NetQuit],80h
-    mov dh,1
-.noto
-    cmp dh,0
-    je .tryagainchatc          ; *********
-    pop ecx
-    pop ebx
-    mov [ebx],dl
-    inc ebx
-    cmp dl,0
-    jne .nextchatcr            ; *********
-    pop edx
-    pushad
-%ifdef __MSDOS__
-    mov dl,'R'
-    call NetAddChar
-    mov dl,'>'
-    call NetAddChar
-%endif
-.notwin32e
-    mov esi,chatstrR
-    call WritetochatBuffer
-    mov dl,13
-    call NetAddChar
-    mov dl,10
-    call NetAddChar
-    popad
-    mov dword[chatRTL],60*8
-    call SplitStringChat
-    pop ebx
-    jmp .onlychatchar
-.norecvchats
-
-    jmp .skipfailed
-.netfailed
-    or byte[NetQuit],80h
-.skipfailed
-
-    cmp byte[CurRecv],1
-    je near .noreceiveb
-    ; Process previous command from buffer
-    mov ebx,[cnetptrtail]
-    mov ecx,JoyAOrig
-    mov dl,[cnetplaybuf+ebx]
-    inc ebx
-    and ebx,1FFh
-    test dl,08h
-    jz .noquit2b
-    push ebx
-    mov ebx,[PBackupPos]
-    cmp ebx,[CBackupPos]
-    je .yesquit
-    cmp dword[NetQuitter],1
-    je .quitlater
-    test dl,80h
-    jz .noloadstateb
-    mov byte[NetLoadState],2
-.noloadstateb
-    mov dword[NetQuitter],1
-    mov ebx,[CBackupPos]
-    mov [QBackupPos],ebx
-    jmp .quitlater
-.yesquit
-    test dl,80h
-    jz .noloadstateb2
-    mov byte[NetLoadState],2
-.noloadstateb2
-    or byte[NetQuit],1
-.quitlater
-    pop ebx
-.noquit2b
-    test dl,02h
-    jz near .nocrupdate2b
-    NetHelpExecRecv2 0
-    NetHelpExecRecv2 1
-    NetHelpExecRecv2 2
-    NetHelpExecRecv2 3
-    NetHelpExecRecv2 4
-    jmp .donecrupdate2
-.nocrupdate2b
-    cmp byte[pl1neten],1
-    jne .nopl1recv2
-    mov eax,[JoyABack]
-    mov [JoyAOrig],eax
-.nopl1recv2
-    cmp byte[pl2neten],1
-    jne .nopl2recv2
-    mov eax,[JoyBBack]
-    mov [JoyBOrig],eax
-.nopl2recv2
-    cmp byte[pl3neten],1
-    jne .nopl3recv2
-    mov eax,[JoyCBack]
-    mov [JoyCOrig],eax
-.nopl3recv2
-    cmp byte[pl4neten],1
-    jne .nopl4recv2
-    mov eax,[JoyDBack]
-    mov [JoyDOrig],eax
-.nopl4recv2
-    cmp byte[pl5neten],1
-    jne .nopl5recv2
-    mov eax,[JoyEBack]
-    mov [JoyEOrig],eax
-.nopl5recv2
-.donecrupdate2
-    mov [cnetptrtail],ebx
-.noreceiveb
-
-    ; backup keyboard presses if recv=1 (delayed by 1 frame)
-    ; else restore
-    ; Restore previous keys if CurRecv = 1
-    ; ************************************
-    cmp byte[CurRecv],1
-    je near .noreceive
-    ; backup keypresses
-    mov ebx,[CBackupPos]
-    dec ebx
-    and ebx,0Fh
-    mov ecx,[JoyAOrig]
-    mov [PPContrl+ebx*4],ecx
-    mov ecx,[JoyBOrig]
-    mov [PPContrl2+ebx*4],ecx
-    mov ecx,[JoyCOrig]
-    mov [PPContrl3+ebx*4],ecx
-    mov ecx,[JoyDOrig]
-    mov [PPContrl4+ebx*4],ecx
-    mov ecx,[JoyEBack]
-    mov [PPContrl4+ebx*4],ecx
-    jmp .yesreceive
-.noreceive
-    mov ebx,[PPValue]
-    dec ebx
-    and ebx,0Fh
-    cmp byte[pl1neten],1
-    jne .nopl1recv3
-    mov ecx,[PPContrl+ebx*4]
-    mov [JoyAOrig],ecx
-.nopl1recv3
-    cmp byte[pl2neten],1
-    jne .nopl2recv3
-    mov ecx,[PPContrl2+ebx*4]
-    mov [JoyBOrig],ecx
-.nopl2recv3
-    cmp byte[pl3neten],1
-    jne .nopl3recv3
-    mov ecx,[PPContrl3+ebx*4]
-    mov [JoyCOrig],ecx
-.nopl3recv3
-    cmp byte[pl4neten],1
-    jne .nopl4recv3
-    mov ecx,[PPContrl4+ebx*4]
-    mov [JoyDOrig],ecx
-.nopl4recv3
-    cmp byte[pl5neten],1
-    jne .nopl5recv3
-    mov ecx,[PPContrl5+ebx*4]
-    mov [JoyEOrig],ecx
-.nopl5recv3
-.yesreceive
-
-.skipallnet
-    pop ecx
-    pop ebx
-    mov edx,[tempedx]
-    xor ebx,ebx
-    jmp .donelatency
-.latencyleft
-    dec byte[LatencyLeft]
-.donelatency
-    mov eax,[JoyAOrig]
-    mov [JoyABack],eax
-    mov eax,[JoyBOrig]
-    mov [JoyBBack],eax
-    mov eax,[JoyCOrig]
-    mov [JoyCBack],eax
-    mov eax,[JoyDOrig]
-    mov [JoyDBack],eax
-    mov eax,[JoyEOrig]
-    mov [JoyEBack],eax
-    jmp .reprocjoy
-.noonens
-    test byte[NetSwap],1
-    jz .nozerons
-    ; copy previous frame values into JoyxOrig and JoyxNow
-    mov eax,[JoyABack]
-    mov [JoyAOrig],eax
-    mov eax,[JoyBBack]
-    mov [JoyBOrig],eax
-    mov eax,[JoyCBack]
-    mov [JoyCOrig],eax
-    mov eax,[JoyDBack]
-    mov [JoyDOrig],eax
-    mov eax,[JoyEBack]
-    mov [JoyEOrig],eax
-.reprocjoy
-    mov eax,[JoyAOrig]
-    rol eax,16
-    mov [JoyANow],eax
-    mov eax,[JoyBOrig]
-    rol eax,16
-    mov [JoyBNow],eax
-    mov eax,[JoyCOrig]
-    rol eax,16
-    mov [JoyCNow],eax
-    mov eax,[JoyDOrig]
-    mov [JoyDNow],eax
-    mov eax,[JoyEOrig]
-    mov [JoyENow],eax
-.nozerons
-
     cmp byte[snesmouse],4
     jne .nolethalen
     mov eax,[LethEnData]
     mov [JoyBNow],eax
 .nolethalen
-
-    xor byte[NetSwap],1
-
-    cmp byte[NetQuit],0
-    je .noquitb
-    pushad
-    mov esi,[wramdata]
-    mov ecx,65536*2
-    xor eax,eax
-    xor ebx,ebx
-.quitloop
-    mov al,[esi]
-    add bx,ax
-    inc esi
-    dec ecx
-    jnz .quitloop
-    mov [valuea],bx
-    popad
-    add [valuea],dh
-
-    mov byte[ExecExitOkay],0
-    mov byte[pressed+1],01h
-    jmp exitloop
-.noquitb
 
     test byte[INTEnab],1
     jz .noresetjoy

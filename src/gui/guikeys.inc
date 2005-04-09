@@ -138,10 +138,6 @@ UseExtKey resb 1
 SECTION .text
 
 GUIgetcurrentinput:
-    cmp byte[HoldCommand],2
-    jne .nohold
-    ret
-.nohold
     mov byte[UseExtKey],0
     xor ch,ch
     xor cl,cl
@@ -321,56 +317,6 @@ GUIgetcurrentinput:
     dec eax
     xor ebx,ebx
     mov bl,[GUIwinorder+eax]
-    cmp ebx,8
-    jne near .nonetwin
-    cmp byte[CNetType],12
-    jne .noprocess7
-    cmp byte[ModemProcess],7
-    jne .noprocess7
-    cmp dh,13
-    je .ret
-    cmp dh,32
-    jb .noprocess7
-.ret
-%ifdef __MSDOS__
-    mov al,dh
-    call ModemSendChar
-%endif
-    ret
-.noprocess7
-    cmp dl,27
-    jne .nonetwin
-    cmp byte[CNetType],2
-    je .yesnetwin
-    cmp byte[CNetType],3
-    je .yesnetwin
-    cmp byte[CNetType],10
-    je .yesnetwin
-    cmp byte[CNetType],11
-    je .yesnetwin
-    cmp byte[CNetType],12
-    je .yesnetwin
-    cmp byte[CNetType],15
-    je .yesnet15
-    jmp .nonetwin
-.yesnet15
-    mov byte[CNetType],0
-%ifdef __MSDOS__
-    call deinitipx
-.nodeinitipx
-%endif
-    jmp .closewin
-.yesnetwin
-%ifdef __MSDOS__
-    cmp byte[ModemInitStat],0
-    je .nodeinitmodem
-    call DeInitModemC
-    mov byte[ModemInitStat],0
-.nodeinitmodem
-%endif
-    mov byte[CNetType],1
-    ret
-.nonetwin
     cmp ebx,13
     jne .notcskeys
     cmp byte[CheatWinMode],1
@@ -408,16 +354,6 @@ GUIgetcurrentinput:
     je near GUIPathKeys
     cmp ebx,20
     je near GUISaveKeys
-    cmp ebx,8
-    jne .notstartmenu
-    cmp byte[CNetType],4
-    jne .notcpip
-    jmp GUITCPIPKeys
-.notcpip
-    cmp byte[CNetType],1
-    jne .notstartmenu
-    jmp GUINetMenuKeys1
-.notstartmenu
     cmp ebx,8
     je near GUIGetInputLine
     ret
@@ -650,162 +586,7 @@ GUIgetcurrentinput:
     ret
 
 GUITCPIPKeys:
-    cmp byte[GUINetTextm2],1
-    je near .section2
-    mov edi,TCPIPAddress
-    mov esi,26
-    cmp byte[GUINetTextm2],2
-    jne .notsecondstring
-    mov edi,ChatNick
-    mov esi,9
-.notsecondstring
-    mov ebx,edi
-.next
-    cmp byte[ebx],0
-    je .done2
-    inc ebx
-    jmp .next
-.done2
-    sub ebx,edi
-    mov [GUINetTextm2+1],bl
-    xor eax,eax
-    mov al,[GUINetTextm2+1]
-    shl al,2
-    add al,2
-    cmp dh,32
-    jbe .notnum2
-    cmp byte[GUINetTextm2],0
-    je .notsecondstringb
-    cmp dh,'_'
-    je .notsecondstringb
-    cmp dh,'-'
-    je .notsecondstringb
-    cmp dh,'^'
-    je .notsecondstringb
-    cmp dh,'='
-    je .notsecondstringb
-    cmp dh,'+'
-    je .notsecondstringb
-    cmp dh,'['
-    je .notsecondstringb
-    cmp dh,']'
-    je .notsecondstringb
-    cmp dh,'0'
-    jb .notnum2
-    cmp dh,'9'
-    jbe .notsecondstringb
-    cmp dh,'A'
-    jb .notnum2
-    cmp dh,'Z'
-    jbe .notsecondstringb
-    cmp dh,'a'
-    jb .notnum2
-    cmp dh,'z'
-    jbe .notsecondstringb
-.notsecondstringb
-    cmp ebx,esi
-    jae near .donesection1
-    add ebx,edi
-    mov byte[ebx],dh
-    jmp .donesection1
-.notnum2
-    cmp dh,8
-    jne .notbacksp
-    or ebx,ebx
-    jz near .donesection1
-    add ebx,edi
-    mov byte[ebx-1],0
-    jmp .donesection1
-.notbacksp
-    cmp dh,'c'
-    je .yesc
-    cmp dh,'C'
-    jne .noc
-.yesc
-;    mov byte[CNetType],15
-;    mov byte[ModemProcess],41
-;    mov byte[WhichRemote],4
-.noc
-    cmp dh,'s'
-    je .yess
-    cmp dh,'S'
-    jne .nos
-.yess
-;    mov byte[CNetType],15
-;    mov byte[ModemProcess],40
-;    mov byte[WhichRemote],4
-.nos
-.donesection1
     ret
-
-.section2
-    mov ebx,GUINetTextl2
-.loopz
-    cmp byte[ebx],0
-    je .donez
-    inc ebx
-    jmp .loopz
-.donez
-    cmp byte[GUINetTextl2],'0'
-    jne .notzerob
-    cmp byte[GUINetTextl2+1],0
-    jne .notzerob
-    dec ebx
-.notzerob
-    cmp dh,'0'
-    jb .notnum
-    cmp dh,'9'
-    ja .notnum
-    mov byte[ebx],dh
-    mov byte[ebx+1],0
-    push ebx
-    call .convert
-    pop ebx
-    cmp ecx,65536
-    jb .donenumb
-    mov byte[ebx],0
-.donenumb
-    jmp .donenum
-.notnum
-    cmp dh,8
-    jne .donenum
-    cmp byte[GUINetTextl2],0
-    je .donenum
-    mov byte[ebx-1],0
-.donenum
-    call .convert
-    cmp ecx,0
-    jne .notzero
-    mov byte[GUINetTextl2],'0'
-    mov byte[GUINetTextl2+1],0
-.notzero
-    mov [TCPIPPortNum],ecx
-    ret
-.convert
-    mov ebx,GUINetTextl2
-    xor ecx,ecx
-.loop
-    cmp byte[ebx],0
-    je .done
-    mov eax,ecx
-    push ebx
-    mov ebx,10
-    mul ebx
-    pop ebx
-    mov ecx,eax
-    xor eax,eax
-    mov al,[ebx]
-    sub eax,48
-    add ecx,eax
-    inc ebx
-    jmp .loop
-.done
-    ret
-
-
-SECTION .data
-NEWSYM TCPIPPortNum, dd 7845
-SECTION .text
 
 GUIOptionKeys:
     cmp dh,'a'
@@ -1569,116 +1350,9 @@ SECTION .data
 SECTION .text
 
 GUINetMenuKeys1:
-    cmp dh,'a'
-    jb .nocap
-    cmp dh,'z'
-    ja .nocap
-    sub dh,'z'-'Z'
-.nocap
-    cmp dh,'C'
-    jne .notconfig
-    mov byte[CNetType],2
-.notconfig
-    cmp dh,'D'
-    jne .notdial
-    mov byte[CNetType],3
-.notdial
-    cmp dh,'M'
-    jne .notmanual
-    mov byte[CNetType],12
-    mov byte[ModemProcess],0
-%ifdef __MSDOS__
-    cmp byte[ModemInitStat],1
-    je .noinit
-    call InitModem
-    mov byte[ModemInitStat],1
-.noinit
-%endif
-    ret
-.notmanual
-    cmp dh,'W'
-    jne .notwait
-    mov byte[CNetType],10
-    mov byte[ModemProcess],0
-%ifdef __MSDOS__
-    cmp byte[ModemInitStat],1
-    je .noinit2
-    call InitModem
-    mov byte[ModemInitStat],1
-.noinit2
-%endif
-    ret
-.notwait
     ret
 
 GUIGetInputLine:
-    cmp ebx,8
-    jne .nodial
-    cmp byte[CNetType],20
-    jne .nochat
-    cmp dh,13
-    jne .nochat
-    mov byte[RemoteCommand],2
-    ret
-.nochat
-    cmp byte[CNetType],3
-    jne .nodial
-    cmp dh,13
-    jne .nodial
-    mov byte[CNetType],11
-    mov byte[ModemProcess],0
-%ifdef __MSDOS__
-    cmp byte[ModemInitStat],1
-    je .noinit
-    call InitModem
-    mov byte[ModemInitStat],1
-%endif
-.noedit
-    ret
-.noinit
-.nodial
-    ; search string for 0, record length of string
-    cmp dword[GUIEditString],0
-    je .noedit
-    mov eax,[GUIEditString]
-    xor ecx,ecx
-    dec ecx
-.next
-    mov bl,[eax]
-    inc eax
-    inc ecx
-    cmp bl,0
-    jne .next
-    cmp byte[GUIEditStringcWin],0
-    je near .blinkstuff
-    cmp ecx,0
-    je .nodel
-    cmp dh,8
-    jne .nodel
-    mov byte[eax-2],0
-    dec eax
-    jmp .blinkstuff
-.nodel
-    cmp ecx,[GUIEditStringmLen]
-    jne .notend
-    jmp .blinkstuff
-.notend
-    cmp dh,'a'
-    jb .nocap
-    cmp dh,'z'
-    ja .nocap
-    sub dh,'z'-'Z'
-.nocap
-    cmp dh,32
-    jb .noinsert
-    mov [eax-1],dh
-    mov byte[eax],0
-    inc eax
-.noinsert
-    jmp .blinkstuff
-.blinkstuff
-    dec eax
-    mov [GUIEditStringcLen],eax
     ret
 
 SECTION .bss

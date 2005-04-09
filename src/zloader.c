@@ -218,26 +218,15 @@ static void handle_params(int argc, char *argv[])
   int i;
 
   #ifndef __MSDOS__
-  NetServer=0;
-  NetChatFirst=0;
-  NetQuitAfter=0;
 
   if (argc >= 5 && argv[1][0] == '/' && strlen(argv[1]) == 6)
   {
     size_t i = 0, j = 0;
-    char *strp, *p;
+    char *strp;
 
     if (toupper(argv[1][1]) == 'T') UDPConfig=0;
-    if (toupper(argv[1][2]) == 'S') NetServer=1;
-    if (toupper(argv[1][2]) == 'C') NetServer=2;
-    if (toupper(argv[1][3]) == 'C') NetChatFirst=0;
-    if (toupper(argv[1][3]) == 'L') NetChatFirst=1;
-    if (toupper(argv[1][4]) == 'N') NetQuitAfter=0;
-    if (toupper(argv[1][4]) == 'Q') NetQuitAfter=1;
+
     //Next should be # of connections
-
-
-    strp = &NetNewNick;
 
     while (argv[2][i]!=0)
     {
@@ -273,26 +262,6 @@ static void handle_params(int argc, char *argv[])
     }
     strp[j] = 0;
 
-    strncpy(NetFilename, argv[3], 512);
-    NetFilename[511] = 0;
-    if (NetServer == 2)
-    {
-      if (argc < 5)
-      {
-        NetServer = 0;
-      }
-      else
-      {
-        CmdLineNetPlay = 1;
-        strp = &CmdLineTCPIPAddress;
-        strncpy(strp, argv[4], 28);
-      }
-    }
-
-    for (p = NetFilename+strlen(NetFilename)-1; (p > (char *)NetFilename) && (*p != DIR_SLASH); p--);
-    *p = 0;
-    chdir(NetFilename);
-    *p = DIR_SLASH;
   }
   #endif
 

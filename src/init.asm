@@ -26,7 +26,7 @@ EXTSYM showinfogui
 EXTSYM filefound,inittable,SA1inittable
 EXTSYM MessageOn,Msgptr,MsgCount,sndrot,SnowTimer
 EXTSYM inittableb,inittablec,newgfx16b,cfgreinittime
-EXTSYM Open_File,Read_File,Write_File,Close_File,Output_Text,Get_Key,CNetType
+EXTSYM Open_File,Read_File,Write_File,Close_File,Output_Text,Get_Key
 EXTSYM Delete_File,Get_First_Entry,Get_Next_Entry,Change_Dir,InitDSP
 EXTSYM Remove_Dir,Change_Single_Dir,Create_Dir,Get_Memfree,Create_File
 EXTSYM SPCDisable,osm2dis,CurRecv,BackupSystemVars
@@ -34,7 +34,6 @@ EXTSYM SnowData,SnowVelDist
 EXTSYM cvidmode,newengen,cfgnewgfx,GUI16VID,NewEngEnForce
 EXTSYM PrintChar,TextFile
 EXTSYM Setper2exec,per2exec
-EXTSYM chaton
 EXTSYM JoyRead,JoyReadControl,joy4218,joy4219,joy421A,joy421B,pressed
 EXTSYM pl3Ak,pl3Bk,pl3Lk,pl3Rk,pl3Xk,pl1p209,pl2p209,pl3p209,pl4p209
 EXTSYM pl3Yk,pl3contrl,pl3downk,pl3leftk,pl3rightk,pl3selk,pl3startk
@@ -50,7 +49,7 @@ EXTSYM pl1ULk,pl1URk,pl1DLk,pl1DRk,pl2ULk,pl2URk,pl2DLk,pl2DRk
 EXTSYM pl3ULk,pl3URk,pl3DLk,pl3DRk,pl4ULk,pl4URk,pl4DLk,pl4DRk
 EXTSYM pl5ULk,pl5URk,pl5DLk,pl5DRk,pl5Xtk,pl5Ytk,pl5Atk,pl5Btk
 EXTSYM pl1Ltk,pl1Rtk,pl2Ltk,pl2Rtk,pl3Ltk,pl3Rtk,pl4Ltk,pl4Rtk,pl5Ltk,pl5Rtk
-EXTSYM Turbo30hz,nojoystickpoll
+EXTSYM Turbo30hz
 EXTSYM NumComboLocl,ComboBlHeader,ComboHeader,CombinDataLocl
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec
 EXTSYM mousexloc,mouseyloc
@@ -527,11 +526,6 @@ SECTION .text
 
 %macro PlayerDeviceHelp 3
     mov eax,[%1]
-    cmp byte[chaton],0
-    je %%okay
-    cmp eax,40h
-    jb %%no
-%%okay
     cmp byte[pressed+eax],1
     jne %%no
     or dword[%2],%3
@@ -567,8 +561,6 @@ SECTION .text
 
 %macro ProcessKeyComb 2
     cmp dword[NumCombo],0
-    je near %%nocomb
-    cmp byte[CNetType],20
     je near %%nocomb
     mov eax,CombinDataGlob
     cmp byte[GUIComboGameSpec],0
@@ -751,9 +743,7 @@ NEWSYM ReadInputDevice
     mov byte[TurboCB],02h
 .noturbo30
     ; Read External Devices (Joystick, PPort, etc.)
-    mov byte[nojoystickpoll],1
     call JoyRead
-    mov byte[nojoystickpoll],0
     ; Process Data
     mov dword[JoyAOrig],0
     ; Get Player1 input device

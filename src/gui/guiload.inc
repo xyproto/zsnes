@@ -174,46 +174,6 @@ netlastloaded resb 1
 SECTION .text
 
 GUIloadfilename:
-    cmp byte[CNetType],15
-    je .noload
-    cmp byte[CNetType],12
-    je .noload
-    cmp byte[CNetType],11
-    je .noload
-    cmp byte[CNetType],10
-    je .noload
-    cmp byte[CNetType],21
-    je .noload
-    cmp byte[CNetType],22
-    jne .yesload
-.noload
-    ret
-.yesload
-    cmp byte[CNetType],20
-    jne near .nocnettype
-    mov byte[netlastloaded],1
-    cmp byte[GUIcmenupos],1
-    jne .nomenuout
-    mov byte[GUIcmenupos],0
-.nomenuout
-    mov esi,FileNameMod
-.nextfnc
-    mov cl,[eax]
-    mov [esi],cl
-    inc eax
-    inc esi
-    cmp cl,0
-    jne .nextfnc
-    mov byte[RemoteCommand],10
-    pushad
-    call GUIQuickLoadUpdate
-    popad
-    ret
-.nocnettype
-    cmp byte[CNetType],20
-    je .okay20
-;    ret
-.okay20
     mov esi,eax
     ; find length of string & copy filename
     xor cl,cl
@@ -317,8 +277,6 @@ GUIloadfilename:
     call GUIDoReset
     call GUIQuickLoadUpdate
     cmp byte[AutoLoadCht],0
-    je .nocheatload
-    cmp byte[CNetType],20
     je .nocheatload
     ; change dir to LoadDrive/LoadDir
     mov dl,[LoadDrive]

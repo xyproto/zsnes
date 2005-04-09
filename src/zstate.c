@@ -785,10 +785,3 @@ void loadstate2()
 {
   stateloader(fnamest+1, 0, 1);
 }
-
-extern unsigned char Netfname[11];
-
-void loadstate3()
-{
-  stateloader(Netfname, 0, 1);
-}

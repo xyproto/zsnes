@@ -43,10 +43,7 @@ EXTSYM WindowDisables,scanlines,romispal
 EXTSYM MusicRelVol,MusicVol,WDSPReg0C,WDSPReg1C
 EXTSYM DSPOp02,Op02AAS,Op02AZS,Op02CX,Op02CY,Op02FX,Op02FY
 EXTSYM Op02FZ,Op02LES,Op02LFE,Op02VOF,Op02VVA
-EXTSYM CurRecv
-EXTSYM CNetType
 EXTSYM KeySlowDown
-EXTSYM chaton
 EXTSYM genfulladdtab
 EXTSYM KeyFRateDown,KeyFRateUp,KeyVolUp,KeyVolDown,KeyDisplayFPS,FPSOn,pl12s34
 EXTSYM bg1ptr,bg2ptr,bg3ptr,bg4ptr,cachebg1,resolutn
@@ -270,9 +267,6 @@ NEWSYM cachevideo
     dec dword[WindowDisables]
 .nowindis
 
-    cmp byte[CurRecv],1
-    je near .fskipall
-
     call ClockCounter
 
     cmp byte[mode7hiresen],0
@@ -316,9 +310,6 @@ NEWSYM cachevideo
 .nofocussaveb
     mov dword[sramb4save],0
 .nofocussave
-
-    cmp byte[CNetType],20
-    je near .sdskip
 
     cmp byte[FastFwdToggle],0
     jne .ffmode2
@@ -404,7 +395,6 @@ NEWSYM cachevideo
     cmp byte[frskipper],bl
     pop ebx
     jae .nofrskip
-.fskipall
     mov byte[curblank],40h
     mov al,40h
     jmp .frskip
@@ -438,8 +428,6 @@ NEWSYM cachevideo
     shl al,cl
     mov [cachedmode],al
     ; disable all necessary backgrounds
-    cmp byte[chaton],1
-    je near .finishchatskip
     mov eax,[KeyBGDisble0]
     test byte[pressed+eax],1
     je .nodis1
@@ -556,13 +544,6 @@ NEWSYM cachevideo
     mov [MessageOn],eax
     call Get_MousePositionDisplacement
 .nodis7
-    cmp byte[CNetType],20
-    jne .nonet
-    cmp byte[snesmouse],0
-    je .nonet
-    mov byte[snesmouse],0
-    mov dword[MessageOn],0
-.nonet
     mov eax,[KeyNewGfxSwt]
     test byte[pressed+eax],1
     je near .nodis8
@@ -813,7 +794,6 @@ NEWSYM cachevideo
     soundselcomp KeyDisableSC6,Voice6Disable,Voice6Status,'7'
     soundselcomp KeyDisableSC7,Voice7Disable,Voice7Status,'8'
 
-.finishchatskip
     cmp byte[curblank],0h
     jne near yesblank
     ; Swap video addresses

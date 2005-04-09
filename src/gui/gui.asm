@@ -68,7 +68,7 @@
 %include "macros.mac"
 
 EXTSYM curblank,vidpastecopyscr,frameskip,newengen,vsyncon
-EXTSYM cvidmode,antienab, smallscreenon, smallscreence,NetQuit
+EXTSYM cvidmode,antienab, smallscreenon, smallscreence
 EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
 EXTSYM endprog,continueprog,spcBuffera,spcRamcmp,cbitmode,makepal
 EXTSYM t1cc,LoadDir,LoadDrive,SRAMDir,SRAMChdir,SRAMDirCurDir,initsnes
@@ -104,7 +104,7 @@ EXTSYM GUIFName,GUICName
 EXTSYM printnum
 EXTSYM MMXCheck
 EXTSYM SaveCombFile
-EXTSYM NetSent,valuea
+EXTSYM valuea
 EXTSYM showinfogui
 EXTSYM BackupCVFrame, tempedx, tempesi, tempedi, tempebp
 EXTSYM Wait1SecWin,ClearUDPStuff
@@ -113,7 +113,7 @@ EXTSYM BackStateSize
 EXTSYM ResetExecStuff
 EXTSYM RestoreCVFrame
 EXTSYM clearSPCRAM
-EXTSYM CurRecv,BackState,CBackupPos,PBackupPos,PPValue,DPValue,NetQuitter
+EXTSYM CurRecv,BackState,CBackupPos,PBackupPos,PPValue,DPValue
 EXTSYM LatencyV
 EXTSYM LatencyRecvPtr,LatencySendPtr
 EXTSYM NumofBanks
@@ -198,15 +198,6 @@ EXTSYM PreparePacketIPX,SendPacketIPX,ipxgetchar,ipxsendchar
 
 
 SECTION .data
-
-
-; ProcessRemoteCommand
-; NetLoadStuff  ; Send 14 to initiate, Send 15 to cancel (either way)
-;    call PreparePacket
-;    mov al,253
-;    call RemoteSendChar
-;    call SendPacket
-; NetAddChar
 
 NEWSYM WaterOn,  db 1
 
@@ -667,20 +658,10 @@ NEWSYM ForceHiLoROM, resb 1
 NEWSYM CombinDataGlob, resb 3300 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff
 NEWSYM CombinDataLocl, resb 3300
 
-section .data
-NEWSYM CmdLineNetPlay, db 0
-NEWSYM CmdLineTCPIPAddress, times 29 db 0
-section .bss
-
 GUIwinorder resb 18
 GUIwinpos   resb 18
 GUIwinactiv resb 18
-DialNumber  resb 40
 ViewBuffer  resb 50*32
-NEWSYM ModemInitStat, resb 1
-ModemProcess resb 1       ; Shows current dial/answer process
-ModemPTimer  resd 1       ; Timer for modem process
-ModemOKStat  resb 1       ; OK is detected on modem status
 
 SECTION .data             ; Window sizes and positions
 ;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE
@@ -747,12 +728,6 @@ NEWSYM CheatBDoor,   resb 1
 NEWSYM ShowTimer,    resb 1
 NEWSYM MousePRClick, resb 1
 NEWSYM MouseDis, resb 1
-NEWSYM NetPlayNoMore, resb 1
-NEWSYM NetChatFirst, resb 1
-NEWSYM NetServer, resb 1
-NEWSYM NetQuitAfter, resb 1
-NEWSYM NetNewNick, resb 16
-NEWSYM NetFilename, resb 512
 
 NEWSYM CheatOn, resd 1
 NEWSYM NumCheats, resd 1
@@ -769,28 +744,7 @@ NEWSYM numdrives, dd 26
 SubPalTable times 256 db 1      ; Corresponding Gray Scale Color
 
 SECTION .bss
-WhichRemote resd 1                ; Modem = 1, IPX = 2, TCP/IP = 4
-Connected   resd 1
-IDCheckPos  resd 1
 
-NEWSYM pl1neten,    resb 1
-NEWSYM pl2neten,    resb 1
-NEWSYM pl3neten,    resb 1
-NEWSYM pl4neten,    resb 1
-NEWSYM pl5neten,    resb 1
-NEWSYM cnetplaybuf, resb 512
-NEWSYM cnetptrhead, resd 1
-NEWSYM cnetptrtail, resd 1
-NEWSYM prevp1net,   resd 1
-NEWSYM prevp2net,   resd 1
-NEWSYM prevp3net,   resd 1
-NEWSYM prevp4net,   resd 1
-NEWSYM prevp5net,   resd 1
-NEWSYM netdelayed,  resb 1
-NEWSYM ChatProgress,resd 1
-NEWSYM RecvProgress,resd 1
-NEWSYM IPXInfoStr,  resw 1
-NEWSYM IPXInfoStrR, resw 1
 NEWSYM GUICMessage, resd 1
 NEWSYM GUICTimer,   resd 1
 NEWSYM GUIOn,       resb 1
@@ -801,9 +755,6 @@ NEWSYM MotionBlur, resb 1
 
 NEWSYM StartLL, resd 1
 NEWSYM StartLR, resd 1
-NEWSYM LatencyVal, resb 32
-
-NEWSYM NetLoadState, resb 1
 
 NEWSYM TRVal, resw 1
 NEWSYM TGVal, resw 1
@@ -996,20 +947,6 @@ NEWSYM GUIRestoreVars
     mov [smallscreenon],al
     mov al,[GUIScreenScale]
     mov [ScreenScale],al
-    cmp byte[CmdLineNetPlay],0
-    je .nocmdlinenetplay
-    mov ecx,28/4
-    mov esi,CmdLineTCPIPAddress
-    mov edi,TCPIPAddress
-.netplayloop
-    mov eax,[esi]
-    add esi,byte 4
-    mov [edi],eax
-    add edi,byte 4
-    dec ecx
-    jnz .netplayloop
-    xor eax,eax
-.nocmdlinenetplay
     call CalcChecksum
     cmp byte[TimeChecker],bl
     jne .nottimer
@@ -1145,10 +1082,6 @@ NEWSYM GUIinit36_4hz
 NEWSYM GUI36hzcall
     inc dword[GUIt1cc]
     inc dword[SnowMover]
-    cmp dword[ModemPTimer],0
-    je .nodec5
-    dec dword[ModemPTimer]
-.nodec5
     cmp dword[GUIEditStringLTxt],0
     je .nodec
     dec dword[GUIEditStringLTxt]
@@ -1177,8 +1110,6 @@ NEWSYM GUI36hzcall
     and byte[GUICCFlash],0Fh
     inc byte[GUILDFlash]
     and byte[GUILDFlash],0Fh
-    inc byte[GUINetTextm2+2]
-    and byte[GUINetTextm2+2],0Fh
     ret
 
 %ifdef __MSDOS__
@@ -1309,21 +1240,8 @@ LoadDetermine:
     mov byte[GUICheatMenuData+14],1
     mov byte[GUICheatMenuData+14*2],1
     mov byte[GUIMiscMenuData+14*2],1
-    cmp byte[CheatBDoor],1
-    je .nomodem
-    cmp byte[CNetType],21
-    je .modem
-    cmp byte[CNetType],22
-    je .modem
-    cmp byte[CNetType],20
-    jne .nomodem
-.modem
-    mov byte[GUICheatMenuData],2
-    mov byte[GUICheatMenuData+14],2
-    mov byte[GUICheatMenuData+14*2],2
-.nomodem
     cmp byte[romloadskip],0
-    je .noromloaded2
+    je .noromloaded
     mov byte[GUIGameMenuData+14],2
     mov byte[GUIGameMenuData+14*2],2
     mov byte[GUIGameMenuData+14*4],2
@@ -1333,7 +1251,6 @@ LoadDetermine:
     mov byte[GUICheatMenuData+14],2
     mov byte[GUICheatMenuData+14*2],2
     mov byte[GUIMiscMenuData+14*2],2
-.noromloaded2
 .noromloaded
     ret
 
@@ -1601,28 +1518,6 @@ section .text
     div ebx
 %endmacro
 
-NEWSYM TestSent
-    mov eax,[NetSent]
-    xor edx,edx
-    mov ebx,16
-    div ebx
-    ProcessOneDigit 3
-    ProcessOneDigit 2
-    ProcessOneDigit 1
-    ProcessOneDigit 0
-
-    mov eax,[valuea]
-    xor edx,edx
-    mov ebx,16
-    div ebx
-    ProcessOneDigit 8
-    ProcessOneDigit 7
-    ProcessOneDigit 6
-    ProcessOneDigit 5
-
-    mov dword[GUICMessage],.message
-    mov dword[GUICTimer],100000
-    ret
 SECTION .data
 .message db 0,0,0,0,' ',0,0,0,0,0,0,0
 SECTION .text
@@ -1858,84 +1753,6 @@ NEWSYM StartGUI
     mov ebx,LoadDir
     call Change_Dir
 
-    cmp byte[NetFilename],0
-    je near .nofilenamenet
-    cmp byte[NetChatFirst],0
-    je near .filenamenetb
-    mov ebx,NetFilename
-    xor ecx,ecx
-.fnetloop
-    cmp byte[ebx],'\'
-    jne .fnetloopb
-    mov ecx,ebx
-.fnetloopb
-    inc ebx
-    cmp byte[ebx],0
-    jne .fnetloop
-    or ecx,ecx
-    jz near .nofilenamenet
-    mov byte[ecx],0
-    push ecx
-    mov dl,[LoadDrive]
-    cmp byte[NetFilename+1],':'
-    jne .nodrivenetb
-    mov dl,[NetFilename]
-    sub dl,'A'
-.nodrivenetb
-    mov ebx,NetFilename
-    call Change_Dir
-    pop ecx
-    mov ebx,NetFilename
-    inc ecx
-.nextnetl
-    mov al,[ecx]
-    mov [ebx],al
-    inc ecx
-    inc ebx
-    or al,al
-    jnz .nextnetl
-    jmp .nofilenamenet
-.filenamenetb
-    mov dl,[LoadDrive]
-    cmp byte[NetFilename+1],':'
-    jne .nodrivenet
-    mov dl,[NetFilename]
-    sub dl,'A'
-.nodrivenet
-    mov ebx,NetFilename
-    call Change_Dir
-    mov byte[NetFilename],0
-.nofilenamenet
-    cmp byte[NetServer],0
-    je .noserverclient
-    mov byte[CNetType],15
-    mov byte[ModemProcess],40
-    cmp byte[NetServer],2
-    jne .noclient
-    mov byte[ModemProcess],41
-.noclient
-    mov byte[NetServer],0
-    mov byte[WhichRemote],4
-    mov byte[GUIcmenupos],0
-    mov byte[GUIcrowpos],0
-    call loadnetopen
-.noserverclient
-    cmp byte[NetNewNick],0
-    je .nonewnick
-    mov ebx,NetNewNick
-    mov ecx,ChatNick
-.nickloop
-    mov al,[ebx]
-    mov [ecx],al
-    inc ebx
-    inc ecx
-    or al,al
-    jnz .nickloop
-    mov byte[NetNewNick],0
-.nonewnick
-
-    cmp byte[CNetType],20
-    je near .noautostate
     cmp byte[AutoState],0
     je .noautostate
     cmp byte[romloadskip],0
@@ -1944,106 +1761,6 @@ NEWSYM StartGUI
 .noautostate
 
     GUIInitIRQs
-
-    cmp byte[CNetType],20
-    jne near .nostat20
-    test byte[NetQuit],80h
-    jnz near .nostat20
-    mov byte[GUIcmenupos],0
-    mov byte[GUIcrowpos],0
-    call loadnetopen
-%ifdef __MSDOS__
-    cmp byte[WhichRemote],1
-    jne .yesdcd
-    call ModemCheckDCD
-    cmp al,1
-    jne near .nostat20
-.yesdcd
-%endif
-
-    mov byte[RestoreValues],1
-    mov [tempedx],edx
-    mov [tempesi],esi
-    mov [tempedi],edi
-    mov [tempebp],ebp
-    pushad
-    mov dword[CBackupPos],0
-    call BackupCVFrame
-    popad
-
-    call DisableSUDPPacket
-    call Wait1SecWin
-    ; sync
-    call PreparePacket
-    mov al,254
-    call RemoteSendChar
-    call SendPacket
-    call PreparePacket
-    mov al,254
-    call RemoteSendChar
-    call SendPacket
-    call PreparePacket
-    mov al,254
-    call RemoteSendChar
-    call SendPacket
-    call PreparePacket
-    mov al,254
-    call RemoteSendChar
-    call SendPacket
-    mov dword[ModemPTimer],4*32
-.nochar
-    pushad
-    call JoyRead
-    popad
-    call RemoteGetChar
-    cmp dword[ModemPTimer],0
-    je near .nostat20
-    cmp dh,0
-    je .nochar
-    cmp dl,254
-    jne .nochar
-    call PreparePacket
-    mov al,253
-    call RemoteSendChar
-    call SendPacket
-.nocharc
-    pushad
-    call JoyRead
-    popad
-    call RemoteGetChar
-    cmp dword[ModemPTimer],0
-    je near .nostat20
-    cmp dh,0
-    je .nocharc
-    cmp dl,253
-    jne .nocharc
-    call PreparePacket
-    mov al,1
-    call RemoteSendChar
-    call SendPacket
-    call ClearUDPStuff
-
-    mov byte[RemoteCommand],1
-    mov byte[HoldCommand],1
-    cmp byte[NetLoadState],1
-    jne .notreceive
-    mov byte[CNetType],22
-.noreceivestate
-    pushad
-    call JoyRead
-    popad
-    call RemoteGetChar
-    cmp dh,0
-    je .noreceivestate
-    cmp dl,14
-    jne .noreceivestate
-    call loadstaterecvinit
-.notreceive
-    cmp byte[NetLoadState],2
-    jne .notsend
-    call NetLoadStuff
-.notsend
-.nostat20
 
     cmp byte[GUIwinptr],0
     jne .nomenuopen
@@ -2100,13 +1817,6 @@ NEWSYM StartGUI
 
     mov byte[GUIQuit],0
 .nokey
-    cmp byte[CNetType],21
-    je .noquit
-    cmp byte[CNetType],22
-    jne .yesquit
-.noquit
-    mov byte[GUIQuit],0
-.yesquit
     cmp byte[GUIQuit],2
     je near .exit
     cmp byte[GUIQuit],1
@@ -2121,12 +1831,6 @@ NEWSYM StartGUI
 .notrouble
 .mousedis2
     call GUIUnBuffer
-    cmp byte[CNetType],20
-    je .nowater
-    cmp byte[CNetType],21
-    je .nowater
-    cmp byte[CNetType],22
-    je .nowater
     cmp byte[GUIEffect],1
     jne .nosnow
     call DrawSnow
@@ -2144,99 +1848,6 @@ NEWSYM StartGUI
 ;    call DrawSmoke
     call DrawBurn
 .nosmoke
-;    call TestSent
-    cmp byte[CNetType],20
-    jne .noreceive
-
-    cmp byte[NetChatFirst],0
-    je .noloadbeforechat
-    mov eax,NetFilename
-    call GUIloadfilename.nocnettype
-    mov byte[sramsavedis],1
-    call transfersram
-    mov byte[NetChatFirst],0
-.noloadbeforechat
-
-    cmp byte[GUIcmenupos],0
-    jne .nomenuout2
-    cmp byte[GUIwinptr],0
-    jne .nomenuout2
-    cmp byte[netlastloaded],1
-    je .openmenu
-    mov byte[GUIcmenupos],2
-    mov byte[GUIcrowpos],0
-    jmp .nomenuout2
-.openmenu
-    mov byte[netlastloaded],0
-    call loadnetopen
-.nomenuout2
-    call RemoteGetChar
-    cmp dh,0
-    jne .received
-    mov dl,1
-.received
-    call ProcessRemoteCommand
-    jmp .noreceive2
-.noreceive
-    mov byte[HoldCommand],0
-.noreceive2
-
-    cmp byte[CNetType],21
-    jne .noloadstatesend
-    call loadstatesend
-.noloadstatesend
-    cmp byte[CNetType],22
-    jne .noloadstaterecv
-    call loadstaterecv
-.noloadstaterecv
-
-    cmp byte[CNetType],15
-    je .modem
-    cmp byte[CNetType],12
-    je .modem
-    cmp byte[CNetType],11
-    je .modem
-    cmp byte[CNetType],10
-    jne near .nomodem
-.modem
-    call ProcessModem
-%ifdef __MSDOS__
-    cmp byte[Connected],1
-    je near .nomodem
-    call ModemGetChar
-    cmp dh,0
-    je .nomodem
-    cmp byte[ModemOKStat],0
-    jne .foundokay
-    mov byte[ModemOKStat],1
-    jmp .skipstat
-.foundokay
-    cmp byte[ModemOKStat],1
-    jne .nostat0
-    cmp dl,13
-    jne .nostat0
-    inc byte[ModemOKStat]
-    jmp .skipstat
-.nostat0
-    cmp byte[ModemOKStat],2
-    jne .nostat1
-    cmp dl,'O'
-    jne .nostat1
-    inc byte[ModemOKStat]
-    jmp .skipstat
-.nostat1
-    cmp byte[ModemOKStat],3
-    jne .nostat2
-    cmp dl,'K'
-    jne .nostat2
-    inc byte[ModemOKStat]
-    jmp .skipstat
-.nostat2
-.skipstat
-    mov dh,0
-    call NetAddChar
-%endif
-.nomodem
 
     cmp dword[GUIEditStringcWin],0
     je .noblink
@@ -2281,24 +1892,7 @@ NEWSYM StartGUI
     call vidpastecopyscr
     call GUIgetcurrentinput
     jmp .nokey
-
 .exitgui
-    cmp byte[CNetType],20
-    jne near .nostat20b2
-    call PreparePacket
-    mov al,255
-    call RemoteSendChar
-    call SendPacket
-    call PreparePacket
-    mov al,255
-    call RemoteSendChar
-    call SendPacket
-    call PreparePacket
-    mov al,255
-    call RemoteSendChar
-    call SendPacket
-.nostat20b2
-
     GUIDeInitIRQs
 
     mov ax,[PrevResoln]
@@ -2320,178 +1914,6 @@ NEWSYM StartGUI
     call makepal
 .nomakepal
     mov word[t1cc],1
-
-    mov byte[chaton],0
-    mov dword[chatstrL],0
-    mov dword[chatLpos],0
-    mov dword[chatstrR],0
-    mov dword[chatRTL],0
-
-    cmp byte[CNetType],20
-    jne near .nostat20b
-
-    mov al,10
-    sub al,[Latency]
-    cmp byte[Latency],4
-    jb .nolatency
-    mov al,7
-.nolatency
-    mov [BackStateSize],al
-
-    call ResetExecStuff
-
-    mov byte[MultiTap],1
-    cmp byte[pl3neten],0
-    jne .mtap
-    cmp byte[pl4neten],0
-    jne .mtap
-    cmp byte[pl5neten],0
-    jne .mtap
-.nomtap
-    mov byte[MultiTap],0
-.mtap
-
-    cmp byte[RestoreValues],1
-    jne .norestoreval
-    pushad
-    mov dword[PBackupPos],0
-    call RestoreCVFrame
-    popad
-    mov esi,[tempesi] 	
-    mov edi,[tempedi] 	
-    mov ebp,[tempebp]
-.norestoreval
-
-    mov dword[nmiprevaddrl],0
-    mov dword[nmiprevaddrh],0
-    mov dword[nmirept],0
-    mov dword[nmiprevline],224
-    mov dword[nmistatus],0
-    mov dword[spcnumread],0
- mov dword[spchalted],-1
-    mov byte[NextLineCache],0
-    mov byte[DSPMem+08h],0
-    mov byte[DSPMem+18h],0
-    mov byte[DSPMem+28h],0
-    mov byte[DSPMem+38h],0
-    mov byte[DSPMem+48h],0
-    mov byte[DSPMem+58h],0
-    mov byte[DSPMem+68h],0
-    mov byte[DSPMem+78h],0
-
-    mov byte[netdelayed],0
-    mov dword[cnetptrhead],0
-    mov dword[cnetptrtail],0
-    mov dword[prevp1net],0
-    mov dword[prevp2net],0
-    mov dword[prevp3net],0
-    mov dword[prevp4net],0
-    mov dword[prevp5net],0
-    mov byte[BackState],1
-    mov dword[CBackupPos],0
-    mov dword[PBackupPos],0
-    mov dword[PPValue],0
-    mov dword[DPValue],0
-    mov byte[CurRecv],0
-    mov dword[NetQuitter],0
-    mov dword[LatencyV],0
-    mov dword[LatencyV+4],0
-    mov dword[LatencyV+8],0
-    mov dword[LatencyV+12],0
-    mov dword[LatencyRecvPtr],0
-    mov dword[LatencySendPtr],0
-
-    mov eax,cnetplaybuf
-    mov ecx,512
-.loop20
-    mov byte[eax],0
-    inc eax
-    dec ecx
-    jnz .loop20
-    mov al,[Latency]
-    mov [LatencyLeft],al
-    mov byte[NetSwap],0
-
-    mov dword[CBackupPos],0
-    mov dword[PBackupPos],0
-
-    mov ebx,[romdata]
-    mov ecx,[NumofBanks]
-    shl ecx,15
-    xor eax,eax
-    or ecx,ecx
-    jz .nocsumloop
-.csumloop
-    add al,[ebx]
-    adc ah,0
-    inc ebx
-    dec ecx
-    jnz .csumloop
-.nocsumloop
-    mov [CheckSumVal],eax
-
-    mov ebx,eax
-    ; sync with modem
-    call PreparePacket
-    mov al,30
-    call RemoteSendChar
-    mov al,230
-    call RemoteSendChar
-    mov al,[CheckSumVal]
-    call RemoteSendChar
-    mov al,[CheckSumVal+1]
-    call RemoteSendChar
-    call SendPacket
-.nocharb
-    pushad
-    call JoyRead
-    popad
-;    cmp byte[pressed+1],1
-;    je near .faileda
-
-    call RemoteGetChar
-    cmp dh,0
-    je .nocharb
-    cmp dl,230
-    jne .nocharb
-.nocharb2
-    call RemoteGetChar
-    cmp dh,0
-    je .nocharb2
-    cmp dl,[CheckSumVal]
-    jne .wrongcs
-.nocharb3
-    call RemoteGetChar
-    cmp dh,0
-    je .nocharb3
-    cmp dl,[CheckSumVal+1]
-    je .okaychat
-.wrongcs
-    mov esi,WrongCheckSum
-    call WritetochatBuffer
-    jmp StartGUI
-.okaychat
-    call PreparePacket
-    mov al,229
-    call RemoteSendChar
-    call SendPacket
-.nocharb5
-    pushad
-    call JoyRead
-    popad
-;    cmp byte[pressed+1],1
-;    je near .failedb
-
-    call RemoteGetChar
-    cmp dh,0
-    je .nocharb5
-    cmp dl,229
-    jne .nocharb5
-.nostat20b
-    call EnableSUDPPacket
-
-    mov byte[ChatProgress],0
-    mov dword[RecvProgress],0
 
     ; get LoadDrive/LoadDir
     mov ebx,LoadDir
@@ -2583,7 +2005,6 @@ NEWSYM StartGUI
     mov byte[GUIReset],0
     mov dword[StartLL],0
     mov dword[StartLR],0
-    mov byte[NetLoadState],0
     jmp continueprog
 
 .faileda
@@ -3207,19 +2628,11 @@ GUITryMenuItem:
 .dontquit
     ret
 .norun
-    cmp byte[CNetType],21
-    je near .noreset
-    cmp byte[CNetType],22
-    je near .noreset
     GUICheckMenuItem 12, 2              ; Reset
     cmp byte[GUIcrowpos],2
     jne .noreset
     mov byte[GUICResetPos],1
 .noreset
-    cmp byte[CNetType],21
-    je near .noromloaded
-    cmp byte[CNetType],22
-    je near .noromloaded
     cmp byte[GUIcrowpos],4
     jne .nosavestate
     mov byte[GUIStatesText5],0
@@ -3293,15 +2706,6 @@ GUITryMenuItem:
 .noconfig
     cmp byte[romloadskip],0
     jne near .nocheat
-    cmp byte[CheatBDoor],1
-    je .yescheat
-    cmp byte[CNetType],20
-    je near .nocheat
-    cmp byte[CNetType],21
-    je near .nocheat
-    cmp byte[CNetType],22
-    je near .nocheat
-.yescheat
     cmp byte[GUIcmenupos],4
     jne near .nocheat
     GUICheckMenuItem 7, 0
@@ -3319,30 +2723,13 @@ GUITryMenuItem:
     cmp byte[GUIcmenupos],5
     jne near .nonet
 %ifdef __MSDOS__
-    cmp byte[CNetType],10
-    jae .nomod
-    mov byte[CNetType],0
-.nomod
     GUICheckMenuItem 8, 0
     GUICheckMenuItem 8, 1
-    cmp byte[CNetType],10
-    jae near .nonet
-    cmp byte[GUIcrowpos],1
-    jne .noipx
-    mov byte[CNetType],7
-.noipx
-    cmp byte[GUIcrowpos],0
-    jne near .nonet
-    mov byte[CNetType],1
-    jmp .nonet
 %endif
 ;.win32
     GUICheckMenuItem 8, 0
-    cmp byte[CNetType],10
-    jae near .nonet
     cmp byte[GUIcrowpos],0
     jne near .nonet
-    mov byte[CNetType],4
     call GetHostName
 .nonet
     cmp byte[GUIcmenupos],6
@@ -3546,11 +2933,6 @@ GUIProcStates:
     popad
     jmp .changedir
 .loadstate
-    cmp byte[CNetType],20
-    jne .notnet
-    call NetLoadStuff
-    jmp .changedir
-.notnet
     pushad
     call loadstate2
     popad
@@ -3602,13 +2984,6 @@ GUIProcReset:
     call GUIDoReset
 .movieendif
     popad
-    cmp byte[CNetType],20
-    jne .noreset
-    call PreparePacket
-    mov al,40
-    call RemoteSendChar
-    call SendPacket
-    mov byte[GUIQuit],0
 .noreset
     mov byte[GUICBHold],0
     xor eax,eax
