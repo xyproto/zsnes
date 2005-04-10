@@ -51,7 +51,7 @@ EXTSYM winbg3enval,winbg4enval,winbgobjenval,Mode7HiRes16b,res640,hiresstuff
 EXTSYM Mode7BackA,Mode7BackC,Mode7BackX0,Mode7BackSet,drawmode7win16b,ngwinen
 EXTSYM drawlineng16x84b16b,drawlineng16x82b16b,ofsmcyps,vram,ofsmcptr,ofsmady
 EXTSYM ofsmadx,ofsmtptr,yposngom,flipyposngom,ofsmmptr,ofsmval,ofsmvalh,V8Mode
-EXTSYM hdmaearlstart,ofsmvalh,cbgval,drawlinengom4b16b,ignor512,winbg1envals
+EXTSYM hdmaearlstart,cbgval,drawlinengom4b16b,ignor512,winbg1envals
 EXTSYM FillSubScr,scanlines,drawmode7win16bd,SpecialLine,vidmemch2s,dovegrest
 EXTSYM smallscreenon,ScreenScale,SA1Enable,drawlinengom16x164b16b,bgallchange
 EXTSYM bg1change,bg2change,bg3change,bg4change,ngwinptr,objwlrpos,objwen
