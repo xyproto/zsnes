@@ -2761,9 +2761,7 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 78,150,[KeyOffsetMSw]
     DGOptnsProcBox 78,160,[KeySlowDown]
     DGOptnsProcBox 78,170,[EMUPauseKey]
-%ifndef __MSDOS__
-    DGOptnsProcBox 178,100,[KeyRewind]
-%endif
+;    DGOptnsProcBox 178,100,[KeyRewind]
     DGOptnsProcBox 178,110,[KeyFastFrwrd]
     DGOptnsProcBox 178,120,[KeyVolUp]
     DGOptnsProcBox 178,130,[KeyVolDown]
@@ -3194,6 +3192,7 @@ DisplayGUISaveClick:
     DGOptnsProcBox 8+25,148,[KeySaveState]
     DGOptnsProcBox 8+57+25,148,[KeyLoadState]
     DGOptnsProcBox 8+114+25,148,[KeyStateSelct]
+    DGOptnsProcBox 8+38,157,[KeyRewind]
     ret
 
 DrawMouse:

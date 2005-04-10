@@ -3817,9 +3817,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,9,152,GUIGameOptnsTextJ
     GUIOuttextwin2 9,9,162,GUIGameOptnsTextK
     GUIOuttextwin2 9,9,172,GUIGameOptnsTextL
-%ifndef __MSDOS__
-    GUIOuttextwin2 9,109,102,GUIGameOptnsTextEa
-%endif
+;    GUIOuttextwin2 9,109,102,GUIGameOptnsTextEa
     GUIOuttextwin2 9,109,112,GUIGameOptnsTextFa
     GUIOuttextwin2 9,109,122,GUIGameOptnsTextGa
     GUIOuttextwin2 9,109,132,GUIGameOptnsTextHa
@@ -3904,9 +3902,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8,151,GUIGameOptnsTextJ
     GUIOuttextwin2 9,8,161,GUIGameOptnsTextK
     GUIOuttextwin2 9,8,171,GUIGameOptnsTextL
-%ifndef __MSDOS__
-    GUIOuttextwin2 9,108,101,GUIGameOptnsTextEa
-%endif
+;    GUIOuttextwin2 9,108,101,GUIGameOptnsTextEa
     GUIOuttextwin2 9,108,111,GUIGameOptnsTextFa
     GUIOuttextwin2 9,108,121,GUIGameOptnsTextGa
     GUIOuttextwin2 9,108,131,GUIGameOptnsTextHa
@@ -3946,9 +3942,7 @@ DisplayGameOptns:
     DGOptnsBorderBox 9,77,149
     DGOptnsBorderBox 9,77,159
     DGOptnsBorderBox 9,77,169    
-%ifndef __MSDOS__
-    DGOptnsBorderBox 9,177,99
-%endif
+;    DGOptnsBorderBox 9,177,99
     DGOptnsBorderBox 9,177,109
     DGOptnsBorderBox 9,177,119
     DGOptnsBorderBox 9,177,129
@@ -3988,9 +3982,7 @@ DisplayGameOptns:
     DGOptnsDrawBox 78,150,[KeyOffsetMSw]
     DGOptnsDrawBox 78,160,[KeySlowDown]
     DGOptnsDrawBox 78,170,[EMUPauseKey]
-%ifndef __MSDOS__
-    DGOptnsDrawBox 178,100,[KeyRewind]
-%endif
+;    DGOptnsDrawBox 178,100,[KeyRewind]
     DGOptnsDrawBox 178,110,[KeyFastFrwrd]
     DGOptnsDrawBox 178,120,[KeyVolUp]
     DGOptnsDrawBox 178,130,[KeyVolDown]
@@ -4006,10 +3998,6 @@ GUIGameOptnsColB resb 1
 GUIGameDisplayKy resd 1
 
 SECTION .data
-;GUIGameOptnsText1A  db 'DUMMY',0
-;GUIGameOptnsTextX  db 'DUMMY',0
-;GUIGameOptnsTextV  db 'DUMMY',0
-
 GUIGameOptnsText1  db 'BG DISABLES :',0
 GUIGameOptnsText2  db 'BG#',0
 GUIGameOptnsText2a db 'OBJ ',0
@@ -4027,7 +4015,7 @@ GUIGameOptnsTextC  db 'SAVE SPC',0
 
 GUIGameOptnsTextD  db 'MISC TOGGLES :',0
 GUIGameOptnsTextE  db 'USE PL12/34',0
-GUIGameOptnsTextEa  db 'REWIND KEY',0
+;GUIGameOptnsTextEa  db 'FREE SPACE',0
 GUIGameOptnsTextF  db 'CLRSWITCHES',0
 GUIGameOptnsTextFa  db 'FASTFWD KEY',0
 GUIGameOptnsTextG  db 'EXTRADEVICE',0
@@ -4042,48 +4030,6 @@ GUIGameOptnsTextK  db 'SLOWDWN KEY',0
 GUIGameOptnsTextKa  db 'DISPLAY FPS',0
 GUIGameOptnsTextL  db 'PAUSE GAME',0
 GUIGameOptnsTextLa  db 'INCR FRAME',0
-
-
-;GUIGameOptnsText1 db 'SOUND DISABLES :',0
-;GUIGameOptnsText2 db 'CH#',0
-;GUIGameOptnsText3 db 'BG DISABLES :',0
-;GUIGameOptnsText4 db 'BG#',0
-;GUIGameOptnsText5 db 'OBJ ',0
-;GUIGameOptnsText6 db 'MOVIE KEYS : ',0
-;GUIGameOptnsText7 db 'ST#',0
-;GUIGameOptnsText8 db 'QUICK KEYS :',0
-;GUIGameOptnsText9 db 'LOAD',0
-;GUIGameOptnsTextA db 'RESET',0
-;GUIGameOptnsTextB db 'EXIT',0
-;GUIGameOptnsTextC db 'MISC TOGGLES :',0
-;GUIGameOptnsTextD db 'CLRSWITCHES',0
-;GUIGameOptnsTextE db 'NEW GFX ENG',0
-;GUIGameOptnsTextF db 'BG WINDOW',0
-;GUIGameOptnsTextG db 'OFFSET MODE',0
-;GUIGameOptnsTextH db 'FASTFWD KEY',0
-;GUIGameOptnsTextI db 'PAUSE EMULATION',0
-;GUIGameOptnsTextJ db 'INCR FRAME',0
-;;GUIGameOptnsTextI db 'INSERT CHAPTER',0
-;;GUIGameOptnsTextJ db 'NEXT CHAPTER',0
-;;GUIGameOptnsTextK db 'PREV CHAPTER',0
-;;GUIGameOptnsTextI db 'SAVE',0
-;;GUIGameOptnsTextJ db 'LOAD',0
-;;GUIGameOptnsTextK db 'PICK',0
-;GUIGameOptnsTextL db 'EXTRADEVICE',0
-;GUIGameOptnsTextM db '+VOL',0
-;GUIGameOptnsTextN db '-VOL',0
-;GUIGameOptnsTextO db '+FRAME RATE',0
-;GUIGameOptnsTextP db '-FRAME RATE',0
-;GUIGameOptnsTextQ db 'CHAT',0
-;GUIGameOptnsTextR db 'SNAPSHOT',0
-;GUIGameOptnsTextS db 'REWIND KEY',0
-;GUIGameOptnsTextT db 'SLOWDWN KEY',0
-;GUIGameOptnsTextU db 'CLOCK',0
-;GUIGameOptnsTextV db 'SAVE SPC',0
-;GUIGameOptnsTextX db 'DISPLAY FPS',0
-;GUIGameOptnsTextY db 'ST+',0
-;GUIGameOptnsTextZ db 'ST-',0
-;GUIGameOptnsText1A db 'USE PL12/34',0
 SECTION .text
 
 DisplayGUIOptns:
@@ -5997,12 +5943,13 @@ DisplayGUISave:
     mov byte[GUISaveText8+2],'8'
     GUIOuttextwin2 20,9,141,GUISaveText8
     mov byte[GUISaveText8+2],'9'
-    GUIOuttextwin2 20,9+45,140,GUISaveText8
+    GUIOuttextwin2 20,9+45,141,GUISaveText8
     GUIOuttextwin2 20,9+45*2,141,GUISaveTextC
     GUIOuttextwin2 20,9+45*3,141,GUISaveTextD    
     GUIOuttextwin2 20,9,150,GUISaveText9
     GUIOuttextwin2 20,9+57,150,GUISaveTextA
     GUIOuttextwin2 20,9+114,150,GUISaveTextB
+    GUIOuttextwin2 20,9,159,GUISaveTextF
     
     add byte[GUItextcolor],15
     mov byte[GUISaveText8+2],'0'
@@ -6030,6 +5977,7 @@ DisplayGUISave:
     GUIOuttextwin2 20,8,149,GUISaveText9
     GUIOuttextwin2 20,8+57,149,GUISaveTextA
     GUIOuttextwin2 20,8+114,149,GUISaveTextB
+    GUIOuttextwin2 20,8,158,GUISaveTextF
 
     mov al,[GUIWincol]
     mov [GUIGameOptnsColA],al
@@ -6133,6 +6081,7 @@ DisplayGUISave:
     DGOptnsBorderBox 20,32,147
     DGOptnsBorderBox 20,89,147
     DGOptnsBorderBox 20,146,147
+    DGOptnsBorderBox 20,45,156
     ; End draw borders  
     
     DrawGUIWinBox 20,150,32,165,39,167
@@ -6210,6 +6159,7 @@ DisplayGUISave:
     DDrawBox 20,8+25,148,[KeySaveState]
     DDrawBox 20,8+57+25,148,[KeyLoadState]
     DDrawBox 20,8+114+25,148,[KeyStateSelct]
+    DDrawBox 20,8+38,157,[KeyRewind]
     ret
 
 SECTION .data
@@ -6227,6 +6177,7 @@ GUISaveTextB db 'PICK',0
 GUISaveTextC db 'ST+',0
 GUISaveTextD db 'ST-',0
 GUISaveTextE db 'STATE SELECTS :',0
+GUISaveTextF db 'REWIND',0
 GUISaveTextV db '+',0
 GUISaveTextW db '-',0
 GUISaveTextX db '  ',0
