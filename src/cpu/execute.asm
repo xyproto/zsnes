@@ -55,21 +55,17 @@ EXTSYM fxbit67pcal,SfxSFR,nosprincr,cpucycle,switchtovirqdeb,switchtonmideb
 EXTSYM MovieSeekBehind,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
-
+EXTSYM AllocatedRewindStates
 
 %ifdef __MSDOS__
 EXTSYM dssel
 %endif
 
 SECTION .data
-NEWSYM CBackupPos, dd 0
-NEWSYM PBackupPos, dd 0
 NEWSYM tempedx, dd 0
 NEWSYM tempesi, dd 0
 NEWSYM tempedi, dd 0
 NEWSYM tempebp, dd 0
-NEWSYM RewindOldPos, dd 0
-NEWSYM RewindPos, dd 0
 NEWSYM RewindTimer, dd 0
 NEWSYM BackState, db 1
 NEWSYM BackStateSize, dd 6
@@ -96,76 +92,39 @@ NEWSYM ProcessRewind
     cmp byte[pressed+eax],1
     jne near .notokay
     mov byte[pressed+eax],2
-    mov eax,[RewindOldPos]
-    cmp [RewindPos],eax
-    je near .notokay
-    dec dword[RewindPos]
-    and dword[RewindPos],0Fh
-    mov eax,[RewindOldPos]
-    cmp [RewindPos],eax
-    je .notokay2
-    dec dword[RewindPos]
-    and dword[RewindPos],0Fh
-    mov eax,[RewindPos]
-    mov [PBackupPos],eax
-    push ecx
-    push ebx
+
     pushad
     call RestoreCVFrame
     popad
+    
     mov esi,[tempesi]
     mov edi,[tempedi]
     mov ebp,[tempebp]
-    ; Clear Cache Check
-    mov ebx,vidmemch2
-    mov ecx,4096+4096+4096
-.next
-    mov byte[ebx],1
-    inc ebx
-    dec ecx
-    jnz .next
-    pop ebx
-    pop ecx
-    inc dword[RewindPos]
-    and dword[RewindPos],0Fh
     mov edx,[tempedx]
 .notokay
     ret
-.notokay2
-    inc dword[RewindPos]
-    and dword[RewindPos],0Fh
-    ret
 
 NEWSYM UpdateRewind
-    push eax
+    cmp byte[AllocatedRewindStates],0
+    je .norewinds
     cmp dword[KeyRewind],0
-    je .notftimer
-    call ProcessRewind
+    je .norewinds
+  
     dec dword[RewindTimer]
-    jnz .notftimer
-    jmp .okay
-.notftimer
-    pop eax
-    ret
-.okay
-    mov eax,[RewindPos]
-    mov [CBackupPos],eax
+    jnz .checkrewind
+    
     mov [tempedx],edx
     mov [tempesi],esi
     mov [tempedi],edi
     mov [tempebp],ebp
+
     pushad
     call BackupCVFrame
     popad
-    inc dword[RewindPos]
-    and dword[RewindPos],0Fh
-    mov eax,[RewindOldPos]
-    cmp [RewindPos],eax
-    jne .noteq
-    inc dword[RewindOldPos]
-    and dword[RewindOldPos],0Fh
-.noteq
-    pop eax
+
+.checkrewind    
+    call ProcessRewind
+.norewinds
     ret
 
 SECTION .data
