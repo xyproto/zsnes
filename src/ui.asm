@@ -18,36 +18,22 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM getcfg,SBHDMA,StereoSound,init,GUIRestoreVars,GUIClick,MouseDis
-EXTSYM ConvertJoyMap,ConvertJoyMap1,ConvertJoyMap2,printhex
-EXTSYM StartUp,PrintStr,WaitForKey,PrintChar,ZFileSystemInit
-EXTSYM SystemInit,allocmem
-EXTSYM cfgsoundon
-EXTSYM xa
-EXTSYM ram7fa,wramdataa
-EXTSYM malloc,free
-EXTSYM MMXSupport,MMXextSupport,ScreenScale,SoundQuality
-EXTSYM debugger,pl1contrl,pl2contrl,romtype,smallscreence
-EXTSYM smallscreenon,spcon
-EXTSYM statefileloc,LatestSave,firstsaveinc
-EXTSYM Create_File,Delete_File,Open_File,Get_File_Date,Close_File,Change_Dir,Get_Dir
-EXTSYM romloadskip
-EXTSYM cfgloadgdir,cfgloadsdir
-EXTSYM init18_2hz
-EXTSYM OSExit,GUIOn2
-EXTSYM SRAMDirCurDir,SRAMChdir,SRAMChdirFail
-EXTSYM frameskip,BitConv32Ptr,spcBuffera,spritetablea,vcache2bs
-EXTSYM vcache4bs,vcache8bs,RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa
-EXTSYM vidbufferofsmos,ngwinptr,vidbufferofsb,headdata,romdata,sfxramdata
-EXTSYM setaramdata,wramdata,ram7f,vram,sram,debugbuf,regptr,regptw,vcache2b
-EXTSYM vcache4b,vcache8b,fname,fnames,fnamest,filefound,vidbufferofsc
-EXTSYM Sup48mbit,Sup16mbit,guioff
+EXTSYM PrintStr,WaitForKey,PrintChar,ram7fa,wramdataa,malloc,free,MMXSupport
+EXTSYM MMXextSupport,statefileloc,LatestSave,firstsaveinc,Open_File
+EXTSYM Get_File_Date,Close_File,Change_Dir,Get_Dir,romloadskip,cfgloadgdir
+EXTSYM cfgloadsdir,init18_2hz,OSExit,SRAMDirCurDir,SRAMChdir,SRAMChdirFail
+EXTSYM BitConv32Ptr,spcBuffera,spritetablea,vcache2bs,vcache4bs,vcache8bs
+EXTSYM RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa,vidbufferofsmos,ngwinptr
+EXTSYM vidbufferofsb,headdata,romdata,sfxramdata,setaramdata,wramdata,ram7f,vram
+EXTSYM sram,debugbuf,regptr,regptw,vcache2b,vcache4b,vcache8b,fname,fnames
+EXTSYM fnamest,filefound,vidbufferofsc,Sup48mbit,Sup16mbit,guioff
 
 %ifdef __LINUX__
-EXTSYM LinuxExit
-EXTSYM GetFilename
+EXTSYM LinuxExit,GetFilename
 %endif
 
 ; Function 0501h
@@ -312,7 +298,7 @@ SECTION .bss
 ;ALIGN32
 
 NEWSYM vrama,       resb 65536
-NEWSYM mode7tab,    resb 65536 
+NEWSYM mode7tab,    resb 65536
 NEWSYM srama,       resb 65536*2
 NEWSYM debugbufa,   resb 10000
 NEWSYM wramreadptr, resd 1
@@ -339,9 +325,9 @@ NEWSYM NoiseData, resb 32768
 ; makevid.asm
 
 ; makevid.asm
-NEWSYM vcache2ba,   resb 262144+256 
-NEWSYM vcache4ba,   resb 131072+256 
-NEWSYM vcache8ba,   resb 65536+256 
+NEWSYM vcache2ba,   resb 262144+256
+NEWSYM vcache4ba,   resb 131072+256
+NEWSYM vcache8ba,   resb 65536+256
 
 ZSNESBase         resd 1
 BlockSize         resd 1  ; Set before calling
@@ -882,7 +868,7 @@ NEWSYM preparedir
     popad
     cmp byte[SRAMChdirFail],0
     je .yessdrive
-    
+
     mov dl,[InitDrive]
     mov ebx,InitDir
     call Change_Dir
@@ -1002,5 +988,3 @@ NEWSYM MMXCheck
 .noprintstr
 .nommx
     ret
-
-

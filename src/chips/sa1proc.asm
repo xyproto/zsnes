@@ -18,16 +18,15 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM xa,xx,xy,xd,xdb,xpb,xs,xe,initaddrl,UpdateDPage,wramdata,IRAM,cycpbl,SA1DoIRQ
-EXTSYM spcnumread,spchalted,SA1IRQEn,nextopcodesa1,debugds
-EXTSYM SNSRegP,SNSRegE,SNSRegPCS,SA1Ptr,SNSPtr,nmiv,irqv,nmiv2,irqv2,snesmap2,SA1tablead
-EXTSYM SA1xpb,SA1RegP,wramdataa,SA1TimerVal,debuggeron
-EXTSYM SA1RegE,SA1RegPCS,SA1BWPtr,SNSBWPtr,CurBWPtr,SA1NMIV,SA1IRQV,debstop,tablead
-EXTSYM membank0w8,romdata,SA1LBound,SA1UBound,SA1SH,SA1SHb
-EXTSYM stackor,stackand,snesmmap,SA1xs,SA1IRQExec
-EXTSYM SA1Message,Sflagnz,Sflagc,Sflago
+EXTSYM initaddrl,wramdata,IRAM,SA1DoIRQ,nextopcodesa1,debugds,SNSRegP,SNSRegPCS
+EXTSYM SA1Ptr,SNSPtr,snesmap2,SA1tablead,SA1xpb,SA1RegP,wramdataa,SA1TimerVal
+EXTSYM debuggeron,SA1RegPCS,SA1BWPtr,SNSBWPtr,CurBWPtr,SA1NMIV,SA1IRQV
+EXTSYM membank0w8,SA1LBound,SA1UBound,SA1SH,SA1SHb,stackor,stackand,snesmmap
+EXTSYM SA1xs,SA1IRQExec,SA1Message,Sflagnz,Sflagc,Sflago
 
 ; In exec loop, jump to execloop if SA1Status != 0
 ; *** Disable spc700 if possible ***
@@ -364,6 +363,3 @@ NEWSYM SA1switchtovirq
     mov [initaddrl],esi
     add esi,eax
     ret
-
-
-

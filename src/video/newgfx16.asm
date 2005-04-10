@@ -18,66 +18,50 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM BG116x16t,BG1SXl,BG1SYl,BG216x16t,BG2SXl,BG2SYl,BG316x16t,BG3PRI
-EXTSYM BG3SXl,BG3SYl,BG416x16t,BG4SXl,BG4SYl,BGFB,BGMA,BGMS1,BGOPT1
-EXTSYM BGOPT2,BGOPT3,BGOPT4,BGPT1,BGPT1X,BGPT1Y,BGPT2,BGPT2X,BGPT2Y,BGPT3
-EXTSYM BGPT3X,BGPT3Y,BGPT4,BGPT4X,BGPT4Y,bg1drwng,bg1objptr,bg1ptr,bg1ptrx
-EXTSYM bg1ptry,bg1scrolx,bg1scroly,bg1totng,bg2drwng,bg2objptr,bg2ptr
-EXTSYM bg2ptrx,bg2ptry,bg2scrolx,bg2scroly,bg2totng,bg3drwng,bg3highst
-EXTSYM bg3objptr,bg3ptr,bg3ptrx,bg3ptry,bg3scrolx,bg3scroly,bg3totng
-EXTSYM bg4drwng,bg4objptr,bg4ptr,bg4ptrx,bg4ptry,bg4scrolx,bg4scroly
-EXTSYM bg4totng,bgcmsung,bgmode,bgtxad,bgtxadd,cachesingle2bng
-EXTSYM cachesingle8bng,cfieldad,cgfxmod,cgmod,cgram,coladdb
-EXTSYM coladdg,coladdr,colleft16b,colormodedef,cpalval,csprbit,csprival
-EXTSYM curmosaicsz,curvidoffset,curypos,firstdrawn
-EXTSYM flipyposng,forceblnk,interlval,intrlng,maxbr,mode0add,mode0ads,mode7A
-EXTSYM mode7C,mode7X0,mode7ab,mode7cd,mode7set,mode7st,mode7xy,modeused
-EXTSYM mosaicon,mosaicsz,mosenng,mosszng,ngceax,ngcedi,ngpalcon2b,ngpalcon4b
-EXTSYM ngpalcon8b,ngptrdat,pesimpng,prdata,prdatb,prdatc,prevbright
-;EXTSYM ngpalcon8b,pesimpng,prdata,prdatb,prdatc,prevbright
-EXTSYM prevpal,reslbyl,resolutn,scaddset,scaddtype,scadsng,scadtng,scbcong
-EXTSYM scfbl,scrndis,scrnon,spritetablea,sprleftpr,sprlefttot,sprprdrn
-EXTSYM sprpriodata,sprtbng,sprtlng,switch16x16,t16x161,t16x162,t16x163
-EXTSYM t16x164,taddfy16x16,taddnfy16x16,tleftn,tleftnb,tltype2b,tltype4b
-EXTSYM tltype8b,vcache2b,vcache4b,vcache8b,vesa2_bposng,vesa2_clbitng,vesa2_gposng
-EXTSYM vesa2_rposng,vidbright,vidbuffer,vidmemch2,vidmemch4,drawsprng
-EXTSYM vidmemch8,vrama,winon,xtravbuf,yposng,vbufdptr,preparesprpr
-EXTSYM drawtileng2b16b,drawtileng4b16b,drawtileng8b16b
-EXTSYM drawtileng16x162b16b,drawtileng16x164b16b,drawtileng16x168b16b
-EXTSYM drawlineng2b16b,drawlineng4b16b,drawlineng8b16b,BuildWindow
-EXTSYM drawlineng16x162b16b,drawlineng16x164b16b,drawlineng16x168b16b
-EXTSYM ngextbg,bgwinchange,disableeffects,winbg1en,winenabs,winenabm
-EXTSYM winl1,winbg1enval,winbg1envalm
-EXTSYM winlogica,winlogicaval,winboundary,winobjen,winlogicb,nglogicval
-EXTSYM ngwintable,winbg2enval,winbg3enval,winbg4enval,winbgobjenval
-EXTSYM Mode7HiRes16b,res640,hiresstuff,Mode7BackA,Mode7BackC,Mode7BackX0
-EXTSYM Mode7BackSet,drawmode7win16b,processmode7hires,ngwinen
-EXTSYM drawlineng16x84b16b,drawlineng16x82b16b,ofsmcyps,vram,ofsmcptr
-EXTSYM ofsmady,ofsmadx,ofsmtptr,yposngom,flipyposngom,ofsmmptr
-EXTSYM ofsmval,ofsmvalh,hdmaearlstart,ofsmvalh,cbgval,drawlinengom4b16b
-EXTSYM drawsprngw,ignor512,winbg1envals,FillSubScr,scanlines
-EXTSYM drawmode7win16bd,SpecialLine,vidmemch2s
-EXTSYM smallscreenon,ScreenScale,SA1Enable,drawlinengom16x164b16b
-EXTSYM doveg,V8Mode,dovegrest
-EXTSYM bgallchange,bg1change,bg2change,bg3change,bg4change
-EXTSYM ngwinptr,objwlrpos,objwen,objclineptr,CSprWinPtr
-EXTSYM BuildWindow2    
-EXTSYM NGNumSpr
-EXTSYM fulladdtab
-EXTSYM MMXSupport,bgtxadd2
+EXTSYM BG116x16t,BG1SXl,BG1SYl,BG216x16t,BG2SXl,BG2SYl,BG316x16t,BG3PRI,BG3SXl
+EXTSYM BG3SYl,BG416x16t,BG4SXl,BG4SYl,BGFB,BGMA,BGMS1,BGOPT1,BGOPT2,BGOPT3
+EXTSYM BGOPT4,BGPT1,BGPT1X,BGPT1Y,BGPT2,BGPT2X,BGPT2Y,BGPT3,BGPT3X,BGPT3Y,BGPT4
+EXTSYM BGPT4X,BGPT4Y,bg1drwng,bg1objptr,bg1ptr,bg1ptrx,bg1ptry,bg1scrolx
+EXTSYM bg1scroly,bg1totng,bg2drwng,bg2objptr,bg2ptr,bg2ptrx,bg2ptry,bg2scrolx
+EXTSYM bg2scroly,bg2totng,bg3drwng,bg3highst,bg3objptr,bg3ptr,bg3ptrx,bg3ptry
+EXTSYM bg3scrolx,bg3scroly,bg3totng,bg4drwng,bg4objptr,bg4ptr,bg4ptrx,bg4ptry
+EXTSYM bg4scrolx,bg4scroly,bg4totng,bgcmsung,bgmode,bgtxad,bgtxadd,ngextbg
+EXTSYM cachesingle2bng,cachesingle8bng,cfieldad,cgmod,cgram,coladdb,coladdg
+EXTSYM coladdr,colleft16b,colormodedef,cpalval,csprbit,csprival,curmosaicsz
+EXTSYM curvidoffset,curypos,firstdrawn,flipyposng,forceblnk,interlval,intrlng
+EXTSYM mode0add,mode0ads,mode7A,mode7C,mode7X0,mode7ab,mode7cd,mode7set,mode7st
+EXTSYM mode7xy,modeused,mosaicon,mosaicsz,mosenng,mosszng,ngceax,ngcedi
+EXTSYM ngpalcon2b,ngpalcon8b,ngptrdat,pesimpng,prdata,prdatb,prdatc,prevbright
+EXTSYM reslbyl,resolutn,scaddset,scaddtype,scadsng,scadtng,scfbl,scrndis,scrnon
+EXTSYM spritetablea,sprleftpr,sprlefttot,sprprdrn,sprpriodata,sprtbng,sprtlng
+EXTSYM switch16x16,t16x161,t16x162,t16x163,t16x164,taddfy16x16,taddnfy16x16
+EXTSYM tleftn,tleftnb,tltype2b,tltype8b,vcache2b,vcache4b,vcache8b,vidbright
+EXTSYM vidbuffer,vidmemch2,vidmemch4,vidmemch8,vrama,winon,xtravbuf,yposng
+EXTSYM vbufdptr,drawtileng2b16b,drawtileng4b16b,drawtileng8b16b,bgwinchange
+EXTSYM drawtileng16x162b16b,drawtileng16x164b16b,drawtileng16x168b16b,winbg1en
+EXTSYM drawlineng2b16b,drawlineng4b16b,drawlineng8b16b,BuildWindow,winenabs
+EXTSYM drawlineng16x162b16b,drawlineng16x164b16b,drawlineng16x168b16b,winenabm
+EXTSYM disableeffects,winl1,winbg1enval,winbg1envalm,winlogica,winlogicaval
+EXTSYM winboundary,winobjen,winlogicb,nglogicval,ngwintable,winbg2enval,doveg
+EXTSYM winbg3enval,winbg4enval,winbgobjenval,Mode7HiRes16b,res640,hiresstuff
+EXTSYM Mode7BackA,Mode7BackC,Mode7BackX0,Mode7BackSet,drawmode7win16b,ngwinen
+EXTSYM drawlineng16x84b16b,drawlineng16x82b16b,ofsmcyps,vram,ofsmcptr,ofsmady
+EXTSYM ofsmadx,ofsmtptr,yposngom,flipyposngom,ofsmmptr,ofsmval,ofsmvalh,V8Mode
+EXTSYM hdmaearlstart,ofsmvalh,cbgval,drawlinengom4b16b,ignor512,winbg1envals
+EXTSYM FillSubScr,scanlines,drawmode7win16bd,SpecialLine,vidmemch2s,dovegrest
+EXTSYM smallscreenon,ScreenScale,SA1Enable,drawlinengom16x164b16b,bgallchange
+EXTSYM bg1change,bg2change,bg3change,bg4change,ngwinptr,objwlrpos,objwen
+EXTSYM objclineptr,CSprWinPtr,BuildWindow2,NGNumSpr,fulladdtab,MMXSupport
+EXTSYM bgtxadd2
 
 %include "video/vidmacro.mac"
 %include "video/newgfx16.mac"
 %include "video/newg162.mac"
 
-
-
-
-
-; mov ebp,[cpalval+ebx*4]
-; 75036*2
 ; Different routines for:
 ;   Normal (just one screen)
 ;   Transparency
@@ -88,9 +72,6 @@ EXTSYM MMXSupport,bgtxadd2
 ;   SubWin+MainWin
 ;   Sub+MainWin
 ;   SubWin+Main
-
-
-
 
 ; cgfxmod :
 ;   0 = No addition whatsoever
@@ -923,7 +904,7 @@ NEWSYM newengine16b
 ;NEWSYM winlogicb,  0             ; Window logic type for Sprites and Backarea
 ;NEWSYM winenabm,   0             ; Window logic enable for main screen
 ;NEWSYM winenabs,   0             ; Window logic enable for sub screen
- 
+
     mov byte[bgwinchange+eax],0
     cmp byte[disableeffects],1
     je near .finishwin
@@ -3624,7 +3605,3 @@ MainScreenClip:
 SubScreenClip:
     ScreenClip SCSubA,SCSubB,SCSubC,SCSubD
     ret
-
-
-
-

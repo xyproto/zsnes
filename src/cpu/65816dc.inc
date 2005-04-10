@@ -19,13 +19,8 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-EXTSYM flagnz, flago, flagc, cpucycle, cycpbl, cycpblt, opcjmptab, doirqnext
-EXTSYM dmadata
 
-
-
-
-
+EXTSYM flagnz,flago,flagc,cpucycle,cycpbl,cycpblt,opcjmptab,doirqnext,dmadata
 
 ;*******************************************************
 ; Flag Setting Macros
@@ -1362,7 +1357,7 @@ COPemulmode
     xor eax,eax
     call membank0r8
     mov [xpc+1],al
-   
+
     inc cx
     and cx,word[stackand]
     xor eax,eax
@@ -1483,7 +1478,7 @@ emulRTI
     xor eax,eax
     call membank0r8
     mov [xpc+1],al
-   
+
     inc cx
     and cx,word[stackand]
     xor eax,eax

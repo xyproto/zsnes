@@ -40,21 +40,14 @@
 ;   I forgot which part.
 
 
+
 %include "macros.mac"
 
-EXTSYM regptr,regptw,romdata,SA1Status,debstop4,SDD1BankA,curromsize
-EXTSYM debuggeron
-EXTSYM Get_Time,Get_TimeDate
-EXTSYM spc7110romptr,SPC7110Entries
-EXTSYM SPC7110IndexSize,SPC7110nfname,SPC7110filep
-EXTSYM SPC7_Convert_Upper,SPC7_Convert_Lower
-EXTSYM Open_File,Close_File,Read_File,File_Seek
-;    EXTSYM Msgptr,MessageOn
-EXTSYM irqv2,irqv,nmiv2,nmiv
-EXTSYM snesmmap,snesmap2
-EXTSYM curypos,CurrentExecSA1
-EXTSYM debstop3
-EXTSYM memaccessbankr8sdd1,memtabler8,AddrNoIncr
+EXTSYM regptr,regptw,romdata,SA1Status,debstop4,SDD1BankA,curromsize,debuggeron
+EXTSYM Get_Time,Get_TimeDate,spc7110romptr,SPC7110Entries,SPC7110IndexSize
+EXTSYM SPC7110nfname,SPC7110filep,SPC7_Convert_Upper,SPC7_Convert_Lower
+EXTSYM Open_File,Close_File,Read_File,File_Seek,irqv2,irqv,nmiv2,nmiv,snesmmap
+EXTSYM snesmap2,curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr
 EXTSYM NumofBanks
 
 %include "cpu/regs.mac"
@@ -773,7 +766,7 @@ SPC4806w:
     mov [SPC7110TempPosition],eax
     mov eax,[edx+8]
     mov [SPC7110TempLength],eax
- 
+
     mov edx,dword[SPC7110filep]
     mov eax,[SPCCompPtr]
     and eax,0FFFFFFh
@@ -1064,7 +1057,7 @@ SPC4818w:
 ;|||||        1 - signed calculation for $4816
 ;|||||_____ : 0 - unsigned calculation for $4814
 ;||||         1 - signed calculation for $4814
-;||||______ : 0 - offset increment gets added to $4811/2/3             
+;||||______ : 0 - offset increment gets added to $4811/2/3
 ;|||          1 - offset increment gets added to $4814/5
 ;| \_______ : 00 - disable offset addition
 ;|          : 01 - 8 bit offset addition using $4814, immediately after writing to $4814/5
@@ -2651,5 +2644,3 @@ NEWSYM sdd14801w
     pop ebx
     pop eax
     ret
-
-

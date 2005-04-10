@@ -18,25 +18,23 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
 EXTSYM DSPMem,FPSOn,Makemode7Table,MessageOn,vesa2red10,scanlines,smallscreenon
-EXTSYM MsgCount,Msgptr,OutputGraphicString,OutputGraphicString16b
-EXTSYM PrepareSaveState,ResetState,breakatsignb,breakatsignc,cvidmode
-EXTSYM cbitmode,copyvid,curblank,drawhline,drawhline16b,drawvline
-EXTSYM drawvline16b,fnames,frameskip,mode7tab,pressed,spcA
-EXTSYM spcBuffera,spcNZ,spcP,spcPCRam,spcRam,spcRamDP,spcS,spcX,spcY
-EXTSYM spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2selec
-EXTSYM vidbuffer,spritetablea,sprlefttot,newengen,spcextraram,resolutn
-EXTSYM Open_File,Close_File,Read_File,Write_File,Create_File,Get_Key,Get_Date
-EXTSYM continueprognokeys,ForceNonTransp,GUIOn,Check_Key,JoyRead
-EXTSYM GetScreen,SSKeyPressed,SPCKeyPressed,StopSound,StartSound
-EXTSYM ExecExitOkay,t1cc
-EXTSYM Clear2xSaIBuffer
-EXTSYM romdata,romtype,ScreenShotFormat
-EXTSYM Voice0Disable,Voice1Disable,Voice2Disable,Voice3Disable
-EXTSYM Voice4Disable,Voice5Disable,Voice6Disable,Voice7Disable
-EXTSYM SRAMChdir, SPCPath, SnapPath, Change_Dir, CHPath, ZFileCHDir
+EXTSYM MsgCount,Msgptr,OutputGraphicString,OutputGraphicString16b,vidbuffer
+EXTSYM PrepareSaveState,ResetState,breakatsignb,cvidmode,cbitmode,copyvid
+EXTSYM curblank,drawhline,drawhline16b,drawvline,drawvline16b,fnames,frameskip
+EXTSYM mode7tab,pressed,spcA,spcBuffera,spcNZ,spcP,spcPCRam,spcRam,spcS,spcX
+EXTSYM spcY,spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2selec
+EXTSYM spritetablea,sprlefttot,newengen,spcextraram,resolutn,Open_File
+EXTSYM Close_File,Write_File,Create_File,Get_Key,Get_Date,continueprognokeys
+EXTSYM ForceNonTransp,GUIOn,Check_Key,JoyRead,GetScreen,SSKeyPressed
+EXTSYM SPCKeyPressed,StopSound,StartSound,ExecExitOkay,t1cc,Clear2xSaIBuffer
+EXTSYM romdata,romtype,ScreenShotFormat,Voice0Disable,Voice1Disable
+EXTSYM Voice2Disable,Voice3Disable,Voice4Disable,Voice5Disable,Voice6Disable
+EXTSYM Voice7Disable,SRAMChdir,SPCPath,SnapPath,CHPath,ZFileCHDir
 %ifndef NO_PNG
 EXTSYM Grab_PNG_Data
 %endif
@@ -384,25 +382,13 @@ NEWSYM showmenu
 .start_dump
 %endif
 
-;    cmp byte[newengen],1
-;    je .unablespc
     mov dword[Msgptr],.search
     mov eax,[MsgCount]
     mov [MessageOn],eax
-;    mov al,[newengen]
-;    mov byte[newengen],0
-;    push eax
     call copyvid
-;    pop eax
-;    mov [newengen],al
-;    call breakatsignc
-;    cmp byte[prbreak],1
-;    je .yesesc
     mov byte[SPCSave],1
     call breakatsignb
     mov byte[SPCSave],0
-;    cmp byte[prbreak],1
-;    je .yesesc
     call savespcdata
 
     mov byte[curblank],40h
@@ -1617,4 +1603,3 @@ restore16b:
    mov byte[vesa2_gpos],6
 .nored
    ret
-

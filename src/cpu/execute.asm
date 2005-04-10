@@ -20,83 +20,42 @@
 
 %include "macros.mac"
 
-EXTSYM StringLength,Get_Time,objhipr,KeyRewind,statesaver
-EXTSYM xa,timer2upd,prevoamptr
-EXTSYM prevedi,SA1xpc,SA1RAMArea,sa1dmaptr
-EXTSYM DSP1COp,C4WFXVal,C41FXVal,Op00Multiplicand,Op10Coefficient,Op04Angle
-EXTSYM Op08X,Op18X,Op28X,Op0CA,Op02FX,Op0AVS,Op06X,Op0DX,Op03F,Op14Zr
-EXTSYM Op0EH,DSP1Type,Op01m
-EXTSYM Voice0Status,UpdateDPage
-EXTSYM MessageOn,MsgCount,Msgptr,StartGUI,cbitmode,debuggeron,romdata
-EXTSYM frameskip,initvideo,newgfx16b,soundon,cvidmode
-EXTSYM vidbuffer,vidbufferofsa,vidbufferofsb,disable65816sh,GUISaveVars,virqnodisable
-EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst,GUIDoReset, GUIReset
-EXTSYM KeyOnStA,KeyOnStB,ProcessKeyOn,printnum,sramsavedis,DSPDisable,C4Enable
-EXTSYM KeyQuickClock,KeyQuickSaveSPC,TimerEnable,AutoIncSaveSlot
-EXTSYM IRQHack,HIRQLoc,Offby1line,splitflags,joinflags,KeyQuickSnapShot
-EXTSYM csounddisable,videotroub,Open_File,Close_File,Read_File,ResetTripleBuf
-EXTSYM Write_File,Output_Text,Create_File,Check_Key,Get_Key,Change_Dir,InitPreGame
-;    EXTSYM tempblah,romdata
-EXTSYM Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8,SetupPreGame
-EXTSYM memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap,DeInitPostGame
-EXTSYM spcPCRam,startdebugger,xp,xpb,xpc,tablead,tableadb,tableadc
-;    EXTSYM oamram
-EXTSYM SA1UpdateDPage,Makemode7Table
-EXTSYM memtabler16,memaccessbankr848mb,memaccessbankr1648mb
-EXTSYM nextmenupopup,MovieProcessing,PrintStr
-EXTSYM OSExit,DosExit,InitDir,InitDrive,createnewcfg,fnames,gotoroot,previdmode
-EXTSYM ramsize,sfxramdata,setaramdata,SETAEnable,sram,SRAMChdir
-;    EXTSYM tempstore
-EXTSYM printhex
-EXTSYM deinitvideo
-EXTSYM BRRBuffer,DSPMem,PrepareSaveState,ResetState,SFXEnable,PHdspsave
-EXTSYM fnamest,sndrot,spcRam,spcRamDP,tableA,vram,wramdata
-EXTSYM PHnum2writesfxreg,SfxR0,PHspcsave
-EXTSYM C4Ram,SPC7110Enable,SDD1Enable
-EXTSYM SA1Mode,PHnum2writesa1reg,SaveSA1,RestoreSA1,UpdateBanksSDD1
-EXTSYM CapturePicture,PrevPicture,NoPictureSave
-EXTSYM BRRPlace0,SfxCPB,SfxCROM,SfxLastRamAdr,SfxMemTable
-EXTSYM SfxRAMBR,SfxRAMMem,SfxROMBR,SfxRomBuffer,Voice0Freq
-EXTSYM cycpbl,cycpbl2,cycpblt,cycpblt2,irqon,nexthdma
-EXTSYM repackfunct,spcnumread,spchalted,spcon,headerhack,initpitch
-EXTSYM SPCMultA,PHnum2writespc7110reg
-EXTSYM multchange,procexecloop,vidmemch2
-EXTSYM romispal
-EXTSYM scrndis,sprlefttot,sprleftpr,processsprites,cachesprites
-EXTSYM NextLineStart,FlipWait,LastLineStart
-EXTSYM opcjmptab
-EXTSYM cpuoverptr
-EXTSYM CheatOn,INTEnab,JoyAPos,JoyBPos,JoyCRead,NMIEnab,NumCheats,CurrentExecSA1
-EXTSYM ReadInputDevice,StartDrawNewGfx,VIRQLoc,cachevideo,cfield
-EXTSYM cheatdata,curblank,curnmi,curypos,cycpl,doirqnext,drawline
-EXTSYM exechdma,hdmadelay,intrset,newengen,oamaddr
-EXTSYM oamaddrs,processmouse,resolutn,showvideo,snesmouse,starthdma
-EXTSYM switchtonmi,switchtovirq,totlines,updatetimer,SA1Swap,SA1DoIRQ
-EXTSYM JoyAOrig,JoyANow,JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow
-EXTSYM JoyEOrig,JoyENow,chaton,chatstrL,chatRTL,chatstrR,SA1Message
-EXTSYM MultiTapStat,idledetectspc,SA1Control,SA1Enable,SA1IRQEnable
-EXTSYM SPC700read,SPC700write,numspcvblleft,spc700idle,SA1Status,SA1IRQExec
-EXTSYM ForceNewGfxOff,LethEnData,C4Pause,GUIQuit
-EXTSYM IRAM,SA1Ptr,SA1BWPtr
-EXTSYM scrnon,scaddset
-EXTSYM outofmemfix,yesoutofmemory
-EXTSYM ProcessMovies,MovieStop
-EXTSYM ioportval,ppustatus
-EXTSYM C4VBlank,dsp1teststuff
-EXTSYM ReturnFromSPCStall,SPCStallSetting,cycpb268,cycpb358,HIRQSkip,scanlines
-EXTSYM smallscreenon,ScreenScale
-EXTSYM MainLoop,NumberOfOpcodes,SfxCLSR,SfxSCMR,SfxPOR
-EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,sfxclineloc
-EXTSYM PLOTJmpa,PLOTJmpb,FxTable,FxTableb,FxTablec,FxTabled
-EXTSYM SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,hdmaearlstart,SFXCounter
-EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67,fxbit67pcal
-EXTSYM SfxSFR,nosprincr
-EXTSYM cpucycle,debstop,switchtovirqdeb,debstop3,switchtonmideb
-EXTSYM MovieSeekBehind
-EXTSYM statefileloc,CHIPBATT,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
-EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead,ResetDuringMovie
-EXTSYM EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
-EXTSYM copyvid
+EXTSYM KeyRewind,statesaver,timer2upd,Voice0Status,UpdateDPage,MessageOn
+EXTSYM MsgCount,Msgptr,StartGUI,cbitmode,debuggeron,romdata,initvideo,newgfx16b
+EXTSYM cvidmode,vidbuffer,vidbufferofsa,disable65816sh,GUISaveVars,virqnodisable
+EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
+EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
+EXTSYM KeyQuickSaveSPC,TimerEnable,IRQHack,HIRQLoc,splitflags,joinflags
+EXTSYM KeyQuickSnapShot,csounddisable,videotroub,Close_File,ResetTripleBuf
+EXTSYM Write_File,Output_Text,Create_File,Check_Key,Get_Key,Change_Dir
+EXTSYM InitPreGame,Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8
+EXTSYM SetupPreGame,memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap
+EXTSYM DeInitPostGame,spcPCRam,startdebugger,xp,xpb,xpc,tablead,tableadb
+EXTSYM tableadc,SA1UpdateDPage,Makemode7Table,nextmenupopup,MovieProcessing
+EXTSYM OSExit,DosExit,InitDir,InitDrive,createnewcfg,sfxramdata,deinitvideo
+EXTSYM SFXEnable,wramdata,cycpbl,cycpblt,irqon,spcnumread,spchalted,spcon
+EXTSYM multchange,vidmemch2,romispal,scrndis,sprlefttot,sprleftpr,processsprites
+EXTSYM cachesprites,NextLineStart,FlipWait,LastLineStart,opcjmptab,CheatOn
+EXTSYM INTEnab,JoyCRead,NMIEnab,NumCheats,CurrentExecSA1,ReadInputDevice
+EXTSYM StartDrawNewGfx,VIRQLoc,cachevideo,cfield,cheatdata,curblank,curnmi
+EXTSYM curypos,cycpl,doirqnext,drawline,exechdma,hdmadelay,intrset,newengen
+EXTSYM oamaddr,oamaddrs,resolutn,showvideo,snesmouse,starthdma,switchtonmi
+EXTSYM switchtovirq,totlines,updatetimer,SA1Swap,SA1DoIRQ,JoyAOrig,JoyANow
+EXTSYM JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow,JoyEOrig,JoyENow
+EXTSYM SA1Message,MultiTapStat,idledetectspc,SA1Control,SA1Enable,SA1IRQEnable
+EXTSYM SPC700read,SPC700write,numspcvblleft,spc700idle,SA1IRQExec,ForceNewGfxOff
+EXTSYM LethEnData,GUIQuit,IRAM,SA1Ptr,SA1BWPtr,scrnon,scaddset,outofmemfix
+EXTSYM yesoutofmemory,ProcessMovies,MovieStop,ppustatus,C4VBlank,copyvid
+EXTSYM ReturnFromSPCStall,scanlines,smallscreenon,ScreenScale,MainLoop
+EXTSYM NumberOfOpcodes,SfxCLSR,SfxSCMR,SfxPOR,sfx128lineloc,sfx160lineloc
+EXTSYM sfx192lineloc,sfxobjlineloc,sfxclineloc,PLOTJmpa,PLOTJmpb,FxTable
+EXTSYM FxTableb,FxTablec,FxTabled,SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,SFXCounter
+EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67
+EXTSYM fxbit67pcal,SfxSFR,nosprincr,cpucycle,switchtovirqdeb,switchtonmideb
+EXTSYM MovieSeekBehind,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
+EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
+EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
+
 
 %ifdef __MSDOS__
 EXTSYM dssel
@@ -433,13 +392,9 @@ NEWSYM start65816
     mov ecx,37518
     xor eax,eax
     rep stosd
-;    mov edi,[vidbufferofsb]
-;    mov ecx,37518
-;    xor eax,eax
-;    rep stosd
     cmp byte[romloadskip],1
     je near StartGUI
-    
+
 NEWSYM continueprog
     ; clear keyboard presses
     mov esi,pressed
@@ -498,7 +453,7 @@ NEWSYM reexecuteb
     inc esi
     dec ecx
     jnz .loopa
-%endif 
+%endif
 reexecuteb2:
     cmp byte[NoSoundReinit],1
     je .skippregame
@@ -614,15 +569,6 @@ reexecuteb2:
     jne .yeskeys
 .nokeys
 
-;    mov edi,memtabler8+40h*4
-;    mov ecx,30h
-;    mov eax,memaccessbankr848mb
-;    rep stosd
-;    mov edi,memtabler16+40h*4
-;    mov ecx,30h
-;    mov eax,memaccessbankr1648mb
-;    rep stosd
-
     cmp byte[nextmenupopup],1
     je near showmenu
     cmp byte[ReturnFromSPCStall],1
@@ -688,9 +634,9 @@ reexecuteb2:
     jne .nomovierecording
     call ResetDuringMovie
     jmp .movieendif
-.nomovierecording    
+.nomovierecording
     call GUIDoReset
-.movieendif    
+.movieendif
     popad
     mov byte[ReturnFromSPCStall],0
     jmp continueprog
@@ -705,11 +651,6 @@ reexecuteb2:
 NEWSYM endprog
     call deinitvideo
 
-;    mov eax,[opcd]
-;    mov eax,[numinst]          ;Temporary
-;    mov eax,[NumBRRconv]
-;    call printnum
-    
     call SaveSramData
     call createnewcfg
     call GUISaveVars
@@ -1143,16 +1084,6 @@ NEWSYM EMUPause, db 0
 NEWSYM INCRFrame, db 0
 SECTION .text
 
-
-%macro C4Paused 0
-;  cmp byte[C4Pause],0
-;  je %%notpaused
-;  inc esi
-;  xor dh,dh
-;  jmp cpuover
-;%%notpaused
-%endmacro
-
 NEWSYM cpuover
     dec esi
     cmp byte[HIRQNextExe],0
@@ -1383,7 +1314,6 @@ NEWSYM cpuover
 ;    mov ax,[resolutn]
 ;    cmp [curypos],ax
 ;    jb .drawline
-    C4Paused
     xor ebx,ebx
     mov bl,[esi]
     inc esi
@@ -1463,7 +1393,6 @@ NEWSYM cpuover
     jne .yesexec
     xor dh,dh
 .yesexec
-    C4Paused
     xor ebx,ebx
     mov bl,[esi]
     inc esi
@@ -1541,7 +1470,7 @@ NEWSYM cpuover
     jz .noincrframekey
     xor byte[INCRFrame],1
     mov byte[pressed+eax],2
-.noincrframekey    
+.noincrframekey
     test byte[pressed+1],01h
     jnz near exitloop
     test byte[pressed+59],01h
@@ -1591,7 +1520,7 @@ NEWSYM cpuover
     jne .noframeincr
     xor byte[INCRFrame],1
     jmp .noemupause
-.noframeincr    
+.noframeincr
     cmp byte[EMUPause],1
     jne .noemupause
     pushad
@@ -1611,14 +1540,14 @@ NEWSYM cpuover
     mov eax,[KeyQuickRst]
     mov byte[pressed+eax],01h
     jmp near exitloop
-.notreset    
+.notreset
     cmp byte[MovieProcessing],0
     jne .noprocmovie
     cmp byte[ZMVZClose],1
     jne .noprocmovie
     jmp OSExit
-.noprocmovie    
-        
+.noprocmovie
+
     call UpdateRewind
 
     cmp byte[snesmouse],4
@@ -1668,7 +1597,6 @@ NEWSYM cpuover
     mov [oamaddr],ax
     mov byte[nosprincr],0
     call showvideo
-;    call dsp1teststuff
     xor ebx,ebx
     mov byte[NMIEnab],81h
     test byte[INTEnab],80h
@@ -1696,7 +1624,6 @@ NEWSYM cpuover
     mov dword[nmiprevaddrh],0
     mov byte[nmirept],1
     mov byte[doirqnext],0
-    C4Paused
     jmp switchtonmi
 .nocheck
     cmp byte[nmirept],10
@@ -1710,7 +1637,6 @@ NEWSYM cpuover
     mov [nmiprevaddrh],esi
 .notgreater
     inc byte[nmirept]
-    C4Paused
     jmp switchtonmi
 .nextcheck
     mov eax,[nmiprevaddrh]
@@ -1722,14 +1648,12 @@ NEWSYM cpuover
     cmp esi,[nmiprevaddrh]
     ja .failcheck
     mov byte[doirqnext],0
-    C4Paused
     jmp switchtonmi
 .failcheck
     mov byte[nmirept],0
     mov dword[nmiprevaddrl],0FFFFFFFFh
     mov dword[nmiprevaddrh],0
     mov byte[doirqnext],0
-    C4Paused
     jmp switchtonmi
 .nonmi
     cmp byte[intrset],1
@@ -1743,7 +1667,6 @@ NEWSYM cpuover
     jz .nowai
     or byte[INTEnab],80h
 .nowai
-    C4Paused
     xor ebx,ebx
     xor ecx,ecx
     mov bl,[esi]
@@ -1802,30 +1725,17 @@ NEWSYM cpuover
     mov dword[SPC700read],0
     mov dword[spc700read],0
 .novblch
-
     mov byte[NMIEnab],01h
-
-;    call cachevideo
     call starthdma
-;    cmp byte[Offby1line],1
-;    je .noirqhack
-;    cmp byte[IRQHack],0
-;    je .noirqhack
-;    call exechdma
 .noirqhack
-
-
     ; check for VIRQ/HIRQ/NMI
     ProcessIRQStuff
-
-    C4Paused
     xor ebx,ebx
     mov bl,[esi]
     inc esi
     jmp execloop.startagain
 
 .virq
-    C4Paused
     test byte[INTEnab],10h
     jz .skiphirq
     cmp word[HIRQLoc],0
@@ -1885,7 +1795,6 @@ NEWSYM cpuover
     jmp switchtovirq
 
 .hirq
-    C4Paused
     mov byte[HIRQNextExe],0
     test byte[INTEnab],10h
     jz .hirqnotokay
@@ -2091,8 +2000,6 @@ NEWSYM UpdateSFX
    call UpdatePORSCMR
    call UpdateCLSR
    ret
-
-EXTSYM SfxAC
 
 NEWSYM StartSFX
     push edx
@@ -2312,21 +2219,6 @@ NEWSYM execsingle
     jmp dword near [edi+ebx*4]
 .cpuover
 
-;    cmp byte[SA1Enable],0
-;    je .nosa1
-;    test byte[SA1Control],60h
-;    jnz .nosa1
-;    dec esi
-;    call SA1Swap
-;    mov bl,[esi]
-;    inc esi
-;    cmp byte[SA1Status],0
-;    je near .nosa1
-;    mov [pdh],dh
-;    xor dh,dh
-;    jmp cpuover
-;.nosa1
-
     cmp byte[SA1Enable],0
     je near .nosa1
     mov byte[cycpl],150
@@ -2470,7 +2362,6 @@ NEWSYM execsingle
     jne .nointrset
     mov byte[intrset],2
 .nointrset
-;    mov byte[debstop3],1
     jmp switchtonmideb
 .nonmi
     cmp byte[intrset],1
@@ -2527,7 +2418,6 @@ NEWSYM execsingle
     jne .nointrset2
     mov byte[intrset],2
 .nointrset2
-;    mov byte[debstop3],1
     jmp switchtovirqdeb
 
 

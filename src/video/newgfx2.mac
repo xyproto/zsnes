@@ -20,11 +20,6 @@
 
 
 
-
-
-
-
-
 ; Finish up parttile
 
 %macro drawlineng16x8 8
@@ -1013,6 +1008,3 @@
     add word[ofsmtptr],bx
     jmp %%next
 %endmacro
-
-
-

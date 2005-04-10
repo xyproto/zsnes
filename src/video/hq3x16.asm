@@ -23,21 +23,15 @@
 ; Copyright (C) 2003 MaxSt ( maxst@hiend3d.com )
 ;----------------------------------------------------------
 
+
+
 %include "macros.mac"
 
-EXTSYM vidbuffer,curblank,MMXSupport,GUIOn,GUIOn2,
-EXTSYM vidbufferofsb
-EXTSYM FilteredGUI,resolutn,lineleft,cfield
-EXTSYM hirestiledat,newengen,SpecialLine,HalfTrans
-EXTSYM hqFilter
-EXTSYM AddEndBytes
-EXTSYM NumBytesPerLine
-EXTSYM WinVidMemStart
-EXTSYM BitConv32Ptr
-EXTSYM RGBtoYUVPtr
-EXTSYM prevline, nextline, deltaptr, xcounter
-EXTSYM w1, w2, w3, w4, w5, w6, w7, w8, w9
-EXTSYM reg_blank, const7, cross, threshold
+EXTSYM vidbuffer,curblank,MMXSupport,GUIOn,GUIOn2,vidbufferofsb,FilteredGUI
+EXTSYM resolutn,lineleft,cfield,hirestiledat,newengen,SpecialLine,HalfTrans
+EXTSYM hqFilter,AddEndBytes,NumBytesPerLine,WinVidMemStart,BitConv32Ptr
+EXTSYM RGBtoYUVPtr,prevline,nextline,deltaptr,xcounter,w1,w2,w3,w4,w5,w6,w7,w8
+EXTSYM w9,reg_blank,const7,cross,threshold
 
 SECTION .text
 
@@ -2754,5 +2748,3 @@ FuncTable2
 SECTION .bss
 InterPtr resd 1
 SECTION .text
-
-

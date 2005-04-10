@@ -18,37 +18,25 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM disableeffects,winl1,winl2,winbgdata,winr1,winr2,winspdata
-EXTSYM winlogica
-EXTSYM winenabm,winobjen
-EXTSYM winlogicb 
-EXTSYM scrndis,scrnon
-EXTSYM bgmode,bgtilesz,winbg1en,winenabs
-EXTSYM bg1objptr,bg1ptr,bg1ptrb,bg1ptrc,bg1ptrd,bg1scrolx,bg1scroly
-EXTSYM cachebg1,curbgofs1,curcolbg1,vcache2b,vcache4b,vcache8b
-EXTSYM vcache2ba,vcache4ba,vcache8ba
-EXTSYM vidbuffer
-EXTSYM bg3highst,cbitmode,colormodedef,colormodeofs,drawline16b
-EXTSYM forceblnk,newengine8b,preparesprpr,scaddset,spritetablea
-EXTSYM sprleftpr,vidbright,ForceNewGfxOff
-EXTSYM curypos,drawmode7,mode7set,mosaicon,mosaicsz,sprleftpr1,sprleftpr2
-EXTSYM sprleftpr3,sprlefttot,sprprifix,drawmode7extbg,interlval,drawmode7extbg2
-EXTSYM sprclprio,sprpriodata,sprsingle
-EXTSYM cachetile2b,cachetile4b,cachetile8b,vram,CacheCheckSkip
-EXTSYM cachetile2b16x16,cachetile4b16x16,cachetile8b16x16
-EXTSYM osm2dis,xtravbuf
-EXTSYM bg3ptr,bg3scrolx,bg3scroly,cachesingle,colormoded2
-EXTSYM tempoffset,vidmemch2,vidmemch4,vidmemch8
-EXTSYM ofsmcptr,ofsmady,ofsmadx,yposng,yposngom,flipyposng,flipyposngom
-EXTSYM ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
+EXTSYM disableeffects,winl1,winl2,winbgdata,winr1,winr2,winspdata,winlogica
+EXTSYM winenabm,winobjen,winlogicb,scrndis,scrnon,bgmode,bgtilesz,winbg1en
+EXTSYM winenabs,bg1objptr,bg1ptr,bg1ptrb,bg1ptrc,bg1ptrd,bg1scrolx,bg1scroly
+EXTSYM cachebg1,curbgofs1,curcolbg1,vcache2b,vcache4b,vcache8b,vcache2ba
+EXTSYM vcache4ba,vcache8ba,vidbuffer,bg3highst,cbitmode,colormodedef
+EXTSYM colormodeofs,drawline16b,forceblnk,newengine8b,preparesprpr,scaddset
+EXTSYM spritetablea,sprleftpr,vidbright,ForceNewGfxOff,curypos,drawmode7
+EXTSYM mode7set,mosaicon,mosaicsz,sprleftpr1,sprleftpr2,sprleftpr3,sprlefttot
+EXTSYM sprprifix,drawmode7extbg,interlval,drawmode7extbg2,sprclprio,sprpriodata
+EXTSYM sprsingle,cachetile2b,cachetile4b,cachetile8b,vram,CacheCheckSkip
+EXTSYM cachetile2b16x16,cachetile4b16x16,cachetile8b16x16,osm2dis,xtravbuf
+EXTSYM bg3ptr,bg3scrolx,bg3scroly,vidmemch4,ofsmcptr,ofsmady,ofsmadx,yposngom
+EXTSYM flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
 
 %include "video/vidmacro.mac"
-
-
-
-
 
 ;drawspritesprio
 
@@ -3109,7 +3097,7 @@ NEWSYM draw16x8
     drawpixel8b8x8 ah, .loopd1d, 3
     mov eax,[ebx+2]
     drawpixel8b8x8 ah, .loopd3d, 2
-.skiploop1d 
+.skiploop1d
     mov eax,[ebx+4]
     or eax,eax
     je .skiploop2d
@@ -3246,7 +3234,7 @@ NEWSYM draw16x8b
     drawpixel8b8x8 al, .loopd1d, 3
     mov eax,[ebx+2]
     drawpixel8b8x8 al, .loopd3d, 2
-.skiploop1d 
+.skiploop1d
     mov eax,[ebx+4]
     or eax,eax
     je .skiploop2d
@@ -3379,7 +3367,7 @@ NEWSYM draw16x8winon
     drawpixel8b8x8win ah, .loopd1d, 3
     mov eax,[ebx+2]
     drawpixel8b8x8win ah, .loopd3d, 2
-.skiploop1d 
+.skiploop1d
     mov eax,[ebx+4]
     or eax,eax
     je .skiploop2d
@@ -3505,7 +3493,7 @@ NEWSYM draw16x8bwinon
     drawpixel8b8x8win al, .loopd1d, 3
     mov eax,[ebx+2]
     drawpixel8b8x8win al, .loopd3d, 2
-.skiploop1d 
+.skiploop1d
     mov eax,[ebx+4]
     or eax,eax
     je .skiploop2d
@@ -4412,6 +4400,4 @@ NEWSYM temp,       resb 1
 NEWSYM bshifter,   resb 1
 NEWSYM a16x16xinc, resb 1
 NEWSYM a16x16yinc, resb 1
-
-
-
+SECTION .text

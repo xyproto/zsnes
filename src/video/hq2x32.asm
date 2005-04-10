@@ -19,25 +19,19 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ;----------------------------------------------------------
-;hq2x filter 
+;hq2x filter
 ;Copyright (C) 2003 MaxSt ( maxst@hiend3d.com )
 ;----------------------------------------------------------
 
+
+
 %include "macros.mac"
 
-EXTSYM vidbuffer,curblank,MMXSupport,GUIOn,GUIOn2,
-EXTSYM vidbufferofsb
-EXTSYM FilteredGUI,resolutn,lineleft,cfield
-EXTSYM hirestiledat,newengen,SpecialLine
-EXTSYM hqFilter
-EXTSYM AddEndBytes
-EXTSYM NumBytesPerLine
-EXTSYM WinVidMemStart
-EXTSYM BitConv32Ptr
-EXTSYM RGBtoYUVPtr
-EXTSYM prevline, nextline, deltaptr, xcounter
-EXTSYM w1, w2, w3, w4, w5, w6, w7, w8, w9
-EXTSYM reg_blank, const3, const5, const6, const14, cross, threshold
+EXTSYM vidbuffer,curblank,MMXSupport,GUIOn,GUIOn2,vidbufferofsb,FilteredGUI
+EXTSYM resolutn,lineleft,cfield,hirestiledat,newengen,SpecialLine,hqFilter
+EXTSYM AddEndBytes,NumBytesPerLine,WinVidMemStart,BitConv32Ptr,RGBtoYUVPtr
+EXTSYM prevline,nextline,deltaptr,xcounter,w1,w2,w3,w4,w5,w6,w7,w8,w9
+EXTSYM reg_blank,const3,const5,const6,const14,cross,threshold
 
 SECTION .bss
 NEWSYM c1, resd 1
@@ -1956,19 +1950,19 @@ hq2x:
     psrlq   mm7,32
     movd    eax,mm5
     mov     [edx+ecx-2],eax
-    movzx   edx,ax  
+    movzx   edx,ax
     mov     [w1],edx
     shr     eax,16
     mov     [w2],eax
     mov     [w3],eax
     movd    eax,mm6
-    movzx   edx,ax  
+    movzx   edx,ax
     mov     [w4],edx
     shr     eax,16
     mov     [w5],eax
     mov     [w6],eax
     movd    eax,mm7
-    movzx   edx,ax  
+    movzx   edx,ax
     mov     [w7],edx
     shr     eax,16
     mov     [w8],eax
@@ -1979,7 +1973,7 @@ hq2x:
 .nexty
     add     esi,64
     add     dword[deltaptr],64
-    add     edi,[AddEndBytes] 
+    add     edi,[AddEndBytes]
     add     edi,ebx
     mov     ebx,[InterPtr]
     inc     ebx
@@ -2138,5 +2132,3 @@ FuncTable2
 SECTION .bss
 InterPtr resd 1
 SECTION .text
-
-

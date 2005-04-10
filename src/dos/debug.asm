@@ -18,43 +18,23 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM DosExit,curblank,previdmode,start65816,wramdata,C4Ram,cnetplaybuf
-EXTSYM UpdateDPage,SA1Enable,splitflags,joinflags,delay
-EXTSYM Open_File,Read_File,Create_File,Write_File,Close_File,romdata
-EXTSYM Check_Key,Get_Key
-EXTSYM LastLog
-EXTSYM fulladdtab
-EXTSYM DecompArray,DecompAPtr
-EXTSYM endprog
-EXTSYM printhex
-EXTSYM vesa2_rpos,vesa2_rfull,vesa2_rtrcl,vesa2_rtrcla
-EXTSYM vesa2_gpos,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla
-EXTSYM vesa2_bpos,vesa2_bfull,vesa2_btrcl,vesa2_btrcla
-EXTSYM BRRBuffer,DSPMem,ResetState,PHdspsave,printnum,PHspcsave
-EXTSYM ssdatst,timeron,timincr0,timincr1,timincr2,timinl0
-EXTSYM timinl1,timinl2,vram
-EXTSYM spcnumread
-EXTSYM Curtableaddr,fnamest,procexecloop,stateloader,tableA
-EXTSYM vidmemch2
-EXTSYM statesaver
-EXTSYM memtablew8,printhex8,writeon
-EXTSYM curcyc,dmadata,execsingle,initaddrl,memtabler8,pdh
-EXTSYM regaccessbankr8,selcB800,snesmap2,snesmmap
-EXTSYM ram7f
-EXTSYM StringLength
-EXTSYM exiter
-EXTSYM SA1Status,CurrentCPU,SA1RegP
-EXTSYM curypos,xa,xd,xdb,xe,xp,xpb,xpc,xs,xx,xy
-EXTSYM SA1xpb,SA1xpc,SA1xa,SA1xx,SA1xy,SA1xd,SA1xdb,SA1xs
-EXTSYM cycpbl,debugbuf,soundon,spcA,spcNZ,spcP,spcPCRam
-EXTSYM spcRam,spcRamDP,spcS,spcX,spcY
-EXTSYM CurPtrVal,SPC7110Enable
-EXTSYM debugloadstate
+EXTSYM DosExit,curblank,start65816,UpdateDPage,splitflags,joinflags,delay
+EXTSYM Open_File,Read_File,Create_File,Write_File,Close_File,Check_Key,Get_Key
+EXTSYM LastLog,endprog,printhex,vesa2_rfull,vesa2_rtrcl,vesa2_gfull,vesa2_gtrcl
+EXTSYM vesa2_bfull,vesa2_btrcl,BRRBuffer,DSPMem,ResetState,PHdspsave,printnum
+EXTSYM PHspcsave,ssdatst,timeron,timincr0,timincr1,timincr2,timinl0,timinl1
+EXTSYM timinl2,vram,spcnumread,Curtableaddr,statesaver,memtablew8,printhex8
+EXTSYM writeon,curcyc,dmadata,execsingle,initaddrl,memtabler8,pdh,debugloadstate
+EXTSYM regaccessbankr8,selcB800,snesmap2,snesmmap,ram7f,StringLength,exiter
+EXTSYM CurrentCPU,SA1RegP,curypos,xa,xd,xdb,xe,xp,xpb,xpc,xs,xx,xy,SA1xpb,SA1xpc
+EXTSYM SA1xa,SA1xx,SA1xy,SA1xd,SA1xdb,SA1xs,cycpbl,debugbuf,soundon,spcA,spcNZ
+EXTSYM spcP,spcPCRam,spcRam,spcS,spcX,spcY
 
 ; debstop at regsw.asm 2118/2119
-
 
 NEWSYM startdebugger
     mov byte[curblank],40h
@@ -683,7 +663,7 @@ NEWSYM modify
     shl dx,4
     mov al,[numstr+ebx]
     inc ebx
-    call converthex2num 
+    call converthex2num
     add dx,ax
     dec cl
     jnz .nextnum
@@ -860,7 +840,7 @@ NEWSYM SPCmodify
     shl dx,4
     mov al,[numstr+ebx]
     inc ebx
-    call converthex2num 
+    call converthex2num
     add dx,ax
     dec cl
     jnz .nextnum
@@ -1005,7 +985,7 @@ NEWSYM SPCbreakpoint
     shl dx,4
     mov al,[numstr+ebx]
     inc ebx
-    call converthex2num 
+    call converthex2num
     add dx,ax
     dec cl
     jnz .nextnum
@@ -1129,7 +1109,7 @@ NEWSYM breakpoint
     shl dx,4
     mov al,[numstr+ebx]
     inc ebx
-    call converthex2num 
+    call converthex2num
     add dx,ax
     dec cl
     jnz .nextnum
@@ -2182,7 +2162,7 @@ NEWSYM startdisplay
     mov ah,al
     sub ah,40
     jmp .loopprint
-.doneprint    
+.doneprint
     ret
 
 SECTION .data
@@ -2628,7 +2608,7 @@ SECTION .text
     cmp ah,19
     jne .check20
     jmp .out19
-.check20 
+.check20
     cmp ah,20
     jne .check21
     jmp .out20
@@ -2679,7 +2659,7 @@ SECTION .text
 %%usedbr
 %endmacro
 
-.out0           ; 
+.out0           ;
     mov al,' '
     mov ecx,19
     rep stosb
@@ -4354,5 +4334,3 @@ NEWSYM ArgumentTable
 ;     F0 F1 F2 F3 F4 F5 F6 F7 F8 F9 FA FB FC FD FE FF
    db 14,01,02,03,15,16,17,18,35,64,09,65,31,66,67,00
 SECTION .text
-
-

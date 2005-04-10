@@ -18,20 +18,11 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM eramaccessbankr16,eramaccessbankr8,eramaccessbankw16
-EXTSYM eramaccessbankw8,memaccessbankr16,memaccessbankr8
-EXTSYM memaccessbankw16,memaccessbankw8
-EXTSYM mosjmptab,mosdraw10,mosdraw11,mosdraw12,mosdraw13
-EXTSYM mosdraw14,mosdraw15,mosdraw16,mosdraw2,mosdraw3
-EXTSYM mosdraw4,mosdraw5,mosdraw6,mosdraw7,mosdraw8
-EXTSYM mosdraw9,ngpalcon2b,ngpalcon4b
-EXTSYM regaccessbankr16,regaccessbankw16,regaccessbankw8
-EXTSYM sramaccessbankr16,sramaccessbankr8,sramaccessbankw16
-EXTSYM sramaccessbankw8,tableAb,tableBb,tableCb,tableDb,tableEb
-EXTSYM tableFb,tableGb,tableHb,wramaccessbankr16
-EXTSYM wramaccessbankr8,wramaccessbankw16,wramaccessbankw8,tableadb
+EXTSYM tableAb,tableBb,tableCb,tableDb,tableEb,tableFb,tableGb,tableHb,tableadb
 
 %include "cpu/65816db.inc"
 %include "cpu/address.inc"
@@ -443,7 +434,7 @@ settables:
     mov dword[edi+0FDh*4],COpFDm8nd
     mov dword[edi+0FEh*4],COpFEm8
     mov dword[edi+0FFh*4],COpFFm8nd
-    ret      
+    ret
 
 settablem16:
     mov dword[edi+01h*4],COp01m16

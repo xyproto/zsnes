@@ -18,56 +18,29 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM BGMA,DSPMem,INTEnab,V8Mode,antienab,cacheud,cbitmode
-EXTSYM ccud,cfield,cgfxmod,cgram,coladdb,coladdg,coladdr,cpalval,curblank
-EXTSYM curfps,cvidmode,delay,draw16bnng,extlatch,fnamest,fulladdtab,En2xSaI
+EXTSYM BGMA,V8Mode,antienab,cacheud,cbitmode,ccud,cfield,cgram,coladdb,coladdg
+EXTSYM coladdr,curblank,curfps,cvidmode,delay,extlatch,fnamest,En2xSaI
 EXTSYM gammalevel,hirestiledat,ignor512,latchx,latchy,maxbr,ForceNewGfxOff
-EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,res640
-EXTSYM resolutn,romispal,scaddtype,scadtng,scanlines
-EXTSYM scbcong,selcA000,snesmouse,t1cc,vcache4b,vesa2_bpos,spritetablea
-EXTSYM vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10,vesa2selec,vidbuffer
-EXTSYM vram,vsyncon,vbufdptr,KeyStateSelct,forceblnk,soundon
-EXTSYM Open_File,Read_File,Close_File,Create_File,Write_File,Get_File_Date
-EXTSYM Triplebufen,makepal,changepal,saveselectpal,displayfpspal,superscopepal
-EXTSYM DrawScreen,MMXSupport
-EXTSYM Get_MouseData,Get_MousePositionDisplacement
-EXTSYM GUIEnableTransp
-EXTSYM GUIFontData
-EXTSYM StopSound,StartSound
-EXTSYM PrevPicture,File_Seek,File_Seek_End,nggposng
-EXTSYM Palette0
-EXTSYM GetTimeInSeconds
-EXTSYM scaddset,scrnon,spcRam,nmiprevline,bgmode,ofsmcptr
-EXTSYM interlval,bg3ptr,bg3scroly,bg3scrolx,C4Ram,SprValAdd,SA1IRQEn,SA1IRQV
-EXTSYM winbg1en,winlogica,wincolen,winlogicb,dsp1ptr,dsp1array,bg3objptr
-EXTSYM cnetptrhead,cnetptrtail,JoyBOrig,pl2neten,Voice6Ptr,HIRQLoc,SA1DoIRQ
-EXTSYM mode7A,mode7B,mode7C,mode7D,mode7set,winbg3en,winl1,winr1,SA1DMAInfo
-EXTSYM winl2,winr2,VIRQLoc,SA1Enable,mode7X0,mode7Y0,SA1Temp
-EXTSYM SA1IRQTemp,SA1IRQEnable,SA1DMADest,SA1DMAChar,SA1DMASource,SA1DMACount
-EXTSYM objptrn,nglogicval,bgtilesz,C4values
-EXTSYM curexecstate,TempVidInfo,LatestBank,C4ObjSelec
-EXTSYM BGMS1,scadsng,winenabm,winenabs,vidbright
-EXTSYM genfulladdtab,genfulladdtabng
-EXTSYM TimerEnable,ShowTimer
-EXTSYM ClearScreenSkip,debugdisble,cmovietimeint
-EXTSYM StringLength
-EXTSYM GUIOn,FilteredGUI,HalfTrans
-EXTSYM SmallMsgText
-EXTSYM ClearScreen
-EXTSYM Mode7HiRes,mosenng,mosszng,intrlng,mode7hr ;,VESAAddr
-EXTSYM GUICPC, newgfx16b
-EXTSYM vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3
-EXTSYM granadd,CSStatus,CSStatus2,CSStatus3
-EXTSYM SpecialLine
-EXTSYM Clear2xSaIBuffer,vidbufferofsb
-;EXTSYM Super2xSaI
-EXTSYM HalfTransB,HalfTransC
-
-EXTSYM cur_zst_size,old_zst_size
-EXTSYM MovieProcessing,mzt_chdir,UpChdir
-EXTSYM MovieFrameStr,GetMovieFrameStr,MovieDisplayFrame
+EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,res640,resolutn
+EXTSYM romispal,scaddtype,scanlines,selcA000,snesmouse,t1cc,vcache4b,vesa2_bpos
+EXTSYM spritetablea,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10,vesa2selec
+EXTSYM vidbuffer,vram,vsyncon,KeyStateSelct,soundon,Open_File,Read_File
+EXTSYM Close_File,Create_File,Write_File,Get_File_Date,Triplebufen,makepal
+EXTSYM changepal,saveselectpal,displayfpspal,superscopepal,DrawScreen,MMXSupport
+EXTSYM Get_MouseData,Get_MousePositionDisplacement,GUIEnableTransp,GUIFontData
+EXTSYM StopSound,StartSound,PrevPicture,File_Seek,File_Seek_End,nggposng
+EXTSYM Palette0,GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram,dsp1array
+EXTSYM genfulladdtab,genfulladdtabng,TimerEnable,ShowTimer,debugdisble,GUIOn
+EXTSYM FilteredGUI,HalfTrans,SmallMsgText,ClearScreen,Mode7HiRes,mosenng,mosszng
+EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,granadd,CSStatus
+EXTSYM CSStatus2,CSStatus3,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
+EXTSYM bg1objptr,DecompAPtr,HalfTransB,HalfTransC,cur_zst_size,old_zst_size
+EXTSYM MovieProcessing,mzt_chdir,UpChdir,MovieFrameStr,GetMovieFrameStr
+EXTSYM MovieDisplayFrame
 
 %ifdef __MSDOS__
 EXTSYM SB_blank
@@ -3049,9 +3022,6 @@ NEWSYM hextestoutput
     mov esi,216*288+32
     add esi,[vidbuffer]
     xor eax,eax
-    EXTSYM Op14Zr,Op14Xr,Op14Yr,Op14U,Op14F,Op14L
-    EXTSYM Op02CX,Op02CY,bg1scrolx,bg1scroly
-    EXTSYM TValDebug,TValDebug2,curhdma,bg1ptr,bg1objptr,DecompAPtr
     ; 4F00h
     mov ebx,[C4Ram]
     mov ebx,[vram]
@@ -3468,5 +3438,3 @@ db 0,0,0,0,0,1,1,0,0,1,0,0,1,1,0,0,0,0,0,0
 db 0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0
 db 0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0
 db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-
-

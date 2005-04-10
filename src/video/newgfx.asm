@@ -18,45 +18,38 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM BG116x16t,BG1SXl,BG1SYl,BG216x16t,BG2SXl,BG2SYl,BG316x16t,BG3PRI
-EXTSYM BG3SXl,BG3SYl,BG416x16t,BG4SXl,BG4SYl,BGFB,BGMA,BGMS1,BGOPT1,BGOPT2
-EXTSYM BGOPT3,BGOPT4,BGPT1,BGPT1X,BGPT1Y,BGPT2,BGPT2X,BGPT2Y,BGPT3,BGPT3X
-EXTSYM BGPT3Y,BGPT4,BGPT4X,BGPT4Y,StartDrawNewGfx16b,bg1objptr,bg1ptr
-EXTSYM bg1ptrx,bg1ptry,bg1scrolx,bg1scroly,bg2objptr,bg2ptr,bg2ptrx
-EXTSYM bg2ptry,bg2scrolx,bg2scroly,bg3highst,bg3objptr,bg3ptr,bg3ptrx
-EXTSYM bg3ptry,bg3scrolx,bg3scroly,bg4objptr,bg4ptr,bg4ptrx,bg4ptry
-EXTSYM bg4scrolx,bg4scroly,bgmode,bgtxad,cachesingle2bng
+EXTSYM BG116x16t,BG1SXl,BG1SYl,BG216x16t,BG2SXl,BG2SYl,BG316x16t,BG3PRI,BG3SXl
+EXTSYM BG3SYl,BG416x16t,BG4SXl,BG4SYl,BGFB,BGMA,BGMS1,BGOPT1,BGOPT2,BGOPT3
+EXTSYM BGOPT4,BGPT1,BGPT1X,BGPT1Y,BGPT2,BGPT2X,BGPT2Y,BGPT3,BGPT3X,BGPT3Y,BGPT4
+EXTSYM BGPT4X,BGPT4Y,StartDrawNewGfx16b,bg1objptr,bg1ptr,bg1ptrx,bg1ptry
+EXTSYM bg1scrolx,bg1scroly,bg2objptr,bg2ptr,bg2ptrx,bg2ptry,bg2scrolx,bg2scroly
+EXTSYM bg3highst,bg3objptr,bg3ptr,bg3ptrx,bg3ptry,bg3scrolx,bg3scroly,bg4objptr
+EXTSYM bg4ptr,bg4ptrx,bg4ptry,bg4scrolx,bg4scroly,bgmode,bgtxad,cachesingle2bng
 EXTSYM cachesingle8bng,cbitmode,cfield,colormodedef,csprbit,curmosaicsz
 EXTSYM curvidoffset,curypos,drawmode716b,forceblnk,interlval,intrlng,mode7A
-EXTSYM mode7C,mode7X0,mode7ab,mode7cd,mode7set,mode7st,mode7xy,mosaicon
-EXTSYM mosaicsz,mosenng,mosszng,ngceax,ngcedi,ngpalcon2b,ngpalcon4b
-EXTSYM ngpalcon8b,ngptrdat,prdata,prdatb,prdatc,res640,resolutn,scrndis
-EXTSYM scrnon,spritetablea,sprleftpr,sprlefttot,sprpriodata,sprtbng,sprtlng
-EXTSYM t16x161,t16x162,t16x163,t16x164,tltype2b,tltype4b,tltype8b,vcache2b
-EXTSYM vcache4b,vcache8b,vidbuffer,vidmemch2,vidmemch4,vidmemch8,vram,vrama
-EXTSYM winon,xtravbuf,ng16bbgval,ng16bprval,bgwinchange,res480
-EXTSYM drawtileng2b,drawtileng4b,drawtileng8b,drawmode7win,hdmaearlstart
-EXTSYM drawtileng16x162b,drawtileng16x164b,drawtileng16x168b,osm2dis
-EXTSYM drawlineng2b,drawlineng4b,drawlineng8b,processmode7hires
-EXTSYM drawlineng16x162b,drawlineng16x164b,drawlineng16x168b,mode7hr
-EXTSYM winboundary,winbg1enval,winbg2enval,winbg3enval,winbg4enval
-EXTSYM winbgobjenval,winlogicaval,disableeffects,winenabs,scanlines
-EXTSYM winl1,winbg1en,winbg2en,winbg3en,winbg4en,winobjen,winlogica,winenabm
-EXTSYM bgallchange,bg1change,bg2change,bg3change,bg4change,hiresstuff
-EXTSYM drawlineng16x84b,drawlineng16x82b,drawlinengom4b,WindowDisables
-EXTSYM winlogicb
-EXTSYM ngwinptr,objwlrpos,objwen,objclineptr,CSprWinPtr
-EXTSYM WindowRedraw
+EXTSYM mode7C,mode7X0,mode7ab,mode7cd,mode7set,mode7st,mode7xy,mosaicon,mosaicsz
+EXTSYM mosenng,mosszng,ngceax,ngcedi,ngpalcon2b,ngpalcon8b,ngptrdat,prdata
+EXTSYM prdatb,prdatc,res640,resolutn,scrndis,scrnon,spritetablea,sprleftpr
+EXTSYM sprlefttot,sprpriodata,sprtbng,sprtlng,t16x161,t16x162,t16x163,t16x164
+EXTSYM tltype2b,tltype8b,vcache2b,vcache4b,vcache8b,vidbuffer,vidmemch2
+EXTSYM vidmemch4,vidmemch8,vram,vrama,winon,xtravbuf,ng16bbgval,ng16bprval
+EXTSYM bgwinchange,res480,drawtileng2b,drawtileng4b,drawtileng8b,drawmode7win
+EXTSYM hdmaearlstart,drawtileng16x162b,drawtileng16x164b,drawtileng16x168b
+EXTSYM osm2dis,drawlineng2b,drawlineng4b,drawlineng8b,processmode7hires
+EXTSYM drawlineng16x162b,drawlineng16x164b,drawlineng16x168b,winboundary
+EXTSYM winbg1enval,winbg2enval,winbg3enval,winbg4enval,winbgobjenval
+EXTSYM winlogicaval,disableeffects,winenabs,scanlines,winl1,winbg1en,winobjen
+EXTSYM winlogica,winenabm,bgallchange,bg1change,bg2change,bg3change,bg4change
+EXTSYM hiresstuff,drawlineng16x84b,drawlineng16x82b,drawlinengom4b,WindowRedraw
+EXTSYM WindowDisables,winlogicb,ngwinptr,objwlrpos,objwen,objclineptr,CSprWinPtr
 
 %include "video/vidmacro.mac"
 %include "video/newgfx2.mac"
 %include "video/newgfx.mac"
-
-
-
-
 
 ; vidbufferofsmos pointer to mosaic buffer
 
@@ -2354,5 +2347,4 @@ NEWSYM preparesprpr
 SECTION .bss
 NEWSYM sprclprio,  resd 1
 NEWSYM sprsingle,  resd 1
-
-
+SECTION .text

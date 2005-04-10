@@ -19,23 +19,12 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
+
 EXTSYM SFXEnable,regptr,initsfxregsr,initSA1regs,SA1Enable,initSDD1regs
-EXTSYM SPC7110Enable,initSPC7110regs,RTCEnable,RTCReset
-EXTSYM curypos,cycpl,debuggeron,pdh
-EXTSYM vram
-EXTSYM romispal
-EXTSYM reg1read,spcnumread,spchalted,spcon
-EXTSYM reg2read
-EXTSYM reg3read
-EXTSYM reg4read
-EXTSYM JoyEOrig,JoyENow
-EXTSYM snesmouse
-EXTSYM cycphb,joycontren,totlines
-EXTSYM DosExit,invalid,numinst,previdmode,printhex,printnum
-
-
-
-
+EXTSYM SPC7110Enable,initSPC7110regs,RTCEnable,RTCReset,curypos,cycpl
+EXTSYM debuggeron,pdh,vram,romispal,reg1read,spcnumread,spcon,reg2read,reg3read
+EXTSYM reg4read,JoyEOrig,JoyENow,snesmouse,cycphb,joycontren,totlines,DosExit
+EXTSYM invalid,numinst,previdmode,printhex,printnum
 
 NEWSYM initregr
     ; Fill register pointer with invalid register accesses
@@ -723,13 +712,13 @@ reg213Dr:
     ret
 .highv
     mov al,byte[latchy]
-    and al,0FEh    
+    and al,0FEh
     or  al,byte[latchy+1]
     mov byte[latchyr],0
     ret
 .noreset
     mov al,byte[latchy]
-    and al,0FEh    
+    and al,0FEh
     or  al,byte[latchy+1]
     ret
 ; PPU Status Flag & Version number (OBJ over flags)

@@ -19,25 +19,12 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
+
 EXTSYM initsfxregsw,reg420Bw,reg420Cw,regptw,initSA1regsw,SDD1Reset
-EXTSYM SPC7110Reset,RTCReset2
-EXTSYM xat,xdbt,xdt,xpbt,xst,xxt,xyt
-EXTSYM DSPMem,WDSPReg0C,WDSPReg0D,WDSPReg0F,WDSPReg1C,WDSPReg1F
-EXTSYM WDSPReg2C,WDSPReg2F,WDSPReg3C,WDSPReg3D,WDSPReg3F,WDSPReg4F
-EXTSYM WDSPReg5F,WDSPReg6C,WDSPReg6F,WDSPReg7D,WDSPReg7F
-EXTSYM debstop
-EXTSYM cachesprites,curblank,processsprites,sprleftpr,sprlefttot,NextLineCache
-EXTSYM vidmemch2,vidmemch4,vidmemch8,vrama
-EXTSYM nmirept,sndwrit,spcRam
-EXTSYM HIRQCycNext,HIRQNextExe,HIRQSkip
-EXTSYM cycpb268,cycpb358,cycpbl,cycpblt,opexec268,opexec268cph
-EXTSYM opexec358,opexec358cph
-EXTSYM hdmarestart
-EXTSYM printhex8
-
-
-
-
+EXTSYM SPC7110Reset,RTCReset2,debstop,NextLineCache,vidmemch2,vidmemch4
+EXTSYM vidmemch8,vrama,nmirept,sndwrit,spcRam,HIRQCycNext,HIRQNextExe,HIRQSkip
+EXTSYM cycpb268,cycpb358,cycpbl,cycpblt,opexec268,opexec268cph,opexec358
+EXTSYM opexec358cph,hdmarestart,printhex8
 
 SECTION .bss
 NEWSYM testgfxv1, resb 1
@@ -545,7 +532,7 @@ reg2108w:
     add word[bg2ptrd],1800h
     mov dword[bg2ptrx],800h
     mov dword[bg2ptry],1000h
-.skipc                  
+.skipc
     ret
 
 ; BG3 VRAM location register
@@ -1184,7 +1171,7 @@ reg212Fw:
 
 ; Fixed color addition or screen addition register
 reg2130w:
-    mov [scaddset],al    
+    mov [scaddset],al
     ret
 
 ; Addition/subtraction for screens, BGs, & OBJs
@@ -1751,5 +1738,3 @@ SECTION .bss
 .invbank resb 1
 .invaddr resb 1
 SECTION .text
-
-

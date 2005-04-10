@@ -193,8 +193,7 @@ EXTSYM FxOpd4C1284b,FxOpd4C1284bz,FxOpd4C1284bd,FxOpd4C1284bzd
 EXTSYM FxOpd4C1282b,FxOpd4C1282bz,FxOpd4C1282bd,FxOpd4C1282bzd
 EXTSYM FxOpd4C1288b,FxOpd4C1288bz,FxOpd4C1288bd,FxOpd4C1288bzd
 EXTSYM FxOpd4C1288bl,FxOpd4C1288bzl,FxOpd4C1288bdl,FxOpd4C1288bzdl
-EXTSYM fxxand,fxbit01,fxbit23,fxbit45,fxbit67
-
+EXTSYM fxxand,fxbit01
 
 SECTION .bss
 NEWSYM sfx128lineloc, resd 1
@@ -203,17 +202,8 @@ NEWSYM sfx192lineloc, resd 1
 NEWSYM sfxobjlineloc, resd 1
 SECTION .text
 
-
 NEWSYM InitFxTables
 
-;   cmp al,0
-;   je near .colors4
-;   cmp al,3
-;   je near .colors256
-;   test byte[SfxPOR],01h
-;   jz .zerocheck
-;   test byte[SfxPOR],02h
-;   jz .nodither4b
    ; Initiate PLOT jump tables
    xor ebx,ebx
    mov ecx,64
@@ -821,7 +811,7 @@ NEWSYM InitFxTables
    mov dword [FxTable+9Dh*4],FxOp9D
    mov dword [FxTable+9Eh*4],FxOp9E
    mov dword [FxTable+9Fh*4],FxOp9F
-                       
+
    mov dword [FxTable+0A0h*4],FxOpA0
    mov dword [FxTable+0A1h*4],FxOpA1
    mov dword [FxTable+0A2h*4],FxOpA2
@@ -988,11 +978,11 @@ NEWSYM InitFxTables
    mov dword [FxTableA1+39h*4],FxOp39A1
    mov dword [FxTableA1+3Ah*4],FxOp3AA1
    mov dword [FxTableA1+3Bh*4],FxOp3BA1
-   mov dword [FxTableA1+3Ch*4],FxOp3C  
-   mov dword [FxTableA1+3Dh*4],FxOp3D  
-   mov dword [FxTableA1+3Eh*4],FxOp3E  
-   mov dword [FxTableA1+3Fh*4],FxOp3F  
-                      
+   mov dword [FxTableA1+3Ch*4],FxOp3C
+   mov dword [FxTableA1+3Dh*4],FxOp3D
+   mov dword [FxTableA1+3Eh*4],FxOp3E
+   mov dword [FxTableA1+3Fh*4],FxOp3F
+
    mov dword [FxTableA1+40h*4],FxOp40A1
    mov dword [FxTableA1+41h*4],FxOp41A1
    mov dword [FxTableA1+42h*4],FxOp42A1
@@ -1077,7 +1067,7 @@ NEWSYM InitFxTables
    mov dword [FxTableA1+8Dh*4],FxOp8DA1
    mov dword [FxTableA1+8Eh*4],FxOp8EA1
    mov dword [FxTableA1+8Fh*4],FxOp8FA1
-                      
+
    mov dword [FxTableA1+90h*4],FxOp90
    mov dword [FxTableA1+91h*4],FxOp91
    mov dword [FxTableA1+92h*4],FxOp92
@@ -1094,7 +1084,7 @@ NEWSYM InitFxTables
    mov dword [FxTableA1+9Dh*4],FxOp9DA1
    mov dword [FxTableA1+9Eh*4],FxOp9E
    mov dword [FxTableA1+9Fh*4],FxOp9FA1
-                       
+
    mov dword [FxTableA1+0A0h*4],FxOpA0A1
    mov dword [FxTableA1+0A1h*4],FxOpA1A1
    mov dword [FxTableA1+0A2h*4],FxOpA2A1
@@ -1129,7 +1119,7 @@ NEWSYM InitFxTables
    mov dword [FxTableA1+0BEh*4],FxOpBE
    mov dword [FxTableA1+0BFh*4],FxOpBF
 
-   mov dword [FxTableA1+0C0h*4],FxOpC0  
+   mov dword [FxTableA1+0C0h*4],FxOpC0
    mov dword [FxTableA1+0C1h*4],FxOpC1A1
    mov dword [FxTableA1+0C2h*4],FxOpC2A1
    mov dword [FxTableA1+0C3h*4],FxOpC3A1
@@ -1350,7 +1340,7 @@ NEWSYM InitFxTables
    mov dword [FxTableA2+8Dh*4],FxOp8DA2
    mov dword [FxTableA2+8Eh*4],FxOp8EA2
    mov dword [FxTableA2+8Fh*4],FxOp8FA2
-                                      
+
    mov dword [FxTableA2+90h*4],FxOp90
    mov dword [FxTableA2+91h*4],FxOp91
    mov dword [FxTableA2+92h*4],FxOp92
@@ -1367,7 +1357,7 @@ NEWSYM InitFxTables
    mov dword [FxTableA2+9Dh*4],FxOp9D
    mov dword [FxTableA2+9Eh*4],FxOp9E
    mov dword [FxTableA2+9Fh*4],FxOp9F
-                       
+
    mov dword [FxTableA2+0A0h*4],FxOpA0A2
    mov dword [FxTableA2+0A1h*4],FxOpA1A2
    mov dword [FxTableA2+0A2h*4],FxOpA2A2
@@ -1639,7 +1629,7 @@ NEWSYM InitFxTables
    mov dword [FxTableA3+9Dh*4],FxOp9D
    mov dword [FxTableA3+9Eh*4],FxOp9E
    mov dword [FxTableA3+9Fh*4],FxOp9F
-                       
+
    mov dword [FxTableA3+0A0h*4],FxOpA0
    mov dword [FxTableA3+0A1h*4],FxOpA1
    mov dword [FxTableA3+0A2h*4],FxOpA2
@@ -1826,9 +1816,9 @@ NEWSYM InitFxTables
    mov dword [FxTablebA1+1Dh*4],FxOpb1D
    mov dword [FxTablebA1+1Eh*4],FxOpb1E
    mov dword [FxTablebA1+1Fh*4],FxOpb1F
-   mov dword [FxTablebA1+3Dh*4],FxOpb3D  
-   mov dword [FxTablebA1+3Eh*4],FxOpb3E  
-   mov dword [FxTablebA1+3Fh*4],FxOpb3F  
+   mov dword [FxTablebA1+3Dh*4],FxOpb3D
+   mov dword [FxTablebA1+3Eh*4],FxOpb3E
+   mov dword [FxTablebA1+3Fh*4],FxOpb3F
    mov dword [FxTablebA1+0B0h*4],FxOpbB0
    mov dword [FxTablebA1+0B1h*4],FxOpbB1
    mov dword [FxTablebA1+0B2h*4],FxOpbB2
@@ -2297,7 +2287,7 @@ NEWSYM InitFxTables
    mov dword [FxTabled+9Dh*4],FxOpd9D
    mov dword [FxTabled+9Eh*4],FxOpd9E
    mov dword [FxTabled+9Fh*4],FxOpd9F
-                       
+
    mov dword [FxTabled+0A0h*4],FxOpdA0
    mov dword [FxTabled+0A1h*4],FxOpdA1
    mov dword [FxTabled+0A2h*4],FxOpdA2
@@ -2464,11 +2454,11 @@ NEWSYM InitFxTables
    mov dword [FxTabledA1+39h*4],FxOpd39A1
    mov dword [FxTabledA1+3Ah*4],FxOpd3AA1
    mov dword [FxTabledA1+3Bh*4],FxOpd3BA1
-   mov dword [FxTabledA1+3Ch*4],FxOpd3C  
-   mov dword [FxTabledA1+3Dh*4],FxOpd3D  
-   mov dword [FxTabledA1+3Eh*4],FxOpd3E  
-   mov dword [FxTabledA1+3Fh*4],FxOpd3F  
-                      
+   mov dword [FxTabledA1+3Ch*4],FxOpd3C
+   mov dword [FxTabledA1+3Dh*4],FxOpd3D
+   mov dword [FxTabledA1+3Eh*4],FxOpd3E
+   mov dword [FxTabledA1+3Fh*4],FxOpd3F
+
    mov dword [FxTabledA1+40h*4],FxOpd40A1
    mov dword [FxTabledA1+41h*4],FxOpd41A1
    mov dword [FxTabledA1+42h*4],FxOpd42A1
@@ -2553,7 +2543,7 @@ NEWSYM InitFxTables
    mov dword [FxTabledA1+8Dh*4],FxOpd8DA1
    mov dword [FxTabledA1+8Eh*4],FxOpd8EA1
    mov dword [FxTabledA1+8Fh*4],FxOpd8FA1
-                      
+
    mov dword [FxTabledA1+90h*4],FxOpd90
    mov dword [FxTabledA1+91h*4],FxOpd91
    mov dword [FxTabledA1+92h*4],FxOpd92
@@ -2570,7 +2560,7 @@ NEWSYM InitFxTables
    mov dword [FxTabledA1+9Dh*4],FxOpd9DA1
    mov dword [FxTabledA1+9Eh*4],FxOpd9E
    mov dword [FxTabledA1+9Fh*4],FxOpd9FA1
-                       
+
    mov dword [FxTabledA1+0A0h*4],FxOpdA0A1
    mov dword [FxTabledA1+0A1h*4],FxOpdA1A1
    mov dword [FxTabledA1+0A2h*4],FxOpdA2A1
@@ -2605,7 +2595,7 @@ NEWSYM InitFxTables
    mov dword [FxTabledA1+0BEh*4],FxOpdBE
    mov dword [FxTabledA1+0BFh*4],FxOpdBF
 
-   mov dword [FxTabledA1+0C0h*4],FxOpdC0  
+   mov dword [FxTabledA1+0C0h*4],FxOpdC0
    mov dword [FxTabledA1+0C1h*4],FxOpdC1A1
    mov dword [FxTabledA1+0C2h*4],FxOpdC2A1
    mov dword [FxTabledA1+0C3h*4],FxOpdC3A1
@@ -2826,7 +2816,7 @@ NEWSYM InitFxTables
    mov dword [FxTabledA2+8Dh*4],FxOpd8DA2
    mov dword [FxTabledA2+8Eh*4],FxOpd8EA2
    mov dword [FxTabledA2+8Fh*4],FxOpd8FA2
-                                      
+
    mov dword [FxTabledA2+90h*4],FxOpd90
    mov dword [FxTabledA2+91h*4],FxOpd91
    mov dword [FxTabledA2+92h*4],FxOpd92
@@ -2843,7 +2833,7 @@ NEWSYM InitFxTables
    mov dword [FxTabledA2+9Dh*4],FxOpd9D
    mov dword [FxTabledA2+9Eh*4],FxOpd9E
    mov dword [FxTabledA2+9Fh*4],FxOpd9F
-                       
+
    mov dword [FxTabledA2+0A0h*4],FxOpdA0A2
    mov dword [FxTabledA2+0A1h*4],FxOpdA1A2
    mov dword [FxTabledA2+0A2h*4],FxOpdA2A2
@@ -3115,7 +3105,7 @@ NEWSYM InitFxTables
    mov dword [FxTabledA3+9Dh*4],FxOpd9D
    mov dword [FxTabledA3+9Eh*4],FxOpd9E
    mov dword [FxTabledA3+9Fh*4],FxOpd9F
-                       
+
    mov dword [FxTabledA3+0A0h*4],FxOpdA0
    mov dword [FxTabledA3+0A1h*4],FxOpdA1
    mov dword [FxTabledA3+0A2h*4],FxOpdA2

@@ -18,22 +18,16 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM mode7tab,winptrref,nglogicval,winlogicaval
-EXTSYM curmosaicsz,curvidoffset,cwinptr,domosaic,mode7A,mode7B
-EXTSYM mode7C,mode7D,mode7X0,mode7Y0,mode7set,vram,vrama,winon,xtravbuf
-EXTSYM ngwinen, winbg1enval, BuildWindow, ngwintable, ngcwinptr, domosaicng
-EXTSYM pesimpng
-EXTSYM mode7hr
-EXTSYM BGMA, mode7ab, mode7cd, BG1SYl, BG1SXl, mosenng, mosszng
+EXTSYM mode7tab,winptrref,nglogicval,winlogicaval,curmosaicsz,curvidoffset
+EXTSYM cwinptr,domosaic,mode7A,mode7B,mode7C,mode7D,mode7X0,mode7Y0,mode7set
+EXTSYM vram,vrama,winon,xtravbuf,ngwinen,winbg1enval,BuildWindow,ngwintable
+EXTSYM ngcwinptr,domosaicng,pesimpng,mode7hr,BGMA,mode7ab,mode7cd,BG1SYl,BG1SXl
 
 %include "video/mode7.mac"
-
-
-
-
-
 
 ;*******************************************************
 ; Processes & Draws Mode 7
@@ -826,5 +820,3 @@ NEWSYM processmode7hires
     pop esi
 .nogo
     ret
-
-

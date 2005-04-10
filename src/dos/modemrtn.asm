@@ -18,13 +18,11 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM ComNum, ComIRQ, BaudRate
-EXTSYM FossilUse
-EXTSYM GUIinit18_2hz,GUIinit36_4hz
-EXTSYM GUIMenuItem
-EXTSYM delay
+EXTSYM ComNum,ComIRQ,BaudRate,FossilUse,delay
 
 %ifdef __MSDOS__
 EXTSYM dssel
@@ -453,5 +451,3 @@ NEWSYM DeInitModemC
    out dx,al
    sti
    ret
-
-

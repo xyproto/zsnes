@@ -19,14 +19,9 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-EXTSYM mode7B, mode7D, processmode7hires16b, processmode7hires16bd
-EXTSYM drawmode7ngextbg16b,drawmode7ngextbg216b
-EXTSYM osm2dis
 
-
-
-
-
+EXTSYM processmode7hires16b,processmode7hires16bd,drawmode7ngextbg16b
+EXTSYM drawmode7ngextbg216b,osm2dis
 
 ; drawtileng16b
 
@@ -3831,5 +3826,3 @@ EXTSYM osm2dis
     pop ebx
     ret
 %endmacro
-
-

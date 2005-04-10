@@ -19,13 +19,9 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
+
 EXTSYM OMBGTestVal,ngptrdat2,cachesingle4bng,ofshvaladd,ofsmtptrs,ofsmcptr2
 EXTSYM Testval
-
-
-
-
-
 
 ; makev16t macros
 
@@ -1791,5 +1787,3 @@ EXTSYM Testval
 %%nocache
     pop ecx
 %endmacro
-
-

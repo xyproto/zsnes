@@ -18,47 +18,30 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM cursprloc,curypos,scrndis,scrnon,winon,winonsp,drawmode716extbg,drawmode716extbg2,SA1Enable
-EXTSYM alreadydrawn,bg1cachloc,bg1tdabloc,bg1tdatloc,bg1vbufloc,bg1xposloc
-EXTSYM bg1yaddval,bgcoloradder,bgmode,bgtilesz,curbgnum,drawn,makewindow
-EXTSYM winbg1en,winenabs
-EXTSYM mosaicon,winenabm
-EXTSYM vidbuffer
-EXTSYM bg3high2,colormodedef,colormodeofs,curbgpr,curblank
-EXTSYM currentobjptr,curvidoffset,cwinenabm,drawline16t,forceblnk
-EXTSYM makewindowsp,maxbr,newengen,newengine16b,preparesprpr
-EXTSYM procbackgrnd,scaddset,scaddtype,spritetablea,sprleftpr,ForceNewGfxOff
-EXTSYM bg1scrolx,bg1scroly,drawmode716b,mode7set,mosaicsz,sprleftpr1
-EXTSYM sprleftpr2,sprleftpr3,sprlefttot,sprprifix,interlval
-EXTSYM extbgdone
-EXTSYM FPUZero,coladdb,coladdg,coladdr,pal16b,vesa2_bpos
-EXTSYM V8Mode,doveg,pal16bcl,pal16bxcl,prevbright,prevpal,vesa2_clbit
-EXTSYM vesa2_gpos,vesa2_rpos,vesa2_usbit,vidbright
-EXTSYM cgmod,cgram,gammalevel16b,dovegrest
-EXTSYM winspdata
-EXTSYM csprbit,csprprlft,sprclprio,sprsingle,sprpriodata
-EXTSYM bgofwptr,bgsubby,bshifter,curmosaicsz,cwinptr,osm2dis,temp
-EXTSYM tempcach,temptile,winptrref,vcache2b,vcache4b,vcache8b
-EXTSYM xtravbuf,yadder,yrevadder
-EXTSYM vcache2ba,vcache4ba,vcache8ba
-EXTSYM hirestiledat,res512switch
-EXTSYM numwin,windowdata
-EXTSYM bg1objptr,bg1ptr,bg1ptrc,bg3ptr,bg3scrolx,bg3scroly,cachesingle
-EXTSYM colormoded2,offsetenab,offsetmclr,offsetmcol,offsetmodeptr
-EXTSYM offsetmptr,offsetmshl,offsetmtst,offsetptra,offsetptrb,posyscroll
-EXTSYM prevoffsetdat,prevtempcache,tempoffset,vidmemch2,vidmemch4
-EXTSYM vidmemch8,vram
-EXTSYM ofsmcptr,ofsmady,ofsmadx,yposng,yposngom,flipyposng,flipyposngom
-EXTSYM ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
-EXTSYM a16x16xinc,a16x16yinc
+EXTSYM cursprloc,curypos,scrndis,scrnon,winon,winonsp,drawmode716extbg
+EXTSYM drawmode716extbg2,SA1Enable,alreadydrawn,bg1cachloc,bg1tdabloc,bg1tdatloc
+EXTSYM bg1vbufloc,bg1xposloc,bg1yaddval,bgcoloradder,bgmode,bgtilesz,curbgnum
+EXTSYM drawn,makewindow,winbg1en,winenabs,mosaicon,winenabm,vidbuffer,bg3high2
+EXTSYM colormodedef,colormodeofs,curbgpr,curblank,currentobjptr,curvidoffset
+EXTSYM cwinenabm,drawline16t,forceblnk,makewindowsp,maxbr,newengen,newengine16b
+EXTSYM preparesprpr,procbackgrnd,scaddset,scaddtype,spritetablea,sprleftpr
+EXTSYM ForceNewGfxOff,bg1scrolx,bg1scroly,drawmode716b,mode7set,mosaicsz
+EXTSYM sprleftpr1,sprleftpr2,sprleftpr3,sprlefttot,sprprifix,interlval,extbgdone
+EXTSYM coladdb,coladdg,coladdr,pal16b,vesa2_bpos,V8Mode,doveg,pal16bcl,pal16bxcl
+EXTSYM prevbright,prevpal,vesa2_clbit,vesa2_gpos,vesa2_rpos,vidbright,cgmod
+EXTSYM cgram,gammalevel16b,dovegrest,winspdata,csprbit,csprprlft,sprclprio
+EXTSYM sprsingle,sprpriodata,bgofwptr,bgsubby,bshifter,curmosaicsz,cwinptr
+EXTSYM osm2dis,temp,tempcach,temptile,winptrref,xtravbuf,yadder,yrevadder
+EXTSYM vcache2ba,vcache4ba,vcache8ba,hirestiledat,res512switch,numwin,windowdata
+EXTSYM bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly,vidmemch4,vram,ofsmcptr
+EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
+EXTSYM bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc
 
 %include "video/vidmacro.mac"
-
-
-
-
 
 ;drawspritesprio
 
@@ -1171,7 +1154,7 @@ NEWSYM drawsprites16b
     jz .skipc
     add al,ch
     mov edx,[pal16b+eax*4]
-    mov [edi+ebx-12],dx 
+    mov [edi+ebx-12],dx
 .skipc
     mov al,[esi+3]
     test al,0Fh
@@ -3087,6 +3070,3 @@ draw16x1616bwinon:
     cmp dh,1
     jne near domosaic16b
     ret
-
-
-

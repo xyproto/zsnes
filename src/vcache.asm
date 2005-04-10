@@ -18,6 +18,8 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
 EXTSYM MessageOn,MsgCount,Msgptr,Voice0Disable,Voice0Status,Voice1Disable
@@ -27,36 +29,27 @@ EXTSYM Voice6Status,Voice7Disable,Voice7Status,bgcmsung,bgmode,cbackofsaddr
 EXTSYM cbitmode,cgmod,debuggeron,disableeffects,frameskip,frskipper,newgfxerror2
 EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen,newgfx16b,newgfxerror
 EXTSYM nextdrawallng,oamaddr,pal16b,pal16bxcl,pressed,prevbright,prevpal
-EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,snesmouse,sprprdrn
-EXTSYM t1cc,vidbright,vidbuffer,vidbufferm,vidbufferofsa,vidbufferofsb
-EXTSYM vidmemch2,statefileloc,fnamest,GUIClick,MousePRClick,ngmsdraw,cvidmode
+EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,snesmouse,sprprdrn,t1cc
+EXTSYM vidbright,vidbuffer,vidbufferm,vidbufferofsa,vidbufferofsb,vidmemch2
+EXTSYM statefileloc,fnamest,GUIClick,MousePRClick,ngmsdraw,cvidmode
 EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyDisableSC4
 EXTSYM KeyDisableSC5,KeyDisableSC6,KeyDisableSC7,KeyFastFrwrd,SRAMSave5Sec
 EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
 EXTSYM KeyResetAll,KeyExtraEnab,KeyWinDisble,KeyNewGfxSwt,KeyOffsetMSw
 EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
-EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeyUsePlayer1234
-EXTSYM maxskip,DSPMem,SprValAdd,dsp1ptr,dsp1array,FastFwdToggle,SaveSramData
-EXTSYM ngextbg,Mode7HiRes,Check60hz,Get_MouseData,Get_MousePositionDisplacement
-EXTSYM WindowDisables,scanlines,romispal
-EXTSYM MusicRelVol,MusicVol,WDSPReg0C,WDSPReg1C
-EXTSYM DSPOp02,Op02AAS,Op02AZS,Op02CX,Op02CY,Op02FX,Op02FY
-EXTSYM Op02FZ,Op02LES,Op02LFE,Op02VOF,Op02VVA
-EXTSYM KeySlowDown
-EXTSYM genfulladdtab
-EXTSYM KeyFRateDown,KeyFRateUp,KeyVolUp,KeyVolDown,KeyDisplayFPS,FPSOn,pl12s34
-EXTSYM bg1ptr,bg2ptr,bg3ptr,bg4ptr,cachebg1,resolutn
-EXTSYM curypos,oamram,objhipr,objptr,objptrn,objsize1,objsize2
-EXTSYM spritetablea,sprleftpr,sprlefttot,vcache4b
-EXTSYM objadds1,objadds2,objmovs1,objmovs2,tltype4b,vidmemch4,vram
-EXTSYM bgptr,bgptrc,bgptrd,curtileptr,vcache2b
-EXTSYM vcache8b,vidmemch8
-EXTSYM offsetmshl,NextLineCache
-EXTSYM tltype2b
-EXTSYM tltype8b,objwlrpos
-EXTSYM snesinputdefault,cycleinputdevice
-EXTSYM Change_Dir,LoadDrive,LoadDir
+EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeyUsePlayer1234,maxskip,DSPMem,dsp1ptr
+EXTSYM dsp1array,FastFwdToggle,SaveSramData,ngextbg,Mode7HiRes,Check60hz
+EXTSYM Get_MouseData,Get_MousePositionDisplacement,WindowDisables,scanlines
+EXTSYM romispal,MusicRelVol,MusicVol,WDSPReg0C,WDSPReg1C,Op02AAS,Op02AZS,Op02CX
+EXTSYM Op02CY,Op02FX,Op02FY,Op02FZ,Op02LES,Op02LFE,Op02VOF,Op02VVA,KeySlowDown
+EXTSYM genfulladdtab,KeyFRateDown,KeyFRateUp,KeyVolUp,KeyVolDown,KeyDisplayFPS
+EXTSYM FPSOn,pl12s34,bg1ptr,bg2ptr,bg3ptr,bg4ptr,cachebg1,resolutn,curypos
+EXTSYM oamram,objhipr,objptr,objptrn,objsize1,objsize2,spritetablea,sprleftpr
+EXTSYM sprlefttot,vcache4b,objadds1,objadds2,objmovs1,objmovs2,tltype4b
+EXTSYM vidmemch4,vram,bgptr,bgptrc,bgptrd,curtileptr,vcache2b,vcache8b,vidmemch8
+EXTSYM offsetmshl,NextLineCache,tltype2b,tltype8b,objwlrpos,snesinputdefault
+EXTSYM cycleinputdevice,Change_Dir,LoadDrive,LoadDir
 
 ; Process stuff & Cache sprites
 
@@ -79,7 +72,7 @@ NEWSYM cmovietimeint, dd 0
 NEWSYM overalltimer, dd 0
 mousecheck db 0
 
-section .text
+SECTION .text
 
 
 
@@ -305,7 +298,7 @@ NEWSYM cachevideo
     mov dl,[LoadDrive]
     mov ebx,LoadDir
     call Change_Dir
-    popad    
+    popad
     jmp .nofocussave
 .nofocussaveb
     mov dword[sramb4save],0
@@ -1037,8 +1030,8 @@ NEWSYM processsprites
     jne .64dot2
     mov ebx,.process32x32sprite
     mov [.size2ptr],ebx
-    jmp .fin2 
-.64dot2 
+    jmp .fin2
+.64dot2
     mov ebx,.process64x64sprite
     mov [.size2ptr],ebx
 .fin2
@@ -1710,8 +1703,8 @@ NEWSYM processspritesb
     jne .64dot2
     mov ebx,.process32x32sprite
     mov [.size2ptr],ebx
-    jmp .fin2 
-.64dot2 
+    jmp .fin2
+.64dot2
     mov ebx,.process64x64sprite
     mov [.size2ptr],ebx
 .fin2
@@ -3893,5 +3886,3 @@ NEWSYM cachesingle8bng
     pop edi
     pop esi
     ret
-
-

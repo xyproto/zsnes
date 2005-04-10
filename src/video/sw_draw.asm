@@ -20,16 +20,15 @@
 
 ; This file compiles to zero if not OpenBSD, thus it can be
 ; left in the Makefile.
+
+
+
 %include "macros.mac"
 
-ALIGN 32
+EXTSYM SurfaceX,SurfaceY,ScreenPtr,SurfBufD,pitch,MMXSupport,resolutn,copymaskRB
+EXTSYM copymaskG,copymagic
 
-EXTSYM SurfaceX,SurfaceY
-EXTSYM ScreenPtr,SurfBufD
-EXTSYM pitch,MMXSupport,resolutn
-%ifdef __WIN32__
-EXTSYM BitConv32Ptr
-%endif
+ALIGN32
 
 SECTION .text
 
@@ -38,7 +37,7 @@ NEWSYM ClearWin16
         mov  edi, [SurfBufD]
         xor  eax,eax
         xor  ebx,ebx
-.Blank2: 
+.Blank2:
         mov  ecx, [SurfaceX]
         rep stosw
         mov  edx, [SurfaceX]
@@ -82,9 +81,9 @@ NEWSYM DrawWin256x224x16
         xor  eax,eax
         movsx edx, word[resolutn]
         sub  edx,2
-.Copying3: 
+.Copying3:
         mov  ecx,32
-.CopyLoop: 
+.CopyLoop:
         movq mm0,[esi]
         movq mm1,[esi+8]
         movq [edi],mm0
@@ -120,7 +119,7 @@ NEWSYM DrawWin256x224x16
 .Copying:
         mov  ecx,128
         rep  movsd
-        inc  eax            
+        inc  eax
         add  edi, [pitch]
         sub  edi,512
         sub  esi,512
@@ -136,8 +135,6 @@ NEWSYM DrawWin256x224x16
         rep  stosd
         popad
         ret
-
-EXTSYM copymaskRB,copymaskG,copymagic,coef
 
 NEWSYM DrawWin256x224x32
         pushad
@@ -195,7 +192,7 @@ NEWSYM DrawWin320x240x16
         xor  ebx,ebx
         mov  esi, [ScreenPtr]
         mov  edi, [SurfBufD]
-.Blank1MMX: 
+.Blank1MMX:
         mov  ecx,160
         rep stosd
         sub  edi,160
@@ -205,16 +202,16 @@ NEWSYM DrawWin320x240x16
         jne .Blank1MMX
         xor  ebx,ebx
         pxor mm0,mm0
-.Copying2MMX: 
+.Copying2MMX:
         mov  ecx,4
-.MMXLoopA: 
+.MMXLoopA:
         movq [edi+0],mm0
         movq [edi+8],mm0
         add  edi,16
         dec  ecx
         jnz .MMXLoopA
         mov  ecx,32
-.MMXLoopB: 
+.MMXLoopB:
         movq mm1,[esi+0]
         movq mm2,[esi+8]
         movq [edi+0],mm1
@@ -224,7 +221,7 @@ NEWSYM DrawWin320x240x16
         dec  ecx
         jnz .MMXLoopB
         mov  ecx,4
-.MMXLoopC: 
+.MMXLoopC:
         movq [edi+0],mm0
         movq [edi+8],mm0
         add  edi,16
@@ -285,5 +282,3 @@ NEWSYM DrawWin320x240x16
         rep  stosd
         popad
         ret
-
-

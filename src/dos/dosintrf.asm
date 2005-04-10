@@ -18,62 +18,30 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,ZFileSystemInit
-EXTSYM getcmdline,GUIRestoreVars,getcfg,obtaindir,ConvertJoyMap,tparms
-EXTSYM preparedir,getblaster,Force8b,SBHDMA
-EXTSYM ccmdline
-EXTSYM InitDir,InitDrive
-EXTSYM DOScreatenewcfg,ExecGUISaveVars
-EXTSYM allocptr
-EXTSYM ZOpenFile,ZOpenMode,CurrentHandle,ZFileSeek,ZOpenFileName,ZFileSeekMode
-EXTSYM ZFileSeekPos,ZFileSeekHandle
-EXTSYM ZFileWriteHandle,ZFileWriteSize,ZFileWriteBlock,ZFileWrite
-EXTSYM ZFileReadHandle,ZFileReadSize,ZFileReadBlock,ZFileRead
-EXTSYM ZFileDelFName,ZFileDelete
-EXTSYM ZCloseFileHandle,ZCloseFile
-EXTSYM ZFileTellHandle,ZFileTell
-EXTSYM GetTime
-EXTSYM GetDate
-EXTSYM ZFFTimeFName,ZFTime,ZFDate,ZFileGetFTime
-EXTSYM pressed
-EXTSYM ZFileMKDir,ZFileCHDir,ZFileRMDir,CHPath,MKPath,RMPath
-EXTSYM ZFileGetDir,DriveNumber,DirName
-EXTSYM DTALoc,DTALocPos,ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
-EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
-EXTSYM NoSoundReinit,soundon,DSPDisable,SBInt,NoSoundReinit,PICMaskP,SBIrq
-EXTSYM SBHandler,InitSB,handler8h,handler9h,init60hz,Interror,init18_2hz,DeInitSPC
-EXTSYM GUIinit36_4hz,GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o
-EXTSYM GUIhandler9h,GUIhandler8h,GUIinit18_2hz
-EXTSYM dosmakepal
-EXTSYM doschangepal
-EXTSYM dosinitvideo, dosinitvideo2
-EXTSYM DosDrawScreen,dosvidpastecopyscr,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
-EXTSYM DOSClearScreen
-EXTSYM DosUpdateDevices
-EXTSYM DOSJoyRead
-EXTSYM pl1contrl,pl2contrl,pl3contrl,pl4contrl,pl5contrl
-EXTSYM BufferSizeW,BufferSizeB,ProcessSoundBuffer
-EXTSYM TCPIPPortNum
-EXTSYM V8Mode,GrayscaleMode
-;    EXTSYM InitTCP
-;    EXTSYM StartServer
-;    EXTSYM InitTCP
-EXTSYM TCPIPAddress
-;    EXTSYM ConnectServer
-;    EXTSYM SendData
-;    EXTSYM GetData
-;    EXTSYM DeInitTCP
-;    EXTSYM StopServer
-;    EXTSYM Disconnect
-
-
-
-
-
-
-
+EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,ZFileSystemInit,getcmdline
+EXTSYM GUIRestoreVars,getcfg,obtaindir,ConvertJoyMap,tparms,preparedir,V8Mode
+EXTSYM getblaster,Force8b,SBHDMA,ccmdline,InitDir,InitDrive,DOScreatenewcfg
+EXTSYM ExecGUISaveVars,allocptr,ZOpenFile,ZOpenMode,CurrentHandle,ZFileSeek
+EXTSYM ZOpenFileName,ZFileSeekMode,ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle
+EXTSYM ZFileWriteSize,ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize
+EXTSYM ZFileReadBlock,ZFileRead,ZFileDelFName,ZFileDelete,ZCloseFileHandle
+EXTSYM ZCloseFile,ZFileTellHandle,ZFileTell,GetTime,GetDate,ZFFTimeFName,ZFTime
+EXTSYM ZFDate,ZFileGetFTime,ZFileMKDir,ZFileCHDir,ZFileRMDir,CHPath,MKPath
+EXTSYM RMPath,ZFileGetDir,DirName,pressed,DTALoc,DTALocPos,ZFileFindATTRIB
+EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,oldhand9s,oldhand9o,interror
+EXTSYM oldhand8s,oldhand8o,oldhandSBs,oldhandSBo,NoSoundReinit,soundon
+EXTSYM DSPDisable,SBInt,NoSoundReinit,PICMaskP,SBIrq,SBHandler,InitSB,handler8h
+EXTSYM handler9h,init60hz,Interror,init18_2hz,DeInitSPC,GUIinit36_4hz
+EXTSYM GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o,GUIhandler9h
+EXTSYM GUIhandler8h,GUIinit18_2hz,dosmakepal,doschangepal,dosinitvideo
+EXTSYM dosinitvideo2,DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
+EXTSYM DOSClearScreen,DosUpdateDevices,DOSJoyRead,pl1contrl,pl2contrl,pl3contrl
+EXTSYM pl4contrl,pl5contrl,BufferSizeW,BufferSizeB,ProcessSoundBuffer
+EXTSYM GrayscaleMode
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
@@ -678,7 +646,7 @@ NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
 ; Delay for CX/65536 of a second
 
 NEWSYM delay
-   in al,61h 
+   in al,61h
    and al,10h
    mov ah,al
 .loopa
@@ -1809,5 +1777,3 @@ NEWSYM GetTimeInSeconds
     div ebx
     pop es
     ret
-
-

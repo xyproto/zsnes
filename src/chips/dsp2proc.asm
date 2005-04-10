@@ -28,9 +28,9 @@
 ;   Command 05h fixed.
 ;   when you got the magic missile damage such as fireball, DSP2 support in prior version entered halt state.
 
-%include "macros.mac"
 
-EXTSYM regaccessbankr8,regaccessbankr16,regaccessbankw8,regaccessbankw16
+
+%include "macros.mac"
 
 DSP2F_HALT              equ 1
 DSP2F_AUTO_BUFFER_SHIFT equ 2
@@ -133,7 +133,7 @@ db   1,  1,  1,  1,  2,  2,  2,  2
 SECTION .text
 
 ;*******************************************************
-; 
+;
 ;*******************************************************
 %macro CommandJmp 2
     cmp al,%1
@@ -166,7 +166,7 @@ SECTION .text
 %endmacro
 
 ;*******************************************************
-; 
+;
 ;*******************************************************
 
 NEWSYM InitDSP2
@@ -180,7 +180,7 @@ NEWSYM InitDSP2
     ret
 
 ;*******************************************************
-; 
+;
 ;*******************************************************
 
 NEWSYM DSP2Read8b
@@ -218,7 +218,7 @@ NEWSYM DSP2Read16b
     ret
 
 ;*******************************************************
-; 
+;
 ;*******************************************************
 
 NEWSYM _DSP2Add2Queue
@@ -609,5 +609,3 @@ NEWSYM DSP2Write16b
     xor eax,eax
 .leave
     ret
-
-

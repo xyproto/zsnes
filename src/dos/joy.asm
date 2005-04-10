@@ -18,20 +18,14 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM JoyAC,JoyBC,JoyLC,JoyRC,JoySelec,JoyStart,JoyXC,JoyYC,WhichSW,_SW1
-EXTSYM _SW2,_readSideWinder,delay,numjoy,pl1Ak,pl1Bk,pl1Lk,pl1Rk,pl1Xk
-EXTSYM pl1Yk,pl1contrl,pl1downk,pl1leftk,pl1rightk,pl1selk,pl1startk
-EXTSYM pl1upk,pl2Ak,pl2Bk,pl2Lk,pl2Rk,pl2Xk,pl2Yk,pl2contrl,pl2downk
-EXTSYM pl2leftk,pl2rightk,pl2selk,pl2startk,pl2upk,_SWCount,_SW3,_SW4
-EXTSYM pl3Ak,pl3Bk,pl3Lk,pl3Rk,pl3Xk,pl1p209,pl2p209,pl3p209,pl4p209
-EXTSYM pl3Yk,pl3contrl,pl3downk,pl3leftk,pl3rightk,pl3selk,pl3startk
-EXTSYM pl3upk,pl4Ak,pl4Bk,pl4Lk,pl4Rk,pl4Xk,pl4Yk,pl4contrl,pl4downk
-EXTSYM pl4leftk,pl4rightk,pl4selk,pl4startk,pl4upk,pressed,read_gpp
-EXTSYM pl5contrl,pl5p209
-EXTSYM CalibXmin, CalibYmin, CalibXmax, CalibYmax, CalibXmin209
-EXTSYM CalibYmin209, CalibXmax209, CalibYmax209
+EXTSYM WhichSW,_SW1,_SW2,_readSideWinder,_SWCount,_SW3,_SW4,delay,pl1contrl
+EXTSYM pl2contrl,pl1p209,pl2p209,pl3p209,pl4p209,pl3contrl,pl4contrl,pressed
+EXTSYM read_gpp,pl5contrl,pl5p209,CalibXmin,CalibYmin,CalibXmax,CalibYmax
+EXTSYM CalibXmin209,CalibYmin209,CalibXmax209,CalibYmax209
 
 SECTION .data
 NEWSYM JoyAltrn2,  db 2
@@ -1678,7 +1672,5 @@ NEWSYM SetInputDevice209
     mov dword[eax+44],1cBh
     ret
 .nopp5
-
 .exit
     ret
-

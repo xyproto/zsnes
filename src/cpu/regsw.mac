@@ -19,13 +19,8 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
+
 EXTSYM tableadc
-
-
-
-
-
-
 
 ;*******************************************************
 ; InitRegW                   Initializes Write Registers
@@ -52,5 +47,3 @@ EXTSYM tableadc
     mov eax,%2
     mov [edi],eax
 %endmacro
-
-

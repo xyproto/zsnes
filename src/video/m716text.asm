@@ -18,14 +18,14 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM coladdr,curmosaicsz,curvidoffset,domosaic16b,mode7A,drawmode7dcolor
-EXTSYM mode7B,mode7C,mode7D,mode7X0,mode7Y0,mode7set,mode7tab
-EXTSYM pal16b,pal16bcl,pal16bxcl,scaddtype,scrnon,transpbuf
-EXTSYM vesa2_clbit,vram,vrama,winon,xtravbuf,winptrref,scaddset
-EXTSYM fulladdtab
-EXTSYM cwinptr
+EXTSYM coladdr,curmosaicsz,curvidoffset,domosaic16b,mode7A,mode7B,mode7C,mode7D
+EXTSYM mode7X0,mode7Y0,mode7set,mode7tab,pal16b,pal16bcl,pal16bxcl,scaddtype
+EXTSYM scrnon,transpbuf,vesa2_clbit,vram,vrama,winon,xtravbuf,winptrref
+EXTSYM fulladdtab,cwinptr
 
 ;*******************************************************
 ; Processes & Draws Mode 7
@@ -187,7 +187,7 @@ EXTSYM cwinptr
     and bx,0001111111111111b    ; 13 -> 16 bit signed value
     test bx,0001000000000000b
     jz .nonega
-    or bx,1110000000000000b    
+    or bx,1110000000000000b
 .nonega
     mov [.cxloc],bx
     mov bx,dx
@@ -996,6 +996,3 @@ extbg2sub:
     cmp dh,1
     jne near domosaic16b
     ret
-
-
-

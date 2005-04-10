@@ -20,10 +20,8 @@
 
 %include "macros.mac"
 
-EXTSYM spcRam, spcPCRam, spcRamDP, spcS, spcX, MovieProcessing
-EXTSYM soundon, RevStereo
-EXTSYM PitchModEn,SoundNoiseDis
-EXTSYM DosExit,Invalidopcode,RSPCRegF0,RSPCRegF1,RSPCRegF2,RSPCRegF3
+EXTSYM spcRam,spcPCRam,spcRamDP,spcS,spcX,RevStereo
+EXTSYM Invalidopcode,RSPCRegF0,RSPCRegF1,RSPCRegF2,RSPCRegF3
 EXTSYM RSPCRegF4,RSPCRegF5,RSPCRegF6,RSPCRegF7,RSPCRegF8,RSPCRegF9
 EXTSYM RSPCRegFA,RSPCRegFB,RSPCRegFC,RSPCRegFD,RSPCRegFE,RSPCRegFF
 EXTSYM SPCRegF0,SPCRegF1,SPCRegF2,SPCRegF3,SPCRegF4,SPCRegF5,SPCRegF6
@@ -124,15 +122,9 @@ EXTSYM WDSPRegE0,WDSPRegE1,WDSPRegE2,WDSPRegE3,WDSPRegE4,WDSPRegE5,WDSPRegE6
 EXTSYM WDSPRegE7,WDSPRegE8,WDSPRegE9,WDSPRegEA,WDSPRegEB,WDSPRegEC,WDSPRegED
 EXTSYM WDSPRegEE,WDSPRegEF,WDSPRegF0,WDSPRegF1,WDSPRegF2,WDSPRegF3,WDSPRegF4
 EXTSYM WDSPRegF5,WDSPRegF6,WDSPRegF7,WDSPRegF8,WDSPRegF9,WDSPRegFA,WDSPRegFB
-EXTSYM WDSPRegFC,WDSPRegFD,WDSPRegFE,WDSPRegFF,RaisePitch
-EXTSYM delay
-EXTSYM spcBuffera
-EXTSYM DSPMem
-EXTSYM SoundInterpType
-EXTSYM NoiseData,Voice0Disable,csounddisable,spcRamcmp
-EXTSYM cfgecho,Surround,SoundBufEn
-EXTSYM echobuf,ENVDisable
-EXTSYM LowPassFilterType
+EXTSYM WDSPRegFC,WDSPRegFD,WDSPRegFE,WDSPRegFF
+EXTSYM spcBuffera,DSPMem,SoundInterpType,NoiseData,Voice0Disable
+EXTSYM cfgecho,Surround,echobuf,ENVDisable,LowPassFilterType
 
 %ifdef __MSDOS__
 EXTSYM SB_alloc_dma,SB_quality_limiter,vibracard
@@ -390,7 +382,7 @@ SECTION .bss
 
 NEWSYM spcWptr,  resd 16     ; SPC Write pointers (point to their own functions)
 NEWSYM spcRptr,  resd 16     ; SPC Read pointers (point to their own functions)
-; 
+;
 SECTION .data
 NEWSYM SoundQuality, dd 2
 NEWSYM StereoSound,    db 0
@@ -597,7 +589,7 @@ NEWSYM AdjustFrequency
 
 .fir_mmx
       mov ebx, DSPInterpolate_8
-	  
+	
 .notgaussian
       mov [DSPInterpolate],ebx
 
@@ -630,15 +622,6 @@ NEWSYM AdjustFrequency
       mov eax,dword [SBToSPCSpeeds2+ecx*4]
 .not16bit
 %endif
-;      cmp byte[RaisePitch],0
-;      jne .nopitchmodify
-;      ; *1000/1024
-;      mov ebx,1024
-;      mul ebx
-;      xor edx,edx
-;      mov ebx,1000
-;      div ebx
-;.nopitchmodify
       mov [SBToSPC],eax
       mov [SBRateb],eax
 
@@ -2053,7 +2036,7 @@ sampleleft         dd 0         ; 8 bytes/sample
 lastbl             dd 0         ; Last block if = 1
 loopbl             dd 0         ; Loop if = 1
 usenoisedata       dd 0
- 
+
 
 
 VolumeTableD
@@ -2198,7 +2181,7 @@ NEWSYM Voice6Pitch, resw 1            ; Previous Pitch for Voice 6
 NEWSYM Voice7Pitch, resw 1            ; Previous Pitch for Voice 7
 
 NEWSYM Voice0Status,   resb 1 ; 0=Not Playing 1=Playing
-NEWSYM Voice1Status,   resb 1 
+NEWSYM Voice1Status,   resb 1
 NEWSYM Voice2Status,   resb 1
 NEWSYM Voice3Status,   resb 1
 NEWSYM Voice4Status,   resb 1
@@ -2234,22 +2217,22 @@ NEWSYM Voice7BufPtr,  resd 1 ; Ptr to Buffer Block to be played
 
 NEWSYM SoundCounter,   resd 1 ; Counter used for sound generation
 NEWSYM SoundCounter2,  resd 1 ; Counter used for sound generation
-NEWSYM Voice0Prev0,    resd 1 
-NEWSYM Voice1Prev0,    resd 1 
-NEWSYM Voice2Prev0,    resd 1 
-NEWSYM Voice3Prev0,    resd 1 
-NEWSYM Voice4Prev0,    resd 1 
-NEWSYM Voice5Prev0,    resd 1 
-NEWSYM Voice6Prev0,    resd 1 
-NEWSYM Voice7Prev0,    resd 1 
-NEWSYM Voice0Prev1,    resd 1 
-NEWSYM Voice1Prev1,    resd 1 
-NEWSYM Voice2Prev1,    resd 1 
-NEWSYM Voice3Prev1,    resd 1 
-NEWSYM Voice4Prev1,    resd 1 
-NEWSYM Voice5Prev1,    resd 1 
-NEWSYM Voice6Prev1,    resd 1 
-NEWSYM Voice7Prev1,    resd 1 
+NEWSYM Voice0Prev0,    resd 1
+NEWSYM Voice1Prev0,    resd 1
+NEWSYM Voice2Prev0,    resd 1
+NEWSYM Voice3Prev0,    resd 1
+NEWSYM Voice4Prev0,    resd 1
+NEWSYM Voice5Prev0,    resd 1
+NEWSYM Voice6Prev0,    resd 1
+NEWSYM Voice7Prev0,    resd 1
+NEWSYM Voice0Prev1,    resd 1
+NEWSYM Voice1Prev1,    resd 1
+NEWSYM Voice2Prev1,    resd 1
+NEWSYM Voice3Prev1,    resd 1
+NEWSYM Voice4Prev1,    resd 1
+NEWSYM Voice5Prev1,    resd 1
+NEWSYM Voice6Prev1,    resd 1
+NEWSYM Voice7Prev1,    resd 1
 
 NEWSYM Voice0Loop,     resb 1
 NEWSYM Voice1Loop,     resb 1
@@ -2629,7 +2612,7 @@ ALIGN32
 NEWSYM MaxEcho,         dd 172
 
 ;    |AR Time 0 to 1|DR|Time 1 to SL|SL|Ratio| SR Time 1to 1/10|
-;---------------------------------------------------------------------     
+;---------------------------------------------------------------------
 ;    |0 |  4.1 sec  | 0|   1.2 sec  | 0| 1/8 |  0| INF         |10|1.2 sec
 ;    |1 |  2.6      | 1| 740  msec  | 1| 2/8 |  1| 38          |11|880 msec
 ;    |2 |  1.5      | 2| 440        | 2| 3/8 |  2| 28          |12|740
@@ -2754,7 +2737,7 @@ SECTION .text
       ; Check if adsr or gain
       test byte[DSPMem+05h+%1*10h],80h
       jz near .gain
-      
+
       ; Calculate attack rate
       xor eax,eax
       mov al,[DSPMem+05h+%1*10h]
@@ -4639,11 +4622,6 @@ NEWSYM EchoStereo
 %endif                                          ; added
     jmp %%NotUnique
 %%Uniquepm
-;    cmp byte[PitchModEn],0
-;    je %%NotUnique
-;    mov al,%1                                  ;
-;    cmp al,0                                   ; commented out
-;    je %%NotUnique                             ;
 %%Unique
     mov byte [UniqueSoundv],1
 %%NotUnique
@@ -5415,7 +5393,7 @@ NEWSYM LPFexit
 
 ;    add [esi],edx
 ;    add [esi+4],edx
-    
+
     add esi,8
     dec ecx
     jnz .loop

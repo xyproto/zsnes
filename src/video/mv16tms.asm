@@ -18,24 +18,17 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM bgcoloradder,bgofwptr,bgsubby,bshifter,curbgpr,curmosaicsz
-EXTSYM curvidoffset,cwinptr,domosaic16b,drawn,pal16b,scaddtype
-EXTSYM scrnon,temp,tempcach,temptile,tileleft16b,transpbuf,vcache2b
-EXTSYM vcache4b,vcache8b,winon,winptrref,xtravbuf,yadd,yadder
-EXTSYM yrevadder,draw16x816t,bgmode
-EXTSYM vcache2ba,vcache4ba,vcache8ba
-EXTSYM fulladdtab,pal16bcl
-EXTSYM pal16bxcl
-EXTSYM coadder16
-EXTSYM a16x16xinc,a16x16yinc,curypos,yflipadd
+EXTSYM bgcoloradder,bgofwptr,bgsubby,bshifter,curbgpr,curmosaicsz,curvidoffset
+EXTSYM cwinptr,domosaic16b,drawn,pal16b,scaddtype,scrnon,temp,tempcach,temptile
+EXTSYM tileleft16b,transpbuf,winon,winptrref,xtravbuf,yadd,yadder,yrevadder
+EXTSYM draw16x816t,bgmode,vcache2ba,vcache4ba,vcache8ba,fulladdtab,pal16bcl
+EXTSYM pal16bxcl,coadder16,a16x16xinc,a16x16yinc,curypos,yflipadd
 
 %include "video/vidmacro.mac"
-
-
-
-
 
 ;*******************************************************
 ; Processes & Draws 8x8 tiles in 2, 4, & 8 bit mode
@@ -1502,5 +1495,3 @@ NEWSYM draw16x1616tswinonms
     dec byte[tileleft16b]
     jnz near .loopa
     ret
-
-

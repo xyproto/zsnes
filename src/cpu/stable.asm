@@ -22,7 +22,7 @@
 
 EXTSYM SA1tableA,SA1tableB,SA1tableC,SA1tableD,SA1tableE
 EXTSYM SA1tableF,SA1tableG,SA1tableH,SA1tablead
-EXTSYM cpucycle, SA1UpdateDPage, intrset
+EXTSYM cpucycle,SA1UpdateDPage,intrset
 
 %include "cpu/s65816d.inc"
 %include "cpu/saddress.inc"
@@ -419,7 +419,7 @@ NEWSYM SA1settables
     mov dword[edi+0FDh*4],SA1COpFDm8nd
     mov dword[edi+0FEh*4],SA1COpFEm8
     mov dword[edi+0FFh*4],SA1COpFFm8nd
-    ret      
+    ret
 
 NEWSYM SA1settablem16
     mov dword[edi+01h*4],SA1COp01m16

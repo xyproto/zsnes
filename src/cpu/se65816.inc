@@ -19,12 +19,12 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-EXTSYM brkv,brkv8,copv,copv8,curexecstate,curnmi
-EXTSYM initaddrl,membank0r16,membank0r8
-EXTSYM membank0w16,membank0w8,memtabler16,memtabler8,memtablew16,memtablew8
-EXTSYM nmistatus,regaccessbankr8,snesmap2,snesmmap,stackand,stackor
+EXTSYM brkv,brkv8,copv,copv8,curexecstate,curnmi,initaddrl
+EXTSYM membank0r16,membank0r8,membank0w16,membank0w8
+EXTSYM memtabler16,memtabler8,memtablew16,memtablew8
+EXTSYM regaccessbankr8,snesmap2,snesmmap,stackand,stackor
 EXTSYM wramdata,SA1xa,SA1xd,SA1xdb,xe,xirqb,SA1xpb,xpc,SA1xs,SA1xx,SA1xy
-EXTSYM switchtovirq,cpuoverptr,debstop4,SA1RegP,nextopcode,debugsa1,skipdebugsa1
+EXTSYM debstop4,SA1RegP,nextopcode,debugsa1,skipdebugsa1
 
 
 sa1debug:

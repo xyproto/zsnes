@@ -18,125 +18,39 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM previdmode,DosExit,ZFileSystemInit
-EXTSYM getcmdline,GUIRestoreVars,getcfg,obtaindir,ConvertJoyMap,tparms
-EXTSYM preparedir,SBHDMA
-EXTSYM ccmdline
-EXTSYM FilenameStart
-EXTSYM spcon
-EXTSYM cfgsoundon
-EXTSYM cfgcvidmode
-EXTSYM pl1contrl,pl2contrl
-EXTSYM InitDir,InitDrive
-EXTSYM DOScreatenewcfg,ExecGUISaveVars
-EXTSYM allocptr
-extsym putchar
-EXTSYM getch
-EXTSYM exit
-EXTSYM ZOpenFile,ZOpenMode,CurrentHandle,ZFileSeek,ZOpenFileName,ZFileSeekMode
-EXTSYM ZFileSeekPos,ZFileSeekHandle
-EXTSYM ZFileWriteHandle,ZFileWriteSize,ZFileWriteBlock,ZFileWrite
-EXTSYM ZFileReadHandle,ZFileReadSize,ZFileReadBlock,ZFileRead
-EXTSYM ZFileDelFName,ZFileDelete
-EXTSYM ZCloseFileHandle,ZCloseFile
-EXTSYM ZFileTellHandle,ZFileTell
-EXTSYM ZFFTimeFName,ZFTime,ZFDate,ZFileGetFTime
-EXTSYM GetTime
-EXTSYM GetDate
-extsym kbhit
-extsym GUIkeydelay2
-;extsym _kbhit
-;EXTSYM _getch
-extsym _chdrive
-EXTSYM ZFileMKDir,ZFileCHDir,ZFileRMDir,CHPath,MKPath,RMPath
-EXTSYM ZFileGetDir,DriveNumber,DirName
-EXTSYM _getdrive
-EXTSYM DTALoc,DTALocPos,ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
-EXTSYM NoSoundReinit,soundon,DSPDisable,NoSoundReinit
-EXTSYM init60hz,init18_2hz
-EXTSYM Start60HZ
-EXTSYM pressed
-EXTSYM RaisePitch,AdjustFrequency
-EXTSYM vidbufferofsb,vidbuffer
-EXTSYM clearwin
-EXTSYM Stop60HZ
-EXTSYM dosmakepal
-EXTSYM doschangepal
-EXTSYM dosinitvideo,dosinitvideo2
-EXTSYM initwinvideo
-EXTSYM vesa2_rpos
-EXTSYM vesa2_gpos
-EXTSYM vesa2_bpos
-EXTSYM vesa2_rposng
-EXTSYM vesa2_gposng
-EXTSYM vesa2_bposng
-EXTSYM vesa2_usbit
-EXTSYM vesa2_clbit
-EXTSYM vesa2_clbitng
-EXTSYM vesa2_clbitng2
-EXTSYM vesa2_clbitng3
-EXTSYM genfulladdtabng
-EXTSYM vesa2red10
-EXTSYM res640
-EXTSYM res480
-EXTSYM AddSub256,InitVesa2,cbitmode,cvidmode
-EXTSYM scanlines,vesa2_bits
-EXTSYM vesa2_x,vesa2_y
-EXTSYM vesa2selec,videotroub
-EXTSYM genfulladdtab
-EXTSYM GUICPC
-EXTSYM drawscreenwin
-EXTSYM ConvertToAFormat
-EXTSYM UnusedBit,HalfTrans,UnusedBitXor,UnusedBit,UnusedBitXor
-EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC
-EXTSYM DosUpdateDevices
-EXTSYM WinUpdateDevices
-EXTSYM DOSJoyRead
-EXTSYM UpdateVFrame
-EXTSYM GetMouseX
-EXTSYM GetMouseY
-EXTSYM GetMouseMoveX
-EXTSYM GetMouseMoveY
-EXTSYM GetMouseButton
-EXTSYM SetMouseMinX,SetMouseMaxX
-EXTSYM SetMouseMinY,SetMouseMaxY
-EXTSYM SetMouseX,SetMouseY
-EXTSYM T36HZEnabled
-EXTSYM MouseButton
-EXTSYM GUIinit36_4hz,GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o
-EXTSYM GUIinit18_2hz
-EXTSYM Start36HZ
-EXTSYM Stop36HZ
-EXTSYM BufferSizeW,BufferSizeB,ProcessSoundBuffer
-EXTSYM CheckTimers
-EXTSYM vesa2_rfull,vesa2_rtrcl,vesa2_rtrcla
-EXTSYM vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla
-EXTSYM vesa2_bfull,vesa2_btrcl,vesa2_btrcla
-EXTSYM Init_2xSaIMMXW
-EXTSYM TCPIPPortNum
-EXTSYM InitTCP
-EXTSYM StartServerCycle
-EXTSYM ServerCheckNewClient
-EXTSYM acceptzuser
-EXTSYM TCPIPAddress
-EXTSYM ConnectServer
-EXTSYM WaitForServer
-EXTSYM SendDataNop
-EXTSYM SendDataUDPNop
-EXTSYM GetDataNop
-EXTSYM DeInitTCP
-EXTSYM StopServer
-EXTSYM Disconnect
-EXTSYM UDPDisableMode,UDPEnableMode,UDPClearVars,UDPWait1Sec
-EXTSYM WinErrorA2,WinErrorB2,WinErrorC2
-EXTSYM ZsnesPage
-EXTSYM V8Mode,GrayscaleMode
-EXTSYM PrevWinMode,PrevFSMode
+EXTSYM DosExit,ZFileSystemInit,getcmdline,GUIRestoreVars,getcfg,obtaindir
+EXTSYM ConvertJoyMap,tparms,preparedir,SBHDMA,ccmdline,spcon,cfgsoundon
+EXTSYM cfgcvidmode,InitDir,InitDrive,DOScreatenewcfg,ExecGUISaveVars,allocptr
+EXTSYM putchar,getch,exit,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName
+EXTSYM ZFileSeekMode,ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle
+EXTSYM ZFileWriteSize,ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize
+EXTSYM ZFileReadBlock,ZFileRead,ZFileDelFName,ZFileDelete,ZCloseFileHandle
+EXTSYM ZCloseFile,ZFileTellHandle,ZFileTell,ZFFTimeFName,ZFTime,ZFDate
+EXTSYM ZFileGetFTime,GetTime,GetDate,GUIkeydelay2,_chdrive,ZFileMKDir,ZFileCHDir
+EXTSYM ZFileRMDir,CHPath,MKPath,RMPath,ZFileGetDir,DirName,_getdrive,DTALoc
+EXTSYM DTALocPos,ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
+EXTSYM soundon,DSPDisable,Start60HZ,pressed,RaisePitch,AdjustFrequency
+EXTSYM vidbufferofsb,vidbuffer,clearwin,Stop60HZ,initwinvideo,vesa2_rpos
+EXTSYM vesa2_gpos,vesa2_bpos,vesa2_rposng,vesa2_gposng,vesa2_bposng,vesa2_usbit
+EXTSYM vesa2_clbit,vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3,vesa2red10,res640
+EXTSYM res480,cbitmode,cvidmode,vesa2_bits,vesa2_x,vesa2_y,genfulladdtab,GUICPC
+EXTSYM drawscreenwin,ConvertToAFormat,UnusedBit,HalfTrans,UnusedBitXor,UnusedBit
+EXTSYM UnusedBitXor,ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC
+EXTSYM WinUpdateDevices,UpdateVFrame,GetMouseX,GetMouseY,InitTCP,GetMouseMoveX
+EXTSYM GetMouseMoveY,GetMouseButton,SetMouseMinX,SetMouseMaxX,SetMouseMinY
+EXTSYM SetMouseMaxY,SetMouseX,SetMouseY,T36HZEnabled,MouseButton,Start36HZ
+EXTSYM Stop36HZ,BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
+EXTSYM vesa2_rfull,vesa2_rtrcl,vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla
+EXTSYM vesa2_bfull,vesa2_btrcl,vesa2_btrcla,Init_2xSaIMMXW,StartServerCycle
+EXTSYM ServerCheckNewClient,acceptzuser,ConnectServer,WaitForServer,SendDataNop
+EXTSYM SendDataUDPNop,GetDataNop,DeInitTCP,StopServer,Disconnect,UDPDisableMode
+EXTSYM UDPEnableMode,UDPClearVars,UDPWait1Sec,WinErrorA2,WinErrorB2,WinErrorC2
+EXTSYM ZsnesPage,V8Mode,GrayscaleMode,PrevWinMode,PrevFSMode,FrameSemaphore
 EXTSYM _imp__GetLocalTime@4
-
-EXTSYM FrameSemaphore
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
@@ -230,7 +144,7 @@ NEWSYM allocmem
 NEWSYM PrintChar
     ret
     ; print character at dl, push all modified registers
-    pushad 
+    pushad
     push eax
     push edx
     call putchar
@@ -238,7 +152,7 @@ NEWSYM PrintChar
 ;    mov ah,02h
 ;    int 21h
     pop eax
-    popad 
+    popad
     ret
 
 NEWSYM PrintStr          ; Print ASCIIZ string
@@ -342,7 +256,7 @@ NEWSYM Open_File_Write
 NEWSYM Create_File
     pushad
     mov dword[ZOpenMode],1
-    mov dword[ZOpenFileName],edx    
+    mov dword[ZOpenFileName],edx
     call ZOpenFile
     cmp eax,0FFFFFFFFh
     je .error
@@ -483,14 +397,14 @@ NEWSYM Get_Date
     popad
     mov eax,[TempVarSeek]
     movzx edx,al ;Move day into edx, day is in BCD
-    shr edx,4    ;Chop off the second digit 
+    shr edx,4    ;Chop off the second digit
     imul edx,10  ;Multiply first digit by 10, since we want decimal
     and al,0xF   ;Remove first BCD digit
     add dl,al    ;Add second digit to first*10
     mov dh,ah    ;Copy month
     ;Year still isn't done yet, although I don't think we use it anywhere -Nach
     ret
-    
+
 NEWSYM Get_File_Date
     mov [ZFFTimeFName],edx
     pushad
@@ -598,7 +512,6 @@ NEWSYM Check_Key
     ret
     ; returns 0 if there are no keys in the keyboard buffer, 0xFF otherwise
     pushad
-;    call kbhit
     call RefreshKeybBuffer
     mov byte[wfkey],0
     mov al,[Keybhead]
@@ -662,7 +575,7 @@ NEWSYM Get_Key
 SECTION .data
 KeyConvTable
    db 255,27 ,'1','2','3','4','5','6'  ; 00h
-   db '7','8','9','0','-','=',8  ,9 
+   db '7','8','9','0','-','=',8  ,9
    db 'Q','W','E','R','T','Y','U','I'  ; 10h
    db 'O','P','[',']',13 ,255,'A','S'
    db 'D','F','G','H','J','K','L',';'  ; 20h
@@ -674,7 +587,7 @@ KeyConvTable
    db 208,209,210,211,255,255,255,255  ; 50h
 KeyConvTableS
    db 255,27 ,'!','@','#','$','%','^'  ; 00h
-   db '&','*','(',')','_','+',8  ,9 
+   db '&','*','(',')','_','+',8  ,9
    db 'Q','W','E','R','T','Y','U','I'  ; 10h
    db 'O','P','{','}',13 ,255,'A','S'
    db 'D','F','G','H','J','K','L',':'  ; 20h
@@ -900,7 +813,7 @@ NEWSYM Get_Memfree
     ret
 
 NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
-    pushad 
+    pushad
 
     ; This function usually displays an error message on-screen
     cmp ah,02h
@@ -981,95 +894,18 @@ NEWSYM DeInitPostGame           ; Called after game is ended
 ; ** Palette Functions **
 NEWSYM makepal  ; 8-bit palette set
     ret
-;    jmp dosmakepal
+
 NEWSYM changepal  ; 8-bit palette set (changes only)
     ret
-;    jmp doschangepal
+
 NEWSYM displayfpspal
     ret
-
-;    mov al,128
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    mov al,63
-;    out dx,al
-;    out dx,al
-;    out dx,al
-;    mov al,128+64
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    mov al,0
-;    out dx,al
-;    out dx,al
-;    out dx,al
-;    ret
 
 NEWSYM superscopepal
     ret
 
-;    mov al,128+16
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    mov al,63
-;    out dx,al
-;    xor al,al
-;    out dx,al
-;    out dx,al
-;    ret
-
 NEWSYM saveselectpal
     ret
-
-    ; set palette of colors 128,144, and 160 to white, blue, and red
-;    mov al,128
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    mov al,63
-;    out dx,al
-;    out dx,al
-;    out dx,al
-;    mov al,144
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    xor al,al
-;    out dx,al
-;    out dx,al
-;    mov al,50
-;    out dx,al
-;    mov al,160
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    mov al,45
-;    out dx,al
-;    xor al,al
-;    out dx,al
-;    out dx,al
-;    mov al,176
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    mov al,47
-;    out dx,al
-;    xor al,al
-;    out dx,al
-;    out dx,al
-;    mov al,208
-;    mov dx,03C8h
-;    out dx,al
-;    inc dx
-;    mov al,50
-;    out dx,al
-;    mov al,25
-;    out dx,al
-;    xor al,al
-;    out dx,al
-;    ret
 
 ; ** init video mode functions **
 SECTION .data
@@ -1123,21 +959,12 @@ NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
    pushad
    call InitializeGfxStuff
    popad
-
    ret
 
-
-;   pushad
-;   call genfulladdtabng
-;   popad
-;    jmp dosinitvideo
 NEWSYM initvideo2 ; ModeQ scanline re-init (Keep blank on non-dos ports)
     ret
-;    jmp dosinitvideo2
+
 NEWSYM deinitvideo
-;    mov al,[previdmode]
-;    mov ah,0
-;    int 10h
     ret
 
 ; ** copy video mode functions **
@@ -1308,7 +1135,7 @@ SECTION .text
 ;   convert it back when writing to it back.
 
 NEWSYM UpdateDevices                    ; One-time input device init
-        call WinUpdateDevices   
+        call WinUpdateDevices
 ;        call DosUpdateDevices
         ret
 
@@ -1371,7 +1198,7 @@ NEWSYM ScanCodeListing
         db 'A0H','A1H','A2H','A3H','A4H','A5H','A6H','A7H'  ; A0h
         db 'A8H','A9H','AAH','ABH','ACH','ADH','AEH','AFH'
         db 'B0H','B1H','B2H','B3H','B4H','B5H','B6H','B7H'  ; B0h
-        db 'B8H','B9H','BAH','BBH','BCH','BDH','BEH','BFH'  
+        db 'B8H','B9H','BAH','BBH','BCH','BDH','BEH','BFH'
         db 'C0H','C1H','C2H','C3H','C4H','C5H','C6H','C7H'  ; C0h
         db 'C8H','C9H','CAH','CBH','CCH','CDH','CEH','CFH'
         db 'D0H','D1H','D2H','D3H','D4H','D5H','D6H','D7H'  ; D0h
@@ -1544,7 +1371,7 @@ NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
     popad
     ; DSPBuffer should contain the processed buffer in the specified size
     ; You will have to convert/clip it to 16-bit for actual sound process
-.nosound    
+.nosound
     ret
 
 NEWSYM delay
@@ -1559,7 +1386,7 @@ NEWSYM Check60hz
     ret
 
 SECTION .data
-BitPosR db 11 
+BitPosR db 11
 BitPosG db 5
 BitPosB db 0
 BitSizeR db 5
@@ -2131,4 +1958,3 @@ NEWSYM fastblur
 	ret
 
 %endif
-

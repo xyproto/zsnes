@@ -18,17 +18,13 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM flagnz,flago,flagc
-EXTSYM SfxSCMR,curnmi,execloop,initaddrl,nmiv,snesmap2
-EXTSYM snesmmap,stackand,stackor,wramdata
-EXTSYM xe,xirqb,xpb,xpc,xs
-EXTSYM irqon,irqv
-EXTSYM irqv8
-EXTSYM execloopdeb
-EXTSYM nmiv8
-EXTSYM membank0r8,membank0w8
+EXTSYM flagnz,flago,flagc,SfxSCMR,curnmi,execloop,initaddrl,nmiv,snesmap2
+EXTSYM snesmmap,stackand,stackor,xe,xirqb,xpb,xpc,xs,irqon,irqv,irqv8
+EXTSYM execloopdeb,nmiv8,membank0w8
 
 ;        NMI     Hardware        00FFFA,B    00FFEA,B     3  -> 000108
 ;        RES     Hardware        00FFFC.D    00FFFC,D     1
@@ -552,6 +548,3 @@ NEWSYM NMIemulmodedeb
     mov [initaddrl],esi
     add esi,eax
     jmp execloopdeb
-
-
-

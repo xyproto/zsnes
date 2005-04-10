@@ -24,10 +24,9 @@ EXTSYM romdata,sramb4save,pressed,vidbuffer,oamram
 EXTSYM C4TransfWireFrame2
 EXTSYM C4WFXVal,C4WFYVal,C4WFX2Val,C4WFY2Val,C4CalcWireFrame
 EXTSYM C4WFDist,C4WFScale,C4TransfWireFrame,C4WFZVal
-EXTSYM debstop3
 EXTSYM C41FXVal,C41FYVal,C41FAngleRes,C41FDist,C4Op1F,C4Op15
 EXTSYM C41FDistVal,C4Op0D,C4Op22,SinTable,CosTable
-EXTSYM SFXEnable,regptra,sfxramdata,snesmmap,wramdataa,debstop,C4Ram,C4Enable
+EXTSYM SFXEnable,regptra,sfxramdata,snesmmap,wramdataa,C4Ram,C4Enable
 EXTSYM C4RamR,C4RamW,snesmap2,SPC7110Enable
 EXTSYM DSP1Read16b
 EXTSYM DSP1Write8b,regptwa,writeon
@@ -42,7 +41,6 @@ EXTSYM DosExit,invalid,invopcd,previdmode,printhex8
 EXTSYM SA1Status,IRAM,CurBWPtr,SA1RAMArea
 EXTSYM SA1Overflow,OBCEnable
 EXTSYM Sdd1Mode,Sdd1Bank,Sdd1Addr,Sdd1NewAddr,memtabler8,AddrNoIncr,SDD1BankA
-EXTSYM SPC7110Entries,spc7110romptr
 
 ; C4SprScale
 
@@ -2065,7 +2063,7 @@ C4activate:
     call C4Op22
     popad
     ret
-    
+
 .propulsion
     pushad
     ; 81 = 5B, 83 = 0x300
@@ -2129,7 +2127,6 @@ C4activate:
     popad
     ret
 .dosprites
-;    mov byte[debstop3],0
     push eax
     mov eax,[C4Ram]
     cmp byte[eax+1F4Dh],0
@@ -2161,7 +2158,6 @@ C4activate:
     pop eax
     ret
 .dolines
-;    mov byte[debstop3],0
     ret
 .bitmap
     call C4BitPlaneWave
@@ -2210,7 +2206,6 @@ C4activate:
     ret
 .transform
     ; 7F81,4,7,9,A,B,0,1,D
-;    mov byte[debstop3],0
     pushad
 ;    mov eax,[C4Ram]
     call C4Transform
@@ -2224,7 +2219,7 @@ C4activate:
     mov eax,[esi+1F80h]
     and eax,0FFFFFFh
     mov ebx,[esi+1F83h]
-    and ebx,0FFFFFFh   
+    and ebx,0FFFFFFh
     imul eax,ebx
     mov [esi+1F80h],eax
     popad
@@ -2235,7 +2230,7 @@ C4activate:
     xor ebx,ebx
     mov esi,[C4Ram]
     mov ecx,800h
-.sumloop    
+.sumloop
     mov bl,byte[esi]
     inc esi
     add ax,bx
@@ -2410,8 +2405,8 @@ C4RegFunction:
     je near C4activate
     ret
 
- ;well, when 7f47 is written, copy the number of bytes specified in 
- ;$7f43-4 from the address at $7f40-2 to the address at $7f45-6 
+ ;well, when 7f47 is written, copy the number of bytes specified in
+ ;$7f43-4 from the address at $7f40-2 to the address at $7f45-6
  ;(which is presumably in the $6000-$7fff range)
 
 NEWSYM C4ReadReg
@@ -2439,7 +2434,7 @@ NEWSYM C4WriteReg
     mov ebx,[C4Ram]
     and edx,01FFFh
     add ebx,edx
-.c4movloop    
+.c4movloop
     mov dl,byte[eax]
     mov [ebx],dl
     inc eax
@@ -2860,7 +2855,7 @@ NEWSYM regaccessbankr8mp
 ; enter : BL = bank number, CX = address location
 ; leave : AL = value read
 
-EXTSYM BWShift,BWAndAddr,BWAnd,BWRAnd,SA1BWPtr
+EXTSYM BWShift,SA1BWPtr
 
 %macro BWCheck 0
     cmp byte[BWShift],0
@@ -2877,7 +2872,6 @@ section .text
 .shift
     cmp byte[SA1Status],0
     je .nosa1
-;    mov byte[debstop3],1
     ; value of 8Fh
     test byte[SA1Overflow+1],80h
     jnz .2bit
@@ -3920,7 +3914,6 @@ NEWSYM memaccessspc7110r8
     inc word[CurDecompSize]
     ret
 
-;    mov byte[debstop3],1
     mov ebx,[romdata]
     add ebx,510000h
     mov al,[ebx+ecx]
@@ -3935,7 +3928,6 @@ NEWSYM memaccessspc7110r8
     xor ebx,ebx
     ret
 NEWSYM memaccessspc7110r16
-;    mov byte[debstop3],1
     mov ebx,[romdata]
     add ebx,510000h
     mov ax,[ebx+ecx]
@@ -4714,14 +4706,14 @@ NEWSYM memaccessbankr8sdd1
     push edx
     push eax
     push ecx
-    
+
     and ecx,0FFFFh
     xor eax,eax
-    GetBankLog al   
+    GetBankLog al
     shl eax, 20
     mov edx, [Sdd1Bank]
     and edx, 0Fh
-    shl edx, 16    
+    shl edx, 16
     add eax, edx
     add eax, [romdata]
     add eax, ecx
@@ -4731,11 +4723,11 @@ NEWSYM memaccessbankr8sdd1
     call SDD1_init
     pop eax
     popad
-        
+
     pop ecx
     pop eax
     pop edx
-        
+
 .decompress
     cmp [Sdd1Bank],ebx
     jne .nomoredec
@@ -4757,7 +4749,7 @@ NEWSYM memaccessbankr8sdd1
     ret
 .yesdec
     pushad
-    call SDD1_get_byte        
+    call SDD1_get_byte
     mov [.tmpbyte], al
     popad
     mov al, [.tmpbyte]

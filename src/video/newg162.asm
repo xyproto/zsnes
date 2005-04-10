@@ -18,34 +18,25 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM ngwintable,ngwinen,ngcwinptr,ngcpixleft,ngcwinmode
-EXTSYM tleftn, ng16bprval, vrama, bg1drwng, ng16bbgval, bg1totng
-EXTSYM bgtxadd, taddnfy16x16, taddfy16x16, switch16x16, curmosaicsz, domosaicng16b
-EXTSYM vidmemch4,vidmemch2,vidmemch8,mode0add,vcache4b,vcache2b,vcache8b
-EXTSYM cachesingle2bng,cachesingle8bng,ngpalcon4b,ngpalcon8b
-EXTSYM ngpalcon2b,tleftnb,tltype2b,tltype4b,tltype8b,yposng,flipyposng
-EXTSYM ofsmcptr,ofsmtptr,ofsmmptr,ofsmcyps,ofsmady,ofsmadx,FillSubScr,UnusedBitXor
-EXTSYM yposngom,flipyposngom,cbgval,ofsmval,ofsmvalh,vram,CPalPtrng,BGMS1,scadtng
-EXTSYM CMainWinScr,CSubWinScr,UnusedBit,res640,mosclineval,mostranspval
-EXTSYM vcache2bs,vcache4bs,vcache8bs
-EXTSYM vidmemch2s,vidmemch4s,vidmemch8s
-EXTSYM cpalval,bgtxadd2
-EXTSYM SpecialLine
+EXTSYM ngwintable,ngwinen,ngcwinptr,ngcpixleft,ngcwinmode,tleftn,ng16bprval
+EXTSYM vrama,bg1drwng,ng16bbgval,bg1totng,bgtxadd,taddnfy16x16,taddfy16x16
+EXTSYM switch16x16,curmosaicsz,domosaicng16b,vidmemch2,vidmemch4,vidmemch8
+EXTSYM mode0add,vcache4b,vcache2b,vcache8b,cachesingle2bng,cachesingle8bng
+EXTSYM ngpalcon4b,ngpalcon8b,ngpalcon2b,tleftnb,tltype2b,tltype4b,tltype8b
+EXTSYM yposng,flipyposng,ofsmcptr,ofsmtptr,ofsmmptr,ofsmcyps,ofsmady,ofsmadx
+EXTSYM FillSubScr,UnusedBitXor,yposngom,flipyposngom,cbgval,ofsmval,ofsmvalh
+EXTSYM vram,CPalPtrng,BGMS1,scadtng,CMainWinScr,CSubWinScr,UnusedBit,res640
+EXTSYM mosclineval,mostranspval,vcache2bs,vcache4bs,vcache8bs,vidmemch2s
+EXTSYM vidmemch4s,vidmemch8s,cpalval,bgtxadd2,SpecialLine
 
 %include "video/vidmacro.mac"
 %include "video/newg162.mac"
 %include "video/newgfx16.mac"
 %include "video/newg16wn.mac"
-
-
-
-
-
-
-
-
 
 ;******************************************
 ; 16bitng caching functions
@@ -578,7 +569,7 @@ drawtileng4b16bms16x16:
     jz near drawtileng4b16bmsnt16x16
     DetermineWindow drawtileng4b16bmstmsw16x16, drawtileng4b16bmstmw16x16, drawtileng4b16bmstsw16x16
     drawtile16b16x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmst,tilenormalbmst
-drawtileng4b16bmstmsw16x16:                                                           
+drawtileng4b16bmstmsw16x16:
     drawtile16bw16x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmst,tilenormalbmst,tilenormalwmst,tilenormalwbmst
 drawtileng4b16bmstmw16x16:
     drawtile16bw216x16 tltype4b, preparet4batile, cachesingle4bng,ngpalcon4b,test4ba,0Fh,vidmemch4s,cache4b16b,tilenormalmst,tilenormalbmst,tilenormalwsmt,tilenormalwbsmt,tilenormals,tilenormalbs
@@ -1403,5 +1394,3 @@ drawlineng4b16bmsom16x16:
     drawline16bmacroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmst,procpixelstmst
 drawlineng4b16bmsntom16x16
     drawline16bmacroom16x16 tltype4b,preparet4ba,cachesingle4bng,ngpalcon4b,test4ba,0Fh,procpixelsmsnt,procpixelstmsnt
-
-

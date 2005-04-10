@@ -18,14 +18,13 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
 EXTSYM regaccessbankr8,regaccessbankr16,regaccessbankw8,regaccessbankw16
-EXTSYM DSPOp0A,Op0AA,Op0AB,Op0AC,Op0AD,Op0AVS,DSPOp10
-EXTSYM debstop
-EXTSYM DSPOp00,Op00Multiplicand,Op00Multiplier
-EXTSYM Op00Result
-EXTSYM DSPOp0F,Op0FPass
+EXTSYM DSPOp0A,Op0AA,Op0AB,Op0AC,Op0AD,Op0AVS,DSPOp10,DSPOp00,Op00Multiplicand
+EXTSYM Op00Multiplier,Op00Result,DSPOp0F,Op0FPass
 EXTSYM DSPOp04,Op04Angle,Op04Cos,Op04Radius,Op04Sin
 EXTSYM DSPOp28,Op28R,Op28X,Op28Y,Op28Z
 EXTSYM DSPOp0C,Op0CA,Op0CX1,Op0CX2,Op0CY1,Op0CY2
@@ -882,6 +881,3 @@ DSP1_14:  ; 3D angle rotation
     mov byte[DSP1RLeft],3
     pop eax
     ret
-
-
-

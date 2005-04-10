@@ -567,29 +567,20 @@ void statesaver()
 
   if ((fhandle = fopen(fnamest+1,"wb")))
   {
-    zst_save(fhandle, (cbitmode && !NoPictureSave) ? true : false);
-
+    zst_save(fhandle, (bool)(cbitmode && !NoPictureSave));
     fclose(fhandle);
 
-    //Display message on the screen, 'STATE X SAVED.'
-    if (fnamest[statefileloc] == 't')
-    {
-      txtsavemsg[6]='0';
-    }
-    else
-    {
-      txtsavemsg[6]=fnamest[statefileloc];
-    }
-
+    //Display message onscreen, 'STATE X SAVED.'
+    txtsavemsg[6] = (fnamest[statefileloc] == 't') ? '0' : fnamest[statefileloc];
     Msgptr = txtsavemsg;
-    MessageOn = MsgCount;
   }
   else
   {
-    //Display message on the screen, 'UNABLE TO SAVE.'
+    //Display message onscreen, 'UNABLE TO SAVE.'
     Msgptr = txtsavemsgfail;
-    MessageOn = MsgCount;
   }
+
+  MessageOn = MsgCount;
 
   stim();
 }
@@ -611,10 +602,12 @@ bool zst_load(FILE *fp)
   zst_version = 0;
 
   Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fp);
+
   if (!memcmp(zst_header_check, zst_header_cur, sizeof(zst_header_check)-2))
   {
     zst_version = 143; //v1.43+
   }
+
   if (!memcmp(zst_header_check, zst_header_old, sizeof(zst_header_check)-2))
   {
     zst_version = 60; //v0.60 - v1.42
@@ -626,7 +619,7 @@ bool zst_load(FILE *fp)
   fhandle = fp; //Set global file handle
   copy_state_data(0, read_save_state_data, true);
   Totalbyteloaded += load_save_size;
-  
+
   if (SFXEnable)
   {
     SfxCPB = SfxMemTable[(SfxPBR & 0xFF)];
@@ -652,17 +645,16 @@ bool zst_load(FILE *fp)
   memset(vidmemch4, 1, sizeof(vidmemch4));
   memset(vidmemch8, 1, sizeof(vidmemch8));
 
-  if (zst_version == 60) //Set new vars which old states did not have  
-  {    
+  if (zst_version == 60) //Set new vars which old states did not have
+  {
     prevoamptr = 0xFF;
     ioportval = 0xFF;
     spcnumread = 0;
     spchalted = 0xFFFFFFFF;
     nexthdma = 0;
   }
-      
-  repackfunct();
 
+  repackfunct();
   initpitch();
   ResetOffset();
   ResetState();
@@ -698,26 +690,14 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
 
   if (keycheck)
   {
-    unsigned char statevalue;
-
     pressed[1] = 0;
     pressed[KeyLoadState] = 2;
     multchange = 1;
-
-    //Get the state number
-    if (fnamest[statefileloc] == 't')
-    {
-      statevalue = '0';
-    }
-    else
-    {
-      statevalue = fnamest[statefileloc];
-    }
-
-    txtloadmsg[6] = statevalue;
-    txtconvmsg[6] = statevalue;
-    txtnfndmsg[21] = statevalue;
+    MessageOn = MsgCount;
   }
+
+  //Get the state number
+  txtloadmsg[6] = txtconvmsg[6] = txtnfndmsg[21] = (fnamest[statefileloc] == 't') ? '0' : fnamest[statefileloc];
 
   switch (MovieProcessing)
   {
@@ -730,7 +710,6 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
         MessageOn = MsgCount;
       }
       return;
-
     case 2:
       if (mzt_load(statename, false))
       {
@@ -743,19 +722,12 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
   clim();
 
   //Actual state loading code
-  if ((fhandle = fopen(statename,"rb")) != NULL)
+  if ((fhandle = fopen(statename,"rb")))
   {
-    if (xfercheck) { Totalbyteloaded = 0; }
+    if (xfercheck)      { Totalbyteloaded = 0; }
 
-    if (zst_load(fhandle))
-    {
-      Msgptr = txtloadmsg; // 'STATE X LOADED.'
-    }
-    else
-    {
-      Msgptr = txtconvmsg; // 'STATE X TOO OLD.'
-    }
-
+    Msgptr = (zst_load(fhandle)) ? txtloadmsg : txtconvmsg;
+    // 'STATE X LOADED.' or 'STATE X TOO OLD.'
     fclose(fhandle);
   }
   else
@@ -764,11 +736,6 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
   }
 
   stim();
-
-  if (keycheck)
-  {
-    MessageOn = MsgCount;
-  }
 }
 
 void debugloadstate()

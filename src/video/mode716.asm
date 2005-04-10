@@ -18,19 +18,15 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM mode7tab,winptrref,nglogicval,winlogicaval
-EXTSYM curmosaicsz,curvidoffset,cwinptr,domosaic,mode7A,mode7B
-EXTSYM mode7C,mode7D,mode7X0,mode7Y0,mode7set,vram,vrama,winon,xtravbuf
-EXTSYM ngwleft,ngwleftb,mode7xpos,mode7ypos,mode7xrpos,mode7yrpos
-EXTSYM mode7xadder,mode7yadder,mode7hr,drawmode7winhr,dcolortab
-EXTSYM UnusedBitXor,UnusedBit
-EXTSYM scrndis
-EXTSYM vidbright,prevbrightdc,Gendcolortable
-EXTSYM mode7ab,mode7cd,BGMA
-EXTSYM BG1SXl,BG1SYl
-EXTSYM processmode7hires
+EXTSYM mode7tab,winptrref,nglogicval,winlogicaval,curmosaicsz,curvidoffset
+EXTSYM cwinptr,mode7A,mode7B,mode7C,mode7D,mode7X0,mode7Y0,mode7set,vram,vrama
+EXTSYM xtravbuf,ngwleft,ngwleftb,mode7xpos,mode7ypos,mode7xrpos,mode7yrpos
+EXTSYM mode7xadder,mode7yadder,mode7hr,dcolortab,UnusedBitXor,UnusedBit,scrndis
+EXTSYM vidbright,prevbrightdc,Gendcolortable,mode7ab,mode7cd,BGMA,BG1SXl,BG1SYl
 
 %include "video/mode716.mac"
 
@@ -687,5 +683,3 @@ NEWSYM processmode7hires16bd
     pop esi
 .nogo
     ret
-
-

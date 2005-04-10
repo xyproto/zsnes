@@ -18,19 +18,16 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM DSPMem,spcWptr,debstop,disablespcclr,SPCSkipXtraROM,SPC700sh
-EXTSYM cycpbl,spcRptr
-EXTSYM spc700read
-EXTSYM dspWptr
-EXTSYM curexecstate,SA1Enable,tableadb
+EXTSYM DSPMem,spcWptr,disablespcclr,SPCSkipXtraROM,SPC700sh,cycpbl,spcRptr
+EXTSYM spc700read,dspWptr,curexecstate,tableadb
 
 %include "cpu/regsw.mac"
 %include "cpu/spcdef.inc"
 %include "cpu/spcaddr.inc"
-
-
 
 ; SPC 700 Emulation by _Demo_
 ; Version 2.0
@@ -95,7 +92,7 @@ NEWSYM spcNZ,
 ;spcCF    db 0     ; The Carry Flag       1 or 254
 
 NEWSYM spcS,     dd 1FFh   ; The stack pointer (always from 100 to 1FF) (added Ram)
-NEWSYM spcRamDP, dd 0     ; The direct page pointer 
+NEWSYM spcRamDP, dd 0     ; The direct page pointer
 NEWSYM spcCycle, dd 0     ; The Cycle Counter
 NEWSYM reg1read, db 0     ; read from 65816
 NEWSYM reg2read, db 0     ; read from 65816
@@ -678,7 +675,7 @@ SECTION .text
   mov byte [spcNZ],1
   jo .setoverflowflag
   and byte [spcP],0BFh
-  jmp .skipflags 
+  jmp .skipflags
 .setsignflag
   mov byte [spcNZ],80h
   jo .setoverflowflag
@@ -711,7 +708,7 @@ ret
   mov byte [spcNZ],1
   jo .setoverflowflag
   and byte [spcP],0BFh
-  jmp .skipflags 
+  jmp .skipflags
 .setsignflag
   mov byte [spcNZ],80h
   jo .setoverflowflag
@@ -799,7 +796,7 @@ NEWSYM Op2F       ; BRA rel      branch always                  ...
 ;************************************************
 ; Clear/Set Flag bits
 ;************************************************
-;  CLRP               20    1     2   clear direct page flag    ..0..... 
+;  CLRP               20    1     2   clear direct page flag    ..0.....
 NEWSYM Op20       ; CLRP Clear direct page flag
       and byte [spcP],11011111b
       mov dword [spcRamDP],spcRam
@@ -811,15 +808,15 @@ NEWSYM Op40       ; SETP Set Direct Page Flag  (Also clear interupt flag?)
       mov dword [spcRamDP],spcRam
       add dword [spcRamDP],100h
       ret
-;  CLRC               60    1     2   clear carry flag          .......0 
+;  CLRC               60    1     2   clear carry flag          .......0
 NEWSYM Op60       ; CLRC Clear carry flag
       and byte [spcP],11111110b
       ret
-;  SETC               80    1     2   set carry flag            .......1 
+;  SETC               80    1     2   set carry flag            .......1
 NEWSYM Op80       ; SETC Set carry flag
       or byte [spcP],00000001b
       ret
-;  EI                 A0    1     3  set interrup enable flag   .....1.. 
+;  EI                 A0    1     3  set interrup enable flag   .....1..
 NEWSYM OpA0       ; EI set interrupt flag
       or byte [spcP],00000100b
       ret
@@ -827,12 +824,12 @@ NEWSYM OpA0       ; EI set interrupt flag
 NEWSYM OpC0       ; DI clear interrupt flag
       and byte [spcP],11111011b
       ret
-;  CLRV               E0    1     2   clear V and H             .0..0... 
+;  CLRV               E0    1     2   clear V and H             .0..0...
 NEWSYM OpE0       ; CLRV clear V and H
       and byte [spcP],10110111b
       ret
-;  NOTC               ED    1     3   complement carry flag     .......C 
-NEWSYM OpED       ; NOTC         complement carry flag     .......C 
+;  NOTC               ED    1     3   complement carry flag     .......C
+NEWSYM OpED       ; NOTC         complement carry flag     .......C
       xor byte [spcP],00000001b
       ret
 
@@ -876,7 +873,7 @@ NEWSYM OpF1       ; TCALL F
 ; SET1 instructions (Verified)
 ;************************************************
 NEWSYM Op02       ; SET1 direct page bit 0
-      set1 1 
+      set1 1
 NEWSYM Op22       ; SET1 direct page bit 1
       set1 2
 NEWSYM Op42       ; SET1 direct page bit 2
@@ -1366,7 +1363,7 @@ NEWSYM Op59       ; EOR (X),(Y)  (X) <- (X) EOR (Y)         N......Z.
       mov [spcNZ],al
       WriteByte
       ret
-     
+
 NEWSYM Op79       ; CMP (X),(Y)  (X)-(Y)                 N......ZC
       spcaddrDPbXb_bYb Op79b:
       cmp al, ah
@@ -1657,7 +1654,7 @@ NEWSYM OpBF       ; MOV A,(X)+  A <- (X) with auto inc    N......Z
       mov byte [spcA],al
       mov [spcNZ],al
       ret
-      
+
 
 ;************************************************
 ; CMP instructions (Verified)
@@ -2411,7 +2408,7 @@ NEWSYM Op4D       ; PUSH X       push X to stack         .........
       dec byte [spcS]
       mov [spcRam+eax],bl
       ret
-   
+
 NEWSYM Op6D       ; PUSH Y    push Y to stack         .........
       mov eax,[spcS]
       mov bl,[spcY]
@@ -2559,7 +2556,7 @@ NEWSYM OpFE       ; DBNZ Y,rel   decrement Y then JNZ           ...
 ; Jump/Subroutine Instructions
 ;************************************************
 
-NEWSYM Op0F       ; BRK       software interrupt       ...1.0.. 
+NEWSYM Op0F       ; BRK       software interrupt       ...1.0..
       inc dword[spc700read]
       dec ebp
       ret
@@ -2592,7 +2589,7 @@ NEWSYM Op3F       ; CALL labs    subroutine call          ........
       xor ecx,ecx
       ret
 
-NEWSYM Op4F       ; PCALL upage  upage call               ........ 
+NEWSYM Op4F       ; PCALL upage  upage call               ........
       ; calculate PC
       mov ecx,ebp
       inc ecx
@@ -2644,7 +2641,7 @@ NEWSYM Op7F       ; ret1         return from interrupt   (Restored)
       mov [spcP],cl
       test byte [spcP],80h
       jz .NoNeg
-      or byte [spcNZ],80h      
+      or byte [spcNZ],80h
 .NoNeg
       test byte [spcP],2
       jz .NoZero

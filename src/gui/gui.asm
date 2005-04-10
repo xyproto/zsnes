@@ -67,122 +67,55 @@
 
 %include "macros.mac"
 
-EXTSYM curblank,vidpastecopyscr,frameskip,newengen,vsyncon
-EXTSYM cvidmode,antienab, smallscreenon, smallscreence
-EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol
-EXTSYM endprog,continueprog,spcBuffera,spcRamcmp,cbitmode,makepal
-EXTSYM t1cc,LoadDir,LoadDrive,SRAMDir,SRAMChdir,SRAMDirCurDir,initsnes
-EXTSYM fname,makeextension,sram,loadfileGUI,GUIloadfailed,romloadskip
-EXTSYM SetupROM,romdata,ForcePal,ramsize,ramsizeand,curromsize
-EXTSYM romispal,totlines,cfgloadsdir,init65816,procexecloop
-EXTSYM spcRam,spcPCRam,spcS,spcRamDP,spcA,spcX,spcY,spcP,spcNZ
-EXTSYM Voice0Status,Voice1Status,Voice2Status,Voice3Status,Voice4Status
-EXTSYM Voice5Status,Voice6Status,Voice7Status,romtype
-EXTSYM ClearScreen,statesaver,loadstate2,vidbuffer,ASCII2Font,hirestiledat
-EXTSYM showallext,ROMTypeNOTFound,scanlines,statefileloc,pl1selk,pl2selk
-EXTSYM fnamest,sprlefttot,spritetablea,fnames,CHIPBATT,sfxramdata,setaramdata,SETAEnable,cgram,srama
-EXTSYM tempco0,prevbright,maxbr,prevpal,coladdr,coladdg,coladdb
-EXTSYM scaddtype,ScreenScale,vesa2red10,initvideo2,initvideo,pressed,UpdateDevices
-EXTSYM memtabler8,memtablew8,writeon,pl1contrl,pl2contrl,JoyRead,SetInputDevice
-EXTSYM SetInputDevice209,FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,WDSPReg2C
-EXTSYM WDSPReg3C,pl12s34,resolutn,delay,chaton,chatstrL,chatLpos,chatstrR,chatRTL
-EXTSYM InitDrive,InitDir,createnewcfg,Makemode7Table,SnowOn
-EXTSYM vidbufferofsb,ZipSupport,wramdata,bgfixer,cfgnewgfx
-EXTSYM cfgdontsave,videotroub,Open_File,Read_File,Close_File,Write_File,Create_File
-EXTSYM File_Seek,File_Seek_End,Open_File_Write,Get_Date,Check_Key,Get_Key
-EXTSYM Change_Drive,Change_Single_Dir,Change_Dir,Get_Dir,Get_First_Entry
-EXTSYM Get_Next_Entry,Set_DTA_Address,timer2upd,curexecstate,TripBufAvail
-EXTSYM nmiprevaddrl,nmiprevaddrh,nmirept,nmiprevline,nmistatus,spcnumread,spchalted
-EXTSYM versionNumber
-EXTSYM NextLineCache,VidStartDraw,ResetTripleBuf,GUINGVID
-EXTSYM ScanCodeListing,AdjustFrequency,GUISaveVars,Init_Mouse
-EXTSYM Get_MouseData,Set_MouseXMax,Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement
-EXTSYM GUIInit,GUIDeInit,SpecialLine
-EXTSYM DrawWater,DrawBurn,RemoteDisconnect,loadstate3
-EXTSYM SA1Enable,SA1RAMArea
-EXTSYM GUIFName,GUICName
-EXTSYM printnum
-EXTSYM MMXCheck
-EXTSYM SaveCombFile
-EXTSYM valuea
-EXTSYM showinfogui
-EXTSYM BackupCVFrame, tempedx, tempesi, tempedi, tempebp
-EXTSYM Wait1SecWin,ClearUDPStuff
-EXTSYM DisableSUDPPacket,EnableSUDPPacket
-EXTSYM BackStateSize
-EXTSYM ResetExecStuff
-EXTSYM RestoreCVFrame
-EXTSYM clearSPCRAM
-EXTSYM CurRecv,BackState,CBackupPos,PBackupPos,PPValue,DPValue
-EXTSYM LatencyV
-EXTSYM LatencyRecvPtr,LatencySendPtr
-EXTSYM NumofBanks
-EXTSYM WinErrorA,WinErrorB,WinErrorC
-EXTSYM ErrorPointer
-EXTSYM MessageOn,Msgptr,MsgCount
-EXTSYM PJoyAOrig,PJoyBOrig,PJoyCOrig,PJoyDOrig,PJoyEOrig
-EXTSYM GetHostName,GetTime
-EXTSYM vramaddr,curypos,ClearRegs,vram,sndrot,regsbackup
-EXTSYM GetScreen,GUITBWVID
-EXTSYM Clear2xSaIBuffer
-EXTSYM MouseWindow
-EXTSYM GotoHomepage
-EXTSYM cfgcvidmode, ExitFromGUI
-EXTSYM GUIWFVID
-EXTSYM cfgvsync,newgfx16b
-EXTSYM cfgscanline,cfginterp
-EXTSYM NumVideoModes
-EXTSYM cfgvolume, MusicVol, DSPMem
-EXTSYM NumInputDevices,GUIInputNames
-EXTSYM GUIVideoModeNames
-EXTSYM GUISLVID,GUIINVID,GUIEAVID,GUIIEVID,GUIFSVID,GUIWSVID
-EXTSYM GUISSVID,GUITBVID,GUIHSVID,GUI2xVID,GUII2VID,GUIM7VID
-EXTSYM cfgsoundon,cfgSoundQuality,cfgStereoSound,cfgforce8b
-EXTSYM Force8b,convertnum,converthex
-EXTSYM per2exec
-EXTSYM hostname
-EXTSYM UDPConfig
-EXTSYM snesmouse
-EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Lk,pl1Rk,pl1Ak,pl1Bk
-EXTSYM outofmemfix,yesoutofmemory
-EXTSYM JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209,JoyMaxX209
-EXTSYM JoyMinY209,JoyMaxY209,GetCoords,GetCoords3
-EXTSYM MultiTap,SFXEnable
-EXTSYM RestoreSystemVars
-EXTSYM TCPIPStartServer
-EXTSYM TCPIPInitConnectToServer
-EXTSYM TCPIPWaitForConnection
-EXTSYM tcperr
-EXTSYM TCPIPConnectToServer
-EXTSYM TCPIPConnectToServerW
-EXTSYM selc0040
-EXTSYM TCPIPPreparePacket
-EXTSYM TCPIPSendPacket,TCPIPSendPacketUDP
-EXTSYM TCPIPDisconnect,TCPIPStatus
-EXTSYM TCPIPStoreByte
-EXTSYM TCPIPGetByte,GUIBIFIL
-EXTSYM GUIHQ2X
-EXTSYM GUIHQ3X
-EXTSYM GUIHQ4X
-EXTSYM firstsaveinc
-EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6
-EXTSYM SkipMovie,MovieStop,MoviePlay,MovieRecord,MovieInsertChapter
-EXTSYM MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
+EXTSYM curblank,vidpastecopyscr,frameskip,newengen,vsyncon,cvidmode,antienab
+EXTSYM smallscreenon,soundon,StereoSound,SoundQuality,MusicRelVol,endprog
+EXTSYM continueprog,spcBuffera,spcRamcmp,cbitmode,makepal,t1cc,LoadDir,LoadDrive
+EXTSYM SRAMDir,SRAMChdir,SRAMDirCurDir,initsnes,fname,makeextension,sram
+EXTSYM loadfileGUI,GUIloadfailed,romloadskip,SetupROM,romdata,ramsize
+EXTSYM cfgloadsdir,init65816,procexecloop,spcRam,spcPCRam,spcS,spcRamDP,spcA
+EXTSYM spcX,spcY,spcP,spcNZ,Voice0Status,Voice1Status,Voice2Status,Voice3Status
+EXTSYM Voice4Status,Voice5Status,Voice6Status,Voice7Status,ClearScreen
+EXTSYM statesaver,loadstate2,vidbuffer,ASCII2Font,hirestiledat,showallext
+EXTSYM scanlines,statefileloc,pl1selk,pl2selk,fnamest,sprlefttot,spritetablea
+EXTSYM fnames,CHIPBATT,sfxramdata,setaramdata,SETAEnable,cgram,srama,tempco0
+EXTSYM prevbright,maxbr,prevpal,coladdr,coladdg,coladdb,scaddtype,ScreenScale
+EXTSYM vesa2red10,initvideo2,initvideo,pressed,UpdateDevices,memtabler8
+EXTSYM memtablew8,writeon,pl1contrl,pl2contrl,JoyRead,SetInputDevice,delay
+EXTSYM SetInputDevice209,FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,pl12s34,resolutn
+EXTSYM InitDrive,InitDir,createnewcfg,Makemode7Table,vidbufferofsb,ZipSupport
+EXTSYM wramdata,bgfixer,cfgnewgfx,cfgdontsave,videotroub,Open_File,Read_File
+EXTSYM Close_File,Write_File,Create_File,File_Seek,File_Seek_End,Get_Date
+EXTSYM Check_Key,Get_Key,Change_Drive,Change_Single_Dir,Change_Dir,Get_Dir
+EXTSYM Get_First_Entry,Get_Next_Entry,Set_DTA_Address,curexecstate,TripBufAvail
+EXTSYM nmiprevaddrl,nmiprevaddrh,nmirept,nmiprevline,nmistatus,spcnumread
+EXTSYM spchalted,NextLineCache,ResetTripleBuf,GUINGVID,ScanCodeListing
+EXTSYM AdjustFrequency,GUISaveVars,Init_Mouse,Get_MouseData,Set_MouseXMax
+EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
+EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,SA1Enable,SA1RAMArea,GUIFName
+EXTSYM GUICName,MMXCheck,SaveCombFile,showinfogui,WinErrorA,WinErrorB
+EXTSYM ErrorPointer,MessageOn,GetHostName,GetTime,sndrot,regsbackup,GetScreen
+EXTSYM GUITBWVID,Clear2xSaIBuffer,MouseWindow,GotoHomepage,cfgcvidmode
+EXTSYM ExitFromGUI,GUIWFVID,cfgvsync,newgfx16b,cfgscanline,cfginterp
+EXTSYM NumVideoModes,cfgvolume,MusicVol,DSPMem,NumInputDevices,GUIInputNames
+EXTSYM GUIVideoModeNames,GUISLVID,GUIINVID,GUIEAVID,GUIIEVID,GUIFSVID,GUIWSVID
+EXTSYM GUISSVID,GUITBVID,GUIHSVID,GUI2xVID,GUII2VID,GUIM7VID,cfgsoundon
+EXTSYM cfgSoundQuality,cfgStereoSound,cfgforce8b,convertnum,converthex,snesmouse
+EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Lk,pl1Rk,pl1Ak,pl1Bk,outofmemfix
+EXTSYM yesoutofmemory,JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209
+EXTSYM JoyMaxX209,JoyMinY209,JoyMaxY209,GetCoords,GetCoords3,MultiTap,SFXEnable
+EXTSYM RestoreSystemVars,GUIBIFIL,GUIHQ2X,GUIHQ3X,GUIHQ4X,firstsaveinc,nssdip1
+EXTSYM nssdip2,nssdip3,nssdip4,nssdip5,nssdip6,SkipMovie,MovieStop,MoviePlay
+EXTSYM MovieRecord,MovieInsertChapter,MovieSeekAhead,MovieSeekBehind
+EXTSYM ResetDuringMovie
 
 %ifdef __LINUX__
 EXTSYM numlockptr
 %endif
 %ifdef __WIN32__
-EXTSYM initDirectDraw
-EXTSYM reInitSound
+EXTSYM initDirectDraw,reInitSound
 %endif
-
 %ifdef __MSDOS__
-EXTSYM dssel, cantinitmodem, ModemClearBuffer, ModemGetChar
-EXTSYM InitModem, DeInitModem, ModemCheckRing, ModemCheckDCD
-EXTSYM DeInitModemC, ModemSendChar, UartType
-EXTSYM deinitipx, IPXSearchval, ipxlookforconnect, initipx
-EXTSYM PreparePacketIPX,SendPacketIPX,ipxgetchar,ipxsendchar
+EXTSYM dssel
 %endif
 
 %include "gui/guitools.inc"
@@ -194,8 +127,6 @@ EXTSYM PreparePacketIPX,SendPacketIPX,ipxgetchar,ipxsendchar
 %include "gui/guicheat.inc"
 %include "gui/guicombo.inc"
 %include "gui/guiload.inc"
-
-
 
 SECTION .data
 

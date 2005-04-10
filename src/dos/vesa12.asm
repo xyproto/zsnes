@@ -18,18 +18,16 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
 EXTSYM vesa2_usbit,vesa2_clbit,vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3
-EXTSYM vesa2_x,vesa2_y,vesa2selec,vesa2_bits,vesa2_rpos,vesa2_gpos,vesa2_bpos
-EXTSYM vesa2_rposng,vesa2_gposng,vesa2_bposng,vesa2_rtrcl,vesa2_rtrcla,vesa2_rfull
+EXTSYM vesa2_x,vesa2_y,vesa2_bits,vesa2_rpos,vesa2_gpos,vesa2_bpos,vesa2_rposng
+EXTSYM vesa2_gposng,vesa2_bposng,vesa2_rtrcl,vesa2_rtrcla,vesa2_rfull,InitDrive
 EXTSYM vesa2_gtrcl,vesa2_gtrcla,vesa2_gfull,vesa2_btrcl,vesa2_btrcla,vesa2_bfull
-EXTSYM vesa2red10,dcolortab,videotroub,Change_Dir
-EXTSYM genfulladdtab,genfulladdtabng,DosExit
-EXTSYM InitDrive,gotoroot,InitDir,fulladdtab
-;        EXTSYM printnum,DosExit
-EXTSYM LFBpointer,noblocks,bytesperscanline,vesamode,VESAmodelist
-
+EXTSYM vesa2red10,videotroub,Change_Dir,genfulladdtab,DosExit,InitDir,noblocks
+EXTSYM bytesperscanline,vesamode,VESAmodelist
 
 ; add 0214h video mode
 
@@ -93,7 +91,7 @@ NEWSYM InitVesa12
 	mov edi,RMREGS
         mov dword[fs:0],'VBE1'          ; Request VBE 2.0 info
 	mov dword[RMREGS.eax],4f00h
-	mov word[RMREGS.es],ax		; Real mode segment of DOS 
+	mov word[RMREGS.es],ax		; Real mode segment of DOS
 					; buffer
 	mov dword[RMREGS.edi],0
 
@@ -534,7 +532,7 @@ RMREGS
 .eax resd 1
 .flags   resw 1
 .es   resw 1
-.ds   resw 1 
+.ds   resw 1
 .fs   resw 1
 .gs   resw 1
 .ip   resw 1
@@ -542,5 +540,3 @@ RMREGS
 .sp   resw 1
 .ss   resw 1
 .spare   times 20 resd 1
-
-

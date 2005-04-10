@@ -20,12 +20,6 @@
 
 
 
-
-
-
-
-
-
 %macro procpixelstw 3
     dec dword[ngcpixleft]
     jnz %%notzero
@@ -1191,5 +1185,3 @@ Nextwinmode:
     add word[ofsmtptr],bx
     jmp %%next
 %endmacro
-
-

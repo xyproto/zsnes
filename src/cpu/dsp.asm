@@ -20,25 +20,21 @@
 
 %include "macros.mac"
 
-EXTSYM BRRPlace0,BRRPlace1,BRRPlace2,BRRPlace3,BRRPlace4,BRRPlace5,BRRPlace6
-EXTSYM BRRPlace7,Decrease,DecreaseRateExp,EchoFB,EchoRate,EchoVL,EchoVR
+EXTSYM Decrease,DecreaseRateExp,EchoFB,EchoRate,EchoVL,EchoVR
 EXTSYM FIRTAPVal0,FIRTAPVal1,FIRTAPVal2,FIRTAPVal3,FIRTAPVal4,FIRTAPVal5
-EXTSYM FIRTAPVal6,FIRTAPVal7,GlobalVL,GlobalVR,Increase,IncreaseBent
-EXTSYM MaxEcho,MusicVol,NoiseInc,NoiseSpeeds,dspPAdj,Voice0End,Voice0EnvInc
-EXTSYM Voice0IncNumber,Voice0Loop,Voice0Noise,Voice0Prev0,Voice0Prev1
-EXTSYM Voice0Start,Voice0State,Voice0Status,Voice0Time,Voice1End,Voice1Noise
-EXTSYM Voice1Prev0,Voice1Prev1,Voice1Start,Voice2End,Voice2Noise,Voice2Prev0
-EXTSYM Voice2Prev1,Voice2Start,Voice3End,Voice3Noise,Voice3Prev0,Voice3Prev1
-EXTSYM Voice3Start,Voice4End,Voice4Noise,Voice4Prev0,Voice4Prev1,Voice4Start
-EXTSYM Voice5End,Voice5Noise,Voice5Prev0,Voice5Prev1,Voice5Start,Voice6End
-EXTSYM Voice6Noise,Voice6Prev0,Voice6Prev1,Voice6Start,Voice7End,Voice7Noise
-EXTSYM Voice7Prev0,Voice7Prev1,Voice7Start,VolumeConvTable,VolumeTableb,keyonsn
-EXTSYM RevStereo,Voice1Status,Voice2Status,Voice3Status,Voice4Status,Voice5Status
-EXTSYM Voice6Status,Voice7Status
+EXTSYM FIRTAPVal6,FIRTAPVal7,GlobalVL,GlobalVR,Increase
+EXTSYM MaxEcho,MusicVol,NoiseInc,NoiseSpeeds,dspPAdj,Voice0EnvInc
+EXTSYM Voice0IncNumber,Voice0State,Voice0Time
+EXTSYM Voice0Start,Voice1Start,Voice2Start,Voice3Start
+EXTSYM Voice4Start,Voice5Start,Voice6Start,Voice7Start
+EXTSYM Voice0Noise,Voice1Noise,Voice2Noise,Voice3Noise
+EXTSYM Voice4Noise,Voice5Noise,Voice6Noise,Voice7Noise
+EXTSYM VolumeConvTable,VolumeTableb,keyonsn
+EXTSYM Voice0Status,Voice1Status,Voice2Status,Voice3Status
+EXTSYM Voice4Status,Voice5Status,Voice6Status,Voice7Status
 EXTSYM GainDecBendDataPos,GainDecBendDataTime,GainDecBendDataDat
 EXTSYM AdsrSustLevLoc,AdsrBlocksLeft,AdsrNextTimeDepth
-EXTSYM MuteVoiceF,VoiceStarter
-EXTSYM DecayRate,SustainRate,SustainValue
+EXTSYM MuteVoiceF,VoiceStarter,DecayRate,SustainRate
 EXTSYM KeyOnStA,KeyOnStB,SoundTest
 
 
@@ -1542,20 +1538,14 @@ NEWSYM RDSPRegFF      ;
 ;Write DSP Registers functions
 
 NEWSYM WDSPReg00       ; Voice  0  Volume Left
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+00h],al
       ret
-.rev
       mov [DSPMem+01h],al
       ret
 
 NEWSYM WDSPReg01       ; Voice  0  Volume Right
-;      cmp byte[RevStereo],1
-;      je .rev
       mov [DSPMem+01h],al
       ret
-.rev
       mov [DSPMem+00h],al
       ret
 

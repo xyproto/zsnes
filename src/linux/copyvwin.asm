@@ -18,18 +18,16 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-ALIGN 32
+
 
 %include "macros.mac"
 
-EXTSYM vesa2selec,vidbuffer,GUIOn,MMXSupport,resolutn,En2xSaI,antienab,scanlines
-EXTSYM hirestiledat,res512switch,curblank,spritetablea
-EXTSYM lineleft,_2xSaILineW,_2xSaISuperEagleLineW, _2xSaISuper2xSaILineW
-EXTSYM newengen,cfield,HalfTrans
-EXTSYM GUIOn2,FilteredGUI
-EXTSYM SpecialLine
-EXTSYM vidbufferofsb
-EXTSYM HalfTransB,HalfTransC
+EXTSYM vidbuffer,GUIOn,MMXSupport,resolutn,En2xSaI,antienab,scanlines
+EXTSYM hirestiledat,res512switch,curblank,spritetablea,lineleft,_2xSaILineW
+EXTSYM _2xSaISuperEagleLineW, _2xSaISuper2xSaILineW,newengen,cfield,HalfTrans
+EXTSYM GUIOn2,FilteredGUI,SpecialLine,vidbufferofsb,HalfTransB,HalfTransC
+
+ALIGN32
 
 SECTION .bss
 NEWSYM AddEndBytes, resd 1         ; Number of bytes between each line
@@ -1563,5 +1561,4 @@ NEWSYM interpolate640x480x16bwin
 
 SECTION .data
 InterPtr dd 0
-
-
+SECTION .text

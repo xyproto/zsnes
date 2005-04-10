@@ -19,6 +19,7 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
+
 ; Finish up parttile
 
 %macro procpixels16x8 3
@@ -887,5 +888,3 @@
     add word[ofsmtptr],bx
     jmp %%nextb
 %endmacro
-
-

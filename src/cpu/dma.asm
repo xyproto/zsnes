@@ -20,16 +20,9 @@
 
 %include "macros.mac"
 
-EXTSYM memtabler8,regptw,snesmap2,snesmmap,debstop3
-;EXTSYM soundcycleft,pexecs2
-EXTSYM memtablew8,regptr
-EXTSYM dmadata
-EXTSYM hdmatype
-EXTSYM nexthdma
+EXTSYM memtabler8,regptw,snesmap2,snesmmap,memtablew8,regptr,memtabler16
+EXTSYM dmadata,hdmatype,nexthdma,resolutn
 EXTSYM curhdma,curypos,disablehdma,hdmadata,hdmadelay,hdmaearlstart
-EXTSYM resolutn
-EXTSYM memtabler16
-
 
 ;*******************************************************
 ; Transfer DMA                     Inits & Transfers DMA
@@ -1174,7 +1167,7 @@ NEWSYM hdmatype2indirect
     cmp dword [ewj2hack],1
     jne near .notend
     cmp byte [esi+1],40h ; Writing to spc
-    jne near .notend 
+    jne near .notend
     cmp byte [esi+10],0DAh ; first transfer
     jne near .notend
     ; EWJ2 HACK

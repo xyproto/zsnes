@@ -18,18 +18,13 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM printnum
-EXTSYM DosExit,ZSNESBase,Change_Dir,PrintStr,newengen
-EXTSYM HalfTransB,HalfTransC
-EXTSYM InitDrive,gotoroot,InitDir,fulladdtab
-;        EXTSYM printhex
-;        EXTSYM printhex
-EXTSYM UnusedBit,HalfTrans,UnusedBitXor,ngrposng,nggposng,ngbposng
-;        EXTSYM printhex
-
-EXTSYM Init_2xSaIMMX
+EXTSYM DosExit,ZSNESBase,Change_Dir,PrintStr,newengen,HalfTransB,HalfTransC
+EXTSYM InitDrive,InitDir,fulladdtab,UnusedBit,HalfTrans,UnusedBitXor
+EXTSYM ngrposng,nggposng,ngbposng,Init_2xSaIMMX
 
 SECTION .data
 ; add 0214h video mode
@@ -197,7 +192,7 @@ NEWSYM InitVesa2
 	mov edi,RMREGS
         mov dword[fs:0],'VBE2'          ; Request VBE 2.0 info
 	mov dword[RMREGS.eax],4f00h
-	mov word[RMREGS.es],ax		; Real mode segment of DOS 
+	mov word[RMREGS.es],ax		; Real mode segment of DOS
 					; buffer
 	mov dword[RMREGS.edi],0
 
@@ -213,7 +208,7 @@ NEWSYM InitVesa2
 	jnc .int1ok
 	    mov edx,.noint1message
             jmp VESA2EXITTODOS
-	    
+	
 
 	.int1ok			; Real mode int successful!!!
 	mov eax,[RMREGS.eax]
@@ -227,7 +222,7 @@ NEWSYM InitVesa2
 	jz .vesadetected	; Check for presence of vesa
 	    mov edx,.novesamessage
             jmp VESA2EXITTODOS
-	    
+	
 
 	.vesadetected
 	cmp word[fs:0004],200h
@@ -324,27 +319,6 @@ NEWSYM InitVesa2
         test word[fs:0000h],1b
             jz near .loopcheckmodes     ; If mode is not available
 
-;
-;        xor eax,eax
-;        mov ax,[fs:12h]
-;        call printnum
-;        mov ah,02h
-;        mov dl,'x'
-;        int 21h
-;        mov ax,[fs:14h]
-;        call printnum
-;        mov ah,02h
-;        mov dl,'x'
-;        int 21h
-;        xor ah,ah
-;        mov al,[fs:19h]
-;        call printnum
-;        mov ah,02h
-;        mov dl,13
-;        int 21h
-;        mov dl,10
-;        int 21h
-
 	mov eax,[vesa2_x]
 	cmp [fs:12h],ax			; Check that the height matches
 	    jnz near .loopcheckmodes
@@ -355,28 +329,12 @@ NEWSYM InitVesa2
 	cmp [fs:19h],al			; Check bits/pixel for match
 	    jnz near .loopcheckmodes
 
-;        mov ax,3
-;        int 10h
-;        xor eax,eax
-;        mov ax,[fs:0h]
-;        call printnum
-;        jmp DosExit
-
         mov byte[TripBufAvail],1
         test word[fs:0000h],400h
         jz .notbuf
         mov byte[TripBufAvail],1
 .notbuf
-
-;        jz .notvesa3
-;        xor eax,eax
-;        mov ax,[fs:0000h]
-;        call printhex
-;        jmp DosExit
 .notvesa3
-
-;        mov ah,07h
-;        int 21h
 
 ;        D0 = Window supported
 ;                0 = Window is not supported
@@ -407,43 +365,39 @@ NEWSYM InitVesa2
 	mov ax,[ebp]
 	mov [vesamode],ax		; Store vesa 2 mode number
 
-;        call printhex
-;        jmp DosExit
-
-        mov ax,[fs:10h]
-        mov byte[vesa2red10],0
-        mov byte[vesa2_rposng],11
-        mov byte[vesa2_gposng],6
-        mov byte[vesa2_bposng],0
-        mov dword[vesa2_clbitng],1111011111011110b
-        mov dword[vesa2_clbitng2],11110111110111101111011111011110b
-        mov dword[vesa2_clbitng2+4],11110111110111101111011111011110b
-        mov dword[vesa2_clbitng3],0111101111101111b
-	mov [bytesperscanline],ax	; Store bytes per scan line
-        cmp byte[fs:20h],10
-        jne near .nored10
-        mov byte[fs:20h],11
-        mov byte[vesa2red10],1
-        mov byte[vesa2_rposng],10
-        mov byte[vesa2_gposng],5
-        mov dword[vesa2_clbitng],0111101111011110b
-        mov dword[vesa2_clbitng2],01111011110111100111101111011110b
-        mov dword[vesa2_clbitng2+4],01111011110111100111101111011110b
-        mov dword[vesa2_clbitng3],0011110111101111b
-
-        mov dword[UnusedBit],     10000000000000001000000000000000b
-        mov dword[HalfTrans],     01111011110111100111101111011110b
-        mov dword[UnusedBitXor],  01111111111111110111111111111111b
-        mov dword[UnusedBit+4],   10000000000000001000000000000000b
-        mov dword[HalfTrans+4],   01111011110111100111101111011110b
-        mov dword[UnusedBitXor+4],01111111111111110111111111111111b
-        mov dword[HalfTransB],    00000100001000010000010000100001b
-        mov dword[HalfTransB+4],  00000100001000010000010000100001b
-        mov dword[HalfTransC],    01111011110111100111101111011110b
-        mov dword[HalfTransC+4],  01111011110111100111101111011110b
-        mov dword[ngrposng],10
-        mov dword[nggposng],5
-        mov dword[ngbposng],0
+      mov ax,[fs:10h]
+      mov byte[vesa2red10],0
+      mov byte[vesa2_rposng],11
+      mov byte[vesa2_gposng],6
+      mov byte[vesa2_bposng],0
+      mov dword[vesa2_clbitng],1111011111011110b
+      mov dword[vesa2_clbitng2],11110111110111101111011111011110b
+      mov dword[vesa2_clbitng2+4],11110111110111101111011111011110b
+      mov dword[vesa2_clbitng3],0111101111101111b
+      mov [bytesperscanline],ax	; Store bytes per scan line
+      cmp byte[fs:20h],10
+      jne near .nored10
+      mov byte[fs:20h],11
+      mov byte[vesa2red10],1
+      mov byte[vesa2_rposng],10
+      mov byte[vesa2_gposng],5
+      mov dword[vesa2_clbitng],0111101111011110b
+      mov dword[vesa2_clbitng2],01111011110111100111101111011110b
+      mov dword[vesa2_clbitng2+4],01111011110111100111101111011110b
+      mov dword[vesa2_clbitng3],0011110111101111b
+      mov dword[UnusedBit],     10000000000000001000000000000000b
+      mov dword[HalfTrans],     01111011110111100111101111011110b
+      mov dword[UnusedBitXor],  01111111111111110111111111111111b
+      mov dword[UnusedBit+4],   10000000000000001000000000000000b
+      mov dword[HalfTrans+4],   01111011110111100111101111011110b
+      mov dword[UnusedBitXor+4],01111111111111110111111111111111b
+      mov dword[HalfTransB],    00000100001000010000010000100001b
+      mov dword[HalfTransB+4],  00000100001000010000010000100001b
+      mov dword[HalfTransC],    01111011110111100111101111011110b
+      mov dword[HalfTransC+4],  01111011110111100111101111011110b
+      mov dword[ngrposng],10
+      mov dword[nggposng],5
+      mov dword[ngbposng],0
 
 .nored10
         ; fix up bit lengths
@@ -654,7 +608,7 @@ NEWSYM InitVesa2
 	jz .modesetok
             mov edx,.unableset
             jmp VESA2EXITTODOS               ; Failure!!!
-	    
+	
 	.modesetok
 ;******************************* EXTRA BIT ****************************
 
@@ -796,7 +750,7 @@ NEWSYM RMREGS
 
 .flags   resw 1
 .es   resw 1
-.ds   resw 1 
+.ds   resw 1
 .fs   resw 1
 .gs   resw 1
 .ip   resw 1

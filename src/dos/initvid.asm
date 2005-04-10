@@ -18,12 +18,12 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
-EXTSYM AddSub256,InitVesa2,cbitmode,cvidmode,makepal
-EXTSYM scanlines,selcA000,vesa2_bits,vesa2_bpos,vesa2_clbit
-EXTSYM vesa2_gpos,vesa2_rpos,vesa2_usbit,vesa2_x,vesa2_y
-EXTSYM vesa2selec,InitVesa12,videotroub
+EXTSYM InitVesa2,cbitmode,cvidmode,makepal,scanlines,selcA000,vesa2_bits
+EXTSYM vesa2_x,vesa2_y,vesa2selec,InitVesa12,videotroub
 
 %ifdef __MSDOS__
 EXTSYM cscopymodeq,cscopymodex
@@ -131,10 +131,10 @@ NEWSYM dosinitvideo
     cmp byte[scanlines],1
     je near .scanlines
     SetVGAMode .Mode256x256c
-    jmp .done    
+    jmp .done
 .scanlines
     SetVGAMode .Mode256x256cs
-    jmp .done    
+    jmp .done
 .done
     call cscopymodeq
 %endif
@@ -175,7 +175,7 @@ NEWSYM dosinitvideo
     cmp byte[scanlines],1
     je near .scanlines2
     SetVGAMode .Mode320x256
-    jmp .done2    
+    jmp .done2
 .scanlines2
     SetVGAMode .Mode320x256s
     jmp .done2
@@ -558,7 +558,7 @@ NEWSYM dosinitvideo
     mov ebx,9
     xor edx,edx
 .loopbanks
-    
+
     xor edi,edi
     mov ecx,16384
 .loopi
@@ -572,5 +572,3 @@ NEWSYM dosinitvideo
     mov ecx,6144
     pop es
     ret
-
-
