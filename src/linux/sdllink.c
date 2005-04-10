@@ -120,6 +120,7 @@ DWORD CurMode = -1;
 
 extern BYTE GUIOn;
 extern BYTE GUIOn2;
+extern BYTE EMUPause;
 static BYTE IsActivated = 1;
 
 /* TIMER VARIABLES/MACROS */
@@ -1047,7 +1048,7 @@ void UpdateVFrame(void)
 	int i;
 
 	//Quick fix for GUI CPU usage
-	if (GUIOn || GUIOn2) usleep(6000);
+	if (GUIOn || GUIOn2 || EMUPause) usleep(6000);
 
 	CheckTimers();
 	Main_Proc();

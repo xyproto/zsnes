@@ -3175,9 +3175,9 @@ DisplayGUISaveClick:
     GUIClickCButton 11,70,byte[LatestSave]
     GUIClickCButton 11,80,byte[AutoState]
     GUIClickCButton 11,90,byte[SRAMState]
-    GUIPHoldbutton2 173,17,181,25,70,byte[RewindStates],1,25
+    GUIPHoldbutton2 173,17,181,25,70,byte[RewindStates],1,99
     GUIPHoldbutton2 184,17,192,25,71,byte[RewindStates],-1,0
-    GUIPHoldbutton2 173,32,181,40,72,byte[RewindFrames],1,40
+    GUIPHoldbutton2 173,32,181,40,72,byte[RewindFrames],1,99
     GUIPHoldbutton2 184,32,192,40,73,byte[RewindFrames],-1,0
     DGOptnsProcBox 27,121,[KeyStateSlc0]
     DGOptnsProcBox 27+45,121,[KeyStateSlc1]

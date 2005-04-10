@@ -424,6 +424,7 @@ void initwinvideo();
 void DosExit(void);
 extern BYTE GUIOn;
 extern BYTE GUIOn2;
+extern BYTE EMUPause;
 extern BYTE cfgsoundon;
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
@@ -665,7 +666,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          {
             IsActivated = 0;
             InputDeAcquire();
-            if (GUIOn || GUIOn2) SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
+            if (GUIOn || GUIOn2 || EMUPause) SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
          }
          break;
       case WM_SETFOCUS:
@@ -676,7 +677,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       case WM_KILLFOCUS:
          InputDeAcquire();
          IsActivated = 0;
-         if (GUIOn || GUIOn2) SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
+         if (GUIOn || GUIOn2 || EMUPause) SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
          break;
       case WM_DESTROY:
          break;
@@ -2133,7 +2134,7 @@ void CheckTimers(void)
 {
 
    // Lame fix for GUI using 100% CPU
-   if (GUIOn || GUIOn2) Sleep(1);
+   if (GUIOn || GUIOn2 || EMUPause) Sleep(1);
 
    QueryPerformanceCounter((LARGE_INTEGER*)&end2);
 
