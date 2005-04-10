@@ -34,7 +34,7 @@ EXTSYM DeInitPostGame,spcPCRam,startdebugger,xp,xpb,xpc,tablead,tableadb
 EXTSYM tableadc,SA1UpdateDPage,Makemode7Table,nextmenupopup,MovieProcessing
 EXTSYM OSExit,DosExit,InitDir,InitDrive,createnewcfg,sfxramdata,deinitvideo
 EXTSYM SFXEnable,wramdata,cycpbl,cycpblt,irqon,spcnumread,spchalted,spcon
-EXTSYM multchange,vidmemch2,romispal,scrndis,sprlefttot,sprleftpr,processsprites
+EXTSYM multchange,romispal,scrndis,sprlefttot,sprleftpr,processsprites
 EXTSYM cachesprites,NextLineStart,FlipWait,LastLineStart,opcjmptab,CheatOn
 EXTSYM INTEnab,JoyCRead,NMIEnab,NumCheats,CurrentExecSA1,ReadInputDevice
 EXTSYM StartDrawNewGfx,VIRQLoc,cachevideo,cfield,cheatdata,curblank,curnmi
