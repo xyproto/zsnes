@@ -195,6 +195,7 @@ extern unsigned char RewindStates;
 
 unsigned char *StateBackup = 0;
 unsigned char AllocatedRewindStates, LatestRewindPos, EarliestRewindPos;
+bool RewindPosPassed;
 
 size_t rewind_state_size, cur_zst_size, old_zst_size;
 
@@ -214,12 +215,19 @@ void BackupCVFrame()
   else if (MovieProcessing == 2) { zmv_rewind_save(LatestRewindPos, false); }
   copy_state_data(RewindBufferPos, memcpyinc, false);
 
-  LatestRewindPos = (LatestRewindPos != AllocatedRewindStates-1) ? LatestRewindPos+1 : 0;
-  if (LatestRewindPos == EarliestRewindPos)
+  if (RewindPosPassed)
   {
     EarliestRewindPos = (EarliestRewindPos != AllocatedRewindStates-1) ? EarliestRewindPos+1 : 0;
+    RewindPosPassed = false;
   }
-      
+
+  LatestRewindPos = (LatestRewindPos != AllocatedRewindStates-1) ? LatestRewindPos+1 : 0;
+
+  if (LatestRewindPos == EarliestRewindPos)
+  {
+    RewindPosPassed = true;
+  }
+          
   RewindTimer = ActualRewindFrames;
 }
 
@@ -227,9 +235,10 @@ void RestoreCVFrame()
 {
   unsigned char *RewindBufferPos;
 
-  if (LatestRewindPos != EarliestRewindPos)
+  if (LatestRewindPos != EarliestRewindPos || RewindPosPassed)
   {
     LatestRewindPos = (LatestRewindPos) ? LatestRewindPos-1 : AllocatedRewindStates-1;
+    RewindPosPassed = false;
   }
 
   RewindBufferPos = StateBackup + LatestRewindPos*rewind_state_size;
@@ -276,6 +285,7 @@ void InitRewindVars()
   SetupRewindBuffer();
   LatestRewindPos = 0;
   EarliestRewindPos = 0;
+  RewindPosPassed = false;
   RewindTimer = 1;
 }
 
