@@ -98,9 +98,9 @@ ifeq (${ENV},dos-cross)
 endif
 
 ifeq (${ENV},win32-cross)
-  CC = i586-mingw32msvc-gcc
-  CPPC = i586-mingw32msvc-g++
-  WINDRES = i586-mingw32msvc-windres
+  CC = i586-mingw32-gcc
+  CPPC = i586-mingw32-g++
+  WINDRES = i586-mingw32-windres
   OS=__WIN32__
   CROSS=yes
   OBJFIX=objfix
