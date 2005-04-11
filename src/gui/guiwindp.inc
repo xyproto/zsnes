@@ -6111,7 +6111,7 @@ DisplayGUISave:
     mov byte[GUItextcolor],211    
 .zero7
 
-    DrawGUIWinBox 20,150,17,165,26,167
+    DrawGUIWinBox 20,150,17,165,24,167
     xor ax,ax
     mov ah,[RewindStates]
     mov al,48
