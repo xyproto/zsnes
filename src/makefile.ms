@@ -169,8 +169,7 @@ WINVIDOBJ=${VIDEODIR}/sw_draw${OE} ${VIDEODIR}/hq2x16${OE} ${VIDEODIR}/hq2x32${O
 
 #only used on Win32
 WINOBJ=${WINDIR}/copyvwin${OE} ${DRESOBJ}\
-	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE}\
-	${WINDIR}/zipxw${OE} ${WINDIR}/zfilew${OE}
+	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE} ${WINDIR}/zfilew${OE}
 
 NETOBJ=${NETDIR}/ztcp${OE}
 
@@ -349,7 +348,6 @@ ${NETDIR}/ztcp${OE}: $<
 ${WINDIR}/copyvwin${OE}: $< macros.mac
 ${WINDIR}/winintrf${OE}: $< macros.mac
 ${WINDIR}/zfilew${OE}: $<
-${WINDIR}/zipxw${OE}: $<
 ifeq (${ENV},msvc)
 ${WINDIR}/zsnes.res: ${WINDIR}/zsnes.rc
 	rc ${WINDIR}/zsnes.rc
