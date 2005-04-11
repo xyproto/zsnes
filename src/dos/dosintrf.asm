@@ -34,7 +34,7 @@ EXTSYM ZFDate,ZFileGetFTime,ZFileMKDir,ZFileCHDir,ZFileRMDir,CHPath,MKPath
 EXTSYM RMPath,ZFileGetDir,DirName,pressed,DTALoc,DTALocPos,ZFileFindATTRIB
 EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,oldhand9s,oldhand9o,interror
 EXTSYM oldhand8s,oldhand8o,oldhandSBs,oldhandSBo,NoSoundReinit,soundon
-EXTSYM DSPDisable,SBInt,NoSoundReinit,PICMaskP,SBIrq,SBHandler,InitSB,handler8h
+EXTSYM DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB,handler8h
 EXTSYM handler9h,init60hz,Interror,init18_2hz,DeInitSPC,GUIinit36_4hz
 EXTSYM GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o,GUIhandler9h
 EXTSYM GUIhandler8h,GUIinit18_2hz,dosmakepal,doschangepal,dosinitvideo
