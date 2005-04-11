@@ -59,7 +59,7 @@ WINOBJ=${WINDIR}/copyvwin.o \
 	@GL_DRAW@ ${WINDIR}/sw_draw.o \
 	${WINDIR}/zipxw.o ${WINDIR}/zfilew.o
 
-WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/modemrtn.o ${DOSDIR}/vesa2.o\
+WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/vesa2.o\
 	${DOSDIR}/initvid.o ${DOSDIR}/sw.o ${DOSDIR}/gppro.o ${DOSDIR}/vesa12.o
 
 NETOBJ=${NETDIR}/ztcp.o
@@ -208,7 +208,6 @@ ${DOSDIR}/gppro.o: ${DOSDIR}/gppro.asm macros.mac
 ${DOSDIR}/zsipx.o: ${DOSDIR}/zsipx.asm
 ${CHIPDIR}/sa1proc.o: ${CHIPDIR}/sa1proc.asm macros.mac
 endmem.o: endmem.asm macros.mac
-${DOSDIR}/modemrtn.o: ${DOSDIR}/modemrtn.asm macros.mac
 
 ${JMADIR}/7zlzma.o: ${JMADIR}/7zlzma.cpp ${JMADIR}/7z.h ${JMADIR}/iiostrm.h
 ${JMADIR}/crc32.o: ${JMADIR}/crc32.cpp ${JMADIR}/crc32.h
