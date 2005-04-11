@@ -30,8 +30,8 @@
 EXTSYM vidbuffer,curblank,MMXSupport,GUIOn,GUIOn2,vidbufferofsb,FilteredGUI
 EXTSYM resolutn,lineleft,cfield,hirestiledat,newengen,SpecialLine,hqFilter
 EXTSYM AddEndBytes,NumBytesPerLine,WinVidMemStart,BitConv32Ptr,RGBtoYUVPtr
-EXTSYM prevline,nextline,deltaptr,xcounter,w1,w2,w3,w4,w5,w6,w7,w8,w9,c1,c2,c3
-EXTSYM c4,c6,c7,c8,c9,reg_blank,const7,cross,threshold
+EXTSYM prevline,nextline,deltaptr,xcounter,w1,w2,w3,w4,w5,w6,w7,w8,w9
+EXTSYM c1,c2,c3,c4,c6,c7,c8,c9,reg_blank,const7,cross,threshold
 
 SECTION .text
 
