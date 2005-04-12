@@ -26,7 +26,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdio.h>
 
 //Get correct mask for particular bit
-#define BIT(X) (1 << X)
+#define BIT(X) (1 << (X))
 
 /*
 Functions that the compiler should inline that will convert
