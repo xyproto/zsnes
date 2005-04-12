@@ -2566,7 +2566,7 @@ NEWSYM drawsprngw16b
     jnz .main
     add esi,75036*2
 .main
-    normalwsprng16b sprdrawprawb16bng,sprdrawprbwb16bn
+    normalwsprng16b sprdrawprawb16bng,sprdrawprbwb16bng
 
 drawsprng16bt:
     test byte[scadtng+ebx],10h
