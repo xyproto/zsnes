@@ -2575,9 +2575,12 @@ drawsprng16bt:
     xor eax,eax
     test byte[BGMS1+ebx*2+1],10h
     jnz near drawsprng16bmst
-;    mov edi,[CMainWinScr]
-;    cmp byte[edi+ebx+4*256],0
-;    jne near drawsprngw16bt
+    test byte[BGMS1+ebx*2+1],04h
+    jnz .main
+    mov edi,[CMainWinScr]
+    cmp byte[edi+ebx+4*256],0
+    jne near drawsprngw16bt
+.main
     xor edi,edi
     normalsprng16b sprdrawpra16bngt,sprdrawprb16bngt
 NEWSYM drawsprngw16bt
