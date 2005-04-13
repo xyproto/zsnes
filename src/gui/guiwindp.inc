@@ -4531,9 +4531,11 @@ DisplayGUIMovies:
     DrawGUIButton 15,7,17,49,28,GUIMovieText1,16,0,0
     DrawGUIButton 15,7,33,49,44,GUIMovieText2,17,0,0
     DrawGUIButton 15,7,49,49,60,GUIMovieText3,18,0,0
-    DrawGUIButton 15,7,65,109,76,GUIMovieTextB,29,0,0
-    DrawGUIButton 15,7,81,109,92,GUIMovieTextC,30,0,0
-    DrawGUIButton 15,7,97,109,108,GUIMovieTextD,31,0,0
+    DrawGUIButton 15,7,65,49,76,GUIMovieTextE,32,0,0
+    DrawGUIButton 15,61,65,118,76,GUIMovieTextEa,33,0,0
+    DrawGUIButton 15,7,81,109,92,GUIMovieTextB,29,0,0
+    DrawGUIButton 15,7,97,109,108,GUIMovieTextC,30,0,0
+    DrawGUIButton 15,7,113,109,124,GUIMovieTextD,31,0,0
     cmp byte[GUIWincoladd],0
     je .zero
     mov byte[GUItextcolor],211
@@ -4560,15 +4562,12 @@ DisplayGUIMovies:
     GUIOuttextwin2 15,131,43,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'9'
     GUIOuttextwin2 15,150,42,GUIChoseSaveText2
-;    GUIOuttextwin2 15,9,121,GUIMovieTextE
-;    GUIOuttextwin2 15,9,131,GUIMovieTextF
-;    GUIOuttextwin2 15,9,141,GUIMovieTextG
     GUIOuttextwin2 15,71,55,GUIMovieTextI
-    GUIOuttextwin2 15,9,120,GUIMovieTextJ
-    GUIOuttextwin2 15,21,130,GUIMovieTextK
-    GUIOuttextwin2 15,56,130,GUIMovieTextL
-    GUIOuttextwin2 15,101,130,GUIMovieTextM
-    GUIOuttextwin2 15,21,140,GUIMovieTextN
+    GUIOuttextwin2 15,9,130,GUIMovieTextJ
+    GUIOuttextwin2 15,21,140,GUIMovieTextK
+    GUIOuttextwin2 15,56,140,GUIMovieTextL
+    GUIOuttextwin2 15,101,140,GUIMovieTextM
+    GUIOuttextwin2 15,21,150,GUIMovieTextN
     add byte[GUItextcolor],15
     GUIOuttextwin2 15,60,15,GUIMovieText4
     mov byte[GUIChoseSaveText2],'0'
@@ -4591,15 +4590,12 @@ DisplayGUIMovies:
     GUIOuttextwin2 15,130,42,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'9'
     GUIOuttextwin2 15,150,42,GUIChoseSaveText2
-;    GUIOuttextwin2 15,8,120,GUIMovieTextE
-;    GUIOuttextwin2 15,8,130,GUIMovieTextF
-;    GUIOuttextwin2 15,8,140,GUIMovieTextG
     GUIOuttextwin2 15,70,54,GUIMovieTextI
-    GUIOuttextwin2 15,8,119,GUIMovieTextJ
-    GUIOuttextwin2 15,20,129,GUIMovieTextK
-    GUIOuttextwin2 15,55,129,GUIMovieTextL
-    GUIOuttextwin2 15,100,129,GUIMovieTextM
-    GUIOuttextwin2 15,20,139,GUIMovieTextN
+    GUIOuttextwin2 15,8,129,GUIMovieTextJ
+    GUIOuttextwin2 15,20,139,GUIMovieTextK
+    GUIOuttextwin2 15,55,139,GUIMovieTextL
+    GUIOuttextwin2 15,100,139,GUIMovieTextM
+    GUIOuttextwin2 15,20,149,GUIMovieTextN
     GUIDisplayButtonHole 15,60,25,byte[CMovieExt],'v'
     GUIDisplayButtonHole 15,80,25,byte[CMovieExt],'1'
     GUIDisplayButtonHole 15,100,25,byte[CMovieExt],'2'
@@ -4620,7 +4616,7 @@ DisplayGUIMovies:
 .zero3
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 15,6,152,GUIMovieTextA
+    GUIOuttextwin2 15,6,162,GUIMovieTextA
     
     mov byte[GUIGameOptnsColA],163
     mov byte[GUIGameOptnsColB],217
@@ -4631,25 +4627,26 @@ DisplayGUIMovies:
 .zero5
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 15,5,151,GUIMovieTextA
+    GUIOuttextwin2 15,5,161,GUIMovieTextA
     
-    DDrawBox 15,116,68,[KeyInsrtChap]
-    DDrawBox 15,116,84,[KeyPrevChap]
-    DDrawBox 15,116,100,[KeyNextChap]
-    DGOptnsBorderBox 15,115,67
+    DDrawBox 15,116,84,[KeyInsrtChap]
+    DDrawBox 15,116,100,[KeyPrevChap]
+    DDrawBox 15,116,116,[KeyNextChap]
+    
     DGOptnsBorderBox 15,115,83
     DGOptnsBorderBox 15,115,99
-
+    DGOptnsBorderBox 15,115,115
+    
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[MovieDisplayFrame],0
     je .nocheckboxMDF
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckboxMDF
     GUIDisplayIconWin 15,60,50,[GUITemp]
-    GUIDisplayButtonHole 15,8,127,byte[MovieStartMethod],0
-    GUIDisplayButtonHole 15,43,127,byte[MovieStartMethod],1
-    GUIDisplayButtonHole 15,88,127,byte[MovieStartMethod],2
-    GUIDisplayButtonHole 15,8,137,byte[MovieStartMethod],3
+    GUIDisplayButtonHole 15,8,137,byte[MovieStartMethod],0
+    GUIDisplayButtonHole 15,43,137,byte[MovieStartMethod],1
+    GUIDisplayButtonHole 15,88,137,byte[MovieStartMethod],2
+    GUIDisplayButtonHole 15,8,147,byte[MovieStartMethod],3
     ret
 
 SECTION .data
@@ -4666,9 +4663,10 @@ GUIMovieTextA db 'STATUS :              ',0
 GUIMovieTextB db 'INSERT CHAPTER',0
 GUIMovieTextC db 'PREVIOUS CHAPTER',0
 GUIMovieTextD db 'NEXT CHAPTER',0
-GUIMovieTextE db 'INSERT CHAPTER',0
-GUIMovieTextF db 'NEXT CHAPTER',0
-GUIMovieTextG db 'PREV CHAPTER',0
+GUIMovieTextE db 'APPEND',0
+GUIMovieTextEa db 'DUMP RAW',0
+;GUIMovieTextF db 'NEXT CHAPTER',0
+;GUIMovieTextG db 'PREV CHAPTER',0
 ;GUIMovieTextH db ' ',0
 GUIMovieTextI db 'DISPLAY FRAMES',0
 GUIMovieTextJ db 'START FROM:',0

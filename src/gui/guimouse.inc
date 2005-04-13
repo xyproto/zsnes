@@ -2041,9 +2041,11 @@ DisplayGUIMovieClick:
     GUIPHoldbutton 7,17,49,28,16
     GUIPHoldbutton 7,33,49,44,17
     GUIPHoldbutton 7,49,49,60,18
-    GUIPHoldbutton 7,65,109,76,29
-    GUIPHoldbutton 7,81,109,92,30
-    GUIPHoldbutton 7,97,109,108,31
+    GUIPHoldbutton 7,81,109,92,29
+    GUIPHoldbutton 7,97,109,108,30
+    GUIPHoldbutton 7,113,109,124,31
+    GUIPHoldbutton 7,65,49,76,32
+    GUIPHoldbutton 61,65,118,76,33
     GUIPButtonHole 60,25,byte[CMovieExt],'v'
     GUIPButtonHole 80,25,byte[CMovieExt],'1'
     GUIPButtonHole 100,25,byte[CMovieExt],'2'
@@ -2055,14 +2057,14 @@ DisplayGUIMovieClick:
     GUIPButtonHole 120,40,byte[CMovieExt],'8'
     GUIPButtonHole 140,40,byte[CMovieExt],'9'
 
-    DGOptnsProcBox 116,68,[KeyInsrtChap]
-    DGOptnsProcBox 116,84,[KeyPrevChap]
-    DGOptnsProcBox 116,100,[KeyNextChap]
+    DGOptnsProcBox 116,84,[KeyInsrtChap]
+    DGOptnsProcBox 116,100,[KeyPrevChap]
+    DGOptnsProcBox 116,116,[KeyNextChap]
     GUIClickCButton 60,50,byte[MovieDisplayFrame]
-    GUIPButtonHole 8,127,byte[MovieStartMethod],0
-    GUIPButtonHole 43,127,byte[MovieStartMethod],1
-    GUIPButtonHole 88,127,byte[MovieStartMethod],2
-    GUIPButtonHole 8,137,byte[MovieStartMethod],3
+    GUIPButtonHole 8,137,byte[MovieStartMethod],0
+    GUIPButtonHole 43,137,byte[MovieStartMethod],1
+    GUIPButtonHole 88,137,byte[MovieStartMethod],2
+    GUIPButtonHole 8,147,byte[MovieStartMethod],3
     ret
 
 
