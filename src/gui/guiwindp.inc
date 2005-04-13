@@ -4561,7 +4561,7 @@ DisplayGUIMovies:
     mov byte[GUIChoseSaveText2],'8'
     GUIOuttextwin2 15,131,43,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'9'
-    GUIOuttextwin2 15,150,42,GUIChoseSaveText2
+    GUIOuttextwin2 15,151,43,GUIChoseSaveText2
     GUIOuttextwin2 15,71,55,GUIMovieTextI
     GUIOuttextwin2 15,9,130,GUIMovieTextJ
     GUIOuttextwin2 15,21,140,GUIMovieTextK
