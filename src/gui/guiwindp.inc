@@ -4532,7 +4532,7 @@ DisplayGUIMovies:
     DrawGUIButton 15,7,33,49,44,GUIMovieText2,17,0,0
     DrawGUIButton 15,7,49,49,60,GUIMovieText3,18,0,0
     DrawGUIButton 15,7,65,49,76,GUIMovieTextE,32,0,0
-    DrawGUIButton 15,61,65,118,76,GUIMovieTextEa,33,0,0
+    DrawGUIButton 15,61,65,155,76,GUIMovieTextEa,33,0,0
     DrawGUIButton 15,7,81,109,92,GUIMovieTextB,29,0,0
     DrawGUIButton 15,7,97,109,108,GUIMovieTextC,30,0,0
     DrawGUIButton 15,7,113,109,124,GUIMovieTextD,31,0,0
@@ -4664,10 +4664,7 @@ GUIMovieTextB db 'INSERT CHAPTER',0
 GUIMovieTextC db 'PREVIOUS CHAPTER',0
 GUIMovieTextD db 'NEXT CHAPTER',0
 GUIMovieTextE db 'APPEND',0
-GUIMovieTextEa db 'DUMP RAW',0
-;GUIMovieTextF db 'NEXT CHAPTER',0
-;GUIMovieTextG db 'PREV CHAPTER',0
-;GUIMovieTextH db ' ',0
+GUIMovieTextEa db 'DUMP RAW MOVIE',0
 GUIMovieTextI db 'DISPLAY FRAMES',0
 GUIMovieTextJ db 'START FROM:',0
 GUIMovieTextK db 'NOW',0
