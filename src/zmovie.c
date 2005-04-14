@@ -48,6 +48,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 extern unsigned int versionNumber, CRC32, cur_zst_size;
 extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
+extern unsigned char pl1contrl, pl2contrl, pl3contrl, pl4contrl, pl5contrl;
 extern unsigned int MsgCount, MessageOn;
 extern unsigned char MovieStartMethod, GUIReset, ReturnFromSPCStall, GUIQuit;
 extern unsigned char MovieProcessing, *Msgptr, fnamest[512];
@@ -71,7 +72,7 @@ bool zst_load(FILE *);
                     print_bin(JoyEOrig, &usede); printf("\n");                    
 
 static unsigned int useda, usedb, usedc, usedd, usede;
-void print_bin(unsigned int num, unsigned int *used)
+static void print_bin(unsigned int num, unsigned int *used)
 {
   unsigned int mask = BIT(31);
   while (mask)
@@ -115,6 +116,16 @@ Header
 2 bytes  -  Number of internal chapters
 2 bytes  -  Length of author name
 3 bytes  -  ZST size
+2 bytes  -  Initial input configuration
+  1 bit  -   Input 1 enabled
+  1 bit  -   Input 2 enabled
+  1 bit  -   Input 3 enabled
+  1 bit  -   Input 4 enabled
+  1 bit  -   Input 5 enabled
+  1 bit  -   Mouse in first port
+  1 bit  -   Mouse in second port
+  1 bit  -   Super Scope in second port
+  8 bits -   Reserved
 1 byte   -  Flag Byte
   2 bits -   Start from ZST/Power On/Reset/Power On + Clear SRAM
   1 bit  -   NTSC or PAL
@@ -223,6 +234,7 @@ struct zmv_header
   unsigned short internal_chapters;
   unsigned short author_len;
   unsigned int zst_size; //We only read/write 3 bytes for this
+  unsigned short initial_input;
   struct
   {
     enum zmv_start_methods start_method;
@@ -245,7 +257,8 @@ static void zmv_header_write(struct zmv_header *zmv_head, FILE *fp)
   fwrite2(zmv_head->internal_chapters, fp);
   fwrite2(zmv_head->author_len, fp);
   fwrite3(zmv_head->zst_size, fp);
-
+  fwrite2(zmv_head->initial_input, fp);
+  
   switch (zmv_head->zmv_flag.start_method)
   {
     case zmv_sm_zst:
@@ -513,6 +526,59 @@ static size_t internal_chapter_delete_after(struct internal_chapter_buf *icb, si
 
 /*
 
+Bit Encoder and Decoder 
+
+*/
+
+size_t bit_encoder(unsigned int data, unsigned int mask, unsigned char *buffer, size_t skip_bits)
+{
+  unsigned char bit_loop;
+
+  for (bit_loop = 31; ; bit_loop--)
+  {
+    if (mask & BIT(bit_loop))
+    {
+      if (data & BIT(bit_loop))
+      {
+        buffer[skip_bits/8] |= BIT(7-(skip_bits&7));
+      }
+      else
+      {
+        buffer[skip_bits/8] &= ~BIT(7-(skip_bits&7));
+      }
+      skip_bits++;
+    }
+  
+    if (!bit_loop) { break; }
+  }
+
+  return(skip_bits);
+}
+
+size_t bit_decoder(unsigned int *data, unsigned int mask, unsigned char *buffer, size_t skip_bits)
+{
+  unsigned char bit_loop;
+  *data = 0;
+  
+  for (bit_loop = 31; ; bit_loop--)
+  {
+    if (mask & BIT(bit_loop))
+    {
+      if (buffer[skip_bits/8] & BIT(7-(skip_bits&7)))
+      {
+        *data |= BIT(bit_loop);
+      }
+      skip_bits++;
+    }
+
+    if (!bit_loop) { break; }
+  }    
+
+  return(skip_bits);
+}
+
+/*
+
 Shared var between record/replay functions
 
 */
@@ -524,11 +590,11 @@ static struct
   FILE *fp;
   struct
   {
-    unsigned short A;
-    unsigned short B;
-    unsigned short C;
-    unsigned short D;
-    unsigned short E;
+    unsigned int A;
+    unsigned int B;
+    unsigned int C;
+    unsigned int D;
+    unsigned int E;
   } last_joy_state;
   unsigned char write_buffer[WRITE_BUFFER_SIZE];
   size_t write_buffer_loc;
@@ -540,23 +606,22 @@ static struct
 
 static void save_last_joy_state(unsigned char *buffer)
 {
-  buffer[0] = (zmv_vars.last_joy_state.A >> 4) & 0xFF;
-  buffer[1] = ((zmv_vars.last_joy_state.A << 4) & 0xF0) | ((zmv_vars.last_joy_state.B >> 8) & 0x0F);
-  buffer[2] = zmv_vars.last_joy_state.B & 0xFF;
-  buffer[3] = (zmv_vars.last_joy_state.C >> 4) & 0xFF;
-  buffer[4] = ((zmv_vars.last_joy_state.C << 4) & 0xF0) | ((zmv_vars.last_joy_state.D >> 8) & 0x0F);
-  buffer[5] = zmv_vars.last_joy_state.D & 0xFF;
-  buffer[6] = (zmv_vars.last_joy_state.E >> 4) & 0xFF;
-  buffer[7] = (zmv_vars.last_joy_state.E << 4) & 0xF0;
+  size_t skip_bits = 0;
+  skip_bits = bit_encoder(zmv_vars.last_joy_state.A, 0xFFF00000, buffer, skip_bits);
+  skip_bits = bit_encoder(zmv_vars.last_joy_state.B, 0xFFF00000, buffer, skip_bits);
+  skip_bits = bit_encoder(zmv_vars.last_joy_state.C, 0xFFF00000, buffer, skip_bits);
+  skip_bits = bit_encoder(zmv_vars.last_joy_state.D, 0xFFF00000, buffer, skip_bits);
+  skip_bits = bit_encoder(zmv_vars.last_joy_state.E, 0xFFF00000, buffer, skip_bits);
 }
 
 static void load_last_joy_state(unsigned char *buffer)
 {
-  zmv_vars.last_joy_state.A = (((unsigned short)(buffer[0])) << 4) | ((buffer[1] & 0xF0) >> 4);
-  zmv_vars.last_joy_state.B = (((unsigned short)(buffer[1] & 0x0F)) << 8) | buffer[2];
-  zmv_vars.last_joy_state.C = (((unsigned short)(buffer[3])) << 4) | ((buffer[4] & 0xF0) >> 4);
-  zmv_vars.last_joy_state.D = (((unsigned short)(buffer[4] & 0x0F)) << 8) | buffer[5];
-  zmv_vars.last_joy_state.E = (((unsigned short)(buffer[6])) << 4) | ((buffer[7] & 0xF0) >> 4);
+  size_t skip_bits = 0;
+  skip_bits = bit_decoder(&zmv_vars.last_joy_state.A, 0xFFF00000, buffer, skip_bits);
+  skip_bits = bit_decoder(&zmv_vars.last_joy_state.B, 0xFFF00000, buffer, skip_bits);
+  skip_bits = bit_decoder(&zmv_vars.last_joy_state.C, 0xFFF00000, buffer, skip_bits);
+  skip_bits = bit_decoder(&zmv_vars.last_joy_state.D, 0xFFF00000, buffer, skip_bits);
+  skip_bits = bit_decoder(&zmv_vars.last_joy_state.E, 0xFFF00000, buffer, skip_bits);
 }
 
 static void write_last_joy_state(FILE *fp)
@@ -683,33 +748,19 @@ static void zmv_record_command(enum zmv_commands command)
   flush_input_if_needed();
 }
 
-#define RECORD_PAD(prev, cur, bit)                                    \
-  if ((unsigned short)(cur >> 20) != prev)                            \
-  {                                                                   \
-    prev = (unsigned short)(cur >> 20);                               \
-    flag |= BIT(bit);                                                 \
-                                                                      \
-    if (nibble & 1)                                                   \
-    {                                                                 \
-      press_buf[nibble/2] |= ((unsigned char)(prev & 0x0F)) << 4;     \
-      nibble++;                                                       \
-      press_buf[nibble/2] = (unsigned char)(prev >> 4);               \
-      nibble += 2;                                                    \
-    }                                                                 \
-    else                                                              \
-    {                                                                 \
-      press_buf[nibble/2] = (unsigned char)(prev & 0xFF);             \
-      nibble += 2;                                                    \
-      press_buf[nibble/2] = (unsigned char)(prev >> 8);               \
-      nibble++;                                                       \
-    }                                                                 \
-  }
+#define RECORD_PAD(prev, cur, bit)                                       \
+  if (cur != prev)                                                       \
+  {                                                                      \
+    prev = cur;                                                          \
+    flag |= BIT(bit);                                                    \
+    skip_bits = bit_encoder(prev, 0xFFF00000, press_buf, skip_bits);     \
+  }  
 
 static void zmv_record(bool slow, unsigned char combos_used)
 {
   unsigned char flag = 0;
   unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-  unsigned char nibble = 0;
+  size_t skip_bits = 0;
 
   if (slow) { zmv_vars.header.slow_frames++; }
 
@@ -725,7 +776,7 @@ static void zmv_record(bool slow, unsigned char combos_used)
 
   if (flag)
   {
-    unsigned char buffer_used = (nibble/2) + (nibble&1);
+    unsigned char buffer_used = skip_bits/8 + ((skip_bits&7) ? 1 : 0);
 
     zmv_rle_flush();
 
@@ -877,6 +928,8 @@ static bool zmv_open(char *filename)
     zmv_vars.filename = (char *)malloc(filename_len+1); //+1 for null
     strcpy(zmv_vars.filename, filename);
 
+    debug_input_start;
+    
     return(true);
   }
   return(false);
@@ -893,27 +946,22 @@ static bool zmv_replay_command(enum zmv_commands command)
   return(false);
 }
 
-#define RESTORE_PAD(cur, prev) cur = (((unsigned int)prev) << 20) | 0x8000
+#define RESTORE_PAD(cur, prev) cur = prev
 
-#define REPLAY_PAD(prev, cur, bit)                    \
-  if (flag & BIT(bit))                                \
-  {                                                   \
-    if (mid_byte)                                     \
-    {                                                 \
-      prev = (byte & 0xF0) >> 4;                      \
-      fread(&byte, 1, 1, zmv_vars.fp);                \
-      prev |= ((unsigned long)byte) << 4;             \
-      mid_byte = false;                               \
-    }                                                 \
-    else                                              \
-    {                                                 \
-      fread(&byte, 1, 1, zmv_vars.fp);                \
-      prev = byte;                                    \
-      fread(&byte, 1, 1, zmv_vars.fp);                \
-      prev |= ((unsigned long)(byte & 0xF)) << 8;     \
-      mid_byte = true;                                \
-    }                                                 \
-  }                                                   \
+#define REPLAY_PAD(prev, cur, bit)                                      \
+  if (flag & BIT(bit))                                                  \
+  {                                                                     \
+    if (skip_bits && ((skip_bits&7) < 4))                               \
+    {                                                                   \
+      fread(press_buf + skip_bits/8, 1, 1, zmv_vars.fp);                \
+    }                                                                   \
+    else                                                                \
+    {                                                                   \
+      fread(press_buf + skip_bits/8, 1, 2, zmv_vars.fp);                \
+    }                                                                   \
+    skip_bits = bit_decoder(&prev, 0xFFF00000, press_buf, skip_bits);   \
+    prev |= 0x8000;                                                     \
+  }                                                                     \
   RESTORE_PAD(cur, prev)
 
 static bool zmv_replay()
@@ -928,12 +976,12 @@ static bool zmv_replay()
       RESTORE_PAD(JoyDOrig, zmv_vars.last_joy_state.D);
       RESTORE_PAD(JoyEOrig, zmv_vars.last_joy_state.E);
       zmv_vars.rle_count--;
+
+      debug_input;
     }
     else
     {
       unsigned char flag = 0;
-      unsigned char byte;
-      bool mid_byte = false;
       zmv_vars.rle_count = 0;
 
       fread(&flag, 1, 1, zmv_vars.fp);
@@ -954,23 +1002,31 @@ static bool zmv_replay()
         return(false);
       }
 
-      if (flag & BIT(1)) //RLE
+      else if (flag & BIT(1)) //RLE
       {
         zmv_vars.rle_count = fread4(zmv_vars.fp) - zmv_open_vars.frames_replayed;
         return(zmv_replay());
       }
 
-      if (flag & BIT(2)) //Internal Chapter
+      else if (flag & BIT(2)) //Internal Chapter
       {
         fseek(zmv_vars.fp, INT_CHAP_SIZE, SEEK_CUR);
         return(zmv_replay());
       }
 
-      REPLAY_PAD(zmv_vars.last_joy_state.A, JoyAOrig, 7);
-      REPLAY_PAD(zmv_vars.last_joy_state.B, JoyBOrig, 6);
-      REPLAY_PAD(zmv_vars.last_joy_state.C, JoyCOrig, 5);
-      REPLAY_PAD(zmv_vars.last_joy_state.D, JoyDOrig, 4);
-      REPLAY_PAD(zmv_vars.last_joy_state.E, JoyEOrig, 3);
+      else
+      {
+        unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+        size_t skip_bits = 0;
+        
+        REPLAY_PAD(zmv_vars.last_joy_state.A, JoyAOrig, 7);
+        REPLAY_PAD(zmv_vars.last_joy_state.B, JoyBOrig, 6);
+        REPLAY_PAD(zmv_vars.last_joy_state.C, JoyCOrig, 5);
+        REPLAY_PAD(zmv_vars.last_joy_state.D, JoyDOrig, 4);
+        REPLAY_PAD(zmv_vars.last_joy_state.E, JoyEOrig, 3);
+      
+        debug_input;
+      }
     }
 
     zmv_open_vars.frames_replayed++;
@@ -1462,6 +1518,87 @@ bool mzt_load(char *statename, bool playback)
 /////////////////////////////////////////////////////////
 
 /*
+
+Code for dumping raw video
+
+*/
+
+#define RAW_BUFFER_FRAMES 10
+#define RAW_WIDTH 256
+#define RAW_HEIGHT 223
+#define RAW_PIXEL_SIZE 4
+#define RAW_FRAME_SIZE (RAW_WIDTH*RAW_HEIGHT)
+#define RAW_PIXEL_FRAME_SIZE (RAW_FRAME_SIZE*RAW_PIXEL_SIZE)
+
+struct
+{
+  FILE *fp;
+  unsigned int *frame_buffer;
+  size_t frame_index;
+} raw_vid;
+
+static void raw_video_close()
+{
+  if (raw_vid.fp)
+  {
+    if (raw_vid.frame_buffer)
+    {
+      if (raw_vid.frame_index)
+      {
+        fwrite(raw_vid.frame_buffer, RAW_PIXEL_FRAME_SIZE, raw_vid.frame_index, raw_vid.fp);
+      }
+
+      free(raw_vid.frame_buffer);
+    }
+
+    fclose(raw_vid.fp);
+    raw_vid.fp = 0;      
+  }
+}
+
+static void raw_video_open(const char *filename)
+{
+  memset(&raw_vid, 0, sizeof(raw_vid));
+  raw_vid.fp = fopen(filename, "wb");
+  if (!(raw_vid.frame_buffer = (unsigned int *)malloc(RAW_PIXEL_FRAME_SIZE*RAW_BUFFER_FRAMES)))
+  {
+    raw_video_close();
+  }
+}
+
+#define PIXEL (vidbuffer[(i*288) + j + 16])
+static void raw_video_write_frame()
+{
+  extern unsigned short *vidbuffer;
+  if (raw_vid.fp)
+  {
+    size_t i, j;
+    unsigned int *pixel_dest = raw_vid.frame_buffer + raw_vid.frame_index*RAW_FRAME_SIZE;
+
+    //Use zsKnight's 16 to 32 bit color conversion (optimized by Nach)
+    for (i = 0; i < RAW_HEIGHT; i++)
+    {
+      unsigned int *scanline = pixel_dest + i*RAW_WIDTH;
+      for (j = 0; j < RAW_WIDTH; j++)
+      {
+        scanline[j] = ((PIXEL&0xF800) << 8) | ((PIXEL&0x07E0) << 5) |
+                      ((PIXEL&0x001F) << 3) | 0xFF000000;
+      }
+    }
+
+    raw_vid.frame_index++;
+    
+    if (raw_vid.frame_index == RAW_BUFFER_FRAMES)
+    {
+      fwrite(raw_vid.frame_buffer, RAW_PIXEL_FRAME_SIZE, RAW_BUFFER_FRAMES, raw_vid.fp);
+      raw_vid.frame_index = 0;
+    }
+  }
+}
+
+/////////////////////////////////////////////////////////
+
+/*
 Nach's insane subtitle library for movies files :)
 
 The filename would be gamename.sub in the same directory the ZMV would be in.
@@ -1708,6 +1845,11 @@ static void OldMoviePlay(FILE *fp)
   }
   MessageOn = MsgCount;
 }
+
+
+
+
+
 
 void MovieInsertChapter()
 {

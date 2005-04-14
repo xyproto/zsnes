@@ -96,10 +96,12 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
   if (spcon)
   {
     copy_spc_data(&buffer, copy_func);
+    /*
     if (buffer) //Rewind stuff
     {
       copy_func(&buffer, &echoon0, PHdspsave2);
     }
+    */
   }
 
   if (C4Enable)
@@ -430,10 +432,9 @@ void calculate_state_sizes()
   old_zst_size = state_size + sizeof(zst_header_old)-1;
 }
 
+//copy_state_data(RewindBufferPos, memcpyinc, false);
 void zst_save(FILE *fp, bool Thumbnail)
 {
-  fwrite(zst_header_cur, 1, sizeof(zst_header_cur)-1, fp); //-1 for null
-
   PrepareOffset();
   PrepareSaveState();
   unpackfunct();
@@ -449,8 +450,16 @@ void zst_save(FILE *fp, bool Thumbnail)
     SaveSA1(); //Convert SA-1 stuff to standard, non displacement format
   }
 
+  fwrite(zst_header_cur, 1, sizeof(zst_header_cur)-1, fp); //-1 for null
+  
   fhandle = fp; //Set global file handle
   copy_state_data(0, write_save_state_data, false);
+
+  if (Thumbnail)
+  {
+    CapturePicture();
+    fwrite(PrevPicture, 1, 64*56*sizeof(unsigned short), fp);
+  }
 
   if (SFXEnable)
   {
@@ -461,12 +470,6 @@ void zst_save(FILE *fp, bool Thumbnail)
   if (SA1Enable)
   {
     RestoreSA1(); //Convert back SA-1 stuff
-  }
-
-  if (Thumbnail)
-  {
-    CapturePicture();
-    fwrite(PrevPicture, 1, 64*56*sizeof(unsigned short), fp);
   }
 
   ResetOffset();
