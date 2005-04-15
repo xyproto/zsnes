@@ -702,7 +702,7 @@ int RegisterWinClass(void)
    if (AllowMultipleInst == 0)
    {
       HWND hFindWindow;
-      hFindWindow = FindWindow("ZSNESWIN", NULL);
+      hFindWindow = FindWindow("ZSNES", NULL);
 
       if (hFindWindow != NULL)
       {
@@ -723,7 +723,7 @@ int RegisterWinClass(void)
    wcl.lpfnWndProc = (WNDPROC)Main_Proc;
    wcl.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
    wcl.lpszMenuName = NULL;
-   wcl.lpszClassName = "ZSNESWIN";
+   wcl.lpszClassName = "ZSNES";
 
    if (RegisterClass(&wcl) == 0) return FALSE;
 
@@ -2072,7 +2072,7 @@ void initwinvideo(void)
 
       if (SaveMainWindowPos == 1 && MainWindowX != -1 && FullScreen == 0) { X = MainWindowX; Y = MainWindowY; }
 
-      hMainWindow = CreateWindow( "ZSNESWIN", WinName, WS_VISIBLE|WS_POPUP,X,Y,  //WS_OVERLAPPED "ZSNESWIN"
+      hMainWindow = CreateWindow( "ZSNES", WinName, WS_VISIBLE|WS_POPUP,X,Y,  //WS_OVERLAPPED "ZSNES"
                                  WindowWidth,WindowHeight,NULL,NULL,hInst,NULL);
 
       CheckPriority();
@@ -2084,7 +2084,7 @@ void initwinvideo(void)
       }
 
       ShowWindow(hMainWindow, SW_SHOWNORMAL);
-      SetWindowText(hMainWindow,"ZSNESWIN");
+      SetWindowText(hMainWindow,"ZSNES");
       InitInput();
       InitSound();
       TestJoy();
