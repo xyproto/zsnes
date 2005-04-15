@@ -157,6 +157,7 @@ Remaining 7 bits of flag determine command
 
 ZST size -  ZST
 4 bytes  -  Frame #
+2 bytes  -  Controller Status
 8 bytes  -  Previous input (60 controller bits [12*5] + 4 padded bits)
 
 -Else-
@@ -181,6 +182,7 @@ External chapters  -  Repeated for all external chapters
 
 ZST Size -  ZST
 4 bytes  -  Frame #
+2 bytes  -  Controller Status
 8 bytes  -  Previous input (60 controller bits [12*5] + 4 padded bits)
 4 bytes  -  Offset to input for current chapter from beginning of file
 
@@ -210,8 +212,8 @@ enum zmv_start_methods { zmv_sm_zst, zmv_sm_power, zmv_sm_reset, zmv_sm_clear_al
 enum zmv_video_modes { zmv_vm_ntsc, zmv_vm_pal };
 enum zmv_commands { zmv_command_reset };
 
-#define INT_CHAP_SIZE (cur_zst_size+4+8)
-#define EXT_CHAP_SIZE (cur_zst_size+4+8+4)
+#define INT_CHAP_SIZE (cur_zst_size+4+2+8)
+#define EXT_CHAP_SIZE (cur_zst_size+4+2+8+4)
 
 #define INT_CHAP_INDEX_SIZE (zmv_vars.header.internal_chapters*4)
 #define EXT_CHAP_BLOCK_SIZE (zmv_open_vars.external_chapter_count*EXT_CHAP_SIZE + 2)
@@ -319,6 +321,7 @@ static bool zmv_header_read(struct zmv_header *zmv_head, FILE *fp)
   zmv_head->internal_chapters = fread2(fp);
   zmv_head->author_len = fread2(fp);
   zmv_head->zst_size = fread3(fp);
+  zmv_head->initial_input = fread2(fp);
   fread(&flag, 1, 1, fp);
 
   if (feof(fp))
@@ -596,6 +599,7 @@ static struct
     unsigned int D;
     unsigned int E;
   } last_joy_state;
+  unsigned short inputs_enabled;
   unsigned char write_buffer[WRITE_BUFFER_SIZE];
   size_t write_buffer_loc;
   struct internal_chapter_buf internal_chapters;
@@ -606,7 +610,8 @@ static struct
 
 static void save_last_joy_state(unsigned char *buffer)
 {
-  size_t skip_bits = 0;
+  size_t skip_bits = 16;
+  memcpy(buffer, uint16_to_bytes(zmv_vars.inputs_enabled), 2);
   skip_bits = bit_encoder(zmv_vars.last_joy_state.A, 0xFFF00000, buffer, skip_bits);
   skip_bits = bit_encoder(zmv_vars.last_joy_state.B, 0xFFF00000, buffer, skip_bits);
   skip_bits = bit_encoder(zmv_vars.last_joy_state.C, 0xFFF00000, buffer, skip_bits);
@@ -616,7 +621,8 @@ static void save_last_joy_state(unsigned char *buffer)
 
 static void load_last_joy_state(unsigned char *buffer)
 {
-  size_t skip_bits = 0;
+  size_t skip_bits = 16;
+  zmv_vars.inputs_enabled = bytes_to_uint16(buffer);
   skip_bits = bit_decoder(&zmv_vars.last_joy_state.A, 0xFFF00000, buffer, skip_bits);
   skip_bits = bit_decoder(&zmv_vars.last_joy_state.B, 0xFFF00000, buffer, skip_bits);
   skip_bits = bit_decoder(&zmv_vars.last_joy_state.C, 0xFFF00000, buffer, skip_bits);
@@ -627,12 +633,12 @@ static void load_last_joy_state(unsigned char *buffer)
 static void write_last_joy_state(FILE *fp)
 {
   save_last_joy_state(zmv_vars.write_buffer);
-  fwrite(zmv_vars.write_buffer, 8, 1, fp);
+  fwrite(zmv_vars.write_buffer, 10, 1, fp);
 }
 
 static void read_last_joy_state(FILE *fp)
 {
-  fread(zmv_vars.write_buffer, 8, 1, fp);
+  fread(zmv_vars.write_buffer, 10, 1, fp);
   load_last_joy_state(zmv_vars.write_buffer);
 }
 
@@ -689,8 +695,17 @@ static void zmv_create(char *filename)
     zmv_vars.header.zst_size = cur_zst_size;
     zmv_vars.header.zmv_flag.start_method = (enum zmv_start_methods)MovieStartMethod;
     zmv_vars.header.zmv_flag.video_mode = romispal ? zmv_vm_pal : zmv_vm_ntsc;
+
+    zmv_vars.header.initial_input = (pl1contrl ? BIT(15) : 0) |
+                                    (pl2contrl ? BIT(14) : 0) |
+                                    (pl3contrl ? BIT(13) : 0) |
+                                    (pl4contrl ? BIT(12) : 0) |
+                                    (pl5contrl ? BIT(11) : 0);
+
     zmv_header_write(&zmv_vars.header, zmv_vars.fp);
 
+    zmv_vars.inputs_enabled = zmv_vars.header.initial_input;
+    
     switch (zmv_vars.header.zmv_flag.start_method)
     {
       case zmv_sm_zst:
@@ -946,7 +961,9 @@ static bool zmv_replay_command(enum zmv_commands command)
   return(false);
 }
 
-#define RESTORE_PAD(cur, prev) cur = prev
+#define RESTORE_PAD(cur, prev, bit)                                     \
+  cur = prev | ((zmv_vars.inputs_enabled & BIT(bit)) ? 0x8000 : 0);
+
 
 #define REPLAY_PAD(prev, cur, bit)                                      \
   if (flag & BIT(bit))                                                  \
@@ -960,9 +977,8 @@ static bool zmv_replay_command(enum zmv_commands command)
       fread(press_buf + skip_bits/8, 1, 2, zmv_vars.fp);                \
     }                                                                   \
     skip_bits = bit_decoder(&prev, 0xFFF00000, press_buf, skip_bits);   \
-    prev |= 0x8000;                                                     \
   }                                                                     \
-  RESTORE_PAD(cur, prev)
+  RESTORE_PAD(cur, prev, bit+8)
 
 static bool zmv_replay()
 {
@@ -970,11 +986,11 @@ static bool zmv_replay()
   {
     if (zmv_vars.rle_count)
     {
-      RESTORE_PAD(JoyAOrig, zmv_vars.last_joy_state.A);
-      RESTORE_PAD(JoyBOrig, zmv_vars.last_joy_state.B);
-      RESTORE_PAD(JoyCOrig, zmv_vars.last_joy_state.C);
-      RESTORE_PAD(JoyDOrig, zmv_vars.last_joy_state.D);
-      RESTORE_PAD(JoyEOrig, zmv_vars.last_joy_state.E);
+      RESTORE_PAD(JoyAOrig, zmv_vars.last_joy_state.A, 15);
+      RESTORE_PAD(JoyBOrig, zmv_vars.last_joy_state.B, 14);
+      RESTORE_PAD(JoyCOrig, zmv_vars.last_joy_state.C, 13);
+      RESTORE_PAD(JoyDOrig, zmv_vars.last_joy_state.D, 12);
+      RESTORE_PAD(JoyEOrig, zmv_vars.last_joy_state.E, 11);
       zmv_vars.rle_count--;
 
       debug_input;
@@ -1264,7 +1280,7 @@ Rewind related functions and vars
 
 struct zmv_rewind
 {
-  unsigned char last_joy_state[8];
+  unsigned char last_joy_state[10];
   size_t file_pos;
   unsigned int frames;
   size_t rle_count;
@@ -1704,7 +1720,7 @@ enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY }
 
 extern bool SRAMState, SloMo50;
 bool PrevSRAMState;
-extern unsigned char ComboCounter, MovieRecordWinVal, RewindStates;
+extern unsigned char ComboCounter, MovieRecordWinVal, AllocatedRewindStates;
 char MovieFrameStr[10];
 void SRAMChdir();
 void ChangetoLOADdir();
@@ -2045,7 +2061,7 @@ void MoviePlay()
 
         if (zmv_open(fnamest+1))
         {
-          zmv_alloc_rewind_buffer(RewindStates);
+          zmv_alloc_rewind_buffer(AllocatedRewindStates);
           SetMovieMode(MOVIE_PLAYBACK);
           memcpy(&fnamest[fname_len-3], ".sub", 4);
           if (isdigit(CMovieExt)) { fnamest[fname_len] = CMovieExt; }
@@ -2107,7 +2123,7 @@ void MovieRecord()
       SRAMState = true;
 
       zmv_create(fnamest+1);
-      zmv_alloc_rewind_buffer(RewindStates);
+      zmv_alloc_rewind_buffer(AllocatedRewindStates);
       SetMovieMode(MOVIE_RECORD);
       Msgptr = "MOVIE RECORDING.";
       MessageOn = MsgCount;
