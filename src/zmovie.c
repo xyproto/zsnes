@@ -628,6 +628,12 @@ static void load_last_joy_state(unsigned char *buffer)
   skip_bits = bit_decoder(&zmv_vars.last_joy_state.C, 0xFFF00000, buffer, skip_bits);
   skip_bits = bit_decoder(&zmv_vars.last_joy_state.D, 0xFFF00000, buffer, skip_bits);
   skip_bits = bit_decoder(&zmv_vars.last_joy_state.E, 0xFFF00000, buffer, skip_bits);
+
+  zmv_vars.last_joy_state.A |= (zmv_vars.inputs_enabled & BIT(15)) ? 0x8000 : 0;
+  zmv_vars.last_joy_state.B |= (zmv_vars.inputs_enabled & BIT(14)) ? 0x8000 : 0;
+  zmv_vars.last_joy_state.C |= (zmv_vars.inputs_enabled & BIT(13)) ? 0x8000 : 0;
+  zmv_vars.last_joy_state.D |= (zmv_vars.inputs_enabled & BIT(12)) ? 0x8000 : 0;
+  zmv_vars.last_joy_state.E |= (zmv_vars.inputs_enabled & BIT(11)) ? 0x8000 : 0;
 }
 
 static void write_last_joy_state(FILE *fp)
