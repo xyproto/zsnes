@@ -499,6 +499,8 @@ NEWSYM cachevideo
     mov byte[Voice6Disable],01h
     mov byte[Voice7Disable],01h
     mov byte[scrndis],00h
+    mov byte[disableeffects],0
+    mov byte[osm2dis],0
     push eax
     mov al,byte[snesinputdefault]
     mov byte[snesmouse],al
