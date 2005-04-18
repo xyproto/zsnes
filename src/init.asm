@@ -56,7 +56,7 @@ EXTSYM memaccessbankr1648mb,procexecloop,ram7fa,wramdata,wramdataa,fname,fnames
 EXTSYM GetCurDir,SRAMChdir,cfgloadsdir,fnamest,statefileloc,InitDir,InitDrive
 EXTSYM curromspace,infoloc,patchfile,romispal,initregr,initregw,memtabler16
 EXTSYM memtabler8,memtablew16,memtablew8,sfxramdata,ScrDispl,wramreadptr
-EXTSYM wramwriteptr,loadstate2,CMovieExt,MoviePlay
+EXTSYM wramwriteptr,loadstate2,CMovieExt,MoviePlay,MovieDumpRaw
 
 ;initc.c
 EXTSYM clearmem,clearSPCRAM,PatchUsingIPS,ZOpenFileName,loadROM,SPC7110IndexSize
@@ -83,6 +83,7 @@ blah times 450 db 0
 ; FIX STATMAT
 NEWSYM autoloadstate, db 0        ; auto load state slot number
 NEWSYM autoloadmovie, db 0
+NEWSYM ZMVRawDump, db 0
 
 NEWSYM EndMessage 	
  db '                                                                   ',13,10,0
@@ -249,7 +250,13 @@ NEWSYM init
     mov byte[CMovieExt],al
 
     pushad
+    cmp byte[ZMVRawDump],1
+    jne .norawdump
+    call MovieDumpRaw
+    jmp .aftermovieplay
+.norawdump    
     call MoviePlay
+.aftermovieplay    
     popad
 
 .noautloadmovie

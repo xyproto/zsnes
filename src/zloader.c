@@ -52,7 +52,8 @@ extern unsigned char Palette0, pl1contrl, pl2contrl, MMXSupport, Force8b, ForceP
                      antienab, cvidmode, debugdisble, debugger, enterpress, vsyncon, DisplayS,
                      fname, SnowOn, Triplebufen, SPC700sh, OffBy1Line, DSPDisable, frameskip,
                      gammalevel, guioff, romtype, per2exec, scanlines, soundon, spcon,
-                     showallext, autoloadstate, smallscreenon, autoloadmovie, ZMVZClose;
+                     showallext, autoloadstate, smallscreenon, autoloadmovie, ZMVZClose,
+                     ZMVRawDump;
 
 void ConvertJoyMap1(), ConvertJoyMap2(), zstart(), makeextension();
 
@@ -106,7 +107,8 @@ static void display_help()
 #endif
   put_line("  -l      Force LoROM");
   put_line("  -m      Disable GUI (Must specify ROM filename)");
-  put_line("  -mc     Exit ZSNES when closing a movie");
+  put_line("  -mc     Exit ZSNES when closing a movie (use with -zm)");
+  put_line("  -md     Dump raw video (use with -zm)");
   put_line("  -n #    Enable scanlines (when available)");
   put_line("          Where # is: 1 = full, 2 = 25%, 3 = 50%");
   put_line("  -om     Enable MMX support (when available)");
@@ -480,6 +482,11 @@ static void handle_params(int argc, char *argv[])
           ZMVZClose = 1;
         }
 
+        else if (tolower(argv[i][1]) == 'm' && argv[i][2] == 'd') //Dump raw vid with ZMV
+        {
+          ZMVRawDump = 1;
+        }
+        
         else if (tolower(argv[i][1]) == 'o' && tolower(argv[i][2]) == 'm') //Enable MMX support
         {
           MMXSupport = 1;
