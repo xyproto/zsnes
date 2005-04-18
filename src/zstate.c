@@ -29,8 +29,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <zlib.h>
 #define DIR_SLASH "\\"
 #endif
+#include "numconv.h"
 #include "gblvars.h"
 #include "asm_call.h"
 
@@ -432,8 +434,43 @@ void calculate_state_sizes()
   old_zst_size = state_size + sizeof(zst_header_old)-1;
 }
 
-//copy_state_data(RewindBufferPos, memcpyinc, false);
-void zst_save(FILE *fp, bool Thumbnail)
+static bool zst_save_compressed(FILE *fp)
+{
+  size_t data_size = cur_zst_size - (sizeof(zst_header_cur)-1);
+  unsigned char *buffer = 0;
+
+  bool worked = false;
+   
+  if ((buffer = (unsigned char *)malloc(data_size)))
+  {
+    //Compressed buffer which must be at least 0.1% larger than source buffer plus 12 bytes
+    //We devide by 999 as a quick way to get a buffer large enough when using integer division
+    unsigned long compressed_size = data_size + data_size/999 + 12;
+    unsigned char *compressed_buffer = 0;
+
+    if ((compressed_buffer = (unsigned char *)malloc(compressed_size)))
+    {
+      copy_state_data(buffer, memcpyinc, false);
+      if (compress2(compressed_buffer, &compressed_size, buffer, data_size, Z_BEST_COMPRESSION) == Z_OK)
+      {
+        fwrite3(compressed_size, fp);
+        fwrite(compressed_buffer, 1, compressed_size, fp);
+        worked = true;
+      }
+      free(compressed_buffer);
+    }
+    free(buffer);
+  }
+   
+  if (!worked) //Compression failed for whatever reason
+  {
+    fwrite3(cur_zst_size | 0x00800000, fp); //Uncompressed ZST will never break 8MB
+  }
+
+  return(worked);
+}
+  
+void zst_save(FILE *fp, bool Thumbnail, bool Compress)
 {
   PrepareOffset();
   PrepareSaveState();
@@ -450,17 +487,20 @@ void zst_save(FILE *fp, bool Thumbnail)
     SaveSA1(); //Convert SA-1 stuff to standard, non displacement format
   }
 
-  fwrite(zst_header_cur, 1, sizeof(zst_header_cur)-1, fp); //-1 for null
-  
-  fhandle = fp; //Set global file handle
-  copy_state_data(0, write_save_state_data, false);
-
-  if (Thumbnail)
+  if (!Compress || !zst_save_compressed(fp)) //If we don't want compressed or compression failed
   {
-    CapturePicture();
-    fwrite(PrevPicture, 1, 64*56*sizeof(unsigned short), fp);
-  }
+    fwrite(zst_header_cur, 1, sizeof(zst_header_cur)-1, fp); //-1 for null
+  
+    fhandle = fp; //Set global file handle
+    copy_state_data(0, write_save_state_data, false);
 
+    if (Thumbnail)
+    {
+      CapturePicture();
+      fwrite(PrevPicture, 1, 64*56*sizeof(unsigned short), fp);
+    }
+  }
+    
   if (SFXEnable)
   {
     SfxRomBuffer += SfxCROM;
@@ -521,7 +561,7 @@ void statesaver()
 
   if ((fhandle = fopen(fnamest+1,"wb")))
   {
-    zst_save(fhandle, (bool)(cbitmode && !NoPictureSave));
+    zst_save(fhandle, (bool)(cbitmode && !NoPictureSave), false);
     fclose(fhandle);
 
     //Display message onscreen, 'STATE X SAVED.'
@@ -550,30 +590,66 @@ static void read_save_state_data(unsigned char **dest, void *data, size_t len)
   load_save_size += fread(data, 1, len, fhandle);
 }
 
-bool zst_load(FILE *fp)
+static bool zst_load_compressed(FILE *fp, size_t compressed_size)
+{    
+  unsigned long data_size = cur_zst_size - (sizeof(zst_header_cur)-1);
+  unsigned char *buffer = 0;
+  bool worked = false;
+   
+  if ((buffer = (unsigned char *)malloc(data_size)))
+  {
+    unsigned char *compressed_buffer = 0;
+
+    if ((compressed_buffer = (unsigned char *)malloc(compressed_size)))
+    {
+      fread(compressed_buffer, 1, compressed_size, fp);
+      if (uncompress(buffer, &data_size, compressed_buffer, compressed_size) == Z_OK)
+      {
+        zst_version = 143; //v1.43+
+        copy_state_data(buffer, memcpyrinc, true);
+        worked = true;
+      }
+      free(compressed_buffer);
+    }
+    free(buffer);
+  }  
+  return(worked);
+}
+
+bool zst_load(FILE *fp, size_t Compressed)
 {
-  char zst_header_check[sizeof(zst_header_cur)-1];
-  zst_version = 0;
-
-  Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fp);
-
-  if (!memcmp(zst_header_check, zst_header_cur, sizeof(zst_header_check)-2))
+  if (Compressed)
   {
-    zst_version = 143; //v1.43+
+    if (!zst_load_compressed(fp, Compressed))
+    {
+      return(false);
+    }
   }
-
-  if (!memcmp(zst_header_check, zst_header_old, sizeof(zst_header_check)-2))
+  else
   {
-    zst_version = 60; //v0.60 - v1.42
+    char zst_header_check[sizeof(zst_header_cur)-1];
+    zst_version = 0;
+
+    Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fp);
+
+    if (!memcmp(zst_header_check, zst_header_cur, sizeof(zst_header_check)-2))
+    {
+      zst_version = 143; //v1.43+
+    }
+
+    if (!memcmp(zst_header_check, zst_header_old, sizeof(zst_header_check)-2))
+    {
+      zst_version = 60; //v0.60 - v1.42
+    }
+
+    if (!zst_version) { return(false); } //Pre v0.60 saves are no longer loaded
+
+    load_save_size = 0;
+    fhandle = fp; //Set global file handle
+    copy_state_data(0, read_save_state_data, true);
+    Totalbyteloaded += load_save_size;
   }
-
-  if (!zst_version) { return(false); } //Pre v0.60 saves are no longer loaded
-
-  load_save_size = 0;
-  fhandle = fp; //Set global file handle
-  copy_state_data(0, read_save_state_data, true);
-  Totalbyteloaded += load_save_size;
-
+    
   if (SFXEnable)
   {
     SfxCPB = SfxMemTable[(SfxPBR & 0xFF)];
@@ -617,6 +693,13 @@ bool zst_load(FILE *fp)
   return(true);
 }
 
+//Wrapper for above
+bool zst_compressed_loader(FILE *fp)
+{      
+  size_t data_size = fread3(fp);
+  return((data_size & 0x00800000) ? zst_load(fp, 0) : zst_load(fp, data_size));
+}
+      
 void zst_sram_load(FILE *fp)
 {
   fseek(fp, sizeof(zst_header_cur)-1 + PH65816regsize + 199635, SEEK_CUR);
@@ -680,7 +763,7 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
   {
     if (xfercheck)      { Totalbyteloaded = 0; }
 
-    Msgptr = (zst_load(fhandle)) ? txtloadmsg : txtconvmsg;
+    Msgptr = (zst_load(fhandle, 0)) ? txtloadmsg : txtconvmsg;
     // 'STATE X LOADED.' or 'STATE X TOO OLD.'
     fclose(fhandle);
   }

@@ -58,8 +58,9 @@ extern bool romispal;
 void GUIDoReset();
 void powercycle(bool);
 void zst_sram_load(FILE *);
-void zst_save(FILE *, bool);
-bool zst_load(FILE *);
+void zst_save(FILE *, bool, bool);
+bool zst_load(FILE *, size_t);
+bool zst_compressed_loader(FILE *);
 
 /////////////////////////////////////////////////////////
 
@@ -212,7 +213,7 @@ enum zmv_start_methods { zmv_sm_zst, zmv_sm_power, zmv_sm_reset, zmv_sm_clear_al
 enum zmv_video_modes { zmv_vm_ntsc, zmv_vm_pal };
 enum zmv_commands { zmv_command_reset };
 
-#define INT_CHAP_SIZE (cur_zst_size+4+2+8)
+#define INT_CHAP_SIZE(offset) (internal_chapter_length(offset)+4+2+8)
 #define EXT_CHAP_SIZE (cur_zst_size+4+2+8+4)
 
 #define INT_CHAP_INDEX_SIZE (zmv_vars.header.internal_chapters*4)
@@ -682,7 +683,21 @@ static void flush_input_if_needed()
     flush_input_buffer();
   }
 }
-      
+
+//For various ZMV calculations, the length of the last chapter needs to be known
+static size_t internal_chapter_length(size_t offset)
+{
+  size_t current_loc = ftell(zmv_vars.fp);
+  size_t icl = 0;
+
+  fseek(zmv_vars.fp, offset, SEEK_SET);
+  icl = fread3(zmv_vars.fp) & 0x007FFFFF; //The upper 9 bits are not part of the length
+  icl += 3; //Add 3 for the header which says how long it is
+  
+  fseek(zmv_vars.fp, current_loc, SEEK_SET);
+  return(icl);
+}
+     
 /*
 
 Create and record ZMV
@@ -729,7 +744,7 @@ static void zmv_create(char *filename)
         break;
     }
 
-    zst_save(zmv_vars.fp, false);
+    zst_save(zmv_vars.fp, false, true);
     zmv_vars.filename = (char *)malloc(filename_len+1); //+1 for null
     strcpy(zmv_vars.filename, filename);
   
@@ -817,7 +832,8 @@ static void zmv_record(bool slow, unsigned char combos_used)
 static bool zmv_insert_chapter()
 {
   if ((zmv_vars.header.internal_chapters < 65535) && zmv_vars.header.frames &&
-      (zmv_vars.last_internal_chapter_offset != (ftell(zmv_vars.fp) + zmv_vars.write_buffer_loc - INT_CHAP_SIZE)))
+      (zmv_vars.last_internal_chapter_offset != (ftell(zmv_vars.fp) + 
+       zmv_vars.write_buffer_loc - INT_CHAP_SIZE(zmv_vars.last_internal_chapter_offset))))
   {
     unsigned char flag = BIT(2);
 
@@ -829,7 +845,7 @@ static bool zmv_insert_chapter()
     zmv_vars.header.internal_chapters++;
     zmv_vars.last_internal_chapter_offset = ftell(zmv_vars.fp);
 
-    zst_save(zmv_vars.fp, false);
+    zst_save(zmv_vars.fp, false, true);
     fwrite4(zmv_vars.header.frames, zmv_vars.fp);
     write_last_joy_state(zmv_vars.fp);
 
@@ -876,6 +892,7 @@ static struct
   unsigned short external_chapter_count;
   unsigned int frames_replayed;
   size_t last_chapter_frame;
+  size_t first_chapter_pos;
   size_t input_start_pos;
 } zmv_open_vars; //Additional vars for open/replay of a ZMV
 
@@ -897,10 +914,12 @@ static bool zmv_open(char *filename)
     }
 
     MovieStartMethod = (unsigned char)zmv_vars.header.zmv_flag.start_method;
-
+    zmv_vars.inputs_enabled = zmv_vars.header.initial_input;
+    zmv_open_vars.first_chapter_pos = ftell(zmv_vars.fp);
+    
     if (zmv_vars.header.zsnes_version != (versionNumber & 0xFFFF))
     {
-      zst_load(zmv_vars.fp);
+      zst_compressed_loader(zmv_vars.fp);
       Msgptr = "MOVIE VERSION MISMATCH - MAY DESYNC.";
     }
     else
@@ -908,7 +927,7 @@ static bool zmv_open(char *filename)
       switch (zmv_vars.header.zmv_flag.start_method)
       {
         case zmv_sm_zst:
-          zst_load(zmv_vars.fp);
+          zst_compressed_loader(zmv_vars.fp);
           break;
         case zmv_sm_power:
           powercycle(false);
@@ -968,7 +987,7 @@ static bool zmv_replay_command(enum zmv_commands command)
 }
 
 #define RESTORE_PAD(cur, prev, bit)                                     \
-  cur = prev | ((zmv_vars.inputs_enabled & BIT(bit)) ? 0x8000 : 0);
+  cur = prev |= ((zmv_vars.inputs_enabled & BIT(bit)) ? 0x8000 : 0);
 
 
 #define REPLAY_PAD(prev, cur, bit)                                      \
@@ -1032,7 +1051,7 @@ static bool zmv_replay()
 
       else if (flag & BIT(2)) //Internal Chapter
       {
-        fseek(zmv_vars.fp, INT_CHAP_SIZE, SEEK_CUR);
+        fseek(zmv_vars.fp, INT_CHAP_SIZE(ftell(zmv_vars.fp)), SEEK_CUR);
         return(zmv_replay());
       }
 
@@ -1085,7 +1104,7 @@ static bool zmv_next_chapter()
     if (next == next_internal)
     {
       fseek(zmv_vars.fp, next_internal, SEEK_SET);
-      zst_load(zmv_vars.fp);
+      zst_compressed_loader(zmv_vars.fp);
       zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
       read_last_joy_state(zmv_vars.fp);
     }
@@ -1093,7 +1112,7 @@ static bool zmv_next_chapter()
     {
       size_t ext_chapter_loc = EXT_CHAP_END_DIST - internal_chapter_pos(&zmv_open_vars.external_chapters, next)*EXT_CHAP_SIZE;
       fseek(zmv_vars.fp, -(ext_chapter_loc), SEEK_END);
-      zst_load(zmv_vars.fp);
+      zst_load(zmv_vars.fp, 0);
       zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
       read_last_joy_state(zmv_vars.fp);
 
@@ -1107,13 +1126,16 @@ static bool zmv_next_chapter()
   return(false);
 }
 
+//Have playback start movie from beginning
 static void zmv_rewind_playback()
 {
-  fseek(zmv_vars.fp, zmv_open_vars.input_start_pos - cur_zst_size, SEEK_SET);
-  zst_load(zmv_vars.fp);
+  fseek(zmv_vars.fp, zmv_open_vars.first_chapter_pos, SEEK_SET);
+  zst_compressed_loader(zmv_vars.fp);
   zmv_open_vars.frames_replayed = 0;
   zmv_open_vars.last_chapter_frame = 0;
   zmv_vars.rle_count = 0;
+  zmv_vars.inputs_enabled = zmv_vars.header.initial_input;
+  memset(&zmv_vars.last_joy_state, 0, sizeof(zmv_vars.last_joy_state));
 }
 
 static void zmv_prev_chapter()
@@ -1174,7 +1196,7 @@ static void zmv_prev_chapter()
   if (prev == prev_internal)
   {
     fseek(zmv_vars.fp, prev_internal, SEEK_SET);
-    zst_load(zmv_vars.fp);
+    zst_compressed_loader(zmv_vars.fp);
     zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
     read_last_joy_state(zmv_vars.fp);
   }
@@ -1182,7 +1204,7 @@ static void zmv_prev_chapter()
   {
     size_t ext_chapter_loc = EXT_CHAP_END_DIST - internal_chapter_pos(&zmv_open_vars.external_chapters, prev)*EXT_CHAP_SIZE;
     fseek(zmv_vars.fp, -(ext_chapter_loc), SEEK_END);
-    zst_load(zmv_vars.fp);
+    zst_load(zmv_vars.fp, 0);
     zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
     read_last_joy_state(zmv_vars.fp);
 
@@ -1192,15 +1214,17 @@ static void zmv_prev_chapter()
   zmv_vars.rle_count = 0;
 }
 
+//External chapter
 static void zmv_add_chapter()
 {
   if ((zmv_open_vars.external_chapter_count < 65535) && zmv_open_vars.frames_replayed)
   {
     size_t current_loc = ftell(zmv_vars.fp);
 
-    //Check if previous input contained internal chapter to here, or if there is external here already
-    if ((internal_chapter_pos(&zmv_vars.internal_chapters, current_loc-(INT_CHAP_SIZE)) == ~0) &&
-        (internal_chapter_pos(&zmv_open_vars.external_chapters, current_loc)) == ~0)
+    //Check if there is external here already - should possibly modify this to use
+    //intern_chapter_lesser() to see if an internal chapter was made right before this
+    //point in the stream
+    if ((internal_chapter_pos(&zmv_open_vars.external_chapters, current_loc)) == ~0)
     {
       //Check if we have internal right here
       unsigned char flag;
@@ -1223,7 +1247,7 @@ static void zmv_add_chapter()
         }
 
         fseek(zmv_vars.fp, -(EXT_CHAP_COUNT_END_DIST), SEEK_END);
-        zst_save(zmv_vars.fp, false);
+        zst_save(zmv_vars.fp, false, false);
         fwrite4(zmv_open_vars.frames_replayed, zmv_vars.fp);
         write_last_joy_state(zmv_vars.fp);
         fwrite4(current_loc, zmv_vars.fp);
@@ -1240,7 +1264,7 @@ static void zmv_add_chapter()
       }
       else //Just skip the internal
       {
-        fseek(zmv_vars.fp, INT_CHAP_SIZE, SEEK_CUR);
+        fseek(zmv_vars.fp, INT_CHAP_SIZE(ftell(zmv_vars.fp)), SEEK_CUR);
       }
     }
   }
@@ -1390,7 +1414,7 @@ bool mzt_save(char *statename, bool thumb, bool playback)
       gzFile gzp = 0;
       size_t rewind_point;
 
-      zst_save(fp, thumb);
+      zst_save(fp, thumb, false);
       fclose(fp);
 
       flush_input_buffer();
@@ -1461,7 +1485,7 @@ bool mzt_load(char *statename, bool playback)
     {
       char FileExt[3];
 
-      zst_load(fp);
+      zst_load(fp, 0);
       fclose(fp);
 
       memcpy(FileExt, statename+filename_len-3, 3);
