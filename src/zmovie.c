@@ -942,7 +942,7 @@ static bool zmv_open(char *filename)
           break;
         case zmv_sm_clear_all:
           powercycle(false);
-          fseek(zmv_vars.fp, cur_zst_size, SEEK_CUR);
+          fseek(zmv_vars.fp, internal_chapter_length(ftell(zmv_vars.fp)), SEEK_CUR);
           break;
       }
 
