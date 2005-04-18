@@ -2125,10 +2125,6 @@ DWORD ScreenPtr;
 DWORD ScreenPtr2;
 extern void GUI36hzcall(void);
 extern void Game60hzcall(void);
-extern int packettimeleft[256];
-extern int PacketCounter;
-extern int CounterA;
-extern int CounterB;
 
 void CheckTimers(void)
 {
@@ -2140,14 +2136,6 @@ void CheckTimers(void)
 
    while ((end2 - start2) >= update_ticks_pc2)
       {
-         if (CounterA>0) CounterA--;
-         if (CounterB>0) CounterB--;
-         if (PacketCounter){
-           for (int i=0;i<256;i++){
-             if (packettimeleft[i]>0)
-               packettimeleft[i]--;
-           }
-         }
          start2 += update_ticks_pc2;
       }
 

@@ -221,6 +221,7 @@ static void handle_params(int argc, char *argv[])
 
   #ifndef __MSDOS__
 
+  /*
   if (argc >= 5 && argv[1][0] == '/' && strlen(argv[1]) == 6)
   {
     size_t i = 0, j = 0;
@@ -265,6 +266,7 @@ static void handle_params(int argc, char *argv[])
     strp[j] = 0;
 
   }
+  */
   #endif
 
   for (i = 1; i < argc; i++)

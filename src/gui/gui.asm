@@ -52,7 +52,6 @@
 ; Quick Searches :
 ;   DisplayMenu           - routines to display top menu bar
 ;   Incomp                - Search for start of modem processing
-;   ProcessModem
 ;   GUIgetcurrentinput
 ;   GUITryMenuItem        - Processes the menu item when user clicks item
 ;   Mouseimplementation
@@ -92,8 +91,8 @@ EXTSYM spchalted,NextLineCache,ResetTripleBuf,GUINGVID,ScanCodeListing
 EXTSYM AdjustFrequency,GUISaveVars,Init_Mouse,Get_MouseData,Set_MouseXMax
 EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
 EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,SA1Enable,SA1RAMArea,GUIFName
-EXTSYM GUICName,MMXCheck,SaveCombFile,showinfogui,WinErrorA,WinErrorB
-EXTSYM ErrorPointer,MessageOn,GetHostName,GetTime,sndrot,regsbackup,GetScreen
+EXTSYM GUICName,MMXCheck,SaveCombFile,showinfogui
+EXTSYM ErrorPointer,MessageOn,GetTime,sndrot,regsbackup,GetScreen
 EXTSYM GUITBWVID,Clear2xSaIBuffer,MouseWindow,GotoHomepage,cfgcvidmode
 EXTSYM ExitFromGUI,GUIWFVID,cfgvsync,newgfx16b,cfgscanline,cfginterp
 EXTSYM NumVideoModes,cfgvolume,MusicVol,DSPMem,NumInputDevices,GUIInputNames
@@ -122,7 +121,6 @@ EXTSYM dssel
 %include "gui/guimisc.inc"
 %include "gui/guimouse.inc"
 %include "gui/guiwindp.inc"
-%include "gui/guinetpl.inc"
 %include "gui/guikeys.inc"
 %include "gui/guicheat.inc"
 %include "gui/guicombo.inc"
@@ -1938,12 +1936,6 @@ NEWSYM StartGUI
     mov dword[StartLR],0
     jmp continueprog
 
-.faileda
-    call WinErrorA
-    jmp continueprog
-.failedb
-    call WinErrorB
-    jmp continueprog
 
 SECTION .bss
 CheckSumVal resd 1
@@ -2661,7 +2653,6 @@ GUITryMenuItem:
     GUICheckMenuItem 8, 0
     cmp byte[GUIcrowpos],0
     jne near .nonet
-    call GetHostName
 .nonet
     cmp byte[GUIcmenupos],6
     jne near .nomisc

@@ -171,7 +171,8 @@ WINVIDOBJ=${VIDEODIR}/sw_draw${OE} ${VIDEODIR}/hq2x16${OE} ${VIDEODIR}/hq2x32${O
 WINOBJ=${WINDIR}/copyvwin${OE} ${DRESOBJ}\
 	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE} ${WINDIR}/zfilew${OE}
 
-NETOBJ=${NETDIR}/ztcp${OE}
+NETOBJ=
+#${NETDIR}/ztcp${OE}
 
 ZIPOBJ=${ZIPDIR}/unzip${OE} ${ZIPDIR}/zpng${OE}
 
@@ -312,7 +313,7 @@ ${CHIPDIR}/dsp4emu${OE}: $<
 
 ${GUIDIR}/gui${OE}: $< ${GUIDIR}/guitools.inc\
 	${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guiwindp.inc\
-	${GUIDIR}/guinetpl.inc ${GUIDIR}/guikeys.inc ${GUIDIR}/guicheat.inc\
+	${GUIDIR}/guikeys.inc ${GUIDIR}/guicheat.inc\
 	${GUIDIR}/guicombo.inc ${GUIDIR}/guiload.inc macros.mac
 ${GUIDIR}/menu${OE}: $< macros.mac
 

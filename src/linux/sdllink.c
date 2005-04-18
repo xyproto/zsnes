@@ -35,6 +35,8 @@ typedef unsigned long DWORD;
 typedef Uint32 UINT32;
 typedef long long _int64;
 typedef long long LARGE_INTEGER;
+#define QueryPerformanceCounter(x) asm volatile("rdtsc" : "=a"(((unsigned int *)(x))[0]),"=d"(((unsigned int *)x)[1]))
+
 
 typedef enum { FALSE = 0, TRUE = 1 } BOOL;
 typedef enum vidstate_e { vid_null, vid_none, vid_soft, vid_gl } vidstate_t;
@@ -51,12 +53,6 @@ int Buffer_head = 0, Buffer_tail = 0;
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
 extern int DSPBuffer[];
-
-/* NETWORK RELATED VARIABLES */
-extern int packettimeleft[256];
-extern int PacketCounter;
-extern int CounterA;
-extern int CounterB;
 
 /* VIDEO VARIABLES */
 SDL_Surface *surface;
@@ -913,18 +909,6 @@ void CheckTimers(void)
 
 	while ((end2 - start2) >= update_ticks_pc2)
 	{
-		if (CounterA > 0)
-			CounterA--;
-		if (CounterB > 0)
-			CounterB--;
-		if (PacketCounter)
-		{
-			for (i = 0; i < 256; i++)
-			{
-				if (packettimeleft[i] > 0)
-					packettimeleft[i]--;
-			}
-		}
 		start2 += update_ticks_pc2;
 	}
 
