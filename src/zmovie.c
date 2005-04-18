@@ -117,7 +117,7 @@ Header
 4 bytes  -  Number of key combos
 2 bytes  -  Number of internal chapters
 2 bytes  -  Length of author name
-3 bytes  -  ZST size
+3 bytes  -  Uncompressed ZST size
 2 bytes  -  Initial input configuration
   1 bit  -   Input 1 enabled
   1 bit  -   Input 2 enabled
@@ -132,6 +132,7 @@ Header
   2 bits -   Start from ZST/Power On/Reset/Power On + Clear SRAM
   1 bit  -   NTSC or PAL
   5 bits -   Reserved
+3 bytes  -  1 bit for compressed or not, 23 bits for size
 ZST size -  ZST (no thumbnail)
 
 
@@ -157,6 +158,7 @@ Remaining 7 bits of flag determine command
 
 -Else If Chapter-
 
+3 bytes  -  1 bit for compressed or not, 23 bits for size
 ZST size -  ZST
 4 bytes  -  Frame #
 2 bytes  -  Controller Status
@@ -182,7 +184,7 @@ Internal chapter offsets  -  Repeated for all internal chapters
 External chapters  -  Repeated for all external chapters
 -----------------------------------------------------------------
 
-ZST Size -  ZST
+ZST Size -  ZST (never compressed)
 4 bytes  -  Frame #
 2 bytes  -  Controller Status
 8 bytes  -  Previous input (60 controller bits [12*5] + 4 padded bits)
