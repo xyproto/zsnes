@@ -58,6 +58,7 @@ extern bool romispal;
 void GUIDoReset();
 void powercycle(bool);
 void zst_sram_load(FILE *);
+void zst_sram_load_compressed(FILE *);
 void zst_save(FILE *, bool, bool);
 bool zst_load(FILE *, size_t);
 bool zst_compressed_loader(FILE *);
@@ -931,13 +932,13 @@ static bool zmv_open(char *filename)
           break;
         case zmv_sm_power:
           powercycle(false);
-          zst_sram_load(zmv_vars.fp);
+          zst_sram_load_compressed(zmv_vars.fp);
           break;
         case zmv_sm_reset:
           GUIReset = 1;
           asm_call(GUIDoReset);
           ReturnFromSPCStall = 0;
-          zst_sram_load(zmv_vars.fp);
+          zst_sram_load_compressed(zmv_vars.fp);
           break;
         case zmv_sm_clear_all:
           powercycle(false);

@@ -719,6 +719,49 @@ void zst_sram_load(FILE *fp)
   if (ramsize)	{ fread(sram, 1, ramsize, fp); } // normal sram
 }
 
+void zst_sram_load_compressed(FILE *fp)
+{
+  size_t compressed_size = fread3(fp);
+  if (compressed_size & 0x00800000)
+  {
+    zst_sram_load(fp);
+  }
+  else
+  {
+    unsigned long data_size = cur_zst_size - (sizeof(zst_header_cur)-1);
+    unsigned char *buffer = 0;
+   
+    if ((buffer = (unsigned char *)malloc(data_size)))
+    {
+      unsigned char *compressed_buffer = 0;
+      if ((compressed_buffer = (unsigned char *)malloc(compressed_size)))
+      {
+        fread(compressed_buffer, 1, compressed_size, fp);
+        if (uncompress(buffer, &data_size, compressed_buffer, compressed_size) == Z_OK)
+        {
+          unsigned char *data = buffer + PH65816regsize + 199635;
+          if (spcon)  { data += PHspcsave + PHdspsave + sizeof(DSPMem); }
+          if (C4Enable) { data += 8192; }
+          if (SFXEnable)  { data += PHnum2writesfxreg + 131072; }
+          if (SA1Enable)
+          {
+            data += PHnum2writesa1reg;
+            memcpyrinc(&data, SA1RAMArea, 131072); // SA-1 sram
+            data += 15;
+          }
+          if (DSP1Type) { data += 2874; }
+          if (SETAEnable) { memcpyrinc(&data, setaramdata, 4096); } // SETA sram
+          if (SPC7110Enable)  { data += PHnum2writespc7110reg + 65536; }
+          data += 227;
+          if (ramsize)  { memcpyrinc(&data, sram, ramsize); } // normal sram
+        }
+        free(compressed_buffer);
+      }
+      free(buffer);
+    }  
+  }
+}
+
 void stateloader (unsigned char *statename, unsigned char keycheck, unsigned char xfercheck)
 {
   #ifdef __LINUX__
