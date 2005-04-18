@@ -106,7 +106,7 @@ EXTSYM JoyMaxX209,JoyMinY209,JoyMaxY209,GetCoords,GetCoords3,MultiTap,SFXEnable
 EXTSYM RestoreSystemVars,GUIBIFIL,GUIHQ2X,GUIHQ3X,GUIHQ4X,firstsaveinc,nssdip1
 EXTSYM nssdip2,nssdip3,nssdip4,nssdip5,nssdip6,SkipMovie,MovieStop,MoviePlay
 EXTSYM MovieRecord,MovieInsertChapter,MovieSeekAhead,MovieSeekBehind
-EXTSYM ResetDuringMovie
+EXTSYM ResetDuringMovie,MovieDumpRaw
 
 %ifdef __LINUX__
 EXTSYM numlockptr

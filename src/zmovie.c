@@ -1603,14 +1603,16 @@ static void raw_video_close()
   }
 }
 
-static void raw_video_open(const char *filename)
+static bool raw_video_open(const char *filename)
 {
   memset(&raw_vid, 0, sizeof(raw_vid));
   raw_vid.fp = fopen(filename, "wb");
   if (!(raw_vid.frame_buffer = (unsigned int *)malloc(RAW_PIXEL_FRAME_SIZE*RAW_BUFFER_FRAMES)))
   {
     raw_video_close();
+    return(false);
   }
+  return(true);
 }
 
 #define PIXEL (vidbuffer[(i*288) + j + 16])
@@ -1748,6 +1750,8 @@ static size_t MovieSub_GetDuration()
 bool MovieWaiting = false;
 enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY };
 #define SetMovieMode(mode) (MovieProcessing = (unsigned char)mode)
+
+bool RawDumpInProgress = false;
 
 extern bool SRAMState, SloMo50;
 bool PrevSRAMState;
@@ -1979,12 +1983,23 @@ void Replay()
       Msgptr = sub;
       MessageOn = MovieSub_GetDuration();
     }
+
+    if (RawDumpInProgress)
+    {
+      raw_video_write_frame();
+    }
   }
   else
   {
     if (zmv_frames_replayed())
     {
       Msgptr = "MOVIE FINISHED.";
+    
+      if (RawDumpInProgress)
+      {
+        raw_video_close();
+        RawDumpInProgress = false;
+      }
     }
     else
     {
@@ -2038,6 +2053,11 @@ void MovieStop()
       case MOVIE_PLAYBACK:
         zmv_replay_finished();
         MovieSub_Close();
+        if (RawDumpInProgress)
+        {
+          raw_video_close();
+          RawDumpInProgress = false;
+        }
         MessageOn = 0;
         break;
 
@@ -2187,3 +2207,18 @@ void GetMovieFrameStr()
       break;
   }
 }
+
+void MovieDumpRaw()
+{
+  switch (MovieProcessing)
+  {
+    case MOVIE_OFF:
+      MoviePlay();
+      SRAMChdir();
+      RawDumpInProgress = raw_video_open("rawvideo.bin");
+      asm_call(ChangetoLOADdir);
+      break;
+  }
+}
+
+

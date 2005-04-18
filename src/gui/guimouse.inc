@@ -632,6 +632,24 @@ ProcessMouseButtons:
     popad
     ret
 .noNextChap
+    cmp byte[GUICBHold],32  ; append movie
+    jne .noAppend
+    mov byte[GUICBHold],0
+    mov byte[GUIQuit],2
+    pushad
+    ;call MovieAppend
+    popad
+    ret
+.noAppend
+    cmp byte[GUICBHold],34  ; dump raw
+    jne .noDumpRaw
+    mov byte[GUICBHold],0
+    mov byte[GUIQuit],2
+    pushad
+    call MovieDumpRaw
+    popad
+    ret
+.noDumpRaw
     cmp byte[GUICBHold],40
     je near SetAllKeys
     cmp byte[GUICBHold],50
