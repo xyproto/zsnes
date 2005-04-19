@@ -1488,6 +1488,10 @@ NEWSYM cpuover
     jmp .nonewgfx
 .noemupause
 
+    ;Rewind update must be done before process this frame of movie, so rewind doesn't
+    ;back up incremented values (some vars being for the next frame)
+    call UpdateRewind
+    
     cmp byte[MovieProcessing],0
     je .noprocmovie
     pushad
@@ -1506,8 +1510,6 @@ NEWSYM cpuover
     jne .noprocmovie
     jmp OSExit
 .noprocmovie
-
-    call UpdateRewind
 
     cmp byte[snesmouse],4
     jne .nolethalen
