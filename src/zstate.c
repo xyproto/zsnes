@@ -81,13 +81,14 @@ static void copy_extra_data(unsigned char **buffer, void (*copy_func)(unsigned c
 }
 
 static size_t load_save_size;
-static unsigned int zst_version;
 
-//For compatibility with old save states (pre v1.43)
-#define loading_old_state (!buffer && read && (zst_version < 143))
-#define loading_state_no_sram (!buffer && read && !SRAMState)
+enum copy_state_method { csm_save_zst_new,
+                         csm_load_zst_new,
+                         csm_load_zst_old,
+                         csm_save_rewind,
+                         csm_load_rewind };
 
-static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t), bool read)
+static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t), enum copy_state_method method)
 {
   copy_snes_data(&buffer, copy_func);
 
@@ -121,7 +122,7 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
   {
     copy_func(&buffer, &SA1Mode, PHnum2writesa1reg);
     copy_func(&buffer, SA1RAMArea, 8192*16);
-    if (!loading_old_state)
+    if (method != csm_load_zst_old)
     {
       copy_func(&buffer, &SA1Status, 3);
       copy_func(&buffer, &SA1xpc, 1*4);
@@ -129,7 +130,7 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
     }
   }
 
-  if (DSP1Type && !loading_old_state)
+  if (DSP1Type && (method != csm_load_zst_old))
   {
     copy_func(&buffer, &DSP1COp, 70+128);
     copy_func(&buffer, &Op00Multiplicand, 3*4+128);
@@ -163,16 +164,17 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
     copy_func(&buffer, &SPCMultA, PHnum2writespc7110reg);
   }
 
-  if (!loading_old_state)
+  if (method != csm_load_zst_old)
   {
     copy_extra_data(&buffer, copy_func);
 
-    if (!loading_state_no_sram)
+    //We don't load SRAM from new states if box isn't checked
+    if ((method != csm_load_zst_new) || SRAMState)
     {
       copy_func(&buffer, sram, ramsize);
     }
 
-    if (buffer) //Not to a file, i.e. rewind
+    if ((method == csm_save_rewind) || (method == csm_load_rewind))
     {
       copy_func(&buffer, &tempesi, 4);
       copy_func(&buffer, &tempedi, 4);
@@ -217,7 +219,7 @@ void BackupCVFrame()
 
   if (MovieProcessing == 1) { zmv_rewind_save(LatestRewindPos, true); }
   else if (MovieProcessing == 2) { zmv_rewind_save(LatestRewindPos, false); }
-  copy_state_data(RewindBufferPos, memcpyinc, false);
+  copy_state_data(RewindBufferPos, memcpyinc, csm_save_rewind);
 
   if (RewindPosPassed)
   {
@@ -250,7 +252,7 @@ void RestoreCVFrame()
     
   if (MovieProcessing == 1) { zmv_rewind_load(LatestRewindPos, true); }
   else if (MovieProcessing == 2) { zmv_rewind_load(LatestRewindPos, false); }
-  copy_state_data(RewindBufferPos, memcpyrinc, true);
+  copy_state_data(RewindBufferPos, memcpyrinc, csm_load_rewind);
 
   //Clear Cache Check
   memset(vidmemch2, 1, sizeof(vidmemch2));
@@ -283,7 +285,7 @@ void InitRewindVars()
 {
   unsigned char almost_useless_array[1]; //An array is needed for copy_state_data to give the correct size
   state_size = 0;
-  copy_state_data(almost_useless_array, state_size_tally, false);
+  copy_state_data(almost_useless_array, state_size_tally, csm_save_rewind);
   rewind_state_size = state_size;
 
   SetupRewindBuffer();
@@ -424,13 +426,11 @@ static const char zst_header_cur[] = "ZSNES Save State File V143\x1a\x8f";
 void calculate_state_sizes()
 {
   state_size = 0;
-  zst_version = 143;
-  copy_state_data(0, state_size_tally, false);
+  copy_state_data(0, state_size_tally, csm_save_zst_new);
   cur_zst_size = state_size + sizeof(zst_header_cur)-1;
 
   state_size = 0;
-  zst_version = 60;
-  copy_state_data(0, state_size_tally, true);
+  copy_state_data(0, state_size_tally, csm_load_zst_old);
   old_zst_size = state_size + sizeof(zst_header_old)-1;
 }
 
@@ -440,7 +440,7 @@ static bool zst_save_compressed(FILE *fp)
   unsigned char *buffer = 0;
 
   bool worked = false;
-   
+
   if ((buffer = (unsigned char *)malloc(data_size)))
   {
     //Compressed buffer which must be at least 0.1% larger than source buffer plus 12 bytes
@@ -450,7 +450,7 @@ static bool zst_save_compressed(FILE *fp)
 
     if ((compressed_buffer = (unsigned char *)malloc(compressed_size)))
     {
-      copy_state_data(buffer, memcpyinc, false);
+      copy_state_data(buffer, memcpyinc, csm_save_zst_new);
       if (compress2(compressed_buffer, &compressed_size, buffer, data_size, Z_BEST_COMPRESSION) == Z_OK)
       {
         fwrite3(compressed_size, fp);
@@ -492,7 +492,7 @@ void zst_save(FILE *fp, bool Thumbnail, bool Compress)
     fwrite(zst_header_cur, 1, sizeof(zst_header_cur)-1, fp); //-1 for null
   
     fhandle = fp; //Set global file handle
-    copy_state_data(0, write_save_state_data, false);
+    copy_state_data(0, write_save_state_data, csm_save_zst_new);
 
     if (Thumbnail)
     {
@@ -605,8 +605,7 @@ static bool zst_load_compressed(FILE *fp, size_t compressed_size)
       fread(compressed_buffer, 1, compressed_size, fp);
       if (uncompress(buffer, &data_size, compressed_buffer, compressed_size) == Z_OK)
       {
-        zst_version = 143; //v1.43+
-        copy_state_data(buffer, memcpyrinc, true);
+        copy_state_data(buffer, memcpyrinc, csm_load_zst_new);
         worked = true;
       }
       free(compressed_buffer);
@@ -618,6 +617,8 @@ static bool zst_load_compressed(FILE *fp, size_t compressed_size)
 
 bool zst_load(FILE *fp, size_t Compressed)
 {
+  size_t zst_version = 0;
+
   if (Compressed)
   {
     if (!zst_load_compressed(fp, Compressed))
@@ -628,7 +629,6 @@ bool zst_load(FILE *fp, size_t Compressed)
   else
   {
     char zst_header_check[sizeof(zst_header_cur)-1];
-    zst_version = 0;
 
     Totalbyteloaded += fread(zst_header_check, 1, sizeof(zst_header_check), fp);
 
@@ -646,7 +646,7 @@ bool zst_load(FILE *fp, size_t Compressed)
 
     load_save_size = 0;
     fhandle = fp; //Set global file handle
-    copy_state_data(0, read_save_state_data, true);
+    copy_state_data(0, read_save_state_data, (zst_version == 143) ? csm_load_zst_new: csm_load_zst_old );
     Totalbyteloaded += load_save_size;
   }
     
@@ -675,7 +675,7 @@ bool zst_load(FILE *fp, size_t Compressed)
   memset(vidmemch4, 1, sizeof(vidmemch4));
   memset(vidmemch8, 1, sizeof(vidmemch8));
 
-  if (zst_version == 60) //Set new vars which old states did not have
+  if (zst_version < 143) //Set new vars which old states did not have
   {
     prevoamptr = 0xFF;
     ioportval = 0xFF;
@@ -722,6 +722,7 @@ void zst_sram_load(FILE *fp)
 void zst_sram_load_compressed(FILE *fp)
 {
   size_t compressed_size = fread3(fp);
+
   if (compressed_size & 0x00800000)
   {
     zst_sram_load(fp);
@@ -730,7 +731,7 @@ void zst_sram_load_compressed(FILE *fp)
   {
     unsigned long data_size = cur_zst_size - (sizeof(zst_header_cur)-1);
     unsigned char *buffer = 0;
-   
+
     if ((buffer = (unsigned char *)malloc(data_size)))
     {
       unsigned char *compressed_buffer = 0;
