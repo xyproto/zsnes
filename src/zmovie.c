@@ -55,6 +55,11 @@ extern unsigned char MovieProcessing, *Msgptr, fnamest[512];
 extern unsigned char CMovieExt;
 extern bool romispal;
 
+extern unsigned char snesmouse;
+#define IS_MOUSE_1() (snesmouse == 1)
+#define IS_MOUSE_2() (snesmouse == 2)
+#define IS_SCOPE()   (snesmouse == 3)
+
 void GUIDoReset();
 void powercycle(bool);
 void zst_sram_load(FILE *);
@@ -162,15 +167,15 @@ Remaining 7 bits of flag determine command
 ZST size -  ZST
 4 bytes  -  Frame #
 2 bytes  -  Controller Status
-8 bytes  -  Previous input (60 controller bits [12*5] + 4 padded bits)
+9 bytes  -  Maximum previous input (1 Mouse [18] + 4 Regular [12*4] + 6 padded bits)
 
 -Else-
 
 variable - Input
 
-  12 bits per controller where input changed padded to next full byte size
-  Minimum 2 bytes (12 controller bits + 4 padded bits)
-  Maximum 8 bytes (60 controller bits [12*5] + 4 padded bits)
+  12 bits per regular controller, 18 per mouse where input changed padded to next full byte size
+  Minimum 2 bytes  (12 controller bits + 4 padded bits)
+  Maximum 10 bytes (18 mouse controller bits + 48 regular controller bits [12*4] + 6 padded bits)
 
 
 -----------------------------------------------------------------
@@ -187,7 +192,7 @@ External chapters  -  Repeated for all external chapters
 ZST Size -  ZST (never compressed)
 4 bytes  -  Frame #
 2 bytes  -  Controller Status
-8 bytes  -  Previous input (60 controller bits [12*5] + 4 padded bits)
+9 bytes  -  Maximum previous input (1 Mouse [18] + 4 Regular [12*4] + 6 padded bits)
 4 bytes  -  Offset to input for current chapter from beginning of file
 
 
@@ -216,8 +221,8 @@ enum zmv_start_methods { zmv_sm_zst, zmv_sm_power, zmv_sm_reset, zmv_sm_clear_al
 enum zmv_video_modes { zmv_vm_ntsc, zmv_vm_pal };
 enum zmv_commands { zmv_command_reset };
 
-#define INT_CHAP_SIZE(offset) (internal_chapter_length(offset)+4+2+8)
-#define EXT_CHAP_SIZE (cur_zst_size+4+2+8+4)
+#define INT_CHAP_SIZE(offset) (internal_chapter_length(offset)+4+2+9)
+#define EXT_CHAP_SIZE (cur_zst_size+4+2+9+4)
 
 #define INT_CHAP_INDEX_SIZE (zmv_vars.header.internal_chapters*4)
 #define EXT_CHAP_BLOCK_SIZE (zmv_open_vars.external_chapter_count*EXT_CHAP_SIZE + 2)
@@ -616,39 +621,89 @@ static void save_last_joy_state(unsigned char *buffer)
 {
   size_t skip_bits = 16;
   memcpy(buffer, uint16_to_bytes(zmv_vars.inputs_enabled), 2);
-  skip_bits = bit_encoder(zmv_vars.last_joy_state.A, 0xFFF00000, buffer, skip_bits);
-  skip_bits = bit_encoder(zmv_vars.last_joy_state.B, 0xFFF00000, buffer, skip_bits);
-  skip_bits = bit_encoder(zmv_vars.last_joy_state.C, 0xFFF00000, buffer, skip_bits);
-  skip_bits = bit_encoder(zmv_vars.last_joy_state.D, 0xFFF00000, buffer, skip_bits);
-  skip_bits = bit_encoder(zmv_vars.last_joy_state.E, 0xFFF00000, buffer, skip_bits);
+
+  if (zmv_vars.inputs_enabled & BIT(0xA)) //Mouse 1
+  {
+    skip_bits = bit_encoder(zmv_vars.last_joy_state.A, 0x00C0FFFF, buffer, skip_bits);
+  }
+  else
+  {
+    skip_bits = bit_encoder(zmv_vars.last_joy_state.A, 0xFFF00000, buffer, skip_bits);
+  }
+
+  if (zmv_vars.inputs_enabled & BIT(0x9)) //Mouse 2
+  {
+    skip_bits = bit_encoder(zmv_vars.last_joy_state.B, 0x00C0FFFF, buffer, skip_bits);
+  }
+  else
+  {
+    skip_bits = bit_encoder(zmv_vars.last_joy_state.B, 0xFFF00000, buffer, skip_bits);
+  }
+
+  //No multitap if both ports use special devices
+  if (!(zmv_vars.inputs_enabled & BIT(0xA)) || (zmv_vars.inputs_enabled & BIT(0x09)))
+  {
+    skip_bits = bit_encoder(zmv_vars.last_joy_state.C, 0xFFF00000, buffer, skip_bits);
+    skip_bits = bit_encoder(zmv_vars.last_joy_state.D, 0xFFF00000, buffer, skip_bits);
+    skip_bits = bit_encoder(zmv_vars.last_joy_state.E, 0xFFF00000, buffer, skip_bits);
+  }
 }
 
 static void load_last_joy_state(unsigned char *buffer)
 {
   size_t skip_bits = 16;
   zmv_vars.inputs_enabled = bytes_to_uint16(buffer);
-  skip_bits = bit_decoder(&zmv_vars.last_joy_state.A, 0xFFF00000, buffer, skip_bits);
-  skip_bits = bit_decoder(&zmv_vars.last_joy_state.B, 0xFFF00000, buffer, skip_bits);
-  skip_bits = bit_decoder(&zmv_vars.last_joy_state.C, 0xFFF00000, buffer, skip_bits);
-  skip_bits = bit_decoder(&zmv_vars.last_joy_state.D, 0xFFF00000, buffer, skip_bits);
-  skip_bits = bit_decoder(&zmv_vars.last_joy_state.E, 0xFFF00000, buffer, skip_bits);
 
-  zmv_vars.last_joy_state.A |= (zmv_vars.inputs_enabled & BIT(15)) ? 0x8000 : 0;
-  zmv_vars.last_joy_state.B |= (zmv_vars.inputs_enabled & BIT(14)) ? 0x8000 : 0;
-  zmv_vars.last_joy_state.C |= (zmv_vars.inputs_enabled & BIT(13)) ? 0x8000 : 0;
-  zmv_vars.last_joy_state.D |= (zmv_vars.inputs_enabled & BIT(12)) ? 0x8000 : 0;
-  zmv_vars.last_joy_state.E |= (zmv_vars.inputs_enabled & BIT(11)) ? 0x8000 : 0;
+  if (zmv_vars.inputs_enabled & BIT(0xA)) //Mouse 1
+  {
+    skip_bits = bit_decoder(&zmv_vars.last_joy_state.A, 0x00C0FFFF, buffer, skip_bits);
+    zmv_vars.last_joy_state.A |= (zmv_vars.inputs_enabled & BIT(15)) ? 0x00010000 : 0;
+  }
+  else
+  {
+    skip_bits = bit_decoder(&zmv_vars.last_joy_state.A, 0xFFF00000, buffer, skip_bits);
+    zmv_vars.last_joy_state.A |= (zmv_vars.inputs_enabled & BIT(15)) ? 0x00008000 : 0;
+  }
+  
+  if (zmv_vars.inputs_enabled & BIT(0x9)) //Mouse 2
+  {
+    skip_bits = bit_decoder(&zmv_vars.last_joy_state.B, 0x00C0FFFF, buffer, skip_bits);
+    zmv_vars.last_joy_state.B |= (zmv_vars.inputs_enabled & BIT(14)) ? 0x00010000 : 0;
+  }
+  else
+  {
+    skip_bits = bit_decoder(&zmv_vars.last_joy_state.A, 0xFFF00000, buffer, skip_bits);
+    zmv_vars.last_joy_state.B |= (zmv_vars.inputs_enabled & BIT(14)) ? 0x00008000 : 0;
+  }
+
+  //No multitap if both ports use special devices
+  if ((zmv_vars.inputs_enabled & BIT(0xA)) && (zmv_vars.inputs_enabled & BIT(0x09)))
+  {
+    zmv_vars.last_joy_state.C = 0;
+    zmv_vars.last_joy_state.D = 0;
+    zmv_vars.last_joy_state.E = 0;
+  }
+  else
+  {    
+    skip_bits = bit_decoder(&zmv_vars.last_joy_state.C, 0xFFF00000, buffer, skip_bits);
+    skip_bits = bit_decoder(&zmv_vars.last_joy_state.D, 0xFFF00000, buffer, skip_bits);
+    skip_bits = bit_decoder(&zmv_vars.last_joy_state.E, 0xFFF00000, buffer, skip_bits);
+
+    zmv_vars.last_joy_state.C |= (zmv_vars.inputs_enabled & BIT(13)) ? 0x00008000 : 0;
+    zmv_vars.last_joy_state.D |= (zmv_vars.inputs_enabled & BIT(12)) ? 0x00008000 : 0;
+    zmv_vars.last_joy_state.E |= (zmv_vars.inputs_enabled & BIT(11)) ? 0x00008000 : 0;
+  }
 }
 
 static void write_last_joy_state(FILE *fp)
 {
   save_last_joy_state(zmv_vars.write_buffer);
-  fwrite(zmv_vars.write_buffer, 10, 1, fp);
+  fwrite(zmv_vars.write_buffer, 11, 1, fp);
 }
 
 static void read_last_joy_state(FILE *fp)
 {
-  fread(zmv_vars.write_buffer, 10, 1, fp);
+  fread(zmv_vars.write_buffer, 11, 1, fp);
   load_last_joy_state(zmv_vars.write_buffer);
 }
 
@@ -681,7 +736,7 @@ static void flush_input_buffer()
 
 static void flush_input_if_needed()
 {
-  if (zmv_vars.write_buffer_loc > WRITE_BUFFER_SIZE - 14) //14 is a RLE buffer + flag + largest input
+  if (zmv_vars.write_buffer_loc > WRITE_BUFFER_SIZE - 15) //14 is a RLE buffer (5) + flag (1) + largest input (9)
   {
     flush_input_buffer();
   }
@@ -720,12 +775,15 @@ static void zmv_create(char *filename)
     zmv_vars.header.zmv_flag.start_method = (enum zmv_start_methods)MovieStartMethod;
     zmv_vars.header.zmv_flag.video_mode = romispal ? zmv_vm_pal : zmv_vm_ntsc;
 
-    zmv_vars.header.initial_input = (pl1contrl ? BIT(15) : 0) |
-                                    (pl2contrl ? BIT(14) : 0) |
-                                    (pl3contrl ? BIT(13) : 0) |
-                                    (pl4contrl ? BIT(12) : 0) |
-                                    (pl5contrl ? BIT(11) : 0);
-
+    zmv_vars.header.initial_input = (pl1contrl    ? BIT(0xF) : 0) |
+                                    (pl2contrl    ? BIT(0xE) : 0) |
+                                    (pl3contrl    ? BIT(0xD) : 0) |
+                                    (pl4contrl    ? BIT(0xC) : 0) |
+                                    (pl5contrl    ? BIT(0xB) : 0) |
+                                    (IS_MOUSE_1() ? BIT(0xA) : 0) |
+                                    (IS_MOUSE_2() ? BIT(0x9) : 0) |
+                                    (IS_SCOPE()   ? BIT(0x8) : 0);
+                                    
     zmv_header_write(&zmv_vars.header, zmv_vars.fp);
 
     zmv_vars.inputs_enabled = zmv_vars.header.initial_input;
@@ -991,7 +1049,6 @@ static bool zmv_replay_command(enum zmv_commands command)
 
 #define RESTORE_PAD(cur, prev, bit)                                     \
   cur = prev |= ((zmv_vars.inputs_enabled & BIT(bit)) ? 0x8000 : 0);
-
 
 #define REPLAY_PAD(prev, cur, bit)                                      \
   if (flag & BIT(bit))                                                  \
