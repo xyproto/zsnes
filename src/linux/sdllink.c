@@ -902,8 +902,6 @@ void initwinvideo(void)
 
 void CheckTimers(void)
 {
-	int i;
-
 	//QueryPerformanceCounter((LARGE_INTEGER*)&end2);
 	end2 = sem_GetTicks();
 
