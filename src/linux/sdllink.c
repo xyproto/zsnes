@@ -134,13 +134,11 @@ float end, end2;
 float start, start2;
 float update_ticks_pc, update_ticks_pc2;
 
+// Used for semaphore code
 static SDL_sem *sem_frames = NULL;
-
+static struct timeval sem_start;
 void sem_sleep_rdy(void);
 void sem_sleep_die(void);
-
-static struct timeval sem_start;
-// void sem_StartTicks(void);
 float sem_GetTicks(void);
 
 extern unsigned char romispal;
@@ -686,6 +684,7 @@ int startgame(void)
 		sdl_state = vid_none;
 	}
 
+        // Start semaphore code so ZSNES multitasks nicely :)
 	sem_sleep_rdy();
 
 	if (sdl_state == vid_soft) sw_end();
@@ -714,7 +713,7 @@ void LinuxExit(void)
 	if (sdl_state != vid_null)
 	{
 		SDL_WM_GrabInput(SDL_GRAB_OFF);	// probably redundant
-		sem_sleep_die();
+		sem_sleep_die(); // Shutdown semaphore
 		SDL_Quit();
 	}
 	exit(0);
@@ -738,6 +737,7 @@ void Start60HZ(void)
 		update_ticks_pc = UPDATE_TICKS_GAME;
 	}
 
+	// Restore timer data from semaphore data
 	start = sem_GetTicks();
 	start2 = sem_GetTicks();
 	T36HZEnabled = 0;
@@ -754,6 +754,7 @@ void Start36HZ(void)
 	update_ticks_pc2 = UPDATE_TICKS_UDP;
 	update_ticks_pc = UPDATE_TICKS_GUI;
 
+	// Restore timer data from semaphore data
 	start = sem_GetTicks();
 	start2 = sem_GetTicks();
 	T60HZEnabled = 0;
