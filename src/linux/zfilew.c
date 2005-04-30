@@ -501,27 +501,28 @@ void obtaindir()
   }
 }
 
-extern char fnamest, fnames;
-
 void GetFilename()
 {
-	char *tmp = &fnamest;
-	char size;
+  extern char fnamest, fnames;
+  extern int statefileloc;
+  char *tmp = &fnamest;
+  char size;
 
-	*tmp = '/';
-	while (*tmp!=0) tmp++;
-	while (*tmp!='/') tmp--;
-	size = (strlen(tmp)-1) & 0xFF;
-	strcpy(&fnamest, tmp);
-	fnamest = size;
-
-	tmp = &fnames;
-	*tmp = '/';
-	while (*tmp!=0) tmp++;
-	while (*tmp!='/') tmp--;
-	size = (strlen(tmp)-1) & 0xFF;
-	strcpy(&fnames, tmp);
-	fnames = size;
+  *tmp = '/';
+  while (*tmp!=0) tmp++;
+  while (*tmp!='/') tmp--;
+  size = (strlen(tmp)-1) & 0xFF;
+  strcpy(&fnamest, tmp);
+  fnamest = size;
+  statefileloc-=(tmp-&fnamest);
+  
+  tmp = &fnames;
+  *tmp = '/';
+  while (*tmp!=0) tmp++;
+  while (*tmp!='/') tmp--;
+  size = (strlen(tmp)-1) & 0xFF;
+  strcpy(&fnames, tmp);
+  fnames = size;
 }
 
 char *olddir = NULL;
