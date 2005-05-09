@@ -101,6 +101,7 @@ NEWSYM ProcessRewind
     mov edi,[tempedi]
     mov ebp,[tempebp]
     mov edx,[tempedx]
+    
 .notokay
     ret
 
@@ -1485,6 +1486,7 @@ NEWSYM cpuover
     pushad
     call copyvid ;Update screen
     popad
+    call ProcessRewind
     jmp .nonewgfx
 .noemupause
 

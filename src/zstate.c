@@ -199,6 +199,8 @@ static void memcpyrinc(unsigned char **src, void *dest, size_t len)
 extern unsigned int RewindTimer;
 extern unsigned char RewindStates;
 
+extern unsigned char EMUPause, PauseRewind;
+
 unsigned char *StateBackup = 0;
 unsigned char AllocatedRewindStates, LatestRewindPos, EarliestRewindPos;
 bool RewindPosPassed;
@@ -249,9 +251,20 @@ void RestoreCVFrame()
 
   RewindBufferPos = StateBackup + LatestRewindPos*rewind_state_size;
   //printf("Restoring rewind in slot #%u\n", LatestRewindPos);
+
+  if (MovieProcessing == 2)
+  {
+    zmv_rewind_load(LatestRewindPos, false);
+  }
+  else
+  {
+    if (MovieProcessing == 1)
+    {
+      zmv_rewind_load(LatestRewindPos, true);
+    }
+    EMUPause = PauseRewind;
+  }
     
-  if (MovieProcessing == 1) { zmv_rewind_load(LatestRewindPos, true); }
-  else if (MovieProcessing == 2) { zmv_rewind_load(LatestRewindPos, false); }
   copy_state_data(RewindBufferPos, memcpyrinc, csm_load_rewind);
 
   //Clear Cache Check
