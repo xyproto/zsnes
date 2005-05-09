@@ -673,33 +673,6 @@ NEWSYM txtsavemsgfail, db 'UNABLE TO SAVE.',0
 SECTION .text
 
 NEWSYM savestate
-    jmp .save
-    mov byte[pressed+1],0
-    mov byte[pressed+60],0
-    mov edx,.fname2+1
-    call Create_File
-    mov esi,[vidbuffer]
-    add esi,16*2+256*2+32*2
-    mov edi,[vidbuffer]
-    mov dl,[resolutn]
-    mov bx,ax
-    ; move data to a linear address from esi to edi
-.loopa
-    mov ecx,128
-    add esi,64+128*4
-    dec dl
-    jnz .loopa
-    push edx
-    push esi
-    mov ecx,128*4
-    mov edx,esi
-    call Write_File
-    pop esi
-    pop edx
-    add esi,64+128*4
-    call Close_File
-    jmp reexecuteb
-.save
     mov byte[pressed+1],0
     mov eax,[KeySaveState]
     mov byte[pressed+eax],2
@@ -711,10 +684,6 @@ NEWSYM savestate
 SECTION .data
 .fname2 db 9,'image.dat',0
 
-SECTION .bss
-cycpblblah resd 2
-
-SECTION .data
 NEWSYM txtloadmsg, db 'STATE - LOADED.',0
 NEWSYM txtconvmsg, db 'STATE - TOO OLD.',0
 NEWSYM txtnfndmsg, db 'UNABLE TO LOAD STATE -.',0
