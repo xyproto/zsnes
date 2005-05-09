@@ -737,6 +737,14 @@ GUISaveKeys:
     jne .nosramstate
     xor byte[SRAMState],1
 .nosramstate
+    cmp dh,'P'
+    jne .nopauseload
+    xor byte[PauseLoad],1
+.nopauseload
+    cmp dh,'R'
+    jne .nopauserewind
+    xor byte[PauseRewind],1
+.nopauserewind
     ret
 
 

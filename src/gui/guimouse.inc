@@ -3188,15 +3188,17 @@ DisplayGUIPathsClick
     ret
 
 DisplayGUISaveClick:
-    GUIClickCButtonAS 11,50,byte[AutoIncSaveSlot]
-    GUIClickCButton 11,60,byte[SRAMSave5Sec]
-    GUIClickCButton 11,70,byte[LatestSave]
-    GUIClickCButton 11,80,byte[AutoState]
-    GUIClickCButton 11,90,byte[SRAMState]
-    GUIPHoldbutton2 173,17,181,25,70,byte[RewindStates],1,99
-    GUIPHoldbutton2 184,17,192,25,71,byte[RewindStates],-1,0
-    GUIPHoldbutton2 173,32,181,40,72,byte[RewindFrames],1,99
-    GUIPHoldbutton2 184,32,192,40,73,byte[RewindFrames],-1,0
+    GUIClickCButtonAS 11,40,byte[AutoIncSaveSlot]
+    GUIClickCButton 11,50,byte[SRAMSave5Sec]
+    GUIClickCButton 11,60,byte[LatestSave]
+    GUIClickCButton 11,70,byte[AutoState]
+    GUIClickCButton 11,80,byte[SRAMState]
+    GUIClickCButton 11,90,byte[PauseLoad]
+    GUIClickCButton 11,100,byte[PauseRewind]
+    GUIPHoldbutton2 173,17,181,24,70,byte[RewindStates],1,99
+    GUIPHoldbutton2 184,17,192,24,71,byte[RewindStates],-1,0
+    GUIPHoldbutton2 173,29,181,36,72,byte[RewindFrames],1,99
+    GUIPHoldbutton2 184,29,192,36,73,byte[RewindFrames],-1,0
     DGOptnsProcBox 27,121,[KeyStateSlc0]
     DGOptnsProcBox 27+45,121,[KeyStateSlc1]
     DGOptnsProcBox 27+45*2,121,[KeyStateSlc2]

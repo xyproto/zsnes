@@ -574,8 +574,9 @@ NEWSYM MovieDisplayFrame, db 0
 NEWSYM MovieStartMethod, db 0
 NEWSYM EMUPauseKey, dd 0
 NEWSYM INCRFrameKey, dd 0
-
-;end NEWSYM
+NEWSYM PauseLoad, db 0 
+NEWSYM PauseRewind, db 0
+;NEWSYM end
 
 GUIsave equ $-GUIRAdd
 

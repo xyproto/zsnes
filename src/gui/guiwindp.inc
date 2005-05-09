@@ -5897,21 +5897,25 @@ DisplayGUISave:
 .zero
     sub byte[GUItextcolor],15
     GUIOuttextwin2 20,8,19,GUISaveText6
-    GUIOuttextwin2 20,8,34,GUISaveText7
-    GUIOuttextwin2u 20,26,54,GUISaveText1,5
-    GUIOuttextwin2u 20,26,64,GUISaveText2,5
-    GUIOuttextwin2u 20,26,74,GUISaveText3,0
-    GUIOuttextwin2u 20,26,84,GUISaveText4,0
-    GUIOuttextwin2u 20,26,94,GUISaveText5,0
+    GUIOuttextwin2 20,8,31,GUISaveText7
+    GUIOuttextwin2u 20,26,44,GUISaveText1,5
+    GUIOuttextwin2u 20,26,54,GUISaveText2,5
+    GUIOuttextwin2u 20,26,64,GUISaveText3,0
+    GUIOuttextwin2u 20,26,74,GUISaveText4,0
+    GUIOuttextwin2u 20,26,84,GUISaveText5,0
+    GUIOuttextwin2u 20,26,94,GUISaveTextG,0
+    GUIOuttextwin2u 20,26,104,GUISaveTextH,12
 
     add byte[GUItextcolor],15
     GUIOuttextwin2 20,7,18,GUISaveText6
-    GUIOuttextwin2 20,7,33,GUISaveText7
-    GUIOuttextwin2 20,25,53,GUISaveText1
-    GUIOuttextwin2 20,25,63,GUISaveText2
-    GUIOuttextwin2 20,25,73,GUISaveText3
-    GUIOuttextwin2 20,25,83,GUISaveText4
-    GUIOuttextwin2 20,25,93,GUISaveText5
+    GUIOuttextwin2 20,7,30,GUISaveText7
+    GUIOuttextwin2 20,25,43,GUISaveText1
+    GUIOuttextwin2 20,25,53,GUISaveText2
+    GUIOuttextwin2 20,25,63,GUISaveText3
+    GUIOuttextwin2 20,25,73,GUISaveText4
+    GUIOuttextwin2 20,25,83,GUISaveText5
+    GUIOuttextwin2 20,25,93,GUISaveTextG
+    GUIOuttextwin2 20,25,103,GUISaveTextH
     
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
@@ -5973,7 +5977,7 @@ DisplayGUISave:
     GUIOuttextwin2 20,8+57,149,GUISaveTextA
     GUIOuttextwin2 20,8+114,149,GUISaveTextB
     GUIOuttextwin2 20,8,158,GUISaveTextF
-
+    
     mov al,[GUIWincol]
     mov [GUIGameOptnsColA],al
     mov byte[GUIGameOptnsColB],202
@@ -6001,32 +6005,44 @@ DisplayGUISave:
     je .nocheckbox
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox
-    GUIDisplayIconWin 20,11,50,[GUITemp]
+    GUIDisplayIconWin 20,11,40,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SRAMSave5Sec],0
     je .nocheckbox1
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
-    GUIDisplayIconWin 20,11,60,[GUITemp]
+    GUIDisplayIconWin 20,11,50,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[LatestSave],0
     je .nocheckbox2
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox2
-    GUIDisplayIconWin 20,11,70,[GUITemp]
+    GUIDisplayIconWin 20,11,60,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AutoState],0
     je .nocheckbox3
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox3
-    GUIDisplayIconWin 20,11,80,[GUITemp]
+    GUIDisplayIconWin 20,11,70,[GUITemp]
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SRAMState],0
     je .nocheckbox4
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox4
+    GUIDisplayIconWin 20,11,80,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[PauseLoad],0
+    je .nocheckbox5
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox5
     GUIDisplayIconWin 20,11,90,[GUITemp]
-    
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[PauseRewind],0
+    je .nocheckbox6
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox6
+    GUIDisplayIconWin 20,11,100,[GUITemp]
+
     ; Draw borders
     mov dword[GUIWincol],148+10
     cmp byte[cwindrawn],1
@@ -6037,18 +6053,7 @@ DisplayGUISave:
     jne .nozero3
     mov dword[GUIWincol],148
 .nozero3
-    mov dl,[GUIWincol]
-    DrawGUIWinBox 20,150,31,165,31,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 20,149,32,149,39,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 20,150,40,165,40,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 20,165,32,166,39,dl
-    
+
     mov dl,[GUIWincol]
     DrawGUIWinBox 20,150,16,165,16,dl
     mov dl,[GUIWincol]
@@ -6060,6 +6065,18 @@ DisplayGUISave:
     mov dl,[GUIWincol]
     add dl,3
     DrawGUIWinBox 20,165,17,166,24,dl
+    
+    mov dl,[GUIWincol]
+    DrawGUIWinBox 20,150,28,165,28,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 20,149,29,149,36,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 20,150,37,165,37,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 20,165,29,166,36,dl
     
     DGOptnsBorderBox 20,26,120
     DGOptnsBorderBox 20,71,120
@@ -6079,7 +6096,7 @@ DisplayGUISave:
     DGOptnsBorderBox 20,45,156
     ; End draw borders  
     
-    DrawGUIWinBox 20,150,32,165,39,167
+    DrawGUIWinBox 20,150,29,165,36,167
     xor ax,ax
     mov ah,[RewindFrames]
     mov al,48
@@ -6093,13 +6110,13 @@ DisplayGUISave:
 .hex2asciidone2
     mov [GUISaveTextX],ax
     mov byte[GUItextcolor],223
-    GUIOuttextwin2 20,154,34,GUISaveTextX
+    GUIOuttextwin2 20,154,31,GUISaveTextX
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je .zero5
     mov byte[GUItextcolor],222
 .zero5
-    GUIOuttextwin2 20,153,33,GUISaveTextX
+    GUIOuttextwin2 20,153,30,GUISaveTextX
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
     je .zero7
@@ -6135,8 +6152,8 @@ DisplayGUISave:
 
     DrawGUIButton 20,173,17,181,25,GUISaveTextY,70,-2,-1
     DrawGUIButton 20,184,17,192,25,GUISaveTextZ,71,-2,-1
-    DrawGUIButton 20,173,32,181,40,GUISaveTextV,72,-2,-1
-    DrawGUIButton 20,184,32,192,40,GUISaveTextW,73,-2,-1
+    DrawGUIButton 20,173,29,181,37,GUISaveTextV,72,-2,-1
+    DrawGUIButton 20,184,29,192,37,GUISaveTextW,73,-2,-1
     
 
     DDrawBox 20,27,121,[KeyStateSlc0]
@@ -6173,6 +6190,8 @@ GUISaveTextC db 'ST+',0
 GUISaveTextD db 'ST-',0
 GUISaveTextE db 'STATE SELECTS :',0
 GUISaveTextF db 'REWIND',0
+GUISaveTextG db 'PAUSE AFTER LOADING STATE',0
+GUISaveTextH db 'PAUSE AFTER REWIND',0
 GUISaveTextV db '+',0
 GUISaveTextW db '-',0
 GUISaveTextX db '  ',0
