@@ -778,6 +778,7 @@ void zst_sram_load_compressed(FILE *fp)
 
 void stateloader (unsigned char *statename, unsigned char keycheck, unsigned char xfercheck)
 {
+  extern unsigned char PauseLoad;
   #ifdef __LINUX__
   SRAMChdir();
   #endif
@@ -802,6 +803,7 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
       {
         Msgptr = "RR STATE LOADED.";
         MessageOn = MsgCount;
+        EMUPause = PauseLoad;
       }
       return;
     case 2:
@@ -820,8 +822,15 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
   {
     if (xfercheck)      { Totalbyteloaded = 0; }
 
-    Msgptr = (zst_load(fhandle, 0)) ? txtloadmsg : txtconvmsg;
-    // 'STATE X LOADED.' or 'STATE X TOO OLD.'
+    if (zst_load(fhandle, 0))
+    {
+      Msgptr = txtloadmsg; // 'STATE X LOADED.'
+      EMUPause = PauseLoad;
+    }
+    else
+    {
+      Msgptr = txtconvmsg; // 'STATE X TOO OLD.' - I don't think this is always accurate -Nach
+    }
     fclose(fhandle);
   }
   else
