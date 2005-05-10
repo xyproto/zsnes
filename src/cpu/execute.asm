@@ -26,8 +26,8 @@ EXTSYM cvidmode,vidbuffer,vidbufferofsa,disable65816sh,GUISaveVars,virqnodisable
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
 EXTSYM KeyQuickSaveSPC,TimerEnable,IRQHack,HIRQLoc,splitflags,joinflags
-EXTSYM KeyQuickSnapShot,csounddisable,videotroub,Close_File,ResetTripleBuf
-EXTSYM Write_File,Output_Text,Create_File,Check_Key,Get_Key,Change_Dir
+EXTSYM KeyQuickSnapShot,csounddisable,videotroub,ResetTripleBuf
+EXTSYM Output_Text,Check_Key,Get_Key,Change_Dir
 EXTSYM InitPreGame,Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8
 EXTSYM SetupPreGame,memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap
 EXTSYM DeInitPostGame,spcPCRam,startdebugger,xp,xpb,xpc,tablead,tableadb
