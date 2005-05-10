@@ -1424,6 +1424,7 @@ NEWSYM cpuover
     call ReadInputDevice
 .noinputread
 
+    ;Pause and Frame increment
     cmp byte[INCRFrame],1
     jne .noframeincr
     xor byte[INCRFrame],1
@@ -1431,10 +1432,15 @@ NEWSYM cpuover
 .noframeincr
     cmp byte[EMUPause],1
     jne .noemupause
-    pushad
-    call copyvid ;Update screen
-    popad
+
     call ProcessRewind
+
+    ;Update screen (we should also kill sound)
+    pushad
+    call showvideo
+    popad
+    
+    ;jmp .nocache
     jmp .nonewgfx
 .noemupause
 
