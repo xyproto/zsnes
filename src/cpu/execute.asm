@@ -535,7 +535,14 @@ reexecuteb2:
     je near .activatereset
     mov eax,[KeySaveState]
     test byte[pressed+eax],1
-    jnz near savestate
+    jz .nosavestt
+    mov byte[pressed+1],0
+    mov byte[pressed+eax],2
+    pushad
+    call statesaver
+    popad
+    jmp reexecuteb
+.nosavestt
     mov eax,[KeyLoadState]
     test byte[pressed+eax],1
     jz .noloadstt0
@@ -660,34 +667,6 @@ NEWSYM newgfxerror2, db 'NEED 320x240 FOR NEW GFX 16B',0
 NEWSYM HIRQCycNext,   dd 0
 NEWSYM HIRQNextExe,   db 0
 
-
-
-;*******************************************************
-; Save/Load States
-;*******************************************************
-
-SECTION .data
-NEWSYM firstsaveinc, db 0
-NEWSYM txtsavemsg, db 'STATE - SAVED.',0
-NEWSYM txtsavemsgfail, db 'UNABLE TO SAVE.',0
-SECTION .text
-
-NEWSYM savestate
-    mov byte[pressed+1],0
-    mov eax,[KeySaveState]
-    mov byte[pressed+eax],2
-    pushad
-    call statesaver
-    popad
-    jmp reexecuteb
-
-SECTION .data
-.fname2 db 9,'image.dat',0
-
-NEWSYM txtloadmsg, db 'STATE - LOADED.',0
-NEWSYM txtconvmsg, db 'STATE - TOO OLD.',0
-NEWSYM txtnfndmsg, db 'UNABLE TO LOAD STATE -.',0
-SECTION .text
 
 ;*******************************************************
 ; Int 08h vector

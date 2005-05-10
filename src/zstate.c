@@ -235,7 +235,7 @@ void BackupCVFrame()
   {
     RewindPosPassed = true;
   }
-          
+
   RewindTimer = ActualRewindFrames;
 }
 
@@ -264,14 +264,14 @@ void RestoreCVFrame()
     }
     EMUPause = PauseRewind;
   }
-    
+
   copy_state_data(RewindBufferPos, memcpyrinc, csm_load_rewind);
 
   //Clear Cache Check
   memset(vidmemch2, 1, sizeof(vidmemch2));
   memset(vidmemch4, 1, sizeof(vidmemch4));
   memset(vidmemch8, 1, sizeof(vidmemch8));
-  
+
   RewindTimer = ActualRewindFrames;
 }
 
@@ -416,12 +416,13 @@ void ResetState()
   ResState(Voice7BufPtr);
 }
 
-extern unsigned int statefileloc, CurrentHandle, SfxRomBuffer;
-extern unsigned int SfxCROM, SfxLastRamAdr, SfxRAMMem;
-extern unsigned int MsgCount, MessageOn;
-extern unsigned char AutoIncSaveSlot, firstsaveinc, fnamest[512];
-extern unsigned char cbitmode, NoPictureSave, txtsavemsg[14];
-extern unsigned char *Msgptr, txtsavemsgfail[15];
+unsigned char firstsaveinc = 0, txtsavemsg[14] = "STATE - SAVED.";
+unsigned char txtsavemsgfail[15] = "UNABLE TO SAVE.";
+
+extern unsigned int statefileloc, CurrentHandle, SfxRomBuffer, SfxCROM;
+extern unsigned int SfxLastRamAdr, SfxRAMMem, MsgCount, MessageOn;
+extern unsigned char AutoIncSaveSlot, fnamest[512], cbitmode, NoPictureSave;
+extern unsigned char *Msgptr;
 extern unsigned short PrevPicture[64*56];
 
 static FILE *fhandle;
@@ -474,7 +475,7 @@ static bool zst_save_compressed(FILE *fp)
     }
     free(buffer);
   }
-   
+
   if (!worked) //Compression failed for whatever reason
   {
     fwrite3(cur_zst_size | 0x00800000, fp); //Uncompressed ZST will never break 8MB
@@ -482,7 +483,7 @@ static bool zst_save_compressed(FILE *fp)
 
   return(worked);
 }
-  
+
 void zst_save(FILE *fp, bool Thumbnail, bool Compress)
 {
   PrepareOffset();
@@ -503,7 +504,7 @@ void zst_save(FILE *fp, bool Thumbnail, bool Compress)
   if (!Compress || !zst_save_compressed(fp)) //If we don't want compressed or compression failed
   {
     fwrite(zst_header_cur, 1, sizeof(zst_header_cur)-1, fp); //-1 for null
-  
+
     fhandle = fp; //Set global file handle
     copy_state_data(0, write_save_state_data, csm_save_zst_new);
 
@@ -513,7 +514,7 @@ void zst_save(FILE *fp, bool Thumbnail, bool Compress)
       fwrite(PrevPicture, 1, 64*56*sizeof(unsigned short), fp);
     }
   }
-    
+
   if (SFXEnable)
   {
     SfxRomBuffer += SfxCROM;
@@ -592,10 +593,13 @@ void statesaver()
   stim();
 }
 
+unsigned char txtloadmsg[16] = "STATE - LOADED.";
+unsigned char txtconvmsg[17] = "STATE - TOO OLD.";
+unsigned char txtnfndmsg[24] = "UNABLE TO LOAD STATE -.";
+
 extern unsigned int KeyLoadState, Totalbyteloaded, SfxMemTable[256], SfxCPB;
 extern unsigned int SfxPBR, SfxROMBR, SfxRAMBR;
-extern unsigned char pressed[256+128+64], multchange, txtloadmsg[15];
-extern unsigned char txtconvmsg[16], txtnfndmsg[23], ioportval, SDD1Enable;
+extern unsigned char pressed[256+128+64], multchange, ioportval, SDD1Enable;
 extern unsigned char nexthdma;
 
 static void read_save_state_data(unsigned char **dest, void *data, size_t len)
@@ -604,11 +608,11 @@ static void read_save_state_data(unsigned char **dest, void *data, size_t len)
 }
 
 static bool zst_load_compressed(FILE *fp, size_t compressed_size)
-{    
+{
   unsigned long data_size = cur_zst_size - (sizeof(zst_header_cur)-1);
   unsigned char *buffer = 0;
   bool worked = false;
-   
+
   if ((buffer = (unsigned char *)malloc(data_size)))
   {
     unsigned char *compressed_buffer = 0;
@@ -624,7 +628,7 @@ static bool zst_load_compressed(FILE *fp, size_t compressed_size)
       free(compressed_buffer);
     }
     free(buffer);
-  }  
+  }
   return(worked);
 }
 
@@ -662,7 +666,7 @@ bool zst_load(FILE *fp, size_t Compressed)
     copy_state_data(0, read_save_state_data, (zst_version == 143) ? csm_load_zst_new: csm_load_zst_old );
     Totalbyteloaded += load_save_size;
   }
-    
+
   if (SFXEnable)
   {
     SfxCPB = SfxMemTable[(SfxPBR & 0xFF)];
@@ -708,11 +712,11 @@ bool zst_load(FILE *fp, size_t Compressed)
 
 //Wrapper for above
 bool zst_compressed_loader(FILE *fp)
-{      
+{
   size_t data_size = fread3(fp);
   return((data_size & 0x00800000) ? zst_load(fp, 0) : zst_load(fp, data_size));
 }
-      
+
 void zst_sram_load(FILE *fp)
 {
   fseek(fp, sizeof(zst_header_cur)-1 + PH65816regsize + 199635, SEEK_CUR);
@@ -772,7 +776,7 @@ void zst_sram_load_compressed(FILE *fp)
         free(compressed_buffer);
       }
       free(buffer);
-    }  
+    }
   }
 }
 

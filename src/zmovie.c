@@ -76,7 +76,7 @@ bool zst_compressed_loader(FILE *);
                     print_bin(JoyBOrig, &usedb); printf(" "); \
                     print_bin(JoyCOrig, &usedc); printf(" "); \
                     print_bin(JoyDOrig, &usedd); printf(" "); \
-                    print_bin(JoyEOrig, &usede); printf("\n");                    
+                    print_bin(JoyEOrig, &usede); printf("\n");
 
 static unsigned int useda, usedb, usedc, usedd, usede;
 static void print_bin(unsigned int num, unsigned int *used)
@@ -269,7 +269,7 @@ static void zmv_header_write(struct zmv_header *zmv_head, FILE *fp)
   fwrite2(zmv_head->author_len, fp);
   fwrite3(zmv_head->zst_size, fp);
   fwrite2(zmv_head->initial_input, fp);
-  
+
   switch (zmv_head->zmv_flag.start_method)
   {
     case zmv_sm_zst:
@@ -538,7 +538,7 @@ static size_t internal_chapter_delete_after(struct internal_chapter_buf *icb, si
 
 /*
 
-Bit Encoder and Decoder 
+Bit Encoder and Decoder
 
 */
 
@@ -560,7 +560,7 @@ size_t bit_encoder(unsigned int data, unsigned int mask, unsigned char *buffer, 
       }
       skip_bits++;
     }
-  
+
     if (!bit_loop) { break; }
   }
 
@@ -571,7 +571,7 @@ size_t bit_decoder(unsigned int *data, unsigned int mask, unsigned char *buffer,
 {
   unsigned char bit_loop;
   *data = 0;
-  
+
   for (bit_loop = 31; ; bit_loop--)
   {
     if (mask & BIT(bit_loop))
@@ -584,7 +584,7 @@ size_t bit_decoder(unsigned int *data, unsigned int mask, unsigned char *buffer,
     }
 
     if (!bit_loop) { break; }
-  }    
+  }
 
   return(skip_bits);
 }
@@ -664,7 +664,7 @@ static void load_last_joy_state(unsigned char *buffer)
     skip_bits = bit_decoder(&zmv_vars.last_joy_state.A, 0xFFF00000, buffer, skip_bits);
     zmv_vars.last_joy_state.A |= (zmv_vars.inputs_enabled & BIT(15)) ? 0x00008000 : 0;
   }
-  
+
   if (zmv_vars.inputs_enabled & BIT(0x9)) //Mouse 2
   {
     skip_bits = bit_decoder(&zmv_vars.last_joy_state.B, 0x00C0FFFF, buffer, skip_bits);
@@ -684,7 +684,7 @@ static void load_last_joy_state(unsigned char *buffer)
     zmv_vars.last_joy_state.E = 0;
   }
   else
-  {    
+  {
     skip_bits = bit_decoder(&zmv_vars.last_joy_state.C, 0xFFF00000, buffer, skip_bits);
     skip_bits = bit_decoder(&zmv_vars.last_joy_state.D, 0xFFF00000, buffer, skip_bits);
     skip_bits = bit_decoder(&zmv_vars.last_joy_state.E, 0xFFF00000, buffer, skip_bits);
@@ -751,11 +751,11 @@ static size_t internal_chapter_length(size_t offset)
   fseek(zmv_vars.fp, offset, SEEK_SET);
   icl = fread3(zmv_vars.fp) & 0x007FFFFF; //The upper 9 bits are not part of the length
   icl += 3; //Add 3 for the header which says how long it is
-  
+
   fseek(zmv_vars.fp, current_loc, SEEK_SET);
   return(icl);
 }
-     
+
 /*
 
 Create and record ZMV
@@ -783,11 +783,11 @@ static void zmv_create(char *filename)
                                     (IS_MOUSE_1() ? BIT(0xA) : 0) |
                                     (IS_MOUSE_2() ? BIT(0x9) : 0) |
                                     (IS_SCOPE()   ? BIT(0x8) : 0);
-                                    
+
     zmv_header_write(&zmv_vars.header, zmv_vars.fp);
 
     zmv_vars.inputs_enabled = zmv_vars.header.initial_input;
-    
+
     switch (zmv_vars.header.zmv_flag.start_method)
     {
       case zmv_sm_zst:
@@ -808,7 +808,7 @@ static void zmv_create(char *filename)
     zst_save(zmv_vars.fp, false, true);
     zmv_vars.filename = (char *)malloc(filename_len+1); //+1 for null
     strcpy(zmv_vars.filename, filename);
-  
+
     debug_input_start;
   }
   else
@@ -838,7 +838,7 @@ static void zmv_rle_flush()
 
 static void zmv_record_command(enum zmv_commands command)
 {
-  zmv_rle_flush();  
+  zmv_rle_flush();
 
   zmv_vars.write_buffer[zmv_vars.write_buffer_loc++] = (command << 1) | BIT(0);
 
@@ -851,7 +851,7 @@ static void zmv_record_command(enum zmv_commands command)
     prev = cur;                                                          \
     flag |= BIT(bit);                                                    \
     skip_bits = bit_encoder(prev, 0xFFF00000, press_buf, skip_bits);     \
-  }  
+  }
 
 static void zmv_record(bool slow, unsigned char combos_used)
 {
@@ -864,7 +864,7 @@ static void zmv_record(bool slow, unsigned char combos_used)
   zmv_vars.header.key_combos += combos_used;
 
   debug_input;
-    
+
   RECORD_PAD(zmv_vars.last_joy_state.A, JoyAOrig, 7);
   RECORD_PAD(zmv_vars.last_joy_state.B, JoyBOrig, 6);
   RECORD_PAD(zmv_vars.last_joy_state.C, JoyCOrig, 5);
@@ -893,7 +893,7 @@ static void zmv_record(bool slow, unsigned char combos_used)
 static bool zmv_insert_chapter()
 {
   if ((zmv_vars.header.internal_chapters < 65535) && zmv_vars.header.frames &&
-      (zmv_vars.last_internal_chapter_offset != (ftell(zmv_vars.fp) + 
+      (zmv_vars.last_internal_chapter_offset != (ftell(zmv_vars.fp) +
        zmv_vars.write_buffer_loc - INT_CHAP_SIZE(zmv_vars.last_internal_chapter_offset))))
   {
     unsigned char flag = BIT(2);
@@ -977,7 +977,7 @@ static bool zmv_open(char *filename)
     MovieStartMethod = (unsigned char)zmv_vars.header.zmv_flag.start_method;
     zmv_vars.inputs_enabled = zmv_vars.header.initial_input;
     zmv_open_vars.first_chapter_pos = ftell(zmv_vars.fp);
-    
+
     if (zmv_vars.header.zsnes_version != (versionNumber & 0xFFFF))
     {
       zst_compressed_loader(zmv_vars.fp);
@@ -1030,7 +1030,7 @@ static bool zmv_open(char *filename)
     strcpy(zmv_vars.filename, filename);
 
     debug_input_start;
-    
+
     return(true);
   }
   return(false);
@@ -1095,7 +1095,7 @@ static bool zmv_replay()
           GUIReset = 1;
           ReturnFromSPCStall = 0;
           return(true);
-        }        
+        }
         if (zmv_replay_command(command));
         {
           return(zmv_replay());
@@ -1119,13 +1119,13 @@ static bool zmv_replay()
       {
         unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
         size_t skip_bits = 0;
-        
+
         REPLAY_PAD(zmv_vars.last_joy_state.A, JoyAOrig, 7);
         REPLAY_PAD(zmv_vars.last_joy_state.B, JoyBOrig, 6);
         REPLAY_PAD(zmv_vars.last_joy_state.C, JoyCOrig, 5);
         REPLAY_PAD(zmv_vars.last_joy_state.D, JoyDOrig, 4);
         REPLAY_PAD(zmv_vars.last_joy_state.E, JoyEOrig, 3);
-      
+
         debug_input;
       }
     }
@@ -1658,7 +1658,7 @@ static void raw_video_close()
     }
 
     fclose(raw_vid.fp);
-    raw_vid.fp = 0;      
+    raw_vid.fp = 0;
   }
 }
 
@@ -1695,7 +1695,7 @@ static void raw_video_write_frame()
     }
 
     raw_vid.frame_index++;
-    
+
     if (raw_vid.frame_index == RAW_BUFFER_FRAMES)
     {
       fwrite(raw_vid.frame_buffer, RAW_PIXEL_FRAME_SIZE, RAW_BUFFER_FRAMES, raw_vid.fp);
@@ -2053,7 +2053,7 @@ void Replay()
     if (zmv_frames_replayed())
     {
       Msgptr = "MOVIE FINISHED.";
-    
+
       if (RawDumpInProgress)
       {
         raw_video_close();
