@@ -6120,6 +6120,7 @@ DisplayGUISave:
     GUIDisplayIconWin 20,11,100,[GUITemp]
 
 
+
 ; Draw borders
     mov dword[GUIWincol],148+10   ; Setup for borders
     cmp byte[cwindrawn],1
@@ -6244,15 +6245,23 @@ DisplayGUISave:
     DDrawBox 20,8+57+25,148,[KeyLoadState]
     DDrawBox 20,8+114+25,148,[KeyStateSelct]
     DDrawBox 20,8+38,157,[KeyRewind]
-    ret
-    
-    
+
+
 ;Buttons    
+    mov byte[GUItextcolor],217               ;set color for boxes
+    cmp byte[GUIWincoladd],0
+    je .zero88
+    mov byte[GUItextcolor],211
+.zero88
+    sub byte[GUItextcolor],15
+    add byte[GUItextcolor],15
     DrawGUIButton 20,173,17,181,25,GUISaveTextZ1,70,-2,-1  ; + Rewind States
     DrawGUIButton 20,184,17,192,25,GUISaveTextZ2,71,-2,-1  ; - Rewind States
     DrawGUIButton 20,173,29,181,37,GUISaveTextZ1,72,-2,-1  ; + Second/Rewind
     DrawGUIButton 20,184,29,192,37,GUISaveTextZ2,73,-2,-1  ; - Second/Rewind
-
+    
+   
+ret
 SECTION .data
 GUISaveTextA1 db '# OF REWIND STATES',0
 GUISaveTextA2 db '1/5 SECONDS PER REWIND',0
