@@ -2377,7 +2377,7 @@ GUIcurrentvideocursloc resd 1
 SECTION .text
 
 
-DisplayGUISound:
+DisplayGUISound:                     ; Sound Related Options
     GUIDrawWindowBox 6,GUISoundDisp
     
 ;Text Display
@@ -2717,16 +2717,16 @@ DisplayGUICheatConv:
     add eax,4
     xor ebx,ebx
     mov ecx,3
-    mov edx,GUICheatTextB
+    mov edx,GUICheatTextZ3
 .loop
     mov bl,[eax]
     and bl,0Fh
-    mov bl,[GUICheatTextC+ebx]
+    mov bl,[GUICheatTextZ4+ebx]
     mov [edx+1],bl
     mov bl,[eax]
     and bl,0F0h
     shr bl,4
-    mov bl,[GUICheatTextC+ebx]
+    mov bl,[GUICheatTextZ4+ebx]
     mov [edx],bl
     add edx,2
     dec eax
@@ -2734,57 +2734,57 @@ DisplayGUICheatConv:
     jnz .loop
     mov eax,[ccheatnpos]
     inc eax
-    mov edx,GUICheatTextB+7
+    mov edx,GUICheatTextZ3+7
     mov bl,[eax]
     and bl,0Fh
-    mov bl,[GUICheatTextC+ebx]
+    mov bl,[GUICheatTextZ4+ebx]
     mov [edx+1],bl
     mov bl,[eax]
     and bl,0F0h
     shr bl,4
-    mov bl,[GUICheatTextC+ebx]
+    mov bl,[GUICheatTextZ4+ebx]
     mov [edx],bl
     mov eax,[ccheatnpos]
     add eax,5
-    mov edx,GUICheatTextB+10
+    mov edx,GUICheatTextZ3+10
     mov bl,[eax]
     and bl,0Fh
-    mov bl,[GUICheatTextC+ebx]
+    mov bl,[GUICheatTextZ4+ebx]
     mov [edx+1],bl
     mov bl,[eax]
     and bl,0F0h
     shr bl,4
-    mov bl,[GUICheatTextC+ebx]
+    mov bl,[GUICheatTextZ4+ebx]
     mov [edx],bl
     mov eax,[ccheatnpos]
     test byte[eax-28],80h
     jnz .src
     test byte[eax],04h
     jz .on
-    mov byte[GUICheatTextB+13],'O'
-    mov byte[GUICheatTextB+14],'F'
-    mov byte[GUICheatTextB+15],'F'
+    mov byte[GUICheatTextZ3+13],'O'
+    mov byte[GUICheatTextZ3+14],'F'
+    mov byte[GUICheatTextZ3+15],'F'
     jmp .off
 .on
     test byte[eax],80h
     jnz .repl
-    mov byte[GUICheatTextB+13],'O'
-    mov byte[GUICheatTextB+14],'N'
-    mov byte[GUICheatTextB+15],' '
+    mov byte[GUICheatTextZ3+13],'O'
+    mov byte[GUICheatTextZ3+14],'N'
+    mov byte[GUICheatTextZ3+15],' '
     jmp .off
 .repl
-    mov byte[GUICheatTextB+13],'R'
-    mov byte[GUICheatTextB+14],'P'
-    mov byte[GUICheatTextB+15],'L'
+    mov byte[GUICheatTextZ3+13],'R'
+    mov byte[GUICheatTextZ3+14],'P'
+    mov byte[GUICheatTextZ3+15],'L'
     jmp .off
 .src
-    mov byte[GUICheatTextB+13],'S'
-    mov byte[GUICheatTextB+14],'R'
-    mov byte[GUICheatTextB+15],'C'
+    mov byte[GUICheatTextZ3+13],'S'
+    mov byte[GUICheatTextZ3+14],'R'
+    mov byte[GUICheatTextZ3+15],'C'
 .off
     mov ecx,20
     add eax,8
-    mov edx,GUICheatTextB+17
+    mov edx,GUICheatTextZ3+17
 .loop2
     mov bl,[eax]
     mov [edx],bl
@@ -2798,46 +2798,53 @@ DisplayGUICheatConv:
     test dword[ccheatnleft],80000000h
     jnz %%skip
     call DisplayGUICheatConv
-    GUIOuttextwin2 7,%1,%2,GUICheatTextB
+    GUIOuttextwin2 7,%1,%2,GUICheatTextZ3
     add dword[ccheatnpos],28
     dec dword[ccheatnleft]
 %%skip
 %endmacro
 
-DisplayGUICheat:
+DisplayGUICheat:       ; Add/Browse Cheats menu
     GUIDrawWindowBox 7,GUICheatDisp
+    
+
+; Display Text
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
     je .zero
     mov byte[GUItextcolor],211
 .zero
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2 7,6,132,GUICheatText1
-    GUIOuttextwin2 7,6,143,GUICheatText2
-    GUIOuttextwin2 7,6,13,GUICheatText3
-    GUIOuttextwin2 7,11,154,GUICheatTextD
-    GUIOuttextwin2 7,11,164,GUICheatTextE
-    GUIOuttextwin2 7,11,172,GUICheatTextF
-    GUIOuttextwin2 7,11,180,GUICheatTextG
-    GUIOuttextwin2 7,26,191,GUICheatTextJ
-    add byte[GUItextcolor],15
-    GUIOuttextwin2 7,5,131,GUICheatText1
-    GUIOuttextwin2 7,5,142,GUICheatText2
-    GUIOuttextwin2 7,5,12,GUICheatText3
-    GUIOuttextwin2 7,10,153,GUICheatTextD
-    GUIOuttextwin2 7,10,163,GUICheatTextE
-    GUIOuttextwin2 7,10,171,GUICheatTextF
-    GUIOuttextwin2 7,10,179,GUICheatTextG
-    GUIOuttextwin2 7,25,190,GUICheatTextJ
+    sub byte[GUItextcolor],15               ;Shadow
+    GUIOuttextwin2 7,6,13,GUICheatTextA
+    GUIOuttextwin2 7,6,132,GUICheatTextC1
+    GUIOuttextwin2 7,6,143,GUICheatTextC2
+    GUIOuttextwin2 7,11,154,GUICheatTextD1
+    GUIOuttextwin2 7,11,164,GUICheatTextD2
+    GUIOuttextwin2 7,11,172,GUICheatTextD3
+    GUIOuttextwin2 7,11,180,GUICheatTextD4
+    GUIOuttextwin2 7,26,191,GUICheatTextE1
+    
+    add byte[GUItextcolor],15               ;Text
+    GUIOuttextwin2 7,5,12,GUICheatTextA
+    GUIOuttextwin2 7,5,131,GUICheatTextC1
+    GUIOuttextwin2 7,5,142,GUICheatTextC2
+    GUIOuttextwin2 7,10,153,GUICheatTextD1
+    GUIOuttextwin2 7,10,163,GUICheatTextD2
+    GUIOuttextwin2 7,10,171,GUICheatTextD3
+    GUIOuttextwin2 7,10,179,GUICheatTextD4
+    GUIOuttextwin2 7,25,190,GUICheatTextE1
     DrawGUIWinBox 7,5,20,229,108,167
 
-    DrawGUIButton 7,5,113,47,124,GUICheatText4,5,0,0
-    DrawGUIButton 7,52,113,94,124,GUICheatText5,6,0,0
-    DrawGUIButton 7,99,113,141,124,GUICheatText7,7,0,0
-    DrawGUIButton 7,146,113,188,124,GUICheatText8,8,0,0
-    DrawGUIButton 7,212,134,236,145,GUICheatText6,9,0,0
-    DrawGUIButton 7,193,113,235,124,GUICheatTextI,33,0,0
+; Draw Buttons
+    DrawGUIButton 7,5,113,47,124,GUICheatTextB1,5,0,0
+    DrawGUIButton 7,52,113,94,124,GUICheatTextB2,6,0,0
+    DrawGUIButton 7,99,113,141,124,GUICheatTextB3,7,0,0
+    DrawGUIButton 7,146,113,188,124,GUICheatTextB4,8,0,0
+    DrawGUIButton 7,193,113,235,124,GUICheatTextB5,33,0,0
+    DrawGUIButton 7,212,134,236,145,GUICheatTextB6,9,0,0
 
+ 
+; Red Highlight for Cheats box
     cmp dword[GUIcurrentcheatwin],0
     jne near .nowinbox
     mov ebx,[GUIcurrentcheatcursloc]
@@ -2849,6 +2856,8 @@ DisplayGUICheat:
     DrawGUIWinBox2 7,5,229,7,224
 .nowinbox
 
+
+; Draw Cheats box
     mov byte[GUItextcolor],223
     mov dword[ccheatnpos],cheatdata
     mov eax,[NumCheats]
@@ -2863,7 +2872,7 @@ DisplayGUICheat:
     sub eax,ebx
     sub eax,ebx
     add [ccheatnpos],eax
-    GUIOuttextwin2cheat 12,24
+    GUIOuttextwin2cheat 12,24         ; Shadow
     GUIOuttextwin2cheat 12,24+7
     GUIOuttextwin2cheat 12,24+7*2
     GUIOuttextwin2cheat 12,24+7*3
@@ -2894,7 +2903,7 @@ DisplayGUICheat:
     sub eax,ebx
     sub eax,ebx
     add [ccheatnpos],eax
-    GUIOuttextwin2cheat 11,23
+    GUIOuttextwin2cheat 11,23          ;Text
     GUIOuttextwin2cheat 11,23+7
     GUIOuttextwin2cheat 11,23+7*2
     GUIOuttextwin2cheat 11,23+7*3
@@ -2907,8 +2916,10 @@ DisplayGUICheat:
     GUIOuttextwin2cheat 11,23+7*10
     GUIOuttextwin2cheat 11,23+7*11
 
+
+;Scrollbar
     DrawSlideBarWin 7,231,28,[GUIcurrentcheatviewloc],[NumCheats],12,73,GUICStA
-    cmp byte[GUICHold],7
+    cmp byte[GUICHold],7          
     jne .noholda
     add byte[GUIWincoladd],3
 .noholda
@@ -2927,7 +2938,8 @@ DisplayGUICheat:
     sub byte[GUIWincoladd],3
 .noholdb2
 
-    ; Draw border
+
+; Draw borders 
     mov dword[GUIWincol],148+10
     cmp byte[cwindrawn],1
     jne .noone2
@@ -2938,9 +2950,9 @@ DisplayGUICheat:
     mov dword[GUIWincol],148
 .nozero2
     mov dl,[GUIWincol]
-    DrawGUIWinBox 7,5,19,229,19,dl
-    DrawGUIWinBox 7,82,128,172,128,dl
-    DrawGUIWinBox 7,82,139,196,139,dl
+    DrawGUIWinBox 7,5,19,229,19,dl      ; Cheat Box
+    DrawGUIWinBox 7,82,128,172,128,dl   ; Code Box
+    DrawGUIWinBox 7,82,139,196,139,dl   ; Descrip. Box
     mov dl,[GUIWincol]
     add dl,1
     DrawGUIWinBox 7,4,20,3,108,dl
@@ -2952,12 +2964,13 @@ DisplayGUICheat:
     DrawGUIWinBox 7,82,137,172,137,dl
     DrawGUIWinBox 7,82,148,196,148,dl
     mov dl,[GUIWincol]
-    add dl,3
+    add dl,3                            ; Cheat Box doesn't have right border
     DrawGUIWinBox 7,174,129,173,136,dl
     DrawGUIWinBox 7,156,140,197,147,dl
 
-    ; Draw boxes
-    mov ebx,[GUIcurrentcheatcursloc]
+
+; Draw input boxes
+    mov ebx,[GUIcurrentcheatcursloc]      
     sub ebx,[GUIcurrentcheatviewloc]
     mov eax,ebx
     lea ebx,[ebx*4]
@@ -2965,7 +2978,8 @@ DisplayGUICheat:
     add ebx,eax
     add ebx,eax
     add ebx,22
-    mov dl,167
+    
+    mov dl,167                           ;Code Box
     cmp dword[GUIcurrentcheatwin],1
     jne .notopibox
     mov dl,226
@@ -2974,8 +2988,9 @@ DisplayGUICheat:
     inc dl
 .nocoladd
 .notopibox
-    DrawGUIWinBox 7,82,129,172,136,dl
-    mov dl,167
+    DrawGUIWinBox 7,82,129,172,136,dl    
+    
+    mov dl,167                           ;Descrip. Box
     cmp dword[GUIcurrentcheatwin],2
     jne .nobotibox
     mov dl,226
@@ -2984,23 +2999,26 @@ DisplayGUICheat:
     inc dl
 .nocoladd2
 .nobotibox
-    DrawGUIWinBox 7,82,140,196,147,dl
-    mov byte[GUItextcolor],223
-    GUIOuttextwin2 7,84,132,GUICheatText9
-    GUIOuttextwin2 7,84,143,GUICheatTextA
-    mov byte[GUItextcolor],221
+    DrawGUIWinBox 7,82,140,196,147,dl        
+    
+    mov byte[GUItextcolor],223           ;Shadow
+    GUIOuttextwin2 7,84,132,GUICheatTextZ1
+    GUIOuttextwin2 7,84,143,GUICheatTextZ2
+    
+    mov byte[GUItextcolor],221           ;Text
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUItextcolor],222
 .zero3
-    GUIOuttextwin2 7,83,131,GUICheatText9
-    GUIOuttextwin2 7,83,142,GUICheatTextA
-    xor eax,eax
+    GUIOuttextwin2 7,83,131,GUICheatTextZ1
+    GUIOuttextwin2 7,83,142,GUICheatTextZ2
+    
+    xor eax,eax                 ; Code for movement of cursor
     mov al,[GUICheatPosA]
-    mov byte[GUICheatText9+eax],0
+    mov byte[GUICheatTextZ1+eax],0
     xor ebx,ebx
     mov bl,[GUICheatPosB]
-    mov byte[GUICheatTextA+ebx],0
+    mov byte[GUICheatTextZ2+ebx],0
     test byte[GUICCFlash],8
     jnz .nound
     cmp dword[GUIcurrentcheatwin],1
@@ -3009,12 +3027,14 @@ DisplayGUICheat:
     je .win2
     jmp .nound
 .win1
-    mov byte[GUICheatText9+eax],'_'
+    mov byte[GUICheatTextZ1+eax],'_'
     jmp .nound
 .win2
-    mov byte[GUICheatTextA+ebx],'_'
+    mov byte[GUICheatTextZ2+ebx],'_'
 .nound
 
+
+; Checkbox
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AutoLoadCht],1
     jne .nocheckbox
@@ -3024,24 +3044,31 @@ DisplayGUICheat:
     ret
 
 SECTION .data
-GUICheatText1 db 'ENTER CODE :',0
-GUICheatText2 db 'DESCRIPTION:',0
-GUICheatText3 db 'ADDRESS CV PV TGL DESCRIPTION',0
-GUICheatText4 db 'REMOVE',0
-GUICheatText5 db 'TOGGLE',0
-GUICheatText6 db 'ADD',0
-GUICheatText7 db 'SAVE',0
-GUICheatText8 db 'LOAD',0
-GUICheatTextI db 'FIX',0
-GUICheatText9 db '_',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; 14 digits
-GUICheatTextA db '_',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; 11 digits
-GUICheatTextB db '000000 00 00 OFF BLAHBLAH---',0,0,0,0,0,0,0,0,0,0,0,0
-GUICheatTextC db '0123456789ABCDEF'
-GUICheatTextD db 'VALID CODES : GAME GENIE, PAR, AND GF',0
-GUICheatTextE db 'NOTE : YOU MAY HAVE TO RESET THE GAME',0
-GUICheatTextF db ' AFTER ENTERING THE CODE. REMEMBER TO',0
-GUICheatTextG db ' INSERT THE "-" FOR GAME GENIE CODES',0
-GUICheatTextJ db 'AUTO-LOAD .CHT FILE AT GAME LOAD',0
+GUICheatTextA db 'ADDRESS CV PV TGL DESCRIPTION',0   ; Top
+
+GUICheatTextB1 db 'REMOVE',0           ; Buttons
+GUICheatTextB2 db 'TOGGLE',0
+GUICheatTextB3 db 'SAVE',0
+GUICheatTextB4 db 'LOAD',0
+GUICheatTextB5 db 'FIX',0
+GUICheatTextB6 db 'ADD',0
+
+GUICheatTextC1 db 'ENTER CODE :',0     ; Text by input boxes
+GUICheatTextC2 db 'DESCRIPTION:',0
+
+GUICheatTextD1 db 'VALID CODES : GAME GENIE, PAR, AND GF',0  ; Info for User
+GUICheatTextD2 db 'NOTE : YOU MAY HAVE TO RESET THE GAME',0
+GUICheatTextD3 db ' AFTER ENTERING THE CODE. REMEMBER TO',0
+GUICheatTextD4 db ' INSERT THE "-" FOR GAME GENIE CODES',0
+
+GUICheatTextE1 db 'AUTO-LOAD .CHT FILE AT GAME LOAD',0  ; Checkbox Text
+
+GUICheatTextZ1 db '_',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; 14 digits  
+GUICheatTextZ2 db '_',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; 11 digits (?)
+GUICheatTextZ3 db '000000 00 00 OFF BLAHBLAH---',0,0,0,0,0,0,0,0,0,0,0,0
+GUICheatTextZ4 db '0123456789ABCDEF'
+
+
 SECTION .bss
 GUICheatPosA resb 1
 GUICheatPosB resb 1
@@ -3052,6 +3079,7 @@ GUIcurrentcheatwin     resd 1
 ccheatnpos             resd 1
 ccheatnleft            resd 1
 SECTION .text
+
 
 DrawWindowSearch:
     GUIDrawWindowBox 13,GUISearchDisp
@@ -5482,7 +5510,7 @@ EEMode:
     mov eax,0
     ret
 
-DisplayGUIAddOns:
+DisplayGUIAddOns:                   ;Select Special Controllers
     GUIDrawWindowBox 17,GUIAddOnsDisp
 
 
@@ -5510,7 +5538,7 @@ DisplayGUIAddOns:
     GUIOuttextwin2 17,21,58,GUIAddOnText5
 .endEE    
 
-    add byte[GUItextcolor],15        ;Test
+    add byte[GUItextcolor],15        ;Text
     call EEMode
     cmp eax,0
     je near .noEE2                   ;You know it!
@@ -5961,7 +5989,7 @@ GUIPathsTextC db 'MDH:',0
 GUIPathsTextD db 'SPL4:',0
 NEWSYM GUIBlinkCursor, times 2 db 0
 
-DisplayGUISave:
+DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     GUIDrawWindowBox 20,GUISaveDisp               
     
 ;Text Display

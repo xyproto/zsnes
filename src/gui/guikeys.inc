@@ -1698,7 +1698,7 @@ GUICheatKeys:
     sub esi,[GUIcurrentcheatcursloc]
     sub esi,[GUIcurrentcheatcursloc]
     add esi,cheatdata
-    mov al,[GUICheatText9]
+    mov al,[GUICheatTextZ1]
     cmp al,'a'
     jae .lowletter
     cmp al,'A'
@@ -1711,7 +1711,7 @@ GUICheatKeys:
 .letter
     sub al,'A'-10
 .num
-    mov ah,[GUICheatText9+1]
+    mov ah,[GUICheatTextZ1+1]
     cmp ah,'a'
     jae .lowletter2
     cmp ah,'A'
@@ -1728,7 +1728,7 @@ GUICheatKeys:
     and ah,0Fh
     or al,ah
     mov [esi+1],al
-    mov word[GUICheatText9],0
+    mov word[GUICheatTextZ1],0
     pushad
     call EnableCheatCodeNoPrevMod
     popad
@@ -1743,8 +1743,8 @@ GUICheatKeys:
     dec byte[GUICheatPosA]
     xor eax,eax
     mov al,[GUICheatPosA]
-    mov byte[GUICheatText9+eax],'_'
-    mov byte[GUICheatText9+eax+1],0
+    mov byte[GUICheatTextZ1+eax],'_'
+    mov byte[GUICheatTextZ1+eax+1],0
     ret
 .nobacksp
     cmp dh,0
@@ -1760,9 +1760,9 @@ GUICheatKeys:
     mov byte[GUICCFlash],0
     xor eax,eax
     mov al,[GUICheatPosA]
-    mov byte[GUICheatText9+eax],dh
-    mov byte[GUICheatText9+eax+1],'_'
-    mov byte[GUICheatText9+eax+2],0
+    mov byte[GUICheatTextZ1+eax],dh
+    mov byte[GUICheatTextZ1+eax+1],'_'
+    mov byte[GUICheatTextZ1+eax+2],0
     inc byte[GUICheatPosA]
 .nochar
     ret
@@ -1781,8 +1781,8 @@ GUICheatKeys:
     dec byte[GUICheatPosB]
     xor eax,eax
     mov al,[GUICheatPosB]
-    mov byte[GUICheatTextA+eax],'_'
-    mov byte[GUICheatTextA+eax+1],0
+    mov byte[GUICheatTextZ2+eax],'_'
+    mov byte[GUICheatTextZ2+eax+1],0
     ret
 .nobackspb
     cmp dh,0
@@ -1796,9 +1796,9 @@ GUICheatKeys:
     xor eax,eax
     mov byte[GUICCFlash],0
     mov al,[GUICheatPosB]
-    mov byte[GUICheatTextA+eax],dh
-    mov byte[GUICheatTextA+eax+1],'_'
-    mov byte[GUICheatTextA+eax+2],0
+    mov byte[GUICheatTextZ2+eax],dh
+    mov byte[GUICheatTextZ2+eax+1],'_'
+    mov byte[GUICheatTextZ2+eax+2],0
     inc byte[GUICheatPosB]
 .nocharb
     ret

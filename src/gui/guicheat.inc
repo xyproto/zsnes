@@ -718,7 +718,7 @@ ProcessCheatCode:
     ; make sure flashing cursor doesn't exist
     xor ebx,ebx
     mov bl,[GUICheatPosB]
-    mov byte[GUICheatTextA+ebx],0
+    mov byte[GUICheatTextZ2+ebx],0
     ; transfer description
     mov eax,[NumCheats]
     shl eax,5
@@ -728,7 +728,7 @@ ProcessCheatCode:
     sub eax,[NumCheats]
     add eax,cheatdata
     add eax,6
-    mov ebx,GUICheatTextA
+    mov ebx,GUICheatTextZ2
     mov ecx,20
 .dloop
     mov dl,[ebx]
@@ -741,7 +741,7 @@ ProcessCheatCode:
     jnz .dloop
     ; determine whether it is gamegenie, par, or GF
     ; uppercase all codes if necessary
-    mov eax,GUICheatText9
+    mov eax,GUICheatTextZ1
     mov ecx,14
 .loop
     mov bl,[eax]
@@ -759,7 +759,7 @@ ProcessCheatCode:
     xor eax,eax
     mov al,[GUICheatPosA]
     dec al
-    cmp byte[GUICheatText9+eax],'R'
+    cmp byte[GUICheatTextZ1+eax],'R'
     jne .notrep
     mov byte[guicheatvalrep],80h
     dec byte[GUICheatPosA]
@@ -774,7 +774,7 @@ ProcessCheatCode:
     jmp guicheaterror
 .par
     ; check if code is valid
-    mov eax,GUICheatText9
+    mov eax,GUICheatTextZ1
     mov ecx,8
 .looppar
     mov bl,[eax]
@@ -795,7 +795,7 @@ ProcessCheatCode:
     jmp guicheaterror
 .gg
     ; check if code is valid
-    mov eax,GUICheatText9
+    mov eax,GUICheatTextZ1
     mov ecx,9
 .loopgg
     cmp ecx,5
@@ -824,7 +824,7 @@ ProcessCheatCode:
     jmp guicheaterror
 .gf
     ; check if code is valid
-    mov eax,GUICheatText9
+    mov eax,GUICheatTextZ1
     mov ecx,5
 .loopgf
     mov bl,[eax]
@@ -840,7 +840,7 @@ ProcessCheatCode:
     inc eax
     dec ecx
     jnz .loopgf
-    mov eax,GUICheatText9+5
+    mov eax,GUICheatTextZ1+5
     mov ecx,6
 .loopgf2
     mov bl,[eax]
@@ -858,7 +858,7 @@ ProcessCheatCode:
     inc eax
     dec ecx
     jnz .loopgf2
-    mov bl,[GUICheatText9+13]
+    mov bl,[GUICheatTextZ1+13]
     cmp bl,'0'
     je .okaygf3
     cmp bl,'1'
@@ -869,7 +869,7 @@ ProcessCheatCode:
 decodegf:
     ; convert code to number format
     mov ecx,14
-    mov esi,GUICheatText9
+    mov esi,GUICheatTextZ1
 .loopb2
     mov al,[esi]
     cmp al,'X'
@@ -890,15 +890,15 @@ decodegf:
     ; get address
     xor ebx,ebx
     xor ecx,ecx
-    mov cl,[GUICheatText9]
+    mov cl,[GUICheatTextZ1]
     shl ecx,4
-    add cl,[GUICheatText9+1]
+    add cl,[GUICheatTextZ1+1]
     shl ecx,4
-    add cl,[GUICheatText9+2]
+    add cl,[GUICheatTextZ1+2]
     shl ecx,4
-    add cl,[GUICheatText9+3]
+    add cl,[GUICheatTextZ1+3]
     shl ecx,4
-    add cl,[GUICheatText9+4]
+    add cl,[GUICheatTextZ1+4]
 
     mov edx,[NumCheats]
     shl edx,5
@@ -908,17 +908,17 @@ decodegf:
     sub edx,[NumCheats]
 
     ; Write data to memory
-    cmp byte[GUICheatText9+13],1
+    cmp byte[GUICheatTextZ1+13],1
     je near .modifysram
 
     ; get data
-    cmp byte[GUICheatText9+5],'X'
+    cmp byte[GUICheatTextZ1+5],'X'
     je near .nocode
-    cmp byte[GUICheatText9+6],'X'
+    cmp byte[GUICheatTextZ1+6],'X'
     je near .nocode
-    mov bl,[GUICheatText9+5]
+    mov bl,[GUICheatTextZ1+5]
     shl bl,4
-    add bl,[GUICheatText9+6]
+    add bl,[GUICheatTextZ1+6]
     mov esi,[romdata]
     mov al,[esi+ecx]
     mov [esi+ecx],bl
@@ -934,15 +934,15 @@ decodegf:
     add edx,28
 .nocode
     inc ecx
-    cmp byte[GUICheatText9+7],'X'
+    cmp byte[GUICheatTextZ1+7],'X'
     je near .nocode1
-    cmp byte[GUICheatText9+8],'X'
+    cmp byte[GUICheatTextZ1+8],'X'
     je near .nocode1
     cmp byte[NumCheats],255
     je near .nocode1
-    mov bl,[GUICheatText9+7]
+    mov bl,[GUICheatTextZ1+7]
     shl bl,4
-    add bl,[GUICheatText9+8]
+    add bl,[GUICheatTextZ1+8]
     mov esi,[romdata]
     mov al,[esi+ecx]
     mov [esi+ecx],bl
@@ -954,15 +954,15 @@ decodegf:
     add edx,28
 .nocode1
     inc ecx
-    cmp byte[GUICheatText9+9],'X'
+    cmp byte[GUICheatTextZ1+9],'X'
     je near .nocode2
-    cmp byte[GUICheatText9+10],'X'
+    cmp byte[GUICheatTextZ1+10],'X'
     je near .nocode2
     cmp byte[NumCheats],255
     je near .nocode2
-    mov bl,[GUICheatText9+9]
+    mov bl,[GUICheatTextZ1+9]
     shl bl,4
-    add bl,[GUICheatText9+10]
+    add bl,[GUICheatTextZ1+10]
     mov esi,[romdata]
     mov al,[esi+ecx]
     mov [esi+ecx],bl
@@ -979,13 +979,13 @@ decodegf:
     ja near .quit
     mov esi,[sram]
     ; get data
-    cmp byte[GUICheatText9+5],'X'
+    cmp byte[GUICheatTextZ1+5],'X'
     je .nocodeb
-    cmp byte[GUICheatText9+6],'X'
+    cmp byte[GUICheatTextZ1+6],'X'
     je .nocodeb
-    mov bl,[GUICheatText9+5]
+    mov bl,[GUICheatTextZ1+5]
     shl bl,4
-    add bl,[GUICheatText9+6]
+    add bl,[GUICheatTextZ1+6]
     mov al,[esi+ecx]
     mov [esi+ecx],bl
     mov byte[cheatdata+edx],2
@@ -996,17 +996,17 @@ decodegf:
     add edx,28
 .nocodeb
     inc ecx
-    cmp byte[GUICheatText9+7],'X'
+    cmp byte[GUICheatTextZ1+7],'X'
     je .nocode1b
-    cmp byte[GUICheatText9+8],'X'
+    cmp byte[GUICheatTextZ1+8],'X'
     je .nocode1b
     cmp byte[NumCheats],255
     je .nocode1b
     cmp ecx,65535
     ja .nocode1b
-    mov bl,[GUICheatText9+7]
+    mov bl,[GUICheatTextZ1+7]
     shl bl,4
-    add bl,[GUICheatText9+8]
+    add bl,[GUICheatTextZ1+8]
     mov al,[esi+ecx+1]
     mov [esi+ecx+1],bl
     mov byte[cheatdata+edx],2
@@ -1017,17 +1017,17 @@ decodegf:
     add edx,28
 .nocode1b
     inc ecx
-    cmp byte[GUICheatText9+9],'X'
+    cmp byte[GUICheatTextZ1+9],'X'
     je .nocode2c
-    cmp byte[GUICheatText9+10],'X'
+    cmp byte[GUICheatTextZ1+10],'X'
     je .nocode2c
     cmp byte[NumCheats],255
     je .nocode2c
     cmp ecx,65535
     ja .nocode2c
-    mov bl,[GUICheatText9+9]
+    mov bl,[GUICheatTextZ1+9]
     shl bl,4
-    add bl,[GUICheatText9+10]
+    add bl,[GUICheatTextZ1+10]
     mov al,[esi+ecx+2]
     mov [esi+ecx+2],bl
     mov byte[cheatdata+edx],2
@@ -1052,8 +1052,8 @@ decodegf:
     mov dword[GUIcurrentcheatviewloc],0
 .noview
 .nocheat
-    mov dword[GUICheatText9],0
-    mov dword[GUICheatTextA],0
+    mov dword[GUICheatTextZ1],0
+    mov dword[GUICheatTextZ2],0
     mov byte[GUICheatPosA],0
     mov byte[GUICheatPosB],0
     ret
@@ -1063,7 +1063,7 @@ decodegg:
 ;Normal  Hex:  0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
 ;              4  6  D  E  2  7  8  3  B  5  C  9  A  0  F  1
     ; Convert code
-    mov esi,GUICheatText9
+    mov esi,GUICheatTextZ1
     mov eax,[esi+5]
     mov [esi+4],eax
     ; convert code to number format
@@ -1085,7 +1085,7 @@ decodegg:
     dec ecx
     jnz .loopb3
 
-    mov esi,GUICheatText9
+    mov esi,GUICheatTextZ1
     xor ecx,ecx
     mov cl,[esi+2]
     shl ecx,4
@@ -1178,8 +1178,8 @@ decodegg:
     mov byte[writeon],0
     mov byte[CheatOn],1
     inc byte[NumCheats]
-    mov dword[GUICheatText9],0
-    mov dword[GUICheatTextA],0
+    mov dword[GUICheatTextZ1],0
+    mov dword[GUICheatTextZ2],0
     mov byte[GUICheatPosA],0
     mov byte[GUICheatPosB],0
     mov dword[GUIcurrentcheatwin],1
@@ -1200,7 +1200,7 @@ SECTION .text
 decodepar:
     ; convert code to number format
     mov ecx,8
-    mov esi,GUICheatText9
+    mov esi,GUICheatTextZ1
 .loopb
     mov al,[esi]
     cmp al,'A'
@@ -1218,19 +1218,19 @@ decodepar:
     ; get address
     xor ebx,ebx
     xor ecx,ecx
-    mov bl,[GUICheatText9]
+    mov bl,[GUICheatTextZ1]
     shl bl,4
-    add bl,[GUICheatText9+1]
-    mov cl,[GUICheatText9+2]
+    add bl,[GUICheatTextZ1+1]
+    mov cl,[GUICheatTextZ1+2]
     shl cx,4
-    add cl,[GUICheatText9+3]
+    add cl,[GUICheatTextZ1+3]
     shl cx,4
-    add cl,[GUICheatText9+4]
+    add cl,[GUICheatTextZ1+4]
     shl cx,4
-    add cl,[GUICheatText9+5]
-    mov al,[GUICheatText9+6]
+    add cl,[GUICheatTextZ1+5]
+    mov al,[GUICheatTextZ1+6]
     shl al,4
-    add al,[GUICheatText9+7]
+    add al,[GUICheatTextZ1+7]
 
     ; store into cheatdata
     xor edx,edx
@@ -1272,8 +1272,8 @@ decodepar:
     mov byte[writeon],0
     mov byte[CheatOn],1
     inc dword[NumCheats]
-    mov dword[GUICheatText9],0
-    mov dword[GUICheatTextA],0
+    mov dword[GUICheatTextZ1],0
+    mov dword[GUICheatTextZ2],0
     mov byte[GUICheatPosA],0
     mov byte[GUICheatPosB],0
     mov dword[GUIcurrentcheatwin],1
