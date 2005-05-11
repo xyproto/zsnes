@@ -5484,42 +5484,52 @@ EEMode:
 
 DisplayGUIAddOns:
     GUIDrawWindowBox 17,GUIAddOnsDisp
+
+
+;Text Display        
+    mov byte[GUItextcolor],217      ;Shadow
+    cmp byte[GUIWincoladd],0
+    je .zero
+    mov byte[GUItextcolor],211
+.zero
     sub byte[GUItextcolor],15
-    
     call EEMode
     cmp eax,0
-    je near .noEE
+    je near .noEE                    ;You know it!
     GUIOuttextwin2 17,21,18,GUIAddOnText1Alt
     GUIOuttextwin2 17,21,28,GUIAddOnText2Alt
     GUIOuttextwin2 17,21,38,GUIAddOnText3Alt
     GUIOuttextwin2 17,21,48,GUIAddOnText4Alt
     GUIOuttextwin2 17,21,58,GUIAddOnText5Alt
     jmp .endEE
-.noEE
+.noEE                                ;Regular
     GUIOuttextwin2 17,21,18,GUIAddOnText1
     GUIOuttextwin2 17,21,28,GUIAddOnText2
     GUIOuttextwin2 17,21,38,GUIAddOnText3
     GUIOuttextwin2 17,21,48,GUIAddOnText4
     GUIOuttextwin2 17,21,58,GUIAddOnText5
 .endEE    
-    add byte[GUItextcolor],15
-    
+
+    add byte[GUItextcolor],15        ;Test
     call EEMode
     cmp eax,0
-    je near .noEE2
+    je near .noEE2                   ;You know it!
     GUIOuttextwin2 17,20,17,GUIAddOnText1Alt
     GUIOuttextwin2 17,20,27,GUIAddOnText2Alt
     GUIOuttextwin2 17,20,37,GUIAddOnText3Alt
     GUIOuttextwin2 17,20,47,GUIAddOnText4Alt
     GUIOuttextwin2 17,20,57,GUIAddOnText5Alt
     jmp .endEE2
-.noEE2    
+.noEE2                               ;Regular
     GUIOuttextwin2 17,20,17,GUIAddOnText1
     GUIOuttextwin2 17,20,27,GUIAddOnText2
     GUIOuttextwin2 17,20,37,GUIAddOnText3
     GUIOuttextwin2 17,20,47,GUIAddOnText4
     GUIOuttextwin2 17,20,57,GUIAddOnText5
 .endEE2        
+
+
+;Ratio Buttons
     GUIDisplayButtonHole 17,9,15,byte[snesmouse],0
     GUIDisplayButtonHole 17,9,25,byte[snesmouse],1
     GUIDisplayButtonHole 17,9,35,byte[snesmouse],2
