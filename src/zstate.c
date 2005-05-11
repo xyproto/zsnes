@@ -416,8 +416,8 @@ void ResetState()
   ResState(Voice7BufPtr);
 }
 
-unsigned char firstsaveinc = 0, txtsavemsg[14] = "STATE - SAVED.";
-unsigned char txtsavemsgfail[15] = "UNABLE TO SAVE.";
+unsigned char firstsaveinc = 0, txtsavemsg[15] = "STATE - SAVED.";
+unsigned char txtsavemsgfail[16] = "UNABLE TO SAVE.";
 
 extern unsigned int statefileloc, CurrentHandle, SfxRomBuffer, SfxCROM;
 extern unsigned int SfxLastRamAdr, SfxRAMMem, MsgCount, MessageOn;
