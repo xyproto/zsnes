@@ -763,14 +763,10 @@ clearsram:
 GUIQuickLoadUpdate:
     cmp byte[prevlfreeze],0
     je .off
-    mov byte[GUIPrevMenuData.onoff+15],'O'
-    mov byte[GUIPrevMenuData.onoff+16],'N'
-    mov byte[GUIPrevMenuData.onoff+17],' '
+    mov dword[GUIPrevMenuData.onoff+15],'ON  '
     jmp .on
 .off
-    mov byte[GUIPrevMenuData.onoff+15],'O'
-    mov byte[GUIPrevMenuData.onoff+16],'F'
-    mov byte[GUIPrevMenuData.onoff+17],'F'
+    mov dword[GUIPrevMenuData.onoff+15],'OFF '
 .on
     mov esi,prevloadfnamel
 %ifdef __MSDOS__
