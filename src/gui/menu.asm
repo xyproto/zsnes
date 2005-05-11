@@ -857,9 +857,7 @@ NEWSYM savespcdata
     cmp al,'.'
     jne .next
     ; Save stuff
-    mov byte[edi],'s'
-    mov byte[edi+1],'p'
-    mov byte[edi+2],'c'
+    mov dword[edi],'spc '
     mov byte[edi+3],0
     ; Find an unoccupied file
 .tryagainspc
@@ -1262,8 +1260,7 @@ NEWSYM savepcx
     dec ecx
     jnz .clearhead2
     ; Initial header = 14 bytes
-    mov byte[pcxheader],'B'
-    mov byte[pcxheader+1],'M'
+    mov word[pcxheader],'BM'
     mov dword[pcxheader+2],02A01Ah-768
     mov dword[pcxheader+10],26
 
@@ -1358,13 +1355,11 @@ NEWSYM GetFreeFile
 %ifdef __MSDOS__
     cmp ecx,0
     jne .isbmp
-    mov byte[.filename+9],'p'
-    mov byte[.filename+10],'c'
+    mov word[.filename+9],'pc'
     mov byte[.filename+11],'x'
     jmp .doneextselect
 .isbmp
-    mov byte[.filename+9],'b'
-    mov byte[.filename+10],'m'
+    mov word[.filename+9],'bm'
     mov byte[.filename+11],'p'
 .doneextselect
     mov byte[.filename+12],0
@@ -1423,21 +1418,15 @@ NEWSYM GetFreeFile
     cmp edx,esi
     jne .next
     mov esi,ebx
-    mov byte[esi],' '
-    mov byte[esi+1],'0'
-    mov byte[esi+2],'0'
-    mov byte[esi+3],'0'
-    mov byte[esi+4],'0'
-    mov byte[esi+5],'.'
+    mov dword[esi],' 000'
+    mov word[esi+4],'0.'
     cmp ecx,0
     jne .isbmp
-    mov byte[esi+6],'p'
-    mov byte[esi+7],'c'
+    mov word[esi+6],'pc'
     mov byte[esi+8],'x'
     jmp .doneextselect
 .isbmp
-    mov byte[esi+6],'b'
-    mov byte[esi+7],'m'
+    mov word[esi+6],'bm'
     mov byte[esi+8],'p'
 .doneextselect
     mov byte[esi+9],0
@@ -1500,8 +1489,7 @@ NEWSYM save16b2
     dec ecx
     jnz .clearhead2
     ; Initial header = 14 bytes
-    mov byte[pcxheader],'B'
-    mov byte[pcxheader+1],'M'
+    mov word[pcxheader],'BM'
     mov dword[pcxheader+2],02A01Ah-256*224*3+512*448*3
     mov dword[pcxheader+10],26
     mov dword[pcxheader+14],12
