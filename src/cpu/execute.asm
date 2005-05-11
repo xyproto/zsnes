@@ -96,12 +96,12 @@ NEWSYM ProcessRewind
     pushad
     call RestoreCVFrame
     popad
-    
+
     mov esi,[tempesi]
     mov edi,[tempedi]
     mov ebp,[tempebp]
     mov edx,[tempedx]
-    
+
 .notokay
     ret
 
@@ -110,10 +110,10 @@ NEWSYM UpdateRewind
     je .norewinds
     cmp dword[KeyRewind],0
     je .norewinds
-  
+
     dec dword[RewindTimer]
     jnz .checkrewind
-    
+
     mov [tempedx],edx
     mov [tempesi],esi
     mov [tempedi],edi
@@ -123,7 +123,7 @@ NEWSYM UpdateRewind
     call BackupCVFrame
     popad
 
-.checkrewind    
+.checkrewind
     call ProcessRewind
 .norewinds
     ret
@@ -1439,7 +1439,7 @@ NEWSYM cpuover
     pushad
     call showvideo
     popad
-    
+
     ;jmp .nocache
     jmp .nonewgfx
 .noemupause
@@ -1447,7 +1447,7 @@ NEWSYM cpuover
     ;Rewind update must be done before process this frame of movie, so rewind doesn't
     ;back up incremented values (some vars being for the next frame)
     call UpdateRewind
-    
+
     cmp byte[MovieProcessing],0
     je .noprocmovie
     pushad

@@ -403,31 +403,31 @@ CheatSrcByteSize db 0
 CheatSrcByteBase db 0
 CheatSrcSearchType db 0
 CheatUpperByteOnly db 0
-NEWSYM SRAMSave5Sec,   db 0
-NEWSYM ReInitSoundC,   db 0
-NEWSYM OldGfxMode2 ,   db 0
-NEWSYM PitchModEn  ,   db 0
-NEWSYM LatestSave  ,   db 0
-NEWSYM AutoState   ,   db 0
-NEWSYM OldVolume   ,   db 1
-NEWSYM BlankVar    ,  db 1
+NEWSYM SRAMSave5Sec, db 0
+NEWSYM ReInitSoundC, db 0
+NEWSYM OldGfxMode2 , db 0
+NEWSYM PitchModEn  , db 0
+NEWSYM LatestSave  , db 0
+NEWSYM AutoState   , db 0
+NEWSYM OldVolume   , db 1
+NEWSYM BlankVar    , db 1
 
-NEWSYM pl1ULk,    dd 0
-NEWSYM pl1URk,    dd 0
-NEWSYM pl1DLk,    dd 0
-NEWSYM pl1DRk,    dd 0
-NEWSYM pl2ULk,    dd 0
-NEWSYM pl2URk,    dd 0
-NEWSYM pl2DLk,    dd 0
-NEWSYM pl2DRk,    dd 0
-NEWSYM pl3ULk,    dd 0
-NEWSYM pl3URk,    dd 0
-NEWSYM pl3DLk,    dd 0
-NEWSYM pl3DRk,    dd 0
-NEWSYM pl4ULk,    dd 0
-NEWSYM pl4URk,    dd 0
-NEWSYM pl4DLk,    dd 0
-NEWSYM pl4DRk,    dd 0
+NEWSYM pl1ULk, dd 0
+NEWSYM pl1URk, dd 0
+NEWSYM pl1DLk, dd 0
+NEWSYM pl1DRk, dd 0
+NEWSYM pl2ULk, dd 0
+NEWSYM pl2URk, dd 0
+NEWSYM pl2DLk, dd 0
+NEWSYM pl2DRk, dd 0
+NEWSYM pl3ULk, dd 0
+NEWSYM pl3URk, dd 0
+NEWSYM pl3DLk, dd 0
+NEWSYM pl3DRk, dd 0
+NEWSYM pl4ULk, dd 0
+NEWSYM pl4URk, dd 0
+NEWSYM pl4DLk, dd 0
+NEWSYM pl4DRk, dd 0
 
 NEWSYM LowPassFilterType,  db 0
 NEWSYM DontSavePath,  db 0
@@ -566,7 +566,7 @@ NEWSYM RomInfo, db 1
 NEWSYM SRAMState, db 0
 NEWSYM RewindStates, db 16
 NEWSYM PrimaryBuffer, db 0
-NEWSYM RewindFrames, db 6
+NEWSYM RewindFrames, db 15
 NEWSYM KeyInsrtChap,  dd 0
 NEWSYM KeyNextChap,   dd 0
 NEWSYM KeyPrevChap,   dd 0
@@ -574,7 +574,7 @@ NEWSYM MovieDisplayFrame, db 0
 NEWSYM MovieStartMethod, db 0
 NEWSYM EMUPauseKey, dd 0
 NEWSYM INCRFrameKey, dd 0
-NEWSYM PauseLoad, db 0 
+NEWSYM PauseLoad, db 0
 NEWSYM PauseRewind, db 0
 ;NEWSYM end
 

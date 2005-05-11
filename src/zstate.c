@@ -212,7 +212,7 @@ extern unsigned char MovieProcessing;
 void zmv_rewind_save(size_t, bool);
 void zmv_rewind_load(size_t, bool);
 
-#define ActualRewindFrames (RewindFrames * (romispal ? 25 : 30))
+#define ActualRewindFrames (RewindFrames * (romispal ? 10 : 12))
 
 void BackupCVFrame()
 {
