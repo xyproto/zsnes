@@ -458,8 +458,9 @@ static bool zst_save_compressed(FILE *fp)
   if ((buffer = (unsigned char *)malloc(data_size)))
   {
     //Compressed buffer which must be at least 0.1% larger than source buffer plus 12 bytes
-    //We devide by 999 as a quick way to get a buffer large enough when using integer division
-    unsigned long compressed_size = data_size + data_size/999 + 12;
+    //We devide by 1000 then add an extra 1 as a quick way to get a buffer large enough when
+    //using integer division
+    unsigned long compressed_size = data_size + data_size/1000 + 13;
     unsigned char *compressed_buffer = 0;
 
     if ((compressed_buffer = (unsigned char *)malloc(compressed_size)))
