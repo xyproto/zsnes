@@ -2835,6 +2835,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     GUIOuttextwin2 7,25,190,GUICheatTextE1
     DrawGUIWinBox 7,5,20,229,108,167
 
+
 ; Draw Buttons
     DrawGUIButton 7,5,113,47,124,GUICheatTextB1,5,0,0
     DrawGUIButton 7,52,113,94,124,GUICheatTextB2,6,0,0
@@ -2843,6 +2844,13 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     DrawGUIButton 7,193,113,235,124,GUICheatTextB5,33,0,0
     DrawGUIButton 7,212,134,236,145,GUICheatTextB6,9,0,0
 
+; Easiest way i could think of to underline the hotkeys for the buttons
+    GUIOuttextwin2u 7,10,117,GUICheatTextZ5,0
+    GUIOuttextwin2u 7,57,117,GUICheatTextZ5,0
+    GUIOuttextwin2u 7,104,117,GUICheatTextZ5,0
+    GUIOuttextwin2u 7,151,117,GUICheatTextZ5,0
+    GUIOuttextwin2u 7,198,117,GUICheatTextZ5,0
+ 
  
 ; Red Highlight for Cheats box
     cmp dword[GUIcurrentcheatwin],0
@@ -3067,6 +3075,7 @@ GUICheatTextZ1 db '_',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; 14 digits
 GUICheatTextZ2 db '_',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; 11 digits (?)
 GUICheatTextZ3 db '000000 00 00 OFF BLAHBLAH---',0,0,0,0,0,0,0,0,0,0,0,0
 GUICheatTextZ4 db '0123456789ABCDEF'
+GUICheatTextZ5 db '      ',0
 
 
 SECTION .bss
@@ -6286,7 +6295,7 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
 
 
 ;Buttons    
-    mov byte[GUItextcolor],217               ;set color for boxes
+    mov byte[GUItextcolor],217               ;set color for buttons
     cmp byte[GUIWincoladd],0
     je .zero88
     mov byte[GUItextcolor],211

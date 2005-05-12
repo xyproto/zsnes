@@ -710,37 +710,45 @@ GUIOptionKeys:
     ret
 
 GUISaveKeys:
-    cmp dh,'a'
+    cmp dh,'a'             ; Setup
     jb .nocap
     cmp dh,'z'
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
+
+;Checkboxes
     cmp dh,'I'
     jne .noautoincsave
     xor byte[AutoIncSaveSlot],1
     mov byte[firstsaveinc],1
 .noautoincsave
+
     cmp dh,'C'
     jne .nosramcheck
     xor byte[SRAMSave5Sec],1
 .nosramcheck
+
     cmp dh,'S'
     jne .nostartsave
     xor byte[LatestSave],1
 .nostartsave
+
     cmp dh,'A'
     jne .noautostate
     xor byte[AutoState],1
 .noautostate
+
     cmp dh,'L'
     jne .nosramstate
     xor byte[SRAMState],1
 .nosramstate
+
     cmp dh,'P'
     jne .nopauseload
     xor byte[PauseLoad],1
 .nopauseload
+
     cmp dh,'R'
     jne .nopauserewind
     xor byte[PauseRewind],1
@@ -749,32 +757,39 @@ GUISaveKeys:
 
 
 GUIChipKeys:
-    cmp dh,'a'
+    cmp dh,'a'             ;Setup
     jb .nocap
     cmp dh,'z'
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
+
+;Checkboxes
     cmp dh,'1'
     jne .nonssdip1
     xor byte[nssdip1],1
 .nonssdip1
+
     cmp dh,'2'
     jne .nonssdip2
     xor byte[nssdip2],1
 .nonssdip2
+
     cmp dh,'3'
     jne .nonssdip3
     xor byte[nssdip3],1
 .nonssdip3
+
     cmp dh,'4'
     jne .nonssdip4
     xor byte[nssdip4],1
 .nonssdip4
+
     cmp dh,'5'
     jne .nonssdip5
     xor byte[nssdip5],1
 .nonssdip5
+
     cmp dh,'6'
     jne .nonssdip6
     xor byte[nssdip6],1
@@ -1512,7 +1527,7 @@ GUIComboKeys:
     ret
 
 GUICheatKeys:
-    cmp dword[GUIcurrentcheatwin],1
+    cmp dword[GUIcurrentcheatwin],1 
     je near .textboxa
     cmp dword[GUIcurrentcheatwin],2
     je near .textboxb
@@ -1522,6 +1537,9 @@ GUICheatKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
+
+
+;Hotkeys for Buttons
     cmp dh,'R'
     jne .noremocheat
     jmp CheatCodeRemove
@@ -1538,6 +1556,12 @@ GUICheatKeys:
     jne .noloadcheat
     jmp CheatCodeLoad
 .noloadcheat
+    cmp dh,'F'
+    jne .nofixcheat
+    jmp CheatCodeFix
+.nofixcheat
+
+;Main Cheat Box
     cmp dword[NumCheats],0
     jne .nozero
     ret
@@ -1680,7 +1704,9 @@ GUICheatKeys:
 .nopagedown
     ret
 
-.textboxa
+
+;Enter Code Input Box
+.textboxa                      
     cmp byte[GUICheatPosA],0
     je near .nobacksp
     cmp dh,9
@@ -1767,6 +1793,7 @@ GUICheatKeys:
 .nochar
     ret
 
+;Description Input Box
 .textboxb
     cmp dh,13
     jne .noretb
