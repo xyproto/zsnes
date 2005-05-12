@@ -718,39 +718,31 @@ GUISaveKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
-
-;Checkboxes
-    cmp dh,'I'
+    cmp dh,'I'             ; Checkboxes
     jne .noautoincsave
     xor byte[AutoIncSaveSlot],1
     mov byte[firstsaveinc],1
 .noautoincsave
-
     cmp dh,'C'
     jne .nosramcheck
     xor byte[SRAMSave5Sec],1
 .nosramcheck
-
     cmp dh,'S'
     jne .nostartsave
     xor byte[LatestSave],1
 .nostartsave
-
     cmp dh,'A'
     jne .noautostate
     xor byte[AutoState],1
 .noautostate
-
     cmp dh,'L'
     jne .nosramstate
     xor byte[SRAMState],1
 .nosramstate
-
     cmp dh,'P'
     jne .nopauseload
     xor byte[PauseLoad],1
 .nopauseload
-
     cmp dh,'R'
     jne .nopauserewind
     xor byte[PauseRewind],1
@@ -764,27 +756,22 @@ GUIAddonKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
-
-    cmp dh,'N'
+    cmp dh,'N'             ;Radio Buttons
     jne .nonone
     mov byte[snesmouse],0
 .nonone
-
     cmp dh,'1'
     jne .nomouse1
     mov byte[snesmouse],1
 .nomouse1
-
     cmp dh,'2'
     jne .nomouse2
     mov byte[snesmouse],2
 .nomouse2
-
     cmp dh,'S'
     jne .nosuperscope
     mov byte[snesmouse],3
 .nosuperscope
-
     cmp dh,'L'
     jne .nolethalgun
     mov byte[snesmouse],4
@@ -797,33 +784,26 @@ GUIChipKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
-
-;Checkboxes
-    cmp dh,'1'
+    cmp dh,'1'             ;Checkboxes
     jne .nonssdip1
     xor byte[nssdip1],1
 .nonssdip1
-
     cmp dh,'2'
     jne .nonssdip2
     xor byte[nssdip2],1
 .nonssdip2
-
     cmp dh,'3'
     jne .nonssdip3
     xor byte[nssdip3],1
 .nonssdip3
-
     cmp dh,'4'
     jne .nonssdip4
     xor byte[nssdip4],1
 .nonssdip4
-
     cmp dh,'5'
     jne .nonssdip5
     xor byte[nssdip5],1
 .nonssdip5
-
     cmp dh,'6'
     jne .nonssdip6
     xor byte[nssdip6],1
