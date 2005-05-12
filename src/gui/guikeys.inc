@@ -348,6 +348,8 @@ GUIgetcurrentinput:
     je near GUIStateKeys
     cmp ebx,16
     je near GUIComboKeys
+    cmp ebx,17
+    je near GUIAddonKeys
     cmp ebx,18
     je near GUIChipKeys
     cmp ebx,19
@@ -755,6 +757,38 @@ GUISaveKeys:
 .nopauserewind
     ret
 
+GUIAddonKeys:
+    cmp dh,'a'             ;Setup
+    jb .nocap
+    cmp dh,'z'
+    ja .nocap
+    sub dh,'z'-'Z'
+.nocap
+
+    cmp dh,'N'
+    jne .nonone
+    mov byte[snesmouse],0
+.nonone
+
+    cmp dh,'1'
+    jne .nomouse1
+    mov byte[snesmouse],1
+.nomouse1
+
+    cmp dh,'2'
+    jne .nomouse2
+    mov byte[snesmouse],2
+.nomouse2
+
+    cmp dh,'S'
+    jne .nosuperscope
+    mov byte[snesmouse],3
+.nosuperscope
+
+    cmp dh,'L'
+    jne .nolethalgun
+    mov byte[snesmouse],4
+.nolethalgun
 
 GUIChipKeys:
     cmp dh,'a'             ;Setup

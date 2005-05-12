@@ -5540,11 +5540,11 @@ DisplayGUIAddOns:                   ;Select Special Controllers
     GUIOuttextwin2 17,21,58,GUIAddOnText5Alt
     jmp .endEE
 .noEE                                ;Regular
-    GUIOuttextwin2 17,21,18,GUIAddOnText1
-    GUIOuttextwin2 17,21,28,GUIAddOnText2
-    GUIOuttextwin2 17,21,38,GUIAddOnText3
-    GUIOuttextwin2 17,21,48,GUIAddOnText4
-    GUIOuttextwin2 17,21,58,GUIAddOnText5
+    GUIOuttextwin2u 17,21,18,GUIAddOnText1,0
+    GUIOuttextwin2u 17,21,28,GUIAddOnText2,20
+    GUIOuttextwin2u 17,21,38,GUIAddOnText3,20
+    GUIOuttextwin2u 17,21,48,GUIAddOnText4,0
+    GUIOuttextwin2u 17,21,58,GUIAddOnText5,0
 .endEE    
 
     add byte[GUItextcolor],15        ;Text
