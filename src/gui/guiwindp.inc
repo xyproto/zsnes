@@ -4559,117 +4559,107 @@ GUIGUIAboutTextG db 'thoroughly before doing so.',0
 
 SECTION .text
 
-DisplayGUIMovies:
-    GUIDrawWindowBox 15,GUIMovieDisp
-    cmp byte[MovieRecordWinVal],0
+DisplayGUIMovies:    ; Movie Record/Playback options
+    GUIDrawWindowBox 15,GUIMovieDisp   ; Display Window
+    
+    cmp byte[MovieRecordWinVal],0       
     je near .displayboxa
-    cmp byte[GUIWincoladd],0
+        
+    cmp byte[GUIWincoladd],0             ; Overwrite Message Box
     je .zero4
     mov byte[GUItextcolor],211
 .zero4
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2 15,9,16,GUIMovieText5
-    GUIOuttextwin2 15,9,26,GUIMovieText6
-    GUIOuttextwin2 15,9,41,GUIMovieText7
-    add byte[GUItextcolor],15
-    GUIOuttextwin2 15,8,15,GUIMovieText5
-    GUIOuttextwin2 15,8,25,GUIMovieText6
-    GUIOuttextwin2 15,8,40,GUIMovieText7
-    DrawGUIButton 15,17,55,59,66,GUIMovieText8,19,0,0
-    DrawGUIButton 15,70,55,112,66,GUIMovieText9,20,0,0
+    sub byte[GUItextcolor],15            ; Shadows
+    GUIOuttextwin2 15,9,16,GUIMovieTextX1
+    GUIOuttextwin2 15,9,26,GUIMovieTextX2
+    GUIOuttextwin2 15,9,41,GUIMovieTextX3
+    add byte[GUItextcolor],15            ; Text
+    GUIOuttextwin2 15,8,15,GUIMovieTextX1
+    GUIOuttextwin2 15,8,25,GUIMovieTextX2
+    GUIOuttextwin2 15,8,40,GUIMovieTextX3
+    DrawGUIButton 15,17,55,59,66,GUIMovieTextX4,19,0,0 ; Yes/No Buttons
+    DrawGUIButton 15,70,55,112,66,GUIMovieTextX5,20,0,0
     ret
-.displayboxa
-    mov dword[GUIMovieTextA+9],'INAC'
-    mov dword[GUIMovieTextA+13],'TIVE'
-    mov dword[GUIMovieTextA+17],'    '
-    cmp byte[MovieProcessing],1
-    jne .noplay
-    mov dword[GUIMovieTextA+9],'PLAY'
-    mov dword[GUIMovieTextA+13],'ING '
-    mov dword[GUIMovieTextA+17],'    '
-.noplay
-    cmp byte[MovieProcessing],2
-    jne .norec
-    mov dword[GUIMovieTextA+9],'RECO'
-    mov dword[GUIMovieTextA+13],'RDIN'
-    mov dword[GUIMovieTextA+17],'G   '
-.norec
-    cmp byte[MovieProcessing],3
-    jne .nooldplay
-    mov dword[GUIMovieTextA+9],'OLD '
-    mov dword[GUIMovieTextA+13],'PLAY'
-    mov dword[GUIMovieTextA+17],'ING '
-.nooldplay
-    DrawGUIButton 15,7,17,49,28,GUIMovieText1,16,0,0
-    DrawGUIButton 15,7,33,49,44,GUIMovieText2,17,0,0
-    DrawGUIButton 15,7,49,49,60,GUIMovieText3,18,0,0
-    DrawGUIButton 15,7,65,49,76,GUIMovieTextE,32,0,0
-    DrawGUIButton 15,61,65,155,76,GUIMovieTextEa,34,0,0
-    DrawGUIButton 15,7,81,109,92,GUIMovieTextB,29,0,0
-    DrawGUIButton 15,7,97,109,108,GUIMovieTextC,30,0,0
-    DrawGUIButton 15,7,113,109,124,GUIMovieTextD,31,0,0
-    cmp byte[GUIWincoladd],0
+    
+    
+.displayboxa                            ; Main Window
+
+    DrawGUIButton 15,7,17,49,28,GUIMovieTextA1,16,0,0  ; Draw Buttons
+    DrawGUIButton 15,7,33,49,44,GUIMovieTextA2,17,0,0
+    DrawGUIButton 15,7,49,49,60,GUIMovieTextA3,18,0,0
+    DrawGUIButton 15,7,65,49,76,GUIMovieTextA4,32,0,0
+    DrawGUIButton 15,7,81,109,92,GUIMovieTextA5,29,0,0
+    DrawGUIButton 15,7,97,109,108,GUIMovieTextA6,30,0,0
+    DrawGUIButton 15,7,113,109,124,GUIMovieTextA7,31,0,0
+    DrawGUIButton 15,61,65,155,76,GUIMovieTextA8,34,0,0
+
+    cmp byte[GUIWincoladd],0               ; Output Text
     je .zero
     mov byte[GUItextcolor],211
 .zero
     sub byte[GUItextcolor],15
-    GUIOuttextwin2 15,61,16,GUIMovieText4
-    mov byte[GUIChoseSaveText2],'0'
-    GUIOuttextwin2 15,71,28,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'1'
-    GUIOuttextwin2 15,91,28,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'2'
-    GUIOuttextwin2 15,111,28,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'3'
-    GUIOuttextwin2 15,131,28,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'4'
-    GUIOuttextwin2 15,151,28,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'5'
-    GUIOuttextwin2 15,71,43,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'6'
-    GUIOuttextwin2 15,91,43,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'7'
-    GUIOuttextwin2 15,111,43,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'8'
-    GUIOuttextwin2 15,131,43,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'9'
-    GUIOuttextwin2 15,151,43,GUIChoseSaveText2
-    GUIOuttextwin2 15,71,55,GUIMovieTextI
-    GUIOuttextwin2 15,9,130,GUIMovieTextJ
-    GUIOuttextwin2 15,21,140,GUIMovieTextK
-    GUIOuttextwin2 15,56,140,GUIMovieTextL
-    GUIOuttextwin2 15,101,140,GUIMovieTextM
-    GUIOuttextwin2 15,21,150,GUIMovieTextN
-    add byte[GUItextcolor],15
-    GUIOuttextwin2 15,60,15,GUIMovieText4
-    mov byte[GUIChoseSaveText2],'0'
-    GUIOuttextwin2 15,70,27,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'1'
-    GUIOuttextwin2 15,90,27,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'2'
-    GUIOuttextwin2 15,110,27,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'3'
-    GUIOuttextwin2 15,130,27,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'4'
-    GUIOuttextwin2 15,150,27,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'5'
-    GUIOuttextwin2 15,70,42,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'6'
-    GUIOuttextwin2 15,90,42,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'7'
-    GUIOuttextwin2 15,110,42,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'8'
-    GUIOuttextwin2 15,130,42,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'9'
-    GUIOuttextwin2 15,150,42,GUIChoseSaveText2
-    GUIOuttextwin2 15,70,54,GUIMovieTextI
-    GUIOuttextwin2 15,8,129,GUIMovieTextJ
-    GUIOuttextwin2 15,20,139,GUIMovieTextK
-    GUIOuttextwin2 15,55,139,GUIMovieTextL
-    GUIOuttextwin2 15,100,139,GUIMovieTextM
-    GUIOuttextwin2 15,20,149,GUIMovieTextN
-    GUIDisplayButtonHole 15,60,25,byte[CMovieExt],'v'
-    GUIDisplayButtonHole 15,80,25,byte[CMovieExt],'1'
+    GUIOuttextwin2 15,61,16,GUIMovieTextB        ; Save Select Shadow
+    mov byte[GUIMovieTextB1],'0'
+    GUIOuttextwin2 15,71,28,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'1'
+    GUIOuttextwin2 15,91,28,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'2'
+    GUIOuttextwin2 15,111,28,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'3'
+    GUIOuttextwin2 15,131,28,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'4'
+    GUIOuttextwin2 15,151,28,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'5'
+    GUIOuttextwin2 15,71,43,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'6'
+    GUIOuttextwin2 15,91,43,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'7'
+    GUIOuttextwin2 15,111,43,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'8'
+    GUIOuttextwin2 15,131,43,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'9'
+    GUIOuttextwin2 15,151,43,GUIMovieTextB1
+    GUIOuttextwin2u 15,71,55,GUIMovieTextB2,0
+    
+    GUIOuttextwin2 15,9,130,GUIMovieTextC           ; "Start From" Section Shadow
+    GUIOuttextwin2u 15,21,140,GUIMovieTextC1,0
+    GUIOuttextwin2u 15,56,140,GUIMovieTextC2,0
+    GUIOuttextwin2u 15,101,140,GUIMovieTextC3,0
+    GUIOuttextwin2u 15,21,150,GUIMovieTextC4,8
+        
+    add byte[GUItextcolor],15                      ; State Select Text
+    GUIOuttextwin2 15,60,15,GUIMovieTextB
+    mov byte[GUIMovieTextB1],'0'
+    GUIOuttextwin2 15,70,27,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'1'
+    GUIOuttextwin2 15,90,27,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'2'
+    GUIOuttextwin2 15,110,27,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'3'
+    GUIOuttextwin2 15,130,27,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'4'
+    GUIOuttextwin2 15,150,27,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'5'
+    GUIOuttextwin2 15,70,42,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'6'
+    GUIOuttextwin2 15,90,42,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'7'
+    GUIOuttextwin2 15,110,42,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'8'
+    GUIOuttextwin2 15,130,42,GUIMovieTextB1
+    mov byte[GUIMovieTextB1],'9'
+    GUIOuttextwin2 15,150,42,GUIMovieTextB1
+    GUIOuttextwin2 15,70,54,GUIMovieTextB2
+    
+    GUIOuttextwin2 15,8,129,GUIMovieTextC             ; "Start From" Section Text
+    GUIOuttextwin2 15,20,139,GUIMovieTextC1
+    GUIOuttextwin2 15,55,139,GUIMovieTextC2
+    GUIOuttextwin2 15,100,139,GUIMovieTextC3
+    GUIOuttextwin2 15,20,149,GUIMovieTextC4          
+        ; Status text is at end of window
+                                                         ; Display ratio buttons
+    GUIDisplayButtonHole 15,60,25,byte[CMovieExt],'v'    ; Select:  
+    GUIDisplayButtonHole 15,80,25,byte[CMovieExt],'1'    
     GUIDisplayButtonHole 15,100,25,byte[CMovieExt],'2'
     GUIDisplayButtonHole 15,120,25,byte[CMovieExt],'3'
     GUIDisplayButtonHole 15,140,25,byte[CMovieExt],'4'
@@ -4679,7 +4669,55 @@ DisplayGUIMovies:
     GUIDisplayButtonHole 15,120,40,byte[CMovieExt],'8'
     GUIDisplayButtonHole 15,140,40,byte[CMovieExt],'9'
     
-    mov al,[GUIWincol]
+    GUIDisplayButtonHole 15,8,137,byte[MovieStartMethod],0      ; Start From:
+    GUIDisplayButtonHole 15,43,137,byte[MovieStartMethod],1
+    GUIDisplayButtonHole 15,88,137,byte[MovieStartMethod],2
+    GUIDisplayButtonHole 15,8,147,byte[MovieStartMethod],3
+    
+    
+    
+    DDrawBox 15,116,84,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
+    DDrawBox 15,116,100,[KeyPrevChap]
+    DDrawBox 15,116,116,[KeyNextChap]
+    
+    DGOptnsBorderBox 15,115,83               ; Borders to above boxes
+    DGOptnsBorderBox 15,115,99
+    DGOptnsBorderBox 15,115,115
+    
+    
+    
+    mov dword[GUITemp],GUIIconDataCheckBoxUC   ; Checkbox
+    cmp byte[MovieDisplayFrame],0
+    je .nocheckboxMDF
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckboxMDF
+    GUIDisplayIconWin 15,60,50,[GUITemp]
+
+    
+    
+    mov dword[GUIMovieTextZ+9],'INAC'    ; Determine Status
+    mov dword[GUIMovieTextZ+13],'TIVE'
+    mov dword[GUIMovieTextZ+17],'    '
+    cmp byte[MovieProcessing],1
+    jne .noplay
+    mov dword[GUIMovieTextZ+9],'PLAY'
+    mov dword[GUIMovieTextZ+13],'ING '
+    mov dword[GUIMovieTextZ+17],'    '
+.noplay
+    cmp byte[MovieProcessing],2
+    jne .norec
+    mov dword[GUIMovieTextZ+9],'RECO'
+    mov dword[GUIMovieTextZ+13],'RDIN'
+    mov dword[GUIMovieTextZ+17],'G   '
+.norec
+    cmp byte[MovieProcessing],3
+    jne .nooldplay
+    mov dword[GUIMovieTextZ+9],'OLD '
+    mov dword[GUIMovieTextZ+13],'PLAY'
+    mov dword[GUIMovieTextZ+17],'ING '
+.nooldplay
+
+   mov al,[GUIWincol]                       ; Display Status Text
     mov [GUIGameOptnsColA],al
     mov byte[GUIGameOptnsColB],202
     cmp byte[GUIWincoladd],0
@@ -4688,7 +4726,7 @@ DisplayGUIMovies:
 .zero3
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 15,6,162,GUIMovieTextA
+    GUIOuttextwin2 15,6,162,GUIMovieTextZ      ; Shadow
     
     mov byte[GUIGameOptnsColA],163
     mov byte[GUIGameOptnsColB],217
@@ -4699,50 +4737,38 @@ DisplayGUIMovies:
 .zero5
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 15,5,161,GUIMovieTextA
-    
-    DDrawBox 15,116,84,[KeyInsrtChap]
-    DDrawBox 15,116,100,[KeyPrevChap]
-    DDrawBox 15,116,116,[KeyNextChap]
-    
-    DGOptnsBorderBox 15,115,83
-    DGOptnsBorderBox 15,115,99
-    DGOptnsBorderBox 15,115,115
-    
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[MovieDisplayFrame],0
-    je .nocheckboxMDF
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckboxMDF
-    GUIDisplayIconWin 15,60,50,[GUITemp]
-    GUIDisplayButtonHole 15,8,137,byte[MovieStartMethod],0
-    GUIDisplayButtonHole 15,43,137,byte[MovieStartMethod],1
-    GUIDisplayButtonHole 15,88,137,byte[MovieStartMethod],2
-    GUIDisplayButtonHole 15,8,147,byte[MovieStartMethod],3
+    GUIOuttextwin2 15,5,161,GUIMovieTextZ       ; Text
     ret
 
 SECTION .data
-GUIMovieText1 db 'PLAY',0
-GUIMovieText2 db 'RECORD',0
-GUIMovieText3 db 'STOP',0
-GUIMovieText4 db 'SELECT :',0
-GUIMovieText5 db 'WARNING :  THIS MOVIE',0
-GUIMovieText6 db '  FILE ALREADY EXISTS',0
-GUIMovieText7 db 'OKAY TO OVERWRITE?',0
-GUIMovieText8 db 'YES',0
-GUIMovieText9 db 'NO',0
-GUIMovieTextA db 'STATUS :              ',0
-GUIMovieTextB db 'INSERT CHAPTER',0
-GUIMovieTextC db 'PREVIOUS CHAPTER',0
-GUIMovieTextD db 'NEXT CHAPTER',0
-GUIMovieTextE db 'APPEND',0
-GUIMovieTextEa db 'DUMP RAW MOVIE',0
-GUIMovieTextI db 'DISPLAY FRAMES',0
-GUIMovieTextJ db 'START FROM:',0
-GUIMovieTextK db 'NOW',0
-GUIMovieTextL db 'POWER',0
-GUIMovieTextM db 'RESET',0
-GUIMovieTextN db 'POWER + SRAM CLEAR',0
+GUIMovieTextA1 db 'PLAY',0                ; Buttons
+GUIMovieTextA2 db 'RECORD',0
+GUIMovieTextA3 db 'STOP',0
+GUIMovieTextA4 db 'APPEND',0
+GUIMovieTextA5 db 'INSERT CHAPTER',0
+GUIMovieTextA6 db 'PREVIOUS CHAPTER',0
+GUIMovieTextA7 db 'NEXT CHAPTER',0
+GUIMovieTextA8 db 'DUMP RAW MOVIE',0
+
+
+GUIMovieTextB db 'SELECT :',0
+GUIMovieTextB1 db ' ',0
+GUIMovieTextB2 db 'DISPLAY FRAMES',0
+
+GUIMovieTextC db 'START FROM:',0
+GUIMovieTextC1 db 'NOW',0
+GUIMovieTextC2 db 'POWER',0
+GUIMovieTextC3 db 'RESET',0
+GUIMovieTextC4 db 'POWER + SRAM CLEAR',0
+
+GUIMovieTextX1 db 'WARNING :  THIS MOVIE',0  ; Overwrite Window
+GUIMovieTextX2 db '  FILE ALREADY EXISTS',0
+GUIMovieTextX3 db 'OKAY TO OVERWRITE?',0
+GUIMovieTextX4 db 'YES',0
+GUIMovieTextX5 db 'NO',0
+
+GUIMovieTextZ db 'STATUS :              ',0
+
 NEWSYM CMovieExt, db 'v'
 
 SECTION .text

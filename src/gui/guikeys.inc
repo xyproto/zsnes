@@ -346,6 +346,8 @@ GUIgetcurrentinput:
     je near GUICheatSearchKeys
     cmp ebx,14
     je near GUIStateKeys
+    cmp ebx,15
+    je near GUIMovieKeys
     cmp ebx,16
     je near GUIComboKeys
     cmp ebx,17
@@ -1505,6 +1507,92 @@ SECTION .bss
 GUIInputBox resd 1
 GUIInputLimit resd 1
 SECTION .text
+
+GUIMovieKeys:
+    cmp dh,'a'             ;Setup
+    jb .nocap
+    cmp dh,'z'
+    ja .nocap
+    sub dh,'z'-'Z'
+.nocap
+                              ; Ratio Buttons
+    cmp dh,'0'                ;Select :  Ratio Buttons
+    jne .noselect0
+    mov byte[CMovieExt],'v'
+.noselect0
+
+    cmp dh,'1'
+    jne .noselect1
+    mov byte[CMovieExt],'1'
+.noselect1
+
+    cmp dh,'2'
+    jne .noselect2
+    mov byte[CMovieExt],'2'
+.noselect2
+
+    cmp dh,'3'
+    jne .noselect3
+    mov byte[CMovieExt],'3'
+.noselect3
+
+    cmp dh,'4'
+    jne .noselect4
+    mov byte[CMovieExt],'4'
+.noselect4
+
+    cmp dh,'5'
+    jne .noselect5
+    mov byte[CMovieExt],'5'
+.noselect5
+
+    cmp dh,'6'
+    jne .noselect6
+    mov byte[CMovieExt],'6'
+.noselect6
+
+    cmp dh,'7'
+    jne .noselect7
+    mov byte[CMovieExt],'7'
+.noselect7
+
+    cmp dh,'8'
+    jne .noselect8
+    mov byte[CMovieExt],'8'
+.noselect8
+
+    cmp dh,'9'
+    jne .noselect9
+    mov byte[CMovieExt],'9'
+.noselect9
+
+
+    cmp dh,'N'             ;Start From Ratio Buttons
+    jne .nonow             
+    mov byte[MovieStartMethod],0
+.nonow
+
+    cmp dh,'P'             
+    jne .nopower
+    mov byte[MovieStartMethod],1
+.nopower
+
+    cmp dh,'R'            
+    jne .noreset
+    mov byte[MovieStartMethod],2
+.noreset
+
+    cmp dh,'S'             
+    jne .nopowsram
+    mov byte[MovieStartMethod],3
+.nopowsram
+
+    cmp dh,'D'             ;Checkbox
+    jne .nodisplay
+    xor byte[MovieDisplayFrame],1
+.nodisplay
+    ret
+
 
 GUIComboKeys:
     ; Calculate Position
