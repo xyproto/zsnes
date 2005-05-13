@@ -1166,6 +1166,11 @@ LoadDetermine:
     mov byte[GUICheatMenuData+14],1
     mov byte[GUICheatMenuData+14*2],1
     mov byte[GUIMiscMenuData+14*2],1
+    mov byte[GUINetPlayData],1
+    mov byte[GUINetPlayMenuData],2         ; Grays out the Internet option.
+%ifdef __MSDOS__
+    mov byte[GUINetPlayMenuData+14],2      ; Grays out second Netplay option for DOS
+%endif
     cmp byte[romloadskip],0
     je .noromloaded
     mov byte[GUIGameMenuData+14],2
@@ -1177,6 +1182,7 @@ LoadDetermine:
     mov byte[GUICheatMenuData+14],2
     mov byte[GUICheatMenuData+14*2],2
     mov byte[GUIMiscMenuData+14*2],2
+    mov byte[GUINetPlayData],2
 .noromloaded
     ret
 
@@ -2643,11 +2649,11 @@ GUITryMenuItem:
     cmp byte[GUIcmenupos],5
     jne near .nonet
 %ifdef __MSDOS__
-    GUICheckMenuItem 8, 0
-    GUICheckMenuItem 8, 1
+;    GUICheckMenuItem 8, 0             ; Disable DOS Netplay options
+;    GUICheckMenuItem 8, 1
 %endif
-;.win32
-    GUICheckMenuItem 8, 0
+;.win32      ; Already commented out
+;    GUICheckMenuItem 8, 0             ; Now for WIN/SDL
     cmp byte[GUIcrowpos],0
     jne near .nonet
 .nonet
