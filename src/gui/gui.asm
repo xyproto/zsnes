@@ -155,6 +155,7 @@ NEWSYM WaterOn,  db 1
 ;                Sound
 ;                Paths
 ;                Saves
+;                Speed
 
 ; MultiPlay only has "Internet" for Windows/Linux
 
@@ -178,11 +179,12 @@ NEWSYM WaterOn,  db 1
 ;           18 = Chip Config
 ;           19 = Paths
 ;           20 = Saves
+;           21 = Speed
 
 ;The first byte is the number of fields on the right not including the seperators
 MenuDat1 db 12, 3,1,1,1,1,1,1,1,1,1,0,1,2,0
 MenuDat2 db 8,  3,1,1,0,1,1,1,0,2,0,0
-MenuDat3 db 13, 3,1,1,1,1,0,1,1,0,1,1,1,1,2,0
+MenuDat3 db 14, 3,1,1,1,1,0,1,1,0,1,1,1,1,1,2,0
 MenuDat4 db 2,  3,1,2,0
 MenuDat5 db 1,  3,2,0
 MenuDat6 db 6,  3,1,1,1,1,0,2,0
@@ -226,6 +228,7 @@ GUIConfigMenuData
         db 1,'SOUND       ',0
         db 1,'PATHS       ',0
         db 1,'SAVES       ',0
+        db 1,'SPEED       ',0
 GUICheatMenuData
         db 1,'ADD CODE    ',0
         db 1,'BROWSE      ',0
@@ -1166,7 +1169,6 @@ LoadDetermine:
     mov byte[GUICheatMenuData+14],1
     mov byte[GUICheatMenuData+14*2],1
     mov byte[GUIMiscMenuData+14*2],1
-    mov byte[GUINetPlayData],1
     mov byte[GUINetPlayMenuData],2         ; Grays out the Internet option.
 %ifdef __MSDOS__
     mov byte[GUINetPlayMenuData+14],2      ; Grays out second Netplay option for DOS
@@ -1182,7 +1184,6 @@ LoadDetermine:
     mov byte[GUICheatMenuData+14],2
     mov byte[GUICheatMenuData+14*2],2
     mov byte[GUIMiscMenuData+14*2],2
-    mov byte[GUINetPlayData],2
 .noromloaded
     ret
 
@@ -2629,6 +2630,7 @@ GUITryMenuItem:
     GUICheckMenuItem 6, 11             ; Sound
     GUICheckMenuItem 19, 12            ; Paths
     GUICheckMenuItem 20, 13            ; Saves
+    GUICheckMenuItem 21, 14            ; Speed
 .noconfig
     cmp byte[romloadskip],0
     jne near .nocheat
@@ -2821,6 +2823,11 @@ DisplayBoxes:
     call DisplayGUISave
     jmp .finstuff
 .nosave
+    cmp al,21
+    jne .nospeed
+    call DisplayGUISpeed
+    jmp .finstuff
+.nospeed
 .finstuff
     pop esi
     inc esi
