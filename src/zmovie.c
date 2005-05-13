@@ -118,7 +118,7 @@ Header
 4 bytes  -  Number of frames in this movie
 4 bytes  -  Number of rerecords
 4 bytes  -  Number of frames removed by rerecord
-4 bytes  -  Number of frames with slow down
+4 bytes  -  Number of frames advanced step-by-step
 4 bytes  -  Number of key combos
 2 bytes  -  Number of internal chapters
 2 bytes  -  Length of author name
@@ -240,7 +240,7 @@ struct zmv_header
   unsigned int frames;
   unsigned int rerecords;
   unsigned int removed_frames;
-  unsigned int slow_frames;
+  unsigned int incr_frames;
   unsigned int key_combos;
   unsigned short internal_chapters;
   unsigned short author_len;
@@ -263,7 +263,7 @@ static void zmv_header_write(struct zmv_header *zmv_head, FILE *fp)
   fwrite4(zmv_head->frames, fp);
   fwrite4(zmv_head->rerecords, fp);
   fwrite4(zmv_head->removed_frames, fp);
-  fwrite4(zmv_head->slow_frames, fp);
+  fwrite4(zmv_head->incr_frames, fp);
   fwrite4(zmv_head->key_combos, fp);
   fwrite2(zmv_head->internal_chapters, fp);
   fwrite2(zmv_head->author_len, fp);
@@ -325,7 +325,7 @@ static bool zmv_header_read(struct zmv_header *zmv_head, FILE *fp)
   zmv_head->frames = fread4(fp);
   zmv_head->rerecords = fread4(fp);
   zmv_head->removed_frames = fread4(fp);
-  zmv_head->slow_frames = fread4(fp);
+  zmv_head->incr_frames = fread4(fp);
   zmv_head->key_combos = fread4(fp);
   zmv_head->internal_chapters = fread2(fp);
   zmv_head->author_len = fread2(fp);
@@ -853,13 +853,13 @@ static void zmv_record_command(enum zmv_commands command)
     skip_bits = bit_encoder(prev, 0xFFF00000, press_buf, skip_bits);     \
   }
 
-static void zmv_record(bool slow, unsigned char combos_used)
+static void zmv_record(bool pause, unsigned char combos_used, unsigned char slow)
 {
   unsigned char flag = 0;
   unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
   size_t skip_bits = 0;
 
-  if (slow) { zmv_vars.header.slow_frames++; }
+  if (pause) { zmv_vars.header.incr_frames++; }
 
   zmv_vars.header.key_combos += combos_used;
 
@@ -1811,10 +1811,11 @@ enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY }
 #define SetMovieMode(mode) (MovieProcessing = (unsigned char)mode)
 
 bool RawDumpInProgress = false;
-
-extern bool SRAMState, SloMo50;
 bool PrevSRAMState;
+
+extern bool SRAMState;
 extern unsigned char ComboCounter, MovieRecordWinVal, AllocatedRewindStates;
+extern unsigned char SloMo, EMUPause;
 char MovieFrameStr[10];
 void SRAMChdir();
 void ChangetoLOADdir();
@@ -2082,7 +2083,7 @@ void ProcessMovies()
       Replay();
       break;
     case MOVIE_RECORD:
-      zmv_record(SloMo50 ? true : false, ComboCounter);
+      zmv_record(EMUPause ? true : false, ComboCounter, SloMo);
       break;
     case MOVIE_OLD_PLAY:
       OldMovieReplay();

@@ -55,7 +55,7 @@ EXTSYM fxbit67pcal,SfxSFR,nosprincr,cpucycle,switchtovirqdeb,switchtonmideb
 EXTSYM MovieSeekBehind,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
-EXTSYM AllocatedRewindStates
+EXTSYM AllocatedRewindStates,SlowDownLock
 
 %ifdef __MSDOS__
 EXTSYM dssel
@@ -1432,6 +1432,7 @@ NEWSYM cpuover
 .noframeincr
     cmp byte[EMUPause],1
     jne .noemupause
+    mov byte[SlowDownLock],0 ; prevents some random desyncs
 
     call ProcessRewind
 
@@ -2336,6 +2337,3 @@ NEWSYM execsingle
     mov byte[intrset],2
 .nointrset2
     jmp switchtovirqdeb
-
-
-

@@ -232,10 +232,10 @@ SaveRamSaved db 'SAVED SRAM DATA',0
 
 SECTION .bss
 FastForwardLock resb 1
-SlowDownLock resb 1
+NEWSYM SlowDownLock, resb 1
 FastForwardLockp resb 1
 NEWSYM CSprWinPtr, resd 1
-NEWSYM SloMo50, resb 1
+NEWSYM SloMo, resb 1  ; number of extra times to draw a frame
 section .text
 
 NEWSYM cachevideo
@@ -313,12 +313,10 @@ NEWSYM cachevideo
 .ffmode2
     mov eax,[KeyFastFrwrd]
     test byte[pressed+eax],1
-    je .nofastfor
+    jz .nofastfor
     mov byte[pressed+eax],2
     xor byte[FastForwardLock],1
-    jmp .ff
 .nofastfor
-.ff
     cmp byte[FastForwardLock],1
     je near .fastfor
 .ffskip
@@ -332,7 +330,7 @@ NEWSYM cachevideo
 .sdmode2
     mov eax,[KeySlowDown]
     test byte[pressed+eax],1
-    je .noslowdwn
+    jz .noslowdwn
     mov byte[pressed+eax],2
     xor byte[SlowDownLock],1
 .noslowdwn
@@ -340,13 +338,13 @@ NEWSYM cachevideo
     je near .slowdwn
     jmp .sdskip
 .slowdwn
-    mov ax,2
-    mov byte[SloMo50],1
+    mov byte[SloMo],1 ; hardcoded 50% slowdown
     jmp .skipnoslowdown
 .sdskip
-    mov ax,1
-    mov byte[SloMo50],0
+    mov byte[SloMo],0
 .skipnoslowdown
+    mov ax,[SloMo]
+    inc ax ; total times frame is drawn
 
     cmp byte[frameskip],0
     jne near .frameskip
@@ -370,15 +368,13 @@ NEWSYM cachevideo
     jbe near .nofrskip
     mov word[t1cc],0
     mov byte[curblank],0
-    mov byte[fskipped],0
-    jmp .nofrskip
 .noskip2
     mov byte[fskipped],0
     jmp .nofrskip
 .fastfor
     inc byte[frskipper]
     push ebx
-    mov bl,10
+    mov bl,10 ; hardcoded number of frames to skip
     jmp .fastforb
 .frameskip
     inc byte[frskipper]
