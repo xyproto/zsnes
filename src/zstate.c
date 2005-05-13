@@ -309,11 +309,23 @@ void InitRewindVars()
 }
 
 //This is used to preserve system load state between loads
-static unsigned char BackupSystemBuffer[0x800000]; //Half a megabyte, should be enough for a while
+static unsigned char *BackupSystemBuffer = 0;
 
 void BackupSystemVars()
 {
-  unsigned char *buffer = BackupSystemBuffer;
+  unsigned char *buffer;
+
+  if (!BackupSystemBuffer)
+  {
+    void *doMemAlloc(size_t);
+    state_size = 0;
+    copy_snes_data(&buffer, state_size_tally);
+    copy_spc_data(&buffer, state_size_tally);
+    copy_extra_data(&buffer, state_size_tally);
+    BackupSystemBuffer = doMemAlloc(state_size);
+  }
+
+  buffer = BackupSystemBuffer;
   copy_snes_data(&buffer, memcpyinc);
   copy_spc_data(&buffer, memcpyinc);
   copy_extra_data(&buffer, memcpyinc);
