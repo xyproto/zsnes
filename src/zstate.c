@@ -212,6 +212,13 @@ extern unsigned char MovieProcessing;
 void zmv_rewind_save(size_t, bool);
 void zmv_rewind_load(size_t, bool);
 
+void ClearCacheCheck()
+{
+  memset(vidmemch2, 1, sizeof(vidmemch2));
+  memset(vidmemch4, 1, sizeof(vidmemch4));
+  memset(vidmemch8, 1, sizeof(vidmemch8));
+}
+
 #define ActualRewindFrames (RewindFrames * (romispal ? 10 : 12))
 
 void BackupCVFrame()
@@ -267,16 +274,34 @@ void RestoreCVFrame()
 
   copy_state_data(RewindBufferPos, memcpyrinc, csm_load_rewind);
 
-  //Clear Cache Check
-  memset(vidmemch2, 1, sizeof(vidmemch2));
-  memset(vidmemch4, 1, sizeof(vidmemch4));
-  memset(vidmemch8, 1, sizeof(vidmemch8));
-
+  ClearCacheCheck();
+  
   RewindTimer = ActualRewindFrames;
+}
+
+
+//Code to handle special frames for pausing, and desync checking
+unsigned char *SpecialPauseBackup = 0;
+void *doMemAlloc(size_t);
+
+void BackupPauseFrame()
+{
+  copy_state_data(SpecialPauseBackup, memcpyinc, csm_save_rewind);
+}
+
+void RestorePauseFrame()
+{
+  copy_state_data(SpecialPauseBackup, memcpyrinc, csm_load_rewind);
+  ClearCacheCheck();
 }
 
 void SetupRewindBuffer()
 {
+  //For special rewind case to help out pauses
+  if (SpecialPauseBackup){ free(SpecialPauseBackup); }
+  SpecialPauseBackup = doMemAlloc(rewind_state_size);
+
+  //For standard rewinds
   if (StateBackup){ free(StateBackup); }
   for (; RewindStates; RewindStates--)
   {
@@ -308,7 +333,7 @@ void InitRewindVars()
   RewindTimer = 1;
 }
 
-//This is used to preserve system load state between loads
+//This is used to preserve system load state between game loads
 static unsigned char *BackupSystemBuffer = 0;
 
 void BackupSystemVars()
@@ -317,7 +342,6 @@ void BackupSystemVars()
 
   if (!BackupSystemBuffer)
   {
-    void *doMemAlloc(size_t);
     state_size = 0;
     copy_snes_data(&buffer, state_size_tally);
     copy_spc_data(&buffer, state_size_tally);
@@ -701,9 +725,7 @@ bool zst_load(FILE *fp, size_t Compressed)
   }
 
   //Clear cache check if state loaded
-  memset(vidmemch2, 1, sizeof(vidmemch2));
-  memset(vidmemch4, 1, sizeof(vidmemch4));
-  memset(vidmemch8, 1, sizeof(vidmemch8));
+  ClearCacheCheck();
 
   if (zst_version < 143) //Set new vars which old states did not have
   {
