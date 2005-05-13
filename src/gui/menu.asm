@@ -1355,12 +1355,10 @@ NEWSYM GetFreeFile
 %ifdef __MSDOS__
     cmp ecx,0
     jne .isbmp
-    mov word[.filename+9],'pc'
-    mov byte[.filename+11],'x'
+    mov dword[.filename+9],'pcx '
     jmp .doneextselect
 .isbmp
-    mov word[.filename+9],'bm'
-    mov byte[.filename+11],'p'
+    mov dword[.filename+9],'bmp '
 .doneextselect
     mov byte[.filename+12],0
     mov word[picnum],0
@@ -1422,12 +1420,10 @@ NEWSYM GetFreeFile
     mov word[esi+4],'0.'
     cmp ecx,0
     jne .isbmp
-    mov word[esi+6],'pc'
-    mov byte[esi+8],'x'
+    mov dword[esi+6],'pcx '
     jmp .doneextselect
 .isbmp
-    mov word[esi+6],'bm'
-    mov byte[esi+8],'p'
+    mov dword[esi+6],'bmp '
 .doneextselect
     mov byte[esi+9],0
 
