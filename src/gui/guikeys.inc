@@ -778,6 +778,7 @@ GUIAddonKeys:
     jne .nolethalgun
     mov byte[snesmouse],4
 .nolethalgun
+    ret
 
 GUIChipKeys:
     cmp dh,'a'             ;Setup
