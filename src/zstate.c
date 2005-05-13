@@ -219,6 +219,21 @@ void ClearCacheCheck()
   memset(vidmemch8, 1, sizeof(vidmemch8));
 }
 
+//Code to handle special frames for pausing, and desync checking
+unsigned char *SpecialPauseBackup = 0;
+void *doMemAlloc(size_t);
+
+void BackupPauseFrame()
+{
+  copy_state_data(SpecialPauseBackup, memcpyinc, csm_save_rewind);
+}
+
+void RestorePauseFrame()
+{
+  copy_state_data(SpecialPauseBackup, memcpyrinc, csm_load_rewind);
+  ClearCacheCheck();
+}
+
 #define ActualRewindFrames (RewindFrames * (romispal ? 10 : 12))
 
 void BackupCVFrame()
@@ -269,7 +284,11 @@ void RestoreCVFrame()
     {
       zmv_rewind_load(LatestRewindPos, true);
     }
-    EMUPause = PauseRewind;
+
+    if ((EMUPause = PauseRewind)) //Yes this if supposed to have a single equal
+    {
+      BackupPauseFrame();
+    }
   }
 
   copy_state_data(RewindBufferPos, memcpyrinc, csm_load_rewind);
@@ -279,21 +298,6 @@ void RestoreCVFrame()
   RewindTimer = ActualRewindFrames;
 }
 
-
-//Code to handle special frames for pausing, and desync checking
-unsigned char *SpecialPauseBackup = 0;
-void *doMemAlloc(size_t);
-
-void BackupPauseFrame()
-{
-  copy_state_data(SpecialPauseBackup, memcpyinc, csm_save_rewind);
-}
-
-void RestorePauseFrame()
-{
-  copy_state_data(SpecialPauseBackup, memcpyrinc, csm_load_rewind);
-  ClearCacheCheck();
-}
 
 void SetupRewindBuffer()
 {
@@ -842,7 +846,11 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
       {
         Msgptr = "RR STATE LOADED.";
         MessageOn = MsgCount;
-        EMUPause = PauseLoad;
+
+        if ((EMUPause = PauseLoad)) //Yes this if supposed to have a single equal
+        {
+          BackupPauseFrame();
+        }
       }
       return;
     case 2:
@@ -864,7 +872,11 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
     if (zst_load(fhandle, 0))
     {
       Msgptr = txtloadmsg; // 'STATE X LOADED.'
-      EMUPause = PauseLoad;
+      
+      if ((EMUPause = PauseLoad)) //Yes this if supposed to have a single equal
+      {
+        BackupPauseFrame();
+      }
     }
     else
     {
