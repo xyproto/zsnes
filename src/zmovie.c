@@ -119,6 +119,7 @@ Header
 4 bytes  -  Number of rerecords
 4 bytes  -  Number of frames removed by rerecord
 4 bytes  -  Number of frames advanced step-by-step
+1 byte   -  Average recording FPS (includes dropped frames) x4-5 for precision
 4 bytes  -  Number of key combos
 2 bytes  -  Number of internal chapters
 2 bytes  -  Length of author name
@@ -241,6 +242,7 @@ struct zmv_header
   unsigned int rerecords;
   unsigned int removed_frames;
   unsigned int incr_frames;
+  unsigned char average_fps;
   unsigned int key_combos;
   unsigned short internal_chapters;
   unsigned short author_len;
@@ -264,6 +266,7 @@ static void zmv_header_write(struct zmv_header *zmv_head, FILE *fp)
   fwrite4(zmv_head->rerecords, fp);
   fwrite4(zmv_head->removed_frames, fp);
   fwrite4(zmv_head->incr_frames, fp);
+  fwrite(&zmv_head->average_fps, 1, 1, fp);
   fwrite4(zmv_head->key_combos, fp);
   fwrite2(zmv_head->internal_chapters, fp);
   fwrite2(zmv_head->author_len, fp);
@@ -326,6 +329,7 @@ static bool zmv_header_read(struct zmv_header *zmv_head, FILE *fp)
   zmv_head->rerecords = fread4(fp);
   zmv_head->removed_frames = fread4(fp);
   zmv_head->incr_frames = fread4(fp);
+  fread(&zmv_head->average_fps, 1, 1, fp);
   zmv_head->key_combos = fread4(fp);
   zmv_head->internal_chapters = fread2(fp);
   zmv_head->author_len = fread2(fp);
@@ -857,6 +861,7 @@ static void zmv_record(bool pause, unsigned char combos_used, unsigned char slow
 {
   unsigned char flag = 0;
   unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+  static double average = 1.0;
   size_t skip_bits = 0;
 
   if (pause) { zmv_vars.header.incr_frames++; }
@@ -887,6 +892,11 @@ static void zmv_record(bool pause, unsigned char combos_used, unsigned char slow
   {
     zmv_vars.rle_count++;
   }
+
+  // it's the right formula, don't waste time busting your brain on it
+  average = (average * (zmv_vars.header.frames + zmv_vars.header.removed_frames) + 1.0/(slow+1))/(zmv_vars.header.frames + zmv_vars.header.removed_frames + 1);
+  // 1/4 precision for NTSC, 1/5 precision for PAL
+  zmv_vars.header.average_fps = (unsigned char)(average * ((romispal) ? 250 : 240));
   zmv_vars.header.frames++;
 }
 
