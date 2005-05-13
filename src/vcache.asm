@@ -231,9 +231,8 @@ SECTION .data
 SaveRamSaved db 'SAVED SRAM DATA',0
 
 SECTION .bss
-FastForwardLock resb 1
+NEWSYM FastForwardLock, resb 1
 NEWSYM SlowDownLock, resb 1
-FastForwardLockp resb 1
 NEWSYM CSprWinPtr, resd 1
 NEWSYM SloMo, resb 1  ; number of extra times to draw a frame
 section .text
