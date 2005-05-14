@@ -4727,27 +4727,17 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     mov dword[GUIMovieTextZ+17],'ING '
 .nooldplay
 
-   mov al,[GUIWincol]                       ; Display Status Text
-    mov [GUIGameOptnsColA],al
-    mov byte[GUIGameOptnsColB],202
-    cmp byte[GUIWincoladd],0
-    je .zero3
-    mov byte[GUIGameOptnsColB],196
-.zero3
-    mov al,byte[GUIGameOptnsColA]
+                                              ; Display Status Text
+   mov al,[GUIWincol]                         ; Shadow (Yellow)
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 15,6,162,GUIMovieTextZ      ; Shadow
-
-    mov byte[GUIGameOptnsColA],163
-    mov byte[GUIGameOptnsColB],217
+    GUIOuttextwin2 15,6,162,GUIMovieTextZ
+    
+    mov byte[GUItextcolor],163                ; Text (Yellow)
     cmp byte[GUIWincoladd],0
     je .zero5
-    mov byte[GUIGameOptnsColA],164
-    mov byte[GUIGameOptnsColB],211
+    mov byte[GUItextcolor],164
 .zero5
-    mov al,byte[GUIGameOptnsColA]
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 15,5,161,GUIMovieTextZ       ; Text
+    GUIOuttextwin2 15,5,161,GUIMovieTextZ
     ret
 
 SECTION .data
@@ -5678,25 +5668,14 @@ DisplayGUIChipConfig:
     GUIOuttextwin2 18,120,57,GUIChipTextA6
 
     mov al,[GUIWincol]                  ;Yellow Shadow
-    mov [GUIGameOptnsColA],al
-    mov byte[GUIGameOptnsColB],202
-    cmp byte[GUIWincoladd],0
-    je .zero3
-    mov byte[GUIGameOptnsColB],196
-.zero3
-    mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 18,10,38,GUIChipTextA
 
-    mov byte[GUIGameOptnsColA],163      ;Yellow Text
-    mov byte[GUIGameOptnsColB],217
+    mov byte[GUItextcolor],163          ; Yellow Text
     cmp byte[GUIWincoladd],0
     je .zero8
-    mov byte[GUIGameOptnsColA],164
-    mov byte[GUIGameOptnsColB],211
+    mov byte[GUItextcolor],164         
 .zero8
-    mov al,byte[GUIGameOptnsColA]
-    mov byte[GUItextcolor],al
     GUIOuttextwin2 18,9,37,GUIChipTextA
 .endEE2
 
@@ -6131,25 +6110,14 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     GUIOuttextwin2 20,8+45*2,140,GUISaveTextC2
 
     mov al,[GUIWincol]                  ;State Selects (Yellow) Shadow
-    mov [GUIGameOptnsColA],al
-    mov byte[GUIGameOptnsColB],202
-    cmp byte[GUIWincoladd],0
-    je .zero3
-    mov byte[GUIGameOptnsColB],196
-.zero3
-    mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 20,6,112,GUISaveTextC1
 
-    mov byte[GUIGameOptnsColA],163      ;State Selects (Yellow) Text
-    mov byte[GUIGameOptnsColB],217
+    mov byte[GUItextcolor],163      ;State Selects (Yellow) Text
     cmp byte[GUIWincoladd],0
     je .zero8
-    mov byte[GUIGameOptnsColA],164
-    mov byte[GUIGameOptnsColB],211
+    mov byte[GUItextcolor],164
 .zero8
-    mov al,byte[GUIGameOptnsColA]
-    mov byte[GUItextcolor],al
     GUIOuttextwin2 20,5,111,GUISaveTextC1
 
 ;Checkboxes
@@ -6388,26 +6356,15 @@ DisplayGUISpeed:                    ;Speed Options
     GUIOuttextwin2 21,7,48,GUISpeedTextA3
 
     mov al,[GUIWincol]                       ;Yellow Shadow
-    mov [GUIGameOptnsColA],al
-    mov byte[GUIGameOptnsColB],202
-    cmp byte[GUIWincoladd],0
-    je .zero1
-    mov byte[GUIGameOptnsColB],196
-.zero1
-    mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 21,8,19,GUISpeedTextA
     GUIOuttextwin2 21,16,79,GUISpeedTextB
 
-    mov byte[GUIGameOptnsColA],163            ;Yellow Text
-    mov byte[GUIGameOptnsColB],217
+    mov byte[GUItextcolor],163            ;Yellow Text
     cmp byte[GUIWincoladd],0
     je .zero3
-    mov byte[GUIGameOptnsColA],164
-    mov byte[GUIGameOptnsColB],211
+    mov byte[GUItextcolor],164
 .zero3
-    mov al,byte[GUIGameOptnsColA]
-    mov byte[GUItextcolor],al
     GUIOuttextwin2 21,7,18,GUISpeedTextA
     GUIOuttextwin2 21,15,78,GUISpeedTextB
 
