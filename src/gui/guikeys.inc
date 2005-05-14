@@ -2382,8 +2382,9 @@ GUICheatSearchKeys:
 .nosecondbox
     ret
 
+; Allows you to use the arrow keys to select a state number, and Enter to pick
 GUIStateSelKeys:
-    cmp al,13
+    cmp al,13 
     jne .noenter
     xor eax,eax
     mov al,[GUIwinptr]
@@ -2501,6 +2502,7 @@ GUIStateSelKeys:
     mov [fnamest+ebx],cl
     ret
 
+; Allows you to select boxes with the arrow keys, Enter to choose
 GUIResetKeys:
 %ifdef __LINUX__
     cmp al,92
@@ -2559,7 +2561,8 @@ GUIResetKeys:
     mov [GUIcmenupos],al
 .notnoreset
     ret
-
+    
+; Allows you to select boxes with the arrow keys, Enter to choose
 GUIStateKeys:
 %ifdef __LINUX__
     cmp al,92

@@ -807,9 +807,10 @@ GUILStB resd 3
 GUILoadPos resb 1
 SECTION .text
 
-DisplayGUIReset:
+DisplayGUIReset:              ; Reset Confirmation
     GUIDrawWindowBox 12,GUIResetDisp
-    cmp byte[GUIWincoladd],0
+    
+        cmp byte[GUIWincoladd],0         ;Red Box around buttons
     je .zero
     mov byte[GUItextcolor],211
 .zero
@@ -825,12 +826,14 @@ DisplayGUIReset:
 .resetboxa
     DrawGUIWinBox 12,19,29,57,42,dl
 .resetboxb
-    DrawGUIButton 12,20,30,56,41,GUIResetText2,2,0,0
+
+    DrawGUIButton 12,20,30,56,41,GUIResetText2,2,0,0   ; Buttons
     DrawGUIButton 12,80,30,116,41,GUIResetText3,3,0,0
-    mov al,[GUIWincol]
+    
+    mov al,[GUIWincol]                     ; Yellow Shadow
     mov byte[GUItextcolor],al
     GUIOuttextwin2 12,6,16,GUIResetText1
-    mov byte[GUItextcolor],163
+    mov byte[GUItextcolor],163             ; Yellow Text
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUItextcolor],164
@@ -844,9 +847,10 @@ GUIResetText2 db 'YES',0
 GUIResetText3 db 'NO',0
 SECTION .text
 
-DisplayGUIStates:
+DisplayGUIStates:                         ; Save/Load State Confirmation
     GUIDrawWindowBox 14,GUIStatesDisp
-    cmp byte[GUIWincoladd],0
+    
+    cmp byte[GUIWincoladd],0             ; Red Box around buttons
     je .zero
     mov byte[GUItextcolor],211
 .zero
@@ -862,18 +866,20 @@ DisplayGUIStates:
 .resetboxa
     DrawGUIWinBox 14,19,29,57,42,dl
 .resetboxb
-    DrawGUIButton 14,20,30,56,41,GUIStatesText3,10,0,0
+    
+    DrawGUIButton 14,20,30,56,41,GUIStatesText3,10,0,0    ; buttons
     DrawGUIButton 14,80,30,116,41,GUIStatesText4,11,0,0
-    mov al,[GUIWincol]
+    
+    mov al,[GUIWincol]                      ; Yellow Shadow
     mov byte[GUItextcolor],al
-    cmp byte[GUIStatesText5],1
-    je .load
+    cmp byte[GUIStatesText5],1              ; Determines Load or Save box
+    je .load                               
     GUIOuttextwin2 14,6,16,GUIStatesText1
     jmp .save
 .load
     GUIOuttextwin2 14,6,16,GUIStatesText2
 .save
-    mov byte[GUItextcolor],163
+    mov byte[GUItextcolor],163               ; Yellow Text
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUItextcolor],164
@@ -895,9 +901,10 @@ GUIStatesText4 db 'NO',0
 GUIStatesText5 db 0
 SECTION .text
 
-DisplayGUIChoseSave:
+DisplayGUIChoseSave:                    ; Pick Save State
     GUIDrawWindowBox 2,GUIStateSelDisp
-    cmp byte[GUIWincoladd],0
+    
+    cmp byte[GUIWincoladd],0             ; Shadow
     je .zero
     mov byte[GUItextcolor],211
 .zero
@@ -922,7 +929,8 @@ DisplayGUIChoseSave:
     GUIOuttextwin2 2,81,46,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'9'
     GUIOuttextwin2 2,101,46,GUIChoseSaveText2
-    add byte[GUItextcolor],15
+    
+    add byte[GUItextcolor],15                   ; Text
     mov byte[GUIChoseSaveText2],'0'
     GUIOuttextwin2 2,20,30,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'1'
@@ -943,16 +951,18 @@ DisplayGUIChoseSave:
     GUIOuttextwin2 2,80,45,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'9'
     GUIOuttextwin2 2,100,45,GUIChoseSaveText2
-    mov al,[GUIWincol]
+    
+    mov al,[GUIWincol]                       ; Yellow Shadow
     mov byte[GUItextcolor],al
     GUIOuttextwin2 2,6,16,GUIChoseSaveText1
-    mov byte[GUItextcolor],163
+    mov byte[GUItextcolor],163               ; Yellow Text
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUItextcolor],164
 .zero3
     GUIOuttextwin2 2,5,15,GUIChoseSaveText1
-    mov dword[GUITemp],GUIIconDataButtonHole
+    
+    mov dword[GUITemp],GUIIconDataButtonHole           ; Ratio Buttons
     mov ebx,[statefileloc]
     mov al,byte[fnamest+ebx]
     mov [GUIChoseSaveText2],al
