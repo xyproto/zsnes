@@ -55,15 +55,17 @@ ProcessMouse:
     mov edx,223
     call Set_MouseYMax
 .nohold1
-    cmp byte[GUIHold],5
+    cmp byte[GUIHold],5 ; Sound Slider
     je .dohold5
-    cmp byte[GUIHold],2
+    cmp byte[GUIHold],6 ; Speed Slider
+    je .dohold5
+    cmp byte[GUIHold],2 ; Colour Slider
     jne .nohold2m
 .dohold5
-    mov ecx,[GUIHoldXlimL]
-    mov edx,[GUIHoldXlimR]
+    mov ecx,[GUIHoldXlimL] ; Sets min/max move range for mouse
+    mov edx,[GUIHoldXlimR] ; once holding slider
     call Set_MouseXMax
-    mov ecx,[GUIHoldYlim]
+    mov ecx,[GUIHoldYlim]  ; Locks pointer on slider
     mov edx,[GUIHoldYlim]
     call Set_MouseYMax
 .nohold2m
@@ -121,6 +123,7 @@ ProcessMouse:
     mov word[GUImouseposy],100
 .nowrapdown
     jmp ProcessMouseButtons
+
 ProcessMouseWrap:
     call Get_MousePositionDisplacement
     add word[GUImouseposx],cx
@@ -417,7 +420,7 @@ ProcessMouseButtons:
     mov byte[GUICBHold],0
     ret
 .hold5
-    ; Slide Bar Hold
+    ; Sound Slide Bar Hold
     mov eax,[GUIHoldYlim]
     mov [GUImouseposy],eax
     mov ebx,[GUImouseposx]
@@ -2057,7 +2060,7 @@ DisplayGUIMovieClick:
     GUIPHoldbutton 17,55,59,66,19
     GUIPHoldbutton 70,55,112,66,20
     ret
-    
+
 .displayboxa                             ; Main Window
     GUIPHoldbutton 7,17,49,28,16         ; Buttons
     GUIPHoldbutton 7,33,49,44,17
@@ -2067,7 +2070,7 @@ DisplayGUIMovieClick:
     GUIPHoldbutton 7,113,109,124,31
     GUIPHoldbutton 7,65,49,76,32
     GUIPHoldbutton 61,65,155,76,34
-    
+
                                                  ; Ratios
     GUIPButtonHole 60,25,byte[CMovieExt],'v'     ; Select
     GUIPButtonHole 80,25,byte[CMovieExt],'1'
@@ -2079,7 +2082,7 @@ DisplayGUIMovieClick:
     GUIPButtonHole 100,40,byte[CMovieExt],'7'
     GUIPButtonHole 120,40,byte[CMovieExt],'8'
     GUIPButtonHole 140,40,byte[CMovieExt],'9'
-    
+
     GUIPButtonHole 8,137,byte[MovieStartMethod],0    ; Start From
     GUIPButtonHole 43,137,byte[MovieStartMethod],1
     GUIPButtonHole 88,137,byte[MovieStartMethod],2
@@ -2088,7 +2091,7 @@ DisplayGUIMovieClick:
     DGOptnsProcBox 116,84,[KeyInsrtChap]           ; Keyboard Shortcut Boxes
     DGOptnsProcBox 116,100,[KeyPrevChap]
     DGOptnsProcBox 116,116,[KeyNextChap]
-    
+
     GUIClickCButton 60,50,byte[MovieDisplayFrame]   ; Checkbox
 
     ret
@@ -2772,7 +2775,7 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 27+45,50,[KeyDisableSC5]
     DGOptnsProcBox 27+45*2,50,[KeyDisableSC6]
     DGOptnsProcBox 27+45*3,50,[KeyDisableSC7]
-    
+
     DGOptnsProcBox 8+25,70,[KeyQuickLoad]
     DGOptnsProcBox 8+57+26,70,[KeyQuickRst]
     DGOptnsProcBox 8+114+20,70,[KeyQuickExit]
@@ -2780,7 +2783,7 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 8+25,80,[KeyQuickChat]
     DGOptnsProcBox 8+57+45,80,[KeyQuickSnapShot]
     DGOptnsProcBox 8+108+70,80,[KeyQuickSaveSPC]
-    
+
     DGOptnsProcBox 78,100,[KeyUsePlayer1234]
     DGOptnsProcBox 78,110,[KeyResetAll]
     DGOptnsProcBox 78,120,[KeyExtraEnab]
@@ -3171,7 +3174,7 @@ DisplayGUIAddOnClick:
     GUIPButtonHole 9,55,byte[snesmouse],4
     ret
 
-DisplayGUIChipClick
+DisplayGUIChipClick:
     GUIClickCButton 9,43,byte[nssdip1]
     GUIClickCButton 59,43,byte[nssdip2]
     GUIClickCButton 109,43,byte[nssdip3]
@@ -3180,7 +3183,7 @@ DisplayGUIChipClick
     GUIClickCButton 109,53,byte[nssdip6]
     ret
 
-DisplayGUIPathsClick
+DisplayGUIPathsClick:
     GUITextBoxInputNach 75,15,230,25,1,1024       ;SRAMDir
     GUITextBoxInputNach 75,35,230,45,2,1024       ;SnapPath
     GUITextBoxInputNach 75,55,230,65,3,1024       ;SPCPath
@@ -3223,53 +3226,35 @@ DisplayGUISaveClick:
     DGOptnsProcBox 8+114+25,148,[KeyStateSelct]
     DGOptnsProcBox 8+38,157,[KeyRewind]
     ret
-    
-DisplayGUISpeedClick
+
+DisplayGUISpeedClick:
     DGOptnsProcBox 100,28,[KeyFastFrwrd]
-    DGOptnsProcBox 100,38,[KeySlowDown]    
-    DGOptnsProcBox 100,48,[KeyResetSpeed] 
-    
-    
+    DGOptnsProcBox 100,38,[KeySlowDown]
+    DGOptnsProcBox 100,48,[KeyResetSpeed]
+
     cmp eax,15
     jl near .nomovebar
-    cmp eax,15+60
+    cmp eax,15+116
     jg near .nomovebar
+    sub eax,15
+    shr eax,1
     cmp edx,89
     jl near .nomovebar
     cmp edx,93
     jg near .nomovebar
-    sub eax,15
     mov [EmuSpeed],al
-;    mov [cfgvolume],al
-    mov byte[GUIHold],5
+    mov byte[GUIHold],6
     mov eax,[GUIwinposy+21*4]
     add eax,91
     mov [GUIHoldYlim],eax
-    xor eax,eax
-    xor edx,edx
-    mov al,[EmuSpeed]
-    shl eax,7
-    mov ebx,100
-    div ebx
-    cmp al,127
-    jb .noof
-    mov al,127
-.noof
-;    mov [MusicVol],al
-;    mov al,[DSPMem+0Ch]
-;    call WDSPReg0C
-;    mov al,[DSPMem+1Ch]
-;    call WDSPReg1C
-
     mov eax,[GUIwinposx+21*4]
     add eax,15
     mov [GUIHoldXlimL],eax
-    add eax,100
+    add eax,116
     mov [GUIHoldXlimR],eax
 .nomovebar
     ret
-    
-    
+
 DrawMouse:
     mov edi,[vidbuffer]
     add edi,16
@@ -3348,6 +3333,3 @@ DrawMouse:
     dec edx
     jnz near .next2
     ret
-
-
-

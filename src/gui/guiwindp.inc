@@ -809,7 +809,7 @@ SECTION .text
 
 DisplayGUIReset:              ; Reset Confirmation
     GUIDrawWindowBox 12,GUIResetDisp
-    
+
         cmp byte[GUIWincoladd],0         ;Red Box around buttons
     je .zero
     mov byte[GUItextcolor],211
@@ -829,7 +829,7 @@ DisplayGUIReset:              ; Reset Confirmation
 
     DrawGUIButton 12,20,30,56,41,GUIResetText2,2,0,0   ; Buttons
     DrawGUIButton 12,80,30,116,41,GUIResetText3,3,0,0
-    
+
     mov al,[GUIWincol]                     ; Yellow Shadow
     mov byte[GUItextcolor],al
     GUIOuttextwin2 12,6,16,GUIResetText1
@@ -849,7 +849,7 @@ SECTION .text
 
 DisplayGUIStates:                         ; Save/Load State Confirmation
     GUIDrawWindowBox 14,GUIStatesDisp
-    
+
     cmp byte[GUIWincoladd],0             ; Red Box around buttons
     je .zero
     mov byte[GUItextcolor],211
@@ -866,14 +866,14 @@ DisplayGUIStates:                         ; Save/Load State Confirmation
 .resetboxa
     DrawGUIWinBox 14,19,29,57,42,dl
 .resetboxb
-    
+
     DrawGUIButton 14,20,30,56,41,GUIStatesText3,10,0,0    ; buttons
     DrawGUIButton 14,80,30,116,41,GUIStatesText4,11,0,0
-    
+
     mov al,[GUIWincol]                      ; Yellow Shadow
     mov byte[GUItextcolor],al
     cmp byte[GUIStatesText5],1              ; Determines Load or Save box
-    je .load                               
+    je .load
     GUIOuttextwin2 14,6,16,GUIStatesText1
     jmp .save
 .load
@@ -903,7 +903,7 @@ SECTION .text
 
 DisplayGUIChoseSave:                    ; Pick Save State
     GUIDrawWindowBox 2,GUIStateSelDisp
-    
+
     cmp byte[GUIWincoladd],0             ; Shadow
     je .zero
     mov byte[GUItextcolor],211
@@ -929,7 +929,7 @@ DisplayGUIChoseSave:                    ; Pick Save State
     GUIOuttextwin2 2,81,46,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'9'
     GUIOuttextwin2 2,101,46,GUIChoseSaveText2
-    
+
     add byte[GUItextcolor],15                   ; Text
     mov byte[GUIChoseSaveText2],'0'
     GUIOuttextwin2 2,20,30,GUIChoseSaveText2
@@ -951,7 +951,7 @@ DisplayGUIChoseSave:                    ; Pick Save State
     GUIOuttextwin2 2,80,45,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'9'
     GUIOuttextwin2 2,100,45,GUIChoseSaveText2
-    
+
     mov al,[GUIWincol]                       ; Yellow Shadow
     mov byte[GUItextcolor],al
     GUIOuttextwin2 2,6,16,GUIChoseSaveText1
@@ -961,7 +961,7 @@ DisplayGUIChoseSave:                    ; Pick Save State
     mov byte[GUItextcolor],164
 .zero3
     GUIOuttextwin2 2,5,15,GUIChoseSaveText1
-    
+
     mov dword[GUITemp],GUIIconDataButtonHole           ; Ratio Buttons
     mov ebx,[statefileloc]
     mov al,byte[fnamest+ebx]
@@ -1378,7 +1378,7 @@ DisplayGUIInput:
     mov dl,[GUIWincol]
     add dl,4
     DrawGUIWinBox 3,5,78,107,78,dl
-    
+
     DGOptnsBorderBox 3,44,99
     DGOptnsBorderBox 3,44,109
     DGOptnsBorderBox 3,44,119
@@ -1395,13 +1395,13 @@ DisplayGUIInput:
     DGOptnsBorderBox 3,124,109
     DGOptnsBorderBox 3,124,119
     DGOptnsBorderBox 3,124,139
-    DGOptnsBorderBox 3,124,149  
+    DGOptnsBorderBox 3,124,149
     DGOptnsBorderBox 3,164,99
     DGOptnsBorderBox 3,164,109
     DGOptnsBorderBox 3,164,119
     DGOptnsBorderBox 3,164,139
-    DGOptnsBorderBox 3,164,149  
-    ; End draw borders  
+    DGOptnsBorderBox 3,164,149
+    ; End draw borders
     ret
 
 SECTION .data
@@ -1631,7 +1631,7 @@ DisplayGUIOption:
     mov dl,[GUIWincol]
     add dl,3
     DrawGUIWinBox 4,95,12,94,19,dl
-    ; End draw borders  
+    ; End draw borders
     DrawGUIWinBox 4,75,12,93,19,167
     mov al,[frameskip]
     add al,47
@@ -1675,7 +1675,7 @@ DisplayGUIOption:
     mov dl,[GUIWincol]
     add dl,3
     DrawGUIWinBox 4,115,12,115,19,dl
-    ; End draw borders  
+    ; End draw borders
     DrawGUIWinBox 4,96,12,114,19,167
     mov al,[maxskip]
     add al,48
@@ -1780,7 +1780,7 @@ DisplayGUIVideo:
 %else
     GUIOuttextwin2 5,13,111,GUIVideoTextb
     GUIOuttextwin2u 5,36,119,GUIVideoTexta,0
-%endif    
+%endif
 .notext2
     xor eax,eax
     mov al,[cvidmode]
@@ -2249,7 +2249,7 @@ DisplayGUIVideo:
     cmp byte[GUICHold],5
     jne .noholdb
     sub byte[GUIWincoladd],3
-.noholdb 
+.noholdb
     cmp byte[GUICHold],6
     jne .noholdc
     add byte[GUIWincoladd],3
@@ -2389,7 +2389,7 @@ SECTION .text
 
 DisplayGUISound:                     ; Sound Related Options
     GUIDrawWindowBox 6,GUISoundDisp
-    
+
 ;Text Display
     mov byte[GUItextcolor],217       ; Shadows
     cmp byte[GUIWincoladd],0
@@ -2411,7 +2411,7 @@ DisplayGUISound:                     ; Sound Related Options
     GUIOuttextwin2u 6,26,126,GUISoundTextD3,1
     GUIOuttextwin2u 6,26,136,GUISoundTextD4,6
     GUIOuttextwin2u 6,26,146,GUISoundTextD5,0
-    
+
     GUIOuttextwin2u 6,26,168,GUISoundTextE1,0
     GUIOuttextwin2u 6,26,178,GUISoundTextE2,0
 %ifndef __MSDOS__
@@ -2424,7 +2424,7 @@ DisplayGUISound:                     ; Sound Related Options
     GUIOuttextwin2u 6,126,188,GUISoundTextF3,0
 %endif
 
-    add byte[GUItextcolor],15           ;Text 
+    add byte[GUItextcolor],15           ;Text
     GUIOuttextwin2 6,25,25,GUISoundTextA1
     GUIOuttextwin2 6,25,34,GUISoundTextA2
 %ifdef __MSDOS__
@@ -2439,7 +2439,7 @@ DisplayGUISound:                     ; Sound Related Options
     GUIOuttextwin2 6,25,125,GUISoundTextD3
     GUIOuttextwin2 6,25,135,GUISoundTextD4
     GUIOuttextwin2 6,25,145,GUISoundTextD5
-    
+
     GUIOuttextwin2 6,25,167,GUISoundTextE1
     GUIOuttextwin2 6,25,177,GUISoundTextE2
 %ifndef __MSDOS__
@@ -2459,7 +2459,7 @@ DisplayGUISound:                     ; Sound Related Options
     GUIOuttextwin2 6,6,76,GUISoundTextC
     GUIOuttextwin2 6,6,158,GUISoundTextE
     GUIOuttextwin2 6,106,158,GUISoundTextF
-    
+
     mov byte[GUItextcolor],163        ;Yellow Text
     cmp byte[GUIWincoladd],0
     je .zero3
@@ -2470,8 +2470,8 @@ DisplayGUISound:                     ; Sound Related Options
     GUIOuttextwin2 6,5,75,GUISoundTextC
     GUIOuttextwin2 6,5,157,GUISoundTextE
     GUIOuttextwin2 6,105,157,GUISoundTextF
-    
-    
+
+
 ;Checkboxes
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[cfgsoundon],0
@@ -2479,7 +2479,7 @@ DisplayGUISound:                     ; Sound Related Options
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox
     GUIDisplayIconWin 6,11,21,[GUITemp]
-    
+
 %ifdef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[cfgforce8b],0
@@ -2495,7 +2495,7 @@ DisplayGUISound:                     ; Sound Related Options
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
     GUIDisplayIconWin 6,11,30,[GUITemp]
-    
+
 %ifdef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[RaisePitch],0
@@ -2511,42 +2511,42 @@ DisplayGUISound:                     ; Sound Related Options
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox3
     GUIDisplayIconWin 6,11,111,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[Surround],0
     je .nocheckbox4
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox4
     GUIDisplayIconWin 6,11,121,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SoundBufEn],0
     je .nocheckbox5
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox5
     GUIDisplayIconWin 6,11,131,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SPCDisable],0
     je .nocheckbox6
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox6
     GUIDisplayIconWin 6,11,141,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SoundInterpType],1
     jne .nocheckbox7
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox7
     GUIDisplayIconWin 6,11,163,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SoundInterpType],2
     jne .nocheckbox8
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox8
     GUIDisplayIconWin 6,11,173,[GUITemp]
-    
+
 %ifndef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SoundInterpType],3
@@ -2562,14 +2562,14 @@ DisplayGUISound:                     ; Sound Related Options
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox10
     GUIDisplayIconWin 6,111,163,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[LowPassFilterType],2
     jne .nocheckbox11
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox11
     GUIDisplayIconWin 6,111,173,[GUITemp]
-    
+
 %ifndef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[LowPassFilterType],3
@@ -2597,15 +2597,15 @@ DisplayGUISound:                     ; Sound Related Options
     shl eax,3
     add [GUITemp],eax
     mov byte[GUItextcolor],223            ; Text
-    GUIOuttextwin2 6,23,64,[GUITemp]  
+    GUIOuttextwin2 6,23,64,[GUITemp]
     mov byte[GUItextcolor],221            ; Shadow
     cmp byte[GUIWincoladd],0
     je .zero4
     mov byte[GUItextcolor],222
 .zero4
     GUIOuttextwin2 6,22,63,[GUITemp]
-    
-   
+
+
 ; Draw borders
     mov dword[GUIWincol],148+10
     cmp byte[cwindrawn],1
@@ -2629,7 +2629,7 @@ DisplayGUISound:                     ; Sound Related Options
     DrawGUIWinBox 6,71,61,70,69,dl ;right
 
 
-; Volume Level Slider    
+; Volume Level Slider
     mov eax,dword[GUIwinposx+6*4]
     mov ebx,dword[GUIwinposy+6*4]
     mov ecx,eax
@@ -2816,7 +2816,7 @@ DisplayGUICheatConv:
 
 DisplayGUICheat:       ; Add/Browse Cheats menu
     GUIDrawWindowBox 7,GUICheatDisp
-    
+
 
 ; Display Text
     mov byte[GUItextcolor],217
@@ -2833,7 +2833,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     GUIOuttextwin2 7,11,172,GUICheatTextD3
     GUIOuttextwin2 7,11,180,GUICheatTextD4
     GUIOuttextwin2 7,26,191,GUICheatTextE1
-    
+
     add byte[GUItextcolor],15               ;Text
     GUIOuttextwin2 7,5,12,GUICheatTextA
     GUIOuttextwin2 7,5,131,GUICheatTextC1
@@ -2860,8 +2860,8 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     GUIOuttextwin2u 7,104,117,GUICheatTextZ5,0
     GUIOuttextwin2u 7,151,117,GUICheatTextZ5,0
     GUIOuttextwin2u 7,198,117,GUICheatTextZ5,0
- 
- 
+
+
 ; Red Highlight for Cheats box
     cmp dword[GUIcurrentcheatwin],0
     jne near .nowinbox
@@ -2937,7 +2937,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
 
 ;Scrollbar
     DrawSlideBarWin 7,231,28,[GUIcurrentcheatviewloc],[NumCheats],12,73,GUICStA
-    cmp byte[GUICHold],7          
+    cmp byte[GUICHold],7
     jne .noholda
     add byte[GUIWincoladd],3
 .noholda
@@ -2957,7 +2957,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
 .noholdb2
 
 
-; Draw borders 
+; Draw borders
     mov dword[GUIWincol],148+10
     cmp byte[cwindrawn],1
     jne .noone2
@@ -2988,7 +2988,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
 
 
 ; Draw input boxes
-    mov ebx,[GUIcurrentcheatcursloc]      
+    mov ebx,[GUIcurrentcheatcursloc]
     sub ebx,[GUIcurrentcheatviewloc]
     mov eax,ebx
     lea ebx,[ebx*4]
@@ -2996,7 +2996,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     add ebx,eax
     add ebx,eax
     add ebx,22
-    
+
     mov dl,167                           ;Code Box
     cmp dword[GUIcurrentcheatwin],1
     jne .notopibox
@@ -3006,8 +3006,8 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     inc dl
 .nocoladd
 .notopibox
-    DrawGUIWinBox 7,82,129,172,136,dl    
-    
+    DrawGUIWinBox 7,82,129,172,136,dl
+
     mov dl,167                           ;Descrip. Box
     cmp dword[GUIcurrentcheatwin],2
     jne .nobotibox
@@ -3017,12 +3017,12 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     inc dl
 .nocoladd2
 .nobotibox
-    DrawGUIWinBox 7,82,140,196,147,dl        
-    
+    DrawGUIWinBox 7,82,140,196,147,dl
+
     mov byte[GUItextcolor],223           ;Shadow
     GUIOuttextwin2 7,84,132,GUICheatTextZ1
     GUIOuttextwin2 7,84,143,GUICheatTextZ2
-    
+
     mov byte[GUItextcolor],221           ;Text
     cmp byte[GUIWincoladd],0
     je .zero3
@@ -3030,7 +3030,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
 .zero3
     GUIOuttextwin2 7,83,131,GUICheatTextZ1
     GUIOuttextwin2 7,83,142,GUICheatTextZ2
-    
+
     xor eax,eax                 ; Code for movement of cursor
     mov al,[GUICheatPosA]
     mov byte[GUICheatTextZ1+eax],0
@@ -3081,7 +3081,7 @@ GUICheatTextD4 db ' INSERT THE "-" FOR GAME GENIE CODES',0
 
 GUICheatTextE1 db 'AUTO-LOAD .CHT FILE AT GAME LOAD',0  ; Checkbox Text
 
-GUICheatTextZ1 db '_',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; 14 digits  
+GUICheatTextZ1 db '_',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; 14 digits
 GUICheatTextZ2 db '_',0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; 11 digits (?)
 GUICheatTextZ3 db '000000 00 00 OFF BLAHBLAH---',0,0,0,0,0,0,0,0,0,0,0,0
 GUICheatTextZ4 db '0123456789ABCDEF'
@@ -3966,7 +3966,7 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8+52,81,GUIGameOptnsTextB
     GUIOuttextwin2 9,136,81,GUIGameOptnsTextC
 
-    
+
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     mov al,byte[GUIGameOptnsColB]
@@ -3998,7 +3998,7 @@ DisplayGameOptns:
     DGOptnsBorderBox 9,116,22
     DGOptnsBorderBox 9,161,22
     DGOptnsBorderBox 9,206,22
-    
+
     DGOptnsBorderBox 9,26,40
     DGOptnsBorderBox 9,71,40
     DGOptnsBorderBox 9,116,40
@@ -4007,7 +4007,7 @@ DisplayGameOptns:
     DGOptnsBorderBox 9,71,49
     DGOptnsBorderBox 9,116,49
     DGOptnsBorderBox 9,161,49
-    
+
     DGOptnsBorderBox 9,32,69
     DGOptnsBorderBox 9,90,69
     DGOptnsBorderBox 9,141,69
@@ -4015,7 +4015,7 @@ DisplayGameOptns:
     DGOptnsBorderBox 9,32,79
     DGOptnsBorderBox 9,109,79
     DGOptnsBorderBox 9,185,79
-    
+
     DGOptnsBorderBox 9,77,99
     DGOptnsBorderBox 9,77,109
     DGOptnsBorderBox 9,77,119
@@ -4023,7 +4023,7 @@ DisplayGameOptns:
     DGOptnsBorderBox 9,77,139
     DGOptnsBorderBox 9,77,149
 ;    DGOptnsBorderBox 9,77,159
-    DGOptnsBorderBox 9,77,169    
+    DGOptnsBorderBox 9,77,169
 ;    DGOptnsBorderBox 9,177,99
 ;    DGOptnsBorderBox 9,177,109
     DGOptnsBorderBox 9,177,119
@@ -4032,7 +4032,7 @@ DisplayGameOptns:
     DGOptnsBorderBox 9,177,149
     DGOptnsBorderBox 9,177,159
     DGOptnsBorderBox 9,177,169
-      
+
     ; Draw black boxes
     DGOptnsDrawBox 27,23,[KeyBGDisble0]
     DGOptnsDrawBox 27+45,23,[KeyBGDisble1]
@@ -4047,7 +4047,7 @@ DisplayGameOptns:
     DGOptnsDrawBox 27+45,50,[KeyDisableSC5]
     DGOptnsDrawBox 27+45*2,50,[KeyDisableSC6]
     DGOptnsDrawBox 27+45*3,50,[KeyDisableSC7]
-    
+
     DGOptnsDrawBox 8+25,70,[KeyQuickLoad]
     DGOptnsDrawBox 8+57+26,70,[KeyQuickRst]
     DGOptnsDrawBox 8+114+20,70,[KeyQuickExit]
@@ -4055,7 +4055,7 @@ DisplayGameOptns:
     DGOptnsDrawBox 8+25,80,[KeyQuickChat]
     DGOptnsDrawBox 8+57+45,80,[KeyQuickSnapShot]
     DGOptnsDrawBox 8+108+70,80,[KeyQuickSaveSPC]
-    
+
     DGOptnsDrawBox 78,100,[KeyUsePlayer1234]
     DGOptnsDrawBox 78,110,[KeyResetAll]
     DGOptnsDrawBox 78,120,[KeyExtraEnab]
@@ -4571,10 +4571,10 @@ SECTION .text
 
 DisplayGUIMovies:    ; Movie Record/Playback options
     GUIDrawWindowBox 15,GUIMovieDisp   ; Display Window
-    
-    cmp byte[MovieRecordWinVal],0       
+
+    cmp byte[MovieRecordWinVal],0
     je near .displayboxa
-        
+
     cmp byte[GUIWincoladd],0             ; Overwrite Message Box
     je .zero4
     mov byte[GUItextcolor],211
@@ -4590,8 +4590,8 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     DrawGUIButton 15,17,55,59,66,GUIMovieTextX4,19,0,0 ; Yes/No Buttons
     DrawGUIButton 15,70,55,112,66,GUIMovieTextX5,20,0,0
     ret
-    
-    
+
+
 .displayboxa                            ; Main Window
 
     DrawGUIButton 15,7,17,49,28,GUIMovieTextA1,16,0,0  ; Draw Buttons
@@ -4630,13 +4630,13 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     mov byte[GUIMovieTextB1],'9'
     GUIOuttextwin2 15,151,43,GUIMovieTextB1
     GUIOuttextwin2u 15,71,55,GUIMovieTextB2,0
-    
+
     GUIOuttextwin2 15,9,130,GUIMovieTextC           ; "Start From" Section Shadow
     GUIOuttextwin2u 15,21,140,GUIMovieTextC1,0
     GUIOuttextwin2u 15,56,140,GUIMovieTextC2,0
     GUIOuttextwin2u 15,101,140,GUIMovieTextC3,0
     GUIOuttextwin2u 15,21,150,GUIMovieTextC4,8
-        
+
     add byte[GUItextcolor],15                      ; State Select Text
     GUIOuttextwin2 15,60,15,GUIMovieTextB
     mov byte[GUIMovieTextB1],'0'
@@ -4660,16 +4660,16 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     mov byte[GUIMovieTextB1],'9'
     GUIOuttextwin2 15,150,42,GUIMovieTextB1
     GUIOuttextwin2 15,70,54,GUIMovieTextB2
-    
+
     GUIOuttextwin2 15,8,129,GUIMovieTextC             ; "Start From" Section Text
     GUIOuttextwin2 15,20,139,GUIMovieTextC1
     GUIOuttextwin2 15,55,139,GUIMovieTextC2
     GUIOuttextwin2 15,100,139,GUIMovieTextC3
-    GUIOuttextwin2 15,20,149,GUIMovieTextC4          
+    GUIOuttextwin2 15,20,149,GUIMovieTextC4
         ; Status text is at end of window
                                                          ; Display ratio buttons
-    GUIDisplayButtonHole 15,60,25,byte[CMovieExt],'v'    ; Select:  
-    GUIDisplayButtonHole 15,80,25,byte[CMovieExt],'1'    
+    GUIDisplayButtonHole 15,60,25,byte[CMovieExt],'v'    ; Select:
+    GUIDisplayButtonHole 15,80,25,byte[CMovieExt],'1'
     GUIDisplayButtonHole 15,100,25,byte[CMovieExt],'2'
     GUIDisplayButtonHole 15,120,25,byte[CMovieExt],'3'
     GUIDisplayButtonHole 15,140,25,byte[CMovieExt],'4'
@@ -4678,24 +4678,24 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     GUIDisplayButtonHole 15,100,40,byte[CMovieExt],'7'
     GUIDisplayButtonHole 15,120,40,byte[CMovieExt],'8'
     GUIDisplayButtonHole 15,140,40,byte[CMovieExt],'9'
-    
+
     GUIDisplayButtonHole 15,8,137,byte[MovieStartMethod],0      ; Start From:
     GUIDisplayButtonHole 15,43,137,byte[MovieStartMethod],1
     GUIDisplayButtonHole 15,88,137,byte[MovieStartMethod],2
     GUIDisplayButtonHole 15,8,147,byte[MovieStartMethod],3
-    
-    
-    
+
+
+
     DDrawBox 15,116,84,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
     DDrawBox 15,116,100,[KeyPrevChap]
     DDrawBox 15,116,116,[KeyNextChap]
-    
+
     DGOptnsBorderBox 15,115,83               ; Borders to above boxes
     DGOptnsBorderBox 15,115,99
     DGOptnsBorderBox 15,115,115
-    
-    
-    
+
+
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC   ; Checkbox
     cmp byte[MovieDisplayFrame],0
     je .nocheckboxMDF
@@ -4703,8 +4703,8 @@ DisplayGUIMovies:    ; Movie Record/Playback options
 .nocheckboxMDF
     GUIDisplayIconWin 15,60,50,[GUITemp]
 
-    
-    
+
+
     mov dword[GUIMovieTextZ+9],'INAC'    ; Determine Status
     mov dword[GUIMovieTextZ+13],'TIVE'
     mov dword[GUIMovieTextZ+17],'    '
@@ -4737,7 +4737,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 15,6,162,GUIMovieTextZ      ; Shadow
-    
+
     mov byte[GUIGameOptnsColA],163
     mov byte[GUIGameOptnsColB],217
     cmp byte[GUIWincoladd],0
@@ -4902,9 +4902,9 @@ SECTION .text
     push ecx
     mov ecx,%4                  ;Move pointer to text into ecx
 %%zero
-    cmp byte[ecx],0             ;Check for null in string 
+    cmp byte[ecx],0             ;Check for null in string
     je %%one
-    inc ecx                 
+    inc ecx
     jmp %%zero
 %%one
     push eax
@@ -4928,7 +4928,7 @@ SECTION .text
     je %%three
     mov byte[GUIBlinkCursor],' '
     jmp %%four
-%%three    
+%%three
     mov byte[GUIBlinkCursor],'_'
 %%four
     imul eax,6
@@ -4937,7 +4937,7 @@ SECTION .text
     mov ecx,eax
     GUIOuttextwin2c %1,ecx,%3,GUIBlinkCursor
     pop ecx
-%%fixreg    
+%%fixreg
     pop eax
 %endmacro
 
@@ -5559,7 +5559,7 @@ DisplayGUIAddOns:                   ;Select Special Controllers
     GUIDrawWindowBox 17,GUIAddOnsDisp
 
 
-;Text Display        
+;Text Display
     mov byte[GUItextcolor],217      ;Shadow
     cmp byte[GUIWincoladd],0
     je .zero
@@ -5581,7 +5581,7 @@ DisplayGUIAddOns:                   ;Select Special Controllers
     GUIOuttextwin2u 17,21,38,GUIAddOnText3,20
     GUIOuttextwin2u 17,21,48,GUIAddOnText4,0
     GUIOuttextwin2u 17,21,58,GUIAddOnText5,0
-.endEE    
+.endEE
 
     add byte[GUItextcolor],15        ;Text
     call EEMode
@@ -5599,7 +5599,7 @@ DisplayGUIAddOns:                   ;Select Special Controllers
     GUIOuttextwin2 17,20,37,GUIAddOnText3
     GUIOuttextwin2 17,20,47,GUIAddOnText4
     GUIOuttextwin2 17,20,57,GUIAddOnText5
-.endEE2        
+.endEE2
 
 
 ;Ratio Buttons
@@ -5628,7 +5628,7 @@ SECTION .text
 
 DisplayGUIChipConfig:
     GUIDrawWindowBox 18,GUIChipConfigDisp
-    
+
 ;Text Display
     mov byte[GUItextcolor],217      ;Shadow
     cmp byte[GUIWincoladd],0
@@ -5655,7 +5655,7 @@ DisplayGUIChipConfig:
     GUIOuttextwin2u 18,21,58,GUIChipTextA4,4
     GUIOuttextwin2u 18,71,58,GUIChipTextA5,4
     GUIOuttextwin2u 18,121,58,GUIChipTextA6,4
-.endEE    
+.endEE
 
     add byte[GUItextcolor],15         ; Text
     call EEMode
@@ -5687,7 +5687,7 @@ DisplayGUIChipConfig:
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 18,10,38,GUIChipTextA
-    
+
     mov byte[GUIGameOptnsColA],163      ;Yellow Text
     mov byte[GUIGameOptnsColB],217
     cmp byte[GUIWincoladd],0
@@ -5707,35 +5707,35 @@ DisplayGUIChipConfig:
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nodip1
     GUIDisplayIconWin 18,9,43,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[nssdip2],0
     je .nodip2
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nodip2
     GUIDisplayIconWin 18,59,43,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[nssdip3],0
     je .nodip3
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nodip3
     GUIDisplayIconWin 18,109,43,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[nssdip4],0
     je .nodip4
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nodip4
     GUIDisplayIconWin 18,9,53,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[nssdip5],0
     je .nodip5
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nodip5
     GUIDisplayIconWin 18,59,53,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[nssdip6],0
     je .nodip6
@@ -5770,7 +5770,7 @@ BlinkCursorCheck:
     mov ebx,0
     ret
 
-.checkboxes    
+.checkboxes
     cmp dword[GUIInputBox],1
     jne .notBox1
     mov ebx,SRAMDir
@@ -5824,7 +5824,7 @@ BlinkCursorCheck:
     cmp dword[GUIInputBox],11
     jne .notBox11
     mov ebx,SPL4Path
-.notBox11    
+.notBox11
     ret
 
 
@@ -5861,7 +5861,7 @@ DisplayGUIPaths:
     GUIOuttextwin2 19,134,172,GUIPathsTextD
 
     ; Draw borders
-    mov dword[GUIWincol],148+10 
+    mov dword[GUIWincol],148+10
     cmp byte[cwindrawn],1
     jne .noone3
     mov dword[GUIWincol],148+5
@@ -5957,7 +5957,7 @@ DisplayGUIPaths:
     DrawGUIWinBox 19,135,106,235,106,dl
     mov dl,[GUIWincol]
     add dl,3
-    DrawGUIWinBox 19,236,95,236,105,dl    
+    DrawGUIWinBox 19,236,95,236,105,dl
     mov dl,[GUIWincol]                   ; SD GUNDAM Border
     DrawGUIWinBox 19,135,119,235,119,dl
     mov dl,[GUIWincol]
@@ -5968,7 +5968,7 @@ DisplayGUIPaths:
     DrawGUIWinBox 19,135,131,235,131,dl
     mov dl,[GUIWincol]
     add dl,3
-    DrawGUIWinBox 19,236,120,236,130,dl    
+    DrawGUIWinBox 19,236,120,236,130,dl
     mov dl,[GUIWincol]                   ; FEOEZ SJNS Border
     DrawGUIWinBox 19,135,154,235,154,dl
     mov dl,[GUIWincol]
@@ -5979,7 +5979,7 @@ DisplayGUIPaths:
     DrawGUIWinBox 19,135,166,235,166,dl
     mov dl,[GUIWincol]
     add dl,3
-    DrawGUIWinBox 19,236,155,236,165,dl    
+    DrawGUIWinBox 19,236,155,236,165,dl
     mov dl,[GUIWincol]                   ; SPL4 Border
     DrawGUIWinBox 19,135,179,235,179,dl
     mov dl,[GUIWincol]
@@ -5990,8 +5990,8 @@ DisplayGUIPaths:
     DrawGUIWinBox 19,135,191,235,191,dl
     mov dl,[GUIWincol]
     add dl,3
-    DrawGUIWinBox 19,236,180,236,190,dl   
-    ; End draw borders  
+    DrawGUIWinBox 19,236,180,236,190,dl
+    ; End draw borders
     ;Input boxes
     DrawGUIWinBox  19,75,15,231,25,167
     DrawGUIWinBox  19,75,35,231,45,167
@@ -6035,8 +6035,8 @@ GUIPathsTextD db 'SPL4:',0
 NEWSYM GUIBlinkCursor, times 2 db 0
 
 DisplayGUISave:                    ;Save & Rewind options/Hotkeys
-    GUIDrawWindowBox 20,GUISaveDisp               
-    
+    GUIDrawWindowBox 20,GUISaveDisp
+
 ;Text Display
     mov byte[GUItextcolor],217               ;Shadow
     cmp byte[GUIWincoladd],0
@@ -6044,9 +6044,9 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     mov byte[GUItextcolor],211
 .zero
     sub byte[GUItextcolor],15
-    GUIOuttextwin2 20,8,19,GUISaveTextA1          
+    GUIOuttextwin2 20,8,19,GUISaveTextA1
     GUIOuttextwin2 20,8,31,GUISaveTextA2
-    
+
     GUIOuttextwin2u 20,26,44,GUISaveTextB1,5
     GUIOuttextwin2u 20,26,54,GUISaveTextB2,5
     GUIOuttextwin2u 20,26,64,GUISaveTextB3,0
@@ -6054,13 +6054,13 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     GUIOuttextwin2u 20,26,84,GUISaveTextB5,0
     GUIOuttextwin2u 20,26,94,GUISaveTextB6,0
     GUIOuttextwin2u 20,26,104,GUISaveTextB7,12
-    
-    GUIOuttextwin2 20,9+45*3,141,GUISaveTextC4   
+
+    GUIOuttextwin2 20,9+45*3,141,GUISaveTextC4
     GUIOuttextwin2 20,9,150,GUISaveTextC5
     GUIOuttextwin2 20,9+57,150,GUISaveTextC6
     GUIOuttextwin2 20,9+114,150,GUISaveTextC7
     GUIOuttextwin2 20,9,159,GUISaveTextC8
-    
+
     mov byte[GUISaveTextC2+2],'0'           ; ST# Shadow
     GUIOuttextwin2 20,9,123,GUISaveTextC2
     mov byte[GUISaveTextC2+2],'1'
@@ -6086,10 +6086,10 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     mov byte[GUISaveTextC2+2],'-'
     GUIOuttextwin2 20,9+45*2,141,GUISaveTextC2
 
-    add byte[GUItextcolor],15                ;Text 
+    add byte[GUItextcolor],15                ;Text
     GUIOuttextwin2 20,7,18,GUISaveTextA1
     GUIOuttextwin2 20,7,30,GUISaveTextA2
-    
+
     GUIOuttextwin2 20,25,43,GUISaveTextB1
     GUIOuttextwin2 20,25,53,GUISaveTextB2
     GUIOuttextwin2 20,25,63,GUISaveTextB3
@@ -6097,14 +6097,14 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     GUIOuttextwin2 20,25,83,GUISaveTextB5
     GUIOuttextwin2 20,25,93,GUISaveTextB6
     GUIOuttextwin2 20,25,103,GUISaveTextB7
-    
+
     GUIOuttextwin2 20,8+45*3,140,GUISaveTextC4
     GUIOuttextwin2 20,8,149,GUISaveTextC5
     GUIOuttextwin2 20,8+57,149,GUISaveTextC6
     GUIOuttextwin2 20,8+114,149,GUISaveTextC7
     GUIOuttextwin2 20,8,158,GUISaveTextC8
-        
-    
+
+
     mov byte[GUISaveTextC2+2],'0'           ; ST# Text
     GUIOuttextwin2 20,8,122,GUISaveTextC2
     mov byte[GUISaveTextC2+2],'1'
@@ -6140,7 +6140,7 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 20,6,112,GUISaveTextC1
-    
+
     mov byte[GUIGameOptnsColA],163      ;State Selects (Yellow) Text
     mov byte[GUIGameOptnsColB],217
     cmp byte[GUIWincoladd],0
@@ -6151,50 +6151,50 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 20,5,111,GUISaveTextC1
-    
+
 ;Checkboxes
-    mov dword[GUITemp],GUIIconDataCheckBoxUC   
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AutoIncSaveSlot],0
     je .nocheckbox
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox
     GUIDisplayIconWin 20,11,40,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SRAMSave5Sec],0
     je .nocheckbox1
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
     GUIDisplayIconWin 20,11,50,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[LatestSave],0
     je .nocheckbox2
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox2
     GUIDisplayIconWin 20,11,60,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AutoState],0
     je .nocheckbox3
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox3
     GUIDisplayIconWin 20,11,70,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SRAMState],0
     je .nocheckbox4
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox4
     GUIDisplayIconWin 20,11,80,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[PauseLoad],0
     je .nocheckbox5
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox5
     GUIDisplayIconWin 20,11,90,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[PauseRewind],0
     je .nocheckbox6
@@ -6226,7 +6226,7 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     mov dl,[GUIWincol]
     add dl,3
     DrawGUIWinBox 20,165,29,166,36,dl
- 
+
     mov dl,[GUIWincol]              ; Second/Rewind (Border)
     DrawGUIWinBox 20,150,16,165,16,dl
     mov dl,[GUIWincol]
@@ -6238,7 +6238,7 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     mov dl,[GUIWincol]
     add dl,3
     DrawGUIWinBox 20,165,17,166,24,dl
-    
+
     DGOptnsBorderBox 20,26,120    ; ST0
     DGOptnsBorderBox 20,71,120    ; ST1
     DGOptnsBorderBox 20,116,120   ; ST2
@@ -6257,7 +6257,7 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     DGOptnsBorderBox 20,45,156    ; REWIND
 
 
-;Boxes    
+;Boxes
     DrawGUIWinBox 20,150,17,165,24,167     ; Rewind States Box
     xor ax,ax
     mov ah,[RewindStates]
@@ -6282,9 +6282,9 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
     je .zero6
-    mov byte[GUItextcolor],211    
-.zero6    
-    
+    mov byte[GUItextcolor],211
+.zero6
+
     DrawGUIWinBox 20,150,29,165,36,167     ; Second/Rewind Box
     xor ax,ax
     mov ah,[RewindFrames]
@@ -6309,13 +6309,13 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
     je .zero7
-    mov byte[GUItextcolor],211    
+    mov byte[GUItextcolor],211
 .zero7
 
     DDrawBox 20,27,121,[KeyStateSlc0]           ; Boxes for State section
-    DDrawBox 20,27+45,121,[KeyStateSlc1]    
+    DDrawBox 20,27+45,121,[KeyStateSlc1]
     DDrawBox 20,27+45*2,121,[KeyStateSlc2]
-    DDrawBox 20,27+45*3,121,[KeyStateSlc3]   
+    DDrawBox 20,27+45*3,121,[KeyStateSlc3]
     DDrawBox 20,27,130,[KeyStateSlc4]
     DDrawBox 20,27+45,130,[KeyStateSlc5]
     DDrawBox 20,27+45*2,130,[KeyStateSlc6]
@@ -6330,7 +6330,7 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     DDrawBox 20,8+38,157,[KeyRewind]
 
 
-;Buttons    
+;Buttons
     mov byte[GUItextcolor],217               ;set color for buttons
     cmp byte[GUIWincoladd],0
     je .zero88
@@ -6342,9 +6342,8 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     DrawGUIButton 20,184,17,192,25,GUISaveTextZ2,71,-2,-1  ; - Rewind States
     DrawGUIButton 20,173,29,181,37,GUISaveTextZ1,72,-2,-1  ; + Second/Rewind
     DrawGUIButton 20,184,29,192,37,GUISaveTextZ2,73,-2,-1  ; - Second/Rewind
-    
-   
-ret
+    ret
+
 SECTION .data
 GUISaveTextA1 db '# OF REWIND STATES',0
 GUISaveTextA2 db '1/5 SECONDS PER REWIND',0
@@ -6372,7 +6371,7 @@ GUISaveTextZ3 db '  ',0
 
 
 DisplayGUISpeed:                    ;Speed Options
-    GUIDrawWindowBox 21,GUISpeedDisp         
+    GUIDrawWindowBox 21,GUISpeedDisp
     mov byte[GUItextcolor],217               ;Shadow
     cmp byte[GUIWincoladd],0
     je .zero
@@ -6382,53 +6381,51 @@ DisplayGUISpeed:                    ;Speed Options
     GUIOuttextwin2 21,8,29,GUISpeedTextA1
     GUIOuttextwin2 21,8,39,GUISpeedTextA2
     GUIOuttextwin2 21,8,49,GUISpeedTextA3
-    
+
     add byte[GUItextcolor],15                ;Text
     GUIOuttextwin2 21,7,28,GUISpeedTextA1
     GUIOuttextwin2 21,7,38,GUISpeedTextA2
     GUIOuttextwin2 21,7,48,GUISpeedTextA3
-    
 
-
-    mov al,[GUIWincol]                  ;Yellow Shadow
+    mov al,[GUIWincol]                       ;Yellow Shadow
     mov [GUIGameOptnsColA],al
     mov byte[GUIGameOptnsColB],202
     cmp byte[GUIWincoladd],0
-    je .zero3
+    je .zero1
     mov byte[GUIGameOptnsColB],196
-.zero3
+.zero1
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 21,8,19,GUISpeedTextA
-    GUIOuttextwin2 21,21,79,GUISpeedTextB   
-     
-    mov byte[GUIGameOptnsColA],163      ;Yellow Text
+    GUIOuttextwin2 21,16,79,GUISpeedTextB
+
+    mov byte[GUIGameOptnsColA],163            ;Yellow Text
     mov byte[GUIGameOptnsColB],217
     cmp byte[GUIWincoladd],0
-    je .zero8
+    je .zero3
     mov byte[GUIGameOptnsColA],164
     mov byte[GUIGameOptnsColB],211
-.zero8
+.zero3
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 21,7,18,GUISpeedTextA
-    GUIOuttextwin2 21,20,78,GUISpeedTextB
+    GUIOuttextwin2 21,15,78,GUISpeedTextB
 
-    
+
     DDrawBox 21,100,28,[KeyFastFrwrd]        ;Shortcut Boxes
-    DDrawBox 21,100,38,[KeySlowDown]    
-    DDrawBox 21,100,48,[KeyResetSpeed] 
-    
+    DDrawBox 21,100,38,[KeySlowDown]
+    DDrawBox 21,100,48,[KeyResetSpeed]
+
     DGOptnsBorderBox 21,99,27                ;Borders
-    DGOptnsBorderBox 21,99,37                
-    DGOptnsBorderBox 21,99,47 
-    
-                   
-    mov eax,dword[GUIwinposx+21*4]            ; Slider
+    DGOptnsBorderBox 21,99,37
+    DGOptnsBorderBox 21,99,47
+
+
+    mov eax,dword[GUIwinposx+21*4]           ;Slider
     mov ebx,dword[GUIwinposy+21*4]
     mov ecx,eax
     add eax,15
-    add ecx,15+60
+    add ecx,15+116
     add ebx,91
     xor edx,edx
     mov dl,215
@@ -6440,21 +6437,27 @@ DisplayGUISpeed:                    ;Speed Options
     DrawGUILine
     xor eax,eax
     mov al,[EmuSpeed]
-    mov dword[GUITemp],11
+    shl eax,1
+    mov dword[GUITemp],12
     add [GUITemp],eax
     GUIDisplayIconWin 21,[GUITemp],87,GUIIconDataSlideBar
-    mov dword[GUISpeedTextB1],' '
+    mov dword[GUISpeedTextB1],0
     mov esi,GUISpeedTextB1+2
-    xor eax,eax
-    mov al,[EmuSpeed]
-    mov ebx,10
-    div bl
-    add ah,48
-    mov [esi],ah
-    cmp al,0
-    je .nomore
+    xor eax,eax         ; currently emuspeed ranges from 0 to 58
+    mov al,[EmuSpeed]   ; this turns it into '/30' to '30x'
+    cmp al,29
+    jb .slowmo
+    mov byte[esi],'x'       ; adds 'x' after the ff value
     dec esi
-    xor ah,ah
+    sub al,28
+    jmp .asciilp
+.slowmo
+    mov byte[GUISpeedTextB1],1      ; slomo indicator
+    mov bl,30
+    sub bl,al
+    mov al,bl
+.asciilp                            ; turns decimal into ascii
+    mov bl,10
     div bl
     add ah,48
     mov [esi],ah
@@ -6466,18 +6469,21 @@ DisplayGUISpeed:                    ;Speed Options
     add ah,48
     mov [esi],ah
 .nomore
+    cmp byte[GUISpeedTextB1],1
+    jne .convdone
+    dec esi
+    mov byte[esi],'/'      ; adds '/' before the slomo value
+.convdone
     mov [GUITemp],esi
     mov byte[GUItextcolor],223
-    GUIOuttextwin2 21,119,89,[GUITemp]
+    GUIOuttextwin2 21,63,79,[GUITemp]
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
-    je .zero5
+    je .zero4
     mov byte[GUItextcolor],222
-.zero5
-    GUIOuttextwin2 21,118,88,[GUITemp]
+.zero4
+    GUIOuttextwin2 21,62,78,[GUITemp]
     ret
-
-
 
 SECTION .data
 GUISpeedTextA db 'SHORTCUTS : ',0
@@ -6487,9 +6493,6 @@ GUISpeedTextA3 db 'RESET SPEED',0
 
 GUISpeedTextB db 'SPEED : ',0
 GUISpeedTextB1 db '---',0
-
-
-
 
 ;General data
 GUILoadDisp     db 'LOAD GAME',0
