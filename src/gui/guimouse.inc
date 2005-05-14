@@ -989,6 +989,8 @@ GUIWinClicked:
     je near DisplayGUIPathsClick
     cmp ebx,20
     je near DisplayGUISaveClick
+    cmp ebx,21
+    je near DisplayGUISpeedClick
     ret
 %macro GUIClickCButton 3
     cmp eax,%1+1
@@ -3221,7 +3223,53 @@ DisplayGUISaveClick:
     DGOptnsProcBox 8+114+25,148,[KeyStateSelct]
     DGOptnsProcBox 8+38,157,[KeyRewind]
     ret
+    
+DisplayGUISpeedClick
+    DGOptnsProcBox 100,28,[KeyFastFrwrd]
+    DGOptnsProcBox 100,38,[KeySlowDown]    
+    DGOptnsProcBox 100,48,[KeyResetSpeed] 
+    
+    
+    cmp eax,15
+    jl near .nomovebar
+    cmp eax,15+100
+    jg near .nomovebar
+    cmp edx,89
+    jl near .nomovebar
+    cmp edx,93
+    jg near .nomovebar
+    sub eax,15
+    mov [EmuSpeed],al
+;    mov [cfgvolume],al
+    mov byte[GUIHold],5
+    mov eax,[GUIwinposy+21*4]
+    add eax,91
+    mov [GUIHoldYlim],eax
+    xor eax,eax
+    xor edx,edx
+    mov al,[EmuSpeed]
+    shl eax,7
+    mov ebx,100
+    div ebx
+    cmp al,127
+    jb .noof
+    mov al,127
+.noof
+;    mov [MusicVol],al
+;    mov al,[DSPMem+0Ch]
+;    call WDSPReg0C
+;    mov al,[DSPMem+1Ch]
+;    call WDSPReg1C
 
+    mov eax,[GUIwinposx+21*4]
+    add eax,15
+    mov [GUIHoldXlimL],eax
+    add eax,100
+    mov [GUIHoldXlimR],eax
+.nomovebar
+    ret
+    
+    
 DrawMouse:
     mov edi,[vidbuffer]
     add edi,16

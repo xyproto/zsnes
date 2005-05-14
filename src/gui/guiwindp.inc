@@ -1,4 +1,4 @@
-;Copyright (C) 1997-2005 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+s;Copyright (C) 1997-2005 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 ;
 ;http://www.zsnes.com
 ;http://sourceforge.net/projects/zsnes
@@ -2586,8 +2586,14 @@ DisplayGUISound:                     ; Sound Related Options
     mov al,[cfgSoundQuality]
     shl eax,3
     add [GUITemp],eax
-    mov byte[GUItextcolor],223
-    GUIOuttextwin2 6,23,64,[GUITemp]
+    mov byte[GUItextcolor],223            ; Text
+    GUIOuttextwin2 6,23,64,[GUITemp]  
+    mov byte[GUItextcolor],221            ; Shadow
+    cmp byte[GUIWincoladd],0
+    je .zero4
+    mov byte[GUItextcolor],222
+.zero4
+    GUIOuttextwin2 6,22,63,[GUITemp]
     
    
 ; Draw borders
@@ -2614,12 +2620,6 @@ DisplayGUISound:                     ; Sound Related Options
 
 
 ; Volume Level Slider    
-    mov byte[GUItextcolor],221
-    cmp byte[GUIWincoladd],0
-    je .zero4
-    mov byte[GUItextcolor],222
-.zero4
-    GUIOuttextwin2 6,22,63,[GUITemp]
     mov eax,dword[GUIwinposx+6*4]
     mov ebx,dword[GUIwinposy+6*4]
     mov ecx,eax
@@ -4052,10 +4052,10 @@ DisplayGameOptns:
     DGOptnsDrawBox 78,130,[KeyNewGfxSwt]
     DGOptnsDrawBox 78,140,[KeyWinDisble]
     DGOptnsDrawBox 78,150,[KeyOffsetMSw]
-    DGOptnsDrawBox 78,160,[KeySlowDown]
+;    DGOptnsDrawBox 78,160,[KeySlowDown]
     DGOptnsDrawBox 78,170,[EMUPauseKey]
 ;    DGOptnsDrawBox 178,100,[KeyRewind]
-    DGOptnsDrawBox 178,110,[KeyFastFrwrd]
+;    DGOptnsDrawBox 178,110,[KeyFastFrwrd]
     DGOptnsDrawBox 178,120,[KeyVolUp]
     DGOptnsDrawBox 178,130,[KeyVolDown]
     DGOptnsDrawBox 178,140,[KeyFRateUp]
@@ -6361,6 +6361,121 @@ GUISaveTextZ2 db '-',0
 GUISaveTextZ3 db '  ',0
 
 
+DisplayGUISpeed:                    ;Speed Options
+    GUIDrawWindowBox 21,GUISpeedDisp         
+    mov byte[GUItextcolor],217               ;Shadow
+    cmp byte[GUIWincoladd],0
+    je .zero
+    mov byte[GUItextcolor],211
+.zero
+    sub byte[GUItextcolor],15
+    GUIOuttextwin2 21,8,29,GUISpeedTextA1
+    GUIOuttextwin2 21,8,39,GUISpeedTextA2
+    GUIOuttextwin2 21,8,49,GUISpeedTextA3
+    
+    add byte[GUItextcolor],15                ;Text
+    GUIOuttextwin2 21,7,28,GUISpeedTextA1
+    GUIOuttextwin2 21,7,38,GUISpeedTextA2
+    GUIOuttextwin2 21,7,48,GUISpeedTextA3
+    
+
+
+    mov al,[GUIWincol]                  ;Yellow Shadow
+    mov [GUIGameOptnsColA],al
+    mov byte[GUIGameOptnsColB],202
+    cmp byte[GUIWincoladd],0
+    je .zero3
+    mov byte[GUIGameOptnsColB],196
+.zero3
+    mov al,byte[GUIGameOptnsColA]
+    mov byte[GUItextcolor],al
+    GUIOuttextwin2 21,7,18,GUISpeedTextA
+    GUIOuttextwin2 21,20,78,GUISpeedTextB   
+     
+    mov byte[GUIGameOptnsColA],163      ;Yellow Text
+    mov byte[GUIGameOptnsColB],217
+    cmp byte[GUIWincoladd],0
+    je .zero8
+    mov byte[GUIGameOptnsColA],164
+    mov byte[GUIGameOptnsColB],211
+.zero8
+    mov al,byte[GUIGameOptnsColA]
+    mov byte[GUItextcolor],al
+    GUIOuttextwin2 21,7,18,GUISpeedTextA
+    GUIOuttextwin2 21,20,78,GUISpeedTextB
+
+    
+    DDrawBox 21,100,28,[KeyFastFrwrd]        ;Shortcut Boxes
+    DDrawBox 21,100,38,[KeySlowDown]    
+    DDrawBox 21,100,48,[KeyResetSpeed] 
+    
+    mov eax,dword[GUIwinposx+21*4]            ; Slider
+    mov ebx,dword[GUIwinposy+21*4]
+    mov ecx,eax
+    add eax,15
+    add ecx,15+100
+    add ebx,91
+    xor edx,edx
+    mov dl,215
+    sub dl,[GUIWincoladd]
+    DrawGUILine
+    inc ecx
+    inc eax
+    sub dl,13
+    DrawGUILine
+    xor eax,eax
+    mov al,[EmuSpeed]
+    mov dword[GUITemp],11
+    add [GUITemp],eax
+    GUIDisplayIconWin 21,[GUITemp],87,GUIIconDataSlideBar
+    mov dword[GUISpeedTextB1],' '
+    mov esi,GUISpeedTextB1+2
+    xor eax,eax
+    mov al,[EmuSpeed]
+    mov ebx,10
+    div bl
+    add ah,48
+    mov [esi],ah
+    cmp al,0
+    je .nomore
+    dec esi
+    xor ah,ah
+    div bl
+    add ah,48
+    mov [esi],ah
+    cmp al,0
+    je .nomore
+    dec esi
+    xor ah,ah
+    div bl
+    add ah,48
+    mov [esi],ah
+.nomore
+    mov [GUITemp],esi
+    mov byte[GUItextcolor],223
+    GUIOuttextwin2 21,119,89,[GUITemp]
+    mov byte[GUItextcolor],221
+    cmp byte[GUIWincoladd],0
+    je .zero5
+    mov byte[GUItextcolor],222
+.zero5
+    GUIOuttextwin2 21,118,88,[GUITemp]
+    ret
+
+
+
+SECTION .data
+GUISpeedTextA db 'SHORTCUTS : ',0
+GUISpeedTextA1 db 'FAST FORWARD',0
+GUISpeedTextA2 db 'SLOWDOWN',0
+GUISpeedTextA3 db 'RESET SPEED',0
+
+GUISpeedTextB db 'SPEED : ',0
+GUISpeedTextB1 db '---',0
+
+
+
+
 ;General data
 GUILoadDisp     db 'LOAD GAME',0
 GUIResetDisp    db 'RESET GAME',0
@@ -6382,6 +6497,7 @@ GUIAddOnsDisp db 'ADD-ON SELECTOR',0
 GUIChipConfigDisp db 'CONFIGURE CHIPS',0
 GUIPathsDisp db 'SETUP PATHS',0
 GUISaveDisp db 'SAVE OPTIONS',0
+GUISpeedDisp db 'SPEED OPTIONS',0
 
 SECTION .bss
 GUIItemBoxColor resd 1

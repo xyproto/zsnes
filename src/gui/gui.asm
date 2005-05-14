@@ -105,7 +105,7 @@ EXTSYM JoyMaxX209,JoyMinY209,JoyMaxY209,GetCoords,GetCoords3,MultiTap,SFXEnable
 EXTSYM RestoreSystemVars,GUIBIFIL,GUIHQ2X,GUIHQ3X,GUIHQ4X,firstsaveinc,nssdip1
 EXTSYM nssdip2,nssdip3,nssdip4,nssdip5,nssdip6,SkipMovie,MovieStop,MoviePlay
 EXTSYM MovieRecord,MovieInsertChapter,MovieSeekAhead,MovieSeekBehind
-EXTSYM ResetDuringMovie,MovieDumpRaw
+EXTSYM ResetDuringMovie,MovieDumpRaw,EmuSpeed
 
 %ifdef __LINUX__
 EXTSYM numlockptr
@@ -155,6 +155,7 @@ NEWSYM WaterOn,  db 1
 ;                Sound
 ;                Paths
 ;                Saves
+;                Speed
 
 ; MultiPlay only has "Internet" for Windows/Linux
 
@@ -178,11 +179,12 @@ NEWSYM WaterOn,  db 1
 ;           18 = Chip Config
 ;           19 = Paths
 ;           20 = Saves
+;           21 = Speed
 
 ;The first byte is the number of fields on the right not including the seperators
 MenuDat1 db 12, 3,1,1,1,1,1,1,1,1,1,0,1,2,0
 MenuDat2 db 8,  3,1,1,0,1,1,1,0,2,0,0
-MenuDat3 db 13, 3,1,1,1,1,0,1,1,0,1,1,1,1,2,0
+MenuDat3 db 14, 3,1,1,1,1,0,1,1,0,1,1,1,1,1,2,0
 MenuDat4 db 2,  3,1,2,0
 MenuDat5 db 1,  3,2,0
 MenuDat6 db 6,  3,1,1,1,1,0,2,0
@@ -226,6 +228,7 @@ GUIConfigMenuData
         db 1,'SOUND       ',0
         db 1,'PATHS       ',0
         db 1,'SAVES       ',0
+        db 1,'SPEED       ',0
 GUICheatMenuData
         db 1,'ADD CODE    ',0
         db 1,'BROWSE      ',0
@@ -576,7 +579,8 @@ NEWSYM EMUPauseKey, dd 0
 NEWSYM INCRFrameKey, dd 0
 NEWSYM PauseLoad, db 0
 NEWSYM PauseRewind, db 0
-;NEWSYM end
+NEWSYM KeyResetSpeed, dd 0
+;end NEWSYM end
 
 GUIsave equ $-GUIRAdd
 
@@ -594,11 +598,11 @@ GUIwinactiv resb 18
 ViewBuffer  resb 50*32
 
 SECTION .data             ; Window sizes and positions
-;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE
-GUIwinposxo dd 0,5   ,60  ,30  ,55  ,50  ,35  ,5   ,30  ,10   ,10   ,50  ,65  ,20  ,70  ,40  ,3   ,50  ,50  ,5    ,20
-GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,65  ,35  ,22  ,60  ,60  ,20   ,30
-GUIwinsizex dd 0,244 ,126 ,189 ,167 ,180 ,188 ,244 ,8*16,235  ,240  ,190 ,9*16,8*16,9*16,180 ,250 ,160 ,160 ,244  ,200
-GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,160 ,190 ,100 ,100 ,190  ,160
+;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE SPED
+GUIwinposxo dd 0,5   ,60  ,30  ,55  ,50  ,35  ,5   ,30  ,10   ,10   ,50  ,65  ,20  ,70  ,40  ,3   ,50  ,50  ,5    ,20  ,20
+GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,65  ,35  ,22  ,60  ,60  ,20   ,30  ,30
+GUIwinsizex dd 0,244 ,126 ,189 ,167 ,180 ,188 ,244 ,8*16,235  ,240  ,190 ,9*16,8*16,9*16,180 ,250 ,160 ,160 ,244  ,200 ,200
+GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,160 ,190 ,100 ,100 ,190  ,160 ,160
 GUIwinptr   db 0
 
 section .bss
@@ -2487,7 +2491,7 @@ CheckMenuItemHelp:
 %%skip
 %endmacro
 
-GUITryMenuItem:
+GUITryMenuItem:                     ; Defines which menu item calls what window number
     cmp byte[GUIcmenupos],1
     jne near .noquickload
     checkqloadvalue 0
@@ -2627,6 +2631,7 @@ GUITryMenuItem:
     GUICheckMenuItem 6, 11             ; Sound
     GUICheckMenuItem 19, 12            ; Paths
     GUICheckMenuItem 20, 13            ; Saves
+    GUICheckMenuItem 21, 14            ; Speed
 .noconfig
     cmp byte[romloadskip],0
     jne near .nocheat
@@ -2693,7 +2698,7 @@ SECTION .data
 .message1 db 'CONFIGURATION FILES SAVED.',0
 SECTION .text
 
-DisplayBoxes:
+DisplayBoxes:                        ; Displays window when item is clicked
     xor esi,esi
     mov byte[cwindrawn],0
 .next2
@@ -2819,6 +2824,11 @@ DisplayBoxes:
     call DisplayGUISave
     jmp .finstuff
 .nosave
+    cmp al,21
+    jne .nospeed
+    call DisplayGUISpeed
+    jmp .finstuff
+.nospeed
 .finstuff
     pop esi
     inc esi
@@ -3139,7 +3149,7 @@ DisplayMenu:
 .nomenu2
     cmp byte[GUIcmenupos],3
     jne near .nomenu3
-    GUIDrawMenuM 52,16,9,14,GUIConfigMenuData,54,57,22,159,42 ;19+14*10
+    GUIDrawMenuM 52,16,9,15,GUIConfigMenuData,54,57,22,169,42 ;19+15*10
     mov dword[GUICYLocPtr],MenuDat3
 .nomenu3
     cmp byte[GUIcmenupos],4
