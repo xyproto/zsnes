@@ -56,6 +56,7 @@ EXTSYM MovieSeekBehind,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,SlowDownLock,FastForwardLock
+EXTSYM PauseFrameMode,RestorePauseFrame
 
 %ifdef __MSDOS__
 EXTSYM dssel
@@ -1425,24 +1426,40 @@ NEWSYM cpuover
 .noinputread
 
     ;Pause and Frame increment
+    cmp byte[PauseFrameMode],2
+    jne .nopauseframemode2
+    pushad
+    call RestorePauseFrame
+    popad
+.nopauseframemode2
+    
+    cmp byte[EMUPause],1
+    jne .noemupause
+
+    ; prevents some random desyncs
+    mov byte[SlowDownLock],0 
+    mov byte[FastForwardLock],0
+    
+    call ProcessRewind
+        
+    cmp byte[PauseFrameMode],1
+    jne .nopauseframemode1
+    mov byte[PauseFrameMode],2
+    jmp .noprocmovie
+.nopauseframemode1
+
     cmp byte[INCRFrame],1
     jne .noframeincr
     xor byte[INCRFrame],1
     jmp .noemupause
 .noframeincr
-    cmp byte[EMUPause],1
-    jne .noemupause
-    mov byte[SlowDownLock],0 ; prevents some random desyncs
-    mov byte[FastForwardLock],0 ; prevents some random desyncs
-
-    call ProcessRewind
 
     ;Update screen (we should also kill sound)
     pushad
+    call StartDrawNewGfx
     call showvideo
     popad
-
-    ;jmp .nocache
+    
     jmp .nonewgfx
 .noemupause
 

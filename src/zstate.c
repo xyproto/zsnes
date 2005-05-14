@@ -220,18 +220,28 @@ void ClearCacheCheck()
 }
 
 //Code to handle special frames for pausing, and desync checking
-unsigned char *SpecialPauseBackup = 0;
+unsigned char *SpecialPauseBackup = 0, PauseFrameMode = 0;
+/*
+Pause frame modes
+
+0 - no pause frame stored
+1 - pause frame stored
+2 - pause frame ready for reload
+*/
+
 void *doMemAlloc(size_t);
 
 void BackupPauseFrame()
 {
   copy_state_data(SpecialPauseBackup, memcpyinc, csm_save_rewind);
+  PauseFrameMode = 1;
 }
 
 void RestorePauseFrame()
 {
   copy_state_data(SpecialPauseBackup, memcpyrinc, csm_load_rewind);
   ClearCacheCheck();
+  PauseFrameMode = 0;
 }
 
 #define ActualRewindFrames (RewindFrames * (romispal ? 10 : 12))
@@ -285,14 +295,16 @@ void RestoreCVFrame()
       zmv_rewind_load(LatestRewindPos, true);
     }
 
-    if ((EMUPause = PauseRewind)) //Yes this if supposed to have a single equal
-    {
-      BackupPauseFrame();
-    }
+    EMUPause = PauseRewind;
   }
 
   copy_state_data(RewindBufferPos, memcpyrinc, csm_load_rewind);
 
+  if (EMUPause)
+  {
+    BackupPauseFrame();
+  }  
+  
   ClearCacheCheck();
   
   RewindTimer = ActualRewindFrames;
