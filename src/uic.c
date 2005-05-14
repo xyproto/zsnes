@@ -140,6 +140,7 @@ unsigned char *spc7110romptr;
 unsigned char MusicRelVol   = 75;
 unsigned char MusicVol      = 0;
 unsigned char MMXextSupport   = 0;
+unsigned char EmuSpeed      = 15;
 
 void outofmemory();
 void init();
