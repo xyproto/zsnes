@@ -2397,17 +2397,14 @@ GUIStateSelKeys:
     ret
 .noenter
 %ifdef __LINUX__
-    cmp al,92
+    cmp al,92               ; linux keypad left
     je  .yesleft
-    cmp dword[numlockptr],1
+    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
     je  .noleft
-    cmp al,75
+%endif
+    cmp al,75               ; linux numpad left, non-linux num/keypad left
     jne .noleft
 .yesleft
-%else
-    cmp al,75
-    jne .noleft
-%endif
     mov ebx,[statefileloc]
     mov cl,[fnamest+ebx]
     cmp cl,'t'
@@ -2429,17 +2426,14 @@ GUIStateSelKeys:
     jmp .done
 .noleft
 %ifdef __LINUX__
-    cmp al,94
+    cmp al,94               ; linux keypad right
     je  .yesright
-    cmp dword[numlockptr],1
+    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
     je  .noright
-    cmp al,77
+%endif
+    cmp al,77               ; linux numpad right, non-linux num/keypad right
     jne .noright
 .yesright
-%else
-    cmp al,77
-    jne .noright
-%endif
     mov ebx,[statefileloc]
     mov cl,[fnamest+ebx]
     cmp cl,'t'
@@ -2461,22 +2455,23 @@ GUIStateSelKeys:
     jmp .done
 .noright
 %ifdef __LINUX__
-    cmp al,90
-    je  .vert
-    cmp dword[numlockptr],1
-    je  .novert
+    cmp al,90               ; linux keypad up
+    je  .yesvert
+    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
+    je  .noup
 %endif
-    cmp al,72
-    je .vert
+    cmp al,72               ; linux numpad up, non-linux num/keypad up
+    je  .yesvert
+.noup
 %ifdef __LINUX__
-    cmp al,96
-    je  .vert
-    cmp dword[numlockptr],1
+    cmp al,96               ; linux keypad down
+    je  .yesvert
+    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
     je  .novert
 %endif
-    cmp al,80
+    cmp al,80               ; linux numpad down, non-linux num/keypad down
     jne .novert
-.vert
+.yesvert
     mov ebx,[statefileloc]
     mov cl,[fnamest+ebx]
     cmp cl,'t'
@@ -2495,11 +2490,9 @@ GUIStateSelKeys:
     jmp .done
 .noabove
     add cl,5
-    jmp .done
-.novert
-    ret
 .done
     mov [fnamest+ebx],cl
+.novert
     ret
 
 ; Allows you to select boxes with the arrow keys, Enter to choose
