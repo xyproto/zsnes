@@ -2787,10 +2787,10 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 78,130,[KeyNewGfxSwt]
     DGOptnsProcBox 78,140,[KeyWinDisble]
     DGOptnsProcBox 78,150,[KeyOffsetMSw]
-    DGOptnsProcBox 78,160,[KeySlowDown]
+;    DGOptnsProcBox 78,160,[KeySlowDown]
     DGOptnsProcBox 78,170,[EMUPauseKey]
 ;    DGOptnsProcBox 178,100,[KeyRewind]
-    DGOptnsProcBox 178,110,[KeyFastFrwrd]
+;    DGOptnsProcBox 178,110,[KeyFastFrwrd]
     DGOptnsProcBox 178,120,[KeyVolUp]
     DGOptnsProcBox 178,130,[KeyVolDown]
     DGOptnsProcBox 178,140,[KeyFRateUp]
@@ -3232,7 +3232,7 @@ DisplayGUISpeedClick
     
     cmp eax,15
     jl near .nomovebar
-    cmp eax,15+100
+    cmp eax,15+60
     jg near .nomovebar
     cmp edx,89
     jl near .nomovebar

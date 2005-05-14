@@ -3887,10 +3887,10 @@ DisplayGameOptns:
     GUIOuttextwin2 9,9,132,GUIGameOptnsTextH
     GUIOuttextwin2 9,9,142,GUIGameOptnsTextI
     GUIOuttextwin2 9,9,152,GUIGameOptnsTextJ
-    GUIOuttextwin2 9,9,162,GUIGameOptnsTextK
+;    GUIOuttextwin2 9,9,162,GUIGameOptnsTextK
     GUIOuttextwin2 9,9,172,GUIGameOptnsTextL
 ;    GUIOuttextwin2 9,109,102,GUIGameOptnsTextEa
-    GUIOuttextwin2 9,109,112,GUIGameOptnsTextFa
+;    GUIOuttextwin2 9,109,112,GUIGameOptnsTextFa
     GUIOuttextwin2 9,109,122,GUIGameOptnsTextGa
     GUIOuttextwin2 9,109,132,GUIGameOptnsTextHa
     GUIOuttextwin2 9,109,142,GUIGameOptnsTextIa
@@ -3972,10 +3972,10 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8,131,GUIGameOptnsTextH
     GUIOuttextwin2 9,8,141,GUIGameOptnsTextI
     GUIOuttextwin2 9,8,151,GUIGameOptnsTextJ
-    GUIOuttextwin2 9,8,161,GUIGameOptnsTextK
+;    GUIOuttextwin2 9,8,161,GUIGameOptnsTextK
     GUIOuttextwin2 9,8,171,GUIGameOptnsTextL
 ;    GUIOuttextwin2 9,108,101,GUIGameOptnsTextEa
-    GUIOuttextwin2 9,108,111,GUIGameOptnsTextFa
+;    GUIOuttextwin2 9,108,111,GUIGameOptnsTextFa
     GUIOuttextwin2 9,108,121,GUIGameOptnsTextGa
     GUIOuttextwin2 9,108,131,GUIGameOptnsTextHa
     GUIOuttextwin2 9,108,141,GUIGameOptnsTextIa
@@ -4012,10 +4012,10 @@ DisplayGameOptns:
     DGOptnsBorderBox 9,77,129
     DGOptnsBorderBox 9,77,139
     DGOptnsBorderBox 9,77,149
-    DGOptnsBorderBox 9,77,159
+;    DGOptnsBorderBox 9,77,159
     DGOptnsBorderBox 9,77,169    
 ;    DGOptnsBorderBox 9,177,99
-    DGOptnsBorderBox 9,177,109
+;    DGOptnsBorderBox 9,177,109
     DGOptnsBorderBox 9,177,119
     DGOptnsBorderBox 9,177,129
     DGOptnsBorderBox 9,177,139
@@ -4089,7 +4089,7 @@ GUIGameOptnsTextD  db 'MISC TOGGLES :',0
 GUIGameOptnsTextE  db 'USE PL12/34',0
 ;GUIGameOptnsTextEa  db 'FREE SPACE',0
 GUIGameOptnsTextF  db 'CLRSWITCHES',0
-GUIGameOptnsTextFa  db 'FASTFWD KEY',0
+;GUIGameOptnsTextFa  db 'FASTFWD KEY',0
 GUIGameOptnsTextG  db 'EXTRADEVICE',0
 GUIGameOptnsTextGa  db '+VOL',0
 GUIGameOptnsTextH  db 'NEW GFX ENG',0
@@ -4098,7 +4098,7 @@ GUIGameOptnsTextI  db 'BG WINDOW',0
 GUIGameOptnsTextIa  db '+FRAME RATE',0
 GUIGameOptnsTextJ  db 'OFFSET MODE',0
 GUIGameOptnsTextJa  db '-FRAME RATE',0
-GUIGameOptnsTextK  db 'SLOWDWN KEY',0
+;GUIGameOptnsTextK  db 'SLOWDWN KEY',0
 GUIGameOptnsTextKa  db 'DISPLAY FPS',0
 GUIGameOptnsTextL  db 'PAUSE GAME',0
 GUIGameOptnsTextLa  db 'INCR FRAME',0
@@ -6389,8 +6389,8 @@ DisplayGUISpeed:                    ;Speed Options
 .zero3
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 21,7,18,GUISpeedTextA
-    GUIOuttextwin2 21,20,78,GUISpeedTextB   
+    GUIOuttextwin2 21,8,19,GUISpeedTextA
+    GUIOuttextwin2 21,21,79,GUISpeedTextB   
      
     mov byte[GUIGameOptnsColA],163      ;Yellow Text
     mov byte[GUIGameOptnsColB],217
@@ -6409,11 +6409,16 @@ DisplayGUISpeed:                    ;Speed Options
     DDrawBox 21,100,38,[KeySlowDown]    
     DDrawBox 21,100,48,[KeyResetSpeed] 
     
+    DGOptnsBorderBox 21,99,27                ;Borders
+    DGOptnsBorderBox 21,99,37                
+    DGOptnsBorderBox 21,99,47 
+    
+                   
     mov eax,dword[GUIwinposx+21*4]            ; Slider
     mov ebx,dword[GUIwinposy+21*4]
     mov ecx,eax
     add eax,15
-    add ecx,15+100
+    add ecx,15+60
     add ebx,91
     xor edx,edx
     mov dl,215
