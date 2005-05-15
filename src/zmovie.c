@@ -733,7 +733,7 @@ static size_t pad_bit_decoder(unsigned char pad, unsigned char *buffer, size_t s
       }
       break;
 
-    case 3:
+    case 3: case 4: case 5:
       //No multitap if both ports use special devices
       if ((zmv_vars.inputs_enabled & BIT(0xA)) && (zmv_vars.inputs_enabled & BIT(0x09)))
       {
@@ -1171,23 +1171,58 @@ static bool zmv_replay_command(enum zmv_commands command)
   return(false);
 }
 
-#define RESTORE_PAD(cur, prev, bit)                                     \
-  cur = prev |= ((zmv_vars.inputs_enabled & BIT(bit)) ? 0x8000 : 0);
+static void replay_pad(unsigned char pad, unsigned char flag, unsigned char *buffer, size_t *skip_bits)
+{
+  unsigned int *last_state = 0, *current_state = 0;
+  unsigned char bit_mask = 0;
 
-#define REPLAY_PAD(prev, cur, bit)                                      \
-  if (flag & BIT(bit))                                                  \
-  {                                                                     \
-    if (skip_bits && ((skip_bits&7) < 4))                               \
-    {                                                                   \
-      fread(press_buf + skip_bits/8, 1, 1, zmv_vars.fp);                \
-    }                                                                   \
-    else                                                                \
-    {                                                                   \
-      fread(press_buf + skip_bits/8, 1, 2, zmv_vars.fp);                \
-    }                                                                   \
-    skip_bits = bit_decoder(&prev, GAMEPAD_MASK, press_buf, skip_bits);   \
-  }                                                                     \
-  RESTORE_PAD(cur, prev, bit+8)
+  switch (pad)
+  {
+    case 1:
+      last_state = &zmv_vars.last_joy_state.A;
+      current_state = &JoyAOrig;
+      bit_mask = BIT(7);
+      break;
+  
+    case 2:
+      last_state = &zmv_vars.last_joy_state.B;
+      current_state = &JoyBOrig;
+      bit_mask = BIT(6);
+      break;
+
+    case 3:
+      last_state = &zmv_vars.last_joy_state.C;
+      current_state = &JoyCOrig;
+      bit_mask = BIT(5);
+      break;
+
+    case 4:
+      last_state = &zmv_vars.last_joy_state.D;
+      current_state = &JoyDOrig;
+      bit_mask = BIT(4);
+      break;
+
+    case 5:
+      last_state = &zmv_vars.last_joy_state.E;
+      current_state = &JoyEOrig;
+      bit_mask = BIT(3);
+      break;                  
+  }
+
+  if (flag & bit_mask)
+  {
+    if (*skip_bits && ((*skip_bits&7) < 4))
+    {
+      fread(buffer + *skip_bits/8, 1, 1, zmv_vars.fp);
+    }
+    else
+    {
+      fread(buffer + *skip_bits/8, 1, 2, zmv_vars.fp);
+    }
+    *skip_bits = pad_bit_decoder(pad, buffer, *skip_bits);
+  }
+  *current_state = *last_state;
+}
 
 static bool zmv_replay()
 {
@@ -1195,11 +1230,11 @@ static bool zmv_replay()
   {
     if (zmv_vars.rle_count)
     {
-      RESTORE_PAD(JoyAOrig, zmv_vars.last_joy_state.A, 15);
-      RESTORE_PAD(JoyBOrig, zmv_vars.last_joy_state.B, 14);
-      RESTORE_PAD(JoyCOrig, zmv_vars.last_joy_state.C, 13);
-      RESTORE_PAD(JoyDOrig, zmv_vars.last_joy_state.D, 12);
-      RESTORE_PAD(JoyEOrig, zmv_vars.last_joy_state.E, 11);
+      JoyAOrig = zmv_vars.last_joy_state.A;
+      JoyBOrig = zmv_vars.last_joy_state.B;
+      JoyCOrig = zmv_vars.last_joy_state.C;
+      JoyDOrig = zmv_vars.last_joy_state.D;
+      JoyEOrig = zmv_vars.last_joy_state.E;
       zmv_vars.rle_count--;
 
       debug_input;
@@ -1244,11 +1279,11 @@ static bool zmv_replay()
         unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
         size_t skip_bits = 0;
 
-        REPLAY_PAD(zmv_vars.last_joy_state.A, JoyAOrig, 7);
-        REPLAY_PAD(zmv_vars.last_joy_state.B, JoyBOrig, 6);
-        REPLAY_PAD(zmv_vars.last_joy_state.C, JoyCOrig, 5);
-        REPLAY_PAD(zmv_vars.last_joy_state.D, JoyDOrig, 4);
-        REPLAY_PAD(zmv_vars.last_joy_state.E, JoyEOrig, 3);
+        replay_pad(1, flag, press_buf, &skip_bits);
+        replay_pad(2, flag, press_buf, &skip_bits);
+        replay_pad(3, flag, press_buf, &skip_bits);
+        replay_pad(4, flag, press_buf, &skip_bits);
+        replay_pad(5, flag, press_buf, &skip_bits);
 
         debug_input;
       }
