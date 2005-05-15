@@ -225,8 +225,9 @@ unsigned char *SpecialPauseBackup = 0, PauseFrameMode = 0;
 Pause frame modes
 
 0 - no pause frame stored
-1 - pause frame stored
-2 - pause frame ready for reload
+1 - pause frame ready to be stored
+2 - pause frame stored
+3 - pause frame ready for reload
 */
 
 void *doMemAlloc(size_t);
@@ -234,7 +235,7 @@ void *doMemAlloc(size_t);
 void BackupPauseFrame()
 {
   copy_state_data(SpecialPauseBackup, memcpyinc, csm_save_rewind);
-  PauseFrameMode = 1;
+  PauseFrameMode = 2;
 }
 
 void RestorePauseFrame()
@@ -295,16 +296,14 @@ void RestoreCVFrame()
       zmv_rewind_load(LatestRewindPos, true);
     }
 
-    EMUPause = PauseRewind;
+    if (PauseRewind)
+    {
+      PauseFrameMode = EMUPause = true;
+    }  
   }
 
   copy_state_data(RewindBufferPos, memcpyrinc, csm_load_rewind);
 
-  if (EMUPause)
-  {
-    BackupPauseFrame();
-  }  
-  
   ClearCacheCheck();
   
   RewindTimer = ActualRewindFrames;
@@ -859,10 +858,10 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
         Msgptr = "RR STATE LOADED.";
         MessageOn = MsgCount;
 
-        if ((EMUPause = PauseLoad)) //Yes this if supposed to have a single equal
+        if (PauseRewind)
         {
-          BackupPauseFrame();
-        }
+          PauseFrameMode = EMUPause = true;
+        }  
       }
       return;
     case 2:
@@ -885,9 +884,9 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
     {
       Msgptr = txtloadmsg; // 'STATE X LOADED.'
       
-      if ((EMUPause = PauseLoad)) //Yes this if supposed to have a single equal
+      if (PauseRewind)
       {
-        BackupPauseFrame();
+        PauseFrameMode = EMUPause = true;
       }
     }
     else
