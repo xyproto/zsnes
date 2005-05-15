@@ -175,8 +175,8 @@ ZST size -  ZST
 variable - Input
 
   12 bits per regular controller, 18 per mouse where input changed padded to next full byte size
-  Minimum 2 bytes  (12 controller bits + 4 padded bits)
-  Maximum 10 bytes (18 mouse controller bits + 48 regular controller bits [12*4] + 6 padded bits)
+  Minimum 2 bytes (12 controller bits + 4 padded bits)
+  Maximum 9 bytes (18 mouse controller bits + 48 regular controller bits [12*4] + 6 padded bits)
 
 
 -----------------------------------------------------------------
@@ -546,6 +546,13 @@ Bit Encoder and Decoder
 
 */
 
+/*
+When working with bits, you have to find the bits in a byte.
+
+Devide the amount of bits by 8 (bit_count >> 3) to find the proper byte.
+The proper bit number in the byte is the amount of bits modulo 8 (bit_count & 7).
+To get the most signifigant bit, you want the bit which is 7 minus the proper bit number.
+*/
 size_t bit_encoder(unsigned int data, unsigned int mask, unsigned char *buffer, size_t skip_bits)
 {
   unsigned char bit_loop;
@@ -556,11 +563,11 @@ size_t bit_encoder(unsigned int data, unsigned int mask, unsigned char *buffer, 
     {
       if (data & BIT(bit_loop))
       {
-        buffer[skip_bits/8] |= BIT(7-(skip_bits&7));
+        buffer[skip_bits>>3] |= BIT(7-(skip_bits&7));
       }
       else
       {
-        buffer[skip_bits/8] &= ~BIT(7-(skip_bits&7));
+        buffer[skip_bits>>3] &= ~BIT(7-(skip_bits&7));
       }
       skip_bits++;
     }
@@ -580,7 +587,7 @@ size_t bit_decoder(unsigned int *data, unsigned int mask, unsigned char *buffer,
   {
     if (mask & BIT(bit_loop))
     {
-      if (buffer[skip_bits/8] & BIT(7-(skip_bits&7)))
+      if (buffer[skip_bits>>3] & BIT(7-(skip_bits&7)))
       {
         *data |= BIT(bit_loop);
       }
@@ -599,7 +606,7 @@ Shared var between record/replay functions
 
 */
 
-#define WRITE_BUFFER_SIZE 512
+#define WRITE_BUFFER_SIZE 1024
 static struct
 {
   struct zmv_header header;
@@ -621,36 +628,137 @@ static struct
   size_t rle_count;
 } zmv_vars;
 
+#define GAMEPAD_MASK 0xFFF00000
+#define MOUSE_MASK 0x00C0FFFF
+
+#define GAMEPAD_ENABLE 0x00008000
+#define MOUSE_ENABLE 0x00010000
+
+static size_t pad_bit_encoder(unsigned char pad, unsigned char *buffer, size_t skip_bits)
+{
+  unsigned int last_state = 0;
+
+  switch (pad)
+  {
+    case 1:
+      last_state = zmv_vars.last_joy_state.A;
+      break;
+  
+    case 2:
+      last_state = zmv_vars.last_joy_state.B;
+      break;
+
+    case 3:
+      last_state = zmv_vars.last_joy_state.C;
+      break;
+
+    case 4:
+      last_state = zmv_vars.last_joy_state.D;
+      break;
+
+    case 5:
+      last_state = zmv_vars.last_joy_state.E;
+      break;                  
+  }
+  
+  switch (pad)
+  {
+    case 1:
+      if (zmv_vars.inputs_enabled & ((pad == 1) ? BIT(0xA) : BIT(0xB))) //Mouse ?
+      {
+        skip_bits = bit_encoder(last_state, MOUSE_MASK, buffer, skip_bits);
+      }
+      else
+      {
+        skip_bits = bit_encoder(last_state, GAMEPAD_MASK, buffer, skip_bits);
+      }
+      break;
+
+    case 3: case 4: case 5:
+      //No multitap if both ports use special devices
+      if (!(zmv_vars.inputs_enabled & BIT(0xA)) || (zmv_vars.inputs_enabled & BIT(0x09)))
+      {
+        skip_bits = bit_encoder(last_state, GAMEPAD_MASK, buffer, skip_bits);
+      }
+      break;
+  }
+  return(skip_bits);
+}
+
+static size_t pad_bit_decoder(unsigned char pad, unsigned char *buffer, size_t skip_bits)
+{
+  unsigned int *last_state = 0;
+  unsigned short input_enable_mask = 0;
+
+  switch (pad)
+  {
+    case 1:
+      last_state = &zmv_vars.last_joy_state.A;
+      input_enable_mask = BIT(15);
+      break;
+  
+    case 2:
+      last_state = &zmv_vars.last_joy_state.B;
+      input_enable_mask = BIT(14);
+      break;
+
+    case 3:
+      last_state = &zmv_vars.last_joy_state.C;
+      input_enable_mask = BIT(13);
+      break;
+
+    case 4:
+      last_state = &zmv_vars.last_joy_state.D;
+      input_enable_mask = BIT(12);
+      break;
+
+    case 5:
+      last_state = &zmv_vars.last_joy_state.E;
+      input_enable_mask = BIT(11);
+      break;                  
+  }
+
+  switch (pad)
+  {
+    case 1: case 2:
+      if (zmv_vars.inputs_enabled & ((pad == 1) ? BIT(0xA) : BIT(0xB))) //Mouse ?
+      {
+        skip_bits = bit_decoder(last_state, MOUSE_MASK, buffer, skip_bits);
+        *last_state |= (zmv_vars.inputs_enabled & input_enable_mask) ? MOUSE_ENABLE : 0;
+      }
+      else
+      {
+        skip_bits = bit_decoder(last_state, GAMEPAD_MASK, buffer, skip_bits);
+        *last_state |= (zmv_vars.inputs_enabled & input_enable_mask) ? GAMEPAD_ENABLE : 0;
+      }
+      break;
+
+    case 3:
+      //No multitap if both ports use special devices
+      if ((zmv_vars.inputs_enabled & BIT(0xA)) && (zmv_vars.inputs_enabled & BIT(0x09)))
+      {
+        *last_state = 0;
+      }
+      else
+      {
+        skip_bits = bit_decoder(last_state, GAMEPAD_MASK, buffer, skip_bits);
+        *last_state |= (zmv_vars.inputs_enabled & input_enable_mask) ? GAMEPAD_ENABLE : 0;
+      }
+      break;
+  }
+  return(skip_bits);
+}
+
 static void save_last_joy_state(unsigned char *buffer)
 {
   size_t skip_bits = 16;
   memcpy(buffer, uint16_to_bytes(zmv_vars.inputs_enabled), 2);
 
-  if (zmv_vars.inputs_enabled & BIT(0xA)) //Mouse 1
-  {
-    skip_bits = bit_encoder(zmv_vars.last_joy_state.A, 0x00C0FFFF, buffer, skip_bits);
-  }
-  else
-  {
-    skip_bits = bit_encoder(zmv_vars.last_joy_state.A, 0xFFF00000, buffer, skip_bits);
-  }
-
-  if (zmv_vars.inputs_enabled & BIT(0x9)) //Mouse 2
-  {
-    skip_bits = bit_encoder(zmv_vars.last_joy_state.B, 0x00C0FFFF, buffer, skip_bits);
-  }
-  else
-  {
-    skip_bits = bit_encoder(zmv_vars.last_joy_state.B, 0xFFF00000, buffer, skip_bits);
-  }
-
-  //No multitap if both ports use special devices
-  if (!(zmv_vars.inputs_enabled & BIT(0xA)) || (zmv_vars.inputs_enabled & BIT(0x09)))
-  {
-    skip_bits = bit_encoder(zmv_vars.last_joy_state.C, 0xFFF00000, buffer, skip_bits);
-    skip_bits = bit_encoder(zmv_vars.last_joy_state.D, 0xFFF00000, buffer, skip_bits);
-    skip_bits = bit_encoder(zmv_vars.last_joy_state.E, 0xFFF00000, buffer, skip_bits);
-  }
+  skip_bits = pad_bit_encoder(1, buffer, skip_bits);
+  skip_bits = pad_bit_encoder(2, buffer, skip_bits);
+  skip_bits = pad_bit_encoder(3, buffer, skip_bits);
+  skip_bits = pad_bit_encoder(4, buffer, skip_bits);
+  skip_bits = pad_bit_encoder(5, buffer, skip_bits);
 }
 
 static void load_last_joy_state(unsigned char *buffer)
@@ -658,47 +766,14 @@ static void load_last_joy_state(unsigned char *buffer)
   size_t skip_bits = 16;
   zmv_vars.inputs_enabled = bytes_to_uint16(buffer);
 
-  if (zmv_vars.inputs_enabled & BIT(0xA)) //Mouse 1
-  {
-    skip_bits = bit_decoder(&zmv_vars.last_joy_state.A, 0x00C0FFFF, buffer, skip_bits);
-    zmv_vars.last_joy_state.A |= (zmv_vars.inputs_enabled & BIT(15)) ? 0x00010000 : 0;
-  }
-  else
-  {
-    skip_bits = bit_decoder(&zmv_vars.last_joy_state.A, 0xFFF00000, buffer, skip_bits);
-    zmv_vars.last_joy_state.A |= (zmv_vars.inputs_enabled & BIT(15)) ? 0x00008000 : 0;
-  }
-
-  if (zmv_vars.inputs_enabled & BIT(0x9)) //Mouse 2
-  {
-    skip_bits = bit_decoder(&zmv_vars.last_joy_state.B, 0x00C0FFFF, buffer, skip_bits);
-    zmv_vars.last_joy_state.B |= (zmv_vars.inputs_enabled & BIT(14)) ? 0x00010000 : 0;
-  }
-  else
-  {
-    skip_bits = bit_decoder(&zmv_vars.last_joy_state.A, 0xFFF00000, buffer, skip_bits);
-    zmv_vars.last_joy_state.B |= (zmv_vars.inputs_enabled & BIT(14)) ? 0x00008000 : 0;
-  }
-
-  //No multitap if both ports use special devices
-  if ((zmv_vars.inputs_enabled & BIT(0xA)) && (zmv_vars.inputs_enabled & BIT(0x09)))
-  {
-    zmv_vars.last_joy_state.C = 0;
-    zmv_vars.last_joy_state.D = 0;
-    zmv_vars.last_joy_state.E = 0;
-  }
-  else
-  {
-    skip_bits = bit_decoder(&zmv_vars.last_joy_state.C, 0xFFF00000, buffer, skip_bits);
-    skip_bits = bit_decoder(&zmv_vars.last_joy_state.D, 0xFFF00000, buffer, skip_bits);
-    skip_bits = bit_decoder(&zmv_vars.last_joy_state.E, 0xFFF00000, buffer, skip_bits);
-
-    zmv_vars.last_joy_state.C |= (zmv_vars.inputs_enabled & BIT(13)) ? 0x00008000 : 0;
-    zmv_vars.last_joy_state.D |= (zmv_vars.inputs_enabled & BIT(12)) ? 0x00008000 : 0;
-    zmv_vars.last_joy_state.E |= (zmv_vars.inputs_enabled & BIT(11)) ? 0x00008000 : 0;
-  }
+  skip_bits = pad_bit_decoder(1, buffer, skip_bits);
+  skip_bits = pad_bit_decoder(2, buffer, skip_bits);
+  skip_bits = pad_bit_decoder(3, buffer, skip_bits);
+  skip_bits = pad_bit_decoder(4, buffer, skip_bits);
+  skip_bits = pad_bit_decoder(5, buffer, skip_bits);
 }
 
+//These things are a total of 11 bytes (2 byte enable field, up to 9 bytes for input bits)
 static void write_last_joy_state(FILE *fp)
 {
   save_last_joy_state(zmv_vars.write_buffer);
@@ -849,19 +924,57 @@ static void zmv_record_command(enum zmv_commands command)
   flush_input_if_needed();
 }
 
-#define RECORD_PAD(prev, cur, bit)                                       \
-  if (cur != prev)                                                       \
-  {                                                                      \
-    prev = cur;                                                          \
-    flag |= BIT(bit);                                                    \
-    skip_bits = bit_encoder(prev, 0xFFF00000, press_buf, skip_bits);     \
-  }
+static void record_pad(unsigned char pad, unsigned char *flag, unsigned char *buffer, size_t *skip_bits)
+{
+  unsigned int *last_state = 0, current_state = 0;
+  unsigned char bit_mask = 0;
 
+  switch (pad)
+  {
+    case 1:
+      last_state = &zmv_vars.last_joy_state.A;
+      current_state = JoyAOrig;
+      bit_mask = BIT(7);
+      break;
+  
+    case 2:
+      last_state = &zmv_vars.last_joy_state.B;
+      current_state = JoyBOrig;
+      bit_mask = BIT(6);
+      break;
+
+    case 3:
+      last_state = &zmv_vars.last_joy_state.C;
+      current_state = JoyCOrig;
+      bit_mask = BIT(5);
+      break;
+
+    case 4:
+      last_state = &zmv_vars.last_joy_state.D;
+      current_state = JoyDOrig;
+      bit_mask = BIT(4);
+      break;
+
+    case 5:
+      last_state = &zmv_vars.last_joy_state.E;
+      current_state = JoyEOrig;
+      bit_mask = BIT(3);
+      break;                  
+  }
+    
+  if (current_state != *last_state)
+  {
+    *last_state = current_state;
+    *flag |= bit_mask;
+    *skip_bits = pad_bit_encoder(pad, buffer, *skip_bits);
+  }
+}
+  
 static void zmv_record(bool pause, unsigned char combos_used, unsigned char slow)
 {
   unsigned char flag = 0;
   unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-  static double average = 1.0;
+  static float average = 1.0f;
   size_t skip_bits = 0;
 
   if (pause) { zmv_vars.header.incr_frames++; }
@@ -870,12 +983,12 @@ static void zmv_record(bool pause, unsigned char combos_used, unsigned char slow
 
   debug_input;
 
-  RECORD_PAD(zmv_vars.last_joy_state.A, JoyAOrig, 7);
-  RECORD_PAD(zmv_vars.last_joy_state.B, JoyBOrig, 6);
-  RECORD_PAD(zmv_vars.last_joy_state.C, JoyCOrig, 5);
-  RECORD_PAD(zmv_vars.last_joy_state.D, JoyDOrig, 4);
-  RECORD_PAD(zmv_vars.last_joy_state.E, JoyEOrig, 3);
-
+  record_pad(1, &flag, press_buf, &skip_bits);
+  record_pad(2, &flag, press_buf, &skip_bits);
+  record_pad(3, &flag, press_buf, &skip_bits);
+  record_pad(4, &flag, press_buf, &skip_bits);
+  record_pad(5, &flag, press_buf, &skip_bits);
+  
   if (flag)
   {
     unsigned char buffer_used = skip_bits/8 + ((skip_bits&7) ? 1 : 0);
@@ -894,7 +1007,8 @@ static void zmv_record(bool pause, unsigned char combos_used, unsigned char slow
   }
 
   // it's the right formula, don't waste time busting your brain on it
-  average = (average * (zmv_vars.header.frames + zmv_vars.header.removed_frames) + 1.0/(slow+1))/(zmv_vars.header.frames + zmv_vars.header.removed_frames + 1);
+  average = (average * (zmv_vars.header.frames + zmv_vars.header.removed_frames) + 1.0f/(float)(slow+1)) /
+            (float)(zmv_vars.header.frames + zmv_vars.header.removed_frames + 1);
   // 1/4 precision for NTSC, 1/5 precision for PAL
   zmv_vars.header.average_fps = (unsigned char)(average * ((romispal) ? 250 : 240));
   zmv_vars.header.frames++;
@@ -1071,7 +1185,7 @@ static bool zmv_replay_command(enum zmv_commands command)
     {                                                                   \
       fread(press_buf + skip_bits/8, 1, 2, zmv_vars.fp);                \
     }                                                                   \
-    skip_bits = bit_decoder(&prev, 0xFFF00000, press_buf, skip_bits);   \
+    skip_bits = bit_decoder(&prev, GAMEPAD_MASK, press_buf, skip_bits);   \
   }                                                                     \
   RESTORE_PAD(cur, prev, bit+8)
 
