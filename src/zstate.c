@@ -858,7 +858,7 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
         Msgptr = "RR STATE LOADED.";
         MessageOn = MsgCount;
 
-        if (PauseRewind)
+        if (PauseLoad)
         {
           PauseFrameMode = EMUPause = true;
         }  
@@ -884,7 +884,7 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
     {
       Msgptr = txtloadmsg; // 'STATE X LOADED.'
       
-      if (PauseRewind)
+      if (PauseLoad)
       {
         PauseFrameMode = EMUPause = true;
       }
