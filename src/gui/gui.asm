@@ -141,7 +141,7 @@ NEWSYM WaterOn,  db 1
 
 ; |  Game        Config     Cheat     MultiPlay    Misc
 ;-------------------------------------------------------
-;    Load        Input#1    Add Code  Modem        Game Keys
+;    Load        Input#1    Add Code  Modem        Misc Keys
 ;    Run         Input#2    Browse    IPX          GUI Opns
 ;    Reset       Input#3    Search                 Movie Opn
 ;    -----       Input#4                           Key Comb.
@@ -237,7 +237,7 @@ GUINetPlayMenuData
         db 1,'MODEM       ',0
         db 1,'IPX         ',0
 GUIMiscMenuData
-        db 1,'GAME KEYS   ',0
+        db 1,'MISC KEYS   ',0
         db 1,'GUI OPNS    ',0
         db 1,'MOVIE OPN   ',0
         db 1,'KEY COMB.   ',0

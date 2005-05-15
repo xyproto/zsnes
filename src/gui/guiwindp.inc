@@ -6462,7 +6462,7 @@ GUIVideoDisp db 'VIDEO CONFIG',0
 GUICheatDisp db 'CHEAT',0
 GUISearchDisp db 'CHEAT SEARCH',0
 GUINetDisp   db 'REMOTE',0,0,0,0,0,0,0,0,0
-GUIGameDisp  db 'GAME KEYS',0
+GUIGameDisp  db 'MISC KEYS',0
 GUIGUIDisp   db 'GUI OPTIONS',0
 GUIAboutDisp db 'ABOUT',0
 GUIMovieDisp db 'MOVIE OPTIONS',0
