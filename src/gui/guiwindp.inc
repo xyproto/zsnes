@@ -1443,10 +1443,10 @@ GUIcurrentinputviewloc resd 1
 GUIcurrentinputcursloc resd 1
 SECTION .text
 
-DisplayGUIOption:
-    ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engine
+DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engine
     GUIDrawWindowBox 4,GUIOptionDisp
-    mov byte[GUItextcolor],217
+    
+    mov byte[GUItextcolor],217               ; Shadow
     cmp byte[GUIWincoladd],0
     je .zero
     mov byte[GUItextcolor],211
@@ -1480,7 +1480,8 @@ DisplayGUIOption:
 %ifdef __WIN32__
     GUIOuttextwin2u 4,26,164,GUIOptionTextW,1
 %endif
-    add byte[GUItextcolor],15
+
+    add byte[GUItextcolor],15                  ; Text
     GUIOuttextwin2 4,5,13,[GUITemp]
     GUIOuttextwin2 4,25,23,GUIOptionText2
     GUIOuttextwin2 4,25,33,GUIOptionText3
@@ -1504,30 +1505,36 @@ DisplayGUIOption:
 %ifdef __WIN32__
     GUIOuttextwin2 4,25,163,GUIOptionTextW
 %endif
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
+
+
+    mov dword[GUITemp],GUIIconDataCheckBoxUC     ; Checkboxes
     cmp byte[frameskip],0
     jne .nocheckbox
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox
     GUIDisplayIconWin 4,11,20,[GUITemp]
+    
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[newengen],0
     je .nocheckbox1
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
     GUIDisplayIconWin 4,11,30,[GUITemp]
+    
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[MMXSupport],1
     jne .nocheckbox2
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox2
     GUIDisplayIconWin 4,11,40,[GUITemp]
+    
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[pl12s34],0
     je .nocheckbox3
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox3
     GUIDisplayIconWin 4,11,50,[GUITemp]
+    
 %ifdef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SidewinderFix],0
@@ -1536,6 +1543,7 @@ DisplayGUIOption:
 .nocheckbox4
     GUIDisplayIconWin 4,11,60,[GUITemp]
 %endif
+
 %ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[HighPriority],0
@@ -1544,60 +1552,70 @@ DisplayGUIOption:
 .nocheckbox4
     GUIDisplayIconWin 4,11,60,[GUITemp]
 %endif
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[FPSAtStart],0
     je .nocheckbox5
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox5
     GUIDisplayIconWin 4,11,70,[GUITemp]
+    
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[Turbo30hz],0
     je .nocheckbox6
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox6
     GUIDisplayIconWin 4,11,80,[GUITemp]
+    
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[TimerEnable],0
     je .nocheckbox7
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox7
     GUIDisplayIconWin 4,11,90,[GUITemp]
+    
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[FastFwdToggle],0
     je .nocheckbox8
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox8
     GUIDisplayIconWin 4,11,100,[GUITemp]
+    
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[OldGfxMode2],0
     je .nocheckbox9
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox9
     GUIDisplayIconWin 4,11,110,[GUITemp]
+    
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[DontSavePath],0
     je .nocheckbox10
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox10
     GUIDisplayIconWin 4,11,120,[GUITemp]
+    
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SmallMsgText],0
     je .nocheckbox11
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox11
     GUIDisplayIconWin 4,11,130,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC ;Autopatch Checkbox
+    
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AutoPatch],0
     je .nocheckbox12
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox12
     GUIDisplayIconWin 4,11,140,[GUITemp]
+    
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[RomInfo],0
     je .nocheckbox13
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox13
     GUIDisplayIconWin 4,11,150,[GUITemp]
+    
 %ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[DisableScreenSaver],0
@@ -1607,32 +1625,10 @@ DisplayGUIOption:
     GUIDisplayIconWin 4,11,160,[GUITemp]
 %endif
 
-
-    cmp byte[frameskip],0
+    cmp byte[frameskip],0                    ; Determine if AutoFR is enabled
     je near .auto
-    ; Draw borders
-    mov dword[GUIWincol],148+10
-    cmp byte[cwindrawn],1
-    jne .noone3
-    mov dword[GUIWincol],148+5
-.noone3
-    cmp byte[cwindrawn],0
-    jne .nozero3
-    mov dword[GUIWincol],148
-.nozero3
-    mov dl,[GUIWincol]
-    DrawGUIWinBox 4,75,11,93,11,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 4,74,12,74,19,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 4,75,20,93,20,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 4,95,12,94,19,dl
-    ; End draw borders
-    DrawGUIWinBox 4,75,12,93,19,167
+    
+    DrawGUIWinBox 4,75,12,93,19,167           ; Frameskip (if not AutoFR)
     mov al,[frameskip]
     add al,47
     mov [GUIOptionTextX],al
@@ -1651,31 +1647,31 @@ DisplayGUIOption:
 .zero6
     DrawGUIButton 4,97,12,105,20,GUIOptionTextY,12,-2,-1
     DrawGUIButton 4,108,12,116,20,GUIOptionTextZ,13,-2,-1
-    ret
-
-.auto
-    ; Draw borders
-    mov dword[GUIWincol],148+10
+    
+    mov dword[GUIWincol],148+10        ; Draw Borders
     cmp byte[cwindrawn],1
-    jne .noone2
+    jne .noone3
     mov dword[GUIWincol],148+5
-.noone2
+.noone3
     cmp byte[cwindrawn],0
-    jne .nozero2
+    jne .nozero3
     mov dword[GUIWincol],148
-.nozero2
+.nozero3
     mov dl,[GUIWincol]
-    DrawGUIWinBox 4,96,11,114,11,dl
+    DrawGUIWinBox 4,75,11,93,11,dl
     mov dl,[GUIWincol]
     add dl,1
-    DrawGUIWinBox 4,95,12,94,19,dl
+    DrawGUIWinBox 4,74,12,73,19,dl
     mov dl,[GUIWincol]
     add dl,4
-    DrawGUIWinBox 4,96,20,114,20,dl
+    DrawGUIWinBox 4,75,20,93,20,dl
     mov dl,[GUIWincol]
     add dl,3
-    DrawGUIWinBox 4,115,12,115,19,dl
-    ; End draw borders
+    DrawGUIWinBox 4,95,12,94,19,dl
+    ret
+
+
+.auto                                          ; Max Frameskip (if AutoFR)
     DrawGUIWinBox 4,96,12,114,19,167
     mov al,[maxskip]
     add al,48
@@ -1695,6 +1691,27 @@ DisplayGUIOption:
 .zero7
     DrawGUIButton 4,118,12,126,20,GUIOptionTextY,12,-2,-1
     DrawGUIButton 4,129,12,137,20,GUIOptionTextZ,13,-2,-1
+    
+    mov dword[GUIWincol],148+10             ; Draw borders
+    cmp byte[cwindrawn],1
+    jne .noone2
+    mov dword[GUIWincol],148+5
+.noone2
+    cmp byte[cwindrawn],0
+    jne .nozero2
+    mov dword[GUIWincol],148
+.nozero2
+    mov dl,[GUIWincol]
+    DrawGUIWinBox 4,96,11,114,11,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 4,95,12,94,19,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 4,96,20,114,20,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 4,116,12,115,19,dl
     ret
 
 SECTION .data

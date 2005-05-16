@@ -599,7 +599,7 @@ GUIOptionKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
-    cmp dh,'A'
+    cmp dh,'A'                 ; Checkboxes
     jne .noautofr
     mov byte[FPSOn],0
     cmp byte[frameskip],0
@@ -621,11 +621,6 @@ GUIOptionKeys:
     mov [cfgnewgfx],al
 .invalidng
 .nonewgfx
-    cmp dh,'T'
-    jne .noautoincsave
-    xor byte[AutoIncSaveSlot],1
-    mov byte[firstsaveinc],1
-.noautoincsave
     cmp dh,'M'
     jne .nommxcopy
     xor byte[MMXSupport],1
@@ -647,10 +642,12 @@ GUIOptionKeys:
     mov byte[MultiTap],0
 .mtap
 .nousepl34
+%ifdef __MSDOS__
     cmp dh,'I'
     jne .noswfix
     xor byte[SidewinderFix],1
 .noswfix
+%endif
 %ifdef __WIN32__
     cmp dh,'H'
     jne .nohighpriority
@@ -669,26 +666,14 @@ GUIOptionKeys:
     jne .nogameclock
     xor byte[TimerEnable],1
 .nogameclock
-    cmp dh,'G'
+    cmp dh,'G'                  ; Move to Speed?
     jne .nofastforward
     xor byte[FastFwdToggle],1
 .nofastforward
-    cmp dh,'R'
-    jne .nosramcheck
-    xor byte[SRAMSave5Sec],1
-.nosramcheck
     cmp dh,'O'
     jne .nooldgfx
     xor byte[OldGfxMode2],1
 .nooldgfx
-    cmp dh,'L'
-    jne .nostartsave
-    xor byte[LatestSave],1
-.nostartsave
-    cmp dh,'/'
-    jne .noautostate
-    xor byte[AutoState],1
-.noautostate
     cmp dh,'D'
     jne .nosavepath
     xor byte[DontSavePath],1

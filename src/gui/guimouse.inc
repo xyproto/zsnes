@@ -2308,12 +2308,12 @@ DisplayGUIInputClick:
     ret
 
 DisplayGUIOptionClick:
-    GUIClickCButtonfr 11,20,byte[frameskip]
+    GUIClickCButtonfr 11,20,byte[frameskip]    ; Clickboxes
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUINGVID+ebx],1
     jne near .invalidng
-    GUIClickCButton2 11,30,byte[newengen],byte[cfgnewgfx],1
+    GUIClickCButton2 11,30,byte[newengen],byte[cfgnewgfx],1 
 .invalidng
     GUIClickCButtonMMX 11,40,byte[MMXSupport]
     GUIClickCButtonM 11,50,byte[pl12s34]
