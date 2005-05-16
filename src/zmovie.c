@@ -634,6 +634,8 @@ static struct
 #define GAMEPAD_ENABLE 0x00008000
 #define MOUSE_ENABLE 0x00010000
 
+//11110000111111110000000000000000
+
 static size_t pad_bit_encoder(unsigned char pad, unsigned char *buffer, size_t skip_bits)
 {
   unsigned int last_state = 0;
@@ -663,7 +665,7 @@ static size_t pad_bit_encoder(unsigned char pad, unsigned char *buffer, size_t s
   
   switch (pad)
   {
-    case 1:
+    case 1: case 2:
       if (zmv_vars.inputs_enabled & ((pad == 1) ? BIT(0xA) : BIT(0xB))) //Mouse ?
       {
         skip_bits = bit_encoder(last_state, MOUSE_MASK, buffer, skip_bits);
