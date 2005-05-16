@@ -1011,7 +1011,7 @@ static void record_pad(unsigned char pad, unsigned char *flag, unsigned char *bu
 static void zmv_record(bool pause, unsigned char combos_used, unsigned char slow)
 {
   unsigned char flag = 0;
-  unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+  unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   static float average = 1.0f;
   size_t skip_bits = 0;
 
@@ -1270,6 +1270,8 @@ static bool zmv_replay()
       JoyCOrig = zmv_vars.last_joy_state.C;
       JoyDOrig = zmv_vars.last_joy_state.D;
       JoyEOrig = zmv_vars.last_joy_state.E;
+      latchx = zmv_vars.last_joy_state.latchx;
+      latchy = zmv_vars.last_joy_state.latchy;
       zmv_vars.rle_count--;
 
       debug_input;
