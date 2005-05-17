@@ -1445,7 +1445,7 @@ SECTION .text
 
 DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engine
     GUIDrawWindowBox 4,GUIOptionDisp
-    
+
     mov byte[GUItextcolor],217               ; Shadow
     cmp byte[GUIWincoladd],0
     je .zero
@@ -1511,28 +1511,28 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox
     GUIDisplayIconWin 4,11,20,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[newengen],0
     je .nocheckbox1
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
     GUIDisplayIconWin 4,11,30,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[MMXSupport],1
     jne .nocheckbox2
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox2
     GUIDisplayIconWin 4,11,40,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[pl12s34],0
     je .nocheckbox3
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox3
     GUIDisplayIconWin 4,11,50,[GUITemp]
-    
+
 %ifdef __MSDOS__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SidewinderFix],0
@@ -1557,14 +1557,14 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox5
     GUIDisplayIconWin 4,11,70,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[Turbo30hz],0
     je .nocheckbox6
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox6
     GUIDisplayIconWin 4,11,80,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[TimerEnable],0
     je .nocheckbox7
@@ -1578,35 +1578,35 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox8
     GUIDisplayIconWin 4,11,100,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[DontSavePath],0
     je .nocheckbox9
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox9
     GUIDisplayIconWin 4,11,110,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[SmallMsgText],0
     je .nocheckbox10
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox10
     GUIDisplayIconWin 4,11,120,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[AutoPatch],0
     je .nocheckbox11
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox11
     GUIDisplayIconWin 4,11,130,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[RomInfo],0
     je .nocheckbox12
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox12
     GUIDisplayIconWin 4,11,140,[GUITemp]
-    
+
 %ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[DisableScreenSaver],0
@@ -1618,7 +1618,7 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
 
     cmp byte[frameskip],0                    ; Determine if AutoFR is enabled
     je near .auto
-    
+
     DrawGUIWinBox 4,75,12,93,19,167           ; Frameskip (if not AutoFR)
     mov al,[frameskip]
     add al,47
@@ -1638,7 +1638,7 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
 .zero6
     DrawGUIButton 4,97,12,105,20,GUIOptionTextY,12,-2,-1
     DrawGUIButton 4,108,12,116,20,GUIOptionTextZ,13,-2,-1
-    
+
     mov dword[GUIWincol],148+10        ; Draw Borders
     cmp byte[cwindrawn],1
     jne .noone3
@@ -1682,7 +1682,7 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
 .zero7
     DrawGUIButton 4,118,12,126,20,GUIOptionTextY,12,-2,-1
     DrawGUIButton 4,129,12,137,20,GUIOptionTextZ,13,-2,-1
-    
+
     mov dword[GUIWincol],148+10             ; Draw borders
     cmp byte[cwindrawn],1
     jne .noone2
@@ -4739,7 +4739,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
    mov al,[GUIWincol]                         ; Shadow (Yellow)
     mov byte[GUItextcolor],al
     GUIOuttextwin2 15,6,162,GUIMovieTextZ
-    
+
     mov byte[GUItextcolor],163                ; Text (Yellow)
     cmp byte[GUIWincoladd],0
     je .zero5
@@ -5682,7 +5682,7 @@ DisplayGUIChipConfig:
     mov byte[GUItextcolor],163          ; Yellow Text
     cmp byte[GUIWincoladd],0
     je .zero8
-    mov byte[GUItextcolor],164         
+    mov byte[GUItextcolor],164
 .zero8
     GUIOuttextwin2 18,9,37,GUIChipTextA
 .endEE2
@@ -6387,22 +6387,21 @@ DisplayGUISpeed:                    ;Speed Options
     DGOptnsBorderBox 21,11,67
     DGOptnsBorderBox 21,11,77
 
-        
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC   ; Checkbox
     cmp byte[FastFwdToggle],0
     je .nocheckbox
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox
-    GUIDisplayIconWin 21,11,125,[GUITemp] 
+    GUIDisplayIconWin 21,11,125,[GUITemp]
 
 
     mov eax,dword[GUIwinposx+21*4]           ;Slider
     mov ebx,dword[GUIwinposy+21*4]
-    mov ecx,eax
     add eax,15
-    add ecx,15+116
-;    add ebx,91
     add ebx,31
+    mov ecx,eax
+    add ecx,116
     xor edx,edx
     mov dl,215
     sub dl,[GUIWincoladd]

@@ -46,7 +46,7 @@ ProcessMouse:
     mov edx,223
     call Set_MouseYMax
 .noholda
-    cmp byte[GUIHold],1
+    cmp byte[GUIHold],1 ; GUI Windows
     jne .nohold1
     mov ecx,0
     mov edx,255
@@ -69,7 +69,7 @@ ProcessMouse:
     mov edx,[GUIHoldYlim]
     call Set_MouseYMax
 .nohold2m
-    cmp byte[GUIHold],3
+    cmp byte[GUIHold],3    ; Scrollbars
     jne .nohold3m
     mov ecx,[GUIHoldXlimL]
     mov edx,[GUIHoldXlimR]
@@ -344,6 +344,8 @@ ProcessMouseButtons:
     je near .hold4
     cmp byte[GUIHold],5
     je near .hold5
+    cmp byte[GUIHold],6
+    je near .hold6
     cmp byte[GUIHold],1
     je near .hold
     cmp byte[GUIHold],255
@@ -360,20 +362,20 @@ ProcessMouseButtons:
     call Set_MousePosition
     ret
 .hold2
-    ; Slide Bar Hold
+    ; Colour Slide Bar Hold
     mov eax,[GUIHoldYlim]
     mov [GUImouseposy],eax
     mov ebx,[GUImouseposx]
     mov eax,[GUIHoldXlimL]
     cmp ebx,eax
-    jnl .noless
+    jnl .noless2
     mov [GUImouseposx],eax
-.noless
+.noless2
     mov eax,[GUIHoldXlimR]
     cmp ebx,eax
-    jng .nogreat
+    jng .nogreat2
     mov [GUImouseposx],eax
-.nogreat
+.nogreat2
     mov byte[lastmouseholded],1
     jmp DisplayGUIOptnsClick
 .hold3
@@ -406,17 +408,17 @@ ProcessMouseButtons:
     mov edx,[GUImouseposy]
     sub edx,[GUIwinposy+ebx*4]
     cmp eax,[GUIHoldXlimL]
-    jl near .nobhold
+    jl near .nobhold4
     cmp edx,[GUIHoldYlim]
-    jl near .nobhold
+    jl near .nobhold4
     cmp eax,[GUIHoldXlimR]
-    jg near .nobhold
+    jg near .nobhold4
     cmp edx,[GUIHoldYlimR]
-    jg near .nobhold
+    jg near .nobhold4
     mov al,[GUICBHold2]
     mov [GUICBHold],al
     ret
-.nobhold
+.nobhold4
     mov byte[GUICBHold],0
     ret
 .hold5
@@ -426,16 +428,33 @@ ProcessMouseButtons:
     mov ebx,[GUImouseposx]
     mov eax,[GUIHoldXlimL]
     cmp ebx,eax
-    jnl .nolessa
+    jnl .noless5
     mov [GUImouseposx],eax
-.nolessa
+.noless5
     mov eax,[GUIHoldXlimR]
     cmp ebx,eax
-    jng .nogreata
+    jng .nogreat5
     mov [GUImouseposx],eax
-.nogreata
+.nogreat5
     mov byte[lastmouseholded],1
     jmp DisplayGUISoundClick
+.hold6
+    ; Speed Slide Bar Hold
+    mov eax,[GUIHoldYlim]
+    mov [GUImouseposy],eax
+    mov ebx,[GUImouseposx]
+    mov eax,[GUIHoldXlimL]
+    cmp ebx,eax
+    jnl .noless6
+    mov [GUImouseposx],eax
+.noless6
+    mov eax,[GUIHoldXlimR]
+    cmp ebx,eax
+    jng .nogreat6
+    mov [GUImouseposx],eax
+.nogreat6
+    mov byte[lastmouseholded],1
+    jmp DisplayGUISpeedClick
 .hold
     cmp word[GUImouseposy],16
     jge .noover
@@ -466,7 +485,6 @@ ProcessMouseButtons:
     mov byte[GUICHold],0
     mov byte[GUIpclicked],0
     mov byte[GUIHold],0
-
 
 %ifdef __LINUX__
     cmp byte[GUIcwinpress],1
@@ -2313,7 +2331,7 @@ DisplayGUIOptionClick:
     mov bl,[cvidmode]
     cmp byte[GUINGVID+ebx],1
     jne near .invalidng
-    GUIClickCButton2 11,30,byte[newengen],byte[cfgnewgfx],1 
+    GUIClickCButton2 11,30,byte[newengen],byte[cfgnewgfx],1
 .invalidng
     GUIClickCButtonMMX 11,40,byte[MMXSupport]
     GUIClickCButtonM 11,50,byte[pl12s34]
@@ -3227,13 +3245,17 @@ DisplayGUISaveClick:
     ret
 
 DisplayGUISpeedClick:
+    mov eax,[GUImouseposx]    ; this updates the mouse location
+    sub eax,[GUIwinposx+21*4] ; effectively 'grabbing' the cursor !
+    mov edx,[GUImouseposy]
+    sub edx,[GUIwinposy+21*4]
     GUIClickCButton 11,125,byte[FastFwdToggle]  ; Checkbox
-    
+
     DGOptnsProcBox 12,58,[KeyFastFrwrd]        ; Shortcut Boxes
     DGOptnsProcBox 12,68,[KeySlowDown]
     DGOptnsProcBox 12,78,[KeyResetSpeed]
 
-                                   ; Speed Slider
+    ; Speed Slider
     cmp eax,15                     ; X-Range for click-area
     jl near .nomovebar
     cmp eax,15+116
@@ -3244,8 +3266,8 @@ DisplayGUISpeedClick:
     jl near .nomovebar
     cmp edx,33
     jg near .nomovebar
-    mov [EmuSpeed],al              ; Lock mouse to bar when clicked
-    mov byte[GUIHold],6
+    mov [EmuSpeed],al
+    mov byte[GUIHold],6            ; Lock mouse to bar when clicked
     mov eax,[GUIwinposy+21*4]
     add eax,31
     mov [GUIHoldYlim],eax

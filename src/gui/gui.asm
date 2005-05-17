@@ -457,10 +457,34 @@ NEWSYM PrevWinMode, db 0
 NEWSYM PrevFSMode, db 0
 %endif
 
+; Window position index
+; GAME       1 > Load
+;            2 > Pick state
+;           12 > Reset
+;           14 > Save/Open state
+; CONFIG     3 > Inputs
+;            4 > Options
+;            5 > Video
+;            6 > Sound
+;           17 > Add-ons
+;           18 > Chip cfg
+;           19 > Paths
+;           20 > Saves
+;           21 > Speed
+; CHEAT      7 > Add/Browse
+;           13 > Search
+;(NETPLAY    8 > Internet)
+; MISC       9 > Misc keys
+;           10 > GUI opns
+;           11 > About
+;           15 > Movie opn
+;           16 > Key comb.
+
+;#             0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21
 OldWinPos db 0
-GUIwinposx  dd 0,5   ,60  ,30  ,55  ,50  ,65  ,5   ,30  ,20  ,10   ,80  ,65  ,20  ,70  ,50  ,3   ,50
+GUIwinposx  dd 0, 5,60,30,55,50,65, 5,30,20,10,80,65,20,70,50, 3,50,50, 5,10,20
 GUIwinposxexp times 30 dd 0
-GUIwinposy  dd 0,20  ,70  ,30  ,20  ,22  ,36  ,20  ,30  ,20  ,30   ,70  ,60  ,30  ,65  ,50  ,22  ,60
+GUIwinposy  dd 0,20,70,30,20,22,36,20,30,20,30,20,60,30,65,50,22,60,20,20,20,20
 GUIwinposyexp times 30 dd 0
 
 NEWSYM GUIEffect, db 0
@@ -1172,7 +1196,7 @@ LoadDetermine:
     mov byte[GUIMiscMenuData+14*2],1
     mov byte[GUINetPlayMenuData],2             ; Gray out Netplay options
 %ifdef __MSDOS__
-    mov byte[GUINetPlayMenuData+14],2          
+    mov byte[GUINetPlayMenuData+14],2
 %endif
     cmp byte[romloadskip],0
     je .noromloaded
