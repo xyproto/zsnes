@@ -488,36 +488,6 @@ NEWSYM Change_Single_Dir
     stc
     ret
 
-NEWSYM Create_Dir
-    ; change to dir in edx
-    mov [MKPath],edx
-    pushad
-    call ZFileMKDir
-    or eax,eax
-    jnz .notokay
-    popad
-    clc
-    ret
-.notokay
-    popad
-    stc
-    ret
-
-NEWSYM Remove_Dir
-    ; remove dir in edx
-    mov [RMPath],edx
-    pushad
-    call ZFileRMDir
-    or eax,eax
-    jnz .notokay
-    popad
-    clc
-    ret
-.notokay
-    popad
-    stc
-    ret
-
 NEWSYM Change_Dir
     mov [CHPath],ebx
     cmp byte[ebx],0
@@ -1059,37 +1029,13 @@ NEWSYM Get_MouseData         ; Returns both pressed and coordinates
     mov bx,[WMouseButton]
     ret
 
-NEWSYM Set_MouseXMax    ; Sets the X boundaries (ecx = left, edx = right)
-    ;pushad
-    ;push ecx
-    ;call SetMouseMinX
-    ;pop ecx
-    ;push edx
-    ;call SetMouseMaxX
-    ;pop edx
-    ;popad
+NEWSYM Set_MouseXMax
     ret
 
-NEWSYM Set_MouseYMax    ; Sets the Y boundaries (ecx = left, edx = right)
-    ;pushad
-    ;push ecx
-    ;call SetMouseMinY
-    ;pop ecx
-    ;push edx
-    ;call SetMouseMaxY
-    ;pop edx
-    ;popad
+NEWSYM Set_MouseYMax
     ret
 
-NEWSYM Set_MousePosition        ; Sets Mouse Position (x:cx,y:dx)
-    ;pushad
-    ;push ecx
-    ;call SetMouse
-    ;pop ecx
-    ;push edx
-    ;call SetMouseY
-    ;pop edx
-    ;popad
+NEWSYM Set_MousePosition
     ret
 
 NEWSYM Get_MousePositionDisplacement

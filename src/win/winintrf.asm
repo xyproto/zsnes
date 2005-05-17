@@ -625,45 +625,6 @@ NEWSYM Change_Single_Dir
 ;    int 21h
 ;    ret
 
-NEWSYM Create_Dir
-    ; change to dir in edx
-    mov [MKPath],edx
-    pushad
-    call ZFileMKDir
-    or eax,eax
-    jnz .notokay
-    popad
-    clc
-    ret
-.notokay
-    popad
-    stc
-    ret
-;    mov ah,39h
-;    int 21h
-;    ret
-
-NEWSYM Remove_Dir
-    ; remove dir in edx
-    mov [RMPath],edx
-    pushad
-    call ZFileRMDir
-    or eax,eax
-    jnz .notokay
-    popad
-    clc
-    ret
-.notokay
-    popad
-    stc
-    ret
-;    mov ah,3Ah
-;    int 21h
-;    ret
-
-;    mov dl,[LoadDrive]
-;    mov ebx,LoadDir
-;    call Change_Dir
 NEWSYM Change_Dir
     pushad
 
@@ -697,25 +658,6 @@ NEWSYM Change_Dir
     stc
     ret
 
-    ; dl = drive, ebx = dir
-;    push ebx
-;    mov ah,0Eh
-;    int 21h
-;    mov ah,3Bh
-;    mov edx,gotoroot
-;    int 21h
-;    pop ebx
-;    mov edx,ebx
-;    cmp byte[edx],0
-;    je .nodir
-;    mov ah,3Bh
-;    int 21h
-;.nodir
-;    ret
-
-;    mov ebx,LoadDir
-;    mov edx,LoadDrive
-;    call Get_Dir
 NEWSYM Get_Dir
     mov [DirName],ebx
     pushad
@@ -742,17 +684,6 @@ NEWSYM Get_Dir
     pop edx
     mov [edx],al
     ret
-
-;    push edx
-;    mov ah,47h
-;    mov dl,0
-;    mov esi,ebx
-;    int 21h
-;    mov ah,19h
-;    int 21h
-;    pop edx
-;    mov [edx],al
-;    ret
 
 NEWSYM Get_First_Entry
     ; cx = attributes, edx = pointer to wildcard
