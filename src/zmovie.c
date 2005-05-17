@@ -669,26 +669,27 @@ static size_t pad_bit_encoder(unsigned char pad, unsigned char *buffer, size_t s
   
   switch (pad)
   {
-    case 1: case 2:
+    case 2:
+      if (BIT(0x8)) //Super Scope
+      {
+        unsigned int xdata = (zmv_vars.last_joy_state.latchx - 40) & 0xFF;
+        unsigned int ydata = zmv_vars.last_joy_state.latchy & 0xFF;
+         
+        skip_bits = bit_encoder(last_state, SCOPE_MASK, buffer, skip_bits);
+        skip_bits = bit_encoder(xdata, 0x000000FF, buffer, skip_bits);
+        skip_bits = bit_encoder(ydata, 0x000000FF, buffer, skip_bits);
+
+        break;
+      }
+    
+    case 1: 
       if (zmv_vars.inputs_enabled & ((pad == 1) ? BIT(0xA) : BIT(0x9))) //Mouse ?
       {
         skip_bits = bit_encoder(last_state, MOUSE_MASK, buffer, skip_bits);
       }
       else
       {
-        if ((pad == 2) && BIT(0x8))
-        {
-          unsigned int xdata = (zmv_vars.last_joy_state.latchx - 40) & 0xFF;
-          unsigned int ydata = zmv_vars.last_joy_state.latchy & 0xFF;
-
-          skip_bits = bit_encoder(last_state, SCOPE_MASK, buffer, skip_bits);
-          skip_bits = bit_encoder(xdata, 0x000000FF, buffer, skip_bits);
-          skip_bits = bit_encoder(ydata, 0x000000FF, buffer, skip_bits);
-        }
-        else
-        {
-          skip_bits = bit_encoder(last_state, GAMEPAD_MASK, buffer, skip_bits);
-        }
+        skip_bits = bit_encoder(last_state, GAMEPAD_MASK, buffer, skip_bits);
       }
       break;
 
@@ -738,31 +739,32 @@ static size_t pad_bit_decoder(unsigned char pad, unsigned char *buffer, size_t s
 
   switch (pad)
   {
-    case 1: case 2:
+    case 2:
+      if (BIT(0x8)) //Super Scope
+      {
+        unsigned int xdata, ydata;
+         
+        skip_bits = bit_decoder(last_state, SCOPE_MASK, buffer, skip_bits);
+        skip_bits = bit_decoder(&xdata, 0x000000FF, buffer, skip_bits);
+        skip_bits = bit_decoder(&ydata, 0x000000FF, buffer, skip_bits);
+        *last_state |= SCOPE_ENABLE;
+
+        zmv_vars.last_joy_state.latchx = (unsigned short)(xdata + 40);
+        zmv_vars.last_joy_state.latchy = (unsigned short)ydata;
+
+        break;  
+      }
+
+    case 1: 
       if (zmv_vars.inputs_enabled & ((pad == 1) ? BIT(0xA) : BIT(0x9))) //Mouse ?
       {
         skip_bits = bit_decoder(last_state, MOUSE_MASK, buffer, skip_bits);
-        *last_state |= (zmv_vars.inputs_enabled & input_enable_mask) ? MOUSE_ENABLE : 0;
+        *last_state |= MOUSE_ENABLE;
       }
       else
       {
-        if ((pad == 2) && BIT(0x8))
-        {
-          unsigned int xdata, ydata;
-           
-          skip_bits = bit_decoder(last_state, SCOPE_MASK, buffer, skip_bits);
-          skip_bits = bit_decoder(&xdata, 0x000000FF, buffer, skip_bits);
-          skip_bits = bit_decoder(&ydata, 0x000000FF, buffer, skip_bits);
-          *last_state |= (zmv_vars.inputs_enabled & input_enable_mask) ? SCOPE_ENABLE : 0;
-
-          zmv_vars.last_joy_state.latchx = (unsigned short)(xdata + 40);
-          zmv_vars.last_joy_state.latchy = (unsigned short)ydata;
-        }
-        else
-        {
-          skip_bits = bit_decoder(last_state, GAMEPAD_MASK, buffer, skip_bits);
-          *last_state |= (zmv_vars.inputs_enabled & input_enable_mask) ? GAMEPAD_ENABLE : 0;
-        }
+        skip_bits = bit_decoder(last_state, GAMEPAD_MASK, buffer, skip_bits);
+        *last_state |= (zmv_vars.inputs_enabled & input_enable_mask) ? GAMEPAD_ENABLE : 0;
       }
       break;
 
@@ -1257,6 +1259,8 @@ static void replay_pad(unsigned char pad, unsigned char flag, unsigned char *buf
     *skip_bits = pad_bit_decoder(pad, buffer, *skip_bits);
   }
   *current_state = *last_state;
+  latchx = zmv_vars.last_joy_state.latchx;
+  latchy = zmv_vars.last_joy_state.latchy;
 }
 
 static bool zmv_replay()
@@ -1313,7 +1317,7 @@ static bool zmv_replay()
 
       else
       {
-        unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+        unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         size_t skip_bits = 0;
 
         replay_pad(1, flag, press_buf, &skip_bits);
