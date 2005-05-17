@@ -1452,13 +1452,6 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
     mov byte[GUItextcolor],211
 .zero
     sub byte[GUItextcolor],15
-    mov dword[GUITemp],GUIOptionText1
-    cmp byte[frameskip],0
-    jne .noauto
-    mov dword[GUITemp],GUIOptionText1b
-.noauto
-    GUIOuttextwin2 4,6,14,[GUITemp]
-    GUIOuttextwin2u 4,26,24,GUIOptionText2,0
     GUIOuttextwin2u 4,26,34,GUIOptionText3,0
     GUIOuttextwin2u 4,26,44,GUIOptionText4,0
     GUIOuttextwin2u 4,26,54,GUIOptionText5,0
@@ -1481,8 +1474,6 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
 %endif
 
     add byte[GUItextcolor],15                  ; Text
-    GUIOuttextwin2 4,5,13,[GUITemp]
-    GUIOuttextwin2 4,25,23,GUIOptionText2
     GUIOuttextwin2 4,25,33,GUIOptionText3
     GUIOuttextwin2 4,25,43,GUIOptionText4
     GUIOuttextwin2 4,25,53,GUIOptionText5
@@ -1505,14 +1496,7 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
 %endif
 
 
-    mov dword[GUITemp],GUIIconDataCheckBoxUC     ; Checkboxes
-    cmp byte[frameskip],0
-    jne .nocheckbox
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox
-    GUIDisplayIconWin 4,11,20,[GUITemp]
-
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    mov dword[GUITemp],GUIIconDataCheckBoxUC       ; Checkboxes
     cmp byte[newengen],0
     je .nocheckbox1
     mov dword[GUITemp],GUIIconDataCheckBoxC
@@ -1615,100 +1599,13 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
 .nocheckbox13
     GUIDisplayIconWin 4,11,150,[GUITemp]
 %endif
+   ret
 
-    cmp byte[frameskip],0                    ; Determine if AutoFR is enabled
-    je near .auto
-
-    DrawGUIWinBox 4,75,12,93,19,167           ; Frameskip (if not AutoFR)
-    mov al,[frameskip]
-    add al,47
-    mov [GUIOptionTextX],al
-    mov byte[GUItextcolor],223
-    GUIOuttextwin2 4,85,14,GUIOptionTextX
-    mov byte[GUItextcolor],221
-    cmp byte[GUIWincoladd],0
-    je .zero4
-    mov byte[GUItextcolor],222
-.zero4
-    GUIOuttextwin2 4,84,13,GUIOptionTextX
-    mov byte[GUItextcolor],217
-    cmp byte[GUIWincoladd],0
-    je .zero6
-    mov byte[GUItextcolor],211
-.zero6
-    DrawGUIButton 4,97,12,105,20,GUIOptionTextY,12,-2,-1
-    DrawGUIButton 4,108,12,116,20,GUIOptionTextZ,13,-2,-1
-
-    mov dword[GUIWincol],148+10        ; Draw Borders
-    cmp byte[cwindrawn],1
-    jne .noone3
-    mov dword[GUIWincol],148+5
-.noone3
-    cmp byte[cwindrawn],0
-    jne .nozero3
-    mov dword[GUIWincol],148
-.nozero3
-    mov dl,[GUIWincol]
-    DrawGUIWinBox 4,75,11,93,11,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 4,74,12,73,19,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 4,75,20,93,20,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 4,95,12,94,19,dl
-    ret
-
-
-.auto                                          ; Max Frameskip (if AutoFR)
-    DrawGUIWinBox 4,96,12,114,19,167
-    mov al,[maxskip]
-    add al,48
-    mov [GUIOptionTextX],al
-    mov byte[GUItextcolor],223
-    GUIOuttextwin2 4,107,14,GUIOptionTextX
-    mov byte[GUItextcolor],221
-    cmp byte[GUIWincoladd],0
-    je .zero5
-    mov byte[GUItextcolor],222
-.zero5
-    GUIOuttextwin2 4,106,13,GUIOptionTextX
-    mov byte[GUItextcolor],217
-    cmp byte[GUIWincoladd],0
-    je .zero7
-    mov byte[GUItextcolor],211
-.zero7
-    DrawGUIButton 4,118,12,126,20,GUIOptionTextY,12,-2,-1
-    DrawGUIButton 4,129,12,137,20,GUIOptionTextZ,13,-2,-1
-
-    mov dword[GUIWincol],148+10             ; Draw borders
-    cmp byte[cwindrawn],1
-    jne .noone2
-    mov dword[GUIWincol],148+5
-.noone2
-    cmp byte[cwindrawn],0
-    jne .nozero2
-    mov dword[GUIWincol],148
-.nozero2
-    mov dl,[GUIWincol]
-    DrawGUIWinBox 4,96,11,114,11,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 4,95,12,94,19,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 4,96,20,114,20,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 4,116,12,115,19,dl
-    ret
 
 SECTION .data
-GUIOptionText1 db 'FRAME RATE',0
-GUIOptionText1b db 'MAX FRAME SKIP',0
-GUIOptionText2 db 'AUTO FRAME RATE',0
+;GUIOptionText1 db 'FRAME RATE',0
+;GUIOptionText1b db 'MAX FRAME SKIP',0
+;GUIOptionText2 db 'AUTO FRAME RATE',0
 GUIOptionText3 db 'NEW GFX ENGINE',0
 GUIOptionText4 db 'MMX SUPPORT',0
 GUIOptionText5 db 'USE PL3/4 AS PL1/2',0
@@ -3148,39 +3045,41 @@ CSAddFlash:
 
 DisplayGUISearch:
     jmp .startcheat
-    call DrawWindowSearch
-    mov byte[GUItextcolor],217
-    cmp byte[GUIWincoladd],0
-    je .zero
-    mov byte[GUItextcolor],211
-.zero
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2 13,6,16,GUISrcText1
-    GUIOuttextwin2 13,6,26,GUISrcText2
-    GUIOuttextwin2 13,6,36,GUISrcText3
-    add byte[GUItextcolor],15
-    GUIOuttextwin2 13,5,15,GUISrcText1
-    GUIOuttextwin2 13,5,25,GUISrcText2
-    GUIOuttextwin2 13,5,35,GUISrcText3
-    ret
-;    DrawGUIButton 13,197,30,239,41,GUICSrcText8+2,40,0,0
-    ret
-.startcheat
-    cmp byte[CheatWinMode],1
+;    call DrawWindowSearch                    ; Do we even need this?
+;    mov byte[GUItextcolor],217
+;    cmp byte[GUIWincoladd],0
+;    je .zero
+;    mov byte[GUItextcolor],211
+;.zero
+;    sub byte[GUItextcolor],15
+;    GUIOuttextwin2 13,6,16,GUISrcText1
+;    GUIOuttextwin2 13,6,26,GUISrcText2
+;    GUIOuttextwin2 13,6,36,GUISrcText3
+;    add byte[GUItextcolor],15
+;    GUIOuttextwin2 13,5,15,GUISrcText1
+;    GUIOuttextwin2 13,5,25,GUISrcText2
+;    GUIOuttextwin2 13,5,35,GUISrcText3
+;    ret
+;;    DrawGUIButton 13,197,30,239,41,GUICSrcText8+2,40,0,0
+;   ret
+    
+.startcheat                     ; Start
+    cmp byte[CheatWinMode],1    ; Determine which CS window we're on
     je near Incheatmode
     cmp byte[CheatWinMode],2
     je near Cheatmodeview
     cmp byte[CheatWinMode],3
     je near Cheatmodeadd
-
     mov dword[GUIwinsizex+13*4],170
     mov dword[GUIwinsizey+13*4],150
     call DrawWindowSearch
-    mov al,[GUIWincol]
+    
+    
+    mov al,[GUIWincol]                      ; Yellow Shadow
     mov byte[GUItextcolor],al
     GUIOuttextwin2 13,6,16,GUICSrcText1
     GUIOuttextwin2 13,6,101,GUICSrcText8
-    mov byte[GUItextcolor],163
+    mov byte[GUItextcolor],163              ; Yellow Text
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUItextcolor],164
@@ -3188,9 +3087,10 @@ DisplayGUISearch:
     GUIOuttextwin2 13,5,15,GUICSrcText1
     GUIOuttextwin2 13,5,100,GUICSrcText8
 
-    mov byte[GUItextcolor],217
-    cmp byte[GUIWincoladd],0
-    je .zero2
+
+    mov byte[GUItextcolor],217                ; Text AND Shadow
+    cmp byte[GUIWincoladd],0                  ; maybe start converting other windows
+    je .zero2                                 ; to this format?
     mov byte[GUItextcolor],211
 .zero2
     TextWindowMacro 13,25,30,GUICSrcText2
@@ -3201,21 +3101,29 @@ DisplayGUISearch:
     TextWindowMacro 13,25,85,GUICSrcText7
     TextWindowMacro 13,25,115,GUICSrcText9
     TextWindowMacro 13,25,125,GUICSrcTextA
-    DrawGUIButton 13,95,140,140,152,GUICSrcTextB,50,0,1
-    GUIDisplayButtonHole 13,11,28,byte[CheatSrcByteSize],0
+    
+    
+    DrawGUIButton 13,95,140,140,152,GUICSrcTextB,50,0,1 ; Button
+    
+    
+    GUIDisplayButtonHole 13,11,28,byte[CheatSrcByteSize],0   ; Ratio Buttons
     GUIDisplayButtonHole 13,11,38,byte[CheatSrcByteSize],1
     GUIDisplayButtonHole 13,11,48,byte[CheatSrcByteSize],2
     GUIDisplayButtonHole 13,11,58,byte[CheatSrcByteSize],3
+    
     GUIDisplayButtonHole 13,11,73,byte[CheatSrcByteBase],0
     GUIDisplayButtonHole 13,11,83,byte[CheatSrcByteBase],1
+    
     GUIDisplayButtonHole 13,11,113,byte[CheatSrcSearchType],0
     GUIDisplayButtonHole 13,11,123,byte[CheatSrcSearchType],1
     ret
-Incheatmode:
+    
+Incheatmode:                              ; Return and Re-search
     mov dword[GUIwinsizex+13*4],180
     mov dword[GUIwinsizey+13*4],150
     call DrawWindowSearch
-    mov byte[GUItextcolor],217
+    
+    mov byte[GUItextcolor],217            ; Text And Shadow
     cmp byte[GUIWincoladd],0
     je .zero2
     mov byte[GUItextcolor],211
@@ -3227,15 +3135,17 @@ Incheatmode:
     TextWindowMacro 13,5,40,GUICSrcTextO
     TextWindowMacro 13,5,50,GUICSrcTextP
     jmp DisplayChtSrcRes.nosearch
-CheatSearching:
+    
+CheatSearching:                    ; Exact Value Search
     cmp byte[CheatSrcSearchType],1
     je near CheatSearchingComp
 
-    ; Exact Value Search
-    TextWindowMacro 13,5,20,GUICSrcTextD
-    DrawGUIWinBox 13,10,40,80,47,167
-    ; Draw border
-    mov dword[GUIWincol],148+10
+    TextWindowMacro 13,5,20,GUICSrcTextD       ; Text (setup?)
+    
+    DrawGUIWinBox 13,10,40,80,47,167           ; Input Box
+    
+
+    mov dword[GUIWincol],148+10              ; Draw border
     cmp byte[cwindrawn],1
     jne .noone2
     mov dword[GUIWincol],148+5
@@ -3256,39 +3166,41 @@ CheatSearching:
     add dl,3
     DrawGUIWinBox 13,82,40,81,47,dl ; 2,0,1,0
 
-    test byte[GUICCFlash],8
+    test byte[GUICCFlash],8            ; Flash Cursor Code?
     jnz .nound
     mov esi,CSInputDisplay
     call CSRemoveFlash
 .nound
 
-    mov byte[GUItextcolor],223
+    mov byte[GUItextcolor],223             ; Green Shadow
     cmp byte[CSOverValue],1
     jne .notdark
-    mov byte[GUItextcolor],202
+    mov byte[GUItextcolor],202             ; Alt Color
 .notdark
     GUIOuttextwin2 13,13,42,CSInputDisplay
-    mov byte[GUItextcolor],221
+    
+    mov byte[GUItextcolor],221            ; Green Text
     cmp byte[GUIWincoladd],0
     je .zero4
     mov byte[GUItextcolor],222
 .zero4
     cmp byte[CSOverValue],1
     jne .notdark2
-    mov byte[GUItextcolor],207
+    mov byte[GUItextcolor],207             ; Alt Color
 .notdark2
     GUIOuttextwin2 13,12,41,CSInputDisplay
-    mov byte[GUItextcolor],217
+    
+    mov byte[GUItextcolor],217          ; More Text
     cmp byte[GUIWincoladd],0
     je .zero2
     mov byte[GUItextcolor],211
 .zero2
     TextWindowMacro 13,5,65,GUICSrcTextT
 
-    mov esi,CSInputDisplay
+    mov esi,CSInputDisplay          ; More flash?
     call CSAddFlash
 
-    xor eax,eax
+    xor eax,eax                 ; Find Max Size
     mov al,[CheatSrcByteSize]
     mov eax,[SrcMask+eax*4]
     mov esi,GUICSrcTextQ
@@ -3302,11 +3214,11 @@ CheatSearching:
     inc ecx
     call converthex
 .dec
-    TextWindowMacro 13,71,65,GUICSrcTextQ
+    TextWindowMacro 13,71,65,GUICSrcTextQ         ; More Text (setup?)
     jmp DisplayChtSrcRes
 
-CheatSearchingComp:
-    ; Comparative search
+CheatSearchingComp:        ; Comparative search
+
     mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 13,6,16,GUICSrcTextE
@@ -6354,51 +6266,66 @@ DisplayGUISpeed:                    ;Speed Options
     mov byte[GUItextcolor],211
 .zero
     sub byte[GUItextcolor],15
-    GUIOuttextwin2 21,40,59,GUISpeedTextA1
-    GUIOuttextwin2 21,40,69,GUISpeedTextA2
-    GUIOuttextwin2 21,40,79,GUISpeedTextA3
-    GUIOuttextwin2u 21,25,129,GUISpeedTextC1,0
+    mov dword[GUITemp],GUISpeedText1
+    cmp byte[frameskip],0
+    jne .noauto
+    mov dword[GUITemp],GUISpeedText1b
+.noauto
+    GUIOuttextwin2 21,6,44,[GUITemp]
+    GUIOuttextwin2 21,40,109,GUISpeedTextA1
+    GUIOuttextwin2 21,40,119,GUISpeedTextA2
+    GUIOuttextwin2 21,40,129,GUISpeedTextA3
+    GUIOuttextwin2u 21,25,169,GUISpeedTextC1,0
+    GUIOuttextwin2u 21,25,179,GUISpeedTextC2,0
 
     add byte[GUItextcolor],15                ;Text
-    GUIOuttextwin2 21,39,58,GUISpeedTextA1
-    GUIOuttextwin2 21,39,68,GUISpeedTextA2
-    GUIOuttextwin2 21,39,78,GUISpeedTextA3
-    GUIOuttextwin2 21,24,128,GUISpeedTextC1
+    GUIOuttextwin2 21,5,43,[GUITemp]
+    GUIOuttextwin2 21,39,108,GUISpeedTextA1
+    GUIOuttextwin2 21,39,118,GUISpeedTextA2
+    GUIOuttextwin2 21,39,128,GUISpeedTextA3
+    GUIOuttextwin2 21,24,168,GUISpeedTextC1
+    GUIOuttextwin2 21,24,178,GUISpeedTextC2
 
     mov al,[GUIWincol]                       ;Yellow Shadow
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 21,8,49,GUISpeedTextA
-    GUIOuttextwin2 21,16,19,GUISpeedTextB
+    GUIOuttextwin2 21,8,99,GUISpeedTextA
+    GUIOuttextwin2 21,8,19,GUISpeedTextB
 
     mov byte[GUItextcolor],163            ;Yellow Text
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUItextcolor],164
 .zero3
-    GUIOuttextwin2 21,7,48,GUISpeedTextA
-    GUIOuttextwin2 21,15,18,GUISpeedTextB
+    GUIOuttextwin2 21,7,98,GUISpeedTextA
+    GUIOuttextwin2 21,7,18,GUISpeedTextB
 
 
-    DDrawBox 21,12,58,[KeyFastFrwrd]        ;Shortcut Boxes
-    DDrawBox 21,12,68,[KeySlowDown]
-    DDrawBox 21,12,78,[KeyResetSpeed]
+    DDrawBox 21,12,108,[KeyFastFrwrd]        ;Shortcut Boxes
+    DDrawBox 21,12,118,[KeySlowDown]
+    DDrawBox 21,12,128,[KeyResetSpeed]
 
-    DGOptnsBorderBox 21,11,57                ;Borders
-    DGOptnsBorderBox 21,11,67
-    DGOptnsBorderBox 21,11,77
+    DGOptnsBorderBox 21,11,107                ;Borders
+    DGOptnsBorderBox 21,11,117
+    DGOptnsBorderBox 21,11,127
 
 
-    mov dword[GUITemp],GUIIconDataCheckBoxUC   ; Checkbox
-    cmp byte[FastFwdToggle],0
-    je .nocheckbox
+    mov dword[GUITemp],GUIIconDataCheckBoxUC     ; Checkboxes
+    cmp byte[frameskip],0
+    jne .nocheckbox
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox
-    GUIDisplayIconWin 21,11,125,[GUITemp]
+    GUIDisplayIconWin 21,11,165,[GUITemp]
+            
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[FastFwdToggle],0
+    je .nocheckbox1
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox1
+    GUIDisplayIconWin 21,11,175,[GUITemp] 
 
 
     mov eax,dword[GUIwinposx+21*4]           ;Slider
     mov ebx,dword[GUIwinposy+21*4]
-    add eax,15
     add ebx,31
     mov ecx,eax
     add ecx,116
@@ -6449,27 +6376,131 @@ DisplayGUISpeed:                    ;Speed Options
     dec esi
     mov byte[esi],'/'      ; adds '/' before the slomo value
 .convdone
-    mov [GUITemp],esi
+    mov [GUITemp],esi                   ; Display Value (Green)
     mov byte[GUItextcolor],223
-    GUIOuttextwin2 21,63,19,[GUITemp]
+    GUIOuttextwin2 21,78,19,[GUITemp]
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je .zero4
     mov byte[GUItextcolor],222
 .zero4
-    GUIOuttextwin2 21,62,18,[GUITemp]
+    GUIOuttextwin2 21,77,18,[GUITemp]
+    
+    
+    cmp byte[frameskip],0                    ; Determine if AutoFR is enabled
+    je near .auto
+    
+    DrawGUIWinBox 21,75,42,93,49,167           ; Frameskip (if not AutoFR)
+    mov al,[frameskip]
+    add al,47
+    mov [GUISpeedTextX],al
+    mov byte[GUItextcolor],223
+    GUIOuttextwin2 21,85,44,GUISpeedTextX
+    mov byte[GUItextcolor],221
+    cmp byte[GUIWincoladd],0
+    je .zero8
+    mov byte[GUItextcolor],222
+.zero8
+    GUIOuttextwin2 21,84,43,GUISpeedTextX
+    mov byte[GUItextcolor],217
+    cmp byte[GUIWincoladd],0
+    je .zero6
+    mov byte[GUItextcolor],211
+.zero6
+    DrawGUIButton 21,97,42,105,50,GUISpeedTextY,12,-2,-1
+    DrawGUIButton 21,108,42,116,50,GUISpeedTextZ,13,-2,-1
+        
+    mov dword[GUIWincol],148+10             ; Draw borders
+    cmp byte[cwindrawn],1
+    jne .noone2
+    mov dword[GUIWincol],148+5
+.noone2
+    cmp byte[cwindrawn],0
+    jne .nozero2
+    mov dword[GUIWincol],148
+.nozero2
+    mov dl,[GUIWincol]
+    DrawGUIWinBox 21,76,41,93,41,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 21,75,42,74,49,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 21,76,50,93,50,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 21,95,42,94,49,dl
+    ret
+
+    
+.auto                                          ; Max Frameskip (if AutoFR)
+    DrawGUIWinBox 21,96,42,114,49,167
+    mov al,[maxskip]
+    add al,48
+    mov [GUISpeedTextX],al
+    mov byte[GUItextcolor],223
+    GUIOuttextwin2 21,107,44,GUISpeedTextX
+    mov byte[GUItextcolor],221
+    cmp byte[GUIWincoladd],0
+    je .zero5
+    mov byte[GUItextcolor],222
+.zero5
+    GUIOuttextwin2 21,106,43,GUISpeedTextX
+    mov byte[GUItextcolor],217
+    cmp byte[GUIWincoladd],0
+    je .zero7
+    mov byte[GUItextcolor],211
+.zero7
+    DrawGUIButton 21,118,42,126,50,GUISpeedTextY,12,-2,-1
+    DrawGUIButton 21,129,42,137,50,GUISpeedTextZ,13,-2,-1
+    
+    mov dword[GUIWincol],148+10             ; Draw borders
+    cmp byte[cwindrawn],1
+    jne .noone3
+    mov dword[GUIWincol],148+5
+.noone3
+    cmp byte[cwindrawn],0
+    jne .nozero3
+    mov dword[GUIWincol],148
+.nozero3
+    mov dl,[GUIWincol]
+    DrawGUIWinBox 21,96,41,113,41,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox 21,95,42,94,49,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox 21,96,50,113,50,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox 21,115,42,114,49,dl
     ret
 
 SECTION .data
 GUISpeedTextA db 'SHORTCUTS : ',0
 GUISpeedTextA1 db 'FAST FORWARD',0
-GUISpeedTextA2 db 'SLOWDOWN',0
+GUISpeedTextA2 db 'SLOW DOWN',0
 GUISpeedTextA3 db 'RESET SPEED',0
+GUISpeedTextA4 db '+ FRAME RATE',0
+GUISpeedTextA5 db '- FRAME RATE',0
+GUISpeedTextA6 db 'PAUSE GAME',0
+GUISpeedTextA7 db 'INCR FRAME',0
+GUISpeedTextA8 db 'SLOW DOWN',0
+GUISpeedTextA9 db 'RESET SPEED',0
 
-GUISpeedTextB db 'SPEED : ',0
+GUISpeedTextB db 'EMU SPEED : ',0
 GUISpeedTextB1 db '---',0
 
-GUISpeedTextC1 db 'TOGGLED FFWD/SLWDWN',0
+GUISpeedText1 db 'FRAME RATE',0
+GUISpeedText1b db 'MAX FRAME SKIP',0
+
+GUISpeedTextC1 db 'AUTO FRAME RATE',0
+GUISpeedTextC2 db 'TOGGLED FFWD/SLWDWN',0
+
+
+GUISpeedTextX db '-',0
+GUISpeedTextY db '+',0
+GUISpeedTextZ db '-',0
 
 ;General data
 GUILoadDisp     db 'LOAD GAME',0

@@ -601,17 +601,6 @@ GUIOptionKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
-    cmp dh,'A'                 ; Checkboxes
-    jne .noautofr
-    mov byte[FPSOn],0
-    cmp byte[frameskip],0
-    je .zero
-    mov byte[frameskip],0
-    jmp .notzero
-.zero
-    mov byte[frameskip],2
-.notzero
-.noautofr
     cmp dh,'N'
     jne .nonewgfx
     xor eax,eax
@@ -745,6 +734,17 @@ GUISpeedKeys:
     jne .nofastforward
     xor byte[FastFwdToggle],1
 .nofastforward
+    cmp dh,'A'                 ; Checkboxes
+    jne .noautofr
+    mov byte[FPSOn],0
+    cmp byte[frameskip],0
+    je .zero
+    mov byte[frameskip],0
+    jmp .notzero
+.zero
+    mov byte[frameskip],2
+.notzero
+.noautofr
     ret
 
 GUIAddonKeys:

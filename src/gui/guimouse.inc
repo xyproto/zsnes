@@ -2326,7 +2326,6 @@ DisplayGUIInputClick:
     ret
 
 DisplayGUIOptionClick:
-    GUIClickCButtonfr 11,20,byte[frameskip]    ; Clickboxes
     xor ebx,ebx
     mov bl,[cvidmode]
     cmp byte[GUINGVID+ebx],1
@@ -2352,16 +2351,7 @@ DisplayGUIOptionClick:
 %ifdef __WIN32__
     GUIClickCButtonW 11,150,byte[DisableScreenSaver]
 %endif
-    ; Frameskip = 0
-    cmp byte[frameskip],0
-    je near .autopress
-    GUIPHoldbutton2 97,12,105,20,12,byte[frameskip],1,10
-    GUIPHoldbutton2 108,12,116,20,13,byte[frameskip],-1,1
-    ret
-.autopress
-    GUIPHoldbutton2 118,12,126,20,12,byte[maxskip],1,9
-    GUIPHoldbutton2 129,12,137,20,13,byte[maxskip],-1,0
-    ret
+     ret
 
 DisplayGUIVideoClick2:
     push eax
@@ -3249,11 +3239,25 @@ DisplayGUISpeedClick:
     sub eax,[GUIwinposx+21*4] ; effectively 'grabbing' the cursor !
     mov edx,[GUImouseposy]
     sub edx,[GUIwinposy+21*4]
-    GUIClickCButton 11,125,byte[FastFwdToggle]  ; Checkbox
+    
+    GUIClickCButtonfr 11,165,byte[frameskip]     ; Checkboxes
+    GUIClickCButton 11,175,byte[FastFwdToggle]
 
-    DGOptnsProcBox 12,58,[KeyFastFrwrd]        ; Shortcut Boxes
-    DGOptnsProcBox 12,68,[KeySlowDown]
-    DGOptnsProcBox 12,78,[KeyResetSpeed]
+    
+    DGOptnsProcBox 12,108,[KeyFastFrwrd]        ; Shortcut Boxes
+    DGOptnsProcBox 12,118,[KeySlowDown]
+    DGOptnsProcBox 12,128,[KeyResetSpeed]
+    
+    ; Frameskip = 0
+    cmp byte[frameskip],0
+    je near .autopress
+    GUIPHoldbutton2 97,42,105,50,12,byte[frameskip],1,10
+    GUIPHoldbutton2 108,42,116,50,13,byte[frameskip],-1,1
+    ret
+.autopress
+    GUIPHoldbutton2 118,42,126,50,12,byte[maxskip],1,9
+    GUIPHoldbutton2 129,42,137,50,13,byte[maxskip],-1,0
+
 
     ; Speed Slider
     cmp eax,15                     ; X-Range for click-area
