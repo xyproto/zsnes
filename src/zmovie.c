@@ -666,11 +666,11 @@ static size_t pad_bit_encoder(unsigned char pad, unsigned char *buffer, size_t s
       last_state = zmv_vars.last_joy_state.E;
       break;                  
   }
-  
+
   switch (pad)
   {
     case 2:
-      if (BIT(0x8)) //Super Scope
+      if ((zmv_vars.inputs_enabled & BIT(0x8))) //Super Scope
       {
         unsigned int xdata = (zmv_vars.last_joy_state.latchx - 40) & 0xFF;
         unsigned int ydata = zmv_vars.last_joy_state.latchy & 0xFF;
@@ -683,7 +683,7 @@ static size_t pad_bit_encoder(unsigned char pad, unsigned char *buffer, size_t s
       }
     
     case 1: 
-      if (zmv_vars.inputs_enabled & ((pad == 1) ? BIT(0xA) : BIT(0x9))) //Mouse ?
+      if ((zmv_vars.inputs_enabled & ((pad == 1) ? BIT(0xA) : BIT(0x9)))) //Mouse ?
       {
         skip_bits = bit_encoder(last_state, MOUSE_MASK, buffer, skip_bits);
       }
@@ -740,7 +740,7 @@ static size_t pad_bit_decoder(unsigned char pad, unsigned char *buffer, size_t s
   switch (pad)
   {
     case 2:
-      if (BIT(0x8)) //Super Scope
+      if ((zmv_vars.inputs_enabled & BIT(0x8))) //Super Scope
       {
         unsigned int xdata, ydata;
          
