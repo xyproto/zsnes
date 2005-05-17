@@ -1471,14 +1471,13 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
     GUIOuttextwin2u 4,26,74,GUIOptionText7,0
     GUIOuttextwin2u 4,26,84,GUIOptionText8,2
     GUIOuttextwin2u 4,26,94,GUIOptionText9,12
-    GUIOuttextwin2u 4,26,104,GUIOptionTextA,2
+    GUIOuttextwin2u 4,26,104,GUIOptionTextA,0
     GUIOuttextwin2u 4,26,114,GUIOptionTextB,0
-    GUIOuttextwin2u 4,26,124,GUIOptionTextC,0
-    GUIOuttextwin2u 4,26,134,GUIOptionTextD,1
-    GUIOuttextwin2u 4,26,144,GUIOptionTextE,12
-    GUIOuttextwin2u 4,26,154,GUIOptionTextF,15
+    GUIOuttextwin2u 4,26,124,GUIOptionTextC,1
+    GUIOuttextwin2u 4,26,134,GUIOptionTextD,12
+    GUIOuttextwin2u 4,26,144,GUIOptionTextE,15
 %ifdef __WIN32__
-    GUIOuttextwin2u 4,26,164,GUIOptionTextW,1
+    GUIOuttextwin2u 4,26,154,GUIOptionTextW,1
 %endif
 
     add byte[GUItextcolor],15                  ; Text
@@ -1501,9 +1500,8 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
     GUIOuttextwin2 4,25,123,GUIOptionTextC
     GUIOuttextwin2 4,25,133,GUIOptionTextD
     GUIOuttextwin2 4,25,143,GUIOptionTextE
-    GUIOuttextwin2 4,25,153,GUIOptionTextF
 %ifdef __WIN32__
-    GUIOuttextwin2 4,25,163,GUIOptionTextW
+    GUIOuttextwin2 4,25,153,GUIOptionTextW
 %endif
 
 
@@ -1573,56 +1571,49 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox7
     GUIDisplayIconWin 4,11,90,[GUITemp]
-    
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[FastFwdToggle],0
+    cmp byte[OldGfxMode2],0
     je .nocheckbox8
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox8
     GUIDisplayIconWin 4,11,100,[GUITemp]
     
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[OldGfxMode2],0
+    cmp byte[DontSavePath],0
     je .nocheckbox9
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox9
     GUIDisplayIconWin 4,11,110,[GUITemp]
     
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[DontSavePath],0
+    cmp byte[SmallMsgText],0
     je .nocheckbox10
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox10
     GUIDisplayIconWin 4,11,120,[GUITemp]
     
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[SmallMsgText],0
+    cmp byte[AutoPatch],0
     je .nocheckbox11
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox11
     GUIDisplayIconWin 4,11,130,[GUITemp]
     
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[AutoPatch],0
+    cmp byte[RomInfo],0
     je .nocheckbox12
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox12
     GUIDisplayIconWin 4,11,140,[GUITemp]
     
+%ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[RomInfo],0
+    cmp byte[DisableScreenSaver],0
     je .nocheckbox13
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox13
     GUIDisplayIconWin 4,11,150,[GUITemp]
-    
-%ifdef __WIN32__
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[DisableScreenSaver],0
-    je .nocheckbox14
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox14
-    GUIDisplayIconWin 4,11,160,[GUITemp]
 %endif
 
     cmp byte[frameskip],0                    ; Determine if AutoFR is enabled
@@ -1726,12 +1717,12 @@ GUIOptionText6b db 'HIGH PRIORITY MODE',0
 GUIOptionText7 db 'FPS AT PROGRAM START',0
 GUIOptionText8 db 'USE 30HZ FOR TURBO',0
 GUIOptionText9 db 'ENABLE GAME CLOCK',0
-GUIOptionTextA db 'TOGGLED FAST FWD/SLWDWN',0
-GUIOptionTextB db 'OLD GFX MODE 2',0
-GUIOptionTextC db 'DON',39,'T SAVE CUR PATH',0
-GUIOptionTextD db 'USE SMALL MESSAGE TEXT',0
-GUIOptionTextE db 'ENABLE AUTO-PATCH',0
-GUIOptionTextF db 'ENABLE ROMINFO.TXT',0
+;GUIOptionTextA db 'TOGGLED FAST FWD/SLWDWN',0
+GUIOptionTextA db 'OLD GFX MODE 2',0
+GUIOptionTextB db 'DON',39,'T SAVE CUR PATH',0
+GUIOptionTextC db 'USE SMALL MESSAGE TEXT',0
+GUIOptionTextD db 'ENABLE AUTO-PATCH',0
+GUIOptionTextE db 'ENABLE ROMINFO.TXT',0
 GUIOptionTextW db 'DISABLE SCREENSAVER',0 ; Try to keep as last option, since its Win Only.
 GUIOptionTextX db '-',0
 GUIOptionTextY db '+',0
@@ -6363,36 +6354,46 @@ DisplayGUISpeed:                    ;Speed Options
     mov byte[GUItextcolor],211
 .zero
     sub byte[GUItextcolor],15
-    GUIOuttextwin2 21,8,29,GUISpeedTextA1
-    GUIOuttextwin2 21,8,39,GUISpeedTextA2
-    GUIOuttextwin2 21,8,49,GUISpeedTextA3
+    GUIOuttextwin2 21,40,59,GUISpeedTextA1
+    GUIOuttextwin2 21,40,69,GUISpeedTextA2
+    GUIOuttextwin2 21,40,79,GUISpeedTextA3
+    GUIOuttextwin2u 21,25,129,GUISpeedTextC1,0
 
     add byte[GUItextcolor],15                ;Text
-    GUIOuttextwin2 21,7,28,GUISpeedTextA1
-    GUIOuttextwin2 21,7,38,GUISpeedTextA2
-    GUIOuttextwin2 21,7,48,GUISpeedTextA3
+    GUIOuttextwin2 21,39,58,GUISpeedTextA1
+    GUIOuttextwin2 21,39,68,GUISpeedTextA2
+    GUIOuttextwin2 21,39,78,GUISpeedTextA3
+    GUIOuttextwin2 21,24,128,GUISpeedTextC1
 
     mov al,[GUIWincol]                       ;Yellow Shadow
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 21,8,19,GUISpeedTextA
-    GUIOuttextwin2 21,16,79,GUISpeedTextB
+    GUIOuttextwin2 21,8,49,GUISpeedTextA
+    GUIOuttextwin2 21,16,19,GUISpeedTextB
 
     mov byte[GUItextcolor],163            ;Yellow Text
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUItextcolor],164
 .zero3
-    GUIOuttextwin2 21,7,18,GUISpeedTextA
-    GUIOuttextwin2 21,15,78,GUISpeedTextB
+    GUIOuttextwin2 21,7,48,GUISpeedTextA
+    GUIOuttextwin2 21,15,18,GUISpeedTextB
 
 
-    DDrawBox 21,100,28,[KeyFastFrwrd]        ;Shortcut Boxes
-    DDrawBox 21,100,38,[KeySlowDown]
-    DDrawBox 21,100,48,[KeyResetSpeed]
+    DDrawBox 21,12,58,[KeyFastFrwrd]        ;Shortcut Boxes
+    DDrawBox 21,12,68,[KeySlowDown]
+    DDrawBox 21,12,78,[KeyResetSpeed]
 
-    DGOptnsBorderBox 21,99,27                ;Borders
-    DGOptnsBorderBox 21,99,37
-    DGOptnsBorderBox 21,99,47
+    DGOptnsBorderBox 21,11,57                ;Borders
+    DGOptnsBorderBox 21,11,67
+    DGOptnsBorderBox 21,11,77
+
+        
+    mov dword[GUITemp],GUIIconDataCheckBoxUC   ; Checkbox
+    cmp byte[FastFwdToggle],0
+    je .nocheckbox
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox
+    GUIDisplayIconWin 21,11,125,[GUITemp] 
 
 
     mov eax,dword[GUIwinposx+21*4]           ;Slider
@@ -6400,7 +6401,8 @@ DisplayGUISpeed:                    ;Speed Options
     mov ecx,eax
     add eax,15
     add ecx,15+116
-    add ebx,91
+;    add ebx,91
+    add ebx,31
     xor edx,edx
     mov dl,215
     sub dl,[GUIWincoladd]
@@ -6414,7 +6416,7 @@ DisplayGUISpeed:                    ;Speed Options
     shl eax,1
     mov dword[GUITemp],12
     add [GUITemp],eax
-    GUIDisplayIconWin 21,[GUITemp],87,GUIIconDataSlideBar
+    GUIDisplayIconWin 21,[GUITemp],27,GUIIconDataSlideBar
     mov dword[GUISpeedTextB1],0
     mov esi,GUISpeedTextB1+2
     xor eax,eax         ; currently emuspeed ranges from 0 to 58
@@ -6450,13 +6452,13 @@ DisplayGUISpeed:                    ;Speed Options
 .convdone
     mov [GUITemp],esi
     mov byte[GUItextcolor],223
-    GUIOuttextwin2 21,63,79,[GUITemp]
+    GUIOuttextwin2 21,63,19,[GUITemp]
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je .zero4
     mov byte[GUItextcolor],222
 .zero4
-    GUIOuttextwin2 21,62,78,[GUITemp]
+    GUIOuttextwin2 21,62,18,[GUITemp]
     ret
 
 SECTION .data
@@ -6467,6 +6469,8 @@ GUISpeedTextA3 db 'RESET SPEED',0
 
 GUISpeedTextB db 'SPEED : ',0
 GUISpeedTextB1 db '---',0
+
+GUISpeedTextC1 db 'TOGGLED FFWD/SLWDWN',0
 
 ;General data
 GUILoadDisp     db 'LOAD GAME',0

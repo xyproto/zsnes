@@ -2326,14 +2326,13 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,70,byte[FPSAtStart]
     GUIClickCButton 11,80,byte[Turbo30hz]
     GUIClickCButton 11,90,byte[TimerEnable]
-    GUIClickCButton 11,100,byte[FastFwdToggle]
-    GUIClickCButtonO 11,110,byte[OldGfxMode2]
-    GUIClickCButton 11,120,byte[DontSavePath]
-    GUIClickCButton 11,130,byte[SmallMsgText]
-    GUIClickCButton 11,140,byte[AutoPatch]
-    GUIClickCButton 11,150,byte[RomInfo]
+    GUIClickCButtonO 11,100,byte[OldGfxMode2]
+    GUIClickCButton 11,110,byte[DontSavePath]
+    GUIClickCButton 11,120,byte[SmallMsgText]
+    GUIClickCButton 11,130,byte[AutoPatch]
+    GUIClickCButton 11,140,byte[RomInfo]
 %ifdef __WIN32__
-    GUIClickCButtonW 11,160,byte[DisableScreenSaver]
+    GUIClickCButtonW 11,150,byte[DisableScreenSaver]
 %endif
     ; Frameskip = 0
     cmp byte[frameskip],0
@@ -3228,24 +3227,27 @@ DisplayGUISaveClick:
     ret
 
 DisplayGUISpeedClick:
-    DGOptnsProcBox 100,28,[KeyFastFrwrd]
-    DGOptnsProcBox 100,38,[KeySlowDown]
-    DGOptnsProcBox 100,48,[KeyResetSpeed]
+    GUIClickCButton 11,125,byte[FastFwdToggle]  ; Checkbox
+    
+    DGOptnsProcBox 12,58,[KeyFastFrwrd]        ; Shortcut Boxes
+    DGOptnsProcBox 12,68,[KeySlowDown]
+    DGOptnsProcBox 12,78,[KeyResetSpeed]
 
-    cmp eax,15
+                                   ; Speed Slider
+    cmp eax,15                     ; X-Range for click-area
     jl near .nomovebar
     cmp eax,15+116
     jg near .nomovebar
     sub eax,15
     shr eax,1
-    cmp edx,89
+    cmp edx,29                     ; Y-Range for click-area
     jl near .nomovebar
-    cmp edx,93
+    cmp edx,33
     jg near .nomovebar
-    mov [EmuSpeed],al
+    mov [EmuSpeed],al              ; Lock mouse to bar when clicked
     mov byte[GUIHold],6
     mov eax,[GUIwinposy+21*4]
-    add eax,91
+    add eax,31
     mov [GUIHoldYlim],eax
     mov eax,[GUIwinposx+21*4]
     add eax,15

@@ -358,6 +358,8 @@ GUIgetcurrentinput:
     je near GUIPathKeys
     cmp ebx,20
     je near GUISaveKeys
+    cmp ebx,21
+    je near GUISpeedKeys
     cmp ebx,8
     je near GUIGetInputLine
     ret
@@ -666,10 +668,6 @@ GUIOptionKeys:
     jne .nogameclock
     xor byte[TimerEnable],1
 .nogameclock
-    cmp dh,'G'                  ; Move to Speed?
-    jne .nofastforward
-    xor byte[FastFwdToggle],1
-.nofastforward
     cmp dh,'O'
     jne .nooldgfx
     xor byte[OldGfxMode2],1
@@ -734,6 +732,19 @@ GUISaveKeys:
     jne .nopauserewind
     xor byte[PauseRewind],1
 .nopauserewind
+    ret
+    
+GUISpeedKeys:
+    cmp dh,'a'             ; Setup
+    jb .nocap
+    cmp dh,'z'
+    ja .nocap
+    sub dh,'z'-'Z'
+.nocap    
+    cmp dh,'T'             ; Checkbox
+    jne .nofastforward
+    xor byte[FastFwdToggle],1
+.nofastforward
     ret
 
 GUIAddonKeys:
