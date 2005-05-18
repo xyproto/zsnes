@@ -2111,7 +2111,6 @@ DisplayGUIMovieClick:
     DGOptnsProcBox 116,116,[KeyNextChap]
 
     GUIClickCButton 60,50,byte[MovieDisplayFrame]   ; Checkbox
-
     ret
 
 
@@ -3240,23 +3239,40 @@ DisplayGUISpeedClick:
     mov edx,[GUImouseposy]
     sub edx,[GUIwinposy+21*4]
     
-    GUIClickCButtonfr 11,165,byte[frameskip]     ; Checkboxes
-    GUIClickCButton 11,175,byte[FastFwdToggle]
+    GUIClickCButton 11,135,byte[FastFwdToggle]     ; Checkboxes
+    GUIClickCButtonfr 11,145,byte[frameskip]
 
+    cmp byte[frameskip],0
+    jne .frate
+    DGOptnsProcBox 12,78,[KeyEmuSpeedUp]
+    DGOptnsProcBox 12,98,[KeyEmuSpeedDown]
+    jmp near .endsc
+.frate
+    DGOptnsProcBox 12,78,[KeyFRateUp]
+    DGOptnsProcBox 12,98,[KeyFRateDown]
+.endsc
+
+
+    DGOptnsProcBox 12,58,[KeyFastFrwrd]        ; Shortcut Boxes
+    DGOptnsProcBox 12,68,[KeySlowDown]
+    DGOptnsProcBox 12,88,[KeyResetSpeed]
+    DGOptnsProcBox 12,108,[EMUPauseKey]
+    DGOptnsProcBox 12,118,[INCRFrameKey]
     
-    DGOptnsProcBox 12,108,[KeyFastFrwrd]        ; Shortcut Boxes
-    DGOptnsProcBox 12,118,[KeySlowDown]
-    DGOptnsProcBox 12,128,[KeyResetSpeed]
     
-    ; Frameskip = 0
+    GUIPHoldbutton2 118,24,126,32,74,byte[FFRatio],1,28
+    GUIPHoldbutton2 129,24,137,32,75,byte[FFRatio],-1,0
+    GUIPHoldbutton2 118,35,126,43,76,byte[SDRatio],1,28
+    GUIPHoldbutton2 129,35,137,43,77,byte[SDRatio],-1,0
     cmp byte[frameskip],0
     je near .autopress
-    GUIPHoldbutton2 97,42,105,50,12,byte[frameskip],1,10
-    GUIPHoldbutton2 108,42,116,50,13,byte[frameskip],-1,1
+    GUIPHoldbutton2 97,13,105,21,12,byte[frameskip],1,10
+    GUIPHoldbutton2 108,13,116,21,13,byte[frameskip],-1,1
     ret
 .autopress
-    GUIPHoldbutton2 118,42,126,50,12,byte[maxskip],1,9
-    GUIPHoldbutton2 129,42,137,50,13,byte[maxskip],-1,0
+    GUIPHoldbutton2 118,13,126,21,12,byte[maxskip],1,9
+    GUIPHoldbutton2 129,13,137,21,13,byte[maxskip],-1,0
+    
 
 
     ; Speed Slider
@@ -3266,14 +3282,14 @@ DisplayGUISpeedClick:
     jg near .nomovebar
     sub eax,15
     shr eax,1
-    cmp edx,29                     ; Y-Range for click-area
+    cmp edx,173                    ; Y-Range for click-area
     jl near .nomovebar
-    cmp edx,33
+    cmp edx,177
     jg near .nomovebar
     mov [EmuSpeed],al
     mov byte[GUIHold],6            ; Lock mouse to bar when clicked
     mov eax,[GUIwinposy+21*4]
-    add eax,31
+    add eax,175
     mov [GUIHoldYlim],eax
     mov eax,[GUIwinposx+21*4]
     add eax,15

@@ -605,6 +605,10 @@ NEWSYM PauseLoad, db 0
 NEWSYM PauseRewind, db 0
 NEWSYM KeyResetSpeed, dd 0
 NEWSYM EmuSpeed, db 29        ; 29 = 1x, 0 = /30 and 58 = 30x
+NEWSYM FFRatio, db 14
+NEWSYM SDRatio, db 14
+NEWSYM KeyEmuSpeedUp, dd 0
+NEWSYM KeyEmuSpeedDown, dd 0
 ;end NEWSYM end
 
 GUIsave equ $-GUIRAdd

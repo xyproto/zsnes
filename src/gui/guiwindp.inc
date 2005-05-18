@@ -20,7 +20,7 @@
 
 
 ; Window Display Routines
-; Last button value used = 65
+; Last button value used = 77
 
 GUIStringGreater:
     ; compares string at esi to edi and returns 1 to al if esi is >, else 0
@@ -6260,74 +6260,197 @@ GUISaveTextZ3 db '  ',0
 
 DisplayGUISpeed:                    ;Speed Options
     GUIDrawWindowBox 21,GUISpeedDisp
+
     mov byte[GUItextcolor],217               ;Shadow
     cmp byte[GUIWincoladd],0
     je .zero
     mov byte[GUItextcolor],211
 .zero
     sub byte[GUItextcolor],15
-    mov dword[GUITemp],GUISpeedText1
+    
     cmp byte[frameskip],0
-    jne .noauto
-    mov dword[GUITemp],GUISpeedText1b
-.noauto
-    GUIOuttextwin2 21,6,44,[GUITemp]
-    GUIOuttextwin2 21,40,109,GUISpeedTextA1
-    GUIOuttextwin2 21,40,119,GUISpeedTextA2
-    GUIOuttextwin2 21,40,129,GUISpeedTextA3
-    GUIOuttextwin2u 21,25,169,GUISpeedTextC1,0
-    GUIOuttextwin2u 21,25,179,GUISpeedTextC2,0
+    jne .noautoshad
+    GUIOuttextwin2 21,6,15,GUISpeedText1b
+    GUIOuttextwin2 21,40,79,GUISpeedTextA3
+    GUIOuttextwin2 21,40,99,GUISpeedTextA5
+    jmp near .endautoshad
+.noautoshad
+    GUIOuttextwin2 21,6,15,GUISpeedText1
+    GUIOuttextwin2 21,40,79,GUISpeedTextA3b
+    GUIOuttextwin2 21,40,99,GUISpeedTextA5b
+.endautoshad    
+    GUIOuttextwin2 21,6,26,GUISpeedText2
+    GUIOuttextwin2 21,6,37,GUISpeedText3
+    GUIOuttextwin2 21,40,59,GUISpeedTextA1
+    GUIOuttextwin2 21,40,69,GUISpeedTextA2
+    GUIOuttextwin2 21,40,89,GUISpeedTextA4
+    GUIOuttextwin2 21,40,109,GUISpeedTextA6
+    GUIOuttextwin2 21,40,119,GUISpeedTextA7
+    GUIOuttextwin2u 21,25,139,GUISpeedTextC1,0
+    GUIOuttextwin2u 21,25,149,GUISpeedTextC2,0
 
     add byte[GUItextcolor],15                ;Text
-    GUIOuttextwin2 21,5,43,[GUITemp]
-    GUIOuttextwin2 21,39,108,GUISpeedTextA1
-    GUIOuttextwin2 21,39,118,GUISpeedTextA2
-    GUIOuttextwin2 21,39,128,GUISpeedTextA3
-    GUIOuttextwin2 21,24,168,GUISpeedTextC1
-    GUIOuttextwin2 21,24,178,GUISpeedTextC2
+    cmp byte[frameskip],0
+    jne .noautotext
+    GUIOuttextwin2 21,5,14,GUISpeedText1b
+    GUIOuttextwin2 21,39,78,GUISpeedTextA3
+    GUIOuttextwin2 21,39,98,GUISpeedTextA5
+    jmp near .endautotext
+.noautotext
+    GUIOuttextwin2 21,5,14,GUISpeedText1
+    GUIOuttextwin2 21,39,78,GUISpeedTextA3b
+    GUIOuttextwin2 21,39,98,GUISpeedTextA5b
+.endautotext
+    GUIOuttextwin2 21,5,25,GUISpeedText2
+    GUIOuttextwin2 21,5,36,GUISpeedText3
+    GUIOuttextwin2 21,39,58,GUISpeedTextA1
+    GUIOuttextwin2 21,39,68,GUISpeedTextA2
+    GUIOuttextwin2 21,39,88,GUISpeedTextA4
+    GUIOuttextwin2 21,39,108,GUISpeedTextA6
+    GUIOuttextwin2 21,39,118,GUISpeedTextA7
+    GUIOuttextwin2 21,24,138,GUISpeedTextC1
+    GUIOuttextwin2 21,24,148,GUISpeedTextC2
 
     mov al,[GUIWincol]                       ;Yellow Shadow
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 21,8,99,GUISpeedTextA
-    GUIOuttextwin2 21,8,19,GUISpeedTextB
+    GUIOuttextwin2 21,8,49,GUISpeedTextA
+    
+    cmp byte[frameskip],0
+    jne near .hidespeed
+    GUIOuttextwin2 21,8,164,GUISpeedTextB
+.hidespeed
 
     mov byte[GUItextcolor],163            ;Yellow Text
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUItextcolor],164
 .zero3
-    GUIOuttextwin2 21,7,98,GUISpeedTextA
-    GUIOuttextwin2 21,7,18,GUISpeedTextB
+    GUIOuttextwin2 21,7,48,GUISpeedTextA
+    
+    cmp byte[frameskip],0
+    jne near .hidespeed2
+    GUIOuttextwin2 21,7,163,GUISpeedTextB
+.hidespeed2
 
 
-    DDrawBox 21,12,108,[KeyFastFrwrd]        ;Shortcut Boxes
-    DDrawBox 21,12,118,[KeySlowDown]
-    DDrawBox 21,12,128,[KeyResetSpeed]
 
-    DGOptnsBorderBox 21,11,107                ;Borders
+    cmp byte[frameskip],0
+    jne .frate
+    DDrawBox 21,12,78,[KeyEmuSpeedUp]
+    DDrawBox 21,12,98,[KeyEmuSpeedDown]
+    jmp near .endsc
+.frate
+    DDrawBox 21,12,78,[KeyFRateUp]
+    DDrawBox 21,12,98,[KeyFRateDown]
+.endsc
+    
+    DDrawBox 21,12,58,[KeyFastFrwrd]        ; Shortcut Boxes
+    DDrawBox 21,12,68,[KeySlowDown]
+    DDrawBox 21,12,88,[KeyResetSpeed]
+    DDrawBox 21,12,108,[EMUPauseKey]
+    DDrawBox 21,12,118,[INCRFrameKey]
+
+
+
+    DGOptnsBorderBox 21,11,57                ; Borders
+    DGOptnsBorderBox 21,11,67
+    DGOptnsBorderBox 21,11,77
+    DGOptnsBorderBox 21,11,87
+    DGOptnsBorderBox 21,11,97
+    DGOptnsBorderBox 21,11,107
     DGOptnsBorderBox 21,11,117
-    DGOptnsBorderBox 21,11,127
-
 
     mov dword[GUITemp],GUIIconDataCheckBoxUC     ; Checkboxes
-    cmp byte[frameskip],0
-    jne .nocheckbox
+    cmp byte[FastFwdToggle],0
+    je .nocheckbox
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox
-    GUIDisplayIconWin 21,11,165,[GUITemp]
+    GUIDisplayIconWin 21,11,135,[GUITemp]
 
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[FastFwdToggle],0
-    je .nocheckbox1
+    cmp byte[frameskip],0
+    jne .nocheckbox1
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
-    GUIDisplayIconWin 21,11,175,[GUITemp]
+    GUIDisplayIconWin 21,11,145,[GUITemp]
 
 
+;Boxes
+    DrawGUIWinBox 21,96,24,114,31,167     ; FF Ratio Box
+    xor ax,ax
+    mov ah,[FFRatio]
+    mov al,48
+    add ah,48
+.asciiloop
+    cmp ah,58
+    jb .hex2asciidone
+    add al,1
+    sub ah,10
+    jmp .asciiloop
+.hex2asciidone
+    mov [GUISpeedTextZ3],ax
+    mov byte[GUItextcolor],223
+    GUIOuttextwin2 21,101,26,GUISpeedTextZ3
+    mov byte[GUItextcolor],221
+    cmp byte[GUIWincoladd],0
+    je .zero14
+    mov byte[GUItextcolor],222
+.zero14
+    GUIOuttextwin2 21,100,25,GUISpeedTextZ3
+    mov byte[GUItextcolor],217
+    cmp byte[GUIWincoladd],0
+    je .zero16
+    mov byte[GUItextcolor],211
+.zero16
+
+    DrawGUIWinBox 21,96,35,114,42,167      ; Boxes
+    xor ax,ax
+    mov ah,[SDRatio]
+    mov al,48
+    add ah,48
+.asciiloop2
+    cmp ah,58
+    jb .hex2asciidone2
+    add al,1
+    sub ah,10
+    jmp .asciiloop2
+.hex2asciidone2
+    mov [GUISpeedTextZ3],ax
+    mov byte[GUItextcolor],223
+    GUIOuttextwin2 21,101,37,GUISpeedTextZ3
+    mov byte[GUItextcolor],221
+    cmp byte[GUIWincoladd],0
+    je .zero15
+    mov byte[GUItextcolor],222
+.zero15
+    GUIOuttextwin2 21,100,36,GUISpeedTextZ3
+    mov byte[GUItextcolor],217
+    cmp byte[GUIWincoladd],0
+    je .zero17
+    mov byte[GUItextcolor],211
+.zero17
+
+
+    mov byte[GUItextcolor],217               ;Buttons
+    cmp byte[GUIWincoladd],0
+    je .zero88
+    mov byte[GUItextcolor],211
+.zero88
+    sub byte[GUItextcolor],15
+    add byte[GUItextcolor],15
+    
+    DrawGUIButton 21,118,24,126,32,GUISaveTextZ1,74,-2,-1  ; + Rewind States
+    DrawGUIButton 21,129,24,137,32,GUISaveTextZ2,75,-2,-1  ; - Rewind States
+    DrawGUIButton 21,118,35,126,43,GUISaveTextZ1,76,-2,-1  ; + Second/Rewind
+    DrawGUIButton 21,129,35,137,43,GUISaveTextZ2,77,-2,-1  ; - Second/Rewind
+
+    
+    cmp byte[frameskip],0
+    jne near .noslider
     mov eax,dword[GUIwinposx+21*4]           ;Slider
     mov ebx,dword[GUIwinposy+21*4]
     add eax,15
-    add ebx,31
+    add ebx,175
     mov ecx,eax
     add ecx,116
     xor edx,edx
@@ -6343,7 +6466,7 @@ DisplayGUISpeed:                    ;Speed Options
     shl eax,1
     mov dword[GUITemp],12
     add [GUITemp],eax
-    GUIDisplayIconWin 21,[GUITemp],27,GUIIconDataSlideBar
+    GUIDisplayIconWin 21,[GUITemp],171,GUIIconDataSlideBar
     mov dword[GUISpeedTextB1],0
     mov esi,GUISpeedTextB1+2
     xor eax,eax         ; currently emuspeed ranges from 0 to 58
@@ -6379,37 +6502,37 @@ DisplayGUISpeed:                    ;Speed Options
 .convdone
     mov [GUITemp],esi                   ; Display Value (Green)
     mov byte[GUItextcolor],223
-    GUIOuttextwin2 21,78,19,[GUITemp]
+    GUIOuttextwin2 21,78,163,[GUITemp]
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je .zero4
     mov byte[GUItextcolor],222
 .zero4
-    GUIOuttextwin2 21,77,18,[GUITemp]
+    GUIOuttextwin2 21,77,162,[GUITemp]
 
-
+.noslider
     cmp byte[frameskip],0                    ; Determine if AutoFR is enabled
     je near .auto
 
-    DrawGUIWinBox 21,75,42,93,49,167           ; Frameskip (if not AutoFR)
+    DrawGUIWinBox 21,75,13,93,20,167           ; Non AFR FrameRate +/- Box
     mov al,[frameskip]
     add al,47
     mov [GUISpeedTextX],al
     mov byte[GUItextcolor],223
-    GUIOuttextwin2 21,85,44,GUISpeedTextX
+    GUIOuttextwin2 21,85,15,GUISpeedTextX
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je .zero8
     mov byte[GUItextcolor],222
 .zero8
-    GUIOuttextwin2 21,84,43,GUISpeedTextX
+    GUIOuttextwin2 21,84,14,GUISpeedTextX
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
     je .zero6
     mov byte[GUItextcolor],211
 .zero6
-    DrawGUIButton 21,97,42,105,50,GUISpeedTextY,12,-2,-1
-    DrawGUIButton 21,108,42,116,50,GUISpeedTextZ,13,-2,-1
+    DrawGUIButton 21,97,13,105,21,GUISpeedTextY,12,-2,-1
+    DrawGUIButton 21,108,13,116,21,GUISpeedTextZ,13,-2,-1
 
     mov dword[GUIWincol],148+10             ; Draw borders
     cmp byte[cwindrawn],1
@@ -6421,39 +6544,39 @@ DisplayGUISpeed:                    ;Speed Options
     mov dword[GUIWincol],148
 .nozero2
     mov dl,[GUIWincol]
-    DrawGUIWinBox 21,76,41,93,41,dl
+    DrawGUIWinBox 21,76,12,93,12,dl
     mov dl,[GUIWincol]
     add dl,1
-    DrawGUIWinBox 21,75,42,74,49,dl
+    DrawGUIWinBox 21,75,13,74,20,dl
     mov dl,[GUIWincol]
     add dl,4
-    DrawGUIWinBox 21,76,50,93,50,dl
+    DrawGUIWinBox 21,76,21,93,21,dl
     mov dl,[GUIWincol]
     add dl,3
-    DrawGUIWinBox 21,95,42,94,49,dl
+    DrawGUIWinBox 21,95,13,94,20,dl
     ret
 
 
-.auto                                          ; Max Frameskip (if AutoFR)
-    DrawGUIWinBox 21,96,42,114,49,167
+.auto                                          ; AFR Max Frameskip +/- Box
+    DrawGUIWinBox 21,96,13,114,20,167
     mov al,[maxskip]
     add al,48
     mov [GUISpeedTextX],al
     mov byte[GUItextcolor],223
-    GUIOuttextwin2 21,107,44,GUISpeedTextX
+    GUIOuttextwin2 21,107,15,GUISpeedTextX
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je .zero5
     mov byte[GUItextcolor],222
 .zero5
-    GUIOuttextwin2 21,106,43,GUISpeedTextX
+    GUIOuttextwin2 21,106,14,GUISpeedTextX
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
     je .zero7
     mov byte[GUItextcolor],211
 .zero7
-    DrawGUIButton 21,118,42,126,50,GUISpeedTextY,12,-2,-1
-    DrawGUIButton 21,129,42,137,50,GUISpeedTextZ,13,-2,-1
+    DrawGUIButton 21,118,13,126,21,GUISpeedTextY,12,-2,-1
+    DrawGUIButton 21,129,13,137,21,GUISpeedTextZ,13,-2,-1
 
     mov dword[GUIWincol],148+10             ; Draw borders
     cmp byte[cwindrawn],1
@@ -6465,38 +6588,42 @@ DisplayGUISpeed:                    ;Speed Options
     mov dword[GUIWincol],148
 .nozero3
     mov dl,[GUIWincol]
-    DrawGUIWinBox 21,96,41,113,41,dl
+    DrawGUIWinBox 21,96,12,113,12,dl
     mov dl,[GUIWincol]
     add dl,1
-    DrawGUIWinBox 21,95,42,94,49,dl
+    DrawGUIWinBox 21,95,13,94,20,dl
     mov dl,[GUIWincol]
     add dl,4
-    DrawGUIWinBox 21,96,50,113,50,dl
+    DrawGUIWinBox 21,96,21,113,21,dl
     mov dl,[GUIWincol]
     add dl,3
-    DrawGUIWinBox 21,115,42,114,49,dl
+    DrawGUIWinBox 21,115,13,114,20,dl
     ret
 
 SECTION .data
 GUISpeedTextA db 'SHORTCUTS : ',0
 GUISpeedTextA1 db 'FAST FORWARD',0
+GUISpeedTextA3b db '+ FRAME RATE',0
 GUISpeedTextA2 db 'SLOW DOWN',0
-GUISpeedTextA3 db 'RESET SPEED',0
-GUISpeedTextA4 db '+ FRAME RATE',0
-GUISpeedTextA5 db '- FRAME RATE',0
+GUISpeedTextA3 db '+ EMU SPEED',0
+GUISpeedTextA4 db 'RESET SPEED',0
+GUISpeedTextA5 db '- EMU SPEED',0
+GUISpeedTextA5b db '- FRAME RATE',0
 GUISpeedTextA6 db 'PAUSE GAME',0
 GUISpeedTextA7 db 'INCR FRAME',0
-GUISpeedTextA8 db 'SLOW DOWN',0
-GUISpeedTextA9 db 'RESET SPEED',0
 
 GUISpeedTextB db 'EMU SPEED : ',0
 GUISpeedTextB1 db '---',0
 
 GUISpeedText1 db 'FRAME RATE',0
 GUISpeedText1b db 'MAX FRAME SKIP',0
+GUISpeedText2 db 'FAST FWD RATIO',0
+GUISpeedText3 db 'SLOWDOWN RATIO',0
 
-GUISpeedTextC1 db 'AUTO FRAME RATE',0
-GUISpeedTextC2 db 'TOGGLED FFWD/SLWDWN',0
+GUISpeedTextC1 db 'TOGGLED FFWD/SLWDWN',0
+GUISpeedTextC2 db 'AUTO FRAME RATE',0
+
+GUISpeedTextZ3 db '--',0
 
 
 GUISpeedTextX db '-',0
