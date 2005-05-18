@@ -136,11 +136,10 @@ unsigned char DisplayS      = 0;
 unsigned char SPC700sh      = 0;
 unsigned char OffBy1Line    = 0;
 unsigned char *spc7110romptr;
- 
+
 unsigned char MusicRelVol   = 75;
 unsigned char MusicVol      = 0;
 unsigned char MMXextSupport = 0;
-unsigned char EmuSpeed      = 29;   // 29 = 1x, 0 = /30 and 58 = 30x
 
 void outofmemory();
 void init();
@@ -157,7 +156,7 @@ void *doMemAlloc(size_t size)
   void *ptr = NULL;
   ptr = malloc(size);
   if (!ptr)
-  { 
+  {
     asm_call(outofmemory);
   }
   return(ptr);

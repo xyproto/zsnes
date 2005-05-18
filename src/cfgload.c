@@ -111,7 +111,7 @@ extern unsigned int newengen;
 extern char SRAMDrive[2];
 extern unsigned char DontSavePath;
 extern unsigned char guioff;
-extern unsigned int frameskip;
+extern unsigned char frameskip;
 extern unsigned char enterpress;
 extern unsigned char cvidmode;
 extern unsigned char antienab;
@@ -362,16 +362,16 @@ void DOScreatenewcfg()
 {
   char buffer[4096];
   FILE *fp = 0;
-  
+
   if (cfgdontsave == 1)
   {
     return;
   }
 
-#ifdef __LINUX__  
+#ifdef __LINUX__
   chdir(zcfgdir);
-#endif  
-  
+#endif
+
   fp = fopen(CMDLineStr, "wb");
   if (!fp)
   {
@@ -490,7 +490,7 @@ void DOScreatenewcfg()
   WRITE_LINE("; Sound Sampling Rate\r\n");
   WRITE_LINE(";   0 =  8,000 Hz, 1 = 11,025 Hz, 2 = 22,050 Hz\r\n");
   WRITE_LINE(";   3 = 44,100 Hz, 4 = 16,000 Hz, 5 = 32,000 Hz\r\n");
-  WRITE_LINE(";   6 = 48,000 Hz\r\n\r\n");                 
+  WRITE_LINE(";   6 = 48,000 Hz\r\n\r\n");
 
   sprintf(buffer, "SoundRate = %d\r\n\r\n", cfgSoundQuality);
   SAVE_LINE(buffer);
@@ -617,7 +617,7 @@ void getcfg()
   char temp;
   unsigned char no_save = 0;
   _forceauto = 0;
-  
+
   //open file
   ZOpenFileName = CMDLineStr;
   ZOpenMode = 0;
@@ -706,7 +706,7 @@ void getcfg()
 #ifndef __LINUX__
                   if (temp >= 'a' && temp <= 'z')
                     temp -= ('a' - 'A');
-#endif    
+#endif
                   _usespace = 1;
                   _stringb[j] = temp;
                   _strlenb++;
@@ -1248,7 +1248,7 @@ void getcfg()
               {
                 if (_strlenb >= 3)
                 {
-#ifndef __LINUX__    
+#ifndef __LINUX__
                   if (_stringb[1] == ':' && _stringb[2] == '\\')
                   {
                     cfgloadgdir = 1;
@@ -1262,7 +1262,7 @@ void getcfg()
                     strncpy(LoadDir, _stringb, _strlenb);
                     LoadDir[_strlenb] = '\0';
 
-#endif        
+#endif
                     strcpy(LoadDirB, LoadDir);
 #ifndef __LINUX__
                   }

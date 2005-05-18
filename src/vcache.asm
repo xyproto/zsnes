@@ -49,7 +49,7 @@ EXTSYM oamram,objhipr,objptr,objptrn,objsize1,objsize2,spritetablea,sprleftpr
 EXTSYM sprlefttot,vcache4b,objadds1,objadds2,objmovs1,objmovs2,tltype4b
 EXTSYM vidmemch4,vram,bgptr,bgptrc,bgptrd,curtileptr,vcache2b,vcache8b,vidmemch8
 EXTSYM offsetmshl,NextLineCache,tltype2b,tltype8b,objwlrpos,snesinputdefault
-EXTSYM cycleinputdevice,Change_Dir,LoadDrive,LoadDir
+EXTSYM cycleinputdevice,Change_Dir,LoadDrive,LoadDir,EmuSpeed
 
 ; Process stuff & Cache sprites
 
@@ -303,6 +303,7 @@ NEWSYM cachevideo
     mov dword[sramb4save],0
 .nofocussave
 
+    ; fast forward goes over all other throttles
     cmp byte[FastFwdToggle],0
     jne .ffmode2
     mov eax,[KeyFastFrwrd]
@@ -319,7 +320,7 @@ NEWSYM cachevideo
     cmp byte[FastForwardLock],1
     je near .fastfor
 .ffskip
-
+    ; next up, check for slowdown
     cmp byte[FastFwdToggle],0
     jne .sdmode2
     mov eax,[KeySlowDown]
@@ -337,13 +338,25 @@ NEWSYM cachevideo
     je near .slowdwn
     jmp .sdskip
 .slowdwn
-    mov byte[SloMo],1 ; hardcoded 50% slowdown
-    jmp .skipnoslowdown
+    mov byte[SloMo],1         ; hardcoded /2 slowdown (for now)
+    jmp .throttleskip
 .sdskip
     mov byte[SloMo],0
-.skipnoslowdown
+    ; now we can look at emuspeed
+    cmp byte[EmuSpeed],30     ; 0-28 slow, 29 normal, 30-58 skip
+    jb .noskipping
+    inc byte[frskipper]
+    push ebx
+    mov bl,[EmuSpeed]
+    sub bl,29                 ; 30-58 -> 1-29 frames to skip, 2x-30x speed
+    jmp .fastforb
+.noskipping
+    mov byte[SloMo],29
+    mov al,[EmuSpeed]
+    sub byte[SloMo],al        ; 0-29 -> repeat 29-0 times, /30-1x speed
+.throttleskip
     mov ax,[SloMo]
-    inc ax ; total times frame is drawn
+    inc ax                    ; total times frame is drawn
 
     cmp byte[frameskip],0
     jne near .frameskip
@@ -373,7 +386,7 @@ NEWSYM cachevideo
 .fastfor
     inc byte[frskipper]
     push ebx
-    mov bl,10 ; hardcoded number of frames to skip
+    mov bl,10                 ; hardcoded 11x fastforward (for now)
     jmp .fastforb
 .frameskip
     inc byte[frskipper]

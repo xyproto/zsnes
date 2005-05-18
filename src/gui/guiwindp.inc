@@ -3062,7 +3062,7 @@ DisplayGUISearch:
 ;    ret
 ;;    DrawGUIButton 13,197,30,239,41,GUICSrcText8+2,40,0,0
 ;   ret
-    
+
 .startcheat                     ; Start
     cmp byte[CheatWinMode],1    ; Determine which CS window we're on
     je near Incheatmode
@@ -3073,8 +3073,8 @@ DisplayGUISearch:
     mov dword[GUIwinsizex+13*4],170
     mov dword[GUIwinsizey+13*4],150
     call DrawWindowSearch
-    
-    
+
+
     mov al,[GUIWincol]                      ; Yellow Shadow
     mov byte[GUItextcolor],al
     GUIOuttextwin2 13,6,16,GUICSrcText1
@@ -3101,28 +3101,28 @@ DisplayGUISearch:
     TextWindowMacro 13,25,85,GUICSrcText7
     TextWindowMacro 13,25,115,GUICSrcText9
     TextWindowMacro 13,25,125,GUICSrcTextA
-    
-    
+
+
     DrawGUIButton 13,95,140,140,152,GUICSrcTextB,50,0,1 ; Button
-    
-    
+
+
     GUIDisplayButtonHole 13,11,28,byte[CheatSrcByteSize],0   ; Ratio Buttons
     GUIDisplayButtonHole 13,11,38,byte[CheatSrcByteSize],1
     GUIDisplayButtonHole 13,11,48,byte[CheatSrcByteSize],2
     GUIDisplayButtonHole 13,11,58,byte[CheatSrcByteSize],3
-    
+
     GUIDisplayButtonHole 13,11,73,byte[CheatSrcByteBase],0
     GUIDisplayButtonHole 13,11,83,byte[CheatSrcByteBase],1
-    
+
     GUIDisplayButtonHole 13,11,113,byte[CheatSrcSearchType],0
     GUIDisplayButtonHole 13,11,123,byte[CheatSrcSearchType],1
     ret
-    
+
 Incheatmode:                              ; Return and Re-search
     mov dword[GUIwinsizex+13*4],180
     mov dword[GUIwinsizey+13*4],150
     call DrawWindowSearch
-    
+
     mov byte[GUItextcolor],217            ; Text And Shadow
     cmp byte[GUIWincoladd],0
     je .zero2
@@ -3135,15 +3135,15 @@ Incheatmode:                              ; Return and Re-search
     TextWindowMacro 13,5,40,GUICSrcTextO
     TextWindowMacro 13,5,50,GUICSrcTextP
     jmp DisplayChtSrcRes.nosearch
-    
+
 CheatSearching:                    ; Exact Value Search
     cmp byte[CheatSrcSearchType],1
     je near CheatSearchingComp
 
     TextWindowMacro 13,5,20,GUICSrcTextD       ; Text (setup?)
-    
+
     DrawGUIWinBox 13,10,40,80,47,167           ; Input Box
-    
+
 
     mov dword[GUIWincol],148+10              ; Draw border
     cmp byte[cwindrawn],1
@@ -3178,7 +3178,7 @@ CheatSearching:                    ; Exact Value Search
     mov byte[GUItextcolor],202             ; Alt Color
 .notdark
     GUIOuttextwin2 13,13,42,CSInputDisplay
-    
+
     mov byte[GUItextcolor],221            ; Green Text
     cmp byte[GUIWincoladd],0
     je .zero4
@@ -3189,7 +3189,7 @@ CheatSearching:                    ; Exact Value Search
     mov byte[GUItextcolor],207             ; Alt Color
 .notdark2
     GUIOuttextwin2 13,12,41,CSInputDisplay
-    
+
     mov byte[GUItextcolor],217          ; More Text
     cmp byte[GUIWincoladd],0
     je .zero2
@@ -6315,17 +6315,18 @@ DisplayGUISpeed:                    ;Speed Options
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox
     GUIDisplayIconWin 21,11,165,[GUITemp]
-            
+
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[FastFwdToggle],0
     je .nocheckbox1
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
-    GUIDisplayIconWin 21,11,175,[GUITemp] 
+    GUIDisplayIconWin 21,11,175,[GUITemp]
 
 
     mov eax,dword[GUIwinposx+21*4]           ;Slider
     mov ebx,dword[GUIwinposy+21*4]
+    add eax,15
     add ebx,31
     mov ecx,eax
     add ecx,116
@@ -6385,11 +6386,11 @@ DisplayGUISpeed:                    ;Speed Options
     mov byte[GUItextcolor],222
 .zero4
     GUIOuttextwin2 21,77,18,[GUITemp]
-    
-    
+
+
     cmp byte[frameskip],0                    ; Determine if AutoFR is enabled
     je near .auto
-    
+
     DrawGUIWinBox 21,75,42,93,49,167           ; Frameskip (if not AutoFR)
     mov al,[frameskip]
     add al,47
@@ -6409,7 +6410,7 @@ DisplayGUISpeed:                    ;Speed Options
 .zero6
     DrawGUIButton 21,97,42,105,50,GUISpeedTextY,12,-2,-1
     DrawGUIButton 21,108,42,116,50,GUISpeedTextZ,13,-2,-1
-        
+
     mov dword[GUIWincol],148+10             ; Draw borders
     cmp byte[cwindrawn],1
     jne .noone2
@@ -6432,7 +6433,7 @@ DisplayGUISpeed:                    ;Speed Options
     DrawGUIWinBox 21,95,42,94,49,dl
     ret
 
-    
+
 .auto                                          ; Max Frameskip (if AutoFR)
     DrawGUIWinBox 21,96,42,114,49,167
     mov al,[maxskip]
@@ -6453,7 +6454,7 @@ DisplayGUISpeed:                    ;Speed Options
 .zero7
     DrawGUIButton 21,118,42,126,50,GUISpeedTextY,12,-2,-1
     DrawGUIButton 21,129,42,137,50,GUISpeedTextZ,13,-2,-1
-    
+
     mov dword[GUIWincol],148+10             ; Draw borders
     cmp byte[cwindrawn],1
     jne .noone3
