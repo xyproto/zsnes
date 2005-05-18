@@ -1476,9 +1476,9 @@ NEWSYM cpuover
     jmp .noemupause
 .noframeincr
 
-    ;Update screen (we should also kill sound)
+    ;Update screen
     pushad
-    call StartDrawNewGfx
+    ;call StartDrawNewGfx
     call showvideo
     popad
     
