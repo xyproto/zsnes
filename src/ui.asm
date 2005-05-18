@@ -208,73 +208,33 @@ NEWSYM getcmdline
     jmp .next2
 .nomore
     mov [FilenameStart],esi
-    mov byte[esi],'z'
-    mov byte[esi+1],'s'
-    mov byte[esi+2],'n'
-    mov byte[esi+3],'e'
-    mov byte[esi+4],'s'
-    mov byte[esi+5],'.'
-    mov byte[esi+6],'c'
-    mov byte[esi+7],'f'
+    mov dword[esi],'zsne'
+    mov dword[esi+4],'s.cf'
     mov byte[esi+8],'g'
     mov byte[esi+9],0
-    mov byte[esi+256],'z'
-    mov byte[esi+1+256],'g'
-    mov byte[esi+2+256],'u'
-    mov byte[esi+3+256],'i'
-    mov byte[esi+4+256],'c'
-    mov byte[esi+5+256],'f'
-    mov byte[esi+6+256],'g'
-    mov byte[esi+7+256],'.'
-    mov byte[esi+8+256],'d'
-    mov byte[esi+9+256],'a'
-    mov byte[esi+10+256],'t'
-    mov byte[esi+11+256],0
-    mov byte[esi+512],'d'
-    mov byte[esi+1+512],'a'
-    mov byte[esi+2+512],'t'
-    mov byte[esi+3+512],'a'
-    mov byte[esi+4+512],'.'
-    mov byte[esi+5+512],'c'
-    mov byte[esi+6+512],'m'
-    mov byte[esi+7+512],'b'
-    mov byte[esi+8+512],0
+    mov dword[esi+256],'zgui'
+    mov dword[esi+256+4],'cfg.'
+    mov dword[esi+256+8],'dat '
+    mov byte[esi+256+11],0
+    mov dword[esi+512],'data'
+    mov dword[esi+512+4],'.cmb'
+    mov byte[esi+512+8],0
     ret
 .nfound
     mov edx,.stringnf
     call PrintStr
     mov esi,CMDLineStr
     mov [FilenameStart],esi
-    mov byte[esi],'z'
-    mov byte[esi+1],'s'
-    mov byte[esi+2],'n'
-    mov byte[esi+3],'e'
-    mov byte[esi+4],'s'
-    mov byte[esi+5],'.'
-    mov byte[esi+6],'c'
-    mov byte[esi+7],'f'
+    mov dword[esi],'zsne'
+    mov dword[esi+4],'s.cf'
     mov byte[esi+8],'g'
     mov byte[esi+9],0
-    mov byte[esi+256],'z'
-    mov byte[esi+1+256],'g'
-    mov byte[esi+2+256],'u'
-    mov byte[esi+3+256],'i'
-    mov byte[esi+4+256],'c'
-    mov byte[esi+5+256],'f'
-    mov byte[esi+6+256],'g'
-    mov byte[esi+7+256],'.'
-    mov byte[esi+8+256],'d'
-    mov byte[esi+9+256],'a'
-    mov byte[esi+10+256],'t'
-    mov byte[esi+11+256],0
-    mov byte[esi+512],'d'
-    mov byte[esi+1+512],'a'
-    mov byte[esi+2+512],'t'
-    mov byte[esi+3+512],'a'
-    mov byte[esi+4+512],'.'
-    mov byte[esi+5+512],'c'
-    mov byte[esi+6+512],'m'
-    mov byte[esi+7+512],'b'
+    mov dword[esi+256],'zgui'
+    mov dword[esi+256+4],'cfg.'
+    mov dword[esi+256+8],'dat '
+    mov byte[esi+256+11],0
+    mov dword[esi+512],'data'
+    mov dword[esi+4+512],'.cmb'
     mov byte[esi+8+512],0
     ret
 
