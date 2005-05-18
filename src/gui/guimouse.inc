@@ -3238,12 +3238,12 @@ DisplayGUISpeedClick:
     sub eax,[GUIwinposx+21*4] ; effectively 'grabbing' the cursor !
     mov edx,[GUImouseposy]
     sub edx,[GUIwinposy+21*4]
-    
+
     GUIClickCButton 11,135,byte[FastFwdToggle]     ; Checkboxes
     GUIClickCButtonfr 11,145,byte[frameskip]
 
     cmp byte[frameskip],0
-    jne .frate
+    jne near .frate
     DGOptnsProcBox 12,78,[KeyEmuSpeedUp]
     DGOptnsProcBox 12,98,[KeyEmuSpeedDown]
     jmp near .endsc
@@ -3252,14 +3252,12 @@ DisplayGUISpeedClick:
     DGOptnsProcBox 12,98,[KeyFRateDown]
 .endsc
 
-
     DGOptnsProcBox 12,58,[KeyFastFrwrd]        ; Shortcut Boxes
     DGOptnsProcBox 12,68,[KeySlowDown]
     DGOptnsProcBox 12,88,[KeyResetSpeed]
     DGOptnsProcBox 12,108,[EMUPauseKey]
     DGOptnsProcBox 12,118,[INCRFrameKey]
-    
-    
+
     GUIPHoldbutton2 118,24,126,32,74,byte[FFRatio],1,28
     GUIPHoldbutton2 129,24,137,32,75,byte[FFRatio],-1,0
     GUIPHoldbutton2 118,35,126,43,76,byte[SDRatio],1,28
@@ -3269,11 +3267,10 @@ DisplayGUISpeedClick:
     GUIPHoldbutton2 97,13,105,21,12,byte[frameskip],1,10
     GUIPHoldbutton2 108,13,116,21,13,byte[frameskip],-1,1
     ret
+
 .autopress
     GUIPHoldbutton2 118,13,126,21,12,byte[maxskip],1,9
     GUIPHoldbutton2 129,13,137,21,13,byte[maxskip],-1,0
-    
-
 
     ; Speed Slider
     cmp eax,15                     ; X-Range for click-area

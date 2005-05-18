@@ -18,6 +18,7 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+SECTION .text
 
 ; Window Display Routines
 ; Last button value used = 77
@@ -805,6 +806,7 @@ SECTION .bss
 GUILStA resd 3
 GUILStB resd 3
 GUILoadPos resb 1
+
 SECTION .text
 
 DisplayGUIReset:              ; Reset Confirmation
@@ -845,6 +847,7 @@ SECTION .data
 GUIResetText1 db 'RESET : ARE YOU SURE ?',0
 GUIResetText2 db 'YES',0
 GUIResetText3 db 'NO',0
+
 SECTION .text
 
 DisplayGUIStates:                         ; Save/Load State Confirmation
@@ -899,6 +902,7 @@ GUIStatesText2 db 'OKAY TO LOAD STATE?',0
 GUIStatesText3 db 'YES',0
 GUIStatesText4 db 'NO',0
 GUIStatesText5 db 0
+
 SECTION .text
 
 DisplayGUIChoseSave:                    ; Pick Save State
@@ -981,6 +985,7 @@ DisplayGUIChoseSave:                    ; Pick Save State
 SECTION .data
 GUIChoseSaveText1 db 'SELECT SAVE SLOT :',0
 GUIChoseSaveText2 db '-',0
+
 SECTION .text
 
 %macro DGOptnsBorderBox 3
@@ -1438,9 +1443,9 @@ GUIInputTextg db 'DR',0
 
 SECTION .bss
 GUIIStA resd 3
-
 GUIcurrentinputviewloc resd 1
 GUIcurrentinputcursloc resd 1
+
 SECTION .text
 
 DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engine
@@ -2282,15 +2287,12 @@ GUIVideoTextw2 db ' D = ALLOW SPECIAL FILTERS',0
 GUIVideoTextw3 db ' W = WIN          F = FULL',0
 GUIVideoTextw4 db '      O = USES OPENGL',0
 
-
 SECTION .bss
 GUIVStA resd 3
-
 GUIcurrentvideoviewloc resd 1
 GUIcurrentvideocursloc resd 1
 
 SECTION .text
-
 
 DisplayGUISound:                     ; Sound Related Options
     GUIDrawWindowBox 6,GUISoundDisp
@@ -2625,7 +2627,6 @@ GUISoundTextF2 db 'DYNAMIC',0
 GUISoundTextF3 db 'HI QUALITY',0      ; Non-DOS Only
 
 SECTION .text
-
 
 DisplayGUICheatConv:
     mov eax,[ccheatnpos]
@@ -2992,7 +2993,6 @@ GUICheatTextZ3 db '000000 00 00 OFF BLAHBLAH---',0,0,0,0,0,0,0,0,0,0,0,0
 GUICheatTextZ4 db '0123456789ABCDEF'
 GUICheatTextZ5 db '      ',0
 
-
 SECTION .bss
 GUICheatPosA resb 1
 GUICheatPosB resb 1
@@ -3002,8 +3002,8 @@ GUIcurrentcheatcursloc resd 1
 GUIcurrentcheatwin     resd 1
 ccheatnpos             resd 1
 ccheatnleft            resd 1
-SECTION .text
 
+SECTION .text
 
 DrawWindowSearch:
     GUIDrawWindowBox 13,GUISearchDisp
@@ -3680,7 +3680,6 @@ curentryval resd 1
 curentryleft resd 1
 curaddrvalcs resd 1
 curvaluecs resd 1
-
 GUICSStA resd 3
 
 SECTION .data
@@ -4032,6 +4031,7 @@ GUIGameOptnsTextJa  db '-FRAME RATE',0
 GUIGameOptnsTextKa  db 'DISPLAY FPS',0
 GUIGameOptnsTextL  db 'PAUSE GAME',0
 GUIGameOptnsTextLa  db 'INCR FRAME',0
+
 SECTION .text
 
 DisplayGUIOptns:
@@ -4388,6 +4388,7 @@ GUIGUIOptnsTextK db 'WHEEL MOUSE',0
 GUIGUIOptnsTextL db 'ALLOW MULTIPLE INSTANCES',0
 GUIGUIOptnsTextM db 'FILTERED GUI',0
 GUIGUIOptnsTextN db 'TRAP MOUSE CURSOR',0
+
 SECTION .text
 
 DisplayGUIAbout:
@@ -4480,11 +4481,7 @@ GUIGUIAboutTextB db 'NO WARRANTY.  This is free',0
 GUIGUIAboutTextC db 'software, and you are welcome',0
 GUIGUIAboutTextD db 'to redistribute it under',0
 GUIGUIAboutTextE db 'certain conditions; please',0
-%ifndef __LINUX__
 GUIGUIAboutTextF db 'read ',39,'LICENSE.TXT',39,0
-%else
-GUIGUIAboutTextF db 'read ',39,'LICENSE',39,0
-%endif
 GUIGUIAboutTextG db 'thoroughly before doing so.',0
 
 SECTION .text
@@ -4669,7 +4666,6 @@ GUIMovieTextA5 db 'INSERT CHAPTER',0
 GUIMovieTextA6 db 'PREVIOUS CHAPTER',0
 GUIMovieTextA7 db 'NEXT CHAPTER',0
 GUIMovieTextA8 db 'DUMP RAW MOVIE',0
-
 
 GUIMovieTextB db 'SELECT :',0
 GUIMovieTextB1 db ' ',0
@@ -5450,7 +5446,6 @@ GUIIconDataComboSecond:
     db 0  ,48 ,46 ,44 ,42 ,0  ,0  ,0  ,0  ,0
     db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
 
-
 SECTION .text
 
 EEMode:
@@ -5933,6 +5928,8 @@ GUIPathsTextC db 'MDH:',0
 GUIPathsTextD db 'SPL4:',0
 NEWSYM GUIBlinkCursor, times 2 db 0
 
+SECTION .text
+
 DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     GUIDrawWindowBox 20,GUISaveDisp
 
@@ -6089,8 +6086,6 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox6
     GUIDisplayIconWin 20,11,100,[GUITemp]
-
-
 
 ; Draw borders
     mov dword[GUIWincol],148+10   ; Setup for borders
@@ -6257,6 +6252,7 @@ GUISaveTextZ1 db '+',0
 GUISaveTextZ2 db '-',0
 GUISaveTextZ3 db '  ',0
 
+SECTION .text
 
 DisplayGUISpeed:                    ;Speed Options
     GUIDrawWindowBox 21,GUISpeedDisp
@@ -6267,9 +6263,9 @@ DisplayGUISpeed:                    ;Speed Options
     mov byte[GUItextcolor],211
 .zero
     sub byte[GUItextcolor],15
-    
+
     cmp byte[frameskip],0
-    jne .noautoshad
+    jne near .noautoshad
     GUIOuttextwin2 21,6,15,GUISpeedText1b
     GUIOuttextwin2 21,40,79,GUISpeedTextA3
     GUIOuttextwin2 21,40,99,GUISpeedTextA5
@@ -6278,7 +6274,7 @@ DisplayGUISpeed:                    ;Speed Options
     GUIOuttextwin2 21,6,15,GUISpeedText1
     GUIOuttextwin2 21,40,79,GUISpeedTextA3b
     GUIOuttextwin2 21,40,99,GUISpeedTextA5b
-.endautoshad    
+.endautoshad
     GUIOuttextwin2 21,6,26,GUISpeedText2
     GUIOuttextwin2 21,6,37,GUISpeedText3
     GUIOuttextwin2 21,40,59,GUISpeedTextA1
@@ -6291,7 +6287,7 @@ DisplayGUISpeed:                    ;Speed Options
 
     add byte[GUItextcolor],15                ;Text
     cmp byte[frameskip],0
-    jne .noautotext
+    jne near .noautotext
     GUIOuttextwin2 21,5,14,GUISpeedText1b
     GUIOuttextwin2 21,39,78,GUISpeedTextA3
     GUIOuttextwin2 21,39,98,GUISpeedTextA5
@@ -6314,7 +6310,7 @@ DisplayGUISpeed:                    ;Speed Options
     mov al,[GUIWincol]                       ;Yellow Shadow
     mov byte[GUItextcolor],al
     GUIOuttextwin2 21,8,49,GUISpeedTextA
-    
+
     cmp byte[frameskip],0
     jne near .hidespeed
     GUIOuttextwin2 21,8,164,GUISpeedTextB
@@ -6326,16 +6322,14 @@ DisplayGUISpeed:                    ;Speed Options
     mov byte[GUItextcolor],164
 .zero3
     GUIOuttextwin2 21,7,48,GUISpeedTextA
-    
+
     cmp byte[frameskip],0
     jne near .hidespeed2
     GUIOuttextwin2 21,7,163,GUISpeedTextB
 .hidespeed2
 
-
-
     cmp byte[frameskip],0
-    jne .frate
+    jne near .frate
     DDrawBox 21,12,78,[KeyEmuSpeedUp]
     DDrawBox 21,12,98,[KeyEmuSpeedDown]
     jmp near .endsc
@@ -6343,14 +6337,12 @@ DisplayGUISpeed:                    ;Speed Options
     DDrawBox 21,12,78,[KeyFRateUp]
     DDrawBox 21,12,98,[KeyFRateDown]
 .endsc
-    
+
     DDrawBox 21,12,58,[KeyFastFrwrd]        ; Shortcut Boxes
     DDrawBox 21,12,68,[KeySlowDown]
     DDrawBox 21,12,88,[KeyResetSpeed]
     DDrawBox 21,12,108,[EMUPauseKey]
     DDrawBox 21,12,118,[INCRFrameKey]
-
-
 
     DGOptnsBorderBox 21,11,57                ; Borders
     DGOptnsBorderBox 21,11,67
@@ -6373,7 +6365,6 @@ DisplayGUISpeed:                    ;Speed Options
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox1
     GUIDisplayIconWin 21,11,145,[GUITemp]
-
 
 ;Boxes
     DrawGUIWinBox 21,96,24,114,31,167     ; FF Ratio Box
@@ -6430,7 +6421,6 @@ DisplayGUISpeed:                    ;Speed Options
     mov byte[GUItextcolor],211
 .zero17
 
-
     mov byte[GUItextcolor],217               ;Buttons
     cmp byte[GUIWincoladd],0
     je .zero88
@@ -6438,13 +6428,12 @@ DisplayGUISpeed:                    ;Speed Options
 .zero88
     sub byte[GUItextcolor],15
     add byte[GUItextcolor],15
-    
+
     DrawGUIButton 21,118,24,126,32,GUISaveTextZ1,74,-2,-1  ; + Rewind States
     DrawGUIButton 21,129,24,137,32,GUISaveTextZ2,75,-2,-1  ; - Rewind States
     DrawGUIButton 21,118,35,126,43,GUISaveTextZ1,76,-2,-1  ; + Second/Rewind
     DrawGUIButton 21,129,35,137,43,GUISaveTextZ2,77,-2,-1  ; - Second/Rewind
 
-    
     cmp byte[frameskip],0
     jne near .noslider
     mov eax,dword[GUIwinposx+21*4]           ;Slider
@@ -6556,7 +6545,6 @@ DisplayGUISpeed:                    ;Speed Options
     DrawGUIWinBox 21,95,13,94,20,dl
     ret
 
-
 .auto                                          ; AFR Max Frameskip +/- Box
     DrawGUIWinBox 21,96,13,114,20,167
     mov al,[maxskip]
@@ -6624,7 +6612,6 @@ GUISpeedTextC1 db 'TOGGLED FFWD/SLWDWN',0
 GUISpeedTextC2 db 'AUTO FRAME RATE',0
 
 GUISpeedTextZ3 db '--',0
-
 
 GUISpeedTextX db '-',0
 GUISpeedTextY db '+',0

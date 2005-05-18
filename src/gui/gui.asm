@@ -605,8 +605,8 @@ NEWSYM PauseLoad, db 0
 NEWSYM PauseRewind, db 0
 NEWSYM KeyResetSpeed, dd 0
 NEWSYM EmuSpeed, db 29        ; 29 = 1x, 0 = /30 and 58 = 30x
-NEWSYM FFRatio, db 14
-NEWSYM SDRatio, db 14
+NEWSYM FFRatio, db 9          ; 0 = 2x, 28 = 30x
+NEWSYM SDRatio, db 0          ; 0 = /2, 28 = /30
 NEWSYM KeyEmuSpeedUp, dd 0
 NEWSYM KeyEmuSpeedDown, dd 0
 ;end NEWSYM end
