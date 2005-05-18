@@ -2035,20 +2035,6 @@ guifirsttimemsg:
     jne .pressedokay
     jmp .again
 .pressedokay
-.again2
-    call Check_Key
-    or al,al
-    jz .nokey
-    call Get_Key
-    jmp .again2
-.nokey
-    cmp byte[MouseDis],1
-    je .mousedis2
-    push ebx
-;    mov eax,0Bh
-;    int 33h
-    pop ebx
-.mousedis2
     ret
 
 SECTION .data
@@ -2109,20 +2095,6 @@ guimustrestartmsg:
     jnz .b
     jmp .again
 .pressedokay
-.again2
-    call Check_Key
-    or al,al
-    jz .nokey
-    call Get_Key
-    jmp .again2
-.nokey
-    cmp byte[MouseDis],1
-    je .mousedis2
-    push ebx
-;    mov eax,0Bh
-;    int 33h
-    pop ebx
-.mousedis2
     mov byte[GUIQuit],1
     ret
 
@@ -2184,20 +2156,6 @@ guiprevideo:
 .mousedis
     jmp .again
 .pressedokay
-.again2
-    call Check_Key
-    or al,al
-    jz .nokey
-    call Get_Key
-    jmp .again2
-.nokey
-    cmp byte[MouseDis],1
-    je .mousedis2
-    push ebx
-;    mov eax,0Bh
-;    int 33h
-    pop ebx
-.mousedis2
     ret
 
 SECTION .data
@@ -2240,8 +2198,11 @@ guipostvideo:
     cmp dword[GUIkeydelay],0
     je .pressedokay
 
-    mov byte[pressed+39h],0
+    ;This is to make all ports not register space bar from being pressed earlier
+    mov byte[pressed+2Ch],0 
+
     call JoyRead
+
     cmp byte[pressed+39h],0
     jne .pressedokay
     jmp .pressedfail
