@@ -125,6 +125,7 @@ EXTSYM WDSPRegF5,WDSPRegF6,WDSPRegF7,WDSPRegF8,WDSPRegF9,WDSPRegFA,WDSPRegFB
 EXTSYM WDSPRegFC,WDSPRegFD,WDSPRegFE,WDSPRegFF
 EXTSYM spcBuffera,DSPMem,SoundInterpType,NoiseData,Voice0Disable
 EXTSYM cfgecho,Surround,echobuf,ENVDisable,LowPassFilterType
+EXTSYM EMUPause
 
 %ifdef __MSDOS__
 EXTSYM SB_alloc_dma,SB_quality_limiter,vibracard
@@ -5222,6 +5223,11 @@ NEWSYM ProcessSoundBuffer
     mov ecx,[BufferSizeB]
     rep stosd
 .nowriteecho
+
+    cmp byte[EMUPause],1
+    jne .nopause
+    ret
+.nopause    
 
     ; Process the sound :I
 	
