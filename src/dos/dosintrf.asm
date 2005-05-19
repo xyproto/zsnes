@@ -30,8 +30,8 @@ EXTSYM ZOpenFileName,ZFileSeekMode,ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle
 EXTSYM ZFileWriteSize,ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize
 EXTSYM ZFileReadBlock,ZFileRead,ZFileDelFName,ZFileDelete,ZCloseFileHandle
 EXTSYM ZCloseFile,ZFileTellHandle,ZFileTell,GetTime,GetDate,ZFFTimeFName,ZFTime
-EXTSYM ZFDate,ZFileGetFTime,ZFileMKDir,ZFileCHDir,ZFileRMDir,CHPath,MKPath
-EXTSYM RMPath,ZFileGetDir,DirName,pressed,DTALoc,DTALocPos,ZFileFindATTRIB
+EXTSYM ZFDate,ZFileGetFTime,ZFileCHDir,CHPath
+EXTSYM ZFileGetDir,DirName,pressed,DTALoc,DTALocPos,ZFileFindATTRIB
 EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,oldhand9s,oldhand9o,interror
 EXTSYM oldhand8s,oldhand8o,oldhandSBs,oldhandSBo,NoSoundReinit,soundon
 EXTSYM DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB,handler8h

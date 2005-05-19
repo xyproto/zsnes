@@ -28,8 +28,8 @@ EXTSYM ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle,ZFileWriteSize
 EXTSYM ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize,ZFileReadBlock
 EXTSYM ZFileRead,ZFileDelFName,ZFileDelete,ZCloseFileHandle,ZCloseFile
 EXTSYM ZFileTellHandle,ZFileTell,ZFFTimeFName,ZFTime,ZFDate,ZFileGetFTime
-EXTSYM GetTime,GetDate,GUIkeydelay2,ZFileMKDir,ZFileCHDir,ZFileRMDir,CHPath
-EXTSYM MKPath,RMPath,ZFileGetDir,DirName,DTALoc,DTALocPos,ZFileFindATTRIB
+EXTSYM GetTime,GetDate,GUIkeydelay2,ZFileCHDir,CHPath
+EXTSYM ZFileGetDir,DirName,DTALoc,DTALocPos,ZFileFindATTRIB
 EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,soundon,DSPDisable,Start60HZ
 EXTSYM pressed,RaisePitch,AdjustFrequency,vidbufferofsb,vidbuffer,clearwin
 EXTSYM Stop60HZ,initwinvideo,vesa2_rpos,vesa2_gpos,vesa2_bpos,vesa2_rposng

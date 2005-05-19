@@ -22,7 +22,7 @@
 
 EXTSYM KeyRewind,statesaver,timer2upd,Voice0Status,UpdateDPage,MessageOn
 EXTSYM MsgCount,Msgptr,StartGUI,cbitmode,debuggeron,romdata,initvideo,newgfx16b
-EXTSYM cvidmode,vidbuffer,vidbufferofsa,disable65816sh,GUISaveVars,virqnodisable
+EXTSYM cvidmode,vidbufferofsa,disable65816sh,GUISaveVars,virqnodisable
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
 EXTSYM KeyQuickSaveSPC,TimerEnable,IRQHack,HIRQLoc,splitflags,joinflags
@@ -45,7 +45,7 @@ EXTSYM JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow,JoyEOrig,JoyENow
 EXTSYM SA1Message,MultiTapStat,idledetectspc,SA1Control,SA1Enable,SA1IRQEnable
 EXTSYM SPC700read,SPC700write,numspcvblleft,spc700idle,SA1IRQExec,ForceNewGfxOff
 EXTSYM LethEnData,GUIQuit,IRAM,SA1Ptr,SA1BWPtr,scrnon,scaddset,outofmemfix
-EXTSYM yesoutofmemory,ProcessMovies,MovieStop,ppustatus,C4VBlank,copyvid
+EXTSYM yesoutofmemory,ProcessMovies,MovieStop,ppustatus,C4VBlank
 EXTSYM ReturnFromSPCStall,scanlines,smallscreenon,ScreenScale,MainLoop
 EXTSYM NumberOfOpcodes,SfxCLSR,SfxSCMR,SfxPOR,sfx128lineloc,sfx160lineloc
 EXTSYM sfx192lineloc,sfxobjlineloc,sfxclineloc,PLOTJmpa,PLOTJmpb,FxTable
@@ -55,8 +55,7 @@ EXTSYM fxbit67pcal,SfxSFR,nosprincr,cpucycle,switchtovirqdeb,switchtonmideb
 EXTSYM MovieSeekBehind,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
-EXTSYM AllocatedRewindStates,SlowDownLock,FastForwardLock
-EXTSYM PauseFrameMode,RestorePauseFrame,BackupPauseFrame
+EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
 
 %ifdef __MSDOS__
 EXTSYM dssel
@@ -1335,7 +1334,7 @@ NEWSYM cpuover
     mov byte[NextNGDisplay],1
     cmp byte[newengen],0
     je .nonewgfx
-    cmp byte[curblank],0h
+    cmp byte[curblank],0
     jne .nonewgfx
     cmp byte[ForceNewGfxOff],0
     jne .nonewgfx
@@ -1446,10 +1445,6 @@ NEWSYM cpuover
     
     cmp byte[EMUPause],1
     jne .noemupause
-
-    ; prevents some random desyncs
-    mov byte[SlowDownLock],0 
-    mov byte[FastForwardLock],0
 
     cmp byte[PauseFrameMode],1
     jne .nopauseframemode1

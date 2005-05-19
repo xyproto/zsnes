@@ -888,7 +888,7 @@ static void zmv_create(char *filename)
     zmv_vars.header.zst_size = cur_zst_size;
     zmv_vars.header.zmv_flag.start_method = (enum zmv_start_methods)MovieStartMethod;
     zmv_vars.header.zmv_flag.video_mode = romispal ? zmv_vm_pal : zmv_vm_ntsc;
-
+    zmv_vars.header.average_fps = romispal ? 250 : 240;
     zmv_vars.header.initial_input = (pl1contrl    ? BIT(0xF) : 0) |
                                     (pl2contrl    ? BIT(0xE) : 0) |
                                     (pl3contrl    ? BIT(0xD) : 0) |
@@ -1014,7 +1014,9 @@ static void zmv_record(bool pause, unsigned char combos_used, unsigned char slow
 {
   unsigned char flag = 0;
   unsigned char press_buf[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-  static float average = 1.0f;
+  static float average = 0.0f;
+  if (!average) { average = (float)zmv_vars.header.average_fps/((romispal) ? 250.0f : 240.0f); }
+
   size_t skip_bits = 0;
 
   if (pause) { zmv_vars.header.incr_frames++; }

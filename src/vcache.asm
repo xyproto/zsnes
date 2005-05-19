@@ -49,7 +49,8 @@ EXTSYM oamram,objhipr,objptr,objptrn,objsize1,objsize2,spritetablea,sprleftpr
 EXTSYM sprlefttot,vcache4b,objadds1,objadds2,objmovs1,objmovs2,tltype4b
 EXTSYM vidmemch4,vram,bgptr,bgptrc,bgptrd,curtileptr,vcache2b,vcache8b,vidmemch8
 EXTSYM offsetmshl,NextLineCache,tltype2b,tltype8b,objwlrpos,snesinputdefault
-EXTSYM cycleinputdevice,Change_Dir,LoadDrive,LoadDir,EmuSpeed
+EXTSYM cycleinputdevice,Change_Dir,LoadDrive,LoadDir,EmuSpeed,SDRatio,FFRatio
+EXTSYM KeyResetSpeed,KeyEmuSpeedUp,KeyEmuSpeedDown,EMUPause
 
 ; Process stuff & Cache sprites
 
@@ -73,8 +74,6 @@ NEWSYM overalltimer, dd 0
 mousecheck db 0
 
 SECTION .text
-
-
 
 %macro stateselcomp 3
     mov eax,[%1]
@@ -108,7 +107,6 @@ SECTION .text
     mov [MessageOn],eax
 %%nosdis
 %endmacro
-
 
 UpdateVolume:
     pushad
@@ -177,7 +175,6 @@ ClockCounter:
     mov dword[overalltimer],0
 .noclear
     ret
-
 
 NEWSYM dsp1teststuff
     ; /////////////////////////////
@@ -303,6 +300,10 @@ NEWSYM cachevideo
     mov dword[sramb4save],0
 .nofocussave
 
+    ; if emulation paused, don't alter timing
+    mov ax,1
+    cmp byte[EMUPause],1
+    je near .ttldone
     ; fast forward goes over all other throttles
     cmp byte[FastFwdToggle],0
     jne .ffmode2
@@ -338,10 +339,11 @@ NEWSYM cachevideo
     je near .slowdwn
     jmp .sdskip
 .slowdwn
-    mov byte[SloMo],1         ; hardcoded /2 slowdown (for now)
+    mov al,[SDRatio]          ; 0-28
+    inc al                    ; 1-29
+    mov [SloMo],al            ; /2-/30 slowmotion
     jmp .throttleskip
 .sdskip
-    mov byte[SloMo],0
     ; now we can look at emuspeed
     cmp byte[EmuSpeed],30     ; 0-28 slow, 29 normal, 30-58 skip
     jb .noskipping
@@ -357,6 +359,7 @@ NEWSYM cachevideo
 .throttleskip
     mov ax,[SloMo]
     inc ax                    ; total times frame is drawn
+.ttldone
 
     cmp byte[frameskip],0
     jne near .frameskip
@@ -374,7 +377,6 @@ NEWSYM cachevideo
     jb .noskip2
     mov byte[curblank],40h
     inc byte[fskipped]
-    mov al,40h
     mov cl,[maxskip]
     cmp byte[fskipped],cl
     jbe near .nofrskip
@@ -386,7 +388,8 @@ NEWSYM cachevideo
 .fastfor
     inc byte[frskipper]
     push ebx
-    mov bl,10                 ; hardcoded 11x fastforward (for now)
+    mov bl,byte[FFRatio]      ; 0-28
+    inc bl                    ; 1-29, 2x-30x fastmotion
     jmp .fastforb
 .frameskip
     inc byte[frskipper]
@@ -397,7 +400,6 @@ NEWSYM cachevideo
     pop ebx
     jae .nofrskip
     mov byte[curblank],40h
-    mov al,40h
     jmp .frskip
 .nofrskip
     mov byte[frskipper],0
@@ -494,6 +496,28 @@ NEWSYM cachevideo
     mov eax,[MsgCount]
     mov [MessageOn],eax
 .nodis5
+    mov eax,[KeyEmuSpeedDown]
+    test byte[pressed+eax],1
+    jz .nospeeddown
+    mov byte[pressed+eax],2
+    cmp byte[EmuSpeed],0
+    je .nospeeddown
+    dec byte[EmuSpeed]
+.nospeeddown
+    mov eax,[KeyEmuSpeedUp]
+    test byte[pressed+eax],1
+    jz .nospeedup
+    mov byte[pressed+eax],2
+    cmp byte[EmuSpeed],58
+    je .nospeedup
+    inc byte[EmuSpeed]
+.nospeedup
+    mov eax,[KeyResetSpeed]
+    test byte[pressed+eax],1
+    jz .nospeedreset
+    mov byte[pressed+eax],2
+    mov byte[EmuSpeed],29
+.nospeedreset
     mov eax,[KeyResetAll]
     test byte[pressed+eax],1
     je .nodis6
