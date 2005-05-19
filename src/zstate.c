@@ -923,7 +923,7 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
     {
       Msgptr = txtloadmsg; // 'STATE X LOADED.'
       
-      if (PauseLoad)
+      if (PauseLoad || EMUPause)
       {
         PauseFrameMode = EMUPause = true;
       }
