@@ -241,7 +241,7 @@ void BackupPauseFrame()
 void RestorePauseFrame()
 {
   copy_state_data(SpecialPauseBackup, memcpyrinc, csm_load_rewind);
-  ClearCacheCheck();
+  //ClearCacheCheck();
   PauseFrameMode = 0;
 }
 
@@ -296,7 +296,7 @@ void RestoreCVFrame()
       zmv_rewind_load(LatestRewindPos, true);
     }
 
-    if (PauseRewind)
+    if (PauseRewind || EMUPause)
     {
       PauseFrameMode = EMUPause = true;
     }  
@@ -467,8 +467,7 @@ void ResetState()
   ResState(Voice7BufPtr);
 }
 
-unsigned char firstsaveinc = 0, txtsavemsg[15] = "STATE - SAVED.";
-unsigned char txtsavemsgfail[16] = "UNABLE TO SAVE.";
+unsigned char firstsaveinc = 0;
 
 extern unsigned int statefileloc, CurrentHandle, SfxRomBuffer, SfxCROM;
 extern unsigned int SfxLastRamAdr, SfxRAMMem, MsgCount, MessageOn;
@@ -582,8 +581,27 @@ void zst_save(FILE *fp, bool Thumbnail, bool Compress)
   ResetState();
 }
 
+
+#define INSERT_POSITION_NUMBER(message, num)                          \
+if (!num)                                                             \
+{                                                                     \
+  num = strchr(message, '-');                                         \
+}                                                                     \
+*num = (fnamest[statefileloc] == 't') ? '0' : fnamest[statefileloc];
+
 void statesaver()
 {
+  static unsigned char txtsavemsg[] = "STATE - SAVED.";
+  static unsigned char txtrrsvmsg[] = "RR STATE - SAVED.";
+
+  static unsigned char *txtsavenum = 0;
+  static unsigned char *txtrrsvnum = 0;
+
+  //Get the state number
+  INSERT_POSITION_NUMBER(txtsavemsg, txtsavenum);
+  INSERT_POSITION_NUMBER(txtrrsvmsg, txtrrsvnum);
+
+   
   //Save State code
   #ifdef __LINUX__
   SRAMChdir();
@@ -594,7 +612,7 @@ void statesaver()
     bool mzt_save(char *, bool, bool);
     if (mzt_save(fnamest+1, (cbitmode && !NoPictureSave) ? true : false, false))
     {
-      Msgptr = "RR STATE SAVED.";
+      Msgptr = txtrrsvmsg;
       MessageOn = MsgCount;
     }
     return;
@@ -631,23 +649,18 @@ void statesaver()
     fclose(fhandle);
 
     //Display message onscreen, 'STATE X SAVED.'
-    txtsavemsg[6] = (fnamest[statefileloc] == 't') ? '0' : fnamest[statefileloc];
     Msgptr = txtsavemsg;
   }
   else
   {
     //Display message onscreen, 'UNABLE TO SAVE.'
-    Msgptr = txtsavemsgfail;
+    Msgptr = "UNABLE TO SAVE.";
   }
 
   MessageOn = MsgCount;
 
   stim();
 }
-
-unsigned char txtloadmsg[16] = "STATE - LOADED.";
-unsigned char txtconvmsg[17] = "STATE - TOO OLD.";
-unsigned char txtnfndmsg[24] = "UNABLE TO LOAD STATE -.";
 
 extern unsigned int KeyLoadState, Totalbyteloaded, SfxMemTable[256], SfxCPB;
 extern unsigned int SfxPBR, SfxROMBR, SfxRAMBR;
@@ -833,6 +846,24 @@ void zst_sram_load_compressed(FILE *fp)
 void stateloader (unsigned char *statename, unsigned char keycheck, unsigned char xfercheck)
 {
   extern unsigned char PauseLoad;
+
+  static unsigned char txtloadmsg[] = "STATE - LOADED.";
+  static unsigned char txtconvmsg[] = "STATE - TOO OLD.";
+  static unsigned char txtnfndmsg[] = "UNABLE TO LOAD STATE -.";
+  static unsigned char txtrrldmsg[] = "RR STATE - LOADED.";
+
+  static unsigned char *txtloadnum = 0;
+  static unsigned char *txtconvnum = 0;
+  static unsigned char *txtnfndnum = 0;
+  static unsigned char *txtrrldnum = 0;
+  
+  //Get the state number
+  INSERT_POSITION_NUMBER(txtloadmsg, txtloadnum);
+  INSERT_POSITION_NUMBER(txtconvmsg, txtconvnum);
+  INSERT_POSITION_NUMBER(txtnfndmsg, txtnfndnum);
+  INSERT_POSITION_NUMBER(txtrrldmsg, txtrrldnum);
+
+    
   #ifdef __LINUX__
   SRAMChdir();
   #endif
@@ -845,8 +876,6 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
     MessageOn = MsgCount;
   }
 
-  //Get the state number
-  txtloadmsg[6] = txtconvmsg[6] = txtnfndmsg[21] = (fnamest[statefileloc] == 't') ? '0' : fnamest[statefileloc];
 
   switch (MovieProcessing)
   {
@@ -855,21 +884,31 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
     case 1:
       if (mzt_load(statename, true))
       {
-        Msgptr = "RR STATE LOADED.";
-        MessageOn = MsgCount;
-
-        if (PauseLoad)
-        {
-          PauseFrameMode = EMUPause = true;
-        }  
+        Msgptr = "CHAPTER LOADED.";
       }
+      else
+      {
+        Msgptr = txtnfndmsg;
+      }
+      MessageOn = MsgCount;
       return;
     case 2:
       if (mzt_load(statename, false))
       {
-        Msgptr = "CHAPTER LOADED.";
+        
+        Msgptr = txtrrldmsg;
         MessageOn = MsgCount;
+
+        if (PauseLoad || EMUPause)
+        {
+          PauseFrameMode = EMUPause = true;
+        }        
       }
+      else
+      {
+        Msgptr = txtnfndmsg;
+      }
+      MessageOn = MsgCount;      
       return;
   }
 

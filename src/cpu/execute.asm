@@ -1475,6 +1475,7 @@ NEWSYM cpuover
     pushad
     ;call StartDrawNewGfx
     call showvideo
+    call cachevideo
     popad
     
     jmp .nonewgfx
