@@ -6346,6 +6346,7 @@ DisplayGUISpeed:                    ;Speed Options
     DrawGUIWinBox 21,96,24,114,31,167     ; FF Ratio Box
     xor ax,ax
     mov ah,[FFRatio]
+    add ah,2
     mov al,48
     add ah,48
 .asciiloop
@@ -6355,6 +6356,10 @@ DisplayGUISpeed:                    ;Speed Options
     sub ah,10
     jmp .asciiloop
 .hex2asciidone
+    cmp al,48
+    jne .yestens
+    mov al,32
+.yestens
     mov [GUISpeedTextZ3],ax
     mov byte[GUItextcolor],223
     GUIOuttextwin2 21,101,26,GUISpeedTextZ3
@@ -6373,6 +6378,7 @@ DisplayGUISpeed:                    ;Speed Options
     DrawGUIWinBox 21,96,35,114,42,167      ; Boxes
     xor ax,ax
     mov ah,[SDRatio]
+    add ah,2
     mov al,48
     add ah,48
 .asciiloop2
@@ -6382,6 +6388,10 @@ DisplayGUISpeed:                    ;Speed Options
     sub ah,10
     jmp .asciiloop2
 .hex2asciidone2
+    cmp al,48
+    jne .yestens2
+    mov al,32
+.yestens2
     mov [GUISpeedTextZ3],ax
     mov byte[GUItextcolor],223
     GUIOuttextwin2 21,101,37,GUISpeedTextZ3
@@ -6519,7 +6529,7 @@ DisplayGUISpeed:                    ;Speed Options
     mov dl,[GUIWincol]
     add dl,3
     DrawGUIWinBox 21,95,13,94,20,dl
-    ret
+    jmp .ratioborders
 
 .auto                                          ; AFR Max Frameskip +/- Box
     DrawGUIWinBox 21,96,13,114,20,167
@@ -6562,6 +6572,20 @@ DisplayGUISpeed:                    ;Speed Options
     mov dl,[GUIWincol]
     add dl,3
     DrawGUIWinBox 21,115,13,114,20,dl
+
+.ratioborders
+    mov dl,[GUIWincol]
+    DrawGUIWinBox 21,96,23,113,23,dl
+    DrawGUIWinBox 21,96,34,113,34,dl
+    add dl,1
+    DrawGUIWinBox 21,95,24,94,31,dl
+    DrawGUIWinBox 21,95,35,94,42,dl
+    add dl,2
+    DrawGUIWinBox 21,115,24,114,31,dl
+    DrawGUIWinBox 21,115,35,114,42,dl
+    add dl,1
+    DrawGUIWinBox 21,96,32,113,32,dl
+    DrawGUIWinBox 21,96,43,113,43,dl
     ret
 
 SECTION .data
@@ -6581,8 +6605,8 @@ GUISpeedTextB1 db '---',0
 
 GUISpeedText1 db 'FRAME RATE',0
 GUISpeedText1b db 'MAX FRAME SKIP',0
-GUISpeedText2 db 'FAST FWD RATIO',0
-GUISpeedText3 db 'SLOWDOWN RATIO',0
+GUISpeedText2 db 'FASTFWD RATIO x',0
+GUISpeedText3 db 'SLOWDWN RATIO /',0
 
 GUISpeedTextC1 db 'TOGGLED FFWD/SLWDWN',0
 GUISpeedTextC2 db 'AUTO FRAME RATE',0
