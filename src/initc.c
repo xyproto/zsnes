@@ -1046,6 +1046,7 @@ bool NSRTHead(unsigned char *ROM)
   return(false); //None
 }
 
+extern bool EMUPause;
 extern bool Sup48mbit;
 extern bool Sup16mbit;
 extern unsigned char snesmouse;
@@ -1061,6 +1062,7 @@ void loadROM()
 {
   bool isCompressed = false, isZip = false;
 
+  EMUPause = false;  
   curromspace = 0;
 
   maxromspace = 4194304;
