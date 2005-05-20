@@ -56,7 +56,7 @@ EXTSYM memaccessbankr1648mb,procexecloop,ram7fa,wramdata,wramdataa,fname,fnames
 EXTSYM GetCurDir,SRAMChdir,cfgloadsdir,fnamest,statefileloc,InitDir,InitDrive
 EXTSYM curromspace,infoloc,patchfile,romispal,initregr,initregw,memtabler16
 EXTSYM memtabler8,memtablew16,memtablew8,sfxramdata,ScrDispl,wramreadptr
-EXTSYM wramwriteptr,loadstate2,CMovieExt,MoviePlay,MovieDumpRaw
+EXTSYM wramwriteptr,loadstate2,CMovieExt,MoviePlay,MovieDumpRaw,AllowUDLR
 
 ;initc.c
 EXTSYM clearmem,clearSPCRAM,PatchUsingIPS,ZOpenFileName,loadROM,SPC7110IndexSize
@@ -687,6 +687,8 @@ CombContDatR dd 08000000h,04000000h,01000000h,02000000h,00800000h,80000000h
 SECTION .text
 
 %macro PlayerDeviceFix 1
+   cmp byte[AllowUDLR],1
+   je %%noleftright
    mov eax,[%1]
    and eax,0C000000h
    cmp eax,0C000000h

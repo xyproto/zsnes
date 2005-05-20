@@ -609,6 +609,7 @@ NEWSYM FFRatio, db 9          ; 0 = 2x, 28 = 30x
 NEWSYM SDRatio, db 0          ; 0 = /2, 28 = /30
 NEWSYM KeyEmuSpeedUp, dd 0
 NEWSYM KeyEmuSpeedDown, dd 0
+NEWSYM AllowUDLR, db 0
 ;end NEWSYM end
 
 GUIsave equ $-GUIRAdd

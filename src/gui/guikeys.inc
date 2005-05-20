@@ -677,6 +677,10 @@ GUIOptionKeys:
     jne .norominfo
     xor byte[RomInfo],1
 .norominfo
+    cmp dh,'A'
+    jne .noallowudlr
+    xor byte[AllowUDLR],1
+.noallowudlr
 %ifdef __WIN32__
     cmp dh,'I'
     jne .noscreensaver

@@ -2347,8 +2347,9 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,120,byte[SmallMsgText]
     GUIClickCButton 11,130,byte[AutoPatch]
     GUIClickCButton 11,140,byte[RomInfo]
+    GUIClickCButton 11,150,byte[AllowUDLR]
 %ifdef __WIN32__
-    GUIClickCButtonW 11,150,byte[DisableScreenSaver]
+    GUIClickCButtonW 11,160,byte[DisableScreenSaver]
 %endif
      ret
 

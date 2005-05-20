@@ -1474,8 +1474,9 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
     GUIOuttextwin2u 4,26,124,GUIOptionTextC,1
     GUIOuttextwin2u 4,26,134,GUIOptionTextD,12
     GUIOuttextwin2u 4,26,144,GUIOptionTextE,15
+    GUIOuttextwin2u 4,26,154,GUIOptionTextF,0
 %ifdef __WIN32__
-    GUIOuttextwin2u 4,26,154,GUIOptionTextW,1
+    GUIOuttextwin2u 4,26,164,GUIOptionTextW,1
 %endif
 
     add byte[GUItextcolor],15                  ; Text
@@ -1496,8 +1497,9 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
     GUIOuttextwin2 4,25,123,GUIOptionTextC
     GUIOuttextwin2 4,25,133,GUIOptionTextD
     GUIOuttextwin2 4,25,143,GUIOptionTextE
+    GUIOuttextwin2 4,25,153,GUIOptionTextF
 %ifdef __WIN32__
-    GUIOuttextwin2 4,25,153,GUIOptionTextW
+    GUIOuttextwin2 4,25,163,GUIOptionTextW
 %endif
 
 
@@ -1596,15 +1598,22 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
 .nocheckbox12
     GUIDisplayIconWin 4,11,140,[GUITemp]
 
-%ifdef __WIN32__
     mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[DisableScreenSaver],0
+    cmp byte[AllowUDLR],0
     je .nocheckbox13
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox13
     GUIDisplayIconWin 4,11,150,[GUITemp]
+
+%ifdef __WIN32__
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[DisableScreenSaver],0
+    je .nocheckbox99
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox99
+    GUIDisplayIconWin 4,11,160,[GUITemp]
 %endif
-   ret
+    ret
 
 
 SECTION .data
@@ -1619,12 +1628,12 @@ GUIOptionText6b db 'HIGH PRIORITY MODE',0
 GUIOptionText7 db 'FPS AT PROGRAM START',0
 GUIOptionText8 db 'USE 30HZ FOR TURBO',0
 GUIOptionText9 db 'ENABLE GAME CLOCK',0
-;GUIOptionTextA db 'TOGGLED FAST FWD/SLWDWN',0
 GUIOptionTextA db 'OLD GFX MODE 2',0
 GUIOptionTextB db 'DON',39,'T SAVE CUR PATH',0
 GUIOptionTextC db 'USE SMALL MESSAGE TEXT',0
 GUIOptionTextD db 'ENABLE AUTO-PATCH',0
 GUIOptionTextE db 'ENABLE ROMINFO.TXT',0
+GUIOptionTextF db 'ALLOW U+D/L+R',0
 GUIOptionTextW db 'DISABLE SCREENSAVER',0 ; Try to keep as last option, since its Win Only.
 GUIOptionTextX db '-',0
 GUIOptionTextY db '+',0
@@ -3880,7 +3889,6 @@ DisplayGameOptns:
     GUIOuttextwin2 9,8+52,81,GUIGameOptnsTextB
     GUIOuttextwin2 9,136,81,GUIGameOptnsTextC
 
-
     mov al,byte[GUIGameOptnsColA]
     mov byte[GUItextcolor],al
     mov al,byte[GUIGameOptnsColB]
@@ -3996,7 +4004,6 @@ GUIGameOptnsTextC  db 'SAVE SPC',0
 
 GUIGameOptnsTextD  db 'MISC TOGGLES :',0
 GUIGameOptnsTextE  db 'USE PL12/34',0
-;GUIGameOptnsTextEa  db 'FREE SPACE',0
 GUIGameOptnsTextF  db 'CLRSWITCHES',0
 GUIGameOptnsTextG  db 'EXTRADEVICE',0
 GUIGameOptnsTextGa  db '+VOL',0
