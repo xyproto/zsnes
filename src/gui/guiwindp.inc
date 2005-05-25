@@ -429,6 +429,28 @@ GUIStringGreater2:
     GUIDisplayIconWin %1,%2,%3,[GUITemp]
 %endmacro
 
+%macro GUIDisplayText 4
+    mov byte[GUItextcolor],202
+    cmp byte[GUIWincoladd],0
+    je %%zero
+    mov byte[GUItextcolor],196
+%%zero
+GUIOuttextwin2 %1,%2,%3,%4
+    add byte[GUItextcolor],15
+GUIOuttextwin2 %1,%2-1,%3-1,%4
+%endmacro
+
+%macro GUIDisplayTextY 4
+    mov al,[GUIWincol]                       ; Yellow Shadow
+    mov byte[GUItextcolor],al
+    GUIOuttextwin2 %1,%2,%3,%4
+    mov byte[GUItextcolor],163               ; Yellow Text
+    cmp byte[GUIWincoladd],0
+    je %%zero
+    mov byte[GUItextcolor],164
+%%zero
+    GUIOuttextwin2 %1,%2-1,%3-1,%4
+%endmacro
 ; DGUIDisplay
 
 DisplayGUILoad:
@@ -4326,56 +4348,30 @@ DisplayGUIAbout:          ; Displays the About Box
     popad
 
     GUIDrawWindowBox 11,GUIAboutDisp
-    mov byte[GUItextcolor],217
+    GUIDisplayText 11,6,16,GUIGUIAboutTextA1       ; Text
+    GUIDisplayText 11,6,26,GUIGUIAboutTextA2
+    GUIDisplayTextY 11,6,36,GUIGUIAboutTextB
+    GUIDisplayText 11,6,46,GUIGUIAboutTextB1
+    GUIDisplayText 11,6,56,GUIGUIAboutTextB2
+    GUIDisplayTextY 11,6,76,GUIGUIAboutTextC
+    GUIDisplayText 11,6,86,GUIGUIAboutTextC1
+    GUIDisplayText 11,6,96,GUIGUIAboutTextC2
+    GUIDisplayText 11,6,106,GUIGUIAboutTextC3
+    GUIDisplayText 11,6,116,GUIGUIAboutTextC4
+    GUIDisplayText 11,6,131,GUIGUIAboutTextD1
+    GUIDisplayText 11,6,141,GUIGUIAboutTextD2
+    GUIDisplayText 11,6,151,GUIGUIAboutTextD3
+    GUIDisplayText 11,6,161,GUIGUIAboutTextD4
+    GUIDisplayText 11,6,171,GUIGUIAboutTextD5
+    GUIDisplayText 11,6,181,GUIGUIAboutTextD6
+    GUIDisplayText 11,6,191,GUIGUIAboutTextD7
+    
+    mov byte[GUItextcolor],217                       ; Buttons
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUItextcolor],211
 .zero3
-    DrawGUIButton 11,90,30,175,40,GUIGUIAboutTextE,65,0,0  ; Button
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2 11,6,16,GUIGUIAboutTextA1       ; Shadow
-    GUIOuttextwin2 11,6,26,GUIGUIAboutTextA2
-    GUIOuttextwin2 11,6,46,GUIGUIAboutTextB1
-    GUIOuttextwin2 11,6,56,GUIGUIAboutTextB2
-    GUIOuttextwin2 11,6,86,GUIGUIAboutTextC1
-    GUIOuttextwin2 11,6,96,GUIGUIAboutTextC2
-    GUIOuttextwin2 11,6,106,GUIGUIAboutTextC3
-    GUIOuttextwin2 11,6,116,GUIGUIAboutTextC4
-    GUIOuttextwin2 11,6,131,GUIGUIAboutTextD1
-    GUIOuttextwin2 11,6,141,GUIGUIAboutTextD2
-    GUIOuttextwin2 11,6,151,GUIGUIAboutTextD3
-    GUIOuttextwin2 11,6,161,GUIGUIAboutTextD4
-    GUIOuttextwin2 11,6,171,GUIGUIAboutTextD5
-    GUIOuttextwin2 11,6,181,GUIGUIAboutTextD6
-    GUIOuttextwin2 11,6,191,GUIGUIAboutTextD7
-    add byte[GUItextcolor],15
-    GUIOuttextwin2 11,5,15,GUIGUIAboutTextA1
-    GUIOuttextwin2 11,5,25,GUIGUIAboutTextA2
-    GUIOuttextwin2 11,5,45,GUIGUIAboutTextB1
-    GUIOuttextwin2 11,5,55,GUIGUIAboutTextB2
-    GUIOuttextwin2 11,5,85,GUIGUIAboutTextC1
-    GUIOuttextwin2 11,5,95,GUIGUIAboutTextC2
-    GUIOuttextwin2 11,5,105,GUIGUIAboutTextC3
-    GUIOuttextwin2 11,5,115,GUIGUIAboutTextC4
-    GUIOuttextwin2 11,5,130,GUIGUIAboutTextD1
-    GUIOuttextwin2 11,5,140,GUIGUIAboutTextD2
-    GUIOuttextwin2 11,5,150,GUIGUIAboutTextD3
-    GUIOuttextwin2 11,5,160,GUIGUIAboutTextD4
-    GUIOuttextwin2 11,5,170,GUIGUIAboutTextD5
-    GUIOuttextwin2 11,5,180,GUIGUIAboutTextD6
-    GUIOuttextwin2 11,5,190,GUIGUIAboutTextD7
-    
-    mov al,[GUIWincol]                       ; Yellow Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 11,6,36,GUIGUIAboutTextB
-    GUIOuttextwin2 11,6,76,GUIGUIAboutTextC
-    mov byte[GUItextcolor],163               ; Yellow Text
-    cmp byte[GUIWincoladd],0
-    je .zero
-    mov byte[GUItextcolor],164
-.zero
-    GUIOuttextwin2 11,5,35,GUIGUIAboutTextB
-    GUIOuttextwin2 11,5,75,GUIGUIAboutTextC
+    DrawGUIButton 11,90,30,175,40,GUIGUIAboutTextE,65,0,0
     ret
 
 SECTION .data
