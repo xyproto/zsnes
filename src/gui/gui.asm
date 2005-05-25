@@ -260,8 +260,6 @@ mouseshad db 1          ; 0 = no mouse shadow, 1 = mouse shadow
 lastcursres db 0        ; 0 = go to load, 1 = go to previous menu, 2 = no menu
 resetposn   db 1        ; 0 = no window reset, 1 = window reset
 NEWSYM GUIClick, db 0   ; 1 = mouse click enters/exits gui
-GUIwinposx2 dd 0,5   ,60  ,30  ,55  ,50  ,65  ,5   ,30  ,20  ,10   ,80  ,65  ,20  ,70  ,50  ,3 ,0
-GUIwinposy2 dd 0,20  ,70  ,30  ,20  ,22  ,36  ,20  ,30  ,20  ,40   ,70  ,60  ,30  ,65  ,50  ,22,0
 
 ; Default keys
 ; Sound Channels 0 .. 7, Save/Select/Load States, Fast Forward
@@ -482,10 +480,15 @@ NEWSYM PrevFSMode, db 0
 
 ;#             0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21
 OldWinPos db 0
-GUIwinposx  dd 0, 5,60,30,55,50,65, 5,30,20,10,80,65,20,70,50, 3,50,50, 5,10,20
+GUIwinposx   dd 0, 5,60,30,55,50,65, 5,30,20,10,80,65,20,70,50, 3,50,50, 5,10,20,0
+GUIwinposx2  dd 0, 5,60,30,55,50,65, 5,30,20,10,80,65,20,70,50, 3,50,50, 5,10,20,0
 GUIwinposxexp times 30 dd 0
-GUIwinposy  dd 0,20,70,30,20,22,36,20,30,20,30,20,60,30,65,50,22,60,20,20,20,20
+GUIwinposy   dd 0,20,70,30,20,22,36,20,30,20,30,20,60,30,65,50,22,60,20,20,20,20,0
+GUIwinposy2  dd 0,20,70,30,20,22,36,20,30,20,30,20,60,30,65,50,22,60,20,20,20,20,0
 GUIwinposyexp times 30 dd 0
+
+
+
 
 NEWSYM GUIEffect, db 0
 
