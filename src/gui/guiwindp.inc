@@ -1017,8 +1017,8 @@ mov dl,[GUIWincol]
 %macro DDrawBox 4
     mov eax,dword[GUIwinposx+%1*4]
     mov ebx,dword[GUIwinposy+%1*4]
-    add eax,%2
-    add ebx,%3
+    add eax,%2+1
+    add ebx,%3+1
     mov ecx,eax
     add ecx,20
     mov dl,167
@@ -1032,13 +1032,14 @@ mov dl,[GUIWincol]
     mov [GUIGameDisplayKy],ebx
     mov byte[GUIGameDisplayKy+3],0
     mov byte[GUItextcolor],223
-    GUIOuttextwin2 %1,%2+3,%3+2,GUIGameDisplayKy
+    GUIOuttextwin2 %1,%2+4,%3+3,GUIGameDisplayKy
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je %%zero
     mov byte[GUItextcolor],222
 %%zero
-    GUIOuttextwin2 %1,%2+2,%3+1,GUIGameDisplayKy
+    GUIOuttextwin2 %1,%2+3,%3+2,GUIGameDisplayKy
+    DGOptnsBorderBox %1,%2,%3
 %endmacro
 
 %macro DGOptnsDrawBox2 3
@@ -3569,76 +3570,41 @@ DisplayGameOptns:        ; Misc Key Window
     GUIDisplayText 9,122,102,GUIGameOptnsTextD2a
     GUIDisplayText 9,122,112,GUIGameOptnsTextD2b
     GUIDisplayText 9,122,122,GUIGameOptnsTextD2c
-    
-
-    ;Draw Borders
-    DGOptnsBorderBox 9,26,22
-    DGOptnsBorderBox 9,71,22
-    DGOptnsBorderBox 9,116,22
-    DGOptnsBorderBox 9,161,22
-    DGOptnsBorderBox 9,206,22
-
-    DGOptnsBorderBox 9,26,40
-    DGOptnsBorderBox 9,71,40
-    DGOptnsBorderBox 9,116,40
-    DGOptnsBorderBox 9,161,40
-    DGOptnsBorderBox 9,213,40
-    DGOptnsBorderBox 9,26,49
-    DGOptnsBorderBox 9,71,49
-    DGOptnsBorderBox 9,116,49
-    DGOptnsBorderBox 9,161,49
-    DGOptnsBorderBox 9,213,49
-
-    DGOptnsBorderBox 9,32,69
-    DGOptnsBorderBox 9,90,69
-    DGOptnsBorderBox 9,141,69
-    DGOptnsBorderBox 9,199,69
-    DGOptnsBorderBox 9,32,79
-    DGOptnsBorderBox 9,109,79
-    DGOptnsBorderBox 9,185,79
-
-    DGOptnsBorderBox 9,77,99
-    DGOptnsBorderBox 9,77,109
-    DGOptnsBorderBox 9,77,119
-    DGOptnsBorderBox 9,77,129
-    DGOptnsBorderBox 9,190,99
-    DGOptnsBorderBox 9,190,109
-    DGOptnsBorderBox 9,190,119
 
     ; Draw black boxes
-    DGOptnsDrawBox 27,23,[KeyBGDisble0]
-    DGOptnsDrawBox 27+45,23,[KeyBGDisble1]
-    DGOptnsDrawBox 27+45*2,23,[KeyBGDisble2]
-    DGOptnsDrawBox 27+45*3,23,[KeyBGDisble3]
-    DGOptnsDrawBox 27+45*4,23,[KeySprDisble]
+    DDrawBox 9,26,22,[KeyBGDisble0]
+    DDrawBox 9,71,22,[KeyBGDisble1]
+    DDrawBox 9,116,22,[KeyBGDisble2]
+    DDrawBox 9,161,22,[KeyBGDisble3]
+    DDrawBox 9,206,22,[KeySprDisble]
     
-    DGOptnsDrawBox 27,41,[KeyDisableSC0]
-    DGOptnsDrawBox 27+45,41,[KeyDisableSC1]
-    DGOptnsDrawBox 27+45*2,41,[KeyDisableSC2]
-    DGOptnsDrawBox 27+45*3,41,[KeyDisableSC3]
-    DGOptnsDrawBox 34+45*4,41,[KeyVolUp]
-    DGOptnsDrawBox 27,50,[KeyDisableSC4]
-    DGOptnsDrawBox 27+45,50,[KeyDisableSC5]
-    DGOptnsDrawBox 27+45*2,50,[KeyDisableSC6]
-    DGOptnsDrawBox 27+45*3,50,[KeyDisableSC7]
-    DGOptnsDrawBox 34+45*4,50,[KeyVolDown]
+    DDrawBox 9,26,40,[KeyDisableSC0]
+    DDrawBox 9,71,40,[KeyDisableSC1]
+    DDrawBox 9,116,40,[KeyDisableSC2]
+    DDrawBox 9,161,40,[KeyDisableSC3]
+    DDrawBox 9,213,40,[KeyVolUp]
+    DDrawBox 9,26,49,[KeyDisableSC4]
+    DDrawBox 9,71,49,[KeyDisableSC5]
+    DDrawBox 9,116,49,[KeyDisableSC6]
+    DDrawBox 9,161,49,[KeyDisableSC7]
+    DDrawBox 9,213,49,[KeyVolDown]
 
-    DGOptnsDrawBox 8+25,70,[KeyQuickLoad]
-    DGOptnsDrawBox 8+57+26,70,[KeyQuickRst]
-    DGOptnsDrawBox 8+114+20,70,[KeyQuickExit]
-    DGOptnsDrawBox 8+114+78,70,[KeyQuickClock]
-    DGOptnsDrawBox 8+25,80,[KeyQuickChat]
-    DGOptnsDrawBox 8+57+45,80,[KeyQuickSnapShot]
-    DGOptnsDrawBox 8+108+70,80,[KeyQuickSaveSPC]
+    DDrawBox 9,32,69,[KeyQuickLoad]
+    DDrawBox 9,90,69,[KeyQuickRst]
+    DDrawBox 9,141,69,[KeyQuickExit]
+    DDrawBox 9,199,69,[KeyQuickClock]
+    DDrawBox 9,32,79,[KeyQuickChat]
+    DDrawBox 9,109,79,[KeyQuickSnapShot]
+    DDrawBox 9,185,79,[KeyQuickSaveSPC]
 
-    DGOptnsDrawBox 78,100,[KeyUsePlayer1234]
-    DGOptnsDrawBox 78,110,[KeyResetAll]
-    DGOptnsDrawBox 78,120,[KeyExtraEnab]
-    DGOptnsDrawBox 78,130,[KeyDisplayFPS]
+    DDrawBox 9,77,99,[KeyUsePlayer1234]
+    DDrawBox 9,77,109,[KeyResetAll]
+    DDrawBox 9,77,119,[KeyExtraEnab]
+    DDrawBox 9,77,129,[KeyDisplayFPS]
     
-    DGOptnsDrawBox 191,100,[KeyNewGfxSwt]
-    DGOptnsDrawBox 191,110,[KeyWinDisble]
-    DGOptnsDrawBox 191,120,[KeyOffsetMSw]
+    DDrawBox 9,190,99,[KeyNewGfxSwt]
+    DDrawBox 9,190,109,[KeyWinDisble]
+    DDrawBox 9,190,119,[KeyOffsetMSw]
     ret
 
 SECTION .bss
@@ -4170,13 +4136,9 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     GUIDisplayButtonHole 15,88,137,byte[MovieStartMethod],2
     GUIDisplayButtonHole 15,8,147,byte[MovieStartMethod],3
 
-    DDrawBox 15,116,84,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
-    DDrawBox 15,116,100,[KeyPrevChap]
-    DDrawBox 15,116,116,[KeyNextChap]
-
-    DGOptnsBorderBox 15,115,83               ; Borders to above boxes
-    DGOptnsBorderBox 15,115,99
-    DGOptnsBorderBox 15,115,115
+    DDrawBox 15,115,83,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
+    DDrawBox 15,115,99,[KeyPrevChap]
+    DDrawBox 15,115,115,[KeyNextChap]
 
     mov dword[GUITemp],GUIIconDataCheckBoxUC   ; Checkbox
     cmp byte[MovieDisplayFrame],0
@@ -5513,22 +5475,6 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     add dl,3
     DrawGUIWinBox 20,165,17,166,24,dl
 
-    DGOptnsBorderBox 20,26,120    ; ST0
-    DGOptnsBorderBox 20,71,120    ; ST1
-    DGOptnsBorderBox 20,116,120   ; ST2
-    DGOptnsBorderBox 20,161,120   ; ST3
-    DGOptnsBorderBox 20,26,129    ; ST4
-    DGOptnsBorderBox 20,71,129    ; ST5
-    DGOptnsBorderBox 20,116,129   ; ST6
-    DGOptnsBorderBox 20,161,129   ; ST7
-    DGOptnsBorderBox 20,26,138    ; ST8
-    DGOptnsBorderBox 20,71,138    ; ST9
-    DGOptnsBorderBox 20,116,138   ; ST+
-    DGOptnsBorderBox 20,161,138   ; ST-
-    DGOptnsBorderBox 20,32,147    ; SAVE
-    DGOptnsBorderBox 20,89,147    ; LOAD
-    DGOptnsBorderBox 20,146,147   ; PICK
-    DGOptnsBorderBox 20,45,156    ; REWIND
 
     DrawGUIWinBox 20,150,17,165,24,167     ; Rewind States Box
     xor ax,ax
@@ -5584,22 +5530,22 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     mov byte[GUItextcolor],211
 .zero7
 
-    DDrawBox 20,27,121,[KeyStateSlc0]           ; Boxes for State section
-    DDrawBox 20,27+45,121,[KeyStateSlc1]
-    DDrawBox 20,27+45*2,121,[KeyStateSlc2]
-    DDrawBox 20,27+45*3,121,[KeyStateSlc3]
-    DDrawBox 20,27,130,[KeyStateSlc4]
-    DDrawBox 20,27+45,130,[KeyStateSlc5]
-    DDrawBox 20,27+45*2,130,[KeyStateSlc6]
-    DDrawBox 20,27+45*3,130,[KeyStateSlc7]
-    DDrawBox 20,27,139,[KeyStateSlc8]
-    DDrawBox 20,27+45,139,[KeyStateSlc9]
-    DDrawBox 20,27+45*2,139,[KeyIncStateSlot]
-    DDrawBox 20,27+45*3,139,[KeyDecStateSlot]
-    DDrawBox 20,8+25,148,[KeySaveState]
-    DDrawBox 20,8+57+25,148,[KeyLoadState]
-    DDrawBox 20,8+114+25,148,[KeyStateSelct]
-    DDrawBox 20,8+38,157,[KeyRewind]
+    DDrawBox 20,26,120,[KeyStateSlc0]           ; Boxes for State section
+    DDrawBox 20,71,120,[KeyStateSlc1]
+    DDrawBox 20,116,120,[KeyStateSlc2]
+    DDrawBox 20,161,120,[KeyStateSlc3]
+    DDrawBox 20,26,129,[KeyStateSlc4]
+    DDrawBox 20,71,129,[KeyStateSlc5]
+    DDrawBox 20,116,129,[KeyStateSlc6]
+    DDrawBox 20,161,129,[KeyStateSlc7]
+    DDrawBox 20,26,138,[KeyStateSlc8]
+    DDrawBox 20,71,138,[KeyStateSlc9]
+    DDrawBox 20,116,138,[KeyIncStateSlot]
+    DDrawBox 20,161,138,[KeyDecStateSlot]
+    DDrawBox 20,32,147,[KeySaveState]
+    DDrawBox 20,89,147,[KeyLoadState]
+    DDrawBox 20,146,147,[KeyStateSelct]
+    DDrawBox 20,45,156,[KeyRewind]
 
     mov byte[GUItextcolor],217               ;Buttons
     cmp byte[GUIWincoladd],0
@@ -5668,26 +5614,19 @@ DisplayGUISpeed:                    ;Speed Options
 
     cmp byte[frameskip],0                  ; Shortcut Boxes
     jne near .frate
-    DDrawBox 21,12,78,[KeyEmuSpeedUp]
-    DDrawBox 21,12,98,[KeyEmuSpeedDown]
+    DDrawBox 21,10,76,[KeyEmuSpeedUp]
+    DDrawBox 21,10,96,[KeyEmuSpeedDown]
     jmp near .endsc
 .frate
-    DDrawBox 21,12,78,[KeyFRateUp]
-    DDrawBox 21,12,98,[KeyFRateDown]
+    DDrawBox 21,10,76,[KeyFRateUp]
+    DDrawBox 21,10,96,[KeyFRateDown]
 .endsc
-    DDrawBox 21,12,58,[KeyFastFrwrd]
-    DDrawBox 21,12,68,[KeySlowDown]
-    DDrawBox 21,12,88,[KeyResetSpeed]
-    DDrawBox 21,12,108,[EMUPauseKey]
-    DDrawBox 21,12,118,[INCRFrameKey]
+    DDrawBox 21,10,56,[KeyFastFrwrd]
+    DDrawBox 21,10,66,[KeySlowDown]
+    DDrawBox 21,10,86,[KeyResetSpeed]
+    DDrawBox 21,10,106,[EMUPauseKey]
+    DDrawBox 21,10,116,[INCRFrameKey]
 
-    DGOptnsBorderBox 21,11,57                ; Borders
-    DGOptnsBorderBox 21,11,67
-    DGOptnsBorderBox 21,11,77
-    DGOptnsBorderBox 21,11,87
-    DGOptnsBorderBox 21,11,97
-    DGOptnsBorderBox 21,11,107
-    DGOptnsBorderBox 21,11,117
                                                ; Checkboxes
     mov dword[GUITemp],GUIIconDataCheckBoxUC   ; Toggled FF/SD
     cmp byte[FastFwdToggle],0
