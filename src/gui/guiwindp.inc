@@ -3047,14 +3047,14 @@ DisplayGUISearch:
     TextWindowMacro 13,25,40,GUICSrcText3
     TextWindowMacro 13,25,50,GUICSrcText4
     TextWindowMacro 13,25,60,GUICSrcText5
+    
     TextWindowMacro 13,25,75,GUICSrcText6
     TextWindowMacro 13,25,85,GUICSrcText7
+    
     TextWindowMacro 13,25,115,GUICSrcText9
     TextWindowMacro 13,25,125,GUICSrcTextA
 
-
     DrawGUIButton 13,95,140,140,152,GUICSrcTextB,50,0,1 ; Button
-
 
     GUIDisplayButtonHole 13,11,28,byte[CheatSrcByteSize],0   ; Ratio Buttons
     GUIDisplayButtonHole 13,11,38,byte[CheatSrcByteSize],1
@@ -3086,14 +3086,15 @@ Incheatmode:                              ; Return and Re-search
     TextWindowMacro 13,5,50,GUICSrcTextP
     jmp DisplayChtSrcRes.nosearch
 
+
 CheatSearching:                    ; Exact Value Search
     cmp byte[CheatSrcSearchType],1
     je near CheatSearchingComp
 
     TextWindowMacro 13,5,20,GUICSrcTextD       ; Text (setup?)
-
+    TextWindowMacro 13,5,65,GUICSrcTextT
+    
     DrawGUIWinBox 13,10,40,80,47,167           ; Input Box
-
 
     mov dword[GUIWincol],148+10              ; Draw border
     cmp byte[cwindrawn],1
@@ -3140,12 +3141,12 @@ CheatSearching:                    ; Exact Value Search
 .notdark2
     GUIOuttextwin2 13,12,41,CSInputDisplay
 
-    mov byte[GUItextcolor],217          ; More Text
+    mov byte[GUItextcolor],217          ; More Text (Moved)
     cmp byte[GUIWincoladd],0
     je .zero2
     mov byte[GUItextcolor],211
 .zero2
-    TextWindowMacro 13,5,65,GUICSrcTextT
+;    TextWindowMacro 13,5,65,GUICSrcTextT
 
     mov esi,CSInputDisplay          ; More flash?
     call CSAddFlash
@@ -3164,8 +3165,9 @@ CheatSearching:                    ; Exact Value Search
     inc ecx
     call converthex
 .dec
-    TextWindowMacro 13,71,65,GUICSrcTextQ         ; More Text (setup?)
+    TextWindowMacro 13,71,65,GUICSrcTextQ         ; Max Size Text (setup?)
     jmp DisplayChtSrcRes
+
 
 CheatSearchingComp:        ; Comparative search
 
@@ -3194,9 +3196,8 @@ CheatSearchingComp:        ; Comparative search
     jmp DisplayChtSrcRes
 
 
-FindChtSrcRes:
+FindChtSrcRes:                        ; Calculate search results
     inc edi
-    ; Calculate search results
     mov eax,dword[vidbuffer]
     add eax,129600+65536*2
     mov ecx,16384
@@ -3225,12 +3226,13 @@ FindChtSrcRes:
     mov [CSStartEntry],esi
     jmp .notset
 
-DisplayChtSrcRes:
+DisplayChtSrcRes:                    ; Buttons (Restart/View/Search) 
     DrawGUIButton 13,120,140,170,152,GUICSrcTextI,53,0,1
 .nosearch
     DrawGUIButton 13,10,140,60,152,GUICSrcTextJ,51,0,1
     DrawGUIButton 13,70,140,110,152,GUICSrcTextL,52,0,1
-    xor edi,edi
+    
+    xor edi,edi                      ; Call and display # of results
     call FindChtSrcRes
     mov esi,GUICSrcTextQ
     call convertnum
@@ -3238,9 +3240,9 @@ DisplayChtSrcRes:
     TextWindowMacro 13,97,125,GUICSrcTextQ
     mov dword[GUIcurrentchtsrcviewloc],0
     mov dword[GUIcurrentchtsrccursloc],0
-    ret
+    ret                              ;  End of Window
 
-Cheatmodeview:
+Cheatmodeview:                       ; View
     mov byte[GUICSrcTextS+12],32
     cmp byte[CheatSrcByteSize],3
     jne .yesprev
@@ -3252,16 +3254,17 @@ Cheatmodeview:
     mov dword[GUIwinsizex+13*4],185
     mov dword[GUIwinsizey+13*4],150
     call DrawWindowSearch
-    mov byte[GUItextcolor],217
+    
+    mov byte[GUItextcolor],217             ; Text
     cmp byte[GUIWincoladd],0
     je .zero
     mov byte[GUItextcolor],211
 .zero
     TextWindowMacro 13,10,12,GUICSrcTextS
-    DrawGUIWinBox 13,5,20,171,108,167
+    
+    DrawGUIWinBox 13,5,20,171,108,167      ; Box
 
-    ; Draw border
-    mov dword[GUIWincol],148+10
+    mov dword[GUIWincol],148+10          ; Draw border
     cmp byte[cwindrawn],1
     jne .noone2
     mov dword[GUIWincol],148+5
@@ -3279,11 +3282,12 @@ Cheatmodeview:
     add dl,4
     DrawGUIWinBox 13,5,109,171,109,dl
 
+
     mov edi,[GUIcurrentchtsrcviewloc]
     call FindChtSrcRes
     mov [NumCheatSrc],eax
     mov dword[ccheatnpos],esi
-    ; Display Window Contents
+                                        ; Display Window Contents
 
     mov byte[GUItextcolor],223
     mov eax,[NumCheatSrc]
@@ -3371,8 +3375,8 @@ Cheatmodeview:
 .noprevious
     sub dword[CheatSearchXPos],102
     add dword[CheatSearchYPos],7
-    ; Search for next entry
-.nextentry
+    
+.nextentry                                      ; Search for next entry
     inc dword[CSCurEntry]
     mov eax,[CSCurEntry]
     mov ecx,eax
@@ -3402,6 +3406,8 @@ Cheatmodeview:
     jne near .nextdisplay
 .noentry
 
+
+                                                  ; Slidebar
     ; win#,X,Y start, %4-List Loc, %5-List size, %6-Screen size, %7-Bar Size
     DrawSlideBarWin 13,173,28,[GUIcurrentchtsrcviewloc],[NumCheatSrc],12,73,GUICSStA
     cmp byte[GUICHold],11
@@ -3431,34 +3437,33 @@ Cheatmodeview:
     DrawGUIButton 13,140,140,180,152,GUICSrcTextU,55,0,1
     ret
 
-Cheatmodeadd:
+Cheatmodeadd:                                 ; Add Window
     mov dword[GUIwinsizex+13*4],170
     mov dword[GUIwinsizey+13*4],165
     call DrawWindowSearch
 
-    mov byte[GUItextcolor],217
+    mov byte[GUItextcolor],217                ; Text
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUItextcolor],211
 .zero3
-
     TextWindowMacro 13,5,20,GUICSrcTextV
     TextWindowMacro 13,5,45,GUICSrcTextW
     TextWindowMacro 13,5,70,GUICSrcTextX
     TextWindowMacro 13,22,143,GUICSrcTextY
 
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    mov dword[GUITemp],GUIIconDataCheckBoxUC          ; Checkbox
     cmp byte[CheatUpperByteOnly],1
     jne .nocheck
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck
     GUIDisplayIconWin 13,8,139,[GUITemp]
 
-    DrawGUIWinBox 13,10,30,80,37,167
+    DrawGUIWinBox 13,10,30,80,37,167             ; Boxes
     DrawGUIWinBox 13,10,55,126,62,167
     DrawGUIWinBox 13,10,80,80,120,167
-    ; Draw border
-    mov dword[GUIWincol],148+10
+    
+    mov dword[GUIWincol],148+10                 ; Draw border
     cmp byte[cwindrawn],1
     jne .noone2
     mov dword[GUIWincol],148+5
@@ -3487,10 +3492,10 @@ Cheatmodeadd:
     DrawGUIWinBox 13,128,55,127,62,dl ; 2,0,1,0
     DrawGUIWinBox 13,82,80,81,120,dl ; 2,0,1,0
 
-    DrawGUIButton 13,60,155,120,167,GUICSrcTextR,56,0,1
+    DrawGUIButton 13,60,155,120,167,GUICSrcTextR,56,0,1        ; Buttons
     DrawGUIButton 13,130,155,160,167,GUICSrcTextU,57,0,1
 
-    TextWindowMacro 13,5,130,GUICSrcTextT
+    TextWindowMacro 13,5,130,GUICSrcTextT              ; Max Value Text
     xor eax,eax
     mov al,[CheatSrcByteSize]
     mov eax,[SrcMask+eax*4]
@@ -3507,7 +3512,7 @@ Cheatmodeadd:
 .dec
     TextWindowMacro 13,71,130,GUICSrcTextQ
 
-    cmp byte[CurCStextpos],0
+    cmp byte[CurCStextpos],0               ; Cheat Input
     jne near .nofirstbox
     test byte[GUICCFlash],8
     jnz .nound
@@ -3534,7 +3539,7 @@ Cheatmodeadd:
     mov esi,CSInputDisplay
     call CSAddFlash
 
-    cmp byte[CurCStextpos],1
+    cmp byte[CurCStextpos],1               ; Cheat Desc. Input
     jne .noundb
     test byte[GUICCFlash],8
     jnz .noundb
@@ -3557,7 +3562,7 @@ Cheatmodeadd:
     cmp byte[CSInputDisplay],'_'
     je near .nodisplay
 
-    mov dword[CheatSearchYPos],83
+    mov dword[CheatSearchYPos],83           ; PAR Code?
     mov eax,[curentryval]
     mov [curaddrvalcs],eax
     mov eax,[CSCurValue]
@@ -3574,7 +3579,7 @@ Cheatmodeadd:
     shr dword[curvaluecs],8
     inc dword[curaddrvalcs]
     jmp .cspardispagain
-.cspardisploop
+    .cspardisploop                               ; Max Value Display?
     push ecx
     mov esi,GUICSrcTextQ
     mov ecx,3
@@ -3601,7 +3606,6 @@ Cheatmodeadd:
     pop ecx
     dec ecx
     jnz near .cspardisploop
-
 .nodisplay
     ret
 
