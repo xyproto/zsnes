@@ -2767,8 +2767,7 @@ guicpressptr resd 1
 SECTION .text
 
 DisplayGameOptnsClick:
-    ; Process boxes
-    mov dword[keycontrolval],0
+    mov dword[keycontrolval],0                  ; Shortcut Boxes
     DGOptnsProcBox 27,23,[KeyBGDisble0]
     DGOptnsProcBox 27+45,23,[KeyBGDisble1]
     DGOptnsProcBox 27+45*2,23,[KeyBGDisble2]
@@ -2778,10 +2777,12 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 27+45,41,[KeyDisableSC1]
     DGOptnsProcBox 27+45*2,41,[KeyDisableSC2]
     DGOptnsProcBox 27+45*3,41,[KeyDisableSC3]
+    DGOptnsProcBox 34+45*4,41,[KeyVolUp]
     DGOptnsProcBox 27,50,[KeyDisableSC4]
     DGOptnsProcBox 27+45,50,[KeyDisableSC5]
     DGOptnsProcBox 27+45*2,50,[KeyDisableSC6]
     DGOptnsProcBox 27+45*3,50,[KeyDisableSC7]
+    DGOptnsProcBox 34+45*4,50,[KeyVolDown]
 
     DGOptnsProcBox 8+25,70,[KeyQuickLoad]
     DGOptnsProcBox 8+57+26,70,[KeyQuickRst]
@@ -2794,19 +2795,10 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 78,100,[KeyUsePlayer1234]
     DGOptnsProcBox 78,110,[KeyResetAll]
     DGOptnsProcBox 78,120,[KeyExtraEnab]
-    DGOptnsProcBox 78,130,[KeyNewGfxSwt]
-    DGOptnsProcBox 78,140,[KeyWinDisble]
-    DGOptnsProcBox 78,150,[KeyOffsetMSw]
-;    DGOptnsProcBox 78,160,[KeySlowDown]
-    DGOptnsProcBox 78,170,[EMUPauseKey]
-;    DGOptnsProcBox 178,100,[KeyRewind]
-;    DGOptnsProcBox 178,110,[KeyFastFrwrd]
-    DGOptnsProcBox 178,120,[KeyVolUp]
-    DGOptnsProcBox 178,130,[KeyVolDown]
-    DGOptnsProcBox 178,140,[KeyFRateUp]
-    DGOptnsProcBox 178,150,[KeyFRateDown]
-    DGOptnsProcBox 178,160,[KeyDisplayFPS]
-    DGOptnsProcBox 178,170,[INCRFrameKey]
+    DGOptnsProcBox 78,130,[KeyDisplayFPS]
+    DGOptnsProcBox 191,100,[KeyNewGfxSwt]
+    DGOptnsProcBox 191,110,[KeyWinDisble]
+    DGOptnsProcBox 191,120,[KeyOffsetMSw]
     ret
 
 DisplayGUIOptnsClick:

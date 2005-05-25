@@ -3678,168 +3678,164 @@ CurCStringPos resd 1
 
 SECTION .text
 
-DisplayGameOptns:
-    ; Key redefinition for :
-    ; Sound Channels 0 .. 7, Save/Select/Load States, Fast Forward
-    ; State Selection 0 .. 9
-    ; Exit, Load, Reset, BG Disables, Reset, Windowing, New Gfx, OffsetMode
+DisplayGameOptns:        ; Misc Key Window
     GUIDrawWindowBox 9,GUIGameDisp
 
-    ; Draw Shadows
-    mov al,[GUIWincol]
+    mov al,[GUIWincol]                         ; Draw Shadows
     mov [GUIGameOptnsColA],al
     mov byte[GUIGameOptnsColB],202
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUIGameOptnsColB],196
 .zero3
-    mov al,byte[GUIGameOptnsColA]
+    mov al,byte[GUIGameOptnsColA]              ; Yellow Shadow
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,6,16,GUIGameOptnsText1
-    mov al,byte[GUIGameOptnsColB]
+    GUIOuttextwin2 9,6,16,GUIGameOptnsTextA
+    
+    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
     mov byte[GUItextcolor],al
-    mov byte[GUIGameOptnsText2+2],'1'
-    GUIOuttextwin2 9,9,25,GUIGameOptnsText2
-    mov byte[GUIGameOptnsText2+2],'2'
-    GUIOuttextwin2 9,9+45,25,GUIGameOptnsText2
-    mov byte[GUIGameOptnsText2+2],'3'
-    GUIOuttextwin2 9,9+90,25,GUIGameOptnsText2
-    mov byte[GUIGameOptnsText2+2],'4'
-    GUIOuttextwin2 9,9+135,25,GUIGameOptnsText2
-    GUIOuttextwin2 9,9+180,25,GUIGameOptnsText2a
-    mov al,byte[GUIGameOptnsColA]
+    mov byte[GUIGameOptnsTextA1+2],'1'
+    GUIOuttextwin2 9,9,25,GUIGameOptnsTextA1
+    mov byte[GUIGameOptnsTextA1+2],'2'
+    GUIOuttextwin2 9,9+45,25,GUIGameOptnsTextA1
+    mov byte[GUIGameOptnsTextA1+2],'3'
+    GUIOuttextwin2 9,9+90,25,GUIGameOptnsTextA1
+    mov byte[GUIGameOptnsTextA1+2],'4'
+    GUIOuttextwin2 9,9+135,25,GUIGameOptnsTextA1
+    GUIOuttextwin2 9,9+180,25,GUIGameOptnsTextA2
+    
+    mov al,byte[GUIGameOptnsColA]              ; Yellow Shadow
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,6,34,GUIGameOptnsText3
-    mov al,byte[GUIGameOptnsColB]
+    GUIOuttextwin2 9,6,34,GUIGameOptnsTextB
+    
+    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
     mov byte[GUItextcolor],al
-    mov byte[GUIGameOptnsText4+2],'1'
-    GUIOuttextwin2 9,9,43,GUIGameOptnsText4
-    mov byte[GUIGameOptnsText4+2],'2'
-    GUIOuttextwin2 9,9+45,43,GUIGameOptnsText4
-    mov byte[GUIGameOptnsText4+2],'3'
-    GUIOuttextwin2 9,9+45*2,43,GUIGameOptnsText4
-    mov byte[GUIGameOptnsText4+2],'4'
-    GUIOuttextwin2 9,9+45*3,43,GUIGameOptnsText4
-    mov byte[GUIGameOptnsText4+2],'5'
-    GUIOuttextwin2 9,9,52,GUIGameOptnsText4
-    mov byte[GUIGameOptnsText4+2],'6'
-    GUIOuttextwin2 9,9+45,52,GUIGameOptnsText4
-    mov byte[GUIGameOptnsText4+2],'7'
-    GUIOuttextwin2 9,9+45*2,52,GUIGameOptnsText4
-    mov byte[GUIGameOptnsText4+2],'8'
-    GUIOuttextwin2 9,9+45*3,52,GUIGameOptnsText4
-    mov al,byte[GUIGameOptnsColA]
+    mov byte[GUIGameOptnsTextB1+2],'1'
+    GUIOuttextwin2 9,9,43,GUIGameOptnsTextB1
+    mov byte[GUIGameOptnsTextB1+2],'2'
+    GUIOuttextwin2 9,9+45,43,GUIGameOptnsTextB1
+    mov byte[GUIGameOptnsTextB1+2],'3'
+    GUIOuttextwin2 9,9+45*2,43,GUIGameOptnsTextB1
+    mov byte[GUIGameOptnsTextB1+2],'4'
+    GUIOuttextwin2 9,9+45*3,43,GUIGameOptnsTextB1
+    GUIOuttextwin2 9,9+45*4,43,GUIGameOptnsTextB2
+    mov byte[GUIGameOptnsTextB1+2],'5'
+    GUIOuttextwin2 9,9,52,GUIGameOptnsTextB1
+    mov byte[GUIGameOptnsTextB1+2],'6'
+    GUIOuttextwin2 9,9+45,52,GUIGameOptnsTextB1
+    mov byte[GUIGameOptnsTextB1+2],'7'
+    GUIOuttextwin2 9,9+45*2,52,GUIGameOptnsTextB1
+    mov byte[GUIGameOptnsTextB1+2],'8'
+    GUIOuttextwin2 9,9+45*3,52,GUIGameOptnsTextB1
+    GUIOuttextwin2 9,9+45*4,52,GUIGameOptnsTextB3
+
+    mov al,byte[GUIGameOptnsColA]              ; Yellow Shadow
     mov byte[GUItextcolor],al
-    mov al,byte[GUIGameOptnsColB]
+    GUIOuttextwin2 9,6,61,GUIGameOptnsTextC
+    
+    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
     mov byte[GUItextcolor],al
-    mov al,byte[GUIGameOptnsColA]
+    GUIOuttextwin2 9,9,72,GUIGameOptnsTextC1
+    GUIOuttextwin2 9,9+52,72,GUIGameOptnsTextC2
+    GUIOuttextwin2 9,9+109,72,GUIGameOptnsTextC3
+    GUIOuttextwin2 9,9+160,72,GUIGameOptnsTextC4
+    GUIOuttextwin2 9,9,82,GUIGameOptnsTextC5
+    GUIOuttextwin2 9,9+52,82,GUIGameOptnsTextC6
+    GUIOuttextwin2 9,137,82,GUIGameOptnsTextC7
+    
+    mov al,byte[GUIGameOptnsColA]              ; Yellow Shadow
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,6,61,GUIGameOptnsText5
-    mov al,byte[GUIGameOptnsColB]
+    GUIOuttextwin2 9,6,93,GUIGameOptnsTextD1
+    GUIOuttextwin2 9,119,93,GUIGameOptnsTextD2
+    
+    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,9,72,GUIGameOptnsText6
-    GUIOuttextwin2 9,9+52,72,GUIGameOptnsText7
-    GUIOuttextwin2 9,9+109,72,GUIGameOptnsText8
-    GUIOuttextwin2 9,9+160,72,GUIGameOptnsText9
-    GUIOuttextwin2 9,9,82,GUIGameOptnsTextA
-    GUIOuttextwin2 9,9+52,82,GUIGameOptnsTextB
-    GUIOuttextwin2 9,137,82,GUIGameOptnsTextC
-    mov al,byte[GUIGameOptnsColA]
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,6,93,GUIGameOptnsTextD
-    mov al,byte[GUIGameOptnsColB]
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,9,102,GUIGameOptnsTextE
-    GUIOuttextwin2 9,9,112,GUIGameOptnsTextF
-    GUIOuttextwin2 9,9,122,GUIGameOptnsTextG
-    GUIOuttextwin2 9,9,132,GUIGameOptnsTextH
-    GUIOuttextwin2 9,9,142,GUIGameOptnsTextI
-    GUIOuttextwin2 9,9,152,GUIGameOptnsTextJ
-    GUIOuttextwin2 9,109,122,GUIGameOptnsTextGa
-    GUIOuttextwin2 9,109,132,GUIGameOptnsTextHa
-    GUIOuttextwin2 9,109,142,GUIGameOptnsTextIa
-    GUIOuttextwin2 9,109,152,GUIGameOptnsTextJa
-    GUIOuttextwin2 9,109,162,GUIGameOptnsTextKa
-    mov byte[GUIGameOptnsColA],163
+    GUIOuttextwin2 9,9,102,GUIGameOptnsTextD1a
+    GUIOuttextwin2 9,9,112,GUIGameOptnsTextD1b
+    GUIOuttextwin2 9,9,122,GUIGameOptnsTextD1c
+    GUIOuttextwin2 9,9,132,GUIGameOptnsTextD1d
+    GUIOuttextwin2 9,122,102,GUIGameOptnsTextD2a
+    GUIOuttextwin2 9,122,112,GUIGameOptnsTextD2b
+    GUIOuttextwin2 9,122,122,GUIGameOptnsTextD2c
+    
+    mov byte[GUIGameOptnsColA],163            ; Draw Text
     mov byte[GUIGameOptnsColB],217
     cmp byte[GUIWincoladd],0
     je .zero
     mov byte[GUIGameOptnsColA],164
     mov byte[GUIGameOptnsColB],211
 .zero
-    mov al,byte[GUIGameOptnsColA]
+    mov al,byte[GUIGameOptnsColA]              ; Yellow Text
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,5,15,GUIGameOptnsText1
-    mov al,byte[GUIGameOptnsColB]
+    GUIOuttextwin2 9,5,15,GUIGameOptnsTextA
+    
+    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
     mov byte[GUItextcolor],al
-    mov byte[GUIGameOptnsText2+2],'1'
-    GUIOuttextwin2 9,8,24,GUIGameOptnsText2
-    mov byte[GUIGameOptnsText2+2],'2'
-    GUIOuttextwin2 9,8+45,24,GUIGameOptnsText2
-    mov byte[GUIGameOptnsText2+2],'3'
-    GUIOuttextwin2 9,8+90,24,GUIGameOptnsText2
-    mov byte[GUIGameOptnsText2+2],'4'
-    GUIOuttextwin2 9,8+135,24,GUIGameOptnsText2
-    GUIOuttextwin2 9,8+180,24,GUIGameOptnsText2a
-    mov al,byte[GUIGameOptnsColA]
+    mov byte[GUIGameOptnsTextB1+2],'1'
+    GUIOuttextwin2 9,8,24,GUIGameOptnsTextA1
+    mov byte[GUIGameOptnsTextA1+2],'2'
+    GUIOuttextwin2 9,8+45,24,GUIGameOptnsTextA1
+    mov byte[GUIGameOptnsTextA1+2],'3'
+    GUIOuttextwin2 9,8+90,24,GUIGameOptnsTextA1
+    mov byte[GUIGameOptnsTextA1+2],'4'
+    GUIOuttextwin2 9,8+135,24,GUIGameOptnsTextA1
+    GUIOuttextwin2 9,8+180,24,GUIGameOptnsTextA2
+    
+    mov al,byte[GUIGameOptnsColA]              ; Yellow Text
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,5,33,GUIGameOptnsText3
-    mov al,byte[GUIGameOptnsColB]
+    GUIOuttextwin2 9,5,33,GUIGameOptnsTextB
+    
+    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
     mov byte[GUItextcolor],al
-    mov byte[GUIGameOptnsText4+2],'1'
-    GUIOuttextwin2 9,8,42,GUIGameOptnsText4
-    mov byte[GUIGameOptnsText4+2],'2'
-    GUIOuttextwin2 9,8+45,42,GUIGameOptnsText4
-    mov byte[GUIGameOptnsText4+2],'3'
-    GUIOuttextwin2 9,8+45*2,42,GUIGameOptnsText4
-    mov byte[GUIGameOptnsText4+2],'4'
-    GUIOuttextwin2 9,8+45*3,42,GUIGameOptnsText4
-    mov byte[GUIGameOptnsText4+2],'5'
-    GUIOuttextwin2 9,8,51,GUIGameOptnsText4
-    mov byte[GUIGameOptnsText4+2],'6'
-    GUIOuttextwin2 9,8+45,51,GUIGameOptnsText4
-    mov byte[GUIGameOptnsText4+2],'7'
-    GUIOuttextwin2 9,8+45*2,51,GUIGameOptnsText4
-    mov byte[GUIGameOptnsText4+2],'8'
-    GUIOuttextwin2 9,8+45*3,51,GUIGameOptnsText4
-    mov al,byte[GUIGameOptnsColA]
+    mov byte[GUIGameOptnsTextB1+2],'1'
+    GUIOuttextwin2 9,8,42,GUIGameOptnsTextB1
+    mov byte[GUIGameOptnsTextB1+2],'2'
+    GUIOuttextwin2 9,8+45,42,GUIGameOptnsTextB1
+    mov byte[GUIGameOptnsTextB1+2],'3'
+    GUIOuttextwin2 9,8+45*2,42,GUIGameOptnsTextB1
+    mov byte[GUIGameOptnsTextB1+2],'4'
+    GUIOuttextwin2 9,8+45*3,42,GUIGameOptnsTextB1
+    GUIOuttextwin2 9,8+45*4,42,GUIGameOptnsTextB2
+    mov byte[GUIGameOptnsTextB1+2],'5'
+    GUIOuttextwin2 9,8,51,GUIGameOptnsTextB1
+    mov byte[GUIGameOptnsTextB1+2],'6'
+    GUIOuttextwin2 9,8+45,51,GUIGameOptnsTextB1
+    mov byte[GUIGameOptnsTextB1+2],'7'
+    GUIOuttextwin2 9,8+45*2,51,GUIGameOptnsTextB1
+    mov byte[GUIGameOptnsTextB1+2],'8'
+    GUIOuttextwin2 9,8+45*3,51,GUIGameOptnsTextB1
+    GUIOuttextwin2 9,8+45*4,51,GUIGameOptnsTextB3
+    
+    mov al,byte[GUIGameOptnsColA]              ; Yellow Text
     mov byte[GUItextcolor],al
-    mov al,byte[GUIGameOptnsColB]
+    GUIOuttextwin2 9,5,61,GUIGameOptnsTextC
+    
+    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
     mov byte[GUItextcolor],al
-    mov al,byte[GUIGameOptnsColA]
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,5,61,GUIGameOptnsText5
-    mov al,byte[GUIGameOptnsColB]
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,8,71,GUIGameOptnsText6
-    GUIOuttextwin2 9,8+52,71,GUIGameOptnsText7
-    GUIOuttextwin2 9,8+109,71,GUIGameOptnsText8
-    GUIOuttextwin2 9,8+160,71,GUIGameOptnsText9
-    GUIOuttextwin2 9,8,81,GUIGameOptnsTextA
-    GUIOuttextwin2 9,8+52,81,GUIGameOptnsTextB
-    GUIOuttextwin2 9,136,81,GUIGameOptnsTextC
+    GUIOuttextwin2 9,8,71,GUIGameOptnsTextC1
+    GUIOuttextwin2 9,8+52,71,GUIGameOptnsTextC2
+    GUIOuttextwin2 9,8+109,71,GUIGameOptnsTextC3
+    GUIOuttextwin2 9,8+160,71,GUIGameOptnsTextC4
+    GUIOuttextwin2 9,8,81,GUIGameOptnsTextC5
+    GUIOuttextwin2 9,8+52,81,GUIGameOptnsTextC6
+    GUIOuttextwin2 9,136,81,GUIGameOptnsTextC7
 
-    mov al,byte[GUIGameOptnsColA]
+    mov al,byte[GUIGameOptnsColA]              ; Yellow Text
     mov byte[GUItextcolor],al
-    mov al,byte[GUIGameOptnsColB]
+    GUIOuttextwin2 9,5,92,GUIGameOptnsTextD1
+    GUIOuttextwin2 9,118,92,GUIGameOptnsTextD2
+    
+    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
     mov byte[GUItextcolor],al
-    mov al,byte[GUIGameOptnsColA]
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,5,92,GUIGameOptnsTextD
-    mov al,byte[GUIGameOptnsColB]
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,8,101,GUIGameOptnsTextE
-    GUIOuttextwin2 9,8,111,GUIGameOptnsTextF
-    GUIOuttextwin2 9,8,121,GUIGameOptnsTextG
-    GUIOuttextwin2 9,8,131,GUIGameOptnsTextH
-    GUIOuttextwin2 9,8,141,GUIGameOptnsTextI
-    GUIOuttextwin2 9,8,151,GUIGameOptnsTextJ
-    GUIOuttextwin2 9,108,121,GUIGameOptnsTextGa
-    GUIOuttextwin2 9,108,131,GUIGameOptnsTextHa
-    GUIOuttextwin2 9,108,141,GUIGameOptnsTextIa
-    GUIOuttextwin2 9,108,151,GUIGameOptnsTextJa
-    GUIOuttextwin2 9,108,161,GUIGameOptnsTextKa
-	;Draw Borders
+    GUIOuttextwin2 9,8,101,GUIGameOptnsTextD1a
+    GUIOuttextwin2 9,8,111,GUIGameOptnsTextD1b
+    GUIOuttextwin2 9,8,121,GUIGameOptnsTextD1c
+    GUIOuttextwin2 9,8,131,GUIGameOptnsTextD1d
+    GUIOuttextwin2 9,121,101,GUIGameOptnsTextD2a
+    GUIOuttextwin2 9,121,111,GUIGameOptnsTextD2b
+    GUIOuttextwin2 9,121,121,GUIGameOptnsTextD2c
+
+    ;Draw Borders
     DGOptnsBorderBox 9,26,22
     DGOptnsBorderBox 9,71,22
     DGOptnsBorderBox 9,116,22
@@ -3850,10 +3846,12 @@ DisplayGameOptns:
     DGOptnsBorderBox 9,71,40
     DGOptnsBorderBox 9,116,40
     DGOptnsBorderBox 9,161,40
+    DGOptnsBorderBox 9,213,40
     DGOptnsBorderBox 9,26,49
     DGOptnsBorderBox 9,71,49
     DGOptnsBorderBox 9,116,49
     DGOptnsBorderBox 9,161,49
+    DGOptnsBorderBox 9,213,49
 
     DGOptnsBorderBox 9,32,69
     DGOptnsBorderBox 9,90,69
@@ -3867,13 +3865,9 @@ DisplayGameOptns:
     DGOptnsBorderBox 9,77,109
     DGOptnsBorderBox 9,77,119
     DGOptnsBorderBox 9,77,129
-    DGOptnsBorderBox 9,77,139
-    DGOptnsBorderBox 9,77,149
-    DGOptnsBorderBox 9,177,119
-    DGOptnsBorderBox 9,177,129
-    DGOptnsBorderBox 9,177,139
-    DGOptnsBorderBox 9,177,149
-    DGOptnsBorderBox 9,177,159
+    DGOptnsBorderBox 9,190,99
+    DGOptnsBorderBox 9,190,109
+    DGOptnsBorderBox 9,190,119
 
     ; Draw black boxes
     DGOptnsDrawBox 27,23,[KeyBGDisble0]
@@ -3881,14 +3875,17 @@ DisplayGameOptns:
     DGOptnsDrawBox 27+45*2,23,[KeyBGDisble2]
     DGOptnsDrawBox 27+45*3,23,[KeyBGDisble3]
     DGOptnsDrawBox 27+45*4,23,[KeySprDisble]
+    
     DGOptnsDrawBox 27,41,[KeyDisableSC0]
     DGOptnsDrawBox 27+45,41,[KeyDisableSC1]
     DGOptnsDrawBox 27+45*2,41,[KeyDisableSC2]
     DGOptnsDrawBox 27+45*3,41,[KeyDisableSC3]
+    DGOptnsDrawBox 34+45*4,41,[KeyVolUp]
     DGOptnsDrawBox 27,50,[KeyDisableSC4]
     DGOptnsDrawBox 27+45,50,[KeyDisableSC5]
     DGOptnsDrawBox 27+45*2,50,[KeyDisableSC6]
     DGOptnsDrawBox 27+45*3,50,[KeyDisableSC7]
+    DGOptnsDrawBox 34+45*4,50,[KeyVolDown]
 
     DGOptnsDrawBox 8+25,70,[KeyQuickLoad]
     DGOptnsDrawBox 8+57+26,70,[KeyQuickRst]
@@ -3901,14 +3898,11 @@ DisplayGameOptns:
     DGOptnsDrawBox 78,100,[KeyUsePlayer1234]
     DGOptnsDrawBox 78,110,[KeyResetAll]
     DGOptnsDrawBox 78,120,[KeyExtraEnab]
-    DGOptnsDrawBox 78,130,[KeyNewGfxSwt]
-    DGOptnsDrawBox 78,140,[KeyWinDisble]
-    DGOptnsDrawBox 78,150,[KeyOffsetMSw]
-    DGOptnsDrawBox 178,120,[KeyVolUp]
-    DGOptnsDrawBox 178,130,[KeyVolDown]
-    DGOptnsDrawBox 178,140,[KeyFRateUp]
-    DGOptnsDrawBox 178,150,[KeyFRateDown]
-    DGOptnsDrawBox 178,160,[KeyDisplayFPS]
+    DGOptnsDrawBox 78,130,[KeyDisplayFPS]
+    
+    DGOptnsDrawBox 191,100,[KeyNewGfxSwt]
+    DGOptnsDrawBox 191,110,[KeyWinDisble]
+    DGOptnsDrawBox 191,120,[KeyOffsetMSw]
     ret
 
 SECTION .bss
@@ -3917,33 +3911,35 @@ GUIGameOptnsColB resb 1
 GUIGameDisplayKy resd 1
 
 SECTION .data
-GUIGameOptnsText1  db 'BG DISABLES :',0
-GUIGameOptnsText2  db 'BG#',0
-GUIGameOptnsText2a db 'OBJ ',0
-GUIGameOptnsText3  db 'SOUND DISABLES :',0
-GUIGameOptnsText4  db 'CH#',0
 
-GUIGameOptnsText5  db 'QUICK KEYS :',0
-GUIGameOptnsText6  db 'LOAD',0
-GUIGameOptnsText7  db 'RESET',0
-GUIGameOptnsText8  db 'EXIT',0
-GUIGameOptnsText9  db 'CLOCK',0
-GUIGameOptnsTextA  db 'CHAT',0
-GUIGameOptnsTextB  db 'SNAPSHOT',0
-GUIGameOptnsTextC  db 'SAVE SPC',0
+GUIGameOptnsTextA   db 'BG DISABLES :',0
+GUIGameOptnsTextA1  db 'BG#',0
+GUIGameOptnsTextA2  db 'OBJ ',0
 
-GUIGameOptnsTextD  db 'MISC TOGGLES :',0
-GUIGameOptnsTextE  db 'USE PL12/34',0
-GUIGameOptnsTextF  db 'CLRSWITCHES',0
-GUIGameOptnsTextG  db 'EXTRADEVICE',0
-GUIGameOptnsTextGa  db '+VOL',0
-GUIGameOptnsTextH  db 'NEW GFX ENG',0
-GUIGameOptnsTextHa  db '-VOL',0
-GUIGameOptnsTextI  db 'BG WINDOW',0
-GUIGameOptnsTextIa  db '+FRAME RATE',0
-GUIGameOptnsTextJ  db 'OFFSET MODE',0
-GUIGameOptnsTextJa  db '-FRAME RATE',0
-GUIGameOptnsTextKa  db 'DISPLAY FPS',0
+GUIGameOptnsTextB   db 'SOUND KEYS :',0
+GUIGameOptnsTextB1  db 'CH#',0
+GUIGameOptnsTextB2  db '+VOL',0
+GUIGameOptnsTextB3  db '-VOL',0
+
+GUIGameOptnsTextC   db 'QUICK KEYS :',0
+GUIGameOptnsTextC1  db 'LOAD',0
+GUIGameOptnsTextC2  db 'RESET',0
+GUIGameOptnsTextC3  db 'EXIT',0
+GUIGameOptnsTextC4  db 'CLOCK',0
+GUIGameOptnsTextC5  db 'CHAT',0
+GUIGameOptnsTextC6  db 'SNAPSHOT',0
+GUIGameOptnsTextC7  db 'SAVE SPC',0
+
+GUIGameOptnsTextD1   db 'MISC TOGGLES :',0
+GUIGameOptnsTextD1a  db 'USE PL12/34',0
+GUIGameOptnsTextD1b  db 'CLRSWITCHES',0
+GUIGameOptnsTextD1c  db 'EXTRADEVICE',0
+GUIGameOptnsTextD1d  db 'DISPLAY FPS',0
+
+GUIGameOptnsTextD2   db 'GFX TOGGLES :',0
+GUIGameOptnsTextD2a  db 'NEW GFX ENG',0
+GUIGameOptnsTextD2b  db 'BG WINDOW',0
+GUIGameOptnsTextD2c  db 'OFFSET MODE',0
 
 SECTION .text
 
