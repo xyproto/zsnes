@@ -3947,13 +3947,13 @@ GUIGameOptnsTextKa  db 'DISPLAY FPS',0
 
 SECTION .text
 
-DisplayGUIOptns:
-%ifdef __WIN32__
+DisplayGUIOptns:              ; GUI Options
+%ifdef __WIN32__              ; If Windows, extend window down
     mov dword[GUIwinsizey+10*4],192
 %endif
     GUIDrawWindowBox 10,GUIGUIDisp
 
-    push eax
+    push eax                       ; Setup Colors
     cmp byte[CurPalSelect],1
     je .yespal2b
     cmp byte[CurPalSelect],2
@@ -3983,7 +3983,7 @@ DisplayGUIOptns:
 .nopal1b
     pop eax
 
-    mov eax,dword[GUIwinposx+10*4]
+    mov eax,dword[GUIwinposx+10*4]        ; Slider Bars
     mov ebx,dword[GUIwinposy+10*4]
     mov ecx,eax
     add eax,25
@@ -4025,232 +4025,243 @@ DisplayGUIOptns:
     mov dword[GUITemp],22
     add [GUITemp],eax
     GUIDisplayIconWin 10,[GUITemp],144,GUIIconDataSlideBar
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
 
-    cmp byte[GUIEnableTransp],1
-    jne .nocheckt
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckt
-    GUIDisplayIconWin 10,124,23,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[FilteredGUI],1
-    jne .nocheckfg
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckfg
-    GUIDisplayIconWin 10,124,43,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
+                                                ; Checkboxes
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Mousewrap
     cmp byte[mousewrap],1
     jne .nocheck
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck
     GUIDisplayIconWin 10,12,23,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Mouse Shadow
     cmp byte[mouseshad],1
     jne .nocheck2
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck2
     GUIDisplayIconWin 10,12,33,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Keep Menu Pos.
     cmp byte[lastcursres],1
     jne .nocheck3
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck3
     GUIDisplayIconWin 10,12,43,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Save Win Pos.
     cmp byte[resetposn],1
     je .nocheck4
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck4
     GUIDisplayIconWin 10,12,53,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Click Enters GUI
     cmp byte[GUIClick],1
     jne .nocheck5
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck5
     GUIDisplayIconWin 10,12,63,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Use Joypad1
     cmp byte[JoyPad1Move],1
     jne .nocheck6
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck6
     GUIDisplayIconWin 10,12,73,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Transparent Msg
+    cmp byte[GUIEnableTransp],1
+    jne .nocheckt
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckt
+    GUIDisplayIconWin 10,124,23,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Filtered GUI
+    cmp byte[FilteredGUI],1
+    jne .nocheckfg
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckfg
+    GUIDisplayIconWin 10,124,33,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Snow Effect
     cmp byte[GUIEffect],1
     jne .nocheck6b
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck6b
-    GUIDisplayIconWin 10,12,83,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    GUIDisplayIconWin 10,124,43,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Burn Effect
     cmp byte[GUIEffect],4
     jne .nocheck7
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck7
-    GUIDisplayIconWin 10,124,83,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    GUIDisplayIconWin 10,124,53,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Water A Effect
     cmp byte[GUIEffect],2
     jne .nocheck7b
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck7b
-    GUIDisplayIconWin 10,12,93,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    GUIDisplayIconWin 10,124,63,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Water B Effect
     cmp byte[GUIEffect],3
     jne .nocheck8
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck8
-    GUIDisplayIconWin 10,124,93,[GUITemp]
+    GUIDisplayIconWin 10,124,73,[GUITemp]
 %ifdef __WIN32__
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    mov dword[GUITemp],GUIIconDataCheckBoxUC   ; Use Mousewheel
     cmp byte[MouseWheel],1
     jne .nocheck9
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck9
-    GUIDisplayIconWin 10,124,33,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[AlwaysOnTop],1
+    GUIDisplayIconWin 10,124,83,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Trap Mouse
+    cmp byte[TrapMouseCursor],1
     jne .nocheck10
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck10
-    GUIDisplayIconWin 10,12,168,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[SaveMainWindowPos],1
+    GUIDisplayIconWin 10,124,93,[GUITemp]
+                                                ; Main Window Options (WIN)
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Always On Top
+    cmp byte[AlwaysOnTop],1
     jne .nocheck11
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck11
-    GUIDisplayIconWin 10,12,178,[GUITemp]
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[AllowMultipleInst],1
+    GUIDisplayIconWin 10,12,168,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Save Win Pos
+    cmp byte[SaveMainWindowPos],1
     jne .nocheck12
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck12
-    GUIDisplayIconWin 10,12,188,[GUITemp]
-%endif
-    mov al,[GUIWincol]
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 10,6,111,GUIGUIOptnsText1
-    GUIOuttextwin2 10,6,16,GUIGUIOptnsText5
-%ifdef __WIN32__
-    GUIOuttextwin2 10,6,160,GUIGUIOptnsTextD
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    cmp byte[TrapMouseCursor],1
+    GUIDisplayIconWin 10,12,178,[GUITemp]
+    mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Allow Multiple Instances
+    cmp byte[AllowMultipleInst],1
     jne .nocheck13
     mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheck13
-    GUIDisplayIconWin 10,124,53,[GUITemp]
+    GUIDisplayIconWin 10,12,188,[GUITemp]
 %endif
-    mov byte[GUItextcolor],163
+
+    mov al,[GUIWincol]                        ; Yellow Shadow
+    mov byte[GUItextcolor],al
+    GUIOuttextwin2 10,6,16,GUIGUIOptnsTextA
+    GUIOuttextwin2 10,6,111,GUIGUIOptnsTextB
+%ifdef __WIN32__
+    GUIOuttextwin2 10,6,161,GUIGUIOptnsTextC
+%endif
+    mov byte[GUItextcolor],163                ; Yellow Text
     cmp byte[GUIWincoladd],0
     je .zero
     mov byte[GUItextcolor],164
 .zero
-    GUIOuttextwin2 10,5,110,GUIGUIOptnsText1
-    GUIOuttextwin2 10,5,15,GUIGUIOptnsText5
+    GUIOuttextwin2 10,5,15,GUIGUIOptnsTextA
+    GUIOuttextwin2 10,5,110,GUIGUIOptnsTextB
 %ifdef __WIN32__
-    GUIOuttextwin2 10,5,160,GUIGUIOptnsTextD
+    GUIOuttextwin2 10,5,160,GUIGUIOptnsTextC
 %endif
-    mov byte[GUItextcolor],217
+
+    mov byte[GUItextcolor],217                ; Shadow
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUItextcolor],211
 .zero3
     sub byte[GUItextcolor],15
-    GUIOuttextwin2u 10,26,28,GUIGUIOptnsText2,0
-    GUIOuttextwin2u 10,26,38,GUIGUIOptnsText3,6
-    GUIOuttextwin2u 10,26,48,GUIGUIOptnsText4,0
-    GUIOuttextwin2u 10,26,58,GUIGUIOptnsText7,5
-    GUIOuttextwin2u 10,26,68,GUIGUIOptnsText8,0
-    GUIOuttextwin2u 10,26,78,GUIGUIOptnsTextA,0
-    GUIOuttextwin2 10,60,111,GUIGUIOptnsTextG
-    GUIOuttextwin2 10,100,111,GUIGUIOptnsTextH
-    GUIOuttextwin2 10,147,111,GUIGUIOptnsTextI
-    GUIOuttextwin2u 10,26,88,GUIGUIOptnsTextB,1
-    GUIOuttextwin2u 10,138,88,GUIGUIOptnsTextBb,2
-    GUIOuttextwin2u 10,26,98,GUIGUIOptnsTextC,3
-    GUIOuttextwin2u 10,138,98,GUIGUIOptnsTextCb,13
-    GUIOuttextwin2u 10,138,28,GUIGUIOptnsTextJ,0
-    GUIOuttextwin2u 10,138,48,GUIGUIOptnsTextM,0
+    GUIOuttextwin2u 10,26,28,GUIGUIOptnsTextA1a,0
+    GUIOuttextwin2u 10,26,38,GUIGUIOptnsTextA1b,6
+    GUIOuttextwin2u 10,26,48,GUIGUIOptnsTextA1c,0
+    GUIOuttextwin2u 10,26,58,GUIGUIOptnsTextA1d,5
+    GUIOuttextwin2u 10,26,68,GUIGUIOptnsTextA1e,0
+    GUIOuttextwin2u 10,26,78,GUIGUIOptnsTextA1f,0
+    GUIOuttextwin2u 10,138,28,GUIGUIOptnsTextA2a,0
+    GUIOuttextwin2u 10,138,38,GUIGUIOptnsTextA2b,0
+    GUIOuttextwin2u 10,138,48,GUIGUIOptnsTextA2c,1
+    GUIOuttextwin2u 10,138,58,GUIGUIOptnsTextA2d,2
+    GUIOuttextwin2u 10,138,68,GUIGUIOptnsTextA2e,3
+    GUIOuttextwin2u 10,138,78,GUIGUIOptnsTextA2f,13
 %ifdef __WIN32__
-    GUIOuttextwin2u 10,26,173,GUIGUIOptnsTextE,0
-    GUIOuttextwin2u 10,26,183,GUIGUIOptnsTextF,2
-    GUIOuttextwin2u 10,138,38,GUIGUIOptnsTextK,1
-    GUIOuttextwin2u 10,26,193,GUIGUIOptnsTextL,1
-    GUIOuttextwin2u 10,138,58,GUIGUIOptnsTextN,3
+    GUIOuttextwin2u 10,138,88,GUIGUIOptnsTextA2g,1
+    GUIOuttextwin2u 10,138,98,GUIGUIOptnsTextA2h,3
 %endif
-    mov byte[GUIGUIOptnsText6],'R'
-    GUIOuttextwin2 10,16,123,GUIGUIOptnsText6
-    mov byte[GUIGUIOptnsText6],'G'
-    GUIOuttextwin2 10,16,135,GUIGUIOptnsText6
-    mov byte[GUIGUIOptnsText6],'B'
-    GUIOuttextwin2 10,16,147,GUIGUIOptnsText6
-    add byte[GUItextcolor],15
-    GUIOuttextwin2 10,25,27,GUIGUIOptnsText2
-    GUIOuttextwin2 10,25,37,GUIGUIOptnsText3
-    GUIOuttextwin2 10,25,47,GUIGUIOptnsText4
-    GUIOuttextwin2 10,25,57,GUIGUIOptnsText7
-    GUIOuttextwin2 10,25,67,GUIGUIOptnsText8
-    GUIOuttextwin2 10,25,77,GUIGUIOptnsTextA
-    GUIOuttextwin2 10,59,110,GUIGUIOptnsTextG
-    GUIOuttextwin2 10,99,110,GUIGUIOptnsTextH
-    GUIOuttextwin2 10,146,110,GUIGUIOptnsTextI
-    GUIOuttextwin2 10,25,87,GUIGUIOptnsTextB
-    GUIOuttextwin2 10,137,87,GUIGUIOptnsTextBb
-    GUIOuttextwin2 10,25,97,GUIGUIOptnsTextC
-    GUIOuttextwin2 10,137,97,GUIGUIOptnsTextCb
-    GUIOuttextwin2 10,137,27,GUIGUIOptnsTextJ
-    GUIOuttextwin2 10,137,47,GUIGUIOptnsTextM
+    GUIOuttextwin2 10,60,111,GUIGUIOptnsTextB1
+    GUIOuttextwin2 10,100,111,GUIGUIOptnsTextB2
+    GUIOuttextwin2 10,147,111,GUIGUIOptnsTextB3
 %ifdef __WIN32__
-    GUIOuttextwin2 10,25,172,GUIGUIOptnsTextE
-    GUIOuttextwin2 10,25,182,GUIGUIOptnsTextF
-    GUIOuttextwin2 10,137,37,GUIGUIOptnsTextK
-    GUIOuttextwin2 10,25,192,GUIGUIOptnsTextL
-    GUIOuttextwin2 10,137,57,GUIGUIOptnsTextN
+    GUIOuttextwin2u 10,26,173,GUIGUIOptnsTextC1,0
+    GUIOuttextwin2u 10,26,183,GUIGUIOptnsTextC2,2
+    GUIOuttextwin2u 10,26,193,GUIGUIOptnsTextC3,1
 %endif
-    mov byte[GUIGUIOptnsText6],'R'
-    GUIOuttextwin2 10,15,122,GUIGUIOptnsText6
-    mov byte[GUIGUIOptnsText6],'G'
-    GUIOuttextwin2 10,15,134,GUIGUIOptnsText6
-    mov byte[GUIGUIOptnsText6],'B'
-    GUIOuttextwin2 10,15,146,GUIGUIOptnsText6
+    mov byte[GUIGUIOptnsTextD1],'R'
+    GUIOuttextwin2 10,16,123,GUIGUIOptnsTextD1
+    mov byte[GUIGUIOptnsTextD1],'G'
+    GUIOuttextwin2 10,16,135,GUIGUIOptnsTextD1
+    mov byte[GUIGUIOptnsTextD1],'B'
+    GUIOuttextwin2 10,16,147,GUIGUIOptnsTextD1
+    
+    add byte[GUItextcolor],15                        ; Text
+    GUIOuttextwin2 10,25,27,GUIGUIOptnsTextA1a
+    GUIOuttextwin2 10,25,37,GUIGUIOptnsTextA1b
+    GUIOuttextwin2 10,25,47,GUIGUIOptnsTextA1c
+    GUIOuttextwin2 10,25,57,GUIGUIOptnsTextA1d
+    GUIOuttextwin2 10,25,67,GUIGUIOptnsTextA1e
+    GUIOuttextwin2 10,25,77,GUIGUIOptnsTextA1f
+    GUIOuttextwin2 10,137,27,GUIGUIOptnsTextA2a
+    GUIOuttextwin2 10,137,37,GUIGUIOptnsTextA2b
+    GUIOuttextwin2 10,137,47,GUIGUIOptnsTextA2c
+    GUIOuttextwin2 10,137,57,GUIGUIOptnsTextA2d
+    GUIOuttextwin2 10,137,67,GUIGUIOptnsTextA2e
+    GUIOuttextwin2 10,137,77,GUIGUIOptnsTextA2f    
+%ifdef __WIN32__
+    GUIOuttextwin2 10,137,87,GUIGUIOptnsTextA2g
+    GUIOuttextwin2 10,137,97,GUIGUIOptnsTextA2h
+%endif
+    GUIOuttextwin2 10,59,110,GUIGUIOptnsTextB1
+    GUIOuttextwin2 10,99,110,GUIGUIOptnsTextB2
+    GUIOuttextwin2 10,146,110,GUIGUIOptnsTextB3
+%ifdef __WIN32__
+    GUIOuttextwin2 10,25,172,GUIGUIOptnsTextC1
+    GUIOuttextwin2 10,25,182,GUIGUIOptnsTextC2
+    GUIOuttextwin2 10,25,192,GUIGUIOptnsTextC3
+%endif
+    mov byte[GUIGUIOptnsTextD1],'R'
+    GUIOuttextwin2 10,15,122,GUIGUIOptnsTextD1
+    mov byte[GUIGUIOptnsTextD1],'G'
+    GUIOuttextwin2 10,15,134,GUIGUIOptnsTextD1
+    mov byte[GUIGUIOptnsTextD1],'B'
+    GUIOuttextwin2 10,15,146,GUIGUIOptnsTextD1
 
-    GUIDisplayButtonHole 10,48,108,byte[CurPalSelect],0
+    GUIDisplayButtonHole 10,48,108,byte[CurPalSelect],0    ; Ratio Buttons
     GUIDisplayButtonHole 10,88,108,byte[CurPalSelect],1
     GUIDisplayButtonHole 10,135,108,byte[CurPalSelect],2
 
-    mov dword[GUIGUIOptnsText9],0
-    mov esi,GUIGUIOptnsText9+2
+    mov dword[GUIGUIOptnsTextD2],0          ; Display Values for the 3 bars
+    mov esi,GUIGUIOptnsTextD2+2
     xor eax,eax
     mov al,[TRVal2]
     call .processnum
-    GUIOuttextwin2 10,160,123,[GUITemp]
+    GUIOuttextwin2 10,160,123,[GUITemp]    ; R Shadow
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je .zero5
     mov byte[GUItextcolor],222
 .zero5
-    GUIOuttextwin2 10,159,122,[GUITemp]
-    mov dword[GUIGUIOptnsText9],0
-    mov esi,GUIGUIOptnsText9+2
+    GUIOuttextwin2 10,159,122,[GUITemp]    ; R Text
+    
+    mov dword[GUIGUIOptnsTextD2],0
+    mov esi,GUIGUIOptnsTextD2+2
     xor eax,eax
     mov al,[TGVal2]
     call .processnum
-    GUIOuttextwin2 10,160,135,[GUITemp]
+    GUIOuttextwin2 10,160,135,[GUITemp]    ; G Shadow
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je .zero6
     mov byte[GUItextcolor],222
 .zero6
-    GUIOuttextwin2 10,159,134,[GUITemp]
-    mov dword[GUIGUIOptnsText9],0
-    mov esi,GUIGUIOptnsText9+2
+    GUIOuttextwin2 10,159,134,[GUITemp]    ; G Text
+    
+    mov dword[GUIGUIOptnsTextD2],0
+    mov esi,GUIGUIOptnsTextD2+2
     xor eax,eax
     mov al,[TBVal2]
     call .processnum
-    GUIOuttextwin2 10,160,147,[GUITemp]
+    GUIOuttextwin2 10,160,147,[GUITemp]    ; B Shadow
     mov byte[GUItextcolor],221
     cmp byte[GUIWincoladd],0
     je .zero7
     mov byte[GUItextcolor],222
 .zero7
-    GUIOuttextwin2 10,159,146,[GUITemp]
+    GUIOuttextwin2 10,159,146,[GUITemp]    ; B Text
     ret
 
 .processnum
@@ -4276,31 +4287,35 @@ DisplayGUIOptns:
 ;resetposn   1      ; 0 = no window reset, 1 = window reset
 
 SECTION .data
-GUIGUIOptnsText1 db 'COLOR:',0
-GUIGUIOptnsText2 db 'MOUSE WRAP',0
-GUIGUIOptnsText3 db 'MOUSE SHADOW',0
-GUIGUIOptnsText4 db 'KEEP MENU POSITN',0
-GUIGUIOptnsText5 db 'GUI SWITCHES :',0
-GUIGUIOptnsText6 db '@',0
-GUIGUIOptnsText7 db 'SAVE WIN POSITNS',0
-GUIGUIOptnsText8 db 'CLICK ENTERS GUI',0
-GUIGUIOptnsText9 dd 0
-GUIGUIOptnsTextA db 'USE JOYPAD1',0
-GUIGUIOptnsTextB dd 'SNOW EFFECT',0
-GUIGUIOptnsTextBb dd 'BURNING EFFECT',0
-GUIGUIOptnsTextC dd 'WATER EFFECT A',0
-GUIGUIOptnsTextCb dd 'WATER EFFECT B',0
-GUIGUIOptnsTextD dd 'MAIN WINDOW OPTIONS :',0
-GUIGUIOptnsTextE dd 'ALWAYS ON TOP',0
-GUIGUIOptnsTextF db 'SAVE MAIN WINDOW POSITION',0
-GUIGUIOptnsTextG db 'BACK',0
-GUIGUIOptnsTextH db 'TITLE',0
-GUIGUIOptnsTextI db 'WIN',0
-GUIGUIOptnsTextJ db 'TRANSPARENT MSGS',0
-GUIGUIOptnsTextK db 'WHEEL MOUSE',0
-GUIGUIOptnsTextL db 'ALLOW MULTIPLE INSTANCES',0
-GUIGUIOptnsTextM db 'FILTERED GUI',0
-GUIGUIOptnsTextN db 'TRAP MOUSE CURSOR',0
+GUIGUIOptnsTextA db 'GUI SWITCHES :',0
+GUIGUIOptnsTextA1a db 'MOUSE WRAP',0
+GUIGUIOptnsTextA1b db 'MOUSE SHADOW',0
+GUIGUIOptnsTextA1c db 'KEEP MENU POSITN',0
+GUIGUIOptnsTextA1d db 'SAVE WIN POSITNS',0
+GUIGUIOptnsTextA1e db 'CLICK ENTERS GUI',0
+GUIGUIOptnsTextA1f db 'USE JOYPAD1',0
+
+GUIGUIOptnsTextA2a db 'TRANSPARENT MSGS',0
+GUIGUIOptnsTextA2b db 'FILTERED GUI',0
+GUIGUIOptnsTextA2c dd 'SNOW EFFECT',0
+GUIGUIOptnsTextA2d dd 'BURNING EFFECT',0
+GUIGUIOptnsTextA2e dd 'WATER EFFECT A',0
+GUIGUIOptnsTextA2f dd 'WATER EFFECT B',0
+GUIGUIOptnsTextA2g db 'WHEEL MOUSE',0
+GUIGUIOptnsTextA2h db 'TRAP MOUSE CURSOR',0
+
+GUIGUIOptnsTextB db 'COLOR:',0
+GUIGUIOptnsTextB1 db 'BACK',0
+GUIGUIOptnsTextB2 db 'TITLE',0
+GUIGUIOptnsTextB3 db 'WIN',0
+
+GUIGUIOptnsTextC dd 'MAIN WINDOW OPTIONS :',0
+GUIGUIOptnsTextC1 dd 'ALWAYS ON TOP',0
+GUIGUIOptnsTextC2 db 'SAVE MAIN WINDOW POSITION',0
+GUIGUIOptnsTextC3 db 'ALLOW MULTIPLE INSTANCES',0
+
+GUIGUIOptnsTextD1 db '@',0
+GUIGUIOptnsTextD2 dd 0
 
 SECTION .text
 

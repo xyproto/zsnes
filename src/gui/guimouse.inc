@@ -2814,30 +2814,31 @@ DisplayGUIOptnsClick:
     sub eax,[GUIwinposx+10*4]
     mov edx,[GUImouseposy]
     sub edx,[GUIwinposy+10*4]
-    GUIClickCButton 12,23,byte[mousewrap]
+    GUIClickCButton 12,23,byte[mousewrap]     ; Checkboxes
     GUIClickCButton 12,33,byte[mouseshad]
     GUIClickCButton 12,43,byte[lastcursres]
     GUIClickCButton 12,53,byte[resetposn]
     GUIClickCButton 12,63,byte[GUIClick]
     GUIClickCButton 12,73,byte[JoyPad1Move]
-    GUIClickCButton6 12,83,byte[GUIEffect],1
-    GUIClickCButton6 124,83,byte[GUIEffect],4
-    GUIClickCButton6 12,93,byte[GUIEffect],2
-    GUIClickCButton6 124,93,byte[GUIEffect],3
     GUIClickCButton 124,23,byte[GUIEnableTransp]
+    GUIClickCButtonI 124,33,byte[FilteredGUI]    
+    GUIClickCButton6 124,43,byte[GUIEffect],1
+    GUIClickCButton6 124,53,byte[GUIEffect],4
+    GUIClickCButton6 124,63,byte[GUIEffect],2
+    GUIClickCButton6 124,73,byte[GUIEffect],3
 %ifdef __WIN32__
+    GUIClickCButton 124,83,byte[MouseWheel]
+    GUIClickCButton 124,93,byte[TrapMouseCursor]
     GUIClickCButton 12,168,byte[AlwaysOnTop]
     GUIClickCButton 12,178,byte[SaveMainWindowPos]
     GUIClickCButton 12,188,byte[AllowMultipleInst]
-    GUIClickCButton 124,33,byte[MouseWheel]
-    GUIClickCButton 124,53,byte[TrapMouseCursor]
 %endif
-    GUIClickCButtonI 124,43,byte[FilteredGUI]
-    GUIPButtonHole 48,108,byte[CurPalSelect],0
+
+    GUIPButtonHole 48,108,byte[CurPalSelect],0    ; Ratio Buttons
     GUIPButtonHole 88,108,byte[CurPalSelect],1
     GUIPButtonHole 135,108,byte[CurPalSelect],2
 
-    push eax
+    push eax                          ; Sliders
     cmp byte[CurPalSelect],1
     je .yespal2b
     cmp byte[CurPalSelect],2

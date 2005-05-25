@@ -844,66 +844,68 @@ GUIGUIOptnsKeys:
     jne .guioptn6
     xor byte[JoyPad1Move],1
 .guioptn6
-    cmp dh,'N'
-    jne .guioptn6b
-    GUIkeystoggleoptn byte[GUIEffect],1
-.guioptn6b
-    cmp dh,'R'
-    jne .guioptn7
-    GUIkeystoggleoptn byte[GUIEffect],4
-.guioptn7
-    cmp dh,'E'
-    jne .guioptn7b
-    GUIkeystoggleoptn byte[GUIEffect],2
-.guioptn7b
-    cmp dh,'B'
-    jne .guioptn8
-    GUIkeystoggleoptn byte[GUIEffect],3
-.guioptn8
-%ifdef __WIN32__
-    cmp dh,'A'
-    jne .guioptn9
-    xor byte[AlwaysOnTop],1
-.guioptn9
-    cmp dh,'V'
-    jne .guioptn10
-    xor byte[SaveMainWindowPos],1
-.guioptn10
-    cmp dh,'L'
-    jne .guioptn11
-    xor byte[AllowMultipleInst],1
-.guioptn11
-    cmp dh,'H'
-    jne .guioptn12
-    xor byte[MouseWheel],1
-.guioptn12
-    cmp dh,'P'
-    jne .guioptn13
-    xor byte[TrapMouseCursor],1
-.guioptn13
-%endif
+
     cmp dh,'T'
-    jne .guioptn14
+    jne .guioptn7
     xor byte[GUIEnableTransp],1
-.guioptn14
+.guioptn7
     cmp dh,'F'
     jne .guioptn15
     xor byte[FilteredGUI],1
     cmp byte[En2xSaI],1
-    jnae .guioptn15
+    jnae .guioptn8
     call ClearScreen
     pushad
     call Clear2xSaIBuffer
     popad
-.guioptn15
+.guioptn8
     cmp byte[hqFilter],0
-    je .guioptn16
+    je .guioptn9
     call ClearScreen
     pushad
     call Clear2xSaIBuffer
     popad
+.guioptn9
+    cmp dh,'N'
+    jne .guioptn10
+    GUIkeystoggleoptn byte[GUIEffect],1
+.guioptn10
+    cmp dh,'R'
+    jne .guioptn11
+    GUIkeystoggleoptn byte[GUIEffect],4
+.guioptn11
+    cmp dh,'E'
+    jne .guioptn12
+    GUIkeystoggleoptn byte[GUIEffect],2
+.guioptn12
+    cmp dh,'B'
+    jne .guioptn13
+    GUIkeystoggleoptn byte[GUIEffect],3
+.guioptn13
+%ifdef __WIN32__
+    cmp dh,'H'
+    jne .guioptn14
+    xor byte[MouseWheel],1
+.guioptn14
+    cmp dh,'P'
+    jne .guioptn15
+    xor byte[TrapMouseCursor],1
+.guioptn15
+
+    cmp dh,'A'
+    jne .guioptn16
+    xor byte[AlwaysOnTop],1
 .guioptn16
-    ret
+    cmp dh,'V'
+    jne .guioptn17
+    xor byte[SaveMainWindowPos],1
+.guioptn17
+    cmp dh,'L'
+    jne .guioptn18
+    xor byte[AllowMultipleInst],1
+.guioptn18
+%endif
+ret
 
 GUIVideoKeys:
     cmp dh,'a'
