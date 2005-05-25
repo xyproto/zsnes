@@ -865,15 +865,7 @@ DisplayGUIReset:              ; Reset Confirmation
     DrawGUIButton 12,20,30,56,41,GUIResetText2,2,0,0   ; Buttons
     DrawGUIButton 12,80,30,116,41,GUIResetText3,3,0,0
 
-    mov al,[GUIWincol]                     ; Yellow Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 12,6,16,GUIResetText1
-    mov byte[GUItextcolor],163             ; Yellow Text
-    cmp byte[GUIWincoladd],0
-    je .zero3
-    mov byte[GUItextcolor],164
-.zero3
-    GUIOuttextwin2 12,5,15,GUIResetText1
+    GUIDisplayTextY 12,6,16,GUIResetText1
     ret
 
 SECTION .data
@@ -906,27 +898,13 @@ DisplayGUIStates:                         ; Save/Load State Confirmation
     DrawGUIButton 14,20,30,56,41,GUIStatesText3,10,0,0    ; Buttons
     DrawGUIButton 14,80,30,116,41,GUIStatesText4,11,0,0
 
-    mov al,[GUIWincol]                      ; Yellow Shadow
-    mov byte[GUItextcolor],al
     cmp byte[GUIStatesText5],1              ; Determines Load or Save box
     je .load
-    GUIOuttextwin2 14,6,16,GUIStatesText1
+    GUIDisplayTextY 14,6,16,GUIStatesText1
     jmp .save
 .load
-    GUIOuttextwin2 14,6,16,GUIStatesText2
+    GUIDisplayTextY 14,6,16,GUIStatesText2
 .save
-    mov byte[GUItextcolor],163               ; Yellow Text
-    cmp byte[GUIWincoladd],0
-    je .zero3
-    mov byte[GUItextcolor],164
-.zero3
-    cmp byte[GUIStatesText5],1
-    je .load2
-    GUIOuttextwin2 14,5,15,GUIStatesText1
-    jmp .save2
-.load2
-    GUIOuttextwin2 14,5,15,GUIStatesText2
-.save2
     ret
 
 SECTION .data
@@ -941,63 +919,28 @@ SECTION .text
 DisplayGUIChoseSave:                    ; Pick Save State
     GUIDrawWindowBox 2,GUIStateSelDisp
 
-    cmp byte[GUIWincoladd],0             ; Shadow
-    je .zero
-    mov byte[GUItextcolor],211
-.zero
-    sub byte[GUItextcolor],15
-    mov byte[GUIChoseSaveText2],'0'
-    GUIOuttextwin2 2,21,31,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'1'
-    GUIOuttextwin2 2,41,31,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'2'
-    GUIOuttextwin2 2,61,31,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'3'
-    GUIOuttextwin2 2,81,31,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'4'
-    GUIOuttextwin2 2,101,31,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'5'
-    GUIOuttextwin2 2,21,46,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'6'
-    GUIOuttextwin2 2,41,46,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'7'
-    GUIOuttextwin2 2,61,46,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'8'
-    GUIOuttextwin2 2,81,46,GUIChoseSaveText2
-    mov byte[GUIChoseSaveText2],'9'
-    GUIOuttextwin2 2,101,46,GUIChoseSaveText2
 
-    add byte[GUItextcolor],15                   ; Text
+    GUIDisplayTextY 2,6,16,GUIChoseSaveText1
     mov byte[GUIChoseSaveText2],'0'
-    GUIOuttextwin2 2,20,30,GUIChoseSaveText2
+    GUIDisplayText 2,21,31,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'1'
-    GUIOuttextwin2 2,40,30,GUIChoseSaveText2
+    GUIDisplayText 2,41,31,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'2'
-    GUIOuttextwin2 2,60,30,GUIChoseSaveText2
+    GUIDisplayText 2,61,31,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'3'
-    GUIOuttextwin2 2,80,30,GUIChoseSaveText2
+    GUIDisplayText 2,81,31,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'4'
-    GUIOuttextwin2 2,100,30,GUIChoseSaveText2
+    GUIDisplayText 2,101,31,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'5'
-    GUIOuttextwin2 2,20,45,GUIChoseSaveText2
+    GUIDisplayText 2,21,46,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'6'
-    GUIOuttextwin2 2,40,45,GUIChoseSaveText2
+    GUIDisplayText 2,41,46,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'7'
-    GUIOuttextwin2 2,60,45,GUIChoseSaveText2
+    GUIDisplayText 2,61,46,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'8'
-    GUIOuttextwin2 2,80,45,GUIChoseSaveText2
+    GUIDisplayText 2,81,46,GUIChoseSaveText2
     mov byte[GUIChoseSaveText2],'9'
-    GUIOuttextwin2 2,100,45,GUIChoseSaveText2
-
-    mov al,[GUIWincol]                       ; Yellow Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 2,6,16,GUIChoseSaveText1
-    mov byte[GUItextcolor],163               ; Yellow Text
-    cmp byte[GUIWincoladd],0
-    je .zero3
-    mov byte[GUItextcolor],164
-.zero3
-    GUIOuttextwin2 2,5,15,GUIChoseSaveText1
+    GUIDisplayText 2,101,46,GUIChoseSaveText2
 
     mov dword[GUITemp],GUIIconDataButtonHole           ; Ratio Buttons
     mov ebx,[statefileloc]
@@ -1484,56 +1427,28 @@ SECTION .text
 DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engine
     GUIDrawWindowBox 4,GUIOptionDisp
 
-    mov byte[GUItextcolor],217               ; Shadow
-    cmp byte[GUIWincoladd],0
-    je .zero
-    mov byte[GUItextcolor],211
-.zero
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2u 4,26,34,GUIOptionText3,0
-    GUIOuttextwin2u 4,26,44,GUIOptionText4,0
-    GUIOuttextwin2u 4,26,54,GUIOptionText5,0
+    GUIDisplayTextu 4,26,34,GUIOptionText3,0
+    GUIDisplayTextu 4,26,44,GUIOptionText4,0
+    GUIDisplayTextu 4,26,54,GUIOptionText5,0
 %ifdef __MSDOS__
-    GUIOuttextwin2u 4,26,64,GUIOptionText6,1
+    GUIDisplayTextu 4,26,64,GUIOptionText6,1
 %endif
 %ifdef __WIN32__
-    GUIOuttextwin2u 4,26,64,GUIOptionText6b,0
+    GUIDisplayTextu 4,26,64,GUIOptionText6b,0
 %endif
-    GUIOuttextwin2u 4,26,74,GUIOptionText7,0
-    GUIOuttextwin2u 4,26,84,GUIOptionText8,2
-    GUIOuttextwin2u 4,26,94,GUIOptionText9,12
-    GUIOuttextwin2u 4,26,104,GUIOptionTextA,0
-    GUIOuttextwin2u 4,26,114,GUIOptionTextB,0
-    GUIOuttextwin2u 4,26,124,GUIOptionTextC,1
-    GUIOuttextwin2u 4,26,134,GUIOptionTextD,12
-    GUIOuttextwin2u 4,26,144,GUIOptionTextE,15
-    GUIOuttextwin2u 4,26,154,GUIOptionTextF,0
+    GUIDisplayTextu 4,26,74,GUIOptionText7,0
+    GUIDisplayTextu 4,26,84,GUIOptionText8,2
+    GUIDisplayTextu 4,26,94,GUIOptionText9,12
+    GUIDisplayTextu 4,26,104,GUIOptionTextA,0
+    GUIDisplayTextu 4,26,114,GUIOptionTextB,0
+    GUIDisplayTextu 4,26,124,GUIOptionTextC,1
+    GUIDisplayTextu 4,26,134,GUIOptionTextD,12
+    GUIDisplayTextu 4,26,144,GUIOptionTextE,15
+    GUIDisplayTextu 4,26,154,GUIOptionTextF,0
 %ifdef __WIN32__
-    GUIOuttextwin2u 4,26,164,GUIOptionTextW,1
+    GUIDisplayTextu 4,26,164,GUIOptionTextW,1
 %endif
 
-    add byte[GUItextcolor],15                  ; Text
-    GUIOuttextwin2 4,25,33,GUIOptionText3
-    GUIOuttextwin2 4,25,43,GUIOptionText4
-    GUIOuttextwin2 4,25,53,GUIOptionText5
-%ifdef __MSDOS__
-    GUIOuttextwin2 4,25,63,GUIOptionText6
-%endif
-%ifdef __WIN32__
-    GUIOuttextwin2 4,25,63,GUIOptionText6b
-%endif
-    GUIOuttextwin2 4,25,73,GUIOptionText7
-    GUIOuttextwin2 4,25,83,GUIOptionText8
-    GUIOuttextwin2 4,25,93,GUIOptionText9
-    GUIOuttextwin2 4,25,103,GUIOptionTextA
-    GUIOuttextwin2 4,25,113,GUIOptionTextB
-    GUIOuttextwin2 4,25,123,GUIOptionTextC
-    GUIOuttextwin2 4,25,133,GUIOptionTextD
-    GUIOuttextwin2 4,25,143,GUIOptionTextE
-    GUIOuttextwin2 4,25,153,GUIOptionTextF
-%ifdef __WIN32__
-    GUIOuttextwin2 4,25,163,GUIOptionTextW
-%endif
                                                ; Checkboxes
     mov dword[GUITemp],GUIIconDataCheckBoxUC   ; New GFX Engine
     cmp byte[newengen],0
@@ -1635,9 +1550,6 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
 
 
 SECTION .data
-;GUIOptionText1 db 'FRAME RATE',0
-;GUIOptionText1b db 'MAX FRAME SKIP',0
-;GUIOptionText2 db 'AUTO FRAME RATE',0
 GUIOptionText3 db 'NEW GFX ENGINE',0
 GUIOptionText4 db 'MMX SUPPORT',0
 GUIOptionText5 db 'USE PL3/4 AS PL1/2',0
@@ -2324,79 +2236,37 @@ SECTION .text
 DisplayGUISound:                     ; Sound Related Options
     GUIDrawWindowBox 6,GUISoundDisp
 
-    mov byte[GUItextcolor],217       ; Shadows
-    cmp byte[GUIWincoladd],0
-    je .zero
-    mov byte[GUItextcolor],211
-.zero
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2u 6,26,26,GUISoundTextA1,0
-    GUIOuttextwin2u 6,26,35,GUISoundTextA2,0
+    GUIDisplayTextY 6,6,16,GUISoundTextA
+    GUIDisplayTextu 6,26,26,GUISoundTextA1,0
+    GUIDisplayTextu 6,26,35,GUISoundTextA2,0
 %ifdef __MSDOS__
-    GUIOuttextwin2u 6,26,44,GUISoundTextA3,1
-    GUIOuttextwin2u 6,116,26,GUISoundTextA4,0
+    GUIDisplayTextu 6,26,44,GUISoundTextA3,1
+    GUIDisplayTextu 6,116,26,GUISoundTextA4,0
 %endif
+    GUIDisplayTextY 6,6,53,GUISoundTextB
+    GUIDisplayTextY 6,6,76,GUISoundTextC
 %ifdef __WIN32__
-    GUIOuttextwin2u 6,26,106,GUISoundTextD1,4
+    GUIDisplayTextu 6,26,106,GUISoundTextD1,4
 %endif
-    GUIOuttextwin2u 6,26,116,GUISoundTextD2,2
-    GUIOuttextwin2u 6,26,126,GUISoundTextD3,1
-    GUIOuttextwin2u 6,26,136,GUISoundTextD4,6
-    GUIOuttextwin2u 6,26,146,GUISoundTextD5,0
-    GUIOuttextwin2u 6,26,168,GUISoundTextE1,0
-    GUIOuttextwin2u 6,26,178,GUISoundTextE2,0
+    GUIDisplayTextu 6,26,116,GUISoundTextD2,2
+    GUIDisplayTextu 6,26,126,GUISoundTextD3,1
+    GUIDisplayTextu 6,26,136,GUISoundTextD4,6
+    GUIDisplayTextu 6,26,146,GUISoundTextD5,0
+    
+    GUIDisplayTextY 6,6,158,GUISoundTextE
+    GUIDisplayTextu 6,26,168,GUISoundTextE1,0
+    GUIDisplayTextu 6,26,178,GUISoundTextE2,0
 %ifndef __MSDOS__
-    GUIOuttextwin2u 6,26,188,GUISoundTextE3,0
-%endif
-    GUIOuttextwin2u 6,126,168,GUISoundTextF1,1
-    GUIOuttextwin2u 6,126,178,GUISoundTextF2,1
-%ifndef __MSDOS__
-    GUIOuttextwin2u 6,126,188,GUISoundTextF3,0
+    GUIDisplayTextu 6,26,188,GUISoundTextE3,0
 %endif
 
-    add byte[GUItextcolor],15           ;Text
-    GUIOuttextwin2 6,25,25,GUISoundTextA1
-    GUIOuttextwin2 6,25,34,GUISoundTextA2
-%ifdef __MSDOS__
-    GUIOuttextwin2 6,25,43,GUISoundTextA3
-    GUIOuttextwin2 6,115,25,GUISoundTextA4
-%endif
-%ifdef __WIN32__
-    GUIOuttextwin2 6,25,105,GUISoundTextD1
-%endif
-    GUIOuttextwin2 6,25,115,GUISoundTextD2
-    GUIOuttextwin2 6,25,125,GUISoundTextD3
-    GUIOuttextwin2 6,25,135,GUISoundTextD4
-    GUIOuttextwin2 6,25,145,GUISoundTextD5
-    GUIOuttextwin2 6,25,167,GUISoundTextE1
-    GUIOuttextwin2 6,25,177,GUISoundTextE2
+    GUIDisplayTextY 6,106,158,GUISoundTextF
+    GUIDisplayTextu 6,126,168,GUISoundTextF1,1
+    GUIDisplayTextu 6,126,178,GUISoundTextF2,1
 %ifndef __MSDOS__
-    GUIOuttextwin2 6,25,187,GUISoundTextE3
-%endif
-    GUIOuttextwin2 6,125,167,GUISoundTextF1
-    GUIOuttextwin2 6,125,177,GUISoundTextF2
-%ifndef __MSDOS__
-    GUIOuttextwin2 6,125,187,GUISoundTextF3
+    GUIDisplayTextu 6,126,188,GUISoundTextF3,0
 %endif
 
-    mov al,[GUIWincol]                ;Yellow Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 6,6,16,GUISoundTextA
-    GUIOuttextwin2u 6,6,53,GUISoundTextB,9
-    GUIOuttextwin2 6,6,76,GUISoundTextC
-    GUIOuttextwin2 6,6,158,GUISoundTextE
-    GUIOuttextwin2 6,106,158,GUISoundTextF
-
-    mov byte[GUItextcolor],163        ;Yellow Text
-    cmp byte[GUIWincoladd],0
-    je .zero3
-    mov byte[GUItextcolor],164
-.zero3
-    GUIOuttextwin2 6,5,15,GUISoundTextA
-    GUIOuttextwin2 6,5,52,GUISoundTextB
-    GUIOuttextwin2 6,5,75,GUISoundTextC
-    GUIOuttextwin2 6,5,157,GUISoundTextE
-    GUIOuttextwin2 6,105,157,GUISoundTextF
                                                 ; Checkboxes
     mov dword[GUITemp],GUIIconDataCheckBoxUC    ; Enable Sound 
     cmp byte[cfgsoundon],0
@@ -5187,46 +5057,22 @@ EEMode:
 DisplayGUIAddOns:                   ;Select Special Controllers
     GUIDrawWindowBox 17,GUIAddOnsDisp
 
-    mov byte[GUItextcolor],217      ;Shadow
-    cmp byte[GUIWincoladd],0
-    je .zero
-    mov byte[GUItextcolor],211
-.zero
-    sub byte[GUItextcolor],15
     call EEMode
     cmp eax,0
     je near .noEE                    ;You know it!
-    GUIOuttextwin2 17,21,18,GUIAddOnText1Alt
-    GUIOuttextwin2 17,21,28,GUIAddOnText2Alt
-    GUIOuttextwin2 17,21,38,GUIAddOnText3Alt
-    GUIOuttextwin2 17,21,48,GUIAddOnText4Alt
-    GUIOuttextwin2 17,21,58,GUIAddOnText5Alt
+    GUIDisplayText 17,21,18,GUIAddOnText1Alt
+    GUIDisplayText 17,21,28,GUIAddOnText2Alt
+    GUIDisplayText 17,21,38,GUIAddOnText3Alt
+    GUIDisplayText 17,21,48,GUIAddOnText4Alt
+    GUIDisplayText 17,21,58,GUIAddOnText5Alt
     jmp .endEE
 .noEE                                ;Regular
-    GUIOuttextwin2u 17,21,18,GUIAddOnText1,0
-    GUIOuttextwin2u 17,21,28,GUIAddOnText2,20
-    GUIOuttextwin2u 17,21,38,GUIAddOnText3,20
-    GUIOuttextwin2u 17,21,48,GUIAddOnText4,0
-    GUIOuttextwin2u 17,21,58,GUIAddOnText5,0
+    GUIDisplayTextu 17,21,18,GUIAddOnText1,0
+    GUIDisplayTextu 17,21,28,GUIAddOnText2,20
+    GUIDisplayTextu 17,21,38,GUIAddOnText3,20
+    GUIDisplayTextu 17,21,48,GUIAddOnText4,0
+    GUIDisplayTextu 17,21,58,GUIAddOnText5,0
 .endEE
-
-    add byte[GUItextcolor],15        ;Text
-    call EEMode
-    cmp eax,0
-    je near .noEE2                   ;You know it!
-    GUIOuttextwin2 17,20,17,GUIAddOnText1Alt
-    GUIOuttextwin2 17,20,27,GUIAddOnText2Alt
-    GUIOuttextwin2 17,20,37,GUIAddOnText3Alt
-    GUIOuttextwin2 17,20,47,GUIAddOnText4Alt
-    GUIOuttextwin2 17,20,57,GUIAddOnText5Alt
-    jmp .endEE2
-.noEE2                               ;Regular
-    GUIOuttextwin2 17,20,17,GUIAddOnText1
-    GUIOuttextwin2 17,20,27,GUIAddOnText2
-    GUIOuttextwin2 17,20,37,GUIAddOnText3
-    GUIOuttextwin2 17,20,47,GUIAddOnText4
-    GUIOuttextwin2 17,20,57,GUIAddOnText5
-.endEE2
 
     GUIDisplayButtonHole 17,9,15,byte[snesmouse],0  ;Ratio Buttons
     GUIDisplayButtonHole 17,9,25,byte[snesmouse],1
@@ -5254,64 +5100,26 @@ SECTION .text
 DisplayGUIChipConfig:
     GUIDrawWindowBox 18,GUIChipConfigDisp
 
-    mov byte[GUItextcolor],217      ;Shadow
-    cmp byte[GUIWincoladd],0
-    je .zero
-    mov byte[GUItextcolor],211
-.zero
-    sub byte[GUItextcolor],15
-
     call EEMode                     ; You know it!
     cmp eax,0
     je near .noEE
-    GUIOuttextwin2 18,10,38,GUIChipText1Alt
-    GUIOuttextwin2 18,21,48,GUIChipText2Alt
-    GUIOuttextwin2 18,71,48,GUIChipText3Alt
-    GUIOuttextwin2 18,121,48,GUIChipText4Alt
-    GUIOuttextwin2 18,21,58,GUIChipText5Alt
-    GUIOuttextwin2 18,71,58,GUIChipText6Alt
-    GUIOuttextwin2 18,121,58,GUIChipText7Alt
+    GUIDisplayText 18,10,38,GUIChipText1Alt
+    GUIDisplayText 18,21,48,GUIChipText2Alt
+    GUIDisplayText 18,71,48,GUIChipText3Alt
+    GUIDisplayText 18,121,48,GUIChipText4Alt
+    GUIDisplayText 18,21,58,GUIChipText5Alt
+    GUIDisplayText 18,71,58,GUIChipText6Alt
+    GUIDisplayText 18,121,58,GUIChipText7Alt
     jmp .endEE
 .noEE                                ; Regular Shadow
-    GUIOuttextwin2u 18,21,48,GUIChipTextA1,4
-    GUIOuttextwin2u 18,71,48,GUIChipTextA2,4
-    GUIOuttextwin2u 18,121,48,GUIChipTextA3,4
-    GUIOuttextwin2u 18,21,58,GUIChipTextA4,4
-    GUIOuttextwin2u 18,71,58,GUIChipTextA5,4
-    GUIOuttextwin2u 18,121,58,GUIChipTextA6,4
+    GUIDisplayTextY 18,10,38,GUIChipTextA
+    GUIDisplayTextu 18,21,48,GUIChipTextA1,4
+    GUIDisplayTextu 18,71,48,GUIChipTextA2,4
+    GUIDisplayTextu 18,121,48,GUIChipTextA3,4
+    GUIDisplayTextu 18,21,58,GUIChipTextA4,4
+    GUIDisplayTextu 18,71,58,GUIChipTextA5,4
+    GUIDisplayTextu 18,121,58,GUIChipTextA6,4
 .endEE
-
-    add byte[GUItextcolor],15         ; Text
-    call EEMode
-    cmp eax,0
-    je near .noEE2                    ; You know it!
-    GUIOuttextwin2 18,9,37,GUIChipText1Alt
-    GUIOuttextwin2 18,20,47,GUIChipText2Alt
-    GUIOuttextwin2 18,70,47,GUIChipText3Alt
-    GUIOuttextwin2 18,120,47,GUIChipText4Alt
-    GUIOuttextwin2 18,20,57,GUIChipText5Alt
-    GUIOuttextwin2 18,70,57,GUIChipText6Alt
-    GUIOuttextwin2 18,120,57,GUIChipText7Alt
-    jmp .endEE2
-.noEE2                                 ; Regular Text
-    GUIOuttextwin2 18,20,47,GUIChipTextA1
-    GUIOuttextwin2 18,70,47,GUIChipTextA2
-    GUIOuttextwin2 18,120,47,GUIChipTextA3
-    GUIOuttextwin2 18,20,57,GUIChipTextA4
-    GUIOuttextwin2 18,70,57,GUIChipTextA5
-    GUIOuttextwin2 18,120,57,GUIChipTextA6
-
-    mov al,[GUIWincol]                  ;Yellow Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 18,10,38,GUIChipTextA
-    mov byte[GUItextcolor],163          ; Yellow Text
-    cmp byte[GUIWincoladd],0
-    je .zero8
-    mov byte[GUItextcolor],164
-.zero8
-    GUIOuttextwin2 18,9,37,GUIChipTextA
-.endEE2
-
                                                 ;Checkboxes
     mov dword[GUITemp],GUIIconDataCheckBoxUC    ;DIP1
     cmp byte[nssdip1],0
@@ -5899,75 +5707,29 @@ SECTION .text
 DisplayGUISpeed:                    ;Speed Options
     GUIDrawWindowBox 21,GUISpeedDisp
 
-    mov byte[GUItextcolor],217               ;Shadow
-    cmp byte[GUIWincoladd],0
-    je .zero
-    mov byte[GUItextcolor],211
-.zero
-    sub byte[GUItextcolor],15
-
     cmp byte[frameskip],0
     jne near .noautoshad
-    GUIOuttextwin2 21,6,15,GUISpeedText1b
-    GUIOuttextwin2 21,40,79,GUISpeedTextA3
-    GUIOuttextwin2 21,40,99,GUISpeedTextA5
+    GUIDisplayText 21,6,15,GUISpeedTextA1
+    GUIDisplayText 21,40,79,GUISpeedTextB3
+    GUIDisplayText 21,40,99,GUISpeedTextB5
+    GUIDisplayTextY 21,8,164,GUISpeedTextD
     jmp near .endautoshad
 .noautoshad
-    GUIOuttextwin2 21,6,15,GUISpeedText1
-    GUIOuttextwin2 21,40,79,GUISpeedTextA3b
-    GUIOuttextwin2 21,40,99,GUISpeedTextA5b
+    GUIDisplayText 21,6,15,GUISpeedTextA1b
+    GUIDisplayText 21,40,79,GUISpeedTextB3b
+    GUIDisplayText 21,40,99,GUISpeedTextB5b
 .endautoshad
-    GUIOuttextwin2 21,6,26,GUISpeedText2
-    GUIOuttextwin2 21,6,37,GUISpeedText3
-    GUIOuttextwin2 21,40,59,GUISpeedTextA1
-    GUIOuttextwin2 21,40,69,GUISpeedTextA2
-    GUIOuttextwin2 21,40,89,GUISpeedTextA4
-    GUIOuttextwin2 21,40,109,GUISpeedTextA6
-    GUIOuttextwin2 21,40,119,GUISpeedTextA7
-    GUIOuttextwin2u 21,25,139,GUISpeedTextC1,0
-    GUIOuttextwin2u 21,25,149,GUISpeedTextC2,0
-
-    add byte[GUItextcolor],15                ;Text
-    cmp byte[frameskip],0
-    jne near .noautotext
-    GUIOuttextwin2 21,5,14,GUISpeedText1b
-    GUIOuttextwin2 21,39,78,GUISpeedTextA3
-    GUIOuttextwin2 21,39,98,GUISpeedTextA5
-    jmp near .endautotext
-.noautotext
-    GUIOuttextwin2 21,5,14,GUISpeedText1
-    GUIOuttextwin2 21,39,78,GUISpeedTextA3b
-    GUIOuttextwin2 21,39,98,GUISpeedTextA5b
-.endautotext
-    GUIOuttextwin2 21,5,25,GUISpeedText2
-    GUIOuttextwin2 21,5,36,GUISpeedText3
-    GUIOuttextwin2 21,39,58,GUISpeedTextA1
-    GUIOuttextwin2 21,39,68,GUISpeedTextA2
-    GUIOuttextwin2 21,39,88,GUISpeedTextA4
-    GUIOuttextwin2 21,39,108,GUISpeedTextA6
-    GUIOuttextwin2 21,39,118,GUISpeedTextA7
-    GUIOuttextwin2 21,24,138,GUISpeedTextC1
-    GUIOuttextwin2 21,24,148,GUISpeedTextC2
-
-    mov al,[GUIWincol]                       ;Yellow Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 21,8,49,GUISpeedTextA
-
-    cmp byte[frameskip],0
-    jne near .hidespeed
-    GUIOuttextwin2 21,8,164,GUISpeedTextB
-.hidespeed
-
-    mov byte[GUItextcolor],163            ;Yellow Text
-    cmp byte[GUIWincoladd],0
-    je .zero3
-    mov byte[GUItextcolor],164
-.zero3
-    GUIOuttextwin2 21,7,48,GUISpeedTextA
-    cmp byte[frameskip],0
-    jne near .hidespeed2
-    GUIOuttextwin2 21,7,163,GUISpeedTextB
-.hidespeed2
+    GUIDisplayText 21,6,26,GUISpeedTextA2
+    GUIDisplayText 21,6,37,GUISpeedTextA3
+    
+    GUIDisplayTextY 21,8,49,GUISpeedTextB
+    GUIDisplayText 21,40,59,GUISpeedTextB1
+    GUIDisplayText 21,40,69,GUISpeedTextB2
+    GUIDisplayText 21,40,89,GUISpeedTextB4
+    GUIDisplayText 21,40,109,GUISpeedTextB6
+    GUIDisplayText 21,40,119,GUISpeedTextB7
+    GUIDisplayTextu 21,25,139,GUISpeedTextC1,0
+    GUIDisplayTextu 21,25,149,GUISpeedTextC2,0
 
     cmp byte[frameskip],0                  ; Shortcut Boxes
     jne near .frate
@@ -6103,8 +5865,8 @@ DisplayGUISpeed:                    ;Speed Options
     mov dword[GUITemp],12
     add [GUITemp],eax
     GUIDisplayIconWin 21,[GUITemp],171,GUIIconDataSlideBar
-    mov dword[GUISpeedTextB1],0
-    mov esi,GUISpeedTextB1+2
+    mov dword[GUISpeedTextD1],0
+    mov esi,GUISpeedTextD1+2
     xor eax,eax         ; currently emuspeed ranges from 0 to 58
     mov al,[EmuSpeed]   ; this turns it into '/30' to '30x'
     cmp al,29
@@ -6114,7 +5876,7 @@ DisplayGUISpeed:                    ;Speed Options
     sub al,28
     jmp .asciilp
 .slowmo
-    mov byte[GUISpeedTextB1],1      ; slomo indicator
+    mov byte[GUISpeedTextD1],1      ; slomo indicator
     mov bl,30
     sub bl,al
     mov al,bl
@@ -6131,7 +5893,7 @@ DisplayGUISpeed:                    ;Speed Options
     add ah,48
     mov [esi],ah
 .nomore
-    cmp byte[GUISpeedTextB1],1
+    cmp byte[GUISpeedTextD1],1
     jne .convdone
     dec esi
     mov byte[esi],'/'      ; adds '/' before the slomo value
@@ -6249,30 +6011,29 @@ DisplayGUISpeed:                    ;Speed Options
     ret
 
 SECTION .data
-GUISpeedTextA db 'SHORTCUTS : ',0
-GUISpeedTextA1 db 'FAST FORWARD',0
-GUISpeedTextA3b db '+ FRAME RATE',0
-GUISpeedTextA2 db 'SLOW DOWN',0
-GUISpeedTextA3 db '+ EMU SPEED',0
-GUISpeedTextA4 db 'RESET SPEED',0
-GUISpeedTextA5 db '- EMU SPEED',0
-GUISpeedTextA5b db '- FRAME RATE',0
-GUISpeedTextA6 db 'PAUSE GAME',0
-GUISpeedTextA7 db 'INCR FRAME',0
+GUISpeedTextA1 db 'FRAME RATE',0
+GUISpeedTextA1b db 'MAX FRAME SKIP',0
+GUISpeedTextA2 db 'FASTFWD RATIO x',0
+GUISpeedTextA3 db 'SLOWDWN RATIO /',0
 
-GUISpeedTextB db 'EMU SPEED : ',0
-GUISpeedTextB1 db '---',0
-
-GUISpeedText1 db 'FRAME RATE',0
-GUISpeedText1b db 'MAX FRAME SKIP',0
-GUISpeedText2 db 'FASTFWD RATIO x',0
-GUISpeedText3 db 'SLOWDWN RATIO /',0
+GUISpeedTextB db 'SHORTCUTS : ',0
+GUISpeedTextB1 db 'FAST FORWARD',0
+GUISpeedTextB2 db 'SLOW DOWN',0
+GUISpeedTextB3 db '+ EMU SPEED',0
+GUISpeedTextB3b db '+ FRAME RATE',0
+GUISpeedTextB4 db 'RESET SPEED',0
+GUISpeedTextB5 db '- EMU SPEED',0
+GUISpeedTextB5b db '- FRAME RATE',0
+GUISpeedTextB6 db 'PAUSE GAME',0
+GUISpeedTextB7 db 'INCR FRAME',0
 
 GUISpeedTextC1 db 'TOGGLED FFWD/SLWDWN',0
 GUISpeedTextC2 db 'AUTO FRAME RATE',0
 
-GUISpeedTextZ3 db '--',0
+GUISpeedTextD db 'EMU SPEED : ',0
+GUISpeedTextD1 db '---',0
 
+GUISpeedTextZ3 db '--',0
 GUISpeedTextX db '-',0
 GUISpeedTextY db '+',0
 GUISpeedTextZ db '-',0
