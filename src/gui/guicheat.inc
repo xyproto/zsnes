@@ -51,7 +51,7 @@ AddCSCheatCode:
     jmp .cspardispagain
 .cspardisploop
     push ecx
-    mov esi,GUICSrcTextQ
+    mov esi,GUICSrcTextG1
     mov ecx,3
     mov eax,[curaddrvalcs]
     add eax,7E0000h

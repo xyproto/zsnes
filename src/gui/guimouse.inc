@@ -3117,7 +3117,8 @@ DisplayGUICheatSearchClick:
     je near .view
     cmp byte[CheatWinMode],3
     je near .add
-    GUIPHoldbutton 95,140,140,152,50
+    
+    GUIPHoldbutton 95,140,140,152,50         ; Main Menu
     GUIPButtonHole 11,28,byte[CheatSrcByteSize],0
     GUIPButtonHole 11,38,byte[CheatSrcByteSize],1
     GUIPButtonHole 11,48,byte[CheatSrcByteSize],2
@@ -3127,29 +3128,32 @@ DisplayGUICheatSearchClick:
     GUIPButtonHole 11,113,byte[CheatSrcSearchType],0
     GUIPButtonHole 11,123,byte[CheatSrcSearchType],1
     ret
-.incheatmode
+    
+.incheatmode                            ; Exact Value
     GUIPHoldbutton 30,140,80,152,51
     cmp byte[CheatSearchStatus],1
     jne near .cheatsearching
     jmp .nosearch
-.cheatsearching
+    
+.cheatsearching                         ; Return and Re-Search
     cmp byte[CheatSrcSearchType],1
     je near .cheatsearchingcomp
     jmp .searched
-.cheatsearchingcomp
+    
+.cheatsearchingcomp                     ; Select Comparison
     GUIPButtonHole 11,33,byte[CheatCompareValue],0
     GUIPButtonHole 11,43,byte[CheatCompareValue],1
     GUIPButtonHole 11,53,byte[CheatCompareValue],2
     GUIPButtonHole 11,63,byte[CheatCompareValue],3
 
-.searched
+.searched                               ; Restart/View/Search Buttons
     GUIPHoldbutton 120,140,170,152,53
 .nosearch
     GUIPHoldbutton 10,140,60,152,51
     GUIPHoldbutton 70,140,110,152,52
     ret
-
-.preview
+                             ; View Cheat
+.preview                     ; Preview Box
     ; x1,y1,x2,y2,upjump,downjump,holdpos,scsize,view,cur,listsize
     GUISlidebarPostImpl 173,28,180,100,.scrollup,.scrolldown,11,12,GUIcurrentchtsrcviewloc,GUIcurrentchtsrccursloc,NumCheatSrc,GUIBlankVar,1
     ;x1,y1,x2,y2,view,curs,num,.scru,.scrd,jumpto,sizeofscreen
@@ -3160,16 +3164,19 @@ DisplayGUICheatSearchClick:
 .skipscrol
     ; x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
     GUIWinControl 5,23,171,21+12*7,GUIBlankVar,GUIcurrentchtsrcviewloc,NumCheatSrc,22,7,GUIcurrentchtsrccursloc,5,13,30
-    GUIPHoldbutton 70,140,130,152,54
+    
+    GUIPHoldbutton 70,140,130,152,54         ; Return/Add Buttons
     GUIPHoldbutton 140,140,180,152,55
     ret
+    
 ;    DrawSlideBarWin 13,173,28,[GUIcurrentchtsrcviewloc],[NumCheatSrc],12,73,GUICSStA
 ;    DrawGUIWinBox 13,5,20,171,108,167
-.add
-    GUIPHoldbutton 60,155,120,167,56
+
+.add                         ; Add Cheat
+    GUIPHoldbutton 60,155,120,167,56                 ; Return/Add Buttons
     GUIPHoldbutton 130,155,160,167,57
-    GUIClickCButton 8,139,byte[CheatUpperByteOnly]
-    GUIBoxVar 10,30,80,37,CurCStextpos,0
+    GUIClickCButton 8,139,byte[CheatUpperByteOnly]   ; Checkbox
+    GUIBoxVar 10,30,80,37,CurCStextpos,0             ; Input Boxes
     GUIBoxVar 10,55,126,62,CurCStextpos,1
     ret
 
