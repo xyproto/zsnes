@@ -3163,10 +3163,10 @@ CheatSearchingComp:           ; Comparative search
     je .zero2
     mov byte[GUItextcolor],211
 .zero2
-    TextWindowMacro 13,25,35,GUICSrcTextD1
-    TextWindowMacro 13,25,45,GUICSrcTextD2
-    TextWindowMacro 13,25,55,GUICSrcTextD3
-    TextWindowMacro 13,25,65,GUICSrcTextD4
+    TextWindowMacrou 13,25,35,GUICSrcTextD1,0
+    TextWindowMacrou 13,25,45,GUICSrcTextD2,1
+    TextWindowMacrou 13,25,55,GUICSrcTextD3,2
+    TextWindowMacrou 13,25,65,GUICSrcTextD4,5
     GUIDisplayButtonHole 13,11,33,byte[CheatCompareValue],0
     GUIDisplayButtonHole 13,11,43,byte[CheatCompareValue],1
     GUIDisplayButtonHole 13,11,53,byte[CheatCompareValue],2

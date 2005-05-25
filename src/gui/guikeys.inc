@@ -734,11 +734,11 @@ GUISpeedKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap    
-    cmp dh,'T'             ; Checkbox
+    cmp dh,'T'                 ; Checkbox
     jne .nofastforward
     xor byte[FastFwdToggle],1
 .nofastforward
-    cmp dh,'A'                 ; Checkboxes
+    cmp dh,'A'                 ; Framerate Checkboxes
     jne .noautofr
     mov byte[FPSOn],0
     cmp byte[frameskip],0
@@ -2076,7 +2076,8 @@ GUICheatSearchKeys:
     je near .view
     cmp byte[CheatWinMode],1
     je near .search
-    CompareKeyMacro '1',CheatSrcByteSize,0
+
+    CompareKeyMacro '1',CheatSrcByteSize,0    ; Main Menu
     CompareKeyMacro '2',CheatSrcByteSize,1
     CompareKeyMacro '3',CheatSrcByteSize,2
     CompareKeyMacro '4',CheatSrcByteSize,3
@@ -2084,7 +2085,8 @@ GUICheatSearchKeys:
     CompareKeyMacro 'H',CheatSrcByteBase,1
     CompareKeyMacro 'E',CheatSrcSearchType,0
     CompareKeyMacro 'C',CheatSrcSearchType,1
-    cmp dh,13
+    
+    cmp dh,13                ; Start Button
     je .start
     cmp dh,'S'
     jne .notstart
@@ -2093,7 +2095,8 @@ GUICheatSearchKeys:
     ret
 .notstart
     ret
-.search
+    
+.search                           ; Shortcuts for Select Comparison
     cmp byte[CheatSrcSearchType],1
     je .compare
     call InsertSearchCharacter
@@ -2101,30 +2104,31 @@ GUICheatSearchKeys:
 .compare
     cmp dh,','
     je .lessthan
-    cmp dh,'<'
+    cmp dh,'N'
     jne .notlessthan
 .lessthan
     mov byte[CheatCompareValue],0
 .notlessthan
     cmp dh,'.'
     je .greaterthan
-    cmp dh,'>'
+    cmp dh,'E'
     jne .notgreaterthan
 .greaterthan
     mov byte[CheatCompareValue],1
 .notgreaterthan
-    cmp dh,'='
+    cmp dh,'W'
     je .equalthan
     cmp dh,'+'
     jne .notequalthan
 .equalthan
     mov byte[CheatCompareValue],2
 .notequalthan
-    cmp dh,'N'
+    cmp dh,'A'
     jne .notnotequalthan
     mov byte[CheatCompareValue],3
 .notnotequalthan
-%ifdef __LINUX__
+
+%ifdef __LINUX__          ; Select with Arrow Keys 
     cmp al,90
     je  .yesmoveup
     cmp dword[numlockptr],1
@@ -2155,7 +2159,9 @@ GUICheatSearchKeys:
     cmp byte[CheatCompareValue],3
     je .nomovedown
     inc byte[CheatCompareValue]
-.nomovedown
+    
+    
+.nomovedown                ; Restart/View/Search Buttons
     cmp dh,'R'
     jne .notrestart
     mov byte[CheatWinMode],0
@@ -2175,8 +2181,9 @@ GUICheatSearchKeys:
     call CheatCodeSearchProcess
 .nosearchprocess
     ret
-.view
-    cmp dword[NumCheatSrc],0
+    
+.view                            ; View
+    cmp dword[NumCheatSrc],0     ; Return Hotkey
     jne .nozero
     cmp dh,27
     je .yesret
@@ -2186,7 +2193,8 @@ GUICheatSearchKeys:
     mov byte[CheatWinMode],1
 .notreturnb
     ret
-.nozero
+
+.nozero                   ; Select Codes with arrow keys
 %ifdef __LINUX__
     cmp al,89
     je  .yeshome
@@ -2270,7 +2278,8 @@ GUICheatSearchKeys:
     inc dword[GUIcurrentchtsrcviewloc]
 .noviewinc
 .nodown
-%ifdef __LINUX__
+
+%ifdef __LINUX__            ; Pageup/Down to select Cheats
     cmp al,91
     je  .yespgup
     cmp dword[numlockptr],1
@@ -2323,7 +2332,8 @@ GUICheatSearchKeys:
     mov dword[GUIcurrentchtsrcviewloc],ebx
 .posvd
 .nopagedown
-    cmp dh,27
+
+    cmp dh,27          ; Return/Add Buttons
     je .yesretb
     cmp dh,'R'
     jne .notreturn
@@ -2343,13 +2353,14 @@ GUICheatSearchKeys:
 .notadd
     ret
 
-.add
-    cmp dh,27
+.add                                 ; Add Cheat Window
+    cmp dh,27                        ; Button Hotkey
     je .yesretc
     cmp byte[CurCStextpos],1
     je .notreturnc
     cmp dh,'R'
     jne .notreturnc
+.nofastforward
 .yesretc
     mov byte[CheatWinMode],2
 .notreturnc
