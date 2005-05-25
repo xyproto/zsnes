@@ -2200,11 +2200,13 @@ DisplayGUIInputClick:
 .skipscrol
     ;x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
     GUIWinControl 5,36,107,34+5*8,GUIBlankVar,GUIcurrentinputviewloc,GUINumValue,35,8,GUIcurrentinputcursloc,4,3,0
-    GUIPHoldbutton 125,34,155,45,14
+    
+    GUIPHoldbutton 125,34,155,45,14            ; Buttons
 %ifdef __MSDOS__
     GUIPHoldbutton 125,50,185,61,15
 %endif
     GUIPHoldbutton 125,66,185,77,40
+    
     mov edi,pl1selk
     mov dword[keycontrolval],pl1contrl
     cmp byte[cplayernum],1

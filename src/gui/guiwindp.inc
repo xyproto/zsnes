@@ -1070,97 +1070,22 @@ mov dl,[GUIWincol]
 
 %macro GUIInputDispKey 2
     mov eax,[edi]
-    mov [GUIInputTextQ],eax
+    mov [GUIInputTextE],eax
     push edi
-    DGOptnsDrawBox2 %1,%2,[GUIInputTextQ]
+    DGOptnsDrawBox2 %1,%2,[GUIInputTextE]
     pop edi
     add edi,4
 %endmacro
 
-DisplayGUIInput:
-    ; Player Select, Joystick/keyboard Type List, Button Assignments
+DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignments
+
     GUIDrawWindowBox 3,GUIInputDisp
-    cmp byte[GUIWincoladd],0
-    je .zero
-    mov byte[GUItextcolor],211
-.zero
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2 3,6,102,GUIInputText3
-    GUIOuttextwin2 3,6,112,GUIInputText4
-    GUIOuttextwin2 3,6,122,GUIInputText5
-    GUIOuttextwin2 3,6,132,GUIInputText6
-    GUIOuttextwin2 3,6,142,GUIInputTextD
-    GUIOuttextwin2 3,6,152,GUIInputTextE
-    GUIOuttextwin2 3,76,102,GUIInputText7
-    GUIOuttextwin2 3,76,112,GUIInputText8
-    GUIOuttextwin2 3,76,122,GUIInputText9
-    GUIOuttextwin2 3,76,132,GUIInputTextA
-    GUIOuttextwin2 3,76,142,GUIInputTextB
-    GUIOuttextwin2 3,76,152,GUIInputTextC
-%ifdef __MSDOS__
-    GUIOuttextwin2 3,20,167,GUIInputTextW
-%endif
-    GUIOuttextwin2 3,156,102,GUIInputText7
-    GUIOuttextwin2 3,156,112,GUIInputText8
-    GUIOuttextwin2 3,156,122,GUIInputTextC
-    GUIOuttextwin2 3,116,102,GUIInputText9
-    GUIOuttextwin2 3,116,112,GUIInputTextA
-    GUIOuttextwin2 3,116,122,GUIInputTextB
-    GUIOuttextwin2 3,153,142,GUIInputTextd
-    GUIOuttextwin2 3,153,152,GUIInputTexte
-    GUIOuttextwin2 3,113,142,GUIInputTextf
-    GUIOuttextwin2 3,113,152,GUIInputTextg
-    add byte[GUItextcolor],15
-    GUIOuttextwin2 3,5,101,GUIInputText3
-    GUIOuttextwin2 3,5,111,GUIInputText4
-    GUIOuttextwin2 3,5,121,GUIInputText5
-    GUIOuttextwin2 3,5,131,GUIInputText6
-    GUIOuttextwin2 3,5,141,GUIInputTextD
-    GUIOuttextwin2 3,5,151,GUIInputTextE
-    GUIOuttextwin2 3,75,101,GUIInputText7
-    GUIOuttextwin2 3,75,111,GUIInputText8
-    GUIOuttextwin2 3,75,121,GUIInputText9
-    GUIOuttextwin2 3,75,131,GUIInputTextA
-    GUIOuttextwin2 3,75,141,GUIInputTextB
-    GUIOuttextwin2 3,75,151,GUIInputTextC
-%ifdef __MSDOS__
-    GUIOuttextwin2 3,19,166,GUIInputTextW
-%endif
-    GUIOuttextwin2 3,155,101,GUIInputText7
-    GUIOuttextwin2 3,155,111,GUIInputText8
-    GUIOuttextwin2 3,155,121,GUIInputTextC
-    GUIOuttextwin2 3,115,101,GUIInputText9
-    GUIOuttextwin2 3,115,111,GUIInputTextA
-    GUIOuttextwin2 3,115,121,GUIInputTextB
-    GUIOuttextwin2 3,152,141,GUIInputTextd
-    GUIOuttextwin2 3,152,151,GUIInputTexte
-    GUIOuttextwin2 3,112,141,GUIInputTextf
-    GUIOuttextwin2 3,112,151,GUIInputTextg
-%ifdef __MSDOS__
-    mov dword[GUITemp],GUIIconDataCheckBoxUC
-    xor eax,eax
-    mov al,[cplayernum]
-    cmp byte[pl1p209+eax],0
-    je .nocheckbox2
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckbox2
-    GUIDisplayIconWin 3,5,162,[GUITemp]
-%endif
-    DrawGUIButton 3,125,34,155,45,GUIInputTextV,14,0,0
-%ifdef __MSDOS__
-    DrawGUIButton 3,125,50,185,61,GUIInputTexta,15,0,0
-%endif
-    DrawGUIButton 3,125,66,179,77,GUIInputTexta2,15,0,0
-    mov al,[GUIWincol]
-    mov byte[GUItextcolor],al
+    
     mov al,[cplayernum]
     add al,'1'
-    mov [GUIInputText1+8],al
-    GUIOuttextwin2 3,6,16,GUIInputText1
-    GUIOuttextwin2 3,6,26,GUIInputText2
-    GUIOuttextwin2 3,6,92,GUIInputTextP
-    GUIOuttextwin2 3,116,92,GUIInputTextb
-    GUIOuttextwin2 3,116,131,GUIInputTextc
+    mov [GUIInputTextA1+8],al
+    GUIDisplayTextY 3,6,16,GUIInputTextA1
+    GUIDisplayTextY 3,6,26,GUIInputTextA2
     xor eax,eax
     mov al,[cplayernum]
     mov ebx,[GUIInputRefP+eax*4]
@@ -1171,28 +1096,125 @@ DisplayGUIInput:
     add eax,ebx
     add eax,GUIInputNames
     mov dword[GUITemp],eax
-    GUIOuttextwin2 3,7+24,83,[GUITemp]
-    GUIOuttextwin2 3,7,83,GUIInputTextT
-    mov byte[GUItextcolor],163
-    cmp byte[GUIWincoladd],0
-    je .zero3
-    mov byte[GUItextcolor],164
-.zero3
-    GUIOuttextwin2 3,5,15,GUIInputText1
-    GUIOuttextwin2 3,5,25,GUIInputText2
-    GUIOuttextwin2 3,5,91,GUIInputTextP
-    GUIOuttextwin2 3,115,91,GUIInputTextb
-    GUIOuttextwin2 3,115,130,GUIInputTextc
-    GUIOuttextwin2 3,6+24,82,[GUITemp]
-    GUIOuttextwin2 3,6,82,GUIInputTextT
-    DrawGUIWinBox 3,5,34,107,77,167
+    GUIDisplayTextY 3,6+24,83,[GUITemp]
+    GUIDisplayTextY 3,6,83,GUIInputTextA3
+    
+    GUIDisplayTextY 3,6,92,GUIInputTextB
+    GUIDisplayText 3,6,102,GUIInputTextB1
+    GUIDisplayText 3,6,112,GUIInputTextB2
+    GUIDisplayText 3,6,122,GUIInputTextB3
+    GUIDisplayText 3,6,132,GUIInputTextB4
+    GUIDisplayText 3,6,142,GUIInputTextB5
+    GUIDisplayText 3,6,152,GUIInputTextB6
+    
+    GUIDisplayText 3,76,102,GUIInputTextC1
+    GUIDisplayText 3,76,112,GUIInputTextC2
+    GUIDisplayText 3,76,122,GUIInputTextC3
+    GUIDisplayText 3,76,132,GUIInputTextC4
+    GUIDisplayText 3,76,142,GUIInputTextC5
+    GUIDisplayText 3,76,152,GUIInputTextC6
+
+    GUIDisplayTextY 3,116,92,GUIInputTextC
+    GUIDisplayText 3,156,102,GUIInputTextC1
+    GUIDisplayText 3,156,112,GUIInputTextC2
+    GUIDisplayText 3,156,122,GUIInputTextC6
+    GUIDisplayText 3,116,102,GUIInputTextC3
+    GUIDisplayText 3,116,112,GUIInputTextC4
+    GUIDisplayText 3,116,122,GUIInputTextC5
+    
+    GUIDisplayTextY 3,116,131,GUIInputTextD
+    GUIDisplayText 3,153,142,GUIInputTextD1
+    GUIDisplayText 3,153,152,GUIInputTextD2
+    GUIDisplayText 3,113,142,GUIInputTextD3
+    GUIDisplayText 3,113,152,GUIInputTextD4
+
+%ifdef __MSDOS__
+    GUIDisplayText 3,20,167,GUIInputTextE4
+%endif
+
+%ifdef __MSDOS__                              ; Checkbox
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    xor eax,eax
+    mov al,[cplayernum]
+    cmp byte[pl1p209+eax],0
+    je .nocheckbox2
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckbox2
+    GUIDisplayIconWin 3,5,162,[GUITemp]
+%endif
+
+    DrawGUIButton 3,125,34,155,45,GUIInputTextE1,14,0,0   ; Buttons
+%ifdef __MSDOS__
+    DrawGUIButton 3,125,50,185,61,GUIInputTextE2,15,0,0
+%endif
+    DrawGUIButton 3,125,66,179,77,GUIInputTextE3,15,0,0
+    
+    DrawGUIWinBox 3,5,34,107,77,167        ; Main Box
     mov ebx,[GUIcurrentinputcursloc]
     sub ebx,[GUIcurrentinputviewloc]
     mov eax,ebx
     lea ebx,[ebx*8]
     add ebx,36
     DrawGUIWinBox2 3,5,107,7,224
-    mov edi,pl1selk
+    
+    mov byte[GUItextcolor],223             ; Shadow inside Main Box
+    mov eax,[GUIcurrentinputviewloc]
+    shl eax,4
+    add eax,[GUIcurrentinputviewloc]
+    add eax,GUIInputNames
+    mov dword[GUITemp],eax
+    GUIOuttextwin2 3,11,38,[GUITemp]
+    add dword[GUITemp],17
+    GUIOuttextwin2 3,11,38+8,[GUITemp]
+    add dword[GUITemp],17
+    GUIOuttextwin2 3,11,38+8*2,[GUITemp]
+    add dword[GUITemp],17
+    GUIOuttextwin2 3,11,38+8*3,[GUITemp]
+    add dword[GUITemp],17
+    GUIOuttextwin2 3,11,38+8*4,[GUITemp]
+
+    mov byte[GUItextcolor],221              ; Text inside Main Box
+    cmp byte[GUIWincoladd],0
+    je .zero5
+    mov byte[GUItextcolor],222
+.zero5
+    mov eax,[GUIcurrentinputviewloc]
+    shl eax,4
+    add eax,[GUIcurrentinputviewloc]
+    add eax,GUIInputNames
+    mov dword[GUITemp],eax
+    GUIOuttextwin2 3,10,37,[GUITemp]
+    add dword[GUITemp],17
+    GUIOuttextwin2 3,10,37+8,[GUITemp]
+    add dword[GUITemp],17
+    GUIOuttextwin2 3,10,37+8*2,[GUITemp]
+    add dword[GUITemp],17
+    GUIOuttextwin2 3,10,37+8*3,[GUITemp]
+    add dword[GUITemp],17
+    GUIOuttextwin2 3,10,37+8*4,[GUITemp]
+    
+                                              ; Sidebar
+    DrawSlideBarWin 3,109,42,[GUIcurrentinputviewloc],[NumInputDevices],5,28,GUIIStA
+    cmp byte[GUICHold],9
+    jne .noholda
+    add byte[GUIWincoladd],3
+.noholda
+    GUIDisplayIconWin 3,109,34,GUIIconDataUpArrow
+    cmp byte[GUICHold],9
+    jne .noholda2
+    sub byte[GUIWincoladd],3
+.noholda2
+    cmp byte[GUICHold],10
+    jne .noholdb
+    add byte[GUIWincoladd],3
+.noholdb
+    GUIDisplayIconWin 3,109,70,GUIIconDataDownArrow
+    cmp byte[GUICHold],10
+    jne .noholdb2
+    sub byte[GUIWincoladd],3
+.noholdb2
+
+    mov edi,pl1selk                        ; Hotkey Boxes
     cmp byte[cplayernum],1
     jne .nopl2
     mov edi,pl2selk
@@ -1221,6 +1243,7 @@ DisplayGUIInput:
     GUIInputDispKey 85,130      ; Y
     GUIInputDispKey 85,110      ; B
     GUIInputDispKey 85,150      ; R
+    
     mov edi,pl1Atk
     cmp byte[cplayernum],1
     jne .nopl2t
@@ -1242,6 +1265,7 @@ DisplayGUIInput:
     GUIInputDispKey 165,110      ; B Turbo
     GUIInputDispKey 125,100      ; X Turbo
     GUIInputDispKey 125,110      ; Y Turbo
+    
     mov edi,pl1Ltk
     cmp byte[cplayernum],1
     jne .nopl2tl
@@ -1283,63 +1307,6 @@ DisplayGUIInput:
     GUIInputDispKey 165,150      ; Up-Right
     GUIInputDispKey 125,140      ; Down-Left
     GUIInputDispKey 125,150      ; Down-Right
-
-    mov byte[GUItextcolor],223
-    mov eax,[GUIcurrentinputviewloc]
-    shl eax,4
-    add eax,[GUIcurrentinputviewloc]
-    add eax,GUIInputNames
-    mov dword[GUITemp],eax
-    GUIOuttextwin2 3,11,38,[GUITemp]
-    add dword[GUITemp],17
-    GUIOuttextwin2 3,11,38+8,[GUITemp]
-    add dword[GUITemp],17
-    GUIOuttextwin2 3,11,38+8*2,[GUITemp]
-    add dword[GUITemp],17
-    GUIOuttextwin2 3,11,38+8*3,[GUITemp]
-    add dword[GUITemp],17
-    GUIOuttextwin2 3,11,38+8*4,[GUITemp]
-
-    mov byte[GUItextcolor],221
-    cmp byte[GUIWincoladd],0
-    je .zero5
-    mov byte[GUItextcolor],222
-.zero5
-    mov eax,[GUIcurrentinputviewloc]
-    shl eax,4
-    add eax,[GUIcurrentinputviewloc]
-    add eax,GUIInputNames
-    mov dword[GUITemp],eax
-    GUIOuttextwin2 3,10,37,[GUITemp]
-    add dword[GUITemp],17
-    GUIOuttextwin2 3,10,37+8,[GUITemp]
-    add dword[GUITemp],17
-    GUIOuttextwin2 3,10,37+8*2,[GUITemp]
-    add dword[GUITemp],17
-    GUIOuttextwin2 3,10,37+8*3,[GUITemp]
-    add dword[GUITemp],17
-    GUIOuttextwin2 3,10,37+8*4,[GUITemp]
-
-    DrawSlideBarWin 3,109,42,[GUIcurrentinputviewloc],[NumInputDevices],5,28,GUIIStA
-
-    cmp byte[GUICHold],9
-    jne .noholda
-    add byte[GUIWincoladd],3
-.noholda
-    GUIDisplayIconWin 3,109,34,GUIIconDataUpArrow
-    cmp byte[GUICHold],9
-    jne .noholda2
-    sub byte[GUIWincoladd],3
-.noholda2
-    cmp byte[GUICHold],10
-    jne .noholdb
-    add byte[GUIWincoladd],3
-.noholdb
-    GUIDisplayIconWin 3,109,70,GUIIconDataDownArrow
-    cmp byte[GUICHold],10
-    jne .noholdb2
-    sub byte[GUIWincoladd],3
-.noholdb2
 
     ; Draw border
     mov dword[GUIWincol],148+10
@@ -1389,33 +1356,42 @@ SECTION .data
 GUIInputRefF db 0,1,2,3,5,18,6,7,8,9,10,11,14,15,16,17
 GUIInputRefB db 0,1,2,3,3,4,6,7,8,9,10,11,11,11,12,13,14,15,5
 GUIInputRefP dd pl1contrl,pl2contrl,pl3contrl,pl4contrl,pl5contrl
-GUIInputText1 db 'PLAYER #  CONTROL :',0
-GUIInputText2 db 'DEVICE :',0
-GUIInputText3 db '    UP',0
-GUIInputText4 db '  DOWN',0
-GUIInputText5 db '  LEFT',0
-GUIInputText6 db ' RIGHT',0
-GUIInputText7 db 'A',0
-GUIInputText8 db 'B',0
-GUIInputText9 db 'X',0
-GUIInputTextA db 'Y',0
-GUIInputTextB db 'L',0
-GUIInputTextC db 'R',0
-GUIInputTextD db ' START',0
-GUIInputTextE db 'SELECT',0
-GUIInputTextP db 'KEYS :',0
-GUIInputTextQ dd 0
-GUIInputTextT db 'CDV:',0
-GUIInputTextV db 'SET',0
-GUIInputTextW db 'USE JOYSTICK PORT 209H',0
-GUIInputTexta db 'CALIBRATE',0
-GUIInputTexta2 db 'SET KEYS',0
-GUIInputTextb db 'TURBO :',0
-GUIInputTextc db 'DIAGONALS :',0
-GUIInputTextd db 'UL',0
-GUIInputTexte db 'UR',0
-GUIInputTextf db 'DL',0
-GUIInputTextg db 'DR',0
+
+
+
+GUIInputTextA1 db 'PLAYER #  CONTROL :',0
+GUIInputTextA2 db 'DEVICE :',0
+GUIInputTextA3 db 'CDV:',0
+
+GUIInputTextB db 'KEYS :',0
+GUIInputTextB1 db '    UP',0
+GUIInputTextB2 db '  DOWN',0
+GUIInputTextB3 db '  LEFT',0
+GUIInputTextB4 db ' RIGHT',0
+GUIInputTextB5 db ' START',0
+GUIInputTextB6 db 'SELECT',0
+
+
+GUIInputTextC db 'TURBO :',0
+GUIInputTextC1 db 'A',0
+GUIInputTextC2 db 'B',0
+GUIInputTextC3 db 'X',0
+GUIInputTextC4 db 'Y',0
+GUIInputTextC5 db 'L',0
+GUIInputTextC6 db 'R',0
+
+GUIInputTextD db 'DIAGONALS :',0
+GUIInputTextD1 db 'UL',0
+GUIInputTextD2 db 'UR',0
+GUIInputTextD3 db 'DL',0
+GUIInputTextD4 db 'DR',0
+
+GUIInputTextE dd 0
+GUIInputTextE1 db 'SET',0
+GUIInputTextE2 db 'CALIBRATE',0
+GUIInputTextE3 db 'SET KEYS',0
+GUIInputTextE4 db 'USE JOYSTICK PORT 209H',0
+
 
 SECTION .bss
 GUIIStA resd 3
