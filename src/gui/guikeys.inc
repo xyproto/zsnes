@@ -850,7 +850,7 @@ GUIGUIOptnsKeys:
     xor byte[GUIEnableTransp],1
 .guioptn7
     cmp dh,'F'
-    jne .guioptn15
+    jne .guioptn8
     xor byte[FilteredGUI],1
     cmp byte[En2xSaI],1
     jnae .guioptn8
