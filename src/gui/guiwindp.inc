@@ -4304,12 +4304,12 @@ GUIGUIOptnsTextN db 'TRAP MOUSE CURSOR',0
 
 SECTION .text
 
-DisplayGUIAbout:
+DisplayGUIAbout:          ; Displays the About Box
 
     ;This will attach compile date onto the end of GUIGUIAboutText1
     pushad
     EXTSYM VERSION_STR, placedate
-    mov eax,GUIGUIAboutText1
+    mov eax,GUIGUIAboutTextA1
     mov [VERSION_STR],eax
     call placedate
     popad
@@ -4320,82 +4320,83 @@ DisplayGUIAbout:
     je .zero3
     mov byte[GUItextcolor],211
 .zero3
-    DrawGUIButton 11,90,30,175,40,GUIGUIAboutText8,65,0,0
+    DrawGUIButton 11,90,30,175,40,GUIGUIAboutTextE,65,0,0  ; Button
     sub byte[GUItextcolor],15
-    GUIOuttextwin2 11,6,16,GUIGUIAboutText1
-    GUIOuttextwin2 11,6,26,GUIGUIAboutText7
-    GUIOuttextwin2 11,6,46,GUIGUIAboutText3
-    GUIOuttextwin2 11,6,56,GUIGUIAboutText4
-    GUIOuttextwin2 11,6,66,GUIGUIAboutText6c
-    GUIOuttextwin2 11,6,86,GUIGUIAboutText6
-    GUIOuttextwin2 11,6,96,GUIGUIAboutText6b
-    GUIOuttextwin2 11,6,106,GUIGUIAboutText6d
-    GUIOuttextwin2 11,6,116,GUIGUIAboutText6e
-    GUIOuttextwin2 11,6,131,GUIGUIAboutTextA
-    GUIOuttextwin2 11,6,141,GUIGUIAboutTextB
-    GUIOuttextwin2 11,6,151,GUIGUIAboutTextC
-    GUIOuttextwin2 11,6,161,GUIGUIAboutTextD
-    GUIOuttextwin2 11,6,171,GUIGUIAboutTextE
-    GUIOuttextwin2 11,6,181,GUIGUIAboutTextF
-    GUIOuttextwin2 11,6,191,GUIGUIAboutTextG
+    GUIOuttextwin2 11,6,16,GUIGUIAboutTextA1       ; Shadow
+    GUIOuttextwin2 11,6,26,GUIGUIAboutTextA2
+    GUIOuttextwin2 11,6,46,GUIGUIAboutTextB1
+    GUIOuttextwin2 11,6,56,GUIGUIAboutTextB2
+    GUIOuttextwin2 11,6,86,GUIGUIAboutTextC1
+    GUIOuttextwin2 11,6,96,GUIGUIAboutTextC2
+    GUIOuttextwin2 11,6,106,GUIGUIAboutTextC3
+    GUIOuttextwin2 11,6,116,GUIGUIAboutTextC4
+    GUIOuttextwin2 11,6,131,GUIGUIAboutTextD1
+    GUIOuttextwin2 11,6,141,GUIGUIAboutTextD2
+    GUIOuttextwin2 11,6,151,GUIGUIAboutTextD3
+    GUIOuttextwin2 11,6,161,GUIGUIAboutTextD4
+    GUIOuttextwin2 11,6,171,GUIGUIAboutTextD5
+    GUIOuttextwin2 11,6,181,GUIGUIAboutTextD6
+    GUIOuttextwin2 11,6,191,GUIGUIAboutTextD7
     add byte[GUItextcolor],15
-    GUIOuttextwin2 11,5,15,GUIGUIAboutText1
-    GUIOuttextwin2 11,5,25,GUIGUIAboutText7
-    GUIOuttextwin2 11,5,45,GUIGUIAboutText3
-    GUIOuttextwin2 11,5,55,GUIGUIAboutText4
-    GUIOuttextwin2 11,5,65,GUIGUIAboutText6c
-    GUIOuttextwin2 11,5,85,GUIGUIAboutText6
-    GUIOuttextwin2 11,5,95,GUIGUIAboutText6b
-    GUIOuttextwin2 11,5,105,GUIGUIAboutText6d
-    GUIOuttextwin2 11,5,115,GUIGUIAboutText6e
-    GUIOuttextwin2 11,5,130,GUIGUIAboutTextA
-    GUIOuttextwin2 11,5,140,GUIGUIAboutTextB
-    GUIOuttextwin2 11,5,150,GUIGUIAboutTextC
-    GUIOuttextwin2 11,5,160,GUIGUIAboutTextD
-    GUIOuttextwin2 11,5,170,GUIGUIAboutTextE
-    GUIOuttextwin2 11,5,180,GUIGUIAboutTextF
-    GUIOuttextwin2 11,5,190,GUIGUIAboutTextG
-    mov al,[GUIWincol]
+    GUIOuttextwin2 11,5,15,GUIGUIAboutTextA1
+    GUIOuttextwin2 11,5,25,GUIGUIAboutTextA2
+    GUIOuttextwin2 11,5,45,GUIGUIAboutTextB1
+    GUIOuttextwin2 11,5,55,GUIGUIAboutTextB2
+    GUIOuttextwin2 11,5,85,GUIGUIAboutTextC1
+    GUIOuttextwin2 11,5,95,GUIGUIAboutTextC2
+    GUIOuttextwin2 11,5,105,GUIGUIAboutTextC3
+    GUIOuttextwin2 11,5,115,GUIGUIAboutTextC4
+    GUIOuttextwin2 11,5,130,GUIGUIAboutTextD1
+    GUIOuttextwin2 11,5,140,GUIGUIAboutTextD2
+    GUIOuttextwin2 11,5,150,GUIGUIAboutTextD3
+    GUIOuttextwin2 11,5,160,GUIGUIAboutTextD4
+    GUIOuttextwin2 11,5,170,GUIGUIAboutTextD5
+    GUIOuttextwin2 11,5,180,GUIGUIAboutTextD6
+    GUIOuttextwin2 11,5,190,GUIGUIAboutTextD7
+    
+    mov al,[GUIWincol]                       ; Yellow Shadow
     mov byte[GUItextcolor],al
-    GUIOuttextwin2 11,6,36,GUIGUIAboutText2
-    GUIOuttextwin2 11,6,76,GUIGUIAboutText5
-    mov byte[GUItextcolor],163
+    GUIOuttextwin2 11,6,36,GUIGUIAboutTextB
+    GUIOuttextwin2 11,6,76,GUIGUIAboutTextC
+    mov byte[GUItextcolor],163               ; Yellow Text
     cmp byte[GUIWincoladd],0
     je .zero
     mov byte[GUItextcolor],164
 .zero
-    GUIOuttextwin2 11,5,35,GUIGUIAboutText2
-    GUIOuttextwin2 11,5,75,GUIGUIAboutText5
+    GUIOuttextwin2 11,5,35,GUIGUIAboutTextB
+    GUIOuttextwin2 11,5,75,GUIGUIAboutTextC
     ret
 
 SECTION .data
-GUIGUIAboutText1  db 'ZSNES V',ZVERSION,'             ',0 ;Need room for date
-GUIGUIAboutText2  db 'CODED BY :  ',0
-GUIGUIAboutText3  db '    ZSKNIGHT      _DEMO_',0
-GUIGUIAboutText4  db '    PAGEFAULT     NACH',0
-GUIGUIAboutText6c db 0
-GUIGUIAboutText5  db 'ASSISTANT CODERS :',0
-GUIGUIAboutText6  db '    PHAROS        STATMAT',0
-GUIGUIAboutText6b db '    TEUF          HPSOLO',0
-GUIGUIAboutText6d db '    THEODDONE33   SILOH',0
-GUIGUIAboutText6e db '    IPHER         GRINVADER',0
-
+GUIGUIAboutTextA1 db 'ZSNES V',ZVERSION,'             ',0 ;Need room for date
 %ifdef __MSDOS__
-GUIGUIAboutText7 db 'DOS VERSION',0
+GUIGUIAboutTextA2 db 'DOS VERSION',0
 %elifdef __WIN32__
-GUIGUIAboutText7 db 'WIN VERSION',0
+GUIGUIAboutTextA2 db 'WIN VERSION',0
 %elifdef __LINUX__
-GUIGUIAboutText7 db 'SDL VERSION',0
+GUIGUIAboutTextA2 db 'SDL VERSION',0
 %endif
 
-GUIGUIAboutText8 db 'WWW.ZSNES.COM',0
-GUIGUIAboutTextA db 'ZSNES comes with ABSOLUTELY',0
-GUIGUIAboutTextB db 'NO WARRANTY.  This is free',0
-GUIGUIAboutTextC db 'software, and you are welcome',0
-GUIGUIAboutTextD db 'to redistribute it under',0
-GUIGUIAboutTextE db 'certain conditions; please',0
-GUIGUIAboutTextF db 'read ',39,'LICENSE.TXT',39,0
-GUIGUIAboutTextG db 'thoroughly before doing so.',0
+GUIGUIAboutTextB  db 'CODED BY :  ',0
+GUIGUIAboutTextB1 db '    ZSKNIGHT      _DEMO_',0
+GUIGUIAboutTextB2 db '    PAGEFAULT     NACH',0
+
+GUIGUIAboutTextC  db 'ASSISTANT CODERS :',0
+GUIGUIAboutTextC1 db '    PHAROS        STATMAT',0
+GUIGUIAboutTextC2 db '    TEUF          HPSOLO',0
+GUIGUIAboutTextC3 db '    THEODDONE33   SILOH',0
+GUIGUIAboutTextC4 db '    IPHER         GRINVADER',0
+
+GUIGUIAboutTextD1 db 'ZSNES comes with ABSOLUTELY',0
+GUIGUIAboutTextD2 db 'NO WARRANTY.  This is free',0
+GUIGUIAboutTextD3 db 'software, and you are welcome',0
+GUIGUIAboutTextD4 db 'to redistribute it under',0
+GUIGUIAboutTextD5 db 'certain conditions; please',0
+GUIGUIAboutTextD6 db 'read ',39,'LICENSE.TXT',39,0
+GUIGUIAboutTextD7 db 'thoroughly before doing so.',0
+
+GUIGUIAboutTextE db 'WWW.ZSNES.COM',0
+
 
 SECTION .text
 
