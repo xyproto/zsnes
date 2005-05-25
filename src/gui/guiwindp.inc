@@ -432,9 +432,9 @@ GUIStringGreater2:
 %macro GUIDisplayText 4
     mov byte[GUItextcolor],202
     cmp byte[GUIWincoladd],0
-    je %%zero
+    je %%text
     mov byte[GUItextcolor],196
-%%zero
+%%text
 GUIOuttextwin2 %1,%2,%3,%4
     add byte[GUItextcolor],15
 GUIOuttextwin2 %1,%2-1,%3-1,%4
@@ -446,10 +446,21 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
     GUIOuttextwin2 %1,%2,%3,%4
     mov byte[GUItextcolor],163               ; Yellow Text
     cmp byte[GUIWincoladd],0
-    je %%zero
+    je %%texty
     mov byte[GUItextcolor],164
-%%zero
+%%texty
     GUIOuttextwin2 %1,%2-1,%3-1,%4
+%endmacro
+
+%macro GUIDisplayTextu 5
+    mov byte[GUItextcolor],202
+    cmp byte[GUIWincoladd],0
+    je %%textu
+    mov byte[GUItextcolor],196
+%%textu
+GUIOuttextwin2u %1,%2,%3,%4,%5
+    add byte[GUItextcolor],15
+GUIOuttextwin2 %1,%2-1,%3-1,%4
 %endmacro
 ; DGUIDisplay
 
@@ -3703,159 +3714,57 @@ SECTION .text
 DisplayGameOptns:        ; Misc Key Window
     GUIDrawWindowBox 9,GUIGameDisp
 
-    mov al,[GUIWincol]                         ; Draw Shadows
-    mov [GUIGameOptnsColA],al
-    mov byte[GUIGameOptnsColB],202
-    cmp byte[GUIWincoladd],0
-    je .zero3
-    mov byte[GUIGameOptnsColB],196
-.zero3
-    mov al,byte[GUIGameOptnsColA]              ; Yellow Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,6,16,GUIGameOptnsTextA
-    
-    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
-    mov byte[GUItextcolor],al
+    GUIDisplayTextY 9,6,16,GUIGameOptnsTextA
     mov byte[GUIGameOptnsTextA1+2],'1'
-    GUIOuttextwin2 9,9,25,GUIGameOptnsTextA1
+    GUIDisplayText 9,9,25,GUIGameOptnsTextA1
     mov byte[GUIGameOptnsTextA1+2],'2'
-    GUIOuttextwin2 9,9+45,25,GUIGameOptnsTextA1
+    GUIDisplayText 9,9+45,25,GUIGameOptnsTextA1
     mov byte[GUIGameOptnsTextA1+2],'3'
-    GUIOuttextwin2 9,9+90,25,GUIGameOptnsTextA1
+    GUIDisplayText 9,9+90,25,GUIGameOptnsTextA1
     mov byte[GUIGameOptnsTextA1+2],'4'
-    GUIOuttextwin2 9,9+135,25,GUIGameOptnsTextA1
-    GUIOuttextwin2 9,9+180,25,GUIGameOptnsTextA2
+    GUIDisplayText 9,9+135,25,GUIGameOptnsTextA1
+    GUIDisplayText 9,9+180,25,GUIGameOptnsTextA2
     
-    mov al,byte[GUIGameOptnsColA]              ; Yellow Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,6,34,GUIGameOptnsTextB
-    
-    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
-    mov byte[GUItextcolor],al
+    GUIDisplayTextY 9,6,34,GUIGameOptnsTextB
     mov byte[GUIGameOptnsTextB1+2],'1'
-    GUIOuttextwin2 9,9,43,GUIGameOptnsTextB1
+    GUIDisplayText 9,9,43,GUIGameOptnsTextB1
     mov byte[GUIGameOptnsTextB1+2],'2'
-    GUIOuttextwin2 9,9+45,43,GUIGameOptnsTextB1
+    GUIDisplayText 9,9+45,43,GUIGameOptnsTextB1
     mov byte[GUIGameOptnsTextB1+2],'3'
-    GUIOuttextwin2 9,9+45*2,43,GUIGameOptnsTextB1
+    GUIDisplayText 9,9+45*2,43,GUIGameOptnsTextB1
     mov byte[GUIGameOptnsTextB1+2],'4'
-    GUIOuttextwin2 9,9+45*3,43,GUIGameOptnsTextB1
-    GUIOuttextwin2 9,9+45*4,43,GUIGameOptnsTextB2
+    GUIDisplayText 9,9+45*3,43,GUIGameOptnsTextB1
+    GUIDisplayText 9,9+45*4,43,GUIGameOptnsTextB2
     mov byte[GUIGameOptnsTextB1+2],'5'
-    GUIOuttextwin2 9,9,52,GUIGameOptnsTextB1
+    GUIDisplayText 9,9,52,GUIGameOptnsTextB1
     mov byte[GUIGameOptnsTextB1+2],'6'
-    GUIOuttextwin2 9,9+45,52,GUIGameOptnsTextB1
+    GUIDisplayText 9,9+45,52,GUIGameOptnsTextB1
     mov byte[GUIGameOptnsTextB1+2],'7'
-    GUIOuttextwin2 9,9+45*2,52,GUIGameOptnsTextB1
+    GUIDisplayText 9,9+45*2,52,GUIGameOptnsTextB1
     mov byte[GUIGameOptnsTextB1+2],'8'
-    GUIOuttextwin2 9,9+45*3,52,GUIGameOptnsTextB1
-    GUIOuttextwin2 9,9+45*4,52,GUIGameOptnsTextB3
+    GUIDisplayText 9,9+45*3,52,GUIGameOptnsTextB1
+    GUIDisplayText 9,9+45*4,52,GUIGameOptnsTextB3
 
-    mov al,byte[GUIGameOptnsColA]              ; Yellow Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,6,61,GUIGameOptnsTextC
-    
-    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,9,72,GUIGameOptnsTextC1
-    GUIOuttextwin2 9,9+52,72,GUIGameOptnsTextC2
-    GUIOuttextwin2 9,9+109,72,GUIGameOptnsTextC3
-    GUIOuttextwin2 9,9+160,72,GUIGameOptnsTextC4
-    GUIOuttextwin2 9,9,82,GUIGameOptnsTextC5
-    GUIOuttextwin2 9,9+52,82,GUIGameOptnsTextC6
-    GUIOuttextwin2 9,137,82,GUIGameOptnsTextC7
-    
-    mov al,byte[GUIGameOptnsColA]              ; Yellow Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,6,93,GUIGameOptnsTextD1
-    GUIOuttextwin2 9,119,93,GUIGameOptnsTextD2
-    
-    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,9,102,GUIGameOptnsTextD1a
-    GUIOuttextwin2 9,9,112,GUIGameOptnsTextD1b
-    GUIOuttextwin2 9,9,122,GUIGameOptnsTextD1c
-    GUIOuttextwin2 9,9,132,GUIGameOptnsTextD1d
-    GUIOuttextwin2 9,122,102,GUIGameOptnsTextD2a
-    GUIOuttextwin2 9,122,112,GUIGameOptnsTextD2b
-    GUIOuttextwin2 9,122,122,GUIGameOptnsTextD2c
-    
-    mov byte[GUIGameOptnsColA],163            ; Draw Text
-    mov byte[GUIGameOptnsColB],217
-    cmp byte[GUIWincoladd],0
-    je .zero
-    mov byte[GUIGameOptnsColA],164
-    mov byte[GUIGameOptnsColB],211
-.zero
-    mov al,byte[GUIGameOptnsColA]              ; Yellow Text
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,5,15,GUIGameOptnsTextA
-    
-    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
-    mov byte[GUItextcolor],al
-    mov byte[GUIGameOptnsTextB1+2],'1'
-    GUIOuttextwin2 9,8,24,GUIGameOptnsTextA1
-    mov byte[GUIGameOptnsTextA1+2],'2'
-    GUIOuttextwin2 9,8+45,24,GUIGameOptnsTextA1
-    mov byte[GUIGameOptnsTextA1+2],'3'
-    GUIOuttextwin2 9,8+90,24,GUIGameOptnsTextA1
-    mov byte[GUIGameOptnsTextA1+2],'4'
-    GUIOuttextwin2 9,8+135,24,GUIGameOptnsTextA1
-    GUIOuttextwin2 9,8+180,24,GUIGameOptnsTextA2
-    
-    mov al,byte[GUIGameOptnsColA]              ; Yellow Text
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,5,33,GUIGameOptnsTextB
-    
-    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
-    mov byte[GUItextcolor],al
-    mov byte[GUIGameOptnsTextB1+2],'1'
-    GUIOuttextwin2 9,8,42,GUIGameOptnsTextB1
-    mov byte[GUIGameOptnsTextB1+2],'2'
-    GUIOuttextwin2 9,8+45,42,GUIGameOptnsTextB1
-    mov byte[GUIGameOptnsTextB1+2],'3'
-    GUIOuttextwin2 9,8+45*2,42,GUIGameOptnsTextB1
-    mov byte[GUIGameOptnsTextB1+2],'4'
-    GUIOuttextwin2 9,8+45*3,42,GUIGameOptnsTextB1
-    GUIOuttextwin2 9,8+45*4,42,GUIGameOptnsTextB2
-    mov byte[GUIGameOptnsTextB1+2],'5'
-    GUIOuttextwin2 9,8,51,GUIGameOptnsTextB1
-    mov byte[GUIGameOptnsTextB1+2],'6'
-    GUIOuttextwin2 9,8+45,51,GUIGameOptnsTextB1
-    mov byte[GUIGameOptnsTextB1+2],'7'
-    GUIOuttextwin2 9,8+45*2,51,GUIGameOptnsTextB1
-    mov byte[GUIGameOptnsTextB1+2],'8'
-    GUIOuttextwin2 9,8+45*3,51,GUIGameOptnsTextB1
-    GUIOuttextwin2 9,8+45*4,51,GUIGameOptnsTextB3
-    
-    mov al,byte[GUIGameOptnsColA]              ; Yellow Text
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,5,61,GUIGameOptnsTextC
-    
-    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,8,71,GUIGameOptnsTextC1
-    GUIOuttextwin2 9,8+52,71,GUIGameOptnsTextC2
-    GUIOuttextwin2 9,8+109,71,GUIGameOptnsTextC3
-    GUIOuttextwin2 9,8+160,71,GUIGameOptnsTextC4
-    GUIOuttextwin2 9,8,81,GUIGameOptnsTextC5
-    GUIOuttextwin2 9,8+52,81,GUIGameOptnsTextC6
-    GUIOuttextwin2 9,136,81,GUIGameOptnsTextC7
+    GUIDisplayTextY 9,6,61,GUIGameOptnsTextC
+    GUIDisplayText 9,9,72,GUIGameOptnsTextC1
+    GUIDisplayText 9,9+52,72,GUIGameOptnsTextC2
+    GUIDisplayText 9,9+109,72,GUIGameOptnsTextC3
+    GUIDisplayText 9,9+160,72,GUIGameOptnsTextC4
+    GUIDisplayText 9,9,82,GUIGameOptnsTextC5
+    GUIDisplayText 9,9+52,82,GUIGameOptnsTextC6
+    GUIDisplayText 9,137,82,GUIGameOptnsTextC7
 
-    mov al,byte[GUIGameOptnsColA]              ; Yellow Text
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,5,92,GUIGameOptnsTextD1
-    GUIOuttextwin2 9,118,92,GUIGameOptnsTextD2
+    GUIDisplayTextY 9,6,93,GUIGameOptnsTextD1
+    GUIDisplayText 9,9,102,GUIGameOptnsTextD1a
+    GUIDisplayText 9,9,112,GUIGameOptnsTextD1b
+    GUIDisplayText 9,9,122,GUIGameOptnsTextD1c
+    GUIDisplayText 9,9,132,GUIGameOptnsTextD1d
     
-    mov al,byte[GUIGameOptnsColB]              ; Regular Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 9,8,101,GUIGameOptnsTextD1a
-    GUIOuttextwin2 9,8,111,GUIGameOptnsTextD1b
-    GUIOuttextwin2 9,8,121,GUIGameOptnsTextD1c
-    GUIOuttextwin2 9,8,131,GUIGameOptnsTextD1d
-    GUIOuttextwin2 9,121,101,GUIGameOptnsTextD2a
-    GUIOuttextwin2 9,121,111,GUIGameOptnsTextD2b
-    GUIOuttextwin2 9,121,121,GUIGameOptnsTextD2c
+    GUIDisplayTextY 9,119,93,GUIGameOptnsTextD2
+    GUIDisplayText 9,122,102,GUIGameOptnsTextD2a
+    GUIDisplayText 9,122,112,GUIGameOptnsTextD2b
+    GUIDisplayText 9,122,122,GUIGameOptnsTextD2c
+    
 
     ;Draw Borders
     DGOptnsBorderBox 9,26,22
@@ -4151,92 +4060,39 @@ DisplayGUIOptns:              ; GUI Options
     GUIDisplayIconWin 10,12,188,[GUITemp]
 %endif
 
-    mov al,[GUIWincol]                        ; Yellow Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 10,6,16,GUIGUIOptnsTextA
-    GUIOuttextwin2 10,6,111,GUIGUIOptnsTextB
+    GUIDisplayTextY 10,6,16,GUIGUIOptnsTextA
+    GUIDisplayTextu 10,26,28,GUIGUIOptnsTextA1a,0
+    GUIDisplayTextu 10,26,38,GUIGUIOptnsTextA1b,6
+    GUIDisplayTextu 10,26,48,GUIGUIOptnsTextA1c,0
+    GUIDisplayTextu 10,26,58,GUIGUIOptnsTextA1d,5
+    GUIDisplayTextu 10,26,68,GUIGUIOptnsTextA1e,0
+    GUIDisplayTextu 10,26,78,GUIGUIOptnsTextA1f,0
+    GUIDisplayTextu 10,138,28,GUIGUIOptnsTextA2a,0
+    GUIDisplayTextu 10,138,38,GUIGUIOptnsTextA2b,0
+    GUIDisplayTextu 10,138,48,GUIGUIOptnsTextA2c,1
+    GUIDisplayTextu 10,138,58,GUIGUIOptnsTextA2d,2
+    GUIDisplayTextu 10,138,68,GUIGUIOptnsTextA2e,3
+    GUIDisplayTextu 10,138,78,GUIGUIOptnsTextA2f,13
 %ifdef __WIN32__
-    GUIOuttextwin2 10,6,161,GUIGUIOptnsTextC
+    GUIDisplayTextu 10,138,88,GUIGUIOptnsTextA2g,1
+    GUIDisplayTextu 10,138,98,GUIGUIOptnsTextA2h,3
 %endif
-    mov byte[GUItextcolor],163                ; Yellow Text
-    cmp byte[GUIWincoladd],0
-    je .zero
-    mov byte[GUItextcolor],164
-.zero
-    GUIOuttextwin2 10,5,15,GUIGUIOptnsTextA
-    GUIOuttextwin2 10,5,110,GUIGUIOptnsTextB
+    GUIDisplayTextY 10,6,111,GUIGUIOptnsTextB
+    GUIDisplayText 10,60,111,GUIGUIOptnsTextB1
+    GUIDisplayText 10,100,111,GUIGUIOptnsTextB2
+    GUIDisplayText 10,147,111,GUIGUIOptnsTextB3
 %ifdef __WIN32__
-    GUIOuttextwin2 10,5,160,GUIGUIOptnsTextC
-%endif
-
-    mov byte[GUItextcolor],217                ; Shadow
-    cmp byte[GUIWincoladd],0
-    je .zero3
-    mov byte[GUItextcolor],211
-.zero3
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2u 10,26,28,GUIGUIOptnsTextA1a,0
-    GUIOuttextwin2u 10,26,38,GUIGUIOptnsTextA1b,6
-    GUIOuttextwin2u 10,26,48,GUIGUIOptnsTextA1c,0
-    GUIOuttextwin2u 10,26,58,GUIGUIOptnsTextA1d,5
-    GUIOuttextwin2u 10,26,68,GUIGUIOptnsTextA1e,0
-    GUIOuttextwin2u 10,26,78,GUIGUIOptnsTextA1f,0
-    GUIOuttextwin2u 10,138,28,GUIGUIOptnsTextA2a,0
-    GUIOuttextwin2u 10,138,38,GUIGUIOptnsTextA2b,0
-    GUIOuttextwin2u 10,138,48,GUIGUIOptnsTextA2c,1
-    GUIOuttextwin2u 10,138,58,GUIGUIOptnsTextA2d,2
-    GUIOuttextwin2u 10,138,68,GUIGUIOptnsTextA2e,3
-    GUIOuttextwin2u 10,138,78,GUIGUIOptnsTextA2f,13
-%ifdef __WIN32__
-    GUIOuttextwin2u 10,138,88,GUIGUIOptnsTextA2g,1
-    GUIOuttextwin2u 10,138,98,GUIGUIOptnsTextA2h,3
-%endif
-    GUIOuttextwin2 10,60,111,GUIGUIOptnsTextB1
-    GUIOuttextwin2 10,100,111,GUIGUIOptnsTextB2
-    GUIOuttextwin2 10,147,111,GUIGUIOptnsTextB3
-%ifdef __WIN32__
-    GUIOuttextwin2u 10,26,173,GUIGUIOptnsTextC1,0
-    GUIOuttextwin2u 10,26,183,GUIGUIOptnsTextC2,2
-    GUIOuttextwin2u 10,26,193,GUIGUIOptnsTextC3,1
+    GUIDisplayTextY 10,6,161,GUIGUIOptnsTextC
+    GUIDisplayTextu 10,26,173,GUIGUIOptnsTextC1,0
+    GUIDisplayTextu 10,26,183,GUIGUIOptnsTextC2,2
+    GUIDisplayTextu 10,26,193,GUIGUIOptnsTextC3,1
 %endif
     mov byte[GUIGUIOptnsTextD1],'R'
-    GUIOuttextwin2 10,16,123,GUIGUIOptnsTextD1
+    GUIDisplayText 10,16,123,GUIGUIOptnsTextD1
     mov byte[GUIGUIOptnsTextD1],'G'
-    GUIOuttextwin2 10,16,135,GUIGUIOptnsTextD1
+    GUIDisplayText 10,16,135,GUIGUIOptnsTextD1
     mov byte[GUIGUIOptnsTextD1],'B'
-    GUIOuttextwin2 10,16,147,GUIGUIOptnsTextD1
-    
-    add byte[GUItextcolor],15                        ; Text
-    GUIOuttextwin2 10,25,27,GUIGUIOptnsTextA1a
-    GUIOuttextwin2 10,25,37,GUIGUIOptnsTextA1b
-    GUIOuttextwin2 10,25,47,GUIGUIOptnsTextA1c
-    GUIOuttextwin2 10,25,57,GUIGUIOptnsTextA1d
-    GUIOuttextwin2 10,25,67,GUIGUIOptnsTextA1e
-    GUIOuttextwin2 10,25,77,GUIGUIOptnsTextA1f
-    GUIOuttextwin2 10,137,27,GUIGUIOptnsTextA2a
-    GUIOuttextwin2 10,137,37,GUIGUIOptnsTextA2b
-    GUIOuttextwin2 10,137,47,GUIGUIOptnsTextA2c
-    GUIOuttextwin2 10,137,57,GUIGUIOptnsTextA2d
-    GUIOuttextwin2 10,137,67,GUIGUIOptnsTextA2e
-    GUIOuttextwin2 10,137,77,GUIGUIOptnsTextA2f    
-%ifdef __WIN32__
-    GUIOuttextwin2 10,137,87,GUIGUIOptnsTextA2g
-    GUIOuttextwin2 10,137,97,GUIGUIOptnsTextA2h
-%endif
-    GUIOuttextwin2 10,59,110,GUIGUIOptnsTextB1
-    GUIOuttextwin2 10,99,110,GUIGUIOptnsTextB2
-    GUIOuttextwin2 10,146,110,GUIGUIOptnsTextB3
-%ifdef __WIN32__
-    GUIOuttextwin2 10,25,172,GUIGUIOptnsTextC1
-    GUIOuttextwin2 10,25,182,GUIGUIOptnsTextC2
-    GUIOuttextwin2 10,25,192,GUIGUIOptnsTextC3
-%endif
-    mov byte[GUIGUIOptnsTextD1],'R'
-    GUIOuttextwin2 10,15,122,GUIGUIOptnsTextD1
-    mov byte[GUIGUIOptnsTextD1],'G'
-    GUIOuttextwin2 10,15,134,GUIGUIOptnsTextD1
-    mov byte[GUIGUIOptnsTextD1],'B'
-    GUIOuttextwin2 10,15,146,GUIGUIOptnsTextD1
+    GUIDisplayText 10,16,147,GUIGUIOptnsTextD1
 
     GUIDisplayButtonHole 10,48,108,byte[CurPalSelect],0    ; Ratio Buttons
     GUIDisplayButtonHole 10,88,108,byte[CurPalSelect],1
@@ -4413,25 +4269,25 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     cmp byte[MovieRecordWinVal],0
     je near .displayboxa
 
-    cmp byte[GUIWincoladd],0             ; Overwrite Message Box
+    GUIDisplayText 15,9,16,GUIMovieTextX1       ; Overwrite Message Box
+    GUIDisplayText 15,9,26,GUIMovieTextX2
+    GUIDisplayText 15,9,41,GUIMovieTextX3
+    
+    mov byte[GUItextcolor],217
+    cmp byte[GUIWincoladd],0
     je .zero4
     mov byte[GUItextcolor],211
 .zero4
-    sub byte[GUItextcolor],15            ; Shadows
-    GUIOuttextwin2 15,9,16,GUIMovieTextX1
-    GUIOuttextwin2 15,9,26,GUIMovieTextX2
-    GUIOuttextwin2 15,9,41,GUIMovieTextX3
-    add byte[GUItextcolor],15            ; Text
-    GUIOuttextwin2 15,8,15,GUIMovieTextX1
-    GUIOuttextwin2 15,8,25,GUIMovieTextX2
-    GUIOuttextwin2 15,8,40,GUIMovieTextX3
     DrawGUIButton 15,17,55,59,66,GUIMovieTextX4,19,0,0 ; Yes/No Buttons
     DrawGUIButton 15,70,55,112,66,GUIMovieTextX5,20,0,0
     ret
 
-
 .displayboxa                            ; Main Window
-
+    mov byte[GUItextcolor],217
+    cmp byte[GUIWincoladd],0
+    je .zero
+    mov byte[GUItextcolor],211
+.zero
     DrawGUIButton 15,7,17,49,28,GUIMovieTextA1,16,0,0  ; Draw Buttons
     DrawGUIButton 15,7,33,49,44,GUIMovieTextA2,17,0,0
     DrawGUIButton 15,7,49,49,60,GUIMovieTextA3,18,0,0
@@ -4441,109 +4297,36 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     DrawGUIButton 15,7,113,109,124,GUIMovieTextA7,31,0,0
     DrawGUIButton 15,61,65,155,76,GUIMovieTextA8,34,0,0
 
-    cmp byte[GUIWincoladd],0               ; Output Text
-    je .zero
-    mov byte[GUItextcolor],211
-.zero
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2 15,61,16,GUIMovieTextB        ; Save Select Shadow
+    GUIDisplayTextY 15,61,16,GUIMovieTextB        ; Save Select Shadow
     mov byte[GUIMovieTextB1],'0'
-    GUIOuttextwin2 15,71,28,GUIMovieTextB1
+    GUIDisplayText 15,71,28,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'1'
-    GUIOuttextwin2 15,91,28,GUIMovieTextB1
+    GUIDisplayText 15,91,28,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'2'
-    GUIOuttextwin2 15,111,28,GUIMovieTextB1
+    GUIDisplayText 15,111,28,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'3'
-    GUIOuttextwin2 15,131,28,GUIMovieTextB1
+    GUIDisplayText 15,131,28,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'4'
-    GUIOuttextwin2 15,151,28,GUIMovieTextB1
+    GUIDisplayText 15,151,28,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'5'
-    GUIOuttextwin2 15,71,43,GUIMovieTextB1
+    GUIDisplayText 15,71,43,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'6'
-    GUIOuttextwin2 15,91,43,GUIMovieTextB1
+    GUIDisplayText 15,91,43,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'7'
-    GUIOuttextwin2 15,111,43,GUIMovieTextB1
+    GUIDisplayText 15,111,43,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'8'
-    GUIOuttextwin2 15,131,43,GUIMovieTextB1
+    GUIDisplayText 15,131,43,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'9'
-    GUIOuttextwin2 15,151,43,GUIMovieTextB1
-    GUIOuttextwin2u 15,71,55,GUIMovieTextB2,0
+    GUIDisplayText 15,151,43,GUIMovieTextB1
+    GUIDisplayTextu 15,71,55,GUIMovieTextB2,0
 
-    GUIOuttextwin2 15,9,130,GUIMovieTextC           ; "Start From" Section Shadow
-    GUIOuttextwin2u 15,21,140,GUIMovieTextC1,0
-    GUIOuttextwin2u 15,56,140,GUIMovieTextC2,0
-    GUIOuttextwin2u 15,101,140,GUIMovieTextC3,0
-    GUIOuttextwin2u 15,21,150,GUIMovieTextC4,8
-
-    add byte[GUItextcolor],15                      ; State Select Text
-    GUIOuttextwin2 15,60,15,GUIMovieTextB
-    mov byte[GUIMovieTextB1],'0'
-    GUIOuttextwin2 15,70,27,GUIMovieTextB1
-    mov byte[GUIMovieTextB1],'1'
-    GUIOuttextwin2 15,90,27,GUIMovieTextB1
-    mov byte[GUIMovieTextB1],'2'
-    GUIOuttextwin2 15,110,27,GUIMovieTextB1
-    mov byte[GUIMovieTextB1],'3'
-    GUIOuttextwin2 15,130,27,GUIMovieTextB1
-    mov byte[GUIMovieTextB1],'4'
-    GUIOuttextwin2 15,150,27,GUIMovieTextB1
-    mov byte[GUIMovieTextB1],'5'
-    GUIOuttextwin2 15,70,42,GUIMovieTextB1
-    mov byte[GUIMovieTextB1],'6'
-    GUIOuttextwin2 15,90,42,GUIMovieTextB1
-    mov byte[GUIMovieTextB1],'7'
-    GUIOuttextwin2 15,110,42,GUIMovieTextB1
-    mov byte[GUIMovieTextB1],'8'
-    GUIOuttextwin2 15,130,42,GUIMovieTextB1
-    mov byte[GUIMovieTextB1],'9'
-    GUIOuttextwin2 15,150,42,GUIMovieTextB1
-    GUIOuttextwin2 15,70,54,GUIMovieTextB2
-
-    GUIOuttextwin2 15,8,129,GUIMovieTextC             ; "Start From" Section Text
-    GUIOuttextwin2 15,20,139,GUIMovieTextC1
-    GUIOuttextwin2 15,55,139,GUIMovieTextC2
-    GUIOuttextwin2 15,100,139,GUIMovieTextC3
-    GUIOuttextwin2 15,20,149,GUIMovieTextC4
-        ; Status text is at end of window
-                                                         ; Display ratio buttons
-    GUIDisplayButtonHole 15,60,25,byte[CMovieExt],'v'    ; Select:
-    GUIDisplayButtonHole 15,80,25,byte[CMovieExt],'1'
-    GUIDisplayButtonHole 15,100,25,byte[CMovieExt],'2'
-    GUIDisplayButtonHole 15,120,25,byte[CMovieExt],'3'
-    GUIDisplayButtonHole 15,140,25,byte[CMovieExt],'4'
-    GUIDisplayButtonHole 15,60,40,byte[CMovieExt],'5'
-    GUIDisplayButtonHole 15,80,40,byte[CMovieExt],'6'
-    GUIDisplayButtonHole 15,100,40,byte[CMovieExt],'7'
-    GUIDisplayButtonHole 15,120,40,byte[CMovieExt],'8'
-    GUIDisplayButtonHole 15,140,40,byte[CMovieExt],'9'
-
-    GUIDisplayButtonHole 15,8,137,byte[MovieStartMethod],0      ; Start From:
-    GUIDisplayButtonHole 15,43,137,byte[MovieStartMethod],1
-    GUIDisplayButtonHole 15,88,137,byte[MovieStartMethod],2
-    GUIDisplayButtonHole 15,8,147,byte[MovieStartMethod],3
-
-
-
-    DDrawBox 15,116,84,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
-    DDrawBox 15,116,100,[KeyPrevChap]
-    DDrawBox 15,116,116,[KeyNextChap]
-
-    DGOptnsBorderBox 15,115,83               ; Borders to above boxes
-    DGOptnsBorderBox 15,115,99
-    DGOptnsBorderBox 15,115,115
-
-
-
-    mov dword[GUITemp],GUIIconDataCheckBoxUC   ; Checkbox
-    cmp byte[MovieDisplayFrame],0
-    je .nocheckboxMDF
-    mov dword[GUITemp],GUIIconDataCheckBoxC
-.nocheckboxMDF
-    GUIDisplayIconWin 15,60,50,[GUITemp]
-
-
-
-    mov dword[GUIMovieTextZ+9],'INAC'    ; Determine Status
+    GUIDisplayTextY 15,9,130,GUIMovieTextC           ; "Start From" Section Shadow
+    GUIDisplayTextu 15,21,140,GUIMovieTextC1,0
+    GUIDisplayTextu 15,56,140,GUIMovieTextC2,0
+    GUIDisplayTextu 15,101,140,GUIMovieTextC3,0
+    GUIDisplayTextu 15,21,150,GUIMovieTextC4,8
+        
+    mov dword[GUIMovieTextZ+9],'INAC'    ; Determine and Display Status
     mov dword[GUIMovieTextZ+13],'TIVE'
     mov dword[GUIMovieTextZ+17],'    '
     cmp byte[MovieProcessing],1
@@ -4564,18 +4347,38 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     mov dword[GUIMovieTextZ+13],'PLAY'
     mov dword[GUIMovieTextZ+17],'ING '
 .nooldplay
+    GUIDisplayTextY 15,6,162,GUIMovieTextZ
+                                                         ; Display ratio buttons
+    GUIDisplayButtonHole 15,60,25,byte[CMovieExt],'v'    ; Select:
+    GUIDisplayButtonHole 15,80,25,byte[CMovieExt],'1'
+    GUIDisplayButtonHole 15,100,25,byte[CMovieExt],'2'
+    GUIDisplayButtonHole 15,120,25,byte[CMovieExt],'3'
+    GUIDisplayButtonHole 15,140,25,byte[CMovieExt],'4'
+    GUIDisplayButtonHole 15,60,40,byte[CMovieExt],'5'
+    GUIDisplayButtonHole 15,80,40,byte[CMovieExt],'6'
+    GUIDisplayButtonHole 15,100,40,byte[CMovieExt],'7'
+    GUIDisplayButtonHole 15,120,40,byte[CMovieExt],'8'
+    GUIDisplayButtonHole 15,140,40,byte[CMovieExt],'9'
 
-                                              ; Display Status Text
-   mov al,[GUIWincol]                         ; Shadow (Yellow)
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 15,6,162,GUIMovieTextZ
+    GUIDisplayButtonHole 15,8,137,byte[MovieStartMethod],0      ; Start From:
+    GUIDisplayButtonHole 15,43,137,byte[MovieStartMethod],1
+    GUIDisplayButtonHole 15,88,137,byte[MovieStartMethod],2
+    GUIDisplayButtonHole 15,8,147,byte[MovieStartMethod],3
 
-    mov byte[GUItextcolor],163                ; Text (Yellow)
-    cmp byte[GUIWincoladd],0
-    je .zero5
-    mov byte[GUItextcolor],164
-.zero5
-    GUIOuttextwin2 15,5,161,GUIMovieTextZ
+    DDrawBox 15,116,84,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
+    DDrawBox 15,116,100,[KeyPrevChap]
+    DDrawBox 15,116,116,[KeyNextChap]
+
+    DGOptnsBorderBox 15,115,83               ; Borders to above boxes
+    DGOptnsBorderBox 15,115,99
+    DGOptnsBorderBox 15,115,115
+
+    mov dword[GUITemp],GUIIconDataCheckBoxUC   ; Checkbox
+    cmp byte[MovieDisplayFrame],0
+    je .nocheckboxMDF
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+.nocheckboxMDF
+    GUIDisplayIconWin 15,60,50,[GUITemp]
     ret
 
 SECTION .data
@@ -5849,97 +5652,48 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     mov byte[GUItextcolor],211
 .zero
     sub byte[GUItextcolor],15
-    GUIOuttextwin2 20,8,19,GUISaveTextA1
-    GUIOuttextwin2 20,8,31,GUISaveTextA2
-    GUIOuttextwin2u 20,26,44,GUISaveTextB1,5
-    GUIOuttextwin2u 20,26,54,GUISaveTextB2,5
-    GUIOuttextwin2u 20,26,64,GUISaveTextB3,0
-    GUIOuttextwin2u 20,26,74,GUISaveTextB4,0
-    GUIOuttextwin2u 20,26,84,GUISaveTextB5,0
-    GUIOuttextwin2u 20,26,94,GUISaveTextB6,0
-    GUIOuttextwin2u 20,26,104,GUISaveTextB7,12
-    GUIOuttextwin2 20,9+45*3,141,GUISaveTextC4
-    GUIOuttextwin2 20,9,150,GUISaveTextC5
-    GUIOuttextwin2 20,9+57,150,GUISaveTextC6
-    GUIOuttextwin2 20,9+114,150,GUISaveTextC7
-    GUIOuttextwin2 20,9,159,GUISaveTextC8
+    GUIDisplayText 20,8,19,GUISaveTextA1
+    GUIDisplayText 20,8,31,GUISaveTextA2
+    GUIDisplayTextu 20,26,44,GUISaveTextB1,5
+    GUIDisplayTextu 20,26,54,GUISaveTextB2,5
+    GUIDisplayTextu 20,26,64,GUISaveTextB3,0
+    GUIDisplayTextu 20,26,74,GUISaveTextB4,0
+    GUIDisplayTextu 20,26,84,GUISaveTextB5,0
+    GUIDisplayTextu 20,26,94,GUISaveTextB6,0
+    GUIDisplayTextu 20,26,104,GUISaveTextB7,12
+    GUIDisplayText 20,9+45*3,141,GUISaveTextC4
+    GUIDisplayText 20,9,150,GUISaveTextC5
+    GUIDisplayText 20,9+57,150,GUISaveTextC6
+    GUIDisplayText 20,9+114,150,GUISaveTextC7
+    GUIDisplayText 20,9,159,GUISaveTextC8
 
-    mov byte[GUISaveTextC2+2],'0'           ; ST# Shadow
-    GUIOuttextwin2 20,9,123,GUISaveTextC2
+
+    GUIDisplayTextY 20,6,112,GUISaveTextC1
+    mov byte[GUISaveTextC2+2],'0'
+    GUIDisplayText 20,9,123,GUISaveTextC2
     mov byte[GUISaveTextC2+2],'1'
-    GUIOuttextwin2 20,9+45,123,GUISaveTextC2
+    GUIDisplayText 20,9+45,123,GUISaveTextC2
     mov byte[GUISaveTextC2+2],'2'
-    GUIOuttextwin2 20,9+45*2,123,GUISaveTextC2
+    GUIDisplayText 20,9+45*2,123,GUISaveTextC2
     mov byte[GUISaveTextC2+2],'3'
-    GUIOuttextwin2 20,9+45*3,123,GUISaveTextC2
+    GUIDisplayText 20,9+45*3,123,GUISaveTextC2
     mov byte[GUISaveTextC2+2],'4'
-    GUIOuttextwin2 20,9,132,GUISaveTextC2
+    GUIDisplayText 20,9,132,GUISaveTextC2
     mov byte[GUISaveTextC2+2],'5'
-    GUIOuttextwin2 20,9+45,132,GUISaveTextC2
+    GUIDisplayText 20,9+45,132,GUISaveTextC2
     mov byte[GUISaveTextC2+2],'6'
-    GUIOuttextwin2 20,9+45*2,132,GUISaveTextC2
+    GUIDisplayText 20,9+45*2,132,GUISaveTextC2
     mov byte[GUISaveTextC2+2],'7'
-    GUIOuttextwin2 20,9+45*3,132,GUISaveTextC2
+    GUIDisplayText 20,9+45*3,132,GUISaveTextC2
     mov byte[GUISaveTextC2+2],'8'
-    GUIOuttextwin2 20,9,141,GUISaveTextC2
+    GUIDisplayText 20,9,141,GUISaveTextC2
     mov byte[GUISaveTextC2+2],'9'
-    GUIOuttextwin2 20,9+45,141,GUISaveTextC2
+    GUIDisplayText 20,9+45,141,GUISaveTextC2
     mov byte[GUISaveTextC2+2],'+'
-    GUIOuttextwin2 20,9+45*2,141,GUISaveTextC2
+    GUIDisplayText 20,9+45*2,141,GUISaveTextC2
     mov byte[GUISaveTextC2+2],'-'
-    GUIOuttextwin2 20,9+45*2,141,GUISaveTextC2
+    GUIDisplayText 20,9+45*2,141,GUISaveTextC2
 
-    add byte[GUItextcolor],15                ;Text
-    GUIOuttextwin2 20,7,18,GUISaveTextA1
-    GUIOuttextwin2 20,7,30,GUISaveTextA2
-    GUIOuttextwin2 20,25,43,GUISaveTextB1
-    GUIOuttextwin2 20,25,53,GUISaveTextB2
-    GUIOuttextwin2 20,25,63,GUISaveTextB3
-    GUIOuttextwin2 20,25,73,GUISaveTextB4
-    GUIOuttextwin2 20,25,83,GUISaveTextB5
-    GUIOuttextwin2 20,25,93,GUISaveTextB6
-    GUIOuttextwin2 20,25,103,GUISaveTextB7
-    GUIOuttextwin2 20,8+45*3,140,GUISaveTextC4
-    GUIOuttextwin2 20,8,149,GUISaveTextC5
-    GUIOuttextwin2 20,8+57,149,GUISaveTextC6
-    GUIOuttextwin2 20,8+114,149,GUISaveTextC7
-    GUIOuttextwin2 20,8,158,GUISaveTextC8
-
-    mov byte[GUISaveTextC2+2],'0'           ; ST# Text
-    GUIOuttextwin2 20,8,122,GUISaveTextC2
-    mov byte[GUISaveTextC2+2],'1'
-    GUIOuttextwin2 20,8+45,122,GUISaveTextC2
-    mov byte[GUISaveTextC2+2],'2'
-    GUIOuttextwin2 20,8+45*2,122,GUISaveTextC2
-    mov byte[GUISaveTextC2+2],'3'
-    GUIOuttextwin2 20,8+45*3,122,GUISaveTextC2
-    mov byte[GUISaveTextC2+2],'4'
-    GUIOuttextwin2 20,8,131,GUISaveTextC2
-    mov byte[GUISaveTextC2+2],'5'
-    GUIOuttextwin2 20,8+45,131,GUISaveTextC2
-    mov byte[GUISaveTextC2+2],'6'
-    GUIOuttextwin2 20,8+45*2,131,GUISaveTextC2
-    mov byte[GUISaveTextC2+2],'7'
-    GUIOuttextwin2 20,8+45*3,131,GUISaveTextC2
-    mov byte[GUISaveTextC2+2],'8'
-    GUIOuttextwin2 20,8,140,GUISaveTextC2
-    mov byte[GUISaveTextC2+2],'9'
-    GUIOuttextwin2 20,8+45,140,GUISaveTextC2
-    mov byte[GUISaveTextC2+2],'+'
-    GUIOuttextwin2 20,8+45*2,140,GUISaveTextC2
-    mov byte[GUISaveTextC2+2],'-'
-    GUIOuttextwin2 20,8+45*2,140,GUISaveTextC2
-
-    mov al,[GUIWincol]                  ;State Selects (Yellow) Shadow
-    mov byte[GUItextcolor],al
-    GUIOuttextwin2 20,6,112,GUISaveTextC1
-
-    mov byte[GUItextcolor],163      ;State Selects (Yellow) Text
-    cmp byte[GUIWincoladd],0
-    je .zero8
-    mov byte[GUItextcolor],164
-.zero8
-    GUIOuttextwin2 20,5,111,GUISaveTextC1
                                                ;Checkboxes
     mov dword[GUITemp],GUIIconDataCheckBoxUC   ; Auto Incrmt Save Slot
     cmp byte[AutoIncSaveSlot],0
@@ -6109,8 +5863,6 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     je .zero88
     mov byte[GUItextcolor],211
 .zero88
-    sub byte[GUItextcolor],15
-    add byte[GUItextcolor],15
     DrawGUIButton 20,173,17,181,25,GUISaveTextZ1,70,-2,-1  ; + Rewind States
     DrawGUIButton 20,184,17,192,25,GUISaveTextZ2,71,-2,-1  ; - Rewind States
     DrawGUIButton 20,173,29,181,37,GUISaveTextZ1,72,-2,-1  ; + Second/Rewind
