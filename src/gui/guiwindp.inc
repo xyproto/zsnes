@@ -5885,8 +5885,8 @@ DisplayGUISpeed:                    ;Speed Options
     ret
 
 SECTION .data
-GUISpeedTextA1 db 'FRAME RATE',0
-GUISpeedTextA1b db 'MAX FRAME SKIP',0
+GUISpeedTextA1 db 'MAX FRAME SKIP',0
+GUISpeedTextA1b db 'FRAME RATE',0
 GUISpeedTextA2 db 'FASTFWD RATIO x',0
 GUISpeedTextA3 db 'SLOWDWN RATIO /',0
 
