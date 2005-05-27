@@ -481,7 +481,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
     GUIDisplayIconWin %1,%2,%3,[GUITemp]
 %endmacro
 
-%macro GUIBorderBoxS 6
+%macro GUIDisplayBBoxS 6
     mov dword[GUIWincol],148+10
     cmp byte[cwindrawn],1
     jne %%noone
@@ -502,7 +502,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
     DrawGUIWinBox %1,%2,%5+1,%4,%5-1,dl
 %endmacro
 
-%macro GUIBorderBox 6
+%macro GUIDisplayBBox 6
     mov dword[GUIWincol],148+10
     cmp byte[cwindrawn],1
     jne %%noone
@@ -1190,7 +1190,7 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
 %endif
     DrawGUIButton 3,125,66,179,77,GUIInputTextE3,15,0,0
     
-    GUIBorderBoxS 3,5,34,107,77,167        ; Main Box
+    GUIDisplayBBoxS 3,5,34,107,77,167        ; Main Box
     mov ebx,[GUIcurrentinputcursloc]
     sub ebx,[GUIcurrentinputviewloc]
     mov eax,ebx
@@ -1792,7 +1792,7 @@ DisplayGUIVideo:
     GUIDisplayCheckbox 5,115,163,hqFilter
 
 .nocheckboxhq                                   ; Video Modes Box
-    GUIBorderBoxS 5,5,26,115,69,167
+    GUIDisplayBBoxS 5,5,26,115,69,167
     DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],5,28,GUIVStA
     cmp byte[GUICHold],5                        ; Scrollbar
     jne .noholda
@@ -1989,7 +1989,7 @@ DisplayGUISound:                     ; Sound Related Options
     GUIDisplayCheckboxn 6,111,183,LowPassFilterType,3
 %endif
 
-    GUIBorderBox 6,15,61,69,69,167            ;Sampling Rate Box
+    GUIDisplayBBox 6,15,61,69,69,167            ;Sampling Rate Box
     mov dword[GUITemp],GUISoundTextB1
     xor eax,eax
     mov al,[cfgSoundQuality]
@@ -2229,7 +2229,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     DrawGUIWinBox2 7,5,229,7,224
 .nowinbox
 
-    GUIBorderBoxS 7,5,20,229,108,167           ; Draw Cheat Box
+    GUIDisplayBBoxS 7,5,20,229,108,167           ; Draw Cheat Box
     mov byte[GUItextcolor],223                ; Shadow
     mov dword[ccheatnpos],cheatdata
     mov eax,[NumCheats]
@@ -2327,7 +2327,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     inc dl
 .nocoladd
 .notopibox
-    GUIBorderBox 7,82,129,172,136,dl
+    GUIDisplayBBox 7,82,129,172,136,dl
 
     mov dl,167                           ;Descrip. Box
     cmp dword[GUIcurrentcheatwin],2
@@ -2338,7 +2338,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     inc dl
 .nocoladd2
 .nobotibox
-    GUIBorderBox 7,82,140,196,147,dl
+    GUIDisplayBBox 7,82,140,196,147,dl
 
     mov byte[GUItextcolor],223           ;Shadow
     GUIOuttextwin2 7,84,132,GUICheatTextZ1
@@ -2523,7 +2523,7 @@ CheatSearching:                       ; Exact Value Search
     GUIDisplayText 13,5,20,GUICSrcTextB1
     GUIDisplayText 13,5,65,GUICSrcTextG1a
     
-    GUIBorderBox 13,10,40,80,47,167           ; Input Box
+    GUIDisplayBBox 13,10,40,80,47,167           ; Input Box
 
     test byte[GUICCFlash],8            ; Flash Cursor Code?
     jnz .nound
@@ -2649,7 +2649,7 @@ Cheatmodeview:                       ; View ResultsWindow
     
     GUIDisplayText 13,10,12,GUICSrcTextE   ; Text
     
-    GUIBorderBoxS 13,5,20,171,108,167      ; Box
+    GUIDisplayBBoxS 13,5,20,171,108,167      ; Box
 
     mov edi,[GUIcurrentchtsrcviewloc]
     call FindChtSrcRes
@@ -2814,9 +2814,9 @@ Cheatmodeadd:                                 ; Add Window
 
     GUIDisplayCheckboxn 13,8,139,CheatUpperByteOnly,1   ; Checkbox
     
-    GUIBorderBox 13,10,30,80,37,167             ; Boxes
-    GUIBorderBox 13,10,55,126,62,167
-    GUIBorderBox 13,10,80,80,120,167
+    GUIDisplayBBox 13,10,30,80,37,167             ; Boxes
+    GUIDisplayBBox 13,10,55,126,62,167
+    GUIDisplayBBox 13,10,80,80,120,167
     
     DrawGUIButton 13,60,155,120,167,GUICSrcTextG2d,56,0,1        ; Buttons
     DrawGUIButton 13,130,155,160,167,GUICSrcTextG2e,57,0,1
@@ -4541,17 +4541,17 @@ DisplayGUIPaths:
     GUIDisplayText 19,8,173,GUIPathsTextC
     GUIDisplayText 19,135,173,GUIPathsTextD
 
-    GUIBorderBox  19,75,15,231,25,167            ;Input boxes
-    GUIBorderBox  19,75,35,231,45,167
-    GUIBorderBox  19,75,55,231,65,167
-    GUIBorderBox  19,8,95,106,105,167
-    GUIBorderBox  19,8,120,106,130,167
-    GUIBorderBox  19,135,95,235,105,167
-    GUIBorderBox  19,135,120,235,130,167
-    GUIBorderBox  19,8,155,106,165,167
-    GUIBorderBox  19,8,180,106,190,167
-    GUIBorderBox  19,135,155,235,165,167
-    GUIBorderBox  19,135,180,235,190,167
+    GUIDisplayBBox  19,75,15,231,25,167            ;Input boxes
+    GUIDisplayBBox  19,75,35,231,45,167
+    GUIDisplayBBox  19,75,55,231,65,167
+    GUIDisplayBBox  19,8,95,106,105,167
+    GUIDisplayBBox  19,8,120,106,130,167
+    GUIDisplayBBox  19,135,95,235,105,167
+    GUIDisplayBBox  19,135,120,235,130,167
+    GUIDisplayBBox  19,8,155,106,165,167
+    GUIDisplayBBox  19,8,180,106,190,167
+    GUIDisplayBBox  19,135,155,235,165,167
+    GUIDisplayBBox  19,135,180,235,190,167
 
     GUIOuttextwin2d 19,77,19,SRAMDir,25            ; Green Text
     GUIOuttextwin2d 19,77,39,SnapPath,25
@@ -4830,7 +4830,7 @@ DisplayGUISpeed:                    ;Speed Options
     GUIDisplayCheckbox 21,11,135,FastFwdToggle   ; Checkboxes
     GUIDisplayCheckboxn 21,11,145,frameskip,0
 
-    GUIBorderBox 21,96,24,114,31,167                ; FF Ratio Box
+    GUIDisplayBBox 21,96,24,114,31,167                ; FF Ratio Box
     xor ax,ax
     mov ah,[FFRatio]
     add ah,2
@@ -4862,7 +4862,7 @@ DisplayGUISpeed:                    ;Speed Options
     mov byte[GUItextcolor],211
 .zero16
 
-    GUIBorderBox 21,96,35,114,42,167      ; SD Ratio Box
+    GUIDisplayBBox 21,96,35,114,42,167      ; SD Ratio Box
     xor ax,ax
     mov ah,[SDRatio]
     add ah,2
@@ -4975,7 +4975,7 @@ DisplayGUISpeed:                    ;Speed Options
     cmp byte[frameskip],0                    ; Determine if AutoFR is enabled
     je near .auto
 
-    GUIBorderBox 21,75,13,93,20,167           ; Non AFR FrameRate +/- Box
+    GUIDisplayBBox 21,75,13,93,20,167           ; Non AFR FrameRate +/- Box
     mov al,[frameskip]
     add al,47
     mov [GUISpeedTextX],al
@@ -4997,7 +4997,7 @@ DisplayGUISpeed:                    ;Speed Options
     jmp .ratioborders
 
 .auto                                          ; AFR Max Frameskip +/- Box
-    GUIBorderBox 21,96,13,114,20,167
+    GUIDisplayBBox 21,96,13,114,20,167
     mov al,[maxskip]
     add al,48
     mov [GUISpeedTextX],al
