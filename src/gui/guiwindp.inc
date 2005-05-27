@@ -429,7 +429,7 @@ GUIStringGreater2:
     GUIDisplayIconWin %1,%2,%3,[GUITemp]
 %endmacro
 
-%macro GUIDisplayText 4
+%macro GUIDisplayText 4                    ; Text&Shadow
     mov byte[GUItextcolor],202
     cmp byte[GUIWincoladd],0
     je %%text
@@ -440,11 +440,11 @@ GUIOuttextwin2 %1,%2,%3,%4
 GUIOuttextwin2 %1,%2-1,%3-1,%4
 %endmacro
 
-%macro GUIDisplayTextY 4
-    mov al,[GUIWincol]                       ; Yellow Shadow
+%macro GUIDisplayTextY 4                    ; Yellow Text&Shadow
+    mov al,[GUIWincol]
     mov byte[GUItextcolor],al
     GUIOuttextwin2 %1,%2,%3,%4
-    mov byte[GUItextcolor],163               ; Yellow Text
+    mov byte[GUItextcolor],163
     cmp byte[GUIWincoladd],0
     je %%texty
     mov byte[GUItextcolor],164
@@ -452,7 +452,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
     GUIOuttextwin2 %1,%2-1,%3-1,%4
 %endmacro
 
-%macro GUIDisplayTextu 5
+%macro GUIDisplayTextu 5                    ; Text&Shadow With Underline
     mov byte[GUItextcolor],202
     cmp byte[GUIWincoladd],0
     je %%textu
@@ -463,7 +463,7 @@ GUIOuttextwin2u %1,%2,%3,%4,%5
 GUIOuttextwin2 %1,%2-1,%3-1,%4
 %endmacro
 
-%macro GUIDisplayCheckbox 4
+%macro GUIDisplayCheckbox 4                 ; Toggled Checkbox
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[%4],0
     je %%nocheckbox
@@ -472,7 +472,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
     GUIDisplayIconWin %1,%2,%3,[GUITemp]
 %endmacro
 
-%macro GUIDisplayCheckboxn 5
+%macro GUIDisplayCheckboxn 5                 ; Set Var. Checkbox
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[%4],%5
     jne %%nocheckbox
@@ -481,8 +481,8 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
     GUIDisplayIconWin %1,%2,%3,[GUITemp]
 %endmacro
 
-%macro GUIDisplayBBoxS 6
-    mov dword[GUIWincol],148+10
+%macro GUIDisplayBBoxS 6                     ; Black Box W/Border
+    mov dword[GUIWincol],148+10              ; Minus right side
     cmp byte[cwindrawn],1
     jne %%noone
     mov dword[GUIWincol],148+5
@@ -502,7 +502,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
     DrawGUIWinBox %1,%2,%5+1,%4,%5-1,dl
 %endmacro
 
-%macro GUIDisplayBBox 6
+%macro GUIDisplayBBox 6                     ; Black Box W/Border
     mov dword[GUIWincol],148+10
     cmp byte[cwindrawn],1
     jne %%noone
@@ -3404,6 +3404,8 @@ DisplayGUIAbout:          ; Displays the About Box
     popad
 
     GUIDrawWindowBox 11,GUIAboutDisp
+    cmp byte[EEgg],1
+    je .eegg
     GUIDisplayText 11,6,16,GUIGUIAboutTextA1       ; Text
     GUIDisplayText 11,6,26,GUIGUIAboutTextA2
     GUIDisplayTextY 11,6,36,GUIGUIAboutTextB
@@ -3421,13 +3423,19 @@ DisplayGUIAbout:          ; Displays the About Box
     GUIDisplayText 11,6,171,GUIGUIAboutTextD5
     GUIDisplayText 11,6,181,GUIGUIAboutTextD6
     GUIDisplayText 11,6,191,GUIGUIAboutTextD7
-    
+
     mov byte[GUItextcolor],217                       ; Buttons
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUItextcolor],211
 .zero3
     DrawGUIButton 11,90,30,175,40,GUIGUIAboutTextE,65,0,0
+    ret
+
+    .eegg                                ;Playground
+    GUIDisplayText 11,42,36,GUIGUIAboutTextF
+    GUIDisplayText 11,30,96,GUIGUIAboutTextFa
+    GUIDisplayText 11,39,106,GUIGUIAboutTextFb
     ret
 
 SECTION .data
@@ -3460,6 +3468,9 @@ GUIGUIAboutTextD7 db 'thoroughly before doing so.',0
 
 GUIGUIAboutTextE db 'WWW.ZSNES.COM',0
 
+GUIGUIAboutTextF db 'HIDDEN MESSAGE!',0
+GUIGUIAboutTextFa db 'PRESS ',39,'E',39,' TO RETURN ',0
+GUIGUIAboutTextFb db 'TO THE ABOUT BOX',0
 
 SECTION .text
 

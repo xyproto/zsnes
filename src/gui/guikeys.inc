@@ -340,6 +340,8 @@ GUIgetcurrentinput:
     je near GUICheatKeys
     cmp ebx,10
     je near GUIGUIOptnsKeys
+    cmp ebx,11
+    je near GUIAboutKeys
     cmp ebx,12
     je near GUIResetKeys
     cmp ebx,13
@@ -687,6 +689,19 @@ GUIOptionKeys:
     xor byte[DisableScreenSaver],1
 .noscreensaver
 %endif
+    ret
+
+GUIAboutKeys
+    cmp dh,'a'             ; Setup
+    jb .nocap
+    cmp dh,'z'
+    ja .nocap
+    sub dh,'z'-'Z'
+.nocap
+    cmp dh,'E'
+    jne .noeegg
+    xor byte[EEgg],1
+.noeegg
     ret
 
 GUISaveKeys:
