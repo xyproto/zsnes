@@ -2278,20 +2278,6 @@ DrawWindowSearch:
     GUIDrawWindowBox 13,GUISearchDisp
     ret
 
-%macro TextWindowMacro 4
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2 %1,%2+1,%3+1,%4
-    add byte[GUItextcolor],15
-    GUIOuttextwin2 %1,%2,%3,%4
-%endmacro
-
-%macro TextWindowMacrou 5
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2u %1,%2+1,%3+1,%4,%5
-    add byte[GUItextcolor],15
-    GUIOuttextwin2 %1,%2,%3,%4
-%endmacro
-
 CSRemoveFlash:
 .loop
     cmp byte[esi],'_'
@@ -2490,8 +2476,8 @@ DisplayChtSrcRes:                    ; Buttons (Restart/View/Search)
     call FindChtSrcRes
     mov esi,GUICSrcTextG1
     call convertnum
-    TextWindowMacro 13,12,125,GUICSrcTextG1b
-    TextWindowMacro 13,97,125,GUICSrcTextG1
+    GUIDisplayText 13,12,125,GUICSrcTextG1b
+    GUIDisplayText 13,97,125,GUICSrcTextG1
     mov dword[GUIcurrentchtsrcviewloc],0
     mov dword[GUIcurrentchtsrccursloc],0
     ret
@@ -2697,7 +2683,7 @@ Cheatmodeadd:                                 ; Add Window
     inc ecx
     call converthex
 .dec
-    TextWindowMacro 13,71,130,GUICSrcTextG1
+    GUIDisplayText 13,71,130,GUICSrcTextG1
 
     cmp byte[CurCStextpos],0               ; Cheat Input
     jne near .nofirstbox
