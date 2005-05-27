@@ -2068,7 +2068,14 @@ DisplayGUICheatConv:
     test dword[ccheatnleft],80000000h
     jnz %%skip
     call DisplayGUICheatConv
+    mov byte[GUItextcolor],223  
     GUIOuttextwin2 7,%1,%2,GUICheatTextZ3
+    mov byte[GUItextcolor],221               ;Text
+    cmp byte[GUIWincoladd],0
+    je %%zero
+    mov byte[GUItextcolor],222
+%%zero
+    GUIOuttextwin2 7,%1-1,%2-1,GUICheatTextZ3
     add dword[ccheatnpos],28
     dec dword[ccheatnleft]
 %%skip
@@ -2085,6 +2092,11 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     GUIDisplayText 7,11,172,GUICheatTextD3
     GUIDisplayText 7,11,180,GUICheatTextD4
     GUIDisplayText 7,26,191,GUICheatTextE1
+    
+    cmp dword[GUIcurrentcheatwin],0     ; Draw underline only if you 
+    jne near .noshortcut                ; don't have an input box selected
+    GUIDisplayTextu 7,26,191,GUICheatTextE1,0
+.noshortcut
 
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
@@ -2098,13 +2110,8 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     DrawGUIButton 7,193,113,235,124,GUICheatTextB5,33,0,0
     DrawGUIButton 7,212,134,236,145,GUICheatTextB6,9,0,0
 
-; Easiest way i could think of to underline the hotkeys for the buttons
-    GUIOuttextwin2u 7,10,117,GUICheatTextZ5,0
-    GUIOuttextwin2u 7,57,117,GUICheatTextZ5,0
-    GUIOuttextwin2u 7,104,117,GUICheatTextZ5,0
-    GUIOuttextwin2u 7,151,117,GUICheatTextZ5,0
-    GUIOuttextwin2u 7,198,117,GUICheatTextZ5,0
-
+    GUIDisplayBBoxS 7,5,20,229,108,167           ; Draw Cheat Box
+    
     cmp dword[GUIcurrentcheatwin],0     ; Red Highlight for Cheats box
     jne near .nowinbox
     mov ebx,[GUIcurrentcheatcursloc]
@@ -2115,10 +2122,8 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     add ebx,22
     DrawGUIWinBox2 7,5,229,7,224
 .nowinbox
-
-    GUIDisplayBBoxS 7,5,20,229,108,167           ; Draw Cheat Box
-    mov byte[GUItextcolor],223                ; Shadow
-    mov dword[ccheatnpos],cheatdata
+    
+    mov dword[ccheatnpos],cheatdata         ; Green Text
     mov eax,[NumCheats]
     sub eax,[GUIcurrentcheatviewloc]
     dec eax
@@ -2143,37 +2148,6 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     GUIOuttextwin2cheat 12,24+7*9
     GUIOuttextwin2cheat 12,24+7*10
     GUIOuttextwin2cheat 12,24+7*11
-
-    mov byte[GUItextcolor],221               ;Text
-    cmp byte[GUIWincoladd],0
-    je .zero4
-    mov byte[GUItextcolor],222
-.zero4
-    mov dword[ccheatnpos],cheatdata
-    mov eax,[NumCheats]
-    sub eax,[GUIcurrentcheatviewloc]
-    dec eax
-    mov dword[ccheatnleft],eax
-    mov eax,[GUIcurrentcheatviewloc]
-    mov ebx,eax
-    shl eax,5
-    sub eax,ebx
-    sub eax,ebx
-    sub eax,ebx
-    sub eax,ebx
-    add [ccheatnpos],eax
-    GUIOuttextwin2cheat 11,23
-    GUIOuttextwin2cheat 11,23+7
-    GUIOuttextwin2cheat 11,23+7*2
-    GUIOuttextwin2cheat 11,23+7*3
-    GUIOuttextwin2cheat 11,23+7*4
-    GUIOuttextwin2cheat 11,23+7*5
-    GUIOuttextwin2cheat 11,23+7*6
-    GUIOuttextwin2cheat 11,23+7*7
-    GUIOuttextwin2cheat 11,23+7*8
-    GUIOuttextwin2cheat 11,23+7*9
-    GUIOuttextwin2cheat 11,23+7*10
-    GUIOuttextwin2cheat 11,23+7*11
 
 ;Scrollbar
     DrawSlideBarWin 7,231,28,[GUIcurrentcheatviewloc],[NumCheats],12,73,GUICStA
@@ -2227,11 +2201,11 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
 .nobotibox
     GUIDisplayBBox 7,82,140,196,147,dl
 
-    mov byte[GUItextcolor],223           ;Shadow
+    mov byte[GUItextcolor],223           ;Green Shadow
     GUIOuttextwin2 7,84,132,GUICheatTextZ1
     GUIOuttextwin2 7,84,143,GUICheatTextZ2
 
-    mov byte[GUItextcolor],221           ;Text
+    mov byte[GUItextcolor],221           ;Green Text
     cmp byte[GUIWincoladd],0
     je .zero3
     mov byte[GUItextcolor],222

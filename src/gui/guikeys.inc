@@ -1776,9 +1776,7 @@ GUICheatKeys:
     sub dh,'z'-'Z'
 .nocap
 
-
-;Hotkeys for Buttons
-    cmp dh,'R'
+    cmp dh,'R'               ; Hotkeys
     jne .noremocheat
     jmp CheatCodeRemove
 .noremocheat
@@ -1798,6 +1796,10 @@ GUICheatKeys:
     jne .nofixcheat
     jmp CheatCodeFix
 .nofixcheat
+    cmp dh,'A'
+    jne .noauto
+    xor byte[AutoLoadCht],1
+.noauto
 
 ;Main Cheat Box
     cmp dword[NumCheats],0
