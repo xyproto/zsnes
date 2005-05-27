@@ -481,6 +481,51 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
     GUIDisplayIconWin %1,%2,%3,[GUITemp]
 %endmacro
 
+%macro GUIBorderBoxS 6
+    mov dword[GUIWincol],148+10
+    cmp byte[cwindrawn],1
+    jne %%noone
+    mov dword[GUIWincol],148+5
+%%noone
+    cmp byte[cwindrawn],0
+    jne %%nozero
+    mov dword[GUIWincol],148
+%%nozero
+    DrawGUIWinBox %1,%2,%3,%4,%5,%6
+    mov dl,[GUIWincol]
+    DrawGUIWinBox %1,%2,%3-3+2,%4,%3+1,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox %1,%2,%5+1,%4,%5-1,dl
+%endmacro
+
+%macro GUIBorderBox 6
+    mov dword[GUIWincol],148+10
+    cmp byte[cwindrawn],1
+    jne %%noone
+    mov dword[GUIWincol],148+5
+%%noone
+    cmp byte[cwindrawn],0
+    jne %%nozero
+    mov dword[GUIWincol],148
+%%nozero
+    DrawGUIWinBox %1,%2,%3,%4,%5,%6
+    mov dl,[GUIWincol]
+    DrawGUIWinBox %1,%2,%3-3+2,%4,%3+1,dl
+    mov dl,[GUIWincol]
+    add dl,1
+    DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
+    mov dl,[GUIWincol]
+    add dl,4
+    DrawGUIWinBox %1,%2,%5+1,%4,%5-1,dl
+    mov dl,[GUIWincol]
+    add dl,3
+    DrawGUIWinBox %1,%4+2,%3,%4-3,%5,dl
+%endmacro
+
 ; DGUIDisplay
 DisplayGUILoad:
     GUIDrawWindowBox 1,GUILoadDisp
@@ -770,6 +815,7 @@ DisplayGUILoad:
     jne .noholdd2
     sub byte[GUIWincoladd],3
 .noholdd2
+
     ; Draw borders
     mov dword[GUIWincol],148+10
     cmp byte[cwindrawn],1
@@ -1144,7 +1190,7 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
 %endif
     DrawGUIButton 3,125,66,179,77,GUIInputTextE3,15,0,0
     
-    DrawGUIWinBox 3,5,34,107,77,167        ; Main Box
+    GUIBorderBoxS 3,5,34,107,77,167        ; Main Box
     mov ebx,[GUIcurrentinputcursloc]
     sub ebx,[GUIcurrentinputviewloc]
     mov eax,ebx
@@ -1302,25 +1348,6 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
     GUIInputDispKey 165,150      ; Up-Right
     GUIInputDispKey 125,140      ; Down-Left
     GUIInputDispKey 125,150      ; Down-Right
-
-    ; Draw border
-    mov dword[GUIWincol],148+10
-    cmp byte[cwindrawn],1
-    jne .noone2
-    mov dword[GUIWincol],148+5
-.noone2
-    cmp byte[cwindrawn],0
-    jne .nozero2
-    mov dword[GUIWincol],148
-.nozero2
-    mov dl,[GUIWincol]                  ;Device
-    DrawGUIWinBox 3,5,33,107,33,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 3,4,34,3,77,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 3,5,78,107,78,dl
 
     DGOptnsBorderBox 3,44,99
     DGOptnsBorderBox 3,44,109
@@ -1764,10 +1791,10 @@ DisplayGUIVideo:
 .checkboxhq
     GUIDisplayCheckbox 5,115,163,hqFilter
 
-.nocheckboxhq                           ; Video Modes Box
-    DrawGUIWinBox 5,5,26,115,69,167             ; Scrollbar
+.nocheckboxhq                                   ; Video Modes Box
+    GUIBorderBoxS 5,5,26,115,69,167
     DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],5,28,GUIVStA
-    cmp byte[GUICHold],5
+    cmp byte[GUICHold],5                        ; Scrollbar
     jne .noholda
     add byte[GUIWincoladd],3
 .noholda
@@ -1832,24 +1859,6 @@ DisplayGUIVideo:
     add dword[GUITemp],18
     GUIOuttextwin2 5,10,29+8*4,[GUITemp]
 
-    mov dword[GUIWincol],148+10           ; Draw borders
-    cmp byte[cwindrawn],1
-    jne .noone2
-    mov dword[GUIWincol],148+5
-.noone2
-    cmp byte[cwindrawn],0
-    jne .nozero2
-    mov dword[GUIWincol],148
-.nozero2
-    mov dl,[GUIWincol]
-    DrawGUIWinBox 5,5,25,115,25,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 5,4,26,3,69,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 5,5,70,115,70,dl
-    
     xor eax,eax                      ; Mode Value
     mov al,[cvidmode]
     mov ebx,eax
@@ -1980,7 +1989,7 @@ DisplayGUISound:                     ; Sound Related Options
     GUIDisplayCheckboxn 6,111,183,LowPassFilterType,3
 %endif
 
-    DrawGUIWinBox 6,15,61,69,69,167       ;Sampling Rate Box
+    GUIBorderBox 6,15,61,69,69,167            ;Sampling Rate Box
     mov dword[GUITemp],GUISoundTextB1
     xor eax,eax
     mov al,[cfgSoundQuality]
@@ -1994,27 +2003,6 @@ DisplayGUISound:                     ; Sound Related Options
     mov byte[GUItextcolor],222
 .zero4
     GUIOuttextwin2 6,22,63,[GUITemp]
-
-    mov dword[GUIWincol],148+10       ; Draw borders
-    cmp byte[cwindrawn],1
-    jne .noone3
-    mov dword[GUIWincol],148+5
-.noone3
-    cmp byte[cwindrawn],0
-    jne .nozero3
-    mov dword[GUIWincol],148
-.nozero3
-    mov dl,[GUIWincol]
-    DrawGUIWinBox 6,15,60,69,60,dl ;top
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 6,14,61,13,69,dl ;left
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 6,15,70,69,70,dl ;bottom
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 6,71,61,70,69,dl ;right
 
     mov eax,dword[GUIwinposx+6*4]   ; Volume Level Slider
     mov ebx,dword[GUIwinposy+6*4]
@@ -2211,8 +2199,6 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     GUIDisplayText 7,11,180,GUICheatTextD4
     GUIDisplayText 7,26,191,GUICheatTextE1
 
-    DrawGUIWinBox 7,5,20,229,108,167
-
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
     je .zero
@@ -2243,7 +2229,8 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     DrawGUIWinBox2 7,5,229,7,224
 .nowinbox
 
-    mov byte[GUItextcolor],223                ; Draw Cheats box
+    GUIBorderBoxS 7,5,20,229,108,167           ; Draw Cheat Box
+    mov byte[GUItextcolor],223                ; Shadow
     mov dword[ccheatnpos],cheatdata
     mov eax,[NumCheats]
     sub eax,[GUIcurrentcheatviewloc]
@@ -2257,7 +2244,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     sub eax,ebx
     sub eax,ebx
     add [ccheatnpos],eax
-    GUIOuttextwin2cheat 12,24                ; Shadow
+    GUIOuttextwin2cheat 12,24
     GUIOuttextwin2cheat 12,24+7
     GUIOuttextwin2cheat 12,24+7*2
     GUIOuttextwin2cheat 12,24+7*3
@@ -2270,7 +2257,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     GUIOuttextwin2cheat 12,24+7*10
     GUIOuttextwin2cheat 12,24+7*11
 
-    mov byte[GUItextcolor],221
+    mov byte[GUItextcolor],221               ;Text
     cmp byte[GUIWincoladd],0
     je .zero4
     mov byte[GUItextcolor],222
@@ -2288,7 +2275,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     sub eax,ebx
     sub eax,ebx
     add [ccheatnpos],eax
-    GUIOuttextwin2cheat 11,23               ;Text
+    GUIOuttextwin2cheat 11,23
     GUIOuttextwin2cheat 11,23+7
     GUIOuttextwin2cheat 11,23+7*2
     GUIOuttextwin2cheat 11,23+7*3
@@ -2322,34 +2309,6 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     sub byte[GUIWincoladd],3
 .noholdb2
 
-    mov dword[GUIWincol],148+10      ; Draw borders
-    cmp byte[cwindrawn],1
-    jne .noone2
-    mov dword[GUIWincol],148+5
-.noone2
-    cmp byte[cwindrawn],0
-    jne .nozero2
-    mov dword[GUIWincol],148
-.nozero2
-    mov dl,[GUIWincol]
-    DrawGUIWinBox 7,5,19,229,19,dl      ; Cheat Box
-    DrawGUIWinBox 7,82,128,172,128,dl   ; Code Box
-    DrawGUIWinBox 7,82,139,196,139,dl   ; Descrip. Box
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 7,4,20,3,108,dl
-    DrawGUIWinBox 7,81,129,80,136,dl
-    DrawGUIWinBox 7,81,140,80,147,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 7,5,109,229,109,dl
-    DrawGUIWinBox 7,82,137,172,137,dl
-    DrawGUIWinBox 7,82,148,196,148,dl
-    mov dl,[GUIWincol]
-    add dl,3                            ; Cheat Box doesn't have right border
-    DrawGUIWinBox 7,174,129,173,136,dl
-    DrawGUIWinBox 7,156,140,197,147,dl
-
     mov ebx,[GUIcurrentcheatcursloc]    ; Draw input boxes
     sub ebx,[GUIcurrentcheatviewloc]
     mov eax,ebx
@@ -2368,7 +2327,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     inc dl
 .nocoladd
 .notopibox
-    DrawGUIWinBox 7,82,129,172,136,dl
+    GUIBorderBox 7,82,129,172,136,dl
 
     mov dl,167                           ;Descrip. Box
     cmp dword[GUIcurrentcheatwin],2
@@ -2379,7 +2338,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     inc dl
 .nocoladd2
 .nobotibox
-    DrawGUIWinBox 7,82,140,196,147,dl
+    GUIBorderBox 7,82,140,196,147,dl
 
     mov byte[GUItextcolor],223           ;Shadow
     GUIOuttextwin2 7,84,132,GUICheatTextZ1
@@ -2413,7 +2372,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     mov byte[GUICheatTextZ2+ebx],'_'
 .nound
 
-    GUIDisplayCheckboxn 7,11,186,AutoLoadCht,1
+    GUIDisplayCheckboxn 7,11,186,AutoLoadCht,1          ; Checkbox
     ret
 
 SECTION .data
@@ -2564,28 +2523,7 @@ CheatSearching:                       ; Exact Value Search
     GUIDisplayText 13,5,20,GUICSrcTextB1
     GUIDisplayText 13,5,65,GUICSrcTextG1a
     
-    DrawGUIWinBox 13,10,40,80,47,167           ; Input Box
-
-    mov dword[GUIWincol],148+10              ; Draw border
-    cmp byte[cwindrawn],1
-    jne .noone2
-    mov dword[GUIWincol],148+5
-.noone2
-    cmp byte[cwindrawn],0
-    jne .nozero2
-    mov dword[GUIWincol],148
-.nozero2
-    mov dl,[GUIWincol]
-    DrawGUIWinBox 13,10,39,80,39,dl  ; 0,-1,0,-1
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 13,9,40,8,47,dl   ; -1,0,-2,0
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 13,10,48,80,48,dl  ; 0,1,0,1
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 13,82,40,81,47,dl ; 2,0,1,0
+    GUIBorderBox 13,10,40,80,47,167           ; Input Box
 
     test byte[GUICCFlash],8            ; Flash Cursor Code?
     jnz .nound
@@ -2711,25 +2649,7 @@ Cheatmodeview:                       ; View ResultsWindow
     
     GUIDisplayText 13,10,12,GUICSrcTextE   ; Text
     
-    DrawGUIWinBox 13,5,20,171,108,167      ; Box
-
-    mov dword[GUIWincol],148+10          ; Draw border
-    cmp byte[cwindrawn],1
-    jne .noone2
-    mov dword[GUIWincol],148+5
-.noone2
-    cmp byte[cwindrawn],0
-    jne .nozero2
-    mov dword[GUIWincol],148
-.nozero2
-    mov dl,[GUIWincol]
-    DrawGUIWinBox 13,5,19,171,19,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 13,4,20,3,108,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 13,5,109,171,109,dl
+    GUIBorderBoxS 13,5,20,171,108,167      ; Box
 
     mov edi,[GUIcurrentchtsrcviewloc]
     call FindChtSrcRes
@@ -2894,39 +2814,10 @@ Cheatmodeadd:                                 ; Add Window
 
     GUIDisplayCheckboxn 13,8,139,CheatUpperByteOnly,1   ; Checkbox
     
-    DrawGUIWinBox 13,10,30,80,37,167             ; Boxes
-    DrawGUIWinBox 13,10,55,126,62,167
-    DrawGUIWinBox 13,10,80,80,120,167
+    GUIBorderBox 13,10,30,80,37,167             ; Boxes
+    GUIBorderBox 13,10,55,126,62,167
+    GUIBorderBox 13,10,80,80,120,167
     
-    mov dword[GUIWincol],148+10                 ; Draw border
-    cmp byte[cwindrawn],1
-    jne .noone2
-    mov dword[GUIWincol],148+5
-.noone2
-    cmp byte[cwindrawn],0
-    jne .nozero2
-    mov dword[GUIWincol],148
-.nozero2
-    mov dl,[GUIWincol]
-    DrawGUIWinBox 13,10,29,80,29,dl  ; 0,-1,0,-1
-    DrawGUIWinBox 13,10,54,126,54,dl  ; 0,-1,0,-1
-    DrawGUIWinBox 13,10,79,80,79,dl  ; 0,-1,0,-1
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 13,9,30,8,37,dl   ; -1,0,-2,0
-    DrawGUIWinBox 13,9,55,8,62,dl   ; -1,0,-2,0
-    DrawGUIWinBox 13,9,80,8,120,dl   ; -1,0,-2,0
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 13,10,38,80,38,dl  ; 0,1,0,1
-    DrawGUIWinBox 13,10,63,126,63,dl  ; 0,1,0,1
-    DrawGUIWinBox 13,10,121,80,121,dl  ; 0,1,0,1
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 13,82,30,81,37,dl ; 2,0,1,0
-    DrawGUIWinBox 13,128,55,127,62,dl ; 2,0,1,0
-    DrawGUIWinBox 13,82,80,81,120,dl ; 2,0,1,0
-
     DrawGUIButton 13,60,155,120,167,GUICSrcTextG2d,56,0,1        ; Buttons
     DrawGUIButton 13,130,155,160,167,GUICSrcTextG2e,57,0,1
 
@@ -3716,8 +3607,8 @@ SECTION .text
 ; Key types: Up, Down, Left, Right, A, B, X, Y, L, R (Press/Relase/P+R)
 ; Frame delays: 1 frame, 2, 3, 4, 5, 1 sec., 2, 3 ,4 ,5
 
-%macro DrawBorderedBox 6
-    ; draw borders
+%macro DrawBorderedBox 6;
+     ; draw borders
     mov dl,[GUIWincol]
     DrawGUIWinBox %1,%2,%6,%4,%3,dl   ; For some reason, this freezes if I
                                       ; replace %6 with %3-1
@@ -4635,182 +4526,34 @@ BlinkCursorCheck:
 
 DisplayGUIPaths:
     GUIDrawWindowBox 19,GUIPathsDisp
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2 19,8,18,GUIPathsText1
-    GUIOuttextwin2 19,8,38,GUIPathsText2
-    GUIOuttextwin2 19,8,58,GUIPathsText3
-    GUIOuttextwin2 19,60,78,GUIPathsText4
-    GUIOuttextwin2 19,8,88,GUIPathsText5
-    GUIOuttextwin2 19,135,88,GUIPathsText6
-    GUIOuttextwin2 19,8,113,GUIPathsText8
-    GUIOuttextwin2 19,135,113,GUIPathsText7
-    GUIOuttextwin2 19,45,138,GUIPathsText9
-    GUIOuttextwin2 19,8,148,GUIPathsTextA
-    GUIOuttextwin2 19,135,148,GUIPathsTextB
-    GUIOuttextwin2 19,8,173,GUIPathsTextC
-    GUIOuttextwin2 19,135,173,GUIPathsTextD
+    
+    GUIDisplayText 19,8,18,GUIPathsText1         ; Text
+    GUIDisplayText 19,8,38,GUIPathsText2
+    GUIDisplayText 19,8,58,GUIPathsText3
+    GUIDisplayText 19,60,78,GUIPathsText4
+    GUIDisplayText 19,8,88,GUIPathsText5
+    GUIDisplayText 19,135,88,GUIPathsText6
+    GUIDisplayText 19,8,113,GUIPathsText8
+    GUIDisplayText 19,135,113,GUIPathsText7
+    GUIDisplayText 19,45,138,GUIPathsText9
+    GUIDisplayText 19,8,148,GUIPathsTextA
+    GUIDisplayText 19,135,148,GUIPathsTextB
+    GUIDisplayText 19,8,173,GUIPathsTextC
+    GUIDisplayText 19,135,173,GUIPathsTextD
 
-    add byte[GUItextcolor],15
-    GUIOuttextwin2 19,7,17,GUIPathsText1
-    GUIOuttextwin2 19,7,37,GUIPathsText2
-    GUIOuttextwin2 19,7,57,GUIPathsText3
-    GUIOuttextwin2 19,59,77,GUIPathsText4
-    GUIOuttextwin2 19,7,87,GUIPathsText5
-    GUIOuttextwin2 19,134,87,GUIPathsText6
-    GUIOuttextwin2 19,7,112,GUIPathsText8
-    GUIOuttextwin2 19,134,112,GUIPathsText7
-    GUIOuttextwin2 19,44,137,GUIPathsText9
-    GUIOuttextwin2 19,7,147,GUIPathsTextA
-    GUIOuttextwin2 19,134,147,GUIPathsTextB
-    GUIOuttextwin2 19,7,172,GUIPathsTextC
-    GUIOuttextwin2 19,134,172,GUIPathsTextD
+    GUIBorderBox  19,75,15,231,25,167            ;Input boxes
+    GUIBorderBox  19,75,35,231,45,167
+    GUIBorderBox  19,75,55,231,65,167
+    GUIBorderBox  19,8,95,106,105,167
+    GUIBorderBox  19,8,120,106,130,167
+    GUIBorderBox  19,135,95,235,105,167
+    GUIBorderBox  19,135,120,235,130,167
+    GUIBorderBox  19,8,155,106,165,167
+    GUIBorderBox  19,8,180,106,190,167
+    GUIBorderBox  19,135,155,235,165,167
+    GUIBorderBox  19,135,180,235,190,167
 
-    ; Draw borders
-    mov dword[GUIWincol],148+10
-    cmp byte[cwindrawn],1
-    jne .noone3
-    mov dword[GUIWincol],148+5
-.noone3
-    cmp byte[cwindrawn],0
-    jne .nozero3
-    mov dword[GUIWincol],148
-.nozero3
-    mov dl,[GUIWincol]                   ; Saves Border
-    DrawGUIWinBox 19,75,14,231,14,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 19,74,15,74,25,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 19,75,26,231,26,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 19,232,15,232,25,dl
-    mov dl,[GUIWincol]                   ; Snapshots Border
-    DrawGUIWinBox 19,75,34,231,34,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 19,74,35,74,45,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 19,75,46,231,46,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 19,232,35,232,45,dl
-    mov dl,[GUIWincol]                   ; SPCs Border
-    DrawGUIWinBox 19,75,54,231,54,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 19,74,55,74,65,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 19,75,66,231,66,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 19,232,55,232,65,dl
-    mov dl,[GUIWincol]                   ; BS-X Border
-    DrawGUIWinBox 19,8,94,106,94,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 19,7,95,74,105,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 19,8,106,106,106,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 19,107,95,107,105,dl
-    mov dl,[GUIWincol]                   ; SAME GAME Border
-    DrawGUIWinBox 19,8,119,106,119,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 19,7,120,7,130,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 19,8,131,106,131,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 19,107,120,107,130,dl
-    mov dl,[GUIWincol]                   ; FEOEZ Border
-    DrawGUIWinBox 19,8,154,106,154,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 19,7,155,7,165,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 19,8,166,106,166,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 19,107,155,107,165,dl
-    mov dl,[GUIWincol]                   ; MDH Border
-    DrawGUIWinBox 19,8,179,106,179,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 19,7,180,7,190,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 19,8,191,106,191,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 19,107,180,107,190,dl
-    mov dl,[GUIWincol]                   ; Sufami Turbo Border
-    DrawGUIWinBox 19,135,94,235,94,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 19,134,95,134,105,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 19,135,106,235,106,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 19,236,95,236,105,dl
-    mov dl,[GUIWincol]                   ; SD GUNDAM Border
-    DrawGUIWinBox 19,135,119,235,119,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 19,134,120,134,130,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 19,135,131,235,131,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 19,236,120,236,130,dl
-    mov dl,[GUIWincol]                   ; FEOEZ SJNS Border
-    DrawGUIWinBox 19,135,154,235,154,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 19,134,155,134,165,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 19,135,166,235,166,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 19,236,155,236,165,dl
-    mov dl,[GUIWincol]                   ; SPL4 Border
-    DrawGUIWinBox 19,135,179,235,179,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 19,134,180,134,190,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 19,135,191,235,191,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 19,236,180,236,190,dl
-    ; End draw borders
-    ;Input boxes
-    DrawGUIWinBox  19,75,15,231,25,167
-    DrawGUIWinBox  19,75,35,231,45,167
-    DrawGUIWinBox  19,75,55,231,65,167
-    DrawGUIWinBox  19,8,95,106,105,167
-    DrawGUIWinBox  19,8,120,106,130,167
-    DrawGUIWinBox  19,135,95,235,105,167
-    DrawGUIWinBox  19,135,120,235,130,167
-    DrawGUIWinBox  19,8,155,106,165,167
-    DrawGUIWinBox  19,8,180,106,190,167
-    DrawGUIWinBox  19,135,155,235,165,167
-    DrawGUIWinBox  19,135,180,235,190,167
-
-    GUIOuttextwin2d 19,77,19,SRAMDir,25
+    GUIOuttextwin2d 19,77,19,SRAMDir,25            ; Green Text
     GUIOuttextwin2d 19,77,39,SnapPath,25
     GUIOuttextwin2d 19,77,59,SPCPath,25
     GUIOuttextwin2d 19,10,99,BSXPath,15
@@ -5087,7 +4830,7 @@ DisplayGUISpeed:                    ;Speed Options
     GUIDisplayCheckbox 21,11,135,FastFwdToggle   ; Checkboxes
     GUIDisplayCheckboxn 21,11,145,frameskip,0
 
-    DrawGUIWinBox 21,96,24,114,31,167                ; FF Ratio Box
+    GUIBorderBox 21,96,24,114,31,167                ; FF Ratio Box
     xor ax,ax
     mov ah,[FFRatio]
     add ah,2
@@ -5119,7 +4862,7 @@ DisplayGUISpeed:                    ;Speed Options
     mov byte[GUItextcolor],211
 .zero16
 
-    DrawGUIWinBox 21,96,35,114,42,167      ; SD Ratio Box
+    GUIBorderBox 21,96,35,114,42,167      ; SD Ratio Box
     xor ax,ax
     mov ah,[SDRatio]
     add ah,2
@@ -5232,7 +4975,7 @@ DisplayGUISpeed:                    ;Speed Options
     cmp byte[frameskip],0                    ; Determine if AutoFR is enabled
     je near .auto
 
-    DrawGUIWinBox 21,75,13,93,20,167           ; Non AFR FrameRate +/- Box
+    GUIBorderBox 21,75,13,93,20,167           ; Non AFR FrameRate +/- Box
     mov al,[frameskip]
     add al,47
     mov [GUISpeedTextX],al
@@ -5251,31 +4994,10 @@ DisplayGUISpeed:                    ;Speed Options
 .zero6
     DrawGUIButton 21,97,13,105,21,GUISpeedTextY,12,-2,-1
     DrawGUIButton 21,108,13,116,21,GUISpeedTextZ,13,-2,-1
-
-    mov dword[GUIWincol],148+10             ; Draw borders
-    cmp byte[cwindrawn],1
-    jne .noone2
-    mov dword[GUIWincol],148+5
-.noone2
-    cmp byte[cwindrawn],0
-    jne .nozero2
-    mov dword[GUIWincol],148
-.nozero2
-    mov dl,[GUIWincol]
-    DrawGUIWinBox 21,76,12,93,12,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 21,75,13,74,20,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 21,76,21,93,21,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 21,95,13,94,20,dl
     jmp .ratioborders
 
 .auto                                          ; AFR Max Frameskip +/- Box
-    DrawGUIWinBox 21,96,13,114,20,167
+    GUIBorderBox 21,96,13,114,20,167
     mov al,[maxskip]
     add al,48
     mov [GUISpeedTextX],al
@@ -5294,40 +5016,7 @@ DisplayGUISpeed:                    ;Speed Options
 .zero7
     DrawGUIButton 21,118,13,126,21,GUISpeedTextY,12,-2,-1
     DrawGUIButton 21,129,13,137,21,GUISpeedTextZ,13,-2,-1
-
-    mov dword[GUIWincol],148+10             ; Draw borders
-    cmp byte[cwindrawn],1
-    jne .noone3
-    mov dword[GUIWincol],148+5
-.noone3
-    cmp byte[cwindrawn],0
-    jne .nozero3
-    mov dword[GUIWincol],148
-.nozero3
-    mov dl,[GUIWincol]
-    DrawGUIWinBox 21,96,12,113,12,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 21,95,13,94,20,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 21,96,21,113,21,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 21,115,13,114,20,dl
 .ratioborders
-    mov dl,[GUIWincol]
-    DrawGUIWinBox 21,96,23,113,23,dl
-    DrawGUIWinBox 21,96,34,113,34,dl
-    add dl,1
-    DrawGUIWinBox 21,95,24,94,31,dl
-    DrawGUIWinBox 21,95,35,94,42,dl
-    add dl,2
-    DrawGUIWinBox 21,115,24,114,31,dl
-    DrawGUIWinBox 21,115,35,114,42,dl
-    add dl,1
-    DrawGUIWinBox 21,96,32,113,32,dl
-    DrawGUIWinBox 21,96,43,113,43,dl
     ret
 
 SECTION .data
