@@ -3859,46 +3859,22 @@ DisplayGUICombo:
 
     DrawBorderedBoxB 16,204,189,218,196,188,255
 
-    ; Normal Text
-    mov byte[GUItextcolor],217
-    cmp byte[GUIWincoladd],0
-    je .zero5
-    mov byte[GUItextcolor],211
-.zero5
-    sub byte[GUItextcolor],15
-    GUIOuttextwin2 16,10,13,GUIComboText1
-    GUIOuttextwin2 16,138,13,GUIComboText2
-    GUIOuttextwin2 16,38,84,GUIComboTextE
-    GUIOuttextwin2 16,10,84,GUIComboTextF
-    GUIOuttextwin2 16,10,103,GUIComboText4
-    GUIOuttextwin2 16,10,152,GUIComboText5
-    GUIOuttextwin2 16,10,162,GUIComboText6
-    GUIOuttextwin2 16,10,172,GUIComboText7
-    GUIOuttextwin2 16,10,182,GUIComboText8
-    GUIOuttextwin2 16,114,182,GUIComboText9
-    GUIOuttextwin2 16,204,182,GUIComboTextG
-    GUIOuttextwin2 16,145,85,GUIComboTextI
-    GUIOuttextwin2 16,176,93,GUIComboTextJ
-    GUIOuttextwin2 16,176,101,GUIComboTextK
+    GUIDisplayText 16,10,13,GUIComboText1        ; Text
+    GUIDisplayText 16,138,13,GUIComboText2
+    GUIDisplayText 16,38,84,GUIComboTextE
+    GUIDisplayText 16,10,84,GUIComboTextF
+    GUIDisplayText 16,10,103,GUIComboText4
+    GUIDisplayText 16,10,152,GUIComboText5
+    GUIDisplayText 16,10,162,GUIComboText6
+    GUIDisplayText 16,10,172,GUIComboText7
+    GUIDisplayText 16,10,182,GUIComboText8
+    GUIDisplayText 16,114,182,GUIComboText9
+    GUIDisplayText 16,204,182,GUIComboTextG
+    GUIDisplayText 16,145,85,GUIComboTextI
+    GUIDisplayText 16,176,93,GUIComboTextJ
+    GUIDisplayText 16,176,101,GUIComboTextK
 
-    add byte[GUItextcolor],15
-    GUIOuttextwin2 16,9,12,GUIComboText1
-    GUIOuttextwin2 16,137,12,GUIComboText2
-    GUIOuttextwin2 16,37,83,GUIComboTextE
-    GUIOuttextwin2 16,9,83,GUIComboTextF
-    GUIOuttextwin2 16,9,102,GUIComboText4
-    GUIOuttextwin2 16,9,151,GUIComboText5
-    GUIOuttextwin2 16,9,161,GUIComboText6
-    GUIOuttextwin2 16,9,171,GUIComboText7
-    GUIOuttextwin2 16,9,181,GUIComboText8
-    GUIOuttextwin2 16,113,181,GUIComboText9
-    GUIOuttextwin2 16,203,181,GUIComboTextG
-    GUIOuttextwin2 16,144,84,GUIComboTextI
-    GUIOuttextwin2 16,175,92,GUIComboTextJ
-    GUIOuttextwin2 16,175,100,GUIComboTextK
-
-    ; Buttons
-    DrawGUIButton 16,202,20,246,31,GUIComboTextA,60,-1,0
+    DrawGUIButton 16,202,20,246,31,GUIComboTextA,60,-1,0    ; Buttons
     DrawGUIButton 16,202,35,246,46,GUIComboTextB,61,-1,0
     DrawGUIButton 16,202,50,246,61,GUIComboTextC,62,-1,0
     DrawGUIButton 16,202,65,246,76,GUIComboTextD,63,-1,0
@@ -4485,13 +4461,7 @@ SECTION .text
 DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     GUIDrawWindowBox 20,GUISaveDisp
 
-    mov byte[GUItextcolor],217               ;Shadow
-    cmp byte[GUIWincoladd],0
-    je .zero
-    mov byte[GUItextcolor],211
-.zero
-    sub byte[GUItextcolor],15
-    GUIDisplayText 20,8,19,GUISaveTextA1
+    GUIDisplayText 20,8,19,GUISaveTextA1           ; Text
     GUIDisplayText 20,8,31,GUISaveTextA2
     GUIDisplayTextu 20,26,44,GUISaveTextB1,5
     GUIDisplayTextu 20,26,54,GUISaveTextB2,5
@@ -4505,7 +4475,6 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     GUIDisplayText 20,9+57,150,GUISaveTextC6
     GUIDisplayText 20,9+114,150,GUISaveTextC7
     GUIDisplayText 20,9,159,GUISaveTextC8
-
 
     GUIDisplayTextY 20,6,112,GUISaveTextC1
     mov byte[GUISaveTextC2+2],'0'
@@ -4541,40 +4510,7 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     GUIDisplayCheckbox 20,11,90,PauseLoad
     GUIDisplayCheckbox 20,11,100,PauseRewind
 
-    mov dword[GUIWincol],148+10   ; Setup for borders
-    cmp byte[cwindrawn],1
-    jne .noone3
-    mov dword[GUIWincol],148+5
-.noone3
-    cmp byte[cwindrawn],0
-    jne .nozero3
-    mov dword[GUIWincol],148
-.nozero3
-    mov dl,[GUIWincol]               ; # of Rewind States (Border)
-    DrawGUIWinBox 20,150,28,165,28,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 20,149,29,149,36,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 20,150,37,165,37,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 20,165,29,166,36,dl
-    mov dl,[GUIWincol]              ; Second/Rewind (Border)
-    DrawGUIWinBox 20,150,16,165,16,dl
-    mov dl,[GUIWincol]
-    add dl,1
-    DrawGUIWinBox 20,149,17,149,24,dl
-    mov dl,[GUIWincol]
-    add dl,4
-    DrawGUIWinBox 20,150,25,165,25,dl
-    mov dl,[GUIWincol]
-    add dl,3
-    DrawGUIWinBox 20,165,17,166,24,dl
-
-
-    DrawGUIWinBox 20,150,17,165,24,167     ; Rewind States Box
+    GUIDisplayBBox 20,150,17,165,24,167     ; Rewind States Box
     xor ax,ax
     mov ah,[RewindStates]
     mov al,48
@@ -4601,7 +4537,7 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     mov byte[GUItextcolor],211
 .zero6
 
-    DrawGUIWinBox 20,150,29,165,36,167     ; Second/Rewind Box
+    GUIDisplayBBox 20,150,29,165,36,167     ; Second/Rewind Box
     xor ax,ax
     mov ah,[RewindFrames]
     mov al,48
