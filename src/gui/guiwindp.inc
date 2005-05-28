@@ -405,7 +405,7 @@ GUIStringGreater2:
 
 %macro GUIOuttextwin2load 3
     test dword[cloadnleft],80000000h
-    jnz %%skip
+    jnz near %%skip
     cmp byte[GUIloadfntype],0
     jne %%nottype0
     mov eax,[cloadnposb]
@@ -554,7 +554,7 @@ DisplayGUILoad:
     GUIDisplayText 1,195,182,GUILoadTextE
     GUIDisplayText 1,195,192,GUILoadTextF
 
-    
+
     mov byte[GUItextcolor],202
     cmp byte[GUIWincoladd],0
     je .text
@@ -562,14 +562,14 @@ DisplayGUILoad:
 .text
     mov dword[cloadmaxlen],39
     cmp dword[GUIcurrentfilewin],0
-    jne .nofiles
+    jne near .nofiles
 %ifndef __MSDOS__
     mov eax,[GUIcurrentcursloc]
     mov eax,[spcRamcmp+eax*4]
     inc eax
     mov [cloadnpos],eax
     GUIOuttextwin2l 1,6,158,[cloadnpos]
-    add byte[GUItextcolor],15    
+    add byte[GUItextcolor],15
     GUIOuttextwin2l 1,5,157,[cloadnpos]
 %else
     add byte[GUItextcolor],15
@@ -621,7 +621,7 @@ DisplayGUILoad:
 
     mov byte[GUItextcolor],223             ; Green Shadow
     GUIOuttextwin2 1,8,148, GUILoadTextA
-    
+
     mov eax,[spcBuffera]
     inc eax
     mov dword[cloadnpos],eax
@@ -686,7 +686,7 @@ DisplayGUILoad:
     mov byte[GUItextcolor],222
 .zero4
     GUIOuttextwin2 1,7,147, GUILoadTextA
-    
+
      xor ebx,ebx
     mov bl,[GUILoadPos]
     mov byte[GUILoadTextA+ebx],0
@@ -1008,7 +1008,7 @@ mov dl,[GUIWincol]
 DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignments
 
     GUIDrawWindowBox 3,GUIInputDisp
-    
+
     mov al,[cplayernum]
     add al,'1'
     mov [GUIInputTextA1+8],al
@@ -1026,7 +1026,7 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
     mov dword[GUITemp],eax
     GUIDisplayTextY 3,6+24,83,[GUITemp]
     GUIDisplayTextY 3,6,83,GUIInputTextA3
-    
+
     GUIDisplayTextY 3,6,92,GUIInputTextB
     GUIDisplayText 3,6,102,GUIInputTextB1
     GUIDisplayText 3,6,112,GUIInputTextB2
@@ -1034,7 +1034,7 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
     GUIDisplayText 3,6,132,GUIInputTextB4
     GUIDisplayText 3,6,142,GUIInputTextB5
     GUIDisplayText 3,6,152,GUIInputTextB6
-    
+
     GUIDisplayText 3,76,102,GUIInputTextC1
     GUIDisplayText 3,76,112,GUIInputTextC2
     GUIDisplayText 3,76,122,GUIInputTextC3
@@ -1049,7 +1049,7 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
     GUIDisplayText 3,116,102,GUIInputTextC3
     GUIDisplayText 3,116,112,GUIInputTextC4
     GUIDisplayText 3,116,122,GUIInputTextC5
-    
+
     GUIDisplayTextY 3,116,131,GUIInputTextD
     GUIDisplayText 3,153,142,GUIInputTextD1
     GUIDisplayText 3,153,152,GUIInputTextD2
@@ -1076,7 +1076,7 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
     DrawGUIButton 3,125,50,185,61,GUIInputTextE2,15,0,0
 %endif
     DrawGUIButton 3,125,66,179,77,GUIInputTextE3,15,0,0
-    
+
     GUIDisplayBBoxS 3,5,34,107,77,167        ; Main Box
     mov ebx,[GUIcurrentinputcursloc]
     sub ebx,[GUIcurrentinputviewloc]
@@ -1084,7 +1084,7 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
     lea ebx,[ebx*8]
     add ebx,36
     DrawGUIWinBox2 3,5,107,7,224
-    
+
     mov byte[GUItextcolor],223             ; Shadow inside Main Box
     mov eax,[GUIcurrentinputviewloc]
     shl eax,4
@@ -1120,7 +1120,7 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
     GUIOuttextwin2 3,10,37+8*3,[GUITemp]
     add dword[GUITemp],17
     GUIOuttextwin2 3,10,37+8*4,[GUITemp]
-    
+
                                               ; Sidebar
     DrawSlideBarWin 3,109,42,[GUIcurrentinputviewloc],[NumInputDevices],5,28,GUIIStA
     cmp byte[GUICHold],9
@@ -1171,7 +1171,7 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
     GUIInputDispKey 85,130      ; Y
     GUIInputDispKey 85,110      ; B
     GUIInputDispKey 85,150      ; R
-    
+
     mov edi,pl1Atk
     cmp byte[cplayernum],1
     jne .nopl2t
@@ -1193,7 +1193,7 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
     GUIInputDispKey 165,110      ; B Turbo
     GUIInputDispKey 125,100      ; X Turbo
     GUIInputDispKey 125,110      ; Y Turbo
-    
+
     mov edi,pl1Ltk
     cmp byte[cplayernum],1
     jne .nopl2tl
@@ -1461,7 +1461,7 @@ DisplayGUIVideo:
     cmp byte[GUITBWVID+eax],0
     je near .nottbw
     GUIDisplayTextu 5,26,128,GUIVideoText7,0
-    
+
 .nottbw                                      ; 2x, S2x, SE Filters
     xor eax,eax
     mov al,[cvidmode]
@@ -1470,93 +1470,93 @@ DisplayGUIVideo:
     GUIDisplayTextu 5,26,138,GUIVideoTextc,1
     GUIDisplayTextu 5,26,148,GUIVideoTextd,6
     GUIDisplayTextu 5,26,158,GUIVideoTextd2,0
-    
+
 .notextb                                      ; Interpol.
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUII2VID+eax],0
     je near .notextb2
     GUIDisplayTextu 5,26,168,GUIVideoText3,0
-    
+
 .notextb2                                      ; Bilinear Filt
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIBIFIL+eax],0
     je near .notextbf2
     GUIDisplayTextu 5,26,168,GUIVideoTextbf,0
-    
+
 .notextbf2                                      ; Interpol.
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIINVID+eax],0
-    je .notext3
+    je near .notext3
     GUIDisplayTextu 5,26,83,GUIVideoText3,0
-    
+
 .notext3                                        ; Eagle Eng.
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIEAVID+eax],0
-    je .notext4
+    je near .notext4
     GUIDisplayTextu 5,26,83,GUIVideoText4,9
-    
+
 .notext4                                      ; Full/Widescreen
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIFSVID+eax],0
     je near .notext5
     cmp byte[GUIWSVID+eax],0
-    je .notext4a
+    je near .notext4a
     GUIDisplayTextu 5,26,93,GUIVideoText5b,6
     jmp .notext5
 .notext4a
     GUIDisplayTextu 5,26,93,GUIVideoText5,6
-    
+
 .notext5                                      ; SmallScreen
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUISSVID+eax],0
-    je .notext6
+    je near .notext6
     GUIDisplayTextu 5,26,103,GUIVideoText6,1
-    
+
 .notext6                                      ; Triple Buff
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[TripBufAvail],0
     je near .notext7
     cmp byte[GUITBVID+eax],0
-    je .notext7
+    je near .notext7
     GUIDisplayTextu 5,26,168,GUIVideoText7,0
-    
+
 .notext7                                      ; HiRes Mode 7
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIM7VID+eax],0
-    je .notext8
+    je near .notext8
     cmp byte[newengen],0
-    je .notext8
+    je near .notext8
     GUIDisplayTextu 5,26,178,GUIVideoText8b,0
-    
+
 .notext8                                     ; 2x
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHQ2X+eax],0
     je near .notexthq2xa
     GUIDisplayTextu 5,130,168,GUIVideoTexthq2x,1
-    
+
 .notexthq2xa                                      ; 3x
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHQ3X+eax],0
     je near .notexthq3xa
     GUIDisplayTextu 5,130,168,GUIVideoTexthq3x,1
-    
+
 .notexthq3xa                                      ; 4x
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHQ4X+eax],0
     je near .notexthq4xa
     GUIDisplayTextu 5,130,168,GUIVideoTexthq4x,1
-    
+
 .notexthq4xa                                      ; Grayscale
     GUIDisplayTextu 5,26,188,GUIVideoText8c,0
 %ifndef __LINUX__                                      ; VSYNC
@@ -1629,7 +1629,7 @@ DisplayGUIVideo:
     cmp byte[TripBufAvail],0
     je near .nocheckboxtbb
     GUIDisplayCheckboxn 5,11,163,Triplebufen,1
-    
+
 .nocheckboxtbb
     xor eax,eax
     mov al,[cvidmode]
@@ -1649,14 +1649,14 @@ DisplayGUIVideo:
     cmp byte[GUIIEVID+eax],0
     je .nocheckbox1b
     GUIDisplayCheckbox 5,11,78,antienab
-    
+
 .nocheckbox1b
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIFSVID+eax],0
     je .nocheckbox2b
     GUIDisplayCheckbox 5,11,88,ScreenScale
-    
+
 .nocheckbox2b
     xor eax,eax
     mov al,[cvidmode]
@@ -1834,7 +1834,7 @@ DisplayGUISound:                     ; Sound Related Options
     GUIDisplayTextu 6,26,126,GUISoundTextD3,1
     GUIDisplayTextu 6,26,136,GUISoundTextD4,6
     GUIDisplayTextu 6,26,146,GUISoundTextD5,0
-    
+
     GUIDisplayTextY 6,6,158,GUISoundTextE
     GUIDisplayTextu 6,26,168,GUISoundTextE1,0
     GUIDisplayTextu 6,26,178,GUISoundTextE2,0
@@ -2066,9 +2066,9 @@ DisplayGUICheatConv:
 
 %macro GUIOuttextwin2cheat 2
     test dword[ccheatnleft],80000000h
-    jnz %%skip
+    jnz near %%skip
     call DisplayGUICheatConv
-    mov byte[GUItextcolor],223  
+    mov byte[GUItextcolor],223
     GUIOuttextwin2 7,%1,%2,GUICheatTextZ3
     mov byte[GUItextcolor],221               ;Text
     cmp byte[GUIWincoladd],0
@@ -2092,8 +2092,8 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     GUIDisplayText 7,11,172,GUICheatTextD3
     GUIDisplayText 7,11,180,GUICheatTextD4
     GUIDisplayText 7,26,191,GUICheatTextE1
-    
-    cmp dword[GUIcurrentcheatwin],0     ; Draw underline only if you 
+
+    cmp dword[GUIcurrentcheatwin],0     ; Draw underline only if you
     jne near .noshortcut                ; don't have an input box selected
     GUIDisplayTextu 7,26,191,GUICheatTextE1,0
 .noshortcut
@@ -2111,7 +2111,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     DrawGUIButton 7,212,134,236,145,GUICheatTextB6,9,0,0
 
     GUIDisplayBBoxS 7,5,20,229,108,167           ; Draw Cheat Box
-    
+
     cmp dword[GUIcurrentcheatwin],0     ; Red Highlight for Cheats box
     jne near .nowinbox
     mov ebx,[GUIcurrentcheatcursloc]
@@ -2122,7 +2122,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     add ebx,22
     DrawGUIWinBox2 7,5,229,7,224
 .nowinbox
-    
+
     mov dword[ccheatnpos],cheatdata         ; Green Text
     mov eax,[NumCheats]
     sub eax,[GUIcurrentcheatviewloc]
@@ -2369,7 +2369,7 @@ CheatSearching:                       ; Exact Value Search
 
     GUIDisplayText 13,5,20,GUICSrcTextB1
     GUIDisplayText 13,5,65,GUICSrcTextG1a
-    
+
     GUIDisplayBBox 13,10,40,80,47,167           ; Input Box
 
     test byte[GUICCFlash],8            ; Flash Cursor Code?
@@ -2429,7 +2429,7 @@ CheatSearchingComp:           ; Comparative search
     GUIDisplayTextu 13,25,45,GUICSrcTextD2,1
     GUIDisplayTextu 13,25,55,GUICSrcTextD3,2
     GUIDisplayTextu 13,25,65,GUICSrcTextD4,5
-    
+
     GUIDisplayButtonHole 13,11,33,byte[CheatCompareValue],0
     GUIDisplayButtonHole 13,11,43,byte[CheatCompareValue],1
     GUIDisplayButtonHole 13,11,53,byte[CheatCompareValue],2
@@ -2466,12 +2466,12 @@ FindChtSrcRes:                        ; Calculate search results
     mov [CSStartEntry],esi
     jmp .notset
 
-DisplayChtSrcRes:                    ; Buttons (Restart/View/Search) 
+DisplayChtSrcRes:                    ; Buttons (Restart/View/Search)
     DrawGUIButton 13,120,140,170,152,GUICSrcTextG2a,53,0,1
 .nosearch
     DrawGUIButton 13,10,140,60,152,GUICSrcTextG2b,51,0,1
     DrawGUIButton 13,70,140,110,152,GUICSrcTextG2c,52,0,1
-    
+
     xor edi,edi                      ; Call and display # of results
     call FindChtSrcRes
     mov esi,GUICSrcTextG1
@@ -2493,9 +2493,9 @@ Cheatmodeview:                       ; View ResultsWindow
     mov dword[GUIwinsizex+13*4],185
     mov dword[GUIwinsizey+13*4],150
     call DrawWindowSearch
-    
+
     GUIDisplayText 13,10,12,GUICSrcTextE   ; Text
-    
+
     GUIDisplayBBoxS 13,5,20,171,108,167      ; Box
 
     mov edi,[GUIcurrentchtsrcviewloc]
@@ -2589,7 +2589,7 @@ Cheatmodeview:                       ; View ResultsWindow
 .noprevious
     sub dword[CheatSearchXPos],102
     add dword[CheatSearchYPos],7
-    
+
 .nextentry                                      ; Search for next entry
     inc dword[CSCurEntry]
     mov eax,[CSCurEntry]
@@ -2660,11 +2660,11 @@ Cheatmodeadd:                                 ; Add Window
     GUIDisplayText 13,22,143,GUICSrcTextF4
 
     GUIDisplayCheckboxn 13,8,139,CheatUpperByteOnly,1   ; Checkbox
-    
+
     GUIDisplayBBox 13,10,30,80,37,167             ; Boxes
     GUIDisplayBBox 13,10,55,126,62,167
     GUIDisplayBBox 13,10,80,80,120,167
-    
+
     DrawGUIButton 13,60,155,120,167,GUICSrcTextG2d,56,0,1        ; Buttons
     DrawGUIButton 13,130,155,160,167,GUICSrcTextG2e,57,0,1
 
@@ -2892,7 +2892,7 @@ DisplayGameOptns:        ; Misc Key Window
     mov byte[GUIGameOptnsTextA1+2],'4'
     GUIDisplayText 9,9+135,25,GUIGameOptnsTextA1
     GUIDisplayText 9,9+180,25,GUIGameOptnsTextA2
-    
+
     GUIDisplayTextY 9,6,34,GUIGameOptnsTextB
     mov byte[GUIGameOptnsTextB1+2],'1'
     GUIDisplayText 9,9,43,GUIGameOptnsTextB1
@@ -2927,7 +2927,7 @@ DisplayGameOptns:        ; Misc Key Window
     GUIDisplayText 9,9,112,GUIGameOptnsTextD1b
     GUIDisplayText 9,9,122,GUIGameOptnsTextD1c
     GUIDisplayText 9,9,132,GUIGameOptnsTextD1d
-    
+
     GUIDisplayTextY 9,119,93,GUIGameOptnsTextD2
     GUIDisplayText 9,122,102,GUIGameOptnsTextD2a
     GUIDisplayText 9,122,112,GUIGameOptnsTextD2b
@@ -2939,7 +2939,7 @@ DisplayGameOptns:        ; Misc Key Window
     DDrawBox 9,116,22,[KeyBGDisble2]
     DDrawBox 9,161,22,[KeyBGDisble3]
     DDrawBox 9,206,22,[KeySprDisble]
-    
+
     DDrawBox 9,26,40,[KeyDisableSC0]
     DDrawBox 9,71,40,[KeyDisableSC1]
     DDrawBox 9,116,40,[KeyDisableSC2]
@@ -2963,7 +2963,7 @@ DisplayGameOptns:        ; Misc Key Window
     DDrawBox 9,77,109,[KeyResetAll]
     DDrawBox 9,77,119,[KeyExtraEnab]
     DDrawBox 9,77,129,[KeyDisplayFPS]
-    
+
     DDrawBox 9,190,99,[KeyNewGfxSwt]
     DDrawBox 9,190,109,[KeyWinDisble]
     DDrawBox 9,190,119,[KeyOffsetMSw]
@@ -3101,7 +3101,7 @@ DisplayGUIOptns:              ; GUI Options
 %ifdef __WIN32__
     GUIDisplayCheckboxn 10,124,83,MouseWheel,1
     GUIDisplayCheckboxn 10,124,93,TrapMouseCursor,1
-    
+
     GUIDisplayCheckboxn 10,12,168,AlwaysOnTop,1
     GUIDisplayCheckboxn 10,12,178,SaveMainWindowPos,1
     GUIDisplayCheckboxn 10,12,188,AllowMultipleInst,1
@@ -3157,7 +3157,7 @@ DisplayGUIOptns:              ; GUI Options
     mov byte[GUItextcolor],222
 .zero5
     GUIOuttextwin2 10,159,122,[GUITemp]    ; R Text
-    
+
     mov dword[GUIGUIOptnsTextD2],0
     mov esi,GUIGUIOptnsTextD2+2
     xor eax,eax
@@ -3170,7 +3170,7 @@ DisplayGUIOptns:              ; GUI Options
     mov byte[GUItextcolor],222
 .zero6
     GUIOuttextwin2 10,159,134,[GUITemp]    ; G Text
-    
+
     mov dword[GUIGUIOptnsTextD2],0
     mov esi,GUIGUIOptnsTextD2+2
     xor eax,eax
@@ -3252,7 +3252,7 @@ DisplayGUIAbout:          ; Displays the About Box
 
     GUIDrawWindowBox 11,GUIAboutDisp
     cmp byte[EEgg],1
-    je .eegg
+    je near .eegg
     GUIDisplayText 11,6,16,GUIGUIAboutTextA1       ; Text
     GUIDisplayText 11,6,26,GUIGUIAboutTextA2
     GUIDisplayTextY 11,6,36,GUIGUIAboutTextB
@@ -3330,7 +3330,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     GUIDisplayText 15,9,16,GUIMovieTextX1       ; Overwrite Message Box
     GUIDisplayText 15,9,26,GUIMovieTextX2
     GUIDisplayText 15,9,41,GUIMovieTextX3
-    
+
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
     je .zero4
@@ -3383,7 +3383,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     GUIDisplayTextu 15,56,140,GUIMovieTextC2,0
     GUIDisplayTextu 15,101,140,GUIMovieTextC3,0
     GUIDisplayTextu 15,21,150,GUIMovieTextC4,8
-        
+
     mov dword[GUIMovieTextZ+9],'INAC'    ; Determine and Display Status
     mov dword[GUIMovieTextZ+13],'TIVE'
     mov dword[GUIMovieTextZ+17],'    '
@@ -4360,7 +4360,7 @@ BlinkCursorCheck:
 
 DisplayGUIPaths:
     GUIDrawWindowBox 19,GUIPathsDisp
-    
+
     GUIDisplayText 19,8,18,GUIPathsText1         ; Text
     GUIDisplayText 19,8,38,GUIPathsText2
     GUIDisplayText 19,8,58,GUIPathsText3
@@ -4596,7 +4596,7 @@ DisplayGUISpeed:                    ;Speed Options
 .endautoshad
     GUIDisplayText 21,6,26,GUISpeedTextA2
     GUIDisplayText 21,6,37,GUISpeedTextA3
-    
+
     GUIDisplayTextY 21,8,49,GUISpeedTextB
     GUIDisplayText 21,40,59,GUISpeedTextB1
     GUIDisplayText 21,40,69,GUISpeedTextB2
