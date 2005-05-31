@@ -4000,7 +4000,7 @@ GUIccombviewloc resd 1
 GUIccombcursloc resd 1
 GUIccomblcursloc resd 1
 NEWSYM NumCombo,     resd 1
-NumComboGlob    resd 1
+NEWSYM NumComboGlob, resd 1
 NEWSYM NumComboLocl, resd 1
 GUICSStC        resd 3
 GUIComboKey     resd 1

@@ -41,7 +41,7 @@ CPUOBJ=${CPUDIR}/addrni.o ${CPUDIR}/dma.o ${CPUDIR}/dsp.o ${CPUDIR}/dspproc.o\
 	${CPUDIR}/memtable.o ${CPUDIR}/spc700.o ${CPUDIR}/stable.o\
 	${CPUDIR}/table.o ${CPUDIR}/tableb.o ${CPUDIR}/tablec.o
 
-GUIOBJ=${GUIDIR}/gui.o ${GUIDIR}/menu.o
+GUIOBJ=${GUIDIR}/gui.o ${GUIDIR}/guifuncs.o ${GUIDIR}/menu.o
 
 VIDEOBJ=${VIDEODIR}/makev16b.o ${VIDEODIR}/makev16t.o ${VIDEODIR}/makevid.o\
 	${VIDEODIR}/mode716.o ${VIDEODIR}/mode716b.o ${VIDEODIR}/mode716d.o\
@@ -77,7 +77,7 @@ MAINOBJ=cfgload.o endmem.o init.o initc.o uic.o patch.o ui.o vcache.o version.o\
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${NETOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
 
-.SUFFIXES: .cpp .c .asm 
+.SUFFIXES: .cpp .c .asm
 
 %.o: %.cpp
 	@CXX@ @CFLAGS@ -o $@ -c $<
@@ -188,6 +188,7 @@ ${GUIDIR}/gui.o: ${GUIDIR}/gui.asm ${GUIDIR}/guitools.inc\
 	${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guiwindp.inc\
   ${GUIDIR}/guikeys.inc ${GUIDIR}/guicheat.inc\
 	${GUIDIR}/guicombo.inc ${GUIDIR}/guiload.inc macros.mac
+${GUIDIR}/guifuncs.o: ${GUIDIR}/guifuncs.c
 ${GUIDIR}/menu.o: ${GUIDIR}/menu.asm macros.mac
 ${VIDEODIR}/newgfx.o:${VIDEODIR}/newgfx.asm ${VIDEODIR}/vidmacro.mac\
 	${VIDEODIR}/newgfx2.mac ${VIDEODIR}/newgfx.mac macros.mac

@@ -107,7 +107,9 @@ NEWSYM SystemInit
     mov ebx,InitDir
     call Change_Dir
 
+    pushad
     call GUIRestoreVars                 ; Load GUI stuff
+    popad
     call getcfg                         ; Load cfg stuff
     call obtaindir                      ; Get Save/Init Directories
     call ConvertJoyMap                  ; Mini joystick init
@@ -129,7 +131,9 @@ NEWSYM createnewcfg
     call DOScreatenewcfg
     ret
 NEWSYM GUISaveVars
+    pushad
     call ExecGUISaveVars
+    popad
     ret
 
 ; Allocate memory - see allocptr in ui.asm for details on what to allocate

@@ -74,7 +74,7 @@ endif
 ifeq (${ENV},win32-unix-shell)
   ENV=win32
   CROSS=yes
-endif 
+endif
 
 ifeq (${ENV},win32)
   CC = gcc
@@ -154,7 +154,7 @@ CPUOBJ=${CPUDIR}/dma${OE} ${CPUDIR}/dsp${OE} ${CPUDIR}/dspproc${OE}\
 	${CPUDIR}/memtable${OE} ${CPUDIR}/spc700${OE} ${CPUDIR}/stable${OE}\
 	${CPUDIR}/table${OE} ${CPUDIR}/tableb${OE} ${CPUDIR}/tablec${OE}
 
-GUIOBJ=${GUIDIR}/gui${OE} ${GUIDIR}/menu${OE}
+GUIOBJ=${GUIDIR}/gui${OE} ${GUIDIR}/guifuncs${OE} ${GUIDIR}/menu${OE}
 
 VIDEOBJ=${VIDEODIR}/makev16b${OE} ${VIDEODIR}/makev16t${OE} ${VIDEODIR}/makevid${OE}\
 	${VIDEODIR}/mode716${OE} ${VIDEODIR}/mode716b${OE} ${VIDEODIR}/mode716d${OE}\
@@ -181,7 +181,7 @@ EFFECTSOBJ=${EFFECTSDIR}/burn${OE} ${EFFECTSDIR}/water${OE} ${EFFECTSDIR}/smoke$
 JMAOBJ=${JMADIR}/7zlzma${OE} ${JMADIR}/crc32${OE} ${JMADIR}/iiostrm${OE}\
        ${JMADIR}/inbyte${OE} ${JMADIR}/jma${OE} ${JMADIR}/lzma${OE} ${JMADIR}/lzmadec${OE}\
        ${JMADIR}/winout${OE} ${JMADIR}/zsnesjma${OE}
-       
+
 MAINOBJ=cfgload${OE} endmem${OE} init${OE} initc${OE} uic${OE} patch${OE}\
 	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE}
 
@@ -315,6 +315,7 @@ ${GUIDIR}/gui${OE}: $< ${GUIDIR}/guitools.inc\
 	${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guiwindp.inc\
 	${GUIDIR}/guikeys.inc ${GUIDIR}/guicheat.inc\
 	${GUIDIR}/guicombo.inc ${GUIDIR}/guiload.inc macros.mac
+${GUIDIR}/guifuncs${OE}: $<
 ${GUIDIR}/menu${OE}: $< macros.mac
 
 ${EFFECTSDIR}/water${OE}: $< ${EFFECTSDIR}/fixsin.h
@@ -362,7 +363,7 @@ ${OBJFIX}: $<
 	gcc -O3 -o $@ objfix.c
 endif
 
-clean: 
+clean:
 
 	${DELETECOMMAND} ${EXE} ${TRUTH}
 	${DELETECOMMAND} *${OE} ${TRUTH}

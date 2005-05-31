@@ -44,6 +44,7 @@ source_files = Split("""
 	effects/water.c
 	effects/smoke.c
 	gui/gui.asm
+      gui/guifuncs.c
 	gui/menu.asm
 	video/makev16b.asm
 	video/makev16t.asm

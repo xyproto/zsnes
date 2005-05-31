@@ -71,7 +71,6 @@ NEWSYM mode7hiresen, dd 1
 NEWSYM hiresstuff, dd 0
 NEWSYM cmovietimeint, dd 0
 NEWSYM overalltimer, dd 0
-mousecheck db 0
 
 SECTION .text
 
@@ -408,10 +407,6 @@ NEWSYM cachevideo
     push esi
     push edi
     push edx
-    inc byte[mousecheck]
-    and byte[mousecheck],07h
-    cmp byte[mousecheck],0
-    jne .noclick
     cmp byte[GUIClick],0
     je .noclick
     cmp byte[snesmouse],0

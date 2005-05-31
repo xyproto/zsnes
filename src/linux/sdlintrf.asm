@@ -114,13 +114,11 @@ NEWSYM SystemInit
     call Change_Dir
 %endif
 
-
+    pushad
     call GUIRestoreVars                 ; Load GUI stuff
-
+    popad
     call getcfg                         ; Load cfg stuff
-
     call obtaindir                      ; Get Save/Init Directories
-
     call ConvertJoyMap                  ; Mini joystick init
     call tparms
     pushad
@@ -137,7 +135,9 @@ NEWSYM createnewcfg
     call DOScreatenewcfg
     ret
 NEWSYM GUISaveVars
+    pushad
     call ExecGUISaveVars
+    popad
     ret
 
 ; Allocate memory - see allocptr in ui.asm for details on what to allocate

@@ -252,7 +252,7 @@ GUIMiscMenuData
 ;                  If menu should go to Load or last position when ESC
 ;                  is pressed from game
 
-GUIRAdd db 15
+NEWSYM GUIRAdd, db 15
 GUIGAdd db 10
 GUIBAdd db 31
 mousewrap db 0          ; 0 = mouse boundries, 1 = mouse wrap
@@ -335,8 +335,8 @@ prevloadnames times 16*10 db 32
 prevloaddname times 128*10 db 0
 prevloadfname times 16*10 db 32
 prevlfreeze db 0
-GUIsmallscreenon db 0
-GUIScreenScale db 0
+NEWSYM GUIsmallscreenon, db 0
+NEWSYM GUIScreenScale,   db 0
 
 NEWSYM pl3contrl, db 0
 NEWSYM pl4contrl, db 0
@@ -613,12 +613,12 @@ NEWSYM SDRatio, db 0          ; 0 = /2, 28 = /30
 NEWSYM KeyEmuSpeedUp, dd 0
 NEWSYM KeyEmuSpeedDown, dd 0
 NEWSYM AllowUDLR, db 0
-NEWSYM EEgg, db 0
 ;end NEWSYM end
 
 GUIsave equ $-GUIRAdd
+NEWSYM PHnumGUIsave, dd GUIsave
 
-section .bss
+SECTION .bss
 
 NEWSYM ForceROMTiming, resb 1
 NEWSYM ForceHiLoROM, resb 1
@@ -639,7 +639,7 @@ GUIwinsizex dd 0,244 ,126 ,189 ,167 ,180 ,188 ,244 ,8*16,240  ,240  ,190 ,9*16,8
 GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,160 ,190 ,100 ,100 ,190  ,160 ,180
 GUIwinptr   db 0
 
-section .bss
+SECTION .bss
 GUItextcolor resb 5
 GUIcmenupos  resb 1
 GUIescpress  resb 1
@@ -707,6 +707,7 @@ NEWSYM GUIcurrentdir, resb 131
 curgsval resb 1
 
 SECTION .data
+NEWSYM EEgg, db 0
 RestoreValues db 0
 NEWSYM numdrives, dd 26
 SubPalTable times 256 db 1      ; Corresponding Gray Scale Color
@@ -863,141 +864,10 @@ GUIQuickLoadUpdate:
     jnz near .mainloop
     ret
 
-
-
-CalcChecksum:
-    mov eax,GUIRAdd
-    mov ecx,100
-    xor edx,edx
-    xor ebx,ebx
-.loop
-    mov bl,[eax]
-    add edx,ebx
-    inc eax
-    dec ecx
-    jnz .loop
-    mov ebx,edx
-    xor bx,1011001011101101b
-    xor eax,eax
-    test bh,08h
-    jz .nb
-    mov al,1
-.nb
-    and bh,0F7h
-    test bl,10h
-    jz .nb2
-    or bh,08h
-.nb2
-    and bl,0EFh
-    test al,1
-    jz .nb3
-    or bl,10h
-.nb3
-    xor bl,bh
-    or bl,80h
-    ret
-
-NEWSYM GUIRestoreVars
-    mov edx,GUIFName
-    call Open_File
-    jc .fail
-    mov bx,ax
-    mov edx,GUIRAdd
-    mov ecx,GUIsave
-    call Read_File
-    call Close_File
-.fail
-    mov al,[GUIsmallscreenon]
-    mov [smallscreenon],al
-    mov al,[GUIScreenScale]
-    mov [ScreenScale],al
-    call CalcChecksum
-    cmp byte[TimeChecker],bl
-    jne .nottimer
-    mov byte[ShowTimer],1
-    mov dword[NumSnow],200
-    mov dword[SnowTimer],0
-.nottimer
-    cmp byte[ReCalib],0
-    je .nocal
-    mov byte[ReCalib],0
-    mov dword[CalibXmin],0
-    mov dword[CalibXmax],0
-    mov dword[CalibYmin],0
-    mov dword[CalibYmax],0
-    mov dword[CalibXmin209],0
-    mov dword[CalibXmax209],0
-    mov dword[CalibYmin209],0
-    mov dword[CalibYmax209],0
-.nocal
-
-    mov dword[NumComboGlob],0
-    mov edx,GUICName
-    call Open_File
-    jc .failb
-    mov bx,ax
-    mov edx,ComboBlHeader
-    mov ecx,23
-    call Read_File
-    mov al,byte[ComboBlHeader+22]
-    or al,al
-    jz .done
-    mov [NumComboGlob],al
-    mov ecx,[NumComboGlob]
-    mov edx,ecx
-    shl ecx,6
-    add ecx,edx
-    add ecx,edx
-    mov edx,CombinDataGlob
-    call Read_File
-.done
-    call Close_File
-.failb
-    ret
-
 SECTION .data
 NEWSYM ComboHeader, db 'Key Combination File',26,1,0
 NEWSYM ComboBlHeader, times 23 db 0
 SECTION .text
-
-NEWSYM ExecGUISaveVars
-    cmp byte[ShowTimer],1
-    jne .nottimer
-    call CalcChecksum
-    mov byte[TimeChecker],bl
-.nottimer
-    cmp byte[cfgdontsave],1
-    je .failed
-    mov edx,GUIFName
-    call Create_File
-    jc .failed
-    mov bx,ax
-    mov edx,GUIRAdd
-    mov ecx,GUIsave
-    call Write_File
-    call Close_File
-.failed
-    mov al,[NumComboGlob]
-    or al,al
-    jz .failb
-    mov [ComboHeader+22],al
-    mov edx,GUICName
-    call Create_File
-    jc .failb
-    mov bx,ax
-    mov edx,ComboHeader
-    mov ecx,23
-    call Write_File
-    mov ecx,[NumComboGlob]
-    mov edx,ecx
-    shl ecx,6
-    add ecx,edx
-    add ecx,edx
-    mov edx,CombinDataGlob
-    call Write_File
-    call Close_File
-.failb
-    ret
 
 %macro GUIInitIRQs 0
     call GUIInit
@@ -1235,7 +1105,7 @@ db 1,1,0,1,1,0,1,1,0,0,1,1,1,1,1,1
 
 SantaPos dd 272
 SantaNextT dd 36*15
-NumSnow dd 0
+NEWSYM NumSnow, dd 0
 NEWSYM SnowTimer, dd 36*30
 MsgGiftLeft dd 0
 SECTION .text
@@ -1471,9 +1341,9 @@ NEWSYM ProcRewind
     mov dword[eax+8],0
 .noteq
     ret
-section .bss
+SECTION .bss
 .temp resd 2
-section .text
+SECTION .text
 
 %macro ProcessOneDigit 1
     cmp dl,9
@@ -2204,7 +2074,7 @@ guipostvideo:
     je .pressedokay
 
     ;This is to make all ports not register space bar from being pressed earlier
-    mov byte[pressed+2Ch],0 
+    mov byte[pressed+2Ch],0
 
     call JoyRead
 
