@@ -125,6 +125,13 @@
 %%noclick
 %endmacro
 
+%macro GUIKeyCheckbox 2
+    cmp dh,%2
+    jne %%nohotkey
+    xor byte[%1],1
+%%nohotkey
+%endmacro
+
 SECTION .bss
 GUIfirstkey resd 1
 GUIlastkey resd 1
@@ -721,7 +728,7 @@ GUIOptionKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
-    cmp dh,'N'
+    cmp dh,'N'                             ; Checkboxes
     jne .nonewgfx
     xor eax,eax
     mov al,[cvidmode]
@@ -754,58 +761,22 @@ GUIOptionKeys:
 .mtap
 .nousepl34
 %ifdef __MSDOS__
-    cmp dh,'I'
-    jne .noswfix
-    xor byte[SidewinderFix],1
-.noswfix
+    GUIKeyCheckbox SidewinderFix,'I'
 %endif
 %ifdef __WIN32__
-    cmp dh,'H'
-    jne .nohighpriority
-    xor byte[HighPriority],1
-.nohighpriority
+    GUIKeyCheckbox HighPriority,'H'
 %endif
-    cmp dh,'F'
-    jne .nofpsatstart
-    xor byte[FPSAtStart],1
-.nofpsatstart
-    cmp dh,'E'
-    jne .nouse30hz
-    xor byte[Turbo30hz],1
-.nouse30hz
-    cmp dh,'C'
-    jne .nogameclock
-    xor byte[TimerEnable],1
-.nogameclock
-    cmp dh,'O'
-    jne .nooldgfx
-    xor byte[OldGfxMode2],1
-.nooldgfx
-    cmp dh,'D'
-    jne .nosavepath
-    xor byte[DontSavePath],1
-.nosavepath
-    cmp dh,'S'
-    jne .nosmallmsgtext
-    xor byte[SmallMsgText],1
-.nosmallmsgtext
-    cmp dh,'P'
-    jne .noautopatch
-    xor byte[AutoPatch],1
-.noautopatch
-    cmp dh,'T'
-    jne .norominfo
-    xor byte[RomInfo],1
-.norominfo
-    cmp dh,'A'
-    jne .noallowudlr
-    xor byte[AllowUDLR],1
-.noallowudlr
+    GUIKeyCheckbox FPSAtStart,'F'
+    GUIKeyCheckbox Turbo30hz,'E'
+    GUIKeyCheckbox TimerEnable,'C'
+    GUIKeyCheckbox OldGfxMode2,'O'
+    GUIKeyCheckbox DontSavePath,'D'
+    GUIKeyCheckbox SmallMsgText,'S'
+    GUIKeyCheckbox AutoPatch,'P'
+    GUIKeyCheckbox RomInfo,'T'
+    GUIKeyCheckbox AllowUDLR,'A'
 %ifdef __WIN32__
-    cmp dh,'I'
-    jne .noscreensaver
-    xor byte[DisableScreenSaver],1
-.noscreensaver
+    GUIKeyCheckbox DisableScreenSaver,'I'
 %endif
     ret
 
@@ -834,30 +805,13 @@ GUISaveKeys:
     xor byte[AutoIncSaveSlot],1
     mov byte[firstsaveinc],1
 .noautoincsave
-    cmp dh,'C'
-    jne .nosramcheck
-    xor byte[SRAMSave5Sec],1
-.nosramcheck
-    cmp dh,'S'
-    jne .nostartsave
-    xor byte[LatestSave],1
-.nostartsave
-    cmp dh,'A'
-    jne .noautostate
-    xor byte[AutoState],1
-.noautostate
-    cmp dh,'L'
-    jne .nosramstate
-    xor byte[SRAMState],1
-.nosramstate
-    cmp dh,'P'
-    jne .nopauseload
-    xor byte[PauseLoad],1
-.nopauseload
-    cmp dh,'R'
-    jne .nopauserewind
-    xor byte[PauseRewind],1
-.nopauserewind
+
+    GUIKeyCheckbox SRAMSave5Sec,'C'
+    GUIKeyCheckbox LatestSave,'S'
+    GUIKeyCheckbox AutoState,'A'
+    GUIKeyCheckbox SRAMState,'L'
+    GUIKeyCheckbox PauseLoad,'P'
+    GUIKeyCheckbox PauseRewind,'R'
     ret
     
 GUISpeedKeys:
@@ -867,10 +821,8 @@ GUISpeedKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap    
-    cmp dh,'T'                 ; Checkbox
-    jne .nofastforward
-    xor byte[FastFwdToggle],1
-.nofastforward
+    GUIKeyCheckbox FastFwdToggle,'T'   ; Checkbox
+    
     cmp dh,'A'                 ; Framerate Checkboxes
     jne .noautofr
     mov byte[FPSOn],0
@@ -920,30 +872,13 @@ GUIChipKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
-    cmp dh,'1'             ;Checkboxes
-    jne .nonssdip1
-    xor byte[nssdip1],1
-.nonssdip1
-    cmp dh,'2'
-    jne .nonssdip2
-    xor byte[nssdip2],1
-.nonssdip2
-    cmp dh,'3'
-    jne .nonssdip3
-    xor byte[nssdip3],1
-.nonssdip3
-    cmp dh,'4'
-    jne .nonssdip4
-    xor byte[nssdip4],1
-.nonssdip4
-    cmp dh,'5'
-    jne .nonssdip5
-    xor byte[nssdip5],1
-.nonssdip5
-    cmp dh,'6'
-    jne .nonssdip6
-    xor byte[nssdip6],1
-.nonssdip6
+    
+    GUIKeyCheckbox nssdip1,'1'             ; Checkboxes
+    GUIKeyCheckbox nssdip2,'2'
+    GUIKeyCheckbox nssdip3,'3'
+    GUIKeyCheckbox nssdip4,'4'
+    GUIKeyCheckbox nssdip5,'5'
+    GUIKeyCheckbox nssdip6,'6'
     ret
 
 GUIGUIOptnsKeys:
@@ -953,35 +888,14 @@ GUIGUIOptnsKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
-    cmp dh,'M'
-    jne .guioptn1
-    xor byte[mousewrap],1
-.guioptn1
-    cmp dh,'S'
-    jne .guioptn2
-    xor byte[mouseshad],1
-.guioptn2
-    cmp dh,'K'
-    jne .guioptn3
-    xor byte[lastcursres],1
-.guioptn3
-    cmp dh,'W'
-    jne .guioptn4
-    xor byte[resetposn],1
-.guioptn4
-    cmp dh,'C'
-    jne .guioptn5
-    xor byte[GUIClick],1
-.guioptn5
-    cmp dh,'U'
-    jne .guioptn6
-    xor byte[JoyPad1Move],1
-.guioptn6
-
-    cmp dh,'T'
-    jne .guioptn7
-    xor byte[GUIEnableTransp],1
-.guioptn7
+    GUIKeyCheckbox mousewrap,'M'            ; Checkboxes
+    GUIKeyCheckbox mouseshad,'S'
+    GUIKeyCheckbox lastcursres,'K'
+    GUIKeyCheckbox resetposn,'W'
+    GUIKeyCheckbox GUIClick,'C'
+    GUIKeyCheckbox JoyPad1Move,'U'
+    GUIKeyCheckbox GUIEnableTransp,'T'
+    
     cmp dh,'F'
     jne .guioptn8
     xor byte[FilteredGUI],1
@@ -999,6 +913,7 @@ GUIGUIOptnsKeys:
     call Clear2xSaIBuffer
     popad
 .guioptn9
+
     cmp dh,'N'
     jne .guioptn10
     GUIkeystoggleoptn byte[GUIEffect],1
@@ -1016,27 +931,11 @@ GUIGUIOptnsKeys:
     GUIkeystoggleoptn byte[GUIEffect],3
 .guioptn13
 %ifdef __WIN32__
-    cmp dh,'H'
-    jne .guioptn14
-    xor byte[MouseWheel],1
-.guioptn14
-    cmp dh,'P'
-    jne .guioptn15
-    xor byte[TrapMouseCursor],1
-.guioptn15
-
-    cmp dh,'A'
-    jne .guioptn16
-    xor byte[AlwaysOnTop],1
-.guioptn16
-    cmp dh,'V'
-    jne .guioptn17
-    xor byte[SaveMainWindowPos],1
-.guioptn17
-    cmp dh,'L'
-    jne .guioptn18
-    xor byte[AllowMultipleInst],1
-.guioptn18
+    GUIKeyCheckbox MouseWheel,'H'
+    GUIKeyCheckbox TrapMouseCursor,'P'
+    GUIKeyCheckbox AlwaysOnTop,'A'
+    GUIKeyCheckbox SaveMainWindowPos,'V'
+    GUIKeyCheckbox AllowMultipleInst,'L'
 %endif
 ret
 
@@ -1723,10 +1622,7 @@ GUIMovieKeys:
     mov byte[MovieStartMethod],3
 .nopowsram
 
-    cmp dh,'D'             ;Checkbox
-    jne .nodisplay
-    xor byte[MovieDisplayFrame],1
-.nodisplay
+    GUIKeyCheckbox MovieDisplayFrame,'D'
     ret
 
 
