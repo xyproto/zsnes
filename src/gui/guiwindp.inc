@@ -3014,25 +3014,25 @@ DisplayGUIOptns:              ; GUI Options
     add [GUITemp],eax
     GUIDisplayIconWin 10,[GUITemp],144,GUIIconDataSlideBar
 
-    GUIDisplayCheckboxn 10,12,23,mousewrap,1      ; Checkboxes
-    GUIDisplayCheckboxn 10,12,33,mouseshad,1
-    GUIDisplayCheckboxn 10,12,43,lastcursres,1
-    GUIDisplayCheckboxn 10,12,53,resetposn,1
-    GUIDisplayCheckboxn 10,12,63,GUIClick,1
-    GUIDisplayCheckboxn 10,12,73,JoyPad1Move,1
-    GUIDisplayCheckboxn 10,124,23,GUIEnableTransp,1
-    GUIDisplayCheckboxn 10,124,33,FilteredGUI,1
+    GUIDisplayCheckbox 10,12,23,mousewrap      ; Checkboxes
+    GUIDisplayCheckbox 10,12,33,mouseshad
+    GUIDisplayCheckbox 10,12,43,lastcursres
+    GUIDisplayCheckbox 10,12,53,resetposn
+    GUIDisplayCheckbox 10,12,63,GUIClick
+    GUIDisplayCheckbox 10,12,73,JoyPad1Move
+    GUIDisplayCheckbox 10,124,23,GUIEnableTransp
+    GUIDisplayCheckbox 10,124,33,FilteredGUI
     GUIDisplayCheckboxn 10,124,43,GUIEffect,1
-    GUIDisplayCheckboxn 10,124,53,GUIEffect,4
-    GUIDisplayCheckboxn 10,124,63,GUIEffect,2
-    GUIDisplayCheckboxn 10,124,73,GUIEffect,3
+    GUIDisplayCheckboxn 10,124,53,GUIEffect,2
+    GUIDisplayCheckboxn 10,124,63,GUIEffect,3
+    GUIDisplayCheckboxn 10,124,73,GUIEffect,4
 %ifdef __WIN32__
-    GUIDisplayCheckboxn 10,124,83,MouseWheel,1
-    GUIDisplayCheckboxn 10,124,93,TrapMouseCursor,1
+    GUIDisplayCheckbox 10,124,83,MouseWheel
+    GUIDisplayCheckbox 10,124,93,TrapMouseCursor
 
-    GUIDisplayCheckboxn 10,12,168,AlwaysOnTop,1
-    GUIDisplayCheckboxn 10,12,178,SaveMainWindowPos,1
-    GUIDisplayCheckboxn 10,12,188,AllowMultipleInst,1
+    GUIDisplayCheckbox 10,12,168,AlwaysOnTop
+    GUIDisplayCheckbox 10,12,178,SaveMainWindowPos
+    GUIDisplayCheckbox 10,12,188,AllowMultipleInst
 %endif
 
     GUIDisplayTextY 10,6,16,GUIGUIOptnsTextA
@@ -3045,9 +3045,9 @@ DisplayGUIOptns:              ; GUI Options
     GUIDisplayTextu 10,138,28,GUIGUIOptnsTextA2a,0
     GUIDisplayTextu 10,138,38,GUIGUIOptnsTextA2b,0
     GUIDisplayTextu 10,138,48,GUIGUIOptnsTextA2c,1
-    GUIDisplayTextu 10,138,58,GUIGUIOptnsTextA2d,2
-    GUIDisplayTextu 10,138,68,GUIGUIOptnsTextA2e,3
-    GUIDisplayTextu 10,138,78,GUIGUIOptnsTextA2f,13
+    GUIDisplayTextu 10,138,58,GUIGUIOptnsTextA2d,3
+    GUIDisplayTextu 10,138,68,GUIGUIOptnsTextA2e,13
+    GUIDisplayTextu 10,138,78,GUIGUIOptnsTextA2f,2
 %ifdef __WIN32__
     GUIDisplayTextu 10,138,88,GUIGUIOptnsTextA2g,1
     GUIDisplayTextu 10,138,98,GUIGUIOptnsTextA2h,3
@@ -3129,9 +3129,9 @@ GUIGUIOptnsTextA1f db 'USE JOYPAD1',0
 GUIGUIOptnsTextA2a db 'TRANSPARENT MSGS',0
 GUIGUIOptnsTextA2b db 'FILTERED GUI',0
 GUIGUIOptnsTextA2c dd 'SNOW EFFECT',0
-GUIGUIOptnsTextA2d dd 'BURNING EFFECT',0
-GUIGUIOptnsTextA2e dd 'WATER EFFECT A',0
-GUIGUIOptnsTextA2f dd 'WATER EFFECT B',0
+GUIGUIOptnsTextA2d dd 'WATER EFFECT A',0
+GUIGUIOptnsTextA2e dd 'WATER EFFECT B',0
+GUIGUIOptnsTextA2f dd 'BURNING EFFECT',0
 GUIGUIOptnsTextA2g db 'WHEEL MOUSE',0
 GUIGUIOptnsTextA2h db 'TRAP MOUSE CURSOR',0
 

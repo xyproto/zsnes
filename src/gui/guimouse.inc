@@ -2817,9 +2817,9 @@ DisplayGUIOptnsClick:
     GUIClickCButton 124,23,byte[GUIEnableTransp]
     GUIClickCButtonI 124,33,byte[FilteredGUI]    
     GUIClickCButton6 124,43,byte[GUIEffect],1
-    GUIClickCButton6 124,53,byte[GUIEffect],4
-    GUIClickCButton6 124,63,byte[GUIEffect],2
-    GUIClickCButton6 124,73,byte[GUIEffect],3
+    GUIClickCButton6 124,53,byte[GUIEffect],2
+    GUIClickCButton6 124,63,byte[GUIEffect],3
+    GUIClickCButton6 124,73,byte[GUIEffect],4
 %ifdef __WIN32__
     GUIClickCButton 124,83,byte[MouseWheel]
     GUIClickCButton 124,93,byte[TrapMouseCursor]
