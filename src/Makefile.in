@@ -30,11 +30,11 @@ EFFECTSDIR=effects
 JMADIR=jma
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
-	 ${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
-	 ${CHIPDIR}/sa1proc.o ${CHIPDIR}/sa1regs.o ${CHIPDIR}/dsp1emu.o\
-         ${CHIPDIR}/st10proc.o ${CHIPDIR}/seta10.o ${CHIPDIR}/dsp2proc.o\
-         ${CHIPDIR}/sdd1emu.o ${CHIPDIR}/c4emu.o ${CHIPDIR}/dsp4proc.o\
-	 ${CHIPDIR}/dsp4emu.o
+	${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
+	${CHIPDIR}/sa1proc.o ${CHIPDIR}/sa1regs.o ${CHIPDIR}/dsp1emu.o\
+	${CHIPDIR}/st10proc.o ${CHIPDIR}/seta10.o ${CHIPDIR}/dsp2proc.o\
+	${CHIPDIR}/sdd1emu.o ${CHIPDIR}/c4emu.o ${CHIPDIR}/dsp4proc.o\
+	${CHIPDIR}/dsp4emu.o
 
 CPUOBJ=${CPUDIR}/addrni.o ${CPUDIR}/dma.o ${CPUDIR}/dsp.o ${CPUDIR}/dspproc.o\
 	${CPUDIR}/execute.o ${CPUDIR}/irq.o ${CPUDIR}/memory.o\
@@ -50,13 +50,12 @@ VIDEOBJ=${VIDEODIR}/makev16b.o ${VIDEODIR}/makev16t.o ${VIDEODIR}/makevid.o\
 	${VIDEODIR}/newgfx16.o ${VIDEODIR}/newgfx2.o ${VIDEODIR}/newgfx.o\
 	${VIDEODIR}/m716text.o ${VIDEODIR}/2xsaiw.o\
 	${VIDEODIR}/procvid.o ${VIDEODIR}/procvidc.o ${VIDEODIR}/sw_draw.o\
-        ${VIDEODIR}/hq2x16.o ${VIDEODIR}/hq2x32.o\
-        ${VIDEODIR}/hq3x16.o ${VIDEODIR}/hq3x32.o\
-        ${VIDEODIR}/hq4x16.o ${VIDEODIR}/hq4x32.o
+	${VIDEODIR}/hq2x16.o ${VIDEODIR}/hq2x32.o\
+	${VIDEODIR}/hq3x16.o ${VIDEODIR}/hq3x32.o\
+	${VIDEODIR}/hq4x16.o ${VIDEODIR}/hq4x32.o
 
-WINOBJ=${WINDIR}/copyvwin.o \
-	${WINDIR}/sdlintrf.o ${WINDIR}/sdllink.o \
-	@GL_DRAW@ ${WINDIR}/sw_draw.o ${WINDIR}/zfilew.o
+WINOBJ=${WINDIR}/copyvwin.o ${WINDIR}/sdlintrf.o ${WINDIR}/sdllink.o @GL_DRAW@\
+	${WINDIR}/sw_draw.o ${WINDIR}/zfilew.o
 
 WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/vesa2.o\
 	${DOSDIR}/initvid.o ${DOSDIR}/sw.o ${DOSDIR}/gppro.o ${DOSDIR}/vesa12.o
@@ -65,19 +64,18 @@ NETOBJ=
 #${NETDIR}/ztcp.o
 
 JMAOBJ=${JMADIR}/7zlzma.o ${JMADIR}/crc32.o ${JMADIR}/iiostrm.o\
-       ${JMADIR}/inbyte.o ${JMADIR}/jma.o ${JMADIR}/lzma.o ${JMADIR}/lzmadec.o\
-       ${JMADIR}/winout.o ${JMADIR}/zsnesjma.o
+	${JMADIR}/inbyte.o ${JMADIR}/jma.o ${JMADIR}/lzma.o ${JMADIR}/lzmadec.o\
+	${JMADIR}/winout.o ${JMADIR}/zsnesjma.o
 
 ZIPOBJ=${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
 EFFECTSOBJ=${EFFECTSDIR}/burn.o ${EFFECTSDIR}/water.o ${EFFECTSDIR}/smoke.o
 
-MAINOBJ=cfgload.o endmem.o init.o initc.o uic.o patch.o ui.o vcache.o version.o\
-	 zmovie.o zstate.o debug.o zloader.o cfgparse.o
+MAINOBJ=cfgload.o cfgparse.o endmem.o init.o initc.o uic.o patch.o ui.o vcache.o\
+	version.o zmovie.o zstate.o debug.o zloader.o
 
 OBJS=${MAINOBJ} ${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${NETOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
 
-CFG=cfgparse.c
 PSR=parsegen
 
 .SUFFIXES: .cpp .c .asm .psr
@@ -94,8 +92,10 @@ PSR=parsegen
 %.o: %.asm
 	@NASMPATH@ @NFLAGS@ -o $@ $<
 
-%.c: %.psr
-	./${PSR} -D__LINUX__ $@ $<
+%.o: %.psr
+	./${PSR} -D__LINUX__ cfgparse.c $<
+	@CC@ @CFLAGS@ -I. -o $@ -c cfgparse.c
+	rm -f cfgparse.c
 
 ALL: @ZSNESEXE@
 
@@ -104,19 +104,18 @@ ALL: @ZSNESEXE@
 
 ${PSR}: parsegen.cpp
 
-cfgload.o:cfgload.c macros.mac
-${CFG}: cfgparse.psr
-cfgparse.o: ${CFG}
+cfgload.o: cfgload.c macros.mac
+cfgparse.o: cfgparse.psr
 endmem.o: endmem.asm macros.mac
-init.o:init.asm macros.mac
-initc.o:initc.c ${CPUDIR}/memtable.h ${JMADIR}/zsnesjma.h
-patch.o:patch.c
+init.o: init.asm macros.mac
+initc.o: initc.c ${CPUDIR}/memtable.h ${JMADIR}/zsnesjma.h
+patch.o: patch.c
 ui.o: ui.asm macros.mac
-uic.o:uic.c
-version.o:version.c
-zloader.o:zloader.c
-zmovie.o:zmovie.c
-zstate.o:zstate.c
+uic.o: uic.c
+version.o: version.c
+zloader.o: zloader.c
+zmovie.o: zmovie.c
+zstate.o: zstate.c
 
 ${CHIPDIR}/dsp1proc.o: ${CHIPDIR}/dsp1proc.asm macros.mac
 ${CHIPDIR}/sa1regs.o: ${CHIPDIR}/sa1regs.asm macros.mac\

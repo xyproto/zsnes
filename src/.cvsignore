@@ -6,5 +6,6 @@ configure
 config.cache
 .gdbinit
 config.status
+parsegen
 zsnesd
 zsnes
