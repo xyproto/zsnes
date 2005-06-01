@@ -50,6 +50,7 @@ JMADIR=jma
 DELETECOMMAND=rm -f
 TRUTH=;true
 SLASH=/
+PSR=parsegen
 ASM=nasm
 ASMOPT=-O1
 ASMFLAGSORIG=
@@ -110,6 +111,7 @@ ifeq (${CROSS},no)
   TRUTH=
   DELETECOMMAND=del
   SLASH=\${BLAHBLAHBLAH}
+  PSR=parsegen.exe
 endif
 
 ifeq (${OS},__MSDOS__)
@@ -183,7 +185,7 @@ JMAOBJ=${JMADIR}/7zlzma${OE} ${JMADIR}/crc32${OE} ${JMADIR}/iiostrm${OE}\
        ${JMADIR}/winout${OE} ${JMADIR}/zsnesjma${OE}
 
 MAINOBJ=cfgload${OE} endmem${OE} init${OE} initc${OE} uic${OE} patch${OE}\
-	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE}
+	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE} cfgparse${OE}
 
 DOSOBJORIG=${DOSDIR}/debug${OE} ${DOSDIR}/joy${OE} ${DOSDIR}/vesa2${OE}\
        ${DOSDIR}/initvid${OE} ${DOSDIR}/sw${OE} ${DOSDIR}/gppro${OE} ${DOSDIR}/vesa12${OE}
@@ -203,7 +205,7 @@ DELETEOBJS=${OBJS}
 endif
 
 
-.SUFFIXES: .c .cpp .asm
+.SUFFIXES: .c .cpp .asm .psr
 
 ifneq (${ENV},msvc)
 %${OE}: %.c
@@ -228,10 +230,13 @@ else
 	${ASM} ${ASMOPT} -f win32 -D__WIN32__ -o $@ $<
 endif
 
+%.c: %.psr
+	${PSR} -D${OS} $@ $<
+
 ALL: zsnes
 	${DELETECOMMAND} version${OE}
 
-zsnes: ${OBJFIX} ${OBJS}
+zsnes: ${PSR} ${OBJFIX} ${OBJS}
 ifneq (${ENV},msvc)
 	${CPPC} ${STRIP} -o ${EXE} ${OBJS} ${LIBS}
 else
@@ -362,6 +367,9 @@ ${WINDIR}/winlink${OE}: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
 ${OBJFIX}: $<
 	gcc -O3 -o $@ objfix.c
 endif
+${PSR}: $<
+cfgparse.c: $< ${PSR}
+cfgparse${OE}: $<
 
 clean:
 

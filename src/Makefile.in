@@ -18,6 +18,8 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+PSR=parsegen
+
 CHIPDIR=chips
 CPUDIR=cpu
 DOSDIR=dos
@@ -73,11 +75,11 @@ ZIPOBJ=${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 EFFECTSOBJ=${EFFECTSDIR}/burn.o ${EFFECTSDIR}/water.o ${EFFECTSDIR}/smoke.o
 
 MAINOBJ=cfgload.o endmem.o init.o initc.o uic.o patch.o ui.o vcache.o version.o\
-	 zmovie.o zstate.o debug.o zloader.o
+	 zmovie.o zstate.o debug.o zloader.o cfgparse.o
 
 OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${NETOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
 
-.SUFFIXES: .cpp .c .asm
+.SUFFIXES: .cpp .c .asm .psr
 
 %.o: %.cpp
 	@CXX@ @CFLAGS@ -o $@ -c $<
@@ -88,9 +90,12 @@ OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ
 %.o: %.asm
 	@NASMPATH@ @NFLAGS@ -o $@ $<
 
+%.c: %.psr
+	${PSR} -D__LINUX__ $@ $<
+
 ALL:	@ZSNESEXE@
 
-@ZSNESEXE@:  ${OBJS}
+@ZSNESEXE@: ${PSR} ${OBJS}
 	@CXX@ -o @ZSNESEXE@ ${OBJS} @CFLAGS@ @LDFLAGS@
 
 ${ZIPDIR}/zpng.o: ${ZIPDIR}/zpng.c ${ZIPDIR}/zpng.h
@@ -209,6 +214,10 @@ ${DOSDIR}/gppro.o: ${DOSDIR}/gppro.asm macros.mac
 ${DOSDIR}/zsipx.o: ${DOSDIR}/zsipx.asm
 ${CHIPDIR}/sa1proc.o: ${CHIPDIR}/sa1proc.asm macros.mac
 endmem.o: endmem.asm macros.mac
+
+${PSR}: $<
+cfgparse.c: $< ${PSR}
+cfgparse${OE}: $<
 
 ${JMADIR}/7zlzma.o: ${JMADIR}/7zlzma.cpp ${JMADIR}/7z.h ${JMADIR}/iiostrm.h
 ${JMADIR}/crc32.o: ${JMADIR}/crc32.cpp ${JMADIR}/crc32.h

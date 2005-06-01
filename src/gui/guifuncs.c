@@ -63,13 +63,10 @@ unsigned char CalcCfgChecksum()
 
 void GUIRestoreVars()
 {
+  unsigned char read_cfg_vars(const char *);
   FILE *cfg_fp;
 
-  if ((cfg_fp = fopen(GUIFName, "rb")))
-  {
-    fread(&GUIRAdd, 1, PHnumGUIsave, cfg_fp);
-    fclose(cfg_fp);
-  }
+  read_cfg_vars(GUIFName);
 
   smallscreenon = (unsigned int)GUIsmallscreenon;
   ScreenScale = GUIScreenScale;
@@ -106,14 +103,14 @@ void GUIRestoreVars()
 
 void ExecGUISaveVars()
 {
+  unsigned char write_cfg_vars(const char *);
   FILE *cfg_fp;
 
   if (ShowTimer == 1) { TimeChecker = CalcCfgChecksum(); }
 
-  if (!cfgdontsave && (cfg_fp = fopen(GUIFName, "wb")))
+  if (!cfgdontsave)
   {
-    fwrite(&GUIRAdd, 1, PHnumGUIsave, cfg_fp);
-    fclose(cfg_fp);
+    write_cfg_vars(GUIFName);
   }
 
   if (NumComboGlob && (cfg_fp = fopen(GUICName, "wb")))
