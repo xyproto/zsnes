@@ -90,8 +90,10 @@ OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ
 %.o: %.asm
 	@NASMPATH@ @NFLAGS@ -o $@ $<
 
-%.c: %.psr
-	./${PSR} -D__LINUX__ $@ $<
+%.o: %.psr
+	./${PSR} -D__LINUX__ tempsrc.c $<
+	@CC@ @CFLAGS@ -I. -o $@ -c tempsrc.c
+	rm -r tempsrc.c
 
 ALL:	@ZSNESEXE@
 
@@ -216,8 +218,7 @@ ${CHIPDIR}/sa1proc.o: ${CHIPDIR}/sa1proc.asm macros.mac
 endmem.o: endmem.asm macros.mac
 
 ${PSR}: $<
-cfgparse.c: $< ${PSR}
-cfgparse${OE}: $<
+cfgparse.o: $<
 
 ${JMADIR}/7zlzma.o: ${JMADIR}/7zlzma.cpp ${JMADIR}/7z.h ${JMADIR}/iiostrm.h
 ${JMADIR}/crc32.o: ${JMADIR}/crc32.cpp ${JMADIR}/crc32.h
