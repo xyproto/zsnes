@@ -300,7 +300,8 @@ GUIwinpos   resb 18
 GUIwinactiv resb 18
 ViewBuffer  resb 50*32
 
-SECTION .data             ; Window sizes and positions
+SECTION .data
+; Window sizes and positions
 ;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE SPED
 GUIwinposxo dd 0,5   ,60  ,30  ,55  ,50  ,35  ,5   ,30  ,8   ,10   ,50  ,65  ,20  ,70  ,40  ,3   ,50  ,50  ,5    ,20  ,45
 GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,65  ,35  ,22  ,60  ,60  ,20   ,30  ,25
