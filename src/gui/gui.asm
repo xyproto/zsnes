@@ -82,7 +82,7 @@ EXTSYM vesa2red10,initvideo2,initvideo,pressed,UpdateDevices,memtabler8
 EXTSYM memtablew8,writeon,pl1contrl,pl2contrl,JoyRead,SetInputDevice,delay
 EXTSYM SetInputDevice209,FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,pl12s34,resolutn
 EXTSYM InitDrive,InitDir,createnewcfg,Makemode7Table,vidbufferofsb,ZipSupport
-EXTSYM wramdata,bgfixer,cfgnewgfx,cfgdontsave,videotroub,Open_File,Read_File
+EXTSYM wramdata,bgfixer,cfgnewgfx,videotroub,Open_File,Read_File
 EXTSYM Close_File,Write_File,Create_File,File_Seek,File_Seek_End,Get_Date
 EXTSYM Check_Key,Get_Key,Change_Drive,Change_Single_Dir,Change_Dir,Get_Dir
 EXTSYM Get_First_Entry,Get_Next_Entry,Set_DTA_Address,curexecstate,TripBufAvail
@@ -90,8 +90,8 @@ EXTSYM nmiprevaddrl,nmiprevaddrh,nmirept,nmiprevline,nmistatus,spcnumread
 EXTSYM spchalted,NextLineCache,ResetTripleBuf,GUINGVID,ScanCodeListing
 EXTSYM AdjustFrequency,GUISaveVars,Init_Mouse,Get_MouseData,Set_MouseXMax
 EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
-EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,SA1Enable,SA1RAMArea,GUIFName
-EXTSYM GUICName,MMXCheck,SaveCombFile,showinfogui
+EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,SA1Enable,SA1RAMArea
+EXTSYM MMXCheck,SaveCombFile,showinfogui
 EXTSYM ErrorPointer,MessageOn,GetTime,sndrot,regsbackup,GetScreen
 EXTSYM GUITBWVID,Clear2xSaIBuffer,MouseWindow,GotoHomepage,cfgcvidmode
 EXTSYM ExitFromGUI,GUIWFVID,cfgvsync,newgfx16b,cfgscanline,cfginterp
@@ -121,7 +121,7 @@ EXTSYM RewindStates,RewindFrames,PauseRewind,PauseLoad,SRAMState,AutoState
 EXTSYM LatestSave,SRAMSave5Sec,AutoIncSaveSlot,pl3selk,pl4selk,pl5selk
 EXTSYM pl1Atk,pl2Atk,pl3Atk,pl4Atk,pl5Atk,pl3contrl,KeyUsePlayer1234
 EXTSYM pl1Ltk,pl2Ltk,pl3Ltk,pl4Ltk,pl5Ltk,pl4contrl,KeyResetAll,CalibXmin
-EXTSYM pl1Utk,pl2Utk,pl3Utk,pl4Utk,pl5Utk,pl5contrl,KeyExtraEnab,CalibYmin
+EXTSYM pl5contrl,KeyExtraEnab,CalibYmin
 EXTSYM pl1ULk,pl2ULk,pl3ULk,pl4ULk,pl5ULk,KeyVolDown,KeyVolUp,CalibXmax
 EXTSYM CalibYmax,CalibXmin209,CalibXmax209,CalibYmin209,CalibYmax209
 EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
