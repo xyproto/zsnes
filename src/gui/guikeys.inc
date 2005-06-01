@@ -132,6 +132,13 @@
 %%nohotkey
 %endmacro
 
+%macro GUIKeyButtonHole 3
+    cmp dh,%3
+    jne %%nohotkey
+    mov byte[%1],%2
+%%nohotkey
+%endmacro
+
 SECTION .bss
 GUIfirstkey resd 1
 GUIlastkey resd 1
@@ -843,26 +850,11 @@ GUIAddonKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
-    cmp dh,'N'             ;Radio Buttons
-    jne .nonone
-    mov byte[snesmouse],0
-.nonone
-    cmp dh,'1'
-    jne .nomouse1
-    mov byte[snesmouse],1
-.nomouse1
-    cmp dh,'2'
-    jne .nomouse2
-    mov byte[snesmouse],2
-.nomouse2
-    cmp dh,'S'
-    jne .nosuperscope
-    mov byte[snesmouse],3
-.nosuperscope
-    cmp dh,'L'
-    jne .nolethalgun
-    mov byte[snesmouse],4
-.nolethalgun
+    GUIKeyButtonHole snesmouse,0,'N'             ;Radio Buttons
+    GUIKeyButtonHole snesmouse,1,'1'
+    GUIKeyButtonHole snesmouse,2,'2'
+    GUIKeyButtonHole snesmouse,3,'S'
+    GUIKeyButtonHole snesmouse,4,'L'
     ret
 
 GUIChipKeys:
@@ -872,7 +864,6 @@ GUIChipKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
-    
     GUIKeyCheckbox nssdip1,'1'             ; Checkboxes
     GUIKeyCheckbox nssdip2,'2'
     GUIKeyCheckbox nssdip3,'3'
@@ -1333,6 +1324,7 @@ GUISoundKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
+
     cmp dh,'E'
     jne .notenablesound
     xor byte[cfgsoundon],1
@@ -1342,57 +1334,38 @@ GUISoundKeys:
     popad
 %endif
 .notenablesound
+
 %ifdef __MSDOS__
-    cmp dh,'F'
-    jne .notforce8b
-    xor byte[cfgforce8b],1
-.notforce8b
+    GUIKeyCheckbox cfgforce8b,'F'
 %endif
-    cmp dh,'S'
-    jne .notstereo
-    xor byte[cfgStereoSound],1
-.notstereo
+    GUIKeyCheckbox cfgStereoSound,'S'
 %ifdef __MSDOS__
-    cmp dh,'A'
-    jne .noraisepitch
-    xor byte[RaisePitch],1
-.noraisepitch
+    GUIKeyCheckbox RaisePitch,'A'
 %endif
-    cmp dh,'P'
-    jne .noprimarybuffer
-    xor byte[PrimaryBuffer],1
-.noprimarybuffer
-    cmp dh,'R'
+    GUIKeyCheckbox PrimaryBuffer,'P'
+    GUIKeyCheckbox RevStereo,'V'
+    GUIKeyCheckbox Surround,'U'
+    GUIKeyCheckbox SoundBufEn,'B'
+    GUIKeyCheckbox SPCDisable,'D'
+
+    cmp dh,'R'                 ; Sampling Rate
     jne .notsrate
     xor eax,eax
     mov al,[cfgSoundQuality]
     mov al,[.sampratenext+eax]
     mov [cfgSoundQuality],al
 .notsrate
-    cmp dh,'V'
-    jne .notrevst
-    xor byte[RevStereo],1
-.notrevst
-    cmp dh,'U'
-    jne .nosurround
-    xor byte[Surround],1
-.nosurround
-    cmp dh,'B'
-    jne .nosoundbuf
-    xor byte[SoundBufEn],1
-.nosoundbuf
-    cmp dh,'D'
-    jne .nospcdisable
-    xor byte[SPCDisable],1
-.nospcdisable
+
     cmp dh,'G'
     jne .nogausseninterp
     GUIkeystoggleoptn byte[SoundInterpType],1
 .nogausseninterp
+
     cmp dh,'C'
     jne .nocubicinterp
     GUIkeystoggleoptn byte[SoundInterpType],2
 .nocubicinterp
+
 %ifndef __MSDOS__
     cmp dh,'8'
     jne .no8ptinterp
@@ -1401,14 +1374,17 @@ GUISoundKeys:
     GUIkeystoggleoptn byte[SoundInterpType],3
 .no8ptinterp
 %endif
+
     cmp dh,'I'
     jne .nosimplefilter
     GUIkeystoggleoptn byte[LowPassFilterType],1
 .nosimplefilter
+
     cmp dh,'Y'
     jne .nodynamicfilter
     GUIkeystoggleoptn byte[LowPassFilterType],2
 .nodynamicfilter
+
 %ifndef __MSDOS__
     cmp dh,'H'
     jne .nohiqualityfilter
@@ -1417,6 +1393,7 @@ GUISoundKeys:
     GUIkeystoggleoptn byte[LowPassFilterType],3
 .nohiqualityfilter
 %endif
+
     ret
 
 SECTION .data
@@ -1550,81 +1527,25 @@ GUIMovieKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
-                              ; Ratio Buttons
-    cmp dh,'0'                ;Select :  Ratio Buttons
-    jne .noselect0
-    mov byte[CMovieExt],'v'
-.noselect0
+    
+    GUIKeyButtonHole CMovieExt,'v','0'         ; Select Radio Buttons
+    GUIKeyButtonHole CMovieExt,'1','1'
+    GUIKeyButtonHole CMovieExt,'2','2'
+    GUIKeyButtonHole CMovieExt,'3','3'
+    GUIKeyButtonHole CMovieExt,'4','4'
+    GUIKeyButtonHole CMovieExt,'5','5'
+    GUIKeyButtonHole CMovieExt,'6','6'
+    GUIKeyButtonHole CMovieExt,'7','7'
+    GUIKeyButtonHole CMovieExt,'8','8'
+    GUIKeyButtonHole CMovieExt,'9','9'
 
-    cmp dh,'1'
-    jne .noselect1
-    mov byte[CMovieExt],'1'
-.noselect1
+    GUIKeyButtonHole MovieStartMethod,0,'N'   ; Start From Radio Buttons
+    GUIKeyButtonHole MovieStartMethod,1,'P'
+    GUIKeyButtonHole MovieStartMethod,2,'R'
+    GUIKeyButtonHole MovieStartMethod,3,'S'
 
-    cmp dh,'2'
-    jne .noselect2
-    mov byte[CMovieExt],'2'
-.noselect2
-
-    cmp dh,'3'
-    jne .noselect3
-    mov byte[CMovieExt],'3'
-.noselect3
-
-    cmp dh,'4'
-    jne .noselect4
-    mov byte[CMovieExt],'4'
-.noselect4
-
-    cmp dh,'5'
-    jne .noselect5
-    mov byte[CMovieExt],'5'
-.noselect5
-
-    cmp dh,'6'
-    jne .noselect6
-    mov byte[CMovieExt],'6'
-.noselect6
-
-    cmp dh,'7'
-    jne .noselect7
-    mov byte[CMovieExt],'7'
-.noselect7
-
-    cmp dh,'8'
-    jne .noselect8
-    mov byte[CMovieExt],'8'
-.noselect8
-
-    cmp dh,'9'
-    jne .noselect9
-    mov byte[CMovieExt],'9'
-.noselect9
-
-
-    cmp dh,'N'             ;Start From Ratio Buttons
-    jne .nonow             
-    mov byte[MovieStartMethod],0
-.nonow
-
-    cmp dh,'P'             
-    jne .nopower
-    mov byte[MovieStartMethod],1
-.nopower
-
-    cmp dh,'R'            
-    jne .noreset
-    mov byte[MovieStartMethod],2
-.noreset
-
-    cmp dh,'S'             
-    jne .nopowsram
-    mov byte[MovieStartMethod],3
-.nopowsram
-
-    GUIKeyCheckbox MovieDisplayFrame,'D'
+    GUIKeyCheckbox MovieDisplayFrame,'D'      ; Checkbox
     ret
-
 
 GUIComboKeys:
     ; Calculate Position

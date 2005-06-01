@@ -702,7 +702,7 @@ DisplayGUILoad:
     mov bl,[GUILoadPos]
     mov byte[GUILoadTextA+ebx],0
 
-%ifdef __MSDOS__                             ; Ratio Buttons
+%ifdef __MSDOS__                             ; Radio Buttons
     GUIDisplayButtonHole 1,9,163,byte[GUIloadfntype],0
     GUIDisplayButtonHole 1,9,171,byte[GUIloadfntype],1
     GUIDisplayButtonHole 1,9,179,byte[GUIloadfntype],2
@@ -880,7 +880,7 @@ DisplayGUIChoseSave:                    ; Pick Save State
     mov byte[GUIChoseSaveText2],'9'
     GUIDisplayText 2,101,46,GUIChoseSaveText2
 
-    mov dword[GUITemp],GUIIconDataButtonHole           ; Ratio Buttons
+    mov dword[GUITemp],GUIIconDataButtonHole           ; Radio Buttons
     mov ebx,[statefileloc]
     mov al,byte[fnamest+ebx]
     mov [GUIChoseSaveText2],al
@@ -2274,7 +2274,7 @@ DisplayGUISearch:
 .zero2
     DrawGUIButton 13,95,140,140,152,GUICSrcTextA3,50,0,1
 
-    GUIDisplayButtonHole 13,11,28,byte[CheatSrcByteSize],0   ; Ratio Buttons
+    GUIDisplayButtonHole 13,11,28,byte[CheatSrcByteSize],0   ; Radio Buttons
     GUIDisplayButtonHole 13,11,38,byte[CheatSrcByteSize],1
     GUIDisplayButtonHole 13,11,48,byte[CheatSrcByteSize],2
     GUIDisplayButtonHole 13,11,58,byte[CheatSrcByteSize],3
@@ -3069,7 +3069,7 @@ DisplayGUIOptns:              ; GUI Options
     mov byte[GUIGUIOptnsTextD1],'B'
     GUIDisplayText 10,16,147,GUIGUIOptnsTextD1
 
-    GUIDisplayButtonHole 10,48,108,byte[CurPalSelect],0    ; Ratio Buttons
+    GUIDisplayButtonHole 10,48,108,byte[CurPalSelect],0    ; Radio Buttons
     GUIDisplayButtonHole 10,88,108,byte[CurPalSelect],1
     GUIDisplayButtonHole 10,135,108,byte[CurPalSelect],2
 
@@ -3316,7 +3316,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     mov dword[GUIMovieTextZ+17],'ING '
 .nooldplay
     GUIDisplayTextY 15,6,162,GUIMovieTextZ
-                                                         ; Display ratio buttons
+                                                         ; Display Radio buttons
     GUIDisplayButtonHole 15,60,25,byte[CMovieExt],'v'    ; Select:
     GUIDisplayButtonHole 15,80,25,byte[CMovieExt],'1'
     GUIDisplayButtonHole 15,100,25,byte[CMovieExt],'2'
@@ -4129,7 +4129,7 @@ DisplayGUIAddOns:                   ;Select Special Controllers
     GUIDisplayTextu 17,21,58,GUIAddOnText5,0
 .endEE
 
-    GUIDisplayButtonHole 17,9,15,byte[snesmouse],0  ;Ratio Buttons
+    GUIDisplayButtonHole 17,9,15,byte[snesmouse],0  ;Radio Buttons
     GUIDisplayButtonHole 17,9,25,byte[snesmouse],1
     GUIDisplayButtonHole 17,9,35,byte[snesmouse],2
     GUIDisplayButtonHole 17,9,45,byte[snesmouse],3
