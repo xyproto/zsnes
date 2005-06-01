@@ -230,8 +230,14 @@ else
 	${ASM} ${ASMOPT} -f win32 -D__WIN32__ -o $@ $<
 endif
 
-%.c: %.psr
-	${PSR} -D${OS} $@ $<
+%${OE}: %.psr
+	${PSR} -D${OS} temppsr.c $<
+ifneq (${ENV},msvc)
+	${CC} ${COPT} ${CFLAGS} -o $@ -c temppsr.c
+else
+	cl /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ temppsr.c
+endif        
+	${DELETECOMMAND} temppsr.c
 
 ALL: zsnes
 	${DELETECOMMAND} version${OE}
@@ -368,7 +374,6 @@ ${OBJFIX}: $<
 	gcc -O3 -o $@ objfix.c
 endif
 ${PSR}: $<
-cfgparse.c: $< ${PSR}
 cfgparse${OE}: $<
 
 clean:
