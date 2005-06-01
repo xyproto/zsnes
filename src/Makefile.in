@@ -91,7 +91,7 @@ OBJS=${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ
 	@NASMPATH@ @NFLAGS@ -o $@ $<
 
 %.c: %.psr
-	${PSR} -D__LINUX__ $@ $<
+	./${PSR} -D__LINUX__ $@ $<
 
 ALL:	@ZSNESEXE@
 
