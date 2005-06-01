@@ -194,7 +194,7 @@ NEWSYM PrevFSMode, db 6
 %elifdef __LINUX__
 NEWSYM PrevWinMode, db 2
 NEWSYM PrevFSMode, db 3
-%else
+%elifdef __MSDOS__
 NEWSYM PrevWinMode, db 0
 NEWSYM PrevFSMode, db 0
 %endif
@@ -319,19 +319,16 @@ NEWSYM KeyIncStateSlot, dd 0
 NEWSYM KeyDecStateSlot, dd 0
 NEWSYM KeyUsePlayer1234, dd 0
 NEWSYM hqFilter, db 0
-NEWSYM reserved, db 0 ;old
-NEWSYM scale2xFilter, db 0
-NEWSYM st010difficulty,  db 0     ;old
-NEWSYM SnapPath, times 1024 db 0
-NEWSYM SPCPath, times 1024 db 0
-NEWSYM BSXPath, times 1024 db 0
-NEWSYM STPath, times 1024 db 0
-NEWSYM GNextPath, times 1024 db 0
-NEWSYM SGPath, times 1024 db 0
-NEWSYM FEOEZPath, times 1024 db 0
-NEWSYM SJNSPath, times 1024 db 0
-NEWSYM MDHPath, times 1024 db 0
-NEWSYM SPL4Path, times 1024 db 0
+NEWSYM SnapPath, times 1024 db ""
+NEWSYM SPCPath, times 1024 db ""
+NEWSYM BSXPath, times 1024 db ""
+NEWSYM STPath, times 1024 db ""
+NEWSYM GNextPath, times 1024 db ""
+NEWSYM SGPath, times 1024 db ""
+NEWSYM FEOEZPath, times 1024 db ""
+NEWSYM SJNSPath, times 1024 db ""
+NEWSYM MDHPath, times 1024 db ""
+NEWSYM SPL4Path, times 1024 db ""
 NEWSYM AutoPatch, db 1
 NEWSYM RomInfo, db 1
 NEWSYM SRAMState, db 0
