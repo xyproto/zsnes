@@ -104,12 +104,6 @@ NEWSYM CalibYmax209, dd 0
 NEWSYM maxskip,      db 9
 NEWSYM FPSAtStart,   db 0
 NEWSYM SidewinderFix, db 0
-GUIInitSt1 db 'ATZ'
-GUIInitSt2 db 'AT S0=0'
-GUIDialSt db 'ATDT ',0
-NEWSYM ComNum,  db 2
-NEWSYM ComIRQ,  db 3
-NEWSYM BaudRate, dd 3
 NEWSYM pl1Atk,    dd 0   ; Turbo A
 NEWSYM pl1Btk,    dd 0   ; Turbo B
 NEWSYM pl1Xtk,    dd 0   ; Turbo X
