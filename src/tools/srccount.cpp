@@ -45,7 +45,7 @@ void size_tally(const char *filename, struct stat& stat_buffer)
 int main()
 {
   parse_dir(".", size_tally);
-  
+
   cout << "Total C files use " << c_count << " bytes.\n"
        << "Total C++ files use " << cpp_count << " bytes.\n"
        << "Total Assembly files use " << asm_count << " bytes.\n"

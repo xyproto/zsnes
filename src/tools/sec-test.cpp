@@ -33,7 +33,7 @@ using namespace std;
 
 void handle_file(const char *filename)
 {
-  enum sections { sec_unknown, sec_bss, sec_data, sec_text };  
+  enum sections { sec_unknown, sec_bss, sec_data, sec_text };
 
   ifstream file(filename, ios::in);
   if (file)
@@ -45,20 +45,20 @@ void handle_file(const char *filename)
       if (!strcasecmp(line, "SECTION .BSS")) { cur_section = sec_bss; }
       if (!strcasecmp(line, "SECTION .DATA")) { cur_section = sec_data; }
       if (!strcasecmp(line, "SECTION .text")) { cur_section = sec_text; }
-      
-      if ((cur_section != sec_bss) && 
+
+      if ((cur_section != sec_bss) &&
           (strstr(line, " resd ") || strstr(line, " resw ") || strstr(line, " resb ") ||
           (strstr(line, ",resd ") || strstr(line, ",resw ") || strstr(line, ",resb ")) ))
       {
         cout << filename << ": line " << i << ": Error, resx in non BSS section. \"" << line << "\"" << endl;
       }
-      
-      if ((cur_section != sec_data) && 
+
+      if ((cur_section != sec_data) &&
           (strstr(line, " dd ") || strstr(line, " dw ") || strstr(line, " db ") ||
           (strstr(line, ",dd ") || strstr(line, ",dw ") || strstr(line, ",db ")) ))
       {
         cout << filename << ": line " << i << ": Error, dx in non DATA section. \"" << line << "\"" << endl;
-      }    
+      }
     }
   }
   else

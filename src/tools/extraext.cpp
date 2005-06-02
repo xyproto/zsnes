@@ -33,6 +33,8 @@ using namespace std;
 
 #include "fileutil.h"
 
+#define LINE_LENGTH 500
+
 set<string> ignore_include_file;
 
 void handle_file(const char *filename)
@@ -51,10 +53,10 @@ void handle_file(const char *filename)
     ifstream file(fname.c_str(), ios::in);
     if (file)
     {
-      char line[500];
+      char line[LINE_LENGTH];
 
       //Build lists
-      for (size_t i = 0; file.getline(line, 500); i++)
+      for (size_t i = 0; file.getline(line, LINE_LENGTH); i++)
       {
         vector<string> tokens;
         char *p = line;
@@ -79,7 +81,7 @@ void handle_file(const char *filename)
           for (vector<string>::iterator i = tokens.begin(); i != tokens.end(); i++)
           {
             extsyms.insert(*i);
-          }        
+          }
         }
         else if (*p && (*p != ';'))
         {
@@ -97,15 +99,15 @@ void handle_file(const char *filename)
               }
             }
           }
-        } 
+        }
       }
-    } 
+    }
     else if (ignore_include_file.find(fname) == ignore_include_file.end())
     {
       cout << "Error opening: " << fname << endl;
     }
   } while(!included_files.empty());
-      
+
   set_difference(extsyms.begin(), extsyms.end(), used_vars.begin(), used_vars.end(), back_inserter(not_used_extsyms));
 
   if (not_used_extsyms.size())

@@ -35,15 +35,15 @@ bool parse_dir(const char *dir_loc, void (*func)(const char *, struct stat&))
     while ((curFile = readdir(curDir)))
     {
       char *filename = curFile->d_name;
-    
+
       if (!strcmp(filename, ".") || !strcmp(filename, ".."))
       {
         continue;
       }
-            
+
       struct stat stat_buffer;
       if (stat(filename, &stat_buffer)) { continue; }
-            
+
       //Directory
       if (S_ISDIR(stat_buffer.st_mode))
       {
