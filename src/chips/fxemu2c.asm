@@ -264,29 +264,29 @@ NEWSYM FxOpd0F      ; BVS    branch on overflow set     ; Verified.
 NEWSYM FxOpd10      ; TO RN  set register n as destination register
    TORNd 0
 NEWSYM FxOpd11      ; TO RN  set register n as destination register
-   TORNd 1   
+   TORNd 1
 NEWSYM FxOpd12      ; TO RN  set register n as destination register
-   TORNd 2   
+   TORNd 2
 NEWSYM FxOpd13      ; TO RN  set register n as destination register
-   TORNd 3   
+   TORNd 3
 NEWSYM FxOpd14      ; TO RN  set register n as destination register
-   TORNd 4   
+   TORNd 4
 NEWSYM FxOpd15      ; TO RN  set register n as destination register
-   TORNd 5   
+   TORNd 5
 NEWSYM FxOpd16      ; TO RN  set register n as destination register
-   TORNd 6   
+   TORNd 6
 NEWSYM FxOpd17      ; TO RN  set register n as destination register
-   TORNd 7   
+   TORNd 7
 NEWSYM FxOpd18      ; TO RN  set register n as destination register
-   TORNd 8   
+   TORNd 8
 NEWSYM FxOpd19      ; TO RN  set register n as destination register
-   TORNd 9   
+   TORNd 9
 NEWSYM FxOpd1A      ; TO RN  set register n as destination register
-   TORNd 10   
+   TORNd 10
 NEWSYM FxOpd1B      ; TO RN  set register n as destination register
-   TORNd 11   
+   TORNd 11
 NEWSYM FxOpd1C      ; TO RN  set register n as destination register
-   TORNd 12   
+   TORNd 12
 NEWSYM FxOpd1D      ; TO RN  set register n as destination register
    TORNd 13
 NEWSYM FxOpd1E      ; TO RN  set register n as destination register
@@ -488,21 +488,21 @@ NEWSYM FxOpd4B      ; LDW RN load word from RAM
    LDWRNc 11
 
 NEWSYM FxOpd40A1    ; LDB RN load byte from RAM
-   LDBRNc 0   
+   LDBRNc 0
 NEWSYM FxOpd41A1    ; LDB RN load byte from RAM
-   LDBRNc 1 
+   LDBRNc 1
 NEWSYM FxOpd42A1    ; LDB RN load byte from RAM
-   LDBRNc 2   
+   LDBRNc 2
 NEWSYM FxOpd43A1    ; LDB RN load byte from RAM
-   LDBRNc 3   
+   LDBRNc 3
 NEWSYM FxOpd44A1    ; LDB RN load byte from RAM
-   LDBRNc 4   
+   LDBRNc 4
 NEWSYM FxOpd45A1    ; LDB RN load byte from RAM
    LDBRNc 5
 NEWSYM FxOpd46A1    ; LDB RN load byte from RAM
-   LDBRNc 6   
+   LDBRNc 6
 NEWSYM FxOpd47A1    ; LDB RN load byte from RAM
-   LDBRNc 7   
+   LDBRNc 7
 NEWSYM FxOpd48A1    ; LDB RN load byte from RAM
    LDBRNc 8
 NEWSYM FxOpd49A1    ; LDB RN load byte from RAM
@@ -937,7 +937,7 @@ NEWSYM FxOpd4CA1    ; RPIX   read color of the pixel with R1,R2 as x,y
 NEWSYM FxOpd4D      ; SWAP   swap upper and lower byte of a register    ; V
    mov eax,[esi]            ; Read Source
    FETCHPIPE
-   ror ax,8   
+   ror ax,8
    inc ebp                ; Increase program counter
    mov [SfxSignZero],eax
    mov [edi],eax            ; Write Destination
@@ -1552,35 +1552,35 @@ NEWSYM FxOpd7FA3    ; BICIRNc register & ~immediate
    BICIRNc 15 ^ 0FFFFh
 
 NEWSYM FxOpd80      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
-   MULTRNc 0 
+   MULTRNc 0
 NEWSYM FxOpd81      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
-   MULTRNc 1 
+   MULTRNc 1
 NEWSYM FxOpd82      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
-   MULTRNc 2 
+   MULTRNc 2
 NEWSYM FxOpd83      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
-   MULTRNc 3 
+   MULTRNc 3
 NEWSYM FxOpd84      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
-   MULTRNc 4 
+   MULTRNc 4
 NEWSYM FxOpd85      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
-   MULTRNc 5 
+   MULTRNc 5
 NEWSYM FxOpd86      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
-   MULTRNc 6 
+   MULTRNc 6
 NEWSYM FxOpd87      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
-   MULTRNc 7 
+   MULTRNc 7
 NEWSYM FxOpd88      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
-   MULTRNc 8 
+   MULTRNc 8
 NEWSYM FxOpd89      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
-   MULTRNc 9 
+   MULTRNc 9
 NEWSYM FxOpd8A      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
-   MULTRNc 10 
+   MULTRNc 10
 NEWSYM FxOpd8B      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
-   MULTRNc 11 
+   MULTRNc 11
 NEWSYM FxOpd8C      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
-   MULTRNc 12 
+   MULTRNc 12
 NEWSYM FxOpd8D      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
-   MULTRNc 13 
+   MULTRNc 13
 NEWSYM FxOpd8E      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
-   MULTRNc 14 
+   MULTRNc 14
 NEWSYM FxOpd8F      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
    FETCHPIPE
    mov ebx,ebp

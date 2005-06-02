@@ -244,7 +244,7 @@ void zstart ()
   asm_call(setnoise);
   asm_call(InitSPC);
 #endif
-	
+
   asm_call(allocmem);
 
   if (!soundon && (SPCDisable != 1))

@@ -1062,7 +1062,7 @@ void loadROM()
 {
   bool isCompressed = false, isZip = false;
 
-  EMUPause = false;  
+  EMUPause = false;
   curromspace = 0;
 
   maxromspace = 4194304;

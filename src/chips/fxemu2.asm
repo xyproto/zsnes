@@ -58,30 +58,30 @@ NEWSYM SfxR6,    dd 0     ; multiplier for fmult and lmult
 NEWSYM SfxR7,    dd 0     ; fixed point texel X position for merge
 NEWSYM SfxR8,    dd 0     ; fixed point texel Y position for merge
 NEWSYM SfxR9,    dd 0     ;
-NEWSYM SfxR10,   dd 0     ; 
+NEWSYM SfxR10,   dd 0     ;
 NEWSYM SfxR11,   dd 0     ; return address set by link
 NEWSYM SfxR12,   dd 0     ; loop counter
 NEWSYM SfxR13,   dd 0     ; loop point address
 NEWSYM SfxR14,   dd 0     ; rom address for getb, getbh, getbl, getbs
-NEWSYM SfxR15,   dd 0     ; program counter 
+NEWSYM SfxR15,   dd 0     ; program counter
 
 NEWSYM SfxSFR,   dd 0     ; status flag register (16bit)
 ;SFR status flag register bits:
-; 0   - 
+; 0   -
 ; 1   Z   Zero flag
 ; 2   CY  Carry flag
 ; 3   S   Sign flag
 ; 4   OV  Overflow flag
 ; 5   G   Go flag (set to 1 when the GSU is running)
 ; 6   R   Set to 1 when reading ROM using R14 address
-; 7   - 
+; 7   -
 ; 8   ALT1   Mode set-up flag for the next instruction
 ; 9   ALT2   Mode set-up flag for the next instruction
 ;10   IL  Immediate lower 8-bit flag
 ;11   IH  Immediate higher 8-bit flag
 ;12   B   Set to 1 when the WITH instruction is executed
-;13   - 
-;14   - 
+;13   -
+;14   -
 ;15   IRQ Set to 1 when GSU caused an interrupt
 ;                Set to 0 when read by 658c16
 
@@ -363,29 +363,29 @@ NEWSYM FxOp0F      ; BVS    branch on overflow set     ; Verified.
 NEWSYM FxOp10      ; TO RN  set register n as destination register
    TORN 0
 NEWSYM FxOp11      ; TO RN  set register n as destination register
-   TORN 1   
+   TORN 1
 NEWSYM FxOp12      ; TO RN  set register n as destination register
-   TORN 2   
+   TORN 2
 NEWSYM FxOp13      ; TO RN  set register n as destination register
-   TORN 3   
+   TORN 3
 NEWSYM FxOp14      ; TO RN  set register n as destination register
-   TORN 4   
+   TORN 4
 NEWSYM FxOp15      ; TO RN  set register n as destination register
-   TORN 5   
+   TORN 5
 NEWSYM FxOp16      ; TO RN  set register n as destination register
-   TORN 6   
+   TORN 6
 NEWSYM FxOp17      ; TO RN  set register n as destination register
-   TORN 7   
+   TORN 7
 NEWSYM FxOp18      ; TO RN  set register n as destination register
-   TORN 8   
+   TORN 8
 NEWSYM FxOp19      ; TO RN  set register n as destination register
-   TORN 9   
+   TORN 9
 NEWSYM FxOp1A      ; TO RN  set register n as destination register
-   TORN 10   
+   TORN 10
 NEWSYM FxOp1B      ; TO RN  set register n as destination register
-   TORN 11   
+   TORN 11
 NEWSYM FxOp1C      ; TO RN  set register n as destination register
-   TORN 12   
+   TORN 12
 NEWSYM FxOp1D      ; TO RN  set register n as destination register
    TORN 13
 NEWSYM FxOp1E      ; TO RN  set register n as destination register
@@ -587,21 +587,21 @@ NEWSYM FxOp4B      ; LDW RN load word from RAM
    LDWRN 11
 
 NEWSYM FxOp40A1    ; LDB RN load byte from RAM
-   LDBRN 0   
+   LDBRN 0
 NEWSYM FxOp41A1    ; LDB RN load byte from RAM
-   LDBRN 1 
+   LDBRN 1
 NEWSYM FxOp42A1    ; LDB RN load byte from RAM
-   LDBRN 2   
+   LDBRN 2
 NEWSYM FxOp43A1    ; LDB RN load byte from RAM
-   LDBRN 3   
+   LDBRN 3
 NEWSYM FxOp44A1    ; LDB RN load byte from RAM
-   LDBRN 4   
+   LDBRN 4
 NEWSYM FxOp45A1    ; LDB RN load byte from RAM
    LDBRN 5
 NEWSYM FxOp46A1    ; LDB RN load byte from RAM
-   LDBRN 6   
+   LDBRN 6
 NEWSYM FxOp47A1    ; LDB RN load byte from RAM
-   LDBRN 7   
+   LDBRN 7
 NEWSYM FxOp48A1    ; LDB RN load byte from RAM
    LDBRN 8
 NEWSYM FxOp49A1    ; LDB RN load byte from RAM
@@ -1036,7 +1036,7 @@ NEWSYM FxOp4CA1    ; RPIX   read color of the pixel with R1,R2 as x,y
 NEWSYM FxOp4D      ; SWAP   swap upper and lower byte of a register    ; V
    mov eax,[esi]            ; Read Source
    FETCHPIPE
-   ror ax,8   
+   ror ax,8
    inc ebp                ; Increase program counter
    mov [SfxSignZero],eax
    mov [edi],eax            ; Write Destination
@@ -1650,35 +1650,35 @@ NEWSYM FxOp7FA3    ; BICIRN register & ~immediate
    BICIRN 15 ^ 0FFFFh
 
 NEWSYM FxOp80      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 0 
+   MULTRN 0
 NEWSYM FxOp81      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 1 
+   MULTRN 1
 NEWSYM FxOp82      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 2 
+   MULTRN 2
 NEWSYM FxOp83      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 3 
+   MULTRN 3
 NEWSYM FxOp84      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 4 
+   MULTRN 4
 NEWSYM FxOp85      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 5 
+   MULTRN 5
 NEWSYM FxOp86      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 6 
+   MULTRN 6
 NEWSYM FxOp87      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 7 
+   MULTRN 7
 NEWSYM FxOp88      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 8 
+   MULTRN 8
 NEWSYM FxOp89      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 9 
+   MULTRN 9
 NEWSYM FxOp8A      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 10 
+   MULTRN 10
 NEWSYM FxOp8B      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 11 
+   MULTRN 11
 NEWSYM FxOp8C      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 12 
+   MULTRN 12
 NEWSYM FxOp8D      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 13 
+   MULTRN 13
 NEWSYM FxOp8E      ; MULTRN 8 bit to 16 bit signed multiply, register * register
-   MULTRN 14 
+   MULTRN 14
 NEWSYM FxOp8F      ; MULTRN 8 bit to 16 bit signed multiply, register * register
    FETCHPIPE
    mov ebx,ebp

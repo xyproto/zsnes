@@ -117,7 +117,7 @@ NEWSYM _2xSaISuper2xSaILine
          mov ebx, [ebp+srcPitch]			;ebx contains the source pitch
          mov ecx, [ebp+width]				;ecx contains the number of pixels to process
          ; eax now points to colorB1
-         sub eax, ebx						;eax points to B1 which is the base 
+         sub eax, ebx						;eax points to B1 which is the base
 
 ; Main Loop
 .Loop:   push ecx
@@ -168,7 +168,7 @@ NEWSYM _2xSaISuper2xSaILine
 
          packsswb mm7, mm7
          movd ecx, mm7
-         test ecx, ecx				
+         test ecx, ecx
          jz near .SKIP_PROCESS		;no, so we can skip
 
          ;End Delta
@@ -455,7 +455,7 @@ NEWSYM _2xSaISuper2xSaILine
 
          ;Start the ASSEMBLY !!!	eh... compose all the results together to form the final image...
 
-		 
+
          movq mm0, [eax+ebx+color5]
          movq mm1, [eax+ebx+ebx+color2]
          movq mm2, mm0
@@ -531,7 +531,7 @@ NEWSYM _2xSaISuper2xSaILine
 		 pand mm6, mm2
 		 por mm7, mm6
 
-		 
+
 		 movq mm6, mm7
 		 pcmpeqw mm6, mm5
 		 pand mm7, mm0
@@ -542,8 +542,8 @@ NEWSYM _2xSaISuper2xSaILine
 		 movq [final1a], mm7			;finished  1a
 
 
-	 
-	     ;--------------------------------		 
+
+	     ;--------------------------------
 
 		 movq mm7, [Mask35]
 		 push eax
@@ -583,7 +583,7 @@ NEWSYM _2xSaISuper2xSaILine
 		 pand mm6, mm2
 		 por mm7, mm6
 
-		 
+
 		 movq mm6, mm7
 		 pcmpeqw mm6, mm5
 		 pand mm7, mm0
@@ -595,7 +595,7 @@ NEWSYM _2xSaISuper2xSaILine
 
 
 		 ;--------------------------------------------
- 
+
 
 %ifdef dfhsdfhsdahdsfhdsfh
                    if (color6 == color3 && color3 == colorA1 && color2 != colorA2 && color3 != colorA0)
@@ -675,7 +675,7 @@ NEWSYM _2xSaISuper2xSaILine
 		 movq [final2b], mm0
 
 		 ;-----------------------------------
-		 
+
 
 		 pxor mm7, mm7
 		 movq mm0, [eax+colorB0]
@@ -732,7 +732,7 @@ NEWSYM _2xSaISuper2xSaILine
 		 por mm0, mm3
 		 por mm0, mm2
 		 movq [final1b], mm0
-		 
+
 	  ;---------
 
 		 movq mm0, [final1a]
@@ -2023,7 +2023,7 @@ Bits565:
          mov [eax+4], edx
          mov eax, 0
          jmp end1
-end1:	
+end1:
          pop edx
 	 mov esp, ebp
 	 pop ebp

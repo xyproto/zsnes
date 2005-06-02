@@ -208,7 +208,7 @@ NEWSYM InitVesa2
 	jnc .int1ok
 	    mov edx,.noint1message
             jmp VESA2EXITTODOS
-	
+
 
 	.int1ok			; Real mode int successful!!!
 	mov eax,[RMREGS.eax]
@@ -222,7 +222,7 @@ NEWSYM InitVesa2
 	jz .vesadetected	; Check for presence of vesa
 	    mov edx,.novesamessage
             jmp VESA2EXITTODOS
-	
+
 
 	.vesadetected
 	cmp word[fs:0004],200h
@@ -608,7 +608,7 @@ NEWSYM InitVesa2
 	jz .modesetok
             mov edx,.unableset
             jmp VESA2EXITTODOS               ; Failure!!!
-	
+
 	.modesetok
 ;******************************* EXTRA BIT ****************************
 

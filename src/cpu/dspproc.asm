@@ -590,7 +590,7 @@ NEWSYM AdjustFrequency
 
 .fir_mmx
       mov ebx, DSPInterpolate_8
-	
+
 .notgaussian
       mov [DSPInterpolate],ebx
 
@@ -4876,7 +4876,7 @@ NEWSYM EchoStereo
     jne near %2
     mov ebp,%1
     mov dword[powhack],1<<%1
-	
+
     mov eax,%1
     dec al
     cmp al,0FFh
@@ -5227,10 +5227,10 @@ NEWSYM ProcessSoundBuffer
     cmp byte[EMUPause],1
     jne .nopause
     ret
-.nopause    
+.nopause
 
     ; Process the sound :I
-	
+
     ProcessVoiceHandler16 0,ProcessVoice116,1,254
 NEWSYM ProcessVoice116
     ProcessVoiceHandler16 1,ProcessVoice216,2,253

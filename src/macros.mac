@@ -76,14 +76,14 @@ section .text
 
 
 ; macro more or less similar to STUB_FUNCTION
-; you can call it without argument, 
+; you can call it without argument,
 ; or with a string arg which will be displayed
 %macro STUB_ASM 0-1 "STUB_ASM"
 %ifndef __PRINTF__
 %define __PRINTF__
 EXTSYM printf
 %endif
-[section .data] 
+[section .data]
 %%string: db %1, 0
 %%strformat: db '%s in %s line %u',13, 10,0
 %%filename: db __FILE__, 0
@@ -111,7 +111,7 @@ popad
 %define __PRINTF__
 EXTSYM printf
 %endif
-[section .data] 
+[section .data]
 %%strformat: db '%s in %s line %u',13, 10,0
 %%filename: db __FILE__, 0
 __SECT__
@@ -126,7 +126,7 @@ push eax
 mov eax, %%strformat
 push eax
 call printf
-add esp, 16 
+add esp, 16
 popad
 %endmacro
 
@@ -136,7 +136,7 @@ popad
 %define __PRINTF__
 EXTSYM printf
 %endif
-[section .data] 
+[section .data]
 %%strformat: db '%x in %s line %u',13, 10,0
 %%filename: db __FILE__, 0
 __SECT__

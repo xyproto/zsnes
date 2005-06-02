@@ -40,7 +40,7 @@ class ISequentialInStream_Array : public ISequentialInStream
   unsigned int size;
 public:
   ISequentialInStream_Array(const char *Adata, unsigned Asize) : data(Adata), size(Asize) { }
-  
+
   HRESULT Read(void *aData, UINT32 aSize, UINT32 *aProcessedSize);
 };
 
@@ -49,7 +49,7 @@ class ISequentialInStream_String : public ISequentialInStream
   std::string& data;
 public:
   ISequentialInStream_String(std::string& Adata) : data(Adata) { }
-  
+
   HRESULT Read(void *aData, UINT32 aSize, UINT32 *aProcessedSize);
 };
 
@@ -58,7 +58,7 @@ class ISequentialInStream_Istream : public ISequentialInStream
   std::istream& data;
 public:
   ISequentialInStream_Istream(std::istream& Adata) : data(Adata) { }
-  
+
   HRESULT Read(void *aData, UINT32 aSize, UINT32 *aProcessedSize);
 };
 
@@ -73,7 +73,7 @@ public:
   virtual HRESULT Write(const void *, UINT32, UINT32 *) = 0;
 };
 
- 
+
 class ISequentialOutStream_Array : public ISequentialOutStream
 {
   char *data;
@@ -120,7 +120,7 @@ public:
 
 class ISequentialStreamCRC32
 {
-protected:  
+protected:
   unsigned int crc32;
 public:
   ISequentialStreamCRC32() : crc32(0) {}
@@ -130,17 +130,17 @@ public:
 
 class ISequentialInStreamCRC32_Array : public ISequentialInStream_Array, public ISequentialStreamCRC32
 {
-public:  
+public:
   ISequentialInStreamCRC32_Array(const char *Adata, unsigned Asize) : ISequentialInStream_Array(Adata, Asize) { }
-  
+
   HRESULT Read(void *aData, UINT32 aSize, UINT32 *aProcessedSize);
 };
 
 class ISequentialInStreamCRC32_String : public ISequentialInStream_String, public ISequentialStreamCRC32
 {
-public:  
+public:
   ISequentialInStreamCRC32_String(std::string& Adata) : ISequentialInStream_String(Adata) { }
-  
+
   HRESULT Read(void *aData, UINT32 aSize, UINT32 *aProcessedSize);
 };
 
@@ -148,16 +148,16 @@ class ISequentialInStreamCRC32_Istream : public ISequentialInStream_Istream, pub
 {
 public:
   ISequentialInStreamCRC32_Istream(std::istream& Adata) : ISequentialInStream_Istream(Adata) { }
-  
+
   HRESULT Read(void *aData, UINT32 aSize, UINT32 *aProcessedSize);
 };
 
- 
+
 class ISequentialOutStreamCRC32_Array : public ISequentialOutStream_Array, public ISequentialStreamCRC32
 {
 public:
   ISequentialOutStreamCRC32_Array(char *Adata, unsigned Asize) : ISequentialOutStream_Array(Adata, Asize) { }
-  
+
   HRESULT Write(const void *aData, UINT32 aSize, UINT32 *aProcessedSize);
 };
 
@@ -165,7 +165,7 @@ class ISequentialOutStreamCRC32_String : public ISequentialOutStream_String, pub
 {
 public:
   ISequentialOutStreamCRC32_String(std::string& Adata) : ISequentialOutStream_String(Adata) { }
-  
+
   HRESULT Write(const void *aData, UINT32 aSize, UINT32 *aProcessedSize);
 };
 
@@ -174,7 +174,7 @@ class ISequentialOutStreamCRC32_Ostream : public ISequentialOutStream_Ostream, p
 {
 public:
   ISequentialOutStreamCRC32_Ostream(std::ostream& Adata) : ISequentialOutStream_Ostream(Adata) { }
-  
+
   HRESULT Write(const void *aData, UINT32 aSize, UINT32 *aProcessedSize);
 };
 

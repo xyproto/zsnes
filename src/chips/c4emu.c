@@ -289,7 +289,7 @@ void C4Op0D()
 }
 
 #define READ_WORD(s) (*(unsigned short *) (s))
-void C4Op22()                
+void C4Op22()
 {
   extern unsigned char *C4Ram;
   short angle1 = READ_WORD(C4Ram+0x1f8c) & 0x1ff;
@@ -298,7 +298,7 @@ void C4Op22()
   int tan2 = Tan(angle2);
   short y = READ_WORD(C4Ram+0x1f83) - READ_WORD(C4Ram+0x1f89);
   short left, right;
-  
+
   int j;
   for (j = 0; j < 225; j++, y++)
   {
@@ -311,11 +311,11 @@ void C4Op22()
       {
         left = 1;
         right = 0;
-      } 
+      }
       else if (left < 0)
       {
         left = 0;
-      } 
+      }
       else if (right < 0)
       {
         right = 0;
@@ -324,11 +324,11 @@ void C4Op22()
       {
         left = 255;
         right = 254;
-      } 
+      }
       else if (left > 255)
       {
         left = 255;
-      } 
+      }
       else if (right > 255)
       {
         right = 255;

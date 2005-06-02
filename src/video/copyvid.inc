@@ -341,7 +341,7 @@ PreTripleBuffer:
 .failed
    mov byte[Triplebufen],0
    ret
-%endif 
+%endif
 
 SECTION .data
 ; Please don't break this again. :)
@@ -405,7 +405,7 @@ ScreenShow:
     je near copyvesa2320x480x8b
     cmp byte[cvidmode],10
     je near copyvesa2320x480x16b
-    cmp byte[cvidmode],11       
+    cmp byte[cvidmode],11
     je near copyvesa2512x384x8b
     cmp byte[cvidmode],12
     je near copyvesa2512x384x16b
@@ -1015,7 +1015,7 @@ NEWSYM copyvesa2320x480x8b
     ret
 
 
-;copyvesa2320x480x8ng:                                    
+;copyvesa2320x480x8ng:
 ;    jmp .mode7hires
 ;    mov ebx,1
 ;.loopa
@@ -1289,7 +1289,7 @@ NEWSYM copyvesa2800x600x16b
     add edi,144*2+800*2+144*2
     dec dl
     jnz near .interpolate
-    
+
 .done
     pop es
     ret

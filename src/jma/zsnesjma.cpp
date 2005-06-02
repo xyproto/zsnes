@@ -35,10 +35,10 @@ void load_jma_file(const char *filename)
   {
     JMA::jma_open JMAFile(filename);
     vector<JMA::jma_public_file_info> file_info = JMAFile.get_files_info();
-    
+
     string our_file_name;
     size_t our_file_size = 0;
-      
+
     for (vector<JMA::jma_public_file_info>::iterator i = file_info.begin(); i != file_info.end(); i++)
     {
       //Check for valid ROM based on size
@@ -48,14 +48,14 @@ void load_jma_file(const char *filename)
         our_file_size = i->size;
       }
     }
-    
+
     if (!our_file_size)
     {
       return;
     }
-    
+
     JMAFile.extract_file(our_file_name, romdata);
-      
+
     curromspace = our_file_size;
   }
   catch (JMA::jma_errors jma_error)

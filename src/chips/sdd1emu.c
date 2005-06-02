@@ -32,8 +32,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * of thanks and credit for figuring this out.
  *
  * Andreas says:
- * The author is greatly indebted with The Dumper, without whose help and 
- * patience providing him with real S-DD1 data the research had never been 
+ * The author is greatly indebted with The Dumper, without whose help and
+ * patience providing him with real S-DD1 data the research had never been
  * possible. He also wish to note that in the very beggining of his research,
  * Neviksti had done some steps in the right direction. By last, the author is
  * indirectly indebted to all the people that worked and contributed in the
@@ -163,7 +163,7 @@ INLINE unsigned char ProbGetBit(unsigned char context){
 
 INLINE unsigned char GetBit(unsigned char cur_bitplane){
     unsigned char bit;
-    
+
     bit=ProbGetBit(((cur_bitplane&1)<<4)
                    | ((prev_bits[cur_bitplane]&high_context_bits)>>5)
                    | (prev_bits[cur_bitplane]&low_context_bits));

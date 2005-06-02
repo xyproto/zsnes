@@ -27,7 +27,7 @@ HRESULT ISequentialInStream_Array::Read(void *aData, UINT32 aSize, UINT32 *aProc
   if (aSize > size)
   {
     aSize = size;
-  }  
+  }
 
   *aProcessedSize = aSize;
   memcpy(aData, data, aSize);
@@ -57,7 +57,7 @@ HRESULT ISequentialInStream_String::Read(void *aData, UINT32 aSize, UINT32 *aPro
   if (aSize > data.size())
   {
     aSize = data.size();
-  }  
+  }
 
   *aProcessedSize = aSize;
   memcpy(aData, data.c_str(), aSize);

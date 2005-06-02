@@ -27,16 +27,16 @@ char *VERSION_STR;
 //Place compilation date at the end of VERSION_STR
 void placedate()
 {
-  strcpy(VERSION_STR + 
-         strlen(VERSION_STR) - 
+  strcpy(VERSION_STR +
+         strlen(VERSION_STR) -
          strlen(__DATE__), __DATE__);
 }
 
 //Place compilation time at the end of VERSION_STR
 void placetime()
 {
-  strcpy(VERSION_STR + 
-         strlen(VERSION_STR) - 
+  strcpy(VERSION_STR +
+         strlen(VERSION_STR) -
          strlen(__TIME__), __TIME__);
 }
 

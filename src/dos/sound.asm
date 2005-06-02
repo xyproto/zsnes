@@ -466,7 +466,7 @@ NEWSYM SBHandler16
     inc dword[sbhandexec]
 
     cmp byte [vibracard], 1
-    je  .donotcallcmdapos      
+    je  .donotcallcmdapos
     call GetCDMAPos
 .donotcallcmdapos
 

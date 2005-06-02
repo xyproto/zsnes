@@ -2200,13 +2200,13 @@ DisplayGUIInputClick:
 .skipscrol
     ;x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
     GUIWinControl 5,36,107,34+5*8,GUIBlankVar,GUIcurrentinputviewloc,GUINumValue,35,8,GUIcurrentinputcursloc,4,3,0
-    
+
     GUIPHoldbutton 125,34,155,45,14            ; Buttons
 %ifdef __MSDOS__
     GUIPHoldbutton 125,50,185,61,15
 %endif
     GUIPHoldbutton 125,66,185,77,40
-    
+
     mov edi,pl1selk
     mov dword[keycontrolval],pl1contrl
     cmp byte[cplayernum],1
@@ -2815,7 +2815,7 @@ DisplayGUIOptnsClick:
     GUIClickCButton 12,63,byte[GUIClick]
     GUIClickCButton 12,73,byte[JoyPad1Move]
     GUIClickCButton 124,23,byte[GUIEnableTransp]
-    GUIClickCButtonI 124,33,byte[FilteredGUI]    
+    GUIClickCButtonI 124,33,byte[FilteredGUI]
     GUIClickCButton6 124,43,byte[GUIEffect],1
     GUIClickCButton6 124,53,byte[GUIEffect],2
     GUIClickCButton6 124,63,byte[GUIEffect],3
@@ -3115,7 +3115,7 @@ DisplayGUICheatSearchClick:
     je near .view
     cmp byte[CheatWinMode],3
     je near .add
-    
+
     GUIPHoldbutton 95,140,140,152,50         ; Main Menu
     GUIPButtonHole 11,28,byte[CheatSrcByteSize],0
     GUIPButtonHole 11,38,byte[CheatSrcByteSize],1
@@ -3126,18 +3126,18 @@ DisplayGUICheatSearchClick:
     GUIPButtonHole 11,113,byte[CheatSrcSearchType],0
     GUIPButtonHole 11,123,byte[CheatSrcSearchType],1
     ret
-    
+
 .incheatmode                            ; Exact Value
     GUIPHoldbutton 30,140,80,152,51
     cmp byte[CheatSearchStatus],1
     jne near .cheatsearching
     jmp .nosearch
-    
+
 .cheatsearching                         ; Return and Re-Search
     cmp byte[CheatSrcSearchType],1
     je near .cheatsearchingcomp
     jmp .searched
-    
+
 .cheatsearchingcomp                     ; Select Comparison
     GUIPButtonHole 11,33,byte[CheatCompareValue],0
     GUIPButtonHole 11,43,byte[CheatCompareValue],1
@@ -3162,11 +3162,11 @@ DisplayGUICheatSearchClick:
 .skipscrol
     ; x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
     GUIWinControl 5,23,171,21+12*7,GUIBlankVar,GUIcurrentchtsrcviewloc,NumCheatSrc,22,7,GUIcurrentchtsrccursloc,5,13,30
-    
+
     GUIPHoldbutton 70,140,130,152,54         ; Return/Add Buttons
     GUIPHoldbutton 140,140,180,152,55
     ret
-    
+
 ;    DrawSlideBarWin 13,173,28,[GUIcurrentchtsrcviewloc],[NumCheatSrc],12,73,GUICSStA
 ;    DrawGUIWinBox 13,5,20,171,108,167
 

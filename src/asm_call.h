@@ -22,17 +22,17 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
 /*
-Introducing 'the "DJGPP/MinGW/MSVC/GCC on *nix compatible" call asm function 
+Introducing 'the "DJGPP/MinGW/MSVC/GCC on *nix compatible" call asm function
 safely from C/C++' macro function!
 
 Usage:
        asm_call( func_name );
-       
+
 That's all there is to it!!!
 
 
 Note: Make sure this is used on a line by itself if the file will ever be
-compiled with MSVC, since it's preproccessor won't parse the inline 
+compiled with MSVC, since it's preproccessor won't parse the inline
 assembly correctly if other stuff are on the line
 
 Note: This will not work with GCC when using the parameter -MASM=intel

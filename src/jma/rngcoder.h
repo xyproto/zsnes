@@ -43,7 +43,7 @@ public:
       m_Range <<= 8;
     }
   }
-  
+
   void Init(ISequentialInStream *aStream)
   {
     m_Stream.Init(aStream);
@@ -71,7 +71,7 @@ public:
     m_Range >>= aNumTotalBits;
     UINT32 aThreshold = m_Code / m_Range;
     m_Code -= aThreshold * m_Range;
-    
+
     Normalize();
     return aThreshold;
   }
@@ -88,7 +88,7 @@ public:
   UINT32 DecodeDirectBits(UINT32 aNumTotalBits)
   {
     UINT32 aRange = m_Range;
-    UINT32 aCode = m_Code;        
+    UINT32 aCode = m_Code;
     UINT32 aResult = 0;
     for (UINT32 i = aNumTotalBits; i > 0; i--)
     {
@@ -109,7 +109,7 @@ public:
       if (aRange < kTopValue)
       {
         aCode = (aCode << 8) | m_Stream.ReadByte();
-        aRange <<= 8; 
+        aRange <<= 8;
       }
     }
     m_Range = aRange;

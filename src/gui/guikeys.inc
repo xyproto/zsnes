@@ -820,16 +820,16 @@ GUISaveKeys:
     GUIKeyCheckbox PauseLoad,'P'
     GUIKeyCheckbox PauseRewind,'R'
     ret
-    
+
 GUISpeedKeys:
     cmp dh,'a'             ; Setup
     jb .nocap
     cmp dh,'z'
     ja .nocap
     sub dh,'z'-'Z'
-.nocap    
+.nocap
     GUIKeyCheckbox FastFwdToggle,'T'   ; Checkbox
-    
+
     cmp dh,'A'                 ; Framerate Checkboxes
     jne .noautofr
     mov byte[FPSOn],0
@@ -886,7 +886,7 @@ GUIGUIOptnsKeys:
     GUIKeyCheckbox GUIClick,'C'
     GUIKeyCheckbox JoyPad1Move,'U'
     GUIKeyCheckbox GUIEnableTransp,'T'
-    
+
     cmp dh,'F'
     jne .guioptn8
     xor byte[FilteredGUI],1
@@ -1527,7 +1527,7 @@ GUIMovieKeys:
     ja .nocap
     sub dh,'z'-'Z'
 .nocap
-    
+
     GUIKeyButtonHole CMovieExt,'v','0'         ; Select Radio Buttons
     GUIKeyButtonHole CMovieExt,'1','1'
     GUIKeyButtonHole CMovieExt,'2','2'
@@ -1582,7 +1582,7 @@ GUIComboKeys:
     ret
 
 GUICheatKeys:
-    cmp dword[GUIcurrentcheatwin],1 
+    cmp dword[GUIcurrentcheatwin],1
     je near .textboxa
     cmp dword[GUIcurrentcheatwin],2
     je near .textboxb
@@ -1763,7 +1763,7 @@ GUICheatKeys:
 
 
 ;Enter Code Input Box
-.textboxa                      
+.textboxa
     cmp byte[GUICheatPosA],0
     je near .nobacksp
     cmp dh,9
@@ -2039,7 +2039,7 @@ GUICheatSearchKeys:
     CompareKeyMacro 'H',CheatSrcByteBase,1
     CompareKeyMacro 'E',CheatSrcSearchType,0
     CompareKeyMacro 'C',CheatSrcSearchType,1
-    
+
     cmp dh,13                ; Start Button
     je .start
     cmp dh,'S'
@@ -2049,7 +2049,7 @@ GUICheatSearchKeys:
     ret
 .notstart
     ret
-    
+
 .search                           ; Shortcuts for Select Comparison
     cmp byte[CheatSrcSearchType],1
     je .compare
@@ -2082,7 +2082,7 @@ GUICheatSearchKeys:
     mov byte[CheatCompareValue],3
 .notnotequalthan
 
-%ifdef __LINUX__          ; Select with Arrow Keys 
+%ifdef __LINUX__          ; Select with Arrow Keys
     cmp al,90
     je  .yesmoveup
     cmp dword[numlockptr],1
@@ -2113,8 +2113,8 @@ GUICheatSearchKeys:
     cmp byte[CheatCompareValue],3
     je .nomovedown
     inc byte[CheatCompareValue]
-    
-    
+
+
 .nomovedown                ; Restart/View/Search Buttons
     cmp dh,'R'
     jne .notrestart
@@ -2135,7 +2135,7 @@ GUICheatSearchKeys:
     call CheatCodeSearchProcess
 .nosearchprocess
     ret
-    
+
 .view                            ; View
     cmp dword[NumCheatSrc],0     ; Return Hotkey
     jne .nozero
@@ -2349,7 +2349,7 @@ GUICheatSearchKeys:
 
 ; Allows you to use the arrow keys to select a state number, and Enter to pick
 GUIStateSelKeys:
-    cmp al,13 
+    cmp al,13
     jne .noenter
     xor eax,eax
     mov al,[GUIwinptr]
@@ -2519,7 +2519,7 @@ GUIResetKeys:
     mov [GUIcmenupos],al
 .notnoreset
     ret
-    
+
 ; Allows you to select boxes with the arrow keys, Enter to choose
 GUIStateKeys:
 %ifdef __LINUX__

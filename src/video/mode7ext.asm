@@ -51,7 +51,7 @@ NEWSYM drawmode7extbg
     and bx,0001111111111111b    ; 13 -> 16 bit signed value
     test bx,0001000000000000b
     jz .nonega
-    or bx,1110000000000000b    
+    or bx,1110000000000000b
 .nonega
     mov [.cxloc],bx
     mov bx,dx

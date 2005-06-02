@@ -5,7 +5,7 @@
 #ifdef __WIN32__
 	#include <windows.h>
 	#include <sys/stat.h>
-	
+
 	#ifdef __WIN32DBG__
 		#include <crtdbg.h>
 	#endif
@@ -42,7 +42,7 @@ int Png_Dump(const char * filename, unsigned short width, unsigned short height,
 	{
 		return (-1);
 	}
-	
+
 	fake_pal.red = 0;
 	fake_pal.green = 0;
 	fake_pal.blue = 0;
@@ -52,14 +52,14 @@ int Png_Dump(const char * filename, unsigned short width, unsigned short height,
 		user_error_fn*/NULL, NULL/*user_warning_fn*/);
 		if (!png_ptr)
 			return (-1);
-						
+
 	/*set png I/O source.*/
 	png_init_io(png_ptr, fp);
-						
+
 	/* set the zlib compression level */
 	png_set_compression_level(png_ptr,
 		Z_BEST_COMPRESSION);
-	
+
 	/* set other zlib parameters */
 	png_set_compression_mem_level(png_ptr, 8);
 	png_set_compression_strategy(png_ptr,
@@ -77,12 +77,12 @@ int Png_Dump(const char * filename, unsigned short width, unsigned short height,
 			return (-1);
 	}
 
-	
+
 	/*set a lot of image info (code adapted from libpng documentation!)*/
 	png_set_IHDR(png_ptr, info_ptr, width, height,
 		8, PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE,
 		PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-	
+
 	info_ptr->color_type=PNG_COLOR_TYPE_RGB_ALPHA;
 
 	/*Allocate an array of scanline pointers*/
@@ -107,10 +107,10 @@ int Png_Dump(const char * filename, unsigned short width, unsigned short height,
 
 	/*close file*/
 	fclose(fp);
-	
+
 	/*Destroy PNG structs*/
 	png_destroy_write_struct(&png_ptr, &info_ptr);
-	
+
 	/*clean up dynamically allocated RAM.*/
 	free(row_pointers);
 

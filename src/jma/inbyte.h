@@ -39,7 +39,7 @@ class CInByte
 public:
   CInByte(UINT32 aBufferSize = 0x100000);
   ~CInByte();
-  
+
   void Init(ISequentialInStream *aStream);
 
   bool ReadByte(BYTE &aByte)

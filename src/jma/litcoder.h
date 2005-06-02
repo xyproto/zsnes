@@ -63,7 +63,7 @@ public:
       // UINT32 aBit = m_Decoders[1 + aMatchBit][aSymbol].Decode(aRangeDecoder);
       // aSymbol = (aSymbol << 1) | aBit;
       UINT32 aBit;
-      RC_GETBIT2(kNumMoveBits, m_Decoders[1 + aMatchBit][aSymbol].m_Probability, aSymbol, 
+      RC_GETBIT2(kNumMoveBits, m_Decoders[1 + aMatchBit][aSymbol].m_Probability, aSymbol,
           aBit = 0, aBit = 1)
       if (aMatchBit != aBit)
       {
@@ -91,7 +91,7 @@ public:
   CDecoder(): m_Coders(0) {}
   ~CDecoder()  { Free(); }
   void Free()
-  { 
+  {
     delete []m_Coders;
     m_Coders = 0;
   }

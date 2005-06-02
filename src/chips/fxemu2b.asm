@@ -188,29 +188,29 @@ NEWSYM FxOpb0F      ; BVS    branch on overflow set     ; Verified.
 NEWSYM FxOpb10      ; TO RN  set register n as destination register
    TORNb 0
 NEWSYM FxOpb11      ; TO RN  set register n as destination register
-   TORNb 1   
+   TORNb 1
 NEWSYM FxOpb12      ; TO RN  set register n as destination register
-   TORNb 2   
+   TORNb 2
 NEWSYM FxOpb13      ; TO RN  set register n as destination register
-   TORNb 3   
+   TORNb 3
 NEWSYM FxOpb14      ; TO RN  set register n as destination register
-   TORNb 4   
+   TORNb 4
 NEWSYM FxOpb15      ; TO RN  set register n as destination register
-   TORNb 5   
+   TORNb 5
 NEWSYM FxOpb16      ; TO RN  set register n as destination register
-   TORNb 6   
+   TORNb 6
 NEWSYM FxOpb17      ; TO RN  set register n as destination register
-   TORNb 7   
+   TORNb 7
 NEWSYM FxOpb18      ; TO RN  set register n as destination register
-   TORNb 8   
+   TORNb 8
 NEWSYM FxOpb19      ; TO RN  set register n as destination register
-   TORNb 9   
+   TORNb 9
 NEWSYM FxOpb1A      ; TO RN  set register n as destination register
-   TORNb 10   
+   TORNb 10
 NEWSYM FxOpb1B      ; TO RN  set register n as destination register
-   TORNb 11   
+   TORNb 11
 NEWSYM FxOpb1C      ; TO RN  set register n as destination register
-   TORNb 12   
+   TORNb 12
 NEWSYM FxOpb1D      ; TO RN  set register n as destination register
    TORNb 13
 NEWSYM FxOpb1E      ; TO RN  set register n as destination register
@@ -504,29 +504,29 @@ NEWSYM FxOpc0F      ; BVS    branch on overflow set     ; Verified.
 NEWSYM FxOpc10      ; TO RN  set register n as destination register
    TORNc 0
 NEWSYM FxOpc11      ; TO RN  set register n as destination register
-   TORNc 1   
+   TORNc 1
 NEWSYM FxOpc12      ; TO RN  set register n as destination register
-   TORNc 2   
+   TORNc 2
 NEWSYM FxOpc13      ; TO RN  set register n as destination register
-   TORNc 3   
+   TORNc 3
 NEWSYM FxOpc14      ; TO RN  set register n as destination register
-   TORNc 4   
+   TORNc 4
 NEWSYM FxOpc15      ; TO RN  set register n as destination register
-   TORNc 5   
+   TORNc 5
 NEWSYM FxOpc16      ; TO RN  set register n as destination register
-   TORNc 6   
+   TORNc 6
 NEWSYM FxOpc17      ; TO RN  set register n as destination register
-   TORNc 7   
+   TORNc 7
 NEWSYM FxOpc18      ; TO RN  set register n as destination register
-   TORNc 8   
+   TORNc 8
 NEWSYM FxOpc19      ; TO RN  set register n as destination register
-   TORNc 9   
+   TORNc 9
 NEWSYM FxOpc1A      ; TO RN  set register n as destination register
-   TORNc 10   
+   TORNc 10
 NEWSYM FxOpc1B      ; TO RN  set register n as destination register
-   TORNc 11   
+   TORNc 11
 NEWSYM FxOpc1C      ; TO RN  set register n as destination register
-   TORNc 12   
+   TORNc 12
 NEWSYM FxOpc1D      ; TO RN  set register n as destination register
    TORNc 13
 NEWSYM FxOpc1E      ; TO RN  set register n as destination register

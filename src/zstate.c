@@ -299,13 +299,13 @@ void RestoreCVFrame()
     if (PauseRewind || EMUPause)
     {
       PauseFrameMode = EMUPause = true;
-    }  
+    }
   }
 
   copy_state_data(RewindBufferPos, memcpyrinc, csm_load_rewind);
 
   ClearCacheCheck();
-  
+
   RewindTimer = ActualRewindFrames;
 }
 
@@ -601,7 +601,7 @@ void statesaver()
   INSERT_POSITION_NUMBER(txtsavemsg, txtsavenum);
   INSERT_POSITION_NUMBER(txtrrsvmsg, txtrrsvnum);
 
-   
+
   //Save State code
   #ifdef __LINUX__
   SRAMChdir();
@@ -856,14 +856,14 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
   static unsigned char *txtconvnum = 0;
   static unsigned char *txtnfndnum = 0;
   static unsigned char *txtrrldnum = 0;
-  
+
   //Get the state number
   INSERT_POSITION_NUMBER(txtloadmsg, txtloadnum);
   INSERT_POSITION_NUMBER(txtconvmsg, txtconvnum);
   INSERT_POSITION_NUMBER(txtnfndmsg, txtnfndnum);
   INSERT_POSITION_NUMBER(txtrrldmsg, txtrrldnum);
 
-    
+
   #ifdef __LINUX__
   SRAMChdir();
   #endif
@@ -895,20 +895,20 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
     case 2:
       if (mzt_load(statename, false))
       {
-        
+
         Msgptr = txtrrldmsg;
         MessageOn = MsgCount;
 
         if (PauseLoad || EMUPause)
         {
           PauseFrameMode = EMUPause = true;
-        }        
+        }
       }
       else
       {
         Msgptr = txtnfndmsg;
       }
-      MessageOn = MsgCount;      
+      MessageOn = MsgCount;
       return;
   }
 
@@ -922,7 +922,7 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
     if (zst_load(fhandle, 0))
     {
       Msgptr = txtloadmsg; // 'STATE X LOADED.'
-      
+
       if (PauseLoad || EMUPause)
       {
         PauseFrameMode = EMUPause = true;

@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
 typedef NCompression::NArithmetic::CRangeDecoder CMyRangeDecoder;
-template <int aNumMoveBits> class CMyBitDecoder: 
+template <int aNumMoveBits> class CMyBitDecoder:
     public NCompression::NArithmetic::CBitDecoder<aNumMoveBits> {};
 
 #endif

@@ -960,7 +960,7 @@ void UpdateSound(void *userdata, Uint8 * stream, int len)
   {
     return;
   }
-  
+
   if (left <= len)
   {
     memcpy(stream, &Buffer[Buffer_head], left);
@@ -970,7 +970,7 @@ void UpdateSound(void *userdata, Uint8 * stream, int len)
     Buffer_fill -= left;
   }
 
-  if (len) 
+  if (len)
   {
     memcpy(stream, &Buffer[Buffer_head], len);
     Buffer_head += len;
@@ -1262,28 +1262,28 @@ void spc_sanitize_files() {
 
 pid_t spc_fork() {
   pid_t childpid;
-  
+
   if ((childpid = fork()) == -1) return -1;
-  
+
   //If this us the parent proccess nothing more to do
   if (childpid != 0) return childpid;
-  
+
   //This is the child proccess
-  
+
   spc_sanitize_files();
-  
+
   /*
   There actually is a bug here which I submitted to the authors of the book -Nach
-  
+
   The bug is as follows:
-  The parent returns the child proccess ID in event of success. 
+  The parent returns the child proccess ID in event of success.
   The child returns 0 on success if and only if it's spc_drop_privileges() call is successful.
-  It is possible that the parent will return with a pid > 0, while the child never returns 
+  It is possible that the parent will return with a pid > 0, while the child never returns
   from spc_fork thus causing a programming error.
 
-  The function should be rewritten that the parent doesn't return till it knows if the 
+  The function should be rewritten that the parent doesn't return till it knows if the
   child is able to return or not. And then return -1 or the child pid.
-  
+
   For out purposes in ZSNES to launch a browser, this bug does not effect us. But
   be careful if you copy this code to use somewhere else.
   */
@@ -1291,7 +1291,7 @@ pid_t spc_fork() {
   {
     exit(0);
   }
-  
+
   return 0;
 }
 
@@ -1304,21 +1304,21 @@ void LaunchBrowser(char *browser)
 void ZsnesPage()
 {
   if (spc_fork()) //If fork failed, or we are the parent
-  { 
+  {
     MouseX = 0;
-    MouseY = 0;    
+    MouseY = 0;
     return;
   }
-  
+
   //We are now the child proccess
-    
+
   //If any of these LaunchBrowser() calls return that means it failed and we should try the next one
   LaunchBrowser("mozilla");
   LaunchBrowser("mozilla-firefox");
   LaunchBrowser("konqueror");
   LaunchBrowser("lynx");
   LaunchBrowser("links");
-  
+
   exit(0); //All browser launches failed, oh well
 }
 

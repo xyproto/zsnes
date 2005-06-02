@@ -127,7 +127,7 @@ DWORD ZOpenFile()
 {
 	if(ZOpenMode==0)
 	{
-		if (TextFile) 
+		if (TextFile)
 			FILEHANDLE[CurrentHandle]=fopen(ZOpenFileName,"rb");
 		else
 			FILEHANDLE[CurrentHandle]=(FILE *)gzopen(ZOpenFileName,"rb");
@@ -140,11 +140,11 @@ DWORD ZOpenFile()
 	}
 	if(ZOpenMode==1)
 	{
-		if (TextFile) 
+		if (TextFile)
 			FILEHANDLE[CurrentHandle]=fopen(ZOpenFileName,"wb");
 		else
 			FILEHANDLE[CurrentHandle]=(FILE *)gzopen(ZOpenFileName,"wb");
-		if(FILEHANDLE[CurrentHandle]!=NULL)	       
+		if(FILEHANDLE[CurrentHandle]!=NULL)
 		{
 			CurrentHandle+=1;
 			return(CurrentHandle-1);
@@ -153,11 +153,11 @@ DWORD ZOpenFile()
 	}
 	if(ZOpenMode==2)
 	{
-		if (TextFile) 
+		if (TextFile)
 			FILEHANDLE[CurrentHandle]=fopen(ZOpenFileName,"r+b");
 		else
 			FILEHANDLE[CurrentHandle]=gzopen(ZOpenFileName,"r+b");
-		if(FILEHANDLE[CurrentHandle]!=NULL)	       
+		if(FILEHANDLE[CurrentHandle]!=NULL)
 		{
 			CurrentHandle+=1;
 			return(CurrentHandle-1);
@@ -184,7 +184,7 @@ DWORD ZFileSeek()
 		mode = SEEK_SET;
 	else if (ZFileSeekMode==1) {
 		mode = SEEK_END;
-		if (TextFile==0) 
+		if (TextFile==0)
 			printf("Warning : gzseek(SEEK_END) not supported");
 	} else return (0xFFFFFFFF);
 
@@ -206,8 +206,8 @@ DWORD ZFileRead()
 			     ZFileReadSize,
 			     FILEHANDLE[ZFileReadHandle]));
 	else
-		return(gzread(FILEHANDLE[ZFileReadHandle], 
-			      ZFileReadBlock, 
+		return(gzread(FILEHANDLE[ZFileReadHandle],
+			      ZFileReadBlock,
 			      ZFileReadSize));
 }
 
@@ -221,11 +221,11 @@ DWORD ZFileWrite()
 			     ZFileWriteSize,
 			     FILEHANDLE[ZFileWriteHandle]);
 	else
-		res = gzwrite(FILEHANDLE[ZFileWriteHandle], 
-			      ZFileWriteBlock, 
+		res = gzwrite(FILEHANDLE[ZFileWriteHandle],
+			      ZFileWriteBlock,
 			      ZFileWriteSize);
-		
-	if (res!=ZFileWriteSize) 
+
+	if (res!=ZFileWriteSize)
 		return(0xFFFFFFFF);
 
 	return(0);
@@ -262,7 +262,7 @@ DWORD ZFileMKDir()
 {
 #ifdef __LINUX__
   return(mkdir(MKPath, (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)));
-#else  
+#else
   return(mkdir(MKPath));
 #endif
 }
@@ -315,30 +315,30 @@ DWORD ZFileFindNext()
 
    if (globcur == -1)
    	return -1;
-   	
+
    globcur++;
    if (globcur > globbuf.gl_pathc) /* >= */
    	return -1;
-   
+
    if (globcur == globbuf.gl_pathc) {
    	/* this is the end, so just add it ourselves */
    	*(char *)(DTALocPos + 0x15) = 0x10;
    	strcpy((char *)DTALocPos + 0x1E, "..");
    	return 0;
    }
-   
+
    *(char *)(DTALocPos + 0x15) = 0;
 
    stat ( globbuf.gl_pathv[globcur], &filetype );
-   
+
    if(ZFileFindATTRIB&0x10 && !S_ISDIR ( filetype.st_mode )) return(ZFileFindNext());
    if(((ZFileFindATTRIB&0x10)==0) && S_ISDIR ( filetype.st_mode )) return(ZFileFindNext());
-   
+
    if ( S_ISDIR ( filetype.st_mode ))
      *(char *)(DTALocPos + 0x15) = 0x10;
 
    strcpy((char *)DTALocPos + 0x1E, globbuf.gl_pathv[globcur]);
-    
+
 #else
    TempFind=_findnext(FindFirstHandle,&FindDataStruct);
    if(TempFind==-1) return(-1);
@@ -365,7 +365,7 @@ DWORD ZFileFindFirst()
    	globfree(&globbuf);
    	globcur = -1;
    }
-   
+
    if (glob(ZFileFindPATH, 0, NULL, &globbuf))
    	return -1;
    globcur = 0;
@@ -378,10 +378,10 @@ DWORD ZFileFindFirst()
 #endif
 
    stat ( globbuf.gl_pathv[globcur], &filetype );
-   
+
    if(ZFileFindATTRIB&0x10 && !S_ISDIR ( filetype.st_mode )) return(ZFileFindNext());
    if(((ZFileFindATTRIB&0x10)==0) && S_ISDIR ( filetype.st_mode )) return(ZFileFindNext());
-   
+
    if ( S_ISDIR ( filetype.st_mode ))
      *(char *)(DTALocPos + 0x15) = 0x10;
 
@@ -482,12 +482,12 @@ void obtaindir()
   }
   strcat(zcfgdir, ZCFG_DIR);
   tmp = opendir(zcfgdir);
-  if (tmp == NULL) 
+  if (tmp == NULL)
   {
     MKPath = zcfgdir;
     ZFileMKDir();
-  } 
-  else 
+  }
+  else
   {
     closedir(tmp);
   }
@@ -495,7 +495,7 @@ void obtaindir()
   {
     strcpy(SRAMDir, zcfgdir);
   }
-  if (*LoadDir == 0) 
+  if (*LoadDir == 0)
   {
     getcwd(LoadDir, 512);
   }
@@ -515,7 +515,7 @@ void GetFilename()
   strcpy(&fnamest, tmp);
   fnamest = size;
   statefileloc-=(tmp-&fnamest);
-  
+
   tmp = &fnames;
   *tmp = '/';
   while (*tmp!=0) tmp++;
@@ -532,7 +532,7 @@ void pushdir()
 {
 	olddir = (char *)malloc(128);
 	getcwd(olddir, 128);
-}	
+}
 
 void popdir()
 {

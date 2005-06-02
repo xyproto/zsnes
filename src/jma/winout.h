@@ -27,7 +27,7 @@ namespace NWindow {
 
 // m_KeepSizeBefore: how mach BYTEs must be in buffer before m_Pos;
 // m_KeepSizeAfter: how mach BYTEs must be in buffer after m_Pos;
-// m_KeepSizeReserv: how mach BYTEs must be in buffer for Moving Reserv; 
+// m_KeepSizeReserv: how mach BYTEs must be in buffer for Moving Reserv;
 //                    must be >= aKeepSizeAfter; // test it
 
 class COut
@@ -55,14 +55,14 @@ public:
 
   void Init(ISequentialOutStream *aStream, bool aSolid = false);
   HRESULT Flush();
-  
+
   UINT32 GetCurPos() const { return m_Pos; }
   const BYTE *GetPointerToCurrentPos() const { return m_Buffer + m_Pos;};
 
   void CopyBackBlock(UINT32 aDistance, UINT32 aLen)
   {
     if (m_Pos >= m_PosLimit)
-      MoveBlockBackward();  
+      MoveBlockBackward();
     BYTE *p = m_Buffer + m_Pos;
     aDistance++;
     for(UINT32 i = 0; i < aLen; i++)
@@ -73,7 +73,7 @@ public:
   void PutOneByte(BYTE aByte)
   {
     if (m_Pos >= m_PosLimit)
-      MoveBlockBackward();  
+      MoveBlockBackward();
     m_Buffer[m_Pos++] = aByte;
   }
 

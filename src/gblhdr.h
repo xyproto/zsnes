@@ -33,7 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 	#include "fcntl.h"
 	#include <string.h>
 	#include <errno.h>
-		
+
 	#include "config.h"
 // General time.h checking
 
@@ -65,9 +65,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 	#endif
 
 // more standard stuff
-	
+
 	#include <stdlib.h>
-	#include <stdio.h>	
+	#include <stdio.h>
 	#include <stdarg.h>
 
 // unistd.h stuff
@@ -92,7 +92,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 	however it's a static value that we can just define */
 	#define getpagesize() 4096
 	#endif
-	
+
 	#ifdef __LINUX__
 	#include "SDL.h"
 	#include <limits.h>

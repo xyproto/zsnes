@@ -110,7 +110,7 @@ static void init_fire (void)
             for (x = 0; x < SCRW; x ++)
             {
                 pixel = fire_buffer [((y + 1) * SCRW) + x];
-    
+
 
                 if (pixel > 0)
                 {

@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #define RC_INIT_VAR                            \
   UINT32 aRange = aRangeDecoder->m_Range;      \
-  UINT32 aCode = aRangeDecoder->m_Code;        
+  UINT32 aCode = aRangeDecoder->m_Code;
 
 #define RC_FLUSH_VAR                          \
   aRangeDecoder->m_Range = aRange;            \
@@ -56,6 +56,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
     }}                                                             \
     RC_NORMALIZE
 
-#define RC_GETBIT(aNumMoveBits, aProb, aModelIndex) RC_GETBIT2(aNumMoveBits, aProb, aModelIndex, ; , ;)               
+#define RC_GETBIT(aNumMoveBits, aProb, aModelIndex) RC_GETBIT2(aNumMoveBits, aProb, aModelIndex, ; , ;)
 
 #endif

@@ -54,7 +54,7 @@ void ZLog_Message (char *Message, ...)
     va_start(ap,Message);
     vsprintf(Msg,Message,ap );
     va_end(ap);
-	
+
     strcat(Msg,"\r\n\0");
     fwrite(Msg,strlen(Msg),1,ZFILELog);
     fflush(ZFILELog);
@@ -67,7 +67,7 @@ void ZStart_Log (void)
 //  [4/15/2001]	char *p;
 
     strcpy(LogFileName,"zfile.log\0");
-	
+
     ZFILELog = fopen(LogFileName,"wb");
 }
 
@@ -179,7 +179,7 @@ int InitTCPFile()
 
     /* Verify version number and exit on wrong version */
     if (wsadata.wVersion != versionneeded)
-	{	
+	{
         return(-1);
 	}
     gameServerSocket=INVALID_SOCKET;
@@ -320,7 +320,7 @@ LPTHREAD_START_ROUTINE MonitorThreadProc(SOCKET s)
                     hwndNCD = CreateDialog(hModule, MAKEINTRESOURCE
                                        (IDD_NO_CONNECT), NULL, NULL);
                 while(destruct > 0)
-                {                    
+                {
                     if (destruct == 10)
                         clockstart = timeGetTime();
 
@@ -399,15 +399,15 @@ OpenConnection(char *User, char *Password, char *FileName)
     if(!strstr(temp,"ok"))
     {
         ZLog_Message("Sending user name");
-    
+
         sprintf(temp,"%s",User);
         sendCommand(temp,strlen(temp));
         receiveData(temp,512);
-    
+
         if(!strstr(temp,"ok")) return 0;
-    
+
         ZLog_Message("Sending password");
-    
+
         sprintf(temp,"%s",Password);
         sendCommand(temp,strlen(temp));
         receiveData(temp,512);
@@ -518,7 +518,7 @@ LRESULT CALLBACK UPDialogMain(HWND hDlg, UINT message, WPARAM wParam,
 
 DWORD ZFileSystemInit()
 {
-    ZStart_Log();    
+    ZStart_Log();
 #ifdef __GZIP__
 	TextFile = 0;
 #else
@@ -552,7 +552,7 @@ DWORD ZOpenFile()
             UPDialogDone=0;
             hwndNCD = DialogBox(hModule, MAKEINTRESOURCE
                                    (IDD_USERPASS), NULL, UPDialogMain);
-            
+
             while(!UPDialogDone)
             {
                 Sleep(1000);
@@ -560,7 +560,7 @@ DWORD ZOpenFile()
 
             DestroyWindow(hwndNCD);
 
-            ZLog_Message("User : %s Pass : %s",user,pass);    
+            ZLog_Message("User : %s Pass : %s",user,pass);
         }
         else
         {
@@ -569,14 +569,14 @@ DWORD ZOpenFile()
             for(i=0;i<endstr-startstr;i++)
                 user[i]=startstr[i];
             user[endstr-startstr]=0;
-    
+
             startstr=endstr+1;
             if((endstr=strstr(startstr,"@"))==NULL) return 0xFFFFFFFF;
             if((endstr-startstr)>512) return 0xFFFFFFFF;
             for(i=0;i<endstr-startstr;i++)
                 pass[i]=startstr[i];
-            pass[endstr-startstr]=0;    
-            ZLog_Message("User : %s Pass : %s",user,pass);    
+            pass[endstr-startstr]=0;
+            ZLog_Message("User : %s Pass : %s",user,pass);
             startstr=endstr+1;
         }
 
@@ -620,7 +620,7 @@ DWORD ZOpenFile()
 #endif
 	if(ZOpenMode==0)
 	{
-		if (TextFile) 
+		if (TextFile)
 			FILEHANDLE[CurrentHandle]=fopen(ZOpenFileName,"rb");
 		else
 			FILEHANDLE[CurrentHandle]=(FILE *)gzopen(ZOpenFileName,"rb");
@@ -633,11 +633,11 @@ DWORD ZOpenFile()
 	}
 	if(ZOpenMode==1)
 	{
-		if (TextFile) 
+		if (TextFile)
 			FILEHANDLE[CurrentHandle]=fopen(ZOpenFileName,"wb");
 		else
 			FILEHANDLE[CurrentHandle]=(FILE *)gzopen(ZOpenFileName,"wb");
-		if(FILEHANDLE[CurrentHandle]!=NULL)	       
+		if(FILEHANDLE[CurrentHandle]!=NULL)
 		{
 			CurrentHandle+=1;
 			return(CurrentHandle-1);
@@ -646,11 +646,11 @@ DWORD ZOpenFile()
 	}
 	if(ZOpenMode==2)
 	{
-		if (TextFile) 
+		if (TextFile)
 			FILEHANDLE[CurrentHandle]=fopen(ZOpenFileName,"r+b");
 		else
 			FILEHANDLE[CurrentHandle]=gzopen(ZOpenFileName,"r+b");
-		if(FILEHANDLE[CurrentHandle]!=NULL)	       
+		if(FILEHANDLE[CurrentHandle]!=NULL)
 		{
 			CurrentHandle+=1;
 			return(CurrentHandle-1);
@@ -695,7 +695,7 @@ DWORD ZFileSeek()
 
     }
     else
-    {    
+    {
 #endif
         int res = 0;
         int mode = 0;
@@ -703,10 +703,10 @@ DWORD ZFileSeek()
             mode = SEEK_SET;
         else if (ZFileSeekMode==1) {
             mode = SEEK_END;
-            if (TextFile==0) 
+            if (TextFile==0)
                 printf("Warning : gzseek(SEEK_END) not supported");
         } else return (0xFFFFFFFF);
-    
+
         if (TextFile) {
             fseek(FILEHANDLE[ZFileSeekHandle], ZFileSeekPos, mode);
             return 0;
@@ -742,7 +742,7 @@ DWORD ZFileRead()
         return ZFileReadSize;
     }
     else
-    {    
+    {
 #endif
         if (TextFile)
             return(fread(ZFileReadBlock,
@@ -750,8 +750,8 @@ DWORD ZFileRead()
                      ZFileReadSize,
                      FILEHANDLE[ZFileReadHandle]));
         else
-            return(gzread(FILEHANDLE[ZFileReadHandle], 
-                      ZFileReadBlock, 
+            return(gzread(FILEHANDLE[ZFileReadHandle],
+                      ZFileReadBlock,
                       ZFileReadSize));
 #ifdef CCBETA
     }
@@ -768,7 +768,7 @@ DWORD ZFileWrite()
 
     }
     else
-    {    
+    {
 #endif
 
 		//MK: this will fail if we write 2GB files
@@ -780,11 +780,11 @@ DWORD ZFileWrite()
                      ZFileWriteSize,
                      FILEHANDLE[ZFileWriteHandle]);
         else
-            res = gzwrite(FILEHANDLE[ZFileWriteHandle], 
-                      ZFileWriteBlock, 
+            res = gzwrite(FILEHANDLE[ZFileWriteHandle],
+                      ZFileWriteBlock,
                       ZFileWriteSize);
-         
-        if (res!=(int)ZFileWriteSize) 
+
+        if (res!=(int)ZFileWriteSize)
             return(0xFFFFFFFF);
 #ifdef CCBETA
     }

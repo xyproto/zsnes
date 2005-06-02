@@ -103,7 +103,7 @@ NEWSYM ProcessRewind
     call BackupPauseFrame
     popad
 .notpauserewind
-    
+
     mov esi,[tempesi]
     mov edi,[tempedi]
     mov ebp,[tempebp]
@@ -1442,7 +1442,7 @@ NEWSYM cpuover
     mov ebp,[tempebp]
     mov edx,[tempedx]
 .nopauseframemode3
-    
+
     cmp byte[EMUPause],1
     jne .noemupause
 
@@ -1451,14 +1451,14 @@ NEWSYM cpuover
     mov [tempedx],edx
     mov [tempesi],esi
     mov [tempedi],edi
-    mov [tempebp],ebp    
+    mov [tempebp],ebp
     pushad
     call BackupPauseFrame
     popad
 .nopauseframemode1
-        
+
     call ProcessRewind
-        
+
     cmp byte[PauseFrameMode],2
     jne .nopauseframemode2
     mov byte[PauseFrameMode],3
@@ -1477,7 +1477,7 @@ NEWSYM cpuover
     call showvideo
     call cachevideo
     popad
-    
+
     jmp .nonewgfx
 .noemupause
 

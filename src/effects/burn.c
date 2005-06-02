@@ -109,7 +109,7 @@ void genpal()
   {
     pal[i]=pal[i-1];
     {
-      struct colorvalue *with = &pal[i]; 
+      struct colorvalue *with = &pal[i];
 
       if (with->r<255) with->r += 1;
       if (with->r<255) with->r += 1;
@@ -125,8 +125,8 @@ int started = 0;
 #if 0 // emulating Turbo Pascal
 
 unsigned int randseed;
-const unsigned modulus = 2147483647; 
-const unsigned factor = 397204094; 
+const unsigned modulus = 2147483647;
+const unsigned factor = 397204094;
 
 void Randomize()
 {
@@ -136,13 +136,13 @@ void Randomize()
 unsigned int randint(unsigned range)
 {
     randseed = randseed * factor % modulus;
-    return range ? randseed % range : 0; 
+    return range ? randseed % range : 0;
 }
 
 double randreal()
 {
     randseed = randseed * factor % modulus;
-    return (double)randseed / modulus;  
+    return (double)randseed / modulus;
 }
 
 int rand1(int r)         /* Return a random number between -R And R*/
@@ -241,14 +241,14 @@ int v;
       if ((v==0) ||
          (v<decay) ||
          (i<=xstart) ||
-         (i>=xend)) 
+         (i>=xend))
         pt[(j-1)*BUF_WIDTH + i] = 0;
       else
         pt[((j-1)*BUF_WIDTH) + (i-(randint(3)-1))] = v - randint(decay);
     }
 
     /*Match?*/
-    if (randint(150)==0) 
+    if (randint(150)==0)
       memset(flamearray + xstart + randint(xend-xstart-5),255,5);
 
     /*This loop controls the "root" of the

@@ -50,7 +50,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //     that packet will be re-sent and reset the timer value back to 60.
 //   If the local side receives the reply packet, it will set the timer
 //     counter to -1.
-//   
+//
 // Gameplay Packets:
 //   Note: Gameplay counter is separate from normal packet counter.
 //   Note2: When referring to TCP/IP, it refers to the Normal Packets above.
@@ -264,7 +264,7 @@ void GetUDPStatus() {
 
 int isipval(char *name){
   int i=0;
-  
+
   while(name[i]!=0){
     if (!((name[i]=='.') || ((name[i]>='0') && (name[i]<='9'))))
       return(0);
@@ -388,7 +388,7 @@ int ConnectServer(char *servername, unsigned int port)
 //      MessageBox(NULL,blah,
 //              "Error",
 //              MB_SYSTEMMODAL|MB_OK);
-      
+
       return(0);
 
 //      retval = send(gamesocket,blah,1,0);
@@ -653,7 +653,7 @@ int ServerCheckNewClient()
             return(1);
           }
           return(0);
-        } 
+        }
 
 	if(serversocket == INVALID_SOCKET)
 	{
@@ -1056,7 +1056,7 @@ char SendBufferSize[256];*/
          return(-1);
            }
       }
-      return(0); 
+      return(0);
    }
 
    /* send data with the socket */
@@ -1146,7 +1146,7 @@ int GetData(int dsize,unsigned char *dptr)
        retval = packetreceivesize[i];
        packetreceived[(i+128) & 0xFF]=0;
        packetrecvhead=(packetrecvhead+1) & 0xFF;
-       return(retval); 
+       return(retval);
      }
 
      i=RecvPtr;

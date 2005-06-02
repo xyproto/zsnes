@@ -85,7 +85,7 @@ NEWSYM autoloadstate, db 0        ; auto load state slot number
 NEWSYM autoloadmovie, db 0
 NEWSYM ZMVRawDump, db 0
 
-NEWSYM EndMessage 	
+NEWSYM EndMessage
  db '                                                                   ',13,10,0
 
 SECTION .text
@@ -254,9 +254,9 @@ NEWSYM init
     jne .norawdump
     call MovieDumpRaw
     jmp .aftermovieplay
-.norawdump    
+.norawdump
     call MoviePlay
-.aftermovieplay    
+.aftermovieplay
     popad
 
 .noautloadmovie

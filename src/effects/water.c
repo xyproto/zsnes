@@ -67,7 +67,7 @@ void DrawWater(void)
 {
 	//		tslast=tscurrent;
 //		tscurrent=time(NULL);
-			
+
       /*
       if (NetPlayNoMore == 1)
       {
@@ -95,23 +95,23 @@ void DrawWater(void)
          y=rand()%(SCRH-2)+1;
          Height[Hpage][y*SCRW+x]=rand()%(pheight<<2);
 		}
-		
+
 		/* the surfer */
 		if(mode&1)
 		{
 			int x,y;
 			x = (SCRW/2)
 			+ ((((FSin( (xang* 65) >>8) >>8)
-			* (FSin( (xang*349) >>8) >>8)) 
+			* (FSin( (xang*349) >>8) >>8))
 			* ((SCRW-8)/2)) >> 16);
-			
+
 			y = (SCRH/2)
 			+ ((((FSin( (yang*377) >>8) >>8)
 			*(FSin( (yang* 84) >>8) >>8))
 			* ((SCRH-8)/2)) >> 16);
 			xang += 13;
 			yang += 12;
-			
+
 			if(mode & 0x4000)
 			{
 				offset = (oy+y)/2*SCRW + (ox+x)/2;
@@ -136,10 +136,10 @@ void DrawWater(void)
 			}
 
 			ox = x;
-			oy = y;			
-			
+			oy = y;
+
 		}
-		
+
 		if(mode&4)
 		{
             int x,y;
@@ -150,14 +150,14 @@ void DrawWater(void)
 				if(mode & 0x4000)
 //					HeightBlob(-1, -1, radius/2, pheight, Hpage);
 				else
-*/              
+*/
                      x=rand()%(SCRW-2)+1;
                      y=rand()%(SCRH-2)+1;
                     SineBlob(x, y, radius, -pheight*6, Hpage);
 			}
-		}	
+		}
         CalcWater(Height[Hpage^1], Height[Hpage], density);
-		Hpage ^= 1; /* flip flop */	
+		Hpage ^= 1; /* flip flop */
 
 }
 
@@ -169,13 +169,13 @@ void DrawWaterNoLight(int *ptr)
 	int x,y;
 	int c;
 	int p;
-	
+
 	int offset = SCRW+1;
 	if(ptr == NULL)
 	{
 		return;
 	}
-	
+
 	for(y=((SCRH-1)*SCRW); offset < y; offset+=2)
 	{
 		for(x = offset+SCRW-2;offset<x;offset++)
@@ -237,10 +237,10 @@ void DrawWaterNoLight(int *ptr)
 			vscr[offset]=c;
 		}
 	}
-	
+
 	memcpy( vidbuffer,vscr,SCRW*SCRH);
 //	frames++;
-	
+
 }
 #endif
 
@@ -250,7 +250,7 @@ void DrawWaterWithLight(int *ptr,int light)
 	int x,y;
 	int c;
 	int p;
-	
+
 	int offset = SCRW+1;
 	if(ptr == NULL)
 	{
@@ -304,14 +304,14 @@ void DrawWaterWithLight(int *ptr,int light)
 			}
 */
 			c=vidbuffer[p];
-			
+
 			c-=(dx>>light);
 			(c<1) ? c=1 : (c > 31) ? c=31 : 0;
 			vscr[offset]=c;
 		}
 	}
 
-	memcpy( vidbuffer,vscr,SCRW*SCRH);	
+	memcpy( vidbuffer,vscr,SCRW*SCRH);
 //	memcpy( VGLDisplay->Bitmap,vscr,SCRW*SCRH);
 //	frames++;
 
@@ -323,7 +323,7 @@ void CalcWater(int *nptr,int *optr,int density)
 	int newh;
 	int count = SCRW+1;
 	int x,y;
-	
+
 	for(y = (SCRH-1) * SCRW;count<y;count+=2)
 	{
 		for(x = count+SCRW-2;count<x;count++)
@@ -338,11 +338,11 @@ void CalcWater(int *nptr,int *optr,int density)
 				+optr[count+SCRW+1]
 				) >> 2)
 				- nptr[count];
-				
+
 			nptr[count] = newh - (newh >> density);
 		}
 	}
-	
+
 }
 
 void SineBlob(int x, int y, int radius, int height, int page)

@@ -73,7 +73,7 @@ bool reloadBuffer()
   if (IPSPatch.proccessed == IPSPatch.file_size) { return(false); }
 
   IPSPatch.buffer_total = IPSPatch.fp ?
-  /* Regular Files */     fread(IPSPatch.data, 1, BUFFER_SIZE, IPSPatch.fp) :  
+  /* Regular Files */     fread(IPSPatch.data, 1, BUFFER_SIZE, IPSPatch.fp) :
   /* Zip Files     */     unzReadCurrentFile(IPSPatch.zipfile, IPSPatch.data, BUFFER_SIZE);
 
   IPSPatch.current = IPSPatch.data;
@@ -113,20 +113,20 @@ bool initPatch()
   IPSPatch.fp = 0;
   IPSPatch.fp = fopen(patchfile, "rb");
   if (!IPSPatch.fp) { return(false); }
- 
+
   return(reloadBuffer());
 }
 
 void deinitPatch()
 {
   if (IPSPatch.data)
-  { 
+  {
     free(IPSPatch.data);
     IPSPatch.data = 0;
   }
 
   if (IPSPatch.fp)
-  { 
+  {
     fclose(IPSPatch.fp);
     IPSPatch.fp = 0;
   }
@@ -145,7 +145,7 @@ void PatchUsingIPS()
   unsigned char *ROM = (unsigned char *)romdata;
   int location = 0, length = 0, last = 0;
   int sub = Header512 ? 512 : 0;
-    
+
   IPSPatched = false;
 
   if (!AutoPatch)
@@ -153,11 +153,11 @@ void PatchUsingIPS()
     deinitPatch(); //Needed if the call to this function was done from findZipIPS()
     return;
   }
-  
+
   if (patchfile) //Regular file, not Zip
-  { 
-    if (!initPatch()) 
-    { 
+  {
+    if (!initPatch())
+    {
       deinitPatch(); //Needed because if it didn't fully init, some things could have
       return;
     }
@@ -177,7 +177,7 @@ void PatchUsingIPS()
     int inloc = (IPSget() << 16) | (IPSget() << 8) | IPSget();
 
     if (inloc == 0x454f46) //EOF
-    { 
+    {
       break;
     }
 
@@ -187,7 +187,7 @@ void PatchUsingIPS()
     //Length is a 2 byte value (max 64KB)
     length = (IPSget() << 8) | IPSget();
 
-    if (length) // Not RLE 
+    if (length) // Not RLE
     {
       int i;
       for (i = 0; i < length; i++, location++)
@@ -208,7 +208,7 @@ void PatchUsingIPS()
     {
       int i;
       unsigned char newVal;
-      length = (IPSget() << 8) | IPSget(); 
+      length = (IPSget() << 8) | IPSget();
       newVal = (unsigned char)IPSget();
       for (i = 0; i < length; i++, location++)
       {
@@ -221,16 +221,16 @@ void PatchUsingIPS()
       }
     }
   }
-  
+
   //We use gotos to break out of the nested loops,
   //as well as a simple way to check for 'PATCH' in
   //some cases like this one, goto is the way to go.
   IPSDone:
-  
+
   deinitPatch();
-  
+
   IPSPatched = true;
-  
+
   //Adjust size values if the ROM was expanded
   if (last > curromspace)
   {
@@ -268,10 +268,10 @@ void findZipIPS(char *compressedfile)
     //Gets info on current file, and places it in cFileInfo
     unzGetCurrentFileInfo(IPSPatch.zipfile, &cFileInfo, cFileName, 256, NULL, 0, NULL, 0);
 
-    //Find IPS file    
+    //Find IPS file
     if (strlen(cFileName) >= 5) //Char + ".IPS"
     {
-      char *ext = cFileName+strlen(cFileName)-4;  
+      char *ext = cFileName+strlen(cFileName)-4;
       if (!strncasecmp(ext, ".IPS", 4))
       {
         FoundIPS = true;
@@ -279,12 +279,12 @@ void findZipIPS(char *compressedfile)
       }
     }
 
-    //Go to next file in zip file 
-    cFile = unzGoToNextFile(IPSPatch.zipfile); 
+    //Go to next file in zip file
+    cFile = unzGoToNextFile(IPSPatch.zipfile);
   }
 
   if (!FoundIPS)
-  { 
+  {
     unzClose(IPSPatch.zipfile);
     IPSPatch.zipfile = 0;
     return;

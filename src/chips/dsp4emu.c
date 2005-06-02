@@ -50,7 +50,7 @@ Fixed-point math reminder:
 #define WRITE_WORD(s, d) (*(uint16 *) (s)) = (d)
 #define WRITE_DWORD(s, d) (*(uint32 *) (s)) = (d)
 
-struct 
+struct
 {
   bool8 waiting4command;
   bool8 half_command;
@@ -428,7 +428,7 @@ void DSP4_OP01()
 
     // scan next command
     DSP4.in_count = 2;
-    DSP4_WAIT(1) resume1 : 
+    DSP4_WAIT(1) resume1 :
 
     // check for termination
     distance = DSP4_READ_WORD();
@@ -469,7 +469,7 @@ void DSP4_OP01()
 
     // already have 2 bytes read
     DSP4.in_count = 6;
-    DSP4_WAIT(3) resume3 : 
+    DSP4_WAIT(3) resume3 :
 
     // inspect inputs
     world_ddy = DSP4_READ_WORD();
@@ -662,7 +662,7 @@ void DSP4_OP07()
 
     // scan next command
     DSP4.in_count = 2;
-    DSP4_WAIT(1) resume1 : 
+    DSP4_WAIT(1) resume1 :
 
     // check for opcode termination
     distance = DSP4_READ_WORD();
@@ -671,7 +671,7 @@ void DSP4_OP07()
 
     // already have 2 bytes in queue
     DSP4.in_count = 10;
-    DSP4_WAIT(2) resume2 : 
+    DSP4_WAIT(2) resume2 :
 
     // inspect inputs
     view_y2 = DSP4_READ_WORD();
@@ -832,7 +832,7 @@ void DSP4_OP08()
 
     // scan next command
     DSP4.in_count = 2;
-    DSP4_WAIT(1) resume1 : 
+    DSP4_WAIT(1) resume1 :
 
     // terminate op
     distance = DSP4_READ_WORD();
@@ -842,7 +842,7 @@ void DSP4_OP08()
     // already have 2 bytes in queue
     DSP4.in_count = 16;
 
-    DSP4_WAIT(2) resume2 : 
+    DSP4_WAIT(2) resume2 :
 
     // look at guidelines for both polygon shapes
     view_x[0] = DSP4_READ_WORD();
@@ -1051,7 +1051,7 @@ void DSP4_OP09()
     // check for new sprites
 
     DSP4.in_count = 4;
-    DSP4_WAIT(1) resume1 :  
+    DSP4_WAIT(1) resume1 :
 
     ////////////////////////////////////////////////
     // raster overdraw check
@@ -1094,7 +1094,7 @@ void DSP4_OP09()
 
       // we already have 4 bytes we want
       DSP4.in_count = 14;
-      DSP4_WAIT(2) resume2 : 
+      DSP4_WAIT(2) resume2 :
 
       // filter inputs
       energy = DSP4_READ_WORD();
@@ -1127,7 +1127,7 @@ void DSP4_OP09()
 
       // grab a few remaining vehicle values
       DSP4.in_count = 4;
-      DSP4_WAIT(3) resume3 : 
+      DSP4_WAIT(3) resume3 :
 
       // add vertical lift factor
       sprite_y += DSP4_READ_WORD();
@@ -1140,7 +1140,7 @@ void DSP4_OP09()
 
       // we already have 4 bytes we want
       DSP4.in_count = 10;
-      DSP4_WAIT(4) resume4 : 
+      DSP4_WAIT(4) resume4 :
 
       // sort loop inputs
       poly_cx[0][0] = DSP4_READ_WORD();
@@ -1170,18 +1170,18 @@ void DSP4_OP09()
     do
     {
       uint16 header;
-      
+
       int16 sp_x, sp_y, sp_attr, sp_dattr;
       int16 sp_dx, sp_dy;
       int16 pixels;
 
       bool8 draw;
-      
+
       DSP4.in_count = 2;
-      DSP4_WAIT(5) resume5 :  
+      DSP4_WAIT(5) resume5 :
 
       draw = TRUE;
-      
+
       // opcode termination
       raster = DSP4_READ_WORD();
       if (raster == -0x8000)
@@ -1212,10 +1212,10 @@ void DSP4_OP09()
 
       // read in rest of sprite data
       DSP4.in_count = 4;
-      DSP4_WAIT(6) resume6 :  
+      DSP4_WAIT(6) resume6 :
 
       draw = TRUE;
-      
+
       /////////////////////////////////////
       // process tile data
 
@@ -1427,7 +1427,7 @@ void DSP4_OP0D()
     view_yofs2 = (world_yofs * distance >> 15) + poly_bottom[0][0] - view_y2;
 
     // 1. World x-location before transformation
-    // 2. Viewer x-position at the current 
+    // 2. Viewer x-position at the current
     // 3. World y-location before perspective projection
     // 4. Viewer y-position below the horizon
     // 5. Number of raster lines drawn in this iteration
@@ -1528,9 +1528,9 @@ void DSP4_OP0D()
 
     // scan next command
     DSP4.in_count = 2;
-    DSP4_WAIT(1) resume1 : 
+    DSP4_WAIT(1) resume1 :
 
-    // inspect input    
+    // inspect input
     distance = DSP4_READ_WORD();
 
     // terminate op
@@ -1539,7 +1539,7 @@ void DSP4_OP0D()
 
     // already have 2 bytes in queue
     DSP4.in_count = 6;
-    DSP4_WAIT(2) resume2 : 
+    DSP4_WAIT(2) resume2 :
 
     // inspect inputs
     world_ddy = DSP4_READ_WORD();
@@ -1680,7 +1680,7 @@ void DSP4_OP0F()
         // grab inputs
         DSP4.in_count = 4;
         DSP4_WAIT(1);
-        resume1 : 
+        resume1 :
         for (;;)
         {
           int16 distance;
@@ -1763,7 +1763,7 @@ void DSP4_OP0F()
 
     // scan next command
     DSP4.in_count = 2;
-    DSP4_WAIT(2) resume2 : 
+    DSP4_WAIT(2) resume2 :
 
     // check for termination
     distance = DSP4_READ_WORD();
@@ -1804,7 +1804,7 @@ void DSP4_OP0F()
 
     // already have 2 bytes in queue
     DSP4.in_count = 6;
-    DSP4_WAIT(4) resume4 : 
+    DSP4_WAIT(4) resume4 :
 
     // inspect inputs
     world_ddy = DSP4_READ_WORD();
@@ -1925,7 +1925,7 @@ void DSP4_OP10()
         // grab inputs
         DSP4.in_count = 4;
         DSP4_WAIT(1);
-        resume1 : 
+        resume1 :
         for (;;)
         {
           int16 distance;
@@ -2006,7 +2006,7 @@ void DSP4_OP10()
 
     // scan next command
     DSP4.in_count = 2;
-    DSP4_WAIT(2) resume2 : 
+    DSP4_WAIT(2) resume2 :
 
     // check for opcode termination
     distance = DSP4_READ_WORD();
@@ -2015,7 +2015,7 @@ void DSP4_OP10()
 
     // already have 2 bytes in queue
     DSP4.in_count = 10;
-    DSP4_WAIT(3) resume3 : 
+    DSP4_WAIT(3) resume3 :
 
 
     // inspect inputs
@@ -2064,7 +2064,7 @@ void DSP4SetByte()
     DSP4.out_index++;
     return;
   }
-   
+
   if (DSP4.waiting4command)
   {
     if (DSP4.half_command)
@@ -2127,14 +2127,14 @@ void DSP4SetByte()
     DSP4.parameters[DSP4.in_index] = dsp4_byte;
     DSP4.in_index++;
   }
-    
+
   if (!DSP4.waiting4command && DSP4.in_count == DSP4.in_index)
   {
     // Actually execute the command
     DSP4.waiting4command = TRUE;
     DSP4.out_index = 0;
     DSP4.in_index = 0;
-      
+
     switch (DSP4.command)
     {
         // 16-bit multiplication
@@ -2147,7 +2147,7 @@ void DSP4SetByte()
         multiplicand = DSP4_READ_WORD();
 
         DSP4_Multiply(multiplicand, multiplier, &product);
-          
+
         DSP4_CLEAR_OUT();
         DSP4_WRITE_WORD(product);
         DSP4_WRITE_WORD(product >> 16);
@@ -2165,7 +2165,7 @@ void DSP4SetByte()
       // clear OAM
       case 0x0005:
         DSP4_OP05(); break;
-            
+
       // transfer OAM
       case 0x0006:
         DSP4_OP06(); break;
@@ -2189,9 +2189,9 @@ void DSP4SetByte()
         int16 in2a = DSP4_READ_WORD();
         int16 in3a = DSP4_READ_WORD();
         int16 out1a, out2a, out3a, out4a;
-          
+
         DSP4_OP0A(in2a, &out2a, &out1a, &out4a, &out3a);
-          
+
         DSP4_CLEAR_OUT();
         DSP4_WRITE_WORD(out1a);
         DSP4_WRITE_WORD(out2a);
@@ -2209,7 +2209,7 @@ void DSP4SetByte()
         bool8 draw = 1;
 
         DSP4_CLEAR_OUT();
-              
+
         DSP4_OP0B(&draw, sp_x, sp_y, sp_attr, 0, 1);
       }
       break;
@@ -2242,7 +2242,7 @@ void DSP4SetByte()
         a = DSP4_READ_WORD();
 
         DSP4_OP11(a, b, c, d, &m);
-          
+
         DSP4_CLEAR_OUT();
         DSP4_WRITE_WORD(m);
 

@@ -52,7 +52,7 @@ class CDecoder
   CBitTreeDecoder<kNumMoveBits, kNumLenBits>  m_LowCoder[kNumPosStatesMax];
   CMyBitDecoder<kNumMoveBits> m_Choice2;
   CBitTreeDecoder<kNumMoveBits, kNumMidBits>  m_MidCoder[kNumPosStatesMax];
-  CBitTreeDecoder<kNumMoveBits, kNumHighBits> m_HighCoder; 
+  CBitTreeDecoder<kNumMoveBits, kNumHighBits> m_HighCoder;
   UINT32 m_NumPosStates;
 public:
   void Create(UINT32 aNumPosStates)

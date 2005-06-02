@@ -438,7 +438,7 @@ NEWSYM reg3010w
     ret
 NEWSYM reg3011w
     mov [SfxR8+1],al
-    ret       
+    ret
 NEWSYM reg3012w
     mov [SfxR9],al
     ret

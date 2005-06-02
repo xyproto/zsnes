@@ -108,8 +108,8 @@ EXTSYM pesimpng,ScrDispl
     and bx,0001111111111111b    ; 13 -> 16 bit signed value
     test bx,0001000000000000b
     jz .nonega
-    or bx,1110000000000000b    
-    or word[mode7X0],1110000000000000b    
+    or bx,1110000000000000b
+    or word[mode7X0],1110000000000000b
 .nonega
     mov [mcxloc],bx
     mov bx,dx
@@ -132,7 +132,7 @@ EXTSYM pesimpng,ScrDispl
     test bx,0001000000000000b
     jz .nonegd
     or bx,1110000000000000b
-    or word[mode7Y0],1110000000000000b    
+    or word[mode7Y0],1110000000000000b
 .nonegd
     sub word[mcyloc],bx
 
@@ -191,8 +191,8 @@ EXTSYM pesimpng,ScrDispl
     and bx,0001111111111111b    ; 13 -> 16 bit signed value
     test bx,0001000000000000b
     jz .nonegacb
-    or word[mode7X0],1110000000000000b    
-    or bx,1110000000000000b    
+    or word[mode7X0],1110000000000000b
+    or bx,1110000000000000b
 .nonegacb
     mov [mcxloc],bx
     mov bx,dx
@@ -213,7 +213,7 @@ EXTSYM pesimpng,ScrDispl
     and bx,0001111111111111b    ; 13 -> 16 bit signed value
     test bx,0001000000000000b
     jz .nonegdcb
-    or word[mode7Y0],1110000000000000b    
+    or word[mode7Y0],1110000000000000b
     or bx,1110000000000000b
 .nonegdcb
     add bx,bx

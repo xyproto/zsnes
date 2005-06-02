@@ -27,10 +27,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 namespace JMA
 {
-  enum jma_errors { JMA_NO_CREATE, JMA_NO_MEM_ALLOC, JMA_NO_OPEN, JMA_BAD_FILE, 
+  enum jma_errors { JMA_NO_CREATE, JMA_NO_MEM_ALLOC, JMA_NO_OPEN, JMA_BAD_FILE,
                     JMA_UNSUPPORTED_VERSION, JMA_COMPRESS_FAILED, JMA_DECOMPRESS_FAILED,
                     JMA_FILE_NOT_FOUND };
-  
+
   struct jma_file_info_base
   {
     std::string name;
@@ -38,12 +38,12 @@ namespace JMA
     size_t size;
     unsigned int crc32;
   };
-                    
+
   struct jma_public_file_info : jma_file_info_base
   {
     time_t datetime;
   };
-  
+
   struct jma_file_info : jma_file_info_base
   {
     unsigned short date;
@@ -59,7 +59,7 @@ namespace JMA
     {
       size += i->size; //We do have a problem if this wraps around
     }
-  
+
     return(size);
   }
 
@@ -68,23 +68,23 @@ namespace JMA
     public:
     jma_open(const char *) throw(jma_errors);
     ~jma_open();
-    
+
     std::vector<jma_public_file_info> get_files_info();
     std::vector<unsigned char *> get_all_files(unsigned char *) throw(jma_errors);
     void extract_file(std::string& name, unsigned char *) throw(jma_errors);
     bool is_solid();
-    
+
     private:
     std::ifstream stream;
     std::vector<jma_file_info> files;
     size_t chunk_size;
     unsigned char *decompressed_buffer;
     unsigned char *compressed_buffer;
-  
+
     void chunk_seek(unsigned int) throw(jma_errors);
     void retrieve_file_block() throw(jma_errors);
   };
-  
+
   const char *jma_error_text(jma_errors);
 }
 #endif

@@ -30,7 +30,7 @@ HRESULT CDecoder::SetDictionarySize(UINT32 aDictionarySize)
 {
   if (aDictionarySize > (1 << kDicLogSizeMax))
     return E_INVALIDARG;
-  
+
   UINT32 aWindowReservSize = MyMax(aDictionarySize, UINT32(1 << 21));
 
   if (m_DictionarySize != aDictionarySize)
@@ -100,9 +100,9 @@ HRESULT CDecoder::Init(ISequentialInStream *anInStream,
     m_MatchRep1ChoiceDecoders[i].Init();
     m_MatchRep2ChoiceDecoders[i].Init();
   }
-  
+
   m_LiteralDecoder.Init();
-   
+
   // m_RepMatchLenDecoder.Init();
 
   for (i = 0; (UINT32) i < kNumLenToPosStates; i++)
@@ -110,7 +110,7 @@ HRESULT CDecoder::Init(ISequentialInStream *anInStream,
 
   for(i = 0; i < kNumPosModels; i++)
     m_PosDecoders[i].Init();
-  
+
   m_LenDecoder.Init();
   m_RepMatchLenDecoder.Init();
 
@@ -120,7 +120,7 @@ HRESULT CDecoder::Init(ISequentialInStream *anInStream,
 }
 
 HRESULT CDecoder::CodeReal(ISequentialInStream *anInStream,
-    ISequentialOutStream *anOutStream, 
+    ISequentialOutStream *anOutStream,
     const UINT64 *anInSize, const UINT64 *anOutSize)
 {
   if (anOutSize == NULL)
@@ -151,21 +151,21 @@ HRESULT CDecoder::CodeReal(ISequentialInStream *anInStream,
         if(aPeviousIsMatch)
         {
           BYTE aMatchByte = m_OutWindowStream.GetOneByte(0 - aRepDistances[0] - 1);
-          aPreviousByte = m_LiteralDecoder.DecodeWithMatchByte(&m_RangeDecoder, 
+          aPreviousByte = m_LiteralDecoder.DecodeWithMatchByte(&m_RangeDecoder,
               UINT32(aNowPos64), aPreviousByte, aMatchByte);
           aPeviousIsMatch = false;
         }
         else
-          aPreviousByte = m_LiteralDecoder.DecodeNormal(&m_RangeDecoder, 
+          aPreviousByte = m_LiteralDecoder.DecodeNormal(&m_RangeDecoder,
               UINT32(aNowPos64), aPreviousByte);
         m_OutWindowStream.PutOneByte(aPreviousByte);
         aNowPos64++;
       }
-      else             
+      else
       {
         aPeviousIsMatch = true;
         UINT32 aDistance, aLen;
-        if(m_MatchChoiceDecoders[aState.m_Index].Decode(&m_RangeDecoder) == 
+        if(m_MatchChoiceDecoders[aState.m_Index].Decode(&m_RangeDecoder) ==
             (UINT32) kMatchChoiceRepetitionIndex)
         {
           if(m_MatchRepChoiceDecoders[aState.m_Index].Decode(&m_RangeDecoder) == 0)
@@ -190,7 +190,7 @@ HRESULT CDecoder::CodeReal(ISequentialInStream *anInStream,
               aRepDistances[1] = aRepDistances[0];
               // aCounts[3 + 1]++;
             }
-            else 
+            else
             {
               if (m_MatchRep2ChoiceDecoders[aState.m_Index].Decode(&m_RangeDecoder) == 0)
               {
@@ -225,7 +225,7 @@ HRESULT CDecoder::CodeReal(ISequentialInStream *anInStream,
               aDistance += m_PosDecoders[aPosSlot - kStartPosModelIndex].Decode(&m_RangeDecoder);
             else
             {
-              aDistance += (m_RangeDecoder.DecodeDirectBits(kDistDirectBits[aPosSlot] - 
+              aDistance += (m_RangeDecoder.DecodeDirectBits(kDistDirectBits[aPosSlot] -
                   kNumAlignBits) << kNumAlignBits);
               aDistance += m_PosAlignDecoder.Decode(&m_RangeDecoder);
             }
@@ -233,11 +233,11 @@ HRESULT CDecoder::CodeReal(ISequentialInStream *anInStream,
           else
             aDistance = aPosSlot;
 
-          
+
           aRepDistances[3] = aRepDistances[2];
           aRepDistances[2] = aRepDistances[1];
           aRepDistances[1] = aRepDistances[0];
-          
+
           aRepDistances[0] = aDistance;
           // UpdateStat(aLen, aPosSlot);
         }
@@ -285,7 +285,7 @@ HRESULT CDecoder::ReadCoderProperties(ISequentialInStream *anInStream)
   UINT8 uint_buffer[UINT_SIZE];
   RETURN_IF_NOT_S_OK(anInStream->Read(uint_buffer, sizeof(aDictionarySize), &aProcessesedSize));
   aDictionarySize = charp_to_uint(uint_buffer);
-  
+
   if (aProcessesedSize != sizeof(aDictionarySize))
     return E_INVALIDARG;
 

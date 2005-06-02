@@ -106,7 +106,7 @@ char *find_next_match(char *str, char match_char)
       if (str[1])
       {
         str++;
-      }   
+      }
       else
       {
         break;
@@ -115,8 +115,8 @@ char *find_next_match(char *str, char match_char)
     str++;
   }
   return(pos);
-}  
-  
+}
+
 //This is like strtok(), except this understands quoted characters and updates error locations
 char *get_token(char *str, char *delim)
 {
@@ -127,14 +127,14 @@ char *get_token(char *str, char *delim)
   {
     pos = str;
   }
-    
+
   if (pos)
   {
-    //Skip delimiters 
+    //Skip delimiters
     while (*pos && strchr(delim, *pos))
     {
       pos++;
-    }  
+    }
     if (*pos)
     {
       token = pos;
@@ -152,7 +152,7 @@ char *get_token(char *str, char *delim)
           }
         }
         pos++;
-      }  
+      }
       if (*pos)
       {
         *pos++ = '\0';
@@ -187,7 +187,7 @@ char *find_chr(char *str, char match_char)
     }
     str++;
   }
-  return(pos);  
+  return(pos);
 }
 
 
@@ -204,7 +204,7 @@ string hex_convert(string str)
   {
     str.erase(0, 1);
   }
-  
+
   size_t h_pos;
   while ((h_pos = str.find_first_of("hH")) != string::npos)
   {
@@ -230,7 +230,7 @@ ssize_t enhanced_atoi(const char *str)
   {
     cerr << "Error: Can not get accurate value information (eatio.res)." << endl;
   }
-  
+
   //Biggest cheat of all time
   ofstream out_stream("eatio.c");
   if (out_stream)
@@ -248,12 +248,12 @@ ssize_t enhanced_atoi(const char *str)
                << "}\n\n";
     out_stream.close();
 
-#ifdef MSC_VER    
+#ifdef MSC_VER
     system("cl /Foeatio.exe eatio.c");
-#else    
+#else
     system("gcc -o eatio.exe eatio.c -s");
 #endif
-        
+
     system("."SLASH_STR"eatio.exe");
 
     remove("eatio.c");
@@ -269,10 +269,10 @@ ssize_t enhanced_atoi(const char *str)
     {
       cerr << "Error: Can not get accurate value information (eatio.res)." << endl;
     }
-    
+
     remove("eatio.res");
   }
-     
+
   return(num);
 }
 
@@ -317,7 +317,7 @@ char *get_comment()
 }
 
 void output_comment(ostream& c_stream, const char *comment)
-{    
+{
   if (comment)
   {
     c_stream << " //" << comment;
@@ -328,7 +328,7 @@ void output_comment(ostream& c_stream, const char *comment)
 bool all_spaces(const char *str)
 {
   while (*str)
-  {    
+  {
     if (!isspace(*str)) { return(false); }
     str++;
   }
@@ -360,7 +360,7 @@ char *convert_asm_type(const char *str, bool unsigned_var = true)
   {
     var_type += strlen("unsigned ");
   }
-  
+
   return(var_type);
 }
 
@@ -379,7 +379,7 @@ void output_parser_start(ostream& c_stream)
            << "#define LINE_LENGTH " << LINE_LENGTH << "\n"
            << "static char line[LINE_LENGTH];\n"
            << "\n"
-           << "\n"           
+           << "\n"
            << "static char *encode_string(const char *str)\n"
            << "{\n"
            << "  size_t i = 0;\n"
@@ -515,7 +515,7 @@ void output_write_var(ostream& c_stream)
   output_array_write(c_stream, "char");
   output_array_write(c_stream, "short");
   output_array_write(c_stream, "int");
-  
+
   c_stream << "\n"
            << "unsigned char write_cfg_vars(const char *file)\n"
            << "{\n"
@@ -533,7 +533,7 @@ void output_write_var(ostream& c_stream)
                << "_array(fp, \"" << i->name << "\", " << i->name << ", " << i->size << ");\n";
     }
     else
-    { 
+    {
       c_stream << "    fprintf(fp, \"" << i->name << "=";
       if (i->type == single_value)
       {
@@ -702,7 +702,7 @@ void handle_directive(char *instruction, char *label)
   else if (!strcasecmp(instruction, "elifdef") || !strcasecmp(instruction, "elseifdef"))
   {
     if (label)
-    {    
+    {
       if (ifs.top())
       {
         ifs.pop();
@@ -711,14 +711,14 @@ void handle_directive(char *instruction, char *label)
       else if (defines.find(label) != defines.end())
       {
         ifs.pop();
-        ifs.push(true);        
+        ifs.push(true);
       }
     }
     else
     {
       show_error_loc("Could not get elseifdef label");
     }
-    
+
   }
   else if (!strcasecmp(instruction, "endif"))
   {
@@ -737,7 +737,7 @@ void handle_directive(char *instruction, char *label)
         ifs.pop();
       }
     }
-  }  
+  }
   else
   {
     show_error_loc("Unknown processor directive");
@@ -745,14 +745,14 @@ void handle_directive(char *instruction, char *label)
 }
 
 void parser_generate(istream& psr_stream, ostream& c_stream)
-{ 
+{
   output_parser_start(c_stream);
- 
+
   while (!psr_stream.eof())
   {
     char *token;
-    char *comment;   
-    
+    char *comment;
+
     psr_stream.getline(line, LINE_LENGTH);
     current_line_number++;
 
@@ -763,7 +763,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream)
       output_comment(c_stream, comment);
       continue;
     }
-    
+
     if ((token = get_token(line, " ")) &&
         (strcasecmp(token, "NEWSYM") || (token = get_token(0, " ,"))))
     {
@@ -777,7 +777,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream)
       {
         continue;
       }
-      
+
       string varname = token;
 
       if ((token = get_token(0, " ,")))
@@ -788,23 +788,23 @@ void parser_generate(istream& psr_stream, ostream& c_stream)
         {
           char *asm_type = token;
           char *var_type = convert_asm_type(asm_type);
-          
+
           if (var_type)
           {
             string initial_value = get_token(0, " ,\n");
-            
+
             if (((initial_value[0] == '\"') && (initial_value[initial_value.length()-1] == '\"')) ||
                 ((initial_value[0] == '\'') && (initial_value[initial_value.length()-1] == '\'')))
             {
               //Make sure it's double quoted
               initial_value[0] = '\"';
               initial_value[initial_value.length()-1] = '\"';
-              
+
               if (!array)
               {
                 array = initial_value.length()-1; //Size minus quotes plus null
               }
-              
+
               c_stream << "char " << varname << "[" << array << "];";
 
               ostringstream memset_line;
@@ -819,13 +819,13 @@ void parser_generate(istream& psr_stream, ostream& c_stream)
                             << varname << "[" << array << "] = 0;";
               }
               memsets.push_back(memset_line.str());
-              
+
               add_config_var(varname, asm_type, quoted_value, 0);
             }
             else
             {
               ssize_t init_value_num = safe_atoi(initial_value);
-  
+
               if (init_value_num < 0)
               {
                 var_type += strlen("unsigned ");
@@ -840,7 +840,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream)
 
                   ostringstream memset_line;
                   memset_line << "memset(" << varname << ", " << init_value_num << ", " << array;
-                
+
                   if (var_type_is_short(var_type))
                   {
                     memset_line << short_scale;
@@ -891,11 +891,11 @@ void parser_generate(istream& psr_stream, ostream& c_stream)
             }
           }
           //Else already handled
-        }        
+        }
         else
         {
           show_error_loc("Could not get array size");
-        }      
+        }
       }
       else
       {
@@ -906,14 +906,14 @@ void parser_generate(istream& psr_stream, ostream& c_stream)
     {
       show_error_loc("Could not get variable name");
     }
-                
+
     output_comment(c_stream, comment);
   }
 
   output_init_var(c_stream);
-  output_write_var(c_stream);  
+  output_write_var(c_stream);
   output_read_var(c_stream);
-  
+
   c_stream << "\n";
 
   if (!ifs.empty())
@@ -934,7 +934,7 @@ int main(size_t argc, const char **argv)
     else
     {
       break;
-    }  
+    }
   }
 
   if ((argc-param_pos) != 2)
@@ -947,10 +947,10 @@ int main(size_t argc, const char **argv)
          << "  -Ddefine   Define a processor director. Example: -D__LINUX__\n"
          << "             Can specify multiple defines.\n"
          << endl;
-         
+
     return(1);
   }
-  
+
   const char *psr_file = argv[param_pos+1], *c_file = argv[param_pos];
   int ret_val = 0;
 
@@ -961,7 +961,7 @@ int main(size_t argc, const char **argv)
     if (c_stream)
     {
       parser_generate(psr_stream, c_stream);
-    
+
       c_stream.close();
     }
     else
@@ -969,7 +969,7 @@ int main(size_t argc, const char **argv)
       cerr << "Error opening " << c_file << " for writing." << endl;
       ret_val |= 2;
     }
-    
+
     psr_stream.close();
   }
   else
@@ -977,7 +977,7 @@ int main(size_t argc, const char **argv)
     cerr << "Error opening " << psr_file << " for reading." << endl;
     ret_val |= 4;
   }
-  
+
   return(0);
-}                  
-                  
+}
+

@@ -206,7 +206,7 @@ void ST010_OP01(short x0, short y0, short *x1, short *y1, short *Quadrant, short
   else
   {
     *x1 = x0;
-    *y1 = y0;	
+    *y1 = y0;
     *Quadrant = 0x0000;
   }
 
@@ -238,7 +238,7 @@ void ST010_Rotate(short Theta, short X0, short Y0, short *X1, short *Y1)
   *Y1 = (Y0 * ST010_Cos(Theta) >> 15) - (X0 * ST010_Sin(Theta) >> 15);
 }
 
-void ST010_SortDrivers(uint16 Positions, uint16 Places[32], uint16 Drivers[32]) 
+void ST010_SortDrivers(uint16 Positions, uint16 Places[32], uint16 Drivers[32])
 {
   bool Sorted;
   uint16 Temp;
@@ -251,12 +251,12 @@ void ST010_SortDrivers(uint16 Positions, uint16 Places[32], uint16 Drivers[32])
       Sorted = true;
       for (i = 0; i < Positions - 1; i++)
       {
-        if (Places[i] < Places[i + 1]) 
+        if (Places[i] < Places[i + 1])
         {
           Temp = Places[i + 1];
           Places[i + 1] = Places[i];
           Places[i] = Temp;
-        
+
           Temp = Drivers[i + 1];
           Drivers[i + 1] = Drivers[i];
           Drivers[i] = Temp;
@@ -278,13 +278,13 @@ void ST010DoCommand(void)
   {
     /*
     Calculate track data based on direction coords
-        
+
     Input
       0x0000-0x0001 : DX (signed)
       0x0002-0x0003 : DY (signed)
     Output
       0x0010-0x0011 : Angle (signed)
-    */  
+    */
 
     case 0x01:
     {
@@ -295,13 +295,13 @@ void ST010DoCommand(void)
     break;
 
     //Sorts a bunch of values by weight
-    
+
     case 0x02:
     {
       ST010_SortDrivers(*(short*)&SRAM[0x0024], (uint16*)&SRAM[0x0040], (uint16*)&SRAM[0x0080]);
     }
     break;
-    
+
     /*
     Two Dimensional Coordinate Scale
 
@@ -312,8 +312,8 @@ void ST010DoCommand(void)
     Output
       0x0010-0x0013 : X1 (signed)
       0x0014-0x0017 : Y1 (signed)
-    */  
-    
+    */
+
     case 0x03:
     {
       ST010_Scale(*(short*)&SRAM[0x0004], *(short*)&SRAM[0x0000], *(short*)&SRAM[0x0002], (int *)&SRAM[0x10], (int *)&SRAM[0x14]);
@@ -344,7 +344,7 @@ void ST010DoCommand(void)
       //Target (x,y) coordinates
       int16 ypos_max = ST010_WORD(0x00C0);
       int16 xpos_max = ST010_WORD(0x00C2);
-    
+
       //Current coordinates and direction
       int32 ypos = SRAM[0xC4]|(SRAM[0xC5]<<8)|(SRAM[0xC6]<<16)|(SRAM[0xC7]<<24);
       int32 xpos = SRAM[0xC8]|(SRAM[0xC9]<<8)|(SRAM[0xCA]<<16)|(SRAM[0xCB]<<24);
@@ -395,7 +395,7 @@ void ST010DoCommand(void)
       {
         speed = 0x100;
       }
-      
+
       //Slow down for sharp curves
       else if (abs(o1-rot)>=0x1000)
       {
@@ -476,7 +476,7 @@ void ST010DoCommand(void)
       SRAM[0x00DD]=(uint8)(flags >> 8);
     }
     break;
-    
+
     /*
     16-bit Multiplication
 
@@ -493,7 +493,7 @@ void ST010DoCommand(void)
     }
     break;
 
-    /*    
+    /*
     Mode 7 Raster Data Calculation
 
     Input
@@ -503,7 +503,7 @@ void ST010DoCommand(void)
       0x0250-0x03af : Mode 7 Matrix B
       0x03b0-0x050f : Mode 7 Matrix C
       0x0510-0x066f : Mode 7 Matrix D
-    */   
+    */
 
     case 0x07:
     {
@@ -519,7 +519,7 @@ void ST010DoCommand(void)
         SRAM[0x00f0 + offset]=(uint8)(data);
         SRAM[0x00f1 + offset]=(uint8)(data >> 8);
         SRAM[0x0510 + offset]=(uint8)(data);
-        SRAM[0x0511 + offset]=(uint8)(data >> 8); 
+        SRAM[0x0511 + offset]=(uint8)(data >> 8);
 
         //Calculate Mode 7 Matrix B/C data
         data = ST010_M7Scale[line] * ST010_Sin(Theta) >> 15;
@@ -527,10 +527,10 @@ void ST010DoCommand(void)
         SRAM[0x0251 + offset]=(uint8)(data >> 8);
 
         if (data) { data = ~data; }
-        
+
         SRAM[0x03b0 + offset]=(uint8)(data);
         SRAM[0x03b1 + offset]=(uint8)(data >> 8);
-        
+
         offset += 2;
       }
 
@@ -551,7 +551,7 @@ void ST010DoCommand(void)
       0x0010-0x0011 : X1 (signed)
       0x0012-0x0013 : Y1 (signed)
     */
-    
+
     case 0x08:
     {
       ST010_Rotate(*(short*)&SRAM[0x0004], *(short*)&SRAM[0x0000], *(short*)&SRAM[0x0002], (short *)&SRAM[0x10], (short *)&SRAM[0x12]);

@@ -36,7 +36,7 @@
       inc ebp
       add ebp,ebx
       ret
-%endmacro      
+%endmacro
 
 ; tcall instruction
 %macro spctcall 1

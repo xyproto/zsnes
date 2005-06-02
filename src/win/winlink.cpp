@@ -473,7 +473,7 @@ BOOL InputRead(void)
       HRESULT hr;
 aquireagain:;
       hr=MouseInput->GetDeviceState(sizeof(DIMOUSESTATE),&dims);
-		
+
       if (hr==DIERR_INPUTLOST)
       {
          hr=MouseInput->Acquire();
@@ -860,7 +860,7 @@ BOOL InitSound()
 	         return FALSE;
 	      }
 		}
-	
+
       SoundEnabled=1;
       FirstSound=0;
       return TRUE;
@@ -989,7 +989,7 @@ BOOL ReInitSound()
 	         return FALSE;
 	      }
 		}
-	
+
       SoundEnabled=1;
       FirstSound=0;
       return TRUE;
@@ -1285,7 +1285,7 @@ bool InitInput()
 
    hr=KeyboardInput->SetDataFormat(&c_dfDIKeyboard);
    if (FAILED(hr)) {DInputError();return FALSE;}
-	
+
    hr=KeyboardInput->SetCooperativeLevel(hMainWindow,DISCL_NONEXCLUSIVE | DISCL_FOREGROUND );
 
    hr=DInput->CreateDevice(GUID_SysMouse, &MouseInput,NULL);
@@ -1293,7 +1293,7 @@ bool InitInput()
 
    hr=MouseInput->SetDataFormat(&c_dfDIMouse);
    if (FAILED(hr)) {DInputError();return FALSE;}
-	
+
    hr=MouseInput->SetCooperativeLevel(hMainWindow,DISCL_EXCLUSIVE|DISCL_FOREGROUND);
    if (FAILED(hr)) {DInputError();return FALSE;}
 
@@ -1614,7 +1614,7 @@ int InitDirectDraw()
       MessageBox(NULL, "IDirectDrawSurface7::GetPixelFormat failed.", "DirectDraw Error", MB_ICONERROR);
       return FALSE;
    }
-	
+
    BitDepth=format.dwRGBBitCount;
    GBitMask=format.dwGBitMask; // 0x07E0 or not
 
@@ -2514,7 +2514,7 @@ void drawscreenwin(void)
            break;
          }
          case 32:
-         {			
+         {
            DrawWin256x224x32();
            break;
          }

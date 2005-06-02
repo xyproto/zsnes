@@ -48,17 +48,17 @@ BOOL sw_start(int width, int height, int req_depth, int FullScreen)
     //int i;
     Uint32 flags = SDL_DOUBLEBUF | SDL_SWSURFACE;
     DWORD GBitMask;
-    
+
     flags |= (FullScreen ? SDL_FULLSCREEN : 0);
-    
+
     SurfaceX = width; SurfaceY = height;
     surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
     if (surface == NULL) {
 	fprintf (stderr, "Could not set %dx%d video mode: %s\n", SurfaceX, SurfaceY, SDL_GetError ());
 	return FALSE;
-      
+
     }
-    
+
     SurfaceLocking = SDL_MUSTLOCK(surface);
     SDL_WarpMouse(SurfaceX/4,SurfaceY/4);
 
@@ -173,7 +173,7 @@ void sw_drawwin()
 			break;
 		default:
 			break;
-		}	
+		}
 	} else {
 		copy640x480x16bwin();
 	}
@@ -195,7 +195,7 @@ void sw_drawwin()
 			break;
 		default:
 			break;
-		}		
+		}
 	} else {
 		copy640x480x16bwin();
 	}
