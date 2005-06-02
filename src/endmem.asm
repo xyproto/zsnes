@@ -20,16 +20,9 @@
 
 %include "macros.mac"
 
-; Much of this used to be in uninitialized space, until I discovered that
-;   ZSNES was unstable because of them...  Odd.
-
-SECTION .data
-Stuff db 'ZSNES v?.??? / free software, programmed by zsKnight, _Demo_, and Pharos',13,10,0
 
 
 SECTION .bss
-; ALIGN32   ; silly boy, bss section gets aligned by default XD
-
 NEWSYM wramdataa, resb 65536
 NEWSYM ram7fa,    resb 65536
 NEWSYM Inbetweendat, resd 4
@@ -256,5 +249,3 @@ NEWSYM bg4change, resb 256
 NEWSYM bgwinchange, resb 256
 
 NEWSYM PrevPicture, resb 64*56*2
-
-

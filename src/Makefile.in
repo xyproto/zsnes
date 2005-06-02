@@ -21,13 +21,14 @@
 CHIPDIR=chips
 CPUDIR=cpu
 DOSDIR=dos
+EFFECTSDIR=effects
 GUIDIR=gui
+JMADIR=jma
+NETDIR=net
+TOOLSDIR=tools
 VIDEODIR=video
 WINDIR=linux
-NETDIR=net
 ZIPDIR=zip
-EFFECTSDIR=effects
-JMADIR=jma
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
 	${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
@@ -41,7 +42,21 @@ CPUOBJ=${CPUDIR}/addrni.o ${CPUDIR}/dma.o ${CPUDIR}/dsp.o ${CPUDIR}/dspproc.o\
 	${CPUDIR}/memtable.o ${CPUDIR}/spc700.o ${CPUDIR}/stable.o\
 	${CPUDIR}/table.o ${CPUDIR}/tableb.o ${CPUDIR}/tablec.o
 
+EFFECTSOBJ=${EFFECTSDIR}/burn.o ${EFFECTSDIR}/water.o ${EFFECTSDIR}/smoke.o
+
 GUIOBJ=${GUIDIR}/gui.o ${GUIDIR}/guifuncs.o ${GUIDIR}/menu.o
+
+JMAOBJ=${JMADIR}/7zlzma.o ${JMADIR}/crc32.o ${JMADIR}/iiostrm.o\
+	${JMADIR}/inbyte.o ${JMADIR}/jma.o ${JMADIR}/lzma.o ${JMADIR}/lzmadec.o\
+	${JMADIR}/winout.o ${JMADIR}/zsnesjma.o
+
+MAINOBJ=cfgload.o cfgparse.o endmem.o init.o initc.o uic.o patch.o ui.o vcache.o\
+	version.o zmovie.o zstate.o debug.o zloader.o
+
+NETOBJ=
+#${NETDIR}/ztcp.o
+
+TOOLSOBJ=${TOOLSDIR}/fileutil.o ${TOOLSDIR}/strutil.o
 
 VIDEOBJ=${VIDEODIR}/makev16b.o ${VIDEODIR}/makev16t.o ${VIDEODIR}/makevid.o\
 	${VIDEODIR}/mode716.o ${VIDEODIR}/mode716b.o ${VIDEODIR}/mode716d.o\
@@ -60,21 +75,9 @@ WINOBJ=${WINDIR}/copyvwin.o ${WINDIR}/sdlintrf.o ${WINDIR}/sdllink.o @GL_DRAW@\
 WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/vesa2.o\
 	${DOSDIR}/initvid.o ${DOSDIR}/sw.o ${DOSDIR}/gppro.o ${DOSDIR}/vesa12.o
 
-NETOBJ=
-#${NETDIR}/ztcp.o
-
-JMAOBJ=${JMADIR}/7zlzma.o ${JMADIR}/crc32.o ${JMADIR}/iiostrm.o\
-	${JMADIR}/inbyte.o ${JMADIR}/jma.o ${JMADIR}/lzma.o ${JMADIR}/lzmadec.o\
-	${JMADIR}/winout.o ${JMADIR}/zsnesjma.o
-
 ZIPOBJ=${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
-EFFECTSOBJ=${EFFECTSDIR}/burn.o ${EFFECTSDIR}/water.o ${EFFECTSDIR}/smoke.o
-
-MAINOBJ=cfgload.o cfgparse.o endmem.o init.o initc.o uic.o patch.o ui.o vcache.o\
-	version.o zmovie.o zstate.o debug.o zloader.o
-
-OBJS=${MAINOBJ} ${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${NETOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
+ZOBJS=${MAINOBJ} ${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${NETOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
 
 PSR=parsegen
 
@@ -99,10 +102,27 @@ PSR=parsegen
 
 ALL: @ZSNESEXE@
 
-@ZSNESEXE@: ${PSR} ${OBJS}
-	@CXX@ -o @ZSNESEXE@ ${OBJS} @CFLAGS@ @LDFLAGS@
+@ZSNESEXE@: ${PSR} ${ZOBJS}
+	@CXX@ -o @ZSNESEXE@ ${ZOBJS} @CFLAGS@ @LDFLAGS@
 
 ${PSR}: parsegen.cpp
+
+ALL:
+	rm -f version.o
+
+tools: minwhite extraext sec-test srccount
+
+minwhite: ${TOOLSOBJ}
+	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/minwhite ${TOOLSDIR}/minwhite.cpp ${TOOLSDIR}/fileutil.o
+
+extraext: ${TOOLSOBJ}
+	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/extraext ${TOOLSDIR}/extraext.cpp ${TOOLSOBJ}
+
+sec-test: ${TOOLSOBJ}
+	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/sec-test ${TOOLSDIR}/sec-test.cpp ${TOOLSDIR}/fileutil.o
+
+srccount: ${TOOLSOBJ}
+	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/srccount ${TOOLSDIR}/srccount.cpp ${TOOLSDIR}/fileutil.o
 
 cfgload.o: cfgload.c macros.mac
 cfgparse.o: cfgparse.psr
@@ -112,6 +132,7 @@ initc.o: initc.c ${CPUDIR}/memtable.h ${JMADIR}/zsnesjma.h
 patch.o: patch.c
 ui.o: ui.asm macros.mac
 uic.o: uic.c
+vcache.o:vcache.asm macros.mac
 version.o: version.c
 zloader.o: zloader.c
 zmovie.o: zmovie.c
@@ -161,7 +182,6 @@ ${CPUDIR}/dsp.o: ${CPUDIR}/dsp.asm macros.mac
 
 ${DOSDIR}/debug.o: ${DOSDIR}/debug.asm macros.mac
 ${DOSDIR}/dosintrf.o: ${DOSDIR}/dosintrf.asm macros.mac
-vcache.o:vcache.asm macros.mac
 ${DOSDIR}/initvid.o:${DOSDIR}/initvid.asm macros.mac
 ${DOSDIR}/vesa2.o: ${DOSDIR}/vesa2.asm macros.mac
 ${DOSDIR}/vesa12.o: ${DOSDIR}/vesa12.asm macros.mac
@@ -191,6 +211,9 @@ ${JMADIR}/lzma.o: ${JMADIR}/lzma.cpp
 ${JMADIR}/lzmadec.o: ${JMADIR}/lzmadec.cpp
 ${JMADIR}/winout.o: ${JMADIR}/winout.cpp ${JMADIR}/iiostrm.h
 ${JMADIR}/zsnesjma.o: ${JMADIR}/zsnesjma.cpp ${JMADIR}/zsnesjma.h ${JMADIR}/jma.h
+
+${TOOLSDIR}/fileutil.o: ${TOOLSDIR}/fileutil.cpp ${TOOLSDIR}/fileutil.h
+${TOOLSDIR}/strutil.o: ${TOOLSDIR}/strutil.cpp ${TOOLSDIR}/strutil.h
 
 ${VIDEODIR}/procvid.o: ${VIDEODIR}/procvid.asm macros.mac ${VIDEODIR}/copyvid.inc ${VIDEODIR}/2xsaimmx.inc
 ${VIDEODIR}/procvidc.o: ${VIDEODIR}/procvidc.c
@@ -235,9 +258,6 @@ ${VIDEODIR}/newg162.o: macros.mac ${VIDEODIR}/newg162.asm ${VIDEODIR}/newg162.ma
 ${ZIPDIR}/zpng.o: ${ZIPDIR}/zpng.c ${ZIPDIR}/zpng.h
 ${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/zunzip.h
 
-ALL:
-	rm -f version.o ${CFG}
-
 install:
 	@INSTALL@ -d -m 0755 ${DESTDIR}/@prefix@/bin
 	@INSTALL@ -m 0755 @ZSNESEXE@ ${DESTDIR}/@prefix@/bin
@@ -248,7 +268,7 @@ uninstall:
 	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man5/zsnes.5
 
 clean:
-	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${NETDIR}/*.o ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  ${EFFECTSDIR}/*.o  ${JMADIR}/*.o  *.o ${CFG} ${PSR} @ZSNESEXE@
+	rm -f *.o ${CHIPDIR}/*.o ${CPUDIR}/*.o ${DOSDIR}/*.o ${EFFECTSDIR}/*.o ${GUIDIR}/*.o ${JMADIR}/*.o ${NETDIR}/*.o ${TOOLSDIR}/*.o ${VIDEODIR}/*.o ${WINDIR}/*.o ${ZIPDIR}/*.o ${PSR} @ZSNESEXE@
 
 distclean:
-	rm -f ${CHIPDIR}/*.o  ${CPUDIR}/*.o  ${VIDEODIR}/*.o  ${NETDIR}/*.o ${GUIDIR}/*.o  ${DOSDIR}/*.o  ${WINDIR}/*.o  ${ZIPDIR}/*.o  ${EFFECTSDIR}/*.o  ${JMADIR}/*.o  *.o ${CFG} ${PSR} @ZSNESEXE@ Makefile config.cache config.log config.status config.h
+	rm -f *.o ${CHIPDIR}/*.o ${CPUDIR}/*.o ${DOSDIR}/*.o ${EFFECTSDIR}/*.o ${GUIDIR}/*.o ${JMADIR}/*.o ${NETDIR}/*.o ${TOOLSDIR}/*.o ${VIDEODIR}/*.o ${WINDIR}/*.o ${ZIPDIR}/*.o ${PSR} @ZSNESEXE@ Makefile config.cache config.log config.status config.h
