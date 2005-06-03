@@ -38,7 +38,7 @@ using namespace std;
 #define SLASH_STR "/"
 #endif
 
-#ifdef MSC_VER
+#ifndef __GNUC__ //MSVC
 typedef ssize_t int;
 #endif
 
@@ -252,7 +252,7 @@ ssize_t enhanced_atoi(const char *str)
                << "}\n\n";
     out_stream.close();
 
-#ifdef MSC_VER
+#ifndef __GNUC__ //MSVC
     system("cl /Foeatio.exe eatio.c");
 #else
     system("gcc -o eatio.exe eatio.c -s");
