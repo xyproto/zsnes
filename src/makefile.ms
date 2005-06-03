@@ -50,7 +50,7 @@ JMADIR=jma
 DELETECOMMAND=rm -f
 TRUTH=;true
 SLASH=/
-PSR=parsegen
+PSR=parsegen.exe
 ASM=nasm
 ASMOPT=-O1
 ASMFLAGSORIG=
@@ -111,7 +111,6 @@ ifeq (${CROSS},no)
   TRUTH=
   DELETECOMMAND=del
   SLASH=\${BLAHBLAHBLAH}
-  PSR=parsegen.exe
 endif
 
 ifeq (${OS},__MSDOS__)
@@ -374,6 +373,15 @@ ${OBJFIX}: $<
 	gcc -O3 -o $@ objfix.c
 endif
 ${PSR}: $<
+ifeq (${ENV},msvc)
+	cl /Fo$@ parsegen.cpp
+else
+ifeq (${ENV},dos)
+	gpp -O3 -o $@ parsegen.cpp
+else
+	g++ -O3 -o $@ parsegen.cpp
+endif
+endif
 cfgparse${OE}: $<
 
 clean:
