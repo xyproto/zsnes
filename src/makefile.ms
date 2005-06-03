@@ -374,7 +374,7 @@ ${OBJFIX}: $<
 endif
 ${PSR}: $<
 ifeq (${ENV},msvc)
-	cl /Fo$@ parsegen.cpp
+	cl /EHsc /Fo$@ parsegen.cpp
 else
 ifeq (${ENV},dos)
 	gpp -O3 -o $@ parsegen.cpp
