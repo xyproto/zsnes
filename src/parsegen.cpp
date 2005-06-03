@@ -39,7 +39,8 @@ using namespace std;
 #endif
 
 #ifndef __GNUC__ //MSVC
-typedef ssize_t int;
+typedef int ssize_t;
+#define strcasecmp stricmp
 #endif
 
 #define LINE_LENGTH 2048*10
