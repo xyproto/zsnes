@@ -38,6 +38,10 @@ using namespace std;
 #define SLASH_STR "/"
 #endif
 
+#ifdef MSC_VER
+typedef ssize_t int;
+#endif
+
 #define LINE_LENGTH 2048*10
 char line[LINE_LENGTH];
 
