@@ -254,7 +254,7 @@ ssize_t enhanced_atoi(const char *str)
     out_stream.close();
 
 #ifndef __GNUC__ //MSVC
-    system("cl /Foeatio.exe eatio.c");
+    system("cl /Feeatio.exe eatio.c");
 #else
     system("gcc -o eatio.exe eatio.c -s");
 #endif
