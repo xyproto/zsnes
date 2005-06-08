@@ -1017,7 +1017,7 @@ static void zmv_record(bool pause, unsigned char combos_used, unsigned char slow
   size_t skip_bits = 0;
 
   static float average = 0.0f;
-  if (average <= 0.0f) { average = (float)zmv_vars.header.average_fps/((romispal) ? 250.0f : 240.0f); }
+  if (!average) { average = (float)zmv_vars.header.average_fps/((romispal) ? 250.0f : 240.0f); }
 
   if (pause) { zmv_vars.header.incr_frames++; }
 
