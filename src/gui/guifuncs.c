@@ -71,7 +71,7 @@ void GUIRestoreVars()
   smallscreenon = (unsigned int)GUIsmallscreenon;
   ScreenScale = GUIScreenScale;
 
-  if (TimeChecker == CalcCfgChecksum());
+  if (TimeChecker == CalcCfgChecksum())
   {
     ShowTimer = 1;
     NumSnow = 200;
