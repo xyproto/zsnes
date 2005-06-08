@@ -478,7 +478,7 @@ static size_t internal_chapter_greater(struct internal_chapter_buf *icb, size_t 
       }
     }
   } while ((icb = icb->next));
-  return((greater == ~0) ? offset : greater);
+  return((greater == 0xFFFFFFFF) ? offset : greater);
 }
 
 static size_t internal_chapter_lesser(struct internal_chapter_buf *icb, size_t offset)
@@ -1017,7 +1017,7 @@ static void zmv_record(bool pause, unsigned char combos_used, unsigned char slow
   size_t skip_bits = 0;
 
   static float average = 0.0f;
-  if (!average) { average = (float)zmv_vars.header.average_fps/((romispal) ? 250.0f : 240.0f); }
+  if (average <= 0.0f) { average = (float)zmv_vars.header.average_fps/((romispal) ? 250.0f : 240.0f); }
 
   if (pause) { zmv_vars.header.incr_frames++; }
 
@@ -1298,7 +1298,7 @@ static bool zmv_replay()
           ReturnFromSPCStall = 0;
           return(true);
         }
-        if (zmv_replay_command(command));
+        if (zmv_replay_command(command))
         {
           return(zmv_replay());
         }
@@ -1486,7 +1486,7 @@ static void zmv_add_chapter()
     //Check if there is external here already - should possibly modify this to use
     //intern_chapter_lesser() to see if an internal chapter was made right before this
     //point in the stream
-    if ((internal_chapter_pos(&zmv_open_vars.external_chapters, current_loc)) == ~0)
+    if ((internal_chapter_pos(&zmv_open_vars.external_chapters, current_loc)) == 0xFFFFFFFF)
     {
       //Check if we have internal right here
       unsigned char flag;
