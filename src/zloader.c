@@ -35,10 +35,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #endif
 
+/*
 #ifndef __MSDOS__
 extern unsigned char NetChatFirst, NetServer, NetNewNick, NetFilename[512], CmdLineTCPIPAddress,
                      NetQuitAfter, UDPConfig, CmdLineNetPlay;
 #endif
+*/
 
 #ifdef __WIN32__
 void ImportDirectX();
@@ -184,6 +186,7 @@ static void display_help()
 #ifndef __LINUX__
   put_line("  Microsoft-style options (/option) are also accepted");
 #endif
+/*
 #ifndef __MSDOS__
   put_line("               --Netplay Parameters--");
   put_line(" Commandline: /ABCDE <nickname> <fname> <IP Addy>");
@@ -201,6 +204,7 @@ static void display_help()
   put_line("   eg: zsnes /UCCN2 nickname /home/zuser/snesroms 202.36.124.28");
 #endif
 #endif
+*/
 
   exit(1);
 }

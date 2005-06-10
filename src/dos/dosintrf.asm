@@ -40,7 +40,7 @@ EXTSYM GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o,GUIhandler9h
 EXTSYM GUIhandler8h,GUIinit18_2hz,dosmakepal,doschangepal,dosinitvideo
 EXTSYM dosinitvideo2,DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
 EXTSYM DOSClearScreen,DosUpdateDevices,DOSJoyRead,pl1contrl,pl2contrl,pl3contrl
-EXTSYM pl4contrl,pl5contrl,BufferSizeW,BufferSizeB,ProcessSoundBuffer
+EXTSYM pl4contrl,pl5contrl
 EXTSYM GrayscaleMode
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
@@ -1004,8 +1004,6 @@ NEWSYM UpdateDevices                    ; One-time input device init
 
 NEWSYM JoyRead
         call DOSJoyRead
-        call SoundProcess               ; Put the sound stuff here since it's
-                                        ; called 60 times per second
         ret
 
 NEWSYM SetInputDevice
@@ -1475,29 +1473,6 @@ NEWSYM StopSound
 
 NEWSYM StartSound
     ret
-
-
-NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
-.nosound
-    ret
-.notdos
-    cmp byte[soundon],0
-    je .nosound
-    cmp byte[DSPDisable],1
-    je .nosound
-    mov eax,200         ; Size of 32-bit buffer in dwords
-    add eax,eax
-    mov dword[BufferSizeW],eax
-    add eax,eax
-    mov dword[BufferSizeB],eax
-    pushad
-    call ProcessSoundBuffer
-    popad
-    ; DSPBuffer should contain the processed buffer in the specified size
-    ; You will have to convert/clip it to 16-bit for actual sound process
-    ret
-
-
 
 NEWSYM Check60hz
     ; Call the timer update function here

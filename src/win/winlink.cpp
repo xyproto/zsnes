@@ -526,14 +526,16 @@ aquireagain:;
 
 extern "C" void SaveSramData(void);
 extern "C" void GUISaveVars(void);
+extern "C" void createnewcfg(void);
 
 void ExitFunction()
 {
    if (GUIOn2 == 0)
    {
       asm_call(SaveSramData);
-      asm_call(GUISaveVars);
    }
+   asm_call(GUISaveVars);
+   asm_call(createnewcfg);
 
    // We need to clean up the debug window if it's running
 

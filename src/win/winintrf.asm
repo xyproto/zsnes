@@ -38,7 +38,7 @@ EXTSYM vidbufferofsb,vidbuffer,clearwin,Stop60HZ,initwinvideo,vesa2_rpos
 EXTSYM vesa2_gpos,vesa2_bpos,vesa2_rposng,vesa2_gposng,vesa2_bposng,vesa2_usbit
 EXTSYM vesa2_clbit,vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3,vesa2red10,res640
 EXTSYM res480,cbitmode,cvidmode,vesa2_bits,vesa2_x,vesa2_y,genfulladdtab,GUICPC
-EXTSYM drawscreenwin,ConvertToAFormat,UnusedBit,HalfTrans,UnusedBitXor,UnusedBit
+EXTSYM drawscreenwin,ConvertToAFormat,HalfTrans,UnusedBitXor,UnusedBit
 EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC
 EXTSYM WinUpdateDevices,UpdateVFrame,GetMouseX,GetMouseY,GetMouseMoveX
 EXTSYM GetMouseMoveY,GetMouseButton,SetMouseMinX,SetMouseMaxX,SetMouseMinY

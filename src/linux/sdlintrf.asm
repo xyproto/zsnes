@@ -36,7 +36,7 @@ EXTSYM Stop60HZ,initwinvideo,vesa2_rpos,vesa2_gpos,vesa2_bpos,vesa2_rposng
 EXTSYM vesa2_gposng,vesa2_bposng,vesa2_usbit,vesa2_clbit,vesa2_clbitng
 EXTSYM vesa2_clbitng2,vesa2_clbitng3,vesa2red10,res640,res480,cbitmode,cvidmode
 EXTSYM vesa2_bits,vesa2_x,vesa2_y,genfulladdtab,GUICPC,drawscreenwin
-EXTSYM ConvertToAFormat,UnusedBit,HalfTrans,UnusedBitXor,UnusedBit,UnusedBitXor
+EXTSYM ConvertToAFormat,HalfTrans,UnusedBit,UnusedBitXor
 EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC,UpdateVFrame,GetMouseX
 EXTSYM GetMouseY,GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
 EXTSYM MouseButton,Start36HZ,Stop36HZ,BufferSizeW,BufferSizeB,ProcessSoundBuffer
@@ -1088,7 +1088,7 @@ NEWSYM StartSound
 
 
 NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
-   pushad
+    pushad
     cmp byte[soundon],0
     je .nosound
     cmp byte[DSPDisable],1
