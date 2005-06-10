@@ -513,7 +513,7 @@ LRESULT CALLBACK UPDialogMain(HWND hDlg, UINT message, WPARAM wParam,
     return FALSE;
 }
 
-#endif CCBETA
+#endif //CCBETA
 
 
 DWORD ZFileSystemInit()
@@ -879,7 +879,7 @@ DWORD ZFileFindNext()
    *(char *)(DTALocPos+0x15)=0;
 
    if(ZFileFindATTRIB&0x10 && (FindDataStruct.attrib&0x10)==0) return(ZFileFindNext());
-   if((ZFileFindATTRIB&0x10==0) && FindDataStruct.attrib&0x10) return(ZFileFindNext());
+   if(((ZFileFindATTRIB&0x10)==0) && FindDataStruct.attrib&0x10) return(ZFileFindNext());
 
    if(FindDataStruct.attrib&_A_SUBDIR)  *(char *)(DTALocPos+0x15)=0x10;
    strcpy((char *)DTALocPos+0x1E,FindDataStruct.name);
@@ -894,7 +894,7 @@ DWORD ZFileFindFirst()
    TempFind=0;
    if(FindFirstHandle==-1) return(-1);
    if(ZFileFindATTRIB&0x10 && (FindDataStruct.attrib&0x10)==0) return(ZFileFindNext());
-   if((ZFileFindATTRIB&0x10==0) && FindDataStruct.attrib&0x10) return(ZFileFindNext());
+   if(((ZFileFindATTRIB&0x10)==0) && FindDataStruct.attrib&0x10) return(ZFileFindNext());
 
    if(FindDataStruct.attrib&_A_SUBDIR)  *(char *)(DTALocPos+0x15)=0x10;
    strcpy((char *) DTALocPos+0x1E,FindDataStruct.name);

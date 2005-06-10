@@ -1068,13 +1068,9 @@ SECTION .text
 
 NEWSYM UpdateDevices                    ; One-time input device init
         call WinUpdateDevices
-;        call DosUpdateDevices
         ret
 
 NEWSYM JoyRead
-;        call SoundProcess               ; Put the sound stuff here since it's
-                                        ; called 60 times per second
-;        call DOSJoyRead
         pushad
         call UpdateVFrame
         popad

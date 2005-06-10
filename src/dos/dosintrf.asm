@@ -1478,15 +1478,6 @@ NEWSYM Check60hz
     ; Call the timer update function here
     ret
 
-; ****************************
-; TCP/IP Stuff
-; ****************************
-
-SECTION .text
-
-NEWSYM Wait1SecWin
-NEWSYM WinErrorA
-NEWSYM WinErrorB
 NEWSYM GotoHomepage
     ret
 

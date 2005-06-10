@@ -334,7 +334,7 @@ extern "C"
 void DDrawError(){
    char message1[256];
 
-   sprintf(message1,"Error drawing to the screen\nMake sure the device is not being used by another process \0");
+   sprintf(message1,"Error drawing to the screen\nMake sure the device is not being used by another process ");
    MessageBox (NULL, message1, "DirectDraw Error" , MB_ICONERROR );
 }
 
@@ -530,10 +530,7 @@ extern "C" void createnewcfg(void);
 
 void ExitFunction()
 {
-   if (GUIOn2 == 0)
-   {
-      asm_call(SaveSramData);
-   }
+   if (GUIOn2 == 0) { asm_call(SaveSramData); }
    asm_call(GUISaveVars);
    asm_call(createnewcfg);
 
@@ -555,7 +552,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
    static bool shiftpr;
    bool accept;
-   int vkeyval;
+   int vkeyval=0;
 
    switch (uMsg)
    {
@@ -1242,7 +1239,7 @@ void ReleaseDirectDraw()
 void DInputError(){
    char message1[256];
 
-   sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx \0");
+   sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx ");
    MessageBox (NULL, message1, "DirectInput Error" , MB_ICONERROR );
 }
 
@@ -1253,29 +1250,29 @@ bool InitInput()
 
    if (FAILED(hr=pDirectInput8Create(hInst,DIRECTINPUT_VERSION,IID_IDirectInput8A,(void **) &DInput,NULL)))
    {
-      sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx \0");
+      sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx ");
       MessageBox (NULL, message1, "DirectInput Error" , MB_ICONERROR );
 
       switch (hr)
       {
       case DIERR_BETADIRECTINPUTVERSION:
-         sprintf(message1,"Beta %X\n\0",hr);
+         sprintf(message1,"Beta %X\n",hr);
          MessageBox (NULL, message1, "Init", MB_ICONERROR );
          break;
       case DIERR_INVALIDPARAM:
-         sprintf(message1,"Invalid %X\n\0",hr);
+         sprintf(message1,"Invalid %X\n",hr);
          MessageBox (NULL, message1, "Init", MB_ICONERROR );
          break;
       case DIERR_OLDDIRECTINPUTVERSION:
-         sprintf(message1,"OLDDIRECTINPUTVERSION %X\n\0",hr);
+         sprintf(message1,"OLDDIRECTINPUTVERSION %X\n",hr);
          MessageBox (NULL, message1, "Init", MB_ICONERROR );
          break;
       case DIERR_OUTOFMEMORY:
-         sprintf(message1,"OUTOFMEMORY %X\n\0",hr);
+         sprintf(message1,"OUTOFMEMORY %X\n",hr);
          MessageBox (NULL, message1, "Init", MB_ICONERROR );
          break;
       default:
-         sprintf(message1,"UNKNOWN %X\n\0",hr);
+         sprintf(message1,"UNKNOWN %X\n",hr);
          MessageBox (NULL, message1, "Init", MB_ICONERROR );
          break;
       }
