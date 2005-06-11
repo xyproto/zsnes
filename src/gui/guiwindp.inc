@@ -3017,7 +3017,7 @@ DisplayGUIOptns:              ; GUI Options
     GUIDisplayCheckbox 10,12,23,mousewrap      ; Checkboxes
     GUIDisplayCheckbox 10,12,33,mouseshad
     GUIDisplayCheckbox 10,12,43,lastcursres
-    GUIDisplayCheckbox 10,12,53,resetposn
+    GUIDisplayCheckboxn 10,12,53,resetposn,0    ; Save Win Pos, but the option is really for Reset Pos
     GUIDisplayCheckbox 10,12,63,GUIClick
     GUIDisplayCheckbox 10,12,73,JoyPad1Move
     GUIDisplayCheckbox 10,124,23,GUIEnableTransp
