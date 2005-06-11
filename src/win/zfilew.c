@@ -697,7 +697,6 @@ DWORD ZFileSeek()
     else
     {
 #endif
-        int res = 0;
         int mode = 0;
         if (ZFileSeekMode==0)
             mode = SEEK_SET;

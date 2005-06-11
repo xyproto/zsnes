@@ -124,10 +124,12 @@ char *generate_filename(void)
 {
 	extern char fnames;
 	char *filename;
-	char *tmp = &fnames;
-	char *tmp2 = 0;
 	short i=0;
 	struct stat buf;
+	char *tmp = &fnames;
+#ifdef __LINUX__
+	char *tmp2 = 0;
+#endif
 
 #ifdef __MSDOS__
 	filename = (char *)malloc(14);
