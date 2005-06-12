@@ -21,6 +21,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 Config file handler creator by Nach (C) 2005
 */
 
+#if !defined(__GNUC__) && !defined(_MSC_VER)
+#error You are using an unsupported compiler
+#endif
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -38,7 +42,7 @@ using namespace std;
 #define SLASH_STR "/"
 #endif
 
-#ifndef __GNUC__ //MSVC
+#ifdef _MSC_VER //MSVC
 typedef int ssize_t;
 #define strcasecmp stricmp
 #endif
@@ -253,8 +257,8 @@ ssize_t enhanced_atoi(const char *str)
                << "}\n\n";
     out_stream.close();
 
-#ifndef __GNUC__ //MSVC
-    system("cl /Feeatio.exe eatio.c");
+#ifdef _MSC_VER //MSVC
+    system("cl /nologo /Feeatio.exe eatio.c");
 #else
     system("gcc -o eatio.exe eatio.c -s");
 #endif
