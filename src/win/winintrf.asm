@@ -162,11 +162,10 @@ NEWSYM PrintStr          ; Print ASCIIZ string
     popad
     ret
 
-
 SECTION .data
 NEWSYM wfkey, db 0
-SECTION .text
 
+SECTION .text
 NEWSYM WaitForKey       ; Wait for a key to be pressed
     pushad
     call getch
@@ -178,7 +177,6 @@ NEWSYM WaitForKey       ; Wait for a key to be pressed
     ; return key in al
     ret
 
-
 NEWSYM OsExit
 NEWSYM OSExit
     call exit
@@ -186,8 +184,8 @@ NEWSYM OSExit
 
 SECTION .data
 NEWSYM TempHandle, dd 0
-SECTION .text
 
+SECTION .text
 NEWSYM Open_File
     pushad
     mov dword[ZOpenMode],0
@@ -751,7 +749,6 @@ NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
     popad
     ret
 
-
 NEWSYM InitPreGame   ; Executes before starting/continuing a game
     mov byte[pressed+1],2
     pushad
@@ -828,7 +825,6 @@ SECTION .data
 NEWSYM firstvideo, dd 1
 SECTION .text
 
-
 NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
    mov byte[res640],1
    mov byte[res480],1
@@ -886,8 +882,8 @@ NEWSYM deinitvideo
 ; ** copy video mode functions **
 SECTION .data
 NEWSYM converta, dd 0
-SECTION .text
 
+SECTION .text
 NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
     cmp dword [converta],1
     jne near .skipconv
@@ -945,7 +941,6 @@ NEWSYM vidpastecopyscr       ; GUI screen render
 ; ** Clear Screen function **
 NEWSYM ClearScreen
    ret
-
 
 ; ** Video Mode Variables **
 SECTION .data
@@ -1146,11 +1141,10 @@ NEWSYM ScanCodeListing
         db 'P2B','P2Y','P2S','P2T','P2U','P2D','P2L','P2R'
         db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
 
-gotoroot db '\',0
-
-SECTION .data
 NEWSYM ZSNESBase, dd 0
 TempVarSeek dd 0
+gotoroot db '\',0
+
 SECTION .text
 
 ; ****************************
@@ -1170,7 +1164,6 @@ NEWSYM WMouseMoveY, dd 0
 NEWSYM WMouseButton, dd 0
 
 SECTION .text
-
 
 NEWSYM Get_MouseData         ; Returns both pressed and coordinates
     ; bx : bit 0 = left button, bit 1 = right button
@@ -1306,7 +1299,6 @@ BitSizeG db 6
 BitSizeB db 5
 SECTION .text
 
-
 InitializeGfxStuff:
         ; Process Red Stuff
         mov al,[BitPosR]
@@ -1414,7 +1406,6 @@ InitializeGfxStuff:
          call Init_2xSaIMMXW
          pop eax
 
-
         ret
 
 
@@ -1499,4 +1490,3 @@ SystemTime:
 .wMinute                dw    0
 .wSecond                dw    0
 .wMilliseconds          dw    0
-

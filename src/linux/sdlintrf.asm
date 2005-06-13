@@ -18,6 +18,8 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+
+
 %include "macros.mac"
 
 EXTSYM DosExit,ZFileSystemInit,getcmdline,GUIRestoreVars,getcfg,obtaindir
@@ -573,8 +575,6 @@ NEWSYM Output_Text       ; Output character (ah=02h) or string (ah=09h)
     popad
     ret
 
-
-
 NEWSYM InitPreGame   ; Executes before starting/continuing a game
     mov byte[pressed+1],2
     pushad
@@ -704,6 +704,7 @@ NEWSYM deinitvideo
 ; ** copy video mode functions **
 SECTION .data
 NEWSYM converta, dd 0
+
 SECTION .text
 NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
     cmp dword [converta],1
@@ -972,9 +973,6 @@ NEWSYM ScanCodeListing
         db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
 %endif
 
-SECTION .text
-
-SECTION .data
 NEWSYM ZSNESBase, dd 0
 TempVarSeek dd 0
 gotoroot db '/',0
@@ -995,8 +993,8 @@ NEWSYM WMouseY, dd 0
 NEWSYM WMouseMoveX, dd 0
 NEWSYM WMouseMoveY, dd 0
 NEWSYM WMouseButton, dd 0
-SECTION .text
 
+SECTION .text
 NEWSYM Get_MouseData         ; Returns both pressed and coordinates
     ; bx : bit 0 = left button, bit 1 = right button
     ; cx = Mouse X Position, dx = Mouse Y Position
