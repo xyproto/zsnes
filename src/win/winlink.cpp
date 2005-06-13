@@ -530,7 +530,10 @@ extern "C" void createnewcfg(void);
 
 void ExitFunction()
 {
-   if (GUIOn2 == 0) { asm_call(SaveSramData); }
+   if (GUIOn2 == 0)
+   {
+   asm_call(SaveSramData);
+   }
    asm_call(GUISaveVars);
    asm_call(createnewcfg);
 
