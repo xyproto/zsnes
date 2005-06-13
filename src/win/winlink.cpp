@@ -552,7 +552,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
    static bool shiftpr;
    bool accept;
-   int vkeyval=0;
+   int vkeyval = 0;
 
    switch (uMsg)
    {

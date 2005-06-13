@@ -70,29 +70,13 @@ NEWSYM SystemInit
     mov byte[cvidmode],3
     call getcmdline
 
-    mov byte[esi],'z'
-    mov byte[esi+1],'s'
-    mov byte[esi+2],'n'
-    mov byte[esi+3],'e'
-    mov byte[esi+4],'s'
-    mov byte[esi+5],'w'
-    mov byte[esi+6],'.'
-    mov byte[esi+7],'c'
-    mov byte[esi+8],'f'
-    mov byte[esi+9],'g'
+    mov dword[esi],'zsne'
+    mov dword[esi+4],'sw.c'
+    mov word[esi+8],'fg'
     mov byte[esi+10],0
-    mov byte[esi+256],'z'
-    mov byte[esi+1+256],'g'
-    mov byte[esi+2+256],'u'
-    mov byte[esi+3+256],'i'
-    mov byte[esi+4+256],'c'
-    mov byte[esi+5+256],'f'
-    mov byte[esi+6+256],'g'
-    mov byte[esi+7+256],'w'
-    mov byte[esi+8+256],'.'
-    mov byte[esi+9+256],'d'
-    mov byte[esi+10+256],'a'
-    mov byte[esi+11+256],'t'
+    mov dword[esi+256],'zgui'
+    mov dword[esi+4+256],'cfgw'
+    mov dword[esi+8+256],'.dat'
     mov byte[esi+12+256],0
 
     mov byte[spcon],1

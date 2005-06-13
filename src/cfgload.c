@@ -25,6 +25,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef __LINUX__
 #include "gblhdr.h"
 #else
+#include <io.h>
 #include <stdio.h>
 #include <string.h>
 #endif
@@ -187,7 +188,7 @@ unsigned char cfgreinittime = 30;
 
 void ConvertJoyMap1()
 {
-  int bl;
+  unsigned int bl;
   // Convert if 2,4,6, or sidewinder
   if (pl1contrl == 2)
   {
@@ -248,7 +249,7 @@ void ConvertJoyMap1()
 
 void ConvertJoyMap2()
 {
-  int bl;
+  unsigned int bl;
   //  mov al,[pl2contrl]
   // Convert if 2,4,6, or sidewinder
   //If pl1contrl=2 and pl2contrl=2, then set pl2 buttons to 3 & 4
