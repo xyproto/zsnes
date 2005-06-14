@@ -19,6 +19,7 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
+
 bits 32
 section .text
 ; Zsnes required macros
@@ -26,6 +27,7 @@ section .text
 %define ZVERSION 'Pre 1.43'
 
 %ifdef ELF
+
 %imacro newsym 1
   GLOBAL %1
   %1:
@@ -35,13 +37,6 @@ section .text
   %1: %2
 %endmacro
 %define EXTSYM EXTERN
-%macro ALIGN32 0
-  times ($$-$) & 1Fh nop    ; Long word alignment
-%endmacro
-
-%macro ALIGN16 0
-  times ($$-$) & 1Fh nop    ; Long word alignment
-%endmacro
 
 %else
 
@@ -50,22 +45,12 @@ section .text
   _%1:
   %1:
 %endmacro
-
 %imacro newsym 2+
   GLOBAL _%1
   _%1:
   %1: %2
 %endmacro
-
-%macro ALIGN32 0
-  times ($$-$) & 1Fh nop    ; Long word alignment
-%endmacro
-
-%macro ALIGN16 0
-  times ($$-$) & 1Fh nop    ; Long word alignment
-%endmacro
-
-%imacro extsym 1-*
+%imacro EXTSYM 1-*
 %rep %0
   	EXTERN _%1
   	%define %1 _%1
@@ -74,85 +59,9 @@ section .text
 %endmacro
 %endif
 
-
-; macro more or less similar to STUB_FUNCTION
-; you can call it without argument,
-; or with a string arg which will be displayed
-%macro STUB_ASM 0-1 "STUB_ASM"
-%ifndef __PRINTF__
-%define __PRINTF__
-EXTSYM printf
-%endif
-[section .data]
-%%string: db %1, 0
-%%strformat: db '%s in %s line %u',13, 10,0
-%%filename: db __FILE__, 0
-__SECT__
-;stubasm:
-pushad
-mov eax, __LINE__
-push eax
-mov eax, %%filename
-push eax
-mov eax, %%string
-push eax
-mov eax, %%strformat
-push eax
-call printf
-add esp, 16
-popad
+%macro ALIGN32 0
+  times ($$-$) & 1Fh nop    ; Long word alignment
 %endmacro
-
-
-; same as above but prints the string
-; whose address is the argument to the macros
-%macro STUB_ASM_STR 1
-%ifndef __PRINTF__
-%define __PRINTF__
-EXTSYM printf
-%endif
-[section .data]
-%%strformat: db '%s in %s line %u',13, 10,0
-%%filename: db __FILE__, 0
-__SECT__
-;stubasm:
-pushad
-mov eax, __LINE__
-push eax
-mov eax, %%filename
-push eax
-mov eax, %1
-push eax
-mov eax, %%strformat
-push eax
-call printf
-add esp, 16
-popad
+%macro ALIGN16 0
+  times ($$-$) & 1Fh nop    ; Long word alignment
 %endmacro
-
-; same as above but prints a number
-%macro STUB_ASM_INT 1
-%ifndef __PRINTF__
-%define __PRINTF__
-EXTSYM printf
-%endif
-[section .data]
-%%strformat: db '%x in %s line %u',13, 10,0
-%%filename: db __FILE__, 0
-__SECT__
-;stubasm:
-pushad
-mov eax, __LINE__
-push eax
-mov eax, %%filename
-push eax
-mov eax, %1
-push eax
-mov eax, %%strformat
-push eax
-call printf
-add esp, 16
-popad
-%endmacro
-
-
