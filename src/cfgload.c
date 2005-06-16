@@ -682,7 +682,7 @@ void getcfg()
             j++;
           i++;
         }
-        while (i < _stralen);
+        while ((unsigned)i < _stralen);
 
         if (j == 1)
         {
@@ -690,16 +690,16 @@ void getcfg()
           j = 0;
           _strlena = 0;
           _strlenb = 0;
-          while (i < _stralen)
+          while ((unsigned)i < _stralen)
           {
             if (_string[i] == '=')
             {
               i++;
-              if (i == _stralen)
+              if ((unsigned)i == _stralen)
                 continue;
               j = 0;
               _usespace = 0;
-              while (i < _stralen)
+              while ((unsigned)i < _stralen)
               {
                 temp = _string[i];
                 if (_usespace || temp != ' ')
@@ -1124,7 +1124,7 @@ void getcfg()
                     }
                     i++;
                   }
-                  while (i < _strlenb);
+                  while ((unsigned)i < _strlenb);
                   if ((_per2exec<150 && _per2exec>50) && !no_save)
                   {
                     per2exec = _per2exec;
@@ -1384,7 +1384,7 @@ void getcfg()
                     }
                     i++;
                   }
-                  while (i < _strlenb);
+                  while ((unsigned)i < _strlenb);
                   if (_volume <= 100 && !no_save)
                   {
                     MusicRelVol = _volume;
@@ -1469,7 +1469,7 @@ void getcfg()
                     }
                     i++;
                   }
-                  while (i < _strlenb);
+                  while ((unsigned)i < _strlenb);
                   if ((_per2exec<150 && _per2exec>5) && !no_save)//shouldn't this be 50?
                     cfgreinittime = _per2exec;
                 }
