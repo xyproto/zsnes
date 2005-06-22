@@ -268,7 +268,7 @@ uninstall:
 	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man5/zsnes.5
 
 clean:
-	rm -f *.o ${CHIPDIR}/*.o ${CPUDIR}/*.o ${DOSDIR}/*.o ${EFFECTSDIR}/*.o ${GUIDIR}/*.o ${JMADIR}/*.o ${NETDIR}/*.o ${TOOLSDIR}/*.o ${VIDEODIR}/*.o ${WINDIR}/*.o ${ZIPDIR}/*.o ${PSR} @ZSNESEXE@
+	rm -f *.o ${CHIPDIR}/*.o ${CPUDIR}/*.o ${DOSDIR}/*.o ${EFFECTSDIR}/*.o ${GUIDIR}/*.o ${JMADIR}/*.o ${NETDIR}/*.o ${TOOLSDIR}/*.o ${VIDEODIR}/*.o ${WINDIR}/*.o ${ZIPDIR}/*.o ${PSR} cfgparse.c @ZSNESEXE@
 
 distclean:
-	rm -f *.o ${CHIPDIR}/*.o ${CPUDIR}/*.o ${DOSDIR}/*.o ${EFFECTSDIR}/*.o ${GUIDIR}/*.o ${JMADIR}/*.o ${NETDIR}/*.o ${TOOLSDIR}/*.o ${VIDEODIR}/*.o ${WINDIR}/*.o ${ZIPDIR}/*.o ${PSR} @ZSNESEXE@ Makefile config.cache config.log config.status config.h
+	rm -f *.o ${CHIPDIR}/*.o ${CPUDIR}/*.o ${DOSDIR}/*.o ${EFFECTSDIR}/*.o ${GUIDIR}/*.o ${JMADIR}/*.o ${NETDIR}/*.o ${TOOLSDIR}/*.o ${VIDEODIR}/*.o ${WINDIR}/*.o ${ZIPDIR}/*.o ${PSR} cfgparse.c @ZSNESEXE@ Makefile config.cache config.log config.status config.h
