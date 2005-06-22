@@ -481,7 +481,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
     GUIOuttextwin2 %1,%2-1,%3-1,%4
 %endmacro
 
-%macro GUIDisplayCheckbox 4                 ; Toggled Checkbox
+%macro GUIDisplayCheckboxP 4                 ; Toggled Checkbox (Plain, no text)
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[%4],0
     je %%nocheckbox
@@ -490,7 +490,47 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
     GUIDisplayIconWin %1,%2,%3,[GUITemp]
 %endmacro
 
-%macro GUIDisplayCheckboxn 5                 ; Set Var. Checkbox
+%macro GUIDisplayCheckbox 5                 ; Toggled Checkbox (Text)
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[%4],0
+    je %%nocheckbox
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+%%nocheckbox
+    GUIDisplayIconWin %1,%2,%3,[GUITemp]
+    GUIDisplayText %1,%2+15,%3+5,%5
+%endmacro
+
+%macro GUIDisplayCheckboxTn 6                 ; Variable Checkbox (Text)
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[%4],%5
+    jne %%nocheckbox
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+%%nocheckbox
+    GUIDisplayIconWin %1,%2,%3,[GUITemp]
+    GUIDisplayText %1,%2+15,%3+5,%6
+%endmacro
+
+%macro GUIDisplayCheckboxu 6                 ; Toggled Checkbox (Text Underline)
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[%4],0
+    je %%nocheckbox
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+%%nocheckbox
+    GUIDisplayIconWin %1,%2,%3,[GUITemp]
+    GUIDisplayTextu %1,%2+15,%3+5,%5,%6
+%endmacro
+
+%macro GUIDisplayCheckboxun 7                 ; Set Var. Checkbox (Text Underline)
+    mov dword[GUITemp],GUIIconDataCheckBoxUC
+    cmp byte[%4],%5
+    jne %%nocheckbox
+    mov dword[GUITemp],GUIIconDataCheckBoxC
+%%nocheckbox
+    GUIDisplayIconWin %1,%2,%3,[GUITemp]
+    GUIDisplayTextu %1,%2+15,%3+5,%6,%7
+%endmacro
+
+%macro GUIDisplayCheckboxPn 5                 ; Set Var. Checkbox
     mov dword[GUITemp],GUIIconDataCheckBoxUC
     cmp byte[%4],%5
     jne %%nocheckbox
@@ -554,16 +594,16 @@ DisplayGUILoad:
     GUIDisplayText 1,21,174,GUILoadText4
     GUIDisplayText 1,21,182,GUILoadText5
 %endif
-    GUIDisplayText 1,21,192,GUILoadText6
+;    GUIDisplayText 1,21,192,GUILoadText6
     GUIDisplayText 1,6,16,GUILoadText7
     GUIDisplayText 1,161,16,GUILoadText8
     GUIDisplayText 1,6,138,GUIcurrentdir
 
     GUIDisplayText 1,146,172,GUILoadTextB
-    GUIDisplayText 1,155,182,GUILoadTextC
-    GUIDisplayText 1,155,192,GUILoadTextD
-    GUIDisplayText 1,195,182,GUILoadTextE
-    GUIDisplayText 1,195,192,GUILoadTextF
+;    GUIDisplayText 1,155,182,GUILoadTextC
+;    GUIDisplayText 1,155,192,GUILoadTextD
+;    GUIDisplayText 1,195,182,GUILoadTextE
+;    GUIDisplayText 1,195,192,GUILoadTextF
 
 
     mov byte[GUItextcolor],202
@@ -708,11 +748,11 @@ DisplayGUILoad:
     GUIDisplayButtonHole 1,9,179,byte[GUIloadfntype],2
 %endif
 
-    GUIDisplayCheckboxn 1,10,187,showallext,1         ; Checkboxes
-    GUIDisplayCheckboxn 1,144,177,ForceROMTiming,1
-    GUIDisplayCheckboxn 1,144,187,ForceROMTiming,2
-    GUIDisplayCheckboxn 1,184,177,ForceHiLoROM,1
-    GUIDisplayCheckboxn 1,184,187,ForceHiLoROM,2
+    GUIDisplayCheckboxTn 1,10,187,showallext,1,GUILoadText6         ; Checkboxes
+    GUIDisplayCheckboxTn 1,144,177,ForceROMTiming,1,GUILoadTextC
+    GUIDisplayCheckboxTn 1,144,187,ForceROMTiming,2,GUILoadTextD
+    GUIDisplayCheckboxTn 1,184,177,ForceHiLoROM,1,GUILoadTextE
+    GUIDisplayCheckboxTn 1,184,187,ForceHiLoROM,2,GUILoadTextF
 
                                                 ; Slidebar for Files
     ; win#,X,Y start, %4-List Loc, %5-List size, %6-Screen size, %7-Bar Size
@@ -1299,48 +1339,26 @@ SECTION .text
 DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engine
     GUIDrawWindowBox 4,GUIOptionDisp
 
-    GUIDisplayTextu 4,26,34,GUIOptionText3,0
-    GUIDisplayTextu 4,26,44,GUIOptionText4,0
-    GUIDisplayTextu 4,26,54,GUIOptionText5,0
+    GUIDisplayCheckboxu 4,11,30,newengen,GUIOptionText3,0
+    GUIDisplayCheckboxu 4,11,40,MMXSupport,GUIOptionText4,0
+    GUIDisplayCheckboxu 4,11,50,pl12s34,GUIOptionText5,0
 %ifdef __MSDOS__
-    GUIDisplayTextu 4,26,64,GUIOptionText6,1
+    GUIDisplayCheckboxu 4,11,60,SidewinderFix,GUIOptionText6,1
 %endif
 %ifdef __WIN32__
-    GUIDisplayTextu 4,26,64,GUIOptionText6b,0
+    GUIDisplayCheckboxu 4,11,60,HighPriority,GUIOptionText6b,0
 %endif
-    GUIDisplayTextu 4,26,74,GUIOptionText7,0
-    GUIDisplayTextu 4,26,84,GUIOptionText8,2
-    GUIDisplayTextu 4,26,94,GUIOptionText9,12
-    GUIDisplayTextu 4,26,104,GUIOptionTextA,0
-    GUIDisplayTextu 4,26,114,GUIOptionTextB,0
-    GUIDisplayTextu 4,26,124,GUIOptionTextC,1
-    GUIDisplayTextu 4,26,134,GUIOptionTextD,12
-    GUIDisplayTextu 4,26,144,GUIOptionTextE,15
-    GUIDisplayTextu 4,26,154,GUIOptionTextF,0
+    GUIDisplayCheckboxu 4,11,70,FPSAtStart,GUIOptionText7,0
+    GUIDisplayCheckboxu 4,11,80,Turbo30hz,GUIOptionText8,2
+    GUIDisplayCheckboxu 4,11,90,TimerEnable,GUIOptionText9,12
+    GUIDisplayCheckboxu 4,11,100,OldGfxMode2,GUIOptionTextA,0
+    GUIDisplayCheckboxu 4,11,110,DontSavePath,GUIOptionTextB,0
+    GUIDisplayCheckboxu 4,11,120,SmallMsgText,GUIOptionTextC,1
+    GUIDisplayCheckboxu 4,11,130,AutoPatch,GUIOptionTextD,12
+    GUIDisplayCheckboxu 4,11,140,RomInfo,GUIOptionTextE,15
+    GUIDisplayCheckboxu 4,11,150,AllowUDLR,GUIOptionTextF,0
 %ifdef __WIN32__
-    GUIDisplayTextu 4,26,164,GUIOptionTextW,1
-%endif
-
-    GUIDisplayCheckbox 4,11,30,newengen
-    GUIDisplayCheckboxn 4,11,40,MMXSupport,1
-    GUIDisplayCheckbox 4,11,50,pl12s34
-%ifdef __MSDOS__
-    GUIDisplayCheckbox 4,11,60,SidewinderFix
-%endif
-%ifdef __WIN32__
-    GUIDisplayCheckbox 4,11,60,HighPriority
-%endif
-    GUIDisplayCheckbox 4,11,70,FPSAtStart
-    GUIDisplayCheckbox 4,11,80,Turbo30hz
-    GUIDisplayCheckbox 4,11,90,TimerEnable
-    GUIDisplayCheckbox 4,11,100,OldGfxMode2
-    GUIDisplayCheckbox 4,11,110,DontSavePath
-    GUIDisplayCheckbox 4,11,120,SmallMsgText
-    GUIDisplayCheckbox 4,11,130,AutoPatch
-    GUIDisplayCheckbox 4,11,140,RomInfo
-    GUIDisplayCheckbox 4,11,150,AllowUDLR
-%ifdef __WIN32__
-    GUIDisplayCheckbox 4,11,160,DisableScreenSaver
+    GUIDisplayCheckboxu 4,11,160,DisableScreenSaver,GUIOptionTextW,1
 %endif
     ret
 
@@ -1419,70 +1437,23 @@ DisplayGUIVideo:
     je near .notext2
 %ifdef __LINUX__
     GUIDisplayText 5,13,116,GUIVideoTextC
-    GUIDisplayTextu 5,36,124,GUIVideoTextC1,0
 %else
     GUIDisplayText 5,13,111,GUIVideoTextC
-    GUIDisplayTextu 5,36,119,GUIVideoTextC1,0
 %endif
 
-.notext2                                      ; 50/25% Scanlines
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUIHSVID+eax],0
-    je near .notexta
-%ifdef __LINUX__
-    GUIDisplayText 5,13,116,GUIVideoTextC
-    GUIDisplayTextu 5,76,124,GUIVideoTextC2,0
-    GUIDisplayTextu 5,116,124,GUIVideoTextC3,0
-%else
-    GUIDisplayText 5,13,111,GUIVideoTextC
-    GUIDisplayTextu 5,76,119,GUIVideoTextC2,0
-    GUIDisplayTextu 5,116,119,GUIVideoTextC3,0
-%endif
-
-.notexta                                      ; Triple Buffering
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUITBWVID+eax],0
-    je near .nottbw
-    GUIDisplayTextu 5,26,128,GUIVideoText7,0
-
-.nottbw                                      ; 2x, S2x, SE Filters
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUI2xVID+eax],0
-    je near .notextb
-    GUIDisplayTextu 5,26,138,GUIVideoTextc,1
-    GUIDisplayTextu 5,26,148,GUIVideoTextd,6
-    GUIDisplayTextu 5,26,158,GUIVideoTextd2,0
-
-.notextb                                      ; Interpol.
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUII2VID+eax],0
-    je near .notextb2
-    GUIDisplayTextu 5,26,168,GUIVideoText3,0
-
-.notextb2                                      ; Bilinear Filt
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUIBIFIL+eax],0
-    je near .notextbf2
-    GUIDisplayTextu 5,26,168,GUIVideoTextbf,0
-
-.notextbf2                                      ; Interpol.
+.notext2                                    ; Interpol.
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIINVID+eax],0
     je near .notext3
-    GUIDisplayTextu 5,26,83,GUIVideoText3,0
+    GUIDisplayCheckboxu 5,11,78,antienab,GUIVideoText3,0
 
-.notext3                                        ; Eagle Eng.
+.notext3                                     ; Eagle Eng.
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIEAVID+eax],0
     je near .notext4
-    GUIDisplayTextu 5,26,83,GUIVideoText4,9
+    GUIDisplayCheckboxu 5,11,78,antienab,GUIVideoText4,9
 
 .notext4                                      ; Full/Widescreen
     xor eax,eax
@@ -1491,63 +1462,33 @@ DisplayGUIVideo:
     je near .notext5
     cmp byte[GUIWSVID+eax],0
     je near .notext4a
-    GUIDisplayTextu 5,26,93,GUIVideoText5b,6
+    GUIDisplayCheckboxu 5,11,88,ScreenScale,GUIVideoText5b,6
     jmp .notext5
 .notext4a
-    GUIDisplayTextu 5,26,93,GUIVideoText5,6
+    GUIDisplayCheckboxu 5,11,88,ScreenScale,GUIVideoText5,6
 
-.notext5                                      ; SmallScreen
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUISSVID+eax],0
-    je near .notext6
-    GUIDisplayTextu 5,26,103,GUIVideoText6,1
-
-.notext6                                      ; Triple Buff
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[TripBufAvail],0
-    je near .notext7
-    cmp byte[GUITBVID+eax],0
-    je near .notext7
-    GUIDisplayTextu 5,26,168,GUIVideoText7,0
-
-.notext7                                      ; HiRes Mode 7
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUIM7VID+eax],0
-    je near .notext8
-    cmp byte[newengen],0
-    je near .notext8
-    GUIDisplayTextu 5,26,178,GUIVideoText8b,0
-
-.notext8                                          ; 2x
+.notext5                                        ; 2x
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHQ2X+eax],0
     je near .notexthq2xa
-    GUIDisplayTextu 5,130,168,GUIVideoTexthq2x,1
+    GUIDisplayCheckboxu 5,115,163,hqFilter,GUIVideoTexthq2x,1
 
-.notexthq2xa                                      ; 3x
+.notexthq2xa                                    ; 3x
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHQ3X+eax],0
     je near .notexthq3xa
-    GUIDisplayTextu 5,130,168,GUIVideoTexthq3x,1
+    GUIDisplayCheckboxu 5,115,163,hqFilter,GUIVideoTexthq3x,1
 
-.notexthq3xa                                      ; 4x
+.notexthq3xa                                    ; 4x
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHQ4X+eax],0
     je near .notexthq4xa
-    GUIDisplayTextu 5,130,168,GUIVideoTexthq4x,1
+    GUIDisplayCheckboxu 5,115,163,hqFilter,GUIVideoTexthq4x,1
 
-.notexthq4xa                                      ; Grayscale
-    GUIDisplayTextu 5,26,188,GUIVideoText8c,0
-%ifndef __LINUX__                                 ; VSYNC
-    GUIDisplayTextu 5,130,188,GUIVideoText9,0
-%endif
-
+.notexthq4xa
     DrawGUIButton 5,128,60,164,71,GUIVideoText8,4,0,0        ; Set Button
 
     xor eax,eax                                      ; Checkboxes
@@ -1555,9 +1496,9 @@ DisplayGUIVideo:
     cmp byte[GUISLVID+eax],0
     je near .nocheckboxb
 %ifdef __LINUX__
-    GUIDisplayCheckboxn 5,21,119,scanlines,1
+    GUIDisplayCheckboxun 5,21,119,scanlines,1,GUIVideoTextC1,0
 %elifdef __WIN32__
-    GUIDisplayCheckboxn 5,21,114,scanlines,1
+    GUIDisplayCheckboxun 5,21,114,scanlines,1,GUIVideoTextC1,0
 %endif
 
 .nocheckboxb
@@ -1566,14 +1507,14 @@ DisplayGUIVideo:
     cmp byte[GUIHSVID+eax],0
     je .nocheckboxw
 %ifdef __LINUX__
-    GUIDisplayCheckboxn 5,61,119,scanlines,3
+    GUIDisplayCheckboxun 5,61,119,scanlines,3,GUIVideoTextC2,0
 %elifdef __WIN32__
-    GUIDisplayCheckboxn 5,61,114,scanlines,3
+    GUIDisplayCheckboxun 5,61,114,scanlines,3,GUIVideoTextC2,0
 %endif
 %ifdef __LINUX__
-    GUIDisplayCheckboxn 5,101,119,scanlines,2
+    GUIDisplayCheckboxun 5,101,119,scanlines,2,GUIVideoTextC3,0
 %elifdef __WIN32__
-    GUIDisplayCheckboxn 5,101,114,scanlines,2
+    GUIDisplayCheckboxun 5,101,114,scanlines,2,GUIVideoTextC3,0
 %endif
 
 .nocheckboxw
@@ -1581,30 +1522,30 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUITBWVID+eax],0
     je near .nocheckboxslw2
-    GUIDisplayCheckboxn 5,11,123,TripleBufferWin,1
+    GUIDisplayCheckboxu 5,11,123,TripleBufferWin,GUIVideoText7,0
 
 .nocheckboxslw2
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUI2xVID+eax],0
     je near .nocheckboxx
-    GUIDisplayCheckboxn 5,11,133,En2xSaI,1
-    GUIDisplayCheckboxn 5,11,143,En2xSaI,2
-    GUIDisplayCheckboxn 5,11,153,En2xSaI,3
+    GUIDisplayCheckboxun 5,11,133,En2xSaI,1,GUIVideoTextc,1
+    GUIDisplayCheckboxun 5,11,143,En2xSaI,2,GUIVideoTextd,6
+    GUIDisplayCheckboxun 5,11,153,En2xSaI,3,GUIVideoTextd2,0
 
 .nocheckboxx
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUII2VID+eax],0
     je near .nocheckboxi2
-    GUIDisplayCheckbox 5,11,163,antienab
+    GUIDisplayCheckboxu 5,11,163,antienab,GUIVideoText3,0
 
 .nocheckboxi2
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIBIFIL+eax],0
     je near .nocheckboxbf
-    GUIDisplayCheckbox 5,11,163,BilinearFilter
+    GUIDisplayCheckboxu 5,11,163,BilinearFilter,GUIVideoTextbf,0
 
 .nocheckboxbf
     xor eax,eax
@@ -1613,7 +1554,7 @@ DisplayGUIVideo:
     je .nocheckboxtbb
     cmp byte[TripBufAvail],0
     je near .nocheckboxtbb
-    GUIDisplayCheckboxn 5,11,163,Triplebufen,1
+    GUIDisplayCheckboxun 5,11,163,Triplebufen,1,GUIVideoText7,0
 
 .nocheckboxtbb
     xor eax,eax
@@ -1622,48 +1563,21 @@ DisplayGUIVideo:
     je near .nocheckboxm72
     cmp byte[newengen],0
     je near .nocheckboxm72
-    GUIDisplayCheckbox 5,11,173,Mode7HiRes16b
+    GUIDisplayCheckboxu 5,11,173,Mode7HiRes16b,GUIVideoText8b,0
 .nocheckboxm72
-    GUIDisplayCheckbox 5,11,183,GrayscaleMode
+    GUIDisplayCheckboxu 5,11,183,GrayscaleMode,GUIVideoText8c,0
 %ifndef __LINUX__
-    GUIDisplayCheckbox 5,115,183,vsyncon
+    GUIDisplayCheckboxu 5,115,183,vsyncon,GUIVideoText9,0
 %endif
-
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUIIEVID+eax],0
-    je .nocheckbox1b
-    GUIDisplayCheckbox 5,11,78,antienab
-
-.nocheckbox1b
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUIFSVID+eax],0
-    je .nocheckbox2b
-    GUIDisplayCheckbox 5,11,88,ScreenScale
 
 .nocheckbox2b
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUISSVID+eax],0
     je .nocheckbox3b
-    GUIDisplayCheckbox 5,11,98,smallscreenon
+    GUIDisplayCheckboxu 5,11,98,smallscreenon,GUIVideoText6,1
 
-.nocheckbox3b
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUIHQ2X+eax],0
-    jne near .checkboxhq
-    cmp byte[GUIHQ3X+eax],0
-    jne near .checkboxhq
-    cmp byte[GUIHQ4X+eax],0
-    jne near .checkboxhq
-    jmp .nocheckboxhq
-
-.checkboxhq
-    GUIDisplayCheckbox 5,115,163,hqFilter
-
-.nocheckboxhq                                   ; Video Modes Box
+.nocheckbox3b                                   ; Video Modes Box
     GUIDisplayBBoxS 5,5,26,115,69,167
     DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],5,28,GUIVStA
     cmp byte[GUICHold],5                        ; Scrollbar
@@ -1782,61 +1696,36 @@ DisplayGUISound:                     ; Sound Related Options
     GUIDrawWindowBox 6,GUISoundDisp
 
     GUIDisplayTextY 6,6,16,GUISoundTextA
-    GUIDisplayTextu 6,26,26,GUISoundTextA1,0
-    GUIDisplayTextu 6,26,35,GUISoundTextA2,0
+    GUIDisplayCheckboxu 6,11,21,cfgsoundon,GUISoundTextA1,0
 %ifdef __MSDOS__
-    GUIDisplayTextu 6,26,44,GUISoundTextA3,1
-    GUIDisplayTextu 6,116,26,GUISoundTextA4,0
+    GUIDisplayCheckboxu 6,102,21,cfgforce8b,GUISoundTextA4,1
+%endif
+    GUIDisplayCheckboxu 6,11,30,cfgStereoSound,GUISoundTextA2,0
+%ifdef __MSDOS__
+    GUIDisplayCheckboxu 6,11,39,RaisePitch,GUISoundTextA3,1
 %endif
     GUIDisplayTextY 6,6,53,GUISoundTextB
     GUIDisplayTextY 6,6,76,GUISoundTextC
 %ifdef __WIN32__
-    GUIDisplayTextu 6,26,106,GUISoundTextD1,4
+    GUIDisplayCheckboxu 6,11,101,PrimaryBuffer,GUISoundTextD1,4
 %endif
-    GUIDisplayTextu 6,26,116,GUISoundTextD2,2
-    GUIDisplayTextu 6,26,126,GUISoundTextD3,1
-    GUIDisplayTextu 6,26,136,GUISoundTextD4,6
-    GUIDisplayTextu 6,26,146,GUISoundTextD5,0
+    GUIDisplayCheckboxu 6,11,111,RevStereo,GUISoundTextD2,2
+    GUIDisplayCheckboxu 6,11,121,Surround,GUISoundTextD3,1
+    GUIDisplayCheckboxu 6,11,131,SoundBufEn,GUISoundTextD4,6
+    GUIDisplayCheckboxu 6,11,141,SPCDisable,GUISoundTextD5,0
 
     GUIDisplayTextY 6,6,158,GUISoundTextE
-    GUIDisplayTextu 6,26,168,GUISoundTextE1,0
-    GUIDisplayTextu 6,26,178,GUISoundTextE2,0
+    GUIDisplayCheckboxun 6,11,163,SoundInterpType,1,GUISoundTextE1,0
+    GUIDisplayCheckboxun 6,11,173,SoundInterpType,2,GUISoundTextE2,0
 %ifndef __MSDOS__
-    GUIDisplayTextu 6,26,188,GUISoundTextE3,0
+    GUIDisplayCheckboxun 6,11,183,SoundInterpType,3,GUISoundTextE3,0
 %endif
 
     GUIDisplayTextY 6,106,158,GUISoundTextF
-    GUIDisplayTextu 6,126,168,GUISoundTextF1,1
-    GUIDisplayTextu 6,126,178,GUISoundTextF2,1
+    GUIDisplayCheckboxun 6,111,163,LowPassFilterType,1,GUISoundTextF1,1
+    GUIDisplayCheckboxun 6,111,173,LowPassFilterType,2,GUISoundTextF2,1
 %ifndef __MSDOS__
-    GUIDisplayTextu 6,126,188,GUISoundTextF3,0
-%endif
-
-
-    GUIDisplayCheckbox 6,11,21,cfgsoundon       ; Checkboxes
-%ifdef __MSDOS__
-    GUIDisplayCheckbox 6,102,21,cfgforce8b
-%endif
-    GUIDisplayCheckbox 6,11,30,cfgStereoSound
-%ifdef __MSDOS__
-    GUIDisplayCheckbox 6,11,39,RaisePitch
-%endif
-%ifdef __WIN32__
-    GUIDisplayCheckbox 6,11,101,PrimaryBuffer
-%endif
-    GUIDisplayCheckbox 6,11,111,RevStereo
-    GUIDisplayCheckbox 6,11,121,Surround
-    GUIDisplayCheckbox 6,11,131,SoundBufEn
-    GUIDisplayCheckbox 6,11,141,SPCDisable
-    GUIDisplayCheckboxn 6,11,163,SoundInterpType,1
-    GUIDisplayCheckboxn 6,11,173,SoundInterpType,2
-%ifndef __MSDOS__
-    GUIDisplayCheckboxn 6,11,183,SoundInterpType,3
-%endif
-    GUIDisplayCheckboxn 6,111,163,LowPassFilterType,1
-    GUIDisplayCheckboxn 6,111,173,LowPassFilterType,2
-%ifndef __MSDOS__
-    GUIDisplayCheckboxn 6,111,183,LowPassFilterType,3
+    GUIDisplayCheckboxun 6,111,183,LowPassFilterType,3,GUISoundTextF3,0
 %endif
 
     GUIDisplayBBox 6,15,61,69,69,167            ;Sampling Rate Box
@@ -2040,12 +1929,6 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     GUIDisplayText 7,11,164,GUICheatTextD2
     GUIDisplayText 7,11,172,GUICheatTextD3
     GUIDisplayText 7,11,180,GUICheatTextD4
-    GUIDisplayText 7,26,191,GUICheatTextE1
-
-    cmp dword[GUIcurrentcheatwin],0     ; Draw underline only if you
-    jne near .noshortcut                ; don't have an input box selected
-    GUIDisplayTextu 7,26,191,GUICheatTextE1,0
-.noshortcut
 
     mov byte[GUItextcolor],217
     cmp byte[GUIWincoladd],0
@@ -2173,7 +2056,11 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     mov byte[GUICheatTextZ2+ebx],'_'
 .nound
 
-    GUIDisplayCheckboxn 7,11,186,AutoLoadCht,1          ; Checkbox
+    GUIDisplayCheckbox 7,11,186,AutoLoadCht,GUICheatTextE1          ; Checkbox
+    cmp dword[GUIcurrentcheatwin],0     ; Draw underline only if you
+    jne near .noshortcut                ; don't have an input box selected
+    GUIDisplayCheckboxu 7,11,186,AutoLoadCht,GUICheatTextE1,0
+.noshortcut
     ret
 
 SECTION .data
@@ -2592,9 +2479,8 @@ Cheatmodeadd:                                 ; Add Window
     GUIDisplayText 13,5,20,GUICSrcTextF1      ; Text
     GUIDisplayText 13,5,45,GUICSrcTextF2
     GUIDisplayText 13,5,70,GUICSrcTextF3
-    GUIDisplayText 13,22,143,GUICSrcTextF4
 
-    GUIDisplayCheckboxn 13,8,139,CheatUpperByteOnly,1   ; Checkbox
+    GUIDisplayCheckbox 13,8,139,CheatUpperByteOnly,GUICSrcTextF4   ; Checkbox
 
     GUIDisplayBBox 13,10,30,80,37,167             ; Boxes
     GUIDisplayBBox 13,10,55,126,62,167
@@ -3014,43 +2900,22 @@ DisplayGUIOptns:              ; GUI Options
     add [GUITemp],eax
     GUIDisplayIconWin 10,[GUITemp],144,GUIIconDataSlideBar
 
-    GUIDisplayCheckbox 10,12,23,mousewrap      ; Checkboxes
-    GUIDisplayCheckbox 10,12,33,mouseshad
-    GUIDisplayCheckbox 10,12,43,lastcursres
-    GUIDisplayCheckboxn 10,12,53,resetposn,0    ; Save Win Pos, but the option is really for Reset Pos
-    GUIDisplayCheckbox 10,12,63,GUIClick
-    GUIDisplayCheckbox 10,12,73,JoyPad1Move
-    GUIDisplayCheckbox 10,124,23,GUIEnableTransp
-    GUIDisplayCheckbox 10,124,33,FilteredGUI
-    GUIDisplayCheckboxn 10,124,43,GUIEffect,1
-    GUIDisplayCheckboxn 10,124,53,GUIEffect,2
-    GUIDisplayCheckboxn 10,124,63,GUIEffect,3
-    GUIDisplayCheckboxn 10,124,73,GUIEffect,4
-%ifdef __WIN32__
-    GUIDisplayCheckbox 10,124,83,MouseWheel
-    GUIDisplayCheckbox 10,124,93,TrapMouseCursor
-
-    GUIDisplayCheckbox 10,12,168,AlwaysOnTop
-    GUIDisplayCheckbox 10,12,178,SaveMainWindowPos
-    GUIDisplayCheckbox 10,12,188,AllowMultipleInst
-%endif
-
     GUIDisplayTextY 10,6,16,GUIGUIOptnsTextA
-    GUIDisplayTextu 10,26,28,GUIGUIOptnsTextA1a,0
-    GUIDisplayTextu 10,26,38,GUIGUIOptnsTextA1b,6
-    GUIDisplayTextu 10,26,48,GUIGUIOptnsTextA1c,0
-    GUIDisplayTextu 10,26,58,GUIGUIOptnsTextA1d,5
-    GUIDisplayTextu 10,26,68,GUIGUIOptnsTextA1e,0
-    GUIDisplayTextu 10,26,78,GUIGUIOptnsTextA1f,0
-    GUIDisplayTextu 10,138,28,GUIGUIOptnsTextA2a,0
-    GUIDisplayTextu 10,138,38,GUIGUIOptnsTextA2b,0
-    GUIDisplayTextu 10,138,48,GUIGUIOptnsTextA2c,1
-    GUIDisplayTextu 10,138,58,GUIGUIOptnsTextA2d,3
-    GUIDisplayTextu 10,138,68,GUIGUIOptnsTextA2e,13
-    GUIDisplayTextu 10,138,78,GUIGUIOptnsTextA2f,2
+    GUIDisplayCheckboxu 10,12,23,mousewrap,GUIGUIOptnsTextA1a,0     ; Checkboxes
+    GUIDisplayCheckboxu 10,12,33,mouseshad,GUIGUIOptnsTextA1b,6
+    GUIDisplayCheckboxu 10,12,43,lastcursres,GUIGUIOptnsTextA1c,0
+    GUIDisplayCheckboxun 10,12,53,resetposn,0,GUIGUIOptnsTextA1d,5    ; Save Win Pos, but the option is really for Reset Pos
+    GUIDisplayCheckboxu 10,12,63,GUIClick,GUIGUIOptnsTextA1e,0
+    GUIDisplayCheckboxu 10,12,73,JoyPad1Move,GUIGUIOptnsTextA1f,0
+    GUIDisplayCheckboxu 10,124,23,GUIEnableTransp,GUIGUIOptnsTextA2a,0
+    GUIDisplayCheckboxu 10,124,33,FilteredGUI,GUIGUIOptnsTextA2b,0
+    GUIDisplayCheckboxun 10,124,43,GUIEffect,1,GUIGUIOptnsTextA2c,1
+    GUIDisplayCheckboxun 10,124,53,GUIEffect,2,GUIGUIOptnsTextA2d,3
+    GUIDisplayCheckboxun 10,124,63,GUIEffect,3,GUIGUIOptnsTextA2e,13
+    GUIDisplayCheckboxun 10,124,73,GUIEffect,4,GUIGUIOptnsTextA2f,2
 %ifdef __WIN32__
-    GUIDisplayTextu 10,138,88,GUIGUIOptnsTextA2g,1
-    GUIDisplayTextu 10,138,98,GUIGUIOptnsTextA2h,3
+    GUIDisplayCheckboxu 10,124,83,MouseWheel,GUIGUIOptnsTextA2g,1
+    GUIDisplayCheckboxu 10,124,93,TrapMouseCursor,GUIGUIOptnsTextA2h,3
 %endif
     GUIDisplayTextY 10,6,111,GUIGUIOptnsTextB
     GUIDisplayText 10,60,111,GUIGUIOptnsTextB1
@@ -3058,10 +2923,11 @@ DisplayGUIOptns:              ; GUI Options
     GUIDisplayText 10,147,111,GUIGUIOptnsTextB3
 %ifdef __WIN32__
     GUIDisplayTextY 10,6,161,GUIGUIOptnsTextC
-    GUIDisplayTextu 10,26,173,GUIGUIOptnsTextC1,0
-    GUIDisplayTextu 10,26,183,GUIGUIOptnsTextC2,2
-    GUIDisplayTextu 10,26,193,GUIGUIOptnsTextC3,1
+    GUIDisplayCheckboxu 10,12,168,AlwaysOnTop,GUIGUIOptnsTextC1,0
+    GUIDisplayCheckboxu 10,12,178,SaveMainWindowPos,GUIGUIOptnsTextC2,2
+    GUIDisplayCheckboxu 10,12,188,AllowMultipleInst,GUIGUIOptnsTextC3,1
 %endif
+
     mov byte[GUIGUIOptnsTextD1],'R'
     GUIDisplayText 10,16,123,GUIGUIOptnsTextD1
     mov byte[GUIGUIOptnsTextD1],'G'
@@ -3286,7 +3152,6 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     GUIDisplayText 15,131,43,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'9'
     GUIDisplayText 15,151,43,GUIMovieTextB1
-    GUIDisplayTextu 15,71,55,GUIMovieTextB2,0
 
     GUIDisplayTextY 15,9,130,GUIMovieTextC           ; "Start From" Section Shadow
     GUIDisplayTextu 15,21,140,GUIMovieTextC1,0
@@ -3337,7 +3202,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     DDrawBox 15,115,99,[KeyPrevChap]
     DDrawBox 15,115,115,[KeyNextChap]
 
-    GUIDisplayCheckbox 15,60,50,MovieDisplayFrame    ; Checkbox
+    GUIDisplayCheckboxu 15,60,50,MovieDisplayFrame,GUIMovieTextB2,0    ; Checkbox
     ret
 
 SECTION .data
@@ -3741,8 +3606,8 @@ DisplayGUICombo:
     GUIDisplayText 16,114,182,GUIComboText9
     GUIDisplayText 16,204,182,GUIComboTextG
     GUIDisplayText 16,145,85,GUIComboTextI
-    GUIDisplayText 16,176,93,GUIComboTextJ
-    GUIDisplayText 16,176,101,GUIComboTextK
+;    GUIDisplayText 16,176,93,GUIComboTextJ
+;    GUIDisplayText 16,176,101,GUIComboTextK
 
     DrawGUIButton 16,202,20,246,31,GUIComboTextA,60,-1,0    ; Buttons
     DrawGUIButton 16,202,35,246,46,GUIComboTextB,61,-1,0
@@ -3793,8 +3658,8 @@ DisplayGUICombo:
     GUIDisplayButtonHole 16,212,82,byte[GUIComboPNum],3
     GUIDisplayButtonHole 16,230,82,byte[GUIComboPNum],4
     ; Check Box
-    GUIDisplayCheckbox 16,163,88,GUIComboLHorz
-    GUIDisplayCheckbox 16,163,96,GUIComboGameSpec
+    GUIDisplayCheckbox 16,163,88,GUIComboLHorz,GUIComboTextJ
+    GUIDisplayCheckbox 16,163,96,GUIComboGameSpec,GUIComboTextK
 
     ; Draw Combination Keys (Each 15x11 -> 210x36)
     xor eax,eax
@@ -4159,29 +4024,22 @@ DisplayGUIChipConfig:
     cmp eax,0
     je near .noEE
     GUIDisplayText 18,10,38,GUIChipText1Alt
-    GUIDisplayText 18,21,48,GUIChipText2Alt
-    GUIDisplayText 18,71,48,GUIChipText3Alt
-    GUIDisplayText 18,121,48,GUIChipText4Alt
-    GUIDisplayText 18,21,58,GUIChipText5Alt
-    GUIDisplayText 18,71,58,GUIChipText6Alt
-    GUIDisplayText 18,121,58,GUIChipText7Alt
+    GUIDisplayCheckbox 18,9,43,nssdip1,GUIChipText2Alt
+    GUIDisplayCheckbox 18,59,43,nssdip2,GUIChipText3Alt
+    GUIDisplayCheckbox 18,109,43,nssdip3,GUIChipText4Alt
+    GUIDisplayCheckbox 18,9,53,nssdip4,GUIChipText5Alt
+    GUIDisplayCheckbox 18,59,53,nssdip5,GUIChipText6Alt
+    GUIDisplayCheckbox 18,109,53,nssdip6,GUIChipText7Alt
     jmp .endEE
 .noEE                                ; Regular Shadow
     GUIDisplayTextY 18,10,38,GUIChipTextA
-    GUIDisplayTextu 18,21,48,GUIChipTextA1,4
-    GUIDisplayTextu 18,71,48,GUIChipTextA2,4
-    GUIDisplayTextu 18,121,48,GUIChipTextA3,4
-    GUIDisplayTextu 18,21,58,GUIChipTextA4,4
-    GUIDisplayTextu 18,71,58,GUIChipTextA5,4
-    GUIDisplayTextu 18,121,58,GUIChipTextA6,4
+    GUIDisplayCheckboxu 18,9,43,nssdip1,GUIChipTextA1,4               ;Checkboxes
+    GUIDisplayCheckboxu 18,59,43,nssdip2,GUIChipTextA2,4
+    GUIDisplayCheckboxu 18,109,43,nssdip3,GUIChipTextA3,4
+    GUIDisplayCheckboxu 18,9,53,nssdip4,GUIChipTextA4,4
+    GUIDisplayCheckboxu 18,59,53,nssdip5,GUIChipTextA5,4
+    GUIDisplayCheckboxu 18,109,53,nssdip6,GUIChipTextA6,4
 .endEE
-
-    GUIDisplayCheckbox 18,9,43,nssdip1               ;Checkboxes
-    GUIDisplayCheckbox 18,59,43,nssdip2
-    GUIDisplayCheckbox 18,109,43,nssdip3
-    GUIDisplayCheckbox 18,9,53,nssdip4
-    GUIDisplayCheckbox 18,59,53,nssdip5
-    GUIDisplayCheckbox 18,109,53,nssdip6
     ret
 
 SECTION .data
@@ -4333,13 +4191,6 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
 
     GUIDisplayText 20,8,19,GUISaveTextA1           ; Text
     GUIDisplayText 20,8,31,GUISaveTextA2
-    GUIDisplayTextu 20,26,44,GUISaveTextB1,5
-    GUIDisplayTextu 20,26,54,GUISaveTextB2,5
-    GUIDisplayTextu 20,26,64,GUISaveTextB3,0
-    GUIDisplayTextu 20,26,74,GUISaveTextB4,0
-    GUIDisplayTextu 20,26,84,GUISaveTextB5,0
-    GUIDisplayTextu 20,26,94,GUISaveTextB6,0
-    GUIDisplayTextu 20,26,104,GUISaveTextB7,12
     GUIDisplayText 20,9+45*3,141,GUISaveTextC4
     GUIDisplayText 20,9,150,GUISaveTextC5
     GUIDisplayText 20,9+57,150,GUISaveTextC6
@@ -4372,13 +4223,13 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
     mov byte[GUISaveTextC2+2],'-'
     GUIDisplayText 20,9+45*2,141,GUISaveTextC2
 
-    GUIDisplayCheckbox 20,11,40,AutoIncSaveSlot         ;Checkboxes
-    GUIDisplayCheckbox 20,11,50,SRAMSave5Sec
-    GUIDisplayCheckbox 20,11,60,LatestSave
-    GUIDisplayCheckbox 20,11,70,AutoState
-    GUIDisplayCheckbox 20,11,80,SRAMState
-    GUIDisplayCheckbox 20,11,90,PauseLoad
-    GUIDisplayCheckbox 20,11,100,PauseRewind
+    GUIDisplayCheckboxu 20,11,40,AutoIncSaveSlot,GUISaveTextB1,5       ;Checkboxes
+    GUIDisplayCheckboxu 20,11,50,SRAMSave5Sec,GUISaveTextB2,5
+    GUIDisplayCheckboxu 20,11,60,LatestSave,GUISaveTextB3,0
+    GUIDisplayCheckboxu 20,11,70,AutoState,GUISaveTextB4,0
+    GUIDisplayCheckboxu 20,11,80,SRAMState,GUISaveTextB5,0
+    GUIDisplayCheckboxu 20,11,90,PauseLoad,GUISaveTextB6,0
+    GUIDisplayCheckboxu 20,11,100,PauseRewind,GUISaveTextB7,12
 
     GUIDisplayBBox 20,150,17,165,24,167     ; Rewind States Box
     xor ax,ax
@@ -4489,8 +4340,8 @@ DisplayGUISpeed:                    ;Speed Options
     GUIDisplayText 21,40,89,GUISpeedTextB4
     GUIDisplayText 21,40,109,GUISpeedTextB6
     GUIDisplayText 21,40,119,GUISpeedTextB7
-    GUIDisplayTextu 21,25,139,GUISpeedTextC1,0
-    GUIDisplayTextu 21,25,149,GUISpeedTextC2,0
+;    GUIDisplayTextu 21,25,139,GUISpeedTextC1,0
+;    GUIDisplayTextu 21,25,149,GUISpeedTextC2,0
 
     cmp byte[frameskip],0                             ; Shortcut Boxes
     jne near .frate
@@ -4507,8 +4358,8 @@ DisplayGUISpeed:                    ;Speed Options
     DDrawBox 21,10,106,[EMUPauseKey]
     DDrawBox 21,10,116,[INCRFrameKey]
 
-    GUIDisplayCheckbox 21,11,135,FastFwdToggle   ; Checkboxes
-    GUIDisplayCheckboxn 21,11,145,frameskip,0
+    GUIDisplayCheckboxu 21,11,135,FastFwdToggle,GUISpeedTextC1,0
+    GUIDisplayCheckboxun 21,11,145,frameskip,0,GUISpeedTextC2,0
 
     GUIDisplayBBox 21,96,24,114,31,167                ; FF Ratio Box
     xor ax,ax
