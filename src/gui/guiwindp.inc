@@ -1505,7 +1505,7 @@ DisplayGUIVideo:
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHSVID+eax],0
-    je .nocheckboxw
+    je near .nocheckboxw
 %ifdef __LINUX__
     GUIDisplayCheckboxun 5,61,119,scanlines,3,GUIVideoTextC2,0
 %elifdef __WIN32__
@@ -1551,7 +1551,7 @@ DisplayGUIVideo:
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUITBVID+eax],0
-    je .nocheckboxtbb
+    je near .nocheckboxtbb
     cmp byte[TripBufAvail],0
     je near .nocheckboxtbb
     GUIDisplayCheckboxun 5,11,163,Triplebufen,1,GUIVideoText7,0
@@ -1574,7 +1574,7 @@ DisplayGUIVideo:
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUISSVID+eax],0
-    je .nocheckbox3b
+    je near .nocheckbox3b
     GUIDisplayCheckboxu 5,11,98,smallscreenon,GUIVideoText6,1
 
 .nocheckbox3b                                   ; Video Modes Box
