@@ -407,6 +407,7 @@ static void handle_params(int argc, char *argv[])
             break;
 
           case 'p': //Percentage of instructions to execute
+            i++;
             per2exec = zatoi(argv[i]);
             if (per2exec > 150 || per2exec < 50)
             {
