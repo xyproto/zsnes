@@ -928,19 +928,20 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                 }
               }
               var_init << ";";
-              c_stream << var_init.str();
+            }
 
-              if (cheader_stream)
+            c_stream << var_init.str();
+
+            if (cheader_stream)
+            {
+              string header_data = var_init.str();
+              size_t equal_pos;
+              if ((equal_pos = header_data.find("=")) != string::npos)
               {
-                string header_data = var_init.str();
-                size_t equal_pos;
-                if ((equal_pos = header_data.find("=")) != string::npos)
-                {
-                  header_data.erase(equal_pos-1);
-                  header_data.append(";");
-                }
-                cheader_stream << "extern " << header_data << "\n";
+                header_data.erase(equal_pos-1);
+                header_data.append(";");
               }
+              cheader_stream << "extern " << header_data << "\n";
             }
           }
           //Else already handled
