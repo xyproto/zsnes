@@ -35,13 +35,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #endif
 
-/*
-#ifndef __MSDOS__
-extern unsigned char NetChatFirst, NetServer, NetNewNick, NetFilename[512], CmdLineTCPIPAddress,
-                     NetQuitAfter, UDPConfig, CmdLineNetPlay;
-#endif
-*/
-
 #ifdef __WIN32__
 void ImportDirectX();
 
