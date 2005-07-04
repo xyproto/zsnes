@@ -96,9 +96,9 @@ PSR=parsegen
 	@NASMPATH@ @NFLAGS@ -o $@ $<
 
 %.o: %.psr
-	./${PSR} -D__LINUX__ cfgparse.c $<
-	@CC@ -I. -o $@ -c cfgparse.c
-	rm -f cfgparse.c
+	./${PSR} -D__LINUX__ temppsr.c $<
+	@CC@ -I. -o $@ -c temppsr.c
+	rm -f temppsr.c
 
 ALL: @ZSNESEXE@
 
@@ -268,7 +268,7 @@ uninstall:
 	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man5/zsnes.5
 
 clean:
-	rm -f *.o ${CHIPDIR}/*.o ${CPUDIR}/*.o ${DOSDIR}/*.o ${EFFECTSDIR}/*.o ${GUIDIR}/*.o ${JMADIR}/*.o ${NETDIR}/*.o ${TOOLSDIR}/*.o ${VIDEODIR}/*.o ${WINDIR}/*.o ${ZIPDIR}/*.o ${PSR} cfgparse.c @ZSNESEXE@
+	rm -f *.o ${CHIPDIR}/*.o ${CPUDIR}/*.o ${DOSDIR}/*.o ${EFFECTSDIR}/*.o ${GUIDIR}/*.o ${JMADIR}/*.o ${NETDIR}/*.o ${TOOLSDIR}/*.o ${VIDEODIR}/*.o ${WINDIR}/*.o ${ZIPDIR}/*.o ${PSR} temppsr.c @ZSNESEXE@
 
 distclean:
-	rm -f *.o ${CHIPDIR}/*.o ${CPUDIR}/*.o ${DOSDIR}/*.o ${EFFECTSDIR}/*.o ${GUIDIR}/*.o ${JMADIR}/*.o ${NETDIR}/*.o ${TOOLSDIR}/*.o ${VIDEODIR}/*.o ${WINDIR}/*.o ${ZIPDIR}/*.o ${PSR} cfgparse.c @ZSNESEXE@ Makefile config.cache config.log config.status config.h
+	rm -f *.o ${CHIPDIR}/*.o ${CPUDIR}/*.o ${DOSDIR}/*.o ${EFFECTSDIR}/*.o ${GUIDIR}/*.o ${JMADIR}/*.o ${NETDIR}/*.o ${TOOLSDIR}/*.o ${VIDEODIR}/*.o ${WINDIR}/*.o ${ZIPDIR}/*.o ${PSR} temppsr.c @ZSNESEXE@ Makefile config.cache config.log config.status config.h
