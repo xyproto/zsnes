@@ -232,7 +232,7 @@ endif
 %${OE}: %.psr
 	${PSR} -D${OS} temppsr.c $<
 ifneq (${ENV},msvc)
-	${CC} ${COPT} ${CFLAGS} -o $@ -c temppsr.c
+	${CC} -o $@ -c temppsr.c
 else
 	cl /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ temppsr.c
 endif        
