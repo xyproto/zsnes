@@ -97,7 +97,7 @@ PSR=parsegen
 
 %.o: %.psr
 	./${PSR} -D__LINUX__ cfgparse.c $<
-	@CC@ @CFLAGS@ -I. -o $@ -c cfgparse.c
+	@CC@ -I. -o $@ -c cfgparse.c
 	rm -f cfgparse.c
 
 ALL: @ZSNESEXE@
