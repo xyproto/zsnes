@@ -33,3 +33,15 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIR_SLASH "\\"
 #endif
 #include "../gblvars.h"
+
+
+//Start of execute.asm goodness
+extern unsigned char t1cc;
+extern unsigned short int nextframe;
+
+void Game60hzcall()
+{
+	t1cc+;
+	nextframe++;
+}
+
