@@ -41,7 +41,7 @@ extern unsigned short int nextframe;
 
 void Game60hzcall()
 {
-	t1cc+;
+	t1cc++;
 	nextframe++;
 }
 
