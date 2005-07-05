@@ -184,11 +184,5 @@ fi
 echo
 echo The binary will be installed in $prefix/bin
 echo
-if test "$target" = "*-*-*bsd*"; then
-echo Configure complete, now type \'gmake\' and pray.
-else
 echo Configure complete, now type \'make\' and pray.
-fi
 echo
-
-
