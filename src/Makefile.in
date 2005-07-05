@@ -41,7 +41,7 @@ CPUOBJ=${CPUDIR}/addrni.o ${CPUDIR}/dma.o ${CPUDIR}/dsp.o ${CPUDIR}/dspproc.o\
 	${CPUDIR}/execute.o ${CPUDIR}/irq.o ${CPUDIR}/memory.o\
 	${CPUDIR}/memtable.o ${CPUDIR}/spc700.o ${CPUDIR}/stable.o\
 	${CPUDIR}/table.o ${CPUDIR}/tableb.o ${CPUDIR}/tablec.o\
-	${CPUDIR}/executec.c
+	${CPUDIR}/executec.o
 
 EFFECTSOBJ=${EFFECTSDIR}/burn.o ${EFFECTSDIR}/water.o ${EFFECTSDIR}/smoke.o
 
