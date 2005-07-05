@@ -115,7 +115,7 @@ if test x$debug = xyes; then
 	dnl enabled. 
 
 	CFLAGS="$CFLAGS -DDEBUG -O0 -fno-omit-frame-pointer -ggdb3"
-	NFLAGS="$NFLAGS -DDEBUG -g -s -O0" dnl it works now
+	NFLAGS="$NFLAGS -DDEBUG -s -O0" dnl it works now
 	ZSNESEXE="zsnesd"
 else
 	AC_MSG_RESULT(no)
@@ -184,7 +184,11 @@ fi
 echo
 echo The binary will be installed in $prefix/bin
 echo
+if test "$target" = "*-*-*bsd*"; then
+echo Configure complete, now type \'gmake\' and pray.
+else
 echo Configure complete, now type \'make\' and pray.
+fi
 echo
 
 
