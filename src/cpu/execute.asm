@@ -172,52 +172,6 @@ VoiceStartMute:
 %endif
 %endmacro
 
-%macro ProcessIRQStuffC 0
-    ; check for VIRQ/HIRQ
-    cmp byte[virqnodisable],1
-    je %%virqdo
-    test dl,04h
-    jnz %%virqdo
-    cmp byte[doirqnext],1
-    je near .virq
-%%virqdo
-    test byte[INTEnab],20h
-    jz near %%novirq
-    mov ax,[VIRQLoc]
-    add ax,[IRQHack]
-    cmp ax,[resolutn]
-    jne %%notres
-    dec ax
-;    inc ax
-%%notres
-    cmp ax,0FFFFh
-    jne %%notzero
-    xor ax,ax
-%%notzero
-    cmp word[curypos],ax
-    jne near %%noirq
-%%startirq
-    cmp byte[intrset],1
-    jne %%nointrseta
-    mov byte[intrset],2
-%%nointrseta
-    mov byte[irqon],80h
-    test dl,04h
-    jnz %%irqd
-    test byte[INTEnab],10h
-    jnz %%tryhirq
-    jmp .virq
-%%novirq
-    test byte[INTEnab],10h
-    jz %%noirq
-%%tryhirq
-    jmp .virq
-    jmp %%startirq
-%%irqd
-    mov byte[doirqnext],1
-%%noirq
-%endmacro
-
 %macro ProcessIRQStuff 0
     ; check for VIRQ/HIRQ
     cmp byte[virqnodisable],1
