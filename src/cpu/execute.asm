@@ -143,7 +143,6 @@ VoiceEndMute:
     mov byte[MuteVoiceF],0
     ret
 
-
 %macro StartMute 1
     mov al,[Voice0Status+%1]
     or al,al
