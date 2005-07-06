@@ -26,8 +26,8 @@ EXTSYM MessageOn,MsgCount,Msgptr,Voice0Disable,Voice0Status,Voice1Disable
 EXTSYM Voice1Status,Voice2Disable,Voice2Status,Voice3Disable,Voice3Status
 EXTSYM Voice4Disable,Voice4Status,Voice5Disable,Voice5Status,Voice6Disable
 EXTSYM Voice6Status,Voice7Disable,Voice7Status,bgcmsung,bgmode,cbackofsaddr
-EXTSYM cbitmode,cgmod,debuggeron,disableeffects,frameskip,frskipper,newgfxerror2
-EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen,newgfx16b,newgfxerror
+EXTSYM cgmod,debuggeron,disableeffects,frameskip,frskipper
+EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen
 EXTSYM nextdrawallng,oamaddr,pal16b,pal16bxcl,pressed,prevbright,prevpal
 EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,snesmouse,sprprdrn,t1cc
 EXTSYM vidbright,vidbuffer,vidbufferm,vidbufferofsa,vidbufferofsb,vidmemch2
@@ -570,23 +570,6 @@ NEWSYM cachevideo
     test byte[pressed+eax],1
     je near .nodis8
     mov byte[pressed+eax],2
-    cmp byte[cbitmode],1
-    jne .no16bng
-    cmp byte[newgfx16b],1
-    je .no16bng
-    jmp .no16bng
-    mov dword[Msgptr],newgfxerror
-.msgstuff
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    cmp byte[newengen],0
-    je near .nodis8
-    mov byte[newengen],0
-    jmp .disng
-.nores
-    mov dword[Msgptr],newgfxerror2
-    jmp .msgstuff
-.no16bng
     mov byte[prevbright],16
     xor byte[newengen],1
     mov dword[Msgptr],ngena
@@ -891,22 +874,6 @@ NEWSYM docache
 
 .nosprites
     ; fill background with 0's unless 16-bit/new graphics engine mode is on
-    jmp .skipbgclear
-    cmp byte[cbitmode],1
-    je .skipbgclear
-    cmp byte[newengen],1
-    jne .skipbgclear
-    mov edi,[vidbuffer]
-    xor eax,eax
-    add edi,16
-    mov dl,[resolutn]
-.loopa
-    mov ecx,64
-    rep stosd
-    add edi,32
-    dec dl
-    jnz .loopa
-.skipbgclear
     xor ecx,ecx
     pop es
 NEWSYM yesblank

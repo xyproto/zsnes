@@ -2566,7 +2566,7 @@ Cheatmodeadd:                                 ; Add Window
     shr dword[curvaluecs],8
     inc dword[curaddrvalcs]
     jmp .cspardispagain
-    .cspardisploop                               ; Max Value Display?
+.cspardisploop                               ; Max Value Display?
     push ecx
     mov esi,GUICSrcTextG1
     mov ecx,3
@@ -3055,7 +3055,7 @@ DisplayGUIAbout:          ; Displays the About Box
     DrawGUIButton 11,90,30,175,40,GUIGUIAboutTextE,65,0,0
     ret
 
-    .eegg                                ;Playground
+.eegg                                ;Playground
     GUIDisplayText 11,42,36,GUIGUIAboutTextF
     GUIDisplayText 11,30,96,GUIGUIAboutTextFa
     GUIDisplayText 11,39,106,GUIGUIAboutTextFb

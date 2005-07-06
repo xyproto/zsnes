@@ -381,7 +381,7 @@ reg2102w:
 ; OAM address register
 reg2103w:
     cmp byte[oamlow],1
-    jne  .afteroamlow
+    jne .afteroamlow
     mov byte[oamlow],0
     mov bl,al
     and bl,01h

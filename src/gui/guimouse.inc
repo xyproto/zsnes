@@ -225,9 +225,9 @@ ProcessMouseButtons:
     jb near .noclickedw
     cmp word[GUImouseposx],242
     ja .notfound7
-    %ifdef __LINUX__
+%ifdef __LINUX__
     jmp .clickawn
-    %endif
+%endif
     cmp word[GUImouseposy],8
     jb .clickawn
     cmp word[GUImouseposy],8

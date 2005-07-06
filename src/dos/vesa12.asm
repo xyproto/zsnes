@@ -79,7 +79,7 @@ NEWSYM InitVesa12
         jnc .gotmem
         mov edx,.nomemmessage
         jmp VESA12EXITTODOS
-    .gotmem
+.gotmem
         mov fs,dx          ; FS now points to the DOS buffer
 
 
@@ -134,7 +134,7 @@ NEWSYM InitVesa12
 		 ; mode information into VESAmodelist		     ;
 		;-----------------------------------------------------;
 
-        .vesa12detected
+.vesa12detected
 	mov ax,[fs:12h]			; Get no. of 64k blocks
 	mov [noblocks],ax
 	mov ax, 2
@@ -173,12 +173,12 @@ NEWSYM InitVesa12
 		    ; mode for vesa2_x, vesa2_y and vesa2_depth	 ;
 		   ;----------------------------------------------;
 
-    .copiedmodes
+.copiedmodes
 
 	mov ebp,VESAmodelist
 	xor ecx,ecx
 
-    .loopcheckmodes
+.loopcheckmodes
 	mov cx, [ebp]
 	cmp cx, 0ffffh
 	jnz .notendoflist
@@ -186,7 +186,7 @@ NEWSYM InitVesa12
 	    mov edx,.endoflist
             jmp VESA12EXITTODOS
 
-    .notendoflist
+.notendoflist
 
         mov edi, RMREGS
         mov dword[RMREGS.eax],4f01h
@@ -314,11 +314,11 @@ NEWSYM InitVesa12
         cmp bh,ah
         jb .scheck1
         mov bh,ah
-      .scheck1
+.scheck1
         cmp bh,bl
         jb .scheck2
         mov bh,bl
-      .scheck2
+.scheck2
         mov byte[fs:19h],5
 
         mov al,16
@@ -331,11 +331,11 @@ NEWSYM InitVesa12
         cmp bh,ah
         jb .scheck1b
         mov bh,ah
-      .scheck1b
+.scheck1b
         cmp bh,bl
         jb .scheck2b
         mov bh,bl
-      .scheck2b
+.scheck2b
         mov [fs:21h],bh
 
         mov al,16
@@ -348,11 +348,11 @@ NEWSYM InitVesa12
         cmp bh,ah
         jb .scheck1c
         mov bh,ah
-      .scheck1c
+.scheck1c
         cmp bh,bl
         jb .scheck2c
         mov bh,bl
-      .scheck2c
+.scheck2c
         mov [fs:23h],bh
 
         mov word[vesa2_clbit],0

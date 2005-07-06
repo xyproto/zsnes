@@ -466,7 +466,7 @@ NEWSYM SBHandler16
     inc dword[sbhandexec]
 
     cmp byte [vibracard], 1
-    je  .donotcallcmdapos
+    je .donotcallcmdapos
     call GetCDMAPos
 .donotcallcmdapos
 
@@ -1257,7 +1257,7 @@ NEWSYM SB_quality_limiter
       ; before REALLY switching back to 8-bit sucky mono mode
       ; check that we're dealing with a ViBRA16X Creative Labs Card
       cmp byte[vibracard], 1
-      je  .nostereo8b
+      je .nostereo8b
 
       cmp dword[SoundQuality],2
       jbe .nostereo8b

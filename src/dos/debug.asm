@@ -2487,7 +2487,7 @@ SECTION .text
     xor edx,edx           ; clear high byte
     xor cx,cx             ; clear counter variable
     mov ebx,10
-  .loopa2
+.loopa2
     div ebx              ; get quotent and remainder
     push dx              ; store number to stack
     inc cl
@@ -2500,7 +2500,7 @@ SECTION .text
     sub ax,cx
     cmp ax,0
     je .loopb4
-  .loopb3
+.loopb3
     push ax
     mov al,[.charprin]
     mov ah,31
@@ -2508,8 +2508,8 @@ SECTION .text
     pop ax
     dec ax
     jnz .loopb3
-  .loopb4
-  .loopb2
+.loopb4
+.loopb2
     pop ax              ; get number back from stack
     add al,30h          ; adjust to ASCII value
     mov ah,31

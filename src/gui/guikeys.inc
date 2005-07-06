@@ -629,7 +629,7 @@ GUIgetcurrentinput:
     cmp al,92
     je .leftpressed
     cmp dword[numlockptr],1
-    je  .noleft
+    je .noleft
     cmp al,75
     jne .noleft
 .leftpressed
@@ -647,9 +647,9 @@ GUIgetcurrentinput:
 .noleft
 %ifdef __LINUX__
     cmp al,94
-    je  .rightpressed
+    je .rightpressed
     cmp dword[numlockptr],1
-    je  .noright
+    je .noright
     cmp al,77
     jne .noright
 .rightpressed
@@ -667,9 +667,9 @@ GUIgetcurrentinput:
     je near .noupdown
 %ifdef __LINUX__
     cmp al,96
-    je  .downpressed
+    je .downpressed
     cmp dword[numlockptr],1
-    je  .nodown
+    je .nodown
     cmp al,80
     jne .nodown
 .downpressed
@@ -693,9 +693,9 @@ GUIgetcurrentinput:
 .nodown
 %ifdef __LINUX__
     cmp al, 90
-    je  .uppressed
+    je .uppressed
     cmp dword[numlockptr],1
-    je  .noup
+    je .noup
     cmp al,72
     jne .noup
 .uppressed
@@ -1145,8 +1145,8 @@ GUIVideoKeys:
 ;    mov byte[vsyncon],0
 ;    mov byte[cfgvsync],0
     call initDirectDraw
- .notriplebufferwin
- %endif
+.notriplebufferwin
+%endif
 %ifdef __MSDOS__
     cmp dh,'T'
     jne .notriplebuffer
@@ -1180,9 +1180,9 @@ GUIVideoKeys:
 ;   "Home"
 %ifdef __LINUX__
     cmp dl,89
-    je  .yeshome
+    je .yeshome
     cmp dword[numlockptr],1
-    je  .nohome
+    je .nohome
     cmp dl,71
     jne .nohome
 .yeshome
@@ -1196,9 +1196,9 @@ GUIVideoKeys:
 ;   "End"
 %ifdef __LINUX__
     cmp dl,95
-    je  .yesendp
+    je .yesendp
     cmp dword[numlockptr],1
-    je  .noendp
+    je .noendp
     cmp dl,79
     jne .noendp
 .yesendp
@@ -1218,9 +1218,9 @@ GUIVideoKeys:
 ;   "Up"
 %ifdef __LINUX__
     cmp dl,90
-    je  .up
+    je .up
     cmp dword[numlockptr],1
-    je  .noup
+    je .noup
     cmp dl,72
     jne .noup
 %else
@@ -1240,9 +1240,9 @@ GUIVideoKeys:
 ;   "Down"
 %ifdef __LINUX__
     cmp dl,96
-    je  .yesdown
+    je .yesdown
     cmp dword[numlockptr],1
-    je  .nodown
+    je .nodown
     cmp dl,80
     jne .nodown
 .yesdown
@@ -1263,9 +1263,9 @@ GUIVideoKeys:
 ;   "PageUp"
 %ifdef __LINUX__
     cmp dl,91
-    je  .yespageup
+    je .yespageup
     cmp dword[numlockptr],1
-    je  .nopageup
+    je .nopageup
     cmp dl,73
     jne .nopageup
 .yespageup
@@ -1287,9 +1287,9 @@ GUIVideoKeys:
 ;   "PageDown"
 %ifdef __LINUX__
     cmp dl,97
-    je  .yespagedn
+    je .yespagedn
     cmp dword[numlockptr],1
-    je  .nopagedown
+    je .nopagedown
     cmp dl,81
     jne .nopagedown
 .yespagedn
@@ -1625,9 +1625,9 @@ GUICheatKeys:
 .nozero
 %ifdef __LINUX__
     cmp al,89
-    je  .homepressed
+    je .homepressed
     cmp dword[numlockptr],1
-    je  .nohome
+    je .nohome
     cmp al,71
     jne .nohome
 .homepressed
@@ -1641,9 +1641,9 @@ GUICheatKeys:
 .nohome
 %ifdef __LINUX__
     cmp al,89
-    je  .endppressed
+    je .endppressed
     cmp dword[numlockptr],1
-    je  .noendp
+    je .noendp
     cmp al,79
     jne .noendp
 .endppressed
@@ -1664,9 +1664,9 @@ GUICheatKeys:
 .noendp
 %ifdef __LINUX__
     cmp al,90
-    je  .up
+    je .up
     cmp dword[numlockptr],1
-    je  .noup
+    je .noup
     cmp al,72
     jne .noup
 %else
@@ -1685,9 +1685,9 @@ GUICheatKeys:
 .noup
 %ifdef __LINUX__
     cmp al, 96
-    je  .downpressed
+    je .downpressed
     cmp dword[numlockptr],1
-    je  .nodown
+    je .nodown
     cmp al,80
     jne .nodown
 .downpressed
@@ -1708,9 +1708,9 @@ GUICheatKeys:
 .nodown
 %ifdef __LINUX__
     cmp al,91
-    je  .pageuppressed
+    je .pageuppressed
     cmp dword[numlockptr],1
-    je  .nopageup
+    je .nopageup
     cmp al,73
     jne .nopageup
 .pageuppressed
@@ -1731,9 +1731,9 @@ GUICheatKeys:
 .nopageup
 %ifdef __LINUX__
     cmp al, 97
-    je  .pagednpressed
+    je .pagednpressed
     cmp dword[numlockptr],1
-    je  .nopagedown
+    je .nopagedown
     cmp al,81
     jne .nopagedown
 .pagednpressed
@@ -2084,9 +2084,9 @@ GUICheatSearchKeys:
 
 %ifdef __LINUX__          ; Select with Arrow Keys
     cmp al,90
-    je  .yesmoveup
+    je .yesmoveup
     cmp dword[numlockptr],1
-    je  .nomoveup
+    je .nomoveup
     cmp al,72
     jne .nomoveup
 .yesmoveup
@@ -2100,9 +2100,9 @@ GUICheatSearchKeys:
 .nomoveup
 %ifdef __LINUX__
     cmp al,96
-    je  .yesmovedown
+    je .yesmovedown
     cmp dword[numlockptr],1
-    je  .nomovedown
+    je .nomovedown
     cmp al,80
     jne .nomovedown
 .yesmovedown
@@ -2151,9 +2151,9 @@ GUICheatSearchKeys:
 .nozero                   ; Select Codes with arrow keys
 %ifdef __LINUX__
     cmp al,89
-    je  .yeshome
+    je .yeshome
     cmp dword[numlockptr],1
-    je  .nohome
+    je .nohome
     cmp al,71
     jne .nohome
 .yeshome
@@ -2167,9 +2167,9 @@ GUICheatSearchKeys:
 .nohome
 %ifdef __LINUX__
     cmp al,95
-    je  .yesendp
+    je .yesendp
     cmp dword[numlockptr],1
-    je  .noendp
+    je .noendp
     cmp al,79
     jne .noendp
 .yesendp
@@ -2190,9 +2190,9 @@ GUICheatSearchKeys:
 .noendp
 %ifdef __LINUX__
     cmp al,90
-    je  .up
+    je .up
     cmp dword[numlockptr],1
-    je  .noup
+    je .noup
     cmp al,72
     jne .noup
 %else
@@ -2211,9 +2211,9 @@ GUICheatSearchKeys:
 .noup
 %ifdef __LINUX__
     cmp al,96
-    je  .yesdown
+    je .yesdown
     cmp dword[numlockptr],1
-    je  .nodown
+    je .nodown
     cmp al,80
     jne .nodown
 .yesdown
@@ -2235,9 +2235,9 @@ GUICheatSearchKeys:
 
 %ifdef __LINUX__            ; Pageup/Down to select Cheats
     cmp al,91
-    je  .yespgup
+    je .yespgup
     cmp dword[numlockptr],1
-    je  .nopageup
+    je .nopageup
     cmp al,73
     jne .nopageup
 .yespgup
@@ -2258,9 +2258,9 @@ GUICheatSearchKeys:
 .nopageup
 %ifdef __LINUX__
     cmp al,97
-    je  .yespgdn
+    je .yespgdn
     cmp dword[numlockptr],1
-    je  .nopagedown
+    je .nopagedown
     cmp al,81
     jne .nopagedown
 .yespgdn
@@ -2363,9 +2363,9 @@ GUIStateSelKeys:
 .noenter
 %ifdef __LINUX__
     cmp al,92               ; linux keypad left
-    je  .yesleft
+    je .yesleft
     cmp dword[numlockptr],1 ; if numlock on, disregard numpad
-    je  .noleft
+    je .noleft
 %endif
     cmp al,75               ; linux numpad left, non-linux num/keypad left
     jne .noleft
@@ -2392,9 +2392,9 @@ GUIStateSelKeys:
 .noleft
 %ifdef __LINUX__
     cmp al,94               ; linux keypad right
-    je  .yesright
+    je .yesright
     cmp dword[numlockptr],1 ; if numlock on, disregard numpad
-    je  .noright
+    je .noright
 %endif
     cmp al,77               ; linux numpad right, non-linux num/keypad right
     jne .noright
@@ -2421,18 +2421,18 @@ GUIStateSelKeys:
 .noright
 %ifdef __LINUX__
     cmp al,90               ; linux keypad up
-    je  .yesvert
+    je .yesvert
     cmp dword[numlockptr],1 ; if numlock on, disregard numpad
-    je  .noup
+    je .noup
 %endif
     cmp al,72               ; linux numpad up, non-linux num/keypad up
-    je  .yesvert
+    je .yesvert
 .noup
 %ifdef __LINUX__
     cmp al,96               ; linux keypad down
-    je  .yesvert
+    je .yesvert
     cmp dword[numlockptr],1 ; if numlock on, disregard numpad
-    je  .novert
+    je .novert
 %endif
     cmp al,80               ; linux numpad down, non-linux num/keypad down
     jne .novert
@@ -2464,9 +2464,9 @@ GUIStateSelKeys:
 GUIResetKeys:
 %ifdef __LINUX__
     cmp al,92
-    je  .yesleft
+    je .yesleft
     cmp dword[numlockptr],1
-    je  .noleft
+    je .noleft
     cmp al,75
     jne .noleft
 .yesleft
@@ -2478,9 +2478,9 @@ GUIResetKeys:
 .noleft
 %ifdef __LINUX__
     cmp al,94
-    je  .yesright
+    je .yesright
     cmp dword[numlockptr],1
-    je  .noright
+    je .noright
     cmp al,77
     jne .noright
 .yesright
@@ -2524,9 +2524,9 @@ GUIResetKeys:
 GUIStateKeys:
 %ifdef __LINUX__
     cmp al,92
-    je  .yesleft
+    je .yesleft
     cmp dword[numlockptr],1
-    je  .noleft
+    je .noleft
     cmp al,75
     jne .noleft
 .yesleft
@@ -2538,9 +2538,9 @@ GUIStateKeys:
 .noleft
 %ifdef __LINUX__
     cmp al,94
-    je  .yesright
+    je .yesright
     cmp dword[numlockptr],1
-    je  .noright
+    je .noright
     cmp al,77
     jne .noright
 .yesright
@@ -2589,9 +2589,9 @@ GUILoadKeys:
     je .noright
 %ifdef __LINUX__
     cmp al,92
-    je  .yesleft
+    je .yesleft
     cmp dword[numlockptr],1
-    je  .noleft
+    je .noleft
     cmp al,75
     jne .noleft
 .yesleft
@@ -2604,9 +2604,9 @@ GUILoadKeys:
 .noleft
 %ifdef __LINUX__
     cmp al,94
-    je  .yesright
+    je .yesright
     cmp dword[numlockptr],1
-    je  .noright
+    je .noright
     cmp al,77
     jne .noright
 .yesright
@@ -2657,9 +2657,9 @@ GUILoadKeys:
     je near .dirwin
 %ifdef __LINUX__
     cmp al,89
-    je  .yeshome
+    je .yeshome
     cmp dword[numlockptr],1
-    je  .nohome
+    je .nohome
     cmp al,71
     jne .nohome
 .yeshome
@@ -2674,9 +2674,9 @@ GUILoadKeys:
 .nohome
 %ifdef __LINUX__
     cmp al,95
-    je  .yesendp
+    je .yesendp
     cmp dword[numlockptr],1
-    je  .noendp
+    je .noendp
     cmp al,79
     jne .noendp
 .yesendp
@@ -2698,9 +2698,9 @@ GUILoadKeys:
 .noendp
 %ifdef __LINUX__
     cmp al,90
-    je  .up
+    je .up
     cmp dword[numlockptr],1
-    je  .noup
+    je .noup
     cmp al,72
     jne .noup
 %else
@@ -2720,9 +2720,9 @@ GUILoadKeys:
 .noup
 %ifdef __LINUX__
     cmp al,96
-    je  .yesdown
+    je .yesdown
     cmp dword[numlockptr],1
-    je  .nodown
+    je .nodown
     cmp al,80
     jne .nodown
 .yesdown
@@ -2744,9 +2744,9 @@ GUILoadKeys:
 .nodown
 %ifdef __LINUX__
     cmp al,91
-    je  .yespageup
+    je .yespageup
     cmp dword[numlockptr],1
-    je  .nopageup
+    je .nopageup
     cmp al,73
     jne .nopageup
 .yespageup
@@ -2768,9 +2768,9 @@ GUILoadKeys:
 .nopageup
 %ifdef __LINUX__
     cmp al,97
-    je  .yespagedn
+    je .yespagedn
     cmp dword[numlockptr],1
-    je  .nopagedown
+    je .nopagedown
     cmp al,81
     jne .nopagedown
 .yespagedn
@@ -2955,9 +2955,9 @@ SECTION .text
 .dirwin
 %ifdef __LINUX__
     cmp al,89
-    je  .yeshome2
+    je .yeshome2
     cmp dword[numlockptr],1
-    je  .nohome2
+    je .nohome2
     cmp al,71
     jne .nohome2
 .yeshome2
@@ -2972,9 +2972,9 @@ SECTION .text
 .nohome2
 %ifdef __LINUX__
     cmp al,95
-    je  .yesendp2
+    je .yesendp2
     cmp dword[numlockptr],1
-    je  .noendp2
+    je .noendp2
     cmp al,79
     jne .noendp2
 .yesendp2
@@ -2996,9 +2996,9 @@ SECTION .text
 .noendp2
 %ifdef __LINUX__
     cmp al,90
-    je  .yesup2
+    je .yesup2
     cmp dword[numlockptr],1
-    je  .noup2
+    je .noup2
     cmp al,72
     jne .noup2
 .yesup2
@@ -3018,9 +3018,9 @@ SECTION .text
 .noup2
 %ifdef __LINUX__
     cmp al,96
-    je  .yesdown2
+    je .yesdown2
     cmp dword[numlockptr],1
-    je  .nodown2
+    je .nodown2
     cmp al,80
     jne .nodown2
 .yesdown2
@@ -3042,9 +3042,9 @@ SECTION .text
 .nodown2
 %ifdef __LINUX__
     cmp al,91
-    je  .yespgup2
+    je .yespgup2
     cmp dword[numlockptr],1
-    je  .nopageup2
+    je .nopageup2
     cmp al,73
     jne .nopageup2
 .yespgup2
@@ -3066,9 +3066,9 @@ SECTION .text
 .nopageup2
 %ifdef __LINUX__
     cmp al,97
-    je  .yespgdn2
+    je .yespgdn2
     cmp dword[numlockptr],1
-    je  .nopagedown2
+    je .nopagedown2
     cmp al,81
     jne .nopagedown2
 .yespgdn2

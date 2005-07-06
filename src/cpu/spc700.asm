@@ -531,17 +531,17 @@ NEWSYM RSPCRegFC
 
 %macro skipmacro 1
 .spcnextskip
-  	  test byte[timeron],1<<%1
-	  je .ret
-	  cmp byte[timincr0+%1],0
-	  je .ret
-	  ;cmp byte[SpeedHack],0
-	  ;je .ret
+      test byte[timeron],1<<%1
+      je .ret
+      cmp byte[timincr0+%1],0
+      je .ret
+      ;cmp byte[SpeedHack],0
+      ;je .ret
       inc byte[spcnumread+%1]
-	  cmp byte[spcnumread+%1],8h
+      cmp byte[spcnumread+%1],8h
       je near haltspc
-	  .ret
-      ret
+.ret
+    ret
 %endmacro
 
 ALIGN16

@@ -22,7 +22,7 @@
 
 %include "macros.mac"
 
-EXTSYM PrintStr,WaitForKey,PrintChar,ram7fa,wramdataa,malloc,free,MMXSupport
+EXTSYM PrintStr,WaitForKey,PrintChar,ram7fa,wramdataa,malloc,MMXSupport
 EXTSYM MMXextSupport,statefileloc,LatestSave,firstsaveinc,Open_File
 EXTSYM Get_File_Date,Close_File,Change_Dir,Get_Dir,romloadskip,cfgloadgdir
 EXTSYM cfgloadsdir,init18_2hz,OSExit,SRAMDirCurDir,SRAMChdir,SRAMChdirFail
@@ -528,14 +528,14 @@ NEWSYM printnum
     xor edx,edx           ; clear high byte
     xor cx,cx             ; clear counter variable
     mov ebx,10
-  .loopa
+.loopa
     div ebx              ; get quotent and remainder
     push edx              ; store number to stack
     inc cl
     xor edx,edx
     test eax,0FFFFFFFFh
     jnz .loopa
-  .loopb
+.loopb
     pop edx              ; get number back from stack
     add dl,30h          ; adjust to ASCII value
     call PrintChar
@@ -556,14 +556,14 @@ NEWSYM convertnum
     xor edx,edx           ; clear high byte
     xor cx,cx             ; clear counter variable
     mov ebx,10
-  .loopa
+.loopa
     div ebx              ; get quotent and remainder
     push edx              ; store number to stack
     inc cl
     xor edx,edx
     test eax,0FFFFFFFFh
     jnz .loopa
-  .loopb
+.loopb
     pop edx              ; get number back from stack
     add dl,30h          ; adjust to ASCII value
     mov [esi],dl
@@ -754,7 +754,7 @@ DetermineNewest:
 ;*******************************************************
 
 NEWSYM tparms
-  .donestring
+.donestring
     test byte[.numparam],0FFh
     jz .nochars
     mov al,byte[filefound]
@@ -762,7 +762,7 @@ NEWSYM tparms
     jz .nostring
     ret
 
-  .nostring
+.nostring
     cmp byte[guioff],0
     je .yesgui
 
@@ -770,7 +770,7 @@ NEWSYM tparms
     call PrintStr
     jmp DosExit
 
-  .nochars
+.nochars
     cmp byte[guioff],0
     je .yesgui
     cmp byte[fname],0
@@ -885,20 +885,6 @@ NEWSYM DosExit ; Terminate Program
 %elifdef __LINUX__
 	call LinuxExit
 %elifdef __MSDOS__
-	jmp .nodeallocate
-	mov ebx,memfreearray
-	.nextdeallocate
-	mov eax,[ebx]
-	or eax,eax
-	jz .nodeallocate
-	push ebx
-	push eax
-	call free
-	pop eax
-	pop ebx
-	add ebx,4
-	jmp .nextdeallocate
-.nodeallocate
 	call init18_2hz
 	mov    ax,4c00h            ;terminate
 	int    21h

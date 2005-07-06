@@ -20,12 +20,12 @@
 
 %include "macros.mac"
 
-EXTSYM KeyRewind,statesaver,timer2upd,Voice0Status,UpdateDPage,MessageOn
-EXTSYM MsgCount,Msgptr,StartGUI,cbitmode,debuggeron,romdata,initvideo,newgfx16b
-EXTSYM cvidmode,vidbufferofsa,disable65816sh,GUISaveVars,virqnodisable
+EXTSYM KeyRewind,statesaver,timer2upd,Voice0Status,UpdateDPage
+EXTSYM StartGUI,debuggeron,romdata,initvideo
+EXTSYM vidbufferofsa,disable65816sh,GUISaveVars,virqnodisable
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
-EXTSYM KeyQuickSaveSPC,TimerEnable,IRQHack,HIRQLoc,splitflags,joinflags
+EXTSYM KeyQuickSaveSPC,TimerEnable,IRQHack,splitflags,joinflags
 EXTSYM KeyQuickSnapShot,csounddisable,videotroub,ResetTripleBuf
 EXTSYM Output_Text,Check_Key,Get_Key,Change_Dir
 EXTSYM InitPreGame,Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8
@@ -241,10 +241,6 @@ VoiceStartMute:
 
 SECTION .data
 NEWSYM romloadskip, db 0
-NEWSYM abcdefg,     dd 0
-NEWSYM abcdefg1,    dd 0
-NEWSYM abcdefg2,    dd 0
-NEWSYM abcdefg3,    dd 0
 NEWSYM SSKeyPressed, dd 0
 NEWSYM SPCKeyPressed, dd 0
 NEWSYM NoSoundReinit, dd 0
@@ -265,25 +261,6 @@ NEWSYM start65816
     ret
 .notrouble
 
-    jmp .nonewgfxcheck
-    cmp byte[cbitmode],1
-    jne .nonewgfxcheck
-    cmp byte[newengen],1
-    jne .nonewgfxcheck
-    cmp byte[cvidmode],3
-    jne .nocorrectmode
-    cmp byte[newgfx16b],1
-    je .nonewgfxcheck
-    jmp .correctmode
-.nocorrectmode
-    mov dword[Msgptr],newgfxerror2
-    jmp .correctmode
-    mov dword[Msgptr],newgfxerror
-.correctmode
-    mov eax,[MsgCount]
-    mov [MessageOn],eax
-    mov byte[newengen],0
-.nonewgfxcheck
     mov edi,[vidbufferofsa]
     mov ecx,37518
     xor eax,eax
@@ -400,13 +377,6 @@ reexecuteb2:
     mov edi,[tableadb+ebx*4]
     and byte[curexecstate],0FDh
 .soundta
-    jmp .nomovie
-.movie
-    mov edi,[tableadc+ebx*4]
-    test byte[curexecstate],2
-    jnz .nomovie
-    mov edi,[tableadb+ebx*4]
-.nomovie
 
     mov ebp,[spcPCRam]
 
@@ -416,13 +386,7 @@ reexecuteb2:
 
     call splitflags
 
-;    cmp byte[MovieProcessing],0
-;    jne .movie2
     call execute
-    jmp .nomovie2
-.movie2
-    call cpuover.returntoloop
-.nomovie2
 
     call joinflags
 
@@ -597,8 +561,8 @@ NEWSYM initaddrl, dd 0                  ; initial address location
 NEWSYM NetSent, dd 0
 NEWSYM nextframe, dd 0                  ; tick count for timer
 NEWSYM curfps,    db 0                  ; frame/sec for current screen
-NEWSYM newgfxerror, db 'NEED MEMORY FOR GFX ENGINE',0
-NEWSYM newgfxerror2, db 'NEED 320x240 FOR NEW GFX 16B',0
+;NEWSYM newgfxerror, db 'NEED MEMORY FOR GFX ENGINE',0
+;NEWSYM newgfxerror2, db 'NEED 320x240 FOR NEW GFX 16B',0
 ;newgfxerror db 'NEW GFX IN 16BIT IS N/A',0
 NEWSYM HIRQCycNext,   dd 0
 NEWSYM HIRQNextExe,   db 0
@@ -1538,13 +1502,6 @@ NEWSYM cpuover
     jne .nointrset2w
     mov byte[intrset],2
 .nointrset2w
-    cmp byte[esi],0CBh
-    jne .nowai
-    jmp .nowai
-    test dl,04h
-    jz .nowai
-    or byte[INTEnab],80h
-.nowai
     xor ebx,ebx
     xor ecx,ecx
     mov bl,[esi]
@@ -1614,33 +1571,6 @@ NEWSYM cpuover
     jmp execloop.startagain
 
 .virq
-    test byte[INTEnab],10h
-    jz .skiphirq
-    cmp word[HIRQLoc],0
-    je .skiphirq
-    jmp .skiphirq
-    cmp word[HIRQLoc],339
-    jbe .hirqnotover
-    mov word[HIRQLoc],339
-.hirqnotover
-    ; first dh = HIRQLoc*DHAdd/340, second dh = DHAdd-first dh
-    push edx
-    mov ax,[HIRQLoc]
-    xor ecx,ecx
-    mov cl,[cycpl]
-    mul cx
-    mov cx,340
-    div cx
-    pop edx
-    mov dh,al
-    mov cl,[cycpl]
-    sub cl,al
-    xor cl,cl
-    mov [HIRQCycNext],cl
-    mov byte[HIRQNextExe],1
-;    jmp .hirq
-    jmp .returnfromhirq
-.skiphirq
     test byte[curexecstate],01h
     jnz .dis658162
     or byte[curexecstate],01h

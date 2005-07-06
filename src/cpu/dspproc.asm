@@ -614,7 +614,7 @@ NEWSYM AdjustFrequency
 %ifdef __MSDOS__
       ; code for supporting vibra cards (coded by Peter Santing)
       cmp byte [vibracard], 1
-      je  .vibrafix
+      je .vibrafix
 
       cmp byte [SBHDMA],0
       je .not16bit
@@ -1262,7 +1262,7 @@ NEWSYM InitSPC
       mov ecx,256
       mov eax,Invalidopcode
       mov ebp,0
-      .loop
+.loop
 %ifdef __MSDOS__
       mov [ds:opcjmptab+ebp],eax
 %else

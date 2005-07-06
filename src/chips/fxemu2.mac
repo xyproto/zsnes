@@ -43,11 +43,6 @@
     mov [SfxRomBuffer],eax
 %endmacro
 
-%macro UpdateR15 0
-    mov ebp,[SfxCPB]
-    add ebp,[SfxR15]
-%endmacro
-
 %macro CLRFLAGS 0
   ;and dword [SfxSFR],0FFFFh-0100h-0200h-1000h  ; Clear ALT1,ALT2 and B Flags
 ;  xor ch,ch

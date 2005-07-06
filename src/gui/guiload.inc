@@ -483,9 +483,9 @@ GetNormalEntries2:
     GUIGetEntry2 GUIfigfind
     GUIGetEntry2 GUImgdfind
     GUIGetEntry2 GUIufofind
-    %ifndef __MSDOS__
+%ifndef __MSDOS__
     GUIGetEntry2 GUIfindGZIP
-    %endif
+%endif
     GUIGetEntry2 GUIfind058
     GUIGetEntry2 GUIfind078
     GUIGetEntry2 GUIfindUSA
@@ -511,9 +511,9 @@ GetNormalEntries:
     GUIGetEntry GUImgdfind
     GUIGetEntry GUIufofind
     GUIGetEntry GUIgd3find
-    %ifndef __MSDOS__
+%ifndef __MSDOS__
     GUIGetEntry GUIfindGZIP
-    %endif
+%endif
     GUIGetEntry GUIfind058
     GUIGetEntry GUIfind078
     GUIGetEntry GUIfindUSA
@@ -675,9 +675,9 @@ GetLoadLfn:
     GUIGetEntryLFN GUIfigfind
     GUIGetEntryLFN GUImgdfind
     GUIGetEntryLFN GUIufofind
-    %ifndef __MSDOS__
+%ifndef __MSDOS__
     GUIGetEntryLFN GUIfindGZIP
-    %endif
+%endif
     GUIGetEntryLFN GUIfind058
     GUIGetEntryLFN GUIfind078
     GUIGetEntryLFN GUIfindUSA

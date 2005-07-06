@@ -78,7 +78,7 @@ EXTSYM statesaver,loadstate2,vidbuffer,ASCII2Font,hirestiledat,showallext
 EXTSYM scanlines,statefileloc,pl1selk,pl2selk,fnamest,sprlefttot,spritetablea
 EXTSYM fnames,CHIPBATT,sfxramdata,setaramdata,SETAEnable,cgram,srama,tempco0
 EXTSYM prevbright,maxbr,prevpal,coladdr,coladdg,coladdb,scaddtype,ScreenScale
-EXTSYM vesa2red10,initvideo2,initvideo,pressed,UpdateDevices,memtabler8
+EXTSYM initvideo2,initvideo,pressed,UpdateDevices,memtabler8
 EXTSYM memtablew8,writeon,pl1contrl,pl2contrl,JoyRead,SetInputDevice,delay
 EXTSYM SetInputDevice209,FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,pl12s34,resolutn
 EXTSYM InitDrive,InitDir,createnewcfg,Makemode7Table,vidbufferofsb,ZipSupport
@@ -2626,32 +2626,32 @@ DisplayMenu:
     GUIBox 0,14,229,14,70
     GUIBox 0,15,229,15,71
 
-    %ifdef __LINUX__
+%ifdef __LINUX__
     GUIShadow 238,9,247,20
     GUIShadow 249,9,257,20
-    %endif
-    %ifdef __WIN32__
+%endif
+%ifdef __WIN32__
     GUIShadow 238,9,247,14
     GUIShadow 238,16,247,20
     GUIShadow 249,9,257,20
-    %endif
+%endif
 .notwinpressa
 
-    %ifdef __LINUX__
+%ifdef __LINUX__
     mov byte[GUIMenuItem+36],247
     GUIDMHelpB 233,242,GUIMenuItem+36,1
     mov byte[GUIMenuItem+36],'x'
     GUIDMHelpB 244,253,GUIMenuItem+36,2
-    %endif
+%endif
 
-    %ifdef __WIN32__
+%ifdef __WIN32__
     mov byte[GUIMenuItem+36],249
     GUIDMHelpB2 233,242,GUIMenuItem+36,1
     mov byte[GUIMenuItem+36],248
     GUIDMHelpB3 233,242,GUIMenuItem+36,3
     mov byte[GUIMenuItem+36],'x'
     GUIDMHelpB 244,253,GUIMenuItem+36,2
-    %endif
+%endif
 .notwinpressb
 
     ; Display upper-left box
@@ -3576,23 +3576,6 @@ GUISetPal16:
     GUIPal16b 237,60,20,25
     GUIPal16b 238,42,20,25
 
-    cmp byte[vesa2red10],1
-    jne .nored10
-    jmp .nored10
-    mov esi,GUICPC
-    mov ecx,256
-.next2
-    mov ax,[esi]
-    mov bx,ax
-    and bx,0000000000011111b
-    and ax,1111111111000000b
-    shr ax,1
-    or ax,bx
-    mov [esi],ax
-    add esi,2
-    dec ecx
-    jnz .next2
-.nored10
     cmp byte[GUIPalConv],0
     je .convert
     ret
