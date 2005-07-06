@@ -2575,8 +2575,8 @@ drawsprng16bt:
     xor eax,eax
     test byte[BGMS1+ebx*2+1],10h
     jnz near drawsprng16bmst
-    test byte[BGMS1+ebx*2],04h
-    jz .main
+    test byte[BGMS1+ebx*2+1],08h
+    jnz .main
     mov edi,[CMainWinScr]
     cmp byte[edi+ebx+4*256],0
     jne near drawsprngw16bt
