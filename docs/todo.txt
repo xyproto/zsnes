@@ -1,30 +1,35 @@
 Some Issues :
 
+All Ports:
+- Recode netplay feature, once core is not random anymore.
+
 SDL Port:
-- Low performance due to differences in surface sizes (internal and 
+- Low performance due to differences in surface sizes (internal and
   SDL), make both the same size.
+- OpenGL code is awful, uncomprehensible, stupid and awful again.
+  We must fix it.
 
 Windows Port:
-- OpenGL, or Direct3D support would be nice (we have the source for 
+- OpenGL, or Direct3D support would be nice (we have the source for
   OpenGL but it needs to be integrated into the main tree, any takers?)
-- MingGW support is now added thanks to Nach! But for some reason 
+- MingGW support is now added thanks to Nach! But for some reason
   winlink.cpp will not compile with optimisations.
-- Auto-detect high/low latency connections and adjust settings accordingly
 
 Compatibility
-- Game not working - Guikuden 1 (and some more)
-- Graphics Glitches - Uniracers (2p mode), Killer Instinct (couple stages,
-    black background), FF3 (some sprite clipping probs), Metal Combat,
-    Tactic Ogre (Menus?)
-- Special Chips - DSP1 (95% done), DSP2 (0% done), SA-1 (95% done),
-                  SDD-1 (decompression left), and others                       
+- Game not working - Guikuden 1, Cu-On-Pa (and loads more)
+- Graphics Glitches - Killer Instinct (black background), FF3 (Range Time Over
+      and other sprite trouble), Metal Combat (?), Tactic Ogre (Menus), Energy
+      Breaker (mode7 world map), Super Aleste (offset incorrect in stage 4),
+      lots of others...
+- Special Chips - DSP1 (95% done), DSP2 (0% done), DSP3 (0% done?), DSP4 (done?)
+      SA-1 (95% done), C4 (done?), SDD-1 (done?), SPC7110 (all but decomp?)
+      SFX1/2 (done?), OBC1 (have to clean the mess)
 
 Timing engine
 - Convert counter to 32-bit. (assigned to pagefault).
-- Fix 65816 timing and take into consideration cycle differences in 
+- Fix 65816 timing and take into consideration cycle differences in
   8/16-bit mode, branches etc.
 
 Graphics Engine
-- Fix some windowing/subscreen sprite problems that are still present in 
+- Fix some windowing/subscreen sprite problems that are still present in
   the new graphics engine. Probably pagefault will have to do this.
-
