@@ -786,7 +786,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
   {
     output_cheader_start(cheader_stream);
   }
-    
+
   while (!psr_stream.eof())
   {
     char *token;
@@ -832,7 +832,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
           {
             string initial_value = get_token(0, " ,\n");
             ostringstream var_init("");
-            
+
             if (((initial_value[0] == '\"') && (initial_value[initial_value.length()-1] == '\"')) ||
                 ((initial_value[0] == '\'') && (initial_value[initial_value.length()-1] == '\'')))
             {
@@ -974,7 +974,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
   {
     output_cheader_end(cheader_stream);
   }
-    
+
   if (!ifs.empty())
   {
     cerr << "Error: " << ifs.size() << " ifdef segments have no endif." << endl;
@@ -1045,7 +1045,7 @@ int main(size_t argc, const char **argv)
           cerr << "Error opening " << cheader_file << " for writing." << endl;
           ret_val |= 8;
         }
-        
+
         cheader_stream.close();
       }
       else
