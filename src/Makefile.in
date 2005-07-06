@@ -37,11 +37,10 @@ CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
 	${CHIPDIR}/sdd1emu.o ${CHIPDIR}/c4emu.o ${CHIPDIR}/dsp4proc.o\
 	${CHIPDIR}/dsp4emu.o
 
-CPUOBJ=${CPUDIR}/addrni.o ${CPUDIR}/dma.o ${CPUDIR}/dsp.o ${CPUDIR}/dspproc.o\
-	${CPUDIR}/execute.o ${CPUDIR}/irq.o ${CPUDIR}/memory.o\
+CPUOBJ=${CPUDIR}/dma.o ${CPUDIR}/dsp.o ${CPUDIR}/dspproc.o ${CPUDIR}/execute.o\
+	${CPUDIR}/executec.o ${CPUDIR}/irq.o ${CPUDIR}/memory.o\
 	${CPUDIR}/memtable.o ${CPUDIR}/spc700.o ${CPUDIR}/stable.o\
-	${CPUDIR}/table.o ${CPUDIR}/tableb.o ${CPUDIR}/tablec.o\
-	${CPUDIR}/executec.o
+	${CPUDIR}/table.o ${CPUDIR}/tableb.o ${CPUDIR}/tablec.o
 
 EFFECTSOBJ=${EFFECTSDIR}/burn.o ${EFFECTSDIR}/water.o ${EFFECTSDIR}/smoke.o
 
