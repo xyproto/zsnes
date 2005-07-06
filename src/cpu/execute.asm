@@ -254,6 +254,8 @@ NEWSYM tempdh, db 0
 
 SECTION .text
 
+
+; this wonderful mess starts up the CPU and initialized the emulation state
 NEWSYM start65816
 
     call initvideo
