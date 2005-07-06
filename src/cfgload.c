@@ -28,6 +28,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <io.h>
 #include <stdio.h>
 #include <string.h>
+#ifndef _MSC_VER
+#include <unistd.h>
+#else
+#include <direct.h>
+#endif
 #endif
 
 #define StringA "FRAMESKIP"
