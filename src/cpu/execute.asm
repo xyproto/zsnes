@@ -58,7 +58,7 @@ EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
 
 %ifdef __MSDOS__
-EXTSYM dssel
+EXTSYM dssel,Game60hzcall
 %endif
 
 SECTION .data
@@ -605,7 +605,6 @@ NEWSYM init18_2hz
     ret
 
 %ifdef __MSDOS__
-EXTSYM Game60hzcall
 NEWSYM handler8h
     cli
     push ds
