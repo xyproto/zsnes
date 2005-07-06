@@ -1399,9 +1399,9 @@ InitializeGfxStuff:
          je .red10
          mov eax,565
          jmp .red11
-         .red10
+.red10
          mov eax,555
-         .red11
+.red11
          push eax
          call Init_2xSaIMMXW
          pop eax
