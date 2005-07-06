@@ -36,8 +36,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
 //Start of execute.asm goodness
-extern unsigned char t1cc;
-extern unsigned short int nextframe;
+extern unsigned char t1cc; // not sure about this one
+extern unsigned short int nextframe; // framecounter for frameskipping
 
 void Game60hzcall()
 {
