@@ -151,9 +151,10 @@ CHIPSOBJ=${CHIPDIR}/dsp1emu${OE} ${CHIPDIR}/fxemu2${OE} ${CHIPDIR}/sfxproc${OE}\
 	${CHIPDIR}/dsp4emu${OE}
 
 CPUOBJ=${CPUDIR}/dma${OE} ${CPUDIR}/dsp${OE} ${CPUDIR}/dspproc${OE}\
-	${CPUDIR}/execute${OE} ${CPUDIR}/irq${OE} ${CPUDIR}/memory${OE}\
-	${CPUDIR}/memtable${OE} ${CPUDIR}/spc700${OE} ${CPUDIR}/stable${OE}\
-	${CPUDIR}/table${OE} ${CPUDIR}/tableb${OE} ${CPUDIR}/tablec${OE}
+	${CPUDIR}/execute${OE} ${CPUDIR}/executec${OE} ${CPUDIR}/irq${OE}\
+	${CPUDIR}/memory${OE} ${CPUDIR}/memtable${OE} ${CPUDIR}/spc700${OE}\
+	${CPUDIR}/stable${OE} ${CPUDIR}/table${OE} ${CPUDIR}/tableb${OE}\
+	${CPUDIR}/tablec${OE}
 
 GUIOBJ=${GUIDIR}/gui${OE} ${GUIDIR}/guifuncs${OE} ${GUIDIR}/menu${OE}
 
@@ -264,6 +265,7 @@ zstate${OE}: $< gblvars.h
 zloader${OE}: $<
 
 ${CPUDIR}/execute${OE}: $< macros.mac
+${CPUDIR}/executec${OE}: $<
 ${CPUDIR}/table${OE}: $< ${CPUDIR}/65816d.inc ${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816.inc\
 	           ${CPUDIR}/regs.mac ${CPUDIR}/regs.inc ${CPUDIR}/regsw.mac ${CPUDIR}/regsw.inc macros.mac
 ${CPUDIR}/tableb${OE}: $< ${CPUDIR}/65816db.inc ${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816b.inc\
