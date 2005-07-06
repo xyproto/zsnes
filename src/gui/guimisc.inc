@@ -380,11 +380,11 @@ NEWSYM GUIDoReset
 
     xor eax,eax
     mov edx,spcRam
-    mov ax,0FFC9h
+    mov ax,0FFC0h
     add edx,eax
     mov [spcPCRam],edx
-    mov dword [spcS],1EFh
-    mov dword [spcRamDP],spcRam
+    mov dword[spcS],1EFh
+    mov dword[spcRamDP],spcRam
     mov byte[spcA],0
     mov byte[spcX],0
     mov byte[spcY],0
