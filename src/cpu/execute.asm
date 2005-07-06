@@ -710,13 +710,6 @@ NEWSYM init18_2hz
     out 40h,al
     ret
 
-%ifndef __LINUX__
-NEWSYM Game60hzcall
-    inc word[t1cc]
-    inc byte[nextframe]
-    ret
-%endif
-
 %ifdef __MSDOS__
 NEWSYM handler8h
     cli
