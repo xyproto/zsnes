@@ -25,10 +25,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef __LINUX__
 #include "gblhdr.h"
 #else
-#include <math.h>
+#include <math.h> //sqrt()
+#include <stdlib.h> //abs()
 #endif
-
-#define ABS(x) ((x)<0?-(x):(x))
 
 #define SRAM setaramdata
 
