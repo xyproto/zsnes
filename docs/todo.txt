@@ -1,8 +1,14 @@
 Some Issues :
 
+SDL Port:
+- Low performance due to differences in surface sizes (internal and 
+  SDL), make both the same size.
+
 Windows Port:
-- OpenGL, or Direct3D support would be nice
-- Use another (free) compiler for the windows version (cygwin?)
+- OpenGL, or Direct3D support would be nice (we have the source for 
+  OpenGL but it needs to be integrated into the main tree, any takers?)
+- MingGW support is now added thanks to Nach! But for some reason 
+  winlink.cpp will not compile with optimisations.
 - Auto-detect high/low latency connections and adjust settings accordingly
 
 Compatibility
@@ -12,3 +18,13 @@ Compatibility
     Tactic Ogre (Menus?)
 - Special Chips - DSP1 (95% done), DSP2 (0% done), SA-1 (95% done),
                   SDD-1 (decompression left), and others                       
+
+Timing engine
+- Convert counter to 32-bit. (assigned to pagefault).
+- Fix 65816 timing and take into consideration cycle differences in 
+  8/16-bit mode, branches etc.
+
+Graphics Engine
+- Fix some windowing/subscreen sprite problems that are still present in 
+  the new graphics engine. Probably pagefault will have to do this.
+
