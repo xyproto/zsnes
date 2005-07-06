@@ -77,7 +77,7 @@ SECTION .text
 %include "video/2xsaimmx.inc"
 %include "video/copyvid.inc"
 
-SECTION  .text
+SECTION .text
 NEWSYM FPUZero
 %if 0
 
@@ -1729,9 +1729,9 @@ NEWSYM saveselect
     inc eax
     dec ecx
     jnz .looppr
-    %ifdef __MSDOS__
+%ifdef __MSDOS__
     mov byte[pressed+1],0
-    %endif
+%endif
 
     mov word[t1cc],0
     mov byte[csounddisable],0
@@ -2043,9 +2043,9 @@ SECTION .text
     dec ecx
     jnz .looppr2
 .prwin
-    %ifdef __MSDOS__
+%ifdef __MSDOS__
     mov byte[pressed+1],0
-    %endif
+%endif
     mov word[t1cc],0
     mov byte[csounddisable],0
     call StartSound
