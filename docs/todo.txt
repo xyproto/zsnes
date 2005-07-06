@@ -12,18 +12,19 @@ SDL Port:
 Windows Port:
 - OpenGL, or Direct3D support would be nice (we have the source for
   OpenGL but it needs to be integrated into the main tree, any takers?)
-- MingGW support is now added thanks to Nach! But for some reason
-  winlink.cpp will not compile with optimisations.
+- MingGW support is now added thanks to Nach and Jonas Quinn! But for some
+  reason GCC's -fweb is breaking winlink.cpp when compiled with optimisation.
 
 Compatibility
 - Game not working - Guikuden 1, Cu-On-Pa (and loads more)
 - Graphics Glitches - Killer Instinct (black background), FF3 (Range Time Over
-      and other sprite trouble), Metal Combat (?), Tactic Ogre (Menus), Energy
+      and other sprite trouble), Metal Combat (OBC-1), Tactic Ogre (Menus), Energy
       Breaker (mode7 world map), Super Aleste (offset incorrect in stage 4),
-      lots of others...
-- Special Chips - DSP1 (95% done), DSP2 (0% done), DSP3 (0% done?), DSP4 (done?)
-      SA-1 (95% done), C4 (done?), SDD-1 (done?), SPC7110 (all but decomp?)
-      SFX1/2 (done?), OBC1 (have to clean the mess)
+      Top Gear 3000 (DSP-4), lots of others...
+- Special Chips - DSP1 (95% done), DSP3 (50% done), DSP4 (90% done)
+      SA-1 (95% done), SPC7110 (Needs some core fixes and decompression)
+      SFX1/2 (done?), OBC1 (have to clean the mess), Seta 11 (0% done),
+      Seta 18 (0% done), BS-X (50% done).
 
 Timing engine
 - Convert counter to 32-bit. (assigned to pagefault).
