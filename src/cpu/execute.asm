@@ -106,7 +106,7 @@ NEWSYM ProcessRewind
 
     mov esi,[tempesi]
     mov edi,[tempedi]
-;    mov ebp,[tempebp]
+    mov ebp,[tempebp]
     mov edx,[tempedx]
 
 .notokay
@@ -124,7 +124,7 @@ NEWSYM UpdateRewind
     mov [tempedx],edx
     mov [tempesi],esi
     mov [tempedi],edi
-;    mov [tempebp],ebp
+    mov [tempebp],ebp
 
     pushad
     call BackupCVFrame
@@ -479,7 +479,7 @@ reexecuteb2:
     mov edi,[tableadb+ebx*4]
 .nomovie
 
-;    mov ebp,[spcPCRam]
+    mov ebp,[spcPCRam]
 
     mov byte[NoSoundReinit],0
     mov byte[csounddisable],0
@@ -499,7 +499,7 @@ reexecuteb2:
 
     ; de-init variables (copy to variables)
 
-;    mov [spcPCRam],ebp
+    mov [spcPCRam],ebp
     mov [Curtableaddr],edi
     mov [xp],dl
     mov [curcyc],dh
