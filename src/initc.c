@@ -930,6 +930,8 @@ void loadZipFile(char *filename)
 
 void load_file_fs(char *path)
 {
+  unsigned char *ROM = (unsigned char *)romdata;
+
   unsigned int pathlen = strlen(path);
   const char *ext = path+pathlen-4;
   if (pathlen >= 5 && !strcasecmp(ext, ".jma"))
@@ -948,6 +950,12 @@ void load_file_fs(char *path)
   {
     loadFile(path);
   }
+
+  if ((curromspace & 0x7FFF) == 512)
+  {
+    memmove(ROM, ROM+512, addOnStart);
+    curromspace -= 512;
+  }  
 }
 
 char *STCart2 = 0;
@@ -970,18 +978,13 @@ void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
   
   if (!*basepath)
   {
-    loadZipFile(basefile);
+    load_file_fs(basefile);
   }
   else
   {
     load_file_fs(basepath);
   }
 
-  if ((curromspace & 0x7FFF) == 512)
-  {
-    memmove(ROM, ROM+512, addOnStart);
-    curromspace -= 512;
-  }
   if (!curromspace) { return; }
 
   switch (MirrorSystem)
