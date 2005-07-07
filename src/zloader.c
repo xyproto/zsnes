@@ -50,6 +50,8 @@ extern unsigned char Palette0, pl1contrl, pl2contrl, MMXSupport, Force8b, ForceP
                      showallext, autoloadstate, smallscreenon, autoloadmovie, ZMVZClose,
                      ZMVRawDump;
 
+extern char *STCart2;
+
 void ConvertJoyMap1(), ConvertJoyMap2(), zstart(), makeextension();
 
 #define put_line(x)                          \
@@ -549,6 +551,8 @@ static void handle_params(int argc, char *argv[])
       fvar[0] = strlen(argv[i]);
       strncpy(&fvar[1],argv[i],127);
       makeextension();
+
+      STCart2 = argv[i+1]; //Sufami Turbo second cart
       break;
     }
   }

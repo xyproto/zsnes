@@ -928,6 +928,29 @@ void loadZipFile(char *filename)
   }
 }
 
+void load_file_fs(char *path)
+{
+  unsigned int pathlen = strlen(path);
+  const char *ext = path+pathlen-4;
+  if (pathlen >= 5 && !strcasecmp(ext, ".jma"))
+  {
+    load_jma_file(path);
+  }
+  else if (pathlen >= 5 && !strcasecmp(ext, ".zip"))
+  {
+    loadZipFile(path);
+  }
+  else if (pathlen >= 4 && !strcasecmp(ext+1, ".gz"))
+  {
+    loadGZipFile(path);
+  }
+  else
+  {
+    loadFile(path);
+  }
+}
+
+char *STCart2 = 0;
 void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
 {
   unsigned char *ROM = (unsigned char *)romdata;
@@ -936,30 +959,22 @@ void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
   if (maxromspace < addOnStart+addOnSize) { return; }
   memcpy(ROM+addOnStart, ROM, addOnSize);
 
-  if (*basepath == 0)
+  if (STCart2)
+  {
+    if (maxromspace < 0x300000) { return; }
+    curromspace = 0;
+    load_file_fs(STCart2);
+    memcpy(ROM+0x200000, ROM, addOnSize);
+    curromspace = 0;
+  }
+  
+  if (!*basepath)
   {
     loadZipFile(basefile);
   }
   else
   {
-    unsigned int pathlen = strlen(basepath);
-    char *ext = basepath+pathlen-4;
-    if (pathlen >= 5 && !strcasecmp(ext, ".jma"))
-    {
-      load_jma_file(basepath);
-    }
-    else if (pathlen >= 5 && !strcasecmp(ext, ".zip"))
-    {
-      loadZipFile(basepath);
-    }
-    else if (pathlen >= 4 && !strcasecmp(ext+1, ".gz"))
-    {
-      loadGZipFile(basepath);
-    }
-    else
-    {
-      loadFile(basepath);
-    }
+    load_file_fs(basepath);
   }
 
   if ((curromspace & 0x7FFF) == 512)
@@ -984,10 +999,19 @@ void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
     case 3:
       memcpy(ROM+0x40000, ROM, 0x40000);
       memcpy(ROM+0x80000, ROM, 0x80000);
+      if (STCart2 && addOnSize < 0x100000)
+      {
+        memcpy(ROM+0x180000, ROM+0x100000, 0x80000);
+        memcpy(ROM+0x280000, ROM+0x200000, 0x80000);
+      }
       break;
   }
 
   curromspace = addOnStart+addOnSize;
+  if (STCart2)
+  {
+    curromspace = 0x300000;
+  }
   SplittedROM = true;
 }
 
@@ -1393,6 +1417,9 @@ extern unsigned char  cycpl;
 void headerhack()
 {
   char *RomData = (char *)romdata;
+
+  return;
+  
   disablehdma = 0;
   hdmaearlstart = 0;
   WindowDisables = 0;
