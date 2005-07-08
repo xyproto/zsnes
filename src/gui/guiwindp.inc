@@ -427,6 +427,16 @@ GUIStringGreater2:
 %%skip
 %endmacro
 
+%macro GUIDisplayButtonHoleTu 7
+    mov dword[GUITemp],GUIIconDataButtonHole
+    cmp %4,%5
+    jne %%nofill
+    mov dword[GUITemp],GUIIconDataButtonFill
+%%nofill
+    GUIDisplayIconWin %1,%2,%3,[GUITemp]
+    GUIDisplayTextu %1,%2+15,%3+3,%6,%7
+%endmacro
+
 %macro GUIDisplayButtonHole 5
     mov dword[GUITemp],GUIIconDataButtonHole
     cmp %4,%5
@@ -2144,15 +2154,16 @@ DisplayGUISearch:
     call DrawWindowSearch
 
     GUIDisplayTextY 13,6,16,GUICSrcTextA1
-    GUIDisplayTextu 13,25,30,GUICSrcTextA1a,0
-    GUIDisplayTextu 13,25,40,GUICSrcTextA1b,0
-    GUIDisplayTextu 13,25,50,GUICSrcTextA1c,0
-    GUIDisplayTextu 13,25,60,GUICSrcTextA1d,0
-    GUIDisplayTextu 13,25,75,GUICSrcTextA1e,0
-    GUIDisplayTextu 13,25,85,GUICSrcTextA1f,0
+    GUIDisplayButtonHoleTu 13,11,28,byte[CheatSrcByteSize],0,GUICSrcTextA1a,0   ; Radio Buttons
+    GUIDisplayButtonHoleTu 13,11,38,byte[CheatSrcByteSize],1,GUICSrcTextA1b,0
+    GUIDisplayButtonHoleTu 13,11,48,byte[CheatSrcByteSize],2,GUICSrcTextA1c,0
+    GUIDisplayButtonHoleTu 13,11,58,byte[CheatSrcByteSize],3,GUICSrcTextA1d,0
+    GUIDisplayButtonHoleTu 13,11,73,byte[CheatSrcByteBase],0,GUICSrcTextA1e,0
+    GUIDisplayButtonHoleTu 13,11,83,byte[CheatSrcByteBase],1,GUICSrcTextA1f,0
+
     GUIDisplayTextY 13,6,101,GUICSrcTextA2
-    GUIDisplayTextu 13,25,115,GUICSrcTextA2a,0
-    GUIDisplayTextu 13,25,125,GUICSrcTextA2b,0
+    GUIDisplayButtonHoleTu 13,11,113,byte[CheatSrcSearchType],0,GUICSrcTextA2a,0
+    GUIDisplayButtonHoleTu 13,11,123,byte[CheatSrcSearchType],1,GUICSrcTextA2b,0
 
     mov byte[GUItextcolor],217          ; Button
     cmp byte[GUIWincoladd],0
@@ -2160,15 +2171,6 @@ DisplayGUISearch:
     mov byte[GUItextcolor],211
 .zero2
     DrawGUIButton 13,95,140,140,152,GUICSrcTextA3,50,0,1
-
-    GUIDisplayButtonHole 13,11,28,byte[CheatSrcByteSize],0   ; Radio Buttons
-    GUIDisplayButtonHole 13,11,38,byte[CheatSrcByteSize],1
-    GUIDisplayButtonHole 13,11,48,byte[CheatSrcByteSize],2
-    GUIDisplayButtonHole 13,11,58,byte[CheatSrcByteSize],3
-    GUIDisplayButtonHole 13,11,73,byte[CheatSrcByteBase],0
-    GUIDisplayButtonHole 13,11,83,byte[CheatSrcByteBase],1
-    GUIDisplayButtonHole 13,11,113,byte[CheatSrcSearchType],0
-    GUIDisplayButtonHole 13,11,123,byte[CheatSrcSearchType],1
     ret
 
 Incheatmode:                              ; Return and Re-search Window
@@ -2245,17 +2247,11 @@ CheatSearching:                       ; Exact Value Search
 
 
 CheatSearchingComp:           ; Comparative search
-
     GUIDisplayTextY 13,6,16,GUICSrcTextD
-    GUIDisplayTextu 13,25,35,GUICSrcTextD1,0
-    GUIDisplayTextu 13,25,45,GUICSrcTextD2,1
-    GUIDisplayTextu 13,25,55,GUICSrcTextD3,2
-    GUIDisplayTextu 13,25,65,GUICSrcTextD4,5
-
-    GUIDisplayButtonHole 13,11,33,byte[CheatCompareValue],0
-    GUIDisplayButtonHole 13,11,43,byte[CheatCompareValue],1
-    GUIDisplayButtonHole 13,11,53,byte[CheatCompareValue],2
-    GUIDisplayButtonHole 13,11,63,byte[CheatCompareValue],3
+    GUIDisplayButtonHoleTu 13,11,33,byte[CheatCompareValue],0,GUICSrcTextD1,0
+    GUIDisplayButtonHoleTu 13,11,43,byte[CheatCompareValue],1,GUICSrcTextD2,1
+    GUIDisplayButtonHoleTu 13,11,53,byte[CheatCompareValue],2,GUICSrcTextD3,2
+    GUIDisplayButtonHoleTu 13,11,63,byte[CheatCompareValue],3,GUICSrcTextD4,5
     jmp DisplayChtSrcRes
 
 FindChtSrcRes:                        ; Calculate search results
@@ -3154,10 +3150,10 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     GUIDisplayText 15,151,43,GUIMovieTextB1
 
     GUIDisplayTextY 15,9,130,GUIMovieTextC           ; "Start From" Section Shadow
-    GUIDisplayTextu 15,21,140,GUIMovieTextC1,0
-    GUIDisplayTextu 15,56,140,GUIMovieTextC2,0
-    GUIDisplayTextu 15,101,140,GUIMovieTextC3,0
-    GUIDisplayTextu 15,21,150,GUIMovieTextC4,8
+    GUIDisplayButtonHoleTu 15,8,137,byte[MovieStartMethod],0,GUIMovieTextC1,0
+    GUIDisplayButtonHoleTu 15,43,137,byte[MovieStartMethod],1,GUIMovieTextC2,0
+    GUIDisplayButtonHoleTu 15,88,137,byte[MovieStartMethod],2,GUIMovieTextC3,0
+    GUIDisplayButtonHoleTu 15,8,147,byte[MovieStartMethod],3,GUIMovieTextC4,8
 
     mov dword[GUIMovieTextZ+9],'INAC'    ; Determine and Display Status
     mov dword[GUIMovieTextZ+13],'TIVE'
@@ -3193,10 +3189,6 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     GUIDisplayButtonHole 15,120,40,byte[CMovieExt],'8'
     GUIDisplayButtonHole 15,140,40,byte[CMovieExt],'9'
 
-    GUIDisplayButtonHole 15,8,137,byte[MovieStartMethod],0      ; Start From:
-    GUIDisplayButtonHole 15,43,137,byte[MovieStartMethod],1
-    GUIDisplayButtonHole 15,88,137,byte[MovieStartMethod],2
-    GUIDisplayButtonHole 15,8,147,byte[MovieStartMethod],3
 
     DDrawBox 15,115,83,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
     DDrawBox 15,115,99,[KeyPrevChap]
