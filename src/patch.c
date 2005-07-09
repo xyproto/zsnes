@@ -244,7 +244,7 @@ void PatchUsingIPS()
   {
     FILE *fp = 0;
     fp = fopen("zsnes.rom", "wb");
-    if (!fp) { asm volatile("int $3"); }
+    if (!fp) { perror(0); asm volatile("int $3"); }
     fwrite(ROM, 1, curromspace, fp);
     fclose(fp);
   }
