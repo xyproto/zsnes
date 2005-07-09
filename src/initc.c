@@ -1420,9 +1420,6 @@ extern unsigned char  cycpl;
 void headerhack()
 {
   char *RomData = (char *)romdata;
-
-  return;
-  
   disablehdma = 0;
   hdmaearlstart = 0;
   WindowDisables = 0;
