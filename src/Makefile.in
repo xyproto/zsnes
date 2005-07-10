@@ -110,7 +110,7 @@ ${PSR}: parsegen.cpp
 ALL:
 	rm -f version.o
 
-tools: minwhite extraext sec-test srccount
+tools: minwhite extraext sec-test srccount nreplace
 
 minwhite: ${TOOLSOBJ}
 	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/minwhite ${TOOLSDIR}/minwhite.cpp ${TOOLSDIR}/fileutil.o
@@ -124,6 +124,9 @@ sec-test: ${TOOLSOBJ}
 srccount: ${TOOLSOBJ}
 	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/srccount ${TOOLSDIR}/srccount.cpp ${TOOLSDIR}/fileutil.o
 
+nreplace: ${TOOLSOBJ}
+	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/nreplace ${TOOLSDIR}/nreplace.cpp ${TOOLSDIR}/fileutil.o
+  
 cfgload.o: cfgload.c macros.mac
 cfgparse.o: cfgparse.psr
 endmem.o: endmem.asm macros.mac

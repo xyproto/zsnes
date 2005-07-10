@@ -19,8 +19,14 @@ Source Counter:
 g++ -Wall -O3 -o srccount.exe srccount.cpp fileutil.o
 
 
+Nach's Replacer:
+g++ -Wall -O3 -o nreplace.exe nreplace.cpp fileutil.o
+
 All the tools scan every compatible file they find from the directory
 they are in. It also scans all sub directories recursively.
 
 Extra EXTSYMs accepts command line arguments. You can specify filenames
 to put on the can't be opened ignore list.
+
+Nach's Replacer accept parameters for various files, and -r for
+recursive directory support.
