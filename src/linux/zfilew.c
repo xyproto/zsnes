@@ -512,17 +512,9 @@ void GetFilename()
   while (*tmp!=0) tmp++;
   while (*tmp!='/') tmp--;
   size = (strlen(tmp)-1) & 0xFF;
-  strcpy(&fnamest, tmp);
+  memmove(&fnamest, tmp, strlen(tmp));
   fnamest = size;
   statefileloc-=(tmp-&fnamest);
-
-  tmp = &fnames;
-  *tmp = '/';
-  while (*tmp!=0) tmp++;
-  while (*tmp!='/') tmp--;
-  size = (strlen(tmp)-1) & 0xFF;
-  strcpy(&fnames, tmp);
-  fnames = size;
 }
 
 char *olddir = NULL;
