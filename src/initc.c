@@ -645,6 +645,12 @@ void MirrorROM()
   }
 
   NumofBanks = curromspace >> 15;
+
+  //If ROM was too small before, but now decent size with mirroring, adjust location
+  if (infoloc < Lo)
+  {
+    infoloc = Lo;
+  }
 }
 
 void SetupSramSize()
