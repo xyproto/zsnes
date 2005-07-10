@@ -56,6 +56,8 @@ EXTSYM Grab_PNG_Data
     popad
 %endmacro
 
+SECTION .text
+
 GUIBufferData:
     mov ecx,16384
     cmp byte[cbitmode],1
@@ -1144,7 +1146,7 @@ SECTION .bss
 
 NEWSYM picnum, resw 1
 
-SECTION .data
+SECTION .text
 
 NEWSYM savepcx
 %ifndef NO_PNG

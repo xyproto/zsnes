@@ -38,24 +38,6 @@
 ;----------------------
 
 	  BITS 32
-%ifdef __DJGPP__
-;          GLOBAL __2xSaILine
-;          GLOBAL __2xSaISuperEagleLine
-;          GLOBAL _Init_2xSaIMMX
-%else
-          GLOBAL _2xSaILine
-          GLOBAL _2xSaISuperEagleLine
-          GLOBAL Init_2xSaIMMX
-%endif
-	  SECTION .text
-
-%ifdef __DJGPP__
-;EXTERN_C void __2xSaILine (uint8 *srcPtr, uint32 srcPitch, uint32 width,
-;                        uint8 *dstPtr, uint32 dstPitch, uint16 dstSegment);
-%else
-;EXTERN_C void _2xSaILine (uint8 *srcPtr, uint32 srcPitch, uint32 width,
-;                        uint8 *dstPtr, uint32 dstPitch);
-%endif
 
 srcPtr        equ 8
 deltaPtr      equ 12
@@ -96,7 +78,7 @@ colorA3   equ 4
 
 
 
-
+SECTION .text
 
 NEWSYM _2xSaISuper2xSaILine
 ; Store some stuff

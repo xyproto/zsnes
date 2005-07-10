@@ -56,6 +56,8 @@ EXTSYM ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc
 ; use bg1ptr(b,c,d) for the pointer to the tile number contents
 ; use bg1objptr for the pointer to the object tile contents
 
+SECTION .text
+
 NEWSYM makedualwincol
     mov dl,[winlogicb]
     shr dl,2
@@ -1954,7 +1956,7 @@ NEWSYM clearback16bdualrev2
 
 SECTION .bss
 NEWSYM DoTransp, resb 1
-SECTION .data
+SECTION .text
 
 ;*******************************************************
 ; Clear Backarea, 16-bit mode w/ transparency

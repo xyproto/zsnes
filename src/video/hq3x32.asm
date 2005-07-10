@@ -2767,7 +2767,7 @@ HighResProc:
     ret
 
 SECTION .data
-FuncTable
+FuncTable:
     dd ..@flag0, ..@flag1, ..@flag2, ..@flag3, ..@flag4, ..@flag5, ..@flag6, ..@flag7
     dd ..@flag8, ..@flag9, ..@flag10, ..@flag11, ..@flag12, ..@flag13, ..@flag14, ..@flag15
     dd ..@flag16, ..@flag17, ..@flag18, ..@flag19, ..@flag20, ..@flag21, ..@flag22, ..@flag23
@@ -2801,7 +2801,7 @@ FuncTable
     dd ..@flag240, ..@flag241, ..@flag242, ..@flag243, ..@flag244, ..@flag245, ..@flag246, ..@flag247
     dd ..@flag248, ..@flag249, ..@flag250, ..@flag251, ..@flag252, ..@flag253, ..@flag254, ..@flag255
 
-FuncTable2
+FuncTable2:
     dd ..@cross0, ..@cross1, ..@cross2, ..@crossN,
     dd ..@cross4, ..@crossN, ..@crossN, ..@crossN,
     dd ..@cross8, ..@crossN, ..@crossN, ..@crossN,

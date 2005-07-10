@@ -668,36 +668,39 @@ EXTSYM fulladdtab,cwinptr
     jnz near .offscrtrc
     jmp .goon
 
-SECTION .bss
-.temp        resd 1       ; for byte move left
-.mode7xpos   resd 1       ; x position
-.tempa2      resd 1       ; keep this blank!
-.mode7xrpos  resd 1       ; x position
-.tempa       resd 1       ; keep this blank!
-.mode7ypos   resd 1       ; y position
-.tempb2      resd 1       ; keep this blank!
-.mode7yrpos  resd 1       ; y position
-.tempb       resd 1       ; keep this blank!
-.mode7xadder resd 1       ; number to add for x
-.tempc2      resd 1       ; keep this blank!
-.mode7xadd2  resd 1       ; number to add for x
-.tempc       resd 1       ; keep this blank!
-.mode7yadder resd 1       ; number to add for y
-.tempd2      resd 1       ; keep this blank!
-.mode7yadd2  resd 1       ; number to add for y
-.tempd       resd 1       ; keep this blank!
-.mode7ptr    resd 1       ; pointer value
-.mode7xinc   resd 1       ; number to add for x
-.mode7yinc   resd 1       ; number to add for y
-.mode7xsloc  resd 1       ; which screen x
-.mode7ysloc  resd 1       ; which screen y
-.mode7xsrl   resd 1       ; which relative screen x
-.mode7ysrl   resd 1       ; which relative screen y
-.cxloc       resd 1       ; cx location
-.cyloc       resd 1       ; cy location
+SECTION .data
+ALIGN32
+.temp        dd 0       ; for byte move left
+.mode7xpos   dd 0       ; x position
+.tempa2      dd 0       ; keep this blank!
+.mode7xrpos  dd 0       ; x position
+.tempa       dd 0       ; keep this blank!
+.mode7ypos   dd 0       ; y position
+.tempb2      dd 0       ; keep this blank!
+.mode7yrpos  dd 0       ; y position
+.tempb       dd 0       ; keep this blank!
+.mode7xadder dd 0       ; number to add for x
+.tempc2      dd 0       ; keep this blank!
+.mode7xadd2  dd 0       ; number to add for x
+.tempc       dd 0       ; keep this blank!
+.mode7yadder dd 0       ; number to add for y
+.tempd2      dd 0       ; keep this blank!
+.mode7yadd2  dd 0       ; number to add for y
+.tempd       dd 0       ; keep this blank!
+.mode7ptr    dd 0       ; pointer value
+.mode7xinc   dd 0       ; number to add for x
+.mode7yinc   dd 0       ; number to add for y
+.mode7xsloc  dd 0       ; which screen x
+.mode7ysloc  dd 0       ; which screen y
+.mode7xsrl   dd 0       ; which relative screen x
+.mode7ysrl   dd 0       ; which relative screen y
+.cxloc       dd 0       ; cx location
+.cyloc       dd 0       ; cy location
+
 SECTION .text
 %endmacro
 
+SECTION .text
 ;*******************************************************
 ; Processes & Draws Mode 7 half Addition
 ;*******************************************************

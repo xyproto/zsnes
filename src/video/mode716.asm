@@ -275,6 +275,8 @@ EXTSYM vidbright,prevbrightdc,Gendcolortable,mode7ab,mode7cd,BGMA,BG1SXl,BG1SYl
     add esi,2
 %endmacro
 
+SECTION .text
+
 NEWSYM drawmode7win16b
     test byte[scrndis],1
     jz .notdisabled

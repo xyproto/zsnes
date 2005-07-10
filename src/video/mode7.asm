@@ -52,6 +52,8 @@ EXTSYM ngcwinptr,domosaicng,pesimpng,mode7hr,BGMA,mode7ab,mode7cd,BG1SYl,BG1SXl
     inc ebp
 %endmacro
 
+SECTION .text
+
 NEWSYM Makemode7Table
     xor eax,eax
 .nextentry

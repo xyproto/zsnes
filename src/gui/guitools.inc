@@ -20,6 +20,8 @@
 
 ; Tools for the GUI (string functions are also used elsewhere)
 
+SECTION .text
+
 NEWSYM CopyString
     push eax
 .again
