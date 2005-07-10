@@ -73,6 +73,8 @@ EXTSYM flagnz,flago,flagc,execloopdeb,Sjoinflags,Ssplitflags,SA1RegP
 %%nov
 %endmacro
 
+SECTION .text
+
 NEWSYM splitflags
    push edx
    mov dl,[SA1RegP]

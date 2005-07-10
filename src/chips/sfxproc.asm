@@ -55,6 +55,7 @@ EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,SFXProc
 .bzero
 %endmacro
 
+SECTION .text
 
 NEWSYM initsfxregsr
     setreg 3000h*4,reg3000r

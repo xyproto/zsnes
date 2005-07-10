@@ -26,7 +26,7 @@ EXTSYM SfxR0,SfxR14,SfxR15,SfxRomBuffer,SfxSignZero,withr15sk
 %include "chips/fxemu2.mac"
 %include "chips/fxemu2b.mac"
 
-
+SECTION .text
 
 
 

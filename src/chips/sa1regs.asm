@@ -1428,7 +1428,7 @@ SPC4841:
     ret
 
 SECTION .data
-SPCTimerVal
+SPCTimerVal:
  db 12h,01h,02h,03h,04h,05h,06h,07h,08h,09h,0,0,0,0,0,0
  db 10h,11h,32h,21h,22h,23h,24h,25h,26h,27h,0,0,0,0,0,0
  db 28h,29h

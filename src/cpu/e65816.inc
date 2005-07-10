@@ -34,6 +34,8 @@ NEWSYM E65816IncStart
 ; L = [ or ]
 ; I = #
 
+SECTION .text
+
 COp61m8nd:  ; ADC(d,x)
    addr_BdCxB_8br
    ADCMacro8bnd

@@ -32,6 +32,8 @@ EXTSYM intrset,UpdateDPage,DPageR8,DPageW8,DPageR16,DPageW16
 ; L = [ or ]
 ; I = #
 
+SECTION .text
+
 COp61m8nd:  ; ADC(d,x)
    addr_BdCxB_8br
    ADCMacro8bnd
