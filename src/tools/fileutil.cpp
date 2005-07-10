@@ -61,3 +61,18 @@ bool parse_dir(const char *dir_loc, void (*func)(const char *, struct stat&))
   }
   return(false);
 }
+
+bool parse_path(const char *path, void (*func)(const char *, struct stat&))
+{
+  struct stat stat_buffer;
+  if (!stat(path, &stat_buffer))
+  {
+    if (S_ISDIR(stat_buffer.st_mode))
+    {
+      return(parse_dir(path, func));
+    }
+    func(path, stat_buffer);
+    return(true);
+  }
+  return(false);
+}
