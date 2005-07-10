@@ -673,6 +673,13 @@ void SetupSramSize()
   {
     ramsize = ((ROM[infoloc+SRAMSizeOffset]) ? (8 << ((unsigned int)ROM[infoloc+SRAMSizeOffset])) : 0);
   }
+
+  //Fix if some ROM goes nuts on size
+  if (ramsize > 1024)
+  {
+    ramsize = 1024;
+  }
+  
   //Convert from Kb to bytes;
   ramsize *= 128;
   ramsizeand = ramsize-1;
