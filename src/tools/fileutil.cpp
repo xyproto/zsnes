@@ -28,7 +28,9 @@ This is part of a toolkit used to assist in ZSNES development
 
 bool parse_dir(const char *dir_loc, void (*func)(const char *, struct stat&))
 {
-  if (!chdir(dir_loc)) //chdir() returns 0 on success
+  char cwd[16384];
+  
+  if (getcwd(cwd, sizeof(cwd)) && !chdir(dir_loc)) //chdir() returns 0 on success
   {
     DIR *curDir = opendir(".");
     dirent *curFile;
@@ -47,16 +49,14 @@ bool parse_dir(const char *dir_loc, void (*func)(const char *, struct stat&))
       //Directory
       if (S_ISDIR(stat_buffer.st_mode))
       {
-        if (parse_dir(filename, func))
-        {
-          chdir("..");
-        }
+        parse_dir(filename, func);
         continue;
       }
 
       func(filename, stat_buffer);
     }
     closedir(curDir);
+    chdir(cwd);
     return(true);
   }
   return(false);
