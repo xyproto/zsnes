@@ -955,7 +955,7 @@ void load_file_fs(char *path)
   {
     memmove(ROM, ROM+512, addOnStart);
     curromspace -= 512;
-  }  
+  }
 }
 
 char *STCart2 = 0;
@@ -975,7 +975,7 @@ void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
     memcpy(ROM+0x200000, ROM, addOnSize);
     curromspace = 0;
   }
-  
+
   if (!*basepath)
   {
     load_file_fs(basefile);

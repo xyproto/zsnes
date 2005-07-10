@@ -65,7 +65,7 @@ void handle_file(const char *filename, struct stat& stat_buffer)
     readin_file(ModifyFile, ModifyText);
 
     bool changed = false;
-    
+
     for (size_t start_pos = 0;;)
     {
       size_t match_point = ModifyText.find(SearchText, start_pos);
@@ -105,7 +105,7 @@ int main(size_t argc, const char **argv)
   if (*argp && !strcmp(*argp, "-r"))
   {
     if (argc < 5) { help(); }
-  
+
     subdir_scan = true;
     argp++;
   }
@@ -114,7 +114,7 @@ int main(size_t argc, const char **argv)
     help();
   }
 
-  
+
   ifstream SearchFile(*argp, ios::in);
   if (SearchFile)
   {
@@ -158,6 +158,6 @@ int main(size_t argc, const char **argv)
       handle_file(*argp, stat_buffer);
     }
   }
-    
+
   return(0);
 }

@@ -29,7 +29,7 @@ This is part of a toolkit used to assist in ZSNES development
 bool parse_dir(const char *dir_loc, void (*func)(const char *, struct stat&))
 {
   char cwd[16384];
-  
+
   if (getcwd(cwd, sizeof(cwd)) && !chdir(dir_loc)) //chdir() returns 0 on success
   {
     DIR *curDir = opendir(".");
