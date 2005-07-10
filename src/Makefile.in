@@ -119,7 +119,7 @@ extraext: ${TOOLSOBJ}
 	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/extraext ${TOOLSDIR}/extraext.cpp ${TOOLSOBJ}
 
 sec-test: ${TOOLSOBJ}
-	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/sec-test ${TOOLSDIR}/sec-test.cpp ${TOOLSDIR}/fileutil.o
+	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/sec-test ${TOOLSDIR}/sec-test.cpp ${TOOLSOBJ}
 
 srccount: ${TOOLSOBJ}
 	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/srccount ${TOOLSDIR}/srccount.cpp ${TOOLSDIR}/fileutil.o

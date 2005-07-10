@@ -28,5 +28,6 @@ This is part of a toolkit used to assist in ZSNES development
 #include <vector>
 
 void Tokenize(const std::string&, std::vector<std::string>&, const std::string&);
+bool all_whitespace(const char *);
 
 #endif

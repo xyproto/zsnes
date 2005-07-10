@@ -44,3 +44,15 @@ void Tokenize(const string& str, vector<string>& tokens, const string& delimiter
     pos = str.find_first_of(delimiters, lastPos);
   }
 }
+
+bool all_whitespace(const char *str)
+{
+  for (; *str; str++)
+  {
+    if (!isspace(*str))
+    {
+      return(false);
+    }
+  }
+  return(true);
+}
