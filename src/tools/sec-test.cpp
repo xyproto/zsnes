@@ -136,7 +136,7 @@ void handle_file(const char *filename)
 
       if ((cur_section != sec_text) && (cur_section != sec_macro))
       {
-        if (!contains_resx(line) && !contains_dx(line) && !label(line) &&
+        if (!contains_resx(line) && !contains_dx(line) && !label(line) && !strstr(line, "RMREGS") &&
             !strstr(line, "NEWSYM") && !strstr(line, "EXTSYM") && !strstr(line, " equ ") &&
             (*line != '%') && !strstr(line, "ALIGN") && strncmp(line, "bits ", strlen("bits ")))
         {
