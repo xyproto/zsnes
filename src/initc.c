@@ -293,6 +293,18 @@ void BankCheck()
   infoloc = 0;
   Interleaved = false;
 
+  if (NumofBytes < Lo)
+  {
+    romtype = 1;
+    infoloc = 1; //Whatever, we just need a valid location
+  }
+
+  if (NumofBytes < Hi)
+  {
+    romtype = 1;
+    infoloc = Lo;
+  }
+    
   if (NumofBytes >= 0x500000)
   {
     //Deinterleave if neccesary
@@ -1027,7 +1039,7 @@ void SplitSupport()
   SplittedROM = false;
 
   //Same Game add on
-  if (ROM[Hi+CompanyOffset] == 0x33 && curromspace == 0x80000 &&
+  if (curromspace == 0x80000 && ROM[Hi+CompanyOffset] == 0x33 &&
       !ROM[Hi+BankOffset] && !ROM[Hi+BSMonthOffset] && !ROM[Hi+BSDayOffset])
   {
     addOnStart = 0x200000;
@@ -1036,7 +1048,7 @@ void SplitSupport()
   }
 
   //SD Gundam G-Next add on
-  if (ROM[Lo+CompanyOffset] == 0x33 && curromspace == 0x80000 &&
+  if (curromspace == 0x80000 && ROM[Lo+CompanyOffset] == 0x33 &&
       !ROM[Lo+BankOffset] && !ROM[Lo+BSMonthOffset] && !ROM[Lo+BSDayOffset] && !strncmp(ROM+Lo, "GNEXT", 5))
   {
     addOnStart = 0x400000;
