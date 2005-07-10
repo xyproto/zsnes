@@ -224,7 +224,7 @@ MenuDat4 db 2,  3,1,2,0
 MenuDat5 db 1,  3,2,0
 MenuDat6 db 6,  3,1,1,1,1,0,2,0
 
-GUIPrevMenuData
+GUIPrevMenuData:
         db 1,'1.                            ',0
         db 1,'2.                            ',0
         db 1,'3.                            ',0
@@ -238,7 +238,7 @@ GUIPrevMenuData
         db 0,'------------',0
 .onoff  db 1,'FREEZE DATA : OFF   ',0
         db 1,'CLEAR ALL DATA      ',0
-GUIGameMenuData
+GUIGameMenuData:
         db 1,'LOAD        ',0
         db 1,'RUN  [ESC]  ',0
         db 1,'RESET       ',0
@@ -248,7 +248,7 @@ GUIGameMenuData
         db 1,'PICK STATE  ',0
         db 0,'------------',0
         db 1,'QUIT        ',0
-GUIConfigMenuData
+GUIConfigMenuData:
         db 1,'INPUT #1    ',0
         db 1,'INPUT #2    ',0
         db 1,'INPUT #3    ',0
@@ -264,14 +264,14 @@ GUIConfigMenuData
         db 1,'PATHS       ',0
         db 1,'SAVES       ',0
         db 1,'SPEED       ',0
-GUICheatMenuData
+GUICheatMenuData:
         db 1,'ADD CODE    ',0
         db 1,'BROWSE      ',0
         db 1,'SEARCH      ',0
-GUINetPlayMenuData
+GUINetPlayMenuData:
         db 1,'MODEM       ',0
         db 1,'IPX         ',0
-GUIMiscMenuData
+GUIMiscMenuData:
         db 1,'MISC KEYS   ',0
         db 1,'GUI OPNS    ',0
         db 1,'MOVIE OPN   ',0

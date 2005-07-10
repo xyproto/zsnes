@@ -21,7 +21,7 @@
 
 
 
-
+SECTION .text
 
 
 ComboClip:

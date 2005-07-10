@@ -26,6 +26,8 @@ EXTSYM Surround,StereoSound,SoundQuality,SoundSpeeds,SBToSPCSpeeds2
 EXTSYM SoundSpeedt,DSPBuffer,BufferSize,BufferSizes,BufferSizeB
 EXTSYM BufferSizeW,dssel
 
+SECTION .text
+
 NEWSYM SB_alloc_dma
 
     mov ax,0100h                ; Allocate DOS memory

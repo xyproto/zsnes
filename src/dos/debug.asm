@@ -36,6 +36,8 @@ EXTSYM spcP,spcPCRam,spcRam,spcS,spcX,spcY
 
 ; debstop at regsw.asm 2118/2119
 
+SECTION .text
+
 NEWSYM startdebugger
     mov byte[curblank],40h
     mov byte[debuggeron],1

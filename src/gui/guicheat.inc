@@ -22,7 +22,7 @@
 
 
 
-
+SECTION .text
 
 ; GUI Cheat Code Routines
 
