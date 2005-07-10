@@ -78,6 +78,8 @@ EXTSYM yposngom,flipyposngom,cbgval,ofsmval,ofsmvalh,vram,bgtxadd2
     jnz near .finline
 %endmacro
 
+SECTION .text
+
 NEWSYM drawtileng2b
     cmp byte[ngwinen],1
     je near drawtileng2bwin

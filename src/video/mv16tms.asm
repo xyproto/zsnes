@@ -205,6 +205,7 @@ EXTSYM pal16bxcl,coadder16,a16x16xinc,a16x16yinc,curypos,yflipadd
 %%loop
 %endmacro
 
+SECTION .text
 
 NEWSYM draw8x816tms
     cmp byte[bgmode],5

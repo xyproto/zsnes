@@ -90,6 +90,8 @@ EXTSYM vidmemch4s,vidmemch8s,cpalval,bgtxadd2,SpecialLine
     ret
 %endmacro
 
+SECTION .text
+
 cache2b16b:
     DoCache vcache2b,vcache2bs
 cache4b16b:

@@ -30,6 +30,8 @@ EXTSYM cwinptr
 ; Processes & Draws Mode 7
 ;*******************************************************
 
+SECTION .text
+
 ALIGN16
 
 NEWSYM drawmode716extbg

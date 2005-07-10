@@ -54,6 +54,7 @@ ALIGN16
     inc ebp
 %endmacro
 
+SECTION .text
 
 NEWSYM drawmode716b
     test byte[scaddset],1

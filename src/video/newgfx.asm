@@ -100,6 +100,8 @@ EXTSYM WindowDisables,winlogicb,ngwinptr,objwlrpos,objwen,objclineptr,CSprWinPtr
     mov [winbg1enval+eax+%1*256],bl
 %endmacro
 
+SECTION .text
+
 NEWSYM newengine8b
     ; store line by line data
     ; BGMode, BGxScrollX, BGxScrollY, both BGPtrs

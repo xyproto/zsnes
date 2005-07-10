@@ -80,6 +80,8 @@ EXTSYM bgtxadd2
 ;   3 = All of subscreen added to specific mainscreens
 ;   4 = Add+Sub enabled
 
+SECTION .text
+
 NEWSYM setpalallng
 
     mov dword[palchanged],1

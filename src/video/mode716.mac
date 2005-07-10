@@ -267,6 +267,8 @@ EXTSYM pesimpng,ScrDispl
 .calculatea
 %endmacro
 
+SECTION .text
+
 Mode7Startup16b:
     Mode7Calculate16b
     ; esi = pointer to video buffer

@@ -173,6 +173,8 @@
 %%nodraw
 %endmacro
 
+SECTION .text
+
 Nextwinmode:
     push ebx
     mov ebx,[ngcwinptr]

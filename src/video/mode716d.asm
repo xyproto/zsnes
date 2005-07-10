@@ -26,6 +26,8 @@ EXTSYM xtravbuf,dcolortab,vidbright
 
 %include "video/mode7.mac"
 
+SECTION .text
+
 NEWSYM Gendcolortable
    ; generate Direct Color Table
    push eax

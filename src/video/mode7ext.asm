@@ -39,6 +39,8 @@ EXTSYM ProcessMode7ngwin,ProcessMode7ngwinB
 ; Processes & Draws Mode 7
 ;*******************************************************
 
+SECTION .text
+
 NEWSYM drawmode7extbg
     mov esi,[cwinptr]
     mov [winptrref],esi
