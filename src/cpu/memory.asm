@@ -55,6 +55,8 @@ EXTSYM Sdd1Mode,Sdd1Bank,Sdd1Addr,Sdd1NewAddr,memtabler8,AddrNoIncr,SDD1BankA
 ; C4 Emulation, reverse engineered & written by zsKnight
 ; ******************************************************
 
+SECTION .text
+
 C4ProcessVectors:
     mov esi,[C4Ram]
     mov edi,esi

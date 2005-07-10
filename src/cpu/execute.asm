@@ -568,6 +568,8 @@ NEWSYM HIRQCycNext,   dd 0
 NEWSYM HIRQNextExe,   db 0
 
 
+SECTION .text
+
 ;*******************************************************
 ; Int 08h vector
 ;*******************************************************
@@ -763,7 +765,7 @@ Donextlinecache:
 
 SECTION .data
 
-SpeedHackSafeTable
+SpeedHackSafeTable:
        db 1,0,1,0,0,0,1,0,1,0,1,1,0,0,0,0
        db 0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0
        db 0,0,0,0,0,0,1,0,1,0,1,1,0,0,1,0

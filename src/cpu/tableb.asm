@@ -35,6 +35,8 @@ EXTSYM tableAb,tableBb,tableCb,tableDb,tableEb,tableFb,tableGb,tableHb,tableadb
 ; Generate OpCode Table
 ;*******************************************************
 
+SECTION .text
+
 NEWSYM inittableb
     ; set tablead  (NVMXDIZC) (  MXD   )
     push es

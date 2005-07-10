@@ -48,6 +48,8 @@ EXTSYM cpucycle,SA1UpdateDPage,intrset
 ; Generate OpCode Table
 ;*******************************************************
 
+SECTION .text
+
 NEWSYM SA1inittable
     ; set tablead  (NVMXDIZC) (  MXD   )
     push es

@@ -52,6 +52,8 @@ EXTSYM execloopdeb,nmiv8,membank0w8
 %%nov
 %endmacro
 
+SECTION .text
+
 ;*******************************************************
 ; SwitchToNMI/VIRQ                        Calls NMI/VIRQ
 ;*******************************************************

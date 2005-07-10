@@ -26,6 +26,8 @@ EXTSYM debuggeron,pdh,vram,romispal,reg1read,spcnumread,spcon,reg2read,reg3read
 EXTSYM reg4read,JoyEOrig,JoyENow,snesmouse,cycphb,joycontren,totlines,DosExit
 EXTSYM invalid,numinst,previdmode,printhex,printnum
 
+SECTION .text
+
 NEWSYM initregr
     ; Fill register pointer with invalid register accesses
     mov edi,[regptr]

@@ -27,6 +27,8 @@ EXTSYM wramdata,SA1xa,SA1xd,SA1xdb,xe,xirqb,SA1xpb,xpc,SA1xs,SA1xx,SA1xy
 EXTSYM debstop4,SA1RegP,nextopcode,debugsa1,skipdebugsa1
 
 
+SECTION .text
+
 sa1debug:
    cmp byte[debuggeron],0
    je .nodebugger

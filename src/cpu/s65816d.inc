@@ -86,6 +86,8 @@ EXTSYM debuggeron
 %%nov
 %endmacro
 
+SECTION .text
+
 NEWSYM Ssplitflags
    restoredl
    ret
