@@ -142,7 +142,7 @@ int main(size_t argc, const char **argv)
 
   if (subdir_scan)
   {
-    for (; **argp; argp++)
+    for (; *argp; argp++)
     {
       if (!parse_path(*argp, handle_file))
       {
