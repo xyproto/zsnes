@@ -18,6 +18,8 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+x86-64=@X8664@
+
 CHIPDIR=chips
 CPUDIR=cpu
 DOSDIR=dos
@@ -94,6 +96,9 @@ PSR=parsegen
 
 %.o: %.asm
 	@NASMPATH@ @NFLAGS@ -o $@ $<
+ifeq (${x86-64},true)
+	objcopy --input-target elf32-i386 --output-target elf64-x86-64 $@ $@
+endif
 
 %.o: %.psr
 	./${PSR} -D__UNIXSDL__ temppsr.c $<

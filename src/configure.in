@@ -6,6 +6,8 @@ ISODATE=`date +%Y-%m-%d`
 AC_SUBST(ISODATE)
 VERSION=1.42
 AC_SUBST(VERSION)
+X8664="false"
+AC_SUBST(X8664)
 AC_ARG_WITH(nasm-prefix,[  --with-nasm-prefix=PFX Prefix where nasm is installed (optional)], nasm_prefix="$withval", nasm_prefix="")
 
 dnl -- Where is our compiler, and who are we compiling for?
@@ -140,6 +142,11 @@ if test x$debug != xyes; then
 			CFLAGS="$CFLAGS -march=pentiumpro"
 			dnl CFLAGS="$CFLAGS -march=pentium3 -mmmx -msse -mfpmath=sse,387"
 			AC_MSG_RESULT(686)
+			;;
+		x86_64-*-* | x86_64-*-*-*)
+			CFLAGS="$CFLAGS -march=k8"
+			X8664="true"
+			AC_MSG_RESULT(x86-64)
 			;;
 		*)
 			AC_MSG_RESULT(386)
