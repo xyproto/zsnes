@@ -372,7 +372,7 @@ DWORD ZFileFindFirst()
 
    *(char *)(DTALocPos + 0x15) = 0;
 
-#ifdef __FreeBSD__
+#ifdef __BSDSDL__
    if (globbuf.gl_matchc == 0)
 	return -1;
 #endif

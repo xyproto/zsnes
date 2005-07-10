@@ -115,7 +115,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 	#endif
 
 	#ifdef __UNIXSDL__
-	#if !defined(__FreeBSD__) && !defined(__BEOS__)
+	#if !defined(__BSDSDL__) && !defined(__BEOS__)
 	#include <asm/ioctls.h>
 	#else
 	#include <sys/filio.h>

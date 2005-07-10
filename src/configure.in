@@ -38,12 +38,12 @@ case "$target" in
         	NFLAGS="$NFLAGS -D__UNIXSDL__ -D__BEOS__ -f elf -DELF"
 		;;
 	*-*-*openbsd*)
-		CFLAGS="$CFLAGS -D__UNIXSDL__ -D__FreeBSD__"
-		NFLAGS="$NFLAGS -D__UNIXSDL__ -D__FreeBSD__ -DELF -f elf"
+		CFLAGS="$CFLAGS -D__UNIXSDL__ -D__BSDSDL__"
+		NFLAGS="$NFLAGS -D__UNIXSDL__ -D__BSDSDL__ -DELF -f elf"
 		;;
 	*-*-*bsd*)
-		CFLAGS="$CFLAGS -D__UNIXSDL__ -D__FreeBSD__"
-		NFLAGS="$NFLAGS -D__UNIXSDL__ -D__FreeBSD__ -DELF -f elf"
+		CFLAGS="$CFLAGS -D__UNIXSDL__ -D__BSDSDL__"
+		NFLAGS="$NFLAGS -D__UNIXSDL__ -D__BSDSDL__ -DELF -f elf"
 		;;
 	*-*-cygwin* | *-*-*ming*)
 		CFLAGS="$CFLAGS -D__UNIXSDL__"
