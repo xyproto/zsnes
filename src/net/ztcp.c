@@ -86,7 +86,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //     only be done if the requested packet is within the past 64 packets.
 //   In-game chat will be moved to a separate packet in TCP/IP
 
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 #include "gblhdr.h"
 #define closesocket(A) close(A)
 #define CopyMemory(A,B,C) memcpy(A,B,C)
@@ -186,14 +186,14 @@ int GetLeftUDP();
 
 int InitTCP()
 {
-#ifndef __LINUX__
+#ifndef __UNIXSDL__
    WORD versionneeded = MAKEWORD(2,2);
    WSADATA wsadata;
 #endif
 
    UDPEnable=0;
 
-#ifndef __LINUX__
+#ifndef __UNIXSDL__
    /* Startup winsock */
    WSAStartup(versionneeded, &wsadata);
 
@@ -217,7 +217,7 @@ int InitTCP()
 
 void DeInitTCP()
 {
-#ifndef __LINUX__
+#ifndef __UNIXSDL__
 	WSACleanup();
 #endif
 }
@@ -337,7 +337,7 @@ int ConnectServer(char *servername, unsigned int port)
 
       if (ugamesocket == INVALID_SOCKET)
       {
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 	      STUB_FUNCTION;
 #else
                  tcperr=WSAGetLastError();
@@ -349,7 +349,7 @@ int ConnectServer(char *servername, unsigned int port)
 
       if (userversocket == INVALID_SOCKET)
       {
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 	      STUB_FUNCTION;
 #else
                  tcperr=WSAGetLastError();
@@ -362,7 +362,7 @@ int ConnectServer(char *servername, unsigned int port)
       if (bind(userversocket,(struct sockaddr*)&userveraddress,sizeof(userveraddress))==
           SOCKET_ERROR)
       {
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 	      STUB_FUNCTION;
 #else
          tcperr=WSAGetLastError();
@@ -420,7 +420,7 @@ int ConnectServer(char *servername, unsigned int port)
                      sizeof(struct sockaddr));
    if (retval == SOCKET_ERROR)
 	{
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 		STUB_FUNCTION;
 #else
       sprintf(blah,"Could not connect to other side");
@@ -524,7 +524,7 @@ int StartServerCycle(unsigned short port)
 
       if (userversocket == INVALID_SOCKET)
       {
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 	      STUB_FUNCTION;
 #else
          tcperr=WSAGetLastError();
@@ -536,7 +536,7 @@ int StartServerCycle(unsigned short port)
       if (bind(userversocket,(struct sockaddr*)&userveraddress,sizeof(userveraddress))==
           SOCKET_ERROR)
       {
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 	      STUB_FUNCTION;
 #else
          tcperr=WSAGetLastError();
@@ -572,7 +572,7 @@ int StartServerCycle(unsigned short port)
    serversocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
    if (serversocket == INVALID_SOCKET)
 	{
-#ifndef __LINUX__
+#ifndef __UNIXSDL__
 	  tcperr=WSAGetLastError();
 #endif
 
@@ -589,7 +589,7 @@ int StartServerCycle(unsigned short port)
                  sizeof(struct sockaddr));
    if (retval == SOCKET_ERROR)
 	{
-#ifndef __LINUX__
+#ifndef __UNIXSDL__
 	  tcperr=WSAGetLastError();
 #endif
       closesocket(serversocket);
@@ -600,7 +600,7 @@ int StartServerCycle(unsigned short port)
    retval = listen(serversocket, SOMAXCONN);
    if (retval == SOCKET_ERROR)
 	{
-#ifndef __LINUX__
+#ifndef __UNIXSDL__
       tcperr=WSAGetLastError();
 #endif
       closesocket(serversocket);
@@ -622,7 +622,7 @@ int acceptzuser()
    gamesocket = accept(serversocket, NULL, NULL);
    if (gamesocket == INVALID_SOCKET)
 	{
-#ifndef __LINUX__
+#ifndef __UNIXSDL__
       tcperr=WSAGetLastError();
 #endif
       closesocket(serversocket);
@@ -668,7 +668,7 @@ int ServerCheckNewClient()
 
 	if(r == -1)
 	{
-#ifndef __LINUX__
+#ifndef __UNIXSDL__
                 tcperr=WSAGetLastError();
 #endif
                 return(-2);
@@ -1236,7 +1236,7 @@ void UDPDisableMode(){
 }
 
 void WinErrorA2(void){
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 	STUB_FUNCTION;
 #else
     char message1[256];
@@ -1246,7 +1246,7 @@ void WinErrorA2(void){
 }
 
 void WinErrorB2(void){
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 	STUB_FUNCTION;
 #else
     char message1[256];
@@ -1256,7 +1256,7 @@ void WinErrorB2(void){
 }
 
 void WinErrorC2(void){
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 	STUB_FUNCTION;
 #else
     char message1[256];

@@ -30,24 +30,24 @@ NFLAGS="$NFLAGS -w-orphan-labels"
 AC_PROG_INSTALL
 case "$target" in
 	*-*-linux*)
-		CFLAGS="$CFLAGS -D__LINUX__"
-        	NFLAGS="$NFLAGS -D__LINUX__ -f elf -DELF"
+		CFLAGS="$CFLAGS -D__UNIXSDL__"
+        	NFLAGS="$NFLAGS -D__UNIXSDL__ -f elf -DELF"
 		;;
 	*-*-beos*)
-		CFLAGS="$CFLAGS -D__LINUX__ -D__BEOS__"
-        	NFLAGS="$NFLAGS -D__LINUX__ -D__BEOS__ -f elf -DELF"
+		CFLAGS="$CFLAGS -D__UNIXSDL__ -D__BEOS__"
+        	NFLAGS="$NFLAGS -D__UNIXSDL__ -D__BEOS__ -f elf -DELF"
 		;;
 	*-*-*openbsd*)
-		CFLAGS="$CFLAGS -D__LINUX__ -D__FreeBSD__"
-		NFLAGS="$NFLAGS -D__LINUX__ -D__FreeBSD__ -DELF -f elf"
+		CFLAGS="$CFLAGS -D__UNIXSDL__ -D__FreeBSD__"
+		NFLAGS="$NFLAGS -D__UNIXSDL__ -D__FreeBSD__ -DELF -f elf"
 		;;
 	*-*-*bsd*)
-		CFLAGS="$CFLAGS -D__LINUX__ -D__FreeBSD__"
-		NFLAGS="$NFLAGS -D__LINUX__ -D__FreeBSD__ -DELF -f elf"
+		CFLAGS="$CFLAGS -D__UNIXSDL__ -D__FreeBSD__"
+		NFLAGS="$NFLAGS -D__UNIXSDL__ -D__FreeBSD__ -DELF -f elf"
 		;;
 	*-*-cygwin* | *-*-*ming*)
-		CFLAGS="$CFLAGS -D__LINUX__"
-		NFLAGS="$NFLAGS -D__LINUX__ -f win32"
+		CFLAGS="$CFLAGS -D__UNIXSDL__"
+		NFLAGS="$NFLAGS -D__UNIXSDL__ -f win32"
 		;;
 	*)
 		AC_MSG_ERROR(This Target is Not Supported)

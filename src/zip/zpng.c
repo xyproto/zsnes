@@ -18,7 +18,7 @@
 	#include <stdlib.h>
 #endif
 
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 #include "../gblhdr.h"
 #endif
 
@@ -127,7 +127,7 @@ char *generate_filename(void)
 	short i=0;
 	struct stat buf;
 	char *tmp = &fnames;
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 	char *tmp2 = 0;
 #endif
 
@@ -156,7 +156,7 @@ char *generate_filename(void)
 	tmp = filename+strlen(filename);
 	while (*tmp!='.') tmp--;
 
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 	tmp2 = filename;
 	while (tmp2<tmp) {
 	  if (*tmp2 == ' ') *tmp2 = '_';
@@ -170,7 +170,7 @@ char *generate_filename(void)
 
 	for(i=0;i<10000;i++)
 	{
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 	  sprintf(tmp, "_%04d.png", i);
 #else
 	  sprintf(tmp, " %04d.png", i);

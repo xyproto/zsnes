@@ -185,7 +185,7 @@ prevloadfnamel times 512*10 db 0
 %ifdef __WIN32__
 NEWSYM PrevWinMode, db 2
 NEWSYM PrevFSMode, db 6
-%elifdef __LINUX__
+%elifdef __UNIXSDL__
 NEWSYM PrevWinMode, db 2
 NEWSYM PrevFSMode, db 3
 %elifdef __MSDOS__

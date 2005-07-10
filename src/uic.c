@@ -21,7 +21,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 #include "gblhdr.h"
 #else
 #include <stdio.h>

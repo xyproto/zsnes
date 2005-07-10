@@ -142,7 +142,7 @@ EXTSYM GUIwinposy2,GUIwinposx2,AllowMultipleInst,Surround,SoundBufEn,SPCDisable
 EXTSYM GUIEnableTransp,FilteredGUI,MouseWheel,TrapMouseCursor,AlwaysOnTop
 EXTSYM pl1p209,pl1p209b,SaveMainWindowPos,FastFwdToggle,SidewinderFix,RaisePitch
 
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
 EXTSYM numlockptr
 %endif
 %ifdef __WIN32__
@@ -1843,7 +1843,7 @@ guipostvideofail:
     call GUIUnBuffer
     call DisplayBoxes
     call DisplayMenu
-%ifndef __LINUX__
+%ifndef __UNIXSDL__
     mov dword[GUIkeydelay],0FFFFFFFFh
 %else
     mov dword[GUIkeydelay],0x0
@@ -2626,7 +2626,7 @@ DisplayMenu:
     GUIBox 0,14,229,14,70
     GUIBox 0,15,229,15,71
 
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     GUIShadow 238,9,247,20
     GUIShadow 249,9,257,20
 %endif
@@ -2637,7 +2637,7 @@ DisplayMenu:
 %endif
 .notwinpressa
 
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     mov byte[GUIMenuItem+36],247
     GUIDMHelpB 233,242,GUIMenuItem+36,1
     mov byte[GUIMenuItem+36],'x'

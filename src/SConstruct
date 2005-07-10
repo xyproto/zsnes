@@ -12,7 +12,7 @@ def parsegen_emitter(target,source,env):
 	return (target,source)
 
 if platform == 'posix':
-	psrbld = Builder(action ='./parsegen -D__LINUX__ cfgparse.c',
+	psrbld = Builder(action ='./parsegen -D__UNIXSDL__ cfgparse.c',
 		emitter = parsegen_emitter,
 		suffix = '.c', src_suffix = '.psr')
 
@@ -196,8 +196,8 @@ env = conf.Finish ()
 # Perform any platform-specific initialization
 if platform == 'posix':
 	src = chipssrc + netsrc + cpusrc + dossrc + effectssrc + guisrc + videosrc + zipsrc + jmasrc + linuxsrc
-	env.Append (CCFLAGS = '-D__LINUX__')
-	env.Append (ASFLAGS = '-DELF -D__LINUX__')
+	env.Append (CCFLAGS = '-D__UNIXSDL__')
+	env.Append (ASFLAGS = '-DELF -D__UNIXSDL__')
 	env.Append (CCFLAGS = '-I.')
 	env.Append (CCFLAGS = '-I/usr/include/SDL')
 	

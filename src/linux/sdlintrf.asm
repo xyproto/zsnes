@@ -81,7 +81,7 @@ NEWSYM SystemInit
     mov byte[cfgsoundon],1
 
     ; Get and set the initial directory
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     call obtaindir
     mov ebx,InitDir
     mov edx,InitDrive
@@ -901,7 +901,7 @@ NEWSYM ScanCodeListing
         db ' " ',' ~ ','LSH',' \ ',' Z ',' X ',' C ',' V '
         db ' B ',' N ',' M ',' , ',' . ',' / ','RSH',' * '  ; 30h
         db 'LAL','SPC','CAP','F1 ','F2 ','F3 ','F4 ','F5 '
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
         db 'F6 ','F7 ','F8 ','F9 ','F10','NUM','SCR','KP7'  ; 40h
         db 'KP8','KP9','KP-','KP4','KP5','KP6','KP+','KP1'
         db 'KP2','KP3','KP0','KP.','   ','   ','OEM','F11'  ; 50h
@@ -951,7 +951,7 @@ NEWSYM ScanCodeListing
         db 'J68','J69','J6A','J6B','J6C','J6D','J6E','J6F'
         db 'J70','J71','J72','J73','J74','J75','J76','J77'  ; 170h
         db 'J78','J79','J7A','J7B','J7C','J7D','J7E','J7F'
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
         ; Extra Joystick Stuff
         db 'J80','J81','J82','J83','J84','J85','J86','J87'  ; 180h
         db 'J88','J89','J8A','J8B','J8C','J8D','J8E','J8F'
@@ -1241,7 +1241,7 @@ NEWSYM SetInputDevice
     je near .input2
     mov dword[eax],54
     mov dword[eax+4],28
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     mov dword[eax+8],90
     mov dword[eax+12],96
     mov dword[eax+16],92

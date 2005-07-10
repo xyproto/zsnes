@@ -1013,7 +1013,7 @@ int main(size_t argc, const char **argv)
          << "\n"
          << "Options:\n"
          << "\n"
-         << "  -Ddefine   Define a processor director. Example: -D__LINUX__\n"
+         << "  -Ddefine   Define a processor director. Example: -D__UNIXSDL__\n"
          << "             Can specify multiple defines.\n"
          << "\n"
          << "  -cheader   Create a C/C++ header with the following name.\n"

@@ -96,7 +96,7 @@ PSR=parsegen
 	@NASMPATH@ @NFLAGS@ -o $@ $<
 
 %.o: %.psr
-	./${PSR} -D__LINUX__ temppsr.c $<
+	./${PSR} -D__UNIXSDL__ temppsr.c $<
 	@CC@ -I. -o $@ -c temppsr.c
 	rm -f temppsr.c
 

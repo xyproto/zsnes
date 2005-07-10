@@ -32,7 +32,7 @@ EXTSYM vidbufferofsb,headdata,romdata,sfxramdata,setaramdata,wramdata,ram7f,vram
 EXTSYM sram,debugbuf,regptr,regptw,vcache2b,vcache4b,vcache8b,fname,fnames
 EXTSYM fnamest,filefound,vidbufferofsc,Sup48mbit,Sup16mbit,guioff
 
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
 EXTSYM LinuxExit,GetFilename
 %endif
 
@@ -107,7 +107,7 @@ SECTION .text
 ;*******************************************************
 
 NEWSYM AllocMem
-%ifndef __LINUX__
+%ifndef __UNIXSDL__
     mov ax,0501h
     mov cx,bx
     shr ebx,16
@@ -192,7 +192,7 @@ NEWSYM getcmdline
 .next2
     cmp eax,edi
     je .nomore
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp byte[eax],'/'
 %else
     cmp byte[eax],'\'
@@ -303,7 +303,7 @@ SECTION .text
 
 
 AllocateLDTDescriptor:
-%ifndef __LINUX__
+%ifndef __UNIXSDL__
 ;Get ZSNES Base
    mov ax,ds
    mov bx,ax
@@ -320,7 +320,7 @@ AllocateLDTDescriptor:
 
 
 AllocateBlock:
-%ifndef __LINUX__
+%ifndef __UNIXSDL__
    mov eax,0501h
    mov bx,[BlockSize+2]
    mov cx,[BlockSize]
@@ -635,7 +635,7 @@ NEWSYM makeextension
 .loopz
     dec edx
     mov al,[fnames+edx]
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al, '/'
 %else
     cmp al,'\'
@@ -667,7 +667,7 @@ NEWSYM makeextension
     add ah,4
     mov [fnames],ah
     mov [fnamest],ah
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     pushad
     call GetFilename
     popad
@@ -791,7 +791,7 @@ SECTION .data
 
 SECTION .text
 
-%ifndef __LINUX__
+%ifndef __UNIXSDL__
 NEWSYM obtaindir
     cmp byte[cfgloadsdir],1
     je .nosdriveb
@@ -818,7 +818,7 @@ NEWSYM preparedir
 ;     DS:ESI -> 64 byte buffer to receive ASCIZ pathname
 ; get current drive, ah = 19h, al = A=0,B=1, etc.
 
-%ifndef __LINUX__
+%ifndef __UNIXSDL__
     cmp byte[cfgloadsdir],0
     je near .nosdrivec
     ; verify sram drive/directory exists
@@ -867,7 +867,7 @@ SECTION .data
 NEWSYM InitDrive, db 2
 NEWSYM LoadDrive, db 2
 
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
 NEWSYM gotoroot, db '/',0
 %else
 NEWSYM gotoroot, db '\',0
@@ -882,7 +882,7 @@ SECTION .text
 NEWSYM DosExit ; Terminate Program
 %ifdef __WIN32__
 	call OSExit
-%elifdef __LINUX__
+%elifdef __UNIXSDL__
 	call LinuxExit
 %elifdef __MSDOS__
 	call init18_2hz

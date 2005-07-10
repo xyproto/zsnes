@@ -203,7 +203,7 @@ GUIloadfilename:
     mov ebx,LoadDir
     mov edx,LoadDrive
     call Get_Dir
-%ifndef __LINUX__
+%ifndef __UNIXSDL__
     cmp byte[cfgloadsdir],0
     jne .nosdrive
     pushad
@@ -1013,7 +1013,7 @@ SECTION .text
 
 NEWSYM GetCurDir
     ; get Drive/Dir
-%ifndef __LINUX__
+%ifndef __UNIXSDL__
     mov ebx,GUIcurrentdir+3
 %else
     mov ebx,GUIcurrentdir
@@ -1021,7 +1021,7 @@ NEWSYM GetCurDir
     mov edx,GUIcurrentdir
     call Get_Dir
 
-%ifndef __LINUX__
+%ifndef __UNIXSDL__
     add byte[GUIcurrentdir],65
 
     mov byte[GUIcurrentdir+1],':'
@@ -1285,7 +1285,7 @@ GUIGetDirs:
     je near .sortagain
     pop edi
 .nodirs
-%ifndef __LINUX__
+%ifndef __UNIXSDL__
     cmp byte[GUIloadfntype],0
     je near .drive2
     mov esi,[GUInumentries]
@@ -1329,7 +1329,7 @@ GUIdirentries resd 1
 GUIfileentries resd 0
 
 SECTION .data
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
 NEWSYM GUIsmcfind,    db '*.[sS][mM][cC]',0
 NEWSYM GUIsfcfind,    db '*.[sS][fF][cC]',0
 NEWSYM GUIswcfind,    db '*.[sS][wW][cC]',0
@@ -1348,7 +1348,7 @@ NEWSYM GUIgd3find,    db '*.GD3',0
 %endif
 NEWSYM GUIfind058,    db '*.058',0
 NEWSYM GUIfind078,    db '*.078',0
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
 NEWSYM GUIfindUSA,    db '*.[uU][sS][aA]',0
 NEWSYM GUIfindEUR,    db '*.[eE][uU][rR]',0
 NEWSYM GUIfindJAP,    db '*.[jJ][aA][pP]',0
@@ -1366,7 +1366,7 @@ NEWSYM GUIfindJMA,    db '*.JMA',0
 NEWSYM GUIfindGZIP,    db '*.GZ',0
 %endif
 NEWSYM GUIfind1,      db '*.1',0
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
 GUIfindDIR    db '*',0
 NEWSYM GUIfindall,    db '*',0
 %else

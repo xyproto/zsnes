@@ -179,7 +179,7 @@ GUIgetcurrentinput:
     mov byte[GUIDelayB],0
     ; Convert pressed to keys
     mov dword[GUIfirstkey],0
-%ifdef __LINUX___
+%ifdef __UNIXSDL___
     GUIqcheckkeys 90 ; UP
     GUIqcheckkeys 96 ; DOWN
     GUIqcheckkeys 92 ; LEFT
@@ -228,7 +228,7 @@ GUIgetcurrentinput:
     GUIqcheckkeys2 [pl1Ak],7
 .nopad1
     xor al,al
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     GUIgetprkeys 90,90 ; UP
     GUIgetprkeys 96,96 ; DOWN
     GUIgetprkeys 92,92 ; LEFT
@@ -268,7 +268,7 @@ GUIgetcurrentinput:
     mov al,cl
 .notextkb
 
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     GUIgetprkeys 90,90 ; UP
     GUIgetprkeys 96,96 ; DOWN
     GUIgetprkeys 92,92 ; LEFT
@@ -625,7 +625,7 @@ GUIgetcurrentinput:
     jne .noenter
     call GUITryMenuItem
 .noenter
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,92
     je .leftpressed
     cmp dword[numlockptr],1
@@ -645,7 +645,7 @@ GUIgetcurrentinput:
 .left
     mov byte[GUIcmenupos],6
 .noleft
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,94
     je .rightpressed
     cmp dword[numlockptr],1
@@ -665,7 +665,7 @@ GUIgetcurrentinput:
 .noright
     cmp byte[GUIcmenupos],0
     je near .noupdown
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,96
     je .downpressed
     cmp dword[numlockptr],1
@@ -691,7 +691,7 @@ GUIgetcurrentinput:
     mov [GUIcrowpos],al
     jmp .nokey
 .nodown
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al, 90
     je .uppressed
     cmp dword[numlockptr],1
@@ -1163,7 +1163,7 @@ GUIVideoKeys:
     jne .nograyscale
     xor byte[GrayscaleMode],1
 .nograyscale
-%ifndef __LINUX__
+%ifndef __UNIXSDL__
     cmp dh,'V'
     jne .novsync
     xor byte[vsyncon],1
@@ -1178,7 +1178,7 @@ GUIVideoKeys:
 .novsync
 %endif
 ;   "Home"
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp dl,89
     je .yeshome
     cmp dword[numlockptr],1
@@ -1194,7 +1194,7 @@ GUIVideoKeys:
     mov dword[GUIcurrentvideoviewloc],0
 .nohome
 ;   "End"
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp dl,95
     je .yesendp
     cmp dword[numlockptr],1
@@ -1216,7 +1216,7 @@ GUIVideoKeys:
     mov dword[GUIcurrentvideoviewloc],0
 .noendp
 ;   "Up"
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp dl,90
     je .up
     cmp dword[numlockptr],1
@@ -1238,7 +1238,7 @@ GUIVideoKeys:
     dec dword[GUIcurrentvideocursloc]
 .noup
 ;   "Down"
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp dl,96
     je .yesdown
     cmp dword[numlockptr],1
@@ -1261,7 +1261,7 @@ GUIVideoKeys:
     inc dword[GUIcurrentvideoviewloc]
 .nodown
 ;   "PageUp"
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp dl,91
     je .yespageup
     cmp dword[numlockptr],1
@@ -1285,7 +1285,7 @@ GUIVideoKeys:
 .posc
 .nopageup
 ;   "PageDown"
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp dl,97
     je .yespagedn
     cmp dword[numlockptr],1
@@ -1623,7 +1623,7 @@ GUICheatKeys:
     jne .nozero
     ret
 .nozero
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,89
     je .homepressed
     cmp dword[numlockptr],1
@@ -1639,7 +1639,7 @@ GUICheatKeys:
     mov dword[GUIcurrentcheatviewloc],0
     ret
 .nohome
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,89
     je .endppressed
     cmp dword[numlockptr],1
@@ -1662,7 +1662,7 @@ GUICheatKeys:
 .posve
     ret
 .noendp
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,90
     je .up
     cmp dword[numlockptr],1
@@ -1683,7 +1683,7 @@ GUICheatKeys:
 .noviewdec
     dec dword[GUIcurrentcheatcursloc]
 .noup
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al, 96
     je .downpressed
     cmp dword[numlockptr],1
@@ -1706,7 +1706,7 @@ GUICheatKeys:
     inc dword[GUIcurrentcheatviewloc]
 .noviewinc
 .nodown
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,91
     je .pageuppressed
     cmp dword[numlockptr],1
@@ -1729,7 +1729,7 @@ GUICheatKeys:
     mov dword[GUIcurrentcheatcursloc],0
 .posc
 .nopageup
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al, 97
     je .pagednpressed
     cmp dword[numlockptr],1
@@ -2082,7 +2082,7 @@ GUICheatSearchKeys:
     mov byte[CheatCompareValue],3
 .notnotequalthan
 
-%ifdef __LINUX__          ; Select with Arrow Keys
+%ifdef __UNIXSDL__          ; Select with Arrow Keys
     cmp al,90
     je .yesmoveup
     cmp dword[numlockptr],1
@@ -2098,7 +2098,7 @@ GUICheatSearchKeys:
     je .nomoveup
     dec byte[CheatCompareValue]
 .nomoveup
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,96
     je .yesmovedown
     cmp dword[numlockptr],1
@@ -2149,7 +2149,7 @@ GUICheatSearchKeys:
     ret
 
 .nozero                   ; Select Codes with arrow keys
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,89
     je .yeshome
     cmp dword[numlockptr],1
@@ -2165,7 +2165,7 @@ GUICheatSearchKeys:
     mov dword[GUIcurrentchtsrcviewloc],0
     ret
 .nohome
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,95
     je .yesendp
     cmp dword[numlockptr],1
@@ -2188,7 +2188,7 @@ GUICheatSearchKeys:
 .posve
     ret
 .noendp
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,90
     je .up
     cmp dword[numlockptr],1
@@ -2209,7 +2209,7 @@ GUICheatSearchKeys:
 .noviewdec
     dec dword[GUIcurrentchtsrccursloc]
 .noup
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,96
     je .yesdown
     cmp dword[numlockptr],1
@@ -2233,7 +2233,7 @@ GUICheatSearchKeys:
 .noviewinc
 .nodown
 
-%ifdef __LINUX__            ; Pageup/Down to select Cheats
+%ifdef __UNIXSDL__            ; Pageup/Down to select Cheats
     cmp al,91
     je .yespgup
     cmp dword[numlockptr],1
@@ -2256,7 +2256,7 @@ GUICheatSearchKeys:
     mov dword[GUIcurrentchtsrccursloc],0
 .posc
 .nopageup
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,97
     je .yespgdn
     cmp dword[numlockptr],1
@@ -2361,7 +2361,7 @@ GUIStateSelKeys:
     mov [GUIcmenupos],al
     ret
 .noenter
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,92               ; linux keypad left
     je .yesleft
     cmp dword[numlockptr],1 ; if numlock on, disregard numpad
@@ -2390,7 +2390,7 @@ GUIStateSelKeys:
     dec cl
     jmp .done
 .noleft
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,94               ; linux keypad right
     je .yesright
     cmp dword[numlockptr],1 ; if numlock on, disregard numpad
@@ -2419,7 +2419,7 @@ GUIStateSelKeys:
     inc cl
     jmp .done
 .noright
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,90               ; linux keypad up
     je .yesvert
     cmp dword[numlockptr],1 ; if numlock on, disregard numpad
@@ -2428,7 +2428,7 @@ GUIStateSelKeys:
     cmp al,72               ; linux numpad up, non-linux num/keypad up
     je .yesvert
 .noup
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,96               ; linux keypad down
     je .yesvert
     cmp dword[numlockptr],1 ; if numlock on, disregard numpad
@@ -2462,7 +2462,7 @@ GUIStateSelKeys:
 
 ; Allows you to select boxes with the arrow keys, Enter to choose
 GUIResetKeys:
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,92
     je .yesleft
     cmp dword[numlockptr],1
@@ -2476,7 +2476,7 @@ GUIResetKeys:
 %endif
     mov byte[GUICResetPos],0
 .noleft
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,94
     je .yesright
     cmp dword[numlockptr],1
@@ -2522,7 +2522,7 @@ GUIResetKeys:
 
 ; Allows you to select boxes with the arrow keys, Enter to choose
 GUIStateKeys:
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,92
     je .yesleft
     cmp dword[numlockptr],1
@@ -2536,7 +2536,7 @@ GUIStateKeys:
 %endif
     mov byte[GUICStatePos],0
 .noleft
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,94
     je .yesright
     cmp dword[numlockptr],1
@@ -2587,7 +2587,7 @@ GUILoadKeys:
     je .noright
     cmp dword[GUIdirentries],0
     je .noright
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,92
     je .yesleft
     cmp dword[numlockptr],1
@@ -2602,7 +2602,7 @@ GUILoadKeys:
     mov byte[GUILoadPos],0
     xor dword[GUIcurrentfilewin],1
 .noleft
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,94
     je .yesright
     cmp dword[numlockptr],1
@@ -2625,7 +2625,7 @@ GUILoadKeys:
 .nextl
     cmp byte[ebx],':'
     je .donel
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp byte[ebx],'/'
 %else
     cmp byte[ebx],'\'
@@ -2655,7 +2655,7 @@ GUILoadKeys:
 .noenter
     cmp dword[GUIcurrentfilewin],1
     je near .dirwin
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,89
     je .yeshome
     cmp dword[numlockptr],1
@@ -2672,7 +2672,7 @@ GUILoadKeys:
     mov dword[GUIcurrentviewloc],0
     ret
 .nohome
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,95
     je .yesendp
     cmp dword[numlockptr],1
@@ -2696,7 +2696,7 @@ GUILoadKeys:
 .posve
     ret
 .noendp
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,90
     je .up
     cmp dword[numlockptr],1
@@ -2718,7 +2718,7 @@ GUILoadKeys:
 .noviewdec
     dec dword[GUIcurrentcursloc]
 .noup
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,96
     je .yesdown
     cmp dword[numlockptr],1
@@ -2742,7 +2742,7 @@ GUILoadKeys:
     inc dword[GUIcurrentviewloc]
 .noviewinc
 .nodown
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,91
     je .yespageup
     cmp dword[numlockptr],1
@@ -2766,7 +2766,7 @@ GUILoadKeys:
     mov dword[GUIcurrentcursloc],0
 .posc
 .nopageup
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,97
     je .yespagedn
     cmp dword[numlockptr],1
@@ -2953,7 +2953,7 @@ SECTION .bss
 SECTION .text
 
 .dirwin
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,89
     je .yeshome2
     cmp dword[numlockptr],1
@@ -2970,7 +2970,7 @@ SECTION .text
     mov dword[GUIcurrentdirviewloc],0
     ret
 .nohome2
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,95
     je .yesendp2
     cmp dword[numlockptr],1
@@ -2994,7 +2994,7 @@ SECTION .text
 .posve2
     ret
 .noendp2
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,90
     je .yesup2
     cmp dword[numlockptr],1
@@ -3016,7 +3016,7 @@ SECTION .text
 .noviewdec2
     dec dword[GUIcurrentdircursloc]
 .noup2
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,96
     je .yesdown2
     cmp dword[numlockptr],1
@@ -3040,7 +3040,7 @@ SECTION .text
     inc dword[GUIcurrentdirviewloc]
 .noviewinc2
 .nodown2
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,91
     je .yespgup2
     cmp dword[numlockptr],1
@@ -3064,7 +3064,7 @@ SECTION .text
     mov dword[GUIcurrentdircursloc],0
 .posc2
 .nopageup2
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp al,97
     je .yespgdn2
     cmp dword[numlockptr],1

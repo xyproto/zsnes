@@ -2131,7 +2131,7 @@ NEWSYM testpressed8b
     mov byte[pressed+77],2
 .noright
 %ifndef __MSDOS__
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     test byte[pressed+92],1
 %else
     test byte[pressed+0CBh],1
@@ -2140,13 +2140,13 @@ NEWSYM testpressed8b
     cmp bl,0
     je .noleft2
     dec bl
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     mov byte[pressed+92],2
 %else
     mov byte[pressed+0CBh],2
 %endif
 .noleft2
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     test byte[pressed+94],1
 %else
     test byte[pressed+0CDh],1
@@ -2155,7 +2155,7 @@ NEWSYM testpressed8b
     cmp bl,9
     je .noright2
     inc bl
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     mov byte[pressed+94],2
 %else
     mov byte[pressed+0CDh],2

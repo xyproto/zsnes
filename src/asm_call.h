@@ -49,7 +49,7 @@ I'd fix that if anyone knows if that parameter defines something I can check
 
 #define ASM_COMMAND(line) #line"\n\t"
 
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 #define ASM_CALL(func) ASM_COMMAND(call func)
 #else
 #define ASM_CALL(func) ASM_COMMAND(call _ ## func)

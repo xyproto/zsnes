@@ -1437,7 +1437,7 @@ DisplayGUIVideo:
     GUIDisplayText 5,10,92,GUIVideoTextB2
     GUIDisplayText 5,10,99,GUIVideoTextB3
 %endif
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     GUIDisplayText 5,10,106,GUIVideoTextB4
 %endif
 
@@ -1445,7 +1445,7 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUISLVID+eax],0
     je near .notext2
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     GUIDisplayText 5,13,116,GUIVideoTextC
 %else
     GUIDisplayText 5,13,111,GUIVideoTextC
@@ -1505,7 +1505,7 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUISLVID+eax],0
     je near .nocheckboxb
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     GUIDisplayCheckboxun 5,21,119,scanlines,1,GUIVideoTextC1,0
 %elifdef __WIN32__
     GUIDisplayCheckboxun 5,21,114,scanlines,1,GUIVideoTextC1,0
@@ -1516,12 +1516,12 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUIHSVID+eax],0
     je near .nocheckboxw
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     GUIDisplayCheckboxun 5,61,119,scanlines,3,GUIVideoTextC2,0
 %elifdef __WIN32__
     GUIDisplayCheckboxun 5,61,114,scanlines,3,GUIVideoTextC2,0
 %endif
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     GUIDisplayCheckboxun 5,101,119,scanlines,2,GUIVideoTextC3,0
 %elifdef __WIN32__
     GUIDisplayCheckboxun 5,101,114,scanlines,2,GUIVideoTextC3,0
@@ -1576,7 +1576,7 @@ DisplayGUIVideo:
     GUIDisplayCheckboxu 5,11,173,Mode7HiRes16b,GUIVideoText8b,0
 .nocheckboxm72
     GUIDisplayCheckboxu 5,11,183,GrayscaleMode,GUIVideoText8c,0
-%ifndef __LINUX__
+%ifndef __UNIXSDL__
     GUIDisplayCheckboxu 5,115,183,vsyncon,GUIVideoText9,0
 %endif
 
@@ -3063,7 +3063,7 @@ GUIGUIAboutTextA1 db 'ZSNES V',ZVERSION,'             ',0 ;Need room for date
 GUIGUIAboutTextA2 db 'DOS VERSION',0
 %elifdef __WIN32__
 GUIGUIAboutTextA2 db 'WIN VERSION',0
-%elifdef __LINUX__
+%elifdef __UNIXSDL__
 GUIGUIAboutTextA2 db 'SDL VERSION',0
 %endif
 

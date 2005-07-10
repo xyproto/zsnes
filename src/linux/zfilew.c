@@ -28,7 +28,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include <zlib.h>
 
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
@@ -44,7 +44,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DWORD unsigned int
 #define BYTE unsigned char
 
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 #define STUB_FUNCTION fprintf(stderr,"STUB: %s at " __FILE__ ", line %d, thread %d\n",__FUNCTION__,__LINE__,getpid())
 #endif
 #include <errno.h>
@@ -260,7 +260,7 @@ DWORD ZFileGetFTime()
 
 DWORD ZFileMKDir()
 {
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
   return(mkdir(MKPath, (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)));
 #else
   return(mkdir(MKPath));
@@ -298,7 +298,7 @@ DWORD DTALocPos;
 
 
 int TempFind;
-#ifndef __LINUX__
+#ifndef __UNIXSDL__
 int FindFirstHandle;
 struct _finddata_t FindDataStruct;
 #else
@@ -309,7 +309,7 @@ int globcur;
 
 DWORD ZFileFindNext()
 {
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 	//STUB_FUNCTION;
    struct stat filetype;
 
@@ -357,7 +357,7 @@ DWORD ZFileFindNext()
 
 DWORD ZFileFindFirst()
 {
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 	//STUB_FUNCTION;
    struct stat filetype;
 
@@ -405,7 +405,7 @@ DWORD ZFileFindFirst()
 
 DWORD ZFileFindEnd()  // for compatibility with windows later
 {
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 	//STUB_FUNCTION;
 	if (globcur != -1) {
 		globfree(&globbuf);
@@ -461,7 +461,7 @@ DWORD GetDate()
 extern char SRAMDir[1024];
 extern char LoadDir[512];
 
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 
 char zcfgdir[1024];
 #define ZCFG_DIR "/.zsnes"

@@ -22,7 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
 
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 #include "gblhdr.h"
 #else
 #include <io.h>
@@ -46,7 +46,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef __WIN32__
 #define StringI "VIDEOMODEWIN"
 #endif
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 #define StringI "VIDEOMODELIN"
 #endif
 #ifdef __MSDOS__
@@ -145,7 +145,7 @@ extern unsigned int ZOpenFile(); //Create_File. Open_File
 extern unsigned int ZFileWrite(); //Write_File();
 extern unsigned int ZCloseFile(); //Close_File
 
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 extern char zcfgdir[1024];
 unsigned char cfgloadsdir = 1; //Set to yes, since savedir is always set and considered to be changed
 #else
@@ -374,7 +374,7 @@ void DOScreatenewcfg()
     return;
   }
 
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
   chdir(zcfgdir);
 #endif
 
@@ -450,7 +450,7 @@ void DOScreatenewcfg()
   sprintf(buffer, "VideoModeWin = %d\r\n\r\n", cfgcvidmode);
   SAVE_LINE(buffer);
 #endif
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 #ifdef __OPENGL__
   WRITE_LINE("; Video Mode, 0 - 18\r\n");
 #else
@@ -535,7 +535,7 @@ void DOScreatenewcfg()
   sprintf(buffer, "\r\nInterpolation = %d\r\n\r\n", cfginterp);
   SAVE_LINE(buffer);
 
-#ifndef __LINUX__
+#ifndef __UNIXSDL__
   WRITE_LINE("; VSync (1 = Enable, 0 = Disable) - Wait for Vertical Sync (Fast cpu reqd)\r\n\r\n");
   sprintf(buffer, "VSync = %d\r\n\r\n", cfgvsync);
   SAVE_LINE(buffer);
@@ -582,7 +582,7 @@ void DOScreatenewcfg()
 
   if (DontSavePath != 1)
   {
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
     sprintf(buffer, "GameDirectory = %s\r\n\r\n", LoadDir);
 #else
     sprintf(buffer, "GameDirectory = %c:\\%s\r\n", (char) (*LoadDrive + 65), LoadDir);
@@ -590,7 +590,7 @@ void DOScreatenewcfg()
   }
   else
   {
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
     sprintf(buffer, "GameDirectory = %s\r\n\r\n", LoadDirB);
 #else
     sprintf(buffer, "GameDirectory = %c:\\%s\r\n", (char) (*LoadDriveB + 65), LoadDirB);
@@ -709,7 +709,7 @@ void getcfg()
                 temp = _string[i];
                 if (_usespace || temp != ' ')
                 {
-#ifndef __LINUX__
+#ifndef __UNIXSDL__
                   if (temp >= 'a' && temp <= 'z')
                     temp -= ('a' - 'A');
 #endif
@@ -1254,7 +1254,7 @@ void getcfg()
               {
                 if (_strlenb >= 3)
                 {
-#ifndef __LINUX__
+#ifndef __UNIXSDL__
                   if (_stringb[1] == ':' && _stringb[2] == '\\')
                   {
                     cfgloadgdir = 1;
@@ -1270,7 +1270,7 @@ void getcfg()
 
 #endif
                     strcpy(LoadDirB, LoadDir);
-#ifndef __LINUX__
+#ifndef __UNIXSDL__
                   }
 #endif
                 }

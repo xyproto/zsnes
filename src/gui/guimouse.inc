@@ -225,7 +225,7 @@ ProcessMouseButtons:
     jb near .noclickedw
     cmp word[GUImouseposx],242
     ja .notfound7
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     jmp .clickawn
 %endif
     cmp word[GUImouseposy],8
@@ -486,7 +486,7 @@ ProcessMouseButtons:
     mov byte[GUIpclicked],0
     mov byte[GUIHold],0
 
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp byte[GUIcwinpress],1
     jne .notwinpressa
     mov byte[GUIcwinpress],0
@@ -1178,7 +1178,7 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
-%ifndef __LINUX__
+%ifndef __UNIXSDL__
 %macro GUIClickCButton2r 5
     cmp eax,%1+1
     jl %%noclick
@@ -2376,7 +2376,7 @@ DisplayGUIVideoClick:
     mov bl,[cvidmode]
     cmp byte[GUISLVID+ebx],0
     je near .nocheckboxb
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     GUIClickCButton4 21,119,byte[scanlines],byte[cfgscanline],1
 %else
     GUIClickCButton4 21,114,byte[scanlines],byte[cfgscanline],1
@@ -2405,7 +2405,7 @@ DisplayGUIVideoClick:
     mov bl,[cvidmode]
     cmp byte[GUIHSVID+ebx],0
     je near .nohsline
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     GUIClickCButton4 61,119,byte[scanlines],byte[cfgscanline],3
     GUIClickCButton4 101,119,byte[scanlines],byte[cfgscanline],2
 %else

@@ -12,7 +12,7 @@
 	typedef enum {false, true} bool;
 #endif
 	//#define __UPSIDE_DOWN__  /*define if pngs are saved upside down*/
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 	#include "../gblhdr.h"
 #else
 	#include <png.h>

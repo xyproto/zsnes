@@ -22,7 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
 
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 #include "gblhdr.h"
 #define DIR_SLASH "/"
 #else
@@ -603,7 +603,7 @@ void statesaver()
 
 
   //Save State code
-  #ifdef __LINUX__
+  #ifdef __UNIXSDL__
   SRAMChdir();
   #endif
 
@@ -864,7 +864,7 @@ void stateloader (unsigned char *statename, unsigned char keycheck, unsigned cha
   INSERT_POSITION_NUMBER(txtrrldmsg, txtrrldnum);
 
 
-  #ifdef __LINUX__
+  #ifdef __UNIXSDL__
   SRAMChdir();
   #endif
 

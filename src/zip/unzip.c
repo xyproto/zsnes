@@ -4,7 +4,7 @@
    Read unzip.h for more info
 */
 
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 #include "../gblhdr.h"
 #else
 #include <stdio.h>

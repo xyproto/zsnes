@@ -93,7 +93,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 	#define getpagesize() 4096
 	#endif
 
-	#ifdef __LINUX__
+	#ifdef __UNIXSDL__
 	#include "SDL.h"
 	#include <limits.h>
 #ifndef __BEOS__
@@ -114,7 +114,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 	#endif
 	#endif
 
-	#ifdef __LINUX__
+	#ifdef __UNIXSDL__
 	#if !defined(__FreeBSD__) && !defined(__BEOS__)
 	#include <asm/ioctls.h>
 	#else

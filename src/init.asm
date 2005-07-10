@@ -63,7 +63,7 @@ EXTSYM clearmem,clearSPCRAM,PatchUsingIPS,ZOpenFileName,loadROM,SPC7110IndexSize
 EXTSYM SPC7PackIndexLoad,IntlEHi,C4Enable,SPC7110Enable,RTCEnable,SA1Enable
 EXTSYM SDD1Enable,OBCEnable,SFXEnable,BSEnable,clearvidsound,headerhack,SetupROM
 
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
 EXTSYM LoadDir,popdir,pushdir
 %endif
 
@@ -229,7 +229,7 @@ NEWSYM init
     ; as not to break any other code later on which depends
     ; on it being present.
   mov ebx,[statefileloc]
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     mov word[fnamest+ebx-1],'st'
 %else
     mov word[fnamest+ebx-1],'ST'
@@ -2120,7 +2120,7 @@ NEWSYM printhex8
 ; Search for header size first which is filesize MOD 32768
 
 NEWSYM PatchIPS
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     pushad
     call pushdir
     popad
@@ -2138,7 +2138,7 @@ NEWSYM PatchIPS
     dec eax
     cmp eax,fname
     je .failfound
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp byte[eax],'/'
 %else
     cmp byte[eax],'\'
@@ -2155,7 +2155,7 @@ NEWSYM PatchIPS
     mov dword[eax],'.ips'
     mov byte[eax+4],0
     push eax
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     cmp byte [ZipSupport], 1
     je .nochangedir
     mov ebx,LoadDir
@@ -2170,7 +2170,7 @@ NEWSYM PatchIPS
     pop eax
     mov ebx,[Prevextn]
     mov [eax],ebx
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     pushad
     call popdir
     popad
@@ -2269,7 +2269,7 @@ NEWSYM loadfile
     mov byte[TextFile], 0
     call GetCurDir
     mov byte[InGUI],0
-%ifdef __LINUX__
+%ifdef __UNIXSDL__
     mov dl,[InitDrive]
     mov ebx,InitDir
     call Change_Dir

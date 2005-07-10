@@ -20,7 +20,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
 #include "gblhdr.h"
 #define DIR_SLASH '/'
 #else
@@ -139,7 +139,7 @@ static void display_help()
   put_line("         30 = 1280x1024 S FULL     31 = 1280x1024 DR FULL");
   put_line("         32 = 1280x1024 DS FULL");
 #endif
-#ifdef __LINUX__
+#ifdef __UNIXSDL__
   put_line("          0 = 256x224   R WIN        1 = 256x224  R FULL");
   put_line("          2 = 512x448   DR WIN       3 = 640x480  DS FULL");
 #ifndef __OPENGL__
@@ -178,7 +178,7 @@ static void display_help()
   put_line("  File Formats Supported by GUI : SMC,SFC,SWC,FIG,MGD,UFO,BIN,");
   put_line("                                  058,078,1,USA,EUR,JAP,ZIP,JMA");
   put_line("");
-#ifndef __LINUX__
+#ifndef __UNIXSDL__
   put_line("  Microsoft-style options (/option) are also accepted");
 #endif
 /*
@@ -270,7 +270,7 @@ static void handle_params(int argc, char *argv[])
 
   for (i = 1; i < argc; i++)
   {
-    #ifndef __LINUX__
+    #ifndef __UNIXSDL__
     if (argv[i][0] == '-' || argv[i][0] == '/')
     #else
     if (argv[i][0] == '-')
@@ -587,7 +587,7 @@ int main(int zargc, char *zargv[])
   argc = zargc;
   argv = zargv;
 
-  #ifdef __LINUX__
+  #ifdef __UNIXSDL__
   handle_params(zargc, zargv);
   #endif
 
