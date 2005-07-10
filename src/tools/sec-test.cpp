@@ -138,7 +138,7 @@ void handle_file(const char *filename)
       {
         if (!contains_resx(line) && !contains_dx(line) && !label(line) && !strstr(line, "RMREGS") &&
             !strstr(line, "NEWSYM") && !strstr(line, "EXTSYM") && !strstr(line, " equ ") &&
-            (*line != '%') && !strstr(line, "ALIGN") && strncmp(line, "bits ", strlen("bits ")))
+            (*line != '%') && !strstr(line, "ALIGN") && strncasecmp(line, "bits ", strlen("bits ")))
         {
           cout << filename << ": line " << i << ": Error, code in non TEXT section. \"" << line << "\"" << endl;
         }    
