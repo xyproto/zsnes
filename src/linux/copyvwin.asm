@@ -28,6 +28,7 @@ EXTSYM _2xSaISuperEagleLineW, _2xSaISuper2xSaILineW,newengen,cfield,HalfTrans
 EXTSYM GUIOn2,FilteredGUI,SpecialLine,vidbufferofsb,HalfTransB,HalfTransC
 
 ALIGN32
+
 section .data
 NEWSYM frametot, dd 0
 
