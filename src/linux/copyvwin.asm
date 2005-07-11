@@ -38,8 +38,7 @@ NEWSYM CheckFrame
     xor eax,eax
     mov ebx,[vidbuffer]
     add ebx,16*2+256*2+32*2
-    add ebx,8*288*2
-    mov ecx,62000
+    mov ecx,61184
 .loopit
     add eax,[ebx]
     add ebx,4
