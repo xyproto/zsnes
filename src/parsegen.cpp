@@ -263,7 +263,8 @@ ssize_t enhanced_atoi(const char *str)
     system("gcc -o eatio.exe eatio.c -s");
 #endif
 
-    system("."SLASH_STR"eatio.exe");
+    //Older MSVCs too stupid to concatinate on their own
+    system((string(".")+string(SLASH_STR)+"eatio.exe").c_str());
 
     remove("eatio.c");
     remove("eatio.exe");
