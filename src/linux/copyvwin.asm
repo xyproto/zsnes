@@ -28,6 +28,26 @@ EXTSYM _2xSaISuperEagleLineW, _2xSaISuper2xSaILineW,newengen,cfield,HalfTrans
 EXTSYM GUIOn2,FilteredGUI,SpecialLine,vidbufferofsb,HalfTransB,HalfTransC
 
 ALIGN32
+section .data
+NEWSYM frametot, dd 0
+
+section .text
+
+NEWSYM CheckFrame
+    pushad
+    xor eax,eax
+    mov ebx,[vidbuffer]
+    add ebx,16*2+256*2+32*2
+    add ebx,8*288*2
+    mov ecx,62000
+.loopit
+    add eax,[ebx]
+    add ebx,4
+    dec ecx
+    jnz .loopit
+    mov [frametot],eax
+    popad
+    ret
 
 SECTION .bss
 NEWSYM AddEndBytes, resd 1         ; Number of bytes between each line

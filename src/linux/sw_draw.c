@@ -28,7 +28,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DWORD unsigned long
 
 typedef enum { FALSE = 0, TRUE = !FALSE } BOOL;
-
+extern void CheckFrame();
 // VIDEO VARIABLES
 extern unsigned char cvidmode;
 extern SDL_Surface *surface;
@@ -40,6 +40,8 @@ extern void LinuxExit();
 extern unsigned int vidbuffer;
 extern DWORD converta;
 extern unsigned char curblank;
+extern int frametot;
+int prevtot = 0;
 void UpdateVFrame(void);
 
 BOOL sw_start(int width, int height, int req_depth, int FullScreen)
@@ -133,9 +135,16 @@ void sw_drawwin()
                                 // the value of newengen is equal to 1.
                                 // (see ProcessTransparencies in newgfx16.asm
                                 //  for ZSNES' current transparency code)
-    UpdateVFrame();
-    if (curblank != 0) return;
 
+
+    prevtot = frametot;
+    CheckFrame();
+
+    UpdateVFrame();
+
+    if (prevtot == frametot) { return; }
+
+    if (curblank != 0) return;
     LockSurface();
 
     ScreenPtr = vidbuffer;
