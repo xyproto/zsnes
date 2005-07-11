@@ -36,15 +36,16 @@ using namespace std;
 
 #include <errno.h>
 
+#ifdef _MSC_VER //MSVC
+typedef int ssize_t;
+#define strcasecmp stricmp
+#define __WIN32__
+#endif
+
 #if defined(__MSDOS__) || defined(__WIN32__)
 #define SLASH_STR "\\"
 #else
 #define SLASH_STR "/"
-#endif
-
-#ifdef _MSC_VER //MSVC
-typedef int ssize_t;
-#define strcasecmp stricmp
 #endif
 
 #define LINE_LENGTH 2048*10
@@ -263,12 +264,12 @@ ssize_t enhanced_atoi(const char *str)
     system("gcc -o eatio.exe eatio.c -s");
 #endif
 
-    //Older MSVCs too stupid to concatinate on their own
-    system((string(".")+string(SLASH_STR)+"eatio.exe").c_str());
+    system("."SLASH_STR"eatio.exe");
 
     remove("eatio.c");
     remove("eatio.exe");
-
+    remove("eatio.obj"); //Needed for stupid MSVCs which leave object files lying around
+    
     ifstream in_stream("eatio.res");
     if (in_stream)
     {

@@ -377,6 +377,7 @@ endif
 ${PSR}: $<
 ifeq (${ENV},msvc)
 	cl /EHsc /Fe$@ parsegen.cpp
+	${DELETECOMMAND} parsegen.obj
 else
 ifeq (${ENV},dos)
 	gpp -O3 -o $@ parsegen.cpp
