@@ -28,7 +28,7 @@
 
 %macro TORNb 1   ; V
    FETCHPIPE
-   test dword [SfxB],1
+   test dword[SfxB],1
    jnz .VersionB
    mov edi, SfxR0+%1*4
    inc ebp                ; Increase program counter
@@ -50,7 +50,7 @@
 
 %macro FROMRNb 1 ; V
    FETCHPIPE
-   test dword [SfxB],1
+   test dword[SfxB],1
    jnz .VersionB
    mov esi,SfxR0+%1*4
    inc ebp                ; Increase program counter

@@ -304,7 +304,7 @@ void BankCheck()
     romtype = 1;
     infoloc = Lo;
   }
-    
+
   if (NumofBytes >= 0x500000)
   {
     //Deinterleave if neccesary
@@ -685,7 +685,7 @@ void SetupSramSize()
   {
     ramsize = 1024;
   }
-  
+
   //Convert from Kb to bytes;
   ramsize *= 128;
   ramsizeand = ramsize-1;

@@ -1094,11 +1094,11 @@ NEWSYM RDSPRegFF      ;
       push eax
       push ebx
       push edx
-      test byte [DSPMem+07h+%1*10h],80h
+      test byte[DSPMem+07h+%1*10h],80h
       jz near %%Direct
-      test byte [DSPMem+07h+%1*10h],40h
+      test byte[DSPMem+07h+%1*10h],40h
       jnz near %%Increase
-      test byte [DSPMem+07h+%1*10h],20h
+      test byte[DSPMem+07h+%1*10h],20h
       jz %%LinearDec
       xor eax,eax
       mov al,[DSPMem+07h+%1*10h]
@@ -1115,11 +1115,11 @@ NEWSYM RDSPRegFF      ;
       mov byte[GainDecBendDataDat+%1],127
       div ebx
       neg eax
-      mov dword [Voice0IncNumber+%1*4],eax
+      mov dword[Voice0IncNumber+%1*4],eax
       pop edx
       pop ebx
       pop eax
-      mov byte [Voice0State+%1],7
+      mov byte[Voice0State+%1],7
       ret
 %%LinearDec
       xor eax,eax
@@ -1132,14 +1132,14 @@ NEWSYM RDSPRegFF      ;
       mov eax,127*65536
       div ebx
       neg eax
-      mov dword [Voice0IncNumber+%1*4],eax
+      mov dword[Voice0IncNumber+%1*4],eax
       pop edx
       pop ebx
       pop eax
-      mov byte [Voice0State+%1],5
+      mov byte[Voice0State+%1],5
       ret
 %%Increase
-      test byte [DSPMem+07h+%1*10h],20h
+      test byte[DSPMem+07h+%1*10h],20h
       jz %%LinearInc
       xor eax,eax
       mov al,[DSPMem+07h+%1*10h]
@@ -1150,7 +1150,7 @@ NEWSYM RDSPRegFF      ;
       xor edx,edx
       mov eax,127*65536
       div ebx
-      mov dword [Voice0IncNumber+%1*4],eax
+      mov dword[Voice0IncNumber+%1*4],eax
       mov ebx,[Voice0Time+%1*4]
       mov eax,ebx
       shr eax,2
@@ -1160,7 +1160,7 @@ NEWSYM RDSPRegFF      ;
       pop edx
       pop ebx
       pop eax
-      mov byte [Voice0State+%1],6
+      mov byte[Voice0State+%1],6
       ret
 %%LinearInc
       xor eax,eax
@@ -1172,23 +1172,23 @@ NEWSYM RDSPRegFF      ;
       xor edx,edx
       mov eax,127*65536
       div ebx
-      mov dword [Voice0IncNumber+%1*4],eax
+      mov dword[Voice0IncNumber+%1*4],eax
       pop edx
       pop ebx
       pop eax
-      mov byte [Voice0State+%1],3
+      mov byte[Voice0State+%1],3
       ret
 %%Direct
       mov al,[DSPMem+07h+%1*10h]
       and al,7Fh
       mov dword[Voice0EnvInc+%1*4],0
-      mov byte [Voice0EnvInc+%1*4+2],al
-      mov dword [Voice0Time+%1*4],0FFFFFFFFh
-      mov dword [Voice0IncNumber+%1*4],0
+      mov byte[Voice0EnvInc+%1*4+2],al
+      mov dword[Voice0Time+%1*4],0FFFFFFFFh
+      mov dword[Voice0IncNumber+%1*4],0
       pop edx
       pop ebx
       pop eax
-      mov byte [Voice0State+%1],4
+      mov byte[Voice0State+%1],4
       ret
 %endmacro
 
@@ -1196,11 +1196,11 @@ NEWSYM RDSPRegFF      ;
       push eax
       push ebx
       push edx
-      test byte [DSPMem+07h+%1*10h],80h
+      test byte[DSPMem+07h+%1*10h],80h
       jz near %%Direct
-      test byte [DSPMem+07h+%1*10h],40h
+      test byte[DSPMem+07h+%1*10h],40h
       jnz near %%Increase
-      test byte [DSPMem+07h+%1*10h],20h
+      test byte[DSPMem+07h+%1*10h],20h
       jz %%LinearDec
       xor eax,eax
       mov al,[DSPMem+07h+%1*10h]
@@ -1230,7 +1230,7 @@ NEWSYM RDSPRegFF      ;
       pop edx
       pop ebx
       pop eax
-      mov byte [Voice0State+%1],7
+      mov byte[Voice0State+%1],7
       ret
 %%LinearDec
       xor eax,eax
@@ -1244,14 +1244,14 @@ NEWSYM RDSPRegFF      ;
       shl eax,16
       div ebx
       neg eax
-      mov dword [Voice0IncNumber+%1*4],eax
+      mov dword[Voice0IncNumber+%1*4],eax
       pop edx
       pop ebx
       pop eax
-      mov byte [Voice0State+%1],5
+      mov byte[Voice0State+%1],5
       ret
 %%Increase
-      test byte [DSPMem+07h+%1*10h],20h
+      test byte[DSPMem+07h+%1*10h],20h
       jz %%LinearInc
       xor eax,eax
       mov al,[DSPMem+07h+%1*10h]
@@ -1269,7 +1269,7 @@ NEWSYM RDSPRegFF      ;
       xor al,127
       shl eax,16
       div ebx
-      mov dword [Voice0IncNumber+%1*4],eax
+      mov dword[Voice0IncNumber+%1*4],eax
       mov ebx,[Voice0Time+%1*4]
       mov eax,ebx
       shr eax,2
@@ -1279,7 +1279,7 @@ NEWSYM RDSPRegFF      ;
       pop edx
       pop ebx
       pop eax
-      mov byte [Voice0State+%1],6
+      mov byte[Voice0State+%1],6
       ret
 %%LinearInc
       xor eax,eax
@@ -1298,23 +1298,23 @@ NEWSYM RDSPRegFF      ;
       xor al,127
       shl eax,16
       div ebx
-      mov dword [Voice0IncNumber+%1*4],eax
+      mov dword[Voice0IncNumber+%1*4],eax
       pop edx
       pop ebx
       pop eax
-      mov byte [Voice0State+%1],3
+      mov byte[Voice0State+%1],3
       ret
 %%Direct
       mov al,[DSPMem+07h+%1*10h]
       and al,7Fh
       mov dword[Voice0EnvInc+%1*4],0
-      mov byte [Voice0EnvInc+%1*4+2],al
-      mov dword [Voice0Time+%1*4],0FFFFFFFFh
-      mov dword [Voice0IncNumber+%1*4],0
+      mov byte[Voice0EnvInc+%1*4+2],al
+      mov dword[Voice0Time+%1*4],0FFFFFFFFh
+      mov dword[Voice0IncNumber+%1*4],0
       pop edx
       pop ebx
       pop eax
-      mov byte [Voice0State+%1],4
+      mov byte[Voice0State+%1],4
       ret
 %%end
       pop edx
@@ -1400,7 +1400,7 @@ NEWSYM RDSPRegFF      ;
       pop edx
       pop ebx
       pop eax
-      mov byte [Voice0State+%1],9
+      mov byte[Voice0State+%1],9
       ret
 %%decayover
       sub edx,ebx
@@ -1439,7 +1439,7 @@ NEWSYM RDSPRegFF      ;
       pop edx
       pop ebx
       pop eax
-      mov byte [Voice0State+%1],7
+      mov byte[Voice0State+%1],7
       ret
 %endmacro
 
@@ -1475,7 +1475,7 @@ NEWSYM RDSPRegFF      ;
       ret
 .gain2
       mov [DSPMem+05h+%1*10h],al
-      cmp byte [Voice0State+%1],210
+      cmp byte[Voice0State+%1],210
       jne %%noendofsamp2
       push eax
       push ebx
@@ -1523,7 +1523,7 @@ NEWSYM RDSPRegFF      ;
       mov [DSPMem+07h+%1*10h],al
       ret
 .gain
-      cmp byte [Voice0State+%1],210
+      cmp byte[Voice0State+%1],210
       jne %%noendofsamp
       push eax
       push ebx
@@ -1831,45 +1831,45 @@ NEWSYM WDSPReg3C       ; Voice  3
       ret
 
 NEWSYM WDSPReg3D       ; Voice  3
-      mov byte [Voice0Noise],0
-      mov byte [Voice1Noise],0
-      mov byte [Voice2Noise],0
-      mov byte [Voice3Noise],0
-      mov byte [Voice4Noise],0
-      mov byte [Voice5Noise],0
-      mov byte [Voice6Noise],0
-      mov byte [Voice7Noise],0
+      mov byte[Voice0Noise],0
+      mov byte[Voice1Noise],0
+      mov byte[Voice2Noise],0
+      mov byte[Voice3Noise],0
+      mov byte[Voice4Noise],0
+      mov byte[Voice5Noise],0
+      mov byte[Voice6Noise],0
+      mov byte[Voice7Noise],0
       test al,1
       jz .TestVoice1
-      mov byte [Voice0Noise],1
+      mov byte[Voice0Noise],1
 .TestVoice1
       test al,2
       jz .TestVoice2
-      mov byte [Voice1Noise],1
+      mov byte[Voice1Noise],1
 .TestVoice2
       test al,4
       jz .TestVoice3
-      mov byte [Voice2Noise],1
+      mov byte[Voice2Noise],1
 .TestVoice3
       test al,8
       jz .TestVoice4
-      mov byte [Voice3Noise],1
+      mov byte[Voice3Noise],1
 .TestVoice4
       test al,16
       jz .TestVoice5
-      mov byte [Voice4Noise],1
+      mov byte[Voice4Noise],1
 .TestVoice5
       test al,32
       jz .TestVoice6
-      mov byte [Voice5Noise],1
+      mov byte[Voice5Noise],1
 .TestVoice6
       test al,64
       jz .TestVoice7
-      mov byte [Voice6Noise],1
+      mov byte[Voice6Noise],1
 .TestVoice7
       test al,128
       jz .TestVoice8
-      mov byte [Voice7Noise],1
+      mov byte[Voice7Noise],1
 .TestVoice8
       mov [DSPMem+03Dh],al
       ret
@@ -1940,11 +1940,11 @@ NEWSYM WDSPReg4C       ; Key On
       xor bl,0FFh
       and bl,al
 
-      xor byte [DSPMem+05Ch],0FFh
+      xor byte[DSPMem+05Ch],0FFh
       jnz .notzero
       and bl,[DSPMem+05Ch]
 .notzero
-      xor byte [DSPMem+05Ch],0FFh
+      xor byte[DSPMem+05Ch],0FFh
 
       or byte[KeyOnStA],bl
       pop ebx
@@ -1955,7 +1955,7 @@ NEWSYM WDSPReg4C       ; Key On
       mov [DSPMem+04Ch],al
       push eax
       xor al,0FFh
-      and byte [DSPMem+07Ch],al
+      and byte[DSPMem+07Ch],al
       pop eax
       ret
 
@@ -2089,9 +2089,9 @@ NEWSYM WDSPReg5B       ; Voice  5
     shr eax,8
     neg eax
     mov dword[Voice0IncNumber+%1*4],eax
-    mov byte [Voice0State+%1],200
-    mov byte [DSPMem+08h+%1*10h],0
-    or byte [DSPMem+7Ch],1 << %1
+    mov byte[Voice0State+%1],200
+    mov byte[DSPMem+08h+%1*10h],0
+    or byte[DSPMem+7Ch],1 << %1
     pop ebx
     pop edx
     pop eax
@@ -2205,7 +2205,7 @@ NEWSYM WDSPReg6B       ; Voice  6
 
 NEWSYM WDSPReg6C       ; Voice  6
       mov [DSPMem+06Ch],al
-      and byte [DSPMem+06Ch],7Fh
+      and byte[DSPMem+06Ch],7Fh
       test al,0C0h
       jz .NoRes2
       mov byte[Voice0Status],0
@@ -2224,7 +2224,7 @@ NEWSYM WDSPReg6C       ; Voice  6
       and eax,1Fh
       xor edx,edx
       mov eax,[NoiseSpeeds+eax*4]
-      Mul dword [dspPAdj]
+      Mul dword[dspPAdj]
       ShrD EAX, EDX, 17
       mov [NoiseInc],eax
       pop edx
@@ -2298,7 +2298,7 @@ NEWSYM WDSPReg7B       ; Voice  7
       ret
 
 NEWSYM WDSPReg7C       ; ENDX
-      mov byte [DSPMem+07Ch],0
+      mov byte[DSPMem+07Ch],0
       ret
 
 NEWSYM WDSPReg7D       ; Echo Delay

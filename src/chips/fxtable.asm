@@ -642,1095 +642,1095 @@ NEWSYM InitFxTables
    add eax,65536
    mov [SfxMemTable+0F3h*4],eax
 
-   mov dword [FxTable+00h*4],FxOp00
-   mov dword [FxTable+01h*4],FxOp01
-   mov dword [FxTable+02h*4],FxOp02
-   mov dword [FxTable+03h*4],FxOp03
-   mov dword [FxTable+04h*4],FxOp04
-   mov dword [FxTable+05h*4],FxOp05
-   mov dword [FxTable+06h*4],FxOp06
-   mov dword [FxTable+07h*4],FxOp07
-   mov dword [FxTable+08h*4],FxOp08
-   mov dword [FxTable+09h*4],FxOp09
-   mov dword [FxTable+0Ah*4],FxOp0A
-   mov dword [FxTable+0Bh*4],FxOp0B
-   mov dword [FxTable+0Ch*4],FxOp0C
-   mov dword [FxTable+0Dh*4],FxOp0D
-   mov dword [FxTable+0Eh*4],FxOp0E
-   mov dword [FxTable+0Fh*4],FxOp0F
-
-   mov dword [FxTable+10h*4],FxOp10
-   mov dword [FxTable+11h*4],FxOp11
-   mov dword [FxTable+12h*4],FxOp12
-   mov dword [FxTable+13h*4],FxOp13
-   mov dword [FxTable+14h*4],FxOp14
-   mov dword [FxTable+15h*4],FxOp15
-   mov dword [FxTable+16h*4],FxOp16
-   mov dword [FxTable+17h*4],FxOp17
-   mov dword [FxTable+18h*4],FxOp18
-   mov dword [FxTable+19h*4],FxOp19
-   mov dword [FxTable+1Ah*4],FxOp1A
-   mov dword [FxTable+1Bh*4],FxOp1B
-   mov dword [FxTable+1Ch*4],FxOp1C
-   mov dword [FxTable+1Dh*4],FxOp1D
-   mov dword [FxTable+1Eh*4],FxOp1E
-   mov dword [FxTable+1Fh*4],FxOp1F
-
-   mov dword [FxTable+20h*4],FxOp20
-   mov dword [FxTable+21h*4],FxOp21
-   mov dword [FxTable+22h*4],FxOp22
-   mov dword [FxTable+23h*4],FxOp23
-   mov dword [FxTable+24h*4],FxOp24
-   mov dword [FxTable+25h*4],FxOp25
-   mov dword [FxTable+26h*4],FxOp26
-   mov dword [FxTable+27h*4],FxOp27
-   mov dword [FxTable+28h*4],FxOp28
-   mov dword [FxTable+29h*4],FxOp29
-   mov dword [FxTable+2Ah*4],FxOp2A
-   mov dword [FxTable+2Bh*4],FxOp2B
-   mov dword [FxTable+2Ch*4],FxOp2C
-   mov dword [FxTable+2Dh*4],FxOp2D
-   mov dword [FxTable+2Eh*4],FxOp2E
-   mov dword [FxTable+2Fh*4],FxOp2F
-
-   mov dword [FxTable+30h*4],FxOp30
-   mov dword [FxTable+31h*4],FxOp31
-   mov dword [FxTable+32h*4],FxOp32
-   mov dword [FxTable+33h*4],FxOp33
-   mov dword [FxTable+34h*4],FxOp34
-   mov dword [FxTable+35h*4],FxOp35
-   mov dword [FxTable+36h*4],FxOp36
-   mov dword [FxTable+37h*4],FxOp37
-   mov dword [FxTable+38h*4],FxOp38
-   mov dword [FxTable+39h*4],FxOp39
-   mov dword [FxTable+3Ah*4],FxOp3A
-   mov dword [FxTable+3Bh*4],FxOp3B
-   mov dword [FxTable+3Ch*4],FxOp3C
-   mov dword [FxTable+3Dh*4],FxOp3D
-   mov dword [FxTable+3Eh*4],FxOp3E
-   mov dword [FxTable+3Fh*4],FxOp3F
-
-   mov dword [FxTable+40h*4],FxOp40
-   mov dword [FxTable+41h*4],FxOp41
-   mov dword [FxTable+42h*4],FxOp42
-   mov dword [FxTable+43h*4],FxOp43
-   mov dword [FxTable+44h*4],FxOp44
-   mov dword [FxTable+45h*4],FxOp45
-   mov dword [FxTable+46h*4],FxOp46
-   mov dword [FxTable+47h*4],FxOp47
-   mov dword [FxTable+48h*4],FxOp48
-   mov dword [FxTable+49h*4],FxOp49
-   mov dword [FxTable+4Ah*4],FxOp4A
-   mov dword [FxTable+4Bh*4],FxOp4B
-   mov dword [FxTable+4Ch*4],FxOp4C
-   mov dword [FxTable+4Dh*4],FxOp4D
-   mov dword [FxTable+4Eh*4],FxOp4E
-   mov dword [FxTable+4Fh*4],FxOp4F
-
-   mov dword [FxTable+50h*4],FxOp50
-   mov dword [FxTable+51h*4],FxOp51
-   mov dword [FxTable+52h*4],FxOp52
-   mov dword [FxTable+53h*4],FxOp53
-   mov dword [FxTable+54h*4],FxOp54
-   mov dword [FxTable+55h*4],FxOp55
-   mov dword [FxTable+56h*4],FxOp56
-   mov dword [FxTable+57h*4],FxOp57
-   mov dword [FxTable+58h*4],FxOp58
-   mov dword [FxTable+59h*4],FxOp59
-   mov dword [FxTable+5Ah*4],FxOp5A
-   mov dword [FxTable+5Bh*4],FxOp5B
-   mov dword [FxTable+5Ch*4],FxOp5C
-   mov dword [FxTable+5Dh*4],FxOp5D
-   mov dword [FxTable+5Eh*4],FxOp5E
-   mov dword [FxTable+5Fh*4],FxOp5F
-
-   mov dword [FxTable+60h*4],FxOp60
-   mov dword [FxTable+61h*4],FxOp61
-   mov dword [FxTable+62h*4],FxOp62
-   mov dword [FxTable+63h*4],FxOp63
-   mov dword [FxTable+64h*4],FxOp64
-   mov dword [FxTable+65h*4],FxOp65
-   mov dword [FxTable+66h*4],FxOp66
-   mov dword [FxTable+67h*4],FxOp67
-   mov dword [FxTable+68h*4],FxOp68
-   mov dword [FxTable+69h*4],FxOp69
-   mov dword [FxTable+6Ah*4],FxOp6A
-   mov dword [FxTable+6Bh*4],FxOp6B
-   mov dword [FxTable+6Ch*4],FxOp6C
-   mov dword [FxTable+6Dh*4],FxOp6D
-   mov dword [FxTable+6Eh*4],FxOp6E
-   mov dword [FxTable+6Fh*4],FxOp6F
-
-   mov dword [FxTable+70h*4],FxOp70
-   mov dword [FxTable+71h*4],FxOp71
-   mov dword [FxTable+72h*4],FxOp72
-   mov dword [FxTable+73h*4],FxOp73
-   mov dword [FxTable+74h*4],FxOp74
-   mov dword [FxTable+75h*4],FxOp75
-   mov dword [FxTable+76h*4],FxOp76
-   mov dword [FxTable+77h*4],FxOp77
-   mov dword [FxTable+78h*4],FxOp78
-   mov dword [FxTable+79h*4],FxOp79
-   mov dword [FxTable+7Ah*4],FxOp7A
-   mov dword [FxTable+7Bh*4],FxOp7B
-   mov dword [FxTable+7Ch*4],FxOp7C
-   mov dword [FxTable+7Dh*4],FxOp7D
-   mov dword [FxTable+7Eh*4],FxOp7E
-   mov dword [FxTable+7Fh*4],FxOp7F
-
-   mov dword [FxTable+80h*4],FxOp80
-   mov dword [FxTable+81h*4],FxOp81
-   mov dword [FxTable+82h*4],FxOp82
-   mov dword [FxTable+83h*4],FxOp83
-   mov dword [FxTable+84h*4],FxOp84
-   mov dword [FxTable+85h*4],FxOp85
-   mov dword [FxTable+86h*4],FxOp86
-   mov dword [FxTable+87h*4],FxOp87
-   mov dword [FxTable+88h*4],FxOp88
-   mov dword [FxTable+89h*4],FxOp89
-   mov dword [FxTable+8Ah*4],FxOp8A
-   mov dword [FxTable+8Bh*4],FxOp8B
-   mov dword [FxTable+8Ch*4],FxOp8C
-   mov dword [FxTable+8Dh*4],FxOp8D
-   mov dword [FxTable+8Eh*4],FxOp8E
-   mov dword [FxTable+8Fh*4],FxOp8F
-
-   mov dword [FxTable+90h*4],FxOp90
-   mov dword [FxTable+91h*4],FxOp91
-   mov dword [FxTable+92h*4],FxOp92
-   mov dword [FxTable+93h*4],FxOp93
-   mov dword [FxTable+94h*4],FxOp94
-   mov dword [FxTable+95h*4],FxOp95
-   mov dword [FxTable+96h*4],FxOp96
-   mov dword [FxTable+97h*4],FxOp97
-   mov dword [FxTable+98h*4],FxOp98
-   mov dword [FxTable+99h*4],FxOp99
-   mov dword [FxTable+9Ah*4],FxOp9A
-   mov dword [FxTable+9Bh*4],FxOp9B
-   mov dword [FxTable+9Ch*4],FxOp9C
-   mov dword [FxTable+9Dh*4],FxOp9D
-   mov dword [FxTable+9Eh*4],FxOp9E
-   mov dword [FxTable+9Fh*4],FxOp9F
-
-   mov dword [FxTable+0A0h*4],FxOpA0
-   mov dword [FxTable+0A1h*4],FxOpA1
-   mov dword [FxTable+0A2h*4],FxOpA2
-   mov dword [FxTable+0A3h*4],FxOpA3
-   mov dword [FxTable+0A4h*4],FxOpA4
-   mov dword [FxTable+0A5h*4],FxOpA5
-   mov dword [FxTable+0A6h*4],FxOpA6
-   mov dword [FxTable+0A7h*4],FxOpA7
-   mov dword [FxTable+0A8h*4],FxOpA8
-   mov dword [FxTable+0A9h*4],FxOpA9
-   mov dword [FxTable+0AAh*4],FxOpAA
-   mov dword [FxTable+0ABh*4],FxOpAB
-   mov dword [FxTable+0ACh*4],FxOpAC
-   mov dword [FxTable+0ADh*4],FxOpAD
-   mov dword [FxTable+0AEh*4],FxOpAE
-   mov dword [FxTable+0AFh*4],FxOpAF
-
-   mov dword [FxTable+0B0h*4],FxOpB0
-   mov dword [FxTable+0B1h*4],FxOpB1
-   mov dword [FxTable+0B2h*4],FxOpB2
-   mov dword [FxTable+0B3h*4],FxOpB3
-   mov dword [FxTable+0B4h*4],FxOpB4
-   mov dword [FxTable+0B5h*4],FxOpB5
-   mov dword [FxTable+0B6h*4],FxOpB6
-   mov dword [FxTable+0B7h*4],FxOpB7
-   mov dword [FxTable+0B8h*4],FxOpB8
-   mov dword [FxTable+0B9h*4],FxOpB9
-   mov dword [FxTable+0BAh*4],FxOpBA
-   mov dword [FxTable+0BBh*4],FxOpBB
-   mov dword [FxTable+0BCh*4],FxOpBC
-   mov dword [FxTable+0BDh*4],FxOpBD
-   mov dword [FxTable+0BEh*4],FxOpBE
-   mov dword [FxTable+0BFh*4],FxOpBF
-
-   mov dword [FxTable+0C0h*4],FxOpC0
-   mov dword [FxTable+0C1h*4],FxOpC1
-   mov dword [FxTable+0C2h*4],FxOpC2
-   mov dword [FxTable+0C3h*4],FxOpC3
-   mov dword [FxTable+0C4h*4],FxOpC4
-   mov dword [FxTable+0C5h*4],FxOpC5
-   mov dword [FxTable+0C6h*4],FxOpC6
-   mov dword [FxTable+0C7h*4],FxOpC7
-   mov dword [FxTable+0C8h*4],FxOpC8
-   mov dword [FxTable+0C9h*4],FxOpC9
-   mov dword [FxTable+0CAh*4],FxOpCA
-   mov dword [FxTable+0CBh*4],FxOpCB
-   mov dword [FxTable+0CCh*4],FxOpCC
-   mov dword [FxTable+0CDh*4],FxOpCD
-   mov dword [FxTable+0CEh*4],FxOpCE
-   mov dword [FxTable+0CFh*4],FxOpCF
-
-   mov dword [FxTable+0D0h*4],FxOpD0
-   mov dword [FxTable+0D1h*4],FxOpD1
-   mov dword [FxTable+0D2h*4],FxOpD2
-   mov dword [FxTable+0D3h*4],FxOpD3
-   mov dword [FxTable+0D4h*4],FxOpD4
-   mov dword [FxTable+0D5h*4],FxOpD5
-   mov dword [FxTable+0D6h*4],FxOpD6
-   mov dword [FxTable+0D7h*4],FxOpD7
-   mov dword [FxTable+0D8h*4],FxOpD8
-   mov dword [FxTable+0D9h*4],FxOpD9
-   mov dword [FxTable+0DAh*4],FxOpDA
-   mov dword [FxTable+0DBh*4],FxOpDB
-   mov dword [FxTable+0DCh*4],FxOpDC
-   mov dword [FxTable+0DDh*4],FxOpDD
-   mov dword [FxTable+0DEh*4],FxOpDE
-   mov dword [FxTable+0DFh*4],FxOpDF
-
-   mov dword [FxTable+0E0h*4],FxOpE0
-   mov dword [FxTable+0E1h*4],FxOpE1
-   mov dword [FxTable+0E2h*4],FxOpE2
-   mov dword [FxTable+0E3h*4],FxOpE3
-   mov dword [FxTable+0E4h*4],FxOpE4
-   mov dword [FxTable+0E5h*4],FxOpE5
-   mov dword [FxTable+0E6h*4],FxOpE6
-   mov dword [FxTable+0E7h*4],FxOpE7
-   mov dword [FxTable+0E8h*4],FxOpE8
-   mov dword [FxTable+0E9h*4],FxOpE9
-   mov dword [FxTable+0EAh*4],FxOpEA
-   mov dword [FxTable+0EBh*4],FxOpEB
-   mov dword [FxTable+0ECh*4],FxOpEC
-   mov dword [FxTable+0EDh*4],FxOpED
-   mov dword [FxTable+0EEh*4],FxOpEE
-   mov dword [FxTable+0EFh*4],FxOpEF
-
-   mov dword [FxTable+0F0h*4],FxOpF0
-   mov dword [FxTable+0F1h*4],FxOpF1
-   mov dword [FxTable+0F2h*4],FxOpF2
-   mov dword [FxTable+0F3h*4],FxOpF3
-   mov dword [FxTable+0F4h*4],FxOpF4
-   mov dword [FxTable+0F5h*4],FxOpF5
-   mov dword [FxTable+0F6h*4],FxOpF6
-   mov dword [FxTable+0F7h*4],FxOpF7
-   mov dword [FxTable+0F8h*4],FxOpF8
-   mov dword [FxTable+0F9h*4],FxOpF9
-   mov dword [FxTable+0FAh*4],FxOpFA
-   mov dword [FxTable+0FBh*4],FxOpFB
-   mov dword [FxTable+0FCh*4],FxOpFC
-   mov dword [FxTable+0FDh*4],FxOpFD
-   mov dword [FxTable+0FEh*4],FxOpFE
-   mov dword [FxTable+0FFh*4],FxOpFF
-
-
-   mov dword [FxTableA1+00h*4],FxOp00
-   mov dword [FxTableA1+01h*4],FxOp01
-   mov dword [FxTableA1+02h*4],FxOp02
-   mov dword [FxTableA1+03h*4],FxOp03
-   mov dword [FxTableA1+04h*4],FxOp04
-   mov dword [FxTableA1+05h*4],FxOp05
-   mov dword [FxTableA1+06h*4],FxOp06
-   mov dword [FxTableA1+07h*4],FxOp07
-   mov dword [FxTableA1+08h*4],FxOp08
-   mov dword [FxTableA1+09h*4],FxOp09
-   mov dword [FxTableA1+0Ah*4],FxOp0A
-   mov dword [FxTableA1+0Bh*4],FxOp0B
-   mov dword [FxTableA1+0Ch*4],FxOp0C
-   mov dword [FxTableA1+0Dh*4],FxOp0D
-   mov dword [FxTableA1+0Eh*4],FxOp0E
-   mov dword [FxTableA1+0Fh*4],FxOp0F
-
-   mov dword [FxTableA1+10h*4],FxOp10
-   mov dword [FxTableA1+11h*4],FxOp11
-   mov dword [FxTableA1+12h*4],FxOp12
-   mov dword [FxTableA1+13h*4],FxOp13
-   mov dword [FxTableA1+14h*4],FxOp14
-   mov dword [FxTableA1+15h*4],FxOp15
-   mov dword [FxTableA1+16h*4],FxOp16
-   mov dword [FxTableA1+17h*4],FxOp17
-   mov dword [FxTableA1+18h*4],FxOp18
-   mov dword [FxTableA1+19h*4],FxOp19
-   mov dword [FxTableA1+1Ah*4],FxOp1A
-   mov dword [FxTableA1+1Bh*4],FxOp1B
-   mov dword [FxTableA1+1Ch*4],FxOp1C
-   mov dword [FxTableA1+1Dh*4],FxOp1D
-   mov dword [FxTableA1+1Eh*4],FxOp1E
-   mov dword [FxTableA1+1Fh*4],FxOp1F
-
-   mov dword [FxTableA1+20h*4],FxOp20
-   mov dword [FxTableA1+21h*4],FxOp21
-   mov dword [FxTableA1+22h*4],FxOp22
-   mov dword [FxTableA1+23h*4],FxOp23
-   mov dword [FxTableA1+24h*4],FxOp24
-   mov dword [FxTableA1+25h*4],FxOp25
-   mov dword [FxTableA1+26h*4],FxOp26
-   mov dword [FxTableA1+27h*4],FxOp27
-   mov dword [FxTableA1+28h*4],FxOp28
-   mov dword [FxTableA1+29h*4],FxOp29
-   mov dword [FxTableA1+2Ah*4],FxOp2A
-   mov dword [FxTableA1+2Bh*4],FxOp2B
-   mov dword [FxTableA1+2Ch*4],FxOp2C
-   mov dword [FxTableA1+2Dh*4],FxOp2D
-   mov dword [FxTableA1+2Eh*4],FxOp2E
-   mov dword [FxTableA1+2Fh*4],FxOp2F
-
-   mov dword [FxTableA1+30h*4],FxOp30A1
-   mov dword [FxTableA1+31h*4],FxOp31A1
-   mov dword [FxTableA1+32h*4],FxOp32A1
-   mov dword [FxTableA1+33h*4],FxOp33A1
-   mov dword [FxTableA1+34h*4],FxOp34A1
-   mov dword [FxTableA1+35h*4],FxOp35A1
-   mov dword [FxTableA1+36h*4],FxOp36A1
-   mov dword [FxTableA1+37h*4],FxOp37A1
-   mov dword [FxTableA1+38h*4],FxOp38A1
-   mov dword [FxTableA1+39h*4],FxOp39A1
-   mov dword [FxTableA1+3Ah*4],FxOp3AA1
-   mov dword [FxTableA1+3Bh*4],FxOp3BA1
-   mov dword [FxTableA1+3Ch*4],FxOp3C
-   mov dword [FxTableA1+3Dh*4],FxOp3D
-   mov dword [FxTableA1+3Eh*4],FxOp3E
-   mov dword [FxTableA1+3Fh*4],FxOp3F
-
-   mov dword [FxTableA1+40h*4],FxOp40A1
-   mov dword [FxTableA1+41h*4],FxOp41A1
-   mov dword [FxTableA1+42h*4],FxOp42A1
-   mov dword [FxTableA1+43h*4],FxOp43A1
-   mov dword [FxTableA1+44h*4],FxOp44A1
-   mov dword [FxTableA1+45h*4],FxOp45A1
-   mov dword [FxTableA1+46h*4],FxOp46A1
-   mov dword [FxTableA1+47h*4],FxOp47A1
-   mov dword [FxTableA1+48h*4],FxOp48A1
-   mov dword [FxTableA1+49h*4],FxOp49A1
-   mov dword [FxTableA1+4Ah*4],FxOp4AA1
-   mov dword [FxTableA1+4Bh*4],FxOp4BA1
-   mov dword [FxTableA1+4Ch*4],FxOp4CA1
-   mov dword [FxTableA1+4Dh*4],FxOp4D
-   mov dword [FxTableA1+4Eh*4],FxOp4EA1
-   mov dword [FxTableA1+4Fh*4],FxOp4F
-
-   mov dword [FxTableA1+50h*4],FxOp50A1
-   mov dword [FxTableA1+51h*4],FxOp51A1
-   mov dword [FxTableA1+52h*4],FxOp52A1
-   mov dword [FxTableA1+53h*4],FxOp53A1
-   mov dword [FxTableA1+54h*4],FxOp54A1
-   mov dword [FxTableA1+55h*4],FxOp55A1
-   mov dword [FxTableA1+56h*4],FxOp56A1
-   mov dword [FxTableA1+57h*4],FxOp57A1
-   mov dword [FxTableA1+58h*4],FxOp58A1
-   mov dword [FxTableA1+59h*4],FxOp59A1
-   mov dword [FxTableA1+5Ah*4],FxOp5AA1
-   mov dword [FxTableA1+5Bh*4],FxOp5BA1
-   mov dword [FxTableA1+5Ch*4],FxOp5CA1
-   mov dword [FxTableA1+5Dh*4],FxOp5DA1
-   mov dword [FxTableA1+5Eh*4],FxOp5EA1
-   mov dword [FxTableA1+5Fh*4],FxOp5FA1
-
-   mov dword [FxTableA1+60h*4],FxOp60A1
-   mov dword [FxTableA1+61h*4],FxOp61A1
-   mov dword [FxTableA1+62h*4],FxOp62A1
-   mov dword [FxTableA1+63h*4],FxOp63A1
-   mov dword [FxTableA1+64h*4],FxOp64A1
-   mov dword [FxTableA1+65h*4],FxOp65A1
-   mov dword [FxTableA1+66h*4],FxOp66A1
-   mov dword [FxTableA1+67h*4],FxOp67A1
-   mov dword [FxTableA1+68h*4],FxOp68A1
-   mov dword [FxTableA1+69h*4],FxOp69A1
-   mov dword [FxTableA1+6Ah*4],FxOp6AA1
-   mov dword [FxTableA1+6Bh*4],FxOp6BA1
-   mov dword [FxTableA1+6Ch*4],FxOp6CA1
-   mov dword [FxTableA1+6Dh*4],FxOp6DA1
-   mov dword [FxTableA1+6Eh*4],FxOp6EA1
-   mov dword [FxTableA1+6Fh*4],FxOp6FA1
-
-   mov dword [FxTableA1+70h*4],FxOp70
-   mov dword [FxTableA1+71h*4],FxOp71A1
-   mov dword [FxTableA1+72h*4],FxOp72A1
-   mov dword [FxTableA1+73h*4],FxOp73A1
-   mov dword [FxTableA1+74h*4],FxOp74A1
-   mov dword [FxTableA1+75h*4],FxOp75A1
-   mov dword [FxTableA1+76h*4],FxOp76A1
-   mov dword [FxTableA1+77h*4],FxOp77A1
-   mov dword [FxTableA1+78h*4],FxOp78A1
-   mov dword [FxTableA1+79h*4],FxOp79A1
-   mov dword [FxTableA1+7Ah*4],FxOp7AA1
-   mov dword [FxTableA1+7Bh*4],FxOp7BA1
-   mov dword [FxTableA1+7Ch*4],FxOp7CA1
-   mov dword [FxTableA1+7Dh*4],FxOp7DA1
-   mov dword [FxTableA1+7Eh*4],FxOp7EA1
-   mov dword [FxTableA1+7Fh*4],FxOp7FA1
-
-   mov dword [FxTableA1+80h*4],FxOp80A1
-   mov dword [FxTableA1+81h*4],FxOp81A1
-   mov dword [FxTableA1+82h*4],FxOp82A1
-   mov dword [FxTableA1+83h*4],FxOp83A1
-   mov dword [FxTableA1+84h*4],FxOp84A1
-   mov dword [FxTableA1+85h*4],FxOp85A1
-   mov dword [FxTableA1+86h*4],FxOp86A1
-   mov dword [FxTableA1+87h*4],FxOp87A1
-   mov dword [FxTableA1+88h*4],FxOp88A1
-   mov dword [FxTableA1+89h*4],FxOp89A1
-   mov dword [FxTableA1+8Ah*4],FxOp8AA1
-   mov dword [FxTableA1+8Bh*4],FxOp8BA1
-   mov dword [FxTableA1+8Ch*4],FxOp8CA1
-   mov dword [FxTableA1+8Dh*4],FxOp8DA1
-   mov dword [FxTableA1+8Eh*4],FxOp8EA1
-   mov dword [FxTableA1+8Fh*4],FxOp8FA1
-
-   mov dword [FxTableA1+90h*4],FxOp90
-   mov dword [FxTableA1+91h*4],FxOp91
-   mov dword [FxTableA1+92h*4],FxOp92
-   mov dword [FxTableA1+93h*4],FxOp93
-   mov dword [FxTableA1+94h*4],FxOp94
-   mov dword [FxTableA1+95h*4],FxOp95
-   mov dword [FxTableA1+96h*4],FxOp96A1
-   mov dword [FxTableA1+97h*4],FxOp97
-   mov dword [FxTableA1+98h*4],FxOp98A1
-   mov dword [FxTableA1+99h*4],FxOp99A1
-   mov dword [FxTableA1+9Ah*4],FxOp9AA1
-   mov dword [FxTableA1+9Bh*4],FxOp9BA1
-   mov dword [FxTableA1+9Ch*4],FxOp9CA1
-   mov dword [FxTableA1+9Dh*4],FxOp9DA1
-   mov dword [FxTableA1+9Eh*4],FxOp9E
-   mov dword [FxTableA1+9Fh*4],FxOp9FA1
-
-   mov dword [FxTableA1+0A0h*4],FxOpA0A1
-   mov dword [FxTableA1+0A1h*4],FxOpA1A1
-   mov dword [FxTableA1+0A2h*4],FxOpA2A1
-   mov dword [FxTableA1+0A3h*4],FxOpA3A1
-   mov dword [FxTableA1+0A4h*4],FxOpA4A1
-   mov dword [FxTableA1+0A5h*4],FxOpA5A1
-   mov dword [FxTableA1+0A6h*4],FxOpA6A1
-   mov dword [FxTableA1+0A7h*4],FxOpA7A1
-   mov dword [FxTableA1+0A8h*4],FxOpA8A1
-   mov dword [FxTableA1+0A9h*4],FxOpA9A1
-   mov dword [FxTableA1+0AAh*4],FxOpAAA1
-   mov dword [FxTableA1+0ABh*4],FxOpABA1
-   mov dword [FxTableA1+0ACh*4],FxOpACA1
-   mov dword [FxTableA1+0ADh*4],FxOpADA1
-   mov dword [FxTableA1+0AEh*4],FxOpAEA1
-   mov dword [FxTableA1+0AFh*4],FxOpAFA1
-
-   mov dword [FxTableA1+0B0h*4],FxOpB0
-   mov dword [FxTableA1+0B1h*4],FxOpB1
-   mov dword [FxTableA1+0B2h*4],FxOpB2
-   mov dword [FxTableA1+0B3h*4],FxOpB3
-   mov dword [FxTableA1+0B4h*4],FxOpB4
-   mov dword [FxTableA1+0B5h*4],FxOpB5
-   mov dword [FxTableA1+0B6h*4],FxOpB6
-   mov dword [FxTableA1+0B7h*4],FxOpB7
-   mov dword [FxTableA1+0B8h*4],FxOpB8
-   mov dword [FxTableA1+0B9h*4],FxOpB9
-   mov dword [FxTableA1+0BAh*4],FxOpBA
-   mov dword [FxTableA1+0BBh*4],FxOpBB
-   mov dword [FxTableA1+0BCh*4],FxOpBC
-   mov dword [FxTableA1+0BDh*4],FxOpBD
-   mov dword [FxTableA1+0BEh*4],FxOpBE
-   mov dword [FxTableA1+0BFh*4],FxOpBF
-
-   mov dword [FxTableA1+0C0h*4],FxOpC0
-   mov dword [FxTableA1+0C1h*4],FxOpC1A1
-   mov dword [FxTableA1+0C2h*4],FxOpC2A1
-   mov dword [FxTableA1+0C3h*4],FxOpC3A1
-   mov dword [FxTableA1+0C4h*4],FxOpC4A1
-   mov dword [FxTableA1+0C5h*4],FxOpC5A1
-   mov dword [FxTableA1+0C6h*4],FxOpC6A1
-   mov dword [FxTableA1+0C7h*4],FxOpC7A1
-   mov dword [FxTableA1+0C8h*4],FxOpC8A1
-   mov dword [FxTableA1+0C9h*4],FxOpC9A1
-   mov dword [FxTableA1+0CAh*4],FxOpCAA1
-   mov dword [FxTableA1+0CBh*4],FxOpCBA1
-   mov dword [FxTableA1+0CCh*4],FxOpCCA1
-   mov dword [FxTableA1+0CDh*4],FxOpCDA1
-   mov dword [FxTableA1+0CEh*4],FxOpCEA1
-   mov dword [FxTableA1+0CFh*4],FxOpCFA1
-
-   mov dword [FxTableA1+0D0h*4],FxOpD0
-   mov dword [FxTableA1+0D1h*4],FxOpD1
-   mov dword [FxTableA1+0D2h*4],FxOpD2
-   mov dword [FxTableA1+0D3h*4],FxOpD3
-   mov dword [FxTableA1+0D4h*4],FxOpD4
-   mov dword [FxTableA1+0D5h*4],FxOpD5
-   mov dword [FxTableA1+0D6h*4],FxOpD6
-   mov dword [FxTableA1+0D7h*4],FxOpD7
-   mov dword [FxTableA1+0D8h*4],FxOpD8
-   mov dword [FxTableA1+0D9h*4],FxOpD9
-   mov dword [FxTableA1+0DAh*4],FxOpDA
-   mov dword [FxTableA1+0DBh*4],FxOpDB
-   mov dword [FxTableA1+0DCh*4],FxOpDC
-   mov dword [FxTableA1+0DDh*4],FxOpDD
-   mov dword [FxTableA1+0DEh*4],FxOpDE
-   mov dword [FxTableA1+0DFh*4],FxOpDF
-
-   mov dword [FxTableA1+0E0h*4],FxOpE0
-   mov dword [FxTableA1+0E1h*4],FxOpE1
-   mov dword [FxTableA1+0E2h*4],FxOpE2
-   mov dword [FxTableA1+0E3h*4],FxOpE3
-   mov dword [FxTableA1+0E4h*4],FxOpE4
-   mov dword [FxTableA1+0E5h*4],FxOpE5
-   mov dword [FxTableA1+0E6h*4],FxOpE6
-   mov dword [FxTableA1+0E7h*4],FxOpE7
-   mov dword [FxTableA1+0E8h*4],FxOpE8
-   mov dword [FxTableA1+0E9h*4],FxOpE9
-   mov dword [FxTableA1+0EAh*4],FxOpEA
-   mov dword [FxTableA1+0EBh*4],FxOpEB
-   mov dword [FxTableA1+0ECh*4],FxOpEC
-   mov dword [FxTableA1+0EDh*4],FxOpED
-   mov dword [FxTableA1+0EEh*4],FxOpEE
-   mov dword [FxTableA1+0EFh*4],FxOpEFA1
-
-   mov dword [FxTableA1+0F0h*4],FxOpF0A1
-   mov dword [FxTableA1+0F1h*4],FxOpF1A1
-   mov dword [FxTableA1+0F2h*4],FxOpF2A1
-   mov dword [FxTableA1+0F3h*4],FxOpF3A1
-   mov dword [FxTableA1+0F4h*4],FxOpF4A1
-   mov dword [FxTableA1+0F5h*4],FxOpF5A1
-   mov dword [FxTableA1+0F6h*4],FxOpF6A1
-   mov dword [FxTableA1+0F7h*4],FxOpF7A1
-   mov dword [FxTableA1+0F8h*4],FxOpF8A1
-   mov dword [FxTableA1+0F9h*4],FxOpF9A1
-   mov dword [FxTableA1+0FAh*4],FxOpFAA1
-   mov dword [FxTableA1+0FBh*4],FxOpFBA1
-   mov dword [FxTableA1+0FCh*4],FxOpFCA1
-   mov dword [FxTableA1+0FDh*4],FxOpFDA1
-   mov dword [FxTableA1+0FEh*4],FxOpFEA1
-   mov dword [FxTableA1+0FFh*4],FxOpFFA1
-
-
-   mov dword [FxTableA2+00h*4],FxOp00
-   mov dword [FxTableA2+01h*4],FxOp01
-   mov dword [FxTableA2+02h*4],FxOp02
-   mov dword [FxTableA2+03h*4],FxOp03
-   mov dword [FxTableA2+04h*4],FxOp04
-   mov dword [FxTableA2+05h*4],FxOp05
-   mov dword [FxTableA2+06h*4],FxOp06
-   mov dword [FxTableA2+07h*4],FxOp07
-   mov dword [FxTableA2+08h*4],FxOp08
-   mov dword [FxTableA2+09h*4],FxOp09
-   mov dword [FxTableA2+0Ah*4],FxOp0A
-   mov dword [FxTableA2+0Bh*4],FxOp0B
-   mov dword [FxTableA2+0Ch*4],FxOp0C
-   mov dword [FxTableA2+0Dh*4],FxOp0D
-   mov dword [FxTableA2+0Eh*4],FxOp0E
-   mov dword [FxTableA2+0Fh*4],FxOp0F
-
-   mov dword [FxTableA2+10h*4],FxOp10
-   mov dword [FxTableA2+11h*4],FxOp11
-   mov dword [FxTableA2+12h*4],FxOp12
-   mov dword [FxTableA2+13h*4],FxOp13
-   mov dword [FxTableA2+14h*4],FxOp14
-   mov dword [FxTableA2+15h*4],FxOp15
-   mov dword [FxTableA2+16h*4],FxOp16
-   mov dword [FxTableA2+17h*4],FxOp17
-   mov dword [FxTableA2+18h*4],FxOp18
-   mov dword [FxTableA2+19h*4],FxOp19
-   mov dword [FxTableA2+1Ah*4],FxOp1A
-   mov dword [FxTableA2+1Bh*4],FxOp1B
-   mov dword [FxTableA2+1Ch*4],FxOp1C
-   mov dword [FxTableA2+1Dh*4],FxOp1D
-   mov dword [FxTableA2+1Eh*4],FxOp1E
-   mov dword [FxTableA2+1Fh*4],FxOp1F
-
-   mov dword [FxTableA2+20h*4],FxOp20
-   mov dword [FxTableA2+21h*4],FxOp21
-   mov dword [FxTableA2+22h*4],FxOp22
-   mov dword [FxTableA2+23h*4],FxOp23
-   mov dword [FxTableA2+24h*4],FxOp24
-   mov dword [FxTableA2+25h*4],FxOp25
-   mov dword [FxTableA2+26h*4],FxOp26
-   mov dword [FxTableA2+27h*4],FxOp27
-   mov dword [FxTableA2+28h*4],FxOp28
-   mov dword [FxTableA2+29h*4],FxOp29
-   mov dword [FxTableA2+2Ah*4],FxOp2A
-   mov dword [FxTableA2+2Bh*4],FxOp2B
-   mov dword [FxTableA2+2Ch*4],FxOp2C
-   mov dword [FxTableA2+2Dh*4],FxOp2D
-   mov dword [FxTableA2+2Eh*4],FxOp2E
-   mov dword [FxTableA2+2Fh*4],FxOp2F
-
-   mov dword [FxTableA2+30h*4],FxOp30
-   mov dword [FxTableA2+31h*4],FxOp31
-   mov dword [FxTableA2+32h*4],FxOp32
-   mov dword [FxTableA2+33h*4],FxOp33
-   mov dword [FxTableA2+34h*4],FxOp34
-   mov dword [FxTableA2+35h*4],FxOp35
-   mov dword [FxTableA2+36h*4],FxOp36
-   mov dword [FxTableA2+37h*4],FxOp37
-   mov dword [FxTableA2+38h*4],FxOp38
-   mov dword [FxTableA2+39h*4],FxOp39
-   mov dword [FxTableA2+3Ah*4],FxOp3A
-   mov dword [FxTableA2+3Bh*4],FxOp3B
-   mov dword [FxTableA2+3Ch*4],FxOp3C
-   mov dword [FxTableA2+3Dh*4],FxOp3D
-   mov dword [FxTableA2+3Eh*4],FxOp3E
-   mov dword [FxTableA2+3Fh*4],FxOp3F
-
-   mov dword [FxTableA2+40h*4],FxOp40
-   mov dword [FxTableA2+41h*4],FxOp41
-   mov dword [FxTableA2+42h*4],FxOp42
-   mov dword [FxTableA2+43h*4],FxOp43
-   mov dword [FxTableA2+44h*4],FxOp44
-   mov dword [FxTableA2+45h*4],FxOp45
-   mov dword [FxTableA2+46h*4],FxOp46
-   mov dword [FxTableA2+47h*4],FxOp47
-   mov dword [FxTableA2+48h*4],FxOp48
-   mov dword [FxTableA2+49h*4],FxOp49
-   mov dword [FxTableA2+4Ah*4],FxOp4A
-   mov dword [FxTableA2+4Bh*4],FxOp4B
-   mov dword [FxTableA2+4Ch*4],FxOp4C
-   mov dword [FxTableA2+4Dh*4],FxOp4D
-   mov dword [FxTableA2+4Eh*4],FxOp4E
-   mov dword [FxTableA2+4Fh*4],FxOp4F
-
-   mov dword [FxTableA2+50h*4],FxOp50A2
-   mov dword [FxTableA2+51h*4],FxOp51A2
-   mov dword [FxTableA2+52h*4],FxOp52A2
-   mov dword [FxTableA2+53h*4],FxOp53A2
-   mov dword [FxTableA2+54h*4],FxOp54A2
-   mov dword [FxTableA2+55h*4],FxOp55A2
-   mov dword [FxTableA2+56h*4],FxOp56A2
-   mov dword [FxTableA2+57h*4],FxOp57A2
-   mov dword [FxTableA2+58h*4],FxOp58A2
-   mov dword [FxTableA2+59h*4],FxOp59A2
-   mov dword [FxTableA2+5Ah*4],FxOp5AA2
-   mov dword [FxTableA2+5Bh*4],FxOp5BA2
-   mov dword [FxTableA2+5Ch*4],FxOp5CA2
-   mov dword [FxTableA2+5Dh*4],FxOp5DA2
-   mov dword [FxTableA2+5Eh*4],FxOp5EA2
-   mov dword [FxTableA2+5Fh*4],FxOp5FA2
-
-   mov dword [FxTableA2+60h*4],FxOp60A2
-   mov dword [FxTableA2+61h*4],FxOp61A2
-   mov dword [FxTableA2+62h*4],FxOp62A2
-   mov dword [FxTableA2+63h*4],FxOp63A2
-   mov dword [FxTableA2+64h*4],FxOp64A2
-   mov dword [FxTableA2+65h*4],FxOp65A2
-   mov dword [FxTableA2+66h*4],FxOp66A2
-   mov dword [FxTableA2+67h*4],FxOp67A2
-   mov dword [FxTableA2+68h*4],FxOp68A2
-   mov dword [FxTableA2+69h*4],FxOp69A2
-   mov dword [FxTableA2+6Ah*4],FxOp6AA2
-   mov dword [FxTableA2+6Bh*4],FxOp6BA2
-   mov dword [FxTableA2+6Ch*4],FxOp6CA2
-   mov dword [FxTableA2+6Dh*4],FxOp6DA2
-   mov dword [FxTableA2+6Eh*4],FxOp6EA2
-   mov dword [FxTableA2+6Fh*4],FxOp6FA2
-
-   mov dword [FxTableA2+70h*4],FxOp70
-   mov dword [FxTableA2+71h*4],FxOp71A2
-   mov dword [FxTableA2+72h*4],FxOp72A2
-   mov dword [FxTableA2+73h*4],FxOp73A2
-   mov dword [FxTableA2+74h*4],FxOp74A2
-   mov dword [FxTableA2+75h*4],FxOp75A2
-   mov dword [FxTableA2+76h*4],FxOp76A2
-   mov dword [FxTableA2+77h*4],FxOp77A2
-   mov dword [FxTableA2+78h*4],FxOp78A2
-   mov dword [FxTableA2+79h*4],FxOp79A2
-   mov dword [FxTableA2+7Ah*4],FxOp7AA2
-   mov dword [FxTableA2+7Bh*4],FxOp7BA2
-   mov dword [FxTableA2+7Ch*4],FxOp7CA2
-   mov dword [FxTableA2+7Dh*4],FxOp7DA2
-   mov dword [FxTableA2+7Eh*4],FxOp7EA2
-   mov dword [FxTableA2+7Fh*4],FxOp7FA2
-
-   mov dword [FxTableA2+80h*4],FxOp80A2
-   mov dword [FxTableA2+81h*4],FxOp81A2
-   mov dword [FxTableA2+82h*4],FxOp82A2
-   mov dword [FxTableA2+83h*4],FxOp83A2
-   mov dword [FxTableA2+84h*4],FxOp84A2
-   mov dword [FxTableA2+85h*4],FxOp85A2
-   mov dword [FxTableA2+86h*4],FxOp86A2
-   mov dword [FxTableA2+87h*4],FxOp87A2
-   mov dword [FxTableA2+88h*4],FxOp88A2
-   mov dword [FxTableA2+89h*4],FxOp89A2
-   mov dword [FxTableA2+8Ah*4],FxOp8AA2
-   mov dword [FxTableA2+8Bh*4],FxOp8BA2
-   mov dword [FxTableA2+8Ch*4],FxOp8CA2
-   mov dword [FxTableA2+8Dh*4],FxOp8DA2
-   mov dword [FxTableA2+8Eh*4],FxOp8EA2
-   mov dword [FxTableA2+8Fh*4],FxOp8FA2
-
-   mov dword [FxTableA2+90h*4],FxOp90
-   mov dword [FxTableA2+91h*4],FxOp91
-   mov dword [FxTableA2+92h*4],FxOp92
-   mov dword [FxTableA2+93h*4],FxOp93
-   mov dword [FxTableA2+94h*4],FxOp94
-   mov dword [FxTableA2+95h*4],FxOp95
-   mov dword [FxTableA2+96h*4],FxOp96
-   mov dword [FxTableA2+97h*4],FxOp97
-   mov dword [FxTableA2+98h*4],FxOp98
-   mov dword [FxTableA2+99h*4],FxOp99
-   mov dword [FxTableA2+9Ah*4],FxOp9A
-   mov dword [FxTableA2+9Bh*4],FxOp9B
-   mov dword [FxTableA2+9Ch*4],FxOp9C
-   mov dword [FxTableA2+9Dh*4],FxOp9D
-   mov dword [FxTableA2+9Eh*4],FxOp9E
-   mov dword [FxTableA2+9Fh*4],FxOp9F
-
-   mov dword [FxTableA2+0A0h*4],FxOpA0A2
-   mov dword [FxTableA2+0A1h*4],FxOpA1A2
-   mov dword [FxTableA2+0A2h*4],FxOpA2A2
-   mov dword [FxTableA2+0A3h*4],FxOpA3A2
-   mov dword [FxTableA2+0A4h*4],FxOpA4A2
-   mov dword [FxTableA2+0A5h*4],FxOpA5A2
-   mov dword [FxTableA2+0A6h*4],FxOpA6A2
-   mov dword [FxTableA2+0A7h*4],FxOpA7A2
-   mov dword [FxTableA2+0A8h*4],FxOpA8A2
-   mov dword [FxTableA2+0A9h*4],FxOpA9A2
-   mov dword [FxTableA2+0AAh*4],FxOpAAA2
-   mov dword [FxTableA2+0ABh*4],FxOpABA2
-   mov dword [FxTableA2+0ACh*4],FxOpACA2
-   mov dword [FxTableA2+0ADh*4],FxOpADA2
-   mov dword [FxTableA2+0AEh*4],FxOpAEA2
-   mov dword [FxTableA2+0AFh*4],FxOpAFA2
-
-   mov dword [FxTableA2+0B0h*4],FxOpB0
-   mov dword [FxTableA2+0B1h*4],FxOpB1
-   mov dword [FxTableA2+0B2h*4],FxOpB2
-   mov dword [FxTableA2+0B3h*4],FxOpB3
-   mov dword [FxTableA2+0B4h*4],FxOpB4
-   mov dword [FxTableA2+0B5h*4],FxOpB5
-   mov dword [FxTableA2+0B6h*4],FxOpB6
-   mov dword [FxTableA2+0B7h*4],FxOpB7
-   mov dword [FxTableA2+0B8h*4],FxOpB8
-   mov dword [FxTableA2+0B9h*4],FxOpB9
-   mov dword [FxTableA2+0BAh*4],FxOpBA
-   mov dword [FxTableA2+0BBh*4],FxOpBB
-   mov dword [FxTableA2+0BCh*4],FxOpBC
-   mov dword [FxTableA2+0BDh*4],FxOpBD
-   mov dword [FxTableA2+0BEh*4],FxOpBE
-   mov dword [FxTableA2+0BFh*4],FxOpBF
-
-   mov dword [FxTableA2+0C0h*4],FxOpC0
-   mov dword [FxTableA2+0C1h*4],FxOpC1A2
-   mov dword [FxTableA2+0C2h*4],FxOpC2A2
-   mov dword [FxTableA2+0C3h*4],FxOpC3A2
-   mov dword [FxTableA2+0C4h*4],FxOpC4A2
-   mov dword [FxTableA2+0C5h*4],FxOpC5A2
-   mov dword [FxTableA2+0C6h*4],FxOpC6A2
-   mov dword [FxTableA2+0C7h*4],FxOpC7A2
-   mov dword [FxTableA2+0C8h*4],FxOpC8A2
-   mov dword [FxTableA2+0C9h*4],FxOpC9A2
-   mov dword [FxTableA2+0CAh*4],FxOpCAA2
-   mov dword [FxTableA2+0CBh*4],FxOpCBA2
-   mov dword [FxTableA2+0CCh*4],FxOpCCA2
-   mov dword [FxTableA2+0CDh*4],FxOpCDA2
-   mov dword [FxTableA2+0CEh*4],FxOpCEA2
-   mov dword [FxTableA2+0CFh*4],FxOpCFA2
-
-   mov dword [FxTableA2+0D0h*4],FxOpD0
-   mov dword [FxTableA2+0D1h*4],FxOpD1
-   mov dword [FxTableA2+0D2h*4],FxOpD2
-   mov dword [FxTableA2+0D3h*4],FxOpD3
-   mov dword [FxTableA2+0D4h*4],FxOpD4
-   mov dword [FxTableA2+0D5h*4],FxOpD5
-   mov dword [FxTableA2+0D6h*4],FxOpD6
-   mov dword [FxTableA2+0D7h*4],FxOpD7
-   mov dword [FxTableA2+0D8h*4],FxOpD8
-   mov dword [FxTableA2+0D9h*4],FxOpD9
-   mov dword [FxTableA2+0DAh*4],FxOpDA
-   mov dword [FxTableA2+0DBh*4],FxOpDB
-   mov dword [FxTableA2+0DCh*4],FxOpDC
-   mov dword [FxTableA2+0DDh*4],FxOpDD
-   mov dword [FxTableA2+0DEh*4],FxOpDE
-   mov dword [FxTableA2+0DFh*4],FxOpDFA2
-
-   mov dword [FxTableA2+0E0h*4],FxOpE0
-   mov dword [FxTableA2+0E1h*4],FxOpE1
-   mov dword [FxTableA2+0E2h*4],FxOpE2
-   mov dword [FxTableA2+0E3h*4],FxOpE3
-   mov dword [FxTableA2+0E4h*4],FxOpE4
-   mov dword [FxTableA2+0E5h*4],FxOpE5
-   mov dword [FxTableA2+0E6h*4],FxOpE6
-   mov dword [FxTableA2+0E7h*4],FxOpE7
-   mov dword [FxTableA2+0E8h*4],FxOpE8
-   mov dword [FxTableA2+0E9h*4],FxOpE9
-   mov dword [FxTableA2+0EAh*4],FxOpEA
-   mov dword [FxTableA2+0EBh*4],FxOpEB
-   mov dword [FxTableA2+0ECh*4],FxOpEC
-   mov dword [FxTableA2+0EDh*4],FxOpED
-   mov dword [FxTableA2+0EEh*4],FxOpEE
-   mov dword [FxTableA2+0EFh*4],FxOpEFA2
-
-   mov dword [FxTableA2+0F0h*4],FxOpF0A2
-   mov dword [FxTableA2+0F1h*4],FxOpF1A2
-   mov dword [FxTableA2+0F2h*4],FxOpF2A2
-   mov dword [FxTableA2+0F3h*4],FxOpF3A2
-   mov dword [FxTableA2+0F4h*4],FxOpF4A2
-   mov dword [FxTableA2+0F5h*4],FxOpF5A2
-   mov dword [FxTableA2+0F6h*4],FxOpF6A2
-   mov dword [FxTableA2+0F7h*4],FxOpF7A2
-   mov dword [FxTableA2+0F8h*4],FxOpF8A2
-   mov dword [FxTableA2+0F9h*4],FxOpF9A2
-   mov dword [FxTableA2+0FAh*4],FxOpFAA2
-   mov dword [FxTableA2+0FBh*4],FxOpFBA2
-   mov dword [FxTableA2+0FCh*4],FxOpFCA2
-   mov dword [FxTableA2+0FDh*4],FxOpFDA2
-   mov dword [FxTableA2+0FEh*4],FxOpFEA2
-   mov dword [FxTableA2+0FFh*4],FxOpFFA2
-
-   mov dword [FxTableA3+00h*4],FxOp00
-   mov dword [FxTableA3+01h*4],FxOp01
-   mov dword [FxTableA3+02h*4],FxOp02
-   mov dword [FxTableA3+03h*4],FxOp03
-   mov dword [FxTableA3+04h*4],FxOp04
-   mov dword [FxTableA3+05h*4],FxOp05
-   mov dword [FxTableA3+06h*4],FxOp06
-   mov dword [FxTableA3+07h*4],FxOp07
-   mov dword [FxTableA3+08h*4],FxOp08
-   mov dword [FxTableA3+09h*4],FxOp09
-   mov dword [FxTableA3+0Ah*4],FxOp0A
-   mov dword [FxTableA3+0Bh*4],FxOp0B
-   mov dword [FxTableA3+0Ch*4],FxOp0C
-   mov dword [FxTableA3+0Dh*4],FxOp0D
-   mov dword [FxTableA3+0Eh*4],FxOp0E
-   mov dword [FxTableA3+0Fh*4],FxOp0F
-
-   mov dword [FxTableA3+10h*4],FxOp10
-   mov dword [FxTableA3+11h*4],FxOp11
-   mov dword [FxTableA3+12h*4],FxOp12
-   mov dword [FxTableA3+13h*4],FxOp13
-   mov dword [FxTableA3+14h*4],FxOp14
-   mov dword [FxTableA3+15h*4],FxOp15
-   mov dword [FxTableA3+16h*4],FxOp16
-   mov dword [FxTableA3+17h*4],FxOp17
-   mov dword [FxTableA3+18h*4],FxOp18
-   mov dword [FxTableA3+19h*4],FxOp19
-   mov dword [FxTableA3+1Ah*4],FxOp1A
-   mov dword [FxTableA3+1Bh*4],FxOp1B
-   mov dword [FxTableA3+1Ch*4],FxOp1C
-   mov dword [FxTableA3+1Dh*4],FxOp1D
-   mov dword [FxTableA3+1Eh*4],FxOp1E
-   mov dword [FxTableA3+1Fh*4],FxOp1F
-
-   mov dword [FxTableA3+20h*4],FxOp20
-   mov dword [FxTableA3+21h*4],FxOp21
-   mov dword [FxTableA3+22h*4],FxOp22
-   mov dword [FxTableA3+23h*4],FxOp23
-   mov dword [FxTableA3+24h*4],FxOp24
-   mov dword [FxTableA3+25h*4],FxOp25
-   mov dword [FxTableA3+26h*4],FxOp26
-   mov dword [FxTableA3+27h*4],FxOp27
-   mov dword [FxTableA3+28h*4],FxOp28
-   mov dword [FxTableA3+29h*4],FxOp29
-   mov dword [FxTableA3+2Ah*4],FxOp2A
-   mov dword [FxTableA3+2Bh*4],FxOp2B
-   mov dword [FxTableA3+2Ch*4],FxOp2C
-   mov dword [FxTableA3+2Dh*4],FxOp2D
-   mov dword [FxTableA3+2Eh*4],FxOp2E
-   mov dword [FxTableA3+2Fh*4],FxOp2F
-
-   mov dword [FxTableA3+30h*4],FxOp30
-   mov dword [FxTableA3+31h*4],FxOp31
-   mov dword [FxTableA3+32h*4],FxOp32
-   mov dword [FxTableA3+33h*4],FxOp33
-   mov dword [FxTableA3+34h*4],FxOp34
-   mov dword [FxTableA3+35h*4],FxOp35
-   mov dword [FxTableA3+36h*4],FxOp36
-   mov dword [FxTableA3+37h*4],FxOp37
-   mov dword [FxTableA3+38h*4],FxOp38
-   mov dword [FxTableA3+39h*4],FxOp39
-   mov dword [FxTableA3+3Ah*4],FxOp3A
-   mov dword [FxTableA3+3Bh*4],FxOp3B
-   mov dword [FxTableA3+3Ch*4],FxOp3C
-   mov dword [FxTableA3+3Dh*4],FxOp3D
-   mov dword [FxTableA3+3Eh*4],FxOp3E
-   mov dword [FxTableA3+3Fh*4],FxOp3F
-
-   mov dword [FxTableA3+40h*4],FxOp40
-   mov dword [FxTableA3+41h*4],FxOp41
-   mov dword [FxTableA3+42h*4],FxOp42
-   mov dword [FxTableA3+43h*4],FxOp43
-   mov dword [FxTableA3+44h*4],FxOp44
-   mov dword [FxTableA3+45h*4],FxOp45
-   mov dword [FxTableA3+46h*4],FxOp46
-   mov dword [FxTableA3+47h*4],FxOp47
-   mov dword [FxTableA3+48h*4],FxOp48
-   mov dword [FxTableA3+49h*4],FxOp49
-   mov dword [FxTableA3+4Ah*4],FxOp4A
-   mov dword [FxTableA3+4Bh*4],FxOp4B
-   mov dword [FxTableA3+4Ch*4],FxOp4C
-   mov dword [FxTableA3+4Dh*4],FxOp4D
-   mov dword [FxTableA3+4Eh*4],FxOp4E
-   mov dword [FxTableA3+4Fh*4],FxOp4F
-
-   mov dword [FxTableA3+50h*4],FxOp50A3
-   mov dword [FxTableA3+51h*4],FxOp51A3
-   mov dword [FxTableA3+52h*4],FxOp52A3
-   mov dword [FxTableA3+53h*4],FxOp53A3
-   mov dword [FxTableA3+54h*4],FxOp54A3
-   mov dword [FxTableA3+55h*4],FxOp55A3
-   mov dword [FxTableA3+56h*4],FxOp56A3
-   mov dword [FxTableA3+57h*4],FxOp57A3
-   mov dword [FxTableA3+58h*4],FxOp58A3
-   mov dword [FxTableA3+59h*4],FxOp59A3
-   mov dword [FxTableA3+5Ah*4],FxOp5AA3
-   mov dword [FxTableA3+5Bh*4],FxOp5BA3
-   mov dword [FxTableA3+5Ch*4],FxOp5CA3
-   mov dword [FxTableA3+5Dh*4],FxOp5DA3
-   mov dword [FxTableA3+5Eh*4],FxOp5EA3
-   mov dword [FxTableA3+5Fh*4],FxOp5FA3
-
-   mov dword [FxTableA3+60h*4],FxOp60A3
-   mov dword [FxTableA3+61h*4],FxOp61A3
-   mov dword [FxTableA3+62h*4],FxOp62A3
-   mov dword [FxTableA3+63h*4],FxOp63A3
-   mov dword [FxTableA3+64h*4],FxOp64A3
-   mov dword [FxTableA3+65h*4],FxOp65A3
-   mov dword [FxTableA3+66h*4],FxOp66A3
-   mov dword [FxTableA3+67h*4],FxOp67A3
-   mov dword [FxTableA3+68h*4],FxOp68A3
-   mov dword [FxTableA3+69h*4],FxOp69A3
-   mov dword [FxTableA3+6Ah*4],FxOp6AA3
-   mov dword [FxTableA3+6Bh*4],FxOp6BA3
-   mov dword [FxTableA3+6Ch*4],FxOp6CA3
-   mov dword [FxTableA3+6Dh*4],FxOp6DA3
-   mov dword [FxTableA3+6Eh*4],FxOp6EA3
-   mov dword [FxTableA3+6Fh*4],FxOp6FA3
-
-   mov dword [FxTableA3+70h*4],FxOp70
-   mov dword [FxTableA3+71h*4],FxOp71A3
-   mov dword [FxTableA3+72h*4],FxOp72A3
-   mov dword [FxTableA3+73h*4],FxOp73A3
-   mov dword [FxTableA3+74h*4],FxOp74A3
-   mov dword [FxTableA3+75h*4],FxOp75A3
-   mov dword [FxTableA3+76h*4],FxOp76A3
-   mov dword [FxTableA3+77h*4],FxOp77A3
-   mov dword [FxTableA3+78h*4],FxOp78A3
-   mov dword [FxTableA3+79h*4],FxOp79A3
-   mov dword [FxTableA3+7Ah*4],FxOp7AA3
-   mov dword [FxTableA3+7Bh*4],FxOp7BA3
-   mov dword [FxTableA3+7Ch*4],FxOp7CA3
-   mov dword [FxTableA3+7Dh*4],FxOp7DA3
-   mov dword [FxTableA3+7Eh*4],FxOp7EA3
-   mov dword [FxTableA3+7Fh*4],FxOp7FA3
-
-   mov dword [FxTableA3+80h*4],FxOp80A3
-   mov dword [FxTableA3+81h*4],FxOp81A3
-   mov dword [FxTableA3+82h*4],FxOp82A3
-   mov dword [FxTableA3+83h*4],FxOp83A3
-   mov dword [FxTableA3+84h*4],FxOp84A3
-   mov dword [FxTableA3+85h*4],FxOp85A3
-   mov dword [FxTableA3+86h*4],FxOp86A3
-   mov dword [FxTableA3+87h*4],FxOp87A3
-   mov dword [FxTableA3+88h*4],FxOp88A3
-   mov dword [FxTableA3+89h*4],FxOp89A3
-   mov dword [FxTableA3+8Ah*4],FxOp8AA3
-   mov dword [FxTableA3+8Bh*4],FxOp8BA3
-   mov dword [FxTableA3+8Ch*4],FxOp8CA3
-   mov dword [FxTableA3+8Dh*4],FxOp8DA3
-   mov dword [FxTableA3+8Eh*4],FxOp8EA3
-   mov dword [FxTableA3+8Fh*4],FxOp8FA3
-
-   mov dword [FxTableA3+90h*4],FxOp90
-   mov dword [FxTableA3+91h*4],FxOp91
-   mov dword [FxTableA3+92h*4],FxOp92
-   mov dword [FxTableA3+93h*4],FxOp93
-   mov dword [FxTableA3+94h*4],FxOp94
-   mov dword [FxTableA3+95h*4],FxOp95
-   mov dword [FxTableA3+96h*4],FxOp96
-   mov dword [FxTableA3+97h*4],FxOp97
-   mov dword [FxTableA3+98h*4],FxOp98
-   mov dword [FxTableA3+99h*4],FxOp99
-   mov dword [FxTableA3+9Ah*4],FxOp9A
-   mov dword [FxTableA3+9Bh*4],FxOp9B
-   mov dword [FxTableA3+9Ch*4],FxOp9C
-   mov dword [FxTableA3+9Dh*4],FxOp9D
-   mov dword [FxTableA3+9Eh*4],FxOp9E
-   mov dword [FxTableA3+9Fh*4],FxOp9F
-
-   mov dword [FxTableA3+0A0h*4],FxOpA0
-   mov dword [FxTableA3+0A1h*4],FxOpA1
-   mov dword [FxTableA3+0A2h*4],FxOpA2
-   mov dword [FxTableA3+0A3h*4],FxOpA3
-   mov dword [FxTableA3+0A4h*4],FxOpA4
-   mov dword [FxTableA3+0A5h*4],FxOpA5
-   mov dword [FxTableA3+0A6h*4],FxOpA6
-   mov dword [FxTableA3+0A7h*4],FxOpA7
-   mov dword [FxTableA3+0A8h*4],FxOpA8
-   mov dword [FxTableA3+0A9h*4],FxOpA9
-   mov dword [FxTableA3+0AAh*4],FxOpAA
-   mov dword [FxTableA3+0ABh*4],FxOpAB
-   mov dword [FxTableA3+0ACh*4],FxOpAC
-   mov dword [FxTableA3+0ADh*4],FxOpAD
-   mov dword [FxTableA3+0AEh*4],FxOpAE
-   mov dword [FxTableA3+0AFh*4],FxOpAF
-
-   mov dword [FxTableA3+0B0h*4],FxOpB0
-   mov dword [FxTableA3+0B1h*4],FxOpB1
-   mov dword [FxTableA3+0B2h*4],FxOpB2
-   mov dword [FxTableA3+0B3h*4],FxOpB3
-   mov dword [FxTableA3+0B4h*4],FxOpB4
-   mov dword [FxTableA3+0B5h*4],FxOpB5
-   mov dword [FxTableA3+0B6h*4],FxOpB6
-   mov dword [FxTableA3+0B7h*4],FxOpB7
-   mov dword [FxTableA3+0B8h*4],FxOpB8
-   mov dword [FxTableA3+0B9h*4],FxOpB9
-   mov dword [FxTableA3+0BAh*4],FxOpBA
-   mov dword [FxTableA3+0BBh*4],FxOpBB
-   mov dword [FxTableA3+0BCh*4],FxOpBC
-   mov dword [FxTableA3+0BDh*4],FxOpBD
-   mov dword [FxTableA3+0BEh*4],FxOpBE
-   mov dword [FxTableA3+0BFh*4],FxOpBF
-
-   mov dword [FxTableA3+0C0h*4],FxOpC0
-   mov dword [FxTableA3+0C1h*4],FxOpC1A3
-   mov dword [FxTableA3+0C2h*4],FxOpC2A3
-   mov dword [FxTableA3+0C3h*4],FxOpC3A3
-   mov dword [FxTableA3+0C4h*4],FxOpC4A3
-   mov dword [FxTableA3+0C5h*4],FxOpC5A3
-   mov dword [FxTableA3+0C6h*4],FxOpC6A3
-   mov dword [FxTableA3+0C7h*4],FxOpC7A3
-   mov dword [FxTableA3+0C8h*4],FxOpC8A3
-   mov dword [FxTableA3+0C9h*4],FxOpC9A3
-   mov dword [FxTableA3+0CAh*4],FxOpCAA3
-   mov dword [FxTableA3+0CBh*4],FxOpCBA3
-   mov dword [FxTableA3+0CCh*4],FxOpCCA3
-   mov dword [FxTableA3+0CDh*4],FxOpCDA3
-   mov dword [FxTableA3+0CEh*4],FxOpCEA3
-   mov dword [FxTableA3+0CFh*4],FxOpCFA3
-
-   mov dword [FxTableA3+0D0h*4],FxOpD0
-   mov dword [FxTableA3+0D1h*4],FxOpD1
-   mov dword [FxTableA3+0D2h*4],FxOpD2
-   mov dword [FxTableA3+0D3h*4],FxOpD3
-   mov dword [FxTableA3+0D4h*4],FxOpD4
-   mov dword [FxTableA3+0D5h*4],FxOpD5
-   mov dword [FxTableA3+0D6h*4],FxOpD6
-   mov dword [FxTableA3+0D7h*4],FxOpD7
-   mov dword [FxTableA3+0D8h*4],FxOpD8
-   mov dword [FxTableA3+0D9h*4],FxOpD9
-   mov dword [FxTableA3+0DAh*4],FxOpDA
-   mov dword [FxTableA3+0DBh*4],FxOpDB
-   mov dword [FxTableA3+0DCh*4],FxOpDC
-   mov dword [FxTableA3+0DDh*4],FxOpDD
-   mov dword [FxTableA3+0DEh*4],FxOpDE
-   mov dword [FxTableA3+0DFh*4],FxOpDFA3
-
-   mov dword [FxTableA3+0E0h*4],FxOpE0
-   mov dword [FxTableA3+0E1h*4],FxOpE1
-   mov dword [FxTableA3+0E2h*4],FxOpE2
-   mov dword [FxTableA3+0E3h*4],FxOpE3
-   mov dword [FxTableA3+0E4h*4],FxOpE4
-   mov dword [FxTableA3+0E5h*4],FxOpE5
-   mov dword [FxTableA3+0E6h*4],FxOpE6
-   mov dword [FxTableA3+0E7h*4],FxOpE7
-   mov dword [FxTableA3+0E8h*4],FxOpE8
-   mov dword [FxTableA3+0E9h*4],FxOpE9
-   mov dword [FxTableA3+0EAh*4],FxOpEA
-   mov dword [FxTableA3+0EBh*4],FxOpEB
-   mov dword [FxTableA3+0ECh*4],FxOpEC
-   mov dword [FxTableA3+0EDh*4],FxOpED
-   mov dword [FxTableA3+0EEh*4],FxOpEE
-   mov dword [FxTableA3+0EFh*4],FxOpEFA3
-
-   mov dword [FxTableA3+0F0h*4],FxOpF0
-   mov dword [FxTableA3+0F1h*4],FxOpF1
-   mov dword [FxTableA3+0F2h*4],FxOpF2
-   mov dword [FxTableA3+0F3h*4],FxOpF3
-   mov dword [FxTableA3+0F4h*4],FxOpF4
-   mov dword [FxTableA3+0F5h*4],FxOpF5
-   mov dword [FxTableA3+0F6h*4],FxOpF6
-   mov dword [FxTableA3+0F7h*4],FxOpF7
-   mov dword [FxTableA3+0F8h*4],FxOpF8
-   mov dword [FxTableA3+0F9h*4],FxOpF9
-   mov dword [FxTableA3+0FAh*4],FxOpFA
-   mov dword [FxTableA3+0FBh*4],FxOpFB
-   mov dword [FxTableA3+0FCh*4],FxOpFC
-   mov dword [FxTableA3+0FDh*4],FxOpFD
-   mov dword [FxTableA3+0FEh*4],FxOpFE
-   mov dword [FxTableA3+0FFh*4],FxOpFF
+   mov dword[FxTable+00h*4],FxOp00
+   mov dword[FxTable+01h*4],FxOp01
+   mov dword[FxTable+02h*4],FxOp02
+   mov dword[FxTable+03h*4],FxOp03
+   mov dword[FxTable+04h*4],FxOp04
+   mov dword[FxTable+05h*4],FxOp05
+   mov dword[FxTable+06h*4],FxOp06
+   mov dword[FxTable+07h*4],FxOp07
+   mov dword[FxTable+08h*4],FxOp08
+   mov dword[FxTable+09h*4],FxOp09
+   mov dword[FxTable+0Ah*4],FxOp0A
+   mov dword[FxTable+0Bh*4],FxOp0B
+   mov dword[FxTable+0Ch*4],FxOp0C
+   mov dword[FxTable+0Dh*4],FxOp0D
+   mov dword[FxTable+0Eh*4],FxOp0E
+   mov dword[FxTable+0Fh*4],FxOp0F
+
+   mov dword[FxTable+10h*4],FxOp10
+   mov dword[FxTable+11h*4],FxOp11
+   mov dword[FxTable+12h*4],FxOp12
+   mov dword[FxTable+13h*4],FxOp13
+   mov dword[FxTable+14h*4],FxOp14
+   mov dword[FxTable+15h*4],FxOp15
+   mov dword[FxTable+16h*4],FxOp16
+   mov dword[FxTable+17h*4],FxOp17
+   mov dword[FxTable+18h*4],FxOp18
+   mov dword[FxTable+19h*4],FxOp19
+   mov dword[FxTable+1Ah*4],FxOp1A
+   mov dword[FxTable+1Bh*4],FxOp1B
+   mov dword[FxTable+1Ch*4],FxOp1C
+   mov dword[FxTable+1Dh*4],FxOp1D
+   mov dword[FxTable+1Eh*4],FxOp1E
+   mov dword[FxTable+1Fh*4],FxOp1F
+
+   mov dword[FxTable+20h*4],FxOp20
+   mov dword[FxTable+21h*4],FxOp21
+   mov dword[FxTable+22h*4],FxOp22
+   mov dword[FxTable+23h*4],FxOp23
+   mov dword[FxTable+24h*4],FxOp24
+   mov dword[FxTable+25h*4],FxOp25
+   mov dword[FxTable+26h*4],FxOp26
+   mov dword[FxTable+27h*4],FxOp27
+   mov dword[FxTable+28h*4],FxOp28
+   mov dword[FxTable+29h*4],FxOp29
+   mov dword[FxTable+2Ah*4],FxOp2A
+   mov dword[FxTable+2Bh*4],FxOp2B
+   mov dword[FxTable+2Ch*4],FxOp2C
+   mov dword[FxTable+2Dh*4],FxOp2D
+   mov dword[FxTable+2Eh*4],FxOp2E
+   mov dword[FxTable+2Fh*4],FxOp2F
+
+   mov dword[FxTable+30h*4],FxOp30
+   mov dword[FxTable+31h*4],FxOp31
+   mov dword[FxTable+32h*4],FxOp32
+   mov dword[FxTable+33h*4],FxOp33
+   mov dword[FxTable+34h*4],FxOp34
+   mov dword[FxTable+35h*4],FxOp35
+   mov dword[FxTable+36h*4],FxOp36
+   mov dword[FxTable+37h*4],FxOp37
+   mov dword[FxTable+38h*4],FxOp38
+   mov dword[FxTable+39h*4],FxOp39
+   mov dword[FxTable+3Ah*4],FxOp3A
+   mov dword[FxTable+3Bh*4],FxOp3B
+   mov dword[FxTable+3Ch*4],FxOp3C
+   mov dword[FxTable+3Dh*4],FxOp3D
+   mov dword[FxTable+3Eh*4],FxOp3E
+   mov dword[FxTable+3Fh*4],FxOp3F
+
+   mov dword[FxTable+40h*4],FxOp40
+   mov dword[FxTable+41h*4],FxOp41
+   mov dword[FxTable+42h*4],FxOp42
+   mov dword[FxTable+43h*4],FxOp43
+   mov dword[FxTable+44h*4],FxOp44
+   mov dword[FxTable+45h*4],FxOp45
+   mov dword[FxTable+46h*4],FxOp46
+   mov dword[FxTable+47h*4],FxOp47
+   mov dword[FxTable+48h*4],FxOp48
+   mov dword[FxTable+49h*4],FxOp49
+   mov dword[FxTable+4Ah*4],FxOp4A
+   mov dword[FxTable+4Bh*4],FxOp4B
+   mov dword[FxTable+4Ch*4],FxOp4C
+   mov dword[FxTable+4Dh*4],FxOp4D
+   mov dword[FxTable+4Eh*4],FxOp4E
+   mov dword[FxTable+4Fh*4],FxOp4F
+
+   mov dword[FxTable+50h*4],FxOp50
+   mov dword[FxTable+51h*4],FxOp51
+   mov dword[FxTable+52h*4],FxOp52
+   mov dword[FxTable+53h*4],FxOp53
+   mov dword[FxTable+54h*4],FxOp54
+   mov dword[FxTable+55h*4],FxOp55
+   mov dword[FxTable+56h*4],FxOp56
+   mov dword[FxTable+57h*4],FxOp57
+   mov dword[FxTable+58h*4],FxOp58
+   mov dword[FxTable+59h*4],FxOp59
+   mov dword[FxTable+5Ah*4],FxOp5A
+   mov dword[FxTable+5Bh*4],FxOp5B
+   mov dword[FxTable+5Ch*4],FxOp5C
+   mov dword[FxTable+5Dh*4],FxOp5D
+   mov dword[FxTable+5Eh*4],FxOp5E
+   mov dword[FxTable+5Fh*4],FxOp5F
+
+   mov dword[FxTable+60h*4],FxOp60
+   mov dword[FxTable+61h*4],FxOp61
+   mov dword[FxTable+62h*4],FxOp62
+   mov dword[FxTable+63h*4],FxOp63
+   mov dword[FxTable+64h*4],FxOp64
+   mov dword[FxTable+65h*4],FxOp65
+   mov dword[FxTable+66h*4],FxOp66
+   mov dword[FxTable+67h*4],FxOp67
+   mov dword[FxTable+68h*4],FxOp68
+   mov dword[FxTable+69h*4],FxOp69
+   mov dword[FxTable+6Ah*4],FxOp6A
+   mov dword[FxTable+6Bh*4],FxOp6B
+   mov dword[FxTable+6Ch*4],FxOp6C
+   mov dword[FxTable+6Dh*4],FxOp6D
+   mov dword[FxTable+6Eh*4],FxOp6E
+   mov dword[FxTable+6Fh*4],FxOp6F
+
+   mov dword[FxTable+70h*4],FxOp70
+   mov dword[FxTable+71h*4],FxOp71
+   mov dword[FxTable+72h*4],FxOp72
+   mov dword[FxTable+73h*4],FxOp73
+   mov dword[FxTable+74h*4],FxOp74
+   mov dword[FxTable+75h*4],FxOp75
+   mov dword[FxTable+76h*4],FxOp76
+   mov dword[FxTable+77h*4],FxOp77
+   mov dword[FxTable+78h*4],FxOp78
+   mov dword[FxTable+79h*4],FxOp79
+   mov dword[FxTable+7Ah*4],FxOp7A
+   mov dword[FxTable+7Bh*4],FxOp7B
+   mov dword[FxTable+7Ch*4],FxOp7C
+   mov dword[FxTable+7Dh*4],FxOp7D
+   mov dword[FxTable+7Eh*4],FxOp7E
+   mov dword[FxTable+7Fh*4],FxOp7F
+
+   mov dword[FxTable+80h*4],FxOp80
+   mov dword[FxTable+81h*4],FxOp81
+   mov dword[FxTable+82h*4],FxOp82
+   mov dword[FxTable+83h*4],FxOp83
+   mov dword[FxTable+84h*4],FxOp84
+   mov dword[FxTable+85h*4],FxOp85
+   mov dword[FxTable+86h*4],FxOp86
+   mov dword[FxTable+87h*4],FxOp87
+   mov dword[FxTable+88h*4],FxOp88
+   mov dword[FxTable+89h*4],FxOp89
+   mov dword[FxTable+8Ah*4],FxOp8A
+   mov dword[FxTable+8Bh*4],FxOp8B
+   mov dword[FxTable+8Ch*4],FxOp8C
+   mov dword[FxTable+8Dh*4],FxOp8D
+   mov dword[FxTable+8Eh*4],FxOp8E
+   mov dword[FxTable+8Fh*4],FxOp8F
+
+   mov dword[FxTable+90h*4],FxOp90
+   mov dword[FxTable+91h*4],FxOp91
+   mov dword[FxTable+92h*4],FxOp92
+   mov dword[FxTable+93h*4],FxOp93
+   mov dword[FxTable+94h*4],FxOp94
+   mov dword[FxTable+95h*4],FxOp95
+   mov dword[FxTable+96h*4],FxOp96
+   mov dword[FxTable+97h*4],FxOp97
+   mov dword[FxTable+98h*4],FxOp98
+   mov dword[FxTable+99h*4],FxOp99
+   mov dword[FxTable+9Ah*4],FxOp9A
+   mov dword[FxTable+9Bh*4],FxOp9B
+   mov dword[FxTable+9Ch*4],FxOp9C
+   mov dword[FxTable+9Dh*4],FxOp9D
+   mov dword[FxTable+9Eh*4],FxOp9E
+   mov dword[FxTable+9Fh*4],FxOp9F
+
+   mov dword[FxTable+0A0h*4],FxOpA0
+   mov dword[FxTable+0A1h*4],FxOpA1
+   mov dword[FxTable+0A2h*4],FxOpA2
+   mov dword[FxTable+0A3h*4],FxOpA3
+   mov dword[FxTable+0A4h*4],FxOpA4
+   mov dword[FxTable+0A5h*4],FxOpA5
+   mov dword[FxTable+0A6h*4],FxOpA6
+   mov dword[FxTable+0A7h*4],FxOpA7
+   mov dword[FxTable+0A8h*4],FxOpA8
+   mov dword[FxTable+0A9h*4],FxOpA9
+   mov dword[FxTable+0AAh*4],FxOpAA
+   mov dword[FxTable+0ABh*4],FxOpAB
+   mov dword[FxTable+0ACh*4],FxOpAC
+   mov dword[FxTable+0ADh*4],FxOpAD
+   mov dword[FxTable+0AEh*4],FxOpAE
+   mov dword[FxTable+0AFh*4],FxOpAF
+
+   mov dword[FxTable+0B0h*4],FxOpB0
+   mov dword[FxTable+0B1h*4],FxOpB1
+   mov dword[FxTable+0B2h*4],FxOpB2
+   mov dword[FxTable+0B3h*4],FxOpB3
+   mov dword[FxTable+0B4h*4],FxOpB4
+   mov dword[FxTable+0B5h*4],FxOpB5
+   mov dword[FxTable+0B6h*4],FxOpB6
+   mov dword[FxTable+0B7h*4],FxOpB7
+   mov dword[FxTable+0B8h*4],FxOpB8
+   mov dword[FxTable+0B9h*4],FxOpB9
+   mov dword[FxTable+0BAh*4],FxOpBA
+   mov dword[FxTable+0BBh*4],FxOpBB
+   mov dword[FxTable+0BCh*4],FxOpBC
+   mov dword[FxTable+0BDh*4],FxOpBD
+   mov dword[FxTable+0BEh*4],FxOpBE
+   mov dword[FxTable+0BFh*4],FxOpBF
+
+   mov dword[FxTable+0C0h*4],FxOpC0
+   mov dword[FxTable+0C1h*4],FxOpC1
+   mov dword[FxTable+0C2h*4],FxOpC2
+   mov dword[FxTable+0C3h*4],FxOpC3
+   mov dword[FxTable+0C4h*4],FxOpC4
+   mov dword[FxTable+0C5h*4],FxOpC5
+   mov dword[FxTable+0C6h*4],FxOpC6
+   mov dword[FxTable+0C7h*4],FxOpC7
+   mov dword[FxTable+0C8h*4],FxOpC8
+   mov dword[FxTable+0C9h*4],FxOpC9
+   mov dword[FxTable+0CAh*4],FxOpCA
+   mov dword[FxTable+0CBh*4],FxOpCB
+   mov dword[FxTable+0CCh*4],FxOpCC
+   mov dword[FxTable+0CDh*4],FxOpCD
+   mov dword[FxTable+0CEh*4],FxOpCE
+   mov dword[FxTable+0CFh*4],FxOpCF
+
+   mov dword[FxTable+0D0h*4],FxOpD0
+   mov dword[FxTable+0D1h*4],FxOpD1
+   mov dword[FxTable+0D2h*4],FxOpD2
+   mov dword[FxTable+0D3h*4],FxOpD3
+   mov dword[FxTable+0D4h*4],FxOpD4
+   mov dword[FxTable+0D5h*4],FxOpD5
+   mov dword[FxTable+0D6h*4],FxOpD6
+   mov dword[FxTable+0D7h*4],FxOpD7
+   mov dword[FxTable+0D8h*4],FxOpD8
+   mov dword[FxTable+0D9h*4],FxOpD9
+   mov dword[FxTable+0DAh*4],FxOpDA
+   mov dword[FxTable+0DBh*4],FxOpDB
+   mov dword[FxTable+0DCh*4],FxOpDC
+   mov dword[FxTable+0DDh*4],FxOpDD
+   mov dword[FxTable+0DEh*4],FxOpDE
+   mov dword[FxTable+0DFh*4],FxOpDF
+
+   mov dword[FxTable+0E0h*4],FxOpE0
+   mov dword[FxTable+0E1h*4],FxOpE1
+   mov dword[FxTable+0E2h*4],FxOpE2
+   mov dword[FxTable+0E3h*4],FxOpE3
+   mov dword[FxTable+0E4h*4],FxOpE4
+   mov dword[FxTable+0E5h*4],FxOpE5
+   mov dword[FxTable+0E6h*4],FxOpE6
+   mov dword[FxTable+0E7h*4],FxOpE7
+   mov dword[FxTable+0E8h*4],FxOpE8
+   mov dword[FxTable+0E9h*4],FxOpE9
+   mov dword[FxTable+0EAh*4],FxOpEA
+   mov dword[FxTable+0EBh*4],FxOpEB
+   mov dword[FxTable+0ECh*4],FxOpEC
+   mov dword[FxTable+0EDh*4],FxOpED
+   mov dword[FxTable+0EEh*4],FxOpEE
+   mov dword[FxTable+0EFh*4],FxOpEF
+
+   mov dword[FxTable+0F0h*4],FxOpF0
+   mov dword[FxTable+0F1h*4],FxOpF1
+   mov dword[FxTable+0F2h*4],FxOpF2
+   mov dword[FxTable+0F3h*4],FxOpF3
+   mov dword[FxTable+0F4h*4],FxOpF4
+   mov dword[FxTable+0F5h*4],FxOpF5
+   mov dword[FxTable+0F6h*4],FxOpF6
+   mov dword[FxTable+0F7h*4],FxOpF7
+   mov dword[FxTable+0F8h*4],FxOpF8
+   mov dword[FxTable+0F9h*4],FxOpF9
+   mov dword[FxTable+0FAh*4],FxOpFA
+   mov dword[FxTable+0FBh*4],FxOpFB
+   mov dword[FxTable+0FCh*4],FxOpFC
+   mov dword[FxTable+0FDh*4],FxOpFD
+   mov dword[FxTable+0FEh*4],FxOpFE
+   mov dword[FxTable+0FFh*4],FxOpFF
+
+
+   mov dword[FxTableA1+00h*4],FxOp00
+   mov dword[FxTableA1+01h*4],FxOp01
+   mov dword[FxTableA1+02h*4],FxOp02
+   mov dword[FxTableA1+03h*4],FxOp03
+   mov dword[FxTableA1+04h*4],FxOp04
+   mov dword[FxTableA1+05h*4],FxOp05
+   mov dword[FxTableA1+06h*4],FxOp06
+   mov dword[FxTableA1+07h*4],FxOp07
+   mov dword[FxTableA1+08h*4],FxOp08
+   mov dword[FxTableA1+09h*4],FxOp09
+   mov dword[FxTableA1+0Ah*4],FxOp0A
+   mov dword[FxTableA1+0Bh*4],FxOp0B
+   mov dword[FxTableA1+0Ch*4],FxOp0C
+   mov dword[FxTableA1+0Dh*4],FxOp0D
+   mov dword[FxTableA1+0Eh*4],FxOp0E
+   mov dword[FxTableA1+0Fh*4],FxOp0F
+
+   mov dword[FxTableA1+10h*4],FxOp10
+   mov dword[FxTableA1+11h*4],FxOp11
+   mov dword[FxTableA1+12h*4],FxOp12
+   mov dword[FxTableA1+13h*4],FxOp13
+   mov dword[FxTableA1+14h*4],FxOp14
+   mov dword[FxTableA1+15h*4],FxOp15
+   mov dword[FxTableA1+16h*4],FxOp16
+   mov dword[FxTableA1+17h*4],FxOp17
+   mov dword[FxTableA1+18h*4],FxOp18
+   mov dword[FxTableA1+19h*4],FxOp19
+   mov dword[FxTableA1+1Ah*4],FxOp1A
+   mov dword[FxTableA1+1Bh*4],FxOp1B
+   mov dword[FxTableA1+1Ch*4],FxOp1C
+   mov dword[FxTableA1+1Dh*4],FxOp1D
+   mov dword[FxTableA1+1Eh*4],FxOp1E
+   mov dword[FxTableA1+1Fh*4],FxOp1F
+
+   mov dword[FxTableA1+20h*4],FxOp20
+   mov dword[FxTableA1+21h*4],FxOp21
+   mov dword[FxTableA1+22h*4],FxOp22
+   mov dword[FxTableA1+23h*4],FxOp23
+   mov dword[FxTableA1+24h*4],FxOp24
+   mov dword[FxTableA1+25h*4],FxOp25
+   mov dword[FxTableA1+26h*4],FxOp26
+   mov dword[FxTableA1+27h*4],FxOp27
+   mov dword[FxTableA1+28h*4],FxOp28
+   mov dword[FxTableA1+29h*4],FxOp29
+   mov dword[FxTableA1+2Ah*4],FxOp2A
+   mov dword[FxTableA1+2Bh*4],FxOp2B
+   mov dword[FxTableA1+2Ch*4],FxOp2C
+   mov dword[FxTableA1+2Dh*4],FxOp2D
+   mov dword[FxTableA1+2Eh*4],FxOp2E
+   mov dword[FxTableA1+2Fh*4],FxOp2F
+
+   mov dword[FxTableA1+30h*4],FxOp30A1
+   mov dword[FxTableA1+31h*4],FxOp31A1
+   mov dword[FxTableA1+32h*4],FxOp32A1
+   mov dword[FxTableA1+33h*4],FxOp33A1
+   mov dword[FxTableA1+34h*4],FxOp34A1
+   mov dword[FxTableA1+35h*4],FxOp35A1
+   mov dword[FxTableA1+36h*4],FxOp36A1
+   mov dword[FxTableA1+37h*4],FxOp37A1
+   mov dword[FxTableA1+38h*4],FxOp38A1
+   mov dword[FxTableA1+39h*4],FxOp39A1
+   mov dword[FxTableA1+3Ah*4],FxOp3AA1
+   mov dword[FxTableA1+3Bh*4],FxOp3BA1
+   mov dword[FxTableA1+3Ch*4],FxOp3C
+   mov dword[FxTableA1+3Dh*4],FxOp3D
+   mov dword[FxTableA1+3Eh*4],FxOp3E
+   mov dword[FxTableA1+3Fh*4],FxOp3F
+
+   mov dword[FxTableA1+40h*4],FxOp40A1
+   mov dword[FxTableA1+41h*4],FxOp41A1
+   mov dword[FxTableA1+42h*4],FxOp42A1
+   mov dword[FxTableA1+43h*4],FxOp43A1
+   mov dword[FxTableA1+44h*4],FxOp44A1
+   mov dword[FxTableA1+45h*4],FxOp45A1
+   mov dword[FxTableA1+46h*4],FxOp46A1
+   mov dword[FxTableA1+47h*4],FxOp47A1
+   mov dword[FxTableA1+48h*4],FxOp48A1
+   mov dword[FxTableA1+49h*4],FxOp49A1
+   mov dword[FxTableA1+4Ah*4],FxOp4AA1
+   mov dword[FxTableA1+4Bh*4],FxOp4BA1
+   mov dword[FxTableA1+4Ch*4],FxOp4CA1
+   mov dword[FxTableA1+4Dh*4],FxOp4D
+   mov dword[FxTableA1+4Eh*4],FxOp4EA1
+   mov dword[FxTableA1+4Fh*4],FxOp4F
+
+   mov dword[FxTableA1+50h*4],FxOp50A1
+   mov dword[FxTableA1+51h*4],FxOp51A1
+   mov dword[FxTableA1+52h*4],FxOp52A1
+   mov dword[FxTableA1+53h*4],FxOp53A1
+   mov dword[FxTableA1+54h*4],FxOp54A1
+   mov dword[FxTableA1+55h*4],FxOp55A1
+   mov dword[FxTableA1+56h*4],FxOp56A1
+   mov dword[FxTableA1+57h*4],FxOp57A1
+   mov dword[FxTableA1+58h*4],FxOp58A1
+   mov dword[FxTableA1+59h*4],FxOp59A1
+   mov dword[FxTableA1+5Ah*4],FxOp5AA1
+   mov dword[FxTableA1+5Bh*4],FxOp5BA1
+   mov dword[FxTableA1+5Ch*4],FxOp5CA1
+   mov dword[FxTableA1+5Dh*4],FxOp5DA1
+   mov dword[FxTableA1+5Eh*4],FxOp5EA1
+   mov dword[FxTableA1+5Fh*4],FxOp5FA1
+
+   mov dword[FxTableA1+60h*4],FxOp60A1
+   mov dword[FxTableA1+61h*4],FxOp61A1
+   mov dword[FxTableA1+62h*4],FxOp62A1
+   mov dword[FxTableA1+63h*4],FxOp63A1
+   mov dword[FxTableA1+64h*4],FxOp64A1
+   mov dword[FxTableA1+65h*4],FxOp65A1
+   mov dword[FxTableA1+66h*4],FxOp66A1
+   mov dword[FxTableA1+67h*4],FxOp67A1
+   mov dword[FxTableA1+68h*4],FxOp68A1
+   mov dword[FxTableA1+69h*4],FxOp69A1
+   mov dword[FxTableA1+6Ah*4],FxOp6AA1
+   mov dword[FxTableA1+6Bh*4],FxOp6BA1
+   mov dword[FxTableA1+6Ch*4],FxOp6CA1
+   mov dword[FxTableA1+6Dh*4],FxOp6DA1
+   mov dword[FxTableA1+6Eh*4],FxOp6EA1
+   mov dword[FxTableA1+6Fh*4],FxOp6FA1
+
+   mov dword[FxTableA1+70h*4],FxOp70
+   mov dword[FxTableA1+71h*4],FxOp71A1
+   mov dword[FxTableA1+72h*4],FxOp72A1
+   mov dword[FxTableA1+73h*4],FxOp73A1
+   mov dword[FxTableA1+74h*4],FxOp74A1
+   mov dword[FxTableA1+75h*4],FxOp75A1
+   mov dword[FxTableA1+76h*4],FxOp76A1
+   mov dword[FxTableA1+77h*4],FxOp77A1
+   mov dword[FxTableA1+78h*4],FxOp78A1
+   mov dword[FxTableA1+79h*4],FxOp79A1
+   mov dword[FxTableA1+7Ah*4],FxOp7AA1
+   mov dword[FxTableA1+7Bh*4],FxOp7BA1
+   mov dword[FxTableA1+7Ch*4],FxOp7CA1
+   mov dword[FxTableA1+7Dh*4],FxOp7DA1
+   mov dword[FxTableA1+7Eh*4],FxOp7EA1
+   mov dword[FxTableA1+7Fh*4],FxOp7FA1
+
+   mov dword[FxTableA1+80h*4],FxOp80A1
+   mov dword[FxTableA1+81h*4],FxOp81A1
+   mov dword[FxTableA1+82h*4],FxOp82A1
+   mov dword[FxTableA1+83h*4],FxOp83A1
+   mov dword[FxTableA1+84h*4],FxOp84A1
+   mov dword[FxTableA1+85h*4],FxOp85A1
+   mov dword[FxTableA1+86h*4],FxOp86A1
+   mov dword[FxTableA1+87h*4],FxOp87A1
+   mov dword[FxTableA1+88h*4],FxOp88A1
+   mov dword[FxTableA1+89h*4],FxOp89A1
+   mov dword[FxTableA1+8Ah*4],FxOp8AA1
+   mov dword[FxTableA1+8Bh*4],FxOp8BA1
+   mov dword[FxTableA1+8Ch*4],FxOp8CA1
+   mov dword[FxTableA1+8Dh*4],FxOp8DA1
+   mov dword[FxTableA1+8Eh*4],FxOp8EA1
+   mov dword[FxTableA1+8Fh*4],FxOp8FA1
+
+   mov dword[FxTableA1+90h*4],FxOp90
+   mov dword[FxTableA1+91h*4],FxOp91
+   mov dword[FxTableA1+92h*4],FxOp92
+   mov dword[FxTableA1+93h*4],FxOp93
+   mov dword[FxTableA1+94h*4],FxOp94
+   mov dword[FxTableA1+95h*4],FxOp95
+   mov dword[FxTableA1+96h*4],FxOp96A1
+   mov dword[FxTableA1+97h*4],FxOp97
+   mov dword[FxTableA1+98h*4],FxOp98A1
+   mov dword[FxTableA1+99h*4],FxOp99A1
+   mov dword[FxTableA1+9Ah*4],FxOp9AA1
+   mov dword[FxTableA1+9Bh*4],FxOp9BA1
+   mov dword[FxTableA1+9Ch*4],FxOp9CA1
+   mov dword[FxTableA1+9Dh*4],FxOp9DA1
+   mov dword[FxTableA1+9Eh*4],FxOp9E
+   mov dword[FxTableA1+9Fh*4],FxOp9FA1
+
+   mov dword[FxTableA1+0A0h*4],FxOpA0A1
+   mov dword[FxTableA1+0A1h*4],FxOpA1A1
+   mov dword[FxTableA1+0A2h*4],FxOpA2A1
+   mov dword[FxTableA1+0A3h*4],FxOpA3A1
+   mov dword[FxTableA1+0A4h*4],FxOpA4A1
+   mov dword[FxTableA1+0A5h*4],FxOpA5A1
+   mov dword[FxTableA1+0A6h*4],FxOpA6A1
+   mov dword[FxTableA1+0A7h*4],FxOpA7A1
+   mov dword[FxTableA1+0A8h*4],FxOpA8A1
+   mov dword[FxTableA1+0A9h*4],FxOpA9A1
+   mov dword[FxTableA1+0AAh*4],FxOpAAA1
+   mov dword[FxTableA1+0ABh*4],FxOpABA1
+   mov dword[FxTableA1+0ACh*4],FxOpACA1
+   mov dword[FxTableA1+0ADh*4],FxOpADA1
+   mov dword[FxTableA1+0AEh*4],FxOpAEA1
+   mov dword[FxTableA1+0AFh*4],FxOpAFA1
+
+   mov dword[FxTableA1+0B0h*4],FxOpB0
+   mov dword[FxTableA1+0B1h*4],FxOpB1
+   mov dword[FxTableA1+0B2h*4],FxOpB2
+   mov dword[FxTableA1+0B3h*4],FxOpB3
+   mov dword[FxTableA1+0B4h*4],FxOpB4
+   mov dword[FxTableA1+0B5h*4],FxOpB5
+   mov dword[FxTableA1+0B6h*4],FxOpB6
+   mov dword[FxTableA1+0B7h*4],FxOpB7
+   mov dword[FxTableA1+0B8h*4],FxOpB8
+   mov dword[FxTableA1+0B9h*4],FxOpB9
+   mov dword[FxTableA1+0BAh*4],FxOpBA
+   mov dword[FxTableA1+0BBh*4],FxOpBB
+   mov dword[FxTableA1+0BCh*4],FxOpBC
+   mov dword[FxTableA1+0BDh*4],FxOpBD
+   mov dword[FxTableA1+0BEh*4],FxOpBE
+   mov dword[FxTableA1+0BFh*4],FxOpBF
+
+   mov dword[FxTableA1+0C0h*4],FxOpC0
+   mov dword[FxTableA1+0C1h*4],FxOpC1A1
+   mov dword[FxTableA1+0C2h*4],FxOpC2A1
+   mov dword[FxTableA1+0C3h*4],FxOpC3A1
+   mov dword[FxTableA1+0C4h*4],FxOpC4A1
+   mov dword[FxTableA1+0C5h*4],FxOpC5A1
+   mov dword[FxTableA1+0C6h*4],FxOpC6A1
+   mov dword[FxTableA1+0C7h*4],FxOpC7A1
+   mov dword[FxTableA1+0C8h*4],FxOpC8A1
+   mov dword[FxTableA1+0C9h*4],FxOpC9A1
+   mov dword[FxTableA1+0CAh*4],FxOpCAA1
+   mov dword[FxTableA1+0CBh*4],FxOpCBA1
+   mov dword[FxTableA1+0CCh*4],FxOpCCA1
+   mov dword[FxTableA1+0CDh*4],FxOpCDA1
+   mov dword[FxTableA1+0CEh*4],FxOpCEA1
+   mov dword[FxTableA1+0CFh*4],FxOpCFA1
+
+   mov dword[FxTableA1+0D0h*4],FxOpD0
+   mov dword[FxTableA1+0D1h*4],FxOpD1
+   mov dword[FxTableA1+0D2h*4],FxOpD2
+   mov dword[FxTableA1+0D3h*4],FxOpD3
+   mov dword[FxTableA1+0D4h*4],FxOpD4
+   mov dword[FxTableA1+0D5h*4],FxOpD5
+   mov dword[FxTableA1+0D6h*4],FxOpD6
+   mov dword[FxTableA1+0D7h*4],FxOpD7
+   mov dword[FxTableA1+0D8h*4],FxOpD8
+   mov dword[FxTableA1+0D9h*4],FxOpD9
+   mov dword[FxTableA1+0DAh*4],FxOpDA
+   mov dword[FxTableA1+0DBh*4],FxOpDB
+   mov dword[FxTableA1+0DCh*4],FxOpDC
+   mov dword[FxTableA1+0DDh*4],FxOpDD
+   mov dword[FxTableA1+0DEh*4],FxOpDE
+   mov dword[FxTableA1+0DFh*4],FxOpDF
+
+   mov dword[FxTableA1+0E0h*4],FxOpE0
+   mov dword[FxTableA1+0E1h*4],FxOpE1
+   mov dword[FxTableA1+0E2h*4],FxOpE2
+   mov dword[FxTableA1+0E3h*4],FxOpE3
+   mov dword[FxTableA1+0E4h*4],FxOpE4
+   mov dword[FxTableA1+0E5h*4],FxOpE5
+   mov dword[FxTableA1+0E6h*4],FxOpE6
+   mov dword[FxTableA1+0E7h*4],FxOpE7
+   mov dword[FxTableA1+0E8h*4],FxOpE8
+   mov dword[FxTableA1+0E9h*4],FxOpE9
+   mov dword[FxTableA1+0EAh*4],FxOpEA
+   mov dword[FxTableA1+0EBh*4],FxOpEB
+   mov dword[FxTableA1+0ECh*4],FxOpEC
+   mov dword[FxTableA1+0EDh*4],FxOpED
+   mov dword[FxTableA1+0EEh*4],FxOpEE
+   mov dword[FxTableA1+0EFh*4],FxOpEFA1
+
+   mov dword[FxTableA1+0F0h*4],FxOpF0A1
+   mov dword[FxTableA1+0F1h*4],FxOpF1A1
+   mov dword[FxTableA1+0F2h*4],FxOpF2A1
+   mov dword[FxTableA1+0F3h*4],FxOpF3A1
+   mov dword[FxTableA1+0F4h*4],FxOpF4A1
+   mov dword[FxTableA1+0F5h*4],FxOpF5A1
+   mov dword[FxTableA1+0F6h*4],FxOpF6A1
+   mov dword[FxTableA1+0F7h*4],FxOpF7A1
+   mov dword[FxTableA1+0F8h*4],FxOpF8A1
+   mov dword[FxTableA1+0F9h*4],FxOpF9A1
+   mov dword[FxTableA1+0FAh*4],FxOpFAA1
+   mov dword[FxTableA1+0FBh*4],FxOpFBA1
+   mov dword[FxTableA1+0FCh*4],FxOpFCA1
+   mov dword[FxTableA1+0FDh*4],FxOpFDA1
+   mov dword[FxTableA1+0FEh*4],FxOpFEA1
+   mov dword[FxTableA1+0FFh*4],FxOpFFA1
+
+
+   mov dword[FxTableA2+00h*4],FxOp00
+   mov dword[FxTableA2+01h*4],FxOp01
+   mov dword[FxTableA2+02h*4],FxOp02
+   mov dword[FxTableA2+03h*4],FxOp03
+   mov dword[FxTableA2+04h*4],FxOp04
+   mov dword[FxTableA2+05h*4],FxOp05
+   mov dword[FxTableA2+06h*4],FxOp06
+   mov dword[FxTableA2+07h*4],FxOp07
+   mov dword[FxTableA2+08h*4],FxOp08
+   mov dword[FxTableA2+09h*4],FxOp09
+   mov dword[FxTableA2+0Ah*4],FxOp0A
+   mov dword[FxTableA2+0Bh*4],FxOp0B
+   mov dword[FxTableA2+0Ch*4],FxOp0C
+   mov dword[FxTableA2+0Dh*4],FxOp0D
+   mov dword[FxTableA2+0Eh*4],FxOp0E
+   mov dword[FxTableA2+0Fh*4],FxOp0F
+
+   mov dword[FxTableA2+10h*4],FxOp10
+   mov dword[FxTableA2+11h*4],FxOp11
+   mov dword[FxTableA2+12h*4],FxOp12
+   mov dword[FxTableA2+13h*4],FxOp13
+   mov dword[FxTableA2+14h*4],FxOp14
+   mov dword[FxTableA2+15h*4],FxOp15
+   mov dword[FxTableA2+16h*4],FxOp16
+   mov dword[FxTableA2+17h*4],FxOp17
+   mov dword[FxTableA2+18h*4],FxOp18
+   mov dword[FxTableA2+19h*4],FxOp19
+   mov dword[FxTableA2+1Ah*4],FxOp1A
+   mov dword[FxTableA2+1Bh*4],FxOp1B
+   mov dword[FxTableA2+1Ch*4],FxOp1C
+   mov dword[FxTableA2+1Dh*4],FxOp1D
+   mov dword[FxTableA2+1Eh*4],FxOp1E
+   mov dword[FxTableA2+1Fh*4],FxOp1F
+
+   mov dword[FxTableA2+20h*4],FxOp20
+   mov dword[FxTableA2+21h*4],FxOp21
+   mov dword[FxTableA2+22h*4],FxOp22
+   mov dword[FxTableA2+23h*4],FxOp23
+   mov dword[FxTableA2+24h*4],FxOp24
+   mov dword[FxTableA2+25h*4],FxOp25
+   mov dword[FxTableA2+26h*4],FxOp26
+   mov dword[FxTableA2+27h*4],FxOp27
+   mov dword[FxTableA2+28h*4],FxOp28
+   mov dword[FxTableA2+29h*4],FxOp29
+   mov dword[FxTableA2+2Ah*4],FxOp2A
+   mov dword[FxTableA2+2Bh*4],FxOp2B
+   mov dword[FxTableA2+2Ch*4],FxOp2C
+   mov dword[FxTableA2+2Dh*4],FxOp2D
+   mov dword[FxTableA2+2Eh*4],FxOp2E
+   mov dword[FxTableA2+2Fh*4],FxOp2F
+
+   mov dword[FxTableA2+30h*4],FxOp30
+   mov dword[FxTableA2+31h*4],FxOp31
+   mov dword[FxTableA2+32h*4],FxOp32
+   mov dword[FxTableA2+33h*4],FxOp33
+   mov dword[FxTableA2+34h*4],FxOp34
+   mov dword[FxTableA2+35h*4],FxOp35
+   mov dword[FxTableA2+36h*4],FxOp36
+   mov dword[FxTableA2+37h*4],FxOp37
+   mov dword[FxTableA2+38h*4],FxOp38
+   mov dword[FxTableA2+39h*4],FxOp39
+   mov dword[FxTableA2+3Ah*4],FxOp3A
+   mov dword[FxTableA2+3Bh*4],FxOp3B
+   mov dword[FxTableA2+3Ch*4],FxOp3C
+   mov dword[FxTableA2+3Dh*4],FxOp3D
+   mov dword[FxTableA2+3Eh*4],FxOp3E
+   mov dword[FxTableA2+3Fh*4],FxOp3F
+
+   mov dword[FxTableA2+40h*4],FxOp40
+   mov dword[FxTableA2+41h*4],FxOp41
+   mov dword[FxTableA2+42h*4],FxOp42
+   mov dword[FxTableA2+43h*4],FxOp43
+   mov dword[FxTableA2+44h*4],FxOp44
+   mov dword[FxTableA2+45h*4],FxOp45
+   mov dword[FxTableA2+46h*4],FxOp46
+   mov dword[FxTableA2+47h*4],FxOp47
+   mov dword[FxTableA2+48h*4],FxOp48
+   mov dword[FxTableA2+49h*4],FxOp49
+   mov dword[FxTableA2+4Ah*4],FxOp4A
+   mov dword[FxTableA2+4Bh*4],FxOp4B
+   mov dword[FxTableA2+4Ch*4],FxOp4C
+   mov dword[FxTableA2+4Dh*4],FxOp4D
+   mov dword[FxTableA2+4Eh*4],FxOp4E
+   mov dword[FxTableA2+4Fh*4],FxOp4F
+
+   mov dword[FxTableA2+50h*4],FxOp50A2
+   mov dword[FxTableA2+51h*4],FxOp51A2
+   mov dword[FxTableA2+52h*4],FxOp52A2
+   mov dword[FxTableA2+53h*4],FxOp53A2
+   mov dword[FxTableA2+54h*4],FxOp54A2
+   mov dword[FxTableA2+55h*4],FxOp55A2
+   mov dword[FxTableA2+56h*4],FxOp56A2
+   mov dword[FxTableA2+57h*4],FxOp57A2
+   mov dword[FxTableA2+58h*4],FxOp58A2
+   mov dword[FxTableA2+59h*4],FxOp59A2
+   mov dword[FxTableA2+5Ah*4],FxOp5AA2
+   mov dword[FxTableA2+5Bh*4],FxOp5BA2
+   mov dword[FxTableA2+5Ch*4],FxOp5CA2
+   mov dword[FxTableA2+5Dh*4],FxOp5DA2
+   mov dword[FxTableA2+5Eh*4],FxOp5EA2
+   mov dword[FxTableA2+5Fh*4],FxOp5FA2
+
+   mov dword[FxTableA2+60h*4],FxOp60A2
+   mov dword[FxTableA2+61h*4],FxOp61A2
+   mov dword[FxTableA2+62h*4],FxOp62A2
+   mov dword[FxTableA2+63h*4],FxOp63A2
+   mov dword[FxTableA2+64h*4],FxOp64A2
+   mov dword[FxTableA2+65h*4],FxOp65A2
+   mov dword[FxTableA2+66h*4],FxOp66A2
+   mov dword[FxTableA2+67h*4],FxOp67A2
+   mov dword[FxTableA2+68h*4],FxOp68A2
+   mov dword[FxTableA2+69h*4],FxOp69A2
+   mov dword[FxTableA2+6Ah*4],FxOp6AA2
+   mov dword[FxTableA2+6Bh*4],FxOp6BA2
+   mov dword[FxTableA2+6Ch*4],FxOp6CA2
+   mov dword[FxTableA2+6Dh*4],FxOp6DA2
+   mov dword[FxTableA2+6Eh*4],FxOp6EA2
+   mov dword[FxTableA2+6Fh*4],FxOp6FA2
+
+   mov dword[FxTableA2+70h*4],FxOp70
+   mov dword[FxTableA2+71h*4],FxOp71A2
+   mov dword[FxTableA2+72h*4],FxOp72A2
+   mov dword[FxTableA2+73h*4],FxOp73A2
+   mov dword[FxTableA2+74h*4],FxOp74A2
+   mov dword[FxTableA2+75h*4],FxOp75A2
+   mov dword[FxTableA2+76h*4],FxOp76A2
+   mov dword[FxTableA2+77h*4],FxOp77A2
+   mov dword[FxTableA2+78h*4],FxOp78A2
+   mov dword[FxTableA2+79h*4],FxOp79A2
+   mov dword[FxTableA2+7Ah*4],FxOp7AA2
+   mov dword[FxTableA2+7Bh*4],FxOp7BA2
+   mov dword[FxTableA2+7Ch*4],FxOp7CA2
+   mov dword[FxTableA2+7Dh*4],FxOp7DA2
+   mov dword[FxTableA2+7Eh*4],FxOp7EA2
+   mov dword[FxTableA2+7Fh*4],FxOp7FA2
+
+   mov dword[FxTableA2+80h*4],FxOp80A2
+   mov dword[FxTableA2+81h*4],FxOp81A2
+   mov dword[FxTableA2+82h*4],FxOp82A2
+   mov dword[FxTableA2+83h*4],FxOp83A2
+   mov dword[FxTableA2+84h*4],FxOp84A2
+   mov dword[FxTableA2+85h*4],FxOp85A2
+   mov dword[FxTableA2+86h*4],FxOp86A2
+   mov dword[FxTableA2+87h*4],FxOp87A2
+   mov dword[FxTableA2+88h*4],FxOp88A2
+   mov dword[FxTableA2+89h*4],FxOp89A2
+   mov dword[FxTableA2+8Ah*4],FxOp8AA2
+   mov dword[FxTableA2+8Bh*4],FxOp8BA2
+   mov dword[FxTableA2+8Ch*4],FxOp8CA2
+   mov dword[FxTableA2+8Dh*4],FxOp8DA2
+   mov dword[FxTableA2+8Eh*4],FxOp8EA2
+   mov dword[FxTableA2+8Fh*4],FxOp8FA2
+
+   mov dword[FxTableA2+90h*4],FxOp90
+   mov dword[FxTableA2+91h*4],FxOp91
+   mov dword[FxTableA2+92h*4],FxOp92
+   mov dword[FxTableA2+93h*4],FxOp93
+   mov dword[FxTableA2+94h*4],FxOp94
+   mov dword[FxTableA2+95h*4],FxOp95
+   mov dword[FxTableA2+96h*4],FxOp96
+   mov dword[FxTableA2+97h*4],FxOp97
+   mov dword[FxTableA2+98h*4],FxOp98
+   mov dword[FxTableA2+99h*4],FxOp99
+   mov dword[FxTableA2+9Ah*4],FxOp9A
+   mov dword[FxTableA2+9Bh*4],FxOp9B
+   mov dword[FxTableA2+9Ch*4],FxOp9C
+   mov dword[FxTableA2+9Dh*4],FxOp9D
+   mov dword[FxTableA2+9Eh*4],FxOp9E
+   mov dword[FxTableA2+9Fh*4],FxOp9F
+
+   mov dword[FxTableA2+0A0h*4],FxOpA0A2
+   mov dword[FxTableA2+0A1h*4],FxOpA1A2
+   mov dword[FxTableA2+0A2h*4],FxOpA2A2
+   mov dword[FxTableA2+0A3h*4],FxOpA3A2
+   mov dword[FxTableA2+0A4h*4],FxOpA4A2
+   mov dword[FxTableA2+0A5h*4],FxOpA5A2
+   mov dword[FxTableA2+0A6h*4],FxOpA6A2
+   mov dword[FxTableA2+0A7h*4],FxOpA7A2
+   mov dword[FxTableA2+0A8h*4],FxOpA8A2
+   mov dword[FxTableA2+0A9h*4],FxOpA9A2
+   mov dword[FxTableA2+0AAh*4],FxOpAAA2
+   mov dword[FxTableA2+0ABh*4],FxOpABA2
+   mov dword[FxTableA2+0ACh*4],FxOpACA2
+   mov dword[FxTableA2+0ADh*4],FxOpADA2
+   mov dword[FxTableA2+0AEh*4],FxOpAEA2
+   mov dword[FxTableA2+0AFh*4],FxOpAFA2
+
+   mov dword[FxTableA2+0B0h*4],FxOpB0
+   mov dword[FxTableA2+0B1h*4],FxOpB1
+   mov dword[FxTableA2+0B2h*4],FxOpB2
+   mov dword[FxTableA2+0B3h*4],FxOpB3
+   mov dword[FxTableA2+0B4h*4],FxOpB4
+   mov dword[FxTableA2+0B5h*4],FxOpB5
+   mov dword[FxTableA2+0B6h*4],FxOpB6
+   mov dword[FxTableA2+0B7h*4],FxOpB7
+   mov dword[FxTableA2+0B8h*4],FxOpB8
+   mov dword[FxTableA2+0B9h*4],FxOpB9
+   mov dword[FxTableA2+0BAh*4],FxOpBA
+   mov dword[FxTableA2+0BBh*4],FxOpBB
+   mov dword[FxTableA2+0BCh*4],FxOpBC
+   mov dword[FxTableA2+0BDh*4],FxOpBD
+   mov dword[FxTableA2+0BEh*4],FxOpBE
+   mov dword[FxTableA2+0BFh*4],FxOpBF
+
+   mov dword[FxTableA2+0C0h*4],FxOpC0
+   mov dword[FxTableA2+0C1h*4],FxOpC1A2
+   mov dword[FxTableA2+0C2h*4],FxOpC2A2
+   mov dword[FxTableA2+0C3h*4],FxOpC3A2
+   mov dword[FxTableA2+0C4h*4],FxOpC4A2
+   mov dword[FxTableA2+0C5h*4],FxOpC5A2
+   mov dword[FxTableA2+0C6h*4],FxOpC6A2
+   mov dword[FxTableA2+0C7h*4],FxOpC7A2
+   mov dword[FxTableA2+0C8h*4],FxOpC8A2
+   mov dword[FxTableA2+0C9h*4],FxOpC9A2
+   mov dword[FxTableA2+0CAh*4],FxOpCAA2
+   mov dword[FxTableA2+0CBh*4],FxOpCBA2
+   mov dword[FxTableA2+0CCh*4],FxOpCCA2
+   mov dword[FxTableA2+0CDh*4],FxOpCDA2
+   mov dword[FxTableA2+0CEh*4],FxOpCEA2
+   mov dword[FxTableA2+0CFh*4],FxOpCFA2
+
+   mov dword[FxTableA2+0D0h*4],FxOpD0
+   mov dword[FxTableA2+0D1h*4],FxOpD1
+   mov dword[FxTableA2+0D2h*4],FxOpD2
+   mov dword[FxTableA2+0D3h*4],FxOpD3
+   mov dword[FxTableA2+0D4h*4],FxOpD4
+   mov dword[FxTableA2+0D5h*4],FxOpD5
+   mov dword[FxTableA2+0D6h*4],FxOpD6
+   mov dword[FxTableA2+0D7h*4],FxOpD7
+   mov dword[FxTableA2+0D8h*4],FxOpD8
+   mov dword[FxTableA2+0D9h*4],FxOpD9
+   mov dword[FxTableA2+0DAh*4],FxOpDA
+   mov dword[FxTableA2+0DBh*4],FxOpDB
+   mov dword[FxTableA2+0DCh*4],FxOpDC
+   mov dword[FxTableA2+0DDh*4],FxOpDD
+   mov dword[FxTableA2+0DEh*4],FxOpDE
+   mov dword[FxTableA2+0DFh*4],FxOpDFA2
+
+   mov dword[FxTableA2+0E0h*4],FxOpE0
+   mov dword[FxTableA2+0E1h*4],FxOpE1
+   mov dword[FxTableA2+0E2h*4],FxOpE2
+   mov dword[FxTableA2+0E3h*4],FxOpE3
+   mov dword[FxTableA2+0E4h*4],FxOpE4
+   mov dword[FxTableA2+0E5h*4],FxOpE5
+   mov dword[FxTableA2+0E6h*4],FxOpE6
+   mov dword[FxTableA2+0E7h*4],FxOpE7
+   mov dword[FxTableA2+0E8h*4],FxOpE8
+   mov dword[FxTableA2+0E9h*4],FxOpE9
+   mov dword[FxTableA2+0EAh*4],FxOpEA
+   mov dword[FxTableA2+0EBh*4],FxOpEB
+   mov dword[FxTableA2+0ECh*4],FxOpEC
+   mov dword[FxTableA2+0EDh*4],FxOpED
+   mov dword[FxTableA2+0EEh*4],FxOpEE
+   mov dword[FxTableA2+0EFh*4],FxOpEFA2
+
+   mov dword[FxTableA2+0F0h*4],FxOpF0A2
+   mov dword[FxTableA2+0F1h*4],FxOpF1A2
+   mov dword[FxTableA2+0F2h*4],FxOpF2A2
+   mov dword[FxTableA2+0F3h*4],FxOpF3A2
+   mov dword[FxTableA2+0F4h*4],FxOpF4A2
+   mov dword[FxTableA2+0F5h*4],FxOpF5A2
+   mov dword[FxTableA2+0F6h*4],FxOpF6A2
+   mov dword[FxTableA2+0F7h*4],FxOpF7A2
+   mov dword[FxTableA2+0F8h*4],FxOpF8A2
+   mov dword[FxTableA2+0F9h*4],FxOpF9A2
+   mov dword[FxTableA2+0FAh*4],FxOpFAA2
+   mov dword[FxTableA2+0FBh*4],FxOpFBA2
+   mov dword[FxTableA2+0FCh*4],FxOpFCA2
+   mov dword[FxTableA2+0FDh*4],FxOpFDA2
+   mov dword[FxTableA2+0FEh*4],FxOpFEA2
+   mov dword[FxTableA2+0FFh*4],FxOpFFA2
+
+   mov dword[FxTableA3+00h*4],FxOp00
+   mov dword[FxTableA3+01h*4],FxOp01
+   mov dword[FxTableA3+02h*4],FxOp02
+   mov dword[FxTableA3+03h*4],FxOp03
+   mov dword[FxTableA3+04h*4],FxOp04
+   mov dword[FxTableA3+05h*4],FxOp05
+   mov dword[FxTableA3+06h*4],FxOp06
+   mov dword[FxTableA3+07h*4],FxOp07
+   mov dword[FxTableA3+08h*4],FxOp08
+   mov dword[FxTableA3+09h*4],FxOp09
+   mov dword[FxTableA3+0Ah*4],FxOp0A
+   mov dword[FxTableA3+0Bh*4],FxOp0B
+   mov dword[FxTableA3+0Ch*4],FxOp0C
+   mov dword[FxTableA3+0Dh*4],FxOp0D
+   mov dword[FxTableA3+0Eh*4],FxOp0E
+   mov dword[FxTableA3+0Fh*4],FxOp0F
+
+   mov dword[FxTableA3+10h*4],FxOp10
+   mov dword[FxTableA3+11h*4],FxOp11
+   mov dword[FxTableA3+12h*4],FxOp12
+   mov dword[FxTableA3+13h*4],FxOp13
+   mov dword[FxTableA3+14h*4],FxOp14
+   mov dword[FxTableA3+15h*4],FxOp15
+   mov dword[FxTableA3+16h*4],FxOp16
+   mov dword[FxTableA3+17h*4],FxOp17
+   mov dword[FxTableA3+18h*4],FxOp18
+   mov dword[FxTableA3+19h*4],FxOp19
+   mov dword[FxTableA3+1Ah*4],FxOp1A
+   mov dword[FxTableA3+1Bh*4],FxOp1B
+   mov dword[FxTableA3+1Ch*4],FxOp1C
+   mov dword[FxTableA3+1Dh*4],FxOp1D
+   mov dword[FxTableA3+1Eh*4],FxOp1E
+   mov dword[FxTableA3+1Fh*4],FxOp1F
+
+   mov dword[FxTableA3+20h*4],FxOp20
+   mov dword[FxTableA3+21h*4],FxOp21
+   mov dword[FxTableA3+22h*4],FxOp22
+   mov dword[FxTableA3+23h*4],FxOp23
+   mov dword[FxTableA3+24h*4],FxOp24
+   mov dword[FxTableA3+25h*4],FxOp25
+   mov dword[FxTableA3+26h*4],FxOp26
+   mov dword[FxTableA3+27h*4],FxOp27
+   mov dword[FxTableA3+28h*4],FxOp28
+   mov dword[FxTableA3+29h*4],FxOp29
+   mov dword[FxTableA3+2Ah*4],FxOp2A
+   mov dword[FxTableA3+2Bh*4],FxOp2B
+   mov dword[FxTableA3+2Ch*4],FxOp2C
+   mov dword[FxTableA3+2Dh*4],FxOp2D
+   mov dword[FxTableA3+2Eh*4],FxOp2E
+   mov dword[FxTableA3+2Fh*4],FxOp2F
+
+   mov dword[FxTableA3+30h*4],FxOp30
+   mov dword[FxTableA3+31h*4],FxOp31
+   mov dword[FxTableA3+32h*4],FxOp32
+   mov dword[FxTableA3+33h*4],FxOp33
+   mov dword[FxTableA3+34h*4],FxOp34
+   mov dword[FxTableA3+35h*4],FxOp35
+   mov dword[FxTableA3+36h*4],FxOp36
+   mov dword[FxTableA3+37h*4],FxOp37
+   mov dword[FxTableA3+38h*4],FxOp38
+   mov dword[FxTableA3+39h*4],FxOp39
+   mov dword[FxTableA3+3Ah*4],FxOp3A
+   mov dword[FxTableA3+3Bh*4],FxOp3B
+   mov dword[FxTableA3+3Ch*4],FxOp3C
+   mov dword[FxTableA3+3Dh*4],FxOp3D
+   mov dword[FxTableA3+3Eh*4],FxOp3E
+   mov dword[FxTableA3+3Fh*4],FxOp3F
+
+   mov dword[FxTableA3+40h*4],FxOp40
+   mov dword[FxTableA3+41h*4],FxOp41
+   mov dword[FxTableA3+42h*4],FxOp42
+   mov dword[FxTableA3+43h*4],FxOp43
+   mov dword[FxTableA3+44h*4],FxOp44
+   mov dword[FxTableA3+45h*4],FxOp45
+   mov dword[FxTableA3+46h*4],FxOp46
+   mov dword[FxTableA3+47h*4],FxOp47
+   mov dword[FxTableA3+48h*4],FxOp48
+   mov dword[FxTableA3+49h*4],FxOp49
+   mov dword[FxTableA3+4Ah*4],FxOp4A
+   mov dword[FxTableA3+4Bh*4],FxOp4B
+   mov dword[FxTableA3+4Ch*4],FxOp4C
+   mov dword[FxTableA3+4Dh*4],FxOp4D
+   mov dword[FxTableA3+4Eh*4],FxOp4E
+   mov dword[FxTableA3+4Fh*4],FxOp4F
+
+   mov dword[FxTableA3+50h*4],FxOp50A3
+   mov dword[FxTableA3+51h*4],FxOp51A3
+   mov dword[FxTableA3+52h*4],FxOp52A3
+   mov dword[FxTableA3+53h*4],FxOp53A3
+   mov dword[FxTableA3+54h*4],FxOp54A3
+   mov dword[FxTableA3+55h*4],FxOp55A3
+   mov dword[FxTableA3+56h*4],FxOp56A3
+   mov dword[FxTableA3+57h*4],FxOp57A3
+   mov dword[FxTableA3+58h*4],FxOp58A3
+   mov dword[FxTableA3+59h*4],FxOp59A3
+   mov dword[FxTableA3+5Ah*4],FxOp5AA3
+   mov dword[FxTableA3+5Bh*4],FxOp5BA3
+   mov dword[FxTableA3+5Ch*4],FxOp5CA3
+   mov dword[FxTableA3+5Dh*4],FxOp5DA3
+   mov dword[FxTableA3+5Eh*4],FxOp5EA3
+   mov dword[FxTableA3+5Fh*4],FxOp5FA3
+
+   mov dword[FxTableA3+60h*4],FxOp60A3
+   mov dword[FxTableA3+61h*4],FxOp61A3
+   mov dword[FxTableA3+62h*4],FxOp62A3
+   mov dword[FxTableA3+63h*4],FxOp63A3
+   mov dword[FxTableA3+64h*4],FxOp64A3
+   mov dword[FxTableA3+65h*4],FxOp65A3
+   mov dword[FxTableA3+66h*4],FxOp66A3
+   mov dword[FxTableA3+67h*4],FxOp67A3
+   mov dword[FxTableA3+68h*4],FxOp68A3
+   mov dword[FxTableA3+69h*4],FxOp69A3
+   mov dword[FxTableA3+6Ah*4],FxOp6AA3
+   mov dword[FxTableA3+6Bh*4],FxOp6BA3
+   mov dword[FxTableA3+6Ch*4],FxOp6CA3
+   mov dword[FxTableA3+6Dh*4],FxOp6DA3
+   mov dword[FxTableA3+6Eh*4],FxOp6EA3
+   mov dword[FxTableA3+6Fh*4],FxOp6FA3
+
+   mov dword[FxTableA3+70h*4],FxOp70
+   mov dword[FxTableA3+71h*4],FxOp71A3
+   mov dword[FxTableA3+72h*4],FxOp72A3
+   mov dword[FxTableA3+73h*4],FxOp73A3
+   mov dword[FxTableA3+74h*4],FxOp74A3
+   mov dword[FxTableA3+75h*4],FxOp75A3
+   mov dword[FxTableA3+76h*4],FxOp76A3
+   mov dword[FxTableA3+77h*4],FxOp77A3
+   mov dword[FxTableA3+78h*4],FxOp78A3
+   mov dword[FxTableA3+79h*4],FxOp79A3
+   mov dword[FxTableA3+7Ah*4],FxOp7AA3
+   mov dword[FxTableA3+7Bh*4],FxOp7BA3
+   mov dword[FxTableA3+7Ch*4],FxOp7CA3
+   mov dword[FxTableA3+7Dh*4],FxOp7DA3
+   mov dword[FxTableA3+7Eh*4],FxOp7EA3
+   mov dword[FxTableA3+7Fh*4],FxOp7FA3
+
+   mov dword[FxTableA3+80h*4],FxOp80A3
+   mov dword[FxTableA3+81h*4],FxOp81A3
+   mov dword[FxTableA3+82h*4],FxOp82A3
+   mov dword[FxTableA3+83h*4],FxOp83A3
+   mov dword[FxTableA3+84h*4],FxOp84A3
+   mov dword[FxTableA3+85h*4],FxOp85A3
+   mov dword[FxTableA3+86h*4],FxOp86A3
+   mov dword[FxTableA3+87h*4],FxOp87A3
+   mov dword[FxTableA3+88h*4],FxOp88A3
+   mov dword[FxTableA3+89h*4],FxOp89A3
+   mov dword[FxTableA3+8Ah*4],FxOp8AA3
+   mov dword[FxTableA3+8Bh*4],FxOp8BA3
+   mov dword[FxTableA3+8Ch*4],FxOp8CA3
+   mov dword[FxTableA3+8Dh*4],FxOp8DA3
+   mov dword[FxTableA3+8Eh*4],FxOp8EA3
+   mov dword[FxTableA3+8Fh*4],FxOp8FA3
+
+   mov dword[FxTableA3+90h*4],FxOp90
+   mov dword[FxTableA3+91h*4],FxOp91
+   mov dword[FxTableA3+92h*4],FxOp92
+   mov dword[FxTableA3+93h*4],FxOp93
+   mov dword[FxTableA3+94h*4],FxOp94
+   mov dword[FxTableA3+95h*4],FxOp95
+   mov dword[FxTableA3+96h*4],FxOp96
+   mov dword[FxTableA3+97h*4],FxOp97
+   mov dword[FxTableA3+98h*4],FxOp98
+   mov dword[FxTableA3+99h*4],FxOp99
+   mov dword[FxTableA3+9Ah*4],FxOp9A
+   mov dword[FxTableA3+9Bh*4],FxOp9B
+   mov dword[FxTableA3+9Ch*4],FxOp9C
+   mov dword[FxTableA3+9Dh*4],FxOp9D
+   mov dword[FxTableA3+9Eh*4],FxOp9E
+   mov dword[FxTableA3+9Fh*4],FxOp9F
+
+   mov dword[FxTableA3+0A0h*4],FxOpA0
+   mov dword[FxTableA3+0A1h*4],FxOpA1
+   mov dword[FxTableA3+0A2h*4],FxOpA2
+   mov dword[FxTableA3+0A3h*4],FxOpA3
+   mov dword[FxTableA3+0A4h*4],FxOpA4
+   mov dword[FxTableA3+0A5h*4],FxOpA5
+   mov dword[FxTableA3+0A6h*4],FxOpA6
+   mov dword[FxTableA3+0A7h*4],FxOpA7
+   mov dword[FxTableA3+0A8h*4],FxOpA8
+   mov dword[FxTableA3+0A9h*4],FxOpA9
+   mov dword[FxTableA3+0AAh*4],FxOpAA
+   mov dword[FxTableA3+0ABh*4],FxOpAB
+   mov dword[FxTableA3+0ACh*4],FxOpAC
+   mov dword[FxTableA3+0ADh*4],FxOpAD
+   mov dword[FxTableA3+0AEh*4],FxOpAE
+   mov dword[FxTableA3+0AFh*4],FxOpAF
+
+   mov dword[FxTableA3+0B0h*4],FxOpB0
+   mov dword[FxTableA3+0B1h*4],FxOpB1
+   mov dword[FxTableA3+0B2h*4],FxOpB2
+   mov dword[FxTableA3+0B3h*4],FxOpB3
+   mov dword[FxTableA3+0B4h*4],FxOpB4
+   mov dword[FxTableA3+0B5h*4],FxOpB5
+   mov dword[FxTableA3+0B6h*4],FxOpB6
+   mov dword[FxTableA3+0B7h*4],FxOpB7
+   mov dword[FxTableA3+0B8h*4],FxOpB8
+   mov dword[FxTableA3+0B9h*4],FxOpB9
+   mov dword[FxTableA3+0BAh*4],FxOpBA
+   mov dword[FxTableA3+0BBh*4],FxOpBB
+   mov dword[FxTableA3+0BCh*4],FxOpBC
+   mov dword[FxTableA3+0BDh*4],FxOpBD
+   mov dword[FxTableA3+0BEh*4],FxOpBE
+   mov dword[FxTableA3+0BFh*4],FxOpBF
+
+   mov dword[FxTableA3+0C0h*4],FxOpC0
+   mov dword[FxTableA3+0C1h*4],FxOpC1A3
+   mov dword[FxTableA3+0C2h*4],FxOpC2A3
+   mov dword[FxTableA3+0C3h*4],FxOpC3A3
+   mov dword[FxTableA3+0C4h*4],FxOpC4A3
+   mov dword[FxTableA3+0C5h*4],FxOpC5A3
+   mov dword[FxTableA3+0C6h*4],FxOpC6A3
+   mov dword[FxTableA3+0C7h*4],FxOpC7A3
+   mov dword[FxTableA3+0C8h*4],FxOpC8A3
+   mov dword[FxTableA3+0C9h*4],FxOpC9A3
+   mov dword[FxTableA3+0CAh*4],FxOpCAA3
+   mov dword[FxTableA3+0CBh*4],FxOpCBA3
+   mov dword[FxTableA3+0CCh*4],FxOpCCA3
+   mov dword[FxTableA3+0CDh*4],FxOpCDA3
+   mov dword[FxTableA3+0CEh*4],FxOpCEA3
+   mov dword[FxTableA3+0CFh*4],FxOpCFA3
+
+   mov dword[FxTableA3+0D0h*4],FxOpD0
+   mov dword[FxTableA3+0D1h*4],FxOpD1
+   mov dword[FxTableA3+0D2h*4],FxOpD2
+   mov dword[FxTableA3+0D3h*4],FxOpD3
+   mov dword[FxTableA3+0D4h*4],FxOpD4
+   mov dword[FxTableA3+0D5h*4],FxOpD5
+   mov dword[FxTableA3+0D6h*4],FxOpD6
+   mov dword[FxTableA3+0D7h*4],FxOpD7
+   mov dword[FxTableA3+0D8h*4],FxOpD8
+   mov dword[FxTableA3+0D9h*4],FxOpD9
+   mov dword[FxTableA3+0DAh*4],FxOpDA
+   mov dword[FxTableA3+0DBh*4],FxOpDB
+   mov dword[FxTableA3+0DCh*4],FxOpDC
+   mov dword[FxTableA3+0DDh*4],FxOpDD
+   mov dword[FxTableA3+0DEh*4],FxOpDE
+   mov dword[FxTableA3+0DFh*4],FxOpDFA3
+
+   mov dword[FxTableA3+0E0h*4],FxOpE0
+   mov dword[FxTableA3+0E1h*4],FxOpE1
+   mov dword[FxTableA3+0E2h*4],FxOpE2
+   mov dword[FxTableA3+0E3h*4],FxOpE3
+   mov dword[FxTableA3+0E4h*4],FxOpE4
+   mov dword[FxTableA3+0E5h*4],FxOpE5
+   mov dword[FxTableA3+0E6h*4],FxOpE6
+   mov dword[FxTableA3+0E7h*4],FxOpE7
+   mov dword[FxTableA3+0E8h*4],FxOpE8
+   mov dword[FxTableA3+0E9h*4],FxOpE9
+   mov dword[FxTableA3+0EAh*4],FxOpEA
+   mov dword[FxTableA3+0EBh*4],FxOpEB
+   mov dword[FxTableA3+0ECh*4],FxOpEC
+   mov dword[FxTableA3+0EDh*4],FxOpED
+   mov dword[FxTableA3+0EEh*4],FxOpEE
+   mov dword[FxTableA3+0EFh*4],FxOpEFA3
+
+   mov dword[FxTableA3+0F0h*4],FxOpF0
+   mov dword[FxTableA3+0F1h*4],FxOpF1
+   mov dword[FxTableA3+0F2h*4],FxOpF2
+   mov dword[FxTableA3+0F3h*4],FxOpF3
+   mov dword[FxTableA3+0F4h*4],FxOpF4
+   mov dword[FxTableA3+0F5h*4],FxOpF5
+   mov dword[FxTableA3+0F6h*4],FxOpF6
+   mov dword[FxTableA3+0F7h*4],FxOpF7
+   mov dword[FxTableA3+0F8h*4],FxOpF8
+   mov dword[FxTableA3+0F9h*4],FxOpF9
+   mov dword[FxTableA3+0FAh*4],FxOpFA
+   mov dword[FxTableA3+0FBh*4],FxOpFB
+   mov dword[FxTableA3+0FCh*4],FxOpFC
+   mov dword[FxTableA3+0FDh*4],FxOpFD
+   mov dword[FxTableA3+0FEh*4],FxOpFE
+   mov dword[FxTableA3+0FFh*4],FxOpFF
 
    ; Transfer FxTable to FxTableb and FxTablec
    mov esi,FxTable
@@ -1742,1471 +1742,1471 @@ NEWSYM InitFxTables
    mov ecx,256*4
    rep movsd
 
-   mov dword [FxTableb+05h*4],FxOpb05
-   mov dword [FxTableb+06h*4],FxOpb06
-   mov dword [FxTableb+07h*4],FxOpb07
-   mov dword [FxTableb+08h*4],FxOpb08
-   mov dword [FxTableb+09h*4],FxOpb09
-   mov dword [FxTableb+0Ah*4],FxOpb0A
-   mov dword [FxTableb+0Bh*4],FxOpb0B
-   mov dword [FxTableb+0Ch*4],FxOpb0C
-   mov dword [FxTableb+0Dh*4],FxOpb0D
-   mov dword [FxTableb+0Eh*4],FxOpb0E
-   mov dword [FxTableb+0Fh*4],FxOpb0F
-   mov dword [FxTableb+10h*4],FxOpb10
-   mov dword [FxTableb+11h*4],FxOpb11
-   mov dword [FxTableb+12h*4],FxOpb12
-   mov dword [FxTableb+13h*4],FxOpb13
-   mov dword [FxTableb+14h*4],FxOpb14
-   mov dword [FxTableb+15h*4],FxOpb15
-   mov dword [FxTableb+16h*4],FxOpb16
-   mov dword [FxTableb+17h*4],FxOpb17
-   mov dword [FxTableb+18h*4],FxOpb18
-   mov dword [FxTableb+19h*4],FxOpb19
-   mov dword [FxTableb+1Ah*4],FxOpb1A
-   mov dword [FxTableb+1Bh*4],FxOpb1B
-   mov dword [FxTableb+1Ch*4],FxOpb1C
-   mov dword [FxTableb+1Dh*4],FxOpb1D
-   mov dword [FxTableb+1Eh*4],FxOpb1E
-   mov dword [FxTableb+1Fh*4],FxOpb1F
-   mov dword [FxTableb+3Dh*4],FxOpb3D
-   mov dword [FxTableb+3Eh*4],FxOpb3E
-   mov dword [FxTableb+3Fh*4],FxOpb3F
-   mov dword [FxTableb+0B0h*4],FxOpbB0
-   mov dword [FxTableb+0B1h*4],FxOpbB1
-   mov dword [FxTableb+0B2h*4],FxOpbB2
-   mov dword [FxTableb+0B3h*4],FxOpbB3
-   mov dword [FxTableb+0B4h*4],FxOpbB4
-   mov dword [FxTableb+0B5h*4],FxOpbB5
-   mov dword [FxTableb+0B6h*4],FxOpbB6
-   mov dword [FxTableb+0B7h*4],FxOpbB7
-   mov dword [FxTableb+0B8h*4],FxOpbB8
-   mov dword [FxTableb+0B9h*4],FxOpbB9
-   mov dword [FxTableb+0BAh*4],FxOpbBA
-   mov dword [FxTableb+0BBh*4],FxOpbBB
-   mov dword [FxTableb+0BCh*4],FxOpbBC
-   mov dword [FxTableb+0BDh*4],FxOpbBD
-   mov dword [FxTableb+0BEh*4],FxOpbBE
-   mov dword [FxTableb+0BFh*4],FxOpbBF
-
-   mov dword [FxTablebA1+05h*4],FxOpb05
-   mov dword [FxTablebA1+06h*4],FxOpb06
-   mov dword [FxTablebA1+07h*4],FxOpb07
-   mov dword [FxTablebA1+08h*4],FxOpb08
-   mov dword [FxTablebA1+09h*4],FxOpb09
-   mov dword [FxTablebA1+0Ah*4],FxOpb0A
-   mov dword [FxTablebA1+0Bh*4],FxOpb0B
-   mov dword [FxTablebA1+0Ch*4],FxOpb0C
-   mov dword [FxTablebA1+0Dh*4],FxOpb0D
-   mov dword [FxTablebA1+0Eh*4],FxOpb0E
-   mov dword [FxTablebA1+0Fh*4],FxOpb0F
-   mov dword [FxTablebA1+10h*4],FxOpb10
-   mov dword [FxTablebA1+11h*4],FxOpb11
-   mov dword [FxTablebA1+12h*4],FxOpb12
-   mov dword [FxTablebA1+13h*4],FxOpb13
-   mov dword [FxTablebA1+14h*4],FxOpb14
-   mov dword [FxTablebA1+15h*4],FxOpb15
-   mov dword [FxTablebA1+16h*4],FxOpb16
-   mov dword [FxTablebA1+17h*4],FxOpb17
-   mov dword [FxTablebA1+18h*4],FxOpb18
-   mov dword [FxTablebA1+19h*4],FxOpb19
-   mov dword [FxTablebA1+1Ah*4],FxOpb1A
-   mov dword [FxTablebA1+1Bh*4],FxOpb1B
-   mov dword [FxTablebA1+1Ch*4],FxOpb1C
-   mov dword [FxTablebA1+1Dh*4],FxOpb1D
-   mov dword [FxTablebA1+1Eh*4],FxOpb1E
-   mov dword [FxTablebA1+1Fh*4],FxOpb1F
-   mov dword [FxTablebA1+3Dh*4],FxOpb3D
-   mov dword [FxTablebA1+3Eh*4],FxOpb3E
-   mov dword [FxTablebA1+3Fh*4],FxOpb3F
-   mov dword [FxTablebA1+0B0h*4],FxOpbB0
-   mov dword [FxTablebA1+0B1h*4],FxOpbB1
-   mov dword [FxTablebA1+0B2h*4],FxOpbB2
-   mov dword [FxTablebA1+0B3h*4],FxOpbB3
-   mov dword [FxTablebA1+0B4h*4],FxOpbB4
-   mov dword [FxTablebA1+0B5h*4],FxOpbB5
-   mov dword [FxTablebA1+0B6h*4],FxOpbB6
-   mov dword [FxTablebA1+0B7h*4],FxOpbB7
-   mov dword [FxTablebA1+0B8h*4],FxOpbB8
-   mov dword [FxTablebA1+0B9h*4],FxOpbB9
-   mov dword [FxTablebA1+0BAh*4],FxOpbBA
-   mov dword [FxTablebA1+0BBh*4],FxOpbBB
-   mov dword [FxTablebA1+0BCh*4],FxOpbBC
-   mov dword [FxTablebA1+0BDh*4],FxOpbBD
-   mov dword [FxTablebA1+0BEh*4],FxOpbBE
-   mov dword [FxTablebA1+0BFh*4],FxOpbBF
-
-   mov dword [FxTablebA2+05h*4],FxOpb05
-   mov dword [FxTablebA2+06h*4],FxOpb06
-   mov dword [FxTablebA2+07h*4],FxOpb07
-   mov dword [FxTablebA2+08h*4],FxOpb08
-   mov dword [FxTablebA2+09h*4],FxOpb09
-   mov dword [FxTablebA2+0Ah*4],FxOpb0A
-   mov dword [FxTablebA2+0Bh*4],FxOpb0B
-   mov dword [FxTablebA2+0Ch*4],FxOpb0C
-   mov dword [FxTablebA2+0Dh*4],FxOpb0D
-   mov dword [FxTablebA2+0Eh*4],FxOpb0E
-   mov dword [FxTablebA2+0Fh*4],FxOpb0F
-   mov dword [FxTablebA2+10h*4],FxOpb10
-   mov dword [FxTablebA2+11h*4],FxOpb11
-   mov dword [FxTablebA2+12h*4],FxOpb12
-   mov dword [FxTablebA2+13h*4],FxOpb13
-   mov dword [FxTablebA2+14h*4],FxOpb14
-   mov dword [FxTablebA2+15h*4],FxOpb15
-   mov dword [FxTablebA2+16h*4],FxOpb16
-   mov dword [FxTablebA2+17h*4],FxOpb17
-   mov dword [FxTablebA2+18h*4],FxOpb18
-   mov dword [FxTablebA2+19h*4],FxOpb19
-   mov dword [FxTablebA2+1Ah*4],FxOpb1A
-   mov dword [FxTablebA2+1Bh*4],FxOpb1B
-   mov dword [FxTablebA2+1Ch*4],FxOpb1C
-   mov dword [FxTablebA2+1Dh*4],FxOpb1D
-   mov dword [FxTablebA2+1Eh*4],FxOpb1E
-   mov dword [FxTablebA2+1Fh*4],FxOpb1F
-   mov dword [FxTablebA2+3Dh*4],FxOpb3D
-   mov dword [FxTablebA2+3Eh*4],FxOpb3E
-   mov dword [FxTablebA2+3Fh*4],FxOpb3F
-   mov dword [FxTablebA2+0B0h*4],FxOpbB0
-   mov dword [FxTablebA2+0B1h*4],FxOpbB1
-   mov dword [FxTablebA2+0B2h*4],FxOpbB2
-   mov dword [FxTablebA2+0B3h*4],FxOpbB3
-   mov dword [FxTablebA2+0B4h*4],FxOpbB4
-   mov dword [FxTablebA2+0B5h*4],FxOpbB5
-   mov dword [FxTablebA2+0B6h*4],FxOpbB6
-   mov dword [FxTablebA2+0B7h*4],FxOpbB7
-   mov dword [FxTablebA2+0B8h*4],FxOpbB8
-   mov dword [FxTablebA2+0B9h*4],FxOpbB9
-   mov dword [FxTablebA2+0BAh*4],FxOpbBA
-   mov dword [FxTablebA2+0BBh*4],FxOpbBB
-   mov dword [FxTablebA2+0BCh*4],FxOpbBC
-   mov dword [FxTablebA2+0BDh*4],FxOpbBD
-   mov dword [FxTablebA2+0BEh*4],FxOpbBE
-   mov dword [FxTablebA2+0BFh*4],FxOpbBF
-
-   mov dword [FxTablebA3+05h*4],FxOpb05
-   mov dword [FxTablebA3+06h*4],FxOpb06
-   mov dword [FxTablebA3+07h*4],FxOpb07
-   mov dword [FxTablebA3+08h*4],FxOpb08
-   mov dword [FxTablebA3+09h*4],FxOpb09
-   mov dword [FxTablebA3+0Ah*4],FxOpb0A
-   mov dword [FxTablebA3+0Bh*4],FxOpb0B
-   mov dword [FxTablebA3+0Ch*4],FxOpb0C
-   mov dword [FxTablebA3+0Dh*4],FxOpb0D
-   mov dword [FxTablebA3+0Eh*4],FxOpb0E
-   mov dword [FxTablebA3+0Fh*4],FxOpb0F
-   mov dword [FxTablebA3+10h*4],FxOpb10
-   mov dword [FxTablebA3+11h*4],FxOpb11
-   mov dword [FxTablebA3+12h*4],FxOpb12
-   mov dword [FxTablebA3+13h*4],FxOpb13
-   mov dword [FxTablebA3+14h*4],FxOpb14
-   mov dword [FxTablebA3+15h*4],FxOpb15
-   mov dword [FxTablebA3+16h*4],FxOpb16
-   mov dword [FxTablebA3+17h*4],FxOpb17
-   mov dword [FxTablebA3+18h*4],FxOpb18
-   mov dword [FxTablebA3+19h*4],FxOpb19
-   mov dword [FxTablebA3+1Ah*4],FxOpb1A
-   mov dword [FxTablebA3+1Bh*4],FxOpb1B
-   mov dword [FxTablebA3+1Ch*4],FxOpb1C
-   mov dword [FxTablebA3+1Dh*4],FxOpb1D
-   mov dword [FxTablebA3+1Eh*4],FxOpb1E
-   mov dword [FxTablebA3+1Fh*4],FxOpb1F
-   mov dword [FxTablebA3+3Dh*4],FxOpb3D
-   mov dword [FxTablebA3+3Eh*4],FxOpb3E
-   mov dword [FxTablebA3+3Fh*4],FxOpb3F
-   mov dword [FxTablebA3+0B0h*4],FxOpbB0
-   mov dword [FxTablebA3+0B1h*4],FxOpbB1
-   mov dword [FxTablebA3+0B2h*4],FxOpbB2
-   mov dword [FxTablebA3+0B3h*4],FxOpbB3
-   mov dword [FxTablebA3+0B4h*4],FxOpbB4
-   mov dword [FxTablebA3+0B5h*4],FxOpbB5
-   mov dword [FxTablebA3+0B6h*4],FxOpbB6
-   mov dword [FxTablebA3+0B7h*4],FxOpbB7
-   mov dword [FxTablebA3+0B8h*4],FxOpbB8
-   mov dword [FxTablebA3+0B9h*4],FxOpbB9
-   mov dword [FxTablebA3+0BAh*4],FxOpbBA
-   mov dword [FxTablebA3+0BBh*4],FxOpbBB
-   mov dword [FxTablebA3+0BCh*4],FxOpbBC
-   mov dword [FxTablebA3+0BDh*4],FxOpbBD
-   mov dword [FxTablebA3+0BEh*4],FxOpbBE
-   mov dword [FxTablebA3+0BFh*4],FxOpbBF
-
-   mov dword [FxTablec+05h*4],FxOpc05
-   mov dword [FxTablec+06h*4],FxOpc06
-   mov dword [FxTablec+07h*4],FxOpc07
-   mov dword [FxTablec+08h*4],FxOpc08
-   mov dword [FxTablec+09h*4],FxOpc09
-   mov dword [FxTablec+0Ah*4],FxOpc0A
-   mov dword [FxTablec+0Bh*4],FxOpc0B
-   mov dword [FxTablec+0Ch*4],FxOpc0C
-   mov dword [FxTablec+0Dh*4],FxOpc0D
-   mov dword [FxTablec+0Eh*4],FxOpc0E
-   mov dword [FxTablec+0Fh*4],FxOpc0F
-   mov dword [FxTablec+10h*4],FxOpc10
-   mov dword [FxTablec+11h*4],FxOpc11
-   mov dword [FxTablec+12h*4],FxOpc12
-   mov dword [FxTablec+13h*4],FxOpc13
-   mov dword [FxTablec+14h*4],FxOpc14
-   mov dword [FxTablec+15h*4],FxOpc15
-   mov dword [FxTablec+16h*4],FxOpc16
-   mov dword [FxTablec+17h*4],FxOpc17
-   mov dword [FxTablec+18h*4],FxOpc18
-   mov dword [FxTablec+19h*4],FxOpc19
-   mov dword [FxTablec+1Ah*4],FxOpc1A
-   mov dword [FxTablec+1Bh*4],FxOpc1B
-   mov dword [FxTablec+1Ch*4],FxOpc1C
-   mov dword [FxTablec+1Dh*4],FxOpc1D
-   mov dword [FxTablec+1Eh*4],FxOpc1E
-   mov dword [FxTablec+1Fh*4],FxOpc1F
-   mov dword [FxTablec+3Dh*4],FxOpc3D
-   mov dword [FxTablec+3Eh*4],FxOpc3E
-   mov dword [FxTablec+3Fh*4],FxOpc3F
-   mov dword [FxTablec+0B0h*4],FxOpcB0
-   mov dword [FxTablec+0B1h*4],FxOpcB1
-   mov dword [FxTablec+0B2h*4],FxOpcB2
-   mov dword [FxTablec+0B3h*4],FxOpcB3
-   mov dword [FxTablec+0B4h*4],FxOpcB4
-   mov dword [FxTablec+0B5h*4],FxOpcB5
-   mov dword [FxTablec+0B6h*4],FxOpcB6
-   mov dword [FxTablec+0B7h*4],FxOpcB7
-   mov dword [FxTablec+0B8h*4],FxOpcB8
-   mov dword [FxTablec+0B9h*4],FxOpcB9
-   mov dword [FxTablec+0BAh*4],FxOpcBA
-   mov dword [FxTablec+0BBh*4],FxOpcBB
-   mov dword [FxTablec+0BCh*4],FxOpcBC
-   mov dword [FxTablec+0BDh*4],FxOpcBD
-   mov dword [FxTablec+0BEh*4],FxOpcBE
-   mov dword [FxTablec+0BFh*4],FxOpcBF
-
-   mov dword [FxTablecA1+05h*4],FxOpc05
-   mov dword [FxTablecA1+06h*4],FxOpc06
-   mov dword [FxTablecA1+07h*4],FxOpc07
-   mov dword [FxTablecA1+08h*4],FxOpc08
-   mov dword [FxTablecA1+09h*4],FxOpc09
-   mov dword [FxTablecA1+0Ah*4],FxOpc0A
-   mov dword [FxTablecA1+0Bh*4],FxOpc0B
-   mov dword [FxTablecA1+0Ch*4],FxOpc0C
-   mov dword [FxTablecA1+0Dh*4],FxOpc0D
-   mov dword [FxTablecA1+0Eh*4],FxOpc0E
-   mov dword [FxTablecA1+0Fh*4],FxOpc0F
-   mov dword [FxTablecA1+10h*4],FxOpc10
-   mov dword [FxTablecA1+11h*4],FxOpc11
-   mov dword [FxTablecA1+12h*4],FxOpc12
-   mov dword [FxTablecA1+13h*4],FxOpc13
-   mov dword [FxTablecA1+14h*4],FxOpc14
-   mov dword [FxTablecA1+15h*4],FxOpc15
-   mov dword [FxTablecA1+16h*4],FxOpc16
-   mov dword [FxTablecA1+17h*4],FxOpc17
-   mov dword [FxTablecA1+18h*4],FxOpc18
-   mov dword [FxTablecA1+19h*4],FxOpc19
-   mov dword [FxTablecA1+1Ah*4],FxOpc1A
-   mov dword [FxTablecA1+1Bh*4],FxOpc1B
-   mov dword [FxTablecA1+1Ch*4],FxOpc1C
-   mov dword [FxTablecA1+1Dh*4],FxOpc1D
-   mov dword [FxTablecA1+1Eh*4],FxOpc1E
-   mov dword [FxTablecA1+1Fh*4],FxOpc1F
-   mov dword [FxTablecA1+3Dh*4],FxOpc3D
-   mov dword [FxTablecA1+3Eh*4],FxOpc3E
-   mov dword [FxTablecA1+3Fh*4],FxOpc3F
-   mov dword [FxTablecA1+0B0h*4],FxOpcB0
-   mov dword [FxTablecA1+0B1h*4],FxOpcB1
-   mov dword [FxTablecA1+0B2h*4],FxOpcB2
-   mov dword [FxTablecA1+0B3h*4],FxOpcB3
-   mov dword [FxTablecA1+0B4h*4],FxOpcB4
-   mov dword [FxTablecA1+0B5h*4],FxOpcB5
-   mov dword [FxTablecA1+0B6h*4],FxOpcB6
-   mov dword [FxTablecA1+0B7h*4],FxOpcB7
-   mov dword [FxTablecA1+0B8h*4],FxOpcB8
-   mov dword [FxTablecA1+0B9h*4],FxOpcB9
-   mov dword [FxTablecA1+0BAh*4],FxOpcBA
-   mov dword [FxTablecA1+0BBh*4],FxOpcBB
-   mov dword [FxTablecA1+0BCh*4],FxOpcBC
-   mov dword [FxTablecA1+0BDh*4],FxOpcBD
-   mov dword [FxTablecA1+0BEh*4],FxOpcBE
-   mov dword [FxTablecA1+0BFh*4],FxOpcBF
-
-   mov dword [FxTablecA2+05h*4],FxOpc05
-   mov dword [FxTablecA2+06h*4],FxOpc06
-   mov dword [FxTablecA2+07h*4],FxOpc07
-   mov dword [FxTablecA2+08h*4],FxOpc08
-   mov dword [FxTablecA2+09h*4],FxOpc09
-   mov dword [FxTablecA2+0Ah*4],FxOpc0A
-   mov dword [FxTablecA2+0Bh*4],FxOpc0B
-   mov dword [FxTablecA2+0Ch*4],FxOpc0C
-   mov dword [FxTablecA2+0Dh*4],FxOpc0D
-   mov dword [FxTablecA2+0Eh*4],FxOpc0E
-   mov dword [FxTablecA2+0Fh*4],FxOpc0F
-   mov dword [FxTablecA2+10h*4],FxOpc10
-   mov dword [FxTablecA2+11h*4],FxOpc11
-   mov dword [FxTablecA2+12h*4],FxOpc12
-   mov dword [FxTablecA2+13h*4],FxOpc13
-   mov dword [FxTablecA2+14h*4],FxOpc14
-   mov dword [FxTablecA2+15h*4],FxOpc15
-   mov dword [FxTablecA2+16h*4],FxOpc16
-   mov dword [FxTablecA2+17h*4],FxOpc17
-   mov dword [FxTablecA2+18h*4],FxOpc18
-   mov dword [FxTablecA2+19h*4],FxOpc19
-   mov dword [FxTablecA2+1Ah*4],FxOpc1A
-   mov dword [FxTablecA2+1Bh*4],FxOpc1B
-   mov dword [FxTablecA2+1Ch*4],FxOpc1C
-   mov dword [FxTablecA2+1Dh*4],FxOpc1D
-   mov dword [FxTablecA2+1Eh*4],FxOpc1E
-   mov dword [FxTablecA2+1Fh*4],FxOpc1F
-   mov dword [FxTablecA2+3Dh*4],FxOpc3D
-   mov dword [FxTablecA2+3Eh*4],FxOpc3E
-   mov dword [FxTablecA2+3Fh*4],FxOpc3F
-   mov dword [FxTablecA2+0B0h*4],FxOpcB0
-   mov dword [FxTablecA2+0B1h*4],FxOpcB1
-   mov dword [FxTablecA2+0B2h*4],FxOpcB2
-   mov dword [FxTablecA2+0B3h*4],FxOpcB3
-   mov dword [FxTablecA2+0B4h*4],FxOpcB4
-   mov dword [FxTablecA2+0B5h*4],FxOpcB5
-   mov dword [FxTablecA2+0B6h*4],FxOpcB6
-   mov dword [FxTablecA2+0B7h*4],FxOpcB7
-   mov dword [FxTablecA2+0B8h*4],FxOpcB8
-   mov dword [FxTablecA2+0B9h*4],FxOpcB9
-   mov dword [FxTablecA2+0BAh*4],FxOpcBA
-   mov dword [FxTablecA2+0BBh*4],FxOpcBB
-   mov dword [FxTablecA2+0BCh*4],FxOpcBC
-   mov dword [FxTablecA2+0BDh*4],FxOpcBD
-   mov dword [FxTablecA2+0BEh*4],FxOpcBE
-   mov dword [FxTablecA2+0BFh*4],FxOpcBF
-
-   mov dword [FxTablecA3+05h*4],FxOpc05
-   mov dword [FxTablecA3+06h*4],FxOpc06
-   mov dword [FxTablecA3+07h*4],FxOpc07
-   mov dword [FxTablecA3+08h*4],FxOpc08
-   mov dword [FxTablecA3+09h*4],FxOpc09
-   mov dword [FxTablecA3+0Ah*4],FxOpc0A
-   mov dword [FxTablecA3+0Bh*4],FxOpc0B
-   mov dword [FxTablecA3+0Ch*4],FxOpc0C
-   mov dword [FxTablecA3+0Dh*4],FxOpc0D
-   mov dword [FxTablecA3+0Eh*4],FxOpc0E
-   mov dword [FxTablecA3+0Fh*4],FxOpc0F
-   mov dword [FxTablecA3+10h*4],FxOpc10
-   mov dword [FxTablecA3+11h*4],FxOpc11
-   mov dword [FxTablecA3+12h*4],FxOpc12
-   mov dword [FxTablecA3+13h*4],FxOpc13
-   mov dword [FxTablecA3+14h*4],FxOpc14
-   mov dword [FxTablecA3+15h*4],FxOpc15
-   mov dword [FxTablecA3+16h*4],FxOpc16
-   mov dword [FxTablecA3+17h*4],FxOpc17
-   mov dword [FxTablecA3+18h*4],FxOpc18
-   mov dword [FxTablecA3+19h*4],FxOpc19
-   mov dword [FxTablecA3+1Ah*4],FxOpc1A
-   mov dword [FxTablecA3+1Bh*4],FxOpc1B
-   mov dword [FxTablecA3+1Ch*4],FxOpc1C
-   mov dword [FxTablecA3+1Dh*4],FxOpc1D
-   mov dword [FxTablecA3+1Eh*4],FxOpc1E
-   mov dword [FxTablecA3+1Fh*4],FxOpc1F
-   mov dword [FxTablecA3+3Dh*4],FxOpc3D
-   mov dword [FxTablecA3+3Eh*4],FxOpc3E
-   mov dword [FxTablecA3+3Fh*4],FxOpc3F
-   mov dword [FxTablecA3+0B0h*4],FxOpcB0
-   mov dword [FxTablecA3+0B1h*4],FxOpcB1
-   mov dword [FxTablecA3+0B2h*4],FxOpcB2
-   mov dword [FxTablecA3+0B3h*4],FxOpcB3
-   mov dword [FxTablecA3+0B4h*4],FxOpcB4
-   mov dword [FxTablecA3+0B5h*4],FxOpcB5
-   mov dword [FxTablecA3+0B6h*4],FxOpcB6
-   mov dword [FxTablecA3+0B7h*4],FxOpcB7
-   mov dword [FxTablecA3+0B8h*4],FxOpcB8
-   mov dword [FxTablecA3+0B9h*4],FxOpcB9
-   mov dword [FxTablecA3+0BAh*4],FxOpcBA
-   mov dword [FxTablecA3+0BBh*4],FxOpcBB
-   mov dword [FxTablecA3+0BCh*4],FxOpcBC
-   mov dword [FxTablecA3+0BDh*4],FxOpcBD
-   mov dword [FxTablecA3+0BEh*4],FxOpcBE
-   mov dword [FxTablecA3+0BFh*4],FxOpcBF
-
-   mov dword [FxTabled+00h*4],FxOpd00
-   mov dword [FxTabled+01h*4],FxOpd01
-   mov dword [FxTabled+02h*4],FxOpd02
-   mov dword [FxTabled+03h*4],FxOpd03
-   mov dword [FxTabled+04h*4],FxOpd04
-   mov dword [FxTabled+05h*4],FxOpd05
-   mov dword [FxTabled+06h*4],FxOpd06
-   mov dword [FxTabled+07h*4],FxOpd07
-   mov dword [FxTabled+08h*4],FxOpd08
-   mov dword [FxTabled+09h*4],FxOpd09
-   mov dword [FxTabled+0Ah*4],FxOpd0A
-   mov dword [FxTabled+0Bh*4],FxOpd0B
-   mov dword [FxTabled+0Ch*4],FxOpd0C
-   mov dword [FxTabled+0Dh*4],FxOpd0D
-   mov dword [FxTabled+0Eh*4],FxOpd0E
-   mov dword [FxTabled+0Fh*4],FxOpd0F
-
-   mov dword [FxTabled+10h*4],FxOpd10
-   mov dword [FxTabled+11h*4],FxOpd11
-   mov dword [FxTabled+12h*4],FxOpd12
-   mov dword [FxTabled+13h*4],FxOpd13
-   mov dword [FxTabled+14h*4],FxOpd14
-   mov dword [FxTabled+15h*4],FxOpd15
-   mov dword [FxTabled+16h*4],FxOpd16
-   mov dword [FxTabled+17h*4],FxOpd17
-   mov dword [FxTabled+18h*4],FxOpd18
-   mov dword [FxTabled+19h*4],FxOpd19
-   mov dword [FxTabled+1Ah*4],FxOpd1A
-   mov dword [FxTabled+1Bh*4],FxOpd1B
-   mov dword [FxTabled+1Ch*4],FxOpd1C
-   mov dword [FxTabled+1Dh*4],FxOpd1D
-   mov dword [FxTabled+1Eh*4],FxOpd1E
-   mov dword [FxTabled+1Fh*4],FxOpd1F
-
-   mov dword [FxTabled+20h*4],FxOpd20
-   mov dword [FxTabled+21h*4],FxOpd21
-   mov dword [FxTabled+22h*4],FxOpd22
-   mov dword [FxTabled+23h*4],FxOpd23
-   mov dword [FxTabled+24h*4],FxOpd24
-   mov dword [FxTabled+25h*4],FxOpd25
-   mov dword [FxTabled+26h*4],FxOpd26
-   mov dword [FxTabled+27h*4],FxOpd27
-   mov dword [FxTabled+28h*4],FxOpd28
-   mov dword [FxTabled+29h*4],FxOpd29
-   mov dword [FxTabled+2Ah*4],FxOpd2A
-   mov dword [FxTabled+2Bh*4],FxOpd2B
-   mov dword [FxTabled+2Ch*4],FxOpd2C
-   mov dword [FxTabled+2Dh*4],FxOpd2D
-   mov dword [FxTabled+2Eh*4],FxOpd2E
-   mov dword [FxTabled+2Fh*4],FxOpd2F
-
-   mov dword [FxTabled+30h*4],FxOpd30
-   mov dword [FxTabled+31h*4],FxOpd31
-   mov dword [FxTabled+32h*4],FxOpd32
-   mov dword [FxTabled+33h*4],FxOpd33
-   mov dword [FxTabled+34h*4],FxOpd34
-   mov dword [FxTabled+35h*4],FxOpd35
-   mov dword [FxTabled+36h*4],FxOpd36
-   mov dword [FxTabled+37h*4],FxOpd37
-   mov dword [FxTabled+38h*4],FxOpd38
-   mov dword [FxTabled+39h*4],FxOpd39
-   mov dword [FxTabled+3Ah*4],FxOpd3A
-   mov dword [FxTabled+3Bh*4],FxOpd3B
-   mov dword [FxTabled+3Ch*4],FxOpd3C
-   mov dword [FxTabled+3Dh*4],FxOpd3D
-   mov dword [FxTabled+3Eh*4],FxOpd3E
-   mov dword [FxTabled+3Fh*4],FxOpd3F
-
-   mov dword [FxTabled+40h*4],FxOpd40
-   mov dword [FxTabled+41h*4],FxOpd41
-   mov dword [FxTabled+42h*4],FxOpd42
-   mov dword [FxTabled+43h*4],FxOpd43
-   mov dword [FxTabled+44h*4],FxOpd44
-   mov dword [FxTabled+45h*4],FxOpd45
-   mov dword [FxTabled+46h*4],FxOpd46
-   mov dword [FxTabled+47h*4],FxOpd47
-   mov dword [FxTabled+48h*4],FxOpd48
-   mov dword [FxTabled+49h*4],FxOpd49
-   mov dword [FxTabled+4Ah*4],FxOpd4A
-   mov dword [FxTabled+4Bh*4],FxOpd4B
-   mov dword [FxTabled+4Ch*4],FxOpd4C
-   mov dword [FxTabled+4Dh*4],FxOpd4D
-   mov dword [FxTabled+4Eh*4],FxOpd4E
-   mov dword [FxTabled+4Fh*4],FxOpd4F
-
-   mov dword [FxTabled+50h*4],FxOpd50
-   mov dword [FxTabled+51h*4],FxOpd51
-   mov dword [FxTabled+52h*4],FxOpd52
-   mov dword [FxTabled+53h*4],FxOpd53
-   mov dword [FxTabled+54h*4],FxOpd54
-   mov dword [FxTabled+55h*4],FxOpd55
-   mov dword [FxTabled+56h*4],FxOpd56
-   mov dword [FxTabled+57h*4],FxOpd57
-   mov dword [FxTabled+58h*4],FxOpd58
-   mov dword [FxTabled+59h*4],FxOpd59
-   mov dword [FxTabled+5Ah*4],FxOpd5A
-   mov dword [FxTabled+5Bh*4],FxOpd5B
-   mov dword [FxTabled+5Ch*4],FxOpd5C
-   mov dword [FxTabled+5Dh*4],FxOpd5D
-   mov dword [FxTabled+5Eh*4],FxOpd5E
-   mov dword [FxTabled+5Fh*4],FxOpd5F
-
-   mov dword [FxTabled+60h*4],FxOpd60
-   mov dword [FxTabled+61h*4],FxOpd61
-   mov dword [FxTabled+62h*4],FxOpd62
-   mov dword [FxTabled+63h*4],FxOpd63
-   mov dword [FxTabled+64h*4],FxOpd64
-   mov dword [FxTabled+65h*4],FxOpd65
-   mov dword [FxTabled+66h*4],FxOpd66
-   mov dword [FxTabled+67h*4],FxOpd67
-   mov dword [FxTabled+68h*4],FxOpd68
-   mov dword [FxTabled+69h*4],FxOpd69
-   mov dword [FxTabled+6Ah*4],FxOpd6A
-   mov dword [FxTabled+6Bh*4],FxOpd6B
-   mov dword [FxTabled+6Ch*4],FxOpd6C
-   mov dword [FxTabled+6Dh*4],FxOpd6D
-   mov dword [FxTabled+6Eh*4],FxOpd6E
-   mov dword [FxTabled+6Fh*4],FxOpd6F
-
-   mov dword [FxTabled+70h*4],FxOpd70
-   mov dword [FxTabled+71h*4],FxOpd71
-   mov dword [FxTabled+72h*4],FxOpd72
-   mov dword [FxTabled+73h*4],FxOpd73
-   mov dword [FxTabled+74h*4],FxOpd74
-   mov dword [FxTabled+75h*4],FxOpd75
-   mov dword [FxTabled+76h*4],FxOpd76
-   mov dword [FxTabled+77h*4],FxOpd77
-   mov dword [FxTabled+78h*4],FxOpd78
-   mov dword [FxTabled+79h*4],FxOpd79
-   mov dword [FxTabled+7Ah*4],FxOpd7A
-   mov dword [FxTabled+7Bh*4],FxOpd7B
-   mov dword [FxTabled+7Ch*4],FxOpd7C
-   mov dword [FxTabled+7Dh*4],FxOpd7D
-   mov dword [FxTabled+7Eh*4],FxOpd7E
-   mov dword [FxTabled+7Fh*4],FxOpd7F
-
-   mov dword [FxTabled+80h*4],FxOpd80
-   mov dword [FxTabled+81h*4],FxOpd81
-   mov dword [FxTabled+82h*4],FxOpd82
-   mov dword [FxTabled+83h*4],FxOpd83
-   mov dword [FxTabled+84h*4],FxOpd84
-   mov dword [FxTabled+85h*4],FxOpd85
-   mov dword [FxTabled+86h*4],FxOpd86
-   mov dword [FxTabled+87h*4],FxOpd87
-   mov dword [FxTabled+88h*4],FxOpd88
-   mov dword [FxTabled+89h*4],FxOpd89
-   mov dword [FxTabled+8Ah*4],FxOpd8A
-   mov dword [FxTabled+8Bh*4],FxOpd8B
-   mov dword [FxTabled+8Ch*4],FxOpd8C
-   mov dword [FxTabled+8Dh*4],FxOpd8D
-   mov dword [FxTabled+8Eh*4],FxOpd8E
-   mov dword [FxTabled+8Fh*4],FxOpd8F
-
-   mov dword [FxTabled+90h*4],FxOpd90
-   mov dword [FxTabled+91h*4],FxOpd91
-   mov dword [FxTabled+92h*4],FxOpd92
-   mov dword [FxTabled+93h*4],FxOpd93
-   mov dword [FxTabled+94h*4],FxOpd94
-   mov dword [FxTabled+95h*4],FxOpd95
-   mov dword [FxTabled+96h*4],FxOpd96
-   mov dword [FxTabled+97h*4],FxOpd97
-   mov dword [FxTabled+98h*4],FxOpd98
-   mov dword [FxTabled+99h*4],FxOpd99
-   mov dword [FxTabled+9Ah*4],FxOpd9A
-   mov dword [FxTabled+9Bh*4],FxOpd9B
-   mov dword [FxTabled+9Ch*4],FxOpd9C
-   mov dword [FxTabled+9Dh*4],FxOpd9D
-   mov dword [FxTabled+9Eh*4],FxOpd9E
-   mov dword [FxTabled+9Fh*4],FxOpd9F
-
-   mov dword [FxTabled+0A0h*4],FxOpdA0
-   mov dword [FxTabled+0A1h*4],FxOpdA1
-   mov dword [FxTabled+0A2h*4],FxOpdA2
-   mov dword [FxTabled+0A3h*4],FxOpdA3
-   mov dword [FxTabled+0A4h*4],FxOpdA4
-   mov dword [FxTabled+0A5h*4],FxOpdA5
-   mov dword [FxTabled+0A6h*4],FxOpdA6
-   mov dword [FxTabled+0A7h*4],FxOpdA7
-   mov dword [FxTabled+0A8h*4],FxOpdA8
-   mov dword [FxTabled+0A9h*4],FxOpdA9
-   mov dword [FxTabled+0AAh*4],FxOpdAA
-   mov dword [FxTabled+0ABh*4],FxOpdAB
-   mov dword [FxTabled+0ACh*4],FxOpdAC
-   mov dword [FxTabled+0ADh*4],FxOpdAD
-   mov dword [FxTabled+0AEh*4],FxOpdAE
-   mov dword [FxTabled+0AFh*4],FxOpdAF
-
-   mov dword [FxTabled+0B0h*4],FxOpdB0
-   mov dword [FxTabled+0B1h*4],FxOpdB1
-   mov dword [FxTabled+0B2h*4],FxOpdB2
-   mov dword [FxTabled+0B3h*4],FxOpdB3
-   mov dword [FxTabled+0B4h*4],FxOpdB4
-   mov dword [FxTabled+0B5h*4],FxOpdB5
-   mov dword [FxTabled+0B6h*4],FxOpdB6
-   mov dword [FxTabled+0B7h*4],FxOpdB7
-   mov dword [FxTabled+0B8h*4],FxOpdB8
-   mov dword [FxTabled+0B9h*4],FxOpdB9
-   mov dword [FxTabled+0BAh*4],FxOpdBA
-   mov dword [FxTabled+0BBh*4],FxOpdBB
-   mov dword [FxTabled+0BCh*4],FxOpdBC
-   mov dword [FxTabled+0BDh*4],FxOpdBD
-   mov dword [FxTabled+0BEh*4],FxOpdBE
-   mov dword [FxTabled+0BFh*4],FxOpdBF
-
-   mov dword [FxTabled+0C0h*4],FxOpdC0
-   mov dword [FxTabled+0C1h*4],FxOpdC1
-   mov dword [FxTabled+0C2h*4],FxOpdC2
-   mov dword [FxTabled+0C3h*4],FxOpdC3
-   mov dword [FxTabled+0C4h*4],FxOpdC4
-   mov dword [FxTabled+0C5h*4],FxOpdC5
-   mov dword [FxTabled+0C6h*4],FxOpdC6
-   mov dword [FxTabled+0C7h*4],FxOpdC7
-   mov dword [FxTabled+0C8h*4],FxOpdC8
-   mov dword [FxTabled+0C9h*4],FxOpdC9
-   mov dword [FxTabled+0CAh*4],FxOpdCA
-   mov dword [FxTabled+0CBh*4],FxOpdCB
-   mov dword [FxTabled+0CCh*4],FxOpdCC
-   mov dword [FxTabled+0CDh*4],FxOpdCD
-   mov dword [FxTabled+0CEh*4],FxOpdCE
-   mov dword [FxTabled+0CFh*4],FxOpdCF
-
-   mov dword [FxTabled+0D0h*4],FxOpdD0
-   mov dword [FxTabled+0D1h*4],FxOpdD1
-   mov dword [FxTabled+0D2h*4],FxOpdD2
-   mov dword [FxTabled+0D3h*4],FxOpdD3
-   mov dword [FxTabled+0D4h*4],FxOpdD4
-   mov dword [FxTabled+0D5h*4],FxOpdD5
-   mov dword [FxTabled+0D6h*4],FxOpdD6
-   mov dword [FxTabled+0D7h*4],FxOpdD7
-   mov dword [FxTabled+0D8h*4],FxOpdD8
-   mov dword [FxTabled+0D9h*4],FxOpdD9
-   mov dword [FxTabled+0DAh*4],FxOpdDA
-   mov dword [FxTabled+0DBh*4],FxOpdDB
-   mov dword [FxTabled+0DCh*4],FxOpdDC
-   mov dword [FxTabled+0DDh*4],FxOpdDD
-   mov dword [FxTabled+0DEh*4],FxOpdDE
-   mov dword [FxTabled+0DFh*4],FxOpdDF
-
-   mov dword [FxTabled+0E0h*4],FxOpdE0
-   mov dword [FxTabled+0E1h*4],FxOpdE1
-   mov dword [FxTabled+0E2h*4],FxOpdE2
-   mov dword [FxTabled+0E3h*4],FxOpdE3
-   mov dword [FxTabled+0E4h*4],FxOpdE4
-   mov dword [FxTabled+0E5h*4],FxOpdE5
-   mov dword [FxTabled+0E6h*4],FxOpdE6
-   mov dword [FxTabled+0E7h*4],FxOpdE7
-   mov dword [FxTabled+0E8h*4],FxOpdE8
-   mov dword [FxTabled+0E9h*4],FxOpdE9
-   mov dword [FxTabled+0EAh*4],FxOpdEA
-   mov dword [FxTabled+0EBh*4],FxOpdEB
-   mov dword [FxTabled+0ECh*4],FxOpdEC
-   mov dword [FxTabled+0EDh*4],FxOpdED
-   mov dword [FxTabled+0EEh*4],FxOpdEE
-   mov dword [FxTabled+0EFh*4],FxOpdEF
-
-   mov dword [FxTabled+0F0h*4],FxOpdF0
-   mov dword [FxTabled+0F1h*4],FxOpdF1
-   mov dword [FxTabled+0F2h*4],FxOpdF2
-   mov dword [FxTabled+0F3h*4],FxOpdF3
-   mov dword [FxTabled+0F4h*4],FxOpdF4
-   mov dword [FxTabled+0F5h*4],FxOpdF5
-   mov dword [FxTabled+0F6h*4],FxOpdF6
-   mov dword [FxTabled+0F7h*4],FxOpdF7
-   mov dword [FxTabled+0F8h*4],FxOpdF8
-   mov dword [FxTabled+0F9h*4],FxOpdF9
-   mov dword [FxTabled+0FAh*4],FxOpdFA
-   mov dword [FxTabled+0FBh*4],FxOpdFB
-   mov dword [FxTabled+0FCh*4],FxOpdFC
-   mov dword [FxTabled+0FDh*4],FxOpdFD
-   mov dword [FxTabled+0FEh*4],FxOpdFE
-   mov dword [FxTabled+0FFh*4],FxOpdFF
-
-
-   mov dword [FxTabledA1+00h*4],FxOpd00
-   mov dword [FxTabledA1+01h*4],FxOpd01
-   mov dword [FxTabledA1+02h*4],FxOpd02
-   mov dword [FxTabledA1+03h*4],FxOpd03
-   mov dword [FxTabledA1+04h*4],FxOpd04
-   mov dword [FxTabledA1+05h*4],FxOpd05
-   mov dword [FxTabledA1+06h*4],FxOpd06
-   mov dword [FxTabledA1+07h*4],FxOpd07
-   mov dword [FxTabledA1+08h*4],FxOpd08
-   mov dword [FxTabledA1+09h*4],FxOpd09
-   mov dword [FxTabledA1+0Ah*4],FxOpd0A
-   mov dword [FxTabledA1+0Bh*4],FxOpd0B
-   mov dword [FxTabledA1+0Ch*4],FxOpd0C
-   mov dword [FxTabledA1+0Dh*4],FxOpd0D
-   mov dword [FxTabledA1+0Eh*4],FxOpd0E
-   mov dword [FxTabledA1+0Fh*4],FxOpd0F
-
-   mov dword [FxTabledA1+10h*4],FxOpd10
-   mov dword [FxTabledA1+11h*4],FxOpd11
-   mov dword [FxTabledA1+12h*4],FxOpd12
-   mov dword [FxTabledA1+13h*4],FxOpd13
-   mov dword [FxTabledA1+14h*4],FxOpd14
-   mov dword [FxTabledA1+15h*4],FxOpd15
-   mov dword [FxTabledA1+16h*4],FxOpd16
-   mov dword [FxTabledA1+17h*4],FxOpd17
-   mov dword [FxTabledA1+18h*4],FxOpd18
-   mov dword [FxTabledA1+19h*4],FxOpd19
-   mov dword [FxTabledA1+1Ah*4],FxOpd1A
-   mov dword [FxTabledA1+1Bh*4],FxOpd1B
-   mov dword [FxTabledA1+1Ch*4],FxOpd1C
-   mov dword [FxTabledA1+1Dh*4],FxOpd1D
-   mov dword [FxTabledA1+1Eh*4],FxOpd1E
-   mov dword [FxTabledA1+1Fh*4],FxOpd1F
-
-   mov dword [FxTabledA1+20h*4],FxOpd20
-   mov dword [FxTabledA1+21h*4],FxOpd21
-   mov dword [FxTabledA1+22h*4],FxOpd22
-   mov dword [FxTabledA1+23h*4],FxOpd23
-   mov dword [FxTabledA1+24h*4],FxOpd24
-   mov dword [FxTabledA1+25h*4],FxOpd25
-   mov dword [FxTabledA1+26h*4],FxOpd26
-   mov dword [FxTabledA1+27h*4],FxOpd27
-   mov dword [FxTabledA1+28h*4],FxOpd28
-   mov dword [FxTabledA1+29h*4],FxOpd29
-   mov dword [FxTabledA1+2Ah*4],FxOpd2A
-   mov dword [FxTabledA1+2Bh*4],FxOpd2B
-   mov dword [FxTabledA1+2Ch*4],FxOpd2C
-   mov dword [FxTabledA1+2Dh*4],FxOpd2D
-   mov dword [FxTabledA1+2Eh*4],FxOpd2E
-   mov dword [FxTabledA1+2Fh*4],FxOpd2F
-
-   mov dword [FxTabledA1+30h*4],FxOpd30A1
-   mov dword [FxTabledA1+31h*4],FxOpd31A1
-   mov dword [FxTabledA1+32h*4],FxOpd32A1
-   mov dword [FxTabledA1+33h*4],FxOpd33A1
-   mov dword [FxTabledA1+34h*4],FxOpd34A1
-   mov dword [FxTabledA1+35h*4],FxOpd35A1
-   mov dword [FxTabledA1+36h*4],FxOpd36A1
-   mov dword [FxTabledA1+37h*4],FxOpd37A1
-   mov dword [FxTabledA1+38h*4],FxOpd38A1
-   mov dword [FxTabledA1+39h*4],FxOpd39A1
-   mov dword [FxTabledA1+3Ah*4],FxOpd3AA1
-   mov dword [FxTabledA1+3Bh*4],FxOpd3BA1
-   mov dword [FxTabledA1+3Ch*4],FxOpd3C
-   mov dword [FxTabledA1+3Dh*4],FxOpd3D
-   mov dword [FxTabledA1+3Eh*4],FxOpd3E
-   mov dword [FxTabledA1+3Fh*4],FxOpd3F
-
-   mov dword [FxTabledA1+40h*4],FxOpd40A1
-   mov dword [FxTabledA1+41h*4],FxOpd41A1
-   mov dword [FxTabledA1+42h*4],FxOpd42A1
-   mov dword [FxTabledA1+43h*4],FxOpd43A1
-   mov dword [FxTabledA1+44h*4],FxOpd44A1
-   mov dword [FxTabledA1+45h*4],FxOpd45A1
-   mov dword [FxTabledA1+46h*4],FxOpd46A1
-   mov dword [FxTabledA1+47h*4],FxOpd47A1
-   mov dword [FxTabledA1+48h*4],FxOpd48A1
-   mov dword [FxTabledA1+49h*4],FxOpd49A1
-   mov dword [FxTabledA1+4Ah*4],FxOpd4AA1
-   mov dword [FxTabledA1+4Bh*4],FxOpd4BA1
-   mov dword [FxTabledA1+4Ch*4],FxOpd4CA1
-   mov dword [FxTabledA1+4Dh*4],FxOpd4D
-   mov dword [FxTabledA1+4Eh*4],FxOpd4EA1
-   mov dword [FxTabledA1+4Fh*4],FxOpd4F
-
-   mov dword [FxTabledA1+50h*4],FxOpd50A1
-   mov dword [FxTabledA1+51h*4],FxOpd51A1
-   mov dword [FxTabledA1+52h*4],FxOpd52A1
-   mov dword [FxTabledA1+53h*4],FxOpd53A1
-   mov dword [FxTabledA1+54h*4],FxOpd54A1
-   mov dword [FxTabledA1+55h*4],FxOpd55A1
-   mov dword [FxTabledA1+56h*4],FxOpd56A1
-   mov dword [FxTabledA1+57h*4],FxOpd57A1
-   mov dword [FxTabledA1+58h*4],FxOpd58A1
-   mov dword [FxTabledA1+59h*4],FxOpd59A1
-   mov dword [FxTabledA1+5Ah*4],FxOpd5AA1
-   mov dword [FxTabledA1+5Bh*4],FxOpd5BA1
-   mov dword [FxTabledA1+5Ch*4],FxOpd5CA1
-   mov dword [FxTabledA1+5Dh*4],FxOpd5DA1
-   mov dword [FxTabledA1+5Eh*4],FxOpd5EA1
-   mov dword [FxTabledA1+5Fh*4],FxOpd5FA1
-
-   mov dword [FxTabledA1+60h*4],FxOpd60A1
-   mov dword [FxTabledA1+61h*4],FxOpd61A1
-   mov dword [FxTabledA1+62h*4],FxOpd62A1
-   mov dword [FxTabledA1+63h*4],FxOpd63A1
-   mov dword [FxTabledA1+64h*4],FxOpd64A1
-   mov dword [FxTabledA1+65h*4],FxOpd65A1
-   mov dword [FxTabledA1+66h*4],FxOpd66A1
-   mov dword [FxTabledA1+67h*4],FxOpd67A1
-   mov dword [FxTabledA1+68h*4],FxOpd68A1
-   mov dword [FxTabledA1+69h*4],FxOpd69A1
-   mov dword [FxTabledA1+6Ah*4],FxOpd6AA1
-   mov dword [FxTabledA1+6Bh*4],FxOpd6BA1
-   mov dword [FxTabledA1+6Ch*4],FxOpd6CA1
-   mov dword [FxTabledA1+6Dh*4],FxOpd6DA1
-   mov dword [FxTabledA1+6Eh*4],FxOpd6EA1
-   mov dword [FxTabledA1+6Fh*4],FxOpd6FA1
-
-   mov dword [FxTabledA1+70h*4],FxOpd70
-   mov dword [FxTabledA1+71h*4],FxOpd71A1
-   mov dword [FxTabledA1+72h*4],FxOpd72A1
-   mov dword [FxTabledA1+73h*4],FxOpd73A1
-   mov dword [FxTabledA1+74h*4],FxOpd74A1
-   mov dword [FxTabledA1+75h*4],FxOpd75A1
-   mov dword [FxTabledA1+76h*4],FxOpd76A1
-   mov dword [FxTabledA1+77h*4],FxOpd77A1
-   mov dword [FxTabledA1+78h*4],FxOpd78A1
-   mov dword [FxTabledA1+79h*4],FxOpd79A1
-   mov dword [FxTabledA1+7Ah*4],FxOpd7AA1
-   mov dword [FxTabledA1+7Bh*4],FxOpd7BA1
-   mov dword [FxTabledA1+7Ch*4],FxOpd7CA1
-   mov dword [FxTabledA1+7Dh*4],FxOpd7DA1
-   mov dword [FxTabledA1+7Eh*4],FxOpd7EA1
-   mov dword [FxTabledA1+7Fh*4],FxOpd7FA1
-
-   mov dword [FxTabledA1+80h*4],FxOpd80A1
-   mov dword [FxTabledA1+81h*4],FxOpd81A1
-   mov dword [FxTabledA1+82h*4],FxOpd82A1
-   mov dword [FxTabledA1+83h*4],FxOpd83A1
-   mov dword [FxTabledA1+84h*4],FxOpd84A1
-   mov dword [FxTabledA1+85h*4],FxOpd85A1
-   mov dword [FxTabledA1+86h*4],FxOpd86A1
-   mov dword [FxTabledA1+87h*4],FxOpd87A1
-   mov dword [FxTabledA1+88h*4],FxOpd88A1
-   mov dword [FxTabledA1+89h*4],FxOpd89A1
-   mov dword [FxTabledA1+8Ah*4],FxOpd8AA1
-   mov dword [FxTabledA1+8Bh*4],FxOpd8BA1
-   mov dword [FxTabledA1+8Ch*4],FxOpd8CA1
-   mov dword [FxTabledA1+8Dh*4],FxOpd8DA1
-   mov dword [FxTabledA1+8Eh*4],FxOpd8EA1
-   mov dword [FxTabledA1+8Fh*4],FxOpd8FA1
-
-   mov dword [FxTabledA1+90h*4],FxOpd90
-   mov dword [FxTabledA1+91h*4],FxOpd91
-   mov dword [FxTabledA1+92h*4],FxOpd92
-   mov dword [FxTabledA1+93h*4],FxOpd93
-   mov dword [FxTabledA1+94h*4],FxOpd94
-   mov dword [FxTabledA1+95h*4],FxOpd95
-   mov dword [FxTabledA1+96h*4],FxOpd96A1
-   mov dword [FxTabledA1+97h*4],FxOpd97
-   mov dword [FxTabledA1+98h*4],FxOpd98A1
-   mov dword [FxTabledA1+99h*4],FxOpd99A1
-   mov dword [FxTabledA1+9Ah*4],FxOpd9AA1
-   mov dword [FxTabledA1+9Bh*4],FxOpd9BA1
-   mov dword [FxTabledA1+9Ch*4],FxOpd9CA1
-   mov dword [FxTabledA1+9Dh*4],FxOpd9DA1
-   mov dword [FxTabledA1+9Eh*4],FxOpd9E
-   mov dword [FxTabledA1+9Fh*4],FxOpd9FA1
-
-   mov dword [FxTabledA1+0A0h*4],FxOpdA0A1
-   mov dword [FxTabledA1+0A1h*4],FxOpdA1A1
-   mov dword [FxTabledA1+0A2h*4],FxOpdA2A1
-   mov dword [FxTabledA1+0A3h*4],FxOpdA3A1
-   mov dword [FxTabledA1+0A4h*4],FxOpdA4A1
-   mov dword [FxTabledA1+0A5h*4],FxOpdA5A1
-   mov dword [FxTabledA1+0A6h*4],FxOpdA6A1
-   mov dword [FxTabledA1+0A7h*4],FxOpdA7A1
-   mov dword [FxTabledA1+0A8h*4],FxOpdA8A1
-   mov dword [FxTabledA1+0A9h*4],FxOpdA9A1
-   mov dword [FxTabledA1+0AAh*4],FxOpdAAA1
-   mov dword [FxTabledA1+0ABh*4],FxOpdABA1
-   mov dword [FxTabledA1+0ACh*4],FxOpdACA1
-   mov dword [FxTabledA1+0ADh*4],FxOpdADA1
-   mov dword [FxTabledA1+0AEh*4],FxOpdAEA1
-   mov dword [FxTabledA1+0AFh*4],FxOpdAFA1
-
-   mov dword [FxTabledA1+0B0h*4],FxOpdB0
-   mov dword [FxTabledA1+0B1h*4],FxOpdB1
-   mov dword [FxTabledA1+0B2h*4],FxOpdB2
-   mov dword [FxTabledA1+0B3h*4],FxOpdB3
-   mov dword [FxTabledA1+0B4h*4],FxOpdB4
-   mov dword [FxTabledA1+0B5h*4],FxOpdB5
-   mov dword [FxTabledA1+0B6h*4],FxOpdB6
-   mov dword [FxTabledA1+0B7h*4],FxOpdB7
-   mov dword [FxTabledA1+0B8h*4],FxOpdB8
-   mov dword [FxTabledA1+0B9h*4],FxOpdB9
-   mov dword [FxTabledA1+0BAh*4],FxOpdBA
-   mov dword [FxTabledA1+0BBh*4],FxOpdBB
-   mov dword [FxTabledA1+0BCh*4],FxOpdBC
-   mov dword [FxTabledA1+0BDh*4],FxOpdBD
-   mov dword [FxTabledA1+0BEh*4],FxOpdBE
-   mov dword [FxTabledA1+0BFh*4],FxOpdBF
-
-   mov dword [FxTabledA1+0C0h*4],FxOpdC0
-   mov dword [FxTabledA1+0C1h*4],FxOpdC1A1
-   mov dword [FxTabledA1+0C2h*4],FxOpdC2A1
-   mov dword [FxTabledA1+0C3h*4],FxOpdC3A1
-   mov dword [FxTabledA1+0C4h*4],FxOpdC4A1
-   mov dword [FxTabledA1+0C5h*4],FxOpdC5A1
-   mov dword [FxTabledA1+0C6h*4],FxOpdC6A1
-   mov dword [FxTabledA1+0C7h*4],FxOpdC7A1
-   mov dword [FxTabledA1+0C8h*4],FxOpdC8A1
-   mov dword [FxTabledA1+0C9h*4],FxOpdC9A1
-   mov dword [FxTabledA1+0CAh*4],FxOpdCAA1
-   mov dword [FxTabledA1+0CBh*4],FxOpdCBA1
-   mov dword [FxTabledA1+0CCh*4],FxOpdCCA1
-   mov dword [FxTabledA1+0CDh*4],FxOpdCDA1
-   mov dword [FxTabledA1+0CEh*4],FxOpdCEA1
-   mov dword [FxTabledA1+0CFh*4],FxOpdCFA1
-
-   mov dword [FxTabledA1+0D0h*4],FxOpdD0
-   mov dword [FxTabledA1+0D1h*4],FxOpdD1
-   mov dword [FxTabledA1+0D2h*4],FxOpdD2
-   mov dword [FxTabledA1+0D3h*4],FxOpdD3
-   mov dword [FxTabledA1+0D4h*4],FxOpdD4
-   mov dword [FxTabledA1+0D5h*4],FxOpdD5
-   mov dword [FxTabledA1+0D6h*4],FxOpdD6
-   mov dword [FxTabledA1+0D7h*4],FxOpdD7
-   mov dword [FxTabledA1+0D8h*4],FxOpdD8
-   mov dword [FxTabledA1+0D9h*4],FxOpdD9
-   mov dword [FxTabledA1+0DAh*4],FxOpdDA
-   mov dword [FxTabledA1+0DBh*4],FxOpdDB
-   mov dword [FxTabledA1+0DCh*4],FxOpdDC
-   mov dword [FxTabledA1+0DDh*4],FxOpdDD
-   mov dword [FxTabledA1+0DEh*4],FxOpdDE
-   mov dword [FxTabledA1+0DFh*4],FxOpdDF
-
-   mov dword [FxTabledA1+0E0h*4],FxOpdE0
-   mov dword [FxTabledA1+0E1h*4],FxOpdE1
-   mov dword [FxTabledA1+0E2h*4],FxOpdE2
-   mov dword [FxTabledA1+0E3h*4],FxOpdE3
-   mov dword [FxTabledA1+0E4h*4],FxOpdE4
-   mov dword [FxTabledA1+0E5h*4],FxOpdE5
-   mov dword [FxTabledA1+0E6h*4],FxOpdE6
-   mov dword [FxTabledA1+0E7h*4],FxOpdE7
-   mov dword [FxTabledA1+0E8h*4],FxOpdE8
-   mov dword [FxTabledA1+0E9h*4],FxOpdE9
-   mov dword [FxTabledA1+0EAh*4],FxOpdEA
-   mov dword [FxTabledA1+0EBh*4],FxOpdEB
-   mov dword [FxTabledA1+0ECh*4],FxOpdEC
-   mov dword [FxTabledA1+0EDh*4],FxOpdED
-   mov dword [FxTabledA1+0EEh*4],FxOpdEE
-   mov dword [FxTabledA1+0EFh*4],FxOpdEFA1
-
-   mov dword [FxTabledA1+0F0h*4],FxOpdF0A1
-   mov dword [FxTabledA1+0F1h*4],FxOpdF1A1
-   mov dword [FxTabledA1+0F2h*4],FxOpdF2A1
-   mov dword [FxTabledA1+0F3h*4],FxOpdF3A1
-   mov dword [FxTabledA1+0F4h*4],FxOpdF4A1
-   mov dword [FxTabledA1+0F5h*4],FxOpdF5A1
-   mov dword [FxTabledA1+0F6h*4],FxOpdF6A1
-   mov dword [FxTabledA1+0F7h*4],FxOpdF7A1
-   mov dword [FxTabledA1+0F8h*4],FxOpdF8A1
-   mov dword [FxTabledA1+0F9h*4],FxOpdF9A1
-   mov dword [FxTabledA1+0FAh*4],FxOpdFAA1
-   mov dword [FxTabledA1+0FBh*4],FxOpdFBA1
-   mov dword [FxTabledA1+0FCh*4],FxOpdFCA1
-   mov dword [FxTabledA1+0FDh*4],FxOpdFDA1
-   mov dword [FxTabledA1+0FEh*4],FxOpdFEA1
-   mov dword [FxTabledA1+0FFh*4],FxOpdFFA1
-
-
-   mov dword [FxTabledA2+00h*4],FxOpd00
-   mov dword [FxTabledA2+01h*4],FxOpd01
-   mov dword [FxTabledA2+02h*4],FxOpd02
-   mov dword [FxTabledA2+03h*4],FxOpd03
-   mov dword [FxTabledA2+04h*4],FxOpd04
-   mov dword [FxTabledA2+05h*4],FxOpd05
-   mov dword [FxTabledA2+06h*4],FxOpd06
-   mov dword [FxTabledA2+07h*4],FxOpd07
-   mov dword [FxTabledA2+08h*4],FxOpd08
-   mov dword [FxTabledA2+09h*4],FxOpd09
-   mov dword [FxTabledA2+0Ah*4],FxOpd0A
-   mov dword [FxTabledA2+0Bh*4],FxOpd0B
-   mov dword [FxTabledA2+0Ch*4],FxOpd0C
-   mov dword [FxTabledA2+0Dh*4],FxOpd0D
-   mov dword [FxTabledA2+0Eh*4],FxOpd0E
-   mov dword [FxTabledA2+0Fh*4],FxOpd0F
-
-   mov dword [FxTabledA2+10h*4],FxOpd10
-   mov dword [FxTabledA2+11h*4],FxOpd11
-   mov dword [FxTabledA2+12h*4],FxOpd12
-   mov dword [FxTabledA2+13h*4],FxOpd13
-   mov dword [FxTabledA2+14h*4],FxOpd14
-   mov dword [FxTabledA2+15h*4],FxOpd15
-   mov dword [FxTabledA2+16h*4],FxOpd16
-   mov dword [FxTabledA2+17h*4],FxOpd17
-   mov dword [FxTabledA2+18h*4],FxOpd18
-   mov dword [FxTabledA2+19h*4],FxOpd19
-   mov dword [FxTabledA2+1Ah*4],FxOpd1A
-   mov dword [FxTabledA2+1Bh*4],FxOpd1B
-   mov dword [FxTabledA2+1Ch*4],FxOpd1C
-   mov dword [FxTabledA2+1Dh*4],FxOpd1D
-   mov dword [FxTabledA2+1Eh*4],FxOpd1E
-   mov dword [FxTabledA2+1Fh*4],FxOpd1F
-
-   mov dword [FxTabledA2+20h*4],FxOpd20
-   mov dword [FxTabledA2+21h*4],FxOpd21
-   mov dword [FxTabledA2+22h*4],FxOpd22
-   mov dword [FxTabledA2+23h*4],FxOpd23
-   mov dword [FxTabledA2+24h*4],FxOpd24
-   mov dword [FxTabledA2+25h*4],FxOpd25
-   mov dword [FxTabledA2+26h*4],FxOpd26
-   mov dword [FxTabledA2+27h*4],FxOpd27
-   mov dword [FxTabledA2+28h*4],FxOpd28
-   mov dword [FxTabledA2+29h*4],FxOpd29
-   mov dword [FxTabledA2+2Ah*4],FxOpd2A
-   mov dword [FxTabledA2+2Bh*4],FxOpd2B
-   mov dword [FxTabledA2+2Ch*4],FxOpd2C
-   mov dword [FxTabledA2+2Dh*4],FxOpd2D
-   mov dword [FxTabledA2+2Eh*4],FxOpd2E
-   mov dword [FxTabledA2+2Fh*4],FxOpd2F
-
-   mov dword [FxTabledA2+30h*4],FxOpd30
-   mov dword [FxTabledA2+31h*4],FxOpd31
-   mov dword [FxTabledA2+32h*4],FxOpd32
-   mov dword [FxTabledA2+33h*4],FxOpd33
-   mov dword [FxTabledA2+34h*4],FxOpd34
-   mov dword [FxTabledA2+35h*4],FxOpd35
-   mov dword [FxTabledA2+36h*4],FxOpd36
-   mov dword [FxTabledA2+37h*4],FxOpd37
-   mov dword [FxTabledA2+38h*4],FxOpd38
-   mov dword [FxTabledA2+39h*4],FxOpd39
-   mov dword [FxTabledA2+3Ah*4],FxOpd3A
-   mov dword [FxTabledA2+3Bh*4],FxOpd3B
-   mov dword [FxTabledA2+3Ch*4],FxOpd3C
-   mov dword [FxTabledA2+3Dh*4],FxOpd3D
-   mov dword [FxTabledA2+3Eh*4],FxOpd3E
-   mov dword [FxTabledA2+3Fh*4],FxOpd3F
-
-   mov dword [FxTabledA2+40h*4],FxOpd40
-   mov dword [FxTabledA2+41h*4],FxOpd41
-   mov dword [FxTabledA2+42h*4],FxOpd42
-   mov dword [FxTabledA2+43h*4],FxOpd43
-   mov dword [FxTabledA2+44h*4],FxOpd44
-   mov dword [FxTabledA2+45h*4],FxOpd45
-   mov dword [FxTabledA2+46h*4],FxOpd46
-   mov dword [FxTabledA2+47h*4],FxOpd47
-   mov dword [FxTabledA2+48h*4],FxOpd48
-   mov dword [FxTabledA2+49h*4],FxOpd49
-   mov dword [FxTabledA2+4Ah*4],FxOpd4A
-   mov dword [FxTabledA2+4Bh*4],FxOpd4B
-   mov dword [FxTabledA2+4Ch*4],FxOpd4C
-   mov dword [FxTabledA2+4Dh*4],FxOpd4D
-   mov dword [FxTabledA2+4Eh*4],FxOpd4E
-   mov dword [FxTabledA2+4Fh*4],FxOpd4F
-
-   mov dword [FxTabledA2+50h*4],FxOpd50A2
-   mov dword [FxTabledA2+51h*4],FxOpd51A2
-   mov dword [FxTabledA2+52h*4],FxOpd52A2
-   mov dword [FxTabledA2+53h*4],FxOpd53A2
-   mov dword [FxTabledA2+54h*4],FxOpd54A2
-   mov dword [FxTabledA2+55h*4],FxOpd55A2
-   mov dword [FxTabledA2+56h*4],FxOpd56A2
-   mov dword [FxTabledA2+57h*4],FxOpd57A2
-   mov dword [FxTabledA2+58h*4],FxOpd58A2
-   mov dword [FxTabledA2+59h*4],FxOpd59A2
-   mov dword [FxTabledA2+5Ah*4],FxOpd5AA2
-   mov dword [FxTabledA2+5Bh*4],FxOpd5BA2
-   mov dword [FxTabledA2+5Ch*4],FxOpd5CA2
-   mov dword [FxTabledA2+5Dh*4],FxOpd5DA2
-   mov dword [FxTabledA2+5Eh*4],FxOpd5EA2
-   mov dword [FxTabledA2+5Fh*4],FxOpd5FA2
-
-   mov dword [FxTabledA2+60h*4],FxOpd60A2
-   mov dword [FxTabledA2+61h*4],FxOpd61A2
-   mov dword [FxTabledA2+62h*4],FxOpd62A2
-   mov dword [FxTabledA2+63h*4],FxOpd63A2
-   mov dword [FxTabledA2+64h*4],FxOpd64A2
-   mov dword [FxTabledA2+65h*4],FxOpd65A2
-   mov dword [FxTabledA2+66h*4],FxOpd66A2
-   mov dword [FxTabledA2+67h*4],FxOpd67A2
-   mov dword [FxTabledA2+68h*4],FxOpd68A2
-   mov dword [FxTabledA2+69h*4],FxOpd69A2
-   mov dword [FxTabledA2+6Ah*4],FxOpd6AA2
-   mov dword [FxTabledA2+6Bh*4],FxOpd6BA2
-   mov dword [FxTabledA2+6Ch*4],FxOpd6CA2
-   mov dword [FxTabledA2+6Dh*4],FxOpd6DA2
-   mov dword [FxTabledA2+6Eh*4],FxOpd6EA2
-   mov dword [FxTabledA2+6Fh*4],FxOpd6FA2
-
-   mov dword [FxTabledA2+70h*4],FxOpd70
-   mov dword [FxTabledA2+71h*4],FxOpd71A2
-   mov dword [FxTabledA2+72h*4],FxOpd72A2
-   mov dword [FxTabledA2+73h*4],FxOpd73A2
-   mov dword [FxTabledA2+74h*4],FxOpd74A2
-   mov dword [FxTabledA2+75h*4],FxOpd75A2
-   mov dword [FxTabledA2+76h*4],FxOpd76A2
-   mov dword [FxTabledA2+77h*4],FxOpd77A2
-   mov dword [FxTabledA2+78h*4],FxOpd78A2
-   mov dword [FxTabledA2+79h*4],FxOpd79A2
-   mov dword [FxTabledA2+7Ah*4],FxOpd7AA2
-   mov dword [FxTabledA2+7Bh*4],FxOpd7BA2
-   mov dword [FxTabledA2+7Ch*4],FxOpd7CA2
-   mov dword [FxTabledA2+7Dh*4],FxOpd7DA2
-   mov dword [FxTabledA2+7Eh*4],FxOpd7EA2
-   mov dword [FxTabledA2+7Fh*4],FxOpd7FA2
-
-   mov dword [FxTabledA2+80h*4],FxOpd80A2
-   mov dword [FxTabledA2+81h*4],FxOpd81A2
-   mov dword [FxTabledA2+82h*4],FxOpd82A2
-   mov dword [FxTabledA2+83h*4],FxOpd83A2
-   mov dword [FxTabledA2+84h*4],FxOpd84A2
-   mov dword [FxTabledA2+85h*4],FxOpd85A2
-   mov dword [FxTabledA2+86h*4],FxOpd86A2
-   mov dword [FxTabledA2+87h*4],FxOpd87A2
-   mov dword [FxTabledA2+88h*4],FxOpd88A2
-   mov dword [FxTabledA2+89h*4],FxOpd89A2
-   mov dword [FxTabledA2+8Ah*4],FxOpd8AA2
-   mov dword [FxTabledA2+8Bh*4],FxOpd8BA2
-   mov dword [FxTabledA2+8Ch*4],FxOpd8CA2
-   mov dword [FxTabledA2+8Dh*4],FxOpd8DA2
-   mov dword [FxTabledA2+8Eh*4],FxOpd8EA2
-   mov dword [FxTabledA2+8Fh*4],FxOpd8FA2
-
-   mov dword [FxTabledA2+90h*4],FxOpd90
-   mov dword [FxTabledA2+91h*4],FxOpd91
-   mov dword [FxTabledA2+92h*4],FxOpd92
-   mov dword [FxTabledA2+93h*4],FxOpd93
-   mov dword [FxTabledA2+94h*4],FxOpd94
-   mov dword [FxTabledA2+95h*4],FxOpd95
-   mov dword [FxTabledA2+96h*4],FxOpd96
-   mov dword [FxTabledA2+97h*4],FxOpd97
-   mov dword [FxTabledA2+98h*4],FxOpd98
-   mov dword [FxTabledA2+99h*4],FxOpd99
-   mov dword [FxTabledA2+9Ah*4],FxOpd9A
-   mov dword [FxTabledA2+9Bh*4],FxOpd9B
-   mov dword [FxTabledA2+9Ch*4],FxOpd9C
-   mov dword [FxTabledA2+9Dh*4],FxOpd9D
-   mov dword [FxTabledA2+9Eh*4],FxOpd9E
-   mov dword [FxTabledA2+9Fh*4],FxOpd9F
-
-   mov dword [FxTabledA2+0A0h*4],FxOpdA0A2
-   mov dword [FxTabledA2+0A1h*4],FxOpdA1A2
-   mov dword [FxTabledA2+0A2h*4],FxOpdA2A2
-   mov dword [FxTabledA2+0A3h*4],FxOpdA3A2
-   mov dword [FxTabledA2+0A4h*4],FxOpdA4A2
-   mov dword [FxTabledA2+0A5h*4],FxOpdA5A2
-   mov dword [FxTabledA2+0A6h*4],FxOpdA6A2
-   mov dword [FxTabledA2+0A7h*4],FxOpdA7A2
-   mov dword [FxTabledA2+0A8h*4],FxOpdA8A2
-   mov dword [FxTabledA2+0A9h*4],FxOpdA9A2
-   mov dword [FxTabledA2+0AAh*4],FxOpdAAA2
-   mov dword [FxTabledA2+0ABh*4],FxOpdABA2
-   mov dword [FxTabledA2+0ACh*4],FxOpdACA2
-   mov dword [FxTabledA2+0ADh*4],FxOpdADA2
-   mov dword [FxTabledA2+0AEh*4],FxOpdAEA2
-   mov dword [FxTabledA2+0AFh*4],FxOpdAFA2
-
-   mov dword [FxTabledA2+0B0h*4],FxOpdB0
-   mov dword [FxTabledA2+0B1h*4],FxOpdB1
-   mov dword [FxTabledA2+0B2h*4],FxOpdB2
-   mov dword [FxTabledA2+0B3h*4],FxOpdB3
-   mov dword [FxTabledA2+0B4h*4],FxOpdB4
-   mov dword [FxTabledA2+0B5h*4],FxOpdB5
-   mov dword [FxTabledA2+0B6h*4],FxOpdB6
-   mov dword [FxTabledA2+0B7h*4],FxOpdB7
-   mov dword [FxTabledA2+0B8h*4],FxOpdB8
-   mov dword [FxTabledA2+0B9h*4],FxOpdB9
-   mov dword [FxTabledA2+0BAh*4],FxOpdBA
-   mov dword [FxTabledA2+0BBh*4],FxOpdBB
-   mov dword [FxTabledA2+0BCh*4],FxOpdBC
-   mov dword [FxTabledA2+0BDh*4],FxOpdBD
-   mov dword [FxTabledA2+0BEh*4],FxOpdBE
-   mov dword [FxTabledA2+0BFh*4],FxOpdBF
-
-   mov dword [FxTabledA2+0C0h*4],FxOpdC0
-   mov dword [FxTabledA2+0C1h*4],FxOpdC1A2
-   mov dword [FxTabledA2+0C2h*4],FxOpdC2A2
-   mov dword [FxTabledA2+0C3h*4],FxOpdC3A2
-   mov dword [FxTabledA2+0C4h*4],FxOpdC4A2
-   mov dword [FxTabledA2+0C5h*4],FxOpdC5A2
-   mov dword [FxTabledA2+0C6h*4],FxOpdC6A2
-   mov dword [FxTabledA2+0C7h*4],FxOpdC7A2
-   mov dword [FxTabledA2+0C8h*4],FxOpdC8A2
-   mov dword [FxTabledA2+0C9h*4],FxOpdC9A2
-   mov dword [FxTabledA2+0CAh*4],FxOpdCAA2
-   mov dword [FxTabledA2+0CBh*4],FxOpdCBA2
-   mov dword [FxTabledA2+0CCh*4],FxOpdCCA2
-   mov dword [FxTabledA2+0CDh*4],FxOpdCDA2
-   mov dword [FxTabledA2+0CEh*4],FxOpdCEA2
-   mov dword [FxTabledA2+0CFh*4],FxOpdCFA2
-
-   mov dword [FxTabledA2+0D0h*4],FxOpdD0
-   mov dword [FxTabledA2+0D1h*4],FxOpdD1
-   mov dword [FxTabledA2+0D2h*4],FxOpdD2
-   mov dword [FxTabledA2+0D3h*4],FxOpdD3
-   mov dword [FxTabledA2+0D4h*4],FxOpdD4
-   mov dword [FxTabledA2+0D5h*4],FxOpdD5
-   mov dword [FxTabledA2+0D6h*4],FxOpdD6
-   mov dword [FxTabledA2+0D7h*4],FxOpdD7
-   mov dword [FxTabledA2+0D8h*4],FxOpdD8
-   mov dword [FxTabledA2+0D9h*4],FxOpdD9
-   mov dword [FxTabledA2+0DAh*4],FxOpdDA
-   mov dword [FxTabledA2+0DBh*4],FxOpdDB
-   mov dword [FxTabledA2+0DCh*4],FxOpdDC
-   mov dword [FxTabledA2+0DDh*4],FxOpdDD
-   mov dword [FxTabledA2+0DEh*4],FxOpdDE
-   mov dword [FxTabledA2+0DFh*4],FxOpdDFA2
-
-   mov dword [FxTabledA2+0E0h*4],FxOpdE0
-   mov dword [FxTabledA2+0E1h*4],FxOpdE1
-   mov dword [FxTabledA2+0E2h*4],FxOpdE2
-   mov dword [FxTabledA2+0E3h*4],FxOpdE3
-   mov dword [FxTabledA2+0E4h*4],FxOpdE4
-   mov dword [FxTabledA2+0E5h*4],FxOpdE5
-   mov dword [FxTabledA2+0E6h*4],FxOpdE6
-   mov dword [FxTabledA2+0E7h*4],FxOpdE7
-   mov dword [FxTabledA2+0E8h*4],FxOpdE8
-   mov dword [FxTabledA2+0E9h*4],FxOpdE9
-   mov dword [FxTabledA2+0EAh*4],FxOpdEA
-   mov dword [FxTabledA2+0EBh*4],FxOpdEB
-   mov dword [FxTabledA2+0ECh*4],FxOpdEC
-   mov dword [FxTabledA2+0EDh*4],FxOpdED
-   mov dword [FxTabledA2+0EEh*4],FxOpdEE
-   mov dword [FxTabledA2+0EFh*4],FxOpdEFA2
-
-   mov dword [FxTabledA2+0F0h*4],FxOpdF0A2
-   mov dword [FxTabledA2+0F1h*4],FxOpdF1A2
-   mov dword [FxTabledA2+0F2h*4],FxOpdF2A2
-   mov dword [FxTabledA2+0F3h*4],FxOpdF3A2
-   mov dword [FxTabledA2+0F4h*4],FxOpdF4A2
-   mov dword [FxTabledA2+0F5h*4],FxOpdF5A2
-   mov dword [FxTabledA2+0F6h*4],FxOpdF6A2
-   mov dword [FxTabledA2+0F7h*4],FxOpdF7A2
-   mov dword [FxTabledA2+0F8h*4],FxOpdF8A2
-   mov dword [FxTabledA2+0F9h*4],FxOpdF9A2
-   mov dword [FxTabledA2+0FAh*4],FxOpdFAA2
-   mov dword [FxTabledA2+0FBh*4],FxOpdFBA2
-   mov dword [FxTabledA2+0FCh*4],FxOpdFCA2
-   mov dword [FxTabledA2+0FDh*4],FxOpdFDA2
-   mov dword [FxTabledA2+0FEh*4],FxOpdFEA2
-   mov dword [FxTabledA2+0FFh*4],FxOpdFFA2
-
-   mov dword [FxTabledA3+00h*4],FxOpd00
-   mov dword [FxTabledA3+01h*4],FxOpd01
-   mov dword [FxTabledA3+02h*4],FxOpd02
-   mov dword [FxTabledA3+03h*4],FxOpd03
-   mov dword [FxTabledA3+04h*4],FxOpd04
-   mov dword [FxTabledA3+05h*4],FxOpd05
-   mov dword [FxTabledA3+06h*4],FxOpd06
-   mov dword [FxTabledA3+07h*4],FxOpd07
-   mov dword [FxTabledA3+08h*4],FxOpd08
-   mov dword [FxTabledA3+09h*4],FxOpd09
-   mov dword [FxTabledA3+0Ah*4],FxOpd0A
-   mov dword [FxTabledA3+0Bh*4],FxOpd0B
-   mov dword [FxTabledA3+0Ch*4],FxOpd0C
-   mov dword [FxTabledA3+0Dh*4],FxOpd0D
-   mov dword [FxTabledA3+0Eh*4],FxOpd0E
-   mov dword [FxTabledA3+0Fh*4],FxOpd0F
-
-   mov dword [FxTabledA3+10h*4],FxOpd10
-   mov dword [FxTabledA3+11h*4],FxOpd11
-   mov dword [FxTabledA3+12h*4],FxOpd12
-   mov dword [FxTabledA3+13h*4],FxOpd13
-   mov dword [FxTabledA3+14h*4],FxOpd14
-   mov dword [FxTabledA3+15h*4],FxOpd15
-   mov dword [FxTabledA3+16h*4],FxOpd16
-   mov dword [FxTabledA3+17h*4],FxOpd17
-   mov dword [FxTabledA3+18h*4],FxOpd18
-   mov dword [FxTabledA3+19h*4],FxOpd19
-   mov dword [FxTabledA3+1Ah*4],FxOpd1A
-   mov dword [FxTabledA3+1Bh*4],FxOpd1B
-   mov dword [FxTabledA3+1Ch*4],FxOpd1C
-   mov dword [FxTabledA3+1Dh*4],FxOpd1D
-   mov dword [FxTabledA3+1Eh*4],FxOpd1E
-   mov dword [FxTabledA3+1Fh*4],FxOpd1F
-
-   mov dword [FxTabledA3+20h*4],FxOpd20
-   mov dword [FxTabledA3+21h*4],FxOpd21
-   mov dword [FxTabledA3+22h*4],FxOpd22
-   mov dword [FxTabledA3+23h*4],FxOpd23
-   mov dword [FxTabledA3+24h*4],FxOpd24
-   mov dword [FxTabledA3+25h*4],FxOpd25
-   mov dword [FxTabledA3+26h*4],FxOpd26
-   mov dword [FxTabledA3+27h*4],FxOpd27
-   mov dword [FxTabledA3+28h*4],FxOpd28
-   mov dword [FxTabledA3+29h*4],FxOpd29
-   mov dword [FxTabledA3+2Ah*4],FxOpd2A
-   mov dword [FxTabledA3+2Bh*4],FxOpd2B
-   mov dword [FxTabledA3+2Ch*4],FxOpd2C
-   mov dword [FxTabledA3+2Dh*4],FxOpd2D
-   mov dword [FxTabledA3+2Eh*4],FxOpd2E
-   mov dword [FxTabledA3+2Fh*4],FxOpd2F
-
-   mov dword [FxTabledA3+30h*4],FxOpd30
-   mov dword [FxTabledA3+31h*4],FxOpd31
-   mov dword [FxTabledA3+32h*4],FxOpd32
-   mov dword [FxTabledA3+33h*4],FxOpd33
-   mov dword [FxTabledA3+34h*4],FxOpd34
-   mov dword [FxTabledA3+35h*4],FxOpd35
-   mov dword [FxTabledA3+36h*4],FxOpd36
-   mov dword [FxTabledA3+37h*4],FxOpd37
-   mov dword [FxTabledA3+38h*4],FxOpd38
-   mov dword [FxTabledA3+39h*4],FxOpd39
-   mov dword [FxTabledA3+3Ah*4],FxOpd3A
-   mov dword [FxTabledA3+3Bh*4],FxOpd3B
-   mov dword [FxTabledA3+3Ch*4],FxOpd3C
-   mov dword [FxTabledA3+3Dh*4],FxOpd3D
-   mov dword [FxTabledA3+3Eh*4],FxOpd3E
-   mov dword [FxTabledA3+3Fh*4],FxOpd3F
-
-   mov dword [FxTabledA3+40h*4],FxOpd40
-   mov dword [FxTabledA3+41h*4],FxOpd41
-   mov dword [FxTabledA3+42h*4],FxOpd42
-   mov dword [FxTabledA3+43h*4],FxOpd43
-   mov dword [FxTabledA3+44h*4],FxOpd44
-   mov dword [FxTabledA3+45h*4],FxOpd45
-   mov dword [FxTabledA3+46h*4],FxOpd46
-   mov dword [FxTabledA3+47h*4],FxOpd47
-   mov dword [FxTabledA3+48h*4],FxOpd48
-   mov dword [FxTabledA3+49h*4],FxOpd49
-   mov dword [FxTabledA3+4Ah*4],FxOpd4A
-   mov dword [FxTabledA3+4Bh*4],FxOpd4B
-   mov dword [FxTabledA3+4Ch*4],FxOpd4C
-   mov dword [FxTabledA3+4Dh*4],FxOpd4D
-   mov dword [FxTabledA3+4Eh*4],FxOpd4E
-   mov dword [FxTabledA3+4Fh*4],FxOpd4F
-
-   mov dword [FxTabledA3+50h*4],FxOpd50A3
-   mov dword [FxTabledA3+51h*4],FxOpd51A3
-   mov dword [FxTabledA3+52h*4],FxOpd52A3
-   mov dword [FxTabledA3+53h*4],FxOpd53A3
-   mov dword [FxTabledA3+54h*4],FxOpd54A3
-   mov dword [FxTabledA3+55h*4],FxOpd55A3
-   mov dword [FxTabledA3+56h*4],FxOpd56A3
-   mov dword [FxTabledA3+57h*4],FxOpd57A3
-   mov dword [FxTabledA3+58h*4],FxOpd58A3
-   mov dword [FxTabledA3+59h*4],FxOpd59A3
-   mov dword [FxTabledA3+5Ah*4],FxOpd5AA3
-   mov dword [FxTabledA3+5Bh*4],FxOpd5BA3
-   mov dword [FxTabledA3+5Ch*4],FxOpd5CA3
-   mov dword [FxTabledA3+5Dh*4],FxOpd5DA3
-   mov dword [FxTabledA3+5Eh*4],FxOpd5EA3
-   mov dword [FxTabledA3+5Fh*4],FxOpd5FA3
-
-   mov dword [FxTabledA3+60h*4],FxOpd60A3
-   mov dword [FxTabledA3+61h*4],FxOpd61A3
-   mov dword [FxTabledA3+62h*4],FxOpd62A3
-   mov dword [FxTabledA3+63h*4],FxOpd63A3
-   mov dword [FxTabledA3+64h*4],FxOpd64A3
-   mov dword [FxTabledA3+65h*4],FxOpd65A3
-   mov dword [FxTabledA3+66h*4],FxOpd66A3
-   mov dword [FxTabledA3+67h*4],FxOpd67A3
-   mov dword [FxTabledA3+68h*4],FxOpd68A3
-   mov dword [FxTabledA3+69h*4],FxOpd69A3
-   mov dword [FxTabledA3+6Ah*4],FxOpd6AA3
-   mov dword [FxTabledA3+6Bh*4],FxOpd6BA3
-   mov dword [FxTabledA3+6Ch*4],FxOpd6CA3
-   mov dword [FxTabledA3+6Dh*4],FxOpd6DA3
-   mov dword [FxTabledA3+6Eh*4],FxOpd6EA3
-   mov dword [FxTabledA3+6Fh*4],FxOpd6FA3
-
-   mov dword [FxTabledA3+70h*4],FxOpd70
-   mov dword [FxTabledA3+71h*4],FxOpd71A3
-   mov dword [FxTabledA3+72h*4],FxOpd72A3
-   mov dword [FxTabledA3+73h*4],FxOpd73A3
-   mov dword [FxTabledA3+74h*4],FxOpd74A3
-   mov dword [FxTabledA3+75h*4],FxOpd75A3
-   mov dword [FxTabledA3+76h*4],FxOpd76A3
-   mov dword [FxTabledA3+77h*4],FxOpd77A3
-   mov dword [FxTabledA3+78h*4],FxOpd78A3
-   mov dword [FxTabledA3+79h*4],FxOpd79A3
-   mov dword [FxTabledA3+7Ah*4],FxOpd7AA3
-   mov dword [FxTabledA3+7Bh*4],FxOpd7BA3
-   mov dword [FxTabledA3+7Ch*4],FxOpd7CA3
-   mov dword [FxTabledA3+7Dh*4],FxOpd7DA3
-   mov dword [FxTabledA3+7Eh*4],FxOpd7EA3
-   mov dword [FxTabledA3+7Fh*4],FxOpd7FA3
-
-   mov dword [FxTabledA3+80h*4],FxOpd80A3
-   mov dword [FxTabledA3+81h*4],FxOpd81A3
-   mov dword [FxTabledA3+82h*4],FxOpd82A3
-   mov dword [FxTabledA3+83h*4],FxOpd83A3
-   mov dword [FxTabledA3+84h*4],FxOpd84A3
-   mov dword [FxTabledA3+85h*4],FxOpd85A3
-   mov dword [FxTabledA3+86h*4],FxOpd86A3
-   mov dword [FxTabledA3+87h*4],FxOpd87A3
-   mov dword [FxTabledA3+88h*4],FxOpd88A3
-   mov dword [FxTabledA3+89h*4],FxOpd89A3
-   mov dword [FxTabledA3+8Ah*4],FxOpd8AA3
-   mov dword [FxTabledA3+8Bh*4],FxOpd8BA3
-   mov dword [FxTabledA3+8Ch*4],FxOpd8CA3
-   mov dword [FxTabledA3+8Dh*4],FxOpd8DA3
-   mov dword [FxTabledA3+8Eh*4],FxOpd8EA3
-   mov dword [FxTabledA3+8Fh*4],FxOpd8FA3
-
-   mov dword [FxTabledA3+90h*4],FxOpd90
-   mov dword [FxTabledA3+91h*4],FxOpd91
-   mov dword [FxTabledA3+92h*4],FxOpd92
-   mov dword [FxTabledA3+93h*4],FxOpd93
-   mov dword [FxTabledA3+94h*4],FxOpd94
-   mov dword [FxTabledA3+95h*4],FxOpd95
-   mov dword [FxTabledA3+96h*4],FxOpd96
-   mov dword [FxTabledA3+97h*4],FxOpd97
-   mov dword [FxTabledA3+98h*4],FxOpd98
-   mov dword [FxTabledA3+99h*4],FxOpd99
-   mov dword [FxTabledA3+9Ah*4],FxOpd9A
-   mov dword [FxTabledA3+9Bh*4],FxOpd9B
-   mov dword [FxTabledA3+9Ch*4],FxOpd9C
-   mov dword [FxTabledA3+9Dh*4],FxOpd9D
-   mov dword [FxTabledA3+9Eh*4],FxOpd9E
-   mov dword [FxTabledA3+9Fh*4],FxOpd9F
-
-   mov dword [FxTabledA3+0A0h*4],FxOpdA0
-   mov dword [FxTabledA3+0A1h*4],FxOpdA1
-   mov dword [FxTabledA3+0A2h*4],FxOpdA2
-   mov dword [FxTabledA3+0A3h*4],FxOpdA3
-   mov dword [FxTabledA3+0A4h*4],FxOpdA4
-   mov dword [FxTabledA3+0A5h*4],FxOpdA5
-   mov dword [FxTabledA3+0A6h*4],FxOpdA6
-   mov dword [FxTabledA3+0A7h*4],FxOpdA7
-   mov dword [FxTabledA3+0A8h*4],FxOpdA8
-   mov dword [FxTabledA3+0A9h*4],FxOpdA9
-   mov dword [FxTabledA3+0AAh*4],FxOpdAA
-   mov dword [FxTabledA3+0ABh*4],FxOpdAB
-   mov dword [FxTabledA3+0ACh*4],FxOpdAC
-   mov dword [FxTabledA3+0ADh*4],FxOpdAD
-   mov dword [FxTabledA3+0AEh*4],FxOpdAE
-   mov dword [FxTabledA3+0AFh*4],FxOpdAF
-
-   mov dword [FxTabledA3+0B0h*4],FxOpdB0
-   mov dword [FxTabledA3+0B1h*4],FxOpdB1
-   mov dword [FxTabledA3+0B2h*4],FxOpdB2
-   mov dword [FxTabledA3+0B3h*4],FxOpdB3
-   mov dword [FxTabledA3+0B4h*4],FxOpdB4
-   mov dword [FxTabledA3+0B5h*4],FxOpdB5
-   mov dword [FxTabledA3+0B6h*4],FxOpdB6
-   mov dword [FxTabledA3+0B7h*4],FxOpdB7
-   mov dword [FxTabledA3+0B8h*4],FxOpdB8
-   mov dword [FxTabledA3+0B9h*4],FxOpdB9
-   mov dword [FxTabledA3+0BAh*4],FxOpdBA
-   mov dword [FxTabledA3+0BBh*4],FxOpdBB
-   mov dword [FxTabledA3+0BCh*4],FxOpdBC
-   mov dword [FxTabledA3+0BDh*4],FxOpdBD
-   mov dword [FxTabledA3+0BEh*4],FxOpdBE
-   mov dword [FxTabledA3+0BFh*4],FxOpdBF
-
-   mov dword [FxTabledA3+0C0h*4],FxOpdC0
-   mov dword [FxTabledA3+0C1h*4],FxOpdC1A3
-   mov dword [FxTabledA3+0C2h*4],FxOpdC2A3
-   mov dword [FxTabledA3+0C3h*4],FxOpdC3A3
-   mov dword [FxTabledA3+0C4h*4],FxOpdC4A3
-   mov dword [FxTabledA3+0C5h*4],FxOpdC5A3
-   mov dword [FxTabledA3+0C6h*4],FxOpdC6A3
-   mov dword [FxTabledA3+0C7h*4],FxOpdC7A3
-   mov dword [FxTabledA3+0C8h*4],FxOpdC8A3
-   mov dword [FxTabledA3+0C9h*4],FxOpdC9A3
-   mov dword [FxTabledA3+0CAh*4],FxOpdCAA3
-   mov dword [FxTabledA3+0CBh*4],FxOpdCBA3
-   mov dword [FxTabledA3+0CCh*4],FxOpdCCA3
-   mov dword [FxTabledA3+0CDh*4],FxOpdCDA3
-   mov dword [FxTabledA3+0CEh*4],FxOpdCEA3
-   mov dword [FxTabledA3+0CFh*4],FxOpdCFA3
-
-   mov dword [FxTabledA3+0D0h*4],FxOpdD0
-   mov dword [FxTabledA3+0D1h*4],FxOpdD1
-   mov dword [FxTabledA3+0D2h*4],FxOpdD2
-   mov dword [FxTabledA3+0D3h*4],FxOpdD3
-   mov dword [FxTabledA3+0D4h*4],FxOpdD4
-   mov dword [FxTabledA3+0D5h*4],FxOpdD5
-   mov dword [FxTabledA3+0D6h*4],FxOpdD6
-   mov dword [FxTabledA3+0D7h*4],FxOpdD7
-   mov dword [FxTabledA3+0D8h*4],FxOpdD8
-   mov dword [FxTabledA3+0D9h*4],FxOpdD9
-   mov dword [FxTabledA3+0DAh*4],FxOpdDA
-   mov dword [FxTabledA3+0DBh*4],FxOpdDB
-   mov dword [FxTabledA3+0DCh*4],FxOpdDC
-   mov dword [FxTabledA3+0DDh*4],FxOpdDD
-   mov dword [FxTabledA3+0DEh*4],FxOpdDE
-   mov dword [FxTabledA3+0DFh*4],FxOpdDFA3
-
-   mov dword [FxTabledA3+0E0h*4],FxOpdE0
-   mov dword [FxTabledA3+0E1h*4],FxOpdE1
-   mov dword [FxTabledA3+0E2h*4],FxOpdE2
-   mov dword [FxTabledA3+0E3h*4],FxOpdE3
-   mov dword [FxTabledA3+0E4h*4],FxOpdE4
-   mov dword [FxTabledA3+0E5h*4],FxOpdE5
-   mov dword [FxTabledA3+0E6h*4],FxOpdE6
-   mov dword [FxTabledA3+0E7h*4],FxOpdE7
-   mov dword [FxTabledA3+0E8h*4],FxOpdE8
-   mov dword [FxTabledA3+0E9h*4],FxOpdE9
-   mov dword [FxTabledA3+0EAh*4],FxOpdEA
-   mov dword [FxTabledA3+0EBh*4],FxOpdEB
-   mov dword [FxTabledA3+0ECh*4],FxOpdEC
-   mov dword [FxTabledA3+0EDh*4],FxOpdED
-   mov dword [FxTabledA3+0EEh*4],FxOpdEE
-   mov dword [FxTabledA3+0EFh*4],FxOpdEFA3
-
-   mov dword [FxTabledA3+0F0h*4],FxOpdF0
-   mov dword [FxTabledA3+0F1h*4],FxOpdF1
-   mov dword [FxTabledA3+0F2h*4],FxOpdF2
-   mov dword [FxTabledA3+0F3h*4],FxOpdF3
-   mov dword [FxTabledA3+0F4h*4],FxOpdF4
-   mov dword [FxTabledA3+0F5h*4],FxOpdF5
-   mov dword [FxTabledA3+0F6h*4],FxOpdF6
-   mov dword [FxTabledA3+0F7h*4],FxOpdF7
-   mov dword [FxTabledA3+0F8h*4],FxOpdF8
-   mov dword [FxTabledA3+0F9h*4],FxOpdF9
-   mov dword [FxTabledA3+0FAh*4],FxOpdFA
-   mov dword [FxTabledA3+0FBh*4],FxOpdFB
-   mov dword [FxTabledA3+0FCh*4],FxOpdFC
-   mov dword [FxTabledA3+0FDh*4],FxOpdFD
-   mov dword [FxTabledA3+0FEh*4],FxOpdFE
-   mov dword [FxTabledA3+0FFh*4],FxOpdFF
+   mov dword[FxTableb+05h*4],FxOpb05
+   mov dword[FxTableb+06h*4],FxOpb06
+   mov dword[FxTableb+07h*4],FxOpb07
+   mov dword[FxTableb+08h*4],FxOpb08
+   mov dword[FxTableb+09h*4],FxOpb09
+   mov dword[FxTableb+0Ah*4],FxOpb0A
+   mov dword[FxTableb+0Bh*4],FxOpb0B
+   mov dword[FxTableb+0Ch*4],FxOpb0C
+   mov dword[FxTableb+0Dh*4],FxOpb0D
+   mov dword[FxTableb+0Eh*4],FxOpb0E
+   mov dword[FxTableb+0Fh*4],FxOpb0F
+   mov dword[FxTableb+10h*4],FxOpb10
+   mov dword[FxTableb+11h*4],FxOpb11
+   mov dword[FxTableb+12h*4],FxOpb12
+   mov dword[FxTableb+13h*4],FxOpb13
+   mov dword[FxTableb+14h*4],FxOpb14
+   mov dword[FxTableb+15h*4],FxOpb15
+   mov dword[FxTableb+16h*4],FxOpb16
+   mov dword[FxTableb+17h*4],FxOpb17
+   mov dword[FxTableb+18h*4],FxOpb18
+   mov dword[FxTableb+19h*4],FxOpb19
+   mov dword[FxTableb+1Ah*4],FxOpb1A
+   mov dword[FxTableb+1Bh*4],FxOpb1B
+   mov dword[FxTableb+1Ch*4],FxOpb1C
+   mov dword[FxTableb+1Dh*4],FxOpb1D
+   mov dword[FxTableb+1Eh*4],FxOpb1E
+   mov dword[FxTableb+1Fh*4],FxOpb1F
+   mov dword[FxTableb+3Dh*4],FxOpb3D
+   mov dword[FxTableb+3Eh*4],FxOpb3E
+   mov dword[FxTableb+3Fh*4],FxOpb3F
+   mov dword[FxTableb+0B0h*4],FxOpbB0
+   mov dword[FxTableb+0B1h*4],FxOpbB1
+   mov dword[FxTableb+0B2h*4],FxOpbB2
+   mov dword[FxTableb+0B3h*4],FxOpbB3
+   mov dword[FxTableb+0B4h*4],FxOpbB4
+   mov dword[FxTableb+0B5h*4],FxOpbB5
+   mov dword[FxTableb+0B6h*4],FxOpbB6
+   mov dword[FxTableb+0B7h*4],FxOpbB7
+   mov dword[FxTableb+0B8h*4],FxOpbB8
+   mov dword[FxTableb+0B9h*4],FxOpbB9
+   mov dword[FxTableb+0BAh*4],FxOpbBA
+   mov dword[FxTableb+0BBh*4],FxOpbBB
+   mov dword[FxTableb+0BCh*4],FxOpbBC
+   mov dword[FxTableb+0BDh*4],FxOpbBD
+   mov dword[FxTableb+0BEh*4],FxOpbBE
+   mov dword[FxTableb+0BFh*4],FxOpbBF
+
+   mov dword[FxTablebA1+05h*4],FxOpb05
+   mov dword[FxTablebA1+06h*4],FxOpb06
+   mov dword[FxTablebA1+07h*4],FxOpb07
+   mov dword[FxTablebA1+08h*4],FxOpb08
+   mov dword[FxTablebA1+09h*4],FxOpb09
+   mov dword[FxTablebA1+0Ah*4],FxOpb0A
+   mov dword[FxTablebA1+0Bh*4],FxOpb0B
+   mov dword[FxTablebA1+0Ch*4],FxOpb0C
+   mov dword[FxTablebA1+0Dh*4],FxOpb0D
+   mov dword[FxTablebA1+0Eh*4],FxOpb0E
+   mov dword[FxTablebA1+0Fh*4],FxOpb0F
+   mov dword[FxTablebA1+10h*4],FxOpb10
+   mov dword[FxTablebA1+11h*4],FxOpb11
+   mov dword[FxTablebA1+12h*4],FxOpb12
+   mov dword[FxTablebA1+13h*4],FxOpb13
+   mov dword[FxTablebA1+14h*4],FxOpb14
+   mov dword[FxTablebA1+15h*4],FxOpb15
+   mov dword[FxTablebA1+16h*4],FxOpb16
+   mov dword[FxTablebA1+17h*4],FxOpb17
+   mov dword[FxTablebA1+18h*4],FxOpb18
+   mov dword[FxTablebA1+19h*4],FxOpb19
+   mov dword[FxTablebA1+1Ah*4],FxOpb1A
+   mov dword[FxTablebA1+1Bh*4],FxOpb1B
+   mov dword[FxTablebA1+1Ch*4],FxOpb1C
+   mov dword[FxTablebA1+1Dh*4],FxOpb1D
+   mov dword[FxTablebA1+1Eh*4],FxOpb1E
+   mov dword[FxTablebA1+1Fh*4],FxOpb1F
+   mov dword[FxTablebA1+3Dh*4],FxOpb3D
+   mov dword[FxTablebA1+3Eh*4],FxOpb3E
+   mov dword[FxTablebA1+3Fh*4],FxOpb3F
+   mov dword[FxTablebA1+0B0h*4],FxOpbB0
+   mov dword[FxTablebA1+0B1h*4],FxOpbB1
+   mov dword[FxTablebA1+0B2h*4],FxOpbB2
+   mov dword[FxTablebA1+0B3h*4],FxOpbB3
+   mov dword[FxTablebA1+0B4h*4],FxOpbB4
+   mov dword[FxTablebA1+0B5h*4],FxOpbB5
+   mov dword[FxTablebA1+0B6h*4],FxOpbB6
+   mov dword[FxTablebA1+0B7h*4],FxOpbB7
+   mov dword[FxTablebA1+0B8h*4],FxOpbB8
+   mov dword[FxTablebA1+0B9h*4],FxOpbB9
+   mov dword[FxTablebA1+0BAh*4],FxOpbBA
+   mov dword[FxTablebA1+0BBh*4],FxOpbBB
+   mov dword[FxTablebA1+0BCh*4],FxOpbBC
+   mov dword[FxTablebA1+0BDh*4],FxOpbBD
+   mov dword[FxTablebA1+0BEh*4],FxOpbBE
+   mov dword[FxTablebA1+0BFh*4],FxOpbBF
+
+   mov dword[FxTablebA2+05h*4],FxOpb05
+   mov dword[FxTablebA2+06h*4],FxOpb06
+   mov dword[FxTablebA2+07h*4],FxOpb07
+   mov dword[FxTablebA2+08h*4],FxOpb08
+   mov dword[FxTablebA2+09h*4],FxOpb09
+   mov dword[FxTablebA2+0Ah*4],FxOpb0A
+   mov dword[FxTablebA2+0Bh*4],FxOpb0B
+   mov dword[FxTablebA2+0Ch*4],FxOpb0C
+   mov dword[FxTablebA2+0Dh*4],FxOpb0D
+   mov dword[FxTablebA2+0Eh*4],FxOpb0E
+   mov dword[FxTablebA2+0Fh*4],FxOpb0F
+   mov dword[FxTablebA2+10h*4],FxOpb10
+   mov dword[FxTablebA2+11h*4],FxOpb11
+   mov dword[FxTablebA2+12h*4],FxOpb12
+   mov dword[FxTablebA2+13h*4],FxOpb13
+   mov dword[FxTablebA2+14h*4],FxOpb14
+   mov dword[FxTablebA2+15h*4],FxOpb15
+   mov dword[FxTablebA2+16h*4],FxOpb16
+   mov dword[FxTablebA2+17h*4],FxOpb17
+   mov dword[FxTablebA2+18h*4],FxOpb18
+   mov dword[FxTablebA2+19h*4],FxOpb19
+   mov dword[FxTablebA2+1Ah*4],FxOpb1A
+   mov dword[FxTablebA2+1Bh*4],FxOpb1B
+   mov dword[FxTablebA2+1Ch*4],FxOpb1C
+   mov dword[FxTablebA2+1Dh*4],FxOpb1D
+   mov dword[FxTablebA2+1Eh*4],FxOpb1E
+   mov dword[FxTablebA2+1Fh*4],FxOpb1F
+   mov dword[FxTablebA2+3Dh*4],FxOpb3D
+   mov dword[FxTablebA2+3Eh*4],FxOpb3E
+   mov dword[FxTablebA2+3Fh*4],FxOpb3F
+   mov dword[FxTablebA2+0B0h*4],FxOpbB0
+   mov dword[FxTablebA2+0B1h*4],FxOpbB1
+   mov dword[FxTablebA2+0B2h*4],FxOpbB2
+   mov dword[FxTablebA2+0B3h*4],FxOpbB3
+   mov dword[FxTablebA2+0B4h*4],FxOpbB4
+   mov dword[FxTablebA2+0B5h*4],FxOpbB5
+   mov dword[FxTablebA2+0B6h*4],FxOpbB6
+   mov dword[FxTablebA2+0B7h*4],FxOpbB7
+   mov dword[FxTablebA2+0B8h*4],FxOpbB8
+   mov dword[FxTablebA2+0B9h*4],FxOpbB9
+   mov dword[FxTablebA2+0BAh*4],FxOpbBA
+   mov dword[FxTablebA2+0BBh*4],FxOpbBB
+   mov dword[FxTablebA2+0BCh*4],FxOpbBC
+   mov dword[FxTablebA2+0BDh*4],FxOpbBD
+   mov dword[FxTablebA2+0BEh*4],FxOpbBE
+   mov dword[FxTablebA2+0BFh*4],FxOpbBF
+
+   mov dword[FxTablebA3+05h*4],FxOpb05
+   mov dword[FxTablebA3+06h*4],FxOpb06
+   mov dword[FxTablebA3+07h*4],FxOpb07
+   mov dword[FxTablebA3+08h*4],FxOpb08
+   mov dword[FxTablebA3+09h*4],FxOpb09
+   mov dword[FxTablebA3+0Ah*4],FxOpb0A
+   mov dword[FxTablebA3+0Bh*4],FxOpb0B
+   mov dword[FxTablebA3+0Ch*4],FxOpb0C
+   mov dword[FxTablebA3+0Dh*4],FxOpb0D
+   mov dword[FxTablebA3+0Eh*4],FxOpb0E
+   mov dword[FxTablebA3+0Fh*4],FxOpb0F
+   mov dword[FxTablebA3+10h*4],FxOpb10
+   mov dword[FxTablebA3+11h*4],FxOpb11
+   mov dword[FxTablebA3+12h*4],FxOpb12
+   mov dword[FxTablebA3+13h*4],FxOpb13
+   mov dword[FxTablebA3+14h*4],FxOpb14
+   mov dword[FxTablebA3+15h*4],FxOpb15
+   mov dword[FxTablebA3+16h*4],FxOpb16
+   mov dword[FxTablebA3+17h*4],FxOpb17
+   mov dword[FxTablebA3+18h*4],FxOpb18
+   mov dword[FxTablebA3+19h*4],FxOpb19
+   mov dword[FxTablebA3+1Ah*4],FxOpb1A
+   mov dword[FxTablebA3+1Bh*4],FxOpb1B
+   mov dword[FxTablebA3+1Ch*4],FxOpb1C
+   mov dword[FxTablebA3+1Dh*4],FxOpb1D
+   mov dword[FxTablebA3+1Eh*4],FxOpb1E
+   mov dword[FxTablebA3+1Fh*4],FxOpb1F
+   mov dword[FxTablebA3+3Dh*4],FxOpb3D
+   mov dword[FxTablebA3+3Eh*4],FxOpb3E
+   mov dword[FxTablebA3+3Fh*4],FxOpb3F
+   mov dword[FxTablebA3+0B0h*4],FxOpbB0
+   mov dword[FxTablebA3+0B1h*4],FxOpbB1
+   mov dword[FxTablebA3+0B2h*4],FxOpbB2
+   mov dword[FxTablebA3+0B3h*4],FxOpbB3
+   mov dword[FxTablebA3+0B4h*4],FxOpbB4
+   mov dword[FxTablebA3+0B5h*4],FxOpbB5
+   mov dword[FxTablebA3+0B6h*4],FxOpbB6
+   mov dword[FxTablebA3+0B7h*4],FxOpbB7
+   mov dword[FxTablebA3+0B8h*4],FxOpbB8
+   mov dword[FxTablebA3+0B9h*4],FxOpbB9
+   mov dword[FxTablebA3+0BAh*4],FxOpbBA
+   mov dword[FxTablebA3+0BBh*4],FxOpbBB
+   mov dword[FxTablebA3+0BCh*4],FxOpbBC
+   mov dword[FxTablebA3+0BDh*4],FxOpbBD
+   mov dword[FxTablebA3+0BEh*4],FxOpbBE
+   mov dword[FxTablebA3+0BFh*4],FxOpbBF
+
+   mov dword[FxTablec+05h*4],FxOpc05
+   mov dword[FxTablec+06h*4],FxOpc06
+   mov dword[FxTablec+07h*4],FxOpc07
+   mov dword[FxTablec+08h*4],FxOpc08
+   mov dword[FxTablec+09h*4],FxOpc09
+   mov dword[FxTablec+0Ah*4],FxOpc0A
+   mov dword[FxTablec+0Bh*4],FxOpc0B
+   mov dword[FxTablec+0Ch*4],FxOpc0C
+   mov dword[FxTablec+0Dh*4],FxOpc0D
+   mov dword[FxTablec+0Eh*4],FxOpc0E
+   mov dword[FxTablec+0Fh*4],FxOpc0F
+   mov dword[FxTablec+10h*4],FxOpc10
+   mov dword[FxTablec+11h*4],FxOpc11
+   mov dword[FxTablec+12h*4],FxOpc12
+   mov dword[FxTablec+13h*4],FxOpc13
+   mov dword[FxTablec+14h*4],FxOpc14
+   mov dword[FxTablec+15h*4],FxOpc15
+   mov dword[FxTablec+16h*4],FxOpc16
+   mov dword[FxTablec+17h*4],FxOpc17
+   mov dword[FxTablec+18h*4],FxOpc18
+   mov dword[FxTablec+19h*4],FxOpc19
+   mov dword[FxTablec+1Ah*4],FxOpc1A
+   mov dword[FxTablec+1Bh*4],FxOpc1B
+   mov dword[FxTablec+1Ch*4],FxOpc1C
+   mov dword[FxTablec+1Dh*4],FxOpc1D
+   mov dword[FxTablec+1Eh*4],FxOpc1E
+   mov dword[FxTablec+1Fh*4],FxOpc1F
+   mov dword[FxTablec+3Dh*4],FxOpc3D
+   mov dword[FxTablec+3Eh*4],FxOpc3E
+   mov dword[FxTablec+3Fh*4],FxOpc3F
+   mov dword[FxTablec+0B0h*4],FxOpcB0
+   mov dword[FxTablec+0B1h*4],FxOpcB1
+   mov dword[FxTablec+0B2h*4],FxOpcB2
+   mov dword[FxTablec+0B3h*4],FxOpcB3
+   mov dword[FxTablec+0B4h*4],FxOpcB4
+   mov dword[FxTablec+0B5h*4],FxOpcB5
+   mov dword[FxTablec+0B6h*4],FxOpcB6
+   mov dword[FxTablec+0B7h*4],FxOpcB7
+   mov dword[FxTablec+0B8h*4],FxOpcB8
+   mov dword[FxTablec+0B9h*4],FxOpcB9
+   mov dword[FxTablec+0BAh*4],FxOpcBA
+   mov dword[FxTablec+0BBh*4],FxOpcBB
+   mov dword[FxTablec+0BCh*4],FxOpcBC
+   mov dword[FxTablec+0BDh*4],FxOpcBD
+   mov dword[FxTablec+0BEh*4],FxOpcBE
+   mov dword[FxTablec+0BFh*4],FxOpcBF
+
+   mov dword[FxTablecA1+05h*4],FxOpc05
+   mov dword[FxTablecA1+06h*4],FxOpc06
+   mov dword[FxTablecA1+07h*4],FxOpc07
+   mov dword[FxTablecA1+08h*4],FxOpc08
+   mov dword[FxTablecA1+09h*4],FxOpc09
+   mov dword[FxTablecA1+0Ah*4],FxOpc0A
+   mov dword[FxTablecA1+0Bh*4],FxOpc0B
+   mov dword[FxTablecA1+0Ch*4],FxOpc0C
+   mov dword[FxTablecA1+0Dh*4],FxOpc0D
+   mov dword[FxTablecA1+0Eh*4],FxOpc0E
+   mov dword[FxTablecA1+0Fh*4],FxOpc0F
+   mov dword[FxTablecA1+10h*4],FxOpc10
+   mov dword[FxTablecA1+11h*4],FxOpc11
+   mov dword[FxTablecA1+12h*4],FxOpc12
+   mov dword[FxTablecA1+13h*4],FxOpc13
+   mov dword[FxTablecA1+14h*4],FxOpc14
+   mov dword[FxTablecA1+15h*4],FxOpc15
+   mov dword[FxTablecA1+16h*4],FxOpc16
+   mov dword[FxTablecA1+17h*4],FxOpc17
+   mov dword[FxTablecA1+18h*4],FxOpc18
+   mov dword[FxTablecA1+19h*4],FxOpc19
+   mov dword[FxTablecA1+1Ah*4],FxOpc1A
+   mov dword[FxTablecA1+1Bh*4],FxOpc1B
+   mov dword[FxTablecA1+1Ch*4],FxOpc1C
+   mov dword[FxTablecA1+1Dh*4],FxOpc1D
+   mov dword[FxTablecA1+1Eh*4],FxOpc1E
+   mov dword[FxTablecA1+1Fh*4],FxOpc1F
+   mov dword[FxTablecA1+3Dh*4],FxOpc3D
+   mov dword[FxTablecA1+3Eh*4],FxOpc3E
+   mov dword[FxTablecA1+3Fh*4],FxOpc3F
+   mov dword[FxTablecA1+0B0h*4],FxOpcB0
+   mov dword[FxTablecA1+0B1h*4],FxOpcB1
+   mov dword[FxTablecA1+0B2h*4],FxOpcB2
+   mov dword[FxTablecA1+0B3h*4],FxOpcB3
+   mov dword[FxTablecA1+0B4h*4],FxOpcB4
+   mov dword[FxTablecA1+0B5h*4],FxOpcB5
+   mov dword[FxTablecA1+0B6h*4],FxOpcB6
+   mov dword[FxTablecA1+0B7h*4],FxOpcB7
+   mov dword[FxTablecA1+0B8h*4],FxOpcB8
+   mov dword[FxTablecA1+0B9h*4],FxOpcB9
+   mov dword[FxTablecA1+0BAh*4],FxOpcBA
+   mov dword[FxTablecA1+0BBh*4],FxOpcBB
+   mov dword[FxTablecA1+0BCh*4],FxOpcBC
+   mov dword[FxTablecA1+0BDh*4],FxOpcBD
+   mov dword[FxTablecA1+0BEh*4],FxOpcBE
+   mov dword[FxTablecA1+0BFh*4],FxOpcBF
+
+   mov dword[FxTablecA2+05h*4],FxOpc05
+   mov dword[FxTablecA2+06h*4],FxOpc06
+   mov dword[FxTablecA2+07h*4],FxOpc07
+   mov dword[FxTablecA2+08h*4],FxOpc08
+   mov dword[FxTablecA2+09h*4],FxOpc09
+   mov dword[FxTablecA2+0Ah*4],FxOpc0A
+   mov dword[FxTablecA2+0Bh*4],FxOpc0B
+   mov dword[FxTablecA2+0Ch*4],FxOpc0C
+   mov dword[FxTablecA2+0Dh*4],FxOpc0D
+   mov dword[FxTablecA2+0Eh*4],FxOpc0E
+   mov dword[FxTablecA2+0Fh*4],FxOpc0F
+   mov dword[FxTablecA2+10h*4],FxOpc10
+   mov dword[FxTablecA2+11h*4],FxOpc11
+   mov dword[FxTablecA2+12h*4],FxOpc12
+   mov dword[FxTablecA2+13h*4],FxOpc13
+   mov dword[FxTablecA2+14h*4],FxOpc14
+   mov dword[FxTablecA2+15h*4],FxOpc15
+   mov dword[FxTablecA2+16h*4],FxOpc16
+   mov dword[FxTablecA2+17h*4],FxOpc17
+   mov dword[FxTablecA2+18h*4],FxOpc18
+   mov dword[FxTablecA2+19h*4],FxOpc19
+   mov dword[FxTablecA2+1Ah*4],FxOpc1A
+   mov dword[FxTablecA2+1Bh*4],FxOpc1B
+   mov dword[FxTablecA2+1Ch*4],FxOpc1C
+   mov dword[FxTablecA2+1Dh*4],FxOpc1D
+   mov dword[FxTablecA2+1Eh*4],FxOpc1E
+   mov dword[FxTablecA2+1Fh*4],FxOpc1F
+   mov dword[FxTablecA2+3Dh*4],FxOpc3D
+   mov dword[FxTablecA2+3Eh*4],FxOpc3E
+   mov dword[FxTablecA2+3Fh*4],FxOpc3F
+   mov dword[FxTablecA2+0B0h*4],FxOpcB0
+   mov dword[FxTablecA2+0B1h*4],FxOpcB1
+   mov dword[FxTablecA2+0B2h*4],FxOpcB2
+   mov dword[FxTablecA2+0B3h*4],FxOpcB3
+   mov dword[FxTablecA2+0B4h*4],FxOpcB4
+   mov dword[FxTablecA2+0B5h*4],FxOpcB5
+   mov dword[FxTablecA2+0B6h*4],FxOpcB6
+   mov dword[FxTablecA2+0B7h*4],FxOpcB7
+   mov dword[FxTablecA2+0B8h*4],FxOpcB8
+   mov dword[FxTablecA2+0B9h*4],FxOpcB9
+   mov dword[FxTablecA2+0BAh*4],FxOpcBA
+   mov dword[FxTablecA2+0BBh*4],FxOpcBB
+   mov dword[FxTablecA2+0BCh*4],FxOpcBC
+   mov dword[FxTablecA2+0BDh*4],FxOpcBD
+   mov dword[FxTablecA2+0BEh*4],FxOpcBE
+   mov dword[FxTablecA2+0BFh*4],FxOpcBF
+
+   mov dword[FxTablecA3+05h*4],FxOpc05
+   mov dword[FxTablecA3+06h*4],FxOpc06
+   mov dword[FxTablecA3+07h*4],FxOpc07
+   mov dword[FxTablecA3+08h*4],FxOpc08
+   mov dword[FxTablecA3+09h*4],FxOpc09
+   mov dword[FxTablecA3+0Ah*4],FxOpc0A
+   mov dword[FxTablecA3+0Bh*4],FxOpc0B
+   mov dword[FxTablecA3+0Ch*4],FxOpc0C
+   mov dword[FxTablecA3+0Dh*4],FxOpc0D
+   mov dword[FxTablecA3+0Eh*4],FxOpc0E
+   mov dword[FxTablecA3+0Fh*4],FxOpc0F
+   mov dword[FxTablecA3+10h*4],FxOpc10
+   mov dword[FxTablecA3+11h*4],FxOpc11
+   mov dword[FxTablecA3+12h*4],FxOpc12
+   mov dword[FxTablecA3+13h*4],FxOpc13
+   mov dword[FxTablecA3+14h*4],FxOpc14
+   mov dword[FxTablecA3+15h*4],FxOpc15
+   mov dword[FxTablecA3+16h*4],FxOpc16
+   mov dword[FxTablecA3+17h*4],FxOpc17
+   mov dword[FxTablecA3+18h*4],FxOpc18
+   mov dword[FxTablecA3+19h*4],FxOpc19
+   mov dword[FxTablecA3+1Ah*4],FxOpc1A
+   mov dword[FxTablecA3+1Bh*4],FxOpc1B
+   mov dword[FxTablecA3+1Ch*4],FxOpc1C
+   mov dword[FxTablecA3+1Dh*4],FxOpc1D
+   mov dword[FxTablecA3+1Eh*4],FxOpc1E
+   mov dword[FxTablecA3+1Fh*4],FxOpc1F
+   mov dword[FxTablecA3+3Dh*4],FxOpc3D
+   mov dword[FxTablecA3+3Eh*4],FxOpc3E
+   mov dword[FxTablecA3+3Fh*4],FxOpc3F
+   mov dword[FxTablecA3+0B0h*4],FxOpcB0
+   mov dword[FxTablecA3+0B1h*4],FxOpcB1
+   mov dword[FxTablecA3+0B2h*4],FxOpcB2
+   mov dword[FxTablecA3+0B3h*4],FxOpcB3
+   mov dword[FxTablecA3+0B4h*4],FxOpcB4
+   mov dword[FxTablecA3+0B5h*4],FxOpcB5
+   mov dword[FxTablecA3+0B6h*4],FxOpcB6
+   mov dword[FxTablecA3+0B7h*4],FxOpcB7
+   mov dword[FxTablecA3+0B8h*4],FxOpcB8
+   mov dword[FxTablecA3+0B9h*4],FxOpcB9
+   mov dword[FxTablecA3+0BAh*4],FxOpcBA
+   mov dword[FxTablecA3+0BBh*4],FxOpcBB
+   mov dword[FxTablecA3+0BCh*4],FxOpcBC
+   mov dword[FxTablecA3+0BDh*4],FxOpcBD
+   mov dword[FxTablecA3+0BEh*4],FxOpcBE
+   mov dword[FxTablecA3+0BFh*4],FxOpcBF
+
+   mov dword[FxTabled+00h*4],FxOpd00
+   mov dword[FxTabled+01h*4],FxOpd01
+   mov dword[FxTabled+02h*4],FxOpd02
+   mov dword[FxTabled+03h*4],FxOpd03
+   mov dword[FxTabled+04h*4],FxOpd04
+   mov dword[FxTabled+05h*4],FxOpd05
+   mov dword[FxTabled+06h*4],FxOpd06
+   mov dword[FxTabled+07h*4],FxOpd07
+   mov dword[FxTabled+08h*4],FxOpd08
+   mov dword[FxTabled+09h*4],FxOpd09
+   mov dword[FxTabled+0Ah*4],FxOpd0A
+   mov dword[FxTabled+0Bh*4],FxOpd0B
+   mov dword[FxTabled+0Ch*4],FxOpd0C
+   mov dword[FxTabled+0Dh*4],FxOpd0D
+   mov dword[FxTabled+0Eh*4],FxOpd0E
+   mov dword[FxTabled+0Fh*4],FxOpd0F
+
+   mov dword[FxTabled+10h*4],FxOpd10
+   mov dword[FxTabled+11h*4],FxOpd11
+   mov dword[FxTabled+12h*4],FxOpd12
+   mov dword[FxTabled+13h*4],FxOpd13
+   mov dword[FxTabled+14h*4],FxOpd14
+   mov dword[FxTabled+15h*4],FxOpd15
+   mov dword[FxTabled+16h*4],FxOpd16
+   mov dword[FxTabled+17h*4],FxOpd17
+   mov dword[FxTabled+18h*4],FxOpd18
+   mov dword[FxTabled+19h*4],FxOpd19
+   mov dword[FxTabled+1Ah*4],FxOpd1A
+   mov dword[FxTabled+1Bh*4],FxOpd1B
+   mov dword[FxTabled+1Ch*4],FxOpd1C
+   mov dword[FxTabled+1Dh*4],FxOpd1D
+   mov dword[FxTabled+1Eh*4],FxOpd1E
+   mov dword[FxTabled+1Fh*4],FxOpd1F
+
+   mov dword[FxTabled+20h*4],FxOpd20
+   mov dword[FxTabled+21h*4],FxOpd21
+   mov dword[FxTabled+22h*4],FxOpd22
+   mov dword[FxTabled+23h*4],FxOpd23
+   mov dword[FxTabled+24h*4],FxOpd24
+   mov dword[FxTabled+25h*4],FxOpd25
+   mov dword[FxTabled+26h*4],FxOpd26
+   mov dword[FxTabled+27h*4],FxOpd27
+   mov dword[FxTabled+28h*4],FxOpd28
+   mov dword[FxTabled+29h*4],FxOpd29
+   mov dword[FxTabled+2Ah*4],FxOpd2A
+   mov dword[FxTabled+2Bh*4],FxOpd2B
+   mov dword[FxTabled+2Ch*4],FxOpd2C
+   mov dword[FxTabled+2Dh*4],FxOpd2D
+   mov dword[FxTabled+2Eh*4],FxOpd2E
+   mov dword[FxTabled+2Fh*4],FxOpd2F
+
+   mov dword[FxTabled+30h*4],FxOpd30
+   mov dword[FxTabled+31h*4],FxOpd31
+   mov dword[FxTabled+32h*4],FxOpd32
+   mov dword[FxTabled+33h*4],FxOpd33
+   mov dword[FxTabled+34h*4],FxOpd34
+   mov dword[FxTabled+35h*4],FxOpd35
+   mov dword[FxTabled+36h*4],FxOpd36
+   mov dword[FxTabled+37h*4],FxOpd37
+   mov dword[FxTabled+38h*4],FxOpd38
+   mov dword[FxTabled+39h*4],FxOpd39
+   mov dword[FxTabled+3Ah*4],FxOpd3A
+   mov dword[FxTabled+3Bh*4],FxOpd3B
+   mov dword[FxTabled+3Ch*4],FxOpd3C
+   mov dword[FxTabled+3Dh*4],FxOpd3D
+   mov dword[FxTabled+3Eh*4],FxOpd3E
+   mov dword[FxTabled+3Fh*4],FxOpd3F
+
+   mov dword[FxTabled+40h*4],FxOpd40
+   mov dword[FxTabled+41h*4],FxOpd41
+   mov dword[FxTabled+42h*4],FxOpd42
+   mov dword[FxTabled+43h*4],FxOpd43
+   mov dword[FxTabled+44h*4],FxOpd44
+   mov dword[FxTabled+45h*4],FxOpd45
+   mov dword[FxTabled+46h*4],FxOpd46
+   mov dword[FxTabled+47h*4],FxOpd47
+   mov dword[FxTabled+48h*4],FxOpd48
+   mov dword[FxTabled+49h*4],FxOpd49
+   mov dword[FxTabled+4Ah*4],FxOpd4A
+   mov dword[FxTabled+4Bh*4],FxOpd4B
+   mov dword[FxTabled+4Ch*4],FxOpd4C
+   mov dword[FxTabled+4Dh*4],FxOpd4D
+   mov dword[FxTabled+4Eh*4],FxOpd4E
+   mov dword[FxTabled+4Fh*4],FxOpd4F
+
+   mov dword[FxTabled+50h*4],FxOpd50
+   mov dword[FxTabled+51h*4],FxOpd51
+   mov dword[FxTabled+52h*4],FxOpd52
+   mov dword[FxTabled+53h*4],FxOpd53
+   mov dword[FxTabled+54h*4],FxOpd54
+   mov dword[FxTabled+55h*4],FxOpd55
+   mov dword[FxTabled+56h*4],FxOpd56
+   mov dword[FxTabled+57h*4],FxOpd57
+   mov dword[FxTabled+58h*4],FxOpd58
+   mov dword[FxTabled+59h*4],FxOpd59
+   mov dword[FxTabled+5Ah*4],FxOpd5A
+   mov dword[FxTabled+5Bh*4],FxOpd5B
+   mov dword[FxTabled+5Ch*4],FxOpd5C
+   mov dword[FxTabled+5Dh*4],FxOpd5D
+   mov dword[FxTabled+5Eh*4],FxOpd5E
+   mov dword[FxTabled+5Fh*4],FxOpd5F
+
+   mov dword[FxTabled+60h*4],FxOpd60
+   mov dword[FxTabled+61h*4],FxOpd61
+   mov dword[FxTabled+62h*4],FxOpd62
+   mov dword[FxTabled+63h*4],FxOpd63
+   mov dword[FxTabled+64h*4],FxOpd64
+   mov dword[FxTabled+65h*4],FxOpd65
+   mov dword[FxTabled+66h*4],FxOpd66
+   mov dword[FxTabled+67h*4],FxOpd67
+   mov dword[FxTabled+68h*4],FxOpd68
+   mov dword[FxTabled+69h*4],FxOpd69
+   mov dword[FxTabled+6Ah*4],FxOpd6A
+   mov dword[FxTabled+6Bh*4],FxOpd6B
+   mov dword[FxTabled+6Ch*4],FxOpd6C
+   mov dword[FxTabled+6Dh*4],FxOpd6D
+   mov dword[FxTabled+6Eh*4],FxOpd6E
+   mov dword[FxTabled+6Fh*4],FxOpd6F
+
+   mov dword[FxTabled+70h*4],FxOpd70
+   mov dword[FxTabled+71h*4],FxOpd71
+   mov dword[FxTabled+72h*4],FxOpd72
+   mov dword[FxTabled+73h*4],FxOpd73
+   mov dword[FxTabled+74h*4],FxOpd74
+   mov dword[FxTabled+75h*4],FxOpd75
+   mov dword[FxTabled+76h*4],FxOpd76
+   mov dword[FxTabled+77h*4],FxOpd77
+   mov dword[FxTabled+78h*4],FxOpd78
+   mov dword[FxTabled+79h*4],FxOpd79
+   mov dword[FxTabled+7Ah*4],FxOpd7A
+   mov dword[FxTabled+7Bh*4],FxOpd7B
+   mov dword[FxTabled+7Ch*4],FxOpd7C
+   mov dword[FxTabled+7Dh*4],FxOpd7D
+   mov dword[FxTabled+7Eh*4],FxOpd7E
+   mov dword[FxTabled+7Fh*4],FxOpd7F
+
+   mov dword[FxTabled+80h*4],FxOpd80
+   mov dword[FxTabled+81h*4],FxOpd81
+   mov dword[FxTabled+82h*4],FxOpd82
+   mov dword[FxTabled+83h*4],FxOpd83
+   mov dword[FxTabled+84h*4],FxOpd84
+   mov dword[FxTabled+85h*4],FxOpd85
+   mov dword[FxTabled+86h*4],FxOpd86
+   mov dword[FxTabled+87h*4],FxOpd87
+   mov dword[FxTabled+88h*4],FxOpd88
+   mov dword[FxTabled+89h*4],FxOpd89
+   mov dword[FxTabled+8Ah*4],FxOpd8A
+   mov dword[FxTabled+8Bh*4],FxOpd8B
+   mov dword[FxTabled+8Ch*4],FxOpd8C
+   mov dword[FxTabled+8Dh*4],FxOpd8D
+   mov dword[FxTabled+8Eh*4],FxOpd8E
+   mov dword[FxTabled+8Fh*4],FxOpd8F
+
+   mov dword[FxTabled+90h*4],FxOpd90
+   mov dword[FxTabled+91h*4],FxOpd91
+   mov dword[FxTabled+92h*4],FxOpd92
+   mov dword[FxTabled+93h*4],FxOpd93
+   mov dword[FxTabled+94h*4],FxOpd94
+   mov dword[FxTabled+95h*4],FxOpd95
+   mov dword[FxTabled+96h*4],FxOpd96
+   mov dword[FxTabled+97h*4],FxOpd97
+   mov dword[FxTabled+98h*4],FxOpd98
+   mov dword[FxTabled+99h*4],FxOpd99
+   mov dword[FxTabled+9Ah*4],FxOpd9A
+   mov dword[FxTabled+9Bh*4],FxOpd9B
+   mov dword[FxTabled+9Ch*4],FxOpd9C
+   mov dword[FxTabled+9Dh*4],FxOpd9D
+   mov dword[FxTabled+9Eh*4],FxOpd9E
+   mov dword[FxTabled+9Fh*4],FxOpd9F
+
+   mov dword[FxTabled+0A0h*4],FxOpdA0
+   mov dword[FxTabled+0A1h*4],FxOpdA1
+   mov dword[FxTabled+0A2h*4],FxOpdA2
+   mov dword[FxTabled+0A3h*4],FxOpdA3
+   mov dword[FxTabled+0A4h*4],FxOpdA4
+   mov dword[FxTabled+0A5h*4],FxOpdA5
+   mov dword[FxTabled+0A6h*4],FxOpdA6
+   mov dword[FxTabled+0A7h*4],FxOpdA7
+   mov dword[FxTabled+0A8h*4],FxOpdA8
+   mov dword[FxTabled+0A9h*4],FxOpdA9
+   mov dword[FxTabled+0AAh*4],FxOpdAA
+   mov dword[FxTabled+0ABh*4],FxOpdAB
+   mov dword[FxTabled+0ACh*4],FxOpdAC
+   mov dword[FxTabled+0ADh*4],FxOpdAD
+   mov dword[FxTabled+0AEh*4],FxOpdAE
+   mov dword[FxTabled+0AFh*4],FxOpdAF
+
+   mov dword[FxTabled+0B0h*4],FxOpdB0
+   mov dword[FxTabled+0B1h*4],FxOpdB1
+   mov dword[FxTabled+0B2h*4],FxOpdB2
+   mov dword[FxTabled+0B3h*4],FxOpdB3
+   mov dword[FxTabled+0B4h*4],FxOpdB4
+   mov dword[FxTabled+0B5h*4],FxOpdB5
+   mov dword[FxTabled+0B6h*4],FxOpdB6
+   mov dword[FxTabled+0B7h*4],FxOpdB7
+   mov dword[FxTabled+0B8h*4],FxOpdB8
+   mov dword[FxTabled+0B9h*4],FxOpdB9
+   mov dword[FxTabled+0BAh*4],FxOpdBA
+   mov dword[FxTabled+0BBh*4],FxOpdBB
+   mov dword[FxTabled+0BCh*4],FxOpdBC
+   mov dword[FxTabled+0BDh*4],FxOpdBD
+   mov dword[FxTabled+0BEh*4],FxOpdBE
+   mov dword[FxTabled+0BFh*4],FxOpdBF
+
+   mov dword[FxTabled+0C0h*4],FxOpdC0
+   mov dword[FxTabled+0C1h*4],FxOpdC1
+   mov dword[FxTabled+0C2h*4],FxOpdC2
+   mov dword[FxTabled+0C3h*4],FxOpdC3
+   mov dword[FxTabled+0C4h*4],FxOpdC4
+   mov dword[FxTabled+0C5h*4],FxOpdC5
+   mov dword[FxTabled+0C6h*4],FxOpdC6
+   mov dword[FxTabled+0C7h*4],FxOpdC7
+   mov dword[FxTabled+0C8h*4],FxOpdC8
+   mov dword[FxTabled+0C9h*4],FxOpdC9
+   mov dword[FxTabled+0CAh*4],FxOpdCA
+   mov dword[FxTabled+0CBh*4],FxOpdCB
+   mov dword[FxTabled+0CCh*4],FxOpdCC
+   mov dword[FxTabled+0CDh*4],FxOpdCD
+   mov dword[FxTabled+0CEh*4],FxOpdCE
+   mov dword[FxTabled+0CFh*4],FxOpdCF
+
+   mov dword[FxTabled+0D0h*4],FxOpdD0
+   mov dword[FxTabled+0D1h*4],FxOpdD1
+   mov dword[FxTabled+0D2h*4],FxOpdD2
+   mov dword[FxTabled+0D3h*4],FxOpdD3
+   mov dword[FxTabled+0D4h*4],FxOpdD4
+   mov dword[FxTabled+0D5h*4],FxOpdD5
+   mov dword[FxTabled+0D6h*4],FxOpdD6
+   mov dword[FxTabled+0D7h*4],FxOpdD7
+   mov dword[FxTabled+0D8h*4],FxOpdD8
+   mov dword[FxTabled+0D9h*4],FxOpdD9
+   mov dword[FxTabled+0DAh*4],FxOpdDA
+   mov dword[FxTabled+0DBh*4],FxOpdDB
+   mov dword[FxTabled+0DCh*4],FxOpdDC
+   mov dword[FxTabled+0DDh*4],FxOpdDD
+   mov dword[FxTabled+0DEh*4],FxOpdDE
+   mov dword[FxTabled+0DFh*4],FxOpdDF
+
+   mov dword[FxTabled+0E0h*4],FxOpdE0
+   mov dword[FxTabled+0E1h*4],FxOpdE1
+   mov dword[FxTabled+0E2h*4],FxOpdE2
+   mov dword[FxTabled+0E3h*4],FxOpdE3
+   mov dword[FxTabled+0E4h*4],FxOpdE4
+   mov dword[FxTabled+0E5h*4],FxOpdE5
+   mov dword[FxTabled+0E6h*4],FxOpdE6
+   mov dword[FxTabled+0E7h*4],FxOpdE7
+   mov dword[FxTabled+0E8h*4],FxOpdE8
+   mov dword[FxTabled+0E9h*4],FxOpdE9
+   mov dword[FxTabled+0EAh*4],FxOpdEA
+   mov dword[FxTabled+0EBh*4],FxOpdEB
+   mov dword[FxTabled+0ECh*4],FxOpdEC
+   mov dword[FxTabled+0EDh*4],FxOpdED
+   mov dword[FxTabled+0EEh*4],FxOpdEE
+   mov dword[FxTabled+0EFh*4],FxOpdEF
+
+   mov dword[FxTabled+0F0h*4],FxOpdF0
+   mov dword[FxTabled+0F1h*4],FxOpdF1
+   mov dword[FxTabled+0F2h*4],FxOpdF2
+   mov dword[FxTabled+0F3h*4],FxOpdF3
+   mov dword[FxTabled+0F4h*4],FxOpdF4
+   mov dword[FxTabled+0F5h*4],FxOpdF5
+   mov dword[FxTabled+0F6h*4],FxOpdF6
+   mov dword[FxTabled+0F7h*4],FxOpdF7
+   mov dword[FxTabled+0F8h*4],FxOpdF8
+   mov dword[FxTabled+0F9h*4],FxOpdF9
+   mov dword[FxTabled+0FAh*4],FxOpdFA
+   mov dword[FxTabled+0FBh*4],FxOpdFB
+   mov dword[FxTabled+0FCh*4],FxOpdFC
+   mov dword[FxTabled+0FDh*4],FxOpdFD
+   mov dword[FxTabled+0FEh*4],FxOpdFE
+   mov dword[FxTabled+0FFh*4],FxOpdFF
+
+
+   mov dword[FxTabledA1+00h*4],FxOpd00
+   mov dword[FxTabledA1+01h*4],FxOpd01
+   mov dword[FxTabledA1+02h*4],FxOpd02
+   mov dword[FxTabledA1+03h*4],FxOpd03
+   mov dword[FxTabledA1+04h*4],FxOpd04
+   mov dword[FxTabledA1+05h*4],FxOpd05
+   mov dword[FxTabledA1+06h*4],FxOpd06
+   mov dword[FxTabledA1+07h*4],FxOpd07
+   mov dword[FxTabledA1+08h*4],FxOpd08
+   mov dword[FxTabledA1+09h*4],FxOpd09
+   mov dword[FxTabledA1+0Ah*4],FxOpd0A
+   mov dword[FxTabledA1+0Bh*4],FxOpd0B
+   mov dword[FxTabledA1+0Ch*4],FxOpd0C
+   mov dword[FxTabledA1+0Dh*4],FxOpd0D
+   mov dword[FxTabledA1+0Eh*4],FxOpd0E
+   mov dword[FxTabledA1+0Fh*4],FxOpd0F
+
+   mov dword[FxTabledA1+10h*4],FxOpd10
+   mov dword[FxTabledA1+11h*4],FxOpd11
+   mov dword[FxTabledA1+12h*4],FxOpd12
+   mov dword[FxTabledA1+13h*4],FxOpd13
+   mov dword[FxTabledA1+14h*4],FxOpd14
+   mov dword[FxTabledA1+15h*4],FxOpd15
+   mov dword[FxTabledA1+16h*4],FxOpd16
+   mov dword[FxTabledA1+17h*4],FxOpd17
+   mov dword[FxTabledA1+18h*4],FxOpd18
+   mov dword[FxTabledA1+19h*4],FxOpd19
+   mov dword[FxTabledA1+1Ah*4],FxOpd1A
+   mov dword[FxTabledA1+1Bh*4],FxOpd1B
+   mov dword[FxTabledA1+1Ch*4],FxOpd1C
+   mov dword[FxTabledA1+1Dh*4],FxOpd1D
+   mov dword[FxTabledA1+1Eh*4],FxOpd1E
+   mov dword[FxTabledA1+1Fh*4],FxOpd1F
+
+   mov dword[FxTabledA1+20h*4],FxOpd20
+   mov dword[FxTabledA1+21h*4],FxOpd21
+   mov dword[FxTabledA1+22h*4],FxOpd22
+   mov dword[FxTabledA1+23h*4],FxOpd23
+   mov dword[FxTabledA1+24h*4],FxOpd24
+   mov dword[FxTabledA1+25h*4],FxOpd25
+   mov dword[FxTabledA1+26h*4],FxOpd26
+   mov dword[FxTabledA1+27h*4],FxOpd27
+   mov dword[FxTabledA1+28h*4],FxOpd28
+   mov dword[FxTabledA1+29h*4],FxOpd29
+   mov dword[FxTabledA1+2Ah*4],FxOpd2A
+   mov dword[FxTabledA1+2Bh*4],FxOpd2B
+   mov dword[FxTabledA1+2Ch*4],FxOpd2C
+   mov dword[FxTabledA1+2Dh*4],FxOpd2D
+   mov dword[FxTabledA1+2Eh*4],FxOpd2E
+   mov dword[FxTabledA1+2Fh*4],FxOpd2F
+
+   mov dword[FxTabledA1+30h*4],FxOpd30A1
+   mov dword[FxTabledA1+31h*4],FxOpd31A1
+   mov dword[FxTabledA1+32h*4],FxOpd32A1
+   mov dword[FxTabledA1+33h*4],FxOpd33A1
+   mov dword[FxTabledA1+34h*4],FxOpd34A1
+   mov dword[FxTabledA1+35h*4],FxOpd35A1
+   mov dword[FxTabledA1+36h*4],FxOpd36A1
+   mov dword[FxTabledA1+37h*4],FxOpd37A1
+   mov dword[FxTabledA1+38h*4],FxOpd38A1
+   mov dword[FxTabledA1+39h*4],FxOpd39A1
+   mov dword[FxTabledA1+3Ah*4],FxOpd3AA1
+   mov dword[FxTabledA1+3Bh*4],FxOpd3BA1
+   mov dword[FxTabledA1+3Ch*4],FxOpd3C
+   mov dword[FxTabledA1+3Dh*4],FxOpd3D
+   mov dword[FxTabledA1+3Eh*4],FxOpd3E
+   mov dword[FxTabledA1+3Fh*4],FxOpd3F
+
+   mov dword[FxTabledA1+40h*4],FxOpd40A1
+   mov dword[FxTabledA1+41h*4],FxOpd41A1
+   mov dword[FxTabledA1+42h*4],FxOpd42A1
+   mov dword[FxTabledA1+43h*4],FxOpd43A1
+   mov dword[FxTabledA1+44h*4],FxOpd44A1
+   mov dword[FxTabledA1+45h*4],FxOpd45A1
+   mov dword[FxTabledA1+46h*4],FxOpd46A1
+   mov dword[FxTabledA1+47h*4],FxOpd47A1
+   mov dword[FxTabledA1+48h*4],FxOpd48A1
+   mov dword[FxTabledA1+49h*4],FxOpd49A1
+   mov dword[FxTabledA1+4Ah*4],FxOpd4AA1
+   mov dword[FxTabledA1+4Bh*4],FxOpd4BA1
+   mov dword[FxTabledA1+4Ch*4],FxOpd4CA1
+   mov dword[FxTabledA1+4Dh*4],FxOpd4D
+   mov dword[FxTabledA1+4Eh*4],FxOpd4EA1
+   mov dword[FxTabledA1+4Fh*4],FxOpd4F
+
+   mov dword[FxTabledA1+50h*4],FxOpd50A1
+   mov dword[FxTabledA1+51h*4],FxOpd51A1
+   mov dword[FxTabledA1+52h*4],FxOpd52A1
+   mov dword[FxTabledA1+53h*4],FxOpd53A1
+   mov dword[FxTabledA1+54h*4],FxOpd54A1
+   mov dword[FxTabledA1+55h*4],FxOpd55A1
+   mov dword[FxTabledA1+56h*4],FxOpd56A1
+   mov dword[FxTabledA1+57h*4],FxOpd57A1
+   mov dword[FxTabledA1+58h*4],FxOpd58A1
+   mov dword[FxTabledA1+59h*4],FxOpd59A1
+   mov dword[FxTabledA1+5Ah*4],FxOpd5AA1
+   mov dword[FxTabledA1+5Bh*4],FxOpd5BA1
+   mov dword[FxTabledA1+5Ch*4],FxOpd5CA1
+   mov dword[FxTabledA1+5Dh*4],FxOpd5DA1
+   mov dword[FxTabledA1+5Eh*4],FxOpd5EA1
+   mov dword[FxTabledA1+5Fh*4],FxOpd5FA1
+
+   mov dword[FxTabledA1+60h*4],FxOpd60A1
+   mov dword[FxTabledA1+61h*4],FxOpd61A1
+   mov dword[FxTabledA1+62h*4],FxOpd62A1
+   mov dword[FxTabledA1+63h*4],FxOpd63A1
+   mov dword[FxTabledA1+64h*4],FxOpd64A1
+   mov dword[FxTabledA1+65h*4],FxOpd65A1
+   mov dword[FxTabledA1+66h*4],FxOpd66A1
+   mov dword[FxTabledA1+67h*4],FxOpd67A1
+   mov dword[FxTabledA1+68h*4],FxOpd68A1
+   mov dword[FxTabledA1+69h*4],FxOpd69A1
+   mov dword[FxTabledA1+6Ah*4],FxOpd6AA1
+   mov dword[FxTabledA1+6Bh*4],FxOpd6BA1
+   mov dword[FxTabledA1+6Ch*4],FxOpd6CA1
+   mov dword[FxTabledA1+6Dh*4],FxOpd6DA1
+   mov dword[FxTabledA1+6Eh*4],FxOpd6EA1
+   mov dword[FxTabledA1+6Fh*4],FxOpd6FA1
+
+   mov dword[FxTabledA1+70h*4],FxOpd70
+   mov dword[FxTabledA1+71h*4],FxOpd71A1
+   mov dword[FxTabledA1+72h*4],FxOpd72A1
+   mov dword[FxTabledA1+73h*4],FxOpd73A1
+   mov dword[FxTabledA1+74h*4],FxOpd74A1
+   mov dword[FxTabledA1+75h*4],FxOpd75A1
+   mov dword[FxTabledA1+76h*4],FxOpd76A1
+   mov dword[FxTabledA1+77h*4],FxOpd77A1
+   mov dword[FxTabledA1+78h*4],FxOpd78A1
+   mov dword[FxTabledA1+79h*4],FxOpd79A1
+   mov dword[FxTabledA1+7Ah*4],FxOpd7AA1
+   mov dword[FxTabledA1+7Bh*4],FxOpd7BA1
+   mov dword[FxTabledA1+7Ch*4],FxOpd7CA1
+   mov dword[FxTabledA1+7Dh*4],FxOpd7DA1
+   mov dword[FxTabledA1+7Eh*4],FxOpd7EA1
+   mov dword[FxTabledA1+7Fh*4],FxOpd7FA1
+
+   mov dword[FxTabledA1+80h*4],FxOpd80A1
+   mov dword[FxTabledA1+81h*4],FxOpd81A1
+   mov dword[FxTabledA1+82h*4],FxOpd82A1
+   mov dword[FxTabledA1+83h*4],FxOpd83A1
+   mov dword[FxTabledA1+84h*4],FxOpd84A1
+   mov dword[FxTabledA1+85h*4],FxOpd85A1
+   mov dword[FxTabledA1+86h*4],FxOpd86A1
+   mov dword[FxTabledA1+87h*4],FxOpd87A1
+   mov dword[FxTabledA1+88h*4],FxOpd88A1
+   mov dword[FxTabledA1+89h*4],FxOpd89A1
+   mov dword[FxTabledA1+8Ah*4],FxOpd8AA1
+   mov dword[FxTabledA1+8Bh*4],FxOpd8BA1
+   mov dword[FxTabledA1+8Ch*4],FxOpd8CA1
+   mov dword[FxTabledA1+8Dh*4],FxOpd8DA1
+   mov dword[FxTabledA1+8Eh*4],FxOpd8EA1
+   mov dword[FxTabledA1+8Fh*4],FxOpd8FA1
+
+   mov dword[FxTabledA1+90h*4],FxOpd90
+   mov dword[FxTabledA1+91h*4],FxOpd91
+   mov dword[FxTabledA1+92h*4],FxOpd92
+   mov dword[FxTabledA1+93h*4],FxOpd93
+   mov dword[FxTabledA1+94h*4],FxOpd94
+   mov dword[FxTabledA1+95h*4],FxOpd95
+   mov dword[FxTabledA1+96h*4],FxOpd96A1
+   mov dword[FxTabledA1+97h*4],FxOpd97
+   mov dword[FxTabledA1+98h*4],FxOpd98A1
+   mov dword[FxTabledA1+99h*4],FxOpd99A1
+   mov dword[FxTabledA1+9Ah*4],FxOpd9AA1
+   mov dword[FxTabledA1+9Bh*4],FxOpd9BA1
+   mov dword[FxTabledA1+9Ch*4],FxOpd9CA1
+   mov dword[FxTabledA1+9Dh*4],FxOpd9DA1
+   mov dword[FxTabledA1+9Eh*4],FxOpd9E
+   mov dword[FxTabledA1+9Fh*4],FxOpd9FA1
+
+   mov dword[FxTabledA1+0A0h*4],FxOpdA0A1
+   mov dword[FxTabledA1+0A1h*4],FxOpdA1A1
+   mov dword[FxTabledA1+0A2h*4],FxOpdA2A1
+   mov dword[FxTabledA1+0A3h*4],FxOpdA3A1
+   mov dword[FxTabledA1+0A4h*4],FxOpdA4A1
+   mov dword[FxTabledA1+0A5h*4],FxOpdA5A1
+   mov dword[FxTabledA1+0A6h*4],FxOpdA6A1
+   mov dword[FxTabledA1+0A7h*4],FxOpdA7A1
+   mov dword[FxTabledA1+0A8h*4],FxOpdA8A1
+   mov dword[FxTabledA1+0A9h*4],FxOpdA9A1
+   mov dword[FxTabledA1+0AAh*4],FxOpdAAA1
+   mov dword[FxTabledA1+0ABh*4],FxOpdABA1
+   mov dword[FxTabledA1+0ACh*4],FxOpdACA1
+   mov dword[FxTabledA1+0ADh*4],FxOpdADA1
+   mov dword[FxTabledA1+0AEh*4],FxOpdAEA1
+   mov dword[FxTabledA1+0AFh*4],FxOpdAFA1
+
+   mov dword[FxTabledA1+0B0h*4],FxOpdB0
+   mov dword[FxTabledA1+0B1h*4],FxOpdB1
+   mov dword[FxTabledA1+0B2h*4],FxOpdB2
+   mov dword[FxTabledA1+0B3h*4],FxOpdB3
+   mov dword[FxTabledA1+0B4h*4],FxOpdB4
+   mov dword[FxTabledA1+0B5h*4],FxOpdB5
+   mov dword[FxTabledA1+0B6h*4],FxOpdB6
+   mov dword[FxTabledA1+0B7h*4],FxOpdB7
+   mov dword[FxTabledA1+0B8h*4],FxOpdB8
+   mov dword[FxTabledA1+0B9h*4],FxOpdB9
+   mov dword[FxTabledA1+0BAh*4],FxOpdBA
+   mov dword[FxTabledA1+0BBh*4],FxOpdBB
+   mov dword[FxTabledA1+0BCh*4],FxOpdBC
+   mov dword[FxTabledA1+0BDh*4],FxOpdBD
+   mov dword[FxTabledA1+0BEh*4],FxOpdBE
+   mov dword[FxTabledA1+0BFh*4],FxOpdBF
+
+   mov dword[FxTabledA1+0C0h*4],FxOpdC0
+   mov dword[FxTabledA1+0C1h*4],FxOpdC1A1
+   mov dword[FxTabledA1+0C2h*4],FxOpdC2A1
+   mov dword[FxTabledA1+0C3h*4],FxOpdC3A1
+   mov dword[FxTabledA1+0C4h*4],FxOpdC4A1
+   mov dword[FxTabledA1+0C5h*4],FxOpdC5A1
+   mov dword[FxTabledA1+0C6h*4],FxOpdC6A1
+   mov dword[FxTabledA1+0C7h*4],FxOpdC7A1
+   mov dword[FxTabledA1+0C8h*4],FxOpdC8A1
+   mov dword[FxTabledA1+0C9h*4],FxOpdC9A1
+   mov dword[FxTabledA1+0CAh*4],FxOpdCAA1
+   mov dword[FxTabledA1+0CBh*4],FxOpdCBA1
+   mov dword[FxTabledA1+0CCh*4],FxOpdCCA1
+   mov dword[FxTabledA1+0CDh*4],FxOpdCDA1
+   mov dword[FxTabledA1+0CEh*4],FxOpdCEA1
+   mov dword[FxTabledA1+0CFh*4],FxOpdCFA1
+
+   mov dword[FxTabledA1+0D0h*4],FxOpdD0
+   mov dword[FxTabledA1+0D1h*4],FxOpdD1
+   mov dword[FxTabledA1+0D2h*4],FxOpdD2
+   mov dword[FxTabledA1+0D3h*4],FxOpdD3
+   mov dword[FxTabledA1+0D4h*4],FxOpdD4
+   mov dword[FxTabledA1+0D5h*4],FxOpdD5
+   mov dword[FxTabledA1+0D6h*4],FxOpdD6
+   mov dword[FxTabledA1+0D7h*4],FxOpdD7
+   mov dword[FxTabledA1+0D8h*4],FxOpdD8
+   mov dword[FxTabledA1+0D9h*4],FxOpdD9
+   mov dword[FxTabledA1+0DAh*4],FxOpdDA
+   mov dword[FxTabledA1+0DBh*4],FxOpdDB
+   mov dword[FxTabledA1+0DCh*4],FxOpdDC
+   mov dword[FxTabledA1+0DDh*4],FxOpdDD
+   mov dword[FxTabledA1+0DEh*4],FxOpdDE
+   mov dword[FxTabledA1+0DFh*4],FxOpdDF
+
+   mov dword[FxTabledA1+0E0h*4],FxOpdE0
+   mov dword[FxTabledA1+0E1h*4],FxOpdE1
+   mov dword[FxTabledA1+0E2h*4],FxOpdE2
+   mov dword[FxTabledA1+0E3h*4],FxOpdE3
+   mov dword[FxTabledA1+0E4h*4],FxOpdE4
+   mov dword[FxTabledA1+0E5h*4],FxOpdE5
+   mov dword[FxTabledA1+0E6h*4],FxOpdE6
+   mov dword[FxTabledA1+0E7h*4],FxOpdE7
+   mov dword[FxTabledA1+0E8h*4],FxOpdE8
+   mov dword[FxTabledA1+0E9h*4],FxOpdE9
+   mov dword[FxTabledA1+0EAh*4],FxOpdEA
+   mov dword[FxTabledA1+0EBh*4],FxOpdEB
+   mov dword[FxTabledA1+0ECh*4],FxOpdEC
+   mov dword[FxTabledA1+0EDh*4],FxOpdED
+   mov dword[FxTabledA1+0EEh*4],FxOpdEE
+   mov dword[FxTabledA1+0EFh*4],FxOpdEFA1
+
+   mov dword[FxTabledA1+0F0h*4],FxOpdF0A1
+   mov dword[FxTabledA1+0F1h*4],FxOpdF1A1
+   mov dword[FxTabledA1+0F2h*4],FxOpdF2A1
+   mov dword[FxTabledA1+0F3h*4],FxOpdF3A1
+   mov dword[FxTabledA1+0F4h*4],FxOpdF4A1
+   mov dword[FxTabledA1+0F5h*4],FxOpdF5A1
+   mov dword[FxTabledA1+0F6h*4],FxOpdF6A1
+   mov dword[FxTabledA1+0F7h*4],FxOpdF7A1
+   mov dword[FxTabledA1+0F8h*4],FxOpdF8A1
+   mov dword[FxTabledA1+0F9h*4],FxOpdF9A1
+   mov dword[FxTabledA1+0FAh*4],FxOpdFAA1
+   mov dword[FxTabledA1+0FBh*4],FxOpdFBA1
+   mov dword[FxTabledA1+0FCh*4],FxOpdFCA1
+   mov dword[FxTabledA1+0FDh*4],FxOpdFDA1
+   mov dword[FxTabledA1+0FEh*4],FxOpdFEA1
+   mov dword[FxTabledA1+0FFh*4],FxOpdFFA1
+
+
+   mov dword[FxTabledA2+00h*4],FxOpd00
+   mov dword[FxTabledA2+01h*4],FxOpd01
+   mov dword[FxTabledA2+02h*4],FxOpd02
+   mov dword[FxTabledA2+03h*4],FxOpd03
+   mov dword[FxTabledA2+04h*4],FxOpd04
+   mov dword[FxTabledA2+05h*4],FxOpd05
+   mov dword[FxTabledA2+06h*4],FxOpd06
+   mov dword[FxTabledA2+07h*4],FxOpd07
+   mov dword[FxTabledA2+08h*4],FxOpd08
+   mov dword[FxTabledA2+09h*4],FxOpd09
+   mov dword[FxTabledA2+0Ah*4],FxOpd0A
+   mov dword[FxTabledA2+0Bh*4],FxOpd0B
+   mov dword[FxTabledA2+0Ch*4],FxOpd0C
+   mov dword[FxTabledA2+0Dh*4],FxOpd0D
+   mov dword[FxTabledA2+0Eh*4],FxOpd0E
+   mov dword[FxTabledA2+0Fh*4],FxOpd0F
+
+   mov dword[FxTabledA2+10h*4],FxOpd10
+   mov dword[FxTabledA2+11h*4],FxOpd11
+   mov dword[FxTabledA2+12h*4],FxOpd12
+   mov dword[FxTabledA2+13h*4],FxOpd13
+   mov dword[FxTabledA2+14h*4],FxOpd14
+   mov dword[FxTabledA2+15h*4],FxOpd15
+   mov dword[FxTabledA2+16h*4],FxOpd16
+   mov dword[FxTabledA2+17h*4],FxOpd17
+   mov dword[FxTabledA2+18h*4],FxOpd18
+   mov dword[FxTabledA2+19h*4],FxOpd19
+   mov dword[FxTabledA2+1Ah*4],FxOpd1A
+   mov dword[FxTabledA2+1Bh*4],FxOpd1B
+   mov dword[FxTabledA2+1Ch*4],FxOpd1C
+   mov dword[FxTabledA2+1Dh*4],FxOpd1D
+   mov dword[FxTabledA2+1Eh*4],FxOpd1E
+   mov dword[FxTabledA2+1Fh*4],FxOpd1F
+
+   mov dword[FxTabledA2+20h*4],FxOpd20
+   mov dword[FxTabledA2+21h*4],FxOpd21
+   mov dword[FxTabledA2+22h*4],FxOpd22
+   mov dword[FxTabledA2+23h*4],FxOpd23
+   mov dword[FxTabledA2+24h*4],FxOpd24
+   mov dword[FxTabledA2+25h*4],FxOpd25
+   mov dword[FxTabledA2+26h*4],FxOpd26
+   mov dword[FxTabledA2+27h*4],FxOpd27
+   mov dword[FxTabledA2+28h*4],FxOpd28
+   mov dword[FxTabledA2+29h*4],FxOpd29
+   mov dword[FxTabledA2+2Ah*4],FxOpd2A
+   mov dword[FxTabledA2+2Bh*4],FxOpd2B
+   mov dword[FxTabledA2+2Ch*4],FxOpd2C
+   mov dword[FxTabledA2+2Dh*4],FxOpd2D
+   mov dword[FxTabledA2+2Eh*4],FxOpd2E
+   mov dword[FxTabledA2+2Fh*4],FxOpd2F
+
+   mov dword[FxTabledA2+30h*4],FxOpd30
+   mov dword[FxTabledA2+31h*4],FxOpd31
+   mov dword[FxTabledA2+32h*4],FxOpd32
+   mov dword[FxTabledA2+33h*4],FxOpd33
+   mov dword[FxTabledA2+34h*4],FxOpd34
+   mov dword[FxTabledA2+35h*4],FxOpd35
+   mov dword[FxTabledA2+36h*4],FxOpd36
+   mov dword[FxTabledA2+37h*4],FxOpd37
+   mov dword[FxTabledA2+38h*4],FxOpd38
+   mov dword[FxTabledA2+39h*4],FxOpd39
+   mov dword[FxTabledA2+3Ah*4],FxOpd3A
+   mov dword[FxTabledA2+3Bh*4],FxOpd3B
+   mov dword[FxTabledA2+3Ch*4],FxOpd3C
+   mov dword[FxTabledA2+3Dh*4],FxOpd3D
+   mov dword[FxTabledA2+3Eh*4],FxOpd3E
+   mov dword[FxTabledA2+3Fh*4],FxOpd3F
+
+   mov dword[FxTabledA2+40h*4],FxOpd40
+   mov dword[FxTabledA2+41h*4],FxOpd41
+   mov dword[FxTabledA2+42h*4],FxOpd42
+   mov dword[FxTabledA2+43h*4],FxOpd43
+   mov dword[FxTabledA2+44h*4],FxOpd44
+   mov dword[FxTabledA2+45h*4],FxOpd45
+   mov dword[FxTabledA2+46h*4],FxOpd46
+   mov dword[FxTabledA2+47h*4],FxOpd47
+   mov dword[FxTabledA2+48h*4],FxOpd48
+   mov dword[FxTabledA2+49h*4],FxOpd49
+   mov dword[FxTabledA2+4Ah*4],FxOpd4A
+   mov dword[FxTabledA2+4Bh*4],FxOpd4B
+   mov dword[FxTabledA2+4Ch*4],FxOpd4C
+   mov dword[FxTabledA2+4Dh*4],FxOpd4D
+   mov dword[FxTabledA2+4Eh*4],FxOpd4E
+   mov dword[FxTabledA2+4Fh*4],FxOpd4F
+
+   mov dword[FxTabledA2+50h*4],FxOpd50A2
+   mov dword[FxTabledA2+51h*4],FxOpd51A2
+   mov dword[FxTabledA2+52h*4],FxOpd52A2
+   mov dword[FxTabledA2+53h*4],FxOpd53A2
+   mov dword[FxTabledA2+54h*4],FxOpd54A2
+   mov dword[FxTabledA2+55h*4],FxOpd55A2
+   mov dword[FxTabledA2+56h*4],FxOpd56A2
+   mov dword[FxTabledA2+57h*4],FxOpd57A2
+   mov dword[FxTabledA2+58h*4],FxOpd58A2
+   mov dword[FxTabledA2+59h*4],FxOpd59A2
+   mov dword[FxTabledA2+5Ah*4],FxOpd5AA2
+   mov dword[FxTabledA2+5Bh*4],FxOpd5BA2
+   mov dword[FxTabledA2+5Ch*4],FxOpd5CA2
+   mov dword[FxTabledA2+5Dh*4],FxOpd5DA2
+   mov dword[FxTabledA2+5Eh*4],FxOpd5EA2
+   mov dword[FxTabledA2+5Fh*4],FxOpd5FA2
+
+   mov dword[FxTabledA2+60h*4],FxOpd60A2
+   mov dword[FxTabledA2+61h*4],FxOpd61A2
+   mov dword[FxTabledA2+62h*4],FxOpd62A2
+   mov dword[FxTabledA2+63h*4],FxOpd63A2
+   mov dword[FxTabledA2+64h*4],FxOpd64A2
+   mov dword[FxTabledA2+65h*4],FxOpd65A2
+   mov dword[FxTabledA2+66h*4],FxOpd66A2
+   mov dword[FxTabledA2+67h*4],FxOpd67A2
+   mov dword[FxTabledA2+68h*4],FxOpd68A2
+   mov dword[FxTabledA2+69h*4],FxOpd69A2
+   mov dword[FxTabledA2+6Ah*4],FxOpd6AA2
+   mov dword[FxTabledA2+6Bh*4],FxOpd6BA2
+   mov dword[FxTabledA2+6Ch*4],FxOpd6CA2
+   mov dword[FxTabledA2+6Dh*4],FxOpd6DA2
+   mov dword[FxTabledA2+6Eh*4],FxOpd6EA2
+   mov dword[FxTabledA2+6Fh*4],FxOpd6FA2
+
+   mov dword[FxTabledA2+70h*4],FxOpd70
+   mov dword[FxTabledA2+71h*4],FxOpd71A2
+   mov dword[FxTabledA2+72h*4],FxOpd72A2
+   mov dword[FxTabledA2+73h*4],FxOpd73A2
+   mov dword[FxTabledA2+74h*4],FxOpd74A2
+   mov dword[FxTabledA2+75h*4],FxOpd75A2
+   mov dword[FxTabledA2+76h*4],FxOpd76A2
+   mov dword[FxTabledA2+77h*4],FxOpd77A2
+   mov dword[FxTabledA2+78h*4],FxOpd78A2
+   mov dword[FxTabledA2+79h*4],FxOpd79A2
+   mov dword[FxTabledA2+7Ah*4],FxOpd7AA2
+   mov dword[FxTabledA2+7Bh*4],FxOpd7BA2
+   mov dword[FxTabledA2+7Ch*4],FxOpd7CA2
+   mov dword[FxTabledA2+7Dh*4],FxOpd7DA2
+   mov dword[FxTabledA2+7Eh*4],FxOpd7EA2
+   mov dword[FxTabledA2+7Fh*4],FxOpd7FA2
+
+   mov dword[FxTabledA2+80h*4],FxOpd80A2
+   mov dword[FxTabledA2+81h*4],FxOpd81A2
+   mov dword[FxTabledA2+82h*4],FxOpd82A2
+   mov dword[FxTabledA2+83h*4],FxOpd83A2
+   mov dword[FxTabledA2+84h*4],FxOpd84A2
+   mov dword[FxTabledA2+85h*4],FxOpd85A2
+   mov dword[FxTabledA2+86h*4],FxOpd86A2
+   mov dword[FxTabledA2+87h*4],FxOpd87A2
+   mov dword[FxTabledA2+88h*4],FxOpd88A2
+   mov dword[FxTabledA2+89h*4],FxOpd89A2
+   mov dword[FxTabledA2+8Ah*4],FxOpd8AA2
+   mov dword[FxTabledA2+8Bh*4],FxOpd8BA2
+   mov dword[FxTabledA2+8Ch*4],FxOpd8CA2
+   mov dword[FxTabledA2+8Dh*4],FxOpd8DA2
+   mov dword[FxTabledA2+8Eh*4],FxOpd8EA2
+   mov dword[FxTabledA2+8Fh*4],FxOpd8FA2
+
+   mov dword[FxTabledA2+90h*4],FxOpd90
+   mov dword[FxTabledA2+91h*4],FxOpd91
+   mov dword[FxTabledA2+92h*4],FxOpd92
+   mov dword[FxTabledA2+93h*4],FxOpd93
+   mov dword[FxTabledA2+94h*4],FxOpd94
+   mov dword[FxTabledA2+95h*4],FxOpd95
+   mov dword[FxTabledA2+96h*4],FxOpd96
+   mov dword[FxTabledA2+97h*4],FxOpd97
+   mov dword[FxTabledA2+98h*4],FxOpd98
+   mov dword[FxTabledA2+99h*4],FxOpd99
+   mov dword[FxTabledA2+9Ah*4],FxOpd9A
+   mov dword[FxTabledA2+9Bh*4],FxOpd9B
+   mov dword[FxTabledA2+9Ch*4],FxOpd9C
+   mov dword[FxTabledA2+9Dh*4],FxOpd9D
+   mov dword[FxTabledA2+9Eh*4],FxOpd9E
+   mov dword[FxTabledA2+9Fh*4],FxOpd9F
+
+   mov dword[FxTabledA2+0A0h*4],FxOpdA0A2
+   mov dword[FxTabledA2+0A1h*4],FxOpdA1A2
+   mov dword[FxTabledA2+0A2h*4],FxOpdA2A2
+   mov dword[FxTabledA2+0A3h*4],FxOpdA3A2
+   mov dword[FxTabledA2+0A4h*4],FxOpdA4A2
+   mov dword[FxTabledA2+0A5h*4],FxOpdA5A2
+   mov dword[FxTabledA2+0A6h*4],FxOpdA6A2
+   mov dword[FxTabledA2+0A7h*4],FxOpdA7A2
+   mov dword[FxTabledA2+0A8h*4],FxOpdA8A2
+   mov dword[FxTabledA2+0A9h*4],FxOpdA9A2
+   mov dword[FxTabledA2+0AAh*4],FxOpdAAA2
+   mov dword[FxTabledA2+0ABh*4],FxOpdABA2
+   mov dword[FxTabledA2+0ACh*4],FxOpdACA2
+   mov dword[FxTabledA2+0ADh*4],FxOpdADA2
+   mov dword[FxTabledA2+0AEh*4],FxOpdAEA2
+   mov dword[FxTabledA2+0AFh*4],FxOpdAFA2
+
+   mov dword[FxTabledA2+0B0h*4],FxOpdB0
+   mov dword[FxTabledA2+0B1h*4],FxOpdB1
+   mov dword[FxTabledA2+0B2h*4],FxOpdB2
+   mov dword[FxTabledA2+0B3h*4],FxOpdB3
+   mov dword[FxTabledA2+0B4h*4],FxOpdB4
+   mov dword[FxTabledA2+0B5h*4],FxOpdB5
+   mov dword[FxTabledA2+0B6h*4],FxOpdB6
+   mov dword[FxTabledA2+0B7h*4],FxOpdB7
+   mov dword[FxTabledA2+0B8h*4],FxOpdB8
+   mov dword[FxTabledA2+0B9h*4],FxOpdB9
+   mov dword[FxTabledA2+0BAh*4],FxOpdBA
+   mov dword[FxTabledA2+0BBh*4],FxOpdBB
+   mov dword[FxTabledA2+0BCh*4],FxOpdBC
+   mov dword[FxTabledA2+0BDh*4],FxOpdBD
+   mov dword[FxTabledA2+0BEh*4],FxOpdBE
+   mov dword[FxTabledA2+0BFh*4],FxOpdBF
+
+   mov dword[FxTabledA2+0C0h*4],FxOpdC0
+   mov dword[FxTabledA2+0C1h*4],FxOpdC1A2
+   mov dword[FxTabledA2+0C2h*4],FxOpdC2A2
+   mov dword[FxTabledA2+0C3h*4],FxOpdC3A2
+   mov dword[FxTabledA2+0C4h*4],FxOpdC4A2
+   mov dword[FxTabledA2+0C5h*4],FxOpdC5A2
+   mov dword[FxTabledA2+0C6h*4],FxOpdC6A2
+   mov dword[FxTabledA2+0C7h*4],FxOpdC7A2
+   mov dword[FxTabledA2+0C8h*4],FxOpdC8A2
+   mov dword[FxTabledA2+0C9h*4],FxOpdC9A2
+   mov dword[FxTabledA2+0CAh*4],FxOpdCAA2
+   mov dword[FxTabledA2+0CBh*4],FxOpdCBA2
+   mov dword[FxTabledA2+0CCh*4],FxOpdCCA2
+   mov dword[FxTabledA2+0CDh*4],FxOpdCDA2
+   mov dword[FxTabledA2+0CEh*4],FxOpdCEA2
+   mov dword[FxTabledA2+0CFh*4],FxOpdCFA2
+
+   mov dword[FxTabledA2+0D0h*4],FxOpdD0
+   mov dword[FxTabledA2+0D1h*4],FxOpdD1
+   mov dword[FxTabledA2+0D2h*4],FxOpdD2
+   mov dword[FxTabledA2+0D3h*4],FxOpdD3
+   mov dword[FxTabledA2+0D4h*4],FxOpdD4
+   mov dword[FxTabledA2+0D5h*4],FxOpdD5
+   mov dword[FxTabledA2+0D6h*4],FxOpdD6
+   mov dword[FxTabledA2+0D7h*4],FxOpdD7
+   mov dword[FxTabledA2+0D8h*4],FxOpdD8
+   mov dword[FxTabledA2+0D9h*4],FxOpdD9
+   mov dword[FxTabledA2+0DAh*4],FxOpdDA
+   mov dword[FxTabledA2+0DBh*4],FxOpdDB
+   mov dword[FxTabledA2+0DCh*4],FxOpdDC
+   mov dword[FxTabledA2+0DDh*4],FxOpdDD
+   mov dword[FxTabledA2+0DEh*4],FxOpdDE
+   mov dword[FxTabledA2+0DFh*4],FxOpdDFA2
+
+   mov dword[FxTabledA2+0E0h*4],FxOpdE0
+   mov dword[FxTabledA2+0E1h*4],FxOpdE1
+   mov dword[FxTabledA2+0E2h*4],FxOpdE2
+   mov dword[FxTabledA2+0E3h*4],FxOpdE3
+   mov dword[FxTabledA2+0E4h*4],FxOpdE4
+   mov dword[FxTabledA2+0E5h*4],FxOpdE5
+   mov dword[FxTabledA2+0E6h*4],FxOpdE6
+   mov dword[FxTabledA2+0E7h*4],FxOpdE7
+   mov dword[FxTabledA2+0E8h*4],FxOpdE8
+   mov dword[FxTabledA2+0E9h*4],FxOpdE9
+   mov dword[FxTabledA2+0EAh*4],FxOpdEA
+   mov dword[FxTabledA2+0EBh*4],FxOpdEB
+   mov dword[FxTabledA2+0ECh*4],FxOpdEC
+   mov dword[FxTabledA2+0EDh*4],FxOpdED
+   mov dword[FxTabledA2+0EEh*4],FxOpdEE
+   mov dword[FxTabledA2+0EFh*4],FxOpdEFA2
+
+   mov dword[FxTabledA2+0F0h*4],FxOpdF0A2
+   mov dword[FxTabledA2+0F1h*4],FxOpdF1A2
+   mov dword[FxTabledA2+0F2h*4],FxOpdF2A2
+   mov dword[FxTabledA2+0F3h*4],FxOpdF3A2
+   mov dword[FxTabledA2+0F4h*4],FxOpdF4A2
+   mov dword[FxTabledA2+0F5h*4],FxOpdF5A2
+   mov dword[FxTabledA2+0F6h*4],FxOpdF6A2
+   mov dword[FxTabledA2+0F7h*4],FxOpdF7A2
+   mov dword[FxTabledA2+0F8h*4],FxOpdF8A2
+   mov dword[FxTabledA2+0F9h*4],FxOpdF9A2
+   mov dword[FxTabledA2+0FAh*4],FxOpdFAA2
+   mov dword[FxTabledA2+0FBh*4],FxOpdFBA2
+   mov dword[FxTabledA2+0FCh*4],FxOpdFCA2
+   mov dword[FxTabledA2+0FDh*4],FxOpdFDA2
+   mov dword[FxTabledA2+0FEh*4],FxOpdFEA2
+   mov dword[FxTabledA2+0FFh*4],FxOpdFFA2
+
+   mov dword[FxTabledA3+00h*4],FxOpd00
+   mov dword[FxTabledA3+01h*4],FxOpd01
+   mov dword[FxTabledA3+02h*4],FxOpd02
+   mov dword[FxTabledA3+03h*4],FxOpd03
+   mov dword[FxTabledA3+04h*4],FxOpd04
+   mov dword[FxTabledA3+05h*4],FxOpd05
+   mov dword[FxTabledA3+06h*4],FxOpd06
+   mov dword[FxTabledA3+07h*4],FxOpd07
+   mov dword[FxTabledA3+08h*4],FxOpd08
+   mov dword[FxTabledA3+09h*4],FxOpd09
+   mov dword[FxTabledA3+0Ah*4],FxOpd0A
+   mov dword[FxTabledA3+0Bh*4],FxOpd0B
+   mov dword[FxTabledA3+0Ch*4],FxOpd0C
+   mov dword[FxTabledA3+0Dh*4],FxOpd0D
+   mov dword[FxTabledA3+0Eh*4],FxOpd0E
+   mov dword[FxTabledA3+0Fh*4],FxOpd0F
+
+   mov dword[FxTabledA3+10h*4],FxOpd10
+   mov dword[FxTabledA3+11h*4],FxOpd11
+   mov dword[FxTabledA3+12h*4],FxOpd12
+   mov dword[FxTabledA3+13h*4],FxOpd13
+   mov dword[FxTabledA3+14h*4],FxOpd14
+   mov dword[FxTabledA3+15h*4],FxOpd15
+   mov dword[FxTabledA3+16h*4],FxOpd16
+   mov dword[FxTabledA3+17h*4],FxOpd17
+   mov dword[FxTabledA3+18h*4],FxOpd18
+   mov dword[FxTabledA3+19h*4],FxOpd19
+   mov dword[FxTabledA3+1Ah*4],FxOpd1A
+   mov dword[FxTabledA3+1Bh*4],FxOpd1B
+   mov dword[FxTabledA3+1Ch*4],FxOpd1C
+   mov dword[FxTabledA3+1Dh*4],FxOpd1D
+   mov dword[FxTabledA3+1Eh*4],FxOpd1E
+   mov dword[FxTabledA3+1Fh*4],FxOpd1F
+
+   mov dword[FxTabledA3+20h*4],FxOpd20
+   mov dword[FxTabledA3+21h*4],FxOpd21
+   mov dword[FxTabledA3+22h*4],FxOpd22
+   mov dword[FxTabledA3+23h*4],FxOpd23
+   mov dword[FxTabledA3+24h*4],FxOpd24
+   mov dword[FxTabledA3+25h*4],FxOpd25
+   mov dword[FxTabledA3+26h*4],FxOpd26
+   mov dword[FxTabledA3+27h*4],FxOpd27
+   mov dword[FxTabledA3+28h*4],FxOpd28
+   mov dword[FxTabledA3+29h*4],FxOpd29
+   mov dword[FxTabledA3+2Ah*4],FxOpd2A
+   mov dword[FxTabledA3+2Bh*4],FxOpd2B
+   mov dword[FxTabledA3+2Ch*4],FxOpd2C
+   mov dword[FxTabledA3+2Dh*4],FxOpd2D
+   mov dword[FxTabledA3+2Eh*4],FxOpd2E
+   mov dword[FxTabledA3+2Fh*4],FxOpd2F
+
+   mov dword[FxTabledA3+30h*4],FxOpd30
+   mov dword[FxTabledA3+31h*4],FxOpd31
+   mov dword[FxTabledA3+32h*4],FxOpd32
+   mov dword[FxTabledA3+33h*4],FxOpd33
+   mov dword[FxTabledA3+34h*4],FxOpd34
+   mov dword[FxTabledA3+35h*4],FxOpd35
+   mov dword[FxTabledA3+36h*4],FxOpd36
+   mov dword[FxTabledA3+37h*4],FxOpd37
+   mov dword[FxTabledA3+38h*4],FxOpd38
+   mov dword[FxTabledA3+39h*4],FxOpd39
+   mov dword[FxTabledA3+3Ah*4],FxOpd3A
+   mov dword[FxTabledA3+3Bh*4],FxOpd3B
+   mov dword[FxTabledA3+3Ch*4],FxOpd3C
+   mov dword[FxTabledA3+3Dh*4],FxOpd3D
+   mov dword[FxTabledA3+3Eh*4],FxOpd3E
+   mov dword[FxTabledA3+3Fh*4],FxOpd3F
+
+   mov dword[FxTabledA3+40h*4],FxOpd40
+   mov dword[FxTabledA3+41h*4],FxOpd41
+   mov dword[FxTabledA3+42h*4],FxOpd42
+   mov dword[FxTabledA3+43h*4],FxOpd43
+   mov dword[FxTabledA3+44h*4],FxOpd44
+   mov dword[FxTabledA3+45h*4],FxOpd45
+   mov dword[FxTabledA3+46h*4],FxOpd46
+   mov dword[FxTabledA3+47h*4],FxOpd47
+   mov dword[FxTabledA3+48h*4],FxOpd48
+   mov dword[FxTabledA3+49h*4],FxOpd49
+   mov dword[FxTabledA3+4Ah*4],FxOpd4A
+   mov dword[FxTabledA3+4Bh*4],FxOpd4B
+   mov dword[FxTabledA3+4Ch*4],FxOpd4C
+   mov dword[FxTabledA3+4Dh*4],FxOpd4D
+   mov dword[FxTabledA3+4Eh*4],FxOpd4E
+   mov dword[FxTabledA3+4Fh*4],FxOpd4F
+
+   mov dword[FxTabledA3+50h*4],FxOpd50A3
+   mov dword[FxTabledA3+51h*4],FxOpd51A3
+   mov dword[FxTabledA3+52h*4],FxOpd52A3
+   mov dword[FxTabledA3+53h*4],FxOpd53A3
+   mov dword[FxTabledA3+54h*4],FxOpd54A3
+   mov dword[FxTabledA3+55h*4],FxOpd55A3
+   mov dword[FxTabledA3+56h*4],FxOpd56A3
+   mov dword[FxTabledA3+57h*4],FxOpd57A3
+   mov dword[FxTabledA3+58h*4],FxOpd58A3
+   mov dword[FxTabledA3+59h*4],FxOpd59A3
+   mov dword[FxTabledA3+5Ah*4],FxOpd5AA3
+   mov dword[FxTabledA3+5Bh*4],FxOpd5BA3
+   mov dword[FxTabledA3+5Ch*4],FxOpd5CA3
+   mov dword[FxTabledA3+5Dh*4],FxOpd5DA3
+   mov dword[FxTabledA3+5Eh*4],FxOpd5EA3
+   mov dword[FxTabledA3+5Fh*4],FxOpd5FA3
+
+   mov dword[FxTabledA3+60h*4],FxOpd60A3
+   mov dword[FxTabledA3+61h*4],FxOpd61A3
+   mov dword[FxTabledA3+62h*4],FxOpd62A3
+   mov dword[FxTabledA3+63h*4],FxOpd63A3
+   mov dword[FxTabledA3+64h*4],FxOpd64A3
+   mov dword[FxTabledA3+65h*4],FxOpd65A3
+   mov dword[FxTabledA3+66h*4],FxOpd66A3
+   mov dword[FxTabledA3+67h*4],FxOpd67A3
+   mov dword[FxTabledA3+68h*4],FxOpd68A3
+   mov dword[FxTabledA3+69h*4],FxOpd69A3
+   mov dword[FxTabledA3+6Ah*4],FxOpd6AA3
+   mov dword[FxTabledA3+6Bh*4],FxOpd6BA3
+   mov dword[FxTabledA3+6Ch*4],FxOpd6CA3
+   mov dword[FxTabledA3+6Dh*4],FxOpd6DA3
+   mov dword[FxTabledA3+6Eh*4],FxOpd6EA3
+   mov dword[FxTabledA3+6Fh*4],FxOpd6FA3
+
+   mov dword[FxTabledA3+70h*4],FxOpd70
+   mov dword[FxTabledA3+71h*4],FxOpd71A3
+   mov dword[FxTabledA3+72h*4],FxOpd72A3
+   mov dword[FxTabledA3+73h*4],FxOpd73A3
+   mov dword[FxTabledA3+74h*4],FxOpd74A3
+   mov dword[FxTabledA3+75h*4],FxOpd75A3
+   mov dword[FxTabledA3+76h*4],FxOpd76A3
+   mov dword[FxTabledA3+77h*4],FxOpd77A3
+   mov dword[FxTabledA3+78h*4],FxOpd78A3
+   mov dword[FxTabledA3+79h*4],FxOpd79A3
+   mov dword[FxTabledA3+7Ah*4],FxOpd7AA3
+   mov dword[FxTabledA3+7Bh*4],FxOpd7BA3
+   mov dword[FxTabledA3+7Ch*4],FxOpd7CA3
+   mov dword[FxTabledA3+7Dh*4],FxOpd7DA3
+   mov dword[FxTabledA3+7Eh*4],FxOpd7EA3
+   mov dword[FxTabledA3+7Fh*4],FxOpd7FA3
+
+   mov dword[FxTabledA3+80h*4],FxOpd80A3
+   mov dword[FxTabledA3+81h*4],FxOpd81A3
+   mov dword[FxTabledA3+82h*4],FxOpd82A3
+   mov dword[FxTabledA3+83h*4],FxOpd83A3
+   mov dword[FxTabledA3+84h*4],FxOpd84A3
+   mov dword[FxTabledA3+85h*4],FxOpd85A3
+   mov dword[FxTabledA3+86h*4],FxOpd86A3
+   mov dword[FxTabledA3+87h*4],FxOpd87A3
+   mov dword[FxTabledA3+88h*4],FxOpd88A3
+   mov dword[FxTabledA3+89h*4],FxOpd89A3
+   mov dword[FxTabledA3+8Ah*4],FxOpd8AA3
+   mov dword[FxTabledA3+8Bh*4],FxOpd8BA3
+   mov dword[FxTabledA3+8Ch*4],FxOpd8CA3
+   mov dword[FxTabledA3+8Dh*4],FxOpd8DA3
+   mov dword[FxTabledA3+8Eh*4],FxOpd8EA3
+   mov dword[FxTabledA3+8Fh*4],FxOpd8FA3
+
+   mov dword[FxTabledA3+90h*4],FxOpd90
+   mov dword[FxTabledA3+91h*4],FxOpd91
+   mov dword[FxTabledA3+92h*4],FxOpd92
+   mov dword[FxTabledA3+93h*4],FxOpd93
+   mov dword[FxTabledA3+94h*4],FxOpd94
+   mov dword[FxTabledA3+95h*4],FxOpd95
+   mov dword[FxTabledA3+96h*4],FxOpd96
+   mov dword[FxTabledA3+97h*4],FxOpd97
+   mov dword[FxTabledA3+98h*4],FxOpd98
+   mov dword[FxTabledA3+99h*4],FxOpd99
+   mov dword[FxTabledA3+9Ah*4],FxOpd9A
+   mov dword[FxTabledA3+9Bh*4],FxOpd9B
+   mov dword[FxTabledA3+9Ch*4],FxOpd9C
+   mov dword[FxTabledA3+9Dh*4],FxOpd9D
+   mov dword[FxTabledA3+9Eh*4],FxOpd9E
+   mov dword[FxTabledA3+9Fh*4],FxOpd9F
+
+   mov dword[FxTabledA3+0A0h*4],FxOpdA0
+   mov dword[FxTabledA3+0A1h*4],FxOpdA1
+   mov dword[FxTabledA3+0A2h*4],FxOpdA2
+   mov dword[FxTabledA3+0A3h*4],FxOpdA3
+   mov dword[FxTabledA3+0A4h*4],FxOpdA4
+   mov dword[FxTabledA3+0A5h*4],FxOpdA5
+   mov dword[FxTabledA3+0A6h*4],FxOpdA6
+   mov dword[FxTabledA3+0A7h*4],FxOpdA7
+   mov dword[FxTabledA3+0A8h*4],FxOpdA8
+   mov dword[FxTabledA3+0A9h*4],FxOpdA9
+   mov dword[FxTabledA3+0AAh*4],FxOpdAA
+   mov dword[FxTabledA3+0ABh*4],FxOpdAB
+   mov dword[FxTabledA3+0ACh*4],FxOpdAC
+   mov dword[FxTabledA3+0ADh*4],FxOpdAD
+   mov dword[FxTabledA3+0AEh*4],FxOpdAE
+   mov dword[FxTabledA3+0AFh*4],FxOpdAF
+
+   mov dword[FxTabledA3+0B0h*4],FxOpdB0
+   mov dword[FxTabledA3+0B1h*4],FxOpdB1
+   mov dword[FxTabledA3+0B2h*4],FxOpdB2
+   mov dword[FxTabledA3+0B3h*4],FxOpdB3
+   mov dword[FxTabledA3+0B4h*4],FxOpdB4
+   mov dword[FxTabledA3+0B5h*4],FxOpdB5
+   mov dword[FxTabledA3+0B6h*4],FxOpdB6
+   mov dword[FxTabledA3+0B7h*4],FxOpdB7
+   mov dword[FxTabledA3+0B8h*4],FxOpdB8
+   mov dword[FxTabledA3+0B9h*4],FxOpdB9
+   mov dword[FxTabledA3+0BAh*4],FxOpdBA
+   mov dword[FxTabledA3+0BBh*4],FxOpdBB
+   mov dword[FxTabledA3+0BCh*4],FxOpdBC
+   mov dword[FxTabledA3+0BDh*4],FxOpdBD
+   mov dword[FxTabledA3+0BEh*4],FxOpdBE
+   mov dword[FxTabledA3+0BFh*4],FxOpdBF
+
+   mov dword[FxTabledA3+0C0h*4],FxOpdC0
+   mov dword[FxTabledA3+0C1h*4],FxOpdC1A3
+   mov dword[FxTabledA3+0C2h*4],FxOpdC2A3
+   mov dword[FxTabledA3+0C3h*4],FxOpdC3A3
+   mov dword[FxTabledA3+0C4h*4],FxOpdC4A3
+   mov dword[FxTabledA3+0C5h*4],FxOpdC5A3
+   mov dword[FxTabledA3+0C6h*4],FxOpdC6A3
+   mov dword[FxTabledA3+0C7h*4],FxOpdC7A3
+   mov dword[FxTabledA3+0C8h*4],FxOpdC8A3
+   mov dword[FxTabledA3+0C9h*4],FxOpdC9A3
+   mov dword[FxTabledA3+0CAh*4],FxOpdCAA3
+   mov dword[FxTabledA3+0CBh*4],FxOpdCBA3
+   mov dword[FxTabledA3+0CCh*4],FxOpdCCA3
+   mov dword[FxTabledA3+0CDh*4],FxOpdCDA3
+   mov dword[FxTabledA3+0CEh*4],FxOpdCEA3
+   mov dword[FxTabledA3+0CFh*4],FxOpdCFA3
+
+   mov dword[FxTabledA3+0D0h*4],FxOpdD0
+   mov dword[FxTabledA3+0D1h*4],FxOpdD1
+   mov dword[FxTabledA3+0D2h*4],FxOpdD2
+   mov dword[FxTabledA3+0D3h*4],FxOpdD3
+   mov dword[FxTabledA3+0D4h*4],FxOpdD4
+   mov dword[FxTabledA3+0D5h*4],FxOpdD5
+   mov dword[FxTabledA3+0D6h*4],FxOpdD6
+   mov dword[FxTabledA3+0D7h*4],FxOpdD7
+   mov dword[FxTabledA3+0D8h*4],FxOpdD8
+   mov dword[FxTabledA3+0D9h*4],FxOpdD9
+   mov dword[FxTabledA3+0DAh*4],FxOpdDA
+   mov dword[FxTabledA3+0DBh*4],FxOpdDB
+   mov dword[FxTabledA3+0DCh*4],FxOpdDC
+   mov dword[FxTabledA3+0DDh*4],FxOpdDD
+   mov dword[FxTabledA3+0DEh*4],FxOpdDE
+   mov dword[FxTabledA3+0DFh*4],FxOpdDFA3
+
+   mov dword[FxTabledA3+0E0h*4],FxOpdE0
+   mov dword[FxTabledA3+0E1h*4],FxOpdE1
+   mov dword[FxTabledA3+0E2h*4],FxOpdE2
+   mov dword[FxTabledA3+0E3h*4],FxOpdE3
+   mov dword[FxTabledA3+0E4h*4],FxOpdE4
+   mov dword[FxTabledA3+0E5h*4],FxOpdE5
+   mov dword[FxTabledA3+0E6h*4],FxOpdE6
+   mov dword[FxTabledA3+0E7h*4],FxOpdE7
+   mov dword[FxTabledA3+0E8h*4],FxOpdE8
+   mov dword[FxTabledA3+0E9h*4],FxOpdE9
+   mov dword[FxTabledA3+0EAh*4],FxOpdEA
+   mov dword[FxTabledA3+0EBh*4],FxOpdEB
+   mov dword[FxTabledA3+0ECh*4],FxOpdEC
+   mov dword[FxTabledA3+0EDh*4],FxOpdED
+   mov dword[FxTabledA3+0EEh*4],FxOpdEE
+   mov dword[FxTabledA3+0EFh*4],FxOpdEFA3
+
+   mov dword[FxTabledA3+0F0h*4],FxOpdF0
+   mov dword[FxTabledA3+0F1h*4],FxOpdF1
+   mov dword[FxTabledA3+0F2h*4],FxOpdF2
+   mov dword[FxTabledA3+0F3h*4],FxOpdF3
+   mov dword[FxTabledA3+0F4h*4],FxOpdF4
+   mov dword[FxTabledA3+0F5h*4],FxOpdF5
+   mov dword[FxTabledA3+0F6h*4],FxOpdF6
+   mov dword[FxTabledA3+0F7h*4],FxOpdF7
+   mov dword[FxTabledA3+0F8h*4],FxOpdF8
+   mov dword[FxTabledA3+0F9h*4],FxOpdF9
+   mov dword[FxTabledA3+0FAh*4],FxOpdFA
+   mov dword[FxTabledA3+0FBh*4],FxOpdFB
+   mov dword[FxTabledA3+0FCh*4],FxOpdFC
+   mov dword[FxTabledA3+0FDh*4],FxOpdFD
+   mov dword[FxTabledA3+0FEh*4],FxOpdFE
+   mov dword[FxTabledA3+0FFh*4],FxOpdFF
    ret
 
 ; normal

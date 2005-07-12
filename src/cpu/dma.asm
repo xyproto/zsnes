@@ -1164,11 +1164,11 @@ NEWSYM ewj2hack, dd 0
 section .text
 
 NEWSYM hdmatype2indirect
-    cmp dword [ewj2hack],1
+    cmp dword[ewj2hack],1
     jne near .notend
-    cmp byte [esi+1],40h ; Writing to spc
+    cmp byte[esi+1],40h ; Writing to spc
     jne near .notend
-    cmp byte [esi+10],0DAh ; first transfer
+    cmp byte[esi+10],0DAh ; first transfer
     jne near .notend
     ; EWJ2 HACK
 ;    int 3h
@@ -1181,7 +1181,7 @@ NEWSYM hdmatype2indirect
     xor ecx,ecx
     xor edx,edx
     mov ax,word[spcRam+021h] ; load dest offset
-    mov dword [.dest],spcRam
+    mov dword[.dest],spcRam
     add [.dest],eax
     mov dl,byte[esi+10] ; number of bytes to transfer
     sub dl,80h
@@ -1193,7 +1193,7 @@ NEWSYM hdmatype2indirect
     inc word[esi+5]
     call dword near [memtabler8+ebx*4]
     mov ebx,[.dest]
-    mov byte [ebx],al
+    mov byte[ebx],al
     inc ebx
     mov [.dest],ebx
     xor ebx,ebx
@@ -1203,7 +1203,7 @@ NEWSYM hdmatype2indirect
     inc word[esi+5]
     call dword near [memtabler8+ebx*4]
     mov ebx,[.dest]
-    mov byte [ebx],al
+    mov byte[ebx],al
     inc ebx
     mov [.dest],ebx
     dec edx

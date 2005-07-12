@@ -52,7 +52,6 @@ netsrc = Split('''
 	net/ztcp.c
 ''')
 cpusrc = Split('''
-	cpu/addrni.asm
 	cpu/dma.asm
 	cpu/dsp.asm
 	cpu/dspproc.asm

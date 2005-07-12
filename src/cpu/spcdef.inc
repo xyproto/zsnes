@@ -32,7 +32,7 @@
       inc ebp
       ret
 .branch
-      movsx ebx,byte [ebp]
+      movsx ebx,byte[ebp]
       inc ebp
       add ebp,ebx
       ret
@@ -44,10 +44,10 @@
       sub ebx,spcRam
       mov eax,[spcS]
       mov [spcRam+eax],bh
-      dec byte [spcS]
+      dec byte[spcS]
       mov eax,[spcS]
       mov [spcRam+eax],bl
-      dec byte [spcS]
+      dec byte[spcS]
       mov bx,[spcextraram+%1]
       test byte[spcRam+0F1h],80h
       jnz %%finished
@@ -94,7 +94,7 @@
       add ebp,2
       ret
 .dp0jump
-      movsx ebx,byte [ebp+1]
+      movsx ebx,byte[ebp+1]
       add ebp,ebx
       add ebp,2
       ret
@@ -110,7 +110,7 @@
       add ebp,2
       ret
 .dp0jump
-      movsx ebx,byte [ebp+1]
+      movsx ebx,byte[ebp+1]
       add ebp,ebx
       add ebp,2
       ret
@@ -118,7 +118,7 @@
 
 ; OR A, instruction
 %macro SPC_OR_A 0
-      or byte [spcA], al
+      or byte[spcA], al
       mov al,[spcA]
       mov [spcNZ],al
       ret
@@ -126,7 +126,7 @@
 
 ; AND A, instruction
 %macro SPC_AND_A 0
-      and byte [spcA], al
+      and byte[spcA], al
       mov al,[spcA]
       mov [spcNZ],al
       ret
@@ -134,7 +134,7 @@
 
 ; EOR A, instruction
 %macro SPC_EOR_A 0
-      xor byte [spcA], al
+      xor byte[spcA], al
       mov al,[spcA]
       mov [spcNZ],al
       ret
@@ -142,7 +142,7 @@
 
 ; CMP A, instruction
 %macro SPC_CMP_A 0
-      cmp byte [spcA], al
+      cmp byte[spcA], al
       cmc
       SPCSetFlagnzc
 %endmacro
@@ -150,7 +150,7 @@
 %macro SPC_ADC_A 0
       mov cl,[spcP]
       shr cl,1
-      adc byte [spcA], al
+      adc byte[spcA], al
       SPCSetFlagnvhzc
 %endmacro
 
@@ -158,13 +158,13 @@
       mov cl,[spcP]
       xor cl,1
       shr cl,1
-      sbb byte [spcA], al
+      sbb byte[spcA], al
       cmc
       SPCSetFlagnvhzc
 %endmacro
 
 %macro SPC_MOV_A 0
-      mov byte [spcA], al
+      mov byte[spcA], al
       mov [spcNZ],al
       ret
 %endmacro

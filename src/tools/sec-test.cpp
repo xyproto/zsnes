@@ -78,7 +78,7 @@ void handle_file(const char *filename)
     for (size_t i = 1; file.getline(buffer, LINE_LENGTH); i++)
     {
       char *line = buffer;
-    
+
       char *comment_p = strchr(line, ';');
       if (comment_p) { *comment_p = 0; }
 
@@ -86,29 +86,29 @@ void handle_file(const char *filename)
 
       for (char *p = line+strlen(line)-1; isspace(*p); p--) { *p = 0; }
       while (isspace(*line)) { line++; }
-      
-      
+
+
       if (!strcasecmp(line, "SECTION .BSS"))
       {
         prev_section = cur_section;
         cur_section = sec_bss;
         continue;
       }
-      
+
       if (!strcasecmp(line, "SECTION .DATA"))
       {
         prev_section = cur_section;
         cur_section = sec_data;
         continue;
       }
-      
+
       if (!strcasecmp(line, "SECTION .text"))
       {
         prev_section = cur_section;
         cur_section = sec_text;
         continue;
       }
-      
+
       if (!strncmp(line, "%macro", strlen("%macro")) ||
           !strncmp(line, "%imacro", strlen("%imacro")))
       {
@@ -122,8 +122,8 @@ void handle_file(const char *filename)
         cur_section = prev_section;
         continue;
       }
-      
-      
+
+
       if ((cur_section != sec_bss) && contains_resx(line))
       {
         cout << filename << ": line " << i << ": Error, resx in non BSS section. \"" << line << "\"" << endl;
@@ -142,7 +142,7 @@ void handle_file(const char *filename)
             strncasecmp(line, "bits ", strlen("bits ")))
         {
           cout << filename << ": line " << i << ": Error, code in non TEXT section. \"" << line << "\"" << endl;
-        }    
+        }
       }
     }
   }

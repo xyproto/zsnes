@@ -1163,14 +1163,14 @@ NEWSYM init65816
     call headerhack
     popad
 
-    mov byte [spcRam+0F4h],0
-    mov byte [spcRam+0F5h],0
-    mov byte [spcRam+0F6h],0
-    mov byte [spcRam+0F7h],0
-    mov byte [reg1read],0
-    mov byte [reg2read],0
-    mov byte [reg3read],0
-    mov byte [reg4read],0
+    mov byte[spcRam+0F4h],0
+    mov byte[spcRam+0F5h],0
+    mov byte[spcRam+0F6h],0
+    mov byte[spcRam+0F7h],0
+    mov byte[reg1read],0
+    mov byte[reg2read],0
+    mov byte[reg3read],0
+    mov byte[reg4read],0
     mov dword[cycpbl],0
     mov dword[spcnumread],0
  mov dword[spchalted],-1
@@ -1182,7 +1182,7 @@ NEWSYM init65816
     mov word[resolutn],224
     mov byte[vidbright],0
     mov byte[forceblnk],0
-    mov byte [spcP],0
+    mov byte[spcP],0
     mov byte[timeron],0
     mov byte[JoyAPos],0
     mov byte[JoyBPos],0
@@ -2156,7 +2156,7 @@ NEWSYM PatchIPS
     mov byte[eax+4],0
     push eax
 %ifdef __UNIXSDL__
-    cmp byte [ZipSupport], 1
+    cmp byte[ZipSupport], 1
     je .nochangedir
     mov ebx,LoadDir
     call Change_Dir

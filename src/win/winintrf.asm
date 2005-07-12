@@ -832,10 +832,10 @@ NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
    mov word[vesa2_x],512
    mov word[vesa2_y],480
    mov byte[vesa2_bits],16
-   mov dword [vesa2_bits],16
-   mov dword [vesa2_rpos],11
-   mov dword [vesa2_gpos],5
-   mov dword [vesa2_bpos],0
+   mov dword[vesa2_bits],16
+   mov dword[vesa2_rpos],11
+   mov dword[vesa2_gpos],5
+   mov dword[vesa2_bpos],0
    mov byte[vesa2red10],0
    mov byte[vesa2_rposng],11
    mov byte[vesa2_gposng],5
@@ -885,7 +885,7 @@ NEWSYM converta, dd 0
 
 SECTION .text
 NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
-    cmp dword [converta],1
+    cmp dword[converta],1
     jne near .skipconv
     pushad
         mov dword[UnusedBit],     10000000000000001000000000000000b

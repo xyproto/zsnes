@@ -74,7 +74,7 @@ NEWSYM ClearWin32
 
 NEWSYM DrawWin256x224x16
         pushad
-        cmp byte [MMXSupport],0
+        cmp byte[MMXSupport],0
         je .noMMX
         mov  esi, [ScreenPtr]
         mov  edi, [SurfBufD]
@@ -186,7 +186,7 @@ NEWSYM DrawWin256x224x32
 
 NEWSYM DrawWin320x240x16
         pushad
-        cmp byte [MMXSupport],0
+        cmp byte[MMXSupport],0
         je  near .noMMX
         xor  eax,eax
         xor  ebx,ebx

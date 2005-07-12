@@ -491,7 +491,7 @@ NEWSYM reg301Fw
     pop edx
     inc word[SfxR15]
     or byte[SfxSFR],20h
-    or dword [SfxSFR],08000h         ; Set IRQ Flag
+    or dword[SfxSFR],08000h         ; Set IRQ Flag
     mov dword[SFXProc],1
 ;    call StartSFXret
     ret
@@ -504,7 +504,7 @@ NEWSYM reg3030w
     ; Disassemble Flags
     test al,20h
     jz .noexec
-    mov dword [NumberOfOpcodes],100
+    mov dword[NumberOfOpcodes],100
     call StartSFX
 .noexec
     ret
@@ -563,7 +563,7 @@ NEWSYM reg303Cw       ; RAMBR (Ram bank register)
     mov bl,al
     shl ebx,16
     add ebx,[sfxramdata]
-    mov dword [SfxRAMMem],ebx
+    mov dword[SfxRAMMem],ebx
     ret
 NEWSYM reg303Dw       ; Unused
     ret

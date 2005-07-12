@@ -214,7 +214,7 @@ readSideWinder:
   jmp SMWDone
 
   ModeA1:
-  cmp dword [SWCount],3
+  cmp dword[SWCount],3
   je near ModeB3
   xor ebp,ebp
   call DoModeA

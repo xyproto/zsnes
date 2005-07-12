@@ -362,7 +362,7 @@ NEWSYM handlersbseg
     dec ecx
     jnz .loopbm
 .sbend
-    xor byte [SBswitch],1
+    xor byte[SBswitch],1
 
    ; move the good data at spcRam+0f3h
       xor eax,eax
@@ -428,7 +428,7 @@ NEWSYM stopsbsound
     dec ecx
     jnz .loopb
 .sbend
-    xor byte [SBswitch],1
+    xor byte[SBswitch],1
 
     ; acknowledge SB for IRQing
     mov dx,[SBPort]
@@ -467,7 +467,7 @@ NEWSYM SBHandler16
     push es
     inc dword[sbhandexec]
 
-    cmp byte [vibracard], 1
+    cmp byte[vibracard], 1
     je .donotcallcmdapos
     call GetCDMAPos
 .donotcallcmdapos
@@ -568,7 +568,7 @@ NEWSYM SBHandler16
     dec ecx
     jnz .loopbm
 .sbend
-    xor byte [SBswitch],1
+    xor byte[SBswitch],1
 
     ; acknowledge SB for IRQing
     mov dx,[SBPort]
@@ -643,7 +643,7 @@ NEWSYM stopsbsound16
     dec ecx
     jnz .loopb
 .sbend
-    xor byte [SBswitch],1
+    xor byte[SBswitch],1
 
     ; acknowledge SB for IRQing
     mov dx,[SBPort]
@@ -694,18 +694,18 @@ NEWSYM InitSB
     add ax,ax
     mov [BufferSizeW],ax
 
-    mov byte [SBswitch],0
+    mov byte[SBswitch],0
     ; Allocate pointer
     ; Set up SB
     call SB_dsp_reset
 
     ; code added by peter santing
-    cmp byte [vibracard], 1
+    cmp byte[vibracard], 1
     je  near .vibrafix2
 
-    cmp byte [SBHDMA],0
+    cmp byte[SBHDMA],0
     je .no16bit
-    cmp byte [SBHDMA],4
+    cmp byte[SBHDMA],4
     jb near .init16bitlowhdma
     jmp .init16bit
 .no16bit
@@ -737,7 +737,7 @@ NEWSYM InitSB
     jbe .okay
     mov eax,2
 .okay
-    mov al,byte [SoundSpeedt+eax]
+    mov al,byte[SoundSpeedt+eax]
     call SB_dsp_write
     ; Set Stereo
     mov dx, [SBPort]
@@ -751,14 +751,14 @@ NEWSYM InitSB
     jmp .donestereo
 .nostereo8b
     mov eax,[SoundQuality]
-    mov al,byte [SoundSpeeds+eax]
+    mov al,byte[SoundSpeeds+eax]
     call SB_dsp_write
 .donestereo
 
     cmp byte[StereoSound],1
     je .highmode
     mov eax,[SoundQuality]
-    cmp byte [SoundSpeeds+eax],211
+    cmp byte[SoundSpeeds+eax],211
     ja .highmode
     mov byte[.Versionnum],1
 .highmode
@@ -839,7 +839,7 @@ SECTION .text
 .vibrafix2
     ; notify user that we're in ViBRA16x mode..
     push eax
-    mov  dword [Msgptr], vibmsg
+    mov  dword[Msgptr], vibmsg
     mov  eax, [MsgCount]
     mov  [MessageOn], eax
     pop  eax
@@ -891,12 +891,12 @@ SECTION .text
     call SB_dsp_write
     push ecx
     mov ecx,[SoundQuality]
-    mov al,byte [SBToSPCSpeeds2+ecx*4+1]
+    mov al,byte[SBToSPCSpeeds2+ecx*4+1]
     pop ecx
     call SB_dsp_write
     push ecx
     mov ecx,[SoundQuality]
-    mov al,byte [SBToSPCSpeeds2+ecx*4]
+    mov al,byte[SBToSPCSpeeds2+ecx*4]
     pop ecx
     call SB_dsp_write
 
@@ -938,7 +938,7 @@ SECTION .text
 
     push ecx
     mov ecx,[SoundQuality]
-    mov al,byte [SoundSpeeds+ecx]
+    mov al,byte[SoundSpeeds+ecx]
     pop ecx
     call SB_dsp_write
 
@@ -1055,12 +1055,12 @@ SECTION .text
     call SB_dsp_write
     push ecx
     mov ecx,[SoundQuality]
-    mov al,byte [SBToSPCSpeeds2+ecx*4+1]
+    mov al,byte[SBToSPCSpeeds2+ecx*4+1]
     pop ecx
     call SB_dsp_write
     push ecx
     mov ecx,[SoundQuality]
-    mov al,byte [SBToSPCSpeeds2+ecx*4]
+    mov al,byte[SBToSPCSpeeds2+ecx*4]
     pop ecx
     call SB_dsp_write
 
@@ -1405,38 +1405,38 @@ NEWSYM getblaster
 ; **** capability of the ViBRA16X line of creative  ****
 ; **** instead of playing 8-bit MONOURAL sound      ****
 ; ******************************************************
-;       cmp byte [SBHDMA], 0
+;       cmp byte[SBHDMA], 0
 ;       jne .vibradma0
-;       mov byte [SBDMAPage], 87h
-;       mov byte [vibracard], 1         ; set ViBRA16X mode
+;       mov byte[SBDMAPage], 87h
+;       mov byte[vibracard], 1         ; set ViBRA16X mode
 .vibradma0
-        cmp byte [SBHDMA], 1
+        cmp byte[SBHDMA], 1
         jne .vibradma1
-        mov byte [SBDMAPage], 83h
-        mov byte [vibracard], 1         ; set ViBRA16X mode
+        mov byte[SBDMAPage], 83h
+        mov byte[vibracard], 1         ; set ViBRA16X mode
 .vibradma1
-        cmp byte [SBHDMA], 2
+        cmp byte[SBHDMA], 2
         jne .vibradma2
-        mov byte [SBDMAPage], 81h
-        mov byte [vibracard], 1         ; set ViBRA16X mode
+        mov byte[SBDMAPage], 81h
+        mov byte[vibracard], 1         ; set ViBRA16X mode
 .vibradma2
-        cmp byte [SBHDMA], 3
+        cmp byte[SBHDMA], 3
         jne .vibradma3
-        mov byte [SBDMAPage], 82h
-        mov byte [vibracard], 1         ; set ViBRA16X mode
+        mov byte[SBDMAPage], 82h
+        mov byte[vibracard], 1         ; set ViBRA16X mode
 .vibradma3
-        cmp byte [vibracard], 1
+        cmp byte[vibracard], 1
         jne .vibrafix
         push ax
         mov  al, [SBHDMA]
         mov  [SBDMA], al
         pop  ax
 .vibrafix
-        cmp byte [SBHDMA],4
+        cmp byte[SBHDMA],4
         jae .hdma
         ; vibra implementation (make sure that zSNES doesn't go back
         ; to eight-bit-mode mono)
-        mov byte [SBHDMA],0
+        mov byte[SBHDMA],0
         cmp byte[vibracard], 1
         jne .hdma
         push edx

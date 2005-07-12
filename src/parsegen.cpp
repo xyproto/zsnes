@@ -269,7 +269,7 @@ ssize_t enhanced_atoi(const char *str)
     remove("eatio.c");
     remove("eatio.exe");
     remove("eatio.obj"); //Needed for stupid MSVCs which leave object files lying around
-    
+
     ifstream in_stream("eatio.res");
     if (in_stream)
     {

@@ -65,10 +65,10 @@ SECTION .text
 %endmacro
 
 %macro FPUStuff 1
-    FILD QWORD [ESI+%1*16]
-    FILD QWORD [ESI+8+%1*16]
-    FISTP QWORD [ES:EDI+8+%1*16]
-    FISTP QWORD [ES:EDI+%1*16]
+    FILD QWORD[ESI+%1*16]
+    FILD QWORD[ESI+8+%1*16]
+    FISTP QWORD[ES:EDI+8+%1*16]
+    FISTP QWORD[ES:EDI+%1*16]
 %endmacro
 
 %MACRO CopyFPU 0
@@ -87,11 +87,11 @@ NEWSYM FPUZero
     mov [.Zero2],eax
     mov [.Zero2+4],eax
 .TopOfLoop
-    FILD QWORD [.Zero]
-    FILD QWORD [.Zero2]
+    FILD QWORD[.Zero]
+    FILD QWORD[.Zero2]
     FXCH
-    FISTP QWORD [EDI]
-    FISTP QWORD [EDI+8]
+    FISTP QWORD[EDI]
+    FISTP QWORD[EDI+8]
     ADD EDI,16
     DEC ECX
     JNZ .TopOfLoop
@@ -99,8 +99,8 @@ NEWSYM FPUZero
     fld1
     fsub st0,st0
 .TopOfLoop
-    fst qword [edi]
-    fst qword [edi+8]
+    fst qword[edi]
+    fst qword[edi+8]
     add edi,16
     dec ecx
     jnz .TopOfLoop

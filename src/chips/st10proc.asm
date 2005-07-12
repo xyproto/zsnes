@@ -40,7 +40,7 @@ NEWSYM setaaccessbankw8
     and ecx,0fffh
     mov ebx,[setaramdata]
     mov [ebx+ecx],al
-    cmp byte [ebx+021h], 80h
+    cmp byte[ebx+021h], 80h
     jnz .nosetenablew8
     pushad
     call ST010DoCommand
@@ -74,8 +74,8 @@ NEWSYM setaaccessbankw16
     mov [ebx],al
     jmp short .nosetenablew16
 .nowrapw16
-    mov word [ebx+ecx],ax
-    cmp byte [ebx+021h], 80h
+    mov word[ebx+ecx],ax
+    cmp byte[ebx+021h], 80h
     jnz .nosetenablew16
     pushad
     call ST010DoCommand

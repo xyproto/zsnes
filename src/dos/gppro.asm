@@ -36,12 +36,12 @@ NEWSYM read_gpp
 
    cmp al,0
    jne GPP_L14
-   mov byte [clock_mask],0x10
-   mov byte [data_mask],0x20
+   mov byte[clock_mask],0x10
+   mov byte[data_mask],0x20
    jmp GPP_L15
 GPP_L14:
-   mov byte [clock_mask],0x40
-   mov byte [data_mask],0x80
+   mov byte[clock_mask],0x40
+   mov byte[data_mask],0x80
 GPP_L15:
 
 
@@ -78,10 +78,10 @@ GPP_L1:
 
    test [data_mask],al
    jz GPP_L3
-   mov byte [sample+edi],1
+   mov byte[sample+edi],1
    jmp GPP_L12
 GPP_L3:
-   mov byte [sample+edi],0
+   mov byte[sample+edi],0
 GPP_L12:
    inc edi
 
@@ -98,7 +98,7 @@ GPP_L13:
    xor ecx,ecx
    mov esi,1
 GPP_L7:
-   cmp byte [sample+esi],1
+   cmp byte[sample+esi],1
    jg GPP_ERR
    jne GPP_L6
    inc ecx

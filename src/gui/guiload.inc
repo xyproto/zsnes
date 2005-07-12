@@ -237,7 +237,7 @@ GUIloadfilename:
     mov byte[NextLineCache],0
     mov byte[curexecstate],1
 
-    mov byte [romloadskip],1
+    mov byte[romloadskip],1
     ; load file
     call loadfileGUI
     cmp byte[ZipSupport],2

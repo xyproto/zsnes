@@ -142,7 +142,7 @@ SWModeCheck:
    jmp short SMWError
 
 ModeA1:
-   cmp dword [_SWCount],3
+   cmp dword[_SWCount],3
    je near ModeB3
    xor ebp,ebp
    call DoModeA
@@ -190,15 +190,15 @@ DoModeB:
    mov ecx,5
    add ebp,bDump
 ModeBLoop:
-   test byte [ebp],00100000b
+   test byte[ebp],00100000b
    jnz $+4
    or ebx,eax
    shl eax,1
-   test byte [ebp],01000000b
+   test byte[ebp],01000000b
    jnz $+4
    or ebx,eax
    shl eax,1
-   test byte [ebp],10000000b
+   test byte[ebp],10000000b
    jnz $+4
    or ebx,eax
    shl eax,1
@@ -213,7 +213,7 @@ DoModeA:
    mov ecx,15
    add ebp,bDump
 ModeALoop:
-   test byte [ebp],00100000b
+   test byte[ebp],00100000b
    jnz $+4
    or ebx,eax
    shl eax,1

@@ -1765,10 +1765,10 @@ NEWSYM UpdatePORSCMR
    or al,bl
    mov ebx,[PLOTJmpb+eax*4]
    mov eax,[PLOTJmpa+eax*4]
-   mov dword [FxTable+4Ch*4],eax
-   mov dword [FxTableb+4Ch*4],eax
-   mov dword [FxTablec+4Ch*4],eax
-   mov dword [FxTabled+4Ch*4],ebx
+   mov dword[FxTable+4Ch*4],eax
+   mov dword[FxTableb+4Ch*4],eax
+   mov dword[FxTablec+4Ch*4],eax
+   mov dword[FxTabled+4Ch*4],ebx
    pop eax
    pop ebx
    ret
@@ -1794,14 +1794,14 @@ NEWSYM UpdateSCBRCOLR
    ret
 
 NEWSYM UpdateCLSR
-   mov dword [NumberOfOpcodes2],350 ; 0FFFFFFFh;350
+   mov dword[NumberOfOpcodes2],350 ; 0FFFFFFFh;350
    test byte[SfxCLSR],01h
    jz .nohighsfx
-   mov dword [NumberOfOpcodes2],700 ;700
+   mov dword[NumberOfOpcodes2],700 ;700
 .nohighsfx
     cmp byte[SFXCounter],1
     je .noyi
-    mov dword [NumberOfOpcodes2],0FFFFFFFh
+    mov dword[NumberOfOpcodes2],0FFFFFFFh
 .noyi
    ret
 
@@ -1858,14 +1858,14 @@ NEWSYM StartSFXdebug
     test al,08h
     jz .noaccess
 .noram
-    mov dword [NumberOfOpcodes],350 ; 0FFFFFFFh;350
+    mov dword[NumberOfOpcodes],350 ; 0FFFFFFFh;350
     test byte[SfxCLSR],01h
     jz .nohighsfx
-    mov dword [NumberOfOpcodes],700 ;700
+    mov dword[NumberOfOpcodes],700 ;700
 .nohighsfx
     cmp byte[SFXCounter],1
     jne .noyi
-    mov dword [NumberOfOpcodes],0FFFFFFFFh
+    mov dword[NumberOfOpcodes],0FFFFFFFFh
 .noyi
 ;    call SFXDebugLoop
 .noaccess
@@ -1914,10 +1914,10 @@ NEWSYM StartSFXdebugb
    or al,bl
    mov ebx,[PLOTJmpb+eax*4]
    mov eax,[PLOTJmpa+eax*4]
-   mov dword [FxTable+4Ch*4],eax
-   mov dword [FxTableb+4Ch*4],eax
-   mov dword [FxTablec+4Ch*4],eax
-   mov dword [FxTabled+4Ch*4],ebx
+   mov dword[FxTable+4Ch*4],eax
+   mov dword[FxTableb+4Ch*4],eax
+   mov dword[FxTablec+4Ch*4],eax
+   mov dword[FxTabled+4Ch*4],ebx
 
    mov ebx,[SfxSCBR]
    shl ebx,10
@@ -1947,14 +1947,14 @@ NEWSYM StartSFXdebugb
     test al,08h
     jz .noaccess
 .noram
-    mov dword [NumberOfOpcodes],400 ;678
+    mov dword[NumberOfOpcodes],400 ;678
     test byte[SfxCLSR],01h
     jz .nohighsfx
-    mov dword [NumberOfOpcodes],800 ;678*2
+    mov dword[NumberOfOpcodes],800 ;678*2
 .nohighsfx
     cmp byte[SFXCounter],1
     jne .noyi
-    mov dword [NumberOfOpcodes],0FFFFFFFh
+    mov dword[NumberOfOpcodes],0FFFFFFFh
 .noyi
     call MainLoop
 .noaccess
@@ -1982,12 +1982,12 @@ NEWSYM StartSFXret
     test al,08h
     jz .noaccess
 .noram
-    mov dword [NumberOfOpcodes],400 ;678
+    mov dword[NumberOfOpcodes],400 ;678
     test byte[SfxCLSR],01h
     jz .nohighsfx
-    mov dword [NumberOfOpcodes],800 ;678*2
+    mov dword[NumberOfOpcodes],800 ;678*2
 .nohighsfx
-    mov dword [NumberOfOpcodes],0FFFFFFFFh
+    mov dword[NumberOfOpcodes],0FFFFFFFFh
     call MainLoop
 .noaccess
     popad

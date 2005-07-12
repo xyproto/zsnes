@@ -1606,7 +1606,7 @@ NEWSYM SA1Reset
     mov ebx,snesmmap+%2*4
     test al,80h
     jz .noupper
-    cmp byte [NumofBanks],64
+    cmp byte[NumofBanks],64
     jne .BSBigBank
     and eax,1
 .BSBigBank
@@ -1615,7 +1615,7 @@ NEWSYM SA1Reset
     push eax
     jmp .yesupper
 .noupper
-    cmp byte [NumofBanks],64
+    cmp byte[NumofBanks],64
     jne .BSBigBank2
     and eax,1
 .BSBigBank2

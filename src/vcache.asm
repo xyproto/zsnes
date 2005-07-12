@@ -893,8 +893,8 @@ NEWSYM ClearBGFPUCopy
 .TopOfLoop
     FLDZ
     FLDZ
-    FISTP QWORD [EDI]
-    FISTP QWORD [EDI+8]
+    FISTP QWORD[EDI]
+    FISTP QWORD[EDI+8]
     ADD EDI,16
     DEC ECX
     JNZ .TopOfLoop

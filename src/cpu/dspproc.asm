@@ -2954,8 +2954,8 @@ SECTION .text
       mov dword[BRRPlace0+%1*8],10000000h
       mov dword[Voice0Prev0+%1*4],0
       mov dword[Voice0Prev1+%1*4],0
-      mov byte  [Voice0End+%1],0
-      mov byte  [Voice0Loop+%1],0
+      mov byte[Voice0End+%1],0
+      mov byte[Voice0Loop+%1],0
       mov dword[PSampleBuf+%1*24*4+16*4],0
       mov dword[PSampleBuf+%1*24*4+17*4],0
       mov dword[PSampleBuf+%1*24*4+18*4],0
@@ -3064,8 +3064,8 @@ NEWSYM Voice7Start
       mov dword[BRRPlace0+%1*8],10000000h
       mov dword[Voice0Prev0+%1*4],0
       mov dword[Voice0Prev1+%1*4],0
-      mov byte  [Voice0End+%1],0
-      mov byte  [Voice0Loop+%1],0
+      mov byte[Voice0End+%1],0
+      mov byte[Voice0Loop+%1],0
       mov dword[PSampleBuf+%1*24*4+16*4],0
       mov dword[PSampleBuf+%1*24*4+17*4],0
       mov dword[PSampleBuf+%1*24*4+18*4],0

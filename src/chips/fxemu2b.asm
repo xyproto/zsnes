@@ -215,7 +215,7 @@ NEWSYM FxOpb1D      ; TO RN  set register n as destination register
    TORNb 13
 NEWSYM FxOpb1E      ; TO RN  set register n as destination register
    FETCHPIPE
-   test dword [SfxB],1
+   test dword[SfxB],1
    jnz .VersionB
    mov edi,SfxR0+14*4
    inc ebp
@@ -237,7 +237,7 @@ NEWSYM FxOpb1E      ; TO RN  set register n as destination register
    ret
 NEWSYM FxOpb1F      ; TO RN  set register n as destination register
    FETCHPIPE
-   test dword [SfxB],1
+   test dword[SfxB],1
    jnz .VersionB
    mov edi,SfxR0+15*4
    inc ebp
@@ -260,7 +260,7 @@ NEWSYM FxOpb1F      ; TO RN  set register n as destination register
 
 NEWSYM FxOpb3D      ; ALT1   set alt1 mode      ; Verified.
    FETCHPIPE
-   mov dword [SfxB],0
+   mov dword[SfxB],0
    or ch,01h
    inc ebp
    mov eax,ebp
@@ -272,7 +272,7 @@ NEWSYM FxOpb3D      ; ALT1   set alt1 mode      ; Verified.
 
 NEWSYM FxOpb3E      ; ALT2   set alt1 mode      ; Verified.
    FETCHPIPE
-   mov dword [SfxB],0
+   mov dword[SfxB],0
    or ch,02h
    inc ebp
    mov eax,ebp
@@ -284,7 +284,7 @@ NEWSYM FxOpb3E      ; ALT2   set alt1 mode      ; Verified.
 
 NEWSYM FxOpb3F      ; ALT3   set alt3 mode      ; Verified.
    FETCHPIPE
-   mov dword [SfxB],0
+   mov dword[SfxB],0
    or ch,03h
    inc ebp
    mov eax,ebp
@@ -325,7 +325,7 @@ NEWSYM FxOpbBD      ; FROM rn   set source register
 NEWSYM FxOpbBE      ; FROM rn   set source register
    FROMRNb 14
 NEWSYM FxOpbBF      ; FROM rn   set source register
-   test dword [SfxB],1
+   test dword[SfxB],1
    jnz .VersionB
    mov esi,SfxR0+15*4
    inc ebp                ; Increase program counter
@@ -548,7 +548,7 @@ NEWSYM FxOpc1F      ; TO RN  set register n as destination register
 
 NEWSYM FxOpc3D      ; ALT1   set alt1 mode      ; Verified.
    FETCHPIPE
-   mov dword [SfxB],0
+   mov dword[SfxB],0
    or ch,01h
    inc ebp
    call [FxTablec+ecx*4]
@@ -557,7 +557,7 @@ NEWSYM FxOpc3D      ; ALT1   set alt1 mode      ; Verified.
 
 NEWSYM FxOpc3E      ; ALT2   set alt1 mode      ; Verified.
    FETCHPIPE
-   mov dword [SfxB],0
+   mov dword[SfxB],0
    or ch,02h
    inc ebp
    call [FxTablec+ecx*4]
@@ -566,7 +566,7 @@ NEWSYM FxOpc3E      ; ALT2   set alt1 mode      ; Verified.
 
 NEWSYM FxOpc3F      ; ALT3   set alt3 mode      ; Verified.
    FETCHPIPE
-   mov dword [SfxB],0
+   mov dword[SfxB],0
    or ch,03h
    inc ebp
    call [FxTablec+ecx*4]
