@@ -1428,7 +1428,7 @@ DisplayGUIVideo:
 
 
     GUIDrawWindowBox 5,GUIVideoDisp      ; Video Modes List/Options
-    
+
     DrawGUIButton 5,128,60,164,71,GUIVideoText8,4,0,0        ; Set Button
 
     GUIDisplayTextY 5,6,16,GUIVideoTextA      ; Video Modes : (Yellow)

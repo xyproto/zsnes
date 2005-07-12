@@ -236,7 +236,7 @@ ifneq (${ENV},msvc)
 	${CC} -o $@ -c temppsr.c
 else
 	cl /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ temppsr.c
-endif        
+endif
 	${DELETECOMMAND} temppsr.c
 
 ALL: zsnes
