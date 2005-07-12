@@ -1428,6 +1428,8 @@ DisplayGUIVideo:
 
 
     GUIDrawWindowBox 5,GUIVideoDisp      ; Video Modes List/Options
+    
+    DrawGUIButton 5,128,60,164,71,GUIVideoText8,4,0,0        ; Set Button
 
     GUIDisplayTextY 5,6,16,GUIVideoTextA      ; Video Modes : (Yellow)
 
@@ -1499,8 +1501,6 @@ DisplayGUIVideo:
     GUIDisplayCheckboxu 5,115,163,hqFilter,GUIVideoTexthq4x,1
 
 .notexthq4xa
-    DrawGUIButton 5,128,60,164,71,GUIVideoText8,4,0,0        ; Set Button
-
     xor eax,eax                                      ; Checkboxes
     mov al,[cvidmode]
     cmp byte[GUISLVID+eax],0
