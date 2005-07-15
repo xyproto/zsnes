@@ -29,6 +29,7 @@ Config file handler creator by Nach (C) 2005
 #include <fstream>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include <sstream>
 #include <set>
 #include <stack>
@@ -58,47 +59,145 @@ typedef vector<string> str_array;
 
 str_array memsets;
 
+
+static struct
+{
+  size_t line_number;
+  size_t column_number;
+
+  void error(const char *str)
+  {
+    cerr << "Error: parse problem occured at " << line_number << ":" << column_number << ". " << str << "." << endl;
+  }
+} current_location;
+
 enum cfg_value_type { single_value, quoted_value, parameterized_value };
+
+class variable_type
+{
+  public:
+  enum v_type { UC, US, UD, SC, SS, SD };
+  variable_type(v_type type) : type(type) {}
+  v_type getOType() { return(type); }
+  const char *getCType(bool);
+  char getFChar();
+  bool is_signed();
+
+  private:
+  v_type type;
+};
+
+const char *variable_type::getCType(bool underscore)
+{
+  if (underscore)
+  {
+    switch (type)
+    {
+      case SC: return("char");
+      case SS: return("short");
+      case SD: return("int");
+      case UC: return("unsigned_char");
+      case US: return("unsigned_short");
+      case UD: return("unsigned_int");
+    }
+  }
+  else
+  {
+    switch (type)
+    {
+      case SC: return("char");
+      case SS: return("short");
+      case SD: return("int");
+      case UC: return("unsigned char");
+      case US: return("unsigned short");
+      case UD: return("unsigned int");
+    }
+  }
+  return("");
+}
+
+char variable_type::getFChar()
+{
+  return(is_signed() ? 'd' : 'u');
+}
+
+bool variable_type::is_signed()
+{
+  switch (type)
+  {
+    case SC: case SS: case SD: return(true);
+    default: return(false);
+  }
+}
+
+struct full_type
+{
+  variable_type::v_type object;
+  cfg_value_type type;
+  full_type(variable_type::v_type object, cfg_value_type type) : object(object), type(type) {}
+  bool operator==(const full_type& ft) const { return((ft.object == object) && (ft.type == type)); }
+};
+
 struct cfg_var_struct
 {
   string name;
-  string object;
+  variable_type object;
   cfg_value_type type;
   size_t size;
+
+  cfg_var_struct(string& name, variable_type::v_type object, cfg_value_type val, size_t size) :
+  name(name), object(object), type(val), size(size)
+  {
+  }
+  bool operator==(const string& name) const { return(this->name == name); }
+  bool operator==(const full_type& ft) { return(ft == full_type(object.getOType(), type)); }
 };
 
 typedef vector<cfg_var_struct> cfg_var_array;
 
-cfg_var_array cfg_vars;
-
-size_t current_line_number = 0;
-size_t current_column_number = 0;
-
-void show_error_loc(const char *str)
+static class
 {
-  cerr << "Error: parse problem occured at " << current_line_number << ":" << current_column_number << ". " << str << "." << endl;
-}
+  private:
+  cfg_var_array array;
 
-void check_existing_var(string& str)
-{
-  for (cfg_var_array::iterator i = cfg_vars.begin(); i != cfg_vars.end(); i++)
+
+  public:
+  void add(string& name, variable_type::v_type object, cfg_value_type val, size_t size)
   {
-    if (i->name == str)
+    cfg_var_struct var(name, object, val, size);
+    if (find(array.begin(), array.end(), name) == array.end())
     {
-      cerr << "Duplicate definition of \"" << i->name << "\" found on line " << current_line_number << "." << endl;
-      break;
+      array.push_back(var);
+    }
+    else
+    {
+      cerr << "Duplicate definition of \"" << name << "\" found on line " << current_location.line_number << "." << endl;
     }
   }
-}
 
-void add_config_var(string& name, const char *object, cfg_value_type val, size_t size)
-{
-  check_existing_var(name);
-  cfg_var_struct cfg_var = {name, object, val, size};
-  cfg_vars.push_back(cfg_var);
-  //cout << "Name: " << name << "; Value Type: " << val << "; Size: " << size << endl;
-}
+  void add(string& name, const char *str, cfg_value_type val, size_t size)
+  {
+    if (!strcmp(str, "char")) { add(name, variable_type::SC, val, size); }
+    else if (!strcmp(str, "short")) { add(name, variable_type::SS, val, size); }
+    else if (!strcmp(str, "int")) { add(name, variable_type::SD, val, size); }
+    else if (!strcmp(str, "unsigned char")) { add(name, variable_type::UC, val, size); }
+    else if (!strcmp(str, "unsigned short")) { add(name, variable_type::US, val, size); }
+    else if (!strcmp(str, "unsigned int")) { add(name, variable_type::UD, val, size); }
+    else
+    {
+      cerr << "Invalid C type \"" << str << "\" when parsing line " << current_location.line_number << "." << endl;
+    }
+  }
 
+  bool type_used_array(const full_type& ft)
+  {
+    return(find(array.begin(), array.end(), ft) != array.end());
+  }
+
+  cfg_var_array::iterator begin() { return(array.begin()); }
+  cfg_var_array::iterator end() { return(array.end()); }
+
+} cfg_var;
 
 //Find next matching character which is not escaped
 char *find_next_match(char *str, char match_char)
@@ -170,7 +269,7 @@ char *get_token(char *str, char *delim)
     }
   }
 
-  if (token) { current_column_number = token - line; }
+  if (token) { current_location.column_number = token - line; }
   return(token);
 }
 
@@ -297,7 +396,7 @@ ssize_t safe_atoi(string& str)
   {
     if (!isdigit(*p))
     {
-      show_error_loc("Not a number");
+      current_location.error("Not a number");
     }
   }
 
@@ -364,7 +463,7 @@ char *convert_asm_type(const char *str, bool unsigned_var = true)
   }
   else
   {
-    show_error_loc("Not a valid type");
+    current_location.error("Not a valid type");
   }
 
   if (var_type && !unsigned_var)
@@ -531,26 +630,34 @@ void output_init_var(ostream& c_stream)
            << "}\n";
 }
 
-void output_array_write(ostream& c_stream, const char *type)
+void output_array_write(ostream& c_stream, variable_type::v_type v_type)
 {
-  c_stream << "\n"
-           << "static void write_" << type << "_array(FILE *fp, const char *var_name, " << type << " *var, size_t size)\n"
-           << "{\n"
-           << "  size_t i;\n"
-           << "  fprintf(fp, \"%s=%d\", var_name, (int)*var);\n"
-           << "  for (i = 1; i < size; i++)\n"
-           << "  {\n"
-           << "    fprintf(fp, \",%d\", (int)(var[i]));\n"
-           << "  }\n"
-           << "  fprintf(fp, \"\\n\");\n"
-           << "}\n";
+  if (cfg_var.type_used_array(full_type(v_type, parameterized_value)))
+  {
+    variable_type type(v_type);
+
+    c_stream << "\n"
+             << "static void write_" << type.getCType(true) << "_array(FILE *fp, const char *var_name, " << type.getCType(false) << " *var, size_t size)\n"
+             << "{\n"
+             << "  size_t i;\n"
+             << "  fprintf(fp, \"%s=%" << type.getFChar() << "\", var_name, (int)*var);\n"
+             << "  for (i = 1; i < size; i++)\n"
+             << "  {\n"
+             << "    fprintf(fp, \",%" << type.getFChar() << "\", (int)(var[i]));\n"
+             << "  }\n"
+             << "  fprintf(fp, \"\\n\");\n"
+             << "}\n";
+  }
 }
 
 void output_write_var(ostream& c_stream)
 {
-  output_array_write(c_stream, "char");
-  output_array_write(c_stream, "short");
-  output_array_write(c_stream, "int");
+  output_array_write(c_stream, variable_type::UC);
+  output_array_write(c_stream, variable_type::US);
+  output_array_write(c_stream, variable_type::UD);
+  output_array_write(c_stream, variable_type::SC);
+  output_array_write(c_stream, variable_type::SS);
+  output_array_write(c_stream, variable_type::SD);
 
   c_stream << "\n"
            << "unsigned char write_cfg_vars(const char *file)\n"
@@ -561,11 +668,11 @@ void output_write_var(ostream& c_stream)
            << "\n"
            << "  if ((fp = fopen(file, \"w\")))\n"
            << "  {\n";
-  for (cfg_var_array::iterator i = cfg_vars.begin(); i != cfg_vars.end(); i++)
+  for (cfg_var_array::iterator i = cfg_var.begin(); i != cfg_var.end(); i++)
   {
     if (i->type == parameterized_value)
     {
-      c_stream << "    write_" << convert_asm_type(i->object.c_str(), false)
+      c_stream << "    write_" << i->object.getCType(true)
                << "_array(fp, \"" << i->name << "\", " << i->name << ", " << i->size << ");\n";
     }
     else
@@ -573,7 +680,7 @@ void output_write_var(ostream& c_stream)
       c_stream << "    fprintf(fp, \"" << i->name << "=";
       if (i->type == single_value)
       {
-      c_stream << "%d\\n\", " << i->name;
+      c_stream << "%" << i->object.getFChar() << "\\n\", " << i->name;
       }
       else
       {
@@ -590,26 +697,34 @@ void output_write_var(ostream& c_stream)
            << "}\n";
 }
 
-void output_array_read(ostream& c_stream, const char *type)
+void output_array_read(ostream& c_stream, variable_type::v_type v_type)
 {
-  c_stream << "\n"
-           << "static void read_" << type << "_array(char *line, " << type << " *var, size_t size)\n"
-           << "{\n"
-           << "  size_t i;\n"
-           << "  char *token;\n"
-           << "  *var = atoi(strtok(line, \", \\t\\r\\n\"));\n"
-           << "  for (i = 1; (i < size) && (token = strtok(0, \", \\t\\r\\n\")); i++)\n"
-           << "  {\n"
-           << "    var[i] = atoi(token);\n"
-           << "  }\n"
-           << "}\n";
+  if (cfg_var.type_used_array(full_type(v_type, parameterized_value)))
+  {
+    variable_type type(v_type);
+
+    c_stream << "\n"
+             << "static void read_" << type.getCType(true) << "_array(char *line, " << type.getCType(false) << " *var, size_t size)\n"
+             << "{\n"
+             << "  size_t i;\n"
+             << "  char *token;\n"
+             << "  *var = (" << type.getCType(false) << ")atoi(strtok(line, \", \\t\\r\\n\"));\n"
+             << "  for (i = 1; (i < size) && (token = strtok(0, \", \\t\\r\\n\")); i++)\n"
+             << "  {\n"
+             << "    var[i] = (" << type.getCType(false) << ")atoi(token);\n"
+             << "  }\n"
+             << "}\n";
+  }
 }
 
 void output_read_var(ostream& c_stream)
 {
-  output_array_read(c_stream, "char");
-  output_array_read(c_stream, "short");
-  output_array_read(c_stream, "int");
+  output_array_read(c_stream, variable_type::UC);
+  output_array_read(c_stream, variable_type::US);
+  output_array_read(c_stream, variable_type::UD);
+  output_array_read(c_stream, variable_type::SC);
+  output_array_read(c_stream, variable_type::SS);
+  output_array_read(c_stream, variable_type::SD);
 
   c_stream << "\n"
            << "unsigned char read_cfg_vars(const char *file)\n"
@@ -646,16 +761,16 @@ void output_read_var(ostream& c_stream)
            << "      continue;\n"
            << "    }\n"
            << "\n";
-  for (cfg_var_array::iterator i = cfg_vars.begin(); i != cfg_vars.end(); i++)
+  for (cfg_var_array::iterator i = cfg_var.begin(); i != cfg_var.end(); i++)
   {
     c_stream << "    if (!strcmp(var, \"" + i->name + "\")) { ";
     if (i->type == single_value)
     {
-      c_stream << i->name << " = atoi(value);";
+      c_stream << i->name << " = (" << i->object.getCType(false) << ")atoi(value);";
     }
     else if (i->type == parameterized_value)
     {
-      c_stream << "read_" << convert_asm_type(i->object.c_str(), false)
+      c_stream << "read_" << i->object.getCType(true)
                << "_array(value, " << i->name << ", " << i->size << ");";
     }
     else
@@ -683,7 +798,7 @@ void handle_directive(char *instruction, char *label)
     }
     else
     {
-      show_error_loc("Could not get define label");
+      current_location.error("Could not get define label");
     }
   }
   else if (!strcasecmp(instruction, "undef"))
@@ -694,7 +809,7 @@ void handle_directive(char *instruction, char *label)
     }
     else
     {
-      show_error_loc("Could not get undefine label");
+      current_location.error("Could not get undefine label");
     }
   }
   else if (!strcasecmp(instruction, "ifdef"))
@@ -712,20 +827,20 @@ void handle_directive(char *instruction, char *label)
     }
     else
     {
-      show_error_loc("Could not get ifdef label");
+      current_location.error("Could not get ifdef label");
     }
   }
   else if (!strcasecmp(instruction, "else"))
   {
     if (label)
     {
-      show_error_loc("Processor directive else does not accept labels");
+      current_location.error("Processor directive else does not accept labels");
     }
     else
     {
       if (ifs.empty())
       {
-        show_error_loc("Processor directive else without ifdef");
+        current_location.error("Processor directive else without ifdef");
       }
       else
       {
@@ -752,7 +867,7 @@ void handle_directive(char *instruction, char *label)
     }
     else
     {
-      show_error_loc("Could not get elseifdef label");
+      current_location.error("Could not get elseifdef label");
     }
 
   }
@@ -760,13 +875,13 @@ void handle_directive(char *instruction, char *label)
   {
     if (label)
     {
-      show_error_loc("Processor directive endif does not accept labels");
+      current_location.error("Processor directive endif does not accept labels");
     }
     else
     {
       if (ifs.empty())
       {
-        show_error_loc("Processor directive endif without ifdef");
+        current_location.error("Processor directive endif without ifdef");
       }
       else
       {
@@ -776,12 +891,14 @@ void handle_directive(char *instruction, char *label)
   }
   else
   {
-    show_error_loc("Unknown processor directive");
+    current_location.error("Unknown processor directive");
   }
 }
 
 void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_stream)
 {
+  current_location.line_number = current_location.column_number = 0;
+
   output_parser_start(c_stream);
 
   if (cheader_stream)
@@ -795,7 +912,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
     char *comment;
 
     psr_stream.getline(line, LINE_LENGTH);
-    current_line_number++;
+    current_location.line_number++;
 
     comment = get_comment();
 
@@ -862,7 +979,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
               }
               memsets.push_back(memset_line.str());
 
-              add_config_var(varname, asm_type, quoted_value, 0);
+              cfg_var.add(varname, variable_type::SC, quoted_value, 0);
             }
             else
             {
@@ -905,7 +1022,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                   var_init << init_value_num << "%d}";
                 }
 
-                add_config_var(varname, asm_type, parameterized_value, array);
+                cfg_var.add(varname, var_type, parameterized_value, array);
               }
               else
               {
@@ -920,13 +1037,13 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                   } while((token = get_token(0, " ,\n")));
                   var_init << "}";
 
-                  add_config_var(varname, asm_type, parameterized_value, array);
+                  cfg_var.add(varname, var_type, parameterized_value, array);
                 }
                 else
                 {
                   var_init << " = " << init_value_num;
 
-                  add_config_var(varname, asm_type, single_value, 0);
+                  cfg_var.add(varname, var_type, single_value, 0);
                 }
               }
               var_init << ";";
@@ -950,17 +1067,17 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
         }
         else
         {
-          show_error_loc("Could not get array size");
+          current_location.error("Could not get array size");
         }
       }
       else
       {
-        show_error_loc("Could not get type");
+        current_location.error("Could not get type");
       }
     }
     else
     {
-      show_error_loc("Could not get variable name");
+      current_location.error("Could not get variable name");
     }
 
     output_comment(c_stream, comment);
