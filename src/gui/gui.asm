@@ -19,6 +19,7 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
+
 ; Sorry.  The GUI code is a total mess.  One problem I encountered is that
 ;   there seems to be a bug in nasm with using math calculations combined
 ;   with macros within macros, so in some macro definitions, I had to
@@ -71,7 +72,7 @@ EXTSYM smallscreenon,soundon,StereoSound,SoundQuality,MusicRelVol,endprog
 EXTSYM continueprog,spcBuffera,spcRamcmp,cbitmode,makepal,t1cc,LoadDir,LoadDrive
 EXTSYM SRAMDir,SRAMChdir,SRAMDirCurDir,initsnes,fname,makeextension,sram
 EXTSYM loadfileGUI,GUIloadfailed,romloadskip,SetupROM,romdata,ramsize
-EXTSYM cfgloadsdir,init65816,procexecloop,spcRam,spcPCRam,spcS,spcRamDP,spcA
+EXTSYM cfgloadsdir,init65816,procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA
 EXTSYM spcX,spcY,spcP,spcNZ,Voice0Status,Voice1Status,Voice2Status,Voice3Status
 EXTSYM Voice4Status,Voice5Status,Voice6Status,Voice7Status,ClearScreen
 EXTSYM statesaver,loadstate2,vidbuffer,ASCII2Font,hirestiledat,showallext

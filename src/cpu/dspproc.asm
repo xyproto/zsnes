@@ -20,7 +20,7 @@
 
 %include "macros.mac"
 
-EXTSYM spcRam,spcPCRam,spcRamDP,spcS,spcX,RevStereo
+EXTSYM SPCRAM,spcPCRam,spcRamDP,spcS,spcX,RevStereo
 EXTSYM Invalidopcode,RSPCRegF0,RSPCRegF1,RSPCRegF2,RSPCRegF3
 EXTSYM RSPCRegF4,RSPCRegF5,RSPCRegF6,RSPCRegF7,RSPCRegF8,RSPCRegF9
 EXTSYM RSPCRegFA,RSPCRegFB,RSPCRegFC,RSPCRegFD,RSPCRegFE,RSPCRegFF
@@ -692,7 +692,7 @@ NEWSYM InitSPC
       dec ecx
       jnz .nextvol
 
-      mov eax,spcRam
+      mov eax,SPCRAM
       mov ebx,0EFh
 .loop2
       mov byte[eax],0
@@ -703,12 +703,12 @@ NEWSYM InitSPC
 
       xor eax,eax
       xor ebx,ebx
-      mov ebp,spcRam
+      mov ebp,SPCRAM
       mov ax,0FFC0h
       add ebp,eax
       mov [spcPCRam],ebp
       mov dword[spcS],1EFh
-      mov dword[spcRamDP],spcRam
+      mov dword[spcRamDP],SPCRAM
 
       ; initialize all the SPC write registers
       mov dword[spcWptr+0],SPCRegF0
@@ -1925,7 +1925,7 @@ BRRDecode:
 
     mov eax,[curvoice]
     mov esi,[Voice0LoopPtr+eax*4]
-    add esi,spcRam
+    add esi,SPCRAM
 
 .dlpf_fill
     push dword[prev0]
@@ -2973,10 +2973,10 @@ SECTION .text
       mov ah,[DSPMem+5Dh]
       add ax,dx
       xor ebx,ebx
-      mov bx,[spcRam+eax]
+      mov bx,[SPCRAM+eax]
       mov [Voice0Ptr+%1*4],ebx
       xor ebx,ebx
-      mov bx,[spcRam+eax+2]
+      mov bx,[SPCRAM+eax+2]
       mov [Voice0LoopPtr+%1*4],ebx
       pop edx
       pop ebx
@@ -3046,10 +3046,10 @@ NEWSYM Voice7Start
       mov ah,[DSPMem+5Dh]
       add ax,dx
       xor ebx,ebx
-      mov bx,[spcRam+eax]
+      mov bx,[SPCRAM+eax]
       mov [Voice0Ptr+%1*4],ebx
       xor ebx,ebx
-      mov bx,[spcRam+eax+2]
+      mov bx,[SPCRAM+eax+2]
       mov [Voice0LoopPtr+%1*4],ebx
       mov ax,[DSPMem+02h+%1*10h]
       cmp word[Voice0Pitch+%1*2],ax
@@ -4735,7 +4735,7 @@ NEWSYM EchoStereo
     mov edi,esi
     inc edi
     shl edi,2
-    add esi,spcRam
+    add esi,SPCRAM
     add edi,[spcBuffera]
     mov eax,[Voice0Prev0+%1*4]
     mov [Voice0BufPtr+%1*4],edi
@@ -4833,10 +4833,10 @@ NEWSYM EchoStereo
 ;      mov ah,[DSPMem+5Dh]
 ;      add ax,dx
 ;      xor ebx,ebx
-;      mov bx,[spcRam+eax]
+;      mov bx,[SPCRAM+eax]
 ;      mov dword[Voice0Ptr+%1*4],ebx
 ;      xor ebx,ebx
-;      mov bx,[spcRam+eax+2]
+;      mov bx,[SPCRAM+eax+2]
 ;      mov dword[Voice0LoopPtr+%1*4],ebx
 ;      pop ebx
 ;      pop edx

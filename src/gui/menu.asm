@@ -26,7 +26,7 @@ EXTSYM DSPMem,FPSOn,Makemode7Table,MessageOn,vesa2red10,scanlines,smallscreenon
 EXTSYM MsgCount,Msgptr,OutputGraphicString,OutputGraphicString16b,vidbuffer
 EXTSYM PrepareSaveState,ResetState,breakatsignb,cvidmode,cbitmode,copyvid
 EXTSYM curblank,drawhline,drawhline16b,drawvline,drawvline16b,fnames,frameskip
-EXTSYM mode7tab,pressed,spcA,spcBuffera,spcNZ,spcP,spcPCRam,spcRam,spcS,spcX
+EXTSYM mode7tab,pressed,spcA,spcBuffera,spcNZ,spcP,spcPCRam,SPCRAM,spcS,spcX
 EXTSYM spcY,spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2selec
 EXTSYM spritetablea,sprlefttot,newengen,spcextraram,resolutn,Open_File
 EXTSYM Close_File,Write_File,Create_File,Get_Key,Get_Date,continueprognokeys
@@ -818,7 +818,7 @@ NEWSYM menudrawcursor16b
     ret
 
 NEWSYM savespcdata
-    sub dword[spcPCRam],spcRam
+    sub dword[spcPCRam],SPCRAM
     ; Assemble N/Z flags into P
     and byte[spcP],0FDh
     test byte[spcNZ],0FFh
@@ -842,7 +842,7 @@ NEWSYM savespcdata
     mov [ssdatst+42],al
     mov al,[spcS]
     mov [ssdatst+43],al
-    add dword[spcPCRam],spcRam
+    add dword[spcPCRam],SPCRAM
 .savestuff
     ChangeDir SPCPath
     pushad
@@ -983,7 +983,7 @@ NEWSYM savespcdata
 
     ; Save SPC stuff
     mov ecx,65536
-    mov edx,spcRam
+    mov edx,SPCRAM
     call Write_File
     mov ecx,256
     mov edx,DSPMem
@@ -1007,7 +1007,7 @@ NEWSYM savespcdata
 
 	mov byte[SPCSave_dump],1
 
-	mov eax, [spcRam+0F4h]
+	mov eax, [SPCRAM+0F4h]
 	mov [SPCSave_ports], eax
 	xor eax, eax
 	mov [SPCSave_buffer], eax

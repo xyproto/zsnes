@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM ProcessSoundBuffer,DosExit,getenv,PrintStr,printhex,printnum,WaitForKey
-EXTSYM SBHDMA,soundon,csounddisable,DisplayS,spcRam,DSPMem
+EXTSYM SBHDMA,soundon,csounddisable,DisplayS,SPCRAM,DSPMem
 EXTSYM Surround,StereoSound,SoundQuality,SoundSpeeds,SBToSPCSpeeds2
 EXTSYM SoundSpeedt,DSPBuffer,BufferSize,BufferSizes,BufferSizeB
 EXTSYM BufferSizeW,dssel
@@ -364,11 +364,11 @@ NEWSYM handlersbseg
 .sbend
     xor byte[SBswitch],1
 
-   ; move the good data at spcRam+0f3h
+   ; move the good data at SPCRAM+0f3h
       xor eax,eax
-      mov al,[spcRam+0F2h]
+      mov al,[SPCRAM+0F2h]
       mov bl,[DSPMem+eax]
-      mov [spcRam+0F3h],bl
+      mov [SPCRAM+0F3h],bl
     ; acknowledge SB for IRQing
     mov dx,[SBPort]
     add dl,0Eh

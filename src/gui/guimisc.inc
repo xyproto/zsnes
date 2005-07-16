@@ -379,12 +379,12 @@ NEWSYM GUIDoReset
     popad
 
     xor eax,eax
-    mov edx,spcRam
+    mov edx,SPCRAM
     mov ax,0FFC0h
     add edx,eax
     mov [spcPCRam],edx
     mov dword[spcS],1EFh
-    mov dword[spcRamDP],spcRam
+    mov dword[spcRamDP],SPCRAM
     mov byte[spcA],0
     mov byte[spcX],0
     mov byte[spcY],0

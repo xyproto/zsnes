@@ -20,12 +20,6 @@
 
 
 
-
-
-
-
-
-
 ; A,DP addressing mode
 %macro SPCaddr_DP 0
       mov bl,[ebp]
@@ -44,7 +38,7 @@
 
 %macro SPCaddr_LABS 0
       mov bx,[ebp]
-      add ebx,spcRam
+      add ebx,SPCRAM
       ReadByte
       add ebp,2
 %endmacro
@@ -53,7 +47,7 @@
       mov bl,[spcX]
       add bx,[ebp]
       add ebp,2
-      add ebx,spcRam
+      add ebx,SPCRAM
       ReadByte
 %endmacro
 
@@ -69,7 +63,7 @@
       mov bl,[spcY]
       add bx,[ebp]
       add ebp,2
-      add ebx,spcRam
+      add ebx,SPCRAM
       ReadByte
 %endmacro
 
@@ -82,7 +76,7 @@
       inc ebp
       mov ax, [ebx]
       mov ebx,eax
-      add ebx,spcRam
+      add ebx,SPCRAM
       ReadByte
 %endmacro
 
@@ -94,8 +88,6 @@
       mov ax,[ebx]
       add ax,[spcY]
       mov ebx,eax
-      add ebx,spcRam
+      add ebx,SPCRAM
       ReadByte
 %endmacro
-
-

@@ -22,7 +22,7 @@
 
 EXTSYM initsfxregsw,reg420Bw,reg420Cw,regptw,initSA1regsw,SDD1Reset
 EXTSYM SPC7110Reset,RTCReset2,debstop,NextLineCache,vidmemch2,vidmemch4
-EXTSYM vidmemch8,vrama,nmirept,sndwrit,spcRam,HIRQCycNext,HIRQNextExe,HIRQSkip
+EXTSYM vidmemch8,vrama,nmirept,sndwrit,SPCRAM,HIRQCycNext,HIRQNextExe,HIRQSkip
 EXTSYM cycpb268,cycpb358,cycpbl,cycpblt,opexec268,opexec268cph,opexec358
 EXTSYM opexec358cph,hdmarestart,printhex8
 
@@ -1220,7 +1220,7 @@ reg2140w:
     jne .n
     mov byte[nmirept],0
 .n
-    mov [spcRam+0F4h],al
+    mov [SPCRAM+0F4h],al
     inc dword[SPC700write]
     reenablespc
     ret
@@ -1234,7 +1234,7 @@ reg2140w:
 ; Sound Register #2
 reg2141w:
     mov byte[sndwrit],1
-    mov [spcRam+0F5h],al
+    mov [SPCRAM+0F5h],al
     inc dword[SPC700write]
     reenablespc
     ret
@@ -1248,7 +1248,7 @@ reg2141w:
 ; Sound Register #3
 reg2142w:
     mov byte[sndwrit],1
-    mov [spcRam+0F6h],al
+    mov [SPCRAM+0F6h],al
     inc dword[SPC700write]
     reenablespc
     ret
@@ -1262,7 +1262,7 @@ reg2142w:
 ; Sound Register #4
 reg2143w:
     mov byte[sndwrit],1
-    mov [spcRam+0F7h],al
+    mov [SPCRAM+0F7h],al
     inc dword[SPC700write]
     reenablespc
     ret

@@ -19,14 +19,8 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-EXTSYM Sflagnz, Sflago, Sflagc,dmadata
-;EXTSYM spcRamDP,spcRamDPb,spcRam
-    EXTSYM IRAM
 
-
-
-
-
+EXTSYM Sflagnz,Sflago,Sflagc,dmadata,IRAM
 
 ;*******************************************************
 ; Flag Setting Macros
@@ -1577,5 +1571,3 @@ COPemulmode
     mov word[stackor],0100h
     endloop
 %endmacro
-
-

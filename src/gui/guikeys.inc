@@ -20,7 +20,6 @@
 
 
 
-
 ; GUI Keyboard Routines
 
 %macro GUIqcheckkeys 1
@@ -3168,5 +3167,3 @@ WaitForKey:
 .mousedis2
     mov byte[GUIpclicked],1
     ret
-
-

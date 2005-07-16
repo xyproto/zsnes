@@ -1158,7 +1158,7 @@ section .data
 .fname2 db 9,'vram2.dat',0
 section .text
 
-EXTSYM spcRam
+EXTSYM SPCRAM
 section .data
 NEWSYM ewj2hack, dd 0
 section .text
@@ -1180,8 +1180,8 @@ NEWSYM hdmatype2indirect
     xor ebx,ebx
     xor ecx,ecx
     xor edx,edx
-    mov ax,[spcRam+021h] ; load dest offset
-    mov dword[.dest],spcRam
+    mov ax,[SPCRAM+021h] ; load dest offset
+    mov dword[.dest],SPCRAM
     add [.dest],eax
     mov dl,[esi+10] ; number of bytes to transfer
     sub dl,80h

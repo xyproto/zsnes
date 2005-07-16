@@ -1327,7 +1327,7 @@ extern unsigned char pal16b[1024];
 extern unsigned char pal16bcl[1024];
 extern unsigned char pal16bclha[1024];
 extern unsigned char pal16bxcl[256];
-extern unsigned char spcRam[65472];
+extern unsigned char SPCRAM[65472];
 
 extern unsigned char *sram;
 extern unsigned char *vidbuffer;
@@ -1354,8 +1354,8 @@ void clearSPCRAM()
   unsigned int i;
   for (i = 0; i < 65472; i += 0x40)
   {
-    memset(spcRam+i, 0, 0x20);
-    memset(spcRam+i+0x20, 0xFF, 0x20);
+    memset(SPCRAM+i, 0, 0x20);
+    memset(SPCRAM+i+0x20, 0xFF, 0x20);
   }
 }
 

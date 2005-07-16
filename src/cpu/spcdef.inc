@@ -20,11 +20,6 @@
 
 
 
-
-
-
-
-
 ; move al at address ebx
 
 ; branch instructions
@@ -41,19 +36,19 @@
 ; tcall instruction
 %macro spctcall 1
       mov ebx,ebp
-      sub ebx,spcRam
+      sub ebx,SPCRAM
       mov eax,[spcS]
-      mov [spcRam+eax],bh
+      mov [SPCRAM+eax],bh
       dec byte[spcS]
       mov eax,[spcS]
-      mov [spcRam+eax],bl
+      mov [SPCRAM+eax],bl
       dec byte[spcS]
       mov bx,[spcextraram+%1]
-      test byte[spcRam+0F1h],80h
+      test byte[SPCRAM+0F1h],80h
       jnz %%finished
-      mov bx,[spcRam+0FFC0h+%1]
+      mov bx,[SPCRAM+0FFC0h+%1]
 %%finished
-      add ebx,spcRam
+      add ebx,SPCRAM
       mov ebp,ebx
       ret
 %endmacro
@@ -168,5 +163,3 @@
       mov [spcNZ],al
       ret
 %endmacro
-
-

@@ -19,6 +19,7 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
+
 ; GUI File (Game) Loader
 
 %macro GUIGetEntry 1
@@ -1559,5 +1560,3 @@ loadquickfname:
 SECTION .bss
 .temp resd 256
 SECTION .text
-
-

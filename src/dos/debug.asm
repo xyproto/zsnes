@@ -32,7 +32,7 @@ EXTSYM writeon,curcyc,dmadata,execsingle,initaddrl,memtabler8,pdh,debugloadstate
 EXTSYM regaccessbankr8,selcB800,snesmap2,snesmmap,ram7f,StringLength,exiter
 EXTSYM CurrentCPU,SA1RegP,curypos,xa,xd,xdb,xe,xp,xpb,xpc,xs,xx,xy,SA1xpb,SA1xpc
 EXTSYM SA1xa,SA1xx,SA1xy,SA1xd,SA1xdb,SA1xs,cycpbl,debugbuf,soundon,spcA,spcNZ
-EXTSYM spcP,spcPCRam,spcRam,spcS,spcX,spcY
+EXTSYM spcP,spcPCRam,SPCRAM,spcS,spcX,spcY
 
 ; debstop at regsw.asm 2118/2119
 
@@ -144,7 +144,7 @@ NEWSYM loadtempstuff
 ;    call Read_File
     ; Load SPC stuff
     mov ecx,[PHspcsave]
-    mov edx,spcRam
+    mov edx,SPCRAM
     call Read_File
     ; Load DSP stuff
     mov ecx,[PHdspsave]
@@ -173,7 +173,7 @@ NEWSYM loadtempstuff
     mov [spcP],al
     mov al,[ssdatst+43]
     mov [spcS],al
-    add dword[spcPCRam],spcRam
+    add dword[spcPCRam],SPCRAM
     ; Assemble N/Z flags into P
     mov byte[spcNZ],0
     test byte[spcP],02h
@@ -186,15 +186,15 @@ NEWSYM loadtempstuff
 .noneg
     ; Init separate variables
     xor eax,eax
-    mov al,[spcRam+0F1h]
+    mov al,[SPCRAM+0F1h]
     mov [timeron],al
-    mov al,[spcRam+0FAh]
+    mov al,[SPCRAM+0FAh]
     mov [timincr0],al
     mov [timinl0],al
-    mov al,[spcRam+0FBh]
+    mov al,[SPCRAM+0FBh]
     mov [timincr1],al
     mov [timinl1],al
-    mov al,[spcRam+0FCh]
+    mov al,[SPCRAM+0FCh]
     mov [timincr2],al
     mov [timinl2],al
     ret
@@ -379,7 +379,7 @@ NEWSYM debugdump
     call Create_File
     mov bx,ax
     mov ecx,65536
-    mov edx,spcRam
+    mov edx,SPCRAM
     call Write_File
     call Close_File
     mov edx,.fname2
@@ -870,7 +870,7 @@ NEWSYM SPCmodify
     xor ebx,ebx
     mov cx,dx
     mov bx,dx
-    add ebx,spcRam
+    add ebx,SPCRAM
     mov [.value],cx
     mov al,[ebx]
     ; set cursor to (12,46)
@@ -911,7 +911,7 @@ NEWSYM SPCmodify
     xor ebx,ebx
     xor ecx,ecx
     mov bx,[.value]
-    add ebx,spcRam
+    add ebx,SPCRAM
     mov [ebx],al
 .exit
     pop es
@@ -1354,7 +1354,7 @@ NEWSYM SPCbreakops
     int 10h
     xor eax,eax
     mov ax,cx
-    add eax,spcRam
+    add eax,SPCRAM
     mov [breakarea],eax
 
     mov byte[wx],14
@@ -1453,7 +1453,7 @@ NEWSYM breakatsign
     int 10h
     xor eax,eax
     mov ax,cx
-    add eax,spcRam
+    add eax,SPCRAM
     mov [breakarea],eax
 
     mov byte[wx],14
@@ -1558,7 +1558,7 @@ NEWSYM breakatsignlog
     int 10h
     xor eax,eax
     mov ax,cx
-    add eax,spcRam
+    add eax,SPCRAM
     mov [breakarea],eax
 
     mov byte[wx],14
@@ -1655,7 +1655,7 @@ NEWSYM breakatsignlog
     cmp al,27
     je .skipc
 .skipa
-;    cmp byte[spcRam+6],40h
+;    cmp byte[SPCRAM+6],40h
 ;    je .skipc
     mov eax,[ram7f]
 ;    jmp .loopa
@@ -1785,7 +1785,7 @@ NEWSYM breakatsignb
     cmp al,27
     je .skipc
 .skipa
-    cmp byte[spcRam+6],40h
+    cmp byte[SPCRAM+6],40h
     je .skipc
     cmp byte[keyonsn],1
     jne .loopa
@@ -1869,7 +1869,7 @@ NEWSYM breakatsignc
     cmp al,27
     je .skipc
 .skipa
-    cmp byte[spcRam+6],40h
+    cmp byte[SPCRAM+6],40h
     je .skipc
     cmp byte[sndwrit],1
     jne .loopa
@@ -3733,7 +3733,7 @@ NEWSYM nextspcopcode
 
     ; output spc pc & opcode #
     mov eax,[spcPCRam]
-    sub eax,spcRam
+    sub eax,SPCRAM
     call .printhex16
     mov al,'/'
     stosb
@@ -3980,7 +3980,7 @@ NEWSYM nextspcopcode
     movsx eax,byte[ebx+1]
     add eax,2
     add eax,[spcPCRam]
-    sub eax,spcRam
+    sub eax,SPCRAM
     call .printhex16
     add esi,3
     jmp .donext
@@ -4019,7 +4019,7 @@ NEWSYM nextspcopcode
     movsx eax,byte[ebx+1]
     add eax,2
     add eax,[spcPCRam]
-    sub eax,spcRam
+    sub eax,SPCRAM
     call .printhex16
     add esi,2
     jmp .donext
@@ -4028,7 +4028,7 @@ NEWSYM nextspcopcode
     movsx eax,byte[ebx+2]
     add eax,2
     add eax,[spcPCRam]
-    sub eax,spcRam
+    sub eax,SPCRAM
     call .printhex16
     add esi,2
     jmp .donext

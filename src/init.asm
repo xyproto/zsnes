@@ -47,7 +47,7 @@ EXTSYM JoyAPos,JoyBPos,NMIEnab,SPCROM,VIRQLoc,coladdb,coladdg,coladdr,doirqnext
 EXTSYM forceblnk,nmiprevaddrh,nmiprevaddrl,nmiprevline,nmirept,nmistatus
 EXTSYM opexec268,opexec268b,opexec268cph,opexec268cphb,opexec358,opexec358b
 EXTSYM opexec358cph,spcextraram,opexec358cphb,prevoamptr,reg1read,reg2read
-EXTSYM reg3read,reg4read,resolutn,romdata,scrndis,spcP,spcRam,spcnumread
+EXTSYM reg3read,reg4read,resolutn,romdata,scrndis,spcP,SPCRAM,spcnumread
 EXTSYM spchalted,tableD,timeron,vidbright,SPC700read,SPC700write,spc700read
 EXTSYM GUIReset,InitC4,SA1Reset,SetAddressingModesSA1,SDD1BankA,SPC7110init
 EXTSYM RTCinit,InitOBC,memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
@@ -1124,7 +1124,7 @@ NEWSYM init65816
 .loopa
     mov al,[SPCROM+esi]
     mov byte[spcextraram+esi],0FFh
-    mov [spcRam+0FFC0h+esi],al
+    mov [SPCRAM+0FFC0h+esi],al
     inc esi
     cmp esi,040h
     jne .loopa
@@ -1163,10 +1163,10 @@ NEWSYM init65816
     call headerhack
     popad
 
-    mov byte[spcRam+0F4h],0
-    mov byte[spcRam+0F5h],0
-    mov byte[spcRam+0F6h],0
-    mov byte[spcRam+0F7h],0
+    mov byte[SPCRAM+0F4h],0
+    mov byte[SPCRAM+0F5h],0
+    mov byte[SPCRAM+0F6h],0
+    mov byte[SPCRAM+0F7h],0
     mov byte[reg1read],0
     mov byte[reg2read],0
     mov byte[reg3read],0

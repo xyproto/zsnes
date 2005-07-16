@@ -61,7 +61,7 @@ static void copy_snes_data(unsigned char **buffer, void (*copy_func)(unsigned ch
 static void copy_spc_data(unsigned char **buffer, void (*copy_func)(unsigned char **, void *, size_t))
 {
   //SPC stuff, DSP stuff
-  copy_func(buffer, spcRam, PHspcsave);
+  copy_func(buffer, SPCRAM, PHspcsave);
   copy_func(buffer, &BRRBuffer, PHdspsave);
   copy_func(buffer, &DSPMem, sizeof(DSPMem));
 }
@@ -386,8 +386,8 @@ extern unsigned int spcPCRam, spcRamDP;
 
 void PrepareSaveState()
 {
-  spcPCRam -= (unsigned int)spcRam;
-  spcRamDP -= (unsigned int)spcRam;
+  spcPCRam -= (unsigned int)SPCRAM;
+  spcRamDP -= (unsigned int)SPCRAM;
 
   Voice0BufPtr -= spcBuffera;
   Voice1BufPtr -= spcBuffera;
@@ -454,8 +454,8 @@ void RestoreSA1()
 
 void ResetState()
 {
-  spcPCRam += (unsigned int)spcRam;
-  spcRamDP += (unsigned int)spcRam;
+  spcPCRam += (unsigned int)SPCRAM;
+  spcRamDP += (unsigned int)SPCRAM;
 
   ResState(Voice0BufPtr);
   ResState(Voice1BufPtr);

@@ -44,7 +44,7 @@ ALIGN32
 ;spcBuffer times 65536*4 db 0      ; The buffer of brr blocks... 4 bits -> 16 bits
 ;spcRamcmp times 65536   db 0      ; SPC Ram compare buffer
 ;spcPrevbf times 65536   db 0      ; SPC PrevX compare buffer
-NEWSYM spcRam,   times 65472 db 0FFh  ; Pointer to the SPC's RAM
+NEWSYM SPCRAM,   times 65472 db 0FFh  ; Pointer to the SPC's RAM
 ; copy #1
 ; THE SPC ROM :)
    db 0CDh,0EFh,0BDh,0E8h,000h,0C6h,01Dh,0D0h,0FCh,08Fh,0AAh,0F4h,08Fh,0BBh,0F5h,078h
@@ -54,7 +54,7 @@ NEWSYM spcRam,   times 65472 db 0FFh  ; Pointer to the SPC's RAM
    db 0AAh,0BBh,0CCh,0DDh,0EEh,0FFh,000h,011h,022h,033h,044h,055h,066h,077h,088h,099h
 
 NEWSYM spcPCRam,
-         dd 0     ; Program Counter (with spcRam added)
+         dd 0     ; Program Counter (with SPCRAM added)
 NEWSYM spcA,
          db 0     ; The A register (general purpose)
          db 0
@@ -111,7 +111,7 @@ NEWSYM spcextraram, times 64 db 0 ; extra ram, used for tcall
 
 NEWSYM FutureExpandS,  times 256-64 db 0
 
-spcsave equ $-spcRam
+spcsave equ $-SPCRAM
 ; pharos equ hack *sigh*
 NEWSYM PHspcsave, dd spcsave
 
@@ -125,20 +125,20 @@ NEWSYM SPCROM
 SECTION .text
 
 %macro WriteByte 0
-  cmp ebx,0ffh+spcRam
+  cmp ebx,0ffh+SPCRAM
   ja %%extramem
-  cmp ebx,0f0h+spcRam
+  cmp ebx,0f0h+SPCRAM
   jb %%normalmem
-  sub ebx,spcRam
+  sub ebx,SPCRAM
   push dword %%finished
   jmp dword near [spcWptr+ebx*4-0f0h*4]
 ;  call dword near [spcWptr+ebx*4-0f0h*4]
 ;  jmp .finished
 %%extramem
-  cmp ebx,0ffc0h+spcRam
+  cmp ebx,0ffc0h+SPCRAM
   jb %%normalmem
-  mov [spcextraram+ebx-0FFC0h-spcRam],al
-  test byte[spcRam+0F1h],80h
+  mov [spcextraram+ebx-0FFC0h-SPCRAM],al
+  test byte[SPCRAM+0F1h],80h
   jnz %%finished
 ;  push ecx
 ;  mov cl,[DSPMem+06Ch]
@@ -151,21 +151,21 @@ SECTION .text
 %endmacro
 
 %macro ReadByte 0
-  cmp ebx,0f0h+spcRam
+  cmp ebx,0f0h+SPCRAM
   jb %%normalmem2
-  cmp ebx,0ffh+spcRam
+  cmp ebx,0ffh+SPCRAM
   ja %%normalmem
-  sub ebx,spcRam
+  sub ebx,SPCRAM
   push dword %%finished
   jmp dword near [spcRptr+ebx*4-0f0h*4]
 ;  call dword near [spcRptr+ebx*4-0f0h*4]
 ;  jmp .rfinished
 %%normalmem
-;  cmp ebx,0ffc0h+spcRam
+;  cmp ebx,0ffc0h+SPCRAM
 ;  jb .rnormalmem2
 ;  test byte[DSPMem+6Ch],10h
 ;  jz .rnormalmem2
-;  mov al,[spcextraram+ebx-0FFC0h-spcRam]
+;  mov al,[spcextraram+ebx-0FFC0h-SPCRAM]
 ;  jmp .rfinished
 %%normalmem2
    mov al,[ebx]
@@ -173,20 +173,20 @@ SECTION .text
 %endmacro
 
 %macro ReadByte2 0
-  cmp ebx,0f0h+spcRam
+  cmp ebx,0f0h+SPCRAM
   jb %%normalmem2
-  cmp ebx,0ffh+spcRam
+  cmp ebx,0ffh+SPCRAM
   ja %%normalmem
-  sub ebx,spcRam
+  sub ebx,SPCRAM
   call dword near [spcRptr+ebx*4-0f0h*4]
-  add ebx,spcRam
+  add ebx,SPCRAM
   jmp %%finished
 %%normalmem
-;  cmp ebx,0ffc0h+spcRam
+;  cmp ebx,0ffc0h+SPCRAM
 ;  jb .rnormalmem2
 ;  test byte[DSPMem+6Ch],10h
 ;  jz .rnormalmem2
-;  mov al,[spcextraram+ebx-0FFC0h-spcRam]
+;  mov al,[spcextraram+ebx-0FFC0h-SPCRAM]
 ;  jmp .rfinished
 %%normalmem2
    mov al,[ebx]
@@ -223,10 +223,10 @@ NEWSYM updatetimer
       jz .noin0
       dec byte[timinl0]
       jnz .noin0
-      inc byte[spcRam+0FDh]
+      inc byte[SPCRAM+0FDh]
       mov al,[timincr0]
       mov [timinl0],al
-      cmp byte[spcRam+0FDh],1
+      cmp byte[SPCRAM+0FDh],1
       jne .noin0
       cmp byte[spchalted],0
       jz .noin0
@@ -237,10 +237,10 @@ NEWSYM updatetimer
       jz .noin1
       dec byte[timinl1]
       jnz .noin1
-      inc byte[spcRam+0FEh]
+      inc byte[SPCRAM+0FEh]
       mov al,[timincr1]
       mov [timinl1],al
-      cmp byte[spcRam+0FEh],1
+      cmp byte[SPCRAM+0FEh],1
       jne .noin1
       cmp byte[spchalted+1],0
       jz .noin1
@@ -252,10 +252,10 @@ NEWSYM updatetimer
       jz near .noin2d2
       dec byte[timinl2]
       jnz .noin2
-      inc byte[spcRam+0FFh]
+      inc byte[SPCRAM+0FFh]
       mov al,[timincr2]
       mov [timinl2],al
-      cmp byte[spcRam+0FFh],1
+      cmp byte[SPCRAM+0FFh],1
       jne .noin2
       cmp byte[spchalted+2],0
       jz .noin2
@@ -264,10 +264,10 @@ NEWSYM updatetimer
 .noin2
       dec byte[timinl2]
       jnz .noin2b
-      inc byte[spcRam+0FFh]
+      inc byte[SPCRAM+0FFh]
       mov al,[timincr2]
       mov [timinl2],al
-      cmp byte[spcRam+0FFh],1
+      cmp byte[SPCRAM+0FFh],1
       jne .noin2b
       cmp byte[spchalted+2],0
       jz .noin2b
@@ -276,10 +276,10 @@ NEWSYM updatetimer
 .noin2b
       dec byte[timinl2]
       jnz .noin2c
-      inc byte[spcRam+0FFh]
+      inc byte[SPCRAM+0FFh]
       mov al,[timincr2]
       mov [timinl2],al
-      cmp byte[spcRam+0FFh],1
+      cmp byte[SPCRAM+0FFh],1
       jne .noin2c
       cmp byte[spchalted+2],0
       jz .noin2c
@@ -288,10 +288,10 @@ NEWSYM updatetimer
 .noin2c
       dec byte[timinl2]
       jnz .noin2d
-      inc byte[spcRam+0FFh]
+      inc byte[SPCRAM+0FFh]
       mov al,[timincr2]
       mov [timinl2],al
-      cmp byte[spcRam+0FFh],1
+      cmp byte[SPCRAM+0FFh],1
       jne .noin2d
       cmp byte[spchalted+2],0
       jz .noin2d
@@ -319,20 +319,20 @@ NEWSYM updatetimer
 ; SPC Write Registers
 ; DO NOT MODIFY DX OR ECX!
 NEWSYM SPCRegF0
-      mov [spcRam+0F0h],al
+      mov [SPCRAM+0F0h],al
       ret
 NEWSYM SPCRegF1
       cmp byte[disablespcclr],1
       je .No23Clear
       test al,10h
       jz .No01Clear
-      mov byte[spcRam+0F4h],0
-      mov byte[spcRam+0F5h],0
+      mov byte[SPCRAM+0F4h],0
+      mov byte[SPCRAM+0F5h],0
 .No01Clear
       test al,20h
       jz .No23Clear
-      mov byte[spcRam+0F6h],0
-      mov byte[spcRam+0F7h],0
+      mov byte[SPCRAM+0F6h],0
+      mov byte[SPCRAM+0F7h],0
 .No23Clear
       cmp byte[SPCSkipXtraROM],1
       je near .AfterNoROM
@@ -343,7 +343,7 @@ NEWSYM SPCRegF1
       xor eax,eax
 .loopa
       mov bl,[SPCROM+eax]
-      mov [spcRam+0FFC0h+eax],bl
+      mov [SPCRAM+0FFC0h+eax],bl
       inc eax
       cmp eax,040h
       jne .loopa
@@ -356,36 +356,36 @@ NEWSYM SPCRegF1
       xor eax,eax
 .loopb
       mov bl,[spcextraram+eax]
-      mov [spcRam+0FFC0h+eax],bl
+      mov [SPCRAM+0FFC0h+eax],bl
       inc eax
       cmp eax,040h
       jne .loopb
       pop ebx
       pop eax
 .AfterNoROM
-      mov [spcRam+0F1h],al
+      mov [SPCRAM+0F1h],al
       and al,0Fh
       mov [timeron],al
       ret
 NEWSYM SPCRegF2
-      mov [spcRam+0F2h],al
+      mov [SPCRAM+0F2h],al
       push eax
       push ebx
       xor eax,eax
-      mov al,[spcRam+0F2h]
+      mov al,[SPCRAM+0F2h]
       mov bl,[DSPMem+eax]
-      mov [spcRam+0F3h],bl
+      mov [SPCRAM+0F3h],bl
       pop ebx
       pop eax
       ret
 NEWSYM SPCRegF3
       push ebx
       xor ebx,ebx
-      mov bl,[spcRam+0F2h]
+      mov bl,[SPCRAM+0F2h]
       and bl,07fh
       call dword near [dspWptr+ebx*4]
       pop ebx
-      mov [spcRam+ebx],al
+      mov [SPCRAM+ebx],al
       ret
 NEWSYM SPCRegF4
       mov [reg1read],al
@@ -404,10 +404,10 @@ NEWSYM SPCRegF7
       inc dword[spc700read]
       ret
 NEWSYM SPCRegF8
-      mov [spcRam+ebx],al
+      mov [SPCRAM+ebx],al
       ret
 NEWSYM SPCRegF9
-      mov [spcRam+ebx],al
+      mov [SPCRAM+ebx],al
       ret
 NEWSYM SPCRegFA
       mov [timincr0],al
@@ -415,7 +415,7 @@ NEWSYM SPCRegFA
       jne .nowrite
       mov [timinl0],al
 .nowrite
-      mov [spcRam+ebx],al
+      mov [SPCRAM+ebx],al
       ret
 NEWSYM SPCRegFB
       mov [timincr1],al
@@ -423,7 +423,7 @@ NEWSYM SPCRegFB
       jne .nowrite
       mov [timinl1],al
 .nowrite
-      mov [spcRam+ebx],al
+      mov [SPCRAM+ebx],al
       ret
 NEWSYM SPCRegFC
       mov [timincr2],al
@@ -431,7 +431,7 @@ NEWSYM SPCRegFC
       jne .nowrite
       mov [timinl2],al
 .nowrite
-      mov [spcRam+ebx],al
+      mov [SPCRAM+ebx],al
       ret
 NEWSYM SPCRegFD
       ret
@@ -444,16 +444,16 @@ NEWSYM SPCRegFF
 ; DO NOT MODIFY ANY REG!
 ; return data true al
 NEWSYM RSPCRegF0
-      mov al,[spcRam+0f0h]
+      mov al,[SPCRAM+0f0h]
       ret
 NEWSYM RSPCRegF1
-      mov al,[spcRam+0f1h]
+      mov al,[SPCRAM+0f1h]
       ret
 NEWSYM RSPCRegF2
-      mov al,[spcRam+0f2h]
+      mov al,[SPCRAM+0f2h]
       ret
 NEWSYM RSPCRegF3
-      mov al,[spcRam+0f3h]
+      mov al,[SPCRAM+0f3h]
       ret
 
 %ifdef SPCDUMP
@@ -490,43 +490,43 @@ EXTSYM SPCSave_dump, SPCSave_handle, Write_File
 %endif
 
 NEWSYM RSPCRegF4
-      mov al,[spcRam+0f4h]
+      mov al,[SPCRAM+0f4h]
 %ifdef SPCDUMP
 	  spcdump 0
 %endif
       ret
 NEWSYM RSPCRegF5
-      mov al,[spcRam+0f5h]
+      mov al,[SPCRAM+0f5h]
 %ifdef SPCDUMP
 	  spcdump 1
 %endif
       ret
 NEWSYM RSPCRegF6
-      mov al,[spcRam+0f6h]
+      mov al,[SPCRAM+0f6h]
 %ifdef SPCDUMP
 	  spcdump 2
 %endif
       ret
 NEWSYM RSPCRegF7
-      mov al,[spcRam+0f7h]
+      mov al,[SPCRAM+0f7h]
 %ifdef SPCDUMP
 	  spcdump 3
 %endif
       ret
 NEWSYM RSPCRegF8
-      mov al,0 ;[spcRam+0f8h]
+      mov al,0 ;[SPCRAM+0f8h]
       ret
 NEWSYM RSPCRegF9
-      mov al,0 ;[spcRam+0f9h]
+      mov al,0 ;[SPCRAM+0f9h]
       ret
 NEWSYM RSPCRegFA
-      mov al,[spcRam+0fah]
+      mov al,[SPCRAM+0fah]
       ret
 NEWSYM RSPCRegFB
-      mov al,[spcRam+0fbh]
+      mov al,[SPCRAM+0fbh]
       ret
 NEWSYM RSPCRegFC
-      mov al,[spcRam+0fch]
+      mov al,[SPCRAM+0fch]
       ret
 
 %macro skipmacro 1
@@ -566,31 +566,31 @@ NEWSYM haltspc
       ret
 
 NEWSYM RSPCRegFD
-      mov al,[spcRam+0fdh]
+      mov al,[SPCRAM+0fdh]
       and al,0Fh
-      cmp byte[spcRam+0fdh],0
+      cmp byte[SPCRAM+0fdh],0
       je .spcnextskip
-      mov byte[spcRam+0fdh],0
+      mov byte[SPCRAM+0fdh],0
       mov byte[spcnumread],0
       ret
 	  skipmacro 0
 
 NEWSYM RSPCRegFE
-      mov al,[spcRam+0feh]
+      mov al,[SPCRAM+0feh]
       and al,0Fh
-      cmp byte[spcRam+0feh],0
+      cmp byte[SPCRAM+0feh],0
       je .spcnextskip
-      mov byte[spcRam+0feh],0
+      mov byte[SPCRAM+0feh],0
       mov byte[spcnumread+1],0
       ret
 	  skipmacro 1
 
 NEWSYM RSPCRegFF
-      mov al,[spcRam+0ffh]
+      mov al,[SPCRAM+0ffh]
       and al,0Fh
-      cmp byte[spcRam+0ffh],0
+      cmp byte[SPCRAM+0ffh],0
       je .spcnextskip
-      mov byte[spcRam+0ffh],0
+      mov byte[SPCRAM+0ffh],0
       mov byte[spcnumread+2],0
       ret
 	  skipmacro 2
@@ -799,13 +799,13 @@ NEWSYM Op2F       ; BRA rel      branch always                  ...
 ;  CLRP               20    1     2   clear direct page flag    ..0.....
 NEWSYM Op20       ; CLRP Clear direct page flag
       and byte[spcP],11011111b
-      mov dword[spcRamDP],spcRam
+      mov dword[spcRamDP],SPCRAM
       ret
 ;  SETP               40    1     2   set dorect page flag      ..1..0..
 NEWSYM Op40       ; SETP Set Direct Page Flag  (Also clear interupt flag?)
       or byte[spcP],00100000b
       and byte[spcP],11111011b
-      mov dword[spcRamDP],spcRam
+      mov dword[spcRamDP],SPCRAM
       add dword[spcRamDP],100h
       ret
 ;  CLRC               60    1     2   clear carry flag          .......0
@@ -1415,7 +1415,7 @@ NEWSYM OpC5       ; MOV labs,A   A -> (abs)           ........
       mov bx,[ebp]
       mov al, [spcA]
       add ebp,2
-      add ebx,spcRam
+      add ebx,SPCRAM
       WriteByte
       ret
 
@@ -1424,7 +1424,7 @@ NEWSYM OpD5       ; MOV labs+X,A A -> (abs+X)         ........
       add bx,[ebp]
       mov al, [spcA]
       add ebp,2
-      add ebx,spcRam
+      add ebx,SPCRAM
       WriteByte
       ret
 
@@ -1440,7 +1440,7 @@ NEWSYM OpD6       ; MOV labs+Y,A A -> (abs+Y)         ........
       mov al, [spcA]
       add bx,[ebp]
       add ebp,2
-      add ebx,spcRam
+      add ebx,SPCRAM
       WriteByte
       ret
 
@@ -1452,7 +1452,7 @@ NEWSYM OpC7       ; MOV (dp+X),A A -> ((dp+X+1)(dp+X))     ........
       inc ebp
       mov ax, [ebx]
       mov ebx,eax
-      add ebx,spcRam
+      add ebx,SPCRAM
       mov al, [spcA]
       WriteByte
       ret
@@ -1465,7 +1465,7 @@ NEWSYM OpD7       ; MOV (dp)+Y,A A -> ((dp+1)(dp)+Y)       ........
       mov ax, [ebx]
       add ax,[spcY]
       mov ebx,eax
-      add ebx,spcRam
+      add ebx,SPCRAM
       mov al, [spcA]
       WriteByte
       ret
@@ -1495,13 +1495,13 @@ NEWSYM OpC9       ; MOV labs,X   X -> (abs)                ........
       mov bx,[ebp]
       mov al, [spcX]
       add ebp,2
-      add ebx,spcRam
+      add ebx,SPCRAM
       WriteByte
       ret
 
 NEWSYM OpE9       ; MOV X,labs   X <- (abs)                N......Z
       mov bx,[ebp]
-      add ebx,spcRam
+      add ebx,SPCRAM
       ReadByte
       add ebp,2
       mov [spcX], al
@@ -1567,13 +1567,13 @@ NEWSYM OpCC       ; MOV labs,Y   Y -> (abs)                ........
       mov bx,[ebp]
       mov al, [spcY]
       add ebp,2
-      add ebx,spcRam
+      add ebx,SPCRAM
       WriteByte
       ret
 
 NEWSYM OpEC       ; MOV Y,labs   Y <- (abs)                N......Z
       mov bx,[ebp]
-      add ebx,spcRam
+      add ebx,SPCRAM
       ReadByte
       add ebp,2
       mov [spcY],al
@@ -1677,7 +1677,7 @@ NEWSYM OpAD       ; CMP Y,#inm   Y-inm                   N......ZC
 NEWSYM Op1E       ; CMP X,labs   X-(abs)                 N......ZC
       mov bx,[ebp]
       add ebp,2
-      add ebx,spcRam
+      add ebx,SPCRAM
       ReadByte
       cmp byte[spcX], al
       cmc
@@ -1694,7 +1694,7 @@ NEWSYM Op3E       ; CMP X,dp     X-(dp)                  N......ZC
 
 NEWSYM Op5E       ; CMP Y,labs   Y-(abs)                 N......ZC
       mov bx,[ebp]
-      add ebx,spcRam
+      add ebx,SPCRAM
       ReadByte
       add ebp,2
       cmp byte[spcY], al
@@ -1887,7 +1887,7 @@ NEWSYM OpDAb
 ;      shr bx,3
 ;      and cl,00000111b
 
-      add ebx,spcRam
+      add ebx,SPCRAM
       ReadByte
       shr al,cl
       and al,01h
@@ -1917,7 +1917,7 @@ NEWSYM Op4A       ; AND1 C,mem.bit  C <- C AND (mem.bit)      ........C
 ;      shr bx,3
 ;      and cl,00000111b
 
-      add ebx,spcRam
+      add ebx,SPCRAM
       ReadByte
       shr al,cl
       or al,0FEh
@@ -1937,7 +1937,7 @@ NEWSYM Op6A       ; AND1 C,/mem.bit C <- C AND !(mem.bit)     ........C
 ;      shr bx,3
 ;      and cl,00000111b
 
-      add ebx,spcRam
+      add ebx,SPCRAM
       ReadByte
       shr al,cl
       or al,0FEh
@@ -1974,7 +1974,7 @@ NEWSYM OpCA       ; MOV1 mem.bit,C  C -> (mem.bit)            .........
       and al,01h
       add ebp,2
       shl al,cl
-      add ebx,spcRam
+      add ebx,SPCRAM
       ; al = carry flag positioned in correct location, ah = 1 positioned
       mov cl,al
       xor ah,0FFh
@@ -1999,7 +1999,7 @@ NEWSYM OpEA       ; NOT1 mem.bit    complement (mem.bit)      .........
 
       shl ah,cl
       add ebp,2
-      add ebx,spcRam
+      add ebx,SPCRAM
       ReadByte2
       xor al,ah
       WriteByte
@@ -2053,7 +2053,7 @@ NEWSYM Op5B       ; LSR dp+X  0 >> (dp+X) <<C       N......ZC
 
 NEWSYM Op0C       ; ASL labs  C << (abs)  <<0       N......ZC
       mov bx,[ebp]
-      add ebx,spcRam
+      add ebx,SPCRAM
       add ebp,2
       ReadByte2
       shl al,1
@@ -2063,7 +2063,7 @@ NEWSYM Op0C       ; ASL labs  C << (abs)  <<0       N......ZC
 
 NEWSYM Op4C       ; LSR labs  0 >> (abs)  <<C       N......ZC
       mov bx,[ebp]
-      add ebx,spcRam
+      add ebx,SPCRAM
       add ebp,2
       ReadByte2
       shr al,1
@@ -2179,7 +2179,7 @@ NEWSYM Op7Bb
 
 NEWSYM Op2C       ; ROL labs  C << (abs)  <<C       N......ZC
       mov bx,[ebp]
-      add ebx,spcRam
+      add ebx,SPCRAM
       add ebp,2
       test byte[spcP],01h
       jnz near Op2Cb
@@ -2197,7 +2197,7 @@ NEWSYM Op2Cb
 
 NEWSYM Op6C       ; ROR labs  C >> (abs)  <<C       N......ZC
       mov bx,[ebp]
-      add ebx,spcRam
+      add ebx,SPCRAM
       add ebp,2
       test byte[spcP],01h
       jnz near Op6Cb
@@ -2315,7 +2315,7 @@ NEWSYM OpBB       ; INC dp+X  ++ (dp+X)             N......Z.
 
 NEWSYM Op8C       ; DEC labs  -- (abs)              N......Z.
       mov bx,[ebp]
-      add ebx,spcRam
+      add ebx,SPCRAM
       add ebp,2
       ReadByte2
       dec al
@@ -2325,7 +2325,7 @@ NEWSYM Op8C       ; DEC labs  -- (abs)              N......Z.
 
 NEWSYM OpAC       ; INC labs  ++ (abs)              N......Z.
       mov bx,[ebp]
-      add ebx,spcRam
+      add ebx,SPCRAM
       add ebp,2
       ReadByte2
       inc al
@@ -2382,45 +2382,45 @@ NEWSYM Op0D       ; PUSH PSW     push PSW to stack       .........
       cmp byte[spcNZ],0
       je .ZeroSet
       dec byte[spcS]
-      mov [spcRam+eax],bl
+      mov [SPCRAM+eax],bl
       ret
 .NegSet
       or bl,80h
       dec byte[spcS]
-      mov [spcRam+eax],bl
+      mov [SPCRAM+eax],bl
       ret
 .ZeroSet
       or bl,02h
       dec byte[spcS]
-      mov [spcRam+eax],bl
+      mov [SPCRAM+eax],bl
       ret
 
 NEWSYM Op2D       ; PUSH A       push A to stack         .........
       mov eax,[spcS]
       mov bl,[spcA]
       dec byte[spcS]
-      mov [spcRam+eax],bl
+      mov [SPCRAM+eax],bl
       ret
 
 NEWSYM Op4D       ; PUSH X       push X to stack         .........
       mov eax,[spcS]
       mov bl,[spcX]
       dec byte[spcS]
-      mov [spcRam+eax],bl
+      mov [SPCRAM+eax],bl
       ret
 
 NEWSYM Op6D       ; PUSH Y    push Y to stack         .........
       mov eax,[spcS]
       mov bl,[spcY]
       dec byte[spcS]
-      mov [spcRam+eax],bl
+      mov [SPCRAM+eax],bl
       ret
 
 NEWSYM Op8E       ; POP PSW   pop PSW from stack     (Restored)
       inc byte[spcS]
       mov eax,[spcS]
       mov byte[spcNZ],0
-      mov bl,[spcRam+eax]
+      mov bl,[SPCRAM+eax]
       mov [spcP],bl
       test byte[spcP],2
       jnz .ZeroYes
@@ -2430,7 +2430,7 @@ NEWSYM Op8E       ; POP PSW   pop PSW from stack     (Restored)
       or byte[spcNZ],80h
 .NoNeg
 .ZeroYes
-      mov dword[spcRamDP],spcRam
+      mov dword[spcRamDP],SPCRAM
       test byte[spcP],32
       jnz .setpage1
       ret
@@ -2441,21 +2441,21 @@ NEWSYM Op8E       ; POP PSW   pop PSW from stack     (Restored)
 NEWSYM OpAE       ; POP A     pop A from stack        .........
       inc byte[spcS]
       mov eax,[spcS]
-      mov bl,[spcRam+eax]
+      mov bl,[SPCRAM+eax]
       mov [spcA],bl
       ret
 
 NEWSYM OpCE       ; POP X     pop X from stack        .........
       inc byte[spcS]
       mov eax,[spcS]
-      mov bl,[spcRam+eax]
+      mov bl,[SPCRAM+eax]
       mov [spcX],bl
       ret
 
 NEWSYM OpEE       ; POP Y     pop Y from stack        .........
       inc byte[spcS]
       mov eax,[spcS]
-      mov bl,[spcRam+eax]
+      mov bl,[SPCRAM+eax]
       mov [spcY],bl
       ret
 
@@ -2465,7 +2465,7 @@ NEWSYM OpEE       ; POP Y     pop Y from stack        .........
 
 NEWSYM Op0E       ; TSET1 labs   test and set bits with A   N......Z.
       mov bx,[ebp]
-      add ebx,spcRam
+      add ebx,SPCRAM
       add ebp,2
       ReadByte2
       mov ah,al
@@ -2566,8 +2566,8 @@ NEWSYM Op1F       ; JMP (labs+X)    PC <- (abs+X+1)(abs+X)         ...
       add bx,[spcX]
       xor eax,eax
       add ebp,2
-      mov ax, [spcRam+ebx]
-      mov ebp,spcRam
+      mov ax,[SPCRAM+ebx]
+      mov ebp,SPCRAM
       add ebp,eax
       ret
 
@@ -2575,16 +2575,16 @@ NEWSYM Op3F       ; CALL labs    subroutine call          ........
       ; calculate PC
       mov ecx,ebp
       add ecx,2
-      sub ecx,spcRam
+      sub ecx,SPCRAM
       mov eax,[spcS]
-      mov [spcRam+eax],ch
+      mov [SPCRAM+eax],ch
       dec byte[spcS]
       mov eax,[spcS]
-      mov [spcRam+eax],cl
+      mov [SPCRAM+eax],cl
       dec byte[spcS]
       ; set new PC
       mov cx,[ebp]
-      add ecx,spcRam
+      add ecx,SPCRAM
       mov ebp,ecx
       xor ecx,ecx
       ret
@@ -2593,17 +2593,17 @@ NEWSYM Op4F       ; PCALL upage  upage call               ........
       ; calculate PC
       mov ecx,ebp
       inc ecx
-      sub ecx,spcRam
+      sub ecx,SPCRAM
       mov eax,[spcS]
-      mov [spcRam+eax],ch
+      mov [SPCRAM+eax],ch
       dec byte[spcS]
       mov eax,[spcS]
-      mov [spcRam+eax],cl
+      mov [SPCRAM+eax],cl
       dec byte[spcS]
       ; set new PC
       xor ecx,ecx
       mov cl,[ebp]
-      add ecx,spcRam
+      add ecx,SPCRAM
       add ecx,0ff00h
       mov ebp,ecx
       xor ecx,ecx
@@ -2614,7 +2614,7 @@ NEWSYM Op4F       ; PCALL upage  upage call               ........
 NEWSYM Op5F       ; JMP labs     jump to new location           ...
       mov bx,[ebp]
       add ebp,2
-      mov ebp,spcRam
+      mov ebp,SPCRAM
       add ebp,ebx
       ret
 
@@ -2622,11 +2622,11 @@ NEWSYM Op6F       ; ret          ret from subroutine   ........
       xor ecx,ecx
       inc byte[spcS]
       mov eax,[spcS]
-      mov cl,[spcRam+eax]
+      mov cl,[SPCRAM+eax]
       inc byte[spcS]
       mov eax,[spcS]
-      mov ch,[spcRam+eax]
-      add ecx,spcRam
+      mov ch,[SPCRAM+eax]
+      add ecx,SPCRAM
       mov ebp,ecx
       xor ecx,ecx
       ret
@@ -2637,7 +2637,7 @@ NEWSYM Op7F       ; ret1         return from interrupt   (Restored)
       xor ecx,ecx
       inc byte[spcS]
       mov eax,[spcS]
-      mov cl,[spcRam+eax]
+      mov cl,[SPCRAM+eax]
       mov [spcP],cl
       test byte[spcP],80h
       jz .NoNeg
@@ -2652,14 +2652,14 @@ NEWSYM Op7F       ; ret1         return from interrupt   (Restored)
 .YesZero
       inc byte[spcS]
       mov eax,[spcS]
-      mov cl,[spcRam+eax]
+      mov cl,[SPCRAM+eax]
       inc byte[spcS]
       mov eax,[spcS]
-      mov ch,[spcRam+eax]
-      add ecx,spcRam
+      mov ch,[SPCRAM+eax]
+      add ecx,SPCRAM
       mov ebp,ecx
       ; set direct page
-      mov dword[spcRamDP],spcRam
+      mov dword[spcRamDP],SPCRAM
       test byte[spcP],32
       jz .nodp
       add dword[spcRamDP],100h
