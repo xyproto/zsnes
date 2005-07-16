@@ -180,14 +180,14 @@ SECTION .text
 NEWSYM Open_File
     pushad
     mov dword[ZOpenMode],0
-    mov dword[ZOpenFileName],edx
+    mov [ZOpenFileName],edx
     call ZOpenFile
     cmp eax,0FFFFFFFFh
     je .error
     mov [TempHandle],eax
     mov dword[ZFileSeekMode],0
     mov dword[ZFileSeekPos],0
-    mov dword[ZFileSeekHandle],eax
+    mov [ZFileSeekHandle],eax
     call ZFileSeek
     popad
     mov ax,[TempHandle]
@@ -201,14 +201,14 @@ NEWSYM Open_File
 NEWSYM Open_File_Write
     pushad
     mov dword[ZOpenMode],2
-    mov dword[ZOpenFileName],edx
+    mov [ZOpenFileName],edx
     call ZOpenFile
     cmp eax,0FFFFFFFFh
     je .error
     mov [TempHandle],eax
     mov dword[ZFileSeekMode],0
     mov dword[ZFileSeekPos],0
-    mov dword[ZFileSeekHandle],eax
+    mov [ZFileSeekHandle],eax
     call ZFileSeek
     popad
     mov ax,[TempHandle]
@@ -222,7 +222,7 @@ NEWSYM Open_File_Write
 NEWSYM Create_File
     pushad
     mov dword[ZOpenMode],1
-    mov dword[ZOpenFileName],edx
+    mov [ZOpenFileName],edx
     call ZOpenFile
     cmp eax,0FFFFFFFFh
     je .error
@@ -285,11 +285,11 @@ NEWSYM Close_File
     ret
 
 NEWSYM File_Seek
-    mov word[ZFileSeekPos+2],cx
-    mov word[ZFileSeekPos],dx
+    mov [ZFileSeekPos+2],cx
+    mov [ZFileSeekPos],dx
     mov dword[ZFileSeekMode],0
     mov dword[ZFileSeekHandle],0
-    mov word[ZFileSeekHandle],bx
+    mov [ZFileSeekHandle],bx
     pushad
     call ZFileSeek
     popad
@@ -298,13 +298,13 @@ NEWSYM File_Seek
     ret
 
 NEWSYM File_Seek_End
-    mov word[ZFileSeekPos+2],cx
-    mov word[ZFileSeekPos],dx
+    mov [ZFileSeekPos+2],cx
+    mov [ZFileSeekPos],dx
     mov dword[ZFileSeekHandle],0
-    mov word[ZFileSeekHandle],bx
+    mov [ZFileSeekHandle],bx
     mov dword[ZFileSeekMode],1
     mov dword[ZFileTellHandle],0
-    mov word[ZFileTellHandle],bx
+    mov [ZFileTellHandle],bx
     pushad
     call ZFileSeek
     call ZFileTell
@@ -673,10 +673,10 @@ NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
    mov al,[cvidmode]
    cmp byte[GUIWFVID+eax],0
    je .prevwinmode
-   mov byte[PrevFSMode],al
+   mov [PrevFSMode],al
    jmp .doneprevmode
 .prevwinmode
-   mov byte[PrevWinMode],al
+   mov [PrevWinMode],al
 .doneprevmode
 
    cmp dword[firstvideo],1
@@ -1076,9 +1076,9 @@ NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
     cmp byte[DSPDisable],1
     je .nosound
     mov eax,256         ; Size
-    mov dword[BufferSizeB],eax
+    mov [BufferSizeB],eax
     add eax,eax
-    mov dword[BufferSizeW],eax
+    mov [BufferSizeW],eax
     pushad
     call ProcessSoundBuffer
     popad
@@ -1131,14 +1131,14 @@ InitializeGfxStuff:
 .shrr
         shr bx,1
 .shlr
-        mov word[vesa2_rfull],bx
+        mov [vesa2_rfull],bx
         add al,5
         mov bx,1
         mov cl,al
         shl bx,cl
-        mov word[vesa2_rtrcl],bx
+        mov [vesa2_rtrcl],bx
         xor bx,0FFFFh
-        mov word[vesa2_rtrcla],bx
+        mov [vesa2_rtrcla],bx
 
         ; Process Green Stuff
         mov al,[BitPosG]
@@ -1162,14 +1162,14 @@ InitializeGfxStuff:
 .shrg
         shr bx,1
 .shlg
-        mov word[vesa2_gfull],bx
+        mov [vesa2_gfull],bx
         add al,5
         mov bx,1
         mov cl,al
         shl bx,cl
-        mov word[vesa2_gtrcl],bx
+        mov [vesa2_gtrcl],bx
         xor bx,0FFFFh
-        mov word[vesa2_gtrcla],bx
+        mov [vesa2_gtrcla],bx
 
         ; Process Blue Stuff
         mov al,[BitPosB]
@@ -1193,14 +1193,14 @@ InitializeGfxStuff:
 .shrb
         shr bx,1
 .shlb
-        mov word[vesa2_bfull],bx
+        mov [vesa2_bfull],bx
         add al,5
         mov bx,1
         mov cl,al
         shl bx,cl
-        mov word[vesa2_btrcl],bx
+        mov [vesa2_btrcl],bx
         xor bx,0FFFFh
-        mov word[vesa2_btrcla],bx
+        mov [vesa2_btrcla],bx
 
         xor word[vesa2_clbit],0FFFFh
         call genfulladdtab

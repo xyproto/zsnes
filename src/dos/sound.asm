@@ -737,7 +737,7 @@ NEWSYM InitSB
     jbe .okay
     mov eax,2
 .okay
-    mov al,byte[SoundSpeedt+eax]
+    mov al,[SoundSpeedt+eax]
     call SB_dsp_write
     ; Set Stereo
     mov dx, [SBPort]
@@ -751,7 +751,7 @@ NEWSYM InitSB
     jmp .donestereo
 .nostereo8b
     mov eax,[SoundQuality]
-    mov al,byte[SoundSpeeds+eax]
+    mov al,[SoundSpeeds+eax]
     call SB_dsp_write
 .donestereo
 
@@ -891,12 +891,12 @@ SECTION .text
     call SB_dsp_write
     push ecx
     mov ecx,[SoundQuality]
-    mov al,byte[SBToSPCSpeeds2+ecx*4+1]
+    mov al,[SBToSPCSpeeds2+ecx*4+1]
     pop ecx
     call SB_dsp_write
     push ecx
     mov ecx,[SoundQuality]
-    mov al,byte[SBToSPCSpeeds2+ecx*4]
+    mov al,[SBToSPCSpeeds2+ecx*4]
     pop ecx
     call SB_dsp_write
 
@@ -938,7 +938,7 @@ SECTION .text
 
     push ecx
     mov ecx,[SoundQuality]
-    mov al,byte[SoundSpeeds+ecx]
+    mov al,[SoundSpeeds+ecx]
     pop ecx
     call SB_dsp_write
 
@@ -1055,12 +1055,12 @@ SECTION .text
     call SB_dsp_write
     push ecx
     mov ecx,[SoundQuality]
-    mov al,byte[SBToSPCSpeeds2+ecx*4+1]
+    mov al,[SBToSPCSpeeds2+ecx*4+1]
     pop ecx
     call SB_dsp_write
     push ecx
     mov ecx,[SoundQuality]
-    mov al,byte[SBToSPCSpeeds2+ecx*4]
+    mov al,[SBToSPCSpeeds2+ecx*4]
     pop ecx
     call SB_dsp_write
 

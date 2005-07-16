@@ -80,7 +80,7 @@
       xor eax,eax
       add ebx,[spcRamDP]
       inc ebp
-      mov ax, word[ebx]
+      mov ax, [ebx]
       mov ebx,eax
       add ebx,spcRam
       ReadByte

@@ -563,7 +563,7 @@ NEWSYM reg303Cw       ; RAMBR (Ram bank register)
     mov bl,al
     shl ebx,16
     add ebx,[sfxramdata]
-    mov dword[SfxRAMMem],ebx
+    mov [SfxRAMMem],ebx
     ret
 NEWSYM reg303Dw       ; Unused
     ret

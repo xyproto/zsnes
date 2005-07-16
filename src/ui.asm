@@ -371,7 +371,7 @@ SECTION .text
     pop ebx
     cmp eax,0
     je near %3
-    mov ebx,dword[cmemallocptr]
+    mov ebx,[cmemallocptr]
     add dword[cmemallocptr],4
     mov [ebx],eax
     and eax,0FFFFFFE0h
@@ -392,7 +392,7 @@ SECTION .text
     pop eax
     cmp eax,0
     je %%nomalloc
-    mov ebx,dword[cmemallocptr]
+    mov ebx,[cmemallocptr]
     add dword[cmemallocptr],4
     mov [ebx],eax
 %%nomalloc
@@ -444,10 +444,10 @@ NEWSYM allocptr
     mov eax,[vbufaptr]
     and eax,0FFFFFFF8h
     add eax,8
-    mov dword[vidbuffer],eax
-    mov dword[vidbufferofsa],eax
+    mov [vidbuffer],eax
+    mov [vidbufferofsa],eax
     add eax,75036
-    mov dword[vidbufferofsmos],eax
+    mov [vidbufferofsmos],eax
 
     mov eax,[ngwinptrb]
     and eax,0FFFFFFF8h
@@ -457,20 +457,20 @@ NEWSYM allocptr
     mov eax,[vbufeptr]
     and eax,0FFFFFFF8h
     add eax,8
-    mov dword[vidbufferofsb],eax
+    mov [vidbufferofsb],eax
 
     mov eax,[vbufdptr]
     and eax,0FFFFFFF8h
     add eax,8
-    mov dword[vidbufferofsc],eax
+    mov [vidbufferofsc],eax
 
     mov eax,[romaptr]
     and eax,0FFFFFFF8h
     add eax,8
-    mov dword[headdata],eax
-    mov dword[romdata],eax
+    mov [headdata],eax
+    mov [romdata],eax
     add eax,4194304
-    mov dword[sfxramdata],eax
+    mov [sfxramdata],eax
     mov dword[setaramdata],eax	; share ram data with sfx
     mov esi,[romdata]
     cmp byte[Sup48mbit],0
@@ -503,17 +503,17 @@ NEWSYM allocptr
     mov eax,vcache2ba
     and eax,0FFFFFFF8h
     add eax,8
-    mov dword[vcache2b],eax
+    mov [vcache2b],eax
     ; 4-bit = 128k
     mov eax,vcache4ba
     and eax,0FFFFFFF8h
     add eax,8
-    mov dword[vcache4b],eax
+    mov [vcache4b],eax
     ; 8 bit = 64k
     mov eax,vcache8ba
     and eax,0FFFFFFF8h
     add eax,8
-    mov dword[vcache8b],eax
+    mov [vcache8b],eax
     ret
 
 ;*******************************************************
@@ -660,7 +660,7 @@ NEWSYM makeextension
     inc ebx
     mov byte[fnames+ebx],'m'
     mov byte[fnamest+ebx],'t'
-    mov dword[statefileloc],ebx
+    mov [statefileloc],ebx
     inc ebx
     mov byte[fnames+ebx],0
     mov byte[fnamest+ebx],0
@@ -757,7 +757,7 @@ NEWSYM tparms
 .donestring
     test byte[.numparam],0FFh
     jz .nochars
-    mov al,byte[filefound]
+    mov al,[filefound]
     test al,0FFh
     jz .nostring
     ret

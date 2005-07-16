@@ -302,7 +302,7 @@ reg2101w:
     cmp byte[prevoamptr],al
     je near .noproc
 .noskip
-    mov byte[prevoamptr],al
+    mov [prevoamptr],al
     xor ebx,ebx
     mov bl,al
     and bl,03h
@@ -638,21 +638,21 @@ reg210Cw:
 ; BG1 horizontal scroll register
 reg210Dw:
     xor ebx,ebx
-    mov byte[bg1scrolx],al
+    mov [bg1scrolx],al
     shl word[bg1scrolx],8
     mov bl,[bgscroltemp]
     add word[bg1scrolx],bx
-    mov byte[bgscroltemp],al
+    mov [bgscroltemp],al
     ret
 
 ; BG1 vertical scroll register
 reg210Ew:
     xor ebx,ebx
-    mov byte[bg1scroly],al
+    mov [bg1scroly],al
     shl word[bg1scroly],8
     mov bl,[bgscroltemp]
     add word[bg1scroly],bx
-    mov byte[bgscroltemp],al
+    mov [bgscroltemp],al
     ret
 
 SECTION .bss
@@ -662,31 +662,31 @@ SECTION .text
 ; BG2 horizontal scroll register
 reg210Fw:
     xor ebx,ebx
-    mov byte[bg2scrolx],al
+    mov [bg2scrolx],al
     shl word[bg2scrolx],8
     mov bl,[bgscroltemp]
     add word[bg2scrolx],bx
-    mov byte[bgscroltemp],al
+    mov [bgscroltemp],al
     ret
 
 ; BG2 vertical scroll register
 reg2110w:
     xor ebx,ebx
-    mov byte[bg2scroly],al
+    mov [bg2scroly],al
     shl word[bg2scroly],8
     mov bl,[bgscroltemp]
     add word[bg2scroly],bx
-    mov byte[bgscroltemp],al
+    mov [bgscroltemp],al
     ret
 
 ; BG3 horizontal scroll register
 reg2111w:
     xor ebx,ebx
-    mov byte[bg3scrolx],al
+    mov [bg3scrolx],al
     shl word[bg3scrolx],8
     mov bl,[bgscroltemp]
     add word[bg3scrolx],bx
-    mov byte[bgscroltemp],al
+    mov [bgscroltemp],al
     ret
 
 section .data
@@ -697,31 +697,31 @@ section .text
 ; BG3 vertical scroll register
 reg2112w:
     xor ebx,ebx
-    mov byte[bg3scroly],al
+    mov [bg3scroly],al
     shl word[bg3scroly],8
     mov bl,[bgscroltemp]
     add word[bg3scroly],bx
-    mov byte[bgscroltemp],al
+    mov [bgscroltemp],al
     ret
 
 ; BG4 horizontal scroll register
 reg2113w:
     xor ebx,ebx
-    mov byte[bg4scrolx],al
+    mov [bg4scrolx],al
     shl word[bg4scrolx],8
     mov bl,[bgscroltemp]
     add word[bg4scrolx],bx
-    mov byte[bgscroltemp],al
+    mov [bgscroltemp],al
     ret
 
 ; BG4 vertical scroll register
 reg2114w:
     xor ebx,ebx
-    mov byte[bg4scroly],al
+    mov [bg4scroly],al
     shl word[bg4scroly],8
     mov bl,[bgscroltemp]
     add word[bg4scroly],bx
-    mov byte[bgscroltemp],al
+    mov [bgscroltemp],al
     ret
 
 ; Video port control
@@ -803,7 +803,7 @@ reg2115w:
 ; Video port address (Low)
 reg2116w:
     shr word[vramaddr],1
-    mov byte[vramaddr],al
+    mov [vramaddr],al
     shl word[vramaddr],1
     mov byte[vramread],0
     ret
@@ -811,7 +811,7 @@ reg2116w:
 ; Video port address (High)
 reg2117w:
     shr word[vramaddr],1
-    mov byte[vramaddr+1],al
+    mov [vramaddr+1],al
     shl word[vramaddr],1
     mov byte[vramread],0
 
@@ -1220,7 +1220,7 @@ reg2140w:
     jne .n
     mov byte[nmirept],0
 .n
-    mov byte[spcRam+0F4h],al
+    mov [spcRam+0F4h],al
     inc dword[SPC700write]
     reenablespc
     ret
@@ -1234,7 +1234,7 @@ reg2140w:
 ; Sound Register #2
 reg2141w:
     mov byte[sndwrit],1
-    mov byte[spcRam+0F5h],al
+    mov [spcRam+0F5h],al
     inc dword[SPC700write]
     reenablespc
     ret
@@ -1248,7 +1248,7 @@ reg2141w:
 ; Sound Register #3
 reg2142w:
     mov byte[sndwrit],1
-    mov byte[spcRam+0F6h],al
+    mov [spcRam+0F6h],al
     inc dword[SPC700write]
     reenablespc
     ret
@@ -1262,7 +1262,7 @@ reg2142w:
 ; Sound Register #4
 reg2143w:
     mov byte[sndwrit],1
-    mov byte[spcRam+0F7h],al
+    mov [spcRam+0F7h],al
     inc dword[SPC700write]
     reenablespc
     ret
@@ -1284,19 +1284,19 @@ reg2180w:
 
 ; WRAM data register (low byte)
 reg2181w:
-    mov byte[wramrwadr],al
+    mov [wramrwadr],al
     ret
 
 ; WRAM data register (middle byte)
 reg2182w:
-    mov byte[wramrwadr+1],al
+    mov [wramrwadr+1],al
     ret
 
 ; WRAM data register (high byte)
 reg2183w:
     mov bl,al
     and bl,01h
-    mov byte[wramrwadr+2],bl
+    mov [wramrwadr+2],bl
     ret
 
 ; Joystick 1 & 2 status bytes
@@ -1371,7 +1371,7 @@ reg4017w:
 
 ; Counter enable
 reg4200w:
-    mov byte[INTEnab],al
+    mov [INTEnab],al
     ret
 
 ; Programmable I/O port (out-port)
@@ -1388,7 +1388,7 @@ reg4201w:
     jz .nolatch
     mov byte[iohvlatch],1
 .nolatch
-    mov byte[ioportval],al
+    mov [ioportval],al
     mov bl,al
     and bl,80h
     and byte[MultiTapStat],07Fh
@@ -1551,22 +1551,22 @@ reg420Dw:
     jnz .speed358
     ; 2.68 Mhz
     mov al,[opexec268]
-    mov byte[cycpl],al      ; 2.68 Mhz
+    mov [cycpl],al      ; 2.68 Mhz
     mov al,[opexec268cph]
-    mov byte[cycphb],al     ; 2.68 Mhz
+    mov [cycphb],al     ; 2.68 Mhz
     and byte[xirqb],00h
     mov bl,[cycpb268]
-    mov byte[cycpblt],bl  ; percentage of CPU/SPC to run
+    mov [cycpblt],bl  ; percentage of CPU/SPC to run
     ret
 .speed358
     ; 3.58 Mhz
     mov al,[opexec358]
-    mov byte[cycpl],al      ; 3.58 Mhz
+    mov [cycpl],al      ; 3.58 Mhz
     mov al,[opexec358cph]
-    mov byte[cycphb],al     ; 3.58 Mhz
+    mov [cycphb],al     ; 3.58 Mhz
     or byte[xirqb],80h
     mov bl,[cycpb358]
-    mov byte[cycpblt],bl  ; percentage of CPU/SPC to run
+    mov [cycpblt],bl  ; percentage of CPU/SPC to run
     ret
 
 ; ???

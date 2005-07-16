@@ -74,7 +74,7 @@ NEWSYM setaaccessbankw16
     mov [ebx],al
     jmp short .nosetenablew16
 .nowrapw16
-    mov word[ebx+ecx],ax
+    mov [ebx+ecx],ax
     cmp byte[ebx+021h], 80h
     jnz .nosetenablew16
     pushad

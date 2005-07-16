@@ -36,7 +36,7 @@ EXTSYM ngcwinptr,domosaicng,pesimpng,mode7hr,BGMA,mode7ab,mode7cd,BG1SYl,BG1SXl
 %macro Mode7Normal 0
     or dl,dl
     jz %%nodrawb
-    mov byte[esi],dl
+    mov [esi],dl
 %%nodrawb
     inc esi
 %endmacro
@@ -46,7 +46,7 @@ EXTSYM ngcwinptr,domosaicng,pesimpng,mode7hr,BGMA,mode7ab,mode7cd,BG1SYl,BG1SXl
     jz %%nodrawbw
     test byte[ebp],0FFh
     jnz %%nodrawbw
-    mov byte[esi],dl
+    mov [esi],dl
 %%nodrawbw
     inc esi
     inc ebp
@@ -667,13 +667,13 @@ NEWSYM ProcessMode7ngwin
     cmp ecx,[ngwleft]
     jae .alldisplay
     sub [ngwleft],ecx
-    mov dword[ngwleftb],ecx
+    mov [ngwleftb],ecx
     xor ecx,ecx
     mov eax,[mode7xrpos]
     ret
 .alldisplay
     mov ecx,[ngwleft]
-    mov dword[ngwleftb],ecx
+    mov [ngwleftb],ecx
     mov dword[ngwleft],0
     xor ecx,ecx
     mov eax,[mode7xrpos]
@@ -712,13 +712,13 @@ NEWSYM ProcessMode7ngwinC
     cmp ecx,[ngwleft]
     jae .alldisplay
     sub [ngwleft],ecx
-    mov dword[ngwleftb],ecx
+    mov [ngwleftb],ecx
     xor ecx,ecx
     mov eax,[mode7xpos]
     ret
 .alldisplay
     mov ecx,[ngwleft]
-    mov dword[ngwleftb],ecx
+    mov [ngwleftb],ecx
     mov dword[ngwleft],0
     xor ecx,ecx
     mov eax,[mode7xpos]
@@ -750,7 +750,7 @@ NEWSYM ProcessMode7ngwinD
     ret
 
 %macro newvaluepred 2
-    mov dx,word[%1+ebx*4+8]
+    mov dx,[%1+ebx*4+8]
     cmp dx,word[%1+ebx*4]
     je %%nodivide
     cmp byte[BGMA+ebx+2],7

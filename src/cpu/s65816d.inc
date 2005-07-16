@@ -420,7 +420,7 @@ NEWSYM Sjoinflags
     or bx,word[stackor]
     mov [SA1xs],bx
     xor bh,bh
-    mov bl,byte[xirqb]
+    mov bl,[xirqb]
     mov [SA1xpb],bl
     xor eax,eax
     mov ax,[brkv]
@@ -564,7 +564,7 @@ BRKemulmode
     mov [SA1xs],cx
 
     xor bh,bh
-    mov bl,byte[xirqb]
+    mov bl,[xirqb]
     mov [SA1xpb],bl
     xor eax,eax
     mov ax,[copv]

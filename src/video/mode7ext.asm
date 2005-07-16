@@ -84,14 +84,14 @@ NEWSYM drawmode7extbg
     movsx ebx,word[.cyloc]
     imul eax,ebx
     mov [.mode7xpos],eax
-    mov bx,word[mode7X0]
+    mov bx,[mode7X0]
     add [.mode7xpos+1],bx
 
     movsx ebx,word[.cyloc]
     movsx eax,word[mode7D]
     imul eax,ebx
     mov [.mode7ypos],eax
-    mov bx,word[mode7Y0]
+    mov bx,[mode7Y0]
     add [.mode7ypos+1],bx
 
     ; 3.) Find left scaled location : SCX=SCX-(cx*A),SCY=SCY-(cx*B)
@@ -207,9 +207,9 @@ NEWSYM drawmode7extbg
     add edi,ecx
 
     mov eax,[.mode7xadder]
-    mov dword[.m7xrpa-4],eax
+    mov [.m7xrpa-4],eax
     mov eax,[.mode7yadder]
-    mov dword[.m7yrpa-4],eax
+    mov [.m7yrpa-4],eax
     mov al,[.mode7xinc]
     mov [.m7xin-1],al
     mov eax,[.mode7xadd2]
@@ -230,19 +230,19 @@ NEWSYM drawmode7extbg
     jnz .rposoffy
 .nextposy
     mov ch,ah
-    mov cl,byte[.mode7yrpos+1]
+    mov cl,[.mode7yrpos+1]
     add eax,0
 .m7xrpa
     mov dl,[mode7tab+ecx]
     sub dword[.mode7yrpos],0
 .m7yrpa
     mov cl,[edi+edx]
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodrawb
     or cl,cl
     jz .nodrawb
-    mov byte[esi],cl
+    mov [esi],cl
 .nodrawb
     inc esi
     dec dword[.temp]
@@ -274,7 +274,7 @@ NEWSYM drawmode7extbg
 
 .finishmode7
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
     ret
@@ -317,12 +317,12 @@ NEWSYM drawmode7extbg
     add [.mode7xpos],eax
     mov cl,[vrama+edx]
     sub [.mode7ypos],ebx
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodraw2trb2
     or cl,cl
     jz .nodraw2trb2
-    mov byte[esi],cl
+    mov [esi],cl
 .nodraw2trb2
     inc esi
     dec dword[.temp]
@@ -352,9 +352,9 @@ NEWSYM drawmode7extbg
     add edi,ecx
 
     mov eax,[.mode7xadder]
-    mov dword[.m7xrpa2-4],eax
+    mov [.m7xrpa2-4],eax
     mov eax,[.mode7yadder]
-    mov dword[.m7yrpa2-4],eax
+    mov [.m7yrpa2-4],eax
 
     jmp .nextvalr
     ALIGN16
@@ -377,12 +377,12 @@ NEWSYM drawmode7extbg
     sub dword[.mode7yrpos],0
 .m7yrpa2
     mov cl,[edi+edx]
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodr2
     or cl,cl
     jz .nodr2
-    mov byte[esi],cl
+    mov [esi],cl
 .nodrawbr
     inc esi
     dec dword[.temp]
@@ -393,7 +393,7 @@ NEWSYM drawmode7extbg
     mov al,[.mode7xinc]
     mov edi,[vram]
     add [.mode7ptr],al
-    mov cl,byte[.mode7xincc]
+    mov cl,[.mode7xincc]
     cmp byte[.mode7ptr],cl
     je .roff
 .roffxretb
@@ -434,12 +434,12 @@ NEWSYM drawmode7extbg
     mov eax,[.mode7yadder]
     mov cl,[vrama+edx]
     sub [.mode7yrpos],eax
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodrawbr2
     or cl,cl
     jz .nodrawbr2
-    mov byte[esi],cl
+    mov [esi],cl
 .nodrawbr2
     inc esi
     dec dword[.temp]
@@ -477,18 +477,18 @@ NEWSYM drawmode7extbg
     mov eax,[.mode7yadder]
     mov cl,[edi+ecx]
     sub [.mode7ypos],eax
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodraw
     or cl,cl
     jz .nodraw
-    mov byte[esi],cl
+    mov [esi],cl
 .nodraw
     inc esi
     dec dword[.temp]
     jnz .nextval2
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
     ret
@@ -525,12 +525,12 @@ NEWSYM drawmode7extbg
     mov eax,[.mode7yadder]
     mov cl,[edi+ecx]
     sub [.mode7ypos],eax
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodraw2
     or cl,cl
     jz .nodraw2
-    mov byte[esi],cl
+    mov [esi],cl
 .nodraw2
     inc esi
     dec dword[.temp]
@@ -551,7 +551,7 @@ NEWSYM drawmode7extbg
     jnz .offscrb
 .goon
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
     ret
@@ -586,12 +586,12 @@ NEWSYM drawmode7extbg
     mov eax,[.mode7yadder]
     mov cl,[edi+ecx]
     sub [.mode7ypos],eax
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodraw2tr
     or cl,cl
     jz .nodraw2tr
-    mov byte[esi],cl
+    mov [esi],cl
 .nodraw2tr
     inc esi
     dec dword[.temp]
@@ -611,12 +611,12 @@ NEWSYM drawmode7extbg
     add [.mode7xpos],eax
     mov cl,[vrama+edx]
     sub [.mode7ypos],ebx
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodraw2trb
     or cl,cl
     jz .nodraw2trb
-    mov byte[esi],cl
+    mov [esi],cl
 .nodraw2trb
     inc esi
     dec dword[.temp]
@@ -709,14 +709,14 @@ SECTION .text
     mov eax,[.mode7yadder]
     mov cl,[edi+edx]
     sub [.mode7yrpos],eax
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodrawbw
     or cl,cl
     jz .nodrawbw
     test byte[ebp],0FFh
     jnz .nodrawbw
-    mov byte[esi],cl
+    mov [esi],cl
 .nodrawbw
     inc esi
     inc ebp
@@ -789,14 +789,14 @@ SECTION .text
     add [.mode7xpos],eax
     mov cl,[vrama+edx]
     sub [.mode7ypos],ebx
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodraw2trb2w
     or cl,cl
     jz .nodraw2trb2w
     test byte[ebp],0FFh
     jnz .nodraw2trb2w
-    mov byte[esi],cl
+    mov [esi],cl
 .nodraw2trb2w
     inc esi
     inc ebp
@@ -841,14 +841,14 @@ SECTION .text
     mov eax,[.mode7yadder]
     mov cl,[edi+edx]
     sub [.mode7yrpos],eax
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodrawbrw
     or cl,cl
     jz .nodrawbrw
     test byte[ebp],0FFh
     jnz .nodrawbrw
-    mov byte[esi],cl
+    mov [esi],cl
 .nodrawbrw
     inc esi
     inc ebp
@@ -859,7 +859,7 @@ SECTION .text
     mov al,[.mode7xinc]
     mov edi,[vram]
     add [.mode7ptr],al
-    mov cl,byte[.mode7xincc]
+    mov cl,[.mode7xincc]
     cmp byte[.mode7ptr],cl
     je .roffw
 .roffxretbw
@@ -900,14 +900,14 @@ SECTION .text
     mov eax,[.mode7yadder]
     mov cl,[vrama+edx]
     sub [.mode7yrpos],eax
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodrawbr2w
     or cl,cl
     jz .nodrawbr2w
     test byte[ebp],0FFh
     jnz .nodrawbr2w
-    mov byte[esi],cl
+    mov [esi],cl
 .nodrawbr2w
     inc esi
     inc ebp
@@ -944,14 +944,14 @@ SECTION .text
     mov eax,[.mode7yadder]
     mov cl,[edi+ecx]
     sub [.mode7ypos],eax
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodraww
     or cl,cl
     jz .nodraww
     test byte[ebp],0FFh
     jnz .nodraww
-    mov byte[esi],cl
+    mov [esi],cl
 .nodraww
     inc esi
     inc ebp
@@ -990,14 +990,14 @@ SECTION .text
     mov eax,[.mode7yadder]
     mov cl,[edi+ecx]
     sub [.mode7ypos],eax
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodraw2w
     or cl,cl
     jz .nodraw2w
     test byte[ebp],0FFh
     jnz .nodraw2w
-    mov byte[esi],cl
+    mov [esi],cl
 .nodraw2w
     inc esi
     inc ebp
@@ -1050,14 +1050,14 @@ SECTION .text
     mov eax,[.mode7yadder]
     mov cl,[edi+ecx]
     sub [.mode7ypos],eax
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodraw2trw
     or cl,cl
     jz .nodraw2trw
     test byte[ebp],0FFh
     jnz .nodraw2trw
-    mov byte[esi],cl
+    mov [esi],cl
 .nodraw2trw
     inc esi
     inc ebp
@@ -1078,14 +1078,14 @@ SECTION .text
     add [.mode7xpos],eax
     mov cl,[vrama+edx]
     sub [.mode7ypos],ebx
-    mov byte[esi+288],cl
+    mov [esi+288],cl
     test cl,80h
     jnz .nodraw2trbw
     or cl,cl
     jz .nodraw2trbw
     test byte[ebp],0FFh
     jnz .nodraw2trbw
-    mov byte[esi],cl
+    mov [esi],cl
 .nodraw2trbw
     inc esi
     inc ebp
@@ -1126,13 +1126,13 @@ NEWSYM drawmode7extbg2
     dec ecx
     jnz .loop
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
     ret
 .drawwin
     mov ebp,[cwinptr]
-    mov byte[esi],cl
+    mov [esi],cl
 .nodrawbw
     mov ecx,256
 .loop2
@@ -1149,31 +1149,31 @@ NEWSYM drawmode7extbg2
     dec ecx
     jnz .loop2
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
     ret
 
 %macro Mode7Normalng 0
-    mov byte[esi+75036],dl
+    mov [esi+75036],dl
     test dl,80h
     jnz %%nodrawb
     or dl,dl
     jz %%nodrawb
-    mov byte[esi],dl
+    mov [esi],dl
 %%nodrawb
     inc esi
 %endmacro
 
 %macro Mode7Windowng 0
-    mov byte[esi+75036],dl
+    mov [esi+75036],dl
     test dl,80h
     jnz %%nodrawbw
     or dl,dl
     jz %%nodrawbw
     test byte[ebp],0FFh
     jnz %%nodrawbw
-    mov byte[esi],dl
+    mov [esi],dl
 %%nodrawbw
     inc esi
     inc ebp
@@ -1322,7 +1322,7 @@ NEWSYM drawmode7ngextbg2
     dec ecx
     jnz .loop
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
     ret

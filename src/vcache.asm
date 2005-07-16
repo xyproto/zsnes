@@ -387,13 +387,13 @@ NEWSYM cachevideo
 .fastfor
     inc byte[frskipper]
     push ebx
-    mov bl,byte[FFRatio]      ; 0-28
+    mov bl,[FFRatio]      ; 0-28
     inc bl                    ; 1-29, 2x-30x fastmotion
     jmp .fastforb
 .frameskip
     inc byte[frskipper]
     push ebx
-    mov bl,byte[frameskip]
+    mov bl,[frameskip]
 .fastforb
     cmp byte[frskipper],bl
     pop ebx
@@ -529,8 +529,8 @@ NEWSYM cachevideo
     mov byte[disableeffects],0
     mov byte[osm2dis],0
     push eax
-    mov al,byte[snesinputdefault]
-    mov byte[snesmouse],al
+    mov al,[snesinputdefault]
+    mov [snesmouse],al
     pop eax
     mov dword[Msgptr],panickeyp
     mov eax,[MsgCount]
@@ -731,10 +731,10 @@ NEWSYM cachevideo
 .jumptofirststate
     mov dh,'t'
 .donextstate
-    mov byte[fnamest+eax],dh
+    mov [fnamest+eax],dh
     cmp dh,'t'
     je .firststatemsg
-    mov byte[sselm+11],dh
+    mov [sselm+11],dh
     jmp .incstatemsg
 .firststatemsg
     mov byte[sselm+11],'0'
@@ -762,10 +762,10 @@ NEWSYM cachevideo
 .jumptolaststate
     mov dh,'9'
 .doprevstate
-    mov byte[fnamest+eax],dh
+    mov [fnamest+eax],dh
     cmp dh,'t'
     je .firststatemsg2
-    mov byte[sselm+11],dh
+    mov [sselm+11],dh
     jmp .decstatemsg
 .firststatemsg2
     mov byte[sselm+11],'0'
@@ -1148,7 +1148,7 @@ SECTION .text
     xor eax,eax
     cmp bx,[curypos]
     jb .overflow
-    mov al,byte[sprlefttot+ebx]
+    mov al,[sprlefttot+ebx]
     cmp al,37
     ja near .overflow
     inc byte[sprlefttot+ebx]
@@ -1161,8 +1161,8 @@ SECTION .text
     mov [ebp+ebx],cx
     mov [ebp+ebx+2],esi
     mov al,[.statusbit]
-    mov byte[ebp+ebx+6],dh
-    mov byte[ebp+ebx+7],al
+    mov [ebp+ebx+6],dh
+    mov [ebp+ebx+7],al
 .overflow
     inc dl
     add esi,8
@@ -1189,7 +1189,7 @@ SECTION .text
     mov bl,dl
     cmp bx,[curypos]
     jb .overflow2
-    mov al,byte[sprlefttot+ebx]
+    mov al,[sprlefttot+ebx]
     cmp al,37
     ja near .overflow2
     inc byte[sprlefttot+ebx]
@@ -1202,8 +1202,8 @@ SECTION .text
     mov [ebp+ebx],cx
     mov [ebp+ebx+2],esi
     mov al,[.statusbit]
-    mov byte[ebp+ebx+6],dh
-    mov byte[ebp+ebx+7],al
+    mov [ebp+ebx+6],dh
+    mov [ebp+ebx+7],al
 .overflow2
     inc dl
     sub esi,8
@@ -1814,7 +1814,7 @@ SECTION .text
     mov bl,dl
     cmp bx,[curypos]
     jb .overflow
-    mov al,byte[sprlefttot+ebx]
+    mov al,[sprlefttot+ebx]
     cmp al,37
     ja near .overflow
     inc byte[sprlefttot+ebx]
@@ -1828,8 +1828,8 @@ SECTION .text
     mov al,[.statusbit]
     and al,0F8h
     or al,[.cpri]
-    mov byte[ebp+ebx+6],dh
-    mov byte[ebp+ebx+7],al
+    mov [ebp+ebx+6],dh
+    mov [ebp+ebx+7],al
 .overflow
     inc dl
     add esi,8
@@ -1856,7 +1856,7 @@ SECTION .text
     mov bl,dl
     cmp bx,[curypos]
     jb .overflow
-    mov al,byte[sprlefttot+ebx]
+    mov al,[sprlefttot+ebx]
     cmp al,37
     ja near .overflow2
     inc byte[sprlefttot+ebx]
@@ -1870,8 +1870,8 @@ SECTION .text
     mov al,[.statusbit]
     and al,0F8h
     or al,[.cpri]
-    mov byte[ebp+ebx+6],dh
-    mov byte[ebp+ebx+7],al
+    mov [ebp+ebx+6],dh
+    mov [ebp+ebx+7],al
 .overflow2
     inc dl
     sub esi,8
@@ -2245,7 +2245,7 @@ NEWSYM cachesprites
     ; initialize obj size cache
     mov dword[.objptr],oamram
     add dword[.objptr],512
-    mov esi,dword[.objptr]
+    mov esi,[.objptr]
     mov al,[esi]
     mov [.curobjtype],al
     mov byte[.objleftinbyte],4
@@ -2388,7 +2388,7 @@ NEWSYM cachesprites
     mov al,[tiletypec]
     shr ebx,1
     pop esi
-    mov byte[tltype4b+ebx],al
+    mov [tltype4b+ebx],al
 .nocache
     inc word[.curobj]
     dec byte[.byteb4add]
@@ -2396,7 +2396,7 @@ NEWSYM cachesprites
     mov ax,[.byte2add]
     add word[.curobj],ax
     mov al,[.byte2move]
-    mov byte[.byteb4add],al
+    mov [.byteb4add],al
 .skipbyteadd
     dec byte[.num2do]
     jnz near .nextobject

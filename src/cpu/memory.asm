@@ -83,7 +83,7 @@ C4ProcessVectors:
     movsx bx,byte[edi]
 .spotloop
     add ah,80h
-    mov byte[esi],ah
+    mov [esi],ah
     sub ah,80h
     add ax,bx
     inc esi
@@ -137,7 +137,7 @@ C4Edit:
     cmp byte[C4ObjSelec],0FFh
     jne .notneg
     dec al
-    mov byte[C4ObjSelec],al
+    mov [C4ObjSelec],al
     jmp .notof
 .notneg
     cmp byte[C4ObjSelec],al
@@ -299,7 +299,7 @@ C4Edit:
     cmp byte[C4ObjSelec],0FFh
     jne .sobjokay2
     dec cl
-    mov byte[C4SObjSelec],cl
+    mov [C4SObjSelec],cl
     jmp .sobjokay
 .sobjokay2
     cmp byte[C4SObjSelec],cl
@@ -308,7 +308,7 @@ C4Edit:
 .sobjokay
 
     xor ecx,ecx
-    mov cl,byte[C4SObjSelec]
+    mov cl,[C4SObjSelec]
     shl ecx,2
     add ebx,ecx
     add ebx,4
@@ -442,7 +442,7 @@ C4ConvOAM:
     ; Convert from esi to edi
     mov dl,0FCh
     push ecx
-    mov cl,byte[C4sprites]
+    mov cl,[C4sprites]
     and cl,3
     add cl,cl
     rol dl,cl
@@ -633,10 +633,10 @@ NEWSYM C4ProcessSprites
     mov esi,[C4Ram]
     mov dword[C4count],8
     mov cl,[esi+626h]
-    mov byte[C4sprites],cl
+    mov [C4sprites],cl
     mov ecx,[C4sprites]
     shl ecx,2
-    mov dword[C4ObjDisp],ecx
+    mov [C4ObjDisp],ecx
     mov ecx,128
 ;    cmp byte[esi+65],50h
 ;    jne .noincdisp
@@ -737,7 +737,7 @@ OBCSprites:
     mov al,[esi+10]       ;2,10
     mov [edi+ebx+2],al
     mov al,[esi+0Bh]
-    mov byte[edi+ebx+3],al
+    mov [edi+ebx+3],al
 
     xor ebx,ebx
     mov bl,[esi+6]
@@ -749,7 +749,7 @@ OBCSprites:
 
     xor al,al
     mov ah,0FCh
-    mov al,byte[esi+4]   ;1,4
+    mov al,[esi+4]   ;1,4
     and al,03h
     shl al,cl
     rol ah,cl
@@ -838,7 +838,7 @@ OBCRegs:
     shl ebx,3
     add ecx,ebx
     add ecx,[C4Ram]
-    mov byte[ecx],al
+    mov [ecx],al
 ;    cmp dl,1
 ;    jne .second
     mov byte[ecx+8],0FFh
@@ -901,7 +901,7 @@ C4ClearSpr:
 ;    add eax,ecx
     shl ch,3
 .scloop2
-    mov cl,byte[C4SprPos]
+    mov cl,[C4SprPos]
     shl cl,2
 .scloop
     mov byte[edi],0
@@ -1031,12 +1031,12 @@ DoScaleRotate:
     mov word[C4YXScale],0
 .effect
     ; Calculate Pixel Resolution
-    mov cl,byte[C4SprPos]
+    mov cl,[C4SprPos]
     shl cl,3
-    mov byte[C4SprPos+2],cl
-    mov cl,byte[C4SprPos+1]
+    mov [C4SprPos+2],cl
+    mov cl,[C4SprPos+1]
     shl cl,3
-    mov byte[C4SprPos+3],cl
+    mov [C4SprPos+3],cl
     ; Calculate Positions
     ; (1-scale)*(pos/2)
     xor eax,eax
@@ -1091,7 +1091,7 @@ DoScaleRotate:
     mov ecx,[C4PCYMPos]
     mov [C4CYMPos],ecx
     mov al,[C4SprPos+2]
-    mov byte[C4CXPos],al
+    mov [C4CXPos],al
 .loop2
     xor eax,eax
     mov al,[C4SprPos+2]
@@ -1545,7 +1545,7 @@ C4BitPlaneWave:
     mov dword[.temp],10h
     xor eax,eax
     mov al,[esi+1F83h]
-    mov dword[.waveptr],eax
+    mov [.waveptr],eax
     mov word[.temp+4],0C0C0h
     mov word[.temp+6],03F3Fh
 .bmloopb
@@ -1644,11 +1644,11 @@ C4DrawLine:
 
     ; transform both coordinates
     push esi
-    mov ax,word[C4X1]
+    mov ax,[C4X1]
     mov [C4WFXVal],ax
-    mov ax,word[C4Y1]
+    mov ax,[C4Y1]
     mov [C4WFYVal],ax
-    mov ax,word[C4Z1]
+    mov ax,[C4Z1]
     mov [C4WFZVal],ax
     mov al,[esi+1F90h]
     mov [C4WFScale],al
@@ -1660,21 +1660,21 @@ C4DrawLine:
     mov [C4WFDist],al
     call C4TransfWireFrame2
     mov ax,[C4WFXVal]
-    mov word[C4X1],ax
+    mov [C4X1],ax
     mov ax,[C4WFYVal]
-    mov word[C4Y1],ax
+    mov [C4Y1],ax
 
-    mov ax,word[C4X2]
+    mov ax,[C4X2]
     mov [C4WFXVal],ax
-    mov ax,word[C4Y2]
+    mov ax,[C4Y2]
     mov [C4WFYVal],ax
-    mov ax,word[C4Z2]
+    mov ax,[C4Z2]
     mov [C4WFZVal],ax
     call C4TransfWireFrame2
     mov ax,[C4WFXVal]
-    mov word[C4X2],ax
+    mov [C4X2],ax
     mov ax,[C4WFYVal]
-    mov word[C4Y2],ax
+    mov [C4Y2],ax
 
     add word[C4X1],48
     add word[C4Y1],48
@@ -1958,11 +1958,11 @@ C4WireFrame:
     jnz .yeswire
     mov ax,1
 .yeswire
-    mov word[esi+$600],ax
+    mov [esi+$600],ax
     mov ax,[C4WFXVal]
-    mov word[esi+$602],ax
+    mov [esi+$602],ax
     mov ax,[C4WFYVal]
-    mov word[esi+$605],ax
+    mov [esi+$605],ax
     add edi,2
     add esi,8
     dec ecx
@@ -1975,11 +1975,11 @@ C4Transform:
     ; 7F81,4,7,9,A,B,0,1,D
     pushad
     mov esi,[C4Ram]
-    mov ax,word[esi+1F81h]
+    mov ax,[esi+1F81h]
     mov [C4WFXVal],ax
-    mov ax,word[esi+1F84h]
+    mov ax,[esi+1F84h]
     mov [C4WFYVal],ax
-    mov ax,word[esi+1F87h]
+    mov ax,[esi+1F87h]
     mov [C4WFZVal],ax
     mov al,[esi+1F90h]
     mov [C4WFScale],al
@@ -1991,9 +1991,9 @@ C4Transform:
     mov [C4WFDist],al
     call C4TransfWireFrame2
     mov ax,[C4WFXVal]
-    mov word[esi+1F80h],ax
+    mov [esi+1F80h],ax
     mov ax,[C4WFYVal]
-    mov word[esi+1F83h],ax
+    mov [esi+1F83h],ax
     popad
     ret
 
@@ -2092,7 +2092,7 @@ C4activate:
     mov dx,ax
     sar edx,8
 .done
-    mov word[esi+1F80h],dx
+    mov [esi+1F80h],dx
     mov [C4values+4],dx
 
 ;    and eax,1FFh
@@ -2233,7 +2233,7 @@ C4activate:
     mov esi,[C4Ram]
     mov ecx,800h
 .sumloop
-    mov bl,byte[esi]
+    mov bl,[esi]
     inc esi
     add ax,bx
     dec ecx
@@ -2281,11 +2281,11 @@ C4activate:
     mov ax,[esi+$1F80]
 ;    imul cx
     shl ax,4
-    mov word[esi+$1F89],ax
+    mov [esi+$1F89],ax
     mov ax,[esi+$1F83]
 ;    imul cx
     shl ax,4
-    mov word[esi+$1F8C],ax
+    mov [esi+$1F8C],ax
 ;    mov cx,[esi+$1F80]
 ;    mov [C4values],cx
 ;    mov cx,[esi+$1F83]
@@ -2437,7 +2437,7 @@ NEWSYM C4WriteReg
     and edx,01FFFh
     add ebx,edx
 .c4movloop
-    mov dl,byte[eax]
+    mov dl,[eax]
     mov [ebx],dl
     inc eax
     inc ebx

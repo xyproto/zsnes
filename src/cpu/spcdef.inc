@@ -164,7 +164,7 @@
 %endmacro
 
 %macro SPC_MOV_A 0
-      mov byte[spcA], al
+      mov [spcA], al
       mov [spcNZ],al
       ret
 %endmacro

@@ -603,7 +603,7 @@ debblah:
 ; Read OAM Data (Low, High)
 reg2138r:
     xor ebx,ebx
-    mov bx,word[oamaddr]
+    mov bx,[oamaddr]
     add ebx,oamram
     mov al,[ebx]
     inc word[oamaddr]
@@ -634,8 +634,8 @@ reg2139r:
     jnz .noincr
 
     add word[vramaddr],2
-    mov bl,byte[vramincby8totl]
-    mov byte[vramincby8left],bl
+    mov bl,[vramincby8totl]
+    mov [vramincby8left],bl
     dec byte[vramincby8rowl]
     jz .nextrow
     mov bx,[vramincby8ptri]
@@ -667,8 +667,8 @@ reg213Ar:
     jnz .noincr
 
     add word[vramaddr],2
-    mov bl,byte[vramincby8totl]
-    mov byte[vramincby8left],bl
+    mov bl,[vramincby8totl]
+    mov [vramincby8left],bl
     dec byte[vramincby8rowl]
     jz .nextrow
     mov bx,[vramincby8ptri]
@@ -693,11 +693,11 @@ reg213Br:
 reg213Cr:
     cmp byte[latchxr],1
     je .highv
-    mov al,byte[latchx]
+    mov al,[latchx]
     mov byte[latchxr],1
     ret
 .highv
-    mov al,byte[latchx]
+    mov al,[latchx]
     and al,0FEh
     or  al,byte[latchx+1]
     mov byte[latchxr],0
@@ -709,17 +709,17 @@ reg213Dr:
     je .noreset
     cmp byte[latchyr],1
     je .highv
-    mov al,byte[latchy]
+    mov al,[latchy]
     mov byte[latchyr],1
     ret
 .highv
-    mov al,byte[latchy]
+    mov al,[latchy]
     and al,0FEh
     or  al,byte[latchy+1]
     mov byte[latchyr],0
     ret
 .noreset
-    mov al,byte[latchy]
+    mov al,[latchy]
     and al,0FEh
     or  al,byte[latchy+1]
     ret

@@ -104,7 +104,7 @@ ProcessMouse:
     je .zero3
     mov byte[MouseMoveOkay],1
 .zero3
-    mov word[GUImouseposx],cx
+    mov [GUImouseposx],cx
     test word[GUImouseposx],8000h
     jz .nowrapleft
     mov word[GUImouseposx],0
@@ -113,7 +113,7 @@ ProcessMouse:
     jbe .nowrapright
     mov word[GUImouseposx],255
 .nowrapright
-    mov word[GUImouseposy],dx
+    mov [GUImouseposy],dx
     test word[GUImouseposy],8000h
     jz .nowrapup
     mov word[GUImouseposy],0
@@ -186,7 +186,7 @@ ProcessMouseButtons:
     mov byte[GUIOnMenuItm],2
     cmp byte[eax+ebx+1],0
     je .zero
-    mov byte[GUIcrowpos],al
+    mov [GUIcrowpos],al
     mov byte[GUIOnMenuItm],1
 .zero
     ; Check if mouse is clicked on menu
@@ -465,7 +465,7 @@ ProcessMouseButtons:
 .nomwrap
     mov word[GUImouseposy],16
 .noover
-    mov cx,word[GUImouseposy]
+    mov cx,[GUImouseposy]
     sub cx,[GUIHoldy]
     add cx,[GUIHoldym]
     movsx ecx,cx
@@ -475,7 +475,7 @@ ProcessMouseButtons:
     xor ebx,ebx
     mov bl,[GUIwinorder+eax]
     mov [GUIwinposy+ebx*4],ecx
-    mov cx,word[GUImouseposx]
+    mov cx,[GUImouseposx]
     sub cx,[GUIHoldx]
     add cx,[GUIHoldxm]
     movsx ecx,cx
@@ -1590,9 +1590,9 @@ SECTION .text
     mov [GUIHoldXlimR],eax
     mov eax,[%5]
     mov [GUIlastdispval],eax
-    mov eax,dword[%8]
+    mov eax,[%8]
     mov [GUIlastcpos],eax
-    mov eax,dword[%7]
+    mov eax,[%7]
     mov [GUIlastvpos],eax
     mov byte[GUIHold],3
     ret
@@ -2186,7 +2186,7 @@ DisplayGUIMovieClick:
 DisplayGUIInputClick2:
     push eax
     mov eax,[NumInputDevices]
-    mov dword[GUINumValue],eax
+    mov [GUINumValue],eax
     pop eax
     GUISlidebarPostImpl 109,42,116,69,.scrollup,.scrolldown,9,5,GUIcurrentinputviewloc,GUIcurrentinputcursloc,GUINumValue,GUIBlankVar,1
     GUIPostWinBoxMove 5,35,107,35+5*8,GUIcurrentinputviewloc,GUIcurrentinputcursloc,GUINumValue,.scrollup,.scrolldown,DisplayGUIInputClick.skipscrol,5
@@ -2194,7 +2194,7 @@ DisplayGUIInputClick:
     ; SlideBar Implementation
     push eax
     mov eax,[NumInputDevices]
-    mov dword[GUINumValue],eax
+    mov [GUINumValue],eax
     pop eax
     GUISlidebarImpl 109,42,116,69,GUIIStA,5,GUIcurrentinputviewloc,GUIcurrentinputcursloc,GUINumValue,3
 .skipscrol
@@ -2232,7 +2232,7 @@ DisplayGUIInputClick:
 
     ;Check if controller is set
     push eax
-    mov eax,dword[keycontrolval]
+    mov eax,[keycontrolval]
     cmp dword[eax],0
     pop eax
     je near .lockInputChange
@@ -2358,7 +2358,7 @@ DisplayGUIOptionClick:
 DisplayGUIVideoClick2:
     push eax
     mov eax,[NumVideoModes]
-    mov dword[GUINumValue],eax
+    mov [GUINumValue],eax
     pop eax
     GUISlidebarPostImpl 117,33,124,62,.scrollup,.scrolldown,5,5,GUIcurrentvideoviewloc,GUIcurrentvideocursloc,GUINumValue,GUIBlankVar,1
     GUIPostWinBoxMove 5,27,115,27+5*8,GUIcurrentvideoviewloc,GUIcurrentvideocursloc,GUINumValue,.scrollup,.scrolldown,DisplayGUIVideoClick.skipscrol,5
@@ -2366,7 +2366,7 @@ DisplayGUIVideoClick:
     ; SlideBar Implementation
     push eax
     mov eax,[NumVideoModes]
-    mov dword[GUINumValue],eax
+    mov [GUINumValue],eax
     pop eax
     GUISlidebarImpl 117,33,124,62,GUIVStA,5,GUIcurrentvideoviewloc,GUIcurrentvideocursloc,GUINumValue,5
 .skipscrol
@@ -2473,7 +2473,7 @@ DisplayGUIVideoClick:
 .nocheckboxi2
     GUIPHoldbutton 128,60,164,71,4
     mov al,[vsyncon]
-    mov byte[cfgvsync],al
+    mov [cfgvsync],al
     xor al,al
     ret
 
@@ -2874,7 +2874,7 @@ DisplayGUIOptnsClick:
     jg .nomovebar1
     cmp byte[TRVal2],al
     je .nomovebar1b
-    mov byte[TRVal2],al
+    mov [TRVal2],al
     mov byte[TRVal2+1],1
 .nomovebar1b
     mov byte[GUIHold],2
@@ -2889,7 +2889,7 @@ DisplayGUIOptnsClick:
     jg .nomovebar2
     cmp byte[TGVal2],al
     je .nomovebar2b
-    mov byte[TGVal2],al
+    mov [TGVal2],al
     mov byte[TRVal2+1],1
 .nomovebar2b
     mov byte[GUIHold],2
@@ -2904,7 +2904,7 @@ DisplayGUIOptnsClick:
     jg .nomovebar3
     cmp byte[TBVal2],al
     je .nomovebar3b
-    mov byte[TBVal2],al
+    mov [TBVal2],al
     mov byte[TRVal2+1],1
 .nomovebar3b
     mov byte[GUIHold],2
@@ -3365,7 +3365,7 @@ DrawMouse:
 ;    jnz .nomidshad
     shr bl,1
     add bl,189
-    mov byte[edi+288*7+5],bl
+    mov [edi+288*7+5],bl
     jmp .finishadow
 .nomidshad
 

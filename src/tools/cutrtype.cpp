@@ -64,13 +64,13 @@ static unsigned char getsize(const string& token, const char mode)
   return (val);
 }
 
-static bool isredund(string& cheese, const vector<string>& wine, const char bread)
+static bool isredund(string& cur_line, const vector<string>& tokens, const char offset)
 {
-  if (getsize(wine[bread],'t') == getsize(wine[(bread+2)%3], 'r'))
+  if (getsize(tokens[offset],'t') == getsize(tokens[(offset+2)%3], 'r'))
   {
-    size_t loc = cheese.find(wine[bread]);
-    cheese.erase(loc, cheese.find(wine[bread+1])-loc-1);
-    return (true); // how are you gentlemen ?
+    size_t loc = cur_line.find(tokens[offset]);
+    cur_line.erase(loc, cur_line.find(tokens[offset+1])-loc-1);
+    return (true);
   }
 
   return (false);

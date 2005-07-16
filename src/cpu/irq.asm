@@ -96,7 +96,7 @@ NEWSYM switchtonmi
     mov [xs],cx
 
     xor bh,bh
-    mov bl,byte[xirqb]
+    mov bl,[xirqb]
     mov [xpb],bl
     xor eax,eax
     mov ax,[nmiv]
@@ -204,7 +204,7 @@ NEWSYM switchtovirq
     mov [xs],cx
 
     xor bh,bh
-    mov bl,byte[xirqb]
+    mov bl,[xirqb]
     mov [xpb],bl
     xor eax,eax
     mov ax,[irqv]
@@ -265,7 +265,7 @@ NEWSYM switchtovirqret
     mov [xs],cx
 
     xor bh,bh
-    mov bl,byte[xirqb]
+    mov bl,[xirqb]
     mov [xpb],bl
     xor eax,eax
     mov ax,[irqv]
@@ -374,7 +374,7 @@ NEWSYM switchtovirqdeb
     mov [xs],cx
 
     xor bh,bh
-    mov bl,byte[xirqb]
+    mov bl,[xirqb]
     mov [xpb],bl
     xor eax,eax
     mov ax,[irqv]
@@ -481,7 +481,7 @@ NEWSYM switchtonmideb
     mov [xs],cx
 
     xor bh,bh
-    mov bl,byte[xirqb]
+    mov bl,[xirqb]
     mov [xpb],bl
     xor eax,eax
     mov ax,[nmiv]

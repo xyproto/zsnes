@@ -425,7 +425,7 @@ NEWSYM hq2x_32b
 ;----------------------------;
 nointerp:
     mov dl,[resolutn]
-    mov byte[lineleft],dl
+    mov [lineleft],dl
     mov ebx,[NumBytesPerLine]
     mov edx,[BitConv32Ptr]
 .loopy
@@ -452,7 +452,7 @@ nointerp:
 ;----------------------------;
 hq2x:
     mov dl,[resolutn]
-    mov byte[lineleft],dl
+    mov [lineleft],dl
     mov dword[prevline],0
     mov dword[nextline],576
     mov ebx,hirestiledat+1

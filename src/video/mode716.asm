@@ -590,7 +590,7 @@ mm7yaddof2 resd 1
 SECTION .text
 
 %macro newvaluepred 2
-    mov dx,word[%1+ebx*4+8]
+    mov dx,[%1+ebx*4+8]
     cmp dx,word[%1+ebx*4]
     je %%nodivide
     cmp byte[BGMA+ebx+2],7

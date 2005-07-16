@@ -66,9 +66,9 @@ EXTSYM Testval
     jae .noinsidemask
     mov byte[esi],0
     mov byte[esi+1],01h
-    mov byte[esi+2],cl
+    mov [esi+2],cl
     mov byte[esi+3],0FFh
-    mov byte[esi+4],ch
+    mov [esi+4],ch
     mov byte[esi+5],01h
     mov byte[numwin],3
     jmp .finishwin
@@ -84,9 +84,9 @@ EXTSYM Testval
     cmp cl,1
     jbe .noinsidemask
 .skipnodraw
-    mov byte[esi],cl
+    mov [esi],cl
     mov byte[esi+1],01h
-    mov byte[esi+2],ch
+    mov [esi+2],ch
     mov byte[esi+3],0FFh
     mov byte[numwin],2
     jmp .finishwin
@@ -140,9 +140,9 @@ EXTSYM Testval
     jae .noinsidemask
     mov byte[esi],0
     mov byte[esi+1],01h
-    mov byte[esi+2],cl
+    mov [esi+2],cl
     mov byte[esi+3],0FFh
-    mov byte[esi+4],ch
+    mov [esi+4],ch
     mov byte[esi+5],01h
     mov byte[numwin],3
     jmp .finishwin
@@ -160,9 +160,9 @@ EXTSYM Testval
     cmp cl,1
     jbe .noinsidemask
 .skipnodraw
-    mov byte[esi],cl
+    mov [esi],cl
     mov byte[esi+1],01h
-    mov byte[esi+2],ch
+    mov [esi+2],ch
     mov byte[esi+3],0FFh
     mov byte[numwin],2
     jmp .finishwin

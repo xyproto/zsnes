@@ -148,10 +148,10 @@ CheatCodeSearchProcess:
     ; Process Cheat Search
     mov ecx,65536*2
     xor ebx,ebx
-    mov bl,byte[CheatSrcByteSize]
+    mov bl,[CheatSrcByteSize]
     sub ecx,ebx
     mov edx,[SrcMask+ebx*4]
-    mov edi,dword[vidbuffer]
+    mov edi,[vidbuffer]
     add edi,129600+65536*2
     mov esi,[wramdata]
     mov bl,0FEh
@@ -198,9 +198,9 @@ CheatCodeSearchProcess:
     mov byte[CSInputDisplay],'_'
     mov byte[CSInputDisplay+1],0
     mov byte[CheatSearchStatus],1
-    mov eax,dword[vidbuffer]
+    mov eax,[vidbuffer]
     add eax,129600+65536*2
-    mov esi,dword[vidbuffer]
+    mov esi,[vidbuffer]
     add esi,129600
     mov edi,[wramdata]
     mov ecx,65536*2
@@ -236,7 +236,7 @@ CheatCodeSearchInit:
     mov byte[CheatSearchStatus],0
     cmp byte[CopyRamToggle],0
     mov byte[FirstSearch],1
-    mov eax,dword[vidbuffer]
+    mov eax,[vidbuffer]
     add eax,129600
     ; copy 128k ram
     mov ebx,[wramdata]
@@ -249,7 +249,7 @@ CheatCodeSearchInit:
     dec ecx
     jnz .loop
     ; fill searched buffer with 0xFF
-    mov eax,dword[vidbuffer]
+    mov eax,[vidbuffer]
     add eax,129600+65536*2
     mov ecx,8192
 .loop2
@@ -262,7 +262,7 @@ CheatCodeSearchInit:
     mov byte[CheatSearchStatus],1
 .nottype1
     mov dword[CheatCompareValue],0
-    mov eax,dword[vidbuffer]
+    mov eax,[vidbuffer]
     add eax,129600+65536*2
     cmp byte[CheatSrcByteSize],1
     je near .bytesize2
@@ -432,7 +432,7 @@ CheatCodeLoad:
     cmp eax,[GUIcurrentcheatcursloc]
     ja .noconf
     dec eax
-    mov dword[GUIcurrentcheatcursloc],eax
+    mov [GUIcurrentcheatcursloc],eax
 .noconf
     cmp dword[NumCheats],0
     jne .nozero
@@ -581,7 +581,7 @@ EnableCheatCode:
     push edx
     call dword near [memtabler8+ebx*4]
     pop edx
-    mov byte[esi+5],al
+    mov [esi+5],al
     pop ebx
     pop eax
     pop ecx
@@ -1161,7 +1161,7 @@ decodegg:
     push edx
     call dword near [memtabler8+ebx*4]
     pop edx
-    mov byte[cheatdata+edx+5],al
+    mov [cheatdata+edx+5],al
     pop ebx
     pop eax
     pop ecx
@@ -1257,7 +1257,7 @@ decodepar:
     push edx
     call dword near [memtabler8+ebx*4]
     pop edx
-    mov byte[cheatdata+edx+5],al
+    mov [cheatdata+edx+5],al
     pop ebx
     pop eax
     pop ecx

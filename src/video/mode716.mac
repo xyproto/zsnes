@@ -142,14 +142,14 @@ EXTSYM pesimpng,ScrDispl
     movsx ebx,word[mcyloc]
     imul eax,ebx
     mov [mmode7xpos],eax
-    mov bx,word[mode7X0]
+    mov bx,[mode7X0]
     add [mmode7xpos+1],bx
 
     movsx ebx,word[mcyloc]
     movsx eax,word[mode7D]
     imul eax,ebx
     mov [mmode7ypos],eax
-    mov bx,word[mode7Y0]
+    mov bx,[mode7Y0]
     add [mmode7ypos+1],bx
 
     ; 3.) Find left scaled location : SCX=SCX-(cx*A),SCY=SCY-(cx*B)
@@ -226,7 +226,7 @@ EXTSYM pesimpng,ScrDispl
     imul eax,ebx
     sar eax,1
     mov [mmode7xpos],eax
-    mov bx,word[mode7X0]
+    mov bx,[mode7X0]
     add [mmode7xpos+1],bx
 
     movsx ebx,word[mcyloc]
@@ -234,7 +234,7 @@ EXTSYM pesimpng,ScrDispl
     imul eax,ebx
     sar eax,1
     mov [mmode7ypos],eax
-    mov bx,word[mode7Y0]
+    mov bx,[mode7Y0]
     add [mmode7ypos+1],bx
 
     ; 3.) Find left scaled location : SCX=SCX-(cx*A),SCY=SCY-(cx*B)
@@ -358,13 +358,13 @@ NEWSYM ProcessMode7ngwin16b
     cmp ecx,[ngwleft]
     jae .alldisplay
     sub [ngwleft],ecx
-    mov dword[ngwleftb],ecx
+    mov [ngwleftb],ecx
     xor ecx,ecx
     mov eax,[mode7xrpos]
     ret
 .alldisplay
     mov ecx,[ngwleft]
-    mov dword[ngwleftb],ecx
+    mov [ngwleftb],ecx
     mov dword[ngwleft],0
     xor ecx,ecx
     mov eax,[mode7xrpos]
@@ -451,13 +451,13 @@ NEWSYM ProcessMode7ngwinC16b
     cmp ecx,[ngwleft]
     jae .alldisplay
     sub [ngwleft],ecx
-    mov dword[ngwleftb],ecx
+    mov [ngwleftb],ecx
     xor ecx,ecx
     mov eax,[mode7xpos]
     ret
 .alldisplay
     mov ecx,[ngwleft]
-    mov dword[ngwleftb],ecx
+    mov [ngwleftb],ecx
     mov dword[ngwleft],0
     xor ecx,ecx
     mov eax,[mode7xpos]
@@ -500,7 +500,7 @@ NEWSYM ProcessMode7ngwinD16b
     mov al,[mmode7xinc]
     mov edi,[vram]
     add [mmode7ptr],al
-    mov cl,byte[mmode7xincc]
+    mov cl,[mmode7xincc]
     cmp byte[mmode7ptr],cl
     je .roffx
 .roffxretb
@@ -599,7 +599,7 @@ NEWSYM ProcessMode7ngwinD16b
 %%nextposy
     mov ch,ah
     mov edx,[mmode7yadder]
-    mov cl,byte[mmode7yrpos+1]
+    mov cl,[mmode7yrpos+1]
     sub dword[mmode7yrpos],edx
     xor edx,edx
     mov dl,[mode7tab+ecx]
@@ -632,7 +632,7 @@ NEWSYM ProcessMode7ngwinD16b
 
 %%finishmode7
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near %2
     ret
@@ -734,7 +734,7 @@ NEWSYM ProcessMode7ngwinD16b
     mov al,[mmode7xinc]
     mov edi,[vram]
     add [mmode7ptr],al
-    mov cl,byte[mmode7xincc]
+    mov cl,[mmode7xincc]
     cmp byte[mmode7ptr],cl
     je %%roff
 %%roffxretb
@@ -856,7 +856,7 @@ NEWSYM ProcessMode7ngwinD16b
     jnz near %%rposoffy
 %%nextposy
     mov ch,ah
-    mov cl,byte[mmode7yrpos+1]
+    mov cl,[mmode7yrpos+1]
     mov edx,[mmode7yadder]
     sub dword[mmode7yrpos],edx
     xor edx,edx
@@ -901,7 +901,7 @@ NEWSYM ProcessMode7ngwinD16b
 
 %%finishmode7
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near %2
     ret
@@ -1002,7 +1002,7 @@ NEWSYM ProcessMode7ngwinD16b
     mov al,[mmode7xinc]
     mov edi,[vram]
     add [mmode7ptr],al
-    mov cl,byte[mmode7xincc]
+    mov cl,[mmode7xincc]
     cmp byte[mmode7ptr],cl
     je %%roff
 %%roffxretb
@@ -1134,7 +1134,7 @@ NEWSYM ProcessMode7ngwinD16b
     jnz near %%rposoffy
 %%nextposy
     mov ch,ah
-    mov cl,byte[mode7yrpos+1]
+    mov cl,[mode7yrpos+1]
     mov edx,[mode7yadder]
     sub dword[mode7yrpos],edx
     xor edx,edx
@@ -1186,7 +1186,7 @@ NEWSYM ProcessMode7ngwinD16b
 
 %%finishmode7
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near %2
     ret
@@ -1328,7 +1328,7 @@ NEWSYM ProcessMode7ngwinD16b
     mov al,[mmode7xinc]
     mov edi,[vram]
     add [mmode7ptr],al
-    mov cl,byte[mmode7xincc]
+    mov cl,[mmode7xincc]
     cmp byte[mmode7ptr],cl
     je %%roff
 %%roffxretb
@@ -1425,7 +1425,7 @@ NEWSYM ProcessMode7ngwinD16b
     add dword[ngcwinptr],4
     mov edx,[ngcwinptr]
     mov edx,[edx]
-    mov dword[ngwleft],edx
+    mov [ngwleft],edx
     xor edx,edx
 %%nextvalwb
 
@@ -1436,7 +1436,7 @@ NEWSYM ProcessMode7ngwinD16b
     jnz near %%rposoffyw
 %%nextposyw
     mov ch,ah
-    mov cl,byte[mmode7yrpos+1]
+    mov cl,[mmode7yrpos+1]
     mov edx,[mmode7yadder]
     sub dword[mmode7yrpos],edx
     xor edx,edx
@@ -1473,7 +1473,7 @@ NEWSYM ProcessMode7ngwinD16b
     add dword[ngcwinptr],4
     mov edx,[ngcwinptr]
     mov edx,[edx]
-    mov dword[ngwleft],edx
+    mov [ngwleft],edx
     xor edx,edx
 %%nextval
     test ah,08h
@@ -1483,7 +1483,7 @@ NEWSYM ProcessMode7ngwinD16b
     jnz near %%rposoffy
 %%nextposy
     mov ch,ah
-    mov cl,byte[mmode7yrpos+1]
+    mov cl,[mmode7yrpos+1]
     mov edx,[mmode7yadder]
     sub dword[mmode7yrpos],edx
     xor edx,edx
@@ -1516,7 +1516,7 @@ NEWSYM ProcessMode7ngwinD16b
     jmp %%nextposy
 %%finishmode7
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near %2
     ret
@@ -1531,7 +1531,7 @@ NEWSYM ProcessMode7ngwinD16b
     add dword[ngcwinptr],4
     mov edx,[ngcwinptr]
     mov edx,[edx]
-    mov dword[ngwleft],edx
+    mov [ngwleft],edx
     xor edx,edx
 %%firstsetwb
 %%norep2
@@ -1608,7 +1608,7 @@ NEWSYM ProcessMode7ngwinD16b
     add dword[ngcwinptr],4
     mov edx,[ngcwinptr]
     mov edx,[edx]
-    mov dword[ngwleft],edx
+    mov [ngwleft],edx
     xor edx,edx
 %%nextvalr
     test byte[mmode7xrpos+1],08h
@@ -1636,7 +1636,7 @@ NEWSYM ProcessMode7ngwinD16b
     mov al,[mmode7xinc]
     mov edi,[vram]
     add [mmode7ptr],al
-    mov cl,byte[mmode7xincc]
+    mov cl,[mmode7xincc]
     cmp byte[mmode7ptr],cl
     je %%roff
 %%roffxretb
@@ -1671,7 +1671,7 @@ NEWSYM ProcessMode7ngwinD16b
     add dword[ngcwinptr],4
     mov edx,[ngcwinptr]
     mov edx,[edx]
-    mov dword[ngwleft],edx
+    mov [ngwleft],edx
     xor edx,edx
 %%tilerep3
     and byte[mmode7yrpos+1],07h
@@ -1696,7 +1696,7 @@ NEWSYM ProcessMode7ngwinD16b
     add dword[ngcwinptr],4
     mov edx,[ngcwinptr]
     mov edx,[edx]
-    mov dword[ngwleft],edx
+    mov [ngwleft],edx
     xor edx,edx
 %%norep2w
     test byte[mode7set],40h
@@ -1772,7 +1772,7 @@ NEWSYM ProcessMode7ngwinD16b
     add dword[ngcwinptr],4
     mov edx,[ngcwinptr]
     mov edx,[edx]
-    mov dword[ngwleft],edx
+    mov [ngwleft],edx
     xor edx,edx
 %%nextvalrw
     test byte[mmode7xrpos+1],08h
@@ -1800,7 +1800,7 @@ NEWSYM ProcessMode7ngwinD16b
     mov al,[mmode7xinc]
     mov edi,[vram]
     add [mmode7ptr],al
-    mov cl,byte[mmode7xincc]
+    mov cl,[mmode7xincc]
     cmp byte[mmode7ptr],cl
     je %%roffw
 %%roffxretbw
@@ -1835,7 +1835,7 @@ NEWSYM ProcessMode7ngwinD16b
     add dword[ngcwinptr],4
     mov edx,[ngcwinptr]
     mov edx,[edx]
-    mov dword[ngwleft],edx
+    mov [ngwleft],edx
     xor edx,edx
 %%tilerep3w
     and byte[mmode7yrpos+1],07h

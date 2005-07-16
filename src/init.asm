@@ -126,7 +126,7 @@ NEWSYM init
     mov [ReInitLength],eax
 
     xor eax,eax
-    mov al,byte[romtype]
+    mov al,[romtype]
     mov [forceromtype],al
     mov byte[romtype],0
     mov ax,ds
@@ -200,19 +200,19 @@ NEWSYM init
     sub byte[autoloadstate],1
     cmp byte[autoloadstate],10
     jge .2digits
-    mov al,byte[autoloadstate]
+    mov al,[autoloadstate]
     add al,48
-    mov byte[fnamest+ebx],al
+    mov [fnamest+ebx],al
     jmp .enddigits
 .2digits
     xor eax,eax
-    mov al,byte[autoloadstate]
+    mov al,[autoloadstate]
     mov dl,10
     div dl
     add al,48
     add ah,48
-    mov byte[fnamest+ebx-1],al
-    mov byte[fnamest+ebx],ah
+    mov [fnamest+ebx-1],al
+    mov [fnamest+ebx],ah
 .enddigits
 
     ; Load the specified state file
@@ -241,13 +241,13 @@ NEWSYM init
     jb .noautloadmovie
     cmp byte[autoloadmovie],10
     ja .noautloadmovie
-    mov al,byte[autoloadmovie]
+    mov al,[autoloadmovie]
     add al,'0'-1
     cmp al,'0'
     jne .notzero1
     mov al,'v'
 .notzero1
-    mov byte[CMovieExt],al
+    mov [CMovieExt],al
 
     pushad
     cmp byte[ZMVRawDump],1
@@ -511,10 +511,10 @@ SECTION .text
     or dword[%1],00000000010000000000000000000000b
 %%n2
     or dword[%1],00000000000000010000000000000000b
-    mov al,byte[mouseypos]
+    mov al,[mouseypos]
     and al,7Fh
     or byte[%1+1],al
-    mov al,byte[mousexpos]
+    mov al,[mousexpos]
     and al,7Fh
     or byte[%1],al
     test byte[mouseydir],01h
@@ -618,7 +618,7 @@ ProcessCombo:
     add ebx,CombTDelP
 .ntsc
     mov ebx,[ebx]
-    mov dword[CombDelay+ecx*4],ebx
+    mov [CombDelay+ecx*4],ebx
     inc eax
     inc byte[ComboPtr+ecx]
     cmp byte[ComboPtr+ecx],42
@@ -740,7 +740,7 @@ NEWSYM ReadInputDevice
     PlayerDeviceHelp pl1DLk   ,JoyAOrig,06000000h
     PlayerDeviceHelp pl1DRk   ,JoyAOrig,05000000h
     PlayerDeviceFix JoyAOrig
-    mov al,byte[TurboCB]
+    mov al,[TurboCB]
     test byte[TurboSw],al
     jnz near .noswitch
     PlayerDeviceHelp pl1Xtk   ,JoyAOrig,00400000h
@@ -803,9 +803,9 @@ NEWSYM ReadInputDevice
     cmp byte[eax],26
     je .not
     mov bl,[mousexloc]
-    mov byte[eax+40Ah],bl
+    mov [eax+40Ah],bl
     mov bl,[mouseyloc]
-    mov byte[eax+40Eh],bl
+    mov [eax+40Eh],bl
 .not
 ;    mov word[JoyBOrig+2],000Eh
 ;    and dword[LethEnData],0000000FFh
@@ -852,7 +852,7 @@ NEWSYM ReadInputDevice
     PlayerDeviceHelp pl2DLk   ,JoyBOrig,06000000h
     PlayerDeviceHelp pl2DRk   ,JoyBOrig,05000000h
     PlayerDeviceFix JoyBOrig
-    mov al,byte[TurboCB]
+    mov al,[TurboCB]
     test byte[TurboSw],al
     jnz near .noswitch2
     PlayerDeviceHelp pl2Xtk   ,JoyBOrig,00400000h
@@ -886,7 +886,7 @@ NEWSYM ReadInputDevice
     PlayerDeviceHelp pl3DLk   ,JoyCOrig,06000000h
     PlayerDeviceHelp pl3DRk   ,JoyCOrig,05000000h
     PlayerDeviceFix JoyCOrig
-    mov al,byte[TurboCB]
+    mov al,[TurboCB]
     test byte[TurboSw],al
     jnz near .noswitch3
     PlayerDeviceHelp pl3Xtk   ,JoyCOrig,00400000h
@@ -920,7 +920,7 @@ NEWSYM ReadInputDevice
     PlayerDeviceHelp pl4DLk   ,JoyDOrig,06000000h
     PlayerDeviceHelp pl4DRk   ,JoyDOrig,05000000h
     PlayerDeviceFix JoyDOrig
-    mov al,byte[TurboCB]
+    mov al,[TurboCB]
     test byte[TurboSw],al
     jnz near .noswitch4
     PlayerDeviceHelp pl4Xtk   ,JoyDOrig,00400000h
@@ -954,7 +954,7 @@ NEWSYM ReadInputDevice
     PlayerDeviceHelp pl5DLk   ,JoyEOrig,06000000h
     PlayerDeviceHelp pl5DRk   ,JoyEOrig,05000000h
     PlayerDeviceFix JoyEOrig
-    mov al,byte[TurboCB]
+    mov al,[TurboCB]
     test byte[TurboSw],al
     jnz near .noswitch5
     PlayerDeviceHelp pl5Xtk   ,JoyEOrig,00400000h
@@ -1075,8 +1075,8 @@ NEWSYM init65816
     mov dword[memtablew16+50h*4],memaccessspc7110w16
     mov eax,[romdata]
     add eax,510000h
-    mov dword[snesmmap+50h*4],eax
-    mov dword[snesmap2+50h*4],eax
+    mov [snesmmap+50h*4],eax
+    mov [snesmap2+50h*4],eax
     mov ecx,16384
 .spc7110clear
     mov dword[eax],0
@@ -1206,7 +1206,7 @@ NEWSYM init65816
     mov byte[xe],1          ; E
     xor eax,eax
     mov ax,[resetv]
-    mov word[xpc],ax
+    mov [xpc],ax
     mov ebx,[romdata]
     add eax,ebx
     pop ebx
@@ -1222,10 +1222,10 @@ NEWSYM init65816
 ;    mov byte[xpb],40h
 .n
     mov al,[opexec268]
-    mov byte[cycpl],al      ; 2.68 Mhz  / 3.58 Mhz = 228
-    mov byte[curcyc],al
+    mov [cycpl],al      ; 2.68 Mhz  / 3.58 Mhz = 228
+    mov [curcyc],al
     mov al,[opexec268cph]
-    mov byte[cycphb],al     ; 2.68 Mhz  / 3.58 Mhz = 56
+    mov [cycphb],al     ; 2.68 Mhz  / 3.58 Mhz = 56
     mov byte[cycpbl],110        ; 3.58Mhz = 175
     mov byte[cycpblt],110
     mov word[curypos],0
@@ -2205,7 +2205,7 @@ OpenCombFile:
     mov edx,ComboBlHeader
     mov ecx,23
     call Read_File
-    mov al,byte[ComboBlHeader+22]
+    mov al,[ComboBlHeader+22]
     or al,al
     jz .done
     mov [NumComboLocl],al
@@ -2365,7 +2365,7 @@ NEWSYM loadfileGUI
     mov byte[GUIloadfailed],0
 
     mov edx,fname+1
-    mov dword[ZOpenFileName],edx
+    mov [ZOpenFileName],edx
 
     pushad
     call loadROM
@@ -2402,8 +2402,8 @@ NEWSYM loadfileGUI
     call Output_Text
 .inguib
 
-    mov eax,dword[curromspace]
-    mov dword[.curfileofs],eax
+    mov eax,[curromspace]
+    mov [.curfileofs],eax
     mov [NumofBytes],eax
     shr eax,15
     mov [NumofBanks],eax

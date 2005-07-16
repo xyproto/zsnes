@@ -153,7 +153,7 @@ NEWSYM SA1Swap
     mov dword[wramdata],wramdataa
     mov esi,[SNSPtr]
     mov eax,[wramdata]
-    mov dword[snesmap2],eax
+    mov [snesmap2],eax
     mov edi,[prevedi]
     xor eax,eax
     add dh,11
@@ -183,7 +183,7 @@ NEWSYM SA1Swap
     mov dword[wramdata],wramdataa
     mov esi,[SNSPtr]
     mov eax,[wramdata]
-    mov dword[snesmap2],eax
+    mov [snesmap2],eax
     mov edi,[prevedi]
     xor eax,eax
     add byte[CurrentExecSA1],4
@@ -256,8 +256,8 @@ SECTION .text
 %endmacro
 
 NEWSYM SA1switchtonmi
-    mov al,byte[SA1Message]
-    mov byte[SA1Message+2],al
+    mov al,[SA1Message]
+    mov [SA1Message+2],al
     mov byte[SA1IRQExec+2],1
     mov ebx,esi
     sub ebx,[initaddrl]
@@ -311,8 +311,8 @@ NEWSYM SA1switchtonmi
     ret
 
 NEWSYM SA1switchtovirq
-    mov al,byte[SA1Message]
-    mov byte[SA1Message+2],al
+    mov al,[SA1Message]
+    mov [SA1Message+2],al
     mov byte[SA1IRQExec+1],1
     mov ebx,esi
     sub ebx,[initaddrl]

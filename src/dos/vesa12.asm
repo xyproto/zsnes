@@ -191,7 +191,7 @@ NEWSYM InitVesa12
         mov edi, RMREGS
         mov dword[RMREGS.eax],4f01h
         mov dword[RMREGS.ebx],0
-        mov dword[RMREGS.ecx],ecx
+        mov [RMREGS.ecx],ecx
         mov dword[RMREGS.edi],0
 
 	push es
@@ -384,14 +384,14 @@ NEWSYM InitVesa12
 .shrr
         shr bx,1
 .shlr
-        mov word[vesa2_rfull],bx
+        mov [vesa2_rfull],bx
         add al,5
         mov bx,1
         mov cl,al
         shl bx,cl
-        mov word[vesa2_rtrcl],bx
+        mov [vesa2_rtrcl],bx
         xor bx,0FFFFh
-        mov word[vesa2_rtrcla],bx
+        mov [vesa2_rtrcla],bx
 
         ; Process Green Stuff
         mov al,[fs:22h]
@@ -415,14 +415,14 @@ NEWSYM InitVesa12
 .shrg
         shr bx,1
 .shlg
-        mov word[vesa2_gfull],bx
+        mov [vesa2_gfull],bx
         add al,5
         mov bx,1
         mov cl,al
         shl bx,cl
-        mov word[vesa2_gtrcl],bx
+        mov [vesa2_gtrcl],bx
         xor bx,0FFFFh
-        mov word[vesa2_gtrcla],bx
+        mov [vesa2_gtrcla],bx
 
         ; Process Blue Stuff
         mov al,[fs:24h]
@@ -446,14 +446,14 @@ NEWSYM InitVesa12
 .shrb
         shr bx,1
 .shlb
-        mov word[vesa2_bfull],bx
+        mov [vesa2_bfull],bx
         add al,5
         mov bx,1
         mov cl,al
         shl bx,cl
-        mov word[vesa2_btrcl],bx
+        mov [vesa2_btrcl],bx
         xor bx,0FFFFh
-        mov word[vesa2_btrcla],bx
+        mov [vesa2_btrcla],bx
 
         xor word[vesa2_clbit],0FFFFh
 

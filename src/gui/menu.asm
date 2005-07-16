@@ -1099,7 +1099,7 @@ NEWSYM dumpsound
 .loop
     push eax
     mov eax,[spcBuffera]
-    mov edx,dword[eax+ecx*4]
+    mov edx,[eax+ecx*4]
     pop eax
     cmp edx,0
     je .nowrite
@@ -1221,7 +1221,7 @@ NEWSYM savepcx
     mov byte[edi],0C1h
     inc edi
     inc ecx
-    mov byte[edi],al
+    mov [edi],al
 .norep
     inc ecx
     inc esi
@@ -1311,19 +1311,19 @@ NEWSYM savepcx
     shr ax,cl
     and ax,1Fh
     shl al,3
-    mov byte[edi],al
+    mov [edi],al
     mov ax,[esi]
     mov cl,[vesa2_gpos]
     shr ax,cl
     and ax,1Fh
     shl al,3
-    mov byte[edi+1],al
+    mov [edi+1],al
     mov ax,[esi]
     mov cl,[vesa2_rpos]
     shr ax,cl
     and ax,1Fh
     shl al,3
-    mov byte[edi+2],al
+    mov [edi+2],al
     pop ecx
     add edi,3
     add esi,2
@@ -1389,9 +1389,9 @@ NEWSYM GetFreeFile
     add al,48
     add dl,48
     mov esi,.filename+5
-    mov byte[esi],cl
-    mov byte[esi+1],al
-    mov byte[esi+2],dl
+    mov [esi],cl
+    mov [esi+1],al
+    mov [esi+2],dl
     jmp .findagain
 .nofile
     mov edx,.filename
@@ -1445,21 +1445,21 @@ NEWSYM GetFreeFile
     mov bx,1000
     div bx
     add al,48
-    mov byte[esi+1],al
+    mov [esi+1],al
     mov ax,dx
     xor edx,edx
     mov bx,100
     div bx
     add al,48
-    mov byte[esi+2],al
+    mov [esi+2],al
     mov ax,dx
     xor edx,edx
     mov bx,10
     div bx
     add al,48
     add dl,48
-    mov byte[esi+3],al
-    mov byte[esi+4],dl
+    mov [esi+3],al
+    mov [esi+4],dl
     jmp .findagain
 .nofile
     mov edx,.imagefname
@@ -1526,19 +1526,19 @@ NEWSYM save16b2
     shr ax,cl
     and ax,1Fh
     shl al,3
-    mov byte[edi],al
+    mov [edi],al
     mov ax,[es:esi]
     mov cl,[vesa2_gpos]
     shr ax,cl
     and ax,1Fh
     shl al,3
-    mov byte[edi+1],al
+    mov [edi+1],al
     mov ax,[es:esi]
     mov cl,[vesa2_rpos]
     shr ax,cl
     and ax,1Fh
     shl al,3
-    mov byte[edi+2],al
+    mov [edi+2],al
     pop ecx
     add edi,3
     add esi,2

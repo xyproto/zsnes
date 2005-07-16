@@ -243,54 +243,54 @@ GUIStringGreater2:
     mov dword[GUIWincol],148
 .nozero
     drawshadow2 %1,dword[GUIwinsizex+%1*4],dword[GUIwinsizey+%1*4]
-    mov eax,dword[GUIwinposx+%1*4]
-    mov ebx,dword[GUIwinposy+%1*4]
+    mov eax,[GUIwinposx+%1*4]
+    mov ebx,[GUIwinposy+%1*4]
     mov ecx,eax
     add ecx,dword[GUIwinsizex+%1*4]
     DrawTitleBar
-    mov esi,dword[GUIwinsizey+%1*4]
+    mov esi,[GUIwinsizey+%1*4]
     dec esi
-    mov edx,dword[GUIWincol]
+    mov edx,[GUIWincol]
     add edx,2
 .loop
     DrawGUILine
     dec esi
     jnz .loop
-    mov edx,dword[GUIWincol]
+    mov edx,[GUIWincol]
     DrawGUILine
-    mov eax,dword[GUIwinposx+%1*4]
-    mov ebx,dword[GUIwinposy+%1*4]
+    mov eax,[GUIwinposx+%1*4]
+    mov ebx,[GUIwinposy+%1*4]
     add ebx,10
     mov ecx,eax
-    mov esi,dword[GUIwinsizey+%1*4]
-    mov edx,dword[GUIWincol]
+    mov esi,[GUIwinsizey+%1*4]
+    mov edx,[GUIWincol]
     add edx,3
     dec esi
 .loop2
     DrawGUILine
     dec esi
     jnz .loop2
-    mov eax,dword[GUIwinposx+%1*4]
-    mov ebx,dword[GUIwinposy+%1*4]
+    mov eax,[GUIwinposx+%1*4]
+    mov ebx,[GUIwinposy+%1*4]
     add ebx,10
     add eax,dword[GUIwinsizex+%1*4]
     mov ecx,eax
-    mov esi,dword[GUIwinsizey+%1*4]
-    mov edx,dword[GUIWincol]
+    mov esi,[GUIwinsizey+%1*4]
+    mov edx,[GUIWincol]
     add edx,1
 .loop3
     DrawGUILine
     dec esi
     jnz .loop3
-    mov ebx,dword[GUIwinposy+%1*4]
+    mov ebx,[GUIwinposy+%1*4]
     add ebx,3
-    mov edx,dword[GUIwinposx+%1*4]
+    mov edx,[GUIwinposx+%1*4]
     add edx,3
     mov byte[GUItextcolor],184
     GUIOuttextwin %2
-    mov ebx,dword[GUIwinposy+%1*4]
+    mov ebx,[GUIwinposy+%1*4]
     add ebx,2
-    mov edx,dword[GUIwinposx+%1*4]
+    mov edx,[GUIwinposx+%1*4]
     add edx,2
     mov byte[GUItextcolor],220
     cmp byte[GUIWincoladd],0
@@ -298,16 +298,16 @@ GUIStringGreater2:
     sub byte[GUItextcolor],6
 .zero2
     GUIOuttextwin %2
-    mov eax,dword[GUIwinposx+%1*4]
-    mov ebx,dword[GUIwinposy+%1*4]
+    mov eax,[GUIwinposx+%1*4]
+    mov ebx,[GUIwinposy+%1*4]
     add eax,dword[GUIwinsizex+%1*4]
     sub eax,10
     GUIDisplayIcon GUIIconDataClose
 %endmacro
 
 %macro DrawGUIWinBox 6
-    mov eax,dword[GUIwinposx+%1*4]
-    mov ebx,dword[GUIwinposy+%1*4]
+    mov eax,[GUIwinposx+%1*4]
+    mov ebx,[GUIwinposy+%1*4]
     add eax,%2
     add ebx,%3
     mov ecx,eax
@@ -321,7 +321,7 @@ GUIStringGreater2:
 %endmacro
 
 %macro DrawGUIWinBox2 5
-    mov eax,dword[GUIwinposx+%1*4]
+    mov eax,[GUIwinposx+%1*4]
     add eax,%2
     mov ecx,eax
     add ecx,%3-%2+1
@@ -340,8 +340,8 @@ GUIStringGreater2:
 
 %macro DrawGUIWinBox3 6
     mov ecx,%4
-    mov eax,dword[GUIwinposx+%1*4]
-    mov ebx,dword[GUIwinposy+%1*4]
+    mov eax,[GUIwinposx+%1*4]
+    mov ebx,[GUIwinposy+%1*4]
     add eax,%2
     add ebx,%3
     add ecx,eax
@@ -356,7 +356,7 @@ GUIStringGreater2:
 %endmacro
 
 %macro DrawGUIButton 9
-    mov dl,byte[GUItextcolor]
+    mov dl,[GUItextcolor]
     sub dl,5
     cmp byte[GUICBHold],%7
     jne %%noa
@@ -459,7 +459,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
 
 %macro GUIDisplayTextY 4                    ; Yellow Text&Shadow
     mov al,[GUIWincol]
-    mov byte[GUItextcolor],al
+    mov [GUItextcolor],al
     GUIOuttextwin2 %1,%2,%3,%4
     mov byte[GUItextcolor],163
     cmp byte[GUIWincoladd],0
@@ -685,11 +685,11 @@ DisplayGUILoad:
 
     mov eax,[spcBuffera]
     inc eax
-    mov dword[cloadnpos],eax
+    mov [cloadnpos],eax
     mov eax,[GUIfileentries]
     sub eax,[GUIcurrentviewloc]
     dec eax
-    mov dword[cloadnleft],eax
+    mov [cloadnleft],eax
     mov eax,[GUIcurrentviewloc]
     mov [cloadnposb],eax
     shl eax,5
@@ -714,11 +714,11 @@ DisplayGUILoad:
 
     mov eax,[spcBuffera]
     inc eax
-    mov dword[cloadnpos],eax
+    mov [cloadnpos],eax
     mov eax,[GUIdirentries]
     sub eax,[GUIcurrentdirviewloc]
     dec eax
-    mov dword[cloadnleft],eax
+    mov [cloadnleft],eax
     mov eax,[GUIcurrentdirviewloc]
     add eax,[GUIfileentries]
     mov [cloadnposb],eax
@@ -932,7 +932,7 @@ DisplayGUIChoseSave:                    ; Pick Save State
 
     mov dword[GUITemp],GUIIconDataButtonHole           ; Radio Buttons
     mov ebx,[statefileloc]
-    mov al,byte[fnamest+ebx]
+    mov al,[fnamest+ebx]
     mov [GUIChoseSaveText2],al
     GUIDisplayButtonHole 2,10,28,byte[GUIChoseSaveText2],'t'
     GUIDisplayButtonHole 2,30,28,byte[GUIChoseSaveText2],'1'
@@ -976,8 +976,8 @@ mov dl,[GUIWincol]
 %endmacro
 
 %macro DGOptnsDrawBox 3
-    mov eax,dword[GUIwinposx+9*4]
-    mov ebx,dword[GUIwinposy+9*4]
+    mov eax,[GUIwinposx+9*4]
+    mov ebx,[GUIwinposy+9*4]
     add eax,%1
     add ebx,%2
     mov ecx,eax
@@ -1003,8 +1003,8 @@ mov dl,[GUIWincol]
 %endmacro
 
 %macro DDrawBox 4
-    mov eax,dword[GUIwinposx+%1*4]
-    mov ebx,dword[GUIwinposy+%1*4]
+    mov eax,[GUIwinposx+%1*4]
+    mov ebx,[GUIwinposy+%1*4]
     add eax,%2+1
     add ebx,%3+1
     mov ecx,eax
@@ -1031,8 +1031,8 @@ mov dl,[GUIWincol]
 %endmacro
 
 %macro DGOptnsDrawBox2 3
-    mov eax,dword[GUIwinposx+3*4]
-    mov ebx,dword[GUIwinposy+3*4]
+    mov eax,[GUIwinposx+3*4]
+    mov ebx,[GUIwinposy+3*4]
     add eax,%1
     add ebx,%2
     mov ecx,eax
@@ -1084,7 +1084,7 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
     shl eax,4
     add eax,ebx
     add eax,GUIInputNames
-    mov dword[GUITemp],eax
+    mov [GUITemp],eax
     GUIDisplayTextY 3,6+24,83,[GUITemp]
     GUIDisplayTextY 3,6,83,GUIInputTextA3
 
@@ -1150,7 +1150,7 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
     shl eax,4
     add eax,[GUIcurrentinputviewloc]
     add eax,GUIInputNames
-    mov dword[GUITemp],eax
+    mov [GUITemp],eax
     GUIDisplayTextG 3,11,38,[GUITemp]
     add dword[GUITemp],17
     GUIDisplayTextG 3,11,38+8,[GUITemp]
@@ -1622,7 +1622,7 @@ DisplayGUIVideo:
     add eax,ebx
     add eax,ebx
     add eax,GUIVideoModeNames
-    mov dword[GUITemp],eax
+    mov [GUITemp],eax
     GUIDisplayTextG 5,11,30,[GUITemp]
     add dword[GUITemp],18
     GUIDisplayTextG 5,11,30+8,[GUITemp]
@@ -1640,7 +1640,7 @@ DisplayGUIVideo:
     add eax,ebx
     add eax,ebx
     add eax,GUIVideoModeNames
-    mov dword[GUITemp],eax
+    mov [GUITemp],eax
     GUIDisplayTextY 5,7,196,GUIVideoTextE
     GUIDisplayTextY 5,49,196,[GUITemp]
     ret
@@ -1746,8 +1746,8 @@ DisplayGUISound:                     ; Sound Related Options
     add [GUITemp],eax
     GUIDisplayTextG 6,23,64,[GUITemp]
 
-    mov eax,dword[GUIwinposx+6*4]   ; Volume Level Slider
-    mov ebx,dword[GUIwinposy+6*4]
+    mov eax,[GUIwinposx+6*4]   ; Volume Level Slider
+    mov ebx,[GUIwinposy+6*4]
     mov ecx,eax
     add eax,15
     add ecx,15+100
@@ -1969,7 +1969,7 @@ DisplayGUICheat:       ; Add/Browse Cheats menu
     mov eax,[NumCheats]
     sub eax,[GUIcurrentcheatviewloc]
     dec eax
-    mov dword[ccheatnleft],eax
+    mov [ccheatnleft],eax
     mov eax,[GUIcurrentcheatviewloc]
     mov ebx,eax
     shl eax,5
@@ -2256,7 +2256,7 @@ CheatSearchingComp:           ; Comparative search
 
 FindChtSrcRes:                        ; Calculate search results
     inc edi
-    mov eax,dword[vidbuffer]
+    mov eax,[vidbuffer]
     add eax,129600+65536*2
     mov ecx,16384
     xor esi,esi
@@ -2319,7 +2319,7 @@ Cheatmodeview:                       ; View ResultsWindow
     mov edi,[GUIcurrentchtsrcviewloc]
     call FindChtSrcRes
     mov [NumCheatSrc],eax
-    mov dword[ccheatnpos],esi
+    mov [ccheatnpos],esi
                                             ; Display Window Contents
     mov byte[GUItextcolor],223
     mov eax,[NumCheatSrc]
@@ -2328,8 +2328,8 @@ Cheatmodeview:                       ; View ResultsWindow
     jbe .notof
     mov eax,12
 .notof
-    mov dword[ccheatnleft],eax
-    mov dword[ccheatnleftb],eax
+    mov [ccheatnleft],eax
+    mov [ccheatnleftb],eax
 
     mov dword[CheatSearchYPos],24
     mov dword[CheatSearchXPos],10
@@ -2386,7 +2386,7 @@ Cheatmodeview:                       ; View ResultsWindow
     cmp byte[GUICSrcTextE+12],0
     je near .noprevious
     mov esi,GUICSrcTextG1
-    mov ebx,dword[vidbuffer]
+    mov ebx,[vidbuffer]
     add ebx,129600
     add ebx,[CSCurEntry]
     mov eax,[ebx]
@@ -2431,8 +2431,8 @@ Cheatmodeview:                       ; View ResultsWindow
     mov dword[CheatSearchXPos],11
     mov eax,[CSStartEntry]
     mov [CSCurEntry],eax
-    mov eax,dword[ccheatnleftb]
-    mov dword[ccheatnleft],eax
+    mov eax,[ccheatnleftb]
+    mov [ccheatnleft],eax
     inc byte[CheatLooped]
     cmp byte[CheatLooped],2
     jne near .nextdisplay
@@ -2853,8 +2853,8 @@ DisplayGUIOptns:              ; GUI Options
 .nopal1b
     pop eax
 
-    mov eax,dword[GUIwinposx+10*4]        ; Slider Bars
-    mov ebx,dword[GUIwinposy+10*4]
+    mov eax,[GUIwinposx+10*4]        ; Slider Bars
+    mov ebx,[GUIwinposy+10*4]
     mov ecx,eax
     add eax,25
     add ecx,25+32*4
@@ -2868,7 +2868,7 @@ DisplayGUIOptns:              ; GUI Options
     add ebx,11
     DrawGUILine
     inc ecx
-    mov ebx,dword[GUIwinposy+10*4]
+    mov ebx,[GUIwinposy+10*4]
     inc eax
     add ebx,125
     sub dl,13
@@ -3306,24 +3306,24 @@ SECTION .text
     mov al,211
 .zero3
     sub al,15
-    mov byte[TextColorSp+2],al
+    mov [TextColorSp+2],al
     mov al,[GUIWincol]
-    mov byte[TextColorSp],al
+    mov [TextColorSp],al
     mov al,163
     cmp byte[GUIWincoladd],0
     je .zero
     mov al,164
     mov byte[GUItextcolor],164
 .zero
-    mov byte[TextColorSp+1],al
+    mov [TextColorSp+1],al
 %endmacro
 
 %macro GUIOuttextwin2b 4        ; Special, yellow text
     mov al,[TextColorSp]
-    mov byte[GUItextcolor],al
+    mov [GUItextcolor],al
     GUIOuttextwin2 %1,%2,%3,%4
     mov al,[TextColorSp+1]
-    mov byte[GUItextcolor],al
+    mov [GUItextcolor],al
     GUIOuttextwin2 %1,%2-1,%3-1,%4
 %endmacro
 
@@ -3390,7 +3390,7 @@ SECTION .text
 %macro DrawSlideBar 10
     DrawSlideBarWin %1,%2,%3+8,%4,%5,%6,%7-16,%8
     mov al,[TextColorSp+2]
-    mov byte[GUItextcolor],al
+    mov [GUItextcolor],al
     cmp byte[GUICHold],%9
     jne .noholda
     add byte[GUIWincoladd],3
@@ -3401,7 +3401,7 @@ SECTION .text
     sub byte[GUIWincoladd],3
 .noholda2
     mov al,[TextColorSp+2]
-    mov byte[GUItextcolor],al
+    mov [GUItextcolor],al
     cmp byte[GUICHold],%10
     jne .noholdb
     add byte[GUIWincoladd],3
@@ -4405,8 +4405,8 @@ DisplayGUISpeed:                    ;Speed Options
 
     cmp byte[frameskip],0
     jne near .noslider
-    mov eax,dword[GUIwinposx+21*4]           ;Slider
-    mov ebx,dword[GUIwinposy+21*4]
+    mov eax,[GUIwinposx+21*4]           ;Slider
+    mov ebx,[GUIwinposy+21*4]
     add eax,15
     add ebx,175
     mov ecx,eax

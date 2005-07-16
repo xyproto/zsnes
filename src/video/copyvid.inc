@@ -4535,7 +4535,7 @@ Process2xSaI:
     mov dl,[resolutn]
     dec dl
     dec dl    ; Compensate for top/bottom line + 2 lines in 2xSaI
-    mov byte[lineleft],dl
+    mov [lineleft],dl
     mov dword[esi+512],0
     mov dword[esi+512+576*2],0
     mov ebx,[vidbufferofsb]
@@ -6499,7 +6499,7 @@ NEWSYM getcopyvesa2320x240x16b
 .res239
     add edi,[VidStartDraw]
     xor ebx,ebx
-    mov bx,word[resolutn]
+    mov bx,[resolutn]
     mov esi,[vidbuffer]
     add esi,32+288*2
     mov ecx,256
@@ -6525,7 +6525,7 @@ NEWSYM getcopyvesa2320x240x16b
 
 ConvertImageDatared10:
     xor ebx,ebx
-    mov bx,word[resolutn]
+    mov bx,[resolutn]
     mov esi,[vidbuffer]
     add esi,32+288*2
     mov ecx,256

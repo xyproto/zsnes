@@ -609,7 +609,7 @@ NEWSYM AdjustFrequency
 .next
 
       mov ecx,[SoundQuality]
-      mov eax,dword[SBToSPCSpeeds+ecx*4]
+      mov eax,[SBToSPCSpeeds+ecx*4]
 
 %ifdef __MSDOS__
       ; code for supporting vibra cards (coded by Peter Santing)
@@ -619,7 +619,7 @@ NEWSYM AdjustFrequency
       cmp byte[SBHDMA],0
       je .not16bit
 .vibrafix
-      mov eax,dword[SBToSPCSpeeds2+ecx*4]
+      mov eax,[SBToSPCSpeeds2+ecx*4]
 .not16bit
 %endif
       mov [SBToSPC],eax
@@ -2744,12 +2744,12 @@ SECTION .text
       and al,0Fh
       cmp eax,0Fh
       je .skipattack
-      mov ebx,dword[AttackRate+eax*4]
-      mov dword[Voice0Time+%1*4],ebx
+      mov ebx,[AttackRate+eax*4]
+      mov [Voice0Time+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
       div ebx
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       mov byte[Voice0State+%1],8
       mov dword[Voice0EnvInc+%1*4],0
       mov byte[GainDecBendDataDat+%1],7Fh
@@ -2802,7 +2802,7 @@ SECTION .text
       mov byte[GainDecBendDataDat+%1],127
       div ebx
       neg eax
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       mov byte[Voice0State+%1],9
       mov byte[Voice0Status+%1],1
       jmp .finproc
@@ -2821,7 +2821,7 @@ SECTION .text
       add ebx,eax
       mov dword[Voice0EnvInc+%1*4],007FFFFFh
       shr ebx,5
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       mov [GainDecBendDataTime+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
@@ -2830,7 +2830,7 @@ SECTION .text
       mov byte[GainDecBendDataDat+%1],127
       div ebx
       neg eax
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       mov byte[Voice0State+%1],7
       mov byte[Voice0Status+%1],1
       jmp .finproc
@@ -2847,7 +2847,7 @@ SECTION .text
       mov ebx,[DecreaseRateExp+eax*4]
       mov dword[Voice0EnvInc+%1*4],007FFFFFh
       shr ebx,5
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       mov [GainDecBendDataTime+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
@@ -2856,7 +2856,7 @@ SECTION .text
       mov byte[GainDecBendDataDat+%1],127
       div ebx
       neg eax
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       mov byte[Voice0State+%1],7
       mov byte[Voice0Status+%1],1
       jmp .finproc
@@ -2866,12 +2866,12 @@ SECTION .text
       and al,1Fh
       mov ebx,[Decrease+eax*4]
       mov dword[Voice0EnvInc+%1*4],007FFFFFh
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
       div ebx
       neg eax
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       mov byte[Voice0State+%1],5
       mov byte[Voice0Status+%1],1
       jmp .finproc
@@ -2883,11 +2883,11 @@ SECTION .text
       and al,1Fh
       mov ebx,[Increase+eax*4]
       mov dword[Voice0EnvInc+%1*4],0
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
       div ebx
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       mov ebx,[Voice0Time+%1*4]
       mov eax,ebx
       shr eax,2
@@ -2903,11 +2903,11 @@ SECTION .text
       and al,1Fh
       mov ebx,[Increase+eax*4]
       mov dword[Voice0EnvInc+%1*4],0
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
       div ebx
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       mov byte[Voice0State+%1],3
       mov byte[Voice0Status+%1],1
       jmp .finproc
@@ -2915,7 +2915,7 @@ SECTION .text
       mov al,[DSPMem+07h+%1*10h]
       and al,7Fh
       mov dword[Voice0EnvInc+%1*4],0
-      mov byte[Voice0EnvInc+%1*4+2],al
+      mov [Voice0EnvInc+%1*4+2],al
       mov dword[Voice0Time+%1*4],0FFFFFFFFh
       mov dword[Voice0IncNumber+%1*4],0
       mov byte[Voice0State+%1],4
@@ -2924,11 +2924,11 @@ SECTION .text
 .finproc
       cmp dword[spc700temp+4],0
       je .skipall
-      mov eax,dword[Voice0Time+%1*4]
+      mov eax,[Voice0Time+%1*4]
       mov [TimeTemp+%1*4],eax
-      mov eax,dword[Voice0IncNumber+%1*4]
+      mov eax,[Voice0IncNumber+%1*4]
       mov [IncNTemp+%1*4],eax
-      mov eax,dword[Voice0EnvInc+%1*4]
+      mov eax,[Voice0EnvInc+%1*4]
       mov [EnvITemp+%1*4],eax
       mov al,[Voice0State+%1]
       mov [StatTemp+%1],al
@@ -2937,14 +2937,14 @@ SECTION .text
       mov dword[Voice0Time+%1*4],127
       shr eax,7
       neg eax
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       mov byte[Voice0State+%1],210
       jmp .novoice
 .skipall
       mov ax,[DSPMem+02h+%1*10h]
       cmp word[Voice0Pitch+%1*2],ax
       je .nopitchc
-      mov word[Voice0Pitch+%1*2],ax
+      mov [Voice0Pitch+%1*2],ax
       And EAX, 03FFFh
       Mul dword[dspPAdj]
       ShRD EAX,EDX,8
@@ -2974,10 +2974,10 @@ SECTION .text
       add ax,dx
       xor ebx,ebx
       mov bx,[spcRam+eax]
-      mov dword[Voice0Ptr+%1*4],ebx
+      mov [Voice0Ptr+%1*4],ebx
       xor ebx,ebx
       mov bx,[spcRam+eax+2]
-      mov dword[Voice0LoopPtr+%1*4],ebx
+      mov [Voice0LoopPtr+%1*4],ebx
       pop edx
       pop ebx
       pop eax
@@ -3047,14 +3047,14 @@ NEWSYM Voice7Start
       add ax,dx
       xor ebx,ebx
       mov bx,[spcRam+eax]
-      mov dword[Voice0Ptr+%1*4],ebx
+      mov [Voice0Ptr+%1*4],ebx
       xor ebx,ebx
       mov bx,[spcRam+eax+2]
-      mov dword[Voice0LoopPtr+%1*4],ebx
+      mov [Voice0LoopPtr+%1*4],ebx
       mov ax,[DSPMem+02h+%1*10h]
       cmp word[Voice0Pitch+%1*2],ax
       je %%nopitchc
-      mov word[Voice0Pitch+%1*2],ax
+      mov [Voice0Pitch+%1*2],ax
       And EAX, 03FFFh
       Mul dword[dspPAdj]
       ShRD EAX,EDX,8
@@ -3132,7 +3132,7 @@ section .text
 	shl eax,cl
 	pop ecx
 %else
-	mov al,byte[powhack]
+	mov al,[powhack]
 %endif
 %endmacro
 
@@ -3154,12 +3154,12 @@ NEWSYM NonEchoMonoPM
     powshithack
     test byte[DSPMem+3Dh],al
     jz .PMod
-    mov eax, dword[NoiseInc]
+    mov eax, [NoiseInc]
     add dword[NoisePointer],eax
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov word[LastNoise],ax
+    mov [LastNoise],ax
     jmp .AfterNoise1
 .PMod
     ProcessPMod ebp
@@ -3199,12 +3199,12 @@ NEWSYM NonEchoStereoPM
     powshithack
     test byte[DSPMem+3Dh],al
     jz .PMod
-    mov eax, dword[NoiseInc]
+    mov eax, [NoiseInc]
     add dword[NoisePointer],eax
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov word[LastNoise],ax
+    mov [LastNoise],ax
     jmp .AfterNoise1b
 .PMod
     ProcessPMod ebp
@@ -3262,12 +3262,12 @@ NEWSYM EchoMonoPM
     powshithack
     test byte[DSPMem+3Dh],al
     jz .PMod
-    mov eax, dword[NoiseInc]
+    mov eax, [NoiseInc]
     add dword[NoisePointer],eax
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov word[LastNoise],ax
+    mov [LastNoise],ax
     jmp .AfterNoise1
 .PMod
     ProcessPMod ebp
@@ -3328,12 +3328,12 @@ NEWSYM EchoStereoPM
     powshithack
     test byte[DSPMem+3Dh],al
     jz .PMod
-    mov eax, dword[NoiseInc]
+    mov eax, [NoiseInc]
     add dword[NoisePointer],eax
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov word[LastNoise],ax
+    mov [LastNoise],ax
     jmp .AfterNoise1b
 .PMod
     ProcessPMod ebp
@@ -3598,12 +3598,12 @@ NEWSYM NonEchoMonoInterpolated
     powshithack
     test byte[DSPMem+3Dh],al
     jz .PMod
-    mov eax, dword[NoiseInc]
+    mov eax, [NoiseInc]
     add dword[NoisePointer],eax
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov word[LastNoise],ax
+    mov [LastNoise],ax
     jmp .AfterNoise1
 .PMod
     ProcessPMod ebp
@@ -3650,12 +3650,12 @@ NEWSYM EchoMonoInterpolated
     powshithack
     test byte[DSPMem+3Dh],al
     jz .PMod
-    mov eax, dword[NoiseInc]
+    mov eax, [NoiseInc]
     add dword[NoisePointer],eax
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov word[LastNoise],ax
+    mov [LastNoise],ax
     jmp .AfterNoise1
 .PMod
     ProcessPMod ebp
@@ -3723,12 +3723,12 @@ NEWSYM NonEchoStereoInterpolated
     powshithack
     test byte[DSPMem+3Dh],al
     jz .PMod
-    mov eax, dword[NoiseInc]
+    mov eax, [NoiseInc]
     add dword[NoisePointer],eax
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov word[LastNoise],ax
+    mov [LastNoise],ax
     jmp .AfterNoise1b
 .PMod
     ProcessPMod ebp
@@ -3791,12 +3791,12 @@ NEWSYM EchoStereoInterpolated
     powshithack
     test byte[DSPMem+3Dh],al
     jz .PMod
-    mov eax, dword[NoiseInc]
+    mov eax, [NoiseInc]
     add dword[NoisePointer],eax
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov word[LastNoise],ax
+    mov [LastNoise],ax
     jmp .AfterNoise1b
 .PMod
     ProcessPMod ebp
@@ -3905,12 +3905,12 @@ NEWSYM NonEchoMono
     powshithack
     test byte[DSPMem+3Dh],al
     jz .PMod
-    mov eax, dword[NoiseInc]
+    mov eax, [NoiseInc]
     add dword[NoisePointer],eax
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov word[LastNoise],ax
+    mov [LastNoise],ax
     jmp .AfterNoise1
 .PMod
     ProcessPMod ebp
@@ -3949,12 +3949,12 @@ NEWSYM NonEchoStereo
     powshithack
     test byte[DSPMem+3Dh],al
     jz .PMod
-    mov eax, dword[NoiseInc]
+    mov eax, [NoiseInc]
     add dword[NoisePointer],eax
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov word[LastNoise],ax
+    mov [LastNoise],ax
     jmp .AfterNoise1b
 .PMod
     ProcessPMod ebp
@@ -4011,12 +4011,12 @@ NEWSYM EchoMono
     powshithack
     test byte[DSPMem+3Dh],al
     jz .PMod
-    mov eax, dword[NoiseInc]
+    mov eax, [NoiseInc]
     add dword[NoisePointer],eax
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov word[LastNoise],ax
+    mov [LastNoise],ax
     jmp .AfterNoise1
 .PMod
     ProcessPMod ebp
@@ -4077,12 +4077,12 @@ NEWSYM EchoStereo
     powshithack
     test byte[DSPMem+3Dh],al
     jz .PMod
-    mov eax, dword[NoiseInc]
+    mov eax, [NoiseInc]
     add dword[NoisePointer],eax
     mov eax,[NoisePointer]
     shr eax,18 ; maybe will need a change
     mov ax,[NoiseData+eax*2]
-    mov word[LastNoise],ax
+    mov [LastNoise],ax
     jmp .AfterNoise1b
 .PMod
     ProcessPMod ebp
@@ -4167,7 +4167,7 @@ NEWSYM EchoStereo
     mov ax,[DSPMem+02h+%1*10h]
     cmp word[Voice0Pitch+%1*2],ax
     je %%nopitchc
-    mov word[Voice0Pitch+%1*2],ax
+    mov [Voice0Pitch+%1*2],ax
     And EAX, 03FFFh
     Mul dword[dspPAdj]
     ShRD EAX,EDX,8
@@ -4212,7 +4212,7 @@ NEWSYM EchoStereo
     mov al,[DSPMem+07h+%1*10h]
     and al,1Fh
     mov ebx,[Increase+eax*4]
-    mov dword[Voice0Time+%1*4],ebx
+    mov [Voice0Time+%1*4],ebx
     shr dword[Voice0IncNumber+%1*4],2
     mov byte[Voice0State+%1],3
     pop ebx
@@ -4264,7 +4264,7 @@ NEWSYM EchoStereo
       mov byte[GainDecBendDataDat+%1],127
       div ebx
       neg eax
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       pop edx
       pop ebx
       mov byte[Voice0State+%1],9
@@ -4284,7 +4284,7 @@ NEWSYM EchoStereo
       add ebx,eax
       mov dword[Voice0EnvInc+%1*4],007FFFFFh
       shr ebx,5
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       mov [GainDecBendDataTime+%1*4],ebx
       xor edx,edx
       mov eax,127*65536-118*65536
@@ -4292,7 +4292,7 @@ NEWSYM EchoStereo
       mov byte[GainDecBendDataDat+%1],127
       div ebx
       neg eax
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       pop edx
       pop ebx
       mov byte[Voice0State+%1],7
@@ -4373,7 +4373,7 @@ NEWSYM EchoStereo
     mov dh,[GainDecBendData+ebx]
     mov dword[Voice0EnvInc+%1*4],0
     mov al,[VolumeConvTable+edx*2]
-    mov byte[Voice0EnvInc+%1*4+2],al
+    mov [Voice0EnvInc+%1*4+2],al
     mov dh,[GainDecBendData+ebx+1]
     cmp dh,255
     je %%nomore
@@ -4432,14 +4432,14 @@ NEWSYM EchoStereo
     mov dl,[DSPMem+06h+%1*10h]
     shr dl,5
     and dl,07h
-    mov dword[Voice0Time+%1*4],ebx
+    mov [Voice0Time+%1*4],ebx
     mov al,[SustainValue+edx]
     xor al,7Fh
     shl eax,16
     xor edx,edx
     div ebx
     neg eax
-    mov dword[Voice0IncNumber+%1*4],eax
+    mov [Voice0IncNumber+%1*4],eax
     mov byte[Voice0State+%1],2
     pop edx
     pop ebx
@@ -4474,13 +4474,13 @@ NEWSYM EchoStereo
     jg %%sustainokay
     mov ebx,100
 %%sustainokay
-    mov dword[Voice0Time+%1*4],ebx
+    mov [Voice0Time+%1*4],ebx
     mov al,[Voice0EnvInc+%1*4+2]
     shl eax,16
     xor edx,edx
     div ebx
     neg eax
-    mov dword[Voice0IncNumber+%1*4],eax
+    mov [Voice0IncNumber+%1*4],eax
     mov byte[Voice0State+%1],4
     pop edx
     pop ebx
@@ -4721,7 +4721,7 @@ NEWSYM EchoStereo
 %%Decode1Block
     sub dword[BRRPlace0+%1*8],10000000h
     push esi
-    mov esi, dword[Voice0Ptr+%1*4]
+    mov esi, [Voice0Ptr+%1*4]
 ;    cmp byte[Voice0Looped+%1],0
 ;    je %%nobrrcheck
 
@@ -4739,9 +4739,9 @@ NEWSYM EchoStereo
     add edi,[spcBuffera]
     mov eax,[Voice0Prev0+%1*4]
     mov [Voice0BufPtr+%1*4],edi
-    mov dword[prev0],eax
+    mov [prev0],eax
     mov eax,[Voice0Prev1+%1*4]
-    mov dword[prev1],eax
+    mov [prev1],eax
     mov ecx,%1
     push ebp
     call BRRDecode
@@ -4791,9 +4791,9 @@ NEWSYM EchoStereo
 	movsx eax,word[BRRreadahead+6]
 	mov [PSampleBuf+22*4+%1*24*4],eax
 
-    mov eax,dword[prev0]
+    mov eax,[prev0]
     mov [Voice0Prev0+%1*4],eax
-    mov eax,dword[prev1]
+    mov eax,[prev1]
     mov [Voice0Prev1+%1*4],eax
     mov al,[loopbl]
     mov [Voice0Loop+%1],al
@@ -4936,7 +4936,7 @@ NEWSYM EchoStereo
 
 %macro FiltTapProc 1
     sub edx,2
-    mov eax,dword[FIRTAPVal0+%1*4]
+    mov eax,[FIRTAPVal0+%1*4]
     and edx,0Fh
     mov ebx,[FiltLoop+edx*4]
     imul eax,ebx
@@ -4946,7 +4946,7 @@ NEWSYM EchoStereo
 
 %macro FiltTapProcR 1
     sub edx,2
-    mov eax,dword[FIRTAPVal0+%1*4]
+    mov eax,[FIRTAPVal0+%1*4]
     and edx,0Fh
     mov ebx,[FiltLoopR+edx*4]
     imul eax,ebx

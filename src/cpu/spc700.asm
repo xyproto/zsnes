@@ -476,7 +476,7 @@ EXTSYM SPCSave_dump, SPCSave_handle, Write_File
 	mov [SPCSave_ports+%1], al
 	pushad
 	mov byte[SPCSave_buffer+2], %1
-	mov byte[SPCSave_buffer+3], al
+	mov [SPCSave_buffer+3], al
 	mov ebx, [SPCSave_handle]
 	mov ecx, 4
 	mov edx, SPCSave_buffer
@@ -747,7 +747,7 @@ NEWSYM OpFF       ; STOP         standby STOP mode       .........
       ret
 NEWSYM Op9F       ; XCN A     A(7-4) <-> A(3-0)     N......Z.
       ror byte[spcA],4
-      mov al,byte[spcA]
+      mov al,[spcA]
       mov [spcNZ],al
       ret
 
@@ -1396,7 +1396,7 @@ NEWSYM OpB9       ; SBC (X),(Y)  (X) <- (X)-(Y)-!C         NV..H..ZC
 
 NEWSYM OpC4       ; MOV dp,A     A -> (dp)            ........
       mov bl,[ebp]
-      mov al, byte[spcA]
+      mov al, [spcA]
       add ebx,[spcRamDP]
       inc ebp
       WriteByte
@@ -1405,7 +1405,7 @@ NEWSYM OpC4       ; MOV dp,A     A -> (dp)            ........
 NEWSYM OpD4       ; MOV dp+x,A   A -> (dp+X)          ........
       mov bl,[ebp]
       add bl,[spcX]
-      mov al, byte[spcA]
+      mov al, [spcA]
       add ebx,[spcRamDP]
       inc ebp
       WriteByte
@@ -1413,7 +1413,7 @@ NEWSYM OpD4       ; MOV dp+x,A   A -> (dp+X)          ........
 
 NEWSYM OpC5       ; MOV labs,A   A -> (abs)           ........
       mov bx,[ebp]
-      mov al, byte[spcA]
+      mov al, [spcA]
       add ebp,2
       add ebx,spcRam
       WriteByte
@@ -1422,7 +1422,7 @@ NEWSYM OpC5       ; MOV labs,A   A -> (abs)           ........
 NEWSYM OpD5       ; MOV labs+X,A A -> (abs+X)         ........
       mov bl,[spcX]
       add bx,[ebp]
-      mov al, byte[spcA]
+      mov al, [spcA]
       add ebp,2
       add ebx,spcRam
       WriteByte
@@ -1431,13 +1431,13 @@ NEWSYM OpD5       ; MOV labs+X,A A -> (abs+X)         ........
 NEWSYM OpC6       ; MOV (X),A    A -> (X)             ........
       mov bl,[spcX]
       add ebx,[spcRamDP]
-      mov al, byte[spcA]
+      mov al, [spcA]
       WriteByte
       ret
 
 NEWSYM OpD6       ; MOV labs+Y,A A -> (abs+Y)         ........
       mov bl,[spcY]
-      mov al, byte[spcA]
+      mov al, [spcA]
       add bx,[ebp]
       add ebp,2
       add ebx,spcRam
@@ -1450,10 +1450,10 @@ NEWSYM OpC7       ; MOV (dp+X),A A -> ((dp+X+1)(dp+X))     ........
       xor eax,eax
       add ebx,[spcRamDP]
       inc ebp
-      mov ax, word[ebx]
+      mov ax, [ebx]
       mov ebx,eax
       add ebx,spcRam
-      mov al, byte[spcA]
+      mov al, [spcA]
       WriteByte
       ret
 
@@ -1462,11 +1462,11 @@ NEWSYM OpD7       ; MOV (dp)+Y,A A -> ((dp+1)(dp)+Y)       ........
       xor eax,eax
       add ebx,[spcRamDP]
       inc ebp
-      mov ax, word[ebx]
+      mov ax, [ebx]
       add ax,[spcY]
       mov ebx,eax
       add ebx,spcRam
-      mov al, byte[spcA]
+      mov al, [spcA]
       WriteByte
       ret
 
@@ -1476,7 +1476,7 @@ NEWSYM OpD7       ; MOV (dp)+Y,A A -> ((dp+1)(dp)+Y)       ........
 
 NEWSYM OpD8       ; MOV dp,X     X -> (dp)                 ........
       mov bl,[ebp]
-      mov al, byte[spcX]
+      mov al, [spcX]
       add ebx,[spcRamDP]
       inc ebp
       WriteByte
@@ -1487,13 +1487,13 @@ NEWSYM OpF8       ;  MOV X,dp    X <- (dp)                 N......Z
       inc ebp
       add ebx,[spcRamDP]
       ReadByte
-      mov byte[spcX], al
+      mov [spcX], al
       mov [spcNZ],al
       ret
 
 NEWSYM OpC9       ; MOV labs,X   X -> (abs)                ........
       mov bx,[ebp]
-      mov al, byte[spcX]
+      mov al, [spcX]
       add ebp,2
       add ebx,spcRam
       WriteByte
@@ -1504,13 +1504,13 @@ NEWSYM OpE9       ; MOV X,labs   X <- (abs)                N......Z
       add ebx,spcRam
       ReadByte
       add ebp,2
-      mov byte[spcX], al
+      mov [spcX], al
       mov [spcNZ],al
       ret
 
 NEWSYM OpD9       ; MOV dp+Y,X   X -> (dp+Y)               ........
       mov bl,[ebp]
-      mov al, byte[spcX]
+      mov al, [spcX]
       add bl,[spcY]
       inc ebp
       add ebx,[spcRamDP]
@@ -1523,13 +1523,13 @@ NEWSYM OpF9       ; MOV X,dp+Y   X <- (dp+Y)               N......Z
       inc ebp
       add ebx,[spcRamDP]
       ReadByte
-      mov byte[spcX], al
+      mov [spcX], al
       mov [spcNZ],al
       ret
 
 NEWSYM OpCB       ; MOV dp,Y  Y -> (dp)                 ........
       mov bl,[ebp]
-      mov al, byte[spcY]
+      mov al, [spcY]
       add ebx,[spcRamDP]
       inc ebp
       WriteByte
@@ -1540,14 +1540,14 @@ NEWSYM OpEB       ; MOV Y,dp  Y <- (dp)                 N......Z
       add ebx,[spcRamDP]
       inc ebp
       ReadByte
-      mov byte[spcY], al
+      mov [spcY], al
       mov [spcNZ],al
       ret
 
 NEWSYM OpDB       ; MOV dp+X,Y   X -> (dp+X)               ........
       mov bl,[ebp]
       add bl,[spcX]
-      mov al, byte[spcY]
+      mov al, [spcY]
       add ebx,[spcRamDP]
       inc ebp
       WriteByte
@@ -1559,13 +1559,13 @@ NEWSYM OpFB       ; MOV Y,dp+X   Y <- (dp+X)               N......Z
       inc ebp
       add ebx,[spcRamDP]
       ReadByte
-      mov byte[spcY], al
+      mov [spcY], al
       mov [spcNZ],al
       ret
 
 NEWSYM OpCC       ; MOV labs,Y   Y -> (abs)                ........
       mov bx,[ebp]
-      mov al, byte[spcY]
+      mov al, [spcY]
       add ebp,2
       add ebx,spcRam
       WriteByte
@@ -1576,7 +1576,7 @@ NEWSYM OpEC       ; MOV Y,labs   Y <- (abs)                N......Z
       add ebx,spcRam
       ReadByte
       add ebp,2
-      mov byte[spcY],al
+      mov [spcY],al
       mov [spcNZ],al
       ret
 
@@ -1641,7 +1641,7 @@ NEWSYM OpFD       ; MOV Y,A      Y <- A                   N......Z
 NEWSYM OpAF       ; MOV (X)+,A   A -> (X) with auto inc    ........
       mov bl,[spcX]
       add ebx,[spcRamDP]
-      mov al, byte[spcA]
+      mov al, [spcA]
       inc byte[spcX]
       WriteByte
       ret
@@ -1651,7 +1651,7 @@ NEWSYM OpBF       ; MOV A,(X)+  A <- (X) with auto inc    N......Z
       add ebx,[spcRamDP]
       ReadByte
       inc byte[spcX]
-      mov byte[spcA],al
+      mov [spcA],al
       mov [spcNZ],al
       ret
 
@@ -2335,37 +2335,37 @@ NEWSYM OpAC       ; INC labs  ++ (abs)              N......Z.
 
 NEWSYM Op9C       ; DEC A  -- A                  N......Z.
       dec byte[spcA]
-      mov al,byte[spcA]
+      mov al,[spcA]
       mov [spcNZ],al
       ret
 
 NEWSYM OpBC       ; INC A  ++ A                  N......Z.
       inc byte[spcA]
-      mov al,byte[spcA]
+      mov al,[spcA]
       mov [spcNZ],al
       ret
 
 NEWSYM OpDC       ; DEC Y  -- Y                  N......Z.
       dec byte[spcY]
-      mov al,byte[spcY]
+      mov al,[spcY]
       mov [spcNZ],al
       ret
 
 NEWSYM OpFC       ; INC Y  ++ Y                  N......Z.
       inc byte[spcY]
-      mov al,byte[spcY]
+      mov al,[spcY]
       mov [spcNZ],al
       ret
 
 NEWSYM Op1D       ; DEC X     -- X                  N......Z.
       dec byte[spcX]
-      mov al,byte[spcX]
+      mov al,[spcX]
       mov [spcNZ],al
       ret
 
 NEWSYM Op3D       ; INC X     ++ X                  N......Z.
       inc byte[spcX]
-      mov al,byte[spcX]
+      mov al,[spcX]
       mov [spcNZ],al
       ret
 
@@ -2566,7 +2566,7 @@ NEWSYM Op1F       ; JMP (labs+X)    PC <- (abs+X+1)(abs+X)         ...
       add bx,[spcX]
       xor eax,eax
       add ebp,2
-      mov ax, word[spcRam+ebx]
+      mov ax, [spcRam+ebx]
       mov ebp,spcRam
       add ebp,eax
       ret
@@ -2681,8 +2681,8 @@ NEWSYM Op9E       ; DIV YA,X     Q:A B:Y <- YA / X       NV..H..Z.
    cmp bl,0
    je NoDiv
    div bx
-   mov byte[spcA],al
-   mov byte[spcY],dl
+   mov [spcA],al
+   mov [spcY],dl
    cmp ah,0
    jne Over
    and byte[spcP],191-16

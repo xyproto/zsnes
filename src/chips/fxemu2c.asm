@@ -75,7 +75,7 @@ NEWSYM FxOpd02      ; CACHE  reintialize GSU cache
    je .SkipUpdate
    cmp byte[SfxCacheActive],1
    je .SkipUpdate
-   mov dword[SfxCBR],eax
+   mov [SfxCBR],eax
    mov dword[SfxCacheActive],1
    call FlushCache
 .SkipUpdate
@@ -91,7 +91,7 @@ NEWSYM FxOpd03      ; LSR    logic shift right  ; Verified.
    shr ax,1                      ; logic shift right
    inc ebp                ; Increase program counter
    mov [edi],eax            ; Write Destination
-   mov dword[SfxSignZero],eax
+   mov [SfxSignZero],eax
    CLRFLAGS
    FXReturn
 
@@ -425,7 +425,7 @@ NEWSYM FxOpd3C      ; LOOP   decrement loop counter, and branch on not zero ; V
    mov [SfxSignZero],eax
    or eax,eax
    jz .NoBranch
-   mov eax,dword[SfxR13]
+   mov eax,[SfxR13]
    mov ebp,[SfxCPB]
    add ebp,eax
    CLRFLAGS
@@ -998,7 +998,7 @@ NEWSYM FxOpd4EA1    ; CMODE  set plot option register ; V
    FETCHPIPE
    mov eax,[esi]            ; Read Source
    inc ebp                ; Increase program counter
-   mov dword[SfxPOR],eax
+   mov [SfxPOR],eax
 
    test byte[SfxPOR],10h
    jnz .objmode
@@ -1034,10 +1034,10 @@ NEWSYM FxOpd4EA1    ; CMODE  set plot option register ; V
    mov ebx,[PLOTJmpb+eax*4]
    mov eax,[PLOTJmpa+eax*4]
 
-   mov dword[FxTable+4Ch*4],eax
-   mov dword[FxTableb+4Ch*4],eax
-   mov dword[FxTablec+4Ch*4],eax
-   mov dword[FxTabled+4Ch*4],ebx
+   mov [FxTable+4Ch*4],eax
+   mov [FxTableb+4Ch*4],eax
+   mov [FxTablec+4Ch*4],eax
+   mov [FxTabled+4Ch*4],ebx
    pop ebx
 
    CLRFLAGS
@@ -1382,8 +1382,8 @@ NEWSYM FxOpd70      ; MERGE  R7 as upper byte, R8 as lower byte (used for textur
             ; V
    xor eax,eax
    FETCHPIPE
-   mov ah,byte[SfxR7+1]
-   mov al,byte[SfxR8+1]
+   mov ah,[SfxR7+1]
+   mov al,[SfxR8+1]
    inc ebp
    mov [edi],eax            ; Write Destination
    mov dword[SfxSignZero],0001h
@@ -1443,7 +1443,7 @@ NEWSYM FxOpd7F      ; AND RN register & register
    sub ebx,[SfxCPB]
    and eax,ebx
    inc ebp
-   mov dword[SfxSignZero],eax
+   mov [SfxSignZero],eax
    mov [edi],eax            ; Write Destination
    CLRFLAGS
    FXReturn
@@ -1484,7 +1484,7 @@ NEWSYM FxOpd7FA1    ; BIC RN register & ~register
    xor ebx,0FFFFh
    and eax,ebx
    inc ebp
-   mov dword[SfxSignZero],eax
+   mov [SfxSignZero],eax
    mov [edi],eax            ; Write Destination
    CLRFLAGS
    FXReturn
@@ -1584,7 +1584,7 @@ NEWSYM FxOpd8E      ; MULTRNc 8 bit to 16 bit signed multiply, register * regist
 NEWSYM FxOpd8F      ; MULTRNc 8 bit to 16 bit signed multiply, register * register
    FETCHPIPE
    mov ebx,ebp
-   mov al,byte[esi]     ; Read Source
+   mov al,[esi]     ; Read Source
    sub ebx,[SfxCPB]
    imul bl
    inc ebp
@@ -1627,7 +1627,7 @@ NEWSYM FxOpd8EA1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * regis
 NEWSYM FxOpd8FA1    ; UMULRN 8 bit to 16 bit unsigned multiply, register * register
    FETCHPIPE
    mov ebx,ebp
-   mov al,byte[esi]     ; Read Source
+   mov al,[esi]     ; Read Source
    sub ebx,[SfxCPB]
    mul bl
    inc ebp
@@ -1743,7 +1743,7 @@ NEWSYM FxOpd96      ; ASR    aritmethic shift right by one      ; V
    sar ax,1                      ; logic shift right
    inc ebp                ; Increase program counter
    mov [edi],eax            ; Write Destination
-   mov dword[SfxSignZero],eax
+   mov [SfxSignZero],eax
    CLRFLAGS
    FXReturn
 
@@ -1757,7 +1757,7 @@ NEWSYM FxOpd96A1    ; DIV2   aritmethic shift right by one      ; V
    sar ax,1                      ; logic shift right
    inc ebp                ; Increase program counter
    mov [edi],eax            ; Write Destination
-   mov dword[SfxSignZero],eax
+   mov [SfxSignZero],eax
    CLRFLAGS
    FXReturn
 .minusone
@@ -1765,7 +1765,7 @@ NEWSYM FxOpd96A1    ; DIV2   aritmethic shift right by one      ; V
    xor eax,eax
    inc ebp                ; Increase program counter
    mov [edi],eax            ; Write Destination
-   mov dword[SfxSignZero],eax
+   mov [SfxSignZero],eax
    CLRFLAGS
    FXReturn
 
@@ -1814,7 +1814,7 @@ NEWSYM FxOpd9E      ; LOB    set upper byte to zero (keep low byte) ; V
    inc ebp
    mov [edi],eax            ; Write Destination
    shl eax,8
-   mov dword[SfxSignZero],eax
+   mov [SfxSignZero],eax
    CLRFLAGS
    FXReturn
 
@@ -1928,7 +1928,7 @@ NEWSYM FxOpdAEA1    ; LMS rn,(yy)  load word from RAM (short address)
    inc ebp
    add eax,[SfxRAMMem]
    mov cl,[ebp]
-   mov dword[SfxLastRamAdr],eax
+   mov [SfxLastRamAdr],eax
    mov ebx,[eax]              ; Read word from ram
    inc ebp
    mov [SfxR0+14*4],bx              ; Write data
@@ -1942,7 +1942,7 @@ NEWSYM FxOpdAFA1    ; LMS rn,(yy)  load word from RAM (short address)
    inc ebp
    add eax,[SfxRAMMem]
    mov cl,[ebp]
-   mov dword[SfxLastRamAdr],eax
+   mov [SfxLastRamAdr],eax
    mov ebx,[eax]              ; Read word from ram
    and ebx,0FFFFh
    mov ebp,[SfxCPB]
@@ -1989,7 +1989,7 @@ NEWSYM FxOpdAFA2    ; SMS (yy),rn  store word in RAM (short address)
    add eax,eax
    FETCHPIPE
    add eax,[SfxRAMMem]
-   mov dword[SfxLastRamAdr],eax
+   mov [SfxLastRamAdr],eax
    inc ebp
    mov [eax],bx              ; Write word to ram
    CLRFLAGS
@@ -2040,7 +2040,7 @@ NEWSYM FxOpdC0      ; HIB       move high-byte to low-byte      ; V
    mov eax,[esi]            ; Read Source
    FETCHPIPE
    and eax,0FF00h
-   mov dword[SfxSignZero],eax
+   mov [SfxSignZero],eax
    shr eax,8
    inc ebp
    mov [edi],eax
@@ -2284,10 +2284,10 @@ NEWSYM FxOpdDFA2    ; RAMB      set current RAM bank    ; Verified
    FETCHPIPE
    dec ebx
    and eax,ebx
-   mov dword[SfxRAMBR],eax
+   mov [SfxRAMBR],eax
    shl eax,16
    add eax,[sfxramdata]
-   mov dword[SfxRAMMem],eax
+   mov [SfxRAMMem],eax
    CLRFLAGS
    inc ebp
    FXReturn
@@ -2296,7 +2296,7 @@ NEWSYM FxOpdDFA3    ; ROMB      set current ROM bank    ; Verified
    mov eax,[esi]            ; Read Source
    and eax,07Fh
    FETCHPIPE
-   mov dword[SfxROMBR],eax
+   mov [SfxROMBR],eax
    mov eax,[SfxMemTable+eax*4]
    mov [SfxCROM],eax
    CLRFLAGS
@@ -2480,7 +2480,7 @@ NEWSYM FxOpdFEA1    ; LM RN,(XX)   load word from RAM
    xor eax,1
    add ebp,3
    mov dh,[eax+ebx]
-   mov word[SfxR0+14*4],dx         ; Store Word
+   mov [SfxR0+14*4],dx         ; Store Word
    UpdateR14
    CLRFLAGS
    FXReturn

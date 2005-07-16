@@ -304,7 +304,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     jnz %%nogo
     xor eax,eax
     mov al,[sprtlng+ebx]
-    mov cl,byte[sprlefttot+ebx]
+    mov cl,[sprlefttot+ebx]
     mov [csprival],eax
     inc byte[sprtlng+ebx]
     test byte[sprleftpr+ebx*4+eax],1
@@ -317,7 +317,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     cmp byte[hiresstuff],0
     je %%nogo
     add esi,75036
-    mov cl,byte[sprlefttot+ebx]
+    mov cl,[sprlefttot+ebx]
     call drawsprng
     sub esi,75036
 %%nogo
@@ -344,7 +344,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     ja %%nogo
     xor eax,eax
     mov al,[sprtlng+ebx]
-    mov cl,byte[sprlefttot+ebx]
+    mov cl,[sprlefttot+ebx]
     mov [csprival],eax
     inc byte[sprtlng+ebx]
     test byte[sprleftpr+ebx*4+eax],1
@@ -357,7 +357,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     cmp byte[hiresstuff],0
     je %%nogo
     add esi,75036
-    mov cl,byte[sprlefttot+ebx]
+    mov cl,[sprlefttot+ebx]
     call drawsprng
     sub esi,75036
 %%nogo
@@ -384,7 +384,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     jbe %%nogo
     xor eax,eax
     mov al,[sprtlng+ebx]
-    mov cl,byte[sprlefttot+ebx]
+    mov cl,[sprlefttot+ebx]
     mov [csprival],eax
     inc byte[sprtlng+ebx]
     test byte[sprleftpr+ebx*4+eax],1
@@ -397,7 +397,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     cmp byte[hiresstuff],0
     je %%nogo
     add esi,75036
-    mov cl,byte[sprlefttot+ebx]
+    mov cl,[sprlefttot+ebx]
     call drawsprng
     sub esi,75036
 %%nogo
@@ -443,7 +443,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     or cl,cl
     jz %%nomosaic
     inc cl
-    mov byte[curmosaicsz],cl
+    mov [curmosaicsz],cl
     xor edx,edx
     mov eax,ebx
     div cl
@@ -538,7 +538,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     or cl,cl
     jz %%nomosaic
     inc cl
-    mov byte[curmosaicsz],cl
+    mov [curmosaicsz],cl
     xor edx,edx
     mov eax,ebx
     div cl
@@ -620,7 +620,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     or cl,cl
     jz %%nomosaic
     inc cl
-    mov byte[curmosaicsz],cl
+    mov [curmosaicsz],cl
     xor edx,edx
     mov eax,ebx
     div cl
@@ -2586,7 +2586,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     or al,al
     jz %%nomosaic
     inc al
-    mov byte[curmosaicsz],al
+    mov [curmosaicsz],al
     mov cl,al
     mov al,bl
     div cl
@@ -2955,7 +2955,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     mov word[bgtxadd2],0
     cmp word[BGPT3X+ebx*2],0
     je .yesoverfl
-    mov cx,word[BG3SXl+ebx*2]
+    mov cx,[BG3SXl+ebx*2]
     add cx,16
     test cx,100h
     jz .notoverfl
@@ -3055,7 +3055,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     or al,al
     jz %%nomosaic
     inc al
-    mov byte[curmosaicsz],al
+    mov [curmosaicsz],al
     mov cl,al
     mov al,bl
     div cl
@@ -3290,7 +3290,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     mov word[bgtxadd2],0
     cmp word[BGPT3X+ebx*2],0
     je .yesoverfl
-    mov cx,word[BG3SXl+ebx*2]
+    mov cx,[BG3SXl+ebx*2]
     add cx,16
     test cx,100h
     jz .notoverfl

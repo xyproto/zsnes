@@ -84,14 +84,14 @@ NEWSYM drawmode716extbg
     movsx ebx,word[.cyloc]
     imul eax,ebx
     mov [.mode7xpos],eax
-    mov bx,word[mode7X0]
+    mov bx,[mode7X0]
     add [.mode7xpos+1],bx
 
     movsx ebx,word[.cyloc]
     movsx eax,word[mode7D]
     imul eax,ebx
     mov [.mode7ypos],eax
-    mov bx,word[mode7Y0]
+    mov bx,[mode7Y0]
     add [.mode7ypos+1],bx
 
     ; 3.) Find left scaled location : SCX=SCX-(cx*A),SCY=SCY-(cx*B)
@@ -256,7 +256,7 @@ NEWSYM drawmode716extbg
     jmp .nextposy
 .finishmode7
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
@@ -363,7 +363,7 @@ NEWSYM drawmode716extbg
     mov al,[.mode7xinc]
     mov edi,[vram]
     add [.mode7ptr],al
-    mov cl,byte[.mode7xincc]
+    mov cl,[.mode7xincc]
     cmp byte[.mode7ptr],cl
     je .roff
 .roffxretb
@@ -458,7 +458,7 @@ NEWSYM drawmode716extbg
     dec byte[.temp]
     jnz .nextval2
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
@@ -520,7 +520,7 @@ NEWSYM drawmode716extbg
     jnz .offscrc
 .goon
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
@@ -666,7 +666,7 @@ NEWSYM drawmode716bwinonextbg
     imul eax,ebx
     neg eax
     mov [.mode7xpos],eax
-    mov bx,word[mode7X0]
+    mov bx,[mode7X0]
     add [.mode7xpos+1],bx
 
     movsx ebx,word[.cyloc]
@@ -674,7 +674,7 @@ NEWSYM drawmode716bwinonextbg
     imul eax,ebx
 ;    neg ax
     mov [.mode7ypos],eax
-    mov bx,word[mode7Y0]
+    mov bx,[mode7Y0]
     add [.mode7ypos+1],bx
 
     ; 3.) Find left scaled location : SCX=SCX-(cx*A),SCY=SCY-(cx*B)
@@ -929,7 +929,7 @@ NEWSYM drawmode716bwinonextbg
     mov al,[.mode7xinc]
     mov edi,[vram]
     add [.mode7ptr],al
-    mov cl,byte[.mode7xincc]
+    mov cl,[.mode7xincc]
     cmp byte[.mode7ptr],cl
     je .roff
 .roffxretb
@@ -1236,13 +1236,13 @@ NEWSYM drawmode716extbg2
     dec ecx
     jnz .loop
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
 .drawwin
     mov ebp,[cwinptr]
-    mov byte[esi],cl
+    mov [esi],cl
 .nodrawbw
     mov ecx,256
     xor eax,eax
@@ -1261,7 +1261,7 @@ NEWSYM drawmode716extbg2
     dec ecx
     jnz .loop2
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret

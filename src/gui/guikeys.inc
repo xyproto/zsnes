@@ -712,7 +712,7 @@ GUIgetcurrentinput:
     jne .notop
 .top
     mov al,[ebx]
-    mov byte[GUIcrowpos],al
+    mov [GUIcrowpos],al
     jmp .nokey
 .notop
     dec eax
@@ -1303,7 +1303,7 @@ GUIVideoKeys:
     dec ebx
     cmp dword[GUIcurrentvideocursloc],ebx
     jb .poscd
-    mov dword[GUIcurrentvideocursloc],ebx
+    mov [GUIcurrentvideocursloc],ebx
 .poscd
     sub ebx,4
     cmp dword[GUIcurrentvideoviewloc],ebx
@@ -1312,7 +1312,7 @@ GUIVideoKeys:
     jz .noneg
     mov ebx,0
 .noneg
-    mov dword[GUIcurrentvideoviewloc],ebx
+    mov [GUIcurrentvideoviewloc],ebx
 .posvd
 .nopagedown
     ret
@@ -1510,7 +1510,7 @@ GUIPathKeys:
     jne .stillroom
     ret
 .stillroom
-    mov byte[eax],dh
+    mov [eax],dh
 
 .nokeypressed
     ret
@@ -1577,7 +1577,7 @@ GUIComboKeys:
     xor eax,eax
     mov byte[GUICCFlash],0
     mov al,[GUIComboPos]
-    mov byte[GUIComboTextH+eax],dh
+    mov [GUIComboTextH+eax],dh
 .nochar
     ret
 
@@ -1653,9 +1653,9 @@ GUICheatKeys:
 %endif
     mov eax,[NumCheats]
     dec eax
-    mov dword[GUIcurrentcheatcursloc],eax
+    mov [GUIcurrentcheatcursloc],eax
     sub eax,11
-    mov dword[GUIcurrentcheatviewloc],eax
+    mov [GUIcurrentcheatviewloc],eax
     test dword[GUIcurrentcheatviewloc],8000000h
     jz .posve
     mov dword[GUIcurrentcheatviewloc],0
@@ -1747,7 +1747,7 @@ GUICheatKeys:
     dec ebx
     cmp dword[GUIcurrentcheatcursloc],ebx
     jb .poscd
-    mov dword[GUIcurrentcheatcursloc],ebx
+    mov [GUIcurrentcheatcursloc],ebx
 .poscd
     sub ebx,11
     cmp dword[GUIcurrentcheatviewloc],ebx
@@ -1756,7 +1756,7 @@ GUICheatKeys:
     jz .noneg
     mov ebx,0
 .noneg
-    mov dword[GUIcurrentcheatviewloc],ebx
+    mov [GUIcurrentcheatviewloc],ebx
 .posvd
 .nopagedown
     ret
@@ -1843,7 +1843,7 @@ GUICheatKeys:
     mov byte[GUICCFlash],0
     xor eax,eax
     mov al,[GUICheatPosA]
-    mov byte[GUICheatTextZ1+eax],dh
+    mov [GUICheatTextZ1+eax],dh
     mov byte[GUICheatTextZ1+eax+1],'_'
     mov byte[GUICheatTextZ1+eax+2],0
     inc byte[GUICheatPosA]
@@ -1880,7 +1880,7 @@ GUICheatKeys:
     xor eax,eax
     mov byte[GUICCFlash],0
     mov al,[GUICheatPosB]
-    mov byte[GUICheatTextZ2+eax],dh
+    mov [GUICheatTextZ2+eax],dh
     mov byte[GUICheatTextZ2+eax+1],'_'
     mov byte[GUICheatTextZ2+eax+2],0
     inc byte[GUICheatPosB]
@@ -1930,7 +1930,7 @@ InsertSearchCharacter:
     cmp dh,'A'
     jb near .done
 .okay
-    mov byte[ecx],dh
+    mov [ecx],dh
     inc ecx
     ; Process cursor if over the window
 .placecursor
@@ -2012,7 +2012,7 @@ InsertSearchDescription:
     je .nocharb
     cmp dl,18
     je .nocharb
-    mov byte[eax],dh
+    mov [eax],dh
     mov byte[eax+1],0
 .nocharb
     ret
@@ -2179,9 +2179,9 @@ GUICheatSearchKeys:
 %endif
     mov eax,[NumCheatSrc]
     dec eax
-    mov dword[GUIcurrentchtsrccursloc],eax
+    mov [GUIcurrentchtsrccursloc],eax
     sub eax,11
-    mov dword[GUIcurrentchtsrcviewloc],eax
+    mov [GUIcurrentchtsrcviewloc],eax
     test dword[GUIcurrentchtsrcviewloc],8000000h
     jz .posve
     mov dword[GUIcurrentchtsrcviewloc],0
@@ -2274,7 +2274,7 @@ GUICheatSearchKeys:
     dec ebx
     cmp dword[GUIcurrentchtsrccursloc],ebx
     jb .poscd
-    mov dword[GUIcurrentchtsrccursloc],ebx
+    mov [GUIcurrentchtsrccursloc],ebx
 .poscd
     sub ebx,11
     cmp dword[GUIcurrentchtsrcviewloc],ebx
@@ -2283,7 +2283,7 @@ GUICheatSearchKeys:
     jz .noneg
     mov ebx,0
 .noneg
-    mov dword[GUIcurrentchtsrcviewloc],ebx
+    mov [GUIcurrentchtsrcviewloc],ebx
 .posvd
 .nopagedown
 
@@ -2687,9 +2687,9 @@ GUILoadKeys:
     mov byte[GUILoadPos],0
     mov eax,[GUIfileentries]
     dec eax
-    mov dword[GUIcurrentcursloc],eax
+    mov [GUIcurrentcursloc],eax
     sub eax,14
-    mov dword[GUIcurrentviewloc],eax
+    mov [GUIcurrentviewloc],eax
     test dword[GUIcurrentviewloc],8000000h
     jz .posve
     mov dword[GUIcurrentviewloc],0
@@ -2785,7 +2785,7 @@ GUILoadKeys:
     dec ebx
     cmp dword[GUIcurrentcursloc],ebx
     jb .poscd
-    mov dword[GUIcurrentcursloc],ebx
+    mov [GUIcurrentcursloc],ebx
 .poscd
     sub ebx,14
     cmp dword[GUIcurrentviewloc],ebx
@@ -2794,7 +2794,7 @@ GUILoadKeys:
     jz .noneg
     mov ebx,0
 .noneg
-    mov dword[GUIcurrentviewloc],ebx
+    mov [GUIcurrentviewloc],ebx
 .posvd
 .nopagedown
 
@@ -2822,7 +2822,7 @@ GUILoadKeys:
     mov byte[GUILDFlash],0
     xor eax,eax
     mov al,[GUILoadPos]
-    mov byte[GUILoadTextA+eax],dh
+    mov [GUILoadTextA+eax],dh
     inc byte[GUILoadPos]
     ; Go to closest matching filename if there are no :, /, or \ in the filename
     mov ebx,[ManualCPtr]
@@ -2850,7 +2850,7 @@ GUILoadKeys:
     add ebx,[GUIdirentries]
 .notdir
     mov ecx,esi
-    mov dword[.foundval],esi
+    mov [.foundval],esi
     mov dword[.maxfound],0
 .loop2
     mov dword[.numfound],0
@@ -2930,7 +2930,7 @@ GUILoadKeys:
     sub ebx,15
     cmp dword[GUIcurrentdirviewloc],ebx
     jb .posvl2
-    mov dword[GUIcurrentdirviewloc],ebx
+    mov [GUIcurrentdirviewloc],ebx
     jmp .posvl2
 .notdir2
     mov [GUIcurrentcursloc],esi
@@ -2939,7 +2939,7 @@ GUILoadKeys:
     sub ebx,15
     cmp dword[GUIcurrentviewloc],ebx
     jb .posvl2
-    mov dword[GUIcurrentviewloc],ebx
+    mov [GUIcurrentviewloc],ebx
 .posvl2
     cmp byte[ManualStatus],3
     jne .notdirectload
@@ -2985,9 +2985,9 @@ SECTION .text
     mov byte[GUILoadPos],0
     mov eax,[GUIdirentries]
     dec eax
-    mov dword[GUIcurrentdircursloc],eax
+    mov [GUIcurrentdircursloc],eax
     sub eax,14
-    mov dword[GUIcurrentdirviewloc],eax
+    mov [GUIcurrentdirviewloc],eax
     test dword[GUIcurrentdirviewloc],8000000h
     jz .posve2
     mov dword[GUIcurrentdirviewloc],0
@@ -3083,7 +3083,7 @@ SECTION .text
     dec ebx
     cmp dword[GUIcurrentdircursloc],ebx
     jb .poscd2
-    mov dword[GUIcurrentdircursloc],ebx
+    mov [GUIcurrentdircursloc],ebx
 .poscd2
     sub ebx,14
     cmp dword[GUIcurrentdirviewloc],ebx
@@ -3092,7 +3092,7 @@ SECTION .text
     jz .noneg2
     mov ebx,0
 .noneg2
-    mov dword[GUIcurrentdirviewloc],ebx
+    mov [GUIcurrentdirviewloc],ebx
 .posvd2
 .nopagedown2
     jmp .textboxa

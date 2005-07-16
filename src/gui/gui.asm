@@ -708,7 +708,7 @@ NEWSYM GUIhandler9h
     xor eax,eax
     ; look for match
 %%notfoundyet
-    mov bl,byte[GUIwinorder+eax]
+    mov bl,[GUIwinorder+eax]
     cmp bl,%1
     je %%nextfind
     inc eax
@@ -829,7 +829,7 @@ DrawSnow:
     add bl,228
     test byte[SnowVelDist+edx*2],8
     jz .nosnow
-    mov byte[esi+eax],bl
+    mov [esi+eax],bl
 .nosnow
     inc edx
     dec ecx
@@ -1021,7 +1021,7 @@ SECTION .text
     add dl,65-48-10
 %%notover
     add dl,48
-    mov byte[.message+%1],dl
+    mov [.message+%1],dl
     xor edx,edx
     div ebx
 %endmacro
@@ -1455,7 +1455,7 @@ NEWSYM StartGUI
     cmp byte[CopyRamToggle],1
     jne .nocopyram
     mov byte[CopyRamToggle],0
-    mov eax,dword[vidbuffer]
+    mov eax,[vidbuffer]
     add eax,129600
     ; copy 128k ram
     mov ebx,[wramdata]
@@ -1972,7 +1972,7 @@ CheckMenuItemHelp:
     xor eax,eax
     mov al,[GUIwinptr]
     inc byte[GUIwinptr]
-    mov byte[GUIwinorder+eax],dl
+    mov [GUIwinorder+eax],dl
     mov byte[GUIwinactiv+edx],1
     cmp byte[resetposn],1
     jne .nomenuitem
@@ -1985,7 +1985,7 @@ CheckMenuItemHelp:
     xor eax,eax
     ; look for match
 .notfoundyet
-    mov bl,byte[GUIwinorder+eax]
+    mov bl,[GUIwinorder+eax]
     cmp bl,dl
     je .nextfind
     inc eax
@@ -3176,7 +3176,7 @@ SECTION .text
     mov bx,%4
     shr bx,1
     or ax,bx
-    mov word[GUICPC+%1*2],ax
+    mov [GUICPC+%1*2],ax
 %endmacro
 
 DecPalVal:

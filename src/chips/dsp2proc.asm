@@ -194,7 +194,7 @@ NEWSYM DSP2Read8b
     jnz .undef
 
     and ecx,255
-    mov al,byte[dsp2buffer+ecx]
+    mov al,[dsp2buffer+ecx]
     xor ecx,ecx
 
     test byte[dsp2state],DSP2F_AUTO_BUFFER_SHIFT
@@ -248,7 +248,7 @@ NEWSYM DSP2Write8b
     jnz near .halt
 
     ; *** Locates current predicator store
-    mov byte[dsp2input],al
+    mov [dsp2input],al
     mov eax,[dsp2enforcerReaderCursor]
     lea ebx,[dsp2enforcerQueue+8*eax]
     ; *** Copies inside command box into box in order to spare indirection cost
@@ -296,7 +296,7 @@ NEWSYM DSP2Write8b
 
     mov al,[dsp2input]
     sar al,1
-    mov byte[dsp2f0dSizeNew],al
+    mov [dsp2f0dSizeNew],al
 
     test al,al
     jz near .gohalt
@@ -328,7 +328,7 @@ NEWSYM DSP2Write8b
 
     mov al,[dsp2input]
     sar al,1
-    mov byte[dsp2f0dSizeOrg],al
+    mov [dsp2f0dSizeOrg],al
 
     test al,al
     jz near .gohalt
@@ -365,7 +365,7 @@ NEWSYM DSP2Write8b
     rol cl,4
     xor eax,eax
     mov al,[dsp2enforcer+1]
-    mov byte[dsp2buffer+eax],cl
+    mov [dsp2buffer+eax],cl
 
     jmp .done
 

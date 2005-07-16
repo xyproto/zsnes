@@ -63,7 +63,7 @@
    mov [edi],eax        ; Write Destination
    mov [SfxSignZero],eax
    shr al,7
-   mov byte[SfxOverflow],al
+   mov [SfxOverflow],al
    CLRFLAGS
    ret
 %endmacro
@@ -85,7 +85,7 @@
    mov [edi],eax        ; Write Destination
    mov [SfxSignZero],eax
    shr al,7
-   mov byte[SfxOverflow],al
+   mov [SfxOverflow],al
    CLRFLAGS
    ret
 %endmacro

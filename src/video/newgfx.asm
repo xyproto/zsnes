@@ -538,7 +538,7 @@ NEWSYM newengine8b
     pop eax
     pop edi
 .no512
-    mov ebx,dword[sprleftpr+eax*4]
+    mov ebx,[sprleftpr+eax*4]
     cmp ebx,00000001h
     je .single
     cmp ebx,00000100h
@@ -645,7 +645,7 @@ NEWSYM BuildWindow
     mov [pwinbound],edx
 .ns
     push esi
-    mov cl,byte[winbg1enval+ebx]
+    mov cl,[winbg1enval+ebx]
     xor edx,edx
     mov ch,cl
     and cl,0Ah
@@ -730,16 +730,16 @@ NEWSYM BuildWindow
     mov bl,[winboundary+eax*4]
     Process1DualWindow
     pop ebx
-    mov dword[WinPtrAPos],esi
+    mov [WinPtrAPos],esi
 
-    mov ch,byte[winbg1enval+ebx]
+    mov ch,[winbg1enval+ebx]
     xor ebx,ebx
     xor edx,edx
     mov bl,[winboundary+eax*4+2]
     mov dl,[winboundary+eax*4+3]
     shr ch,2
     Process1DualWindow
-    mov dword[WinPtrBPos],esi
+    mov [WinPtrBPos],esi
 
     ; Convert displacement table to cumulative table
     mov esi,ngwintable
@@ -825,7 +825,7 @@ NEWSYM BuildWindow
     add edx,4
 .finb
 
-    mov dword[WinPtrAPos],edx
+    mov [WinPtrAPos],edx
 
 ;    jmp .c
 
@@ -2330,7 +2330,7 @@ NEWSYM makesprprtable
 NEWSYM preparesprpr
     xor ebx,ebx
     mov bl,[curypos]
-    mov eax,dword[sprleftpr+ebx*4]
+    mov eax,[sprleftpr+ebx*4]
     mov [sprclprio],eax
     cmp eax,00000001h
     je .single

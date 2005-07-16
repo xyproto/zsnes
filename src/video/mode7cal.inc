@@ -66,14 +66,14 @@
     movsx ebx,word[.cyloc]
     imul eax,ebx
     mov [.mode7xpos],eax
-    mov bx,word[mode7X0]
+    mov bx,[mode7X0]
     add [.mode7xpos+1],bx
 
     movsx ebx,word[.cyloc]
     movsx eax,word[mode7D]
     imul eax,ebx
     mov [.mode7ypos],eax
-    mov bx,word[mode7Y0]
+    mov bx,[mode7Y0]
     add [.mode7ypos+1],bx
 
     ; 3.) Find left scaled location : SCX=SCX-(cx*A),SCY=SCY-(cx*B)
@@ -145,7 +145,7 @@
 %%nextposy
     mov ch,ah
     mov edx,[.mode7yadder]
-    mov cl,byte[.mode7yrpos+1]
+    mov cl,[.mode7yrpos+1]
     sub dword[.mode7yrpos],edx
     xor edx,edx
     add eax,[.mode7xadder]
@@ -178,7 +178,7 @@
 
 %%finishmode7
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near %2
     ret
@@ -279,7 +279,7 @@
     mov al,[.mode7xinc]
     mov edi,[vram]
     add [.mode7ptr],al
-    mov cl,byte[.mode7xincc]
+    mov cl,[.mode7xincc]
     cmp byte[.mode7ptr],cl
     je %%roff
 %%roffxretb

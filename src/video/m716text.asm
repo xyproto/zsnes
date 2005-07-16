@@ -219,7 +219,7 @@ EXTSYM fulladdtab,cwinptr
     imul eax,ebx
     neg eax
     mov [.mode7xpos],eax
-    mov bx,word[mode7X0]
+    mov bx,[mode7X0]
     add [.mode7xpos+1],bx
 
     movsx ebx,word[.cyloc]
@@ -227,7 +227,7 @@ EXTSYM fulladdtab,cwinptr
     imul eax,ebx
 ;    neg ax
     mov [.mode7ypos],eax
-    mov bx,word[mode7Y0]
+    mov bx,[mode7Y0]
     add [.mode7ypos+1],bx
 
     ; 3.) Find left scaled location : SCX=SCX-(cx*A),SCY=SCY-(cx*B)
@@ -372,7 +372,7 @@ EXTSYM fulladdtab,cwinptr
     jmp .nextposy
 .finishmode7
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
@@ -551,7 +551,7 @@ EXTSYM fulladdtab,cwinptr
     dec byte[.temp]
     jnz near .nextval2
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
@@ -608,7 +608,7 @@ EXTSYM fulladdtab,cwinptr
     jnz .offscrc
 .goon
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
@@ -835,13 +835,13 @@ NEWSYM drawmode716textbg2
     dec ecx
     jnz .loop
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
 .drawwin
     mov ebp,[cwinptr]
-    mov byte[esi],cl
+    mov [esi],cl
 .nodrawbw
     mov ecx,256
     xor eax,eax
@@ -869,7 +869,7 @@ NEWSYM drawmode716textbg2
     dec ecx
     jnz .loop2
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
@@ -900,13 +900,13 @@ extbg2add:
     dec ecx
     jnz .loop
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
 .drawwin
     mov ebp,[cwinptr]
-    mov byte[esi],cl
+    mov [esi],cl
 .nodrawbw
     mov ecx,256
     xor eax,eax
@@ -931,7 +931,7 @@ extbg2add:
     dec ecx
     jnz .loop2
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
@@ -963,13 +963,13 @@ extbg2sub:
     dec ecx
     jnz .loop
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
 .drawwin
     mov ebp,[cwinptr]
-    mov byte[esi],cl
+    mov [esi],cl
 .nodrawbw
     mov ecx,256
     xor eax,eax
@@ -995,7 +995,7 @@ extbg2sub:
     dec ecx
     jnz .loop2
     xor eax,eax
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret

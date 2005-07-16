@@ -969,7 +969,7 @@ NEWSYM dohdma
     mov cx,[edx+17]
     call dword near [memtabler8+ebx*4]
     inc word[edx+17]
-    mov byte[esi+10],al
+    mov [esi+10],al
     test al,0FFh
     jnz .yeszero
     xor [nexthdma],ah
@@ -1089,7 +1089,7 @@ NEWSYM indirectaddr
     mov cx,[edx+17]
     call dword near [memtabler8+ebx*4]
     inc word[edx+17]
-    mov byte[esi+10],al
+    mov [esi+10],al
     push eax
     mov bl,[esi+4]
     mov cx,[edx+17]
@@ -1180,10 +1180,10 @@ NEWSYM hdmatype2indirect
     xor ebx,ebx
     xor ecx,ecx
     xor edx,edx
-    mov ax,word[spcRam+021h] ; load dest offset
+    mov ax,[spcRam+021h] ; load dest offset
     mov dword[.dest],spcRam
     add [.dest],eax
-    mov dl,byte[esi+10] ; number of bytes to transfer
+    mov dl,[esi+10] ; number of bytes to transfer
     sub dl,80h
 .inloop
     xor ebx,ebx
@@ -1193,7 +1193,7 @@ NEWSYM hdmatype2indirect
     inc word[esi+5]
     call dword near [memtabler8+ebx*4]
     mov ebx,[.dest]
-    mov byte[ebx],al
+    mov [ebx],al
     inc ebx
     mov [.dest],ebx
     xor ebx,ebx
@@ -1203,7 +1203,7 @@ NEWSYM hdmatype2indirect
     inc word[esi+5]
     call dword near [memtabler8+ebx*4]
     mov ebx,[.dest]
-    mov byte[ebx],al
+    mov [ebx],al
     inc ebx
     mov [.dest],ebx
     dec edx

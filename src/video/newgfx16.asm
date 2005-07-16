@@ -95,7 +95,7 @@ NEWSYM setpalallng
     add esi,1024
     xor ebp,ebp
     and esi,255*1024
-    mov dword[cpalptrng],esi
+    mov [cpalptrng],esi
 
     add esi,[vbufdptr]
 
@@ -177,7 +177,7 @@ NEWSYM setpalette16bng
     mov edi,esi
     add esi,1024
     and esi,255*1024
-    mov dword[cpalptrng],esi
+    mov [cpalptrng],esi
 
     add esi,[vbufdptr]
     add edi,[vbufdptr]
@@ -453,8 +453,8 @@ BackAreaFill:
     dec edx
     mov ebx,[BackAreaUnFillCol]
 .swloopb
-    mov dword[ecx],ebx
-    mov dword[ecx+4],ebx
+    mov [ecx],ebx
+    mov [ecx+4],ebx
     add ecx,8
     sub eax,4
     jc .doneb
@@ -471,8 +471,8 @@ BackAreaFill:
     add edi,4
     mov ebx,[BackAreaFillCol]
 .swloop2b
-    mov dword[ecx],ebx
-    mov dword[ecx+4],ebx
+    mov [ecx],ebx
+    mov [ecx+4],ebx
     add ecx,8
     sub eax,4
     jc .doneb
@@ -530,7 +530,7 @@ NEWSYM newengine16b
     mov ecx,1024+512+256
     mov eax,0FFFFFFFFh
 .loopcc
-    mov dword[ebx],eax
+    mov [ebx],eax
     add ebx,4
     dec ecx
     jnz .loopcc
@@ -864,12 +864,12 @@ NEWSYM newengine16b
     jne .notpchanged
     cmp eax,112
     jae .endl
-    mov dword[startlinet],eax
+    mov [startlinet],eax
     jmp .notpchanged
 .endl
     cmp dword[endlinet],255
     jb .notpchanged
-    mov dword[endlinet],eax
+    mov [endlinet],eax
 .notpchanged
 
     mov ebx,[cpalptrng]
@@ -1134,18 +1134,18 @@ NEWSYM newengine16b
     test cl,20h
     jnz .outside
 .insideb
-    mov dword[BackAreaUnFillCol],ebx
-    mov dword[BackAreaFillCol],ebx
+    mov [BackAreaUnFillCol],ebx
+    mov [BackAreaFillCol],ebx
     jmp .donesubscreen
 .inside
     test cl,20h
     jnz .filled
-    mov dword[BackAreaUnFillCol],edx
+    mov [BackAreaUnFillCol],edx
     mov [BackAreaFillCol],ebx
     jmp .donesubscreen
 .outside
     mov [BackAreaUnFillCol],ebx
-    mov dword[BackAreaFillCol],edx
+    mov [BackAreaFillCol],edx
     jmp .donesubscreen
 .filled
     xor ebx,ebx
@@ -1196,18 +1196,18 @@ NEWSYM newengine16b
     test cl,20h
     jnz .outside2
 .inside2b
-    mov dword[BackAreaUnFillCol],ebx
-    mov dword[BackAreaFillCol],ebx
+    mov [BackAreaUnFillCol],ebx
+    mov [BackAreaFillCol],ebx
     jmp .donesubscreen2
 .inside2
     test cl,20h
     jnz .filled2
-    mov dword[BackAreaUnFillCol],edx
+    mov [BackAreaUnFillCol],edx
     mov [BackAreaFillCol],ebx
     jmp .donesubscreen2
 .outside2
     mov [BackAreaUnFillCol],ebx
-    mov dword[BackAreaFillCol],edx
+    mov [BackAreaFillCol],edx
     jmp .donesubscreen2
 .filled2
     xor ebx,ebx
@@ -1292,7 +1292,7 @@ NEWSYM newengine16b
     or byte[SpecialLine+eax],4
 .notinterl
 
-    mov ebx,dword[sprleftpr+eax*4]
+    mov ebx,[sprleftpr+eax*4]
     cmp ebx,00000001h
     je .single
     cmp ebx,00000100h
@@ -2577,7 +2577,7 @@ drawsprng16bt:
     xor eax,eax
     test byte[BGMS1+ebx*2+1],10h
     jnz near drawsprng16bmst
-    mov al,byte[BGMS1+ebx*2]
+    mov al,[BGMS1+ebx*2]
     shr al,2
     test byte[BGMS1+ebx*2],al
     jnz .transpwin
@@ -3073,13 +3073,13 @@ ProcessTransparencies:
     movq [esi],mm0
     jmp .faddloopdoneh
 .faddlooph
-    mov ebx,dword[esi]
+    mov ebx,[esi]
     test ebx,eax
     jz near .faddl2h
     and ebx,eax
     cmp ebx,eax
     jne .faddloopbh
-    mov ebx,dword[esi+4]
+    mov ebx,[esi+4]
     and ebx,eax
     cmp ebx,eax
     jne .faddloopbh
@@ -3498,7 +3498,7 @@ section .text
     add esi,16*2+288*2
     mov ebx,1
 .nextline
-    mov al,byte[scadsng+ebx]
+    mov al,[scadsng+ebx]
     %1
     test al,0C0h
     jz near .notthisone

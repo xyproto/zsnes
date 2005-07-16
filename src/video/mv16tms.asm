@@ -317,7 +317,7 @@ NEWSYM draw8x816tms
     jnz near .loopa
     cmp byte[drawn],0
     je .nodraw
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
 .nodraw
@@ -343,7 +343,7 @@ NEWSYM draw8x816tms
     jnz near .loopa
     cmp byte[drawn],0
     je .nodraw2
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
 .nodraw2
@@ -402,7 +402,7 @@ NEWSYM draw8x8fulladdms
     jnz near .loopa
     cmp byte[drawn],0
     je .nodraw
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
 .nodraw
@@ -429,7 +429,7 @@ NEWSYM draw8x8fulladdms
     jnz near .loopa
     cmp byte[drawn],0
     je .nodraw2
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
 .nodraw2
@@ -898,7 +898,7 @@ NEWSYM draw16x1616tms
 .loopc2
     dec byte[tileleft16b]
     jnz near .loopa
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
@@ -927,7 +927,7 @@ NEWSYM draw16x1616tms
 .loopc
     dec byte[tileleft16b]
     jnz near .loopa
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
@@ -1011,7 +1011,7 @@ draw16x16fulladdms:
 .loopc2
     dec byte[tileleft16b]
     jnz near .loopa
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
@@ -1039,7 +1039,7 @@ draw16x16fulladdms:
 .loopc
     dec byte[tileleft16b]
     jnz near .loopa
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
@@ -1123,7 +1123,7 @@ NEWSYM draw16x1616tsms
 .loopc2
     dec byte[tileleft16b]
     jnz near .loopa
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret
@@ -1151,7 +1151,7 @@ NEWSYM draw16x1616tsms
 .loopc
     dec byte[tileleft16b]
     jnz near .loopa
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic16b
     ret

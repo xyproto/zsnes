@@ -946,9 +946,9 @@ SECTION .text
 .skipnodraw
     mov byte[esi],0
     mov byte[esi+1],01h
-    mov byte[esi+2],cl
+    mov [esi+2],cl
     mov byte[esi+3],0FFh
-    mov byte[esi+4],ch
+    mov [esi+4],ch
     mov byte[esi+5],01h
     mov byte[numwin],3
     jmp .finishwin
@@ -963,13 +963,13 @@ SECTION .text
 .multiwin
     mov byte[winon],0
     mov byte[multiwin],0
-    mov byte[multiclip],al
+    mov [multiclip],al
     mov al,[winlogica]
     mov ecx,ebp
     shl ecx,1
     shr al,cl
     and al,3h
-    mov byte[multitype],al
+    mov [multitype],al
     mov cl,[winl1]
     mov ch,[winr1]
     mov esi,windowdata
@@ -1004,9 +1004,9 @@ SECTION .text
 .skipnodraw2
     mov byte[esi],0
     mov byte[esi+1],01h
-    mov byte[esi+2],cl
+    mov [esi+2],cl
     mov byte[esi+3],0FFh
-    mov byte[esi+4],ch
+    mov [esi+4],ch
     mov byte[esi+5],01h
     mov byte[numwin],3
     jmp .secondwin
@@ -1106,7 +1106,7 @@ NEWSYM drawbackgrndsub
     jne .nomode0
     mov eax,ebp
     shl eax,5
-    mov byte[bgcoloradder],al
+    mov [bgcoloradder],al
 .nomode0
     mov esi,[bg1vbufloc+ebp*4]
     mov edi,[bg1tdatloc+ebp*4]
@@ -1171,7 +1171,7 @@ NEWSYM drawbackgrndmain
     jne .nomode0
     mov eax,ebp
     shl eax,5
-    mov byte[bgcoloradder],al
+    mov [bgcoloradder],al
 .nomode0
     mov esi,[bg1vbufloc+ebp*4]
     mov edi,[bg1tdatloc+ebp*4]
@@ -2779,7 +2779,7 @@ NEWSYM draw8x8
     jnz near .loopa
     cmp byte[drawn],0
     je .nodraw
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
 .nodraw
@@ -2820,7 +2820,7 @@ NEWSYM draw8x8
     jnz near .loopa
     cmp byte[drawn],0
     je .nodraw2
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
 .nodraw2
@@ -3063,7 +3063,7 @@ NEWSYM draw16x8
     jnz near .loopa
     cmp byte[drawn],0
     je .nodraw
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
 .nodraw
@@ -3115,7 +3115,7 @@ NEWSYM draw16x8
     jnz near .loopa
     cmp byte[drawn],0
     je .nodraw2
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
     cmp byte[winon],0
@@ -3200,7 +3200,7 @@ NEWSYM draw16x8b
     jnz near .loopa
     cmp byte[drawn],0
     je .nodraw
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
 .nodraw
@@ -3252,7 +3252,7 @@ NEWSYM draw16x8b
     jnz near .loopa
     cmp byte[drawn],0
     je .nodraw2
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
 .nodraw2
@@ -3783,7 +3783,7 @@ NEWSYM draw8x8offset
     jnz near .loopa
     cmp byte[drawn],0
     je .nodraw
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
 .nodraw
@@ -3821,7 +3821,7 @@ NEWSYM draw8x8offset
     xor eax,eax
     cmp byte[drawn],0
     je .nodraw2
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
 .nodraw2
@@ -4205,7 +4205,7 @@ NEWSYM draw16x16
 .loopc2
     dec ch
     jnz near .loopa
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
     ret
@@ -4247,7 +4247,7 @@ NEWSYM draw16x16
 .loopc
     dec ch
     jnz near .loopa
-    mov dh,byte[curmosaicsz]
+    mov dh,[curmosaicsz]
     cmp dh,1
     jne near domosaic
     ret

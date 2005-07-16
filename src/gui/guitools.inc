@@ -126,7 +126,7 @@ GUIoutputchar:
     sub al,cl
     sub al,ch
     inc al
-    mov byte[esi],al
+    mov [esi],al
 .nowrite
     shl ah,1
     inc esi
@@ -309,7 +309,7 @@ GUIDrawShadow:
     sub al,189
     shr al,1
     add al,189
-    mov byte[edi-288*3-3],al
+    mov [edi-288*3-3],al
     jmp .noshadow
 .nomidshad
     mov al,[edi]
@@ -384,7 +384,7 @@ GUIoutputcharwin:
     test ah,80h
     jz .nowrite
     mov al,[GUItextcolor]
-    mov byte[esi],al
+    mov [esi],al
 .nowrite
     shl ah,1
     inc esi
@@ -535,8 +535,8 @@ OutputUnder:
 %endmacro
 
 %macro GUIOuttextwin2 4
-    mov edx,dword[GUIwinposx+%1*4]
-    mov ebx,dword[GUIwinposy+%1*4]
+    mov edx,[GUIwinposx+%1*4]
+    mov ebx,[GUIwinposy+%1*4]
     add edx,%2
     add ebx,%3
 
@@ -552,8 +552,8 @@ OutputUnder:
 %endmacro
 
 %macro GUIOuttextwin2l 4
-    mov edx,dword[GUIwinposx+%1*4]
-    mov ebx,dword[GUIwinposy+%1*4]
+    mov edx,[GUIwinposx+%1*4]
+    mov ebx,[GUIwinposy+%1*4]
     add edx,%2
     add ebx,%3
 
@@ -569,8 +569,8 @@ OutputUnder:
 %endmacro
 
 %macro GUIOuttextwin2u 5
-    mov edx,dword[GUIwinposx+%1*4]
-    mov ebx,dword[GUIwinposy+%1*4]
+    mov edx,[GUIwinposx+%1*4]
+    mov ebx,[GUIwinposy+%1*4]
     add edx,%2
     add ebx,%3
 
@@ -648,8 +648,8 @@ GUIoutputiconwin:
 %endmacro
 
 %macro GUIDisplayIconWin 4
-    mov eax,dword[GUIwinposx+%1*4]
-    mov ebx,dword[GUIwinposy+%1*4]
+    mov eax,[GUIwinposx+%1*4]
+    mov ebx,[GUIwinposy+%1*4]
     add eax,%2
     add ebx,%3
     mov edi,%4
@@ -826,8 +826,8 @@ GUIDrawSlideBar:
     mov [%8],esi
     mov [%8+4],edx
     mov [%8+8],ecx
-    mov eax,dword[GUIwinposx+%1*4]
-    mov ebx,dword[GUIwinposy+%1*4]
+    mov eax,[GUIwinposx+%1*4]
+    mov ebx,[GUIwinposy+%1*4]
     add eax,%2
     add ebx,%3
     mov esi,%7

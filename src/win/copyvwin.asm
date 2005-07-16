@@ -817,7 +817,7 @@ Process2xSaIwin:
 ;    add edi,[VESAAddr]
     mov dl,[resolutn]
     sub dl,2    ; Compensate for top/bottom line + 2 lines in 2xSaI
-    mov byte[lineleft],dl
+    mov [lineleft],dl
     mov dword[esi+512],0
     mov dword[esi+512+576*2],0
     mov ebx,[vidbufferofsb]

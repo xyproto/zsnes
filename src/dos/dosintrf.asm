@@ -185,7 +185,7 @@ NEWSYM OSExit
 NEWSYM Open_File
     pushad
     mov dword[ZOpenMode],0
-    mov dword[ZOpenFileName],edx
+    mov [ZOpenFileName],edx
     call ZOpenFile
     cmp eax,0FFFFFFFFh
     je .error
@@ -194,7 +194,7 @@ NEWSYM Open_File
     mov dword[ZFileSeekHandle],0
     mov bx,[CurrentHandle]
     dec bx
-    mov word[ZFileSeekHandle],bx
+    mov [ZFileSeekHandle],bx
     call ZFileSeek
     popad
     mov ax,[CurrentHandle]
@@ -213,7 +213,7 @@ NEWSYM Open_File
 NEWSYM Open_File_Write
     pushad
     mov dword[ZOpenMode],2
-    mov dword[ZOpenFileName],edx
+    mov [ZOpenFileName],edx
     call ZOpenFile
     cmp eax,0FFFFFFFFh
     je .error
@@ -222,7 +222,7 @@ NEWSYM Open_File_Write
     mov dword[ZFileSeekHandle],0
     mov bx,[CurrentHandle]
     dec bx
-    mov word[ZFileSeekHandle],bx
+    mov [ZFileSeekHandle],bx
     call ZFileSeek
     popad
     mov ax,[CurrentHandle]
@@ -241,7 +241,7 @@ NEWSYM Open_File_Write
 NEWSYM Create_File
     pushad
     mov dword[ZOpenMode],1
-    mov dword[ZOpenFileName],edx
+    mov [ZOpenFileName],edx
     call ZOpenFile
     cmp eax,0FFFFFFFFh
     je .error
@@ -321,11 +321,11 @@ NEWSYM Close_File
     ret
 
 NEWSYM File_Seek
-    mov word[ZFileSeekPos+2],cx
-    mov word[ZFileSeekPos],dx
+    mov [ZFileSeekPos+2],cx
+    mov [ZFileSeekPos],dx
     mov dword[ZFileSeekMode],0
     mov dword[ZFileSeekHandle],0
-    mov word[ZFileSeekHandle],bx
+    mov [ZFileSeekHandle],bx
     pushad
     call ZFileSeek
     popad
@@ -338,13 +338,13 @@ NEWSYM File_Seek
     ret
 
 NEWSYM File_Seek_End
-    mov word[ZFileSeekPos+2],cx
-    mov word[ZFileSeekPos],dx
+    mov [ZFileSeekPos+2],cx
+    mov [ZFileSeekPos],dx
     mov dword[ZFileSeekHandle],0
-    mov word[ZFileSeekHandle],bx
+    mov [ZFileSeekHandle],bx
     mov dword[ZFileSeekMode],1
     mov dword[ZFileTellHandle],0
-    mov word[ZFileTellHandle],bx
+    mov [ZFileTellHandle],bx
     pushad
     call ZFileSeek
     call ZFileTell

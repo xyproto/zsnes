@@ -245,37 +245,37 @@ NEWSYM DosUpdateDevices
     mov eax,ecx
     shr ecx,1
     sub eax,ecx
-    mov dword[JoyMinX2],eax
+    mov [JoyMinX2],eax
     add eax,ecx
     add eax,ecx
-    mov dword[JoyMaxX2],eax
+    mov [JoyMaxX2],eax
     mov ecx,[JoyY2]
     mov [JoyCenterY2], ecx
     mov eax,ecx
     shr ecx,1
     sub eax,ecx
-    mov dword[JoyMinY2],eax
+    mov [JoyMinY2],eax
     add eax,ecx
     add eax,ecx
-    mov dword[JoyMaxY2],eax
+    mov [JoyMaxY2],eax
     mov ecx,[JoyX]
     mov [JoyCenterX], ecx
     mov eax,ecx
     shr ecx,1
     sub eax,ecx
-    mov dword[JoyMinX],eax
+    mov [JoyMinX],eax
     add eax,ecx
     add eax,ecx
-    mov dword[JoyMaxX],eax
+    mov [JoyMaxX],eax
     mov ecx,[JoyY]
     mov [JoyCenterY], ecx
     mov eax,ecx
     shr ecx,1
     sub eax,ecx
-    mov dword[JoyMinY],eax
+    mov [JoyMinY],eax
     add eax,ecx
     add eax,ecx
-    mov dword[JoyMaxY],eax
+    mov [JoyMaxY],eax
     ; Port 209
     ; Auto-Calibrate the joysticks
     cmp byte[JoyQuant209],2
@@ -306,37 +306,37 @@ NEWSYM DosUpdateDevices
     mov eax,ecx
     shr ecx,1
     sub eax,ecx
-    mov dword[JoyMinX2209],eax
+    mov [JoyMinX2209],eax
     add eax,ecx
     add eax,ecx
-    mov dword[JoyMaxX2209],eax
+    mov [JoyMaxX2209],eax
     mov ecx,[JoyY2]
     mov [JoyCenterY2209], ecx
     mov eax,ecx
     shr ecx,1
     sub eax,ecx
-    mov dword[JoyMinY2209],eax
+    mov [JoyMinY2209],eax
     add eax,ecx
     add eax,ecx
-    mov dword[JoyMaxY2209],eax
+    mov [JoyMaxY2209],eax
     mov ecx,[JoyX]
     mov [JoyCenterX209], ecx
     mov eax,ecx
     shr ecx,1
     sub eax,ecx
-    mov dword[JoyMinX209],eax
+    mov [JoyMinX209],eax
     add eax,ecx
     add eax,ecx
-    mov dword[JoyMaxX209],eax
+    mov [JoyMaxX209],eax
     mov ecx,[JoyY]
     mov [JoyCenterY209], ecx
     mov eax,ecx
     shr ecx,1
     sub eax,ecx
-    mov dword[JoyMinY209],eax
+    mov [JoyMinY209],eax
     add eax,ecx
     add eax,ecx
-    mov dword[JoyMaxY209],eax
+    mov [JoyMaxY209],eax
     cmp dword[CalibXmin],0
     je .nocalib
     mov eax,[CalibXmin]
@@ -432,7 +432,7 @@ NEWSYM DosUpdateDevices
     sub al,5
     cmp byte[NumSWs],al
     ja .skipswc
-    mov byte[NumSWs],al
+    mov [NumSWs],al
 .skipswc
     ret
 .grip
@@ -441,7 +441,7 @@ NEWSYM DosUpdateDevices
     sub al,9
     cmp byte[NumGRiPs],al
     ja .skipgripc
-    mov byte[NumGRiPs],al
+    mov [NumGRiPs],al
 .skipgripc
 .none
     ret
@@ -480,7 +480,7 @@ NEWSYM DosUpdateDevices
     sub al,5
     cmp byte[NumSWs209],al
     ja .skipswc2
-    mov byte[NumSWs209],al
+    mov [NumSWs209],al
 .skipswc2
     ret
 .grip2
@@ -489,7 +489,7 @@ NEWSYM DosUpdateDevices
     sub al,9
     cmp byte[NumGRiPs209],al
     ja .skipgripc2
-    mov byte[NumGRiPs209],al
+    mov [NumGRiPs209],al
 .skipgripc2
 .none2
     ret

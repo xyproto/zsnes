@@ -343,7 +343,7 @@ NEWSYM FxOpbBF      ; FROM rn   set source register
    mov [edi],eax        ; Write Destination
    mov [SfxSignZero],eax
    shr al,7
-   mov byte[SfxOverflow],al
+   mov [SfxOverflow],al
    CLRFLAGS
    ret
 
@@ -611,7 +611,7 @@ NEWSYM FxOpcBF      ; FROM rn   set source register
    mov [edi],eax        ; Write Destination
    mov [SfxSignZero],eax
    shr al,7
-   mov byte[SfxOverflow],al
+   mov [SfxOverflow],al
    CLRFLAGS
    ret
 

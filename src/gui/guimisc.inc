@@ -131,13 +131,13 @@ SetAllKeys:
 
     ;Check if controller is set
     push eax
-    mov eax,dword[keycontrolval]
+    mov eax,[keycontrolval]
     cmp dword[eax],0
     pop eax
     jne .noLockInputChange
     ret
 .noLockInputChange
-    mov dword[guicpressptr],edi
+    mov [guicpressptr],edi
     xor ebx,ebx
     mov ecx,12
     mov dword[guipressptr],guipresstext4b

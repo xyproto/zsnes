@@ -404,7 +404,7 @@ EXTSYM flagnz,flago,flagc,cpucycle,doirqnext,dmadata
     or bx,word[stackor]
     mov [xs],bx
     xor bh,bh
-    mov bl,byte[xirqb]
+    mov bl,[xirqb]
     mov [xpb],bl
     xor eax,eax
     mov ax,[brkv]
@@ -559,7 +559,7 @@ BRKemulmode
     or bx,word[stackor]
     mov [xs],bx
     xor bh,bh
-    mov bl,byte[xirqb]
+    mov bl,[xirqb]
     mov [xpb],bl
     xor eax,eax
     mov ax,[copv]

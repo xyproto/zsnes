@@ -973,7 +973,7 @@ GetLoadDirNormal:
     ; Copy every 14 bytes of spcRamcmp into every 32 bytes of spcBuffer
     mov ecx,[GUIdirentries]
     mov esi,[GUIdirStartLoc]
-    mov edi,dword[GUIfileentries]
+    mov edi,[GUIfileentries]
     shl edi,5
     add edi,[spcBuffera]
     cmp ecx,0
@@ -999,7 +999,7 @@ GetLoadDirNormallfn:
     call GetNormalDirEntries
     push edi
     ; Copy every 14 bytes of spcRamcmp into every 32 bytes of spcBuffer
-    mov edi,dword[GUIfileentries]
+    mov edi,[GUIfileentries]
     shl edi,5
     add edi,[spcBuffera]
     inc edi
@@ -1079,8 +1079,8 @@ GetLoadData:
     mov byte[GUIloadfntype],0
     jmp GetLoadData
 .notfailed
-    mov eax,dword[GUInumentries]
-    mov dword[GUIfileentries],eax
+    mov eax,[GUInumentries]
+    mov [GUIfileentries],eax
     cmp dword[GUIfileentries],0
     jne .nonoentry
     mov dword[GUIcurrentfilewin],1
@@ -1203,7 +1203,7 @@ GUIGetDirs:
     ; compares string at esi to edi and returns 1 to al if esi is >, else 0
 .sortagain
     mov byte[BubbleSorted],0
-    mov esi,dword[GUIfileentries]
+    mov esi,[GUIfileentries]
     shl esi,5
     add esi,[spcBuffera]
     mov edi,[GUIdirStartLoc]
@@ -1256,7 +1256,7 @@ GUIGetDirs:
     pop edi
     jmp .nodirs
 .sort2
-    mov esi,dword[GUIfileentries]
+    mov esi,[GUIfileentries]
     shl esi,2
     add esi,spcRamcmp
 .nextentryb

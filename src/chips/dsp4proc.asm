@@ -38,17 +38,17 @@ SECTION .text
 
 NEWSYM DSP4Read8b
     RouteAccess regaccessbankr8
-    mov word[dsp4_address],cx
+    mov [dsp4_address],cx
     pushad
     call DSP4GetByte
     popad
-    mov al,byte[dsp4_byte]
+    mov al,[dsp4_byte]
     ret
 
 NEWSYM DSP4Write8b
     RouteAccess regaccessbankw8
-    mov word[dsp4_address],cx
-    mov byte[dsp4_byte],al
+    mov [dsp4_address],cx
+    mov [dsp4_byte],al
     pushad
     call DSP4SetByte
     popad
@@ -56,27 +56,27 @@ NEWSYM DSP4Write8b
 
 NEWSYM DSP4Read16b
     RouteAccess regaccessbankr16
-    mov word[dsp4_address],cx
+    mov [dsp4_address],cx
     pushad
     call DSP4GetByte
-    mov al,byte[dsp4_byte]
-    mov byte[dsp4temp],al
+    mov al,[dsp4_byte]
+    mov [dsp4temp],al
     inc word[dsp4_address]
     call DSP4GetByte
     popad
-    mov al,byte[dsp4temp]
-    mov ah,byte[dsp4_byte]
+    mov al,[dsp4temp]
+    mov ah,[dsp4_byte]
     ret
 
 NEWSYM DSP4Write16b
     RouteAccess regaccessbankw16
-    mov word[dsp4_address],cx
-    mov byte[dsp4_byte],al
-    mov byte[dsp4temp],ah
+    mov [dsp4_address],cx
+    mov [dsp4_byte],al
+    mov [dsp4temp],ah
     pushad
     call DSP4SetByte
-    mov ah,byte[dsp4temp]
-    mov byte[dsp4_byte],ah
+    mov ah,[dsp4temp]
+    mov [dsp4_byte],ah
     inc word[dsp4_address]
     call DSP4SetByte
     popad

@@ -76,7 +76,7 @@
 %macro STWRN 1  ; V
    mov eax,[SfxR0+%1*4]             ; Read register
    mov ebx,[SfxRAMMem]
-   mov dword[SfxLastRamAdr],eax    ; Save last ram address
+   mov [SfxLastRamAdr],eax    ; Save last ram address
    add dword[SfxLastRamAdr],ebx    ; Save last ram address
    mov edx,[esi]            ; Read Source
    FETCHPIPE
@@ -92,9 +92,9 @@
    mov eax,[SfxR0+%1*4]             ; Read register
    FETCHPIPE
    add eax,[SfxRAMMem]
-   mov dword[SfxLastRamAdr],eax    ; Save last ram address
+   mov [SfxLastRamAdr],eax    ; Save last ram address
    mov ebx,[esi]            ; Read Source
-   mov byte[eax],bl         ; Store Byte
+   mov [eax],bl         ; Store Byte
    CLRFLAGS
    inc ebp                ; Increase program counter
    ret
@@ -103,7 +103,7 @@
 %macro LDWRN 1  ; V
    mov eax,[SfxR0+%1*4]             ; Read register
    mov ebx,[SfxRAMMem]
-   mov dword[SfxLastRamAdr],eax    ; Save last ram address
+   mov [SfxLastRamAdr],eax    ; Save last ram address
    FETCHPIPE
    mov dl,[ebx+eax]         ; Store Word
    add dword[SfxLastRamAdr],ebx    ; Save last ram address
@@ -121,7 +121,7 @@
    FETCHPIPE
    add eax,[SfxRAMMem]
    xor ebx,ebx
-   mov dword[SfxLastRamAdr],eax    ; Save last ram address
+   mov [SfxLastRamAdr],eax    ; Save last ram address
    mov bl,[eax]                     ; Read Byte
    inc ebp                ; Increase program counter
    mov [edi],ebx            ; Store Result
@@ -516,7 +516,7 @@
    FETCHPIPE
    and eax,ebx
    inc ebp
-   mov dword[SfxSignZero],eax
+   mov [SfxSignZero],eax
    mov [edi],eax            ; Write Destination
    CLRFLAGS
    ret
@@ -529,7 +529,7 @@
    FETCHPIPE
    and eax,ebx
    inc ebp
-   mov dword[SfxSignZero],eax
+   mov [SfxSignZero],eax
    mov [edi],eax            ; Write Destination
    CLRFLAGS
    ret
@@ -540,7 +540,7 @@
    FETCHPIPE
    and eax,%1
    inc ebp
-   mov dword[SfxSignZero],eax
+   mov [SfxSignZero],eax
    mov [edi],eax            ; Write Destination
    CLRFLAGS
    ret
@@ -551,15 +551,15 @@
    FETCHPIPE
    and eax,%1
    inc ebp
-   mov dword[SfxSignZero],eax
+   mov [SfxSignZero],eax
    mov [edi],eax            ; Write Destination
    CLRFLAGS
    ret
 %endmacro
 
 %macro MULTRN 1 ; V
-   mov al,byte[esi]     ; Read Source
-   mov bl,byte[SfxR0+%1*4]      ; Read RN
+   mov al,[esi]     ; Read Source
+   mov bl,[SfxR0+%1*4]      ; Read RN
    FETCHPIPE
    imul bl
    inc ebp
@@ -571,8 +571,8 @@
 %endmacro
 
 %macro UMULTRN 1        ; V
-   mov al,byte[esi]     ; Read Source
-   mov bl,byte[SfxR0+%1*4]      ; Read RN
+   mov al,[esi]     ; Read Source
+   mov bl,[SfxR0+%1*4]      ; Read RN
    FETCHPIPE
    mul bl
    inc ebp
@@ -584,7 +584,7 @@
 %endmacro
 
 %macro MULTIRN 1        ; V
-   mov al,byte[esi]     ; Read Source
+   mov al,[esi]     ; Read Source
    mov bl,%1                  ; Read RN
    FETCHPIPE
    imul bl
@@ -597,7 +597,7 @@
 %endmacro
 
 %macro UMULTIRN 1       ; V
-   mov al,byte[esi]     ; Read Source
+   mov al,[esi]     ; Read Source
    mov bl,%1                  ; Read RN
    FETCHPIPE
    mul bl
@@ -614,7 +614,7 @@
    sub eax,[SfxCPB]
    add eax,%1
    FETCHPIPE
-   mov word[SfxR11],ax
+   mov [SfxR11],ax
    CLRFLAGS
    inc ebp
    ret
@@ -633,7 +633,7 @@
    FETCHPIPE
    mov eax,[SfxR0+%1*4]
    and eax,07Fh
-   mov byte[SfxPBR],al
+   mov [SfxPBR],al
 ;   mov byte[fxtrace+eax],1
    mov eax,[SfxMemTable+eax*4]
    mov [SfxCPB],eax
@@ -663,7 +663,7 @@
    inc ebp
    add eax,[SfxRAMMem]
    mov cl,[ebp]
-   mov dword[SfxLastRamAdr],eax
+   mov [SfxLastRamAdr],eax
    mov ebx,[eax]              ; Read word from ram
    inc ebp
    mov [SfxR0+%1*4],bx              ; Write data
@@ -679,7 +679,7 @@
    mov cl,[ebp]
    add eax,[SfxRAMMem]
    mov ebx,[SfxR0+%1*4]              ; Read data
-   mov dword[SfxLastRamAdr],eax
+   mov [SfxLastRamAdr],eax
    inc ebp
    mov [eax],bx              ; Write word to ram
    CLRFLAGS
@@ -783,7 +783,7 @@
    xor eax,1
    add ebp,3
    mov dh,[eax+ebx]
-   mov word[SfxR0+%1*4],dx         ; Store Word
+   mov [SfxR0+%1*4],dx         ; Store Word
    CLRFLAGS
    ret
 %endmacro
@@ -817,7 +817,7 @@
    mov eax,[SfxRAMBR]
    shl eax,16
    add eax,[sfxramdata]
-   mov dword[SfxRAMMem],eax
+   mov [SfxRAMMem],eax
 %endmacro
 
 %macro UnPackEsiEdi 0

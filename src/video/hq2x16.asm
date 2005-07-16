@@ -521,7 +521,7 @@ nointerp:
 ;----------------------------;
 hq2x:
     mov dl,[resolutn]
-    mov byte[lineleft],dl
+    mov [lineleft],dl
     mov dword[prevline],0
     mov dword[nextline],576
     mov ebx,hirestiledat+1

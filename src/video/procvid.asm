@@ -126,7 +126,7 @@ NEWSYM showvideo
     push ebx
     push ebp
     inc byte[ccud]
-    mov bl,byte[ccud]
+    mov bl,[ccud]
     cmp byte[cacheud],bl
     je .noinc
     mov byte[ccud],0
@@ -623,7 +623,7 @@ NEWSYM outputchar
     test ah,80h
     jz .nowrite
     mov al,[textcolor]
-    mov byte[esi],al
+    mov [esi],al
     mov byte[esi+289],192
 .nowrite
     shl ah,1
@@ -689,7 +689,7 @@ NEWSYM outputchar5x5
     test ah,80h
     jz .nowrite
     mov al,[textcolor]
-    mov byte[esi],al
+    mov [esi],al
 .nowrite
     shl ah,1
     inc esi
@@ -725,8 +725,8 @@ NEWSYM outputchar16b5x5
     jz .nowrite
     push eax
     mov ax,[textcolor16b]
-    mov word[esi],ax
-    mov word[esi+75036*4],ax
+    mov [esi],ax
+    mov [esi+75036*4],ax
     pop eax
 .nowrite
     shl ah,1
@@ -779,8 +779,8 @@ NEWSYM outputchar16b5x52
     jz .nowrite
     push eax
     mov ax,[textcolor16b]
-    mov word[esi],ax
-    mov word[esi+75036*4],ax
+    mov [esi],ax
+    mov [esi+75036*4],ax
     pop eax
 .nowrite
     shl ah,1
@@ -857,7 +857,7 @@ NEWSYM OutputGraphicString
     mov bx,20
     shl bx,cl
     add ax,bx
-    mov word[textcolor16b],ax
+    mov [textcolor16b],ax
 .no130
     ; Color #131, Red
     cmp byte[textcolor],131
@@ -876,7 +876,7 @@ NEWSYM OutputGraphicString
     mov bx,5
     shl bx,cl
     add ax,bx
-    mov word[textcolor16b],ax
+    mov [textcolor16b],ax
 .no131
     jmp OutputGraphicString16b
 
@@ -939,7 +939,7 @@ NEWSYM OutputGraphicString5x5
     mov bx,20
     shl bx,cl
     add ax,bx
-    mov word[textcolor16b],ax
+    mov [textcolor16b],ax
 .no130
     ; Color #131, Red
     cmp byte[textcolor],131
@@ -958,7 +958,7 @@ NEWSYM OutputGraphicString5x5
     mov bx,5
     shl bx,cl
     add ax,bx
-    mov word[textcolor16b],ax
+    mov [textcolor16b],ax
 .no131
     jmp OutputGraphicString16b5x5
 
@@ -1078,7 +1078,7 @@ NEWSYM OutputGraphicStringb
     mov bx,20
     shl bx,cl
     add ax,bx
-    mov word[textcolor16b],ax
+    mov [textcolor16b],ax
 .no130
     ; Color #131, Red
     cmp byte[textcolor],131
@@ -1097,7 +1097,7 @@ NEWSYM OutputGraphicStringb
     mov bx,5
     shl bx,cl
     add ax,bx
-    mov word[textcolor16b],ax
+    mov [textcolor16b],ax
 .no131
 NEWSYM OutputGraphicString16bb
     xor eax,eax
@@ -1176,7 +1176,7 @@ SECTION .text
 
 NEWSYM drawhline
 .loop
-    mov byte[esi],al
+    mov [esi],al
     inc esi
     dec ecx
     jnz .loop
@@ -1192,7 +1192,7 @@ NEWSYM drawhline16b
 
 NEWSYM drawvline
 .loop
-    mov byte[esi],al
+    mov [esi],al
     add esi,288
     dec ecx
     jnz .loop
@@ -1349,7 +1349,7 @@ GetPicture:
     push esi
 .ploopb2
     mov ax,[edi]
-    mov word[esi],ax
+    mov [esi],ax
     add esi,2
     add edi,2
     dec ecx
@@ -1559,7 +1559,7 @@ NEWSYM saveselect
     jnz .loop
     ; draw filled boxes for existing files
     mov eax,[statefileloc]
-    mov bl,byte[fnamest+eax]
+    mov bl,[fnamest+eax]
     push ebx
     call DetermineNewest
     drawfillboxhelp 0,'t'
@@ -1574,7 +1574,7 @@ NEWSYM saveselect
     drawfillboxhelp 9,'9'
     pop ebx
     mov eax,[statefileloc]
-    mov byte[fnamest+eax],bl
+    mov [fnamest+eax],bl
 
     mov esi,75+73*288
     add esi,[vidbuffer]
@@ -1650,7 +1650,7 @@ NEWSYM saveselect
     mov byte[curblank],0h
     mov bl,0
     mov ebx,[statefileloc]
-    mov al,byte[fnamest+ebx]
+    mov al,[fnamest+ebx]
     cmp al,'t'
     jne .noT
     mov bl,0
@@ -1716,7 +1716,7 @@ NEWSYM saveselect
     mov al,bl
 .save
     mov ebx,[statefileloc]
-    mov byte[fnamest+ebx],al
+    mov [fnamest+ebx],al
 .esc
 
     mov eax,pressed
@@ -1835,7 +1835,7 @@ SECTION .text
 
     ; draw filled boxes for existing files
     mov eax,[statefileloc]
-    mov bl,byte[fnamest+eax]
+    mov bl,[fnamest+eax]
     push ebx
     call DetermineNewest
     drawfillboxhelp16b 0,'t'
@@ -1850,7 +1850,7 @@ SECTION .text
     drawfillboxhelp16b 9,'9'
     pop ebx
     mov eax,[statefileloc]
-    mov byte[fnamest+eax],bl
+    mov [fnamest+eax],bl
 
     mov esi,75*2+73*288*2
     add esi,[vidbuffer]
@@ -1927,7 +1927,7 @@ SECTION .text
     mov byte[curblank],0h
     mov bl,0
     mov ebx,[statefileloc]
-    mov al,byte[fnamest+ebx]
+    mov al,[fnamest+ebx]
     cmp al,'t'
     jne .noT16b
     mov bl,0
@@ -1953,7 +1953,7 @@ SECTION .text
     mov [CurPictureVal],bl
     pushad
     mov eax,[statefileloc]
-    mov cl,byte[fnamest+eax]
+    mov cl,[fnamest+eax]
     push ecx
     cmp bl,0
     jne .nozero16b2
@@ -1963,11 +1963,11 @@ SECTION .text
     mov cl,bl
     add cl,48
 .save16b2
-    mov byte[fnamest+eax],cl
+    mov [fnamest+eax],cl
     call GetPicture
     pop ecx
     mov eax,[statefileloc]
-    mov byte[fnamest+eax],cl
+    mov [fnamest+eax],cl
     popad
 
     mov dx,0FFFFh
@@ -2030,7 +2030,7 @@ SECTION .text
     mov al,bl
 .save16b
     mov ebx,[statefileloc]
-    mov byte[fnamest+ebx],al
+    mov [fnamest+ebx],al
 .esc16b
     mov eax,pressed
     mov ecx,256
@@ -2222,7 +2222,7 @@ NEWSYM doveg
     or ax,cx
     mov bx,ax
     pop eax
-    mov word[cgram+eax],bx
+    mov [cgram+eax],bx
     add eax,2
     cmp eax,200h
     jne .next

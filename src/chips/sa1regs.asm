@@ -196,7 +196,7 @@ RTC2801w:
     ret
 .notstop
     push ebx
-    mov ebx,dword[RTCPtr2]
+    mov ebx,[RTCPtr2]
     cmp ebx,0
     je .next
     cmp ebx,13
@@ -767,7 +767,7 @@ SPC4806w:
     mov eax,[edx+8]
     mov [SPC7110TempLength],eax
 
-    mov edx,dword[SPC7110filep]
+    mov edx,[SPC7110filep]
     mov eax,[SPCCompPtr]
     and eax,0FFFFFFh
     mov ecx,6
@@ -1204,7 +1204,7 @@ SPC482E:
     xor al,al
     ret
 SPC482Ew:
-    mov byte[SPCSignedVal],al
+    mov [SPCSignedVal],al
     mov dword[SPCMultA],0
     mov dword[SPCMultB],0
     mov dword[SPCDivEnd],0
@@ -1251,7 +1251,7 @@ SPC4834:
 SPC4840w:
     test al,1
     jz .notreset
-    mov byte[SPC7110RTCStat],al
+    mov [SPC7110RTCStat],al
     mov byte[SPC7110RTCStat+1],0FEh
 .notreset
     ret
@@ -1279,12 +1279,12 @@ SPC4841w:
     ret
 .commandbyte
     inc byte[SPC7110RTCStat+1]
-    mov byte[SPC7110RTCStat+2],al
+    mov [SPC7110RTCStat+2],al
     ret
 .commandindex
     push eax
     and al,0Fh
-    mov byte[SPC7110RTCStat+1],al
+    mov [SPC7110RTCStat+1],al
     pop eax
     ret
 SPC4842w:
@@ -1424,7 +1424,7 @@ SPC4841:
     ret
 .commandbyte
     inc byte[SPC7110RTCStat+1]
-    mov al,byte[SPC7110RTCStat+2]
+    mov al,[SPC7110RTCStat+2]
     ret
 
 SECTION .data
@@ -1580,9 +1580,9 @@ NEWSYM SA1Reset
     mov [SA1RAMArea],eax
     mov eax,[romdata]
     add eax,4096*1024-6000h
-    mov dword[CurBWPtr],eax
-    mov dword[SA1BWPtr],eax
-    mov dword[SNSBWPtr],eax
+    mov [CurBWPtr],eax
+    mov [SA1BWPtr],eax
+    mov [SNSBWPtr],eax
     mov dword[SA1xa],0
     mov dword[SA1xx],0
     mov dword[SA1xy],0
@@ -1711,7 +1711,7 @@ NEWSYM sdd14807w
 NEWSYM sa12200w
     mov bl,al
     and bl,0Fh
-    mov byte[SA1Message],bl
+    mov [SA1Message],bl
     test al,80h
     jz .noirq
     or byte[SA1DoIRQ],1
@@ -1744,7 +1744,7 @@ NEWSYM sa12200w
     ret
 
 NEWSYM sa12201w         ; IRQ Enable
-    mov byte[SA1IRQEnable],al
+    mov [SA1IRQEnable],al
     ret
 NEWSYM sa12202w         ; IRQ Clear
     test al,80h
@@ -1774,7 +1774,7 @@ NEWSYM sa12209w ; IRQ Stuff
 .noirq
     mov bl,al
     and bl,0Fh
-    mov byte[SA1Message+1],bl
+    mov [SA1Message+1],bl
     mov bx,[irqv2]
     test al,40h
     jz .noirqchange
@@ -1818,10 +1818,10 @@ NEWSYM sa12224w ; BWRAM
     shl ebx,13
     add ebx,[romdata]
     add ebx,1024*4096-6000h
-    mov dword[SNSBWPtr],ebx
+    mov [SNSBWPtr],ebx
     cmp byte[SA1Status],0
     jne .nosnes
-    mov dword[CurBWPtr],ebx
+    mov [CurBWPtr],ebx
 .nosnes
     ret
 NEWSYM sa12225w ; BWRAM
@@ -1834,10 +1834,10 @@ EXTSYM BWUsed2
     shl ebx,13
     add ebx,[romdata]
     add ebx,1024*4096-6000h
-    mov dword[SA1BWPtr],ebx
+    mov [SA1BWPtr],ebx
     cmp byte[SA1Status],0
     je .nosa1b
-    mov dword[CurBWPtr],ebx
+    mov [CurBWPtr],ebx
 .nosa1b
     mov byte[BWShift],0
     mov byte[BWAndAddr],0
@@ -1865,15 +1865,15 @@ EXTSYM BWUsed2
 .4col
     add ebx,[romdata]
     add ebx,1024*4096
-    mov dword[SA1BWPtr],ebx
+    mov [SA1BWPtr],ebx
     cmp byte[SA1Status],0
     je .nosa1
-    mov dword[CurBWPtr],ebx
+    mov [CurBWPtr],ebx
 .nosa1
 ;    mov byte[debstop3],1
     ret
 NEWSYM sa12250w
-    mov byte[SA1ARC],al
+    mov [SA1ARC],al
     mov byte[SA1ARC+1],1
     test al,2
     jz .notcumul
@@ -1883,19 +1883,19 @@ NEWSYM sa12250w
 .notcumul
     ret
 NEWSYM sa12251w
-    mov byte[SA1AR1],al
+    mov [SA1AR1],al
     mov byte[SA1ARC+1],1
     ret
 NEWSYM sa12252w
-    mov byte[SA1AR1+1],al
+    mov [SA1AR1+1],al
     mov byte[SA1ARC+1],1
     ret
 NEWSYM sa12253w
-    mov byte[SA1AR2],al
+    mov [SA1AR2],al
     mov byte[SA1ARC+1],1
     ret
 NEWSYM sa12254w
-    mov byte[SA1AR2+1],al
+    mov [SA1AR2+1],al
     mov byte[SA1ARC+1],1
     test byte[SA1ARC],2
     jnz .cumul
@@ -2138,7 +2138,7 @@ NEWSYM sa1230Er
 NEWSYM sa12302r
     test byte[SA1TimerSet],80h
     jnz .timeron
-    mov al,byte[CurrentExecSA1]
+    mov al,[CurrentExecSA1]
     shl al,2
     add al,dh
     ret
@@ -2148,7 +2148,7 @@ NEWSYM sa12302r
 NEWSYM sa12303r
     test byte[SA1TimerSet],80h
     jnz .timeron
-    mov al,byte[CurrentExecSA1]
+    mov al,[CurrentExecSA1]
     shr al,3
     ret
 .timeron

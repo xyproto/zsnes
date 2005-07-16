@@ -1106,7 +1106,7 @@ NEWSYM RDSPRegFF      ;
       mov ebx,[DecreaseRateExp+eax*4]
       mov dword[Voice0EnvInc+%1*4],007FFFFFh
       shr ebx,5
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       mov [GainDecBendDataTime+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
@@ -1115,7 +1115,7 @@ NEWSYM RDSPRegFF      ;
       mov byte[GainDecBendDataDat+%1],127
       div ebx
       neg eax
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       pop edx
       pop ebx
       pop eax
@@ -1127,12 +1127,12 @@ NEWSYM RDSPRegFF      ;
       and al,1Fh
       mov ebx,[Decrease+eax*4]
       mov dword[Voice0EnvInc+%1*4],007FFFFFh
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
       div ebx
       neg eax
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       pop edx
       pop ebx
       pop eax
@@ -1146,11 +1146,11 @@ NEWSYM RDSPRegFF      ;
       and al,1Fh
       mov ebx,[Increase+eax*4]
       mov dword[Voice0EnvInc+%1*4],0
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
       div ebx
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       mov ebx,[Voice0Time+%1*4]
       mov eax,ebx
       shr eax,2
@@ -1168,11 +1168,11 @@ NEWSYM RDSPRegFF      ;
       and al,1Fh
       mov ebx,[Increase+eax*4]
       mov dword[Voice0EnvInc+%1*4],0
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
       div ebx
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       pop edx
       pop ebx
       pop eax
@@ -1182,7 +1182,7 @@ NEWSYM RDSPRegFF      ;
       mov al,[DSPMem+07h+%1*10h]
       and al,7Fh
       mov dword[Voice0EnvInc+%1*4],0
-      mov byte[Voice0EnvInc+%1*4+2],al
+      mov [Voice0EnvInc+%1*4+2],al
       mov dword[Voice0Time+%1*4],0FFFFFFFFh
       mov dword[Voice0IncNumber+%1*4],0
       pop edx
@@ -1207,7 +1207,7 @@ NEWSYM RDSPRegFF      ;
       and al,1Fh
       mov ebx,[DecreaseRateExp+eax*4]
       shr ebx,5
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       mov [GainDecBendDataTime+%1*4],ebx
       xor edx,edx
       mov dh,118
@@ -1237,14 +1237,14 @@ NEWSYM RDSPRegFF      ;
       mov al,[DSPMem+07h+%1*10h]
       and al,1Fh
       mov ebx,[Decrease+eax*4]
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       xor edx,edx
       xor eax,eax
       mov al,[Voice0EnvInc+%1*4+2]
       shl eax,16
       div ebx
       neg eax
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       pop edx
       pop ebx
       pop eax
@@ -1257,7 +1257,7 @@ NEWSYM RDSPRegFF      ;
       mov al,[DSPMem+07h+%1*10h]
       and al,1Fh
       mov ebx,[Increase+eax*4]
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       xor edx,edx
       xor eax,eax
       mov al,[Voice0EnvInc+%1*4+2]
@@ -1269,7 +1269,7 @@ NEWSYM RDSPRegFF      ;
       xor al,127
       shl eax,16
       div ebx
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       mov ebx,[Voice0Time+%1*4]
       mov eax,ebx
       shr eax,2
@@ -1286,7 +1286,7 @@ NEWSYM RDSPRegFF      ;
       mov al,[DSPMem+07h+%1*10h]
       and al,1Fh
       mov ebx,[Increase+eax*4]
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       xor edx,edx
       xor eax,eax
       mov al,[Voice0EnvInc+%1*4+2]
@@ -1298,7 +1298,7 @@ NEWSYM RDSPRegFF      ;
       xor al,127
       shl eax,16
       div ebx
-      mov dword[Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       pop edx
       pop ebx
       pop eax
@@ -1308,7 +1308,7 @@ NEWSYM RDSPRegFF      ;
       mov al,[DSPMem+07h+%1*10h]
       and al,7Fh
       mov dword[Voice0EnvInc+%1*4],0
-      mov byte[Voice0EnvInc+%1*4+2],al
+      mov [Voice0EnvInc+%1*4+2],al
       mov dword[Voice0Time+%1*4],0FFFFFFFFh
       mov dword[Voice0IncNumber+%1*4],0
       pop edx
@@ -1417,7 +1417,7 @@ NEWSYM RDSPRegFF      ;
       add ebx,eax
       mov dword[Voice0EnvInc+%1*4],007FFFFFh
       shr ebx,5
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       mov [GainDecBendDataTime+%1*4],ebx
       xor edx,edx
 
@@ -2088,7 +2088,7 @@ NEWSYM WDSPReg5B       ; Voice  5
     mov eax,[Voice0EnvInc+%1*4]
     shr eax,8
     neg eax
-    mov dword[Voice0IncNumber+%1*4],eax
+    mov [Voice0IncNumber+%1*4],eax
     mov byte[Voice0State+%1],200
     mov byte[DSPMem+08h+%1*10h],0
     or byte[DSPMem+7Ch],1 << %1

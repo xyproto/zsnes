@@ -220,7 +220,7 @@ NEWSYM DSP1Write8b
     mov bl,al
     mov byte[DSPFuncUsed+ebx],1
     pop ebx
-    mov byte[DSP1COp],al
+    mov [DSP1COp],al
     mov byte[DSP1CPtrW],0
     DSP1WriteInit 00h, 2  ; 16-bit multiply
     DSP1WriteInit 10h, 2  ; Inverse
@@ -574,11 +574,11 @@ DSP1_06:  ; Object Projection Calculation
     call DSPOp06
     popad
     mov ax,[Op06H]
-    mov word[DSP1RET],ax
+    mov [DSP1RET],ax
     mov ax,[Op06V]
-    mov word[DSP1RET+2],ax
+    mov [DSP1RET+2],ax
     mov ax,[Op06S]
-    mov word[DSP1RET+4],ax
+    mov [DSP1RET+4],ax
     mov byte[DSP1RLeft],3
     pop eax
     ret
@@ -611,9 +611,9 @@ DSP1_0E:  ; Coordinate Calculation of a point onscreen
     call DSPOp0E
     popad
     mov ax,[Op0EX]
-    mov word[DSP1RET],ax
+    mov [DSP1RET],ax
     mov ax,[Op0EY]
-    mov word[DSP1RET+2],ax
+    mov [DSP1RET+2],ax
     mov byte[DSP1RLeft],2
     pop eax
     ret
@@ -678,11 +678,11 @@ DSP1_0D:  ; Convert from global to object coords Matrix A
     call DSPOp0D
     popad
     mov ax,[Op0DF]
-    mov word[DSP1RET],ax
+    mov [DSP1RET],ax
     mov ax,[Op0DL]
-    mov word[DSP1RET+2],ax
+    mov [DSP1RET+2],ax
     mov ax,[Op0DU]
-    mov word[DSP1RET+4],ax
+    mov [DSP1RET+4],ax
     mov byte[DSP1RLeft],3
     pop eax
     ret
@@ -694,7 +694,7 @@ DSP1_0F:  ; DSP RAM Test
     call DSPOp0F
     popad
     mov ax,[Op0FPass]
-    mov word[DSP1RET],ax
+    mov [DSP1RET],ax
     mov byte[DSP1RLeft],1
     pop eax
     ret
@@ -711,11 +711,11 @@ DSP1_1D:  ; Convert from global to object coords Matrix B
     call DSPOp1D
     popad
     mov ax,[Op1DF]
-    mov word[DSP1RET],ax
+    mov [DSP1RET],ax
     mov ax,[Op1DL]
-    mov word[DSP1RET+2],ax
+    mov [DSP1RET+2],ax
     mov ax,[Op1DU]
-    mov word[DSP1RET+4],ax
+    mov [DSP1RET+4],ax
     mov byte[DSP1RLeft],3
     pop eax
     ret
@@ -732,11 +732,11 @@ DSP1_2D:  ; Convert from global to object coords Matrix C
     call DSPOp2D
     popad
     mov ax,[Op2DF]
-    mov word[DSP1RET],ax
+    mov [DSP1RET],ax
     mov ax,[Op2DL]
-    mov word[DSP1RET+2],ax
+    mov [DSP1RET+2],ax
     mov ax,[Op2DU]
-    mov word[DSP1RET+4],ax
+    mov [DSP1RET+4],ax
     mov byte[DSP1RLeft],3
     pop eax
     ret
@@ -753,11 +753,11 @@ DSP1_03:  ; Convert from object to global coords Matrix A
     call DSPOp03
     popad
     mov ax,[Op03X]
-    mov word[DSP1RET],ax
+    mov [DSP1RET],ax
     mov ax,[Op03Y]
-    mov word[DSP1RET+2],ax
+    mov [DSP1RET+2],ax
     mov ax,[Op03Z]
-    mov word[DSP1RET+4],ax
+    mov [DSP1RET+4],ax
     mov byte[DSP1RLeft],3
     pop eax
     ret
@@ -774,11 +774,11 @@ DSP1_13:  ; Convert from object to global coords Matrix B
     call DSPOp13
     popad
     mov ax,[Op13X]
-    mov word[DSP1RET],ax
+    mov [DSP1RET],ax
     mov ax,[Op13Y]
-    mov word[DSP1RET+2],ax
+    mov [DSP1RET+2],ax
     mov ax,[Op13Z]
-    mov word[DSP1RET+4],ax
+    mov [DSP1RET+4],ax
     mov byte[DSP1RLeft],3
     pop eax
     ret
@@ -795,11 +795,11 @@ DSP1_23:  ; Convert from object to global coords Matrix C
     call DSPOp23
     popad
     mov ax,[Op23X]
-    mov word[DSP1RET],ax
+    mov [DSP1RET],ax
     mov ax,[Op23Y]
-    mov word[DSP1RET+2],ax
+    mov [DSP1RET+2],ax
     mov ax,[Op23Z]
-    mov word[DSP1RET+4],ax
+    mov [DSP1RET+4],ax
     mov byte[DSP1RLeft],3
     pop eax
     ret
@@ -816,7 +816,7 @@ DSP1_0B:  ; Calculation of inner product Matrix A
     call DSPOp0B
     popad
     mov ax,[Op0BS]
-    mov word[DSP1RET],ax
+    mov [DSP1RET],ax
     mov byte[DSP1RLeft],1
     pop eax
     ret
@@ -833,7 +833,7 @@ DSP1_1B:  ; Calculation of inner product Matrix B
     call DSPOp1B
     popad
     mov ax,[Op1BS]
-    mov word[DSP1RET],ax
+    mov [DSP1RET],ax
     mov byte[DSP1RLeft],1
     pop eax
     ret
@@ -850,7 +850,7 @@ DSP1_2B:  ; Calculation of inner product Matrix C
     call DSPOp2B
     popad
     mov ax,[Op2BS]
-    mov word[DSP1RET],ax
+    mov [DSP1RET],ax
     mov byte[DSP1RLeft],1
     pop eax
     ret
@@ -873,11 +873,11 @@ DSP1_14:  ; 3D angle rotation
     call DSPOp14
     popad
     mov ax,[Op14Zrr]
-    mov word[DSP1RET],ax
+    mov [DSP1RET],ax
     mov ax,[Op14Xrr]
-    mov word[DSP1RET+2],ax
+    mov [DSP1RET+2],ax
     mov ax,[Op14Yrr]
-    mov word[DSP1RET+4],ax
+    mov [DSP1RET+4],ax
     mov byte[DSP1RLeft],3
     pop eax
     ret

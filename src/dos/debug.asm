@@ -187,7 +187,7 @@ NEWSYM loadtempstuff
     ; Init separate variables
     xor eax,eax
     mov al,[spcRam+0F1h]
-    mov byte[timeron],al
+    mov [timeron],al
     mov al,[spcRam+0FAh]
     mov [timincr0],al
     mov [timinl0],al
@@ -554,7 +554,7 @@ NEWSYM getstring
     mov al,bl
     add esi,eax
     mov dl,'0'
-    mov byte[esi],dl
+    mov [esi],dl
     dec esi
     mov ecx,eax
     cmp bl,0
@@ -568,7 +568,7 @@ NEWSYM getstring
     jnz .okloop2
 .noloop
     mov dl,[clearchar]
-    mov byte[es:edi],dl
+    mov [es:edi],dl
     jmp .tryinputagain
 .trynextentry
     mov al,0
@@ -2191,13 +2191,13 @@ NEWSYM nextopcode
     mov byte[.charprin],'-'
     call .printnum
     xor eax,eax
-    mov al,byte[curcyc]
+    mov al,[curcyc]
     mov byte[.addernum],3
     mov edi,160+40
     mov byte[.charprin],' '
     call .printnum
     mov edi,160+52
-    mov ax,word[curypos]
+    mov ax,[curypos]
     call .printnum
 
     mov ax,ds
@@ -2497,7 +2497,7 @@ SECTION .text
     test eax,0FFFFFFFFh
     jnz .loopa2
     xor eax,eax
-    mov al,byte[.addernum]
+    mov al,[.addernum]
     xor ah,ah
     sub ax,cx
     cmp ax,0
@@ -3486,13 +3486,13 @@ NEWSYM nextopcodesa1
     mov byte[nextopcode.charprin],'-'
     call nextopcode.printnum
     xor eax,eax
-    mov al,byte[curcyc]
+    mov al,[curcyc]
     mov byte[nextopcode.addernum],3
     mov edi,160+40
     mov byte[nextopcode.charprin],' '
     call nextopcode.printnum
     mov edi,160+52
-    mov ax,word[curypos]
+    mov ax,[curypos]
     call nextopcode.printnum
     pop es
     ; set output pointer

@@ -88,7 +88,7 @@ NEWSYM ResetExecStuff
   ret
 
 NEWSYM ProcessRewind
-    mov eax,dword[KeyRewind]
+    mov eax,[KeyRewind]
     cmp byte[pressed+eax],1
     jne near .notokay
     mov byte[pressed+eax],2
@@ -1037,8 +1037,8 @@ NEWSYM cpuover
     test byte[SA1DoIRQ],4
     jz .nosa1
     and byte[SA1DoIRQ],0FBh
-    mov al,byte[SA1Message+1]
-    mov byte[SA1Message+3],al
+    mov al,[SA1Message+1]
+    mov [SA1Message+3],al
     or byte[SA1IRQExec],1
     ; Start IRQ
     add dh,10
@@ -1050,8 +1050,8 @@ NEWSYM cpuover
     jz .nosa1chirq
 ;    jmp .nosa1chirq
     and byte[SA1DoIRQ],0F7h
-    mov al,byte[SA1Message+1]
-    mov byte[SA1Message+3],al
+    mov al,[SA1Message+1]
+    mov [SA1Message+3],al
     or byte[SA1IRQExec],2
     ; Start IRQ
     add dh,10
@@ -1234,7 +1234,7 @@ NEWSYM cpuover
 .nonewgfx
     cmp byte[GUIQuit],1
     je near endprog
-    mov eax,dword[KeyQuickSnapShot]
+    mov eax,[KeyQuickSnapShot]
     or eax,eax
     jz .nosskey
     test byte[pressed+eax],1
@@ -1243,7 +1243,7 @@ NEWSYM cpuover
     mov byte[pressed+eax],2
     jmp exitloop
 .nosskey
-    mov eax,dword[KeyQuickClock]
+    mov eax,[KeyQuickClock]
     or eax,eax
     jz .noclockkey
     test byte[pressed+eax],1
@@ -1251,7 +1251,7 @@ NEWSYM cpuover
     xor byte[TimerEnable],1
     mov byte[pressed+eax],2
 .noclockkey
-    mov eax,dword[KeyQuickSaveSPC]
+    mov eax,[KeyQuickSaveSPC]
     or eax,eax
     jz .nosavespckey
     test byte[pressed+eax],1
@@ -1260,7 +1260,7 @@ NEWSYM cpuover
     mov byte[pressed+eax],2
     jmp exitloop
 .nosavespckey
-    mov eax,dword[EMUPauseKey]
+    mov eax,[EMUPauseKey]
     or eax,eax
     jz .nopausekey
     test byte[pressed+eax],1
@@ -1268,7 +1268,7 @@ NEWSYM cpuover
     xor byte[EMUPause],1
     mov byte[pressed+eax],2
 .nopausekey
-    mov eax,dword[INCRFrameKey]
+    mov eax,[INCRFrameKey]
     or eax,eax
     jz .noincrframekey
     test byte[pressed+eax],1
@@ -1655,7 +1655,7 @@ NEWSYM cpuover
     push ecx
     push edx
     mov al,[NumCheats]
-    mov byte[.numcheat],al
+    mov [.numcheat],al
     xor edx,edx
 .anothercheat
     xor ebx,ebx
@@ -1765,10 +1765,10 @@ NEWSYM UpdatePORSCMR
    or al,bl
    mov ebx,[PLOTJmpb+eax*4]
    mov eax,[PLOTJmpa+eax*4]
-   mov dword[FxTable+4Ch*4],eax
-   mov dword[FxTableb+4Ch*4],eax
-   mov dword[FxTablec+4Ch*4],eax
-   mov dword[FxTabled+4Ch*4],ebx
+   mov [FxTable+4Ch*4],eax
+   mov [FxTableb+4Ch*4],eax
+   mov [FxTablec+4Ch*4],eax
+   mov [FxTabled+4Ch*4],ebx
    pop eax
    pop ebx
    ret
@@ -1914,10 +1914,10 @@ NEWSYM StartSFXdebugb
    or al,bl
    mov ebx,[PLOTJmpb+eax*4]
    mov eax,[PLOTJmpa+eax*4]
-   mov dword[FxTable+4Ch*4],eax
-   mov dword[FxTableb+4Ch*4],eax
-   mov dword[FxTablec+4Ch*4],eax
-   mov dword[FxTabled+4Ch*4],ebx
+   mov [FxTable+4Ch*4],eax
+   mov [FxTableb+4Ch*4],eax
+   mov [FxTablec+4Ch*4],eax
+   mov [FxTabled+4Ch*4],ebx
 
    mov ebx,[SfxSCBR]
    shl ebx,10
