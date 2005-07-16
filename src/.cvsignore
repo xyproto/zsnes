@@ -1,11 +1,12 @@
-config.log
+.gdbinit
 Makefile
 aclocal.m4
-config.h
-configure
 config.cache
-.gdbinit
+config.h
+config.log
 config.status
+configure
 parsegen
 zsnesd
 zsnes
+

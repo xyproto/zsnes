@@ -115,22 +115,25 @@ ${PSR}: parsegen.cpp
 ALL:
 	rm -f version.o
 
-tools: minwhite extraext sec-test srccount nreplace
+tools: cutrtype extraext minwhite nreplace sec-test srccount
+
+cutrtype: ${TOOLSOBJ}
+	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/cutrtype ${TOOLSDIR}/cutrtype.cpp ${TOOLSOBJ}
+
+extraext: ${TOOLSOBJ}
+	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/extraext ${TOOLSDIR}/extraext.cpp ${TOOLSOBJ}
 
 minwhite: ${TOOLSOBJ}
 	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/minwhite ${TOOLSDIR}/minwhite.cpp ${TOOLSDIR}/fileutil.o
 
-extraext: ${TOOLSOBJ}
-	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/extraext ${TOOLSDIR}/extraext.cpp ${TOOLSOBJ}
+nreplace: ${TOOLSOBJ}
+	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/nreplace ${TOOLSDIR}/nreplace.cpp ${TOOLSDIR}/fileutil.o
 
 sec-test: ${TOOLSOBJ}
 	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/sec-test ${TOOLSDIR}/sec-test.cpp ${TOOLSOBJ}
 
 srccount: ${TOOLSOBJ}
 	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/srccount ${TOOLSDIR}/srccount.cpp ${TOOLSDIR}/fileutil.o
-
-nreplace: ${TOOLSOBJ}
-	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/nreplace ${TOOLSDIR}/nreplace.cpp ${TOOLSDIR}/fileutil.o
 
 cfgload.o: cfgload.c macros.mac
 cfgparse.o: cfgparse.psr
@@ -140,7 +143,7 @@ initc.o: initc.c ${CPUDIR}/memtable.h ${JMADIR}/zsnesjma.h
 patch.o: patch.c
 ui.o: ui.asm macros.mac
 uic.o: uic.c
-vcache.o:vcache.asm macros.mac
+vcache.o: vcache.asm macros.mac
 version.o: version.c
 zloader.o: zloader.c
 zmovie.o: zmovie.c

@@ -6,21 +6,23 @@ g++ -Wall -O3 -o fileutil.o -c fileutil.cpp
 g++ -Wall -O3 -o strutil.o -c strutil.cpp
 
 
-Minimize Whitespace:
-g++ -Wall -O3 -o minwhite.exe minwhite.cpp fileutil.o
+Cut Redundant ASM Typecasts:
+g++ -Wall -O3 -o cutrtype.exe cutrtype.cpp fileutil.o strutil.o
 
 Extra EXTSYMs:
 g++ -Wall -O3 -o extraext.exe extraext.cpp fileutil.o strutil.o
+
+Minimize Whitespace:
+g++ -Wall -O3 -o minwhite.exe minwhite.cpp fileutil.o
+
+Nach's Replacer:
+g++ -Wall -O3 -o nreplace.exe nreplace.cpp fileutil.o
 
 Section Tester:
 g++ -Wall -O3 -o sec-test.exe sec-test.cpp fileutil.o strutil.o
 
 Source Counter:
 g++ -Wall -O3 -o srccount.exe srccount.cpp fileutil.o
-
-
-Nach's Replacer:
-g++ -Wall -O3 -o nreplace.exe nreplace.cpp fileutil.o
 
 All the tools scan every compatible file they find from the directory
 they are in. It also scans all sub directories recursively.
