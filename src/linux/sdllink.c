@@ -809,10 +809,10 @@ void initwinvideo(void)
 		FullScreen = GUIWFVID[cvidmode];
 #ifdef __OPENGL__
 		UseOpenGL = 0;
-		if (cvidmode > 3)
+		if (cvidmode > 5)
 		   UseOpenGL = 1;
 #else
-		if (cvidmode > 3)
+		if (cvidmode > 5)
 		  cvidmode = 2; // set it to the default 512x448 W
 #endif
 
@@ -826,48 +826,54 @@ void initwinvideo(void)
 				WindowHeight = 224;
 				break;
 			case 2:
-			case 5:
-			case 18:					// Variable
+			case 3:
+			case 7:
+			case 21:					// Variable
 				WindowWidth = 512;
 				WindowHeight = 448;
 				break;
-			case 3:
-			case 6:
-			case 7:
+			case 4:
+			case 8:
+			case 9:
 				WindowWidth = 640;
 				WindowHeight = 480;
 				break;
-			case 8:
+			case 10:
 				WindowWidth = 640;
 				WindowHeight = 576;
 				break;
-			case 9:
+			case 11:
 				WindowWidth = 768;
 				WindowHeight = 672;
 				break;
-			case 10:
-			case 11:
+			case 5:
+			case 12:
+			case 13:
 				WindowWidth = 800;
 				WindowHeight = 600;
 				break;
-			case 12:
+			case 14:
 				WindowWidth = 896;
 				WindowHeight = 784;
 				break;
-			case 13:
-			case 14:
+			case 15:
+			case 16:
 				WindowWidth = 1024;
 				WindowHeight = 768;
 				break;
-			case 15:
+			case 17:
 				WindowWidth = 1024;
 				WindowHeight = 896;
 				break;
-			case 16:
+			case 18:
+				WindowWidth = 1280;
+				WindowHeight = 960;
+				break;
+			case 19:
 				WindowWidth = 1280;
 				WindowHeight = 1024;
 				break;
-			case 17:
+			case 20:
 				WindowWidth = 1600;
 				WindowHeight = 1200;
 				break;
