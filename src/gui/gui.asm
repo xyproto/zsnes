@@ -3787,7 +3787,7 @@ GUIMousePtr db 50+88,47+88,45+88,43+88,42+88,00,00,00
             db 00,00,00,00,00,00,52,00
 
 NEWSYM GUIFontData
-         db 0,0,0,0,0
+         db 0,0,0,0,0; empty space
          db 01110000b
          db 10011000b
          db 10101000b
@@ -4173,6 +4173,321 @@ NEWSYM GUIFontData
          db 10001000b
          db 10001000b
          db 11111000b; Maximize (Linux)
+         db 00000000b
+         db 00000000b
+         db 00100000b
+         db 01010000b
+         db 00100000b; shw fullstop 0x4E
+         db 01110000b
+         db 01000000b
+         db 01000000b
+         db 01000000b
+         db 00000000b; shw left bracket 0x4F
+         db 00000000b
+         db 00010000b
+         db 00010000b
+         db 00010000b
+         db 01110000b; shw right bracket 0x50
+         db 00000000b
+         db 00000000b
+         db 00000000b
+         db 01000000b
+         db 00100000b; shw comma 0x51
+         db 00000000b
+         db 00100000b
+         db 01110000b
+         db 00100000b
+         db 00000000b; shw mid-dot 0x52
+         db 11111000b
+         db 00001000b
+         db 11110000b
+         db 00100000b
+         db 11000000b; shw wo 0x53
+         db 00000000b
+         db 11111000b
+         db 01010000b
+         db 01100000b
+         db 01000000b; shw mini a 0x54
+         db 00000000b
+         db 00010000b
+         db 00100000b
+         db 11100000b
+         db 00100000b; shw mini i 0x55
+         db 00000000b
+         db 00100000b
+         db 11111000b
+         db 10001000b
+         db 00110000b; shw mini u 0x56
+         db 00000000b
+         db 00000000b
+         db 11111000b
+         db 00100000b
+         db 11111000b; shw mini e 0x57
+         db 00000000b
+         db 00010000b
+         db 11111000b
+         db 00110000b
+         db 11010000b; shw mini o 0x58
+         db 00000000b
+         db 01000000b
+         db 11111000b
+         db 01010000b
+         db 01000000b; shw mini ya 0x59
+         db 00000000b
+         db 00000000b
+         db 11110000b
+         db 00010000b
+         db 11111000b; shw mini yu 0x5A
+         db 00000000b
+         db 11111000b
+         db 00001000b
+         db 01111000b
+         db 11111000b; shw mini yo 0x5B
+         db 00000000b
+         db 10101000b
+         db 10101000b
+         db 00010000b
+         db 01100000b; shw mini tsu 0x5C
+         db 00000000b
+         db 10000000b
+         db 01111000b
+         db 00000000b
+         db 00000000b; shw prolong 0x5D
+         db 11111000b
+         db 00101000b
+         db 00110000b
+         db 00100000b
+         db 11000000b; shw a 0x5E
+         db 00001000b
+         db 00110000b
+         db 11100000b
+         db 00100000b
+         db 00100000b; shw i 0x5F
+         db 00100000b
+         db 11111000b
+         db 10001000b
+         db 00010000b
+         db 01100000b; shw u 0x60
+         db 11111000b
+         db 00100000b
+         db 00100000b
+         db 00100000b
+         db 11111000b; shw e 0x61
+         db 00010000b
+         db 11111000b
+         db 00110000b
+         db 01010000b
+         db 10010000b; shw o 0x62
+         db 01000000b
+         db 11111000b
+         db 01001000b
+         db 01001000b
+         db 10011000b; shw ka 0x63
+         db 00100000b
+         db 11111000b
+         db 00100000b
+         db 11111000b
+         db 00100000b; shw ki 0x64
+         db 01000000b
+         db 01111000b
+         db 10001000b
+         db 00010000b
+         db 01100000b; shw ku 0x65
+         db 01000000b
+         db 01111000b
+         db 10010000b
+         db 00010000b
+         db 01100000b; shw ke 0x66 ^^
+         db 11111000b
+         db 00001000b
+         db 00001000b
+         db 00001000b
+         db 11111000b; shw ko 0x67
+         db 01010000b
+         db 11111000b
+         db 01010000b
+         db 00010000b
+         db 01100000b; shw sa 0x68
+         db 01000000b
+         db 10101000b
+         db 01001000b
+         db 00010000b
+         db 11100000b; shw shi 0x69
+         db 11111000b
+         db 00001000b
+         db 00010000b
+         db 00110000b
+         db 11001000b; shw su 0x6A
+         db 01000000b
+         db 11111000b
+         db 01010000b
+         db 01000000b
+         db 00111000b; shw se 0x6B
+         db 10001000b
+         db 01001000b
+         db 00001000b
+         db 00010000b
+         db 01100000b; shw so 0x6C
+         db 01000000b
+         db 01111000b
+         db 11001000b
+         db 00110000b
+         db 01100000b; shw ta 0x6D
+         db 11111000b
+         db 00100000b
+         db 11111000b
+         db 00100000b
+         db 01000000b; shw chi 0x6E
+         db 10101000b
+         db 10101000b
+         db 00001000b
+         db 00010000b
+         db 01100000b; shw tsu 0x6F
+         db 11111000b
+         db 00000000b
+         db 11111000b
+         db 00100000b
+         db 11000000b; shw te 0x70
+         db 01000000b
+         db 01000000b
+         db 01100000b
+         db 01010000b
+         db 01000000b; shw to 0x71
+         db 00100000b
+         db 11111000b
+         db 00100000b
+         db 00100000b
+         db 01000000b; shw na 0x72
+         db 11110000b
+         db 00000000b
+         db 00000000b
+         db 00000000b
+         db 11111000b; shw ni 0x73
+         db 11111000b
+         db 00001000b
+         db 00101000b
+         db 00010000b
+         db 011010000b; shw nu 0x74
+         db 00100000b
+         db 11111000b
+         db 00001000b
+         db 01110000b
+         db 10101000b; shw ne 0x75
+         db 00001000b
+         db 00001000b
+         db 00001000b
+         db 00010000b
+         db 01100000b; shw no 0x76
+         db 01010000b
+         db 01010000b
+         db 01010000b
+         db 10001000b
+         db 10001000b; shw ha 0x77
+         db 10000000b
+         db 10011000b
+         db 11100000b
+         db 10000000b
+         db 01111000b; shw hi 0x78
+         db 11111000b
+         db 00001000b
+         db 00001000b
+         db 00010000b
+         db 01100000b; shw hu 0x79
+         db 01000000b
+         db 10100000b
+         db 10010000b
+         db 00001000b
+         db 00000000b; shw he 0x7A
+         db 00100000b
+         db 11111000b
+         db 01110000b
+         db 10101000b
+         db 00100000b; shw ho 0x7B
+         db 11111000b
+         db 00001000b
+         db 10010000b
+         db 01100000b
+         db 00100000b; shw ma 0x7C
+         db 11111000b
+         db 00000000b
+         db 11111000b
+         db 00000000b
+         db 11111000b; shw mi 0x7D
+         db 00100000b
+         db 01000000b
+         db 01000000b
+         db 10010000b
+         db 11111000b; shw mu 0x7E
+         db 00001000b
+         db 01001000b
+         db 00110000b
+         db 00110000b
+         db 11001000b; shw me 0x7F
+         db 11111000b
+         db 00100000b
+         db 11111000b
+         db 00100000b
+         db 00111000b; shw mo 0x80
+         db 01000000b
+         db 11111100b
+         db 01001000b
+         db 00100000b
+         db 0010000b; shw ya 0x81
+         db 11110000b
+         db 00010000b
+         db 00010000b
+         db 00010000b
+         db 11111000b; shw yu 0x82
+         db 11111000b
+         db 00001000b
+         db 11111000b
+         db 00001000b
+         db 11111000b; shw yo 0x83
+         db 11111000b
+         db 00000000b
+         db 11111000b
+         db 00010000b
+         db 01100000b; shw ra 0x84
+         db 10001000b
+         db 10001000b
+         db 10001000b
+         db 00010000b
+         db 01100000b; shw ri 0x85
+         db 01100000b
+         db 01100000b
+         db 01101000b
+         db 01101000b
+         db 10110000b; shw ru 0x86
+         db 10000000b
+         db 10000000b
+         db 10001000b
+         db 10001000b
+         db 11110000b; shw re 0x87
+         db 11111000b
+         db 10001000b
+         db 10001000b
+         db 10001000b
+         db 11111000b; shw ro 0x88
+         db 11111000b
+         db 10001000b
+         db 00001000b
+         db 00010000b
+         db 01100000b; shw wa 0x89
+         db 10000000b
+         db 01001000b
+         db 00001000b
+         db 00010000b
+         db 11100000b; shw n 0x8A
+         db 10100000b
+         db 10100000b
+         db 00000000b
+         db 00000000b
+         db 00000000b; shw voiced 0x8B
+         db 01000000b
+         db 10100000b
+         db 01000000b
+         db 00000000b
+         db 00000000b; shw halfvoiced 0x8C
 
 ; 189 .. 220
 GUIIconDataClose:

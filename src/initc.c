@@ -721,7 +721,6 @@ void DumpROMLoadInfo()
     fputs("\n", fp);
     fclose(fp);
   }
-
 }
 
 
@@ -1858,21 +1857,21 @@ unsigned int showinfogui()
 
   memcpy (CSStatus+29, "NORMAL  ", 8);
 
-  if (SA1Enable)	{ memcpy (CSStatus+29, "SA-1    ", 8); }
-  if (RTCEnable)	{ memcpy (CSStatus+29, "RTC     ", 8); }
-  if (SPC7110Enable)	{ memcpy (CSStatus+29, "SPC7110 ", 8); }
-  if (SFXEnable)	{ memcpy (CSStatus+29, "SUPER FX", 8); }
-  if (C4Enable)		{ memcpy (CSStatus+29, "C4      ", 8); }
-  if (DSP1Enable)	{ memcpy (CSStatus+29, "DSP-1   ", 8); }
-  if (DSP2Enable)	{ memcpy (CSStatus+29, "DSP-2   ", 8); }
-  if (DSP3Enable)	{ memcpy (CSStatus+29, "DSP-3   ", 8); }
-  if (DSP4Enable)	{ memcpy (CSStatus+29, "DSP-4   ", 8); }
-  if (SDD1Enable)	{ memcpy (CSStatus+29, "S-DD1   ", 8); }
-  if (OBCEnable)	{ memcpy (CSStatus+29, "OBC1    ", 8); }
-  if (SETAEnable)	{ memcpy (CSStatus+29, "SETA DSP", 8); }
-  if (ST18Enable)	{ memcpy (CSStatus+29, "ST018   ", 8); }
-  if (SGBEnable)	{ memcpy (CSStatus+29, "SGB     ", 8); }
-  if (BSEnable)		{ memcpy (CSStatus+29, "BROADCST", 8);
+  if (SA1Enable)     { memcpy (CSStatus+29, "SA-1    ", 8); }
+  if (RTCEnable)     { memcpy (CSStatus+29, "RTC     ", 8); }
+  if (SPC7110Enable) { memcpy (CSStatus+29, "SPC7110 ", 8); }
+  if (SFXEnable)     { memcpy (CSStatus+29, "SUPER FX", 8); }
+  if (C4Enable)      { memcpy (CSStatus+29, "C4      ", 8); }
+  if (DSP1Enable)    { memcpy (CSStatus+29, "DSP-1   ", 8); }
+  if (DSP2Enable)    { memcpy (CSStatus+29, "DSP-2   ", 8); }
+  if (DSP3Enable)    { memcpy (CSStatus+29, "DSP-3   ", 8); }
+  if (DSP4Enable)    { memcpy (CSStatus+29, "DSP-4   ", 8); }
+  if (SDD1Enable)    { memcpy (CSStatus+29, "S-DD1   ", 8); }
+  if (OBCEnable)     { memcpy (CSStatus+29, "OBC1    ", 8); }
+  if (SETAEnable)    { memcpy (CSStatus+29, "SETA DSP", 8); }
+  if (ST18Enable)    { memcpy (CSStatus+29, "ST018   ", 8); }
+  if (SGBEnable)     { memcpy (CSStatus+29, "SGB     ", 8); }
+  if (BSEnable)      { memcpy (CSStatus+29, "BROADCST", 8);
 	// dummy out date so CRC32 matches
     ROM[infoloc + 22] = 0x42;
     ROM[infoloc + 23] = 0x00;
