@@ -52,8 +52,9 @@ extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
 extern unsigned char pl1contrl, pl2contrl, pl3contrl, pl4contrl, pl5contrl;
 extern unsigned int MsgCount, MessageOn;
 extern unsigned char MovieStartMethod, GUIReset, ReturnFromSPCStall, GUIQuit;
-extern unsigned char MovieProcessing, *Msgptr, fnamest[512];
+extern unsigned char MovieProcessing;
 extern unsigned char CMovieExt;
+extern char *Msgptr, fnamest[512];
 extern bool romispal;
 
 extern unsigned char snesmouse;
