@@ -33,13 +33,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIR_SLASH "\\"
 #endif
 
-extern unsigned char ComboHeader[23], ComboBlHeader[23], GUIRAdd, GUIFName[256];
-extern unsigned char GUICName[256], GUIsmallscreenon, ScreenScale, TimeChecker;
+extern unsigned char ComboHeader[23], ComboBlHeader[23], GUIRAdd;
+extern unsigned char GUIsmallscreenon, ScreenScale, TimeChecker;
 extern unsigned char GUIScreenScale, ShowTimer, ReCalib, cfgdontsave;
 extern unsigned char CombinDataGlob[3300];
 extern unsigned int PHnumGUIsave, smallscreenon, SnowTimer, NumSnow;
 extern unsigned int CalibXmin, CalibXmax, CalibYmin, CalibYmax, NumComboGlob;
 extern unsigned int CalibXmin209, CalibXmax209, CalibYmin209, CalibYmax209;
+extern char GUICName[256], GUIFName[256];
 
 unsigned char CalcCfgChecksum()
 {
