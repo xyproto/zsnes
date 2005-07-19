@@ -45,12 +45,12 @@ extern unsigned char KitchenSync, Force60hz;
 extern unsigned char Palette0, pl1contrl, pl2contrl, MMXSupport, Force8b, ForcePal, GUIClick,
                      MouseDis, MusicRelVol, ScreenScale, SoundQuality, StereoSound, V8Mode,
                      antienab, cvidmode, debugdisble, debugger, enterpress, vsyncon, DisplayS,
-                     fname, SnowOn, Triplebufen, SPC700sh, OffBy1Line, DSPDisable, frameskip,
+                     SnowOn, Triplebufen, SPC700sh, OffBy1Line, DSPDisable, frameskip,
                      gammalevel, guioff, romtype, per2exec, scanlines, soundon, spcon,
                      showallext, autoloadstate, smallscreenon, autoloadmovie, ZMVZClose,
                      ZMVRawDump;
 
-extern char *STCart2;
+extern char *STCart2, fname;
 
 void ConvertJoyMap1(), ConvertJoyMap2(), zstart(), makeextension();
 

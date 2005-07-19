@@ -379,7 +379,7 @@ void ST010DoCommand(void)
       SRAM[0xDB]=0;
 
       //Grab the target angle
-      ST010_OP01(dy,dx,&a1,&b1,&c1,&o1);
+      ST010_OP01(dy,dx,&a1,&b1,&c1,(int16 *)&o1);
 
       //Check for wrapping
       if (abs(o1-rot)>0x8000)
