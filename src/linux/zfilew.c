@@ -41,9 +41,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <io.h>
 #endif
 
-#define DWORD unsigned int
-#define BYTE unsigned char
-
 #ifdef __UNIXSDL__
 #define STUB_FUNCTION fprintf(stderr,"STUB: %s at " __FILE__ ", line %d, thread %d\n",__FUNCTION__,__LINE__,getpid())
 #endif
@@ -51,68 +48,68 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 FILE *FILEHANDLE[16];
 
-DWORD CurrentHandle=0;
+unsigned int CurrentHandle=0;
 
 
 // ZFileSystemInit
 // return 0
 
 // ZOpenFile info :
-BYTE * ZOpenFileName;
-DWORD ZOpenMode;
+char * ZOpenFileName;
+unsigned int ZOpenMode;
 // Open modes :   0 read/write in
 //                1 write (create file, overwrite)
 // return file handle if success, 0xFFFFFFFF if error
 
 // ZCloseFile info :
-DWORD ZCloseFileHandle;
+unsigned int ZCloseFileHandle;
 // return 0
 
 // ZFileSeek info :
-DWORD ZFileSeekHandle;
-DWORD ZFileSeekPos;
-DWORD ZFileSeekMode; // 0 start, 1 end
+unsigned int ZFileSeekHandle;
+unsigned int ZFileSeekPos;
+unsigned int ZFileSeekMode; // 0 start, 1 end
 // return 0
 
 // ZFileReadBlock info :
-BYTE * ZFileReadBlock;
-DWORD ZFileReadSize;
-DWORD ZFileReadHandle;
+char * ZFileReadBlock;
+unsigned int ZFileReadSize;
+unsigned int ZFileReadHandle;
 // return 0
 
 // ZFileWriteBlock info :
-BYTE * ZFileWriteBlock;
-DWORD ZFileWriteSize;
-DWORD ZFileWriteHandle;
+char * ZFileWriteBlock;
+unsigned int ZFileWriteSize;
+unsigned int ZFileWriteHandle;
 // return 0
 
 // ZFileTell
-DWORD ZFileTellHandle;
+unsigned int ZFileTellHandle;
 
 // ZFileGetftime
-BYTE * ZFFTimeFName;
-DWORD ZFTimeHandle;
-DWORD ZFDate;
-DWORD ZFTime;
+char * ZFFTimeFName;
+unsigned int ZFTimeHandle;
+unsigned int ZFDate;
+unsigned int ZFTime;
 
 // MKDir/CHDir
-BYTE * MKPath;
-BYTE * CHPath;
-BYTE * RMPath;
+char * MKPath;
+char * CHPath;
+char * RMPath;
 
 //Indicate whether the file must be opened using
 //zlib or not (used for gzip support)
-BYTE TextFile;
+char TextFile;
 
 // GetDir
-BYTE * DirName;
-DWORD DriveNumber;
+char * DirName;
+unsigned int DriveNumber;
 
 // ZFileDelete
-BYTE * ZFileDelFName;
+char * ZFileDelFName;
 // return current position
 
-DWORD ZFileSystemInit()
+unsigned int ZFileSystemInit()
 {
 #ifdef __GZIP__
 	TextFile = 0;
@@ -123,7 +120,7 @@ DWORD ZFileSystemInit()
 	return(0);
 }
 
-DWORD ZOpenFile()
+unsigned int ZOpenFile()
 {
 	if(ZOpenMode==0)
 	{
@@ -167,7 +164,7 @@ DWORD ZOpenFile()
 	return(0xFFFFFFFF);
 }
 
-DWORD ZCloseFile()
+unsigned int ZCloseFile()
 {
 	if (TextFile)
 		fclose(FILEHANDLE[ZCloseFileHandle]);
@@ -177,7 +174,7 @@ DWORD ZCloseFile()
 	return(0);
 }
 
-DWORD ZFileSeek()
+unsigned int ZFileSeek()
 {
 	int mode = 0;
 	if (ZFileSeekMode==0)
@@ -198,7 +195,7 @@ DWORD ZFileSeek()
 	return(0xFFFFFFFF);
 }
 
-DWORD ZFileRead()
+unsigned int ZFileRead()
 {
 	if (TextFile)
 		return(fread(ZFileReadBlock,
@@ -212,9 +209,9 @@ DWORD ZFileRead()
 }
 
 
-DWORD ZFileWrite()
+unsigned int ZFileWrite()
 {
-	DWORD res=0;
+	unsigned int res=0;
 	if (TextFile)
 		res = fwrite(ZFileWriteBlock,
 			     1,
@@ -231,7 +228,7 @@ DWORD ZFileWrite()
 	return(0);
 }
 
-DWORD ZFileTell()
+unsigned int ZFileTell()
 {
 	int res = 0;
 	if (TextFile) {
@@ -241,12 +238,12 @@ DWORD ZFileTell()
 	} else return gztell(FILEHANDLE[ZFileTellHandle]);
 }
 
-DWORD ZFileDelete()
+unsigned int ZFileDelete()
 {
   return(remove(ZFileDelFName));
 }
 
-DWORD ZFileGetFTime()
+unsigned int ZFileGetFTime()
 {
   struct stat filestat;
 
@@ -258,7 +255,7 @@ DWORD ZFileGetFTime()
   return(0);
 }
 
-DWORD ZFileMKDir()
+unsigned int ZFileMKDir()
 {
 #ifdef __UNIXSDL__
   return(mkdir(MKPath, (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)));
@@ -268,12 +265,12 @@ DWORD ZFileMKDir()
 }
 
 
-DWORD ZFileCHDir()
+unsigned int ZFileCHDir()
 {
   return(chdir(CHPath));
 }
 
-DWORD ZFileRMDir()
+unsigned int ZFileRMDir()
 {
   return(rmdir(RMPath));
 }
@@ -283,9 +280,9 @@ char *ZFileGetDir()
   return(getcwd(DirName,128));
 }
 
-BYTE * ZFileFindPATH;
-DWORD ZFileFindATTRIB;
-DWORD DTALocPos;
+char * ZFileFindPATH;
+unsigned int ZFileFindATTRIB;
+unsigned int DTALocPos;
 
 //struct _find_t {
 //  char reserved[21] __attribute__((packed));
@@ -307,7 +304,7 @@ glob_t globbuf;
 int globcur;
 #endif
 
-DWORD ZFileFindNext()
+unsigned int ZFileFindNext()
 {
 #ifdef __UNIXSDL__
 	//STUB_FUNCTION;
@@ -355,7 +352,7 @@ DWORD ZFileFindNext()
    return(0);
 }
 
-DWORD ZFileFindFirst()
+unsigned int ZFileFindFirst()
 {
 #ifdef __UNIXSDL__
 	//STUB_FUNCTION;
@@ -403,7 +400,7 @@ DWORD ZFileFindFirst()
 }
 
 
-DWORD ZFileFindEnd()  // for compatibility with windows later
+unsigned int ZFileFindEnd()  // for compatibility with windows later
 {
 #ifdef __UNIXSDL__
 	//STUB_FUNCTION;
@@ -418,17 +415,17 @@ DWORD ZFileFindEnd()  // for compatibility with windows later
 }
 
 
-//BYTE * DirName;
-//DWORD DriveNumber;
+//char * DirName;
+//unsigned int DriveNumber;
 
 //unsigned int   _dos_findfirst(char *_name, unsigned int _attr, struct _find_t *_result);
 //unsigned int   _dos_findnext(struct _find_t *_result);
 
 
-DWORD GetTime()
+unsigned int GetTime()
 {
 
-   DWORD value;
+   unsigned int value;
    struct tm *newtime;
    time_t long_time;
 
@@ -441,10 +438,10 @@ DWORD GetTime()
    return(value);
 }
 
-DWORD GetDate()
+unsigned int GetDate()
 {
 
-   DWORD value;
+   unsigned int value;
    struct tm *newtime;
    time_t long_time;
 
@@ -503,7 +500,7 @@ void obtaindir()
 
 void GetFilename()
 {
-  extern char fnamest, fnames;
+  extern char fnamest;
   extern int statefileloc;
   char *tmp = &fnamest;
   char size;
