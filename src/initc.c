@@ -1047,7 +1047,7 @@ extern char GNextPath[1024];
 extern char SGPath[1024];
 void SplitSupport()
 {
-  unsigned char *ROM = (unsigned char *)romdata;
+  char *ROM = (char *)romdata;
   SplittedROM = false;
 
   //Same Game add on
@@ -1703,7 +1703,7 @@ unsigned int SPC7110IndexSize;
 extern unsigned int SPC7110Entries;
 void SPC7PackIndexLoad()
 {
-  unsigned char *ROM = (unsigned char *)romdata;
+  char *ROM = (char *)romdata;
   FILE *fp = 0;
   SPC7110IndexSize = 0;
 
@@ -1827,7 +1827,8 @@ unsigned int CalcCRC32 (unsigned char *start, unsigned int size)
 }
 
 extern unsigned int MsgCount, MessageOn, CRC32;
-extern unsigned char IPSPatched, *Msgptr;
+extern unsigned char IPSPatched;
+extern char *Msgptr;
 
 unsigned int showinfogui()
 {
@@ -1973,7 +1974,7 @@ void CheckROMType()
   MirrorROM();
 
   lorommapmode2 = 0;
-  if (!strncmp(ROM+0x207FC0, "DERBY STALLION 96", 17) || !strncmp(ROM+Lo, "SOUND NOVEL-TCOOL", 17))
+  if (!strncmp((char *)ROM+0x207FC0, "DERBY STALLION 96", 17) || !strncmp((char *)ROM+Lo, "SOUND NOVEL-TCOOL", 17))
   {
     lorommapmode2 = 1;
   }
@@ -2211,7 +2212,7 @@ void powercycle(bool sramload)
   NextLineCache = 0;
   curexecstate = 1;
 
-  if (sramload)	{ loadSRAM(fnames+1); }
+  if (sramload)	{ loadSRAM((char *)fnames+1); }
   SetupROM();
   asm_call(initsnes);
 

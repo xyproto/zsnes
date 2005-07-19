@@ -471,8 +471,8 @@ unsigned char firstsaveinc = 0;
 
 extern unsigned int statefileloc, CurrentHandle, SfxRomBuffer, SfxCROM;
 extern unsigned int SfxLastRamAdr, SfxRAMMem, MsgCount, MessageOn;
-extern unsigned char AutoIncSaveSlot, fnamest[512], cbitmode, NoPictureSave;
-extern unsigned char *Msgptr;
+extern unsigned char AutoIncSaveSlot, cbitmode, NoPictureSave;
+extern char *Msgptr, fnamest[512];
 extern unsigned short PrevPicture[64*56];
 
 static FILE *fhandle;
@@ -591,11 +591,11 @@ if (!num)                                                             \
 
 void statesaver()
 {
-  static unsigned char txtsavemsg[] = "STATE - SAVED.";
-  static unsigned char txtrrsvmsg[] = "RR STATE - SAVED.";
+  static char txtsavemsg[] = "STATE - SAVED.";
+  static char txtrrsvmsg[] = "RR STATE - SAVED.";
 
-  static unsigned char *txtsavenum = 0;
-  static unsigned char *txtrrsvnum = 0;
+  static char *txtsavenum = 0;
+  static char *txtrrsvnum = 0;
 
   //Get the state number
   INSERT_POSITION_NUMBER(txtsavemsg, txtsavenum);
@@ -610,7 +610,7 @@ void statesaver()
   if (MovieProcessing == 2)
   {
     bool mzt_save(char *, bool, bool);
-    if (mzt_save(fnamest+1, (cbitmode && !NoPictureSave) ? true : false, false))
+    if (mzt_save((char *)fnamest+1, (cbitmode && !NoPictureSave) ? true : false, false))
     {
       Msgptr = txtrrsvmsg;
       MessageOn = MsgCount;
@@ -843,19 +843,19 @@ void zst_sram_load_compressed(FILE *fp)
   }
 }
 
-void stateloader (unsigned char *statename, unsigned char keycheck, unsigned char xfercheck)
+void stateloader (char *statename, unsigned char keycheck, unsigned char xfercheck)
 {
   extern unsigned char PauseLoad;
 
-  static unsigned char txtloadmsg[] = "STATE - LOADED.";
-  static unsigned char txtconvmsg[] = "STATE - TOO OLD.";
-  static unsigned char txtnfndmsg[] = "UNABLE TO LOAD STATE -.";
-  static unsigned char txtrrldmsg[] = "RR STATE - LOADED.";
+  static char txtloadmsg[] = "STATE - LOADED.";
+  static char txtconvmsg[] = "STATE - TOO OLD.";
+  static char txtnfndmsg[] = "UNABLE TO LOAD STATE -.";
+  static char txtrrldmsg[] = "RR STATE - LOADED.";
 
-  static unsigned char *txtloadnum = 0;
-  static unsigned char *txtconvnum = 0;
-  static unsigned char *txtnfndnum = 0;
-  static unsigned char *txtrrldnum = 0;
+  static char *txtloadnum = 0;
+  static char *txtconvnum = 0;
+  static char *txtnfndnum = 0;
+  static char *txtrrldnum = 0;
 
   //Get the state number
   INSERT_POSITION_NUMBER(txtloadmsg, txtloadnum);
