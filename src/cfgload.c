@@ -134,7 +134,7 @@ extern unsigned char vsyncon;
 extern unsigned int ZFileRead();
 extern unsigned int ZOpenMode;
 extern unsigned int ZCloseFileHandle;
-extern unsigned char *ZOpenFileName;
+extern char *ZOpenFileName;
 extern unsigned char *ZFileWriteBlock;
 extern unsigned int ZFileWriteSize;
 extern unsigned int ZFileWriteHandle;
