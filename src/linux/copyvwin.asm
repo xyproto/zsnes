@@ -35,13 +35,12 @@ section .text
 
 NEWSYM CheckFrame
     pushad
-    xor eax,eax
     mov ebx,[vidbuffer]
-    add ebx,16*2+256*2+32*2
-    mov ecx,61184
+    mov eax,[ebx]
+    mov ecx,32767
 .loopit
-    add eax,[ebx]
     add ebx,4
+    add eax,[ebx]
     dec ecx
     jnz .loopit
     mov [frametot],eax
