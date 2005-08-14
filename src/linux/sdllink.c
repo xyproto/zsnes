@@ -24,7 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "sw_draw.h"
 #include "gl_draw.h"
 
-#include "SDL_thread.h"
+#include <SDL_thread.h>
 
 #include <sys/time.h>
 #include <time.h>

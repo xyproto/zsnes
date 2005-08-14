@@ -10,9 +10,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <zlib.h>
 #endif
 
-#include "zlib.h"
 #include "zunzip.h"
 
 #ifdef STDC

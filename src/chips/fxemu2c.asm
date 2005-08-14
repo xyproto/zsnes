@@ -34,7 +34,6 @@ EXTSYM fxxand
 EXTSYM PLOTJmpa,PLOTJmpb
 
 %include "chips/fxemu2.mac"
-%include "chips/fxemu2b.mac"
 %include "chips/fxemu2c.mac"
 
 

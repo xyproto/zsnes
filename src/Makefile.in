@@ -135,140 +135,146 @@ sec-test: ${TOOLSOBJ}
 srccount: ${TOOLSOBJ}
 	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/srccount ${TOOLSDIR}/srccount.cpp ${TOOLSDIR}/fileutil.o
 
-cfgload.o: cfgload.c macros.mac
+cfgload.o: cfgload.c gblhdr.h
 cfgparse.o: cfgparse.psr
+debug.o: debug.c gblhdr.h gblvars.h
 endmem.o: endmem.asm macros.mac
 init.o: init.asm macros.mac
-initc.o: initc.c ${CPUDIR}/memtable.h ${JMADIR}/zsnesjma.h
-patch.o: patch.c
+initc.o: initc.c asm_call.h gblhdr.h ${CPUDIR}/memtable.h ${JMADIR}/zsnesjma.h\
+	${ZIPDIR}/zunzip.h
+patch.o: patch.c gblhdr.h ${ZIPDIR}/zunzip.h
 ui.o: ui.asm macros.mac
-uic.o: uic.c
+uic.o: uic.c asm_call.h gblhdr.h
 vcache.o: vcache.asm macros.mac
 version.o: version.c
-zloader.o: zloader.c
-zmovie.o: zmovie.c
-zstate.o: zstate.c
+zloader.o: zloader.c gblhdr.h
+zmovie.o: zmovie.c asm_call.h gblhdr.h gblvars.h numconv.h
+zstate.o: zstate.c asm_call.h gblhdr.h gblvars.h numconv.h
 
+${CHIPDIR}/c4emu.o: ${CHIPDIR}/c4emu.c gblhdr.h
+${CHIPDIR}/dsp1emu.o: ${CHIPDIR}/dsp1emu.c gblhdr.h
 ${CHIPDIR}/dsp1proc.o: ${CHIPDIR}/dsp1proc.asm macros.mac
+${CHIPDIR}/dsp2proc.o: ${CHIPDIR}/dsp2proc.asm macros.mac
+${CHIPDIR}/dsp4emu.o: ${CHIPDIR}/dsp4emu.c
+${CHIPDIR}/dsp4proc.o: ${CHIPDIR}/dsp4proc.asm macros.mac
+${CHIPDIR}/fxemu2.o: ${CHIPDIR}/fxemu2.asm macros.mac ${CHIPDIR}/fxemu2.mac
+${CHIPDIR}/fxemu2b.o: ${CHIPDIR}/fxemu2b.asm macros.mac ${CHIPDIR}/fxemu2.mac\
+	${CHIPDIR}/fxemu2b.mac
+${CHIPDIR}/fxemu2c.o: ${CHIPDIR}/fxemu2c.asm macros.mac ${CHIPDIR}/fxemu2.mac\
+	${CHIPDIR}/fxemu2c.mac
+${CHIPDIR}/fxtable.o: ${CHIPDIR}/fxtable.asm macros.mac
+${CHIPDIR}/sa1proc.o: ${CHIPDIR}/sa1proc.asm macros.mac
 ${CHIPDIR}/sa1regs.o: ${CHIPDIR}/sa1regs.asm macros.mac\
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
+${CHIPDIR}/sdd1emu.o: ${CHIPDIR}/sdd1emu.c
+${CHIPDIR}/seta10.o: ${CHIPDIR}/seta10.c gblhdr.h
 ${CHIPDIR}/sfxproc.o: ${CHIPDIR}/sfxproc.asm macros.mac\
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
 ${CHIPDIR}/st10proc.o: ${CHIPDIR}/st10proc.asm macros.mac
-${CHIPDIR}/seta10.o: ${CHIPDIR}/seta10.c
-${CHIPDIR}/dsp1emu.o: ${CHIPDIR}/dsp1emu.c
-${CHIPDIR}/dsp4proc.o: ${CHIPDIR}/dsp4proc.asm macros.mac
-${CHIPDIR}/dsp4emu.o: ${CHIPDIR}/dsp4emu.c
-${CHIPDIR}/fxemu2.o: ${CHIPDIR}/fxemu2.asm ${CHIPDIR}/fxemu2.mac\
-	macros.mac
-${CHIPSDIR}/fxemu2b.o: ${CHIPDIR}/fxemu2b.asm ${CHIPDIR}/fxemu2.mac\
-	${CHIPDIR}/fxemu2b.mac
-${CHIPSDIR}/fxemu2c.o: ${CHIPDIR}/fxemu2c.asm macros.mac ${CHIPDIR}/fxemu2.mac\
-	${CHIPDIR}/fxemu2b.mac ${CHIPDIR}/fxemu2c.mac
-${CHIPDIR}/fxtable.o: ${CHIPDIR}/fxtable.asm macros.mac
-${CHIPDIR}/sa1proc.o: ${CHIPDIR}/sa1proc.asm macros.mac
 
-${CPUDIR}/execute.o: ${CPUDIR}/execute.asm macros.mac
-${CPUDIR}/table.o: ${CPUDIR}/table.asm ${CPUDIR}/65816d.inc\
-	${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816.inc\
-	${CPUDIR}/regs.mac ${CPUDIR}/regs.inc ${CPUDIR}/regsw.mac\
-	${CPUDIR}/regsw.inc macros.mac
-${CPUDIR}/tableb.o: ${CPUDIR}/tableb.asm ${CPUDIR}/65816db.inc\
-	${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816b.inc\
-	${CPUDIR}/regs.mac macros.mac
-${CPUDIR}/tablec.o: ${CPUDIR}/tablec.asm ${CPUDIR}/65816dc.inc\
-	${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816c.inc\
-	${CPUDIR}/regs.mac macros.mac
-${CPUDIR}/stable.o: ${CPUDIR}/stable.asm ${CPUDIR}/s65816d.inc\
-	${CPUDIR}/saddress.inc ${CPUDIR}/saddrni.inc ${CPUDIR}/se65816.inc\
-	macros.mac
-${CPUDIR}/memory.o: ${CPUDIR}/memtable.h ${CPUDIR}/memory.asm macros.mac
-${CPUDIR}/memtable.o: ${CPUDIR}/memtable.c
-${CPUDIR}/executec.o: ${CPUDIR}/executec.c
 ${CPUDIR}/dma.o: ${CPUDIR}/dma.asm macros.mac
-${CPUDIR}/irq.o: ${CPUDIR}/irq.asm macros.mac
-${CPUDIR}/dspproc.o: ${CPUDIR}/dspproc.asm macros.mac
-${CPUDIR}/spc700.o:${CPUDIR}/spc700.asm macros.mac\
-	${CPUDIR}/regsw.mac ${CPUDIR}/spcdef.inc ${CPUDIR}/spcaddr.inc
 ${CPUDIR}/dsp.o: ${CPUDIR}/dsp.asm macros.mac
+${CPUDIR}/dspproc.o: ${CPUDIR}/dspproc.asm macros.mac ${CPUDIR}/fir_tables.inc
+${CPUDIR}/execute.o: ${CPUDIR}/execute.asm macros.mac
+${CPUDIR}/executec.o: ${CPUDIR}/executec.c gblhdr.h gblvars.h
+${CPUDIR}/irq.o: ${CPUDIR}/irq.asm macros.mac
+${CPUDIR}/memory.o: ${CPUDIR}/memory.asm macros.mac
+${CPUDIR}/memtable.o: ${CPUDIR}/memtable.c gblhdr.h gblvars.h ${CPUDIR}/memtable.h
+${CPUDIR}/spc700.o: ${CPUDIR}/spc700.asm macros.mac ${CPUDIR}/regsw.mac\
+	${CPUDIR}/spcaddr.inc ${CPUDIR}/spcdef.inc
+${CPUDIR}/stable.o: ${CPUDIR}/stable.asm macros.mac ${CPUDIR}/s65816d.inc\
+	${CPUDIR}/saddress.inc ${CPUDIR}/saddrni.inc ${CPUDIR}/se65816.inc
+${CPUDIR}/table.o: ${CPUDIR}/table.asm macros.mac ${CPUDIR}/65816d.inc\
+	${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816.inc\
+	${CPUDIR}/regs.inc ${CPUDIR}/regs.mac ${CPUDIR}/regsw.inc ${CPUDIR}/regsw.mac
+${CPUDIR}/tableb.o: ${CPUDIR}/tableb.asm macros.mac ${CPUDIR}/65816db.inc\
+	${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816b.inc
+${CPUDIR}/tablec.o: ${CPUDIR}/tablec.asm macros.mac ${CPUDIR}/65816dc.inc\
+	${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816c.inc
 
 ${DOSDIR}/debug.o: ${DOSDIR}/debug.asm macros.mac
-${DOSDIR}/dosintrf.o: ${DOSDIR}/dosintrf.asm macros.mac
-${DOSDIR}/initvid.o:${DOSDIR}/initvid.asm macros.mac
-${DOSDIR}/vesa2.o: ${DOSDIR}/vesa2.asm macros.mac
-${DOSDIR}/vesa12.o: ${DOSDIR}/vesa12.asm macros.mac
+${DOSDIR}/gppro.o: ${DOSDIR}/gppro.asm macros.mac
+${DOSDIR}/initvid.o: ${DOSDIR}/initvid.asm macros.mac ${DOSDIR}/vga.inc
 ${DOSDIR}/joy.o: ${DOSDIR}/joy.asm macros.mac
 ${DOSDIR}/sw.o: ${DOSDIR}/sw.asm macros.mac
-${DOSDIR}/gppro.o: ${DOSDIR}/gppro.asm macros.mac
-${DOSDIR}/zsipx.o: ${DOSDIR}/zsipx.asm
+${DOSDIR}/vesa12.o: ${DOSDIR}/vesa12.asm macros.mac
+${DOSDIR}/vesa2.o: ${DOSDIR}/vesa2.asm macros.mac
 
-${EFFECTSDIR}/water.o: ${EFFECTSDIR}/water.c ${EFFECTSDIR}/fixsin.h gblhdr.h
-${EFFECTSDIR}/smoke.o: ${EFFECTSDIR}/smoke.c
 ${EFFECTSDIR}/burn.o: ${EFFECTSDIR}/burn.c
+${EFFECTSDIR}/smoke.o: ${EFFECTSDIR}/smoke.c
+${EFFECTSDIR}/water.o: ${EFFECTSDIR}/water.c gblhdr.h ${EFFECTSDIR}/fixsin.h
 
-${GUIDIR}/gui.o: ${GUIDIR}/gui.asm ${GUIDIR}/guitools.inc\
-	${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guiwindp.inc\
-  ${GUIDIR}/guikeys.inc ${GUIDIR}/guicheat.inc\
-	${GUIDIR}/guicombo.inc ${GUIDIR}/guiload.inc macros.mac
-${GUIDIR}/guifuncs.o: ${GUIDIR}/guifuncs.c
+${GUIDIR}/gui.o: ${GUIDIR}/gui.asm macros.mac ${GUIDIR}/guicheat.inc\
+	${GUIDIR}/guicombo.inc ${GUIDIR}/guikeys.inc ${GUIDIR}/guiload.inc\
+	${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guitools.inc\
+	${GUIDIR}/guiwindp.inc
+${GUIDIR}/guifuncs.o: ${GUIDIR}/guifuncs.c gblhdr.h
 ${GUIDIR}/menu.o: ${GUIDIR}/menu.asm macros.mac
 
-${JMADIR}/7zlzma.o: ${JMADIR}/7zlzma.cpp ${JMADIR}/7z.h ${JMADIR}/iiostrm.h
-${JMADIR}/crc32.o: ${JMADIR}/crc32.cpp ${JMADIR}/crc32.h
-${JMADIR}/iiostrm.o: ${JMADIR}/iiostrm.cpp ${JMADIR}/iiostrm.h ${JMADIR}/crc32.h
-${JMADIR}/inbyte.o: ${JMADIR}/inbyte.cpp
-${JMADIR}/jma.o: ${JMADIR}/jma.cpp ${JMADIR}/jma.h ${JMADIR}/crc32.h ${JMADIR}/portable.h\
-	${JMADIR}/7z.h ${JMADIR}/iiostrm.h
-${JMADIR}/lzma.o: ${JMADIR}/lzma.cpp
-${JMADIR}/lzmadec.o: ${JMADIR}/lzmadec.cpp
-${JMADIR}/winout.o: ${JMADIR}/winout.cpp ${JMADIR}/iiostrm.h
-${JMADIR}/zsnesjma.o: ${JMADIR}/zsnesjma.cpp ${JMADIR}/zsnesjma.h ${JMADIR}/jma.h
+${JMADIR}/7zlzma.o: ${JMADIR}/7zlzma.cpp ${JMADIR}/7z.h ${JMADIR}/lzmadec.h
+${JMADIR}/crc32.o: ${JMADIR}/crc32.cpp
+${JMADIR}/iiostrm.o: ${JMADIR}/iiostrm.cpp ${JMADIR}/crc32.h ${JMADIR}/iiostrm.h\
+	${JMADIR}/portable.h
+${JMADIR}/inbyte.o: ${JMADIR}/inbyte.cpp ${JMADIR}/inbyte.h
+${JMADIR}/jma.o: ${JMADIR}/jma.cpp ${JMADIR}/7z.h ${JMADIR}/crc32.h\
+	${JMADIR}/jma.h ${JMADIR}/portable.h
+${JMADIR}/lzma.o: ${JMADIR}/lzma.cpp ${JMADIR}/lzma.h
+${JMADIR}/lzmadec.o: ${JMADIR}/lzmadec.cpp ${JMADIR}/lzmadec.h\
+	${JMADIR}/portable.h
+${JMADIR}/winout.o: ${JMADIR}/winout.cpp ${JMADIR}/winout.h
+${JMADIR}/zsnesjma.o: ${JMADIR}/zsnesjma.cpp ${JMADIR}/jma.h\
+	${JMADIR}/zsnesjma.h
 
 ${TOOLSDIR}/fileutil.o: ${TOOLSDIR}/fileutil.cpp ${TOOLSDIR}/fileutil.h
 ${TOOLSDIR}/strutil.o: ${TOOLSDIR}/strutil.cpp ${TOOLSDIR}/strutil.h
 
-${VIDEODIR}/procvid.o: ${VIDEODIR}/procvid.asm macros.mac ${VIDEODIR}/copyvid.inc ${VIDEODIR}/2xsaimmx.inc
-${VIDEODIR}/procvidc.o: ${VIDEODIR}/procvidc.c
-${VIDEODIR}/sw_draw.o: ${VIDEODIR}/sw_draw.asm macros.mac
+${VIDEODIR}/2xsaiw.o: ${VIDEODIR}/2xsaiw.asm macros.mac
 ${VIDEODIR}/hq2x16.o: ${VIDEODIR}/hq2x16.asm macros.mac
 ${VIDEODIR}/hq2x32.o: ${VIDEODIR}/hq2x32.asm macros.mac
 ${VIDEODIR}/hq3x16.o: ${VIDEODIR}/hq3x16.asm macros.mac
 ${VIDEODIR}/hq3x32.o: ${VIDEODIR}/hq3x32.asm macros.mac
 ${VIDEODIR}/hq4x16.o: ${VIDEODIR}/hq4x16.asm macros.mac
 ${VIDEODIR}/hq4x32.o: ${VIDEODIR}/hq4x32.asm macros.mac
-${VIDEODIR}/makevid.o: ${VIDEODIR}/makevid.asm ${VIDEODIR}/vidmacro.mac\
-	macros.mac
-${VIDEODIR}/makev16b.o: ${VIDEODIR}/makev16b.asm ${VIDEODIR}/vidmacro.mac\
-	macros.mac
-${VIDEODIR}/makev16t.o: ${VIDEODIR}/makev16t.asm ${VIDEODIR}/vidmacro.mac\
-	macros.mac
-${VIDEODIR}/mv16tms.o: ${VIDEODIR}/mv16tms.asm ${VIDEODIR}/vidmacro.mac\
-	macros.mac
-${VIDEODIR}/mode7.o: ${VIDEODIR}/mode7.asm ${VIDEODIR}/mode7.mac\
-	macros.mac
-${VIDEODIR}/mode716.o: ${VIDEODIR}/mode716.asm ${VIDEODIR}/mode716.mac\
-	macros.mac
-${VIDEODIR}/mode716b.o:${VIDEODIR}/mode716b.asm ${VIDEODIR}/mode7.mac\
-	macros.mac
-${VIDEODIR}/mode716t.o:${VIDEODIR}/mode716t.asm ${VIDEODIR}/mode7.mac\
-	macros.mac
-${VIDEODIR}/mode716d.o:${VIDEODIR}/mode716d.asm ${VIDEODIR}/mode7.mac\
-	macros.mac
-${VIDEODIR}/mode7ext.o:${VIDEODIR}/mode7ext.asm macros.mac
-${VIDEODIR}/mode716e.o:${VIDEODIR}/mode716e.asm macros.mac
-${VIDEODIR}/m716text.o:${VIDEODIR}/m716text.asm ${VIDEODIR}/mode7.mac\
-	macros.mac
-${VIDEODIR}/newgfx.o:${VIDEODIR}/newgfx.asm ${VIDEODIR}/vidmacro.mac\
-	${VIDEODIR}/newgfx2.mac ${VIDEODIR}/newgfx.mac macros.mac
-${VIDEODIR}/newgfx2.o:${VIDEODIR}/newgfx2.asm ${VIDEODIR}/newgfxwn.mac\
-	${VIDEODIR}/newgfx.mac macros.mac
-${VIDEODIR}/newgfx16.o: ${VIDEODIR}/newgfx16.asm macros.mac ${VIDEODIR}/vidmacro.mac\
-	${VIDEODIR}/newgfx16.mac ${VIDEODIR}/newg162.mac
-${VIDEODIR}/newg162.o: macros.mac ${VIDEODIR}/newg162.asm ${VIDEODIR}/newg162.mac\
-	${VIDEODIR}/vidmacro.mac ${VIDEODIR}/newg16wn.mac
+${VIDEODIR}/m716text.o: ${VIDEODIR}/m716text.asm macros.mac
+${VIDEODIR}/makev16b.o: ${VIDEODIR}/makev16b.asm macros.mac\
+	${VIDEODIR}/vidmacro.mac
+${VIDEODIR}/makev16t.o: ${VIDEODIR}/makev16t.asm macros.mac\
+	${VIDEODIR}/vidmacro.mac
+${VIDEODIR}/makevid.o: ${VIDEODIR}/makevid.asm macros.mac\
+	${VIDEODIR}/vidmacro.mac
+${VIDEODIR}/mode7.o: ${VIDEODIR}/mode7.asm macros.mac ${VIDEODIR}/mode7.mac
+${VIDEODIR}/mode716.o: ${VIDEODIR}/mode716.asm macros.mac ${VIDEODIR}/mode716.mac
+${VIDEODIR}/mode716b.o: ${VIDEODIR}/mode716b.asm macros.mac ${VIDEODIR}/mode7.mac
+${VIDEODIR}/mode716d.o: ${VIDEODIR}/mode716d.asm macros.mac ${VIDEODIR}/mode7.mac
+${VIDEODIR}/mode716e.o: ${VIDEODIR}/mode716e.asm macros.mac
+${VIDEODIR}/mode716t.o: ${VIDEODIR}/mode716t.asm macros.mac ${VIDEODIR}/mode7.mac
+${VIDEODIR}/mode7ext.o: ${VIDEODIR}/mode7ext.asm macros.mac ${VIDEODIR}/mode7.mac
+${VIDEODIR}/mv16tms.o: ${VIDEODIR}/mv16tms.asm macros.mac\
+	${VIDEODIR}/vidmacro.mac
+${VIDEODIR}/newg162.o: ${VIDEODIR}/newg162.asm macros.mac\
+	${VIDEODIR}/newg162.mac ${VIDEODIR}/newg16wn.mac ${VIDEODIR}/newgfx16.mac\
+	${VIDEODIR}/vidmacro.mac
+${VIDEODIR}/newfgx.o: ${VIDEODIR}/newfgx.asm macros.mac ${VIDEODIR}/newgfx.mac\
+	${VIDEODIR}/newgfx2.mac ${VIDEODIR}/vidmacro.mac
+${VIDEODIR}/newgfx16.o: ${VIDEODIR}/newgfx16.asm macros.mac\
+	${VIDEODIR}/newg162.mac ${VIDEODIR}/newgfx16.mac ${VIDEODIR}/vidmacro.mac
+${VIDEODIR}/newgfx2.o: ${VIDEODIR}/newgfx2.asm macros.mac ${VIDEODIR}/newgfx.mac\
+	${VIDEODIR}/newgfx2.mac ${VIDEODIR}/newgfxwn.mac ${VIDEODIR}/vidmacro.mac
+${VIDEODIR}/procvid.o: ${VIDEODIR}/procvid.asm macros.mac\
+	${VIDEODIR}/2xsaimmx.inc ${VIDEODIR}/copyvid.inc
+${VIDEODIR}/procvidc.o: ${VIDEODIR}/procvidc.c gblhdr.h
+${VIDEODIR}/sw_draw.o: ${VIDEODIR}/sw_draw.asm macros.mac
 
-${ZIPDIR}/zpng.o: ${ZIPDIR}/zpng.c ${ZIPDIR}/zpng.h
-${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c ${ZIPDIR}/zunzip.h
+${WINDIR}/copyvwin.o: ${WINDIR}/copyvwin.asm macros.mac
+${WINDIR}/gl_draw.o: ${WINDIR}/gl_draw.c gblhdr.h
+${WINDIR}/sdlintrf.o: ${WINDIR}/sdlintrf.asm macros.mac
+${WINDIR}/sdllink.o: ${WINDIR}/sdllink.c gblhdr.h ${WINDIR}/sw_draw.h\
+	${WINDIR}/gl_draw.h
+${WINDIR}/sw_draw.o: ${WINDIR}/sw_draw.c gblhdr.h
+${WINDIR}/zfilew.o: ${WINDIR}/zfilew.c
+
+${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c gblhdr.h ${ZIPDIR}/zunzip.h
+${ZIPDIR}/zpng.o: ${ZIPDIR}/zpng.c gblhdr.h ${ZIPDIR}/zpng.h
 
 install:
 	@INSTALL@ -d -m 0755 ${DESTDIR}/@prefix@/bin
