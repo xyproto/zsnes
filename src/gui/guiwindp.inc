@@ -1509,7 +1509,7 @@ DisplayGUIVideo:
     je near .nocheckboxb
 %ifdef __UNIXSDL__
     GUIDisplayCheckboxun 5,21,119,scanlines,1,GUIVideoTextC1,0
-%elifdef __WIN32__
+%else
     GUIDisplayCheckboxun 5,21,114,scanlines,1,GUIVideoTextC1,0
 %endif
 
