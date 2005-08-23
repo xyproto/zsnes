@@ -1486,6 +1486,8 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUIHQ2X+eax],0
     je near .notexthq2xa
+    cmp byte[MMXSupport],0
+    je near .notexthq2xa
     GUIDisplayCheckboxu 5,115,163,hqFilter,GUIVideoTexthq2x,1
 
 .notexthq2xa                                    ; 3x
@@ -1493,12 +1495,16 @@ DisplayGUIVideo:
     mov al,[cvidmode]
     cmp byte[GUIHQ3X+eax],0
     je near .notexthq3xa
+    cmp byte[MMXSupport],0
+    je near .notexthq3xa
     GUIDisplayCheckboxu 5,115,163,hqFilter,GUIVideoTexthq3x,1
 
 .notexthq3xa                                    ; 4x
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIHQ4X+eax],0
+    je near .notexthq4xa
+    cmp byte[MMXSupport],0
     je near .notexthq4xa
     GUIDisplayCheckboxu 5,115,163,hqFilter,GUIVideoTexthq4x,1
 
@@ -1540,6 +1546,8 @@ DisplayGUIVideo:
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUI2xVID+eax],0
+    je near .nocheckboxx
+    cmp byte[MMXSupport],0
     je near .nocheckboxx
     GUIDisplayCheckboxun 5,11,133,En2xSaI,1,GUIVideoTextc,1
     GUIDisplayCheckboxun 5,11,143,En2xSaI,2,GUIVideoTextd,6
