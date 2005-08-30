@@ -197,9 +197,7 @@ static void memcpyrinc(unsigned char **src, void *dest, size_t len)
 }
 
 extern unsigned int RewindTimer;
-extern unsigned char RewindStates;
-
-extern unsigned char EMUPause, PauseRewind;
+extern unsigned char RewindStates, EMUPause, PauseRewind, EmuSpeed;
 
 unsigned char *StateBackup = 0;
 unsigned char AllocatedRewindStates, LatestRewindPos, EarliestRewindPos;
@@ -207,8 +205,7 @@ bool RewindPosPassed;
 
 size_t rewind_state_size, cur_zst_size, old_zst_size;
 
-extern unsigned char RewindFrames, romispal;
-extern unsigned char MovieProcessing;
+extern unsigned char RewindFrames, romispal, MovieProcessing;
 void zmv_rewind_save(size_t, bool);
 void zmv_rewind_load(size_t, bool);
 
@@ -245,7 +242,8 @@ void RestorePauseFrame()
   PauseFrameMode = 0;
 }
 
-#define ActualRewindFrames (RewindFrames * (romispal ? 10 : 12))
+#define ActualRewindFrames ((EMUPause) ? 1 : (RewindFrames * (romispal ? 10 : 12)))
+// emu paused -> save rewind every frame
 
 void BackupCVFrame()
 {
@@ -601,7 +599,6 @@ void statesaver()
   INSERT_POSITION_NUMBER(txtsavemsg, txtsavenum);
   INSERT_POSITION_NUMBER(txtrrsvmsg, txtrrsvnum);
 
-
   //Save State code
   #ifdef __UNIXSDL__
   SRAMChdir();
@@ -629,7 +626,8 @@ void statesaver()
     {
       switch (fnamest[statefileloc])
       {
-        case 't':
+        case 't': // ZST state
+        case 'v': // ZMV movie
           fnamest[statefileloc] = '1';
           break;
         case '9':
@@ -863,7 +861,6 @@ void stateloader (char *statename, unsigned char keycheck, unsigned char xferche
   INSERT_POSITION_NUMBER(txtnfndmsg, txtnfndnum);
   INSERT_POSITION_NUMBER(txtrrldmsg, txtrrldnum);
 
-
   #ifdef __UNIXSDL__
   SRAMChdir();
   #endif
@@ -875,7 +872,6 @@ void stateloader (char *statename, unsigned char keycheck, unsigned char xferche
     multchange = 1;
     MessageOn = MsgCount;
   }
-
 
   switch (MovieProcessing)
   {
@@ -895,7 +891,6 @@ void stateloader (char *statename, unsigned char keycheck, unsigned char xferche
     case 2:
       if (mzt_load(statename, false))
       {
-
         Msgptr = txtrrldmsg;
         MessageOn = MsgCount;
 

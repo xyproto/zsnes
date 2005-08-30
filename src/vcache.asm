@@ -517,17 +517,18 @@ NEWSYM cachevideo
     test byte[pressed+eax],1
     je .nodis6
     mov byte[pressed+eax],2
-    mov byte[Voice0Disable],01h
-    mov byte[Voice1Disable],01h
-    mov byte[Voice2Disable],01h
-    mov byte[Voice3Disable],01h
-    mov byte[Voice4Disable],01h
-    mov byte[Voice5Disable],01h
-    mov byte[Voice6Disable],01h
-    mov byte[Voice7Disable],01h
-    mov byte[scrndis],00h
+    mov byte[Voice0Disable],1
+    mov byte[Voice1Disable],1
+    mov byte[Voice2Disable],1
+    mov byte[Voice3Disable],1
+    mov byte[Voice4Disable],1
+    mov byte[Voice5Disable],1
+    mov byte[Voice6Disable],1
+    mov byte[Voice7Disable],1
+    mov byte[scrndis],0
     mov byte[disableeffects],0
     mov byte[osm2dis],0
+    mov byte[EmuSpeed],29
     push eax
     mov al,[snesinputdefault]
     mov [snesmouse],al

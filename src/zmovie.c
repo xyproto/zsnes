@@ -47,13 +47,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define mkdir(path) mkdir(path, (S_IRWXU|S_IRWXG|S_IRWXO)) //0777
 #endif
 
-extern unsigned int versionNumber, CRC32, cur_zst_size;
+extern unsigned int versionNumber, CRC32, cur_zst_size, MsgCount, MessageOn;
 extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
 extern unsigned char pl1contrl, pl2contrl, pl3contrl, pl4contrl, pl5contrl;
-extern unsigned int MsgCount, MessageOn;
 extern unsigned char MovieStartMethod, GUIReset, ReturnFromSPCStall, GUIQuit;
-extern unsigned char MovieProcessing;
-extern unsigned char CMovieExt;
+extern unsigned char MovieProcessing, CMovieExt, EmuSpeed;
 extern char *Msgptr, fnamest[512];
 extern bool romispal;
 
@@ -1431,8 +1429,8 @@ static void zmv_prev_chapter()
   }
 
   //Code to go back before the previous chapter if the previous chapter was loaded recently
-  if (zmv_open_vars.frames_replayed - zmv_open_vars.last_chapter_frame < 150) //2.5 seconds NTSC
-  {
+  if ((zmv_open_vars.frames_replayed - zmv_open_vars.last_chapter_frame) < 5*(EmuSpeed+1))
+  { //2.5 seconds NTSC when in 100% speed - altered to make slowmo nicer
     size_t pprev = prev-1;
     size_t pprev_internal = internal_chapter_lesser(&zmv_vars.internal_chapters, pprev);
     size_t pprev_external = internal_chapter_lesser(&zmv_open_vars.external_chapters, pprev);
@@ -2396,7 +2394,6 @@ void MoviePlay()
     }
     else
     {
-      printf(fnamest+1);
       Msgptr = "MOVIE COULD NOT BE OPENED.";
       MessageOn = MsgCount;
     }
