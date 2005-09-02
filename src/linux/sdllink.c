@@ -1295,7 +1295,7 @@ pid_t spc_fork() {
   */
   if (!spc_drop_privileges()) //Failed to drop special privleges
   {
-    exit(0);
+    _exit(0);
   }
 
   return 0;
@@ -1325,6 +1325,6 @@ void ZsnesPage()
   LaunchBrowser("lynx");
   LaunchBrowser("links");
 
-  exit(0); //All browser launches failed, oh well
+  _exit(0); //All browser launches failed, oh well
 }
 
