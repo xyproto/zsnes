@@ -44,7 +44,7 @@ EXTSYM LinuxExit,GetFilename
 SECTION .text
 
 ALIGN32
-NEWSYM	outofmemory
+NEWSYM outofmemory
 	mov edx,outofmem
 	call PrintStr
 	jmp DosExit

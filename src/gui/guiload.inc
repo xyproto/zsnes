@@ -1327,7 +1327,7 @@ GUIcurrentdircursloc resd 1
 GUIdirStartLoc    resd 1
 GUInumentries resd 1
 GUIdirentries resd 1
-GUIfileentries resd 0
+GUIfileentries resd 1
 
 SECTION .data
 %ifdef __UNIXSDL__
