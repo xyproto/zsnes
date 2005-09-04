@@ -297,7 +297,7 @@ mrwp sfxbankd = { sfxaccessbankr8d, sfxaccessbankw8d, sfxaccessbankr16d, sfxacce
 void SetAddressingModes()
 {                                       //  Banks
   map_mem(0x00, &regbank,  0x40);       // 00 - 3F
-  map_mem(0x40, &membank,  0x30);       // 49 - 6F
+  map_mem(0x40, &membank,  0x30);       // 40 - 6F
   map_mem(0x70, &srambank, 0x08);       // 70 - 77
   map_mem(0x78, &membank,  0x06);       // 78 - 7D
   map_mem(0x7E, &wrambank, 0x01);       // 7E
@@ -309,8 +309,9 @@ void SetAddressingModes()
 void SetAddressingModesSA1()
 {
   map_mem(0x00, &sa1regbank,  0x40);    // 00 - 3F
-  map_mem(0x40, &sa1rambank,  0x30);    // 49 - 6F
-  map_mem(0x70, &sa1rambankb, 0x08);    // 70 - 77
+  map_mem(0x40, &sa1rambank,  0x20);    // 40 - 5F
+  map_mem(0x60, &sa1rambankb, 0x10);    // 60 - 6F
+  map_mem(0x70, &srambank,    0x08);    // 70 - 77
   map_mem(0x78, &membank,     0x06);    // 78 - 7D
   map_mem(0x7E, &wrambank,    0x01);    // 7E
   map_mem(0x7F, &erambank,    0x01);    // 7F
