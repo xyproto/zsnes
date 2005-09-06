@@ -130,10 +130,8 @@ SECTION .text
   cmp ebx,0f0h+SPCRAM
   jb %%normalmem
   sub ebx,SPCRAM
-  push dword %%finished
-  jmp dword near [spcWptr+ebx*4-0f0h*4]
-;  call dword near [spcWptr+ebx*4-0f0h*4]
-;  jmp .finished
+  call dword near [spcWptr+ebx*4-0f0h*4]
+  jmp %%finished
 %%extramem
   cmp ebx,0ffc0h+SPCRAM
   jb %%normalmem
@@ -156,10 +154,8 @@ SECTION .text
   cmp ebx,0ffh+SPCRAM
   ja %%normalmem
   sub ebx,SPCRAM
-  push dword %%finished
-  jmp dword near [spcRptr+ebx*4-0f0h*4]
-;  call dword near [spcRptr+ebx*4-0f0h*4]
-;  jmp .rfinished
+  call dword near [spcRptr+ebx*4-0f0h*4]
+  jmp %%finished
 %%normalmem
 ;  cmp ebx,0ffc0h+SPCRAM
 ;  jb .rnormalmem2
@@ -228,8 +224,8 @@ NEWSYM updatetimer
       mov [timinl0],al
       cmp byte[SPCRAM+0FDh],1
       jne .noin0
-      cmp byte[spchalted],0
-      jz .noin0
+;      cmp byte[spchalted],0
+;      jz .noin0
       reenablespc
       mov dword[cycpbl],0
 .noin0
@@ -242,8 +238,8 @@ NEWSYM updatetimer
       mov [timinl1],al
       cmp byte[SPCRAM+0FEh],1
       jne .noin1
-      cmp byte[spchalted+1],0
-      jz .noin1
+;      cmp byte[spchalted+1],0
+;      jz .noin1
       reenablespc
       mov dword[cycpbl],0
 .noin1
@@ -257,8 +253,8 @@ NEWSYM updatetimer
       mov [timinl2],al
       cmp byte[SPCRAM+0FFh],1
       jne .noin2
-      cmp byte[spchalted+2],0
-      jz .noin2
+;      cmp byte[spchalted+2],0
+;      jz .noin2
       reenablespc
       mov dword[cycpbl],0
 .noin2
@@ -269,8 +265,8 @@ NEWSYM updatetimer
       mov [timinl2],al
       cmp byte[SPCRAM+0FFh],1
       jne .noin2b
-      cmp byte[spchalted+2],0
-      jz .noin2b
+;      cmp byte[spchalted+2],0
+;      jz .noin2b
       reenablespc
       mov dword[cycpbl],0
 .noin2b
@@ -281,8 +277,8 @@ NEWSYM updatetimer
       mov [timinl2],al
       cmp byte[SPCRAM+0FFh],1
       jne .noin2c
-      cmp byte[spchalted+2],0
-      jz .noin2c
+;      cmp byte[spchalted+2],0
+;      jz .noin2c
       reenablespc
       mov dword[cycpbl],0
 .noin2c
@@ -293,8 +289,8 @@ NEWSYM updatetimer
       mov [timinl2],al
       cmp byte[SPCRAM+0FFh],1
       jne .noin2d
-      cmp byte[spchalted+2],0
-      jz .noin2d
+;      cmp byte[spchalted+2],0
+;      jz .noin2d
       reenablespc
       mov dword[cycpbl],0
 .noin2d
@@ -581,7 +577,7 @@ NEWSYM RSPCRegFE
       cmp byte[SPCRAM+0feh],0
       je .spcnextskip
       mov byte[SPCRAM+0feh],0
-      mov byte[spcnumread+1],0
+      mov byte[spcnumread],0
       ret
 	  skipmacro 1
 
@@ -591,7 +587,7 @@ NEWSYM RSPCRegFF
       cmp byte[SPCRAM+0ffh],0
       je .spcnextskip
       mov byte[SPCRAM+0ffh],0
-      mov byte[spcnumread+2],0
+      mov byte[spcnumread],0
       ret
 	  skipmacro 2
 
