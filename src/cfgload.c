@@ -446,7 +446,8 @@ void DOScreatenewcfg()
   WRITE_LINE(";  26 = 1280x960  DR FULL    27 = 1280x960  DS FULL\r\n");
   WRITE_LINE(";  28 = 1280x1024 S WIN      29 = 1280x1024 DS WIN\r\n");
   WRITE_LINE(";  30 = 1280x1024 S FULL     31 = 1280x1024 DR FULL\r\n");
-  WRITE_LINE(";  32 = 1280x1024 DS FULL\r\n\r\n");
+  WRITE_LINE(";  32 = 1280x1024 DS FULL    33 = 1600x1200 S WIN\r\n");
+  WRITE_LINE(";  34 = 1600x1200 DS WIN\r\n\r\n");
   sprintf(buffer, "VideoModeWin = %d\r\n\r\n", cfgcvidmode);
   SAVE_LINE(buffer);
 #endif
