@@ -1944,8 +1944,10 @@ void initwinvideo(void)
          break;
       case 33:
       case 34:
+      case 35:
+      case 36:
          WindowWidth=1600;
-         WindowHeight=1024;
+         WindowHeight=1200;
          break;
       default:
          WindowWidth=256;

@@ -147,7 +147,6 @@ void reg2119inc8inc();
 
 void repackfunct()
 {
-  signed char val;
   unsigned char block;
 
   // Global/Echo Volumes
@@ -161,22 +160,14 @@ void repackfunct()
   EchoFB = VolumeTableb[DSPMem[0x0D]];
 
   // FIR Filter Values
-  val = DSPMem[0x0F];
-  FIRTAPVal0 = (signed int)val;
-  val = DSPMem[0x1F];
-  FIRTAPVal1 = (signed int)val;
-  val = DSPMem[0x2F];
-  FIRTAPVal2 = (signed int)val;
-  val = DSPMem[0x3F];
-  FIRTAPVal3 = (signed int)val;
-  val = DSPMem[0x4F];
-  FIRTAPVal4 = (signed int)val;
-  val = DSPMem[0x5F];
-  FIRTAPVal5 = (signed int)val;
-  val = DSPMem[0x6F];
-  FIRTAPVal6 = (signed int)val;
-  val = DSPMem[0x7F];
-  FIRTAPVal7 = (signed int)val;
+  FIRTAPVal0 = (signed int)DSPMem[0x0F];
+  FIRTAPVal1 = (signed int)DSPMem[0x1F];
+  FIRTAPVal2 = (signed int)DSPMem[0x2F];
+  FIRTAPVal3 = (signed int)DSPMem[0x3F];
+  FIRTAPVal4 = (signed int)DSPMem[0x4F];
+  FIRTAPVal5 = (signed int)DSPMem[0x5F];
+  FIRTAPVal6 = (signed int)DSPMem[0x6F];
+  FIRTAPVal7 = (signed int)DSPMem[0x7F];
 
   // Noise
   block = DSPMem[0x6C];
