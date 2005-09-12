@@ -122,8 +122,8 @@ extern unsigned int GlobalVL, GlobalVR, EchoVL, EchoVR, EchoRate[16], MaxEcho;
 extern unsigned int EchoFB, NoiseSpeeds[32], dspPAdj, NoiseInc, bg1ptrx;
 extern unsigned int bg1ptry, bg2ptrx, bg2ptry, bg3ptrx, bg3ptry, bg4ptrx;
 extern unsigned int bg4ptry;
-extern signed int FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4;
-extern signed int FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
+extern int FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4;
+extern int FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
 extern unsigned short VolumeConvTable[32768], bg1ptr, bg1ptrb, bg1ptrc;
 extern unsigned short bg2ptr, bg2ptrb, bg2ptrc, bg3ptr, bg3ptrb, bg3ptrc;
 extern unsigned short bg4ptr, bg4ptrb, bg4ptrc;
@@ -160,14 +160,14 @@ void repackfunct()
   EchoFB = VolumeTableb[DSPMem[0x0D]];
 
   // FIR Filter Values
-  FIRTAPVal0 = (signed int)DSPMem[0x0F];
-  FIRTAPVal1 = (signed int)DSPMem[0x1F];
-  FIRTAPVal2 = (signed int)DSPMem[0x2F];
-  FIRTAPVal3 = (signed int)DSPMem[0x3F];
-  FIRTAPVal4 = (signed int)DSPMem[0x4F];
-  FIRTAPVal5 = (signed int)DSPMem[0x5F];
-  FIRTAPVal6 = (signed int)DSPMem[0x6F];
-  FIRTAPVal7 = (signed int)DSPMem[0x7F];
+  FIRTAPVal0 = (char)DSPMem[0x0F];
+  FIRTAPVal1 = (char)DSPMem[0x1F];
+  FIRTAPVal2 = (char)DSPMem[0x2F];
+  FIRTAPVal3 = (char)DSPMem[0x3F];
+  FIRTAPVal4 = (char)DSPMem[0x4F];
+  FIRTAPVal5 = (char)DSPMem[0x5F];
+  FIRTAPVal6 = (char)DSPMem[0x6F];
+  FIRTAPVal7 = (char)DSPMem[0x7F];
 
   // Noise
   block = DSPMem[0x6C];
