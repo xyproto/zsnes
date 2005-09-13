@@ -173,7 +173,7 @@ void repackfunct()
   block = DSPMem[0x6C];
   DSPMem[0x6C] &= 0x7F;
 
-  if (block && 0xC0)
+  if (block & 0xC0)
   {
     Voice0Status = Voice1Status = Voice2Status = Voice3Status = 0;
     Voice4Status = Voice5Status = Voice6Status = Voice7Status = 0;
