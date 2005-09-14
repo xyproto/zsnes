@@ -1958,7 +1958,7 @@ void initpitch()
 extern unsigned int SfxR1, SfxR2, SetaCmdEnable, SfxSFR, SfxSCMR;
 extern unsigned char lorommapmode2, disablespcclr, *sfxramdata, SramExists;
 extern unsigned char *setaramdata, *wramdata, *SA1RAMArea, cbitmode, curromsize;
-extern unsigned char ForcePal, ForceROMTiming, romispal;
+extern unsigned char ForcePal, ForceROMTiming, romispal, MovieWaiting;
 extern unsigned short totlines;
 void SetAddressingModes(), GenerateBank0Table();
 void SetAddressingModesSA1(), GenerateBank0TableSA1();
@@ -1967,11 +1967,11 @@ void InitDSP(), InitDSP2(), InitDSP4(), InitFxTables(), initregr(), initregw();
 void SPC7110Load(), DOSClearScreen(), dosmakepal();
 
 void CheckROMType()
-{
+{ // used by both movie and normal powercycles
   unsigned char *ROM = (unsigned char *)romdata;
 
   BankCheck();
-  MirrorROM();
+  if (!MovieWaiting) { MirrorROM(); }
 
   lorommapmode2 = 0;
   if (!strncmp((char *)ROM+0x207FC0, "DERBY STALLION 96", 17) || !strncmp((char *)ROM+Lo, "SOUND NOVEL-TCOOL", 17))
@@ -2198,7 +2198,7 @@ void SetupROM()
 }
 
 void powercycle(bool sramload)
-{
+{ // currently only used by movies - rom already loaded, no need for init
   memset(sram, 0xFF, 32768);
   clearSPCRAM();
 
@@ -2214,7 +2214,7 @@ void powercycle(bool sramload)
 
   if (sramload)	{ loadSRAM((char *)fnames+1); }
   SetupROM();
-  asm_call(initsnes);
+//  asm_call(initsnes);
 
   sramsavedis = 0;
 

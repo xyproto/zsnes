@@ -54,6 +54,10 @@ extern unsigned char MovieStartMethod, GUIReset, ReturnFromSPCStall, GUIQuit;
 extern unsigned char MovieProcessing, CMovieExt, EmuSpeed;
 extern char *Msgptr, fnamest[512];
 extern bool romispal;
+bool MovieWaiting = false;
+
+enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY };
+#define SetMovieMode(mode) (MovieProcessing = (unsigned char)mode)
 
 extern unsigned char snesmouse;
 extern unsigned short latchx, latchy;
@@ -907,6 +911,7 @@ static void zmv_create(char *filename)
       case zmv_sm_zst:
         break;
       case zmv_sm_power:
+        MovieWaiting = true;
         powercycle(true);
         break;
       case zmv_sm_reset:
@@ -915,6 +920,7 @@ static void zmv_create(char *filename)
         ReturnFromSPCStall = 0;
         break;
       case zmv_sm_clear_all:
+        MovieWaiting = true;
         powercycle(false);
         break;
     }
@@ -1157,6 +1163,7 @@ static bool zmv_open(char *filename)
           zst_compressed_loader(zmv_vars.fp);
           break;
         case zmv_sm_power:
+          MovieWaiting = true;
           powercycle(false);
           zst_sram_load_compressed(zmv_vars.fp);
           break;
@@ -1167,6 +1174,7 @@ static bool zmv_open(char *filename)
           zst_sram_load_compressed(zmv_vars.fp);
           break;
         case zmv_sm_clear_all:
+          MovieWaiting = true;
           powercycle(false);
           fseek(zmv_vars.fp, internal_chapter_length(ftell(zmv_vars.fp)), SEEK_CUR);
           break;
@@ -2008,10 +2016,6 @@ static size_t MovieSub_GetDuration()
 
 /////////////////////////////////////////////////////////
 
-bool MovieWaiting = false;
-enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY };
-#define SetMovieMode(mode) (MovieProcessing = (unsigned char)mode)
-
 bool RawDumpInProgress = false;
 bool PrevSRAMState;
 
@@ -2158,11 +2162,6 @@ static void OldMoviePlay(FILE *fp)
   }
   MessageOn = MsgCount;
 }
-
-
-
-
-
 
 void MovieInsertChapter()
 {
@@ -2434,9 +2433,9 @@ void MovieRecord()
       PrevSRAMState = SRAMState;
       SRAMState = true;
 
+      SetMovieMode(MOVIE_RECORD);
       zmv_create(fnamest+1);
       zmv_alloc_rewind_buffer(AllocatedRewindStates);
-      SetMovieMode(MOVIE_RECORD);
       Msgptr = "MOVIE RECORDING.";
       MessageOn = MsgCount;
     }
@@ -2481,5 +2480,3 @@ void MovieDumpRaw()
       break;
   }
 }
-
-
