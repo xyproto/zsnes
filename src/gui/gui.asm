@@ -142,6 +142,7 @@ EXTSYM BilinearFilter,lastcursres,OldVolume,prevloadl,prevloadfname,OldWinPos
 EXTSYM GUIwinposy2,GUIwinposx2,AllowMultipleInst,Surround,SoundBufEn,SPCDisable
 EXTSYM GUIEnableTransp,FilteredGUI,MouseWheel,TrapMouseCursor,AlwaysOnTop
 EXTSYM pl1p209,pl1p209b,SaveMainWindowPos,FastFwdToggle,SidewinderFix,RaisePitch
+EXTSYM KeyDisplayBatt
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
