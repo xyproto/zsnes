@@ -2798,6 +2798,8 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 78,110,[KeyResetAll]
     DGOptnsProcBox 78,120,[KeyExtraEnab]
     DGOptnsProcBox 78,130,[KeyDisplayFPS]
+    DGOptnsProcBox 78,140,[KeyDisplayBatt]
+    
     DGOptnsProcBox 191,100,[KeyNewGfxSwt]
     DGOptnsProcBox 191,110,[KeyWinDisble]
     DGOptnsProcBox 191,120,[KeyOffsetMSw]

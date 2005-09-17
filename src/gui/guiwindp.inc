@@ -2747,7 +2747,8 @@ DisplayGameOptns:        ; Misc Key Window
     GUIDisplayText 9,9,112,GUIGameOptnsTextD1b
     GUIDisplayText 9,9,122,GUIGameOptnsTextD1c
     GUIDisplayText 9,9,132,GUIGameOptnsTextD1d
-
+    GUIDisplayText 9,9,142,GUIGameOptnsTextD1e
+    
     GUIDisplayTextY 9,119,93,GUIGameOptnsTextD2
     GUIDisplayText 9,122,102,GUIGameOptnsTextD2a
     GUIDisplayText 9,122,112,GUIGameOptnsTextD2b
@@ -2783,7 +2784,8 @@ DisplayGameOptns:        ; Misc Key Window
     DDrawBox 9,77,109,[KeyResetAll]
     DDrawBox 9,77,119,[KeyExtraEnab]
     DDrawBox 9,77,129,[KeyDisplayFPS]
-
+    DDrawBox 9,77,139,[KeyDisplayBatt]
+    
     DDrawBox 9,190,99,[KeyNewGfxSwt]
     DDrawBox 9,190,109,[KeyWinDisble]
     DDrawBox 9,190,119,[KeyOffsetMSw]
@@ -2819,6 +2821,7 @@ GUIGameOptnsTextD1a  db 'USE PL12/34',0
 GUIGameOptnsTextD1b  db 'CLRSWITCHES',0
 GUIGameOptnsTextD1c  db 'EXTRADEVICE',0
 GUIGameOptnsTextD1d  db 'DISPLAY FPS',0
+GUIGameOptnsTextD1e  db 'BATT POWER',0
 
 GUIGameOptnsTextD2   db 'GFX TOGGLES :',0
 GUIGameOptnsTextD2a  db 'NEW GFX ENG',0
