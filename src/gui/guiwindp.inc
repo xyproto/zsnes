@@ -2747,7 +2747,9 @@ DisplayGameOptns:        ; Misc Key Window
     GUIDisplayText 9,9,112,GUIGameOptnsTextD1b
     GUIDisplayText 9,9,122,GUIGameOptnsTextD1c
     GUIDisplayText 9,9,132,GUIGameOptnsTextD1d
+%ifndef __MSDOS__
     GUIDisplayText 9,9,142,GUIGameOptnsTextD1e
+%endif
     
     GUIDisplayTextY 9,119,93,GUIGameOptnsTextD2
     GUIDisplayText 9,122,102,GUIGameOptnsTextD2a
@@ -2784,7 +2786,9 @@ DisplayGameOptns:        ; Misc Key Window
     DDrawBox 9,77,109,[KeyResetAll]
     DDrawBox 9,77,119,[KeyExtraEnab]
     DDrawBox 9,77,129,[KeyDisplayFPS]
+%ifndef __MSDOS__
     DDrawBox 9,77,139,[KeyDisplayBatt]
+%endif
     
     DDrawBox 9,190,99,[KeyNewGfxSwt]
     DDrawBox 9,190,109,[KeyWinDisble]

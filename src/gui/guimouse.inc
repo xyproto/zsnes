@@ -2798,7 +2798,9 @@ DisplayGameOptnsClick:
     DGOptnsProcBox 78,110,[KeyResetAll]
     DGOptnsProcBox 78,120,[KeyExtraEnab]
     DGOptnsProcBox 78,130,[KeyDisplayFPS]
+%ifndef __MSDOS__
     DGOptnsProcBox 78,140,[KeyDisplayBatt]
+%endif
     
     DGOptnsProcBox 191,100,[KeyNewGfxSwt]
     DGOptnsProcBox 191,110,[KeyWinDisble]
