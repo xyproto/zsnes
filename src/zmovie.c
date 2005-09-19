@@ -1039,7 +1039,7 @@ static void zmv_record(bool pause, unsigned char combos_used, unsigned char slow
 
   if (flag)
   {
-    unsigned char buffer_used = skip_bits/8 + ((skip_bits&7) ? 1 : 0);
+    unsigned char buffer_used = (skip_bits>>3) + ((skip_bits&7) ? 1 : 0);
 
     zmv_rle_flush();
 
