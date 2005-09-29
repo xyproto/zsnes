@@ -203,8 +203,10 @@ int SemaphoreMax = 5;
 void InitSemaphore();
 void ShutdownSemaphore();
 void InitDebugger();
-}
 
+void Clear2xSaIBuffer();
+void clear_display();
+}
 static char dinput8_dll[] = {"dinput8.dll\0"};
 static char dinput8_imp[] = {"DirectInput8Create\0"};
 
@@ -662,6 +664,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (FirstActivate == 0) initwinvideo();
             InputAcquire();
             if (FirstActivate == 1) FirstActivate = 0;
+            if (FullScreen == 1) Clear2xSaIBuffer();
             CheckPriority();
          }
          if (LOWORD(wParam) == WA_INACTIVE)
@@ -1844,8 +1847,6 @@ void Stop36HZ(void)
 
 char WinMessage[256];
 void clearwin();
-void Clear2xSaIBuffer();
-void clear_display();
 
 char WinName[]={"ZSNESW\0"};
 
