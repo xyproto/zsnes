@@ -289,3 +289,49 @@ void zstart ()
 
   asm_call(init);
 }
+
+static char *int_to_asc(size_t number)
+{
+  static char buffer[20];
+  buffer[19] = '\0';
+  char *i = buffer+18;
+  do
+  {
+    *i-- = (char)(number % 10) + '0';
+  } while (number /= 10);
+  return(++i);
+}
+
+ char *seconds_to_asc(size_t seconds)
+{
+  static char buffer[70];
+  size_t hours, minutes;
+   
+  hours = seconds/3600;
+  seconds -= hours*3600;
+  minutes = seconds/60;
+  seconds -= minutes*60;
+  *buffer = 0;
+  
+  if (hours)
+  {
+    strcat(buffer, int_to_asc(hours));
+    strcat(buffer, " hours ");
+  }
+  if (minutes)
+  {
+    strcat(buffer, int_to_asc(minutes));
+    strcat(buffer, " min ");
+  }
+  if (seconds)
+  {
+    strcat(buffer, int_to_asc(seconds));
+    strcat(buffer, " sec");
+  }
+  if (!*buffer)
+  {
+    strcpy(buffer, "0 sec");
+  }
+  return(buffer);
+}
+
