@@ -338,6 +338,7 @@ static char *int_to_asc(size_t number)
   return(buffer);
 }
 
+#ifdef __WIN32__
 extern int WinCheckBatteryTime();
 
 void DisplayBatteryStatus()
@@ -346,4 +347,4 @@ void DisplayBatteryStatus()
    MsgCount = 300;
    MessageOn = 1;
 }
-
+#endif
