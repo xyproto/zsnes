@@ -44,9 +44,6 @@ extern unsigned char *romaptr;
 extern unsigned char mydebug[2];
 extern unsigned char outofmem[51];
 extern unsigned char YesMMX[34];
-extern unsigned int MessageOn;
-extern unsigned int MsgCount;
-
 
 // Global Variables ported from ASM
 
@@ -341,7 +338,9 @@ static char *int_to_asc(size_t number)
 }
 
 #ifdef __WIN32__
-extern int WinCheckBatteryTime();
+int WinCheckBatteryTime();
+extern unsigned int MessageOn;
+extern unsigned int MsgCount;
 
 void DisplayBatteryStatus()
 {
