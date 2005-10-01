@@ -339,11 +339,13 @@ static char *int_to_asc(size_t number)
 
 #ifdef __WIN32__
 signed int WinCheckBatteryTime();
+#endif
 extern unsigned int MessageOn;
 extern unsigned int MsgCount;
 
 void DisplayBatteryStatus()
 {
+#ifdef __WIN32__
    signed int batteryTime = WinCheckBatteryTime();
 
    if (batteryTime>0)
@@ -352,5 +354,5 @@ void DisplayBatteryStatus()
      MsgCount = 50000;
      MessageOn = 2000;
    }
-}
 #endif
+}
