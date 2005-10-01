@@ -49,8 +49,8 @@ EXTSYM oamram,objhipr,objptr,objptrn,objsize1,objsize2,spritetablea,sprleftpr
 EXTSYM sprlefttot,vcache4b,objadds1,objadds2,objmovs1,objmovs2,tltype4b
 EXTSYM vidmemch4,vram,bgptr,bgptrc,bgptrd,curtileptr,vcache2b,vcache8b,vidmemch8
 EXTSYM offsetmshl,NextLineCache,tltype2b,tltype8b,objwlrpos,snesinputdefault
-EXTSYM cycleinputdevice,SRAMChdir,EmuSpeed,SDRatio,FFRatio
-EXTSYM KeyResetSpeed,KeyEmuSpeedUp,KeyEmuSpeedDown,EMUPause
+EXTSYM cycleinputdevice,SRAMChdir,EmuSpeed,SDRatio,FFRatio,DisplayBatteryStatus
+EXTSYM KeyResetSpeed,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyDisplayBatt,EMUPause
 
 ; Process stuff & Cache sprites
 
@@ -685,6 +685,14 @@ NEWSYM cachevideo
     mov eax,[MsgCount]
     mov [MessageOn],eax
 .nofrdown
+    mov eax,[KeyDisplayBatt]
+    test byte[pressed+eax],1
+    je .nodisplaybatt
+    mov byte[pressed+eax],2
+    pushad
+    call DisplayBatteryStatus
+    popad
+.nodisplaybatt
     mov eax,[KeyDisplayFPS]
     test byte[pressed+eax],1
     je .nodisplayfps
