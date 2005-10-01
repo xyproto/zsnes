@@ -26,6 +26,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #else
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #endif
 
 #include "asm_call.h"
@@ -43,6 +44,9 @@ extern unsigned char *romaptr;
 extern unsigned char mydebug[2];
 extern unsigned char outofmem[51];
 extern unsigned char YesMMX[34];
+extern unsigned int MessageOn;
+extern unsigned int MsgCount;
+
 
 // Global Variables ported from ASM
 
@@ -151,8 +155,6 @@ void InitSPC();
 void setnoise();
 void SystemInit();
 void StartUp();
-unsigned int MessageOn;
-unsigned int MsgCount;
 
 void *doMemAlloc(size_t size)
 {
