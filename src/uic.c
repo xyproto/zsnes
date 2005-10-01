@@ -140,6 +140,7 @@ unsigned char *spc7110romptr;
 unsigned char MusicRelVol   = 75;
 unsigned char MusicVol      = 0;
 unsigned char MMXextSupport = 0;
+extern char *Msgptr;
 
 void outofmemory();
 void init();
@@ -150,6 +151,8 @@ void InitSPC();
 void setnoise();
 void SystemInit();
 void StartUp();
+unsigned int MessageOn;
+unsigned int MsgCount;
 
 void *doMemAlloc(size_t size)
 {
@@ -333,5 +336,14 @@ static char *int_to_asc(size_t number)
     strcpy(buffer, "0 sec");
   }
   return(buffer);
+}
+
+extern int WinCheckBatteryTime();
+
+void DisplayBatteryStatus()
+{
+   Msgptr = seconds_to_asc(WinCheckBatteryTime());
+   MsgCount = 300;
+   MessageOn = 1;
 }
 
