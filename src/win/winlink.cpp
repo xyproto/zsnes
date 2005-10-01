@@ -3089,4 +3089,13 @@ void InitDebugger()
    }
 }
 
+unsigned int WinCheckBatteryTime()
+{
+   SYSTEM_POWER_STATUS SysPowerStat;
+
+   GetSystemPowerStatus(&SysPowerStat);
+
+   return SysPowerStat.BatteryLifeTime;
+}
+
 }
