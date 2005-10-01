@@ -1262,23 +1262,23 @@ bool InitInput()
       switch (hr)
       {
       case DIERR_BETADIRECTINPUTVERSION:
-         sprintf(message1,"Beta %X\n",hr);
+         sprintf(message1,"Beta %X\n",(unsigned int)hr);
          MessageBox (NULL, message1, "Init", MB_ICONERROR );
          break;
       case DIERR_INVALIDPARAM:
-         sprintf(message1,"Invalid %X\n",hr);
+         sprintf(message1,"Invalid %X\n",(unsigned int)hr);
          MessageBox (NULL, message1, "Init", MB_ICONERROR );
          break;
       case DIERR_OLDDIRECTINPUTVERSION:
-         sprintf(message1,"OLDDIRECTINPUTVERSION %X\n",hr);
+         sprintf(message1,"OLDDIRECTINPUTVERSION %X\n",(unsigned int)hr);
          MessageBox (NULL, message1, "Init", MB_ICONERROR );
          break;
       case DIERR_OUTOFMEMORY:
-         sprintf(message1,"OUTOFMEMORY %X\n",hr);
+         sprintf(message1,"OUTOFMEMORY %X\n",(unsigned int)hr);
          MessageBox (NULL, message1, "Init", MB_ICONERROR );
          break;
       default:
-         sprintf(message1,"UNKNOWN %X\n",hr);
+         sprintf(message1,"UNKNOWN %X\n",(unsigned int)hr);
          MessageBox (NULL, message1, "Init", MB_ICONERROR );
          break;
       }

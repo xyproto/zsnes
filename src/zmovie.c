@@ -2457,13 +2457,13 @@ void GetMovieFrameStr()
   switch (MovieProcessing)
   {
     case MOVIE_PLAYBACK:
-      sprintf(MovieFrameStr, "%u",zmv_frames_replayed());
+      sprintf(MovieFrameStr, "%u",(unsigned int)zmv_frames_replayed());
       break;
     case MOVIE_RECORD:
-      sprintf(MovieFrameStr, "%u",zmv_frames_recorded());
+      sprintf(MovieFrameStr, "%u",(unsigned int)zmv_frames_recorded());
       break;
     case MOVIE_OLD_PLAY:
-      sprintf(MovieFrameStr, "%u",old_movie.frames_replayed);
+      sprintf(MovieFrameStr, "%u",(unsigned int)(old_movie.frames_replayed));
       break;
   }
 }
