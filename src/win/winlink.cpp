@@ -3089,7 +3089,7 @@ void InitDebugger()
    }
 }
 
-unsigned int WinCheckBatteryTime()
+signed int WinCheckBatteryTime()
 {
    SYSTEM_POWER_STATUS SysPowerStat;
 
