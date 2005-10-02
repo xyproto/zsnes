@@ -345,17 +345,29 @@ int WinCheckBatteryTime();
 #endif
 extern unsigned int MessageOn;
 extern unsigned int MsgCount;
+extern char CSStatus[70];
+extern char CSStatus2[70];
+extern char CSStatus3[70];
 
 void DisplayBatteryStatus()
 {
 #ifdef __WIN32__
    int batteryTime = WinCheckBatteryTime();
 
-   if (batteryTime>0)
+   if (batteryTime > 0)
    {
-     Msgptr = seconds_to_asc(batteryTime);
-     MsgCount = 50000;
-     MessageOn = 2000;
+     strcpy(CSStatus, "Battery time remaining\0");
+     strcpy(CSStatus2, seconds_to_asc(batteryTime));
+     Msgptr = CSStatus;
+     MessageOn = 100;
    }
+   else
+   {
+     strcpy(CSStatus, "No battery present\0");
+   }
+
+     Msgptr = CSStatus;
+     MessageOn = 100;
+
 #endif
 }
