@@ -295,8 +295,11 @@ void zstart ()
 static char *int_to_asc(size_t number)
 {
   static char buffer[20];
+  char *i;
+
   buffer[19] = '\0';
-  char *i = buffer+18;
+  i = buffer+18;
+
   do
   {
     *i-- = (char)(number % 10) + '0';
@@ -304,17 +307,17 @@ static char *int_to_asc(size_t number)
   return(++i);
 }
 
- char *seconds_to_asc(size_t seconds)
+char *seconds_to_asc(size_t seconds)
 {
   static char buffer[70];
   size_t hours, minutes;
-   
+
   hours = seconds/3600;
   seconds -= hours*3600;
   minutes = seconds/60;
   seconds -= minutes*60;
   *buffer = 0;
-  
+
   if (hours)
   {
     strcat(buffer, int_to_asc(hours));
@@ -338,7 +341,7 @@ static char *int_to_asc(size_t number)
 }
 
 #ifdef __WIN32__
-signed int WinCheckBatteryTime();
+int WinCheckBatteryTime();
 #endif
 extern unsigned int MessageOn;
 extern unsigned int MsgCount;
@@ -346,7 +349,7 @@ extern unsigned int MsgCount;
 void DisplayBatteryStatus()
 {
 #ifdef __WIN32__
-   signed int batteryTime = WinCheckBatteryTime();
+   int batteryTime = WinCheckBatteryTime();
 
    if (batteryTime>0)
    {
