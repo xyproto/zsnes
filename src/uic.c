@@ -238,7 +238,13 @@ void zstart ()
   puts("please read 'LICENSE.TXT' thoroughly before doing so.\n");
   puts("Use ZSNES -? for command line definitions.\n");
 
+#ifndef __RELEASE__
+  puts("This is a work in progress build. It contains code which");
+  puts("May or may not be complete");
+#endif
+
   asm_call(SystemInit);
+
 
 #ifdef OPENSPC
   OSPC_Init();
@@ -353,6 +359,9 @@ void DisplayBatteryStatus()
 {
 #ifdef __WIN32__
    int batteryTime = WinCheckBatteryTime();
+
+   strcpy(CSStatus2, "");
+   strcpy(CSStatus3, "");
 
    if (batteryTime > 0)
    {
