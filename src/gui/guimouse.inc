@@ -2801,7 +2801,7 @@ DisplayGameOptnsClick:
 %ifndef __MSDOS__
     DGOptnsProcBox 78,140,[KeyDisplayBatt]
 %endif
-    
+
     DGOptnsProcBox 191,100,[KeyNewGfxSwt]
     DGOptnsProcBox 191,110,[KeyWinDisble]
     DGOptnsProcBox 191,120,[KeyOffsetMSw]

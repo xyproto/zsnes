@@ -2134,7 +2134,6 @@ static void OldMoviePlay(FILE *fp)
     nmiprevline = 224;
     nmistatus = 0;
     spcnumread = 0;
-    spchalted = 0xFFFFFFFF;
     NextLineCache = 0;
   }
 

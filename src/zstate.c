@@ -72,8 +72,7 @@ static void copy_extra_data(unsigned char **buffer, void (*copy_func)(unsigned c
   copy_func(buffer, &spc700read, 10*4);
   copy_func(buffer, &timer2upd, 1*4);
   copy_func(buffer, &xa, 14*4);
-  copy_func(buffer, &spcnumread, 4);
-  copy_func(buffer, &spchalted, 4);
+  copy_func(buffer, &spcnumread, 1);
   copy_func(buffer, &opcd, 6*4);
   copy_func(buffer, &HIRQCycNext, 5);
   copy_func(buffer, &oamaddr, 14*4);
@@ -758,7 +757,6 @@ bool zst_load(FILE *fp, size_t Compressed)
     prevoamptr = 0xFF;
     ioportval = 0xFF;
     spcnumread = 0;
-    spchalted = 0xFFFFFFFF;
     nexthdma = 0;
   }
 

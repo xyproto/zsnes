@@ -1904,7 +1904,7 @@ unsigned int showinfogui()
 }
 
 extern unsigned int nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
-extern unsigned int spcnumread, spchalted;
+extern unsigned char spcnumread;
 extern unsigned char NextLineCache, sramsavedis, sndrot, regsbackup[3019];
 extern unsigned char yesoutofmemory, fnames[512];
 
@@ -1994,7 +1994,7 @@ void CheckROMType()
   // Setup DSP-X stuff
   DSP1Type = 0;
 
-  if (DSP1Enable || DSP2Enable || DSP3Enable)
+  if (DSP1Enable || DSP2Enable)
   {
     if (DSP2Enable)
     {
@@ -2005,7 +2005,15 @@ void CheckROMType()
 
     DSP1Type = (romtype == 2) ? 2 : 1;
   }
+/*
+  if (DSP3Enable)
+  {
+    InitDSP3();
 
+    // DSP-3 mapping, banks 20 - 3F
+    map_mem(0x20, &dsp3bank, 0x20);
+  }
+*/
   if (DSP4Enable)
   {
     InitDSP4();
@@ -2208,7 +2216,6 @@ void powercycle(bool sramload)
   nmiprevline = 224;
   nmistatus = 0;
   spcnumread = 0;
-  spchalted = ~0;
   NextLineCache = 0;
   curexecstate = 1;
 

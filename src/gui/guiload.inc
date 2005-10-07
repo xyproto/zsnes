@@ -233,8 +233,7 @@ GUIloadfilename:
     mov dword[nmirept],0
     mov dword[nmiprevline],224
     mov dword[nmistatus],0
-    mov dword[spcnumread],0
-    mov dword[spchalted],-1
+    mov byte[spcnumread],0
     mov byte[NextLineCache],0
     mov byte[curexecstate],1
 

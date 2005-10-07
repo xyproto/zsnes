@@ -2750,7 +2750,7 @@ DisplayGameOptns:        ; Misc Key Window
 %ifndef __MSDOS__
     GUIDisplayText 9,9,142,GUIGameOptnsTextD1e
 %endif
-    
+
     GUIDisplayTextY 9,119,93,GUIGameOptnsTextD2
     GUIDisplayText 9,122,102,GUIGameOptnsTextD2a
     GUIDisplayText 9,122,112,GUIGameOptnsTextD2b
@@ -2789,7 +2789,7 @@ DisplayGameOptns:        ; Misc Key Window
 %ifndef __MSDOS__
     DDrawBox 9,77,139,[KeyDisplayBatt]
 %endif
-    
+
     DDrawBox 9,190,99,[KeyNewGfxSwt]
     DDrawBox 9,190,109,[KeyWinDisble]
     DDrawBox 9,190,119,[KeyOffsetMSw]

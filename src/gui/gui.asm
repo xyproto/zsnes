@@ -88,7 +88,7 @@ EXTSYM Close_File,Write_File,Create_File,File_Seek,File_Seek_End,Get_Date
 EXTSYM Check_Key,Get_Key,Change_Drive,Change_Single_Dir,Change_Dir,Get_Dir
 EXTSYM Get_First_Entry,Get_Next_Entry,Set_DTA_Address,curexecstate,TripBufAvail
 EXTSYM nmiprevaddrl,nmiprevaddrh,nmirept,nmiprevline,nmistatus,spcnumread
-EXTSYM spchalted,NextLineCache,ResetTripleBuf,GUINGVID,ScanCodeListing
+EXTSYM NextLineCache,ResetTripleBuf,GUINGVID,ScanCodeListing
 EXTSYM AdjustFrequency,GUISaveVars,Init_Mouse,Get_MouseData,Set_MouseXMax
 EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
 EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,SA1Enable,SA1RAMArea

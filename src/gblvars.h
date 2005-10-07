@@ -29,13 +29,13 @@ extern unsigned int cycpbl, PH65816regsize;
 extern unsigned int *wramdata, *vram, PHspcsave, PHdspsave, *C4Ram, *sfxramdata;
 extern unsigned int PHnum2writesa1reg, SA1Mode, prevedi, SA1xpc, sa1dmaptr;
 extern unsigned int soundcycleft, spc700read, timer2upd, xa, PHnum2writesfxreg;
-extern unsigned int spcnumread, spchalted, opcd, HIRQCycNext, oamaddr;
+extern unsigned int opcd, HIRQCycNext, oamaddr;
 extern unsigned int SfxR0, *setaramdata, ramsize, *sram;
 extern unsigned int tempesi, tempedi, tempedx, tempebp;
 extern unsigned int SPCMultA, PHnum2writespc7110reg, PHdspsave2;
 extern unsigned char sndrot, SPCRAM[65472], DSPMem[256], SA1Status, *SA1RAMArea;
 extern unsigned char DSP1Type, DSP1COp, prevoamptr, BRRBuffer[32], *romdata;
-extern unsigned char curcyc, echoon0;
+extern unsigned char curcyc, echoon0, spcnumread;
 extern unsigned char vidmemch4[4096], vidmemch8[4096], vidmemch2[4096];
 
 extern bool C4Enable, SFXEnable, SA1Enable, SPC7110Enable, SETAEnable, spcon;
