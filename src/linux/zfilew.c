@@ -36,6 +36,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <unistd.h>
 #include <time.h>
 #include <glob.h>
+#include <pwd.h>
 #else
 #include <time.h>
 #include <io.h>
@@ -466,16 +467,16 @@ char zcfgdir[1024];
 
 void obtaindir()
 {
-  char *homedir = 0;
+  struct passwd *userinfo;
   DIR *tmp;
 
-  if ((homedir = (char *)getenv("HOME")) == 0)
+  if ((userinfo = getpwuid(getuid())))
   {
-    getcwd(zcfgdir, ZCFG_DIR_LEN);
+    strcpy(zcfgdir, userinfo->pw_dir);
   }
   else
   {
-    strcpy(zcfgdir, homedir);
+    getcwd(zcfgdir, ZCFG_DIR_LEN);
   }
   strcat(zcfgdir, ZCFG_DIR);
   tmp = opendir(zcfgdir);
