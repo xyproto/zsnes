@@ -22,8 +22,8 @@
 
 %include "macros.mac"
 
-EXTSYM DSPMem,spcWptr,disablespcclr,SPCSkipXtraROM,SPC700sh,cycpbl,spcRptr
-EXTSYM spc700read,dspWptr,curexecstate,tableadb
+EXTSYM DSPMem,spcWptr,disablespcclr,SPCSkipXtraROM,cycpbl,spcRptr
+EXTSYM spc700read,dspWptr,curexecstate
 
 %include "cpu/regsw.mac"
 %include "cpu/spcdef.inc"
@@ -224,8 +224,6 @@ NEWSYM updatetimer
     mov [timinl0],al
     cmp byte[SPCRAM+0FDh],1
     jne .noin0
-;    cmp byte[spchalted],0
-;    jz .noin0
     reenablespc
     mov dword[cycpbl],0
 .noin0
@@ -238,8 +236,6 @@ NEWSYM updatetimer
     mov [timinl1],al
     cmp byte[SPCRAM+0FEh],1
     jne .noin1
-;    cmp byte[spchalted+1],0
-;    jz .noin1
     reenablespc
     mov dword[cycpbl],0
 .noin1
@@ -253,8 +249,6 @@ NEWSYM updatetimer
     mov [timinl2],al
     cmp byte[SPCRAM+0FFh],1
     jne .noin2
-;    cmp byte[spchalted+2],0
-;    jz .noin2
     reenablespc
     mov dword[cycpbl],0
 .noin2
@@ -265,8 +259,6 @@ NEWSYM updatetimer
     mov [timinl2],al
     cmp byte[SPCRAM+0FFh],1
     jne .noin2b
-;    cmp byte[spchalted+2],0
-;    jz .noin2b
     reenablespc
     mov dword[cycpbl],0
 .noin2b
@@ -277,8 +269,6 @@ NEWSYM updatetimer
     mov [timinl2],al
     cmp byte[SPCRAM+0FFh],1
     jne .noin2c
-;    cmp byte[spchalted+2],0
-;    jz .noin2c
     reenablespc
     mov dword[cycpbl],0
 .noin2c
@@ -289,8 +279,6 @@ NEWSYM updatetimer
     mov [timinl2],al
     cmp byte[SPCRAM+0FFh],1
     jne .noin2d
-;    cmp byte[spchalted+2],0
-;    jz .noin2d
     reenablespc
     mov dword[cycpbl],0
 .noin2d
@@ -479,75 +467,29 @@ NEWSYM RSPCRegFC
     mov al,[SPCRAM+0fch]
     ret
 
-%macro skipmacro 1
-.spcnextskip
-    test byte[timeron],1<<%1
-    je .ret
-    cmp byte[timincr0+%1],0
-    je .ret
-    ;cmp byte[SpeedHack],0
-    ;je .ret
-    inc byte[spcnumread+%1]
-    cmp byte[spcnumread+%1],8h
-    je near haltspc
-.ret
-    ret
-%endmacro
-
-ALIGN16
-NEWSYM haltspc
-    cmp byte[SPC700sh],1
-    je .nochangestate
-    mov dword[cycpbl],0FFFFFFFFh
-    test byte[curexecstate],02h
-    jz .nochangestate
-    and byte[curexecstate],0FDh
-    push ebx
-
-    mov ebx,[spcnumread]
-    mov [spchalted],ebx
-
-    xor ebx,ebx
-    mov bl,dl
-    mov edi,[tableadb+ebx*4]
-    pop ebx
-.nochangestate
-    mov dword[spcnumread],0
-    ret
-
 NEWSYM RSPCRegFD
     mov al,[SPCRAM+0fdh]
     and al,0Fh
-    cmp byte[SPCRAM+0fdh],0
-    je .spcnextskip
     mov byte[SPCRAM+0fdh],0
     mov byte[spcnumread],0
     ret
-    skipmacro 0
 
 NEWSYM RSPCRegFE
     mov al,[SPCRAM+0feh]
     and al,0Fh
-    cmp byte[SPCRAM+0feh],0
-    je .spcnextskip
     mov byte[SPCRAM+0feh],0
     mov byte[spcnumread],0
     ret
-    skipmacro 1
 
 NEWSYM RSPCRegFF
     mov al,[SPCRAM+0ffh]
     and al,0Fh
-    cmp byte[SPCRAM+0ffh],0
-    je .spcnextskip
     mov byte[SPCRAM+0ffh],0
     mov byte[spcnumread],0
     ret
-    skipmacro 2
 
 SECTION .data
-NEWSYM spcnumread, dd 0
-NEWSYM spchalted, dd 0
+NEWSYM spcnumread, db 0
 SECTION .text
 
 %macro SPCSetFlagnzc 0

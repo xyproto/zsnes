@@ -746,8 +746,7 @@ reg2140r:
     je .nosound
     inc dword[SPC700read]
     mov al,[reg1read]
-    mov dword[spcnumread],0
-;	mov dword[spchalted],-1
+    mov byte[spcnumread],0
     ret
 .nosound
     ; Find for D0
@@ -786,8 +785,7 @@ reg2141r:
     je .nosound
     inc dword[SPC700read]
     mov al,[reg2read]
-    mov dword[spcnumread],0
-;	mov dword[spchalted],-1
+    mov byte[spcnumread],0
     ret
 .nosound
     ; Find for D0
@@ -818,8 +816,7 @@ reg2142r:
     je .nosound
     inc dword[SPC700read]
     mov al,[reg3read]
-    mov dword[spcnumread],0
-;	mov dword[spchalted],-1
+    mov byte[spcnumread],0
     ret
 .nosound
     ; Find for D0
@@ -849,8 +846,7 @@ reg2143r:
     je .nosound
     inc dword[SPC700read]
     mov al,[reg4read]
-    mov dword[spcnumread],0
-;	mov dword[spchalted],-1
+    mov byte[spcnumread],0
     ret
 .nosound
     ; Find for D0

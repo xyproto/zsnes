@@ -22,7 +22,7 @@
 
 EXTSYM memtabler8,regptw,snesmap2,snesmmap,memtablew8,regptr,memtabler16
 EXTSYM dmadata,hdmatype,nexthdma,resolutn
-EXTSYM curhdma,curypos,disablehdma,hdmadata,hdmadelay,hdmaearlstart
+EXTSYM curhdma,curypos,disablehdma,hdmadata,hdmadelay
 
 ;*******************************************************
 ; Transfer DMA                     Inits & Transfers DMA
@@ -859,7 +859,7 @@ NEWSYM reg420Cw
     jz .notransh
     call setuphdma
 .notransh
-    mov bl,[hdmaearlstart]
+    mov bl,1
     mov [hdmadelay],bl
     pop edx
     pop ecx
