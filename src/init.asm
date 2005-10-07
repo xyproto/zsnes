@@ -997,7 +997,6 @@ NEWSYM disablehdma,    db 0
 NEWSYM disableeffects, db 0
 NEWSYM hdmaearlstart,  db 0
 NEWSYM hdmadelay,      db 0
-NEWSYM dracxhack,      db 0
 NEWSYM disable65816sh, db 0
 NEWSYM disablespcclr,  db 0
 NEWSYM virqnodisable,  db 0
@@ -1138,7 +1137,6 @@ NEWSYM init65816
     mov byte[prevoamptr],0FFh
     mov byte[disablehdma],0
     mov byte[disableeffects],0
-    mov byte[dracxhack],0
     mov al,[opexec268b]
     mov [opexec268],al
     mov al,[opexec358b]

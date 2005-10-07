@@ -20,7 +20,7 @@
 
 %include "macros.mac"
 
-EXTSYM KeyRewind,statesaver,timer2upd,Voice0Status,UpdateDPage
+EXTSYM KeyRewind,statesaver,Voice0Status,UpdateDPage
 EXTSYM StartGUI,debuggeron,romdata,initvideo
 EXTSYM vidbufferofsa,disable65816sh,GUISaveVars,virqnodisable
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
@@ -33,7 +33,7 @@ EXTSYM SetupPreGame,memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap
 EXTSYM DeInitPostGame,spcPCRam,startdebugger,xp,xpb,xpc,tablead,tableadb
 EXTSYM tableadc,SA1UpdateDPage,Makemode7Table,nextmenupopup,MovieProcessing
 EXTSYM OSExit,DosExit,InitDir,InitDrive,createnewcfg,sfxramdata,deinitvideo
-EXTSYM SFXEnable,wramdata,cycpbl,cycpblt,irqon,spcnumread,spcon
+EXTSYM SFXEnable,wramdata,cycpbl,cycpblt,irqon,spcon
 EXTSYM multchange,romispal,scrndis,sprlefttot,sprleftpr,processsprites
 EXTSYM cachesprites,NextLineStart,FlipWait,LastLineStart,opcjmptab,CheatOn
 EXTSYM INTEnab,JoyCRead,NMIEnab,NumCheats,CurrentExecSA1,ReadInputDevice
@@ -70,21 +70,6 @@ NEWSYM RewindTimer, dd 0
 NEWSYM BackState, db 1
 NEWSYM BackStateSize, dd 6
 SECTION .text
-
-NEWSYM ResetExecStuff
-  mov dword[soundcycleft],0
-  mov dword[curexecstate],0
-  mov dword[nmiprevaddrl],0
-  mov dword[nmiprevaddrh],0
-  mov dword[nmirept],0
-  mov dword[nmiprevline],224
-  mov dword[nmistatus],0
-  mov byte[NextLineCache],0
-  mov byte[spcnumread],0
-  mov dword[timer2upd],0
-  mov dword[HIRQCycNext],0
-  mov byte[HIRQNextExe],0
-  ret
 
 NEWSYM ProcessRewind
     mov eax,[KeyRewind]

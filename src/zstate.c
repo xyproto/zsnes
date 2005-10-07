@@ -68,13 +68,22 @@ static void copy_spc_data(unsigned char **buffer, void (*copy_func)(unsigned cha
 
 static void copy_extra_data(unsigned char **buffer, void (*copy_func)(unsigned char **, void *, size_t))
 {
-  copy_func(buffer, &soundcycleft, 33);
+  copy_func(buffer, &soundcycleft, 4);
+  copy_func(buffer, &curexecstate, 4);
+  copy_func(buffer, &nmiprevaddrl, 4);
+  copy_func(buffer, &nmiprevaddrh, 4);
+  copy_func(buffer, &nmirept, 4);
+  copy_func(buffer, &nmiprevline, 4);
+  copy_func(buffer, &nmistatus, 4);
+  copy_func(buffer, &joycontren, 4);
+  copy_func(buffer, &NextLineCache, 1);
   copy_func(buffer, &spc700read, 10*4);
-  copy_func(buffer, &timer2upd, 1*4);
+  copy_func(buffer, &timer2upd, 4);
   copy_func(buffer, &xa, 14*4);
   copy_func(buffer, &spcnumread, 1);
   copy_func(buffer, &opcd, 6*4);
-  copy_func(buffer, &HIRQCycNext, 5);
+  copy_func(buffer, &HIRQCycNext, 4);
+  copy_func(buffer, &HIRQNextExe, 1);
   copy_func(buffer, &oamaddr, 14*4);
   copy_func(buffer, &prevoamptr, 1);
 }
