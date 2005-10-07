@@ -40,7 +40,6 @@ extern void LinuxExit();
 extern unsigned int vidbuffer;
 extern DWORD converta;
 extern unsigned char curblank;
-extern unsigned char frameskipped;
 extern int frametot;
 int prevtot = 0;
 void UpdateVFrame(void);
@@ -145,7 +144,7 @@ void sw_drawwin()
 
     if (prevtot == frametot) { return; }
 
-    if (curblank != 0 || frameskipped == 1) return;
+    if (curblank) return;
     LockSurface();
 
     ScreenPtr = vidbuffer;
