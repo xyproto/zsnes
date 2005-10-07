@@ -594,33 +594,15 @@ void statesaver()
   static char *txtsavenum = 0;
   static char *txtrrsvnum = 0;
 
-  //Get the state number
-  INSERT_POSITION_NUMBER(txtsavemsg, txtsavenum);
-  INSERT_POSITION_NUMBER(txtrrsvmsg, txtrrsvnum);
-
   //Save State code
   #ifdef __UNIXSDL__
   SRAMChdir();
   #endif
 
-  if (MovieProcessing == 2)
-  {
-    bool mzt_save(char *, bool, bool);
-    if (mzt_save((char *)fnamest+1, (cbitmode && !NoPictureSave) ? true : false, false))
-    {
-      Msgptr = txtrrsvmsg;
-      MessageOn = MsgCount;
-    }
-    return;
-  }
-
   //'Auto increment savestate slot' code
   if (AutoIncSaveSlot)
   {
-    if (firstsaveinc)
-    {
-      firstsaveinc = 0;
-    }
+    if (firstsaveinc) { firstsaveinc = 0; }
     else
     {
       switch (fnamest[statefileloc])
@@ -636,6 +618,21 @@ void statesaver()
           fnamest[statefileloc]++;
       }
     }
+  }
+
+  //Get the state number
+  INSERT_POSITION_NUMBER(txtsavemsg, txtsavenum);
+  INSERT_POSITION_NUMBER(txtrrsvmsg, txtrrsvnum);
+
+  if (MovieProcessing == 2)
+  {
+    bool mzt_save(char *, bool, bool);
+    if (mzt_save((char *)fnamest+1, (cbitmode && !NoPictureSave) ? true : false, false))
+    {
+      Msgptr = txtrrsvmsg;
+      MessageOn = MsgCount;
+    }
+    return;
   }
 
   clim();
