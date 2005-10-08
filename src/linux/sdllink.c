@@ -1333,7 +1333,7 @@ void ZsnesPage()
 
 /*
 Functions for battery power for Linux by Nach
-I believe Linux 2.6 is required to get info
+I believe Linux 2.4.x+ is needed for ACPI support
 but it'll compile fine for older versions too
 
 Special thanks David Lee Lambert for most of the code here
