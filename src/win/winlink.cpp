@@ -3089,13 +3089,43 @@ void InitDebugger()
    }
 }
 
-signed int WinCheckBatteryTime()
+int CheckBattery()
 {
    SYSTEM_POWER_STATUS SysPowerStat;
-
    GetSystemPowerStatus(&SysPowerStat);
 
+   if (SysPowerStat.ACLineStatus == 0) //Definitly running off of battery
+   {
+     return(1); //Running off of battery
+   }
+   
+   if ((SysPowerStat.BatteryFlag == 255) || //Unknown
+       (SysPowerStat.BatteryFlag & 128)) //No battery
+   {
+      return(-1);
+   }
+
+   if ((SysPowerStat.BatteryFlag & 8) || //Charging
+       (SysPowerStat.ACLineStatus == 1)) //Plugged in
+   {
+      return(0); //Plugged in
+   }
+   
+   return(1); //Running off of battery
+}
+
+int CheckBatteryTime()
+{
+   SYSTEM_POWER_STATUS SysPowerStat;
+   GetSystemPowerStatus(&SysPowerStat);
    return SysPowerStat.BatteryLifeTime;
+}
+
+int CheckBatteryPercent()
+{
+   SYSTEM_POWER_STATUS SysPowerStat;
+   GetSystemPowerStatus(&SysPowerStat);
+   return((SysPowerStat.BatteryLifePercent == 255) ? -1 : SysPowerStat.BatteryLifePercent);
 }
 
 }

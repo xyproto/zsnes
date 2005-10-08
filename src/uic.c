@@ -300,7 +300,7 @@ void zstart ()
 
 static char *int_to_asc(size_t number)
 {
-  static char buffer[20];
+  static char buffer[12];
   char *i;
 
   buffer[19] = '\0';
@@ -315,7 +315,7 @@ static char *int_to_asc(size_t number)
 
 char *seconds_to_asc(size_t seconds)
 {
-  static char buffer[70];
+  static char buffer[50];
   size_t hours, minutes;
 
   hours = seconds/3600;
@@ -347,7 +347,9 @@ char *seconds_to_asc(size_t seconds)
 }
 
 #ifdef __WIN32__
-int WinCheckBatteryTime();
+int CheckBattery();
+int CheckBatteryTime();
+int CheckBatteryPercent();
 #endif
 extern unsigned int MessageOn;
 extern unsigned int MsgCount;
@@ -358,25 +360,47 @@ extern char CSStatus3[70];
 void DisplayBatteryStatus()
 {
 #ifdef __WIN32__
-   int batteryTime = WinCheckBatteryTime();
+   *CSStatus2 = 0;
+   *CSStatus3 = 0;
 
-   strcpy(CSStatus2, "");
-   strcpy(CSStatus3, "");
-
-   if (batteryTime > 0)
+   switch (CheckBattery())
    {
-     strcpy(CSStatus, "Battery time remaining\0");
-     strcpy(CSStatus2, seconds_to_asc(batteryTime));
-     Msgptr = CSStatus;
-     MessageOn = 100;
-   }
-   else
-   {
-     strcpy(CSStatus, "No battery present\0");
+     case -1: //No battery
+       strcpy(CSStatus, "No battery present");
+       break;
+       
+     case 0: //Plugged in
+       {
+         int percent = CheckBatteryPercent();
+
+         strcpy(CSStatus, "PC is plugged in");
+         if (percent > 0)
+         {
+           sprintf(CSStatus2, "%d%% charged", percent);
+         }
+       }
+       break;
+       
+     case 1: //Not plugged in
+       {
+         int percent = CheckBatteryPercent();
+         int battery_time = CheckBatteryTime();
+
+         strcpy(CSStatus, "PC is running off of battery");
+         if (battery_time > 0)
+         {
+           sprintf(CSStatus2, "Time remaining: %s", seconds_to_asc(battery_time));
+         }
+         if (percent > 0)
+         {
+           sprintf(CSStatus3, "%d%% remaining", percent);
+         }
+       }
+       break;
    }
 
-     Msgptr = CSStatus;
-     MessageOn = 100;
+   Msgptr = CSStatus;
+   MessageOn = 100;
 
 #endif
 }
