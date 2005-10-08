@@ -1371,9 +1371,10 @@ int CheckBattery()
             {
               battery = 0;
             }
-            if (!strcmp(arg, "off-line"))
+            else if (!strcmp(arg, "off-line"))
             {
               battery = 1;
+              break;
             }
           }
         }
@@ -1445,10 +1446,12 @@ static void update_battery_info()
           else if (strcmp(key, "present rate") == 0 && sscanf(arg, "%g", &x) == 1)
           {
             present_rate += charging * x;
+            charging = 0;
           }
           else if (strcmp(key, "remaining capacity") == 0 && sscanf(arg, "%g:", &x) == 1)
           {
             remaining_capacity += x;
+            charging = 0;
           }
         }
         fclose(fp);
@@ -1456,7 +1459,7 @@ static void update_battery_info()
     }
     if (design_capacity > 0.0f)
     {
-      BatteryLifePercent = (int)floorf((remaining_capacity / ((full_capacity > 0.0f) ? full_capacity : design_capacity) * 100.0) + 0.499);
+      BatteryLifePercent = (int)floorf(remaining_capacity / ((full_capacity > 0.0f) ? full_capacity : design_capacity) * 100.0);
       if (present_rate < 0.0f)
       {
         // Linux specifies rates in mWh or mAh 
