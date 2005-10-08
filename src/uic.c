@@ -346,11 +346,6 @@ char *seconds_to_asc(size_t seconds)
   return(buffer);
 }
 
-#ifdef __WIN32__
-int CheckBattery();
-int CheckBatteryTime();
-int CheckBatteryPercent();
-#endif
 extern unsigned int MessageOn;
 extern unsigned int MsgCount;
 extern char CSStatus[70];
@@ -359,7 +354,11 @@ extern char CSStatus3[70];
 
 void DisplayBatteryStatus()
 {
-#ifdef __WIN32__
+#ifndef __MSDOS__
+   int CheckBattery();
+   int CheckBatteryTime();
+   int CheckBatteryPercent();   
+   
    *CSStatus2 = 0;
    *CSStatus3 = 0;
 

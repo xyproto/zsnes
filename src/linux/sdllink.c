@@ -28,6 +28,21 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include <sys/time.h>
 #include <time.h>
+#include <dirent.h>
+
+#include <sys/param.h>
+#include <paths.h>
+#include <grp.h>
+
+#ifndef OPEN_MAX
+#define OPEN_MAX 256
+#endif
+
+//C++ style code in C
+#define bool unsigned char
+#define true 1
+#define false 0
+
 
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
@@ -1189,19 +1204,6 @@ float sem_GetTicks()
 
 //Introducing the secure browser opener for POSIX systems ;) -Nach
 
-#include <sys/param.h>
-#include <paths.h>
-#include <grp.h>
-
-#ifndef OPEN_MAX
-#define OPEN_MAX 256
-#endif
-
-//C++ style code in C
-#define bool unsigned char
-#define true 1
-#define false 0
-
 //Taken from the secure programming cookbook, slightly modified
 bool spc_drop_privileges() {
   gid_t newgid = getgid(), oldgid = getegid();
@@ -1328,3 +1330,172 @@ void ZsnesPage()
   _exit(0); //All browser launches failed, oh well
 }
 
+
+/*
+Functions for battery power for Linux by Nach
+I believe Linux 2.6 is required to get info
+but it'll compile fine for older versions too
+
+Special thanks David Lee Lambert for most of the code here
+*/
+
+#ifdef linux
+int CheckBattery()
+{  
+  int battery = -1; //No battery / Can't get info
+  const char *ac = "/proc/acpi/ac_adapter/";
+  
+  //Check ac adapter 
+  DIR *ac_dir = opendir(ac);
+  if (ac_dir)
+  {
+    char fnbuf[40]; // longer than len(ac)+len(HEXDIGIT*4)+len({state|info})
+    FILE *fp;
+    const char *pattern = " %39[^:]: %39[ -~]"; // for sscanf
+    char line[80], key[40], arg[40];
+      
+    struct dirent *ent;
+    while ((ent = readdir(ac_dir)))
+    {
+      if (ent->d_name[0] == '.') { continue; }
+      
+      snprintf(fnbuf, 40, "%s%s/state", ac, ent->d_name);
+      fp = fopen(fnbuf, "r");
+      if (fp)
+      {
+        while (fgets(line, 80, fp) && 2 == sscanf(line, pattern, key, arg))
+        {
+          if (!strcmp(key, "state"))
+          {
+            if (!strcmp(arg, "on-line"))
+            {
+              battery = 0;
+            }
+            if (!strcmp(arg, "off-line"))
+            {
+              battery = 1;
+            }
+          }
+        }
+        fclose(fp);
+      }
+    }
+    closedir(ac_dir);
+  }
+  return(battery);
+}
+
+static int BatteryLifeTime;
+static int BatteryLifePercent;
+
+static void update_battery_info()
+{
+  const char *batt = "/proc/acpi/battery/";
+    
+  //Check batteries 
+  DIR *batt_dir = opendir(batt);
+  if (batt_dir)
+  {
+    char fnbuf[40]; // longer than len(ac)+len(HEXDIGIT*4)+len({state|info})
+    FILE *fp;
+    const char *pattern = " %39[^:]: %39[ -~]"; // for sscanf
+    char line[80], key[40], arg[40];
+    
+    float x, design_capacity = 0.0f, remaining_capacity = 0.0f, present_rate = 0.0f, full_capacity = 0.0f;
+    
+    struct dirent *ent;
+    while ((ent = readdir(batt_dir)))
+    {
+      if (ent->d_name[0] == '.') { continue; }
+      snprintf(fnbuf, 40, "%s%s/info", batt, ent->d_name);
+      fp = fopen(fnbuf, "r");
+      if (fp)
+      {
+        while (fgets(line, 80, fp) && 2 == sscanf(line, pattern, key, arg))
+        {
+          if (strcmp(key, "design capacity") == 0 && sscanf(arg, "%g", &x) == 1)
+          {
+            design_capacity += x;
+          }
+          else if (strcmp(key, "last full capacity") == 0 && sscanf(arg, "%g", &x) == 1)
+          {
+            full_capacity += x;
+          }          
+        }
+        fclose(fp);
+      }
+      snprintf(fnbuf, 40, "%s%s/state", batt, ent->d_name);
+      fp = fopen(fnbuf, "r");
+      if (fp)
+      {
+        int charging = 0;
+        while (fgets(line, 80, fp) && 2 == sscanf(line, pattern, key, arg))
+        {
+          if (strcmp(key, "charging state") == 0)
+          {
+            if (strcmp(arg, "discharging") == 0)
+            {
+              charging = -1;
+            }
+            else if (strcmp(arg, "charging") == 0)
+            {
+              charging = 1;
+            }
+          }
+          else if (strcmp(key, "present rate") == 0 && sscanf(arg, "%g", &x) == 1)
+          {
+            present_rate += charging * x;
+          }
+          else if (strcmp(key, "remaining capacity") == 0 && sscanf(arg, "%g:", &x) == 1)
+          {
+            remaining_capacity += x;
+          }
+        }
+        fclose(fp);
+      }
+    }
+    if (design_capacity > 0.0f)
+    {
+      BatteryLifePercent = (int)floorf((remaining_capacity / ((full_capacity > 0.0f) ? full_capacity : design_capacity) * 100.0) + 0.499);
+      if (present_rate < 0.0f)
+      {
+        // Linux specifies rates in mWh or mAh 
+        BatteryLifeTime = (int)floorf(remaining_capacity / (-present_rate) * 3600.0);
+      }
+    }
+    closedir(batt_dir);
+  }
+}
+
+int CheckBatteryTime()
+{
+  BatteryLifeTime = -1;
+  update_battery_info();
+  return(BatteryLifeTime);
+}
+
+int CheckBatteryPercent()
+{
+  BatteryLifePercent = -1;
+  update_battery_info();
+  return(BatteryLifePercent);
+}
+
+#else //Non Linux OSs
+
+int CheckBattery()
+{
+  return(-1);
+}
+
+int CheckBatteryTime()
+{
+  return(-1);
+}
+
+int CheckBatteryPercent()
+{
+  return(-1);
+}
+
+#endif
