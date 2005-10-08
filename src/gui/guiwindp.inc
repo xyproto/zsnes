@@ -3047,11 +3047,12 @@ DisplayGUIAbout:          ; Displays the About Box
     GUIDisplayTextY 11,6,36,GUIGUIAboutTextB
     GUIDisplayText 11,6,46,GUIGUIAboutTextB1
     GUIDisplayText 11,6,56,GUIGUIAboutTextB2
-    GUIDisplayTextY 11,6,76,GUIGUIAboutTextC
-    GUIDisplayText 11,6,86,GUIGUIAboutTextC1
-    GUIDisplayText 11,6,96,GUIGUIAboutTextC2
-    GUIDisplayText 11,6,106,GUIGUIAboutTextC3
-    GUIDisplayText 11,6,116,GUIGUIAboutTextC4
+    GUIDisplayTextY 11,6,66,GUIGUIAboutTextC
+    GUIDisplayText 11,6,76,GUIGUIAboutTextC1
+    GUIDisplayText 11,6,86,GUIGUIAboutTextC2
+    GUIDisplayText 11,6,96,GUIGUIAboutTextC3
+    GUIDisplayText 11,6,106,GUIGUIAboutTextC4
+    GUIDisplayText 11,6,116,GUIGUIAboutTextC5
     GUIDisplayText 11,6,131,GUIGUIAboutTextD1
     GUIDisplayText 11,6,141,GUIGUIAboutTextD2
     GUIDisplayText 11,6,151,GUIGUIAboutTextD3
@@ -3093,6 +3094,7 @@ GUIGUIAboutTextC1 db '    PHAROS        STATMAT',0
 GUIGUIAboutTextC2 db '    TEUF          HPSOLO',0
 GUIGUIAboutTextC3 db '    THEODDONE33   SILOH',0
 GUIGUIAboutTextC4 db '    IPHER         GRINVADER',0
+GUIGUIAboutTextC5 db '    JONAS QUINN',0
 
 GUIGUIAboutTextD1 db 'ZSNES comes with ABSOLUTELY',0
 GUIGUIAboutTextD2 db 'NO WARRANTY.  This is free',0
