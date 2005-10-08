@@ -1512,7 +1512,7 @@ NEWSYM interpolate640x480x16bwin
     add edx,4
     dec ecx
     jnz .ab3
-    add edi,AddEndBytes
+    add edi,[AddEndBytes]
     add edi,4
     mov ecx,255
     mov edx,[spritetablea]
