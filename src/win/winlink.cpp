@@ -3098,7 +3098,7 @@ int CheckBattery()
    {
      return(1); //Running off of battery
    }
-   
+
    if ((SysPowerStat.BatteryFlag == 255) || //Unknown
        (SysPowerStat.BatteryFlag & 128)) //No battery
    {
@@ -3110,7 +3110,7 @@ int CheckBattery()
    {
       return(0); //Plugged in
    }
-   
+
    return(1); //Running off of battery
 }
 

@@ -1341,11 +1341,11 @@ Special thanks David Lee Lambert for most of the code here
 
 #ifdef linux
 int CheckBattery()
-{  
+{
   int battery = -1; //No battery / Can't get info
   const char *ac = "/proc/acpi/ac_adapter/";
-  
-  //Check ac adapter 
+
+  //Check ac adapter
   DIR *ac_dir = opendir(ac);
   if (ac_dir)
   {
@@ -1353,12 +1353,12 @@ int CheckBattery()
     FILE *fp;
     const char *pattern = " %39[^:]: %39[ -~]"; // for sscanf
     char line[80], key[40], arg[40];
-      
+
     struct dirent *ent;
     while ((ent = readdir(ac_dir)))
     {
       if (ent->d_name[0] == '.') { continue; }
-      
+
       snprintf(fnbuf, 40, "%s%s/state", ac, ent->d_name);
       fp = fopen(fnbuf, "r");
       if (fp)
@@ -1392,8 +1392,8 @@ static int BatteryLifePercent;
 static void update_battery_info()
 {
   const char *batt = "/proc/acpi/battery/";
-    
-  //Check batteries 
+
+  //Check batteries
   DIR *batt_dir = opendir(batt);
   if (batt_dir)
   {
@@ -1401,9 +1401,9 @@ static void update_battery_info()
     FILE *fp;
     const char *pattern = " %39[^:]: %39[ -~]"; // for sscanf
     char line[80], key[40], arg[40];
-    
+
     float x, design_capacity = 0.0f, remaining_capacity = 0.0f, present_rate = 0.0f, full_capacity = 0.0f;
-    
+
     struct dirent *ent;
     while ((ent = readdir(batt_dir)))
     {
@@ -1421,7 +1421,7 @@ static void update_battery_info()
           else if (strcmp(key, "last full capacity") == 0 && sscanf(arg, "%g", &x) == 1)
           {
             full_capacity += x;
-          }          
+          }
         }
         fclose(fp);
       }
@@ -1462,7 +1462,7 @@ static void update_battery_info()
       BatteryLifePercent = (int)floorf(remaining_capacity / ((full_capacity > 0.0f) ? full_capacity : design_capacity) * 100.0);
       if (present_rate < 0.0f)
       {
-        // Linux specifies rates in mWh or mAh 
+        // Linux specifies rates in mWh or mAh
         BatteryLifeTime = (int)floorf(remaining_capacity / (-present_rate) * 3600.0);
       }
     }

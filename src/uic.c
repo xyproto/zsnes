@@ -357,8 +357,8 @@ void DisplayBatteryStatus()
 #ifndef __MSDOS__
    int CheckBattery();
    int CheckBatteryTime();
-   int CheckBatteryPercent();   
-   
+   int CheckBatteryPercent();
+
    *CSStatus2 = 0;
    *CSStatus3 = 0;
 
@@ -367,7 +367,7 @@ void DisplayBatteryStatus()
      case -1: //No battery
        strcpy(CSStatus, "No battery present");
        break;
-       
+
      case 0: //Plugged in
        {
          int percent = CheckBatteryPercent();
@@ -379,7 +379,7 @@ void DisplayBatteryStatus()
          }
        }
        break;
-       
+
      case 1: //Not plugged in
        {
          int percent = CheckBatteryPercent();
