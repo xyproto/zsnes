@@ -25,7 +25,7 @@
 EXTSYM PrintStr,WaitForKey,PrintChar,ram7fa,wramdataa,malloc,MMXSupport
 EXTSYM MMXextSupport,statefileloc,LatestSave,firstsaveinc,Open_File
 EXTSYM Get_File_Date,Close_File,Change_Dir,Get_Dir,romloadskip,cfgloadgdir
-EXTSYM cfgloadsdir,init18_2hz,OSExit,SRAMDirCurDir,SRAMChdir,SRAMChdirFail
+EXTSYM cfgloadsdir,init18_2hz,SRAMDirCurDir,SRAMChdir,SRAMChdirFail
 EXTSYM BitConv32Ptr,spcBuffera,spritetablea,vcache2bs,vcache4bs,vcache8bs
 EXTSYM RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa,vidbufferofsmos,ngwinptr
 EXTSYM vidbufferofsb,headdata,romdata,sfxramdata,setaramdata,wramdata,ram7f,vram
@@ -34,6 +34,10 @@ EXTSYM fnamest,filefound,vidbufferofsc,Sup48mbit,Sup16mbit,guioff
 
 %ifdef __UNIXSDL__
 EXTSYM LinuxExit,GetFilename
+%elifdef __WIN32__
+EXTSYM _imp__GetModuleFileNameA@12,memcpy,exit
+%elifdef __MSDOS__
+EXTSYM argv
 %endif
 
 ; Function 0501h
@@ -122,13 +126,6 @@ NEWSYM AllocMem
 ;*******************************************************
 ; Get Command Line       Locates SET CMDLINE environment
 ;*******************************************************
-
-%ifdef __WIN32__
-EXTSYM _imp__GetModuleFileNameA@12
-EXTSYM memcpy
-%elifdef __MSDOS__
-EXTSYM argv
-%endif
 
 NEWSYM getcmdline
 %ifdef __MSDOS__
@@ -881,7 +878,7 @@ SECTION .text
 
 NEWSYM DosExit ; Terminate Program
 %ifdef __WIN32__
-	call OSExit
+	call exit
 %elifdef __UNIXSDL__
 	call LinuxExit
 %elifdef __MSDOS__

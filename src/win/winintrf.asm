@@ -22,10 +22,10 @@
 
 %include "macros.mac"
 
-EXTSYM DosExit,ZFileSystemInit,getcmdline,GUIRestoreVars,getcfg,obtaindir
+EXTSYM ZFileSystemInit,getcmdline,GUIRestoreVars,getcfg,obtaindir
 EXTSYM ConvertJoyMap,tparms,preparedir,SBHDMA,ccmdline,spcon,cfgsoundon
 EXTSYM cfgcvidmode,InitDir,InitDrive,DOScreatenewcfg,ExecGUISaveVars,allocptr
-EXTSYM putchar,getch,exit,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName
+EXTSYM putchar,getch,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName
 EXTSYM ZFileSeekMode,ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle
 EXTSYM ZFileWriteSize,ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize
 EXTSYM ZFileReadBlock,ZFileRead,ZFileDelFName,ZFileDelete,ZCloseFileHandle
@@ -176,11 +176,6 @@ NEWSYM WaitForKey       ; Wait for a key to be pressed
     ;int 21h
     ; return key in al
     ret
-
-NEWSYM OsExit
-NEWSYM OSExit
-    call exit
-    jmp DosExit
 
 SECTION .data
 NEWSYM TempHandle, dd 0
@@ -1002,7 +997,7 @@ NEWSYM GUIIEVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 NEWSYM GUIFSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Full Screen
 NEWSYM GUIWSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; (Full Scr. | Wide Scr.)
 NEWSYM GUISSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Small Screen
-NEWSYM GUITBVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0      ; Triple Buffering
+NEWSYM GUITBVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; Triple Buffering
 NEWSYM GUIHSVID,  db 0,0,0,1,0,1,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1       ; Half/Quarter Scanlines
 NEWSYM GUI2xVID,  db 0,0,0,1,0,1,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1       ; 2xSaI/Super Eagle Engines
 NEWSYM GUIM7VID,  db 0,0,0,1,0,1,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1       ; ?Mode 7 video thing?
@@ -1010,7 +1005,7 @@ NEWSYM GUIWFVID,  db 0,1,0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,1,1,0,0
 NEWSYM GUIDSIZE,  db 0,0,0,1,0,1,1,1,0,0,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,0,1,1,0,1,0,1,1,0,1,1,1
 NEWSYM GUIRATIO,  db 0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 NEWSYM GUIBIFIL,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-NEWSYM GUITBWVID, db 0,1,0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,0,0,1,1      ; Triple Buffering (Win)
+NEWSYM GUITBWVID, db 0,1,0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,1,1,0,0,1,1,1,0,0,1,1       ; Triple Buffering (Win)
 NEWSYM GUISMODE,  db 0,0,0,0,1,0,0,0,1,0,0,1,0,1,0,0,1,0,1,0,0,0,0,1,0,1,0,0,1,0,1,0,0,0,0,0,0
 NEWSYM GUIDSMODE, db 0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,1,0,1,0,0,1,0,0,0,1,0,0,1,0,1,0,0,1,0,1,0,1
 NEWSYM GUIHQ2X,   db 0,0,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0       ; hq2x filter

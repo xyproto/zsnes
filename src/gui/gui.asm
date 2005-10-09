@@ -146,11 +146,9 @@ EXTSYM KeyDisplayBatt
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
-%endif
-%ifdef __WIN32__
+%elifdef __WIN32__
 EXTSYM initDirectDraw,reInitSound
-%endif
-%ifdef __MSDOS__
+%elifdef __MSDOS__
 EXTSYM dssel
 %endif
 

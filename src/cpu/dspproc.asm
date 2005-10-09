@@ -1571,9 +1571,9 @@ section .text
     shl eax,cl
     sar eax,1
     jmp %%got_delta
-    %%invalid_range
+%%invalid_range
     and eax,~0x7FF
-    %%got_delta
+%%got_delta
     mov edx,eax
 
     cmp dword[filter0],240

@@ -39,5 +39,3 @@ void placetime()
          strlen(VERSION_STR) -
          strlen(__TIME__), __TIME__);
 }
-
-

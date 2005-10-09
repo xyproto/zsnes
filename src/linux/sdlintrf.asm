@@ -22,7 +22,7 @@
 
 %include "macros.mac"
 
-EXTSYM DosExit,ZFileSystemInit,getcmdline,GUIRestoreVars,getcfg,obtaindir
+EXTSYM ZFileSystemInit,getcmdline,GUIRestoreVars,getcfg,obtaindir
 EXTSYM ConvertJoyMap,tparms,SBHDMA,spcon,cfgsoundon,cfgcvidmode,InitDir
 EXTSYM InitDrive,SRAMChdir,DOScreatenewcfg,ExecGUISaveVars,allocptr,putchar
 EXTSYM getchar,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName,ZFileSeekMode
@@ -168,10 +168,6 @@ NEWSYM WaitForKey       ; Wait for a key to be pressed
     mov al,[wfkey]
     ; return key in al
     ret
-
-NEWSYM OsExit
-NEWSYM OSExit
-    jmp DosExit
 
 SECTION .data
 NEWSYM TempHandle, dd 0

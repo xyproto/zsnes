@@ -27,7 +27,7 @@ EXTSYM SidewinderFix
    xor cl,ch
    jpe %%ParChkSW
    mov [%1],ebx
-   %%ParChkSW:
+%%ParChkSW:
 %endmacro
 
 section .data

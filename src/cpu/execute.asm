@@ -32,7 +32,7 @@ EXTSYM InitPreGame,Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8
 EXTSYM SetupPreGame,memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap
 EXTSYM DeInitPostGame,spcPCRam,startdebugger,xp,xpb,xpc,tablead,tableadb
 EXTSYM tableadc,SA1UpdateDPage,Makemode7Table,nextmenupopup,MovieProcessing
-EXTSYM OSExit,DosExit,InitDir,InitDrive,createnewcfg,sfxramdata,deinitvideo
+EXTSYM DosExit,InitDir,InitDrive,createnewcfg,sfxramdata,deinitvideo
 EXTSYM SFXEnable,wramdata,cycpbl,cycpblt,irqon,spcon
 EXTSYM multchange,romispal,scrndis,sprlefttot,sprleftpr,processsprites
 EXTSYM cachesprites,NextLineStart,FlipWait,LastLineStart,opcjmptab,CheatOn
@@ -515,7 +515,7 @@ NEWSYM endprog
     mov ebx,InitDir
     call Change_Dir
 
-    jmp OSExit
+    jmp DosExit
 
 NEWSYM interror
     stim
@@ -1375,7 +1375,7 @@ NEWSYM cpuover
     jne .noprocmovie
     cmp byte[ZMVZClose],1
     jne .noprocmovie
-    jmp OSExit
+    jmp DosExit
 .noprocmovie
 
     cmp byte[snesmouse],4
