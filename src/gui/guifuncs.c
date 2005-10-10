@@ -36,7 +36,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 extern unsigned char ComboHeader[23], ComboBlHeader[23], GUIRAdd;
 extern unsigned char GUIsmallscreenon, ScreenScale, TimeChecker;
 extern unsigned char GUIScreenScale, ShowTimer, ReCalib, cfgdontsave;
-extern unsigned char CombinDataGlob[3300];
+extern unsigned char CombinDataGlob[3300], savecfgforce;
 extern unsigned int PHnumGUIsave, smallscreenon, SnowTimer, NumSnow;
 extern unsigned int CalibXmin, CalibXmax, CalibYmin, CalibYmax, NumComboGlob;
 extern unsigned int CalibXmin209, CalibXmax209, CalibYmin209, CalibYmax209;
@@ -109,7 +109,7 @@ void ExecGUISaveVars()
 
   if (ShowTimer == 1) { TimeChecker = CalcCfgChecksum(); }
 
-  if (!cfgdontsave)
+  if (!cfgdontsave || savecfgforce)
   {
     write_cfg_vars(GUIFName);
   }

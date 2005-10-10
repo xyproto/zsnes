@@ -130,6 +130,8 @@ extern unsigned char soundon;
 extern unsigned char spcon;
 extern unsigned char vsyncon;
 
+extern unsigned char savecfgforce;
+
 //extern void Open_File();
 extern unsigned int ZFileRead();
 extern unsigned int ZOpenMode;
@@ -369,7 +371,7 @@ void DOScreatenewcfg()
   char buffer[4096];
   FILE *fp = 0;
 
-  if (cfgdontsave == 1)
+  if (cfgdontsave && !savecfgforce)
   {
     return;
   }

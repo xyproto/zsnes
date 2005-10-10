@@ -2206,7 +2206,7 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
     jne .nomovie
     mov byte[MovieRecordWinVal],0
 .nomovie
-    GUICheckMenuItem 16, 3
+    GUICheckMenuItem 16, 3        ; Save Config
     cmp byte[GUIcrowpos],4
     jne .nosavestuff
 
@@ -2214,8 +2214,11 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
     mov dl,[InitDrive]
     mov ebx,InitDir
     call Change_Dir
+
+    mov byte[savecfgforce],1
     call createnewcfg
     call GUISaveVars
+    mov byte[savecfgforce],0
 
     call Makemode7Table
     mov dword[GUICMessage],.message1
@@ -2231,6 +2234,7 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
 
 SECTION .data
 .message1 db 'CONFIGURATION FILES SAVED.',0
+NEWSYM savecfgforce, db 0
 SECTION .text
 
 DisplayBoxes:                        ; Displays window when item is clicked
