@@ -276,10 +276,14 @@ NEWSYM continueprognokeys
     mov byte[exiter],0
 
     call InitPreGame
-    jmp reexecutenokeys
+    jmp reexecuteb2
 
 ; Incorrect
 
+NEWSYM reexecuteb
+%ifndef __MSDOS__
+    jmp reexecuteb2
+%endif
 NEWSYM reexecute
 
     ; clear keyboard presses
@@ -294,23 +298,6 @@ NEWSYM reexecute
     inc esi
     dec ecx
     jnz .loopa
-reexecutenokeys
-    jmp reexecuteb2
-
-NEWSYM reexecuteb
-%ifdef __MSDOS__
-    mov esi,pressed
-    mov ecx,256+128+64
-    mov al,0
-.loopa
-    cmp byte[esi],2
-    jne .notclear
-    mov [esi],al
-.notclear
-    inc esi
-    dec ecx
-    jnz .loopa
-%endif
 reexecuteb2:
     cmp byte[NoSoundReinit],1
     je .skippregame
