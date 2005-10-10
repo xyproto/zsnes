@@ -1363,7 +1363,7 @@ int CheckBattery()
       fp = fopen(fnbuf, "r");
       if (fp)
       {
-        while (fgets(line, 80, fp) && 2 == sscanf(line, pattern, key, arg))
+        while (fgets(line, 80, fp) && sscanf(line, pattern, key, arg) == 2)
         {
           if (!strcmp(key, "state"))
           {
@@ -1412,13 +1412,13 @@ static void update_battery_info()
       fp = fopen(fnbuf, "r");
       if (fp)
       {
-        while (fgets(line, 80, fp) && 2 == sscanf(line, pattern, key, arg))
+        while (fgets(line, 80, fp) && sscanf(line, pattern, key, arg) == 2)
         {
-          if (strcmp(key, "design capacity") == 0 && sscanf(arg, "%g", &x) == 1)
+          if (!strcmp(key, "design capacity") && sscanf(arg, "%g", &x) == 1)
           {
             design_capacity += x;
           }
-          else if (strcmp(key, "last full capacity") == 0 && sscanf(arg, "%g", &x) == 1)
+          else if (!strcmp(key, "last full capacity") && sscanf(arg, "%g", &x) == 1)
           {
             full_capacity += x;
           }
@@ -1430,25 +1430,25 @@ static void update_battery_info()
       if (fp)
       {
         int charging = 0;
-        while (fgets(line, 80, fp) && 2 == sscanf(line, pattern, key, arg))
+        while (fgets(line, 80, fp) && sscanf(line, pattern, key, arg) == 2)
         {
-          if (strcmp(key, "charging state") == 0)
+          if (!strcmp(key, "charging state"))
           {
-            if (strcmp(arg, "discharging") == 0)
+            if (!strcmp(arg, "discharging"))
             {
               charging = -1;
             }
-            else if (strcmp(arg, "charging") == 0)
+            else if (!strcmp(arg, "charging"))
             {
               charging = 1;
             }
           }
-          else if (strcmp(key, "present rate") == 0 && sscanf(arg, "%g", &x) == 1)
+          else if (!strcmp(key, "present rate") && sscanf(arg, "%g", &x) == 1)
           {
             present_rate += charging * x;
             charging = 0;
           }
-          else if (strcmp(key, "remaining capacity") == 0 && sscanf(arg, "%g:", &x) == 1)
+          else if (!strcmp(key, "remaining capacity") && sscanf(arg, "%g:", &x) == 1)
           {
             remaining_capacity += x;
             charging = 0;
