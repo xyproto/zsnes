@@ -845,6 +845,10 @@ void zst_sram_load_compressed(FILE *fp)
   }
 }
 
+
+extern unsigned char Voice0Disable, Voice1Disable, Voice2Disable, Voice3Disable;
+extern unsigned char Voice4Disable, Voice5Disable, Voice6Disable, Voice7Disable;
+
 void stateloader (char *statename, unsigned char keycheck, unsigned char xfercheck)
 {
   extern unsigned char PauseLoad;
@@ -937,6 +941,15 @@ void stateloader (char *statename, unsigned char keycheck, unsigned char xferche
   {
     Msgptr = txtnfndmsg; // 'UNABLE TO LOAD STATE X.'
   }
+
+  Voice0Disable = 1;
+  Voice1Disable = 1;
+  Voice2Disable = 1;
+  Voice3Disable = 1;
+  Voice4Disable = 1;
+  Voice5Disable = 1;
+  Voice6Disable = 1;
+  Voice7Disable = 1;
 
   stim();
 }

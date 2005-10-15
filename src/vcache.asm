@@ -530,10 +530,8 @@ NEWSYM cachevideo
     mov byte[disableeffects],0
     mov byte[osm2dis],0
     mov byte[EmuSpeed],29
-    push eax
     mov al,[snesinputdefault]
     mov [snesmouse],al
-    pop eax
     mov dword[Msgptr],panickeyp
     mov eax,[MsgCount]
     mov [MessageOn],eax
