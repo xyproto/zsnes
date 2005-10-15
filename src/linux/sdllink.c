@@ -1230,7 +1230,7 @@ bool spc_drop_privileges() {
     seteuid(newuid);
     if (setuid(newuid) == -1) return(false);
 #else
-    if (setregid(newuid, newuid) == -1) return(false);
+    if (setreuid(newuid, newuid) == -1) return(false);
 #endif
   }
 
