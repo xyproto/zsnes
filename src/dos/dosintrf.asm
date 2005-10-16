@@ -920,25 +920,25 @@ NEWSYM NumVideoModes, dd 19
 ; GUI Video Mode Names - Make sure that all names are of the same length
 ; and end with a NULL terminator
 NEWSYM GUIVideoModeNames
-db '256X224X8B  MODEQ',0    ; 0
-db '256X240X8B  MODEQ',0    ; 1
-db '256X256X8B  MODEQ',0    ; 2
-db '320X224X8B  MODEX',0    ; 3
-db '320X240X8B  MODEX',0    ; 4
-db '320X256X8B  MODEX',0    ; 5
-db '640X480X16B VESA1',0    ; 6
-db '320X240X8B  VESA2',0    ; 7
-db '320X240X16B VESA2',0    ; 8
-db '320X480X8B  VESA2',0    ; 9
-db '320X480X16B VESA2',0    ; 10
-db '512X384X8B  VESA2',0    ; 11
-db '512X384X16B VESA2',0    ; 12
-db '640X400X8B  VESA2',0    ; 13
-db '640X400X16B VESA2',0    ; 14
-db '640X480X8B  VESA2',0    ; 15
-db '640X480X16B VESA2',0    ; 16
-db '800X600X8B  VESA2',0    ; 17
-db '800X600X16B VESA2',0    ; 18
+db '256x224x8B  MODEQ',0    ; 0
+db '256x240x8B  MODEQ',0    ; 1
+db '256x256x8B  MODEQ',0    ; 2
+db '320x224x8B  MODEX',0    ; 3
+db '320x240x8B  MODEX',0    ; 4
+db '320x256x8B  MODEX',0    ; 5
+db '640x480x16B VESA1',0    ; 6
+db '320x240x8B  VESA2',0    ; 7
+db '320x240x16B VESA2',0    ; 8
+db '320x480x8B  VESA2',0    ; 9
+db '320x480x16B VESA2',0    ; 10
+db '512x384x8B  VESA2',0    ; 11
+db '512x384x16B VESA2',0    ; 12
+db '640x400x8B  VESA2',0    ; 13
+db '640x400x16B VESA2',0    ; 14
+db '640x480x8B  VESA2',0    ; 15
+db '640x480x16B VESA2',0    ; 16
+db '800x600x8B  VESA2',0    ; 17
+db '800x600x16B VESA2',0    ; 18
 db '                 ',0
 
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)

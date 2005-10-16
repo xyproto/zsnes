@@ -28,8 +28,8 @@ EXTSYM gammalevel,hirestiledat,ignor512,latchx,latchy,maxbr,ForceNewGfxOff
 EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,res640,resolutn
 EXTSYM romispal,scaddtype,scanlines,selcA000,snesmouse,t1cc,vcache4b,vesa2_bpos
 EXTSYM spritetablea,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10,vesa2selec
-EXTSYM vidbuffer,vram,vsyncon,KeyStateSelct,soundon,Open_File,Read_File
-EXTSYM Close_File,Create_File,Write_File,Get_File_Date,Triplebufen,makepal
+EXTSYM vidbuffer,vram,KeyStateSelct,soundon,Open_File,Read_File
+EXTSYM Close_File,Create_File,Write_File,Get_File_Date,makepal
 EXTSYM changepal,saveselectpal,displayfpspal,superscopepal,DrawScreen,MMXSupport
 EXTSYM Get_MouseData,Get_MousePositionDisplacement,GUIEnableTransp,GUIFontData
 EXTSYM StopSound,StartSound,PrevPicture,File_Seek,File_Seek_End,nggposng
@@ -43,7 +43,7 @@ EXTSYM MovieProcessing,mzt_chdir,UpChdir,MovieFrameStr,GetMovieFrameStr
 EXTSYM MovieDisplayFrame
 
 %ifdef __MSDOS__
-EXTSYM SB_blank
+EXTSYM SB_blank,vsyncon,Triplebufen
 %endif
 
 SECTION .bss
@@ -3279,16 +3279,16 @@ SECTION .bss
 SECTION .text
 
 NEWSYM vidpaste
+%ifdef __MSDOS__
     cmp byte[vsyncon],0
     je .novsync
     cmp byte[Triplebufen],0
     jne .novsync
     cmp byte[curblank],0h
     jne .novsync
-%ifdef __MSDOS__
     call waitvsync
-%endif
 .novsync
+%endif
     cmp byte[cbitmode],1
     je .nopal
     cmp byte[curblank],0

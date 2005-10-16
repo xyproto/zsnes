@@ -779,9 +779,9 @@ NEWSYM NumVideoModes, dd 6
 ; GUI Video Mode Names - Make sure that all names are of the same length
 ; and end with a NULL terminator
 NEWSYM GUIVideoModeNames
-db '256X224       R W',0  ;0
+db '256x224       R W',0  ;0
 db '256x224       R F',0  ;1
-db '512X448      DR W',0  ;2
+db '512x448      DR W',0  ;2
 db '512x448      DR F',0  ;3
 db '640x480      DR F',0  ;4
 db '800x600      DR F',0  ;5
