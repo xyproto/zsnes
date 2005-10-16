@@ -486,7 +486,14 @@ CheatCodeRemove:
     je .okay
     cmp eax,[NumCheats]
     jne .okay
-    dec dword[GUIcurrentcheatcursloc]
+    dec eax
+    mov [GUIcurrentcheatcursloc],eax
+    sub eax,11
+    mov [GUIcurrentcheatviewloc],eax
+    test dword[GUIcurrentcheatviewloc],80000000h
+    jz .noview
+    mov dword[GUIcurrentcheatviewloc],0
+.noview
 .okay
     cmp byte[NumCheats],0
     jne .cheatexists
