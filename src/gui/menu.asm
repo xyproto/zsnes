@@ -843,7 +843,7 @@ NEWSYM savespcdata
     mov al,[spcS]
     mov [ssdatst+43],al
     add dword[spcPCRam],SPCRAM
-.savestuff
+;.savestuff
     ChangeDir SPCPath
     pushad
     call PrepareSaveState
@@ -856,7 +856,7 @@ NEWSYM savespcdata
     mov [edi],al
     inc esi
     inc edi
-    cmp al,'.'
+    cmp byte[esi+3],0       ;Check for end of filename
     jne .next
     ; Save stuff
     mov dword[edi],'spc '
@@ -1400,15 +1400,9 @@ NEWSYM GetFreeFile
     mov esi,fnames+1
     mov ebx,.imagefname
 .end1
-    mov al,[esi]
     inc esi
-    cmp al,0
+    cmp byte[esi+4],0       ;Check for end of filename
     jne .end1
-.end2
-    dec esi
-    mov al,[esi]
-    cmp al,'.'
-    jne .end2
     mov edx,fnames+1
 .next
     mov al,[edx]
