@@ -339,7 +339,14 @@ NEWSYM Get_Date
     and al,0xF   ;Remove first BCD digit
     add dl,al    ;Add second digit to first*10
     mov dh,ah    ;Copy month
-    ;Year still isn't done yet, although I don't think we use it anywhere -Nach
+    ;Year Calculation
+    shr eax,16
+    movzx ecx,al
+    shr ecx,4
+    imul ecx,10
+    and al,0xF
+    add cl,al
+    add cx,1900
     ret
 
 NEWSYM Get_File_Date
