@@ -48,7 +48,7 @@ extern unsigned char Palette0, pl1contrl, pl2contrl, MMXSupport, Force8b, ForceP
                      SnowOn, Triplebufen, SPC700sh, OffBy1Line, DSPDisable, frameskip,
                      gammalevel, guioff, romtype, per2exec, scanlines, soundon, spcon,
                      showallext, autoloadstate, smallscreenon, autoloadmovie, ZMVZClose,
-                     ZMVRawDump;
+                     ZMVRawDump, HacksDisable;
 
 extern char *STCart2, fname;
 
@@ -88,6 +88,7 @@ static void display_help()
   put_line("  -d      Start with debugger enabled");
 #endif
   put_line("  -dd     Disable sound DSP emulation");
+  put_line("  -dh     Disable hacks");
 #ifdef __MSDOS__
   put_line("  -e      Skip enter key press at the beginning");
 #endif
@@ -473,6 +474,11 @@ static void handle_params(int argc, char *argv[])
         else if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 'd') //Disable sound DSP emulation
         {
           DSPDisable = 1;
+        }
+
+        else if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 'h') //Disable hacks
+        {
+          HacksDisable = 1;
         }
 
         #ifdef __WIN32__

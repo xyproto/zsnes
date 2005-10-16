@@ -1440,6 +1440,7 @@ extern unsigned char  opexec358cphb;
 extern unsigned char  DSP1Type;
 extern unsigned int   ewj2hack;
 extern unsigned char  cycpl;
+unsigned char HacksDisable;
 
 void headerhack()
 {
@@ -1450,12 +1451,12 @@ void headerhack()
   ClearScreenSkip = 0;
   ENVDisable = 0;
 
-  if (curromspace < Lo)
+  if ((curromspace < Lo) || (HacksDisable && !DSP1Type))
   {
     return;
   }
 
-  //These next fiew look like RAM init hacks, should be looked into
+  //These next few look like RAM init hacks, should be looked into
 
   //Should be Super Famista (J), uses non-standard characters
   if (!strncmp((RomData+Lo),"\x0bd\x0b0\x0ca\x0df\x0b0\x0cc\x0a7\x0d0\x0bd\x0c0      " ,16))
@@ -1675,8 +1676,6 @@ void headerhack()
     opexec268cph = 80;
     opexec358cph = 80;
   }
-
-  return;
 }
 
 extern unsigned char per2exec;
@@ -1684,8 +1683,8 @@ extern unsigned char per2exec;
 void Setper2exec()
 {
   if (per2exec != 100)
-  {	// Decrease standard % of execution by 5% to replace branch and 16bit
-	// cycle deductions
+  { // Decrease standard % of execution by 5% to replace branch and 16bit
+    // cycle deductions
     opexec268b = (unsigned char)((opexec268 * 95 * per2exec) / 10000);
     opexec358b = (unsigned char)((opexec358 * 87 * per2exec) / 10000); // 82
     opexec268cphb = (unsigned char)((opexec268cph * 95 * per2exec) / 10000);
