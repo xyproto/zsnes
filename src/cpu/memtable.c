@@ -255,6 +255,7 @@ void SA1RAMaccessbankr8b(), SA1RAMaccessbankw8b(), SA1RAMaccessbankr16b(), SA1RA
 void sramaccessbankr8s(), sramaccessbankw8s(), sramaccessbankr16s(), sramaccessbankw16s();
 void DSP1Read8b3F(), DSP1Write8b3F(), DSP1Read16b3F(), DSP1Write16b3F();
 void DSP2Read8b(), DSP2Write8b(), DSP2Read16b(), DSP2Write16b();
+//void DSP3Read8b(), DSP3Write8b(), DSP3Read16b(), DSP3Write16b();
 void DSP4Read8b(), DSP4Write8b(), DSP4Read16b(), DSP4Write16b();
 void setaaccessbankr8(), setaaccessbankw8(), setaaccessbankr16(), setaaccessbankw16();
 void setaaccessbankr8a(), setaaccessbankw8a(), setaaccessbankr16a(), setaaccessbankw16a();
@@ -276,6 +277,7 @@ mrwp sa1rambankb = { SA1RAMaccessbankr8b, SA1RAMaccessbankw8b, SA1RAMaccessbankr
 mrwp sramsbank = { sramaccessbankr8s, sramaccessbankw8s, sramaccessbankr16s, sramaccessbankw16s };
 mrwp dsp1bank = { DSP1Read8b3F, DSP1Write8b3F, DSP1Read16b3F, DSP1Write16b3F };
 mrwp dsp2bank = { DSP2Read8b, DSP2Write8b, DSP2Read16b, DSP2Write16b };
+//mrwp dsp3bank = { DSP3Read8b, DSP3Write8b, DSP3Read16b, DSP3Write16b };
 mrwp dsp4bank = { DSP4Read8b, DSP4Write8b, DSP4Read16b, DSP4Write16b };
 mrwp setabank = { setaaccessbankr8, setaaccessbankw8, setaaccessbankr16, setaaccessbankw16 };
 mrwp setabanka = { setaaccessbankr8a, setaaccessbankw8a, setaaccessbankr16a, setaaccessbankw16a };
