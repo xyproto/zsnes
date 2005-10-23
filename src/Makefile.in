@@ -92,7 +92,7 @@ PSR=parsegen
 	@CXX@ @CFLAGS@ -o $@ $<
 
 %.o: %.c
-	@CC@ @CFLAGS@ -I. -o $@ -c $<
+	@CC@ @CFLAGS@ -o $@ -c $<
 
 %.o: %.asm
 	@NASMPATH@ @NFLAGS@ -o $@ $<
@@ -289,4 +289,4 @@ clean:
 	rm -f *.o ${CHIPDIR}/*.o ${CPUDIR}/*.o ${DOSDIR}/*.o ${EFFECTSDIR}/*.o ${GUIDIR}/*.o ${JMADIR}/*.o ${NETDIR}/*.o ${TOOLSDIR}/*.o ${VIDEODIR}/*.o ${WINDIR}/*.o ${ZIPDIR}/*.o ${PSR} temppsr.c @ZSNESEXE@
 
 distclean:
-	rm -f *.o ${CHIPDIR}/*.o ${CPUDIR}/*.o ${DOSDIR}/*.o ${EFFECTSDIR}/*.o ${GUIDIR}/*.o ${JMADIR}/*.o ${NETDIR}/*.o ${TOOLSDIR}/*.o ${VIDEODIR}/*.o ${WINDIR}/*.o ${ZIPDIR}/*.o ${PSR} temppsr.c @ZSNESEXE@ Makefile config.cache config.log config.status config.h
+	rm -f *.o ${CHIPDIR}/*.o ${CPUDIR}/*.o ${DOSDIR}/*.o ${EFFECTSDIR}/*.o ${GUIDIR}/*.o ${JMADIR}/*.o ${NETDIR}/*.o ${TOOLSDIR}/*.o ${VIDEODIR}/*.o ${WINDIR}/*.o ${ZIPDIR}/*.o ${PSR} temppsr.c @ZSNESEXE@ Makefile aclocal.m4 configure config.cache config.log config.status config.h
