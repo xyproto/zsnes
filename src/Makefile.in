@@ -86,10 +86,10 @@ PSR=parsegen
 .SUFFIXES: .cpp .c .asm .psr
 
 %.o: %.cpp
-	@CXX@ @CFLAGS@ -o $@ -c $<
+	@CXX@ @CXXFLAGS@ -o $@ -c $<
 
 %: %.cpp
-	@CXX@ @CFLAGS@ -o $@ $<
+	@CXX@ @CXXFLAGS@ -o $@ $<
 
 %.o: %.c
 	@CC@ @CFLAGS@ -o $@ -c $<
@@ -102,13 +102,13 @@ endif
 
 %.o: %.psr
 	./${PSR} -D__UNIXSDL__ temppsr.c $<
-	@CC@ -I. -o $@ -c temppsr.c
+	@CC@ -I. -O1 -o $@ -c temppsr.c
 	rm -f temppsr.c
 
 ALL: @ZSNESEXE@
 
 @ZSNESEXE@: ${PSR} ${ZOBJS}
-	@CXX@ -o @ZSNESEXE@ ${ZOBJS} @CFLAGS@ @LDFLAGS@
+	@CXX@ -o @ZSNESEXE@ ${ZOBJS} @CXXFLAGS@ @LDFLAGS@
 
 ${PSR}: parsegen.cpp
 
@@ -118,22 +118,22 @@ ALL:
 tools: cutrtype extraext minwhite nreplace sec-test srccount
 
 cutrtype: ${TOOLSOBJ}
-	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/cutrtype ${TOOLSDIR}/cutrtype.cpp ${TOOLSOBJ}
+	@CXX@ @CXXFLAGS@ -o ${TOOLSDIR}/cutrtype ${TOOLSDIR}/cutrtype.cpp ${TOOLSOBJ}
 
 extraext: ${TOOLSOBJ}
-	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/extraext ${TOOLSDIR}/extraext.cpp ${TOOLSOBJ}
+	@CXX@ @CXXFLAGS@ -o ${TOOLSDIR}/extraext ${TOOLSDIR}/extraext.cpp ${TOOLSOBJ}
 
 minwhite: ${TOOLSOBJ}
-	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/minwhite ${TOOLSDIR}/minwhite.cpp ${TOOLSDIR}/fileutil.o
+	@CXX@ @CXXFLAGS@ -o ${TOOLSDIR}/minwhite ${TOOLSDIR}/minwhite.cpp ${TOOLSDIR}/fileutil.o
 
 nreplace: ${TOOLSOBJ}
-	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/nreplace ${TOOLSDIR}/nreplace.cpp ${TOOLSDIR}/fileutil.o
+	@CXX@ @CXXFLAGS@ -o ${TOOLSDIR}/nreplace ${TOOLSDIR}/nreplace.cpp ${TOOLSDIR}/fileutil.o
 
 sec-test: ${TOOLSOBJ}
-	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/sec-test ${TOOLSDIR}/sec-test.cpp ${TOOLSOBJ}
+	@CXX@ @CXXFLAGS@ -o ${TOOLSDIR}/sec-test ${TOOLSDIR}/sec-test.cpp ${TOOLSOBJ}
 
 srccount: ${TOOLSOBJ}
-	@CXX@ @CFLAGS@ -o ${TOOLSDIR}/srccount ${TOOLSDIR}/srccount.cpp ${TOOLSDIR}/fileutil.o
+	@CXX@ @CXXFLAGS@ -o ${TOOLSDIR}/srccount ${TOOLSDIR}/srccount.cpp ${TOOLSDIR}/fileutil.o
 
 cfgload.o: cfgload.c gblhdr.h
 cfgparse.o: cfgparse.psr

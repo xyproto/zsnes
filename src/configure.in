@@ -124,11 +124,11 @@ else
 
   if test x$release = xyes; then
     AC_MSG_RESULT(yes)
-    CFLAGS="$CFLAGS -O3 -pipe -fomit-frame-pointer -ffast-math -fno-exceptions -fprefetch-loop-arrays -fno-rtti -frename-registers -fforce-addr -s"
+    CFLAGS="$CFLAGS -O3 -pipe -fomit-frame-pointer -ffast-math -fno-exceptions -fprefetch-loop-arrays -frename-registers -fforce-addr -s"
     NFLAGS="$NFLAGS -O99999999"
   else
     AC_MSG_RESULT(no)
-    CFLAGS="$CFLAGS -O2 -fomit-frame-pointer -s"
+    CFLAGS="$CFLAGS -O3 -fomit-frame-pointer -s"
     NFLAGS="$NFLAGS -O1"
   fi
 
@@ -165,6 +165,7 @@ else
     CFLAGS="$CFLAGS -march=$CPU_INFO"
   fi
 fi
+CXXFLAGS="$CFLAGS -fno-rtti"
 
 dnl Checks for header files.
 AC_HEADER_STDC
@@ -200,5 +201,12 @@ fi
 echo
 echo The binary will be installed in $prefix/bin
 echo
-echo Configure complete, now type \'make\' and pray.
+case "$target" in
+  *-*-*bsd*)
+    echo Configure complete, now type \'gmake\' and pray.
+    ;;
+  *)
+    echo Configure complete, now type \'make\' and pray.
+    ;;
+esac
 echo

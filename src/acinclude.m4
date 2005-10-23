@@ -433,11 +433,11 @@ if test x$enable_cpucheck != xno; then
     AC_MSG_RESULT(found)
     CPU_INFO=$(<conf.cpuchk)
     ifelse([$1], , :, [$1])
+    rm conf.cpuchk
   else
     AC_MSG_RESULT(not found)
     ifelse([$2], , :, [$2])
   fi
-  rm conf.cpuchk
   AC_SUBST(CPU_INFO)
 
 else
