@@ -7,7 +7,7 @@ dnl become zlib.m4?)
 dnl
 dnl AM_PATH_ZLIB([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Tests for zlib, outputs ZLIB_VERSION, ZLIB_LIBS, and ZLIB_CFLAGS
-AC_DEFUN(AM_PATH_ZLIB,
+AC_DEFUN([AM_PATH_ZLIB],
 [dnl
 dnl
 dnl
@@ -116,7 +116,7 @@ dnl become libpng.m4?)
 dnl
 dnl AM_PATH_LIBPNG([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Tests for libpng, outputs LIBPNG_VERSION, LIBPNG_LIBS, and LIBPNG_CFLAGS
-AC_DEFUN(AM_PATH_LIBPNG,
+AC_DEFUN([AM_PATH_LIBPNG],
 [dnl
 dnl
 dnl
@@ -245,7 +245,7 @@ dnl including those tags, so others can easily copy it too.
 dnl
 dnl AM_CPU_DETECT([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl Tests and reads the first entry in /proc/cpuinfo, outputs CPU_INFO
-AC_DEFUN(AM_CPU_DETECT,
+AC_DEFUN([AM_CPU_DETECT],
 [
 CPU_INFO=""
 
