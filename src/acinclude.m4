@@ -458,7 +458,7 @@ if test x$enable_cpucheck != xno; then
 
             if (!cpu)
             {
-              if (strstr(model_name, "Pentium(R) M"))
+              if (strstr(model_name, "Pentium(R) M") || strstr(model_name, "Celeron(R) M"))
               {
                 #if __GNUC__ > 3 || __GNUC_MINOR__ > 3
                 cpu = "pentium-m";
