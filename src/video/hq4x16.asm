@@ -4182,6 +4182,9 @@ HighResProc:
     ret
 .m56
     mov ebx,[NumBytesPerLine]
+    mov eax,edi
+    add eax,ebx
+    add eax,ebx
     test byte[cfield],1
     jnz .cfield1hr
 .cfield0hr
