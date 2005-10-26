@@ -480,6 +480,7 @@ if test x$enable_cpucheck != xno; then
         }
         else { cpu = (!strcmp(cpu_family, "6")) ? "pentium2" : "pentium-mmx"; }
       }
+      #endif
 
       if (!cpu)
       {
@@ -487,7 +488,6 @@ if test x$enable_cpucheck != xno; then
         if (family > 5) { cpu = "pentiumpro"; }
         else if (family == 5) { cpu = "pentium"; }
       }
-      #endif
     }
     #if __GNUC__ > 2
     else if (strstr(model_name, "VIA"))
@@ -500,10 +500,10 @@ if test x$enable_cpucheck != xno; then
         else if (strstr(flags, "sse")) { cpu = "c3-2"; }
         #endif
         #endif
-     }
-   }
-   else if (strstr(model_name, "WinChip"))
-   {
+      }
+    }
+    else if (strstr(model_name, "WinChip"))
+    {
       #if __GNUC__ > 3 || __GNUC_MINOR__ > 2
       if (strstr(flags, "mmx"))
       {
