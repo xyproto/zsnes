@@ -306,18 +306,18 @@ if test x$enable_cpucheck != xno; then
     }
   }
 
-  int main(int argc, char *argv[])
+  int main()
   {
-    char *cpu = 0, model_name[216], flags[216];
-    char cpu_family[216], vendor_id[216], model[216];
+    char model_name[216], flags[216], cpu_family[216];
+    char vendor_id[216], model[216], *cpu = 0;
 
     FILE *fp;
 
     *model_name = 0;
-    *flags = 0;
     *cpu_family = 0;
     *vendor_id = 0;
     *model = 0;
+    strcpy(flags, " ");
 
     if ((fp = fopen("/proc/cpuinfo", "r")))
     {
@@ -328,8 +328,11 @@ if test x$enable_cpucheck != xno; then
       {
         if (!strncmp(key, "model name", strlen("model name")) && !*model_name)
         { strcpy(model_name, arg); }
-        else if (!strncmp(key, "flags", strlen("flags")) && !*flags)
-        { strcpy(flags, arg); }
+        else if (!strncmp(key, "flags", strlen("flags")) && !flags[1])
+        {
+          strcat(flags, arg);
+          strcat(flags, " ");
+        }
         else if (!strncmp(key, "cpu family", strlen("cpu family")) && !*cpu_family)
         { strcpy(cpu_family, arg); }
         else if (!strncmp(key, "vendor_id", strlen("vendor_id")) && !*vendor_id)
@@ -356,7 +359,7 @@ if test x$enable_cpucheck != xno; then
 
       cpuid(0x80000000, maxei, unused, unused, unused);
 
-      if(maxei >= 0x80000001)
+      if (maxei >= 0x80000001)
       {
         cpuid(0x80000001, unused, unused, ecx, edx);
         add_flags(flags, edx, 32);
@@ -379,7 +382,7 @@ if test x$enable_cpucheck != xno; then
         add_flags(flags, edx, 128);
       }
 
-      if(maxei >= 0x80000002)
+      if (maxei >= 0x80000002)
       {
         for (i = 0x80000002; i <= 0x80000004; i++)
         {
@@ -389,35 +392,32 @@ if test x$enable_cpucheck != xno; then
           strncat(model_name, (char *)&ecx, 4);
           strncat(model_name, (char *)&edx, 4);
         }
-
-        while (isspace(*model_name))
-        { memmove(model_name, model_name+1, strlen(model_name)); }
       }
     }
 
     if (!strcmp(vendor_id, "AuthenticAMD") || strstr(model_name, "AMD"))
     {
-      if (strstr(flags, "mmx"))
+      if (strstr(flags, " mmx "))
       {
         #if __GNUC__ > 2
-        if (strstr(flags, "3dnow"))
+        if (strstr(flags, " 3dnow "))
         {
-          if (strstr(flags, "3dnowext"))
+          if (strstr(flags, " 3dnowext "))
           {
             #if __GNUC__ > 3 || __GNUC_MINOR__ > 0
-            if (strstr(flags, "sse"))
+            if (strstr(flags, " sse "))
             {
               #if __GNUC__ > 3 || __GNUC_MINOR__ > 3
-              if (strstr(flags, "sse2") && strstr(flags, "lm")) //Need two checks to protect Semprons
+              if (strstr(flags, " sse2 ") && strstr(flags, " lm ")) //Need two checks to protect Semprons
               {
-                if (strstr(model_name, "Opteron")) { cpu = "opteron"; }
+                if (strstr(model_name, " Opteron ")) { cpu = "opteron"; }
                 else { cpu = (strstr(model_name, "Athlon(tm) 64")) ? "athlon64" : "k8"; }
               } //Athlon64, also athlon-fx
               #endif
               if (!cpu)
               {
                 if (strstr(model_name, "Athlon(tm) 4")) { cpu = "athlon-4"; }
-                else { cpu = (strstr(model_name, "Athlon(tm) MP")) ? "athlon-mp" : "athlon-xp"; }
+                else { cpu = (strstr(model_name, "Athlon(tm) MP")) ? "athlon-mp" : cpu = "athlon-xp"; }
               }
             }
 
@@ -443,22 +443,22 @@ if test x$enable_cpucheck != xno; then
     else if (!strcmp(vendor_id, "GenuineIntel") || strstr(model_name, "Intel"))
     {
       #if __GNUC__ > 2
-      if (strstr(flags, "mmx"))
+      if (strstr(flags, " mmx "))
       {
-        if (strstr(flags, "sse"))
+        if (strstr(flags, " sse "))
         {
-          if (strstr(flags, "sse2"))
+          if (strstr(flags, " sse2 "))
           {
             #if __GNUC__ > 3 || __GNUC_MINOR__ > 2
-            if (strstr(flags, "pni"))
+            if (strstr(flags, " pni "))
             {
-              cpu = (strstr(flags, "lm")) ? "nocona" : "prescott";
+              cpu = (strstr(flags, " lm ")) ? "nocona" : "prescott";
             }
             #endif
 
             if (!cpu)
             {
-              if (strstr(model_name, "Pentium(R) M") || strstr(model_name, "Celeron(R) M"))
+              if (!strcmp(cpu_family, "6"))
               {
                 #if __GNUC__ > 3 || __GNUC_MINOR__ > 3
                 cpu = "pentium-m";
@@ -492,12 +492,12 @@ if test x$enable_cpucheck != xno; then
     #if __GNUC__ > 2
     else if (strstr(model_name, "VIA"))
     {
-      if (strstr(flags, "mmx"))
+      if (strstr(flags, " mmx "))
       {
         #if __GNUC__ > 3 || __GNUC_MINOR__ > 2
-        if (strstr(flags, "3dnow")) { cpu = "c3"; }
+        if (strstr(flags, " 3dnow ")) { cpu = "c3"; }
         #if __GNUC__ > 3 || __GNUC_MINOR__ > 3
-        else if (strstr(flags, "sse")) { cpu = "c3-2"; }
+        else if (strstr(flags, " sse ")) { cpu = "c3-2"; }
         #endif
         #endif
       }
@@ -505,9 +505,9 @@ if test x$enable_cpucheck != xno; then
     else if (strstr(model_name, "WinChip"))
     {
       #if __GNUC__ > 3 || __GNUC_MINOR__ > 2
-      if (strstr(flags, "mmx"))
+      if (strstr(flags, " mmx "))
       {
-        cpu = (strstr(flags, "3dnow")) ? "winchip2" : "winchip-c6";
+        cpu = (strstr(flags, " 3dnow ")) ? "winchip2" : "winchip-c6";
       }
       #endif
     }
