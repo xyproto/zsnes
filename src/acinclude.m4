@@ -306,7 +306,7 @@ if test x$enable_cpucheck != xno; then
     }
   }
 
-  int main()
+  int main(int argc, char *argv[])
   {
     char model_name[216], flags[216], cpu_family[216];
     char vendor_id[216], model[216], *cpu = 0;
@@ -417,7 +417,7 @@ if test x$enable_cpucheck != xno; then
               if (!cpu)
               {
                 if (strstr(model_name, "Athlon(tm) 4")) { cpu = "athlon-4"; }
-                else { cpu = (strstr(model_name, "Athlon(tm) MP")) ? "athlon-mp" : cpu = "athlon-xp"; }
+                else { cpu = (strstr(model_name, "Athlon(tm) MP")) ? "athlon-mp" : "athlon-xp"; }
               }
             }
 

@@ -124,7 +124,7 @@ else
 
   if test x$release = xyes; then
     AC_MSG_RESULT(yes)
-    CFLAGS="$CFLAGS -O3 -fomit-frame-pointer -ffast-math -fprefetch-loop-arrays -fforce-addr -s"
+    CFLAGS="$CFLAGS -O3 -fomit-frame-pointer -fprefetch-loop-arrays -fforce-addr -s"
     NFLAGS="$NFLAGS -O99999999"
   else
     AC_MSG_RESULT(no)
