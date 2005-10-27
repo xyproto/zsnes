@@ -410,7 +410,7 @@ if test x$enable_cpucheck != xno; then
               #if __GNUC__ > 3 || __GNUC_MINOR__ > 3
               if (strstr(flags, " sse2 ") && strstr(flags, " lm ")) //Need two checks to protect Semprons
               {
-                if (strstr(model_name, " Opteron ")) { cpu = "opteron"; }
+                if (strstr(model_name, "Opteron")) { cpu = "opteron"; }
                 else { cpu = (strstr(model_name, "Athlon(tm) 64")) ? "athlon64" : "k8"; }
               } //Athlon64, also athlon-fx
               #endif
