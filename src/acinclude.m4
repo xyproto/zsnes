@@ -237,21 +237,21 @@ dnl -- End libpng autoconf macro
 
 dnl ----
 
-dnl -- Begin custom cpu detection autoconf macro
+dnl -- Begin custom arch detection autoconf macro
 dnl Copyright (c) 2005 Nach, grinvader
 dnl Under the GPL License
-dnl When copying, include from Begin to End custom cpu detection autoconf macro,
+dnl When copying, include from Begin to End custom arch detection autoconf macro,
 dnl including those tags, so others can easily copy it too.
 dnl
-dnl AM_CPU_DETECT([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
+dnl AM_ARCH_DETECT([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl Reads the first entry in /proc/cpuinfo or uses cpuid to grab what is needed,
-dnl outputs CPU_INFO
-AC_DEFUN([AM_CPU_DETECT],
+dnl outputs ARCH_INFO
+AC_DEFUN([AM_ARCH_DETECT],
 [
-CPU_INFO=""
+ARCH_INFO=""
 
 AC_MSG_CHECKING(for cpu info)
-AC_ARG_ENABLE(cpucheck, [  --disable-cpucheck      Do not try to autodetect cpu ],,enable_cpucheck=yes)
+AC_ARG_ENABLE(cpucheck, [  --disable-cpucheck      Do not try to autodetect cpu architecture ],,enable_cpucheck=yes)
 
 if test x$enable_cpucheck != xno; then
   AC_TRY_RUN([
@@ -544,7 +544,7 @@ if test x$enable_cpucheck != xno; then
         else { cpu = "i386"; }
       }
 
-      if ((fp = fopen("conf.cpuchk", "a")))
+      if ((fp = fopen("conf.archchk", "a")))
       {
         fprintf(fp, "%s", cpu);
         fclose(fp);
@@ -558,18 +558,18 @@ if test x$enable_cpucheck != xno; then
 
   if test x$cpu_found = xyes; then
     AC_MSG_RESULT(found)
-    CPU_INFO=$(<conf.cpuchk)
+    ARCH_INFO=$(<conf.archchk)
     ifelse([$1], , :, [$1])
-    rm conf.cpuchk
+    rm conf.archchk
   else
     AC_MSG_RESULT(not found)
     ifelse([$2], , :, [$2])
   fi
-  AC_SUBST(CPU_INFO)
+  AC_SUBST(ARCH_INFO)
 
 else
   AC_MSG_RESULT(disabled by user)
 fi
 
 ])
-dnl -- End custom cpu detection autoconf macro
+dnl -- End custom arch detection autoconf macro

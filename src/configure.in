@@ -132,10 +132,10 @@ else
     NFLAGS="$NFLAGS -O1"
   fi
 
-  AM_CPU_DETECT()
+  AM_ARCH_DETECT()
 
-  AC_MSG_CHECKING(which processor arch to optimize for)
-  if test x$CPU_INFO = x ; then
+  AC_MSG_CHECKING(which cpu architecture to optimize for)
+  if test x$ARCH_INFO = x ; then
     case "$target" in
       x86_64-*-* | x86_64-*-*-*)
         AC_MSG_RESULT(guessing x86-64)
@@ -161,8 +161,8 @@ else
         ;;
     esac
   else
-    AC_MSG_RESULT($CPU_INFO)
-    CFLAGS="$CFLAGS -march=$CPU_INFO"
+    AC_MSG_RESULT($ARCH_INFO)
+    CFLAGS="$CFLAGS -march=$ARCH_INFO"
   fi
 fi
 CXXFLAGS="$CFLAGS -fno-rtti"
