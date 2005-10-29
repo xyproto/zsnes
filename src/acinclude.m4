@@ -424,7 +424,7 @@ if test x$enable_cpucheck != xno; then
           #if __GNUC__ > 2
           if (strstr(flags, " 3dnow "))
           {
-            if (strstr(flags, " 3dnowext "))
+            if (strstr(flags, " 3dnowext ")  && (atoi(cpu_family) > 5))
             {
               #if __GNUC__ > 3 || __GNUC_MINOR__ > 0
               if (strstr(flags, " sse "))
@@ -459,7 +459,7 @@ if test x$enable_cpucheck != xno; then
           }
           #endif
 
-          if (!cpu && (atoi(cpu_family) > 5)) { cpu = "k6"; }
+          if (!cpu) { cpu = "k6"; }
         }
       }
       else if (!strcmp(vendor_id, "GenuineIntel") || strstr(model_name, "Intel"))
