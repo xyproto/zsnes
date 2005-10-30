@@ -49,6 +49,29 @@ I'd fix that if anyone knows if that parameter defines something I can check
 
 #define ASM_COMMAND(line) #line"\n\t"
 
+#ifdef __x86_64__
+#define PUSHAD ASM_COMMAND(pushl %eax) \
+               ASM_COMMAND(pushl %ecx) \
+               ASM_COMMAND(pushl %edx) \
+               ASM_COMMAND(pushl %ebx) \
+               ASM_COMMAND(pushl %esp) \
+               ASM_COMMAND(pushl %ebp) \
+               ASM_COMMAND(pushl %esi) \
+               ASM_COMMAND(pushl %edi)
+
+#define POPAD ASM_COMMAND(popl %edi) \
+              ASM_COMMAND(popl %esi) \
+              ASM_COMMAND(popl %ebp) \
+              ASM_COMMAND(popl %esp) \
+              ASM_COMMAND(popl %ebx) \
+              ASM_COMMAND(popl %edx) \
+              ASM_COMMAND(popl %ecx) \
+              ASM_COMMAND(popl %eax)
+#else
+#define PUSHAD ASM_COMMAND(pushal)
+#define POPAD ASM_COMMAND(popal)
+#endif
+
 #ifdef __UNIXSDL__
 #define ASM_CALL(func) ASM_COMMAND(call func)
 #else
@@ -56,9 +79,9 @@ I'd fix that if anyone knows if that parameter defines something I can check
 #endif
 
 #define asm_call(func) __asm__ __volatile__ ( \
-ASM_COMMAND(pushal) \
+PUSHAD \
 ASM_CALL(func) \
-ASM_COMMAND(popal) \
+POPAD \
 );
 
 #else //MSVC
