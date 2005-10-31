@@ -290,6 +290,28 @@ bool all_spaces(const char *str)
   return(true);
 }
 
+string encode_string(string& str, bool quotes = true)
+{
+  string newstr("");
+  if (quotes) { newstr += '\"'; }
+
+  for (size_t i = 0; i < str.length(); i++)
+  {
+    if ((str[i] == '\\') ||
+        (str[i] == '\"') ||
+        (str[i] == '\'') ||
+        (str[i] == '\n') ||
+        (str[i] == '\t'))
+    {
+      newstr += '\\';
+    }
+    newstr += str[i];
+  }
+
+  if (quotes) { newstr += '\"'; }
+  return(newstr);
+}
+
 /*
 
 Structures used to store config data
@@ -371,7 +393,7 @@ namespace variable
     }
 
     public:
-    void add_comment(string& comment)
+    void add_comment(string comment)
     {
       config_data_element new_element = { "", none, NT, 0, comment };
       data_array.push_back(new_element);
@@ -441,31 +463,6 @@ Compiler with it's helper functions
 
 #define short_scale "*sizeof(short)"
 #define int_scale "*sizeof(int)"
-
-//Return the comment from global line variable
-char *get_comment()
-{
-  char *comment = find_chr(line, ';');
-  if (comment)
-  {
-    *comment = 0;
-    comment++;
-    if (isspace(comment[strlen(comment)-1]))
-    {
-      comment[strlen(comment)-1] = 0;
-    }
-  }
-  return(comment);
-}
-
-void output_comment(ostream& c_stream, const char *comment)
-{
-  if (comment)
-  {
-    c_stream << " //" << comment;
-  }
-  c_stream << "\n";
-}
 
 //Convert asm types to C types
 char *convert_asm_type(const char *str, bool unsigned_var = true)
@@ -657,13 +654,17 @@ void output_array_write(ostream& c_stream, variable::ctype type)
   if (variable::config_data.ctype_mult_used(type))
   {
     c_stream << "\n"
-             << "static void write_" << variable::info[type].CTypeUnderscore << "_array(FILE *fp, const char *var_name, " << variable::info[type].CTypeSpace << " *var, size_t size)\n"
+             << "static void write_" << variable::info[type].CTypeUnderscore << "_array(FILE *fp, const char *var_name, " << variable::info[type].CTypeSpace << " *var, size_t size, const char *comment)\n"
              << "{\n"
              << "  size_t i;\n"
              << "  fprintf(fp, \"%s=%" << variable::info[type].FormatChar << "\", var_name, (int)*var);\n"
              << "  for (i = 1; i < size; i++)\n"
              << "  {\n"
              << "    fprintf(fp, \",%" << variable::info[type].FormatChar << "\", (int)(var[i]));\n"
+             << "  }\n"
+             << "  if (comment)\n"
+             << "  {\n"
+             << "    fprintf(fp, \" ;%s\", comment);\n"
              << "  }\n"
              << "  fprintf(fp, \"\\n\");\n"
              << "}\n";
@@ -690,21 +691,26 @@ void output_write_var(ostream& c_stream)
            << "  {\n";
   for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)
   {
-    if (i->format == variable::mult)
+    if (i->format == variable::none)
+    {
+      c_stream << "    fprintf(fp, \";%s\\n\", " << encode_string(i->comment) << ");\n";
+    }
+    else if (i->format == variable::mult)
     {
       c_stream << "    write_" << variable::info[i->type].CTypeUnderscore
-               << "_array(fp, \"" << i->name << "\", " << i->name << ", " << i->length << ");\n";
+               << "_array(fp, \"" << i->name << "\", " << i->name << ", " << i->length << ", " << ((i->comment != "") ? encode_string(i->comment) : "0") << ");\n";
     }
     else
     {
+      string config_comment = (i->comment != "") ? (string(" ;") + encode_string(i->comment, false)) : "";
       c_stream << "    fprintf(fp, \"" << i->name << "=";
       if (i->format == variable::single)
       {
-      c_stream << "%" << variable::info[i->type].FormatChar << "\\n\", " << i->name;
+        c_stream << "%" << variable::info[i->type].FormatChar << config_comment << "\\n\", " << i->name;
       }
-      else
+      else if (i->format == variable::quoted)
       {
-       c_stream << "%s\\n\", encode_string(" << i->name << ")";
+       c_stream << "%s" << config_comment << "\\n\", encode_string(" << i->name << ")";
       }
       c_stream << ");\n";
     }
@@ -781,22 +787,25 @@ void output_read_var(ostream& c_stream)
            << "\n";
   for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)
   {
-    c_stream << "    if (!strcmp(var, \"" + i->name + "\")) { ";
-    if (i->format == variable::single)
+    if (i->format != variable::none)
     {
-      c_stream << i->name << " = (" << variable::info[i->type].CTypeSpace << ")atoi(value);";
+      c_stream << "    if (!strcmp(var, \"" + i->name + "\")) { ";
+      if (i->format == variable::single)
+      {
+        c_stream << i->name << " = (" << variable::info[i->type].CTypeSpace << ")atoi(value);";
+      }
+      else if (i->format == variable::mult)
+      {
+        c_stream << "read_" << variable::info[i->type].CTypeUnderscore
+                 << "_array(value, " << i->name << ", " << i->length << ");";
+      }
+      else if (i->format == variable::quoted)
+      {
+        c_stream << "*" << i->name << " = 0; "
+                 << "strncat(" << i->name << ", decode_string(value), sizeof(" << i->name << ")-1);";
+      }
+      c_stream << " continue; }\n";
     }
-    else if (i->format == variable::mult)
-    {
-      c_stream << "read_" << variable::info[i->type].CTypeUnderscore
-               << "_array(value, " << i->name << ", " << i->length << ");";
-    }
-    else
-    {
-      c_stream << "*" << i->name << " = 0; "
-               << "strncat(" << i->name << ", decode_string(value), sizeof(" << i->name << ")-1);";
-    }
-    c_stream << " continue; }\n";
   }
   c_stream << "  }\n"
            << "\n"
@@ -931,6 +940,33 @@ void handle_directive(char *instruction, char *label)
   }
 }
 
+//Return the comment from global line variable
+char *get_comment(char comment_seperator)
+{
+  char *comment = find_chr(line, comment_seperator);
+  if (comment)
+  {
+    *comment = 0;
+    comment++;
+    if (isspace(comment[strlen(comment)-1]))
+    {
+      comment[strlen(comment)-1] = 0;
+    }
+  }
+  return(comment);
+}
+
+void output_parser_comment(ostream& c_stream, const char *comment)
+{
+  if (comment)
+  {
+    c_stream << " //" << comment;
+  }
+  c_stream << "\n";
+}
+
+#define CONFIG_COMMENT (config_comment ? config_comment : "")
+
 void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_stream)
 {
   current_location.line_number = current_location.column_number = 0;
@@ -945,16 +981,25 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
   while (!psr_stream.eof())
   {
     char *token;
-    char *comment;
+    char *parser_comment;
+    char *config_comment;
 
     psr_stream.getline(line, LINE_LENGTH);
     current_location.line_number++;
 
-    comment = get_comment();
+    parser_comment = get_comment(';');
 
     if (all_spaces(line))
     {
-      output_comment(c_stream, comment);
+      output_parser_comment(c_stream, parser_comment);
+      continue;
+    }
+
+    config_comment = get_comment('@');
+
+    if (all_spaces(line) && config_comment)
+    {
+      variable::config_data.add_comment(config_comment);
       continue;
     }
 
@@ -1014,8 +1059,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                             << varname << "[" << array << "] = 0;";
               }
               memsets.push_back(memset_line.str());
-
-              variable::config_data.add_var_quoted(varname);
+              variable::config_data.add_var_quoted(varname, CONFIG_COMMENT);
             }
             else
             {
@@ -1058,7 +1102,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                   var_init << init_value_num << "%d}";
                 }
 
-                variable::config_data.add_var_mult(varname, var_type, array);
+                variable::config_data.add_var_mult(varname, var_type, array, CONFIG_COMMENT);
               }
               else
               {
@@ -1073,13 +1117,13 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                   } while((token = get_token(0, " ,\n")));
                   var_init << "}";
 
-                  variable::config_data.add_var_mult(varname, var_type, array);
+                  variable::config_data.add_var_mult(varname, var_type, array, CONFIG_COMMENT);
                 }
                 else
                 {
                   var_init << " = " << init_value_num;
 
-                  variable::config_data.add_var_single(varname, var_type);
+                  variable::config_data.add_var_single(varname, var_type, CONFIG_COMMENT);
                 }
               }
               var_init << ";";
@@ -1116,7 +1160,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
       current_location.error("Could not get variable name");
     }
 
-    output_comment(c_stream, comment);
+    output_parser_comment(c_stream, parser_comment);
   }
 
   output_init_var(c_stream);
