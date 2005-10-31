@@ -52,13 +52,12 @@ typedef int ssize_t;
 #define LINE_LENGTH 2048*10
 char line[LINE_LENGTH];
 
-set<string> defines;
-stack<bool> ifs;
 
-typedef vector<string> str_array;
+/*
 
-str_array memsets;
+Line Tracking and Error Control
 
+*/
 
 static struct
 {
@@ -71,133 +70,11 @@ static struct
   }
 } current_location;
 
-enum cfg_value_type { single_value, quoted_value, parameterized_value };
+/*
 
-class variable_type
-{
-  public:
-  enum v_type { UC, US, UD, SC, SS, SD };
-  variable_type(v_type type) : type(type) {}
-  v_type getOType() { return(type); }
-  const char *getCType(bool);
-  char getFChar();
-  bool is_signed();
+String Functions for various parsing
 
-  private:
-  v_type type;
-};
-
-const char *variable_type::getCType(bool underscore)
-{
-  if (underscore)
-  {
-    switch (type)
-    {
-      case SC: return("char");
-      case SS: return("short");
-      case SD: return("int");
-      case UC: return("unsigned_char");
-      case US: return("unsigned_short");
-      case UD: return("unsigned_int");
-    }
-  }
-  else
-  {
-    switch (type)
-    {
-      case SC: return("char");
-      case SS: return("short");
-      case SD: return("int");
-      case UC: return("unsigned char");
-      case US: return("unsigned short");
-      case UD: return("unsigned int");
-    }
-  }
-  return("");
-}
-
-char variable_type::getFChar()
-{
-  return(is_signed() ? 'd' : 'u');
-}
-
-bool variable_type::is_signed()
-{
-  switch (type)
-  {
-    case SC: case SS: case SD: return(true);
-    default: return(false);
-  }
-}
-
-struct full_type
-{
-  variable_type::v_type object;
-  cfg_value_type type;
-  full_type(variable_type::v_type object, cfg_value_type type) : object(object), type(type) {}
-  bool operator==(const full_type& ft) const { return((ft.object == object) && (ft.type == type)); }
-};
-
-struct cfg_var_struct
-{
-  string name;
-  variable_type object;
-  cfg_value_type type;
-  size_t size;
-
-  cfg_var_struct(string& name, variable_type::v_type object, cfg_value_type val, size_t size) :
-  name(name), object(object), type(val), size(size)
-  {
-  }
-  bool operator==(const string& name) const { return(this->name == name); }
-  bool operator==(const full_type& ft) { return(ft == full_type(object.getOType(), type)); }
-};
-
-typedef vector<cfg_var_struct> cfg_var_array;
-
-static class
-{
-  private:
-  cfg_var_array array;
-
-
-  public:
-  void add(string& name, variable_type::v_type object, cfg_value_type val, size_t size)
-  {
-    cfg_var_struct var(name, object, val, size);
-    if (find(array.begin(), array.end(), name) == array.end())
-    {
-      array.push_back(var);
-    }
-    else
-    {
-      cerr << "Duplicate definition of \"" << name << "\" found on line " << current_location.line_number << "." << endl;
-    }
-  }
-
-  void add(string& name, const char *str, cfg_value_type val, size_t size)
-  {
-    if (!strcmp(str, "char")) { add(name, variable_type::SC, val, size); }
-    else if (!strcmp(str, "short")) { add(name, variable_type::SS, val, size); }
-    else if (!strcmp(str, "int")) { add(name, variable_type::SD, val, size); }
-    else if (!strcmp(str, "unsigned char")) { add(name, variable_type::UC, val, size); }
-    else if (!strcmp(str, "unsigned short")) { add(name, variable_type::US, val, size); }
-    else if (!strcmp(str, "unsigned int")) { add(name, variable_type::UD, val, size); }
-    else
-    {
-      cerr << "Invalid C type \"" << str << "\" when parsing line " << current_location.line_number << "." << endl;
-    }
-  }
-
-  bool type_used_array(const full_type& ft)
-  {
-    return(find(array.begin(), array.end(), ft) != array.end());
-  }
-
-  cfg_var_array::iterator begin() { return(array.begin()); }
-  cfg_var_array::iterator end() { return(array.end()); }
-
-} cfg_var;
+*/
 
 //Find next matching character which is not escaped
 char *find_next_match(char *str, char match_char)
@@ -403,6 +280,161 @@ ssize_t safe_atoi(string& str)
   return(atoi(str.c_str()));
 }
 
+bool all_spaces(const char *str)
+{
+  while (*str)
+  {
+    if (!isspace(*str)) { return(false); }
+    str++;
+  }
+  return(true);
+}
+
+/*
+
+Structures used to store config data
+
+*/
+
+set<string> defines;
+stack<bool> ifs;
+
+typedef vector<string> str_array;
+
+str_array memsets;
+
+namespace variable
+{
+  enum ctype { NT, UC, US, UD, SC, SS, SD, LT };
+  
+  static struct 
+  {
+    const char *CTypeSpace;
+    const char *CTypeUnderscore;
+    char FormatChar;
+    bool Signed;
+  } info[] = {
+              { "", "", 0, false },
+              { "unsigned char", "unsigned_char", 'u', false },
+              { "unsigned short", "unsigned_short", 'u', false },
+              { "unsigned int", "unsigned_int", 'u', false },
+              { "char", "char", 'd', true },
+              { "short", "short", 'd', true },
+              { "int", "int", 'd', true }
+             };
+             
+  ctype GetCType(const char *str)
+  {
+    int i = NT;
+    for ( ; i < LT; i++)
+    {
+      if (!strcmp(info[i].CTypeSpace, str)) { break; }
+    }
+    i %= LT;
+    
+    if (i == NT)
+    {
+      cerr << "Invalid C type \"" << str << "\" when parsing line " << current_location.line_number << "." << endl;
+    }
+    
+    return((ctype)i);
+  }
+             
+  enum storage_format { none, single, quoted, mult, mult_packed };
+
+  struct config_data_element
+  {
+    string name;
+    storage_format format;
+    ctype type;
+    size_t length;
+    string comment;
+    
+    bool operator==(const string& name) const { return(this->name == name); }
+  };
+
+  typedef vector<config_data_element> config_data_array;
+  
+  static class
+  {
+    private:
+    config_data_array data_array;
+
+    bool duplicate_name(string& name)
+    {
+      if (find(data_array.begin(), data_array.end(), name) != data_array.end())
+      {
+        cerr << "Duplicate definition of \"" << name << "\" found on line " << current_location.line_number << "." << endl;
+        return(true);
+      }
+      return(false);
+    }
+        
+    public:
+    void add_comment(string& comment)
+    {
+      config_data_element new_element = { "", none, NT, 0, comment };
+      data_array.push_back(new_element);
+    }
+    
+    void add_var_single(string& name, ctype type, string comment = "")
+    {
+      if (!duplicate_name(name))
+      {
+        config_data_element new_element = { name, single, type, 0, comment };
+        data_array.push_back(new_element);      
+      }
+    }
+    void add_var_single(string& name, const char *type, string comment = "")
+    {
+      add_var_single(name, GetCType(type), comment);
+    }
+    
+    void add_var_quoted(string& name, string comment = "")
+    {
+      if (!duplicate_name(name))
+      {
+        config_data_element new_element = { name, quoted, NT, 0, comment };
+        data_array.push_back(new_element);      
+      }    
+    }
+    
+    void add_var_mult(string& name, ctype type, size_t length, string comment = "")
+    {
+      if (!duplicate_name(name))
+      {
+        config_data_element new_element = { name, mult, type, length, comment };
+        data_array.push_back(new_element);      
+      }        
+    }
+    void add_var_mult(string& name, const char *type, size_t length, string comment = "")
+    {
+      add_var_mult(name, GetCType(type), length, comment);
+    }
+
+    bool ctype_mult_used(ctype type)
+    {
+      for (config_data_array::iterator i = data_array.begin(); i != data_array.end(); i++)
+      {
+        if ((i->format == mult) && (i->type == type))
+        {
+          return(true);
+        }
+      }
+      return(false);
+    }
+        
+    config_data_array::iterator begin() { return(data_array.begin()); }
+    config_data_array::iterator end() { return(data_array.end()); }
+  } config_data;
+}
+
+/*
+
+Compiler with it's helper functions
+
+*/
+
 #define var_type_is_char(var_type)  !strcmp(var_type+strlen(var_type)-strlen("char"), "char")
 #define var_type_is_short(var_type) !strcmp(var_type+strlen(var_type)-strlen("short"), "short")
 #define var_type_is_int(var_type)   !strcmp(var_type+strlen(var_type)-strlen("int"), "int")
@@ -433,16 +465,6 @@ void output_comment(ostream& c_stream, const char *comment)
     c_stream << " //" << comment;
   }
   c_stream << "\n";
-}
-
-bool all_spaces(const char *str)
-{
-  while (*str)
-  {
-    if (!isspace(*str)) { return(false); }
-    str++;
-  }
-  return(true);
 }
 
 //Convert asm types to C types
@@ -630,20 +652,18 @@ void output_init_var(ostream& c_stream)
            << "}\n";
 }
 
-void output_array_write(ostream& c_stream, variable_type::v_type v_type)
+void output_array_write(ostream& c_stream, variable::ctype type)
 {
-  if (cfg_var.type_used_array(full_type(v_type, parameterized_value)))
+  if (variable::config_data.ctype_mult_used(type))
   {
-    variable_type type(v_type);
-
     c_stream << "\n"
-             << "static void write_" << type.getCType(true) << "_array(FILE *fp, const char *var_name, " << type.getCType(false) << " *var, size_t size)\n"
+             << "static void write_" << variable::info[type].CTypeUnderscore << "_array(FILE *fp, const char *var_name, " << variable::info[type].CTypeSpace << " *var, size_t size)\n"
              << "{\n"
              << "  size_t i;\n"
-             << "  fprintf(fp, \"%s=%" << type.getFChar() << "\", var_name, (int)*var);\n"
+             << "  fprintf(fp, \"%s=%" << variable::info[type].FormatChar << "\", var_name, (int)*var);\n"
              << "  for (i = 1; i < size; i++)\n"
              << "  {\n"
-             << "    fprintf(fp, \",%" << type.getFChar() << "\", (int)(var[i]));\n"
+             << "    fprintf(fp, \",%" << variable::info[type].FormatChar << "\", (int)(var[i]));\n"
              << "  }\n"
              << "  fprintf(fp, \"\\n\");\n"
              << "}\n";
@@ -652,12 +672,12 @@ void output_array_write(ostream& c_stream, variable_type::v_type v_type)
 
 void output_write_var(ostream& c_stream)
 {
-  output_array_write(c_stream, variable_type::UC);
-  output_array_write(c_stream, variable_type::US);
-  output_array_write(c_stream, variable_type::UD);
-  output_array_write(c_stream, variable_type::SC);
-  output_array_write(c_stream, variable_type::SS);
-  output_array_write(c_stream, variable_type::SD);
+  output_array_write(c_stream, variable::UC);
+  output_array_write(c_stream, variable::US);
+  output_array_write(c_stream, variable::UD);
+  output_array_write(c_stream, variable::SC);
+  output_array_write(c_stream, variable::SS);
+  output_array_write(c_stream, variable::SD);
 
   c_stream << "\n"
            << "unsigned char write_cfg_vars(const char *file)\n"
@@ -668,19 +688,19 @@ void output_write_var(ostream& c_stream)
            << "\n"
            << "  if ((fp = fopen(file, \"w\")))\n"
            << "  {\n";
-  for (cfg_var_array::iterator i = cfg_var.begin(); i != cfg_var.end(); i++)
+  for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)
   {
-    if (i->type == parameterized_value)
+    if (i->format == variable::mult)
     {
-      c_stream << "    write_" << i->object.getCType(true)
-               << "_array(fp, \"" << i->name << "\", " << i->name << ", " << i->size << ");\n";
+      c_stream << "    write_" << variable::info[i->type].CTypeUnderscore
+               << "_array(fp, \"" << i->name << "\", " << i->name << ", " << i->length << ");\n";
     }
     else
     {
       c_stream << "    fprintf(fp, \"" << i->name << "=";
-      if (i->type == single_value)
+      if (i->format == variable::single)
       {
-      c_stream << "%" << i->object.getFChar() << "\\n\", " << i->name;
+      c_stream << "%" << variable::info[i->type].FormatChar << "\\n\", " << i->name;
       }
       else
       {
@@ -697,21 +717,19 @@ void output_write_var(ostream& c_stream)
            << "}\n";
 }
 
-void output_array_read(ostream& c_stream, variable_type::v_type v_type)
+void output_array_read(ostream& c_stream, variable::ctype type)
 {
-  if (cfg_var.type_used_array(full_type(v_type, parameterized_value)))
+  if (variable::config_data.ctype_mult_used(type))
   {
-    variable_type type(v_type);
-
     c_stream << "\n"
-             << "static void read_" << type.getCType(true) << "_array(char *line, " << type.getCType(false) << " *var, size_t size)\n"
+             << "static void read_" << variable::info[type].CTypeUnderscore << "_array(char *line, " << variable::info[type].CTypeSpace << " *var, size_t size)\n"
              << "{\n"
              << "  size_t i;\n"
              << "  char *token;\n"
-             << "  *var = (" << type.getCType(false) << ")atoi(strtok(line, \", \\t\\r\\n\"));\n"
+             << "  *var = (" << variable::info[type].CTypeSpace << ")atoi(strtok(line, \", \\t\\r\\n\"));\n"
              << "  for (i = 1; (i < size) && (token = strtok(0, \", \\t\\r\\n\")); i++)\n"
              << "  {\n"
-             << "    var[i] = (" << type.getCType(false) << ")atoi(token);\n"
+             << "    var[i] = (" << variable::info[type].CTypeSpace << ")atoi(token);\n"
              << "  }\n"
              << "}\n";
   }
@@ -719,12 +737,12 @@ void output_array_read(ostream& c_stream, variable_type::v_type v_type)
 
 void output_read_var(ostream& c_stream)
 {
-  output_array_read(c_stream, variable_type::UC);
-  output_array_read(c_stream, variable_type::US);
-  output_array_read(c_stream, variable_type::UD);
-  output_array_read(c_stream, variable_type::SC);
-  output_array_read(c_stream, variable_type::SS);
-  output_array_read(c_stream, variable_type::SD);
+  output_array_read(c_stream, variable::UC);
+  output_array_read(c_stream, variable::US);
+  output_array_read(c_stream, variable::UD);
+  output_array_read(c_stream, variable::SC);
+  output_array_read(c_stream, variable::SS);
+  output_array_read(c_stream, variable::SD);
 
   c_stream << "\n"
            << "unsigned char read_cfg_vars(const char *file)\n"
@@ -761,24 +779,24 @@ void output_read_var(ostream& c_stream)
            << "      continue;\n"
            << "    }\n"
            << "\n";
-  for (cfg_var_array::iterator i = cfg_var.begin(); i != cfg_var.end(); i++)
+  for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)           
   {
     c_stream << "    if (!strcmp(var, \"" + i->name + "\")) { ";
-    if (i->type == single_value)
+    if (i->format == variable::single)
     {
-      c_stream << i->name << " = (" << i->object.getCType(false) << ")atoi(value);";
+      c_stream << i->name << " = (" << variable::info[i->type].CTypeSpace << ")atoi(value);";
     }
-    else if (i->type == parameterized_value)
+    else if (i->format == variable::mult)
     {
-      c_stream << "read_" << i->object.getCType(true)
-               << "_array(value, " << i->name << ", " << i->size << ");";
+      c_stream << "read_" << variable::info[i->type].CTypeUnderscore
+               << "_array(value, " << i->name << ", " << i->length << ");";
     }
     else
     {
       c_stream << "*" << i->name << " = 0; "
                << "strncat(" << i->name << ", decode_string(value), sizeof(" << i->name << ")-1);";
     }
-    c_stream << " }\n";
+    c_stream << " continue; }\n";
   }
   c_stream << "  }\n"
            << "\n"
@@ -830,6 +848,24 @@ void handle_directive(char *instruction, char *label)
       current_location.error("Could not get ifdef label");
     }
   }
+  else if (!strcasecmp(instruction, "ifndef"))
+  {
+    if (label)
+    {
+      if (defines.find(label) == defines.end())
+      {
+        ifs.push(true);
+      }
+      else
+      {
+        ifs.push(false);
+      }
+    }
+    else
+    {
+      current_location.error("Could not get ifndef label");
+    }
+  }  
   else if (!strcasecmp(instruction, "else"))
   {
     if (label)
@@ -979,7 +1015,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
               }
               memsets.push_back(memset_line.str());
 
-              cfg_var.add(varname, variable_type::SC, quoted_value, 0);
+              variable::config_data.add_var_quoted(varname);
             }
             else
             {
@@ -1022,7 +1058,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                   var_init << init_value_num << "%d}";
                 }
 
-                cfg_var.add(varname, var_type, parameterized_value, array);
+                variable::config_data.add_var_mult(varname, var_type, array);
               }
               else
               {
@@ -1037,13 +1073,13 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                   } while((token = get_token(0, " ,\n")));
                   var_init << "}";
 
-                  cfg_var.add(varname, var_type, parameterized_value, array);
+                  variable::config_data.add_var_mult(varname, var_type, array);
                 }
                 else
                 {
                   var_init << " = " << init_value_num;
 
-                  cfg_var.add(varname, var_type, single_value, 0);
+                  variable::config_data.add_var_single(varname, var_type);
                 }
               }
               var_init << ";";
