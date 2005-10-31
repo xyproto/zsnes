@@ -306,8 +306,8 @@ str_array memsets;
 namespace variable
 {
   enum ctype { NT, UC, US, UD, SC, SS, SD, LT };
-  
-  static struct 
+
+  static struct
   {
     const char *CTypeSpace;
     const char *CTypeUnderscore;
@@ -322,7 +322,7 @@ namespace variable
               { "short", "short", 'd', true },
               { "int", "int", 'd', true }
              };
-             
+
   ctype GetCType(const char *str)
   {
     int i = NT;
@@ -331,15 +331,15 @@ namespace variable
       if (!strcmp(info[i].CTypeSpace, str)) { break; }
     }
     i %= LT;
-    
+
     if (i == NT)
     {
       cerr << "Invalid C type \"" << str << "\" when parsing line " << current_location.line_number << "." << endl;
     }
-    
+
     return((ctype)i);
   }
-             
+
   enum storage_format { none, single, quoted, mult, mult_packed };
 
   struct config_data_element
@@ -349,12 +349,12 @@ namespace variable
     ctype type;
     size_t length;
     string comment;
-    
+
     bool operator==(const string& name) const { return(this->name == name); }
   };
 
   typedef vector<config_data_element> config_data_array;
-  
+
   static class
   {
     private:
@@ -369,43 +369,43 @@ namespace variable
       }
       return(false);
     }
-        
+
     public:
     void add_comment(string& comment)
     {
       config_data_element new_element = { "", none, NT, 0, comment };
       data_array.push_back(new_element);
     }
-    
+
     void add_var_single(string& name, ctype type, string comment = "")
     {
       if (!duplicate_name(name))
       {
         config_data_element new_element = { name, single, type, 0, comment };
-        data_array.push_back(new_element);      
+        data_array.push_back(new_element);
       }
     }
     void add_var_single(string& name, const char *type, string comment = "")
     {
       add_var_single(name, GetCType(type), comment);
     }
-    
+
     void add_var_quoted(string& name, string comment = "")
     {
       if (!duplicate_name(name))
       {
         config_data_element new_element = { name, quoted, NT, 0, comment };
-        data_array.push_back(new_element);      
-      }    
+        data_array.push_back(new_element);
+      }
     }
-    
+
     void add_var_mult(string& name, ctype type, size_t length, string comment = "")
     {
       if (!duplicate_name(name))
       {
         config_data_element new_element = { name, mult, type, length, comment };
-        data_array.push_back(new_element);      
-      }        
+        data_array.push_back(new_element);
+      }
     }
     void add_var_mult(string& name, const char *type, size_t length, string comment = "")
     {
@@ -423,7 +423,7 @@ namespace variable
       }
       return(false);
     }
-        
+
     config_data_array::iterator begin() { return(data_array.begin()); }
     config_data_array::iterator end() { return(data_array.end()); }
   } config_data;
@@ -779,7 +779,7 @@ void output_read_var(ostream& c_stream)
            << "      continue;\n"
            << "    }\n"
            << "\n";
-  for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)           
+  for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)
   {
     c_stream << "    if (!strcmp(var, \"" + i->name + "\")) { ";
     if (i->format == variable::single)
@@ -865,7 +865,7 @@ void handle_directive(char *instruction, char *label)
     {
       current_location.error("Could not get ifndef label");
     }
-  }  
+  }
   else if (!strcasecmp(instruction, "else"))
   {
     if (label)
