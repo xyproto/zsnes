@@ -2,6 +2,7 @@
 # Run 'scons' in this directory to build.
 # Run 'scons -c' in this directory to cleanup.
 
+import os
 env = Environment ()
 platform = env['PLATFORM']
 
@@ -10,13 +11,16 @@ parsegen_tool = env.Program(target= 'parsegen', source = 'parsegen.cpp')
 def parsegen_emitter(target,source,env):
 	env.Depends(target,parsegen_tool)
 	return (target,source)
-
+	
 if platform == 'posix':
-	psrbld = Builder(action ='./parsegen -D__UNIXSDL__ cfgparse.c',
+	os.system('rm cfgparse.c version.o')
+	print 'cfgparse.c and version.o removed'
+	psrbld = Builder(action ='./parsegen -D__UNIXSDL__ $TARGET $SOURCE',
 		emitter = parsegen_emitter,
 		suffix = '.c', src_suffix = '.psr')
 
 env['BUILDERS']['PARSEGEN'] = psrbld	
+env.PARSEGEN('cfgparse.c', 'cfgparse.psr')
 
 objfix_tool = env.Program(target= 'objfix.exe', source= 'objfix.c')
 
@@ -48,6 +52,7 @@ chipssrc = Split('''
 	chips/sfxproc.asm
 	chips/st10proc.asm
 ''')
+#ztcp is no longer used
 netsrc = Split('''
 	net/ztcp.c
 ''')
@@ -69,7 +74,6 @@ cpusrc = Split('''
 dossrc = Split('''
 	dos/debug.asm
 	dos/joy.asm
-	dos/modemrtn.asm
 	dos/vesa2.asm
 	dos/initvid.asm
 	dos/sw.asm
@@ -123,14 +127,14 @@ jmasrc = Split('''
 	jma/crc32.cpp
 	jma/iiostrm.cpp
 	jma/inbyte.cpp
+	jma/zsnesjma.cpp
 	jma/jma.cpp
 	jma/lzma.cpp
 	jma/lzmadec.cpp
 	jma/winout.cpp
-	jma/jma.cpp
 ''')
 basesrc = Split('''
-	cfgparse.psr
+	cfgparse.c
 	cfgload.c
 	endmem.asm
 	init.asm
@@ -150,7 +154,6 @@ linuxsrc = Split('''
 	linux/sdlintrf.asm
 	linux/sdllink.c
 	linux/sw_draw.c
-	linux/zipxw.c
 	linux/zfilew.c
 ''')
 winsrc = Split('''
@@ -194,15 +197,14 @@ env = conf.Finish ()
 
 # Perform any platform-specific initialization
 if platform == 'posix':
-	src = chipssrc + netsrc + cpusrc + dossrc + effectssrc + guisrc + videosrc + zipsrc + jmasrc + linuxsrc
+	src = chipssrc  + cpusrc + dossrc + effectssrc + guisrc + videosrc + zipsrc + jmasrc + linuxsrc + basesrc
 	env.Append (CCFLAGS = '-D__UNIXSDL__')
 	env.Append (ASFLAGS = '-DELF -D__UNIXSDL__')
 	env.Append (CCFLAGS = '-I.')
 	env.Append (CCFLAGS = '-I/usr/include/SDL')
-	
-	#Build ZSNESL
+
+	#Build ZSNES
 	env.Program('zsnes',src)
-	Exit(0)
 
 if platform == 'win32':
 	if env['CC'] == 'cl':
@@ -293,7 +295,7 @@ if platform == 'win32':
 
 			env.Append(CCFLAGS=Split('/EHsc /J /W3 /Gd'))
 			env.Append(CPPDEFINES=Split('WIN32 _WINDOWS'))
-		src = chipssrc + netsrc + cpusrc + dossrc + effectssrc + guisrc + videosrc + zipsrc + jmasrc + winsrc
+		src = chipssrc + cpusrc + dossrc + effectssrc + guisrc + videosrc + zipsrc + jmasrc + winsrc
 		env.Append (CCFLAGS = '-D__WIN32__')
 		env.Append (ASFLAGS = '-f win32')
 		
@@ -310,5 +312,3 @@ if platform == 'win32':
 		
 		#Build ZSNESW
 		env.Program('zsnesw.exe',src)
-		Exit(0)
-
