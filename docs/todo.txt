@@ -19,7 +19,7 @@ Compatibility
 - Game not working - Guikuden 1, Cu-On-Pa (and loads more)
 - Graphics Glitches - Killer Instinct (black background), FF3 (Range Time Over
       and other sprite trouble), Metal Combat (OBC-1), Tactic Ogre (Menus), Energy
-      Breaker (mode7 world map), Super Aleste (offset incorrect in stage 4),
+      Breaker (mode7 world map), Super Aleste (incorrect opt in stage 5),
       Top Gear 3000 (DSP-4), lots of others...
 - Special Chips - DSP1 (95% done), DSP3 (50% done), DSP4 (90% done)
       SA-1 (95% done), SPC7110 (Needs some core fixes and decompression)
