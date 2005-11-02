@@ -6,6 +6,9 @@ g++ -Wall -O3 -o fileutil.o -c fileutil.cpp
 g++ -Wall -O3 -o strutil.o -c strutil.cpp
 
 
+Architecture detector:
+gcc -Wall -O3 -m32 -o archopt.exe archopt.c
+
 Cut Redundant ASM Typecasts:
 g++ -Wall -O3 -o cutrtype.exe cutrtype.cpp fileutil.o strutil.o
 

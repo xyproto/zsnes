@@ -115,7 +115,10 @@ ${PSR}: parsegen.cpp
 ALL:
 	rm -f version.o
 
-tools: cutrtype extraext minwhite nreplace sec-test srccount
+tools: archopt cutrtype extraext minwhite nreplace sec-test srccount
+
+archopt:
+	@CC@ @CFLAGS@ -m32 -o ${TOOLSDIR}/archopt ${TOOLSDIR}/archopt.c
 
 cutrtype: ${TOOLSOBJ}
 	@CXX@ @CXXFLAGS@ -o ${TOOLSDIR}/cutrtype ${TOOLSDIR}/cutrtype.cpp ${TOOLSOBJ}

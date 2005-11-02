@@ -132,7 +132,10 @@ else
     NFLAGS="$NFLAGS -O1"
   fi
 
+  CFLAGSBAK="$CFLAGS"
+  CFLAGS="$CFLAGS -m32" dnl 64 bit cpus must use that for the arch detector
   AM_ARCH_DETECT()
+  CFLAGS="$CFLAGSBAK"
 
   AC_MSG_CHECKING(which cpu architecture to optimize for)
   if test x$ARCH_INFO = x ; then

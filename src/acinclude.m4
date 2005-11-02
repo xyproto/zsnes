@@ -424,7 +424,7 @@ if test x$enable_cpucheck != xno; then
           #if __GNUC__ > 2
           if (strstr(flags, " 3dnow "))
           {
-            if (strstr(flags, " 3dnowext ")  && (atoi(cpu_family) > 5))
+            if (strstr(flags, " 3dnowext ") && (atoi(cpu_family) > 5))
             {
               #if __GNUC__ > 3 || __GNUC_MINOR__ > 0
               if (strstr(flags, " sse "))
@@ -512,27 +512,20 @@ if test x$enable_cpucheck != xno; then
         }
       }
       #if __GNUC__ > 2
-      else if (strstr(model_name, "VIA"))
+      #if __GNUC__ > 3 || __GNUC_MINOR__ > 2
+      else if (!strcmp(vendor_id, "CentaurHauls") && strstr(flags, " mmx "))
       {
-        if (strstr(flags, " mmx "))
+        if (strstr(flags, " 3dnow "))
         {
-          #if __GNUC__ > 3 || __GNUC_MINOR__ > 2
-          if (strstr(flags, " 3dnow ")) { cpu = "c3"; }
-          #if __GNUC__ > 3 || __GNUC_MINOR__ > 3
-          else if (strstr(flags, " sse ")) { cpu = "c3-2"; }
-          #endif
-          #endif
+          cpu = (atoi(cpu_family) > 5) ? "c3" : "winchip2";
         }
-      }
-      else if (strstr(model_name, "WinChip"))
-      {
-        #if __GNUC__ > 3 || __GNUC_MINOR__ > 2
-        if (strstr(flags, " mmx "))
-        {
-          cpu = (strstr(flags, " 3dnow ")) ? "winchip2" : "winchip-c6";
-        }
+        #if __GNUC__ > 3 || __GNUC_MINOR__ > 3
+        else if (strstr(flags, " sse ")) { cpu = "c3-2"; }
         #endif
+
+        if (!cpu) { cpu = "winchip-c6"; }
       }
+      #endif
       #endif
 
       if (!cpu)
