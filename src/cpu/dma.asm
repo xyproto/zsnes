@@ -21,9 +21,8 @@
 %include "macros.mac"
 
 EXTSYM memtabler8,regptw,snesmap2,snesmmap,memtablew8,regptr,memtabler16
-EXTSYM dmadata,hdmatype,nexthdma,resolutn
-EXTSYM curhdma,curypos,disablehdma,hdmadata,hdmadelay,hdmastartsc,hdmarestart
-EXTSYM nohdmaframe
+EXTSYM dmadata,hdmatype,nexthdma,resolutn,curhdma,curypos,disablehdma,hdmadata
+EXTSYM hdmadelay,hdmarestart,nohdmaframe
 
 ;*******************************************************
 ; Transfer DMA                     Inits & Transfers DMA
