@@ -22,7 +22,8 @@
 
 EXTSYM memtabler8,regptw,snesmap2,snesmmap,memtablew8,regptr,memtabler16
 EXTSYM dmadata,hdmatype,nexthdma,resolutn
-EXTSYM curhdma,curypos,disablehdma,hdmadata,hdmadelay
+EXTSYM curhdma,curypos,disablehdma,hdmadata,hdmadelay,hdmastartsc,hdmarestart
+EXTSYM nohdmaframe
 
 ;*******************************************************
 ; Transfer DMA                     Inits & Transfers DMA
@@ -778,23 +779,16 @@ section .data
            dw 0,1,2,3
 .addrnumt  db 1,2,2,4,4,4,4,4
 
-section .bss
-
-NEWSYM hdmastartsc, resb 1
-NEWSYM hdmarestart, resb 1
-
 section .text
 
 NEWSYM reg420Cw
-
     mov [curhdma],al
     mov bx,[resolutn]
     cmp word[curypos],bx
     jae near .nohdma
+    mov al,[curhdma]
     cmp byte[disablehdma],0
     jne near .nohdma
-;    jmp starthdma
-    mov al,[curhdma]
     mov [nexthdma],al
     cmp al,0
     je near .nohdma
@@ -859,8 +853,6 @@ NEWSYM reg420Cw
     jz .notransh
     call setuphdma
 .notransh
-    mov bl,1
-    mov [hdmadelay],bl
     pop edx
     pop ecx
     pop edi
@@ -869,6 +861,11 @@ NEWSYM reg420Cw
 ;    call exechdma
 ;    call exechdma
 .nohdma
+    cmp byte[nohdmaframe],1
+    jne .notframe
+    inc byte[hdmadelay]
+.notframe
+
     mov byte[hdmarestart],0
     ret
 

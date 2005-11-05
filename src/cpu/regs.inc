@@ -406,9 +406,12 @@ NEWSYM poamaddrs, dw 0
 NEWSYM ioportval, db 255
 NEWSYM iohvlatch, db 0
 NEWSYM ppustatus, db 0
+NEWSYM hdmastartsc, db 0
+NEWSYM hdmarestart, db 0
+NEWSYM hdmadelay, db 0
+NEWSYM nohdmaframe, db 0           ; no hdma for current frame
 
-
-NEWSYM tempdat, times 477 db 0     ; expandable area
+NEWSYM tempdat, times 474 db 0     ; expandable area
 
 num2writeppureg equ $-sndrot
 ; pharos equ hack *sigh*
@@ -479,6 +482,10 @@ NEWSYM ClearRegs
     mov word[bg3objptr],0
     mov word[bg4objptr],0
     mov byte[ioportval],0FFh
+    mov byte[hdmastartsc],0
+    mov byte[hdmarestart],0
+    mov byte[nohdmaframe],0
+    mov byte[hdmadelay],0
     ret
 
 reg2100r:

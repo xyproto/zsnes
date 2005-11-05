@@ -996,7 +996,6 @@ SECTION .data
 NEWSYM disablehdma,    db 0
 NEWSYM disableeffects, db 0
 NEWSYM hdmaearlstart,  db 0
-NEWSYM hdmadelay,      db 0
 NEWSYM disable65816sh, db 0
 NEWSYM disablespcclr,  db 0
 NEWSYM virqnodisable,  db 0

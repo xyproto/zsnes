@@ -24,7 +24,7 @@ EXTSYM initsfxregsw,reg420Bw,reg420Cw,regptw,initSA1regsw,SDD1Reset
 EXTSYM SPC7110Reset,RTCReset2,debstop,NextLineCache,vidmemch2,vidmemch4
 EXTSYM vidmemch8,vrama,nmirept,sndwrit,SPCRAM,HIRQCycNext,HIRQNextExe,HIRQSkip
 EXTSYM cycpb268,cycpb358,cycpbl,cycpblt,opexec268,opexec268cph,opexec358
-EXTSYM opexec358cph,hdmarestart,printhex8
+EXTSYM opexec358cph,printhex8
 
 SECTION .bss
 NEWSYM testgfxv1, resb 1
@@ -1675,10 +1675,17 @@ reg43x9w:
 
 ; Number of lines for HDMA transfer
 reg43XAw:
+    mov byte[nohdmaframe],0
     xor ebx,ebx
     mov bx,cx
     sub bx,4300h
     mov [dmadata+ebx],al
+    mov bx,[resolutn]
+    cmp word[curypos],bx
+    jb .nodma
+    mov byte[nohdmaframe],1
+    inc byte[hdmadelay]
+.nodma
     ret
 
 regINVALIDw:     ; Invalid Register

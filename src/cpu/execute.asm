@@ -1553,6 +1553,9 @@ NEWSYM cpuover
     mov ax,[resolutn]
     cmp word[curypos],ax
     jnb .nodrawline
+    cmp byte[hdmadelay],1
+    jne .virqstuff
+.virqstuff
     cmp byte[hdmadelay],0
     je .dohdma2
     dec byte[hdmadelay]
