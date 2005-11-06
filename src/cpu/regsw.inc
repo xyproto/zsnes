@@ -635,93 +635,59 @@ reg210Cw:
     mov [bg4objptr],bx
     ret
 
+section .data
+NEWSYM bgscrolPrev, db 0
+
+section .text
+%macro UpdateScrollReg 1
+    mov bh,al
+    mov bl,[bgscrolPrev]
+    mov [bgscrolPrev],al
+    shl ebx,13
+    mov bh,[%1+1]
+    shl bh,5
+    shr ebx,13
+    mov [%1],bx
+%endmacro
+
 ; BG1 horizontal scroll register
 reg210Dw:
-    xor ebx,ebx
-    mov [bg1scrolx],al
-    shl word[bg1scrolx],8
-    mov bl,[bgscroltemp]
-    add word[bg1scrolx],bx
-    mov [bgscroltemp],al
+    UpdateScrollReg bg1scrolx
     ret
 
 ; BG1 vertical scroll register
 reg210Ew:
-    xor ebx,ebx
-    mov [bg1scroly],al
-    shl word[bg1scroly],8
-    mov bl,[bgscroltemp]
-    add word[bg1scroly],bx
-    mov [bgscroltemp],al
+    UpdateScrollReg bg1scroly
     ret
-
-SECTION .bss
-bgscroltemp resb 1
-SECTION .text
 
 ; BG2 horizontal scroll register
 reg210Fw:
-    xor ebx,ebx
-    mov [bg2scrolx],al
-    shl word[bg2scrolx],8
-    mov bl,[bgscroltemp]
-    add word[bg2scrolx],bx
-    mov [bgscroltemp],al
+    UpdateScrollReg bg2scrolx
     ret
 
 ; BG2 vertical scroll register
 reg2110w:
-    xor ebx,ebx
-    mov [bg2scroly],al
-    shl word[bg2scroly],8
-    mov bl,[bgscroltemp]
-    add word[bg2scroly],bx
-    mov [bgscroltemp],al
+    UpdateScrollReg bg2scroly
     ret
 
 ; BG3 horizontal scroll register
 reg2111w:
-    xor ebx,ebx
-    mov [bg3scrolx],al
-    shl word[bg3scrolx],8
-    mov bl,[bgscroltemp]
-    add word[bg3scrolx],bx
-    mov [bgscroltemp],al
+    UpdateScrollReg bg3scrolx
     ret
-
-section .data
-NEWSYM latchbg3, db 0
-
-section .text
 
 ; BG3 vertical scroll register
 reg2112w:
-    xor ebx,ebx
-    mov [bg3scroly],al
-    shl word[bg3scroly],8
-    mov bl,[bgscroltemp]
-    add word[bg3scroly],bx
-    mov [bgscroltemp],al
+    UpdateScrollReg bg3scroly
     ret
 
 ; BG4 horizontal scroll register
 reg2113w:
-    xor ebx,ebx
-    mov [bg4scrolx],al
-    shl word[bg4scrolx],8
-    mov bl,[bgscroltemp]
-    add word[bg4scrolx],bx
-    mov [bgscroltemp],al
+    UpdateScrollReg bg4scrolx
     ret
 
 ; BG4 vertical scroll register
 reg2114w:
-    xor ebx,ebx
-    mov [bg4scroly],al
-    shl word[bg4scroly],8
-    mov bl,[bgscroltemp]
-    add word[bg4scroly],bx
-    mov [bgscroltemp],al
+    UpdateScrollReg bg4scroly
     ret
 
 ; Video port control
