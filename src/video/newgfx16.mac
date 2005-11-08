@@ -3140,7 +3140,7 @@ EXTSYM drawmode7ngextbg216b,osm2dis
     shl edx,1
     add ax,dx
     mov dx,[bg3scrolx]
-    test dx,8000h
+    test dx,1000h
     jz .nooma16x16
     and dx,0F000h
     shr dx,5
@@ -3312,7 +3312,7 @@ EXTSYM drawmode7ngextbg216b,osm2dis
     shl edx,1
     add ax,dx
     mov dx,[bg3scrolx]
-    test dx,8000h
+    test dx,1000h
     jz .nooma
     and dx,0F000h
     shr dx,5
@@ -3717,7 +3717,7 @@ EXTSYM drawmode7ngextbg216b,osm2dis
     shl edx,1
     add ax,dx
     mov dx,[bg3scrolx]
-    test dx,8000h
+    test dx,1000h
     jz .nooma
     and dx,0F000h
     shr dx,5
