@@ -77,9 +77,9 @@ NEWSYM pl4Bk,     dd 0   ; 4B = END
 NEWSYM pl4Rk,     dd 0   ; 4R = PAGE DOWN
 NEWSYM TimeChecker,  db 0   ; Future Reserved
 GUISoundBuffer db 1 ; Sound Buffer Disabled
-prevloadnames times 16*10 db 32
-prevloaddname times 128*10 db 0
-prevloadfname times 16*10 db 32
+prevloadnames times 160 db 32
+prevloaddname packed 1280 db 0
+prevloadfname times 160 db 32
 prevlfreeze db 0
 GUIsmallscreenon db 0
 GUIScreenScale db 0
@@ -179,8 +179,8 @@ NEWSYM SPCDisable, db 0
 NEWSYM RaisePitch, db 0
 
 prevloadl db 0
-prevloaddnamel times 512*10 db 0
-prevloadfnamel times 512*10 db 0
+prevloaddnamel packed 5120 db 0
+prevloadfnamel packed 5120 db 0
 
 %ifdef __WIN32__
 NEWSYM PrevWinMode, db 2
