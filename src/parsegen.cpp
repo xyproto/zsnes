@@ -86,6 +86,7 @@ char *find_next_match(char *str, char match_char)
     if (*str == match_char)
     {
       pos = str;
+      break;
     }
     if (*str == '\\')
     {
@@ -434,6 +435,15 @@ namespace variable
       add_var_mult(name, GetCType(type), length, comment);
     }
 
+    void add_var_packed(string& name, size_t length, string comment = "")
+    {
+      if (!duplicate_name(name))
+      {
+        config_data_element new_element = { name, mult_packed, NT, length, comment };
+        data_array.push_back(new_element);
+      }
+    }
+
     bool ctype_mult_used(ctype type)
     {
       for (config_data_array::iterator i = data_array.begin(); i != data_array.end(); i++)
@@ -507,6 +517,7 @@ void output_parser_start(ostream& c_stream)
            << "\n"
            << "#define LINE_LENGTH " << LINE_LENGTH << "\n"
            << "static char line[LINE_LENGTH];\n"
+           << "static char packed[LINE_LENGTH];\n"
            << "\n"
            << "\n"
            << "static char *encode_string(const char *str)\n"
@@ -562,6 +573,7 @@ void output_parser_start(ostream& c_stream)
            << "    if (*str == match_char)\n"
            << "    {\n"
            << "      pos = str;\n"
+           << "      break;\n"
            << "    }\n"
            << "    if (*str == '\\\\')\n"
            << "    {\n"
@@ -601,6 +613,128 @@ void output_parser_start(ostream& c_stream)
            << "    str++;\n"
            << "  }\n"
            << "  return(pos);  \n"
+           << "}\n"
+           << "\n"
+           << "char *get_token(char *str, char *delim)\n"
+           << "{\n"
+           << "  static char *pos = 0;\n"
+           << "  char *token = 0;\n"
+           << "\n"
+           << "  if (str) //Start a new string?\n"
+           << "  {\n"
+           << "    pos = str;\n"
+           << "  }\n"
+           << "\n"
+           << "  if (pos)\n"
+           << "  {\n"
+           << "    //Skip delimiters\n"
+           << "    while (*pos && strchr(delim, *pos))\n"
+           << "    {\n"
+           << "      pos++;\n"
+           << "    }\n"
+           << "    if (*pos)\n"
+           << "    {\n"
+           << "      token = pos;\n"
+           << "\n"
+           << "      //Skip non-delimiters\n"
+           << "      while (*pos && !strchr(delim, *pos))\n"
+           << "      {\n"
+           << "        //Skip quoted characters\n"
+           << "        if ((*pos == '\\\"') || (*pos == '\\''))\n"
+           << "        {\n"
+           << "          char *match_pos = 0;\n"
+           << "          if ((match_pos = find_next_match(pos+1, *pos)))\n"
+           << "          {\n"
+           << "            pos = match_pos;\n"
+           << "          }\n"
+           << "        }\n"
+           << "        pos++;\n"
+           << "      }\n"
+           << "      if (*pos)\n"
+           << "      {\n"
+           << "        *pos++ = '\\0';\n"
+           << "      }\n"
+           << "    }\n"
+           << "  }\n"
+           << "  return(token);\n"
+           << "}\n"
+           << "\n"
+           << "static char *base94_encode(size_t size)\n"
+           << "{\n"
+           << "  unsigned int i;\n"
+           << "  static char buffer[] = { 0, 0, 0, 0, 0, 0};\n"
+           << "  for (i = 0; i < 5; i++)\n"
+           << "  {\n"
+           << "    buffer[i] = ' ' + (char)(size % 94);\n"
+           << "    size /= 94;\n"
+           << "  }\n"
+           << "  return(buffer);\n"
+           << "}\n"
+           << "\n"
+           << "static size_t base94_decode(const char *buffer)\n"
+           << "{\n"
+           << "  size_t size = 0;\n"
+           << "  int i;\n"
+           << "  for (i = 4; i >= 0; i--)\n"
+           << "  {\n"
+           << "    size *= 94;\n"
+           << "    size += (size_t)(buffer[i]-' ');\n"
+           << "  }\n"
+           << "  return(size);\n"
+           << "}\n"
+           << "\n"
+           << "static char *char_array_pack(const char *str, size_t len)\n"
+           << "{\n"
+           << "  char *p = packed;\n"
+           << "  while (len)\n"
+           << "  {\n"
+           << "    if (*str)\n"
+           << "    {\n"
+           << "      size_t length = strlen(str);\n"
+           << "      strcpy(p, encode_string(str));\n"
+           << "      str += length;\n"
+           << "      len -= length;\n"
+           << "      p += strlen(p);\n"
+           << "    }\n"
+           << "    else\n"
+           << "    {\n"
+           << "      size_t i = 0;\n"
+           << "      while (!*str && len)\n"
+           << "      {\n"
+           << "        i++;\n"
+           << "        str++;\n"
+           << "        len--;\n"
+           << "      }\n"
+           << "\n"
+           << "      sprintf(p, \"0%s\", encode_string(base94_encode(i)));\n"
+           << "      p += strlen(p);\n"
+           << "    }\n"
+           << "    *p++ = '\\\\';\n"
+           << "  }\n"
+           << "  p[-1] = 0;\n"
+           << "  return(packed);\n"
+           << "}\n"
+           << "\n"
+           << "static char *char_array_unpack(char *str)\n"
+           << "{\n"
+           << "  char *p = packed, *token;\n"
+           << "  for (token = get_token(str, \"\\\\\"); token; token = get_token(0, \"\\\\\"))\n"
+           << "  {\n"
+           << "    if (*token == '0')\n"
+           << "    {\n"
+           << "      size_t i = base94_decode(decode_string(token+1));\n"
+           << "      memset(p, 0, i);\n"
+           << "      p += i;\n"
+           << "    }\n"
+           << "    else\n"
+           << "    {\n"
+           << "      char *decoded = decode_string(token);\n"
+           << "      size_t decoded_length = strlen(decoded);\n"
+           << "      memcpy(p, decoded, decoded_length);\n"
+           << "      p += decoded_length;\n"
+           << "    }\n"
+           << "  }\n"
+           << "  return(packed);\n"
            << "}\n"
            << "\n"
            << "\n";
@@ -712,6 +846,10 @@ void output_write_var(ostream& c_stream)
       {
        c_stream << "%s" << config_comment << "\\n\", encode_string(" << i->name << ")";
       }
+      else if (i->format == variable::mult_packed)
+      {
+        c_stream << "%s" << config_comment << "\\n\", char_array_pack((char *)" << i->name << ", " << i->length << ")";
+      }
       c_stream << ");\n";
     }
   }
@@ -803,6 +941,10 @@ void output_read_var(ostream& c_stream)
       {
         c_stream << "*" << i->name << " = 0; "
                  << "strncat(" << i->name << ", decode_string(value), sizeof(" << i->name << ")-1);";
+      }
+      else if (i->format == variable::mult_packed)
+      {
+        c_stream << "memcpy(" << i->name << ", char_array_unpack(value), " << i->length << ");";
       }
       c_stream << " continue; }\n";
     }
@@ -1022,7 +1164,9 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
       if ((token = get_token(0, " ,")))
       {
         size_t array = 0;
-        if (strcasecmp(token, "times") ||
+        bool is_array = !strcasecmp(token, "times");
+        bool is_packed = !strcasecmp(token, "packed");
+        if ((!is_array && !is_packed) ||
             ((token = get_token(0, " ")) && (array = enhanced_atoi(token)) && (token = get_token(0, " "))))
         {
           char *asm_type = token;
@@ -1102,7 +1246,14 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                   var_init << init_value_num << "%d}";
                 }
 
-                variable::config_data.add_var_mult(varname, var_type, array, CONFIG_COMMENT);
+                if (is_array)
+                {
+                  variable::config_data.add_var_mult(varname, var_type, array, CONFIG_COMMENT);
+                }
+                else if (is_packed)
+                {
+                  variable::config_data.add_var_packed(varname, array, CONFIG_COMMENT);
+                }
               }
               else
               {
