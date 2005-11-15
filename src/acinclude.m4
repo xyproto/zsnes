@@ -490,7 +490,7 @@ if test x$enable_cpucheck != xno; then
                 }
                 else
                 {
-                  #if __GNUC__ > 3 || __GNUC_MINOR__ > 2
+                  #if __GNUC__ > 3 || __GNUC_MINOR__ > 3
                   if (strstr(model_name, "Mobile")) { cpu = "pentium4m"; }
                   #endif
 
