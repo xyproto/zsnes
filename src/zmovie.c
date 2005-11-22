@@ -2145,6 +2145,11 @@ static void OldMovieReplay()
         MessageOn = MovieSub_GetDuration();
       }
 
+      if (RawDumpInProgress)
+      {
+        raw_video_write_frame();
+      }
+
       old_movie.frames_replayed++;
     }
     else // anything else is bad - the file isn't a movie.
@@ -2171,6 +2176,12 @@ static void OldMovieReplay()
 
     fclose(old_movie.fp);
     MovieSub_Close();
+
+    if (RawDumpInProgress)
+    {
+      raw_video_close();
+      RawDumpInProgress = false;
+    }
   }
 }
 
@@ -2322,12 +2333,6 @@ void Replay()
     if (zmv_frames_replayed())
     {
       Msgptr = "MOVIE FINISHED.";
-
-      if (RawDumpInProgress)
-      {
-        raw_video_close();
-        RawDumpInProgress = false;
-      }
     }
     else
     {
@@ -2339,6 +2344,13 @@ void Replay()
     zmv_replay_finished();
     zmv_dealloc_rewind_buffer();
     MovieSub_Close();
+
+    if (RawDumpInProgress)
+    {
+      raw_video_close();
+      RawDumpInProgress = false;
+    }
+
     SRAMState = PrevSRAMState;
   }
 }
@@ -2400,6 +2412,11 @@ void MovieStop()
       case MOVIE_OLD_PLAY:
         fclose(old_movie.fp);
         MovieSub_Close();
+        if (RawDumpInProgress)
+        {
+          raw_video_close();
+          RawDumpInProgress = false;
+        }
         MessageOn = 0;
         break;
     }
