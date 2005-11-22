@@ -1846,50 +1846,95 @@ Code for dumping raw video
 #define RAW_FRAME_SIZE (RAW_WIDTH*RAW_HEIGHT)
 #define RAW_PIXEL_FRAME_SIZE (RAW_FRAME_SIZE*RAW_PIXEL_SIZE)
 
+//0 = None; 1 Logging, but not now, 2 Log now
+unsigned char AudioLogging;
+
 struct
 {
-  FILE *fp;
+  FILE *vp;
   unsigned int *frame_buffer;
   size_t frame_index;
+
+  FILE *ap;
+  size_t aud_dsize_pos;
 } raw_vid;
 
 static void raw_video_close()
 {
-  if (raw_vid.fp)
+  if (raw_vid.vp)
   {
     if (raw_vid.frame_buffer)
     {
       if (raw_vid.frame_index)
       {
-        fwrite(raw_vid.frame_buffer, RAW_PIXEL_FRAME_SIZE, raw_vid.frame_index, raw_vid.fp);
+        fwrite(raw_vid.frame_buffer, RAW_PIXEL_FRAME_SIZE, raw_vid.frame_index, raw_vid.vp);
       }
 
       free(raw_vid.frame_buffer);
     }
 
-    fclose(raw_vid.fp);
-    raw_vid.fp = 0;
+    fclose(raw_vid.vp);
+    raw_vid.vp = 0;
+
+    if (raw_vid.ap)
+    {
+      size_t file_size = ftell(raw_vid.ap);                     //Get file size
+      if (!fseek(raw_vid.ap, 4, SEEK_SET))                      //Seek to after RIFF header
+      {
+        fwrite4(file_size - 2, raw_vid.ap);                     //No idea why -2
+      }
+      if (!fseek(raw_vid.ap, raw_vid.aud_dsize_pos, SEEK_SET))  //Seek to where the audio data size goes
+      {
+        //Data size is remainder of file, which is file size, less current position, plus
+        //The 4 bytes needed to hold the data size
+        fwrite4(file_size - (raw_vid.aud_dsize_pos+4), raw_vid.ap);
+      }
+      fclose(raw_vid.ap);
+      raw_vid.ap = 0;
+    }
+    AudioLogging = 0;
   }
 }
 
-static bool raw_video_open(const char *filename)
+static bool raw_video_open(const char *video_filename, const char *audio_filename)
 {
   memset(&raw_vid, 0, sizeof(raw_vid));
-  raw_vid.fp = fopen(filename, "wb");
-  if (!(raw_vid.frame_buffer = (unsigned int *)malloc(RAW_PIXEL_FRAME_SIZE*RAW_BUFFER_FRAMES)))
+  if ((raw_vid.vp = fopen(video_filename, "wb")))
   {
+    if ((raw_vid.frame_buffer = (unsigned int *)malloc(RAW_PIXEL_FRAME_SIZE*RAW_BUFFER_FRAMES)))
+    {
+      if ((raw_vid.ap = fopen(audio_filename, "wb")))
+      {
+        fputs("RIFF", raw_vid.ap);                 //header
+        fwrite4(~0, raw_vid.ap);                   //file size - unknown till file close
+        fputs("WAVEfmt ", raw_vid.ap);             //format
+        fwrite4(0x12, raw_vid.ap);                 //fmt size
+        fwrite2(1, raw_vid.ap);                    //fmt type (PCM)
+        fwrite2(2, raw_vid.ap);                    //channels
+        fwrite4(32000, raw_vid.ap);                //sample rate
+        fwrite4(32000*4, raw_vid.ap);              //byte rate (sample rate*block align)
+        fwrite2(16/8*2, raw_vid.ap);               //block align (SignificantBitsPerSample / 8 * NumChannels)
+        fwrite2(16, raw_vid.ap);                   //Significant bits per sample
+        fwrite2(0, raw_vid.ap);                    //Extra format bytes
+        fputs("data", raw_vid.ap);                 //data header
+        raw_vid.aud_dsize_pos = ftell(raw_vid.ap); //Save current position for use later
+        fwrite4(~0, raw_vid.ap);                   //data size - unknown till file close
+
+        AudioLogging = 1;
+        return(true);
+      }
+    }
     raw_video_close();
-    return(false);
   }
-  return(true);
+  return(false);
 }
 
 #define PIXEL (vidbuffer[(i*288) + j + 16])
 static void raw_video_write_frame()
 {
-  extern unsigned short *vidbuffer;
-  if (raw_vid.fp)
+  if (raw_vid.vp)
   {
+    extern unsigned short *vidbuffer;
     size_t i, j;
     unsigned int *pixel_dest = raw_vid.frame_buffer + raw_vid.frame_index*RAW_FRAME_SIZE;
 
@@ -1908,11 +1953,34 @@ static void raw_video_write_frame()
 
     if (raw_vid.frame_index == RAW_BUFFER_FRAMES)
     {
-      fwrite(raw_vid.frame_buffer, RAW_PIXEL_FRAME_SIZE, RAW_BUFFER_FRAMES, raw_vid.fp);
+      fwrite(raw_vid.frame_buffer, RAW_PIXEL_FRAME_SIZE, RAW_BUFFER_FRAMES, raw_vid.vp);
       raw_vid.frame_index = 0;
     }
   }
+
+  if (raw_vid.ap)
+  {
+    extern int DSPBuffer[1280];
+    extern unsigned int BufferSizeB, BufferSizeW;
+    int i = 0, temp;
+
+    BufferSizeB = 1024;
+    BufferSizeW = BufferSizeB<<1;
+
+    AudioLogging = 2;
+    asm_call(ProcessSoundBuffer);
+    AudioLogging = 1;
+
+    for (i = 0; i < BufferSizeB; i++)
+    {
+      temp = DSPBuffer[i];
+      if (temp > 32767) { temp = 32767; }
+      else if (temp < -32768) { temp =-32768; }
+      fwrite2((short)temp, raw_vid.ap);
+    }
+  }
 }
+
 
 /////////////////////////////////////////////////////////
 
@@ -2474,7 +2542,7 @@ void MovieDumpRaw()
     case MOVIE_OFF:
       MoviePlay();
       SRAMChdir();
-      RawDumpInProgress = raw_video_open("rawvideo.bin");
+      RawDumpInProgress = raw_video_open("rawvideo.bin", "pcmaudio.wav");
       asm_call(ChangetoLOADdir);
       break;
   }

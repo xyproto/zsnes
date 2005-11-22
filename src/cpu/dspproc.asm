@@ -125,7 +125,7 @@ EXTSYM WDSPRegF5,WDSPRegF6,WDSPRegF7,WDSPRegF8,WDSPRegF9,WDSPRegFA,WDSPRegFB
 EXTSYM WDSPRegFC,WDSPRegFD,WDSPRegFE,WDSPRegFF
 EXTSYM spcBuffera,DSPMem,SoundInterpType,NoiseData,Voice0Disable
 EXTSYM cfgecho,Surround,echobuf,ENVDisable,LowPassFilterType
-EXTSYM EMUPause
+EXTSYM EMUPause,AudioLogging
 
 %ifdef __MSDOS__
 EXTSYM SB_alloc_dma,SB_quality_limiter,vibracard
@@ -5227,6 +5227,12 @@ NEWSYM ProcessSoundBuffer
     jne .nopause
     ret
 .nopause
+
+    ;When logging is enabled but don't want logging this pass, return
+    cmp byte[AudioLogging],1
+    jne .rawdump
+    ret
+.rawdump
 
     ; Process the sound :I
 
