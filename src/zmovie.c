@@ -1964,7 +1964,7 @@ static void raw_video_write_frame()
     extern unsigned int BufferSizeB, BufferSizeW;
     int i = 0, temp;
 
-    BufferSizeB = 1024;
+    BufferSizeB = romispal ? 1280 : 1024;
     BufferSizeW = BufferSizeB<<1;
 
     AudioLogging = 2;
