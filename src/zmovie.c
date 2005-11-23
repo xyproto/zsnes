@@ -1993,7 +1993,7 @@ static void raw_video_write_frame()
       temp = DSPBuffer[i];
       if (temp > 32767) { temp = 32767; }
       else if (temp < -32768) { temp =-32768; }
-      fwrite2((short)temp, raw_vid.ap);
+      raw_vid.sample_buffer[raw_vid.sample_index] = temp;
 
       raw_vid.sample_index++;
 
