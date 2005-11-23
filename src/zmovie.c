@@ -47,6 +47,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define mkdir(path) mkdir(path, (S_IRWXU|S_IRWXG|S_IRWXO)) //0777
 #endif
 
+#ifdef __GNUC__
+typedef unsigned long long uint64;
+#else //MSVC
+typedef unsigned __int64 uint64;
+#endif
+
 extern unsigned int versionNumber, CRC32, cur_zst_size, MsgCount, MessageOn;
 extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
 extern unsigned char pl1contrl, pl2contrl, pl3contrl, pl4contrl, pl5contrl;
@@ -1847,6 +1853,15 @@ Code for dumping raw video
 #define RAW_FRAME_SIZE (RAW_WIDTH*RAW_HEIGHT)
 #define RAW_PIXEL_FRAME_SIZE (RAW_FRAME_SIZE*RAW_PIXEL_SIZE)
 
+//NTSC FPS is 59.9487437186 in AVI that's a fraction of 59649/995
+//FPS = 64000 / Samples per Frame
+
+//These two numbers help with calculating how many samples are needed per frame
+//59.9487437186 = SAMPLE_NTSC_HI*32000/SAMPLE_NTSC_LO *2
+#define SAMPLE_NTSC_HI 31840000ULL
+#define SAMPLE_NTSC_LO 59649ULL
+
+
 //0 = None; 1 Logging, but not now, 2 Log now
 unsigned char AudioLogging;
 
@@ -1859,7 +1874,12 @@ struct
   FILE *ap;
   unsigned short *sample_buffer;
   size_t sample_index;
+
   size_t aud_dsize_pos;
+  //These next three are only used for NTSC videos to keep sample rate correct
+  uint64 sample_ntsc_hi;
+  uint64 sample_ntsc_lo;
+  uint64 sample_ntsc_balance;
 } raw_vid;
 
 static void raw_video_close()
@@ -1936,6 +1956,13 @@ static bool raw_video_open(const char *video_filename, const char *audio_filenam
           raw_vid.aud_dsize_pos = ftell(raw_vid.ap); //Save current position for use later
           fwrite4(~0, raw_vid.ap);                   //data size - unknown till file close
 
+          if (!romispal)
+          {
+            raw_vid.sample_ntsc_hi = SAMPLE_NTSC_HI;
+            raw_vid.sample_ntsc_lo = SAMPLE_NTSC_LO;
+            raw_vid.sample_ntsc_balance = SAMPLE_NTSC_HI;
+          }
+
           AudioLogging = 1;
           return(true);
         }
@@ -1945,6 +1972,9 @@ static bool raw_video_open(const char *video_filename, const char *audio_filenam
   }
   return(false);
 }
+
+//Used by raw videos for calculating sample rate in NTSC mode
+//Code by Bisqwit
 
 #define PIXEL (vidbuffer[(i*288) + j + 16])
 static void raw_video_write_frame()
@@ -1981,7 +2011,18 @@ static void raw_video_write_frame()
     extern unsigned int BufferSizeB, BufferSizeW;
     int i = 0, temp;
 
-    BufferSizeB = romispal ? 1280 : 1068;
+    if (romispal)
+    {
+      BufferSizeB = 1280;
+    }
+    else
+    {
+      //Thanks Bisqwit for this algorithm
+      BufferSizeB = (raw_vid.sample_ntsc_balance/raw_vid.sample_ntsc_lo) << 1;
+      raw_vid.sample_ntsc_balance %= raw_vid.sample_ntsc_lo;
+      raw_vid.sample_ntsc_balance += raw_vid.sample_ntsc_hi;
+      printf("Frame %u: %u samples\n", raw_vid.frame_index, BufferSizeB);
+    }
     BufferSizeW = BufferSizeB<<1;
 
     AudioLogging = 2;
