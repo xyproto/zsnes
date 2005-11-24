@@ -1853,11 +1853,13 @@ Code for dumping raw video
 #define RAW_FRAME_SIZE (RAW_WIDTH*RAW_HEIGHT)
 #define RAW_PIXEL_FRAME_SIZE (RAW_FRAME_SIZE*RAW_PIXEL_SIZE)
 
-//NTSC FPS is 59.9487437186 in AVI that's a fraction of 59649/995
+//NTSC FPS is  59.948743718592964824120603015060 in AVI that's a fraction of 59649/995
+//which equals 59.948743718592964824120603015075, so videos should not desync for several millinium
+
 //FPS = 64000 / Samples per Frame
 
 //These two numbers help with calculating how many samples are needed per frame
-//59.9487437186 = SAMPLE_NTSC_HI*32000/SAMPLE_NTSC_LO *2
+//59.948743718592964824120603015060 = SAMPLE_NTSC_HI*32000/SAMPLE_NTSC_LO *2
 #define SAMPLE_NTSC_HI 31840000ULL
 #define SAMPLE_NTSC_LO 59649ULL
 
