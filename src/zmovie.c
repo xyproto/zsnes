@@ -2023,7 +2023,7 @@ static void raw_video_write_frame()
       BufferSizeB = (raw_vid.sample_ntsc_balance/raw_vid.sample_ntsc_lo) << 1;
       raw_vid.sample_ntsc_balance %= raw_vid.sample_ntsc_lo;
       raw_vid.sample_ntsc_balance += raw_vid.sample_ntsc_hi;
-      printf("Frame %u: %u samples\n", raw_vid.frame_index, BufferSizeB);
+      //printf("Frame %u: %u samples\n", raw_vid.frame_index, BufferSizeB);
     }
     BufferSizeW = BufferSizeB<<1;
 
