@@ -1074,22 +1074,6 @@ NEWSYM StartSound
     call JoyRead
     ret
 
-NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
-    cmp byte[soundon],0
-    je .nosound
-    cmp byte[DSPDisable],1
-    je .nosound
-    mov dword[BufferSizeB],256
-    mov dword[BufferSizeW],512
-    pushad
-    call ProcessSoundBuffer
-    popad
-
-    ; DSPBuffer should contain the processed buffer in the specified size
-    ; You will have to convert/clip it to 16-bit for actual sound process
-.nosound
-    ret
-
 NEWSYM delay
    ret
 

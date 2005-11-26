@@ -43,6 +43,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define true 1
 #define false 0
 
+#include "../asm_call.h"
+
 
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
@@ -168,7 +170,6 @@ void UpdateSound(void *userdata, Uint8 * stream, int len);
 
 extern int GUI36hzcall(void);
 extern int Game60hzcall(void);
-extern void SoundProcess();
 _int64 copymaskRB = 0x001FF800001FF800LL;
 _int64 copymaskG = 0x0000FC000000FC00LL;
 _int64 copymagic = 0x0008010000080100LL;
@@ -1048,6 +1049,9 @@ void sem_sleep_die(void)
 
 void UpdateVFrame(void)
 {
+  extern unsigned char soundon, DSPDisable;
+  extern unsigned int BufferSizeB, BufferSizeW;
+
   //Quick fix for GUI CPU usage
   if (GUIOn || GUIOn2 || EMUPause) { usleep(6000); }
 
@@ -1055,6 +1059,8 @@ void UpdateVFrame(void)
   Main_Proc();
 
   /* Process sound */
+  BufferSizeB = 256;
+  BufferSizeW = BufferSizeB+BufferSizeB;
 
   /* take care of the things we left behind last time */
   SDL_LockAudio();
@@ -1062,16 +1068,16 @@ void UpdateVFrame(void)
   {
     short *ptr = (short*)&Buffer[Buffer_tail];
 
-    SoundProcess();
+    if (soundon && !DSPDisable) { asm_call(ProcessSoundBuffer); }
 
     if (T36HZEnabled)
     {
-      memset(ptr, 0, 256*sizeof(short));
+      memset(ptr, 0, BufferSizeW);
     }
     else
     {
       int *d = DSPBuffer;
-      int *end_d = DSPBuffer+256;
+      int *end_d = DSPBuffer+BufferSizeB;
       for (; d < end_d; d++, ptr++)
       {
         if (*d > 32767) { *ptr = 32767; }
@@ -1080,8 +1086,8 @@ void UpdateVFrame(void)
       }
     }
 
-    Buffer_fill += 512;
-    Buffer_tail += 512;
+    Buffer_fill += BufferSizeW;
+    Buffer_tail += BufferSizeW;
     if (Buffer_tail >= Buffer_len) { Buffer_tail = 0; }
   }
   SDL_UnlockAudio();
