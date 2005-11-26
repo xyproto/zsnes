@@ -1048,46 +1048,43 @@ void sem_sleep_die(void)
 
 void UpdateVFrame(void)
 {
-	const int SPCSize = 256;
-	int i;
+  //Quick fix for GUI CPU usage
+  if (GUIOn || GUIOn2 || EMUPause) { usleep(6000); }
 
-	//Quick fix for GUI CPU usage
-	if (GUIOn || GUIOn2 || EMUPause) usleep(6000);
+  CheckTimers();
+  Main_Proc();
 
-	CheckTimers();
-	Main_Proc();
+  /* Process sound */
 
-	/* Process sound */
+  /* take care of the things we left behind last time */
+  SDL_LockAudio();
+  while (Buffer_fill < Buffer_len)
+  {
+    short *ptr = (short*)&Buffer[Buffer_tail];
 
-	/* take care of the things we left behind last time */
-	SDL_LockAudio();
-	while (Buffer_fill < Buffer_len) {
-		short *ptr = (short*)&Buffer[Buffer_tail];
+    SoundProcess();
 
-		SoundProcess();
+    if (T36HZEnabled)
+    {
+      memset(ptr, 0, 256*sizeof(short));
+    }
+    else
+    {
+      int *d = DSPBuffer;
+      int *end_d = DSPBuffer+256;
+      for (; d < end_d; d++, ptr++)
+      {
+        if (*d > 32767) { *ptr = 32767; }
+        else if (*d < -32767) { *ptr = -32767; }
+        else { *ptr = *d; }
+      }
+    }
 
-		for (i = 0; i < SPCSize; i++, ptr++)
-		{
-			if (T36HZEnabled)
-			{
-				*ptr = 0;
-			}
-			else
-			{
-				if (DSPBuffer[i] > 32767)
-					*ptr = 32767;
-				else if (DSPBuffer[i] < -32767)
-					*ptr = -32767;
-				else
-					*ptr = DSPBuffer[i];
-			}
-		}
-
-		Buffer_fill += SPCSize * 2;
-		Buffer_tail += SPCSize * 2;
-		if (Buffer_tail >= Buffer_len) Buffer_tail = 0;
-	}
-	SDL_UnlockAudio();
+    Buffer_fill += 512;
+    Buffer_tail += 512;
+    if (Buffer_tail >= Buffer_len) { Buffer_tail = 0; }
+  }
+  SDL_UnlockAudio();
 }
 
 void clearwin()
