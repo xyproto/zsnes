@@ -1080,9 +1080,9 @@ void UpdateVFrame(void)
       int *end_d = DSPBuffer+BufferSizeB;
       for (; d < end_d; d++, ptr++)
       {
-        if (*d > 32767) { *ptr = 32767; }
-        else if (*d < -32767) { *ptr = -32767; }
-        else { *ptr = *d; }
+        if ((unsigned) (*d + 0x8000) <= 0xFFFF) { *ptr = *d; continue; }
+        if (*d > 0x7FFF) { *ptr = 0x7FFF; }
+        else { *d = 0x8000; }
       }
     }
 
