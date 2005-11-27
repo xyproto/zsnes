@@ -2009,6 +2009,7 @@ static void raw_video_write_frame()
 
   if (raw_vid.ap)
   {
+    void ProcessSoundBuffer();
     extern int DSPBuffer[1280];
     extern unsigned int BufferSizeB, BufferSizeW;
     int i = 0, temp;
