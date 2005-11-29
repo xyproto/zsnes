@@ -139,7 +139,7 @@ srccount: ${TOOLSOBJ}
 	@CXX@ @CXXFLAGS@ -o ${TOOLSDIR}/srccount ${TOOLSDIR}/srccount.cpp ${TOOLSDIR}/fileutil.o
 
 cfgload.o: cfgload.c gblhdr.h
-cfgparse.o: cfgparse.psr
+cfgparse.o: cfgparse.psr ${PSR}
 debug.o: debug.c gblhdr.h gblvars.h
 endmem.o: endmem.asm macros.mac
 init.o: init.asm macros.mac

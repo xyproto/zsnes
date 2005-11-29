@@ -148,7 +148,7 @@ CHIPSOBJ=${CHIPDIR}/dsp1emu${OE} ${CHIPDIR}/fxemu2${OE} ${CHIPDIR}/sfxproc${OE}\
 	${CHIPDIR}/sa1proc${OE} ${CHIPDIR}/sa1regs${OE} ${CHIPDIR}/dsp1proc${OE}\
 	${CHIPDIR}/st10proc${OE} ${CHIPDIR}/seta10${OE} ${CHIPDIR}/dsp2proc${OE}\
 	${CHIPDIR}/sdd1emu${OE} ${CHIPDIR}/c4emu${OE} ${CHIPDIR}/dsp4proc${OE}\
-	${CHIPDIR}/dsp4emu${OE}
+	${CHIPDIR}/dsp4emu${OE} ${CHIPDIR}/dsp3proc${OE} ${CHIPDIR}/dsp3emu${OE}
 
 CPUOBJ=${CPUDIR}/dma${OE} ${CPUDIR}/dsp${OE} ${CPUDIR}/dspproc${OE}\
 	${CPUDIR}/execute${OE} ${CPUDIR}/executec${OE} ${CPUDIR}/irq${OE}\
@@ -253,7 +253,7 @@ else
 endif
 
 cfgload${OE}: cfgload.c
-cfgparse${OE}: cfgparse.psr
+cfgparse${OE}: ${PSR} cfgparse.psr
 endmem${OE}: endmem.asm macros.mac
 init${OE}: init.asm macros.mac
 initc${OE}: initc.c asm_call.h ${CPUDIR}/memtable.h ${JMADIR}/zsnesjma.h\
