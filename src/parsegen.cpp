@@ -49,6 +49,14 @@ typedef int ssize_t;
 #define SLASH_STR "/"
 #endif
 
+#ifdef _MSC_VER //MSVC
+#define COMPILE_EXE(exe, c) "cl /nologo /Fe"exe " "c
+#define COMPILE_OBJ(obj, c) "cl /nologo /Fo"obj " "c
+#else
+#define COMPILE_EXE(exe, c) "gcc -o "exe " "c " -s"
+#define COMPILE_OBJ(obj, c) "gcc -o "obj " -c "c
+#endif
+
 #define LINE_LENGTH 2048*10
 char line[LINE_LENGTH];
 
@@ -235,12 +243,7 @@ ssize_t enhanced_atoi(const char *str)
                << "}\n\n";
     out_stream.close();
 
-#ifdef _MSC_VER //MSVC
-    system("cl /nologo /Feeatio.exe eatio.c");
-#else
-    system("gcc -o eatio.exe eatio.c -s");
-#endif
-
+    system(COMPILE_EXE("eatio.exe", "eatio.c"));
     system("."SLASH_STR"eatio.exe");
 
     remove("eatio.c");
@@ -1344,6 +1347,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
 int main(size_t argc, const char **argv)
 {
   const char *cheader_file = 0;
+  bool compile = false;
 
   size_t param_pos = 1;
   for (; param_pos < argc; param_pos++)
@@ -1356,6 +1360,10 @@ int main(size_t argc, const char **argv)
     {
       param_pos++;
       cheader_file = argv[param_pos];
+    }
+    else if (!strcmp(argv[param_pos], "-compile"))
+    {
+      compile = true;
     }
     else
     {
@@ -1383,7 +1391,8 @@ int main(size_t argc, const char **argv)
     return(1);
   }
 
-  const char *psr_file = argv[param_pos+1], *c_file = argv[param_pos];
+  const char *psr_file = argv[param_pos+1], *c_file = compile ? "psrtemp.c" : argv[param_pos];
+  const char *obj_file = compile ? argv[param_pos] : 0;
   int ret_val = 0;
 
   ifstream psr_stream(psr_file);
@@ -1428,6 +1437,15 @@ int main(size_t argc, const char **argv)
     ret_val |= 4;
   }
 
-  return(0);
+  if (!ret_val && compile)
+  {
+    puts(COMPILE_OBJ("psrtemp.obj", "psrtemp.c"));
+    system(COMPILE_OBJ("psrtemp.obj", "psrtemp.c"));
+    remove("psrtemp.c");
+    printf("Renaming psrtemp.obj to %s\n", obj_file);
+    rename("psrtemp.obj", obj_file);
+  }
+
+  return(ret_val);
 }
 
