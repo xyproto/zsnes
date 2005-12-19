@@ -148,7 +148,7 @@ CHIPSOBJ=${CHIPDIR}/dsp1emu${OE} ${CHIPDIR}/fxemu2${OE} ${CHIPDIR}/sfxproc${OE}\
 	${CHIPDIR}/sa1proc${OE} ${CHIPDIR}/sa1regs${OE} ${CHIPDIR}/dsp1proc${OE}\
 	${CHIPDIR}/st10proc${OE} ${CHIPDIR}/seta10${OE} ${CHIPDIR}/dsp2proc${OE}\
 	${CHIPDIR}/sdd1emu${OE} ${CHIPDIR}/c4emu${OE} ${CHIPDIR}/dsp4proc${OE}\
-	${CHIPDIR}/dsp4emu${OE} ${CHIPDIR}/dsp3proc${OE} ${CHIPDIR}/dsp3emu${OE}
+	${CHIPDIR}/dsp4emu${OE}
 
 CPUOBJ=${CPUDIR}/dma${OE} ${CPUDIR}/dsp${OE} ${CPUDIR}/dspproc${OE}\
 	${CPUDIR}/execute${OE} ${CPUDIR}/executec${OE} ${CPUDIR}/irq${OE}\
