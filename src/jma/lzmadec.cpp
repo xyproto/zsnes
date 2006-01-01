@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2005 NSRT Team ( http://nsrt.edgeemu.com )
+Copyright (C) 2005-2006 NSRT Team ( http://nsrt.edgeemu.com )
 Copyright (C) 2002 Andrea Mazzoleni ( http://advancemame.sf.net )
 Copyright (C) 2001-4 Igor Pavlov ( http://www.7-zip.org )
 

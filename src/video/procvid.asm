@@ -1,4 +1,4 @@
-;Copyright (C) 1997-2005 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+;Copyright (C) 1997-2006 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 ;
 ;http://www.zsnes.com
 ;http://sourceforge.net/projects/zsnes
