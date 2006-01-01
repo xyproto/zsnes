@@ -1373,7 +1373,7 @@ int main(size_t argc, const char **argv)
 
   if ((argc-param_pos) != 2)
   {
-    cout << "Config file handler creator by Nach (C) 2005\n"
+    cout << "Config file handler creator by Nach (C) 2005-2006\n"
          << "\n"
          << "Usage:\n"
          << "parsegen [options] <output> <input>\n"
