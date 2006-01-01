@@ -50,23 +50,23 @@ I'd fix that if anyone knows if that parameter defines something I can check
 #define ASM_COMMAND(line) #line"\n\t"
 
 #ifdef __x86_64__
-#define PUSHAD ASM_COMMAND(pushl %eax) \
-               ASM_COMMAND(pushl %ecx) \
-               ASM_COMMAND(pushl %edx) \
-               ASM_COMMAND(pushl %ebx) \
-               ASM_COMMAND(pushl %esp) \
-               ASM_COMMAND(pushl %ebp) \
-               ASM_COMMAND(pushl %esi) \
-               ASM_COMMAND(pushl %edi)
+#define PUSHAD ASM_COMMAND(pushq %rax) \
+               ASM_COMMAND(pushq %rcx) \
+               ASM_COMMAND(pushq %rdx) \
+               ASM_COMMAND(pushq %rbx) \
+               ASM_COMMAND(pushq %rsp) \
+               ASM_COMMAND(pushq %rbp) \
+               ASM_COMMAND(pushq %rsi) \
+               ASM_COMMAND(pushq %rdi)
 
-#define POPAD ASM_COMMAND(popl %edi) \
-              ASM_COMMAND(popl %esi) \
-              ASM_COMMAND(popl %ebp) \
-              ASM_COMMAND(popl %esp) \
-              ASM_COMMAND(popl %ebx) \
-              ASM_COMMAND(popl %edx) \
-              ASM_COMMAND(popl %ecx) \
-              ASM_COMMAND(popl %eax)
+#define POPAD ASM_COMMAND(popq %rdi) \
+              ASM_COMMAND(popq %rsi) \
+              ASM_COMMAND(popq %rbp) \
+              ASM_COMMAND(popq %rsp) \
+              ASM_COMMAND(popq %rbx) \
+              ASM_COMMAND(popq %rdx) \
+              ASM_COMMAND(popq %rcx) \
+              ASM_COMMAND(popq %rax)
 #else
 #define PUSHAD ASM_COMMAND(pushal)
 #define POPAD ASM_COMMAND(popal)
