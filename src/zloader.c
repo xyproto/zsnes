@@ -50,7 +50,7 @@ extern unsigned char Palette0, pl1contrl, pl2contrl, MMXSupport, Force8b, ForceP
                      showallext, autoloadstate, smallscreenon, autoloadmovie, ZMVZClose,
                      ZMVRawDump, HacksDisable;
 
-extern char *STCart2, fname;
+extern char *STCart2, fname[];
 
 void ConvertJoyMap1(), ConvertJoyMap2(), zstart(), makeextension();
 
@@ -121,7 +121,7 @@ static void display_help()
   put_line("  -u      Force PAL timing");
   put_line("  -v #    Select Video Mode :");
 #ifdef __WIN32__
-#define VIDEO_MODE_COUNT 34
+#define VIDEO_MODE_COUNT 37
   put_line("          0 = 256x224   R WIN       1 = 256x224   R FULL");
   put_line("          2 = 512x448   R WIN       3 = 512x448   DR WIN");
   put_line("          4 = 640x480   S WIN       5 = 640x480   DS WIN");
@@ -556,7 +556,7 @@ static void handle_params(int argc, char *argv[])
     }
     else //Param with no - or / prefix
     {
-      char *fvar = &fname;
+      char *fvar = fname;
       fvar[0] = strlen(argv[i]);
       strncpy(&fvar[1],argv[i],127);
       makeextension();
