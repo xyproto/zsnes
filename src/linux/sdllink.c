@@ -393,7 +393,7 @@ int Main_Proc(void)
 				offset = ButtonOffset[event.jbutton.which];
 				offset += event.jbutton.button;
 //				printf("DEBUG button offset: %d\n", offset);
-				if (offset >= (256 + 64)) break;
+				if (offset >= (256 + 128 + 64)) break;
 				pressed[offset] = 0;
 				break;
 			case SDL_QUIT:
