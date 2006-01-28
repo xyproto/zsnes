@@ -535,7 +535,7 @@ void DOScreatenewcfg()
   WRITE_LINE("\r\n; Interpolation (1 = Enable, 0 = Disable) - 640x480x65536 mode only\r\n");
   WRITE_LINE("; This option also Enables EAGLE          - 640x480x256 mode only\r\n");
 #else
-  WRITE_LINE("; Interpolation (1 = Enable, 0 = Disable)\r\n");
+  WRITE_LINE("\r\n; Interpolation (1 = Enable, 0 = Disable)\r\n");
 #endif
   sprintf(buffer, "\r\nInterpolation = %d\r\n\r\n", cfginterp);
   SAVE_LINE(buffer);
