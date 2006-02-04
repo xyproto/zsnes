@@ -1245,7 +1245,7 @@ void ReleaseDirectDraw()
 void DInputError(){
    char message1[256];
 
-   sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx ");
+   sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx\0");
    MessageBox (NULL, message1, "DirectInput Error" , MB_ICONERROR );
 }
 
@@ -1256,7 +1256,7 @@ bool InitInput()
 
    if (FAILED(hr=pDirectInput8Create(hInst,DIRECTINPUT_VERSION,IID_IDirectInput8A,(void **) &DInput,NULL)))
    {
-      sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx ");
+      sprintf(message1,"Error initializing DirectInput\nYou may need to install DirectX 8.0a or higher located at www.microsoft.com/directx\0");
       MessageBox (NULL, message1, "DirectInput Error" , MB_ICONERROR );
 
       switch (hr)
