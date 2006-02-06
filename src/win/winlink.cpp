@@ -1025,7 +1025,7 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
       return DIENUM_CONTINUE;
    }
 
-   if (JoystickInput[CurrentJoy]->SetCooperativeLevel(hMainWindow, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND) != DI_OK)
+   if (JoystickInput[CurrentJoy]->SetCooperativeLevel(hMainWindow, DISCL_EXCLUSIVE | DISCL_BACKGROUND) != DI_OK)
    {
       JoystickInput[CurrentJoy]->Release();
       return DIENUM_CONTINUE;
