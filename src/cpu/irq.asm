@@ -102,7 +102,7 @@ NEWSYM switchtonmi
     mov ax,[nmiv]
     test byte[SfxSCMR],10h
     jz .nosfxnmi
-;    mov ax,0108h
+    mov ax,0108h
 .nosfxnmi
     mov [xpc],ax
     and dl,11110011b
@@ -208,10 +208,10 @@ NEWSYM switchtovirq
     mov [xpb],bl
     xor eax,eax
     mov ax,[irqv]
-;    test byte[SfxSCMR],10h
-;    jz .nosfxnmi
-;    mov ax,010Ch
-;.nosfxnmi
+    test byte[SfxSCMR],10h
+    jz .nosfxnmi
+    mov ax,010Ch
+.nosfxnmi
     mov [xpc],ax
     and dl,11110011b
     or dl,00000100b
@@ -269,10 +269,10 @@ NEWSYM switchtovirqret
     mov [xpb],bl
     xor eax,eax
     mov ax,[irqv]
-;    test byte[SfxSCMR],10h
-;    jz .nosfxnmi
-;    mov ax,010Ch
-;.nosfxnmi
+    test byte[SfxSCMR],10h
+    jz .nosfxnmi
+    mov ax,010Ch
+.nosfxnmi
     mov [xpc],ax
     and dl,11110011b
     or dl,00000100b
@@ -378,10 +378,10 @@ NEWSYM switchtovirqdeb
     mov [xpb],bl
     xor eax,eax
     mov ax,[irqv]
-;    test byte[SfxSCMR],10h
-;    jz .nosfxnmi
-;    mov ax,010Ch
-;.nosfxnmi
+    test byte[SfxSCMR],10h
+    jz .nosfxnmi
+    mov ax,010Ch
+.nosfxnmi
     mov [xpc],ax
     and dl,11110011b
     or dl,00000100b
@@ -487,7 +487,7 @@ NEWSYM switchtonmideb
     mov ax,[nmiv]
     test byte[SfxSCMR],10h
     jz .nosfxnmi
-;    mov ax,0108h
+    mov ax,0108h
 .nosfxnmi
     mov [xpc],ax
     and dl,11110011b
