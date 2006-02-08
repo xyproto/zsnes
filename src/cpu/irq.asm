@@ -102,7 +102,7 @@ NEWSYM switchtonmi
     mov ax,[nmiv]
     test byte[SfxSCMR],10h
     jz .nosfxnmi
-    mov ax,0108h
+;    mov ax,0108h
 .nosfxnmi
     mov [xpc],ax
     and dl,11110011b
