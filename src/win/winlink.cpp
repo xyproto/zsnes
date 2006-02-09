@@ -3137,9 +3137,26 @@ int CheckBatteryPercent()
    return((SysPowerStat.BatteryLifePercent == 255) ? -1 : SysPowerStat.BatteryLifePercent);
 }
 
+extern "C" unsigned int PrevBuildNum;
+
 void DisplayWIPDisclaimer()
 {
-   MessageBox(NULL, "This build of ZSNES is a WORK IN PROGRESS. This means that it is known to contain bugs and certain features\nmay or may not be working correctly. This build is not any representation of final work and is provided AS IS\nfor people to try bleeding edge code.\n\nPlease see http://zsnes.gamehost.com/~pagefault/ for a list of current issues.", "Disclaimer", MB_OK);
+   // This stupid function calculates a build hash based on the build date
+
+   unsigned int CurrentBuildNum = 0;
+   char *BuildWorkBuffer = (char *) malloc(sizeof(__DATE__));
+
+   strcpy(BuildWorkBuffer, __DATE__);
+
+   for (int i = 0; i<strlen(BuildWorkBuffer); i++) CurrentBuildNum += BuildWorkBuffer[i];
+
+   if (CurrentBuildNum != PrevBuildNum)
+   {
+      MessageBox(NULL, "This build of ZSNES is a WORK IN PROGRESS. This means that it is known to contain bugs and certain features\nmay or may not be working correctly. This build is not any representation of final work and is provided AS IS\nfor people to try bleeding edge code.\n\nPlease see http://zsnes.gamehost.com/~pagefault/ for a list of current issues.", "Disclaimer", MB_OK);
+      PrevBuildNum = CurrentBuildNum;
+   }
+
+   free(BuildWorkBuffer);
 }
 
 }
