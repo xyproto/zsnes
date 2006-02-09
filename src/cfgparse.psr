@@ -347,3 +347,4 @@ NEWSYM KeyEmuSpeedDown, dd 0
 NEWSYM AllowUDLR, db 0
 NEWSYM KeyDisplayBatt, dd 0
 NEWSYM PrevBuildNum, dd 0
+NEWSYM PauseFocusChange, db 0
