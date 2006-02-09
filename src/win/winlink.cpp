@@ -2069,7 +2069,7 @@ void initwinvideo(void)
    {
       atexit(ExitFunction);
 
-#ifndef __RELEASE__
+#ifndef __DEVELOPER__
       DisplayWIPDisclaimer();
 #endif
 
