@@ -136,8 +136,8 @@ ifeq (${DEBUG},yes)
 endif
 
 ifeq (${DEV},yes)
-  CFLAGSORIG=-D__DEVELOPER__
-  ASMFLAGSORIG=-D__DEVELOPER__
+  CFLAGSORIG+=-D__DEVELOPER__
+  ASMFLAGSORIG+=-D__DEVELOPER__
 endif
 
 ifeq (${RELEASEGRADE},yes)
