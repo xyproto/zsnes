@@ -1369,8 +1369,9 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
     GUIDisplayCheckboxu 4,11,130,AutoPatch,GUIOptionTextD,12
     GUIDisplayCheckboxu 4,11,140,RomInfo,GUIOptionTextE,15
     GUIDisplayCheckboxu 4,11,150,AllowUDLR,GUIOptionTextF,0
+    GUIDisplayCheckboxu 4,11,160,PauseFocusChange,GUIOptionTextG,13
 %ifdef __WIN32__
-    GUIDisplayCheckboxu 4,11,160,DisableScreenSaver,GUIOptionTextW,1
+    GUIDisplayCheckboxu 4,11,170,DisableScreenSaver,GUIOptionTextW,1
 %endif
     ret
 
@@ -1390,6 +1391,7 @@ GUIOptionTextC db 'USE SMALL MESSAGE TEXT',0
 GUIOptionTextD db 'ENABLE AUTO-PATCH',0
 GUIOptionTextE db 'ENABLE ROMINFO.TXT',0
 GUIOptionTextF db 'ALLOW U+D/L+R',0
+GUIOptionTextG db 'PAUSE EMU IN BACKGROUND',0
 GUIOptionTextW db 'DISABLE SCREENSAVER',0 ; Try to keep as last option, since its Win Only.
 GUIOptionTextX db '-',0
 GUIOptionTextY db '+',0
