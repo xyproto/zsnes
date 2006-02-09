@@ -781,7 +781,9 @@ GUIOptionKeys:
     GUIKeyCheckbox AutoPatch,'P'
     GUIKeyCheckbox RomInfo,'T'
     GUIKeyCheckbox AllowUDLR,'A'
+%ifndef __MSDOS__
     GUIKeyCheckbox PauseFocusChange,'B'
+%endif
 %ifdef __WIN32__
     GUIKeyCheckbox DisableScreenSaver,'I'
 %endif

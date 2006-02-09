@@ -2350,7 +2350,9 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,130,byte[AutoPatch]
     GUIClickCButton 11,140,byte[RomInfo]
     GUIClickCButton 11,150,byte[AllowUDLR]
+%ifndef __MSDOS__
     GUIClickCButton 11,160,byte[PauseFocusChange]
+%endif
 %ifdef __WIN32__
     GUIClickCButtonW 11,170,byte[DisableScreenSaver]
 %endif

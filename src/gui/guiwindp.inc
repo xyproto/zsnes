@@ -1369,7 +1369,9 @@ DisplayGUIOption:       ; Frame Rate/Auto Frame Rate/Max Frame Skip/New Gfx Engi
     GUIDisplayCheckboxu 4,11,130,AutoPatch,GUIOptionTextD,12
     GUIDisplayCheckboxu 4,11,140,RomInfo,GUIOptionTextE,15
     GUIDisplayCheckboxu 4,11,150,AllowUDLR,GUIOptionTextF,0
+%ifndef __MSDOS__
     GUIDisplayCheckboxu 4,11,160,PauseFocusChange,GUIOptionTextG,13
+%endif
 %ifdef __WIN32__
     GUIDisplayCheckboxu 4,11,170,DisableScreenSaver,GUIOptionTextW,1
 %endif
