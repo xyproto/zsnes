@@ -202,6 +202,7 @@ extern "C" {
 int SemaphoreMax = 5;
 void InitSemaphore();
 void ShutdownSemaphore();
+void DisplayWIPDisclaimer();
 void InitDebugger();
 
 void Clear2xSaIBuffer();
@@ -2068,6 +2069,10 @@ void initwinvideo(void)
    {
       atexit(ExitFunction);
 
+#ifndef __RELEASE__
+      DisplayWIPDisclaimer();
+#endif
+
       if (!QueryPerformanceFrequency((LARGE_INTEGER*)&freq)) return;
 
       if (!RegisterWinClass())
@@ -3130,6 +3135,11 @@ int CheckBatteryPercent()
    SYSTEM_POWER_STATUS SysPowerStat;
    GetSystemPowerStatus(&SysPowerStat);
    return((SysPowerStat.BatteryLifePercent == 255) ? -1 : SysPowerStat.BatteryLifePercent);
+}
+
+void DisplayWIPDisclaimer()
+{
+   MessageBox(NULL, "This build of ZSNES is a WORK IN PROGRESS. This means that it is known to contain bugs and certain features\nmay or may not be working correctly. This build is not any representation of final work and is provided AS IS\nfor people to try bleeding edge code.\n\nPlease see http://zsnes.gamehost.com/~pagefault/ for a list of current issues.", "Disclaimer", MB_OK);
 }
 
 }
