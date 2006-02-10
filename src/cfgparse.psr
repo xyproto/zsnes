@@ -348,5 +348,5 @@ NEWSYM AllowUDLR, db 0
 NEWSYM KeyDisplayBatt, dd 0
 NEWSYM PrevBuildNum, dd 0
 NEWSYM PauseFocusChange, db 0
-NEWSYM KeyIncreaseGamma, db 0
-NEWSYM KeyDecreaseGamma, db 0
+NEWSYM KeyIncreaseGamma, dd 0
+NEWSYM KeyDecreaseGamma, dd 0
