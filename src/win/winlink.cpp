@@ -188,7 +188,6 @@ BYTE                    IsActivated=1;
 WORD                    PrevRes=0;
 RECT                    BlitArea;
 BYTE                    AltSurface=0;
-
 extern "C" {
 DWORD                   MouseButton;
 DWORD                   SurfaceX=0;
@@ -344,6 +343,8 @@ void DDrawError(){
 extern "C" BYTE vsyncon;
 extern "C" BYTE KitchenSync;
 extern "C" BYTE TripleBufferWin;
+extern "C" BYTE EMUPaused;
+extern "C" BYTE PauseFocusChange;
 
 void DrawScreen()
 {
@@ -663,6 +664,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          {
             IsActivated = 1;
             if (FirstActivate == 0) initwinvideo();
+            if (PauseFocusChange) EMUPause = 0;
             InputAcquire();
             if (FirstActivate == 1) FirstActivate = 0;
             if (FullScreen == 1) Clear2xSaIBuffer();
@@ -671,6 +673,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          if (LOWORD(wParam) == WA_INACTIVE)
          {
             IsActivated = 0;
+            if (PauseFocusChange) EMUPause = 1;
             InputDeAcquire();
             if (GUIOn || GUIOn2 || EMUPause) SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
          }
