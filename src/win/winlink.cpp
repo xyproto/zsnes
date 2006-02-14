@@ -29,7 +29,6 @@ extern "C" {
    #include <ddraw.h>
    #include <mmsystem.h>
    #include <time.h>
-   #include <zlib.h>
 }
 #include <math.h>
 #include <dsound.h>
@@ -2072,10 +2071,6 @@ void initwinvideo(void)
    {
       atexit(ExitFunction);
 
-#ifndef __DEVELOPER__
-      DisplayWIPDisclaimer();
-#endif
-
       if (!QueryPerformanceFrequency((LARGE_INTEGER*)&freq)) return;
 
       if (!RegisterWinClass())
@@ -3140,29 +3135,20 @@ int CheckBatteryPercent()
    return((SysPowerStat.BatteryLifePercent == 255) ? -1 : SysPowerStat.BatteryLifePercent);
 }
 
+
 extern "C" unsigned int PrevBuildNum;
-extern "C" char *VERSION_STR;
 
 void DisplayWIPDisclaimer()
 {
-  void placedate();
-  void placetime();
-
-   // This stupid function calculates a build hash based on the build date
-
-   unsigned int ver_len = strlen(__DATE__) + strlen(__TIME__) + 15; //+15 because some names are longer than others
-
-   VERSION_STR = (char *)malloc(ver_len);
-   *VERSION_STR = 0;
-   placedate();
-   placetime();
-
-   unsigned int CurrentBuildNum = ~crc32(0, (const unsigned char *)VERSION_STR, ver_len);
-   free(VERSION_STR);
+  unsigned int version_hash();
+  unsigned int CurrentBuildNum = version_hash();
 
    if (CurrentBuildNum != PrevBuildNum)
    {
-      MessageBox(NULL, "This build of ZSNES is a WORK IN PROGRESS. This means that it is known to contain bugs and certain features\nmay or may not be working correctly. This build is not any representation of final work and is provided AS IS\nfor people to try bleeding edge code.\n\nPlease see http://zsnes.game-host.org/~pagefault/ for a list of current issues.", "Disclaimer", MB_OK);
+      char text[1024];
+      sprintf(text, "%s Current: %x; Old: %x\n", "This build of ZSNES is a WORK IN PROGRESS. This means that it is known to contain bugs and certain features\nmay or may not be working correctly. This build is not any representation of final work and is provided AS IS\nfor people to try bleeding edge code.\n\nPlease see http://zsnes.game-host.org/~pagefault/ for a list of current issues.", CurrentBuildNum, PrevBuildNum);
+
+      MessageBox(NULL, text, "Disclaimer", MB_OK);
       PrevBuildNum = CurrentBuildNum;
    }
 }

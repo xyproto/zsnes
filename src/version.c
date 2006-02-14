@@ -21,6 +21,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include <string.h>
+#include <zlib.h>
 
 char *VERSION_STR;
 
@@ -39,3 +40,9 @@ void placetime()
          strlen(VERSION_STR) -
          strlen(__TIME__), __TIME__);
 }
+
+unsigned int version_hash()
+{
+  return(~crc32(crc32(0, (const unsigned char *)__DATE__, strlen(__DATE__)), (const unsigned char *)__TIME__, strlen(__TIME__)));
+}
+

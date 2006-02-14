@@ -48,6 +48,7 @@ EXTSYM vesa2_rfull,vesa2_rtrcl,vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla
 EXTSYM vesa2_bfull,vesa2_btrcl,vesa2_btrcla,Init_2xSaIMMXW
 EXTSYM ZsnesPage,V8Mode,GrayscaleMode,PrevWinMode,PrevFSMode,FrameSemaphore
 EXTSYM _imp__GetLocalTime@4
+EXTSYM DisplayWIPDisclaimer
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
@@ -100,11 +101,14 @@ NEWSYM SystemInit
     call ccmdline
     call tparms
     call preparedir
-;    call getblaster                     ; get set blaster environment
-;    cmp byte[Force8b],1
-;    jne .noforce8b
+
+%ifndef __DEVELOPER__
+    pushad
+    call DisplayWIPDisclaimer
+    popad
+%endif
+
     mov byte[SBHDMA],1
-;.noforce8b
     pop es
     ret
 
