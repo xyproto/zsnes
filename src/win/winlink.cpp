@@ -3150,7 +3150,7 @@ void DisplayWIPDisclaimer()
 
    // This stupid function calculates a build hash based on the build date
 
-   unsigned int ver_len = sizeof(__DATE__) + sizeof(__TIME__) + 10; //+10 because some names are longer than others
+   unsigned int ver_len = strlen(__DATE__) + strlen(__TIME__) + 15; //+15 because some names are longer than others
 
    VERSION_STR = (char *)malloc(ver_len);
    *VERSION_STR = 0;
