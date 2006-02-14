@@ -96,6 +96,8 @@ int16 view_yofs1;           // current viewer y-vertical scroll
 int16 view_xofs2;           // future viewer x-vertical scroll
 int16 view_yofs2;           // future viewer y-vertical scroll
 int16 view_yofsenv;         // y-scroll shaping factor
+int16 view_turnoff_x;       // road turnoff data
+int16 view_turnoff_dx;      // road turnoff delta factor
 
 
 // drawing area
@@ -309,6 +311,8 @@ void DSP4_OP01()
   view_y1 = world_y >> 16;
   view_xofs1 = world_x >> 16;
   view_yofs1 = world_yofs;
+  view_turnoff_x = 0;
+  view_turnoff_dx = 0;
 
   // first raster line
   poly_raster[0][0] = poly_bottom[0][0];
@@ -320,7 +324,7 @@ void DSP4_OP01()
 
     // perspective projection of world (x,y,scroll) points
     // based on the current projection lines
-    view_x2 = ((world_x + world_xenv) >> 16) * distance >> 15;
+    view_x2 = ( ( ( world_x + world_xenv ) >> 16 ) * distance >> 15 ) + ( view_turnoff_x * distance >> 15 );
     view_y2 = (world_y >> 16) * distance >> 15;
     view_xofs2 = view_x2;
     view_yofs2 = (world_yofs * distance >> 15) + poly_bottom[0][0] - view_y2;
@@ -388,7 +392,7 @@ void DSP4_OP01()
       // rasterize line
       for (lcv = 0; lcv < segments; lcv++)
       {
-        // 1. HDMA memory pointer
+        // 1. HDMA memory pointer (bg1)
         // 2. vertical scroll offset ($210E)
         // 3. horizontal scroll offset ($210D)
 
@@ -423,6 +427,9 @@ void DSP4_OP01()
     world_x += (world_dx + world_xenv);
     world_y += world_dy;
 
+    // update road turnoff position
+    view_turnoff_x += view_turnoff_dx;
+
     ////////////////////////////////////////////////////
     // command check
 
@@ -435,33 +442,22 @@ void DSP4_OP01()
     if (distance == -0x8000)
       break;
 
-    if ((uint16) distance == 0x8001)
+    // road turnoff
+    if( (uint16) distance == 0x8001 )
     {
-      /*
-      (code)
-      308000 W: 01
-      308001 W: 80
-      308000 W: E4
-      308001 W: 0B
-      308000 W: 5C
-      308001 W: A0
-      308000 W: 38
-      308001 W: FD
-      (normal)
-      308000 W: 07
-      308001 W: 0B
-      308000 W: 00
-      308001 W: 00
-      308000 W: 00
-      308001 W: 01
-      308000 W: 00
-      308001 W: 00
-        */
-
       DSP4.in_count = 6;
-      DSP4_WAIT(2) resume2 : distance = DSP4_READ_WORD();
-      DSP4_READ_WORD();
-      DSP4_READ_WORD();
+      DSP4_WAIT(2) resume2:
+
+      distance = DSP4_READ_WORD();
+      view_turnoff_x = DSP4_READ_WORD();
+      view_turnoff_dx = DSP4_READ_WORD();
+
+      // factor in new changes
+      view_x1 += ( view_turnoff_x * distance >> 15 );
+      view_xofs1 += ( view_turnoff_x * distance >> 15 );
+
+      // update stepping values
+      view_turnoff_x += view_turnoff_dx;
 
       DSP4.in_count = 2;
       DSP4_WAIT(1)
@@ -631,9 +627,9 @@ void DSP4_OP07()
       // rasterize line
       for (lcv = 0; lcv < segments; lcv++)
       {
-        // 1. HDMA memory pointer
-        // 2. vertical scroll offset ($210E)
-        // 3. horizontal scroll offset ($210D)
+        // 1. HDMA memory pointer (bg2)
+        // 2. vertical scroll offset ($2110)
+        // 3. horizontal scroll offset ($210F)
 
         DSP4_WRITE_WORD(poly_ptr[0][0]);
         DSP4_WRITE_WORD((y_scroll + 0x8000) >> 16);
@@ -871,6 +867,7 @@ void DSP4_OP08()
       int32 left_inc, right_inc;
       int16 x1_final, x2_final;
       int16 env[2][2];
+      int16 poly;
 
       // SR = 0x00
 
@@ -902,6 +899,9 @@ void DSP4_OP08()
       // tell user how many raster structures to read in
       DSP4_WRITE_WORD(segments);
 
+      // normal parameters
+      poly = polygon;
+
       /////////////////////////////////////////////////////
 
       // scan next command if no SR check needed
@@ -909,17 +909,22 @@ void DSP4_OP08()
       {
         int32 win_left, win_right;
 
+        // road turnoff selection
+        if( (uint16) envelope[ polygon ][ 0 ] == (uint16) 0xc001 )
+          poly = 1;
+        else if( envelope[ polygon ][ 1 ] == 0x3fff )
+          poly = 1;
 
         ///////////////////////////////////////////////
         // left side of polygon
 
         // perspective correction on additional shaping parameters
-        env[0][0] = envelope[polygon][0] * poly_plane[polygon] >> 15;
+        env[0][0] = envelope[polygon][0] * poly_plane[poly] >> 15;
         env[0][1] = envelope[polygon][0] * distance >> 15;
 
         // project new shapes (left side)
-        x1_final = view_x[polygon] + env[0][0];
-        x2_final = poly_start[polygon] + env[0][1];
+        x1_final = view_x[poly] + env[0][0];
+        x2_final = poly_start[poly] + env[0][1];
 
         // interpolate between projected points with shaping
         left_inc = (x2_final - x1_final) * DSP4_Inverse(segments) << 1;
@@ -930,12 +935,13 @@ void DSP4_OP08()
         // right side of polygon
 
         // perspective correction on additional shaping parameters
-        env[1][0] = envelope[polygon][1] * poly_plane[polygon] >> 15;
+        env[1][0] = envelope[polygon][1] * poly_plane[poly] >> 15;;
         env[1][1] = envelope[polygon][1] * distance >> 15;
 
         // project new shapes (right side)
-        x1_final = view_x[polygon] + env[1][0];
-        x2_final = poly_start[polygon] + env[1][1];
+        x1_final = view_x[poly] + env[1][0];
+        x2_final = poly_start[poly] + env[1][1];
+
 
         // interpolate between projected points with shaping
         right_inc = (x2_final - x1_final) * DSP4_Inverse(segments) << 1;
@@ -945,8 +951,8 @@ void DSP4_OP08()
         ///////////////////////////////////////////////
         // update each point on the line
 
-        win_left = SEX16(poly_cx[polygon][0] - poly_start[polygon] + env[0][0]);
-        win_right = SEX16(poly_cx[polygon][1] - poly_start[polygon] + env[1][0]);
+        win_left = SEX16(poly_cx[polygon][0] - poly_start[poly] + env[0][0]);
+        win_right = SEX16(poly_cx[polygon][1] - poly_start[poly] + env[1][0]);
 
         // update distance drawn into world
         poly_plane[polygon] = distance;
@@ -993,7 +999,7 @@ void DSP4_OP08()
       // Post-update
 
       // new projection spot to continue rasterizing from
-      poly_start[polygon] = view_x[polygon];
+      poly_start[polygon] = view_x[poly];
     } // end polygon rasterizer
   }
   while (1);
@@ -1421,7 +1427,7 @@ void DSP4_OP0D()
 
     // perspective projection of world (x,y,scroll) points
     // based on the current projection lines
-    view_x2 = ((world_x + world_xenv) >> 16) * distance >> 15;
+    view_x2 = ( ( ( world_x + world_xenv ) >> 16 ) * distance >> 15 ) + ( view_turnoff_x * distance >> 15 );
     view_y2 = (world_y >> 16) * distance >> 15;
     view_xofs2 = view_x2;
     view_yofs2 = (world_yofs * distance >> 15) + poly_bottom[0][0] - view_y2;
@@ -1488,7 +1494,7 @@ void DSP4_OP0D()
       // rasterize line
       for (lcv = 0; lcv < segments; lcv++)
       {
-        // 1. HDMA memory pointer
+        // 1. HDMA memory pointer (bg1)
         // 2. vertical scroll offset ($210E)
         // 3. horizontal scroll offset ($210D)
 
@@ -1539,7 +1545,7 @@ void DSP4_OP0D()
 
     // already have 2 bytes in queue
     DSP4.in_count = 6;
-    DSP4_WAIT(2) resume2 :
+    DSP4_WAIT(2) resume2:
 
     // inspect inputs
     world_ddy = DSP4_READ_WORD();
@@ -1611,6 +1617,8 @@ void DSP4_OP0F()
   view_y1 = world_y >> 16;
   view_xofs1 = world_x >> 16;
   view_yofs1 = world_yofs;
+  view_turnoff_x = 0;
+  view_turnoff_dx = 0;
 
   // first raster line
   poly_raster[0][0] = poly_bottom[0][0];
@@ -1758,45 +1766,37 @@ void DSP4_OP0F()
     world_x += (world_dx + world_xenv);
     world_y += world_dy;
 
+    // update road turnoff position
+    view_turnoff_x += view_turnoff_dx;
+
     ////////////////////////////////////////////////////
     // command check
 
     // scan next command
     DSP4.in_count = 2;
-    DSP4_WAIT(2) resume2 :
+    DSP4_WAIT(2) resume2:
 
     // check for termination
     distance = DSP4_READ_WORD();
     if (distance == -0x8000)
       break;
 
-    if ((uint16) distance == 0x8001)
+    // road splice
+    if( (uint16) distance == 0x8001 )
     {
-      /*
-      (code)
-      308000 W: 01
-      308001 W: 80
-      308000 W: E4
-      308001 W: 0B
-      308000 W: 5C
-      308001 W: A0
-      308000 W: 38
-      308001 W: FD
-      (normal)
-      308000 W: 07
-      308001 W: 0B
-      308000 W: 00
-      308001 W: 00
-      308000 W: 00
-      308001 W: 01
-      308000 W: 00
-      308001 W: 00
-        */
-
       DSP4.in_count = 6;
-      DSP4_WAIT(3) resume3 : distance = DSP4_READ_WORD();
-      DSP4_READ_WORD();
-      DSP4_READ_WORD();
+      DSP4_WAIT(3) resume3:
+
+      distance = DSP4_READ_WORD();
+      view_turnoff_x = DSP4_READ_WORD();
+      view_turnoff_dx = DSP4_READ_WORD();
+
+      // factor in new changes
+      view_x1 += ( view_turnoff_x * distance >> 15 );
+      view_xofs1 += ( view_turnoff_x * distance >> 15 );
+
+      // update stepping values
+      view_turnoff_x += view_turnoff_dx;
 
       DSP4.in_count = 2;
       DSP4_WAIT(2)
@@ -1975,9 +1975,9 @@ void DSP4_OP10()
       // rasterize line
       for (lcv = 0; lcv < segments; lcv++)
       {
-        // 1. HDMA memory pointer
-        // 2. vertical scroll offset ($210E)
-        // 3. horizontal scroll offset ($210D)
+        // 1. HDMA memory pointer (bg2)
+        // 2. vertical scroll offset ($2110)
+        // 3. horizontal scroll offset ($210F)
 
         DSP4_WRITE_WORD(poly_ptr[0][0]);
         DSP4_WRITE_WORD((y_scroll + 0x8000) >> 16);
@@ -2170,7 +2170,7 @@ void DSP4SetByte()
       case 0x0006:
         DSP4_OP06(); break;
 
-      // single-player track fork projection
+      // single-player track turnoff projection
       case 0x0007:
         DSP4_OP07(); break;
 
@@ -2226,7 +2226,7 @@ void DSP4SetByte()
       case 0x000F:
         DSP4_OP0F(); break;
 
-      // single-player track fork projection with lighting
+      // single-player track turnoff projection with lighting
       case 0x0010:
         DSP4_OP10(); break;
 
