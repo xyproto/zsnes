@@ -3140,26 +3140,25 @@ int CheckBatteryPercent()
    return((SysPowerStat.BatteryLifePercent == 255) ? -1 : SysPowerStat.BatteryLifePercent);
 }
 
-extern "C" {
-  extern unsigned int PrevBuildNum;
-  char *VERSION_STR;
-  void placedate();
-  void placetime();
-}
+extern "C" unsigned int PrevBuildNum;
+extern "C" char *VERSION_STR;
 
 void DisplayWIPDisclaimer()
 {
+  void placedate();
+  void placetime();
+
    // This stupid function calculates a build hash based on the build date
 
    unsigned int ver_len = sizeof(__DATE__) + sizeof(__TIME__) + 10; //+10 because some names are longer than others
 
-   VERSION_STR = new char[ver_len]; 
+   VERSION_STR = (char *)malloc(ver_len);
    *VERSION_STR = 0;
    placedate();
    placetime();
 
    unsigned int CurrentBuildNum = ~crc32(0, (const unsigned char *)VERSION_STR, ver_len);
-   delete[] VERSION_STR;
+   free(VERSION_STR);
 
    if (CurrentBuildNum != PrevBuildNum)
    {
