@@ -27,9 +27,9 @@ extern "C" {
    #include <windows.h>
    #include <stdio.h>
    #include <ddraw.h>
-   //#include <initguid.h>
    #include <mmsystem.h>
    #include <time.h>
+   #include <zlib.h>
 }
 #include <math.h>
 #include <dsound.h>
@@ -3140,26 +3140,33 @@ int CheckBatteryPercent()
    return((SysPowerStat.BatteryLifePercent == 255) ? -1 : SysPowerStat.BatteryLifePercent);
 }
 
-extern "C" unsigned int PrevBuildNum;
+extern "C" {
+  extern unsigned int PrevBuildNum;
+  char *VERSION_STR;
+  void placedate();
+  void placetime();
+}
 
 void DisplayWIPDisclaimer()
 {
    // This stupid function calculates a build hash based on the build date
 
-   unsigned int CurrentBuildNum = 0;
-   char *BuildWorkBuffer = (char *) malloc(sizeof(__DATE__));
+   unsigned int ver_len = sizeof(__DATE__) + sizeof(__TIME__) + 10; //+10 because some names are longer than others
 
-   strcpy(BuildWorkBuffer, __DATE__);
+   VERSION_STR = new char[ver_len]; 
+   *VERSION_STR = 0;
+   placedate();
+   placetime();
 
-   for (unsigned int i = 0; i<strlen(BuildWorkBuffer); i++) CurrentBuildNum += BuildWorkBuffer[i];
+   unsigned int CurrentBuildNum = ~crc32(0, (const unsigned char *)VERSION_STR, ver_len);
+   delete[] VERSION_STR;
 
    if (CurrentBuildNum != PrevBuildNum)
    {
       MessageBox(NULL, "This build of ZSNES is a WORK IN PROGRESS. This means that it is known to contain bugs and certain features\nmay or may not be working correctly. This build is not any representation of final work and is provided AS IS\nfor people to try bleeding edge code.\n\nPlease see http://zsnes.game-host.org/~pagefault/ for a list of current issues.", "Disclaimer", MB_OK);
       PrevBuildNum = CurrentBuildNum;
    }
-
-   free(BuildWorkBuffer);
 }
+
 
 }
