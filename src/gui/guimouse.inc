@@ -813,8 +813,8 @@ ProcessMouseButtons:
 
 
 GUIProcVideo:
-    mov al,[GUIcurrentvideocursloc]
 %ifdef __MSDOS__
+    mov al,[GUIcurrentvideocursloc]
     cmp al,3
     je .yes16b
     cmp al,5
@@ -825,8 +825,8 @@ GUIProcVideo:
     je .yes16b
     cmp al,8
     jne .no16b
-%endif
 .yes16b
+%endif
 ;    mov byte[newengen],0
 ;    mov byte[cfgnewgfx],0
 ;    jmp .skipno16b
@@ -1300,8 +1300,8 @@ GUIWinClicked:
 %%done
     mov al,%3
     mov %4,al
-    call ClearScreen
 %ifdef __MSDOS__
+    call ClearScreen
     cmp byte[En2xSaI],0
     jne %%nomodeq
     cmp byte[cvidmode],2
@@ -1315,8 +1315,8 @@ GUIWinClicked:
     call initvideo2
     mov byte[cbitmode],0
     call GUISetPal
-%endif
 %%nomodex
+%endif
     ret
 %%noclick
 %endmacro
@@ -2062,8 +2062,8 @@ DisplayGUIChoseSaveClick:
     mov ebx,[keycontrolval]
     mov byte[ebx],1
     pop ebx
-%endif
 %%notwin32
+%endif
     ret
 %%cancelkey
     xor ebx,ebx

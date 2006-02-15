@@ -433,8 +433,8 @@ GUIOutputStringwinl:
     cmp al,'%'
     jne .noperc
     call ConvertPercValue
-%endif
 .noperc
+%endif
     or al,al
     jz .nomore
     mov al,[ASCII2Font+eax]
@@ -459,6 +459,7 @@ GUIOutputStringwinl:
 .nomore
     ret
 
+%ifndef __MSDOS__
 ConvertPercValue:
     mov al,[edi+2]
     cmp al,'a'
@@ -511,6 +512,7 @@ ConvertPercValue:
     xor eax,eax
     mov al,[edi]
     ret
+%endif
 
 OutputUnder:
     cmp edx,-8

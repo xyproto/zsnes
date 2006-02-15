@@ -35,7 +35,7 @@ EXTSYM tableadc,SA1UpdateDPage,Makemode7Table,nextmenupopup,MovieProcessing
 EXTSYM DosExit,InitDir,InitDrive,createnewcfg,sfxramdata,deinitvideo
 EXTSYM SFXEnable,wramdata,cycpbl,cycpblt,irqon,spcon
 EXTSYM multchange,romispal,scrndis,sprlefttot,sprleftpr,processsprites
-EXTSYM cachesprites,NextLineStart,FlipWait,LastLineStart,opcjmptab,CheatOn
+EXTSYM cachesprites,opcjmptab,CheatOn
 EXTSYM INTEnab,JoyCRead,NMIEnab,NumCheats,CurrentExecSA1,ReadInputDevice
 EXTSYM StartDrawNewGfx,VIRQLoc,cachevideo,cfield,cheatdata,curblank,curnmi
 EXTSYM curypos,cycpl,doirqnext,drawline,exechdma,hdmadelay,intrset,newengen
@@ -58,7 +58,7 @@ EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
 
 %ifdef __MSDOS__
-EXTSYM dssel,Game60hzcall
+EXTSYM dssel,Game60hzcall,NextLineStart,FlipWait,LastLineStart
 %endif
 
 SECTION .data
@@ -763,6 +763,7 @@ NEWSYM exitloop
 ALIGN16
 
 %macro FlipCheck 0
+%ifdef __MSDOS__
    cmp byte[FlipWait],0
    je %%noflip
    push edx
@@ -787,6 +788,7 @@ ALIGN16
    pop eax
    pop edx
 %%noflip
+%endif
 %endmacro
 
 NEWSYM execute

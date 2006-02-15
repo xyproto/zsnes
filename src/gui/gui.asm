@@ -79,9 +79,9 @@ EXTSYM statesaver,loadstate2,vidbuffer,ASCII2Font,hirestiledat,showallext
 EXTSYM scanlines,statefileloc,pl1selk,pl2selk,fnamest,sprlefttot,spritetablea
 EXTSYM fnames,CHIPBATT,sfxramdata,setaramdata,SETAEnable,cgram,srama,tempco0
 EXTSYM prevbright,maxbr,prevpal,coladdr,coladdg,coladdb,scaddtype,ScreenScale
-EXTSYM initvideo2,initvideo,pressed,UpdateDevices,memtabler8
+EXTSYM initvideo,pressed,UpdateDevices,memtabler8
 EXTSYM memtablew8,writeon,pl1contrl,pl2contrl,JoyRead,SetInputDevice,delay
-EXTSYM SetInputDevice209,FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,pl12s34,resolutn
+EXTSYM FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,pl12s34,resolutn
 EXTSYM InitDrive,InitDir,createnewcfg,Makemode7Table,vidbufferofsb,ZipSupport
 EXTSYM wramdata,bgfixer,cfgnewgfx,videotroub,Open_File,Read_File
 EXTSYM Close_File,Write_File,Create_File,File_Seek,File_Seek_End,Get_Date
@@ -149,7 +149,7 @@ EXTSYM numlockptr
 %elifdef __WIN32__
 EXTSYM initDirectDraw,reInitSound
 %elifdef __MSDOS__
-EXTSYM dssel
+EXTSYM dssel,SetInputDevice209,initvideo2
 %endif
 
 %include "gui/guitools.inc"
@@ -477,16 +477,18 @@ GUIQuickLoadUpdate:
 .off
     mov dword[GUIPrevMenuData.onoff+15],'OFF '
 .on
-    mov esi,prevloadfnamel
 %ifdef __MSDOS__
     mov esi,prevloadnames
+%else
+    mov esi,prevloadfnamel
 %endif
     mov edi,GUIPrevMenuData+3
     mov edx,10
 .mainloop
-    mov ecx,25
 %ifdef __MSDOS__
     mov ecx,16
+%else
+    mov ecx,25
 %endif
     push edi
     push esi
@@ -525,9 +527,10 @@ GUIQuickLoadUpdate:
 .fin
     pop esi
     pop edi
-    add esi,512 ;16
 %ifdef __MSDOS__
-    sub esi,512-16
+    add esi,16
+%else
+    add esi,512 ;16
 %endif
     add edi,32
     dec edx

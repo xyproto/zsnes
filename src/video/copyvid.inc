@@ -1542,6 +1542,10 @@ NEWSYM copyvesa2640x400x16b
 ;*******************************************************
 %endif
 
+SECTION .bss
+NEWSYM res640, resb 1
+NEWSYM res480, resb 1
+
 SECTION .data
 
 NEWSYM EagleHold, dd 0

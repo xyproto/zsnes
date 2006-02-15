@@ -38,7 +38,7 @@ EXTSYM DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB,handler8h
 EXTSYM handler9h,init60hz,Interror,init18_2hz,DeInitSPC,GUIinit36_4hz
 EXTSYM GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o,GUIhandler9h
 EXTSYM GUIhandler8h,GUIinit18_2hz,dosmakepal,doschangepal,dosinitvideo
-EXTSYM dosinitvideo2,DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
+EXTSYM DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
 EXTSYM DOSClearScreen,DosUpdateDevices,DOSJoyRead,pl1contrl,pl2contrl,pl3contrl
 EXTSYM pl4contrl,pl5contrl
 EXTSYM GrayscaleMode
@@ -871,8 +871,6 @@ NEWSYM saveselectpal
 ; ** init video mode functions **
 NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
     jmp dosinitvideo
-NEWSYM initvideo2 ; ModeQ scanline re-init (Keep blank on non-dos ports)
-    jmp dosinitvideo2
 NEWSYM deinitvideo
     mov al,[previdmode]
     mov ah,0

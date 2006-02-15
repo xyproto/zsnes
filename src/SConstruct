@@ -75,10 +75,6 @@ dossrc = Split('''
 	dos/debug.asm
 	dos/joy.asm
 	dos/vesa2.asm
-	dos/initvid.asm
-	dos/sw.asm
-	dos/gppro.asm
-	dos/vesa12.asm
 ''')
 effectssrc = Split('''
 	effects/burn.c

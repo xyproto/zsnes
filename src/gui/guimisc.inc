@@ -238,6 +238,7 @@ CalibrateDev1:
     mov [JoyMaxY],eax
     mov [CalibYmax],eax
     ret
+%ifdef __MSDOS__
 .port209
     cmp bl,1
     jbe .nojoy209
@@ -305,6 +306,7 @@ CalibrateDev1:
     mov [JoyMaxY209],eax
     mov [CalibYmax209],eax
     ret
+%endif
 SECTION .bss
 .joyblx resd 1
 .joybly resd 1
@@ -333,6 +335,7 @@ SetDevice:
     call SetInputDevice
     call UpdateDevices
     jmp .procmtap
+%ifdef __MSDOS__
 .port209
     mov dword[CalibXmin209],0
     mov ecx,[DevicePtr+eax*4]
@@ -344,6 +347,7 @@ SetDevice:
     mov bh,[cplayernum]
     call SetInputDevice209
     call UpdateDevices
+%endif
 .procmtap
     mov byte[MultiTap],1
     cmp byte[SFXEnable],1

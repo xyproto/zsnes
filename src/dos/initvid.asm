@@ -22,23 +22,13 @@
 
 %include "macros.mac"
 
-EXTSYM InitVesa2,cbitmode,cvidmode,makepal,scanlines,selcA000,vesa2_bits
-EXTSYM vesa2_x,vesa2_y,vesa2selec,InitVesa12,videotroub
-
-%ifdef __MSDOS__
-EXTSYM cscopymodeq,cscopymodex
-%endif
-
-SECTION .bss
-
-NEWSYM clearfilter, resw 1
-NEWSYM res640, resb 1
-NEWSYM res480, resb 1
+EXTSYM InitVesa2,cbitmode,cvidmode,dosmakepal,scanlines,selcA000,vesa2_bits
+EXTSYM vesa2_x,vesa2_y,vesa2selec,InitVesa12,videotroub,cscopymodeq,cscopymodex
+EXTSYM res640,res480
 
 
 SECTION .text
-
-NEWSYM dosinitvideo2
+NEWSYM initvideo2
     cmp byte[cvidmode],2
     jne .nomodeq
     jmp dosinitvideo.initmodeq256
@@ -103,11 +93,9 @@ NEWSYM dosinitvideo
 ;*******************************************************
 
 .initmodeq224
-%ifdef __MSDOS__
     SetVGAMode .Mode256x224c
     call cscopymodeq
-%endif
-    call makepal
+    call dosmakepal
     ret
 
 ;*******************************************************
@@ -115,11 +103,9 @@ NEWSYM dosinitvideo
 ;*******************************************************
 
 .initmodeq240
-%ifdef __MSDOS__
     SetVGAMode .Mode256x240c
     call cscopymodeq
-%endif
-    call makepal
+    call dosmakepal
     ret
 
 ;*******************************************************
@@ -127,7 +113,6 @@ NEWSYM dosinitvideo
 ;*******************************************************
 
 .initmodeq256
-%ifdef __MSDOS__
     cmp byte[scanlines],1
     je near .scanlines
     SetVGAMode .Mode256x256c
@@ -137,8 +122,7 @@ NEWSYM dosinitvideo
     jmp .done
 .done
     call cscopymodeq
-%endif
-    call makepal
+    call dosmakepal
     ret
 
 
@@ -147,11 +131,9 @@ NEWSYM dosinitvideo
 ;*******************************************************
 
 .initmodex224
-%ifdef __MSDOS__
     SetVGAMode .Mode320x224
     call cscopymodex
-%endif
-    call makepal
+    call dosmakepal
     ret
 
 ;*******************************************************
@@ -159,11 +141,9 @@ NEWSYM dosinitvideo
 ;*******************************************************
 
 .initmodex240
-%ifdef __MSDOS__
     SetVGAMode .Mode320x240
     call cscopymodex
-%endif
-    call makepal
+    call dosmakepal
     ret
 
 ;*******************************************************
@@ -171,7 +151,6 @@ NEWSYM dosinitvideo
 ;*******************************************************
 
 .initmodex256
-%ifdef __MSDOS__
     cmp byte[scanlines],1
     je near .scanlines2
     SetVGAMode .Mode320x256
@@ -181,8 +160,7 @@ NEWSYM dosinitvideo
     jmp .done2
 .done2
     call cscopymodex
-%endif
-    call makepal
+    call dosmakepal
     ret
 
 
@@ -200,7 +178,7 @@ NEWSYM dosinitvideo
     jne .notrouble
     ret
 .notrouble
-    call makepal
+    call dosmakepal
     ; clear screen (320*240 bytes)
     push es
     mov ax,[vesa2selec]
@@ -258,7 +236,7 @@ NEWSYM dosinitvideo
     jne .notrouble3
     ret
 .notrouble3
-    call makepal
+    call dosmakepal
     ; clear screen (640*480 bytes)
     push es
     mov ax,[vesa2selec]
@@ -318,7 +296,7 @@ NEWSYM dosinitvideo
     jne .notrouble11
     ret
 .notrouble11
-    call makepal
+    call dosmakepal
     ; clear screen (800*600 bytes)
     push es
     mov ax,[vesa2selec]
@@ -377,7 +355,7 @@ NEWSYM dosinitvideo
     jne .notrouble5
     ret
 .notrouble5
-    call makepal
+    call dosmakepal
     ; clear screen (320*480 bytes)
     push es
     mov ax,[vesa2selec]
@@ -436,7 +414,7 @@ NEWSYM dosinitvideo
     jne .notrouble7
     ret
 .notrouble7
-    call makepal
+    call dosmakepal
     ; clear screen (512*384 bytes)
     push es
     mov ax,[vesa2selec]
@@ -494,7 +472,7 @@ NEWSYM dosinitvideo
     jne .notrouble9
     ret
 .notrouble9
-    call makepal
+    call dosmakepal
     ; clear screen (640*400 bytes)
     push es
     mov ax,[vesa2selec]

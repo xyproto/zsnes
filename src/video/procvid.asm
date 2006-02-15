@@ -25,7 +25,7 @@
 EXTSYM BGMA,V8Mode,antienab,cacheud,cbitmode,ccud,cfield,cgram,coladdb,coladdg
 EXTSYM coladdr,curblank,curfps,cvidmode,delay,extlatch,fnamest,En2xSaI
 EXTSYM gammalevel,hirestiledat,ignor512,latchx,latchy,maxbr,ForceNewGfxOff
-EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,res640,resolutn
+EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,resolutn
 EXTSYM romispal,scaddtype,scanlines,selcA000,snesmouse,t1cc,vcache4b,vesa2_bpos
 EXTSYM spritetablea,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10,vesa2selec
 EXTSYM vidbuffer,vram,KeyStateSelct,soundon,Open_File,Read_File

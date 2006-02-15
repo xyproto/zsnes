@@ -698,9 +698,6 @@ NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
    ret
 
 
-NEWSYM initvideo2 ; ModeQ scanline re-init (Keep blank on non-dos ports)
-    ret
-
 NEWSYM deinitvideo
     ret
 

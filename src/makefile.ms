@@ -161,8 +161,7 @@ CPUOBJ=${CPUDIR}/dma${OE} ${CPUDIR}/dsp${OE} ${CPUDIR}/dspproc${OE}\
 	${CPUDIR}/stable${OE} ${CPUDIR}/table${OE} ${CPUDIR}/tableb${OE}\
 	${CPUDIR}/tablec${OE}
 
-DOSOBJORIG=${DOSDIR}/debug${OE} ${DOSDIR}/joy${OE} ${DOSDIR}/vesa2${OE}\
-	${DOSDIR}/initvid${OE} ${DOSDIR}/sw${OE} ${DOSDIR}/gppro${OE} ${DOSDIR}/vesa12${OE}
+DOSOBJORIG=${DOSDIR}/debug${OE} ${DOSDIR}/joy${OE} ${DOSDIR}/vesa2${OE}
 
 EFFECTSOBJ=${EFFECTSDIR}/burn${OE} ${EFFECTSDIR}/water${OE} ${EFFECTSDIR}/smoke${OE}
 
@@ -199,7 +198,8 @@ ZIPOBJ=${ZIPDIR}/unzip${OE} ${ZIPDIR}/zpng${OE}
 OBJSORIG=${CHIPSOBJ} ${CPUOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
 
 ifeq (${OS},__MSDOS__)
-DOSOBJ=${DOSOBJORIG} ${DOSDIR}/dosintrf${OE} ${DOSDIR}/sound${OE} ${DOSDIR}/zfile${OE}
+DOSOBJ=${DOSOBJORIG} ${DOSDIR}/dosintrf${OE} ${DOSDIR}/gppro${OE} ${DOSDIR}/initvid${OE}\
+	${DOSDIR}/sound${OE} ${DOSDIR}/sw${OE} ${DOSDIR}/vesa12${OE} ${DOSDIR}/zfile${OE}
 OBJS=${OBJSORIG} ${DOSOBJ}
 DELETEOBJS=${OBJSORIG} ${DOSOBJ}
 endif

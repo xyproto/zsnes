@@ -22,10 +22,14 @@
 
 %include "macros.mac"
 
-EXTSYM WhichSW,_SW1,_SW2,_readSideWinder,_SWCount,_SW3,_SW4,delay,pl1contrl
+EXTSYM WhichSW,delay,pl1contrl
 EXTSYM pl2contrl,pl1p209,pl2p209,pl3p209,pl4p209,pl3contrl,pl4contrl,pressed
-EXTSYM read_gpp,pl5contrl,pl5p209,CalibXmin,CalibYmin,CalibXmax,CalibYmax
+EXTSYM pl5contrl,pl5p209,CalibXmin,CalibYmin,CalibXmax,CalibYmax
 EXTSYM CalibXmin209,CalibYmin209,CalibXmax209,CalibYmax209
+
+%ifdef __MSDOS__
+EXTSYM read_gpp,_readSideWinder,_SW1,_SW2,_SW3,_SW4,_SWCount
+%endif
 
 SECTION .data
 NEWSYM JoyAltrn2,  db 2
@@ -188,6 +192,7 @@ NEWSYM GetCoords3
   sti
   ret
 
+%ifdef __MSDOS__
 NEWSYM DosUpdateDevices
     mov byte[PPad],0
     mov byte[JoyQuant],0
@@ -493,10 +498,6 @@ NEWSYM DosUpdateDevices
 .skipgripc2
 .none2
     ret
-
-SECTION .data
-NEWSYM JoyReadControl, db 0
-SECTION .text
 
 JoyRead209:
    cmp byte[JoyAltrn],1
@@ -907,7 +908,7 @@ GamePadPro2:
 .error
    ret
 
-NEWSYM SideWinder
+SideWinder:
   mov al,[NumSWs]
   mov [_SWCount],al
   mov dx,201h
@@ -1089,7 +1090,7 @@ GamePadPro2209:
 .error
    ret
 
-NEWSYM SideWinder209
+SideWinder209:
   mov al,[NumSWs209]
   mov [_SWCount],al
   mov dx,209h
@@ -1223,7 +1224,7 @@ NEWSYM SideWinder209
 %%nobutton
 %endmacro
 
-NEWSYM GetParallelPlayer1
+GetParallelPlayer1:
     mov dx, 0378h
     mov byte[pressed+180h],0
     mov byte[pressed+181h],0
@@ -1251,7 +1252,7 @@ NEWSYM GetParallelPlayer1
     PPortHelp 0F9h, 40h, 18Bh
     ret
 
-NEWSYM GetParallelPlayer2
+GetParallelPlayer2:
     mov dx, 0378h
     mov byte[pressed+190h],0
     mov byte[pressed+191h],0
@@ -1279,7 +1280,7 @@ NEWSYM GetParallelPlayer2
     PPortHelp 0F9h, 20h, 19Bh
     ret
 
-NEWSYM GetParallelPlayer3
+GetParallelPlayer3:
     mov dx, 0378h
     mov byte[pressed+1A0h],0
     mov byte[pressed+1A1h],0
@@ -1307,7 +1308,7 @@ NEWSYM GetParallelPlayer3
     PPortHelp 0F9h, 10h, 1ABh
     ret
 
-NEWSYM GetParallelPlayer4
+GetParallelPlayer4:
     mov dx, 0378h
     mov byte[pressed+1B0h],0
     mov byte[pressed+1B1h],0
@@ -1335,7 +1336,7 @@ NEWSYM GetParallelPlayer4
     PPortHelp 0F9h, 08h, 1BBh
     ret
 
-NEWSYM GetParallelPlayer5
+GetParallelPlayer5:
     mov dx, 0378h
     mov byte[pressed+1c0h],0
     mov byte[pressed+1c1h],0
@@ -1674,3 +1675,4 @@ NEWSYM SetInputDevice209
 .nopp5
 .exit
     ret
+%endif

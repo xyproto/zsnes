@@ -20,7 +20,6 @@
 
 ; by kode54, stainless
 
-%ifdef __MSDOS__
 %macro SetVGAMode 1
     mov byte[cbitmode],0
 
@@ -152,5 +151,3 @@ SECTION .data
 
 
 SECTION .text
-%endif
-

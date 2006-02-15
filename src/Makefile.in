@@ -74,8 +74,7 @@ VIDEOBJ=${VIDEODIR}/makev16b.o ${VIDEODIR}/makev16t.o ${VIDEODIR}/makevid.o\
 WINOBJ=${WINDIR}/copyvwin.o ${WINDIR}/sdlintrf.o ${WINDIR}/sdllink.o @GL_DRAW@\
 	${WINDIR}/sw_draw.o ${WINDIR}/zfilew.o
 
-WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/vesa2.o\
-	${DOSDIR}/initvid.o ${DOSDIR}/sw.o ${DOSDIR}/gppro.o ${DOSDIR}/vesa12.o
+WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/vesa2.o
 
 ZIPOBJ=${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
@@ -196,11 +195,7 @@ ${CPUDIR}/tablec.o: ${CPUDIR}/tablec.asm macros.mac ${CPUDIR}/65816dc.inc\
 	${CPUDIR}/address.inc ${CPUDIR}/addrni.inc ${CPUDIR}/e65816c.inc
 
 ${DOSDIR}/debug.o: ${DOSDIR}/debug.asm macros.mac
-${DOSDIR}/gppro.o: ${DOSDIR}/gppro.asm macros.mac
-${DOSDIR}/initvid.o: ${DOSDIR}/initvid.asm macros.mac ${DOSDIR}/vga.inc
 ${DOSDIR}/joy.o: ${DOSDIR}/joy.asm macros.mac
-${DOSDIR}/sw.o: ${DOSDIR}/sw.asm macros.mac
-${DOSDIR}/vesa12.o: ${DOSDIR}/vesa12.asm macros.mac
 ${DOSDIR}/vesa2.o: ${DOSDIR}/vesa2.asm macros.mac
 
 ${EFFECTSDIR}/burn.o: ${EFFECTSDIR}/burn.c
@@ -271,7 +266,7 @@ ${VIDEODIR}/sw_draw.o: ${VIDEODIR}/sw_draw.asm macros.mac
 ${WINDIR}/copyvwin.o: ${WINDIR}/copyvwin.asm macros.mac
 ${WINDIR}/gl_draw.o: ${WINDIR}/gl_draw.c gblhdr.h
 ${WINDIR}/sdlintrf.o: ${WINDIR}/sdlintrf.asm macros.mac
-${WINDIR}/sdllink.o: ${WINDIR}/sdllink.c gblhdr.h ${WINDIR}/sw_draw.h\
+${WINDIR}/sdllink.o: ${WINDIR}/sdllink.c asm_call.h gblhdr.h ${WINDIR}/sw_draw.h\
 	${WINDIR}/gl_draw.h
 ${WINDIR}/sw_draw.o: ${WINDIR}/sw_draw.c gblhdr.h
 ${WINDIR}/zfilew.o: ${WINDIR}/zfilew.c
