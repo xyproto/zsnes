@@ -22,7 +22,7 @@
 
 EXTSYM memtabler8,regptw,snesmap2,snesmmap,memtablew8,regptr,memtabler16
 EXTSYM dmadata,hdmatype,nexthdma,resolutn,curhdma,curypos,disablehdma,hdmadata
-EXTSYM hdmadelay,hdmarestart,nohdmaframe
+EXTSYM hdmadelay,hdmarestart,nohdmaframe,SPCRAM
 
 ;*******************************************************
 ; Transfer DMA                     Inits & Transfers DMA
@@ -1154,7 +1154,6 @@ section .data
 .fname2 db 9,'vram2.dat',0
 section .text
 
-EXTSYM SPCRAM
 section .data
 NEWSYM ewj2hack, dd 0
 section .text

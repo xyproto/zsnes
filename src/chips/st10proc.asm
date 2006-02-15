@@ -20,11 +20,11 @@
 
 %include "macros.mac"
 
+EXTSYM setaramdata,ST010DoCommand
+
 SECTION .data
 NEWSYM SetaCmdEnable,    dd 0     ; Seta ST010/ST011 command enable register. Maybe also status.
 SECTION .text
-EXTSYM setaramdata
-EXTSYM ST010DoCommand
 
 ;; TODO - should return ROM for > 8000h
 NEWSYM setaaccessbankr8

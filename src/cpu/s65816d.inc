@@ -20,12 +20,11 @@
 
 
 
-EXTSYM Sflagnz,Sflago,Sflagc,dmadata,IRAM
+EXTSYM Sflagnz,Sflago,Sflagc,dmadata,IRAM,debuggeron
 
 ;*******************************************************
 ; Flag Setting Macros
 ;*******************************************************
-EXTSYM debuggeron
 
 %macro endloop 0
 ;    call sa1debug

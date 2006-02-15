@@ -203,36 +203,15 @@ NEWSYM getcmdline
 .next
     inc eax
     jmp .next2
-.nomore
-    mov [FilenameStart],esi
-    mov dword[esi],'zsne'
-    mov dword[esi+4],'s.cf'
-    mov byte[esi+8],'g'
-    mov byte[esi+9],0
-    mov dword[esi+256],'zgui'
-    mov dword[esi+256+4],'cfg.'
-    mov dword[esi+256+8],'dat '
-    mov byte[esi+256+11],0
-    mov dword[esi+512],'data'
-    mov dword[esi+512+4],'.cmb'
-    mov byte[esi+512+8],0
-    ret
 .nfound
     mov edx,.stringnf
     call PrintStr
     mov esi,CMDLineStr
+.nomore
     mov [FilenameStart],esi
-    mov dword[esi],'zsne'
-    mov dword[esi+4],'s.cf'
-    mov byte[esi+8],'g'
-    mov byte[esi+9],0
-    mov dword[esi+256],'zgui'
-    mov dword[esi+256+4],'cfg.'
-    mov dword[esi+256+8],'dat '
-    mov byte[esi+256+11],0
     mov dword[esi+512],'data'
-    mov dword[esi+4+512],'.cmb'
-    mov byte[esi+8+512],0
+    mov dword[esi+512+4],'.cmb'
+    mov byte[esi+512+8],0
     ret
 
 SECTION .data

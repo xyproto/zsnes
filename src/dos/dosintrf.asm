@@ -94,6 +94,15 @@ NEWSYM SystemInit
     push es
     call getcmdline
 
+    mov dword[esi],'zsne'
+    mov dword[esi+4],'s.cf'
+    mov byte[esi+8],'g'
+    mov byte[esi+9],0
+    mov dword[esi+256],'zgui'
+    mov dword[esi+256+4],'cfg.'
+    mov dword[esi+256+8],'dat '
+    mov byte[esi+256+11],0
+
     ; Get and set the initial directory
     mov ebx,InitDir
     mov edx,InitDrive

@@ -24,7 +24,7 @@
 
 EXTSYM vidbuffer,GUIOn,MMXSupport,resolutn,En2xSaI,antienab,scanlines
 EXTSYM hirestiledat,res512switch,curblank,spritetablea,lineleft,_2xSaILineW
-EXTSYM _2xSaISuperEagleLineW, _2xSaISuper2xSaILineW,newengen,cfield,HalfTrans
+EXTSYM _2xSaISuperEagleLineW,_2xSaISuper2xSaILineW,newengen,cfield,HalfTrans
 EXTSYM GUIOn2,FilteredGUI,SpecialLine,vidbufferofsb,HalfTransB,HalfTransC
 
 ALIGN32

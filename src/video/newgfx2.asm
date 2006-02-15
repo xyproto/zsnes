@@ -21,8 +21,8 @@
 %include "macros.mac"
 
 EXTSYM ngwintable,ngwinen,ngcwinptr,ngcpixleft,ngcwinmode
-EXTSYM tleftn, ng16bprval, vrama, bg1drwng, ng16bbgval, bg1totng
-EXTSYM bgtxadd, taddnfy16x16, taddfy16x16, switch16x16, curmosaicsz, domosaicng
+EXTSYM tleftn,ng16bprval,vrama,bg1drwng,ng16bbgval,bg1totng
+EXTSYM bgtxadd,taddnfy16x16,taddfy16x16,switch16x16,curmosaicsz,domosaicng
 EXTSYM vidmemch4,vidmemch2,vidmemch8,mode0add,vcache4b,vcache2b,vcache8b
 EXTSYM cachesingle2bng,cachesingle8bng,ngpalcon4b,ngpalcon8b
 EXTSYM ngpalcon2b,tleftnb,tltype2b,tltype4b,tltype8b,yposng,flipyposng

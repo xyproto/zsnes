@@ -20,7 +20,7 @@
 
 
 EXTSYM BGMS1,FillSubScr,CMainWinScr,CSubWinScr,scadtng
-EXTSYM ngwinen, winbg1enval, BuildWindow, ngwintable, ngcwinptr, domosaicng16b
+EXTSYM ngwinen,winbg1enval,BuildWindow,ngwintable,ngcwinptr,domosaicng16b
 EXTSYM pesimpng,ScrDispl
 
 

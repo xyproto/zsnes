@@ -48,7 +48,7 @@ EXTSYM Get_Time,Get_TimeDate,spc7110romptr,SPC7110Entries,SPC7110IndexSize
 EXTSYM SPC7110nfname,SPC7110filep,SPC7_Convert_Upper,SPC7_Convert_Lower
 EXTSYM Open_File,Close_File,Read_File,File_Seek,irqv2,irqv,nmiv2,nmiv,snesmmap
 EXTSYM snesmap2,curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr
-EXTSYM NumofBanks
+EXTSYM NumofBanks,BWUsed2
 
 %include "cpu/regs.mac"
 %include "cpu/regsw.mac"
@@ -1825,7 +1825,6 @@ NEWSYM sa12224w ; BWRAM
 .nosnes
     ret
 NEWSYM sa12225w ; BWRAM
-EXTSYM BWUsed2
     mov [BWUsed2],al
     test al,80h
     jnz .upper
