@@ -1190,10 +1190,10 @@ static bool zmv_open(char *filename)
       Msgptr = "MOVIE STARTED.";
     }
 
-    fseek(zmv_vars.fp, -(EXT_CHAP_COUNT_END_DIST), SEEK_END);
+    fseek(zmv_vars.fp, -((signed)EXT_CHAP_COUNT_END_DIST), SEEK_END);
     zmv_open_vars.external_chapter_count = fread2(zmv_vars.fp);
 
-    fseek(zmv_vars.fp, -(INT_CHAP_END_DIST), SEEK_END);
+    fseek(zmv_vars.fp, -((signed)INT_CHAP_END_DIST), SEEK_END);
 
     internal_chapter_read(&zmv_vars.internal_chapters, zmv_vars.fp, zmv_vars.header.internal_chapters);
 
@@ -1387,7 +1387,7 @@ static bool zmv_next_chapter()
     else
     {
       size_t ext_chapter_loc = EXT_CHAP_END_DIST - internal_chapter_pos(&zmv_open_vars.external_chapters, next)*EXT_CHAP_SIZE;
-      fseek(zmv_vars.fp, -(ext_chapter_loc), SEEK_END);
+      fseek(zmv_vars.fp, -((signed)ext_chapter_loc), SEEK_END);
       zst_load(zmv_vars.fp, 0);
       zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
       read_last_joy_state(zmv_vars.fp);
@@ -1443,7 +1443,7 @@ static void zmv_prev_chapter()
   }
 
   //Code to go back before the previous chapter if the previous chapter was loaded recently
-  if ((zmv_open_vars.frames_replayed - zmv_open_vars.last_chapter_frame) < 5*(EmuSpeed+1))
+  if ((zmv_open_vars.frames_replayed - zmv_open_vars.last_chapter_frame) < 5*((unsigned int)EmuSpeed+1))
   { //2.5 seconds NTSC when in 100% speed - altered to make slowmo nicer
     size_t pprev = prev-1;
     size_t pprev_internal = internal_chapter_lesser(&zmv_vars.internal_chapters, pprev);
@@ -1479,7 +1479,7 @@ static void zmv_prev_chapter()
   else
   {
     size_t ext_chapter_loc = EXT_CHAP_END_DIST - internal_chapter_pos(&zmv_open_vars.external_chapters, prev)*EXT_CHAP_SIZE;
-    fseek(zmv_vars.fp, -(ext_chapter_loc), SEEK_END);
+    fseek(zmv_vars.fp, -((signed)ext_chapter_loc), SEEK_END);
     zst_load(zmv_vars.fp, 0);
     zmv_open_vars.frames_replayed = fread4(zmv_vars.fp);
     read_last_joy_state(zmv_vars.fp);
@@ -1522,7 +1522,7 @@ static void zmv_add_chapter()
           }
         }
 
-        fseek(zmv_vars.fp, -(EXT_CHAP_COUNT_END_DIST), SEEK_END);
+        fseek(zmv_vars.fp, -((signed)EXT_CHAP_COUNT_END_DIST), SEEK_END);
         zst_save(zmv_vars.fp, false, false);
         fwrite4(zmv_open_vars.frames_replayed, zmv_vars.fp);
         write_last_joy_state(zmv_vars.fp);
@@ -2012,7 +2012,8 @@ static void raw_video_write_frame()
     void ProcessSoundBuffer();
     extern int DSPBuffer[1280];
     extern unsigned int BufferSizeB, BufferSizeW;
-    int i = 0, temp;
+    unsigned int i = 0;
+    int temp;
 
     if (romispal)
     {
@@ -2156,7 +2157,6 @@ static size_t MovieSub_GetDuration()
 bool RawDumpInProgress = false;
 bool PrevSRAMState;
 
-extern bool SRAMState;
 extern unsigned char ComboCounter, MovieRecordWinVal, AllocatedRewindStates;
 extern unsigned char SloMo, EMUPause;
 char MovieFrameStr[10];
