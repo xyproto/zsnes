@@ -692,7 +692,7 @@ DWORD ZFileSeek()
 
     if(FILETYPE[ZFileSeekHandle]==1)
     {
-
+      return(0xFFFFFFFF);
     }
     else
     {
@@ -716,7 +716,6 @@ DWORD ZFileSeek()
 #ifdef CCBETA
     }
 #endif
-	return(0xFFFFFFFF);
 }
 
 DWORD ZFileRead()

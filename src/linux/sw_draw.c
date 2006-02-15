@@ -35,8 +35,6 @@ extern SDL_Surface *surface;
 extern int SurfaceX, SurfaceY;
 extern int SurfaceLocking;
 
-extern void LinuxExit();
-
 extern unsigned int vidbuffer;
 extern DWORD converta;
 extern unsigned char curblank;

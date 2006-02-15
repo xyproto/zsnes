@@ -735,12 +735,6 @@ void LinuxExit(void)
 	exit(0);
 }
 
-void endgame()
-{
-	LinuxExit();
-}
-
-
 void Start60HZ(void)
 {
 	update_ticks_pc2 = UPDATE_TICKS_UDP;
