@@ -76,5 +76,5 @@ void CapturePicture()
 
 void Clear2xSaIBuffer()
 {
-  memset(vidbufferofsb+576, 0xFF, 576*239);
+  memset(vidbufferofsb+288, 0xFF, 576*239);
 }
