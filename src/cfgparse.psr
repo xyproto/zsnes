@@ -350,3 +350,5 @@ NEWSYM PrevBuildNum, dd 0
 NEWSYM PauseFocusChange, db 0
 NEWSYM KeyIncreaseGamma, dd 0
 NEWSYM KeyDecreaseGamma, dd 0
+NEWSYM MovieVideoMode, db 1
+NEWSYM MovieAudioMode, db 1

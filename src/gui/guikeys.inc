@@ -1546,6 +1546,13 @@ GUIMovieKeys:
     GUIKeyButtonHole MovieStartMethod,2,'R'
     GUIKeyButtonHole MovieStartMethod,3,'S'
 
+    GUIKeyButtonHole MovieVideoMode,0,'O'
+    GUIKeyButtonHole MovieVideoMode,1,'W'
+    GUIKeyButtonHole MovieVideoMode,2,'U'
+
+    GUIKeyButtonHole MovieAudioMode,0,'I'
+    GUIKeyButtonHole MovieAudioMode,1,'A'
+
     GUIKeyCheckbox MovieDisplayFrame,'D'      ; Checkbox
     ret
 

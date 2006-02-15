@@ -143,6 +143,7 @@ EXTSYM GUIwinposy2,GUIwinposx2,AllowMultipleInst,Surround,SoundBufEn,SPCDisable
 EXTSYM GUIEnableTransp,FilteredGUI,MouseWheel,TrapMouseCursor,AlwaysOnTop
 EXTSYM pl1p209,pl1p209b,SaveMainWindowPos,FastFwdToggle,SidewinderFix,RaisePitch
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
+EXTSYM MovieVideoMode, MovieAudioMode
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
@@ -303,10 +304,10 @@ ViewBuffer  resb 50*32
 SECTION .data
 ; Window sizes and positions
 ;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE SPED
-GUIwinposxo dd 0,6   ,65  ,33  ,42  ,38  ,34  ,6   ,64  ,8    ,8    ,33  ,56  ,64  ,56  ,38  ,3   ,48  ,48  ,6    ,28  ,53
-GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,65  ,35  ,19  ,60  ,60  ,20   ,30  ,25
-GUIwinsizex dd 0,244 ,126 ,189 ,172 ,180 ,188 ,244 ,8*16,240  ,240  ,190 ,9*16,8*16,9*16,180 ,250 ,160 ,160 ,244  ,200 ,150
-GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,160 ,190 ,100 ,100 ,190  ,160 ,180
+GUIwinposxo dd 0,6   ,65  ,33  ,42  ,38  ,34  ,6   ,64  ,8    ,8    ,33  ,56  ,64  ,56  ,5  ,3   ,48  ,48  ,6    ,28  ,53
+GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,65  ,25  ,19  ,60  ,60  ,20   ,30  ,25
+GUIwinsizex dd 0,244 ,126 ,189 ,172 ,180 ,188 ,244 ,8*16,240  ,240  ,190 ,9*16,8*16,9*16,246 ,250 ,160 ,160 ,244  ,200 ,150
+GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,180 ,190 ,100 ,100 ,190  ,160 ,180
 GUIwinptr   db 0
 
 SECTION .bss
