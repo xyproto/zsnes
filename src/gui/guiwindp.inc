@@ -3147,16 +3147,16 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     je .zero
     mov byte[GUItextcolor],211
 .zero
-    DrawGUIButton 15,7,36,49,47,GUIMovieTextA1,16,0,0  ; Draw Buttons
-    DrawGUIButton 15,53,36,95,47,GUIMovieTextA2,17,0,0
-    DrawGUIButton 15,101,36,145,47,GUIMovieTextA3,18,0,0
-    DrawGUIButton 15,151,36,195,47,GUIMovieTextA4,32,0,0
-    DrawGUIButton 15,7,56,109,67,GUIMovieTextA5,29,0,0
-    DrawGUIButton 15,7,70,109,81,GUIMovieTextA6,30,0,0
-    DrawGUIButton 15,7,84,109,95,GUIMovieTextA7,31,0,0
-    DrawGUIButton 15,61,150,155,161,GUIMovieTextA8,34,0,0
+    DrawGUIButton 15,7,50,49,61,GUIMovieTextA1,16,0,0  ; Draw Buttons
+    DrawGUIButton 15,53,50,95,61,GUIMovieTextA2,17,0,0
+    DrawGUIButton 15,101,50,145,61,GUIMovieTextA3,18,0,0
+    DrawGUIButton 15,151,50,195,61,GUIMovieTextA4,32,0,0
+    DrawGUIButton 15,7,68,109,79,GUIMovieTextA5,29,0,0
+    DrawGUIButton 15,7,84,109,95,GUIMovieTextA6,30,0,0
+    DrawGUIButton 15,7,100,109,111,GUIMovieTextA7,31,0,0
+    DrawGUIButton 15,130,145,198,156,GUIMovieTextA8,34,0,0
 
-    GUIDisplayTextY 15,12,16,GUIMovieTextB        ; Save Select
+    GUIDisplayTextY 15,8,16,GUIMovieTextB        ; Save Select
     mov byte[GUIMovieTextB1],'0'
     GUIDisplayText 15,22,28,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'1'
@@ -3168,32 +3168,32 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     mov byte[GUIMovieTextB1],'4'
     GUIDisplayText 15,102,28,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'5'
-    GUIDisplayText 15,122,28,GUIMovieTextB1
+    GUIDisplayText 15,22,38,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'6'
-    GUIDisplayText 15,142,28,GUIMovieTextB1
+    GUIDisplayText 15,42,38,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'7'
-    GUIDisplayText 15,162,28,GUIMovieTextB1
+    GUIDisplayText 15,62,38,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'8'
-    GUIDisplayText 15,182,28,GUIMovieTextB1
+    GUIDisplayText 15,82,38,GUIMovieTextB1
     mov byte[GUIMovieTextB1],'9'
-    GUIDisplayText 15,202,28,GUIMovieTextB1
+    GUIDisplayText 15,102,38,GUIMovieTextB1
 
-    GUIDisplayTextY 15,145,60,GUIMovieTextC           ; "Start From" Section
-    GUIDisplayButtonHoleTu 15,210,57,byte[MovieStartMethod],0,GUIMovieTextC1,0
-    GUIDisplayButtonHoleTu 15,144,67,byte[MovieStartMethod],1,GUIMovieTextC2,0
-    GUIDisplayButtonHoleTu 15,190,67,byte[MovieStartMethod],2,GUIMovieTextC3,0
-    GUIDisplayButtonHoleTu 15,144,77,byte[MovieStartMethod],3,GUIMovieTextC4,6
+    GUIDisplayTextY 15,115,16,GUIMovieTextC           ; "Start From" Section
+    GUIDisplayButtonHoleTu 15,115,25,byte[MovieStartMethod],0,GUIMovieTextC1,0
+    GUIDisplayButtonHoleTu 15,152,25,byte[MovieStartMethod],1,GUIMovieTextC2,0
+    GUIDisplayButtonHoleTu 15,200,25,byte[MovieStartMethod],2,GUIMovieTextC3,0
+    GUIDisplayButtonHoleTu 15,115,35,byte[MovieStartMethod],3,GUIMovieTextC4,6
 
 
-    GUIDisplayTextY 15,8,105,GUIMovieTextD           ; Video Section
-    GUIDisplayButtonHoleTu 15,9,115,byte[MovieVideoMode],0,GUIMovieTextD1,1
-    GUIDisplayButtonHoleTu 15,9,125,byte[MovieVideoMode],1,GUIMovieTextD2,2
-    GUIDisplayButtonHoleTu 15,9,135,byte[MovieVideoMode],2,GUIMovieTextD3,0
-    
-    GUIDisplayTextY 15,129,105,GUIMovieTextE           ; Audio Section
-    GUIDisplayButtonHoleTu 15,130,115,byte[MovieAudioMode],0,GUIMovieTextE1,6
-    GUIDisplayButtonHoleTu 15,130,125,byte[MovieAudioMode],1,GUIMovieTextE2,0
-    
+    GUIDisplayTextY 15,8,120,GUIMovieTextD           ; Video Section
+    GUIDisplayButtonHoleTu 15,9,128,byte[MovieVideoMode],0,GUIMovieTextD1,1
+    GUIDisplayButtonHoleTu 15,9,138,byte[MovieVideoMode],1,GUIMovieTextD2,2
+    GUIDisplayButtonHoleTu 15,9,148,byte[MovieVideoMode],2,GUIMovieTextD3,0
+
+    GUIDisplayTextY 15,129,120,GUIMovieTextE           ; Audio Section
+    GUIDisplayButtonHoleTu 15,130,128,byte[MovieAudioMode],0,GUIMovieTextE1,6
+    GUIDisplayButtonHoleTu 15,197,128,byte[MovieAudioMode],1,GUIMovieTextE2,0
+
 
 
     mov dword[GUIMovieTextZ+9],'INAC'    ; Determine and Display Status
@@ -3224,18 +3224,18 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     GUIDisplayButtonHole 15,50,25,byte[CMovieExt],'2'
     GUIDisplayButtonHole 15,70,25,byte[CMovieExt],'3'
     GUIDisplayButtonHole 15,90,25,byte[CMovieExt],'4'
-    GUIDisplayButtonHole 15,110,25,byte[CMovieExt],'5'
-    GUIDisplayButtonHole 15,130,25,byte[CMovieExt],'6'
-    GUIDisplayButtonHole 15,150,25,byte[CMovieExt],'7'
-    GUIDisplayButtonHole 15,170,25,byte[CMovieExt],'8'
-    GUIDisplayButtonHole 15,190,25,byte[CMovieExt],'9'
+    GUIDisplayButtonHole 15,10,35,byte[CMovieExt],'5'
+    GUIDisplayButtonHole 15,30,35,byte[CMovieExt],'6'
+    GUIDisplayButtonHole 15,50,35,byte[CMovieExt],'7'
+    GUIDisplayButtonHole 15,70,35,byte[CMovieExt],'8'
+    GUIDisplayButtonHole 15,90,35,byte[CMovieExt],'9'
 
 
-    DDrawBox 15,115,58,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
-    DDrawBox 15,115,72,[KeyPrevChap]
-    DDrawBox 15,115,86,[KeyNextChap]
+    DDrawBox 15,115,70,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
+    DDrawBox 15,115,86,[KeyPrevChap]
+    DDrawBox 15,115,102,[KeyNextChap]
 
-    GUIDisplayCheckboxu 15,60,12,MovieDisplayFrame,GUIMovieTextB2,0    ; Checkbox
+    GUIDisplayCheckboxu 15,144,67,MovieDisplayFrame,GUIMovieTextB2,0    ; Checkbox
     ret
 
 SECTION .data
@@ -3248,22 +3248,22 @@ GUIMovieTextA6 db 'PREVIOUS CHAPTER',0
 GUIMovieTextA7 db 'NEXT CHAPTER',0
 GUIMovieTextA8 db 'DUMP MOVIE',0
 
-GUIMovieTextB db 'SELECT :',0
+GUIMovieTextB db 'SELECT MOVIE:',0
 GUIMovieTextB1 db ' ',0
 GUIMovieTextB2 db 'DISPLAY FRAMES',0
 
-GUIMovieTextC db 'START FROM:',0
+GUIMovieTextC db 'RECORD FROM:',0
 GUIMovieTextC1 db 'NOW',0
 GUIMovieTextC2 db 'POWER',0
 GUIMovieTextC3 db 'RESET',0
-GUIMovieTextC4 db 'POWER+SRAM CLR',0
+GUIMovieTextC4 db 'POWER+SRAM CLEAR',0
 
-GUIMovieTextD db 'MOVIE VIDEO OPTIONS',0
+GUIMovieTextD db 'DUMP VIDEO OPTIONS',0
 GUIMovieTextD1 db 'NO VIDEO',0
 GUIMovieTextD2 db 'RAW VIDEO',0
 GUIMovieTextD3 db 'UNCOMPRESSED AVI',0
 
-GUIMovieTextE db 'MOVIE AUDIO OPTIONS',0
+GUIMovieTextE db 'DUMP AUDIO OPTIONS',0
 GUIMovieTextE1 db 'NO AUDIO',0
 GUIMovieTextE2 db 'AUDIO',0
 

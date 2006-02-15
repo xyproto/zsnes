@@ -2080,43 +2080,43 @@ DisplayGUIMovieClick:
     ret
 
 .displayboxa                             ; Main Window
-    GUIPHoldbutton 9,36,50,47,16         ; Buttons
-    GUIPHoldbutton 55,36,96,47,17
-    GUIPHoldbutton 103,36,146,47,18
-    GUIPHoldbutton 8,56,111,67,29
-    GUIPHoldbutton 8,70,111,81,30
-    GUIPHoldbutton 8,84,111,95,31
-    GUIPHoldbutton 153,36,196,47,32
-    GUIPHoldbutton 61,150,155,161,34
+    GUIPHoldbutton 9,50,48,61,16         ; Buttons
+    GUIPHoldbutton 55,50,94,61,17
+    GUIPHoldbutton 103,50,144,61,18
+    GUIPHoldbutton 153,50,193,61,32
+    GUIPHoldbutton 9,68,112,79,29
+    GUIPHoldbutton 9,84,112,95,30
+    GUIPHoldbutton 9,100,112,111,31
+    GUIPHoldbutton 132,145,197,156,34
 
                                                  ; Ratios
-    GUIPButtonHole 12,25,byte[CMovieExt],'v'     ; Select
-    GUIPButtonHole 32,25,byte[CMovieExt],'1'
-    GUIPButtonHole 52,25,byte[CMovieExt],'2'
-    GUIPButtonHole 72,25,byte[CMovieExt],'3'
-    GUIPButtonHole 92,25,byte[CMovieExt],'4'
-    GUIPButtonHole 112,25,byte[CMovieExt],'5'
-    GUIPButtonHole 132,25,byte[CMovieExt],'6'
-    GUIPButtonHole 152,25,byte[CMovieExt],'7'
-    GUIPButtonHole 172,25,byte[CMovieExt],'8'
-    GUIPButtonHole 192,25,byte[CMovieExt],'9'
+    GUIPButtonHole 10,25,byte[CMovieExt],'v'     ; Select
+    GUIPButtonHole 30,25,byte[CMovieExt],'1'
+    GUIPButtonHole 50,25,byte[CMovieExt],'2'
+    GUIPButtonHole 70,25,byte[CMovieExt],'3'
+    GUIPButtonHole 90,25,byte[CMovieExt],'4'
+    GUIPButtonHole 10,35,byte[CMovieExt],'5'
+    GUIPButtonHole 30,35,byte[CMovieExt],'6'
+    GUIPButtonHole 50,35,byte[CMovieExt],'7'
+    GUIPButtonHole 70,35,byte[CMovieExt],'8'
+    GUIPButtonHole 90,35,byte[CMovieExt],'9'
 
-    GUIPButtonHole 211,57,byte[MovieStartMethod],0    ; Start From
-    GUIPButtonHole 145,67,byte[MovieStartMethod],1
-    GUIPButtonHole 191,67,byte[MovieStartMethod],2
-    GUIPButtonHole 145,77,byte[MovieStartMethod],3
-    
-    GUIPButtonHole 9,117,byte[MovieVideoMode],0      ; Movie Options
-    GUIPButtonHole 9,127,byte[MovieVideoMode],1
-    GUIPButtonHole 9,137,byte[MovieVideoMode],2
-    GUIPButtonHole 130,117,byte[MovieAudioMode],0
-    GUIPButtonHole 130,127,byte[MovieAudioMode],1
+    GUIPButtonHole 115,25,byte[MovieStartMethod],0    ; Start From
+    GUIPButtonHole 152,25,byte[MovieStartMethod],1
+    GUIPButtonHole 200,25,byte[MovieStartMethod],2
+    GUIPButtonHole 115,35,byte[MovieStartMethod],3
 
-    DGOptnsProcBox 118,59,[KeyInsrtChap]           ; Keyboard Shortcut Boxes
-    DGOptnsProcBox 118,73,[KeyPrevChap]
-    DGOptnsProcBox 118,87,[KeyNextChap]
+    GUIPButtonHole 9,128,byte[MovieVideoMode],0      ; Movie Options
+    GUIPButtonHole 9,138,byte[MovieVideoMode],1
+    GUIPButtonHole 9,148,byte[MovieVideoMode],2
+    GUIPButtonHole 130,128,byte[MovieAudioMode],0
+    GUIPButtonHole 197,128,byte[MovieAudioMode],1
 
-    GUIClickCButton 60,12,byte[MovieDisplayFrame]   ; Checkbox
+    DGOptnsProcBox 116,71,[KeyInsrtChap]           ; Keyboard Shortcut Boxes
+    DGOptnsProcBox 116,87,[KeyPrevChap]
+    DGOptnsProcBox 116,103,[KeyNextChap]
+
+    GUIClickCButton 144,67,byte[MovieDisplayFrame]   ; Checkbox
     ret
 
 
