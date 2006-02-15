@@ -62,7 +62,7 @@ the following speedups:
 const int rootrand = 20;	/* Max/Min decrease of the root of the flames */
 const int decay = 5;		/* How far should the flames go up on the screen? */
 				/* This MUST be positive - JF */
-const int miny = 0;		/* Startingline of the flame routine.
+const int miny = 1;		/* Startingline of the flame routine.
 				(should be adjusted along with MinY above) */
 const int smooth = 1;		/* How descrete can the flames be?*/
 const int minfire = 50;		/* limit between the "starting to burn" and
