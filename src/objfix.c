@@ -22,7 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 int open_error(const char *filename, const char *mode)
 {
- printf("Failure opening %s for %s\n");
+ printf("Failure opening %s for %s\n",filename,mode);
  return 1;
 }
 
