@@ -43,6 +43,6 @@ void placetime()
 
 unsigned int version_hash()
 {
-  return(~crc32(crc32(0, (const unsigned char *)__DATE__, strlen(__DATE__)), (const unsigned char *)__TIME__, strlen(__TIME__)));
+  return(~crc32(0, (const unsigned char *)__DATE__, strlen(__DATE__)));
 }
 
