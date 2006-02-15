@@ -1002,7 +1002,6 @@ NEWSYM virqnodisable,  db 0
 NEWSYM numspcvblleft,  dd 0
 NEWSYM spc700idle,     dd 0
 NEWSYM IRQHack,        dw 0
-NEWSYM Offby1line,     db 0
 NEWSYM CacheCheckSkip,     db 0
 NEWSYM HIRQSkip,     db 0
 NEWSYM ClearScreenSkip, db 0

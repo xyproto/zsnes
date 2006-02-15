@@ -28,7 +28,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <unistd.h>
 #define DIR_SLASH '\\'
 #ifdef __WIN32__
 #include <windows.h>
@@ -45,7 +44,7 @@ extern unsigned char KitchenSync, Force60hz;
 extern unsigned char Palette0, pl1contrl, pl2contrl, MMXSupport, Force8b, ForcePal, GUIClick,
                      MouseDis, MusicRelVol, ScreenScale, SoundQuality, StereoSound, V8Mode,
                      antienab, cvidmode, debugdisble, debugger, enterpress, vsyncon, DisplayS,
-                     SnowOn, Triplebufen, SPC700sh, OffBy1Line, DSPDisable, frameskip,
+                     SnowOn, Triplebufen, SPC700sh, DSPDisable, frameskip,
                      gammalevel, guioff, romtype, per2exec, scanlines, soundon, spcon,
                      showallext, autoloadstate, smallscreenon, autoloadmovie, ZMVZClose,
                      ZMVRawDump, HacksDisable;
@@ -81,7 +80,6 @@ static void display_help()
 #endif
   put_line("  -7      Disable SPC700 speedhack");
   put_line("  -8      Force 8-bit sound");
-  put_line("  -9      Off by 1 line fix");
   put_line("  -c      Enable full/wide screen (when available)");
   put_line("  -cc     Enable small screen (when available)");
 #ifdef __MSDOS__
@@ -329,10 +327,6 @@ static void handle_params(int argc, char *argv[])
 
           case '8': //Force 8-bit sound
             Force8b = 1;
-            break;
-
-          case '9': //Off by 1 line
-            OffBy1Line = 1;
             break;
 
           case 'c': //Enable full screen (when available)
