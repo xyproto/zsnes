@@ -36,14 +36,14 @@ EXTSYM StopSound,StartSound,PrevPicture,File_Seek,File_Seek_End,nggposng
 EXTSYM Palette0,GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram,dsp1array
 EXTSYM genfulladdtab,genfulladdtabng,TimerEnable,ShowTimer,debugdisble,GUIOn
 EXTSYM FilteredGUI,HalfTrans,SmallMsgText,ClearScreen,Mode7HiRes,mosenng,mosszng
-EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,granadd,CSStatus
+EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,CSStatus
 EXTSYM CSStatus2,CSStatus3,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
 EXTSYM bg1objptr,DecompAPtr,HalfTransB,HalfTransC,cur_zst_size,old_zst_size
 EXTSYM MovieProcessing,mzt_chdir,UpChdir,MovieFrameStr,GetMovieFrameStr
 EXTSYM MovieDisplayFrame
 
 %ifdef __MSDOS__
-EXTSYM SB_blank,vsyncon,Triplebufen
+EXTSYM SB_blank,vsyncon,Triplebufen,granadd
 %endif
 
 SECTION .bss
