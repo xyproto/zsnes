@@ -59,7 +59,7 @@ EXTSYM Grab_PNG_Data
 SECTION .text
 
 GUIBufferData:
-    mov ecx,16384
+    mov ecx,16000
     cmp byte[cbitmode],1
     jne near .16b
     add ecx,16384
@@ -67,6 +67,8 @@ GUIBufferData:
     ; copy to spritetable
     mov esi,[vidbuffer]
     mov edi,[spritetablea]
+    add esi,4*384
+    add edi,4*384
 .loop
     mov eax,[esi]
     mov [edi],eax
@@ -84,7 +86,7 @@ GUIBufferData:
     ret
 
 GUIUnBuffer:
-    mov ecx,16384
+    mov ecx,16000
     cmp byte[cbitmode],1
     jne near .16b
     add ecx,16384
@@ -92,6 +94,8 @@ GUIUnBuffer:
     ; copy from spritetable
     mov esi,[vidbuffer]
     mov edi,[spritetablea]
+    add esi,4*384
+    add edi,4*384
 .loop
     mov eax,[edi]
     mov [esi],eax
