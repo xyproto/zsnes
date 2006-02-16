@@ -32,7 +32,7 @@ EXTSYM spritetablea,sprlefttot,newengen,spcextraram,resolutn,Open_File
 EXTSYM Close_File,Write_File,Create_File,Get_Key,Get_Date,continueprognokeys
 EXTSYM ForceNonTransp,GUIOn,Check_Key,JoyRead,GetScreen,SSKeyPressed
 EXTSYM SPCKeyPressed,StopSound,StartSound,ExecExitOkay,t1cc,Clear2xSaIBuffer
-EXTSYM romdata,romtype,ScreenShotFormat,Voice0Disable,Voice1Disable
+EXTSYM romdata,infoloc,ScreenShotFormat,Voice0Disable,Voice1Disable
 EXTSYM Voice2Disable,Voice3Disable,Voice4Disable,Voice5Disable,Voice6Disable
 EXTSYM Voice7Disable,SRAMChdir,SPCPath,SnapPath,CHPath,ZFileCHDir
 %ifndef NO_PNG
@@ -909,11 +909,7 @@ NEWSYM savespcdata
     ; Copy Game Title
 
     mov esi,[romdata]
-    add esi,7FC0h
-    cmp byte[romtype],2
-    jne .nohirom2
-    add esi,8000h
-.nohirom2
+    add esi,[infoloc]
     mov ecx,20
     mov edi,ssdatst+46+32
 .romloop
