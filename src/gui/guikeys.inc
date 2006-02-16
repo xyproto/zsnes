@@ -768,8 +768,7 @@ GUIOptionKeys:
 .nousepl34
 %ifdef __MSDOS__
     GUIKeyCheckbox SidewinderFix,'I'
-%endif
-%ifdef __WIN32__
+%elifdef __WIN32__
     GUIKeyCheckbox HighPriority,'H'
 %endif
     GUIKeyCheckbox FPSAtStart,'F'
@@ -1147,9 +1146,11 @@ GUIVideoKeys:
 ;    mov byte[vsyncon],0
 ;    mov byte[cfgvsync],0
     call initDirectDraw
+    pushad
+    call Clear2xSaIBuffer
+    popad
 .notriplebufferwin
-%endif
-%ifdef __MSDOS__
+%elifdef __MSDOS__
     cmp dh,'T'
     jne .notriplebuffer
     xor ebx,ebx
@@ -1173,6 +1174,9 @@ GUIVideoKeys:
     mov [cfgvsync],al
 %ifdef __WIN32__
     call initDirectDraw
+    pushad
+    call Clear2xSaIBuffer
+    popad
 %endif
 %ifdef __MSDOS__
 ;    mov byte[Triplebufen],0

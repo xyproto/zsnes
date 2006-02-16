@@ -2400,8 +2400,10 @@ DisplayGUIVideoClick:
     GUIClickCButton 11,183,byte[GrayscaleMode]
 %ifdef __WIN32__
     GUIClickCButtonf 115,183,byte[vsyncon],initDirectDraw
-%endif
-%ifdef __MSDOS__
+    pushad
+    call Clear2xSaIBuffer
+    popad
+%elifdef __MSDOS__
     GUIClickCButtonT 115,183,byte[vsyncon],byte[Triplebufen]
 %endif
     xor ebx,ebx
@@ -2423,11 +2425,14 @@ DisplayGUIVideoClick:
 %endif
 .nohsline
 %ifdef __WIN32__
-     xor ebx,ebx
-     mov bl,[cvidmode]
-     cmp byte[GUITBWVID+ebx],0
-     je near .notriplebufferwin
-     GUIClickCButtonf 11,123,byte[TripleBufferWin],initDirectDraw
+    xor ebx,ebx
+    mov bl,[cvidmode]
+    cmp byte[GUITBWVID+ebx],0
+    je near .notriplebufferwin
+    GUIClickCButtonf 11,123,byte[TripleBufferWin],initDirectDraw
+    pushad
+    call Clear2xSaIBuffer
+    popad
 .notriplebufferwin
 %endif
     xor ebx,ebx
@@ -2518,8 +2523,7 @@ DisplayGUISoundClick:
     GUIClickCButton5 111,173,byte[LowPassFilterType],2
 %ifndef __MSDOS__
     GUIClickCButton5MMXC 111,183,byte[LowPassFilterType],3
-%endif
-%ifdef __WIN32__
+%elifdef __WIN32__
     GUIClickCButton 11,101,byte[PrimaryBuffer]
 %endif
     cmp eax,15
