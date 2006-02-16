@@ -20,6 +20,8 @@
 
 
 
+EXTSYM VERSION_STR,placedate
+
 SECTION .text
 
 ; Window Display Routines
@@ -1742,14 +1744,20 @@ DisplayGUISound:                     ; Sound Related Options
     GUIDisplayCheckboxun 6,11,163,SoundInterpType,1,GUISoundTextE1,0
     GUIDisplayCheckboxun 6,11,173,SoundInterpType,2,GUISoundTextE2,0
 %ifndef __MSDOS__
+    cmp byte[MMXSupport],0
+    je near .no8ptinterp
     GUIDisplayCheckboxun 6,11,183,SoundInterpType,3,GUISoundTextE3,0
+.no8ptinterp
 %endif
 
     GUIDisplayTextY 6,106,158,GUISoundTextF
     GUIDisplayCheckboxun 6,111,163,LowPassFilterType,1,GUISoundTextF1,1
     GUIDisplayCheckboxun 6,111,173,LowPassFilterType,2,GUISoundTextF2,1
 %ifndef __MSDOS__
+    cmp byte[MMXSupport],0
+    je near .nohiqualityfilter
     GUIDisplayCheckboxun 6,111,183,LowPassFilterType,3,GUISoundTextF3,0
+.nohiqualityfilter
 %endif
 
     GUIDisplayBBox 6,15,61,69,69,167            ;Sampling Rate Box
@@ -3043,7 +3051,6 @@ DisplayGUIAbout:          ; Displays the About Box
 
     ;This will attach compile date onto the end of GUIGUIAboutText1
     pushad
-    EXTSYM VERSION_STR, placedate
     mov eax,GUIGUIAboutTextA1
     mov [VERSION_STR],eax
     call placedate

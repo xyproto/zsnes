@@ -125,7 +125,7 @@ EXTSYM WDSPRegF5,WDSPRegF6,WDSPRegF7,WDSPRegF8,WDSPRegF9,WDSPRegFA,WDSPRegFB
 EXTSYM WDSPRegFC,WDSPRegFD,WDSPRegFE,WDSPRegFF
 EXTSYM spcBuffera,DSPMem,SoundInterpType,NoiseData,Voice0Disable
 EXTSYM cfgecho,Surround,echobuf,ENVDisable,LowPassFilterType
-EXTSYM EMUPause,AudioLogging
+EXTSYM EMUPause,AudioLogging,MMXSupport
 
 %ifdef __MSDOS__
 EXTSYM SB_alloc_dma,SB_quality_limiter,vibracard
@@ -477,18 +477,19 @@ NEWSYM conv2speed
     jnz .next
     ret
 
-EXTSYM MMXSupport
-
 NEWSYM AdjustFrequency
+      xor ebx,ebx
       mov al,[SoundInterpType]
       mov ah,[MMXSupport]
-      cmp ah,0
+      or al,al
+      je near .notgaussian
+      or ah,ah
       jne .mmx
+      cmp al,3
+      jb .mmx
       mov al,1
       mov [SoundInterpType],al
 .mmx
-      or al,al
-      je near .notgaussian
       cmp al,2
       je near .cubicspline
       ja near .fir_mmx
@@ -1902,8 +1903,8 @@ BRRDecode:
     dec byte[sampleleft]
     jnz .nextsample
 
-    cmp byte[SoundInterpType],1
-	jae .BRR_decode_ahead
+    cmp dword[DSPInterpolate],0
+	jnz .BRR_decode_ahead
 
 	cmp byte[LowPassFilterType],2
 	jle near .no_dlpf
@@ -4444,7 +4445,7 @@ NEWSYM EchoStereo
     pop edx
     pop ebx
     mov ebx,[Voice0Freq+%1*4]
-    cmp byte[SoundInterpType],0
+    cmp dword[DSPInterpolate],0
     je %%notinterpsound
     cmp byte[StereoSound],1
     je near %%EndofProcessNEnvsi
@@ -4485,7 +4486,7 @@ NEWSYM EchoStereo
     pop edx
     pop ebx
     mov ebx,[Voice0Freq+%1*4]
-    cmp byte[SoundInterpType],0
+    cmp dword[DSPInterpolate],0
     je %%notinterpsound2
     cmp byte[StereoSound],1
     je near %%EndofProcessNEnvsi
@@ -4500,7 +4501,7 @@ NEWSYM EchoStereo
     mov dword[Voice0Time+%1*4],0FFFFFFFFh
 %%ContinueGain
     mov ebx,[Voice0Freq+%1*4]
-    cmp byte[SoundInterpType],0
+    cmp dword[DSPInterpolate],0
     je %%notinterpsound3
     cmp byte[StereoSound],1
     je near %%EndofProcessNEnvsi
@@ -4626,7 +4627,7 @@ NEWSYM EchoStereo
     mov byte[UniqueSoundv],1
 %%NotUnique
 
-    cmp byte[SoundInterpType],0
+    cmp dword[DSPInterpolate],0
     je %%notinterpsound4
     cmp byte[StereoSound],1
     je %%NextSampleSi
@@ -4801,7 +4802,7 @@ NEWSYM EchoStereo
     mov [Voice0End+%1],al
     mov ebx,[Voice0Freq+%1*4]
     add dword[Voice0Ptr+%1*4],9
-    cmp byte[SoundInterpType],0
+    cmp dword[DSPInterpolate],0
     je %%notinterpsound6
     cmp byte[StereoSound],1
     je near %%NextSampleSi
