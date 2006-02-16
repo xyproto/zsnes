@@ -241,7 +241,7 @@ NEWSYM showmenu
     popad
     call StopSound
 .nextkey
-    call GUIUnBuffer
+    ;call GUIUnBuffer
     call menudrawbox8b
     push eax
     call copyvid
