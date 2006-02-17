@@ -45,7 +45,7 @@ EXTSYM GetMouseMoveY,GetMouseButton,SetMouseMinX,SetMouseMaxX,SetMouseMinY
 EXTSYM SetMouseMaxY,SetMouseX,SetMouseY,T36HZEnabled,MouseButton,Start36HZ
 EXTSYM Stop36HZ,BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
 EXTSYM vesa2_rfull,vesa2_rtrcl,vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla
-EXTSYM vesa2_bfull,vesa2_btrcl,vesa2_btrcla,Init_2xSaIMMXW
+EXTSYM vesa2_bfull,vesa2_btrcl,vesa2_btrcla,Init_2xSaIMMXW,DoSleep
 EXTSYM ZsnesPage,V8Mode,GrayscaleMode,PrevWinMode,PrevFSMode,FrameSemaphore
 EXTSYM _imp__GetLocalTime@4
 EXTSYM DisplayWIPDisclaimer
@@ -879,9 +879,6 @@ NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
    popad
    ret
 
-NEWSYM initvideo2 ; ModeQ scanline re-init (Keep blank on non-dos ports)
-    ret
-
 NEWSYM deinitvideo
     ret
 
@@ -1290,7 +1287,16 @@ NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
 .nosound
     ret
 
+section .data
+NEWSYM delayvalue, db 0
+
+section .text
+
 NEWSYM delay
+   mov [delayvalue],ecx
+   pushad
+   call DoSleep
+   popad
    ret
 
 NEWSYM Check60hz

@@ -2535,8 +2535,7 @@ void drawscreenwin(void)
            DrawWin256x224x32();
            break;
          }
-
-           SURFDW=(DWORD *) &SurfBuf[(resolutn-1)*pitch];
+/*           SURFDW=(DWORD *) &SurfBuf[(resolutn-1)*pitch];
            color32=0x7F000000;
 
            for(i=0;i<256;i++)
@@ -2551,7 +2550,7 @@ void drawscreenwin(void)
            {
              SURFDW[i]=color32;
            }
-           break;
+           break;*/
          case 24:
             MessageBox (NULL, "Sorry.  ZSNESw does not work in windowed 24 bit color modes. \nClick 'OK' to switch to a full screen mode.", "DDRAW Error" , MB_ICONERROR );
             cvidmode=3;
@@ -3135,6 +3134,16 @@ int CheckBatteryPercent()
    return((SysPowerStat.BatteryLifePercent == 255) ? -1 : SysPowerStat.BatteryLifePercent);
 }
 
+extern "C" unsigned int delayvalue;
+
+// Delay function for GUI
+void DoSleep()
+{
+   // Fraction value for windows version of sleep
+   delayvalue /= 100;
+
+   Sleep(delayvalue);
+}
 
 extern "C" unsigned int PrevBuildNum;
 
