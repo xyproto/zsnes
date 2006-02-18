@@ -120,7 +120,7 @@ NEWSYM SA1Swap
     ; Check if IRQ is executed on SA-1
     xor eax,eax
     mov al,dl
-    add dh,25
+   ; add dh,25
     mov edi,[SA1tablead+eax*4]
     mov byte[SA1Status],1
     test dword[SA1DoIRQ],0FF000003h
@@ -163,7 +163,7 @@ NEWSYM SA1Swap
     ret
 
 .speedhack
-    add dh,100
+    add dh,90
 
     mov bl,[esi]
     inc esi
@@ -189,7 +189,7 @@ NEWSYM SA1Swap
     add byte[CurrentExecSA1],4
     mov byte[SA1Status],0
     add dword[SA1TimerVal],23
-;    xor dh,dh
+    xor dh,dh
     mov dh,18
     cmp esi,dword[SA1LBound]
     jb .stoph
@@ -207,7 +207,7 @@ NEWSYM SA1Swap
     ret
 .nosa1exec
     xor ecx,ecx
-    add dh,22
+    add dh,18
     add byte[CurrentExecSA1],2
     mov byte[SA1Status],0
     ret
