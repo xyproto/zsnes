@@ -56,7 +56,7 @@ EXTSYM FillSubScr,scanlines,drawmode7win16bd,SpecialLine,vidmemch2s,dovegrest
 EXTSYM smallscreenon,ScreenScale,SA1Enable,drawlinengom16x164b16b,bgallchange
 EXTSYM bg1change,bg2change,bg3change,bg4change,ngwinptr,objwlrpos,objwen
 EXTSYM objclineptr,CSprWinPtr,BuildWindow2,NGNumSpr,fulladdtab,MMXSupport
-EXTSYM bgtxadd2
+EXTSYM bgtxadd2,gammalevel16b
 
 %include "video/vidmacro.mac"
 %include "video/newgfx16.mac"
@@ -104,6 +104,11 @@ NEWSYM setpalallng
     mov [prevpal2+ebp],dx
     mov ax,dx
     and al,01Fh
+    add al,[gammalevel16b]
+    cmp al,31
+    jbe .nogr
+    mov al,31
+.nogr
     mov cl,[vidbright]
     mul cl
     mov cl,15
@@ -116,6 +121,11 @@ NEWSYM setpalallng
     mov ax,dx
     shr ax,5
     and al,01Fh
+    add al,[gammalevel16b]
+    cmp al,31
+    jbe .nogg
+    mov al,31
+.nogg
     mov cl,[vidbright]
     mul cl
     mov cl,15
@@ -127,6 +137,11 @@ NEWSYM setpalallng
     mov ax,dx
     shr ax,10
     and al,01Fh
+    add al,[gammalevel16b]
+    cmp al,31
+    jbe .nogb
+    mov al,31
+.nogb
     mov cl,[vidbright]
     mul cl
     mov cl,15
@@ -205,6 +220,11 @@ NEWSYM setpalette16bng
 .notchanged
     mov ax,dx
     and al,01Fh
+    add al,[gammalevel16b]
+    cmp al,31
+    jbe .norr
+    mov al,31
+.norr
     mov cl,[vidbright]
     mul cl
     mov cl,15
@@ -217,6 +237,11 @@ NEWSYM setpalette16bng
     mov ax,dx
     shr ax,5
     and al,01Fh
+    add al,[gammalevel16b]
+    cmp al,31
+    jbe .norg
+    mov al,31
+.norg
     mov cl,[vidbright]
     mul cl
     mov cl,15
@@ -228,6 +253,11 @@ NEWSYM setpalette16bng
     mov ax,dx
     shr ax,10
     and al,01Fh
+    add al,[gammalevel16b]
+    cmp al,31
+    jbe .norb
+    mov al,31
+.norb
     mov cl,[vidbright]
     mul cl
     mov cl,15
