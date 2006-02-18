@@ -1633,18 +1633,6 @@ void headerhack()
   //Okaaay...
   if(DSP1Type) { disablehdma = true; }
 
-/*
-  //Final Fantasy 3u/6j (extent unknown!)
-  if ((romdata[0x26AC] == 0xF00F2908) || !strncmp((RomData+Hi),"FINAL FANTASY 6" ,15))
-  {
-    //asm volatile("int $3");
-    opexec268 = 163;
-    opexec358 = 157;
-    opexec268cph = 39;
-    opexec358cph = 39;
-  }
-*/
-
   //Earthworm Jim 2 (all regions?)
   if (!strncmp((RomData+Lo),"EARTHWORM JIM 2     " ,20))
   {
