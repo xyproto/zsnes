@@ -1157,7 +1157,7 @@ SECTION .text
     cmp bx,[curypos]
     jb .overflow
     mov al,[sprlefttot+ebx]
-    cmp al,37
+    cmp al,45
     ja near .overflow
     inc byte[sprlefttot+ebx]
     add ebx,[addr2add]
@@ -1198,7 +1198,7 @@ SECTION .text
     cmp bx,[curypos]
     jb .overflow2
     mov al,[sprlefttot+ebx]
-    cmp al,37
+    cmp al,45
     ja near .overflow2
     inc byte[sprlefttot+ebx]
     add ebx,[addr2add]
@@ -1823,7 +1823,7 @@ SECTION .text
     cmp bx,[curypos]
     jb .overflow
     mov al,[sprlefttot+ebx]
-    cmp al,37
+    cmp al,45
     ja near .overflow
     inc byte[sprlefttot+ebx]
     mov edi,[.cpri]
@@ -1865,7 +1865,7 @@ SECTION .text
     cmp bx,[curypos]
     jb .overflow
     mov al,[sprlefttot+ebx]
-    cmp al,37
+    cmp al,45
     ja near .overflow2
     inc byte[sprlefttot+ebx]
     mov edi,[.cpri]
