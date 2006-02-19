@@ -26,9 +26,18 @@
 
 
 
+EXTSYM WriteLine
+
 %macro FXReturn 0
    dec dword[NumberOfOpcodes]
+;pushad
+   js %%endloop
+;call WriteLine
+;popad
+%%blah
    jmp [FxTabled+ecx*4]
+%%endloop
+   jmp FXEndLoop
    ALIGN32
 %endmacro
 
@@ -38,7 +47,6 @@
    jmp [FxTabled+ecx*4]
 %%endloop
    jmp FXEndLoop
-;   jmp [FxTabled+ecx*4]
    ALIGN32
 %endmacro
 

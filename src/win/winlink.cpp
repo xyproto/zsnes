@@ -3088,6 +3088,16 @@ void ZsnesPage()
    MouseY = 0;
 }
 
+
+extern "C" signed int NumberOfOpcodes;
+
+void WriteLine()
+{
+char buf[50];
+sprintf(buf, "%d\n", NumberOfOpcodes);
+WriteConsole(debugWindow, buf, strlen(buf), NULL, NULL);
+
+}
 // This function creates the debug console
 void InitDebugger()
 {
