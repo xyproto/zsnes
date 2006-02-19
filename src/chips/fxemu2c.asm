@@ -48,9 +48,11 @@ NEWSYM FxOpd00      ; STOP   stop GSU execution (and maybe generate an IRQ)     
    and dword[SfxSFR],0FFFFh-32     ; Clear Go flag (set to 1 when the GSU is running)
    test dword[SfxCFGR],080h        ; Check if the interrupt generation is on
    jnz .NoIRQ
-   or dword[SfxSFR],08000h         ; Set IRQ Flag
+         ; Set IRQ Flag
 .NoIRQ
    CLRFLAGS
+    and byte[SfxSFR+1],07fh
+
    inc ebp
    mov eax,[NumberOfOpcodes]
    add eax,0F0000000h
