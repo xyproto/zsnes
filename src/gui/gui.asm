@@ -148,7 +148,7 @@ EXTSYM MovieVideoMode, MovieAudioMode
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
 %elifdef __WIN32__
-EXTSYM initDirectDraw,reInitSound
+EXTSYM initDirectDraw,reInitSound,CheckAlwaysOnTop,CheckPriority,CheckScreenSaver
 %elifdef __MSDOS__
 EXTSYM dssel,SetInputDevice209,initvideo2
 %endif

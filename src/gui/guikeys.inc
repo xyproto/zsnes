@@ -770,6 +770,9 @@ GUIOptionKeys:
     GUIKeyCheckbox SidewinderFix,'I'
 %elifdef __WIN32__
     GUIKeyCheckbox HighPriority,'H'
+    pushad
+    call CheckPriority
+    popad
 %endif
     GUIKeyCheckbox FPSAtStart,'F'
     GUIKeyCheckbox Turbo30hz,'E'
@@ -785,6 +788,9 @@ GUIOptionKeys:
 %endif
 %ifdef __WIN32__
     GUIKeyCheckbox DisableScreenSaver,'I'
+    pushad
+    call CheckScreenSaver
+    popad
 %endif
     ret
 

@@ -20,8 +20,6 @@
 
 
 %ifdef __WIN32__
-EXTSYM CheckPriority
-EXTSYM CheckAlwaysOnTop
 EXTSYM MinimizeWindow
 %endif
 
@@ -1357,24 +1355,6 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
-%macro GUIClickCButtonW 3
-    cmp eax,%1+1
-    jl %%noclick
-    cmp edx,%2+3
-    jl %%noclick
-    cmp eax,%1+6
-    jg %%noclick
-    cmp edx,%2+8
-    jg %%noclick
-    xor %3,1
-%%noclick
-%ifdef __WIN32__
-    pushad
-    call CheckPriority
-    popad
-%endif
-%endmacro
-
 %macro GUIClickCButtonI 3
     cmp eax,%1+1
     jl %%noclick
@@ -2343,9 +2323,11 @@ DisplayGUIOptionClick:
     GUIClickCButtonM 11,50,byte[pl12s34]
 %ifdef __MSDOS__
     GUIClickCButton 11,60,byte[SidewinderFix]
-%endif
-%ifdef __WIN32__
-    GUIClickCButtonW 11,60,byte[HighPriority]
+%elifdef __WIN32__
+    GUIClickCButton 11,60,byte[HighPriority]
+    pushad
+    call CheckPriority
+    popad
 %endif
     GUIClickCButton 11,70,byte[FPSAtStart]
     GUIClickCButton 11,80,byte[Turbo30hz]
@@ -2360,7 +2342,10 @@ DisplayGUIOptionClick:
     GUIClickCButton 11,160,byte[PauseFocusChange]
 %endif
 %ifdef __WIN32__
-    GUIClickCButtonW 11,170,byte[DisableScreenSaver]
+    GUIClickCButton 11,170,byte[DisableScreenSaver]
+    pushad
+    call CheckScreenSaver
+    popad
 %endif
      ret
 

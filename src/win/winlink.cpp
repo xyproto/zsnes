@@ -456,6 +456,12 @@ extern "C" void CheckAlwaysOnTop()
       else SetWindowPos(hMainWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 }
 
+extern "C" void CheckScreenSaver()
+{
+   if (DisableScreenSaver == 1 && IsActivated == 1) SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, 0, SPIF_SENDCHANGE);
+      else SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, TRUE, 0, SPIF_SENDCHANGE);
+}
+
 extern "C" void MinimizeWindow()
 {
    ShowWindow(hMainWindow, SW_MINIMIZE);
@@ -544,6 +550,7 @@ void ExitFunction()
    if (debugWindow) FreeConsole();
 
    IsActivated = 0;
+   CheckScreenSaver();
    ReleaseDirectInput();
    ReleaseDirectSound();
    ReleaseDirectDraw();
@@ -667,6 +674,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (FirstActivate == 1) FirstActivate = 0;
             if (FullScreen == 1) Clear2xSaIBuffer();
             CheckPriority();
+            CheckScreenSaver();
          }
          if (LOWORD(wParam) == WA_INACTIVE)
          {
@@ -674,32 +682,25 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             if (PauseFocusChange) EMUPause = 1;
             InputDeAcquire();
             if (GUIOn || GUIOn2 || EMUPause) SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
+            CheckScreenSaver();
          }
          break;
       case WM_SETFOCUS:
          if (FullScreen == 0) ShowWindow(hMainWindow, SW_SHOWNORMAL);
          CheckPriority();
+         CheckScreenSaver();
          InputAcquire();
          break;
       case WM_KILLFOCUS:
          InputDeAcquire();
          IsActivated = 0;
          if (GUIOn || GUIOn2 || EMUPause) SetPriorityClass(GetCurrentProcess(), IDLE_PRIORITY_CLASS);
+         CheckScreenSaver();
          break;
       case WM_DESTROY:
          break;
       case WM_CLOSE:
          break;
-	  case WM_SYSCOMMAND:
-		 if (DisableScreenSaver)
-		 {
-		    switch (wParam)
-			{
-			   case SC_MONITORPOWER:
-			   return 0;
-			}
-		 }
-		break;
    }
 	return DefWindowProc(hWnd,uMsg,wParam,lParam);;
 }
@@ -2097,6 +2098,7 @@ void initwinvideo(void)
 
       CheckPriority();
       CheckAlwaysOnTop();
+      CheckScreenSaver();
 
       if (!hMainWindow)
       {
