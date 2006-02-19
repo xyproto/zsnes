@@ -2523,7 +2523,8 @@ DisplayGUISoundClick:
     GUIClickCButton5 111,173,byte[LowPassFilterType],2
 %ifndef __MSDOS__
     GUIClickCButton5MMXC 111,183,byte[LowPassFilterType],3
-%elifdef __WIN32__
+%endif
+%ifdef __WIN32__
     GUIClickCButton 11,101,byte[PrimaryBuffer]
 %endif
     cmp eax,15
