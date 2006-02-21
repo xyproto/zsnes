@@ -1257,12 +1257,6 @@ NEWSYM SetInputDevice
     mov dword[eax+44],46
     ret
 
-NEWSYM GotoHomepage
-    pushad
-    call ZsnesPage
-    popad
-    ret
-
 EXTSYM SystemTimewHour
 EXTSYM SystemTimewMinute
 EXTSYM SystemTimewSecond

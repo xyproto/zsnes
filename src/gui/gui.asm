@@ -94,7 +94,7 @@ EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
 EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,SA1Enable,SA1RAMArea
 EXTSYM MMXCheck,SaveCombFile,showinfogui
 EXTSYM ErrorPointer,MessageOn,GetTime,sndrot,regsbackup,GetScreen
-EXTSYM GUITBWVID,Clear2xSaIBuffer,MouseWindow,GotoHomepage,cfgcvidmode
+EXTSYM GUITBWVID,Clear2xSaIBuffer,MouseWindow,cfgcvidmode
 EXTSYM ExitFromGUI,GUIWFVID,cfgvsync,newgfx16b,cfgscanline,cfginterp
 EXTSYM NumVideoModes,cfgvolume,MusicVol,DSPMem,NumInputDevices,GUIInputNames
 EXTSYM GUIVideoModeNames,GUISLVID,GUIINVID,GUIEAVID,GUIIEVID,GUIFSVID,GUIWSVID
@@ -151,6 +151,10 @@ EXTSYM numlockptr
 EXTSYM initDirectDraw,reInitSound,CheckAlwaysOnTop,CheckPriority,CheckScreenSaver
 %elifdef __MSDOS__
 EXTSYM dssel,SetInputDevice209,initvideo2
+%endif
+
+%ifndef __MSDOS__
+EXTSYM ZsnesPage,DocsPage
 %endif
 
 %include "gui/guitools.inc"

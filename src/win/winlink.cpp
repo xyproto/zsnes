@@ -3090,6 +3090,12 @@ void ZsnesPage()
    MouseY = 0;
 }
 
+void DocsPage()
+{
+   ShellExecute(NULL, NULL, "http://zsnes-docs.sourceforge.net/", NULL, NULL, 0);
+   MouseX = 0;
+   MouseY = 0;
+}
 
 extern "C" signed int NumberOfOpcodes;
 

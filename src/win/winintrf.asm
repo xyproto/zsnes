@@ -1475,12 +1475,6 @@ NEWSYM SetInputDevice
     mov dword[eax+44],46
     ret
 
-NEWSYM GotoHomepage
-    pushad
-    call ZsnesPage
-    popad
-    ret
-
 NEWSYM GetTimeInSeconds
     push dword SystemTime
     call [_imp__GetLocalTime@4]

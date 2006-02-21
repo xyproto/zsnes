@@ -735,10 +735,20 @@ ProcessMouseButtons:
     call AddCSCheatCode
 ;    call InsertSearchDescription
 .noinsertscc
+%ifndef __MSDOS__
     cmp byte[GUICBHold],65
-    jne .nohomepage
-    call GotoHomepage
-.nohomepage
+    jne .nozsnespage
+    pushad
+    call ZsnesPage
+    popad
+.nozsnespage
+    cmp byte[GUICBHold],66
+    jne .nodocspage
+    pushad
+    call DocsPage
+    popad
+.nodocspage
+%endif
     mov byte[GUICBHold],0
     ret
 .checkmenuboxclick

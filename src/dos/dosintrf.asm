@@ -1482,9 +1482,6 @@ NEWSYM Check60hz
     ; Call the timer update function here
     ret
 
-NEWSYM GotoHomepage
-    ret
-
 NEWSYM GetTimeInSeconds
     push es
     mov ax,[selc0040]

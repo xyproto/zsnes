@@ -1300,13 +1300,13 @@ pid_t spc_fork() {
   return 0;
 }
 
-void LaunchBrowser(char *browser)
+void LaunchBrowser(char *browser, char *url)
 {
-  char *arglist[] = { browser, "http://www.zsnes.com/", 0 };
+  char *const arglist[] = { browser, url, 0 };
   execvp(browser, arglist);
 }
 
-void ZsnesPage()
+void LaunchURL(char *url)
 {
   if (spc_fork()) //If fork failed, or we are the parent
   {
@@ -1318,13 +1318,25 @@ void ZsnesPage()
   //We are now the child proccess
 
   //If any of these LaunchBrowser() calls return that means it failed and we should try the next one
-  LaunchBrowser("mozilla");
-  LaunchBrowser("mozilla-firefox");
-  LaunchBrowser("konqueror");
-  LaunchBrowser("lynx");
-  LaunchBrowser("links");
+  LaunchBrowser("mozilla", url);
+  LaunchBrowser("mozilla-firefox", url);
+  LaunchBrowser("firefox", url);
+  LaunchBrowser("konqueror", url);
+  LaunchBrowser("opera", url);
+  LaunchBrowser("lynx", url);
+  LaunchBrowser("links", url);
 
   _exit(0); //All browser launches failed, oh well
+}
+
+void ZsnesPage()
+{
+  LaunchURL("http://www.zsnes.com/");
+}
+
+void DocsPage()
+{
+  LaunchURL("http://zsnes-docs.sourceforge.net/");
 }
 
 
