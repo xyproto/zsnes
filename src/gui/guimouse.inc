@@ -2970,7 +2970,8 @@ DisplayGUIAboutClick:
     cmp byte[EEgg],1
     je .eegg
 %ifndef __MSDOS__
-    GUIPHoldbutton 90,30,175,40,65
+    GUIPHoldbutton 90,22,175,32,65
+    GUIPHoldbutton 90,33,175,43,66
 %endif
 .eegg
     ret

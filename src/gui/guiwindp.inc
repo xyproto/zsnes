@@ -3083,7 +3083,8 @@ DisplayGUIAbout:          ; Displays the About Box
     je .zero3
     mov byte[GUItextcolor],211
 .zero3
-    DrawGUIButton 11,90,30,175,40,GUIGUIAboutTextE,65,0,0
+    DrawGUIButton 11,90,22,175,32,GUIGUIAboutTextE1,65,0,0
+    DrawGUIButton 11,90,33,175,43,GUIGUIAboutTextE2,66,0,0
     ret
 
 .eegg                                ;Playground
@@ -3121,7 +3122,8 @@ GUIGUIAboutTextD5 db 'certain conditions; please',0
 GUIGUIAboutTextD6 db 'read ',39,'LICENSE.TXT',39,0
 GUIGUIAboutTextD7 db 'thoroughly before doing so.',0
 
-GUIGUIAboutTextE db 'WWW.ZSNES.COM',0
+GUIGUIAboutTextE1 db 'WWW.ZSNES.COM',0
+GUIGUIAboutTextE2 db 'DOCUMENTATION',0
 
 GUIGUIAboutTextF db 'HIDDEN MESSAGE!',0
 GUIGUIAboutTextFa db 'PRESS ',39,'E',39,' TO RETURN ',0
