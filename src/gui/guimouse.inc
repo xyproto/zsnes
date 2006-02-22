@@ -2977,13 +2977,13 @@ DisplayGUIOptnsClick:
     ret
 
 DisplayGUIAboutClick:
-    cmp byte[EEgg],1
-    je .eegg
 %ifndef __MSDOS__
+    cmp byte[EEgg],1
+    je near .eegg
     GUIPHoldbutton 90,22,175,32,65
     GUIPHoldbutton 90,33,175,43,66
-%endif
 .eegg
+%endif
     ret
 
 %macro ComboBoxProc 5
