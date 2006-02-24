@@ -1439,10 +1439,10 @@ int main(size_t argc, const char **argv)
 
   if (!ret_val && compile)
   {
-    puts(COMPILE_OBJ("psrtemp.obj", "psrtemp.c"));
+    cout << COMPILE_OBJ("psrtemp.obj", "psrtemp.c") << "\n";
     system(COMPILE_OBJ("psrtemp.obj", "psrtemp.c"));
     remove("psrtemp.c");
-    printf("Renaming psrtemp.obj to %s\n", obj_file);
+    cout << "Renaming psrtemp.obj to " << obj_file << endl;
     rename("psrtemp.obj", obj_file);
   }
 
