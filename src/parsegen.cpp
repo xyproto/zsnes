@@ -322,6 +322,8 @@ Structures used to store config data
 
 */
 
+string family_name = "cfg";
+
 set<string> defines;
 stack<bool> ifs;
 
@@ -618,7 +620,7 @@ void output_parser_start(ostream& c_stream)
            << "  return(pos);  \n"
            << "}\n"
            << "\n"
-           << "char *get_token(char *str, char *delim)\n"
+           << "static char *get_token(char *str, char *delim)\n"
            << "{\n"
            << "  static char *pos = 0;\n"
            << "  char *token = 0;\n"
@@ -763,8 +765,8 @@ void output_cheader_start(ostream& cheader_stream)
                  << "  extern \"C\" {\n"
                  << "#endif\n"
                  << "\n"
-                 << "unsigned char read_cfg_vars(const char *);\n"
-                 << "unsigned char write_cfg_vars(const char *);\n"
+                 << "unsigned char read_" << family_name << "_vars(const char *);\n"
+                 << "unsigned char write_" << family_name << "_vars(const char *);\n"
                  << "\n";
 }
 
@@ -781,7 +783,7 @@ void output_cheader_end(ostream& cheader_stream)
 void output_init_var(ostream& c_stream)
 {
   c_stream << "\n"
-           << "static void init_cfg_vars()\n"
+           << "static void init_" << family_name << "_vars()\n"
            << "{\n"
            << "  static unsigned char init_done = 0;\n"
            << "  if (!init_done)\n"
@@ -828,11 +830,11 @@ void output_write_var(ostream& c_stream)
   output_array_write(c_stream, variable::SD);
 
   c_stream << "\n"
-           << "unsigned char write_cfg_vars(const char *file)\n"
+           << "unsigned char write_" << family_name << "_vars(const char *file)\n"
            << "{\n"
            << "  FILE *fp = 0;\n"
            << "\n"
-           << "  init_cfg_vars();\n"
+           << "  init_" << family_name << "_vars();\n"
            << "\n"
            << "  if ((fp = fopen(file, \"w\")))\n"
            << "  {\n";
@@ -902,15 +904,15 @@ void output_read_var(ostream& c_stream)
   output_array_read(c_stream, variable::SD);
 
   c_stream << "\n"
-           << "unsigned char read_cfg_vars(const char *file)\n"
+           << "unsigned char read_" << family_name << "_vars(const char *file)\n"
            << "{\n"
            << "  FILE *fp = 0;\n"
            << "\n"
-           << "  init_cfg_vars();\n"
+           << "  init_" << family_name << "_vars();\n"
            << "\n"
            << "  if (!(fp = fopen(file, \"r\")))\n"
            << "  {\n"
-           << "    write_cfg_vars(file);\n"
+           << "    write_" << family_name << "_vars(file);\n"
            << "    return(0);\n"
            << "  }\n"
            << "\n"
@@ -965,7 +967,7 @@ void output_read_var(ostream& c_stream)
   c_stream << "  }\n"
            << "\n"
            << "  fclose(fp);\n"
-           << "  write_cfg_vars(file);\n"
+           << "  write_" << family_name << "_vars(file);\n"
            << "  return(1);\n"
            << "}\n";
 }
@@ -1365,6 +1367,11 @@ int main(size_t argc, const char **argv)
     {
       compile = true;
     }
+    else if (!strcmp(argv[param_pos], "-fname"))
+    {
+      param_pos++;
+      family_name = argv[param_pos];
+    }
     else
     {
       break;
@@ -1386,6 +1393,12 @@ int main(size_t argc, const char **argv)
          << "\n"
          << "  -cheader   Create a C/C++ header with the following name.\n"
          << "             Example -cheader cfgvars.h\n"
+         << "\n"
+         << "  -fname     Use the following name for the main functions.\n"
+         << "             Example -fname math\n"
+         << "             Would make init_cfg_vars become init_math_vars the\n"
+         << "             happens to write_cfg_vars and read_cfg_vars.\n"
+         << "\n"
          << endl;
 
     return(1);
