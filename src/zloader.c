@@ -38,16 +38,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 void ImportDirectX();
 
 extern unsigned char KitchenSync, Force60hz;
-
 #endif
 
-extern unsigned char Palette0, pl1contrl, pl2contrl, MMXSupport, Force8b, ForcePal, GUIClick,
-                     MouseDis, MusicRelVol, ScreenScale, SoundQuality, StereoSound, V8Mode,
-                     antienab, cvidmode, debugdisble, debugger, enterpress, vsyncon, DisplayS,
-                     SnowOn, Triplebufen, SPC700sh, DSPDisable, frameskip,
-                     gammalevel, guioff, romtype, per2exec, scanlines, soundon, spcon,
-                     showallext, autoloadstate, smallscreenon, autoloadmovie, ZMVZClose,
-                     ZMVRawDump, HacksDisable;
+extern unsigned char Palette0, pl1contrl, pl2contrl, MMXSupport, Force8b, V8Mode,
+       ForcePal, GUIClick, MouseDis, MusicRelVol, ScreenScale, SoundQuality,
+       StereoSound, antienab, cvidmode, debugdisble, debugger, enterpress, vsyncon,
+       DisplayS, SnowOn, Triplebufen, DSPDisable, frameskip, gammalevel, guioff,
+       romtype, per2exec, scanlines, soundon, spcon, showallext, autoloadstate,
+       smallscreenon, autoloadmovie, ZMVZClose, ZMVRawDump, HacksDisable;
 
 extern char *STCart2, fname[];
 
@@ -78,7 +76,6 @@ static void display_help()
 #ifdef __WIN32__
   put_line("  -6      Force 60Hz refresh rate");
 #endif
-  put_line("  -7      Disable SPC700 speedhack");
   put_line("  -8      Force 8-bit sound");
   put_line("  -c      Enable full/wide screen (when available)");
   put_line("  -cc     Enable small screen (when available)");
@@ -320,10 +317,6 @@ static void handle_params(int argc, char *argv[])
             Force60hz = 1;
             break;
           #endif
-
-          case '7': //SPC700 speed hack disable
-            SPC700sh = 1;
-            break;
 
           case '8': //Force 8-bit sound
             Force8b = 1;

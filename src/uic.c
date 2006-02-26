@@ -134,7 +134,6 @@ unsigned char finterleave   = 0;
 unsigned char DSPDisable    = 0;	// Disable DSP emulation
 unsigned char Palette0      = 0;
 unsigned char DisplayS      = 0;
-unsigned char SPC700sh      = 0;
 unsigned char *spc7110romptr;
 
 unsigned char MusicRelVol   = 75;
