@@ -1649,6 +1649,8 @@ reg43XAw:
     mov bx,[resolutn]
     cmp word[curypos],bx
     jb .nodma
+    cmp al,0
+    je .nodma
     mov byte[nohdmaframe],1
     inc byte[hdmadelay]
 .nodma
