@@ -46,12 +46,12 @@ int main()
 {
   parse_dir(".", size_tally);
 
-  cout << "Total C files use " << c_count << " bytes.\n"
-       << "Total C++ files use " << cpp_count << " bytes.\n"
-       << "Total Assembly files use " << asm_count << " bytes.\n"
-       << "PSR file uses " << psr_count << " bytes.\n"
-       << "\n"
-       << "ASM ratio: " << (float)(asm_count*100)/(float)(asm_count+c_count+cpp_count+psr_count)
-       << "%" << endl;
+  unsigned int total_count = asm_count + c_count + cpp_count + psr_count;
+
+  cout << "ASM code uses " << asm_count << " bytes. (" << (float)(asm_count*100)/total_count << ")\n"
+       << "C code uses "   << c_count   << " bytes. (" << (float)(c_count*100)/total_count << ")\n"
+       << "C++ code uses " << cpp_count << " bytes. (" << (float)(cpp_count*100)/total_count << ")\n"
+       << "PSR code uses " << psr_count << " bytes. (" << (float)(psr_count*100)/total_count << ")\n"
+       << endl;
   return(0);
 }
