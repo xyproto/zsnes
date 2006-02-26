@@ -1985,7 +1985,7 @@ static void raw_video_close()
 
 static bool raw_video_open()
 {
-  read_movie_vars("zmovie.cfg");
+  read_md_vars("zmovie.cfg");
 
   switch (MovieVideoMode)
   {

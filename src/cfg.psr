@@ -1,0 +1,354 @@
+GUIRAdd db 15
+GUIGAdd db 10
+GUIBAdd db 31
+mousewrap db 0          ; 0 = mouse boundries, 1 = mouse wrap
+mouseshad db 1          ; 0 = no mouse shadow, 1 = mouse shadow
+lastcursres db 0        ; 0 = go to load, 1 = go to previous menu, 2 = no menu
+resetposn   db 1        ; 0 = no window reset, 1 = window reset
+NEWSYM GUIClick, db 0   ; 1 = mouse click enters/exits gui
+
+; Default keys
+; Sound Channels 0 .. 7, Save/Select/Load States, Fast Forward
+; Exit, Load, Reset, BG Disables, Reset, Windowing, New Gfx, OffsetMode
+; State Selection 0 .. 9
+
+NEWSYM KeyDisableSC0, dd 63
+NEWSYM KeyDisableSC1, dd 64
+NEWSYM KeyDisableSC2, dd 65
+NEWSYM KeyDisableSC3, dd 66
+NEWSYM KeyDisableSC4, dd 67
+NEWSYM KeyDisableSC5, dd 68
+NEWSYM KeyDisableSC6, dd 87
+NEWSYM KeyDisableSC7, dd 88
+NEWSYM KeySaveState,  dd 60
+NEWSYM KeyStateSelct, dd 61
+NEWSYM KeyLoadState,  dd 62
+NEWSYM KeyFastFrwrd,  dd 41
+NEWSYM KeyQuickExit,  dd 0
+NEWSYM KeyQuickLoad,  dd 0
+NEWSYM KeyQuickRst,   dd 0
+NEWSYM KeyBGDisble0,  dd 2
+NEWSYM KeyBGDisble1,  dd 3
+NEWSYM KeyBGDisble2,  dd 4
+NEWSYM KeyBGDisble3,  dd 5
+NEWSYM KeySprDisble,  dd 6
+NEWSYM KeyResetAll,   dd 7
+NEWSYM KeyExtraEnab,  dd 8
+NEWSYM KeyNewGfxSwt,  dd 9
+NEWSYM KeyWinDisble,  dd 10
+NEWSYM KeyOffsetMSw,  dd 11
+NEWSYM KeyStateSlc0,  dd 0
+NEWSYM KeyStateSlc1,  dd 0
+NEWSYM KeyStateSlc2,  dd 0
+NEWSYM KeyStateSlc3,  dd 0
+NEWSYM KeyStateSlc4,  dd 0
+NEWSYM KeyStateSlc5,  dd 0
+NEWSYM KeyStateSlc6,  dd 0
+NEWSYM KeyStateSlc7,  dd 0
+NEWSYM KeyStateSlc8,  dd 0
+NEWSYM KeyStateSlc9,  dd 0
+
+GUIshowallext db 0
+GUIloadfntype    db 0
+
+NEWSYM pl3selk,   dd 0   ; 3SELECT = SHIFT
+NEWSYM pl3startk, dd 0   ; 3START = ENTER
+NEWSYM pl3upk,    dd 0   ; 3UP = up
+NEWSYM pl3downk,  dd 0   ; 3DOWN = down
+NEWSYM pl3leftk,  dd 0   ; 3LEFT = left
+NEWSYM pl3rightk, dd 0   ; 3RIGHT = right
+NEWSYM pl3Xk,     dd 0   ; 3X = INS
+NEWSYM pl3Ak,     dd 0   ; 3A = HOME
+NEWSYM pl3Lk,     dd 0   ; 3L = PAGE UP
+NEWSYM pl3Yk,     dd 0   ; 3Y = DELETE
+NEWSYM pl3Bk,     dd 0   ; 3B = END
+NEWSYM pl3Rk,     dd 0   ; 3R = PAGE DOWN
+NEWSYM pl4selk,   dd 0   ; 4SELECT = SHIFT
+NEWSYM pl4startk, dd 0   ; 4START = ENTER
+NEWSYM pl4upk,    dd 0   ; 4UP = up
+NEWSYM pl4downk,  dd 0   ; 4DOWN = down
+NEWSYM pl4leftk,  dd 0   ; 4LEFT = left
+NEWSYM pl4rightk, dd 0   ; 4RIGHT = right
+NEWSYM pl4Xk,     dd 0   ; 4X = INS
+NEWSYM pl4Ak,     dd 0   ; 4A = HOME
+NEWSYM pl4Lk,     dd 0   ; 4L = PAGE UP
+NEWSYM pl4Yk,     dd 0   ; 4Y = DELETE
+NEWSYM pl4Bk,     dd 0   ; 4B = END
+NEWSYM pl4Rk,     dd 0   ; 4R = PAGE DOWN
+NEWSYM TimeChecker,  db 0   ; Future Reserved
+GUISoundBuffer db 1 ; Sound Buffer Disabled
+prevloadnames times 160 db 32
+prevloaddname packed 1280 db 0
+prevloadfname times 160 db 32
+prevlfreeze db 0
+GUIsmallscreenon db 0
+GUIScreenScale db 0
+
+NEWSYM pl3contrl, db 0
+NEWSYM pl4contrl, db 0
+NEWSYM pl1p209b, db 0
+NEWSYM pl2p209b, db 0
+NEWSYM pl3p209b, db 0
+NEWSYM pl4p209b, db 0
+JoyPad1Move db 0
+NEWSYM FirstTimeData, db 0
+NEWSYM PrevSWFix, db 0
+NEWSYM CalibXmin, dd 0
+NEWSYM CalibYmin, dd 0
+NEWSYM CalibXmax, dd 0
+NEWSYM CalibYmax, dd 0
+NEWSYM CalibXmin209, dd 0
+NEWSYM CalibYmin209, dd 0
+NEWSYM CalibXmax209, dd 0
+NEWSYM CalibYmax209, dd 0
+NEWSYM maxskip,      db 9
+NEWSYM FPSAtStart,   db 0
+NEWSYM SidewinderFix, db 0
+NEWSYM pl1Atk,    dd 0   ; Turbo A
+NEWSYM pl1Btk,    dd 0   ; Turbo B
+NEWSYM pl1Xtk,    dd 0   ; Turbo X
+NEWSYM pl1Ytk,    dd 0   ; Turbo Y
+NEWSYM pl2Atk,    dd 0   ; Turbo A
+NEWSYM pl2Btk,    dd 0   ; Turbo B
+NEWSYM pl2Xtk,    dd 0   ; Turbo X
+NEWSYM pl2Ytk,    dd 0   ; Turbo Y
+NEWSYM pl3Atk,    dd 0   ; Turbo A
+NEWSYM pl3Btk,    dd 0   ; Turbo B
+NEWSYM pl3Xtk,    dd 0   ; Turbo X
+NEWSYM pl3Ytk,    dd 0   ; Turbo Y
+NEWSYM pl4Atk,    dd 0   ; Turbo A
+NEWSYM pl4Btk,    dd 0   ; Turbo B
+NEWSYM pl4Xtk,    dd 0   ; Turbo X
+NEWSYM pl4Ytk,    dd 0   ; Turbo Y
+NEWSYM Turbo30hz, db 0   ; Turbo at 30hz instead of 60hz
+
+NEWSYM KeyVolUp,       dd 0
+NEWSYM KeyVolDown,     dd 0
+NEWSYM KeyFRateUp,     dd 0
+NEWSYM KeyFRateDown,   dd 0
+
+NEWSYM KeyQuickChat,  dd 20
+NEWSYM FossilUse,     db 0
+NEWSYM TimerEnable,   db 0
+
+NEWSYM Surround,      db 0
+NEWSYM InterSound,    db 1
+NEWSYM FastFwdToggle, db 0
+NEWSYM En2xSaI, db 0
+NEWSYM AutoLoadCht, db 0
+NEWSYM KeyQuickSnapShot,  dd 0
+
+CheatSrcByteSize db 0
+CheatSrcByteBase db 0
+CheatSrcSearchType db 0
+CheatUpperByteOnly db 0
+NEWSYM SRAMSave5Sec, db 0
+NEWSYM ReInitSoundC, db 0
+NEWSYM OldGfxMode2 , db 0
+NEWSYM PitchModEn  , db 0
+NEWSYM LatestSave  , db 0
+NEWSYM AutoState   , db 0
+NEWSYM OldVolume   , db 1
+NEWSYM BlankVar    , db 1
+
+NEWSYM pl1ULk, dd 0
+NEWSYM pl1URk, dd 0
+NEWSYM pl1DLk, dd 0
+NEWSYM pl1DRk, dd 0
+NEWSYM pl2ULk, dd 0
+NEWSYM pl2URk, dd 0
+NEWSYM pl2DLk, dd 0
+NEWSYM pl2DRk, dd 0
+NEWSYM pl3ULk, dd 0
+NEWSYM pl3URk, dd 0
+NEWSYM pl3DLk, dd 0
+NEWSYM pl3DRk, dd 0
+NEWSYM pl4ULk, dd 0
+NEWSYM pl4URk, dd 0
+NEWSYM pl4DLk, dd 0
+NEWSYM pl4DRk, dd 0
+
+NEWSYM LowPassFilterType,  db 0
+NEWSYM DontSavePath,  db 0
+NEWSYM ReCalib, db 1
+NEWSYM GUIComboGameSpec, db 0
+NEWSYM SoundNoiseDis, db 0      ; Disable Noise
+NEWSYM Triplebufen, db 0
+NEWSYM SoundBufEn, db 0
+NEWSYM SPCDisable, db 0
+NEWSYM RaisePitch, db 0
+
+prevloadl db 0
+prevloaddnamel packed 5120 db 0
+prevloadfnamel packed 5120 db 0
+
+%ifdef __WIN32__
+NEWSYM PrevWinMode, db 2
+NEWSYM PrevFSMode, db 6
+%elifdef __UNIXSDL__
+NEWSYM PrevWinMode, db 2
+NEWSYM PrevFSMode, db 3
+%elifdef __MSDOS__
+NEWSYM PrevWinMode, db 0
+NEWSYM PrevFSMode, db 0
+%endif
+
+; Window position index
+; GAME       1 > Load
+;            2 > Pick state
+;           12 > Reset
+;           14 > Save/Open state
+; CONFIG     3 > Inputs
+;            4 > Options
+;            5 > Video
+;            6 > Sound
+;           17 > Add-ons
+;           18 > Chip cfg
+;           19 > Paths
+;           20 > Saves
+;           21 > Speed
+; CHEAT      7 > Add/Browse
+;           13 > Search
+;(NETPLAY    8 > Internet)
+; MISC       9 > Misc keys
+;           10 > GUI opns
+;           11 > About
+;           15 > Movie opn
+;           16 > Key comb.
+
+;#             0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21
+OldWinPos db 0
+GUIwinposx   dd 0, 5,60,30,55,50,65, 5,30,20,10,80,65,20,70,50, 3,50,50, 5,10,20,0
+GUIwinposx2  dd 0, 5,60,30,55,50,65, 5,30,20,10,80,65,20,70,50, 3,50,50, 5,10,20,0
+GUIwinposxexp times 30 dd 0
+GUIwinposy   dd 0,20,70,30,20,22,36,20,30,20,30,20,60,30,65,50,22,60,20,20,20,20,0
+GUIwinposy2  dd 0,20,70,30,20,22,36,20,30,20,30,20,60,30,65,50,22,60,20,20,20,20,0
+GUIwinposyexp times 30 dd 0
+
+NEWSYM GUIEffect, db 0
+
+NEWSYM pl5selk,   dd 0   ; 4SELECT = SHIFT
+NEWSYM pl5startk, dd 0   ; 4START = ENTER
+NEWSYM pl5upk,    dd 0   ; 4UP = up
+NEWSYM pl5downk,  dd 0   ; 4DOWN = down
+NEWSYM pl5leftk,  dd 0   ; 4LEFT = left
+NEWSYM pl5rightk, dd 0   ; 4RIGHT = right
+NEWSYM pl5Xk,     dd 0   ; 4X = INS
+NEWSYM pl5Ak,     dd 0   ; 4A = HOME
+NEWSYM pl5Lk,     dd 0   ; 4L = PAGE UP
+NEWSYM pl5Yk,     dd 0   ; 4Y = DELETE
+NEWSYM pl5Bk,     dd 0   ; 4B = END
+NEWSYM pl5Rk,     dd 0   ; 4R = PAGE DOWN
+NEWSYM pl5ULk,    dd 0
+NEWSYM pl5URk,    dd 0
+NEWSYM pl5DLk,    dd 0
+NEWSYM pl5DRk,    dd 0
+NEWSYM pl5Atk,    dd 0   ; Turbo A
+NEWSYM pl5Btk,    dd 0   ; Turbo B
+NEWSYM pl5Xtk,    dd 0   ; Turbo X
+NEWSYM pl5Ytk,    dd 0   ; Turbo Y
+NEWSYM pl5contrl, db 0
+NEWSYM pl1p209,   db 0
+NEWSYM pl2p209,   db 0
+NEWSYM pl3p209,   db 0
+NEWSYM pl4p209,   db 0
+NEWSYM pl5p209,   db 0
+
+NEWSYM GUIEnableTransp, db 0
+NEWSYM Mode7HiRes16b, dd 0
+NEWSYM NewEngEnForce, db 1
+NEWSYM KeyRewind, dd 0
+NEWSYM ChatNick, times 16 db 0
+NEWSYM KeySlowDown, dd 0
+
+NEWSYM UseCubicSpline, db 1
+
+NEWSYM LargeSoundBuf, db 0
+NEWSYM HighPriority, db 0
+NEWSYM AlwaysOnTop, db 0
+NEWSYM SaveMainWindowPos, db 1
+NEWSYM MainWindowX, dw -1
+NEWSYM MainWindowY, dw -1
+
+NEWSYM ScreenShotFormat, db 0
+
+NEWSYM pl1Ltk,    dd 0   ; Turbo L
+NEWSYM pl1Rtk,    dd 0   ; Turbo R
+NEWSYM pl2Ltk,    dd 0   ; Turbo L
+NEWSYM pl2Rtk,    dd 0   ; Turbo R
+NEWSYM pl3Ltk,    dd 0   ; Turbo L
+NEWSYM pl3Rtk,    dd 0   ; Turbo R
+NEWSYM pl4Ltk,    dd 0   ; Turbo L
+NEWSYM pl4Rtk,    dd 0   ; Turbo R
+NEWSYM pl5Ltk,    dd 0   ; Turbo L
+NEWSYM pl5Rtk,    dd 0   ; Turbo R
+
+NEWSYM GUITRAdd,  db 0
+NEWSYM GUITGAdd,  db 10
+NEWSYM GUITBAdd,  db 31
+
+NEWSYM GUIWRAdd,  db 8
+NEWSYM GUIWGAdd,  db 8
+NEWSYM GUIWBAdd,  db 25
+
+NEWSYM GrayscaleMode, db 0
+NEWSYM MouseWheel, db 1
+NEWSYM SmallMsgText, db 0
+NEWSYM AllowMultipleInst, db 0
+NEWSYM FilteredGUI, db 1
+NEWSYM BilinearFilter, db 0
+NEWSYM TripleBufferWin, db 0
+
+NEWSYM ExclusiveSound, db 0
+NEWSYM DisableScreenSaver, db 0
+NEWSYM MMXSupport, db 1
+NEWSYM TrapMouseCursor, db 1
+NEWSYM KeyQuickClock, dd 0
+NEWSYM KeyQuickSaveSPC, dd 0
+NEWSYM AutoIncSaveSlot, db 0
+NEWSYM TCPIPAddress, times 29 db 0
+NEWSYM SoundInterpType, db 1
+NEWSYM KeyDisplayFPS, dd 0
+NEWSYM KeyIncStateSlot, dd 0
+NEWSYM KeyDecStateSlot, dd 0
+NEWSYM KeyUsePlayer1234, dd 0
+NEWSYM hqFilter, db 0
+NEWSYM SnapPath, times 1024 db ""
+NEWSYM SPCPath, times 1024 db ""
+NEWSYM BSXPath, times 1024 db ""
+NEWSYM STPath, times 1024 db ""
+NEWSYM GNextPath, times 1024 db ""
+NEWSYM SGPath, times 1024 db ""
+NEWSYM FEOEZPath, times 1024 db ""
+NEWSYM SJNSPath, times 1024 db ""
+NEWSYM MDHPath, times 1024 db ""
+NEWSYM SPL4Path, times 1024 db ""
+NEWSYM AutoPatch, db 1
+NEWSYM RomInfo, db 1
+NEWSYM SRAMState, db 0
+NEWSYM RewindStates, db 16
+NEWSYM PrimaryBuffer, db 0
+NEWSYM RewindFrames, db 15
+NEWSYM KeyInsrtChap,  dd 0
+NEWSYM KeyNextChap,   dd 0
+NEWSYM KeyPrevChap,   dd 0
+NEWSYM MovieDisplayFrame, db 0
+NEWSYM MovieStartMethod, db 0
+NEWSYM EMUPauseKey, dd 25
+NEWSYM INCRFrameKey, dd 0
+NEWSYM PauseLoad, db 0
+NEWSYM PauseRewind, db 0
+NEWSYM KeyResetSpeed, dd 0
+NEWSYM EmuSpeed, db 29        ; 29 = 1x, 0 = /30 and 58 = 30x
+NEWSYM FFRatio, db 9          ; 0 = 2x, 28 = 30x
+NEWSYM SDRatio, db 0          ; 0 = /2, 28 = /30
+NEWSYM KeyEmuSpeedUp, dd 0
+NEWSYM KeyEmuSpeedDown, dd 0
+NEWSYM AllowUDLR, db 0
+NEWSYM KeyDisplayBatt, dd 0
+NEWSYM PrevBuildNum, dd 0
+NEWSYM PauseFocusChange, db 0
+NEWSYM KeyIncreaseGamma, dd 0
+NEWSYM KeyDecreaseGamma, dd 0
+NEWSYM MovieVideoMode, db 1
+NEWSYM MovieAudioMode, db 1

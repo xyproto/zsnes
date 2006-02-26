@@ -168,7 +168,9 @@ else
     CFLAGS="$CFLAGS -march=$ARCH_INFO"
   fi
 fi
+CFLAGS="$CFLAGS -I./psrhead"
 CXXFLAGS="$CFLAGS -fno-rtti"
+PSRFLAGS="-D__UNIXSDL__"
 
 dnl Checks for header files.
 AC_HEADER_STDC
@@ -179,6 +181,7 @@ AC_SUBST(ZSNESEXE)
 AC_SUBST(GL_DRAW)
 AC_SUBST(NFLAGS)
 AC_SUBST(NASMPATH)
+AC_SUBST(PSRFLAGS)
 AC_OUTPUT(Makefile)
 echo
 echo
