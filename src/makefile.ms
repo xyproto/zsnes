@@ -173,7 +173,7 @@ JMAOBJ=${JMADIR}/7zlzma${OE} ${JMADIR}/crc32${OE} ${JMADIR}/iiostrm${OE}\
 
 MAINOBJ=cfgload${OE} endmem${OE} init${OE} initc${OE} uic${OE} patch${OE}\
 	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE} \
-	cfgparse${OE} md${OE}
+	cfg${OE} md${OE}
 
 NETOBJ=
 #${NETDIR}/ztcp${OE}
@@ -237,7 +237,7 @@ else
 endif
 
 %${OE}: %.psr
-	${PSR} -D${OS} temppsr.c $<
+	${PSR} -D${OS} -cheader psrhead/$(patsubst %${OE},%.h,$@) -fname $(patsubst %${OE},%,$@) temppsr.c $<
 ifneq (${ENV},msvc)
 	${CC} -o $@ -c temppsr.c
 else
@@ -259,7 +259,7 @@ else
 endif
 
 cfgload${OE}: cfgload.c
-cfgparse${OE}: ${PSR} cfgparse.psr
+cfg${OE}: ${PSR} cfg.psr
 endmem${OE}: endmem.asm macros.mac
 init${OE}: init.asm macros.mac
 initc${OE}: initc.c asm_call.h ${CPUDIR}/memtable.h ${JMADIR}/zsnesjma.h\
@@ -273,12 +273,6 @@ zloader${OE}: zloader.c
 zmovie${OE}: zmovie.c asm_call.h gblvars.h numconv.h md${OE}
 zstate${OE}: zstate.c asm_call.h gblvars.h numconv.h
 md${OE}: md.psr ${PSR}
-	${PSR} -D${OS} -cheader md.h -fname movie temppsr.c $<
-ifneq (${ENV},msvc)
-	${CC} -o $@ -c temppsr.c
-else
-	cl /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ temppsr.c
-endif
 
 ${CHIPDIR}/c4emu${OE}: ${CHIPDIR}/c4emu.c
 ${CHIPDIR}/dsp1emu${OE}: ${CHIPDIR}/dsp1emu.c
@@ -439,6 +433,7 @@ clean:
 	${DELETECOMMAND} ${VIDEODIR}${SLASH}*${OE} ${TRUTH}
 	${DELETECOMMAND} ${WINDIR}${SLASH}*${OE} ${TRUTH}
 	${DELETECOMMAND} ${ZIPDIR}${SLASH}*${OE} ${TRUTH}
+	${DELETECOMMAND} psrhead${SLASH}*.h
 
 else  #else no ENV specified
 help:

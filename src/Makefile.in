@@ -112,7 +112,7 @@ ALL: @ZSNESEXE@
 ${PSR}: parsegen.cpp
 
 ALL:
-	rm -f version.o psrhead/*.h
+	rm -f version.o
 
 tools: archopt cutrtype extraext minwhite nreplace sec-test srccount
 
