@@ -172,7 +172,8 @@ JMAOBJ=${JMADIR}/7zlzma${OE} ${JMADIR}/crc32${OE} ${JMADIR}/iiostrm${OE}\
 	${JMADIR}/winout${OE} ${JMADIR}/zsnesjma${OE}
 
 MAINOBJ=cfgload${OE} endmem${OE} init${OE} initc${OE} uic${OE} patch${OE}\
-	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE} cfgparse${OE}
+	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE} \
+	cfgparse${OE} md${OE}
 
 NETOBJ=
 #${NETDIR}/ztcp${OE}
@@ -269,8 +270,15 @@ uic${OE}: uic.c asm_call.h
 vcache${OE}: vcache.asm macros.mac
 version${OE}: version.c
 zloader${OE}: zloader.c
-zmovie${OE}: zmovie.c asm_call.h gblvars.h numconv.h
+zmovie${OE}: zmovie.c asm_call.h gblvars.h numconv.h md${OE}
 zstate${OE}: zstate.c asm_call.h gblvars.h numconv.h
+md${OE}: md.psr ${PSR}
+	${PSR} -D${OS} -cheader md.h -fname movie temppsr.c $<
+ifneq (${ENV},msvc)
+	${CC} -o $@ -c temppsr.c
+else
+	cl /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ temppsr.c
+endif
 
 ${CHIPDIR}/c4emu${OE}: ${CHIPDIR}/c4emu.c
 ${CHIPDIR}/dsp1emu${OE}: ${CHIPDIR}/dsp1emu.c
