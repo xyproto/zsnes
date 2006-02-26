@@ -486,6 +486,7 @@ void chip_detect()
       return;
       break;
 
+    case 0x3223: //One sample game seems to use this for some reason
     case 0x3523:
       SA1Enable = true;
       CHIPBATT = true;
