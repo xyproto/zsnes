@@ -120,7 +120,7 @@ NEWSYM SA1Swap
     ; Check if IRQ is executed on SA-1
     xor eax,eax
     mov al,dl
-   add dh,25
+    add dh,20
     mov edi,[SA1tablead+eax*4]
     mov byte[SA1Status],1
     test dword[SA1DoIRQ],0FF000003h
@@ -129,8 +129,8 @@ NEWSYM SA1Swap
 
 ;    SA1Debug
 
-    cmp byte[SA1SH],1
-    je near .speedhack
+;    cmp byte[SA1SH],1
+;    je near .speedhack
 
      ; non debug version
     mov bl,[esi]
