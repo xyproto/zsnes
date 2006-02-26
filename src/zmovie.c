@@ -1884,13 +1884,14 @@ static char *pick_var(char **str)
     *str += strlen("$md_video_rate");
     return(romispal ? md_pal : md_ntsc);
   }
+  *str += strlen(*str);
   fprintf(stderr, "Unknown Variable: %s", *str);
   return("");
 }
 
 FILE *open_movie_file()
 {
-  char command[400], *p, *var;
+  char command[450], *p, *var;
   read_movie_vars("zmovie.cfg");
 
   *command = 0;
