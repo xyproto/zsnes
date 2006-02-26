@@ -1559,6 +1559,8 @@ GUIMovieKeys:
     GUIKeyButtonHole MovieVideoMode,0,'O'
     GUIKeyButtonHole MovieVideoMode,1,'W'
     GUIKeyButtonHole MovieVideoMode,2,'U'
+    GUIKeyButtonHole MovieVideoMode,3,'F'
+    GUIKeyButtonHole MovieVideoMode,4,'X'
 
     GUIKeyButtonHole MovieAudioMode,0,'I'
     GUIKeyButtonHole MovieAudioMode,1,'A'

@@ -2099,6 +2099,8 @@ DisplayGUIMovieClick:
     GUIPButtonHole 9,128,byte[MovieVideoMode],0      ; Movie Options
     GUIPButtonHole 9,138,byte[MovieVideoMode],1
     GUIPButtonHole 9,148,byte[MovieVideoMode],2
+    GUIPButtonHole 9,158,byte[MovieVideoMode],3
+    GUIPButtonHole 9,168,byte[MovieVideoMode],4
     GUIPButtonHole 130,128,byte[MovieAudioMode],0
     GUIPButtonHole 197,128,byte[MovieAudioMode],1
 
