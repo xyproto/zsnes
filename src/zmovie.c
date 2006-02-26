@@ -1892,8 +1892,6 @@ static char *pick_var(char **str)
 FILE *open_movie_file()
 {
   char command[450], *p, *var;
-  read_movie_vars("zmovie.cfg");
-
   *command = 0;
 
   switch (MovieVideoMode)
@@ -1985,12 +1983,14 @@ static void raw_video_close()
   }
 }
 
-static bool raw_video_open(const char *video_filename, const char *audio_filename)
+static bool raw_video_open()
 {
+  read_movie_vars("zmovie.cfg");
+
   switch (MovieVideoMode)
   {
     case 1:
-      raw_vid.vp = fopen(video_filename, "wb");
+      raw_vid.vp = fopen(md_raw_file, "wb");
       break;
 
     case 2: case 3: case 4:
@@ -2009,7 +2009,7 @@ static bool raw_video_open(const char *video_filename, const char *audio_filenam
 
   if (!MovieVideoMode || raw_vid.vp)
   {
-    if ((raw_vid.ap = fopen(audio_filename, "wb")))
+    if ((raw_vid.ap = fopen(md_pcm_audio, "wb")))
     {
       if ((raw_vid.sample_buffer = (unsigned short *)malloc(RAW_BUFFER_SAMPLES*sizeof(short))))
       {
@@ -2684,7 +2684,7 @@ void MovieDumpRaw()
     case MOVIE_OFF:
       MoviePlay();
       SRAMChdir();
-      RawDumpInProgress = raw_video_open("rawvideo.bin", "pcmaudio.wav");
+      RawDumpInProgress = raw_video_open();
       asm_call(ChangetoLOADdir);
       break;
   }
