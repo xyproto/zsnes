@@ -53,7 +53,7 @@ JMAOBJ=${JMADIR}/7zlzma.o ${JMADIR}/crc32.o ${JMADIR}/iiostrm.o\
 	${JMADIR}/winout.o ${JMADIR}/zsnesjma.o
 
 MAINOBJ=cfgload.o cfgparse.o endmem.o init.o initc.o uic.o patch.o ui.o vcache.o\
-	version.o zmovie.o zstate.o debug.o zloader.o
+	version.o zmovie.o zstate.o debug.o zloader.o md.o
 
 NETOBJ=
 #${NETDIR}/ztcp.o
@@ -150,7 +150,11 @@ uic.o: uic.c asm_call.h gblhdr.h
 vcache.o: vcache.asm macros.mac
 version.o: version.c
 zloader.o: zloader.c gblhdr.h
-zmovie.o: zmovie.c asm_call.h gblhdr.h gblvars.h numconv.h
+md.o: md.psr ${PSR}
+	./${PSR} -D__UNIXSDL__ -cheader md.h -fname movie temppsr.c $<
+	@CC@ -I. -O1 -o $@ -c temppsr.c
+	rm -f temppsr.c
+zmovie.o: zmovie.c asm_call.h gblhdr.h gblvars.h numconv.h md.o
 zstate.o: zstate.c asm_call.h gblhdr.h gblvars.h numconv.h
 
 ${CHIPDIR}/c4emu.o: ${CHIPDIR}/c4emu.c gblhdr.h

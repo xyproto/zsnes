@@ -23,6 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
 #define DIR_SLASH "/"
+#define WRITE_BINARY "w"
 #else
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,10 +39,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <unistd.h>
 #endif
 #define DIR_SLASH "\\"
+#define WRITE_BINARY "wb"
 #endif
 #include "gblvars.h"
 #include "asm_call.h"
 #include "numconv.h"
+#include "md.h"
 
 #ifndef __WIN32__
 #define mkdir(path) mkdir(path, (S_IRWXU|S_IRWXG|S_IRWXO)) //0777
@@ -1845,13 +1848,9 @@ Code for dumping raw video
 
 */
 
-#define RAW_BUFFER_FRAMES 10
 #define RAW_BUFFER_SAMPLES 12800
 #define RAW_WIDTH 256
 #define RAW_HEIGHT 224
-#define RAW_PIXEL_SIZE 4
-#define RAW_FRAME_SIZE (RAW_WIDTH*RAW_HEIGHT)
-#define RAW_PIXEL_FRAME_SIZE (RAW_FRAME_SIZE*RAW_PIXEL_SIZE)
 
 //NTSC FPS is  59.948743718592964824120603015060 in AVI that's a fraction of 59649/995
 //which equals 59.948743718592964824120603015075, so videos should not desync for several millinium
@@ -1862,16 +1861,70 @@ Code for dumping raw video
 //59.948743718592964824120603015060 = SAMPLE_NTSC_HI*32000/SAMPLE_NTSC_LO *2
 #define SAMPLE_NTSC_HI 31840000ULL
 #define SAMPLE_NTSC_LO 59649ULL
+//Used by raw videos for calculating sample rate in NTSC mode
+//Code by Bisqwit
 
 
 //0 = None; 1 Logging, but not now, 2 Log now
 unsigned char AudioLogging;
 
+extern unsigned char MovieVideoMode;
+extern unsigned char MovieAudioMode;
+
+#define PICK_HELP(var) if (!strncmp(*str, "$"#var, strlen(#var)+1)) { *str += strlen(#var)+1; return(var); }
+
+static char *pick_var(char **str)
+{
+  PICK_HELP(md_prog);
+  PICK_HELP(md_raw);
+  PICK_HELP(md_other);
+  PICK_HELP(md_file);
+  if (!strncmp(*str, "$md_video_rate", strlen("$md_video_rate")))
+  {
+    *str += strlen("$md_video_rate");
+    return(romispal ? md_pal : md_ntsc);
+  }
+  fprintf(stderr, "Unknown Variable: %s", *str);
+  return("");
+}
+
+FILE *open_movie_file()
+{
+  char command[400], *p, *var;
+  read_movie_vars("zmovie.cfg");
+
+  *command = 0;
+
+  switch (MovieVideoMode)
+  {
+    case 2: p = md_uncompressed; break;
+    case 3: p = md_ffv1; break;
+    case 4: p = md_x264; break;
+    default: p = "$"; break;
+  }
+
+  while (*p)
+  {
+    if ((var = strchr(p, '$')))
+    {
+      strncat(command, p, var - p);
+      strcat(command, pick_var(&var));
+      p = var;
+    }
+    else
+    {
+      strcat(command, p);
+      break;
+    }
+  }
+
+  puts(command);
+  return(popen(command, WRITE_BINARY));
+}
+
 struct
 {
   FILE *vp;
-  unsigned int *frame_buffer;
-  size_t frame_index;
 
   FILE *ap;
   unsigned short *sample_buffer;
@@ -1888,95 +1941,107 @@ static void raw_video_close()
 {
   if (raw_vid.vp)
   {
-    if (raw_vid.frame_buffer)
+    switch (MovieVideoMode)
     {
-      if (raw_vid.frame_index)
-      {
-        fwrite(raw_vid.frame_buffer, RAW_PIXEL_FRAME_SIZE, raw_vid.frame_index, raw_vid.vp);
-      }
-
-      free(raw_vid.frame_buffer);
+      case 1:
+        fclose(raw_vid.vp);
+        break;
+      case 2: case 3: case 4:
+        pclose(raw_vid.vp);
+        break;
     }
 
-    fclose(raw_vid.vp);
     raw_vid.vp = 0;
+  }
 
-    if (raw_vid.ap)
+  if (raw_vid.ap)
+  {
+    if (raw_vid.sample_buffer)
     {
-      if (raw_vid.sample_buffer)
+      size_t file_size;
+      if (raw_vid.sample_index)
       {
-        size_t file_size;
-        if (raw_vid.sample_index)
-        {
-          fwrite(raw_vid.sample_buffer, 2, raw_vid.frame_index, raw_vid.ap); //Sample is 2 bytes
-        }
-
-        free(raw_vid.sample_buffer);
-
-        file_size = ftell(raw_vid.ap);                            //Get file size
-        if (!fseek(raw_vid.ap, 4, SEEK_SET))                      //Seek to after RIFF header
-        {
-          fwrite4(file_size - 8, raw_vid.ap);                     //Don't include header or this write, -8
-        }
-        if (!fseek(raw_vid.ap, raw_vid.aud_dsize_pos, SEEK_SET))  //Seek to where the audio data size goes
-        {
-          //Data size is remainder of file, which is file size, less current position, plus
-          //The 4 bytes needed to hold the data size
-          fwrite4(file_size - (raw_vid.aud_dsize_pos+4), raw_vid.ap);
-        }
-        fclose(raw_vid.ap);
-        raw_vid.ap = 0;
+        fwrite(raw_vid.sample_buffer, 2, raw_vid.sample_index, raw_vid.ap); //Sample is 2 bytes
       }
-      AudioLogging = 0;
+
+      free(raw_vid.sample_buffer);
+
+      file_size = ftell(raw_vid.ap);                            //Get file size
+      if (!fseek(raw_vid.ap, 4, SEEK_SET))                      //Seek to after RIFF header
+      {
+        fwrite4(file_size - 8, raw_vid.ap);                     //Don't include header or this write, -8
+      }
+      if (!fseek(raw_vid.ap, raw_vid.aud_dsize_pos, SEEK_SET))  //Seek to where the audio data size goes
+      {
+        //Data size is remainder of file, which is file size, less current position, plus
+        //The 4 bytes needed to hold the data size
+        fwrite4(file_size - (raw_vid.aud_dsize_pos+4), raw_vid.ap);
+      }
+      fclose(raw_vid.ap);
+      raw_vid.ap = 0;
     }
+    AudioLogging = 0;
   }
 }
 
 static bool raw_video_open(const char *video_filename, const char *audio_filename)
 {
-  memset(&raw_vid, 0, sizeof(raw_vid));
-  if ((raw_vid.vp = fopen(video_filename, "wb")))
+  switch (MovieVideoMode)
   {
-    if ((raw_vid.frame_buffer = (unsigned int *)malloc(RAW_PIXEL_FRAME_SIZE*RAW_BUFFER_FRAMES)))
+    case 1:
+      raw_vid.vp = fopen(video_filename, "wb");
+      break;
+
+    case 2: case 3: case 4:
+      raw_vid.vp = open_movie_file();
+      break;
+
+    default:
+      return(false);
+      break;
+  }
+
+  if (!MovieAudioMode && raw_vid.vp)
+  {
+    return(true);
+  }
+
+  if (!MovieVideoMode || raw_vid.vp)
+  {
+    if ((raw_vid.ap = fopen(audio_filename, "wb")))
     {
-      if ((raw_vid.ap = fopen(audio_filename, "wb")))
+      if ((raw_vid.sample_buffer = (unsigned short *)malloc(RAW_BUFFER_SAMPLES*sizeof(short))))
       {
-        if ((raw_vid.sample_buffer = (unsigned short *)malloc(RAW_BUFFER_SAMPLES*sizeof(short))))
+        fputs("RIFF", raw_vid.ap);                 //header
+        fwrite4(~0, raw_vid.ap);                   //file size - unknown till file close
+        fputs("WAVEfmt ", raw_vid.ap);             //format
+        fwrite4(0x12, raw_vid.ap);                 //fmt size
+        fwrite2(1, raw_vid.ap);                    //fmt type (PCM)
+        fwrite2(2, raw_vid.ap);                    //channels
+        fwrite4(32000, raw_vid.ap);                //sample rate
+        fwrite4(32000*4, raw_vid.ap);              //byte rate (sample rate*block align)
+        fwrite2(16/8*2, raw_vid.ap);               //block align (SignificantBitsPerSample / 8 * NumChannels)
+        fwrite2(16, raw_vid.ap);                   //Significant bits per sample
+        fwrite2(0, raw_vid.ap);                    //Extra format bytes
+        fputs("data", raw_vid.ap);                 //data header
+        raw_vid.aud_dsize_pos = ftell(raw_vid.ap); //Save current position for use later
+        fwrite4(~0, raw_vid.ap);                   //data size - unknown till file close
+
+        if (!romispal)
         {
-          fputs("RIFF", raw_vid.ap);                 //header
-          fwrite4(~0, raw_vid.ap);                   //file size - unknown till file close
-          fputs("WAVEfmt ", raw_vid.ap);             //format
-          fwrite4(0x12, raw_vid.ap);                 //fmt size
-          fwrite2(1, raw_vid.ap);                    //fmt type (PCM)
-          fwrite2(2, raw_vid.ap);                    //channels
-          fwrite4(32000, raw_vid.ap);                //sample rate
-          fwrite4(32000*4, raw_vid.ap);              //byte rate (sample rate*block align)
-          fwrite2(16/8*2, raw_vid.ap);               //block align (SignificantBitsPerSample / 8 * NumChannels)
-          fwrite2(16, raw_vid.ap);                   //Significant bits per sample
-          fwrite2(0, raw_vid.ap);                    //Extra format bytes
-          fputs("data", raw_vid.ap);                 //data header
-          raw_vid.aud_dsize_pos = ftell(raw_vid.ap); //Save current position for use later
-          fwrite4(~0, raw_vid.ap);                   //data size - unknown till file close
-
-          if (!romispal)
-          {
-            raw_vid.sample_ntsc_hi = SAMPLE_NTSC_HI;
-            raw_vid.sample_ntsc_lo = SAMPLE_NTSC_LO;
-            raw_vid.sample_ntsc_balance = SAMPLE_NTSC_HI;
-          }
-
-          AudioLogging = 1;
-          return(true);
+          raw_vid.sample_ntsc_hi = SAMPLE_NTSC_HI;
+          raw_vid.sample_ntsc_lo = SAMPLE_NTSC_LO;
+          raw_vid.sample_ntsc_balance = SAMPLE_NTSC_HI;
         }
+
+        AudioLogging = 1;
+        return(true);
       }
     }
-    raw_video_close();
   }
+  raw_video_close();
   return(false);
 }
-
-//Used by raw videos for calculating sample rate in NTSC mode
-//Code by Bisqwit
 
 #define PIXEL (vidbuffer[(i*288) + j + 16])
 static void raw_video_write_frame()
@@ -1985,25 +2050,14 @@ static void raw_video_write_frame()
   {
     extern unsigned short *vidbuffer;
     size_t i, j;
-    unsigned int *pixel_dest = raw_vid.frame_buffer + raw_vid.frame_index*RAW_FRAME_SIZE;
 
     //Use zsKnight's 16 to 32 bit color conversion (optimized by Nach)
     for (i = 0; i < RAW_HEIGHT; i++)
     {
-      unsigned int *scanline = pixel_dest + i*RAW_WIDTH;
       for (j = 0; j < RAW_WIDTH; j++)
       {
-        scanline[j] = ((PIXEL&0xF800) << 8) | ((PIXEL&0x07E0) << 5) |
-                      ((PIXEL&0x001F) << 3) | 0xFF000000;
+        fwrite3(((PIXEL&0xF800) << 8) | ((PIXEL&0x07E0) << 5) | ((PIXEL&0x001F) << 3), raw_vid.vp);
       }
-    }
-
-    raw_vid.frame_index++;
-
-    if (raw_vid.frame_index == RAW_BUFFER_FRAMES)
-    {
-      fwrite(raw_vid.frame_buffer, RAW_PIXEL_FRAME_SIZE, RAW_BUFFER_FRAMES, raw_vid.vp);
-      raw_vid.frame_index = 0;
     }
   }
 
@@ -2050,6 +2104,7 @@ static void raw_video_write_frame()
     }
   }
 }
+
 
 
 /////////////////////////////////////////////////////////
