@@ -5,7 +5,7 @@ md_ntsc times 20 db "59649/995"
 md_pal times 5 db "50/1"
 md_prog times 50 db "mencoder"
 md_raw times 100 db "-demuxer rawvideo -rawvideo format=0x42475218:w=256:h=224:size=172032"
-md_other times 50 db "-aspect 4/3 -mc 0 -nosound"
+md_other times 75 db "-aspect 4:3 -vop scale -mc 0 -nosound"
 md_file times 50 db "video.avi"
 
 @Valid variables to use in the next three lines are:
