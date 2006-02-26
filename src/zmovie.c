@@ -1989,6 +1989,9 @@ static bool raw_video_open()
 
   switch (MovieVideoMode)
   {
+    case 0:
+      break;
+
     case 1:
       raw_vid.vp = fopen(md_raw_file, "wb");
       break;
