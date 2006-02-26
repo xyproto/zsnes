@@ -168,7 +168,6 @@ else
     CFLAGS="$CFLAGS -march=$ARCH_INFO"
   fi
 fi
-CFLAGS="$CFLAGS -I./psrhead"
 CXXFLAGS="$CFLAGS -fno-rtti"
 PSRFLAGS="-D__UNIXSDL__"
 
