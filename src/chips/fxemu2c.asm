@@ -29,17 +29,14 @@ EXTSYM SfxRomBuffer,SfxSCBR,SfxSCMR,SfxSFR,SfxSignZero,SfxnRamBanks,flagnz
 EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,sfxramdata
 EXTSYM withr15sk,sfxclineloc,SCBRrel,ChangeOps
 EXTSYM fxbit01pcal,fxbit23pcal,fxbit45pcal,fxbit67pcal
-EXTSYM fxbit01,fxbit23,fxbit45,fxbit67
-EXTSYM fxxand
-EXTSYM PLOTJmpa,PLOTJmpb
+EXTSYM fxbit01,fxbit23,fxbit45,fxbit67,fxxand,PLOTJmpa,PLOTJmpb
 
 %include "chips/fxemu2.mac"
 %include "chips/fxemu2c.mac"
 
 
 
-
-SECTION .text ;ALIGN=32
+SECTION .text
 
 ALIGN32
 NEWSYM FxOpd00      ; STOP   stop GSU execution (and maybe generate an IRQ)     ; Verified.

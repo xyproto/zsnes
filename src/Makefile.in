@@ -288,7 +288,7 @@ uninstall:
 	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man5/zsnes.5
 
 clean:
-	rm -fr *.o ${PSR} psrhead/*.h temppsr.c @ZSNESEXE@
+	rm -f ${ZOBJS} ${PSR} psrhead/*.h temppsr.c @ZSNESEXE@
 
 distclean:
-	rm -fr *.o ${PSR} psrhead/*.h temppsr.c @ZSNESEXE@ Makefile aclocal.m4 configure config.cache config.log config.status config.h
+	rm -f ${ZOBJS} ${PSR} psrhead/*.h temppsr.c @ZSNESEXE@ Makefile aclocal.m4 configure config.cache config.log config.status config.h

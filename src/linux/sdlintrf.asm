@@ -32,7 +32,7 @@ EXTSYM ZFileRead,ZFileDelFName,ZFileDelete,ZCloseFileHandle,ZCloseFile
 EXTSYM ZFileTellHandle,ZFileTell,ZFFTimeFName,ZFTime,ZFDate,ZFileGetFTime
 EXTSYM GetTime,GetDate,GUIkeydelay2,ZFileCHDir,CHPath
 EXTSYM ZFileGetDir,DirName,DTALoc,DTALocPos,ZFileFindATTRIB
-EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,soundon,DSPDisable,Start60HZ
+EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,soundon,Start60HZ
 EXTSYM pressed,RaisePitch,AdjustFrequency,vidbufferofsb,vidbuffer,clearwin
 EXTSYM Stop60HZ,initwinvideo,vesa2_rpos,vesa2_gpos,vesa2_bpos,vesa2_rposng
 EXTSYM vesa2_gposng,vesa2_bposng,vesa2_usbit,vesa2_clbit,vesa2_clbitng
@@ -41,11 +41,10 @@ EXTSYM vesa2_bits,vesa2_x,vesa2_y,genfulladdtab,GUICPC,drawscreenwin
 EXTSYM ConvertToAFormat,HalfTrans,UnusedBit,UnusedBitXor
 EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC,UpdateVFrame,GetMouseX
 EXTSYM GetMouseY,GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
-EXTSYM MouseButton,Start36HZ,Stop36HZ,BufferSizeW,BufferSizeB,ProcessSoundBuffer
-EXTSYM CheckTimers,vesa2_rfull,vesa2_rtrcl,vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl
-EXTSYM vesa2_gtrcla,vesa2_bfull,vesa2_btrcl,vesa2_btrcla,Init_2xSaIMMXW
-EXTSYM GetLocalTime,V8Mode,GrayscaleMode
-EXTSYM PrevWinMode,PrevFSMode,sem_sleep,ZsnesPage
+EXTSYM MouseButton,Start36HZ,Stop36HZ,CheckTimers,vesa2_rfull,vesa2_rtrcl
+EXTSYM vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla,vesa2_bfull,vesa2_btrcl
+EXTSYM vesa2_btrcla,Init_2xSaIMMXW,GetLocalTime,V8Mode,GrayscaleMode,PrevWinMode
+EXTSYM PrevFSMode,sem_sleep
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are

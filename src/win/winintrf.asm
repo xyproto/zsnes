@@ -46,9 +46,8 @@ EXTSYM SetMouseMaxY,SetMouseX,SetMouseY,T36HZEnabled,MouseButton,Start36HZ
 EXTSYM Stop36HZ,BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
 EXTSYM vesa2_rfull,vesa2_rtrcl,vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla
 EXTSYM vesa2_bfull,vesa2_btrcl,vesa2_btrcla,Init_2xSaIMMXW,DoSleep
-EXTSYM ZsnesPage,V8Mode,GrayscaleMode,PrevWinMode,PrevFSMode,FrameSemaphore
-EXTSYM _imp__GetLocalTime@4
-EXTSYM DisplayWIPDisclaimer
+EXTSYM V8Mode,GrayscaleMode,PrevWinMode,PrevFSMode,FrameSemaphore
+EXTSYM _imp__GetLocalTime@4,DisplayWIPDisclaimer
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are

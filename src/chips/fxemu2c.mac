@@ -20,14 +20,6 @@
 
 
 
-
-
-
-
-
-
-EXTSYM WriteLine
-
 %macro FXReturn 0
    dec dword[NumberOfOpcodes]
 ;pushad
