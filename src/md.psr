@@ -21,4 +21,4 @@ md_ffv1 times 100 db "-ovc lavc -lavcopts vcodec=ffv1:vstrict=-2:aspect=4/3"
 @$md_vcodec is $md_x264 or $md_ffv1 depending on the codec selected
 
 md_command times 150 db "$md_prog $md_other $md_no_sound $md_raw:fps=$md_video_rate $md_vcodec -o $md_file -"
-md_merge times 150 db "$md_prog $md_other $md_sound -audiofile $md_pcm_audio -ovc copy -o merged.avi $md_file"
+md_merge times 150 db "$md_prog $md_other $md_sound -audiofile $md_pcm_audio -force-avi-aspect 4:3 -ovc copy -o merged.avi $md_file"
