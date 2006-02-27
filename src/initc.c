@@ -1439,7 +1439,6 @@ extern unsigned char  opexec358cph;
 extern unsigned char  opexec268cphb;
 extern unsigned char  opexec358cphb;
 extern unsigned char  DSP1Type;
-extern unsigned int   ewj2hack;
 extern unsigned char  cycpl;
 unsigned char HacksDisable;
 
@@ -1633,16 +1632,6 @@ void headerhack()
 
   //Okaaay...
   if(DSP1Type) { disablehdma = true; }
-
-  //Earthworm Jim 2 (all regions?)
-  if (!strncmp((RomData+Lo),"EARTHWORM JIM 2     " ,20))
-  {
-    RomData[0x2A9C1A] = 0;
-    RomData[0x2A9C1B] = 0;
-    RomData[0x2A9C1F] = 0;
-    RomData[0x2A9C20] = 0;
-    ewj2hack = true;
-  }
 
   //Lamborghini - American Challenge (U/E)
   if (!strncmp((RomData+Lo), "LAMBORGHINI AMERICAN", 20))

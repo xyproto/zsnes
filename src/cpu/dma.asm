@@ -1154,19 +1154,11 @@ section .data
 .fname2 db 9,'vram2.dat',0
 section .text
 
-section .data
-NEWSYM ewj2hack, dd 0
-section .text
-
 NEWSYM hdmatype2indirect
-    cmp dword[ewj2hack],1
-    jne near .notend
     cmp byte[esi+1],40h ; Writing to spc
     jne near .notend
     cmp byte[esi+10],0DAh ; first transfer
     jne near .notend
-    ; EWJ2 HACK
-;    int 3h
     push eax
     push ebx
     push ecx

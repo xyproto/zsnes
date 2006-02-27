@@ -4519,25 +4519,11 @@ NEWSYM EchoStereo
     mov dword[Voice0IncNumber+%1*4],0
     mov byte[Voice0Status+%1],0
     mov byte[Voice0State+%1],0
-;    cmp byte[ENVDisable],1
-;    je %%noSkipStuff
-;%%noSkipStuff
-    mov byte[DSPMem+08h+%1*10h],0
-    mov byte[DSPMem+09h+%1*10h],0
-    or byte[DSPMem+7Ch],%3
-%%SkipStuff
     jmp %2
 %%EndofSamp2
     mov dword[Voice0EnvInc+%1*4],0
     mov dword[Voice0IncNumber+%1*4],0
     mov byte[Voice0State+%1],0
-    cmp byte[ENVDisable],1
-    je %%noSkipStuff2
-%%noSkipStuff2
-    mov byte[DSPMem+08h+%1*10h],0
-    mov byte[DSPMem+09h+%1*10h],0
-    or byte[DSPMem+7Ch],%3
-%%SkipStuff2
     mov al,%1
     call VoiceStarter
     jmp %%SkipProcess2
