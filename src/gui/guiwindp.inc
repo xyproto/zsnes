@@ -3199,7 +3199,6 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     GUIDisplayButtonHoleTu 15,9,138,byte[MovieVideoMode],1,GUIMovieTextD2,2
     GUIDisplayButtonHoleTu 15,9,148,byte[MovieVideoMode],2,GUIMovieTextD3,0
     GUIDisplayButtonHoleTu 15,9,158,byte[MovieVideoMode],3,GUIMovieTextD4,0
-    GUIDisplayButtonHoleTu 15,9,168,byte[MovieVideoMode],4,GUIMovieTextD5,0
 
     GUIDisplayTextY 15,129,120,GUIMovieTextE           ; Audio Section
     GUIDisplayButtonHoleTu 15,130,128,byte[MovieAudioMode],0,GUIMovieTextE1,6
@@ -3272,9 +3271,8 @@ GUIMovieTextC4 db 'POWER+SRAM CLEAR',0
 GUIMovieTextD db 'DUMP VIDEO OPTIONS',0
 GUIMovieTextD1 db 'NO VIDEO',0
 GUIMovieTextD2 db 'RAW VIDEO',0
-GUIMovieTextD3 db 'UNCOMPRESSED AVI',0
-GUIMovieTextD4 db 'FFV1',0
-GUIMovieTextD5 db 'X264 LOSSLESS',0
+GUIMovieTextD3 db 'FFV1',0
+GUIMovieTextD4 db 'X264 LOSSLESS',0
 
 GUIMovieTextE db 'DUMP AUDIO OPTIONS',0
 GUIMovieTextE1 db 'NO AUDIO',0
