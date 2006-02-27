@@ -1996,18 +1996,18 @@ static bool raw_video_open()
 {
   read_md_vars("zmovie.cfg");
 
+  chdir(ZStartPath);
+
   switch (MovieVideoMode)
   {
     case 0:
       break;
 
     case 1:
-      chdir(ZStartPath);
       raw_vid.vp = fopen(md_raw_file, "wb");
       break;
 
     case 2: case 3:
-      chdir(ZStartPath);
       raw_vid.vp = popen(encode_command(md_command), WRITE_BINARY);
       break;
 
