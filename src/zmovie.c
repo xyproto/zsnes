@@ -2022,7 +2022,7 @@ static bool raw_video_open()
     return(true);
   }
 
-  if (!MovieVideoMode || raw_vid.vp)
+  if ((!MovieVideoMode || raw_vid.vp) && MovieAudioMode)
   {
     if ((raw_vid.ap = fopen(md_pcm_audio, "wb")))
     {
