@@ -1155,54 +1155,6 @@ section .data
 section .text
 
 NEWSYM hdmatype2indirect
-    cmp byte[esi+1],40h ; Writing to spc
-    jne near .notend
-    cmp byte[esi+10],0DAh ; first transfer
-    jne near .notend
-    push eax
-    push ebx
-    push ecx
-    push edx
-    xor eax,eax
-    xor ebx,ebx
-    xor ecx,ecx
-    xor edx,edx
-    mov ax,[SPCRAM+021h] ; load dest offset
-    mov dword[.dest],SPCRAM
-    add [.dest],eax
-    mov dl,[esi+10] ; number of bytes to transfer
-    sub dl,80h
-.inloop
-    xor ebx,ebx
-    xor ecx,ecx
-    mov bl,[esi+7]
-    mov cx,[esi+5]
-    inc word[esi+5]
-    call dword near [memtabler8+ebx*4]
-    mov ebx,[.dest]
-    mov [ebx],al
-    inc ebx
-    mov [.dest],ebx
-    xor ebx,ebx
-    xor ecx,ecx
-    mov bl,[esi+7]
-    mov cx,[esi+5]
-    inc word[esi+5]
-    call dword near [memtabler8+ebx*4]
-    mov ebx,[.dest]
-    mov [ebx],al
-    inc ebx
-    mov [.dest],ebx
-    dec edx
-    jnz .inloop
-    sub word[esi+5],5Ah
-    sub word[esi+5],5Ah
-    pop edx
-    pop ecx
-    pop ebx
-    pop eax
-.notend
-
     mov al,[edx+16]
     mov [.tempdecr],al
     xor ebx,ebx
