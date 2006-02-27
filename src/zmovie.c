@@ -29,6 +29,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
 #include <sys/stat.h>
 #include <zlib.h>
 #ifdef __WIN32__
