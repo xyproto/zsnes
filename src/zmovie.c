@@ -1876,6 +1876,8 @@ unsigned char AudioLogging;
 extern unsigned char MovieVideoMode;
 extern unsigned char MovieAudioMode;
 
+extern char ZStartPath[PATH_MAX];
+
 #define PICK_HELP(var) if (!strncmp(*str, "$"#var, strlen(#var)+1)) { *str += strlen(#var)+1; return(var); }
 
 static char *pick_var(char **str)
@@ -1884,28 +1886,32 @@ static char *pick_var(char **str)
   PICK_HELP(md_raw);
   PICK_HELP(md_other);
   PICK_HELP(md_file);
+  PICK_HELP(md_sound);
+  PICK_HELP(md_no_sound);
+  PICK_HELP(md_pcm_audio);
+
+
+
   if (!strncmp(*str, "$md_video_rate", strlen("$md_video_rate")))
   {
     *str += strlen("$md_video_rate");
     return(romispal ? md_pal : md_ntsc);
+  }
+  if (!strncmp(*str, "$md_vcodec", strlen("$md_vcodec")))
+  {
+    *str += strlen("$md_vcodec");
+    return(MovieVideoMode == 2 ? md_ffv1 : md_x264);
   }
   *str += strlen(*str);
   fprintf(stderr, "Unknown Variable: %s", *str);
   return("");
 }
 
-FILE *open_movie_file()
+static char *encode_command(char *p)
 {
-  char command[450], *p, *var;
+  static char command[700];
+  char *var;
   *command = 0;
-
-  switch (MovieVideoMode)
-  {
-    case 2: p = md_uncompressed; break;
-    case 3: p = md_ffv1; break;
-    case 4: p = md_x264; break;
-    default: p = "$"; break;
-  }
 
   while (*p)
   {
@@ -1923,7 +1929,8 @@ FILE *open_movie_file()
   }
 
   puts(command);
-  return(popen(command, WRITE_BINARY));
+
+  return(command);
 }
 
 struct
@@ -1941,6 +1948,8 @@ struct
 
 static void raw_video_close()
 {
+  bool audio_and_video = raw_vid.vp && raw_vid.ap;
+
   if (raw_vid.vp)
   {
     switch (MovieVideoMode)
@@ -1948,7 +1957,7 @@ static void raw_video_close()
       case 1:
         fclose(raw_vid.vp);
         break;
-      case 2: case 3: case 4:
+      case 2: case 3:
         pclose(raw_vid.vp);
         break;
     }
@@ -1973,6 +1982,14 @@ static void raw_video_close()
     raw_vid.ap = 0;
     AudioLogging = 0;
   }
+
+  if (audio_and_video && (MovieAudioMode == 2))
+  {
+    chdir(ZStartPath);
+    system(encode_command(md_merge));
+    remove(md_file);
+    remove(md_pcm_audio);
+  }
 }
 
 static bool raw_video_open()
@@ -1985,11 +2002,13 @@ static bool raw_video_open()
       break;
 
     case 1:
+      chdir(ZStartPath);
       raw_vid.vp = fopen(md_raw_file, "wb");
       break;
 
-    case 2: case 3: case 4:
-      raw_vid.vp = open_movie_file();
+    case 2: case 3:
+      chdir(ZStartPath);
+      raw_vid.vp = popen(encode_command(md_command), WRITE_BINARY);
       break;
 
     default:

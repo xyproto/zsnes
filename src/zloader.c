@@ -562,6 +562,8 @@ void ccmdline()
   handle_params(argc, argv);
 }
 
+char ZStartPath[PATH_MAX];
+
 #ifdef __WIN32__
 extern HINSTANCE hInst;
 int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
@@ -571,6 +573,8 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
   hInst=hInstance;
   ImportDirectX();
+
+  getcwd(ZStartPath, PATH_MAX);
 
   zstart();
   return(0);
@@ -586,6 +590,8 @@ int main(int zargc, char *zargv[])
   #ifdef __UNIXSDL__
   handle_params(zargc, zargv);
   #endif
+
+  getcwd(ZStartPath, PATH_MAX);
 
   zstart();
   return(0);
