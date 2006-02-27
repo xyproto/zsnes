@@ -1848,21 +1848,26 @@ Code for dumping raw video
 
 */
 
-#define RAW_BUFFER_SAMPLES 12800
 #define RAW_WIDTH 256
 #define RAW_HEIGHT 224
 
 //NTSC FPS is  59.948743718592964824120603015060 in AVI that's a fraction of 59649/995
 //which equals 59.948743718592964824120603015075, so videos should not desync for several millinium
 
-//FPS = 64000 / Samples per Frame
+//FPS = Rate*Stereo / Samples per Frame
 
 //These two numbers help with calculating how many samples are needed per frame
-//59.948743718592964824120603015060 = SAMPLE_NTSC_HI*32000/SAMPLE_NTSC_LO *2
-#define SAMPLE_NTSC_HI 31840000ULL
+//59.948743718592964824120603015060 = SAMPLE_NTSC_LO*Rate/SAMPLE_NTSC_HI
+//Samples per Frame = SAMPLE_NTSC_HI/SAMPLE_NTSC_LO *Stereo
+
+#define SAMPLE_NTSC_HI_SCALE 995ULL
 #define SAMPLE_NTSC_LO 59649ULL
+//Code using this by Bisqwit
 //Used by raw videos for calculating sample rate in NTSC mode
-//Code by Bisqwit
+
+static const unsigned int freqtab[] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
+extern unsigned int SoundQuality;
+#define RATE freqtab[SoundQuality]
 
 
 //0 = None; 1 Logging, but not now, 2 Log now
@@ -1926,8 +1931,6 @@ struct
   FILE *vp;
 
   FILE *ap;
-  unsigned short *sample_buffer;
-  size_t sample_index;
 
   size_t aud_dsize_pos;
   //These next three are only used for NTSC videos to keep sample rate correct
@@ -1955,30 +1958,19 @@ static void raw_video_close()
 
   if (raw_vid.ap)
   {
-    if (raw_vid.sample_buffer)
+    size_t file_size = ftell(raw_vid.ap);                     //Get file size
+    if (!fseek(raw_vid.ap, 4, SEEK_SET))                      //Seek to after RIFF header
     {
-      size_t file_size;
-      if (raw_vid.sample_index)
-      {
-        fwrite(raw_vid.sample_buffer, 2, raw_vid.sample_index, raw_vid.ap); //Sample is 2 bytes
-      }
-
-      free(raw_vid.sample_buffer);
-
-      file_size = ftell(raw_vid.ap);                            //Get file size
-      if (!fseek(raw_vid.ap, 4, SEEK_SET))                      //Seek to after RIFF header
-      {
-        fwrite4(file_size - 8, raw_vid.ap);                     //Don't include header or this write, -8
-      }
-      if (!fseek(raw_vid.ap, raw_vid.aud_dsize_pos, SEEK_SET))  //Seek to where the audio data size goes
-      {
-        //Data size is remainder of file, which is file size, less current position, plus
-        //The 4 bytes needed to hold the data size
-        fwrite4(file_size - (raw_vid.aud_dsize_pos+4), raw_vid.ap);
-      }
-      fclose(raw_vid.ap);
-      raw_vid.ap = 0;
+      fwrite4(file_size - 8, raw_vid.ap);                     //Don't include header or this write, -8
     }
+    if (!fseek(raw_vid.ap, raw_vid.aud_dsize_pos, SEEK_SET))  //Seek to where the audio data size goes
+    {
+      //Data size is remainder of file, which is file size, less current position, plus
+      //The 4 bytes needed to hold the data size
+      fwrite4(file_size - (raw_vid.aud_dsize_pos+4), raw_vid.ap);
+    }
+    fclose(raw_vid.ap);
+    raw_vid.ap = 0;
     AudioLogging = 0;
   }
 }
@@ -2014,37 +2006,64 @@ static bool raw_video_open()
   {
     if ((raw_vid.ap = fopen(md_pcm_audio, "wb")))
     {
-      if ((raw_vid.sample_buffer = (unsigned short *)malloc(RAW_BUFFER_SAMPLES*sizeof(short))))
+      fputs("RIFF", raw_vid.ap);                 //header
+      fwrite4(~0, raw_vid.ap);                   //file size - unknown till file close
+      fputs("WAVEfmt ", raw_vid.ap);             //format
+      fwrite4(0x12, raw_vid.ap);                 //fmt size
+      fwrite2(1, raw_vid.ap);                    //fmt type (PCM)
+      fwrite2(2, raw_vid.ap);                    //channels
+      fwrite4(RATE, raw_vid.ap);                 //sample rate
+      fwrite4(RATE*4, raw_vid.ap);               //byte rate (sample rate*block align)
+      fwrite2(16/8*2, raw_vid.ap);               //block align (SignificantBitsPerSample / 8 * NumChannels)
+      fwrite2(16, raw_vid.ap);                   //Significant bits per sample
+      fwrite2(0, raw_vid.ap);                    //Extra format bytes
+      fputs("data", raw_vid.ap);                 //data header
+      raw_vid.aud_dsize_pos = ftell(raw_vid.ap); //Save current position for use later
+      fwrite4(~0, raw_vid.ap);                   //data size - unknown till file close
+
+      if (!romispal)
       {
-        fputs("RIFF", raw_vid.ap);                 //header
-        fwrite4(~0, raw_vid.ap);                   //file size - unknown till file close
-        fputs("WAVEfmt ", raw_vid.ap);             //format
-        fwrite4(0x12, raw_vid.ap);                 //fmt size
-        fwrite2(1, raw_vid.ap);                    //fmt type (PCM)
-        fwrite2(2, raw_vid.ap);                    //channels
-        fwrite4(32000, raw_vid.ap);                //sample rate
-        fwrite4(32000*4, raw_vid.ap);              //byte rate (sample rate*block align)
-        fwrite2(16/8*2, raw_vid.ap);               //block align (SignificantBitsPerSample / 8 * NumChannels)
-        fwrite2(16, raw_vid.ap);                   //Significant bits per sample
-        fwrite2(0, raw_vid.ap);                    //Extra format bytes
-        fputs("data", raw_vid.ap);                 //data header
-        raw_vid.aud_dsize_pos = ftell(raw_vid.ap); //Save current position for use later
-        fwrite4(~0, raw_vid.ap);                   //data size - unknown till file close
-
-        if (!romispal)
-        {
-          raw_vid.sample_ntsc_hi = SAMPLE_NTSC_HI;
-          raw_vid.sample_ntsc_lo = SAMPLE_NTSC_LO;
-          raw_vid.sample_ntsc_balance = SAMPLE_NTSC_HI;
-        }
-
-        AudioLogging = 1;
-        return(true);
+        raw_vid.sample_ntsc_hi = SAMPLE_NTSC_HI_SCALE*RATE;
+        raw_vid.sample_ntsc_lo = SAMPLE_NTSC_LO;
+        raw_vid.sample_ntsc_balance = raw_vid.sample_ntsc_hi;
       }
+
+      AudioLogging = 1;
+      return(true);
     }
   }
   raw_video_close();
   return(false);
+}
+
+static void raw_audio_write(unsigned int samples)
+{
+  void ProcessSoundBuffer();
+  extern int DSPBuffer[1280];
+  extern unsigned int BufferSizeB, BufferSizeW;
+  unsigned int i = 0;
+  int temp;
+
+  if (samples > 1280)
+  {
+    raw_audio_write(1280);
+    samples -= 1280;
+  }
+
+  BufferSizeB = samples;
+  BufferSizeW = samples<<1;
+
+  AudioLogging = 2;
+  asm_call(ProcessSoundBuffer);
+  AudioLogging = 1;
+
+  for (i = 0; i < BufferSizeB; i++)
+  {
+    temp = DSPBuffer[i];
+    if (temp > 32767) { temp = 32767; }
+    else if (temp < -32768) { temp =-32768; }
+    fwrite2((short)temp, raw_vid.ap);
+  }
 }
 
 #define PIXEL (vidbuffer[(i*288) + j + 16])
@@ -2067,45 +2086,26 @@ static void raw_video_write_frame()
 
   if (raw_vid.ap)
   {
-    void ProcessSoundBuffer();
-    extern int DSPBuffer[1280];
-    extern unsigned int BufferSizeB, BufferSizeW;
-    unsigned int i = 0;
-    int temp;
-
+    unsigned int samples;
     if (romispal)
     {
-      BufferSizeB = 1280;
+      samples = RATE*2/50;
+      if (samples & 1)
+      {
+        static signed char odd_carry = 0;
+        samples += odd_carry-1;
+        odd_carry ^= 2;
+      }
     }
     else
     {
       //Thanks Bisqwit for this algorithm
-      BufferSizeB = (raw_vid.sample_ntsc_balance/raw_vid.sample_ntsc_lo) << 1;
+      samples = (raw_vid.sample_ntsc_balance/raw_vid.sample_ntsc_lo) << 1;
       raw_vid.sample_ntsc_balance %= raw_vid.sample_ntsc_lo;
       raw_vid.sample_ntsc_balance += raw_vid.sample_ntsc_hi;
-      //printf("Frame %u: %u samples\n", raw_vid.frame_index, BufferSizeB);
+      //printf("Frame %u: %u samples\n", raw_vid.sample_index, BufferSizeB);
     }
-    BufferSizeW = BufferSizeB<<1;
-
-    AudioLogging = 2;
-    asm_call(ProcessSoundBuffer);
-    AudioLogging = 1;
-
-    for (i = 0; i < BufferSizeB; i++)
-    {
-      temp = DSPBuffer[i];
-      if (temp > 32767) { temp = 32767; }
-      else if (temp < -32768) { temp =-32768; }
-      raw_vid.sample_buffer[raw_vid.sample_index] = temp;
-
-      raw_vid.sample_index++;
-
-      if (raw_vid.sample_index == RAW_BUFFER_SAMPLES)
-      {
-        fwrite(raw_vid.sample_buffer, 2, RAW_BUFFER_SAMPLES, raw_vid.ap); //Each sample is 2 bytes
-        raw_vid.sample_index = 0;
-      }
-    }
+    raw_audio_write(samples);
   }
 }
 
