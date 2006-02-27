@@ -9,16 +9,17 @@ md_prog times 50 db "mencoder"
 md_raw times 100 db "-demuxer rawvideo -rawvideo format=0x42475218:w=256:h=224:size=172032"
 md_other times 75 db "-aspect 4:3 -mc 0"
 md_no_sound times 25 db "-nosound"
-md_sound times 50 db "-oac mp3lame -lameopts aq=0:preset=64"
+md_sound times 50 db "-oac mp3lame -lameopts aq=0:preset=64:mode=1"
 md_x264 times 100 db "-ovc x264 -x264encopts qp_constant=0:frameref=15"
 md_ffv1 times 100 db "-ovc lavc -lavcopts vcodec=ffv1:vstrict=-2:aspect=4/3"
+md_xvid times 100 db "-ovc xvid -xvidencopts fixed_quant=2"
 
 @Valid variables to use in the next two lines are:
 @$md_file, $md_prog, $md_raw, $md_other, $md_no_sound, $md_sound, $md_pcm_audio
 @and $md_video_rate, $md_vcodec
 @These variables are defined above.
 @$md_video_rate is $md_ntsc or $md_pal depending on the game as needed
-@$md_vcodec is $md_x264 or $md_ffv1 depending on the codec selected
+@$md_vcodec is $md_x264, $md_ffv1, or $md_xvid depending on the codec selected
 
 md_command times 150 db "$md_prog $md_other $md_no_sound $md_raw:fps=$md_video_rate $md_vcodec -o $md_file -"
 md_merge times 150 db "$md_prog $md_other $md_sound -audiofile $md_pcm_audio -force-avi-aspect 4:3 -ovc copy -o merged.avi $md_file"
