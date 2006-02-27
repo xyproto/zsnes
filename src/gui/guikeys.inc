@@ -1563,6 +1563,7 @@ GUIMovieKeys:
 
     GUIKeyButtonHole MovieAudioMode,0,'I'
     GUIKeyButtonHole MovieAudioMode,1,'A'
+    GUIKeyButtonHole MovieAudioMode,2,'U'
 
     GUIKeyCheckbox MovieDisplayFrame,'D'      ; Checkbox
     ret

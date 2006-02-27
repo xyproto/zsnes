@@ -3163,7 +3163,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     DrawGUIButton 15,7,68,109,79,GUIMovieTextA5,29,0,0
     DrawGUIButton 15,7,84,109,95,GUIMovieTextA6,30,0,0
     DrawGUIButton 15,7,100,109,111,GUIMovieTextA7,31,0,0
-    DrawGUIButton 15,130,145,198,156,GUIMovieTextA8,34,0,0
+    DrawGUIButton 15,130,155,198,166,GUIMovieTextA8,34,0,0
 
     GUIDisplayTextY 15,8,16,GUIMovieTextB        ; Save Select
     mov byte[GUIMovieTextB1],'0'
@@ -3203,7 +3203,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     GUIDisplayTextY 15,129,120,GUIMovieTextE           ; Audio Section
     GUIDisplayButtonHoleTu 15,130,128,byte[MovieAudioMode],0,GUIMovieTextE1,6
     GUIDisplayButtonHoleTu 15,197,128,byte[MovieAudioMode],1,GUIMovieTextE2,0
-
+    GUIDisplayButtonHoleTu 15,130,138,byte[MovieAudioMode],2,GUIMovieTextE3,1
 
 
     mov dword[GUIMovieTextZ+9],'INAC'    ; Determine and Display Status
@@ -3277,6 +3277,7 @@ GUIMovieTextD4 db 'X264 LOSSLESS',0
 GUIMovieTextE db 'DUMP AUDIO OPTIONS',0
 GUIMovieTextE1 db 'NO AUDIO',0
 GUIMovieTextE2 db 'AUDIO',0
+GUIMovieTextE3 db 'AUDIO IN VIDEO',0
 
 GUIMovieTextX1 db 'WARNING :  THIS MOVIE',0  ; Overwrite Window
 GUIMovieTextX2 db '  FILE ALREADY EXISTS',0
