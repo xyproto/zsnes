@@ -2053,9 +2053,7 @@ static void raw_audio_write(unsigned int samples)
   BufferSizeB = samples;
   BufferSizeW = samples<<1;
 
-  AudioLogging = 2;
   asm_call(ProcessSoundBuffer);
-  AudioLogging = 1;
 
   for (i = 0; i < BufferSizeB; i++)
   {
@@ -2105,7 +2103,9 @@ static void raw_video_write_frame()
       raw_vid.sample_ntsc_balance += raw_vid.sample_ntsc_hi;
       //printf("Frame %u: %u samples\n", raw_vid.sample_index, BufferSizeB);
     }
+    AudioLogging = 2;
     raw_audio_write(samples);
+    AudioLogging = 1;
   }
 }
 
