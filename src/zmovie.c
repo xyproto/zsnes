@@ -25,6 +25,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIR_SLASH "/"
 #define WRITE_BINARY "w"
 #else
+#define _POSIX_
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
