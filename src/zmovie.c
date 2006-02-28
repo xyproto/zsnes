@@ -1987,7 +1987,7 @@ static void raw_video_close()
   if (audio_and_video && (MovieAudioMode == 2))
   {
     chdir(ZStartPath);
-    system(encode_command(md_merge));
+    if (mencoderExists) system(encode_command(md_merge));
     remove(md_file);
     remove(md_pcm_audio);
   }
