@@ -61,7 +61,7 @@ extern unsigned int versionNumber, CRC32, cur_zst_size, MsgCount, MessageOn;
 extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
 extern unsigned char pl1contrl, pl2contrl, pl3contrl, pl4contrl, pl5contrl;
 extern unsigned char MovieStartMethod, GUIReset, ReturnFromSPCStall, GUIQuit;
-extern unsigned char MovieProcessing, CMovieExt, EmuSpeed;
+extern unsigned char MovieProcessing, CMovieExt, EmuSpeed, mencoderExists;
 extern char *Msgptr, fnamest[512];
 extern bool romispal;
 bool MovieWaiting = false;
@@ -2009,7 +2009,7 @@ static bool raw_video_open()
       break;
 
     case 2: case 3:
-      raw_vid.vp = popen(encode_command(md_command), WRITE_BINARY);
+      mencoderExists = raw_vid.vp = popen(encode_command(md_command), WRITE_BINARY);
       break;
 
     default:
@@ -2052,6 +2052,7 @@ static bool raw_video_open()
       return(true);
     }
   }
+
   raw_video_close();
   return(false);
 }

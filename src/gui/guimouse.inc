@@ -667,6 +667,10 @@ ProcessMouseButtons:
     pushad
     call MovieDumpRaw
     popad
+    cmp byte[mencoderExists],0
+    jne .okay
+    call guimencodermsg
+.okay
     ret
 .noDumpRaw
     cmp byte[GUICBHold],40
