@@ -22,6 +22,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
+#include "linux/safelib.h"
+#include <sys/poll.h>
 #define DIR_SLASH "/"
 #define WRITE_BINARY "w"
 #else
@@ -2010,7 +2012,7 @@ static bool raw_video_open()
       break;
 
     case 2: case 3:
-      mencoderExists = raw_vid.vp = popen(encode_command(md_command), WRITE_BINARY);
+      mencoderExists = (unsigned char)(int)(raw_vid.vp = popen(encode_command(md_command), WRITE_BINARY));
       break;
 
     default:

@@ -72,7 +72,7 @@ VIDEOBJ=${VIDEODIR}/makev16b.o ${VIDEODIR}/makev16t.o ${VIDEODIR}/makevid.o\
 	${VIDEODIR}/hq4x16.o ${VIDEODIR}/hq4x32.o
 
 WINOBJ=${WINDIR}/copyvwin.o ${WINDIR}/sdlintrf.o ${WINDIR}/sdllink.o @GL_DRAW@\
-	${WINDIR}/sw_draw.o ${WINDIR}/zfilew.o
+	${WINDIR}/sw_draw.o ${WINDIR}/zfilew.o ${WINDIR}/safelib.o
 
 WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/vesa2.o
 
@@ -154,7 +154,7 @@ uic.o: uic.c asm_call.h gblhdr.h
 vcache.o: vcache.asm macros.mac
 version.o: version.c
 zloader.o: zloader.c gblhdr.h
-zmovie.o: zmovie.c asm_call.h gblhdr.h gblvars.h numconv.h md.o
+zmovie.o: zmovie.c asm_call.h gblhdr.h gblvars.h numconv.h ${WINDIR}/safelib.h md.o
 zstate.o: zstate.c asm_call.h gblhdr.h gblvars.h numconv.h
 
 ${CHIPDIR}/c4emu.o: ${CHIPDIR}/c4emu.c gblhdr.h
@@ -271,9 +271,10 @@ ${WINDIR}/copyvwin.o: ${WINDIR}/copyvwin.asm macros.mac
 ${WINDIR}/gl_draw.o: ${WINDIR}/gl_draw.c gblhdr.h
 ${WINDIR}/sdlintrf.o: ${WINDIR}/sdlintrf.asm macros.mac
 ${WINDIR}/sdllink.o: ${WINDIR}/sdllink.c asm_call.h gblhdr.h ${WINDIR}/sw_draw.h\
-	${WINDIR}/gl_draw.h
+	${WINDIR}/gl_draw.h ${WINDIR}/safelib.h
 ${WINDIR}/sw_draw.o: ${WINDIR}/sw_draw.c gblhdr.h
 ${WINDIR}/zfilew.o: ${WINDIR}/zfilew.c
+${WINDIR}/safelib.o: ${WINDIR}/safelib.c ${WINDIR}/safelib.h
 
 ${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c gblhdr.h ${ZIPDIR}/zunzip.h
 ${ZIPDIR}/zpng.o: ${ZIPDIR}/zpng.c gblhdr.h ${ZIPDIR}/zpng.h

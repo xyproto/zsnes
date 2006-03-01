@@ -30,19 +30,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <time.h>
 #include <dirent.h>
 
-#include <sys/param.h>
-#include <paths.h>
-#include <grp.h>
-
-#ifndef OPEN_MAX
-#define OPEN_MAX 256
-#endif
-
-//C++ style code in C
-#define bool unsigned char
-#define true 1
-#define false 0
-
+#include "safelib.h"
 #include "../asm_call.h"
 
 
@@ -1200,107 +1188,6 @@ float sem_GetTicks()
 
 
 
-//Introducing the secure browser opener for POSIX systems ;) -Nach
-
-//Taken from the secure programming cookbook, slightly modified
-bool spc_drop_privileges() {
-  gid_t newgid = getgid(), oldgid = getegid();
-  uid_t newuid = getuid(), olduid = geteuid();
-
-  /* If root privileges are to be dropped, be sure to pare down the ancillary
-   * groups for the process before doing anything else because the setgroups()
-   * system call requires root privileges.  Drop ancillary groups regardless of
-   * whether privileges are being dropped temporarily or permanently.
-   */
-  if (!olduid) setgroups(1, &newgid);
-
-  if (newgid != oldgid) {
-#if !defined(linux)
-    setegid(newgid);
-    if (setgid(newgid) == -1) return(false);
-#else
-    if (setregid(newgid, newgid) == -1) return(false);
-#endif
-  }
-
-  if (newuid != olduid) {
-#if !defined(linux)
-    seteuid(newuid);
-    if (setuid(newuid) == -1) return(false);
-#else
-    if (setreuid(newuid, newuid) == -1) return(false);
-#endif
-  }
-
-  /* verify that the changes were successful */
-
-  if (newgid != oldgid && (setegid(oldgid) != -1 || getegid() != newgid))
-    return(false);
-  if (newuid != olduid && (seteuid(olduid) != -1 || geteuid() != newuid))
-    return(false);
-
-  return(true);
-}
-
-static int open_devnull(int fd) {
-  FILE *f = 0;
-
-  if (!fd) f = freopen(_PATH_DEVNULL, "rb", stdin);
-  else if (fd == 1) f = freopen(_PATH_DEVNULL, "wb", stdout);
-  else if (fd == 2) f = freopen(_PATH_DEVNULL, "wb", stderr);
-  return (f && fileno(f) == fd);
-}
-
-void spc_sanitize_files() {
-  int         fd, fds;
-  struct stat st;
-
-  /* Make sure all open descriptors other than the standard ones are closed */
-  if ((fds = getdtablesize()) == -1) fds = OPEN_MAX;
-  for (fd = 3;  fd < fds;  fd++) close(fd);
-
-  /* Verify that the standard descriptors are open.  If they're not, attempt to
-   * open them using /dev/null.  If any are unsuccessful, abort.
-   */
-  for (fd = 0;  fd < 3;  fd++)
-    if (fstat(fd, &st) == -1 && (errno != EBADF || !open_devnull(fd))) abort();
-}
-
-pid_t spc_fork() {
-  pid_t childpid;
-
-  if ((childpid = fork()) == -1) return -1;
-
-  //If this us the parent proccess nothing more to do
-  if (childpid != 0) return childpid;
-
-  //This is the child proccess
-
-  spc_sanitize_files();
-
-  /*
-  There actually is a bug here which I submitted to the authors of the book -Nach
-
-  The bug is as follows:
-  The parent returns the child proccess ID in event of success.
-  The child returns 0 on success if and only if it's spc_drop_privileges() call is successful.
-  It is possible that the parent will return with a pid > 0, while the child never returns
-  from spc_fork thus causing a programming error.
-
-  The function should be rewritten that the parent doesn't return till it knows if the
-  child is able to return or not. And then return -1 or the child pid.
-
-  For out purposes in ZSNES to launch a browser, this bug does not effect us. But
-  be careful if you copy this code to use somewhere else.
-  */
-  if (!spc_drop_privileges()) //Failed to drop special privleges
-  {
-    _exit(0);
-  }
-
-  return 0;
-}
-
 void LaunchBrowser(char *browser, char *url)
 {
   char *const arglist[] = { browser, url, 0 };
@@ -1309,7 +1196,7 @@ void LaunchBrowser(char *browser, char *url)
 
 void LaunchURL(char *url)
 {
-  if (spc_fork()) //If fork failed, or we are the parent
+  if (spc_fork(0, 0)) //If fork failed, or we are the parent
   {
     MouseX = 0;
     MouseY = 0;
