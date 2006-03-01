@@ -128,9 +128,6 @@ static bool spc_sanitize_files(int *a, size_t size, int skip)
   return(true);
 }
 
-
-static bool child_exited;
-
 //Pass array of file descriptors to leave open
 pid_t spc_fork(int *a, size_t size)
 {
