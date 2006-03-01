@@ -22,8 +22,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
+#include <signal.h>
 #include "linux/safelib.h"
-#include <sys/poll.h>
 #define DIR_SLASH "/"
 #define WRITE_BINARY "w"
 #else
@@ -35,6 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <limits.h>
 #include <sys/stat.h>
 #include <zlib.h>
+#define signal(x, y)
 #ifdef __WIN32__
 #include <direct.h>
 #include <io.h>
@@ -1937,6 +1938,12 @@ static char *encode_command(char *p)
   return(command);
 }
 
+static void broken_pipe(int sig)
+{
+  Msgptr = "BROKEN PIPE!";
+  MessageOn = MsgCount;
+}
+
 struct
 {
   FILE *vp;
@@ -2012,6 +2019,7 @@ static bool raw_video_open()
       break;
 
     case 2: case 3:
+      signal(SIGPIPE, broken_pipe);
       mencoderExists = (unsigned char)(int)(raw_vid.vp = popen(encode_command(md_command), WRITE_BINARY));
       break;
 
