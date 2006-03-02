@@ -3277,7 +3277,7 @@ GUIMovieTextD1 db 'NO VIDEO',0
 GUIMovieTextD2 db 'RAW VIDEO',0
 GUIMovieTextD3 db 'FFV1',0
 GUIMovieTextD4 db 'X264 LOSSLESS',0
-GUIMovieTextD5 db 'XVID',0
+GUIMovieTextD5 db 'XVID LOSSLESS',0
 GUIMovieTextD6 db 'CUSTOM',0
 
 GUIMovieTextE db 'DUMP AUDIO OPTIONS',0
