@@ -352,5 +352,5 @@ NEWSYM KeyIncreaseGamma, dd 0
 NEWSYM KeyDecreaseGamma, dd 0
 NEWSYM MovieVideoMode, db 4
 NEWSYM MovieAudio, db 1
-NEWSYM MovieVideoAudio, db 1
-NEWSYM MovieAudioCompress, db 1
+NEWSYM MovieVideoAudio, db 0
+NEWSYM MovieAudioCompress, db 0
