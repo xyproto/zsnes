@@ -1879,7 +1879,8 @@ extern unsigned int SoundQuality;
 unsigned char AudioLogging;
 
 extern unsigned char MovieVideoMode;
-extern unsigned char MovieAudioMode;
+extern unsigned char MovieAudio;
+extern unsigned char MovieVideoAudio;
 
 extern char ZStartPath[PATH_MAX];
 
@@ -1905,7 +1906,12 @@ static char *pick_var(char **str)
   if (!strncmp(*str, "$md_vcodec", strlen("$md_vcodec")))
   {
     *str += strlen("$md_vcodec");
-    return(MovieVideoMode == 2 ? md_ffv1 : md_x264);
+    switch (MovieVideoMode)
+    {
+      case 2: return(md_ffv1); break;
+      case 3: return(md_x264); break;
+      case 4: return(md_xvid); break;
+    }
   }
   *str += strlen(*str);
   fprintf(stderr, "Unknown Variable: %s", *str);
@@ -1968,7 +1974,7 @@ static void raw_video_close()
       case 1:
         fclose(raw_vid.vp);
         break;
-      case 2: case 3:
+      case 2: case 3: case 4:
         pclose(raw_vid.vp);
         break;
     }
@@ -1994,7 +2000,7 @@ static void raw_video_close()
     AudioLogging = 0;
   }
 
-  if (audio_and_video && (MovieAudioMode == 2))
+  if (audio_and_video && MovieVideoAudio)
   {
     chdir(ZStartPath);
     if (mencoderExists) system(encode_command(md_merge));
@@ -2018,7 +2024,7 @@ static bool raw_video_open()
       raw_vid.vp = fopen(md_raw_file, "wb");
       break;
 
-    case 2: case 3:
+    case 2: case 3: case 4:
       signal(SIGPIPE, broken_pipe);
       mencoderExists = (unsigned char)(int)(raw_vid.vp = popen(encode_command(md_command), WRITE_BINARY));
       break;
@@ -2028,12 +2034,12 @@ static bool raw_video_open()
       break;
   }
 
-  if (!MovieAudioMode && raw_vid.vp)
+  if (!MovieAudio && raw_vid.vp)
   {
     return(true);
   }
 
-  if ((!MovieVideoMode || raw_vid.vp) && MovieAudioMode)
+  if ((!MovieVideoMode || raw_vid.vp) && MovieAudio)
   {
     if ((raw_vid.ap = fopen(md_pcm_audio, "wb")))
     {
