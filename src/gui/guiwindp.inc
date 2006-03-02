@@ -1573,8 +1573,15 @@ DisplayGUIVideo:
     xor eax,eax
     mov al,[cvidmode]
     cmp byte[GUIBIFIL+eax],0
-    je near .nocheckboxbf
+    je near .nocheckboxe
     GUIDisplayCheckboxu 5,11,163,BilinearFilter,GUIVideoTextbf,0
+
+.nocheckboxe
+    xor eax,eax
+    mov al,[cvidmode]
+    cmp byte[GUINTSC+eax],0
+    je near .nocheckboxbf
+    GUIDisplayCheckboxu 5,115,173,NTSCFilter,GUIVideoTexte,0
 
 .nocheckboxbf
     xor eax,eax
@@ -1682,12 +1689,6 @@ GUIVideoTextC3 db '25%',0
 
 GUIVideoTextE db 'MODE : ',0
 
-;GUIVideoText1 db 'VIDEO MODES :',0
-;GUIVideoText2 db 'FULL SCANLINES',0
-;GUIVideoTextb db 'SCANLINES:',0
-;GUIVideoTexta db 'FULL',0
-;GUIVideoTexta2 db '50%',0
-;GUIVideoTexta3 db '25%',0
 GUIVideoTextc db '2XSAI ENGINE',0
 GUIVideoTextd db 'SUPER EAGLE',0
 GUIVideoTextd2 db 'SUPER 2XSAI',0
@@ -1706,12 +1707,7 @@ GUIVideoText8b db 'HI-RES MODE 7',0       ; -c
 GUIVideoText8c db 'GRAYSCALE MODE',0       ; -c
 GUIVideoText8 db 'SET',0                ; set button
 GUIVideoText9 db 'VSYNC',0       ; -c
-;GUIVideoTextH db 'MODE : ',0
-;GUIVideoTextw0 db 'LEGEND:',0
-;GUIVideoTextw1 db 'S = STRETCH  R = KEEP RATIO',0
-;GUIVideoTextw2 db ' D = ALLOW SPECIAL FILTERS',0
-;GUIVideoTextw3 db ' W = WIN          F = FULL',0
-;GUIVideoTextw4 db '      O = USES OPENGL',0
+GUIVideoTexte db 'NTSC',0
 
 
 SECTION .bss
@@ -3201,7 +3197,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     GUIDisplayButtonHoleTu 15,9,128,byte[MovieVideoMode],0,GUIMovieTextD1,1
     GUIDisplayButtonHoleTu 15,9,138,byte[MovieVideoMode],1,GUIMovieTextD2,2
     GUIDisplayButtonHoleTu 15,9,148,byte[MovieVideoMode],2,GUIMovieTextD3,0
-    GUIDisplayButtonHoleTu 15,9,158,byte[MovieVideoMode],3,GUIMovieTextD4,7
+    GUIDisplayButtonHoleTu 15,9,158,byte[MovieVideoMode],3,GUIMovieTextD4,9
     GUIDisplayButtonHoleTu 15,9,168,byte[MovieVideoMode],4,GUIMovieTextD5,0
     GUIDisplayButtonHoleTu 15,9,178,byte[MovieVideoMode],5,GUIMovieTextD6,0
 

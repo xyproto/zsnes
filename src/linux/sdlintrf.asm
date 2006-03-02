@@ -828,6 +828,7 @@ NEWSYM GUIHQ2X,   db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1     ; hq2x filt
 NEWSYM GUIHQ3X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; hq3x filter
 NEWSYM GUIHQ4X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; hq4x filter
 NEWSYM GUIRESIZE, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1     ; resizable
+NEWSYM GUINTSC,   db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1     ; NTSC Filter
 
 SECTION .text
 

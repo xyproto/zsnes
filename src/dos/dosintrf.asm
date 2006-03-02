@@ -971,6 +971,7 @@ NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; Triple Buffer
 NEWSYM GUIHQ2X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; HQ2X Filter
 NEWSYM GUIHQ3X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; HQ3X Filter
 NEWSYM GUIHQ4X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; HQ4X Filter
+NEWSYM GUINTSC,   db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1     ; NTSC Filter
 SECTION .text
 
 ; ****************************

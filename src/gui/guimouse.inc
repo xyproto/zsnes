@@ -2420,6 +2420,12 @@ DisplayGUIVideoClick:
 .nocheckboxtm7
     xor ebx,ebx
     mov bl,[cvidmode]
+    cmp byte[GUIM7VID+ebx],0
+    je .nontscfilter
+    GUIClickCButton5 11,173,byte[Mode7HiRes16b],1
+.nontscfilter
+    xor ebx,ebx
+    mov bl,[cvidmode]
     cmp byte[GUIHSVID+ebx],0
     je near .nohsline
 %ifdef __UNIXSDL__

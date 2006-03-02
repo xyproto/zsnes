@@ -1133,6 +1133,14 @@ GUIVideoKeys:
     je .nohiresmode7
     xor byte[Mode7HiRes16b],1
 .nohiresmode7
+    cmp dh,'N'
+    jne .nontscfilters
+    xor ebx,ebx
+    mov bl,[cvidmode]
+    cmp byte[GUINTSC+ebx],0
+    je .nohiresmode7
+    xor byte[NTSCFilter],1
+.nontscfilters
     cmp dh,'B'
     jne .nobilinearfilter
     xor ebx,ebx

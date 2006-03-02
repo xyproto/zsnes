@@ -354,3 +354,4 @@ NEWSYM MovieVideoMode, db 4
 NEWSYM MovieAudio, db 1
 NEWSYM MovieVideoAudio, db 0
 NEWSYM MovieAudioCompress, db 0
+NEWSYM NTSCFilter, db 0
