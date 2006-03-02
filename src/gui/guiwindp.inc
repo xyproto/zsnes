@@ -3166,7 +3166,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     DrawGUIButton 15,7,68,109,79,GUIMovieTextA5,29,0,0
     DrawGUIButton 15,7,84,109,95,GUIMovieTextA6,30,0,0
     DrawGUIButton 15,7,100,109,111,GUIMovieTextA7,31,0,0
-    DrawGUIButton 15,130,155,198,166,GUIMovieTextA8,34,0,0
+    DrawGUIButton 15,130,165,198,176,GUIMovieTextA8,34,0,0
 
     GUIDisplayTextY 15,8,16,GUIMovieTextB        ; Save Select
     mov byte[GUIMovieTextB1],'0'
@@ -3201,14 +3201,15 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     GUIDisplayButtonHoleTu 15,9,128,byte[MovieVideoMode],0,GUIMovieTextD1,1
     GUIDisplayButtonHoleTu 15,9,138,byte[MovieVideoMode],1,GUIMovieTextD2,2
     GUIDisplayButtonHoleTu 15,9,148,byte[MovieVideoMode],2,GUIMovieTextD3,0
-    GUIDisplayButtonHoleTu 15,9,158,byte[MovieVideoMode],3,GUIMovieTextD4,0
+    GUIDisplayButtonHoleTu 15,9,158,byte[MovieVideoMode],3,GUIMovieTextD4,7
+    GUIDisplayButtonHoleTu 15,9,168,byte[MovieVideoMode],4,GUIMovieTextD5,0
+    GUIDisplayButtonHoleTu 15,9,178,byte[MovieVideoMode],5,GUIMovieTextD6,0
 
     GUIDisplayTextY 15,129,120,GUIMovieTextE           ; Audio Section
-    GUIDisplayButtonHoleTu 15,130,128,byte[MovieAudioMode],0,GUIMovieTextE1,6
-    GUIDisplayButtonHoleTu 15,197,128,byte[MovieAudioMode],1,GUIMovieTextE2,0
-    GUIDisplayButtonHoleTu 15,130,138,byte[MovieAudioMode],2,GUIMovieTextE3,1
-
-
+    GUIDisplayCheckboxu 15,130,128,MovieAudio,GUIMovieTextE1,0
+    GUIDisplayCheckboxu 15,130,138,MovieAudioCompress,GUIMovieTextE2,9
+    GUIDisplayCheckboxu 15,130,148,MovieVideoAudio,GUIMovieTextE3,2
+    
     mov dword[GUIMovieTextZ+9],'INAC'    ; Determine and Display Status
     mov dword[GUIMovieTextZ+13],'TIVE'
     mov dword[GUIMovieTextZ+17],'    '
@@ -3230,7 +3231,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     mov dword[GUIMovieTextZ+13],'PLAY'
     mov dword[GUIMovieTextZ+17],'ING '
 .nooldplay
-    GUIDisplayTextY 15,6,182,GUIMovieTextZ
+    GUIDisplayTextY 15,6,192,GUIMovieTextZ
                                                          ; Display Radio buttons
     GUIDisplayButtonHole 15,10,25,byte[CMovieExt],'v'    ; Select:
     GUIDisplayButtonHole 15,30,25,byte[CMovieExt],'1'
@@ -3247,7 +3248,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     DDrawBox 15,115,70,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
     DDrawBox 15,115,86,[KeyPrevChap]
     DDrawBox 15,115,102,[KeyNextChap]
-
+    
     GUIDisplayCheckboxu 15,144,67,MovieDisplayFrame,GUIMovieTextB2,0    ; Checkbox
     ret
 
@@ -3276,11 +3277,14 @@ GUIMovieTextD1 db 'NO VIDEO',0
 GUIMovieTextD2 db 'RAW VIDEO',0
 GUIMovieTextD3 db 'FFV1',0
 GUIMovieTextD4 db 'X264 LOSSLESS',0
+GUIMovieTextD5 db 'XVID',0
+GUIMovieTextD6 db 'CUSTOM',0
 
 GUIMovieTextE db 'DUMP AUDIO OPTIONS',0
-GUIMovieTextE1 db 'NO AUDIO',0
-GUIMovieTextE2 db 'AUDIO',0
-GUIMovieTextE3 db 'AUDIO IN VIDEO',0
+GUIMovieTextE1 db 'AUDIO',0
+GUIMovieTextE2 db 'AUDIO IN VIDEO',0
+GUIMovieTextE3 db 'COMPRESS',0
+
 
 GUIMovieTextX1 db 'WARNING :  THIS MOVIE',0  ; Overwrite Window
 GUIMovieTextX2 db '  FILE ALREADY EXISTS',0

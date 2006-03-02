@@ -2083,7 +2083,7 @@ DisplayGUIMovieClick:
     GUIPHoldbutton 9,68,112,79,29
     GUIPHoldbutton 9,84,112,95,30
     GUIPHoldbutton 9,100,112,111,31
-    GUIPHoldbutton 132,155,197,166,34
+    GUIPHoldbutton 132,165,197,176,34
 
                                                  ; Ratios
     GUIPButtonHole 10,25,byte[CMovieExt],'v'     ; Select
@@ -2106,9 +2106,12 @@ DisplayGUIMovieClick:
     GUIPButtonHole 9,138,byte[MovieVideoMode],1
     GUIPButtonHole 9,148,byte[MovieVideoMode],2
     GUIPButtonHole 9,158,byte[MovieVideoMode],3
-    GUIPButtonHole 130,128,byte[MovieAudioMode],0
-    GUIPButtonHole 197,128,byte[MovieAudioMode],1
-    GUIPButtonHole 130,138,byte[MovieAudioMode],2
+    GUIPButtonHole 9,168,byte[MovieVideoMode],4
+    GUIPButtonHole 9,178,byte[MovieVideoMode],5
+    
+    GUIClickCButton 130,128,byte[MovieAudio]
+    GUIClickCButton 130,138,byte[MovieAudioCompress]
+    GUIClickCButton 130,148,byte[MovieVideoAudio]
 
     DGOptnsProcBox 116,71,[KeyInsrtChap]           ; Keyboard Shortcut Boxes
     DGOptnsProcBox 116,87,[KeyPrevChap]

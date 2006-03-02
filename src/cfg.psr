@@ -351,4 +351,7 @@ NEWSYM PauseFocusChange, db 0
 NEWSYM KeyIncreaseGamma, dd 0
 NEWSYM KeyDecreaseGamma, dd 0
 NEWSYM MovieVideoMode, db 1
-NEWSYM MovieAudioMode, db 1
+NEWSYM MovieAudioMode, db 0
+NEWSYM MovieAudio, db 1
+NEWSYM MovieVideoAudio, db 1
+NEWSYM MovieAudioCompress, db 1
