@@ -1,5 +1,6 @@
 md_raw_file times 50 db "rawvideo.bin" @ Only for Raw Video
 md_pcm_audio times 50 db "audio.wav" @ AVI dumping always dumps audio seperatly
+md_compressed_audio times 50 db "audio.mp3" @ For when selecting compressed
 
 md_ntsc times 20 db "59649/995"
 md_pal times 5 db "50/1"
@@ -14,8 +15,8 @@ md_x264 times 100 db "-ovc x264 -x264encopts qp_constant=0:frameref=15"
 md_ffv1 times 100 db "-ovc lavc -lavcopts vcodec=ffv1:vstrict=-2:aspect=4/3"
 md_xvid times 100 db "-ovc xvid -xvidencopts fixed_quant=2"
 
-@Valid variables to use in the next two lines are:
-@$md_file, $md_prog, $md_raw, $md_other, $md_no_sound, $md_sound, $md_pcm_audio
+@Valid variables to use in the next four lines are:
+@$md_file, $md_prog, $md_raw, $md_other, $md_no_sound, $md_sound, $md_pcm_audio, $md_compressed_audio
 @and $md_video_rate, $md_vcodec
 @These variables are defined above.
 @$md_video_rate is $md_ntsc or $md_pal depending on the game as needed
@@ -23,3 +24,5 @@ md_xvid times 100 db "-ovc xvid -xvidencopts fixed_quant=2"
 
 md_command times 150 db "$md_prog $md_other $md_no_sound $md_raw:fps=$md_video_rate $md_vcodec -o $md_file -"
 md_merge times 150 db "$md_prog $md_other $md_sound -audiofile $md_pcm_audio -force-avi-aspect 4:3 -ovc copy -o merged.avi $md_file"
+md_audio_compress times 150 db "lame -m j --preset 64 -q 0 - $md_compressed_audio"
+md_merge_compressed times 150 db "$md_prog $md_other -oac copy -audiofile $md_compressed_audio -force-avi-aspect 4:3 -ovc copy -o merged.avi $md_file"

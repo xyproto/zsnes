@@ -1881,6 +1881,7 @@ unsigned char AudioLogging;
 extern unsigned char MovieVideoMode;
 extern unsigned char MovieAudio;
 extern unsigned char MovieVideoAudio;
+extern unsigned char MovieAudioCompress;
 
 extern char ZStartPath[PATH_MAX];
 
@@ -1895,8 +1896,7 @@ static char *pick_var(char **str)
   PICK_HELP(md_sound);
   PICK_HELP(md_no_sound);
   PICK_HELP(md_pcm_audio);
-
-
+  PICK_HELP(md_compressed_audio);
 
   if (!strncmp(*str, "$md_video_rate", strlen("$md_video_rate")))
   {
@@ -1995,7 +1995,14 @@ static void raw_video_close()
       //The 4 bytes needed to hold the data size
       fwrite4(file_size - (raw_vid.aud_dsize_pos+4), raw_vid.ap);
     }
-    fclose(raw_vid.ap);
+    if (MovieAudioCompress)
+    {
+      pclose(raw_vid.ap);
+    }
+    else
+    {
+      fclose(raw_vid.ap);
+    }
     raw_vid.ap = 0;
     AudioLogging = 0;
   }
@@ -2003,10 +2010,19 @@ static void raw_video_close()
   if (audio_and_video && MovieVideoAudio)
   {
     chdir(ZStartPath);
-    if (mencoderExists) system(encode_command(md_merge));
+    if (MovieAudioCompress)
+    {
+      if (mencoderExists) { system(encode_command(md_merge_compressed)); }
+      remove(md_compressed_audio);
+    }
+    else
+    {
+      if (mencoderExists) { system(encode_command(md_merge)); }
+      remove(md_pcm_audio);
+    }
     remove(md_file);
-    remove(md_pcm_audio);
   }
+  signal(SIGPIPE, SIG_IGN);
 }
 
 static bool raw_video_open()
@@ -2041,7 +2057,16 @@ static bool raw_video_open()
 
   if ((!MovieVideoMode || raw_vid.vp) && MovieAudio)
   {
-    if ((raw_vid.ap = fopen(md_pcm_audio, "wb")))
+    if (MovieAudioCompress)
+    {
+      signal(SIGPIPE, broken_pipe);
+      raw_vid.ap = popen(encode_command(md_audio_compress), WRITE_BINARY);
+    }
+    else
+    {
+      raw_vid.ap = fopen(md_pcm_audio, "wb");
+    }
+    if (raw_vid.ap)
     {
       fputs("RIFF", raw_vid.ap);                 //header
       fwrite4(~0, raw_vid.ap);                   //file size - unknown till file close
