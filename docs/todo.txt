@@ -8,6 +8,7 @@ SDL Port:
   SDL), make both the same size.
 - OpenGL code is awful, uncomprehensible, stupid and awful again.
   We must fix it.
+- Support overscan in games like DQ5.
 
 Windows Port:
 - OpenGL, or Direct3D support would be nice (we have the source for
