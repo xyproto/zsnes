@@ -1559,17 +1559,15 @@ GUIMovieKeys:
     GUIKeyButtonHole MovieVideoMode,0,'O'
     GUIKeyButtonHole MovieVideoMode,1,'W'
     GUIKeyButtonHole MovieVideoMode,2,'F'
-    GUIKeyButtonHole MovieVideoMode,3,'X'
+    GUIKeyButtonHole MovieVideoMode,3,'L'
+    GUIKeyButtonHole MovieVideoMode,4,'X'
+    GUIKeyButtonHole MovieVideoMode,5,'C'
 
     GUIKeyCheckbox MovieAudio,'A'
     GUIKeyCheckbox MovieAudioCompress,'V'
     GUIKeyCheckbox MovieVideoAudio,'M'
 
     GUIKeyCheckbox MovieDisplayFrame,'D'      ; Checkbox
-;    GUIKeyCheckbox MovieDisplayFrame,'D'
-;    GUIKeyCheckbox MovieDisplayFrame,'D'
-;    GUIKeyCheckbox MovieDisplayFrame,'D'
-    
     ret
 
 GUIComboKeys:
