@@ -1572,8 +1572,8 @@ GUIMovieKeys:
     GUIKeyButtonHole MovieVideoMode,5,'C'
 
     GUIKeyCheckbox MovieAudio,'A'
-    GUIKeyCheckbox MovieAudioCompress,'V'
-    GUIKeyCheckbox MovieVideoAudio,'M'
+    GUIKeyCheckbox MovieVideoAudio,'V'
+    GUIKeyCheckbox MovieAudioCompress,'M'
 
     GUIKeyCheckbox MovieDisplayFrame,'D'      ; Checkbox
     ret
