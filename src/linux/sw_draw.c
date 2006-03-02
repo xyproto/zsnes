@@ -39,6 +39,7 @@ extern unsigned int vidbuffer;
 extern DWORD converta;
 extern unsigned char curblank;
 extern int frametot;
+extern BYTE GUIOn,GUIOn2;
 int prevtot = 0;
 void UpdateVFrame(void);
 
@@ -140,7 +141,7 @@ void sw_drawwin()
 
     UpdateVFrame();
 
-    if (prevtot == frametot) { return; }
+    if (prevtot == frametot && (!GUIOn || !GUIOn2)) { return; }
 
     if (curblank) return;
     LockSurface();
