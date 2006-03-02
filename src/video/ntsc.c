@@ -85,22 +85,22 @@ static void ntsc_to_rgb_init( ntsc_to_rgb_t* ntsc, snes_ntsc_setup_t const* setu
 	static float const to_rgb [6] = { 0.956, 0.621, -0.272, -0.647, -1.105, 1.702 };
 	static float const gaussian_factor = 1.0; /* 1 = normal, > 1 reduces echoes of bright objects */
 	int i;
-	
+
 	/* ranges need to be scaled a bit to avoid pixels overflowing at extremes */
 	ntsc->brightness = setup->brightness * (0.4f * rgb_unit);
 	ntsc->contrast = setup->contrast * 0.4f + 1;
 	ntsc->sharpness = 1 + (setup->sharpness < 0 ? setup->sharpness * 0.5f : setup->sharpness);
 	ntsc->hue_warping = setup->hue_warping;
-	
+
 	for ( i = 0; i < composite_size; i++ )
 		ntsc->composite [i] = 0;
-	
+
 	/* Generate gaussian kernel, padded with zero */
 	for ( i = 0; i < ntsc_kernel_size; i++ )
 		ntsc->kernel [i] = 0;
 	for ( i = -composite_border; i <= composite_border; i++ )
 		ntsc->kernel [ntsc_kernel_size / 2 + i] = exp( i * i * (-0.03125f * gaussian_factor) );
-	
+
 	/* normalize kernel totals of every fourth sample (at all four phases) to 0.5, otherwise
 	i/q low-pass will favor one of the four alignments and cause repeating spots */
 	for ( i = 0; i < 4; i++ )
@@ -114,14 +114,14 @@ static void ntsc_to_rgb_init( ntsc_to_rgb_t* ntsc, snes_ntsc_setup_t const* setu
 		for ( x = i; x < ntsc_kernel_size; x += 4 )
 			ntsc->kernel [x] *= scale;
 	}
-	
+
 	/* adjust decoder matrix */
 	{
 		float hue = setup->hue * pi;
 		float sat = setup->saturation + 1;
 		rotate_matrix( to_rgb, sin( hue ) * sat, cos( hue ) * sat, ntsc->decoder_matrix );
 	}
-	
+
 	memset( ntsc->rgb, 0, sizeof ntsc->rgb );
 }
 
@@ -150,14 +150,14 @@ static void ntsc_to_rgb( ntsc_to_rgb_t const* ntsc, int offset, short* out )
 			out [2] = (int) b;\
 			out += 3;\
 		}
-		
+
 		/* to do: these must be rearranged when changing kernel size (composite_border) */
 		PIXEL( i - ntsc->composite [x + 0] )
 		PIXEL( q - ntsc->composite [x + 1] )
 		PIXEL( ntsc->composite [x + 2] - i )
 		PIXEL( ntsc->composite [x + 3] - q )
 		x += 4;
-		
+
 		#undef PIXEL
 	}
 }
@@ -197,14 +197,14 @@ static void sharpen( short const* in, float level, int count, short* out )
 	int const accuracy = 16;
 	int const middle = (int) (level * (1 << accuracy));
 	int const side   = (middle - (1 << accuracy)) >> 1;
-	
+
 	*out++ = *in++;
 	*out++ = *in++;
 	*out++ = *in++;
-	
+
 	for ( count = (count - 2) * 3; count--; in++ )
 		*out++ = (in [0] * middle - in [-3] * side - in [3] * side) >> accuracy;
-	
+
 	*out++ = *in++;
 	*out++ = *in++;
 	*out++ = *in++;
@@ -214,7 +214,7 @@ static void sharpen( short const* in, float level, int count, short* out )
 static ntsc_rgb_t* gen_pixel( ntsc_to_rgb_t* ntsc, int ntsc_pos, int rescaled_pos, ntsc_rgb_t* out )
 {
 	ntsc_to_rgb( ntsc, composite_border + ntsc_pos, ntsc->rgb [rgb_pad] );
-	
+
 	if ( ntsc->sharpness == 1.0f ) /* optimization only */
 	{
 		rescale( ntsc->rgb [0], rescaled_size, ntsc->rescaled [0] );
@@ -224,7 +224,7 @@ static ntsc_rgb_t* gen_pixel( ntsc_to_rgb_t* ntsc, int ntsc_pos, int rescaled_po
 		rescale( ntsc->rgb [0], rescaled_size, ntsc->rescaled [1] );
 		sharpen( ntsc->rescaled [1], ntsc->sharpness, rescaled_size, ntsc->rescaled [0] );
 	}
-	
+
 	{
 		short const* in = ntsc->rescaled [rescaled_pos];
 		int n = rgb_kernel_size;
@@ -244,7 +244,7 @@ static ntsc_rgb_t gen_kernel( ntsc_to_rgb_t* ntsc, float y, float ci, float cq, 
 		{0.0, 1.0}, {-0.866025, -0.5}, {0.866025, -0.5}
 	};
 	int burst;
-	
+
 	/* warp hue */
 	float cq_warp = cq * ntsc->hue_warping;
 	if ( cq_warp != 0 && ci * cq <= 0 )
@@ -253,9 +253,9 @@ static ntsc_rgb_t gen_kernel( ntsc_to_rgb_t* ntsc, float y, float ci, float cq, 
 		ci -= ci * factor;
 		cq += cq * factor;
 	}
-	
+
 	y = y * ntsc->contrast + ntsc->brightness;
-	
+
 	/* generate for each scanline burst phase */
 	for ( burst = 0; burst < burst_count; burst++ )
 	{
@@ -265,12 +265,12 @@ static ntsc_rgb_t gen_kernel( ntsc_to_rgb_t* ntsc, float y, float ci, float cq, 
 		float fi = ci * cos_b - cq * sin_b;
 		float fq = ci * sin_b + cq * cos_b;
 		rotate_matrix( ntsc->decoder_matrix, sin_b, cos_b, ntsc->to_rgb );
-		
+
 		ntsc->composite [composite_border + 0] = fi + y;
 		ntsc->composite [composite_border + 1] = fq + y;
 		ntsc->composite [composite_border + 2] = (fi - y) * (2 / 3.0f);
 		out = gen_pixel( ntsc, 0, 5, out );
-		
+
 		ntsc->composite [composite_border + 0] = 0;
 		ntsc->composite [composite_border + 1] = 0;
 		ntsc->composite [composite_border + 2] = (fi - y) * (1 / 3.0f);
@@ -278,7 +278,7 @@ static ntsc_rgb_t gen_kernel( ntsc_to_rgb_t* ntsc, float y, float ci, float cq, 
 		ntsc->composite [composite_border + 4] = fi + y;
 		ntsc->composite [composite_border + 5] = (fq + y) * (1 / 3.0f);
 		out = gen_pixel( ntsc, 2, 7, out );
-		
+
 		ntsc->composite [composite_border + 2] = 0;
 		ntsc->composite [composite_border + 3] = 0;
 		ntsc->composite [composite_border + 4] = 0;
@@ -286,13 +286,13 @@ static ntsc_rgb_t gen_kernel( ntsc_to_rgb_t* ntsc, float y, float ci, float cq, 
 		ntsc->composite [composite_border + 6] = fi - y;
 		ntsc->composite [composite_border + 7] = fq - y;
 		out = gen_pixel( ntsc, 4, 9, out );
-		
+
 		/* keep composite clear for next time */
 		ntsc->composite [composite_border + 5] = 0;
 		ntsc->composite [composite_border + 6] = 0;
 		ntsc->composite [composite_border + 7] = 0;
 	}
-	
+
 	/* determine rgb that ntsc decoder should produce for a solid area of color */
 	{
 		float r = y + ci * ntsc->decoder_matrix [0] + cq * ntsc->decoder_matrix [1];
@@ -306,7 +306,7 @@ static ntsc_rgb_t gen_kernel( ntsc_to_rgb_t* ntsc, float y, float ci, float cq, 
 static void adjust_kernel( ntsc_rgb_t color, int merge_fields, ntsc_rgb_t* out )
 {
 	ntsc_rgb_t const bias = MAKE_KMASK( 0x100 );
-	
+
 	if ( merge_fields )
 	{
 		/* convert to offset binary when doing shift to avoid bit leakage */
@@ -323,7 +323,7 @@ static void adjust_kernel( ntsc_rgb_t color, int merge_fields, ntsc_rgb_t* out )
 			p [burst_entry_size * 2] = ((p2 + p0 + bias) >> 1 & mask) - (bias >> 1);
 		}
 	}
-	
+
 	/* correct roundoff errors that would cause speckles in solid areas */
 	color += bias;
 	{
@@ -353,7 +353,7 @@ void snes_ntsc_init( snes_ntsc_t* emu, snes_ntsc_setup_t const* setup )
 	int entry;
 	ntsc_to_rgb_t ntsc;
 	ntsc_to_rgb_init( &ntsc, setup );
-	
+
 	/* generate gamma table */
 	{
 		float gamma = 1 - setup->gamma * (setup->gamma > 0 ? 0.5f : 1.5f);
@@ -361,7 +361,7 @@ void snes_ntsc_init( snes_ntsc_t* emu, snes_ntsc_setup_t const* setup )
 		for ( i = 0; i < 32; i++ )
 			to_float [i] = pow( (1 / 31.0f) * i, gamma ) * rgb_unit;
 	}
-	
+
 	/* generate entries */
 	bsnes_colortbl = setup->bsnes_colortbl;
 	for ( entry = 0; entry < snes_ntsc_color_count; entry++ )
@@ -370,7 +370,7 @@ void snes_ntsc_init( snes_ntsc_t* emu, snes_ntsc_setup_t const* setup )
 		int ir = entry >> 8 & 0x1E;
 		int ig = entry >> 4 & 0x1F;
 		int ib = entry << 1 & 0x1E;
-		
+
 		/*
 		if ( bsnes_colortbl )
 		{
@@ -381,7 +381,7 @@ void snes_ntsc_init( snes_ntsc_t* emu, snes_ntsc_setup_t const* setup )
 			ib = rgb16       & 0x1F;
 		}
 		*/
-		
+
 		/* reduce number of significant bits of source color (changes to this
 		must be reflectd in the ENTRY macro). I found that clearing the low
 		bits of r and b were least notictable (setting them was moreso, and
@@ -389,17 +389,17 @@ void snes_ntsc_init( snes_ntsc_t* emu, snes_ntsc_setup_t const* setup )
 		float r = to_float [ir & ~1];
 		float g = to_float [ig     ];
 		float b = to_float [ib & ~1];
-		
+
 		/* convert to yiq color */
 		float y = r * 0.299f + g * 0.587f + b * 0.114f;
 		float i = r * 0.596f - g * 0.275f - b * 0.321f;
 		float q = r * 0.212f - g * 0.523f + b * 0.311f;
-		
+
 		/* build table entries for pixel */
 		ntsc_rgb_t color = gen_kernel( &ntsc, y, i, q, emu->table [entry] );
 		adjust_kernel( color, setup->merge_fields, emu->table [entry] );
 	}
-	
+
 	/* verify byte order */
 	{
 		volatile unsigned i = ~0xFF;
@@ -468,10 +468,10 @@ void snes_ntsc_blit( snes_ntsc_t const* emu, unsigned short const* in, long in_p
 		int n;
 		in += 2;
 		burst = (burst + 1) % 3;
-		
+
 		#define WRITE_PIXEL( x ) \
 			{ out [x/2-1] = rgb; out2 [x/2-1] = rgb - (rgb >> 2 & 0x39E739E7); }
-		
+
 		#define PIXEL( x ) { \
 			ntsc_rgb_t raw =\
 				k0 [ x      ] + k1 [(x+12)%14+14] + k2 [(x+10)%14+28] +\
@@ -479,7 +479,7 @@ void snes_ntsc_blit( snes_ntsc_t const* emu, unsigned short const* in, long in_p
 			if ( x && !(x & 1) ) WRITE_PIXEL( x ); \
 			MAKE_RGB( raw, x & 1, 0, rgb )\
 		}
-		
+
 		for ( n = chunk_count; n; --n )
 		{
 			ntsc_rgb_t const* k0 = ENTRY( in [0] );
@@ -531,7 +531,7 @@ void snes_ntsc_blit( snes_ntsc_t const* emu, unsigned short const* in, long in_p
 			WRITE_PIXEL( 12 );
 		}
 		#undef PIXEL
-		
+
 		in = (unsigned short*) ((char*) in + next_in_line);
 		out  = (ntsc_rgb_t*) ((char*) out  + next_out_line);
 		out2 = (ntsc_rgb_t*) ((char*) out2 + next_out_line);
@@ -564,10 +564,10 @@ void snes_ntsc_blit_hires( snes_ntsc_t const* emu, unsigned short const* in, lon
 		int n;
 		in += 4;
 		burst = (burst + 1) % 3;
-		
+
 		#define WRITE_PIXEL( x ) \
 			{ out [x/2-1] = rgb; out2 [x/2-1] = rgb - (rgb >> 2 & 0x39E739E7); }
-		
+
 		#define PIXEL( x ) { \
 			ntsc_rgb_t raw =\
 				k0  [ x       ] + k2  [(x+12)%14+14] + k4  [(x+10)%14+28] +\
@@ -577,7 +577,7 @@ void snes_ntsc_blit_hires( snes_ntsc_t const* emu, unsigned short const* in, lon
 			if ( x && !(x & 1) ) WRITE_PIXEL( x ); \
 			MAKE_RGB( raw, x & 1, 1, rgb )\
 		}
-		
+
 		for ( n = chunk_count; n; --n )
 		{
 			ntsc_rgb_t const* k0 = ENTRY( in [0] );
@@ -640,7 +640,7 @@ void snes_ntsc_blit_hires( snes_ntsc_t const* emu, unsigned short const* in, lon
 			WRITE_PIXEL( 12 );
 		}
 		#undef PIXEL
-		
+
 		in = (unsigned short*) ((char*) in + next_in_line);
 		out  = (ntsc_rgb_t*) ((char*) out  + next_out_line);
 		out2 = (ntsc_rgb_t*) ((char*) out2 + next_out_line);

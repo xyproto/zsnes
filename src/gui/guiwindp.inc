@@ -3244,7 +3244,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
     DDrawBox 15,115,70,[KeyInsrtChap]        ; Chapter Keyboard Shortcut Boxes
     DDrawBox 15,115,86,[KeyPrevChap]
     DDrawBox 15,115,102,[KeyNextChap]
-    
+
     GUIDisplayCheckboxu 15,144,67,MovieDisplayFrame,GUIMovieTextB2,0    ; Checkbox
     ret
 

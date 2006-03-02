@@ -2108,7 +2108,7 @@ DisplayGUIMovieClick:
     GUIPButtonHole 9,158,byte[MovieVideoMode],3
     GUIPButtonHole 9,168,byte[MovieVideoMode],4
     GUIPButtonHole 9,178,byte[MovieVideoMode],5
-    
+
     GUIClickCButton 130,128,byte[MovieAudio]
     GUIClickCButton 130,138,byte[MovieAudioCompress]
     GUIClickCButton 130,148,byte[MovieVideoAudio]
