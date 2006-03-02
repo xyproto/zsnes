@@ -69,7 +69,7 @@ VIDEOBJ=${VIDEODIR}/makev16b.o ${VIDEODIR}/makev16t.o ${VIDEODIR}/makevid.o\
 	${VIDEODIR}/procvid.o ${VIDEODIR}/procvidc.o ${VIDEODIR}/sw_draw.o\
 	${VIDEODIR}/hq2x16.o ${VIDEODIR}/hq2x32.o\
 	${VIDEODIR}/hq3x16.o ${VIDEODIR}/hq3x32.o\
-	${VIDEODIR}/hq4x16.o ${VIDEODIR}/hq4x32.o
+	${VIDEODIR}/hq4x16.o ${VIDEODIR}/hq4x32.o ${VIDEODIR}/ntsc.o
 
 WINOBJ=${WINDIR}/copyvwin.o ${WINDIR}/sdlintrf.o ${WINDIR}/sdllink.o @GL_DRAW@\
 	${WINDIR}/sw_draw.o ${WINDIR}/zfilew.o ${WINDIR}/safelib.o
@@ -266,6 +266,7 @@ ${VIDEODIR}/procvid.o: ${VIDEODIR}/procvid.asm macros.mac\
 	${VIDEODIR}/2xsaimmx.inc ${VIDEODIR}/copyvid.inc
 ${VIDEODIR}/procvidc.o: ${VIDEODIR}/procvidc.c gblhdr.h
 ${VIDEODIR}/sw_draw.o: ${VIDEODIR}/sw_draw.asm macros.mac
+${VIDEODIR}/ntsc.o: ${VIDEODIR}/ntsc.c gblhdr.h
 
 ${WINDIR}/copyvwin.o: ${WINDIR}/copyvwin.asm macros.mac
 ${WINDIR}/gl_draw.o: ${WINDIR}/gl_draw.c gblhdr.h
