@@ -2422,7 +2422,8 @@ DisplayGUIVideoClick:
     mov bl,[cvidmode]
     cmp byte[GUIM7VID+ebx],0
     je .nontscfilter
-    GUIClickCButton5 11,173,byte[Mode7HiRes16b],1
+    GUIClickCButton5 115,173,byte[NTSCFilter],1
+
 .nontscfilter
     xor ebx,ebx
     mov bl,[cvidmode]
