@@ -842,7 +842,14 @@ void output_write_var(ostream& c_stream)
   {
     if (i->format == variable::none)
     {
-      c_stream << "    fprintf(fp, \";%s\\n\", " << encode_string(i->comment) << ");\n";
+      if (i->comment != "")
+      {
+        c_stream << "    fprintf(fp, \";%s\\n\", " << encode_string(i->comment) << ");\n";
+      }
+      else
+      {
+        c_stream << "    fprintf(fp, \"\\n\");\n";
+      }
     }
     else if (i->format == variable::mult)
     {
