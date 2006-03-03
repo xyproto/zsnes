@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=ZSNES
+Type=Application
+Comment=SNES (Super Nintendo) emulator that uses x86 assembly
+Exec=zsnes
+Path=
+Icon=zsnes.png
+Categories=Application;Game;Emulator;
