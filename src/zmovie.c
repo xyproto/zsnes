@@ -2027,8 +2027,6 @@ static void raw_video_close()
 
 static bool raw_video_open()
 {
-  read_md_vars("zmovie.cfg");
-
   chdir(ZStartPath);
 
   switch (MovieVideoMode)

@@ -32,6 +32,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <zlib.h>
 #define DIR_SLASH "\\"
 #endif
+#include "../psrhead/md.h"
 
 extern unsigned char ComboHeader[23], ComboBlHeader[23], GUIRAdd;
 extern unsigned char GUIsmallscreenon, ScreenScale, TimeChecker;
@@ -68,6 +69,7 @@ void GUIRestoreVars()
   FILE *cfg_fp;
 
   read_cfg_vars(GUIFName);
+  read_md_vars("zmovie.cfg");
 
   smallscreenon = (unsigned int)GUIsmallscreenon;
   ScreenScale = GUIScreenScale;
