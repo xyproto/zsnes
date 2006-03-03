@@ -335,7 +335,7 @@ ${GUIDIR}/gui${OE}: ${GUIDIR}/gui.asm macros.mac ${GUIDIR}/guicheat.inc\
 	${GUIDIR}/guicombo.inc ${GUIDIR}/guikeys.inc ${GUIDIR}/guiload.inc\
 	${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guitools.inc\
 	${GUIDIR}/guiwindp.inc
-${GUIDIR}/guifuncs${OE}: ${GUIDIR}/guifuncs.c
+${GUIDIR}/guifuncs${OE}: ${GUIDIR}/guifuncs.c md${OE}
 ${GUIDIR}/menu${OE}: ${GUIDIR}/menu.asm macros.mac
 
 ${JMADIR}/7zlzma${OE}: ${JMADIR}/7zlzma.cpp ${JMADIR}/7z.h ${JMADIR}/lzmadec.h

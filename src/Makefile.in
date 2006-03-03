@@ -210,7 +210,7 @@ ${GUIDIR}/gui.o: ${GUIDIR}/gui.asm macros.mac ${GUIDIR}/guicheat.inc\
 	${GUIDIR}/guicombo.inc ${GUIDIR}/guikeys.inc ${GUIDIR}/guiload.inc\
 	${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guitools.inc\
 	${GUIDIR}/guiwindp.inc
-${GUIDIR}/guifuncs.o: ${GUIDIR}/guifuncs.c gblhdr.h
+${GUIDIR}/guifuncs.o: ${GUIDIR}/guifuncs.c gblhdr.h md.o
 ${GUIDIR}/menu.o: ${GUIDIR}/menu.asm macros.mac
 
 ${JMADIR}/7zlzma.o: ${JMADIR}/7zlzma.cpp ${JMADIR}/7z.h ${JMADIR}/lzmadec.h
