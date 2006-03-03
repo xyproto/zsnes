@@ -666,7 +666,7 @@ void statesaver()
 }
 
 extern unsigned int KeyLoadState, Totalbyteloaded, SfxMemTable[256], SfxCPB;
-extern unsigned int SfxPBR, SfxROMBR, SfxRAMBR;
+extern unsigned int SfxPBR, SfxROMBR, SfxRAMBR, SCBRrel, SfxSCBR;
 extern unsigned char pressed[256+128+64], multchange, ioportval, SDD1Enable;
 extern unsigned char nexthdma;
 
@@ -742,6 +742,7 @@ bool zst_load(FILE *fp, size_t Compressed)
     SfxRAMMem = (unsigned int)sfxramdata + ((SfxRAMBR & 0xFF) << 16);
     SfxRomBuffer += SfxCROM;
     SfxLastRamAdr += SfxRAMMem;
+    SCBRrel = (SfxSCBR << 10) + (unsigned int)sfxramdata;
   }
 
   if (SA1Enable)
