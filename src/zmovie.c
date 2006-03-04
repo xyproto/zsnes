@@ -40,6 +40,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <direct.h>
 #include <io.h>
 #define ftruncate chsize
+#define popen _popen
+#define pclose _pclose
 #else
 #include <unistd.h>
 #endif
