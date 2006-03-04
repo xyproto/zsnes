@@ -148,7 +148,12 @@ pid_t spc_fork(int *a, size_t size)
       close(filedes[1]); //Close writing
       read(filedes[0], &success, 1);
       close(filedes[0]);
-      return(success ? childpid : -1);
+      if (success)
+      {
+        return(childpid);
+      }
+      waitpid(childpid, filedes, 0);
+      return(-1);
     }
 
 
