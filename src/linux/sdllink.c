@@ -1196,7 +1196,7 @@ void LaunchBrowser(char *browser, char *url)
 
 void LaunchURL(char *url)
 {
-  if (spc_fork(0, 0)) //If fork failed, or we are the parent
+  if (safe_fork(0, 0)) //If fork failed, or we are the parent
   {
     MouseX = 0;
     MouseY = 0;

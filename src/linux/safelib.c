@@ -40,7 +40,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define false 0
 
 
-//Introducing the secure browser opener for POSIX systems ;) -Nach
+//Introducing secure forking ;) -Nach
 
 //Taken from the secure programming cookbook, somewhat modified
 static bool spc_drop_privileges() {
@@ -129,7 +129,7 @@ static bool spc_sanitize_files(int *a, size_t size, int skip)
 }
 
 //Pass array of file descriptors to leave open
-pid_t spc_fork(int *a, size_t size)
+pid_t safe_fork(int *a, size_t size)
 {
   int filedes[2];
   if (!pipe(filedes))
@@ -152,7 +152,7 @@ pid_t spc_fork(int *a, size_t size)
       {
         return(childpid);
       }
-      waitpid(childpid, filedes, 0);
+      waitpid(childpid, 0, 0);
       return(-1);
     }
 
@@ -327,14 +327,61 @@ static void argv_print(char **argv)
   printf("argv[%u]: NULL\n", argp-argv);
 }
 
-static bool child_exited;
-void catch_child(int sig_num)
+
+//Forks, parent is paused until child successfully execs (returns child pid) or child exits (returns failure)
+static pid_t parent_pause_fork()
 {
-  int child_status;
-  wait(&child_status);
-  signal(SIGCHLD, SIG_IGN);
-  child_exited = true;
+  int filedes[2];
+  if (!pipe(filedes))
+  {
+    int pid = fork();
+    if (pid == -1) //Failed
+    {
+      close(filedes[0]);
+      close(filedes[1]);
+    }
+    else if (pid > 0) //Parent
+    {
+      char success = 1;
+      close(filedes[1]);
+      read(filedes[0], &success, 1);
+      close(filedes[0]);
+      if (success)
+      {
+        return(pid);
+      }
+      waitpid(pid, 0, 0);
+    }
+    else //Child
+    {
+      close(filedes[0]);
+      fcntl(filedes[1], F_SETFD, FD_CLOEXEC);
+      return(-filedes[1]);
+    }
+  }
+  return(0);
 }
+
+static void close_child(pid_t pid)
+{
+  char success = 0;
+  write(-pid, &success, 1);
+  close(-pid);
+  _exit(0);
+}
+
+#define IS_PARENT(x) ((x) > 0)
+#define IS_CHILD(x) ((x) < 0)
+#define IS_FAIL(x) ((x) == 0)
+
+
+static struct fp_pid_link
+{
+  FILE *fp;
+  pid_t pid;
+  struct fp_pid_link *next;
+} fp_pids = { 0, 0, 0 };
+
 
 FILE *safe_popen(char *command, const char *mode)
 {
@@ -344,65 +391,84 @@ FILE *safe_popen(char *command, const char *mode)
 
   if ((*mode == 'r' || *mode == 'w') && !pipe(filedes))
   {
-    char **argv = build_argv(command);
-    if (argv)
+    pid_t childpid = parent_pause_fork();
+    if (IS_PARENT(childpid))
     {
-      pid_t childpid;
-
-      child_exited = false;
-      signal(SIGCHLD, catch_child);
-      if ((childpid = vfork()) == -1) //Fork Failed
-      {
-        signal(SIGCHLD, SIG_IGN);
-        free(argv);
-        close(filedes[0]);
-        close(filedes[1]);
-        return(0);
-      }
-
-      if (childpid) //Parent
-      {
-        FILE *fp;
-        signal(SIGCHLD, SIG_IGN);
-        free(argv);
-        if (!child_exited)
-        {
-          if (*mode == 'r')
-          {
-            close(filedes[1]);
-            fp = fdopen(filedes[0], "r");
-          }
-          else
-          {
-            close(filedes[0]);
-            fp = fdopen(filedes[1], "w");
-          }
-
-          if (fp) { return(fp); }
-        }
-        close(filedes[0]);
-        close(filedes[1]);
-        return(0);
-      }
-
-      //Child
-
+      FILE *fp;
       if (*mode == 'r')
       {
-        dup2(filedes[1], STDOUT_FILENO);
-        close(filedes[0]);
+        close(filedes[1]);
+        fp = fdopen(filedes[0], "r");
       }
       else
       {
-        dup2(filedes[0], STDIN_FILENO);
-        close(filedes[1]);
+        close(filedes[0]);
+        fp = fdopen(filedes[1], "w");
       }
 
-      execvp(argv[0], argv);
-      _exit(0);
+      if (fp)
+      {
+        struct fp_pid_link *link = &fp_pids;
+        while (link->next)
+        {
+          link = link->next;
+        }
+
+        link->next = (struct fp_pid_link *)malloc(sizeof(struct fp_pid_link));
+        if (link->next)
+        {
+          link->next->fp = fp;
+          link->next->pid = childpid;
+          link->next->next = 0;
+          return(fp);
+        }
+        fclose(fp);
+      }
+      kill(childpid, SIGTERM);
+      waitpid(childpid, 0, 0);
+    }
+    else if (IS_CHILD(childpid))
+    {
+      char **argv = build_argv(command);
+      if (argv)
+      {
+        if (*mode == 'r')
+        {
+          dup2(filedes[1], STDOUT_FILENO);
+        }
+        else
+        {
+          dup2(filedes[0], STDIN_FILENO);
+        }
+
+        if (spc_sanitize_files(0, 0, -childpid) && spc_drop_privileges())
+        {
+          execvp(argv[0], argv);
+        }
+        free(argv);
+      }
+      close_child(childpid);
     }
     close(filedes[0]);
     close(filedes[1]);
   }
   return(0);
+}
+
+void safe_pclose(FILE *fp)
+{
+  struct fp_pid_link *link = &fp_pids;
+
+  while (link->next && link->next->fp != fp)
+  {
+    link = link->next;
+  }
+  if (link->next->fp == fp)
+  {
+    struct fp_pid_link *dellink = link->next;
+    fclose(fp);
+    waitpid(link->next->pid, 0, 0);
+    link->next = link->next->next;
+    free(dellink);
+  }
 }
