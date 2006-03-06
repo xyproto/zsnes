@@ -174,7 +174,7 @@ static void display_help()
   put_line("         18 = 800x600x16B (VESA2)");
 #endif
   put_line("  -w      Enable vsync (disables triple buffering)");
-  put_line("  -y      Enable Anti-Aliasing");
+  put_line("  -y      Enable Anti-Aliasing (video interpolation)");
   put_line("  -z      Disable Stereo Sound");
   put_line("  -zm #   Auto load specified movie slot on startup ");
   put_line("  -zs #   Auto load specified save state slot on startup ");
