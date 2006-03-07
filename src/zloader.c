@@ -93,10 +93,7 @@ static void display_help()
   put_line("  -e      Skip enter key press at the beginning");
 #endif
   put_line("  -f #    Enable fixed frame rate [0...9]");
-#ifdef __MSDOS__
   put_line("  -g #    Specify gamma correction value [0...15]");
-  put_line("          (Only works properly in 8-bit modes)");
-#endif
   put_line("  -h      Force HiROM");
   put_line("  -j      Disable Mouse (Automatically turns off right mouse click)");
   put_line("  -k #    Set Volume Level (0 .. 100)");
