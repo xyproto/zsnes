@@ -2376,6 +2376,11 @@ static void OldMovieReplay()
   }
 }
 
+extern unsigned char frameskip;
+extern unsigned char maxskip;
+static unsigned char oldframeskip = 0;
+static unsigned char oldmaxskip = 0;
+
 static void OldMoviePlay(FILE *fp)
 {
   unsigned char RecData[16];
@@ -2423,6 +2428,11 @@ static void OldMoviePlay(FILE *fp)
     DSPMem[0x78] = 0;
 
     Msgptr = "OLD MOVIE REPLAYING.";
+
+    oldframeskip = frameskip;
+    oldmaxskip = maxskip;
+    frameskip = 0;
+    maxskip = 0;
   }
   else
   {
@@ -2617,6 +2627,9 @@ void MovieStop()
     SRAMState = PrevSRAMState;
   }
   MovieWaiting = false;
+
+  frameskip = oldframeskip;
+  maxskip = oldmaxskip;
 }
 
 void MoviePlay()
@@ -2654,6 +2667,11 @@ void MoviePlay()
           if (isdigit(CMovieExt)) { fnamest[fname_len] = CMovieExt; }
           MovieSub_Open(fnamest+1);
           MessageOn = MsgCount;
+
+          oldframeskip = frameskip;
+          oldmaxskip = maxskip;
+          frameskip = 0;
+          maxskip = 0;
         }
         else
         {
@@ -2713,6 +2731,11 @@ void MovieRecord()
       zmv_alloc_rewind_buffer(AllocatedRewindStates);
       Msgptr = "MOVIE RECORDING.";
       MessageOn = MsgCount;
+
+      oldframeskip = frameskip;
+      oldmaxskip = maxskip;
+      frameskip = 0;
+      maxskip = 0;
     }
     else
     {
