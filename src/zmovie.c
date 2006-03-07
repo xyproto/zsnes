@@ -2042,7 +2042,7 @@ static bool raw_video_open()
 
     case 2: case 3: case 4:
       signal(SIGPIPE, broken_pipe);
-      mencoderExists = (unsigned char)(int)(raw_vid.vp = popen(encode_command(md_command), WRITE_BINARY));
+      mencoderExists = (raw_vid.vp = popen(encode_command(md_command), WRITE_BINARY)) ? 1 : 0;
       break;
 
     default:
