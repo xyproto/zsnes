@@ -15,6 +15,14 @@
 #define flushall _flushall
 #define fdopen _fdopen
 
+#ifndef STDIN_FILENO
+#define STDIN_FILENO fileno(stdin)
+#endif
+
+#ifndef STDOUT_FILENO
+#define STDOUT_FILENO fileno(stdout)
+#endif
+
 //Introducing a popen which doesn't return until it knows for sure of program launched or couldn't open -Nach
 
 #define READ_FD 0
