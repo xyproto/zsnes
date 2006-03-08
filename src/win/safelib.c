@@ -46,6 +46,7 @@ FILE *safe_popen(char *command, const char *mode)
       {
         fd_original = dup(STDOUT_FILENO);
         dup2(filedes[WRITE_FD], STDOUT_FILENO);
+        close(filedes[WRITE_FD]);
         if (!(fp = fdopen(filedes[READ_FD], mode)))
         {
           close(filedes[READ_FD]);
@@ -55,6 +56,7 @@ FILE *safe_popen(char *command, const char *mode)
       {
         fd_original = dup(STDIN_FILENO);
         dup2(filedes[READ_FD], STDIN_FILENO);
+        close(filedes[READ_FD]);
         if (!(fp = fdopen(filedes[WRITE_FD], mode)))
         {
           close(filedes[WRITE_FD]);
