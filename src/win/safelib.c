@@ -1,9 +1,9 @@
+#include <process.h>
 #define _POSIX_
 #include <io.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <process.h>
 #include <fcntl.h>
 
 #include "../argv.h"
@@ -14,7 +14,6 @@
 #define pipe _pipe
 #define flushall _flushall
 #define fdopen _fdopen
-#define P_NOWAIT _P_NOWAIT
 
 #ifndef STDIN_FILENO
 #define STDIN_FILENO fileno(stdin)
