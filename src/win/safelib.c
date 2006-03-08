@@ -81,11 +81,11 @@ FILE *safe_popen(char *command, const char *mode)
 
       if (*mode == 'r')
       {
-        dup2(fd_original, STDIN_FILENO);
+        dup2(fd_original, STDOUT_FILENO);
       }
       else
       {
-        dup2(fd_original, STDOUT_FILENO);
+        dup2(fd_original, STDIN_FILENO);
       }
       close(fd_original);
     }
