@@ -14,6 +14,7 @@
 #define pipe _pipe
 #define flushall _flushall
 #define fdopen _fdopen
+#define P_NOWAIT _P_NOWAIT
 
 #ifndef STDIN_FILENO
 #define STDIN_FILENO fileno(stdin)
