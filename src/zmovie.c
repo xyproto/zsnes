@@ -39,9 +39,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef __WIN32__
 #include <direct.h>
 #include <io.h>
+#include "win/safelib.h"
 #define ftruncate chsize
-#define popen _popen
-#define pclose _pclose
 #else
 #include <unistd.h>
 #endif

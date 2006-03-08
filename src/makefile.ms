@@ -172,7 +172,7 @@ JMAOBJ=${JMADIR}/7zlzma${OE} ${JMADIR}/crc32${OE} ${JMADIR}/iiostrm${OE}\
 	${JMADIR}/winout${OE} ${JMADIR}/zsnesjma${OE}
 
 MAINOBJ=cfgload${OE} endmem${OE} init${OE} initc${OE} uic${OE} patch${OE}\
-	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE} \
+	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE}\
 	cfg${OE} md${OE}
 
 NETOBJ=
@@ -183,12 +183,13 @@ VIDEOBJ=${VIDEODIR}/makev16b${OE} ${VIDEODIR}/makev16t${OE} ${VIDEODIR}/makevid$
 	${VIDEODIR}/mode716e${OE} ${VIDEODIR}/mode716t${OE} ${VIDEODIR}/mode7${OE}\
 	${VIDEODIR}/mode7ext${OE} ${VIDEODIR}/mv16tms${OE} ${VIDEODIR}/newg162${OE}\
 	${VIDEODIR}/newgfx16${OE} ${VIDEODIR}/newgfx2${OE} ${VIDEODIR}/newgfx${OE}\
-	${VIDEODIR}/m716text${OE} ${VIDEODIR}/procvid${OE} ${VIDEODIR}/procvidc${OE} \
+	${VIDEODIR}/m716text${OE} ${VIDEODIR}/procvid${OE} ${VIDEODIR}/procvidc${OE}\
 	${VIDEODIR}/ntsc${OE}
 
 #only used on Win32
 WINOBJ=${WINDIR}/copyvwin${OE} ${DRESOBJ}\
-	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE} ${WINDIR}/zfilew${OE}
+	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE} ${WINDIR}/zfilew${OE}\
+	${WINDIR}/safelib${OE}
 
 WINVIDOBJ=${VIDEODIR}/sw_draw${OE} ${VIDEODIR}/hq2x16${OE} ${VIDEODIR}/hq2x32${OE}\
 	${VIDEODIR}/2xsaiw${OE} ${VIDEODIR}/hq3x16${OE} ${VIDEODIR}/hq3x32${OE}\
@@ -393,6 +394,7 @@ ${VIDEODIR}/ntsc${OE}: ${VIDEODIR}/ntsc.c
 ${WINDIR}/copyvwin${OE}: ${WINDIR}/copyvwin.asm macros.mac
 ${WINDIR}/winintrf${OE}: ${WINDIR}/winintrf.asm macros.mac
 ${WINDIR}/zfilew${OE}: ${WINDIR}/zfilew.c ${WINDIR}/resource.h
+${WINDIR}/safelib${OE}: ${WINDIR}/safelib.c argv.h
 ifeq (${ENV},msvc)
 ${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
 ${WINDIR}/zsnes.res: ${WINDIR}/zsnes.rc ${WINDIR}/afxres.h ${WINDIR}/resource.h

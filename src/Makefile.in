@@ -275,7 +275,7 @@ ${WINDIR}/sdllink.o: ${WINDIR}/sdllink.c asm_call.h gblhdr.h ${WINDIR}/sw_draw.h
 	${WINDIR}/gl_draw.h ${WINDIR}/safelib.h
 ${WINDIR}/sw_draw.o: ${WINDIR}/sw_draw.c gblhdr.h
 ${WINDIR}/zfilew.o: ${WINDIR}/zfilew.c
-${WINDIR}/safelib.o: ${WINDIR}/safelib.c ${WINDIR}/safelib.h
+${WINDIR}/safelib.o: ${WINDIR}/safelib.c ${WINDIR}/safelib.h argv.h
 
 ${ZIPDIR}/unzip.o: ${ZIPDIR}/unzip.c gblhdr.h ${ZIPDIR}/zunzip.h
 ${ZIPDIR}/zpng.o: ${ZIPDIR}/zpng.c gblhdr.h ${ZIPDIR}/zpng.h
