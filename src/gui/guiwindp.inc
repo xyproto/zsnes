@@ -3203,8 +3203,13 @@ DisplayGUIMovies:    ; Movie Record/Playback options
 
     GUIDisplayTextY 15,129,120,GUIMovieTextE           ; Audio Section
     GUIDisplayCheckboxu 15,130,128,MovieAudio,GUIMovieTextE1,0
+    cmp byte[MovieAudio],1
+    jne .nomux
     GUIDisplayCheckboxu 15,130,138,MovieAudioCompress,GUIMovieTextE3,2
+    cmp byte[MovieVideoMode],2
+    jl .nomux
     GUIDisplayCheckboxu 15,130,148,MovieVideoAudio,GUIMovieTextE2,9
+.nomux
 
     mov dword[GUIMovieTextZ+9],'INAC'    ; Determine and Display Status
     mov dword[GUIMovieTextZ+13],'TIVE'
