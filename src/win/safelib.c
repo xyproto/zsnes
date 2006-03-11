@@ -36,7 +36,7 @@ FILE *safe_popen(char *command, const char *mode)
   {
     int filedes[2];
 
-    if ((*mode == 'r' || *mode == 'w') &&
+    if (mode && (*mode == 'r' || *mode == 'w') &&
         !pipe(filedes, 512, (mode[1] == 'b' ? O_BINARY : O_TEXT) | O_NOINHERIT))
     {
       int fd_original;

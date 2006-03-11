@@ -243,7 +243,7 @@ FILE *safe_popen(char *command, const char *mode)
   //filedes[1] is for writing.
   int filedes[2];
 
-  if ((*mode == 'r' || *mode == 'w') && !pipe(filedes))
+  if (mode && (*mode == 'r' || *mode == 'w') && !pipe(filedes))
   {
     pid_t childpid = parent_pause_fork();
     if (IS_PARENT(childpid))
