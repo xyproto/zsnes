@@ -145,6 +145,7 @@ EXTSYM pl1p209,pl1p209b,SaveMainWindowPos,FastFwdToggle,SidewinderFix,RaisePitch
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM MovieVideoMode, MovieAudio, MovieVideoAudio, MovieAudioCompress
 EXTSYM NTSCFilter, GUINTSC
+EXTSYM GetDate, horizon_get
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
@@ -1401,6 +1402,22 @@ NEWSYM StartGUI
     call guifirsttimemsg
     mov byte[FirstTimeData],1
 .nofirsttime
+    cmp byte[guimsgptr],0
+    jne .nohorizon
+    pushad
+    call GetDate
+    cmp ax,1025
+    popad
+    jne .nohorizon
+    pushad
+    call GetTime
+    push eax
+    call horizon_get
+    mov [guimsgptr],eax
+    popad
+    call horizonfixmsg
+    mov byte[guimsgptr],1
+.nohorizon
     cmp dword[GUICTimer],0
     je .notimer
     GUIOuttext 21,211,[GUICMessage],50
@@ -1636,6 +1653,53 @@ guiftimemsg5 db ' INFORMATION AND ANSWERS',0
 guiftimemsg6 db '    TO COMMON PROBLEMS',0
 guiftimemsg7 db '      AND QUESTIONS.',0
 guiftimemsg8 db 'PRESS SPACEBAR TO PROCEED.',0
+SECTION .text
+
+horizonfixmsg:
+    xor ebx,ebx
+    mov ecx,256
+.a
+    mov byte[pressed+ebx],0
+    inc ebx
+    dec ecx
+    jnz .a
+    mov byte[pressed+2Ch],0
+.again
+    GUIBox 43,75,213,163,160
+    GUIBox 43,75,213,75,162
+    GUIBox 43,75,43,163,161
+    GUIBox 213,75,213,163,159
+    GUIBox 43,163,213,163,158
+    GUIOuttext 52,81,guimsgmsg,220-15
+    GUIOuttext 51,80,guimsgmsg,220
+    GUIOuttext 52,96,[guimsgptr],220-15
+    GUIOuttext 51,95,[guimsgptr],220
+    add dword[guimsgptr],32
+    GUIOuttext 52,104,[guimsgptr],220-15
+    GUIOuttext 51,103,[guimsgptr],220
+    add dword[guimsgptr],32
+    GUIOuttext 52,112,[guimsgptr],220-15
+    GUIOuttext 51,111,[guimsgptr],220
+    add dword[guimsgptr],32
+    GUIOuttext 52,120,[guimsgptr],220-15
+    GUIOuttext 51,119,[guimsgptr],220
+    sub dword[guimsgptr],96
+    GUIOuttext 52,151,guiftimemsg8,220-15
+    GUIOuttext 51,150,guiftimemsg8,220
+    call vidpastecopyscr
+    call GUIUnBuffer
+    call DisplayBoxes
+    call DisplayMenu
+    call JoyRead
+    cmp byte[pressed+39h],0
+    jne .pressedokay
+    jmp .again
+.pressedokay
+    ret
+
+SECTION .data
+guimsgptr dd 0
+guimsgmsg db '     WELCOME TO ZSNES',0
 SECTION .text
 
 guimustrestartmsg:
