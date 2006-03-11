@@ -2624,11 +2624,11 @@ void MovieStop()
     zmv_dealloc_rewind_buffer();
     SetMovieMode(MOVIE_OFF);
     SRAMState = PrevSRAMState;
+
+    frameskip = oldframeskip;
+    maxskip = oldmaxskip;
   }
   MovieWaiting = false;
-
-  frameskip = oldframeskip;
-  maxskip = oldmaxskip;
 }
 
 void MoviePlay()
