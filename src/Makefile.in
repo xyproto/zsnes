@@ -101,7 +101,7 @@ endif
 
 %.o: %.psr
 	./${PSR} @PSRFLAGS@ -cheader psrhead/$(patsubst %.o,%.h,$@) -fname $(patsubst %.o,%,$@) temppsr.c $<
-	@CC@ -I. -O1 -o $@ -c temppsr.c
+	@CC@ @CFLAGS@ -O1 -o $@ -c temppsr.c
 	rm -f temppsr.c
 
 ALL: @ZSNESEXE@

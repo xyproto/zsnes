@@ -229,10 +229,10 @@ ifeq (${OS},__WIN32__)
 endif
 else
 %.obj : %.c
-	cl /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ $<
+	cl /nologo /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ $<
 
 %.obj: %.cpp
-	cl /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ $<
+	cl /nologo /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ $<
 
 %.obj: %.asm
 	${ASM} ${ASMOPT} -f win32 -D__WIN32__ -o $@ $<
@@ -243,7 +243,7 @@ endif
 ifneq (${ENV},msvc)
 	${CC} -o $@ -c temppsr.c
 else
-	cl /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ temppsr.c
+	cl /nologo /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ temppsr.c
 endif
 	${DELETECOMMAND} temppsr.c
 
@@ -257,7 +257,7 @@ else
 	 @echo /Fezsnesw.exe *.obj ${CPUDIR}\*.obj ${VIDEODIR}\*.obj ${CHIPDIR}\*.obj ${EFFECTSDIR}\*.obj ${DOSDIR}\*.obj ${WINDIR}\*.obj ${GUIDIR}\*.obj > link.vc
 	 @echo ${ZIPDIR}\*.obj ${JMADIR}\*.obj ${NETDIR}\*.obj >> link.vc
 	 @echo ${MSVCLIBS} >> link.vc
-	 cl @link.vc ${WINDIR}/zsnes.res /link
+	 cl /nologo @link.vc ${WINDIR}/zsnes.res /link
 endif
 
 cfgload${OE}: cfgload.c
@@ -394,7 +394,7 @@ ${VIDEODIR}/ntsc${OE}: ${VIDEODIR}/ntsc.c
 ${WINDIR}/copyvwin${OE}: ${WINDIR}/copyvwin.asm macros.mac
 ${WINDIR}/winintrf${OE}: ${WINDIR}/winintrf.asm macros.mac
 ${WINDIR}/zfilew${OE}: ${WINDIR}/zfilew.c ${WINDIR}/resource.h
-${WINDIR}/safelib${OE}: ${WINDIR}/safelib.c argv.h
+${WINDIR}/safelib${OE}: ${WINDIR}/safelib.c ${WINDIR}/safelib.h argv.h
 ifeq (${ENV},msvc)
 ${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
 ${WINDIR}/zsnes.res: ${WINDIR}/zsnes.rc ${WINDIR}/afxres.h ${WINDIR}/resource.h
@@ -409,7 +409,7 @@ ${OBJFIX}: objfix.c
 endif
 ${PSR}: parsegen.cpp
 ifeq (${ENV},msvc)
-	cl /EHsc /Fe$@ parsegen.cpp
+	cl /nologo /EHsc /Fe$@ parsegen.cpp
 	${DELETECOMMAND} parsegen.obj
 else
 ifeq (${ENV},dos)
