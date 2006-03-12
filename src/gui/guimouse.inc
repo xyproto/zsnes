@@ -895,13 +895,13 @@ SECTION .text
 
 NEWSYM SwitchFullScreen
     pushad
-    mov ecx,255*296
-    mov eax,[vidbufferofsb]
-.loop
-    mov dword[eax],0FEFEFEFEh
-    add eax,4
-    dec ecx
-    jnz .loop
+;    mov ecx,255*296
+;    mov eax,[vidbufferofsb]
+;.loop
+;    mov dword[eax],0FEFEFEFEh
+;    add eax,4
+;    dec ecx
+;    jnz .loop
 
     xor eax,eax
     mov al,[cvidmode]
