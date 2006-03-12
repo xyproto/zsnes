@@ -649,7 +649,7 @@ NEWSYM menudrawbox16b
     add esi,[vidbuffer]
     add esi,[MenuDisplace16]
     mov ecx,150
-    mov al,85
+    mov al,95
     mov ah,5
 .loop16b2
     mov dx,[esi]
