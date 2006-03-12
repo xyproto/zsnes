@@ -2382,6 +2382,8 @@ NEWSYM drawbg4linepr116b
 .loopobj2
     test byte[esi+7],20h
     jnz near .drawspriteflipx2
+    or byte[esi+4],0        ;this prevents some games from crashing
+    jz near .exitnow
     mov bx,[esi]
     mov ch,[esi+6]
     mov esi,[esi+2]
@@ -2390,6 +2392,7 @@ NEWSYM drawbg4linepr116b
     mov esi,edx
     dec cl
     jnz near .loopobj2
+.exitnow
     pop ebx
     pop esi
     ret
