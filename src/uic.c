@@ -147,7 +147,6 @@ void WaitForKey();
 void MMXCheck();
 void allocmem();
 void InitSPC();
-void setnoise();
 void SystemInit();
 void StartUp();
 
@@ -210,6 +209,35 @@ void cycleinputdevice()
   }
 }
 
+unsigned char NoiseData[32768];
+const unsigned char samplenoise[128] = {
+     27,232,234,138,187,246,176, 81, 25,241,  1,127,154,190,195,103,
+    231,165,220,238,232,189, 57,201,123, 75, 63,143,145,159, 13,236,
+    191,142, 56,164,222, 80, 88, 13,148,118,162,212,157,146,176,  0,
+    241, 88,244,238, 51,235,149, 50, 77,212,186,241, 88, 32, 23,206,
+      1, 24, 48,244,248,210,253, 77, 19,100, 83,222,108, 68, 11, 58,
+    152,161,223,245,  4,105,  3, 82, 15,130,171,242,141,  2,172,218,
+    152, 97,223,157, 93, 75, 83,238,104,238,131, 70, 22,252,180, 82,
+    110,123,106,133,183,209, 48,230,157,205, 27, 21,107, 63, 85,164};
+
+void setnoise()
+{
+  unsigned short ctr1, ctr2, ptr1=0;
+  unsigned char ptr2=0, ptr3=0;
+
+  for(ctr1=256;ctr1>0;ctr1--)
+  {
+    for(ctr2=128;ctr2>0;ctr2--,ptr1++)
+    {
+      NoiseData[ptr1] = (samplenoise[ptr2] + samplenoise[ptr3]);
+      ptr2=(ptr2+1)&0x7f;
+      ptr3=(ptr3-1)&0x7f;
+    }
+    ptr3=(ptr3-1)&0x7f;
+  }
+}
+
+
 extern unsigned int xa;
 extern unsigned char soundon, SPCDisable, spcon, FPSOn, FPSAtStart;
 
@@ -247,7 +275,7 @@ void zstart ()
 #ifdef OPENSPC
   OSPC_Init();
 #else
-  asm_call(setnoise);
+  setnoise();
   asm_call(InitSPC);
 #endif
 

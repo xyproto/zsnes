@@ -68,45 +68,6 @@ NEWSYM YesMMX, db 'MMX support found and enabled.',13,10,13,10,0
 SECTION .text
 
 ;*******************************************************
-; Set Noise Data
-;*******************************************************
-
-NEWSYM setnoise
-    mov edi,NoiseData
-    mov ebx,256
-    mov ecx,128
-    xor esi,esi
-    xor edx,edx
-.next
-    mov al,[.samplenoise+esi]
-    add al,[.samplenoise+edx]
-    mov [edi],al
-    inc edi
-    inc esi
-    and esi,07Fh
-    dec edx
-    and edx,07Fh
-    dec ecx
-    jnz .next
-    dec edx
-    and edx,07Fh
-    mov ecx,128
-    dec ebx
-    jnz .next
-    ret
-
-SECTION .data
-.samplenoise:
-  db 27,232,234,138,187,246,176,81,25,241,1,127,154,190,195,103,231,165,220,238
-  db 232,189,57,201,123,75,63,143,145,159,13,236,191,142,56,164,222,80,88,13
-  db 148,118,162,212,157,146,176,0,241,88,244,238,51,235,149,50,77,212,186,241
-  db 88,32,23,206,1,24,48,244,248,210,253,77,19,100,83,222,108,68,11,58
-  db 152,161,223,245,4,105,3,82,15,130,171,242,141,2,172,218,152,97,223,157
-  db 93,75,83,238,104,238,131,70,22,252,180,82,110,123,106,133,183,209,48,230
-  db 157,205,27,21,107,63,85,164
-SECTION .text
-
-;*******************************************************
 ; Allocate Memory, ebx = size,eax returned = LFB pointer
 ;*******************************************************
 
@@ -256,7 +217,6 @@ NEWSYM spcRamcmp, resb 65536
 NEWSYM VolumeConvTable, resw 32768
 NEWSYM dspWptr,  resd 256
 NEWSYM dspRptr,  resd 256
-NEWSYM NoiseData, resb 32768
 
 ; makevid.asm
 
@@ -271,55 +231,6 @@ LinearAddress     resd 1  ; Returned by function
 BlockHandle       resd 1  ; Returned by function
 ZSNESAddress      resd 1  ; Returned by function
 
-SECTION .text
-
-;*******************************************************
-; Allocate Pointer    Sets variables with pointer values
-;*******************************************************
-
-
-AllocateLDTDescriptor:
-%ifndef __UNIXSDL__
-;Get ZSNES Base
-   mov ax,ds
-   mov bx,ax
-   mov eax,0006h
-   int 31h
-   jc .FatalError
-   mov [ZSNESBase+2],cx
-   mov [ZSNESBase],dx
-   ret
-.FatalError
-; maybe dosexit?
-%endif
-   ret
-
-
-AllocateBlock:
-%ifndef __UNIXSDL__
-   mov eax,0501h
-   mov bx,[BlockSize+2]
-   mov cx,[BlockSize]
-   int 31h
-   jc .FatalError
-   mov [LinearAddress+2],bx
-   mov [LinearAddress],cx
-   mov [BlockHandle+2],si
-   mov [BlockHandle],di
-   mov eax,[LinearAddress]
-   sub eax,[ZSNESBase]
-   and eax,0FFFFFFE0h
-   add eax,40h
-   mov [ZSNESAddress],eax
-   xor ebx,ebx
-   ret
-.FatalError
-   mov ebx,1
-%endif
-   ret
-
-
-SECTION .bss
 
 ;ALIGN32
 vbufaptr resd 1
@@ -335,9 +246,6 @@ cmemallocptr resd 1
 memfreearray resd 12
 
 SECTION .text
-
-
-
 
 %macro AllocmemFail 3
     mov ebx,%1
@@ -380,12 +288,12 @@ SECTION .text
 ;    AllocmemFail 8192*1024+4096,spc7110romptr,outofmemoryb
 ;    ret
 
-outofmemoryb
-%ifdef __MSDOS__
-    mov ax,3
-    int 10h
-%endif
-    jmp outofmemory
+;outofmemoryb
+;%ifdef __MSDOS__
+;    mov ax,3
+;    int 10h
+;%endif
+;    jmp outofmemory
 
 NEWSYM allocptr
     mov dword[cmemallocptr],memfreearray
