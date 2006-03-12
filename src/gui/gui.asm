@@ -1416,7 +1416,6 @@ NEWSYM StartGUI
     mov [guimsgptr],eax
     popad
     call horizonfixmsg
-    mov byte[guimsgptr],1
 .nohorizon
     cmp dword[GUICTimer],0
     je .notimer
