@@ -1,6 +1,6 @@
 #include <process.h>
-#define _POSIX_
 #include <io.h>
+#define _POSIX_
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

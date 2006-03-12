@@ -38,6 +38,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define signal(x, y)
 #ifdef __WIN32__
 #include <direct.h>
+#undef _POSIX_
 #include <io.h>
 #include "win/safelib.h"
 #define ftruncate chsize
@@ -2160,7 +2161,7 @@ static void raw_video_write_frame()
     else
     {
       //Thanks Bisqwit for this algorithm
-      samples = (raw_vid.sample_ntsc_balance/raw_vid.sample_ntsc_lo) << 1;
+      samples = (unsigned int)((raw_vid.sample_ntsc_balance/raw_vid.sample_ntsc_lo) << 1);
       raw_vid.sample_ntsc_balance %= raw_vid.sample_ntsc_lo;
       raw_vid.sample_ntsc_balance += raw_vid.sample_ntsc_hi;
       //printf("Frame %u: %u samples\n", raw_vid.sample_index, BufferSizeB);
