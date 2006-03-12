@@ -1287,7 +1287,7 @@ NEWSYM SoundProcess     ; This function is called ~60 times/s at full speed
     ret
 
 section .data
-NEWSYM delayvalue, db 0
+NEWSYM delayvalue, dd 0
 
 section .text
 
