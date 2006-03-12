@@ -914,6 +914,10 @@ NEWSYM savespcdata
 
     mov esi,[romdata]
     add esi,[infoloc]
+    cmp dword[infoloc],40ffc0h
+    jne .noehi
+    sub esi,408000h
+.noehi
     mov ecx,20
     mov edi,ssdatst+46+32
 .romloop
