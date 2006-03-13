@@ -2104,8 +2104,7 @@ static void raw_audio_write(unsigned int samples)
   void ProcessSoundBuffer();
   extern int DSPBuffer[1280];
   extern unsigned int BufferSizeB, BufferSizeW;
-  unsigned int i = 0;
-  int temp;
+  int *d = DSPBuffer, *d_end;
 
   if (samples > 1280)
   {
@@ -2118,12 +2117,11 @@ static void raw_audio_write(unsigned int samples)
 
   asm_call(ProcessSoundBuffer);
 
-  for (i = 0; i < BufferSizeB; i++)
+  for (d_end = DSPBuffer+samples; d < d_end; d++)
   {
-    temp = DSPBuffer[i];
-    if (temp > 32767) { temp = 32767; }
-    else if (temp < -32768) { temp =-32768; }
-    fwrite2((short)temp, raw_vid.ap);
+    if ((unsigned int)(*d + 0x8000) <= 0xFFFF) {fwrite2((short)*d, raw_vid.ap); continue; }
+    if (*d > 0x7FFF) { fwrite2(0x7FFF, raw_vid.ap); }
+    else { 0x8000; }
   }
 }
 
