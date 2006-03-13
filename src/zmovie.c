@@ -2119,9 +2119,9 @@ static void raw_audio_write(unsigned int samples)
 
   for (d_end = DSPBuffer+samples; d < d_end; d++)
   {
-    if ((unsigned int)(*d + 0x8000) <= 0xFFFF) {fwrite2((short)*d, raw_vid.ap); continue; }
+    if ((unsigned int)(*d + 0x8000) <= 0xFFFF) { fwrite2((short)*d, raw_vid.ap); continue; }
     if (*d > 0x7FFF) { fwrite2(0x7FFF, raw_vid.ap); }
-    else { 0x8000; }
+    else { fwrite2(0x8000, raw_vid.ap); }
   }
 }
 
