@@ -87,7 +87,7 @@ it will divide its size by 10.
 
 
 Windows port with MinGW:
-- GNU Make : http://unxutils.sourceforge.net/
+- GNU Make (don't use included in mingw): http://unxutils.sourceforge.net/
 - NASM v0.98.39 : http://nasm.sf.net/ 
 - MinGW : http://www.mingw.org
 - Latest Win32API : http://www.mingw.org
