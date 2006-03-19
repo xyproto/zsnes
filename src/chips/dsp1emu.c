@@ -18,7 +18,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #define __ZSNES__
 
 #if (defined __ZSNES__ && __UNIXSDL__)
@@ -35,12 +34,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 // uncomment some lines to test
 //#define printinfo
-//#define debug02
-//#define debug0A
 //#define debug06
 
 #define __OPT__
-#define __OPT02__
 #define __OPT06__
 
 #ifdef DebugDSP1
@@ -419,24 +415,22 @@ const short DSP1_SinTable[256] = {
 
 short DSP1_Sin(short Angle)
 {
-	int S;
 	if (Angle < 0) {
 		if (Angle == -32768) return 0;
 		return -DSP1_Sin(-Angle);
 	}
-	S = DSP1_SinTable[Angle >> 8] + (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[0x40 + (Angle >> 8)] >> 15);
+	int S = DSP1_SinTable[Angle >> 8] + (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[0x40 + (Angle >> 8)] >> 15);
 	if (S > 32767) S = 32767;
 	return (short) S;
 }
 
 short DSP1_Cos(short Angle)
 {
-	int S;
 	if (Angle < 0) {
 		if (Angle == -32768) return -32768;
 		Angle = -Angle;
 	}
-	S = DSP1_SinTable[0x40 + (Angle >> 8)] - (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[Angle >> 8] >> 15);
+	int S = DSP1_SinTable[0x40 + (Angle >> 8)] - (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[Angle >> 8] >> 15);
 	if (S < -32768) S = -32767;
 	return (short) S;
 }
@@ -516,6 +510,16 @@ void DSP1_NormalizeDouble(int Product, short *Coefficient, short *Exponent)
 	*Exponent = e;
 }
 
+short DSP1_Truncate(short C, short E)
+{
+	if (E > 0) {
+		if (C > 0) return 32767; else if (C < 0) return -32767;
+	} else {
+		if (E < 0) return C * DSP1ROM[0x0031 + E] >> 15;
+	}
+	return C;
+}
+
 void DSPOp04()
 {
 	Op04Sin = DSP1_Sin(Op04Angle) * Op04Radius >> 15;
@@ -534,254 +538,156 @@ void DSPOp0C()
 	Op0CY2 = (Op0CY1 * DSP1_Cos(Op0CA) >> 15) - (Op0CX1 * DSP1_Sin(Op0CA) >> 15);
 }
 
+short CentreX;
+short CentreY;
+short VOffset;
+
+short VPlane_C;
+short VPlane_E;
+
+// Azimuth and Zenith angles
+short SinAas;
+short CosAas;
+short SinAzs;
+short CosAzs;
+
+// Clipped Zenith angle
+short SinAZS;
+short CosAZS;
+short SecAZS_C1;
+short SecAZS_E1;
+short SecAZS_C2;
+short SecAZS_E2;
+
+const short MaxAZS_Exp[16] = {
+	0x38b4, 0x38b7, 0x38ba, 0x38be, 0x38c0, 0x38c4, 0x38c7, 0x38ca,
+	0x38ce,	0x38d0, 0x38d4, 0x38d7, 0x38da, 0x38dd, 0x38e0, 0x38e4
+};
+
+void DSP1_Parameter(short Fx, short Fy, short Fz, short Lfe, short Les, short Aas, short Azs, short *Vof, short *Vva, short *Cx, short *Cy)
+{
+	short CSec, C, E;
+
+	// Copy Zenith angle for clipping
+	short AZS = Azs;
+
+	// Store Sin and Cos of Azimuth and Zenith angles
+	SinAas = DSP1_Sin(Aas);
+	CosAas = DSP1_Cos(Aas);
+	SinAzs = DSP1_Sin(Azs);
+	CosAzs = DSP1_Cos(Azs);
+
+	// Center of Projection
+	CentreX = Fx + (Lfe * (SinAzs * -SinAas >> 15) >> 15);
+	CentreY = Fy + (Lfe * (SinAzs * CosAas >> 15) >> 15);
+
+	E = 0;
+	DSP1_Normalize(Fz + (Lfe * (CosAzs * 0x7fff >> 15) >> 15), &C, &E);
+
+	VPlane_C = C;
+	VPlane_E = E;
+
+	// Determine clip boundary and clip Zenith angle if necessary
+	short MaxAZS = MaxAZS_Exp[-E];
+
+	if (AZS < 0) {
+		MaxAZS = -MaxAZS;
+		if (AZS < MaxAZS + 1) AZS = MaxAZS + 1;
+	} else {
+		if (AZS > MaxAZS) AZS = MaxAZS;
+	}
+
+	// Store Sin and Cos of clipped Zenith angle
+	SinAZS = DSP1_Sin(AZS);
+	CosAZS = DSP1_Cos(AZS);
+
+	DSP1_Inverse(CosAZS, 0, &SecAZS_C1, &SecAZS_E1);
+	DSP1_Normalize(C * SecAZS_C1 >> 15, &C, &E);
+	E += SecAZS_E1;
+
+	C = DSP1_Truncate(C, E) * SinAZS >> 15;
+
+	CentreX += C * SinAas >> 15;
+	CentreY -= C * CosAas >> 15;
+
+	*Cx = CentreX;
+	*Cy = CentreY;
+
+	// Raster number of imaginary center and horizontal line
+	*Vof = 0;
+
+	if ((Azs != AZS) || (Azs == MaxAZS))
+	{
+		if (Azs == -32768) Azs = -32767;
+
+		C = Azs - MaxAZS;
+		if (C >= 0) C--;
+		short Aux = ~(C << 2);
+
+		C = Aux * DSP1ROM[0x0328] >> 15;
+		C = (C * Aux >> 15) + DSP1ROM[0x0327];
+		*Vof -= (C * Aux >> 15) * Les >> 15;
+
+		C = Aux * Aux >> 15;
+		Aux = (C * DSP1ROM[0x0324] >> 15) + DSP1ROM[0x0325];
+		CosAZS += (C * Aux >> 15) * CosAZS >> 15;
+	}
+
+	VOffset = Les * CosAZS >> 15;
+
+	DSP1_Inverse(SinAZS, 0, &CSec, &E);
+	DSP1_Normalize(VOffset, &C, &E);
+	DSP1_Normalize(C * CSec >> 15, &C, &E);
+
+	if (C == -32768) { C >>= 1; E++; }
+
+	*Vva = DSP1_Truncate(-C, E);
+
+	// Store Sec of clipped Zenith angle
+	DSP1_Inverse(CosAZS, 0, &SecAZS_C2, &SecAZS_E2);
+}
+
+void DSP1_Raster(short Vs, short *An, short *Bn, short *Cn, short *Dn)
+{
+	short C, E, C1, E1;
+
+	DSP1_Inverse((Vs * SinAzs >> 15) + VOffset, 7, &C, &E);
+	E += VPlane_E;
+
+	C1 = C * VPlane_C >> 15;
+	E1 = E + SecAZS_E2;
+
+	DSP1_Normalize(C1, &C, &E);
+
+	C = DSP1_Truncate(C, E);
+
+	*An = C * CosAas >> 15;
+	*Cn = C * SinAas >> 15;
+
+	DSP1_Normalize(C1 * SecAZS_C2 >> 15, &C, &E1);
+
+	C = DSP1_Truncate(C, E1);
+
+	*Bn = C * -SinAas >> 15;
+	*Dn = C * CosAas >> 15;
+}
 
 short Op02FX;
 short Op02FY;
 short Op02FZ;
 short Op02LFE;
 short Op02LES;
-unsigned short Op02AAS;
-unsigned short Op02AZS;
-unsigned short Op02VOF;
-unsigned short Op02VVA;
-
+short Op02AAS;
+short Op02AZS;
+short Op02VOF;
+short Op02VVA;
 short Op02CX;
 short Op02CY;
-double Op02CXF;
-double Op02CYF;
-double ViewerX0;
-double ViewerY0;
-double ViewerZ0;
-double ViewerX1;
-double ViewerY1;
-double ViewerZ1;
-double ViewerX;
-double ViewerY;
-double ViewerZ;
-int ViewerAX;
-int ViewerAY;
-int ViewerAZ;
-double NumberOfSlope;
-double ScreenX;
-double ScreenY;
-double ScreenZ;
-double TopLeftScreenX;
-double TopLeftScreenY;
-double TopLeftScreenZ;
-double BottomRightScreenX;
-double BottomRightScreenY;
-double BottomRightScreenZ;
-double Ready;
-double RasterLX;
-double RasterLY;
-double RasterLZ;
-double ScreenLX1;
-double ScreenLY1;
-double ScreenLZ1;
-int    ReversedLES;
-short Op02LESb;
-double NAzsB,NAasB;
-double ViewerXc;
-double ViewerYc;
-double ViewerZc;
-double CenterX,CenterY;
-short Op02CYSup,Op02CXSup;
-double CXdistance;
-
-#define VofAngle 0x3880
-
-short TValDebug,TValDebug2;
-short ScrDispl;
-
-
-#ifdef __OPT02__
-void DSPOp02()
-{
-	ViewerZ1=-Cos(Angle(Op02AZS));
-	ViewerX1=Sin(Angle(Op02AZS))*Sin(Angle(Op02AAS));
-	ViewerY1=Sin(Angle(Op02AZS))*Cos(Angle(Op02AAS));
-
-
-   #ifdef debug02
-   printf("\nViewerX1 : %f ViewerY1 : %f ViewerZ1 : %f\n",ViewerX1,ViewerY1,
-                                                                   ViewerZ1);
-   getch();
-   #endif
-   ViewerX=Op02FX-ViewerX1*Op02LFE;
-   ViewerY=Op02FY-ViewerY1*Op02LFE;
-   ViewerZ=Op02FZ-ViewerZ1*Op02LFE;
-
-   ScreenX=Op02FX+ViewerX1*(Op02LES-Op02LFE);
-   ScreenY=Op02FY+ViewerY1*(Op02LES-Op02LFE);
-   ScreenZ=Op02FZ+ViewerZ1*(Op02LES-Op02LFE);
-
-   #ifdef debug02
-   printf("ViewerX : %f ViewerY : %f ViewerZ : %f\n",ViewerX,ViewerY,ViewerZ);
-   printf("Op02FX : %d Op02FY : %d Op02FZ : %d\n",Op02FX,Op02FY,Op02FZ);
-   printf("ScreenX : %f ScreenY : %f ScreenZ : %f\n",ScreenX,ScreenY,ScreenZ);
-   getch();
-   #endif
-   if (ViewerZ1==0)ViewerZ1++;
-   NumberOfSlope=ViewerZ/-ViewerZ1;
-
-   Op02CX=(short)(Op02CXF=ViewerX+ViewerX1*NumberOfSlope);
-   Op02CY=(short)(Op02CYF=ViewerY+ViewerY1*NumberOfSlope);
-
-   Op02VOF=0x0000;
-   ReversedLES=0;
-   Op02LESb=Op02LES;
-   if ((Op02LES>=VofAngle+16384.0) && (Op02LES<VofAngle+32768.0)) {
-     ReversedLES=1;
-     Op02LESb=VofAngle+0x4000-(Op02LES-(VofAngle+0x4000));
-   }
-   Op02VVA = (short)(Op02LESb * tan((Op02AZS-0x4000)*6.2832/65536.0));
-   if ((Op02LESb>=VofAngle) && (Op02LESb<=VofAngle+0x4000)) {
-      Op02VOF= (short)(Op02LESb * tan((Op02AZS-0x4000-VofAngle)*6.2832/65536.0));
-      Op02VVA-=Op02VOF;
-   }
-   if (ReversedLES){
-     Op02VOF=-Op02VOF;
-   }
-
-   NAzsB = (Op02AZS-0x4000)*6.2832/65536.0;
-   NAasB = Op02AAS*6.2832/65536.0;
-
-   if (tan(NAzsB)==0) NAzsB=0.1;
-
-   ScrDispl=0;
-   if (NAzsB>-0.15) {NAzsB=-0.15;ScrDispl=Op02VVA-0xFFDA;}
-
-   CXdistance=1/tan(NAzsB);
-
-   ViewerXc=Op02FX;
-   ViewerYc=Op02FY;
-   ViewerZc=Op02FZ;
-
-   CenterX = (-sin(NAasB)*ViewerZc*CXdistance)+ViewerXc;
-   CenterY = (cos(NAasB)*ViewerZc*CXdistance)+ViewerYc;
-   Op02CX = (short)CenterX;
-   Op02CY = (short)CenterY;
-
-   ViewerXc=ViewerX;//-Op02FX);
-   ViewerYc=ViewerY;//-Op02FY);
-   ViewerZc=ViewerZ;//-Op02FZ);
-
-   CenterX = (-sin(NAasB)*ViewerZc*CXdistance)+ViewerXc;
-   if (CenterX<-32768) CenterX = -32768; if (CenterX>32767) CenterX=32767;
-   CenterY = (cos(NAasB)*ViewerZc*CXdistance)+ViewerYc;
-   if (CenterY<-32768) CenterY = -32768; if (CenterY>32767) CenterY=32767;
-
-   TValDebug = (short)((NAzsB*65536/6.28));
-   TValDebug2 = ScrDispl;
-
-//   if (Op02CY < 0) {Op02CYSup = Op02CY/256; Op02CY = 0;}
-//   if (Op02CX < 0) {Op02CXSup = Op02CX/256; Op02CX = 0;}
-
-//  [4/15/2001]   (ViewerX+ViewerX1*NumberOfSlope);
-//  [4/15/2001]   (ViewerY+ViewerY1*NumberOfSlope);
-
-//   if(Op02LFE==0x2200)Op02VVA=0xFECD;
-//   else Op02VVA=0xFFB2;
-
-
-   #ifdef DebugDSP1
-      Log_Message("OP02 FX:%d FY:%d FZ:%d LFE:%d LES:%d",Op02FX,Op02FY,Op02FZ,Op02LFE,Op02LES);
-      Log_Message("     AAS:%d AZS:%d VOF:%d VVA:%d",Op02AAS,Op02AZS,Op02VOF,Op02VVA);
-      Log_Message("     VX:%d VY:%d VZ:%d",(short)ViewerX,(short)ViewerY,(short)ViewerZ);
-   #endif
-
-}
-#else
 
 void DSPOp02()
 {
-   ViewerZ1=-cos(Op02AZS*6.2832/65536.0);
-   ViewerX1=sin(Op02AZS*6.2832/65536.0)*sin(Op02AAS*6.2832/65536.0);
-   ViewerY1=sin(Op02AZS*6.2832/65536.0)*cos(-Op02AAS*6.2832/65536.0);
-
-   #ifdef debug02
-   printf("\nViewerX1 : %f ViewerY1 : %f ViewerZ1 : %f\n",ViewerX1,ViewerY1,
-                                                                   ViewerZ1);
-   getch();
-   #endif
-   ViewerX=Op02FX-ViewerX1*Op02LFE;
-   ViewerY=Op02FY-ViewerY1*Op02LFE;
-   ViewerZ=Op02FZ-ViewerZ1*Op02LFE;
-
-   ScreenX=Op02FX+ViewerX1*(Op02LES-Op02LFE);
-   ScreenY=Op02FY+ViewerY1*(Op02LES-Op02LFE);
-   ScreenZ=Op02FZ+ViewerZ1*(Op02LES-Op02LFE);
-
-   #ifdef debug02
-   printf("ViewerX : %f ViewerY : %f ViewerZ : %f\n",ViewerX,ViewerY,ViewerZ);
-   printf("Op02FX : %d Op02FY : %d Op02FZ : %d\n",Op02FX,Op02FY,Op02FZ);
-   printf("ScreenX : %f ScreenY : %f ScreenZ : %f\n",ScreenX,ScreenY,ScreenZ);
-   getch();
-   #endif
-   if (ViewerZ1==0)ViewerZ1++;
-   NumberOfSlope=ViewerZ/-ViewerZ1;
-
-   Op02CX=(short)(Op02CXF=ViewerX+ViewerX1*NumberOfSlope);
-   Op02CY=(short)(Op02CYF=ViewerY+ViewerY1*NumberOfSlope);
-
-   ViewerXc=ViewerX;//-Op02FX);
-   ViewerYc=ViewerY;//-Op02FY);
-   ViewerZc=ViewerZ;//-Op02FZ);
-
-   Op02VOF=0x0000;
-   ReversedLES=0;
-   Op02LESb=Op02LES;
-   if ((Op02LES>=VofAngle+16384.0) && (Op02LES<VofAngle+32768.0)) {
-     ReversedLES=1;
-     Op02LESb=VofAngle+0x4000-(Op02LES-(VofAngle+0x4000));
-   }
-   Op02VVA = (short)(Op02LESb * tan((Op02AZS-0x4000)*6.2832/65536.0));
-   if ((Op02LESb>=VofAngle) && (Op02LESb<=VofAngle+0x4000)) {
-      Op02VOF= (short)(Op02LESb * tan((Op02AZS-0x4000-VofAngle)*6.2832/65536.0));
-      Op02VVA-=Op02VOF;
-   }
-   if (ReversedLES){
-     Op02VOF=-Op02VOF;
-   }
-
-   NAzsB = (Op02AZS-0x4000)*6.2832/65536.0;
-   NAasB = Op02AAS*6.2832/65536.0;
-
-   if (tan(NAzsB)==0) NAzsB=0.1;
-
-   ScrDispl=0;
-   if (NAzsB>-0.15) {NAzsB=-0.15;ScrDispl=Op02VVA-0xFFDA;}
-
-   CXdistance=1/tan(NAzsB);
-
-   CenterX = (-sin(NAasB)*ViewerZc*CXdistance)+ViewerXc;
-   if (CenterX<-32768) CenterX = -32768; if (CenterX>32767) CenterX=32767;
-   Op02CX = (short)CenterX;
-   CenterY = (cos(NAasB)*ViewerZc*CXdistance)+ViewerYc;
-   if (CenterY<-32768) CenterY = -32768; if (CenterY>32767) CenterY=32767;
-   Op02CY = (short)CenterY;
-
-   TValDebug = (NAzsB*65536/6.28);
-   TValDebug2 = ScrDispl;
-
-//   if (Op02CY < 0) {Op02CYSup = Op02CY/256; Op02CY = 0;}
-//   if (Op02CX < 0) {Op02CXSup = Op02CX/256; Op02CX = 0;}
-
-//  [4/15/2001]   (ViewerX+ViewerX1*NumberOfSlope);
-//  [4/15/2001]   (ViewerY+ViewerY1*NumberOfSlope);
-
-//   if(Op02LFE==0x2200)Op02VVA=0xFECD;
-//   else Op02VVA=0xFFB2;
-
-
-   #ifdef DebugDSP1
-      Log_Message("OP02 FX:%d FY:%d FZ:%d LFE:%d LES:%d",Op02FX,Op02FY,Op02FZ,Op02LFE,Op02LES);
-      Log_Message("     AAS:%d AZS:%d VOF:%d VVA:%d",Op02AAS,Op02AZS,Op02VOF,Op02VVA);
-      Log_Message("     VX:%d VY:%d VZ:%d",(short)ViewerX,(short)ViewerY,(short)ViewerZ);
-   #endif
-
+	DSP1_Parameter(Op02FX, Op02FY, Op02FZ, Op02LFE, Op02LES, Op02AAS, Op02AZS, &Op02VOF, &Op02VVA, &Op02CX, &Op02CY);
 }
-#endif
 
 short Op0AVS;
 short Op0AA;
@@ -789,82 +695,10 @@ short Op0AB;
 short Op0AC;
 short Op0AD;
 
-double RasterRX;
-double RasterRY;
-double RasterRZ;
-double RasterLSlopeX;
-double RasterLSlopeY;
-double RasterLSlopeZ;
-double RasterRSlopeX;
-double RasterRSlopeY;
-double RasterRSlopeZ;
-double GroundLX;
-double GroundLY;
-double GroundRX;
-double GroundRY;
-double Distance;
-
-double NAzs,NAas;
-double RVPos,RHPos,RXRes,RYRes;
-
-
-void GetRXYPos(){
-   double scalar;
-
-   if (Op02LES==0) return;
-
-
-   NAzs = NAzsB - Atan((RVPos) / (double)Op02LES);
-   NAas = NAasB;// + Atan(RHPos) / (double)Op02LES);
-
-   if (cos(NAzs)==0) NAzs+=0.001;
-   if (tan(NAzs)==0) NAzs+=0.001;
-
-   RXRes = (-sin(NAas)*ViewerZc/(tan(NAzs))+ViewerXc);
-   RYRes = (cos(NAas)*ViewerZc/(tan(NAzs))+ViewerYc);
-   scalar = ((ViewerZc/sin(NAzs))/(double)Op02LES);
-   RXRes += scalar*-sin(NAas+PI/2)*RHPos;
-   RYRes += scalar*cos(NAas+PI/2)*RHPos;
-}
-
 void DSPOp0A()
 {
-  double x2,y2,x3,y3,x4,y4,m,ypos;
-
-
-   if(Op0AVS==0) {Op0AVS++; return;}
-   ypos=Op0AVS-ScrDispl;
-   // CenterX,CenterX = Center (x1,y1)
-   // Get (0,Vs) coords (x2,y2)
-   RVPos = ypos; RHPos = 0;
-   GetRXYPos(); x2 = RXRes; y2 = RYRes;
-   // Get (-128,Vs) coords (x3,y3)
-   RVPos = ypos; RHPos = -128;
-   GetRXYPos(); x3 = RXRes; y3 = RYRes;
-   // Get (127,Vs) coords (x4,y4)
-   RVPos = ypos; RHPos = 127;
-   GetRXYPos(); x4 = RXRes; y4 = RYRes;
-
-   // A = (x4-x3)/256
-   m = (x4-x3)/256*256; if (m>32767) m=32767; if (m<-32768) m=-32768;
-   Op0AA = (short)(m);
-   // C = (y4-y3)/256
-   m = (y4-y3)/256*256; if (m>32767) m=32767; if (m<-32768) m=-32768;
-   Op0AC = (short)(m);
-   if (ypos==0){
-     Op0AB = 0;
-     Op0AD = 0;
-   }
-   else {
-     // B = (x2-x1)/Vs
-     m = (x2-CenterX)/ypos*256; if (m>32767) m=32767; if (m<-32768) m=-32768;
-     Op0AB = (short)(m);
-     // D = (y2-y1)/Vs
-     m = (y2-CenterY)/ypos*256; if (m>32767) m=32767; if (m<-32768) m=-32768;
-     Op0AD = (short)(m);
-   }
-
-   Op0AVS+=1;
+	DSP1_Raster(Op0AVS, &Op0AA, &Op0AB, &Op0AC, &Op0AD);
+	Op0AVS++;
 }
 
 short Op06X;
@@ -890,7 +724,6 @@ int tanval2;
 #ifdef __OPT06__
 void DSPOp06()
 {
-
    ObjPX=Op06X-Op02FX;
    ObjPY=Op06Y-Op02FY;
    ObjPZ=Op06Z-Op02FZ;
@@ -1222,13 +1055,7 @@ void DSPOp14()
 
 	DSP1_Normalize(C * CSec >> 15, &C, &E);
 
-	if (E > 0)	{
-		if (C > 0) C = 32767; else if (C < 0) C = -32767;
-	} else {
-		if (E < 0) C = C * DSP1ROM[0x31 + E] >> 15;
-	}
-
-	Op14Zrr = Op14Zr + C;
+	Op14Zrr = Op14Zr + DSP1_Truncate(C, E);
 
 	// Rotation Around X
 	Op14Xrr = Op14Xr + (Op14U * DSP1_Sin(Op14Yr) >> 15) + (Op14F * DSP1_Cos(Op14Yr) >> 15);
@@ -1244,13 +1071,36 @@ void DSPOp14()
 
 	DSP1_Normalize(-(C * CTan >> 15), &C, &E);
 
-	if (E > 0)	{
-		if (C > 0) C = 32767; else if (C < 0) C = -32767;
-	} else {
-		if (E < 0) C = C * DSP1ROM[0x31 + E] >> 15;
-	}
+	Op14Yrr = Op14Yr + DSP1_Truncate(C, E) + Op14L;
+}
 
-	Op14Yrr = Op14Yr + C + Op14L;
+void DSP1_Target(short H, short V, short *X, short *Y)
+{
+	short C, E, C1, E1;
+
+	DSP1_Inverse((V * SinAzs >> 15) + VOffset, 8, &C, &E);
+	E += VPlane_E;
+
+	C1 = C * VPlane_C >> 15;
+	E1 = E + SecAZS_E1;
+
+	H <<= 8;
+
+	DSP1_Normalize(C1, &C, &E);
+
+	C = DSP1_Truncate(C, E) * H >> 15;
+
+	*X = CentreX + (C * CosAas >> 15);
+	*Y = CentreY - (C * SinAas >> 15);
+
+	V <<= 8;
+
+	DSP1_Normalize(C1 * SecAZS_C1 >> 15, &C, &E1);
+
+	C = DSP1_Truncate(C, E1) * V >> 15;
+
+	*X += C * -SinAas >> 15;
+	*Y += C * CosAas >> 15;
 }
 
 short Op0EH;
@@ -1260,16 +1110,7 @@ short Op0EY;
 
 void DSPOp0E()
 {
-   // screen Directions UP
-   RVPos = Op0EV;
-   RHPos = Op0EH;
-   GetRXYPos();
-   Op0EX = (short)(RXRes);
-   Op0EY = (short)(RYRes);
-
-   #ifdef DebugDSP1
-      Log_Message("OP0E COORDINATE H:%d V:%d   X:%d Y:%d",Op0EH,Op0EV,Op0EX,Op0EY);
-   #endif
+	DSP1_Target(Op0EH, Op0EV, &Op0EX, &Op0EY);
 }
 
 short Op0BX;
@@ -1362,14 +1203,14 @@ void DSPOp28()
 	if (Radius == 0) Op28R = 0;
 	else
 	{
-		short C, E, Pos, Node1, Node2;
+		short C, E;
 		DSP1_NormalizeDouble(Radius, &C, &E);
 		if (E & 1) C = C * 0x4000 >> 15;
 
-		Pos = C * 0x0040 >> 15;
+		short Pos = C * 0x0040 >> 15;
 
-		Node1 = DSP1ROM[0x00d5 + Pos];
-		Node2 = DSP1ROM[0x00d6 + Pos];
+		short Node1 = DSP1ROM[0x00d5 + Pos];
+		short Node2 = DSP1ROM[0x00d6 + Pos];
 
 		Op28R = ((Node2 - Node1) * (C & 0x1ff) >> 9) + Node1;
 		Op28R >>= (E >> 1);
@@ -1392,7 +1233,6 @@ short Op1CZ2;
 
 void DSPOp1C()
 {
-
 	// Rotate Around Op1CZ1
 	Op1CX1 = (Op1CYBR * DSP1_Sin(Op1CZ) >> 15) + (Op1CXBR * DSP1_Cos(Op1CZ) >> 15);
 	Op1CY1 = (Op1CYBR * DSP1_Cos(Op1CZ) >> 15) - (Op1CXBR * DSP1_Sin(Op1CZ) >> 15);
@@ -1432,5 +1272,3 @@ void DSPOp2F()
 {
 	Op2FSize=0x100;
 }
-
-

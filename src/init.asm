@@ -53,7 +53,7 @@ EXTSYM memaccessspc7110w16,ram7f,snesmap2,snesmmap,MultiTap,memaccessbankr848mb
 EXTSYM memaccessbankr1648mb,procexecloop,ram7fa,wramdata,wramdataa,fname,fnames
 EXTSYM GetCurDir,SRAMChdir,cfgloadsdir,fnamest,statefileloc,InitDir,InitDrive
 EXTSYM curromspace,infoloc,patchfile,romispal,initregr,initregw,memtabler16
-EXTSYM memtabler8,memtablew16,memtablew8,sfxramdata,ScrDispl,wramreadptr
+EXTSYM memtabler8,memtablew16,memtablew8,sfxramdata,wramreadptr
 EXTSYM wramwriteptr,loadstate2,CMovieExt,MoviePlay,MovieDumpRaw,AllowUDLR
 
 ;initc.c
@@ -1039,7 +1039,6 @@ SECTION .text
 NEWSYM init65816
     mov byte[osm2dis],0
     mov byte[bgfixer2],0
-    mov word[ScrDispl],0
     cmp byte[SA1Enable],0
     je .nosa1init
     call SA1Reset

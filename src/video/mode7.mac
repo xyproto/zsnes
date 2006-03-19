@@ -17,11 +17,6 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-
-EXTSYM ScrDispl
-
-
-
 %macro Mode7Calculate 0
     ; mode 7, ax = curyposition, dx = curxposition (left side)
     ; draw center map coordinates at (X0-bg1scrolx,Y0-bg1scroly) on screen
@@ -49,7 +44,6 @@ EXTSYM ScrDispl
     jz .nonegc
     or bx,1110000000000000b
 .nonegc
-    sub bx,[ScrDispl]
     mov [.cyloc],bx
     mov bx,[mode7Y0]
     and bx,0001111111111111b    ; 13 -> 16 bit signed value
@@ -132,7 +126,6 @@ EXTSYM ScrDispl
     jz .nonegc
     or bx,1100000000000000b
 .nonegc
-    sub bx,[ScrDispl]
     mov [.cyloc],bx
     mov bx,[mode7Y0]
     and bx,0001111111111111b    ; 13 -> 16 bit signed value
