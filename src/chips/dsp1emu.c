@@ -415,22 +415,24 @@ const short DSP1_SinTable[256] = {
 
 short DSP1_Sin(short Angle)
 {
+  int S;
 	if (Angle < 0) {
 		if (Angle == -32768) return 0;
 		return -DSP1_Sin(-Angle);
 	}
-	int S = DSP1_SinTable[Angle >> 8] + (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[0x40 + (Angle >> 8)] >> 15);
+  S = DSP1_SinTable[Angle >> 8] + (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[0x40 + (Angle >> 8)] >> 15);
 	if (S > 32767) S = 32767;
 	return (short) S;
 }
 
 short DSP1_Cos(short Angle)
 {
+  int S;
 	if (Angle < 0) {
 		if (Angle == -32768) return -32768;
 		Angle = -Angle;
 	}
-	int S = DSP1_SinTable[0x40 + (Angle >> 8)] - (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[Angle >> 8] >> 15);
+	S = DSP1_SinTable[0x40 + (Angle >> 8)] - (DSP1_MulTable[Angle & 0xff] * DSP1_SinTable[Angle >> 8] >> 15);
 	if (S < -32768) S = -32767;
 	return (short) S;
 }
@@ -566,7 +568,7 @@ const short MaxAZS_Exp[16] = {
 
 void DSP1_Parameter(short Fx, short Fy, short Fz, short Lfe, short Les, short Aas, short Azs, short *Vof, short *Vva, short *Cx, short *Cy)
 {
-	short CSec, C, E;
+	short CSec, C, E, MaxAZS, Aux;
 
 	// Copy Zenith angle for clipping
 	short AZS = Azs;
@@ -588,7 +590,7 @@ void DSP1_Parameter(short Fx, short Fy, short Fz, short Lfe, short Les, short Aa
 	VPlane_E = E;
 
 	// Determine clip boundary and clip Zenith angle if necessary
-	short MaxAZS = MaxAZS_Exp[-E];
+	MaxAZS = MaxAZS_Exp[-E];
 
 	if (AZS < 0) {
 		MaxAZS = -MaxAZS;
@@ -622,7 +624,7 @@ void DSP1_Parameter(short Fx, short Fy, short Fz, short Lfe, short Les, short Aa
 
 		C = Azs - MaxAZS;
 		if (C >= 0) C--;
-		short Aux = ~(C << 2);
+		Aux = ~(C << 2);
 
 		C = Aux * DSP1ROM[0x0328] >> 15;
 		C = (C * Aux >> 15) + DSP1ROM[0x0327];
@@ -1203,14 +1205,14 @@ void DSPOp28()
 	if (Radius == 0) Op28R = 0;
 	else
 	{
-		short C, E;
+		short C, E, Pos, Node1, Node2;
 		DSP1_NormalizeDouble(Radius, &C, &E);
 		if (E & 1) C = C * 0x4000 >> 15;
 
-		short Pos = C * 0x0040 >> 15;
+		Pos = C * 0x0040 >> 15;
 
-		short Node1 = DSP1ROM[0x00d5 + Pos];
-		short Node2 = DSP1ROM[0x00d6 + Pos];
+		Node1 = DSP1ROM[0x00d5 + Pos];
+		Node2 = DSP1ROM[0x00d6 + Pos];
 
 		Op28R = ((Node2 - Node1) * (C & 0x1ff) >> 9) + Node1;
 		Op28R >>= (E >> 1);
