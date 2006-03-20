@@ -2162,9 +2162,9 @@ static void raw_video_write_frame()
         samples = RATE/50;
         if (freqtab[SoundQuality] & 1)
         {
-          static signed char odd_carry = 0;
-          samples += odd_carry-1;
-          odd_carry ^= 2;
+          static signed char half_carry = 0;
+          samples += half_carry;
+          half_carry ^= 1;
         }
       }
     }
