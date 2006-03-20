@@ -1872,6 +1872,7 @@ Code for dumping raw video
 
 static const unsigned int freqtab[] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
 extern unsigned int SoundQuality;
+extern unsigned char StereoSound;
 #define RATE freqtab[SoundQuality]
 
 
@@ -2071,10 +2072,10 @@ static bool raw_video_open()
       fputs("WAVEfmt ", raw_vid.ap);             //format
       fwrite4(0x12, raw_vid.ap);                 //fmt size
       fwrite2(1, raw_vid.ap);                    //fmt type (PCM)
-      fwrite2(2, raw_vid.ap);                    //channels
+      fwrite2(StereoSound+1, raw_vid.ap);        //channels
       fwrite4(RATE, raw_vid.ap);                 //sample rate
       fwrite4(RATE*4, raw_vid.ap);               //byte rate (sample rate*block align)
-      fwrite2(16/8*2, raw_vid.ap);               //block align (SignificantBitsPerSample / 8 * NumChannels)
+      fwrite2(16/8*StereoSound, raw_vid.ap);     //block align (SignificantBitsPerSample / 8 * NumChannels)
       fwrite2(16, raw_vid.ap);                   //Significant bits per sample
       fwrite2(0, raw_vid.ap);                    //Extra format bytes
       fputs("data", raw_vid.ap);                 //data header
@@ -2146,18 +2147,31 @@ static void raw_video_write_frame()
     unsigned int samples;
     if (romispal)
     {
-      samples = RATE*2/50;
-      if (samples & 1)
+      if (StereoSound)
       {
-        static signed char odd_carry = 0;
-        samples += odd_carry-1;
-        odd_carry ^= 2;
+        samples = RATE*2/50;
+        if (samples & 1)
+        {
+          static signed char odd_carry = 0;
+          samples += odd_carry-1;
+          odd_carry ^= 2;
+        }
+      }
+      else
+      {
+        samples = RATE/50;
+        if (freqtab[SoundQuality] & 1)
+        {
+          static signed char odd_carry = 0;
+          samples += odd_carry-1;
+          odd_carry ^= 2;
+        }
       }
     }
     else
     {
       //Thanks Bisqwit for this algorithm
-      samples = (unsigned int)((raw_vid.sample_ntsc_balance/raw_vid.sample_ntsc_lo) << 1);
+      samples = (unsigned int)((raw_vid.sample_ntsc_balance/raw_vid.sample_ntsc_lo) << StereoSound);
       raw_vid.sample_ntsc_balance %= raw_vid.sample_ntsc_lo;
       raw_vid.sample_ntsc_balance += raw_vid.sample_ntsc_hi;
       //printf("Frame %u: %u samples\n", raw_vid.sample_index, BufferSizeB);
