@@ -1529,8 +1529,8 @@ guimencodermsg:
   ret
 
 SECTION .data
-guimencodert1 db ' MENCODER IS MISSING : ',0
-guimencodert2 db ' PRESS SPACE TO CONTINUE',0
+guimencodert1 db ' MENCODER IS MISSING: ',0
+guimencodert2 db 'PRESS SPACE TO PROCEED',0
 
 SECTION .text
 
@@ -1730,17 +1730,18 @@ guiprevideo:
   mov ecx,256+128+64
 .b
   cmp byte[pressed+ebx],0
-  jne .pressedokay
+  jne .pressedkey
   inc ebx
   dec ecx
   jnz .b
   cmp byte[MouseDis],1
-  je .mousedis
+  je .again
   call Get_MouseData
   test bx,01h
   jnz .pressedokay
-.mousedis
   jmp .again
+.pressedkey
+  mov byte[pressed+ebx],0
 .pressedokay
   ret
 
@@ -2251,16 +2252,16 @@ SECTION .text
 
 DisplayBoxes:                        ; Displays window when item is clicked
   xor esi,esi
-  mov byte[cwindrawn],0
 .next2
   mov al,[GUIwinorder+esi]
   cmp al,0
   je .done
-  inc byte[cwindrawn]
   inc esi
   jmp .next2
 .done
-  dec byte[cwindrawn]
+  mov eax,esi
+  dec eax
+  mov [cwindrawn],al
   xor eax,eax
   xor esi,esi
 .next

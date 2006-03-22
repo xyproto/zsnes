@@ -150,8 +150,7 @@ SECTION .text
 
 GUIgetcurrentinput:
   mov byte[UseExtKey],0
-  xor ch,ch
-  xor cl,cl
+  xor cx,cx
 .getnextkey
   call Check_Key
   or al,al
@@ -1103,6 +1102,11 @@ GUIVideoKeys:
   mov [GUIcurrentvideoviewloc],ebx
 .posvd
 .nopagedown
+; "Return"
+  cmp dl,13
+  jne .noreturn
+  mov byte[GUICBHold],4
+.noreturn
 .notmodestab
 
   cmp dword[GUIVideoTabs],2

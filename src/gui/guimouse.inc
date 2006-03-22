@@ -654,9 +654,9 @@ ProcessMouseButtons:
   jne .noAppend
   mov byte[GUICBHold],0
   mov byte[GUIQuit],2
-  pushad
+  ;pushad
   ;call MovieAppend
-  popad
+  ;popad
   ret
 .noAppend
   cmp byte[GUICBHold],34  ; dump raw
@@ -1025,6 +1025,7 @@ GUIWinClicked:
   cmp ebx,21
   je near DisplayGUISpeedClick
   ret
+
 %macro GUIClickCButton 3
   cmp eax,%1+1
   jl %%noclick
@@ -2488,6 +2489,9 @@ DisplayGUIVideoClick:
   jmp .nocheckboxhq
 .checkboxhq
   GUIClickCButtonHQ 115,163,byte[hqFilter]
+  pushad
+  call Clear2xSaIBuffer
+  popad
 .nocheckboxhq
   xor ebx,ebx
   mov bl,[cvidmode]
@@ -2812,17 +2816,17 @@ guipresstestb:
 SECTION .data
 guipresstext3b db '(ESC TO SKIP)',0
 guipresstext4b db 'FOR UP              ',0
-db 'FOR DOWN            ',0
-db 'FOR LEFT            ',0
-db 'FOR RIGHT           ',0
-db 'FOR START           ',0
-db 'FOR SELECT          ',0
-db 'FOR A (RIGHT BUTTON)',0
-db 'FOR B (DOWN BUTTON) ',0
-db 'FOR X (TOP BUTTON)  ',0
-db 'FOR Y (LEFT BUTTON) ',0
-db 'FOR THE L BUTTON    ',0
-db 'FOR THE R BUTTON    ',0
+  db 'FOR DOWN            ',0
+  db 'FOR LEFT            ',0
+  db 'FOR RIGHT           ',0
+  db 'FOR START           ',0
+  db 'FOR SELECT          ',0
+  db 'FOR A (RIGHT BUTTON)',0
+  db 'FOR B (DOWN BUTTON) ',0
+  db 'FOR X (TOP BUTTON)  ',0
+  db 'FOR Y (LEFT BUTTON) ',0
+  db 'FOR THE L BUTTON    ',0
+  db 'FOR THE R BUTTON    ',0
 SECTION .bss
 guipressptr resd 1
 guicpressptr resd 1
