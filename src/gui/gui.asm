@@ -47,7 +47,6 @@
 ;   GUIWinDp.inc - Window Display Routines
 ;   GUITools.inc - Misc routines for the GUI
 
-
 ; Quick Searches :
 ;   DisplayMenu           - routines to display top menu bar
 ;   Incomp                - Search for start of modem processing
@@ -61,7 +60,6 @@
 ;   ButtonProcess         - routines that processes boxed buttons
 ;   CheatCodeSearchInit
 ;   guiwincontrol
-
 
 %include "macros.mac"
 
@@ -142,8 +140,7 @@ EXTSYM GUIEnableTransp,FilteredGUI,MouseWheel,TrapMouseCursor,AlwaysOnTop
 EXTSYM pl1p209,pl1p209b,SaveMainWindowPos,FastFwdToggle,SidewinderFix,RaisePitch
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM MovieVideoMode, MovieAudio, MovieVideoAudio, MovieAudioCompress
-EXTSYM NTSCFilter, GUINTSC
-EXTSYM GetDate, horizon_get
+EXTSYM NTSCFilter,GUINTSC,GetDate, horizon_get
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
@@ -178,26 +175,21 @@ NEWSYM WaterOn,  db 1
 ; blue scale = 148 .. 167, 168 .. 187
 ; gray scale = 189 .. 220 (32+137)
 
-
 ; |  Game        Config     Cheat     MultiPlay    Misc
 ;-------------------------------------------------------
-;    Load        Input#1    Add Code  Modem        Misc Keys
-;    Run         Input#2    Browse    IPX          GUI Opns
-;    Reset       Input#3    Search                 Movie Opn
-;    -----       Input#4                           Key Comb.
-;    Save State  Input#5                           Save Cfg
-;    Load State  -----                             ----
-;    Pick State  Add-Ons                           About
-;    -----       Chip Cfg
-;    Quit        ----
-;                Options
-;                Video
-;                Sound
-;                Paths
+;    Load        Input      Add Code  Modem        Misc Keys
+;    Run         -----      Browse    IPX          GUI Opns
+;    Reset       Add-Ons    Search                 Movie Opn
+;    -----       Chip Cfg                          Key Comb.
+;    Save State  -----                             Save Cfg
+;    Load State  Options                           -----
+;    Pick State  Video                             About
+;    -----       Sound
+;    Quit        Paths
 ;                Saves
 ;                Speed
 
-; MultiPlay only has "Internet" for Windows/Linux
+; NetPlay only has "Internet" for Windows/Linux
 
 ; Windows : 1 = Load
 ;           2 = Chose State
@@ -223,67 +215,72 @@ NEWSYM WaterOn,  db 1
 
 ;The first byte is the number of fields on the right not including the seperators
 MenuDat1 db 12, 3,1,1,1,1,1,1,1,1,1,0,1,2,0
-MenuDat2 db 8,  3,1,1,0,1,1,1,0,2,0,0
-MenuDat3 db 14, 3,1,1,1,1,0,1,1,0,1,1,1,1,1,2,0
+MenuDat2 db 8,  3,1,1,0,1,1,1,0,2,0
+MenuDat3 db 10, 3,0,1,1,0,1,1,1,1,1,2,0
 MenuDat4 db 2,  3,1,2,0
+%ifndef __MSDOS__
+MenuDat5 db 0,  2,0,0
+%else
 MenuDat5 db 1,  3,2,0
+%endif
 MenuDat6 db 6,  3,1,1,1,1,0,2,0
 
 GUIPrevMenuData:
-        db 1,'1.                            ',0
-        db 1,'2.                            ',0
-        db 1,'3.                            ',0
-        db 1,'4.                            ',0
-        db 1,'5.                            ',0
-        db 1,'6.                            ',0
-        db 1,'7.                            ',0
-        db 1,'8.                            ',0
-        db 1,'9.                            ',0
-        db 1,'0.                            ',0
-        db 0,'------------',0
-.onoff  db 1,'FREEZE DATA : OFF   ',0
-        db 1,'CLEAR ALL DATA      ',0
+  db 1,'1.                            ',0
+  db 1,'2.                            ',0
+  db 1,'3.                            ',0
+  db 1,'4.                            ',0
+  db 1,'5.                            ',0
+  db 1,'6.                            ',0
+  db 1,'7.                            ',0
+  db 1,'8.                            ',0
+  db 1,'9.                            ',0
+  db 1,'0.                            ',0
+  db 0,'------------',0
+.onoff db 1,'FREEZE DATA: OFF   ',0
+  db 1,'CLEAR ALL DATA     ',0
 GUIGameMenuData:
-        db 1,'LOAD        ',0
-        db 1,'RUN  [ESC]  ',0
-        db 1,'RESET       ',0
-        db 0,'------------',0
-        db 1,'SAVE STATE  ',0
-        db 1,'OPEN STATE  ',0
-        db 1,'PICK STATE  ',0
-        db 0,'------------',0
-        db 1,'QUIT        ',0
+  db 1,'LOAD        ',0
+  db 1,'RUN  [ESC]  ',0
+  db 1,'RESET       ',0
+  db 0,'------------',0
+  db 1,'SAVE STATE  ',0
+  db 1,'OPEN STATE  ',0
+  db 1,'PICK STATE  ',0
+  db 0,'------------',0
+  db 1,'QUIT        ',0
 GUIConfigMenuData:
-        db 1,'INPUT #1    ',0
-        db 1,'INPUT #2    ',0
-        db 1,'INPUT #3    ',0
-        db 1,'INPUT #4    ',0
-        db 1,'INPUT #5    ',0
-        db 0,'------------',0
-        db 1,'ADD-ONS     ',0
-        db 1,'CHIP CFG    ',0
-        db 0,'------------',0
-        db 1,'OPTIONS     ',0
-        db 1,'VIDEO       ',0
-        db 1,'SOUND       ',0
-        db 1,'PATHS       ',0
-        db 1,'SAVES       ',0
-        db 1,'SPEED       ',0
+  db 1,'INPUT       ',0
+  db 0,'------------',0
+  db 1,'ADD-ONS     ',0
+  db 1,'CHIP CFG    ',0
+  db 0,'------------',0
+  db 1,'OPTIONS     ',0
+  db 1,'VIDEO       ',0
+  db 1,'SOUND       ',0
+  db 1,'PATHS       ',0
+  db 1,'SAVES       ',0
+  db 1,'SPEED       ',0
 GUICheatMenuData:
-        db 1,'ADD CODE    ',0
-        db 1,'BROWSE      ',0
-        db 1,'SEARCH      ',0
+  db 1,'ADD CODE    ',0
+  db 1,'BROWSE      ',0
+  db 1,'SEARCH      ',0
 GUINetPlayMenuData:
-        db 1,'MODEM       ',0
-        db 1,'IPX         ',0
+%ifndef __MSDOS__
+  db 1,'INTERNET    ',0
+  db 0,'------------',0
+%else
+  db 1,'MODEM       ',0
+  db 1,'IPX         ',0
+%endif
 GUIMiscMenuData:
-        db 1,'MISC KEYS   ',0
-        db 1,'GUI OPNS    ',0
-        db 1,'MOVIE OPN   ',0
-        db 1,'KEY COMB.   ',0
-        db 1,'SAVE CFG    ',0
-        db 0,'------------',0
-        db 1,'ABOUT       ',0
+  db 1,'MISC KEYS   ',0
+  db 1,'GUI OPNS    ',0
+  db 1,'MOVIE OPN   ',0
+  db 1,'KEY COMB.   ',0
+  db 1,'SAVE CFG    ',0
+  db 0,'------------',0
+  db 1,'ABOUT       ',0
 
 ; Config, Options -> New Gfx Engine, Frame Rate, Fast Forward FrameRate, etc.
 ; Config, Video -> Video Mode, Interpolation, etc.
@@ -308,7 +305,7 @@ ViewBuffer  resb 50*32
 SECTION .data
 ; Window sizes and positions
 ;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE SPED
-GUIwinposxo dd 0,6   ,65  ,33  ,42  ,38  ,34  ,6   ,64  ,8    ,8    ,33  ,56  ,64  ,56  ,5  ,3   ,48  ,48  ,6    ,28  ,53
+GUIwinposxo dd 0,6   ,65  ,33  ,42  ,38  ,34  ,6   ,64  ,8    ,8    ,33  ,56  ,64  ,56  ,5   ,3   ,48  ,48  ,6    ,28  ,53
 GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,65  ,20  ,19  ,60  ,60  ,20   ,30  ,25
 GUIwinsizex dd 0,244 ,126 ,189 ,172 ,180 ,188 ,244 ,8*16,240  ,240  ,190 ,9*16,8*16,9*16,246 ,250 ,160 ,160 ,244  ,200 ,150
 GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,100 ,100 ,190  ,160 ,180
@@ -414,133 +411,133 @@ SECTION .text
 
 %macro stim 0
 %ifdef __MSDOS__
-    sti
+  sti
 %endif
 %endmacro
 
 %macro clim 0
 %ifdef __MSDOS__
-    cli
+  cli
 %endif
 %endmacro
 
 clearsram:
-    push eax
-    push ecx
-    mov eax,srama
-    mov ecx,65536
+  push eax
+  push ecx
+  mov eax,srama
+  mov ecx,65536
 .loop
-    mov byte[eax],0FFh
-    inc eax
-    dec ecx
-    jnz .loop
-    cmp byte[SFXEnable],0
-    je .nosfxbatt
-    cmp byte[CHIPBATT],0
-    je .nosfxbatt
-    mov eax,[sfxramdata]
-    mov ecx,65536
+  mov byte[eax],0FFh
+  inc eax
+  dec ecx
+  jnz .loop
+  cmp byte[SFXEnable],0
+  je .nosfxbatt
+  cmp byte[CHIPBATT],0
+  je .nosfxbatt
+  mov eax,[sfxramdata]
+  mov ecx,65536
 .loop2
-    mov byte[eax],0FFh
-    inc eax
-    dec ecx
-    jnz .loop2
+  mov byte[eax],0FFh
+  inc eax
+  dec ecx
+  jnz .loop2
 .nosfxbatt
 
-    cmp byte[SETAEnable],0
-    je .nosetasram
-    mov eax,[setaramdata]
-    mov ecx,4096
+  cmp byte[SETAEnable],0
+  je .nosetasram
+  mov eax,[setaramdata]
+  mov ecx,4096
 .loop2seta
-    mov byte[eax],0FFh
-    inc eax
-    dec ecx
-    jnz .loop2seta
+  mov byte[eax],0FFh
+  inc eax
+  dec ecx
+  jnz .loop2seta
 .nosetasram
 
-    cmp byte[SA1Enable],1
-    jne .nosa1
-    cmp byte[CHIPBATT],1
-    jne .nosa1
-    mov eax,[SA1RAMArea]
-    mov ecx,65536*2
+  cmp byte[SA1Enable],1
+  jne .nosa1
+  cmp byte[CHIPBATT],1
+  jne .nosa1
+  mov eax,[SA1RAMArea]
+  mov ecx,65536*2
 .loop3
-    mov byte[eax],0FFh
-    inc eax
-    dec ecx
-    jnz .loop3
+  mov byte[eax],0FFh
+  inc eax
+  dec ecx
+  jnz .loop3
 .nosa1
-    pop ecx
-    pop eax
-    ret
+  pop ecx
+  pop eax
+  ret
 
 GUIQuickLoadUpdate:
-    cmp byte[prevlfreeze],0
-    je .off
-    mov dword[GUIPrevMenuData.onoff+15],'ON  '
-    jmp .on
+  cmp byte[prevlfreeze],0
+  je .off
+  mov dword[GUIPrevMenuData.onoff+14],'ON  '
+  jmp .on
 .off
-    mov dword[GUIPrevMenuData.onoff+15],'OFF '
+  mov dword[GUIPrevMenuData.onoff+14],'OFF '
 .on
 %ifdef __MSDOS__
-    mov esi,prevloadnames
+  mov esi,prevloadnames
 %else
-    mov esi,prevloadfnamel
+  mov esi,prevloadfnamel
 %endif
-    mov edi,GUIPrevMenuData+3
-    mov edx,10
+  mov edi,GUIPrevMenuData+3
+  mov edx,10
 .mainloop
 %ifdef __MSDOS__
-    mov ecx,16
+  mov ecx,16
 %else
-    mov ecx,25
+  mov ecx,25
 %endif
-    push edi
-    push esi
-    cmp byte[esi],32
-    je near .fin2
+  push edi
+  push esi
+  cmp byte[esi],32
+  je near .fin2
 .loop
-    mov al,[esi]
-    cmp al,0
-    je .zero
-    mov [edi],al
-    inc esi
-    inc edi
-    dec ecx
-    jnz .loop
-    cmp byte[esi],0
-    je .zero
-    mov byte[edi],'.'
-    mov byte[edi+1],'.'
-    mov byte[edi+2],'.'
-    jmp .fin
+  mov al,[esi]
+  cmp al,0
+  je .zero
+  mov [edi],al
+  inc esi
+  inc edi
+  dec ecx
+  jnz .loop
+  cmp byte[esi],0
+  je .zero
+  mov byte[edi],'.'
+  mov byte[edi+1],'.'
+  mov byte[edi+2],'.'
+  jmp .fin
 .zero
-    add ecx,3
+  add ecx,3
 .loop2
-    mov byte[edi],32
-    inc edi
-    dec ecx
-    jnz .loop2
-    jmp .fin
+  mov byte[edi],32
+  inc edi
+  dec ecx
+  jnz .loop2
+  jmp .fin
 .fin2
-    mov ecx,18
+  mov ecx,18
 .loop3
-    mov byte[edi],32
-    inc edi
-    dec ecx
-    jnz .loop3
+  mov byte[edi],32
+  inc edi
+  dec ecx
+  jnz .loop3
 .fin
-    pop esi
-    pop edi
+  pop esi
+  pop edi
 %ifdef __MSDOS__
-    add esi,16
+  add esi,16
 %else
-    add esi,512 ;16
+  add esi,512 ;16
 %endif
-    add edi,32
-    dec edx
-    jnz near .mainloop
-    ret
+  add edi,32
+  dec edx
+  jnz near .mainloop
+  ret
 
 SECTION .data
 NEWSYM ComboHeader, db 'Key Combination File',26,1,0
@@ -548,19 +545,19 @@ NEWSYM ComboBlHeader, times 23 db 0
 SECTION .text
 
 %macro GUIInitIRQs 0
-    call GUIInit
-    mov esi,pressed
-    mov ecx,256
-    mov al,0
+  call GUIInit
+  mov esi,pressed
+  mov ecx,256
+  mov al,0
 .loopa
-    mov [esi],al
-    inc esi
-    dec ecx
-    jnz .loopa
+  mov [esi],al
+  inc esi
+  dec ecx
+  jnz .loopa
 %endmacro
 
 %macro GUIDeInitIRQs 0
-    call GUIDeInit
+  call GUIDeInit
 %endmacro
 
 SECTION .data
@@ -574,201 +571,201 @@ SECTION .data
 
 SECTION .text
 NEWSYM GUIinit18_2hz
-    mov al,00110110b
-    out 43h,al
-    mov ax,0
-    out 40h,al
-    mov al,ah
-    out 40h,al
-    ret
+  mov al,00110110b
+  out 43h,al
+  mov ax,0
+  out 40h,al
+  mov al,ah
+  out 40h,al
+  ret
 
 NEWSYM GUIinit36_4hz
-    mov al,00110110b
-    out 43h,al
-    mov ax,32768
-    out 40h,al
-    mov al,ah
-    out 40h,al
-    ret
+  mov al,00110110b
+  out 43h,al
+  mov ax,32768
+  out 40h,al
+  mov al,ah
+  out 40h,al
+  ret
 
 NEWSYM GUI36hzcall
-    inc dword[GUIt1cc]
-    inc dword[SnowMover]
-    cmp dword[GUIEditStringLTxt],0
-    je .nodec
-    dec dword[GUIEditStringLTxt]
+  inc dword[GUIt1cc]
+  inc dword[SnowMover]
+  cmp dword[GUIEditStringLTxt],0
+  je .nodec
+  dec dword[GUIEditStringLTxt]
 .nodec
-    cmp dword[GUIScrolTim1],0
-    je .nodec4
-    dec dword[GUIScrolTim1]
+  cmp dword[GUIScrolTim1],0
+  je .nodec4
+  dec dword[GUIScrolTim1]
 .nodec4
-    cmp dword[GUIDClickTL],0
-    je .nodec2
-    dec dword[GUIDClickTL]
+  cmp dword[GUIDClickTL],0
+  je .nodec2
+  dec dword[GUIDClickTL]
 .nodec2
-    cmp dword[GUIkeydelay],0
-    je .nodec3
-    dec dword[GUIkeydelay]
+  cmp dword[GUIkeydelay],0
+  je .nodec3
+  dec dword[GUIkeydelay]
 .nodec3
-    cmp dword[GUIkeydelay2],0
-    je .nodec3b
-    dec dword[GUIkeydelay2]
+  cmp dword[GUIkeydelay2],0
+  je .nodec3b
+  dec dword[GUIkeydelay2]
 .nodec3b
-    cmp dword[GUICTimer],0
-    je .nodec6
-    dec dword[GUICTimer]
+  cmp dword[GUICTimer],0
+  je .nodec6
+  dec dword[GUICTimer]
 .nodec6
-    inc byte[GUICCFlash]
-    and byte[GUICCFlash],0Fh
-    inc byte[GUILDFlash]
-    and byte[GUILDFlash],0Fh
-    ret
+  inc byte[GUICCFlash]
+  and byte[GUICCFlash],0Fh
+  inc byte[GUILDFlash]
+  and byte[GUILDFlash],0Fh
+  ret
 
 %ifdef __MSDOS__
 NEWSYM GUIhandler8h
-    cli
-    push ds
-    push eax
-    mov ax,[cs:dssel]
-    mov ds,ax
-    call GUI36hzcall
-    xor byte[GUIt1ccSwap],1
-    cmp byte[GUIt1ccSwap],0
-    je .nocall
-    pushf
-    call far [GUIoldhand8o]
+  cli
+  push ds
+  push eax
+  mov ax,[cs:dssel]
+  mov ds,ax
+  call GUI36hzcall
+  xor byte[GUIt1ccSwap],1
+  cmp byte[GUIt1ccSwap],0
+  je .nocall
+  pushf
+  call far [GUIoldhand8o]
 .nocall
-    mov al,20h
-    out 20h,al
-    pop eax
-    pop ds
-    sti
-    iretd
+  mov al,20h
+  out 20h,al
+  pop eax
+  pop ds
+  sti
+  iretd
 
 NEWSYM GUIhandler9h
-    cli
-    push ds
-    push eax
-    push ebx
-    mov ax,[cs:dssel]
-    mov ds,ax
+  cli
+  push ds
+  push eax
+  push ebx
+  mov ax,[cs:dssel]
+  mov ds,ax
 
-    xor ebx,ebx
-    in al,60h                 ; get keyboard scan code
-    cmp al,42
-    jne .no42
-    cmp byte[GUIskipnextkey42],0
-    je .no42
-    mov byte[GUIskipnextkey42],0
-    jmp .skipkeyrel
+  xor ebx,ebx
+  in al,60h                 ; get keyboard scan code
+  cmp al,42
+  jne .no42
+  cmp byte[GUIskipnextkey42],0
+  je .no42
+  mov byte[GUIskipnextkey42],0
+  jmp .skipkeyrel
 .no42
-    cmp al,0E0h
-    jne .noE0
-    mov byte[GUIskipnextkey42],1
-    jmp .skipkeyrel
+  cmp al,0E0h
+  jne .noE0
+  mov byte[GUIskipnextkey42],1
+  jmp .skipkeyrel
 .noE0
-    mov byte[GUIskipnextkey42],0
-    mov bl,al
-    xor bh,bh
-    test bl,80h               ; check if bit 7 is on (key released)
-    jnz .keyrel
-    cmp byte[pressed+ebx],0
-    jne .skipa
-    mov byte[pressed+ebx],1        ; if not, set key to pressed
+  mov byte[GUIskipnextkey42],0
+  mov bl,al
+  xor bh,bh
+  test bl,80h               ; check if bit 7 is on (key released)
+  jnz .keyrel
+  cmp byte[pressed+ebx],0
+  jne .skipa
+  mov byte[pressed+ebx],1        ; if not, set key to pressed
 .skipa
-    jmp .skipkeyrel
+  jmp .skipkeyrel
 .keyrel
-    and bl,7Fh
-    mov byte[pressed+ebx],0        ; if not, set key to pressed
+  and bl,7Fh
+  mov byte[pressed+ebx],0        ; if not, set key to pressed
 .skipkeyrel
-    mov byte[pressed],0
+  mov byte[pressed],0
 
-    pushf
-    call far [GUIoldhand9o]
-    mov al,20h
-    out 20h,al
-    pop ebx
-    pop eax
-    pop ds
-    sti
-    iretd
+  pushf
+  call far [GUIoldhand9o]
+  mov al,20h
+  out 20h,al
+  pop ebx
+  pop eax
+  pop ds
+  sti
+  iretd
 %endif
 
 %macro loadmenuopen 1
-    mov al,[GUIcmenupos]
-    mov [GUIpmenupos],al
-    mov byte[GUIcmenupos],0
-    cmp byte[GUIwinactiv+%1],1
-    je %%menuontop
-    xor eax,eax
-    mov al,[GUIwinptr]
-    inc byte[GUIwinptr]
-    mov byte[GUIwinorder+eax],%1
-    mov byte[GUIwinactiv+%1],1
-    cmp byte[resetposn],1
-    jne %%nomenuitem
-    mov eax,[GUIwinposxo+%1*4]
-    mov [GUIwinposx+%1*4],eax
-    mov eax,[GUIwinposyo+%1*4]
-    mov [GUIwinposy+%1*4],eax
-    jmp %%nomenuitem
+  mov al,[GUIcmenupos]
+  mov [GUIpmenupos],al
+  mov byte[GUIcmenupos],0
+  cmp byte[GUIwinactiv+%1],1
+  je %%menuontop
+  xor eax,eax
+  mov al,[GUIwinptr]
+  inc byte[GUIwinptr]
+  mov byte[GUIwinorder+eax],%1
+  mov byte[GUIwinactiv+%1],1
+  cmp byte[resetposn],1
+  jne %%nomenuitem
+  mov eax,[GUIwinposxo+%1*4]
+  mov [GUIwinposx+%1*4],eax
+  mov eax,[GUIwinposyo+%1*4]
+  mov [GUIwinposy+%1*4],eax
+  jmp %%nomenuitem
 %%menuontop
-    xor eax,eax
-    ; look for match
+  xor eax,eax
+  ; look for match
 %%notfoundyet
-    mov bl,[GUIwinorder+eax]
-    cmp bl,%1
-    je %%nextfind
-    inc eax
-    jmp %%notfoundyet
+  mov bl,[GUIwinorder+eax]
+  cmp bl,%1
+  je %%nextfind
+  inc eax
+  jmp %%notfoundyet
 %%nextfind
-    inc eax
-    cmp al,[GUIwinptr]
-    je %%foundend
-    mov cl,[GUIwinorder+eax]
-    mov [GUIwinorder+eax-1],cl
-    jmp %%nextfind
+  inc eax
+  cmp al,[GUIwinptr]
+  je %%foundend
+  mov cl,[GUIwinorder+eax]
+  mov [GUIwinorder+eax-1],cl
+  jmp %%nextfind
 %%foundend
-    mov byte[GUIpclicked],0
-    mov [GUIwinorder+eax-1],bl
+  mov byte[GUIpclicked],0
+  mov [GUIwinorder+eax-1],bl
 %%nomenuitem
 %endmacro
 
 loadnetopen:
-    loadmenuopen 8
-    ret
+  loadmenuopen 8
+  ret
 
 SECTION .bss
 MouseInitOkay resb 1
 SECTION .text
 
 LoadDetermine:
-    mov byte[GUIGameMenuData+14],1
-    mov byte[GUIGameMenuData+14*2],1
-    mov byte[GUIGameMenuData+14*4],1
-    mov byte[GUIGameMenuData+14*5],1
-    mov byte[GUIGameMenuData+14*6],1
-    mov byte[GUICheatMenuData],1
-    mov byte[GUICheatMenuData+14],1
-    mov byte[GUICheatMenuData+14*2],1
-    mov byte[GUIMiscMenuData+14*2],1
-    mov byte[GUINetPlayMenuData],2             ; Gray out Netplay options
+  mov byte[GUIGameMenuData+14],1
+  mov byte[GUIGameMenuData+14*2],1
+  mov byte[GUIGameMenuData+14*4],1
+  mov byte[GUIGameMenuData+14*5],1
+  mov byte[GUIGameMenuData+14*6],1
+  mov byte[GUICheatMenuData],1
+  mov byte[GUICheatMenuData+14],1
+  mov byte[GUICheatMenuData+14*2],1
+  mov byte[GUIMiscMenuData+14*2],1
+  mov byte[GUINetPlayMenuData],2             ; Gray out Netplay options
 %ifdef __MSDOS__
-    mov byte[GUINetPlayMenuData+14],2
+  mov byte[GUINetPlayMenuData+14],2
 %endif
-    cmp byte[romloadskip],0
-    je .noromloaded
-    mov byte[GUIGameMenuData+14],2
-    mov byte[GUIGameMenuData+14*2],2
-    mov byte[GUIGameMenuData+14*4],2
-    mov byte[GUIGameMenuData+14*5],2
-    mov byte[GUIGameMenuData+14*6],2
-    mov byte[GUICheatMenuData],2
-    mov byte[GUICheatMenuData+14],2
-    mov byte[GUICheatMenuData+14*2],2
-    mov byte[GUIMiscMenuData+14*2],2
+  cmp byte[romloadskip],0
+  je .noromloaded
+  mov byte[GUIGameMenuData+14],2
+  mov byte[GUIGameMenuData+14*2],2
+  mov byte[GUIGameMenuData+14*4],2
+  mov byte[GUIGameMenuData+14*5],2
+  mov byte[GUIGameMenuData+14*6],2
+  mov byte[GUICheatMenuData],2
+  mov byte[GUICheatMenuData+14],2
+  mov byte[GUICheatMenuData+14*2],2
+  mov byte[GUIMiscMenuData+14*2],2
 .noromloaded
-    ret
+  ret
 
 SECTION .data
 SantaData:
@@ -789,125 +786,125 @@ MsgGiftLeft dd 0
 SECTION .text
 
 DrawSnow:
-    cmp byte[OkaySC],0
-    je near .nosanta
-    cmp dword[MsgGiftLeft],0
-    je .nodec
-    mov edx,20
-    mov ebx,210
-    mov byte[GUItextcolor],228
-    GUIOuttextwin .giftmsg
+  cmp byte[OkaySC],0
+  je near .nosanta
+  cmp dword[MsgGiftLeft],0
+  je .nodec
+  mov edx,20
+  mov ebx,210
+  mov byte[GUItextcolor],228
+  GUIOuttextwin .giftmsg
 .nodec
-    mov esi,[vidbuffer]
-    add esi,[SantaPos]
-    add esi,60*288
-    mov edx,SantaData
-    mov ebx,8
+  mov esi,[vidbuffer]
+  add esi,[SantaPos]
+  add esi,60*288
+  mov edx,SantaData
+  mov ebx,8
 .sloop2
-    mov ecx,16
+  mov ecx,16
 .sloop
-    cmp byte[edx],0
-    je .transp
-    mov byte[esi],0
+  cmp byte[edx],0
+  je .transp
+  mov byte[esi],0
 .transp
-    inc esi
-    inc edx
-    dec ecx
-    jnz .sloop
-    add esi,272
-    dec ebx
-    jnz .sloop2
+  inc esi
+  inc edx
+  dec ecx
+  jnz .sloop
+  add esi,272
+  dec ebx
+  jnz .sloop2
 .nosanta
-    mov esi,[vidbuffer]
-    mov ecx,200
-    xor edx,edx
+  mov esi,[vidbuffer]
+  mov ecx,200
+  xor edx,edx
 .loop
-    xor eax,eax
-    mov al,[SnowData+edx*4+3]
-    mov ebx,eax
-    shl eax,8
-    shl ebx,5
-    add eax,ebx
-    xor ebx,ebx
-    mov bl,[SnowData+edx*4+1]
-    add eax,ebx
-    add eax,16
-    mov bl,[SnowVelDist+edx*2]
-    and bl,03h
-    add bl,228
-    test byte[SnowVelDist+edx*2],8
-    jz .nosnow
-    mov [esi+eax],bl
+  xor eax,eax
+  mov al,[SnowData+edx*4+3]
+  mov ebx,eax
+  shl eax,8
+  shl ebx,5
+  add eax,ebx
+  xor ebx,ebx
+  mov bl,[SnowData+edx*4+1]
+  add eax,ebx
+  add eax,16
+  mov bl,[SnowVelDist+edx*2]
+  and bl,03h
+  add bl,228
+  test byte[SnowVelDist+edx*2],8
+  jz .nosnow
+  mov [esi+eax],bl
 .nosnow
-    inc edx
-    dec ecx
-    jnz .loop
-    ; Change Snow Displacement Values
+  inc edx
+  dec ecx
+  jnz .loop
+  ; Change Snow Displacement Values
 .next
-    cmp dword[SnowMover],0
-    je .nomore
-    call ProcessSnowVelocity
-    dec dword[SnowMover]
-    jmp .next
+  cmp dword[SnowMover],0
+  je .nomore
+  call ProcessSnowVelocity
+  dec dword[SnowMover]
+  jmp .next
 .nomore
-    ret
+  ret
 
 SECTION .data
 .giftmsg db 'A GIFT TO YOU IN THE OPTIONS!',0
 SECTION .text
 
 ProcessSnowVelocity:
-    cmp dword[MsgGiftLeft],0
-    je .nodec
-    dec dword[MsgGiftLeft]
+  cmp dword[MsgGiftLeft],0
+  je .nodec
+  dec dword[MsgGiftLeft]
 .nodec
-    cmp dword[NumSnow],200
-    jne .snowincr
-    cmp dword[SantaNextT],0
-    je .skip
-    dec dword[SantaNextT]
-    jmp .notsreset
+  cmp dword[NumSnow],200
+  jne .snowincr
+  cmp dword[SantaNextT],0
+  je .skip
+  dec dword[SantaNextT]
+  jmp .notsreset
 .skip
-    dec dword[SantaPos]
-    cmp dword[SantaPos],0
-    jne .notsreset
-    mov dword[SantaPos],272
-    mov dword[SantaNextT],36*60
-    jmp .notsreset
+  dec dword[SantaPos]
+  cmp dword[SantaPos],0
+  jne .notsreset
+  mov dword[SantaPos],272
+  mov dword[SantaNextT],36*60
+  jmp .notsreset
 .snowincr
-    dec dword[SnowTimer]
-    jnz .notsreset
-    inc dword[NumSnow]
-    mov dword[SnowTimer],18
+  dec dword[SnowTimer]
+  jnz .notsreset
+  inc dword[NumSnow]
+  mov dword[SnowTimer],18
 .notsreset
 
-    mov ecx,[NumSnow]
-    cmp ecx,0
-    jne .okay
-    ret
+  mov ecx,[NumSnow]
+  cmp ecx,0
+  jne .okay
+  ret
 .okay
-    xor edx,edx
+  xor edx,edx
 .loop
-    xor eax,eax
-    mov al,[SnowVelDist+edx*2]
-    mov ebx,100
-    sub bl,[MusicRelVol]
-    add bx,bx
-    add ax,bx
-    add ax,bx
-    add word[SnowData+edx*4],ax
-    xor eax,eax
-    mov al,[SnowVelDist+edx*2+1]
-    add ax,256
-    add word[SnowData+edx*4+2],ax
-    cmp word[SnowData+edx*4+2],200h
-    ja .nosdata
-    or byte[SnowVelDist+edx*2],8
+  xor eax,eax
+  mov al,[SnowVelDist+edx*2]
+  mov ebx,100
+  sub bl,[MusicRelVol]
+  add bx,bx
+  add ax,bx
+  add ax,bx
+  add word[SnowData+edx*4],ax
+  xor eax,eax
+  mov al,[SnowVelDist+edx*2+1]
+  add ax,256
+  add word[SnowData+edx*4+2],ax
+  cmp word[SnowData+edx*4+2],200h
+  ja .nosdata
+  or byte[SnowVelDist+edx*2],8
 .nosdata
-    inc edx
-    dec ecx
-    jnz .loop
-    ret
+  inc edx
+  dec ecx
+  jnz .loop
+  ret
 
 SECTION .bss
 OkaySC resb 1
@@ -915,123 +912,72 @@ SECTION .data
 cstempfname db 'tmpchtsr.___',0
 SECTION .text
 
-
 NEWSYM SaveSramData
-    ; change to sram dir
-    pushad
-    call SRAMChdir
-    popad
+  ; change to sram dir
+  pushad
+  call SRAMChdir
+  popad
 
-    cmp byte[sramsavedis],1
-    je .savesramdone
+  cmp byte[sramsavedis],1
+  je .savesramdone
 
-    cmp dword[ramsize],0
-    je .savesramdone
+  cmp dword[ramsize],0
+  je .savesramdone
 
-    mov edx,[sram]
-    cmp byte[SFXEnable],1
-    jne .notsfx
-    mov edx,[sfxramdata]
+  mov edx,[sram]
+  cmp byte[SFXEnable],1
+  jne .notsfx
+  mov edx,[sfxramdata]
 .notsfx
-    cmp byte[SA1Enable],1
-    jne .notsa1
-    mov edx,[SA1RAMArea]
+  cmp byte[SA1Enable],1
+  jne .notsa1
+  mov edx,[SA1RAMArea]
 .notsa1
-    cmp byte[SETAEnable],1
-    jne .notseta
-    mov edx,[setaramdata]
+  cmp byte[SETAEnable],1
+  jne .notseta
+  mov edx,[setaramdata]
 .notseta
-    cmp edx,[sram]
-    je .notspecial
-    cmp byte[CHIPBATT],0
-    je .savesramdone
+  cmp edx,[sram]
+  je .notspecial
+  cmp byte[CHIPBATT],0
+  je .savesramdone
 .notspecial
 
-    clim
+  clim
 
-    push edx ;Backup data to save
-    mov edx,fnames+1
-    call Create_File
-    jc .failed
-    mov bx,ax
-    xor ecx,ecx
-    mov ecx,[ramsize]
-    pop edx ;Restore data to save
-    call Write_File
-    call Close_File
-    push edx ;Dirty hack for the next line
+  push edx ;Backup data to save
+  mov edx,fnames+1
+  call Create_File
+  jc .failed
+  mov bx,ax
+  xor ecx,ecx
+  mov ecx,[ramsize]
+  pop edx ;Restore data to save
+  call Write_File
+  call Close_File
+  push edx ;Dirty hack for the next line
 .failed
-    pop edx ;This is needed here because if the jump to failed is carried out, edx is never popped
-    stim
+  pop edx ;This is needed here because if the jump to failed is carried out, edx is never popped
+  stim
 .savesramdone
 
-    call SaveCombFile
+  call SaveCombFile
 
-    ; change dir to InitDrive/InitDir
-    mov dl,[InitDrive]
-    mov ebx,InitDir
-    call Change_Dir
-    ret
-
-NEWSYM ProcRewind
-    mov eax,KeyRewind
-    add eax,4
-    mov ebx,8
-.loop
-    cmp byte[eax],'a'
-    jb .b
-    cmp byte[eax],'z'
-    ja .b
-    sub byte[eax],'a'-'A'
-.b
-    inc eax
-    dec ebx
-    jnz .loop
-    sub eax,8
-    ; 90,83,75,78,73,71
-    mov dword[.temp],44*65536*256+24*65536+72*256+40
-    mov word[.temp+4],41*256+50
-    add dword[.temp],34*65536*256+51*65536+11*256+50
-    add word[.temp+4],30*256+23
-    call .c
-    ; 95,68,69,77,79,95
-    mov dword[.temp],25*65536*256+29*65536+31*256+62
-    mov word[.temp+4],43*256+18
-    add dword[.temp],52*65536*256+40*65536+37*256+33
-    add word[.temp+4],52*256+61
-    call .c
-    ; 80,72,65,82,79,83
-    mov dword[.temp],11*65536*256+33*65536+24*256+35
-    mov word[.temp+4],52*256+30
-    add dword[.temp],71*65536*256+32*65536+48*256+45
-    add word[.temp+4],31*256+49
-    call .c
-    ret
-.c
-    mov ebx,[.temp]
-    cmp [eax],ebx
-    jne .noteq
-    mov bx,[.temp+4]
-    cmp [eax+4],bx
-    jne .noteq
-    mov dword[eax],0
-    mov dword[eax+4],0
-    mov dword[eax+8],0
-.noteq
-    ret
-SECTION .bss
-.temp resd 2
-SECTION .text
+  ; change dir to InitDrive/InitDir
+  mov dl,[InitDrive]
+  mov ebx,InitDir
+  call Change_Dir
+  ret
 
 %macro ProcessOneDigit 1
-    cmp dl,9
-    jbe %%notover
-    add dl,65-48-10
+  cmp dl,9
+  jbe %%notover
+  add dl,65-48-10
 %%notover
-    add dl,48
-    mov [.message+%1],dl
-    xor edx,edx
-    div ebx
+  add dl,48
+  mov [.message+%1],dl
+  xor edx,edx
+  div ebx
 %endmacro
 
 SECTION .data
@@ -1039,505 +985,495 @@ SECTION .data
 SECTION .text
 
 NEWSYM StartGUI
-    cmp byte[TripBufAvail],0
-    jne .notexttb
-    mov byte[Triplebufen],0
+  cmp byte[TripBufAvail],0
+  jne .notexttb
+  mov byte[Triplebufen],0
 .notexttb
-    cmp byte[MMXSupport],1
-    jne .2xSaIdis
-    cmp byte[newgfx16b],0
-    je .2xSaIdis
-    jmp .no2xSaIdis
+  cmp byte[MMXSupport],1
+  jne .2xSaIdis
+  cmp byte[newgfx16b],0
+  je .2xSaIdis
+  jmp .no2xSaIdis
 .2xSaIdis
-    mov byte[En2xSaI],0
-    mov byte[hqFilter],0
+  mov byte[En2xSaI],0
+  mov byte[hqFilter],0
 .no2xSaIdis
-    cmp byte[En2xSaI],0
-    je .no2xsaidis
-    mov byte[Triplebufen],0
+  cmp byte[En2xSaI],0
+  je .no2xsaidis
+  mov byte[Triplebufen],0
 .no2xsaidis
-    cmp byte[En2xSaI],0
-    je .no2xsaien
-    mov byte[hqFilter],0
-    mov byte[scanlines],0
-    mov byte[antienab],0
+  cmp byte[En2xSaI],0
+  je .no2xsaien
+  mov byte[hqFilter],0
+  mov byte[scanlines],0
+  mov byte[antienab],0
 .no2xsaien
-    cmp byte[hqFilter],0
-    je .nohq
-    mov byte[En2xSaI],0
-    mov byte[scanlines],0
-    mov byte[antienab],0
+  cmp byte[hqFilter],0
+  je .nohq
+  mov byte[En2xSaI],0
+  mov byte[scanlines],0
+  mov byte[antienab],0
 .nohq
-    mov ecx,64
-    mov eax,SpecialLine
+  mov ecx,64
+  mov eax,SpecialLine
 .slloop
-    mov dword[eax],0
-    add eax,4
-    dec ecx
-    jnz .slloop
-    cmp byte[OldWinPos],0
-    jne .okayow
-    xor esi,esi
-    mov ecx,17
+  mov dword[eax],0
+  add eax,4
+  dec ecx
+  jnz .slloop
+  cmp byte[OldWinPos],0
+  jne .okayow
+  xor esi,esi
+  mov ecx,17
 .nextow
-    mov eax,[GUIwinposx2+esi*4]
-    mov [GUIwinposx+esi*4],eax
-    mov eax,[GUIwinposy2+esi*4]
-    mov [GUIwinposy+esi*4],eax
-    inc esi
-    dec ecx
-    jnz .nextow
-    mov byte[OldWinPos],1
-    mov eax,[pl1p209b]
-    mov [pl1p209],eax
+  mov eax,[GUIwinposx2+esi*4]
+  mov [GUIwinposx+esi*4],eax
+  mov eax,[GUIwinposy2+esi*4]
+  mov [GUIwinposy+esi*4],eax
+  inc esi
+  dec ecx
+  jnz .nextow
+  mov byte[OldWinPos],1
+  mov eax,[pl1p209b]
+  mov [pl1p209],eax
 .okayow
-%ifndef __MSDOS__
-    mov dword[GUINetPlayMenuData+1],'INTE'
-    mov dword[GUINetPlayMenuData+5],'RNET'
-    mov dword[GUINetPlayMenuData+1+14],'----'
-    mov dword[GUINetPlayMenuData+5+14],'----'
-    mov byte[MenuDat5],0
-    mov byte[MenuDat5+1],2
-%endif
-;.notwinport
-    ; copy old quickfilename to new quickfilename
-    cmp byte[prevloadl],0
-    jne .noconvertlfqm
-    mov byte[prevloadl],1
-    mov ecx,10
-    xor edx,edx
+  ; copy old quickfilename to new quickfilename
+  cmp byte[prevloadl],0
+  jne .noconvertlfqm
+  mov byte[prevloadl],1
+  mov ecx,10
+  xor edx,edx
 .convlfnlp
-    mov eax,ecx
-    dec eax
-    mov edx,eax
-    shl eax,9
-    shl edx,4
-    mov bl,16
+  mov eax,ecx
+  dec eax
+  mov edx,eax
+  shl eax,9
+  shl edx,4
+  mov bl,16
 .convlfnlp2
-    mov bh,[prevloadfname+edx]
-    mov [prevloadfnamel+eax],bh
-    inc edx
-    inc eax
-    dec bl
-    jnz .convlfnlp2
-    mov eax,ecx
-    dec eax
-    mov edx,eax
-    shl eax,9
-    shl edx,7
-    mov bl,128
+  mov bh,[prevloadfname+edx]
+  mov [prevloadfnamel+eax],bh
+  inc edx
+  inc eax
+  dec bl
+  jnz .convlfnlp2
+  mov eax,ecx
+  dec eax
+  mov edx,eax
+  shl eax,9
+  shl edx,7
+  mov bl,128
 .convlfnlp2b
-    mov bh,[prevloaddname+edx]
-    mov [prevloaddnamel+eax],bh
-    inc edx
-    inc eax
-    dec bl
-    jnz .convlfnlp2b
-    dec ecx
-    jnz .convlfnlp
+  mov bh,[prevloaddname+edx]
+  mov [prevloaddnamel+eax],bh
+  inc edx
+  inc eax
+  dec bl
+  jnz .convlfnlp2b
+  dec ecx
+  jnz .convlfnlp
 .noconvertlfqm
 
-    mov byte[GUIOn],1
-    mov byte[GUIOn2],1
-    mov eax,[NumComboLocl]
-    cmp byte[GUIComboGameSpec],0
-    jne .local
-    mov eax,[NumComboGlob]
+  mov byte[GUIOn],1
+  mov byte[GUIOn2],1
+  mov eax,[NumComboLocl]
+  cmp byte[GUIComboGameSpec],0
+  jne .local
+  mov eax,[NumComboGlob]
 .local
-    mov [NumCombo],eax
-    call ResetTripleBuf
+  mov [NumCombo],eax
+  call ResetTripleBuf
 
-    cmp dword[GUIwinposx+16*4],0
-    jne .notzero
-    mov dword[GUIwinposx+16*4],3
-    mov dword[GUIwinposy+16*4],22
+  cmp dword[GUIwinposx+16*4],0
+  jne .notzero
+  mov dword[GUIwinposx+16*4],3
+  mov dword[GUIwinposy+16*4],22
 .notzero
-    xor ecx,ecx
+  xor ecx,ecx
 .joysloop
-    cmp dword[pl1ULk+ecx*4],80h
-    jbe .nojoystick
-    mov dword[pl1ULk+ecx*4],0
+  cmp dword[pl1ULk+ecx*4],80h
+  jbe .nojoystick
+  mov dword[pl1ULk+ecx*4],0
 .nojoystick
-    inc ecx
-    cmp ecx,16
-    jne .joysloop
+  inc ecx
+  cmp ecx,16
+  jne .joysloop
 
-    mov dword[GUICTimer],0
-    cmp byte[OldVolume],1
-    jne .notold
-    mov byte[OldVolume],0
-    mov byte[MusicRelVol],100
-    mov byte[cfgvolume],100
-    ; Initialize volume
-    xor eax,eax
-    xor edx,edx
-    mov al,[MusicRelVol]
-    shl eax,7
-    mov ebx,100
-    div ebx
-    cmp al,127
-    jb .noofb
-    mov al,127
+  mov dword[GUICTimer],0
+  cmp byte[OldVolume],1
+  jne .notold
+  mov byte[OldVolume],0
+  mov byte[MusicRelVol],100
+  mov byte[cfgvolume],100
+  ; Initialize volume
+  xor eax,eax
+  xor edx,edx
+  mov al,[MusicRelVol]
+  shl eax,7
+  mov ebx,100
+  div ebx
+  cmp al,127
+  jb .noofb
+  mov al,127
 .noofb
-    mov [MusicVol],al
+  mov [MusicVol],al
 .notold
-    mov byte[CheatSearchStatus],0
-    cmp byte[newgfx16b],0
-    je .nong
-    mov ecx,255*144
-    mov eax,[vidbufferofsb]
+  mov byte[CheatSearchStatus],0
+  cmp byte[newgfx16b],0
+  je .nong
+  mov ecx,255*144
+  mov eax,[vidbufferofsb]
 .loop
-    mov dword[eax],0
-    add eax,4
-    dec ecx
-    jnz .loop
+  mov dword[eax],0
+  add eax,4
+  dec ecx
+  jnz .loop
 .nong
-    mov byte[ShowTimer],1
-    call Get_Date
-    cmp dh,12
-    jne .noxmas
-    cmp dl,25
-    jne .noxmas
-    mov byte[OkaySC],1
+  mov byte[ShowTimer],1
+  call Get_Date
+  cmp dh,12
+  jne .noxmas
+  cmp dl,25
+  jne .noxmas
+  mov byte[OkaySC],1
 .noxmas
-    mov byte[lastmouseholded],1
-    cmp dword[GUIwinposx+15*4],0
-    jne .nomoviemenufix
-    mov dword[GUIwinposx+15*4],50
-    mov dword[GUIwinposy+15*4],50
+  mov byte[lastmouseholded],1
+  cmp dword[GUIwinposx+15*4],0
+  jne .nomoviemenufix
+  mov dword[GUIwinposx+15*4],50
+  mov dword[GUIwinposy+15*4],50
 .nomoviemenufix
-    mov ax,[resolutn]
-    mov [PrevResoln],ax
-    mov word[resolutn],224
+  mov ax,[resolutn]
+  mov [PrevResoln],ax
+  mov word[resolutn],224
 
-    mov byte[GUIPalConv],0
-    mov byte[MousePRClick],1
+  mov byte[GUIPalConv],0
+  mov byte[MousePRClick],1
 
-    pushad
-    cmp byte[MouseInitOkay],1
-    je near .mousedone
-    mov byte[MouseInitOkay],1
-    cmp byte[MouseDis],1
-    je .mousedone
-    call Init_Mouse
-    cmp ax,0
-    jne .mousedone
-    mov byte[MouseDis],1
+  pushad
+  cmp byte[MouseInitOkay],1
+  je near .mousedone
+  mov byte[MouseInitOkay],1
+  cmp byte[MouseDis],1
+  je .mousedone
+  call Init_Mouse
+  cmp ax,0
+  jne .mousedone
+  mov byte[MouseDis],1
 .mousedone
-    popad
+  popad
 
-    mov eax,[KeyQuickLoad]
-    test byte[pressed+eax],1
-    jz near .noquickload
-    mov byte[GUIcmenupos],0
-    loadmenuopen 1
+  mov eax,[KeyQuickLoad]
+  test byte[pressed+eax],1
+  jz near .noquickload
+  mov byte[GUIcmenupos],0
+  loadmenuopen 1
 .noquickload
-    mov esi,pressed
-    mov ecx,64+32+8
+  mov esi,pressed
+  mov ecx,64+32+8
 .pclear
-    mov dword[esi],0
-    add esi,4
-    dec ecx
-    jnz .pclear
-    mov byte[pressed+1],2
-    mov byte[GUIescpress],1
+  mov dword[esi],0
+  add esi,4
+  dec ecx
+  jnz .pclear
+  mov byte[pressed+1],2
+  mov byte[GUIescpress],1
 
-    ; set Video cursor location
-    xor eax,eax
-    mov al,[cvidmode]
-    mov [GUIcurrentvideocursloc],eax
-    mov ebx,[NumVideoModes]
-    sub ebx,5
-    cmp eax,ebx
-    jbe .noof
-    mov eax,ebx
+  ; set Video cursor location
+  xor eax,eax
+  mov al,[cvidmode]
+  mov [GUIcurrentvideocursloc],eax
+  mov ebx,[NumVideoModes]
+  sub ebx,5
+  cmp eax,ebx
+  jbe .noof
+  mov eax,ebx
 .noof
-    mov [GUIcurrentvideoviewloc],eax
+  mov [GUIcurrentvideoviewloc],eax
 
-    call SaveSramData
+  call SaveSramData
 
-    ; change to sram dir
-    pushad
-    call SRAMChdir
-    popad
+  ; change to sram dir
+  pushad
+  call SRAMChdir
+  popad
 
-    call GUIQuickLoadUpdate
-    call LoadDetermine
+  call GUIQuickLoadUpdate
+  call LoadDetermine
 
-    ; change dir to LoadDrive/LoadDir
-    mov dl,[LoadDrive]
-    mov ebx,LoadDir
-    call Change_Dir
+  ; change dir to LoadDrive/LoadDir
+  mov dl,[LoadDrive]
+  mov ebx,LoadDir
+  call Change_Dir
 
-    cmp byte[AutoState],0
-    je .noautostate
-    cmp byte[romloadskip],0
-    jne .noautostate
-    call SaveSecondState
+  cmp byte[AutoState],0
+  je .noautostate
+  cmp byte[romloadskip],0
+  jne .noautostate
+  call SaveSecondState
 .noautostate
 
-    GUIInitIRQs
+  GUIInitIRQs
 
-    cmp byte[GUIwinptr],0
-    jne .nomenuopen
-    cmp byte[lastcursres],1
-    je .nomenuchange
-    mov byte[GUIcmenupos],2
-    mov byte[GUIcrowpos],0
-    mov dword[GUICYLocPtr],MenuDat2
-    cmp byte[lastcursres],0
-    je .nomenuchange
+  cmp byte[GUIwinptr],0
+  jne .nomenuopen
+  cmp byte[lastcursres],1
+  je .nomenuchange
+  mov byte[GUIcmenupos],2
+  mov byte[GUIcrowpos],0
+  mov dword[GUICYLocPtr],MenuDat2
+  cmp byte[lastcursres],0
+  je .nomenuchange
 .nomenuopen
-    mov byte[GUIcmenupos],0
+  mov byte[GUIcmenupos],0
 .nomenuchange
-    cmp byte[GUIwinactiv+1],0
-    je .noloadrefresh
-    call GetLoadData
+  cmp byte[GUIwinactiv+1],0
+  je .noloadrefresh
+  call GetLoadData
 .noloadrefresh
-    mov byte[GUIHold],0
-    ; clear 256 bytes from hirestiledat
-    mov esi,hirestiledat
-    mov ecx,256
+  mov byte[GUIHold],0
+  ; clear 256 bytes from hirestiledat
+  mov esi,hirestiledat
+  mov ecx,256
 .loophires
-    mov byte[esi],0
-    inc esi
-    dec ecx
-    jnz .loophires
-    mov byte[curblank],00h
-    call InitGUI
+  mov byte[esi],0
+  inc esi
+  dec ecx
+  jnz .loophires
+  mov byte[curblank],00h
+  call InitGUI
 
-    cmp byte[CheatWinMode],0
-    je near .csskip
-    ; change to sram dir
-    pushad
-    call SRAMChdir
-    popad
+  cmp byte[CheatWinMode],0
+  je near .csskip
+  ; change to sram dir
+  pushad
+  call SRAMChdir
+  popad
 
-    ; Load Cheat Search File
-    mov edx,cstempfname
-    call Open_File
-    jc .csskipb
-    mov bx,ax
-    mov edx,[vidbuffer]
-    add edx,129600
-    mov ecx,65536*2+32768
-    call Read_File
-    call Close_File
+  ; Load Cheat Search File
+  mov edx,cstempfname
+  call Open_File
+  jc .csskipb
+  mov bx,ax
+  mov edx,[vidbuffer]
+  add edx,129600
+  mov ecx,65536*2+32768
+  call Read_File
+  call Close_File
 
 .csskipb
-    ; change dir to LoadDrive/LoadDir
-    mov dl,[LoadDrive]
-    mov ebx,LoadDir
-    call Change_Dir
+  ; change dir to LoadDrive/LoadDir
+  mov dl,[LoadDrive]
+  mov ebx,LoadDir
+  call Change_Dir
 .csskip
 
-    mov byte[GUIQuit],0
+  mov byte[GUIQuit],0
 .nokey
-    cmp byte[GUIQuit],2
-    je near .exit
-    cmp byte[GUIQuit],1
-    je near .exitgui
-    mov byte[GUIQuit],0
-    cmp byte[MouseDis],1
-    je .mousedis2
-    call ProcessMouse
-    cmp byte[videotroub],1
-    jne .notrouble
-    ret
+  cmp byte[GUIQuit],2
+  je near .exit
+  cmp byte[GUIQuit],1
+  je near .exitgui
+  mov byte[GUIQuit],0
+  cmp byte[MouseDis],1
+  je .mousedis2
+  call ProcessMouse
+  cmp byte[videotroub],1
+  jne .notrouble
+  ret
 .notrouble
 .mousedis2
-    call GUIUnBuffer
-    cmp byte[GUIEffect],1
-    jne .nosnow
-    call DrawSnow
+  call GUIUnBuffer
+  cmp byte[GUIEffect],1
+  jne .nosnow
+  call DrawSnow
 .nosnow
-    cmp byte[GUIEffect],2
-    jne .nowater
-    call DrawWater
+  cmp byte[GUIEffect],2
+  jne .nowater
+  call DrawWater
 .nowater
-    cmp byte[GUIEffect],3
-    jne .nowater2
-    call DrawWater
+  cmp byte[GUIEffect],3
+  jne .nowater2
+  call DrawWater
 .nowater2
-    cmp byte[GUIEffect],4
-    jne .nosmoke
+  cmp byte[GUIEffect],4
+  jne .nosmoke
 ;    call DrawSmoke
-    call DrawBurn
+  call DrawBurn
 .nosmoke
 
-    cmp dword[GUIEditStringcWin],0
-    je .noblink
-    cmp dword[GUIEditStringcLen],0
-    je .noblink
-    mov eax,[GUIEditStringcLen]
-    cmp dword[GUIEditStringLTxt],8
-    jb .noblinka
-    mov byte[eax],'_'
-    mov byte[eax+1],0
-    mov dword[GUIEditStringLstb],1
+  cmp dword[GUIEditStringcWin],0
+  je .noblink
+  cmp dword[GUIEditStringcLen],0
+  je .noblink
+  mov eax,[GUIEditStringcLen]
+  cmp dword[GUIEditStringLTxt],8
+  jb .noblinka
+  mov byte[eax],'_'
+  mov byte[eax+1],0
+  mov dword[GUIEditStringLstb],1
 .noblinka
-    cmp dword[GUIEditStringLTxt],0
-    jne .noblink
-    mov dword[GUIEditStringLTxt],16
+  cmp dword[GUIEditStringLTxt],0
+  jne .noblink
+  mov dword[GUIEditStringLTxt],16
 .noblink
 
-    call DisplayBoxes
+  call DisplayBoxes
 
-    cmp dword[GUIEditStringLstb],1
-    jne .notblinked
-    mov dword[GUIEditStringLstb],0
-    mov eax,[GUIEditStringcLen]
-    mov byte[eax],0
+  cmp dword[GUIEditStringLstb],1
+  jne .notblinked
+  mov dword[GUIEditStringLstb],0
+  mov eax,[GUIEditStringcLen]
+  mov byte[eax],0
 .notblinked
 
-    call DisplayMenu
-    cmp byte[MouseDis],1
-    je .mousedis3
-    call DrawMouse
+  call DisplayMenu
+  cmp byte[MouseDis],1
+  je .mousedis3
+  call DrawMouse
 .mousedis3
-    cmp byte[FirstTimeData],0
-    jne .nofirsttime
-    call guifirsttimemsg
-    mov byte[FirstTimeData],1
+  cmp byte[FirstTimeData],0
+  jne .nofirsttime
+  call guifirsttimemsg
+  mov byte[FirstTimeData],1
 .nofirsttime
-    cmp byte[guimsgptr],0
-    jne .nohorizon
-    pushad
-    call GetDate
-    cmp ax,1025
-    popad
-    jne .nohorizon
-    pushad
-    call GetTime
-    push eax
-    call horizon_get
-    mov [guimsgptr],eax
-    popad
-    call horizonfixmsg
+  cmp byte[guimsgptr],0
+  jne .nohorizon
+  pushad
+  call GetDate
+  cmp ax,1025
+  popad
+  jne .nohorizon
+  pushad
+  call GetTime
+  push eax
+  call horizon_get
+  mov [guimsgptr],eax
+  popad
+  call horizonfixmsg
 .nohorizon
-    cmp dword[GUICTimer],0
-    je .notimer
-    GUIOuttext 21,211,[GUICMessage],50
-    GUIOuttext 20,210,[GUICMessage],63
+  cmp dword[GUICTimer],0
+  je .notimer
+  GUIOuttext 21,211,[GUICMessage],50
+  GUIOuttext 20,210,[GUICMessage],63
 .notimer
-    call vidpastecopyscr
-    call GUIgetcurrentinput
-    jmp .nokey
+  call vidpastecopyscr
+  call GUIgetcurrentinput
+  jmp .nokey
 .exitgui
-    GUIDeInitIRQs
+  GUIDeInitIRQs
 
-    mov ax,[PrevResoln]
-    mov [resolutn],ax
-    jmp endprog
+  mov ax,[PrevResoln]
+  mov [resolutn],ax
+  jmp endprog
 .exit
-    mov edi,[spcBuffera]
-    mov ecx,65536
-    xor eax,eax
-    rep stosd
-    mov edi,spcRamcmp
-    mov ecx,65536/4
-    xor eax,eax
-    rep stosd
-    GUIDeInitIRQs
-    call ClearScreen
-    cmp byte[cbitmode],0
-    jne .nomakepal
-    call makepal
+  mov edi,[spcBuffera]
+  mov ecx,65536
+  xor eax,eax
+  rep stosd
+  mov edi,spcRamcmp
+  mov ecx,65536/4
+  xor eax,eax
+  rep stosd
+  GUIDeInitIRQs
+  call ClearScreen
+  cmp byte[cbitmode],0
+  jne .nomakepal
+  call makepal
 .nomakepal
-    mov word[t1cc],1
+  mov word[t1cc],1
 
-    ; get LoadDrive/LoadDir
-    mov ebx,LoadDir
-    mov edx,LoadDrive
-    call Get_Dir
+  ; get LoadDrive/LoadDir
+  mov ebx,LoadDir
+  mov edx,LoadDrive
+  call Get_Dir
 
-    ; change dir to InitDrive/InitDir
-    mov dl,[InitDrive]
-    mov ebx,InitDir
-    ; save config
-    call Change_Dir
-    call createnewcfg
-    call GUISaveVars
+  ; change dir to InitDrive/InitDir
+  mov dl,[InitDrive]
+  mov ebx,InitDir
+  ; save config
+  call Change_Dir
+  call createnewcfg
+  call GUISaveVars
 
-    ; change dir to SRAMDrive/SRAMDir
-    pushad
-    call SRAMChdir
-    popad
+  ; change dir to SRAMDrive/SRAMDir
+  pushad
+  call SRAMChdir
+  popad
 
-    mov byte[MousePRClick],1
-    mov byte[prevbright],0
-    mov ax,[PrevResoln]
-    mov [resolutn],ax
+  mov byte[MousePRClick],1
+  mov byte[prevbright],0
+  mov ax,[PrevResoln]
+  mov [resolutn],ax
 
-    mov byte[CheatOn],0
-    cmp dword[NumCheats],0
-    je .nocheats
-    mov byte[CheatOn],1
+  mov byte[CheatOn],0
+  cmp dword[NumCheats],0
+  je .nocheats
+  mov byte[CheatOn],1
 .nocheats
 
-    cmp byte[CopyRamToggle],1
-    jne .nocopyram
-    mov byte[CopyRamToggle],0
-    mov eax,[vidbuffer]
-    add eax,129600
-    ; copy 128k ram
-    mov ebx,[wramdata]
-    mov ecx,32768
+  cmp byte[CopyRamToggle],1
+  jne .nocopyram
+  mov byte[CopyRamToggle],0
+  mov eax,[vidbuffer]
+  add eax,129600
+  ; copy 128k ram
+  mov ebx,[wramdata]
+  mov ecx,32768
 .loopcr
-    mov edx,[ebx]
-    mov [eax],edx
-    add ebx,4
-    add eax,4
-    dec ecx
-    jnz .loopcr
+  mov edx,[ebx]
+  mov [eax],edx
+  add ebx,4
+  add eax,4
+  dec ecx
+  jnz .loopcr
 .nocopyram
 
-    cmp byte[CheatWinMode],2
-    jne .notview
-    mov byte[CheatWinMode],1
+  cmp byte[CheatWinMode],2
+  jne .notview
+  mov byte[CheatWinMode],1
 .notview
 
-    cmp byte[CheatWinMode],0
-    je .csskip2
-    ; Save Cheat Search File
-    mov edx,cstempfname
-    call Create_File
-    jc .csskip2
-    mov bx,ax
-    mov edx,[vidbuffer]
-    add edx,129600
-    mov ecx,65536*2+32768
-    call Write_File
-    call Close_File
+  cmp byte[CheatWinMode],0
+  je .csskip2
+  ; Save Cheat Search File
+  mov edx,cstempfname
+  call Create_File
+  jc .csskip2
+  mov bx,ax
+  mov edx,[vidbuffer]
+  add edx,129600
+  mov ecx,65536*2+32768
+  call Write_File
+  call Close_File
 .csskip2
 
-    mov edi,[vidbuffer]
-    mov ecx,288*120
-    xor eax,eax
-    rep stosd
+  mov edi,[vidbuffer]
+  mov ecx,288*120
+  xor eax,eax
+  rep stosd
 
-    mov ecx,256*144
-    mov eax,[vidbufferofsb]
+  mov ecx,256*144
+  mov eax,[vidbufferofsb]
 .loopcl
-    mov dword[eax],0
-    add eax,4
-    dec ecx
-    jnz .loopcl
+  mov dword[eax],0
+  add eax,4
+  dec ecx
+  jnz .loopcl
 
-    mov al,[cfgsoundon]
-    mov [soundon],al
-    mov al,[cfgStereoSound]
-    mov [StereoSound],al
-    mov al,[cfgSoundQuality]
-    mov [SoundQuality],al
-    call AdjustFrequency
-    mov byte[GUIOn],0
-    mov byte[GUIOn2],0
-    mov byte[GUIReset],0
-    mov dword[StartLL],0
-    mov dword[StartLR],0
-    jmp continueprog
-
+  mov al,[cfgsoundon]
+  mov [soundon],al
+  mov al,[cfgStereoSound]
+  mov [StereoSound],al
+  mov al,[cfgSoundQuality]
+  mov [SoundQuality],al
+  call AdjustFrequency
+  mov byte[GUIOn],0
+  mov byte[GUIOn2],0
+  mov byte[GUIReset],0
+  mov dword[StartLL],0
+  mov dword[StartLR],0
+  jmp continueprog
 
 SECTION .bss
 CheckSumVal resd 1
@@ -1545,101 +1481,100 @@ SECTION .data
 WrongCheckSum db 10,13,'ROM Data Mismatch',10,13,10,13,0
 SECTION .text
 
-
 SRAMDirc:
-    ; get LoadDrive/LoadDir
-    mov ebx,LoadDir
-    mov edx,LoadDrive
-    call Get_Dir
-    ; change to sram dir
-    pushad
-    call SRAMChdir
-    popad
-    ret
+  ; get LoadDrive/LoadDir
+  mov ebx,LoadDir
+  mov edx,LoadDrive
+  call Get_Dir
+  ; change to sram dir
+  pushad
+  call SRAMChdir
+  popad
+  ret
 
 LOADDir:
-    mov dl,[LoadDrive]
-    mov ebx,LoadDir
-    call Change_Dir
-    ret
+  mov dl,[LoadDrive]
+  mov ebx,LoadDir
+  call Change_Dir
+  ret
 
 guimencodermsg:
-    xor ebx,ebx
-    mov ecx,256
+  xor ebx,ebx
+  mov ecx,256
 .a
-    mov byte[pressed+ebx],0
-    inc ebx
-    dec ecx
-    jnz .a
-    mov byte[pressed+2Ch],0
+  mov byte[pressed+ebx],0
+  inc ebx
+  dec ecx
+  jnz .a
+  mov byte[pressed+2Ch],0
 .again
-    GUIBox 43,75,213,163,160
-    GUIBox 43,75,213,75,162
-    GUIBox 43,75,43,163,161
-    GUIBox 213,75,213,163,159
-    GUIBox 43,163,213,163,158
-    GUIOuttext 52,96,guimencodert1,220-15
-    GUIOuttext 51,95,guimencodert1,220
-    GUIOuttext 52,134,guimencodert2,220-15
-    GUIOuttext 51,133,guimencodert2,220
-    call vidpastecopyscr
-    call GUIUnBuffer
-    call DisplayBoxes
-    call DisplayMenu
-    call JoyRead
-    cmp byte[pressed+39h],0
-    jne .pressedokay
-    jmp .again
+  GUIBox 43,75,213,163,160
+  GUIBox 43,75,213,75,162
+  GUIBox 43,75,43,163,161
+  GUIBox 213,75,213,163,159
+  GUIBox 43,163,213,163,158
+  GUIOuttext 52,96,guimencodert1,220-15
+  GUIOuttext 51,95,guimencodert1,220
+  GUIOuttext 52,134,guimencodert2,220-15
+  GUIOuttext 51,133,guimencodert2,220
+  call vidpastecopyscr
+  call GUIUnBuffer
+  call DisplayBoxes
+  call DisplayMenu
+  call JoyRead
+  cmp byte[pressed+39h],0
+  jne .pressedokay
+  jmp .again
 .pressedokay
-    ret
+  ret
 
 SECTION .data
-guimencodert1 db ' MENCODER iS MISSING : ',0
+guimencodert1 db ' MENCODER IS MISSING : ',0
 guimencodert2 db ' PRESS SPACE TO CONTINUE',0
 
-section .text
+SECTION .text
 
 guifirsttimemsg:
-    xor ebx,ebx
-    mov ecx,256
+  xor ebx,ebx
+  mov ecx,256
 .a
-    mov byte[pressed+ebx],0
-    inc ebx
-    dec ecx
-    jnz .a
-    mov byte[pressed+2Ch],0
+  mov byte[pressed+ebx],0
+  inc ebx
+  dec ecx
+  jnz .a
+  mov byte[pressed+2Ch],0
 .again
-    GUIBox 43,75,213,163,160
-    GUIBox 43,75,213,75,162
-    GUIBox 43,75,43,163,161
-    GUIBox 213,75,213,163,159
-    GUIBox 43,163,213,163,158
-    GUIOuttext 52,81,guiftimemsg1,220-15
-    GUIOuttext 51,80,guiftimemsg1,220
-    GUIOuttext 52,96,guiftimemsg2,220-15
-    GUIOuttext 51,95,guiftimemsg2,220
-    GUIOuttext 52,104,guiftimemsg3,220-15
-    GUIOuttext 51,103,guiftimemsg3,220
-    GUIOuttext 52,112,guiftimemsg4,220-15
-    GUIOuttext 51,111,guiftimemsg4,220
-    GUIOuttext 52,120,guiftimemsg5,220-15
-    GUIOuttext 51,119,guiftimemsg5,220
-    GUIOuttext 52,128,guiftimemsg6,220-15
-    GUIOuttext 51,127,guiftimemsg6,220
-    GUIOuttext 52,136,guiftimemsg7,220-15
-    GUIOuttext 51,135,guiftimemsg7,220
-    GUIOuttext 52,151,guiftimemsg8,220-15
-    GUIOuttext 51,150,guiftimemsg8,220
-    call vidpastecopyscr
-    call GUIUnBuffer
-    call DisplayBoxes
-    call DisplayMenu
-    call JoyRead
-    cmp byte[pressed+39h],0
-    jne .pressedokay
-    jmp .again
+  GUIBox 43,75,213,163,160
+  GUIBox 43,75,213,75,162
+  GUIBox 43,75,43,163,161
+  GUIBox 213,75,213,163,159
+  GUIBox 43,163,213,163,158
+  GUIOuttext 52,81,guiftimemsg1,220-15
+  GUIOuttext 51,80,guiftimemsg1,220
+  GUIOuttext 52,96,guiftimemsg2,220-15
+  GUIOuttext 51,95,guiftimemsg2,220
+  GUIOuttext 52,104,guiftimemsg3,220-15
+  GUIOuttext 51,103,guiftimemsg3,220
+  GUIOuttext 52,112,guiftimemsg4,220-15
+  GUIOuttext 51,111,guiftimemsg4,220
+  GUIOuttext 52,120,guiftimemsg5,220-15
+  GUIOuttext 51,119,guiftimemsg5,220
+  GUIOuttext 52,128,guiftimemsg6,220-15
+  GUIOuttext 51,127,guiftimemsg6,220
+  GUIOuttext 52,136,guiftimemsg7,220-15
+  GUIOuttext 51,135,guiftimemsg7,220
+  GUIOuttext 52,151,guiftimemsg8,220-15
+  GUIOuttext 51,150,guiftimemsg8,220
+  call vidpastecopyscr
+  call GUIUnBuffer
+  call DisplayBoxes
+  call DisplayMenu
+  call JoyRead
+  cmp byte[pressed+39h],0
+  jne .pressedokay
+  jmp .again
 .pressedokay
-    ret
+  ret
 
 SECTION .data
 guiftimemsg1 db ' ONE-TIME USER REMINDER : ',0
@@ -1653,46 +1588,46 @@ guiftimemsg8 db 'PRESS SPACEBAR TO PROCEED.',0
 SECTION .text
 
 horizonfixmsg:
-    xor ebx,ebx
-    mov ecx,256
+  xor ebx,ebx
+  mov ecx,256
 .a
-    mov byte[pressed+ebx],0
-    inc ebx
-    dec ecx
-    jnz .a
-    mov byte[pressed+2Ch],0
+  mov byte[pressed+ebx],0
+  inc ebx
+  dec ecx
+  jnz .a
+  mov byte[pressed+2Ch],0
 .again
-    GUIBox 43,75,213,163,160
-    GUIBox 43,75,213,75,162
-    GUIBox 43,75,43,163,161
-    GUIBox 213,75,213,163,159
-    GUIBox 43,163,213,163,158
-    GUIOuttext 52,81,guimsgmsg,220-15
-    GUIOuttext 51,80,guimsgmsg,220
-    GUIOuttext 52,96,[guimsgptr],220-15
-    GUIOuttext 51,95,[guimsgptr],220
-    add dword[guimsgptr],32
-    GUIOuttext 52,104,[guimsgptr],220-15
-    GUIOuttext 51,103,[guimsgptr],220
-    add dword[guimsgptr],32
-    GUIOuttext 52,112,[guimsgptr],220-15
-    GUIOuttext 51,111,[guimsgptr],220
-    add dword[guimsgptr],32
-    GUIOuttext 52,120,[guimsgptr],220-15
-    GUIOuttext 51,119,[guimsgptr],220
-    sub dword[guimsgptr],96
-    GUIOuttext 52,151,guiftimemsg8,220-15
-    GUIOuttext 51,150,guiftimemsg8,220
-    call vidpastecopyscr
-    call GUIUnBuffer
-    call DisplayBoxes
-    call DisplayMenu
-    call JoyRead
-    cmp byte[pressed+39h],0
-    jne .pressedokay
-    jmp .again
+  GUIBox 43,75,213,163,160
+  GUIBox 43,75,213,75,162
+  GUIBox 43,75,43,163,161
+  GUIBox 213,75,213,163,159
+  GUIBox 43,163,213,163,158
+  GUIOuttext 52,81,guimsgmsg,220-15
+  GUIOuttext 51,80,guimsgmsg,220
+  GUIOuttext 52,96,[guimsgptr],220-15
+  GUIOuttext 51,95,[guimsgptr],220
+  add dword[guimsgptr],32
+  GUIOuttext 52,104,[guimsgptr],220-15
+  GUIOuttext 51,103,[guimsgptr],220
+  add dword[guimsgptr],32
+  GUIOuttext 52,112,[guimsgptr],220-15
+  GUIOuttext 51,111,[guimsgptr],220
+  add dword[guimsgptr],32
+  GUIOuttext 52,120,[guimsgptr],220-15
+  GUIOuttext 51,119,[guimsgptr],220
+  sub dword[guimsgptr],96
+  GUIOuttext 52,151,guiftimemsg8,220-15
+  GUIOuttext 51,150,guiftimemsg8,220
+  call vidpastecopyscr
+  call GUIUnBuffer
+  call DisplayBoxes
+  call DisplayMenu
+  call JoyRead
+  cmp byte[pressed+39h],0
+  jne .pressedokay
+  jmp .again
 .pressedokay
-    ret
+  ret
 
 SECTION .data
 guimsgptr dd 0
@@ -1700,54 +1635,54 @@ guimsgmsg db '     WELCOME TO ZSNES',0
 SECTION .text
 
 guimustrestartmsg:
-    xor ebx,ebx
-    mov ecx,256
+  xor ebx,ebx
+  mov ecx,256
 .a
-    cmp byte[pressed+ebx],1
-    jne .npr1
-    mov byte[pressed+ebx],2
+  cmp byte[pressed+ebx],1
+  jne .npr1
+  mov byte[pressed+ebx],2
 .npr1
-    inc ebx
-    dec ecx
-    jnz .a
-    mov byte[pressed+2Ch],0
+  inc ebx
+  dec ecx
+  jnz .a
+  mov byte[pressed+2Ch],0
 .again
-    GUIBox 43,87,213,151,160
-    GUIBox 43,87,213,87,162
-    GUIBox 43,87,43,151,161
-    GUIBox 213,87,213,151,159
-    GUIBox 43,151,213,151,158
-    GUIOuttext 56,92,guiqtimemsg1,220-15
-    GUIOuttext 55,91,guiqtimemsg1,220
-    GUIOuttext 56,100,guiqtimemsg2,220-15
-    GUIOuttext 55,99,guiqtimemsg2,220
-    GUIOuttext 56,108,guiqtimemsg3,220-15
-    GUIOuttext 55,107,guiqtimemsg3,220
-    GUIOuttext 56,116,guiqtimemsg4,220-15
-    GUIOuttext 55,115,guiqtimemsg4,220
-    GUIOuttext 56,139,guiqtimemsg8,220-15
-    GUIOuttext 55,138,guiqtimemsg8,220
-    call vidpastecopyscr
-    call GUIUnBuffer
-    call DisplayBoxes
-    call DisplayMenu
-    call JoyRead
+  GUIBox 43,87,213,151,160
+  GUIBox 43,87,213,87,162
+  GUIBox 43,87,43,151,161
+  GUIBox 213,87,213,151,159
+  GUIBox 43,151,213,151,158
+  GUIOuttext 56,92,guiqtimemsg1,220-15
+  GUIOuttext 55,91,guiqtimemsg1,220
+  GUIOuttext 56,100,guiqtimemsg2,220-15
+  GUIOuttext 55,99,guiqtimemsg2,220
+  GUIOuttext 56,108,guiqtimemsg3,220-15
+  GUIOuttext 55,107,guiqtimemsg3,220
+  GUIOuttext 56,116,guiqtimemsg4,220-15
+  GUIOuttext 55,115,guiqtimemsg4,220
+  GUIOuttext 56,139,guiqtimemsg8,220-15
+  GUIOuttext 55,138,guiqtimemsg8,220
+  call vidpastecopyscr
+  call GUIUnBuffer
+  call DisplayBoxes
+  call DisplayMenu
+  call JoyRead
 
-    mov byte[pressed+2Ch],0
+  mov byte[pressed+2Ch],0
 
-    call JoyRead
-    xor ebx,ebx
-    mov ecx,256+128+64
+  call JoyRead
+  xor ebx,ebx
+  mov ecx,256+128+64
 .b
-    cmp byte[pressed+ebx],1
-    je .pressedokay
-    inc ebx
-    dec ecx
-    jnz .b
-    jmp .again
+  cmp byte[pressed+ebx],1
+  je .pressedokay
+  inc ebx
+  dec ecx
+  jnz .b
+  jmp .again
 .pressedokay
-    mov byte[GUIQuit],1
-    ret
+  mov byte[GUIQuit],1
+  ret
 
 SECTION .data
 guiqtimemsg1 db 'ZSNES MUST BE RESTARTED',0
@@ -1758,203 +1693,203 @@ guiqtimemsg8 db 'PRESS ANY KEY.',0
 SECTION .text
 
 guiprevideo:
-    xor ebx,ebx
-    mov ecx,256
+  xor ebx,ebx
+  mov ecx,256
 .a
-    mov byte[pressed+ebx],0
-    inc ebx
-    dec ecx
-    jnz .a
-    call GUIUnBuffer
-    call DisplayBoxes
-    call DisplayMenu
-    GUIBox 43,90,213,163,160
-    GUIBox 43,90,213,90,162
-    GUIBox 43,90,43,163,161
-    GUIBox 213,90,213,163,159
-    GUIBox 43,163,213,163,158
-    GUIOuttext 56,96,guiprevidmsg1,220-15
-    GUIOuttext 55,95,guiprevidmsg1,220
-    GUIOuttext 56,104,guiprevidmsg2,220-15
-    GUIOuttext 55,103,guiprevidmsg2,220
-    GUIOuttext 56,112,guiprevidmsg3,220-15
-    GUIOuttext 55,111,guiprevidmsg3,220
-    GUIOuttext 56,120,guiprevidmsg4,220-15
-    GUIOuttext 55,119,guiprevidmsg4,220
-    GUIOuttext 56,128,guiprevidmsg5,220-15
-    GUIOuttext 55,127,guiprevidmsg5,220
-    GUIOuttext 56,136,guiprevidmsg6,220-15
-    GUIOuttext 55,135,guiprevidmsg6,220
-    GUIOuttext 56,151,guiprevidmsg7,220-15
-    GUIOuttext 55,150,guiprevidmsg7,220
-    call vidpastecopyscr
-    mov byte[pressed+2Ch],0
+  mov byte[pressed+ebx],0
+  inc ebx
+  dec ecx
+  jnz .a
+  call GUIUnBuffer
+  call DisplayBoxes
+  call DisplayMenu
+  GUIBox 43,90,213,163,160
+  GUIBox 43,90,213,90,162
+  GUIBox 43,90,43,163,161
+  GUIBox 213,90,213,163,159
+  GUIBox 43,163,213,163,158
+  GUIOuttext 56,96,guiprevidmsg1,220-15
+  GUIOuttext 55,95,guiprevidmsg1,220
+  GUIOuttext 56,104,guiprevidmsg2,220-15
+  GUIOuttext 55,103,guiprevidmsg2,220
+  GUIOuttext 56,112,guiprevidmsg3,220-15
+  GUIOuttext 55,111,guiprevidmsg3,220
+  GUIOuttext 56,120,guiprevidmsg4,220-15
+  GUIOuttext 55,119,guiprevidmsg4,220
+  GUIOuttext 56,128,guiprevidmsg5,220-15
+  GUIOuttext 55,127,guiprevidmsg5,220
+  GUIOuttext 56,136,guiprevidmsg6,220-15
+  GUIOuttext 55,135,guiprevidmsg6,220
+  GUIOuttext 56,151,guiprevidmsg7,220-15
+  GUIOuttext 55,150,guiprevidmsg7,220
+  call vidpastecopyscr
+  mov byte[pressed+2Ch],0
 .again
-    call JoyRead
-    xor ebx,ebx
-    mov ecx,256+128+64
+  call JoyRead
+  xor ebx,ebx
+  mov ecx,256+128+64
 .b
-    cmp byte[pressed+ebx],0
-    jne .pressedokay
-    inc ebx
-    dec ecx
-    jnz .b
-    cmp byte[MouseDis],1
-    je .mousedis
-    call Get_MouseData
-    test bx,01h
-    jnz .pressedokay
+  cmp byte[pressed+ebx],0
+  jne .pressedokay
+  inc ebx
+  dec ecx
+  jnz .b
+  cmp byte[MouseDis],1
+  je .mousedis
+  call Get_MouseData
+  test bx,01h
+  jnz .pressedokay
 .mousedis
-    jmp .again
+  jmp .again
 .pressedokay
-    ret
+  ret
 
 SECTION .data
 guiprevidmsg1 db 'ZSNES WILL NOW ATTEMPT',0
-guiprevidmsg2 db 'TO CHANGE YOUR VIDEO',0
-guiprevidmsg3 db 'MODE.  IF THE CHANGE',0
-guiprevidmsg4 db 'IS UNSUCCESSFUL, WAIT',0
-guiprevidmsg5 db '10 SECONDS AND VIDEO',0
-guiprevidmsg6 db 'MODE WILL BE RESET',0
-guiprevidmsg7 db 'PRESS ANY KEY',0
+guiprevidmsg2 db ' TO CHANGE YOUR VIDEO',0
+guiprevidmsg3 db ' MODE.  IF THE CHANGE',0
+guiprevidmsg4 db 'IS UNSUCCESSFUL,  WAIT',0
+guiprevidmsg5 db ' 10 SECONDS AND VIDEO',0
+guiprevidmsg6 db 'MODE WILL BE RESTORED.',0
+guiprevidmsg7 db '    PRESS ANY KEY.',0
 SECTION .text
 
 guipostvideo:
-    mov ecx,255*144
-    mov eax,[vidbufferofsb]
+  mov ecx,255*144
+  mov eax,[vidbufferofsb]
 .loop
-    mov dword[eax],0FFFFFFFFh
-    add eax,4
-    dec ecx
-    jnz .loop
+  mov dword[eax],0FFFFFFFFh
+  add eax,4
+  dec ecx
+  jnz .loop
 
-    mov dword[GUIkeydelay],36*10
+  mov dword[GUIkeydelay],36*10
 
 .pressedfail
-    call GUIUnBuffer
-    call DisplayBoxes
-    call DisplayMenu
-    GUIBox 43,90,213,163,160
-    GUIBox 43,90,213,90,162
-    GUIBox 43,90,43,163,161
-    GUIBox 213,90,213,163,159
-    GUIBox 43,163,213,163,158
-    GUIOuttext 56,96,guipostvidmsg1,220-15
-    GUIOuttext 55,95,guipostvidmsg1,220
-    GUIOuttext 56,151,guipostvidmsg2,220-15
-    GUIOuttext 55,150,guipostvidmsg2,220
-    call vidpastecopyscr
-    ; Wait for all mouse and input data to be 0
+  call GUIUnBuffer
+  call DisplayBoxes
+  call DisplayMenu
+  GUIBox 43,90,213,163,160
+  GUIBox 43,90,213,90,162
+  GUIBox 43,90,43,163,161
+  GUIBox 213,90,213,163,159
+  GUIBox 43,163,213,163,158
+  GUIOuttext 56,96,guipostvidmsg1,220-15
+  GUIOuttext 55,95,guipostvidmsg1,220
+  GUIOuttext 56,151,guipostvidmsg2,220-15
+  GUIOuttext 55,150,guipostvidmsg2,220
+  call vidpastecopyscr
+  ; Wait for all mouse and input data to be 0
 
-    cmp dword[GUIkeydelay],0
-    je .pressedokay
+  cmp dword[GUIkeydelay],0
+  je .pressedokay
 
-    ;This is to make all ports not register space bar from being pressed earlier
-    mov byte[pressed+2Ch],0
+  ;This is to make all ports not register space bar from being pressed earlier
+  mov byte[pressed+2Ch],0
 
-    call JoyRead
+  call JoyRead
 
-    cmp byte[pressed+39h],0
-    jne .pressedokay
-    jmp .pressedfail
+  cmp byte[pressed+39h],0
+  jne .pressedokay
+  jmp .pressedfail
 .pressedokay
-    mov byte[GUIpclicked],1
-    ret
+  mov byte[GUIpclicked],1
+  ret
 
 SECTION .data
 guipostvidmsg1 db 'VIDEO MODE CHANGED.',0
-guipostvidmsg2 db 'PRESS SPACEBAR',0
+guipostvidmsg2 db '  PRESS SPACEBAR.',0
 SECTION .text
 
 guipostvideofail:
-    mov dword[guipostvidptr],guipostvidmsg3b
-    mov byte[guipostvidmsg3b],0
-    mov byte[guipostvidmsg4b],0
-    mov byte[guipostvidmsg5b],0
-    mov eax,[ErrorPointer]
-    mov ebx,eax
+  mov dword[guipostvidptr],guipostvidmsg3b
+  mov byte[guipostvidmsg3b],0
+  mov byte[guipostvidmsg4b],0
+  mov byte[guipostvidmsg5b],0
+  mov eax,[ErrorPointer]
+  mov ebx,eax
 .loop
-    cmp byte[ebx],0
-    je .found
-    cmp byte[ebx],'$'
-    je .found
-    inc ebx
-    jmp .loop
+  cmp byte[ebx],0
+  je .found
+  cmp byte[ebx],'$'
+  je .found
+  inc ebx
+  jmp .loop
 .found
-    mov edx,ebx
-    sub edx,eax
+  mov edx,ebx
+  sub edx,eax
 .detnext
-    or edx,edx
-    jz .notext
-    cmp edx,25
-    jbe .copytext
+  or edx,edx
+  jz .notext
+  cmp edx,25
+  jbe .copytext
 .nospace
-    dec edx
-    cmp byte[eax+edx],32
-    jne .nospace
-    jmp .detnext
+  dec edx
+  cmp byte[eax+edx],32
+  jne .nospace
+  jmp .detnext
 .copytext
-    push ebx
-    mov ecx,[guipostvidptr]
+  push ebx
+  mov ecx,[guipostvidptr]
 .copytextloop
-    mov bl,[eax]
-    cmp bl,'$'
-    jne .notdol
-    mov bl,0
+  mov bl,[eax]
+  cmp bl,'$'
+  jne .notdol
+  mov bl,0
 .notdol
-    mov [ecx],bl
-    inc eax
-    inc ecx
-    dec edx
-    jnz .copytextloop
-    mov byte[ecx],0
-    pop ebx
-    add dword[guipostvidptr],26
-    cmp byte[eax],0
-    je .notext
-    cmp byte[eax],'$'
-    je .notext
-    inc eax
-    jmp .found
+  mov [ecx],bl
+  inc eax
+  inc ecx
+  dec edx
+  jnz .copytextloop
+  mov byte[ecx],0
+  pop ebx
+  add dword[guipostvidptr],26
+  cmp byte[eax],0
+  je .notext
+  cmp byte[eax],'$'
+  je .notext
+  inc eax
+  jmp .found
 .notext
 
-    xor ebx,ebx
-    mov ecx,256
+  xor ebx,ebx
+  mov ecx,256
 .a
-    mov byte[pressed+ebx],0
-    inc ebx
-    dec ecx
-    jnz .a
-    call GUIUnBuffer
-    call DisplayBoxes
-    call DisplayMenu
-    GUIBox 43,90,213,163,160
-    GUIBox 43,90,213,90,162
-    GUIBox 43,90,43,163,161
-    GUIBox 213,90,213,163,159
-    GUIBox 43,163,213,163,158
-    GUIOuttext 56,96,guipostvidmsg1b,220-15
-    GUIOuttext 55,95,guipostvidmsg1b,220
-    GUIOuttext 56,108,guipostvidmsg2b,220-15
-    GUIOuttext 55,107,guipostvidmsg2b,220
-    GUIOuttext 56,119,guipostvidmsg3b,220-15
-    GUIOuttext 55,118,guipostvidmsg3b,220
-    GUIOuttext 56,129,guipostvidmsg4b,220-15
-    GUIOuttext 55,128,guipostvidmsg4b,220
-    GUIOuttext 56,139,guipostvidmsg5b,220-15
-    GUIOuttext 55,138,guipostvidmsg5b,220
-    GUIOuttext 56,152,guipostvidmsg8b,220-15
-    GUIOuttext 55,151,guipostvidmsg8b,220
-    call vidpastecopyscr
-    call GUIUnBuffer
-    call DisplayBoxes
-    call DisplayMenu
+  mov byte[pressed+ebx],0
+  inc ebx
+  dec ecx
+  jnz .a
+  call GUIUnBuffer
+  call DisplayBoxes
+  call DisplayMenu
+  GUIBox 43,90,213,163,160
+  GUIBox 43,90,213,90,162
+  GUIBox 43,90,43,163,161
+  GUIBox 213,90,213,163,159
+  GUIBox 43,163,213,163,158
+  GUIOuttext 56,96,guipostvidmsg1b,220-15
+  GUIOuttext 55,95,guipostvidmsg1b,220
+  GUIOuttext 56,108,guipostvidmsg2b,220-15
+  GUIOuttext 55,107,guipostvidmsg2b,220
+  GUIOuttext 56,119,guipostvidmsg3b,220-15
+  GUIOuttext 55,118,guipostvidmsg3b,220
+  GUIOuttext 56,129,guipostvidmsg4b,220-15
+  GUIOuttext 55,128,guipostvidmsg4b,220
+  GUIOuttext 56,139,guipostvidmsg5b,220-15
+  GUIOuttext 55,138,guipostvidmsg5b,220
+  GUIOuttext 56,152,guipostvidmsg8b,220-15
+  GUIOuttext 55,151,guipostvidmsg8b,220
+  call vidpastecopyscr
+  call GUIUnBuffer
+  call DisplayBoxes
+  call DisplayMenu
 %ifndef __UNIXSDL__
-    mov dword[GUIkeydelay],0FFFFFFFFh
+  mov dword[GUIkeydelay],0FFFFFFFFh
 %else
-    mov dword[GUIkeydelay],0x0
+  mov dword[GUIkeydelay],0x0
 %endif
-    jmp guipostvideo.pressedfail
+  jmp guipostvideo.pressedfail
 
 SECTION .data
 guipostvidmsg1b db 'VIDEO MODE CHANGE FAILED.',0
@@ -1968,95 +1903,95 @@ guipostvidptr resd 1
 SECTION .text
 
 GUILoadManualDir
-    mov ebx,GUILoadTextA
-    mov [ManualCPtr],ebx
-    cmp byte[ebx],0
-    je near .nofindfile
-    xor eax,eax
+  mov ebx,GUILoadTextA
+  mov [ManualCPtr],ebx
+  cmp byte[ebx],0
+  je near .nofindfile
+  xor eax,eax
 .next
-    cmp byte[ebx],':'
-    jne .nocolon
-    mov eax,ebx
+  cmp byte[ebx],':'
+  jne .nocolon
+  mov eax,ebx
 .nocolon
-    inc ebx
-    cmp byte[ebx],0
-    jne .next
-    or eax,eax
-    jz .nomorecolon
-    cmp eax,GUILoadTextA
-    je .invalidcolon
-    mov bl,[eax-1]
-    cmp bl,'a'
-    jb .nolower
-    cmp bl,'z'
-    ja .nolower
-    sub bl,'a'-'A'
+  inc ebx
+  cmp byte[ebx],0
+  jne .next
+  or eax,eax
+  jz .nomorecolon
+  cmp eax,GUILoadTextA
+  je .invalidcolon
+  mov bl,[eax-1]
+  cmp bl,'a'
+  jb .nolower
+  cmp bl,'z'
+  ja .nolower
+  sub bl,'a'-'A'
 .nolower
-    cmp bl,'A'
-    jb .invalidcolon
-    cmp bl,'Z'
-    ja .invalidcolon
-    sub bl,'A'
-    mov dl,bl
-    push eax
-    call Change_Drive
-    pop eax
-    mov byte[ManualStatus],1
+  cmp bl,'A'
+  jb .invalidcolon
+  cmp bl,'Z'
+  ja .invalidcolon
+  sub bl,'A'
+  mov dl,bl
+  push eax
+  call Change_Drive
+  pop eax
+  mov byte[ManualStatus],1
 .invalidcolon
-    inc eax
-    mov [ManualCPtr],eax
+  inc eax
+  mov [ManualCPtr],eax
 .nomorecolon
-    mov ebx,[ManualCPtr]
-    cmp byte[ebx],0
-    je near .finish
-    xor eax,eax
+  mov ebx,[ManualCPtr]
+  cmp byte[ebx],0
+  je near .finish
+  xor eax,eax
 .next2
-    cmp byte[ebx],'\'
-    jne .nobackslash
-    mov eax,ebx
+  cmp byte[ebx],'\'
+  jne .nobackslash
+  mov eax,ebx
 .nobackslash
-    inc ebx
-    cmp byte[ebx],0
-    jne .next2
-    or eax,eax
-    jz .finish
-    inc eax
-    mov cl,[eax]
-    mov byte[eax],0
-    push ecx
-    push eax
-    mov edx,[ManualCPtr]
-    call Change_Single_Dir
-    jc .nosuchdir
-    mov byte[ManualStatus],1
+  inc ebx
+  cmp byte[ebx],0
+  jne .next2
+  or eax,eax
+  jz .finish
+  inc eax
+  mov cl,[eax]
+  mov byte[eax],0
+  push ecx
+  push eax
+  mov edx,[ManualCPtr]
+  call Change_Single_Dir
+  jc .nosuchdir
+  mov byte[ManualStatus],1
 .nosuchdir
-    pop eax
-    pop ecx
-    mov [eax],cl
-    mov [ManualCPtr],eax
+  pop eax
+  pop ecx
+  mov [eax],cl
+  mov [ManualCPtr],eax
 .finish
-    mov edx,[ManualCPtr]
-    call Change_Single_Dir
-    jc .notdir
-    mov byte[ManualStatus],1
-    jmp .nomoredir
+  mov edx,[ManualCPtr]
+  call Change_Single_Dir
+  jc .notdir
+  mov byte[ManualStatus],1
+  jmp .nomoredir
 .notdir
-    call .nomoredir
-    mov edx,[ManualCPtr]
-    cmp byte[edx],0
-    je .nofindfile
-    ; otherwise set ManualStatus to 2
-    mov byte[ManualStatus],2
-    mov dword[GUIcurrentfilewin],0
+  call .nomoredir
+  mov edx,[ManualCPtr]
+  cmp byte[edx],0
+  je .nofindfile
+  ; otherwise set ManualStatus to 2
+  mov byte[ManualStatus],2
+  mov dword[GUIcurrentfilewin],0
 .nofindfile
-    ret
+  ret
 .nomoredir
-    ; refresh dir if necessary
-    cmp byte[ManualStatus],1
-    jne .norefresh
-    call GetLoadData.a
+  ; refresh dir if necessary
+  cmp byte[ManualStatus],1
+  jne .norefresh
+  call GetLoadData.a
 .norefresh
-    ret
+  ret
 
 SECTION .bss
 ManualCPtr resd 1
@@ -2070,273 +2005,244 @@ DevicePtr dd pl1selk,pl2selk,pl3selk,pl4selk,pl5selk
 SECTION .text
 
 CheckMenuItemHelp:
-    mov al,[GUIcmenupos]
-    mov [GUIpmenupos],al
-    mov byte[GUIcmenupos],0
-    cmp byte[GUIwinactiv+edx],1
-    je .menuontop
-    xor eax,eax
-    mov al,[GUIwinptr]
-    inc byte[GUIwinptr]
-    mov [GUIwinorder+eax],dl
-    mov byte[GUIwinactiv+edx],1
-    cmp byte[resetposn],1
-    jne .nomenuitem
-    mov eax,[GUIwinposxo+edx*4]
-    mov [GUIwinposx+edx*4],eax
-    mov eax,[GUIwinposyo+edx*4]
-    mov [GUIwinposy+edx*4],eax
-    jmp .nomenuitem
+  mov al,[GUIcmenupos]
+  mov [GUIpmenupos],al
+  mov byte[GUIcmenupos],0
+  cmp byte[GUIwinactiv+edx],1
+  je .menuontop
+  xor eax,eax
+  mov al,[GUIwinptr]
+  inc byte[GUIwinptr]
+  mov [GUIwinorder+eax],dl
+  mov byte[GUIwinactiv+edx],1
+  cmp byte[resetposn],1
+  jne .nomenuitem
+  mov eax,[GUIwinposxo+edx*4]
+  mov [GUIwinposx+edx*4],eax
+  mov eax,[GUIwinposyo+edx*4]
+  mov [GUIwinposy+edx*4],eax
+  jmp .nomenuitem
 .menuontop
-    xor eax,eax
-    ; look for match
+  xor eax,eax
+  ; look for match
 .notfoundyet
-    mov bl,[GUIwinorder+eax]
-    cmp bl,dl
-    je .nextfind
-    inc eax
-    jmp .notfoundyet
+  mov bl,[GUIwinorder+eax]
+  cmp bl,dl
+  je .nextfind
+  inc eax
+  jmp .notfoundyet
 .nextfind
-    inc eax
-    cmp al,[GUIwinptr]
-    je .foundend
-    mov cl,[GUIwinorder+eax]
-    mov [GUIwinorder+eax-1],cl
-    jmp .nextfind
+  inc eax
+  cmp al,[GUIwinptr]
+  je .foundend
+  mov cl,[GUIwinorder+eax]
+  mov [GUIwinorder+eax-1],cl
+  jmp .nextfind
 .foundend
-    mov byte[GUIpclicked],0
-    mov [GUIwinorder+eax-1],bl
+  mov byte[GUIpclicked],0
+  mov [GUIwinorder+eax-1],bl
 .nomenuitem
-    ret
+  ret
 
 %macro GUICheckMenuItem 2
-    mov edx,%1
-    cmp byte[GUIcrowpos],%2
-    jne near %%nomenuitem
-    call CheckMenuItemHelp
+  mov edx,%1
+  cmp byte[GUIcrowpos],%2
+  jne near %%nomenuitem
+  call CheckMenuItemHelp
 %%nomenuitem
 %endmacro
 
 %macro checkqloadvalue 1
-    cmp byte[GUIcrowpos],%1
-    jne %%skip
-    mov esi,prevloaddnamel+%1*512
-    cmp byte[esi+1],0
-    je %%notvalid
-    mov edi,prevloadfnamel+%1*512
-    mov ebx,prevloadnames+%1*16
-    mov ecx,%1
-    call loadquickfname
+  cmp byte[GUIcrowpos],%1
+  jne %%skip
+  mov esi,prevloaddnamel+%1*512
+  cmp byte[esi+1],0
+  je %%notvalid
+  mov edi,prevloadfnamel+%1*512
+  mov ebx,prevloadnames+%1*16
+  mov ecx,%1
+  call loadquickfname
 %%notvalid
-    ret
+  ret
 %%skip
 %endmacro
 
 GUITryMenuItem:                     ; Defines which menu item calls what window number
-    cmp byte[GUIcmenupos],1
-    jne near .noquickload
-    checkqloadvalue 0
-    checkqloadvalue 1
-    checkqloadvalue 2
-    checkqloadvalue 3
-    checkqloadvalue 4
-    checkqloadvalue 5
-    checkqloadvalue 6
-    checkqloadvalue 7
-    checkqloadvalue 8
-    checkqloadvalue 9
-    cmp byte[GUIcrowpos],11
-    jne .skipswitch
-    xor byte[prevlfreeze],1
-    cmp byte[prevlfreeze],0
-    je .off
-    mov byte[GUIPrevMenuData.onoff+15],'O'
-    mov byte[GUIPrevMenuData.onoff+16],'N'
-    mov byte[GUIPrevMenuData.onoff+17],' '
-    jmp .on
+  cmp byte[GUIcmenupos],1
+  jne near .noquickload
+  checkqloadvalue 0
+  checkqloadvalue 1
+  checkqloadvalue 2
+  checkqloadvalue 3
+  checkqloadvalue 4
+  checkqloadvalue 5
+  checkqloadvalue 6
+  checkqloadvalue 7
+  checkqloadvalue 8
+  checkqloadvalue 9
+  cmp byte[GUIcrowpos],11
+  jne .skipswitch
+  xor byte[prevlfreeze],1
+  cmp byte[prevlfreeze],0
+  je .off
+  mov dword[GUIPrevMenuData.onoff+14],'ON  '
+  jmp .on
 .off
-    mov byte[GUIPrevMenuData.onoff+15],'O'
-    mov byte[GUIPrevMenuData.onoff+16],'F'
-    mov byte[GUIPrevMenuData.onoff+17],'F'
+  mov dword[GUIPrevMenuData.onoff+14],'OFF '
 .on
 .skipswitch
-    cmp byte[GUIcrowpos],12
-    jne .skipclear
-    cmp byte[prevlfreeze],0
-    jne .skipclear
-    mov edi,prevloadnames
-    mov eax,20202020h
-    mov ecx,4*10
-    rep stosd
-    mov edi,prevloaddnamel
-    xor eax,eax
-    mov ecx,128*10
-    rep stosd
-    mov edi,prevloadfnamel
-    mov eax,0 ;20202020h
-    mov ecx,128*10
-    rep stosd
-    call GUIQuickLoadUpdate
-    ret
+  cmp byte[GUIcrowpos],12
+  jne .skipclear
+  cmp byte[prevlfreeze],0
+  jne .skipclear
+  mov edi,prevloadnames
+  mov eax,20202020h
+  mov ecx,4*10
+  rep stosd
+  mov edi,prevloaddnamel
+  xor eax,eax
+  mov ecx,128*10
+  rep stosd
+  mov edi,prevloadfnamel
+  mov eax,0 ;20202020h
+  mov ecx,128*10
+  rep stosd
+  call GUIQuickLoadUpdate
+  ret
 .skipclear
 .noquickload
-    cmp byte[GUIcmenupos],2
-    jne near .nomain
-    GUICheckMenuItem 1, 0               ; Load
-    cmp byte[GUIcrowpos],0
-    jne .noloadrefresh
-    jmp GetLoadData
+  cmp byte[GUIcmenupos],2
+  jne near .nomain
+  GUICheckMenuItem 1, 0               ; Load
+  cmp byte[GUIcrowpos],0
+  jne .noloadrefresh
+  jmp GetLoadData
 .noloadrefresh
-    cmp byte[romloadskip],0
-    jne near .noromloaded
-    cmp byte[GUIcrowpos],1              ; Run
-    jne .norun
-    cmp byte[romloadskip],0
-    jne .dontquit
-    mov byte[GUIQuit],2
+  cmp byte[romloadskip],0
+  jne near .noromloaded
+  cmp byte[GUIcrowpos],1              ; Run
+  jne .norun
+  cmp byte[romloadskip],0
+  jne .dontquit
+  mov byte[GUIQuit],2
 .dontquit
-    ret
+  ret
 .norun
-    GUICheckMenuItem 12, 2              ; Reset
-    cmp byte[GUIcrowpos],2
-    jne .noreset
-    mov byte[GUICResetPos],1
+  GUICheckMenuItem 12, 2              ; Reset
+  cmp byte[GUIcrowpos],2
+  jne .noreset
+  mov byte[GUICResetPos],1
 .noreset
-    cmp byte[GUIcrowpos],4
-    jne .nosavestate
-    mov byte[GUIStatesText5],0
-    mov byte[GUICStatePos],1
+  cmp byte[GUIcrowpos],4
+  jne .nosavestate
+  mov byte[GUIStatesText5],0
+  mov byte[GUICStatePos],1
 .nosavestate
-    cmp byte[GUIcrowpos],5
-    jne .noloadstate
-    mov byte[GUIStatesText5],1
-    mov byte[GUICStatePos],1
+  cmp byte[GUIcrowpos],5
+  jne .noloadstate
+  mov byte[GUIStatesText5],1
+  mov byte[GUICStatePos],1
 .noloadstate
-    GUICheckMenuItem 14, 4              ; Save State
-    GUICheckMenuItem 14, 5              ; Load State
-    GUICheckMenuItem 2, 6               ; Select State
+  GUICheckMenuItem 14, 4              ; Save State
+  GUICheckMenuItem 14, 5              ; Load State
+  GUICheckMenuItem 2, 6               ; Select State
 .noromloaded
-    cmp byte[GUIcrowpos],8
-    jne .noquit
-    mov byte[GUIQuit],1
+  cmp byte[GUIcrowpos],8
+  jne .noquit
+  mov byte[GUIQuit],1
 .noquit
 .nomain
-    cmp byte[GUIcmenupos],3
-    jne near .noconfig
-    GUICheckMenuItem 3, 0               ; Input #1
-    GUICheckMenuItem 3, 1               ; Input #2
-    GUICheckMenuItem 3, 2               ; Input #3
-    GUICheckMenuItem 3, 3               ; Input #4
-    GUICheckMenuItem 3, 4               ; Input #5
-    cmp byte[GUIcrowpos],0
-    jne .noplay1
-    mov byte[cplayernum],0
-.noplay1
-    cmp byte[GUIcrowpos],1
-    jne .noplay2
-    mov byte[cplayernum],1
-.noplay2
-    cmp byte[GUIcrowpos],2
-    jne .noplay3
-    mov byte[cplayernum],2
-.noplay3
-    cmp byte[GUIcrowpos],3
-    jne .noplay4
-    mov byte[cplayernum],3
-.noplay4
-    cmp byte[GUIcrowpos],4
-    jne .noplay5
-    mov byte[cplayernum],4
-.noplay5
-    ;The number on the left is the window to open
-    ;the number on the right is where in the drop down box we are
-    GUICheckMenuItem 17, 6              ; Add-Ons
-    GUICheckMenuItem 18, 7              ; Chip Config
-    GUICheckMenuItem 4, 9               ; Options
-    cmp byte[GUIcrowpos],10              ; Video
-    jne near .novideo
-    ; set Video cursor location
-    xor eax,eax
-    mov al,[cvidmode]
-    mov [GUIcurrentvideocursloc],eax
-    mov edx,[NumVideoModes]
-    sub edx,5
-    cmp eax,edx
-    jbe .noof
-    mov eax,edx
+  cmp byte[GUIcmenupos],3
+  jne near .noconfig
+  ;The number on the left is the window to open
+  ;the number on the right is where in the drop down box we are
+  GUICheckMenuItem 3,0               ; Input #1-5
+  GUICheckMenuItem 17,2              ; Add-Ons
+  GUICheckMenuItem 18,3              ; Chip Config
+  GUICheckMenuItem 4,5               ; Options
+  cmp byte[GUIcrowpos],6             ; Video
+  jne near .novideo
+  ; set Video cursor location
+  xor eax,eax
+  mov al,[cvidmode]
+  mov [GUIcurrentvideocursloc],eax
+  mov edx,[NumVideoModes]
+  sub edx,5
+  cmp eax,edx
+  jbe .noof
+  mov eax,edx
 .noof
-    mov [GUIcurrentvideoviewloc],eax
-    mov edx,5
-    call CheckMenuItemHelp
+  mov [GUIcurrentvideoviewloc],eax
+  mov edx,5
+  call CheckMenuItemHelp
 .novideo
-    GUICheckMenuItem 6, 11             ; Sound
-    GUICheckMenuItem 19, 12            ; Paths
-    GUICheckMenuItem 20, 13            ; Saves
-    GUICheckMenuItem 21, 14            ; Speed
+  GUICheckMenuItem 6,7             ; Sound
+  GUICheckMenuItem 19,8            ; Paths
+  GUICheckMenuItem 20,9            ; Saves
+  GUICheckMenuItem 21,10           ; Speed
 .noconfig
-    cmp byte[romloadskip],0
-    jne near .nocheat
-    cmp byte[GUIcmenupos],4
-    jne near .nocheat
-    GUICheckMenuItem 7, 0
-    GUICheckMenuItem 7, 1
-    GUICheckMenuItem 13, 2
-    cmp byte[GUIcrowpos],0
-    jne .noaddc
-    mov dword[GUIcurrentcheatwin],1
+  cmp byte[romloadskip],0
+  jne near .nocheat
+  cmp byte[GUIcmenupos],4
+  jne near .nocheat
+  GUICheckMenuItem 7, 0
+  GUICheckMenuItem 7, 1
+  GUICheckMenuItem 13, 2
+  cmp byte[GUIcrowpos],0
+  jne .noaddc
+  mov dword[GUIcurrentcheatwin],1
 .noaddc
-    cmp byte[GUIcrowpos],1
-    jne .nobrowsec
-    mov dword[GUIcurrentcheatwin],0
+  cmp byte[GUIcrowpos],1
+  jne .nobrowsec
+  mov dword[GUIcurrentcheatwin],0
 .nobrowsec
 .nocheat
-    cmp byte[GUIcmenupos],5
-    jne near .nonet
+  cmp byte[GUIcmenupos],5
+  jne near .nonet
 %ifdef __MSDOS__
 ;    GUICheckMenuItem 8, 0        ; Disable DOS Netplay Options
 ;    GUICheckMenuItem 8, 1
 %endif
-;.win32                           ; Already commented
 ;    GUICheckMenuItem 8, 0        ; Disable WIN/SDL Internet Option
-    cmp byte[GUIcrowpos],0
-    jne near .nonet
+  cmp byte[GUIcrowpos],0
+  jne near .nonet
 .nonet
-    cmp byte[GUIcmenupos],6
-    jne near .nomisc
-    GUICheckMenuItem 9, 0
-    GUICheckMenuItem 10, 1
-    cmp byte[romloadskip],0
-    jne near .nomovie
-    GUICheckMenuItem 15, 2
-    cmp byte[GUIcrowpos],2
-    jne .nomovie
-    mov byte[MovieRecordWinVal],0
+  cmp byte[GUIcmenupos],6
+  jne near .nomisc
+  GUICheckMenuItem 9, 0
+  GUICheckMenuItem 10, 1
+  cmp byte[romloadskip],0
+  jne near .nomovie
+  GUICheckMenuItem 15, 2
+  cmp byte[GUIcrowpos],2
+  jne .nomovie
+  mov byte[MovieRecordWinVal],0
 .nomovie
-    GUICheckMenuItem 16, 3        ; Save Config
-    cmp byte[GUIcrowpos],4
-    jne .nosavestuff
+  GUICheckMenuItem 16, 3        ; Save Config
+  cmp byte[GUIcrowpos],4
+  jne .nosavestuff
 
-    ; change dir to InitDrive/InitDir
-    mov dl,[InitDrive]
-    mov ebx,InitDir
-    call Change_Dir
+  ; change dir to InitDrive/InitDir
+  mov dl,[InitDrive]
+  mov ebx,InitDir
+  call Change_Dir
 
-    mov byte[savecfgforce],1
-    call createnewcfg
-    call GUISaveVars
-    mov byte[savecfgforce],0
+  mov byte[savecfgforce],1
+  call createnewcfg
+  call GUISaveVars
+  mov byte[savecfgforce],0
 
-    call Makemode7Table
-    mov dword[GUICMessage],.message1
-    mov dword[GUICTimer],50
-    ; change dir to LoadDrive/LoadDir
-    mov dl,[LoadDrive]
-    mov ebx,LoadDir
-    call Change_Dir
+  call Makemode7Table
+  mov dword[GUICMessage],.message1
+  mov dword[GUICTimer],50
+  ; change dir to LoadDrive/LoadDir
+  mov dl,[LoadDrive]
+  mov ebx,LoadDir
+  call Change_Dir
 .nosavestuff
-    GUICheckMenuItem 11, 6
+  GUICheckMenuItem 11, 6
 .nomisc
-    ret
+  ret
 
 SECTION .data
 .message1 db 'CONFIGURATION FILES SAVED.',0
@@ -2344,2368 +2250,2363 @@ NEWSYM savecfgforce, db 0
 SECTION .text
 
 DisplayBoxes:                        ; Displays window when item is clicked
-    xor esi,esi
-    mov byte[cwindrawn],0
+  xor esi,esi
+  mov byte[cwindrawn],0
 .next2
-    mov al,[GUIwinorder+esi]
-    cmp al,0
-    je .done
-    inc byte[cwindrawn]
-    inc esi
-    jmp .next2
+  mov al,[GUIwinorder+esi]
+  cmp al,0
+  je .done
+  inc byte[cwindrawn]
+  inc esi
+  jmp .next2
 .done
-    dec byte[cwindrawn]
-    xor eax,eax
-    xor esi,esi
+  dec byte[cwindrawn]
+  xor eax,eax
+  xor esi,esi
 .next
-    mov al,[GUIwinorder+esi]
-    cmp al,0
-    je near .nomore
-    push esi
-    cmp al,1
-    jne .noguiconfirm
-    cmp byte[GUIReset],1
-    je near .finstuff
-    call DisplayGUILoad
-    jmp .finstuff
+  mov al,[GUIwinorder+esi]
+  cmp al,0
+  je near .nomore
+  push esi
+  cmp al,1
+  jne .noguiconfirm
+  cmp byte[GUIReset],1
+  je near .finstuff
+  call DisplayGUILoad
+  jmp .finstuff
 .noguiconfirm
-    cmp al,2
-    jne .noguichosesave
-    call DisplayGUIChoseSave
-    jmp .finstuff
+  cmp al,2
+  jne .noguichosesave
+  call DisplayGUIChoseSave
+  jmp .finstuff
 .noguichosesave
-    cmp al,3
-    jne .noguiinput
-    call DisplayGUIInput
-    jmp .finstuff
+  cmp al,3
+  jne .noguiinput
+  call DisplayGUIInput
+  jmp .finstuff
 .noguiinput
-    cmp al,4
-    jne .noguioption
-    call DisplayGUIOption
-    jmp .finstuff
+  cmp al,4
+  jne .noguioption
+  call DisplayGUIOption
+  jmp .finstuff
 .noguioption
-    cmp al,5
-    jne .noguivideo
-    call DisplayGUIVideo
-    jmp .finstuff
+  cmp al,5
+  jne .noguivideo
+  call DisplayGUIVideo
+  jmp .finstuff
 .noguivideo
-    cmp al,6
-    jne .noguisound
-    call DisplayGUISound
-    jmp .finstuff
+  cmp al,6
+  jne .noguisound
+  call DisplayGUISound
+  jmp .finstuff
 .noguisound
-    cmp al,7
-    jne .noguicheat
-    call DisplayGUICheat
-    jmp .finstuff
+  cmp al,7
+  jne .noguicheat
+  call DisplayGUICheat
+  jmp .finstuff
 .noguicheat
-    cmp al,8
-    jne .noguinet
-    call DisplayNetOptns
-    jmp .finstuff
+  cmp al,8
+  jne .noguinet
+  call DisplayNetOptns
+  jmp .finstuff
 .noguinet
-    cmp al,9
-    jne .noguigameop
-    call DisplayGameOptns
-    jmp .finstuff
+  cmp al,9
+  jne .noguigameop
+  call DisplayGameOptns
+  jmp .finstuff
 .noguigameop
-    cmp al,10
-    jne .noguiconf
-    call DisplayGUIOptns
+  cmp al,10
+  jne .noguiconf
+  call DisplayGUIOptns
 %ifdef __WIN32__
-    pushad
-    call CheckAlwaysOnTop
-    popad
+  pushad
+  call CheckAlwaysOnTop
+  popad
 %endif
-    jmp .finstuff
+  jmp .finstuff
 .noguiconf
-    cmp al,11
-    jne .noguiconf2
-    call DisplayGUIAbout
-    jmp .finstuff
+  cmp al,11
+  jne .noguiconf2
+  call DisplayGUIAbout
+  jmp .finstuff
 .noguiconf2
-    cmp al,12
-    jne .noguireset
-    call DisplayGUIReset
-    jmp .finstuff
+  cmp al,12
+  jne .noguireset
+  call DisplayGUIReset
+  jmp .finstuff
 .noguireset
-    cmp al,13
-    jne .noguisearch
-    call DisplayGUISearch
-    jmp .finstuff
+  cmp al,13
+  jne .noguisearch
+  call DisplayGUISearch
+  jmp .finstuff
 .noguisearch
-    cmp al,14
-    jne .noguistates
-    call DisplayGUIStates
-    jmp .finstuff
+  cmp al,14
+  jne .noguistates
+  call DisplayGUIStates
+  jmp .finstuff
 .noguistates
-    cmp al,15
-    jne .noguimovies
-    call DisplayGUIMovies
-    jmp .finstuff
+  cmp al,15
+  jne .noguimovies
+  call DisplayGUIMovies
+  jmp .finstuff
 .noguimovies
-    cmp al,16
-    jne .noguicombo
-    call DisplayGUICombo
-    jmp .finstuff
+  cmp al,16
+  jne .noguicombo
+  call DisplayGUICombo
+  jmp .finstuff
 .noguicombo
-    cmp al,17
-    jne .noaddon
-    call DisplayGUIAddOns
-    jmp .finstuff
+  cmp al,17
+  jne .noaddon
+  call DisplayGUIAddOns
+  jmp .finstuff
 .noaddon
-    cmp al,18
-    jne .nochipconfig
-    call DisplayGUIChipConfig
-    jmp .finstuff
+  cmp al,18
+  jne .nochipconfig
+  call DisplayGUIChipConfig
+  jmp .finstuff
 .nochipconfig
-    cmp al,19
-    jne .nopaths
-    call DisplayGUIPaths
-    jmp .finstuff
+  cmp al,19
+  jne .nopaths
+  call DisplayGUIPaths
+  jmp .finstuff
 .nopaths
-    cmp al,20
-    jne .nosave
-    call DisplayGUISave
-    jmp .finstuff
+  cmp al,20
+  jne .nosave
+  call DisplayGUISave
+  jmp .finstuff
 .nosave
-    cmp al,21
-    jne .nospeed
-    call DisplayGUISpeed
-    jmp .finstuff
+  cmp al,21
+  jne .nospeed
+  call DisplayGUISpeed
+  jmp .finstuff
 .nospeed
 .finstuff
-    pop esi
-    inc esi
-    dec byte[cwindrawn]
-    jmp .next
+  pop esi
+  inc esi
+  dec byte[cwindrawn]
+  jmp .next
 .nomore
-    ret
+  ret
 
 NEWSYM ChangetoLOADdir
-    mov dl,[LoadDrive]
-    mov ebx,LoadDir
-    call Change_Dir
-    ret
+  mov dl,[LoadDrive]
+  mov ebx,LoadDir
+  call Change_Dir
+  ret
 
 GUIProcStates:
-    xor eax,eax
-    mov al,[GUIwinptr]
-    dec eax
-    mov byte[GUIwinactiv+14],0
-    mov byte[GUIwinorder+eax],0
-    dec byte[GUIwinptr]
-    cmp byte[GUICBHold],10
-    je .yesstate
-    mov byte[GUICBHold],0
-    ret
+  xor eax,eax
+  mov al,[GUIwinptr]
+  dec eax
+  mov byte[GUIwinactiv+14],0
+  mov byte[GUIwinorder+eax],0
+  dec byte[GUIwinptr]
+  cmp byte[GUICBHold],10
+  je .yesstate
+  mov byte[GUICBHold],0
+  ret
 .yesstate
-    mov byte[GUICBHold],0
-    pushad
-    call SRAMChdir
-    popad
-    cmp byte[GUIStatesText5],1
-    je .loadstate
-    pushad
-    call statesaver
-    popad
-    jmp .changedir
+  mov byte[GUICBHold],0
+  pushad
+  call SRAMChdir
+  popad
+  cmp byte[GUIStatesText5],1
+  je .loadstate
+  pushad
+  call statesaver
+  popad
+  jmp .changedir
 .loadstate
-    pushad
-    call loadstate2
-    popad
+  pushad
+  call loadstate2
+  popad
 .changedir
-    ; change dir to LoadDrive/LoadDir
-    call ChangetoLOADdir
-    ret
+  ; change dir to LoadDrive/LoadDir
+  call ChangetoLOADdir
+  ret
 
 SaveSecondState:
-    pushad
-    call SRAMChdir
-    popad
-    mov ebx,[statefileloc]
-    mov al,[fnamest+ebx]
-    mov byte[fnamest+ebx],'s'
-    pushad
-    call statesaver
-    popad
-    mov ebx,[statefileloc]
-    mov [fnamest+ebx],al
-    call ChangetoLOADdir
-    ret
+  pushad
+  call SRAMChdir
+  popad
+  mov ebx,[statefileloc]
+  mov al,[fnamest+ebx]
+  mov byte[fnamest+ebx],'s'
+  pushad
+  call statesaver
+  popad
+  mov ebx,[statefileloc]
+  mov [fnamest+ebx],al
+  call ChangetoLOADdir
+  ret
 
 LoadSecondState:
-    pushad
-    call SRAMChdir
-    popad
-    mov ebx,[statefileloc]
-    mov al,[fnamest+ebx]
-    mov byte[fnamest+ebx],'s'
-    pushad
-    call loadstate2
-    popad
-    mov ebx,[statefileloc]
-    mov [fnamest+ebx],al
-    call ChangetoLOADdir
-    ret
+  pushad
+  call SRAMChdir
+  popad
+  mov ebx,[statefileloc]
+  mov al,[fnamest+ebx]
+  mov byte[fnamest+ebx],'s'
+  pushad
+  call loadstate2
+  popad
+  mov ebx,[statefileloc]
+  mov [fnamest+ebx],al
+  call ChangetoLOADdir
+  ret
 
 GUIProcReset:
-    cmp byte[GUICBHold],2
-    jne .noreset
-    pushad
-    mov byte[GUIReset],1
-    cmp byte[MovieProcessing],2 ;Recording
-    jne .nomovierecording
-    call ResetDuringMovie
-    jmp .movieendif
+  cmp byte[GUICBHold],2
+  jne .noreset
+  pushad
+  mov byte[GUIReset],1
+  cmp byte[MovieProcessing],2 ;Recording
+  jne .nomovierecording
+  call ResetDuringMovie
+  jmp .movieendif
 .nomovierecording
-    call GUIDoReset
+  call GUIDoReset
 .movieendif
-    popad
+  popad
 .noreset
-    mov byte[GUICBHold],0
-    xor eax,eax
-    mov al,[GUIwinptr]
-    dec eax
-    mov byte[GUIwinactiv+12],0
-    mov byte[GUIwinorder+eax],0
-    dec byte[GUIwinptr]
-    ret
+  mov byte[GUICBHold],0
+  xor eax,eax
+  mov al,[GUIwinptr]
+  dec eax
+  mov byte[GUIwinactiv+12],0
+  mov byte[GUIwinorder+eax],0
+  dec byte[GUIwinptr]
+  ret
 
 SECTION .bss
 LoadDuplicFound resb 1
 SECTION .text
 
 %macro GUIDMHelp 4
-    mov byte[GUItextcolor],46
-    mov byte[GUItextcolor+1],42
-    mov byte[GUItextcolor+2],38
-    mov byte[GUItextcolor+3],44
-    mov byte[GUItextcolor+4],40
-    cmp byte[GUIcmenupos],%4
-    jne %%nohighlight
-    mov byte[GUItextcolor],38
-    mov byte[GUItextcolor+1],40
-    mov byte[GUItextcolor+2],46
-    mov byte[GUItextcolor+3],40
-    mov byte[GUItextcolor+4],44
+  mov byte[GUItextcolor],46
+  mov byte[GUItextcolor+1],42
+  mov byte[GUItextcolor+2],38
+  mov byte[GUItextcolor+3],44
+  mov byte[GUItextcolor+4],40
+  cmp byte[GUIcmenupos],%4
+  jne %%nohighlight
+  mov byte[GUItextcolor],38
+  mov byte[GUItextcolor+1],40
+  mov byte[GUItextcolor+2],46
+  mov byte[GUItextcolor+3],40
+  mov byte[GUItextcolor+4],44
 %%nohighlight
-    GUIBox %1,3,%2,3,[GUItextcolor]
-    GUIBox %1,4,%2,12,[GUItextcolor+1]
-    GUIBox %1,13,%2,13,[GUItextcolor+2]
-    GUIBox %1,3,%1,12,[GUItextcolor+3]
-    GUIBox %2,4,%2,13,[GUItextcolor+4]
-    GUIOuttext %1+5,7,%3,44
-    GUIOuttext %1+4,6,%3,62
+  GUIBox %1,3,%2,3,[GUItextcolor]
+  GUIBox %1,4,%2,12,[GUItextcolor+1]
+  GUIBox %1,13,%2,13,[GUItextcolor+2]
+  GUIBox %1,3,%1,12,[GUItextcolor+3]
+  GUIBox %2,4,%2,13,[GUItextcolor+4]
+  GUIOuttext %1+5,7,%3,44
+  GUIOuttext %1+4,6,%3,62
 %endmacro
 
 %macro GUIDMHelpB 4
-    mov byte[GUItextcolor],46
-    mov byte[GUItextcolor+1],42
-    mov byte[GUItextcolor+2],38
-    mov byte[GUItextcolor+3],44
-    mov byte[GUItextcolor+4],40
-    cmp byte[GUIcwinpress],%4
-    jne %%nohighlight
-    mov byte[GUItextcolor],38
-    mov byte[GUItextcolor+1],40
-    mov byte[GUItextcolor+2],46
-    mov byte[GUItextcolor+3],40
-    mov byte[GUItextcolor+4],44
+  mov byte[GUItextcolor],46
+  mov byte[GUItextcolor+1],42
+  mov byte[GUItextcolor+2],38
+  mov byte[GUItextcolor+3],44
+  mov byte[GUItextcolor+4],40
+  cmp byte[GUIcwinpress],%4
+  jne %%nohighlight
+  mov byte[GUItextcolor],38
+  mov byte[GUItextcolor+1],40
+  mov byte[GUItextcolor+2],46
+  mov byte[GUItextcolor+3],40
+  mov byte[GUItextcolor+4],44
 %%nohighlight
-    GUIBox %1,3,%2,3,[GUItextcolor]
-    GUIBox %1,4,%2,13,[GUItextcolor+1]
-    GUIBox %1,14,%2,14,[GUItextcolor+2]
-    GUIBox %1,3,%1,13,[GUItextcolor+3]
-    GUIBox %2,4,%2,14,[GUItextcolor+4]
-    GUIOuttext %1+3,7,%3,44
-    GUIOuttext %1+2,6,%3,62
+  GUIBox %1,3,%2,3,[GUItextcolor]
+  GUIBox %1,4,%2,13,[GUItextcolor+1]
+  GUIBox %1,14,%2,14,[GUItextcolor+2]
+  GUIBox %1,3,%1,13,[GUItextcolor+3]
+  GUIBox %2,4,%2,14,[GUItextcolor+4]
+  GUIOuttext %1+3,7,%3,44
+  GUIOuttext %1+2,6,%3,62
 %endmacro
 
 %macro GUIDMHelpB2 4
-    mov byte[GUItextcolor],46
-    mov byte[GUItextcolor+1],42
-    mov byte[GUItextcolor+2],38
-    mov byte[GUItextcolor+3],44
-    mov byte[GUItextcolor+4],40
-    cmp byte[GUIcwinpress],%4
-    jne %%nohighlight
-    mov byte[GUItextcolor],38
-    mov byte[GUItextcolor+1],40
-    mov byte[GUItextcolor+2],46
-    mov byte[GUItextcolor+3],40
-    mov byte[GUItextcolor+4],44
+  mov byte[GUItextcolor],46
+  mov byte[GUItextcolor+1],42
+  mov byte[GUItextcolor+2],38
+  mov byte[GUItextcolor+3],44
+  mov byte[GUItextcolor+4],40
+  cmp byte[GUIcwinpress],%4
+  jne %%nohighlight
+  mov byte[GUItextcolor],38
+  mov byte[GUItextcolor+1],40
+  mov byte[GUItextcolor+2],46
+  mov byte[GUItextcolor+3],40
+  mov byte[GUItextcolor+4],44
 %%nohighlight
-    GUIBox %1,3,%2,3,[GUItextcolor]
-    GUIBox %1,4,%2,6,[GUItextcolor+1]
-    GUIBox %1,7,%2,7,[GUItextcolor+2]
-    GUIBox %1,3,%1,6,[GUItextcolor+3]
-    GUIBox %2,4,%2,7,[GUItextcolor+4]
-    GUIOuttext %1+3,5,%3,44
-    GUIOuttext %1+2,4,%3,62
+  GUIBox %1,3,%2,3,[GUItextcolor]
+  GUIBox %1,4,%2,6,[GUItextcolor+1]
+  GUIBox %1,7,%2,7,[GUItextcolor+2]
+  GUIBox %1,3,%1,6,[GUItextcolor+3]
+  GUIBox %2,4,%2,7,[GUItextcolor+4]
+  GUIOuttext %1+3,5,%3,44
+  GUIOuttext %1+2,4,%3,62
 %endmacro
 
 %macro GUIDMHelpB3 4
-    mov byte[GUItextcolor],46
-    mov byte[GUItextcolor+1],42
-    mov byte[GUItextcolor+2],38
-    mov byte[GUItextcolor+3],44
-    mov byte[GUItextcolor+4],40
-    cmp byte[GUIcwinpress],%4
-    jne %%nohighlight
-    mov byte[GUItextcolor],38
-    mov byte[GUItextcolor+1],40
-    mov byte[GUItextcolor+2],46
-    mov byte[GUItextcolor+3],40
-    mov byte[GUItextcolor+4],44
+  mov byte[GUItextcolor],46
+  mov byte[GUItextcolor+1],42
+  mov byte[GUItextcolor+2],38
+  mov byte[GUItextcolor+3],44
+  mov byte[GUItextcolor+4],40
+  cmp byte[GUIcwinpress],%4
+  jne %%nohighlight
+  mov byte[GUItextcolor],38
+  mov byte[GUItextcolor+1],40
+  mov byte[GUItextcolor+2],46
+  mov byte[GUItextcolor+3],40
+  mov byte[GUItextcolor+4],44
 %%nohighlight
-    GUIBox %1,9,%2,9,[GUItextcolor]
-    GUIBox %1,10,%2,12,[GUItextcolor+1]
-    GUIBox %1,13,%2,13,[GUItextcolor+2]
-    GUIBox %1,9,%1,12,[GUItextcolor+3]
-    GUIBox %2,10,%2,13,[GUItextcolor+4]
-    GUIOuttext %1+3,11,%3,44
-    GUIOuttext %1+2,10,%3,62
+  GUIBox %1,9,%2,9,[GUItextcolor]
+  GUIBox %1,10,%2,12,[GUItextcolor+1]
+  GUIBox %1,13,%2,13,[GUItextcolor+2]
+  GUIBox %1,9,%1,12,[GUItextcolor+3]
+  GUIBox %2,10,%2,13,[GUItextcolor+4]
+  GUIOuttext %1+3,11,%3,44
+  GUIOuttext %1+2,10,%3,62
 %endmacro
 
 %macro GUIDrawMenuM 10
-    GUIShadow %7,%8,%7+4+%3*6,%8+3+%4*10
-    GUIBox %1,%2,%1+4+%3*6,%2+3+%4*10,43
+  GUIShadow %7,%8,%7+4+%3*6,%8+3+%4*10
+  GUIBox %1,%2,%1+4+%3*6,%2+3+%4*10,43
 
-    mov edi,[GUIcrowpos]
-    mov ecx,edi
-    shl edi,8
-    shl ecx,5
-    add edi,ecx
-    lea edi,[edi*5]
-    shl edi,1
-    add edi,[vidbuffer]
-    add edi,%1+17+18*288
-    mov ecx,6*%3+3
-    mov edx,1
-    mov al,73
-    push edi
-    call GUIDrawBox
-    pop edi
-    add edi,288
-    mov ecx,6*%3+3
-    mov edx,7
-    mov al,72
-    push edi
-    call GUIDrawBox
-    pop edi
-    add edi,288*7
-    mov ecx,6*%3+3
-    mov edx,1
-    mov al,73
-    call GUIDrawBox
+  mov edi,[GUIcrowpos]
+  mov ecx,edi
+  shl edi,8
+  shl ecx,5
+  add edi,ecx
+  lea edi,[edi*5]
+  shl edi,1
+  add edi,[vidbuffer]
+  add edi,%1+17+18*288
+  mov ecx,6*%3+3
+  mov edx,1
+  mov al,73
+  push edi
+  call GUIDrawBox
+  pop edi
+  add edi,288
+  mov ecx,6*%3+3
+  mov edx,7
+  mov al,72
+  push edi
+  call GUIDrawBox
+  pop edi
+  add edi,288*7
+  mov ecx,6*%3+3
+  mov edx,1
+  mov al,73
+  call GUIDrawBox
 
-    GUIBox %1+%10,%2,%1+4+%3*6,%2,47
-    GUIBox %1,%2,%1,%9,45
-    GUIBox %1,%9,%1+4+%3*6,%9,39
-    GUIBox %1+4+%3*6,1+%2,%1+4+%3*6,%9,41
-    mov edi,%5
-    mov esi,[vidbuffer]
-    add esi,16+%6+20*288
-    mov ecx,%4
-    mov edx,6*%3
-    call GUIMenuDisplay
+  GUIBox %1+%10,%2,%1+4+%3*6,%2,47
+  GUIBox %1,%2,%1,%9,45
+  GUIBox %1,%9,%1+4+%3*6,%9,39
+  GUIBox %1+4+%3*6,1+%2,%1+4+%3*6,%9,41
+  mov edi,%5
+  mov esi,[vidbuffer]
+  add esi,16+%6+20*288
+  mov ecx,%4
+  mov edx,6*%3
+  call GUIMenuDisplay
 
-    mov dword[GUIMenuL],%1+1
-    mov dword[GUIMenuR],%1+6*%3+3
-    mov dword[GUIMenuD],18+%4*10
+  mov dword[GUIMenuL],%1+1
+  mov dword[GUIMenuR],%1+6*%3+3
+  mov dword[GUIMenuD],18+%4*10
 %endmacro
 
 DisplayMenu:
-    ; Draw Shadow
-    GUIShadow 5,7,235,21
-    ; Display Top Border
-    GUIBox 0,1,229,1,71
-    GUIBox 0,2,229,2,70
-    GUIBox 0,3,229,3,69
-    GUIBox 0,4,229,4,68
-    GUIBox 0,5,229,5,67
-    GUIBox 0,6,229,6,66
-    GUIBox 0,7,229,7,65
-    GUIBox 0,8,229,8,64
-    GUIBox 0,9,229,9,65
-    GUIBox 0,10,229,10,66
-    GUIBox 0,11,229,11,67
-    GUIBox 0,12,229,12,68
-    GUIBox 0,13,229,13,69
-    GUIBox 0,14,229,14,70
-    GUIBox 0,15,229,15,71
+  ; Draw Shadow
+  GUIShadow 5,7,235,21
+  ; Display Top Border
+  GUIBox 0,1,229,1,71
+  GUIBox 0,2,229,2,70
+  GUIBox 0,3,229,3,69
+  GUIBox 0,4,229,4,68
+  GUIBox 0,5,229,5,67
+  GUIBox 0,6,229,6,66
+  GUIBox 0,7,229,7,65
+  GUIBox 0,8,229,8,64
+  GUIBox 0,9,229,9,65
+  GUIBox 0,10,229,10,66
+  GUIBox 0,11,229,11,67
+  GUIBox 0,12,229,12,68
+  GUIBox 0,13,229,13,69
+  GUIBox 0,14,229,14,70
+  GUIBox 0,15,229,15,71
 
 %ifdef __UNIXSDL__
-    GUIShadow 238,9,247,20
-    GUIShadow 249,9,257,20
+  GUIShadow 238,9,247,20
+  GUIShadow 249,9,257,20
 %endif
 %ifdef __WIN32__
-    GUIShadow 238,9,247,14
-    GUIShadow 238,16,247,20
-    GUIShadow 249,9,257,20
+  GUIShadow 238,9,247,14
+  GUIShadow 238,16,247,20
+  GUIShadow 249,9,257,20
 %endif
 .notwinpressa
 
 %ifdef __UNIXSDL__
-    mov byte[GUIMenuItem+36],247
-    GUIDMHelpB 233,242,GUIMenuItem+36,1
-    mov byte[GUIMenuItem+36],'x'
-    GUIDMHelpB 244,253,GUIMenuItem+36,2
+  mov byte[GUIMenuItem+36],247
+  GUIDMHelpB 233,242,GUIMenuItem+36,1
+  mov byte[GUIMenuItem+36],'x'
+  GUIDMHelpB 244,253,GUIMenuItem+36,2
 %endif
 
 %ifdef __WIN32__
-    mov byte[GUIMenuItem+36],249
-    GUIDMHelpB2 233,242,GUIMenuItem+36,1
-    mov byte[GUIMenuItem+36],248
-    GUIDMHelpB3 233,242,GUIMenuItem+36,3
-    mov byte[GUIMenuItem+36],'x'
-    GUIDMHelpB 244,253,GUIMenuItem+36,2
+  mov byte[GUIMenuItem+36],249
+  GUIDMHelpB2 233,242,GUIMenuItem+36,1
+  mov byte[GUIMenuItem+36],248
+  GUIDMHelpB3 233,242,GUIMenuItem+36,3
+  mov byte[GUIMenuItem+36],'x'
+  GUIDMHelpB 244,253,GUIMenuItem+36,2
 %endif
 .notwinpressb
 
-    ; Display upper-left box
-    mov byte[GUIMenuItem+36],25
-    GUIDMHelp 4,12,GUIMenuItem+6,1
-    GUIOuttext 4+3,7,GUIMenuItem+36,44
-    GUIOuttext 4+2,6,GUIMenuItem+36,62
-    ; Display boxes
-    GUIDMHelp 17,47,GUIMenuItem,2
-    GUIDMHelp 52,94,GUIMenuItem+7,3
-    GUIDMHelp 99,135,GUIMenuItem+14,4
-    GUIDMHelp 140,188,GUIMenuItem+21,5
-    GUIDMHelp 193,223,GUIMenuItem+29,6
+  ; Display upper-left box
+  mov byte[GUIMenuItem+36],25
+  GUIDMHelp 4,12,GUIMenuItem+6,1
+  GUIOuttext 4+3,7,GUIMenuItem+36,44
+  GUIOuttext 4+2,6,GUIMenuItem+36,62
+  ; Display boxes
+  GUIDMHelp 17,47,GUIMenuItem,2
+  GUIDMHelp 52,94,GUIMenuItem+7,3
+  GUIDMHelp 99,135,GUIMenuItem+14,4
+  GUIDMHelp 140,188,GUIMenuItem+21,5
+  GUIDMHelp 193,223,GUIMenuItem+29,6
 
-    mov dword[GUIMenuL],0
-    mov dword[GUIMenuR],0
-    mov dword[GUIMenuD],0
+  mov dword[GUIMenuL],0
+  mov dword[GUIMenuR],0
+  mov dword[GUIMenuD],0
 
-    ; format : x pos, y pos, #charx, #chary, name, xpos+2, xpos+5,22,
-    ;          19+#chary*10, length of top menu box
-    cmp byte[GUIcmenupos],1
-    jne near .nomenu1
-    GUIDrawMenuM 4,16,30,13,GUIPrevMenuData,6,9,22,149,8 ;19+13*10
-    mov dword[GUICYLocPtr],MenuDat1
+  ; format : x pos, y pos, #charx, #chary, name, xpos+2, xpos+5,22,
+  ;          19+#chary*10, length of top menu box
+  cmp byte[GUIcmenupos],1
+  jne near .nomenu1
+  GUIDrawMenuM 4,16,30,13,GUIPrevMenuData,6,9,22,149,8 ;19+13*10
+  mov dword[GUICYLocPtr],MenuDat1
 .nomenu1
-    cmp byte[GUIcmenupos],2
-    jne near .nomenu2
-    GUIDrawMenuM 17,16,10,9,GUIGameMenuData,19,22,22,109,30 ;19+9*10
-    mov dword[GUICYLocPtr],MenuDat2
+  cmp byte[GUIcmenupos],2
+  jne near .nomenu2
+  GUIDrawMenuM 17,16,10,9,GUIGameMenuData,19,22,22,109,30 ;19+9*10
+  mov dword[GUICYLocPtr],MenuDat2
 .nomenu2
-    cmp byte[GUIcmenupos],3
-    jne near .nomenu3
-    GUIDrawMenuM 52,16,9,15,GUIConfigMenuData,54,57,22,169,42 ;19+15*10
-    mov dword[GUICYLocPtr],MenuDat3
+  cmp byte[GUIcmenupos],3
+  jne near .nomenu3
+  GUIDrawMenuM 52,16,8,11,GUIConfigMenuData,54,57,22,129,42 ;19+11*10
+  mov dword[GUICYLocPtr],MenuDat3
 .nomenu3
-    cmp byte[GUIcmenupos],4
-    jne near .nomenu4
-    GUIDrawMenuM 99,16,11,3,GUICheatMenuData,101,104,22,49,36 ;19+3*10
-    mov dword[GUICYLocPtr],MenuDat4
+  cmp byte[GUIcmenupos],4
+  jne near .nomenu4
+  GUIDrawMenuM 99,16,8,3,GUICheatMenuData,101,104,22,49,36 ;19+3*10
+  mov dword[GUICYLocPtr],MenuDat4
 .nomenu4
-    cmp byte[GUIcmenupos],5
-    jne near .nomenu5
+  cmp byte[GUIcmenupos],5
+  jne near .nomenu5
 %ifdef __MSDOS__
-    GUIDrawMenuM 140,16,10,2,GUINetPlayMenuData,142,145,22,39,48 ;19+2*10
-    mov dword[GUICYLocPtr],MenuDat5
-    jmp .nomenu5
+  GUIDrawMenuM 140,16,10,2,GUINetPlayMenuData,142,145,22,39,48 ;19+2*10
+%else
+  GUIDrawMenuM 140,16,10,1,GUINetPlayMenuData,142,145,22,29,48 ;19+1*10
 %endif
-.menu5b
-    GUIDrawMenuM 140,16,10,1,GUINetPlayMenuData,142,145,22,29,48 ;19+2*10
-    mov dword[GUICYLocPtr],MenuDat5
+  mov dword[GUICYLocPtr],MenuDat5
 .nomenu5
-    cmp byte[GUIcmenupos],6
-    jne near .nomenu6
-    GUIDrawMenuM 193,16,9,7,GUIMiscMenuData,195,198,22,89,30 ;19+5*10
-    mov dword[GUICYLocPtr],MenuDat6
+  cmp byte[GUIcmenupos],6
+  jne near .nomenu6
+  GUIDrawMenuM 193,16,9,7,GUIMiscMenuData,195,198,22,89,30 ;19+5*10
+  mov dword[GUICYLocPtr],MenuDat6
 .nomenu6
-    ret
+  ret
 
 GUIMenuDisplay:
-    xor ebx,ebx
+  xor ebx,ebx
 .next
-    mov al,[edi]
-    push ebx
-    push ecx
-    push esi
-    cmp al,0
-    je near .notext
-    cmp al,2
-    je .darktext
-    inc edi
-    mov byte[GUItextcolor],44
-    cmp byte[GUIcrowpos],bl
-    je .nodrawshadow
-    push edi
-    push esi
-    add esi,289
-    call GUIOutputString
-    pop esi
-    pop edi
+  mov al,[edi]
+  push ebx
+  push ecx
+  push esi
+  cmp al,0
+  je near .notext
+  cmp al,2
+  je .darktext
+  inc edi
+  mov byte[GUItextcolor],44
+  cmp byte[GUIcrowpos],bl
+  je .nodrawshadow
+  push edi
+  push esi
+  add esi,289
+  call GUIOutputString
+  pop esi
+  pop edi
 .nodrawshadow
-    mov byte[GUItextcolor],63
-    call GUIOutputString
-    inc edi
-    jmp .text
+  mov byte[GUItextcolor],63
+  call GUIOutputString
+  inc edi
+  jmp .text
 .darktext
-    inc edi
-    mov byte[GUItextcolor],42
-    cmp byte[GUIcrowpos],bl
-    je .nodrawshadow2
-    push edi
-    push esi
-    add esi,289
-    call GUIOutputString
-    pop esi
-    pop edi
+  inc edi
+  mov byte[GUItextcolor],42
+  cmp byte[GUIcrowpos],bl
+  je .nodrawshadow2
+  push edi
+  push esi
+  add esi,289
+  call GUIOutputString
+  pop esi
+  pop edi
 .nodrawshadow2
-    mov byte[GUItextcolor],57
-    call GUIOutputString
-    inc edi
-    jmp .text
+  mov byte[GUItextcolor],57
+  call GUIOutputString
+  inc edi
+  jmp .text
 .notext
-    add esi,4*288
-    mov ecx,edx
+  add esi,4*288
+  mov ecx,edx
 .loop
-    mov byte[esi],45
-    mov byte[esi-289],40
-    mov byte[esi+289],42
-    inc esi
-    dec ecx
-    jnz .loop
-    add edi,14
+  mov byte[esi],45
+  mov byte[esi-289],40
+  mov byte[esi+289],42
+  inc esi
+  dec ecx
+  jnz .loop
+  add edi,14
 .text
-    pop esi
-    pop ecx
-    pop ebx
-    add esi,10*288
-    inc ebx
-    dec ecx
-    jnz near .next
-    ret
-
-
+  pop esi
+  pop ecx
+  pop ebx
+  add esi,10*288
+  inc ebx
+  dec ecx
+  jnz near .next
+  ret
 
 InitGUI:
-    cmp byte[newengen],0
-    je .nong16b
-    cmp byte[cbitmode],0
-    je .nong16b
-    call GetScreen
+  cmp byte[newengen],0
+  je .nong16b
+  cmp byte[cbitmode],0
+  je .nong16b
+  call GetScreen
 .nong16b
-    call ClearScreen
-    pushad
-    call Clear2xSaIBuffer
-    popad
-    call GUISetPal
-    call GUIBufferData
-    ret
+  call ClearScreen
+  pushad
+  call Clear2xSaIBuffer
+  popad
+  call GUISetPal
+  call GUIBufferData
+  ret
 
 GUISetPal:
-    cmp byte[cbitmode],1
-    je near GUISetPal16
-    ; set palette
-    ; Fixed Color Scale = 0 .. 31
-    mov dx,03C8h
-    mov al,0
-    out dx,al
-    inc dx
-    out dx,al
-    out dx,al
-    out dx,al
+  cmp byte[cbitmode],1
+  je near GUISetPal16
+  ; set palette
+  ; Fixed Color Scale = 0 .. 31
+  mov dx,03C8h
+  mov al,0
+  out dx,al
+  inc dx
+  out dx,al
+  out dx,al
+  out dx,al
 
-    inc al
-    mov dx,03C8h
-    mov bl,1
-    out dx,al
-    inc dx
+  inc al
+  mov dx,03C8h
+  mov bl,1
+  out dx,al
+  inc dx
 .loopd
-    mov al,bl
-    add al,[GUIRAdd]
-    out dx,al
-    mov al,bl
-    add al,[GUIGAdd]
-    out dx,al
-    mov al,bl
-    add al,[GUIBAdd]
-    out dx,al
-    inc bl
-    cmp bl,32
-    jne .loopd
-    ; gray scale = 32 .. 63
-    mov dx,03C8h
-    mov bl,32
-    mov al,32
-    out dx,al
-    inc dx
+  mov al,bl
+  add al,[GUIRAdd]
+  out dx,al
+  mov al,bl
+  add al,[GUIGAdd]
+  out dx,al
+  mov al,bl
+  add al,[GUIBAdd]
+  out dx,al
+  inc bl
+  cmp bl,32
+  jne .loopd
+  ; gray scale = 32 .. 63
+  mov dx,03C8h
+  mov bl,32
+  mov al,32
+  out dx,al
+  inc dx
 .loopc
-    mov al,bl
-    add al,al
-    out dx,al
-    out dx,al
-    out dx,al
-    inc bl
-    cmp bl,64
-    jne .loopc
-    ; shadow = 96 .. 127
-    inc al
-    mov al,96
-    mov dx,03C8h
-    mov bl,0
-    out dx,al
-    inc dx
+  mov al,bl
+  add al,al
+  out dx,al
+  out dx,al
+  out dx,al
+  inc bl
+  cmp bl,64
+  jne .loopc
+  ; shadow = 96 .. 127
+  inc al
+  mov al,96
+  mov dx,03C8h
+  mov bl,0
+  out dx,al
+  inc dx
 .loope
-    mov al,bl
-    add al,[GUIRAdd]
-    mov ah,al
-    add al,al
-    add al,ah
-    shr al,2
-    out dx,al
-    mov al,bl
-    add al,[GUIGAdd]
-    mov ah,al
-    add al,al
-    add al,ah
-    shr al,2
-    out dx,al
-    mov al,bl
-    add al,[GUIBAdd]
-    mov ah,al
-    add al,al
-    add al,ah
-    shr al,2
-    out dx,al
-    inc bl
-    cmp bl,32
-    jne .loope
+  mov al,bl
+  add al,[GUIRAdd]
+  mov ah,al
+  add al,al
+  add al,ah
+  shr al,2
+  out dx,al
+  mov al,bl
+  add al,[GUIGAdd]
+  mov ah,al
+  add al,al
+  add al,ah
+  shr al,2
+  out dx,al
+  mov al,bl
+  add al,[GUIBAdd]
+  mov ah,al
+  add al,al
+  add al,ah
+  shr al,2
+  out dx,al
+  inc bl
+  cmp bl,32
+  jne .loope
 
-    ; 0,10,31
-    mov al,[GUITRAdd]
-    mov [TRVal],al
-    mov al,[GUITGAdd]
-    mov [TGVal],al
-    mov al,[GUITBAdd]
-    mov [TBVal],al
-    mov ax,[TRVal]
-    inc ax
-    shr ax,3
-    mov [TRVali],ax
-    shl ax,3
-    add [TRVal],ax
-    mov ax,[TGVal]
-    inc ax
-    shr ax,3
-    mov [TGVali],ax
-    shl ax,3
-    add [TGVal],ax
-    mov ax,[TBVal]
-    inc ax
-    shr ax,3
-    mov [TBVali],ax
-    shl ax,3
-    add [TBVal],ax
+  ; 0,10,31
+  mov al,[GUITRAdd]
+  mov [TRVal],al
+  mov al,[GUITGAdd]
+  mov [TGVal],al
+  mov al,[GUITBAdd]
+  mov [TBVal],al
+  mov ax,[TRVal]
+  inc ax
+  shr ax,3
+  mov [TRVali],ax
+  shl ax,3
+  add [TRVal],ax
+  mov ax,[TGVal]
+  inc ax
+  shr ax,3
+  mov [TGVali],ax
+  shl ax,3
+  add [TGVal],ax
+  mov ax,[TBVal]
+  inc ax
+  shr ax,3
+  mov [TBVali],ax
+  shl ax,3
+  add [TBVal],ax
 
-    GUIPal 64,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 65,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 66,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 67,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 68,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 69,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 70,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 71,[TRVal],[TGVal],[TBVal]
+  GUIPal 64,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 65,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 66,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 67,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 68,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 69,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 70,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 71,[TRVal],[TGVal],[TBVal]
 
-    GUIPal 72,40,0,20
-    GUIPal 73,34,0,21
+  GUIPal 72,40,0,20
+  GUIPal 73,34,0,21
 
-    GUIPal 80,0,10,28
-    GUIPal 81,0,10,27
-    GUIPal 82,0,10,25
-    GUIPal 83,0,09,24
-    GUIPal 84,0,08,22
-    GUIPal 85,0,07,20
-    GUIPal 86,0,06,18
-    GUIPal 87,0,05,15
-    GUIPal 88,20,0,10
-    GUIPal 89,17,0,10
+  GUIPal 80,0,10,28
+  GUIPal 81,0,10,27
+  GUIPal 82,0,10,25
+  GUIPal 83,0,09,24
+  GUIPal 84,0,08,22
+  GUIPal 85,0,07,20
+  GUIPal 86,0,06,18
+  GUIPal 87,0,05,15
+  GUIPal 88,20,0,10
+  GUIPal 89,17,0,10
 
-    ; Orange Scale
-    mov dx,03C8h
-    mov al,128
-    mov cl,20
-    out dx,al
-    mov bh,0
-    mov ah,0
-    inc dx
+  ; Orange Scale
+  mov dx,03C8h
+  mov al,128
+  mov cl,20
+  out dx,al
+  mov bh,0
+  mov ah,0
+  inc dx
 .loopf
-    add bh,2
-    add ah,1
-    mov al,63
-    out dx,al
-    mov al,bh
-    out dx,al
-    mov al,ah
-    out dx,al
-    dec cl
-    jnz .loopf
+  add bh,2
+  add ah,1
+  mov al,63
+  out dx,al
+  mov al,bh
+  out dx,al
+  mov al,ah
+  out dx,al
+  dec cl
+  jnz .loopf
 
-    ; Blue scale = 148 .. 167
-    mov al,[GUIWRAdd]
-    add al,al
-    mov [TRVal],al
-    mov al,[GUIWGAdd]
-    add al,al
-    mov [TGVal],al
-    mov al,[GUIWBAdd]
-    add al,al
-    mov [TBVal],al
-    mov byte[TRVali],4
-    mov byte[TGVali],4
-    mov byte[TBVali],4
+  ; Blue scale = 148 .. 167
+  mov al,[GUIWRAdd]
+  add al,al
+  mov [TRVal],al
+  mov al,[GUIWGAdd]
+  add al,al
+  mov [TGVal],al
+  mov al,[GUIWBAdd]
+  add al,al
+  mov [TBVal],al
+  mov byte[TRVali],4
+  mov byte[TGVali],4
+  mov byte[TBVali],4
 
-    GUIPal 152,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 151,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 150,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 149,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 148,[TRVal],[TGVal],[TBVal]
+  GUIPal 152,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 151,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 150,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 149,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 148,[TRVal],[TGVal],[TBVal]
 
-    mov al,[GUIWRAdd]
-    add al,al
-    mov [TRVal],al
-    mov al,[GUIWGAdd]
-    add al,al
-    mov [TGVal],al
-    mov al,[GUIWBAdd]
-    add al,al
-    mov [TBVal],al
-    mov byte[TRVali],4
-    mov byte[TGVali],4
-    mov byte[TBVali],4
-    call DecPalVal
-    call DecPalVal
+  mov al,[GUIWRAdd]
+  add al,al
+  mov [TRVal],al
+  mov al,[GUIWGAdd]
+  add al,al
+  mov [TGVal],al
+  mov al,[GUIWBAdd]
+  add al,al
+  mov [TBVal],al
+  mov byte[TRVali],4
+  mov byte[TGVali],4
+  mov byte[TBVali],4
+  call DecPalVal
+  call DecPalVal
 
-    GUIPal 157,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 156,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 155,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 154,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 153,[TRVal],[TGVal],[TBVal]
+  GUIPal 157,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 156,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 155,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 154,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 153,[TRVal],[TGVal],[TBVal]
 
-    mov al,[GUIWRAdd]
-    add al,al
-    mov [TRVal],al
-    mov al,[GUIWGAdd]
-    add al,al
-    mov [TGVal],al
-    mov al,[GUIWBAdd]
-    add al,al
-    mov [TBVal],al
-    mov byte[TRVali],4
-    mov byte[TGVali],4
-    mov byte[TBVali],4
-    call DecPalVal
-    call DecPalVal
-    call DecPalVal
-    call DecPalVal
+  mov al,[GUIWRAdd]
+  add al,al
+  mov [TRVal],al
+  mov al,[GUIWGAdd]
+  add al,al
+  mov [TGVal],al
+  mov al,[GUIWBAdd]
+  add al,al
+  mov [TBVal],al
+  mov byte[TRVali],4
+  mov byte[TGVali],4
+  mov byte[TBVali],4
+  call DecPalVal
+  call DecPalVal
+  call DecPalVal
+  call DecPalVal
 
-    GUIPal 162,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 161,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 160,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 159,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 158,[TRVal],[TGVal],[TBVal]
+  GUIPal 162,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 161,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 160,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 159,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 158,[TRVal],[TGVal],[TBVal]
 
-    GUIPal 163,40,40,00
-    GUIPal 164,30,30,00
-    GUIPal 165,50,00,00
-    GUIPal 166,35,00,00
-    GUIPal 167,00,00,00
+  GUIPal 163,40,40,00
+  GUIPal 164,30,30,00
+  GUIPal 165,50,00,00
+  GUIPal 166,35,00,00
+  GUIPal 167,00,00,00
 
-    ; Blue scale shadow
-    mov al,[GUIWRAdd]
-    mov [TRVal],al
-    mov al,[GUIWGAdd]
-    mov [TGVal],al
-    mov al,[GUIWBAdd]
-    mov [TBVal],al
-    mov byte[TRVali],2
-    mov byte[TGVali],2
-    mov byte[TBVali],2
+  ; Blue scale shadow
+  mov al,[GUIWRAdd]
+  mov [TRVal],al
+  mov al,[GUIWGAdd]
+  mov [TGVal],al
+  mov al,[GUIWBAdd]
+  mov [TBVal],al
+  mov byte[TRVali],2
+  mov byte[TGVali],2
+  mov byte[TBVali],2
 
-    GUIPal 172,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 171,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 170,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 169,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 168,[TRVal],[TGVal],[TBVal]
+  GUIPal 172,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 171,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 170,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 169,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 168,[TRVal],[TGVal],[TBVal]
 
-    mov al,[GUIWRAdd]
-    mov [TRVal],al
-    mov al,[GUIWGAdd]
-    mov [TGVal],al
-    mov al,[GUIWBAdd]
-    mov [TBVal],al
-    mov byte[TRVali],2
-    mov byte[TGVali],2
-    mov byte[TBVali],2
-    call DecPalVal
-    call DecPalVal
+  mov al,[GUIWRAdd]
+  mov [TRVal],al
+  mov al,[GUIWGAdd]
+  mov [TGVal],al
+  mov al,[GUIWBAdd]
+  mov [TBVal],al
+  mov byte[TRVali],2
+  mov byte[TGVali],2
+  mov byte[TBVali],2
+  call DecPalVal
+  call DecPalVal
 
-    GUIPal 177,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 176,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 175,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 174,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 173,[TRVal],[TGVal],[TBVal]
+  GUIPal 177,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 176,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 175,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 174,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 173,[TRVal],[TGVal],[TBVal]
 
-    mov al,[GUIWRAdd]
-    mov [TRVal],al
-    mov al,[GUIWGAdd]
-    mov [TGVal],al
-    mov al,[GUIWBAdd]
-    mov [TBVal],al
-    mov byte[TRVali],2
-    mov byte[TGVali],2
-    mov byte[TBVali],2
-    call DecPalVal
-    call DecPalVal
-    call DecPalVal
-    call DecPalVal
+  mov al,[GUIWRAdd]
+  mov [TRVal],al
+  mov al,[GUIWGAdd]
+  mov [TGVal],al
+  mov al,[GUIWBAdd]
+  mov [TBVal],al
+  mov byte[TRVali],2
+  mov byte[TGVali],2
+  mov byte[TBVali],2
+  call DecPalVal
+  call DecPalVal
+  call DecPalVal
+  call DecPalVal
 
-    GUIPal 182,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 181,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 180,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 179,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal 178,[TRVal],[TGVal],[TBVal]
+  GUIPal 182,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 181,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 180,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 179,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal 178,[TRVal],[TGVal],[TBVal]
 
-    GUIPal 183,20,20,00
-    GUIPal 184,15,15,00
-    GUIPal 185,25,00,00
-    GUIPal 186,17,00,00
-    GUIPal 187,00,00,00
+  GUIPal 183,20,20,00
+  GUIPal 184,15,15,00
+  GUIPal 185,25,00,00
+  GUIPal 186,17,00,00
+  GUIPal 187,00,00,00
 
-    ; gray scale2 = 189 .. 220
-    mov dx,03C8h
-    mov al,189
-    mov bl,0
-    out dx,al
-    inc dx
+  ; gray scale2 = 189 .. 220
+  mov dx,03C8h
+  mov al,189
+  mov bl,0
+  out dx,al
+  inc dx
 .loopi
-    mov al,bl
-    add al,al
-    mov ah,bl
-    shr ah,1
-    sub al,ah
-    out dx,al
-    out dx,al
-    add al,ah
-    out dx,al
-    inc bl
-    cmp bl,64
-    jne .loopi
+  mov al,bl
+  add al,al
+  mov ah,bl
+  shr ah,1
+  sub al,ah
+  out dx,al
+  out dx,al
+  add al,ah
+  out dx,al
+  inc bl
+  cmp bl,64
+  jne .loopi
 
-    GUIPal 221,00,55,00
-    GUIPal 222,00,45,00
-    GUIPal 223,00,25,00
+  GUIPal 221,00,55,00
+  GUIPal 222,00,45,00
+  GUIPal 223,00,25,00
 
-    GUIPal 224,40,0,20
-    GUIPal 225,32,0,15
+  GUIPal 224,40,0,20
+  GUIPal 225,32,0,15
 
-    GUIPal 226,20,0,10
-    GUIPal 227,16,0,07
+  GUIPal 226,20,0,10
+  GUIPal 227,16,0,07
 
-    GUIPal 228,45,45,50
-    GUIPal 229,40,40,45
-    GUIPal 230,35,35,40
-    GUIPal 231,30,30,35
+  GUIPal 228,45,45,50
+  GUIPal 229,40,40,45
+  GUIPal 230,35,35,40
+  GUIPal 231,30,30,35
 
-    GUIPal 232,35,15,15
+  GUIPal 232,35,15,15
 
-    GUIPal 233,50,12,60
-    GUIPal 234,30,14,60
+  GUIPal 233,50,12,60
+  GUIPal 234,30,14,60
 
-    cmp byte[GUIPalConv],0
-    je .convert
-    ret
+  cmp byte[GUIPalConv],0
+  je .convert
+  ret
 .convert
-    mov byte[GUIPalConv],1
+  mov byte[GUIPalConv],1
 
-    ; Convert Image data to Gray Scale
-    ; Create Palette Table
-    call GUIconvpal
-    ; Convert Current Image in Buffer
-    mov esi,[vidbuffer]
-    mov ecx,288*240
-    xor eax,eax
+  ; Convert Image data to Gray Scale
+  ; Create Palette Table
+  call GUIconvpal
+  ; Convert Current Image in Buffer
+  mov esi,[vidbuffer]
+  mov ecx,288*240
+  xor eax,eax
 .next
-    mov al,[esi]
-    mov bl,[SubPalTable+eax]
-    mov [esi],bl
-    inc esi
-    dec ecx
-    jnz .next
-    ret
+  mov al,[esi]
+  mov bl,[SubPalTable+eax]
+  mov [esi],bl
+  inc esi
+  dec ecx
+  jnz .next
+  ret
 
 SECTION .bss
 NEWSYM GUICPC, resw 256
 SECTION .text
 
 %macro GUIPal16b 4
-    mov ax,%2
-    shr ax,1
-    shl ax,11
-    mov bx,%3
-    shl bx,5
-    or ax,bx
-    mov bx,%4
-    shr bx,1
-    or ax,bx
-    mov [GUICPC+%1*2],ax
+  mov ax,%2
+  shr ax,1
+  shl ax,11
+  mov bx,%3
+  shl bx,5
+  or ax,bx
+  mov bx,%4
+  shr bx,1
+  or ax,bx
+  mov [GUICPC+%1*2],ax
 %endmacro
 
 DecPalVal:
-    mov ax,[TRVali]
-    sub word[TRVal],ax
-    mov ax,[TGVali]
-    sub word[TGVal],ax
-    mov ax,[TBVali]
-    sub word[TBVal],ax
-    test word[TRVal],8000h
-    jz .notnegr
-    mov word[TRVal],0
+  mov ax,[TRVali]
+  sub word[TRVal],ax
+  mov ax,[TGVali]
+  sub word[TGVal],ax
+  mov ax,[TBVali]
+  sub word[TBVal],ax
+  test word[TRVal],8000h
+  jz .notnegr
+  mov word[TRVal],0
 .notnegr
-    test word[TGVal],8000h
-    jz .notnegg
-    mov word[TGVal],0
+  test word[TGVal],8000h
+  jz .notnegg
+  mov word[TGVal],0
 .notnegg
-    test word[TBVal],8000h
-    jz .notnegb
-    mov word[TBVal],0
+  test word[TBVal],8000h
+  jz .notnegb
+  mov word[TBVal],0
 .notnegb
-    ret
+  ret
 
 GUISetPal16:
-    ; set palette
-    ; Fixed Color Scale = 0 .. 31
-    mov word[GUICPC],0
-    inc al
-    xor ebx,ebx
-    mov bl,1
+  ; set palette
+  ; Fixed Color Scale = 0 .. 31
+  mov word[GUICPC],0
+  inc al
+  xor ebx,ebx
+  mov bl,1
 .loopd
-    xor ecx,ecx
-    mov cl,bl
-    add cl,[GUIRAdd]
-    shr cl,1
-    shl ecx,11
-    xor eax,eax
-    mov al,bl
-    add al,[GUIGAdd]
-    shl eax,5
-    or ecx,eax
-    xor eax,eax
-    mov al,bl
-    add al,[GUIBAdd]
-    shr eax,1
-    or ecx,eax
-    mov [GUICPC+ebx*2],cx
-    inc bl
-    cmp bl,32
-    jne .loopd
+  xor ecx,ecx
+  mov cl,bl
+  add cl,[GUIRAdd]
+  shr cl,1
+  shl ecx,11
+  xor eax,eax
+  mov al,bl
+  add al,[GUIGAdd]
+  shl eax,5
+  or ecx,eax
+  xor eax,eax
+  mov al,bl
+  add al,[GUIBAdd]
+  shr eax,1
+  or ecx,eax
+  mov [GUICPC+ebx*2],cx
+  inc bl
+  cmp bl,32
+  jne .loopd
 
-    ; gray scale = 32 .. 63
-    mov bl,32
-    mov al,32
+  ; gray scale = 32 .. 63
+  mov bl,32
+  mov al,32
 .loopc
-    mov al,bl
-    add al,al
-    xor ecx,ecx
-    mov cl,al
-    shr ecx,1
-    shl ecx,11
-    xor edx,edx
-    mov dl,al
-    shl edx,5
-    or ecx,edx
-    xor edx,edx
-    mov dl,al
-    shr edx,1
-    or ecx,edx
-    mov [GUICPC+ebx*2],cx
-    inc bl
-    cmp bl,64
-    jne .loopc
+  mov al,bl
+  add al,al
+  xor ecx,ecx
+  mov cl,al
+  shr ecx,1
+  shl ecx,11
+  xor edx,edx
+  mov dl,al
+  shl edx,5
+  or ecx,edx
+  xor edx,edx
+  mov dl,al
+  shr edx,1
+  or ecx,edx
+  mov [GUICPC+ebx*2],cx
+  inc bl
+  cmp bl,64
+  jne .loopc
 
-    ; shadow = 96 .. 127
-    xor ebx,ebx
+  ; shadow = 96 .. 127
+  xor ebx,ebx
 .loope
-    xor ecx,ecx
-    mov al,bl
-    add al,[GUIRAdd]
-    mov ah,al
-    add al,al
-    add al,ah
-    shr al,2
-    shr al,1
-    or cl,al
-    shl ecx,6
-    mov al,bl
-    add al,[GUIGAdd]
-    mov ah,al
-    add al,al
-    add al,ah
-    shr al,2
-    or cl,al
-    shl ecx,5
-    mov al,bl
-    add al,[GUIBAdd]
-    mov ah,al
-    add al,al
-    add al,ah
-    shr al,2
-    shr al,1
-    or cl,al
-    mov [GUICPC+ebx*2+96*2],cx
-    inc bl
-    cmp bl,32
-    jne .loope
+  xor ecx,ecx
+  mov al,bl
+  add al,[GUIRAdd]
+  mov ah,al
+  add al,al
+  add al,ah
+  shr al,2
+  shr al,1
+  or cl,al
+  shl ecx,6
+  mov al,bl
+  add al,[GUIGAdd]
+  mov ah,al
+  add al,al
+  add al,ah
+  shr al,2
+  or cl,al
+  shl ecx,5
+  mov al,bl
+  add al,[GUIBAdd]
+  mov ah,al
+  add al,al
+  add al,ah
+  shr al,2
+  shr al,1
+  or cl,al
+  mov [GUICPC+ebx*2+96*2],cx
+  inc bl
+  cmp bl,32
+  jne .loope
 
-    ; 0,10,31
-    mov al,[GUITRAdd]
-    mov [TRVal],al
-    mov al,[GUITGAdd]
-    mov [TGVal],al
-    mov al,[GUITBAdd]
-    mov [TBVal],al
-    mov ax,[TRVal]
-    inc ax
-    shr ax,3
-    mov [TRVali],ax
-    shl ax,3
-    add [TRVal],ax
-    mov ax,[TGVal]
-    inc ax
-    shr ax,3
-    mov [TGVali],ax
-    shl ax,3
-    add [TGVal],ax
-    mov ax,[TBVal]
-    inc ax
-    shr ax,3
-    mov [TBVali],ax
-    shl ax,3
-    add [TBVal],ax
+  ; 0,10,31
+  mov al,[GUITRAdd]
+  mov [TRVal],al
+  mov al,[GUITGAdd]
+  mov [TGVal],al
+  mov al,[GUITBAdd]
+  mov [TBVal],al
+  mov ax,[TRVal]
+  inc ax
+  shr ax,3
+  mov [TRVali],ax
+  shl ax,3
+  add [TRVal],ax
+  mov ax,[TGVal]
+  inc ax
+  shr ax,3
+  mov [TGVali],ax
+  shl ax,3
+  add [TGVal],ax
+  mov ax,[TBVal]
+  inc ax
+  shr ax,3
+  mov [TBVali],ax
+  shl ax,3
+  add [TBVal],ax
 
-    GUIPal16b 64,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 65,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 66,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 67,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 68,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 69,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 70,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 71,[TRVal],[TGVal],[TBVal]
+  GUIPal16b 64,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 65,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 66,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 67,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 68,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 69,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 70,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 71,[TRVal],[TGVal],[TBVal]
 
-    GUIPal16b 72,40,0,20
-    GUIPal16b 73,34,0,21
+  GUIPal16b 72,40,0,20
+  GUIPal16b 73,34,0,21
 
-    GUIPal16b 80,0,10,28
-    GUIPal16b 81,0,10,27
-    GUIPal16b 82,0,10,25
-    GUIPal16b 83,0,09,24
-    GUIPal16b 84,0,08,22
-    GUIPal16b 85,0,07,20
-    GUIPal16b 86,0,06,18
-    GUIPal16b 87,0,05,15
-    GUIPal16b 88,20,0,10
-    GUIPal16b 89,17,0,10
+  GUIPal16b 80,0,10,28
+  GUIPal16b 81,0,10,27
+  GUIPal16b 82,0,10,25
+  GUIPal16b 83,0,09,24
+  GUIPal16b 84,0,08,22
+  GUIPal16b 85,0,07,20
+  GUIPal16b 86,0,06,18
+  GUIPal16b 87,0,05,15
+  GUIPal16b 88,20,0,10
+  GUIPal16b 89,17,0,10
 
-    ; Orange Scale
-    mov cl,20
-    mov bh,0
-    mov ah,0
-    inc dx
-    mov esi,128
+  ; Orange Scale
+  mov cl,20
+  mov bh,0
+  mov ah,0
+  inc dx
+  mov esi,128
 .loopf
-    add bh,2
-    add ah,1
-    mov edx,1Fh << 6
-    or dl,bh
-    shl edx,5
-    mov al,ah
-    shr al,1
-    or dl,al
-    mov [GUICPC+esi*2],dx
-    inc esi
-    dec cl
-    jnz .loopf
+  add bh,2
+  add ah,1
+  mov edx,1Fh << 6
+  or dl,bh
+  shl edx,5
+  mov al,ah
+  shr al,1
+  or dl,al
+  mov [GUICPC+esi*2],dx
+  inc esi
+  dec cl
+  jnz .loopf
 
-    ; Blue scale = 148 .. 167
-    mov al,[GUIWRAdd]
-    add al,al
-    mov [TRVal],al
-    mov al,[GUIWGAdd]
-    add al,al
-    mov [TGVal],al
-    mov al,[GUIWBAdd]
-    add al,al
-    mov [TBVal],al
-    mov byte[TRVali],4
-    mov byte[TGVali],4
-    mov byte[TBVali],4
+  ; Blue scale = 148 .. 167
+  mov al,[GUIWRAdd]
+  add al,al
+  mov [TRVal],al
+  mov al,[GUIWGAdd]
+  add al,al
+  mov [TGVal],al
+  mov al,[GUIWBAdd]
+  add al,al
+  mov [TBVal],al
+  mov byte[TRVali],4
+  mov byte[TGVali],4
+  mov byte[TBVali],4
 
-    GUIPal16b 152,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 151,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 150,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 149,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 148,[TRVal],[TGVal],[TBVal]
+  GUIPal16b 152,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 151,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 150,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 149,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 148,[TRVal],[TGVal],[TBVal]
 
-    mov al,[GUIWRAdd]
-    add al,al
-    mov [TRVal],al
-    mov al,[GUIWGAdd]
-    add al,al
-    mov [TGVal],al
-    mov al,[GUIWBAdd]
-    add al,al
-    mov [TBVal],al
-    mov byte[TRVali],4
-    mov byte[TGVali],4
-    mov byte[TBVali],4
-    mov al,[TRVal]
-    shr al,2
-    sub [TRVal],al
-    mov al,[TGVal]
-    shr al,2
-    sub [TGVal],al
-    mov al,[TBVal]
-    shr al,2
-    sub [TBVal],al
+  mov al,[GUIWRAdd]
+  add al,al
+  mov [TRVal],al
+  mov al,[GUIWGAdd]
+  add al,al
+  mov [TGVal],al
+  mov al,[GUIWBAdd]
+  add al,al
+  mov [TBVal],al
+  mov byte[TRVali],4
+  mov byte[TGVali],4
+  mov byte[TBVali],4
+  mov al,[TRVal]
+  shr al,2
+  sub [TRVal],al
+  mov al,[TGVal]
+  shr al,2
+  sub [TGVal],al
+  mov al,[TBVal]
+  shr al,2
+  sub [TBVal],al
 
-    GUIPal16b 157,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 156,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 155,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 154,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 153,[TRVal],[TGVal],[TBVal]
+  GUIPal16b 157,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 156,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 155,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 154,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 153,[TRVal],[TGVal],[TBVal]
 
-    mov al,[GUIWRAdd]
-    add al,al
-    mov [TRVal],al
-    mov al,[GUIWGAdd]
-    add al,al
-    mov [TGVal],al
-    mov al,[GUIWBAdd]
-    add al,al
-    mov [TBVal],al
-    mov byte[TRVali],4
-    mov byte[TGVali],4
-    mov byte[TBVali],4
-    mov al,[TRVal]
-    shr al,1
-    sub [TRVal],al
-    mov al,[TGVal]
-    shr al,1
-    sub [TGVal],al
-    mov al,[TBVal]
-    shr al,1
-    sub [TBVal],al
+  mov al,[GUIWRAdd]
+  add al,al
+  mov [TRVal],al
+  mov al,[GUIWGAdd]
+  add al,al
+  mov [TGVal],al
+  mov al,[GUIWBAdd]
+  add al,al
+  mov [TBVal],al
+  mov byte[TRVali],4
+  mov byte[TGVali],4
+  mov byte[TBVali],4
+  mov al,[TRVal]
+  shr al,1
+  sub [TRVal],al
+  mov al,[TGVal]
+  shr al,1
+  sub [TGVal],al
+  mov al,[TBVal]
+  shr al,1
+  sub [TBVal],al
 
-    GUIPal16b 162,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 161,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 160,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 159,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 158,[TRVal],[TGVal],[TBVal]
+  GUIPal16b 162,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 161,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 160,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 159,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 158,[TRVal],[TGVal],[TBVal]
 
-    GUIPal16b 163,40,40,00
-    GUIPal16b 164,30,30,00
-    GUIPal16b 165,50,00,00
-    GUIPal16b 166,35,00,00
-    GUIPal16b 167,00,00,00
+  GUIPal16b 163,40,40,00
+  GUIPal16b 164,30,30,00
+  GUIPal16b 165,50,00,00
+  GUIPal16b 166,35,00,00
+  GUIPal16b 167,00,00,00
 
-    ; Blue scale shadow
-    mov al,[GUIWRAdd]
-    mov [TRVal],al
-    mov al,[GUIWGAdd]
-    mov [TGVal],al
-    mov al,[GUIWBAdd]
-    mov [TBVal],al
-    mov byte[TRVali],2
-    mov byte[TGVali],2
-    mov byte[TBVali],2
+  ; Blue scale shadow
+  mov al,[GUIWRAdd]
+  mov [TRVal],al
+  mov al,[GUIWGAdd]
+  mov [TGVal],al
+  mov al,[GUIWBAdd]
+  mov [TBVal],al
+  mov byte[TRVali],2
+  mov byte[TGVali],2
+  mov byte[TBVali],2
 
-    GUIPal16b 172,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 171,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 170,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 169,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 168,[TRVal],[TGVal],[TBVal]
+  GUIPal16b 172,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 171,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 170,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 169,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 168,[TRVal],[TGVal],[TBVal]
 
-    mov al,[GUIWRAdd]
-    mov [TRVal],al
-    mov al,[GUIWGAdd]
-    mov [TGVal],al
-    mov al,[GUIWBAdd]
-    mov [TBVal],al
-    mov byte[TRVali],2
-    mov byte[TGVali],2
-    mov byte[TBVali],2
-    call DecPalVal
-    call DecPalVal
+  mov al,[GUIWRAdd]
+  mov [TRVal],al
+  mov al,[GUIWGAdd]
+  mov [TGVal],al
+  mov al,[GUIWBAdd]
+  mov [TBVal],al
+  mov byte[TRVali],2
+  mov byte[TGVali],2
+  mov byte[TBVali],2
+  call DecPalVal
+  call DecPalVal
 
-    GUIPal16b 177,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 176,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 175,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 174,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 173,[TRVal],[TGVal],[TBVal]
+  GUIPal16b 177,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 176,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 175,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 174,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 173,[TRVal],[TGVal],[TBVal]
 
-    mov al,[GUIWRAdd]
-    mov [TRVal],al
-    mov al,[GUIWGAdd]
-    mov [TGVal],al
-    mov al,[GUIWBAdd]
-    mov [TBVal],al
-    mov byte[TRVali],2
-    mov byte[TGVali],2
-    mov byte[TBVali],2
-    call DecPalVal
-    call DecPalVal
-    call DecPalVal
-    call DecPalVal
+  mov al,[GUIWRAdd]
+  mov [TRVal],al
+  mov al,[GUIWGAdd]
+  mov [TGVal],al
+  mov al,[GUIWBAdd]
+  mov [TBVal],al
+  mov byte[TRVali],2
+  mov byte[TGVali],2
+  mov byte[TBVali],2
+  call DecPalVal
+  call DecPalVal
+  call DecPalVal
+  call DecPalVal
 
-    GUIPal16b 182,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 181,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 180,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 179,[TRVal],[TGVal],[TBVal]
-    call DecPalVal
-    GUIPal16b 178,[TRVal],[TGVal],[TBVal]
+  GUIPal16b 182,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 181,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 180,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 179,[TRVal],[TGVal],[TBVal]
+  call DecPalVal
+  GUIPal16b 178,[TRVal],[TGVal],[TBVal]
 
-    GUIPal16b 183,20,20,00
-    GUIPal16b 184,15,15,00
-    GUIPal16b 185,25,00,00
-    GUIPal16b 186,17,00,00
-    GUIPal16b 187,00,00,00
+  GUIPal16b 183,20,20,00
+  GUIPal16b 184,15,15,00
+  GUIPal16b 185,25,00,00
+  GUIPal16b 186,17,00,00
+  GUIPal16b 187,00,00,00
 
-    ; gray scale2 = 189 .. 220
-    mov bl,0
-    mov esi,189
+  ; gray scale2 = 189 .. 220
+  mov bl,0
+  mov esi,189
 .loopi
-    xor edx,edx
-    mov al,bl
-    add al,al
-    mov ah,bl
-    shr ah,1
-    sub al,ah
-    mov dl,al
-    shr dl,1
-    shl edx,6
-    or dl,al
-    shl edx,5
-    add al,ah
-    shr al,1
-    or dl,al
-    mov [GUICPC+esi*2],dx
-    inc esi
-    inc bl
-    cmp bl,64
-    jne .loopi
+  xor edx,edx
+  mov al,bl
+  add al,al
+  mov ah,bl
+  shr ah,1
+  sub al,ah
+  mov dl,al
+  shr dl,1
+  shl edx,6
+  or dl,al
+  shl edx,5
+  add al,ah
+  shr al,1
+  or dl,al
+  mov [GUICPC+esi*2],dx
+  inc esi
+  inc bl
+  cmp bl,64
+  jne .loopi
 
-    GUIPal16b 221,00,55,00
-    GUIPal16b 222,00,45,00
-    GUIPal16b 223,00,25,00
+  GUIPal16b 221,00,55,00
+  GUIPal16b 222,00,45,00
+  GUIPal16b 223,00,25,00
 
-    GUIPal16b 224,40,0,20
-    GUIPal16b 225,32,0,15
+  GUIPal16b 224,40,0,20
+  GUIPal16b 225,32,0,15
 
-    GUIPal16b 226,20,0,10
-    GUIPal16b 227,16,0,07
+  GUIPal16b 226,20,0,10
+  GUIPal16b 227,16,0,07
 
-    GUIPal16b 228,45,45,50
-    GUIPal16b 229,40,40,45
-    GUIPal16b 230,35,35,40
-    GUIPal16b 231,30,30,35
+  GUIPal16b 228,45,45,50
+  GUIPal16b 229,40,40,45
+  GUIPal16b 230,35,35,40
+  GUIPal16b 231,30,30,35
 
-    GUIPal16b 232,35,15,15
+  GUIPal16b 232,35,15,15
 
-    GUIPal16b 233,50,12,60
-    GUIPal16b 234,30,14,60
-    GUIPal16b 235,12,60,25
-    GUIPal16b 236,14,42,25
-    GUIPal16b 237,60,20,25
-    GUIPal16b 238,42,20,25
+  GUIPal16b 233,50,12,60
+  GUIPal16b 234,30,14,60
+  GUIPal16b 235,12,60,25
+  GUIPal16b 236,14,42,25
+  GUIPal16b 237,60,20,25
+  GUIPal16b 238,42,20,25
 
-    cmp byte[GUIPalConv],0
-    je .convert
-    ret
+  cmp byte[GUIPalConv],0
+  je .convert
+  ret
 .convert
-    mov byte[GUIPalConv],1
-    mov esi,[vidbuffer]
-    mov edi,288*240
-    xor ebx,ebx
+  mov byte[GUIPalConv],1
+  mov esi,[vidbuffer]
+  mov edi,288*240
+  xor ebx,ebx
 .next
-    mov ax,[esi+ebx*2]
-    mov ecx,eax
-    shr ecx,11
-    and ecx,1Fh
-    mov edx,eax
-    shr edx,6
-    and edx,1Fh
-    add ecx,edx
-    mov edx,eax
-    and edx,1Fh
-    add ecx,edx
-    shr ecx,1
-    mov al,[.multab+ecx]
-    mov [esi+ebx],al
-    inc ebx
-    dec edi
-    jnz .next
-    ret
+  mov ax,[esi+ebx*2]
+  mov ecx,eax
+  shr ecx,11
+  and ecx,1Fh
+  mov edx,eax
+  shr edx,6
+  and edx,1Fh
+  add ecx,edx
+  mov edx,eax
+  and edx,1Fh
+  add ecx,edx
+  shr ecx,1
+  mov al,[.multab+ecx]
+  mov [esi+ebx],al
+  inc ebx
+  dec edi
+  jnz .next
+  ret
 
 SECTION .data
 .multab db 1,1,1,2,2,3,4,4,5,6,6,7,8,8,9,10,10,11,12,12,13,14,14,15,16,16,
-        db 17,18,18,19,20,20,21,22,22,23,24,24,25,26,26,27,28,28,29,30,30,
-        db 31
+  db 17,18,18,19,20,20,21,22,22,23,24,24,25,26,26,27,28,28,29,30,30,31
 SECTION .text
 
 GUIBufferData:
-    mov ecx,16384
-    cmp byte[cbitmode],1
-    jne near .16b
-    add ecx,16384
-    cmp word[PrevResoln],224
-    je .nobufb
-    add esi,288*8
+  mov ecx,16384
+  cmp byte[cbitmode],1
+  jne near .16b
+  add ecx,16384
+  cmp word[PrevResoln],224
+  je .nobufb
+  add esi,288*8
 .nobufb
 .16b
-    ; copy to spritetable
-    mov esi,[vidbuffer]
-    cmp word[PrevResoln],224
-    je .nobufa
-    add esi,288*8
+  ; copy to spritetable
+  mov esi,[vidbuffer]
+  cmp word[PrevResoln],224
+  je .nobufa
+  add esi,288*8
 .nobufa
-    mov edi,[spritetablea]
-    add edi,8*288
+  mov edi,[spritetablea]
+  add edi,8*288
 .loop
-    mov eax,[esi]
-    mov [edi],eax
-    add esi,4
-    add edi,4
-    dec ecx
-    jnz .loop
-    mov edi,sprlefttot
-    mov ecx,64*5
+  mov eax,[esi]
+  mov [edi],eax
+  add esi,4
+  add edi,4
+  dec ecx
+  jnz .loop
+  mov edi,sprlefttot
+  mov ecx,64*5
 .a
-    mov dword[edi],0
-    add edi,4
-    dec ecx
-    jnz .a
-    ret
+  mov dword[edi],0
+  add edi,4
+  dec ecx
+  jnz .a
+  ret
 
 GUIUnBuffer:
-    mov ecx,16384
-    ; copy from spritetable
-    mov edi,[vidbuffer]
-    mov esi,[spritetablea]
-    add esi,8*288
-    rep movsd
-    mov eax,01010101h
-    mov ecx,2*288
-    rep stosd
-    ret
+  mov ecx,16384
+  ; copy from spritetable
+  mov edi,[vidbuffer]
+  mov esi,[spritetablea]
+  add esi,8*288
+  rep movsd
+  mov eax,01010101h
+  mov ecx,2*288
+  rep stosd
+  ret
 
 GUIconvpal:
-    mov ax,[cgram]
-    mov [tempco0],ax
-    test byte[scaddtype],00100000b
-    jz near .noaddition
-    test byte[scaddtype],10000000b
-    jnz near .noaddition
-    mov cx,[cgram]
-    mov ax,cx
-    and ax,001Fh
-    add al,[coladdr]
-    cmp al,01Fh
-    jb .noadd
-    mov al,01Fh
+  mov ax,[cgram]
+  mov [tempco0],ax
+  test byte[scaddtype],00100000b
+  jz near .noaddition
+  test byte[scaddtype],10000000b
+  jnz near .noaddition
+  mov cx,[cgram]
+  mov ax,cx
+  and ax,001Fh
+  add al,[coladdr]
+  cmp al,01Fh
+  jb .noadd
+  mov al,01Fh
 .noadd
-    mov bx,ax
-    mov ax,cx
-    shr ax,5
-    and ax,001Fh
-    add al,[coladdg]
-    cmp al,01Fh
-    jb .noaddb
-    mov al,01Fh
+  mov bx,ax
+  mov ax,cx
+  shr ax,5
+  and ax,001Fh
+  add al,[coladdg]
+  cmp al,01Fh
+  jb .noaddb
+  mov al,01Fh
 .noaddb
-    shl ax,5
-    add bx,ax
-    mov ax,cx
-    shr ax,10
-    and ax,001Fh
-    add al,[coladdb]
-    cmp al,01Fh
-    jb .noaddc
-    mov al,01Fh
+  shl ax,5
+  add bx,ax
+  mov ax,cx
+  shr ax,10
+  and ax,001Fh
+  add al,[coladdb]
+  cmp al,01Fh
+  jb .noaddc
+  mov al,01Fh
 .noaddc
-    shl ax,10
-    add bx,ax
-    mov [cgram],bx
+  shl ax,10
+  add bx,ax
+  mov [cgram],bx
 .noaddition
-    mov edi,cgram
-    mov ebx,prevpal
-    xor ah,ah
+  mov edi,cgram
+  mov ebx,prevpal
+  xor ah,ah
 .loopa
-    mov cx,[edi]
-    push eax
-    push ebx
-    mov [ebx],cx
-    mov al,ah
-    mov ax,cx
-    and al,01Fh
-    mov bh,[maxbr]
-    mov bl,bh
-    mul bl
-    mov bl,15
-    div bl
-    mov [curgsval],al
-    mov ax,cx
-    shr ax,5
-    and al,01Fh
-    mov bl,bh
-    mul bl
-    mov bl,15
-    div bl
-    add [curgsval],al
-    mov ax,cx
-    shr ax,10
-    and al,01Fh
-    mov bl,bh
-    mul bl
-    mov bl,15
-    div bl
-    add [curgsval],al
-    pop ebx
-    pop eax
-    add edi,2
-    add ebx,2
-    push eax
-    push ebx
-    mov al,ah
-    and eax,0FFh
-    mov bl,[curgsval]
-    push eax
-    push ebx
-    mov al,bl
-    mov bl,3
-    xor ah,ah
-    div bl
-    pop ebx
-    mov bl,al
-    pop eax
-    cmp byte[MessageOn],0
-    je .nochange128
-    cmp al,128
-    jne .nochange128
-    mov bl,31
+  mov cx,[edi]
+  push eax
+  push ebx
+  mov [ebx],cx
+  mov al,ah
+  mov ax,cx
+  and al,01Fh
+  mov bh,[maxbr]
+  mov bl,bh
+  mul bl
+  mov bl,15
+  div bl
+  mov [curgsval],al
+  mov ax,cx
+  shr ax,5
+  and al,01Fh
+  mov bl,bh
+  mul bl
+  mov bl,15
+  div bl
+  add [curgsval],al
+  mov ax,cx
+  shr ax,10
+  and al,01Fh
+  mov bl,bh
+  mul bl
+  mov bl,15
+  div bl
+  add [curgsval],al
+  pop ebx
+  pop eax
+  add edi,2
+  add ebx,2
+  push eax
+  push ebx
+  mov al,ah
+  and eax,0FFh
+  mov bl,[curgsval]
+  push eax
+  push ebx
+  mov al,bl
+  mov bl,3
+  xor ah,ah
+  div bl
+  pop ebx
+  mov bl,al
+  pop eax
+  cmp byte[MessageOn],0
+  je .nochange128
+  cmp al,128
+  jne .nochange128
+  mov bl,31
 .nochange128
-    or bl,bl
-    jnz .noadder
-    inc bl
+  or bl,bl
+  jnz .noadder
+  inc bl
 .noadder
-    mov [SubPalTable+eax],bl
-    pop ebx
-    pop eax
-    inc ah
-    jnz near .loopa
-    mov al,[maxbr]
-    mov [prevbright],al
-    mov ax,[tempco0]
-    mov [cgram],ax
-    ret
+  mov [SubPalTable+eax],bl
+  pop ebx
+  pop eax
+  inc ah
+  jnz near .loopa
+  mov al,[maxbr]
+  mov [prevbright],al
+  mov ax,[tempco0]
+  mov [cgram],ax
+  ret
 
 SECTION .data
-GUIMousePtr db 50+88,47+88,45+88,43+88,42+88,00,00,00
-            db 53+88,52+88,46+88,42+88,00,00,00,00
-            db 55+88,54+88,54+88,44+88,00,00,00,00
-            db 57+88,57+88,56+88,52+88,45+88,00,00,00
-            db 59+88,00,00,55+88,50+88,45+88,00,00
-            db 00,00,00,00,55+88,50+88,45+88,00
-            db 00,00,00,00,00,55+88,50+88,47+88
-            db 00,00,00,00,00,00,52+88,00
-
-            db 50,47,45,43,40,00,00,00
-            db 53,52,46,42,00,00,00,00
-            db 55,54,54,44,00,00,00,00
-            db 57,57,56,52,45,00,00,00
-            db 59,00,00,55,50,45,00,00
-            db 00,00,00,00,55,50,45,00
-            db 00,00,00,00,00,55,50,47
-            db 00,00,00,00,00,00,52,00
+GUIMousePtr:
+  db 50+88,47+88,45+88,43+88,40+88,0    ,0    ,0
+  db 53+88,52+88,46+88,42+88,0    ,0    ,0    ,0
+  db 55+88,54+88,54+88,44+88,0    ,0    ,0    ,0
+  db 57+88,57+88,56+88,52+88,45+88,0    ,0    ,0
+  db 59+88,0    ,0    ,55+88,50+88,45+88,0    ,0
+  db 0    ,0    ,0    ,0    ,55+88,50+88,45+88,0
+  db 0    ,0    ,0    ,0    ,0    ,55+88,50+88,47+88
+  db 0    ,0    ,0    ,0    ,0    ,0    ,52+88,0
+  db 50,47,45,43,40,0 ,0 ,0
+  db 53,52,46,42,0 ,0 ,0 ,0
+  db 55,54,54,44,0 ,0 ,0 ,0
+  db 57,57,56,52,45,0 ,0 ,0
+  db 59,0 ,0 ,55,50,45,0 ,0
+  db 0 ,0 ,0 ,0 ,55,50,45,0
+  db 0 ,0 ,0 ,0 ,0 ,55,50,47
+  db 0 ,0 ,0 ,0 ,0 ,0 ,52,0
 
 NEWSYM GUIFontData
-         db 0,0,0,0,0; empty space
-         db 01110000b
-         db 10011000b
-         db 10101000b
-         db 11001000b
-         db 01110000b; 0
-         db 00100000b
-         db 01100000b
-         db 00100000b
-         db 00100000b
-         db 01110000b; 1
-         db 01110000b
-         db 10001000b
-         db 00110000b
-         db 01000000b
-         db 11111000b; 2
-         db 01110000b
-         db 10001000b
-         db 00110000b
-         db 10001000b
-         db 01110000b; 3
-         db 01010000b
-         db 10010000b
-         db 11111000b
-         db 00010000b
-         db 00010000b; 4
-         db 11111000b
-         db 10000000b
-         db 11110000b
-         db 00001000b
-         db 11110000b; 5
-         db 01110000b
-         db 10000000b
-         db 11110000b
-         db 10001000b
-         db 01110000b; 6
-         db 11111000b
-         db 00001000b
-         db 00010000b
-         db 00010000b
-         db 00010000b; 7
-         db 01110000b
-         db 10001000b
-         db 01110000b
-         db 10001000b
-         db 01110000b; 8
-         db 01110000b
-         db 10001000b
-         db 01111000b
-         db 00001000b
-         db 01110000b; 9
-         db 01110000b
-         db 10001000b
-         db 11111000b
-         db 10001000b
-         db 10001000b; A
-         db 11110000b
-         db 10001000b
-         db 11110000b
-         db 10001000b
-         db 11110000b; B
-         db 01110000b
-         db 10001000b
-         db 10000000b
-         db 10001000b
-         db 01110000b; C
-         db 11110000b
-         db 10001000b
-         db 10001000b
-         db 10001000b
-         db 11110000b; D
-         db 11111000b
-         db 10000000b
-         db 11110000b
-         db 10000000b
-         db 11111000b; E
-         db 11111000b
-         db 10000000b
-         db 11110000b
-         db 10000000b
-         db 10000000b; F
-         db 01111000b
-         db 10000000b
-         db 10011000b
-         db 10001000b
-         db 01110000b; G
-         db 10001000b
-         db 10001000b
-         db 11111000b
-         db 10001000b
-         db 10001000b; H
-         db 11111000b
-         db 00100000b
-         db 00100000b
-         db 00100000b
-         db 11111000b; I
-         db 01111000b
-         db 00010000b
-         db 00010000b
-         db 10010000b
-         db 01100000b; J
-         db 10010000b
-         db 10100000b
-         db 11100000b
-         db 10010000b
-         db 10001000b; K
-         db 10000000b
-         db 10000000b
-         db 10000000b
-         db 10000000b
-         db 11111000b; L
-         db 11011000b
-         db 10101000b
-         db 10101000b
-         db 10101000b
-         db 10001000b; M
-         db 11001000b
-         db 10101000b
-         db 10101000b
-         db 10101000b
-         db 10011000b; N
-         db 01110000b
-         db 10001000b
-         db 10001000b
-         db 10001000b
-         db 01110000b; O
-         db 11110000b
-         db 10001000b
-         db 11110000b
-         db 10000000b
-         db 10000000b; P
-         db 01110000b
-         db 10001000b
-         db 10101000b
-         db 10010000b
-         db 01101000b; Q
-         db 11110000b
-         db 10001000b
-         db 11110000b
-         db 10010000b
-         db 10001000b; R
-         db 01111000b
-         db 10000000b
-         db 01110000b
-         db 00001000b
-         db 11110000b; S
-         db 11111000b
-         db 00100000b
-         db 00100000b
-         db 00100000b
-         db 00100000b; T
-         db 10001000b
-         db 10001000b
-         db 10001000b
-         db 10001000b
-         db 01110000b; U
-         db 10001000b
-         db 10001000b
-         db 01010000b
-         db 01010000b
-         db 00100000b; V
-         db 10001000b
-         db 10101000b
-         db 10101000b
-         db 10101000b
-         db 01010000b; W
-         db 10001000b
-         db 01010000b
-         db 00100000b
-         db 01010000b
-         db 10001000b; X
-         db 10001000b
-         db 01010000b
-         db 00100000b
-         db 00100000b
-         db 00100000b; Y
-         db 11111000b
-         db 00010000b
-         db 00100000b
-         db 01000000b
-         db 11111000b; Z
-         db 00000000b
-         db 00000000b
-         db 11111000b
-         db 00000000b
-         db 00000000b; -
-         db 00000000b
-         db 00000000b
-         db 00000000b
-         db 00000000b
-         db 11111000b; _
-         db 01101000b
-         db 10010000b
-         db 00000000b
-         db 00000000b
-         db 00000000b; ~
-         db 00000000b
-         db 00000000b
-         db 00000000b
-         db 00000000b
-         db 00100000b; .
-         db 00001000b
-         db 00010000b
-         db 00100000b
-         db 01000000b
-         db 10000000b; /
-         db 00010000b
-         db 00100000b
-         db 01000000b
-         db 00100000b
-         db 00010000b; <
-         db 01000000b
-         db 00100000b
-         db 00010000b
-         db 00100000b
-         db 01000000b; >
-         db 01110000b
-         db 01000000b
-         db 01000000b
-         db 01000000b
-         db 01110000b; [
-         db 01110000b
-         db 00010000b
-         db 00010000b
-         db 00010000b
-         db 01110000b; ]
-         db 00000000b
-         db 00100000b
-         db 00000000b
-         db 00100000b
-         db 00000000b; :
-         db 01100000b
-         db 10011000b
-         db 01110000b
-         db 10011000b
-         db 01101000b; &
-         db 00100000b
-         db 00100000b
-         db 10101000b
-         db 01110000b
-         db 00100000b; arrow
-         db 01010000b
-         db 11111000b
-         db 01010000b
-         db 11111000b
-         db 01010000b; #
-         db 00000000b
-         db 11111000b
-         db 00000000b
-         db 11111000b
-         db 00000000b; =
-         db 01001000b
-         db 10010000b
-         db 00000000b
-         db 00000000b
-         db 00000000b; "
-         db 10000000b
-         db 01000000b
-         db 00100000b
-         db 00010000b
-         db 00001000b; \ (Screw you nassm)
-         db 10101000b
-         db 01110000b
-         db 11111000b
-         db 01110000b
-         db 10101000b; *
-         db 01110000b
-         db 10001000b
-         db 00110000b
-         db 00000000b
-         db 00100000b; ?
-         db 10001000b
-         db 00010000b
-         db 00100000b
-         db 01000000b
-         db 10001000b; %
-         db 00100000b
-         db 00100000b
-         db 11111000b
-         db 00100000b
-         db 00100000b; +
-         db 00000000b
-         db 00000000b
-         db 00000000b
-         db 00100000b
-         db 01000000b; ,
-         db 00110000b
-         db 01000000b
-         db 01000000b
-         db 01000000b
-         db 00110000b; (
-         db 01100000b
-         db 00010000b
-         db 00010000b
-         db 00010000b
-         db 01100000b; )
-         db 01110000b
-         db 10011000b
-         db 10111000b
-         db 10000000b
-         db 01110000b; @
-         db 00100000b
-         db 01000000b
-         db 00000000b
-         db 00000000b
-         db 00000000b; '
-         db 00100000b
-         db 00100000b
-         db 00100000b
-         db 00000000b
-         db 00100000b; !
-         db 01111000b
-         db 10100000b
-         db 01110000b
-         db 00101000b
-         db 11110000b; $
-         db 00000000b
-         db 00100000b
-         db 00000000b
-         db 00100000b
-         db 01000000b; ;
-         db 01000000b
-         db 00100000b
-         db 00000000b
-         db 00000000b
-         db 00000000b; `
-         db 00100000b
-         db 01010000b
-         db 00000000b
-         db 00000000b
-         db 00000000b; ^
-         db 00110000b
-         db 01000000b
-         db 11000000b
-         db 01000000b
-         db 00110000b; {
-         db 01100000b
-         db 00010000b
-         db 00011000b
-         db 00010000b
-         db 01100000b; }
-         db 00100000b
-         db 00100000b
-         db 01110000b
-         db 01110000b
-         db 11111000b; Up
-         db 11111000b
-         db 01110000b
-         db 01110000b
-         db 00100000b
-         db 00100000b; Down
-         db 00001000b
-         db 00111000b
-         db 11111000b
-         db 00111000b
-         db 00001000b; Left
-         db 10000000b
-         db 11100000b
-         db 11111000b
-         db 11100000b
-         db 10000000b; Right
-         db 00100000b
-         db 01100000b
-         db 11111000b
-         db 01100000b
-         db 00100000b; Arrow Left
-         db 00111000b
-         db 00100000b
-         db 00110000b
-         db 00001000b
-         db 10110000b; .5
-         db 11111100b
-         db 10000100b
-         db 11111100b
-         db 00000000b
-         db 00000000b; Maximize
-         db 00000000b
-         db 11111100b
-         db 00000000b
-         db 00000000b
-         db 00000000b; Minimize
-         db 11111000b
-         db 10001000b
-         db 10001000b
-         db 10001000b
-         db 11111000b; Maximize (Linux)
-         db 00000000b
-         db 00000000b
-         db 00100000b
-         db 01010000b
-         db 00100000b; shw fullstop 0x4E
-         db 01110000b
-         db 01000000b
-         db 01000000b
-         db 01000000b
-         db 00000000b; shw left bracket 0x4F
-         db 00000000b
-         db 00010000b
-         db 00010000b
-         db 00010000b
-         db 01110000b; shw right bracket 0x50
-         db 00000000b
-         db 00000000b
-         db 00000000b
-         db 01000000b
-         db 00100000b; shw comma 0x51
-         db 00000000b
-         db 00100000b
-         db 01110000b
-         db 00100000b
-         db 00000000b; shw mid-dot 0x52
-         db 11111000b
-         db 00001000b
-         db 11110000b
-         db 00100000b
-         db 11000000b; shw wo 0x53
-         db 00000000b
-         db 11111000b
-         db 01010000b
-         db 01100000b
-         db 01000000b; shw mini a 0x54
-         db 00000000b
-         db 00010000b
-         db 00100000b
-         db 11100000b
-         db 00100000b; shw mini i 0x55
-         db 00000000b
-         db 00100000b
-         db 11111000b
-         db 10001000b
-         db 00110000b; shw mini u 0x56
-         db 00000000b
-         db 00000000b
-         db 11111000b
-         db 00100000b
-         db 11111000b; shw mini e 0x57
-         db 00000000b
-         db 00010000b
-         db 11111000b
-         db 00110000b
-         db 11010000b; shw mini o 0x58
-         db 00000000b
-         db 01000000b
-         db 11111000b
-         db 01010000b
-         db 01000000b; shw mini ya 0x59
-         db 00000000b
-         db 00000000b
-         db 11110000b
-         db 00010000b
-         db 11111000b; shw mini yu 0x5A
-         db 00000000b
-         db 11111000b
-         db 00001000b
-         db 01111000b
-         db 11111000b; shw mini yo 0x5B
-         db 00000000b
-         db 10101000b
-         db 10101000b
-         db 00010000b
-         db 01100000b; shw mini tsu 0x5C
-         db 00000000b
-         db 10000000b
-         db 01111000b
-         db 00000000b
-         db 00000000b; shw prolong 0x5D
-         db 11111000b
-         db 00101000b
-         db 00110000b
-         db 00100000b
-         db 11000000b; shw a 0x5E
-         db 00001000b
-         db 00110000b
-         db 11100000b
-         db 00100000b
-         db 00100000b; shw i 0x5F
-         db 00100000b
-         db 11111000b
-         db 10001000b
-         db 00010000b
-         db 01100000b; shw u 0x60
-         db 11111000b
-         db 00100000b
-         db 00100000b
-         db 00100000b
-         db 11111000b; shw e 0x61
-         db 00010000b
-         db 11111000b
-         db 00110000b
-         db 01010000b
-         db 10010000b; shw o 0x62
-         db 01000000b
-         db 11111000b
-         db 01001000b
-         db 01001000b
-         db 10011000b; shw ka 0x63
-         db 00100000b
-         db 11111000b
-         db 00100000b
-         db 11111000b
-         db 00100000b; shw ki 0x64
-         db 01000000b
-         db 01111000b
-         db 10001000b
-         db 00010000b
-         db 01100000b; shw ku 0x65
-         db 01000000b
-         db 01111000b
-         db 10010000b
-         db 00010000b
-         db 01100000b; shw ke 0x66 ^^
-         db 11111000b
-         db 00001000b
-         db 00001000b
-         db 00001000b
-         db 11111000b; shw ko 0x67
-         db 01010000b
-         db 11111000b
-         db 01010000b
-         db 00010000b
-         db 01100000b; shw sa 0x68
-         db 01000000b
-         db 10101000b
-         db 01001000b
-         db 00010000b
-         db 11100000b; shw shi 0x69
-         db 11111000b
-         db 00001000b
-         db 00010000b
-         db 00110000b
-         db 11001000b; shw su 0x6A
-         db 01000000b
-         db 11111000b
-         db 01010000b
-         db 01000000b
-         db 00111000b; shw se 0x6B
-         db 10001000b
-         db 01001000b
-         db 00001000b
-         db 00010000b
-         db 01100000b; shw so 0x6C
-         db 01000000b
-         db 01111000b
-         db 11001000b
-         db 00110000b
-         db 01100000b; shw ta 0x6D
-         db 11111000b
-         db 00100000b
-         db 11111000b
-         db 00100000b
-         db 01000000b; shw chi 0x6E
-         db 10101000b
-         db 10101000b
-         db 00001000b
-         db 00010000b
-         db 01100000b; shw tsu 0x6F
-         db 11111000b
-         db 00000000b
-         db 11111000b
-         db 00100000b
-         db 11000000b; shw te 0x70
-         db 01000000b
-         db 01000000b
-         db 01100000b
-         db 01010000b
-         db 01000000b; shw to 0x71
-         db 00100000b
-         db 11111000b
-         db 00100000b
-         db 00100000b
-         db 01000000b; shw na 0x72
-         db 11110000b
-         db 00000000b
-         db 00000000b
-         db 00000000b
-         db 11111000b; shw ni 0x73
-         db 11111000b
-         db 00001000b
-         db 00101000b
-         db 00010000b
-         db 011010000b; shw nu 0x74
-         db 00100000b
-         db 11111000b
-         db 00001000b
-         db 01110000b
-         db 10101000b; shw ne 0x75
-         db 00001000b
-         db 00001000b
-         db 00001000b
-         db 00010000b
-         db 01100000b; shw no 0x76
-         db 01010000b
-         db 01010000b
-         db 01010000b
-         db 10001000b
-         db 10001000b; shw ha 0x77
-         db 10000000b
-         db 10011000b
-         db 11100000b
-         db 10000000b
-         db 01111000b; shw hi 0x78
-         db 11111000b
-         db 00001000b
-         db 00001000b
-         db 00010000b
-         db 01100000b; shw hu 0x79
-         db 01000000b
-         db 10100000b
-         db 10010000b
-         db 00001000b
-         db 00000000b; shw he 0x7A
-         db 00100000b
-         db 11111000b
-         db 01110000b
-         db 10101000b
-         db 00100000b; shw ho 0x7B
-         db 11111000b
-         db 00001000b
-         db 10010000b
-         db 01100000b
-         db 00100000b; shw ma 0x7C
-         db 11111000b
-         db 00000000b
-         db 11111000b
-         db 00000000b
-         db 11111000b; shw mi 0x7D
-         db 00100000b
-         db 01000000b
-         db 01000000b
-         db 10010000b
-         db 11111000b; shw mu 0x7E
-         db 00001000b
-         db 01001000b
-         db 00110000b
-         db 00110000b
-         db 11001000b; shw me 0x7F
-         db 11111000b
-         db 00100000b
-         db 11111000b
-         db 00100000b
-         db 00111000b; shw mo 0x80
-         db 01000000b
-         db 11111100b
-         db 01001000b
-         db 00100000b
-         db 0010000b; shw ya 0x81
-         db 11110000b
-         db 00010000b
-         db 00010000b
-         db 00010000b
-         db 11111000b; shw yu 0x82
-         db 11111000b
-         db 00001000b
-         db 11111000b
-         db 00001000b
-         db 11111000b; shw yo 0x83
-         db 11111000b
-         db 00000000b
-         db 11111000b
-         db 00010000b
-         db 01100000b; shw ra 0x84
-         db 10001000b
-         db 10001000b
-         db 10001000b
-         db 00010000b
-         db 01100000b; shw ri 0x85
-         db 01100000b
-         db 01100000b
-         db 01101000b
-         db 01101000b
-         db 10110000b; shw ru 0x86
-         db 10000000b
-         db 10000000b
-         db 10001000b
-         db 10001000b
-         db 11110000b; shw re 0x87
-         db 11111000b
-         db 10001000b
-         db 10001000b
-         db 10001000b
-         db 11111000b; shw ro 0x88
-         db 11111000b
-         db 10001000b
-         db 00001000b
-         db 00010000b
-         db 01100000b; shw wa 0x89
-         db 10000000b
-         db 01001000b
-         db 00001000b
-         db 00010000b
-         db 11100000b; shw n 0x8A
-         db 10100000b
-         db 10100000b
-         db 00000000b
-         db 00000000b
-         db 00000000b; shw voiced 0x8B
-         db 01000000b
-         db 10100000b
-         db 01000000b
-         db 00000000b
-         db 00000000b; shw halfvoiced 0x8C
+  db 0,0,0,0,0; empty space
+  db 01110000b
+  db 10011000b
+  db 10101000b
+  db 11001000b
+  db 01110000b; 0
+  db 00100000b
+  db 01100000b
+  db 00100000b
+  db 00100000b
+  db 01110000b; 1
+  db 01110000b
+  db 10001000b
+  db 00110000b
+  db 01000000b
+  db 11111000b; 2
+  db 01110000b
+  db 10001000b
+  db 00110000b
+  db 10001000b
+  db 01110000b; 3
+  db 01010000b
+  db 10010000b
+  db 11111000b
+  db 00010000b
+  db 00010000b; 4
+  db 11111000b
+  db 10000000b
+  db 11110000b
+  db 00001000b
+  db 11110000b; 5
+  db 01110000b
+  db 10000000b
+  db 11110000b
+  db 10001000b
+  db 01110000b; 6
+  db 11111000b
+  db 00001000b
+  db 00010000b
+  db 00010000b
+  db 00010000b; 7
+  db 01110000b
+  db 10001000b
+  db 01110000b
+  db 10001000b
+  db 01110000b; 8
+  db 01110000b
+  db 10001000b
+  db 01111000b
+  db 00001000b
+  db 01110000b; 9
+  db 01110000b
+  db 10001000b
+  db 11111000b
+  db 10001000b
+  db 10001000b; A
+  db 11110000b
+  db 10001000b
+  db 11110000b
+  db 10001000b
+  db 11110000b; B
+  db 01110000b
+  db 10001000b
+  db 10000000b
+  db 10001000b
+  db 01110000b; C
+  db 11110000b
+  db 10001000b
+  db 10001000b
+  db 10001000b
+  db 11110000b; D
+  db 11111000b
+  db 10000000b
+  db 11110000b
+  db 10000000b
+  db 11111000b; E
+  db 11111000b
+  db 10000000b
+  db 11110000b
+  db 10000000b
+  db 10000000b; F
+  db 01111000b
+  db 10000000b
+  db 10011000b
+  db 10001000b
+  db 01110000b; G
+  db 10001000b
+  db 10001000b
+  db 11111000b
+  db 10001000b
+  db 10001000b; H
+  db 11111000b
+  db 00100000b
+  db 00100000b
+  db 00100000b
+  db 11111000b; I
+  db 01111000b
+  db 00010000b
+  db 00010000b
+  db 10010000b
+  db 01100000b; J
+  db 10010000b
+  db 10100000b
+  db 11100000b
+  db 10010000b
+  db 10001000b; K
+  db 10000000b
+  db 10000000b
+  db 10000000b
+  db 10000000b
+  db 11111000b; L
+  db 11011000b
+  db 10101000b
+  db 10101000b
+  db 10101000b
+  db 10001000b; M
+  db 11001000b
+  db 10101000b
+  db 10101000b
+  db 10101000b
+  db 10011000b; N
+  db 01110000b
+  db 10001000b
+  db 10001000b
+  db 10001000b
+  db 01110000b; O
+  db 11110000b
+  db 10001000b
+  db 11110000b
+  db 10000000b
+  db 10000000b; P
+  db 01110000b
+  db 10001000b
+  db 10101000b
+  db 10010000b
+  db 01101000b; Q
+  db 11110000b
+  db 10001000b
+  db 11110000b
+  db 10010000b
+  db 10001000b; R
+  db 01111000b
+  db 10000000b
+  db 01110000b
+  db 00001000b
+  db 11110000b; S
+  db 11111000b
+  db 00100000b
+  db 00100000b
+  db 00100000b
+  db 00100000b; T
+  db 10001000b
+  db 10001000b
+  db 10001000b
+  db 10001000b
+  db 01110000b; U
+  db 10001000b
+  db 10001000b
+  db 01010000b
+  db 01010000b
+  db 00100000b; V
+  db 10001000b
+  db 10101000b
+  db 10101000b
+  db 10101000b
+  db 01010000b; W
+  db 10001000b
+  db 01010000b
+  db 00100000b
+  db 01010000b
+  db 10001000b; X
+  db 10001000b
+  db 01010000b
+  db 00100000b
+  db 00100000b
+  db 00100000b; Y
+  db 11111000b
+  db 00010000b
+  db 00100000b
+  db 01000000b
+  db 11111000b; Z
+  db 00000000b
+  db 00000000b
+  db 11111000b
+  db 00000000b
+  db 00000000b; -
+  db 00000000b
+  db 00000000b
+  db 00000000b
+  db 00000000b
+  db 11111000b; _
+  db 01101000b
+  db 10010000b
+  db 00000000b
+  db 00000000b
+  db 00000000b; ~
+  db 00000000b
+  db 00000000b
+  db 00000000b
+  db 00000000b
+  db 00100000b; .
+  db 00001000b
+  db 00010000b
+  db 00100000b
+  db 01000000b
+  db 10000000b; /
+  db 00010000b
+  db 00100000b
+  db 01000000b
+  db 00100000b
+  db 00010000b; <
+  db 01000000b
+  db 00100000b
+  db 00010000b
+  db 00100000b
+  db 01000000b; >
+  db 01110000b
+  db 01000000b
+  db 01000000b
+  db 01000000b
+  db 01110000b; [
+  db 01110000b
+  db 00010000b
+  db 00010000b
+  db 00010000b
+  db 01110000b; ]
+  db 00000000b
+  db 00100000b
+  db 00000000b
+  db 00100000b
+  db 00000000b; :
+  db 01100000b
+  db 10011000b
+  db 01110000b
+  db 10011000b
+  db 01101000b; &
+  db 00100000b
+  db 00100000b
+  db 10101000b
+  db 01110000b
+  db 00100000b; arrow
+  db 01010000b
+  db 11111000b
+  db 01010000b
+  db 11111000b
+  db 01010000b; #
+  db 00000000b
+  db 11111000b
+  db 00000000b
+  db 11111000b
+  db 00000000b; =
+  db 01001000b
+  db 10010000b
+  db 00000000b
+  db 00000000b
+  db 00000000b; "
+  db 10000000b
+  db 01000000b
+  db 00100000b
+  db 00010000b
+  db 00001000b; \ (Screw you nassm)
+  db 10101000b
+  db 01110000b
+  db 11111000b
+  db 01110000b
+  db 10101000b; *
+  db 01110000b
+  db 10001000b
+  db 00110000b
+  db 00000000b
+  db 00100000b; ?
+  db 10001000b
+  db 00010000b
+  db 00100000b
+  db 01000000b
+  db 10001000b; %
+  db 00100000b
+  db 00100000b
+  db 11111000b
+  db 00100000b
+  db 00100000b; +
+  db 00000000b
+  db 00000000b
+  db 00000000b
+  db 00100000b
+  db 01000000b; ,
+  db 00110000b
+  db 01000000b
+  db 01000000b
+  db 01000000b
+  db 00110000b; (
+  db 01100000b
+  db 00010000b
+  db 00010000b
+  db 00010000b
+  db 01100000b; )
+  db 01110000b
+  db 10011000b
+  db 10111000b
+  db 10000000b
+  db 01110000b; @
+  db 00100000b
+  db 01000000b
+  db 00000000b
+  db 00000000b
+  db 00000000b; '
+  db 00100000b
+  db 00100000b
+  db 00100000b
+  db 00000000b
+  db 00100000b; !
+  db 01111000b
+  db 10100000b
+  db 01110000b
+  db 00101000b
+  db 11110000b; $
+  db 00000000b
+  db 00100000b
+  db 00000000b
+  db 00100000b
+  db 01000000b; ;
+  db 01000000b
+  db 00100000b
+  db 00000000b
+  db 00000000b
+  db 00000000b; `
+  db 00100000b
+  db 01010000b
+  db 00000000b
+  db 00000000b
+  db 00000000b; ^
+  db 00110000b
+  db 01000000b
+  db 11000000b
+  db 01000000b
+  db 00110000b; {
+  db 01100000b
+  db 00010000b
+  db 00011000b
+  db 00010000b
+  db 01100000b; }
+  db 00100000b
+  db 00100000b
+  db 01110000b
+  db 01110000b
+  db 11111000b; Up
+  db 11111000b
+  db 01110000b
+  db 01110000b
+  db 00100000b
+  db 00100000b; Down
+  db 00001000b
+  db 00111000b
+  db 11111000b
+  db 00111000b
+  db 00001000b; Left
+  db 10000000b
+  db 11100000b
+  db 11111000b
+  db 11100000b
+  db 10000000b; Right
+  db 00100000b
+  db 01100000b
+  db 11111000b
+  db 01100000b
+  db 00100000b; Arrow Left
+  db 00111000b
+  db 00100000b
+  db 00110000b
+  db 00001000b
+  db 10110000b; .5
+  db 11111100b
+  db 10000100b
+  db 11111100b
+  db 00000000b
+  db 00000000b; Maximize
+  db 00000000b
+  db 11111100b
+  db 00000000b
+  db 00000000b
+  db 00000000b; Minimize
+  db 11111000b
+  db 10001000b
+  db 10001000b
+  db 10001000b
+  db 11111000b; Maximize (Linux)
+  db 00000000b
+  db 00000000b
+  db 00100000b
+  db 01010000b
+  db 00100000b; sjis halfwidth (shw) fullstop 0x4E
+  db 01110000b
+  db 01000000b
+  db 01000000b
+  db 01000000b
+  db 00000000b; shw left bracket 0x4F
+  db 00000000b
+  db 00010000b
+  db 00010000b
+  db 00010000b
+  db 01110000b; shw right bracket 0x50
+  db 00000000b
+  db 00000000b
+  db 00000000b
+  db 01000000b
+  db 00100000b; shw comma 0x51
+  db 00000000b
+  db 00100000b
+  db 01110000b
+  db 00100000b
+  db 00000000b; shw mid-dot 0x52
+  db 11111000b
+  db 00001000b
+  db 11110000b
+  db 00100000b
+  db 11000000b; shw wo 0x53
+  db 00000000b
+  db 11111000b
+  db 01010000b
+  db 01100000b
+  db 01000000b; shw mini a 0x54
+  db 00000000b
+  db 00010000b
+  db 00100000b
+  db 11100000b
+  db 00100000b; shw mini i 0x55
+  db 00000000b
+  db 00100000b
+  db 11111000b
+  db 10001000b
+  db 00110000b; shw mini u 0x56
+  db 00000000b
+  db 00000000b
+  db 11111000b
+  db 00100000b
+  db 11111000b; shw mini e 0x57
+  db 00000000b
+  db 00010000b
+  db 11111000b
+  db 00110000b
+  db 11010000b; shw mini o 0x58
+  db 00000000b
+  db 01000000b
+  db 11111000b
+  db 01010000b
+  db 01000000b; shw mini ya 0x59
+  db 00000000b
+  db 00000000b
+  db 11110000b
+  db 00010000b
+  db 11111000b; shw mini yu 0x5A
+  db 00000000b
+  db 11111000b
+  db 00001000b
+  db 01111000b
+  db 11111000b; shw mini yo 0x5B
+  db 00000000b
+  db 10101000b
+  db 10101000b
+  db 00010000b
+  db 01100000b; shw mini tsu 0x5C
+  db 00000000b
+  db 10000000b
+  db 01111000b
+  db 00000000b
+  db 00000000b; shw prolong 0x5D
+  db 11111000b
+  db 00101000b
+  db 00110000b
+  db 00100000b
+  db 11000000b; shw a 0x5E
+  db 00001000b
+  db 00110000b
+  db 11100000b
+  db 00100000b
+  db 00100000b; shw i 0x5F
+  db 00100000b
+  db 11111000b
+  db 10001000b
+  db 00010000b
+  db 01100000b; shw u 0x60
+  db 11111000b
+  db 00100000b
+  db 00100000b
+  db 00100000b
+  db 11111000b; shw e 0x61
+  db 00010000b
+  db 11111000b
+  db 00110000b
+  db 01010000b
+  db 10010000b; shw o 0x62
+  db 01000000b
+  db 11111000b
+  db 01001000b
+  db 01001000b
+  db 10011000b; shw ka 0x63
+  db 00100000b
+  db 11111000b
+  db 00100000b
+  db 11111000b
+  db 00100000b; shw ki 0x64
+  db 01000000b
+  db 01111000b
+  db 10001000b
+  db 00010000b
+  db 01100000b; shw ku 0x65
+  db 01000000b
+  db 01111000b
+  db 10010000b
+  db 00010000b
+  db 01100000b; shw ke 0x66 ^^
+  db 11111000b
+  db 00001000b
+  db 00001000b
+  db 00001000b
+  db 11111000b; shw ko 0x67
+  db 01010000b
+  db 11111000b
+  db 01010000b
+  db 00010000b
+  db 01100000b; shw sa 0x68
+  db 01000000b
+  db 10101000b
+  db 01001000b
+  db 00010000b
+  db 11100000b; shw shi 0x69
+  db 11111000b
+  db 00001000b
+  db 00010000b
+  db 00110000b
+  db 11001000b; shw su 0x6A
+  db 01000000b
+  db 11111000b
+  db 01010000b
+  db 01000000b
+  db 00111000b; shw se 0x6B
+  db 10001000b
+  db 01001000b
+  db 00001000b
+  db 00010000b
+  db 01100000b; shw so 0x6C
+  db 01000000b
+  db 01111000b
+  db 11001000b
+  db 00110000b
+  db 01100000b; shw ta 0x6D
+  db 11111000b
+  db 00100000b
+  db 11111000b
+  db 00100000b
+  db 01000000b; shw chi 0x6E
+  db 10101000b
+  db 10101000b
+  db 00001000b
+  db 00010000b
+  db 01100000b; shw tsu 0x6F
+  db 11111000b
+  db 00000000b
+  db 11111000b
+  db 00100000b
+  db 11000000b; shw te 0x70
+  db 01000000b
+  db 01000000b
+  db 01100000b
+  db 01010000b
+  db 01000000b; shw to 0x71
+  db 00100000b
+  db 11111000b
+  db 00100000b
+  db 00100000b
+  db 01000000b; shw na 0x72
+  db 11110000b
+  db 00000000b
+  db 00000000b
+  db 00000000b
+  db 11111000b; shw ni 0x73
+  db 11111000b
+  db 00001000b
+  db 00101000b
+  db 00010000b
+  db 011010000b; shw nu 0x74
+  db 00100000b
+  db 11111000b
+  db 00001000b
+  db 01110000b
+  db 10101000b; shw ne 0x75
+  db 00001000b
+  db 00001000b
+  db 00001000b
+  db 00010000b
+  db 01100000b; shw no 0x76
+  db 01010000b
+  db 01010000b
+  db 01010000b
+  db 10001000b
+  db 10001000b; shw ha 0x77
+  db 10000000b
+  db 10011000b
+  db 11100000b
+  db 10000000b
+  db 01111000b; shw hi 0x78
+  db 11111000b
+  db 00001000b
+  db 00001000b
+  db 00010000b
+  db 01100000b; shw hu 0x79
+  db 01000000b
+  db 10100000b
+  db 10010000b
+  db 00001000b
+  db 00000000b; shw he 0x7A
+  db 00100000b
+  db 11111000b
+  db 01110000b
+  db 10101000b
+  db 00100000b; shw ho 0x7B
+  db 11111000b
+  db 00001000b
+  db 10010000b
+  db 01100000b
+  db 00100000b; shw ma 0x7C
+  db 11111000b
+  db 00000000b
+  db 11111000b
+  db 00000000b
+  db 11111000b; shw mi 0x7D
+  db 00100000b
+  db 01000000b
+  db 01000000b
+  db 10010000b
+  db 11111000b; shw mu 0x7E
+  db 00001000b
+  db 01001000b
+  db 00110000b
+  db 00110000b
+  db 11001000b; shw me 0x7F
+  db 11111000b
+  db 00100000b
+  db 11111000b
+  db 00100000b
+  db 00111000b; shw mo 0x80
+  db 01000000b
+  db 11111100b
+  db 01001000b
+  db 00100000b
+  db 0010000b; shw ya 0x81
+  db 11110000b
+  db 00010000b
+  db 00010000b
+  db 00010000b
+  db 11111000b; shw yu 0x82
+  db 11111000b
+  db 00001000b
+  db 11111000b
+  db 00001000b
+  db 11111000b; shw yo 0x83
+  db 11111000b
+  db 00000000b
+  db 11111000b
+  db 00010000b
+  db 01100000b; shw ra 0x84
+  db 10001000b
+  db 10001000b
+  db 10001000b
+  db 00010000b
+  db 01100000b; shw ri 0x85
+  db 01100000b
+  db 01100000b
+  db 01101000b
+  db 01101000b
+  db 10110000b; shw ru 0x86
+  db 10000000b
+  db 10000000b
+  db 10001000b
+  db 10001000b
+  db 11110000b; shw re 0x87
+  db 11111000b
+  db 10001000b
+  db 10001000b
+  db 10001000b
+  db 11111000b; shw ro 0x88
+  db 11111000b
+  db 10001000b
+  db 00001000b
+  db 00010000b
+  db 01100000b; shw wa 0x89
+  db 10000000b
+  db 01001000b
+  db 00001000b
+  db 00010000b
+  db 11100000b; shw n 0x8A
+  db 10100000b
+  db 10100000b
+  db 00000000b
+  db 00000000b
+  db 00000000b; shw voiced 0x8B
+  db 01000000b
+  db 10100000b
+  db 01000000b
+  db 00000000b
+  db 00000000b; shw halfvoiced 0x8C
 
 ; 189 .. 220
 GUIIconDataClose:
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
-    db 0  ,216,216,216,216,216,216,216,0  ,0
-    db 214,212,202,212,212,212,202,212,210,0
-    db 214,212,212,200,212,200,212,212,210,202
-    db 214,212,212,212,198,212,212,212,210,202
-    db 214,212,212,196,212,196,212,212,210,200
-    db 214,212,194,212,212,212,194,212,210,200
-    db 0  ,208,208,208,208,208,208,208,198,198
-    db 0  ,0  ,198,198,198,198,198,198,198,0
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 0  ,216,216,216,216,216,216,216,0  ,0
+  db 214,212,202,212,212,212,202,212,210,0
+  db 214,212,212,200,212,200,212,212,210,202
+  db 214,212,212,212,198,212,212,212,210,202
+  db 214,212,212,196,212,196,212,212,210,200
+  db 214,212,194,212,212,212,194,212,210,200
+  db 0  ,208,208,208,208,208,208,208,198,198
+  db 0  ,0  ,198,198,198,198,198,198,198,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
 
 GUIIconDataButtonHole:
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
-    db 0  ,0  ,0  ,207,205,207,0  ,0  ,0  ,0
-    db 0  ,0  ,207,203,202,203,207,0  ,0  ,0
-    db 0  ,207,203,200,198,200,203,207,0  ,0
-    db 0  ,207,202,198,197,198,202,207,0  ,0
-    db 0  ,207,203,200,198,200,203,207,0  ,0
-    db 0  ,0  ,207,203,202,203,207,0  ,0  ,0
-    db 0  ,0  ,0  ,207,205,207,0  ,0  ,0  ,0
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,207,205,207,0  ,0  ,0  ,0
+  db 0  ,0  ,207,203,202,203,207,0  ,0  ,0
+  db 0  ,207,203,200,198,200,203,207,0  ,0
+  db 0  ,207,202,198,197,198,202,207,0  ,0
+  db 0  ,207,203,200,198,200,203,207,0  ,0
+  db 0  ,0  ,207,203,202,203,207,0  ,0  ,0
+  db 0  ,0  ,0  ,207,205,207,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
 
 GUIIconDataButtonFill:
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
-    db 0  ,0  ,0  ,207,209,207,0  ,0  ,0  ,0
-    db 0  ,0  ,207,211,212,211,207,0  ,0  ,0
-    db 0  ,207,211,214,216,214,211,207,0  ,0
-    db 0  ,207,212,216,217,216,212,207,0  ,0
-    db 0  ,207,211,214,216,214,211,207,0  ,0
-    db 0  ,0  ,207,211,212,211,207,0  ,0  ,0
-    db 0  ,0  ,0  ,207,209,207,0  ,0  ,0  ,0
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,207,209,207,0  ,0  ,0  ,0
+  db 0  ,0  ,207,211,212,211,207,0  ,0  ,0
+  db 0  ,207,211,214,216,214,211,207,0  ,0
+  db 0  ,207,212,216,217,216,212,207,0  ,0
+  db 0  ,207,211,214,216,214,211,207,0  ,0
+  db 0  ,0  ,207,211,212,211,207,0  ,0  ,0
+  db 0  ,0  ,0  ,207,209,207,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
 
 GUIIconDataSlideBar:
-    db 0  ,0  ,0  ,0  ,216,0  ,0  ,0  ,0  ,0
-    db 0  ,0  ,0  ,212,216,220,0  ,0  ,0  ,0
-    db 0  ,0  ,0  ,212,216,220,202,0  ,0  ,0
-    db 0  ,0  ,212,212,216,218,220,0  ,0  ,0
-    db 0  ,0  ,212,214,216,218,220,202,0  ,0
-    db 0  ,0  ,212,214,216,218,220,202,0  ,0
-    db 0  ,0  ,0  ,212,216,220,202,202,0  ,0
-    db 0  ,0  ,0  ,212,216,220,202,0  ,0  ,0
-    db 0  ,0  ,0  ,0  ,216,202,202,0  ,0  ,0
-    db 0  ,0  ,0  ,0  ,0  ,202,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,0  ,216,0  ,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,212,216,220,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,212,216,220,202,0  ,0  ,0
+  db 0  ,0  ,212,212,216,218,220,0  ,0  ,0
+  db 0  ,0  ,212,214,216,218,220,202,0  ,0
+  db 0  ,0  ,212,214,216,218,220,202,0  ,0
+  db 0  ,0  ,0  ,212,216,220,202,202,0  ,0
+  db 0  ,0  ,0  ,212,216,220,202,0  ,0  ,0
+  db 0  ,0  ,0  ,0  ,216,202,202,0  ,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,202,0  ,0  ,0  ,0
 
 GUIIconDataCheckBoxUC:
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
-    db 0  ,220,219,218,217,216,215,0  ,0  ,0
-    db 0  ,219,218,217,216,215,214,202,0  ,0
-    db 0  ,218,217,216,215,214,213,202,0  ,0
-    db 0  ,217,216,215,214,213,212,202,0  ,0
-    db 0  ,216,215,214,213,212,211,202,0  ,0
-    db 0  ,215,214,213,212,211,210,202,0  ,0
-    db 0  ,0  ,202,202,202,202,202,202,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 0  ,220,219,218,217,216,215,0  ,0  ,0
+  db 0  ,219,218,217,216,215,214,202,0  ,0
+  db 0  ,218,217,216,215,214,213,202,0  ,0
+  db 0  ,217,216,215,214,213,212,202,0  ,0
+  db 0  ,216,215,214,213,212,211,202,0  ,0
+  db 0  ,215,214,213,212,211,210,202,0  ,0
+  db 0  ,0  ,202,202,202,202,202,202,0  ,0
 
 GUIIconDataCheckBoxC:
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,165,0
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,165,0  ,0
-    db 0  ,0  ,0  ,0  ,0  ,0  ,165,0  ,0  ,0
-    db 0  ,220,219,218,217,165,215,0  ,0  ,0
-    db 0  ,165,165,217,165,165,214,202,0  ,0
-    db 0  ,218,165,216,165,214,213,202,0  ,0
-    db 0  ,217,165,165,165,213,212,202,0  ,0
-    db 0  ,216,215,165,213,212,211,202,0  ,0
-    db 0  ,215,214,165,212,211,210,202,0  ,0
-    db 0  ,0  ,202,202,202,202,202,202,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,165,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,165,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,165,0  ,0  ,0
+  db 0  ,220,219,218,217,165,215,0  ,0  ,0
+  db 0  ,165,165,217,165,165,214,202,0  ,0
+  db 0  ,218,165,216,165,214,213,202,0  ,0
+  db 0  ,217,165,165,165,213,212,202,0  ,0
+  db 0  ,216,215,165,213,212,211,202,0  ,0
+  db 0  ,215,214,165,212,211,210,202,0  ,0
+  db 0  ,0  ,202,202,202,202,202,202,0  ,0
 
 GUIIconDataCheckBoxX:
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
-    db 0  ,165,0  ,0  ,0  ,0  ,0  ,165,0  ,0
-    db 0  ,220,165,218,217,216,165,0  ,0  ,0
-    db 0  ,219,218,165,216,165,214,202,0  ,0
-    db 0  ,218,217,216,165,214,213,202,0  ,0
-    db 0  ,217,216,165,214,165,212,202,0  ,0
-    db 0  ,216,165,214,213,212,165,202,0  ,0
-    db 0  ,165,214,213,212,211,210,165,0  ,0
-    db 0  ,0  ,202,202,202,202,202,202,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 0  ,165,0  ,0  ,0  ,0  ,0  ,165,0  ,0
+  db 0  ,220,165,218,217,216,165,0  ,0  ,0
+  db 0  ,219,218,165,216,165,214,202,0  ,0
+  db 0  ,218,217,216,165,214,213,202,0  ,0
+  db 0  ,217,216,165,214,165,212,202,0  ,0
+  db 0  ,216,165,214,213,212,165,202,0  ,0
+  db 0  ,165,214,213,212,211,210,165,0  ,0
+  db 0  ,0  ,202,202,202,202,202,202,0  ,0
 
 GUIIconDataUpArrow:
-    db 201,209,209,209,209,209,209,200,0  ,0
-    db 207,205,205,202,203,205,205,203,0  ,0
-    db 207,205,201,202,203,202,205,203,0  ,0
-    db 207,200,205,202,203,205,201,203,0  ,0
-    db 207,205,205,202,203,205,205,203,0  ,0
-    db 207,205,205,202,203,205,205,203,0  ,0
-    db 207,205,205,202,203,205,205,203,0  ,0
-    db 199,201,201,201,201,201,201,198,0  ,0
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 201,209,209,209,209,209,209,200,0  ,0
+  db 207,205,205,202,203,205,205,203,0  ,0
+  db 207,205,201,202,203,202,205,203,0  ,0
+  db 207,200,205,202,203,205,201,203,0  ,0
+  db 207,205,205,202,203,205,205,203,0  ,0
+  db 207,205,205,202,203,205,205,203,0  ,0
+  db 207,205,205,202,203,205,205,203,0  ,0
+  db 199,201,201,201,201,201,201,198,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
 
 GUIIconDataDownArrow:
-    db 201,209,209,209,209,209,209,200,0  ,0
-    db 207,205,205,202,203,205,205,203,0  ,0
-    db 207,205,205,202,203,205,205,203,0  ,0
-    db 207,205,205,202,203,205,205,203,0  ,0
-    db 207,200,205,202,203,205,201,203,0  ,0
-    db 207,205,201,202,203,202,205,203,0  ,0
-    db 207,205,205,202,203,205,205,203,0  ,0
-    db 199,201,201,201,201,201,201,198,0  ,0
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
-    db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 201,209,209,209,209,209,209,200,0  ,0
+  db 207,205,205,202,203,205,205,203,0  ,0
+  db 207,205,205,202,203,205,205,203,0  ,0
+  db 207,205,205,202,203,205,205,203,0  ,0
+  db 207,200,205,202,203,205,201,203,0  ,0
+  db 207,205,201,202,203,202,205,203,0  ,0
+  db 207,205,205,202,203,205,205,203,0  ,0
+  db 199,201,201,201,201,201,201,198,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
+  db 0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0  ,0
 
 NEWSYM SnowData
 dw 161,251,115,211,249,87,128,101,232,176,51,180,108,193,224,112,254,159,102,238

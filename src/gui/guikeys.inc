@@ -21,118 +21,118 @@
 ; GUI Keyboard Routines
 
 %macro GUIqcheckkeys 1
-    cmp byte[pressed+%1],1
-    jne %%skip
-    mov dword[GUIfirstkey],1
+  cmp byte[pressed+%1],1
+  jne %%skip
+  mov dword[GUIfirstkey],1
 %%skip
 %endmacro
 
 %macro GUIqcheckkeys2 2
-    mov eax,%1
-    cmp byte[pressed+eax],1
-    jne %%skip
-    cmp byte[GUIJoyPadnk+%2],2
-    je %%skip
-    mov dword[GUIfirstkey],1
+  mov eax,%1
+  cmp byte[pressed+eax],1
+  jne %%skip
+  cmp byte[GUIJoyPadnk+%2],2
+  je %%skip
+  mov dword[GUIfirstkey],1
 %%skip
 %endmacro
 
 %macro GUIgetprkeys 2
-    cmp byte[pressed+%1],1
-    je %%okay
-    cmp byte[pressed+%1],2
-    jne %%nopr
-    cmp dword[GUIfirstkey],1
-    je %%nopr
-    cmp dword[GUIlastkey],%1
-    jne %%nopr
-    jmp %%skipnext
+  cmp byte[pressed+%1],1
+  je %%okay
+  cmp byte[pressed+%1],2
+  jne %%nopr
+  cmp dword[GUIfirstkey],1
+  je %%nopr
+  cmp dword[GUIlastkey],%1
+  jne %%nopr
+  jmp %%skipnext
 %%okay
-    mov dword[GUInextkeydelay],10
+  mov dword[GUInextkeydelay],10
 %%skipnext
-    mov dword[GUIlastkey],%1
-    mov byte[pressed+%1],2
-    cmp dword[GUIkeydelay],0
-    jne near .done
-    mov eax,[GUInextkeydelay]
-    mov [GUIkeydelay],eax
-    mov dword[GUInextkeydelay],2
-    mov eax,%2
-    jmp .done
+  mov dword[GUIlastkey],%1
+  mov byte[pressed+%1],2
+  cmp dword[GUIkeydelay],0
+  jne near .done
+  mov eax,[GUInextkeydelay]
+  mov [GUIkeydelay],eax
+  mov dword[GUInextkeydelay],2
+  mov eax,%2
+  jmp .done
 %%nopr
 %endmacro
 
 %macro GUIgetprkeysb 2
-    cmp byte[pressed+%1],1
-    jne %%nopr
-    cmp byte[GUIescpress],1
-    je %%nopr2
-    mov byte[pressed+%1],2
-    mov eax,%2
-    jmp .done
+  cmp byte[pressed+%1],1
+  jne %%nopr
+  cmp byte[GUIescpress],1
+  je %%nopr2
+  mov byte[pressed+%1],2
+  mov eax,%2
+  jmp .done
 %%nopr
-    cmp byte[pressed+%1],0
-    jne %%nopr2
-    mov byte[GUIescpress],0
+  cmp byte[pressed+%1],0
+  jne %%nopr2
+  mov byte[GUIescpress],0
 %%nopr2
 %endmacro
 
 %macro GUIgetprkeys2 3
-    mov ebx,%1
-    cmp byte[pressed+ebx],0
-    jne %%pressed
-    mov byte[GUIJoyPadnk+%3],0
-    jmp %%nopr
+  mov ebx,%1
+  cmp byte[pressed+ebx],0
+  jne %%pressed
+  mov byte[GUIJoyPadnk+%3],0
+  jmp %%nopr
 %%pressed
-    cmp byte[GUIJoyPadnk+%3],2
-    je %%secondpress
-    cmp byte[pressed+ebx],1
-    je %%okay
+  cmp byte[GUIJoyPadnk+%3],2
+  je %%secondpress
+  cmp byte[pressed+ebx],1
+  je %%okay
 %%secondpress
-    cmp dword[GUIfirstkey],1
-    je %%nopr
-    cmp dword[GUIlastkey],ebx
-    jne %%nopr
-    jmp %%skipnext
+  cmp dword[GUIfirstkey],1
+  je %%nopr
+  cmp dword[GUIlastkey],ebx
+  jne %%nopr
+  jmp %%skipnext
 %%okay
-    mov dword[GUInextkeydelay],10
+  mov dword[GUInextkeydelay],10
 %%skipnext
-    mov [GUIlastkey],ebx
-    mov byte[GUIJoyPadnk+%3],2
-    cmp dword[GUIkeydelay],0
-    jne near .done
-    mov eax,[GUInextkeydelay]
-    mov [GUIkeydelay],eax
-    mov byte[GUIDelayB],5
-    mov dword[GUInextkeydelay],2
-    mov eax,%2
-    jmp .done
+  mov [GUIlastkey],ebx
+  mov byte[GUIJoyPadnk+%3],2
+  cmp dword[GUIkeydelay],0
+  jne near .done
+  mov eax,[GUInextkeydelay]
+  mov [GUIkeydelay],eax
+  mov byte[GUIDelayB],5
+  mov dword[GUInextkeydelay],2
+  mov eax,%2
+  jmp .done
 %%nopr
 %endmacro
 
 %macro GUIkeystoggleoptn 2
-    cmp %1,%2
-    jne %%set
-    xor %1,%2
-    jmp %%clear
+  cmp %1,%2
+  jne %%set
+  xor %1,%2
+  jmp %%clear
 %%set
-    mov %1,%2
+  mov %1,%2
 %%clear
-    ret
+  ret
 %%noclick
 %endmacro
 
 %macro GUIKeyCheckbox 2
-    cmp dh,%2
-    jne %%nohotkey
-    xor byte[%1],1
+  cmp dh,%2
+  jne %%nohotkey
+  xor byte[%1],1
 %%nohotkey
 %endmacro
 
 %macro GUIKeyButtonHole 3
-    cmp dh,%3
-    jne %%nohotkey
-    mov byte[%1],%2
+  cmp dh,%3
+  jne %%nohotkey
+  mov byte[%1],%2
 %%nohotkey
 %endmacro
 
@@ -149,1280 +149,1311 @@ UseExtKey resb 1
 SECTION .text
 
 GUIgetcurrentinput:
-    mov byte[UseExtKey],0
-    xor ch,ch
-    xor cl,cl
+  mov byte[UseExtKey],0
+  xor ch,ch
+  xor cl,cl
 .getnextkey
-    call Check_Key
-    or al,al
-    jz .nokeyd
-    call Get_Key
-    cmp cl,0
-    jne .nostorekey
-    mov ch,al
+  call Check_Key
+  or al,al
+  jz .nokeyd
+  call Get_Key
+  cmp cl,0
+  jne .nostorekey
+  mov ch,al
 .nostorekey
-    xor cl,cl
-    cmp al,0
-    jne .noextkey
-    call Get_Key
-    mov [UseExtKey],al
-    xor al,al
-    mov ch,al
-    mov cl,1
+  xor cl,cl
+  cmp al,0
+  jne .noextkey
+  call Get_Key
+  mov [UseExtKey],al
+  xor al,al
+  mov ch,al
+  mov cl,1
 .noextkey
 ;    jmp .getnextkey
 .nokeyd
-    mov dh,ch
-    mov byte[GUIDelayB],0
-    ; Convert pressed to keys
-    mov dword[GUIfirstkey],0
+  mov dh,ch
+  mov byte[GUIDelayB],0
+  ; Convert pressed to keys
+  mov dword[GUIfirstkey],0
 %ifdef __UNIXSDL___
-    GUIqcheckkeys 90 ; UP
-    GUIqcheckkeys 96 ; DOWN
-    GUIqcheckkeys 92 ; LEFT
-    GUIqcheckkeys 94 ; RIGHT
-    GUIqcheckkeys 89 ; HOME
-    GUIqcheckkeys 91 ; PGUP
-    GUIqcheckkeys 95 ; END
-    GUIqcheckkeys 97 ; PGDOWN
+  GUIqcheckkeys 90 ; UP
+  GUIqcheckkeys 96 ; DOWN
+  GUIqcheckkeys 92 ; LEFT
+  GUIqcheckkeys 94 ; RIGHT
+  GUIqcheckkeys 89 ; HOME
+  GUIqcheckkeys 91 ; PGUP
+  GUIqcheckkeys 95 ; END
+  GUIqcheckkeys 97 ; PGDOWN
 %endif
-    GUIqcheckkeys 72 ; NUMPAD STUFF
-    GUIqcheckkeys 80
-    GUIqcheckkeys 75
-    GUIqcheckkeys 77
-    GUIqcheckkeys 73
-    GUIqcheckkeys 81
-    GUIqcheckkeys 71
-    GUIqcheckkeys 79
-    GUIqcheckkeys 1
-    GUIqcheckkeys 1Ch
+  GUIqcheckkeys 72 ; NUMPAD STUFF
+  GUIqcheckkeys 80
+  GUIqcheckkeys 75
+  GUIqcheckkeys 77
+  GUIqcheckkeys 73
+  GUIqcheckkeys 81
+  GUIqcheckkeys 71
+  GUIqcheckkeys 79
+  GUIqcheckkeys 1
+  GUIqcheckkeys 1Ch
 
 %ifndef __MSDOS__
-    GUIqcheckkeys 0C8h
-    GUIqcheckkeys 0D0h
-    GUIqcheckkeys 0CBh
-    GUIqcheckkeys 0CDh
-    GUIqcheckkeys 0C9h
-    GUIqcheckkeys 0D1h
-    GUIqcheckkeys 0C7h
-    GUIqcheckkeys 0CFh
-    GUIqcheckkeys 09Ch
+  GUIqcheckkeys 0C8h
+  GUIqcheckkeys 0D0h
+  GUIqcheckkeys 0CBh
+  GUIqcheckkeys 0CDh
+  GUIqcheckkeys 0C9h
+  GUIqcheckkeys 0D1h
+  GUIqcheckkeys 0C7h
+  GUIqcheckkeys 0CFh
+  GUIqcheckkeys 09Ch
 %endif
 .notwinport
 
-    cmp byte[JoyPad1Move],0
-    je near .nopad1
-    push edx
-    call JoyRead
-    pop edx
-    GUIqcheckkeys2 [pl1upk],0
-    GUIqcheckkeys2 [pl1downk],1
-    GUIqcheckkeys2 [pl1leftk],2
-    GUIqcheckkeys2 [pl1rightk],3
-    GUIqcheckkeys2 [pl1Lk],4
-    GUIqcheckkeys2 [pl1Rk],5
-    GUIqcheckkeys2 [pl1Bk],6
-    GUIqcheckkeys2 [pl1Ak],7
+  cmp byte[JoyPad1Move],0
+  je near .nopad1
+  push edx
+  call JoyRead
+  pop edx
+  GUIqcheckkeys2 [pl1upk],0
+  GUIqcheckkeys2 [pl1downk],1
+  GUIqcheckkeys2 [pl1leftk],2
+  GUIqcheckkeys2 [pl1rightk],3
+  GUIqcheckkeys2 [pl1Lk],4
+  GUIqcheckkeys2 [pl1Rk],5
+  GUIqcheckkeys2 [pl1Bk],6
+  GUIqcheckkeys2 [pl1Ak],7
 .nopad1
-    xor al,al
+  xor al,al
 %ifdef __UNIXSDL__
-    GUIgetprkeys 90,90 ; UP
-    GUIgetprkeys 96,96 ; DOWN
-    GUIgetprkeys 92,92 ; LEFT
-    GUIgetprkeys 94,94 ; RIGHT
-    GUIgetprkeys 89,89 ; HOME
-    GUIgetprkeys 91,91 ; PGUP
-    GUIgetprkeys 95,95 ; END
-    GUIgetprkeys 97,97 ; PGDOWN
+  GUIgetprkeys 90,90 ; UP
+  GUIgetprkeys 96,96 ; DOWN
+  GUIgetprkeys 92,92 ; LEFT
+  GUIgetprkeys 94,94 ; RIGHT
+  GUIgetprkeys 89,89 ; HOME
+  GUIgetprkeys 91,91 ; PGUP
+  GUIgetprkeys 95,95 ; END
+  GUIgetprkeys 97,97 ; PGDOWN
 
-    GUIgetprkeys 72,72 ; KP8
-    GUIgetprkeys 80,80 ; KP2
-    GUIgetprkeys 75,75 ; KP4
-    GUIgetprkeys 77,77 ; KP6
-    GUIgetprkeys 71,71 ; KP7
-    GUIgetprkeys 79,79 ; KP9
-    GUIgetprkeys 81,81 ; KP1
-    GUIgetprkeys 73,73 ; KP3
+  GUIgetprkeys 72,72 ; KP8
+  GUIgetprkeys 80,80 ; KP2
+  GUIgetprkeys 75,75 ; KP4
+  GUIgetprkeys 77,77 ; KP6
+  GUIgetprkeys 71,71 ; KP7
+  GUIgetprkeys 79,79 ; KP9
+  GUIgetprkeys 81,81 ; KP1
+  GUIgetprkeys 73,73 ; KP3
 %else
 ;    GUIgetprkeys 72,72
 ;    GUIgetprkeys 80,80
-    GUIgetprkeys 75,75
-    GUIgetprkeys 77,77
-    GUIgetprkeys 71,71
-    GUIgetprkeys 79,79
-    GUIgetprkeys 81,81
-    GUIgetprkeys 73,73
+  GUIgetprkeys 75,75
+  GUIgetprkeys 77,77
+  GUIgetprkeys 71,71
+  GUIgetprkeys 79,79
+  GUIgetprkeys 81,81
+  GUIgetprkeys 73,73
 %endif
-    GUIgetprkeysb 1,27
-    GUIgetprkeys 1Ch,13
+  GUIgetprkeysb 1,27
+  GUIgetprkeys 1Ch,13
 
-    mov cl,[UseExtKey]
-    cmp cl,72
-    je .okayextk
-    cmp cl,80
-    jne .notextkb
+  mov cl,[UseExtKey]
+  cmp cl,72
+  je .okayextk
+  cmp cl,80
+  jne .notextkb
 .okayextk
-    mov al,cl
+  mov al,cl
 .notextkb
 
 %ifdef __UNIXSDL__
-    GUIgetprkeys 90,90 ; UP
-    GUIgetprkeys 96,96 ; DOWN
-    GUIgetprkeys 92,92 ; LEFT
-    GUIgetprkeys 94,94 ; RIGHT
-    GUIgetprkeys 89,89 ; HOME
-    GUIgetprkeys 91,91 ; PGUP
-    GUIgetprkeys 95,95 ; END
-    GUIgetprkeys 97,97 ; PGDOWN
+  GUIgetprkeys 90,90 ; UP
+  GUIgetprkeys 96,96 ; DOWN
+  GUIgetprkeys 92,92 ; LEFT
+  GUIgetprkeys 94,94 ; RIGHT
+  GUIgetprkeys 89,89 ; HOME
+  GUIgetprkeys 91,91 ; PGUP
+  GUIgetprkeys 95,95 ; END
+  GUIgetprkeys 97,97 ; PGDOWN
 
-    GUIgetprkeys 72,72 ; KP8
-    GUIgetprkeys 80,80 ; KP2
-    GUIgetprkeys 75,75 ; KP4
-    GUIgetprkeys 77,77 ; KP6
-    GUIgetprkeys 71,71 ; KP7
-    GUIgetprkeys 79,79 ; KP9
-    GUIgetprkeys 81,81 ; KP1
-    GUIgetprkeys 73,73 ; KP3
+  GUIgetprkeys 72,72 ; KP8
+  GUIgetprkeys 80,80 ; KP2
+  GUIgetprkeys 75,75 ; KP4
+  GUIgetprkeys 77,77 ; KP6
+  GUIgetprkeys 71,71 ; KP7
+  GUIgetprkeys 79,79 ; KP9
+  GUIgetprkeys 81,81 ; KP1
+  GUIgetprkeys 73,73 ; KP3
 
-    GUIgetprkeys 09Ch,13 ; ENTER
+  GUIgetprkeys 09Ch,13 ; ENTER
 %endif
 %ifdef __WIN32__
-    GUIgetprkeys 0CBh,75
-    GUIgetprkeys 0CDh,77
-    GUIgetprkeys 0C9h,73
-    GUIgetprkeys 0D1h,81
-    GUIgetprkeys 0C7h,71
-    GUIgetprkeys 0CFh,79
-    GUIgetprkeys 09Ch,13
+  GUIgetprkeys 0CBh,75
+  GUIgetprkeys 0CDh,77
+  GUIgetprkeys 0C9h,73
+  GUIgetprkeys 0D1h,81
+  GUIgetprkeys 0C7h,71
+  GUIgetprkeys 0CFh,79
+  GUIgetprkeys 09Ch,13
 %endif
 ;.notwinport2
 
-    cmp byte[JoyPad1Move],0
-    je near .nopad1b
-    GUIgetprkeys2 [pl1upk],72,0
-    GUIgetprkeys2 [pl1downk],80,1
-    GUIgetprkeys2 [pl1leftk],75,2
-    GUIgetprkeys2 [pl1rightk],77,3
-    GUIgetprkeys2 [pl1Lk],73,4
-    GUIgetprkeys2 [pl1Rk],81,5
-    GUIgetprkeys2 [pl1Bk],27,6
-    GUIgetprkeys2 [pl1Ak],13,7
+  cmp byte[JoyPad1Move],0
+  je near .nopad1b
+  GUIgetprkeys2 [pl1upk],72,0
+  GUIgetprkeys2 [pl1downk],80,1
+  GUIgetprkeys2 [pl1leftk],75,2
+  GUIgetprkeys2 [pl1rightk],77,3
+  GUIgetprkeys2 [pl1Lk],73,4
+  GUIgetprkeys2 [pl1Rk],81,5
+  GUIgetprkeys2 [pl1Bk],27,6
+  GUIgetprkeys2 [pl1Ak],13,7
 .nopad1b
-    cmp dh,' '
-    jne .notspace
-    mov al,' '
+  cmp dh,' '
+  jne .notspace
+  mov al,' '
 .notspace
-    mov dword[GUInextkeydelay],10
-    mov dword[GUIkeydelay],0
+  mov dword[GUInextkeydelay],10
+  mov dword[GUIkeydelay],0
 .done
-    cmp byte[GUIcmenupos],0
-    jne near .processmenu
-    mov dl,al
-    xor eax,eax
-    mov al,[GUIwinptr]
-    cmp dl,27
-    jne .noclosewin
-    or eax,eax
-    jz near .runprog
+  cmp byte[GUIcmenupos],0
+  jne near .processmenu
+  mov dl,al
+  xor eax,eax
+  mov al,[GUIwinptr]
+  cmp dl,27
+  jne .noclosewin
+  or eax,eax
+  jz near .runprog
 .noclosewin
-    dec eax
-    xor ebx,ebx
-    mov bl,[GUIwinorder+eax]
-    cmp ebx,13
-    jne .notcskeys
-    cmp byte[CheatWinMode],1
-    ja .avoidesc
+  dec eax
+  xor ebx,ebx
+  mov bl,[GUIwinorder+eax]
+  cmp ebx,13
+  jne .notcskeys
+  cmp byte[CheatWinMode],1
+  ja .avoidesc
 .notcskeys
-    cmp dl,27
-    je near .closewin
+  cmp dl,27
+  je near .closewin
 .avoidesc
-    mov al,dl
-    cmp ebx,1
-    je near GUILoadKeys
-    cmp ebx,2
-    je near GUIStateSelKeys
-    cmp ebx,4
-    je near GUIOptionKeys
-    cmp ebx,5
-    je near GUIVideoKeys
-    cmp ebx,6
-    je near GUISoundKeys
-    cmp ebx,7
-    je near GUICheatKeys
-    cmp ebx,10
-    je near GUIGUIOptnsKeys
-    cmp ebx,11
-    je near GUIAboutKeys
-    cmp ebx,12
-    je near GUIResetKeys
-    cmp ebx,13
-    je near GUICheatSearchKeys
-    cmp ebx,14
-    je near GUIStateKeys
-    cmp ebx,15
-    je near GUIMovieKeys
-    cmp ebx,16
-    je near GUIComboKeys
-    cmp ebx,17
-    je near GUIAddonKeys
-    cmp ebx,18
-    je near GUIChipKeys
-    cmp ebx,19
-    je near GUIPathKeys
-    cmp ebx,20
-    je near GUISaveKeys
-    cmp ebx,21
-    je near GUISpeedKeys
-    cmp ebx,8
-    je near GUIGetInputLine
-    ret
+  mov al,dl
+  cmp ebx,1
+  je near GUILoadKeys
+  cmp ebx,2
+  je near GUIStateSelKeys
+  cmp ebx,3
+  je near GUIInputKeys
+  cmp ebx,4
+  je near GUIOptionKeys
+  cmp ebx,5
+  je near GUIVideoKeys
+  cmp ebx,6
+  je near GUISoundKeys
+  cmp ebx,7
+  je near GUICheatKeys
+  cmp ebx,10
+  je near GUIGUIOptnsKeys
+  cmp ebx,11
+  je near GUIAboutKeys
+  cmp ebx,12
+  je near GUIResetKeys
+  cmp ebx,13
+  je near GUICheatSearchKeys
+  cmp ebx,14
+  je near GUIStateKeys
+  cmp ebx,15
+  je near GUIMovieKeys
+  cmp ebx,16
+  je near GUIComboKeys
+  cmp ebx,17
+  je near GUIAddonKeys
+  cmp ebx,18
+  je near GUIChipKeys
+  cmp ebx,19
+  je near GUIPathKeys
+  cmp ebx,20
+  je near GUISaveKeys
+  cmp ebx,21
+  je near GUISpeedKeys
+  cmp ebx,8
+  je near GUIGetInputLine
+  ret
 .runprog
-    cmp byte[romloadskip],0
-    jne .noquit
-    mov byte[GUIQuit],2
+  cmp byte[romloadskip],0
+  jne .noquit
+  mov byte[GUIQuit],2
 .noquit
-    ret
+  ret
 .closewin
-    ; close window
-    mov byte[GUIwinorder+eax],0
-    mov byte[GUIwinactiv+ebx],0
-    dec byte[GUIwinptr]
-    cmp byte[GUIwinptr],0
-    jne .nowinopen
-    mov al,[GUIpmenupos]
-    mov [GUIcmenupos],al
+  ; close window
+  mov byte[GUIwinorder+eax],0
+  mov byte[GUIwinactiv+ebx],0
+  dec byte[GUIwinptr]
+  cmp byte[GUIwinptr],0
+  jne .nowinopen
+  mov al,[GUIpmenupos]
+  mov [GUIcmenupos],al
 .nowinopen
-    ret
+  ret
 .processmenu
-    cmp dh,'a'
-    jb .nolower
-    cmp dh,'z'
-    ja .nolower
-    sub dh,'a'-'A'
+  cmp dh,'a'
+  jb .nolower
+  cmp dh,'z'
+  ja .nolower
+  sub dh,'a'-'A'
 .nolower
-    cmp dh,'X'                 ; Main Menu Hotkeys
-    jne .noclose
-    mov byte[GUIcmenupos],0
-    mov byte[GUIcrowpos],0
+  cmp dh,'X'                 ; Main Menu Hotkeys
+  jne .noclose
+  mov byte[GUIcmenupos],0
+  mov byte[GUIcrowpos],0
 .noclose
-    cmp dh,'R'
-    jne .norecent
-    mov byte[GUIcmenupos],1
-    mov byte[GUIcrowpos],0
+  cmp dh,'R'
+  jne .norecent
+  mov byte[GUIcmenupos],1
+  mov byte[GUIcrowpos],0
 .norecent
-    cmp dh,'G'
-    jne .nogame
-    mov byte[GUIcmenupos],2
-    mov byte[GUIcrowpos],0
+  cmp dh,'G'
+  jne .nogame
+  mov byte[GUIcmenupos],2
+  mov byte[GUIcrowpos],0
 .nogame
-    cmp dh,'C'
-    jne .noconfig
-    mov byte[GUIcmenupos],3
-    mov byte[GUIcrowpos],0
+  cmp dh,'C'
+  jne .noconfig
+  mov byte[GUIcmenupos],3
+  mov byte[GUIcrowpos],0
 .noconfig
-    cmp dh,'H'
-    jne .nocheat
-    mov byte[GUIcmenupos],4
-    mov byte[GUIcrowpos],0
+  cmp dh,'H'
+  jne .nocheat
+  mov byte[GUIcmenupos],4
+  mov byte[GUIcrowpos],0
 .nocheat
-    cmp dh,'N'
-    jne .nonetplay
-    mov byte[GUIcmenupos],5
-    mov byte[GUIcrowpos],0
+  cmp dh,'N'
+  jne .nonetplay
+  mov byte[GUIcmenupos],5
+  mov byte[GUIcrowpos],0
 .nonetplay
-    cmp dh,'M'
-    jne .nomisc
-    mov byte[GUIcmenupos],6
-    mov byte[GUIcrowpos],0
+  cmp dh,'M'
+  jne .nomisc
+  mov byte[GUIcmenupos],6
+  mov byte[GUIcrowpos],0
 .nomisc
-    cmp byte[GUIcmenupos],1       ; Recently Played Hotkeys
-    jne near .noquickmenu
-    cmp dh,'1'
-    jne .no1
-    mov byte[GUIcrowpos],0
+  cmp byte[GUIcmenupos],1       ; Recently Played Hotkeys
+  jne near .noquickmenu
+  cmp dh,'1'
+  jne .no1
+  mov byte[GUIcrowpos],0
 .no1
-    cmp dh,'2'
-    jne .no2
-    mov byte[GUIcrowpos],1
+  cmp dh,'2'
+  jne .no2
+  mov byte[GUIcrowpos],1
 .no2
-    cmp dh,'3'
-    jne .no3
-    mov byte[GUIcrowpos],2
+  cmp dh,'3'
+  jne .no3
+  mov byte[GUIcrowpos],2
 .no3
-    cmp dh,'4'
-    jne .no4
-    mov byte[GUIcrowpos],3
+  cmp dh,'4'
+  jne .no4
+  mov byte[GUIcrowpos],3
 .no4
-    cmp dh,'5'
-    jne .no5
-    mov byte[GUIcrowpos],4
+  cmp dh,'5'
+  jne .no5
+  mov byte[GUIcrowpos],4
 .no5
-    cmp dh,'6'
-    jne .no6
-    mov byte[GUIcrowpos],5
+  cmp dh,'6'
+  jne .no6
+  mov byte[GUIcrowpos],5
 .no6
-    cmp dh,'7'
-    jne .no7
-    mov byte[GUIcrowpos],6
+  cmp dh,'7'
+  jne .no7
+  mov byte[GUIcrowpos],6
 .no7
-    cmp dh,'8'
-    jne .no8
-    mov byte[GUIcrowpos],7
+  cmp dh,'8'
+  jne .no8
+  mov byte[GUIcrowpos],7
 .no8
-    cmp dh,'9'
-    jne .no9
-    mov byte[GUIcrowpos],8
+  cmp dh,'9'
+  jne .no9
+  mov byte[GUIcrowpos],8
 .no9
-    cmp dh,'0'
-    jne .no0
-    mov byte[GUIcrowpos],9
+  cmp dh,'0'
+  jne .no0
+  mov byte[GUIcrowpos],9
 .no0
-    cmp dh,'F'
-    jne .nof
-    mov byte[GUIcrowpos],11
+  cmp dh,'F'
+  jne .nof
+  mov byte[GUIcrowpos],11
 .nof
-    cmp dh,'L'
-    jne .nol
-    mov byte[GUIcrowpos],12
+  cmp dh,'L'
+  jne .nol
+  mov byte[GUIcrowpos],12
 .nol
 .noquickmenu                        ; Game Hotkeys
-    cmp byte[GUIcmenupos],2
-    jne near .noloadmenu
-    cmp dh,'L'
-    jne .noll
-    mov byte[GUIcrowpos],0
+  cmp byte[GUIcmenupos],2
+  jne near .noloadmenu
+  cmp dh,'L'
+  jne .noll
+  mov byte[GUIcrowpos],0
 .noll
-    cmp dh,'E'
-    jne .nor
-    mov byte[GUIcrowpos],2
+  cmp dh,'E'
+  jne .nor
+  mov byte[GUIcrowpos],2
 .nor
-    cmp dh,'S'
-    jne .nos
-    mov byte[GUIcrowpos],4
+  cmp dh,'S'
+  jne .nos
+  mov byte[GUIcrowpos],4
 .nos
-    cmp dh,'O'
-    jne .noo
-    mov byte[GUIcrowpos],5
+  cmp dh,'O'
+  jne .noo
+  mov byte[GUIcrowpos],5
 .noo
-    cmp dh,'P'
-    jne .nop
-    mov byte[GUIcrowpos],6
+  cmp dh,'P'
+  jne .nop
+  mov byte[GUIcrowpos],6
 .nop
-    cmp dh,'Q'
-    jne .noq
-    mov byte[GUIcrowpos],8
+  cmp dh,'Q'
+  jne .noq
+  mov byte[GUIcrowpos],8
 .noq
 .noloadmenu                            ; Config Hotkeys
-    cmp byte[GUIcmenupos],3
-    jne near .noconfigmenu
-    cmp dh,'1'
-    jne .noin1
-    mov byte[GUIcrowpos],0
+  cmp byte[GUIcmenupos],3
+  jne near .noconfigmenu
+  cmp dh,'1'
+  jne .noin1
+  mov byte[GUIcrowpos],0
 .noin1
-    cmp dh,'2'
-    jne .noin2
-    mov byte[GUIcrowpos],1
+  cmp dh,'2'
+  jne .noin2
+  mov byte[GUIcrowpos],1
 .noin2
-    cmp dh,'3'
-    jne .noin3
-    mov byte[GUIcrowpos],2
+  cmp dh,'3'
+  jne .noin3
+  mov byte[GUIcrowpos],2
 .noin3
-    cmp dh,'4'
-    jne .noin4
-    mov byte[GUIcrowpos],3
+  cmp dh,'4'
+  jne .noin4
+  mov byte[GUIcrowpos],3
 .noin4
-    cmp dh,'5'
-    jne .noin5
-    mov byte[GUIcrowpos],4
+  cmp dh,'5'
+  jne .noin5
+  mov byte[GUIcrowpos],4
 .noin5
-    cmp dh,'A'
-    jne .noina
-    mov byte[GUIcrowpos],6
+  cmp dh,'A'
+  jne .noina
+  mov byte[GUIcrowpos],6
 .noina
-    cmp dh,'F'
-    jne .noinc
-    mov byte[GUIcrowpos],7
+  cmp dh,'F'
+  jne .noinc
+  mov byte[GUIcrowpos],7
 .noinc
-    cmp dh,'O'
-    jne .noino
-    mov byte[GUIcrowpos],9
+  cmp dh,'O'
+  jne .noino
+  mov byte[GUIcrowpos],9
 .noino
-    cmp dh,'V'
-    jne .noinv
-    mov byte[GUIcrowpos],10
+  cmp dh,'V'
+  jne .noinv
+  mov byte[GUIcrowpos],10
 .noinv
-    cmp dh,'S'
-    jne .noins
-    mov byte[GUIcrowpos],11
+  cmp dh,'S'
+  jne .noins
+  mov byte[GUIcrowpos],11
 .noins
-    cmp dh,'P'
-    jne .noinp
-    mov byte[GUIcrowpos],12
+  cmp dh,'P'
+  jne .noinp
+  mov byte[GUIcrowpos],12
 .noinp
-    cmp dh,'E'
-    jne .noine
-    mov byte[GUIcrowpos],13
+  cmp dh,'E'
+  jne .noine
+  mov byte[GUIcrowpos],13
 .noine
-    cmp dh,'D'
-    jne .noind
-    mov byte[GUIcrowpos],14
+  cmp dh,'D'
+  jne .noind
+  mov byte[GUIcrowpos],14
 .noind
 .noconfigmenu                          ; Cheat Hotkeys
-    cmp byte[GUIcmenupos],4
-    jne near .nocheatmenu
-    cmp dh,'A'
-    jne .noa
-    mov byte[GUIcrowpos],0
+  cmp byte[GUIcmenupos],4
+  jne near .nocheatmenu
+  cmp dh,'A'
+  jne .noa
+  mov byte[GUIcrowpos],0
 .noa
-    cmp dh,'B'
-    jne .nob
-    mov byte[GUIcrowpos],1
+  cmp dh,'B'
+  jne .nob
+  mov byte[GUIcrowpos],1
 .nob
-    cmp dh,'S'
-    jne .nos2
-    mov byte[GUIcrowpos],2
+  cmp dh,'S'
+  jne .nos2
+  mov byte[GUIcrowpos],2
 .nos2
 .nocheatmenu                           ; Misc Hotkeys
-    cmp byte[GUIcmenupos],6
-    jne near .nomiscmenu
-    cmp dh,'K'
-    jne .nomk
-    mov byte[GUIcrowpos],0
+  cmp byte[GUIcmenupos],6
+  jne near .nomiscmenu
+  cmp dh,'K'
+  jne .nomk
+  mov byte[GUIcrowpos],0
 .nomk
-    cmp dh,'U'
-    jne .nomu
-    mov byte[GUIcrowpos],1
+  cmp dh,'U'
+  jne .nomu
+  mov byte[GUIcrowpos],1
 .nomu
-    cmp dh,'O'
-    jne .nomo
-    mov byte[GUIcrowpos],2
+  cmp dh,'O'
+  jne .nomo
+  mov byte[GUIcrowpos],2
 .nomo
-    cmp dh,'E'
-    jne .nome
-    mov byte[GUIcrowpos],3
+  cmp dh,'E'
+  jne .nome
+  mov byte[GUIcrowpos],3
 .nome
-    cmp dh,'S'
-    jne .noms
-    mov byte[GUIcrowpos],4
+  cmp dh,'S'
+  jne .noms
+  mov byte[GUIcrowpos],4
 .noms
-    cmp dh,'A'
-    jne .noma
-    mov byte[GUIcrowpos],6
+  cmp dh,'A'
+  jne .noma
+  mov byte[GUIcrowpos],6
 .noma
 .nomiscmenu
 
-    cmp byte[romloadskip],0
-    jne .dontquit
-    cmp al,27
-    jne .noexit
-    mov byte[GUIQuit],2
+  cmp byte[romloadskip],0
+  jne .dontquit
+  cmp al,27
+  jne .noexit
+  mov byte[GUIQuit],2
 .noexit
 .dontquit
-    cmp al,13
-    jne .noenter
-    call GUITryMenuItem
+  cmp al,13
+  jne .noenter
+  call GUITryMenuItem
 .noenter
 %ifdef __UNIXSDL__
-    cmp al,92
-    je .leftpressed
-    cmp dword[numlockptr],1
-    je .noleft
-    cmp al,75
-    jne .noleft
+  cmp al,92
+  je .leftpressed
+  cmp dword[numlockptr],1
+  je .noleft
+  cmp al,75
+  jne .noleft
 .leftpressed
 %else
-    cmp al,75
-    jne .noleft
+  cmp al,75
+  jne .noleft
 %endif
-    mov byte[GUIcrowpos],0
-    cmp byte[GUIcmenupos],1
-    jbe .left
-    dec byte[GUIcmenupos]
-    jmp .noleft
+  mov byte[GUIcrowpos],0
+  cmp byte[GUIcmenupos],1
+  jbe .left
+  dec byte[GUIcmenupos]
+  jmp .noleft
 .left
-    mov byte[GUIcmenupos],6
+  mov byte[GUIcmenupos],6
 .noleft
 %ifdef __UNIXSDL__
-    cmp al,94
-    je .rightpressed
-    cmp dword[numlockptr],1
-    je .noright
-    cmp al,77
-    jne .noright
+  cmp al,94
+  je .rightpressed
+  cmp dword[numlockptr],1
+  je .noright
+  cmp al,77
+  jne .noright
 .rightpressed
 %else
-    cmp al,77
-    jne .noright
+  cmp al,77
+  jne .noright
 %endif
-    mov byte[GUIcrowpos],0
-    inc byte[GUIcmenupos]
-    cmp byte[GUIcmenupos],7
-    jne .noright
-    mov byte[GUIcmenupos],1
+  mov byte[GUIcrowpos],0
+  inc byte[GUIcmenupos]
+  cmp byte[GUIcmenupos],7
+  jne .noright
+  mov byte[GUIcmenupos],1
 .noright
-    cmp byte[GUIcmenupos],0
-    je near .noupdown
+  cmp byte[GUIcmenupos],0
+  je near .noupdown
 %ifdef __UNIXSDL__
-    cmp al,96
-    je .downpressed
-    cmp dword[numlockptr],1
-    je .nodown
-    cmp al,80
-    jne .nodown
+  cmp al,96
+  je .downpressed
+  cmp dword[numlockptr],1
+  je .nodown
+  cmp al,80
+  jne .nodown
 .downpressed
 %else
-    cmp al,80
-    jne .nodown
+  cmp al,80
+  jne .nodown
 %endif
-    xor eax,eax
-    mov al,[GUIcrowpos]
-    mov ebx,[GUICYLocPtr]
-    cmp byte[eax+ebx+1],2
-    jne .nobottom
-    mov byte[GUIcrowpos],0
-    jmp .nokey
+  xor eax,eax
+  mov al,[GUIcrowpos]
+  mov ebx,[GUICYLocPtr]
+  cmp byte[eax+ebx+1],2
+  jne .nobottom
+  mov byte[GUIcrowpos],0
+  jmp .nokey
 .nobottom
-    inc eax
-    cmp byte[eax+ebx+1],0
-    je .nobottom
-    mov [GUIcrowpos],al
-    jmp .nokey
+  inc eax
+  cmp byte[eax+ebx+1],0
+  je .nobottom
+  mov [GUIcrowpos],al
+  jmp .nokey
 .nodown
 %ifdef __UNIXSDL__
-    cmp al, 90
-    je .uppressed
-    cmp dword[numlockptr],1
-    je .noup
-    cmp al,72
-    jne .noup
+  cmp al, 90
+  je .uppressed
+  cmp dword[numlockptr],1
+  je .noup
+  cmp al,72
+  jne .noup
 .uppressed
 %else
-    cmp al,72
-    jne .noup
+  cmp al,72
+  jne .noup
 %endif
-    xor eax,eax
-    mov al,[GUIcrowpos]
-    mov ebx,[GUICYLocPtr]
-    or al,al
-    jz .top
-    cmp byte[eax+ebx+1],3
-    jne .notop
+  xor eax,eax
+  mov al,[GUIcrowpos]
+  mov ebx,[GUICYLocPtr]
+  or al,al
+  jz .top
+  cmp byte[eax+ebx+1],3
+  jne .notop
 .top
-    mov al,[ebx]
-    mov [GUIcrowpos],al
-    jmp .nokey
+  mov al,[ebx]
+  mov [GUIcrowpos],al
+  jmp .nokey
 .notop
-    dec eax
-    cmp byte[eax+ebx+1],0
-    je .notop
-    mov [GUIcrowpos],al
-    jmp .nokey
+  dec eax
+  cmp byte[eax+ebx+1],0
+  je .notop
+  mov [GUIcrowpos],al
+  jmp .nokey
 .noup
 .noupdown
 .nokey
-    ret
+  ret
+
+%macro KeyTabInc 1 ; tab array
+  cmp dh,9
+  jne %%done
+  mov eax,[%1]
+  cmp eax,[%1+4]
+  je %%back
+  inc dword[%1]
+  jmp %%done
+%%back
+  mov dword[%1],1
+%%done
+%endmacro
+
+GUIInputKeys:
+  KeyTabInc GUIInputTabs
+  ret
 
 GUITCPIPKeys:
-    ret
+  ret
 
 GUIOptionKeys:
-    cmp dh,'a'
-    jb .nocap
-    cmp dh,'z'
-    ja .nocap
-    sub dh,'z'-'Z'
+  cmp dh,'a'
+  jb .nocap
+  cmp dh,'z'
+  ja .nocap
+  sub dh,'z'-'Z'
 .nocap
-    cmp dh,'N'                             ; Checkboxes
-    jne .nonewgfx
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUINGVID+eax],1
-    jne near .invalidng
-    xor byte[newengen],1
-    mov al,[newengen]
-    mov [cfgnewgfx],al
+  cmp dh,'N'                             ; Checkboxes
+  jne .nonewgfx
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUINGVID+eax],1
+  jne near .invalidng
+  xor byte[newengen],1
+  mov al,[newengen]
+  mov [cfgnewgfx],al
 .invalidng
 .nonewgfx
-    cmp dh,'M'
-    jne .nommxcopy
-    xor byte[MMXSupport],1
-    call MMXCheck
+  cmp dh,'M'
+  jne .nommxcopy
+  xor byte[MMXSupport],1
+  call MMXCheck
 .nommxcopy
-    cmp dh,'U'
-    jne .nousepl34
-    xor byte[pl12s34],1
-    mov byte[MultiTap],1
-    cmp byte[pl12s34],1
-    je .nomtap
-    cmp byte[pl3contrl],0
-    jne .mtap
-    cmp byte[pl4contrl],0
-    jne .mtap
-    cmp byte[pl5contrl],0
-    jne .mtap
+  cmp dh,'U'
+  jne .nousepl34
+  xor byte[pl12s34],1
+  mov byte[MultiTap],1
+  cmp byte[pl12s34],1
+  je .nomtap
+  cmp byte[pl3contrl],0
+  jne .mtap
+  cmp byte[pl4contrl],0
+  jne .mtap
+  cmp byte[pl5contrl],0
+  jne .mtap
 .nomtap
-    mov byte[MultiTap],0
+  mov byte[MultiTap],0
 .mtap
 .nousepl34
 %ifdef __MSDOS__
-    GUIKeyCheckbox SidewinderFix,'I'
+  GUIKeyCheckbox SidewinderFix,'I'
 %elifdef __WIN32__
-    GUIKeyCheckbox HighPriority,'H'
-    pushad
-    call CheckPriority
-    popad
+  GUIKeyCheckbox HighPriority,'H'
+  pushad
+  call CheckPriority
+  popad
 %endif
-    GUIKeyCheckbox FPSAtStart,'F'
-    GUIKeyCheckbox Turbo30hz,'E'
-    GUIKeyCheckbox TimerEnable,'C'
-    GUIKeyCheckbox OldGfxMode2,'O'
-    GUIKeyCheckbox DontSavePath,'D'
-    GUIKeyCheckbox SmallMsgText,'S'
-    GUIKeyCheckbox AutoPatch,'P'
-    GUIKeyCheckbox RomInfo,'T'
-    GUIKeyCheckbox AllowUDLR,'A'
+  GUIKeyCheckbox FPSAtStart,'F'
+  GUIKeyCheckbox Turbo30hz,'E'
+  GUIKeyCheckbox TimerEnable,'C'
+  GUIKeyCheckbox OldGfxMode2,'O'
+  GUIKeyCheckbox DontSavePath,'D'
+  GUIKeyCheckbox SmallMsgText,'S'
+  GUIKeyCheckbox AutoPatch,'P'
+  GUIKeyCheckbox RomInfo,'T'
+  GUIKeyCheckbox AllowUDLR,'A'
 %ifndef __MSDOS__
-    GUIKeyCheckbox PauseFocusChange,'B'
+  GUIKeyCheckbox PauseFocusChange,'B'
 %endif
 %ifdef __WIN32__
-    GUIKeyCheckbox DisableScreenSaver,'I'
-    pushad
-    call CheckScreenSaver
-    popad
+  GUIKeyCheckbox DisableScreenSaver,'I'
+  pushad
+  call CheckScreenSaver
+  popad
 %endif
-    ret
+  ret
 
-GUIAboutKeys
-    cmp dh,'a'             ; Setup
-    jb .nocap
-    cmp dh,'z'
-    ja .nocap
-    sub dh,'z'-'Z'
+GUIAboutKeys:
+  cmp dh,'a'             ; Setup
+  jb .nocap
+  cmp dh,'z'
+  ja .nocap
+  sub dh,'z'-'Z'
 .nocap
-    cmp dh,'E'
-    jne .noeegg
-    xor byte[EEgg],1
+  cmp dh,'E'
+  jne .noeegg
+  xor byte[EEgg],1
 .noeegg
-    ret
+  ret
 
 GUISaveKeys:
-    cmp dh,'a'             ; Setup
-    jb .nocap
-    cmp dh,'z'
-    ja .nocap
-    sub dh,'z'-'Z'
+  cmp dh,'a'             ; Setup
+  jb .nocap
+  cmp dh,'z'
+  ja .nocap
+  sub dh,'z'-'Z'
 .nocap
-    cmp dh,'I'             ; Checkboxes
-    jne .noautoincsave
-    xor byte[AutoIncSaveSlot],1
-    mov byte[firstsaveinc],1
+  cmp dh,'I'             ; Checkboxes
+  jne .noautoincsave
+  xor byte[AutoIncSaveSlot],1
+  mov byte[firstsaveinc],1
 .noautoincsave
 
-    GUIKeyCheckbox SRAMSave5Sec,'C'
-    GUIKeyCheckbox LatestSave,'S'
-    GUIKeyCheckbox AutoState,'A'
-    GUIKeyCheckbox SRAMState,'L'
-    GUIKeyCheckbox PauseLoad,'P'
-    GUIKeyCheckbox PauseRewind,'R'
-    ret
+  GUIKeyCheckbox SRAMSave5Sec,'C'
+  GUIKeyCheckbox LatestSave,'S'
+  GUIKeyCheckbox AutoState,'A'
+  GUIKeyCheckbox SRAMState,'L'
+  GUIKeyCheckbox PauseLoad,'P'
+  GUIKeyCheckbox PauseRewind,'R'
+  ret
 
 GUISpeedKeys:
-    cmp dh,'a'             ; Setup
-    jb .nocap
-    cmp dh,'z'
-    ja .nocap
-    sub dh,'z'-'Z'
+  cmp dh,'a'             ; Setup
+  jb .nocap
+  cmp dh,'z'
+  ja .nocap
+  sub dh,'z'-'Z'
 .nocap
-    GUIKeyCheckbox FastFwdToggle,'T'   ; Checkbox
+  GUIKeyCheckbox FastFwdToggle,'T'   ; Checkbox
 
-    cmp dh,'A'                 ; Framerate Checkboxes
-    jne .noautofr
-    mov byte[FPSOn],0
-    cmp byte[frameskip],0
-    je .zero
-    mov byte[frameskip],0
-    jmp .notzero
+  cmp dh,'A'                 ; Framerate Checkboxes
+  jne .noautofr
+  mov byte[FPSOn],0
+  cmp byte[frameskip],0
+  je .zero
+  mov byte[frameskip],0
+  jmp .notzero
 .zero
-    mov byte[frameskip],2
+  mov byte[frameskip],2
 .notzero
 .noautofr
-    ret
+  ret
 
 GUIAddonKeys:
-    cmp dh,'a'             ;Setup
-    jb .nocap
-    cmp dh,'z'
-    ja .nocap
-    sub dh,'z'-'Z'
+  cmp dh,'a'             ;Setup
+  jb .nocap
+  cmp dh,'z'
+  ja .nocap
+  sub dh,'z'-'Z'
 .nocap
-    GUIKeyButtonHole snesmouse,0,'N'             ;Radio Buttons
-    GUIKeyButtonHole snesmouse,1,'1'
-    GUIKeyButtonHole snesmouse,2,'2'
-    GUIKeyButtonHole snesmouse,3,'S'
-    GUIKeyButtonHole snesmouse,4,'L'
-    ret
+  GUIKeyButtonHole snesmouse,0,'N'             ;Radio Buttons
+  GUIKeyButtonHole snesmouse,1,'1'
+  GUIKeyButtonHole snesmouse,2,'2'
+  GUIKeyButtonHole snesmouse,3,'S'
+  GUIKeyButtonHole snesmouse,4,'L'
+  ret
 
 GUIChipKeys:
-    cmp dh,'a'             ;Setup
-    jb .nocap
-    cmp dh,'z'
-    ja .nocap
-    sub dh,'z'-'Z'
+  cmp dh,'a'             ;Setup
+  jb .nocap
+  cmp dh,'z'
+  ja .nocap
+  sub dh,'z'-'Z'
 .nocap
-    GUIKeyCheckbox nssdip1,'1'             ; Checkboxes
-    GUIKeyCheckbox nssdip2,'2'
-    GUIKeyCheckbox nssdip3,'3'
-    GUIKeyCheckbox nssdip4,'4'
-    GUIKeyCheckbox nssdip5,'5'
-    GUIKeyCheckbox nssdip6,'6'
-    ret
+  GUIKeyCheckbox nssdip1,'1'             ; Checkboxes
+  GUIKeyCheckbox nssdip2,'2'
+  GUIKeyCheckbox nssdip3,'3'
+  GUIKeyCheckbox nssdip4,'4'
+  GUIKeyCheckbox nssdip5,'5'
+  GUIKeyCheckbox nssdip6,'6'
+  ret
 
 GUIGUIOptnsKeys:
-    cmp dh,'a'
-    jb .nocap
-    cmp dh,'z'
-    ja .nocap
-    sub dh,'z'-'Z'
+  cmp dh,'a'
+  jb .nocap
+  cmp dh,'z'
+  ja .nocap
+  sub dh,'z'-'Z'
 .nocap
-    GUIKeyCheckbox mousewrap,'M'            ; Checkboxes
-    GUIKeyCheckbox mouseshad,'S'
-    GUIKeyCheckbox lastcursres,'K'
-    GUIKeyCheckbox resetposn,'W'
-    GUIKeyCheckbox GUIClick,'C'
-    GUIKeyCheckbox JoyPad1Move,'U'
-    GUIKeyCheckbox GUIEnableTransp,'T'
+  GUIKeyCheckbox mousewrap,'M'            ; Checkboxes
+  GUIKeyCheckbox mouseshad,'S'
+  GUIKeyCheckbox lastcursres,'K'
+  GUIKeyCheckbox resetposn,'W'
+  GUIKeyCheckbox GUIClick,'C'
+  GUIKeyCheckbox JoyPad1Move,'U'
+  GUIKeyCheckbox GUIEnableTransp,'T'
 
-    cmp dh,'F'
-    jne .guioptn8
-    xor byte[FilteredGUI],1
-    cmp byte[En2xSaI],1
-    jnae .guioptn8
-    call ClearScreen
-    pushad
-    call Clear2xSaIBuffer
-    popad
+  cmp dh,'F'
+  jne .guioptn8
+  xor byte[FilteredGUI],1
+  cmp byte[En2xSaI],1
+  jnae .guioptn8
+  call ClearScreen
+  pushad
+  call Clear2xSaIBuffer
+  popad
 .guioptn8
-    cmp byte[hqFilter],0
-    je .guioptn9
-    call ClearScreen
-    pushad
-    call Clear2xSaIBuffer
-    popad
+  cmp byte[hqFilter],0
+  je .guioptn9
+  call ClearScreen
+  pushad
+  call Clear2xSaIBuffer
+  popad
 .guioptn9
 
-    cmp dh,'N'
-    jne .guioptn10
-    GUIkeystoggleoptn byte[GUIEffect],1
+  cmp dh,'N'
+  jne .guioptn10
+  GUIkeystoggleoptn byte[GUIEffect],1
 .guioptn10
-    cmp dh,'R'
-    jne .guioptn11
-    GUIkeystoggleoptn byte[GUIEffect],4
+  cmp dh,'R'
+  jne .guioptn11
+  GUIkeystoggleoptn byte[GUIEffect],4
 .guioptn11
-    cmp dh,'E'
-    jne .guioptn12
-    GUIkeystoggleoptn byte[GUIEffect],2
+  cmp dh,'E'
+  jne .guioptn12
+  GUIkeystoggleoptn byte[GUIEffect],2
 .guioptn12
-    cmp dh,'B'
-    jne .guioptn13
-    GUIkeystoggleoptn byte[GUIEffect],3
+  cmp dh,'B'
+  jne .guioptn13
+  GUIkeystoggleoptn byte[GUIEffect],3
 .guioptn13
 %ifdef __WIN32__
-    GUIKeyCheckbox MouseWheel,'H'
-    GUIKeyCheckbox TrapMouseCursor,'P'
-    GUIKeyCheckbox AlwaysOnTop,'A'
-    GUIKeyCheckbox SaveMainWindowPos,'V'
-    GUIKeyCheckbox AllowMultipleInst,'L'
+  GUIKeyCheckbox MouseWheel,'H'
+  GUIKeyCheckbox TrapMouseCursor,'P'
+  GUIKeyCheckbox AlwaysOnTop,'A'
+  GUIKeyCheckbox SaveMainWindowPos,'V'
+  GUIKeyCheckbox AllowMultipleInst,'L'
 %endif
 ret
 
 GUIVideoKeys:
-    cmp dh,'a'
-    jb .nocap
-    cmp dh,'z'
-    ja .nocap
-    sub dh,'z'-'Z'
+  KeyTabInc GUIVideoTabs
+  cmp dh,'a'
+  jb .nocap
+  cmp dh,'z'
+  ja .nocap
+  sub dh,'z'-'Z'
 .nocap
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUISLVID+eax],0
-    je .nofullscanlines
-    cmp dh,'F'
-    jne .nofullscanlines
-    cmp byte[En2xSaI],0
-    jne .nofullscanlines
-    cmp byte[hqFilter],0
-    jne .nofullscanlines
-    call ClearScreen
-    GUIkeystoggleoptn byte[scanlines],1
+  xor eax,eax
+  cmp dword[GUIVideoTabs],1
+  jne near .notmodestab
+;   "Home"
+%ifdef __UNIXSDL__
+  cmp dl,89
+  je .yeshome
+  cmp dword[numlockptr],1
+  je .nohome
+  cmp dl,71
+  jne .nohome
+.yeshome
+%else
+  cmp dl,71
+  jne .nohome
+%endif
+  mov dword[GUIcurrentvideocursloc],0
+  mov dword[GUIcurrentvideoviewloc],0
+.nohome
+;   "End"
+%ifdef __UNIXSDL__
+  cmp dl,95
+  je .yesendp
+  cmp dword[numlockptr],1
+  je .noendp
+  cmp dl,79
+  jne .noendp
+.yesendp
+%else
+  cmp dl,79
+  jne .noendp
+%endif
+  mov eax,[NumVideoModes]
+  dec eax
+  mov [GUIcurrentvideocursloc],eax
+  sub eax,4
+  mov [GUIcurrentvideoviewloc],eax
+  test dword[GUIcurrentvideoviewloc],8000000h
+  jz .noendp
+  mov dword[GUIcurrentvideoviewloc],0
+.noendp
+;   "Up"
+%ifdef __UNIXSDL__
+  cmp dl,90
+  je .up
+  cmp dword[numlockptr],1
+  je .noup
+  cmp dl,72
+  jne .noup
+%else
+  cmp dl,72
+  jne .noup
+%endif
+.up
+  cmp dword[GUIcurrentvideocursloc],0
+  je .noup
+  mov ebx,[GUIcurrentvideocursloc]
+  cmp [GUIcurrentvideoviewloc],ebx
+  jne .noviewdec
+  dec dword[GUIcurrentvideoviewloc]
+.noviewdec
+  dec dword[GUIcurrentvideocursloc]
+.noup
+;   "Down"
+%ifdef __UNIXSDL__
+  cmp dl,96
+  je .yesdown
+  cmp dword[numlockptr],1
+  je .nodown
+  cmp dl,80
+  jne .nodown
+.yesdown
+%else
+  cmp dl,80
+  jne .nodown
+%endif
+  mov ebx,[GUIcurrentvideocursloc]
+  inc ebx
+  cmp ebx,[NumVideoModes]
+  je .nodown
+  inc dword[GUIcurrentvideocursloc]
+  sub ebx,5
+  cmp ebx,[GUIcurrentvideoviewloc]
+  jne .nodown
+  inc dword[GUIcurrentvideoviewloc]
+.nodown
+;   "PageUp"
+%ifdef __UNIXSDL__
+  cmp dl,91
+  je .yespageup
+  cmp dword[numlockptr],1
+  je .nopageup
+  cmp dl,73
+  jne .nopageup
+.yespageup
+%else
+  cmp dl,73
+  jne .nopageup
+%endif
+  sub dword[GUIcurrentvideoviewloc],5
+  sub dword[GUIcurrentvideocursloc],5
+  test dword[GUIcurrentvideoviewloc],8000000h
+  jz .posv
+  mov dword[GUIcurrentvideoviewloc],0
+.posv
+  test dword[GUIcurrentvideocursloc],8000000h
+  jz .posc
+  mov dword[GUIcurrentvideocursloc],0
+.posc
+.nopageup
+;   "PageDown"
+%ifdef __UNIXSDL__
+  cmp dl,97
+  je .yespagedn
+  cmp dword[numlockptr],1
+  je .nopagedown
+  cmp dl,81
+  jne .nopagedown
+.yespagedn
+%else
+  cmp dl,81
+  jne .nopagedown
+%endif
+  add dword[GUIcurrentvideoviewloc],5
+  add dword[GUIcurrentvideocursloc],5
+  mov ebx,[NumVideoModes]
+  dec ebx
+  cmp dword[GUIcurrentvideocursloc],ebx
+  jb .poscd
+  mov [GUIcurrentvideocursloc],ebx
+.poscd
+  sub ebx,4
+  cmp dword[GUIcurrentvideoviewloc],ebx
+  jl .posvd
+  test ebx,8000000h
+  jz .noneg
+  mov ebx,0
+.noneg
+  mov [GUIcurrentvideoviewloc],ebx
+.posvd
+.nopagedown
+.notmodestab
+
+  cmp dword[GUIVideoTabs],2
+  jne near .notfilterstab
+  mov al,[cvidmode]
+  cmp byte[GUISLVID+eax],0
+  je .nofullscanlines
+  cmp dh,'F'
+  jne .nofullscanlines
+  cmp byte[En2xSaI],0
+  jne .nofullscanlines
+  cmp byte[hqFilter],0
+  jne .nofullscanlines
+  call ClearScreen
+  GUIkeystoggleoptn byte[scanlines],1
 %ifdef __MSDOS__
-    cmp byte[cvidmode],2
-    jne .nomodeq
-    jmp .refresh
+  cmp byte[cvidmode],2
+  jne .nomodeq
+  jmp .refresh
 .nomodeq
-    cmp byte[cvidmode],5
-    jne .nofullscanlines
+  cmp byte[cvidmode],5
+  jne .nofullscanlines
 .refresh
-    mov byte[cbitmode],1
-    call initvideo2
-    mov byte[cbitmode],0
-    call GUISetPal
+  mov byte[cbitmode],1
+  call initvideo2
+  mov byte[cbitmode],0
+  call GUISetPal
 %endif
 .nofullscanlines
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUIHSVID+eax],0
-    je near .noquarterscanlines
-    cmp dh,'5'
-    jne .nohalfscanlines
-    cmp byte[En2xSaI],0
-    jne .nohalfscanlines
-    cmp byte[hqFilter],0
-    jne .nohalfscanlines
-    call ClearScreen
-    GUIkeystoggleoptn byte[scanlines],3
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUIHSVID+eax],0
+  je near .noquarterscanlines
+  cmp dh,'5'
+  jne .nohalfscanlines
+  cmp byte[En2xSaI],0
+  jne .nohalfscanlines
+  cmp byte[hqFilter],0
+  jne .nohalfscanlines
+  call ClearScreen
+  GUIkeystoggleoptn byte[scanlines],3
 %ifdef __MSDOS__
-    ;cmp byte[cvidmode],2
-    ;jne .nohalfscanlines
-    ;mov byte[cbitmode],1
-    ;call initvideo2
-    ;mov byte[cbitmode],0
-    ;call GUISetPal
+  ;cmp byte[cvidmode],2
+  ;jne .nohalfscanlines
+  ;mov byte[cbitmode],1
+  ;call initvideo2
+  ;mov byte[cbitmode],0
+  ;call GUISetPal
 %endif
 .nohalfscanlines
-    cmp dh,'2'
-    jne .noquarterscanlines
-    cmp byte[En2xSaI],0
-    jne .noquarterscanlines
-    cmp byte[hqFilter],0
-    jne .noquarterscanlines
-    call ClearScreen
-    GUIkeystoggleoptn byte[scanlines],2
+  cmp dh,'2'
+  jne .noquarterscanlines
+  cmp byte[En2xSaI],0
+  jne .noquarterscanlines
+  cmp byte[hqFilter],0
+  jne .noquarterscanlines
+  call ClearScreen
+  GUIkeystoggleoptn byte[scanlines],2
 %ifdef __MSDOS__
-    ;cmp byte[cvidmode],2
-    ;jne .noquarterscanlines
-    ;mov byte[cbitmode],1
-    ;call initvideo2
-    ;mov byte[cbitmode],0
-    ;call GUISetPal
+  ;cmp byte[cvidmode],2
+  ;jne .noquarterscanlines
+  ;mov byte[cbitmode],1
+  ;call initvideo2
+  ;mov byte[cbitmode],0
+  ;call GUISetPal
 %endif
 .noquarterscanlines
-    cmp dh,'Q'
-    jne .nohqfilter
-    xor ebx,ebx
-    mov bl,[cvidmode]
-    cmp byte[GUIHQ2X+ebx],0
-    jne .hqfilter
-    cmp byte[GUIHQ3X+ebx],0
-    jne .hqfilter
-    cmp byte[GUIHQ4X+ebx],0
-    jne .hqfilter
-    jmp .nohqfilter
+  cmp dh,'Q'
+  jne .nohqfilter
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUIHQ2X+ebx],0
+  jne .hqfilter
+  cmp byte[GUIHQ3X+ebx],0
+  jne .hqfilter
+  cmp byte[GUIHQ4X+ebx],0
+  jne .hqfilter
+  jmp .nohqfilter
 .hqfilter
-    xor byte[hqFilter],1
-    jz .nohqfilter
-    mov byte[scanlines],0
-    mov byte[cfgscanline],0
-    mov byte[En2xSaI],0
-    mov byte[antienab],0
-    mov byte[cfginterp],0
+  xor byte[hqFilter],1
+  jz .nohqfilter
+  mov byte[scanlines],0
+  mov byte[cfgscanline],0
+  mov byte[En2xSaI],0
+  mov byte[antienab],0
+  mov byte[cfginterp],0
 .nohqfilter
-    cmp dh,'X'
-    jne .no2xsai
-    xor ebx,ebx
-    mov bl,[cvidmode]
-    cmp byte[GUI2xVID+ebx],0
-    je near .no2xsai
-    pushad
-    call Clear2xSaIBuffer
-    popad
-    GUIkeystoggleoptn byte[En2xSaI],1
+  cmp dh,'X'
+  jne .no2xsai
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUI2xVID+ebx],0
+  je near .no2xsai
+  pushad
+  call Clear2xSaIBuffer
+  popad
+  GUIkeystoggleoptn byte[En2xSaI],1
 .no2xsai
-    cmp dh,'E'
-    jne .nosupereagle
-    xor ebx,ebx
-    mov bl,[cvidmode]
-    cmp byte[GUI2xVID+ebx],0
-    je near .nosupereagle
-    pushad
-    call Clear2xSaIBuffer
-    popad
-    GUIkeystoggleoptn byte[En2xSaI],2
+  cmp dh,'E'
+  jne .nosupereagle
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUI2xVID+ebx],0
+  je near .nosupereagle
+  pushad
+  call Clear2xSaIBuffer
+  popad
+  GUIkeystoggleoptn byte[En2xSaI],2
 .nosupereagle
-    cmp dh,'S'
-    jne .nosuper2xsai
-    xor ebx,ebx
-    mov bl,[cvidmode]
-    cmp byte[GUI2xVID+ebx],0
-    je near .nosuper2xsai
-    pushad
-    call Clear2xSaIBuffer
-    popad
-    GUIkeystoggleoptn byte[En2xSaI],3
+  cmp dh,'S'
+  jne .nosuper2xsai
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUI2xVID+ebx],0
+  je near .nosuper2xsai
+  pushad
+  call Clear2xSaIBuffer
+  popad
+  GUIkeystoggleoptn byte[En2xSaI],3
 .nosuper2xsai
-    cmp dh,'I'
-    jne .nointerpolationwin
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUII2VID+eax],0
-    je .nointerpolationwin
-    xor byte[antienab],1
-    mov al,[antienab]
-    mov [cfginterp],al
+  cmp dh,'I'
+  jne .nointerpolationwin
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUII2VID+eax],0
+  je .nointerpolationwin
+  xor byte[antienab],1
+  mov al,[antienab]
+  mov [cfginterp],al
 .nointerpolationwin
-    cmp dh,'I'
-    jne .nointerpolation
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUIIEVID+eax],0
-    je .nointerpolation
-    xor byte[antienab],1
-    mov al,[antienab]
-    mov [cfginterp],al
+  cmp dh,'I'
+  jne .nointerpolation
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUIIEVID+eax],0
+  je .nointerpolation
+  xor byte[antienab],1
+  mov al,[antienab]
+  mov [cfginterp],al
 .nointerpolation
-    cmp dh,'C'
-    jne .nofullscreen
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUIFSVID+eax],0
-    je .nofullscreen
-    call ClearScreen
-    xor byte[ScreenScale],1
-    mov al,[ScreenScale]
-    mov [GUIScreenScale],al
-    push eax
-    push ecx
-    mov eax,[vidbufferofsb]
-    mov ecx,288*128
+  cmp dh,'C'
+  jne .nofullscreen
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUIFSVID+eax],0
+  je .nofullscreen
+  call ClearScreen
+  xor byte[ScreenScale],1
+  mov al,[ScreenScale]
+  mov [GUIScreenScale],al
+  push eax
+  push ecx
+  mov eax,[vidbufferofsb]
+  mov ecx,288*128
 .fsloop
-    mov dword[eax],0
-    add eax,4
-    dec ecx
-    jnz .fsloop
-    pop ecx
-    pop eax
+  mov dword[eax],0
+  add eax,4
+  dec ecx
+  jnz .fsloop
+  pop ecx
+  pop eax
 .nofullscreen
-    cmp dh,'M'
-    jne .nosmallscreen
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUISSVID+eax],0
-    je .nosmallscreen
-    call ClearScreen
-    xor byte[smallscreenon],1
-    mov al,[smallscreenon]
-    mov [GUIsmallscreenon],al
-    push eax
-    push ecx
-    mov eax,[vidbufferofsb]
-    mov ecx,288*128
+  cmp dh,'M'
+  jne .nosmallscreen
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUISSVID+eax],0
+  je .nosmallscreen
+  call ClearScreen
+  xor byte[smallscreenon],1
+  mov al,[smallscreenon]
+  mov [GUIsmallscreenon],al
+  push eax
+  push ecx
+  mov eax,[vidbufferofsb]
+  mov ecx,288*128
 .ssloop
-    mov dword[eax],0
-    add eax,4
-    dec ecx
-    jnz .ssloop
-    pop ecx
-    pop eax
+  mov dword[eax],0
+  add eax,4
+  dec ecx
+  jnz .ssloop
+  pop ecx
+  pop eax
 .nosmallscreen
-    cmp dh,'H'
-    jne .nohiresmode7
-    xor ebx,ebx
-    mov bl,[cvidmode]
-    cmp byte[GUIM7VID+ebx],0
-    je .nohiresmode7
-    xor byte[Mode7HiRes16b],1
+  cmp dh,'H'
+  jne .nohiresmode7
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUIM7VID+ebx],0
+  je .nohiresmode7
+  xor byte[Mode7HiRes16b],1
 .nohiresmode7
-    cmp dh,'N'
-    jne .nontscfilters
-    xor ebx,ebx
-    mov bl,[cvidmode]
-    cmp byte[GUINTSC+ebx],0
-    je .nohiresmode7
-    xor byte[NTSCFilter],1
+  cmp dh,'N'
+  jne .nontscfilters
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUINTSC+ebx],0
+  je .nohiresmode7
+  xor byte[NTSCFilter],1
 .nontscfilters
-    cmp dh,'B'
-    jne .nobilinearfilter
-    xor ebx,ebx
-    mov bl,[cvidmode]
-    cmp byte[GUIBIFIL+ebx],0
-    je .nobilinearfilter
-    xor byte[BilinearFilter],1
+  cmp dh,'B'
+  jne .nobilinearfilter
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUIBIFIL+ebx],0
+  je .nobilinearfilter
+  xor byte[BilinearFilter],1
 .nobilinearfilter
 %ifdef __WIN32__
-    cmp dh,'T'
-    jne .notriplebufferwin
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUITBWVID+eax],0
-    je near .notriplebufferwin
-    xor byte[TripleBufferWin],1
+  cmp dh,'T'
+  jne .notriplebufferwin
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUITBWVID+eax],0
+  je near .notriplebufferwin
+  xor byte[TripleBufferWin],1
 ;    mov byte[vsyncon],0
 ;    mov byte[cfgvsync],0
-    call initDirectDraw
-    pushad
-    call Clear2xSaIBuffer
-    popad
+  call initDirectDraw
+  pushad
+  call Clear2xSaIBuffer
+  popad
 .notriplebufferwin
 %elifdef __MSDOS__
-    cmp dh,'T'
-    jne .notriplebuffer
-    xor ebx,ebx
-    mov bl,[cvidmode]
-    cmp byte[GUITBVID+ebx],0
-    je .notriplebuffer
-    xor byte[Triplebufen],1
+  cmp dh,'T'
+  jne .notriplebuffer
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUITBVID+ebx],0
+  je .notriplebuffer
+  xor byte[Triplebufen],1
 ;    mov byte[vsyncon],0
 ;    mov byte[cfgvsync],0
 .notriplebuffer
 %endif
-    cmp dh,'G'
-    jne .nograyscale
-    xor byte[GrayscaleMode],1
+  cmp dh,'G'
+  jne .nograyscale
+  xor byte[GrayscaleMode],1
 .nograyscale
 %ifndef __UNIXSDL__
-    cmp dh,'V'
-    jne .novsync
-    xor byte[vsyncon],1
-    mov al,[vsyncon]
-    mov [cfgvsync],al
+  cmp dh,'V'
+  jne .novsync
+  xor byte[vsyncon],1
+  mov al,[vsyncon]
+  mov [cfgvsync],al
 %ifdef __WIN32__
-    call initDirectDraw
-    pushad
-    call Clear2xSaIBuffer
-    popad
+  call initDirectDraw
+  pushad
+  call Clear2xSaIBuffer
+  popad
 %endif
 %ifdef __MSDOS__
 ;    mov byte[Triplebufen],0
 %endif
 .novsync
 %endif
-;   "Home"
-%ifdef __UNIXSDL__
-    cmp dl,89
-    je .yeshome
-    cmp dword[numlockptr],1
-    je .nohome
-    cmp dl,71
-    jne .nohome
-.yeshome
-%else
-    cmp dl,71
-    jne .nohome
-%endif
-    mov dword[GUIcurrentvideocursloc],0
-    mov dword[GUIcurrentvideoviewloc],0
-.nohome
-;   "End"
-%ifdef __UNIXSDL__
-    cmp dl,95
-    je .yesendp
-    cmp dword[numlockptr],1
-    je .noendp
-    cmp dl,79
-    jne .noendp
-.yesendp
-%else
-    cmp dl,79
-    jne .noendp
-%endif
-    mov eax,[NumVideoModes]
-    dec eax
-    mov [GUIcurrentvideocursloc],eax
-    sub eax,4
-    mov [GUIcurrentvideoviewloc],eax
-    test dword[GUIcurrentvideoviewloc],8000000h
-    jz .noendp
-    mov dword[GUIcurrentvideoviewloc],0
-.noendp
-;   "Up"
-%ifdef __UNIXSDL__
-    cmp dl,90
-    je .up
-    cmp dword[numlockptr],1
-    je .noup
-    cmp dl,72
-    jne .noup
-%else
-    cmp dl,72
-    jne .noup
-%endif
-.up
-    cmp dword[GUIcurrentvideocursloc],0
-    je .noup
-    mov ebx,[GUIcurrentvideocursloc]
-    cmp [GUIcurrentvideoviewloc],ebx
-    jne .noviewdec
-    dec dword[GUIcurrentvideoviewloc]
-.noviewdec
-    dec dword[GUIcurrentvideocursloc]
-.noup
-;   "Down"
-%ifdef __UNIXSDL__
-    cmp dl,96
-    je .yesdown
-    cmp dword[numlockptr],1
-    je .nodown
-    cmp dl,80
-    jne .nodown
-.yesdown
-%else
-    cmp dl,80
-    jne .nodown
-%endif
-    mov ebx,[GUIcurrentvideocursloc]
-    inc ebx
-    cmp ebx,[NumVideoModes]
-    je .nodown
-    inc dword[GUIcurrentvideocursloc]
-    sub ebx,5
-    cmp ebx,[GUIcurrentvideoviewloc]
-    jne .nodown
-    inc dword[GUIcurrentvideoviewloc]
-.nodown
-;   "PageUp"
-%ifdef __UNIXSDL__
-    cmp dl,91
-    je .yespageup
-    cmp dword[numlockptr],1
-    je .nopageup
-    cmp dl,73
-    jne .nopageup
-.yespageup
-%else
-    cmp dl,73
-    jne .nopageup
-%endif
-    sub dword[GUIcurrentvideoviewloc],5
-    sub dword[GUIcurrentvideocursloc],5
-    test dword[GUIcurrentvideoviewloc],8000000h
-    jz .posv
-    mov dword[GUIcurrentvideoviewloc],0
-.posv
-    test dword[GUIcurrentvideocursloc],8000000h
-    jz .posc
-    mov dword[GUIcurrentvideocursloc],0
-.posc
-.nopageup
-;   "PageDown"
-%ifdef __UNIXSDL__
-    cmp dl,97
-    je .yespagedn
-    cmp dword[numlockptr],1
-    je .nopagedown
-    cmp dl,81
-    jne .nopagedown
-.yespagedn
-%else
-    cmp dl,81
-    jne .nopagedown
-%endif
-    add dword[GUIcurrentvideoviewloc],5
-    add dword[GUIcurrentvideocursloc],5
-    mov ebx,[NumVideoModes]
-    dec ebx
-    cmp dword[GUIcurrentvideocursloc],ebx
-    jb .poscd
-    mov [GUIcurrentvideocursloc],ebx
-.poscd
-    sub ebx,4
-    cmp dword[GUIcurrentvideoviewloc],ebx
-    jl .posvd
-    test ebx,8000000h
-    jz .noneg
-    mov ebx,0
-.noneg
-    mov [GUIcurrentvideoviewloc],ebx
-.posvd
-.nopagedown
-    ret
+.notfilterstab
+
+  cmp dword[GUIVideoTabs],3
+  jne .notntsctab
+.notntsctab
+  ret
 
 GUISoundKeys:
-    cmp dh,'a'
-    jb .nocap
-    cmp dh,'z'
-    ja .nocap
-    sub dh,'z'-'Z'
+  cmp dh,'a'
+  jb .nocap
+  cmp dh,'z'
+  ja .nocap
+  sub dh,'z'-'Z'
 .nocap
 
-    cmp dh,'E'
-    jne .notenablesound
-    xor byte[cfgsoundon],1
+  cmp dh,'E'
+  jne .notenablesound
+  xor byte[cfgsoundon],1
 %ifdef __WIN32__
-    pushad
-    call reInitSound
-    popad
+  pushad
+  call reInitSound
+  popad
 %endif
 .notenablesound
 
 %ifdef __MSDOS__
-    GUIKeyCheckbox cfgforce8b,'F'
+  GUIKeyCheckbox cfgforce8b,'F'
 %endif
-    GUIKeyCheckbox cfgStereoSound,'S'
+  GUIKeyCheckbox cfgStereoSound,'S'
 %ifdef __MSDOS__
-    GUIKeyCheckbox RaisePitch,'A'
+  GUIKeyCheckbox RaisePitch,'A'
 %endif
-    GUIKeyCheckbox PrimaryBuffer,'P'
-    GUIKeyCheckbox RevStereo,'V'
-    GUIKeyCheckbox Surround,'U'
-    GUIKeyCheckbox SoundBufEn,'B'
-    GUIKeyCheckbox SPCDisable,'D'
+  GUIKeyCheckbox PrimaryBuffer,'P'
+  GUIKeyCheckbox RevStereo,'V'
+  GUIKeyCheckbox Surround,'U'
+  GUIKeyCheckbox SoundBufEn,'B'
+  GUIKeyCheckbox SPCDisable,'D'
 
-    cmp dh,'R'                 ; Sampling Rate
-    jne .notsrate
-    xor eax,eax
-    mov al,[cfgSoundQuality]
-    mov al,[.sampratenext+eax]
-    mov [cfgSoundQuality],al
+  cmp dh,'R'                 ; Sampling Rate
+  jne .notsrate
+  xor eax,eax
+  mov al,[cfgSoundQuality]
+  mov al,[.sampratenext+eax]
+  mov [cfgSoundQuality],al
 .notsrate
 
-    cmp dh,'G'
-    jne .nogausseninterp
-    GUIkeystoggleoptn byte[SoundInterpType],1
+  cmp dh,'G'
+  jne .nogausseninterp
+  GUIkeystoggleoptn byte[SoundInterpType],1
 .nogausseninterp
 
-    cmp dh,'C'
-    jne .nocubicinterp
-    GUIkeystoggleoptn byte[SoundInterpType],2
+  cmp dh,'C'
+  jne .nocubicinterp
+  GUIkeystoggleoptn byte[SoundInterpType],2
 .nocubicinterp
 
 %ifndef __MSDOS__
-    cmp dh,'8'
-    jne .no8ptinterp
-    cmp byte[MMXSupport],0
-    je .no8ptinterp
-    GUIkeystoggleoptn byte[SoundInterpType],3
+  cmp dh,'8'
+  jne .no8ptinterp
+  cmp byte[MMXSupport],0
+  je .no8ptinterp
+  GUIkeystoggleoptn byte[SoundInterpType],3
 .no8ptinterp
 %endif
 
-    cmp dh,'I'
-    jne .nosimplefilter
-    GUIkeystoggleoptn byte[LowPassFilterType],1
+  cmp dh,'I'
+  jne .nosimplefilter
+  GUIkeystoggleoptn byte[LowPassFilterType],1
 .nosimplefilter
 
-    cmp dh,'Y'
-    jne .nodynamicfilter
-    GUIkeystoggleoptn byte[LowPassFilterType],2
+  cmp dh,'Y'
+  jne .nodynamicfilter
+  GUIkeystoggleoptn byte[LowPassFilterType],2
 .nodynamicfilter
 
 %ifndef __MSDOS__
-    cmp dh,'H'
-    jne .nohiqualityfilter
-    cmp byte[MMXSupport],0
-    je .nohiqualityfilter
-    GUIkeystoggleoptn byte[LowPassFilterType],3
+  cmp dh,'H'
+  jne .nohiqualityfilter
+  cmp byte[MMXSupport],0
+  je .nohiqualityfilter
+  GUIkeystoggleoptn byte[LowPassFilterType],3
 .nohiqualityfilter
 %endif
 
-    ret
+  ret
 
 SECTION .data
 .sampratenext db 1,4,5,6,2,3,0,0,0,0
 SECTION .text
 
 GUINetMenuKeys1:
-    ret
+  ret
 
 GUIGetInputLine:
-    ret
+  ret
 
 SECTION .bss
 GUIEditString resd 1              ; Pointer to string
@@ -1434,104 +1465,104 @@ GUIEditStringcWin resd 1          ; 0 = no text window selected
 SECTION .text
 
 GUIPathKeys:
-    cmp dh,0
-    je near .nokeypressed
-    cmp dword[GUIInputBox],0
-    je near .nokeypressed
+  cmp dh,0
+  je near .nokeypressed
+  cmp dword[GUIInputBox],0
+  je near .nokeypressed
 
-    cmp dword[GUIInputBox],1
-    jne .notBox1
-    mov byte[cfgloadsdir],1 ;Need this to know if we should save the path
-    mov eax,SRAMDir
-    jmp .boxselected
+  cmp dword[GUIInputBox],1
+  jne .notBox1
+  mov byte[cfgloadsdir],1 ;Need this to know if we should save the path
+  mov eax,SRAMDir
+  jmp .boxselected
 .notBox1
-    cmp dword[GUIInputBox],2
-    jne .notBox2
-    mov eax,SnapPath
-    jmp .boxselected
+  cmp dword[GUIInputBox],2
+  jne .notBox2
+  mov eax,SnapPath
+  jmp .boxselected
 .notBox2
-    cmp dword[GUIInputBox],3
-    jne .notBox3
-    mov eax,SPCPath
-    jmp .boxselected
+  cmp dword[GUIInputBox],3
+  jne .notBox3
+  mov eax,SPCPath
+  jmp .boxselected
 .notBox3
-    cmp dword[GUIInputBox],4
-    jne .notBox4
-    mov eax,BSXPath
-    jmp .boxselected
+  cmp dword[GUIInputBox],4
+  jne .notBox4
+  mov eax,BSXPath
+  jmp .boxselected
 .notBox4
-    cmp dword[GUIInputBox],5
-    jne .notBox5
-    mov eax,SGPath
-    jmp .boxselected
+  cmp dword[GUIInputBox],5
+  jne .notBox5
+  mov eax,SGPath
+  jmp .boxselected
 .notBox5
-    cmp dword[GUIInputBox],6
-    jne .notBox6
-    mov eax,STPath
-    jmp .boxselected
+  cmp dword[GUIInputBox],6
+  jne .notBox6
+  mov eax,STPath
+  jmp .boxselected
 .notBox6
-    cmp dword[GUIInputBox],7
-    jne .notBox7
-    mov eax,GNextPath
-    jmp .boxselected
+  cmp dword[GUIInputBox],7
+  jne .notBox7
+  mov eax,GNextPath
+  jmp .boxselected
 .notBox7
-    cmp dword[GUIInputBox],8
-    jne .notBox8
-    mov eax,FEOEZPath
-    jmp .boxselected
+  cmp dword[GUIInputBox],8
+  jne .notBox8
+  mov eax,FEOEZPath
+  jmp .boxselected
 .notBox8
-    cmp dword[GUIInputBox],9
-    jne .notBox9
-    mov eax,SJNSPath
-    jmp .boxselected
+  cmp dword[GUIInputBox],9
+  jne .notBox9
+  mov eax,SJNSPath
+  jmp .boxselected
 .notBox9
-    cmp dword[GUIInputBox],10
-    jne .notBox10
-    mov eax,MDHPath
-    jmp .boxselected
+  cmp dword[GUIInputBox],10
+  jne .notBox10
+  mov eax,MDHPath
+  jmp .boxselected
 .notBox10
-    cmp dword[GUIInputBox],11
-    jne .notBox11
-    mov eax,SPL4Path
-    jmp .boxselected
+  cmp dword[GUIInputBox],11
+  jne .notBox11
+  mov eax,SPL4Path
+  jmp .boxselected
 .notBox11
 
 .boxselected
-    mov ecx,eax
+  mov ecx,eax
 
-    ;Find end of string
+  ;Find end of string
 .findend
-    cmp byte[eax],0
-    je .foundend
-    inc eax
-    jmp .findend
+  cmp byte[eax],0
+  je .foundend
+  inc eax
+  jmp .findend
 .foundend
 
-    cmp dh,8    ;Backspace
-    jne .notbackspace
-    cmp eax,ecx
-    je .cantback
-    mov byte[eax-1],0
+  cmp dh,8    ;Backspace
+  jne .notbackspace
+  cmp eax,ecx
+  je .cantback
+  mov byte[eax-1],0
 .cantback
-    ret
+  ret
 .notbackspace
 
-    cmp dh,13    ;Enter
-    jne .notenter
-    mov dword[GUIInputBox],0
-    ret
+  cmp dh,13    ;Enter
+  jne .notenter
+  mov dword[GUIInputBox],0
+  ret
 .notenter
 
-    ;check if we're at the end
-    add ecx,dword[GUIInputLimit]
-    cmp eax,ecx
-    jne .stillroom
-    ret
+  ;check if we're at the end
+  add ecx,dword[GUIInputLimit]
+  cmp eax,ecx
+  jne .stillroom
+  ret
 .stillroom
-    mov [eax],dh
+  mov [eax],dh
 
 .nokeypressed
-    ret
+  ret
 
 SECTION .bss
 GUIInputBox resd 1
@@ -1539,477 +1570,476 @@ GUIInputLimit resd 1
 SECTION .text
 
 GUIMovieKeys:
-    cmp dh,'a'             ;Setup
-    jb .nocap
-    cmp dh,'z'
-    ja .nocap
-    sub dh,'z'-'Z'
+  cmp dh,'a'             ;Setup
+  jb .nocap
+  cmp dh,'z'
+  ja .nocap
+  sub dh,'z'-'Z'
 .nocap
 
-    GUIKeyButtonHole CMovieExt,'v','0'         ; Select Radio Buttons
-    GUIKeyButtonHole CMovieExt,'1','1'
-    GUIKeyButtonHole CMovieExt,'2','2'
-    GUIKeyButtonHole CMovieExt,'3','3'
-    GUIKeyButtonHole CMovieExt,'4','4'
-    GUIKeyButtonHole CMovieExt,'5','5'
-    GUIKeyButtonHole CMovieExt,'6','6'
-    GUIKeyButtonHole CMovieExt,'7','7'
-    GUIKeyButtonHole CMovieExt,'8','8'
-    GUIKeyButtonHole CMovieExt,'9','9'
+  GUIKeyButtonHole CMovieExt,'v','0'         ; Select Radio Buttons
+  GUIKeyButtonHole CMovieExt,'1','1'
+  GUIKeyButtonHole CMovieExt,'2','2'
+  GUIKeyButtonHole CMovieExt,'3','3'
+  GUIKeyButtonHole CMovieExt,'4','4'
+  GUIKeyButtonHole CMovieExt,'5','5'
+  GUIKeyButtonHole CMovieExt,'6','6'
+  GUIKeyButtonHole CMovieExt,'7','7'
+  GUIKeyButtonHole CMovieExt,'8','8'
+  GUIKeyButtonHole CMovieExt,'9','9'
 
-    GUIKeyButtonHole MovieStartMethod,0,'N'   ; Start From Radio Buttons
-    GUIKeyButtonHole MovieStartMethod,1,'P'
-    GUIKeyButtonHole MovieStartMethod,2,'R'
-    GUIKeyButtonHole MovieStartMethod,3,'S'
+  GUIKeyButtonHole MovieStartMethod,0,'N'   ; Start From Radio Buttons
+  GUIKeyButtonHole MovieStartMethod,1,'P'
+  GUIKeyButtonHole MovieStartMethod,2,'R'
+  GUIKeyButtonHole MovieStartMethod,3,'S'
 
-    GUIKeyButtonHole MovieVideoMode,0,'O'
-    GUIKeyButtonHole MovieVideoMode,1,'W'
-    GUIKeyButtonHole MovieVideoMode,2,'F'
-    GUIKeyButtonHole MovieVideoMode,3,'L'
-    GUIKeyButtonHole MovieVideoMode,4,'X'
-    GUIKeyButtonHole MovieVideoMode,5,'C'
+  GUIKeyButtonHole MovieVideoMode,0,'O'
+  GUIKeyButtonHole MovieVideoMode,1,'W'
+  GUIKeyButtonHole MovieVideoMode,2,'F'
+  GUIKeyButtonHole MovieVideoMode,3,'L'
+  GUIKeyButtonHole MovieVideoMode,4,'X'
+  GUIKeyButtonHole MovieVideoMode,5,'C'
 
-    GUIKeyCheckbox MovieAudio,'A'
-    GUIKeyCheckbox MovieVideoAudio,'V'
-    GUIKeyCheckbox MovieAudioCompress,'M'
+  GUIKeyCheckbox MovieAudio,'A'
+  GUIKeyCheckbox MovieVideoAudio,'V'
+  GUIKeyCheckbox MovieAudioCompress,'M'
 
-    GUIKeyCheckbox MovieDisplayFrame,'D'      ; Checkbox
-    ret
+  GUIKeyCheckbox MovieDisplayFrame,'D'      ; Checkbox
+  ret
 
 GUIComboKeys:
-    ; Calculate Position
-    xor eax,eax
+  ; Calculate Position
+  xor eax,eax
 .nozero
-    cmp byte[GUIComboTextH+eax],0
-    je .zero
-    inc eax
-    jmp .nozero
+  cmp byte[GUIComboTextH+eax],0
+  je .zero
+  inc eax
+  jmp .nozero
 .zero
-    mov [GUIComboPos],al
-    cmp dh,8
-    jne .nobacksp
-    cmp byte[GUIComboPos],0
-    je .nochar
-    mov byte[GUICCFlash],0
-    xor eax,eax
-    mov al,[GUIComboPos]
-    dec eax
-    mov byte[GUIComboTextH+eax],0
-    ret
+  mov [GUIComboPos],al
+  cmp dh,8
+  jne .nobacksp
+  cmp byte[GUIComboPos],0
+  je .nochar
+  mov byte[GUICCFlash],0
+  xor eax,eax
+  mov al,[GUIComboPos]
+  dec eax
+  mov byte[GUIComboTextH+eax],0
+  ret
 .nobacksp
-    cmp dh,0
-    je .nochar
-    cmp dh,13
-    je .nochar
-    cmp byte[GUIComboPos],19
-    je .nochar
-    xor eax,eax
-    mov byte[GUICCFlash],0
-    mov al,[GUIComboPos]
-    mov [GUIComboTextH+eax],dh
+  cmp dh,0
+  je .nochar
+  cmp dh,13
+  je .nochar
+  cmp byte[GUIComboPos],19
+  je .nochar
+  xor eax,eax
+  mov byte[GUICCFlash],0
+  mov al,[GUIComboPos]
+  mov [GUIComboTextH+eax],dh
 .nochar
-    ret
+  ret
 
 GUICheatKeys:
-    cmp dword[GUIcurrentcheatwin],1
-    je near .textboxa
-    cmp dword[GUIcurrentcheatwin],2
-    je near .textboxb
-    cmp dh,'a'
-    jb .nocap
-    cmp dh,'z'
-    ja .nocap
-    sub dh,'z'-'Z'
+  cmp dword[GUIcurrentcheatwin],1
+  je near .textboxa
+  cmp dword[GUIcurrentcheatwin],2
+  je near .textboxb
+  cmp dh,'a'
+  jb .nocap
+  cmp dh,'z'
+  ja .nocap
+  sub dh,'z'-'Z'
 .nocap
 
-    cmp dh,'R'               ; Hotkeys
-    jne .noremocheat
-    jmp CheatCodeRemove
+  cmp dh,'R'               ; Hotkeys
+  jne .noremocheat
+  jmp CheatCodeRemove
 .noremocheat
-    cmp dh,'T'
-    jne .notoggcheat
-    jmp CheatCodeToggle
+  cmp dh,'T'
+  jne .notoggcheat
+  jmp CheatCodeToggle
 .notoggcheat
-    cmp dh,'S'
-    jne .nosavecheat
-    jmp CheatCodeSave
+  cmp dh,'S'
+  jne .nosavecheat
+  jmp CheatCodeSave
 .nosavecheat
-    cmp dh,'L'
-    jne .noloadcheat
-    jmp CheatCodeLoad
+  cmp dh,'L'
+  jne .noloadcheat
+  jmp CheatCodeLoad
 .noloadcheat
-    cmp dh,'F'
-    jne .nofixcheat
-    jmp CheatCodeFix
+  cmp dh,'F'
+  jne .nofixcheat
+  jmp CheatCodeFix
 .nofixcheat
-    cmp dh,'A'
-    jne .noauto
-    xor byte[AutoLoadCht],1
+  cmp dh,'A'
+  jne .noauto
+  xor byte[AutoLoadCht],1
 .noauto
 
 ;Main Cheat Box
-    cmp dword[NumCheats],0
-    jne .nozero
-    ret
+  cmp dword[NumCheats],0
+  jne .nozero
+  ret
 .nozero
 %ifdef __UNIXSDL__
-    cmp al,89
-    je .homepressed
-    cmp dword[numlockptr],1
-    je .nohome
-    cmp al,71
-    jne .nohome
+  cmp al,89
+  je .homepressed
+  cmp dword[numlockptr],1
+  je .nohome
+  cmp al,71
+  jne .nohome
 .homepressed
 %else
-    cmp al,71
-    jne .nohome
+  cmp al,71
+  jne .nohome
 %endif
-    mov dword[GUIcurrentcheatcursloc],0
-    mov dword[GUIcurrentcheatviewloc],0
-    ret
+  mov dword[GUIcurrentcheatcursloc],0
+  mov dword[GUIcurrentcheatviewloc],0
+  ret
 .nohome
 %ifdef __UNIXSDL__
-    cmp al,89
-    je .endppressed
-    cmp dword[numlockptr],1
-    je .noendp
-    cmp al,79
-    jne .noendp
+  cmp al,89
+  je .endppressed
+  cmp dword[numlockptr],1
+  je .noendp
+  cmp al,79
+  jne .noendp
 .endppressed
 %else
-    cmp al,79
-    jne .noendp
+  cmp al,79
+  jne .noendp
 %endif
-    mov eax,[NumCheats]
-    dec eax
-    mov [GUIcurrentcheatcursloc],eax
-    sub eax,11
-    mov [GUIcurrentcheatviewloc],eax
-    test dword[GUIcurrentcheatviewloc],8000000h
-    jz .posve
-    mov dword[GUIcurrentcheatviewloc],0
+  mov eax,[NumCheats]
+  dec eax
+  mov [GUIcurrentcheatcursloc],eax
+  sub eax,11
+  mov [GUIcurrentcheatviewloc],eax
+  test dword[GUIcurrentcheatviewloc],8000000h
+  jz .posve
+  mov dword[GUIcurrentcheatviewloc],0
 .posve
-    ret
+  ret
 .noendp
 %ifdef __UNIXSDL__
-    cmp al,90
-    je .up
-    cmp dword[numlockptr],1
-    je .noup
-    cmp al,72
-    jne .noup
+  cmp al,90
+  je .up
+  cmp dword[numlockptr],1
+  je .noup
+  cmp al,72
+  jne .noup
 %else
-    cmp al,72
-    jne .noup
+  cmp al,72
+  jne .noup
 %endif
 .up
-    cmp dword[GUIcurrentcheatcursloc],0
-    je .noup
-    mov ebx,[GUIcurrentcheatcursloc]
-    cmp [GUIcurrentcheatviewloc],ebx
-    jne .noviewdec
-    dec dword[GUIcurrentcheatviewloc]
+  cmp dword[GUIcurrentcheatcursloc],0
+  je .noup
+  mov ebx,[GUIcurrentcheatcursloc]
+  cmp [GUIcurrentcheatviewloc],ebx
+  jne .noviewdec
+  dec dword[GUIcurrentcheatviewloc]
 .noviewdec
-    dec dword[GUIcurrentcheatcursloc]
+  dec dword[GUIcurrentcheatcursloc]
 .noup
 %ifdef __UNIXSDL__
-    cmp al, 96
-    je .downpressed
-    cmp dword[numlockptr],1
-    je .nodown
-    cmp al,80
-    jne .nodown
+  cmp al, 96
+  je .downpressed
+  cmp dword[numlockptr],1
+  je .nodown
+  cmp al,80
+  jne .nodown
 .downpressed
 %else
-    cmp al,80
-    jne .nodown
+  cmp al,80
+  jne .nodown
 %endif
-    mov ebx,[GUIcurrentcheatcursloc]
-    inc ebx
-    cmp ebx,[NumCheats]
-    jae .noviewinc
-    inc dword[GUIcurrentcheatcursloc]
-    sub ebx,12
-    cmp ebx,[GUIcurrentcheatviewloc]
-    jne .noviewinc
-    inc dword[GUIcurrentcheatviewloc]
+  mov ebx,[GUIcurrentcheatcursloc]
+  inc ebx
+  cmp ebx,[NumCheats]
+  jae .noviewinc
+  inc dword[GUIcurrentcheatcursloc]
+  sub ebx,12
+  cmp ebx,[GUIcurrentcheatviewloc]
+  jne .noviewinc
+  inc dword[GUIcurrentcheatviewloc]
 .noviewinc
 .nodown
 %ifdef __UNIXSDL__
-    cmp al,91
-    je .pageuppressed
-    cmp dword[numlockptr],1
-    je .nopageup
-    cmp al,73
-    jne .nopageup
+  cmp al,91
+  je .pageuppressed
+  cmp dword[numlockptr],1
+  je .nopageup
+  cmp al,73
+  jne .nopageup
 .pageuppressed
 %else
-    cmp al,73
-    jne .nopageup
+  cmp al,73
+  jne .nopageup
 %endif
-    sub dword[GUIcurrentcheatviewloc],12
-    sub dword[GUIcurrentcheatcursloc],12
-    test dword[GUIcurrentcheatviewloc],8000000h
-    jz .posv
-    mov dword[GUIcurrentcheatviewloc],0
+  sub dword[GUIcurrentcheatviewloc],12
+  sub dword[GUIcurrentcheatcursloc],12
+  test dword[GUIcurrentcheatviewloc],8000000h
+  jz .posv
+  mov dword[GUIcurrentcheatviewloc],0
 .posv
-    test dword[GUIcurrentcheatcursloc],8000000h
-    jz .posc
-    mov dword[GUIcurrentcheatcursloc],0
+  test dword[GUIcurrentcheatcursloc],8000000h
+  jz .posc
+  mov dword[GUIcurrentcheatcursloc],0
 .posc
 .nopageup
 %ifdef __UNIXSDL__
-    cmp al, 97
-    je .pagednpressed
-    cmp dword[numlockptr],1
-    je .nopagedown
-    cmp al,81
-    jne .nopagedown
+  cmp al, 97
+  je .pagednpressed
+  cmp dword[numlockptr],1
+  je .nopagedown
+  cmp al,81
+  jne .nopagedown
 .pagednpressed
 %else
-    cmp al,81
-    jne .nopagedown
+  cmp al,81
+  jne .nopagedown
 %endif
-    add dword[GUIcurrentcheatviewloc],12
-    add dword[GUIcurrentcheatcursloc],12
-    mov ebx,[NumCheats]
-    dec ebx
-    cmp dword[GUIcurrentcheatcursloc],ebx
-    jb .poscd
-    mov [GUIcurrentcheatcursloc],ebx
+  add dword[GUIcurrentcheatviewloc],12
+  add dword[GUIcurrentcheatcursloc],12
+  mov ebx,[NumCheats]
+  dec ebx
+  cmp dword[GUIcurrentcheatcursloc],ebx
+  jb .poscd
+  mov [GUIcurrentcheatcursloc],ebx
 .poscd
-    sub ebx,11
-    cmp dword[GUIcurrentcheatviewloc],ebx
-    jl .posvd
-    test ebx,8000000h
-    jz .noneg
-    mov ebx,0
+  sub ebx,11
+  cmp dword[GUIcurrentcheatviewloc],ebx
+  jl .posvd
+  test ebx,8000000h
+  jz .noneg
+  mov ebx,0
 .noneg
-    mov [GUIcurrentcheatviewloc],ebx
+  mov [GUIcurrentcheatviewloc],ebx
 .posvd
 .nopagedown
-    ret
-
+  ret
 
 ;Enter Code Input Box
 .textboxa
-    cmp byte[GUICheatPosA],0
-    je near .nobacksp
-    cmp dh,9
-    je .yesret
-    cmp dh,13
-    jne near .noret
+  cmp byte[GUICheatPosA],0
+  je near .nobacksp
+  cmp dh,9
+  je .yesret
+  cmp dh,13
+  jne near .noret
 .yesret
-    cmp byte[GUICheatPosA],2
-    jne near .nocodemod
-    mov byte[GUICheatPosA],0
-    mov esi,[GUIcurrentcheatcursloc]
-    shl esi,5
-    sub esi,[GUIcurrentcheatcursloc]
-    sub esi,[GUIcurrentcheatcursloc]
-    sub esi,[GUIcurrentcheatcursloc]
-    sub esi,[GUIcurrentcheatcursloc]
-    add esi,cheatdata
-    mov al,[GUICheatTextZ1]
-    cmp al,'a'
-    jae .lowletter
-    cmp al,'A'
-    jae .letter
-    sub al,'0'
-    jmp .num
+  cmp byte[GUICheatPosA],2
+  jne near .nocodemod
+  mov byte[GUICheatPosA],0
+  mov esi,[GUIcurrentcheatcursloc]
+  shl esi,5
+  sub esi,[GUIcurrentcheatcursloc]
+  sub esi,[GUIcurrentcheatcursloc]
+  sub esi,[GUIcurrentcheatcursloc]
+  sub esi,[GUIcurrentcheatcursloc]
+  add esi,cheatdata
+  mov al,[GUICheatTextZ1]
+  cmp al,'a'
+  jae .lowletter
+  cmp al,'A'
+  jae .letter
+  sub al,'0'
+  jmp .num
 .lowletter
-    sub al,'a'-10
-    jmp .num
+  sub al,'a'-10
+  jmp .num
 .letter
-    sub al,'A'-10
+  sub al,'A'-10
 .num
-    mov ah,[GUICheatTextZ1+1]
-    cmp ah,'a'
-    jae .lowletter2
-    cmp ah,'A'
-    jae .letter2
-    sub ah,'0'
-    jmp .num2
+  mov ah,[GUICheatTextZ1+1]
+  cmp ah,'a'
+  jae .lowletter2
+  cmp ah,'A'
+  jae .letter2
+  sub ah,'0'
+  jmp .num2
 .lowletter2
-    sub ah,'a'-10
-    jmp .num2
+  sub ah,'a'-10
+  jmp .num2
 .letter2
-    sub ah,'A'-10
+  sub ah,'A'-10
 .num2
-    shl al,4
-    and ah,0Fh
-    or al,ah
-    mov [esi+1],al
-    mov word[GUICheatTextZ1],0
-    pushad
-    call EnableCheatCodeNoPrevMod
-    popad
-    jmp .noret
+  shl al,4
+  and ah,0Fh
+  or al,ah
+  mov [esi+1],al
+  mov word[GUICheatTextZ1],0
+  pushad
+  call EnableCheatCodeNoPrevMod
+  popad
+  jmp .noret
 .nocodemod
-    inc dword[GUIcurrentcheatwin]
-    mov byte[GUICCFlash],0
+  inc dword[GUIcurrentcheatwin]
+  mov byte[GUICCFlash],0
 .noret
-    cmp dh,8
-    jne .nobacksp
-    mov byte[GUICCFlash],0
-    dec byte[GUICheatPosA]
-    xor eax,eax
-    mov al,[GUICheatPosA]
-    mov byte[GUICheatTextZ1+eax],'_'
-    mov byte[GUICheatTextZ1+eax+1],0
-    ret
+  cmp dh,8
+  jne .nobacksp
+  mov byte[GUICCFlash],0
+  dec byte[GUICheatPosA]
+  xor eax,eax
+  mov al,[GUICheatPosA]
+  mov byte[GUICheatTextZ1+eax],'_'
+  mov byte[GUICheatTextZ1+eax+1],0
+  ret
 .nobacksp
-    cmp dh,0
-    je .nochar
-    cmp dh,13
-    je .nochar
-    cmp dh,8
-    je .nochar
-    cmp dh,9
-    je .nochar
-    cmp byte[GUICheatPosA],14
-    je .nochar
-    mov byte[GUICCFlash],0
-    xor eax,eax
-    mov al,[GUICheatPosA]
-    mov [GUICheatTextZ1+eax],dh
-    mov byte[GUICheatTextZ1+eax+1],'_'
-    mov byte[GUICheatTextZ1+eax+2],0
-    inc byte[GUICheatPosA]
+  cmp dh,0
+  je .nochar
+  cmp dh,13
+  je .nochar
+  cmp dh,8
+  je .nochar
+  cmp dh,9
+  je .nochar
+  cmp byte[GUICheatPosA],14
+  je .nochar
+  mov byte[GUICCFlash],0
+  xor eax,eax
+  mov al,[GUICheatPosA]
+  mov [GUICheatTextZ1+eax],dh
+  mov byte[GUICheatTextZ1+eax+1],'_'
+  mov byte[GUICheatTextZ1+eax+2],0
+  inc byte[GUICheatPosA]
 .nochar
-    ret
+  ret
 
 ;Description Input Box
 .textboxb
-    cmp dh,13
-    jne .noretb
-    mov byte[GUICCFlash],0
-    jmp ProcessCheatCode
+  cmp dh,13
+  jne .noretb
+  mov byte[GUICCFlash],0
+  jmp ProcessCheatCode
 .noretb
-    cmp byte[GUICheatPosB],0
-    je .nobackspb
-    cmp dh,8
-    jne .nobackspb
-    mov byte[GUICCFlash],0
-    dec byte[GUICheatPosB]
-    xor eax,eax
-    mov al,[GUICheatPosB]
-    mov byte[GUICheatTextZ2+eax],'_'
-    mov byte[GUICheatTextZ2+eax+1],0
-    ret
+  cmp byte[GUICheatPosB],0
+  je .nobackspb
+  cmp dh,8
+  jne .nobackspb
+  mov byte[GUICCFlash],0
+  dec byte[GUICheatPosB]
+  xor eax,eax
+  mov al,[GUICheatPosB]
+  mov byte[GUICheatTextZ2+eax],'_'
+  mov byte[GUICheatTextZ2+eax+1],0
+  ret
 .nobackspb
-    cmp dh,0
-    je .nocharb
-    cmp dh,13
-    je .nocharb
-    cmp dh,8
-    je .nocharb
-    cmp byte[GUICheatPosB],18
-    je .nocharb
-    xor eax,eax
-    mov byte[GUICCFlash],0
-    mov al,[GUICheatPosB]
-    mov [GUICheatTextZ2+eax],dh
-    mov byte[GUICheatTextZ2+eax+1],'_'
-    mov byte[GUICheatTextZ2+eax+2],0
-    inc byte[GUICheatPosB]
+  cmp dh,0
+  je .nocharb
+  cmp dh,13
+  je .nocharb
+  cmp dh,8
+  je .nocharb
+  cmp byte[GUICheatPosB],18
+  je .nocharb
+  xor eax,eax
+  mov byte[GUICCFlash],0
+  mov al,[GUICheatPosB]
+  mov [GUICheatTextZ2+eax],dh
+  mov byte[GUICheatTextZ2+eax+1],'_'
+  mov byte[GUICheatTextZ2+eax+2],0
+  inc byte[GUICheatPosB]
 .nocharb
-    ret
+  ret
 
 %macro CompareKeyMacro 3
-    cmp dh,%1
-    jne %%skip
-    mov byte[%2],%3
+  cmp dh,%1
+  jne %%skip
+  mov byte[%2],%3
 %%skip
 %endmacro
 
 InsertSearchCharacter:
-    push edx
-    push eax
-    ; Send character into CSInputDisplay
-    ; Find location
-    mov ecx,CSInputDisplay
+  push edx
+  push eax
+  ; Send character into CSInputDisplay
+  ; Find location
+  mov ecx,CSInputDisplay
 .next
-    cmp byte[ecx],0
-    je .found
-    cmp byte[ecx],'_'
-    je .found
-    inc ecx
-    jmp .next
+  cmp byte[ecx],0
+  je .found
+  cmp byte[ecx],'_'
+  je .found
+  inc ecx
+  jmp .next
 .found
-    ; Delete if necessary
-    cmp dh,8
-    jne .notdelete
-    cmp ecx,CSInputDisplay
-    je near .done
-    dec ecx
-    jmp .placecursor
+  ; Delete if necessary
+  cmp dh,8
+  jne .notdelete
+  cmp ecx,CSInputDisplay
+  je near .done
+  dec ecx
+  jmp .placecursor
 .notdelete
-    cmp ecx,CSInputDisplay+10
-    je near .done
-    ; Add character if necessary
-    cmp dh,'0'
-    jb near .done
-    cmp dh,'9'
-    jbe .okay
-    cmp byte[CheatSrcByteBase],0
-    je near .done
-    cmp dh,'F'
-    ja near .done
-    cmp dh,'A'
-    jb near .done
+  cmp ecx,CSInputDisplay+10
+  je near .done
+  ; Add character if necessary
+  cmp dh,'0'
+  jb near .done
+  cmp dh,'9'
+  jbe .okay
+  cmp byte[CheatSrcByteBase],0
+  je near .done
+  cmp dh,'F'
+  ja near .done
+  cmp dh,'A'
+  jb near .done
 .okay
-    mov [ecx],dh
-    inc ecx
-    ; Process cursor if over the window
+  mov [ecx],dh
+  inc ecx
+  ; Process cursor if over the window
 .placecursor
-    mov byte[ecx],'_'
-    mov byte[ecx+1],0
+  mov byte[ecx],'_'
+  mov byte[ecx+1],0
 
-    mov byte[CSOverValue],0
-    ; Find overall value and delete if over
-    mov ecx,CSInputDisplay
-    mov ebx,10
-    cmp byte[CheatSrcByteBase],0
-    je .dec
-    mov ebx,16
+  mov byte[CSOverValue],0
+  ; Find overall value and delete if over
+  mov ecx,CSInputDisplay
+  mov ebx,10
+  cmp byte[CheatSrcByteBase],0
+  je .dec
+  mov ebx,16
 .dec
-    xor eax,eax
+  xor eax,eax
 .next2
-    cmp byte[ecx],0
-    je .found2
-    cmp byte[ecx],'_'
-    je .found2
-    mul ebx
-    or edx,edx
-    jz .notoverflow
-    mov byte[CSOverValue],1
+  cmp byte[ecx],0
+  je .found2
+  cmp byte[ecx],'_'
+  je .found2
+  mul ebx
+  or edx,edx
+  jz .notoverflow
+  mov byte[CSOverValue],1
 .notoverflow
-    xor edx,edx
-    mov dl,[ecx]
-    cmp dl,'A'
-    jb .below
-    sub dl,'A'-10-'0'
+  xor edx,edx
+  mov dl,[ecx]
+  cmp dl,'A'
+  jb .below
+  sub dl,'A'-10-'0'
 .below
-    sub dl,'0'
-    add eax,edx
-    jnc .notoverflowb
-    mov byte[CSOverValue],1
+  sub dl,'0'
+  add eax,edx
+  jnc .notoverflowb
+  mov byte[CSOverValue],1
 .notoverflowb
-    inc ecx
-    jmp .next2
+  inc ecx
+  jmp .next2
 .found2
-    xor ebx,ebx
-    mov bl,[CheatSrcByteSize]
-    mov ebx,[SrcMask+ebx*4]
-    mov [CSCurValue],eax
-    cmp eax,ebx
-    jbe .done
-    mov byte[CSOverValue],1
+  xor ebx,ebx
+  mov bl,[CheatSrcByteSize]
+  mov ebx,[SrcMask+ebx*4]
+  mov [CSCurValue],eax
+  cmp eax,ebx
+  jbe .done
+  mov byte[CSOverValue],1
 .done
-    pop eax
-    pop edx
-    ret
+  pop eax
+  pop edx
+  ret
 
 SECTION .bss
 CSOverValue resb 1
@@ -2017,964 +2047,963 @@ CSCurValue  resd 1
 SECTION .text
 
 InsertSearchDescription:
-    mov eax,CSDescDisplay
-    xor dl,dl
+  mov eax,CSDescDisplay
+  xor dl,dl
 .next
-    cmp byte[eax],0
-    je .fin
-    inc eax
-    inc dl
-    jmp .next
+  cmp byte[eax],0
+  je .fin
+  inc eax
+  inc dl
+  jmp .next
 .fin
-    or dl,dl
-    jz .nobackspb
-    cmp dh,8
-    jne .nobackspb
-    mov byte[eax-1],0
-    ret
+  or dl,dl
+  jz .nobackspb
+  cmp dh,8
+  jne .nobackspb
+  mov byte[eax-1],0
+  ret
 .nobackspb
-    cmp dh,0
-    je .nocharb
-    cmp dh,13
-    je .nocharb
-    cmp dh,8
-    je .nocharb
-    cmp dl,18
-    je .nocharb
-    mov [eax],dh
-    mov byte[eax+1],0
+  cmp dh,0
+  je .nocharb
+  cmp dh,13
+  je .nocharb
+  cmp dh,8
+  je .nocharb
+  cmp dl,18
+  je .nocharb
+  mov [eax],dh
+  mov byte[eax+1],0
 .nocharb
-    ret
+  ret
 
 GUICheatSearchKeys:
-    cmp dh,'a'
-    jb .nocap
-    cmp dh,'z'
-    ja .nocap
-    sub dh,'z'-'Z'
+  cmp dh,'a'
+  jb .nocap
+  cmp dh,'z'
+  ja .nocap
+  sub dh,'z'-'Z'
 .nocap
-    cmp byte[CheatWinMode],3
-    je near .add
-    cmp byte[CheatWinMode],2
-    je near .view
-    cmp byte[CheatWinMode],1
-    je near .search
+  cmp byte[CheatWinMode],3
+  je near .add
+  cmp byte[CheatWinMode],2
+  je near .view
+  cmp byte[CheatWinMode],1
+  je near .search
 
-    CompareKeyMacro '1',CheatSrcByteSize,0    ; Main Menu
-    CompareKeyMacro '2',CheatSrcByteSize,1
-    CompareKeyMacro '3',CheatSrcByteSize,2
-    CompareKeyMacro '4',CheatSrcByteSize,3
-    CompareKeyMacro 'D',CheatSrcByteBase,0
-    CompareKeyMacro 'H',CheatSrcByteBase,1
-    CompareKeyMacro 'E',CheatSrcSearchType,0
-    CompareKeyMacro 'C',CheatSrcSearchType,1
+  CompareKeyMacro '1',CheatSrcByteSize,0    ; Main Menu
+  CompareKeyMacro '2',CheatSrcByteSize,1
+  CompareKeyMacro '3',CheatSrcByteSize,2
+  CompareKeyMacro '4',CheatSrcByteSize,3
+  CompareKeyMacro 'D',CheatSrcByteBase,0
+  CompareKeyMacro 'H',CheatSrcByteBase,1
+  CompareKeyMacro 'E',CheatSrcSearchType,0
+  CompareKeyMacro 'C',CheatSrcSearchType,1
 
-    cmp dh,13                ; Start Button
-    je .start
-    cmp dh,'S'
-    jne .notstart
+  cmp dh,13                ; Start Button
+  je .start
+  cmp dh,'S'
+  jne .notstart
 .start
-    call CheatCodeSearchInit
-    ret
+  call CheatCodeSearchInit
+  ret
 .notstart
-    ret
+  ret
 
 .search                           ; Shortcuts for Select Comparison
-    cmp byte[CheatSrcSearchType],1
-    je .compare
-    call InsertSearchCharacter
-    jmp .nomovedown
+  cmp byte[CheatSrcSearchType],1
+  je .compare
+  call InsertSearchCharacter
+  jmp .nomovedown
 .compare
-    cmp dh,','
-    je .lessthan
-    cmp dh,'N'
-    jne .notlessthan
+  cmp dh,','
+  je .lessthan
+  cmp dh,'N'
+  jne .notlessthan
 .lessthan
-    mov byte[CheatCompareValue],0
+  mov byte[CheatCompareValue],0
 .notlessthan
-    cmp dh,'.'
-    je .greaterthan
-    cmp dh,'E'
-    jne .notgreaterthan
+  cmp dh,'.'
+  je .greaterthan
+  cmp dh,'E'
+  jne .notgreaterthan
 .greaterthan
-    mov byte[CheatCompareValue],1
+  mov byte[CheatCompareValue],1
 .notgreaterthan
-    cmp dh,'W'
-    je .equalthan
-    cmp dh,'+'
-    jne .notequalthan
+  cmp dh,'W'
+  je .equalthan
+  cmp dh,'+'
+  jne .notequalthan
 .equalthan
-    mov byte[CheatCompareValue],2
+  mov byte[CheatCompareValue],2
 .notequalthan
-    cmp dh,'A'
-    jne .notnotequalthan
-    mov byte[CheatCompareValue],3
+  cmp dh,'A'
+  jne .notnotequalthan
+  mov byte[CheatCompareValue],3
 .notnotequalthan
 
 %ifdef __UNIXSDL__          ; Select with Arrow Keys
-    cmp al,90
-    je .yesmoveup
-    cmp dword[numlockptr],1
-    je .nomoveup
-    cmp al,72
-    jne .nomoveup
+  cmp al,90
+  je .yesmoveup
+  cmp dword[numlockptr],1
+  je .nomoveup
+  cmp al,72
+  jne .nomoveup
 .yesmoveup
 %else
-    cmp al,72
-    jne .nomoveup
+  cmp al,72
+  jne .nomoveup
 %endif
-    cmp byte[CheatCompareValue],0
-    je .nomoveup
-    dec byte[CheatCompareValue]
+  cmp byte[CheatCompareValue],0
+  je .nomoveup
+  dec byte[CheatCompareValue]
 .nomoveup
 %ifdef __UNIXSDL__
-    cmp al,96
-    je .yesmovedown
-    cmp dword[numlockptr],1
-    je .nomovedown
-    cmp al,80
-    jne .nomovedown
+  cmp al,96
+  je .yesmovedown
+  cmp dword[numlockptr],1
+  je .nomovedown
+  cmp al,80
+  jne .nomovedown
 .yesmovedown
 %else
-    cmp al,80
-    jne .nomovedown
+  cmp al,80
+  jne .nomovedown
 %endif
-    cmp byte[CheatCompareValue],3
-    je .nomovedown
-    inc byte[CheatCompareValue]
-
+  cmp byte[CheatCompareValue],3
+  je .nomovedown
+  inc byte[CheatCompareValue]
 
 .nomovedown                ; Restart/View/Search Buttons
-    cmp dh,'R'
-    jne .notrestart
-    mov byte[CheatWinMode],0
-    mov byte[CheatSearchStatus],0
+  cmp dh,'R'
+  jne .notrestart
+  mov byte[CheatWinMode],0
+  mov byte[CheatSearchStatus],0
 .notrestart
-    cmp dh,'V'
-    jne .notview
-    mov byte[CheatWinMode],2
+  cmp dh,'V'
+  jne .notview
+  mov byte[CheatWinMode],2
 .notview
-    cmp dh,13
-    je .searchprocess
-    cmp dh,'S'
-    jne .nosearchprocess
+  cmp dh,13
+  je .searchprocess
+  cmp dh,'S'
+  jne .nosearchprocess
 .searchprocess
-    cmp byte[CheatSearchStatus],1
-    je .nosearchprocess
-    call CheatCodeSearchProcess
+  cmp byte[CheatSearchStatus],1
+  je .nosearchprocess
+  call CheatCodeSearchProcess
 .nosearchprocess
-    ret
+  ret
 
 .view                            ; View
-    cmp dword[NumCheatSrc],0     ; Return Hotkey
-    jne .nozero
-    cmp dh,27
-    je .yesret
-    cmp dh,'R'
-    jne .notreturnb
+  cmp dword[NumCheatSrc],0     ; Return Hotkey
+  jne .nozero
+  cmp dh,27
+  je .yesret
+  cmp dh,'R'
+  jne .notreturnb
 .yesret
-    mov byte[CheatWinMode],1
+  mov byte[CheatWinMode],1
 .notreturnb
-    ret
+  ret
 
 .nozero                   ; Select Codes with arrow keys
 %ifdef __UNIXSDL__
-    cmp al,89
-    je .yeshome
-    cmp dword[numlockptr],1
-    je .nohome
-    cmp al,71
-    jne .nohome
+  cmp al,89
+  je .yeshome
+  cmp dword[numlockptr],1
+  je .nohome
+  cmp al,71
+  jne .nohome
 .yeshome
 %else
-    cmp al,71
-    jne .nohome
+  cmp al,71
+  jne .nohome
 %endif
-    mov dword[GUIcurrentchtsrccursloc],0
-    mov dword[GUIcurrentchtsrcviewloc],0
-    ret
+  mov dword[GUIcurrentchtsrccursloc],0
+  mov dword[GUIcurrentchtsrcviewloc],0
+  ret
 .nohome
 %ifdef __UNIXSDL__
-    cmp al,95
-    je .yesendp
-    cmp dword[numlockptr],1
-    je .noendp
-    cmp al,79
-    jne .noendp
+  cmp al,95
+  je .yesendp
+  cmp dword[numlockptr],1
+  je .noendp
+  cmp al,79
+  jne .noendp
 .yesendp
 %else
-    cmp al,79
-    jne .noendp
+  cmp al,79
+  jne .noendp
 %endif
-    mov eax,[NumCheatSrc]
-    dec eax
-    mov [GUIcurrentchtsrccursloc],eax
-    sub eax,11
-    mov [GUIcurrentchtsrcviewloc],eax
-    test dword[GUIcurrentchtsrcviewloc],8000000h
-    jz .posve
-    mov dword[GUIcurrentchtsrcviewloc],0
+  mov eax,[NumCheatSrc]
+  dec eax
+  mov [GUIcurrentchtsrccursloc],eax
+  sub eax,11
+  mov [GUIcurrentchtsrcviewloc],eax
+  test dword[GUIcurrentchtsrcviewloc],8000000h
+  jz .posve
+  mov dword[GUIcurrentchtsrcviewloc],0
 .posve
-    ret
+  ret
 .noendp
 %ifdef __UNIXSDL__
-    cmp al,90
-    je .up
-    cmp dword[numlockptr],1
-    je .noup
-    cmp al,72
-    jne .noup
+  cmp al,90
+  je .up
+  cmp dword[numlockptr],1
+  je .noup
+  cmp al,72
+  jne .noup
 %else
-    cmp al,72
-    jne .noup
+  cmp al,72
+  jne .noup
 %endif
 .up
-    cmp dword[GUIcurrentchtsrccursloc],0
-    je .noup
-    mov ebx,[GUIcurrentchtsrccursloc]
-    cmp [GUIcurrentchtsrcviewloc],ebx
-    jne .noviewdec
-    dec dword[GUIcurrentchtsrcviewloc]
+  cmp dword[GUIcurrentchtsrccursloc],0
+  je .noup
+  mov ebx,[GUIcurrentchtsrccursloc]
+  cmp [GUIcurrentchtsrcviewloc],ebx
+  jne .noviewdec
+  dec dword[GUIcurrentchtsrcviewloc]
 .noviewdec
-    dec dword[GUIcurrentchtsrccursloc]
+  dec dword[GUIcurrentchtsrccursloc]
 .noup
 %ifdef __UNIXSDL__
-    cmp al,96
-    je .yesdown
-    cmp dword[numlockptr],1
-    je .nodown
-    cmp al,80
-    jne .nodown
+  cmp al,96
+  je .yesdown
+  cmp dword[numlockptr],1
+  je .nodown
+  cmp al,80
+  jne .nodown
 .yesdown
 %else
-    cmp al,80
-    jne .nodown
+  cmp al,80
+  jne .nodown
 %endif
-    mov ebx,[GUIcurrentchtsrccursloc]
-    inc ebx
-    cmp ebx,[NumCheatSrc]
-    jae .noviewinc
-    inc dword[GUIcurrentchtsrccursloc]
-    sub ebx,12
-    cmp ebx,[GUIcurrentchtsrcviewloc]
-    jne .noviewinc
-    inc dword[GUIcurrentchtsrcviewloc]
+  mov ebx,[GUIcurrentchtsrccursloc]
+  inc ebx
+  cmp ebx,[NumCheatSrc]
+  jae .noviewinc
+  inc dword[GUIcurrentchtsrccursloc]
+  sub ebx,12
+  cmp ebx,[GUIcurrentchtsrcviewloc]
+  jne .noviewinc
+  inc dword[GUIcurrentchtsrcviewloc]
 .noviewinc
 .nodown
 
 %ifdef __UNIXSDL__            ; Pageup/Down to select Cheats
-    cmp al,91
-    je .yespgup
-    cmp dword[numlockptr],1
-    je .nopageup
-    cmp al,73
-    jne .nopageup
+  cmp al,91
+  je .yespgup
+  cmp dword[numlockptr],1
+  je .nopageup
+  cmp al,73
+  jne .nopageup
 .yespgup
 %else
-    cmp al,73
-    jne .nopageup
+  cmp al,73
+  jne .nopageup
 %endif
-    sub dword[GUIcurrentchtsrcviewloc],12
-    sub dword[GUIcurrentchtsrccursloc],12
-    test dword[GUIcurrentchtsrcviewloc],8000000h
-    jz .posv
-    mov dword[GUIcurrentchtsrcviewloc],0
+  sub dword[GUIcurrentchtsrcviewloc],12
+  sub dword[GUIcurrentchtsrccursloc],12
+  test dword[GUIcurrentchtsrcviewloc],8000000h
+  jz .posv
+  mov dword[GUIcurrentchtsrcviewloc],0
 .posv
-    test dword[GUIcurrentchtsrccursloc],8000000h
-    jz .posc
-    mov dword[GUIcurrentchtsrccursloc],0
+  test dword[GUIcurrentchtsrccursloc],8000000h
+  jz .posc
+  mov dword[GUIcurrentchtsrccursloc],0
 .posc
 .nopageup
 %ifdef __UNIXSDL__
-    cmp al,97
-    je .yespgdn
-    cmp dword[numlockptr],1
-    je .nopagedown
-    cmp al,81
-    jne .nopagedown
+  cmp al,97
+  je .yespgdn
+  cmp dword[numlockptr],1
+  je .nopagedown
+  cmp al,81
+  jne .nopagedown
 .yespgdn
 %else
-    cmp al,81
-    jne .nopagedown
+  cmp al,81
+  jne .nopagedown
 %endif
-    add dword[GUIcurrentchtsrcviewloc],12
-    add dword[GUIcurrentchtsrccursloc],12
-    mov ebx,[NumCheatSrc]
-    dec ebx
-    cmp dword[GUIcurrentchtsrccursloc],ebx
-    jb .poscd
-    mov [GUIcurrentchtsrccursloc],ebx
+  add dword[GUIcurrentchtsrcviewloc],12
+  add dword[GUIcurrentchtsrccursloc],12
+  mov ebx,[NumCheatSrc]
+  dec ebx
+  cmp dword[GUIcurrentchtsrccursloc],ebx
+  jb .poscd
+  mov [GUIcurrentchtsrccursloc],ebx
 .poscd
-    sub ebx,11
-    cmp dword[GUIcurrentchtsrcviewloc],ebx
-    jl .posvd
-    test ebx,8000000h
-    jz .noneg
-    mov ebx,0
+  sub ebx,11
+  cmp dword[GUIcurrentchtsrcviewloc],ebx
+  jl .posvd
+  test ebx,8000000h
+  jz .noneg
+  mov ebx,0
 .noneg
-    mov [GUIcurrentchtsrcviewloc],ebx
+  mov [GUIcurrentchtsrcviewloc],ebx
 .posvd
 .nopagedown
 
-    cmp dh,27          ; Return/Add Buttons
-    je .yesretb
-    cmp dh,'R'
-    jne .notreturn
+  cmp dh,27          ; Return/Add Buttons
+  je .yesretb
+  cmp dh,'R'
+  jne .notreturn
 .yesretb
-    mov byte[CheatWinMode],1
+  mov byte[CheatWinMode],1
 .notreturn
-    cmp dh,13
-    je .yesadd
-    cmp dh,'A'
-    jne .notadd
+  cmp dh,13
+  je .yesadd
+  cmp dh,'A'
+  jne .notadd
 .yesadd
-    mov byte[CheatWinMode],3
-    mov byte[CurCStextpos],0
-    mov byte[CSInputDisplay],'_'
-    mov byte[CSInputDisplay+1],0
-    mov byte[CSDescDisplay],0
+  mov byte[CheatWinMode],3
+  mov byte[CurCStextpos],0
+  mov byte[CSInputDisplay],'_'
+  mov byte[CSInputDisplay+1],0
+  mov byte[CSDescDisplay],0
 .notadd
-    ret
+  ret
 
 .add                                 ; Add Cheat Window
-    cmp dh,27                        ; Button Hotkey
-    je .yesretc
-    cmp byte[CurCStextpos],1
-    je .notreturnc
-    cmp dh,'R'
-    jne .notreturnc
+  cmp dh,27                        ; Button Hotkey
+  je .yesretc
+  cmp byte[CurCStextpos],1
+  je .notreturnc
+  cmp dh,'R'
+  jne .notreturnc
 .nofastforward
 .yesretc
-    mov byte[CheatWinMode],2
+  mov byte[CheatWinMode],2
 .notreturnc
-    cmp byte[CurCStextpos],0
-    jne near .nofirstbox
-    cmp dh,9
-    je .yestab
-    cmp byte[CSOverValue],1
-    je .noret
-    cmp dh,13
-    jne .noret
+  cmp byte[CurCStextpos],0
+  jne near .nofirstbox
+  cmp dh,9
+  je .yestab
+  cmp byte[CSOverValue],1
+  je .noret
+  cmp dh,13
+  jne .noret
 .yestab
-    mov byte[CurCStextpos],1
+  mov byte[CurCStextpos],1
 .noret
-    call InsertSearchCharacter
-    ret
+  call InsertSearchCharacter
+  ret
 .nofirstbox
-    cmp byte[CurCStextpos],1
-    jne near .nosecondbox
-    cmp dh,9
-    jne .notab
-    mov byte[CurCStextpos],0
+  cmp byte[CurCStextpos],1
+  jne near .nosecondbox
+  cmp dh,9
+  jne .notab
+  mov byte[CurCStextpos],0
 .notab
-    cmp dh,13
-    jne .noenter
-    jmp AddCSCheatCode
+  cmp dh,13
+  jne .noenter
+  jmp AddCSCheatCode
 .noenter
-    call InsertSearchDescription
-    ret
+  call InsertSearchDescription
+  ret
 .nosecondbox
-    ret
+  ret
 
 ; Allows you to use the arrow keys to select a state number, and Enter to pick
 GUIStateSelKeys:
-    cmp al,13
-    jne .noenter
-    xor eax,eax
-    mov al,[GUIwinptr]
-    dec eax
-    mov byte[GUIwinactiv+2],0
-    mov byte[GUIwinorder+eax],0
-    dec byte[GUIwinptr]
-    mov al,[GUIpmenupos]
-    mov [GUIcmenupos],al
-    ret
+  cmp al,13
+  jne .noenter
+  xor eax,eax
+  mov al,[GUIwinptr]
+  dec eax
+  mov byte[GUIwinactiv+2],0
+  mov byte[GUIwinorder+eax],0
+  dec byte[GUIwinptr]
+  mov al,[GUIpmenupos]
+  mov [GUIcmenupos],al
+  ret
 .noenter
 %ifdef __UNIXSDL__
-    cmp al,92               ; linux keypad left
-    je .yesleft
-    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
-    je .noleft
+  cmp al,92               ; linux keypad left
+  je .yesleft
+  cmp dword[numlockptr],1 ; if numlock on, disregard numpad
+  je .noleft
 %endif
-    cmp al,75               ; linux numpad left, non-linux num/keypad left
-    jne .noleft
+  cmp al,75               ; linux numpad left, non-linux num/keypad left
+  jne .noleft
 .yesleft
-    mov ebx,[statefileloc]
-    mov cl,[fnamest+ebx]
-    cmp cl,'t'
-    jne .no1st
-    mov cl,'4'
-    jmp .done
+  mov ebx,[statefileloc]
+  mov cl,[fnamest+ebx]
+  cmp cl,'t'
+  jne .no1st
+  mov cl,'4'
+  jmp .done
 .no1st
-    cmp cl,'1'
-    jne .no2nd
-    mov cl,'t'
-    jmp .done
+  cmp cl,'1'
+  jne .no2nd
+  mov cl,'t'
+  jmp .done
 .no2nd
-    cmp cl,'5'
-    jne .no5th
-    mov cl,'9'
-    jmp .done
+  cmp cl,'5'
+  jne .no5th
+  mov cl,'9'
+  jmp .done
 .no5th
-    dec cl
-    jmp .done
+  dec cl
+  jmp .done
 .noleft
 %ifdef __UNIXSDL__
-    cmp al,94               ; linux keypad right
-    je .yesright
-    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
-    je .noright
+  cmp al,94               ; linux keypad right
+  je .yesright
+  cmp dword[numlockptr],1 ; if numlock on, disregard numpad
+  je .noright
 %endif
-    cmp al,77               ; linux numpad right, non-linux num/keypad right
-    jne .noright
+  cmp al,77               ; linux numpad right, non-linux num/keypad right
+  jne .noright
 .yesright
-    mov ebx,[statefileloc]
-    mov cl,[fnamest+ebx]
-    cmp cl,'t'
-    jne .noT
-    mov cl,'1'
-    jmp .done
+  mov ebx,[statefileloc]
+  mov cl,[fnamest+ebx]
+  cmp cl,'t'
+  jne .noT
+  mov cl,'1'
+  jmp .done
 .noT
-    cmp cl,'4'
-    jne .no4th
-    mov cl,'t'
-    jmp .done
+  cmp cl,'4'
+  jne .no4th
+  mov cl,'t'
+  jmp .done
 .no4th
-    cmp cl,'9'
-    jne .no9th
-    mov cl,'5'
-    jmp .done
+  cmp cl,'9'
+  jne .no9th
+  mov cl,'5'
+  jmp .done
 .no9th
-    inc cl
-    jmp .done
+  inc cl
+  jmp .done
 .noright
 %ifdef __UNIXSDL__
-    cmp al,90               ; linux keypad up
-    je .yesvert
-    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
-    je .noup
+  cmp al,90               ; linux keypad up
+  je .yesvert
+  cmp dword[numlockptr],1 ; if numlock on, disregard numpad
+  je .noup
 %endif
-    cmp al,72               ; linux numpad up, non-linux num/keypad up
-    je .yesvert
+  cmp al,72               ; linux numpad up, non-linux num/keypad up
+  je .yesvert
 .noup
 %ifdef __UNIXSDL__
-    cmp al,96               ; linux keypad down
-    je .yesvert
-    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
-    je .novert
+  cmp al,96               ; linux keypad down
+  je .yesvert
+  cmp dword[numlockptr],1 ; if numlock on, disregard numpad
+  je .novert
 %endif
-    cmp al,80               ; linux numpad down, non-linux num/keypad down
-    jne .novert
+  cmp al,80               ; linux numpad down, non-linux num/keypad down
+  jne .novert
 .yesvert
-    mov ebx,[statefileloc]
-    mov cl,[fnamest+ebx]
-    cmp cl,'t'
-    jne .noTv
-    mov cl,'5'
-    jmp .done
+  mov ebx,[statefileloc]
+  mov cl,[fnamest+ebx]
+  cmp cl,'t'
+  jne .noTv
+  mov cl,'5'
+  jmp .done
 .noTv
-    cmp cl,'5'
-    jne .no5v
-    mov cl,'t'
-    jmp .done
+  cmp cl,'5'
+  jne .no5v
+  mov cl,'t'
+  jmp .done
 .no5v
-    cmp cl,'5'
-    jb .noabove
-    sub cl,5
-    jmp .done
+  cmp cl,'5'
+  jb .noabove
+  sub cl,5
+  jmp .done
 .noabove
-    add cl,5
+  add cl,5
 .done
-    mov [fnamest+ebx],cl
+  mov [fnamest+ebx],cl
 .novert
-    ret
+  ret
 
 ; Allows you to select boxes with the arrow keys, Enter to choose
 GUIResetKeys:
 %ifdef __UNIXSDL__
-    cmp al,92
-    je .yesleft
-    cmp dword[numlockptr],1
-    je .noleft
-    cmp al,75
-    jne .noleft
+  cmp al,92
+  je .yesleft
+  cmp dword[numlockptr],1
+  je .noleft
+  cmp al,75
+  jne .noleft
 .yesleft
 %else
-    cmp al,75
-    jne .noleft
+  cmp al,75
+  jne .noleft
 %endif
-    mov byte[GUICResetPos],0
+  mov byte[GUICResetPos],0
 .noleft
 %ifdef __UNIXSDL__
-    cmp al,94
-    je .yesright
-    cmp dword[numlockptr],1
-    je .noright
-    cmp al,77
-    jne .noright
+  cmp al,94
+  je .yesright
+  cmp dword[numlockptr],1
+  je .noright
+  cmp al,77
+  jne .noright
 .yesright
 %else
-    cmp al,77
-    jne .noright
+  cmp al,77
+  jne .noright
 %endif
-    mov byte[GUICResetPos],1
+  mov byte[GUICResetPos],1
 .noright
-    cmp al,13
-    jne .noconf
-    cmp byte[GUICResetPos],0
-    je .yesreset
-    jmp .noreset
+  cmp al,13
+  jne .noconf
+  cmp byte[GUICResetPos],0
+  je .yesreset
+  jmp .noreset
 .noconf
-    cmp dh,'Y'
-    je .yesreset
-    cmp dh,'y'
-    jne .notyesreset
+  cmp dh,'Y'
+  je .yesreset
+  cmp dh,'y'
+  jne .notyesreset
 .yesreset
-    mov byte[GUICBHold],2
-    jmp GUIProcReset
+  mov byte[GUICBHold],2
+  jmp GUIProcReset
 .notyesreset
-    cmp dh,'N'
-    je .noreset
-    cmp dh,'n'
-    jne .notnoreset
+  cmp dh,'N'
+  je .noreset
+  cmp dh,'n'
+  jne .notnoreset
 .noreset
-    xor eax,eax
-    mov al,[GUIwinptr]
-    dec eax
-    mov byte[GUIwinactiv+12],0
-    mov byte[GUIwinorder+eax],0
-    dec byte[GUIwinptr]
-    mov al,[GUIpmenupos]
-    mov [GUIcmenupos],al
+  xor eax,eax
+  mov al,[GUIwinptr]
+  dec eax
+  mov byte[GUIwinactiv+12],0
+  mov byte[GUIwinorder+eax],0
+  dec byte[GUIwinptr]
+  mov al,[GUIpmenupos]
+  mov [GUIcmenupos],al
 .notnoreset
-    ret
+  ret
 
 ; Allows you to select boxes with the arrow keys, Enter to choose
 GUIStateKeys:
 %ifdef __UNIXSDL__
-    cmp al,92
-    je .yesleft
-    cmp dword[numlockptr],1
-    je .noleft
-    cmp al,75
-    jne .noleft
+  cmp al,92
+  je .yesleft
+  cmp dword[numlockptr],1
+  je .noleft
+  cmp al,75
+  jne .noleft
 .yesleft
 %else
-    cmp al,75
-    jne .noleft
+  cmp al,75
+  jne .noleft
 %endif
-    mov byte[GUICStatePos],0
+  mov byte[GUICStatePos],0
 .noleft
 %ifdef __UNIXSDL__
-    cmp al,94
-    je .yesright
-    cmp dword[numlockptr],1
-    je .noright
-    cmp al,77
-    jne .noright
+  cmp al,94
+  je .yesright
+  cmp dword[numlockptr],1
+  je .noright
+  cmp al,77
+  jne .noright
 .yesright
 %else
-    cmp al,77
-    jne .noright
+  cmp al,77
+  jne .noright
 %endif
-    mov byte[GUICStatePos],1
+  mov byte[GUICStatePos],1
 .noright
-    cmp al,13
-    jne .noconf
-    cmp byte[GUICStatePos],0
-    je .yesreset
-    jmp .noreset
+  cmp al,13
+  jne .noconf
+  cmp byte[GUICStatePos],0
+  je .yesreset
+  jmp .noreset
 .noconf
-    cmp dh,'Y'
-    je .yesreset
-    cmp dh,'y'
-    jne .notyesreset
+  cmp dh,'Y'
+  je .yesreset
+  cmp dh,'y'
+  jne .notyesreset
 .yesreset
-    mov byte[GUICBHold],10
-    jmp GUIProcStates
+  mov byte[GUICBHold],10
+  jmp GUIProcStates
 .notyesreset
-    cmp dh,'N'
-    je .noreset
-    cmp dh,'n'
-    jne .notnoreset
+  cmp dh,'N'
+  je .noreset
+  cmp dh,'n'
+  jne .notnoreset
 .noreset
-    xor eax,eax
-    mov al,[GUIwinptr]
-    dec eax
-    mov byte[GUIwinactiv+14],0
-    mov byte[GUIwinorder+eax],0
-    dec byte[GUIwinptr]
-    mov al,[GUIpmenupos]
-    mov [GUIcmenupos],al
+  xor eax,eax
+  mov al,[GUIwinptr]
+  dec eax
+  mov byte[GUIwinactiv+14],0
+  mov byte[GUIwinorder+eax],0
+  dec byte[GUIwinptr]
+  mov al,[GUIpmenupos]
+  mov [GUIcmenupos],al
 .notnoreset
-    ret
+  ret
 
 GUILoadKeys:
-    mov byte[ManualStatus],0
-    mov dword[ManualCPtr],GUILoadTextA
-    cmp dword[GUIfileentries],0
-    je .noright
-    cmp dword[GUIdirentries],0
-    je .noright
+  mov byte[ManualStatus],0
+  mov dword[ManualCPtr],GUILoadTextA
+  cmp dword[GUIfileentries],0
+  je .noright
+  cmp dword[GUIdirentries],0
+  je .noright
 %ifdef __UNIXSDL__
-    cmp al,92
-    je .yesleft
-    cmp dword[numlockptr],1
-    je .noleft
-    cmp al,75
-    jne .noleft
+  cmp al,92
+  je .yesleft
+  cmp dword[numlockptr],1
+  je .noleft
+  cmp al,75
+  jne .noleft
 .yesleft
 %else
-    cmp al,75
-    jne .noleft
+  cmp al,75
+  jne .noleft
 %endif
-    mov byte[GUILoadPos],0
-    xor dword[GUIcurrentfilewin],1
+  mov byte[GUILoadPos],0
+  xor dword[GUIcurrentfilewin],1
 .noleft
 %ifdef __UNIXSDL__
-    cmp al,94
-    je .yesright
-    cmp dword[numlockptr],1
-    je .noright
-    cmp al,77
-    jne .noright
+  cmp al,94
+  je .yesright
+  cmp dword[numlockptr],1
+  je .noright
+  cmp al,77
+  jne .noright
 .yesright
 %else
-    cmp al,77
-    jne .noright
+  cmp al,77
+  jne .noright
 %endif
-    mov byte[GUILoadPos],0
-    xor dword[GUIcurrentfilewin],1
+  mov byte[GUILoadPos],0
+  xor dword[GUIcurrentfilewin],1
 .noright
-    cmp al,13
-    jne .noenter
-    mov byte[GUILoadPos],0
+  cmp al,13
+  jne .noenter
+  mov byte[GUILoadPos],0
 
-    mov ebx,GUILoadTextA
+  mov ebx,GUILoadTextA
 .nextl
-    cmp byte[ebx],':'
-    je .donel
+  cmp byte[ebx],':'
+  je .donel
 %ifdef __UNIXSDL__
-    cmp byte[ebx],'/'
+  cmp byte[ebx],'/'
 %else
-    cmp byte[ebx],'\'
+  cmp byte[ebx],'\'
 %endif
-    je .donel
-    inc ebx
-    cmp byte[ebx],0
-    je .nofnamel
-    jmp .nextl
+  je .donel
+  inc ebx
+  cmp byte[ebx],0
+  je .nofnamel
+  jmp .nextl
 .donel
-    call GUILoadManualDir
-    cmp byte[ManualStatus],2
-    je near .done
-    ret
+  call GUILoadManualDir
+  cmp byte[ManualStatus],2
+  je near .done
+  ret
 .nofnamel
-    mov ebx,GUILoadTextA
-    cmp byte[ebx],0
-    je .nodirtry
-    mov edx,ebx
-    call Change_Single_Dir
-    jc .nodirtry
-    call GetLoadData.a
-    ret
+  mov ebx,GUILoadTextA
+  cmp byte[ebx],0
+  je .nodirtry
+  mov edx,ebx
+  call Change_Single_Dir
+  jc .nodirtry
+  call GetLoadData.a
+  ret
 .nodirtry
-    call GUILoadData
-    ret
+  call GUILoadData
+  ret
 .noenter
-    cmp dword[GUIcurrentfilewin],1
-    je near .dirwin
+  cmp dword[GUIcurrentfilewin],1
+  je near .dirwin
 %ifdef __UNIXSDL__
-    cmp al,89
-    je .yeshome
-    cmp dword[numlockptr],1
-    je .nohome
-    cmp al,71
-    jne .nohome
+  cmp al,89
+  je .yeshome
+  cmp dword[numlockptr],1
+  je .nohome
+  cmp al,71
+  jne .nohome
 .yeshome
 %else
-    cmp al,71
-    jne .nohome
+  cmp al,71
+  jne .nohome
 %endif
-    mov byte[GUILoadPos],0
-    mov dword[GUIcurrentcursloc],0
-    mov dword[GUIcurrentviewloc],0
-    ret
+  mov byte[GUILoadPos],0
+  mov dword[GUIcurrentcursloc],0
+  mov dword[GUIcurrentviewloc],0
+  ret
 .nohome
 %ifdef __UNIXSDL__
-    cmp al,95
-    je .yesendp
-    cmp dword[numlockptr],1
-    je .noendp
-    cmp al,79
-    jne .noendp
+  cmp al,95
+  je .yesendp
+  cmp dword[numlockptr],1
+  je .noendp
+  cmp al,79
+  jne .noendp
 .yesendp
 %else
-    cmp al,79
-    jne .noendp
+  cmp al,79
+  jne .noendp
 %endif
-    mov byte[GUILoadPos],0
-    mov eax,[GUIfileentries]
-    dec eax
-    mov [GUIcurrentcursloc],eax
-    sub eax,14
-    mov [GUIcurrentviewloc],eax
-    test dword[GUIcurrentviewloc],8000000h
-    jz .posve
-    mov dword[GUIcurrentviewloc],0
+  mov byte[GUILoadPos],0
+  mov eax,[GUIfileentries]
+  dec eax
+  mov [GUIcurrentcursloc],eax
+  sub eax,14
+  mov [GUIcurrentviewloc],eax
+  test dword[GUIcurrentviewloc],8000000h
+  jz .posve
+  mov dword[GUIcurrentviewloc],0
 .posve
-    ret
+  ret
 .noendp
 %ifdef __UNIXSDL__
-    cmp al,90
-    je .up
-    cmp dword[numlockptr],1
-    je .noup
-    cmp al,72
-    jne .noup
+  cmp al,90
+  je .up
+  cmp dword[numlockptr],1
+  je .noup
+  cmp al,72
+  jne .noup
 %else
-    cmp al,72
-    jne .noup
+  cmp al,72
+  jne .noup
 %endif
 .up
-    mov byte[GUILoadPos],0
-    cmp dword[GUIcurrentcursloc],0
-    je .noup
-    mov ebx,[GUIcurrentcursloc]
-    cmp [GUIcurrentviewloc],ebx
-    jne .noviewdec
-    dec dword[GUIcurrentviewloc]
+  mov byte[GUILoadPos],0
+  cmp dword[GUIcurrentcursloc],0
+  je .noup
+  mov ebx,[GUIcurrentcursloc]
+  cmp [GUIcurrentviewloc],ebx
+  jne .noviewdec
+  dec dword[GUIcurrentviewloc]
 .noviewdec
-    dec dword[GUIcurrentcursloc]
+  dec dword[GUIcurrentcursloc]
 .noup
 %ifdef __UNIXSDL__
-    cmp al,96
-    je .yesdown
-    cmp dword[numlockptr],1
-    je .nodown
-    cmp al,80
-    jne .nodown
+  cmp al,96
+  je .yesdown
+  cmp dword[numlockptr],1
+  je .nodown
+  cmp al,80
+  jne .nodown
 .yesdown
 %else
-    cmp al,80
-    jne .nodown
+  cmp al,80
+  jne .nodown
 %endif
-    mov byte[GUILoadPos],0
-    mov ebx,[GUIcurrentcursloc]
-    inc ebx
-    cmp ebx,[GUIfileentries]
-    je .noviewinc
-    inc dword[GUIcurrentcursloc]
-    sub ebx,15
-    cmp ebx,[GUIcurrentviewloc]
-    jne .noviewinc
-    inc dword[GUIcurrentviewloc]
+  mov byte[GUILoadPos],0
+  mov ebx,[GUIcurrentcursloc]
+  inc ebx
+  cmp ebx,[GUIfileentries]
+  je .noviewinc
+  inc dword[GUIcurrentcursloc]
+  sub ebx,15
+  cmp ebx,[GUIcurrentviewloc]
+  jne .noviewinc
+  inc dword[GUIcurrentviewloc]
 .noviewinc
 .nodown
 %ifdef __UNIXSDL__
-    cmp al,91
-    je .yespageup
-    cmp dword[numlockptr],1
-    je .nopageup
-    cmp al,73
-    jne .nopageup
+  cmp al,91
+  je .yespageup
+  cmp dword[numlockptr],1
+  je .nopageup
+  cmp al,73
+  jne .nopageup
 .yespageup
 %else
-    cmp al,73
-    jne .nopageup
+  cmp al,73
+  jne .nopageup
 %endif
-    mov byte[GUILoadPos],0
-    sub dword[GUIcurrentviewloc],15
-    sub dword[GUIcurrentcursloc],15
-    test dword[GUIcurrentviewloc],8000000h
-    jz .posv
-    mov dword[GUIcurrentviewloc],0
+  mov byte[GUILoadPos],0
+  sub dword[GUIcurrentviewloc],15
+  sub dword[GUIcurrentcursloc],15
+  test dword[GUIcurrentviewloc],8000000h
+  jz .posv
+  mov dword[GUIcurrentviewloc],0
 .posv
-    test dword[GUIcurrentcursloc],8000000h
-    jz .posc
-    mov dword[GUIcurrentcursloc],0
+  test dword[GUIcurrentcursloc],8000000h
+  jz .posc
+  mov dword[GUIcurrentcursloc],0
 .posc
 .nopageup
 %ifdef __UNIXSDL__
-    cmp al,97
-    je .yespagedn
-    cmp dword[numlockptr],1
-    je .nopagedown
-    cmp al,81
-    jne .nopagedown
+  cmp al,97
+  je .yespagedn
+  cmp dword[numlockptr],1
+  je .nopagedown
+  cmp al,81
+  jne .nopagedown
 .yespagedn
 %else
-    cmp al,81
-    jne .nopagedown
+  cmp al,81
+  jne .nopagedown
 %endif
-    mov byte[GUILoadPos],0
-    add dword[GUIcurrentviewloc],15
-    add dword[GUIcurrentcursloc],15
-    mov ebx,[GUIfileentries]
-    dec ebx
-    cmp dword[GUIcurrentcursloc],ebx
-    jb .poscd
-    mov [GUIcurrentcursloc],ebx
+  mov byte[GUILoadPos],0
+  add dword[GUIcurrentviewloc],15
+  add dword[GUIcurrentcursloc],15
+  mov ebx,[GUIfileentries]
+  dec ebx
+  cmp dword[GUIcurrentcursloc],ebx
+  jb .poscd
+  mov [GUIcurrentcursloc],ebx
 .poscd
-    sub ebx,14
-    cmp dword[GUIcurrentviewloc],ebx
-    jl .posvd
-    test ebx,8000000h
-    jz .noneg
-    mov ebx,0
+  sub ebx,14
+  cmp dword[GUIcurrentviewloc],ebx
+  jl .posvd
+  test ebx,8000000h
+  jz .noneg
+  mov ebx,0
 .noneg
-    mov [GUIcurrentviewloc],ebx
+  mov [GUIcurrentviewloc],ebx
 .posvd
 .nopagedown
 
 .textboxa
-    cmp byte[GUILoadPos],0
-    je near .nobacksp
-    cmp dh,8
-    jne .nobacksp
-    mov byte[GUILDFlash],0
-    dec byte[GUILoadPos]
-    xor eax,eax
-    mov al,[GUILoadPos]
-    ret
+  cmp byte[GUILoadPos],0
+  je near .nobacksp
+  cmp dh,8
+  jne .nobacksp
+  mov byte[GUILDFlash],0
+  dec byte[GUILoadPos]
+  xor eax,eax
+  mov al,[GUILoadPos]
+  ret
 .nobacksp
-    cmp dh,0
-    je near .posvl2
-    cmp dh,13
-    je near .posvl2
-    cmp dh,8
-    je near .posvl2
-    cmp dh,9
-    je near .posvl2
-    cmp byte[GUILoadPos],36
-    je near .posvl2
-    mov byte[GUILDFlash],0
-    xor eax,eax
-    mov al,[GUILoadPos]
-    mov [GUILoadTextA+eax],dh
-    inc byte[GUILoadPos]
-    ; Go to closest matching filename if there are no :, /, or \ in the filename
-    mov ebx,[ManualCPtr]
-    cmp byte[ebx],0
-    je near .posvl2
+  cmp dh,0
+  je near .posvl2
+  cmp dh,13
+  je near .posvl2
+  cmp dh,8
+  je near .posvl2
+  cmp dh,9
+  je near .posvl2
+  cmp byte[GUILoadPos],36
+  je near .posvl2
+  mov byte[GUILDFlash],0
+  xor eax,eax
+  mov al,[GUILoadPos]
+  mov [GUILoadTextA+eax],dh
+  inc byte[GUILoadPos]
+  ; Go to closest matching filename if there are no :, /, or \ in the filename
+  mov ebx,[ManualCPtr]
+  cmp byte[ebx],0
+  je near .posvl2
 .next
-    cmp byte[ebx],':'
-    je near .posvl2
-    cmp byte[ebx],'/'
-    je near .posvl2
-    cmp byte[ebx],'\'
-    je near .posvl2
-    inc ebx
-    cmp byte[ebx],0
-    je .done
-    jmp .next
+  cmp byte[ebx],':'
+  je near .posvl2
+  cmp byte[ebx],'/'
+  je near .posvl2
+  cmp byte[ebx],'\'
+  je near .posvl2
+  inc ebx
+  cmp byte[ebx],0
+  je .done
+  jmp .next
 .done
 
-    mov ebx,[GUIfileentries]
-    xor esi,esi
-    cmp dword[GUIcurrentfilewin],1
-    jne near .notdir
-    mov esi,[GUIfileentries]
-    mov ebx,[GUIfileentries]
-    add ebx,[GUIdirentries]
+  mov ebx,[GUIfileentries]
+  xor esi,esi
+  cmp dword[GUIcurrentfilewin],1
+  jne near .notdir
+  mov esi,[GUIfileentries]
+  mov ebx,[GUIfileentries]
+  add ebx,[GUIdirentries]
 .notdir
-    mov ecx,esi
-    mov [.foundval],esi
-    mov dword[.maxfound],0
+  mov ecx,esi
+  mov [.foundval],esi
+  mov dword[.maxfound],0
 .loop2
-    mov dword[.numfound],0
-    cmp byte[GUIloadfntype],0
-    jne .nottype02
-    mov eax,[spcRamcmp+esi*4]
-    jmp .type02
+  mov dword[.numfound],0
+  cmp byte[GUIloadfntype],0
+  jne .nottype02
+  mov eax,[spcRamcmp+esi*4]
+  jmp .type02
 .nottype02
-    mov eax,esi
-    shl eax,5
-    add eax,[spcBuffera]
+  mov eax,esi
+  shl eax,5
+  add eax,[spcBuffera]
 .type02
-    inc eax
-    mov edi,[ManualCPtr]
-    cmp byte[eax],'['
-    jne .nodrive
-    inc eax
+  inc eax
+  mov edi,[ManualCPtr]
+  cmp byte[eax],'['
+  jne .nodrive
+  inc eax
 .nodrive
 .loop3
-    mov dl,[eax]
-    cmp dl,'a'
-    jb .nolowerb2
-    cmp dl,'z'
-    ja .nolowerb2
-    sub dl,'a'-'A'
+  mov dl,[eax]
+  cmp dl,'a'
+  jb .nolowerb2
+  cmp dl,'z'
+  ja .nolowerb2
+  sub dl,'a'-'A'
 .nolowerb2
-    mov dh,[edi]
-    cmp dh,'a'
-    jb .nolowerb3
-    cmp dh,'z'
-    ja .nolowerb3
-    sub dh,'a'-'A'
+  mov dh,[edi]
+  cmp dh,'a'
+  jb .nolowerb3
+  cmp dh,'z'
+  ja .nolowerb3
+  sub dh,'a'-'A'
 .nolowerb3
-    cmp dl,dh
-    jne .notfound
-    cmp byte[ManualStatus],2
-    jne .notfullload
-    or dh,dh
-    jnz .notfullload
-    or dl,dl
-    jnz .notfullload
-    mov byte[ManualStatus],3
+  cmp dl,dh
+  jne .notfound
+  cmp byte[ManualStatus],2
+  jne .notfullload
+  or dh,dh
+  jnz .notfullload
+  or dl,dl
+  jnz .notfullload
+  mov byte[ManualStatus],3
 .notfullload
-    or dh,dh
-    jz .notfound
-    or dl,dl
-    jz .notfound
-    inc dword[.numfound]
-    inc eax
-    inc edi
-    jmp .loop3
+  or dh,dh
+  jz .notfound
+  or dl,dl
+  jz .notfound
+  inc dword[.numfound]
+  inc eax
+  inc edi
+  jmp .loop3
 .notfound
-    mov edx,[.numfound]
-    cmp edx,[.maxfound]
-    jbe .nfound
-    mov [.maxfound],edx
-    mov [.foundval],esi
+  mov edx,[.numfound]
+  cmp edx,[.maxfound]
+  jbe .nfound
+  mov [.maxfound],edx
+  mov [.foundval],esi
 .nfound
-    inc esi
-    cmp esi,ebx
-    jne .noend2
-    mov esi,[GUIfileentries]
-    cmp dword[GUIcurrentfilewin],1
-    je .noend2
-    xor esi,esi
+  inc esi
+  cmp esi,ebx
+  jne .noend2
+  mov esi,[GUIfileentries]
+  cmp dword[GUIcurrentfilewin],1
+  je .noend2
+  xor esi,esi
 .noend2
-    cmp esi,ecx
-    jne near .loop2
+  cmp esi,ecx
+  jne near .loop2
 .skipall
-    mov esi,[.foundval]
-    cmp dword[GUIcurrentfilewin],1
-    jne .notdir2
-    sub esi,[GUIfileentries]
-    mov [GUIcurrentdircursloc],esi
-    mov [GUIcurrentdirviewloc],esi
-    mov ebx,[GUIdirentries]
-    sub ebx,15
-    cmp dword[GUIcurrentdirviewloc],ebx
-    jb .posvl2
-    mov [GUIcurrentdirviewloc],ebx
-    jmp .posvl2
+  mov esi,[.foundval]
+  cmp dword[GUIcurrentfilewin],1
+  jne .notdir2
+  sub esi,[GUIfileentries]
+  mov [GUIcurrentdircursloc],esi
+  mov [GUIcurrentdirviewloc],esi
+  mov ebx,[GUIdirentries]
+  sub ebx,15
+  cmp dword[GUIcurrentdirviewloc],ebx
+  jb .posvl2
+  mov [GUIcurrentdirviewloc],ebx
+  jmp .posvl2
 .notdir2
-    mov [GUIcurrentcursloc],esi
-    mov [GUIcurrentviewloc],esi
-    mov ebx,[GUIfileentries]
-    sub ebx,15
-    cmp dword[GUIcurrentviewloc],ebx
-    jb .posvl2
-    mov [GUIcurrentviewloc],ebx
+  mov [GUIcurrentcursloc],esi
+  mov [GUIcurrentviewloc],esi
+  mov ebx,[GUIfileentries]
+  sub ebx,15
+  cmp dword[GUIcurrentviewloc],ebx
+  jb .posvl2
+  mov [GUIcurrentviewloc],ebx
 .posvl2
-    cmp byte[ManualStatus],3
-    jne .notdirectload
-    call GUILoadData
+  cmp byte[ManualStatus],3
+  jne .notdirectload
+  call GUILoadData
 .notdirectload
-    ret
+  ret
 SECTION .bss
 .foundval resd 1
 .numfound resd 1
@@ -2983,157 +3012,157 @@ SECTION .text
 
 .dirwin
 %ifdef __UNIXSDL__
-    cmp al,89
-    je .yeshome2
-    cmp dword[numlockptr],1
-    je .nohome2
-    cmp al,71
-    jne .nohome2
+  cmp al,89
+  je .yeshome2
+  cmp dword[numlockptr],1
+  je .nohome2
+  cmp al,71
+  jne .nohome2
 .yeshome2
 %else
-    cmp al,71
-    jne .nohome2
+  cmp al,71
+  jne .nohome2
 %endif
-    mov byte[GUILoadPos],0
-    mov dword[GUIcurrentdircursloc],0
-    mov dword[GUIcurrentdirviewloc],0
-    ret
+  mov byte[GUILoadPos],0
+  mov dword[GUIcurrentdircursloc],0
+  mov dword[GUIcurrentdirviewloc],0
+  ret
 .nohome2
 %ifdef __UNIXSDL__
-    cmp al,95
-    je .yesendp2
-    cmp dword[numlockptr],1
-    je .noendp2
-    cmp al,79
-    jne .noendp2
+  cmp al,95
+  je .yesendp2
+  cmp dword[numlockptr],1
+  je .noendp2
+  cmp al,79
+  jne .noendp2
 .yesendp2
 %else
-    cmp al,79
-    jne .noendp2
+  cmp al,79
+  jne .noendp2
 %endif
-    mov byte[GUILoadPos],0
-    mov eax,[GUIdirentries]
-    dec eax
-    mov [GUIcurrentdircursloc],eax
-    sub eax,14
-    mov [GUIcurrentdirviewloc],eax
-    test dword[GUIcurrentdirviewloc],8000000h
-    jz .posve2
-    mov dword[GUIcurrentdirviewloc],0
+  mov byte[GUILoadPos],0
+  mov eax,[GUIdirentries]
+  dec eax
+  mov [GUIcurrentdircursloc],eax
+  sub eax,14
+  mov [GUIcurrentdirviewloc],eax
+  test dword[GUIcurrentdirviewloc],8000000h
+  jz .posve2
+  mov dword[GUIcurrentdirviewloc],0
 .posve2
-    ret
+  ret
 .noendp2
 %ifdef __UNIXSDL__
-    cmp al,90
-    je .yesup2
-    cmp dword[numlockptr],1
-    je .noup2
-    cmp al,72
-    jne .noup2
+  cmp al,90
+  je .yesup2
+  cmp dword[numlockptr],1
+  je .noup2
+  cmp al,72
+  jne .noup2
 .yesup2
 %else
-    cmp al,72
-    jne .noup2
+  cmp al,72
+  jne .noup2
 %endif
-    mov byte[GUILoadPos],0
-    cmp dword[GUIcurrentdircursloc],0
-    je .noup2
-    mov ebx,[GUIcurrentdircursloc]
-    cmp [GUIcurrentdirviewloc],ebx
-    jne .noviewdec2
-    dec dword[GUIcurrentdirviewloc]
+  mov byte[GUILoadPos],0
+  cmp dword[GUIcurrentdircursloc],0
+  je .noup2
+  mov ebx,[GUIcurrentdircursloc]
+  cmp [GUIcurrentdirviewloc],ebx
+  jne .noviewdec2
+  dec dword[GUIcurrentdirviewloc]
 .noviewdec2
-    dec dword[GUIcurrentdircursloc]
+  dec dword[GUIcurrentdircursloc]
 .noup2
 %ifdef __UNIXSDL__
-    cmp al,96
-    je .yesdown2
-    cmp dword[numlockptr],1
-    je .nodown2
-    cmp al,80
-    jne .nodown2
+  cmp al,96
+  je .yesdown2
+  cmp dword[numlockptr],1
+  je .nodown2
+  cmp al,80
+  jne .nodown2
 .yesdown2
 %else
-    cmp al,80
-    jne .nodown2
+  cmp al,80
+  jne .nodown2
 %endif
-    mov byte[GUILoadPos],0
-    mov ebx,[GUIcurrentdircursloc]
-    inc ebx
-    cmp ebx,[GUIdirentries]
-    je .noviewinc2
-    inc dword[GUIcurrentdircursloc]
-    sub ebx,15
-    cmp ebx,[GUIcurrentdirviewloc]
-    jne .noviewinc2
-    inc dword[GUIcurrentdirviewloc]
+  mov byte[GUILoadPos],0
+  mov ebx,[GUIcurrentdircursloc]
+  inc ebx
+  cmp ebx,[GUIdirentries]
+  je .noviewinc2
+  inc dword[GUIcurrentdircursloc]
+  sub ebx,15
+  cmp ebx,[GUIcurrentdirviewloc]
+  jne .noviewinc2
+  inc dword[GUIcurrentdirviewloc]
 .noviewinc2
 .nodown2
 %ifdef __UNIXSDL__
-    cmp al,91
-    je .yespgup2
-    cmp dword[numlockptr],1
-    je .nopageup2
-    cmp al,73
-    jne .nopageup2
+  cmp al,91
+  je .yespgup2
+  cmp dword[numlockptr],1
+  je .nopageup2
+  cmp al,73
+  jne .nopageup2
 .yespgup2
 %else
-    cmp al,73
-    jne .nopageup2
+  cmp al,73
+  jne .nopageup2
 %endif
-    mov byte[GUILoadPos],0
-    sub dword[GUIcurrentdirviewloc],15
-    sub dword[GUIcurrentdircursloc],15
-    test dword[GUIcurrentdirviewloc],8000000h
-    jz .posv2
-    mov dword[GUIcurrentdirviewloc],0
+  mov byte[GUILoadPos],0
+  sub dword[GUIcurrentdirviewloc],15
+  sub dword[GUIcurrentdircursloc],15
+  test dword[GUIcurrentdirviewloc],8000000h
+  jz .posv2
+  mov dword[GUIcurrentdirviewloc],0
 .posv2
-    test dword[GUIcurrentdircursloc],8000000h
-    jz .posc2
-    mov dword[GUIcurrentdircursloc],0
+  test dword[GUIcurrentdircursloc],8000000h
+  jz .posc2
+  mov dword[GUIcurrentdircursloc],0
 .posc2
 .nopageup2
 %ifdef __UNIXSDL__
-    cmp al,97
-    je .yespgdn2
-    cmp dword[numlockptr],1
-    je .nopagedown2
-    cmp al,81
-    jne .nopagedown2
+  cmp al,97
+  je .yespgdn2
+  cmp dword[numlockptr],1
+  je .nopagedown2
+  cmp al,81
+  jne .nopagedown2
 .yespgdn2
 %else
-    cmp al,81
-    jne .nopagedown2
+  cmp al,81
+  jne .nopagedown2
 %endif
-    mov byte[GUILoadPos],0
-    add dword[GUIcurrentdirviewloc],15
-    add dword[GUIcurrentdircursloc],15
-    mov ebx,[GUIdirentries]
-    dec ebx
-    cmp dword[GUIcurrentdircursloc],ebx
-    jb .poscd2
-    mov [GUIcurrentdircursloc],ebx
+  mov byte[GUILoadPos],0
+  add dword[GUIcurrentdirviewloc],15
+  add dword[GUIcurrentdircursloc],15
+  mov ebx,[GUIdirentries]
+  dec ebx
+  cmp dword[GUIcurrentdircursloc],ebx
+  jb .poscd2
+  mov [GUIcurrentdircursloc],ebx
 .poscd2
-    sub ebx,14
-    cmp dword[GUIcurrentdirviewloc],ebx
-    jb .posvd2
-    test ebx,8000000h
-    jz .noneg2
-    mov ebx,0
+  sub ebx,14
+  cmp dword[GUIcurrentdirviewloc],ebx
+  jb .posvd2
+  test ebx,8000000h
+  jz .noneg2
+  mov ebx,0
 .noneg2
-    mov [GUIcurrentdirviewloc],ebx
+  mov [GUIcurrentdirviewloc],ebx
 .posvd2
 .nopagedown2
-    jmp .textboxa
+  jmp .textboxa
 
 WaitForKey:
 .again3
-    mov edx,10
+  mov edx,10
 .again4
-    mov cx,1000
-    push edx
-    call delay
-    call JoyRead
+  mov cx,1000
+  push edx
+  call delay
+  call JoyRead
 ;    mov dword[pressed+0CCh],0    ; Up,Down,Left,Right, pl1
 ;    mov dword[pressed+0E8h],0    ; Up,Down,Left,Right, pl2
 ;    mov dword[pressed+14Ch],0    ; Up,Down,Left,Right, pl1
@@ -3146,19 +3175,19 @@ WaitForKey:
 ;    mov dword[pressed+101h],0    ; Button 8
 ;    mov dword[pressed+106h],0    ; Button 5
 ;    mov dword[pressed+107h],0    ; Button 6
-    pop edx
-    xor ebx,ebx
-    mov ecx,256+128+64
+  pop edx
+  xor ebx,ebx
+  mov ecx,256+128+64
 .b2
-    cmp byte[pressed+ebx],0
-    jne near .again3
-    inc ebx
-    dec ecx
-    jnz .b2
-    dec edx
-    jnz near .again4
+  cmp byte[pressed+ebx],0
+  jne near .again3
+  inc ebx
+  dec ecx
+  jnz .b2
+  dec edx
+  jnz near .again4
 .again
-    call JoyRead
+  call JoyRead
 ;    mov dword[pressed+0CCh],0    ; Up,Down,Left,Right, pl1
 ;    mov dword[pressed+0E8h],0    ; Up,Down,Left,Right, pl2
 ;    mov dword[pressed+14Ch],0    ; Up,Down,Left,Right, pl1
@@ -3171,29 +3200,29 @@ WaitForKey:
 ;    mov dword[pressed+101h],0    ; Button 8
 ;    mov dword[pressed+106h],0    ; Button 5
 ;    mov dword[pressed+107h],0    ; Button 6
-    xor ebx,ebx
-    mov ecx,256+128+64
+  xor ebx,ebx
+  mov ecx,256+128+64
 .b
-    cmp byte[pressed+ebx],0
-    jne .pressedokay
-    inc ebx
-    dec ecx
-    jnz .b
-    jmp .again
+  cmp byte[pressed+ebx],0
+  jne .pressedokay
+  inc ebx
+  dec ecx
+  jnz .b
+  jmp .again
 .pressedokay
 .again2
-    call Check_Key
-    or al,al
-    jz .nokey
-    call Get_Key
-    jmp .again2
+  call Check_Key
+  or al,al
+  jz .nokey
+  call Get_Key
+  jmp .again2
 .nokey
-    cmp byte[MouseDis],1
-    je .mousedis2
-    push ebx
+  cmp byte[MouseDis],1
+  je .mousedis2
+  push ebx
 ;    mov eax,0Bh
 ;    int 33h
-    pop ebx
+  pop ebx
 .mousedis2
-    mov byte[GUIpclicked],1
-    ret
+  mov byte[GUIpclicked],1
+  ret
