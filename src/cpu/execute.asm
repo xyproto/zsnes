@@ -1365,7 +1365,7 @@ NEWSYM cpuover
     jmp DosExit
 .noprocmovie
 
-    cmp byte[snesmouse],4
+    cmp byte[snesmouse],5
     jne .nolethalen
     mov eax,[LethEnData]
     mov [JoyBNow],eax

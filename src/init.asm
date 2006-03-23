@@ -722,8 +722,10 @@ NEWSYM ReadInputDevice
     cmp byte[snesmouse],3
     jne .nomultimouse
     mov byte[MouseToRead],1
+    call processmouse
     ProcSNESMouse JoyAOrig
     mov byte[MouseToRead],2
+    call processmouse
     ProcSNESMouse JoyBOrig
     jmp .noinput2
 .nomultimouse
