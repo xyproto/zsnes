@@ -424,13 +424,6 @@ void DisplayBatteryStatus()
 #endif
 }
 
-void MultiMouseShutdown()
-{
-   multiMouseMode = 0;
-   ManyMouse_Quit();
-
-}
-
 // Make use of multiple mice.
 
 int numMice = 0;
@@ -439,15 +432,19 @@ int Mouse2MoveX = 0;
 int Mouse1MoveY = 0;
 int Mouse2MoveY = 0;
 unsigned char MouseToRead = 0;
-unsigned char multimouse = 1; // Enabled
 
-extern void WriteLine();
+void MultiMouseShutdown()
+{
+   multiMouseMode = 0;
+   numMouse = 0;
+   ManyMouse_Quit();
+}
 
 void MultiMouseInit()
 {
-   int mice = ManyMouse_Init();
+   int numMice = ManyMouse_Init();
    printf("ManyMouse: %d mice detected.\n", mice);
-   if (mice) multiMouseMode = 1;
+   if (numMice) multiMouseMode = 1;
 }
 
 void MultiMouseProcess()
