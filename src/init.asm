@@ -683,7 +683,7 @@ CombContDatN dd 08000000h,04000000h,02000000h,01000000h,00800000h,80000000h
 CombContDatR dd 08000000h,04000000h,01000000h,02000000h,00800000h,80000000h
              dd 00400000h,40000000h,00200000h,00100000h,10000000h,20000000h
 
-EXTSYM MouseToRead,multimouse
+EXTSYM MouseToRead,multiMouseMode
 
 SECTION .text
 
@@ -718,7 +718,7 @@ NEWSYM ReadInputDevice
     ; Process Data
     mov dword[JoyAOrig],0
     ; Get Player1 input device
-    cmp byte[multimouse],1
+    cmp byte[multiMouseMode],1
     je .multimouse1
     cmp byte[snesmouse],1
     jne .nomouse1
@@ -772,7 +772,7 @@ NEWSYM ReadInputDevice
     and dword[JoyAOrig],7FFFFFFFh
 .noinput1
     mov dword[JoyBOrig],0
-    cmp byte[multimouse],1
+    cmp byte[multiMouseMode],1
     je .multimouse2
     cmp byte[snesmouse],2
     jne .nomouse2

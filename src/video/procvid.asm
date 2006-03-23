@@ -173,13 +173,13 @@ NEWSYM processmouse
 .noautosw
     mov byte[ssautoswb],0
 .ss
-;    cmp byte[multiMouseMode],0
-;    je .nomultimouse
+    cmp byte[multiMouseMode],0
+    je .nomultimouse
     pushad
     call MultiMouseProcess
     popad
     cmp byte[MouseToRead],2
-;    je .getmouse2
+    je .getmouse2
     mov cx,[Mouse1MoveX]
     mov dx,[Mouse1MoveY]
     jmp .mousestuff
