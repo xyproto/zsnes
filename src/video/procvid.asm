@@ -143,7 +143,9 @@ NEWSYM showvideo
     pop esi
     ret
 
-
+%ifndef __MSDOS__
+EXTSYM multiMouseMode,Mouse1MoveX,Mouse1MoveY,Mouse2MoveX,Mouse2MoveY,MultiMouseProcess,MouseToRead
+%endif
 
 NEWSYM processmouse
     push esi
@@ -171,7 +173,23 @@ NEWSYM processmouse
 .noautosw
     mov byte[ssautoswb],0
 .ss
+;    cmp byte[multiMouseMode],0
+;    je .nomultimouse
+    pushad
+    call MultiMouseProcess
+    popad
+    cmp byte[MouseToRead],2
+;    je .getmouse2
+    mov cx,[Mouse1MoveX]
+    mov dx,[Mouse1MoveY]
+    jmp .mousestuff
+.getmouse2
+    mov cx,[Mouse2MoveX]
+    mov dx,[Mouse2MoveY]
+    jmp .mousestuff
+.nomultimouse
     call Get_MousePositionDisplacement
+.mousestuff
     cmp byte[snesmouse],4
     je .le
     cmp byte[snesmouse],3

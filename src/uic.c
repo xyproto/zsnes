@@ -30,6 +30,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 #include "asm_call.h"
+#include "manymouse.h"
 
 //C++ style code in C
 #define bool unsigned char
@@ -101,11 +102,11 @@ unsigned char previdmode;	// previous video mode
 unsigned char cbitmode;		// bit mode, 0=8bit, 1=16bit
 
 unsigned char opexec268     = 155;	// # of opcodes/scanline in 2.68Mhz mode
-unsigned char opexec358     = 172;	// # of opcodes/scanline in 3.58Mhz mode (228/180)
+unsigned char opexec358     = 142;	// # of opcodes/scanline in 3.58Mhz mode (228/180)
 unsigned char opexec268cph  = 42;	// # of opcodes/hblank in 2.68Mhz mode
 unsigned char opexec358cph  = 45;	// # of opcodes/hblank in 3.58Mhz mode (56/50)
-unsigned char opexec268b    = 155;	// # of opcodes/scanline in 2.68Mhz mode
-unsigned char opexec358b    = 172;	// # of opcodes/scanline in 3.58Mhz mode (228/180)
+unsigned char opexec268b    = 142;	// # of opcodes/scanline in 2.68Mhz mode
+unsigned char opexec358b    = 155;	// # of opcodes/scanline in 3.58Mhz mode (228/180)
 unsigned char opexec268cphb = 42;	// # of opcodes/hblank in 2.68Mhz mode
 unsigned char opexec358cphb = 45;	// # of opcodes/hblank in 3.58Mhz mode (56/50)
 unsigned char debugdisble   = 1;	// debugger disable.  0 = no, 1 = yes
@@ -149,6 +150,7 @@ void allocmem();
 void InitSPC();
 void SystemInit();
 void StartUp();
+void MultiMouseInit();
 
 void *doMemAlloc(size_t size)
 {
@@ -269,6 +271,10 @@ void zstart ()
   puts("May or may not be complete");
 #endif
 
+#ifndef __MSDOS__
+  MultiMouseInit();
+#endif
+
   asm_call(SystemInit);
 
 
@@ -358,6 +364,8 @@ static char *seconds_to_asc(unsigned int seconds)
   return(buffer);
 }
 
+unsigned char multiMouseMode = 0;
+
 extern unsigned int MessageOn;
 extern unsigned int MsgCount;
 extern char CSStatus[70];
@@ -414,4 +422,46 @@ void DisplayBatteryStatus()
    MessageOn = 100;
 
 #endif
+}
+
+void MultiMouseShutdown()
+{
+   multiMouseMode = 0;
+   ManyMouse_Quit();
+
+}
+
+// Make use of multiple mice.
+
+int numMice = 0;
+int Mouse1MoveX = 0;
+int Mouse2MoveX = 0;
+int Mouse1MoveY = 0;
+int Mouse2MoveY = 0;
+unsigned char MouseToRead = 0;
+unsigned char multimouse = 1; // Enabled
+
+extern void WriteLine();
+
+void MultiMouseInit()
+{
+   int mice = ManyMouse_Init();
+   printf("ManyMouse: %d mice detected.", mice);
+   multiMouseMode = 1;
+}
+
+void MultiMouseProcess()
+{
+   ManyMouseEvent event;
+ 
+     ManyMouse_PollEvent(&event);
+
+           if (event.type == MANYMOUSE_EVENT_RELMOTION)
+           { 
+              if (event.device == 0)
+                 if (event.item == 0) { Mouse1MoveX = event.value; } else { Mouse1MoveY = event.value; }
+              else
+                 if (event.item == 0) { Mouse2MoveX = event.value; } else { Mouse2MoveY = event.value; }
+
+           }
 }

@@ -51,10 +51,11 @@ JMAOBJ=${JMADIR}/7zlzma.o ${JMADIR}/crc32.o ${JMADIR}/iiostrm.o\
 	${JMADIR}/winout.o ${JMADIR}/zsnesjma.o
 
 MAINOBJ=cfgload.o cfg.o endmem.o init.o initc.o md.o uic.o patch.o ui.o\
-	vcache.o version.o zmovie.o zstate.o debug.o zloader.o
+	vcache.o version.o zmovie.o zstate.o debug.o zloader.o manymouse.o\
+        linux_evdev.o
 
 NETOBJ=
-#${NETDIR}/ztcp.o
+#${NETDIR}/ztcp.os
 
 TOOLSOBJ=${TOOLSDIR}/fileutil.o ${TOOLSDIR}/strutil.o
 
@@ -154,6 +155,8 @@ version.o: version.c
 zloader.o: zloader.c gblhdr.h
 zmovie.o: zmovie.c asm_call.h gblhdr.h gblvars.h numconv.h ${WINDIR}/safelib.h md.o
 zstate.o: zstate.c asm_call.h gblhdr.h gblvars.h numconv.h
+manymouse.o: manymouse.c
+linux_evdev.o: linux_evdev.c
 
 ${CHIPDIR}/c4emu.o: ${CHIPDIR}/c4emu.c gblhdr.h
 ${CHIPDIR}/dsp1emu.o: ${CHIPDIR}/dsp1emu.c gblhdr.h
