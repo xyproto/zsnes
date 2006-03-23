@@ -453,8 +453,9 @@ void MultiMouseInit()
 void MultiMouseProcess()
 {
    ManyMouseEvent event;
- 
-     ManyMouse_PollEvent(&event);
+
+   Mouse1MoveX = Mouse1MoveY = Mouse2MoveX = Mouse2MoveY = 0;
+   ManyMouse_PollEvent(&event);
 
            if (event.type == MANYMOUSE_EVENT_RELMOTION)
            { 
