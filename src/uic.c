@@ -100,12 +100,12 @@ unsigned char *RGBtoYUVPtr;
 unsigned char previdmode;	// previous video mode
 unsigned char cbitmode;		// bit mode, 0=8bit, 1=16bit
 
-unsigned char opexec268     = 167;	// # of opcodes/scanline in 2.68Mhz mode
-unsigned char opexec358     = 180;	// # of opcodes/scanline in 3.58Mhz mode (228/180)
+unsigned char opexec268     = 155;	// # of opcodes/scanline in 2.68Mhz mode
+unsigned char opexec358     = 172;	// # of opcodes/scanline in 3.58Mhz mode (228/180)
 unsigned char opexec268cph  = 42;	// # of opcodes/hblank in 2.68Mhz mode
 unsigned char opexec358cph  = 45;	// # of opcodes/hblank in 3.58Mhz mode (56/50)
-unsigned char opexec268b    = 167;	// # of opcodes/scanline in 2.68Mhz mode
-unsigned char opexec358b    = 180;	// # of opcodes/scanline in 3.58Mhz mode (228/180)
+unsigned char opexec268b    = 155;	// # of opcodes/scanline in 2.68Mhz mode
+unsigned char opexec358b    = 172;	// # of opcodes/scanline in 3.58Mhz mode (228/180)
 unsigned char opexec268cphb = 42;	// # of opcodes/hblank in 2.68Mhz mode
 unsigned char opexec358cphb = 45;	// # of opcodes/hblank in 3.58Mhz mode (56/50)
 unsigned char debugdisble   = 1;	// debugger disable.  0 = no, 1 = yes
