@@ -265,7 +265,7 @@ void gl_drawwin()
 				// (see ProcessTransparencies in newgfx16.asm
 				//  for ZSNES' current transparency code)
 	UpdateVFrame();
-	if (curblank != 0)
+	if (curblank || cvidmode<6)
 		return;
 
 	if (BilinearFilter)

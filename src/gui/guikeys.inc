@@ -1185,27 +1185,28 @@ GUIVideoKeys:
   je near .nosuper2xsai
   cmp dh,'X'
   jne .no2xsai
-  GUIkeystoggleoptn byte[En2xSaI],1
+  mov eax,1
   jmp .yesfilter
 .no2xsai
   cmp dh,'E'
   jne .nosupereagle
-  GUIkeystoggleoptn byte[En2xSaI],2
+  mov eax,2
   jmp .yesfilter
 .nosupereagle
   cmp dh,'S'
   jne .nosuper2xsai
-  GUIkeystoggleoptn byte[En2xSaI],3
+  mov eax,3
 .yesfilter
+  pushad
+  call Clear2xSaIBuffer
+  popad
   mov byte[hqFilter],0
   mov byte[scanlines],0
   mov byte[cfgscanline],0
   mov byte[antienab],0
   mov byte[cfginterp],0
   mov byte[NTSCFilter],0
-  pushad
-  call Clear2xSaIBuffer
-  popad
+  GUIkeystoggleoptn byte[En2xSaI],al
 .nosuper2xsai
   cmp dh,'I'
   jne .nointerpolation

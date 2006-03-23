@@ -893,6 +893,7 @@ SECTION .text
 
 NEWSYM SwitchFullScreen
   pushad
+  call Clear2xSaIBuffer
   xor eax,eax
   mov al,[cvidmode]
   cmp byte[GUIWFVID+eax],0
