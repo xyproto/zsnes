@@ -30,7 +30,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 #include "asm_call.h"
-#include "manymouse.h"
+#include "mmlib/mm.h"
 
 //C++ style code in C
 #define bool unsigned char

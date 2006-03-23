@@ -22,7 +22,7 @@
 #define WM_INPUT 0x00FF
 #endif
 
-#include "manymouse.h"
+#include "mm.h"
 
 /* that should be enough, knock on wood. */
 #define MAX_MICE 32

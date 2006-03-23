@@ -21,7 +21,7 @@
 
 #include <linux/input.h>  /* evdev interface...  */
 
-#include "manymouse.h"
+#include "mm.h"
 
 #define test_bit(array, bit)    (array[bit/8] & (1<<(bit%8)))
 

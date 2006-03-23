@@ -29,6 +29,7 @@ TOOLSDIR=tools
 VIDEODIR=video
 WINDIR=linux
 ZIPDIR=zip
+MMLIBDIR=mmlib
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
 	${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
@@ -50,9 +51,10 @@ JMAOBJ=${JMADIR}/7zlzma.o ${JMADIR}/crc32.o ${JMADIR}/iiostrm.o\
 	${JMADIR}/inbyte.o ${JMADIR}/jma.o ${JMADIR}/lzma.o ${JMADIR}/lzmadec.o\
 	${JMADIR}/winout.o ${JMADIR}/zsnesjma.o
 
-MAINOBJ=cfgload.o cfg.o endmem.o init.o initc.o md.o uic.o patch.o ui.o\
-	vcache.o version.o zmovie.o zstate.o debug.o zloader.o manymouse.o\
-        linux_evdev.o
+MMLIBOBJ=${MMLIBDIR}/mm.o ${MMLIBDIR}/linux.o
+
+MAINOBJ=cfgload.o cfg.o endmem.o init.o initc.o md.o patch.o ui.o\
+	vcache.o version.o zmovie.o zstate.o debug.o zloader.o uic.o
 
 NETOBJ=
 #${NETDIR}/ztcp.os
@@ -77,7 +79,8 @@ WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/vesa2.o
 
 ZIPOBJ=${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
-ZOBJS=${MAINOBJ} ${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${NETOBJ} ${ZIPOBJ} ${EFFECTSOBJ} ${JMAOBJ}
+ZOBJS=${MAINOBJ} ${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${NETOBJ} ${ZIPOBJ}\
+	${EFFECTSOBJ} ${JMAOBJ} ${MMLIBOBJ}
 
 PSR=parsegen
 
@@ -149,14 +152,12 @@ initc.o: initc.c asm_call.h gblhdr.h ${CPUDIR}/memtable.h ${JMADIR}/zsnesjma.h\
 md.o: md.psr ${PSR}
 patch.o: patch.c gblhdr.h ${ZIPDIR}/zunzip.h
 ui.o: ui.asm macros.mac
-uic.o: uic.c asm_call.h gblhdr.h
+uic.o: uic.c asm_call.h gblhdr.h ${MMLIBDIR}/mm.h
 vcache.o: vcache.asm macros.mac
 version.o: version.c
 zloader.o: zloader.c gblhdr.h
 zmovie.o: zmovie.c asm_call.h gblhdr.h gblvars.h numconv.h ${WINDIR}/safelib.h md.o
 zstate.o: zstate.c asm_call.h gblhdr.h gblvars.h numconv.h
-manymouse.o: manymouse.c
-linux_evdev.o: linux_evdev.c
 
 ${CHIPDIR}/c4emu.o: ${CHIPDIR}/c4emu.c gblhdr.h
 ${CHIPDIR}/dsp1emu.o: ${CHIPDIR}/dsp1emu.c gblhdr.h
@@ -229,6 +230,9 @@ ${JMADIR}/lzmadec.o: ${JMADIR}/lzmadec.cpp ${JMADIR}/lzmadec.h\
 ${JMADIR}/winout.o: ${JMADIR}/winout.cpp ${JMADIR}/winout.h
 ${JMADIR}/zsnesjma.o: ${JMADIR}/zsnesjma.cpp ${JMADIR}/jma.h\
 	${JMADIR}/zsnesjma.h
+
+${MMLIBDIR}/mm.o: ${MMLIBDIR}/mm.c ${MMLIBDIR}/mm.h
+${MMLIBDIR}/linux.o: ${MMLIBDIR}/linux.c ${MMLIBDIR}/mm.h
 
 ${TOOLSDIR}/fileutil.o: ${TOOLSDIR}/fileutil.cpp ${TOOLSDIR}/fileutil.h
 ${TOOLSDIR}/strutil.o: ${TOOLSDIR}/strutil.cpp ${TOOLSDIR}/strutil.h
