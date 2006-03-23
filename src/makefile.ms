@@ -44,6 +44,7 @@ NETDIR=net
 VIDEODIR=video
 WINDIR=win
 ZIPDIR=zip
+MMLIBDIR=mmlib
 
 DELETECOMMAND=rm -f
 TRUTH=;true
@@ -187,7 +188,7 @@ VIDEOBJ=${VIDEODIR}/makev16b${OE} ${VIDEODIR}/makev16t${OE} ${VIDEODIR}/makevid$
 #only used on Win32
 WINOBJ=${WINDIR}/copyvwin${OE} ${DRESOBJ}\
 	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE} ${WINDIR}/zfilew${OE}\
-	${WINDIR}/safelib${OE}
+	${WINDIR}/safelib${OE} ${MMLIBDIR}/mm${OE} ${MMLIBDIR}/windows${OE}
 
 WINVIDOBJ=${VIDEODIR}/sw_draw${OE} ${VIDEODIR}/hq2x16${OE} ${VIDEODIR}/hq2x32${OE}\
 	${VIDEODIR}/2xsaiw${OE} ${VIDEODIR}/hq3x16${OE} ${VIDEODIR}/hq3x32${OE}\
@@ -266,7 +267,7 @@ initc${OE}: initc.c asm_call.h ${CPUDIR}/memtable.h ${JMADIR}/zsnesjma.h\
 	${ZIPDIR}/zunzip.h
 patch${OE}: patch.c ${ZIPDIR}/zunzip.h
 ui${OE}: ui.asm macros.mac
-uic${OE}: uic.c asm_call.h
+uic${OE}: uic.c asm_call.h ${MMLIBDIR}/mm.h
 vcache${OE}: vcache.asm macros.mac
 version${OE}: version.c
 zloader${OE}: zloader.c
@@ -390,6 +391,9 @@ ${VIDEODIR}/procvid${OE}: ${VIDEODIR}/procvid.asm macros.mac\
 ${VIDEODIR}/procvidc${OE}: ${VIDEODIR}/procvidc.c
 ${VIDEODIR}/sw_draw${OE}: ${VIDEODIR}/sw_draw.asm macros.mac
 ${VIDEODIR}/ntsc${OE}: ${VIDEODIR}/ntsc.c
+
+${MMLIBDIR}/mm${OE}: ${MMLIBDIR}/mm.c ${MMLIBDIR}/mm.h
+${MMLIBDIR}/windows${OE}: ${MMLIBDIR}/windows.c ${MMLIBDIR}/mm.h
 
 ${WINDIR}/copyvwin${OE}: ${WINDIR}/copyvwin.asm macros.mac
 ${WINDIR}/winintrf${OE}: ${WINDIR}/winintrf.asm macros.mac
