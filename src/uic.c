@@ -121,6 +121,8 @@ unsigned char Sup16mbit     = 0;	// Support 16mbit roms
 unsigned char dmadeddis     = 0;	// DMA deduction
 unsigned char antienab      = 0;	// Interpolation Enabled
 unsigned char snesmouse     = 0;	// Mouse status (1 = enabled)
+unsigned char device1       = 0;  // Device in port 1? 0 = Gamepad
+unsigned char device2       = 0;  // Device in port 2?
 unsigned char OldStyle      = 1;	// Old style joystick on
 unsigned char SecondPort    = 0;	// Secondary Joystick Port Enabled (209h) (DOS port only)
 

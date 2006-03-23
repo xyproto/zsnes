@@ -140,6 +140,7 @@ EXTSYM GUIEnableTransp,FilteredGUI,MouseWheel,TrapMouseCursor,AlwaysOnTop
 EXTSYM pl1p209,pl1p209b,SaveMainWindowPos,FastFwdToggle,SidewinderFix,RaisePitch
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM MovieVideoMode, MovieAudio,MovieVideoAudio,MovieAudioCompress
+EXTSYM device1,device2
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
@@ -178,7 +179,7 @@ NEWSYM WaterOn,  db 1
 ;-------------------------------------------------------
 ;    Load        Input      Add Code  Modem        Misc Keys
 ;    Run         -----      Browse    IPX          GUI Opns
-;    Reset       Add-Ons    Search                 Movie Opn
+;    Reset       Devices    Search                 Movie Opn
 ;    -----       Chip Cfg                          Key Comb.
 ;    Save State  -----                             Save Cfg
 ;    Load State  Options                           -----
@@ -206,7 +207,7 @@ NEWSYM WaterOn,  db 1
 ;           14 = SaveState Confirmation
 ;           15 = Movies
 ;           16 = Key Combo
-;           17 = Add-Ons
+;           17 = Devices
 ;           18 = Chip Config
 ;           19 = Paths
 ;           20 = Saves
@@ -251,7 +252,7 @@ GUIGameMenuData:
 GUIConfigMenuData:
   db 1,'INPUT       ',0
   db 0,'------------',0
-  db 1,'ADD-ONS     ',0
+  db 1,'DEVICES     ',0
   db 1,'CHIP CFG    ',0
   db 0,'------------',0
   db 1,'OPTIONS     ',0
@@ -2155,7 +2156,7 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
   ;The number on the left is the window to open
   ;the number on the right is where in the drop down box we are
   GUICheckMenuItem 3,0               ; Input #1-5
-  GUICheckMenuItem 17,2              ; Add-Ons
+  GUICheckMenuItem 17,2              ; Devices
   GUICheckMenuItem 18,3              ; Chip Config
   GUICheckMenuItem 4,5               ; Options
   cmp byte[GUIcrowpos],6             ; Video

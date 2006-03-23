@@ -872,11 +872,13 @@ GUIAddonKeys:
   ja .nocap
   sub dh,'z'-'Z'
 .nocap
-  GUIKeyButtonHole snesmouse,0,'N'             ;Radio Buttons
-  GUIKeyButtonHole snesmouse,1,'1'
-  GUIKeyButtonHole snesmouse,2,'2'
-  GUIKeyButtonHole snesmouse,3,'S'
-  GUIKeyButtonHole snesmouse,4,'L'
+  GUIKeyButtonHole device1,0,'G'             ;Radio Buttons
+  GUIKeyButtonHole device1,1,'M'
+  GUIKeyButtonHole device2,0,'A'
+  GUIKeyButtonHole device2,1,'O'
+  GUIKeyButtonHole device2,2,'S'
+  GUIKeyButtonHole device2,3,'1'
+  GUIKeyButtonHole device2,4,'2'
   ret
 
 GUIChipKeys:

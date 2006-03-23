@@ -4236,25 +4236,31 @@ DisplayGUIAddOns:                   ;Select Special Controllers
   jmp .endEE
 .noEE                                ;Regular
   GUIDisplayTextu 17,21,18,GUIAddOnText1,0
-  GUIDisplayTextu 17,21,28,GUIAddOnText2,20
-  GUIDisplayTextu 17,21,38,GUIAddOnText3,20
-  GUIDisplayTextu 17,21,48,GUIAddOnText4,0
-  GUIDisplayTextu 17,21,58,GUIAddOnText5,0
+  GUIDisplayTextu 17,21,28,GUIAddOnText2,0
+
+  GUIDisplayTextu 17,82,18,GUIAddOnText1,1
+  GUIDisplayTextu 17,82,28,GUIAddOnText2,1
+  GUIDisplayTextu 17,82,38,GUIAddOnText3,0
+  GUIDisplayTextu 17,82,48,GUIAddOnText4,0
+  GUIDisplayTextu 17,82,58,GUIAddOnText5,0
 .endEE
 
-  GUIDisplayButtonHole 17,9,15,byte[snesmouse],0  ;Radio Buttons
-  GUIDisplayButtonHole 17,9,25,byte[snesmouse],1
-  GUIDisplayButtonHole 17,9,35,byte[snesmouse],2
-  GUIDisplayButtonHole 17,9,45,byte[snesmouse],3
-  GUIDisplayButtonHole 17,9,55,byte[snesmouse],4
+  GUIDisplayButtonHole 17,9,15,byte[device1],0  ;Radio Buttons
+  GUIDisplayButtonHole 17,9,25,byte[device1],1
+
+  GUIDisplayButtonHole 17,70,15,byte[device2],0
+  GUIDisplayButtonHole 17,70,25,byte[device2],1
+  GUIDisplayButtonHole 17,70,35,byte[device2],2
+  GUIDisplayButtonHole 17,70,45,byte[device2],3
+  GUIDisplayButtonHole 17,70,55,byte[device2],4
   ret
 
 SECTION .data
-GUIAddOnText1 db 'NONE',0
-GUIAddOnText2 db 'SNES MOUSE AT PORT #1',0
-GUIAddOnText3 db 'SNES MOUSE AT PORT #2',0
-GUIAddOnText4 db 'SUPER SCOPE',0
-GUIAddOnText5 db 'LETHAL ENFORCER GUN',0
+GUIAddOnText1 db 'GAMEPAD',0
+GUIAddOnText2 db 'MOUSE',0
+GUIAddOnText3 db 'SUPER SCOPE',0
+GUIAddOnText4 db '1 JUSTIFIER',0
+GUIAddOnText5 db '2 JUSTIFIERS',0
 
 ;EE
 GUIAddOnText1Alt db 79,70,70,0
@@ -4797,7 +4803,7 @@ GUIAboutDisp db 'ABOUT',0
 GUIMovieDisp db 'MOVIE OPTIONS',0
 GUIStatesDisp db 'STATE CONFIRM',0
 GUIComboDisp db 'KEY COMBINATION EDITOR',0
-GUIAddOnsDisp db 'ADD-ON SELECTOR',0
+GUIAddOnsDisp db 'DEVICES SELECTOR',0
 GUIChipConfigDisp db 'CONFIGURE CHIPS',0
 GUIPathsDisp db 'SETUP PATHS',0
 GUISaveDisp db 'SAVE OPTIONS',0

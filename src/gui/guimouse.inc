@@ -3260,11 +3260,14 @@ DisplayGUICheatSearchClick:
   ret
 
 DisplayGUIAddOnClick:
-  GUIPButtonHole 9,15,byte[snesmouse],0
-  GUIPButtonHole 9,25,byte[snesmouse],1
-  GUIPButtonHole 9,35,byte[snesmouse],2
-  GUIPButtonHole 9,45,byte[snesmouse],3
-  GUIPButtonHole 9,55,byte[snesmouse],4
+  GUIPButtonHole 9,15,byte[device1],0
+  GUIPButtonHole 9,25,byte[device1],1
+
+  GUIPButtonHole 70,15,byte[device2],0
+  GUIPButtonHole 70,25,byte[device2],1
+  GUIPButtonHole 70,35,byte[device2],2
+  GUIPButtonHole 70,45,byte[device2],3
+  GUIPButtonHole 70,55,byte[device2],4
   ret
 
 DisplayGUIChipClick:
