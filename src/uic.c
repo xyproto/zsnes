@@ -180,7 +180,7 @@ void cycleinputdevice()
   for (;;)
   {
     snesmouse++;
-    if (snesmouse >= 5)
+    if (snesmouse >= 6)
     {
       snesmouse = 0;
     }
@@ -201,10 +201,15 @@ void cycleinputdevice()
     }
     if (snesmouse == 3)
     {
-      if (input2scope) { return; }
+      if (input2mouse) { return; }
       snesmouse++;
     }
     if (snesmouse == 4)
+    {
+      if (input2scope) { return; }
+      snesmouse++;
+    }
+    if (snesmouse == 5)
     {
       if (input2just) { return; }
     }
@@ -424,8 +429,6 @@ void DisplayBatteryStatus()
 #endif
 }
 
-
-
 // Make use of multiple mice.
 
 int MouseCount = 0;
@@ -433,6 +436,7 @@ int Mouse1MoveX = 0;
 int Mouse2MoveX = 0;
 int Mouse1MoveY = 0;
 int Mouse2MoveY = 0;
+int MousePoll = 0;
 unsigned char MouseToRead = 0;
 
 void MultiMouseShutdown()
@@ -454,6 +458,9 @@ void MultiMouseProcess()
    ManyMouseEvent event;
 
    Mouse1MoveX = Mouse1MoveY = Mouse2MoveX = Mouse2MoveY = 0;
+   MousePoll ^= 1;
+   if (MousePoll)
+   {
    ManyMouse_PollEvent(&event);
 
            if (event.type == MANYMOUSE_EVENT_RELMOTION)
@@ -464,4 +471,5 @@ void MultiMouseProcess()
                  if (event.item == 0) { Mouse2MoveX = event.value; } else { Mouse2MoveY = event.value; }
 
            }
+}
 }

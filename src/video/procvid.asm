@@ -173,8 +173,8 @@ NEWSYM processmouse
 .noautosw
     mov byte[ssautoswb],0
 .ss
-    cmp byte[multiMouseMode],0
-    je .nomultimouse
+    cmp byte[snesmouse],3
+    jne .nomultimouse
     pushad
     call MultiMouseProcess
     popad
@@ -190,9 +190,9 @@ NEWSYM processmouse
 .nomultimouse
     call Get_MousePositionDisplacement
 .mousestuff
-    cmp byte[snesmouse],4
+    cmp byte[snesmouse],5
     je .le
-    cmp byte[snesmouse],3
+    cmp byte[snesmouse],4
     jne .ss2
 .le
     add word[mousexloc],cx

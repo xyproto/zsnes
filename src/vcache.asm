@@ -556,10 +556,14 @@ NEWSYM cachevideo
 .nom2
     cmp byte[snesmouse],3
     jne .nom3
+    mov dword[Msgptr],snesmouse12
+.nom3
+    cmp byte[snesmouse],4
+    jne .nom4
     mov dword[Msgptr],snesss
     mov word[mousexloc],128
     mov word[mouseyloc],112
-.nom3
+.nom4
     mov eax,[MsgCount]
     mov [MessageOn],eax
     call Get_MousePositionDisplacement
@@ -954,6 +958,7 @@ NEWSYM panickeyp,   db 'ALL SWITCHES NORMAL',0
 NEWSYM snesmousep0, db 'MOUSE/SUPER SCOPE DISABLED',0
 NEWSYM snesmousep1, db 'MOUSE ENABLED IN PORT 1',0
 NEWSYM snesmousep2, db 'MOUSE ENABLED IN PORT 2',0
+NEWSYM snesmouse12, db 'MOUSE ENABLED IN PORT 1 AND 2',0
 NEWSYM snesss,      db 'SUPER SCOPE ENABLED',0
 NEWSYM snesle,      db 'LETHAL ENFORCER GUN ENABLED',0
 NEWSYM windissw,    db 'WINDOWING DISABLED',0

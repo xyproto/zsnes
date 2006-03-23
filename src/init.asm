@@ -718,12 +718,8 @@ NEWSYM ReadInputDevice
     ; Process Data
     mov dword[JoyAOrig],0
     ; Get Player1 input device
-    cmp byte[multiMouseMode],1
-    je .multimouse1
     cmp byte[snesmouse],1
     jne .nomouse1
-.multimouse1
-    mov byte[MouseToRead],1
     call processmouse
     ProcSNESMouse JoyAOrig
     jmp .noinput1
@@ -772,17 +768,20 @@ NEWSYM ReadInputDevice
     and dword[JoyAOrig],7FFFFFFFh
 .noinput1
     mov dword[JoyBOrig],0
-    cmp byte[multiMouseMode],1
-    je .multimouse2
     cmp byte[snesmouse],2
     jne .nomouse2
-.multimouse2
-    mov byte[MouseToRead],2
     call processmouse
     ProcSNESMouse JoyBOrig
     jmp .noinput2
 .nomouse2
     cmp byte[snesmouse],3
+    je .nomultimouse
+    mov byte[MouseToRead],1
+    ProcSNESMouse JoyAOrig
+    mov byte[MouseToRead],2
+    ProcSNESMouse JoyBOrig
+.nomultimouse
+    cmp byte[snesmouse],4
     jne .nosuperscope
     call processmouse
     mov byte[JoyBOrig+2],0FFh
@@ -802,7 +801,7 @@ NEWSYM ReadInputDevice
     mov [JoyBOrig+3],al
     jmp .noinput2
 .nosuperscope
-    cmp byte[snesmouse],4
+    cmp byte[snesmouse],5
     jne .nolethalen
     call processmouse
     mov eax,[romdata]
