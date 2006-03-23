@@ -447,7 +447,7 @@ void MultiMouseInit()
 {
    int mice = ManyMouse_Init();
    printf("ManyMouse: %d mice detected.\n", mice);
-   multiMouseMode = 1;
+   if (mice) multiMouseMode = 1;
 }
 
 void MultiMouseProcess()
