@@ -795,38 +795,37 @@ db '1024x896    ODR W',0  ;17
 db '1280x960    ODS F',0  ;18
 db '1280x1024   ODS F',0  ;19
 db '1600x1200   ODS F',0  ;20
-db 'VARIABLE    ODR W',0  ;21
+db 'VARIABLE     OD W',0  ;21
 
 %endif
 
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)
 ; Left side starts with Video Mode 0
 ; vid mode column =  0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1
-NEWSYM GUI16VID,  db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1     ; 16-bit mode
-NEWSYM GUINGVID,  db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1     ; New Graphics Mode Available
-NEWSYM GUISLVID,  db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1     ; Scanlines
-NEWSYM GUIINVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; Interpolation
-NEWSYM GUII2VID,  db 0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; Interpolation(w)
-NEWSYM GUIEAVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; Eagle
-NEWSYM GUIIEVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; (Interp | Eagle)
-NEWSYM GUIFSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; Full Screen
-NEWSYM GUIWSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; (Full Scr. | Wide Scr.)
-NEWSYM GUISSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; Small Screen
-NEWSYM GUITBVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; Triple Buffering
-NEWSYM GUIHSVID,  db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1     ; Half/Quarter Scanlines
-NEWSYM GUI2xVID,  db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1     ; 2xSaI/Super Eagle Engines
-NEWSYM GUIM7VID,  db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1     ; ?Mode 7 video thing?
-NEWSYM GUIWFVID,  db 0,1,0,1,1,1,0,0,1,0,0,0,1,0,0,1,0,0,1,1,1,0     ; If Windows Full Screen
-NEWSYM GUIDSIZE,  db 0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-NEWSYM GUIRATIO,  db 0,1,0,1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
-NEWSYM GUIBIFIL,  db 0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1     ; binlinear = 1, nearest = 0
-NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; Triple Buffering (Win)
-NEWSYM GUIMBVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-NEWSYM GUIHQ2X,   db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1     ; hq2x filter
-NEWSYM GUIHQ3X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; hq3x filter
-NEWSYM GUIHQ4X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0     ; hq4x filter
-NEWSYM GUIRESIZE, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1     ; resizable
-NEWSYM GUINTSC,   db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1     ; NTSC Filter
+NEWSYM GUI16VID,  db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; 16-bit mode
+NEWSYM GUINGVID,  db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; New Graphics Engine
+NEWSYM GUISLVID,  db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Scanlines
+NEWSYM GUIINVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Interpolation)
+NEWSYM GUII2VID,  db 0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; Interpolation
+NEWSYM GUIEAVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Eagle)
+NEWSYM GUIIEVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Eagle+Int)
+NEWSYM GUIFSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Fullscreen)
+NEWSYM GUIWSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Widescreen)
+NEWSYM GUISSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Smallscreen)
+NEWSYM GUITBVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Triple Buffer)
+NEWSYM GUIHSVID,  db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Half/Quarter Scanlines
+NEWSYM GUI2xVID,  db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; 2xSaI/Super Engines
+NEWSYM GUIM7VID,  db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Hires Mode 7
+NEWSYM GUIWFVID,  db 0,1,0,1,1,1,0,0,1,0,0,0,1,0,0,1,0,0,1,1,1,0 ; Fullscreen
+NEWSYM GUIDSIZE,  db 0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; D modes
+NEWSYM GUIRATIO,  db 0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; Ratio-Fullscreen modes
+NEWSYM GUIBIFIL,  db 0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; SDL Bilinear Filter
+NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Win Triple Buffer)
+NEWSYM GUIHQ2X,   db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1 ; hq2x filter
+NEWSYM GUIHQ3X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq3x filter)
+NEWSYM GUIHQ4X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq4x filter)
+NEWSYM GUIRESIZE, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 ; SDL Resizable
+NEWSYM GUINTVID,  db 0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; NTSC Filter
 
 SECTION .text
 

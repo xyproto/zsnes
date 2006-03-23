@@ -141,7 +141,7 @@ void sw_drawwin()
 
     if (prevtot == frametot && (!GUIOn || !GUIOn2)) { return; }
 
-    if (curblank) return;
+    if (curblank || cvidmode > 5) return;
     LockSurface();
 
     ScreenPtr = vidbuffer;
@@ -208,5 +208,3 @@ void sw_drawwin()
     }
     UnlockSurface();
 }
-
-

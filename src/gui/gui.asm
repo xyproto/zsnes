@@ -88,13 +88,13 @@ EXTSYM NextLineCache,ResetTripleBuf,GUINGVID,ScanCodeListing
 EXTSYM AdjustFrequency,GUISaveVars,Init_Mouse,Get_MouseData,Set_MouseXMax
 EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
 EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,SA1Enable,SA1RAMArea
-EXTSYM MMXCheck,SaveCombFile,showinfogui
+EXTSYM MMXCheck,SaveCombFile,showinfogui,GetDate,horizon_get
 EXTSYM ErrorPointer,MessageOn,GetTime,sndrot,regsbackup,GetScreen
-EXTSYM GUITBWVID,Clear2xSaIBuffer,MouseWindow,cfgcvidmode
+EXTSYM GUITBWVID,Clear2xSaIBuffer,MouseWindow,cfgcvidmode,cfgsoundon
 EXTSYM ExitFromGUI,GUIWFVID,cfgvsync,newgfx16b,cfgscanline,cfginterp
 EXTSYM NumVideoModes,cfgvolume,MusicVol,DSPMem,NumInputDevices,GUIInputNames
 EXTSYM GUIVideoModeNames,GUISLVID,GUIINVID,GUIEAVID,GUIIEVID,GUIFSVID,GUIWSVID
-EXTSYM GUISSVID,GUITBVID,GUIHSVID,GUI2xVID,GUII2VID,GUIM7VID,cfgsoundon
+EXTSYM GUISSVID,GUITBVID,GUIHSVID,GUI2xVID,GUII2VID,GUIM7VID,GUINTVID
 EXTSYM cfgSoundQuality,cfgStereoSound,cfgforce8b,convertnum,converthex,snesmouse
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Lk,pl1Rk,pl1Ak,pl1Bk,outofmemfix
 EXTSYM yesoutofmemory,JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209
@@ -102,9 +102,9 @@ EXTSYM JoyMaxX209,JoyMinY209,JoyMaxY209,GetCoords,GetCoords3,MultiTap,SFXEnable
 EXTSYM RestoreSystemVars,GUIBIFIL,GUIHQ2X,GUIHQ3X,GUIHQ4X,firstsaveinc,nssdip1
 EXTSYM nssdip2,nssdip3,nssdip4,nssdip5,nssdip6,SkipMovie,MovieStop,MoviePlay
 EXTSYM MovieRecord,MovieInsertChapter,MovieSeekAhead,MovieSeekBehind
-EXTSYM ResetDuringMovie,MovieDumpRaw
+EXTSYM ResetDuringMovie,MovieDumpRaw,AutoLoadCht
 
-EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,AutoLoadCht
+EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM LowPassFilterType,MovieStartMethod,MovieDisplayFrame,resetposn
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath,FEOEZPath,SJNSPath
 EXTSYM MDHPath,SPL4Path,CheatSrcByteSize,prevloadfnamel,prevloaddname
@@ -139,8 +139,7 @@ EXTSYM GUIwinposy2,GUIwinposx2,AllowMultipleInst,Surround,SoundBufEn,SPCDisable
 EXTSYM GUIEnableTransp,FilteredGUI,MouseWheel,TrapMouseCursor,AlwaysOnTop
 EXTSYM pl1p209,pl1p209b,SaveMainWindowPos,FastFwdToggle,SidewinderFix,RaisePitch
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
-EXTSYM MovieVideoMode, MovieAudio, MovieVideoAudio, MovieAudioCompress
-EXTSYM NTSCFilter,GUINTSC,GetDate, horizon_get
+EXTSYM MovieVideoMode, MovieAudio,MovieVideoAudio,MovieAudioCompress
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
@@ -999,21 +998,19 @@ NEWSYM StartGUI
   mov byte[hqFilter],0
 .no2xSaIdis
   cmp byte[En2xSaI],0
-  je .no2xsaidis
-  mov byte[Triplebufen],0
-.no2xsaidis
-  cmp byte[En2xSaI],0
   je .no2xsaien
+  mov byte[Triplebufen],0
   mov byte[hqFilter],0
   mov byte[scanlines],0
   mov byte[antienab],0
 .no2xsaien
   cmp byte[hqFilter],0
-  je .nohq
+  je .nohqen
   mov byte[En2xSaI],0
   mov byte[scanlines],0
   mov byte[antienab],0
-.nohq
+.nohqen
+
   mov ecx,64
   mov eax,SpecialLine
 .slloop
