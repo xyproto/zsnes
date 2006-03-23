@@ -95,7 +95,7 @@ EXTSYM ExitFromGUI,GUIWFVID,cfgvsync,newgfx16b,cfgscanline,cfginterp
 EXTSYM NumVideoModes,cfgvolume,MusicVol,DSPMem,NumInputDevices,GUIInputNames
 EXTSYM GUIVideoModeNames,GUISLVID,GUIINVID,GUIEAVID,GUIIEVID,GUIFSVID,GUIWSVID
 EXTSYM GUISSVID,GUITBVID,GUIHSVID,GUI2xVID,GUII2VID,GUIM7VID,GUINTVID
-EXTSYM cfgSoundQuality,cfgStereoSound,cfgforce8b,convertnum,converthex,snesmouse
+EXTSYM cfgSoundQuality,cfgStereoSound,cfgforce8b,convertnum,converthex
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Lk,pl1Rk,pl1Ak,pl1Bk,outofmemfix
 EXTSYM yesoutofmemory,JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209
 EXTSYM JoyMaxX209,JoyMinY209,JoyMaxY209,GetCoords,GetCoords3,MultiTap,SFXEnable
