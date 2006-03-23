@@ -446,7 +446,7 @@ extern void WriteLine();
 void MultiMouseInit()
 {
    int mice = ManyMouse_Init();
-   printf("ManyMouse: %d mice detected.", mice);
+   printf("ManyMouse: %d mice detected.\n", mice);
    multiMouseMode = 1;
 }
 
