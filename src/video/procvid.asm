@@ -154,7 +154,7 @@ NEWSYM processmouse
     push ebx
     call Get_MouseData
     mov [mousebuttons],bx
-    cmp byte[snesmouse],3
+    cmp byte[snesmouse],4
     jne .ss
     cmp byte[pressed+13],0
     je .noautosw
@@ -220,9 +220,9 @@ NEWSYM processmouse
 .noneg
     mov [mousexpos],cx
 .noxchange
-    cmp byte[snesmouse],4
+    cmp byte[snesmouse],5
     je .le2
-    cmp byte[snesmouse],3
+    cmp byte[snesmouse],4
     jne .ss3
 .le2
     add word[mouseyloc],dx
@@ -3325,10 +3325,8 @@ NEWSYM vidpaste
     je .noclock
     call ClockOutput
 .noclock
-    cmp byte[snesmouse],3
+    cmp byte[snesmouse],4
     je near .drawss
-;    cmp byte[snesmouse],4
-;    je near .drawss
 .returnfromdraw
     mov ax,[resolutn]
     cmp [prevresolutn],ax
