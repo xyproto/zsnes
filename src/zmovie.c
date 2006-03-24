@@ -73,11 +73,11 @@ bool MovieWaiting = false;
 enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY };
 #define SetMovieMode(mode) (MovieProcessing = (unsigned char)mode)
 
-extern unsigned char snesmouse;
+extern unsigned char device1, device2;
 extern unsigned short latchx, latchy;
-#define IS_MOUSE_1() (snesmouse == 1)
-#define IS_MOUSE_2() (snesmouse == 2)
-#define IS_SCOPE()   (snesmouse == 3)
+#define IS_MOUSE_1() (device1 == 1)
+#define IS_MOUSE_2() (device2 == 1)
+#define IS_SCOPE()   (device2 == 2)
 
 void GUIDoReset();
 void powercycle(bool);

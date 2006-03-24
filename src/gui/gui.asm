@@ -118,7 +118,7 @@ EXTSYM RewindStates,RewindFrames,PauseRewind,PauseLoad,SRAMState,AutoState
 EXTSYM LatestSave,SRAMSave5Sec,AutoIncSaveSlot,pl3selk,pl4selk,pl5selk
 EXTSYM pl1Atk,pl2Atk,pl3Atk,pl4Atk,pl5Atk,pl3contrl,KeyUsePlayer1234
 EXTSYM pl1Ltk,pl2Ltk,pl3Ltk,pl4Ltk,pl5Ltk,pl4contrl,KeyResetAll,CalibXmin
-EXTSYM pl5contrl,KeyExtraEnab,CalibYmin
+EXTSYM pl5contrl,KeyExtraEnab1,KeyExtraEnab2,CalibYmin
 EXTSYM pl1ULk,pl2ULk,pl3ULk,pl4ULk,pl5ULk,KeyVolDown,KeyVolUp,CalibXmax
 EXTSYM CalibYmax,CalibXmin209,CalibXmax209,CalibYmin209,CalibYmax209
 EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble

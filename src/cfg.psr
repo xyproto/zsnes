@@ -33,7 +33,8 @@ NEWSYM KeyBGDisble2,  dd 4
 NEWSYM KeyBGDisble3,  dd 5
 NEWSYM KeySprDisble,  dd 6
 NEWSYM KeyResetAll,   dd 7
-NEWSYM KeyExtraEnab,  dd 8
+NEWSYM KeyExtraEnab1, dd 0
+NEWSYM KeyExtraEnab2, dd 0
 NEWSYM KeyNewGfxSwt,  dd 9
 NEWSYM KeyWinDisble,  dd 10
 NEWSYM KeyOffsetMSw,  dd 11

@@ -21,7 +21,7 @@
 EXTSYM SFXEnable,regptr,initsfxregsr,initSA1regs,SA1Enable,initSDD1regs
 EXTSYM SPC7110Enable,initSPC7110regs,RTCEnable,RTCReset,curypos,cycpl
 EXTSYM debuggeron,pdh,vram,romispal,reg1read,spcnumread,spcon,reg2read,reg3read
-EXTSYM reg4read,JoyEOrig,JoyENow,snesmouse,cycphb,joycontren,totlines,DosExit
+EXTSYM reg4read,JoyEOrig,JoyENow,device2,cycphb,joycontren,totlines,DosExit
 EXTSYM invalid,numinst,previdmode,printhex,printnum
 
 SECTION .text
@@ -908,7 +908,7 @@ SECTION .text
 
 ; Joystick Data for controller 2 and 4
 reg4017r:
-    cmp byte[snesmouse],0
+    cmp byte[device2],0
     jne .nomultitap
     cmp byte[MultiTap],1
     je .multitap

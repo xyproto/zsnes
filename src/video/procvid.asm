@@ -24,7 +24,7 @@ EXTSYM BGMA,V8Mode,antienab,cacheud,cbitmode,ccud,cfield,cgram,coladdb,coladdg
 EXTSYM coladdr,curblank,curfps,cvidmode,delay,extlatch,fnamest,En2xSaI
 EXTSYM gammalevel,hirestiledat,ignor512,latchx,latchy,maxbr,ForceNewGfxOff
 EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,resolutn
-EXTSYM romispal,scaddtype,scanlines,selcA000,snesmouse,t1cc,vcache4b,vesa2_bpos
+EXTSYM romispal,scaddtype,scanlines,selcA000,t1cc,vcache4b,vesa2_bpos
 EXTSYM spritetablea,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10,vesa2selec
 EXTSYM vidbuffer,vram,KeyStateSelct,soundon,Open_File,Read_File
 EXTSYM Close_File,Create_File,Write_File,Get_File_Date,makepal
@@ -39,6 +39,7 @@ EXTSYM CSStatus2,CSStatus3,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
 EXTSYM bg1objptr,DecompAPtr,HalfTransB,HalfTransC,cur_zst_size,old_zst_size
 EXTSYM MovieProcessing,mzt_chdir,UpChdir,MovieFrameStr,GetMovieFrameStr
 EXTSYM MovieDisplayFrame
+EXTSYM MouseCount,device2
 
 %ifdef __MSDOS__
 EXTSYM SB_blank,vsyncon,Triplebufen,granadd
@@ -147,14 +148,61 @@ NEWSYM showvideo
 EXTSYM multiMouseMode,Mouse1MoveX,Mouse1MoveY,Mouse2MoveX,Mouse2MoveY,MultiMouseProcess,MouseToRead
 %endif
 
-NEWSYM processmouse
+NEWSYM processmouse1
     push esi
     push edi
     push edx
     push ebx
     call Get_MouseData
     mov [mousebuttons],bx
-    cmp byte[snesmouse],4
+    cmp byte[MouseCount],1
+    jle .nomultimouse
+    pushad
+    call MultiMouseProcess
+    popad
+    mov cx,[Mouse1MoveX]
+    mov dx,[Mouse1MoveY]
+    jmp .mousestuff
+.nomultimouse
+    call Get_MousePositionDisplacement
+.mousestuff
+    mov word[mousexpos],0
+    cmp cx,0
+    je .noxchange
+    mov byte[mousexdir],0
+    cmp cx,0
+    jge .noneg
+    mov byte[mousexdir],1
+    neg cx
+.noneg
+    mov [mousexpos],cx
+.noxchange
+    mov word[mouseypos],0
+    cmp dx,0
+    je .noychange
+    mov byte[mouseydir],0
+    cmp dx,0
+    jge .noneg2
+    mov byte[mouseydir],1
+    neg dx
+.noneg2
+    mov [mouseypos],dx
+.noychange
+    xor ecx,ecx
+    pop ebx
+    pop edx
+    pop edi
+    pop esi
+    ret
+
+NEWSYM processmouse2
+    push esi
+    push edi
+    push edx
+    push ebx
+    call Get_MouseData
+    mov [mousebuttons],bx
+    cmp byte[device2],2
     jne .ss
     cmp byte[pressed+13],0
     je .noautosw
@@ -173,26 +221,22 @@ NEWSYM processmouse
 .noautosw
     mov byte[ssautoswb],0
 .ss
-    cmp byte[snesmouse],3
-    jne .nomultimouse
+    cmp byte[MouseCount],1
+    jle .nomultimouse
     pushad
     call MultiMouseProcess
     popad
-    cmp byte[MouseToRead],2
-    je .getmouse2
-    mov cx,[Mouse1MoveX]
-    mov dx,[Mouse1MoveY]
-    jmp .mousestuff
-.getmouse2
     mov cx,[Mouse2MoveX]
     mov dx,[Mouse2MoveY]
     jmp .mousestuff
 .nomultimouse
     call Get_MousePositionDisplacement
 .mousestuff
-    cmp byte[snesmouse],5
+    cmp byte[device2],3
     je .le
-    cmp byte[snesmouse],4
+    cmp byte[device2],4
+    je .le
+    cmp byte[device2],2
     jne .ss2
 .le
     add word[mousexloc],cx
@@ -220,9 +264,11 @@ NEWSYM processmouse
 .noneg
     mov [mousexpos],cx
 .noxchange
-    cmp byte[snesmouse],5
+    cmp byte[device2],3
     je .le2
-    cmp byte[snesmouse],4
+    cmp byte[device2],4
+    je .le2
+    cmp byte[device2],2
     jne .ss3
 .le2
     add word[mouseyloc],dx
@@ -3325,7 +3371,7 @@ NEWSYM vidpaste
     je .noclock
     call ClockOutput
 .noclock
-    cmp byte[snesmouse],4
+    cmp byte[device2],2
     je near .drawss
 .returnfromdraw
     mov ax,[resolutn]

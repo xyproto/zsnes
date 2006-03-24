@@ -27,7 +27,7 @@ EXTSYM Voice6Status,Voice7Disable,Voice7Status,bgcmsung,bgmode,cbackofsaddr
 EXTSYM cgmod,debuggeron,disableeffects,frameskip,frskipper
 EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen
 EXTSYM nextdrawallng,oamaddr,pal16b,pal16bxcl,pressed,prevbright,prevpal
-EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,snesmouse,sprprdrn,t1cc
+EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,sprprdrn,t1cc
 EXTSYM vidbright,vidbuffer,vidbufferm,vidbufferofsa,vidbufferofsb,vidmemch2
 EXTSYM statefileloc,fnamest,GUIClick,MousePRClick,ngmsdraw,cvidmode
 EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyDisableSC4
@@ -46,9 +46,11 @@ EXTSYM FPSOn,pl12s34,bg1ptr,bg2ptr,bg3ptr,bg4ptr,cachebg1,resolutn,curypos
 EXTSYM oamram,objhipr,objptr,objptrn,objsize1,objsize2,spritetablea,sprleftpr
 EXTSYM sprlefttot,vcache4b,objadds1,objadds2,objmovs1,objmovs2,tltype4b
 EXTSYM vidmemch4,vram,bgptr,bgptrc,bgptrd,curtileptr,vcache2b,vcache8b,vidmemch8
-EXTSYM offsetmshl,NextLineCache,tltype2b,tltype8b,objwlrpos,snesinputdefault
+EXTSYM offsetmshl,NextLineCache,tltype2b,tltype8b,objwlrpos
 EXTSYM cycleinputdevice,SRAMChdir,EmuSpeed,SDRatio,FFRatio,DisplayBatteryStatus
 EXTSYM KeyResetSpeed,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyDisplayBatt,EMUPause
+EXTSYM device1,device2,snesinputdefault1,snesinputdefault2
+EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2
 
 ; Process stuff & Cache sprites
 
@@ -408,7 +410,9 @@ NEWSYM cachevideo
     push edx
     cmp byte[GUIClick],0
     je .noclick
-    cmp byte[snesmouse],0
+    cmp byte[device1],0
+    jne .noclick
+    cmp byte[device2],0
     jne .noclick
     call Get_MouseData
     test bx,02h
@@ -528,46 +532,60 @@ NEWSYM cachevideo
     mov byte[disableeffects],0
     mov byte[osm2dis],0
     mov byte[EmuSpeed],29
-    mov al,[snesinputdefault]
-    mov [snesmouse],al
+    mov al,[snesinputdefault1]
+    mov [device1],al
+    mov al,[snesinputdefault2]
+    mov [device2],al
     mov dword[Msgptr],panickeyp
     mov eax,[MsgCount]
     mov [MessageOn],eax
 .nodis6
-    mov eax,[KeyExtraEnab]
+    mov eax,[KeyExtraEnab1]
     test byte[pressed+eax],1
-    je near .nodis7
+    je near .nodisd1
     mov byte[pressed+eax],2
     pushad
-    call cycleinputdevice
+    call cycleinputdevice1
     popad
-    mov dword[Msgptr],snesle
-    cmp byte[snesmouse],0
-    jne .nom0
     mov dword[Msgptr],snesmousep0
-.nom0
-    cmp byte[snesmouse],1
-    jne .nom1
+    cmp byte[device1],1
+    jne .nom11
     mov dword[Msgptr],snesmousep1
-.nom1
-    cmp byte[snesmouse],2
-    jne .nom2
-    mov dword[Msgptr],snesmousep2
-.nom2
-    cmp byte[snesmouse],3
-    jne .nom3
-    mov dword[Msgptr],snesmouse12
-.nom3
-    cmp byte[snesmouse],4
-    jne .nom4
-    mov dword[Msgptr],snesss
-    mov word[mousexloc],128
-    mov word[mouseyloc],112
-.nom4
+.nom11
     mov eax,[MsgCount]
     mov [MessageOn],eax
     call Get_MousePositionDisplacement
-.nodis7
+.nodisd1
+    mov eax,[KeyExtraEnab2]
+    test byte[pressed+eax],1
+    je near .nodisd2
+    mov byte[pressed+eax],2
+    pushad
+    call cycleinputdevice2
+    popad
+    mov dword[Msgptr],snesmousep0
+    cmp byte[device2],1
+    jne .nom21
+    mov dword[Msgptr],snesmousep2
+.nom21
+    cmp byte[device2],2
+    jne .nom22
+    mov dword[Msgptr],snesss
+    mov word[mousexloc],128
+    mov word[mouseyloc],112
+.nom22
+    cmp byte[device2],3
+    jne .nom23
+    mov dword[Msgptr],snesle1
+.nom23
+    cmp byte[device2],4
+    jne .nom24
+    mov dword[Msgptr],snesle2
+.nom24
+    mov eax,[MsgCount]
+    mov [MessageOn],eax
+    call Get_MousePositionDisplacement
+.nodisd2
     mov eax,[KeyNewGfxSwt]
     test byte[pressed+eax],1
     je near .nodis8
@@ -955,12 +973,12 @@ NEWSYM curcolbg2,   db 0
 NEWSYM curcolbg3,   db 0
 NEWSYM curcolbg4,   db 0
 NEWSYM panickeyp,   db 'ALL SWITCHES NORMAL',0
-NEWSYM snesmousep0, db 'MOUSE/SUPER SCOPE DISABLED',0
+NEWSYM snesmousep0, db 'EXTRA DEVICES DISABLED',0
 NEWSYM snesmousep1, db 'MOUSE ENABLED IN PORT 1',0
 NEWSYM snesmousep2, db 'MOUSE ENABLED IN PORT 2',0
-NEWSYM snesmouse12, db 'MOUSE ENABLED IN PORT 1 AND 2',0
 NEWSYM snesss,      db 'SUPER SCOPE ENABLED',0
-NEWSYM snesle,      db 'LETHAL ENFORCER GUN ENABLED',0
+NEWSYM snesle1,      db '1 JUSTIFIER ENABLED',0
+NEWSYM snesle2,      db '2 JUSTIFIERS ENABLED',0
 NEWSYM windissw,    db 'WINDOWING DISABLED',0
 NEWSYM winenasw,    db 'WINDOWING ENABLED',0
 NEWSYM ofsdissw,    db 'OFFSET MODE DISABLED',0

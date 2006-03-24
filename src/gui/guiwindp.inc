@@ -2989,7 +2989,7 @@ DisplayGameOptns:        ; Misc Key Window
 
   DDrawBox 9,77,99,[KeyUsePlayer1234]
   DDrawBox 9,77,109,[KeyResetAll]
-  DDrawBox 9,77,119,[KeyExtraEnab]
+  ;DDrawBox 9,77,119,[KeyExtraEnab]
   DDrawBox 9,77,129,[KeyDisplayFPS]
   DDrawBox 9,77,139,[KeyIncreaseGamma]
   DDrawBox 9,77,149,[KeyDecreaseGamma]

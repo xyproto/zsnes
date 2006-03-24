@@ -2904,7 +2904,7 @@ void WinUpdateDevices()
 
 }
 
-extern BYTE snesmouse;
+extern unsigned char device1, device2;
 
 int GetMouseX(void)
 {
@@ -2923,7 +2923,7 @@ int GetMouseX(void)
             SetCursorPos(X + WindowWidth + 32, (int)(Y + (MouseY * WindowHeight / 224)));
          }
       }
-      else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
+      else if (FullScreen == 0 && device1 == 0 && device2 == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
       {
          MouseInput->Unacquire();
          SetCursorPos(X + WindowWidth + 1, (int)(Y + (MouseY * WindowHeight / 224)));
@@ -2942,7 +2942,7 @@ int GetMouseX(void)
             SetCursorPos(X - 32, (int)(Y + (MouseY * WindowHeight / 224)));
          }
       }
-      else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
+      else if (FullScreen == 0 && device1 == 0 && device2 == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
       {
          MouseInput->Unacquire();
          SetCursorPos(X - 1, (int)(Y + (MouseY * WindowHeight / 224)));
@@ -2967,7 +2967,7 @@ int GetMouseY(void)
             SetCursorPos((int)(X+(MouseX * WindowWidth / 256)), Y + WindowHeight + 32);
          }
       }
-      else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
+      else if (FullScreen == 0 && device1 == 0 && device2 == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
       {
          MouseInput->Unacquire();
          SetCursorPos((int)(X+(MouseX * WindowWidth / 256)), Y + WindowHeight + 1);
@@ -2986,7 +2986,7 @@ int GetMouseY(void)
             SetCursorPos((int)(X + (MouseX * WindowWidth / 256)), Y - 32);
          }
       }
-      else if (FullScreen == 0 && snesmouse == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
+      else if (FullScreen == 0 && device1 == 0 && device2 == 0 && MouseButtonPressed == 0 && GUIOn2 == 1)
       {
          MouseInput->Unacquire();
          SetCursorPos((int)(X + (MouseX * WindowWidth / 256)), Y - 1);

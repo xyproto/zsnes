@@ -31,8 +31,8 @@ EXTSYM pl3Lk,pl3Rk,pl3Xk,pl3Yk,pl3contrl,pl3downk,pl3leftk,pl3rightk,pl3selk
 EXTSYM pl3startk,pl3upk,pl4Ak,pl4Bk,pl4Lk,pl4Rk,pl4Xk,pl4Yk,pl4contrl,pl4downk
 EXTSYM pl4leftk,pl4rightk,pl4selk,pl4startk,pl4upk,mousebuttons,mousexdir,pl5Ak
 EXTSYM pl5Bk,pl5Lk,pl5Rk,pl5Xk,pl5Yk,pl5contrl,pl5downk,pl5leftk,pl5rightk
-EXTSYM pl5selk,pl5startk,pl5upk,mouseydir,mousexpos,mouseypos,snesmouse,sram
-EXTSYM processmouse,ssautosw,GUIDelayB,pl12s34,pl1Xtk,pl1Ytk,pl1Atk,pl1Btk
+EXTSYM pl5selk,pl5startk,pl5upk,mouseydir,mousexpos,mouseypos,sram
+EXTSYM ssautosw,GUIDelayB,pl12s34,pl1Xtk,pl1Ytk,pl1Atk,pl1Btk
 EXTSYM pl2Xtk,pl2Ytk,pl2Atk,pl2Btk,pl3Xtk,pl3Ytk,pl3Atk,pl3Btk,pl4Xtk,pl4Ytk
 EXTSYM pl4Atk,pl4Btk,pl1ULk,pl1URk,pl1DLk,pl1DRk,pl2ULk,pl2URk,pl2DLk,pl2DRk
 EXTSYM pl3ULk,pl3URk,pl3DLk,pl3DRk,pl4ULk,pl4URk,pl4DLk,pl4DRk,pl5ULk,pl5URk
@@ -55,6 +55,7 @@ EXTSYM GetCurDir,SRAMChdir,cfgloadsdir,fnamest,statefileloc,InitDir,InitDrive
 EXTSYM curromspace,infoloc,patchfile,romispal,initregr,initregw,memtabler16
 EXTSYM memtabler8,memtablew16,memtablew8,sfxramdata,wramreadptr
 EXTSYM wramwriteptr,loadstate2,CMovieExt,MoviePlay,MovieDumpRaw,AllowUDLR
+EXTSYM device1,device2,processmouse1,processmouse2
 
 ;initc.c
 EXTSYM clearmem,clearSPCRAM,PatchUsingIPS,ZOpenFileName,loadROM,SPC7110IndexSize
@@ -719,21 +720,10 @@ NEWSYM ReadInputDevice
     mov dword[JoyAOrig],0
     mov dword[JoyBOrig],0
 
-    cmp byte[snesmouse],3
-    jne .nomultimouse
-    mov byte[MouseToRead],1
-    call processmouse
-    ProcSNESMouse JoyAOrig
-    mov byte[MouseToRead],2
-    call processmouse
-    ProcSNESMouse JoyBOrig
-    jmp .noinput2
-.nomultimouse
-
     ; Get Player1 input device
-    cmp byte[snesmouse],1
+    cmp byte[device1],1
     jne .nomouse1
-    call processmouse
+    call processmouse1
     ProcSNESMouse JoyAOrig
     jmp .noinput1
 .nomouse1
@@ -781,15 +771,16 @@ NEWSYM ReadInputDevice
     and dword[JoyAOrig],7FFFFFFFh
 .noinput1
     mov dword[JoyBOrig],0
-    cmp byte[snesmouse],2
+    cmp byte[device2],1
     jne .nomouse2
-    call processmouse
+    mov byte[MouseToRead],1
+    call processmouse2
     ProcSNESMouse JoyBOrig
     jmp .noinput2
 .nomouse2
-    cmp byte[snesmouse],4
+    cmp byte[device2],2
     jne .nosuperscope
-    call processmouse
+    call processmouse2
     mov byte[JoyBOrig+2],0FFh
     mov al,[ssautosw]
     test byte[mousebuttons],01h
@@ -807,9 +798,9 @@ NEWSYM ReadInputDevice
     mov [JoyBOrig+3],al
     jmp .noinput2
 .nosuperscope
-    cmp byte[snesmouse],5
+    cmp byte[device2],3
     jne .nolethalen
-    call processmouse
+    call processmouse2
     mov eax,[romdata]
     cmp dword[eax+1000h],0AD20C203h
     jne .not
@@ -982,24 +973,17 @@ NEWSYM ReadInputDevice
     or dword[JoyEOrig],00008000h        ; Joystick Enable
 .noinput5
     cmp byte[pl12s34],1
-    je .pl1234
-.nopl1234
-    ret
-.pl1234
-    cmp byte[snesmouse],5
-    je .nopl1234
-    cmp byte[snesmouse],1
-    je .nopl13
+    jne .nop24
+    cmp byte[device1],0
+    jne .nop13
     mov eax,[JoyCOrig]
     or [JoyAOrig],eax
-.nopl13
-    cmp byte[snesmouse],2
-    je .nopl24
-    cmp byte[snesmouse],4
-    je .nopl24
+.nop13
+    cmp byte[device2],0
+    jne .nop24
     mov eax,[JoyDOrig]
     or [JoyBOrig],eax
-.nopl24
+.nop24
     ret
 
 ;*******************************************************

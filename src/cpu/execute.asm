@@ -37,7 +37,7 @@ EXTSYM cachesprites,opcjmptab,CheatOn
 EXTSYM INTEnab,JoyCRead,NMIEnab,NumCheats,CurrentExecSA1,ReadInputDevice
 EXTSYM StartDrawNewGfx,VIRQLoc,cachevideo,cfield,cheatdata,curblank,curnmi
 EXTSYM curypos,cycpl,doirqnext,drawline,exechdma,hdmadelay,intrset,newengen
-EXTSYM oamaddr,oamaddrs,resolutn,showvideo,snesmouse,starthdma,switchtonmi
+EXTSYM oamaddr,oamaddrs,resolutn,showvideo,starthdma,switchtonmi
 EXTSYM switchtovirq,totlines,updatetimer,SA1Swap,SA1DoIRQ,JoyAOrig,JoyANow
 EXTSYM JoyBOrig,JoyBNow,JoyCOrig,JoyCNow,JoyDOrig,JoyDNow,JoyEOrig,JoyENow
 EXTSYM SA1Message,MultiTapStat,idledetectspc,SA1Control,SA1Enable,SA1IRQEnable
@@ -54,6 +54,7 @@ EXTSYM MovieSeekBehind,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
+EXTSYM device2
 
 %ifdef __MSDOS__
 EXTSYM dssel,Game60hzcall,NextLineStart,FlipWait,LastLineStart
@@ -1365,11 +1366,18 @@ NEWSYM cpuover
     jmp DosExit
 .noprocmovie
 
-    cmp byte[snesmouse],5
-    jne .nolethalen
+    cmp byte[device2],3
+    jne .nolethalen1
     mov eax,[LethEnData]
     mov [JoyBNow],eax
-.nolethalen
+.nolethalen1
+    ;Todo, add second gun...
+    cmp byte[device2],4
+    jne .nolethalen2
+    mov eax,[LethEnData]
+    mov [JoyBNow],eax
+.nolethalen2
+
 
     test byte[INTEnab],1
     jz .noresetjoy
@@ -2130,11 +2138,16 @@ NEWSYM execsingle
     mov byte[JoyCRead],0
 .noresetjoy
 
-    cmp byte[snesmouse],4
-    jne .nolethalen
+    cmp byte[device2],3
+    jne .nolethalen1
     mov eax,[LethEnData]
     mov [JoyBNow],eax
-.nolethalen
+.nolethalen1
+    cmp byte[device2],4
+    jne .nolethalen2
+    mov eax,[LethEnData]
+    mov [JoyBNow],eax
+.nolethalen2
 
     mov byte[MultiTapStat],80h
     mov byte[NMIEnab],81h

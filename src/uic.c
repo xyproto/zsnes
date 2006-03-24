@@ -120,7 +120,6 @@ unsigned char Sup48mbit     = 1;	// Support 48mbit roms
 unsigned char Sup16mbit     = 0;	// Support 16mbit roms
 unsigned char dmadeddis     = 0;	// DMA deduction
 unsigned char antienab      = 0;	// Interpolation Enabled
-unsigned char snesmouse     = 0;	// Mouse status (1 = enabled)
 unsigned char device1       = 0;  // Device in port 1? 0 = Gamepad
 unsigned char device2       = 0;  // Device in port 2?
 unsigned char OldStyle      = 1;	// Old style joystick on
@@ -176,42 +175,56 @@ extern bool input2gp;
 extern bool input2mouse;
 extern bool input2scope;
 extern bool input2just;
-extern unsigned char snesmouse;
-void cycleinputdevice()
+void cycleinputdevice1()
 {
   for (;;)
   {
-    snesmouse++;
-    if (snesmouse >= 6)
+    device1++;
+    if (device1 >= 2)
     {
-      snesmouse = 0;
+      device1 = 0;
     }
-    if (snesmouse == 0)
+    if (device1 == 0)
     {
-      if (input1gp && input2gp) { return; }
-      snesmouse++;
+      if (input1gp) { return; }
+      device1++;
     }
-    if (snesmouse == 1)
+    if (device1 == 1)
     {
       if (input1mouse) { return; }
-      snesmouse++;
     }
-    if (snesmouse == 2)
+  }
+}
+void cycleinputdevice2()
+{
+  for (;;)
+  {
+    device2++;
+    if (device2 >= 5)
+    {
+      device2 = 0;
+    }
+    if (device2 == 0)
+    {
+      if (input2gp) { return; }
+      device2++;
+    }
+    if (device2 == 1)
     {
       if (input2mouse) { return; }
-      snesmouse++;
+      device2++;
     }
-    if (snesmouse == 3)
-    {
-      if (input2mouse) { return; }
-      snesmouse++;
-    }
-    if (snesmouse == 4)
+    if (device2 == 2)
     {
       if (input2scope) { return; }
-      snesmouse++;
+      device2++;
     }
-    if (snesmouse == 5)
+    if (device2 == 3)
+    {
+      if (input2just) { return; }
+      device2++;
+    }
+    if (device2 == 4)
     {
       if (input2just) { return; }
     }

@@ -1099,8 +1099,8 @@ bool NSRTHead(unsigned char *ROM)
 extern bool EMUPause;
 extern bool Sup48mbit;
 extern bool Sup16mbit;
-extern unsigned char snesmouse;
-unsigned char snesinputdefault;
+extern unsigned char device1, device2;
+unsigned char snesinputdefault1, snesinputdefault2;
 bool input1gp;
 bool input1mouse;
 bool input2gp;
@@ -1201,7 +1201,8 @@ void loadROM()
     }
   }
 
-  snesmouse = 0;
+  device1 = 0;
+  device2 = 0;
   input1gp = true;
   input1mouse = true;
   input2gp = true;
@@ -1226,7 +1227,7 @@ void loadROM()
           break;
 
         case 0x01: //Mouse port 2
-          snesmouse = 2;
+          device2 = 1;
           input2gp = false;
           input2scope = false;
           input2just = false;
@@ -1234,7 +1235,7 @@ void loadROM()
           break;
 
         case 0x03: //Super Scope port 2
-          snesmouse = 3;
+          device2 = 2;
           input2gp = false;
           input2mouse = false;
           input2just = false;
@@ -1242,14 +1243,14 @@ void loadROM()
           break;
 
         case 0x04: //Super Scope or Gamepad port 2
-          snesmouse = 3;
+          device2 = 2;
           input2mouse = false;
           input2just = false;
           input1mouse = false;
           break;
 
         case 0x05: //Justifier (Lethal Enforcer gun) port 2
-          snesmouse = 4;
+          device2 = 3;
           input2mouse = false;
           input2scope = false;
           input1mouse = false;
@@ -1264,14 +1265,14 @@ void loadROM()
           break;
 
         case 0x08: //Mouse or Multitap port 2
-          snesmouse = 2;
+          device2 = 1;
           input2just = false;
           input2scope = false;
           input1mouse = false;
           break;
 
         case 0x10: //Mouse port 1
-          snesmouse = 1;
+          device1 = 1;
           input2mouse = false;
           input2just = false;
           input2scope = false;
@@ -1279,14 +1280,15 @@ void loadROM()
           break;
 
         case 0x20: //Mouse or Gamepad port 1
-          snesmouse = 1;
+          device1 = 1;
           input2mouse = false;
           input2just = false;
           input2scope = false;
           break;
 
         case 0x22: //Mouse or Gamepad port 1 and port 2
-          snesmouse = 1;
+          device1 = 1;
+          device2 = 1;
           input2just = false;
           input2scope = false;
           break;
@@ -1303,7 +1305,8 @@ void loadROM()
     memmove((unsigned char *)romdata, ((unsigned char *)romdata)+512, curromspace);
   }
 
-  snesinputdefault = snesmouse;
+  snesinputdefault1 = device1;
+  snesinputdefault2 = device2;
 
   SplitSupport();
 

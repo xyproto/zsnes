@@ -2869,7 +2869,7 @@ DisplayGameOptnsClick:
 
   DGOptnsProcBox 78,100,[KeyUsePlayer1234]
   DGOptnsProcBox 78,110,[KeyResetAll]
-  DGOptnsProcBox 78,120,[KeyExtraEnab]
+  ;DGOptnsProcBox 78,120,[KeyExtraEnab]
   DGOptnsProcBox 78,130,[KeyDisplayFPS]
   DGOptnsProcBox 78,140,[KeyIncreaseGamma]
   DGOptnsProcBox 78,150,[KeyDecreaseGamma]
