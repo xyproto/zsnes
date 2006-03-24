@@ -475,6 +475,8 @@ void MultiMouseProcess(unsigned int mouse)
   ManyMouseEvent event;
   event.device = ~0;
 
+  Mouse1MoveX = Mouse1MoveY = Mouse2MoveX = Mouse2MoveY = 0;
+
   if (mouse == 1)
   {
     Mouse1MoveX = Mouse1MoveY = 0;
