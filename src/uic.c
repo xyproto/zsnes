@@ -384,8 +384,6 @@ static char *seconds_to_asc(unsigned int seconds)
   return(buffer);
 }
 
-unsigned char multiMouseMode = 0;
-
 extern unsigned int MessageOn;
 extern unsigned int MsgCount;
 extern char CSStatus[70];
@@ -454,7 +452,6 @@ int Mouse2MoveY = 0;
 
 void MultiMouseShutdown()
 {
-   multiMouseMode = 0;
    MouseCount = 0;
    ManyMouse_Quit();
 }
@@ -463,7 +460,6 @@ void MultiMouseInit()
 {
    MouseCount = ManyMouse_Init();
    printf("ManyMouse: %d mice detected.\n", MouseCount);
-   if (MouseCount) multiMouseMode = 1;
 }
 
 bool Mouse1Waiting = false, Mouse2Waiting = false;
@@ -479,7 +475,6 @@ void MultiMouseProcess(unsigned int mouse)
 
   if (mouse == 1)
   {
-    Mouse1MoveX = Mouse1MoveY = 0;
     if (Mouse1Waiting)
     {
       if (Mouse1Event.type == MANYMOUSE_EVENT_RELMOTION)
@@ -493,7 +488,6 @@ void MultiMouseProcess(unsigned int mouse)
 
   if (mouse == 2)
   {
-    Mouse2MoveX = Mouse2MoveY = 0;
     if (Mouse2Waiting)
     {
       if (Mouse2Event.type == MANYMOUSE_EVENT_RELMOTION)
