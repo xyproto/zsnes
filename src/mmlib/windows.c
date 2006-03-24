@@ -364,7 +364,7 @@ static void wminput_handler(WPARAM wParam, LPARAM lParam)
         return;  /* unexpected packet? */
 
     lpb = (LPBYTE) alloca(dwSize);
-    if (lpb == NULL) 
+    if (lpb == NULL)
         return;
     if (pGetRawInputData((HRAWINPUT) lParam, RID_INPUT, lpb, &dwSize,
                           sizeof (RAWINPUTHEADER)) != dwSize)

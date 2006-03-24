@@ -479,7 +479,7 @@ void MultiMouseProcess()
    ManyMouse_PollEvent(&event);
 
            if (event.type == MANYMOUSE_EVENT_RELMOTION)
-           { 
+           {
               if (event.device == 0)
                  if (event.item == 0) { Mouse1MoveX = event.value; } else { Mouse1MoveY = event.value; }
               else
