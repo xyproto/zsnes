@@ -158,6 +158,7 @@ NEWSYM processmouse1
     cmp byte[MouseCount],1
     jle .nomultimouse
     pushad
+    mov eax,1
     call MultiMouseProcess
     popad
     mov cx,[Mouse1MoveX]
@@ -224,6 +225,7 @@ NEWSYM processmouse2
     cmp byte[MouseCount],1
     jle .nomultimouse
     pushad
+    mov eax,2
     call MultiMouseProcess
     popad
     mov cx,[Mouse2MoveX]

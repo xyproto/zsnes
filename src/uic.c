@@ -451,7 +451,6 @@ int Mouse1MoveX = 0;
 int Mouse2MoveX = 0;
 int Mouse1MoveY = 0;
 int Mouse2MoveY = 0;
-int MousePoll = 0;
 
 void MultiMouseShutdown()
 {
@@ -467,23 +466,78 @@ void MultiMouseInit()
    if (MouseCount) multiMouseMode = 1;
 }
 
-void MultiMouseProcess()
+bool Mouse1Waiting = false, Mouse2Waiting = false;
+ManyMouseEvent Mouse1Event,Mouse2Event;
+
+
+void MultiMouseProcess(unsigned int mouse)
 {
-   ManyMouseEvent event;
+  ManyMouseEvent event;
+  event.device = ~0;
 
-   Mouse1MoveX = Mouse1MoveY = Mouse2MoveX = Mouse2MoveY = 0;
-   MousePoll ^= 1;
-   if (MousePoll)
-   {
-   ManyMouse_PollEvent(&event);
+  if ((mouse == 1) && Mouse1Waiting)
+  {
+    Mouse1MoveX = Mouse1MoveY = 0;
+    if (Mouse1Event.type == MANYMOUSE_EVENT_RELMOTION)
+    {
+      if (Mouse1Event.item == 0) { Mouse1MoveX = Mouse1Event.value; } else { Mouse1MoveY = Mouse1Event.value; }
+    }
+    Mouse1Waiting = false;
+    return;
+  }
 
-           if (event.type == MANYMOUSE_EVENT_RELMOTION)
-           {
-              if (event.device == 0)
-                 if (event.item == 0) { Mouse1MoveX = event.value; } else { Mouse1MoveY = event.value; }
-              else
-                 if (event.item == 0) { Mouse2MoveX = event.value; } else { Mouse2MoveY = event.value; }
+  if ((mouse == 2) && Mouse2Waiting)
+  {
+    Mouse2MoveX = Mouse2MoveY = 0;
+    if (Mouse2Event.type == MANYMOUSE_EVENT_RELMOTION)
+    {
+      if (Mouse2Event.item == 1) { Mouse2MoveX = Mouse2Event.value; } else { Mouse2MoveY = Mouse2Event.value; }
+    }
+    Mouse2Waiting = false;
+    return;
+  }
 
-           }
-}
+  while ((event.device != 0) && (event.device != 1))
+  {
+    if (!ManyMouse_PollEvent(&event))
+    {
+      if (mouse == 1)
+      {
+        Mouse1MoveX = Mouse1MoveY = 0;
+      }
+      if (mouse == 2)
+      {
+        Mouse2MoveX = Mouse2MoveY = 0;
+      }
+      return;
+    }
+
+    if ((mouse == 1) && event.device == 1)
+    {
+      Mouse2Event = event;
+      Mouse2Waiting = true;
+      event.device = ~0;
+    }
+    if ((mouse == 2) && event.device == 0)
+    {
+      Mouse1Event = event;
+      Mouse1Waiting = true;
+      event.device = ~0;
+    }
+  }
+
+  if (event.type == MANYMOUSE_EVENT_RELMOTION)
+  {
+    if (event.device == 0)
+    {
+      Mouse1MoveX = Mouse1MoveY = 0;
+      if (event.item == 0) { Mouse1MoveX = event.value; } else { Mouse1MoveY = event.value; }
+      return;
+    }
+    if (event.device == 1)
+    {
+      Mouse2MoveX = Mouse2MoveY = 0;
+      if (event.item == 0) { Mouse2MoveX = event.value; } else { Mouse2MoveY = event.value; }
+    }
+  }
 }
