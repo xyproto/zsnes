@@ -452,7 +452,6 @@ int Mouse2MoveX = 0;
 int Mouse1MoveY = 0;
 int Mouse2MoveY = 0;
 int MousePoll = 0;
-unsigned char MouseToRead = 0;
 
 void MultiMouseShutdown()
 {

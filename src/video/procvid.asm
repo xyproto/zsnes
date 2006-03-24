@@ -41,6 +41,10 @@ EXTSYM MovieProcessing,mzt_chdir,UpChdir,MovieFrameStr,GetMovieFrameStr
 EXTSYM MovieDisplayFrame
 EXTSYM MouseCount,device2
 
+%ifndef __MSDOS__
+EXTSYM Mouse1MoveX,Mouse1MoveY,Mouse2MoveX,Mouse2MoveY,MultiMouseProcess
+%endif
+
 %ifdef __MSDOS__
 EXTSYM SB_blank,vsyncon,Triplebufen,granadd
 %endif
@@ -143,10 +147,6 @@ NEWSYM showvideo
     pop edi
     pop esi
     ret
-
-%ifndef __MSDOS__
-EXTSYM multiMouseMode,Mouse1MoveX,Mouse1MoveY,Mouse2MoveX,Mouse2MoveY,MultiMouseProcess,MouseToRead
-%endif
 
 NEWSYM processmouse1
     push esi
