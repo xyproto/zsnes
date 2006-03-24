@@ -477,32 +477,30 @@ void MultiMouseProcess(unsigned int mouse)
 
   if (mouse == 1)
   {
-     Mouse1MoveX = Mouse1MoveY = 0;
+    Mouse1MoveX = Mouse1MoveY = 0;
+    if (Mouse1Waiting)
+    {
+      if (Mouse1Event.type == MANYMOUSE_EVENT_RELMOTION)
+      {
+        if (Mouse1Event.item == 0) { Mouse1MoveX = Mouse1Event.value; } else { Mouse1MoveY = Mouse1Event.value; }
+      }
+      Mouse1Waiting = false;
+      return;
+    }
   }
 
   if (mouse == 2)
   {
-     Mouse2MoveX = Mouse2MoveY = 0;
-  }
-
-  if ((mouse == 1) && Mouse1Waiting)
-  {
-    if (Mouse1Event.type == MANYMOUSE_EVENT_RELMOTION)
+    Mouse2MoveX = Mouse2MoveY = 0;
+    if (Mouse2Waiting)
     {
-      if (Mouse1Event.item == 0) { Mouse1MoveX = Mouse1Event.value; } else { Mouse1MoveY = Mouse1Event.value; }
+      if (Mouse2Event.type == MANYMOUSE_EVENT_RELMOTION)
+      {
+        if (Mouse2Event.item == 1) { Mouse2MoveX = Mouse2Event.value; } else { Mouse2MoveY = Mouse2Event.value; }
+      }
+      Mouse2Waiting = false;
+      return;
     }
-    Mouse1Waiting = false;
-    return;
-  }
-
-  if ((mouse == 2) && Mouse2Waiting)
-  {
-    if (Mouse2Event.type == MANYMOUSE_EVENT_RELMOTION)
-    {
-      if (Mouse2Event.item == 1) { Mouse2MoveX = Mouse2Event.value; } else { Mouse2MoveY = Mouse2Event.value; }
-    }
-    Mouse2Waiting = false;
-    return;
   }
 
   while ((event.device != 0) && (event.device != 1))
