@@ -475,9 +475,18 @@ void MultiMouseProcess(unsigned int mouse)
   ManyMouseEvent event;
   event.device = ~0;
 
+  if (mouse == 1)
+  {
+     Mouse1MoveX = Mouse1MoveY = 0;
+  }
+
+  if (mouse == 2)
+  {
+     Mouse2MoveX = Mouse2MoveY = 0;
+  }
+
   if ((mouse == 1) && Mouse1Waiting)
   {
-    Mouse1MoveX = Mouse1MoveY = 0;
     if (Mouse1Event.type == MANYMOUSE_EVENT_RELMOTION)
     {
       if (Mouse1Event.item == 0) { Mouse1MoveX = Mouse1Event.value; } else { Mouse1MoveY = Mouse1Event.value; }
@@ -488,7 +497,6 @@ void MultiMouseProcess(unsigned int mouse)
 
   if ((mouse == 2) && Mouse2Waiting)
   {
-    Mouse2MoveX = Mouse2MoveY = 0;
     if (Mouse2Event.type == MANYMOUSE_EVENT_RELMOTION)
     {
       if (Mouse2Event.item == 1) { Mouse2MoveX = Mouse2Event.value; } else { Mouse2MoveY = Mouse2Event.value; }
@@ -501,14 +509,6 @@ void MultiMouseProcess(unsigned int mouse)
   {
     if (!ManyMouse_PollEvent(&event))
     {
-      if (mouse == 1)
-      {
-        Mouse1MoveX = Mouse1MoveY = 0;
-      }
-      if (mouse == 2)
-      {
-        Mouse2MoveX = Mouse2MoveY = 0;
-      }
       return;
     }
 
@@ -530,13 +530,11 @@ void MultiMouseProcess(unsigned int mouse)
   {
     if (event.device == 0)
     {
-      Mouse1MoveX = Mouse1MoveY = 0;
       if (event.item == 0) { Mouse1MoveX = event.value; } else { Mouse1MoveY = event.value; }
       return;
     }
     if (event.device == 1)
     {
-      Mouse2MoveX = Mouse2MoveY = 0;
       if (event.item == 0) { Mouse2MoveX = event.value; } else { Mouse2MoveY = event.value; }
     }
   }
