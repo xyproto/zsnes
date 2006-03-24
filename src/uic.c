@@ -444,6 +444,8 @@ void DisplayBatteryStatus()
 
 // Make use of multiple mice.
 
+#ifndef __MSDOS__
+
 int MouseCount = 0;
 int Mouse1MoveX = 0;
 int Mouse2MoveX = 0;
@@ -533,3 +535,6 @@ void MultiMouseProcess(unsigned int mouse)
     }
   }
 }
+
+#endif
+

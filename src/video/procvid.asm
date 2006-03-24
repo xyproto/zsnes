@@ -155,6 +155,7 @@ NEWSYM processmouse1
     push ebx
     call Get_MouseData
     mov [mousebuttons],bx
+%ifndef __MSDOS__
     cmp byte[MouseCount],1
     jle .nomultimouse
     pushad
@@ -165,6 +166,7 @@ NEWSYM processmouse1
     mov dx,[Mouse1MoveY]
     jmp .mousestuff
 .nomultimouse
+%endif
     call Get_MousePositionDisplacement
 .mousestuff
     mov word[mousexpos],0
@@ -222,6 +224,7 @@ NEWSYM processmouse2
 .noautosw
     mov byte[ssautoswb],0
 .ss
+%ifndef __MSDOS__
     cmp byte[MouseCount],1
     jle .nomultimouse
     pushad
@@ -232,6 +235,7 @@ NEWSYM processmouse2
     mov dx,[Mouse2MoveY]
     jmp .mousestuff
 .nomultimouse
+%endif
     call Get_MousePositionDisplacement
 .mousestuff
     cmp byte[device2],3
