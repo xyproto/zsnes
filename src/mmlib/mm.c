@@ -54,11 +54,15 @@ int ManyMouse_Init(void)
     for (i = 0; mice_drivers[i]; i++)
     {
         int mice = mice_drivers[i]->init();
-        if (mice >= 0)
+        if (mice > 0)
         {
             driver = mice_drivers[i];
             return(mice);
         } /* if */
+        else
+        {
+            return(0);
+        }
     } /* for */
 
     return(-1);

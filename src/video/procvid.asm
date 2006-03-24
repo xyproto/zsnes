@@ -42,7 +42,7 @@ EXTSYM MovieDisplayFrame
 EXTSYM MouseCount,device2
 
 %ifndef __MSDOS__
-EXTSYM Mouse1MoveX,Mouse1MoveY,Mouse2MoveX,Mouse2MoveY,MultiMouseProcess
+EXTSYM MouseMoveX,MouseMoveY,MouseButton,MultiMouseProcess,mouse
 %endif
 
 %ifdef __MSDOS__
@@ -153,20 +153,22 @@ NEWSYM processmouse1
     push edi
     push edx
     push ebx
-    call Get_MouseData
-    mov [mousebuttons],bx
 %ifndef __MSDOS__
     cmp byte[MouseCount],1
     jle .nomultimouse
     pushad
-    mov eax,1
+    mov byte[mouse],0
     call MultiMouseProcess
     popad
-    mov cx,[Mouse1MoveX]
-    mov dx,[Mouse1MoveY]
+    mov bx,[MouseButton]
+    mov [mousebuttons],bx
+    mov cx,[MouseMoveX]
+    mov dx,[MouseMoveY]
     jmp .mousestuff
 .nomultimouse
 %endif
+    call Get_MouseData
+    mov [mousebuttons],bx
     call Get_MousePositionDisplacement
 .mousestuff
     mov word[mousexpos],0
@@ -203,11 +205,23 @@ NEWSYM processmouse2
     push edi
     push edx
     push ebx
+%ifndef __MSDOS__
+    cmp byte[MouseCount],1
+    jle .nomultimouse
+    pushad
+    mov byte[mouse],1
+    call MultiMouseProcess
+    popad
+    mov bx,[MouseButton+2]
+    jmp .mousestuff
+.nomultimouse
+%endif
     call Get_MouseData
+.mousestuff
     mov [mousebuttons],bx
     cmp byte[device2],2
     jne .ss
-    cmp byte[pressed+13],0
+     cmp byte[pressed+13],0
     je .noautosw
     cmp byte[ssautoswb],1
     je .ss
@@ -226,18 +240,14 @@ NEWSYM processmouse2
 .ss
 %ifndef __MSDOS__
     cmp byte[MouseCount],1
-    jle .nomultimouse
-    pushad
-    mov eax,2
-    call MultiMouseProcess
-    popad
-    mov cx,[Mouse2MoveX]
-    mov dx,[Mouse2MoveY]
-    jmp .mousestuff
-.nomultimouse
+    jle .nomultimouse2
+    mov cx,[MouseMoveX+2]
+    mov dx,[MouseMoveY+2]
+    jmp .mousestuff2
+.nomultimouse2
 %endif
     call Get_MousePositionDisplacement
-.mousestuff
+.mousestuff2
     cmp byte[device2],3
     je .le
     cmp byte[device2],4

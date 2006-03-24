@@ -447,10 +447,13 @@ void DisplayBatteryStatus()
 #ifndef __MSDOS__
 
 int MouseCount = 0;
-int Mouse1MoveX = 0;
-int Mouse2MoveX = 0;
-int Mouse1MoveY = 0;
-int Mouse2MoveY = 0;
+
+unsigned short MouseMoveX[2];
+unsigned short MouseMoveY[2];
+unsigned short MouseButton[2];
+
+bool MouseWaiting[2];
+ManyMouseEvent MouseEvent[2];
 
 void MultiMouseShutdown()
 {
@@ -464,6 +467,10 @@ void MultiMouseInit()
    printf("ManyMouse: %d mice detected.\n", MouseCount);
    if (MouseCount > 1)
    {
+     MouseMoveX[0] = MouseMoveX[1] = 0;
+     MouseMoveY[0] = MouseMoveY[1] = 0;
+     MouseButton[0] = MouseButton[1] = 0;
+     MouseWaiting[0] = MouseWaiting[1] = false;
      atexit(MultiMouseShutdown);
    }
    else
@@ -472,41 +479,35 @@ void MultiMouseInit()
    }
 }
 
-bool Mouse1Waiting = false, Mouse2Waiting = false;
-ManyMouseEvent Mouse1Event,Mouse2Event;
+#define BIT(x) (1 << (x))
+#define MOUSE_BUTTON_HANDLE(mouse, bit, value) \
+  if (value) { mouse |= BIT(bit); } \
+  else { mouse &= ~BIT(bit); }
 
-
-void MultiMouseProcess(unsigned int mouse)
+unsigned char mouse;
+void MultiMouseProcess()
 {
   ManyMouseEvent event;
   event.device = ~0;
 
-  Mouse1MoveX = Mouse1MoveY = Mouse2MoveX = Mouse2MoveY = 0;
+  MouseMoveX[mouse] = 0;
+  MouseMoveY[mouse] = 0;
+  //MouseButton[mouse] = 0;
 
-  if (mouse == 1)
+  if (MouseWaiting[mouse])
   {
-    if (Mouse1Waiting)
+    if (MouseEvent[mouse].type == MANYMOUSE_EVENT_RELMOTION)
     {
-      if (Mouse1Event.type == MANYMOUSE_EVENT_RELMOTION)
-      {
-        if (Mouse1Event.item == 0) { Mouse1MoveX = Mouse1Event.value; } else { Mouse1MoveY = Mouse1Event.value; }
-      }
-      Mouse1Waiting = false;
-      return;
+      if (MouseEvent[mouse].item == 0) { MouseMoveX[mouse] = MouseEvent[mouse].value; }
+      else { MouseMoveY[mouse] = MouseEvent[mouse].value; }
     }
-  }
-
-  if (mouse == 2)
-  {
-    if (Mouse2Waiting)
+    else if (MouseEvent[mouse].type == MANYMOUSE_EVENT_BUTTON)
     {
-      if (Mouse2Event.type == MANYMOUSE_EVENT_RELMOTION)
-      {
-        if (Mouse2Event.item == 1) { Mouse2MoveX = Mouse2Event.value; } else { Mouse2MoveY = Mouse2Event.value; }
-      }
-      Mouse2Waiting = false;
-      return;
+      if (MouseEvent[mouse].item == 0) { MOUSE_BUTTON_HANDLE(MouseButton[mouse], 0, MouseEvent[mouse].value); }
+      else if (MouseEvent[mouse].item == 1) { MOUSE_BUTTON_HANDLE(MouseButton[mouse], 1, MouseEvent[mouse].value); }
     }
+    MouseWaiting[mouse] = false;
+    return;
   }
 
   while ((event.device != 0) && (event.device != 1))
@@ -516,31 +517,23 @@ void MultiMouseProcess(unsigned int mouse)
       return;
     }
 
-    if ((mouse == 1) && event.device == 1)
+    if (event.device == (mouse^1))
     {
-      Mouse2Event = event;
-      Mouse2Waiting = true;
-      event.device = ~0;
-    }
-    if ((mouse == 2) && event.device == 0)
-    {
-      Mouse1Event = event;
-      Mouse1Waiting = true;
+      MouseEvent[event.device] = event;
+      MouseWaiting[event.device] = true;
       event.device = ~0;
     }
   }
 
   if (event.type == MANYMOUSE_EVENT_RELMOTION)
   {
-    if (event.device == 0)
-    {
-      if (event.item == 0) { Mouse1MoveX = event.value; } else { Mouse1MoveY = event.value; }
-      return;
-    }
-    if (event.device == 1)
-    {
-      if (event.item == 0) { Mouse2MoveX = event.value; } else { Mouse2MoveY = event.value; }
-    }
+    if (event.item == 0) { MouseMoveX[mouse] = event.value; }
+    else { MouseMoveY[mouse] = event.value; }
+  }
+  else if (event.type == MANYMOUSE_EVENT_BUTTON)
+  {
+    if (event.item == 0) { MOUSE_BUTTON_HANDLE(MouseButton[mouse], 0, event.value); }
+    else if (event.item == 1) { MOUSE_BUTTON_HANDLE(MouseButton[mouse], 1, event.value); }
   }
 }
 

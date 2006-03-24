@@ -518,7 +518,7 @@ NEWSYM cachevideo
 .nospeedreset
     mov eax,[KeyResetAll]
     test byte[pressed+eax],1
-    je .nodis6
+    je near .nodis6
     mov byte[pressed+eax],2
     mov byte[Voice0Disable],1
     mov byte[Voice1Disable],1
