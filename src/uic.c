@@ -462,6 +462,7 @@ void MultiMouseInit()
 {
    MouseCount = ManyMouse_Init();
    printf("ManyMouse: %d mice detected.\n", MouseCount);
+   atexit(MultiMouseShutdown);
 }
 
 bool Mouse1Waiting = false, Mouse2Waiting = false;
