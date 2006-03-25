@@ -22,11 +22,8 @@ EXTSYM initsfxregsw,reg420Bw,reg420Cw,regptw,initSA1regsw,SDD1Reset
 EXTSYM SPC7110Reset,RTCReset2,debstop,NextLineCache,vidmemch2,vidmemch4
 EXTSYM vidmemch8,vrama,nmirept,sndwrit,SPCRAM,HIRQCycNext,HIRQNextExe,HIRQSkip
 EXTSYM cycpb268,cycpb358,cycpbl,cycpblt,opexec268,opexec268cph,opexec358
-EXTSYM opexec358cph,printhex8
+EXTSYM opexec358cph
 
-SECTION .bss
-NEWSYM testgfxv1, resb 1
-NEWSYM testgfxv2, resb 1
 SECTION .text
 
 NEWSYM initregw
@@ -1173,10 +1170,6 @@ reg2133w:
     mov word[resolutn],239
     ret
 
-SECTION .bss
-NEWSYM CleartheScreen, resb 1
-SECTION .text
-
 ; Sound Register #1
 reg2140w:
     mov byte[sndwrit],1
@@ -1656,58 +1649,3 @@ reg43XAw:
 
 regINVALIDw:     ; Invalid Register
     ret
-
-
-regexiter:
-    mov bl,[xpb]
-    mov ax,[xpc]
-    test ax,8000h
-    jz .loweraddr2
-    mov eax,[snesmmap+ebx*4]
-    jmp .nextaddr
-.loweraddr2
-    mov eax,[snesmap2+ebx*4]
-.nextaddr
-    mov ebx,esi
-    sub ebx,eax                 ; subtract program counter by address
-    mov [.invaddr],bx
-    mov bl,[xpb]
-    mov [.invbank],bl
-
-    mov al,[previdmode]
-    mov ah,0
-    int 10h
-    mov byte[invalid],1
-    mov [invreg],cx
-    mov ah,9
-    mov edx,.invalidreg
-    int 21h
-    xor eax,eax
-    mov ax,[invreg]
-    call printhex
-    mov ah,9
-    mov edx,.invalidreg
-    int 21h
-    xor eax,eax
-    mov al,[.invbank]
-    call printhex8
-    mov ax,[.invaddr]
-    call printhex
-    mov ah,2
-    mov dl,13
-    int 21h
-    mov ah,2
-    mov dl,10
-    int 21h
-    mov eax,[numinst]
-    call printnum
-    jmp DosExit
-
-SECTION .data
-.invalidreg db 'Invalid Write Register : $'
-.invalidaddr db ' at address $'
-
-SECTION .bss
-.invbank resb 1
-.invaddr resb 1
-SECTION .text

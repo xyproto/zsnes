@@ -21,8 +21,7 @@
 EXTSYM SFXEnable,regptr,initsfxregsr,initSA1regs,SA1Enable,initSDD1regs
 EXTSYM SPC7110Enable,initSPC7110regs,RTCEnable,RTCReset,curypos,cycpl
 EXTSYM debuggeron,pdh,vram,romispal,reg1read,spcnumread,spcon,reg2read,reg3read
-EXTSYM reg4read,JoyEOrig,JoyENow,device2,cycphb,joycontren,totlines,DosExit
-EXTSYM invalid,numinst,previdmode,printhex,printnum
+EXTSYM reg4read,JoyEOrig,JoyENow,device2,cycphb,joycontren,totlines
 
 SECTION .text
 
@@ -1215,32 +1214,3 @@ regINVALID:     ; Invalid Register
 .nospc7110
 ;    mov byte[debstop3],1
     ret
-
-    mov al,[previdmode]
-    mov ah,0
-    int 10h
-    mov byte[invalid],1
-    mov [invreg],cx
-    mov ah,9
-    mov edx,.invalidreg
-    int 21h
-    xor eax,eax
-    mov ax,[invreg]
-    call printhex
-    mov ah,2
-    mov dl,13
-    int 21h
-    mov ah,2
-    mov dl,10
-    int 21h
-    mov eax,[numinst]          ;Temporary
-    call printnum
-    jmp DosExit
-
-SECTION .data
-.invalidreg db 'Invalid Read Register : $'
-SECTION .text
-
-
-
-
