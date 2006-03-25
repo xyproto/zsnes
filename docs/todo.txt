@@ -13,8 +13,6 @@ SDL Port:
 Windows Port:
 - OpenGL, or Direct3D support would be nice (we have the source for
   OpenGL but it needs to be integrated into the main tree, any takers?)
-- MingGW support is now added thanks to Nach and Jonas Quinn! But for some
-  reason GCC's -fweb is breaking winlink.cpp when compiled with optimisation.
 
 Compatibility
 - Game not working - Guikuden 1, Cu-On-Pa (and loads more)
