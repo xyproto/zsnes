@@ -107,7 +107,7 @@ EXTSYM ResetDuringMovie,MovieDumpRaw,AutoLoadCht
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM LowPassFilterType,MovieStartMethod,MovieDisplayFrame,resetposn
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath,FEOEZPath,SJNSPath
-EXTSYM MDHPath,SPL4Path,CheatSrcByteSize,prevloadfnamel,prevloaddname
+EXTSYM MDHPath,SPL4Path,CheatSrcByteSize,prevloadfnamel
 EXTSYM prevloadnames,prevloaddnamel,prevlfreeze,FirstTimeData,MMXSupport
 EXTSYM GUIRAdd,GUIGAdd,GUIBAdd,GUITRAdd,GUITGAdd,GUITBAdd,GUIWRAdd
 EXTSYM GUIWGAdd,GUIWBAdd,GUIloadfntype,SoundInterpType,PrimaryBuffer
@@ -134,7 +134,7 @@ EXTSYM mousewrap,GUIClick,PrevFSMode,PrevWinMode,GUIshowallext,HighPriority
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,OldGfxMode2,DontSavePath,SmallMsgText
 EXTSYM AutoPatch,RomInfo,AllowUDLR,DisableScreenSaver,Triplebufen,GrayscaleMode
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,TripleBufferWin
-EXTSYM BilinearFilter,lastcursres,OldVolume,prevloadl,prevloadfname,OldWinPos
+EXTSYM BilinearFilter,lastcursres,OldVolume,OldWinPos
 EXTSYM GUIwinposy2,GUIwinposx2,AllowMultipleInst,Surround,SoundBufEn,SPCDisable
 EXTSYM GUIEnableTransp,FilteredGUI,MouseWheel,TrapMouseCursor,AlwaysOnTop
 EXTSYM pl1p209,pl1p209b,SaveMainWindowPos,FastFwdToggle,SidewinderFix,RaisePitch
@@ -1035,42 +1035,6 @@ NEWSYM StartGUI
   mov eax,[pl1p209b]
   mov [pl1p209],eax
 .okayow
-  ; copy old quickfilename to new quickfilename
-  cmp byte[prevloadl],0
-  jne .noconvertlfqm
-  mov byte[prevloadl],1
-  mov ecx,10
-  xor edx,edx
-.convlfnlp
-  mov eax,ecx
-  dec eax
-  mov edx,eax
-  shl eax,9
-  shl edx,4
-  mov bl,16
-.convlfnlp2
-  mov bh,[prevloadfname+edx]
-  mov [prevloadfnamel+eax],bh
-  inc edx
-  inc eax
-  dec bl
-  jnz .convlfnlp2
-  mov eax,ecx
-  dec eax
-  mov edx,eax
-  shl eax,9
-  shl edx,7
-  mov bl,128
-.convlfnlp2b
-  mov bh,[prevloaddname+edx]
-  mov [prevloaddnamel+eax],bh
-  inc edx
-  inc eax
-  dec bl
-  jnz .convlfnlp2b
-  dec ecx
-  jnz .convlfnlp
-.noconvertlfqm
 
   mov byte[GUIOn],1
   mov byte[GUIOn2],1
