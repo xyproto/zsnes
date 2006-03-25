@@ -472,6 +472,8 @@ void MultiMouseInit()
      MouseButton[0] = MouseButton[1] = 0;
      MouseWaiting[0] = MouseWaiting[1] = false;
      atexit(MultiMouseShutdown);
+
+     printf("Using ManyMouse for:\nDevice 0: %s\nDevice 1: %s\n", ManyMouse_DeviceName(0), ManyMouse_DeviceName(1));
    }
    else
    {
@@ -492,7 +494,6 @@ void MultiMouseProcess()
 
   MouseMoveX[mouse] = 0;
   MouseMoveY[mouse] = 0;
-  //MouseButton[mouse] = 0;
 
   if (MouseWaiting[mouse])
   {
