@@ -505,8 +505,10 @@ void MultiMouseProcess()
         continue;
       }
 
-      if (event.device == (mouse^1));
+      if ((event.device == (mouse^1)) && !MouseWaiting[event.device])
       {
+        MouseMoveX[event.device] = 0;
+        MouseMoveY[event.device] = 0;
         MouseWaiting[event.device] = true;
       }
 
