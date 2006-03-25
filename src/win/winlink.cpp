@@ -56,8 +56,10 @@ asm_call() can be treated like any C function, use it to call an assembly functi
 #ifdef __GNUC__ //MinGW
 
 //Simple start and end structure, set as volatile so perhaps we can use -O1+ later
-#define ASM_BEGIN asm volatile (
-#define ASM_END );
+#define ASM_BEGIN asm volatile ( \
+ASM_COMMAND(pushad)
+#define ASM_END ASM_COMMAND(popad) \
+);
 //All commands need quotes and a newline and tab. C vars are _ prefixed
 #define ASM_COMMAND(line) #line"\n\t"
 #define ASM_COMMAND2(line, part2) #line", "#part2"\n\t"

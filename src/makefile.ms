@@ -405,7 +405,7 @@ ${WINDIR}/zsnes.res: ${WINDIR}/zsnes.rc ${WINDIR}/afxres.h ${WINDIR}/resource.h
 	rc ${WINDIR}/zsnes.rc
 else
 ${WINDIR}/winlink${OE}: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
-	${CPPC} -O0 ${CFLAGS} -masm=intel -o $@ -c ${WINDIR}/winlink.cpp
+	${CPPC} ${COPT} ${CFLAGS} -masm=intel -o $@ -c ${WINDIR}/winlink.cpp
 ${WINDIR}/zsnes${OE}: ${WINDIR}/zsnes.rc ${WINDIR}/afxres.h ${WINDIR}/resource.h
 	${WINDRES} --include-dir ${WINDIR} ${WINDIR}/zsnes.rc -o${WINDIR}/zsnes${OE}
 ${OBJFIX}: objfix.c
