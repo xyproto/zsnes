@@ -515,58 +515,42 @@ GUIgetcurrentinput:
 .noloadmenu                            ; Config Hotkeys
   cmp byte[GUIcmenupos],3
   jne near .noconfigmenu
-  cmp dh,'1'
-  jne .noin1
+  cmp dh,'I'
+  jne .noin
   mov byte[GUIcrowpos],0
-.noin1
-  cmp dh,'2'
-  jne .noin2
-  mov byte[GUIcrowpos],1
-.noin2
-  cmp dh,'3'
-  jne .noin3
+.noin
+  cmp dh,'D'
+  jne .noind
   mov byte[GUIcrowpos],2
-.noin3
-  cmp dh,'4'
-  jne .noin4
-  mov byte[GUIcrowpos],3
-.noin4
-  cmp dh,'5'
-  jne .noin5
-  mov byte[GUIcrowpos],4
-.noin5
-  cmp dh,'A'
-  jne .noina
-  mov byte[GUIcrowpos],6
-.noina
+.noind
   cmp dh,'F'
   jne .noinc
-  mov byte[GUIcrowpos],7
+  mov byte[GUIcrowpos],3
 .noinc
   cmp dh,'O'
   jne .noino
-  mov byte[GUIcrowpos],9
+  mov byte[GUIcrowpos],5
 .noino
   cmp dh,'V'
   jne .noinv
-  mov byte[GUIcrowpos],10
+  mov byte[GUIcrowpos],6
 .noinv
   cmp dh,'S'
   jne .noins
-  mov byte[GUIcrowpos],11
+  mov byte[GUIcrowpos],7
 .noins
   cmp dh,'P'
   jne .noinp
-  mov byte[GUIcrowpos],12
+  mov byte[GUIcrowpos],8
 .noinp
+  cmp dh,'A'
+  jne .noina
+  mov byte[GUIcrowpos],9
+.noina
   cmp dh,'E'
   jne .noine
-  mov byte[GUIcrowpos],13
+  mov byte[GUIcrowpos],10
 .noine
-  cmp dh,'D'
-  jne .noind
-  mov byte[GUIcrowpos],14
-.noind
 .noconfigmenu                          ; Cheat Hotkeys
   cmp byte[GUIcmenupos],4
   jne near .nocheatmenu
