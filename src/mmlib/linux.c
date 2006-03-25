@@ -1,10 +1,32 @@
 /*
- * Support for Linux evdevs...the /dev/input/event* devices.
- *
- * Please see the file LICENSE in the source's root directory.
- *
- *  This file written by Ryan C. Gordon.
- */
+Copyright (c) 2003-2006 Ryan C. Gordon and others.
+   
+http://icculus.org/manymouse/
+
+This software is provided 'as-is', without any express or implied warranty.
+In no event will the authors be held liable for any damages arising from
+the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+claim that you wrote the original software. If you use this software in a
+product, an acknowledgment in the product documentation would be
+appreciated but is not required.
+
+2. Altered source versions must be plainly marked as such, and must not be
+misrepresented as being the original software.
+
+3. This notice may not be removed or altered from any source distribution.
+
+    Ryan C. Gordon <icculus@icculus.org>
+*/
+
+//Support for Linux evdevs...the /dev/input/event* devices.
+
+#include "mm.h"
 
 #ifdef __linux__
 
@@ -20,8 +42,6 @@
 #include <fcntl.h>
 
 #include <linux/input.h>  /* evdev interface...  */
-
-#include "mm.h"
 
 #define test_bit(array, bit)    (array[bit/8] & (1<<(bit%8)))
 
@@ -256,7 +276,7 @@ static int linux_evdev_init(void)
 
     dirp = opendir("/dev/input");
     if (!dirp)
-        return 0;
+        return -1;
 
     while ((dent = readdir(dirp)) != NULL)
     {
@@ -322,6 +342,14 @@ static int linux_evdev_poll(ManyMouseEvent *event)
     return(0);  /* no new events */
 } /* linux_evdev_poll */
 
+#else
+
+static int linux_evdev_init(void) { return(-1); }
+static void linux_evdev_quit(void) {}
+static const char *linux_evdev_name(unsigned int index) { return(0); }
+static int linux_evdev_poll(ManyMouseEvent *event) { return(0); }
+
+#endif  /* defined __linux__ */
 
 ManyMouseDriver ManyMouseDriver_evdev =
 {
@@ -331,7 +359,4 @@ ManyMouseDriver ManyMouseDriver_evdev =
     linux_evdev_poll
 };
 
-#endif  /* defined __linux__ */
-
 /* end of linux_evdev.c ... */
-
