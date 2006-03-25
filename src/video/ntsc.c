@@ -82,7 +82,7 @@ static void rotate_matrix( float const* in, float s, float c, float* out )
 
 static void ntsc_to_rgb_init( ntsc_to_rgb_t* ntsc, snes_ntsc_setup_t const* setup )
 {
-	static float const to_rgb [6] = { 0.956, 0.621, -0.272, -0.647, -1.105, 1.702 };
+	static float const to_rgb [6] = { 0.956f, 0.621f, -0.272f, -0.647f, -1.105f, 1.702f };
 	static float const gaussian_factor = 1.0; /* 1 = normal, > 1 reduces echoes of bright objects */
 	int i;
 
@@ -241,7 +241,7 @@ static ntsc_rgb_t* gen_pixel( ntsc_to_rgb_t* ntsc, int ntsc_pos, int rescaled_po
 static ntsc_rgb_t gen_kernel( ntsc_to_rgb_t* ntsc, float y, float ci, float cq, ntsc_rgb_t* out )
 {
 	static float const burst_phases [burst_count] [2] = { /* 0 deg, -120 deg, -240 deg */
-		{0.0, 1.0}, {-0.866025, -0.5}, {0.866025, -0.5}
+		{0.0f, 1.0f}, {-0.866025f, -0.5f}, {0.866025f, -0.5f}
 	};
 	int burst;
 

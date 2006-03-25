@@ -13,7 +13,6 @@
 #define dup2 _dup2
 #define pipe _pipe
 #define flushall _flushall
-#define fdopen _fdopen
 
 #ifndef STDIN_FILENO
 #define STDIN_FILENO 0
