@@ -452,6 +452,8 @@ unsigned short MouseMoveX[2];
 unsigned short MouseMoveY[2];
 unsigned short MouseButton[2];
 
+bool MouseWaiting[2];
+
 void MultiMouseShutdown()
 {
    MouseCount = 0;
@@ -467,6 +469,7 @@ void MultiMouseInit()
      MouseMoveX[0] = MouseMoveX[1] = 0;
      MouseMoveY[0] = MouseMoveY[1] = 0;
      MouseButton[0] = MouseButton[1] = 0;
+     MouseWaiting[0] = MouseWaiting[1] = false;
      atexit(MultiMouseShutdown);
 
      printf("Using ManyMouse for:\nMouse 0: %s\nMouse 1: %s\n", ManyMouse_DeviceName(0), ManyMouse_DeviceName(1));
@@ -486,13 +489,27 @@ unsigned char mouse;
 void MultiMouseProcess()
 {
   ManyMouseEvent event;
-  MouseMoveX[mouse] = 0;
-  MouseMoveY[mouse] = 0;
-
-  while (ManyMouse_PollEvent(&event))
+  if (MouseWaiting[mouse])
   {
-    if ((event.device == 0) || (event.device == 1))
+    MouseWaiting[mouse] = false;
+  }
+  else
+  {
+    MouseMoveX[mouse] = 0;
+    MouseMoveY[mouse] = 0;
+
+    while (ManyMouse_PollEvent(&event))
     {
+      if (event.device != 0 && event.device != 1)
+      {
+        continue;
+      }
+
+      if (event.device == (mouse^1));
+      {
+        MouseWaiting[event.device] = true;
+      }
+
       if (event.type == MANYMOUSE_EVENT_RELMOTION)
       {
         if (event.item == 0) { MouseMoveX[event.device] = event.value; }
