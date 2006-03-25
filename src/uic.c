@@ -277,7 +277,7 @@ void zstart ()
   printf("%s", mydebug);
 
   // Print welcome message.
-  printf("ZSNES v%s, (c) 1997-2005, ZSNES Team\n", ZVERSION);
+  printf("ZSNES v%s, (c) 1997-2006, ZSNES Team\n", ZVERSION);
   puts("Be sure to check http://www.zsnes.com/ for the latest version.");
   puts("Please report crashes to zsnes-devel@lists.sourceforge.net.\n");
   puts("ZSNES is written by the ZSNES Team (See AUTHORS.TXT)");
@@ -504,6 +504,8 @@ void MultiMouseProcess()
       {
         continue;
       }
+
+      //printf("Device: %d; Type: %d; Item: %d; Value: %d\n", event.device, event.type, event.item, event.value);
 
       if ((event.device == (mouse^1)) && !MouseWaiting[event.device])
       {
