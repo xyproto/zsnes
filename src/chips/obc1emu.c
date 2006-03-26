@@ -122,8 +122,10 @@ void SetOBC1 ()
 	OBC1_RAM[obc1_address & 0x1fff] = obc1_byte;
 }
 
-void ResetOBC1()
+extern unsigned char *romdata;
+void InitOBC1()
 {
+	OBC1_RAM = romdata+0x400000;
 	if (OBC1_RAM[0x1ff5] & 1)
 		OBC1_BasePtr = 0x1800;
 	else
@@ -131,11 +133,4 @@ void ResetOBC1()
 
 	OBC1_Address = OBC1_RAM[0x1ff6] & 0x7f;
 	OBC1_Shift = (OBC1_RAM[0x1ff6] & 3) << 1;
-}
-
-extern unsigned char *romdata;
-void InitOBC()
-{
-  OBC1_RAM = romdata+0x400000;
-  ResetOBC1();
 }
