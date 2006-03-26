@@ -353,12 +353,12 @@ int Main_Proc(void)
 				offset += event.jaxis.axis * 2;
 				if (offset >= (256 + 128 + 64)) break;
 //				printf("DEBUG axis offset: %d\n", offset);
-				if (event.jaxis.value < -16384)
+				if (event.jaxis.value < -128)
 				{
 					pressed[offset + 1] = 1;
 					pressed[offset + 0] = 0;
 				}
-				else if (event.jaxis.value > 16384)
+				else if (event.jaxis.value > 128)
 				{
 					pressed[offset + 0] = 1;
 					pressed[offset + 1] = 0;
