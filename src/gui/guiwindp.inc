@@ -4235,32 +4235,30 @@ DisplayGUIAddOns:                   ;Select Special Controllers
   GUIDisplayText 17,21,58,GUIAddOnText5Alt
   jmp .endEE
 .noEE                                ;Regular
-  GUIDisplayTextu 17,21,18,GUIAddOnText1,0
-  GUIDisplayTextu 17,21,28,GUIAddOnText2,0
 
-  GUIDisplayTextu 17,82,18,GUIAddOnText1,1
-  GUIDisplayTextu 17,82,28,GUIAddOnText2,1
-  GUIDisplayTextu 17,82,38,GUIAddOnText3,0
-  GUIDisplayTextu 17,82,48,GUIAddOnText4,0
-  GUIDisplayTextu 17,82,58,GUIAddOnText5,0
 .endEE
 
-  GUIDisplayButtonHole 17,9,15,byte[device1],0  ;Radio Buttons
-  GUIDisplayButtonHole 17,9,25,byte[device1],1
+  GUIDisplayText 17,20,15,GUIAddOnText1
+  GUIDisplayText 17,82,15,GUIAddOnText2
 
-  GUIDisplayButtonHole 17,70,15,byte[device2],0
-  GUIDisplayButtonHole 17,70,25,byte[device2],1
-  GUIDisplayButtonHole 17,70,35,byte[device2],2
-  GUIDisplayButtonHole 17,70,45,byte[device2],3
-  GUIDisplayButtonHole 17,70,55,byte[device2],4
+  GUIDisplayButtonHoleTu 17,9,23,byte[device1],0,GUIAddOnText3,0
+  GUIDisplayButtonHoleTu 17,9,33,byte[device1],1,GUIAddOnText4,0
+
+  GUIDisplayButtonHoleTu 17,70,23,byte[device2],0,GUIAddOnText3,1
+  GUIDisplayButtonHoleTu 17,70,33,byte[device2],1,GUIAddOnText4,1
+  GUIDisplayButtonHoleTu 17,70,43,byte[device2],2,GUIAddOnText5,0
+  GUIDisplayButtonHoleTu 17,70,53,byte[device2],3,GUIAddOnText6,0
+  GUIDisplayButtonHoleTu 17,70,63,byte[device2],4,GUIAddOnText7,0
   ret
 
 SECTION .data
-GUIAddOnText1 db 'GAMEPAD',0
-GUIAddOnText2 db 'MOUSE',0
-GUIAddOnText3 db 'SUPER SCOPE',0
-GUIAddOnText4 db '1 JUSTIFIER',0
-GUIAddOnText5 db '2 JUSTIFIERS',0
+GUIAddOnText1 db 'PORT 1:',0
+GUIAddOnText2 db 'PORT 2:',0
+GUIAddOnText3 db 'GAMEPAD',0
+GUIAddOnText4 db 'MOUSE',0
+GUIAddOnText5 db 'SUPER SCOPE',0
+GUIAddOnText6 db '1 JUSTIFIER',0
+GUIAddOnText7 db '2 JUSTIFIERS',0
 
 ;EE
 GUIAddOnText1Alt db 79,70,70,0

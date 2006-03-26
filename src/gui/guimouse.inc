@@ -3262,14 +3262,14 @@ DisplayGUICheatSearchClick:
   ret
 
 DisplayGUIAddOnClick:
-  GUIPButtonHole 9,15,byte[device1],0
-  GUIPButtonHole 9,25,byte[device1],1
+  GUIPButtonHole 9,23,byte[device1],0
+  GUIPButtonHole 9,33,byte[device1],1
 
-  GUIPButtonHole 70,15,byte[device2],0
-  GUIPButtonHole 70,25,byte[device2],1
-  GUIPButtonHole 70,35,byte[device2],2
-  GUIPButtonHole 70,45,byte[device2],3
-  GUIPButtonHole 70,55,byte[device2],4
+  GUIPButtonHole 70,23,byte[device2],0
+  GUIPButtonHole 70,33,byte[device2],1
+  GUIPButtonHole 70,43,byte[device2],2
+  GUIPButtonHole 70,53,byte[device2],3
+  GUIPButtonHole 70,63,byte[device2],4
   ret
 
 DisplayGUIChipClick:
