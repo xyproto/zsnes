@@ -66,23 +66,6 @@ NEWSYM YesMMX, db 'MMX support found and enabled.',13,10,13,10,0
 SECTION .text
 
 ;*******************************************************
-; Allocate Memory, ebx = size,eax returned = LFB pointer
-;*******************************************************
-
-NEWSYM AllocMem
-%ifndef __UNIXSDL__
-    mov ax,0501h
-    mov cx,bx
-    shr ebx,16
-    int 31h
-    jc near outofmemory
-    mov ax,bx
-    shl eax,16
-    mov ax,cx
-%endif
-    ret
-
-;*******************************************************
 ; Get Command Line       Locates SET CMDLINE environment
 ;*******************************************************
 

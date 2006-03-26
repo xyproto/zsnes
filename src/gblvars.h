@@ -42,5 +42,4 @@ extern bool SRAMState;
 
 extern short C4WFXVal, C41FXVal, Op00Multiplicand, Op04Angle, Op08X, Op18X;
 extern short Op28X, Op0CA, Op02FX, Op0AVS, Op06X, Op01m, Op0DX, Op03F, Op14Zr;
-extern short Op0EH;
-extern signed short Op10Coefficient;
+extern short Op0EH, Op10Coefficient;

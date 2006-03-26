@@ -1985,9 +1985,11 @@ DisplayGUIConfirmClick:
   GUIWinControl 5,27,144,26+15*7,GUIcurrentfilewin,GUIcurrentviewloc,GUIfileentries,27,7,GUIcurrentcursloc,0,1,30
   GUIWinControl 160,27,228,26+15*7,GUIcurrentfilewin,GUIcurrentdirviewloc,GUIdirentries,27,7,GUIcurrentdircursloc,1,1,30
   GUIPHoldbutton 186,165,228,176,1
+%ifdef __MSDOS__
   GUIPButtonHoleLoad 9,163,byte[GUIloadfntype],0
   GUIPButtonHoleLoad 9,171,byte[GUIloadfntype],1
   GUIPButtonHoleLoad 9,179,byte[GUIloadfntype],2
+%endif
   GUIClickCButton5 144,177,byte[ForceROMTiming],1
   GUIClickCButton5 144,187,byte[ForceROMTiming],2
   GUIClickCButton5 184,177,byte[ForceHiLoROM],1

@@ -39,7 +39,7 @@ void ST010DoCommand(void);
 
 typedef signed char     int8;
 typedef unsigned char   uint8;
-typedef signed short    int16;
+typedef short           int16;
 typedef unsigned short  uint16;
 typedef int             int32;
 typedef unsigned int    uint32;

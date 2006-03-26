@@ -26,19 +26,17 @@ EXTSYM C41FXVal,C41FYVal,C41FAngleRes,C41FDist,C4Op1F,C4Op15
 EXTSYM C41FDistVal,C4Op0D,C4Op22,SinTable,CosTable
 EXTSYM SFXEnable,regptra,sfxramdata,snesmmap,wramdataa,C4Ram,C4Enable
 EXTSYM C4RamR,C4RamW,snesmap2,SPC7110Enable
-EXTSYM DSP1Read16b
-EXTSYM DSP1Write8b,regptwa,writeon
+EXTSYM DSP1Write8b,regptwa,writeon,DSP1Read16b
 EXTSYM Bank0datr8,Bank0datw8,Bank0datr16,Bank0datw16,xd,SA1xd
-EXTSYM DSP1Read8b,DSP1Type,SA1Enable
-EXTSYM DSP1Write16b
+EXTSYM DSP1Read8b,DSP1Type,SA1Enable,DSP1Write16b
 EXTSYM CurDecompPtr,PrevDecompPtr,CurDecompSize
 EXTSYM SPCDecmPtr,SPCCompPtr,SPCCompCounter
-EXTSYM ramsize,ramsizeand,sram
-EXTSYM ram7fa
-EXTSYM DosExit,invalid,invopcd,previdmode,printhex8
+EXTSYM ramsize,ramsizeand,sram,ram7fa
 EXTSYM SA1Status,IRAM,CurBWPtr,SA1RAMArea
 EXTSYM SA1Overflow,OBCEnable
 EXTSYM Sdd1Mode,Sdd1Bank,Sdd1Addr,Sdd1NewAddr,memtabler8,AddrNoIncr,SDD1BankA
+EXTSYM SDD1_init,SDD1_get_byte,BWShift,SA1BWPtr
+
 
 ; C4SprScale
 
@@ -2855,8 +2853,6 @@ NEWSYM regaccessbankr8mp
 ; enter : BL = bank number, CX = address location
 ; leave : AL = value read
 
-EXTSYM BWShift,SA1BWPtr
-
 %macro BWCheck 0
     cmp byte[BWShift],0
     jne near .shift
@@ -4220,36 +4216,6 @@ NEWSYM eramaccessbankw16
     ret
 
 ;*******************************************************
-; Invalid Access Bank (710000h-7DFFFFh)
-;*******************************************************
-NEWSYM invaccessbank
-    xor eax,eax
-    mov byte[invalid],1
-    mov [invopcd],bl
-    mov al,[previdmode]
-    mov ah,0
-    int 10h
-    mov ah,9
-    mov edx,.invalidbank
-    int 21h
-    xor eax,eax
-    mov al,[invopcd]
-    call printhex8
-    mov ah,2
-    mov dl,13
-    int 21h
-    mov ah,2
-    mov dl,10
-    int 21h
-    jmp DosExit
-
-SECTION .data
-.invalidbank db 'Invalid Bank Access : $'
-SECTION .text
-    ret
-
-
-;*******************************************************
 ; SA-1 Bank Accesses
 ;*******************************************************
 
@@ -4686,9 +4652,6 @@ SECTION .text
 SECTION .data
 NEWSYM LatestBank, dd 0FFFFh
 SECTION .text
-
-EXTSYM SDD1_init
-EXTSYM SDD1_get_byte
 
 ; Software decompression version
 NEWSYM memaccessbankr8sdd1

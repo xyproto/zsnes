@@ -236,14 +236,14 @@ void C4CalcWireFrame()
   C4WFYVal=C4WFY2Val-C4WFYVal;
   if (abs(C4WFXVal)>abs(C4WFYVal)){
     C4WFDist=abs(C4WFXVal)+1;
-    C4WFYVal=(256*(long)C4WFYVal)/abs(C4WFXVal);
+    C4WFYVal=(short)((256*(long)C4WFYVal)/abs(C4WFXVal));
     if (C4WFXVal<0) C4WFXVal=-256;
     else C4WFXVal=256;
   }
   else
   if (C4WFYVal!=0) {
     C4WFDist=abs(C4WFYVal)+1;
-    C4WFXVal=(256*(long)C4WFXVal)/abs(C4WFYVal);
+    C4WFXVal=(short)((256*(long)C4WFXVal)/abs(C4WFYVal));
     if (C4WFYVal<0) C4WFYVal=-256;
     else C4WFYVal=256;
   }

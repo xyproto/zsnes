@@ -55,7 +55,7 @@ EXTSYM GetCurDir,SRAMChdir,cfgloadsdir,fnamest,statefileloc,InitDir,InitDrive
 EXTSYM curromspace,infoloc,patchfile,romispal,initregr,initregw,memtabler16
 EXTSYM memtabler8,memtablew16,memtablew8,sfxramdata,wramreadptr
 EXTSYM wramwriteptr,loadstate2,CMovieExt,MoviePlay,MovieDumpRaw,AllowUDLR
-EXTSYM device1,device2,processmouse1,processmouse2
+EXTSYM device1,device2,processmouse1,processmouse2,cpalval
 
 ;initc.c
 EXTSYM clearmem,clearSPCRAM,PatchUsingIPS,ZOpenFileName,loadROM,SPC7110IndexSize
@@ -89,7 +89,6 @@ NEWSYM EndMessage
 
 SECTION .text
 
-EXTSYM cpalval
 NEWSYM init
     ; prevents a crash if cpalval gets accessed before initializing
     mov eax,cpalval
