@@ -1943,7 +1943,7 @@ extern unsigned short totlines;
 void SetAddressingModes(), GenerateBank0Table();
 void SetAddressingModesSA1(), GenerateBank0TableSA1();
 void calculate_state_sizes(), InitRewindVars();
-void InitDSP(), InitDSP2(), InitDSP3(), InitDSP4(), InitFxTables(), initregr(), initregw();
+void InitDSP(), InitDSP2(), InitDSP3(), InitDSP4(), InitOBC(), InitFxTables(), initregr(), initregw();
 void SPC7110Load(), DOSClearScreen(), dosmakepal();
 
 void CheckROMType()
@@ -2000,6 +2000,14 @@ void CheckROMType()
 
     // DSP-4 mapping, banks 30 - 3F
     map_mem(0x30, &dsp4bank, 0x10);
+  }
+
+  if (OBCEnable)
+  {
+    InitOBC();
+
+    map_mem(0x00, &obc1bank, 0x40);
+    map_mem(0x80, &obc1bank, 0x40);
   }
 
   if (SFXEnable)

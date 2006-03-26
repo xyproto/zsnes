@@ -33,7 +33,7 @@ EXTSYM CurDecompPtr,PrevDecompPtr,CurDecompSize
 EXTSYM SPCDecmPtr,SPCCompPtr,SPCCompCounter
 EXTSYM ramsize,ramsizeand,sram,ram7fa
 EXTSYM SA1Status,IRAM,CurBWPtr,SA1RAMArea
-EXTSYM SA1Overflow,OBCEnable
+EXTSYM SA1Overflow
 EXTSYM Sdd1Mode,Sdd1Bank,Sdd1Addr,Sdd1NewAddr,memtabler8,AddrNoIncr,SDD1BankA
 EXTSYM SDD1_init,SDD1_get_byte,BWShift,SA1BWPtr
 
@@ -657,205 +657,10 @@ NEWSYM C4ProcessSprites
     ret
 
 section .bss
-NEWSYM SprValAdd, resb 1
 C4Data resd 1
 C4sprites resd 1
-OBClog resd 1
-NumSprites resb 1
-OBCOldRegArray resb 1
 
-section .text
-
-NEWSYM InitOBC
-    pushad
-    mov esi,[romdata]
-    add esi,4096*1024
-    mov [C4RamR],esi
-    mov [C4RamW],esi
-    mov [C4Ram],esi
-    add dword[C4RamW],8192*4
-    add dword[C4Ram],8192*8
-    mov ecx,8192
-.c4loop
-    mov dword[esi],OBCReadReg
-    mov dword[esi+8192*4],OBCWriteReg
-    mov dword[esi+8192*8],0
-    add esi,4
-    dec ecx
-    jnz .c4loop
-    mov esi,[romdata]
-    add esi,4096*1024
-    mov dword[esi+3A1Eh*4],OBCClear
-    mov dword[esi+3FF0h*4],OBCRegs
-    mov dword[esi+3FF1h*4],OBCRegs
-    mov dword[esi+3FF2h*4],OBCRegs
-    mov dword[esi+3FF3h*4],OBCRegs
-    mov dword[esi+3FF4h*4],OBCRegs
-    mov dword[esi+3FF5h*4],OBCRegs
-    mov dword[esi+3FF6h*4],OBCRegs
-    mov dword[esi+3FF7h*4],OBCRegs
-    popad
-    ret
-
-OBCSprites:
-    pushad
-    mov byte[NumSprites],0
-    mov esi,[C4Ram]
-    mov edi,esi
-    add edi,1800h
-    add byte[OBCRegArray],2
-    and byte[OBCRegArray],0FEh
-    cmp byte[OBCRegArray],0FEh
-    je .ohno
-    cmp byte[OBCRegArray],0
-    je .ohno
-    jmp .okay
-.ohno
-    mov al,[OBCOldRegArray]
-    mov [OBCRegArray],al
-    jmp .loop
-.okay
-    mov al,[OBCRegArray]
-    mov [OBCOldRegArray],al
-.loop
-    cmp byte[OBCRegArray],0
-    je .nomore
-    sub byte[OBCRegArray],2
-    xor ebx,ebx
-    mov bl,[esi+6]
-    shl ebx,2
-
-    ; Get X,Y,OAM, and Attr
-    mov al,[esi+3]         ;0,3
-    mov [edi+ebx],al
-    mov al,[esi+9]
-    mov [edi+ebx+1],al
-    mov al,[esi+10]       ;2,10
-    mov [edi+ebx+2],al
-    mov al,[esi+0Bh]
-    mov [edi+ebx+3],al
-
-    xor ebx,ebx
-    mov bl,[esi+6]
-    shr ebx,2
-    add ebx,512
-    mov cl,[esi+6]
-    and cl,03h
-    add cl,cl
-
-    xor al,al
-    mov ah,0FCh
-    mov al,[esi+4]   ;1,4
-    and al,03h
-    shl al,cl
-    rol ah,cl
-    and byte[edi+ebx],ah
-    or byte[edi+ebx],al
-
-    inc byte[NumSprites]
-    add esi,16
-    jmp .loop
-.nomore
-
-    mov esi,[C4Ram]
-    mov edi,esi
-    add edi,1800h
-;    mov dword[edi+200h],0AAAAAAAAh
-    popad
-    ret
-
-OBCClear:
-    call OBCSprites
-    mov byte[clearmem],1
-    mov dword[OBClog],0
-    ret
-
-; Affected values: 0,1,2,3,4,6,7,9,A,B
-; 0,1 - Another X value (unused?)
-; 2   - OAM value
-; 3/4 - X value (bits 0-8)
-; 5   - N/A (not written to)
-; 6   - OAM #
-; 7   - Always 0?
-; 9   - Y value (bits 0-7)
-; A   - OAM value
-; B   - OAM Status
-; X,Y,OAM,Attr / xhighbit / OAM highbit / Sprite size
-;bit 0 = OAM b8, bit 1-3 = palette number bit 4,5 = playfield priority
-;bit 6   = horizontal flip bit 7   = horizonal flip
-; Extra: bit 0 = X bit 8, bit 1 = Larger sprite size
-
-SECTION .bss
-OBCRegArray resb 8
-clearmem resb 1
-SECTION .data
-OBCIncArray db 2,1,1,1,2,2,2,2
 SECTION .text
-
-OBCRegs:
-    pushad
-    sub ecx,1FF0h
-
-    cmp byte[clearmem],0
-    je near .noclearmem
-    cmp ecx,6
-    je .okay
-    popad
-    ret
-.okay
-    mov dword[OBCRegArray],0
-    mov dword[OBCRegArray+4],0
-    mov byte[OBCRegArray],0FEh
-    mov byte[clearmem],0
-.noclearmem
-
-    mov ebx,[C4Ram]
-    add ebx,1000h
-    add ebx,[OBClog]
-    inc dword[OBClog]
-    mov [ebx],cl
-    cmp cl,6
-    jne .notsix
-    add byte[OBCRegArray],2
-    mov bl,[OBCRegArray]
-    mov bh,bl
-    mov [OBCRegArray+1],bl
-    mov [OBCRegArray+2],bx
-    mov [OBCRegArray+4],bx
-    mov [OBCRegArray+6],bx
-.notsix
-
-    xor ebx,ebx
-    mov bl,[OBCRegArray+ecx]
-    cmp byte[OBCIncArray+ecx],1
-    jne .noinc
-    or byte[OBCRegArray+ecx],1
-.noinc
-    shl ebx,3
-    add ecx,ebx
-    add ecx,[C4Ram]
-    mov [ecx],al
-;    cmp dl,1
-;    jne .second
-    mov byte[ecx+8],0FFh
-;    jmp .first
-;.second
-;    mov byte[ecx+16],0FFh
-;.first
-    popad
-    ret
-
-OBCReadReg:
-    add ecx,[C4Ram]
-    mov al,[ecx]
-    sub ecx,[C4Ram]
-    ret
-
-OBCWriteReg
-    add ecx,[C4Ram]
-    mov [ecx],al
-    sub ecx,[C4Ram]
-    ret
 
 NEWSYM InitC4
     pushad
@@ -2473,8 +2278,6 @@ NEWSYM regaccessbankr8
     je .sfxram
     cmp byte[C4Enable],1
     je near .c4ram
-    cmp byte[OBCEnable],1
-    je near .c4ram
     and ebx,7Fh
     cmp bl,10h
     jb .dsp1
@@ -2578,8 +2381,6 @@ NEWSYM regaccessbankr16
     je .sfxram
     cmp byte[C4Enable],1
     je near .c4ram
-    cmp byte[OBCEnable],1
-    je near .c4ram
     and ebx,7Fh
     cmp bl,10h
     jb .dsp1
@@ -2677,8 +2478,6 @@ NEWSYM regaccessbankw8
     cmp byte[SFXEnable],1
     je .sfxram
     cmp byte[C4Enable],1
-    je near .c4ram
-    cmp byte[OBCEnable],1
     je near .c4ram
     and ebx,7Fh
     cmp bl,10h
@@ -2779,8 +2578,6 @@ NEWSYM regaccessbankw16
     cmp byte[SFXEnable],1
     je .sfxram
     cmp byte[C4Enable],1
-    je near .c4ram
-    cmp byte[OBCEnable],1
     je near .c4ram
     and ebx,7Fh
     cmp bl,10h

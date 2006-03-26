@@ -48,7 +48,7 @@ EXTSYM opexec358cph,spcextraram,opexec358cphb,prevoamptr,reg1read,reg2read
 EXTSYM reg3read,reg4read,resolutn,romdata,scrndis,spcP,SPCRAM,spcnumread
 EXTSYM tableD,timeron,vidbright,SPC700read,SPC700write,spc700read
 EXTSYM GUIReset,InitC4,SA1Reset,SetAddressingModesSA1,SDD1BankA,SPC7110init
-EXTSYM RTCinit,InitOBC,memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
+EXTSYM RTCinit,memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
 EXTSYM memaccessspc7110w16,ram7f,snesmap2,snesmmap,MultiTap,memaccessbankr848mb
 EXTSYM memaccessbankr1648mb,procexecloop,ram7fa,wramdata,wramdataa,fname,fnames
 EXTSYM GetCurDir,SRAMChdir,cfgloadsdir,fnamest,statefileloc,InitDir,InitDrive
@@ -60,7 +60,7 @@ EXTSYM device1,device2,processmouse1,processmouse2,cpalval
 ;initc.c
 EXTSYM clearmem,clearSPCRAM,PatchUsingIPS,ZOpenFileName,loadROM,SPC7110IndexSize
 EXTSYM SPC7PackIndexLoad,IntlEHi,C4Enable,SPC7110Enable,RTCEnable,SA1Enable
-EXTSYM SDD1Enable,OBCEnable,SFXEnable,BSEnable,clearvidsound,headerhack,SetupROM
+EXTSYM SDD1Enable,SFXEnable,BSEnable,clearvidsound,headerhack,SetupROM
 
 %ifdef __UNIXSDL__
 EXTSYM LoadDir,popdir,pushdir
@@ -1041,10 +1041,6 @@ NEWSYM init65816
     call SetAddressingModesSA1
     popad
 .nosa1init
-    cmp byte[OBCEnable],0
-    je .noobcinit
-    call InitOBC
-.noobcinit
     cmp byte[C4Enable],0
     je .noc4init
     mov byte[osm2dis],1

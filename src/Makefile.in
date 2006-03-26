@@ -36,7 +36,8 @@ CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
 	${CHIPDIR}/sa1proc.o ${CHIPDIR}/sa1regs.o ${CHIPDIR}/dsp1emu.o\
 	${CHIPDIR}/st10proc.o ${CHIPDIR}/seta10.o ${CHIPDIR}/dsp2proc.o\
 	${CHIPDIR}/sdd1emu.o ${CHIPDIR}/c4emu.o ${CHIPDIR}/dsp4proc.o\
-	${CHIPDIR}/dsp4emu.o ${CHIPDIR}/dsp3proc.o ${CHIPDIR}/dsp3emu.o
+	${CHIPDIR}/dsp4emu.o ${CHIPDIR}/dsp3proc.o ${CHIPDIR}/dsp3emu.o\
+	${CHIPDIR}/obc1emu${OE} ${CHIPDIR}/obc1proc${OE}
 
 CPUOBJ=${CPUDIR}/dma.o ${CPUDIR}/dsp.o ${CPUDIR}/dspproc.o ${CPUDIR}/execute.o\
 	${CPUDIR}/executec.o ${CPUDIR}/irq.o ${CPUDIR}/memory.o\
@@ -174,6 +175,8 @@ ${CHIPDIR}/fxemu2c.o: ${CHIPDIR}/fxemu2c.asm macros.mac ${CHIPDIR}/fxemu2.mac\
 	${CHIPDIR}/fxemu2c.mac
 ${CHIPDIR}/fxtable.o: ${CHIPDIR}/fxtable.asm macros.mac
 ${CHIPDIR}/sa1proc.o: ${CHIPDIR}/sa1proc.asm macros.mac
+${CHIPDIR}/obc1emu.o: ${CHIPDIR}/obc1emu.c
+${CHIPDIR}/obc1proc.o: ${CHIPDIR}/obc1proc.asm macros.mac
 ${CHIPDIR}/sa1regs.o: ${CHIPDIR}/sa1regs.asm macros.mac\
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac
 ${CHIPDIR}/sdd1emu.o: ${CHIPDIR}/sdd1emu.c
