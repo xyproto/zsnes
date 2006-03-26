@@ -767,7 +767,6 @@ NEWSYM ReadInputDevice
 .inputbdcb
     and dword[JoyAOrig],7FFFFFFFh
 .noinput1
-    mov dword[JoyBOrig],0
     cmp byte[device2],1
     jne .nomouse2
     call processmouse2
