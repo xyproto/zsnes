@@ -393,6 +393,11 @@ void DrawScreen()
    }
 }
 
+extern "C" void MultiMouseInit();
+extern "C" void MultiMouseShutdown();
+extern BYTE device1,device2;
+extern BYTE GUIOn;
+extern BYTE GUIOn2;
 DWORD InputEn=0;
 
 BOOL InputAcquire(void)
@@ -402,7 +407,8 @@ BOOL InputAcquire(void)
    if (JoystickInput[2]) JoystickInput[2]->Acquire();
    if (JoystickInput[3]) JoystickInput[3]->Acquire();
    if (JoystickInput[4]) JoystickInput[4]->Acquire();
-   if (MouseInput) MouseInput->Acquire();
+   if (device1 && device2 && !GUIOn2) MultiMouseInit();
+      else if (MouseInput) MouseInput->Acquire();
    if (KeyboardInput) KeyboardInput->Acquire();
    InputEn = 1;
    return TRUE;
@@ -410,13 +416,15 @@ BOOL InputAcquire(void)
 
 BOOL InputDeAcquire(void)
 {
-   if (MouseInput) { MouseInput->Unacquire(); }
+
    if (KeyboardInput) KeyboardInput->Unacquire();
    if (JoystickInput[0]) JoystickInput[0]->Unacquire();
    if (JoystickInput[1]) JoystickInput[1]->Unacquire();
    if (JoystickInput[2]) JoystickInput[2]->Unacquire();
    if (JoystickInput[3]) JoystickInput[3]->Unacquire();
    if (JoystickInput[4]) JoystickInput[4]->Unacquire();
+   if (device1 && device2 && !GUIOn2) MultiMouseShutdown();
+      else if (MouseInput) MouseInput->Unacquire();
    InputEn = 0;
    return TRUE;
 }
@@ -424,8 +432,6 @@ BOOL InputDeAcquire(void)
 extern "C" {
 void initwinvideo();
 void DosExit(void);
-extern BYTE GUIOn;
-extern BYTE GUIOn2;
 extern BYTE EMUPause;
 extern BYTE cfgsoundon;
 extern BYTE StereoSound;
@@ -479,17 +485,7 @@ BOOL InputRead(void)
    {
       DIMOUSESTATE dims;
       HRESULT hr;
-aquireagain:;
       hr=MouseInput->GetDeviceState(sizeof(DIMOUSESTATE),&dims);
-
-      if (hr==DIERR_INPUTLOST)
-      {
-         hr=MouseInput->Acquire();
-         if (SUCCEEDED(hr))
-         {
-            goto aquireagain;
-         }
-      }
 
       if (SUCCEEDED(hr))
       {
@@ -657,7 +653,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             shiftpr=false;
          break;
       case WM_MOUSEMOVE:
-         if (MouseInput) MouseInput->Acquire();
+         if (MouseInput && GUIOn2) MouseInput->Acquire();
          break;
       case WM_MOVE:
          break;
@@ -1827,11 +1823,22 @@ void Start60HZ(void)
 
    InitSemaphore();
 
+   if (device1 && device2)
+   {
+      MouseInput->Unacquire();
+      MultiMouseInit();
+   }
+
 }
 
 void Stop60HZ(void)
 {
    T60HZEnabled=0;
+   if (device1 && device2)
+   {
+      MultiMouseShutdown();
+      MouseInput->Acquire();
+   }
    ShutdownSemaphore();
 }
 
@@ -2096,22 +2103,29 @@ void initwinvideo(void)
       hMainWindow = CreateWindow( "ZSNES", WinName, WS_VISIBLE|WS_POPUP,X,Y,  //WS_OVERLAPPED "ZSNES"
                                  WindowWidth,WindowHeight,NULL,NULL,hInst,NULL);
 
-      CheckPriority();
-      CheckAlwaysOnTop();
-      CheckScreenSaver();
-
       if (!hMainWindow)
       {
          return;
       }
+      
+      // Hide the cursor
+      ShowCursor(0);
 
+      // Set window attributes
       ShowWindow(hMainWindow, SW_SHOWNORMAL);
       SetWindowText(hMainWindow,"ZSNES");
+
+      // Run ZSNES Windows GUI callback functions to set initial values
+      CheckPriority();
+      CheckAlwaysOnTop();
+      CheckScreenSaver();
+
+      // Init various DirectX subsystems
       InitInput();
       InitSound();
       TestJoy();
 
-      if (debugger) InitDebugger(); // Start debugger
+      if (debugger) InitDebugger(); // Start debugger such that it is at this point
 
    }
 
@@ -2905,8 +2919,6 @@ void WinUpdateDevices()
    }
 
 }
-
-extern unsigned char device1, device2;
 
 int GetMouseX(void)
 {

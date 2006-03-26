@@ -289,7 +289,7 @@ void zstart ()
   puts("May or may not be complete");
 #endif
 
-#ifndef __MSDOS__
+#ifdef __SDL__
   MultiMouseInit();
 #endif
 
