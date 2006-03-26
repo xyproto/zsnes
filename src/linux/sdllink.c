@@ -104,16 +104,16 @@ extern int CurKeyReadPos;
 extern int KeyBuffer[16];
 
 /* MOUSE INPUT */
-float MouseMinX = 0;
-float MouseMaxX = 256;
-float MouseMinY = 0;
-float MouseMaxY = 223;
-int MouseX, MouseY;
-float MouseMoveX, MouseMoveY;
-int MouseMove2X, MouseMove2Y;
-Uint8 MouseButton;
-float MouseXScale = 1.0;
-float MouseYScale = 1.0;
+static float MouseMinX = 0;
+static float MouseMaxX = 256;
+static float MouseMinY = 0;
+static float MouseMaxY = 223;
+static int MouseX, MouseY;
+static float MouseMoveX, MouseMoveY;
+static int MouseMove2X, MouseMove2Y;
+static unsigned char MouseButton;
+static float MouseXScale = 1.0;
+static float MouseYScale = 1.0;
 DWORD LastUsedPos = 0;
 DWORD CurMode = -1;
 
