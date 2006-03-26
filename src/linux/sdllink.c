@@ -247,18 +247,20 @@ int Main_Proc(void)
 					case 5:
 						ProcessKeyBuf(SDLK_DOWN);
 						break;
+          case 3:
+            MouseButton |= 2;
+            break;
 					case 2:
 						ProcessKeyBuf(SDLK_RETURN);
 						// Yes, this is intentional - DDOI
-					default:
-						MouseButton = MouseButton | event.button.button;
+					case 1:
+						MouseButton |= event.button.button;
 						break;
 				}
 				break;
 
 			case SDL_MOUSEBUTTONUP:
-				MouseButton =
-					MouseButton & ~event.button.button;
+				MouseButton &= ~event.button.button;
 				break;
 
 			case SDL_JOYHATMOTION: // POV hats act as direction pad
