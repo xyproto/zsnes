@@ -4228,27 +4228,65 @@ DisplayGUIAddOns:                   ;Select Special Controllers
   call EEMode
   cmp eax,0
   je near .noEE                    ;You know it!
-  GUIDisplayText 17,21,18,GUIAddOnText1Alt
-  GUIDisplayText 17,21,28,GUIAddOnText2Alt
-  GUIDisplayText 17,21,38,GUIAddOnText3Alt
-  GUIDisplayText 17,21,48,GUIAddOnText4Alt
-  GUIDisplayText 17,21,58,GUIAddOnText5Alt
+
+  push eax
+  push ebx
+  push ecx
+  mov eax,GUIAddOnEETopBar
+  mov ebx,GUIAddOnsDisp
+.loopA
+  mov cl,byte[eax]
+  mov byte[ebx],cl
+  inc eax
+  inc ebx
+  cmp cl,0
+  jne .loopA
+  pop ecx
+  pop ebx
+  pop eax
+
+  GUIDisplayText 17,20,15,GUIAddOnText1Alt
+  GUIDisplayText 17,112,15,GUIAddOnText2Alt
+
+  GUIDisplayButtonHoleTu 17,9,23,byte[device1],0,GUIAddOnText3Alt,0
+  GUIDisplayButtonHoleTu 17,9,33,byte[device1],1,GUIAddOnText4Alt,0
+
+  GUIDisplayButtonHoleTu 17,100,23,byte[device2],0,GUIAddOnText3Alt,1
+  GUIDisplayButtonHoleTu 17,100,33,byte[device2],1,GUIAddOnText4Alt,1
+  GUIDisplayButtonHoleTu 17,100,43,byte[device2],2,GUIAddOnText5Alt,0
+  GUIDisplayButtonHoleTu 17,100,53,byte[device2],3,GUIAddOnText6Alt,0
+  GUIDisplayButtonHoleTu 17,100,63,byte[device2],4,GUIAddOnText7Alt,0
   jmp .endEE
 .noEE                                ;Regular
 
-.endEE
+  push eax
+  push ebx
+  push ecx
+  mov eax,GUIAddOnsDispEE
+  mov ebx,GUIAddOnsDisp
+.loopB
+  mov cl,byte[eax]
+  mov byte[ebx],cl
+  inc eax
+  inc ebx
+  cmp cl,0
+  jne .loopB
+  pop ecx
+  pop ebx
+  pop eax
 
   GUIDisplayText 17,20,15,GUIAddOnText1
-  GUIDisplayText 17,82,15,GUIAddOnText2
+  GUIDisplayText 17,112,15,GUIAddOnText2
 
   GUIDisplayButtonHoleTu 17,9,23,byte[device1],0,GUIAddOnText3,0
   GUIDisplayButtonHoleTu 17,9,33,byte[device1],1,GUIAddOnText4,0
 
-  GUIDisplayButtonHoleTu 17,70,23,byte[device2],0,GUIAddOnText3,1
-  GUIDisplayButtonHoleTu 17,70,33,byte[device2],1,GUIAddOnText4,1
-  GUIDisplayButtonHoleTu 17,70,43,byte[device2],2,GUIAddOnText5,0
-  GUIDisplayButtonHoleTu 17,70,53,byte[device2],3,GUIAddOnText6,0
-  GUIDisplayButtonHoleTu 17,70,63,byte[device2],4,GUIAddOnText7,0
+  GUIDisplayButtonHoleTu 17,100,23,byte[device2],0,GUIAddOnText3,1
+  GUIDisplayButtonHoleTu 17,100,33,byte[device2],1,GUIAddOnText4,1
+  GUIDisplayButtonHoleTu 17,100,43,byte[device2],2,GUIAddOnText5,0
+  GUIDisplayButtonHoleTu 17,100,53,byte[device2],3,GUIAddOnText6,0
+  GUIDisplayButtonHoleTu 17,100,63,byte[device2],4,GUIAddOnText7,0
+.endEE
   ret
 
 SECTION .data
@@ -4261,11 +4299,14 @@ GUIAddOnText6 db '1 JUSTIFIER',0
 GUIAddOnText7 db '2 JUSTIFIERS',0
 
 ;EE
-GUIAddOnText1Alt db 79,70,70,0
-GUIAddOnText2Alt db 84,79,65,83,84,32,77,89,32,66,82,69,65,68,0
-GUIAddOnText3Alt db 71,73,77, 77,69,32,70,82,73,69,83,32,87,73,84,72,32,84,72,65,84,0
-GUIAddOnText4Alt db 65,78,68,32,65,32,77,85,70,70,73,78,0
-GUIAddOnText5Alt db 87,73,84,72,32,86,73,84,65,77,73,78,83,0
+GUIAddOnText1Alt db 83,76,79,84,32,49,58,0
+GUIAddOnText2Alt db 83,76,79,84,32,50,58,0
+GUIAddOnText3Alt db 79,70,70,0
+GUIAddOnText4Alt db 87,72,73,84,69,32,66,82,69,65,68,0
+GUIAddOnText5Alt db 82,89,69,32,66,82,69,65,68,0
+GUIAddOnText6Alt db 69,78,71,76,73,83,72,32,77,85,70,70,73,78,0
+GUIAddOnText7Alt db 87,65,70,70,76,69,0
+GUIAddOnEETopBar db 84,79,65,83,84,69,82,32,79,80,84,73,79,78,83,0
 
 SECTION .text
 
@@ -4802,6 +4843,7 @@ GUIMovieDisp db 'MOVIE OPTIONS',0
 GUIStatesDisp db 'STATE CONFIRM',0
 GUIComboDisp db 'KEY COMBINATION EDITOR',0
 GUIAddOnsDisp db 'DEVICES SELECTOR',0
+GUIAddOnsDispEE db 'DEVICES SELECTOR',0
 GUIChipConfigDisp db 'CONFIGURE CHIPS',0
 GUIPathsDisp db 'SETUP PATHS',0
 GUISaveDisp db 'SAVE OPTIONS',0

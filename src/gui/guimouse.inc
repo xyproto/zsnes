@@ -3265,11 +3265,11 @@ DisplayGUIAddOnClick:
   GUIPButtonHole 9,23,byte[device1],0
   GUIPButtonHole 9,33,byte[device1],1
 
-  GUIPButtonHole 70,23,byte[device2],0
-  GUIPButtonHole 70,33,byte[device2],1
-  GUIPButtonHole 70,43,byte[device2],2
-  GUIPButtonHole 70,53,byte[device2],3
-  GUIPButtonHole 70,63,byte[device2],4
+  GUIPButtonHole 100,23,byte[device2],0
+  GUIPButtonHole 100,33,byte[device2],1
+  GUIPButtonHole 100,43,byte[device2],2
+  GUIPButtonHole 100,53,byte[device2],3
+  GUIPButtonHole 100,63,byte[device2],4
   ret
 
 DisplayGUIChipClick:

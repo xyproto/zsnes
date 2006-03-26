@@ -305,9 +305,9 @@ ViewBuffer  resb 50*32
 SECTION .data
 ; Window sizes and positions
 ;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE SPED
-GUIwinposxo dd 0,6   ,65  ,33  ,42  ,38  ,34  ,6   ,64  ,8    ,8    ,33  ,56  ,64  ,56  ,5   ,3   ,48  ,48  ,6    ,28  ,53
+GUIwinposxo dd 0,6   ,65  ,33  ,42  ,38  ,34  ,6   ,64  ,8    ,8    ,33  ,56  ,64  ,56  ,5   ,3   ,28  ,48  ,6    ,28  ,53
 GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,65  ,20  ,19  ,60  ,60  ,20   ,30  ,25
-GUIwinsizex dd 0,244 ,126 ,189 ,172 ,180 ,188 ,244 ,8*16,240  ,240  ,190 ,9*16,8*16,9*16,246 ,250 ,160 ,160 ,244  ,200 ,150
+GUIwinsizex dd 0,244 ,126 ,189 ,172 ,180 ,188 ,244 ,8*16,240  ,240  ,190 ,9*16,8*16,9*16,246 ,250 ,200 ,160 ,244  ,200 ,150
 GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,100 ,100 ,190  ,160 ,180
 GUIwinptr   db 0
 
