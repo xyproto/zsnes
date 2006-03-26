@@ -448,9 +448,9 @@ int MouseCount = 0;
 
 unsigned short MouseMoveX[2];
 unsigned short MouseMoveY[2];
-unsigned short MouseButton[2];
+unsigned short MouseButtons[2];
 
-bool MouseWaiting[2];
+static bool MouseWaiting[2];
 
 void MultiMouseShutdown()
 {
@@ -466,7 +466,7 @@ void MultiMouseInit()
    {
      MouseMoveX[0] = MouseMoveX[1] = 0;
      MouseMoveY[0] = MouseMoveY[1] = 0;
-     MouseButton[0] = MouseButton[1] = 0;
+     MouseButtons[0] = MouseButtons[1] = 0;
      MouseWaiting[0] = MouseWaiting[1] = false;
      atexit(MultiMouseShutdown);
 
@@ -519,8 +519,8 @@ void MultiMouseProcess()
       }
       else if (event.type == MANYMOUSE_EVENT_BUTTON)
       {
-        if (event.item == 0) { MOUSE_BUTTON_HANDLE(MouseButton[event.device], 0, event.value); }
-        else if (event.item == 1) { MOUSE_BUTTON_HANDLE(MouseButton[event.device], 1, event.value); }
+        if (event.item == 0) { MOUSE_BUTTON_HANDLE(MouseButtons[event.device], 0, event.value); }
+        else if (event.item == 1) { MOUSE_BUTTON_HANDLE(MouseButtons[event.device], 1, event.value); }
       }
     }
   }

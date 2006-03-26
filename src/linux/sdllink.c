@@ -111,7 +111,7 @@ static float MouseMaxY = 223;
 static int MouseX, MouseY;
 static float MouseMoveX, MouseMoveY;
 static int MouseMove2X, MouseMove2Y;
-static unsigned char MouseButton;
+unsigned char MouseButton;
 static float MouseXScale = 1.0;
 static float MouseYScale = 1.0;
 DWORD LastUsedPos = 0;

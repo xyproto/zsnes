@@ -42,7 +42,7 @@ EXTSYM MovieDisplayFrame
 EXTSYM MouseCount,device2
 
 %ifndef __MSDOS__
-EXTSYM MouseMoveX,MouseMoveY,MouseButton,MultiMouseProcess,mouse
+EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
 %endif
 
 %ifdef __MSDOS__
@@ -160,7 +160,7 @@ NEWSYM processmouse1
     mov byte[mouse],0
     call MultiMouseProcess
     popad
-    mov bx,[MouseButton]
+    mov bx,[MouseButtons]
     mov [mousebuttons],bx
     mov cx,[MouseMoveX]
     mov dx,[MouseMoveY]
@@ -212,7 +212,7 @@ NEWSYM processmouse2
     mov byte[mouse],1
     call MultiMouseProcess
     popad
-    mov bx,[MouseButton+2]
+    mov bx,[MouseButtons+2]
     jmp .mousestuff
 .nomultimouse
 %endif
