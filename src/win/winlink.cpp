@@ -2107,7 +2107,7 @@ void initwinvideo(void)
       {
          return;
       }
-      
+
       // Hide the cursor
       ShowCursor(0);
 

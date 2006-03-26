@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2003-2006 Ryan C. Gordon and others.
-   
+
 http://icculus.org/manymouse/
 
 This software is provided 'as-is', without any express or implied warranty.
