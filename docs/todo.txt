@@ -15,7 +15,6 @@ Windows Port:
   OpenGL but it needs to be integrated into the main tree, any takers?)
 - Windows port should be converted to Direct3D from DirectDraw 7.0.
 - Windows sound code needs to be rewritten to reflect the SDL port.
-- Clean up mouse processing code in winlink.cpp, remove the goto in the code.
 
 Compatibility
 - Game not working - Guikuden 1, Cu-On-Pa (and loads more)
