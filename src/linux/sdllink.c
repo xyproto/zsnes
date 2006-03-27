@@ -260,7 +260,16 @@ int Main_Proc(void)
 				break;
 
 			case SDL_MOUSEBUTTONUP:
-				MouseButton &= ~event.button.button;
+        switch (event.button.button)
+        {
+          case 1: case 2:
+				    MouseButton &= ~event.button.button;
+            break;
+
+          case 3:
+            MouseButton &= ~2;
+            break;
+        }
 				break;
 
 			case SDL_JOYHATMOTION: // POV hats act as direction pad
