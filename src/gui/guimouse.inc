@@ -2871,17 +2871,16 @@ DisplayGameOptnsClick:
 
   DGOptnsProcBox 78,100,[KeyUsePlayer1234]
   DGOptnsProcBox 78,110,[KeyResetAll]
-  ;DGOptnsProcBox 78,120,[KeyExtraEnab]
-  DGOptnsProcBox 78,130,[KeyDisplayFPS]
-  DGOptnsProcBox 78,140,[KeyIncreaseGamma]
-  DGOptnsProcBox 78,150,[KeyDecreaseGamma]
+  DGOptnsProcBox 78,120,[KeyDisplayFPS]
 %ifndef __MSDOS__
-  DGOptnsProcBox 78,160,[KeyDisplayBatt]
+  DGOptnsProcBox 78,130,[KeyDisplayBatt]
 %endif
 
   DGOptnsProcBox 191,100,[KeyNewGfxSwt]
   DGOptnsProcBox 191,110,[KeyWinDisble]
   DGOptnsProcBox 191,120,[KeyOffsetMSw]
+  DGOptnsProcBox 191,130,[KeyIncreaseGamma]
+  DGOptnsProcBox 191,140,[KeyDecreaseGamma]
   ret
 
 DisplayGUIOptnsClick:

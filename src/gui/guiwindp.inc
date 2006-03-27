@@ -2949,17 +2949,16 @@ DisplayGameOptns:        ; Misc Key Window
   GUIDisplayText 9,9,102,GUIGameOptnsTextD1a
   GUIDisplayText 9,9,112,GUIGameOptnsTextD1b
   GUIDisplayText 9,9,122,GUIGameOptnsTextD1c
-  GUIDisplayText 9,9,132,GUIGameOptnsTextD1d
-  GUIDisplayText 9,9,142,GUIGameOptnsTextD1e
-  GUIDisplayText 9,9,152,GUIGameOptnsTextD1f
 %ifndef __MSDOS__
-  GUIDisplayText 9,9,162,GUIGameOptnsTextD1g
+  GUIDisplayText 9,9,132,GUIGameOptnsTextD1d
 %endif
 
   GUIDisplayTextY 9,119,93,GUIGameOptnsTextD2
   GUIDisplayText 9,122,102,GUIGameOptnsTextD2a
   GUIDisplayText 9,122,112,GUIGameOptnsTextD2b
   GUIDisplayText 9,122,122,GUIGameOptnsTextD2c
+  GUIDisplayText 9,122,132,GUIGameOptnsTextD2d
+  GUIDisplayText 9,122,142,GUIGameOptnsTextD2e
 
   ; Draw black boxes
   DDrawBox 9,26,22,[KeyBGDisble0]
@@ -2989,17 +2988,16 @@ DisplayGameOptns:        ; Misc Key Window
 
   DDrawBox 9,77,99,[KeyUsePlayer1234]
   DDrawBox 9,77,109,[KeyResetAll]
-  ;DDrawBox 9,77,119,[KeyExtraEnab]
-  DDrawBox 9,77,129,[KeyDisplayFPS]
-  DDrawBox 9,77,139,[KeyIncreaseGamma]
-  DDrawBox 9,77,149,[KeyDecreaseGamma]
+  DDrawBox 9,77,119,[KeyDisplayFPS]
 %ifndef __MSDOS__
-  DDrawBox 9,77,159,[KeyDisplayBatt]
+  DDrawBox 9,77,129,[KeyDisplayBatt]
 %endif
 
   DDrawBox 9,190,99,[KeyNewGfxSwt]
   DDrawBox 9,190,109,[KeyWinDisble]
   DDrawBox 9,190,119,[KeyOffsetMSw]
+  DDrawBox 9,190,129,[KeyIncreaseGamma]
+  DDrawBox 9,190,139,[KeyDecreaseGamma]
   ret
 
 SECTION .bss
@@ -3030,16 +3028,16 @@ GUIGameOptnsTextC7 db 'SAVE SPC',0
 GUIGameOptnsTextD1 db 'MISC TOGGLES:',0
 GUIGameOptnsTextD1a db 'USE PL12/34',0
 GUIGameOptnsTextD1b db 'CLRSWITCHES',0
-GUIGameOptnsTextD1c db 'EXTRADEVICE',0
-GUIGameOptnsTextD1d db 'DISPLAY FPS',0
-GUIGameOptnsTextD1e db '+ GAMMA',0
-GUIGameOptnsTextD1f db '- GAMMA',0
-GUIGameOptnsTextD1g db 'BATT POWER',0
+GUIGameOptnsTextD1c db 'DISPLAY FPS',0
+GUIGameOptnsTextD1d db 'BATT POWER',0
 
 GUIGameOptnsTextD2 db 'GFX TOGGLES:',0
 GUIGameOptnsTextD2a db 'NEW GFX ENG',0
 GUIGameOptnsTextD2b db 'BG WINDOW',0
 GUIGameOptnsTextD2c db 'OFFSET MODE',0
+GUIGameOptnsTextD2d db '+ GAMMA',0
+GUIGameOptnsTextD2e db '- GAMMA',0
+
 
 SECTION .text
 
