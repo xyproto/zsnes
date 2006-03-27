@@ -214,7 +214,14 @@ static int init_mouse(const char *fname, int fd)
     mouse->min_x = mouse->min_y = mouse->max_x = mouse->max_y = 0;
     if (has_absolutes)
     {
-        struct input_absinfo absinfo;
+        struct
+        {
+          int value;
+          int minimum;
+          int maximum;
+          int fuzz;
+          int flat;
+        } absinfo;
         if (ioctl(fd, EVIOCGABS(ABS_X), &absinfo) == -1)
             return 0;
         mouse->min_x = absinfo.minimum;
