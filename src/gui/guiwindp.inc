@@ -4285,6 +4285,9 @@ DisplayGUIAddOns:                   ;Select Special Controllers
   GUIDisplayButtonHoleTu 17,100,53,byte[device2],3,GUIAddOnText6,0
   GUIDisplayButtonHoleTu 17,100,63,byte[device2],4,GUIAddOnText7,0
 .endEE
+
+  DDrawBox 17,18,75,[KeyExtraEnab1]
+  DDrawBox 17,109,75,[KeyExtraEnab2]
   ret
 
 SECTION .data
