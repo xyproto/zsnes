@@ -353,3 +353,10 @@ NEWSYM MovieAudio, db 1
 NEWSYM MovieVideoAudio, db 0
 NEWSYM MovieAudioCompress, db 0
 NEWSYM NTSCFilter, db 0
+NEWSYM NTSCBlend, db 0
+NEWSYM NTSCHue, db 0
+NEWSYM NTSCSat, db 0
+NEWSYM NTSCCont, db 0
+NEWSYM NTSCBright, db 0
+NEWSYM NTSCSharp, db 0
+NEWSYM NTSCWarp, db 0

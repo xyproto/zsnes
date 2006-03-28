@@ -53,12 +53,14 @@ ProcessMouse:
   call Set_MouseYMax
 .nohold1
   cmp byte[GUIHold],5 ; Sound Slider
-  je .dohold5
+  je .holdslider
   cmp byte[GUIHold],6 ; Speed Slider
-  je .dohold5
+  je .holdslider
   cmp byte[GUIHold],2 ; Colour Slider
+  je .holdslider
+  cmp byte[GUIHold],7 ; Video Slider
   jne .nohold2m
-.dohold5
+.holdslider
   mov ecx,[GUIHoldXlimL] ; Sets min/max move range for mouse
   mov edx,[GUIHoldXlimR] ; once holding slider
   call Set_MouseXMax
@@ -334,7 +336,7 @@ ProcessMouseButtons:
   xor ebx,ebx
   mov bl,[GUIwinorder+eax]
   cmp byte[GUIHold],2
-  je .hold2
+  je near .hold2
   cmp byte[GUIHold],3
   je near .hold3
   cmp byte[GUIHold],4
@@ -343,6 +345,8 @@ ProcessMouseButtons:
   je near .hold5
   cmp byte[GUIHold],6
   je near .hold6
+  cmp byte[GUIHold],7
+  je near .hold7
   cmp byte[GUIHold],1
   je near .hold
   cmp byte[GUIHold],255
@@ -452,6 +456,23 @@ ProcessMouseButtons:
 .nogreat6
   mov byte[lastmouseholded],1
   jmp DisplayGUISpeedClick
+.hold7
+  ; Video Slide Bar Hold
+  mov eax,[GUIHoldYlim]
+  mov [GUImouseposy],eax
+  mov ebx,[GUImouseposx]
+  mov eax,[GUIHoldXlimL]
+  cmp ebx,eax
+  jnl .noless7
+  mov [GUImouseposx],eax
+.noless7
+  mov eax,[GUIHoldXlimR]
+  cmp ebx,eax
+  jng .nogreat7
+  mov [GUImouseposx],eax
+.nogreat7
+  mov byte[lastmouseholded],1
+  jmp DisplayGUIVideoClick
 .hold
   cmp word[GUImouseposy],16
   jge .noover
@@ -2182,7 +2203,7 @@ DisplayGUIMovieClick:
 %%noclick
 %endmacro
 
-%macro GUIPTabClick 4 ; minX, maxX, var, value
+%macro GUIPTabClick 3-* ; minX, maxX, value, var, vars to zero
   cmp eax,%1+1
   jl %%noclick
   cmp eax,%2-1
@@ -2191,7 +2212,14 @@ DisplayGUIMovieClick:
   jl %%noclick
   cmp edx,22
   jg %%noclick
-  mov %3,%4
+  mov dword[%4],%3
+%if (%0>4)
+  %rotate 4
+%rep (%0-4)
+  mov dword[%1],0
+  %rotate 1
+%endrep
+%endif
 %%noclick
 %endmacro
 
@@ -2213,11 +2241,11 @@ DisplayGUIInputClick:
   ;x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
   GUIWinControl 5,36,107,34+5*8,GUIBlankVar,GUIcurrentinputviewloc,GUINumValue,35,8,GUIcurrentinputcursloc,4,3,0
 
-  GUIPTabClick 0,21,dword[GUIInputTabs],1
-  GUIPTabClick 22,43,dword[GUIInputTabs],2
-  GUIPTabClick 44,65,dword[GUIInputTabs],3
-  GUIPTabClick 66,87,dword[GUIInputTabs],4
-  GUIPTabClick 88,109,dword[GUIInputTabs],5
+  GUIPTabClick 0,21,1,GUIInputTabs
+  GUIPTabClick 22,43,2,GUIInputTabs
+  GUIPTabClick 44,65,3,GUIInputTabs
+  GUIPTabClick 66,87,4,GUIInputTabs
+  GUIPTabClick 88,109,5,GUIInputTabs
 
   GUIPHoldbutton 123,34,153,45,14            ; Buttons
   GUIPHoldbutton 123,50,177,61,40
@@ -2381,7 +2409,6 @@ DisplayGUIOptionClick:
 %endif
   ret
 
-
 DisplayGUIVideoClick2:
   cmp dword[GUIVideoTabs],1  ; modes
   jne near .notmodestab2
@@ -2393,11 +2420,11 @@ DisplayGUIVideoClick2:
   GUIPostWinBoxMove 5,27,115,27+5*8,GUIcurrentvideoviewloc,GUIcurrentvideocursloc,GUINumValue,.scrollup,.scrolldown,DisplayGUIVideoClick.skipscrol,5
 .notmodestab2
 DisplayGUIVideoClick:
-  GUIPTabClick 0,39,dword[GUIVideoTabs],1
-  GUIPTabClick 40,91,dword[GUIVideoTabs],2
-  cmp dword[GUIVideoTabs+4],3
+  GUIPTabClick 0,39,1,GUIVideoTabs,GUIVntscTab
+  GUIPTabClick 40,91,2,GUIVideoTabs,GUIVntscTab
+  cmp byte[NTSCFilter],1
   jne .nontscf
-  GUIPTabClick 92,125,dword[GUIVideoTabs],3
+  GUIPTabClick 92,125,1,GUIVntscTab,GUIVideoTabs
 .nontscf
 
   cmp dword[GUIVideoTabs],1  ; modes
@@ -2542,13 +2569,103 @@ DisplayGUIVideoClick:
   GUIClickCButtonT 115,183,byte[vsyncon],byte[Triplebufen]
 %endif
   GUIClickCButton 11,183,byte[GrayscaleMode]
-.notfilterstab
-
-  cmp dword[GUIVideoTabs],3  ; NTSC
-  jne .notntsctab
-.notntsctab
   mov al,[vsyncon]
   mov [cfgvsync],al
+.notfilterstab
+
+  cmp dword[GUIVntscTab],1  ; NTSC
+  jne near .notntsctab
+  mov eax,[GUImouseposx]    ; update mouse location
+  sub eax,[GUIwinposx+5*4]
+  mov edx,[GUImouseposy]
+  sub edx,[GUIwinposy+5*4]
+
+  GUIClickCButton 5,25,byte[NTSCBlend]     ; Checkboxes
+
+  ;Sliders
+  cmp eax,15                     ; X-Range for click-area
+  jl near .nomovebar
+  cmp eax,15+100
+  jg near .nomovebar
+  cmp edx,54                     ; Y-Range for click-area
+  jl near .nomovebar
+  cmp edx,58
+  jg .nohuebar
+  sub eax,15
+  mov [NTSCHue],al
+  mov byte[GUIHold],7            ; Lock mouse to bar when clicked
+  mov eax,[GUIwinposy+5*4]
+  add eax,56
+  mov [GUIHoldYlim],eax
+  jmp .nowarpbar
+.nohuebar
+  cmp edx,74
+  jl near .nomovebar
+  cmp edx,78
+  jg .nosatbar
+  sub eax,15
+  mov [NTSCSat],al
+  mov byte[GUIHold],7
+  mov eax,[GUIwinposy+5*4]
+  add eax,76
+  mov [GUIHoldYlim],eax
+  jmp .nowarpbar
+.nosatbar
+  cmp edx,94
+  jl near .nomovebar
+  cmp edx,98
+  jg .nocontbar
+  sub eax,15
+  mov [NTSCCont],al
+  mov byte[GUIHold],7
+  mov eax,[GUIwinposy+5*4]
+  add eax,96
+  mov [GUIHoldYlim],eax
+  jmp .nowarpbar
+.nocontbar
+  cmp edx,114
+  jl near .nomovebar
+  cmp edx,118
+  jg .nobrightbar
+  sub eax,15
+  mov [NTSCBright],al
+  mov byte[GUIHold],7
+  mov eax,[GUIwinposy+5*4]
+  add eax,116
+  mov [GUIHoldYlim],eax
+  jmp .nowarpbar
+.nobrightbar
+  cmp edx,134
+  jl .nomovebar
+  cmp edx,138
+  jg .nosharpbar
+  sub eax,15
+  mov [NTSCSharp],al
+  mov byte[GUIHold],7
+  mov eax,[GUIwinposy+5*4]
+  add eax,136
+  mov [GUIHoldYlim],eax
+  jmp .nowarpbar
+.nosharpbar
+  cmp edx,154
+  jl .nomovebar
+  cmp edx,158
+  jg .nomovebar
+  sub eax,15
+  mov [NTSCWarp],al
+  mov byte[GUIHold],7
+  mov eax,[GUIwinposy+5*4]
+  add eax,156
+  mov [GUIHoldYlim],eax
+.nowarpbar
+  mov eax,[GUIwinposx+5*4]
+  add eax,15
+  mov [GUIHoldXlimL],eax
+  add eax,100
+  mov [GUIHoldXlimR],eax
+.nomovebar
+
+.notntsctab
   xor al,al
   ret
 
@@ -2944,7 +3061,7 @@ DisplayGUIOptnsClick:
 
   cmp eax,25
   jl near .nomovebar
-  cmp eax,25+32*4-1
+  cmp eax,25+128
   jg near .nomovebar
   sub eax,25
   shr eax,2
@@ -3036,7 +3153,7 @@ DisplayGUIOptnsClick:
   add eax,25
   mov [GUIHoldXlimL],eax
   mov eax,[GUIwinposx+10*4]
-  add eax,25+32*4-1
+  add eax,25+128
   mov [GUIHoldXlimR],eax
 .nohold
   ret
@@ -3449,8 +3566,6 @@ DrawMouse:
   cmp bl,220
   ja .nomidshad
   sub bl,189
-;    test bl,01h
-;    jnz .nomidshad
   shr bl,1
   add bl,189
   mov [edi+288*7+5],bl
@@ -3458,6 +3573,7 @@ DrawMouse:
 .nomidshad
 
 .finishadow
+  add al,88
   mov [edi],al
 .nodraw
   inc esi

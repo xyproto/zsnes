@@ -281,8 +281,8 @@ GUIStringGreater2:
   add eax,dword[GUIwinsizex+%1*4]
   mov ecx,eax
   mov esi,[GUIwinsizey+%1*4]
-  mov edx,[GUIWincol]
-  add edx,1
+  mov dl,[GUIWincol]
+  inc dl
 .loop3
   DrawGUILine
   dec esi
@@ -567,7 +567,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   mov dl,[GUIWincol]
   DrawGUIWinBox %1,%2,%3-3+2,%4,%3+1,dl
   mov dl,[GUIWincol]
-  add dl,1
+  inc dl
   DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
   mov dl,[GUIWincol]
   add dl,4
@@ -588,7 +588,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   mov dl,[GUIWincol]
   DrawGUIWinBox %1,%2,%3-3+2,%4,%3+1,dl
   mov dl,[GUIWincol]
-  add dl,1
+  inc dl
   DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
   mov dl,[GUIWincol]
   add dl,4
@@ -608,14 +608,38 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   add esi,[vidbuffer]
 %endmacro
 
+%macro GUIDrawTArea 1 ; win #id
+  mov dl,[GUIWincol]
+  inc dl
+  mov eax,[GUIwinposx+%1*4]
+  mov ebx,[GUIwinposy+%1*4]
+  add ebx,10
+  mov ecx,eax
+  add ecx,[GUIwinsizex+%1*4]
+  mov esi,12
+%%loop1
+  DrawGUILine
+  dec esi
+  jnz %%loop1
+  add dl,3
+  inc eax
+  DrawGUILine
+  sub ebx,13 ; set ebx to minY
+  dec eax    ; set eax to minX
+%endmacro
+
 %macro DrawTabOn 1 ; %1 = array, ebp = offset, eax = minX, ebx = minY
   push edi
   mov esi,%1
   mov ecx,8
   add ecx,eax
+%%skip
+  cmp byte[esi+ebp],0
+  jne %%read1
+  inc ebp
+  jmp %%skip
 %%read1
-  mov dl,[esi+ebp]
-  cmp dl,0
+  cmp byte[esi+ebp],0
   je %%ok1
   inc esi
   add ecx,6
@@ -673,23 +697,26 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   add eax,2   ; restore and set Xoff for next tab
 %%read2
   mov esi,%1
-  mov dl,[esi+ebp]
-  cmp dl,0
+  cmp byte[esi+ebp],0
   je %%ok2
   inc ebp
   jmp %%read2
 %%ok2
-  inc ebp     ; set pointer to next string
   pop edi
 %endmacro
 
 %macro DrawTabOff 1 ; %1 = array, ebp = offset, eax = minX, ebx = minY
+  push edi
   mov esi,%1
   mov ecx,8
   add ecx,eax
+%%skip
+  cmp byte[esi+ebp],0
+  jne %%read1
+  inc ebp
+  jmp %%skip
 %%read1
-  mov dl,[esi+ebp]
-  cmp dl,0
+  cmp byte[esi+ebp],0
   je %%ok1
   inc esi
   add ecx,6
@@ -711,7 +738,6 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   jnz %%draw1
   sub ebx,10
   push ebx    ; save Yoff for next drawing step
-  push ebp    ; save array offset
   mov byte[GUItextcolor],202
   cmp byte[GUIWincoladd],0
   je %%nochange
@@ -723,25 +749,18 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   add edx,6
   push edx    ; save label Xoff
   SetVidbufLoc
-  push edi
   mov edi,%1
   add edi,ebp
   call GUIOutputStringwin
-  pop edi
   pop edx
   pop ebx
-  pop ebp
-  push ebp    ; save array offset again
   add byte[GUItextcolor],15
   dec edx
   dec ebx
   SetVidbufLoc
-  push edi
   mov edi,%1
   add edi,ebp
   call GUIOutputStringwin
-  pop edi
-  pop ebp     ; restore pointer
   pop ebx     ; restore Yoff for drawing step
   pop eax
   inc eax     ; restore and set Xoff for drawing step
@@ -756,50 +775,71 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   inc eax
 %%read2
   mov esi,%1
-  mov dl,[esi+ebp]
-  cmp dl,0
+  cmp byte[esi+ebp],0
   je %%ok2
   inc ebp
   jmp %%read2
 %%ok2
-  inc ebp     ; set pointer to next string
+  pop edi
 %endmacro
 
-%macro GUIDrawTab 2 ; window id #, tabs/label array
-  mov dl,[GUIWincol]
-  add dl,1
-  mov eax,[GUIwinposx+%1*4]
-  mov ebx,[GUIwinposy+%1*4]
-  add ebx,10
-  mov ecx,eax
-  add ecx,[GUIwinsizex+%1*4]
-  mov esi,12
-%%loop1
-  DrawGUILine
-  dec esi
-  jnz %%loop1
-  add dl,3
-  inc eax
-  DrawGUILine
-  sub ebx,13 ; set ebx to minY
-  dec eax    ; set eax to minX
-  mov esi,[%2]   ; active tab
-  mov ecx,[%2+4] ; total #
+%macro GUIDrawTabs 1 ; tabs/label array
+  mov ecx,[%1+4] ; total #
+  cmp ecx,0
+  je near %%nodraw
+  mov esi,[%1]   ; active tab
   mov ebp,8  ; set array offset at top of labels
 %%loop2
   dec esi    ; check if tab is the current one
   push ecx
   push esi
   jnz near %%disabled
-  DrawTabOn %2  ; draws tab, updates eax, ebx & ebp for next tab...
-  jmp %%done
+  DrawTabOn %1  ; draws tab, updates eax, ebx & ebp for next tab...
+  jmp near %%done
 %%disabled
-  DrawTabOff %2 ; ... and autosizes the tab for its label
+  DrawTabOff %1 ; ... and autosizes the tab for its label
 %%done
   pop esi
   pop ecx
   dec ecx
   jnz %%loop2
+%%nodraw
+%endmacro
+
+%macro GUIDrawSlider 6 ; win #id, minX, width, Ypos, variable, text
+  mov eax,[GUIwinposx+%1*4]
+  mov ebx,[GUIwinposy+%1*4]
+  add eax,%2
+  add ebx,%4
+  mov ecx,eax
+  add ecx,%3
+  xor edx,edx
+  mov dl,215
+  sub dl,[GUIWincoladd]
+  DrawGUILine
+  inc ecx
+  inc eax
+  sub dl,13
+  DrawGUILine
+  xor eax,eax
+  mov al,[%5]
+  mov dword[GUITemp],%2-4
+  add [GUITemp],eax
+  GUIDisplayIconWin %1,[GUITemp],%4-4,GUIIconDataSlideBar
+  mov word[%6],'  '
+  mov esi,%6+3
+  mov al,[%5]
+  mov bl,10
+%%asciilp                            ; turns decimal into ascii
+  dec esi
+  xor ah,ah
+  div bl
+  add ah,48
+  mov [esi],ah
+  cmp al,0
+  jne %%asciilp
+  mov dword[GUITemp],%6  ; Display Value (Green)
+  GUIDisplayTextG %1,%2+%3+6,%4-1,[GUITemp]
 %endmacro
 
 ; DGUIDisplay
@@ -1166,7 +1206,7 @@ SECTION .text
   mov dl,[GUIWincol]
   DrawGUIWinBox %1,%2+1,%3,%2+18,%3,dl
   mov dl,[GUIWincol]
-  add dl,1
+  inc dl
   DrawGUIWinBox %1,%2,%3+1,%2-1,%3+5,dl
   mov dl,[GUIWincol]
   add dl,4
@@ -1274,7 +1314,8 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
   mov eax,[GUIInputTabs]
   dec al
   mov [cplayernum],al
-  GUIDrawTab 3,GUIInputTabs
+  GUIDrawTArea 3
+  GUIDrawTabs GUIInputTabs
 
   GUIDisplayTextY 3,6,26,GUIInputTextA
   xor eax,eax
@@ -1632,12 +1673,12 @@ DisplayGUIVideo:
 
   GUIDrawWindowBox 5,GUIVideoDisp      ; Video Modes List/Options
 
-  xor ebx,ebx
-  mov bl,[NTSCFilter]
-  add ebx,2
-  mov [GUIVideoTabs+4],ebx
-
-  GUIDrawTab 5,GUIVideoTabs
+  GUIDrawTArea 5
+  GUIDrawTabs GUIVideoTabs
+  cmp byte[NTSCFilter],0
+  je near .nontsc
+  GUIDrawTabs GUIVntscTab
+.nontsc
 
   cmp dword[GUIVideoTabs],1
   jne near .notmodestab
@@ -1860,8 +1901,23 @@ DisplayGUIVideo:
 %endif
 .notfilterstab
 
-  cmp dword[GUIVideoTabs],3
-  jne .notntsctab
+  cmp dword[GUIVntscTab],1
+  jne near .notntsctab
+  GUIDisplayCheckboxu 5,5,25,NTSCBlend,GUIVideoTextG1,0
+
+  GUIDisplayTextY 5,7,46,GUIVideoTextG2
+  GUIDisplayTextY 5,7,66,GUIVideoTextG3
+  GUIDisplayTextY 5,7,86,GUIVideoTextG4
+  GUIDisplayTextY 5,7,106,GUIVideoTextG5
+  GUIDisplayTextY 5,7,126,GUIVideoTextG6
+  GUIDisplayTextY 5,7,146,GUIVideoTextG7
+
+  GUIDrawSlider 5,15,100,56,NTSCHue,GUIVideoTextG
+  GUIDrawSlider 5,15,100,76,NTSCSat,GUIVideoTextG
+  GUIDrawSlider 5,15,100,96,NTSCCont,GUIVideoTextG
+  GUIDrawSlider 5,15,100,116,NTSCBright,GUIVideoTextG
+  GUIDrawSlider 5,15,100,136,NTSCSharp,GUIVideoTextG
+  GUIDrawSlider 5,15,100,156,NTSCWarp,GUIVideoTextG
 .notntsctab
   ret
 
@@ -1869,6 +1925,7 @@ SECTION .data
 GUIVideoTabs dd 1,2
   db 'MODES',0
   db 'FILTERS',0
+GUIVntscTab dd 0,1
   db 'NTSC',0
 
 GUIVideoTextB db 'LEGEND:',0
@@ -1903,6 +1960,15 @@ GUIVideoText8c db 'GRAYSCALE MODE',0    ; -c
 GUIVideoText8 db 'SET',0                ; set button
 GUIVideoText9 db 'VSYNC',0              ; -c
 GUIVideoTexte db 'NTSC',0
+
+GUIVideoTextG db '---%',0
+GUIVideoTextG1 db 'BLEND FRAMES',0
+GUIVideoTextG2 db 'HUE:',0
+GUIVideoTextG3 db 'SATURATION:',0
+GUIVideoTextG4 db 'CONTRAST:',0
+GUIVideoTextG5 db 'BRIGHTNESS:',0
+GUIVideoTextG6 db 'SHARPNESS:',0
+GUIVideoTextG7 db 'HUE WARPING:',0
 
 SECTION .bss
 GUIVStA resd 3
@@ -1961,51 +2027,7 @@ DisplayGUISound:                     ; Sound Related Options
   add [GUITemp],eax
   GUIDisplayTextG 6,23,64,[GUITemp]
 
-  mov eax,[GUIwinposx+6*4]   ; Volume Level Slider
-  mov ebx,[GUIwinposy+6*4]
-  mov ecx,eax
-  add eax,15
-  add ecx,15+100
-  add ebx,91
-  xor edx,edx
-  mov dl,215
-  sub dl,[GUIWincoladd]
-  DrawGUILine
-  inc ecx
-  inc eax
-  sub dl,13
-  DrawGUILine
-  xor eax,eax
-  mov al,[MusicRelVol]
-  mov dword[GUITemp],11
-  add [GUITemp],eax
-  GUIDisplayIconWin 6,[GUITemp],87,GUIIconDataSlideBar
-  mov dword[GUISoundTextC1],' '
-  mov byte[GUISoundTextC1+3],'%'
-  mov esi,GUISoundTextC1+2
-  xor eax,eax
-  mov al,[MusicRelVol]
-  mov ebx,10
-  div bl
-  add ah,48
-  mov [esi],ah
-  cmp al,0
-  je .nomore
-  dec esi
-  xor ah,ah
-  div bl
-  add ah,48
-  mov [esi],ah
-  cmp al,0
-  je .nomore
-  dec esi
-  xor ah,ah
-  div bl
-  add ah,48
-  mov [esi],ah
-.nomore
-  mov [GUITemp],esi
-  GUIDisplayTextG 6,119,89,[GUITemp]
+  GUIDrawSlider 6,15,100,91,MusicRelVol,GUISoundTextC1
   ret
 
 SECTION .data
@@ -3027,7 +3049,7 @@ GUIGameOptnsTextC7 db 'SAVE SPC',0
 
 GUIGameOptnsTextD1 db 'MISC TOGGLES:',0
 GUIGameOptnsTextD1a db 'USE PL12/34',0
-GUIGameOptnsTextD1b db 'CLRSWITCHES',0
+GUIGameOptnsTextD1b db 'PANIC KEY',0
 GUIGameOptnsTextD1c db 'DISPLAY FPS',0
 GUIGameOptnsTextD1d db 'BATT POWER',0
 
@@ -3104,19 +3126,19 @@ DisplayGUIOptns:              ; GUI Options
   xor eax,eax
   mov al,[TRVal2]
   shl eax,2
-  mov dword[GUITemp],22
+  mov dword[GUITemp],23
   add [GUITemp],eax
   GUIDisplayIconWin 10,[GUITemp],120,GUIIconDataSlideBar
   xor eax,eax
   mov al,[TGVal2]
   shl eax,2
-  mov dword[GUITemp],22
+  mov dword[GUITemp],23
   add [GUITemp],eax
   GUIDisplayIconWin 10,[GUITemp],132,GUIIconDataSlideBar
   xor eax,eax
   mov al,[TBVal2]
   shl eax,2
-  mov dword[GUITemp],22
+  mov dword[GUITemp],23
   add [GUITemp],eax
   GUIDisplayIconWin 10,[GUITemp],144,GUIIconDataSlideBar
 
@@ -3491,7 +3513,7 @@ SECTION .text
   mov dl,[GUIWincol]
   DrawGUIWinBox %1,%2,%6,%4,%3,dl   ; freezes if you replace %6 with %3-1
   mov dl,[GUIWincol]
-  add dl,1
+  inc dl
   DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
   mov dl,[GUIWincol]
   add dl,4
@@ -3507,7 +3529,7 @@ SECTION .text
   mov dl,[GUIWincol]
   DrawGUIWinBox %1,%2,%6,%4,%3,dl
   mov dl,[GUIWincol]
-  add dl,1
+  inc dl
   DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
   mov dl,[GUIWincol]
   add dl,4
@@ -3532,7 +3554,7 @@ SECTION .text
   mov dl,[GUIWincol]
   DrawGUIWinBox %1,%2,%6,%4,%3,dl
   mov dl,[GUIWincol]
-  add dl,1
+  inc dl
   DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
   mov dl,[GUIWincol]
   add dl,4
@@ -4233,8 +4255,8 @@ DisplayGUIAddOns:                   ;Select Special Controllers
   mov eax,GUIAddOnEETopBar
   mov ebx,GUIAddOnsDisp
 .loopA
-  mov cl,byte[eax]
-  mov byte[ebx],cl
+  mov cl,[eax]
+  mov [ebx],cl
   inc eax
   inc ebx
   cmp cl,0
@@ -4263,8 +4285,8 @@ DisplayGUIAddOns:                   ;Select Special Controllers
   mov eax,GUIAddOnsDispEE
   mov ebx,GUIAddOnsDisp
 .loopB
-  mov cl,byte[eax]
-  mov byte[ebx],cl
+  mov cl,[eax]
+  mov [ebx],cl
   inc eax
   inc ebx
   cmp cl,0
@@ -4273,8 +4295,8 @@ DisplayGUIAddOns:                   ;Select Special Controllers
   pop ebx
   pop eax
 
-  GUIDisplayText 17,20,15,GUIAddOnText1
-  GUIDisplayText 17,112,15,GUIAddOnText2
+  GUIDisplayTextY 17,20,15,GUIAddOnText1
+  GUIDisplayTextY 17,112,15,GUIAddOnText2
 
   GUIDisplayButtonHoleTu 17,9,23,byte[device1],0,GUIAddOnText3,0
   GUIDisplayButtonHoleTu 17,9,33,byte[device1],1,GUIAddOnText4,0
@@ -4523,14 +4545,13 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
   GUIDisplayCheckboxu 20,11,100,PauseRewind,GUISaveTextB7,12
 
   GUIDisplayBBox 20,150,17,165,24,167     ; Rewind States Box
-  xor ax,ax
   mov ah,[RewindStates]
   mov al,48
   add ah,48
 .asciiloop
   cmp ah,58
   jb .hex2asciidone
-  add al,1
+  inc al
   sub ah,10
   jmp .asciiloop
 .hex2asciidone
@@ -4538,14 +4559,13 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
   GUIDisplayTextG 20,154,19,GUISaveTextZ3
 
   GUIDisplayBBox 20,150,29,165,36,167     ; Second/Rewind Box
-  xor ax,ax
   mov ah,[RewindFrames]
   mov al,48
   add ah,48
 .asciiloop2
   cmp ah,58
   jb .hex2asciidone2
-  add al,1
+  inc al
   sub ah,10
   jmp .asciiloop2
 .hex2asciidone2
@@ -4649,7 +4669,6 @@ DisplayGUISpeed:                    ;Speed Options
   GUIDisplayCheckboxun 21,11,145,frameskip,0,GUISpeedTextC2,0
 
   GUIDisplayBBox 21,96,24,114,31,167      ; FF Ratio Box
-  xor ax,ax
   mov ah,[FFRatio]
   add ah,2
   mov al,48
@@ -4657,7 +4676,7 @@ DisplayGUISpeed:                    ;Speed Options
 .asciiloop
   cmp ah,58
   jb .hex2asciidone
-  add al,1
+  inc al
   sub ah,10
   jmp .asciiloop
 .hex2asciidone
@@ -4669,7 +4688,6 @@ DisplayGUISpeed:                    ;Speed Options
   GUIDisplayTextG 21,101,26,GUISpeedTextZ3
 
   GUIDisplayBBox 21,96,35,114,42,167      ; SD Ratio Box
-  xor ax,ax
   mov ah,[SDRatio]
   add ah,2
   mov al,48
@@ -4677,7 +4695,7 @@ DisplayGUISpeed:                    ;Speed Options
 .asciiloop2
   cmp ah,58
   jb .hex2asciidone2
-  add al,1
+  inc al
   sub ah,10
   jmp .asciiloop2
 .hex2asciidone2
@@ -4717,7 +4735,7 @@ DisplayGUISpeed:                    ;Speed Options
   xor eax,eax
   mov al,[EmuSpeed]
   shl eax,1
-  mov dword[GUITemp],12
+  mov dword[GUITemp],11
   add [GUITemp],eax
   GUIDisplayIconWin 21,[GUITemp],171,GUIIconDataSlideBar
   mov dword[GUISpeedTextD1],0

@@ -706,21 +706,33 @@ GUIgetcurrentinput:
 .nokey
   ret
 
-%macro KeyTabInc 1 ; tab array
-  cmp dh,9
-  jne %%done
+%macro KeyTabInc 1-* ; tab arrays
+  push edx
+%rep %0
+  xor edx,edx
   mov eax,[%1]
-  cmp eax,[%1+4]
-  je %%back
-  inc dword[%1]
-  jmp %%done
-%%back
-  mov dword[%1],1
-%%done
+  div dword[%1+4]
+  mov [%1],edx
+  %rotate 1
+  or [%1],eax
+  cmp eax,1
+  je %%exit
+  %rotate -1
+  sub eax,[%1]
+  adc dword[%1],0
+  cmp dword[%1],0
+  jne %%exit
+  %rotate 1
+%endrep
+%%exit
+  pop edx
 %endmacro
 
 GUIInputKeys:
+  cmp dh,9
+  jne .notab
   KeyTabInc GUIInputTabs
+.notab
   ret
 
 GUITCPIPKeys:
@@ -838,13 +850,13 @@ GUISpeedKeys:
 
   cmp dh,'A'                 ; Framerate Checkboxes
   jne .noautofr
-  mov byte[FPSOn],0
-  cmp byte[frameskip],0
+  cmp byte[frameskip],0  ; 0 = autoframerate / 1-10 = frameskip 0-9
   je .zero
   mov byte[frameskip],0
   jmp .notzero
 .zero
-  mov byte[frameskip],2
+  mov byte[FPSOn],0
+  mov byte[frameskip],1
 .notzero
 .noautofr
   ret
@@ -939,7 +951,15 @@ GUIGUIOptnsKeys:
 ret
 
 GUIVideoKeys:
+  cmp dh,9
+  jne near .notab
+  cmp byte[NTSCFilter],0
+  jne .ntsc
   KeyTabInc GUIVideoTabs
+  jmp .notab
+.ntsc
+  KeyTabInc GUIVideoTabs,GUIVntscTab
+.notab
   cmp dh,'a'
   jb .nocap
   cmp dh,'z'
@@ -1340,8 +1360,12 @@ GUIVideoKeys:
 .nograyscale
 .notfilterstab
 
-  cmp dword[GUIVideoTabs],3
+  cmp dword[GUIVntscTab],1
   jne .notntsctab
+  cmp dh,'B'
+  jne .noblend
+  xor byte[NTSCBlend],1
+.noblend
 .notntsctab
   ret
 

@@ -19,6 +19,8 @@
 
 
 %include "macros.mac"
+%include "video/2xsaimmx.inc"
+%include "video/copyvid.inc"
 
 EXTSYM BGMA,V8Mode,antienab,cacheud,cbitmode,ccud,cfield,cgram,coladdb,coladdg
 EXTSYM coladdr,curblank,curfps,cvidmode,delay,extlatch,fnamest,En2xSaI
@@ -38,14 +40,11 @@ EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,CSStatus
 EXTSYM CSStatus2,CSStatus3,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
 EXTSYM bg1objptr,DecompAPtr,HalfTransB,HalfTransC,cur_zst_size,old_zst_size
 EXTSYM MovieProcessing,mzt_chdir,UpChdir,MovieFrameStr,GetMovieFrameStr
-EXTSYM MovieDisplayFrame
-EXTSYM MouseCount,device2
+EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
-%endif
-
-%ifdef __MSDOS__
+%else
 EXTSYM SB_blank,vsyncon,Triplebufen,granadd
 %endif
 
@@ -53,7 +52,6 @@ SECTION .bss
 NEWSYM ScreenScale, resb 1        ; If horizontal is scaled or not
 NEWSYM TempDebugV, resw 1       ; Temporary Debugging variable
 SECTION .text
-
 
 %macro MMXStuff 0
 %%1
@@ -67,56 +65,7 @@ SECTION .text
     jnz %%1
 %endmacro
 
-%macro FPUStuff 1
-    FILD QWORD[ESI+%1*16]
-    FILD QWORD[ESI+8+%1*16]
-    FISTP QWORD[ES:EDI+8+%1*16]
-    FISTP QWORD[ES:EDI+%1*16]
-%endmacro
-
-%MACRO CopyFPU 0
-%ENDMACRO
-
-%include "video/2xsaimmx.inc"
-%include "video/copyvid.inc"
-
 SECTION .text
-NEWSYM FPUZero
-%if 0
-
-; omg this is lame ;P
-    mov [.Zero],eax
-    mov [.Zero+4],eax
-    mov [.Zero2],eax
-    mov [.Zero2+4],eax
-.TopOfLoop
-    FILD QWORD[.Zero]
-    FILD QWORD[.Zero2]
-    FXCH
-    FISTP QWORD[EDI]
-    FISTP QWORD[EDI+8]
-    ADD EDI,16
-    DEC ECX
-    JNZ .TopOfLoop
-%else
-    fld1
-    fsub st0,st0
-.TopOfLoop
-    fst qword[edi]
-    fst qword[edi+8]
-    add edi,16
-    dec ecx
-    jnz .TopOfLoop
-    fstp st0
-%endif
-    ret
-
-%if 0
-SECTION .bss
-.Zero resd 2
-.Zero2 resd 2
-SECTION .text
-%endif
 
 ;*******************************************************
 ; ShowVideo                   Processes & displays video
@@ -548,118 +497,119 @@ NEWSYM outputhex16
 
 SECTION .data
 NEWSYM ASCII2Font
-         db 00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-         db 00h,00h,00h,00h,00h,00h,00h,00h,00h,30h,00h,00h,00h,00h,00h,00h
-         db 00h,3Eh,33h,31h,3Fh,37h,2Fh,3Dh,3Ah,3Bh,35h,38h,39h,25h,28h,29h
-         db 01h,02h,03h,04h,05h,06h,07h,08h,09h,0Ah,2Eh,40h,2Ah,32h,2Bh,36h
-         db 3Ch,0Bh,0Ch,0Dh,0Eh,0Fh,10h,11h,12h,13h,14h,15h,16h,17h,18h,19h
-         db 1Ah,1Bh,1Ch,1Dh,1Eh,1Fh,20h,21h,22h,23h,24h,2Ch,34h,2Dh,42h,26h
-         db 41h,0Bh,0Ch,0Dh,0Eh,0Fh,10h,11h,12h,13h,14h,15h,16h,17h,18h,19h
-         db 1Ah,1Bh,1Ch,1Dh,1Eh,1Fh,20h,21h,22h,23h,24h,43h,00h,44h,27h,00h
-         db 0Dh,1Fh,0Fh,0Bh,0Bh,0Bh,0Bh,0Dh,0Fh,0Fh,0Fh,13h,13h,13h,0Bh,0Bh
-         db 0Fh,0Bh,0Bh,19h,19h,19h,1Fh,1Fh,23h,19h,1Fh,0Dh,10h,23h,1Ah,10h
-         db 0Bh,4Eh,4Fh,50h,51h,52h,53h,54h,55h,56h,57h,58h,59h,5Ah,5Bh,5Ch
-         db 5Dh,5Eh,5Fh,60h,61h,62h,63h,64h,65h,66h,67h,68h,69h,6Ah,6Bh,6Ch
-         db 6Dh,6Eh,6Fh,70h,71h,72h,73h,74h,75h,76h,77h,78h,79h,7Ah,7Bh,7Ch
-         db 7Dh,7Eh,7Fh,80h,81h,82h,83h,84h,85h,86h,87h,88h,89h,8Ah,8Bh,8Ch
-         db 00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
-         db 00h,00h,00h,00h,00h,00h,00h,4Dh,4Ch,4Bh,4Ah,45h,46h,47h,48h,49h
+  db 00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+  db 00h,00h,00h,00h,00h,00h,00h,00h,00h,30h,00h,00h,00h,00h,00h,00h
+  db 00h,3Eh,33h,31h,3Fh,37h,2Fh,3Dh,3Ah,3Bh,35h,38h,39h,25h,28h,29h
+  db 01h,02h,03h,04h,05h,06h,07h,08h,09h,0Ah,2Eh,40h,2Ah,32h,2Bh,36h
+  db 3Ch,0Bh,0Ch,0Dh,0Eh,0Fh,10h,11h,12h,13h,14h,15h,16h,17h,18h,19h
+  db 1Ah,1Bh,1Ch,1Dh,1Eh,1Fh,20h,21h,22h,23h,24h,2Ch,34h,2Dh,42h,26h
+  db 41h,0Bh,0Ch,0Dh,0Eh,0Fh,10h,11h,12h,13h,14h,15h,16h,17h,18h,19h
+  db 1Ah,1Bh,1Ch,1Dh,1Eh,1Fh,20h,21h,22h,23h,24h,43h,00h,44h,27h,00h
+  db 0Dh,1Fh,0Fh,0Bh,0Bh,0Bh,0Bh,0Dh,0Fh,0Fh,0Fh,13h,13h,13h,0Bh,0Bh
+  db 0Fh,0Bh,0Bh,19h,19h,19h,1Fh,1Fh,23h,19h,1Fh,0Dh,10h,23h,1Ah,10h
+  db 0Bh,4Eh,4Fh,50h,51h,52h,53h,54h,55h,56h,57h,58h,59h,5Ah,5Bh,5Ch
+  db 5Dh,5Eh,5Fh,60h,61h,62h,63h,64h,65h,66h,67h,68h,69h,6Ah,6Bh,6Ch
+  db 6Dh,6Eh,6Fh,70h,71h,72h,73h,74h,75h,76h,77h,78h,79h,7Ah,7Bh,7Ch
+  db 7Dh,7Eh,7Fh,80h,81h,82h,83h,84h,85h,86h,87h,88h,89h,8Ah,8Bh,8Ch
+  db 00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h,00h
+  db 00h,00h,00h,00h,00h,00h,00h,4Dh,4Ch,4Bh,4Ah,45h,46h,47h,48h,49h
 
 NEWSYM FontData
-         db 0,0,0,0,0,0,0,0
-         db 01111100b,11000110b,11001110b,11010110b     ; 0, 01
+; bitmap 8x8 font ; char, offset for ASCII2Font
+         db 0,0,0,0,0,0,0,0                       ; ' ', 00
+         db 01111100b,11000110b,11001110b,11010110b ; 0, 01
          db 11100110b,11000110b,01111100b,00000000b
-         db 00011000b,00111000b,01111000b,00011000b     ; 1, 02
+         db 00011000b,00111000b,01111000b,00011000b ; 1, 02
          db 00011000b,00011000b,01111110b,00000000b
-         db 01111100b,11000110b,00001100b,00011000b     ; 2, 03
+         db 01111100b,11000110b,00001100b,00011000b ; 2, 03
          db 00110000b,01100110b,11111110b,00000000b
-         db 01111100b,11000110b,00000110b,00111100b     ; 3, 04
+         db 01111100b,11000110b,00000110b,00111100b ; 3, 04
          db 00000110b,11000110b,01111100b,00000000b
-         db 00111100b,01101100b,11001100b,11111110b     ; 4, 05
+         db 00111100b,01101100b,11001100b,11111110b ; 4, 05
          db 00001100b,00001100b,00001100b,00000000b
-         db 11111110b,11000000b,11000000b,11111100b     ; 5, 06
+         db 11111110b,11000000b,11000000b,11111100b ; 5, 06
          db 00000110b,11000110b,01111100b,00000000b
-         db 00111100b,01100000b,11000000b,11111100b     ; 6, 07
+         db 00111100b,01100000b,11000000b,11111100b ; 6, 07
          db 11000110b,11000110b,01111100b,00000000b
-         db 11111110b,11000110b,00000110b,00001100b     ; 7, 08
+         db 11111110b,11000110b,00000110b,00001100b ; 7, 08
          db 00011000b,00011000b,00011000b,00000000b
-         db 01111100b,11000110b,11000110b,01111100b     ; 8, 09
+         db 01111100b,11000110b,11000110b,01111100b ; 8, 09
          db 11000110b,11000110b,01111100b,00000000b
-         db 01111100b,11000110b,11000110b,01111110b     ; 9, 0A
+         db 01111100b,11000110b,11000110b,01111110b ; 9, 0A
          db 00000110b,11000110b,01111100b,00000000b
-         db 00111000b,01101100b,11000110b,11111110b     ; A, 0B
+         db 00111000b,01101100b,11000110b,11111110b ; A, 0B
          db 11000110b,11000110b,11000110b,00000000b
-         db 11111100b,11000110b,11000110b,11111100b     ; B, 0C
+         db 11111100b,11000110b,11000110b,11111100b ; B, 0C
          db 11000110b,11000110b,11111100b,00000000b
-         db 01111100b,11000110b,11000000b,11000000b     ; C, 0D
+         db 01111100b,11000110b,11000000b,11000000b ; C, 0D
          db 11000000b,11000110b,01111100b,00000000b
-         db 11111100b,11000110b,11000110b,11000110b     ; D, 0E
+         db 11111100b,11000110b,11000110b,11000110b ; D, 0E
          db 11000110b,11000110b,11111100b,00000000b
-         db 11111110b,11000000b,11000000b,11111000b     ; E, 0F
+         db 11111110b,11000000b,11000000b,11111000b ; E, 0F
          db 11000000b,11000000b,11111110b,00000000b
-         db 11111110b,11000000b,11000000b,11111000b     ; F, 10
+         db 11111110b,11000000b,11000000b,11111000b ; F, 10
          db 11000000b,11000000b,11000000b,00000000b
-         db 01111100b,11000110b,11000000b,11000000b     ; G, 11
+         db 01111100b,11000110b,11000000b,11000000b ; G, 11
          db 11001110b,11000110b,01111100b,00000000b
-         db 11000110b,11000110b,11000110b,11111110b     ; H, 12
+         db 11000110b,11000110b,11000110b,11111110b ; H, 12
          db 11000110b,11000110b,11000110b,00000000b
-         db 00111100b,00011000b,00011000b,00011000b     ; I, 13
+         db 00111100b,00011000b,00011000b,00011000b ; I, 13
          db 00011000b,00011000b,00111100b,00000000b
-         db 00011110b,00001100b,00001100b,00001100b     ; J, 14
+         db 00011110b,00001100b,00001100b,00001100b ; J, 14
          db 00001100b,11001100b,00111100b,00000000b
-         db 11001100b,11011000b,11110000b,11100000b     ; K, 15
+         db 11001100b,11011000b,11110000b,11100000b ; K, 15
          db 11110000b,11011000b,11001100b,00000000b
-         db 11000000b,11000000b,11000000b,11000000b     ; L, 16
+         db 11000000b,11000000b,11000000b,11000000b ; L, 16
          db 11000000b,11000000b,11111110b,00000000b
-         db 11000110b,11101110b,11111110b,11010110b     ; M, 17
+         db 11000110b,11101110b,11111110b,11010110b ; M, 17
          db 11000110b,11000110b,11000110b,00000000b
-         db 11000110b,11100110b,11110110b,11011110b     ; N, 18
+         db 11000110b,11100110b,11110110b,11011110b ; N, 18
          db 11001110b,11000110b,11000110b,00000000b
-         db 01111100b,11000110b,11000110b,11000110b     ; O, 19
+         db 01111100b,11000110b,11000110b,11000110b ; O, 19
          db 11000110b,11000110b,01111100b,00000000b
-         db 11111100b,11000110b,11000110b,11111100b     ; P, 1A
+         db 11111100b,11000110b,11000110b,11111100b ; P, 1A
          db 11000000b,11000000b,11000000b,00000000b
-         db 01111100b,11000110b,11000110b,11000110b     ; Q, 1B
+         db 01111100b,11000110b,11000110b,11000110b ; Q, 1B
          db 11010110b,11001110b,01111110b,00000000b
-         db 11111100b,11000110b,11000110b,11111100b     ; R, 1C
+         db 11111100b,11000110b,11000110b,11111100b ; R, 1C
          db 11001100b,11000110b,11000110b,00000000b
-         db 01111100b,11000110b,11000000b,01111100b     ; S, 1D
+         db 01111100b,11000110b,11000000b,01111100b ; S, 1D
          db 00000110b,11000110b,01111100b,00000000b
-         db 01111110b,00011000b,00011000b,00011000b     ; T, 1E
+         db 01111110b,00011000b,00011000b,00011000b ; T, 1E
          db 00011000b,00011000b,00011000b,00000000b
-         db 11000110b,11000110b,11000110b,11000110b     ; U, 1F
+         db 11000110b,11000110b,11000110b,11000110b ; U, 1F
          db 11000110b,11000110b,01111100b,00000000b
-         db 11000110b,11000110b,11000110b,11000110b     ; V, 20
+         db 11000110b,11000110b,11000110b,11000110b ; V, 20
          db 01101100b,00111000b,00010000b,00000000b
-         db 11000110b,11000110b,11000110b,11010110b     ; W, 21
+         db 11000110b,11000110b,11000110b,11010110b ; W, 21
          db 11010110b,11111110b,01101100b,00000000b
-         db 11000110b,01101100b,00111000b,00010000b     ; X, 22
+         db 11000110b,01101100b,00111000b,00010000b ; X, 22
          db 00111000b,01101100b,11000110b,00000000b
-         db 11001100b,11001100b,01111000b,00110000b     ; Y, 23
+         db 11001100b,11001100b,01111000b,00110000b ; Y, 23
          db 00110000b,00110000b,00110000b,00000000b
-         db 11111100b,10001100b,00011000b,00110000b     ; Z, 24
+         db 11111100b,10001100b,00011000b,00110000b ; Z, 24
          db 01100000b,11000100b,11111100b,00000000b
-         db 00000000b,00000000b,00000000b,11111110b     ; -, 25
+         db 00000000b,00000000b,00000000b,11111110b ; -, 25
          db 00000000b,00000000b,00000000b,00000000b
-         db 00000000b,00000000b,00000000b,00000000b     ; _, 26
+         db 00000000b,00000000b,00000000b,00000000b ; _, 26
          db 00000000b,00000000b,11111110b,00000000b
-         db 01110000b,11011100b,00000110b,00000000b     ; ~, 27
+         db 01110000b,11011100b,00000110b,00000000b ; ~, 27
          db 00000000b,00000000b,00000000b,00000000b
-         db 00000000b,00000000b,00000000b,00000000b     ; ., 28
+         db 00000000b,00000000b,00000000b,00000000b ; ., 28
          db 00000000b,00110000b,00110000b,00000000b
-         db 00000010b,00000100b,00001000b,00010000b     ; /, 29
+         db 00000010b,00000100b,00001000b,00010000b ; /, 29
          db 00100000b,01000000b,10000000b,00000000b
-         db 00001100b,00011000b,00110000b,01100000b     ; <, 2A
+         db 00001100b,00011000b,00110000b,01100000b ; <, 2A
          db 00110000b,00011000b,00001100b,00000000b
-         db 01100000b,00110000b,00011000b,00001100b     ; >, 2B
+         db 01100000b,00110000b,00011000b,00001100b ; >, 2B
          db 00011000b,00110000b,01100000b,00000000b
-         db 00111000b,00100000b,00100000b,00100000b     ; [, 2C
+         db 00111000b,00100000b,00100000b,00100000b ; [, 2C
          db 00100000b,00100000b,00111000b,00000000b
-         db 00111000b,00001000b,00001000b,00001000b     ; ], 2D
+         db 00111000b,00001000b,00001000b,00001000b ; ], 2D
          db 00001000b,00001000b,00111000b,00000000b
-         db 00000000b,00011000b,00011000b,00000000b     ; :, 2E
+         db 00000000b,00011000b,00011000b,00000000b ; :, 2E
          db 00011000b,00011000b,00000000b,00000000b
-         db 00011000b,00100100b,00011000b,00111010b     ; &, 2F
+         db 00011000b,00100100b,00011000b,00111010b ; &, 2F
          db 01000100b,01000110b,00111010b,00000000b
          ; Arrow, 30
          ; #, 31  (, 3A  {, 43
@@ -2607,22 +2557,29 @@ SECTION .text
 ;*******************************************************
 
 NEWSYM showfps
-    mov cl,50
+    mov al,60
     cmp byte[romispal],0
-    jne .nontsc
-    mov cl,60
-.nontsc
+    je .ntsc
+    mov al,50
+.ntsc
     inc byte[curfps]
-    cmp byte[nextframe],cl
+    cmp byte[nextframe],al
     jb .nofrc
-    mov al,[curfps]
-    mov [lastfps],al
-    mov al,[curfps2]
-    mov [lastfps2],al
+    mov cl,[curfps]
+    mov [lastfps],cl
+    mov cl,[curfps2]
+    mov [lastfps2],cl
     mov byte[curfps],0
     mov byte[curfps2],0
-    sub byte[nextframe],cl
+    sub byte[nextframe],al
 .nofrc
+    mov cl,[SloMo]
+    cmp cl,0
+    je .noslw
+    inc cl
+    div cl
+.noslw
+    mov cl,al
 
     cmp byte[cbitmode],1
     je near .do16b
@@ -2660,73 +2617,50 @@ NEWSYM showfps
     ret
 
 .do16b
-    mov al,[lastfps]
-    mov bl,10
-    xor ah,ah
-    div bl
-    shl al,4
-    add ah,al
-    mov al,ah
-    mov esi,208*288*2+32*2
-    add esi,[vidbuffer]
-    push ecx
-    call outputhex16
+  mov esi,208*288*2+48*2
+  add esi,[vidbuffer]
+  mov al,[lastfps]
+  push ecx
+  xor ecx,ecx
+.strloop
+  xor ah,ah
+  add al,48
+  sub esi,8*2
+.asciiloop16b
+  cmp al,58
+  jb .h2adone16b
+  inc ah
+  sub al,10
+  jmp .asciiloop16b
+.h2adone16b
+  mov cl,al
+  mov al,[ASCII2Font+ecx]
+  call outputchar16b
+  mov al,ah
+  or al,al
+  jnz .strloop
 
-    mov esi,208*288*2+48*2
-    add esi,[vidbuffer]
-    mov al,29h
-    call outputchar16b
-    pop ecx
+  mov esi,208*288*2+48*2
+  add esi,[vidbuffer]
+  mov al,41 ; '/'
+  call outputchar16b
+  pop ecx
 
-    mov al,cl
-    mov bl,10
-    xor ah,ah
-    div bl
-    shl al,4
-    add ah,al
-    mov al,ah
-    mov esi,208*288*2+56*2
-    add esi,[vidbuffer]
-    call outputhex16
-    ret
-
-.ng16b
-    mov byte[ngfont],1
-
-    mov al,[lastfps]
-    mov bl,10
-    xor ah,ah
-    div bl
-    shl al,4
-    add ah,al
-    mov al,ah
-    mov esi,208*288+32
-    add esi,[vidbuffer]
-    push ecx
-    call outputhex
-
-    mov esi,208*288+48
-    add esi,[vidbuffer]
-    mov al,29h
-    call outputchar
-    pop ecx
-
-    mov al,cl
-    mov bl,10
-    xor ah,ah
-    div bl
-    shl al,4
-    add ah,al
-    mov al,ah
-    mov esi,208*288+56
-    add esi,[vidbuffer]
-    call outputhex
-    ret
+  mov al,cl
+  mov bl,10
+  xor ah,ah
+  div bl
+  shl al,4
+  add ah,al
+  mov al,ah
+  mov esi,208*288*2+56*2
+  add esi,[vidbuffer]
+  call outputhex16
+  ret
 
 SECTION .bss
 NEWSYM spcdebugaddr, resd 1
 NEWSYM tempoffset, resw 1
-
 NEWSYM Testval, resd 1
 SECTION .text
 
