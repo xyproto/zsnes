@@ -46,9 +46,6 @@ EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
 EXTSYM SB_blank,vsyncon,Triplebufen,granadd
 %endif
 
-%include "video/2xsaimmx.inc"
-%include "video/copyvid.inc"
-
 SECTION .bss
 NEWSYM ScreenScale, resb 1        ; If horizontal is scaled or not
 NEWSYM TempDebugV, resw 1       ; Temporary Debugging variable
@@ -67,6 +64,11 @@ SECTION .text
 %endmacro
 
 SECTION .text
+
+%ifdef __MSDOS__
+%include "video/2xsaimmx.inc"
+%endif
+%include "video/copyvid.inc"
 
 ;*******************************************************
 ; ShowVideo                   Processes & displays video
