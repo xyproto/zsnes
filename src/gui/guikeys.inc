@@ -788,6 +788,7 @@ GUIOptionKeys:
   GUIKeyCheckbox FPSAtStart,'F'
   GUIKeyCheckbox Turbo30hz,'E'
   GUIKeyCheckbox TimerEnable,'C'
+  GUIKeyCheckbox TwelveHourClock,'1'
   GUIKeyCheckbox OldGfxMode2,'O'
   GUIKeyCheckbox DontSavePath,'D'
   GUIKeyCheckbox SmallMsgText,'S'

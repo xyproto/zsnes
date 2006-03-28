@@ -1606,6 +1606,7 @@ DisplayGUIOption:       ; Emu Options
   GUIDisplayCheckboxu 4,11,70,FPSAtStart,GUIOptionText7,0
   GUIDisplayCheckboxu 4,11,80,Turbo30hz,GUIOptionText8,2
   GUIDisplayCheckboxu 4,11,90,TimerEnable,GUIOptionText9,12
+  GUIDisplayCheckboxu 4,130,90,TwelveHourClock,GUIOptionText9a,0
   GUIDisplayCheckboxu 4,11,100,OldGfxMode2,GUIOptionTextA,0
   GUIDisplayCheckboxu 4,11,110,DontSavePath,GUIOptionTextB,0
   GUIDisplayCheckboxu 4,11,120,SmallMsgText,GUIOptionTextC,1
@@ -1629,6 +1630,7 @@ GUIOptionText6b db 'HIGH PRIORITY MODE',0
 GUIOptionText7 db 'FPS AT PROGRAM START',0
 GUIOptionText8 db 'USE 30HZ FOR TURBO',0
 GUIOptionText9 db 'ENABLE GAME CLOCK',0
+GUIOptionText9a db '12HR',0
 GUIOptionTextA db 'OLD GFX MODE 2',0
 GUIOptionTextB db 'DON',39,'T SAVE CUR PATH',0
 GUIOptionTextC db 'USE SMALL MESSAGE TEXT',0

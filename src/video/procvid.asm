@@ -2667,6 +2667,7 @@ NEWSYM tempoffset, resw 1
 NEWSYM Testval, resd 1
 SECTION .text
 
+EXTSYM TwelveHourClock
 
 NEWSYM ClockOutput
     cmp byte[cbitmode],1
@@ -2733,6 +2734,10 @@ NEWSYM ClockOutput
     call .output
     pop eax
     ; eax = hours
+    cmp byte[TwelveHourClock],1
+    jne .no12hour
+    sub eax,12
+.no12hour
     xor edx,edx
     mov ebx,10
     div ebx

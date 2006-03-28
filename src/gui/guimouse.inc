@@ -2392,6 +2392,7 @@ DisplayGUIOptionClick:
   GUIClickCButton 11,70,byte[FPSAtStart]
   GUIClickCButton 11,80,byte[Turbo30hz]
   GUIClickCButton 11,90,byte[TimerEnable]
+  GUIClickCButton 130,90,byte[TwelveHourClock]
   GUIClickCButtonO 11,100,byte[OldGfxMode2]
   GUIClickCButton 11,110,byte[DontSavePath]
   GUIClickCButton 11,120,byte[SmallMsgText]

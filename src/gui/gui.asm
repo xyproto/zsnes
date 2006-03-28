@@ -141,7 +141,7 @@ EXTSYM GUIEnableTransp,FilteredGUI,MouseWheel,TrapMouseCursor,AlwaysOnTop
 EXTSYM pl1p209,pl1p209b,SaveMainWindowPos,FastFwdToggle,SidewinderFix,RaisePitch
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM MovieVideoMode, MovieAudio,MovieVideoAudio,MovieAudioCompress
-EXTSYM device1,device2
+EXTSYM device1,device2,TwelveHourClock
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
