@@ -1900,17 +1900,9 @@ void initwinvideo(void)
       case 5:
       case 6:
       case 7:
-      case 8:
-         if (NTSCFilter && !FullScreen)
-         {
-            WindowWidth=600;
-            WindowHeight=446;
-         }
-         else
-         {
-            WindowWidth=640;
-            WindowHeight=480;
-         }
+      case 8:         
+         WindowWidth=640;
+         WindowHeight=480;
          break;
       case 9:
       case 10:
@@ -1978,8 +1970,13 @@ void initwinvideo(void)
         else
           SurfaceX = 640;
         SurfaceY=480;
-        if (NTSCFilter && WindowHeight == 600 || FullScreen)
+        if (NTSCMode)
         {
+          if (!FullScreen)
+          {
+             WindowWidth == 600;
+             WindowHeight == 446;
+          }
           SurfaceX = 600;
           SurfaceY = 446;
         }
