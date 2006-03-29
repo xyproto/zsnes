@@ -2736,6 +2736,9 @@ NEWSYM ClockOutput
     ; eax = hours
     cmp byte[TwelveHourClock],1
     jne .no12hour
+    ; check to see if it's 12 PM
+    cmp eax,12
+    jbe .no12hour
     sub eax,12
 .no12hour
     xor edx,edx
