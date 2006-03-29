@@ -1978,7 +1978,7 @@ void initwinvideo(void)
         else
           SurfaceX = 640;
         SurfaceY=480;
-        if (NTSCFilter && WindowHeight == 600)
+        if (NTSCFilter && WindowHeight == 600 || FullScreen)
         {
           SurfaceX = 600;
           SurfaceY = 446;
