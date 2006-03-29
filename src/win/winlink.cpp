@@ -1901,7 +1901,7 @@ void initwinvideo(void)
       case 6:
       case 7:
       case 8:
-         if (NTSCFilter)
+         if (NTSCFilter && !FullScreen)
          {
             WindowWidth=600;
             WindowHeight=446;
