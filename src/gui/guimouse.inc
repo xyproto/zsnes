@@ -2667,7 +2667,7 @@ DisplayGUIVideoClick:
   mov [GUIHoldXlimR],eax
 .nomovebar
 .notntsctab
-EXTSYm NTSCFilterInit
+EXTSYM NTSCFilterInit
   xor al,al
   pushad
   call NTSCFilterInit
