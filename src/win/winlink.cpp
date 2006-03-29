@@ -1401,6 +1401,7 @@ DWORD SMode=0;
 DWORD DSMode=0;
 DWORD NTSCMode=0;
 DWORD prevHQMode=~0;
+DWORD prevNTSCMode=0;
 DWORD prevScanlines=~0;
 WORD Refresh = 0;
 extern "C" BYTE GUIWFVID[];
@@ -1866,10 +1867,11 @@ void initwinvideo(void)
      if ( GUIHQ4X[cvidmode] != 0 ) HQMode=4;
    }
 
-   if ((CurMode!=cvidmode) || (prevHQMode!=HQMode))
+   if ((CurMode!=cvidmode) || (prevHQMode!=HQMode) || (prevNTSCMode!=NTSCFilter))
    {
       CurMode=cvidmode;
       prevHQMode=HQMode;
+      prevNTSCMode=NTSCFilter;
       newmode=1;
       SurfaceX=256;
       SurfaceY=240;
@@ -1969,8 +1971,10 @@ void initwinvideo(void)
           SurfaceX = 512;
         else
           SurfaceX = 640;
+
         SurfaceY=480;
-        if (NTSCMode)
+
+        if (NTSCMode && NTSCFilter)
         {
           if (!FullScreen)
           {
@@ -2509,6 +2513,8 @@ void drawscreenwin(void)
 
    if (prevHQMode!=HQMode)
      initwinvideo();
+
+   if (prevNTSCMode != NTSCFilter) initwinvideo();
 
    if (prevScanlines != scanlines)
    {

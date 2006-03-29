@@ -20,6 +20,7 @@
 
 %ifdef __WIN32__
 EXTSYM MinimizeWindow
+EXTSYM initwinvideo
 %endif
 
 SECTION .bss
@@ -2541,7 +2542,7 @@ DisplayGUIVideoClick:
   cmp byte[GUINTVID+ebx],0
   je near .nontscfilter
   FilterExcl 115,173,En2xSaI,hqFilter,scanlines,cfgscanline,antienab,cfginterp,BilinearFilter
-  GUIClickCButton5 115,173,byte[NTSCFilter],1
+  GUIClickCButtonf 115,173,byte[NTSCFilter],initwinvideo
 .nontscfilter
 %ifdef __UNIXSDL__
   xor ebx,ebx                             ; bilinear
