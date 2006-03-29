@@ -210,6 +210,15 @@ string hex_convert(string str)
     str.insert(h_pos-h_len+1, "0x");
   }
 
+  for (size_t i = 0; i < str.size(); i++)
+  {
+    if ((!i || !isxdigit(str[i-1])) && (str[i] == '0') && (str[i+1] != 'x'))
+    {
+      str.erase(i, 1);
+      i--;
+    }
+  }
+
   return(str);
 }
 
