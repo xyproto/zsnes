@@ -90,13 +90,13 @@ extern unsigned char NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTS
 void NTSCFilterInit()
 {
    // Set GUI options
-   ntsc_setup.merge_fields = NTSCBlend;
-   ntsc_setup.hue = NTSCHue / 100;
-   ntsc_setup.saturation = NTSCSat / 100;
-   ntsc_setup.contrast = NTSCCont / 100;
-   ntsc_setup.brightness = NTSCBright / 100;
-   ntsc_setup.brightness = NTSCSharp / 100;
-   ntsc_setup.hue_warping = NTSCWarp / 100;
+   ntsc_setup.merge_fields = (float) NTSCBlend;
+   ntsc_setup.hue = (float) NTSCHue / 100;
+   ntsc_setup.saturation = (float) NTSCSat / 100;
+   ntsc_setup.contrast = (float) NTSCCont / 100;
+   ntsc_setup.brightness = (float) NTSCBright / 100;
+   ntsc_setup.sharpness = (float) NTSCSharp / 100;
+   ntsc_setup.hue_warping = (float) NTSCWarp / 100;
    snes_ntsc_init(&ntsc_snes, &ntsc_setup);
 }
 

@@ -2665,9 +2665,12 @@ DisplayGUIVideoClick:
   add eax,100
   mov [GUIHoldXlimR],eax
 .nomovebar
-
 .notntsctab
+EXTSYm NTSCFilterInit
   xor al,al
+  pushad
+  call NTSCFilterInit
+  popad
   ret
 
 SECTION .bss
