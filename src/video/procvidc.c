@@ -84,10 +84,14 @@ void Clear2xSaIBuffer()
 unsigned char ntsc_phase = 0;
 snes_ntsc_setup_t ntsc_setup;
 snes_ntsc_t ntsc_snes;
+extern unsigned char NTSCBlend;
 
 // Init NTSC filter command, should be called whenever changes are made in the GUI related to the GUI
 void NTSCFilterInit()
 {
+   // Set GUI options
+   ntsc_setup.merge_fields = NTSCBlend;
+
    snes_ntsc_init(&ntsc_snes, &ntsc_setup);
 }
 
