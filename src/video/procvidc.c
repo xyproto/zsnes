@@ -74,15 +74,16 @@ void CapturePicture()
 }
 
 
-unsigned char ntsc_phase;
-snes_ntsc_setup_t ntsc_setup;
-snes_ntsc_t ntsc_snes;
-
 void Clear2xSaIBuffer()
 {
   memset(vidbufferofsb+288, 0xFF, 576*239);
 }
 
+// NTSC filter variables
+
+unsigned char ntsc_phase = 0;
+snes_ntsc_setup_t ntsc_setup;
+snes_ntsc_t ntsc_snes;
 
 // Init NTSC filter command, should be called whenever changes are made in the GUI related to the GUI
 void NTSCFilterInit()
