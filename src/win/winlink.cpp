@@ -1,22 +1,3 @@
-/*
-Copyright (C) 1997-2006 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
-
-http://www.zsnes.com
-http://sourceforge.net/projects/zsnes
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-version 2 as published by the Free Software Foundation.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
 
 #define DIRECTINPUT_VERSION 0x0800
 #define DIRECTSOUND_VERSION 0x0800
@@ -1410,6 +1391,7 @@ extern "C" unsigned int BitConv32Ptr;
 extern "C" unsigned int RGBtoYUVPtr;
 extern "C" unsigned char cvidmode;
 extern "C" unsigned char hqFilter;
+extern "C" unsigned char NTSCFilter;
 extern "C" unsigned short resolutn;
 extern "C" unsigned short scanlines;
 DWORD FirstVid=1;
@@ -1417,6 +1399,7 @@ DWORD FirstFull=1;
 DWORD DMode=0;
 DWORD SMode=0;
 DWORD DSMode=0;
+DWORD NTSCMode=0;
 DWORD prevHQMode=~0;
 DWORD prevScanlines=~0;
 WORD Refresh = 0;
@@ -1427,6 +1410,7 @@ extern "C" BYTE GUIDSMODE[];
 extern "C" BYTE GUIHQ2X[];
 extern "C" BYTE GUIHQ3X[];
 extern "C" BYTE GUIHQ4X[];
+extern "C" BYTE GUINTVID[];
 
 int InitDirectDraw()
 {
@@ -1662,7 +1646,7 @@ int InitDirectDraw()
         return FALSE;
      }
 
-     if (((SurfaceX==512) || (SurfaceX==640)) && (HQMode==0))
+     if (((SurfaceX==512) || (SurfaceX==600) || (SurfaceX==640)) && (HQMode==0))
        AltSurface = 1;
    }
 
@@ -1863,6 +1847,8 @@ char WinMessage[256];
 void clearwin();
 
 char WinName[]={"ZSNESW\0"};
+extern void NTSCFilterInit();
+extern void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char* buffer);
 
 void initwinvideo(void)
 {
@@ -1870,6 +1856,8 @@ void initwinvideo(void)
    RECT rc1;
    DWORD newmode=0;
    DWORD HQMode=0;
+
+   NTSCFilterInit();
 
    if ( hqFilter != 0 )
    {
@@ -1891,6 +1879,7 @@ void initwinvideo(void)
       DMode=GUIDSIZE[cvidmode];
       SMode=GUISMODE[cvidmode];
       DSMode=GUIDSMODE[cvidmode];
+      NTSCMode=GUINTVID[cvidmode];
 
       switch (cvidmode)
       {
@@ -1912,8 +1901,16 @@ void initwinvideo(void)
       case 6:
       case 7:
       case 8:
-         WindowWidth=640;
-         WindowHeight=480;
+         if (NTSCFilter)
+         {
+            WindowWidth=600;
+            WindowHeight=446;
+         }
+         else
+         {
+            WindowWidth=640;
+            WindowHeight=480;
+         }
          break;
       case 9:
       case 10:
@@ -1981,6 +1978,11 @@ void initwinvideo(void)
         else
           SurfaceX = 640;
         SurfaceY=480;
+        if (NTSCFilter == 1)
+        {
+          SurfaceX = 600;
+          SurfaceY = 446;
+        }
       }
       else
       {
@@ -2011,7 +2013,7 @@ void initwinvideo(void)
       BlitArea.left = 0;
       BlitArea.right = SurfaceX;
 
-      if ((SurfaceX == 640) || (SurfaceX == 320))
+      if ((SurfaceX == 600) || (SurfaceX == 640) || (SurfaceX == 320))
         BlitArea.bottom = SurfaceY;
       else
         BlitArea.bottom = (SurfaceY/240)*resolutn;
@@ -2689,6 +2691,26 @@ void drawscreenwin(void)
             NumBytesPerLine=pitch;
             WinVidMemStart=&SurfBuf[(240-resolutn)*pitch+64*2];
             asm_call(copy640x480x16bwin);
+            break;
+         default:
+            UnlockSurface();
+            MessageBox (NULL, "Mode only available in 16 and 32 bit color", "DDRAW Error" , MB_ICONERROR );
+            cvidmode=2;
+            initwinvideo();
+            Sleep(1000);
+            drawscreenwin();
+       }
+     }
+     if (SurfaceX == 600 && SurfaceY == 446)
+     {
+       switch (BitDepth)
+       {
+         case 16:
+         case 32: // using 16bpp AltSurface
+            AddEndBytes=pitch-1024;
+            NumBytesPerLine=pitch;
+            WinVidMemStart=&SurfBuf[0];
+            NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart);
             break;
          default:
             UnlockSurface();

@@ -29,6 +29,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <ctype.h>
 #include <string.h>
 #include <sys/stat.h>
+#include "ntsc.h"
 #define DIR_SLASH "\\"
 #endif
 
@@ -72,7 +73,27 @@ void CapturePicture()
     }
 }
 
+
+unsigned char ntsc_phase;
+snes_ntsc_setup_t ntsc_setup;
+snes_ntsc_t ntsc_snes;
+
 void Clear2xSaIBuffer()
 {
   memset(vidbufferofsb+288, 0xFF, 576*239);
+}
+
+
+// Init NTSC filter command, should be called whenever changes are made in the GUI related to the GUI
+void NTSCFilterInit()
+{
+   snes_ntsc_init(&ntsc_snes, &ntsc_setup);
+}
+
+void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char *buffer)
+{
+   snes_ntsc_blit(&ntsc_snes, vidbuffer+16, 576, ntsc_phase, SurfaceX, SurfaceY, buffer, pitch);
+
+   // Change phase on alternating frames
+   ntsc_phase ^= 1;
 }
