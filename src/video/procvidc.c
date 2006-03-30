@@ -22,16 +22,15 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
-#define DIR_SLASH "/"
 #else
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
 #include <sys/stat.h>
-#include "ntsc.h"
-#define DIR_SLASH "\\"
 #endif
+
+#include "ntsc.h"
 
 extern unsigned int newengen, nggposng[2];
 extern unsigned short PrevPicture[64*56], *vidbuffer, *vidbufferofsb;
