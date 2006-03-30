@@ -953,14 +953,18 @@ ret
 
 GUIVideoKeys:
   cmp dh,9
-  jne near .notab
+  jne near .tabdone
   cmp byte[NTSCFilter],0
-  jne .ntsc
-  KeyTabInc GUIVideoTabs
-  jmp .notab
-.ntsc
+  je near .nontsc
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUINTVID+eax],0
+  je .nontsc
   KeyTabInc GUIVideoTabs,GUIVntscTab
-.notab
+  jmp .tabdone
+.nontsc
+  KeyTabInc GUIVideoTabs
+.tabdone
   cmp dh,'a'
   jb .nocap
   cmp dh,'z'
@@ -1367,6 +1371,10 @@ GUIVideoKeys:
   jne .noblend
   xor byte[NTSCBlend],1
 .noblend
+  cmp dh,'R'
+  jne .norefresh
+  xor byte[NTSCRef],1
+.norefresh
 .notntsctab
   ret
 

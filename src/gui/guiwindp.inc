@@ -659,17 +659,17 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   push ecx    ; save X offset for next drawing step
   dec eax
   mov ecx,eax
-  mov esi,12
+  mov esi,11
   inc dl
 %%draw2
   DrawGUILine
   dec esi
   jnz %%draw2
-  sub ebx,13
+  sub ebx,11
   push ebx    ; save Y offset for next drawing step
   mov cl,[GUIWincol]
   mov [GUItextcolor],cl
-  add ebx,5
+  add ebx,4
   push ebx    ; save label Yoff
   mov edx,eax
   add edx,6
@@ -692,9 +692,19 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   add edi,ebp
   call GUIOutputStringwin
   mov byte[GUItextcolor],217 ; restore normal colour
-  pop ebx     ; restore Yoff for next tab
+  pop ebx     ; restore Yoff for drawing step
   pop eax
-  add eax,2   ; restore and set Xoff for next tab
+  inc eax     ; restore and set Xoff for drawing step
+  mov ecx,eax
+  mov dl,[GUIWincol]
+  add dl,3
+  mov esi,12
+%%draw3
+  DrawGUILine
+  dec esi
+  jnz %%draw3
+  sub ebx,13
+  inc eax
 %%read2
   mov esi,%1
   cmp byte[esi+ebp],0
@@ -806,7 +816,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
 %%nodraw
 %endmacro
 
-%macro GUIDrawSlider 6 ; win #id, minX, width, Ypos, variable, text
+%macro GUIDrawSlider 8 ; win #id, minX, width, Ypos, var, text, proc1, proc2
   mov eax,[GUIwinposx+%1*4]
   mov ebx,[GUIwinposy+%1*4]
   add eax,%2
@@ -822,23 +832,12 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   sub dl,13
   DrawGUILine
   xor eax,eax
-  mov al,[%5]
+  %7 %5       ; proc1 == alters var correctly and puts result in al
   mov dword[GUITemp],%2-4
   add [GUITemp],eax
   GUIDisplayIconWin %1,[GUITemp],%4-4,GUIIconDataSlideBar
-  mov word[%6],'  '
-  mov esi,%6+3
-  mov al,[%5]
-  mov bl,10
-%%asciilp                            ; turns decimal into ascii
-  dec esi
-  xor ah,ah
-  div bl
-  add ah,48
-  mov [esi],ah
-  cmp al,0
-  jne %%asciilp
-  mov dword[GUITemp],%6  ; Display Value (Green)
+  %8 %5,%6    ; proc2 == alters text correctly and puts pointer in esi
+  mov [GUITemp],esi  ; Display Value (Green)
   GUIDisplayTextG %1,%2+%3+6,%4-1,[GUITemp]
 %endmacro
 
@@ -1645,6 +1644,35 @@ GUIOptionTextZ db '-',0
 
 SECTION .text
 
+%macro NTSCslidSet 1 ; slider variable
+  mov al,[%1]
+  add al,100
+%endmacro
+
+%macro NTSCslidText 2 ; slider var, text
+  mov dword[%2],'    '
+  mov esi,%2+3
+  mov al,[%1]
+  mov bl,10
+  test al,128
+  jz %%asciilp
+  xor al,255
+  inc al
+%%asciilp                            ; turns decimal into ascii
+  xor ah,ah
+  div bl
+  add ah,48
+  mov [esi],ah
+  dec esi
+  cmp al,0
+  jne %%asciilp
+  test byte[%1],128
+  jz %%pos
+  mov byte[esi],'-'
+%%pos
+  mov esi,%2
+%endmacro
+
 DisplayGUIVideo:
   cmp byte[TripBufAvail],0        ; Check features
   jne .notexttb
@@ -1675,6 +1703,16 @@ DisplayGUIVideo:
 
   GUIDrawWindowBox 5,GUIVideoDisp      ; Video Modes List/Options
 
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUINTVID+eax],0
+  jne .ntsc
+  mov byte[NTSCFilter],0
+  mov dword[GUIVntscTab],0
+  cmp byte[GUIVideoTabs],0
+  jne .ntsc
+  mov byte[GUIVideoTabs],1
+.ntsc
   GUIDrawTArea 5
   GUIDrawTabs GUIVideoTabs
   cmp byte[NTSCFilter],0
@@ -1905,7 +1943,10 @@ DisplayGUIVideo:
 
   cmp dword[GUIVntscTab],1
   jne near .notntsctab
+  DrawGUIButton 5,5,166,42,177,GUIVideoTextG8,37,0,0        ; Button
+
   GUIDisplayCheckboxu 5,5,25,NTSCBlend,GUIVideoTextG1,0
+  GUIDisplayCheckboxu 5,135,25,NTSCRef,GUIVideoTextG9,0
 
   GUIDisplayTextY 5,7,46,GUIVideoTextG2
   GUIDisplayTextY 5,7,66,GUIVideoTextG3
@@ -1914,12 +1955,12 @@ DisplayGUIVideo:
   GUIDisplayTextY 5,7,126,GUIVideoTextG6
   GUIDisplayTextY 5,7,146,GUIVideoTextG7
 
-  GUIDrawSlider 5,15,100,56,NTSCHue,GUIVideoTextG
-  GUIDrawSlider 5,15,100,76,NTSCSat,GUIVideoTextG
-  GUIDrawSlider 5,15,100,96,NTSCCont,GUIVideoTextG
-  GUIDrawSlider 5,15,100,116,NTSCBright,GUIVideoTextG
-  GUIDrawSlider 5,15,100,136,NTSCSharp,GUIVideoTextG
-  GUIDrawSlider 5,15,100,156,NTSCWarp,GUIVideoTextG
+  GUIDrawSlider 5,8,200,56,NTSCHue,GUIVideoTextG,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,76,NTSCSat,GUIVideoTextG,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,96,NTSCCont,GUIVideoTextG,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,116,NTSCBright,GUIVideoTextG,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,136,NTSCSharp,GUIVideoTextG,NTSCslidSet,NTSCslidText
+  GUIDrawSlider 5,8,200,156,NTSCWarp,GUIVideoTextG,NTSCslidSet,NTSCslidText
 .notntsctab
   ret
 
@@ -1963,7 +2004,7 @@ GUIVideoText8 db 'SET',0                ; set button
 GUIVideoText9 db 'VSYNC',0              ; -c
 GUIVideoTexte db 'NTSC',0
 
-GUIVideoTextG db '---%',0
+GUIVideoTextG db '----%',0
 GUIVideoTextG1 db 'BLEND FRAMES',0
 GUIVideoTextG2 db 'HUE:',0
 GUIVideoTextG3 db 'SATURATION:',0
@@ -1971,6 +2012,8 @@ GUIVideoTextG4 db 'CONTRAST:',0
 GUIVideoTextG5 db 'BRIGHTNESS:',0
 GUIVideoTextG6 db 'SHARPNESS:',0
 GUIVideoTextG7 db 'HUE WARPING:',0
+GUIVideoTextG8 db 'RESET',0
+GUIVideoTextG9 db 'REFRESH',0
 
 SECTION .bss
 GUIVStA resd 3
@@ -1978,6 +2021,26 @@ GUIcurrentvideoviewloc resd 1
 GUIcurrentvideocursloc resd 1
 
 SECTION .text
+
+%macro VolslidSet 1 ; slider variable
+  mov al,[%1]
+%endmacro
+
+%macro VolslidText 2 ; slider var, text
+  mov word[%2],'  '
+  mov esi,%2+3
+  mov al,[%1]
+  mov bl,10
+%%asciilp                            ; turns decimal into ascii
+  dec esi
+  xor ah,ah
+  div bl
+  add ah,48
+  mov [esi],ah
+  cmp al,0
+  jne %%asciilp
+  mov esi,%2
+%endmacro
 
 DisplayGUISound:                     ; Sound Related Options
   GUIDrawWindowBox 6,GUISoundDisp
@@ -2029,7 +2092,7 @@ DisplayGUISound:                     ; Sound Related Options
   add [GUITemp],eax
   GUIDisplayTextG 6,23,64,[GUITemp]
 
-  GUIDrawSlider 6,15,100,91,MusicRelVol,GUISoundTextC1
+  GUIDrawSlider 6,15,100,91,MusicRelVol,GUISoundTextC1,VolslidSet,VolslidText
   ret
 
 SECTION .data
@@ -3065,13 +3128,35 @@ GUIGameOptnsTextD2e db '- GAMMA',0
 
 SECTION .text
 
+%macro GUICslidSet 1 ; slider var
+  mov al,[%1]
+  shl eax,2
+  add eax,2
+%endmacro
+
+%macro GUICslidText 2 ; slider var, text
+  mov byte[%2],' '
+  mov esi,%2+2
+  mov al,[%1]
+  mov bl,10
+%%asciilp                            ; turns decimal into ascii
+  dec esi
+  xor ah,ah
+  div bl
+  add ah,48
+  mov [esi],ah
+  cmp al,0
+  jne %%asciilp
+  mov esi,%2
+%endmacro
+
 DisplayGUIOptns:              ; GUI Options
 %ifdef __WIN32__              ; If Windows, extend window down
   mov dword[GUIwinsizey+10*4],192
 %endif
   GUIDrawWindowBox 10,GUIGUIDisp
 
-  push eax                       ; Setup Colors
+  ; Setup Colors
   cmp byte[CurPalSelect],1
   je .yespal2b
   cmp byte[CurPalSelect],2
@@ -3099,50 +3184,10 @@ DisplayGUIOptns:              ; GUI Options
   mov al,[GUIWBAdd]
   mov [TBVal2],al
 .nopal1b
-  pop eax
 
-  mov eax,[GUIwinposx+10*4]        ; Slider Bars
-  mov ebx,[GUIwinposy+10*4]
-  mov ecx,eax
-  add eax,25
-  add ecx,25+32*4
-  add ebx,124
-  xor edx,edx
-  mov dl,215
-  sub dl,[GUIWincoladd]
-  DrawGUILine
-  add ebx,11
-  DrawGUILine
-  add ebx,11
-  DrawGUILine
-  inc ecx
-  mov ebx,[GUIwinposy+10*4]
-  inc eax
-  add ebx,125
-  sub dl,13
-  DrawGUILine
-  add ebx,11
-  DrawGUILine
-  add ebx,11
-  DrawGUILine
-  xor eax,eax
-  mov al,[TRVal2]
-  shl eax,2
-  mov dword[GUITemp],23
-  add [GUITemp],eax
-  GUIDisplayIconWin 10,[GUITemp],120,GUIIconDataSlideBar
-  xor eax,eax
-  mov al,[TGVal2]
-  shl eax,2
-  mov dword[GUITemp],23
-  add [GUITemp],eax
-  GUIDisplayIconWin 10,[GUITemp],132,GUIIconDataSlideBar
-  xor eax,eax
-  mov al,[TBVal2]
-  shl eax,2
-  mov dword[GUITemp],23
-  add [GUITemp],eax
-  GUIDisplayIconWin 10,[GUITemp],144,GUIIconDataSlideBar
+  GUIDrawSlider 10,25,127,124,TRVal2,GUIGUIOptnsTextD2,GUICslidSet,GUICslidText
+  GUIDrawSlider 10,25,127,136,TGVal2,GUIGUIOptnsTextD2,GUICslidSet,GUICslidText
+  GUIDrawSlider 10,25,127,148,TBVal2,GUIGUIOptnsTextD2,GUICslidSet,GUICslidText
 
   GUIDisplayTextY 10,6,16,GUIGUIOptnsTextA
   GUIDisplayCheckboxu 10,12,23,mousewrap,GUIGUIOptnsTextA1a,0     ; Checkboxes
@@ -3183,50 +3228,7 @@ DisplayGUIOptns:              ; GUI Options
   GUIDisplayButtonHole 10,48,108,byte[CurPalSelect],0    ; Radio Buttons
   GUIDisplayButtonHole 10,88,108,byte[CurPalSelect],1
   GUIDisplayButtonHole 10,135,108,byte[CurPalSelect],2
-
-  mov dword[GUIGUIOptnsTextD2],0          ; Display Values for the 3 bars
-  mov esi,GUIGUIOptnsTextD2+2
-  xor eax,eax
-  mov al,[TRVal2]
-  call .processnum
-  GUIDisplayTextG 10,160,123,[GUITemp]    ; R
-
-  mov dword[GUIGUIOptnsTextD2],0
-  mov esi,GUIGUIOptnsTextD2+2
-  xor eax,eax
-  mov al,[TGVal2]
-  call .processnum
-  GUIDisplayTextG 10,160,135,[GUITemp]    ; G
-
-  mov dword[GUIGUIOptnsTextD2],0
-  mov esi,GUIGUIOptnsTextD2+2
-  xor eax,eax
-  mov al,[TBVal2]
-  call .processnum
-  GUIDisplayTextG 10,160,147,[GUITemp]    ; B
   ret
-
-.processnum
-  mov ebx,10
-  div bl
-  add ah,48
-  mov [esi],ah
-  cmp al,0
-  je .nomore
-  dec esi
-  xor ah,ah
-  div bl
-  add ah,48
-  mov [esi],ah
-.nomore
-  mov [GUITemp],esi
-  mov byte[GUItextcolor],223
-  ret
-
-;mousewrap   0      ; 0 = mouse boundries, 1 = mouse wrap
-;mouseshad   1      ; 0 = no mouse shadow, 1 = mouse shadow
-;lastcursres 0      ; 0 = go to load, 1 = go to previous menu, 2 = no menu
-;resetposn   1      ; 0 = no window reset, 1 = window reset
 
 SECTION .data
 GUIGUIOptnsTextA db 'GUI SWITCHES:',0
@@ -3257,7 +3259,7 @@ GUIGUIOptnsTextC2 db 'SAVE MAIN WINDOW POSITION',0
 GUIGUIOptnsTextC3 db 'ALLOW MULTIPLE INSTANCES',0
 
 GUIGUIOptnsTextD1 db '@',0
-GUIGUIOptnsTextD2 dd 0
+GUIGUIOptnsTextD2 db '  ',0
 
 SECTION .text
 
@@ -4627,6 +4629,41 @@ GUISaveTextZ3 db '  ',0
 
 SECTION .text
 
+%macro SpdslidSet 1 ; slider var
+  mov al,[%1]
+  shl eax,1
+%endmacro
+
+%macro SpdslidText 2 ; slider var, text
+  mov dword[%2],0
+  mov esi,%2+2
+  mov al,[%1]   ; currently emuspeed ranges from 0 to 58
+  mov bl,10
+  cmp al,29     ; this will turn it into '/30' to '30x'
+  jb %%slowmo
+  mov byte[esi],'x' ; adds 'x' after the ff value
+  sub al,28
+  jmp %%asciilp
+%%slowmo
+  inc esi
+  mov byte[%2],1    ; slomo indicator
+  mov al,30
+  sub al,[%1]
+%%asciilp           ; turns decimal into ascii
+  dec esi
+  xor ah,ah
+  div bl
+  add ah,48
+  mov [esi],ah
+  cmp al,0
+  jne %%asciilp
+  cmp byte[%2],1
+  jne %%done
+  dec esi
+  mov byte[esi],'/' ; adds '/' before the slomo value
+%%done
+%endmacro
+
 DisplayGUISpeed:                    ;Speed Options
   GUIDrawWindowBox 21,GUISpeedDisp
 
@@ -4720,62 +4757,7 @@ DisplayGUISpeed:                    ;Speed Options
 
   cmp byte[frameskip],0
   jne near .noslider
-  mov eax,[GUIwinposx+21*4]           ;Slider
-  mov ebx,[GUIwinposy+21*4]
-  add eax,15
-  add ebx,175
-  mov ecx,eax
-  add ecx,116
-  xor edx,edx
-  mov dl,215
-  sub dl,[GUIWincoladd]
-  DrawGUILine
-  inc ecx
-  inc eax
-  sub dl,13
-  DrawGUILine
-  xor eax,eax
-  mov al,[EmuSpeed]
-  shl eax,1
-  mov dword[GUITemp],11
-  add [GUITemp],eax
-  GUIDisplayIconWin 21,[GUITemp],171,GUIIconDataSlideBar
-  mov dword[GUISpeedTextD1],0
-  mov esi,GUISpeedTextD1+2
-  xor eax,eax         ; currently emuspeed ranges from 0 to 58
-  mov al,[EmuSpeed]   ; this will turn it into '/30' to '30x'
-  cmp al,29
-  jb .slowmo
-  mov byte[esi],'x'       ; adds 'x' after the ff value
-  dec esi
-  sub al,28
-  jmp .asciilp
-.slowmo
-  mov byte[GUISpeedTextD1],1      ; slomo indicator
-  mov bl,30
-  sub bl,al
-  mov al,bl
-.asciilp                            ; turns decimal into ascii
-  mov bl,10
-  div bl
-  add ah,48
-  mov [esi],ah
-  cmp al,0
-  je .nomore
-  dec esi
-  xor ah,ah
-  div bl
-  add ah,48
-  mov [esi],ah
-.nomore
-  cmp byte[GUISpeedTextD1],1
-  jne .convdone
-  dec esi
-  mov byte[esi],'/'      ; adds '/' before the slomo value
-.convdone
-  mov [GUITemp],esi                   ; Display Value (Green)
-  GUIDisplayTextG 21,78,163,[GUITemp]
-
+  GUIDrawSlider 21,7,116,175,EmuSpeed,GUISpeedTextD1,SpdslidSet,SpdslidText
 .noslider
   cmp byte[frameskip],0                    ; Determine if AutoFR is enabled
   je near .auto

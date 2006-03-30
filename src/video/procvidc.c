@@ -29,7 +29,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <string.h>
 #include <sys/stat.h>
 #endif
-
 #include "ntsc.h"
 
 extern unsigned int newengen, nggposng[2];
@@ -83,20 +82,21 @@ void Clear2xSaIBuffer()
 unsigned char ntsc_phase = 0;
 snes_ntsc_setup_t ntsc_setup;
 snes_ntsc_t ntsc_snes;
-extern unsigned char NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCWarp;
+extern unsigned char NTSCBlend;
+extern signed char NTSCHue, NTSCSat, NTSCCont, NTSCBright, NTSCSharp, NTSCWarp;
 
 // Init NTSC filter command, should be called whenever changes are made in the GUI related to the GUI
 void NTSCFilterInit()
 {
-   // Set GUI options
-   ntsc_setup.merge_fields = (float) NTSCBlend;
-   ntsc_setup.hue = (float) NTSCHue / 100;
-   ntsc_setup.saturation = (float) NTSCSat / 100;
-   ntsc_setup.contrast = (float) NTSCCont / 100;
-   ntsc_setup.brightness = (float) NTSCBright / 100;
-   ntsc_setup.sharpness = (float) NTSCSharp / 100;
-   ntsc_setup.hue_warping = (float) NTSCWarp / 100;
-   snes_ntsc_init(&ntsc_snes, &ntsc_setup);
+  // Set GUI options
+  ntsc_setup.hue = ((float) NTSCHue) / 100.0;
+  ntsc_setup.saturation = ((float) NTSCSat) / 100.0;
+  ntsc_setup.contrast = ((float) NTSCCont) / 100.0;
+  ntsc_setup.brightness = ((float) NTSCBright) / 100.0;
+  ntsc_setup.sharpness = ((float) NTSCSharp) / 100.0;
+  ntsc_setup.hue_warping = ((float) NTSCWarp) / 100.0;
+  ntsc_setup.merge_fields = (int) NTSCBlend;
+  snes_ntsc_init(&ntsc_snes, &ntsc_setup);
 }
 
 void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char *buffer)

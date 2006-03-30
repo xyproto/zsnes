@@ -37,6 +37,18 @@ ProcessMouse:
   je near .noholdnecessary
   cmp byte[GUIHold],0
   jne .noholda
+  cmp byte[LastHoldEnable],7 ; ntsc sliders
+  jne .norelease1
+  xor edx,edx
+  mov dl,[ntscWhVar]
+  mov cl,[ntscCurVar]
+  cmp cl,[ntscLastVar+edx]
+  je .norelease1
+  pushad
+  call NTSCFilterInit
+  popad
+  mov [ntscLastVar+edx],cl
+.norelease1
   mov ecx,0
   mov edx,255
   call Set_MouseXMax
@@ -584,7 +596,9 @@ ProcessMouseButtons:
   je near GUIProcReset
   cmp byte[GUICBHold],3
   je near GUIProcReset
-  cmp byte[GUICBHold],4
+  cmp byte[GUICBHold],4  ; set video mode
+  je near GUIProcVideo
+  cmp byte[GUICBHold],37 ; reset ntsc options
   je near GUIProcVideo
   cmp byte[GUICBHold],10
   je near GUIProcStates
@@ -847,6 +861,22 @@ ProcessMouseButtons:
   ret
 
 GUIProcVideo:
+  cmp byte[GUICBHold],37
+  mov byte[GUICBHold],0
+  jne .noreset
+  mov byte[NTSCBlend],0
+  mov byte[NTSCRef],0
+  mov byte[NTSCHue],0
+  mov byte[NTSCSat],0
+  mov byte[NTSCCont],0
+  mov byte[NTSCBright],0
+  mov byte[NTSCSharp],0
+  mov byte[NTSCWarp],0
+  pushad
+  call NTSCFilterInit
+  popad
+  ret
+.noreset
 %ifdef __MSDOS__
   mov al,[GUIcurrentvideocursloc]
   cmp al,3
@@ -868,7 +898,6 @@ GUIProcVideo:
   mov byte[newengen],1
   mov byte[cfgnewgfx],1
 .skipno16b
-  mov byte[GUICBHold],0
   call guiprevideo
   mov al,[cvidmode]
   mov [.prevvid],al
@@ -2583,18 +2612,23 @@ DisplayGUIVideoClick:
   sub edx,[GUIwinposy+5*4]
 
   GUIClickCButton 5,25,byte[NTSCBlend]     ; Checkboxes
+  GUIClickCButton 135,25,byte[NTSCRef]
+
+  GUIPHoldbutton 5,166,42,177,37  ; button
 
   ;Sliders
-  cmp eax,15                     ; X-Range for click-area
+  cmp eax,8                      ; X-Range for click-area
   jl near .nomovebar
-  cmp eax,15+100
+  cmp eax,8+200
   jg near .nomovebar
+  sub al,108
   cmp edx,54                     ; Y-Range for click-area
   jl near .nomovebar
   cmp edx,58
   jg .nohuebar
-  sub eax,15
   mov [NTSCHue],al
+  mov [ntscCurVar],al
+  mov byte[ntscWhVar],0
   mov byte[GUIHold],7            ; Lock mouse to bar when clicked
   mov eax,[GUIwinposy+5*4]
   add eax,56
@@ -2605,8 +2639,9 @@ DisplayGUIVideoClick:
   jl near .nomovebar
   cmp edx,78
   jg .nosatbar
-  sub eax,15
   mov [NTSCSat],al
+  mov [ntscCurVar],al
+  mov byte[ntscWhVar],1
   mov byte[GUIHold],7
   mov eax,[GUIwinposy+5*4]
   add eax,76
@@ -2617,8 +2652,9 @@ DisplayGUIVideoClick:
   jl near .nomovebar
   cmp edx,98
   jg .nocontbar
-  sub eax,15
   mov [NTSCCont],al
+  mov [ntscCurVar],al
+  mov byte[ntscWhVar],2
   mov byte[GUIHold],7
   mov eax,[GUIwinposy+5*4]
   add eax,96
@@ -2629,8 +2665,9 @@ DisplayGUIVideoClick:
   jl near .nomovebar
   cmp edx,118
   jg .nobrightbar
-  sub eax,15
   mov [NTSCBright],al
+  mov [ntscCurVar],al
+  mov byte[ntscWhVar],3
   mov byte[GUIHold],7
   mov eax,[GUIwinposy+5*4]
   add eax,116
@@ -2638,11 +2675,12 @@ DisplayGUIVideoClick:
   jmp .nowarpbar
 .nobrightbar
   cmp edx,134
-  jl .nomovebar
+  jl near .nomovebar
   cmp edx,138
   jg .nosharpbar
-  sub eax,15
   mov [NTSCSharp],al
+  mov [ntscCurVar],al
+  mov byte[ntscWhVar],4
   mov byte[GUIHold],7
   mov eax,[GUIwinposy+5*4]
   add eax,136
@@ -2653,30 +2691,35 @@ DisplayGUIVideoClick:
   jl .nomovebar
   cmp edx,158
   jg .nomovebar
-  sub eax,15
   mov [NTSCWarp],al
+  mov [ntscCurVar],al
+  mov byte[ntscWhVar],5
   mov byte[GUIHold],7
   mov eax,[GUIwinposy+5*4]
   add eax,156
   mov [GUIHoldYlim],eax
 .nowarpbar
   mov eax,[GUIwinposx+5*4]
-  add eax,15
+  add eax,8
   mov [GUIHoldXlimL],eax
-  add eax,100
+  add eax,200
   mov [GUIHoldXlimR],eax
 .nomovebar
-.notntsctab
-EXTSYM NTSCFilterInit
-  xor al,al
+  cmp byte[NTSCRef],0
+  je .notntsctab
   pushad
   call NTSCFilterInit
   popad
+.notntsctab
+  xor eax,eax
   ret
 
 SECTION .bss
 GUINumValue resd 1
 GUIBlankVar resd 1
+ntscLastVar resb 6
+ntscCurVar resb 1
+ntscWhVar resb 1
 SECTION .text
 
 DisplayGUISoundClick:
@@ -3066,7 +3109,7 @@ DisplayGUIOptnsClick:
 
   cmp eax,25
   jl near .nomovebar
-  cmp eax,25+128
+  cmp eax,25+127
   jg near .nomovebar
   sub eax,25
   shr eax,2
@@ -3158,7 +3201,7 @@ DisplayGUIOptnsClick:
   add eax,25
   mov [GUIHoldXlimL],eax
   mov eax,[GUIwinposx+10*4]
-  add eax,25+128
+  add eax,25+127
   mov [GUIHoldXlimR],eax
 .nohold
   ret
@@ -3489,11 +3532,11 @@ DisplayGUISpeedClick:
   GUIPHoldbutton2 129,13,137,21,13,byte[maxskip],-1,0
 
   ; Speed Slider
-  cmp eax,15                     ; X-Range for click-area
+  cmp eax,7                      ; X-Range for click-area
   jl near .nomovebar
-  cmp eax,15+116
+  cmp eax,7+116
   jg near .nomovebar
-  sub eax,15
+  sub eax,7
   shr eax,1
   cmp edx,173                    ; Y-Range for click-area
   jl near .nomovebar
@@ -3505,7 +3548,7 @@ DisplayGUISpeedClick:
   add eax,175
   mov [GUIHoldYlim],eax
   mov eax,[GUIwinposx+21*4]
-  add eax,15
+  add eax,7
   mov [GUIHoldXlimL],eax
   add eax,116
   mov [GUIHoldXlimR],eax
