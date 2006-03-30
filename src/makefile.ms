@@ -255,7 +255,7 @@ ifneq (${ENV},msvc)
 	${CPPC} ${STRIP} -o ${EXE} ${OBJS} ${LIBS}
 else
 	 @echo /Fezsnesw.exe *.obj ${CPUDIR}\*.obj ${VIDEODIR}\*.obj ${CHIPDIR}\*.obj ${EFFECTSDIR}\*.obj ${DOSDIR}\*.obj ${WINDIR}\*.obj ${GUIDIR}\*.obj > link.vc
-	 @echo ${ZIPDIR}\*.obj ${JMADIR}\*.obj ${NETDIR}\*.obj >> link.vc
+	 @echo ${ZIPDIR}\*.obj ${JMADIR}\*.obj ${NETDIR}\*.obj ${MMLIBDIR}\*.obj >> link.vc
 	 @echo ${MSVCLIBS} >> link.vc
 	 cl /nologo @link.vc ${WINDIR}/zsnes.res /link
 endif
