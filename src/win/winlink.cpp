@@ -1980,8 +1980,8 @@ void initwinvideo(void)
         {
           if (!FullScreen)
           {
-             WindowWidth = 600;
-             WindowHeight = 446;
+             WindowWidth = 600*((WindowHeight/224)-1);
+             WindowHeight = 446*((WindowHeight/224)-1);
           }
           SurfaceX = 600;
           SurfaceY = 446;
