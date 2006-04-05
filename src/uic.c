@@ -460,8 +460,12 @@ void MultiMouseShutdown()
 
 void MultiMouseInit()
 {
+   static char buffer[50];
+   char *p = buffer;
    MouseCount = ManyMouse_Init();
+
    printf("ManyMouse: %d mice detected.\n", MouseCount);
+
    if (MouseCount > 1)
    {
      MouseMoveX[0] = MouseMoveX[1] = 0;
@@ -474,6 +478,12 @@ void MultiMouseInit()
    }
    else
    {
+     strcpy(CSStatus, "Dual mice not detected");
+     strcpy(CSStatus2, "");
+     strcpy(CSStatus3, "");
+     Msgptr = CSStatus;
+     MessageOn = 100;
+
      MultiMouseShutdown();
    }
 }
