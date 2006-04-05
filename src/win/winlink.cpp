@@ -2020,7 +2020,7 @@ void initwinvideo(void)
       if ((SurfaceX == 600) || (SurfaceX == 640) || (SurfaceX == 320))
         BlitArea.bottom = SurfaceY;
       else
-        BlitArea.bottom = (SurfaceY/240)*resolutn;
+        if (!NTSCFilter) BlitArea.bottom = (SurfaceY/240)*resolutn;
 
       if (PrevRes == 0) PrevRes = resolutn;
    }
@@ -2505,9 +2505,9 @@ void drawscreenwin(void)
      if ((SurfaceX == 640) || (SurfaceX == 320))
        BlitArea.bottom = SurfaceY;
      else
-       BlitArea.bottom = (SurfaceY/240)*resolutn;
+       if (!NTSCFilter) BlitArea.bottom = (SurfaceY/240)*resolutn;
 
-     if ((FullScreen == 0) && (SMode == 0) && (DSMode == 0))
+     if ((FullScreen == 0) && (SMode == 0) && (DSMode == 0) && !NTSCFilter)
        WindowHeight = (WindowHeight/224)*resolutn;
 
      initwinvideo();
