@@ -389,7 +389,7 @@ BOOL InputAcquire(void)
    if (JoystickInput[3]) JoystickInput[3]->Acquire();
    if (JoystickInput[4]) JoystickInput[4]->Acquire();
    if (device1 && device2 && !GUIOn2) MultiMouseInit();
-      else if (MouseInput) MouseInput->Acquire();
+      else if (MouseInput && GUIOn2) MouseInput->Acquire();
    if (KeyboardInput) KeyboardInput->Acquire();
    InputEn = 1;
    return TRUE;
@@ -1814,16 +1814,19 @@ void Start60HZ(void)
       MultiMouseInit();
    }
 
+   if (!device1 && !device2) MouseInput->Unacquire();
+
 }
 
 void Stop60HZ(void)
 {
    T60HZEnabled=0;
+
    if (device1 && device2)
-   {
       MultiMouseShutdown();
-      MouseInput->Acquire();
-   }
+
+   MouseInput->Acquire();
+
    ShutdownSemaphore();
 }
 
