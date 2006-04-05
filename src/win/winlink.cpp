@@ -321,6 +321,7 @@ void DDrawError(){
 }
 
 extern "C" BYTE vsyncon;
+extern "C" BYTE curblank;
 extern "C" BYTE KitchenSync;
 extern "C" BYTE TripleBufferWin;
 extern "C" BYTE PauseFocusChange;
@@ -345,11 +346,10 @@ void DrawScreen()
             if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
               DD_Primary->Restore();
          }
-
       }
       else
       {
-         if (vsyncon == 1)
+         if (vsyncon == 1 && curblank != 0x40)
          {
             if (lpDD->WaitForVerticalBlank(DDWAITVB_BLOCKBEGIN, NULL) != DD_OK)
             {
@@ -359,7 +359,6 @@ void DrawScreen()
          DD_Primary->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL);
          DD_Primary->Restore();
       }
-
    }
    else
    {
