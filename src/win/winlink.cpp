@@ -2013,7 +2013,8 @@ void initwinvideo(void)
           break;
       }
 
-      BlitArea.top = 0;
+      if (!NTSCFilter) BlitArea.top = 0;
+         else BlitArea.top = 2;
       BlitArea.left = 0;
       BlitArea.right = SurfaceX;
 
