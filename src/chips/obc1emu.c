@@ -45,18 +45,23 @@ void GetOBC1 ()
 	switch(obc1_address) {
 		case 0x7ff0:
 			obc1_byte = OBC1_RAM[OBC1_BasePtr + (OBC1_Address << 2)];
+			break;
 
 		case 0x7ff1:
 			obc1_byte = OBC1_RAM[OBC1_BasePtr + (OBC1_Address << 2) + 1];
+			break;
 
 		case 0x7ff2:
 			obc1_byte = OBC1_RAM[OBC1_BasePtr + (OBC1_Address << 2) + 2];
+			break;
 
 		case 0x7ff3:
 			obc1_byte = OBC1_RAM[OBC1_BasePtr + (OBC1_Address << 2) + 3];
+			break;
 
 		case 0x7ff4:
 			obc1_byte = OBC1_RAM[OBC1_BasePtr + (OBC1_Address >> 2) + 0x200];
+			break;
 
 		default:
 			obc1_byte = OBC1_RAM[obc1_address & 0x1fff];
