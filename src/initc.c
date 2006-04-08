@@ -1815,6 +1815,10 @@ unsigned int showinfogui()
   unsigned int i;
   unsigned char *ROM = (unsigned char *)romdata;
 
+  strcpy(CSStatus, "                        TYPE:           ");
+  strcpy(CSStatus2, "INTERLEAVED:      BANK:      CHKSUM:    ");
+  strcpy(CSStatus3, "VIDEO:                    CRC32:        ");
+
   if (infoloc == 0x40FFC0)	{ memcpy (CSStatus2+23, "EHi ", 4); }
   else
   {
@@ -2106,7 +2110,7 @@ void SetIRQVectors()
 { // get vectors (NMI & reset)
   unsigned char *ROM = (unsigned char *)romdata;
 
-  if (!(ROM[infoloc+21] & 0xF0)) // if not fastrom
+  if (!(ROM[infoloc+BankOffset] & 0xF0)) // if not fastrom
   {
     opexec358 = opexec268;
     opexec358cph = opexec268cph;
@@ -2160,7 +2164,7 @@ void SetupROM()
   #endif
 
   // get ROM and SRAM sizes
-  curromsize = ROM[infoloc+0x17];
+  curromsize = ROM[infoloc+ROMSizeOffset];
 
   SetupSramSize();
   calculate_state_sizes();
@@ -2178,7 +2182,7 @@ void SetupROM()
       romispal = (!BSEnable);
       break;
     default:
-      romispal = ((!BSEnable) && (ROM[infoloc+0x19] > 1) && (ROM[infoloc+0x19] < 0xD));
+      romispal = ((!BSEnable) && (ROM[infoloc+CountryOffset] > 1) && (ROM[infoloc+CountryOffset] < 0xD));
   }
 
   if (romispal)
