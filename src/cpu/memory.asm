@@ -3810,6 +3810,8 @@ NEWSYM memaccessbankr1648mb
 ;*******************************************************
 
 NEWSYM sramaccessbankr8
+    test ecx,8000h
+    jnz memaccessbankr8
     push ecx
     cmp bl,0F0h
     jne .notf0
@@ -3822,6 +3824,8 @@ NEWSYM sramaccessbankr8
     pop ecx
     ret
 NEWSYM sramaccessbankr16
+    test ecx,8000h
+    jnz memaccessbankr16
     push ecx
     sub bl,70h
     shl ebx,15
@@ -3830,6 +3834,8 @@ NEWSYM sramaccessbankr16
     pop ecx
     ret
 NEWSYM sramaccessbankw8
+    test ecx,8000h
+    jnz memaccessbankw8
     push ecx
     sub bl,70h
     cmp bl,0F0h
@@ -3842,6 +3848,8 @@ NEWSYM sramaccessbankw8
     pop ecx
     ret
 NEWSYM sramaccessbankw16
+    test ecx,8000h
+    jnz memaccessbankw16
     push ecx
     cmp bl,0F0h
     jne .notf0
