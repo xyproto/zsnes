@@ -1970,9 +1970,20 @@ void CheckROMType()
 
   disablespcclr = (memcmp(ROM+Hi, "\0x42\0x53\0x20\0x5A", 4)) ? 0 : 1;
 
-  if ((romtype == 1) && (!SDD1Enable))
-  {  // Non-SDD1 LoROM SRAM mapping, banks F0 - F3
-    map_mem(0xF0, &srambank, 4);
+  // LoROM SRAM mapping
+  if (romtype == 1)
+  {  // banks 70 - 77
+    map_mem(0x70, &srambank, 0x08);
+
+    if (!BSEnable)
+    {  // banks 78 - 7D (not for BS)
+      map_mem(0x78, &srambank, 0x06);
+    }
+
+    if (!SDD1Enable)
+    {  // banks F0 - FF (not for S-DD1)
+      map_mem(0xF0, &srambank, 0x10);
+    }
   }
 
   // Setup DSP-X stuff

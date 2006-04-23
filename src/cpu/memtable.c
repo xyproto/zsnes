@@ -290,9 +290,7 @@ mrwp obc1bank = { OBC1Read8b, OBC1Write8b, OBC1Read16b, OBC1Write16b };
 void SetAddressingModes()
 {                                       //  Banks
   map_mem(0x00, &regbank,  0x40);       // 00 - 3F
-  map_mem(0x40, &membank,  0x30);       // 40 - 6F
-  map_mem(0x70, &srambank, 0x08);       // 70 - 77
-  map_mem(0x78, &membank,  0x06);       // 78 - 7D
+  map_mem(0x40, &membank,  0x3E);       // 40 - 7D
   map_mem(0x7E, &wrambank, 0x01);       // 7E
   map_mem(0x7F, &erambank, 0x01);       // 7F
   map_mem(0x80, &regbank,  0x40);       // 80 - BF
