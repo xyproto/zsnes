@@ -1606,17 +1606,6 @@ void headerhack()
     disablehdma = true;
   }
 
-  //Super Final Match Tennis (J)
-  if (!strncmp((RomData+Lo),"SP F", 4))
-  {
-    cycpb268 = 145;
-    cycpb358 = 147;
-    cycpbl2  = 145;
-    cycpblt2 = 145;
-    cycpbl   = 145;
-    cycpblt  = 145;
-  }
-
   //Tuff E Nuff (U/E), Dead Dance (J),
   //Cyber Knight II - Tikyu Teikoku no Yabou (J)
   if (!strncmp((RomData+Lo),"CYBER KNIGHT 2  " ,16) ||
