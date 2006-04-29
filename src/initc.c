@@ -1486,8 +1486,8 @@ void headerhack()
   //Deae Tonosama Appare Ichiban (J)
   if (!strncmp((RomData+Lo),"\x0c3\x0de\x0b1\x0b4\x0c4\x0c9\x0bb\x0cf \x0b1\x0af\x0ca" ,12))
   {
-    RomData[0x17837] = 0xEA;
-    RomData[0x17838] = 0xEA;
+    RomData[0x17837C] = 0xEA;
+    RomData[0x17837D] = 0xEA;
   }
 
   /*
@@ -1637,8 +1637,8 @@ void headerhack()
   //Lamborghini - American Challenge (U/E)
   if (!strncmp((RomData+Lo), "LAMBORGHINI AMERICAN", 20))
   {
-    opexec268 = 187;
-    opexec358 = 187;
+    opexec268 = 76;
+    opexec358 = 76;
   }
 
   //Addams Family Values (U/E)
