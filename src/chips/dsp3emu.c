@@ -594,21 +594,516 @@ void DSP3_Decode()
 	SetDSP3 = &DSP3_Decode_A;
 }
 
+
+// Opcodes 1E/3E bit-perfect to 'dsp3-intro' log
+// src: adapted from SD Gundam X/G-Next
+
+int16 op3e_x;
+int16 op3e_y;
+
+int16 op1e_terrain[0x2000];
+int16 op1e_cost[0x2000];
+int16 op1e_weight[0x2000];
+
+int16 op1e_cell;
+int16 op1e_turn;
+int16 op1e_search;
+
+int16 op1e_x;
+int16 op1e_y;
+
+int16 op1e_min_radius;
+int16 op1e_max_radius;
+
+int16 op1e_max_search_radius;
+int16 op1e_max_path_radius;
+
+int16 op1e_lcv_radius;
+int16 op1e_lcv_steps;
+int16 op1e_lcv_turns;
+
+void DSP3_OP3E()
+{
+	op3e_x = (uint8)(DSP3_DR & 0x00ff);
+	op3e_y = (uint8)((DSP3_DR & 0xff00)>>8);
+
+	DSP3_OP03();
+
+	op1e_terrain[ DSP3_DR ] = 0x00;
+	op1e_cost[ DSP3_DR ] = 0xff;
+	op1e_weight[ DSP3_DR ] = 0;
+
+	op1e_max_search_radius = 0;
+	op1e_max_path_radius = 0;
+}
+
+void DSP3_OP1E_A();
+void DSP3_OP1E_A1();
+void DSP3_OP1E_A2();
+void DSP3_OP1E_A3();
+
+void DSP3_OP1E_B();
+void DSP3_OP1E_B1();
+void DSP3_OP1E_B2();
+
+void DSP3_OP1E_C();
+void DSP3_OP1E_C1();
+void DSP3_OP1E_C2();
+
+void DSP3_OP1E_D( int16, int16 *, int16 * );
+void DSP3_OP1E_D1( int16 move, int16 *lo, int16 *hi );
+
+void DSP3_OP1E()
+{
+	int lcv;
+
+	op1e_min_radius = (uint8)(DSP3_DR & 0x00ff);
+	op1e_max_radius = (uint8)((DSP3_DR & 0xff00)>>8);
+
+	if( op1e_min_radius == 0 )
+		op1e_min_radius++;
+
+	if( op1e_max_search_radius >= op1e_min_radius )
+		op1e_min_radius = op1e_max_search_radius+1;
+
+	if( op1e_max_radius > op1e_max_search_radius )
+		op1e_max_search_radius = op1e_max_radius;
+
+	op1e_lcv_radius = op1e_min_radius;
+	op1e_lcv_steps = op1e_min_radius;
+
+	op1e_lcv_turns = 6;
+	op1e_turn = 0;
+
+	op1e_x = op3e_x;
+	op1e_y = op3e_y;
+
+	for( lcv = 0; lcv < op1e_min_radius; lcv++ )
+		DSP3_OP1E_D( op1e_turn, &op1e_x, &op1e_y );
+
+	DSP3_OP1E_A();
+}
+
+void DSP3_OP1E_A()
+{
+	int lcv;
+
+	if( op1e_lcv_steps == 0 ) {
+		op1e_lcv_radius++;
+
+		op1e_lcv_steps = op1e_lcv_radius;
+
+		op1e_x = op3e_x;
+		op1e_y = op3e_y;
+
+		for( lcv = 0; lcv < op1e_lcv_radius; lcv++ )
+			DSP3_OP1E_D( op1e_turn, &op1e_x, &op1e_y );
+	}
+
+	if( op1e_lcv_radius > op1e_max_radius ) {
+		op1e_turn++;
+		op1e_lcv_turns--;
+
+		op1e_lcv_radius = op1e_min_radius;
+		op1e_lcv_steps = op1e_min_radius;
+
+		op1e_x = op3e_x;
+		op1e_y = op3e_y;
+
+		for( lcv = 0; lcv < op1e_min_radius; lcv++ )
+			DSP3_OP1E_D( op1e_turn, &op1e_x, &op1e_y );
+	}
+
+	if( op1e_lcv_turns == 0 ) {
+		DSP3_DR = 0xffff;
+		DSP3_SR = 0x0080;
+		SetDSP3 = &DSP3_OP1E_B;
+		return;
+	}
+
+	DSP3_DR = (uint8)(op1e_x) | ((uint8)(op1e_y)<<8);
+	DSP3_OP03();
+
+	op1e_cell = DSP3_DR;
+
+	DSP3_SR = 0x0080;
+	SetDSP3 = &DSP3_OP1E_A1;
+}
+
+void DSP3_OP1E_A1()
+{
+	DSP3_SR = 0x0084;
+	SetDSP3 = &DSP3_OP1E_A2;
+}
+
+void DSP3_OP1E_A2()
+{
+	op1e_terrain[ op1e_cell ] = (uint8)(DSP3_DR & 0x00ff);
+
+	DSP3_SR = 0x0084;
+	SetDSP3 = &DSP3_OP1E_A3;
+}
+
+void DSP3_OP1E_A3()
+{
+	op1e_cost[ op1e_cell ] = (uint8)(DSP3_DR & 0x00ff);
+
+	if( op1e_lcv_radius == 1 ) {
+		if( op1e_terrain[ op1e_cell ] & 1 ) {
+			op1e_weight[ op1e_cell ] = 0xff;
+		} else {
+			op1e_weight[ op1e_cell ] = op1e_cost[ op1e_cell ];
+		}
+	}
+	else {
+		op1e_weight[ op1e_cell ] = 0xff;
+	}
+
+	DSP3_OP1E_D( (int16)(op1e_turn+2), &op1e_x, &op1e_y );
+	op1e_lcv_steps--;
+
+	DSP3_SR = 0x0080;
+	DSP3_OP1E_A();
+}
+
+
+void DSP3_OP1E_B()
+{
+	op1e_x = op3e_x;
+	op1e_y = op3e_y;
+	op1e_lcv_radius = 1;
+
+	op1e_search = 0;
+
+	DSP3_OP1E_B1();
+
+	SetDSP3 = &DSP3_OP1E_C;
+}
+
+
+void DSP3_OP1E_B1()
+{
+	while( op1e_lcv_radius < op1e_max_radius ) {
+		op1e_y--;
+
+		op1e_lcv_turns = 6;
+		op1e_turn = 5;
+
+		while( op1e_lcv_turns ) {
+			op1e_lcv_steps = op1e_lcv_radius;
+
+			while( op1e_lcv_steps ) {
+				DSP3_OP1E_D1( op1e_turn, &op1e_x, &op1e_y );
+
+				if( 0 <= op1e_y && op1e_y < DSP3_WinHi &&
+						0 <= op1e_x && op1e_x < DSP3_WinLo ) {
+					DSP3_DR = (uint8)(op1e_x) | ((uint8)(op1e_y)<<8);
+					DSP3_OP03();
+
+					op1e_cell = DSP3_DR;
+					if( op1e_cost[ op1e_cell ] < 0x80 &&
+							op1e_terrain[ op1e_cell ] < 0x40 ) {
+						DSP3_OP1E_B2();
+					} // end cell perimeter
+				}
+
+				op1e_lcv_steps--;
+			} // end search line
+
+			op1e_turn--;
+			if( op1e_turn == 0 ) op1e_turn = 6;
+
+			op1e_lcv_turns--;
+		} // end circle search
+
+		op1e_lcv_radius++;
+	} // end radius search
+}
+
+
+void DSP3_OP1E_B2()
+{
+	int16 cell;
+	int16 path;
+	int16 x,y;
+	int16 lcv_turns;
+
+	path = 0xff;
+	lcv_turns = 6;
+
+	while( lcv_turns ) {
+		x = op1e_x;
+		y = op1e_y;
+
+		DSP3_OP1E_D1( lcv_turns, &x, &y );
+
+		DSP3_DR = (uint8)(x) | ((uint8)(y)<<8);
+		DSP3_OP03();
+
+		cell = DSP3_DR;
+
+		if( 0 <= y && y < DSP3_WinHi &&
+				0 <= x && x < DSP3_WinLo  ) {
+
+			if( op1e_terrain[ cell ] < 0x80 || op1e_weight[ cell ] == 0 ) {
+				if( op1e_weight[ cell ] < path ) {
+					path = op1e_weight[ cell ];
+				}
+			}
+		} // end step travel
+
+		lcv_turns--;
+	} // end while turns
+
+	if( path != 0xff ) {
+		op1e_weight[ op1e_cell ] = path + op1e_cost[ op1e_cell ];
+	}
+}
+
+
+void DSP3_OP1E_C()
+{
+	int lcv;
+
+	op1e_min_radius = (uint8)(DSP3_DR & 0x00ff);
+	op1e_max_radius = (uint8)((DSP3_DR & 0xff00)>>8);
+
+	if( op1e_min_radius == 0 )
+		op1e_min_radius++;
+
+	if( op1e_max_path_radius >= op1e_min_radius )
+		op1e_min_radius = op1e_max_path_radius+1;
+
+	if( op1e_max_radius > op1e_max_path_radius )
+		op1e_max_path_radius = op1e_max_radius;
+
+	op1e_lcv_radius = op1e_min_radius;
+	op1e_lcv_steps = op1e_min_radius;
+
+	op1e_lcv_turns = 6;
+	op1e_turn = 0;
+
+	op1e_x = op3e_x;
+	op1e_y = op3e_y;
+
+	for( lcv = 0; lcv < op1e_min_radius; lcv++ )
+		DSP3_OP1E_D( op1e_turn, &op1e_x, &op1e_y );
+
+	DSP3_OP1E_C1();
+}
+
+
+void DSP3_OP1E_C1()
+{
+	int lcv;
+
+	if( op1e_lcv_steps == 0 ) {
+		op1e_lcv_radius++;
+
+		op1e_lcv_steps = op1e_lcv_radius;
+
+		op1e_x = op3e_x;
+		op1e_y = op3e_y;
+
+		for( lcv = 0; lcv < op1e_lcv_radius; lcv++ )
+			DSP3_OP1E_D( op1e_turn, &op1e_x, &op1e_y );
+	}
+
+	if( op1e_lcv_radius > op1e_max_radius ) {
+		op1e_turn++;
+		op1e_lcv_turns--;
+
+		op1e_lcv_radius = op1e_min_radius;
+		op1e_lcv_steps = op1e_min_radius;
+
+		op1e_x = op3e_x;
+		op1e_y = op3e_y;
+
+		for( lcv = 0; lcv < op1e_min_radius; lcv++ )
+			DSP3_OP1E_D( op1e_turn, &op1e_x, &op1e_y );
+	}
+
+	if( op1e_lcv_turns == 0 ) {
+		DSP3_DR = 0xffff;
+		DSP3_SR = 0x0080;
+		SetDSP3 = &DSP3_Reset;
+		return;
+	}
+
+	DSP3_DR = (uint8)(op1e_x) | ((uint8)(op1e_y)<<8);
+	DSP3_OP03();
+
+	op1e_cell = DSP3_DR;
+
+	DSP3_SR = 0x0080;
+	SetDSP3 = &DSP3_OP1E_C2;
+}
+
+
+void DSP3_OP1E_C2()
+{
+	DSP3_DR = op1e_weight[ op1e_cell ];
+
+	DSP3_OP1E_D( (int16)(op1e_turn+2), &op1e_x, &op1e_y );
+	op1e_lcv_steps--;
+
+	DSP3_SR = 0x0084;
+	SetDSP3 = &DSP3_OP1E_C1;
+}
+
+
+void DSP3_OP1E_D( int16 move, int16 *lo, int16 *hi )
+{
+	uint32 dataOfs = ((move << 1) + 0x03b2) & 0x03ff;
+	int16 Lo;
+	int16 Hi;
+
+	DSP3_AddHi = DSP3_DataROM[dataOfs];
+	DSP3_AddLo = DSP3_DataROM[dataOfs + 1];
+
+	Lo = (uint8)(*lo);
+	Hi = (uint8)(*hi);
+
+	if (Lo & 1)	Hi += (DSP3_AddLo & 1);
+
+	DSP3_AddLo += Lo;
+	DSP3_AddHi += Hi;
+
+	if (DSP3_AddLo < 0)
+		DSP3_AddLo += DSP3_WinLo;
+	else
+		if (DSP3_AddLo >= DSP3_WinLo)
+			DSP3_AddLo -= DSP3_WinLo;
+
+	if (DSP3_AddHi < 0)
+		DSP3_AddHi += DSP3_WinHi;
+	else
+		if (DSP3_AddHi >= DSP3_WinHi)
+			DSP3_AddHi -= DSP3_WinHi;
+
+	*lo = DSP3_AddLo;
+	*hi = DSP3_AddHi;
+}
+
+
+void DSP3_OP1E_D1( int16 move, int16 *lo, int16 *hi )
+{
+	uint32 dataOfs = ((move << 1) + 0x03b2) & 0x03ff;
+	int16 Lo;
+	int16 Hi;
+
+	const unsigned short HiAdd[] = {
+		0x00, 0xFF, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00,
+		0x00, 0xFF, 0xFF, 0x00, 0x01, 0x00, 0xFF, 0x00
+	};
+	const unsigned short LoAdd[] = {
+		0x00, 0x00, 0x01, 0x01, 0x00, 0xFF, 0xFF, 0x00
+	};
+
+	if( (*lo) & 1 )
+		DSP3_AddHi = HiAdd[ move + 8 ];
+	else
+		DSP3_AddHi = HiAdd[ move + 0 ];
+	DSP3_AddLo = LoAdd[ move ];
+
+	Lo = (uint8)(*lo);
+	Hi = (uint8)(*hi);
+
+	if (Lo & 1)	Hi += (DSP3_AddLo & 1);
+
+	DSP3_AddLo += Lo;
+	DSP3_AddHi += Hi;
+
+	*lo = DSP3_AddLo;
+	*hi = DSP3_AddHi;
+}
+
+
+void DSP3_OP10()
+{
+	if( DSP3_DR == 0xffff ) {
+		DSP3_Reset();
+	} else {
+		// absorb 2 bytes
+		DSP3_DR = DSP3_DR;
+	}
+}
+
+
+void DSP3_OP0C_A()
+{
+	// absorb 2 bytes
+
+	DSP3_DR = 0;
+	SetDSP3 = &DSP3_Reset;
+}
+
+
+void DSP3_OP0C()
+{
+	// absorb 2 bytes
+
+	DSP3_DR = 0;
+	//SetDSP3 = &DSP3_OP0C_A;
+	SetDSP3 = &DSP3_Reset;
+}
+
+
+void DSP3_OP1C_C()
+{
+	// return 2 bytes
+	DSP3_DR = 0;
+	SetDSP3 = &DSP3_Reset;
+}
+
+
+void DSP3_OP1C_B()
+{
+	// absorb 2 bytes
+
+	// return 2 bytes
+	DSP3_DR = 0;
+	SetDSP3 = &DSP3_OP1C_C;
+}
+
+
+void DSP3_OP1C_A()
+{
+	// absorb 2 bytes
+
+	SetDSP3 = &DSP3_OP1C_B;
+}
+
+
+void DSP3_OP1C()
+{
+	// absorb 2 bytes
+
+	SetDSP3 = &DSP3_OP1C_A;
+}
+
+
 void DSP3_Command()
 {
 	if (DSP3_DR < 0x40)
 	{
 		switch (DSP3_DR)
 		{
-		case 0x02: SetDSP3 = &DSP3_Coordinate; break;
-		case 0x03: SetDSP3 = &DSP3_OP03; break;
-		case 0x06: SetDSP3 = &DSP3_OP06; break;
-		case 0x07: SetDSP3 = &DSP3_OP07; return;
-		case 0x0f: SetDSP3 = &DSP3_TestMemory; break;
-		case 0x18: SetDSP3 = &DSP3_Convert; break;
-		case 0x1f: SetDSP3 = &DSP3_MemoryDump; break;
-		case 0x2f: SetDSP3 = &DSP3_MemorySize; break;
-		case 0x38: SetDSP3 = &DSP3_Decode; break;
+    case 0x02: SetDSP3 = &DSP3_Coordinate; break;
+    case 0x03: SetDSP3 = &DSP3_OP03; break;
+    case 0x06: SetDSP3 = &DSP3_OP06; break;
+    case 0x07: SetDSP3 = &DSP3_OP07; return;
+    case 0x0c: SetDSP3 = &DSP3_OP0C; break;
+    case 0x0f: SetDSP3 = &DSP3_TestMemory; break;
+    case 0x10: SetDSP3 = &DSP3_OP10; break;
+    case 0x18: SetDSP3 = &DSP3_Convert; break;
+    case 0x1c: SetDSP3 = &DSP3_OP1C; break;
+    case 0x1e: SetDSP3 = &DSP3_OP1E; break;
+    case 0x1f: SetDSP3 = &DSP3_MemoryDump; break;
+    case 0x38: SetDSP3 = &DSP3_Decode; break;
+    case 0x3e: SetDSP3 = &DSP3_OP3E; break;
+    default:
+     return;
 		}
 		DSP3_SR = 0x0080;
 		DSP3_Index = 0;
