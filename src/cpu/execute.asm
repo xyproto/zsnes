@@ -20,10 +20,10 @@
 
 EXTSYM KeyRewind,statesaver,Voice0Status,UpdateDPage
 EXTSYM StartGUI,debuggeron,romdata,initvideo
-EXTSYM vidbufferofsa,disable65816sh,GUISaveVars,virqnodisable
+EXTSYM vidbufferofsa,disable65816sh,GUISaveVars
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
-EXTSYM KeyQuickSaveSPC,TimerEnable,IRQHack,splitflags,joinflags
+EXTSYM KeyQuickSaveSPC,TimerEnable,splitflags,joinflags
 EXTSYM KeyQuickSnapShot,csounddisable,videotroub,ResetTripleBuf
 EXTSYM Output_Text,Check_Key,Get_Key,Change_Dir
 EXTSYM InitPreGame,Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8
@@ -157,8 +157,6 @@ VoiceStartMute:
 
 %macro ProcessIRQStuff 0
     ; check for VIRQ/HIRQ
-    cmp byte[virqnodisable],1
-    je %%virqdo
     test dl,04h
     jnz %%virqdo
     cmp byte[doirqnext],1
@@ -167,7 +165,6 @@ VoiceStartMute:
     test byte[INTEnab],20h
     jz near %%novirq
     mov ax,[VIRQLoc]
-    add ax,[IRQHack]
     cmp ax,[resolutn]
     jne %%notres
     dec ax
@@ -1543,7 +1540,6 @@ NEWSYM cpuover
 .novblch
     mov byte[NMIEnab],01h
     call starthdma
-.noirqhack
     ; check for VIRQ/HIRQ/NMI
     ProcessIRQStuff
     xor ebx,ebx

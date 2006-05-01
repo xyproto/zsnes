@@ -43,7 +43,7 @@ EXTSYM winbg1enval,winbg2enval,winbg3enval,winbg4enval,winbgobjenval
 EXTSYM winlogicaval,disableeffects,winenabs,scanlines,winl1,winbg1en,winobjen
 EXTSYM winlogica,winenabm,bgallchange,bg1change,bg2change,bg3change,bg4change
 EXTSYM hiresstuff,drawlineng16x84b,drawlineng16x82b,drawlinengom4b,WindowRedraw
-EXTSYM WindowDisables,winlogicb,ngwinptr,objwlrpos,objwen,objclineptr,CSprWinPtr
+EXTSYM winlogicb,ngwinptr,objwlrpos,objwen,objclineptr,CSprWinPtr
 
 %include "video/vidmacro.mac"
 %include "video/newgfx2.mac"
@@ -601,10 +601,6 @@ NEWSYM BuildWindow2
 NEWSYM BuildWindow
     cmp byte[WindowRedraw],1
     je .ns2
-    cmp byte[WindowDisables],0
-    je .nodisable
-    ret
-.nodisable
     mov dword[valtemp],0EE00h
     push edx
     push ecx

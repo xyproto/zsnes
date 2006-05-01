@@ -139,7 +139,6 @@ NEWSYM init
     inc eax
     dec ecx
     jnz .rbackupl
-    mov byte[virqnodisable],0
     pushad
     call clearmem
     popad
@@ -991,13 +990,8 @@ NEWSYM disableeffects, db 0
 NEWSYM hdmaearlstart,  db 0
 NEWSYM disable65816sh, db 0
 NEWSYM disablespcclr,  db 0
-NEWSYM virqnodisable,  db 0
 NEWSYM numspcvblleft,  dd 0
 NEWSYM spc700idle,     dd 0
-NEWSYM IRQHack,        dw 0
-NEWSYM CacheCheckSkip,     db 0
-NEWSYM HIRQSkip,     db 0
-NEWSYM ClearScreenSkip, db 0
 NEWSYM ENVDisable, db 0
 SECTION .text
 
@@ -1022,7 +1016,6 @@ SECTION .bss
 NEWSYM ReturnFromSPCStall, resb 1
 NEWSYM SPCStallSetting, resb 1
 NEWSYM SPCSkipXtraROM, resb 1
-NEWSYM WindowDisables, resd 1
 SECTION .text
 
 %macro helpclearmem 2

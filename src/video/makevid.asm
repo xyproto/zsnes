@@ -29,7 +29,7 @@ EXTSYM colormodeofs,drawline16b,forceblnk,newengine8b,preparesprpr,scaddset
 EXTSYM spritetablea,sprleftpr,vidbright,ForceNewGfxOff,curypos,drawmode7
 EXTSYM mode7set,mosaicon,mosaicsz,sprleftpr1,sprleftpr2,sprleftpr3,sprlefttot
 EXTSYM sprprifix,drawmode7extbg,interlval,drawmode7extbg2,sprclprio,sprpriodata
-EXTSYM sprsingle,cachetile2b,cachetile4b,cachetile8b,vram,CacheCheckSkip
+EXTSYM sprsingle,cachetile2b,cachetile4b,cachetile8b,vram
 EXTSYM cachetile2b16x16,cachetile4b16x16,cachetile8b16x16,osm2dis,xtravbuf
 EXTSYM bg3ptr,bg3scrolx,bg3scroly,vidmemch4,ofsmcptr,ofsmady,ofsmadx,yposngom
 EXTSYM flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
@@ -2435,11 +2435,9 @@ NEWSYM proc8x8
     shr eax,3
     and eax,63
     and ebx,07h
-    cmp byte[CacheCheckSkip],1
-    je .docache
     cmp byte[edi+eax],0
     jne .nocachereq
-.docache
+;.docache
 ;    cmp byte[ccud],0
 ;    jne .nocachereq
     mov byte[edi+eax],1

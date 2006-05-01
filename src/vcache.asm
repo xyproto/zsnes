@@ -38,7 +38,7 @@ EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
 EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeyUsePlayer1234,maxskip,DSPMem,dsp1ptr
 EXTSYM dsp1array,FastFwdToggle,SaveSramData,ngextbg,Mode7HiRes,Check60hz
-EXTSYM Get_MouseData,Get_MousePositionDisplacement,WindowDisables,scanlines
+EXTSYM Get_MouseData,Get_MousePositionDisplacement,scanlines
 EXTSYM romispal,MusicRelVol,MusicVol,WDSPReg0C,WDSPReg1C,Op02AAS,Op02AZS,Op02CX
 EXTSYM Op02CY,Op02FX,Op02FY,Op02FZ,Op02LES,Op02LFE,Op02VOF,Op02VVA,KeySlowDown
 EXTSYM genfulladdtab,KeyFRateDown,KeyFRateUp,KeyVolUp,KeyVolDown,KeyDisplayFPS
@@ -250,10 +250,6 @@ NEWSYM cachevideo
     mov dword[scaddtngbx],0FFFFFFFFh
     mov byte[hiresstuff],0
     mov byte[Mode7HiRes],0
-    cmp dword[WindowDisables],0
-    je .nowindis
-    dec dword[WindowDisables]
-.nowindis
 
     call ClockCounter
 

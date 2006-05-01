@@ -20,7 +20,7 @@
 
 EXTSYM initsfxregsw,reg420Bw,reg420Cw,regptw,initSA1regsw,SDD1Reset
 EXTSYM SPC7110Reset,RTCReset2,debstop,NextLineCache,vidmemch2,vidmemch4
-EXTSYM vidmemch8,vrama,nmirept,sndwrit,SPCRAM,HIRQCycNext,HIRQNextExe,HIRQSkip
+EXTSYM vidmemch8,vrama,nmirept,sndwrit,SPCRAM,HIRQCycNext,HIRQNextExe
 EXTSYM cycpb268,cycpb358,cycpbl,cycpblt,opexec268,opexec268cph,opexec358
 EXTSYM opexec358cph
 
@@ -1406,8 +1406,6 @@ reg4206w:
 
 
 DetermineHIRQExec
-    cmp byte[HIRQSkip],1
-    je near .ret
     add dh,[HIRQCycNext]
     mov byte[HIRQCycNext],0
     mov byte[HIRQNextExe],0
@@ -1428,7 +1426,6 @@ DetermineHIRQExec
 .notokay
     pop ecx
     pop eax
-.ret
     ret
 .hirqokay
     sub dh,cl

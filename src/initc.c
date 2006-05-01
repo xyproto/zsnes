@@ -1421,10 +1421,7 @@ Would be nice to trash this section in the future
 
 extern unsigned char  disablehdma;
 extern unsigned char  hdmaearlstart;
-extern unsigned int   WindowDisables;
-extern unsigned char  ClearScreenSkip;
 extern unsigned char  ENVDisable;
-extern unsigned char  latchyr;
 extern unsigned char  cycpb268;
 extern unsigned char  cycpb358;
 extern unsigned char  cycpbl2;
@@ -1440,7 +1437,6 @@ extern unsigned char  opexec358cph;
 extern unsigned char  opexec268cphb;
 extern unsigned char  opexec358cphb;
 extern unsigned char  DSP1Type;
-extern unsigned char  cycpl;
 unsigned char HacksDisable;
 
 void headerhack()
@@ -1448,8 +1444,6 @@ void headerhack()
   char *RomData = (char *)romdata;
   disablehdma = 0;
   hdmaearlstart = 0;
-  WindowDisables = 0;
-  ClearScreenSkip = 0;
   ENVDisable = 0;
 
   if ((curromspace < Lo) || (HacksDisable && !DSP1Type))
@@ -1475,12 +1469,6 @@ void headerhack()
     //Skip a check for value FF at 2140 when spc not initialized yet?!?
     RomData[0x6CF9] = 0xEA;
     RomData[0x6CFA] = 0xEA;
-  }
-
-  //Kamen Rider (J)
-  if (!strncmp((RomData+Lo),"SFC \x0b6\x0d2\x0dd\x0d7\x0b2\x0c0\x0de\x0b0    " ,16))
-  {
-    latchyr = 2;
   }
 
   //Deae Tonosama Appare Ichiban (J)
@@ -1622,13 +1610,6 @@ void headerhack()
 
   //Okaaay...
   if(DSP1Type) { disablehdma = true; }
-
-  //Lamborghini - American Challenge (U/E)
-  if (!strncmp((RomData+Lo), "LAMBORGHINI AMERICAN", 20))
-  {
-    opexec268 = 76;
-    opexec358 = 76;
-  }
 
   //Addams Family Values (U/E)
   if (!strncmp((RomData+Lo), "ADDAMS FAMILY VALUES", 20))
