@@ -1478,13 +1478,8 @@ void headerhack()
     RomData[0x17837D] = 0xEA;
   }
 
-  /*
-  The asm indicates the hack is for HGP3, but all of these are affected
-  Human Grand Prix (J), Human Grand Prix II (J),
-  Human Grand Prix III - F1 Triple Battle (J).
-  Human Grand Prix IV is a HiROM and is not affected
-  */
-  if (!strncmp((RomData+Lo),"HUMAN GRANDP" ,12))
+  //Human Grand Prix III - F1 Triple Battle (J)
+  if (!strncmp((RomData+Lo),"HUMAN GRANDPRIX 3   " ,20))
   {
     cycpb268 = 135;
     cycpb358 = 157;
