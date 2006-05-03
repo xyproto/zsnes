@@ -1955,7 +1955,7 @@ void initwinvideo(void)
       case 35:
       case 36:
          WindowWidth=1600;
-         WindowHeight=1024;
+         WindowHeight=1200;
          break;
       case 37:
          WindowWidth=1680;
