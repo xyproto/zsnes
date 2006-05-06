@@ -440,9 +440,7 @@ NEWSYM Get_Key
     ; for extended keys, return a 0, then the extended key afterwards
     xor eax,eax
 .nokey
-    pushad
-    call JoyRead
-    popad
+;    call JoyRead
     mov al,[CurKeyReadPos]
     cmp al,[CurKeyPos]
     je .nokey

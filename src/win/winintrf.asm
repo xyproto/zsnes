@@ -516,7 +516,7 @@ NEWSYM Get_Key
     ; for extended keys, return a 0, then the extended key afterwards
     xor eax,eax
 .nokey
-    call JoyRead
+;    call JoyRead
     mov al,[CurKeyReadPos]
     cmp al,[CurKeyPos]
     je .nokey
