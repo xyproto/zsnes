@@ -1454,6 +1454,7 @@ void headerhack()
   //These next few look like RAM init hacks, should be looked into
 
   //Should be Super Famista (J), uses non-standard characters
+  //Shows black screen after one screen.
   if (!strncmp((RomData+Lo),"\x0bd\x0b0\x0ca\x0df\x0b0\x0cc\x0a7\x0d0\x0bd\x0c0      " ,16))
   {
     RomData[0x2762F] = 0xEA;
@@ -1461,6 +1462,7 @@ void headerhack()
   }
 
   //Should be Super Famista 2 (J), uses non-standard characters
+  //Shows black screen after loading the ROM.
   if (!strncmp((RomData+Lo),"\x0bd\x0b0\x0ca\x0df\x0b0\x0cc\x0a7\x0d0\x0bd\x0c0 \x032    " ,16))
   {
     //Skip a check for value FF at 2140 when spc not initialized yet?!?
@@ -1472,6 +1474,7 @@ void headerhack()
   }
 
   //Deae Tonosama Appare Ichiban (J)
+  //Shows some screen and hangs there.
   if (!strncmp((RomData+Lo),"\x0c3\x0de\x0b1\x0b4\x0c4\x0c9\x0bb\x0cf \x0b1\x0af\x0ca" ,12))
   {
     RomData[0x17837C] = 0xEA;
@@ -1479,6 +1482,7 @@ void headerhack()
   }
 
   //Human Grand Prix III - F1 Triple Battle (J)
+  //Shows black screen after loading the ROM.
   if (!strncmp((RomData+Lo),"HUMAN GRANDPRIX 3   " ,20))
   {
     cycpb268 = 135;
@@ -1490,6 +1494,7 @@ void headerhack()
   }
 
   //Accele Brid (J)
+  //Hangs after some time in the first level.
   if (!strncmp((RomData+Lo),"ACCELEBRID  " ,12))
   {
     RomData[0x34DA2] = 0;
@@ -1497,6 +1502,7 @@ void headerhack()
   }
 
   //Home Alone (J/E/U)
+  //Hangs after starting a new game.
   if (!strncmp((RomData+Lo),"HOME ALONE  " ,12))
   {
     RomData[0x666B] = 0xEE;
@@ -1504,6 +1510,7 @@ void headerhack()
   }
 
   //Emerald Dragon (J)
+  //Hangs while drawing the logo after loading the ROM.
   if (!strncmp((RomData+Hi),"EMERALD DRAG" ,12))
   {
     ENVDisable = true;
@@ -1513,6 +1520,7 @@ void headerhack()
   Super Mario World 2 - Yoshi's Island (U/E),
   Super Mario - Yossy Island (J), and variants
   */
+  //Probably some GFX bugs.
   if (!strncmp((RomData+Lo),"YOSSY'S ISLA" ,12) ||
       !strncmp((RomData+Lo),"YOSHI'S ISLA" ,12))
   {
@@ -1529,6 +1537,7 @@ void headerhack()
       !strncmp((RomData+Lo),"REND", 4))
   */
   //Rendering Ranger R2
+  //Shows black screen after loading the ROM.
   if (!strncmp((RomData+Lo),"REND", 4))
   {
     cycpb268 = 157;
@@ -1540,6 +1549,7 @@ void headerhack()
   }
 
   //Clay Fighter (U), other versions are CLAYFIGHTER with no space
+  //Hangs in the intro. Missing sound in battles.
   if (!strncmp((RomData+Hi),"CLAY FIGHTER    " ,16))
   {
     //Intro
@@ -1551,12 +1561,16 @@ void headerhack()
   }
 
   //Bahamut Lagoon (J) and all known translations
+  //Garbled lines in the intro at some point on the bottom.
   if (!strncmp((RomData+Hi),"Bahamut Lago" ,12))
   {
     RomData[0x10254] = 0xEE;
   }
 
   //Mortal Kombat (J/U/E), Super Punch-Out, Dragon Quest 5 (J)
+  //Messed up damage bar in battles. (Mortal Kombat)
+  //Messed up countdown. (Super Punch-Out)
+  //Flickering clouds in intro after starting a new game. (DQ5)
   if (!strncmp((RomData+Lo),"DRAGONQUEST5" ,12) ||
       !strncmp((RomData+Lo),"MORTAL KOMBAT   " ,16) ||
       !strncmp((RomData+Lo),"Super Punch-Out!!   ", 20))
@@ -1566,6 +1580,8 @@ void headerhack()
 
   //Tuff E Nuff (U/E), Dead Dance (J),
   //Cyber Knight II - Tikyu Teikoku no Yabou (J)
+  //Shows black screen after loading the ROM. (Tuff E Nuff, Dead Dance)
+  //Shows black screen after two screens. (Cyber Knight II)
   if (!strncmp((RomData+Lo),"CYBER KNIGHT 2  " ,16) ||
       !strncmp((RomData+Lo),"DEAD", 4) ||
       !strncmp((RomData+Lo),"TUFF", 4))
@@ -1582,6 +1598,7 @@ void headerhack()
   if(DSP1Type) { disablehdma = true; }
 
   //Addams Family Values (U/E)
+  //Restarts or shows a black screen after starting a new game.
   if (!strncmp((RomData+Lo), "ADDAMS FAMILY VALUES", 20))
   {
     opexec268 = 120;
@@ -1589,6 +1606,7 @@ void headerhack()
   }
 
   //Front Mission
+  //Flickering worldmap and statusbar.
   if (!strncmp((RomData+Hi), "\x0cc\x0db\x0dd\x0c4\x0d0\x0af\x0bc\x0ae", 8) ||
       !strncmp((RomData+Hi), "FRONT MI", 8))
   {
