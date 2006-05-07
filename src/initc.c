@@ -1496,22 +1496,8 @@ void headerhack()
     RomData[0x34DA3] = 0;
   }
 
-  //Battle Grand Prix (J)
-  if (!strncmp((RomData+Lo),"BATTLE GRAND" ,12))
-  {
-    RomData[0x18089] = 0xFB;
-    RomData[0x6C95]  = 0xFB;
-  }
-
-  //Neugier (J), and it's English translation
-  if (!strncmp((RomData+Lo),"NEUGIER     " ,12) ||
-      !strncmp((RomData+Lo),"Neugier (tr." ,12))
-  {
-    RomData[0xD4150] = 0xF9;
-  }
-
   //Home Alone (J/E/U)
-  if (!strncmp((RomData+Lo),"HOME ALO" ,8))
+  if (!strncmp((RomData+Lo),"HOME ALONE  " ,12))
   {
     RomData[0x666B] = 0xEE;
     RomData[0x666C] = 0xBC;
@@ -1533,17 +1519,6 @@ void headerhack()
     hdmaearlstart = 2;
     opexec268 = 116;
     opexec358 = 126;
-  }
-
-  //Bubsy II (U/E)
-  if (!strncmp((RomData+Hi),"BUBSY II" ,8))
-  {
-    cycpb268 = 125;
-    cycpb358 = 147;
-    cycpbl2  = 125;
-    cycpblt2 = 125;
-    cycpbl   = 125;
-    cycpblt  = 125;
   }
 
   /*
