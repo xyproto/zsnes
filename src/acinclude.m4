@@ -309,6 +309,7 @@ if test x$enable_cpucheck != xno; then
   int have_cpuid()
   {
     int have = 0x200000;
+    #ifndef __x86_64__
     asm volatile
     (
       "pushfl           \n\t"
@@ -323,6 +324,7 @@ if test x$enable_cpucheck != xno; then
       : "=a" (have)
       : "c" (have)
     );
+    #endif
     return(have);
   }
 

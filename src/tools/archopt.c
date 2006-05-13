@@ -52,6 +52,7 @@ void add_flags(char *flags, unsigned int reg, unsigned int offset)
 int have_cpuid()
 {
   int have = 0x200000;
+  #ifndef __x86_64__
   asm volatile
   (
     "pushfl                  \n\t"
@@ -66,6 +67,7 @@ int have_cpuid()
     : "=a" (have)
     : "c" (have)
   );
+  #endif
   return(have);
 }
 

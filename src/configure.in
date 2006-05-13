@@ -133,7 +133,6 @@ else
   fi
 
   CFLAGSBAK="$CFLAGS"
-  CFLAGS="$CFLAGS -m32" dnl 64 bit cpus must use that for the arch detector
   AM_ARCH_DETECT()
   CFLAGS="$CFLAGSBAK"
 
