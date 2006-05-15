@@ -603,7 +603,7 @@ void DSP1_Parameter(short Fx, short Fy, short Fz, short Lfe, short Les, short Aa
   *Cy = CentreY;
 
 	// Raster number of imaginary center and horizontal line
-  Vof = 0;
+  *Vof = 0;
 
   if ((Azs != AZS) || (Azs == MaxAZS))
   {
@@ -615,7 +615,7 @@ void DSP1_Parameter(short Fx, short Fy, short Fz, short Lfe, short Les, short Aa
 
     C = Aux * DSP1ROM[0x0328] >> 15;
     C = (C * Aux >> 15) + DSP1ROM[0x0327];
-    Vof -= (C * Aux >> 15) * Les >> 15;
+    *Vof -= (C * Aux >> 15) * Les >> 15;
 
     C = Aux * Aux >> 15;
     Aux = (C * DSP1ROM[0x0324] >> 15) + DSP1ROM[0x0325];
