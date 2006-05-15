@@ -28,7 +28,7 @@ EXTSYM DSPOp28,Op28R,Op28X,Op28Y,Op28Z
 EXTSYM DSPOp0C,Op0CA,Op0CX1,Op0CX2,Op0CY1,Op0CY2
 EXTSYM DSPOp02,Op02AAS,Op02AZS,Op02CX,Op02CY,Op02FX,Op02FY
 EXTSYM Op02FZ,Op02LES,Op02LFE,Op02VOF,Op02VVA
-EXTSYM DSPOp06,Op06X,Op06Y,Op06Z,Op06H,Op06V,Op06S
+EXTSYM DSPOp06,Op06X,Op06Y,Op06Z,Op06H,Op06V,Op06M
 EXTSYM DSPOp0E,Op0EH,Op0EV,Op0EX,Op0EY
 EXTSYM Op01m,Op01Zr,Op01Xr,Op01Yr,DSPOp01
 EXTSYM Op11m,Op11Zr,Op11Xr,Op11Yr,DSPOp11
@@ -572,7 +572,7 @@ DSP1_06:  ; Object Projection Calculation
     mov [DSP1RET],ax
     mov ax,[Op06V]
     mov [DSP1RET+2],ax
-    mov ax,[Op06S]
+    mov ax,[Op06M]
     mov [DSP1RET+4],ax
     mov byte[DSP1RLeft],3
     pop eax
@@ -591,7 +591,7 @@ DSP1_06:  ; Object Projection Calculation
     mov [eax+7],bx
     mov bx,[Op06V]
     mov [eax+9],bx
-    mov bx,[Op06S]
+    mov bx,[Op06M]
     mov [eax+11],bx
     pop ebx
     add dword[dsp1ptr],13
