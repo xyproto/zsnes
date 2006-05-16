@@ -363,7 +363,7 @@ static void queue_from_rawinput(const RAWINPUT *raw)
         {
             event.type = MANYMOUSE_EVENT_SCROLL;
             event.item = 0;  /* !!! FIXME: horizontal wheel? */
-            event.value = (mouse->usButtonData > 0) ? 1 : -1;
+            event.value = ( ((SHORT) mouse->usButtonData) > 0) ? 1 : -1;
             queue_event(&event);
         } /* if */
     } /* if */
