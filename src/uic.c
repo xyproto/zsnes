@@ -461,8 +461,6 @@ void MultiMouseShutdown()
 
 void MultiMouseInit()
 {
-  static char buffer[50];
-  char *p = buffer;
   MouseCount = ManyMouse_Init();
 
 #ifdef __UNIXSDL__
@@ -475,7 +473,7 @@ void MultiMouseInit()
     {
       if (!strncasecmp(ent->d_name, "event", strlen("event")))
       {
-        char buffer[64];
+        char buffer[32];
         if ((snprintf(buffer, sizeof(buffer), "/dev/input/%s", ent->d_name) < sizeof(buffer)) &&
             access(buffer, R_OK))
         {
