@@ -21,6 +21,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
+#include <dirent.h>
 #else
 #include <stdio.h>
 #include <stdlib.h>
@@ -460,32 +461,57 @@ void MultiMouseShutdown()
 
 void MultiMouseInit()
 {
-   static char buffer[50];
-   char *p = buffer;
-   MouseCount = ManyMouse_Init();
+  static char buffer[50];
+  char *p = buffer;
+  MouseCount = ManyMouse_Init();
 
-   printf("ManyMouse: %d mice detected.\n", MouseCount);
+#ifdef __UNIXSDL__
+  puts("Starting Mouse detection.");
+  DIR *input_dir = opendir("/dev/input");
+  if (input_dir)
+  {
+    struct dirent *ent;
+    while ((ent = readdir(input_dir)))
+    {
+      if (!strncasecmp(ent->d_name, "event", strlen("event")))
+      {
+        char buffer[64];
+        if ((snprintf(buffer, sizeof(buffer), "/dev/input/%s", ent->d_name) < sizeof(buffer)) &&
+            access(buffer, R_OK))
+        {
+          printf("Unable to poll %s. Make sure you have read permissions to it.\n", buffer);
+        }
+      }
+    }
+    closedir(input_dir);
+  }
+  else
+  {
+    puts("/dev/input does not exist or is inaccessable");
+  }
+#endif
+  printf("ManyMouse: %d mice detected.\n", MouseCount);
 
-   if (MouseCount > 1)
-   {
-     MouseMoveX[0] = MouseMoveX[1] = 0;
-     MouseMoveY[0] = MouseMoveY[1] = 0;
-     MouseButtons[0] = MouseButtons[1] = 0;
-     MouseWaiting[0] = MouseWaiting[1] = false;
-     atexit(MultiMouseShutdown);
+  if (MouseCount > 1)
+  {
+    MouseMoveX[0] = MouseMoveX[1] = 0;
+    MouseMoveY[0] = MouseMoveY[1] = 0;
+    MouseButtons[0] = MouseButtons[1] = 0;
+    MouseWaiting[0] = MouseWaiting[1] = false;
+    atexit(MultiMouseShutdown);
 
-     printf("Using ManyMouse for:\nMouse 0: %s\nMouse 1: %s\n", ManyMouse_DeviceName(0), ManyMouse_DeviceName(1));
-   }
-   else
-   {
-     strcpy(CSStatus, "Dual mice not detected");
-     strcpy(CSStatus2, "");
-     strcpy(CSStatus3, "");
-     Msgptr = CSStatus;
-     MessageOn = 100;
+    printf("Using ManyMouse for:\nMouse 0: %s\nMouse 1: %s\n", ManyMouse_DeviceName(0), ManyMouse_DeviceName(1));
+  }
+  else
+  {
+    strcpy(CSStatus, "Dual mice not detected");
+    strcpy(CSStatus2, "");
+    strcpy(CSStatus3, "");
+    Msgptr = CSStatus;
+    MessageOn = 100;
 
-     MultiMouseShutdown();
-   }
+    MultiMouseShutdown();
+  }
 }
 
 #define BIT(x) (1 << (x))
