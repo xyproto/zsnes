@@ -177,253 +177,273 @@ static void adjustMouseYScale(void)
 
 int Main_Proc(void)
 {
-	SDL_Event event;
+  SDL_Event event;
 
-	while (SDL_PollEvent(&event))
-	{
-		switch (event.type)
-		{
-			case SDL_ACTIVEEVENT:
-				IsActivated = event.active.gain;
-				break;
-			case SDL_KEYDOWN:
-				if ((event.key.keysym.sym == SDLK_RETURN) &&
-				    (event.key.keysym.mod & KMOD_ALT)) {
-					SwitchFullScreen();
-					break;
-				}
-				if (event.key.keysym.sym == SDLK_LSHIFT ||
-				    event.key.keysym.sym == SDLK_RSHIFT)
-					shiftptr = 1;
-				if (event.key.keysym.mod & KMOD_NUM)
-					numlockptr = 1;
-				else
-					numlockptr = 0;
-				if (event.key.keysym.scancode - 8 >= 0)
-				{
-					//if (pressed[event.key.keysym.scancode - 8] != 2)
-					pressed[event.key.keysym.scancode - 8] = 1;
-					ProcessKeyBuf(event.key.keysym.sym);
-				}
-				break;
+  while (SDL_PollEvent(&event))
+  {
+    switch (event.type)
+    {
+      case SDL_ACTIVEEVENT:
+        IsActivated = event.active.gain;
+        break;
+      case SDL_KEYDOWN:
+        if ((event.key.keysym.sym == SDLK_RETURN) &&
+            (event.key.keysym.mod & KMOD_ALT)) {
+          SwitchFullScreen();
+          break;
+        }
+        if (event.key.keysym.sym == SDLK_LSHIFT ||
+            event.key.keysym.sym == SDLK_RSHIFT)
+          shiftptr = 1;
+        if (event.key.keysym.mod & KMOD_NUM)
+          numlockptr = 1;
+        else
+          numlockptr = 0;
+        if (event.key.keysym.scancode - 8 >= 0)
+        {
+          //if (pressed[event.key.keysym.scancode - 8] != 2)
+          pressed[event.key.keysym.scancode - 8] = 1;
+          ProcessKeyBuf(event.key.keysym.sym);
+        }
+        break;
 
-			case SDL_KEYUP:
-				if (event.key.keysym.sym == SDLK_LSHIFT ||
-				    event.key.keysym.sym == SDLK_RSHIFT)
-					shiftptr = 0;
-				if (event.key.keysym.scancode - 8 >= 0)
-					pressed[event.key.keysym.scancode - 8] = 0;
-				break;
+      case SDL_KEYUP:
+        if (event.key.keysym.sym == SDLK_LSHIFT ||
+            event.key.keysym.sym == SDLK_RSHIFT)
+          shiftptr = 0;
+        if (event.key.keysym.scancode - 8 >= 0)
+          pressed[event.key.keysym.scancode - 8] = 0;
+        break;
 
-			case SDL_MOUSEMOTION:
-				if (FullScreen)
-				{
-					MouseX += event.motion.xrel;
-					MouseY += event.motion.yrel;
-				}
-				else
-				{
-					MouseX = ((int) ((float) event.motion.x) * MouseXScale);
-					MouseY = ((int) ((float) event.motion.y) * MouseYScale);
-				}
+      case SDL_MOUSEMOTION:
+        if (FullScreen)
+        {
+          MouseX += event.motion.xrel;
+          MouseY += event.motion.yrel;
+        }
+        else
+        {
+          MouseX = ((int) ((float) event.motion.x) * MouseXScale);
+          MouseY = ((int) ((float) event.motion.y) * MouseYScale);
+        }
 
-				if (MouseX < MouseMinX) MouseX = MouseMinX;
-				if (MouseX > MouseMaxX) MouseX = MouseMaxX;
-				if (MouseY < MouseMinY) MouseY = MouseMinY;
-				if (MouseY > MouseMaxY) MouseY = MouseMaxY;
-				break;
+        if (MouseX < MouseMinX) MouseX = MouseMinX;
+        if (MouseX > MouseMaxX) MouseX = MouseMaxX;
+        if (MouseY < MouseMinY) MouseY = MouseMinY;
+        if (MouseY > MouseMaxY) MouseY = MouseMaxY;
+        break;
 
-			case SDL_MOUSEBUTTONDOWN:
-				/*
-				   button 2 = enter (i.e. select)
-				   button 4 = mouse wheel up (treat as "up" key)
-				   button 5 = mouse wheel down (treat as "down" key)
-				 */
-				switch (event.button.button)
-				{
-					case 4:
-						ProcessKeyBuf(SDLK_UP);
-						break;
-					case 5:
-						ProcessKeyBuf(SDLK_DOWN);
-						break;
+      case SDL_MOUSEBUTTONDOWN:
+        /*
+           button 2 = enter (i.e. select)
+           button 4 = mouse wheel up (treat as "up" key)
+           button 5 = mouse wheel down (treat as "down" key)
+         */
+        switch (event.button.button)
+        {
+          case 4:
+            ProcessKeyBuf(SDLK_UP);
+            break;
+          case 5:
+            ProcessKeyBuf(SDLK_DOWN);
+            break;
           case 3:
             MouseButton |= 2;
             break;
-					case 2:
-						ProcessKeyBuf(SDLK_RETURN);
-						// Yes, this is intentional - DDOI
-					case 1:
-						MouseButton |= event.button.button;
-						break;
-				}
-				break;
+          case 2:
+            ProcessKeyBuf(SDLK_RETURN);
+            // Yes, this is intentional - DDOI
+          case 1:
+            MouseButton |= event.button.button;
+            break;
+        }
+        break;
 
-			case SDL_MOUSEBUTTONUP:
+      case SDL_MOUSEBUTTONUP:
         switch (event.button.button)
         {
           case 1: case 2:
-				    MouseButton &= ~event.button.button;
+            MouseButton &= ~event.button.button;
             break;
 
           case 3:
             MouseButton &= ~2;
             break;
         }
-				break;
+        break;
 
-			case SDL_JOYHATMOTION: // POV hats act as direction pad
-				offset = HatOffset[event.jhat.which];
-				if (offset >= (256 + 128 + 64)) break;
-				switch (event.jhat.value)
-			    	{
-				        case SDL_HAT_CENTERED:
-						pressed[offset] = 0;
-						pressed[offset + 1] = 0;
-						pressed[offset + 2] = 0;
-						pressed[offset + 3] = 0;
-						break;
-					case SDL_HAT_UP:
-						pressed[offset + 3] = 1;
-						pressed[offset + 2] = 0;
-						break;
-					case SDL_HAT_RIGHTUP:
-						pressed[offset] = 1;
-						pressed[offset + 3] = 1;
-						pressed[offset + 1] = 0;
-						pressed[offset + 2] = 0;
-						break;
-					case SDL_HAT_RIGHT:
-						pressed[offset] = 1;
-						pressed[offset + 1] = 0;
-						break;
-					case SDL_HAT_RIGHTDOWN:
-						pressed[offset] = 1;
-						pressed[offset + 2] = 1;
-						pressed[offset + 1] = 0;
-						pressed[offset + 3] = 0;
-						break;
-					case SDL_HAT_DOWN:
-						pressed[offset + 2] = 1;
-						pressed[offset + 3] = 0;
-						break;
-					case SDL_HAT_LEFTDOWN:
-						pressed[offset + 1] = 1;
-						pressed[offset + 2] = 1;
-						pressed[offset] = 0;
-						pressed[offset + 3] = 0;
-						break;
-					case SDL_HAT_LEFT:
-						pressed[offset + 1] = 1;
-						pressed[offset] = 0;
-						break;
-					case SDL_HAT_LEFTUP:
-						pressed[offset + 1] = 1;
-						pressed[offset + 3] = 1;
-						pressed[offset] = 0;
-						pressed[offset + 2] = 0;
-						break;
-				}
-				break;
+      case SDL_JOYHATMOTION: // POV hats act as direction pad
+        offset = HatOffset[event.jhat.which];
+        if (offset >= (256 + 128 + 64)) break;
+        switch (event.jhat.value)
+        {
+          case SDL_HAT_CENTERED:
+            pressed[offset] = 0;
+            pressed[offset + 1] = 0;
+            pressed[offset + 2] = 0;
+            pressed[offset + 3] = 0;
+            break;
+          case SDL_HAT_UP:
+            pressed[offset + 3] = 1;
+            pressed[offset + 2] = 0;
+            break;
+          case SDL_HAT_RIGHTUP:
+            pressed[offset] = 1;
+            pressed[offset + 3] = 1;
+            pressed[offset + 1] = 0;
+            pressed[offset + 2] = 0;
+            break;
+          case SDL_HAT_RIGHT:
+            pressed[offset] = 1;
+            pressed[offset + 1] = 0;
+            break;
+          case SDL_HAT_RIGHTDOWN:
+            pressed[offset] = 1;
+            pressed[offset + 2] = 1;
+            pressed[offset + 1] = 0;
+            pressed[offset + 3] = 0;
+            break;
+          case SDL_HAT_DOWN:
+            pressed[offset + 2] = 1;
+            pressed[offset + 3] = 0;
+            break;
+          case SDL_HAT_LEFTDOWN:
+            pressed[offset + 1] = 1;
+            pressed[offset + 2] = 1;
+            pressed[offset] = 0;
+            pressed[offset + 3] = 0;
+            break;
+          case SDL_HAT_LEFT:
+            pressed[offset + 1] = 1;
+            pressed[offset] = 0;
+            break;
+          case SDL_HAT_LEFTUP:
+            pressed[offset + 1] = 1;
+            pressed[offset + 3] = 1;
+            pressed[offset] = 0;
+            pressed[offset + 2] = 0;
+            break;
+        }
+        break;
 
-			/*
-			   joystick trackball code untested; change the test
-			   values if the motion is too sensitive (or not
-			   sensitive enough)
-			 */
-			case SDL_JOYBALLMOTION:
-				offset = BallOffset[event.jball.which];
-				offset += event.jball.ball;
-				if (offset >= (256 + 128 + 64)) break;
-				if (event.jball.xrel < -100)
-				{
-					pressed[offset] = 0;
-					pressed[offset + 1] = 1;
-				}
-				if (event.jball.xrel > 100)
-				{
-					pressed[offset] = 1;
-					pressed[offset + 1] = 0;
-				}
-				if (event.jball.yrel < -100)
-				{
-					pressed[offset + 2] = 0;
-					pressed[offset + 3] = 1;
-				}
-				if (event.jball.yrel > 100)
-				{
-					pressed[offset + 2] = 1;
-					pressed[offset + 3] = 0;
-				}
-				break;
+      /*
+         joystick trackball code untested; change the test
+         values if the motion is too sensitive (or not
+         sensitive enough)
+       */
+      case SDL_JOYBALLMOTION:
+        offset = BallOffset[event.jball.which];
+        offset += event.jball.ball;
+        if (offset >= (256 + 128 + 64)) break;
+        if (event.jball.xrel < -100)
+        {
+          pressed[offset] = 0;
+          pressed[offset + 1] = 1;
+        }
+        if (event.jball.xrel > 100)
+        {
+          pressed[offset] = 1;
+          pressed[offset + 1] = 0;
+        }
+        if (event.jball.yrel < -100)
+        {
+          pressed[offset + 2] = 0;
+          pressed[offset + 3] = 1;
+        }
+        if (event.jball.yrel > 100)
+        {
+          pressed[offset + 2] = 1;
+          pressed[offset + 3] = 0;
+        }
+        break;
 
-			case SDL_JOYAXISMOTION:
-				offset = AxisOffset[event.jaxis.which];
-				offset += event.jaxis.axis * 2;
-				if (offset >= (256 + 128 + 64)) break;
-//				printf("DEBUG axis offset: %d\n", offset);
-				if (event.jaxis.value < -128)
-				{
-					pressed[offset + 1] = 1;
-					pressed[offset + 0] = 0;
-				}
-				else if (event.jaxis.value > 128)
-				{
-					pressed[offset + 0] = 1;
-					pressed[offset + 1] = 0;
-				}
-				else
-				{
-					pressed[offset + 0] = 0;
-					pressed[offset + 1] = 0;
-				}
-				break;
+      case SDL_JOYAXISMOTION:
+        offset = AxisOffset[event.jaxis.which];
+        offset += event.jaxis.axis * 2;
+        if (offset >= (256 + 128 + 64)) break;
+        //printf("DEBUG axis offset: %d\n", offset);
+        if (event.jaxis.value < -128)
+        {
+          pressed[offset + 1] = 1;
+          pressed[offset + 0] = 0;
+        }
+        else if (event.jaxis.value > 128)
+        {
+          pressed[offset + 0] = 1;
+          pressed[offset + 1] = 0;
+        }
+        else
+        {
+          pressed[offset + 0] = 0;
+          pressed[offset + 1] = 0;
+        }
+        break;
 
-			case SDL_JOYBUTTONDOWN:
-				offset = ButtonOffset[event.jbutton.which];
-				offset += event.jbutton.button;
-//				printf("DEBUG button offset: %d\n", offset);
-				if (offset >= (256 + 128 + 64)) break;
-				pressed[offset] = 1;
-				break;
+      case SDL_JOYBUTTONDOWN:
+        offset = ButtonOffset[event.jbutton.which];
+        offset += event.jbutton.button;
+        //printf("DEBUG button offset: %d\n", offset);
+        if (offset >= (256 + 128 + 64)) break;
+        pressed[offset] = 1;
+        break;
 
-			case SDL_JOYBUTTONUP:
-				offset = ButtonOffset[event.jbutton.which];
-				offset += event.jbutton.button;
-//				printf("DEBUG button offset: %d\n", offset);
-				if (offset >= (256 + 128 + 64)) break;
-				pressed[offset] = 0;
-				break;
-			case SDL_QUIT:
-				LinuxExit();
-				break;
+      case SDL_JOYBUTTONUP:
+        offset = ButtonOffset[event.jbutton.which];
+        offset += event.jbutton.button;
+        //printf("DEBUG button offset: %d\n", offset);
+        if (offset >= (256 + 128 + 64)) break;
+        pressed[offset] = 0;
+        break;
+      case SDL_QUIT:
+        LinuxExit();
+        break;
 #ifdef __OPENGL__
-			case SDL_VIDEORESIZE:
-				if(!GUIRESIZE[cvidmode]) {
-				    surface = SDL_SetVideoMode(WindowWidth, WindowHeight,
-					    BitDepth, surface->flags & ~SDL_RESIZABLE);
-					adjustMouseXScale();
-					adjustMouseYScale();
-				    break;
-				}
-				WindowWidth = SurfaceX = event.resize.w;
-				WindowHeight = SurfaceY = event.resize.h;
-				surface = SDL_SetVideoMode(WindowWidth,
-				    WindowHeight, BitDepth, surface->flags);
-				adjustMouseXScale();
-				adjustMouseYScale();
-				glViewport(0,0, WindowWidth, WindowHeight);
-				glFlush();
-				gl_clearwin();
-				break;
-#endif
-			default:
-				break;
-		}
-	}
+      case SDL_VIDEORESIZE:
+        if(!GUIRESIZE[cvidmode])
+        {
+          surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags & ~SDL_RESIZABLE);
+          adjustMouseXScale();
+          adjustMouseYScale();
+          break;
+        }
+        WindowWidth = SurfaceX = event.resize.w;
+        WindowHeight = SurfaceY = event.resize.h;
+        surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags);
+        adjustMouseXScale();
+        adjustMouseYScale();
+        glViewport(0,0, WindowWidth, WindowHeight);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        if (224*WindowWidth > 256*WindowHeight && WindowHeight)
+        {
+          glOrtho (- ((float) 224*WindowWidth)/((float) 256*WindowHeight),
+                   ((float) 224*WindowWidth)/((float) 256*WindowHeight), -1, 1, -1, 1);
 
-	return TRUE;
+        }
+        else if (224*WindowWidth < 256*WindowHeight && WindowWidth)
+        {
+          glOrtho (-1, 1,- ((float) 256*WindowHeight)/((float) 224*WindowWidth),
+                   ((float) 256*WindowHeight)/((float) 224*WindowWidth), -1, 1);
+        }
+        else
+        {
+          glOrtho (-1, 1, -1, 1, -1, 1);
+        }
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glDisable(GL_DEPTH_TEST);
+        glFlush();
+        gl_clearwin();
+        break;
+#endif
+      default:
+        break;
+    }
+  }
+
+  return TRUE;
 }
+
 
 void ProcessKeyBuf(int scancode)
 {
