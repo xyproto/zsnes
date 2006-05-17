@@ -959,7 +959,11 @@ void load_file_fs(char *path)
   const char *ext = path+pathlen-4;
   if (pathlen >= 5 && !strcasecmp(ext, ".jma"))
   {
+    #ifdef NO_JMA
+    puts("This binary was built without JMA support.");
+    #else
     load_jma_file(path);
+    #endif
   }
   else if (pathlen >= 5 && !strcasecmp(ext, ".zip"))
   {
@@ -1126,8 +1130,12 @@ void loadROM()
     char *ext = ZOpenFileName+strlen(ZOpenFileName)-4;
     if (!strcasecmp(ext, ".jma"))
     {
+      #ifdef NO_JMA
+      puts("This binary was built without JMA support.");
+      #else
       isCompressed = true;
       load_jma_file(ZOpenFileName);
+      #endif
     }
   }
 

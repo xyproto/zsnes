@@ -4527,7 +4527,7 @@ NEWSYM EchoStereo
     mov byte[Voice0State+%1],0
     mov byte[DSPMem+08h+%1*10h],0
     mov byte[DSPMem+09h+%1*10h],0
-    mov al,%1   
+    mov al,%1
 call VoiceStarter
     jmp %%SkipProcess2
 %%SkipProcess

@@ -16,20 +16,18 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-x86-64=@X8664@
-
 CHIPDIR=chips
 CPUDIR=cpu
 DOSDIR=dos
 EFFECTSDIR=effects
 GUIDIR=gui
 JMADIR=jma
+MMLIBDIR=mmlib
 NETDIR=net
 TOOLSDIR=tools
 VIDEODIR=video
 WINDIR=linux
 ZIPDIR=zip
-MMLIBDIR=mmlib
 
 CHIPSOBJ=${CHIPDIR}/sfxproc.o ${CHIPDIR}/fxemu2.o ${CHIPDIR}/dsp1proc.o\
 	${CHIPDIR}/fxemu2b.o ${CHIPDIR}/fxemu2c.o ${CHIPDIR}/fxtable.o\
@@ -48,27 +46,25 @@ EFFECTSOBJ=${EFFECTSDIR}/burn.o ${EFFECTSDIR}/water.o ${EFFECTSDIR}/smoke.o
 
 GUIOBJ=${GUIDIR}/gui.o ${GUIDIR}/guifuncs.o ${GUIDIR}/menu.o
 
-JMAOBJ=${JMADIR}/7zlzma.o ${JMADIR}/crc32.o ${JMADIR}/iiostrm.o\
-	${JMADIR}/inbyte.o ${JMADIR}/jma.o ${JMADIR}/lzma.o ${JMADIR}/lzmadec.o\
-	${JMADIR}/winout.o ${JMADIR}/zsnesjma.o
+JMAOBJ=@JMA_FILES@
 
-MMLIBOBJ=${MMLIBDIR}/mm.o ${MMLIBDIR}/linux.o
+MMLIBOBJ=${MMLIBDIR}/linux.o ${MMLIBDIR}/mm.o
 
-MAINOBJ=cfgload.o cfg.o endmem.o init.o initc.o md.o patch.o ui.o\
-	vcache.o version.o zmovie.o zstate.o debug.o zloader.o uic.o
+MAINOBJ=cfg.o cfgload.o debug.o endmem.o init.o initc.o md.o patch.o ui.o uic.o\
+	vcache.o version.o zloader.o zmovie.o zstate.o
 
 NETOBJ=
-#${NETDIR}/ztcp.os
+#${NETDIR}/ztcp.o
 
 TOOLSOBJ=${TOOLSDIR}/fileutil.o ${TOOLSDIR}/strutil.o
 
 VIDEOBJ=${VIDEODIR}/makev16b.o ${VIDEODIR}/makev16t.o ${VIDEODIR}/makevid.o\
 	${VIDEODIR}/mode716.o ${VIDEODIR}/mode716b.o ${VIDEODIR}/mode716d.o\
 	${VIDEODIR}/mode716e.o ${VIDEODIR}/mode716t.o ${VIDEODIR}/mode7.o\
-	${VIDEODIR}/mode7ext.o ${VIDEODIR}/mv16tms.o ${VIDEODIR}/newg162.o\
-	${VIDEODIR}/newgfx16.o ${VIDEODIR}/newgfx2.o ${VIDEODIR}/newgfx.o\
-	${VIDEODIR}/m716text.o ${VIDEODIR}/2xsaiw.o\
-	${VIDEODIR}/procvid.o ${VIDEODIR}/procvidc.o ${VIDEODIR}/sw_draw.o\
+	${VIDEODIR}/mode7ext.o ${VIDEODIR}/mv16tms.o ${VIDEODIR}/m716text.o\
+	${VIDEODIR}/newg162.o ${VIDEODIR}/newgfx.o ${VIDEODIR}/newgfx16.o\
+	${VIDEODIR}/newgfx2.o ${VIDEODIR}/procvid.o ${VIDEODIR}/procvidc.o\
+	${VIDEODIR}/sw_draw.o ${VIDEODIR}/2xsaiw.o\
 	${VIDEODIR}/hq2x16.o ${VIDEODIR}/hq2x32.o\
 	${VIDEODIR}/hq3x16.o ${VIDEODIR}/hq3x32.o\
 	${VIDEODIR}/hq4x16.o ${VIDEODIR}/hq4x32.o ${VIDEODIR}/ntsc.o
@@ -80,8 +76,8 @@ WINDOSOBJ=${DOSDIR}/debug.o ${DOSDIR}/joy.o ${DOSDIR}/vesa2.o
 
 ZIPOBJ=${ZIPDIR}/unzip.o ${ZIPDIR}/zpng.o
 
-ZOBJS=${MAINOBJ} ${CHIPSOBJ} ${CPUOBJ} ${WINOBJ} ${WINDOSOBJ} ${GUIOBJ} ${VIDEOBJ} ${NETOBJ} ${ZIPOBJ}\
-	${EFFECTSOBJ} ${JMAOBJ} ${MMLIBOBJ}
+ZOBJS=${MAINOBJ} ${CHIPSOBJ} ${CPUOBJ} ${GUIOBJ} ${EFFECTSOBJ} ${JMAOBJ}\
+	${MMLIBOBJ} ${NETOBJ} ${VIDEOBJ} ${WINOBJ} ${WINDOSOBJ} ${ZIPOBJ}
 
 PSR=parsegen
 
@@ -98,9 +94,7 @@ PSR=parsegen
 
 %.o: %.asm
 	@NASMPATH@ @NFLAGS@ -o $@ $<
-ifeq (${x86-64},true)
-	objcopy --input-target elf32-i386 --output-target elf64-x86-64 $@ $@
-endif
+@X64FIX@
 
 %.o: %.psr
 	./${PSR} @PSRFLAGS@ -cheader psrhead/$(patsubst %.o,%.h,$@) -fname $(patsubst %.o,%,$@) temppsr.c $<
@@ -110,7 +104,7 @@ endif
 ALL: @ZSNESEXE@
 
 @ZSNESEXE@: ${PSR} ${ZOBJS}
-	@CXX@ -o @ZSNESEXE@ ${ZOBJS} @CXXFLAGS@ @LDFLAGS@
+	@ZC@ -o @ZSNESEXE@ ${ZOBJS} @ZCFLAGS@ @LDFLAGS@
 
 ${PSR}: parsegen.cpp
 
@@ -297,10 +291,10 @@ install:
 	@INSTALL@ -m 0644 linux/zsnes.1 ${DESTDIR}/@prefix@/man/man1
 
 uninstall:
-	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man5/zsnes.5
+	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man1/zsnes.1
 
 clean:
 	rm -f ${ZOBJS} ${PSR} psrhead/*.h temppsr.c @ZSNESEXE@
 
-distclean:
-	rm -f ${ZOBJS} ${PSR} psrhead/*.h temppsr.c @ZSNESEXE@ Makefile aclocal.m4 configure config.cache config.log config.status config.h
+distclean: clean
+	rm -f Makefile aclocal.m4 configure config.cache config.log config.status config.h

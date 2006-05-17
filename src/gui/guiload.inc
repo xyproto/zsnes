@@ -490,7 +490,9 @@ GetNormalEntries2:
     GUIGetEntry2 GUIfindJAP
     GUIGetEntry2 GUIfindBIN
     GUIGetEntry2 GUIfindZIP
+%ifndef NO_JMA
     GUIGetEntry2 GUIfindJMA
+%endif
     GUIGetEntry2 GUIfind1
     jmp .guiNext
 .guishowall

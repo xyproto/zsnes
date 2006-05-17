@@ -1,26 +1,22 @@
-dnl Process this file with autoconf to produce a configure script.
+dnl - Process this file with autoconf to produce a configure script.
 
 AC_INIT(init.asm)
-AC_CONFIG_HEADER(config.h)	
+AC_CONFIG_HEADER(config.h)
 ISODATE=`date +%Y-%m-%d`
 AC_SUBST(ISODATE)
 VERSION=pre1.43
 AC_SUBST(VERSION)
-X8664="false"
-AC_SUBST(X8664)
 AC_ARG_WITH(nasm-prefix,[  --with-nasm-prefix=PFX Prefix where nasm is installed (optional)], nasm_prefix="$withval", nasm_prefix="")
 
-dnl -- Where is our compiler, and who are we compiling for?
 CFLAGS="$CFLAGS -pipe -I. -I/usr/local/include -I/usr/include"
-
-dnl -- You might wanna change -I/usr/include if you're trying to do this with
+dnl - You might wanna change -I/usr/include if you're trying to do this with
 dnl Mingw, because it doesnt have a standard file tree. Maybe if ming do this
 dnl else do -I/usr/include. Or some shit. You figure it out.
 
 LDFLAGS="$LDFLAGS -L/usr/local/lib -L/usr/lib"
+dnl - Same thing here.
 
-dnl -- Same thing here.
-
+dnl - Where is our compiler, and who are we compiling for?
 AC_CANONICAL_SYSTEM
 AC_PROG_CC
 AC_PROG_CXX
@@ -52,13 +48,16 @@ case "$target" in
     ;;
 esac
 
-dnl Checks for libraries.
-dnl -- Where is libSDL and zlib, and do we want/have libPNG and OpenGL support?
+dnl - Checks for libraries: libSDL*, zlib*, libpng, OpenGL, JMA support
+dnl - libs marked * are required, the other are optionnal
 
 AM_PATH_SDL(1.2.0,,[AC_MSG_ERROR(SDL >= 1.2.0 is required)])
+
 AM_PATH_ZLIB(1.1.0,,[AC_MSG_ERROR(ZLIB >= 1.1.0 is required)])
 CFLAGS="$CFLAGS $ZLIB_CFLAGS"
 LDFLAGS="$LDFLAGS $ZLIB_LIBS"
+
+dnl - libpng stuff
 AM_PATH_LIBPNG(1.2.0,,)
 CFLAGS="$CFLAGS $SDL_CFLAGS"
 LDFLAGS="$LDFLAGS $SDL_LIBS"
@@ -71,10 +70,9 @@ else
   LDFLAGS="$LDFLAGS $LIBPNG_LIBS"
 fi
 
-dnl -- opengl stuff
-
-AC_ARG_ENABLE(opengl,[  --disable-opengl        Build without opengl support],,enable_opengl=yes)
-AC_ARG_WITH(opengl-prefix,[  --with-opengl-prefix=PFX Prefix where opengl is installed (optional)], opengl_prefix="$withval", opengl_prefix="")
+dnl - opengl stuff
+AC_ARG_ENABLE(opengl,[  --disable-opengl        Build without OpenGL support],,enable_opengl=yes)
+AC_ARG_WITH(opengl-prefix,[  --with-opengl-prefix=PFX Prefix where OpenGL is installed (optional)], opengl_prefix="$withval", opengl_prefix="")
 
 if test x$enable_opengl != xno; then
   AC_PATH_X
@@ -85,7 +83,7 @@ if test x$enable_opengl != xno; then
   if test x$x_libraries != x; then
     LDFLAGS="$LDFLAGS -L$x_libraries"
   fi
-  AC_CHECK_LIB(GL, glGetError,found_opengl="yes",,)
+  AC_CHECK_LIB(GL, glGetError, found_opengl="yes",,)
 fi
 AC_MSG_CHECKING(for OpenGL)
 if test x$enable_opengl != xno; then
@@ -101,10 +99,20 @@ if test x$enable_opengl != xno; then
 else
   AC_MSG_RESULT(disabled by user)
 fi
-dnl --
 
-dnl -- Various debug and optimization option checks
+dnl - jma check
+AC_ARG_ENABLE(jma,[  --disable-jma           Build without JMA support],,enable_jma=yes)
 
+AC_MSG_CHECKING(for JMA support)
+if test x$enable_jma != xno; then
+  AC_MSG_RESULT(yes)
+else
+  AC_MSG_RESULT(no)
+  CFLAGS="$CFLAGS -DNO_JMA"
+  NFLAGS="$NFLAGS -DNO_JMA"
+fi
+
+dnl - Various debug and optimization option checks
 AC_ARG_ENABLE(debug, [  --enable-debug          Build GDB friendly binary (zsnesd) ],debug=$enableval)
 AC_MSG_CHECKING(if you want gdb friendly executable)
 
@@ -133,6 +141,7 @@ else
   fi
 
   CFLAGSBAK="$CFLAGS"
+  X64FIX="false"
   AM_ARCH_DETECT()
   CFLAGS="$CFLAGSBAK"
 
@@ -142,7 +151,7 @@ else
       x86_64-*-* | x86_64-*-*-*)
         AC_MSG_RESULT(guessing x86-64)
         CFLAGS="$CFLAGS -march=x86-64"
-        X8664="true"
+        X64FIX="true"
         ;;
       i686-*-*)
         AC_MSG_RESULT(guessing i686)
@@ -170,17 +179,39 @@ fi
 CXXFLAGS="$CFLAGS -fno-rtti"
 PSRFLAGS="-D__UNIXSDL__"
 
-dnl Checks for header files.
+if test x$X64FIX != xtrue; then
+  X64FIX=""
+else
+  X64FIX="	objcopy --input-target elf32-i386 --output-target elf64-x86-64 $@ $@"
+fi
+
+if test x$enable_jma != xno; then
+  JMA_FILES="\${JMADIR}/7zlzma.o \${JMADIR}/crc32.o \${JMADIR}/iiostrm.o \${JMADIR}/inbyte.o \${JMADIR}/jma.o \${JMADIR}/lzma.o \${JMADIR}/lzmadec.o \${JMADIR}/winout.o \${JMADIR}/zsnesjma.o"
+  ZC="$CXX"
+  ZCFLAGS="$CXXFLAGS"
+else
+  JMA_FILES=""
+  ZC="$CC"
+  ZCFLAGS="$CFLAGS"
+fi
+
+dnl - Check for header files
 AC_HEADER_STDC
 AC_HEADER_MAJOR
 
-dnl Checks for library functions.
+dnl - Create Makefile
+AC_SUBST(NASMPATH)
+AC_SUBST(ZC)
+AC_SUBST(ZCFLAGS)
+AC_SUBST(PSRFLAGS)
+AC_SUBST(NFLAGS)
 AC_SUBST(ZSNESEXE)
 AC_SUBST(GL_DRAW)
-AC_SUBST(NFLAGS)
-AC_SUBST(NASMPATH)
-AC_SUBST(PSRFLAGS)
+AC_SUBST(JMA_FILES)
+AC_SUBST(X64FIX)
 AC_OUTPUT(Makefile)
+
+dnl - Info output
 echo
 echo
 echo ZSNES v$VERSION
@@ -201,6 +232,11 @@ elif test "$enable_opengl" = "no"; then
   echo "OpenGL support                Disabled by user"
 else
   echo "OpenGL support                Disabled, library not found"
+fi
+if test "$enable_jma" = "no"; then
+  echo "JMA support                   Disabled by user"
+else
+  echo "JMA support                   Yes"
 fi
 echo
 echo The binary will be installed in $prefix/bin
