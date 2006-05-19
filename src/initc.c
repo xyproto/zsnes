@@ -33,8 +33,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include "cpu/memtable.h"
 #include "zip/zunzip.h"
-#include "jma/zsnesjma.h"
 #include "asm_call.h"
+#ifndef NO_JMA
+#include "jma/zsnesjma.h"
+#endif
+
 
 #ifndef __GNUC__
 #define strcasecmp stricmp
