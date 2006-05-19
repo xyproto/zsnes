@@ -94,7 +94,7 @@ PSR=parsegen
 
 %.o: %.asm
 	@NASMPATH@ @NFLAGS@ -o $@ $<
-	@X64FIX@
+@X64FIX@
 
 %.o: %.psr
 	./${PSR} @PSRFLAGS@ -cheader psrhead/$(patsubst %.o,%.h,$@) -fname $(patsubst %.o,%,$@) temppsr.c $<
