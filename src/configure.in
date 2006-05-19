@@ -157,7 +157,7 @@ else
       x86_64-*-* | x86_64-*-*-*)
         AC_MSG_RESULT(guessing x86-64)
         CFLAGS="$CFLAGS -march=x86-64"
-        X64FIX="true"
+        X64FIX="objcopy --input-target elf32-i386 --output-target elf64-x86-64 $@ $@"
         ;;
       i686-*-*)
         AC_MSG_RESULT(guessing i686)
