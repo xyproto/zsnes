@@ -93,6 +93,16 @@ EXTSYM pesimpng
     mov esi,winbg1enval
 %endmacro
 
+%macro CLIP 1
+    test word[%1],2000h
+    jz %%zero
+    or word[%1],~3ffh
+    jmp %%notzero
+%%zero
+    and word[%1],3ffh
+%%notzero
+%endmacro
+
 %macro Mode7Calculate16b 0
     ; mode 7, ax = curyposition, dx = curxposition (left side)
     ; draw center map coordinates at (X0-bg1scrolx,Y0-bg1scroly) on screen
@@ -102,6 +112,13 @@ EXTSYM pesimpng
     cmp byte[M7HROn],1
     je near .calculateb
 
+    mov bx,dx
+    and bx,0001111111111111b    ; 13 -> 16 bit signed value
+    test bx,0001000000000000b
+    jz .nonegb
+    or bx,1110000000000000b
+.nonegb
+    mov [mcxloc],bx
     mov bx,[mode7X0]
     and bx,0001111111111111b    ; 13 -> 16 bit signed value
     test bx,0001000000000000b
@@ -109,15 +126,12 @@ EXTSYM pesimpng
     or bx,1110000000000000b
     or word[mode7X0],1110000000000000b
 .nonega
-    mov [mcxloc],bx
-    mov bx,dx
-    and bx,0001111111111111b    ; 13 -> 16 bit signed value
-    test bx,0001000000000000b
-    jz .nonegb
-    or bx,1110000000000000b
-.nonegb
     sub [mcxloc],bx
+    CLIP mcxloc
     mov bx,ax
+    ;mov bx,[bg1scroly]         ;Alternative to get IOG/IOT working
+                                ;But breaks Pilotwings and Super Mario Kart
+
     and bx,0001111111111111b    ; 13 -> 16 bit signed value
     test bx,0001000000000000b
     jz .nonegc
@@ -132,6 +146,9 @@ EXTSYM pesimpng
     or word[mode7Y0],1110000000000000b
 .nonegd
     sub word[mcyloc],bx
+    CLIP mcyloc
+    ;sub ax,[bg1scroly]         ;Alternative to get IOG/IOT working
+    ;add [mcyloc],ax            ;But breaks Pilotwings and Super Mario Kart
 
     ; 2.) Find position at scaled y, centered x at SCX=X0-(cy*C),SCY=Y0-(cy*D)
 
@@ -155,7 +172,7 @@ EXTSYM pesimpng
     movsx eax,word[mode7A]
     mov [mmode7xadder],eax
     imul eax,ebx
-    neg eax
+    ;neg eax
     add [mmode7xpos],eax
 
     movsx eax,word[mode7C]
@@ -163,7 +180,7 @@ EXTSYM pesimpng
     neg eax
     mov [mmode7yadder],eax
     imul eax,ebx
-    add [mmode7ypos],eax
+    sub [mmode7ypos],eax
 
     test byte[mode7set],1
     jz .nohflip
@@ -184,6 +201,13 @@ EXTSYM pesimpng
     ; center map coordinates = (X0,Y0)
     ; 1.) cx=X0-bg1scrolx, cy =Y0-ax
 
+    mov bx,dx
+    and bx,0001111111111111b    ; 13 -> 16 bit signed value
+    test bx,0001000000000000b
+    jz .nonegbcb
+    or bx,1110000000000000b
+.nonegbcb
+    mov [mcxloc],bx
     mov bx,[mode7X0]
     and bx,0001111111111111b    ; 13 -> 16 bit signed value
     test bx,0001000000000000b
@@ -191,15 +215,12 @@ EXTSYM pesimpng
     or word[mode7X0],1110000000000000b
     or bx,1110000000000000b
 .nonegacb
-    mov [mcxloc],bx
-    mov bx,dx
-    and bx,0001111111111111b    ; 13 -> 16 bit signed value
-    test bx,0001000000000000b
-    jz .nonegbcb
-    or bx,1110000000000000b
-.nonegbcb
     sub [mcxloc],bx
+    CLIP mcxloc
     mov bx,ax
+    ;mov bx,[bg1scroly]         ;Alternative to get IOG/IOT working
+                                ;But breaks Pilotwings and Super Mario Kart
+
     and bx,0011111111111111b    ; 13 -> 16 bit signed value
     test bx,0010000000000000b
     jz .nonegccb
@@ -215,6 +236,9 @@ EXTSYM pesimpng
 .nonegdcb
     add bx,bx
     sub word[mcyloc],bx
+    CLIP mcyloc
+    ;sub ax,[bg1scroly]         ;Alternative to get IOG/IOT working
+    ;add [mcyloc],ax            ;But breaks Pilotwings and Super Mario Kart
 
     ; 2.) Find position at scaled y, centered x at SCX=X0-(cy*C),SCY=Y0-(cy*D)
 
@@ -240,7 +264,7 @@ EXTSYM pesimpng
     movsx eax,word[mode7A]
     mov [mmode7xadder],eax
     imul eax,ebx
-    neg eax
+    ;neg eax
     add [mmode7xpos],eax
 
     movsx eax,word[mode7C]
@@ -248,7 +272,7 @@ EXTSYM pesimpng
     neg eax
     mov [mmode7yadder],eax
     imul eax,ebx
-    add [mmode7ypos],eax
+    sub [mmode7ypos],eax
 
     test byte[mode7set],1
     jz .nohflipcb
