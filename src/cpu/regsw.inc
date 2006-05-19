@@ -632,6 +632,8 @@ reg210Cw:
 
 section .data
 NEWSYM bgscrolPrev, db 0
+NEWSYM bg1scrolx_m7, dw 0
+NEWSYM bg1scroly_m7, dw 0
 
 section .text
 %macro UpdateScrollReg 1
@@ -648,11 +650,17 @@ section .text
 ; BG1 horizontal scroll register
 reg210Dw:
     UpdateScrollReg bg1scrolx
+    mov bl,[m7byte]
+    mov [bg1scrolx_m7],bx
+    mov [m7byte],al
     ret
 
 ; BG1 vertical scroll register
 reg210Ew:
     UpdateScrollReg bg1scroly
+    mov bl,[m7byte]
+    mov [bg1scroly_m7],bx
+    mov [m7byte],al
     ret
 
 ; BG2 horizontal scroll register
@@ -966,50 +974,46 @@ reg211Aw:
 
 SECTION .data
 NEWSYM multchange, db 1
+NEWSYM m7byte, db 0
 SECTION .text
+
+%macro Mode7Regs 1
+    mov bl,[m7byte]
+    mov [%1],bl
+    mov [%1+1],al
+    mov [m7byte],al
+%endmacro
 
 ; COS (COSINE) rotate angle / X Expansion
 reg211Bw:
-    mov bl,[mode7A+1]
-    mov [mode7A],bl
-    mov [mode7A+1],al
+    Mode7Regs mode7A
     mov byte[multchange],1
     ret
 
 ; SIN (SIN)    rotate angle / X Expansion & Complement Multiplication Start
 reg211Cw:
-    mov bl,[mode7B+1]
-    mov [mode7B],bl
-    mov [mode7B+1],al
+    Mode7Regs mode7B
     mov byte[multchange],1
     ret
 
 ; SIN (SIN)    rotate angle / Y Expansion
 reg211Dw:
-    mov bl,[mode7C+1]
-    mov [mode7C],bl
-    mov [mode7C+1],al
+    Mode7Regs mode7C
     ret
 
 ; COS (COSINE) rotate angle / Y Expansion
 reg211Ew:
-    mov bl,[mode7D+1]
-    mov [mode7D],bl
-    mov [mode7D+1],al
+    Mode7Regs mode7D
     ret
 
 ; Center position X (13-bit data only)
 reg211Fw:
-    mov bl,[mode7X0+1]
-    mov [mode7X0],bl
-    mov [mode7X0+1],al
+    Mode7Regs mode7X0
     ret
 
 ; Center position Y (13-bit data only)
 reg2120w:
-    mov bl,[mode7Y0+1]
-    mov [mode7Y0],bl
-    mov [mode7Y0+1],al
+    Mode7Regs mode7Y0
     ret
 
 ; Colour # (or palette) selection register
