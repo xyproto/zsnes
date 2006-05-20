@@ -474,7 +474,7 @@ if test x$enable_cpucheck != xno; then
             if (strstr(flags, " sse2 "))
             {
               #if __GNUC__ > 3 || __GNUC_MINOR__ > 2
-              if (strstr(flags, " pni "))
+              if (strstr(flags, " pni ") && strcmp(cpu_family, "6"))
               {
                 cpu = (strstr(flags, " lm ")) ? "nocona" : "prescott";
               }
@@ -500,7 +500,14 @@ if test x$enable_cpucheck != xno; then
                 }
               }
             }
-            else { cpu = "pentium3"; }
+            else
+            {
+              #if __GNUC__ > 3 || __GNUC_MINOR__ > 3
+              if (strstr(model_name, "Mobile")) { cpu = "pentium3m"; }
+              #endif
+
+              if (!cpu) { cpu = "pentium3"; }
+            }
           }
           else { cpu = (!strcmp(cpu_family, "6")) ? "pentium2" : "pentium-mmx"; }
         }

@@ -414,21 +414,25 @@ int Main_Proc(void)
         glViewport(0,0, WindowWidth, WindowHeight);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        if (224*WindowWidth > 256*WindowHeight && WindowHeight)
-        {
-          glOrtho (- ((float) 224*WindowWidth)/((float) 256*WindowHeight),
-                   ((float) 224*WindowWidth)/((float) 256*WindowHeight), -1, 1, -1, 1);
 
-        }
-        else if (224*WindowWidth < 256*WindowHeight && WindowWidth)
+        if (cvidmode == 21)
         {
-          glOrtho (-1, 1,- ((float) 256*WindowHeight)/((float) 224*WindowWidth),
+          if (224*WindowWidth > 256*WindowHeight && WindowHeight)
+          {
+            glOrtho (- ((float) 224*WindowWidth)/((float) 256*WindowHeight),
+                     ((float) 224*WindowWidth)/((float) 256*WindowHeight), -1, 1, -1, 1);
+          }
+          else if (224*WindowWidth < 256*WindowHeight && WindowWidth)
+          {
+            glOrtho (-1, 1,- ((float) 256*WindowHeight)/((float) 224*WindowWidth),
                    ((float) 256*WindowHeight)/((float) 224*WindowWidth), -1, 1);
+          }
+          else
+          {
+            glOrtho (-1, 1, -1, 1, -1, 1);
+          }
         }
-        else
-        {
-          glOrtho (-1, 1, -1, 1, -1, 1);
-        }
+
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         glDisable(GL_DEPTH_TEST);
@@ -846,17 +850,17 @@ void initwinvideo(void)
 
 		switch (cvidmode)
 		{
-			//case 0:
-			//case 4;
-			case 1:
 			default:
+			case 0:
+			case 1:
 				WindowWidth = 256;
 				WindowHeight = 224;
 				break;
 			case 2:
 			case 3:
 			case 7:
-			case 21:					// Variable
+			case 21: // variable
+			case 22: // variable
 				WindowWidth = 512;
 				WindowHeight = 448;
 				break;

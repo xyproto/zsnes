@@ -113,15 +113,6 @@ else
 fi
 
 dnl - Various debug and optimization option checks
-case "$target" in
-  x86_64-*)
-    X64FIX="true"
-    ;;
-  *)
-    X64FIX="false"
-    ;;
-esac
-
 AM_ARCH_DETECT()
 
 AC_ARG_ENABLE(debug, [  --enable-debug          Build GDB friendly binary (zsnesd) ],debug=$enableval)
@@ -154,11 +145,6 @@ else
   AC_MSG_CHECKING(which cpu architecture to optimize for)
   if test x$ARCH_INFO = x ; then
     case "$target" in
-      x86_64-*-* | x86_64-*-*-*)
-        AC_MSG_RESULT(guessing x86-64)
-        CFLAGS="$CFLAGS -march=x86-64"
-        X64FIX="true"
-        ;;
       i686-*-*)
         AC_MSG_RESULT(guessing i686)
         CFLAGS="$CFLAGS -march=i686"
@@ -185,12 +171,6 @@ fi
 CXXFLAGS="$CFLAGS -fno-rtti"
 PSRFLAGS="-D__UNIXSDL__"
 
-if test x$X64FIX != xtrue; then
-  X64FIX=""
-else
-  X64FIX="	objcopy --input-target elf32-i386 --output-target elf64-x86-64 \$@ \$@"
-fi
-
 if test x$enable_jma != xno; then
   JMA_FILES="\${JMADIR}/7zlzma.o \${JMADIR}/crc32.o \${JMADIR}/iiostrm.o \${JMADIR}/inbyte.o \${JMADIR}/jma.o \${JMADIR}/lzma.o \${JMADIR}/lzmadec.o \${JMADIR}/winout.o \${JMADIR}/zsnesjma.o"
   ZC="$CXX"
@@ -214,7 +194,6 @@ AC_SUBST(NFLAGS)
 AC_SUBST(ZSNESEXE)
 AC_SUBST(GL_DRAW)
 AC_SUBST(JMA_FILES)
-AC_SUBST(X64FIX)
 AC_OUTPUT(Makefile)
 
 dnl - Info output
