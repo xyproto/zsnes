@@ -266,7 +266,7 @@ int main()
           if (strstr(flags, " sse2 "))
           {
             #if __GNUC__ > 3 || __GNUC_MINOR__ > 2
-            if (strstr(flags, " pni "))
+            if (strstr(flags, " pni ") && strcmp(cpu_family, "6"))
             {
               if (strstr(flags, " lm "))
               {
@@ -307,7 +307,17 @@ int main()
           }
           else
           {
-            cpu = "pentium3";
+            #if __GNUC__ > 3 || __GNUC_MINOR__ > 3
+            if (strstr(model_name, "Mobile"))
+            {
+              cpu = "pentium3m";
+            }
+            #endif
+
+            if (!cpu)
+            {
+              cpu = "pentium3";
+            }
           }
         }
         else
