@@ -550,19 +550,8 @@ if test x$enable_cpucheck != xno; then
       {
         fprintf(fp, "%s", cpu);
         fclose(fp);
+        return(0);
       }
-      else { return(1); }
-    }
-
-    if ((fp = fopen("conf.x64chk", "a")))
-    {
-      #ifdef __x86_64__
-      fputs("true", fp);
-      #else
-      fputs("false", fp);
-      #endif
-      fclose(fp);
-      return(0);
     }
 
     return(1);
@@ -572,9 +561,8 @@ if test x$enable_cpucheck != xno; then
   if test x$cpu_found = xyes; then
     AC_MSG_RESULT(found)
     ARCH_INFO=$(<conf.archchk)
-    X64FIX=$(<conf.x64chk)
     ifelse([$1], , :, [$1])
-    rm conf.archchk conf.x64chk
+    rm conf.archchk
   else
     AC_MSG_RESULT(not found)
     ifelse([$2], , :, [$2])
