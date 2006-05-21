@@ -139,21 +139,22 @@ static void display_help()
   put_line("         36 = 1600x1200 DS FULL    37 = 1680x1050 DR FULL");
 #endif
 #ifdef __UNIXSDL__
-  put_line("          0 = 256x224   R WIN        1 = 256x224  R FULL");
-  put_line("          2 = 512x448   DR WIN       3 = 512x448  DR FULL");
-  put_line("          4 = 640x480   DR FULL      5 = 800x600 DR FULL");
+  put_line("          0 = 256x224   R WIN        1 = 256x224   R FULL");
+  put_line("          2 = 512x448   DR WIN       3 = 512x448   DR FULL");
+  put_line("          4 = 640x480   DR FULL      5 = 800x600   DR FULL");
 #ifndef __OPENGL__
 #define VIDEO_MODE_COUNT 5
 #else
-#define VIDEO_MODE_COUNT 21
-  put_line("          6 = 256x224   OR  WIN      7 = 512x448   ODR WIN");
+#define VIDEO_MODE_COUNT 22
+  put_line("          6 = 256x224   OR WIN       7 = 512x448   ODR WIN");
   put_line("          8 = 640x480   ODS FULL     9 = 640x480   ODS WIN");
   put_line("         10 = 640x576   ODR WIN     11 = 768x672   ODR WIN");
   put_line("         12 = 800x600   ODS FULL    13 = 800x600   ODS WIN");
   put_line("         14 = 896x784   ODR WIN     15 = 1024x768  ODS FULL");
   put_line("         16 = 1024x768  ODS WIN     17 = 1024x896  ODR WIN");
   put_line("         18 = 1280x960  ODS FULL    19 = 1280x1024 ODR FULL");
-  put_line("         20 = 1600x1200 ODS FULL    21 = VARIABLE  ODS WIN");
+  put_line("         20 = 1600x1200 ODS FULL    21 = VARIABLE  ODR WIN");
+  put_line("         22 = VARIABLE  ODS WIN");
 #endif
 #endif
 #ifdef __MSDOS__
