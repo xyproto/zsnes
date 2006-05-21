@@ -25,7 +25,6 @@ EXTSYM cwinptr,mode7A,mode7B,mode7C,mode7D,mode7X0,mode7Y0,mode7set,vram,vrama
 EXTSYM xtravbuf,ngwleft,ngwleftb,mode7xpos,mode7ypos,mode7xrpos,mode7yrpos
 EXTSYM mode7xadder,mode7yadder,mode7hr,dcolortab,UnusedBitXor,UnusedBit,scrndis
 EXTSYM vidbright,prevbrightdc,Gendcolortable,mode7ab,mode7cd,BGMA,BG1SXl,BG1SYl
-EXTSYM bg1scrolx_m7,bg1scroly_m7
 
 %include "video/mode716.mac"
 

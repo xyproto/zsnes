@@ -24,7 +24,7 @@ EXTSYM mode7tab,winptrref,nglogicval,winlogicaval,curmosaicsz,curvidoffset
 EXTSYM cwinptr,domosaic,mode7A,mode7B,mode7C,mode7D,mode7X0,mode7Y0,mode7set
 EXTSYM vram,vrama,winon,xtravbuf,ngwinen,winbg1enval,BuildWindow,ngwintable
 EXTSYM ngcwinptr,domosaicng,pesimpng,mode7hr,BGMA,mode7ab,mode7cd,BG1SYl,BG1SXl
-EXTSYM bg1scrolx_m7,bg1scroly_m7,m7starty
+EXTSYM m7starty
 
 %include "video/mode7.mac"
 
