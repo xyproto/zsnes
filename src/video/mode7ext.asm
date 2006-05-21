@@ -449,7 +449,7 @@ NEWSYM drawmode7extbg
 ;**********************************************************
 
 .nextval3
-    test byte[mode7set],080h
+    test byte[mode7set],80h
     jnz near .norep
     jmp .nextval2
     ALIGN16

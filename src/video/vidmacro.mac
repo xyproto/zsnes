@@ -19,7 +19,7 @@
 
 
 EXTSYM OMBGTestVal,ngptrdat2,cachesingle4bng,ofshvaladd,ofsmtptrs,ofsmcptr2
-EXTSYM Testval
+EXTSYM Testval,m7starty
 
 ; makev16t macros
 
@@ -1366,11 +1366,11 @@ EXTSYM Testval
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
+    inc ax
     test byte[mode7set],02h
     jz .noflip
-    mov ax,261
-    sub ax,[curypos]
-    dec ax
+    neg ax
+    add ax,255
 .noflip
     mov byte[curmosaicsz],1
     test byte[mosaicon],%3
@@ -1385,7 +1385,8 @@ EXTSYM Testval
     xor edx,edx
     mul bx
 .nomos
-    add ax,%1
+    mov [m7starty],ax
+    mov ax,%1
     mov dx,%2
     call drawmode716b
 %endmacro

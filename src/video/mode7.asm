@@ -24,6 +24,7 @@ EXTSYM mode7tab,winptrref,nglogicval,winlogicaval,curmosaicsz,curvidoffset
 EXTSYM cwinptr,domosaic,mode7A,mode7B,mode7C,mode7D,mode7X0,mode7Y0,mode7set
 EXTSYM vram,vrama,winon,xtravbuf,ngwinen,winbg1enval,BuildWindow,ngwintable
 EXTSYM ngcwinptr,domosaicng,pesimpng,mode7hr,BGMA,mode7ab,mode7cd,BG1SYl,BG1SXl
+EXTSYM bg1scrolx_m7,bg1scroly_m7,m7starty
 
 %include "video/mode7.mac"
 
@@ -807,10 +808,11 @@ NEWSYM processmode7hires
     inc eax
     test byte[mode7set],02h
     jz .noflip
-    mov eax,261
+    mov eax,255
     sub eax,ebx
 .noflip
-    add ax,[BG1SYl+ebx*2+2]
+    mov [m7starty],ax
+    mov ax,[BG1SYl+ebx*2+2]
     add eax,ecx
 
     add esi,75036

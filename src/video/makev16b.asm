@@ -37,7 +37,7 @@ EXTSYM osm2dis,temp,tempcach,temptile,winptrref,xtravbuf,yadder,yrevadder
 EXTSYM vcache2ba,vcache4ba,vcache8ba,hirestiledat,res512switch,numwin,windowdata
 EXTSYM bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly,vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
-EXTSYM bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc
+EXTSYM bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc,bg1scrolx_m7,bg1scroly_m7
 
 %include "video/vidmacro.mac"
 
@@ -56,11 +56,11 @@ SECTION .text
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
+    inc ax
     test byte[mode7set],02h
     jz %%noflip
-    mov ax,261
-    sub ax,[curypos]
-    dec ax
+    neg ax
+    add ax,255
 %%noflip
     mov byte[curmosaicsz],1
     test byte[mosaicon],%3
@@ -75,7 +75,8 @@ SECTION .text
     xor edx,edx
     mul bx
 %%nomos
-    add ax,%1
+    mov [m7starty],ax
+    mov ax,%1
     mov dx,%2
     call drawmode716extbg
 %endmacro
@@ -573,7 +574,7 @@ NEWSYM processmode716b
     je near .noback0
 .nobackwin0
     mov byte[extbgdone],1
-    procmode716bextbg [bg1scroly],[bg1scrolx],1
+    procmode716bextbg [bg1scroly_m7],[bg1scrolx_m7],1
 .noback0
 
     ; do objects
@@ -614,7 +615,7 @@ NEWSYM processmode716b
     cmp byte[winon],0FFh
     je near .noback1
 .nobackwin1
-    procmode716b [bg1scroly],[bg1scrolx],1
+    procmode716b [bg1scroly_m7],[bg1scrolx_m7],1
 .noback1
 
     ; do objects
@@ -657,7 +658,7 @@ NEWSYM processmode716b
     je near .noback0b
 .nobackwin0b
     mov byte[extbgdone],1
-    procmode716bextbg [bg1scroly],[bg1scrolx],1
+    procmode716bextbg [bg1scroly_m7],[bg1scrolx_m7],1
 .noback0b
 
     ; mode 7 extbg
@@ -678,7 +679,7 @@ NEWSYM processmode716b
     cmp byte[winon],0FFh
     je near .noback2
 .nobackwin2
-    procmode716bextbg2 [bg1scroly],[bg1scrolx],1
+    procmode716bextbg2 [bg1scroly_m7],[bg1scrolx_m7],1
 .noback2
 
     ; do objects

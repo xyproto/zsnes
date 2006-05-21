@@ -33,6 +33,7 @@ EXTSYM sprsingle,cachetile2b,cachetile4b,cachetile8b,vram
 EXTSYM cachetile2b16x16,cachetile4b16x16,cachetile8b16x16,osm2dis,xtravbuf
 EXTSYM bg3ptr,bg3scrolx,bg3scroly,vidmemch4,ofsmcptr,ofsmady,ofsmadx,yposngom
 EXTSYM flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
+EXTSYM bg1scrolx_m7,bg1scroly_m7
 
 %include "video/vidmacro.mac"
 
@@ -75,10 +76,11 @@ SECTION .text
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
+    inc ax
     test byte[mode7set],02h
     jz %%noflip
-    mov ax,261
-    sub ax,[curypos]
+    neg ax
+    add ax,255
 %%noflip
     mov byte[curmosaicsz],1
     test byte[mosaicon],%3
@@ -97,7 +99,8 @@ SECTION .text
     mov dl,[mosaicsz]
     add ax,[MosaicYAdder+edx*2]
 %%nomos
-    add ax,%1
+    mov [m7starty],ax
+    mov ax,%1
     mov dx,%2
     call drawmode7
 %endmacro
@@ -106,10 +109,11 @@ SECTION .text
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
+    inc ax
     test byte[mode7set],02h
     jz %%noflip
-    mov ax,261
-    sub ax,[curypos]
+    neg ax
+    add ax,255
 %%noflip
     mov byte[curmosaicsz],1
     test byte[mosaicon],%3
@@ -128,7 +132,8 @@ SECTION .text
     mov dl,[mosaicsz]
     add ax,[MosaicYAdder+edx*2]
 %%nomos
-    add ax,%1
+    mov [m7starty],ax
+    mov ax,%1
     mov dx,%2
     call drawmode7extbg
 %endmacro
@@ -137,10 +142,11 @@ SECTION .text
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
+    inc ax
     test byte[mode7set],02h
     jz %%noflip
-    mov ax,261
-    sub ax,[curypos]
+    neg ax
+    add ax,255
 %%noflip
     mov byte[curmosaicsz],1
     test byte[mosaicon],%3
@@ -159,7 +165,8 @@ SECTION .text
     mov dl,[mosaicsz]
     add ax,[MosaicYAdder+edx*2]
 %%nomos
-    add ax,%1
+    mov [m7starty],ax
+    mov ax,%1
     mov dx,%2
     call drawmode7extbg2
 %endmacro
@@ -1750,7 +1757,7 @@ NEWSYM processmode7
     je near .noback0
 .nobackwin0
     mov byte[extbgdone],1
-    procmode7extbg [bg1scroly],[bg1scrolx],1
+    procmode7extbg [bg1scroly_m7],[bg1scrolx_m7],1
 .noback0
 
     ; do objects
@@ -1792,7 +1799,7 @@ NEWSYM processmode7
     cmp byte[winon],0FFh
     je near .noback1
 .nobackwin1
-    procmode7 [bg1scroly],[bg1scrolx],1
+    procmode7 [bg1scroly_m7],[bg1scrolx_m7],1
 .noback1
 
     ; do objects
@@ -1836,7 +1843,7 @@ NEWSYM processmode7
     je near .noback0b
 .nobackwin0b
     mov byte[extbgdone],1
-    procmode7extbg [bg1scroly],[bg1scrolx],1
+    procmode7extbg [bg1scroly_m7],[bg1scrolx_m7],1
 .noback0b
 
     test byte[interlval],40h
@@ -1854,7 +1861,7 @@ NEWSYM processmode7
     cmp byte[winon],0FFh
     je near .noback2
 .nobackwin2
-    procmode7extbg2 [bg1scroly],[bg1scrolx],1
+    procmode7extbg2 [bg1scroly_m7],[bg1scrolx_m7],1
 .noback2
 
     ; do objects

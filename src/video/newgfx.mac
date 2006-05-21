@@ -463,11 +463,12 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     mov eax,ebx
     test byte[mode7set],02h
     jz %%noflip
-    mov eax,261
+    mov eax,255
     sub eax,ebx
 %%noflip
     mov dx,[BG1SXl+ebx*2]
-    add ax,[BG1SYl+ebx*2]
+    mov [m7starty],ax
+    mov ax,[BG1SYl+ebx*2]
     mov [curvidoffset],esi
     pop ebx
     push eax
@@ -557,11 +558,12 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     mov eax,ebx
     test byte[mode7set],02h
     jz %%noflip
-    mov eax,261
+    mov eax,255
     sub eax,ebx
 %%noflip
     mov dx,[BG1SXl+ebx*2]
-    add ax,[BG1SYl+ebx*2]
+    mov [m7starty],ax
+    mov ax,[BG1SYl+ebx*2]
     mov [curvidoffset],esi
     push esi
     call drawmode7ngextbg
@@ -639,11 +641,12 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     mov eax,ebx
     test byte[mode7set],02h
     jz %%noflip
-    mov eax,261
+    mov eax,255
     sub eax,ebx
 %%noflip
     mov dx,[BG1SXl+ebx*2]
-    add ax,[BG1SYl+ebx*2]
+    mov [m7starty],ax
+    mov ax,[BG1SYl+ebx*2]
     mov [curvidoffset],esi
     push esi
     jmp %%drawb

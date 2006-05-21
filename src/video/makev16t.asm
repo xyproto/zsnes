@@ -42,6 +42,7 @@ EXTSYM yrevadder,vcache2ba,vcache4ba,vcache8ba,draw8x816boffset,osm2dis
 EXTSYM hirestiledat,res512switch,bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly
 EXTSYM vidmemch4,vram,ofsmcptr,ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr
 EXTSYM ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc
+EXTSYM bg1scrolx_m7,bg1scroly_m7
 
 %include "video/vidmacro.mac"
 
@@ -119,11 +120,11 @@ NEWSYM procmode716tsub
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
+    inc ax
     test byte[mode7set],02h
     jz .noflip
-    mov ax,261
-    sub ax,[curypos]
-    dec ax
+    neg ax
+    add ax,255
 .noflip
     mov byte[curmosaicsz],1
     test byte[mosaicon],1
@@ -138,8 +139,9 @@ NEWSYM procmode716tsub
     xor edx,edx
     mul bx
 .nomos
-    add ax,[bg1scroly]
-    mov dx,[bg1scrolx]
+    mov [m7starty],ax
+    mov ax,[bg1scroly_m7]
+    mov dx,[bg1scrolx_m7]
     call drawmode716t
 .noback1
     ret
@@ -166,11 +168,11 @@ NEWSYM procmode716tsubextbg
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
+    inc ax
     test byte[mode7set],02h
     jz .noflip
-    mov ax,261
-    sub ax,[curypos]
-    dec ax
+    neg ax
+    add ax,255
 .noflip
     mov byte[curmosaicsz],1
     test byte[mosaicon],1
@@ -185,8 +187,9 @@ NEWSYM procmode716tsubextbg
     xor edx,edx
     mul bx
 .nomos
-    add ax,[bg1scroly]
-    mov dx,[bg1scrolx]
+    mov [m7starty],ax
+    mov ax,[bg1scroly_m7]
+    mov dx,[bg1scrolx_m7]
     mov byte[extbgdone],1
     call drawmode716extbg
 .noback1
@@ -214,11 +217,11 @@ NEWSYM procmode716tsubextbgb
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
+    inc ax
     test byte[mode7set],02h
     jz .noflip
-    mov ax,261
-    sub ax,[curypos]
-    dec ax
+    neg ax
+    add ax,255
 .noflip
     mov byte[curmosaicsz],1
     test byte[mosaicon],1
@@ -233,8 +236,9 @@ NEWSYM procmode716tsubextbgb
     xor edx,edx
     mul bx
 .nomos
-    add ax,[bg1scroly]
-    mov dx,[bg1scrolx]
+    mov [m7starty],ax
+    mov ax,[bg1scroly_m7]
+    mov dx,[bg1scrolx_m7]
     mov byte[extbgdone],1
     call drawmode716textbg
 .noback1
@@ -292,11 +296,11 @@ NEWSYM procmode716tmain
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
+    inc ax
     test byte[mode7set],02h
     jz .noflip
-    mov ax,261
-    sub ax,[curypos]
-    dec ax
+    neg ax
+    add ax,255
 .noflip
     mov byte[curmosaicsz],1
     test byte[mosaicon],1
@@ -311,8 +315,9 @@ NEWSYM procmode716tmain
     xor edx,edx
     mul bx
 .nomos
-    add ax,[bg1scroly]
-    mov dx,[bg1scrolx]
+    mov [m7starty],ax
+    mov ax,[bg1scroly_m7]
+    mov dx,[bg1scrolx_m7]
     test byte[scaddset],02h
     jz .noscrnadd
     test word[scrnon+1],01h
@@ -348,11 +353,11 @@ NEWSYM procmode716tmainextbg
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
+    inc ax
     test byte[mode7set],02h
     jz .noflip
-    mov ax,261
-    sub ax,[curypos]
-    dec ax
+    neg ax
+    add ax,255
 .noflip
     mov byte[curmosaicsz],1
     test byte[mosaicon],1
@@ -367,8 +372,9 @@ NEWSYM procmode716tmainextbg
     xor edx,edx
     mul bx
 .nomos
-    add ax,[bg1scroly]
-    mov dx,[bg1scrolx]
+    mov [m7starty],ax
+    mov ax,[bg1scroly_m7]
+    mov dx,[bg1scrolx_m7]
     test byte[scaddtype],01h
     jz .notransp
     mov byte[extbgdone],1
@@ -400,11 +406,11 @@ NEWSYM procmode716tmainextbgb
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
+    inc ax
     test byte[mode7set],02h
     jz .noflip
-    mov ax,261
-    sub ax,[curypos]
-    dec ax
+    neg ax
+    add ax,255
 .noflip
     mov byte[curmosaicsz],1
     test byte[mosaicon],1
@@ -419,8 +425,9 @@ NEWSYM procmode716tmainextbgb
     xor edx,edx
     mul bx
 .nomos
-    add ax,[bg1scroly]
-    mov dx,[bg1scrolx]
+    mov [m7starty],ax
+    mov ax,[bg1scroly_m7]
+    mov dx,[bg1scrolx_m7]
     test byte[scaddtype],01h
     jz .notransp
     mov byte[extbgdone],1
@@ -450,11 +457,11 @@ NEWSYM procmode716tmainextbg2
     xor eax,eax
     xor edx,edx
     mov ax,[curypos]
+    inc ax
     test byte[mode7set],02h
     jz .noflip
-    mov ax,261
-    sub ax,[curypos]
-    dec ax
+    neg ax
+    add ax,255
 .noflip
     mov byte[curmosaicsz],1
     test byte[mosaicon],1
@@ -469,8 +476,9 @@ NEWSYM procmode716tmainextbg2
     xor edx,edx
     mul bx
 .nomos
-    add ax,[bg1scroly]
-    mov dx,[bg1scrolx]
+    mov [m7starty],ax
+    mov ax,[bg1scroly_m7]
+    mov dx,[bg1scrolx_m7]
     test byte[scaddtype],01h
     jz .notransp
     call drawmode716textbg2

@@ -93,6 +93,11 @@ EXTSYM pesimpng
     mov esi,winbg1enval
 %endmacro
 
+SECTION .data
+NEWSYM m7starty, dw 0
+
+SECTION .text
+
 %macro CLIP 1
     test word[%1],2000h
     jz %%zero
@@ -124,13 +129,10 @@ EXTSYM pesimpng
     test bx,0001000000000000b
     jz .nonega
     or bx,1110000000000000b
-    or word[mode7X0],1110000000000000b
 .nonega
     sub [mcxloc],bx
     CLIP mcxloc
     mov bx,ax
-    ;mov bx,[bg1scroly]         ;Alternative to get IOG/IOT working
-                                ;But breaks Pilotwings and Super Mario Kart
 
     and bx,0001111111111111b    ; 13 -> 16 bit signed value
     test bx,0001000000000000b
@@ -143,28 +145,49 @@ EXTSYM pesimpng
     test bx,0001000000000000b
     jz .nonegd
     or bx,1110000000000000b
-    or word[mode7Y0],1110000000000000b
 .nonegd
     sub word[mcyloc],bx
     CLIP mcyloc
-    ;sub ax,[bg1scroly]         ;Alternative to get IOG/IOT working
-    ;add [mcyloc],ax            ;But breaks Pilotwings and Super Mario Kart
 
     ; 2.) Find position at scaled y, centered x at SCX=X0-(cy*C),SCY=Y0-(cy*D)
 
     movsx eax,word[mode7B]
     movsx ebx,word[mcyloc]
     imul eax,ebx
+    and eax,~63
     mov [mmode7xpos],eax
     mov bx,[mode7X0]
+    and bx,0001111111111111b    ; 13 -> 16 bit signed value
+    test bx,0001000000000000b
+    jz .nonegablah
+    or bx,1110000000000000b
+.nonegablah
     add [mmode7xpos+1],bx
+
+    movsx eax,word[mode7B]
+    movzx ebx,word[m7starty]
+    imul eax,ebx
+    and eax,~63
+    add [mmode7xpos],eax
 
     movsx ebx,word[mcyloc]
     movsx eax,word[mode7D]
     imul eax,ebx
+    and eax,~63
     mov [mmode7ypos],eax
     mov bx,[mode7Y0]
+    and bx,0001111111111111b    ; 13 -> 16 bit signed value
+    test bx,0001000000000000b
+    jz .nonegdblah
+    or bx,1110000000000000b
+.nonegdblah
     add [mmode7ypos+1],bx
+
+    movsx eax,word[mode7D]
+    movzx ebx,word[m7starty]
+    imul eax,ebx
+    and eax,~63
+    add [mmode7ypos],eax
 
     ; 3.) Find left scaled location : SCX=SCX-(cx*A),SCY=SCY-(cx*B)
 
@@ -172,6 +195,7 @@ EXTSYM pesimpng
     movsx eax,word[mode7A]
     mov [mmode7xadder],eax
     imul eax,ebx
+    and eax,~63
     ;neg eax
     add [mmode7xpos],eax
 
@@ -179,8 +203,10 @@ EXTSYM pesimpng
     movsx ebx,word[mcxloc]
     neg eax
     mov [mmode7yadder],eax
+    neg eax
     imul eax,ebx
-    sub [mmode7ypos],eax
+    and eax,~63
+    add [mmode7ypos],eax
 
     test byte[mode7set],1
     jz .nohflip
