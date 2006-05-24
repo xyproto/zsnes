@@ -1134,7 +1134,7 @@ void getcfg()
                     i++;
                   }
                   while ((unsigned)i < _strlenb);
-                  if ((_per2exec<150 && _per2exec>50) && !no_save)
+                  if ((_per2exec<=150 && _per2exec>=50) && !no_save)
                   {
                     per2exec = _per2exec;
                     cfgper2exec = _per2exec;
