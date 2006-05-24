@@ -650,17 +650,19 @@ section .text
 ; BG1 horizontal scroll register
 reg210Dw:
     UpdateScrollReg bg1scrolx
-    mov bl,[m7byte]
-    mov [bg1scrolx_m7],bx
-    mov [m7byte],al
+    mov bx,[bg1scrolx_m7]
+;    mov bl,[m7byte]
+;    mov [bg1scrolx_m7],bx
+;    mov [m7byte],al
     ret
 
 ; BG1 vertical scroll register
 reg210Ew:
     UpdateScrollReg bg1scroly
-    mov bl,[m7byte]
-    mov [bg1scroly_m7],bx
-    mov [m7byte],al
+    mov bx,[bg1scroly_m7]
+;    mov bl,[m7byte]
+;    mov [bg1scroly_m7],bx
+;    mov [m7byte],al
     ret
 
 ; BG2 horizontal scroll register
@@ -978,10 +980,11 @@ NEWSYM m7byte, db 0
 SECTION .text
 
 %macro Mode7Regs 1
-    mov bl,[m7byte]
+    mov bl,[%1+1]
+    ;mov bl,[m7byte]
     mov [%1],bl
     mov [%1+1],al
-    mov [m7byte],al
+    ;mov [m7byte],al
 %endmacro
 
 ; COS (COSINE) rotate angle / X Expansion
