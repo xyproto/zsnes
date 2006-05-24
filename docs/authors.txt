@@ -2,16 +2,20 @@
 The ZSNES Team
 --------------
 
-zsKnight <zsknight@zsnes.com>
-_Demo_ <z_demo_z@users.sourceforge.net>
+zsKnight
+_Demo_
 pagefault
+Nach
 
 ------------------
 Assistant Coders
 ------------------
 pharos
 stainless
-Nach
+grinvader
+Jonas Quinn
+ipher
+
 
 ------------------
 Additional Authors
@@ -27,8 +31,6 @@ MKendora
 hpsolo
 aaronl
 Diablo-D3
-grinvader
-ipher
 
 -------------
 Miscellaneous
