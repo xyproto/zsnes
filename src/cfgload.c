@@ -429,7 +429,7 @@ void DOScreatenewcfg()
   SAVE_LINE(buffer);
 
 #ifdef __WIN32__
-  WRITE_LINE("; Video Mode, 0 - 32\r\n");
+  WRITE_LINE("; Video Mode, 0 - 40\r\n");
   WRITE_LINE(";   0 = 256x224   R WIN       1 = 256x224   R FULL\r\n");
   WRITE_LINE(";   2 = 512x448   R WIN       3 = 512x448   DR WIN\r\n");
   WRITE_LINE(";   4 = 640x480   S WIN       5 = 640x480   DS WIN\r\n");
@@ -448,7 +448,12 @@ void DOScreatenewcfg()
   WRITE_LINE(";  30 = 1280x1024 S FULL     31 = 1280x1024 DR FULL\r\n");
   WRITE_LINE(";  32 = 1280x1024 DS FULL    33 = 1600x1200 S WIN\r\n");
   WRITE_LINE(";  34 = 1600x1200 DS WIN     35 = 1600x1200 DR FULL\r\n");
-  WRITE_LINE(";  36 = 1600x1200 DS FULL    37 = 1680x1050 DR FULL\r\n\r\n");
+  WRITE_LINE(";  36 = 1600x1200 DS FULL    37 = CUSTOM    DS WIN\r\n");
+  WRITE_LINE(";  38 = CUSTOM    DS FULL    39 = CUSTOM    S WIN\r\n");
+  WRITE_LINE(";  40 = CUSTOM    S FULL\r\n");
+  WRITE_LINE(";  Custom resolutions must be defined in zguicfgw.dat\r\n");
+  WRITE_LINE(";  Look for CustomResX and CustomResY and modify those values\r\n");
+  WRITE_LINE(";  Valid resolutions are those supported by your system!\r\n\r\n");
   sprintf(buffer, "VideoModeWin = %d\r\n\r\n", cfgcvidmode);
   SAVE_LINE(buffer);
 #endif
@@ -589,7 +594,7 @@ void DOScreatenewcfg()
 #ifdef __UNIXSDL__
     sprintf(buffer, "GameDirectory = %s\r\n\r\n", LoadDir);
 #else
-    sprintf(buffer, "GameDirectory = %c:\\%s\r\n", (char) (*LoadDrive + 65), LoadDir);
+    sprintf(buffer, "GameDirectory = %c:\\%s\r\n\r\n", (char) (*LoadDrive + 65), LoadDir);
 #endif
   }
   else
@@ -597,10 +602,11 @@ void DOScreatenewcfg()
 #ifdef __UNIXSDL__
     sprintf(buffer, "GameDirectory = %s\r\n\r\n", LoadDirB);
 #else
-    sprintf(buffer, "GameDirectory = %c:\\%s\r\n", (char) (*LoadDriveB + 65), LoadDirB);
+    sprintf(buffer, "GameDirectory = %c:\\%s\r\n\r\n", (char) (*LoadDriveB + 65), LoadDirB);
 #endif
   }
   SAVE_LINE(buffer);
+
   fclose(fp);
 }
 

@@ -1853,6 +1853,9 @@ char WinName[]={"ZSNESW\0"};
 extern void NTSCFilterInit();
 extern void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char* buffer);
 
+extern "C" unsigned int CustomResX;
+extern "C" unsigned int CustomResY;
+
 void initwinvideo(void)
 {
    WINDOWPLACEMENT wndpl;
@@ -1958,8 +1961,11 @@ void initwinvideo(void)
          WindowHeight=1200;
          break;
       case 37:
-         WindowWidth=1680;
-         WindowHeight=1050;
+      case 38:
+      case 39:
+      case 40:
+         WindowWidth=CustomResX;
+         WindowHeight=CustomResY;
          break;
       default:
          WindowWidth=256;

@@ -117,7 +117,7 @@ static void display_help()
   put_line("  -u      Force PAL timing");
   put_line("  -v #    Select Video Mode :");
 #ifdef __WIN32__
-#define VIDEO_MODE_COUNT 37
+#define VIDEO_MODE_COUNT 40
   put_line("          0 = 256x224   R WIN       1 = 256x224   R FULL");
   put_line("          2 = 512x448   R WIN       3 = 512x448   DR WIN");
   put_line("          4 = 640x480   S WIN       5 = 640x480   DS WIN");
@@ -136,7 +136,9 @@ static void display_help()
   put_line("         30 = 1280x1024 S FULL     31 = 1280x1024 DR FULL");
   put_line("         32 = 1280x1024 DS FULL    33 = 1600x1200 S WIN");
   put_line("         34 = 1600x1200 DS WIN     35 = 1600x1200 DR FULL");
-  put_line("         36 = 1600x1200 DS FULL    37 = 1680x1050 DR FULL");
+  put_line("         36 = 1600x1200 DS FULL    37 = CUSTOM    DS WIN");
+  put_line("         38 = CUSTOM    DS FULL    39 = CUSTOM    S WIN");
+  put_line("         40 = CUSTOM    S FULL");
 #endif
 #ifdef __UNIXSDL__
   put_line("          0 = 256x224   R WIN        1 = 256x224   R FULL");

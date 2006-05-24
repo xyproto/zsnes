@@ -362,3 +362,5 @@ NEWSYM NTSCBright, db 0
 NEWSYM NTSCSharp, db 0
 NEWSYM NTSCWarp, db 0
 NEWSYM NTSCRef, db 0
+NEWSYM CustomResX, dd 640
+NEWSYM CustomResY, dd 480
