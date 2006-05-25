@@ -260,17 +260,14 @@ void BackupCVFrame()
 
   if (RewindPosPassed)
   {
-    EarliestRewindPos = (EarliestRewindPos != AllocatedRewindStates-1) ? EarliestRewindPos+1 : 0;
+    EarliestRewindPos = (EarliestRewindPos+1)%AllocatedRewindStates;
     RewindPosPassed = false;
   }
 //  printf("Backing up in #%u, earliest: #%u, allocated: %u\n", LatestRewindPos, EarliestRewindPos, AllocatedRewindStates);
 
-  LatestRewindPos = (LatestRewindPos != AllocatedRewindStates-1) ? LatestRewindPos+1 : 0;
+  LatestRewindPos = (LatestRewindPos+1)%AllocatedRewindStates;
 
-  if (LatestRewindPos == EarliestRewindPos)
-  {
-    RewindPosPassed = true;
-  }
+  if (LatestRewindPos == EarliestRewindPos) { RewindPosPassed = true; }
 
   RewindTimer = ActualRewindFrames;
   DblRewTimer += (DblRewTimer) ? 0 : ActualRewindFrames;
@@ -323,7 +320,6 @@ void RestoreCVFrame()
   RewindTimer = ActualRewindFrames;
   DblRewTimer = 2*ActualRewindFrames;
 }
-
 
 void SetupRewindBuffer()
 {
