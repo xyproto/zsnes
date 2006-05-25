@@ -1503,17 +1503,6 @@ NEWSYM initsnes
     ret
 
 .lorom48
-    mov byte[cycpb268],94
-    mov byte[cycpb358],94
-    mov byte[cycpbl2],94
-    mov byte[cycpblt2],94
-    mov byte[cycpbl],94
-    mov byte[cycpblt],94
-    mov byte[opexec268],183
-    mov byte[opexec358],187
-    mov byte[opexec268cph],30
-    mov byte[opexec358cph],30
-
     mov edi,memtabler8+40h*4
     mov ecx,30h
     mov eax,memaccessbankr848mb
