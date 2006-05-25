@@ -147,7 +147,7 @@ static void display_help()
 #ifndef __OPENGL__
 #define VIDEO_MODE_COUNT 5
 #else
-#define VIDEO_MODE_COUNT 22
+#define VIDEO_MODE_COUNT 23
   put_line("          6 = 256x224   OR WIN       7 = 512x448   ODR WIN");
   put_line("          8 = 640x480   ODS FULL     9 = 640x480   ODS WIN");
   put_line("         10 = 640x576   ODR WIN     11 = 768x672   ODR WIN");
@@ -156,7 +156,7 @@ static void display_help()
   put_line("         16 = 1024x768  ODS WIN     17 = 1024x896  ODR WIN");
   put_line("         18 = 1280x960  ODS FULL    19 = 1280x1024 ODR FULL");
   put_line("         20 = 1600x1200 ODS FULL    21 = VARIABLE  ODR WIN");
-  put_line("         22 = VARIABLE  ODS WIN");
+  put_line("         22 = VARIABLE  ODS WIN     23 = CUSTOM    OD  FULL");
 #endif
 #endif
 #ifdef __MSDOS__

@@ -88,6 +88,9 @@ extern BYTE GUIHQ3X[];
 extern BYTE GUIHQ4X[];
 extern BYTE GUIRESIZE[];
 
+unsigned int CustomResX;
+unsigned int CustomResY;
+
 /* JOYSTICK AND KEYBOARD INPUT */
 SDL_Joystick *JoystickInput[5];
 unsigned int AxisOffset[5] = {256 + 128 + 64};	// per joystick offsets in
@@ -908,6 +911,10 @@ void initwinvideo(void)
 			case 20:
 				WindowWidth = 1600;
 				WindowHeight = 1200;
+				break;
+			case 23: //Custom
+				WindowWidth = CustomResX;
+				WindowHeight = CustomResY;
 				break;
 		}
 		adjustMouseXScale();

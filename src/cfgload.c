@@ -459,7 +459,7 @@ void DOScreatenewcfg()
 #endif
 #ifdef __UNIXSDL__
 #ifdef __OPENGL__
-  WRITE_LINE("; Video Mode, 0 - 22\r\n");
+  WRITE_LINE("; Video Mode, 0 - 23\r\n");
 #else
   WRITE_LINE("; Video Mode, 0 - 5\r\n");
 #endif
@@ -475,7 +475,7 @@ void DOScreatenewcfg()
   WRITE_LINE(";  16 = 1024x768  ODS WIN     17 = 1024x896  ODR WIN\r\n");
   WRITE_LINE(";  18 = 1280x960  ODS FULL    19 = 1280x1024 ODS FULL\r\n");
   WRITE_LINE(";  20 = 1600x1200 ODR FULL    21 = VARIABLE  ODR WIN\r\n");
-  WRITE_LINE(";  22 = VARIABLE  ODS WIN\r\n");
+  WRITE_LINE(";  22 = VARIABLE  ODS WIN     23 = CUSTOM    OD FULL\r\n");
 #endif
   sprintf(buffer, "\r\nVideoModeLin = %d\r\n\r\n", cfgcvidmode);
   SAVE_LINE(buffer);
