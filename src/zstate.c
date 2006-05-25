@@ -628,6 +628,7 @@ void statesaver()
           break;
         case '9':
           fnamest[statefileloc] = 't';
+        case 's': // ZSS state
           break;
         default:
           fnamest[statefileloc]++;
