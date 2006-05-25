@@ -68,6 +68,7 @@ NEWSYM tempebp, dd 0
 NEWSYM RewindTimer, dd 0
 NEWSYM BackState, db 1
 NEWSYM BackStateSize, dd 6
+NEWSYM DblRewTimer, dd 0
 SECTION .text
 
 NEWSYM ProcessRewind
@@ -101,6 +102,7 @@ NEWSYM UpdateRewind
     cmp dword[KeyRewind],0
     je .norewinds
 
+    dec dword[DblRewTimer]
     dec dword[RewindTimer]
     jnz .checkrewind
 
