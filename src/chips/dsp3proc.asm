@@ -24,8 +24,8 @@ EXTSYM regaccessbankr16,regaccessbankr8,regaccessbankw16,regaccessbankw8
 SECTION .text
 
 %macro RouteAccess 1
-    cmp ecx,08000h
-    jb %1
+    test ecx,8000h
+    jz %1
 %endmacro
 
 NEWSYM DSP3Read8b

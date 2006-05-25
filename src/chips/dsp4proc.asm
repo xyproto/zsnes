@@ -24,11 +24,9 @@ EXTSYM regaccessbankr16,regaccessbankr8,regaccessbankw16,regaccessbankw8
 SECTION .text
 
 %macro RouteAccess 1
-    test ecx,08000h
-    jnz .dsp4area
-    jmp %1
-.dsp4area
-    test ecx,04000h
+    test ecx,8000h
+    jz %1
+    test ecx,4000h
     jz .dsp4continue
     ret
 .dsp4continue
