@@ -650,7 +650,7 @@ section .text
 ; BG1 horizontal scroll register
 reg210Dw:
     UpdateScrollReg bg1scrolx
-    mov bx,[bg1scrolx_m7]
+    mov [bg1scrolx_m7],bx
 ;    mov bl,[m7byte]
 ;    mov [bg1scrolx_m7],bx
 ;    mov [m7byte],al
@@ -659,7 +659,7 @@ reg210Dw:
 ; BG1 vertical scroll register
 reg210Ew:
     UpdateScrollReg bg1scroly
-    mov bx,[bg1scroly_m7]
+    mov [bg1scroly_m7],bx
 ;    mov bl,[m7byte]
 ;    mov [bg1scroly_m7],bx
 ;    mov [m7byte],al
