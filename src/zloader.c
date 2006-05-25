@@ -136,8 +136,8 @@ static void display_help()
   put_line("         30 = 1280x1024 S FULL     31 = 1280x1024 DR FULL");
   put_line("         32 = 1280x1024 DS FULL    33 = 1600x1200 S WIN");
   put_line("         34 = 1600x1200 DS WIN     35 = 1600x1200 DR FULL");
-  put_line("         36 = 1600x1200 DS FULL    37 = CUSTOM    DS WIN");
-  put_line("         38 = CUSTOM    DS FULL    39 = CUSTOM    S WIN");
+  put_line("         36 = 1600x1200 DS FULL    37 = CUSTOM    D WIN");
+  put_line("         38 = CUSTOM    DS FULL    39 = CUSTOM      WIN");
   put_line("         40 = CUSTOM    S FULL");
 #endif
 #ifdef __UNIXSDL__

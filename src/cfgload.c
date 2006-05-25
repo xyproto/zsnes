@@ -448,8 +448,8 @@ void DOScreatenewcfg()
   WRITE_LINE(";  30 = 1280x1024 S FULL     31 = 1280x1024 DR FULL\r\n");
   WRITE_LINE(";  32 = 1280x1024 DS FULL    33 = 1600x1200 S WIN\r\n");
   WRITE_LINE(";  34 = 1600x1200 DS WIN     35 = 1600x1200 DR FULL\r\n");
-  WRITE_LINE(";  36 = 1600x1200 DS FULL    37 = CUSTOM    DS WIN\r\n");
-  WRITE_LINE(";  38 = CUSTOM    DS FULL    39 = CUSTOM    S WIN\r\n");
+  WRITE_LINE(";  36 = 1600x1200 DS FULL    37 = CUSTOM    D WIN\r\n");
+  WRITE_LINE(";  38 = CUSTOM    DS FULL    39 = CUSTOM      WIN\r\n");
   WRITE_LINE(";  40 = CUSTOM    S FULL\r\n");
   WRITE_LINE(";  Custom resolutions must be defined in zguicfgw.dat\r\n");
   WRITE_LINE(";  Look for CustomResX and CustomResY and modify those values\r\n");
@@ -476,6 +476,8 @@ void DOScreatenewcfg()
   WRITE_LINE(";  18 = 1280x960  ODS FULL    19 = 1280x1024 ODS FULL\r\n");
   WRITE_LINE(";  20 = 1600x1200 ODR FULL    21 = VARIABLE  ODR WIN\r\n");
   WRITE_LINE(";  22 = VARIABLE  ODS WIN     23 = CUSTOM    OD FULL\r\n");
+  WRITE_LINE(";  Custom resolutions must be defined in zguicfgl.dat\r\n");
+  WRITE_LINE(";  Look for CustomResX and CustomResY and modify those values\r\n");
 #endif
   sprintf(buffer, "\r\nVideoModeLin = %d\r\n\r\n", cfgcvidmode);
   SAVE_LINE(buffer);
