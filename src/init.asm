@@ -71,13 +71,10 @@ EXTSYM LoadDir,popdir,pushdir
 SECTION .data
 NEWSYM regsbackup, times 3019 db 0
 NEWSYM forceromtype, db 0
-NEWSYM loadedfromgui, db 0
 NEWSYM bgfixer, db 0
 NEWSYM bgfixer2, db 0
-NEWSYM ReInitLength, dd 0
 NEWSYM ForceNewGfxOff, dd 0
 NEWSYM SfxAC, db 0
-blah times 450 db 0
 ; FIX STATMAT
 NEWSYM autoloadstate, db 0        ; auto load state slot number
 NEWSYM autoloadmovie, db 0
@@ -120,7 +117,6 @@ NEWSYM init
     mov al,[cfgreinittime]
     mov ebx,50
     mul ebx
-    mov [ReInitLength],eax
 
     xor eax,eax
     mov al,[romtype]
@@ -224,12 +220,8 @@ NEWSYM init
     ; above (by placing two digits in the extension). This is so
     ; as not to break any other code later on which depends
     ; on it being present.
-  mov ebx,[statefileloc]
-%ifdef __UNIXSDL__
+    mov ebx,[statefileloc]
     mov word[fnamest+ebx-1],'st'
-%else
-    mov word[fnamest+ebx-1],'ST'
-%endif
 
 .noautoloadstate
 
@@ -2322,7 +2314,6 @@ NEWSYM loadfileGUI
 
     mov byte[TextFile], 0
     mov dword[MessageOn],0
-    mov byte[loadedfromgui],1
     mov byte[yesoutofmemory],0
     mov byte[.fail],0
     mov byte[IPSPatched],0
