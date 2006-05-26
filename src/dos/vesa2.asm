@@ -22,7 +22,10 @@
 
 EXTSYM DosExit,ZSNESBase,Change_Dir,PrintStr,newengen,HalfTransB,HalfTransC
 EXTSYM InitDrive,InitDir,fulladdtab,UnusedBit,HalfTrans,UnusedBitXor
-EXTSYM ngrposng,nggposng,ngbposng,Init_2xSaIMMX
+EXTSYM ngrposng,nggposng,ngbposng
+%ifdef __MSDOS__
+EXTSYM Init_2xSaIMMX
+%endif
 
 SECTION .data
 ; add 0214h video mode

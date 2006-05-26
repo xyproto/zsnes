@@ -1,3 +1,22 @@
+/*
+Copyright (C) 1997-2006 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+
+http://www.zsnes.com
+http://sourceforge.net/projects/zsnes
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+version 2 as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
 
 #define DIRECTINPUT_VERSION 0x0800
 #define DIRECTSOUND_VERSION 0x0800
@@ -66,9 +85,9 @@ ASM_END
 //Next is not really special either
 #define ASM_CALL(func) ASM_COMMAND(call func)
 //Using this weird style because of MSVCs bad parsing
-#define asm_call(func) _asm pushad \
+#define asm_call(func) { _asm pushad \
 _asm call func \
-_asm popad
+_asm popad };
 
 #endif
 
@@ -373,12 +392,14 @@ void DrawScreen()
    }
 }
 
-extern "C" void MultiMouseInit();
-extern "C" void MultiMouseShutdown();
+extern "C" {
+extern void MultiMouseInit();
+extern void MultiMouseShutdown();
 extern BYTE device1,device2;
 extern BYTE GUIOn;
 extern BYTE GUIOn2;
 DWORD InputEn=0;
+}
 
 BOOL InputAcquire(void)
 {
@@ -514,10 +535,7 @@ extern "C" void createnewcfg(void);
 
 void ExitFunction()
 {
-   if (GUIOn2 == 0)
-   {
    asm_call(SaveSramData);
-   }
    asm_call(GUISaveVars);
    asm_call(createnewcfg);
 
