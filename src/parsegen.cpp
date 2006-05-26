@@ -1170,7 +1170,10 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
 
     if (all_spaces(line) && config_comment)
     {
-      variable::config_data.add_comment(config_comment);
+      if (ifs.empty() || ifs.top())
+      {
+        variable::config_data.add_comment(config_comment);
+      }
       continue;
     }
 
