@@ -47,7 +47,7 @@ extern unsigned char KitchenSync, Force60hz;
 extern unsigned char Palette0, pl1contrl, pl2contrl, MMXSupport, Force8b, V8Mode,
        ForcePal, GUIClick, MouseDis, MusicRelVol, ScreenScale, SoundQuality,
        StereoSound, antienab, cvidmode, debugdisble, debugger, enterpress, vsyncon,
-       DisplayS, SnowOn, Triplebufen, DSPDisable, frameskip, gammalevel, guioff,
+       DisplayS, Triplebufen, DSPDisable, frameskip, gammalevel, guioff,
        romtype, per2exec, scanlines, soundon, spcon, showallext, autoloadstate,
        smallscreenon, autoloadmovie, ZMVZClose, ZMVRawDump, HacksDisable;
 
@@ -112,7 +112,6 @@ static void display_help()
   put_line("             4 = 16000Hz 5 = 32000Hz 6 = 48000Hz");
   put_line("  -s      Enable SPC700/DSP emulation (Sound)");
   put_line("  -sa     Show all extensions in GUI (*.*)");
-  put_line("  -sn     Enable Snowy GUI Background");
   put_line("  -t      Force NTSC timing");
   put_line("  -u      Force PAL timing");
   put_line("  -v #    Select Video Mode :");
@@ -502,11 +501,6 @@ static void handle_params(int argc, char *argv[])
         else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'a') //Show all extensions in GUI
         {
           showallext = 1;
-        }
-
-        else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'n') //Enable Snowy GUI Background
-        {
-          SnowOn = 1;
         }
 
         else if (tolower(argv[i][1]) == 'v' && argv[i][2] == '8') //V8 Mode

@@ -72,7 +72,6 @@ SECTION .data
 NEWSYM regsbackup, times 3019 db 0
 NEWSYM forceromtype, db 0
 NEWSYM loadedfromgui, db 0
-NEWSYM SnowOn, db 0
 NEWSYM bgfixer, db 0
 NEWSYM bgfixer2, db 0
 NEWSYM ReInitLength, dd 0
