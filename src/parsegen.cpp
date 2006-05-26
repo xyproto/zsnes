@@ -1162,7 +1162,10 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
 
     if (all_spaces(line))
     {
-      output_parser_comment(c_stream, parser_comment);
+      if (ifs.empty() || ifs.top())
+      {
+        output_parser_comment(c_stream, parser_comment);
+      }
       continue;
     }
 
