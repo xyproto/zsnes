@@ -106,7 +106,7 @@ static void display_help()
   put_line("  -n #    Enable scanlines (when available)");
   put_line("          Where # is: 1 = full, 2 = 25%, 3 = 50%");
   put_line("  -om     Enable MMX support (when available)");
-  put_line("  -p #    Percentage of instructions to execute [50..120]");
+  put_line("  -p #    Percentage of instructions to execute [50..150]");
   put_line("  -r #    Set Sampling Sound Blaster Sampling Rate & Bit :");
   put_line("             0 = 8000Hz  1 = 11025Hz 2 = 22050Hz 3 = 44100Hz");
   put_line("             4 = 16000Hz 5 = 32000Hz 6 = 48000Hz");
