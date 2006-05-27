@@ -46,29 +46,14 @@ EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
 EXTSYM SB_blank,vsyncon,Triplebufen,granadd
 %endif
 
-SECTION .bss
-NEWSYM ScreenScale, resb 1        ; If horizontal is scaled or not
-NEWSYM TempDebugV, resw 1       ; Temporary Debugging variable
-SECTION .text
-
-%macro MMXStuff 0
-%%1
-    movq mm0,[esi]
-    movq [es:edi],mm0
-    movq mm1,[esi+8]
-    movq [es:edi+8],mm1
-    add esi,16
-    add edi,16
-    dec ecx
-    jnz %%1
-%endmacro
-
-SECTION .text
-
 %ifdef __MSDOS__
 %include "video/2xsaimmx.inc"
 %endif
 %include "video/copyvid.inc"
+
+SECTION .bss
+NEWSYM ScreenScale, resb 1        ; If horizontal is scaled or not
+SECTION .text
 
 ;*******************************************************
 ; ShowVideo                   Processes & displays video
@@ -173,7 +158,7 @@ NEWSYM processmouse2
     mov [mousebuttons],bx
     cmp byte[device2],2
     jne .ss
-     cmp byte[pressed+13],0
+    cmp byte[pressed+13],0
     je .noautosw
     cmp byte[ssautoswb],1
     je .ss
@@ -767,72 +752,6 @@ NEWSYM outputchar16b5x5
     pop edi
     ret
 
-NEWSYM outputchar16b5x52
-    push edi
-    push esi
-    push eax
-    mov edi,GUIFontData
-    xor ebx,ebx
-    mov bl,al
-    shl ebx,2
-    add edi,ebx
-    xor ebx,ebx
-    mov bl,al
-    add edi,ebx
-    mov word[esi-288*2],0
-    mov word[esi+2-288*2],0
-    mov word[esi+4-288*2],0
-    mov word[esi+6-288*2],0
-    mov word[esi+8-288*2],0
-    mov word[esi+10-288*2],0
-    mov word[esi-288*2+75036*4],0
-    mov word[esi+2-288*2+75036*4],0
-    mov word[esi+4-288*2+75036*4],0
-    mov word[esi+6-288*2+75036*4],0
-    mov word[esi+8-288*2+75036*4],0
-    mov word[esi+10-288*2+75036*4],0
-    mov cl,5
-.loopa
-    mov ah,[edi]
-    mov ch,5
-.loopb
-    mov word[esi],0
-    mov word[esi+2],0
-    mov word[esi+75036*4],0
-    mov word[esi+2+75036*4],0
-    test ah,80h
-    jz .nowrite
-    push eax
-    mov ax,[textcolor16b]
-    mov [esi],ax
-    mov [esi+75036*4],ax
-    pop eax
-.nowrite
-    shl ah,1
-    add esi,2
-    dec ch
-    jnz .loopb
-    add esi,283*2
-    inc edi
-    dec cl
-    jnz .loopa
-    mov word[esi],0
-    mov word[esi+2],0
-    mov word[esi+4],0
-    mov word[esi+6],0
-    mov word[esi+8],0
-    mov word[esi+10],0
-    mov word[esi+75036*4],0
-    mov word[esi+2+75036*4],0
-    mov word[esi+4+75036*4],0
-    mov word[esi+6+75036*4],0
-    mov word[esi+8+75036*4],0
-    mov word[esi+10+75036*4],0
-    pop eax
-    pop esi
-    pop edi
-    ret
-
 ;*******************************************************
 ; Output Graphic String   Outputs String from edi to esi
 ;*******************************************************
@@ -999,189 +918,6 @@ NEWSYM OutputGraphicString16b5x5
     inc edi
     jmp .nextstr
 .nomore
-    ret
-
-NEWSYM OutputGraphicString16b5x52
-    xor eax,eax
-.nextstr
-    mov al,[edi]
-    cmp al,0
-    je .nomore
-    mov al,[ASCII2Font+eax]
-    call outputchar16b5x52
-    add esi,12
-    inc edi
-    jmp .nextstr
-.nomore
-    ret
-
-NEWSYM OutputGraphicStringb
-    cmp byte[cbitmode],1
-    je near .do16b
-    xor eax,eax
-    cmp byte[edi-1],1
-    je .dir
-    cmp byte[edi-1],2
-    je near .drive
-    sub esi,8
-.nextstr
-    mov al,[edi]
-    cmp al,0
-    je .nomore
-    mov al,[ASCII2Font+eax]
-    call outputchar
-    add esi,8
-    inc edi
-    jmp .nextstr
-.nomore
-    ret
-.dir
-    sub esi,8
-    mov al,'<'
-    mov al,[ASCII2Font+eax]
-    call outputchar
-    add esi,8
-.nextstr2
-    mov al,[edi]
-    cmp al,0
-    je .nomore2
-    mov al,[ASCII2Font+eax]
-    call outputchar
-    add esi,8
-    inc edi
-    jmp .nextstr2
-.nomore2
-    mov al,'>'
-    mov al,[ASCII2Font+eax]
-    call outputchar
-    ret
-.drive
-    sub esi,8
-    mov al,'['
-    mov al,[ASCII2Font+eax]
-    call outputchar
-    add esi,8
-.nextstr3
-    mov al,[edi]
-    cmp al,0
-    je .nomore3
-    mov al,[ASCII2Font+eax]
-    call outputchar
-    add esi,8
-    inc edi
-    jmp .nextstr3
-.nomore3
-    mov al,']'
-    mov al,[ASCII2Font+eax]
-    call outputchar
-    ret
-.do16b
-    sub esi,[vidbuffer]
-    shl esi,1
-    add esi,[vidbuffer]
-    cmp byte[textcolor],128
-    jne .no128
-    mov word[textcolor16b],0FFFFh
-.no128
-    cmp byte[textcolor],129
-    jne .no129
-    mov word[textcolor16b],0
-.no129
-    cmp byte[textcolor],130
-    jne .no130
-    xor ax,ax
-    xor bx,bx
-    mov cl,[vesa2_rpos]
-    mov bx,20
-    shl bx,cl
-    add ax,bx
-    mov cl,[vesa2_gpos]
-    mov bx,20
-    shl bx,cl
-    add ax,bx
-    mov cl,[vesa2_bpos]
-    mov bx,20
-    shl bx,cl
-    add ax,bx
-    mov [textcolor16b],ax
-.no130
-    ; Color #131, Red
-    cmp byte[textcolor],131
-    jne .no131
-    xor ax,ax
-    xor bx,bx
-    mov cl,[vesa2_rpos]
-    mov bx,22
-    shl bx,cl
-    add ax,bx
-    mov cl,[vesa2_gpos]
-    mov bx,5
-    shl bx,cl
-    add ax,bx
-    mov cl,[vesa2_bpos]
-    mov bx,5
-    shl bx,cl
-    add ax,bx
-    mov [textcolor16b],ax
-.no131
-NEWSYM OutputGraphicString16bb
-    xor eax,eax
-    cmp byte[edi-1],1
-    je .dir
-    cmp byte[edi-1],2
-    je near .drive
-    xor eax,eax
-    sub esi,16
-.nextstr
-    mov al,[edi]
-    cmp al,0
-    je .nomore
-    mov al,[ASCII2Font+eax]
-    call outputchar16b
-    add esi,16
-    inc edi
-    jmp .nextstr
-.nomore
-    ret
-.dir
-    sub esi,16
-    mov al,'<'
-    mov al,[ASCII2Font+eax]
-    call outputchar16b
-    add esi,16
-.nextstr2
-    mov al,[edi]
-    cmp al,0
-    je .nomore2
-    mov al,[ASCII2Font+eax]
-    call outputchar16b
-    add esi,16
-    inc edi
-    jmp .nextstr2
-.nomore2
-    mov al,'>'
-    mov al,[ASCII2Font+eax]
-    call outputchar16b
-    ret
-.drive
-    sub esi,16
-    mov al,'['
-    mov al,[ASCII2Font+eax]
-    call outputchar16b
-    add esi,16
-.nextstr3
-    mov al,[edi]
-    cmp al,0
-    je .nomore3
-    mov al,[ASCII2Font+eax]
-    call outputchar16b
-    add esi,16
-    inc edi
-    jmp .nextstr3
-.nomore3
-    mov al,']'
-    mov al,[ASCII2Font+eax]
-    call outputchar16b
     ret
 
 ;*******************************************************
@@ -2673,7 +2409,6 @@ NEWSYM ClockOutput
     cmp byte[cbitmode],1
     je near .do16b3
 .no16b3
-    mov byte[ngfont],1
     call displayfpspal
     mov esi,215*288+32+192
     add esi,[vidbuffer]
@@ -2829,7 +2564,6 @@ NEWSYM ClockOutputB
     cmp byte[cbitmode],1
     je near .do16b3
 .no16b3
-    mov byte[ngfont],1
     call displayfpspal
     mov esi,208*288+32+192
     add esi,[vidbuffer]
@@ -3099,7 +2833,6 @@ NEWSYM SoundPlayed4, resb 1
 NEWSYM SoundPlayed5, resb 1
 NEWSYM SoundPlayed6, resb 1
 NEWSYM SoundPlayed7, resb 1
-NEWSYM ngfont,       resb 1
 SECTION .text
 
 NEWSYM ShowSound
@@ -3200,7 +2933,6 @@ NEWSYM prevengval, db 10
 SECTION .text
 
 NEWSYM copyvid
-    mov byte[ngfont],0
     mov dword[.sdrawptr],0
     ; Test if add table needs updating
     cmp byte[cbitmode],0
@@ -3221,7 +2953,6 @@ NEWSYM copyvid
     cmp byte[cbitmode],1
     je near .do16b
 .no16b
-    mov byte[ngfont],1
     mov edi,[Msgptr]
     mov esi,200*288+32
     add esi,[vidbuffer]

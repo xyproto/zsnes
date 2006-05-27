@@ -17,6 +17,18 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
+%macro MMXStuff 0
+%%1
+    movq mm0,[esi]
+    movq [es:edi],mm0
+    movq mm1,[esi+8]
+    movq [es:edi+8],mm1
+    add esi,16
+    add edi,16
+    dec ecx
+    jnz %%1
+%endmacro
+
 %macro FilterTest 1
     cmp byte[GUIOn],1
     jne %%nogui

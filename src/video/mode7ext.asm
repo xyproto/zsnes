@@ -1163,21 +1163,6 @@ NEWSYM drawmode7extbg2
     inc esi
 %endmacro
 
-%macro Mode7Windowng 0
-    mov [esi+75036],dl
-    test dl,80h
-    jnz %%nodrawbw
-    or dl,dl
-    jz %%nodrawbw
-    test byte[ebp],0FFh
-    jnz %%nodrawbw
-    mov [esi],dl
-%%nodrawbw
-    inc esi
-    inc ebp
-%endmacro
-
-
 NEWSYM drawmode7ngextbg
     ProcessBuildWindow 0
 

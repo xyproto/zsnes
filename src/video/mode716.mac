@@ -21,34 +21,6 @@ EXTSYM BGMS1,FillSubScr,CMainWinScr,CSubWinScr,scadtng
 EXTSYM ngwinen,winbg1enval,BuildWindow,ngwintable,ngcwinptr,domosaicng16b
 EXTSYM pesimpng
 
-
-
-%macro ProcessBuildWindow 1
-    mov dword[ngwinen],0
-    test byte[winbg1enval+ebx+%1*256],0Ah
-    jz %%nowindowing
-    push eax
-    push ebx
-    mov al,[winlogicaval+ebx*2]
-    shr al,%1*2
-    and al,03h
-    mov [nglogicval],al
-    mov eax,ebx
-    add ebx,%1*256
-    call BuildWindow
-    cmp dword[ngwintable],0
-    je %%zero
-    dec dword[ngwintable]
-    jmp %%notzero
-%%zero
-    dec dword[ngwintable+4]
-%%notzero
-    pop ebx
-    pop eax
-    mov dword[ngcwinptr],ngwintable
-%%nowindowing
-%endmacro
-
 ;Skip transparency if the bg is just a sub-screen or there are no sub-screens
 ;for that line:
 %macro CheckTransparency 2
