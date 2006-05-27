@@ -86,6 +86,11 @@ void handle_file(const char *filename, size_t orig_file_size)
   }
 }
 
+void force_trim(const char *filename, struct stat& stat_buffer)
+{
+  handle_file(filename, stat_buffer.st_size);
+}
+
 void trim_whitespace(const char *filename, struct stat& stat_buffer)
 {
   if (is_c_file(filename) ||
@@ -97,8 +102,13 @@ void trim_whitespace(const char *filename, struct stat& stat_buffer)
   }
 }
 
-int main()
+int main(size_t argc, char **argv)
 {
+  for (char **i = argv+1; *i; i++)
+  {
+    parse_path(*i, force_trim);
+  }
+
   parse_dir(".", trim_whitespace);
   return(0);
 }
