@@ -89,12 +89,12 @@ extern signed char NTSCHue, NTSCSat, NTSCCont, NTSCBright, NTSCSharp, NTSCWarp;
 void NTSCFilterInit()
 {
   // Set GUI options
-  ntsc_setup.hue = ((float) NTSCHue) / 100.0;
-  ntsc_setup.saturation = ((float) NTSCSat) / 100.0;
-  ntsc_setup.contrast = ((float) NTSCCont) / 100.0;
-  ntsc_setup.brightness = ((float) NTSCBright) / 100.0;
-  ntsc_setup.sharpness = ((float) NTSCSharp) / 100.0;
-  ntsc_setup.hue_warping = ((float) NTSCWarp) / 100.0;
+  ntsc_setup.hue = (float)(NTSCHue / 100.0);
+  ntsc_setup.saturation = (float)(NTSCSat / 100.0);
+  ntsc_setup.contrast = (float)(NTSCCont / 100.0);
+  ntsc_setup.brightness = (float)(NTSCBright / 100.0);
+  ntsc_setup.sharpness = (float)(NTSCSharp / 100.0);
+  ntsc_setup.hue_warping = (float)(NTSCWarp / 100.0);
   ntsc_setup.merge_fields = (int) NTSCBlend;
   snes_ntsc_init(&ntsc_snes, &ntsc_setup);
 }

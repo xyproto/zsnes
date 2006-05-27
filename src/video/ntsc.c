@@ -99,7 +99,7 @@ static void ntsc_to_rgb_init( ntsc_to_rgb_t* ntsc, snes_ntsc_setup_t const* setu
 	for ( i = 0; i < ntsc_kernel_size; i++ )
 		ntsc->kernel [i] = 0;
 	for ( i = -composite_border; i <= composite_border; i++ )
-		ntsc->kernel [ntsc_kernel_size / 2 + i] = exp( i * i * (-0.03125f * gaussian_factor) );
+		ntsc->kernel [ntsc_kernel_size / 2 + i] = (float)exp( i * i * (-0.03125f * gaussian_factor) );
 
 	/* normalize kernel totals of every fourth sample (at all four phases) to 0.5, otherwise
 	i/q low-pass will favor one of the four alignments and cause repeating spots */
@@ -110,7 +110,7 @@ static void ntsc_to_rgb_init( ntsc_to_rgb_t* ntsc, snes_ntsc_setup_t const* setu
 		int x;
 		for ( x = i; x < ntsc_kernel_size; x += 4 )
 			sum += ntsc->kernel [x];
-		scale = 0.5 / sum;
+		scale = (float)(0.5 / sum);
 		for ( x = i; x < ntsc_kernel_size; x += 4 )
 			ntsc->kernel [x] *= scale;
 	}
@@ -119,7 +119,7 @@ static void ntsc_to_rgb_init( ntsc_to_rgb_t* ntsc, snes_ntsc_setup_t const* setu
 	{
 		float hue = setup->hue * pi;
 		float sat = setup->saturation + 1;
-		rotate_matrix( to_rgb, sin( hue ) * sat, cos( hue ) * sat, ntsc->decoder_matrix );
+		rotate_matrix( to_rgb, (float)(sin( hue ) * sat), (float)(cos( hue ) * sat), ntsc->decoder_matrix );
 	}
 
 	memset( ntsc->rgb, 0, sizeof ntsc->rgb );
@@ -359,7 +359,7 @@ void snes_ntsc_init( snes_ntsc_t* emu, snes_ntsc_setup_t const* setup )
 		float gamma = 1 - setup->gamma * (setup->gamma > 0 ? 0.5f : 1.5f);
 		int i;
 		for ( i = 0; i < 32; i++ )
-			to_float [i] = pow( (1 / 31.0f) * i, gamma ) * rgb_unit;
+			to_float [i] = (float)(pow( (1 / 31.0f) * i, gamma ) * rgb_unit);
 	}
 
 	/* generate entries */
