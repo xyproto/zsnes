@@ -355,10 +355,10 @@ static char *seconds_to_asc(unsigned int seconds)
   char *p = buffer;
   unsigned int hours, minutes;
 
-  hours = seconds/3600;
-  seconds -= hours*3600;
   minutes = seconds/60;
   seconds -= minutes*60;
+  hours = minutes/60;
+  minutes -= hours*60;
   *buffer = 0;
 
   if (hours)

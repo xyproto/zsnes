@@ -1,12 +1,10 @@
 dnl - Process this file with autoconf to produce a configure script.
 
-AC_INIT(init.asm)
+AC_INIT
+AC_CONFIG_SRCDIR(init.asm)
 AC_CONFIG_HEADER(config.h)
-ISODATE=`date +%Y-%m-%d`
-AC_SUBST(ISODATE)
+
 VERSION=pre1.43
-AC_SUBST(VERSION)
-AC_ARG_WITH(nasm-prefix,[  --with-nasm-prefix=PFX Prefix where nasm is installed (optional)], nasm_prefix="$withval", nasm_prefix="")
 
 CFLAGS="$CFLAGS -pipe -I. -I/usr/local/include -I/usr/include"
 dnl - You might wanna change -I/usr/include if you're trying to do this with
@@ -16,17 +14,23 @@ dnl else do -I/usr/include. Or some shit. You figure it out.
 LDFLAGS="$LDFLAGS -L/usr/local/lib -L/usr/lib"
 dnl - Same thing here.
 
-dnl - Where is our compiler, and who are we compiling for?
-AC_CANONICAL_SYSTEM
+dnl - Where are our compilers, and who are we compiling for?
+AC_CANONICAL_TARGET
+AC_PROG_INSTALL
 AC_PROG_CC
 AC_PROG_CXX
+
+AC_ARG_WITH(nasm-prefix,
+  [  --with-nasm-prefix=PFX  Prefix where nasm is installed (optional)],
+  nasm_prefix="$withval",
+  nasm_prefix="")
 AC_CHECK_TOOL(NASMPATH,nasm,"no",$nasm_prefix:$PATH)
 if test x$NASMPATH = xno; then
   AC_MSG_ERROR(You need NASM installed to compile ZSNES)
 fi
 NFLAGS="$NFLAGS -w-orphan-labels"
-AC_PROG_INSTALL
-case "$target" in
+
+case x$target in
   *-*-linux*)
     CFLAGS="$CFLAGS -D__UNIXSDL__"
     NFLAGS="$NFLAGS -D__UNIXSDL__ -f elf -DELF"
@@ -48,12 +52,14 @@ case "$target" in
     ;;
 esac
 
-dnl - Checks for libraries: libSDL*, zlib*, libpng, OpenGL, JMA support
+dnl - Checks for libraries: libSDL*, zlib*, libpng, OpenGL, JMAlib
 dnl - libs marked * are required, the other are optionnal
 
+dnl - libsdl stuff
 AM_PATH_SDL(1.2.0,,[AC_MSG_ERROR(SDL >= 1.2.0 is required)])
 
-AM_PATH_ZLIB(1.1.0,,[AC_MSG_ERROR(ZLIB >= 1.1.0 is required)])
+dnl - zlib stuff
+AM_PATH_ZLIB(1.1.0,,[AC_MSG_ERROR(zlib >= 1.1.0 is required)])
 CFLAGS="$CFLAGS $ZLIB_CFLAGS"
 LDFLAGS="$LDFLAGS $ZLIB_LIBS"
 
@@ -71,9 +77,15 @@ else
 fi
 
 dnl - opengl stuff
-AC_ARG_ENABLE(opengl,[  --disable-opengl        Build without OpenGL support],,enable_opengl=yes)
-AC_ARG_WITH(opengl-prefix,[  --with-opengl-prefix=PFX Prefix where OpenGL is installed (optional)], opengl_prefix="$withval", opengl_prefix="")
-
+AC_ARG_ENABLE(opengl,
+  [  --disable-opengl        Build without OpenGL support],
+  ,
+  enable_opengl=yes)
+AC_ARG_WITH(
+  opengl-prefix,
+  [  --with-opengl-prefix=PFX Prefix where OpenGL is installed (optional)],
+  opengl_prefix="$withval",
+  opengl_prefix="")
 if test x$enable_opengl != xno; then
   AC_PATH_X
   if test x$opengl_prefix != x; then
@@ -83,31 +95,30 @@ if test x$enable_opengl != xno; then
   if test x$x_libraries != x; then
     LDFLAGS="$LDFLAGS -L$x_libraries"
   fi
-  AC_CHECK_LIB(GL, glGetError, found_opengl="yes",,)
+  AC_CHECK_LIB(GL, glGetError, found_opengl=yes,found_opengl=no)
 fi
+
 AC_MSG_CHECKING(for OpenGL)
 if test x$enable_opengl != xno; then
   if test x$found_opengl = xyes; then
-    AC_MSG_RESULT(yes)
     LDFLAGS="$LDFLAGS -lGL"
     CFLAGS="$CFLAGS -D__OPENGL__"
     NFLAGS="$NFLAGS -D__OPENGL__"
-    GL_DRAW="\${WINDIR}/gl_draw.o"
-  else
-    AC_MSG_RESULT(no)
+    GL_DRAW="\$(WINDIR)/gl_draw.o"
   fi
+  AC_MSG_RESULT($found_opengl)
 else
   AC_MSG_RESULT(disabled by user)
 fi
 
 dnl - jma check
-AC_ARG_ENABLE(jma,[  --disable-jma           Build without JMA support],,enable_jma=yes)
-
+AC_ARG_ENABLE(jma,
+  [  --disable-jma           Build without JMA support],
+  ,
+  enable_jma=yes)
 AC_MSG_CHECKING(for JMA support)
-if test x$enable_jma != xno; then
-  AC_MSG_RESULT(yes)
-else
-  AC_MSG_RESULT(no)
+AC_MSG_RESULT($enable_jma)
+if test x$enable_jma != xyes; then
   CFLAGS="$CFLAGS -DNO_JMA"
   NFLAGS="$NFLAGS -DNO_JMA"
 fi
@@ -115,64 +126,80 @@ fi
 dnl - Various debug and optimization option checks
 AM_ARCH_DETECT()
 
-AC_ARG_ENABLE(debug, [  --enable-debug          Build GDB friendly binary (zsnesd) ],debug=$enableval)
+AC_ARG_ENABLE(debug,
+  [  --enable-debug          Build GDB friendly binary (zsnesd)],
+  debug=$enableval,
+  debug=no)
 AC_MSG_CHECKING(if you want gdb friendly executable)
-
+AC_MSG_RESULT($debug)
 if test x$debug = xyes; then
-  AC_MSG_RESULT(yes)
-
-  dnl It is easier to debug zsnes with no optimization enabled.
+dnl - It is easier to debug zsnes with no optimization enabled.
+  ZSNESEXE="zsnesd"
   CFLAGS="$CFLAGS -Wall -W -DDEBUG -O0 -fno-omit-frame-pointer -gstabs3"
   NFLAGS="$NFLAGS -DDEBUG -g -F stabs -s -O0"
-  ZSNESEXE="zsnesd"
 else
-  AC_MSG_RESULT(no)
   ZSNESEXE="zsnes"
-
-  AC_ARG_ENABLE(release, [  --enable-release        Build ultra-optimized binary (zsnes) ],release=$enableval)
+  AC_ARG_ENABLE(release,
+    [  --enable-release        Build ultra-optimized binary (zsnes)],
+    release=$enableval,
+    release=no)
   AC_MSG_CHECKING(if you want crazy optimizations)
-
+  AC_MSG_RESULT($release)
   if test x$release = xyes; then
-    AC_MSG_RESULT(yes)
     CFLAGS="$CFLAGS -O3 -fomit-frame-pointer -fprefetch-loop-arrays -fforce-addr -s"
     NFLAGS="$NFLAGS -O99999999"
   else
-    AC_MSG_RESULT(no)
     CFLAGS="$CFLAGS -O3 -fomit-frame-pointer -s"
     NFLAGS="$NFLAGS -O1"
   fi
 
+  CFLAGSBAK="$CFLAGS"
+  AC_ARG_VAR(force_arch, [Force architecture to optimize GCC/G++ for])
   AC_MSG_CHECKING(which cpu architecture to optimize for)
-  if test x$ARCH_INFO = x ; then
-    case "$target" in
-      i686-*-*)
-        AC_MSG_RESULT(guessing i686)
-        CFLAGS="$CFLAGS -march=i686"
-        ;;
-      i586-*-*)
-        AC_MSG_RESULT(guessing i586)
-        CFLAGS="$CFLAGS -march=i586"
-        ;;
-      i486-*-*)
-        AC_MSG_RESULT(guessing i486)
-        CFLAGS="$CFLAGS -march=i486"
-        ;;
-      *)
-        AC_MSG_RESULT(guessing i386)
-        CFLAGS="$CFLAGS -march=i386"
-        AC_MSG_WARN(*** This is probably not what you want *** use --target)
-        ;;
-    esac
-  else
-    AC_MSG_RESULT($ARCH_INFO)
-    CFLAGS="$CFLAGS -march=$ARCH_INFO"
+  if test x$force_arch != x; then
+    CFLAGS="$CFLAGS -march=$force_arch"
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]])],
+    [AC_MSG_RESULT(forcing $force_arch)],
+    [AC_MSG_RESULT($force_arch ??)
+    AC_MSG_WARN(incorrect force_arch parameter)
+    force_arch=""
+    CFLAGS="$CFLAGSBAK"
+    AC_MSG_CHECKING(for autodetected architecture)])
+  fi
+  if test x$force_arch = x; then
+    if test x$ARCH_INFO = x; then
+      case x$target in
+        i686-*-*)
+          AC_MSG_RESULT(guessing i686)
+          CFLAGS="$CFLAGS -march=i686"
+          ;;
+        i586-*-*)
+          AC_MSG_RESULT(guessing i586)
+          CFLAGS="$CFLAGS -march=i586"
+          ;;
+        i486-*-*)
+          AC_MSG_RESULT(guessing i486)
+          CFLAGS="$CFLAGS -march=i486"
+          ;;
+        *)
+          AC_MSG_RESULT(guessing i386)
+          CFLAGS="$CFLAGS -march=i386"
+          AC_MSG_WARN([This is not what you want, use --target or force-arch])
+          ;;
+      esac
+    else
+      AC_MSG_RESULT($ARCH_INFO)
+      CFLAGS="$CFLAGS -march=$ARCH_INFO"
+    fi
   fi
 fi
 CXXFLAGS="$CFLAGS -fno-rtti"
 PSRFLAGS="-D__UNIXSDL__"
 
 if test x$enable_jma != xno; then
-  JMA_FILES="\${JMADIR}/7zlzma.o \${JMADIR}/crc32.o \${JMADIR}/iiostrm.o \${JMADIR}/inbyte.o \${JMADIR}/jma.o \${JMADIR}/lzma.o \${JMADIR}/lzmadec.o \${JMADIR}/winout.o \${JMADIR}/zsnesjma.o"
+  JMA_FILES="\$(JMADIR)/7zlzma.o \$(JMADIR)/crc32.o \$(JMADIR)/iiostrm.o\
+	\$(JMADIR)/inbyte.o \$(JMADIR)/jma.o \$(JMADIR)/lzma.o\
+	\$(JMADIR)/lzmadec.o \$(JMADIR)/winout.o \$(JMADIR)/zsnesjma.o"
   ZC="$CXX"
   ZCFLAGS="$CXXFLAGS"
 else
@@ -186,6 +213,7 @@ AC_HEADER_STDC
 AC_HEADER_MAJOR
 
 dnl - Create Makefile
+AC_SUBST(VERSION)
 AC_SUBST(NASMPATH)
 AC_SUBST(ZC)
 AC_SUBST(ZCFLAGS)
@@ -194,7 +222,9 @@ AC_SUBST(NFLAGS)
 AC_SUBST(ZSNESEXE)
 AC_SUBST(GL_DRAW)
 AC_SUBST(JMA_FILES)
-AC_OUTPUT(Makefile)
+
+AC_CONFIG_FILES(Makefile)
+AC_OUTPUT
 
 dnl - Info output
 echo
@@ -203,35 +233,39 @@ echo ZSNES v$VERSION
 echo
 echo "SDL support                   Version `$SDL_CONFIG --version`"
 echo "NASM support                  `nasm -v`"
-echo "ZLib support                  Version $ZLIB_VERSION"
-if test "$with_libpng" = "yes"; then
-  echo "PNG support                   Yes, version $LIBPNG_VERSION"
-elif test "$enable_libpng" = "no"; then
-  echo "PNG support                   Disabled by user"
+echo "zlib support                  Version $ZLIB_VERSION"
+echo $ECHO_N "PNG support                   $ECHO_C"
+if test x$with_libpng = xyes; then
+  echo "${ECHO_T}Yes, version $LIBPNG_VERSION"
+elif test x$enable_libpng = xno; then
+  echo "${ECHO_T}Disabled by user"
 else
-  echo "PNG support                   Disabled, library not found"
+  echo "${ECHO_T}Disabled, library not found"
 fi
-if test "$found_opengl" = "yes"; then
-  echo "OpenGL support                Yes"
-elif test "$enable_opengl" = "no"; then
-  echo "OpenGL support                Disabled by user"
+echo $ECHO_N "OpenGL support                $ECHO_C"
+if test x$found_opengl = xyes; then
+  echo "${ECHO_T}Yes"
+elif test x$enable_opengl = xno; then
+  echo "${ECHO_T}Disabled by user"
 else
-  echo "OpenGL support                Disabled, library not found"
+  echo "${ECHO_T}Disabled, library not found"
 fi
-if test "$enable_jma" = "no"; then
-  echo "JMA support                   Disabled by user"
+echo $ECHO_N "JMA support                   $ECHO_C"
+if test x$enable_jma = xno; then
+  echo "${ECHO_T}Disabled by user"
 else
-  echo "JMA support                   Yes"
+  echo "${ECHO_T}Yes"
 fi
 echo
 echo The binary will be installed in $prefix/bin
 echo
-case "$target" in
+echo $ECHO_N "Configure complete, now type '$ECHO_C"
+case x$target in
   *-*-*bsd*)
-    echo Configure complete, now type \'gmake\' and pray.
+    echo $ECHO_N "${ECHO_T}g$ECHO_C"
     ;;
   *)
-    echo Configure complete, now type \'make\' and pray.
     ;;
 esac
+echo "${ECHO_T}make' and pray."
 echo
