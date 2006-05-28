@@ -1,15 +1,11 @@
-;Copyright (C) 1997-2005 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+;Copyright (C) 1997-2006 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 ;
-;zsknight@zsnes.com
-;_demo_@zsnes.com
-;pagefault@zsnes.com
-;n-a-c-h@users.sf.net
+;http://www.zsnes.com
+;http://sourceforge.net/projects/zsnes
 ;
 ;This program is free software; you can redistribute it and/or
 ;modify it under the terms of the GNU General Public License
-;as published by the Free Software Foundation; either
-;version 2 of the License, or (at your option) any later
-;version.
+;version 2 as published by the Free Software Foundation.
 ;
 ;This program is distributed in the hope that it will be useful,
 ;but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,10 +18,8 @@
 
 %include "macros.mac"
 
-EXTSYM SPCRAM, spcPCRam, spcRamDP, spcS, spcX, MovieProcessing
-EXTSYM CNetType, soundon, RevStereo
-EXTSYM PitchModEn,SoundNoiseDis
-EXTSYM DosExit,Invalidopcode,RSPCRegF0,RSPCRegF1,RSPCRegF2,RSPCRegF3
+EXTSYM SPCRAM,spcPCRam,spcRamDP,spcS,spcX,RevStereo
+EXTSYM Invalidopcode,RSPCRegF0,RSPCRegF1,RSPCRegF2,RSPCRegF3
 EXTSYM RSPCRegF4,RSPCRegF5,RSPCRegF6,RSPCRegF7,RSPCRegF8,RSPCRegF9
 EXTSYM RSPCRegFA,RSPCRegFB,RSPCRegFC,RSPCRegFD,RSPCRegFE,RSPCRegFF
 EXTSYM SPCRegF0,SPCRegF1,SPCRegF2,SPCRegF3,SPCRegF4,SPCRegF5,SPCRegF6
@@ -126,15 +120,10 @@ EXTSYM WDSPRegE0,WDSPRegE1,WDSPRegE2,WDSPRegE3,WDSPRegE4,WDSPRegE5,WDSPRegE6
 EXTSYM WDSPRegE7,WDSPRegE8,WDSPRegE9,WDSPRegEA,WDSPRegEB,WDSPRegEC,WDSPRegED
 EXTSYM WDSPRegEE,WDSPRegEF,WDSPRegF0,WDSPRegF1,WDSPRegF2,WDSPRegF3,WDSPRegF4
 EXTSYM WDSPRegF5,WDSPRegF6,WDSPRegF7,WDSPRegF8,WDSPRegF9,WDSPRegFA,WDSPRegFB
-EXTSYM WDSPRegFC,WDSPRegFD,WDSPRegFE,WDSPRegFF,RaisePitch
-EXTSYM delay
-EXTSYM spcBuffera
-EXTSYM DSPMem
-EXTSYM SoundInterpType
-EXTSYM NoiseData,Voice0Disable,csounddisable,spcRamcmp
-EXTSYM cfgecho,Surround,SoundBufEn
-EXTSYM echobuf,ENVDisable
-EXTSYM LowPassFilterType
+EXTSYM WDSPRegFC,WDSPRegFD,WDSPRegFE,WDSPRegFF
+EXTSYM spcBuffera,DSPMem,SoundInterpType,NoiseData,Voice0Disable
+EXTSYM cfgecho,Surround,echobuf,ENVDisable,LowPassFilterType
+EXTSYM EMUPause,AudioLogging,MMXSupport
 
 %ifdef __MSDOS__
 EXTSYM SB_alloc_dma,SB_quality_limiter,vibracard
@@ -180,6 +169,7 @@ DSPInterP:
   resw 1024
 
 section .data
+ALIGN32
 
 Gaussian:
   dw 1305,1305,1304,1304,1304,1304,1304,1303
@@ -246,7 +236,6 @@ Gaussian:
   dw    1,   1,   1,   1,   1,   1,   1,   1
   dw    0,   0,   0,   0,   0,   0,   0,   0
   dw    0,   0,   0,   0,   0,   0,   0,   0
-
   dw    0,   0,   0,   0,   0,   0,   0,   0
   dw    0,   0,   0,   0,   0,   0,   0,   0
   dw    0,   0,   0,   0,   0,   0,   0,   0
@@ -287,7 +276,6 @@ CubicSpline:
   dw  -78, -76, -73, -70, -67, -65, -62, -59
   dw  -56, -53, -50, -46, -43, -40, -36, -33
   dw  -30, -26, -22, -19, -15, -11,  -7,  -3
-
   dw    0,   4,   8,  12,  16,  21,  26,  30
   dw   35,  40,  46,  51,  56,  62,  67,  73
   dw   79,  85,  91,  97, 103, 109, 116, 122
@@ -393,7 +381,7 @@ SECTION .bss
 
 NEWSYM spcWptr,  resd 16     ; SPC Write pointers (point to their own functions)
 NEWSYM spcRptr,  resd 16     ; SPC Read pointers (point to their own functions)
-; 
+;
 SECTION .data
 NEWSYM SoundQuality, dd 2
 NEWSYM StereoSound,    db 0
@@ -421,6 +409,7 @@ NEWSYM NoiseSpeeds
             dd 1,16,21,25,31,42,50,63,83,100,125,167,200,250,333,400,500,667,
             dd 800,1000,1333,1600,2000,2667,3200,4000,5333,6400,8000,10667,
             dd 16000,32000
+
 section .text
 
 %if 0
@@ -437,22 +426,12 @@ NEWSYM conv2speedb
     jne .nozero
     mov eax,1
 .nozero
-    mov [esi],eax
+;    mov [esi],eax
     add esi,4
     dec ecx
     jnz .next
     ret
 %endif
-
-%macro initpitchm 1
-      mov ax,[DSPMem+02h+%1*10h]
-      mov word[Voice0Pitch+%1*2],ax
-      And EAX, 03FFFh
-      Mul dword [dspPAdj]
-      ShRD EAX,EDX,8
-      mov [Voice0Freq+%1*4],eax
-      ; modpitch
-%endmacro
 
 %if 0
 %macro fixdspm 1
@@ -487,12 +466,8 @@ NEWSYM conv2speed
     mov eax,[edi]
     mov ebx,[SBToSPC]
     mul ebx
-    mov ebx,32000
+    mov ebx,11025
     div ebx
-    test eax,eax
-    jnz .notzero
-    inc eax
-.notzero
     mov [esi],eax
     add esi,4
     add edi,4
@@ -500,18 +475,19 @@ NEWSYM conv2speed
     jnz .next
     ret
 
-EXTSYM MMXSupport
-
 NEWSYM AdjustFrequency
+      xor ebx,ebx
       mov al,[SoundInterpType]
       mov ah,[MMXSupport]
-      cmp ah,0
+      or al,al
+      je near .notgaussian
+      or ah,ah
       jne .mmx
+      cmp al,3
+      jb .mmx
       mov al,1
       mov [SoundInterpType],al
 .mmx
-      or al,al
-      je near .notgaussian
       cmp al,2
       je near .cubicspline
       ja near .fir_mmx
@@ -613,7 +589,7 @@ NEWSYM AdjustFrequency
 
 .fir_mmx
       mov ebx, DSPInterpolate_8
-	  
+
 .notgaussian
       mov [DSPInterpolate],ebx
 
@@ -632,29 +608,19 @@ NEWSYM AdjustFrequency
 .next
 
       mov ecx,[SoundQuality]
-      mov eax,dword [SBToSPCSpeeds+ecx*4]
+      mov eax,[SBToSPCSpeeds+ecx*4]
 
 %ifdef __MSDOS__
       ; code for supporting vibra cards (coded by Peter Santing)
-      cmp byte [vibracard], 1
-      je  .vibrafix
+      cmp byte[vibracard],1
+      je .vibrafix
 
-      cmp byte [SBHDMA],0
+      cmp byte[SBHDMA],0
       je .not16bit
-;      mov eax,dword [SBToSPCSpeeds2+ecx*4]	; redundant
 .vibrafix
-      mov eax,dword [SBToSPCSpeeds2+ecx*4]
+      mov eax,[SBToSPCSpeeds2+ecx*4]
 .not16bit
 %endif
-;      cmp byte[RaisePitch],0
-;      jne .nopitchmodify
-;      ; *1000/1024
-;      mov ebx,1024
-;      mul ebx
-;      xor edx,edx
-;      mov ebx,1000
-;      div ebx
-;.nopitchmodify
       mov [SBToSPC],eax
       mov [SBRateb],eax
 
@@ -667,34 +633,36 @@ NEWSYM AdjustFrequency
       mov [dspPAdj],eax
 
       ; Init all rates
-      ;Echo rates
       mov esi,EchoRate
       mov edi,EchoRateO
       mov ecx,16
       call conv2speed
-      ;ADSR Attack rates
       mov esi,AttackRate
       mov edi,AttackRateO
       mov ecx,16
       call conv2speed
-      ;ADSR Decay rates
       mov esi,DecayRate
       mov edi,DecayRateO
       mov ecx,8
       call conv2speed
-      ;ADSR Sustain/GAIN Exponential Decrease rates
-      mov esi,DecreaseRateExp+4
-      mov edi,DecreaseRateExpO+4
+      mov esi,SustainRate+4
+      mov edi,SustainRateO+4
       mov ecx,31
       call conv2speed
-      ;GAIN Linear Increase/Decrease rates
-      mov esi,LinearRate+4
-      mov edi,LinearRateO+4
+      mov esi,Increase+4
+      mov edi,IncreaseO+4
       mov ecx,31
       call conv2speed
-      ;GAIN Bent Line Increase rates
       mov esi,IncreaseBent+4
       mov edi,IncreaseBentO+4
+      mov ecx,31
+      call conv2speed
+      mov esi,Decrease+4
+      mov edi,DecreaseO+4
+      mov ecx,31
+      call conv2speed
+      mov esi,DecreaseRateExp+4
+      mov edi,DecreaseRateExpO+4
       mov ecx,31
       call conv2speed
       mov dword[Voice0Pitch],0xFFFEFFFE
@@ -735,11 +703,11 @@ NEWSYM InitSPC
       xor eax,eax
       xor ebx,ebx
       mov ebp,SPCRAM
-      mov ax,0FFC9h
+      mov ax,0FFC0h
       add ebp,eax
       mov [spcPCRam],ebp
-      mov dword [spcS],1EFh
-      mov dword [spcRamDP],SPCRAM
+      mov dword[spcS],1EFh
+      mov dword[spcRamDP],SPCRAM
 
       ; initialize all the SPC write registers
       mov dword[spcWptr+0],SPCRegF0
@@ -774,525 +742,525 @@ NEWSYM InitSPC
       mov dword[spcRptr+52],RSPCRegFD
       mov dword[spcRptr+56],RSPCRegFE
       mov dword[spcRptr+60],RSPCRegFF
-      mov dword [dspRptr+00h],RDSPReg00
-      mov dword [dspRptr+04h],RDSPReg01
-      mov dword [dspRptr+08h],RDSPReg02
-      mov dword [dspRptr+0Ch],RDSPReg03
-      mov dword [dspRptr+010h],RDSPReg04
-      mov dword [dspRptr+014h],RDSPReg05
-      mov dword [dspRptr+018h],RDSPReg06
-      mov dword [dspRptr+01Ch],RDSPReg07
-      mov dword [dspRptr+020h],RDSPReg08
-      mov dword [dspRptr+024h],RDSPReg09
-      mov dword [dspRptr+028h],RDSPReg0A
-      mov dword [dspRptr+02Ch],RDSPReg0B
-      mov dword [dspRptr+030h],RDSPReg0C
-      mov dword [dspRptr+034h],RDSPReg0D
-      mov dword [dspRptr+038h],RDSPReg0E
-      mov dword [dspRptr+03Ch],RDSPReg0F
-      mov dword [dspRptr+040h],RDSPReg10
-      mov dword [dspRptr+044h],RDSPReg11
-      mov dword [dspRptr+048h],RDSPReg12
-      mov dword [dspRptr+04Ch],RDSPReg13
-      mov dword [dspRptr+050h],RDSPReg14
-      mov dword [dspRptr+054h],RDSPReg15
-      mov dword [dspRptr+058h],RDSPReg16
-      mov dword [dspRptr+05Ch],RDSPReg17
-      mov dword [dspRptr+060h],RDSPReg18
-      mov dword [dspRptr+064h],RDSPReg19
-      mov dword [dspRptr+068h],RDSPReg1A
-      mov dword [dspRptr+06Ch],RDSPReg1B
-      mov dword [dspRptr+070h],RDSPReg1C
-      mov dword [dspRptr+074h],RDSPReg1D
-      mov dword [dspRptr+078h],RDSPReg1E
-      mov dword [dspRptr+07Ch],RDSPReg1F
-      mov dword [dspRptr+080h],RDSPReg20
-      mov dword [dspRptr+084h],RDSPReg21
-      mov dword [dspRptr+088h],RDSPReg22
-      mov dword [dspRptr+08Ch],RDSPReg23
-      mov dword [dspRptr+090h],RDSPReg24
-      mov dword [dspRptr+094h],RDSPReg25
-      mov dword [dspRptr+098h],RDSPReg26
-      mov dword [dspRptr+09Ch],RDSPReg27
-      mov dword [dspRptr+0A0h],RDSPReg28
-      mov dword [dspRptr+0A4h],RDSPReg29
-      mov dword [dspRptr+0A8h],RDSPReg2A
-      mov dword [dspRptr+0ACh],RDSPReg2B
-      mov dword [dspRptr+0B0h],RDSPReg2C
-      mov dword [dspRptr+0B4h],RDSPReg2D
-      mov dword [dspRptr+0B8h],RDSPReg2E
-      mov dword [dspRptr+0BCh],RDSPReg2F
-      mov dword [dspRptr+0C0h],RDSPReg30
-      mov dword [dspRptr+0C4h],RDSPReg31
-      mov dword [dspRptr+0C8h],RDSPReg32
-      mov dword [dspRptr+0CCh],RDSPReg33
-      mov dword [dspRptr+0D0h],RDSPReg34
-      mov dword [dspRptr+0D4h],RDSPReg35
-      mov dword [dspRptr+0D8h],RDSPReg36
-      mov dword [dspRptr+0DCh],RDSPReg37
-      mov dword [dspRptr+0E0h],RDSPReg38
-      mov dword [dspRptr+0E4h],RDSPReg39
-      mov dword [dspRptr+0E8h],RDSPReg3A
-      mov dword [dspRptr+0ECh],RDSPReg3B
-      mov dword [dspRptr+0F0h],RDSPReg3C
-      mov dword [dspRptr+0F4h],RDSPReg3D
-      mov dword [dspRptr+0F8h],RDSPReg3E
-      mov dword [dspRptr+0FCh],RDSPReg3F
-      mov dword [dspRptr+0100h],RDSPReg40
-      mov dword [dspRptr+0104h],RDSPReg41
-      mov dword [dspRptr+0108h],RDSPReg42
-      mov dword [dspRptr+010Ch],RDSPReg43
-      mov dword [dspRptr+0110h],RDSPReg44
-      mov dword [dspRptr+0114h],RDSPReg45
-      mov dword [dspRptr+0118h],RDSPReg46
-      mov dword [dspRptr+011Ch],RDSPReg47
-      mov dword [dspRptr+0120h],RDSPReg48
-      mov dword [dspRptr+0124h],RDSPReg49
-      mov dword [dspRptr+0128h],RDSPReg4A
-      mov dword [dspRptr+012Ch],RDSPReg4B
-      mov dword [dspRptr+0130h],RDSPReg4C
-      mov dword [dspRptr+0134h],RDSPReg4D
-      mov dword [dspRptr+0138h],RDSPReg4E
-      mov dword [dspRptr+013Ch],RDSPReg4F
-      mov dword [dspRptr+0140h],RDSPReg50
-      mov dword [dspRptr+0144h],RDSPReg51
-      mov dword [dspRptr+0148h],RDSPReg52
-      mov dword [dspRptr+014Ch],RDSPReg53
-      mov dword [dspRptr+0150h],RDSPReg54
-      mov dword [dspRptr+0154h],RDSPReg55
-      mov dword [dspRptr+0158h],RDSPReg56
-      mov dword [dspRptr+015Ch],RDSPReg57
-      mov dword [dspRptr+0160h],RDSPReg58
-      mov dword [dspRptr+0164h],RDSPReg59
-      mov dword [dspRptr+0168h],RDSPReg5A
-      mov dword [dspRptr+016Ch],RDSPReg5B
-      mov dword [dspRptr+0170h],RDSPReg5C
-      mov dword [dspRptr+0174h],RDSPReg5D
-      mov dword [dspRptr+0178h],RDSPReg5E
-      mov dword [dspRptr+017Ch],RDSPReg5F
-      mov dword [dspRptr+0180h],RDSPReg60
-      mov dword [dspRptr+0184h],RDSPReg61
-      mov dword [dspRptr+0188h],RDSPReg62
-      mov dword [dspRptr+018Ch],RDSPReg63
-      mov dword [dspRptr+0190h],RDSPReg64
-      mov dword [dspRptr+0194h],RDSPReg65
-      mov dword [dspRptr+0198h],RDSPReg66
-      mov dword [dspRptr+019Ch],RDSPReg67
-      mov dword [dspRptr+01A0h],RDSPReg68
-      mov dword [dspRptr+01A4h],RDSPReg69
-      mov dword [dspRptr+01A8h],RDSPReg6A
-      mov dword [dspRptr+01ACh],RDSPReg6B
-      mov dword [dspRptr+01B0h],RDSPReg6C
-      mov dword [dspRptr+01B4h],RDSPReg6D
-      mov dword [dspRptr+01B8h],RDSPReg6E
-      mov dword [dspRptr+01BCh],RDSPReg6F
-      mov dword [dspRptr+01C0h],RDSPReg70
-      mov dword [dspRptr+01C4h],RDSPReg71
-      mov dword [dspRptr+01C8h],RDSPReg72
-      mov dword [dspRptr+01CCh],RDSPReg73
-      mov dword [dspRptr+01D0h],RDSPReg74
-      mov dword [dspRptr+01D4h],RDSPReg75
-      mov dword [dspRptr+01D8h],RDSPReg76
-      mov dword [dspRptr+01DCh],RDSPReg77
-      mov dword [dspRptr+01E0h],RDSPReg78
-      mov dword [dspRptr+01E4h],RDSPReg79
-      mov dword [dspRptr+01E8h],RDSPReg7A
-      mov dword [dspRptr+01ECh],RDSPReg7B
-      mov dword [dspRptr+01F0h],RDSPReg7C
-      mov dword [dspRptr+01F4h],RDSPReg7D
-      mov dword [dspRptr+01F8h],RDSPReg7E
-      mov dword [dspRptr+01FCh],RDSPReg7F
-      mov dword [dspRptr+0200h],RDSPReg80
-      mov dword [dspRptr+0204h],RDSPReg81
-      mov dword [dspRptr+0208h],RDSPReg82
-      mov dword [dspRptr+020Ch],RDSPReg83
-      mov dword [dspRptr+0210h],RDSPReg84
-      mov dword [dspRptr+0214h],RDSPReg85
-      mov dword [dspRptr+0218h],RDSPReg86
-      mov dword [dspRptr+021Ch],RDSPReg87
-      mov dword [dspRptr+0220h],RDSPReg88
-      mov dword [dspRptr+0224h],RDSPReg89
-      mov dword [dspRptr+0228h],RDSPReg8A
-      mov dword [dspRptr+022Ch],RDSPReg8B
-      mov dword [dspRptr+0230h],RDSPReg8C
-      mov dword [dspRptr+0234h],RDSPReg8D
-      mov dword [dspRptr+0238h],RDSPReg8E
-      mov dword [dspRptr+023Ch],RDSPReg8F
-      mov dword [dspRptr+0240h],RDSPReg90
-      mov dword [dspRptr+0244h],RDSPReg91
-      mov dword [dspRptr+0248h],RDSPReg92
-      mov dword [dspRptr+024Ch],RDSPReg93
-      mov dword [dspRptr+0250h],RDSPReg94
-      mov dword [dspRptr+0254h],RDSPReg95
-      mov dword [dspRptr+0258h],RDSPReg96
-      mov dword [dspRptr+025Ch],RDSPReg97
-      mov dword [dspRptr+0260h],RDSPReg98
-      mov dword [dspRptr+0264h],RDSPReg99
-      mov dword [dspRptr+0268h],RDSPReg9A
-      mov dword [dspRptr+026Ch],RDSPReg9B
-      mov dword [dspRptr+0270h],RDSPReg9C
-      mov dword [dspRptr+0274h],RDSPReg9D
-      mov dword [dspRptr+0278h],RDSPReg9E
-      mov dword [dspRptr+027Ch],RDSPReg9F
-      mov dword [dspRptr+0280h],RDSPRegA0
-      mov dword [dspRptr+0284h],RDSPRegA1
-      mov dword [dspRptr+0288h],RDSPRegA2
-      mov dword [dspRptr+028Ch],RDSPRegA3
-      mov dword [dspRptr+0290h],RDSPRegA4
-      mov dword [dspRptr+0294h],RDSPRegA5
-      mov dword [dspRptr+0298h],RDSPRegA6
-      mov dword [dspRptr+029Ch],RDSPRegA7
-      mov dword [dspRptr+02A0h],RDSPRegA8
-      mov dword [dspRptr+02A4h],RDSPRegA9
-      mov dword [dspRptr+02A8h],RDSPRegAA
-      mov dword [dspRptr+02ACh],RDSPRegAB
-      mov dword [dspRptr+02B0h],RDSPRegAC
-      mov dword [dspRptr+02B4h],RDSPRegAD
-      mov dword [dspRptr+02B8h],RDSPRegAE
-      mov dword [dspRptr+02BCh],RDSPRegAF
-      mov dword [dspRptr+02C0h],RDSPRegB0
-      mov dword [dspRptr+02C4h],RDSPRegB1
-      mov dword [dspRptr+02C8h],RDSPRegB2
-      mov dword [dspRptr+02CCh],RDSPRegB3
-      mov dword [dspRptr+02D0h],RDSPRegB4
-      mov dword [dspRptr+02D4h],RDSPRegB5
-      mov dword [dspRptr+02D8h],RDSPRegB6
-      mov dword [dspRptr+02DCh],RDSPRegB7
-      mov dword [dspRptr+02E0h],RDSPRegB8
-      mov dword [dspRptr+02E4h],RDSPRegB9
-      mov dword [dspRptr+02E8h],RDSPRegBA
-      mov dword [dspRptr+02ECh],RDSPRegBB
-      mov dword [dspRptr+02F0h],RDSPRegBC
-      mov dword [dspRptr+02F4h],RDSPRegBD
-      mov dword [dspRptr+02F8h],RDSPRegBE
-      mov dword [dspRptr+02FCh],RDSPRegBF
-      mov dword [dspRptr+0300h],RDSPRegC0
-      mov dword [dspRptr+0304h],RDSPRegC1
-      mov dword [dspRptr+0308h],RDSPRegC2
-      mov dword [dspRptr+030Ch],RDSPRegC3
-      mov dword [dspRptr+0310h],RDSPRegC4
-      mov dword [dspRptr+0314h],RDSPRegC5
-      mov dword [dspRptr+0318h],RDSPRegC6
-      mov dword [dspRptr+031Ch],RDSPRegC7
-      mov dword [dspRptr+0320h],RDSPRegC8
-      mov dword [dspRptr+0324h],RDSPRegC9
-      mov dword [dspRptr+0328h],RDSPRegCA
-      mov dword [dspRptr+032Ch],RDSPRegCB
-      mov dword [dspRptr+0330h],RDSPRegCC
-      mov dword [dspRptr+0334h],RDSPRegCD
-      mov dword [dspRptr+0338h],RDSPRegCE
-      mov dword [dspRptr+033Ch],RDSPRegCF
-      mov dword [dspRptr+0340h],RDSPRegD0
-      mov dword [dspRptr+0344h],RDSPRegD1
-      mov dword [dspRptr+0348h],RDSPRegD2
-      mov dword [dspRptr+034Ch],RDSPRegD3
-      mov dword [dspRptr+0350h],RDSPRegD4
-      mov dword [dspRptr+0354h],RDSPRegD5
-      mov dword [dspRptr+0358h],RDSPRegD6
-      mov dword [dspRptr+035Ch],RDSPRegD7
-      mov dword [dspRptr+0360h],RDSPRegD8
-      mov dword [dspRptr+0364h],RDSPRegD9
-      mov dword [dspRptr+0368h],RDSPRegDA
-      mov dword [dspRptr+036Ch],RDSPRegDB
-      mov dword [dspRptr+0370h],RDSPRegDC
-      mov dword [dspRptr+0374h],RDSPRegDD
-      mov dword [dspRptr+0378h],RDSPRegDE
-      mov dword [dspRptr+037Ch],RDSPRegDF
-      mov dword [dspRptr+0380h],RDSPRegE0
-      mov dword [dspRptr+0384h],RDSPRegE1
-      mov dword [dspRptr+0388h],RDSPRegE2
-      mov dword [dspRptr+038Ch],RDSPRegE3
-      mov dword [dspRptr+0390h],RDSPRegE4
-      mov dword [dspRptr+0394h],RDSPRegE5
-      mov dword [dspRptr+0398h],RDSPRegE6
-      mov dword [dspRptr+039Ch],RDSPRegE7
-      mov dword [dspRptr+03A0h],RDSPRegE8
-      mov dword [dspRptr+03A4h],RDSPRegE9
-      mov dword [dspRptr+03A8h],RDSPRegEA
-      mov dword [dspRptr+03ACh],RDSPRegEB
-      mov dword [dspRptr+03B0h],RDSPRegEC
-      mov dword [dspRptr+03B4h],RDSPRegED
-      mov dword [dspRptr+03B8h],RDSPRegEE
-      mov dword [dspRptr+03BCh],RDSPRegEF
-      mov dword [dspRptr+03C0h],RDSPRegF0
-      mov dword [dspRptr+03C4h],RDSPRegF1
-      mov dword [dspRptr+03C8h],RDSPRegF2
-      mov dword [dspRptr+03CCh],RDSPRegF3
-      mov dword [dspRptr+03D0h],RDSPRegF4
-      mov dword [dspRptr+03D4h],RDSPRegF5
-      mov dword [dspRptr+03D8h],RDSPRegF6
-      mov dword [dspRptr+03DCh],RDSPRegF7
-      mov dword [dspRptr+03E0h],RDSPRegF8
-      mov dword [dspRptr+03E4h],RDSPRegF9
-      mov dword [dspRptr+03E8h],RDSPRegFA
-      mov dword [dspRptr+03ECh],RDSPRegFB
-      mov dword [dspRptr+03F0h],RDSPRegFC
-      mov dword [dspRptr+03F4h],RDSPRegFD
-      mov dword [dspRptr+03F8h],RDSPRegFE
-      mov dword [dspRptr+03FCh],RDSPRegFF
+      mov dword[dspRptr+00h],RDSPReg00
+      mov dword[dspRptr+04h],RDSPReg01
+      mov dword[dspRptr+08h],RDSPReg02
+      mov dword[dspRptr+0Ch],RDSPReg03
+      mov dword[dspRptr+010h],RDSPReg04
+      mov dword[dspRptr+014h],RDSPReg05
+      mov dword[dspRptr+018h],RDSPReg06
+      mov dword[dspRptr+01Ch],RDSPReg07
+      mov dword[dspRptr+020h],RDSPReg08
+      mov dword[dspRptr+024h],RDSPReg09
+      mov dword[dspRptr+028h],RDSPReg0A
+      mov dword[dspRptr+02Ch],RDSPReg0B
+      mov dword[dspRptr+030h],RDSPReg0C
+      mov dword[dspRptr+034h],RDSPReg0D
+      mov dword[dspRptr+038h],RDSPReg0E
+      mov dword[dspRptr+03Ch],RDSPReg0F
+      mov dword[dspRptr+040h],RDSPReg10
+      mov dword[dspRptr+044h],RDSPReg11
+      mov dword[dspRptr+048h],RDSPReg12
+      mov dword[dspRptr+04Ch],RDSPReg13
+      mov dword[dspRptr+050h],RDSPReg14
+      mov dword[dspRptr+054h],RDSPReg15
+      mov dword[dspRptr+058h],RDSPReg16
+      mov dword[dspRptr+05Ch],RDSPReg17
+      mov dword[dspRptr+060h],RDSPReg18
+      mov dword[dspRptr+064h],RDSPReg19
+      mov dword[dspRptr+068h],RDSPReg1A
+      mov dword[dspRptr+06Ch],RDSPReg1B
+      mov dword[dspRptr+070h],RDSPReg1C
+      mov dword[dspRptr+074h],RDSPReg1D
+      mov dword[dspRptr+078h],RDSPReg1E
+      mov dword[dspRptr+07Ch],RDSPReg1F
+      mov dword[dspRptr+080h],RDSPReg20
+      mov dword[dspRptr+084h],RDSPReg21
+      mov dword[dspRptr+088h],RDSPReg22
+      mov dword[dspRptr+08Ch],RDSPReg23
+      mov dword[dspRptr+090h],RDSPReg24
+      mov dword[dspRptr+094h],RDSPReg25
+      mov dword[dspRptr+098h],RDSPReg26
+      mov dword[dspRptr+09Ch],RDSPReg27
+      mov dword[dspRptr+0A0h],RDSPReg28
+      mov dword[dspRptr+0A4h],RDSPReg29
+      mov dword[dspRptr+0A8h],RDSPReg2A
+      mov dword[dspRptr+0ACh],RDSPReg2B
+      mov dword[dspRptr+0B0h],RDSPReg2C
+      mov dword[dspRptr+0B4h],RDSPReg2D
+      mov dword[dspRptr+0B8h],RDSPReg2E
+      mov dword[dspRptr+0BCh],RDSPReg2F
+      mov dword[dspRptr+0C0h],RDSPReg30
+      mov dword[dspRptr+0C4h],RDSPReg31
+      mov dword[dspRptr+0C8h],RDSPReg32
+      mov dword[dspRptr+0CCh],RDSPReg33
+      mov dword[dspRptr+0D0h],RDSPReg34
+      mov dword[dspRptr+0D4h],RDSPReg35
+      mov dword[dspRptr+0D8h],RDSPReg36
+      mov dword[dspRptr+0DCh],RDSPReg37
+      mov dword[dspRptr+0E0h],RDSPReg38
+      mov dword[dspRptr+0E4h],RDSPReg39
+      mov dword[dspRptr+0E8h],RDSPReg3A
+      mov dword[dspRptr+0ECh],RDSPReg3B
+      mov dword[dspRptr+0F0h],RDSPReg3C
+      mov dword[dspRptr+0F4h],RDSPReg3D
+      mov dword[dspRptr+0F8h],RDSPReg3E
+      mov dword[dspRptr+0FCh],RDSPReg3F
+      mov dword[dspRptr+0100h],RDSPReg40
+      mov dword[dspRptr+0104h],RDSPReg41
+      mov dword[dspRptr+0108h],RDSPReg42
+      mov dword[dspRptr+010Ch],RDSPReg43
+      mov dword[dspRptr+0110h],RDSPReg44
+      mov dword[dspRptr+0114h],RDSPReg45
+      mov dword[dspRptr+0118h],RDSPReg46
+      mov dword[dspRptr+011Ch],RDSPReg47
+      mov dword[dspRptr+0120h],RDSPReg48
+      mov dword[dspRptr+0124h],RDSPReg49
+      mov dword[dspRptr+0128h],RDSPReg4A
+      mov dword[dspRptr+012Ch],RDSPReg4B
+      mov dword[dspRptr+0130h],RDSPReg4C
+      mov dword[dspRptr+0134h],RDSPReg4D
+      mov dword[dspRptr+0138h],RDSPReg4E
+      mov dword[dspRptr+013Ch],RDSPReg4F
+      mov dword[dspRptr+0140h],RDSPReg50
+      mov dword[dspRptr+0144h],RDSPReg51
+      mov dword[dspRptr+0148h],RDSPReg52
+      mov dword[dspRptr+014Ch],RDSPReg53
+      mov dword[dspRptr+0150h],RDSPReg54
+      mov dword[dspRptr+0154h],RDSPReg55
+      mov dword[dspRptr+0158h],RDSPReg56
+      mov dword[dspRptr+015Ch],RDSPReg57
+      mov dword[dspRptr+0160h],RDSPReg58
+      mov dword[dspRptr+0164h],RDSPReg59
+      mov dword[dspRptr+0168h],RDSPReg5A
+      mov dword[dspRptr+016Ch],RDSPReg5B
+      mov dword[dspRptr+0170h],RDSPReg5C
+      mov dword[dspRptr+0174h],RDSPReg5D
+      mov dword[dspRptr+0178h],RDSPReg5E
+      mov dword[dspRptr+017Ch],RDSPReg5F
+      mov dword[dspRptr+0180h],RDSPReg60
+      mov dword[dspRptr+0184h],RDSPReg61
+      mov dword[dspRptr+0188h],RDSPReg62
+      mov dword[dspRptr+018Ch],RDSPReg63
+      mov dword[dspRptr+0190h],RDSPReg64
+      mov dword[dspRptr+0194h],RDSPReg65
+      mov dword[dspRptr+0198h],RDSPReg66
+      mov dword[dspRptr+019Ch],RDSPReg67
+      mov dword[dspRptr+01A0h],RDSPReg68
+      mov dword[dspRptr+01A4h],RDSPReg69
+      mov dword[dspRptr+01A8h],RDSPReg6A
+      mov dword[dspRptr+01ACh],RDSPReg6B
+      mov dword[dspRptr+01B0h],RDSPReg6C
+      mov dword[dspRptr+01B4h],RDSPReg6D
+      mov dword[dspRptr+01B8h],RDSPReg6E
+      mov dword[dspRptr+01BCh],RDSPReg6F
+      mov dword[dspRptr+01C0h],RDSPReg70
+      mov dword[dspRptr+01C4h],RDSPReg71
+      mov dword[dspRptr+01C8h],RDSPReg72
+      mov dword[dspRptr+01CCh],RDSPReg73
+      mov dword[dspRptr+01D0h],RDSPReg74
+      mov dword[dspRptr+01D4h],RDSPReg75
+      mov dword[dspRptr+01D8h],RDSPReg76
+      mov dword[dspRptr+01DCh],RDSPReg77
+      mov dword[dspRptr+01E0h],RDSPReg78
+      mov dword[dspRptr+01E4h],RDSPReg79
+      mov dword[dspRptr+01E8h],RDSPReg7A
+      mov dword[dspRptr+01ECh],RDSPReg7B
+      mov dword[dspRptr+01F0h],RDSPReg7C
+      mov dword[dspRptr+01F4h],RDSPReg7D
+      mov dword[dspRptr+01F8h],RDSPReg7E
+      mov dword[dspRptr+01FCh],RDSPReg7F
+      mov dword[dspRptr+0200h],RDSPReg80
+      mov dword[dspRptr+0204h],RDSPReg81
+      mov dword[dspRptr+0208h],RDSPReg82
+      mov dword[dspRptr+020Ch],RDSPReg83
+      mov dword[dspRptr+0210h],RDSPReg84
+      mov dword[dspRptr+0214h],RDSPReg85
+      mov dword[dspRptr+0218h],RDSPReg86
+      mov dword[dspRptr+021Ch],RDSPReg87
+      mov dword[dspRptr+0220h],RDSPReg88
+      mov dword[dspRptr+0224h],RDSPReg89
+      mov dword[dspRptr+0228h],RDSPReg8A
+      mov dword[dspRptr+022Ch],RDSPReg8B
+      mov dword[dspRptr+0230h],RDSPReg8C
+      mov dword[dspRptr+0234h],RDSPReg8D
+      mov dword[dspRptr+0238h],RDSPReg8E
+      mov dword[dspRptr+023Ch],RDSPReg8F
+      mov dword[dspRptr+0240h],RDSPReg90
+      mov dword[dspRptr+0244h],RDSPReg91
+      mov dword[dspRptr+0248h],RDSPReg92
+      mov dword[dspRptr+024Ch],RDSPReg93
+      mov dword[dspRptr+0250h],RDSPReg94
+      mov dword[dspRptr+0254h],RDSPReg95
+      mov dword[dspRptr+0258h],RDSPReg96
+      mov dword[dspRptr+025Ch],RDSPReg97
+      mov dword[dspRptr+0260h],RDSPReg98
+      mov dword[dspRptr+0264h],RDSPReg99
+      mov dword[dspRptr+0268h],RDSPReg9A
+      mov dword[dspRptr+026Ch],RDSPReg9B
+      mov dword[dspRptr+0270h],RDSPReg9C
+      mov dword[dspRptr+0274h],RDSPReg9D
+      mov dword[dspRptr+0278h],RDSPReg9E
+      mov dword[dspRptr+027Ch],RDSPReg9F
+      mov dword[dspRptr+0280h],RDSPRegA0
+      mov dword[dspRptr+0284h],RDSPRegA1
+      mov dword[dspRptr+0288h],RDSPRegA2
+      mov dword[dspRptr+028Ch],RDSPRegA3
+      mov dword[dspRptr+0290h],RDSPRegA4
+      mov dword[dspRptr+0294h],RDSPRegA5
+      mov dword[dspRptr+0298h],RDSPRegA6
+      mov dword[dspRptr+029Ch],RDSPRegA7
+      mov dword[dspRptr+02A0h],RDSPRegA8
+      mov dword[dspRptr+02A4h],RDSPRegA9
+      mov dword[dspRptr+02A8h],RDSPRegAA
+      mov dword[dspRptr+02ACh],RDSPRegAB
+      mov dword[dspRptr+02B0h],RDSPRegAC
+      mov dword[dspRptr+02B4h],RDSPRegAD
+      mov dword[dspRptr+02B8h],RDSPRegAE
+      mov dword[dspRptr+02BCh],RDSPRegAF
+      mov dword[dspRptr+02C0h],RDSPRegB0
+      mov dword[dspRptr+02C4h],RDSPRegB1
+      mov dword[dspRptr+02C8h],RDSPRegB2
+      mov dword[dspRptr+02CCh],RDSPRegB3
+      mov dword[dspRptr+02D0h],RDSPRegB4
+      mov dword[dspRptr+02D4h],RDSPRegB5
+      mov dword[dspRptr+02D8h],RDSPRegB6
+      mov dword[dspRptr+02DCh],RDSPRegB7
+      mov dword[dspRptr+02E0h],RDSPRegB8
+      mov dword[dspRptr+02E4h],RDSPRegB9
+      mov dword[dspRptr+02E8h],RDSPRegBA
+      mov dword[dspRptr+02ECh],RDSPRegBB
+      mov dword[dspRptr+02F0h],RDSPRegBC
+      mov dword[dspRptr+02F4h],RDSPRegBD
+      mov dword[dspRptr+02F8h],RDSPRegBE
+      mov dword[dspRptr+02FCh],RDSPRegBF
+      mov dword[dspRptr+0300h],RDSPRegC0
+      mov dword[dspRptr+0304h],RDSPRegC1
+      mov dword[dspRptr+0308h],RDSPRegC2
+      mov dword[dspRptr+030Ch],RDSPRegC3
+      mov dword[dspRptr+0310h],RDSPRegC4
+      mov dword[dspRptr+0314h],RDSPRegC5
+      mov dword[dspRptr+0318h],RDSPRegC6
+      mov dword[dspRptr+031Ch],RDSPRegC7
+      mov dword[dspRptr+0320h],RDSPRegC8
+      mov dword[dspRptr+0324h],RDSPRegC9
+      mov dword[dspRptr+0328h],RDSPRegCA
+      mov dword[dspRptr+032Ch],RDSPRegCB
+      mov dword[dspRptr+0330h],RDSPRegCC
+      mov dword[dspRptr+0334h],RDSPRegCD
+      mov dword[dspRptr+0338h],RDSPRegCE
+      mov dword[dspRptr+033Ch],RDSPRegCF
+      mov dword[dspRptr+0340h],RDSPRegD0
+      mov dword[dspRptr+0344h],RDSPRegD1
+      mov dword[dspRptr+0348h],RDSPRegD2
+      mov dword[dspRptr+034Ch],RDSPRegD3
+      mov dword[dspRptr+0350h],RDSPRegD4
+      mov dword[dspRptr+0354h],RDSPRegD5
+      mov dword[dspRptr+0358h],RDSPRegD6
+      mov dword[dspRptr+035Ch],RDSPRegD7
+      mov dword[dspRptr+0360h],RDSPRegD8
+      mov dword[dspRptr+0364h],RDSPRegD9
+      mov dword[dspRptr+0368h],RDSPRegDA
+      mov dword[dspRptr+036Ch],RDSPRegDB
+      mov dword[dspRptr+0370h],RDSPRegDC
+      mov dword[dspRptr+0374h],RDSPRegDD
+      mov dword[dspRptr+0378h],RDSPRegDE
+      mov dword[dspRptr+037Ch],RDSPRegDF
+      mov dword[dspRptr+0380h],RDSPRegE0
+      mov dword[dspRptr+0384h],RDSPRegE1
+      mov dword[dspRptr+0388h],RDSPRegE2
+      mov dword[dspRptr+038Ch],RDSPRegE3
+      mov dword[dspRptr+0390h],RDSPRegE4
+      mov dword[dspRptr+0394h],RDSPRegE5
+      mov dword[dspRptr+0398h],RDSPRegE6
+      mov dword[dspRptr+039Ch],RDSPRegE7
+      mov dword[dspRptr+03A0h],RDSPRegE8
+      mov dword[dspRptr+03A4h],RDSPRegE9
+      mov dword[dspRptr+03A8h],RDSPRegEA
+      mov dword[dspRptr+03ACh],RDSPRegEB
+      mov dword[dspRptr+03B0h],RDSPRegEC
+      mov dword[dspRptr+03B4h],RDSPRegED
+      mov dword[dspRptr+03B8h],RDSPRegEE
+      mov dword[dspRptr+03BCh],RDSPRegEF
+      mov dword[dspRptr+03C0h],RDSPRegF0
+      mov dword[dspRptr+03C4h],RDSPRegF1
+      mov dword[dspRptr+03C8h],RDSPRegF2
+      mov dword[dspRptr+03CCh],RDSPRegF3
+      mov dword[dspRptr+03D0h],RDSPRegF4
+      mov dword[dspRptr+03D4h],RDSPRegF5
+      mov dword[dspRptr+03D8h],RDSPRegF6
+      mov dword[dspRptr+03DCh],RDSPRegF7
+      mov dword[dspRptr+03E0h],RDSPRegF8
+      mov dword[dspRptr+03E4h],RDSPRegF9
+      mov dword[dspRptr+03E8h],RDSPRegFA
+      mov dword[dspRptr+03ECh],RDSPRegFB
+      mov dword[dspRptr+03F0h],RDSPRegFC
+      mov dword[dspRptr+03F4h],RDSPRegFD
+      mov dword[dspRptr+03F8h],RDSPRegFE
+      mov dword[dspRptr+03FCh],RDSPRegFF
 
-      mov dword [dspWptr+00h],WDSPReg00
-      mov dword [dspWptr+04h],WDSPReg01
-      mov dword [dspWptr+08h],WDSPReg02
-      mov dword [dspWptr+0Ch],WDSPReg03
-      mov dword [dspWptr+010h],WDSPReg04
-      mov dword [dspWptr+014h],WDSPReg05
-      mov dword [dspWptr+018h],WDSPReg06
-      mov dword [dspWptr+01Ch],WDSPReg07
-      mov dword [dspWptr+020h],WDSPReg08
-      mov dword [dspWptr+024h],WDSPReg09
-      mov dword [dspWptr+028h],WDSPReg0A
-      mov dword [dspWptr+02Ch],WDSPReg0B
-      mov dword [dspWptr+030h],WDSPReg0C
-      mov dword [dspWptr+034h],WDSPReg0D
-      mov dword [dspWptr+038h],WDSPReg0E
-      mov dword [dspWptr+03Ch],WDSPReg0F
-      mov dword [dspWptr+040h],WDSPReg10
-      mov dword [dspWptr+044h],WDSPReg11
-      mov dword [dspWptr+048h],WDSPReg12
-      mov dword [dspWptr+04Ch],WDSPReg13
-      mov dword [dspWptr+050h],WDSPReg14
-      mov dword [dspWptr+054h],WDSPReg15
-      mov dword [dspWptr+058h],WDSPReg16
-      mov dword [dspWptr+05Ch],WDSPReg17
-      mov dword [dspWptr+060h],WDSPReg18
-      mov dword [dspWptr+064h],WDSPReg19
-      mov dword [dspWptr+068h],WDSPReg1A
-      mov dword [dspWptr+06Ch],WDSPReg1B
-      mov dword [dspWptr+070h],WDSPReg1C
-      mov dword [dspWptr+074h],WDSPReg1D
-      mov dword [dspWptr+078h],WDSPReg1E
-      mov dword [dspWptr+07Ch],WDSPReg1F
-      mov dword [dspWptr+080h],WDSPReg20
-      mov dword [dspWptr+084h],WDSPReg21
-      mov dword [dspWptr+088h],WDSPReg22
-      mov dword [dspWptr+08Ch],WDSPReg23
-      mov dword [dspWptr+090h],WDSPReg24
-      mov dword [dspWptr+094h],WDSPReg25
-      mov dword [dspWptr+098h],WDSPReg26
-      mov dword [dspWptr+09Ch],WDSPReg27
-      mov dword [dspWptr+0A0h],WDSPReg28
-      mov dword [dspWptr+0A4h],WDSPReg29
-      mov dword [dspWptr+0A8h],WDSPReg2A
-      mov dword [dspWptr+0ACh],WDSPReg2B
-      mov dword [dspWptr+0B0h],WDSPReg2C
-      mov dword [dspWptr+0B4h],WDSPReg2D
-      mov dword [dspWptr+0B8h],WDSPReg2E
-      mov dword [dspWptr+0BCh],WDSPReg2F
-      mov dword [dspWptr+0C0h],WDSPReg30
-      mov dword [dspWptr+0C4h],WDSPReg31
-      mov dword [dspWptr+0C8h],WDSPReg32
-      mov dword [dspWptr+0CCh],WDSPReg33
-      mov dword [dspWptr+0D0h],WDSPReg34
-      mov dword [dspWptr+0D4h],WDSPReg35
-      mov dword [dspWptr+0D8h],WDSPReg36
-      mov dword [dspWptr+0DCh],WDSPReg37
-      mov dword [dspWptr+0E0h],WDSPReg38
-      mov dword [dspWptr+0E4h],WDSPReg39
-      mov dword [dspWptr+0E8h],WDSPReg3A
-      mov dword [dspWptr+0ECh],WDSPReg3B
-      mov dword [dspWptr+0F0h],WDSPReg3C
-      mov dword [dspWptr+0F4h],WDSPReg3D
-      mov dword [dspWptr+0F8h],WDSPReg3E
-      mov dword [dspWptr+0FCh],WDSPReg3F
-      mov dword [dspWptr+0100h],WDSPReg40
-      mov dword [dspWptr+0104h],WDSPReg41
-      mov dword [dspWptr+0108h],WDSPReg42
-      mov dword [dspWptr+010Ch],WDSPReg43
-      mov dword [dspWptr+0110h],WDSPReg44
-      mov dword [dspWptr+0114h],WDSPReg45
-      mov dword [dspWptr+0118h],WDSPReg46
-      mov dword [dspWptr+011Ch],WDSPReg47
-      mov dword [dspWptr+0120h],WDSPReg48
-      mov dword [dspWptr+0124h],WDSPReg49
-      mov dword [dspWptr+0128h],WDSPReg4A
-      mov dword [dspWptr+012Ch],WDSPReg4B
-      mov dword [dspWptr+0130h],WDSPReg4C
-      mov dword [dspWptr+0134h],WDSPReg4D
-      mov dword [dspWptr+0138h],WDSPReg4E
-      mov dword [dspWptr+013Ch],WDSPReg4F
-      mov dword [dspWptr+0140h],WDSPReg50
-      mov dword [dspWptr+0144h],WDSPReg51
-      mov dword [dspWptr+0148h],WDSPReg52
-      mov dword [dspWptr+014Ch],WDSPReg53
-      mov dword [dspWptr+0150h],WDSPReg54
-      mov dword [dspWptr+0154h],WDSPReg55
-      mov dword [dspWptr+0158h],WDSPReg56
-      mov dword [dspWptr+015Ch],WDSPReg57
-      mov dword [dspWptr+0160h],WDSPReg58
-      mov dword [dspWptr+0164h],WDSPReg59
-      mov dword [dspWptr+0168h],WDSPReg5A
-      mov dword [dspWptr+016Ch],WDSPReg5B
-      mov dword [dspWptr+0170h],WDSPReg5C
-      mov dword [dspWptr+0174h],WDSPReg5D
-      mov dword [dspWptr+0178h],WDSPReg5E
-      mov dword [dspWptr+017Ch],WDSPReg5F
-      mov dword [dspWptr+0180h],WDSPReg60
-      mov dword [dspWptr+0184h],WDSPReg61
-      mov dword [dspWptr+0188h],WDSPReg62
-      mov dword [dspWptr+018Ch],WDSPReg63
-      mov dword [dspWptr+0190h],WDSPReg64
-      mov dword [dspWptr+0194h],WDSPReg65
-      mov dword [dspWptr+0198h],WDSPReg66
-      mov dword [dspWptr+019Ch],WDSPReg67
-      mov dword [dspWptr+01A0h],WDSPReg68
-      mov dword [dspWptr+01A4h],WDSPReg69
-      mov dword [dspWptr+01A8h],WDSPReg6A
-      mov dword [dspWptr+01ACh],WDSPReg6B
-      mov dword [dspWptr+01B0h],WDSPReg6C
-      mov dword [dspWptr+01B4h],WDSPReg6D
-      mov dword [dspWptr+01B8h],WDSPReg6E
-      mov dword [dspWptr+01BCh],WDSPReg6F
-      mov dword [dspWptr+01C0h],WDSPReg70
-      mov dword [dspWptr+01C4h],WDSPReg71
-      mov dword [dspWptr+01C8h],WDSPReg72
-      mov dword [dspWptr+01CCh],WDSPReg73
-      mov dword [dspWptr+01D0h],WDSPReg74
-      mov dword [dspWptr+01D4h],WDSPReg75
-      mov dword [dspWptr+01D8h],WDSPReg76
-      mov dword [dspWptr+01DCh],WDSPReg77
-      mov dword [dspWptr+01E0h],WDSPReg78
-      mov dword [dspWptr+01E4h],WDSPReg79
-      mov dword [dspWptr+01E8h],WDSPReg7A
-      mov dword [dspWptr+01ECh],WDSPReg7B
-      mov dword [dspWptr+01F0h],WDSPReg7C
-      mov dword [dspWptr+01F4h],WDSPReg7D
-      mov dword [dspWptr+01F8h],WDSPReg7E
-      mov dword [dspWptr+01FCh],WDSPReg7F
-      mov dword [dspWptr+0200h],WDSPReg80
-      mov dword [dspWptr+0204h],WDSPReg81
-      mov dword [dspWptr+0208h],WDSPReg82
-      mov dword [dspWptr+020Ch],WDSPReg83
-      mov dword [dspWptr+0210h],WDSPReg84
-      mov dword [dspWptr+0214h],WDSPReg85
-      mov dword [dspWptr+0218h],WDSPReg86
-      mov dword [dspWptr+021Ch],WDSPReg87
-      mov dword [dspWptr+0220h],WDSPReg88
-      mov dword [dspWptr+0224h],WDSPReg89
-      mov dword [dspWptr+0228h],WDSPReg8A
-      mov dword [dspWptr+022Ch],WDSPReg8B
-      mov dword [dspWptr+0230h],WDSPReg8C
-      mov dword [dspWptr+0234h],WDSPReg8D
-      mov dword [dspWptr+0238h],WDSPReg8E
-      mov dword [dspWptr+023Ch],WDSPReg8F
-      mov dword [dspWptr+0240h],WDSPReg90
-      mov dword [dspWptr+0244h],WDSPReg91
-      mov dword [dspWptr+0248h],WDSPReg92
-      mov dword [dspWptr+024Ch],WDSPReg93
-      mov dword [dspWptr+0250h],WDSPReg94
-      mov dword [dspWptr+0254h],WDSPReg95
-      mov dword [dspWptr+0258h],WDSPReg96
-      mov dword [dspWptr+025Ch],WDSPReg97
-      mov dword [dspWptr+0260h],WDSPReg98
-      mov dword [dspWptr+0264h],WDSPReg99
-      mov dword [dspWptr+0268h],WDSPReg9A
-      mov dword [dspWptr+026Ch],WDSPReg9B
-      mov dword [dspWptr+0270h],WDSPReg9C
-      mov dword [dspWptr+0274h],WDSPReg9D
-      mov dword [dspWptr+0278h],WDSPReg9E
-      mov dword [dspWptr+027Ch],WDSPReg9F
-      mov dword [dspWptr+0280h],WDSPRegA0
-      mov dword [dspWptr+0284h],WDSPRegA1
-      mov dword [dspWptr+0288h],WDSPRegA2
-      mov dword [dspWptr+028Ch],WDSPRegA3
-      mov dword [dspWptr+0290h],WDSPRegA4
-      mov dword [dspWptr+0294h],WDSPRegA5
-      mov dword [dspWptr+0298h],WDSPRegA6
-      mov dword [dspWptr+029Ch],WDSPRegA7
-      mov dword [dspWptr+02A0h],WDSPRegA8
-      mov dword [dspWptr+02A4h],WDSPRegA9
-      mov dword [dspWptr+02A8h],WDSPRegAA
-      mov dword [dspWptr+02ACh],WDSPRegAB
-      mov dword [dspWptr+02B0h],WDSPRegAC
-      mov dword [dspWptr+02B4h],WDSPRegAD
-      mov dword [dspWptr+02B8h],WDSPRegAE
-      mov dword [dspWptr+02BCh],WDSPRegAF
-      mov dword [dspWptr+02C0h],WDSPRegB0
-      mov dword [dspWptr+02C4h],WDSPRegB1
-      mov dword [dspWptr+02C8h],WDSPRegB2
-      mov dword [dspWptr+02CCh],WDSPRegB3
-      mov dword [dspWptr+02D0h],WDSPRegB4
-      mov dword [dspWptr+02D4h],WDSPRegB5
-      mov dword [dspWptr+02D8h],WDSPRegB6
-      mov dword [dspWptr+02DCh],WDSPRegB7
-      mov dword [dspWptr+02E0h],WDSPRegB8
-      mov dword [dspWptr+02E4h],WDSPRegB9
-      mov dword [dspWptr+02E8h],WDSPRegBA
-      mov dword [dspWptr+02ECh],WDSPRegBB
-      mov dword [dspWptr+02F0h],WDSPRegBC
-      mov dword [dspWptr+02F4h],WDSPRegBD
-      mov dword [dspWptr+02F8h],WDSPRegBE
-      mov dword [dspWptr+02FCh],WDSPRegBF
-      mov dword [dspWptr+0300h],WDSPRegC0
-      mov dword [dspWptr+0304h],WDSPRegC1
-      mov dword [dspWptr+0308h],WDSPRegC2
-      mov dword [dspWptr+030Ch],WDSPRegC3
-      mov dword [dspWptr+0310h],WDSPRegC4
-      mov dword [dspWptr+0314h],WDSPRegC5
-      mov dword [dspWptr+0318h],WDSPRegC6
-      mov dword [dspWptr+031Ch],WDSPRegC7
-      mov dword [dspWptr+0320h],WDSPRegC8
-      mov dword [dspWptr+0324h],WDSPRegC9
-      mov dword [dspWptr+0328h],WDSPRegCA
-      mov dword [dspWptr+032Ch],WDSPRegCB
-      mov dword [dspWptr+0330h],WDSPRegCC
-      mov dword [dspWptr+0334h],WDSPRegCD
-      mov dword [dspWptr+0338h],WDSPRegCE
-      mov dword [dspWptr+033Ch],WDSPRegCF
-      mov dword [dspWptr+0340h],WDSPRegD0
-      mov dword [dspWptr+0344h],WDSPRegD1
-      mov dword [dspWptr+0348h],WDSPRegD2
-      mov dword [dspWptr+034Ch],WDSPRegD3
-      mov dword [dspWptr+0350h],WDSPRegD4
-      mov dword [dspWptr+0354h],WDSPRegD5
-      mov dword [dspWptr+0358h],WDSPRegD6
-      mov dword [dspWptr+035Ch],WDSPRegD7
-      mov dword [dspWptr+0360h],WDSPRegD8
-      mov dword [dspWptr+0364h],WDSPRegD9
-      mov dword [dspWptr+0368h],WDSPRegDA
-      mov dword [dspWptr+036Ch],WDSPRegDB
-      mov dword [dspWptr+0370h],WDSPRegDC
-      mov dword [dspWptr+0374h],WDSPRegDD
-      mov dword [dspWptr+0378h],WDSPRegDE
-      mov dword [dspWptr+037Ch],WDSPRegDF
-      mov dword [dspWptr+0380h],WDSPRegE0
-      mov dword [dspWptr+0384h],WDSPRegE1
-      mov dword [dspWptr+0388h],WDSPRegE2
-      mov dword [dspWptr+038Ch],WDSPRegE3
-      mov dword [dspWptr+0390h],WDSPRegE4
-      mov dword [dspWptr+0394h],WDSPRegE5
-      mov dword [dspWptr+0398h],WDSPRegE6
-      mov dword [dspWptr+039Ch],WDSPRegE7
-      mov dword [dspWptr+03A0h],WDSPRegE8
-      mov dword [dspWptr+03A4h],WDSPRegE9
-      mov dword [dspWptr+03A8h],WDSPRegEA
-      mov dword [dspWptr+03ACh],WDSPRegEB
-      mov dword [dspWptr+03B0h],WDSPRegEC
-      mov dword [dspWptr+03B4h],WDSPRegED
-      mov dword [dspWptr+03B8h],WDSPRegEE
-      mov dword [dspWptr+03BCh],WDSPRegEF
-      mov dword [dspWptr+03C0h],WDSPRegF0
-      mov dword [dspWptr+03C4h],WDSPRegF1
-      mov dword [dspWptr+03C8h],WDSPRegF2
-      mov dword [dspWptr+03CCh],WDSPRegF3
-      mov dword [dspWptr+03D0h],WDSPRegF4
-      mov dword [dspWptr+03D4h],WDSPRegF5
-      mov dword [dspWptr+03D8h],WDSPRegF6
-      mov dword [dspWptr+03DCh],WDSPRegF7
-      mov dword [dspWptr+03E0h],WDSPRegF8
-      mov dword [dspWptr+03E4h],WDSPRegF9
-      mov dword [dspWptr+03E8h],WDSPRegFA
-      mov dword [dspWptr+03ECh],WDSPRegFB
-      mov dword [dspWptr+03F0h],WDSPRegFC
-      mov dword [dspWptr+03F4h],WDSPRegFD
-      mov dword [dspWptr+03F8h],WDSPRegFE
-      mov dword [dspWptr+03FCh],WDSPRegFF
+      mov dword[dspWptr+00h],WDSPReg00
+      mov dword[dspWptr+04h],WDSPReg01
+      mov dword[dspWptr+08h],WDSPReg02
+      mov dword[dspWptr+0Ch],WDSPReg03
+      mov dword[dspWptr+010h],WDSPReg04
+      mov dword[dspWptr+014h],WDSPReg05
+      mov dword[dspWptr+018h],WDSPReg06
+      mov dword[dspWptr+01Ch],WDSPReg07
+      mov dword[dspWptr+020h],WDSPReg08
+      mov dword[dspWptr+024h],WDSPReg09
+      mov dword[dspWptr+028h],WDSPReg0A
+      mov dword[dspWptr+02Ch],WDSPReg0B
+      mov dword[dspWptr+030h],WDSPReg0C
+      mov dword[dspWptr+034h],WDSPReg0D
+      mov dword[dspWptr+038h],WDSPReg0E
+      mov dword[dspWptr+03Ch],WDSPReg0F
+      mov dword[dspWptr+040h],WDSPReg10
+      mov dword[dspWptr+044h],WDSPReg11
+      mov dword[dspWptr+048h],WDSPReg12
+      mov dword[dspWptr+04Ch],WDSPReg13
+      mov dword[dspWptr+050h],WDSPReg14
+      mov dword[dspWptr+054h],WDSPReg15
+      mov dword[dspWptr+058h],WDSPReg16
+      mov dword[dspWptr+05Ch],WDSPReg17
+      mov dword[dspWptr+060h],WDSPReg18
+      mov dword[dspWptr+064h],WDSPReg19
+      mov dword[dspWptr+068h],WDSPReg1A
+      mov dword[dspWptr+06Ch],WDSPReg1B
+      mov dword[dspWptr+070h],WDSPReg1C
+      mov dword[dspWptr+074h],WDSPReg1D
+      mov dword[dspWptr+078h],WDSPReg1E
+      mov dword[dspWptr+07Ch],WDSPReg1F
+      mov dword[dspWptr+080h],WDSPReg20
+      mov dword[dspWptr+084h],WDSPReg21
+      mov dword[dspWptr+088h],WDSPReg22
+      mov dword[dspWptr+08Ch],WDSPReg23
+      mov dword[dspWptr+090h],WDSPReg24
+      mov dword[dspWptr+094h],WDSPReg25
+      mov dword[dspWptr+098h],WDSPReg26
+      mov dword[dspWptr+09Ch],WDSPReg27
+      mov dword[dspWptr+0A0h],WDSPReg28
+      mov dword[dspWptr+0A4h],WDSPReg29
+      mov dword[dspWptr+0A8h],WDSPReg2A
+      mov dword[dspWptr+0ACh],WDSPReg2B
+      mov dword[dspWptr+0B0h],WDSPReg2C
+      mov dword[dspWptr+0B4h],WDSPReg2D
+      mov dword[dspWptr+0B8h],WDSPReg2E
+      mov dword[dspWptr+0BCh],WDSPReg2F
+      mov dword[dspWptr+0C0h],WDSPReg30
+      mov dword[dspWptr+0C4h],WDSPReg31
+      mov dword[dspWptr+0C8h],WDSPReg32
+      mov dword[dspWptr+0CCh],WDSPReg33
+      mov dword[dspWptr+0D0h],WDSPReg34
+      mov dword[dspWptr+0D4h],WDSPReg35
+      mov dword[dspWptr+0D8h],WDSPReg36
+      mov dword[dspWptr+0DCh],WDSPReg37
+      mov dword[dspWptr+0E0h],WDSPReg38
+      mov dword[dspWptr+0E4h],WDSPReg39
+      mov dword[dspWptr+0E8h],WDSPReg3A
+      mov dword[dspWptr+0ECh],WDSPReg3B
+      mov dword[dspWptr+0F0h],WDSPReg3C
+      mov dword[dspWptr+0F4h],WDSPReg3D
+      mov dword[dspWptr+0F8h],WDSPReg3E
+      mov dword[dspWptr+0FCh],WDSPReg3F
+      mov dword[dspWptr+0100h],WDSPReg40
+      mov dword[dspWptr+0104h],WDSPReg41
+      mov dword[dspWptr+0108h],WDSPReg42
+      mov dword[dspWptr+010Ch],WDSPReg43
+      mov dword[dspWptr+0110h],WDSPReg44
+      mov dword[dspWptr+0114h],WDSPReg45
+      mov dword[dspWptr+0118h],WDSPReg46
+      mov dword[dspWptr+011Ch],WDSPReg47
+      mov dword[dspWptr+0120h],WDSPReg48
+      mov dword[dspWptr+0124h],WDSPReg49
+      mov dword[dspWptr+0128h],WDSPReg4A
+      mov dword[dspWptr+012Ch],WDSPReg4B
+      mov dword[dspWptr+0130h],WDSPReg4C
+      mov dword[dspWptr+0134h],WDSPReg4D
+      mov dword[dspWptr+0138h],WDSPReg4E
+      mov dword[dspWptr+013Ch],WDSPReg4F
+      mov dword[dspWptr+0140h],WDSPReg50
+      mov dword[dspWptr+0144h],WDSPReg51
+      mov dword[dspWptr+0148h],WDSPReg52
+      mov dword[dspWptr+014Ch],WDSPReg53
+      mov dword[dspWptr+0150h],WDSPReg54
+      mov dword[dspWptr+0154h],WDSPReg55
+      mov dword[dspWptr+0158h],WDSPReg56
+      mov dword[dspWptr+015Ch],WDSPReg57
+      mov dword[dspWptr+0160h],WDSPReg58
+      mov dword[dspWptr+0164h],WDSPReg59
+      mov dword[dspWptr+0168h],WDSPReg5A
+      mov dword[dspWptr+016Ch],WDSPReg5B
+      mov dword[dspWptr+0170h],WDSPReg5C
+      mov dword[dspWptr+0174h],WDSPReg5D
+      mov dword[dspWptr+0178h],WDSPReg5E
+      mov dword[dspWptr+017Ch],WDSPReg5F
+      mov dword[dspWptr+0180h],WDSPReg60
+      mov dword[dspWptr+0184h],WDSPReg61
+      mov dword[dspWptr+0188h],WDSPReg62
+      mov dword[dspWptr+018Ch],WDSPReg63
+      mov dword[dspWptr+0190h],WDSPReg64
+      mov dword[dspWptr+0194h],WDSPReg65
+      mov dword[dspWptr+0198h],WDSPReg66
+      mov dword[dspWptr+019Ch],WDSPReg67
+      mov dword[dspWptr+01A0h],WDSPReg68
+      mov dword[dspWptr+01A4h],WDSPReg69
+      mov dword[dspWptr+01A8h],WDSPReg6A
+      mov dword[dspWptr+01ACh],WDSPReg6B
+      mov dword[dspWptr+01B0h],WDSPReg6C
+      mov dword[dspWptr+01B4h],WDSPReg6D
+      mov dword[dspWptr+01B8h],WDSPReg6E
+      mov dword[dspWptr+01BCh],WDSPReg6F
+      mov dword[dspWptr+01C0h],WDSPReg70
+      mov dword[dspWptr+01C4h],WDSPReg71
+      mov dword[dspWptr+01C8h],WDSPReg72
+      mov dword[dspWptr+01CCh],WDSPReg73
+      mov dword[dspWptr+01D0h],WDSPReg74
+      mov dword[dspWptr+01D4h],WDSPReg75
+      mov dword[dspWptr+01D8h],WDSPReg76
+      mov dword[dspWptr+01DCh],WDSPReg77
+      mov dword[dspWptr+01E0h],WDSPReg78
+      mov dword[dspWptr+01E4h],WDSPReg79
+      mov dword[dspWptr+01E8h],WDSPReg7A
+      mov dword[dspWptr+01ECh],WDSPReg7B
+      mov dword[dspWptr+01F0h],WDSPReg7C
+      mov dword[dspWptr+01F4h],WDSPReg7D
+      mov dword[dspWptr+01F8h],WDSPReg7E
+      mov dword[dspWptr+01FCh],WDSPReg7F
+      mov dword[dspWptr+0200h],WDSPReg80
+      mov dword[dspWptr+0204h],WDSPReg81
+      mov dword[dspWptr+0208h],WDSPReg82
+      mov dword[dspWptr+020Ch],WDSPReg83
+      mov dword[dspWptr+0210h],WDSPReg84
+      mov dword[dspWptr+0214h],WDSPReg85
+      mov dword[dspWptr+0218h],WDSPReg86
+      mov dword[dspWptr+021Ch],WDSPReg87
+      mov dword[dspWptr+0220h],WDSPReg88
+      mov dword[dspWptr+0224h],WDSPReg89
+      mov dword[dspWptr+0228h],WDSPReg8A
+      mov dword[dspWptr+022Ch],WDSPReg8B
+      mov dword[dspWptr+0230h],WDSPReg8C
+      mov dword[dspWptr+0234h],WDSPReg8D
+      mov dword[dspWptr+0238h],WDSPReg8E
+      mov dword[dspWptr+023Ch],WDSPReg8F
+      mov dword[dspWptr+0240h],WDSPReg90
+      mov dword[dspWptr+0244h],WDSPReg91
+      mov dword[dspWptr+0248h],WDSPReg92
+      mov dword[dspWptr+024Ch],WDSPReg93
+      mov dword[dspWptr+0250h],WDSPReg94
+      mov dword[dspWptr+0254h],WDSPReg95
+      mov dword[dspWptr+0258h],WDSPReg96
+      mov dword[dspWptr+025Ch],WDSPReg97
+      mov dword[dspWptr+0260h],WDSPReg98
+      mov dword[dspWptr+0264h],WDSPReg99
+      mov dword[dspWptr+0268h],WDSPReg9A
+      mov dword[dspWptr+026Ch],WDSPReg9B
+      mov dword[dspWptr+0270h],WDSPReg9C
+      mov dword[dspWptr+0274h],WDSPReg9D
+      mov dword[dspWptr+0278h],WDSPReg9E
+      mov dword[dspWptr+027Ch],WDSPReg9F
+      mov dword[dspWptr+0280h],WDSPRegA0
+      mov dword[dspWptr+0284h],WDSPRegA1
+      mov dword[dspWptr+0288h],WDSPRegA2
+      mov dword[dspWptr+028Ch],WDSPRegA3
+      mov dword[dspWptr+0290h],WDSPRegA4
+      mov dword[dspWptr+0294h],WDSPRegA5
+      mov dword[dspWptr+0298h],WDSPRegA6
+      mov dword[dspWptr+029Ch],WDSPRegA7
+      mov dword[dspWptr+02A0h],WDSPRegA8
+      mov dword[dspWptr+02A4h],WDSPRegA9
+      mov dword[dspWptr+02A8h],WDSPRegAA
+      mov dword[dspWptr+02ACh],WDSPRegAB
+      mov dword[dspWptr+02B0h],WDSPRegAC
+      mov dword[dspWptr+02B4h],WDSPRegAD
+      mov dword[dspWptr+02B8h],WDSPRegAE
+      mov dword[dspWptr+02BCh],WDSPRegAF
+      mov dword[dspWptr+02C0h],WDSPRegB0
+      mov dword[dspWptr+02C4h],WDSPRegB1
+      mov dword[dspWptr+02C8h],WDSPRegB2
+      mov dword[dspWptr+02CCh],WDSPRegB3
+      mov dword[dspWptr+02D0h],WDSPRegB4
+      mov dword[dspWptr+02D4h],WDSPRegB5
+      mov dword[dspWptr+02D8h],WDSPRegB6
+      mov dword[dspWptr+02DCh],WDSPRegB7
+      mov dword[dspWptr+02E0h],WDSPRegB8
+      mov dword[dspWptr+02E4h],WDSPRegB9
+      mov dword[dspWptr+02E8h],WDSPRegBA
+      mov dword[dspWptr+02ECh],WDSPRegBB
+      mov dword[dspWptr+02F0h],WDSPRegBC
+      mov dword[dspWptr+02F4h],WDSPRegBD
+      mov dword[dspWptr+02F8h],WDSPRegBE
+      mov dword[dspWptr+02FCh],WDSPRegBF
+      mov dword[dspWptr+0300h],WDSPRegC0
+      mov dword[dspWptr+0304h],WDSPRegC1
+      mov dword[dspWptr+0308h],WDSPRegC2
+      mov dword[dspWptr+030Ch],WDSPRegC3
+      mov dword[dspWptr+0310h],WDSPRegC4
+      mov dword[dspWptr+0314h],WDSPRegC5
+      mov dword[dspWptr+0318h],WDSPRegC6
+      mov dword[dspWptr+031Ch],WDSPRegC7
+      mov dword[dspWptr+0320h],WDSPRegC8
+      mov dword[dspWptr+0324h],WDSPRegC9
+      mov dword[dspWptr+0328h],WDSPRegCA
+      mov dword[dspWptr+032Ch],WDSPRegCB
+      mov dword[dspWptr+0330h],WDSPRegCC
+      mov dword[dspWptr+0334h],WDSPRegCD
+      mov dword[dspWptr+0338h],WDSPRegCE
+      mov dword[dspWptr+033Ch],WDSPRegCF
+      mov dword[dspWptr+0340h],WDSPRegD0
+      mov dword[dspWptr+0344h],WDSPRegD1
+      mov dword[dspWptr+0348h],WDSPRegD2
+      mov dword[dspWptr+034Ch],WDSPRegD3
+      mov dword[dspWptr+0350h],WDSPRegD4
+      mov dword[dspWptr+0354h],WDSPRegD5
+      mov dword[dspWptr+0358h],WDSPRegD6
+      mov dword[dspWptr+035Ch],WDSPRegD7
+      mov dword[dspWptr+0360h],WDSPRegD8
+      mov dword[dspWptr+0364h],WDSPRegD9
+      mov dword[dspWptr+0368h],WDSPRegDA
+      mov dword[dspWptr+036Ch],WDSPRegDB
+      mov dword[dspWptr+0370h],WDSPRegDC
+      mov dword[dspWptr+0374h],WDSPRegDD
+      mov dword[dspWptr+0378h],WDSPRegDE
+      mov dword[dspWptr+037Ch],WDSPRegDF
+      mov dword[dspWptr+0380h],WDSPRegE0
+      mov dword[dspWptr+0384h],WDSPRegE1
+      mov dword[dspWptr+0388h],WDSPRegE2
+      mov dword[dspWptr+038Ch],WDSPRegE3
+      mov dword[dspWptr+0390h],WDSPRegE4
+      mov dword[dspWptr+0394h],WDSPRegE5
+      mov dword[dspWptr+0398h],WDSPRegE6
+      mov dword[dspWptr+039Ch],WDSPRegE7
+      mov dword[dspWptr+03A0h],WDSPRegE8
+      mov dword[dspWptr+03A4h],WDSPRegE9
+      mov dword[dspWptr+03A8h],WDSPRegEA
+      mov dword[dspWptr+03ACh],WDSPRegEB
+      mov dword[dspWptr+03B0h],WDSPRegEC
+      mov dword[dspWptr+03B4h],WDSPRegED
+      mov dword[dspWptr+03B8h],WDSPRegEE
+      mov dword[dspWptr+03BCh],WDSPRegEF
+      mov dword[dspWptr+03C0h],WDSPRegF0
+      mov dword[dspWptr+03C4h],WDSPRegF1
+      mov dword[dspWptr+03C8h],WDSPRegF2
+      mov dword[dspWptr+03CCh],WDSPRegF3
+      mov dword[dspWptr+03D0h],WDSPRegF4
+      mov dword[dspWptr+03D4h],WDSPRegF5
+      mov dword[dspWptr+03D8h],WDSPRegF6
+      mov dword[dspWptr+03DCh],WDSPRegF7
+      mov dword[dspWptr+03E0h],WDSPRegF8
+      mov dword[dspWptr+03E4h],WDSPRegF9
+      mov dword[dspWptr+03E8h],WDSPRegFA
+      mov dword[dspWptr+03ECh],WDSPRegFB
+      mov dword[dspWptr+03F0h],WDSPRegFC
+      mov dword[dspWptr+03F4h],WDSPRegFD
+      mov dword[dspWptr+03F8h],WDSPRegFE
+      mov dword[dspWptr+03FCh],WDSPRegFF
 
    ; first fill all pointer to an invalid access function
       mov ecx,256
       mov eax,Invalidopcode
       mov ebp,0
-      .loop
+.loop
 %ifdef __MSDOS__
       mov [ds:opcjmptab+ebp],eax
 %else
@@ -1302,262 +1270,262 @@ NEWSYM InitSPC
       dec ecx
       jnz .loop
    ; now fill the table
-      mov dword [opcjmptab+00h],Op00
-      mov dword [opcjmptab+04h],Op01
-      mov dword [opcjmptab+08h],Op02
-      mov dword [opcjmptab+0Ch],Op03
-      mov dword [opcjmptab+010h],Op04
-      mov dword [opcjmptab+014h],Op05
-      mov dword [opcjmptab+018h],Op06
-      mov dword [opcjmptab+01Ch],Op07
-      mov dword [opcjmptab+020h],Op08
-      mov dword [opcjmptab+024h],Op09
-      mov dword [opcjmptab+028h],Op0A
-      mov dword [opcjmptab+02Ch],Op0B
-      mov dword [opcjmptab+030h],Op0C
-      mov dword [opcjmptab+034h],Op0D
-      mov dword [opcjmptab+038h],Op0E
-      mov dword [opcjmptab+03Ch],Op0F
-      mov dword [opcjmptab+040h],Op10
-      mov dword [opcjmptab+044h],Op11
-      mov dword [opcjmptab+048h],Op12
-      mov dword [opcjmptab+04Ch],Op13
-      mov dword [opcjmptab+050h],Op14
-      mov dword [opcjmptab+054h],Op15
-      mov dword [opcjmptab+058h],Op16
-      mov dword [opcjmptab+05Ch],Op17
-      mov dword [opcjmptab+060h],Op18
-      mov dword [opcjmptab+064h],Op19
-      mov dword [opcjmptab+068h],Op1A
-      mov dword [opcjmptab+06Ch],Op1B
-      mov dword [opcjmptab+070h],Op1C
-      mov dword [opcjmptab+074h],Op1D
-      mov dword [opcjmptab+078h],Op1E
-      mov dword [opcjmptab+07Ch],Op1F
-      mov dword [opcjmptab+080h],Op20
-      mov dword [opcjmptab+084h],Op21
-      mov dword [opcjmptab+088h],Op22
-      mov dword [opcjmptab+08Ch],Op23
-      mov dword [opcjmptab+090h],Op24
-      mov dword [opcjmptab+094h],Op25
-      mov dword [opcjmptab+098h],Op26
-      mov dword [opcjmptab+09Ch],Op27
-      mov dword [opcjmptab+0A0h],Op28
-      mov dword [opcjmptab+0A4h],Op29
-      mov dword [opcjmptab+0A8h],Op2A
-      mov dword [opcjmptab+0ACh],Op2B
-      mov dword [opcjmptab+0B0h],Op2C
-      mov dword [opcjmptab+0B4h],Op2D
-      mov dword [opcjmptab+0B8h],Op2E
-      mov dword [opcjmptab+0BCh],Op2F
-      mov dword [opcjmptab+0C0h],Op30
-      mov dword [opcjmptab+0C4h],Op31
-      mov dword [opcjmptab+0C8h],Op32
-      mov dword [opcjmptab+0CCh],Op33
-      mov dword [opcjmptab+0D0h],Op34
-      mov dword [opcjmptab+0D4h],Op35
-      mov dword [opcjmptab+0D8h],Op36
-      mov dword [opcjmptab+0DCh],Op37
-      mov dword [opcjmptab+0E0h],Op38
-      mov dword [opcjmptab+0E4h],Op39
-      mov dword [opcjmptab+0E8h],Op3A
-      mov dword [opcjmptab+0ECh],Op3B
-      mov dword [opcjmptab+0F0h],Op3C
-      mov dword [opcjmptab+0F4h],Op3D
-      mov dword [opcjmptab+0F8h],Op3E
-      mov dword [opcjmptab+0FCh],Op3F
-      mov dword [opcjmptab+0100h],Op40
-      mov dword [opcjmptab+0104h],Op41
-      mov dword [opcjmptab+0108h],Op42
-      mov dword [opcjmptab+010Ch],Op43
-      mov dword [opcjmptab+0110h],Op44
-      mov dword [opcjmptab+0114h],Op45
-      mov dword [opcjmptab+0118h],Op46
-      mov dword [opcjmptab+011Ch],Op47
-      mov dword [opcjmptab+0120h],Op48
-      mov dword [opcjmptab+0124h],Op49
-      mov dword [opcjmptab+0128h],Op4A
-      mov dword [opcjmptab+012Ch],Op4B
-      mov dword [opcjmptab+0130h],Op4C
-      mov dword [opcjmptab+0134h],Op4D
-      mov dword [opcjmptab+0138h],Op4E
-      mov dword [opcjmptab+013Ch],Op4F
-      mov dword [opcjmptab+0140h],Op50
-      mov dword [opcjmptab+0144h],Op51
-      mov dword [opcjmptab+0148h],Op52
-      mov dword [opcjmptab+014Ch],Op53
-      mov dword [opcjmptab+0150h],Op54
-      mov dword [opcjmptab+0154h],Op55
-      mov dword [opcjmptab+0158h],Op56
-      mov dword [opcjmptab+015Ch],Op57
-      mov dword [opcjmptab+0160h],Op58
-      mov dword [opcjmptab+0164h],Op59
-      mov dword [opcjmptab+0168h],Op5A
-      mov dword [opcjmptab+016Ch],Op5B
-      mov dword [opcjmptab+0170h],Op5C
-      mov dword [opcjmptab+0174h],Op5D
-      mov dword [opcjmptab+0178h],Op5E
-      mov dword [opcjmptab+017Ch],Op5F
-      mov dword [opcjmptab+0180h],Op60
-      mov dword [opcjmptab+0184h],Op61
-      mov dword [opcjmptab+0188h],Op62
-      mov dword [opcjmptab+018Ch],Op63
-      mov dword [opcjmptab+0190h],Op64
-      mov dword [opcjmptab+0194h],Op65
-      mov dword [opcjmptab+0198h],Op66
-      mov dword [opcjmptab+019Ch],Op67
-      mov dword [opcjmptab+01A0h],Op68
-      mov dword [opcjmptab+01A4h],Op69
-      mov dword [opcjmptab+01A8h],Op6A
-      mov dword [opcjmptab+01ACh],Op6B
-      mov dword [opcjmptab+01B0h],Op6C
-      mov dword [opcjmptab+01B4h],Op6D
-      mov dword [opcjmptab+01B8h],Op6E
-      mov dword [opcjmptab+01BCh],Op6F
-      mov dword [opcjmptab+01C0h],Op70
-      mov dword [opcjmptab+01C4h],Op71
-      mov dword [opcjmptab+01C8h],Op72
-      mov dword [opcjmptab+01CCh],Op73
-      mov dword [opcjmptab+01D0h],Op74
-      mov dword [opcjmptab+01D4h],Op75
-      mov dword [opcjmptab+01D8h],Op76
-      mov dword [opcjmptab+01DCh],Op77
-      mov dword [opcjmptab+01E0h],Op78
-      mov dword [opcjmptab+01E4h],Op79
-      mov dword [opcjmptab+01E8h],Op7A
-      mov dword [opcjmptab+01ECh],Op7B
-      mov dword [opcjmptab+01F0h],Op7C
-      mov dword [opcjmptab+01F4h],Op7D
-      mov dword [opcjmptab+01F8h],Op7E
-      mov dword [opcjmptab+01FCh],Op7F
-      mov dword [opcjmptab+0200h],Op80
-      mov dword [opcjmptab+0204h],Op81
-      mov dword [opcjmptab+0208h],Op82
-      mov dword [opcjmptab+020Ch],Op83
-      mov dword [opcjmptab+0210h],Op84
-      mov dword [opcjmptab+0214h],Op85
-      mov dword [opcjmptab+0218h],Op86
-      mov dword [opcjmptab+021Ch],Op87
-      mov dword [opcjmptab+0220h],Op88
-      mov dword [opcjmptab+0224h],Op89
-      mov dword [opcjmptab+0228h],Op8A
-      mov dword [opcjmptab+022Ch],Op8B
-      mov dword [opcjmptab+0230h],Op8C
-      mov dword [opcjmptab+0234h],Op8D
-      mov dword [opcjmptab+0238h],Op8E
-      mov dword [opcjmptab+023Ch],Op8F
-      mov dword [opcjmptab+0240h],Op90
-      mov dword [opcjmptab+0244h],Op91
-      mov dword [opcjmptab+0248h],Op92
-      mov dword [opcjmptab+024Ch],Op93
-      mov dword [opcjmptab+0250h],Op94
-      mov dword [opcjmptab+0254h],Op95
-      mov dword [opcjmptab+0258h],Op96
-      mov dword [opcjmptab+025Ch],Op97
-      mov dword [opcjmptab+0260h],Op98
-      mov dword [opcjmptab+0264h],Op99
-      mov dword [opcjmptab+0268h],Op9A
-      mov dword [opcjmptab+026Ch],Op9B
-      mov dword [opcjmptab+0270h],Op9C
-      mov dword [opcjmptab+0274h],Op9D
-      mov dword [opcjmptab+0278h],Op9E
-      mov dword [opcjmptab+027Ch],Op9F
-      mov dword [opcjmptab+0280h],OpA0
-      mov dword [opcjmptab+0284h],OpA1
-      mov dword [opcjmptab+0288h],OpA2
-      mov dword [opcjmptab+028Ch],OpA3
-      mov dword [opcjmptab+0290h],OpA4
-      mov dword [opcjmptab+0294h],OpA5
-      mov dword [opcjmptab+0298h],OpA6
-      mov dword [opcjmptab+029Ch],OpA7
-      mov dword [opcjmptab+02A0h],OpA8
-      mov dword [opcjmptab+02A4h],OpA9
-      mov dword [opcjmptab+02A8h],OpAA
-      mov dword [opcjmptab+02ACh],OpAB
-      mov dword [opcjmptab+02B0h],OpAC
-      mov dword [opcjmptab+02B4h],OpAD
-      mov dword [opcjmptab+02B8h],OpAE
-      mov dword [opcjmptab+02BCh],OpAF
-      mov dword [opcjmptab+02C0h],OpB0
-      mov dword [opcjmptab+02C4h],OpB1
-      mov dword [opcjmptab+02C8h],OpB2
-      mov dword [opcjmptab+02CCh],OpB3
-      mov dword [opcjmptab+02D0h],OpB4
-      mov dword [opcjmptab+02D4h],OpB5
-      mov dword [opcjmptab+02D8h],OpB6
-      mov dword [opcjmptab+02DCh],OpB7
-      mov dword [opcjmptab+02E0h],OpB8
-      mov dword [opcjmptab+02E4h],OpB9
-      mov dword [opcjmptab+02E8h],OpBA
-      mov dword [opcjmptab+02ECh],OpBB
-      mov dword [opcjmptab+02F0h],OpBC
-      mov dword [opcjmptab+02F4h],OpBD
-      mov dword [opcjmptab+02F8h],OpBE
-      mov dword [opcjmptab+02FCh],OpBF
-      mov dword [opcjmptab+0300h],OpC0
-      mov dword [opcjmptab+0304h],OpC1
-      mov dword [opcjmptab+0308h],OpC2
-      mov dword [opcjmptab+030Ch],OpC3
-      mov dword [opcjmptab+0310h],OpC4
-      mov dword [opcjmptab+0314h],OpC5
-      mov dword [opcjmptab+0318h],OpC6
-      mov dword [opcjmptab+031Ch],OpC7
-      mov dword [opcjmptab+0320h],OpC8
-      mov dword [opcjmptab+0324h],OpC9
-      mov dword [opcjmptab+0328h],OpCA
-      mov dword [opcjmptab+032Ch],OpCB
-      mov dword [opcjmptab+0330h],OpCC
-      mov dword [opcjmptab+0334h],OpCD
-      mov dword [opcjmptab+0338h],OpCE
-      mov dword [opcjmptab+033Ch],OpCF
-      mov dword [opcjmptab+0340h],OpD0
-      mov dword [opcjmptab+0344h],OpD1
-      mov dword [opcjmptab+0348h],OpD2
-      mov dword [opcjmptab+034Ch],OpD3
-      mov dword [opcjmptab+0350h],OpD4
-      mov dword [opcjmptab+0354h],OpD5
-      mov dword [opcjmptab+0358h],OpD6
-      mov dword [opcjmptab+035Ch],OpD7
-      mov dword [opcjmptab+0360h],OpD8
-      mov dword [opcjmptab+0364h],OpD9
-      mov dword [opcjmptab+0368h],OpDA
-      mov dword [opcjmptab+036Ch],OpDB
-      mov dword [opcjmptab+0370h],OpDC
-      mov dword [opcjmptab+0374h],OpDD
-      mov dword [opcjmptab+0378h],OpDE
-      mov dword [opcjmptab+037Ch],OpDF
-      mov dword [opcjmptab+0380h],OpE0
-      mov dword [opcjmptab+0384h],OpE1
-      mov dword [opcjmptab+0388h],OpE2
-      mov dword [opcjmptab+038Ch],OpE3
-      mov dword [opcjmptab+0390h],OpE4
-      mov dword [opcjmptab+0394h],OpE5
-      mov dword [opcjmptab+0398h],OpE6
-      mov dword [opcjmptab+039Ch],OpE7
-      mov dword [opcjmptab+03A0h],OpE8
-      mov dword [opcjmptab+03A4h],OpE9
-      mov dword [opcjmptab+03A8h],OpEA
-      mov dword [opcjmptab+03ACh],OpEB
-      mov dword [opcjmptab+03B0h],OpEC
-      mov dword [opcjmptab+03B4h],OpED
-      mov dword [opcjmptab+03B8h],OpEE
-      mov dword [opcjmptab+03BCh],OpEF
-      mov dword [opcjmptab+03C0h],OpF0
-      mov dword [opcjmptab+03C4h],OpF1
-      mov dword [opcjmptab+03C8h],OpF2
-      mov dword [opcjmptab+03CCh],OpF3
-      mov dword [opcjmptab+03D0h],OpF4
-      mov dword [opcjmptab+03D4h],OpF5
-      mov dword [opcjmptab+03D8h],OpF6
-      mov dword [opcjmptab+03DCh],OpF7
-      mov dword [opcjmptab+03E0h],OpF8
-      mov dword [opcjmptab+03E4h],OpF9
-      mov dword [opcjmptab+03E8h],OpFA
-      mov dword [opcjmptab+03ECh],OpFB
-      mov dword [opcjmptab+03F0h],OpFC
-      mov dword [opcjmptab+03F4h],OpFD
-      mov dword [opcjmptab+03F8h],OpFE
-      mov dword [opcjmptab+03FCh],OpFF
+      mov dword[opcjmptab+00h],Op00
+      mov dword[opcjmptab+04h],Op01
+      mov dword[opcjmptab+08h],Op02
+      mov dword[opcjmptab+0Ch],Op03
+      mov dword[opcjmptab+010h],Op04
+      mov dword[opcjmptab+014h],Op05
+      mov dword[opcjmptab+018h],Op06
+      mov dword[opcjmptab+01Ch],Op07
+      mov dword[opcjmptab+020h],Op08
+      mov dword[opcjmptab+024h],Op09
+      mov dword[opcjmptab+028h],Op0A
+      mov dword[opcjmptab+02Ch],Op0B
+      mov dword[opcjmptab+030h],Op0C
+      mov dword[opcjmptab+034h],Op0D
+      mov dword[opcjmptab+038h],Op0E
+      mov dword[opcjmptab+03Ch],Op0F
+      mov dword[opcjmptab+040h],Op10
+      mov dword[opcjmptab+044h],Op11
+      mov dword[opcjmptab+048h],Op12
+      mov dword[opcjmptab+04Ch],Op13
+      mov dword[opcjmptab+050h],Op14
+      mov dword[opcjmptab+054h],Op15
+      mov dword[opcjmptab+058h],Op16
+      mov dword[opcjmptab+05Ch],Op17
+      mov dword[opcjmptab+060h],Op18
+      mov dword[opcjmptab+064h],Op19
+      mov dword[opcjmptab+068h],Op1A
+      mov dword[opcjmptab+06Ch],Op1B
+      mov dword[opcjmptab+070h],Op1C
+      mov dword[opcjmptab+074h],Op1D
+      mov dword[opcjmptab+078h],Op1E
+      mov dword[opcjmptab+07Ch],Op1F
+      mov dword[opcjmptab+080h],Op20
+      mov dword[opcjmptab+084h],Op21
+      mov dword[opcjmptab+088h],Op22
+      mov dword[opcjmptab+08Ch],Op23
+      mov dword[opcjmptab+090h],Op24
+      mov dword[opcjmptab+094h],Op25
+      mov dword[opcjmptab+098h],Op26
+      mov dword[opcjmptab+09Ch],Op27
+      mov dword[opcjmptab+0A0h],Op28
+      mov dword[opcjmptab+0A4h],Op29
+      mov dword[opcjmptab+0A8h],Op2A
+      mov dword[opcjmptab+0ACh],Op2B
+      mov dword[opcjmptab+0B0h],Op2C
+      mov dword[opcjmptab+0B4h],Op2D
+      mov dword[opcjmptab+0B8h],Op2E
+      mov dword[opcjmptab+0BCh],Op2F
+      mov dword[opcjmptab+0C0h],Op30
+      mov dword[opcjmptab+0C4h],Op31
+      mov dword[opcjmptab+0C8h],Op32
+      mov dword[opcjmptab+0CCh],Op33
+      mov dword[opcjmptab+0D0h],Op34
+      mov dword[opcjmptab+0D4h],Op35
+      mov dword[opcjmptab+0D8h],Op36
+      mov dword[opcjmptab+0DCh],Op37
+      mov dword[opcjmptab+0E0h],Op38
+      mov dword[opcjmptab+0E4h],Op39
+      mov dword[opcjmptab+0E8h],Op3A
+      mov dword[opcjmptab+0ECh],Op3B
+      mov dword[opcjmptab+0F0h],Op3C
+      mov dword[opcjmptab+0F4h],Op3D
+      mov dword[opcjmptab+0F8h],Op3E
+      mov dword[opcjmptab+0FCh],Op3F
+      mov dword[opcjmptab+0100h],Op40
+      mov dword[opcjmptab+0104h],Op41
+      mov dword[opcjmptab+0108h],Op42
+      mov dword[opcjmptab+010Ch],Op43
+      mov dword[opcjmptab+0110h],Op44
+      mov dword[opcjmptab+0114h],Op45
+      mov dword[opcjmptab+0118h],Op46
+      mov dword[opcjmptab+011Ch],Op47
+      mov dword[opcjmptab+0120h],Op48
+      mov dword[opcjmptab+0124h],Op49
+      mov dword[opcjmptab+0128h],Op4A
+      mov dword[opcjmptab+012Ch],Op4B
+      mov dword[opcjmptab+0130h],Op4C
+      mov dword[opcjmptab+0134h],Op4D
+      mov dword[opcjmptab+0138h],Op4E
+      mov dword[opcjmptab+013Ch],Op4F
+      mov dword[opcjmptab+0140h],Op50
+      mov dword[opcjmptab+0144h],Op51
+      mov dword[opcjmptab+0148h],Op52
+      mov dword[opcjmptab+014Ch],Op53
+      mov dword[opcjmptab+0150h],Op54
+      mov dword[opcjmptab+0154h],Op55
+      mov dword[opcjmptab+0158h],Op56
+      mov dword[opcjmptab+015Ch],Op57
+      mov dword[opcjmptab+0160h],Op58
+      mov dword[opcjmptab+0164h],Op59
+      mov dword[opcjmptab+0168h],Op5A
+      mov dword[opcjmptab+016Ch],Op5B
+      mov dword[opcjmptab+0170h],Op5C
+      mov dword[opcjmptab+0174h],Op5D
+      mov dword[opcjmptab+0178h],Op5E
+      mov dword[opcjmptab+017Ch],Op5F
+      mov dword[opcjmptab+0180h],Op60
+      mov dword[opcjmptab+0184h],Op61
+      mov dword[opcjmptab+0188h],Op62
+      mov dword[opcjmptab+018Ch],Op63
+      mov dword[opcjmptab+0190h],Op64
+      mov dword[opcjmptab+0194h],Op65
+      mov dword[opcjmptab+0198h],Op66
+      mov dword[opcjmptab+019Ch],Op67
+      mov dword[opcjmptab+01A0h],Op68
+      mov dword[opcjmptab+01A4h],Op69
+      mov dword[opcjmptab+01A8h],Op6A
+      mov dword[opcjmptab+01ACh],Op6B
+      mov dword[opcjmptab+01B0h],Op6C
+      mov dword[opcjmptab+01B4h],Op6D
+      mov dword[opcjmptab+01B8h],Op6E
+      mov dword[opcjmptab+01BCh],Op6F
+      mov dword[opcjmptab+01C0h],Op70
+      mov dword[opcjmptab+01C4h],Op71
+      mov dword[opcjmptab+01C8h],Op72
+      mov dword[opcjmptab+01CCh],Op73
+      mov dword[opcjmptab+01D0h],Op74
+      mov dword[opcjmptab+01D4h],Op75
+      mov dword[opcjmptab+01D8h],Op76
+      mov dword[opcjmptab+01DCh],Op77
+      mov dword[opcjmptab+01E0h],Op78
+      mov dword[opcjmptab+01E4h],Op79
+      mov dword[opcjmptab+01E8h],Op7A
+      mov dword[opcjmptab+01ECh],Op7B
+      mov dword[opcjmptab+01F0h],Op7C
+      mov dword[opcjmptab+01F4h],Op7D
+      mov dword[opcjmptab+01F8h],Op7E
+      mov dword[opcjmptab+01FCh],Op7F
+      mov dword[opcjmptab+0200h],Op80
+      mov dword[opcjmptab+0204h],Op81
+      mov dword[opcjmptab+0208h],Op82
+      mov dword[opcjmptab+020Ch],Op83
+      mov dword[opcjmptab+0210h],Op84
+      mov dword[opcjmptab+0214h],Op85
+      mov dword[opcjmptab+0218h],Op86
+      mov dword[opcjmptab+021Ch],Op87
+      mov dword[opcjmptab+0220h],Op88
+      mov dword[opcjmptab+0224h],Op89
+      mov dword[opcjmptab+0228h],Op8A
+      mov dword[opcjmptab+022Ch],Op8B
+      mov dword[opcjmptab+0230h],Op8C
+      mov dword[opcjmptab+0234h],Op8D
+      mov dword[opcjmptab+0238h],Op8E
+      mov dword[opcjmptab+023Ch],Op8F
+      mov dword[opcjmptab+0240h],Op90
+      mov dword[opcjmptab+0244h],Op91
+      mov dword[opcjmptab+0248h],Op92
+      mov dword[opcjmptab+024Ch],Op93
+      mov dword[opcjmptab+0250h],Op94
+      mov dword[opcjmptab+0254h],Op95
+      mov dword[opcjmptab+0258h],Op96
+      mov dword[opcjmptab+025Ch],Op97
+      mov dword[opcjmptab+0260h],Op98
+      mov dword[opcjmptab+0264h],Op99
+      mov dword[opcjmptab+0268h],Op9A
+      mov dword[opcjmptab+026Ch],Op9B
+      mov dword[opcjmptab+0270h],Op9C
+      mov dword[opcjmptab+0274h],Op9D
+      mov dword[opcjmptab+0278h],Op9E
+      mov dword[opcjmptab+027Ch],Op9F
+      mov dword[opcjmptab+0280h],OpA0
+      mov dword[opcjmptab+0284h],OpA1
+      mov dword[opcjmptab+0288h],OpA2
+      mov dword[opcjmptab+028Ch],OpA3
+      mov dword[opcjmptab+0290h],OpA4
+      mov dword[opcjmptab+0294h],OpA5
+      mov dword[opcjmptab+0298h],OpA6
+      mov dword[opcjmptab+029Ch],OpA7
+      mov dword[opcjmptab+02A0h],OpA8
+      mov dword[opcjmptab+02A4h],OpA9
+      mov dword[opcjmptab+02A8h],OpAA
+      mov dword[opcjmptab+02ACh],OpAB
+      mov dword[opcjmptab+02B0h],OpAC
+      mov dword[opcjmptab+02B4h],OpAD
+      mov dword[opcjmptab+02B8h],OpAE
+      mov dword[opcjmptab+02BCh],OpAF
+      mov dword[opcjmptab+02C0h],OpB0
+      mov dword[opcjmptab+02C4h],OpB1
+      mov dword[opcjmptab+02C8h],OpB2
+      mov dword[opcjmptab+02CCh],OpB3
+      mov dword[opcjmptab+02D0h],OpB4
+      mov dword[opcjmptab+02D4h],OpB5
+      mov dword[opcjmptab+02D8h],OpB6
+      mov dword[opcjmptab+02DCh],OpB7
+      mov dword[opcjmptab+02E0h],OpB8
+      mov dword[opcjmptab+02E4h],OpB9
+      mov dword[opcjmptab+02E8h],OpBA
+      mov dword[opcjmptab+02ECh],OpBB
+      mov dword[opcjmptab+02F0h],OpBC
+      mov dword[opcjmptab+02F4h],OpBD
+      mov dword[opcjmptab+02F8h],OpBE
+      mov dword[opcjmptab+02FCh],OpBF
+      mov dword[opcjmptab+0300h],OpC0
+      mov dword[opcjmptab+0304h],OpC1
+      mov dword[opcjmptab+0308h],OpC2
+      mov dword[opcjmptab+030Ch],OpC3
+      mov dword[opcjmptab+0310h],OpC4
+      mov dword[opcjmptab+0314h],OpC5
+      mov dword[opcjmptab+0318h],OpC6
+      mov dword[opcjmptab+031Ch],OpC7
+      mov dword[opcjmptab+0320h],OpC8
+      mov dword[opcjmptab+0324h],OpC9
+      mov dword[opcjmptab+0328h],OpCA
+      mov dword[opcjmptab+032Ch],OpCB
+      mov dword[opcjmptab+0330h],OpCC
+      mov dword[opcjmptab+0334h],OpCD
+      mov dword[opcjmptab+0338h],OpCE
+      mov dword[opcjmptab+033Ch],OpCF
+      mov dword[opcjmptab+0340h],OpD0
+      mov dword[opcjmptab+0344h],OpD1
+      mov dword[opcjmptab+0348h],OpD2
+      mov dword[opcjmptab+034Ch],OpD3
+      mov dword[opcjmptab+0350h],OpD4
+      mov dword[opcjmptab+0354h],OpD5
+      mov dword[opcjmptab+0358h],OpD6
+      mov dword[opcjmptab+035Ch],OpD7
+      mov dword[opcjmptab+0360h],OpD8
+      mov dword[opcjmptab+0364h],OpD9
+      mov dword[opcjmptab+0368h],OpDA
+      mov dword[opcjmptab+036Ch],OpDB
+      mov dword[opcjmptab+0370h],OpDC
+      mov dword[opcjmptab+0374h],OpDD
+      mov dword[opcjmptab+0378h],OpDE
+      mov dword[opcjmptab+037Ch],OpDF
+      mov dword[opcjmptab+0380h],OpE0
+      mov dword[opcjmptab+0384h],OpE1
+      mov dword[opcjmptab+0388h],OpE2
+      mov dword[opcjmptab+038Ch],OpE3
+      mov dword[opcjmptab+0390h],OpE4
+      mov dword[opcjmptab+0394h],OpE5
+      mov dword[opcjmptab+0398h],OpE6
+      mov dword[opcjmptab+039Ch],OpE7
+      mov dword[opcjmptab+03A0h],OpE8
+      mov dword[opcjmptab+03A4h],OpE9
+      mov dword[opcjmptab+03A8h],OpEA
+      mov dword[opcjmptab+03ACh],OpEB
+      mov dword[opcjmptab+03B0h],OpEC
+      mov dword[opcjmptab+03B4h],OpED
+      mov dword[opcjmptab+03B8h],OpEE
+      mov dword[opcjmptab+03BCh],OpEF
+      mov dword[opcjmptab+03C0h],OpF0
+      mov dword[opcjmptab+03C4h],OpF1
+      mov dword[opcjmptab+03C8h],OpF2
+      mov dword[opcjmptab+03CCh],OpF3
+      mov dword[opcjmptab+03D0h],OpF4
+      mov dword[opcjmptab+03D4h],OpF5
+      mov dword[opcjmptab+03D8h],OpF6
+      mov dword[opcjmptab+03DCh],OpF7
+      mov dword[opcjmptab+03E0h],OpF8
+      mov dword[opcjmptab+03E4h],OpF9
+      mov dword[opcjmptab+03E8h],OpFA
+      mov dword[opcjmptab+03ECh],OpFB
+      mov dword[opcjmptab+03F0h],OpFC
+      mov dword[opcjmptab+03F4h],OpFD
+      mov dword[opcjmptab+03F8h],OpFE
+      mov dword[opcjmptab+03FCh],OpFF
 %ifdef __MSDOS__
      call SB_alloc_dma
 %endif
@@ -1593,15 +1561,21 @@ section .text
     mov cl,[bshift]
     mov al,[esi]
     %1
-    test al,08h
-    jz %%noneg
-    or eax,0FFFFFFF0h
-%%noneg
+    ;sign extend
+    xor eax,8
+    sub eax,8
+
+    cmp cl,12
+    ja %%invalid_range
     shl eax,cl
     sar eax,1
+    jmp %%got_delta
+%%invalid_range
+    and eax,~0x7FF
+%%got_delta
     mov edx,eax
 
-    cmp dword [filter0],240
+    cmp dword[filter0],240
     jne %%notfilter1
     mov eax,[prev0]
     sar eax,1
@@ -1611,7 +1585,7 @@ section .text
     sar eax,5
     add edx,eax
 %%notfilter1
-    cmp dword [filter0],488
+    cmp dword[filter0],488
     jne %%notfilter2
     mov eax,[prev0]
     add edx,eax
@@ -1628,7 +1602,7 @@ section .text
     sar eax,5
     add edx,eax
 %%notfilter2
-    cmp dword [filter0],460
+    cmp dword[filter0],460
     jne %%notfilter3
     mov eax,[prev0]
     add edx,eax
@@ -1790,7 +1764,7 @@ ALIGN16
     mov esi,ebp
     mov ebp,ecx
     mov ecx,ebx
-    dec dword [esp]
+    dec dword[esp]
     jnz %%dlpf_by_5_loop
     pop ecx
     ret
@@ -1886,7 +1860,6 @@ ALIGN16
 %endmacro
 
 section .bss
-NEWSYM lastblockbrr, resd 8
 NEWSYM curvoice, resd 1
 section .text
 
@@ -1911,19 +1884,9 @@ BRRDecode:
     mov ebx,[Filter+eax*2]
     shr cl,4
     mov [filter0],ebx
-    push eax
 	mov ebx,[Filter+eax*2+4]
-    cmp cl,12
-    jbe .noprevblock
-    mov eax,[curvoice]
-    mov cl,[lastblockbrr+eax]
-.noprevblock
     mov [bshift],cl
 	mov [filter1],ebx
-    mov eax,[curvoice]
-    mov [lastblockbrr+eax],cl
-    pop eax
-    mov [bshift],cl
     mov byte[sampleleft],8
     jmp .nextsample
     ALIGN16
@@ -1938,8 +1901,8 @@ BRRDecode:
     dec byte[sampleleft]
     jnz .nextsample
 
-    cmp byte[SoundInterpType],1
-	jae .BRR_decode_ahead
+    cmp dword[DSPInterpolate],0
+	jnz .BRR_decode_ahead
 
 	cmp byte[LowPassFilterType],2
 	jle near .no_dlpf
@@ -1975,18 +1938,9 @@ BRRDecode:
     mov ebx,[Filter+eax*2]
     shr cl,4
     mov [filter0],ebx
-    push eax
 	mov ebx,[Filter+eax*2+4]
-    cmp cl,12
-    jbe .noprevblock2
-    mov eax,[curvoice]
-    mov cl,[lastblockbrr+eax]
-.noprevblock2
     mov [bshift],cl
 	mov [filter1],ebx
-;    mov eax,[curvoice]
-;    mov [lastblockbrr+eax],cl
-    pop eax
 
     ProcessSample ProcessA
     mov [BRRreadahead],dx
@@ -2023,188 +1977,68 @@ BRRDecode:
 section .data
 ALIGN32
 
-; All the values are in 1/32000
-
-%define Echo_ConvertSamplesToRate(samples,rate) \
- ((samples)*(rate)/32000)
-%define CounterToSamples(ticks,coeff,rate) \
- ((coeff)*30720*((rate)/32000)/(ticks))
-
 ; Original Values
 NEWSYM EchoRateO
-               dd Echo_ConvertSamplesToRate(1,32000)
-               dd Echo_ConvertSamplesToRate(512*1,32000)
-               dd Echo_ConvertSamplesToRate(512*2,32000)
-               dd Echo_ConvertSamplesToRate(512*3,32000)
-               dd Echo_ConvertSamplesToRate(512*4,32000)
-               dd Echo_ConvertSamplesToRate(512*5,32000)
-               dd Echo_ConvertSamplesToRate(512*6,32000)
-               dd Echo_ConvertSamplesToRate(512*7,32000)
-               dd Echo_ConvertSamplesToRate(512*8,32000)
-               dd Echo_ConvertSamplesToRate(512*9,32000)
-               dd Echo_ConvertSamplesToRate(512*10,32000)
-               dd Echo_ConvertSamplesToRate(512*11,32000)
-               dd Echo_ConvertSamplesToRate(512*12,32000)
-               dd Echo_ConvertSamplesToRate(512*13,32000)
-               dd Echo_ConvertSamplesToRate(512*14,32000)
-               dd Echo_ConvertSamplesToRate(512*15,32000)
-
+               dd 2,172,344,517,689,861,1033,1205,1378,1550,1722,1895,
+               dd 2067,2239,2412,2584
 NEWSYM AttackRateO
-               dd CounterToSamples(0x000F,64,32000)
-               dd CounterToSamples(0x0018,64,32000)
-               dd CounterToSamples(0x0028,64,32000)
-               dd CounterToSamples(0x003C,64,32000)
-               dd CounterToSamples(0x0060,64,32000)
-               dd CounterToSamples(0x00A0,64,32000)
-               dd CounterToSamples(0x00F0,64,32000)
-               dd CounterToSamples(0x0180,64,32000)
-               dd CounterToSamples(0x0280,64,32000)
-               dd CounterToSamples(0x03C0,64,32000)
-               dd CounterToSamples(0x0600,64,32000)
-               dd CounterToSamples(0x0A00,64,32000)
-               dd CounterToSamples(0x0F00,64,32000)
-               dd CounterToSamples(0x1800,64,32000)
-               dd CounterToSamples(0x2800,64,32000)
-               dd CounterToSamples(0x7800,64,32000)
-
+               dd 45202,28665,16537,11025,7056,4189,2866,1764,1058,705,441
+               dd 264,176,110,66,4
 NEWSYM DecayRateO
-               dd CounterToSamples(0x01E0,600,32000)
-               dd CounterToSamples(0x0300,600,32000)
-               dd CounterToSamples(0x0500,600,32000)
-               dd CounterToSamples(0x0780,600,32000)
-               dd CounterToSamples(0x0C00,600,32000)
-               dd CounterToSamples(0x1400,600,32000)
-               dd CounterToSamples(0x1E00,600,32000)
-               dd CounterToSamples(0x3C00,600,32000)
-NEWSYM DecreaseRateExpO
+               dd 13230,8158,4851,2697,2284,1212,815,407
 NEWSYM SustainRateO
-               dd (1 - 0)
-               dd CounterToSamples(0x000F,300,32000)
-               dd CounterToSamples(0x0014,300,32000)
-               dd CounterToSamples(0x0018,300,32000)
-               dd CounterToSamples(0x001E,300,32000)
-               dd CounterToSamples(0x0028,300,32000)
-               dd CounterToSamples(0x0030,300,32000)
-               dd CounterToSamples(0x003C,300,32000)
-               dd CounterToSamples(0x0050,300,32000)
-               dd CounterToSamples(0x0060,300,32000)
-               dd CounterToSamples(0x0078,300,32000)
-               dd CounterToSamples(0x00A0,300,32000)
-               dd CounterToSamples(0x00C0,300,32000)
-               dd CounterToSamples(0x00F0,300,32000)
-               dd CounterToSamples(0x0140,300,32000)
-               dd CounterToSamples(0x0180,300,32000)
-               dd CounterToSamples(0x01E0,300,32000)
-               dd CounterToSamples(0x0280,300,32000)
-               dd CounterToSamples(0x0300,300,32000)
-               dd CounterToSamples(0x03C0,300,32000)
-               dd CounterToSamples(0x0500,300,32000)
-               dd CounterToSamples(0x0600,300,32000)
-               dd CounterToSamples(0x0780,300,32000)
-               dd CounterToSamples(0x0A00,300,32000)
-               dd CounterToSamples(0x0C00,300,32000)
-               dd CounterToSamples(0x0F00,300,32000)
-               dd CounterToSamples(0x1400,300,32000)
-               dd CounterToSamples(0x1800,300,32000)
-               dd CounterToSamples(0x1E00,300,32000)
-               dd CounterToSamples(0x2800,300,32000)
-               dd CounterToSamples(0x3C00,300,32000)
-               dd CounterToSamples(0x7800,300,32000)
+               dd 0FFFFFFFFh,418950,308700,265600,209475,154350,132300
+               dd 103635,78277,65047,51817,38587,31972,26460,19845,16537
+               dd 13230,9702,8158,6504,4851,3879,2697,2050
+               dd 1572,1212,1014,815,606,407,202,125
 
 NEWSYM SustainValueO
-               db 15,31,47,63,89,95,111,127
-NEWSYM LinearRateO
+               db 15,31,47,63,79,95,111,127
 NEWSYM IncreaseO
-NEWSYM DecreaseO
-               dd (0 - 1)
-               dd CounterToSamples(0x000F,64,32000)
-               dd CounterToSamples(0x0014,64,32000)
-               dd CounterToSamples(0x0018,64,32000)
-               dd CounterToSamples(0x001E,64,32000)
-               dd CounterToSamples(0x0028,64,32000)
-               dd CounterToSamples(0x0030,64,32000)
-               dd CounterToSamples(0x003C,64,32000)
-               dd CounterToSamples(0x0050,64,32000)
-               dd CounterToSamples(0x0060,64,32000)
-               dd CounterToSamples(0x0078,64,32000)
-               dd CounterToSamples(0x00A0,64,32000)
-               dd CounterToSamples(0x00C0,64,32000)
-               dd CounterToSamples(0x00F0,64,32000)
-               dd CounterToSamples(0x0140,64,32000)
-               dd CounterToSamples(0x0180,64,32000)
-               dd CounterToSamples(0x01E0,64,32000)
-               dd CounterToSamples(0x0280,64,32000)
-               dd CounterToSamples(0x0300,64,32000)
-               dd CounterToSamples(0x03C0,64,32000)
-               dd CounterToSamples(0x0500,64,32000)
-               dd CounterToSamples(0x0600,64,32000)
-               dd CounterToSamples(0x0780,64,32000)
-               dd CounterToSamples(0x0A00,64,32000)
-               dd CounterToSamples(0x0C00,64,32000)
-               dd CounterToSamples(0x0F00,64,32000)
-               dd CounterToSamples(0x1400,64,32000)
-               dd CounterToSamples(0x1800,64,32000)
-               dd CounterToSamples(0x1E00,64,32000)
-               dd CounterToSamples(0x2800,64,32000)
-               dd CounterToSamples(0x3C00,64,32000)
-               dd CounterToSamples(0x7800,64,32000)
+               dd 0FFFFFFFFh,45202,34177,28665,22050,16537,14332,11025
+               dd 8489,7056,5622,4189,3528,2866,2094,1764
+               dd 1433,1058,882,705,529,441,352,264
+               dd 220,176,132,110,88,66,44,22
 NEWSYM IncreaseBentO
-               dd (0 - 1)
-               dd CounterToSamples(0x000F,112,32000)
-               dd CounterToSamples(0x0014,112,32000)
-               dd CounterToSamples(0x0018,112,32000)
-               dd CounterToSamples(0x001E,112,32000)
-               dd CounterToSamples(0x0028,112,32000)
-               dd CounterToSamples(0x0030,112,32000)
-               dd CounterToSamples(0x003C,112,32000)
-               dd CounterToSamples(0x0050,112,32000)
-               dd CounterToSamples(0x0060,112,32000)
-               dd CounterToSamples(0x0078,112,32000)
-               dd CounterToSamples(0x00A0,112,32000)
-               dd CounterToSamples(0x00C0,112,32000)
-               dd CounterToSamples(0x00F0,112,32000)
-               dd CounterToSamples(0x0140,112,32000)
-               dd CounterToSamples(0x0180,112,32000)
-               dd CounterToSamples(0x01E0,112,32000)
-               dd CounterToSamples(0x0280,112,32000)
-               dd CounterToSamples(0x0300,112,32000)
-               dd CounterToSamples(0x03C0,112,32000)
-               dd CounterToSamples(0x0500,112,32000)
-               dd CounterToSamples(0x0600,112,32000)
-               dd CounterToSamples(0x0780,112,32000)
-               dd CounterToSamples(0x0A00,112,32000)
-               dd CounterToSamples(0x0C00,112,32000)
-               dd CounterToSamples(0x0F00,112,32000)
-               dd CounterToSamples(0x1400,112,32000)
-               dd CounterToSamples(0x1800,112,32000)
-               dd CounterToSamples(0x1E00,112,32000)
-               dd CounterToSamples(0x2800,112,32000)
-               dd CounterToSamples(0x3C00,112,32000)
-               dd CounterToSamples(0x7800,112,32000)
+               dd 0FFFFFFFFh,79100,59535,50160,38580,28665,25000,19250
+               dd 14332,12127,9800,7320,6160,4961,3650,3060
+               dd 2425,1845,1540,1212,920,770,614,460
+               dd 383,306,229,190,152,113,75,36
+NEWSYM DecreaseO
+               dd 0FFFFFFFFh,45202,34177,28665,22050,16537,14332,11025
+               dd 8489,7056,5622,4189,3528,2866,2094,1764
+               dd 1433,1058,882,705,529,441,352,264
+               dd 220,176,132,110,88,66,44,22
+NEWSYM DecreaseRateExpO
+               dd 0FFFFFFFFh,418950,308700,264600,209470,154350,132300,103635
+               dd 78277,65047,51817,38587,31972,26460,19845,16537
+               dd 13230,9702,8158,6504,4851,4079,3197,2425
+               dd 1984,1653,1212,1014,815,606,407,198
 
 SECTION .bss
 NoisePtr           resd 1
 
 ; used only in dspproc.asm
 SECTION .data
+ALIGN32
+
 Filter dd 0,0,240,0,488,-240,460,-208
 
-SECTION .bss
-prev0              resd 1         ; previous value 1
-prev1              resd 1         ; previous value 2
-nextsamp           resd 1         ; next sample
-filter0            resd 1         ; filter 0
-filter1            resd 1         ; filter 1
-bshift             resd 1
-sampleleft         resd 1         ; 8 bytes/sample
+prev0              dd 0         ; previous value 1
+prev1              dd 0         ; previous value 2
+nextsamp           dd 0         ; next sample
+filter0            dd 0         ; filter 0
+filter1            dd 0         ; filter 1
+bshift             dd 0
+sampleleft         dd 0         ; 8 bytes/sample
 
-lastbl             resd 1         ; Last block if = 1
-loopbl             resd 1         ; Loop if = 1
-usenoisedata       resd 1
+lastbl             dd 0         ; Last block if = 1
+loopbl             dd 0         ; Loop if = 1
+usenoisedata       dd 0
 
-SECTION .data
 
-VolumeTableD
+
+VolumeTableD:
 db 0,3,6,9,12,15,17,18,19,21,22,23,24,24,26,28,30,31,33,35,36,38,40,41,43,45,46,48,49
 db 51,52,54,56,57,58,60,61,63,64,66,67,68,70,71,72,74,75,76,78,79,80,81,82,84,85,86
 db 87,88,89,90,91,92,93,94,96,96,97,98,99,100,101,102,103,104,105,106,106,107,108
@@ -2346,7 +2180,7 @@ NEWSYM Voice6Pitch, resw 1            ; Previous Pitch for Voice 6
 NEWSYM Voice7Pitch, resw 1            ; Previous Pitch for Voice 7
 
 NEWSYM Voice0Status,   resb 1 ; 0=Not Playing 1=Playing
-NEWSYM Voice1Status,   resb 1 
+NEWSYM Voice1Status,   resb 1
 NEWSYM Voice2Status,   resb 1
 NEWSYM Voice3Status,   resb 1
 NEWSYM Voice4Status,   resb 1
@@ -2382,22 +2216,22 @@ NEWSYM Voice7BufPtr,  resd 1 ; Ptr to Buffer Block to be played
 
 NEWSYM SoundCounter,   resd 1 ; Counter used for sound generation
 NEWSYM SoundCounter2,  resd 1 ; Counter used for sound generation
-NEWSYM Voice0Prev0,    resd 1 
-NEWSYM Voice1Prev0,    resd 1 
-NEWSYM Voice2Prev0,    resd 1 
-NEWSYM Voice3Prev0,    resd 1 
-NEWSYM Voice4Prev0,    resd 1 
-NEWSYM Voice5Prev0,    resd 1 
-NEWSYM Voice6Prev0,    resd 1 
-NEWSYM Voice7Prev0,    resd 1 
-NEWSYM Voice0Prev1,    resd 1 
-NEWSYM Voice1Prev1,    resd 1 
-NEWSYM Voice2Prev1,    resd 1 
-NEWSYM Voice3Prev1,    resd 1 
-NEWSYM Voice4Prev1,    resd 1 
-NEWSYM Voice5Prev1,    resd 1 
-NEWSYM Voice6Prev1,    resd 1 
-NEWSYM Voice7Prev1,    resd 1 
+NEWSYM Voice0Prev0,    resd 1
+NEWSYM Voice1Prev0,    resd 1
+NEWSYM Voice2Prev0,    resd 1
+NEWSYM Voice3Prev0,    resd 1
+NEWSYM Voice4Prev0,    resd 1
+NEWSYM Voice5Prev0,    resd 1
+NEWSYM Voice6Prev0,    resd 1
+NEWSYM Voice7Prev0,    resd 1
+NEWSYM Voice0Prev1,    resd 1
+NEWSYM Voice1Prev1,    resd 1
+NEWSYM Voice2Prev1,    resd 1
+NEWSYM Voice3Prev1,    resd 1
+NEWSYM Voice4Prev1,    resd 1
+NEWSYM Voice5Prev1,    resd 1
+NEWSYM Voice6Prev1,    resd 1
+NEWSYM Voice7Prev1,    resd 1
 
 NEWSYM Voice0Loop,     resb 1
 NEWSYM Voice1Loop,     resb 1
@@ -2716,10 +2550,6 @@ NEWSYM FIRTAPVal5,      resd 1
 NEWSYM FIRTAPVal6,      resd 1
 NEWSYM FIRTAPVal7,      resd 1
 
-SECTION .data
-NEWSYM MaxEcho,         dd 172
-
-SECTION .bss
 NEWSYM CEchoPtr,        resd 1
 NEWSYM EchoFB,          resd 1
 
@@ -2772,12 +2602,16 @@ NEWSYM Voice4FirstBlock,  resb 1
 NEWSYM Voice5FirstBlock,  resb 1
 NEWSYM Voice6FirstBlock,  resb 1
 NEWSYM Voice7FirstBlock,  resb 1
+
 marksave2:
 
 SECTION .data
+ALIGN32
+
+NEWSYM MaxEcho,         dd 172
 
 ;    |AR Time 0 to 1|DR|Time 1 to SL|SL|Ratio| SR Time 1to 1/10|
-;---------------------------------------------------------------------     
+;---------------------------------------------------------------------
 ;    |0 |  4.1 sec  | 0|   1.2 sec  | 0| 1/8 |  0| INF         |10|1.2 sec
 ;    |1 |  2.6      | 1| 740  msec  | 1| 2/8 |  1| 38          |11|880 msec
 ;    |2 |  1.5      | 2| 440        | 2| 3/8 |  2| 28          |12|740
@@ -2796,159 +2630,50 @@ SECTION .data
 ;    |F |  0        |                        |  F|  1.5        |1F| 28
 ;    ---------------                         ---------------------------
 
+; All the values are in 1/11025
+
 NEWSYM EchoRate
-               dd Echo_ConvertSamplesToRate(1,32000)
-               dd Echo_ConvertSamplesToRate(512*1,32000)
-               dd Echo_ConvertSamplesToRate(512*2,32000)
-               dd Echo_ConvertSamplesToRate(512*3,32000)
-               dd Echo_ConvertSamplesToRate(512*4,32000)
-               dd Echo_ConvertSamplesToRate(512*5,32000)
-               dd Echo_ConvertSamplesToRate(512*6,32000)
-               dd Echo_ConvertSamplesToRate(512*7,32000)
-               dd Echo_ConvertSamplesToRate(512*8,32000)
-               dd Echo_ConvertSamplesToRate(512*9,32000)
-               dd Echo_ConvertSamplesToRate(512*10,32000)
-               dd Echo_ConvertSamplesToRate(512*11,32000)
-               dd Echo_ConvertSamplesToRate(512*12,32000)
-               dd Echo_ConvertSamplesToRate(512*13,32000)
-               dd Echo_ConvertSamplesToRate(512*14,32000)
-               dd Echo_ConvertSamplesToRate(512*15,32000)
+               dd 2,172,344,517,689,861,1033,1205,1378,1550,1722,1895,
+               dd 2067,2239,2412,2584
 
 NEWSYM AttackRate
-               dd CounterToSamples(0x000F,64,32000)
-               dd CounterToSamples(0x0018,64,32000)
-               dd CounterToSamples(0x0028,64,32000)
-               dd CounterToSamples(0x003C,64,32000)
-               dd CounterToSamples(0x0060,64,32000)
-               dd CounterToSamples(0x00A0,64,32000)
-               dd CounterToSamples(0x00F0,64,32000)
-               dd CounterToSamples(0x0180,64,32000)
-               dd CounterToSamples(0x0280,64,32000)
-               dd CounterToSamples(0x03C0,64,32000)
-               dd CounterToSamples(0x0600,64,32000)
-               dd CounterToSamples(0x0A00,64,32000)
-               dd CounterToSamples(0x0F00,64,32000)
-               dd CounterToSamples(0x1800,64,32000)
-               dd CounterToSamples(0x2800,64,32000)
-               dd CounterToSamples(0x7800,64,32000)
+               dd 45202,28665,16537,11025,7056,4189,2866,1764,1058,705,441
+               dd 264,176,110,66,4
 
 NEWSYM DecayRate
-               dd CounterToSamples(0x01E0,600,32000)
-               dd CounterToSamples(0x0300,600,32000)
-               dd CounterToSamples(0x0500,600,32000)
-               dd CounterToSamples(0x0780,600,32000)
-               dd CounterToSamples(0x0C00,600,32000)
-               dd CounterToSamples(0x1400,600,32000)
-               dd CounterToSamples(0x1E00,600,32000)
-               dd CounterToSamples(0x3C00,600,32000)
-
-NEWSYM DecreaseRateExp
+               dd 13230,8158,4851,2697,1984,815,407,125
 NEWSYM SustainRate
-               dd (0 - 1)
-               dd CounterToSamples(0x000F,300,32000)
-               dd CounterToSamples(0x0014,300,32000)
-               dd CounterToSamples(0x0018,300,32000)
-               dd CounterToSamples(0x001E,300,32000)
-               dd CounterToSamples(0x0028,300,32000)
-               dd CounterToSamples(0x0030,300,32000)
-               dd CounterToSamples(0x003C,300,32000)
-               dd CounterToSamples(0x0050,300,32000)
-               dd CounterToSamples(0x0060,300,32000)
-               dd CounterToSamples(0x0078,300,32000)
-               dd CounterToSamples(0x00A0,300,32000)
-               dd CounterToSamples(0x00C0,300,32000)
-               dd CounterToSamples(0x00F0,300,32000)
-               dd CounterToSamples(0x0140,300,32000)
-               dd CounterToSamples(0x0180,300,32000)
-               dd CounterToSamples(0x01E0,300,32000)
-               dd CounterToSamples(0x0280,300,32000)
-               dd CounterToSamples(0x0300,300,32000)
-               dd CounterToSamples(0x03C0,300,32000)
-               dd CounterToSamples(0x0500,300,32000)
-               dd CounterToSamples(0x0600,300,32000)
-               dd CounterToSamples(0x0780,300,32000)
-               dd CounterToSamples(0x0A00,300,32000)
-               dd CounterToSamples(0x0C00,300,32000)
-               dd CounterToSamples(0x0F00,300,32000)
-               dd CounterToSamples(0x1400,300,32000)
-               dd CounterToSamples(0x1800,300,32000)
-               dd CounterToSamples(0x1E00,300,32000)
-               dd CounterToSamples(0x2800,300,32000)
-               dd CounterToSamples(0x3C00,300,32000)
-               dd CounterToSamples(0x7800,300,32000)
+               dd 0FFFFFFFFh,418950,308700,265600,209475,154350,132300
+               dd 103635,78277,65047,51817,38587,31972,26460,19845,16537
+               dd 13230,9702,8158,6504,4851,3879,2697,1450
+               dd 1212,1014,815,606,407,202,125,70
 
 NEWSYM SustainValue
-               db 15,31,47,63,89,95,111,127
+               db 15,31,47,63,79,95,111,127
 
-NEWSYM LinearRate
 NEWSYM Increase
-NEWSYM Decrease
-               dd (0 - 1)
-               dd CounterToSamples(0x000F,64,32000)
-               dd CounterToSamples(0x0014,64,32000)
-               dd CounterToSamples(0x0018,64,32000)
-               dd CounterToSamples(0x001E,64,32000)
-               dd CounterToSamples(0x0028,64,32000)
-               dd CounterToSamples(0x0030,64,32000)
-               dd CounterToSamples(0x003C,64,32000)
-               dd CounterToSamples(0x0050,64,32000)
-               dd CounterToSamples(0x0060,64,32000)
-               dd CounterToSamples(0x0078,64,32000)
-               dd CounterToSamples(0x00A0,64,32000)
-               dd CounterToSamples(0x00C0,64,32000)
-               dd CounterToSamples(0x00F0,64,32000)
-               dd CounterToSamples(0x0140,64,32000)
-               dd CounterToSamples(0x0180,64,32000)
-               dd CounterToSamples(0x01E0,64,32000)
-               dd CounterToSamples(0x0280,64,32000)
-               dd CounterToSamples(0x0300,64,32000)
-               dd CounterToSamples(0x03C0,64,32000)
-               dd CounterToSamples(0x0500,64,32000)
-               dd CounterToSamples(0x0600,64,32000)
-               dd CounterToSamples(0x0780,64,32000)
-               dd CounterToSamples(0x0A00,64,32000)
-               dd CounterToSamples(0x0C00,64,32000)
-               dd CounterToSamples(0x0F00,64,32000)
-               dd CounterToSamples(0x1400,64,32000)
-               dd CounterToSamples(0x1800,64,32000)
-               dd CounterToSamples(0x1E00,64,32000)
-               dd CounterToSamples(0x2800,64,32000)
-               dd CounterToSamples(0x3C00,64,32000)
-               dd CounterToSamples(0x7800,64,32000)
+               dd 0FFFFFFFFh,45202,34177,28665,22050,16537,14332,11025
+               dd 8489,7056,5622,4189,3528,2866,2094,1764
+               dd 1433,1058,882,705,529,441,352,264
+               dd 220,176,132,110,88,66,44,22
 
 NEWSYM IncreaseBent
-               dd (0 - 1)
-               dd CounterToSamples(0x000F,112,32000)
-               dd CounterToSamples(0x0014,112,32000)
-               dd CounterToSamples(0x0018,112,32000)
-               dd CounterToSamples(0x001E,112,32000)
-               dd CounterToSamples(0x0028,112,32000)
-               dd CounterToSamples(0x0030,112,32000)
-               dd CounterToSamples(0x003C,112,32000)
-               dd CounterToSamples(0x0050,112,32000)
-               dd CounterToSamples(0x0060,112,32000)
-               dd CounterToSamples(0x0078,112,32000)
-               dd CounterToSamples(0x00A0,112,32000)
-               dd CounterToSamples(0x00C0,112,32000)
-               dd CounterToSamples(0x00F0,112,32000)
-               dd CounterToSamples(0x0140,112,32000)
-               dd CounterToSamples(0x0180,112,32000)
-               dd CounterToSamples(0x01E0,112,32000)
-               dd CounterToSamples(0x0280,112,32000)
-               dd CounterToSamples(0x0300,112,32000)
-               dd CounterToSamples(0x03C0,112,32000)
-               dd CounterToSamples(0x0500,112,32000)
-               dd CounterToSamples(0x0600,112,32000)
-               dd CounterToSamples(0x0780,112,32000)
-               dd CounterToSamples(0x0A00,112,32000)
-               dd CounterToSamples(0x0C00,112,32000)
-               dd CounterToSamples(0x0F00,112,32000)
-               dd CounterToSamples(0x1400,112,32000)
-               dd CounterToSamples(0x1800,112,32000)
-               dd CounterToSamples(0x1E00,112,32000)
-               dd CounterToSamples(0x2800,112,32000)
-               dd CounterToSamples(0x3C00,112,32000)
-               dd CounterToSamples(0x7800,112,32000)
+               dd 0FFFFFFFFh,79100,59535,50160,38580,28665,25000,19250
+               dd 14332,12127,9800,7320,6160,4961,3650,3060
+               dd 2425,1845,1540,1212,920,770,614,460
+               dd 383,306,229,190,152,113,75,36
+
+NEWSYM Decrease
+               dd 0FFFFFFFFh,45202,34177,28665,22050,16537,14332,11025
+               dd 8489,7056,5622,4189,3528,2866,2094,1764
+               dd 1433,1058,882,705,529,441,352,264
+               dd 220,176,132,110,88,66,44,22
+
+NEWSYM DecreaseRateExp
+               dd 0FFFFFFFFh,418950,308700,264600,209470,154350,132300,103635
+               dd 78277,65047,51817,38587,31972,26460,19845,16537
+               dd 13230,9702,8158,6504,4851,4079,3197,2425
+               dd 1984,1653,1212,1014,815,606,407,198
 
 GainDecBendData db 118,110,102,95,89,83,77,72,67,62,58,54,50,47,44,41,38,35
                 db 33,30,28,26,24,23,21,20,18,17,16,15,14,13
@@ -2970,20 +2695,6 @@ dspsave2 equ marksave2-echoon0
 NEWSYM PHdspsave, dd dspsave
 NEWSYM PHdspconvb, dd dspconvb
 NEWSYM PHdspsave2, dd dspsave2
-
-section .text
-
-%macro ResState 1
-    mov edi,%1
-    add edi,[spcBuffera]
-    mov eax,[spcBuffera]
-    add eax,65536*4
-    cmp edi,eax
-    jb %%noof
-    mov edi,[spcBuffera]
-%%noof
-    mov %1,edi
-%endmacro
 
 SECTION .bss
 spc700temp resd 2
@@ -3025,20 +2736,20 @@ SECTION .text
       ; Check if adsr or gain
       test byte[DSPMem+05h+%1*10h],80h
       jz near .gain
-      
+
       ; Calculate attack rate
       xor eax,eax
       mov al,[DSPMem+05h+%1*10h]
       and al,0Fh
       cmp eax,0Fh
       je .skipattack
-      mov ebx,dword [AttackRate+eax*4]
-      mov dword[Voice0Time+%1*4],ebx
+      mov ebx,[AttackRate+eax*4]
+      mov [Voice0Time+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
       div ebx
-      mov dword [Voice0IncNumber+%1*4],eax
-      mov byte [Voice0State+%1],8
+      mov [Voice0IncNumber+%1*4],eax
+      mov byte[Voice0State+%1],8
       mov dword[Voice0EnvInc+%1*4],0
       mov byte[GainDecBendDataDat+%1],7Fh
       mov byte[Voice0Status+%1],1
@@ -3090,8 +2801,8 @@ SECTION .text
       mov byte[GainDecBendDataDat+%1],127
       div ebx
       neg eax
-      mov dword [Voice0IncNumber+%1*4],eax
-      mov byte [Voice0State+%1],9
+      mov [Voice0IncNumber+%1*4],eax
+      mov byte[Voice0State+%1],9
       mov byte[Voice0Status+%1],1
       jmp .finproc
 .decayover
@@ -3109,7 +2820,7 @@ SECTION .text
       add ebx,eax
       mov dword[Voice0EnvInc+%1*4],007FFFFFh
       shr ebx,5
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       mov [GainDecBendDataTime+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
@@ -3118,16 +2829,16 @@ SECTION .text
       mov byte[GainDecBendDataDat+%1],127
       div ebx
       neg eax
-      mov dword [Voice0IncNumber+%1*4],eax
-      mov byte [Voice0State+%1],7
+      mov [Voice0IncNumber+%1*4],eax
+      mov byte[Voice0State+%1],7
       mov byte[Voice0Status+%1],1
       jmp .finproc
 .gain
-      test byte [DSPMem+07h+%1*10h],80h
+      test byte[DSPMem+07h+%1*10h],80h
       jz near .Direct
-      test byte [DSPMem+07h+%1*10h],40h
+      test byte[DSPMem+07h+%1*10h],40h
       jnz near .Increase
-      test byte [DSPMem+07h+%1*10h],20h
+      test byte[DSPMem+07h+%1*10h],20h
       jz .LinearDec
       xor eax,eax
       mov al,[DSPMem+07h+%1*10h]
@@ -3135,7 +2846,7 @@ SECTION .text
       mov ebx,[DecreaseRateExp+eax*4]
       mov dword[Voice0EnvInc+%1*4],007FFFFFh
       shr ebx,5
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       mov [GainDecBendDataTime+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
@@ -3144,8 +2855,8 @@ SECTION .text
       mov byte[GainDecBendDataDat+%1],127
       div ebx
       neg eax
-      mov dword [Voice0IncNumber+%1*4],eax
-      mov byte [Voice0State+%1],7
+      mov [Voice0IncNumber+%1*4],eax
+      mov byte[Voice0State+%1],7
       mov byte[Voice0Status+%1],1
       jmp .finproc
 .LinearDec
@@ -3154,35 +2865,35 @@ SECTION .text
       and al,1Fh
       mov ebx,[Decrease+eax*4]
       mov dword[Voice0EnvInc+%1*4],007FFFFFh
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
       div ebx
       neg eax
-      mov dword [Voice0IncNumber+%1*4],eax
-      mov byte [Voice0State+%1],5
+      mov [Voice0IncNumber+%1*4],eax
+      mov byte[Voice0State+%1],5
       mov byte[Voice0Status+%1],1
       jmp .finproc
 .Increase
-      test byte [DSPMem+07h+%1*10h],20h
+      test byte[DSPMem+07h+%1*10h],20h
       jz .LinearInc
       xor eax,eax
       mov al,[DSPMem+07h+%1*10h]
       and al,1Fh
       mov ebx,[Increase+eax*4]
       mov dword[Voice0EnvInc+%1*4],0
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
       div ebx
-      mov dword [Voice0IncNumber+%1*4],eax
+      mov [Voice0IncNumber+%1*4],eax
       mov ebx,[Voice0Time+%1*4]
       mov eax,ebx
       shr eax,2
       sub ebx,eax
       dec ebx
       mov [Voice0Time+%1*4],ebx
-      mov byte [Voice0State+%1],6
+      mov byte[Voice0State+%1],6
       mov byte[Voice0Status+%1],1
       jmp .finproc
 .LinearInc
@@ -3191,32 +2902,32 @@ SECTION .text
       and al,1Fh
       mov ebx,[Increase+eax*4]
       mov dword[Voice0EnvInc+%1*4],0
-      mov dword[Voice0Time+%1*4],ebx
+      mov [Voice0Time+%1*4],ebx
       xor edx,edx
       mov eax,127*65536
       div ebx
-      mov dword [Voice0IncNumber+%1*4],eax
-      mov byte [Voice0State+%1],3
+      mov [Voice0IncNumber+%1*4],eax
+      mov byte[Voice0State+%1],3
       mov byte[Voice0Status+%1],1
       jmp .finproc
 .Direct
       mov al,[DSPMem+07h+%1*10h]
       and al,7Fh
       mov dword[Voice0EnvInc+%1*4],0
-      mov byte [Voice0EnvInc+%1*4+2],al
-      mov dword [Voice0Time+%1*4],0FFFFFFFFh
-      mov dword [Voice0IncNumber+%1*4],0
-      mov byte [Voice0State+%1],4
+      mov [Voice0EnvInc+%1*4+2],al
+      mov dword[Voice0Time+%1*4],0FFFFFFFFh
+      mov dword[Voice0IncNumber+%1*4],0
+      mov byte[Voice0State+%1],4
       mov byte[Voice0Status+%1],1
       jmp .finproc
 .finproc
       cmp dword[spc700temp+4],0
       je .skipall
-      mov eax,dword[Voice0Time+%1*4]
+      mov eax,[Voice0Time+%1*4]
       mov [TimeTemp+%1*4],eax
-      mov eax,dword[Voice0IncNumber+%1*4]
+      mov eax,[Voice0IncNumber+%1*4]
       mov [IncNTemp+%1*4],eax
-      mov eax,dword[Voice0EnvInc+%1*4]
+      mov eax,[Voice0EnvInc+%1*4]
       mov [EnvITemp+%1*4],eax
       mov al,[Voice0State+%1]
       mov [StatTemp+%1],al
@@ -3225,25 +2936,25 @@ SECTION .text
       mov dword[Voice0Time+%1*4],127
       shr eax,7
       neg eax
-      mov dword[Voice0IncNumber+%1*4],eax
-      mov byte [Voice0State+%1],210
+      mov [Voice0IncNumber+%1*4],eax
+      mov byte[Voice0State+%1],210
       jmp .novoice
 .skipall
       mov ax,[DSPMem+02h+%1*10h]
       cmp word[Voice0Pitch+%1*2],ax
       je .nopitchc
-      mov word[Voice0Pitch+%1*2],ax
+      mov [Voice0Pitch+%1*2],ax
       And EAX, 03FFFh
-      Mul dword [dspPAdj]
+      Mul dword[dspPAdj]
       ShRD EAX,EDX,8
       mov [Voice0Freq+%1*4],eax
       ; modpitch
 .nopitchc
       mov dword[BRRPlace0+%1*8],10000000h
-      mov dword [Voice0Prev0+%1*4],0
-      mov dword [Voice0Prev1+%1*4],0
-      mov byte  [Voice0End+%1],0
-      mov byte  [Voice0Loop+%1],0
+      mov dword[Voice0Prev0+%1*4],0
+      mov dword[Voice0Prev1+%1*4],0
+      mov byte[Voice0End+%1],0
+      mov byte[Voice0Loop+%1],0
       mov dword[PSampleBuf+%1*24*4+16*4],0
       mov dword[PSampleBuf+%1*24*4+17*4],0
       mov dword[PSampleBuf+%1*24*4+18*4],0
@@ -3262,10 +2973,10 @@ SECTION .text
       add ax,dx
       xor ebx,ebx
       mov bx,[SPCRAM+eax]
-      mov dword[Voice0Ptr+%1*4],ebx
+      mov [Voice0Ptr+%1*4],ebx
       xor ebx,ebx
       mov bx,[SPCRAM+eax+2]
-      mov dword[Voice0LoopPtr+%1*4],ebx
+      mov [Voice0LoopPtr+%1*4],ebx
       pop edx
       pop ebx
       pop eax
@@ -4806,13 +4517,18 @@ NEWSYM EchoStereo
     mov dword[Voice0IncNumber+%1*4],0
     mov byte[Voice0Status+%1],0
     mov byte[Voice0State+%1],0
+    mov byte[DSPMem+08h+%1*10h],0
+    mov byte[DSPMem+09h+%1*10h],0
+    or byte[DSPMem+7Ch],%3
     jmp %2
 %%EndofSamp2
     mov dword[Voice0EnvInc+%1*4],0
     mov dword[Voice0IncNumber+%1*4],0
     mov byte[Voice0State+%1],0
+    mov byte[DSPMem+08h+%1*10h],0
+    mov byte[DSPMem+09h+%1*10h],0
     mov al,%1
-    call VoiceStarter
+call VoiceStarter
     jmp %%SkipProcess2
 %%SkipProcess
     xor esi,esi
@@ -5477,7 +5193,7 @@ NEWSYM EchoStereo
 section .bss
 echowrittento resb 1
 section .text
-EXTSYM EMUPause,AudioLogging
+
 NEWSYM ProcessSoundBuffer
     ; Clear the DSP Buffer
     mov edi,DSPBuffer
