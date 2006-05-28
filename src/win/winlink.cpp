@@ -1881,7 +1881,7 @@ void initwinvideo(void)
    DWORD newmode=0;
    DWORD HQMode=0;
 
-   NTSCFilterInit();
+   if (NTSCFilter) NTSCFilterInit();
 
    if ( hqFilter != 0 )
    {
