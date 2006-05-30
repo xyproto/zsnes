@@ -282,7 +282,16 @@ if test x$enable_cpucheck != xno; then
 #include <string.h>
 #include <ctype.h>
 
+#ifdef __x86_64__
 #define cpuid(in, a, b, c, d) asm volatile("cpuid": "=a" (a), "=b" (b), "=c" (c), "=d" (d) : "a" (in));
+#else
+#define cpuid(in, a, b, c, d) asm volatile("\
+  pushl %%ebx;\
+  movl %%edi,%%ebx;\
+  cpuid;\
+  movl %%ebx,%%edi;\
+  popl %%ebx": "=a" (a), "=D" (b), "=c" (c), "=d" (d) : "a" (in));
+#endif
 
 char *x86_flags[] =
 { "fpu", "vme", "de", "pse", "tsc", "msr", "pae", "mce",
