@@ -70,7 +70,7 @@ I'd fix that if anyone knows if that parameter defines something I can check
 #define POPAD ASM_COMMAND(popal)
 #endif
 
-#if defined(__UNIXSDL__) && !defined(__MACOSX__)
+#ifdef __ELF__
 #define ASM_CALL(func) ASM_COMMAND(call func)
 #else
 #define ASM_CALL(func) ASM_COMMAND(call _ ## func)
