@@ -50,7 +50,7 @@ GUIOBJ=$(GUIDIR)/gui.o $(GUIDIR)/guifuncs.o $(GUIDIR)/menu.o
 
 JMAOBJ=@JMA_FILES@
 
-MMLIBOBJ=$(MMLIBDIR)/linux.o $(MMLIBDIR)/mm.o
+MMLIBOBJ=@MMLIB_FILES@
 
 MAINOBJ=cfg.o cfgload.o debug.o endmem.o init.o initc.o md.o patch.o ui.o uic.o\
 	vcache.o version.o zloader.o zmovie.o zstate.o
@@ -219,6 +219,7 @@ $(JMADIR)/zsnesjma.o: $(JMADIR)/zsnesjma.cpp $(JMADIR)/jma.h\
 
 $(MMLIBDIR)/linux.o: $(MMLIBDIR)/linux.c $(MMLIBDIR)/mm.h
 $(MMLIBDIR)/mm.o: $(MMLIBDIR)/mm.c $(MMLIBDIR)/mm.h
+$(MMLIBDIR)/osx.o: $(MMLIBDIR)/osx.c $(MMLIBDIR)/mm.h
 
 $(TOOLSDIR)/fileutil.o: $(TOOLSDIR)/fileutil.cpp $(TOOLSDIR)/fileutil.h
 $(TOOLSDIR)/strutil.o: $(TOOLSDIR)/strutil.cpp $(TOOLSDIR)/strutil.h
