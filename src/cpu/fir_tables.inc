@@ -16,7 +16,7 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-SECTION .DATA
+SECTION .data
 
 fir_lut:
 dw  27, -363, 1153, 14775, 1153, -363, 27, -24
