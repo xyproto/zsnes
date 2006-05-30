@@ -561,7 +561,7 @@ NEWSYM makeextension
     call DetermineNew
 %endmacro
 
-DetermineNew:
+NEWSYM DetermineNew
     push eax
     push ebx
     mov edx,fnamest+1
@@ -591,7 +591,7 @@ DetermineNew:
     pop eax
     ret
 
-DetermineNewest:
+NEWSYM DetermineNewest
     mov eax,[statefileloc]
     mov dword[newestfiledate],0
     mov byte[newestfileloc],0
