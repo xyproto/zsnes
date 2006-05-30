@@ -463,7 +463,7 @@ void MultiMouseInit()
 {
   MouseCount = ManyMouse_Init();
 
-#ifdef __UNIXSDL__
+#ifdef linux
   puts("Starting Mouse detection.");
   DIR *input_dir = opendir("/dev/input");
   if (input_dir)
