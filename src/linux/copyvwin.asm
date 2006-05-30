@@ -82,7 +82,6 @@ NEWSYM copy640x480x16bwin
     je near interpolate640x480x16bwin
 .nointerp
     mov dl,224
-    dec dl
     cmp byte[scanlines],1
     je near .scanlines
     cmp byte[scanlines],3
@@ -839,7 +838,6 @@ Process2xSaIwin:
 
 ;    add edi,[VESAAddr]
     mov dl,224
-    sub dl,2    ; Compensate for top/bottom line + 2 lines in 2xSaI
     mov [lineleft],dl
     mov dword[esi+512],0
     mov dword[esi+512+576*2],0
@@ -940,7 +938,6 @@ MMXInterpolwin:
 .loopab
 
     mov dl,224
-    dec dl
     movq mm2,[HalfTransC]
     cmp byte[scanlines],1
     je near .scanlines
@@ -1272,7 +1269,6 @@ NEWSYM interpolate640x480x16bwin
     mov [InterPtr],ebx
 
     mov dl,224
-    dec dl
     cmp byte[scanlines],1
     je near .scanlines
     cmp byte[scanlines],2
