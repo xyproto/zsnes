@@ -168,6 +168,13 @@ void allocspc7110()
   spc7110romptr = (unsigned char *)doMemAlloc(8192*1024+4096);
 }
 
+void *malloc_ptr;
+unsigned int malloc_size;
+void malloc_help()
+{
+  malloc_ptr=malloc(malloc_size);
+}
+
 extern bool input1gp;
 extern bool input1mouse;
 extern bool input2gp;

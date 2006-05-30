@@ -20,7 +20,7 @@
 
 %include "macros.mac"
 
-EXTSYM PrintStr,WaitForKey,PrintChar,ram7fa,wramdataa,malloc,MMXSupport
+EXTSYM PrintStr,WaitForKey,PrintChar,ram7fa,wramdataa,MMXSupport
 EXTSYM MMXextSupport,statefileloc,LatestSave,firstsaveinc,Open_File
 EXTSYM Get_File_Date,Close_File,Change_Dir,Get_Dir,romloadskip,cfgloadgdir
 EXTSYM cfgloadsdir,init18_2hz,SRAMDirCurDir,SRAMChdir,SRAMChdirFail
@@ -29,6 +29,7 @@ EXTSYM RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa,vidbufferofsmos,ngwinptr
 EXTSYM vidbufferofsb,headdata,romdata,sfxramdata,setaramdata,wramdata,ram7f,vram
 EXTSYM sram,debugbuf,regptr,regptw,vcache2b,vcache4b,vcache8b,fname,fnames
 EXTSYM fnamest,filefound,vidbufferofsc,Sup48mbit,Sup16mbit,guioff
+EXTSYM malloc_ptr,malloc_size,malloc_help
 
 %ifdef __UNIXSDL__
 EXTSYM LinuxExit,GetFilename
@@ -229,11 +230,13 @@ memfreearray resd 12
 SECTION .text
 
 %macro AllocmemFail 3
-    mov ebx,%1
-    add ebx,1000h
-    push ebx
-    call malloc
-    pop ebx
+    mov eax,%1
+    add eax,1000h
+    mov [malloc_size],eax
+    pushad
+    call malloc_help
+    popad
+    mov eax,[malloc_ptr]
     cmp eax,0
     je near %3
     mov ebx,[cmemallocptr]
@@ -245,11 +248,13 @@ SECTION .text
 %endmacro
 
 %macro AllocmemOkay 3
-    mov ebx,%1
-    add ebx,1000h
-    push ebx
-    call malloc
-    pop ebx
+    mov eax,%1
+    add eax,1000h
+    mov [malloc_size],eax
+    pushad
+    call malloc_help
+    popad
+    mov eax,[malloc_ptr]
     push eax
     and eax,0FFFFFFE0h
     add eax,40h
@@ -561,7 +566,7 @@ NEWSYM makeextension
     call DetermineNew
 %endmacro
 
-NEWSYM DetermineNew
+DetermineNew:
     push eax
     push ebx
     mov edx,fnamest+1
@@ -591,7 +596,7 @@ NEWSYM DetermineNew
     pop eax
     ret
 
-NEWSYM DetermineNewest
+DetermineNewest:
     mov eax,[statefileloc]
     mov dword[newestfiledate],0
     mov byte[newestfileloc],0
