@@ -284,8 +284,7 @@ void zstart ()
 
   // Print welcome message.
   printf("ZSNES v%s, (c) 1997-2006, ZSNES Team\n", ZVERSION);
-  puts("Be sure to check http://www.zsnes.com/ for the latest version.");
-  puts("Please report crashes to zsnes-devel@lists.sourceforge.net.\n");
+  puts("Be sure to check http://www.zsnes.com/ for the latest version.\n");
   puts("ZSNES is written by the ZSNES Team (See AUTHORS.TXT)");
   puts("ZSNES comes with ABSOLUTELY NO WARRANTY.  This is free software,");
   puts("and you are welcome to redistribute it under certain conditions;");

@@ -83,7 +83,6 @@ NEWSYM copy640x480x16bwin
 .nointerp
     mov dl,224
     dec dl
-    dec dl
     cmp byte[scanlines],1
     je near .scanlines
     cmp byte[scanlines],3
@@ -942,8 +941,6 @@ MMXInterpolwin:
 
     mov dl,224
     dec dl
-    dec dl
-    dec dl
     movq mm2,[HalfTransC]
     cmp byte[scanlines],1
     je near .scanlines
@@ -1275,8 +1272,6 @@ NEWSYM interpolate640x480x16bwin
     mov [InterPtr],ebx
 
     mov dl,224
-    dec dl
-    dec dl
     dec dl
     cmp byte[scanlines],1
     je near .scanlines
