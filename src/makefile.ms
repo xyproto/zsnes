@@ -241,7 +241,7 @@ endif
 %${OE}: %.psr
 	${PSR} -D${OS} -cheader psrhead/$(patsubst %${OE},%.h,$@) -fname $(patsubst %${OE},%,$@) temppsr.c $<
 ifneq (${ENV},msvc)
-	${CC} -o $@ -c temppsr.c
+	${CC} -D${OS} -o $@ -c temppsr.c
 else
 	cl /nologo /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ temppsr.c
 endif
