@@ -6,7 +6,7 @@
  *  This file written by Ryan C. Gordon.
  */
 
-#include "manymouse.h"
+#include "mm.h"
 
 #if ( (defined(__MACH__)) && (defined(__APPLE__)) )
 
