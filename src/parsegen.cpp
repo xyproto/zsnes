@@ -519,6 +519,11 @@ char *convert_asm_type(const char *str, bool unsigned_var = true)
     current_location.error("Not a valid type");
   }
 
+  if (var_type && !strncmp(var_type, "unsigned ", strlen("unsigned ")) && !unsigned_var)
+  {
+    var_type += strlen("unsigned ");
+  }
+
   return(var_type);
 }
 
@@ -1251,7 +1256,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
             {
               ssize_t init_value_num = safe_atoi(initial_value);
 
-              if (init_value_num < 0)
+              if ((init_value_num < 0) && !strncmp(var_type, "unsigned ", strlen("unsigned ")))
               {
                 var_type += strlen("unsigned ");
               }
