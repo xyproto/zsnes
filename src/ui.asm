@@ -28,7 +28,7 @@ EXTSYM BitConv32Ptr,spcBuffera,spritetablea,vcache2bs,vcache4bs,vcache8bs
 EXTSYM RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa,vidbufferofsmos,ngwinptr
 EXTSYM vidbufferofsb,headdata,romdata,sfxramdata,setaramdata,wramdata,ram7f,vram
 EXTSYM sram,debugbuf,regptr,regptw,vcache2b,vcache4b,vcache8b,fname,fnames
-EXTSYM fnamest,filefound,vidbufferofsc,Sup48mbit,Sup16mbit,guioff
+EXTSYM fnamest,filefound,vidbufferofsc,Sup48mbit,Sup16mbit,guioff,SRAMDir
 EXTSYM malloc_ptr,malloc_size,malloc_help
 
 %ifdef __UNIXSDL__
