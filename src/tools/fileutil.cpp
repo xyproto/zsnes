@@ -19,45 +19,49 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 This is part of a toolkit used to assist in ZSNES development
 */
 
+#include <stdio.h>
 #include <unistd.h>
 #include <dirent.h>
 
 #include "fileutil.h"
 
-bool parse_dir(const char *dir_loc, void (*func)(const char *, struct stat&))
+void parse_dir(const char *dir_loc, void (*func)(const char *, struct stat&))
 {
-  char cwd[16384];
+  char path[4096];
 
-  if (getcwd(cwd, sizeof(cwd)) && !chdir(dir_loc)) //chdir() returns 0 on success
+  DIR *curDir = opendir(dir_loc);
+  dirent *curFile;
+  while ((curFile = readdir(curDir)))
   {
-    DIR *curDir = opendir(".");
-    dirent *curFile;
-    while ((curFile = readdir(curDir)))
+    if (!strcmp(curFile->d_name, ".") || !strcmp(curFile->d_name, ".."))
     {
-      char *filename = curFile->d_name;
-
-      if (!strcmp(filename, ".") || !strcmp(filename, ".."))
-      {
-        continue;
-      }
-
-      struct stat stat_buffer;
-      if (stat(filename, &stat_buffer)) { continue; }
-
-      //Directory
-      if (S_ISDIR(stat_buffer.st_mode))
-      {
-        parse_dir(filename, func);
-        continue;
-      }
-
-      func(filename, stat_buffer);
+      continue;
     }
-    closedir(curDir);
-    chdir(cwd);
-    return(true);
+
+    char *filename;
+    if (!strcmp(dir_loc, "."))
+    {
+      filename = curFile->d_name;
+    }
+    else
+    {
+      sprintf(path, "%s/%s", dir_loc, curFile->d_name);
+      filename = path;
+    }
+
+    struct stat stat_buffer;
+    if (stat(filename, &stat_buffer)) { continue; }
+
+    //Directory
+    if (S_ISDIR(stat_buffer.st_mode))
+    {
+      parse_dir(filename, func);
+      continue;
+    }
+
+    func(filename, stat_buffer);
   }
-  return(false);
+  closedir(curDir);
 }
 
 bool parse_path(const char *path, void (*func)(const char *, struct stat&))
@@ -67,9 +71,12 @@ bool parse_path(const char *path, void (*func)(const char *, struct stat&))
   {
     if (S_ISDIR(stat_buffer.st_mode))
     {
-      return(parse_dir(path, func));
+      parse_dir(path, func);
     }
-    func(path, stat_buffer);
+    else
+    {
+      func(path, stat_buffer);
+    }
     return(true);
   }
   return(false);

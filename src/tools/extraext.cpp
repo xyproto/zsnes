@@ -67,7 +67,17 @@ void handle_file(const char *filename)
           string not_commented = tokens[0];
           tokens.clear();
           Tokenize(not_commented, tokens, "/\" \t");
-          included_files.push(*(tokens.end()-1));
+
+          string inc_fname(*(tokens.end()-1));
+          if (inc_fname != "macros.mac")
+          {
+            size_t last_slash = fname.find_last_of("/");
+            if (last_slash != string::npos)
+            {
+              inc_fname.insert(0, fname, 0, last_slash+1);
+            }
+            included_files.push(inc_fname);
+          }
         }
         else if (!strncasecmp(p, "extsym ", strlen("extsym ")))
         {

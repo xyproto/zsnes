@@ -25,7 +25,7 @@ This is part of a toolkit used to assist in ZSNES development
 #include <string.h>
 #include <sys/stat.h>
 
-bool parse_dir(const char *, void (*func)(const char *, struct stat&));
+void parse_dir(const char *, void (*func)(const char *, struct stat&));
 bool parse_path(const char *, void (*func)(const char *, struct stat&));
 
 inline bool extension_match(const char *filename, const char *ext)
