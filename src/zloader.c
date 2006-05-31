@@ -44,9 +44,11 @@ void ImportDirectX();
 extern unsigned char KitchenSync, Force60hz;
 #endif
 
+
 extern unsigned char gammalevel, romtype, MouseDis, spcon, V8Mode, ForcePal;
 extern unsigned char HacksDisable, DSPDisable, ZMVZClose, ZMVRawDump;
-extern unsigned char autoloadstate, autoloadmovie;
+extern unsigned char autoloadstate, autoloadmovie, Palette0, debugger;
+extern unsigned char debugdisble, DisplayS;
 extern char *STCart2, fname[];
 
 void zstart(), makeextension();
