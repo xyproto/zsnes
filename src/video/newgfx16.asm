@@ -1388,18 +1388,6 @@ NEWSYM StartDrawNewGfx16b
     mov byte[WindowRedraw],1
     sub dword[endlinet],8
 
-    ; Clear video memory
-;    mov edi,[vidbuffer]
-;    xor eax,eax
-;    add edi,32
-;    mov dl,[resolutn]
-;.loopa
-;    mov ecx,128
-;    rep stosd
-;    add edi,64
-;    dec dl
-;    jnz .loopa
-
     cmp dword[scfbl],0
     jne near .dontdraw
 

@@ -502,8 +502,7 @@ ConvertPercValue:
   and eax,0FFh
   ret
 .noperc
-  xor eax,eax
-  mov al,[edi]
+  movzx eax,byte[edi]
   ret
 %endif
 

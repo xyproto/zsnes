@@ -37,7 +37,6 @@ EXTSYM SA1Overflow
 EXTSYM Sdd1Mode,Sdd1Bank,Sdd1Addr,Sdd1NewAddr,memtabler8,AddrNoIncr,SDD1BankA
 EXTSYM SDD1_init,SDD1_get_byte,BWShift,SA1BWPtr
 
-
 ; C4SprScale
 
 ;*******************************************************
@@ -45,7 +44,6 @@ EXTSYM SDD1_init,SDD1_get_byte,BWShift,SA1BWPtr
 ;*******************************************************
 ; enter : BL = bank number, CX = address location
 ; leave : AL = value read
-
 
 ; ******************************************************
 ; C4 Emulation, reverse engineered & written by zsKnight
@@ -57,8 +55,7 @@ C4ProcessVectors:
     mov esi,[C4Ram]
     mov edi,esi
     add edi,1F8Ch
-    xor edx,edx
-    mov dx,[esi+1F8Ah]
+    movzx edx,word[esi+1F8Ah]
     cmp dx,128
     ja .ret
     cmp dx,0
@@ -143,8 +140,7 @@ C4Edit:
 .notof
 
     ; Draw the dots on-screen
-    xor eax,eax
-    mov al,[C4ObjSelec]
+    movzx eax,byte[C4ObjSelec]
     shl eax,4
     add eax,[C4Ram]
     add eax,220h
@@ -162,8 +158,7 @@ C4Edit:
 ;              07    - looks like some sprite displacement values
 ;              08/09 - ???
 ;              0A-0F - unused
-    xor ebx,ebx
-    mov bx,[eax+8]
+    movzx ebx,word[eax+8]
     mov [CObjNum],bx
     cmp bx,4096
     jae near .skipall
@@ -303,8 +298,7 @@ C4Edit:
     mov byte[C4SObjSelec],0
 .sobjokay
 
-    xor ecx,ecx
-    mov cl,[C4SObjSelec]
+    movzx ecx,byte[C4SObjSelec]
     shl ecx,2
     add ebx,ecx
     add ebx,4
@@ -364,12 +358,10 @@ C4Edit:
     mov ch,[ebx+1]
 .nosubobjs
     mov edx,ecx
-    xor ebx,ebx
-    xor ecx,ecx
-    mov bl,[eax]
+    movzx ebx,byte[eax]
     sub bl,[esi+621h]
     add bl,dl
-    mov cl,[eax+2]
+    movzx ecx,byte[eax+2]
     sub cl,[esi+623h]
     add cl,dh
     mov esi,[vidbuffer]
@@ -421,9 +413,8 @@ C4ConvOAM:
     inc byte[C4Timer2]
     and byte[C4Timer2],7
     mov esi,[C4Ram]
-    xor ecx,ecx
     mov edi,esi
-    mov cl,[esi+620h]
+    movzx ecx,byte[esi+620h]
     mov bx,[esi+621h]
     mov [.addx],bx
     mov bx,[esi+623h]
@@ -497,8 +488,7 @@ C4ConvOAM:
     or [C4SprAttr],al
 ;    mov [C4SprFlip],al
 
-    xor ecx,ecx
-    mov cl,[esi+9]
+    movzx ecx,byte[esi+9]
     shl ecx,16
     mov cx,[esi+7]
     add cx,cx
@@ -696,10 +686,6 @@ NEWSYM InitC4
 C4ClearSpr:
     mov esi,ebx
     mov edi,eax
-;    xor ecx,ecx
-;    mov cx,[eax+1F44h]
-;    sub cx,6000h
-;    add eax,ecx
     shl ch,3
 .scloop2
     mov cl,[C4SprPos]
@@ -840,26 +826,22 @@ DoScaleRotate:
     mov [C4SprPos+3],cl
     ; Calculate Positions
     ; (1-scale)*(pos/2)
-    xor eax,eax
-    mov al,[C4SprPos+2]
+    movzx eax,byte[C4SprPos+2]
     shl eax,11
     mov [C4PCXMPos],eax
-    xor eax,eax
-    mov al,[C4SprPos+3]
+    movzx eax,byte[C4SprPos+3]
     shl eax,11
     mov [C4PCYMPos],eax
 
     mov bx,[C4XXScale]
-    xor eax,eax
-    mov al,[C4SprPos+2]
+    movzx eax,byte[C4SprPos+2]
     shr ax,1
     imul bx
     shl edx,16
     mov dx,ax
     sub [C4PCXMPos],edx
     mov bx,[C4YXScale]
-    xor eax,eax
-    mov al,[C4SprPos+3]
+    movzx eax,byte[C4SprPos+3]
     shr ax,1
     imul bx
     shl edx,16
@@ -867,16 +849,14 @@ DoScaleRotate:
     sub [C4PCXMPos],edx
 
     mov bx,[C4XYScale]
-    xor eax,eax
-    mov al,[C4SprPos+2]
+    movzx eax,byte[C4SprPos+2]
     shr ax,1
     imul bx
     shl edx,16
     mov dx,ax
     sub [C4PCYMPos],edx
     mov bx,[C4YYScale]
-    xor eax,eax
-    mov al,[C4SprPos+3]
+    movzx eax,byte[C4SprPos+3]
     shr ax,1
     imul bx
     shl edx,16
@@ -894,23 +874,20 @@ DoScaleRotate:
     mov al,[C4SprPos+2]
     mov [C4CXPos],al
 .loop2
-    xor eax,eax
-    mov al,[C4SprPos+2]
+    movzx eax,byte[C4SprPos+2]
     mov ebx,[C4CXMPos]
     sar ebx,12
     cmp ebx,eax
     jae near .blank
-    xor eax,eax
-    mov al,[C4SprPos+3]
+    movzx eax,byte[C4SprPos+3]
     mov ebx,[C4CYMPos]
     sar ebx,12
     cmp ebx,eax
     jae near .blank
     ; Get pixel value
     mov ebx,[C4CYMPos]
-    xor eax,eax
     shr ebx,12
-    mov al,[C4SprPos+2]
+    movzx eax,byte[C4SprPos+2]
     mul ebx
     mov ebx,[C4CXMPos]
     shr ebx,12
@@ -974,15 +951,13 @@ DoScaleRotate:
 
 DoScaleRotate2:
     pushad
-    xor ebx,ebx
-    mov bx,[eax+1F8Fh]
+    movzx ebx,word[eax+1F8Fh]
     cmp bx,1000h
     ja .scaled
     mov bx,1000h
 .scaled
     mov [C4SprScale],ebx
-    xor ebx,ebx
-    mov bx,[eax+1F92h]
+    movzx ebx,word[eax+1F92h]
     cmp bx,1000h
     ja .scaledb
     mov bx,1000h
@@ -1027,8 +1002,7 @@ DoScaleRotate2:
     mov cl,ch
     and ecx,0FFh
     push eax
-    xor eax,eax
-    mov al,[C4SprPos]
+    movzx eax,byte[C4SprPos]
     shl al,3
     mul ecx
     add esi,eax
@@ -1042,8 +1016,7 @@ DoScaleRotate2:
 .next
     push esi
     push edi
-    xor ecx,ecx
-    mov cl,[C4SprPos]
+    movzx ecx,byte[C4SprPos]
     shl cl,3
     mov ch,cl
     mov dword[C4SprScaler],0
@@ -1083,8 +1056,7 @@ DoScaleRotate2:
 .done
     pop edi
     pop esi
-    xor edx,edx
-    mov dl,[C4SprPos]
+    movzx edx,byte[C4SprPos]
     shl dl,3
     add esi,edx
 
@@ -1110,8 +1082,7 @@ C4SprScaleR:
     push esi
     push edi
     mov dword[C4SprPtrInc],0
-    xor ebx,ebx
-    mov bl,[eax+1F42h]
+    movzx ebx,byte[eax+1F42h]
     shl ebx,16
     mov bx,[eax+1F40h]
     add bx,bx
@@ -1130,8 +1101,7 @@ C4SprScaleR:
 
     mov esi,eax
     add esi,2000h
-    xor ebx,ebx
-    mov bl,[C4SprPos]
+    movzx ebx,byte[C4SprPos]
     call C4SprBitPlane
     pop edi
     pop esi
@@ -1164,8 +1134,7 @@ C4SprRotateR:
     call DoScaleRotate
     mov esi,eax
     add esi,2000h
-    xor ebx,ebx
-    mov bl,[C4SprPos]
+    movzx ebx,byte[C4SprPos]
     add byte[C4SprPos+1],2
     call C4SprBitPlane
     pop edi
@@ -1178,8 +1147,7 @@ C4SprRotateR:
 C4SprDisintegrate:
     pushad
     mov dword[C4SprPtrInc],0
-    xor ebx,ebx
-    mov bl,[eax+1F42h]
+    movzx ebx,byte[eax+1F42h]
     shl ebx,16
     mov bx,[eax+1F40h]
     add bx,bx
@@ -1195,28 +1163,22 @@ C4SprDisintegrate:
     call C4ClearSpr
 
     mov esi,[C4Ram]
-    xor ebx,ebx
-    mov bx,[esi+1F86h]
-    xor eax,eax
-    mov al,[esi+1F89h]
+    movzx ebx,word[esi+1F86h]
+    movzx eax,byte[esi+1F89h]
     shr al,1
     mul ebx
     neg eax
-    xor ebx,ebx
-    mov bl,[esi+1F89h]
+    movzx ebx,byte[esi+1F89h]
     shr bl,1
     shl ebx,8
     add eax,ebx
     push eax
-    xor ebx,ebx
-    mov bx,[esi+1F8Fh]
-    xor eax,eax
-    mov al,[esi+1F8Ch]
+    movzx ebx,word[esi+1F8Fh]
+    movzx eax,byte[esi+1F8Ch]
     shr al,1
     mul ebx
     neg eax
-    xor ebx,ebx
-    mov bl,[esi+1F8Ch]
+    movzx ebx,byte[esi+1F8Ch]
     shr bl,1
     shl ebx,8
     add ebx,eax
@@ -1278,10 +1240,8 @@ C4SprDisintegrate:
     jae .fail
     push ecx
     push edx
-    xor eax,eax
-    mov al,[C4SprPos+2]
-    xor ecx,ecx
-    mov cl,dh
+    movzx eax,byte[C4SprPos+2]
+    movzx ecx,dh
     mul ecx
     mov ecx,ebx
     shr ecx,8
@@ -1327,25 +1287,24 @@ C4SprDisintegrate:
 
     mov esi,[C4Ram]
     add esi,6000h
-;    mov esi,[C4SprPtr]
     mov eax,[C4Ram]
-    xor ebx,ebx
-    mov bl,[C4SprPos]
+    movzx ebx,byte[C4SprPos]
     call C4SprBitPlane
 
     popad
     ret
+
 SECTION .bss
 .scalex resd 1
 .scaley resd 1
+
 SECTION .text
 
 C4BitPlaneWave:
     pushad
     mov esi,[C4Ram]
     mov dword[.temp],10h
-    xor eax,eax
-    mov al,[esi+1F83h]
+    movzx eax,byte[esi+1F83h]
     mov [.waveptr],eax
     mov word[.temp+4],0C0C0h
     mov word[.temp+6],03F3Fh
@@ -1495,8 +1454,7 @@ C4DrawLine:
     mov ax,[C4Y2+1]
     mov [C4WFY2Val],ax
     call C4CalcWireFrame
-    xor ecx,ecx
-    mov cx,[C4WFDist]
+    movzx ecx,word[C4WFDist]
     or ecx,ecx
     jnz .not0
     mov ecx,1
@@ -1517,10 +1475,9 @@ C4DrawLine:
     jg near .noplot
     cmp word[C4Y1+1],95
     jg near .noplot
-    xor eax,eax
     mov dx,[C4Y1+1]
     shr dx,3
-    mov ax,dx
+    movzx eax,dx
     shl ax,6
     shl dx,8
     sub dx,ax
@@ -1562,19 +1519,16 @@ C4DrawLine:
 DrawWireFrame:
     mov esi,[C4Ram]
     mov edi,esi
-    xor ebx,ebx
-    mov bl,[esi+1F82h]
+    movzx ebx,byte[esi+1F82h]
     shl ebx,16
     mov bx,[esi+1F80h]
     add bx,bx
     shr ebx,1
     add ebx,[romdata]
     mov edi,ebx
-    xor ecx,ecx
-    mov cl,[esi+295h]
+    movzx ecx,byte[esi+295h]
 .loop
-    xor eax,eax
-    mov al,[esi+1F82h]
+    movzx eax,byte[esi+1F82h]
     shl eax,16
     mov al,[edi+1]
     mov ah,[edi+0]
@@ -1590,8 +1544,7 @@ DrawWireFrame:
     add ax,ax
     shr eax,1
     add eax,[romdata]
-    xor edx,edx
-    mov dl,[esi+1F82h]
+    movzx edx,byte[esi+1F82h]
     shl edx,16
     mov dl,[edi+3]
     mov dh,[edi+2]
@@ -1599,9 +1552,8 @@ DrawWireFrame:
     add dx,dx
     shr edx,1
     add edx,[romdata]
-    xor ebx,ebx
+    movzx ebx,byte[eax+1]
     mov bh,[eax]
-    mov bl,[eax+1]
     mov [C4X1],ebx
     mov bh,[eax+2]
     mov bl,[eax+3]
@@ -1691,9 +1643,7 @@ C4WireFrame:
 ;    mov [C4values+6],ax
 
     ; transform vertices (MMX2 - 36 vertices, 54 lines)
-    xor ecx,ecx
-    mov cx,[esi+1F80h]
-    xor al,al
+    movzx ecx,word[esi+1F80h]
 .loop
     mov ax,[esi+1]
     mov [C4WFXVal],ax
@@ -1726,21 +1676,18 @@ C4WireFrame:
     mov word[esi+$602+8],60h
     mov word[esi+$605+8],40h
 
-    xor ecx,ecx
-    mov cx,[esi+0B00h]
+    movzx ecx,word[esi+0B00h]
     mov edi,esi
     add edi,0B02h
 .lineloop
-    xor eax,eax
-    mov al,[edi]
+    movzx eax,byte[edi]
     shl eax,4
     add eax,[C4Ram]
     mov bx,[eax+1]
     mov [C4WFXVal],bx
     mov bx,[eax+5]
     mov [C4WFYVal],bx
-    xor eax,eax
-    mov al,[edi+1]
+    movzx eax,byte[edi+1]
     shl eax,4
     add eax,[C4Ram]
     mov bx,[eax+1]
@@ -1910,7 +1857,6 @@ C4activate:
 .polarcord2
     pushad
     mov esi,[C4Ram]
-    xor ecx,ecx
     mov cx,[esi+1F80h]
     and ecx,1FFh
     movsx eax,word[esi+1F83h]
@@ -2136,7 +2082,6 @@ C4activate:
     push edx
     push ecx
     mov esi,[C4Ram]
-    xor ecx,ecx
     mov ax,[esi+1F80h]
     and eax,1FFh
     mov bx,[CosTable+eax*2]
@@ -2984,8 +2929,7 @@ section .text
 
 NEWSYM UpdateDPage
     push eax
-    xor eax,eax
-    mov al,[xd+1]
+    movzx eax,byte[xd+1]
     push ecx
     mov ecx,[Bank0datr8+eax*4]
     mov [DPageR8],ecx
@@ -3001,8 +2945,7 @@ NEWSYM UpdateDPage
 
 NEWSYM SA1UpdateDPage
     push eax
-    xor eax,eax
-    mov al,[SA1xd+1]
+    movzx eax,byte[SA1xd+1]
     push ecx
     mov ecx,[Bank0datr8+eax*4]
     mov [SA1DPageR8],ecx
@@ -3690,12 +3633,8 @@ NEWSYM membank0w16SA1
 ;*******************************************************
 
 NEWSYM memaccessspc7110r8
-
-
-    xor al,al
     push ebx
-    xor ebx,ebx
-    mov bx,[SPCDecmPtr]
+    movzx ebx,word[SPCDecmPtr]
     add ebx,[romdata]
     add ebx,510000h
     mov al,[ebx]

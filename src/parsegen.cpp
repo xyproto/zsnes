@@ -502,6 +502,18 @@ char *convert_asm_type(const char *str, bool unsigned_var = true)
   {
     var_type = "unsigned char";
   }
+  else if (!strcasecmp(str, "sd"))
+  {
+    var_type = "int";
+  }
+  else if (!strcasecmp(str, "sw"))
+  {
+    var_type = "short";
+  }
+  else if (!strcasecmp(str, "sb"))
+  {
+    var_type = "char";
+  }
   else
   {
     current_location.error("Not a valid type");

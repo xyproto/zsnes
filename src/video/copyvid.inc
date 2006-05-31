@@ -1559,8 +1559,6 @@ NEWSYM res480, resb 1
 SECTION .data
 
 NEWSYM EagleHold, dd 0
-NEWSYM smallscreenon, dd 0
-NEWSYM smallscreence, dd 0
 NEWSYM CurrentGUIOn, dd 0
 vesavaland dd 0,0
 mmxvalanda dd 11111111110000001111111111000000b,11111111110000001111111111000000b

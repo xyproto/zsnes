@@ -31,15 +31,48 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIR_SLASH "\\"
 #endif
 #include "../psrhead/md.h"
+#include "../psrhead/cfg.h"
 
-extern unsigned char ComboHeader[23], ComboBlHeader[23], GUIRAdd;
-extern unsigned char GUIsmallscreenon, ScreenScale, TimeChecker;
-extern unsigned char GUIScreenScale, ShowTimer, ReCalib, cfgdontsave;
-extern unsigned char CombinDataGlob[3300], savecfgforce;
-extern unsigned int PHnumGUIsave, smallscreenon, SnowTimer, NumSnow;
-extern unsigned int CalibXmin, CalibXmax, CalibYmin, CalibYmax, NumComboGlob;
-extern unsigned int CalibXmin209, CalibXmax209, CalibYmin209, CalibYmax209;
-extern char GUICName[256], GUIFName[256];
+extern unsigned char ComboHeader[23], ComboBlHeader[23], CombinDataGlob[3300];
+extern unsigned char GUICName[256], GUIFName[256], ShowTimer, savecfgforce;
+extern unsigned int SnowTimer, NumSnow, NumComboGlob;
+enum vtype { UB, UW, UD, SB, SW, SD };
+
+void CheckValueBounds(void *ptr, int min, int max, int val, enum vtype type)
+{
+  switch (type)
+  {
+    case SB:
+      if (((*(char*)ptr) > (char)max) || ((*(char*)ptr) < (char)min))
+      { *(char*)ptr = (char)val; }
+      break;
+    case UB:
+      if (((*(unsigned char*)ptr) > (unsigned char)max) ||
+          ((*(unsigned char*)ptr) < (unsigned char)min))
+      { *(unsigned char*)ptr = (unsigned char)val; }
+      break;
+
+    case SW:
+      if (((*(short*)ptr) > (short)max) || ((*(short*)ptr) < (short)min))
+      { *(short*)ptr = (short)val; }
+      break;
+    case UW:
+      if (((*(unsigned short*)ptr) > (unsigned short)max) ||
+          ((*(unsigned short*)ptr) < (unsigned short)min))
+      { *(unsigned short*)ptr = (unsigned short)val; }
+      break;
+
+    default:
+    case SD:
+      if (((*(int*)ptr) > max) || ((*(int*)ptr) < min))
+      { *(int*)ptr = val; }
+      break;
+    case UD:
+      if (((*(unsigned int*)ptr) > (unsigned int)max) ||
+          ((*(unsigned int*)ptr) < (unsigned int)min))
+      { *(unsigned int*)ptr = (unsigned int)val; }
+  }
+}
 
 unsigned char CalcCfgChecksum()
 {
@@ -63,27 +96,207 @@ unsigned char CalcCfgChecksum()
 
 void GUIRestoreVars()
 {
+  int i;
   unsigned char read_cfg_vars(const char *);
   FILE *cfg_fp;
 
   read_cfg_vars(GUIFName);
   read_md_vars("zmovie.cfg");
 
-  smallscreenon = (unsigned int)GUIsmallscreenon;
-  ScreenScale = GUIScreenScale;
+  CheckValueBounds(&per2exec, 50, 150, 100, UD);
+  CheckValueBounds(&SRAMSave5Sec, 0, 1, 0, UB);
+  CheckValueBounds(&OldGfxMode2, 0, 1, 0, UB);
+
+#ifdef __MSDOS__
+  CheckValueBounds(&pl1contrl, 0, 15, 1, UB);
+  CheckValueBounds(&pl1p209, 0, 1, 0, UB);
+  CheckValueBounds(&pl2contrl, 0, 15, 0, UB);
+  CheckValueBounds(&pl2p209, 0, 1, 0, UB);
+  CheckValueBounds(&pl3contrl, 0, 15, 0, UB);
+  CheckValueBounds(&pl3p209, 0, 1, 0, UB);
+  CheckValueBounds(&pl4contrl, 0, 15, 0, UB);
+  CheckValueBounds(&pl4p209, 0, 1, 0, UB);
+  CheckValueBounds(&pl5contrl, 0, 15, 0, UB);
+  CheckValueBounds(&pl5p209, 0, 1, 0, UB);
+#else
+  CheckValueBounds(&pl1contrl, 0, 1, 1, UB);
+  CheckValueBounds(&pl2contrl, 0, 1, 0, UB);
+  CheckValueBounds(&pl3contrl, 0, 1, 0, UB);
+  CheckValueBounds(&pl4contrl, 0, 1, 0, UB);
+  CheckValueBounds(&pl5contrl, 0, 1, 0, UB);
+#endif
+  CheckValueBounds(&pl12s34, 0, 1, 0, UB);
+  CheckValueBounds(&AllowUDLR, 0, 1, 0, UB);
+#ifdef __MSDOS__
+  CheckValueBounds(&SidewinderFix, 0, 1, 0, UB);
+#endif
+
+#ifdef __WIN32__
+  CheckValueBounds(&cvidmode, 0, 40, 3, UB);
+  CheckValueBounds(&PrevWinMode, 0, 40, 3, UB);
+  CheckValueBounds(&PrevFSMode, 0, 40, 6, UB);
+#endif
+#ifdef __UNIXSDL__
+#ifdef __OPENGL__
+  CheckValueBounds(&cvidmode, 0, 23, 2, UB);
+  CheckValueBounds(&PrevWinMode, 0, 23, 2, UB);
+  CheckValueBounds(&PrevFSMode, 0, 23, 3, UB);
+#else
+  CheckValueBounds(&cvidmode, 0, 5, 2, UB);
+  CheckValueBounds(&PrevWinMode, 0, 5, 2, UB);
+  CheckValueBounds(&PrevFSMode, 0, 5, 3, UB);
+#endif
+#endif
+#ifdef __MSDOS__
+  CheckValueBounds(&cvidmode, 0, 18, 4, UB);
+#endif
+  CheckValueBounds(&CustomResX, 256, 2048, 640, UD);
+  CheckValueBounds(&CustomResY, 224, 1536, 480, UD);
+  CheckValueBounds(&newengen, 0, 1, 1, UB);
+  CheckValueBounds(&scanlines, 0, 3, 0, UB);
+  CheckValueBounds(&antienab, 0, 1, 0, UB);
+#ifndef __UNIXSDL__
+  CheckValueBounds(&vsyncon, 0, 1, 0, UB);
+#endif
+#ifdef __WIN32__
+  CheckValueBounds(&TripleBufferWin, 0, 1, 0, UB);
+#endif
+#ifdef __MSDOS__
+  CheckValueBounds(&smallscreenon, 0, 1, 0, UD);
+  CheckValueBounds(&ScreenScale, 0, 1, 0, UB);
+  CheckValueBounds(&Triplebufen, 0, 1, 0, UB);
+#endif
+#ifdef __UNIXSDL__
+  CheckValueBounds(&BilinearFilter, 0, 1, 0, UB);
+#endif
+  CheckValueBounds(&En2xSaI, 0, 3, 0, UB);
+  CheckValueBounds(&hqFilter, 0, 1, 0, UB);
+  CheckValueBounds(&GrayscaleMode, 0, 1, 0, UB);
+  CheckValueBounds(&Mode7HiRes16b, 0, 1, 0, UD);
+  CheckValueBounds(&NTSCFilter, 0, 1, 0, UB);
+  CheckValueBounds(&NTSCBlend, 0, 1, 0, UB);
+  CheckValueBounds(&NTSCHue, -100, 100, 0, SB);
+  CheckValueBounds(&NTSCSat, -100, 100, 0, SB);
+  CheckValueBounds(&NTSCCont, -100, 100, 0, SB);
+  CheckValueBounds(&NTSCBright, -100, 100, 0, SB);
+  CheckValueBounds(&NTSCSharp, -100, 100, 0, SB);
+  CheckValueBounds(&NTSCWarp, -100, 100, 0, SB);
+  CheckValueBounds(&NTSCRef, 0, 1, 0, UB);
+
+  CheckValueBounds(&soundon, 0, 1, 1, UB);
+  CheckValueBounds(&StereoSound, 0, 1, 1, UB);
+  CheckValueBounds(&SoundQuality, 0, 6, 5, UD);
+  CheckValueBounds(&MusicRelVol, 0, 100, 100, UB);
+  CheckValueBounds(&RevStereo, 0, 1, 0, UB);
+#ifdef __MSDOS__
+  CheckValueBounds(&Force8b, 0, 1, 0, UB);
+  CheckValueBounds(&RaisePitch, 0, 1, 0, UB);
+#endif
+  CheckValueBounds(&SPCDisable, 0, 1, 0, UB);
+  CheckValueBounds(&EchoDis, 0, 1, 0, UB);
+  CheckValueBounds(&SoundBufEn, 0, 1, 0, UB);
+  CheckValueBounds(&Surround, 0, 1, 0, UB);
+  CheckValueBounds(&SoundInterpType, 0, 3, 1, UB);
+  CheckValueBounds(&LowPassFilterType, 0, 3, 0, UB);
+#ifdef __WIN32__
+  CheckValueBounds(&PrimaryBuffer, 0, 1, 0, UB);
+#endif
+
+  CheckValueBounds(&frameskip, 0, 10, 0, UB);
+  CheckValueBounds(&maxskip, 0, 9, 9, UB);
+  CheckValueBounds(&EmuSpeed, 0, 58, 29, UB);
+  CheckValueBounds(&Turbo30hz, 0, 1, 1, UB);
+  CheckValueBounds(&FastFwdToggle, 0, 1, 0, UB);
+  CheckValueBounds(&FFRatio, 0, 28, 8, UB);
+  CheckValueBounds(&SDRatio, 0, 28, 0, UB);
+  CheckValueBounds(&SRAMState, 0, 1, 1, UB);
+  CheckValueBounds(&AutoIncSaveSlot, 0, 1, 0, UB);
+  CheckValueBounds(&LatestSave, 0, 1, 0, UB);
+  CheckValueBounds(&AutoState, 0, 1, 0, UB);
+  CheckValueBounds(&RewindStates, 0, 99, 8, UB);
+  CheckValueBounds(&RewindFrames, 1, 99, 15, UB);
+#ifndef __UNIXSDL__
+  CheckValueBounds(LoadDrive, 0, 25, 2, UB);
+#endif
+#ifdef NO_PNG
+  CheckValueBounds(&ScreenShotFormat, 0, 0, 0, UB);
+#else
+  CheckValueBounds(&ScreenShotFormat, 0, 1, 0, UB);
+#endif
+  CheckValueBounds(&MMXSupport, 0, 1, 1, UB);
+  CheckValueBounds(&SmallMsgText, 0, 1, 0, UB);
+  CheckValueBounds(&GUIEnableTransp, 0, 1, 0, UB);
+  CheckValueBounds(&PauseLoad, 0, 1, 0, UB);
+  CheckValueBounds(&PauseRewind, 0, 1, 0, UB);
+  CheckValueBounds(&FPSAtStart, 0, 1, 0, UB);
+  CheckValueBounds(&TimerEnable, 0, 1, 0, UB);
+  CheckValueBounds(&TwelveHourClock, 0, 1, 0, UB);
+  CheckValueBounds(&AutoLoadCht, 0, 1, 0, UB);
+  CheckValueBounds(&AutoPatch, 0, 1, 1, UB);
+  CheckValueBounds(&PauseFocusChange, 0, 1, 0, UB);
+  CheckValueBounds(&DisplayInfo, 0, 1, 1, UB);
+  CheckValueBounds(&RomInfo, 0, 1, 1, UB);
+#ifdef __WIN32__
+  CheckValueBounds(&HighPriority, 0, 1, 0, UB);
+  CheckValueBounds(&SaveMainWindowPos, 0, 1, 1, UB);
+  CheckValueBounds(&AllowMultipleInst, 0, 1, 1, UB);
+  CheckValueBounds(&DisableScreenSaver, 0, 1, 1, UB);
+#endif
+  CheckValueBounds(&cfgdontsave, 0, 1, 0, UB);
+  CheckValueBounds(&FirstTimeData, 0, 1, 1, UB);
+
+  CheckValueBounds(&guioff, 0, 1, 0, UB);
+  CheckValueBounds(&showallext, 0, 1, 0, UB);
+#ifdef __MSDOS__
+  CheckValueBounds(&GUIloadfntype, 0, 2, 0, UB);
+#endif
+  CheckValueBounds(&prevlfreeze, 0, 1, 0, UB);
+  CheckValueBounds(&GUIRAdd, 0, 31, 15, UB);
+  CheckValueBounds(&GUIGAdd, 0, 31, 10, UB);
+  CheckValueBounds(&GUIBAdd, 0, 31, 31, UB);
+  CheckValueBounds(&GUITRAdd, 0, 31, 0, UB);
+  CheckValueBounds(&GUITGAdd, 0, 31, 10, UB);
+  CheckValueBounds(&GUITBAdd, 0, 31, 31, UB);
+  CheckValueBounds(&GUIWRAdd, 0, 31, 8, UB);
+  CheckValueBounds(&GUIWGAdd, 0, 31, 8, UB);
+  CheckValueBounds(&GUIWBAdd, 0, 31, 25, UB);
+  CheckValueBounds(&GUIEffect, 0, 4, 0, UB);
+  CheckValueBounds(&FilteredGUI, 0, 1, 1, UB);
+  CheckValueBounds(&mousewrap, 0, 1, 0, UB);
+  CheckValueBounds(&mouseshad, 0, 1, 1, UB);
+  CheckValueBounds(&lastcursres, 0, 1, 0, UB);
+  CheckValueBounds(&resetposn, 0, 1, 1, UB);
+  for (i=1 ; i<22 ; i++)
+  {
+    CheckValueBounds(GUIwinposx+i, -233, 254, 10, SD);
+    CheckValueBounds(GUIwinposy+i, 8, 221, 20, SD);
+  }
+#ifdef __WIN32__
+  CheckValueBounds(&MouseWheel, 0, 1, 0, UB);
+  CheckValueBounds(&TrapMouseCursor, 0, 1, 0, UB);
+  CheckValueBounds(&AlwaysOnTop, 0, 1, 0, UB);
+#endif
+  CheckValueBounds(&GUIComboGameSpec, 0, 1, 0, UB);
+  CheckValueBounds(&GUIClick, 0, 1, 0, UB);
+  CheckValueBounds(&JoyPad1Move, 0, 1, 0, UB);
+
+  CheckValueBounds(&CheatSrcByteSize, 0, 3, 0, UB);
+  CheckValueBounds(&CheatSrcByteBase, 0, 1, 0, UB);
+  CheckValueBounds(&CheatSrcSearchType, 0, 1, 0, UB);
+  CheckValueBounds(&CheatUpperByteOnly, 0, 1, 0, UB);
+
+  CheckValueBounds(&MovieDisplayFrame, 0, 1, 0, UB);
+  CheckValueBounds(&MovieStartMethod, 0, 3, 0, UB);
+  CheckValueBounds(&MovieVideoMode, 0, 5, 4, UB);
+  CheckValueBounds(&MovieAudio, 0, 1, 1, UB);
+  CheckValueBounds(&MovieVideoAudio, 0, 1, 1, UB);
+  CheckValueBounds(&MovieAudioCompress, 0, 1, 1, UB);
 
   if (TimeChecker == CalcCfgChecksum())
   {
     ShowTimer = 1;
     NumSnow = 200;
     SnowTimer = 0;
-  }
-
-  if (ReCalib)
-  {
-    ReCalib = 0;
-    CalibXmin = CalibXmax = CalibYmin = CalibYmax = 0;
-    CalibXmin209 = CalibXmax209 = CalibYmin209 = CalibYmax209 = 0;
   }
 
   NumComboGlob = 0;
@@ -102,7 +315,7 @@ void GUIRestoreVars()
   }
 }
 
-void ExecGUISaveVars()
+void GUISaveVars()
 {
   unsigned char write_cfg_vars(const char *);
   FILE *cfg_fp;

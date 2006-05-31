@@ -26,8 +26,6 @@
 ;   Command 05h fixed.
 ;   when you got the magic missile damage such as fireball, DSP2 support in prior version entered halt state.
 
-
-
 %include "macros.mac"
 
 DSP2F_HALT              equ 1

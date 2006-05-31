@@ -22,8 +22,8 @@
 
 EXTSYM PrintStr,WaitForKey,PrintChar,ram7fa,wramdataa,MMXSupport
 EXTSYM MMXextSupport,statefileloc,LatestSave,firstsaveinc,Open_File
-EXTSYM Get_File_Date,Close_File,Change_Dir,Get_Dir,romloadskip,cfgloadgdir
-EXTSYM cfgloadsdir,init18_2hz,SRAMDirCurDir,SRAMChdir,SRAMChdirFail
+EXTSYM Get_File_Date,Close_File,Change_Dir,Get_Dir,romloadskip
+EXTSYM init18_2hz,SRAMDirCurDir,SRAMChdir,SRAMChdirFail,LoadDir,LoadDrive
 EXTSYM BitConv32Ptr,spcBuffera,spritetablea,vcache2bs,vcache4bs,vcache8bs
 EXTSYM RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa,vidbufferofsmos,ngwinptr
 EXTSYM vidbufferofsb,headdata,romdata,sfxramdata,setaramdata,wramdata,ram7f,vram
@@ -53,16 +53,8 @@ NEWSYM outofmemory
 	jmp DosExit
 
 SECTION .data
-NEWSYM mydebug, db '',13,10,0
 NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,10,0
-
-;cpuidfname db 'nocpuzid.dat',0
-;cpuidtext db 'NOTE: If ZSNES crashes here, then please re-run. ',0
-;cpuidtext2 db 13,'                                                 ',13,0
 NEWSYM YesMMX, db 'MMX support found and enabled.',13,10,13,10,0
-
-; New Variables
-;NEWSYM BetaUser, db 37,38,210,56,78,23,7,7,0
 
 SECTION .text
 
@@ -270,17 +262,6 @@ SECTION .text
     jne near %3
 %endmacro
 
-;NEWSYM allocspc7110
-;    AllocmemFail 8192*1024+4096,spc7110romptr,outofmemoryb
-;    ret
-
-;outofmemoryb
-;%ifdef __MSDOS__
-;    mov ax,3
-;    int 10h
-;%endif
-;    jmp outofmemory
-
 NEWSYM allocptr
     mov dword[cmemallocptr],memfreearray
 
@@ -483,14 +464,12 @@ newestfiledate resd 1
 SECTION .text
 
 NEWSYM makeextension
-    xor ecx,ecx
-    xor ebx,ebx
-    xor ah,ah
-    mov cl,[fname]
+    movzx ecx,byte[fname]
     mov [fnames],cl
     mov [fnamest],cl
     mov dl,cl
-    inc ebx
+    mov ebx,1
+    xor ah,ah
 .loopc
     mov al,[fname+ebx]
     mov [fnames+ebx],al
@@ -506,7 +485,7 @@ NEWSYM makeextension
     dec edx
     mov al,[fnames+edx]
 %ifdef __UNIXSDL__
-    cmp al, '/'
+    cmp al,'/'
 %else
     cmp al,'\'
 %endif
@@ -519,17 +498,9 @@ NEWSYM makeextension
 .addb
     mov ebx,edx
 .addext
-    mov byte[fnames+ebx],'.'
-    mov byte[fnamest+ebx],'.'
-    inc ebx
-    mov byte[fnames+ebx],'s'
-    mov byte[fnamest+ebx],'z'
-    inc ebx
-    mov byte[fnames+ebx],'r'
-    mov byte[fnamest+ebx],'s'
-    inc ebx
-    mov byte[fnames+ebx],'m'
-    mov byte[fnamest+ebx],'t'
+    mov dword[fnames+ebx],'.srm'
+    mov dword[fnamest+ebx],'.zst'
+    add ebx,3
     mov [statefileloc],ebx
     inc ebx
     mov byte[fnames+ebx],0
@@ -663,14 +634,12 @@ SECTION .text
 
 %ifndef __UNIXSDL__
 NEWSYM obtaindir
-    cmp byte[cfgloadsdir],1
-    je .nosdriveb
+    cmp byte[SRAMDir],0
+    jne .nosdriveb
     pushad
     call SRAMDirCurDir
     popad
 .nosdriveb
-    cmp byte[cfgloadgdir],1
-    je .noldriveb
     mov ebx,LoadDir
     mov edx,LoadDrive
     call Get_Dir
@@ -689,7 +658,7 @@ NEWSYM preparedir
 ; get current drive, ah = 19h, al = A=0,B=1, etc.
 
 %ifndef __UNIXSDL__
-    cmp byte[cfgloadsdir],0
+    cmp byte[SRAMDir],0
     je near .nosdrivec
     ; verify sram drive/directory exists
     ; change dir to SRAMDrive/SRAMDir
@@ -702,8 +671,6 @@ NEWSYM preparedir
     mov dl,[InitDrive]
     mov ebx,InitDir
     call Change_Dir
-
-    mov byte[cfgloadsdir],0
     ; Get drive/dir
     pushad
     call SRAMDirCurDir
@@ -735,7 +702,6 @@ SECTION .data
 .enter      db 13,10,0
 
 NEWSYM InitDrive, db 2
-NEWSYM LoadDrive, db 2
 
 %ifdef __UNIXSDL__
 NEWSYM gotoroot, db '/',0
@@ -745,7 +711,6 @@ NEWSYM gotoroot, db '\',0
 
 SECTION .bss
 NEWSYM InitDir, resb 512
-NEWSYM LoadDir, resb 512
 
 SECTION .text
 

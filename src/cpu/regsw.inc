@@ -786,13 +786,11 @@ reg2117w:
     shl word[vramaddr],1
     mov byte[vramread],0
 
-    xor ebx,ebx
-    mov bx,[vramaddr]
+    movzx ebx,word[vramaddr]
     add ebx,[vram]
     mov bl,[ebx]
     mov [vramread],bl
-    xor ebx,ebx
-    mov bx,[vramaddr]
+    movzx ebx,word[vramaddr]
     add ebx,[vram]
     mov bl,[ebx+1]
     mov [vramread2],bl
@@ -821,9 +819,8 @@ NEWSYM reg2118inc
 
 NEWSYM reg2118inc8
     push ecx
-    xor ecx,ecx
     mov ebx,[vramaddr]
-    mov cl,[vramincby8left]
+    movzx ecx,byte[vramincby8left]
     and ebx,ecx
     shl ebx,3
     push eax
@@ -851,9 +848,8 @@ NEWSYM reg2118inc8
 
 NEWSYM reg2118inc8inc
     push ecx
-    xor ecx,ecx
     mov ebx,[vramaddr]
-    mov cl,[vramincby8left]
+    movzx ecx,byte[vramincby8left]
     and ebx,ecx
     shl ebx,3
     push eax
@@ -913,9 +909,8 @@ NEWSYM reg2119inc
 
 NEWSYM reg2119inc8
     push ecx
-    xor ecx,ecx
     mov ebx,[vramaddr]
-    mov cl,[vramincby8left]
+    movzx ecx,byte[vramincby8left]
     and ebx,ecx
     shl ebx,3
     push eax
@@ -941,9 +936,8 @@ NEWSYM reg2119inc8
 
 NEWSYM reg2119inc8inc
     push ecx
-    xor ecx,ecx
     mov ebx,[vramaddr]
-    mov cl,[vramincby8left]
+    movzx ecx,byte[vramincby8left]
     and ebx,ecx
     shl ebx,3
     push eax
@@ -1030,8 +1024,7 @@ reg2121w:
 
 ; Colour data register
 reg2122w:
-    xor ebx,ebx
-    mov bx,[cgaddr]
+    movzx ebx,word[cgaddr]
     cmp [cgram+ebx],al
     je .nomod
     mov [cgram+ebx],al
@@ -1393,9 +1386,8 @@ reg4206w:
     je .divby0
     push eax
     push edx
-    xor ebx,ebx
     xor edx,edx
-    mov bl,al
+    movzx ebx,al
     mov ax,[diva]
     div bx
     mov [divres],ax
@@ -1420,8 +1412,7 @@ DetermineHIRQExec
     push ecx
     push edx
     mov ax,[HIRQLoc]
-    xor ecx,ecx
-    mov cl,[cycpl]
+    movzx ecx,byte[cycpl]
     mul cx
     mov cx,340
     div cx

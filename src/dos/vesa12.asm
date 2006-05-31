@@ -464,12 +464,10 @@ NEWSYM InitVesa12
 
     call genfulladdtab
 
-    xor eax,eax
-    xor ebx,ebx
     xor ecx,ecx
     xor edx,edx
-    mov ax,4f02h
-    mov bx,[vesamode]
+    mov eax,4f02h
+    movzx ebx,word[vesamode]
     int 10h              ; Set the vesa mode
     cmp ax,004fh
     jz .modesetok

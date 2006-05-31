@@ -161,14 +161,36 @@ SECTION .data
 SECTION .text
 
 CalibrateDev1:
-    xor eax,eax
-    mov al,[cplayernum]
+    movzx eax,byte[cplayernum]
     mov ebx,[GUIInputRefP+eax*4]
     mov bl,[ebx]
     mov byte[GUICBHold],0
 %ifdef __MSDOS__
-    cmp byte[pl1p209+eax],0
+    cmp al,0
+    jne .notpl1
+    cmp byte[pl1p209],0
     jne near .port209
+.notpl1
+    cmp al,1
+    jne .notpl2
+    cmp byte[pl2p209],0
+    jne near .port209
+.notpl2
+    cmp al,2
+    jne .notpl3
+    cmp byte[pl3p209],0
+    jne near .port209
+.notpl3
+    cmp al,3
+    jne .notpl4
+    cmp byte[pl4p209],0
+    jne near .port209
+.notpl4
+    cmp al,4
+    jne .notpl5
+    cmp byte[pl5p209],0
+    jne near .port209
+.notpl5
 %endif
     cmp bl,1
     jbe .nojoy
@@ -315,11 +337,33 @@ SECTION .text
 
 SetDevice:
     mov byte[GUICBHold],0
-    xor eax,eax
-    mov al,[cplayernum]
+    movzx eax,byte[cplayernum]
 %ifdef __MSDOS__
-    cmp byte[pl1p209+eax],0
+    cmp al,0
+    jne .notpl1
+    cmp byte[pl1p209],0
     jne .port209
+.notpl1
+    cmp al,1
+    jne .notpl2
+    cmp byte[pl2p209],0
+    jne .port209
+.notpl2
+    cmp al,2
+    jne .notpl3
+    cmp byte[pl3p209],0
+    jne .port209
+.notpl3
+    cmp al,3
+    jne .notpl4
+    cmp byte[pl4p209],0
+    jne .port209
+.notpl4
+    cmp al,4
+    jne .notpl5
+    cmp byte[pl5p209],0
+    jne .port209
+.notpl5
 %endif
 ;.notdos
     mov dword[CalibXmin],0

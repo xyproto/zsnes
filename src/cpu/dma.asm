@@ -32,8 +32,7 @@ NEWSYM AddrNoIncr, resb 1
 section .text
 
 %macro ExecSPCCycles 0
-    xor ebx,ebx
-    mov bx,[esi+5]
+    movzx ebx,word[esi+5]
     inc bx
     inc ebx
     shr ebx,2
@@ -88,8 +87,7 @@ NEWSYM transdma
     mov edi,ebx
 
     ; get pointer #1
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi]
     shl ebx,2
@@ -98,8 +96,7 @@ NEWSYM transdma
     mov [.regptra],eax
 
     ; get pointer #2
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+2]
     shl ebx,2
@@ -108,8 +105,7 @@ NEWSYM transdma
     mov [.regptrb],eax
 
     ; get pointer #3
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+4]
     shl ebx,2
@@ -118,8 +114,7 @@ NEWSYM transdma
     mov [.regptrc],eax
 
     ; get pointer #4
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+6]
     shl ebx,2
@@ -127,10 +122,9 @@ NEWSYM transdma
     mov eax,[ebx]
     mov [.regptrd],eax
 
-    mov dx,[esi+5]      ; Number of bytes to transfer
-    xor ebx,ebx
-    mov bl,[esi+4]      ; Bank #
-    mov ecx,[esi+2]      ; address offset #
+    mov dx,[esi+5]        ; Number of bytes to transfer
+    movzx ebx,byte[esi+4] ; Bank #
+    mov ecx,[esi+2]       ; address offset #
     and ecx,0FFFFh
     mov [.curbank],bl
     mov word[esi+5],0
@@ -146,8 +140,7 @@ NEWSYM transdma
 
     push esi
     mov esi,ebx
-    xor ebx,ebx
-    mov bl,[.curbank]
+    movzx ebx,byte[.curbank]
     ; do loop
     cmp edx,0
     jne .no0
@@ -155,8 +148,7 @@ NEWSYM transdma
 .no0
     mov ebx,[memtabler8+ebx*4]
     mov [.readaddr],ebx
-    xor ebx,ebx
-    mov bl,[.curbank]
+    movzx ebx,byte[.curbank]
     mov [.cebx],ebx
 .againloop
     cmp edx,4
@@ -239,16 +231,14 @@ NEWSYM transdmappu2cpu
 .skipaddrincr
 
     ; get address order to be written
-    xor ebx,ebx
     and al,00000111b
-    mov bl,al
+    movzx ebx,al
     shl bl,3
     add ebx,.addrwrite
     mov edi,ebx
 
     ; get pointer #1
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi]
     shl ebx,2
@@ -257,8 +247,7 @@ NEWSYM transdmappu2cpu
     mov [.regptra],eax
 
     ; get pointer #2
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+2]
     shl ebx,2
@@ -267,8 +256,7 @@ NEWSYM transdmappu2cpu
     mov [.regptrb],eax
 
     ; get pointer #3
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+4]
     shl ebx,2
@@ -277,8 +265,7 @@ NEWSYM transdmappu2cpu
     mov [.regptrc],eax
 
     ; get pointer #4
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+6]
     shl ebx,2
@@ -286,10 +273,9 @@ NEWSYM transdmappu2cpu
     mov eax,[ebx]
     mov [.regptrd],eax
 
-    mov dx,[esi+5]      ; Number of bytes to transfer
-    xor ebx,ebx
-    mov bl,[esi+4]      ; Bank #
-    mov ecx,[esi+2]      ; address offset #
+    mov dx,[esi+5]        ; Number of bytes to transfer
+    movzx ebx,byte[esi+4] ; Bank #
+    mov ecx,[esi+2]       ; address offset #
     and ecx,0FFFFh
     mov [.curbank],bl
     mov word[esi+5],0
@@ -305,8 +291,7 @@ NEWSYM transdmappu2cpu
 
     push esi
     mov esi,ebx
-    xor ebx,ebx
-    mov bl,[.curbank]
+    movzx ebx,byte[.curbank]
     ; do loop
     cmp edx,0
     jne .no0
@@ -314,8 +299,7 @@ NEWSYM transdmappu2cpu
 .no0
     mov ebx,[memtablew8+ebx*4]
     mov [.writeaddr],ebx
-    xor ebx,ebx
-    mov bl,[.curbank]
+    movzx ebx,byte[.curbank]
     mov [.cebx],ebx
 .againloop
     cmp edx,4
@@ -461,9 +445,8 @@ NEWSYM setuphdma
     mov [edx+17],ax
     ; get address order to be written
     xor ebx,ebx
-    xor eax,eax
     xor ecx,ecx
-    mov al,[esi]
+    movzx eax,byte[esi]
     and al,00000111b
     cmp al,5
     jb .notmode567dma
@@ -477,8 +460,7 @@ NEWSYM setuphdma
     mov edi,ebx
 
     ; get pointer #1
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi]
     cmp bx,2118h
@@ -495,8 +477,7 @@ NEWSYM setuphdma
     mov [edx],eax
 
     ; get pointer #2
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+2]
     cmp bx,2118h
@@ -513,8 +494,7 @@ NEWSYM setuphdma
     mov [edx+4],eax
 
     ; get pointer #3
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+4]
     cmp bx,2118h
@@ -525,15 +505,13 @@ NEWSYM setuphdma
 .notnormalhdma3
     mov bx,2200h        ; bad hack _Demo_
 .normalhdma3
-
     shl ebx,2
     add ebx,[regptw]
     mov eax,[ebx]
     mov [edx+8],eax
 
     ; get pointer #4
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+6]
     cmp bx,2118h
@@ -544,7 +522,6 @@ NEWSYM setuphdma
 .notnormalhdma4
     mov bx,2200h        ; bad hack _Demo_
 .normalhdma4
-
     shl ebx,2
     add ebx,[regptw]
     mov eax,[ebx]
@@ -567,9 +544,8 @@ NEWSYM setuphdmars
 
     ; get address order to be written
     xor ebx,ebx
-    xor eax,eax
     xor ecx,ecx
-    mov al,[esi]
+    movzx eax,byte[esi]
     and al,00000111b
     cmp al,5
     jb .notmode567dma
@@ -583,8 +559,7 @@ NEWSYM setuphdmars
     mov edi,ebx
 
     ; get pointer #1
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi]
     cmp bx,2118h
@@ -601,8 +576,7 @@ NEWSYM setuphdmars
     mov [edx],eax
 
     ; get pointer #2
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+2]
     cmp bx,2118h
@@ -619,8 +593,7 @@ NEWSYM setuphdmars
     mov [edx+4],eax
 
     ; get pointer #3
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+4]
     cmp bx,2118h
@@ -637,8 +610,7 @@ NEWSYM setuphdmars
     mov [edx+8],eax
 
     ; get pointer #4
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+6]
     cmp bx,2118h
@@ -675,9 +647,8 @@ NEWSYM setuphdma2
     mov [edx+17],ax
     ; get address order to be written
     xor ebx,ebx
-    xor eax,eax
     xor ecx,ecx
-    mov al,[esi]
+    movzx eax,byte[esi]
     and al,00000111b
     cmp al,5
     jb .notmode567dma
@@ -691,8 +662,7 @@ NEWSYM setuphdma2
     mov edi,ebx
 
     ; get pointer #1
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi]
     cmp bx,2118h
@@ -703,15 +673,13 @@ NEWSYM setuphdma2
 .notnormalhdma1
     mov bx,2200h        ; bad hack _Demo_
 .normalhdma1
-
     shl ebx,2
     add ebx,[regptw]
     mov eax,[ebx]
     mov [edx],eax
 
     ; get pointer #2
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+2]
     cmp bx,2118h
@@ -726,9 +694,9 @@ NEWSYM setuphdma2
     add ebx,[regptw]
     mov eax,[ebx]
     mov [edx+4],eax
+
     ; get pointer #3
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+4]
     cmp bx,2118h
@@ -745,8 +713,7 @@ NEWSYM setuphdma2
     mov [edx+8],eax
 
     ; get pointer #4
-    xor ebx,ebx
-    mov bl,[esi+1]      ; PPU memory - 21xx
+    movzx ebx,byte[esi+1]      ; PPU memory - 21xx
     mov bh,21h
     add bx,[edi+6]
     cmp bx,2118h
@@ -973,32 +940,27 @@ NEWSYM dohdma
     ja near hdmatype2
     mov al,[edx+16]
     mov [.tempdecr],al
-    xor ebx,ebx
-    xor ecx,ecx
-    mov bl,[esi+4]
-    mov cx,[edx+17]         ; increment/decrement/keep pointer location
+    movzx ebx,byte[esi+4]
+    movzx ecx,word[edx+17]  ; increment/decrement/keep pointer location
     call dword near [memtabler8+ebx*4]
     call dword near [edx]
     dec byte[.tempdecr]
     jz .finhdma
-    xor ebx,ebx
-    mov bl,[esi+4]
+    movzx ebx,byte[esi+4]
     mov cx,[edx+17]         ; increment/decrement/keep pointer location
     inc cx
     call dword near [memtabler8+ebx*4]
     call dword near [edx+4]
     dec byte[.tempdecr]
     jz .finhdma
-    xor ebx,ebx
-    mov bl,[esi+4]
+    movzx ebx,byte[esi+4]
     mov cx,[edx+17]         ; increment/decrement/keep pointer location
     add cx,2
     call dword near [memtabler8+ebx*4]
     call dword near [edx+8]
     dec byte[.tempdecr]
     jz .finhdma
-    xor ebx,ebx
-    mov bl,[esi+4]
+    movzx ebx,byte[esi+4]
     mov cx,[edx+17]         ; increment/decrement/keep pointer location
     add cx,3
     call dword near [memtabler8+ebx*4]
@@ -1026,33 +988,28 @@ section .text
 NEWSYM hdmatype2
     mov al,[edx+16]
     mov [.tempdecr],al
-    xor ebx,ebx
-    xor ecx,ecx
-    mov bl,[esi+4]
-    mov cx,[edx+17]         ; increment/decrement/keep pointer location
+    movzx ebx,byte[esi+4]
+    movzx ecx,word[edx+17] ; increment/decrement/keep pointer location
     inc word[edx+17]
     call dword near [memtabler8+ebx*4]
     call dword near [edx]
     dec byte[.tempdecr]
     jz .finhdma
-    xor ebx,ebx
-    mov bl,[esi+4]
+    movzx ebx,byte[esi+4]
     mov cx,[edx+17]         ; increment/decrement/keep pointer location
     inc word[edx+17]
     call dword near [memtabler8+ebx*4]
     call dword near [edx+4]
     dec byte[.tempdecr]
     jz .finhdma
-    xor ebx,ebx
-    mov bl,[esi+4]
+    movzx ebx,byte[esi+4]
     mov cx,[edx+17]         ; increment/decrement/keep pointer location
     inc word[edx+17]
     call dword near [memtabler8+ebx*4]
     call dword near [edx+8]
     dec byte[.tempdecr]
     jz .finhdma
-    xor ebx,ebx
-    mov bl,[esi+4]
+    movzx ebx,byte[esi+4]
     mov cx,[edx+17]         ; increment/decrement/keep pointer location
     inc word[edx+17]
     call dword near [memtabler8+ebx*4]
@@ -1099,35 +1056,30 @@ NEWSYM indirectaddr
     ja near hdmatype2indirect
     mov al,[edx+16]
     mov [.tempdecr],al
-    xor ebx,ebx
-    xor ecx,ecx
-    mov bl,[esi+7]
-    mov cx,[esi+5]         ; increment/decrement/keep pointer location
+    movzx ebx,byte[esi+7]
+    movzx ecx,word[esi+5]  ; increment/decrement/keep pointer location
     call dword near [memtabler8+ebx*4]
     call dword near [edx]
     dec byte[.tempdecr]
     jz .finhdma
-    xor ebx,ebx
-    mov bl,[esi+7]
+    movzx ebx,byte[esi+7]
     mov cx,[esi+5]         ; increment/decrement/keep pointer location
     inc cx
     call dword near [memtabler8+ebx*4]
     call dword near [edx+4]
     dec byte[.tempdecr]
     jz .finhdma
-    xor ebx,ebx
-    mov bl,[esi+7]
+    movzx ebx,byte[esi+7]
     mov cx,[esi+5]         ; increment/decrement/keep pointer location
     add cx,2
     call dword near [memtabler8+ebx*4]
     call dword near [edx+8]
     dec byte[.tempdecr]
     jz .finhdma
-    xor ebx,ebx
-    mov bl,[esi+7]
+    movzx ebx,byte[esi+7]
     mov cx,[esi+5]         ; increment/decrement/keep pointer location
     add cx,3
-	call dword near [memtabler8+ebx*4]
+    call dword near [memtabler8+ebx*4]
     call dword near [edx+12]
     jmp .finhdma
 .nozero
@@ -1155,33 +1107,28 @@ section .text
 NEWSYM hdmatype2indirect
     mov al,[edx+16]
     mov [.tempdecr],al
-    xor ebx,ebx
-    xor ecx,ecx
-    mov bl,[esi+7]
-    mov cx,[esi+5]         ; increment/decrement/keep pointer location
+    movzx ebx,byte[esi+7]
+    movzx ecx,word[esi+5]  ; increment/decrement/keep pointer location
     inc word[esi+5]
     call dword near [memtabler8+ebx*4]
     call dword near [edx]
     dec byte[.tempdecr]
     jz .finhdma
-    xor ebx,ebx
-    mov bl,[esi+7]
+    movzx ebx,byte[esi+7]
     mov cx,[esi+5]         ; increment/decrement/keep pointer location
     inc word[esi+5]
     call dword near [memtabler8+ebx*4]
     call dword near [edx+4]
     dec byte[.tempdecr]
     jz .finhdma
-    xor ebx,ebx
-    mov bl,[esi+7]
+    movzx ebx,byte[esi+7]
     mov cx,[esi+5]         ; increment/decrement/keep pointer location
     inc word[esi+5]
     call dword near [memtabler8+ebx*4]
     call dword near [edx+8]
     dec byte[.tempdecr]
     jz .finhdma
-    xor ebx,ebx
-    mov bl,[esi+7]
+    movzx ebx,byte[esi+7]
     mov cx,[esi+5]         ; increment/decrement/keep pointer location
     inc word[esi+5]
     call dword near [memtabler8+ebx*4]

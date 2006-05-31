@@ -20,16 +20,9 @@
 
 EXTSYM FxTable,FxTableb,FxTablec,FxTabled,SfxMemTable,flagnz,fxbit01,fxbit23
 EXTSYM fxxand,sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc
-EXTSYM sfxramdata,fxbit45,fxbit67,SFXProc,ChangeOps
-EXTSYM PLOTJmpa,PLOTJmpb
-
+EXTSYM sfxramdata,fxbit45,fxbit67,SFXProc,ChangeOps,PLOTJmpa,PLOTJmpb
 
 %include "chips/fxemu2.mac"
-
-
-
-
-
 
 ; * Optimise PLOT, COLOR!
 SECTION .text
@@ -878,7 +871,7 @@ NEWSYM FxOp4CA1    ; RPIX   read color of the pixel with R1,R2 as x,y
 .donelines
    mov ebx,[eax+ebx*4]
    cmp ebx,0FFFFFFFFh
-   je near .nodraw
+   je .nodraw
    xor eax,eax
    ; bits 5/2 : 00 = 128 pixels, 01 = 160 pixels, 10 = 192 pixels, 11 = obj
    ; bits 1/0 : 00 = 4 color, 01 = 16-color, 10 = not used, 11 = 256 color
@@ -889,7 +882,7 @@ NEWSYM FxOp4CA1    ; RPIX   read color of the pixel with R1,R2 as x,y
    and al,00000011b     ; 4 + 32
 
    cmp al,0
-   je near .colors4
+   je .colors4
    cmp al,3
    je near .colors256
 

@@ -36,35 +36,16 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define true 1
 #define false 0
 
-extern unsigned char *vbufaptr;
-extern unsigned char *vbufeptr;
-extern unsigned char *ngwinptrb;
-extern unsigned char *vbufdptr;
-extern unsigned char *romaptr;
-extern unsigned char mydebug[2];
-extern unsigned char outofmem[51];
-extern unsigned char YesMMX[34];
+extern unsigned char *vbufaptr, *vbufeptr, *ngwinptrb, *vbufdptr, *romaptr;
+extern unsigned int per2exec, xa, MessageOn;
+extern unsigned char cvidmode, frameskip, scanlines, vsyncon, guioff, antienab;
+extern unsigned char Force8b, MusicRelVol, soundon, SPCDisable, spcon, FPSOn;
+extern unsigned char FPSAtStart, *Msgptr, CSStatus[], CSStatus2[], CSStatus3[];
 
-// Global Variables ported from ASM
+unsigned short selc0040, selcA000, selcB800;
+unsigned char string[512], fname[512], fnames[512], fnamest[512];
 
-unsigned int per2exec = 100; // percentage of opcodes to execute
-
-#ifdef __MSDOS__
-unsigned char cvidmode = 4; // video mode
-#else
-unsigned char cvidmode = 1;
-#endif
-
-unsigned char string[512];
-unsigned char fname[512];
-unsigned char fnames[512];	// sram filename
-unsigned char fnamest[512];	// state filename
-
-unsigned short selc0040;
-unsigned short selcA000;
-unsigned short selcB800;
 unsigned char filefound;	// Parameter String Found
-unsigned char frameskip;	// 0 = Auto, 1-10 = Skip 0 .. 9
 unsigned char *vidbuffer;	//  video buffer (1024x239 = 244736)
 unsigned char *ngwinptr;
 unsigned char *vidbufferm;	// video buffer mirror
@@ -92,7 +73,6 @@ unsigned char *vcache2bs;	// 2-bit video secondary cache
 unsigned char *vcache4bs;	// 4-bit video secondary cache
 unsigned char *vcache8bs;	// 8-bit video secondary cache
 unsigned char romispal;		// 0 = NTSC, 1 = PAL
-unsigned char enterpress;	// if enter is to be issued (0 = yes)
 unsigned char newgfx16b;
 unsigned char *BitConv32Ptr;
 unsigned char *RGBtoYUVPtr;
@@ -111,46 +91,29 @@ unsigned char opexec358cphb = 45;	// # of opcodes/hblank in 3.58Mhz mode (56/50)
 unsigned char debugdisble   = 1;	// debugger disable.  0 = no, 1 = yes
 unsigned char gammalevel    = 0;	// gamma level (8-bit engine)
 unsigned char gammalevel16b = 0;	// gamma level (16-bit engine)
-unsigned char scanlines     = 0;	// scanlines on/off
-unsigned char vsyncon       = 0;	// vsync on/off
-unsigned char guioff        = 0;	// gui on/off (1 = off)
 unsigned char AddSub256     = 0;	// screen add/sub in 256 colors
 unsigned char Sup48mbit     = 1;	// Support 48mbit roms
 unsigned char Sup16mbit     = 0;	// Support 16mbit roms
 unsigned char dmadeddis     = 0;	// DMA deduction
-unsigned char antienab      = 0;	// Interpolation Enabled
-unsigned char device1       = 0;  // Device in port 1? 0 = Gamepad
+unsigned char device1       = 0;  // Device in port 1?
 unsigned char device2       = 0;  // Device in port 2?
 unsigned char OldStyle      = 1;	// Old style joystick on
 unsigned char SecondPort    = 0;	// Secondary Joystick Port Enabled (209h) (DOS port only)
 
-// New Variables
-unsigned char ForcePal      = 0;	// 1 = NTSC, 2 = PAL
-unsigned char Force8b       = 0;	// Force 8-bit sound on
 unsigned char Doublevbuf    = 1;	// Double video buffer
 unsigned char V8Mode        = 0;	// Vegetable mode! =) (Greyscale mode)
 unsigned char fastmemptr    = 0;
-unsigned char showallext    = 0;	// Show all extensions in GUI load dialog
+unsigned char ForcePal      = 0;    // 1 = NTSC, 2 = PAL
 unsigned char finterleave   = 0;
 unsigned char DSPDisable    = 0;	// Disable DSP emulation
 unsigned char Palette0      = 0;
 unsigned char DisplayS      = 0;
 unsigned char *spc7110romptr;
-
-unsigned char MusicRelVol   = 75;
 unsigned char MusicVol      = 0;
 unsigned char MMXextSupport = 0;
-extern char *Msgptr;
 
-void outofmemory();
-void init();
-void WaitForKey();
-void MMXCheck();
-void allocmem();
-void InitSPC();
-void SystemInit();
-void StartUp();
-void MultiMouseInit();
+void outofmemory(), init(), WaitForKey(), MMXCheck(), allocmem(), InitSPC();
+void SystemInit(), StartUp(), MultiMouseInit();
 
 void *doMemAlloc(size_t size)
 {
@@ -170,6 +133,7 @@ void allocspc7110()
 
 void *malloc_ptr;
 unsigned int malloc_size;
+
 void malloc_help()
 {
   malloc_ptr=malloc(malloc_size);
@@ -181,6 +145,7 @@ extern bool input2gp;
 extern bool input2mouse;
 extern bool input2scope;
 extern bool input2just;
+
 void cycleinputdevice1()
 {
   for (;;)
@@ -201,6 +166,7 @@ void cycleinputdevice1()
     }
   }
 }
+
 void cycleinputdevice2()
 {
   for (;;)
@@ -265,22 +231,16 @@ void setnoise()
   }
 }
 
-
-extern unsigned int xa;
-extern unsigned char soundon, SPCDisable, spcon, FPSOn, FPSAtStart;
-
 const unsigned int versionNumber = 0x0000008F; // 1.43
 char *ZVERSION = "Pre 1.43";
 unsigned char txtfailedalignd[25] = "Data Alignment Failure : ";
 unsigned char txtfailedalignc[25] = "Code Alignment Failure : ";
 
-void zstart ()
+void zstart()
 {
   unsigned int ptr;
 
   asm_call(StartUp);
-
-  printf("%s", mydebug);
 
   // Print welcome message.
   printf("ZSNES v%s, (c) 1997-2006, ZSNES Team\n", ZVERSION);
@@ -302,7 +262,6 @@ void zstart ()
 
   asm_call(SystemInit);
 
-
 #ifdef OPENSPC
   OSPC_Init();
 #else
@@ -312,18 +271,8 @@ void zstart ()
 
   asm_call(allocmem);
 
-  if (!soundon && (SPCDisable != 1))
-  {
-    soundon = 1;
-    spcon = 1;
-    DSPDisable = 1;
-  }
-
-  if (SPCDisable)
-  {
-    soundon = 0;
-    spcon = 0;
-  }
+  if (!(spcon = !SPCDisable)) { soundon = 0; }
+  DSPDisable = !soundon;
 
   if (!frameskip)
   {
@@ -335,20 +284,16 @@ void zstart ()
   asm_call(MMXCheck);
 
   ptr = (unsigned int)&outofmemory;
-
   if ((ptr & 3))
   {
     printf("%s%d", txtfailedalignc, (ptr & 0x1F));
-
     asm_call(WaitForKey);
   }
 
   ptr = (unsigned int)&xa;
-
   if ((ptr & 3))
   {
     printf("%s%d", txtfailedalignd, (ptr & 0x1F));
-
     asm_call(WaitForKey);
   }
 
@@ -388,12 +333,6 @@ static char *seconds_to_asc(unsigned int seconds)
   }
   return(buffer);
 }
-
-extern unsigned int MessageOn;
-extern unsigned int MsgCount;
-extern char CSStatus[70];
-extern char CSStatus2[70];
-extern char CSStatus3[70];
 
 void DisplayBatteryStatus()
 {
@@ -443,7 +382,6 @@ void DisplayBatteryStatus()
 
    Msgptr = CSStatus;
    MessageOn = 100;
-
 #endif
 }
 

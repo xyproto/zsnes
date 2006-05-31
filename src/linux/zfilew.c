@@ -40,11 +40,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <io.h>
 #endif
 
-#ifdef __UNIXSDL__
-#define STUB_FUNCTION fprintf(stderr,"STUB: %s at " __FILE__ ", line %d, thread %d\n",__FUNCTION__,__LINE__,getpid())
-#endif
-#include <errno.h>
-
 FILE *FILEHANDLE[16];
 
 unsigned int CurrentHandle=0;
@@ -306,7 +301,6 @@ int globcur;
 unsigned int ZFileFindNext()
 {
 #ifdef __UNIXSDL__
-	//STUB_FUNCTION;
    struct stat filetype;
 
    if (globcur == -1)

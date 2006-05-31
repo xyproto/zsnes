@@ -20,9 +20,8 @@
 
 %include "macros.mac"
 
-EXTSYM ZFileSystemInit,getcmdline,GUIRestoreVars,getcfg,obtaindir
-EXTSYM ConvertJoyMap,tparms,preparedir,SBHDMA,ccmdline,spcon,cfgsoundon
-EXTSYM cfgcvidmode,InitDir,InitDrive,DOScreatenewcfg,ExecGUISaveVars,allocptr
+EXTSYM ZFileSystemInit,getcmdline,GUIRestoreVars,obtaindir
+EXTSYM tparms,preparedir,SBHDMA,ccmdline,InitDir,InitDrive,allocptr
 EXTSYM putchar,getch,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName
 EXTSYM ZFileSeekMode,ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle
 EXTSYM ZFileWriteSize,ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize
@@ -64,7 +63,6 @@ NEWSYM StartUp
 NEWSYM SystemInit
     ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
     push es
-    mov byte[cfgcvidmode],3
     mov byte[cvidmode],3
     call getcmdline
 
@@ -77,10 +75,6 @@ NEWSYM SystemInit
     mov dword[esi+8+256],'.dat'
     mov byte[esi+12+256],0
 
-    mov byte[spcon],1
-    mov byte[soundon],1
-    mov byte[cfgsoundon],1
-
     ; Get and set the initial directory
     mov ebx,InitDir
     mov edx,InitDrive
@@ -92,9 +86,7 @@ NEWSYM SystemInit
     pushad
     call GUIRestoreVars                 ; Load GUI stuff
     popad
-    call getcfg                         ; Load cfg stuff
     call obtaindir                      ; Get Save/Init Directories
-    call ConvertJoyMap                  ; Mini joystick init
     call ccmdline
     call tparms
     call preparedir
@@ -104,28 +96,14 @@ NEWSYM SystemInit
     call DisplayWIPDisclaimer
     popad
 %endif
-
     mov byte[SBHDMA],1
     pop es
-    ret
-
-; Configuration save re-routing functions.  You can comment these out
-;   for debugging purposes or change it if you're using a different
-;   configuration format
-NEWSYM createnewcfg
-    call DOScreatenewcfg
-    ret
-NEWSYM GUISaveVars
-    pushad
-    call ExecGUISaveVars
-    popad
     ret
 
 ; Allocate memory - see allocptr in ui.asm for details on what to allocate
 NEWSYM allocmem
     call allocptr
     ret
-
 
 NEWSYM PrintChar
     ret
@@ -142,9 +120,7 @@ NEWSYM PrintChar
     ret
 
 NEWSYM PrintStr          ; Print ASCIIZ string
-
     pushad
-
 .next
     mov al,[edx]
     or al,al
@@ -453,8 +429,7 @@ RefreshKeybBuffer:
 .skipdecval
     cmp ebx,58h
     jae .none
-    xor eax,eax
-    mov al,[Keybtail]
+    movzx eax,byte[Keybtail]
     inc al
     and al,0Fh
     cmp al,[Keybhead]
@@ -534,8 +509,7 @@ NEWSYM Get_Key
     pushad
 .nonewkey
     call RefreshKeybBuffer
-    xor eax,eax
-    mov al,[Keybhead]
+    movzx eax,byte[Keybhead]
     cmp al,[Keybtail]
     je .nonewkey
     mov bl,[HoldKeyBuf+eax]
@@ -852,8 +826,7 @@ NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
    call initwinvideo
    popad
 
-   xor eax,eax
-   mov al,[cvidmode]
+   movzx eax,byte[cvidmode]
    cmp byte[GUIWFVID+eax],0
    je .prevwinmode
    mov [PrevFSMode],al
@@ -916,8 +889,7 @@ NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
 
 NEWSYM vidpastecopyscr       ; GUI screen render
    pushad
-   xor eax,eax
-   mov al,[cvidmode]
+   movzx eax,byte[cvidmode]
    cmp byte[GUI16VID+eax],1
    jne .no16bconv
    mov eax,[vidbuffer]
@@ -926,8 +898,7 @@ NEWSYM vidpastecopyscr       ; GUI screen render
    add ecx,-288
    dec edx
 .loop
-   xor ebx,ebx
-   mov bl,[eax+edx]
+   movzx ebx,byte[eax+edx]
    mov bx,[GUICPC+ebx*2]
    mov [eax+edx*2],bx
    dec edx
@@ -1076,16 +1047,16 @@ db '                ',0
 db '                ',0
 db '                ',0
 db '                ',0
-db 'SIDEWINDERPAD1  ',0
-db 'SIDEWINDERPAD2  ',0
-db 'SIDEWINDERPAD3  ',0
-db 'SIDEWINDERPAD4  ',0
-db 'GAMEPAD PRO P0  ',0
-db 'GAMEPAD PRO P1  ',0
-db 'PARALLEL LPT1 P1',0
-db 'PARALLEL LPT1 P2',0
-db 'PARALLEL LPT2 P1',0
-db 'PARALLEL LPT2 P2',0
+db '                ',0
+db '                ',0
+db '                ',0
+db '                ',0
+db '                ',0
+db '                ',0
+db '                ',0
+db '                ',0
+db '                ',0
+db '                ',0
 
 ; GUI Description codes for each corresponding key pressed value
 NEWSYM ScanCodeListing

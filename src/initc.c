@@ -2129,18 +2129,19 @@ void SetIRQVectors()
 
 void SetupROM()
 {
+  static bool CLforce = false;
   unsigned char *ROM = (unsigned char *)romdata;
 
   CheckROMType();
   SetIRQVectors();
 
   #ifdef __MSDOS__
-    asm_call(DOSClearScreen);
+  asm_call(DOSClearScreen);
 
-    if (!cbitmode) // 8-bit mode uses a palette
-    {
-      asm_call(dosmakepal);
-    }
+  if (!cbitmode) // 8-bit mode uses a palette
+  {
+    asm_call(dosmakepal);
+  }
   #endif
 
   // get ROM and SRAM sizes
@@ -2150,8 +2151,14 @@ void SetupROM()
   calculate_state_sizes();
   InitRewindVars();
 
-  // get timing (pal/ntsc)
-  ForcePal = ForceROMTiming;
+  /* get timing (pal/ntsc)
+  ForceROMTiming is from the GUI.
+  ForcePal is from Command line, we have a static var
+  to prevent forcing a secong game loaded from the GUI when
+  the first was loaded from the command line with forcing.
+  */
+  if (ForcePal && !CLforce) { CLforce = true; }
+  else { ForcePal = ForceROMTiming; }
 
   switch (ForcePal)
   {

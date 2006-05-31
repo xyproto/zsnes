@@ -752,8 +752,6 @@ GUIOptionKeys:
   cmp byte[GUINGVID+eax],1
   jne near .invalidng
   xor byte[newengen],1
-  mov al,[newengen]
-  mov [cfgnewgfx],al
 .invalidng
 .nonewgfx
   cmp dh,'M'
@@ -790,7 +788,6 @@ GUIOptionKeys:
   GUIKeyCheckbox TimerEnable,'C'
   GUIKeyCheckbox TwelveHourClock,'1'
   GUIKeyCheckbox OldGfxMode2,'O'
-  GUIKeyCheckbox DontSavePath,'D'
   GUIKeyCheckbox SmallMsgText,'S'
   GUIKeyCheckbox AutoPatch,'P'
   GUIKeyCheckbox RomInfo,'T'
@@ -1184,10 +1181,8 @@ GUIVideoKeys:
   xor byte[hqFilter],1
   jz .nohqfilter
   mov byte[scanlines],0
-  mov byte[cfgscanline],0
   mov byte[En2xSaI],0
   mov byte[antienab],0
-  mov byte[cfginterp],0
   mov byte[NTSCFilter],0
 .nohqfilter
   xor ebx,ebx
@@ -1213,9 +1208,7 @@ GUIVideoKeys:
   popad
   mov byte[hqFilter],0
   mov byte[scanlines],0
-  mov byte[cfgscanline],0
   mov byte[antienab],0
-  mov byte[cfginterp],0
   mov byte[NTSCFilter],0
   GUIkeystoggleoptn byte[En2xSaI],al
 .nosuper2xsai
@@ -1229,8 +1222,6 @@ GUIVideoKeys:
   je .nointerpolation
 .interpolation
   xor byte[antienab],1
-  mov al,[antienab]
-  mov [cfginterp],al
   mov byte[En2xSaI],0
   mov byte[hqFilter],0
   mov byte[NTSCFilter],0
@@ -1244,8 +1235,6 @@ GUIVideoKeys:
   je .nofullscreen
   call ClearScreen
   xor byte[ScreenScale],1
-  mov al,[ScreenScale]
-  mov [GUIScreenScale],al
   push eax
   push ecx
   mov eax,[vidbufferofsb]
@@ -1266,8 +1255,6 @@ GUIVideoKeys:
   je .nosmallscreen
   call ClearScreen
   xor byte[smallscreenon],1
-  mov al,[smallscreenon]
-  mov [GUIsmallscreenon],al
   push eax
   push ecx
   mov eax,[vidbufferofsb]
@@ -1300,9 +1287,7 @@ GUIVideoKeys:
   mov byte[En2xSaI],0
   mov byte[hqFilter],0
   mov byte[scanlines],0
-  mov byte[cfgscanline],0
   mov byte[antienab],0
-  mov byte[cfginterp],0
   mov byte[BilinearFilter],0
 .nontscfilter
 %ifdef __UNIXSDL__
@@ -1324,8 +1309,6 @@ GUIVideoKeys:
   cmp byte[GUITBWVID+eax],0
   je near .notriplebufferwin
   xor byte[TripleBufferWin],1
-;    mov byte[vsyncon],0
-;    mov byte[cfgvsync],0
   call initDirectDraw
   pushad
   call Clear2xSaIBuffer
@@ -1347,8 +1330,6 @@ GUIVideoKeys:
   cmp dh,'V'
   jne .novsync
   xor byte[vsyncon],1
-  mov al,[vsyncon]
-  mov [cfgvsync],al
 %ifdef __WIN32__
   call initDirectDraw
   pushad
@@ -1388,7 +1369,7 @@ GUISoundKeys:
 
   cmp dh,'E'
   jne .notenablesound
-  xor byte[cfgsoundon],1
+  xor byte[soundon],1
 %ifdef __WIN32__
   pushad
   call reInitSound
@@ -1397,9 +1378,9 @@ GUISoundKeys:
 .notenablesound
 
 %ifdef __MSDOS__
-  GUIKeyCheckbox cfgforce8b,'F'
+  GUIKeyCheckbox Force8b,'F'
 %endif
-  GUIKeyCheckbox cfgStereoSound,'S'
+  GUIKeyCheckbox StereoSound,'S'
 %ifdef __MSDOS__
   GUIKeyCheckbox RaisePitch,'A'
 %endif
@@ -1411,10 +1392,9 @@ GUISoundKeys:
 
   cmp dh,'R'                 ; Sampling Rate
   jne .notsrate
-  xor eax,eax
-  mov al,[cfgSoundQuality]
+  mov eax,[SoundQuality]
   mov al,[.sampratenext+eax]
-  mov [cfgSoundQuality],al
+  mov [SoundQuality],al
 .notsrate
 
   cmp dh,'G'
@@ -1458,7 +1438,7 @@ GUISoundKeys:
   ret
 
 SECTION .data
-.sampratenext db 1,4,5,6,2,3,0,0,0,0
+.sampratenext db 1,4,5,6,2,3,0,0
 SECTION .text
 
 GUINetMenuKeys1:
@@ -1484,7 +1464,6 @@ GUIPathKeys:
 
   cmp dword[GUIInputBox],1
   jne .notBox1
-  mov byte[cfgloadsdir],1 ;Need this to know if we should save the path
   mov eax,SRAMDir
   jmp .boxselected
 .notBox1

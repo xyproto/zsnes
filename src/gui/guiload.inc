@@ -203,7 +203,7 @@ GUIloadfilename:
     mov edx,LoadDrive
     call Get_Dir
 %ifndef __UNIXSDL__
-    cmp byte[cfgloadsdir],0
+    cmp byte[SRAMDir],0
     jne .nosdrive
     pushad
     call SRAMDirCurDir
@@ -253,7 +253,10 @@ GUIloadfilename:
 
     pushad
     call SetupROM
+    cmp byte[DisplayInfo],0
+    je .noshowinfo
     call showinfogui
+.noshowinfo
     popad
     call initsnes
     mov byte[sramsavedis],0
@@ -460,8 +463,7 @@ GUILoadData:
     jmp .findnext
 .foundend
     call GUIloadfilename
-    xor eax,eax
-    mov al,[GUIwinptr]
+    movzx eax,byte[GUIwinptr]
     dec eax
     mov byte[GUIwinactiv+1],0
     mov byte[GUIwinorder+eax],0
@@ -1384,11 +1386,9 @@ loadquickfname:
 .trynext
     cmp byte[GUIwinptr],0
     je near .noclose
-    xor eax,eax
-    mov al,[GUIwinptr]
+    movzx eax,byte[GUIwinptr]
     dec eax
-    xor ebx,ebx
-    mov bl,[GUIwinorder+eax]
+    movzx ebx,byte[GUIwinorder+eax]
     ; close window
     mov byte[GUIwinorder+eax],0
     mov byte[GUIwinactiv+ebx],0

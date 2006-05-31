@@ -434,7 +434,7 @@ extern "C" {
 void initwinvideo();
 void DosExit(void);
 extern BYTE EMUPause;
-extern BYTE cfgsoundon;
+extern BYTE soundon;
 extern BYTE StereoSound;
 extern DWORD SoundQuality;
 extern BYTE HighPriority;
@@ -531,13 +531,11 @@ BOOL InputRead(void)
 
 extern "C" void SaveSramData(void);
 extern "C" void GUISaveVars(void);
-extern "C" void createnewcfg(void);
 
 void ExitFunction()
 {
    asm_call(SaveSramData);
    asm_call(GUISaveVars);
-   asm_call(createnewcfg);
 
    // We need to clean up the debug window if it's running
 
@@ -744,7 +742,7 @@ BOOL InitSound()
 
    SoundEnabled = 0;
 
-   if (cfgsoundon == 0) return FALSE;
+   if (soundon == 0) return FALSE;
 
    PrevSoundQuality=SoundQuality;
    PrevStereoSound=StereoSound;
@@ -892,7 +890,7 @@ BOOL ReInitSound()
       lpPrimaryBuffer = NULL;
    }
 
-   if (cfgsoundon == 0)
+   if (soundon == 0)
    {
       SoundEnabled = 0;
       ReleaseDirectSound();

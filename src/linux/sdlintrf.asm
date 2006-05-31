@@ -20,9 +20,8 @@
 
 %include "macros.mac"
 
-EXTSYM ZFileSystemInit,getcmdline,GUIRestoreVars,getcfg,obtaindir
-EXTSYM ConvertJoyMap,tparms,SBHDMA,spcon,cfgsoundon,cfgcvidmode,InitDir
-EXTSYM InitDrive,SRAMChdir,DOScreatenewcfg,ExecGUISaveVars,allocptr,putchar
+EXTSYM ZFileSystemInit,getcmdline,GUIRestoreVars,obtaindir
+EXTSYM tparms,SBHDMA,InitDir,InitDrive,SRAMChdir,allocptr,putchar
 EXTSYM getchar,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName,ZFileSeekMode
 EXTSYM ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle,ZFileWriteSize
 EXTSYM ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize,ZFileReadBlock
@@ -30,7 +29,7 @@ EXTSYM ZFileRead,ZFileDelFName,ZFileDelete,ZCloseFileHandle,ZCloseFile
 EXTSYM ZFileTellHandle,ZFileTell,ZFFTimeFName,ZFTime,ZFDate,ZFileGetFTime
 EXTSYM GetTime,GetDate,GUIkeydelay2,ZFileCHDir,CHPath
 EXTSYM ZFileGetDir,DirName,DTALoc,DTALocPos,ZFileFindATTRIB
-EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,soundon,Start60HZ
+EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,Start60HZ
 EXTSYM pressed,RaisePitch,AdjustFrequency,vidbufferofsb,vidbuffer,clearwin
 EXTSYM Stop60HZ,initwinvideo,vesa2_rpos,vesa2_gpos,vesa2_bpos,vesa2_rposng
 EXTSYM vesa2_gposng,vesa2_bposng,vesa2_usbit,vesa2_clbit,vesa2_clbitng
@@ -61,7 +60,6 @@ NEWSYM StartUp
 NEWSYM SystemInit
     ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
     push es
-    mov byte[cfgcvidmode],2
     mov byte[cvidmode],2
     call getcmdline
     mov dword[esi],'zsne'
@@ -72,10 +70,6 @@ NEWSYM SystemInit
     mov dword[esi+4+256],'cfgl'
     mov dword[esi+8+256],'.dat'
     mov byte[esi+12+256],0
-
-    mov byte[spcon],1
-    mov byte[soundon],1
-    mov byte[cfgsoundon],1
 
     ; Get and set the initial directory
 %ifdef __UNIXSDL__
@@ -100,9 +94,7 @@ NEWSYM SystemInit
     pushad
     call GUIRestoreVars                 ; Load GUI stuff
     popad
-    call getcfg                         ; Load cfg stuff
     call obtaindir                      ; Get Save/Init Directories
-    call ConvertJoyMap                  ; Mini joystick init
     call tparms
     pushad
     call SRAMChdir
@@ -111,32 +103,17 @@ NEWSYM SystemInit
     pop es
     ret
 
-; Configuration save re-routing functions.  You can comment these out
-;   for debugging purposes or change it if you're using a different
-;   configuration format
-NEWSYM createnewcfg
-    call DOScreatenewcfg
-    ret
-NEWSYM GUISaveVars
-    pushad
-    call ExecGUISaveVars
-    popad
-    ret
-
 ; Allocate memory - see allocptr in ui.asm for details on what to allocate
 NEWSYM allocmem
     call allocptr
     ret
-
 
 NEWSYM PrintChar
     ret
     ; print character at dl, push all modified registers
 
 NEWSYM PrintStr          ; Print ASCIIZ string
-
     pushad
-
 .next
     mov al,[edx]
     or al,al
@@ -402,8 +379,7 @@ RefreshKeybBuffer:
 .skipdecval
     cmp ebx,58h
     jae .none
-    xor eax,eax
-    mov al,[Keybtail]
+    movzx eax,byte[Keybtail]
     inc al
     and al,0Fh
     cmp al,[Keybhead]
@@ -667,8 +643,7 @@ NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
    call initwinvideo
    popad
 
-   xor eax,eax
-   mov al,[cvidmode]
+   movzx eax,byte[cvidmode]
    cmp byte[GUIWFVID+eax],0
    je .prevwinmode
    mov [PrevFSMode],al
@@ -732,8 +707,7 @@ NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
 
 NEWSYM vidpastecopyscr       ; GUI screen render
    pushad
-   xor eax,eax
-   mov al,[cvidmode]
+   movzx eax,byte[cvidmode]
    cmp byte[GUI16VID+eax],1
    jne .no16bconv
    mov eax,[vidbuffer]
@@ -742,8 +716,7 @@ NEWSYM vidpastecopyscr       ; GUI screen render
    sub ecx,288
    dec edx
 .loop
-   xor ebx,ebx
-   mov bl,[eax+edx]
+   movzx ebx,byte[eax+edx]
    mov bx,[GUICPC+ebx*2]
    mov [eax+edx*2],bx
    dec edx
@@ -752,7 +725,6 @@ NEWSYM vidpastecopyscr       ; GUI screen render
 .no16bconv
    popad
    jmp DrawScreen
-
 
 ; ** Clear Screen function **
 NEWSYM ClearScreen
@@ -880,16 +852,16 @@ db '                ',0
 db '                ',0
 db '                ',0
 db '                ',0
-db 'SIDEWINDERPAD1  ',0
-db 'SIDEWINDERPAD2  ',0
-db 'SIDEWINDERPAD3  ',0
-db 'SIDEWINDERPAD4  ',0
-db 'GAMEPAD PRO P0  ',0
-db 'GAMEPAD PRO P1  ',0
-db 'PARALLEL LPT1 P1',0
-db 'PARALLEL LPT1 P2',0
-db 'PARALLEL LPT2 P1',0
-db 'PARALLEL LPT2 P2',0
+db '                ',0
+db '                ',0
+db '                ',0
+db '                ',0
+db '                ',0
+db '                ',0
+db '                ',0
+db '                ',0
+db '                ',0
+db '                ',0
 
 ; GUI Description codes for each corresponding key pressed value
 NEWSYM ScanCodeListing

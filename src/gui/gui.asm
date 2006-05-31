@@ -68,41 +68,37 @@ EXTSYM smallscreenon,soundon,StereoSound,SoundQuality,MusicRelVol,endprog
 EXTSYM continueprog,spcBuffera,spcRamcmp,cbitmode,makepal,t1cc,LoadDir,LoadDrive
 EXTSYM SRAMDir,SRAMChdir,SRAMDirCurDir,initsnes,fname,makeextension,sram
 EXTSYM loadfileGUI,GUIloadfailed,romloadskip,SetupROM,romdata,ramsize
-EXTSYM cfgloadsdir,init65816,procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA
+EXTSYM init65816,procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA
 EXTSYM spcX,spcY,spcP,spcNZ,Voice0Status,Voice1Status,Voice2Status,Voice3Status
 EXTSYM Voice4Status,Voice5Status,Voice6Status,Voice7Status,ClearScreen
 EXTSYM statesaver,loadstate2,vidbuffer,ASCII2Font,hirestiledat,showallext
-EXTSYM scanlines,statefileloc,pl1selk,pl2selk,fnamest,sprlefttot,spritetablea
-EXTSYM fnames,CHIPBATT,sfxramdata,setaramdata,SETAEnable,cgram,srama,tempco0
-EXTSYM prevbright,maxbr,prevpal,coladdr,coladdg,coladdb,scaddtype,ScreenScale
-EXTSYM initvideo,pressed,UpdateDevices,memtabler8
-EXTSYM memtablew8,writeon,pl1contrl,pl2contrl,JoyRead,SetInputDevice,delay
-EXTSYM FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,pl12s34,resolutn
-EXTSYM InitDrive,InitDir,createnewcfg,Makemode7Table,vidbufferofsb,ZipSupport
-EXTSYM wramdata,bgfixer,cfgnewgfx,videotroub,Open_File,Read_File
-EXTSYM Close_File,Write_File,Create_File,File_Seek,File_Seek_End,Get_Date
-EXTSYM Check_Key,Get_Key,Change_Drive,Change_Single_Dir,Change_Dir,Get_Dir
-EXTSYM Get_First_Entry,Get_Next_Entry,Set_DTA_Address,curexecstate,TripBufAvail
-EXTSYM nmiprevaddrl,nmiprevaddrh,nmirept,nmiprevline,nmistatus,spcnumread
-EXTSYM NextLineCache,ResetTripleBuf,GUINGVID,ScanCodeListing
-EXTSYM AdjustFrequency,GUISaveVars,Init_Mouse,Get_MouseData,Set_MouseXMax
-EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
-EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,SA1Enable,SA1RAMArea
-EXTSYM MMXCheck,SaveCombFile,showinfogui,GetDate,horizon_get
-EXTSYM ErrorPointer,MessageOn,GetTime,sndrot,regsbackup,GetScreen
-EXTSYM GUITBWVID,Clear2xSaIBuffer,MouseWindow,cfgcvidmode,cfgsoundon
-EXTSYM ExitFromGUI,GUIWFVID,cfgvsync,newgfx16b,cfgscanline,cfginterp
-EXTSYM NumVideoModes,cfgvolume,MusicVol,DSPMem,NumInputDevices,GUIInputNames
+EXTSYM scanlines,statefileloc,fnamest,sprlefttot,spritetablea,fnames,CHIPBATT
+EXTSYM sfxramdata,setaramdata,SETAEnable,cgram,srama,tempco0,prevbright,maxbr
+EXTSYM prevpal,coladdr,coladdg,coladdb,scaddtype,ScreenScale,initvideo,pressed
+EXTSYM UpdateDevices,memtabler8,memtablew8,writeon,JoyRead,SetInputDevice,delay
+EXTSYM FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,pl12s34,resolutn,InitDrive,InitDir
+EXTSYM Makemode7Table,vidbufferofsb,ZipSupport,wramdata,bgfixer
+EXTSYM videotroub,Open_File,Read_File,Close_File,Write_File,Create_File
+EXTSYM File_Seek,File_Seek_End,Get_Date,Check_Key,Get_Key,Change_Drive
+EXTSYM Change_Single_Dir,Change_Dir,Get_Dir,Get_First_Entry,Get_Next_Entry
+EXTSYM Set_DTA_Address,curexecstate,TripBufAvail,nmiprevaddrl,nmiprevaddrh
+EXTSYM nmirept,nmiprevline,nmistatus,spcnumread,NextLineCache,ResetTripleBuf
+EXTSYM GUINGVID,ScanCodeListing,AdjustFrequency,GUISaveVars,Init_Mouse
+EXTSYM Get_MouseData,Set_MouseXMax,Set_MouseYMax,Set_MousePosition
+EXTSYM Get_MousePositionDisplacement,GUIInit,GUIDeInit,SpecialLine,DrawWater
+EXTSYM DrawBurn,SA1Enable,SA1RAMArea,MMXCheck,SaveCombFile,showinfogui,GetDate
+EXTSYM horizon_get,ErrorPointer,MessageOn,GetTime,sndrot,regsbackup,GetScreen
+EXTSYM GUITBWVID,Clear2xSaIBuffer,MouseWindow,ExitFromGUI,GUIWFVID,newgfx16b
+EXTSYM NumVideoModes,MusicVol,DSPMem,NumInputDevices,GUIInputNames
 EXTSYM GUIVideoModeNames,GUISLVID,GUIINVID,GUIEAVID,GUIIEVID,GUIFSVID,GUIWSVID
 EXTSYM GUISSVID,GUITBVID,GUIHSVID,GUI2xVID,GUII2VID,GUIM7VID,GUINTVID
-EXTSYM cfgSoundQuality,cfgStereoSound,cfgforce8b,convertnum,converthex
-EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Lk,pl1Rk,pl1Ak,pl1Bk,outofmemfix
-EXTSYM yesoutofmemory,JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209
-EXTSYM JoyMaxX209,JoyMinY209,JoyMaxY209,GetCoords,GetCoords3,MultiTap,SFXEnable
-EXTSYM RestoreSystemVars,GUIBIFIL,GUIHQ2X,GUIHQ3X,GUIHQ4X,firstsaveinc,nssdip1
-EXTSYM nssdip2,nssdip3,nssdip4,nssdip5,nssdip6,SkipMovie,MovieStop,MoviePlay
-EXTSYM MovieRecord,MovieInsertChapter,MovieSeekAhead,MovieSeekBehind
-EXTSYM ResetDuringMovie,MovieDumpRaw,AutoLoadCht
+EXTSYM Force8b,convertnum,converthex,device1,device2,TwelveHourClock
+EXTSYM outofmemfix,yesoutofmemory,JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY
+EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,GetCoords,GetCoords3,MultiTap
+EXTSYM SFXEnable,RestoreSystemVars,GUIBIFIL,GUIHQ2X,GUIHQ3X,GUIHQ4X,firstsaveinc
+EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6,SkipMovie,MovieStop
+EXTSYM MoviePlay,MovieRecord,MovieInsertChapter,MovieSeekAhead,MovieSeekBehind
+EXTSYM ResetDuringMovie,MovieDumpRaw,AutoLoadCht,DisplayInfo
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCWarp,NTSCRef
@@ -116,12 +112,20 @@ EXTSYM CheatSrcByteBase,CheatSrcSearchType,CheatUpperByteOnly,GUIComboGameSpec
 EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
 EXTSYM RewindStates,RewindFrames,PauseRewind,PauseLoad,SRAMState,AutoState
-EXTSYM LatestSave,SRAMSave5Sec,AutoIncSaveSlot,pl3selk,pl4selk,pl5selk
-EXTSYM pl1Atk,pl2Atk,pl3Atk,pl4Atk,pl5Atk,pl3contrl,KeyUsePlayer1234
-EXTSYM pl1Ltk,pl2Ltk,pl3Ltk,pl4Ltk,pl5Ltk,pl4contrl,KeyResetAll,CalibXmin
-EXTSYM pl5contrl,KeyExtraEnab1,KeyExtraEnab2,CalibYmin
-EXTSYM pl1ULk,pl2ULk,pl3ULk,pl4ULk,pl5ULk,KeyVolDown,KeyVolUp,CalibXmax
-EXTSYM CalibYmax,CalibXmin209,CalibXmax209,CalibYmin209,CalibYmax209
+EXTSYM LatestSave,SRAMSave5Sec,AutoIncSaveSlot,KeyUsePlayer1234
+EXTSYM pl1contrl,pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
+EXTSYM pl1Ak,pl1Lk,pl1Yk,pl1Bk,pl1Rk,pl1Xtk,pl1Ytk,pl1Atk,pl1Btk,pl1Ltk,pl1Rtk
+EXTSYM pl1ULk,pl1URk,pl1DLk,pl1DRk,pl2contrl,pl2selk,pl2startk,pl2upk,pl2downk
+EXTSYM pl2leftk,pl2rightk,pl2Xk,pl2Ak,pl2Lk,pl2Yk,pl2Bk,pl2Rk,pl2Xtk,pl2Ytk
+EXTSYM pl2Atk,pl2Btk,pl2Ltk,pl2Rtk,pl2ULk,pl2URk,pl2DLk,pl2DRk,pl3contrl,pl3selk
+EXTSYM pl3startk,pl3upk,pl3downk,pl3leftk,pl3rightk,pl3Xk,pl3Ak,pl3Lk,pl3Yk
+EXTSYM pl3Bk,pl3Rk,pl3Xtk,pl3Ytk,pl3Atk,pl3Btk,pl3Ltk,pl3Rtk,pl3ULk,pl3URk
+EXTSYM pl3DLk,pl3DRk,pl4contrl,pl4selk,pl4startk,pl4upk,pl4downk,pl4leftk
+EXTSYM pl4rightk,pl4Xk,pl4Ak,pl4Lk,pl4Yk,pl4Bk,pl4Rk,pl4Xtk,pl4Ytk,pl4Atk,pl4Btk
+EXTSYM pl4Ltk,pl4Rtk,pl4ULk,pl4URk,pl4DLk,pl4DRk,pl5contrl,pl5selk,pl5startk
+EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5Xk,pl5Ak,pl5Lk,pl5Yk,pl5Bk,pl5Rk
+EXTSYM pl5Xtk,pl5Ytk,pl5Atk,pl5Btk,pl5Ltk,pl5Rtk,pl5ULk,pl5URk,pl5DLk,pl5DRk
+EXTSYM KeyResetAll,KeyExtraEnab1,KeyExtraEnab2,KeyVolDown,KeyVolUp
 EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
 EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyQuickSnapShot
 EXTSYM KeyDisableSC4,KeyDisableSC5,KeyDisableSC6,KeyDisableSC7,KeyQuickSaveSPC
@@ -130,23 +134,22 @@ EXTSYM KeyInsrtChap,KeyPrevChap,KeyNextChap,KeyDisplayFPS,KeyNewGfxSwt
 EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
 EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
-EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,GUIScreenScale,GUIsmallscreenon
-EXTSYM mousewrap,GUIClick,PrevFSMode,PrevWinMode,GUIshowallext,HighPriority
-EXTSYM FPSAtStart,Turbo30hz,TimerEnable,OldGfxMode2,DontSavePath,SmallMsgText
+EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move
+EXTSYM mousewrap,GUIClick,PrevFSMode,PrevWinMode,HighPriority
+EXTSYM FPSAtStart,Turbo30hz,TimerEnable,OldGfxMode2,SmallMsgText
 EXTSYM AutoPatch,RomInfo,AllowUDLR,DisableScreenSaver,Triplebufen,GrayscaleMode
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,TripleBufferWin
-EXTSYM BilinearFilter,lastcursres,OldVolume,OldWinPos
-EXTSYM GUIwinposy2,GUIwinposx2,AllowMultipleInst,Surround,SoundBufEn,SPCDisable
-EXTSYM GUIEnableTransp,FilteredGUI,MouseWheel,TrapMouseCursor,AlwaysOnTop
-EXTSYM pl1p209,pl1p209b,SaveMainWindowPos,FastFwdToggle,SidewinderFix,RaisePitch
+EXTSYM BilinearFilter,lastcursres,SidewinderFix,RaisePitch
+EXTSYM GUIEnableTransp,FilteredGUI,Surround,SoundBufEn,SPCDisable
+EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SaveMainWindowPos,FastFwdToggle
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM MovieVideoMode, MovieAudio,MovieVideoAudio,MovieAudioCompress
-EXTSYM device1,device2,TwelveHourClock
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
 %elifdef __WIN32__
-EXTSYM initDirectDraw,reInitSound,CheckAlwaysOnTop,CheckPriority,CheckScreenSaver
+EXTSYM initDirectDraw,reInitSound,CheckAlwaysOnTop,CheckPriority,AlwaysOnTop
+EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor
 %elifdef __MSDOS__
 EXTSYM dssel,SetInputDevice209,initvideo2
 %endif
@@ -165,8 +168,6 @@ EXTSYM ZsnesPage,DocsPage
 %include "gui/guiload.inc"
 
 SECTION .data
-
-NEWSYM WaterOn,  db 1
 
 ; Things to do :
 ;
@@ -283,18 +284,32 @@ GUIMiscMenuData:
   db 0,'------------',0
   db 1,'ABOUT       ',0
 
-; Config, Options -> New Gfx Engine, Frame Rate, Fast Forward FrameRate, etc.
-; Config, Video -> Video Mode, Interpolation, etc.
-; Config, Options -> Set up Save and/or Load State Confirmation
-;                  Select Different game key assignments
-;                  If menu should go to Load or last position when ESC
-;                  is pressed from game
+; Window sizes and positions
+;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE SPED
+GUIwinposxo dd 0,6   ,65  ,33  ,42  ,2   ,34  ,6   ,64  ,8    ,8    ,33  ,56  ,64  ,56  ,5   ,3   ,28  ,48  ,6    ,28  ,53
+GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,60  ,20  ,20  ,60  ,60  ,20   ,30  ,20
+GUIwinsizex dd 0,244 ,126 ,189 ,172 ,250 ,188 ,244 ,128 ,240  ,240  ,190 ,144 ,128 ,144 ,246 ,250 ,200 ,160 ,244  ,200 ,150
+GUIwinsizey dd 0,190 ,48  ,166 ,190 ,192 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,100 ,100 ,190  ,160 ,180
+GUIwinptr db 0
+
+NEWSYM WaterOn,  db 1
+NEWSYM ForceROMTiming, db 0
+NEWSYM ForceHiLoROM, db 0
+NEWSYM CalibXmin, dd 0
+NEWSYM CalibXmax, dd 0
+NEWSYM CalibYmin, dd 0
+NEWSYM CalibYmax, dd 0
+NEWSYM CalibXmin209, dd 0
+NEWSYM CalibXmax209, dd 0
+NEWSYM CalibYmin209, dd 0
+NEWSYM CalibYmax209, dd 0
+
+EEgg db 0
+RestoreValues db 0
+NEWSYM numdrives, dd 26
+SubPalTable times 256 db 1      ; Corresponding Gray Scale Color
 
 SECTION .bss
-
-NEWSYM ForceROMTiming, resb 1
-NEWSYM ForceHiLoROM, resb 1
-
 NEWSYM CombinDataGlob, resb 3300 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff
 NEWSYM CombinDataLocl, resb 3300
 
@@ -303,16 +318,6 @@ GUIwinpos   resb 18
 GUIwinactiv resb 18
 ViewBuffer  resb 50*32
 
-SECTION .data
-; Window sizes and positions
-;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE SPED
-GUIwinposxo dd 0,6   ,65  ,33  ,42  ,2  ,34  ,6   ,64  ,8    ,8    ,33  ,56  ,64  ,56  ,5   ,3   ,28  ,48  ,6    ,28  ,53
-GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,65  ,20  ,19  ,60  ,60  ,20   ,30  ,25
-GUIwinsizex dd 0,244 ,126 ,189 ,172 ,250 ,188 ,244 ,8*16,240  ,240  ,190 ,9*16,8*16,9*16,246 ,250 ,200 ,160 ,244  ,200 ,150
-GUIwinsizey dd 0,190 ,3*16,166 ,190 ,192 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,100 ,100 ,190  ,160 ,180
-GUIwinptr   db 0
-
-SECTION .bss
 GUItextcolor resb 5
 GUIcmenupos  resb 1
 GUIescpress  resb 1
@@ -351,6 +356,7 @@ vbuflimtop   resd 1
 vbuflimbot   resd 1
 GUIScrolTim1 resd 1
 GUIScrolTim2 resd 1
+BlankVar     resb 1
 GUICHold     resd 1
 NEWSYM GUICBHold,    resd 1
 GUICBHold2   resd 1
@@ -376,16 +382,7 @@ NEWSYM cheatdataprev, resb 28 ; leave contents blank
 NEWSYM cheatdata, resb 28*255+56 ; toggle, value, address, pvalue, name(22)
 
 NEWSYM GUIcurrentdir, resb 131
-
 curgsval resb 1
-
-SECTION .data
-NEWSYM EEgg, db 0
-RestoreValues db 0
-NEWSYM numdrives, dd 26
-SubPalTable times 256 db 1      ; Corresponding Gray Scale Color
-
-SECTION .bss
 
 NEWSYM GUICMessage, resd 1
 NEWSYM GUICTimer,   resd 1
@@ -543,8 +540,8 @@ GUIQuickLoadUpdate:
 SECTION .data
 NEWSYM ComboHeader, db 'Key Combination File',26,1,0
 NEWSYM ComboBlHeader, times 23 db 0
-SECTION .text
 
+SECTION .text
 %macro GUIInitIRQs 0
   call GUIInit
   mov esi,pressed
@@ -562,13 +559,13 @@ SECTION .text
 %endmacro
 
 SECTION .data
- NEWSYM GUIoldhand9o, dd 0
- NEWSYM GUIoldhand9s, dw 0
- NEWSYM GUIoldhand8o, dd 0
- NEWSYM GUIoldhand8s, dw 0
- GUIt1cc dd 0
- GUIt1ccSwap db 0
- GUIskipnextkey42 db 0
+NEWSYM GUIoldhand9o, dd 0
+NEWSYM GUIoldhand9s, dw 0
+NEWSYM GUIoldhand8o, dd 0
+NEWSYM GUIoldhand8s, dw 0
+GUIt1cc dd 0
+GUIt1ccSwap db 0
+GUIskipnextkey42 db 0
 
 SECTION .text
 NEWSYM GUIinit18_2hz
@@ -1020,21 +1017,6 @@ NEWSYM StartGUI
   add eax,4
   dec ecx
   jnz .slloop
-  cmp byte[OldWinPos],0
-  jne .okayow
-  xor esi,esi
-  mov ecx,17
-.nextow
-  mov eax,[GUIwinposx2+esi*4]
-  mov [GUIwinposx+esi*4],eax
-  mov eax,[GUIwinposy2+esi*4]
-  mov [GUIwinposy+esi*4],eax
-  inc esi
-  dec ecx
-  jnz .nextow
-  mov byte[OldWinPos],1
-  mov eax,[pl1p209b]
-  mov [pl1p209],eax
 .okayow
 
   mov byte[GUIOn],1
@@ -1063,11 +1045,6 @@ NEWSYM StartGUI
   jne .joysloop
 
   mov dword[GUICTimer],0
-  cmp byte[OldVolume],1
-  jne .notold
-  mov byte[OldVolume],0
-  mov byte[MusicRelVol],100
-  mov byte[cfgvolume],100
   ; Initialize volume
   xor eax,eax
   xor edx,edx
@@ -1080,7 +1057,6 @@ NEWSYM StartGUI
   mov al,127
 .noofb
   mov [MusicVol],al
-.notold
   mov byte[CheatSearchStatus],0
   cmp byte[newgfx16b],0
   je .nong
@@ -1356,7 +1332,6 @@ NEWSYM StartGUI
   mov ebx,InitDir
   ; save config
   call Change_Dir
-  call createnewcfg
   call GUISaveVars
 
   ; change dir to SRAMDrive/SRAMDir
@@ -1424,12 +1399,6 @@ NEWSYM StartGUI
   dec ecx
   jnz .loopcl
 
-  mov al,[cfgsoundon]
-  mov [soundon],al
-  mov al,[cfgStereoSound]
-  mov [StereoSound],al
-  mov al,[cfgSoundQuality]
-  mov [SoundQuality],al
   call AdjustFrequency
   mov byte[GUIOn],0
   mov byte[GUIOn2],0
@@ -2192,8 +2161,9 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
   call Change_Dir
 
   mov byte[savecfgforce],1
-  call createnewcfg
+  pushad
   call GUISaveVars
+  popad
   mov byte[savecfgforce],0
 
   call Makemode7Table

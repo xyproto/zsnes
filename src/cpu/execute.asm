@@ -30,7 +30,7 @@ EXTSYM InitPreGame,Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8
 EXTSYM SetupPreGame,memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap
 EXTSYM DeInitPostGame,spcPCRam,startdebugger,xp,xpb,xpc,tablead,tableadb
 EXTSYM tableadc,SA1UpdateDPage,Makemode7Table,nextmenupopup,MovieProcessing
-EXTSYM DosExit,InitDir,InitDrive,createnewcfg,sfxramdata,deinitvideo
+EXTSYM DosExit,InitDir,InitDrive,sfxramdata,deinitvideo
 EXTSYM SFXEnable,wramdata,cycpbl,cycpblt,irqon,spcon
 EXTSYM multchange,romispal,scrndis,sprlefttot,sprleftpr,processsprites
 EXTSYM cachesprites,opcjmptab,CheatOn
@@ -488,7 +488,6 @@ NEWSYM endprog
     call deinitvideo
 
     call SaveSramData
-    call createnewcfg
     call GUISaveVars
 
     pushad

@@ -33,14 +33,14 @@ EXTSYM flagnz,flago,flagc,cpucycle,cycpbl,cycpblt,opcjmptab,doirqnext,dmadata
     add dword[cycpbl],eax
     ; 1260, 10000/12625
     inc ebp
-    call dword near [opcjmptab+ebx*4]
+    call dword [opcjmptab+ebx*4]
     xor ebx,ebx
 %%skipallspc
     mov bl,[esi]
     inc esi
     sub dh,[cpucycle+ebx]
     jc %%cpuover
-    jmp dword near [edi+ebx*4]
+    jmp dword [edi+ebx*4]
 %%cpuover
     ret
 %endmacro
@@ -48,21 +48,21 @@ EXTSYM flagnz,flago,flagc,cpucycle,cycpbl,cycpblt,opcjmptab,doirqnext,dmadata
 %macro restoredl 0
    mov dword[flagnz],0
    test dl,80h
-   jz near %%noneg
+   jz %%noneg
    or dword[flagnz],10000h
 %%noneg
    test dl,2h
-   jnz near %%zero
+   jnz %%zero
    or dword[flagnz],1
 %%zero
    mov dword[flagc],0
    test dl,01h
-   jz near %%nocarry
+   jz %%nocarry
    mov dword[flagc],0FFh
 %%nocarry
    mov dword[flago],0
    test dl,40h
-   jz near %%nov
+   jz %%nov
    mov dword[flago],0FFh
 %%nov
 %endmacro
@@ -759,7 +759,7 @@ COPemulmode
     xor eax,eax
     add cx,[xx]
     mov bl,[xpb]
-    call dword near [memtabler16+ebx*4]
+    call dword [memtabler16+ebx*4]
     mov [xpc],ax
     mov bl,[xpb]
     test eax,8000h
@@ -916,7 +916,7 @@ COPemulmode
     mov cx,[esi]
     mov bl,[xpb]
     add cx,[xx]
-    call dword near [memtabler16+ebx*4]
+    call dword [memtabler16+ebx*4]
     mov [xpc],ax
     mov bl,[xpb]
     test eax,8000h
@@ -986,10 +986,10 @@ COPemulmode
     mov [xdb],al
     mov bl,ah
     mov cx,[xx]
-    call dword near [memtabler8+ebx*4]
+    call dword [memtabler8+ebx*4]
     mov bl,[xdb]
     mov cx,[xy]
-    call dword near [memtablew8+ebx*4]
+    call dword [memtablew8+ebx*4]
     test dl,10h
     jnz near .pagezero
     inc word[xx]
@@ -1017,10 +1017,10 @@ COPemulmode
     mov [xdb],al
     mov bl,ah
     mov cx,[xx]
-    call dword near [memtabler8+ebx*4]
+    call dword [memtabler8+ebx*4]
     mov bl,[xdb]
     mov cx,[xy]
-    call dword near [memtablew8+ebx*4]
+    call dword [memtablew8+ebx*4]
     test dl,10h
     jnz near .pagezero
     dec word[xx]
@@ -1242,7 +1242,7 @@ COPemulmode
     mov bl,dl
     mov edi,[tableadc+ebx*4]
     test dl,00010000b
-    jnz near .setx
+    jnz .setx
     endloop
 .setx
     mov byte[xx+1],0
@@ -1320,13 +1320,13 @@ COPemulmode
 
 %macro RTIMacro 0
     cmp byte[nmistatus],3
-    jne near .nodis658162
+    jne .nodis658162
     test byte[curexecstate],01h
-    jz near .nodis65816
+    jz .nodis65816
     and byte[curexecstate],0FEh
 .nodis65816
     cmp byte[curexecstate],0
-    jne near .nn
+    jne .nn
     xor dh,dh
 .nn
 .nodis658162
@@ -1371,7 +1371,7 @@ COPemulmode
     mov bl,[xpb]
     mov [xpc],ax
     test eax,8000h
-    jz near .loweraddr
+    jz .loweraddr
     mov esi,[snesmmap+ebx*4]
     mov [initaddrl],esi
     add esi,eax
@@ -1393,7 +1393,7 @@ COPemulmode
     mov byte[intrset],2
 .notwai2
     test dl,00010000b
-    jnz near .setx
+    jnz .setx
     endloop
 .setx
     mov byte[xx+1],0
@@ -1401,19 +1401,19 @@ COPemulmode
     endloop
 .upperlower
     cmp dword[memtabler8+ebx*4],regaccessbankr8
-    je near .dma
+    je .dma
     mov byte[doirqnext],0
     mov [initaddrl],esi
     add esi,eax
     test dl,00010000b
-    jnz near .setx
+    jnz .setx
     endloop
 .dma
     mov esi,dmadata-4300h
     mov [initaddrl],esi
     add esi,eax
     test dl,00010000b
-    jnz near .setx
+    jnz .setx
     endloop
 
 emulRTI
@@ -1450,7 +1450,7 @@ emulRTI
     xor bl,bl
     mov [xpc],ax
     test eax,8000h
-    jz near .loweraddr
+    jz .loweraddr
     mov esi,[snesmmap+ebx*4]
     mov [initaddrl],esi
     add esi,eax
@@ -1505,7 +1505,7 @@ emulRTI
     mov bl,[xpb]
     mov [xpc],ax
     test eax,8000h
-    jz near .loweraddr
+    jz .loweraddr
     mov esi,[snesmmap+ebx*4]
     mov [initaddrl],esi
     add esi,eax
@@ -1538,7 +1538,7 @@ emulRTI
     mov [xpc],ax
     mov bl,[xpb]
     test eax,8000h
-    jz near .loweraddr
+    jz .loweraddr
     mov esi,[snesmmap+ebx*4]
     mov [initaddrl],esi
     add esi,eax

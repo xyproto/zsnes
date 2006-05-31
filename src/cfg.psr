@@ -1,366 +1,963 @@
-GUIRAdd db 15
-GUIGAdd db 10
-GUIBAdd db 31
-mousewrap db 0          ; 0 = mouse boundries, 1 = mouse wrap
-mouseshad db 1          ; 0 = no mouse shadow, 1 = mouse shadow
-lastcursres db 0        ; 0 = go to load, 1 = go to previous menu, 2 = no menu
-resetposn   db 1        ; 0 = no window reset, 1 = window reset
-NEWSYM GUIClick, db 0   ; 1 = mouse click enters/exits gui
+@ PSR-produced config file (stock default in CAPS)
 
-; Default keys
-; Sound Channels 0 .. 7, Save/Select/Load States, Fast Forward
-; Exit, Load, Reset, BG Disables, Reset, Windowing, New Gfx, OffsetMode
-; State Selection 0 .. 9
+@
+@  ----
+@ -- Emulation --
+@  ----
 
-NEWSYM KeyDisableSC0, dd 63
-NEWSYM KeyDisableSC1, dd 64
-NEWSYM KeyDisableSC2, dd 65
-NEWSYM KeyDisableSC3, dd 66
-NEWSYM KeyDisableSC4, dd 67
-NEWSYM KeyDisableSC5, dd 68
-NEWSYM KeyDisableSC6, dd 87
-NEWSYM KeyDisableSC7, dd 88
-NEWSYM KeySaveState,  dd 60
-NEWSYM KeyStateSelct, dd 61
-NEWSYM KeyLoadState,  dd 62
-NEWSYM KeyFastFrwrd,  dd 41
-NEWSYM KeyQuickExit,  dd 0
-NEWSYM KeyQuickLoad,  dd 0
-NEWSYM KeyQuickRst,   dd 0
-NEWSYM KeyBGDisble0,  dd 2
-NEWSYM KeyBGDisble1,  dd 3
-NEWSYM KeyBGDisble2,  dd 4
-NEWSYM KeyBGDisble3,  dd 5
-NEWSYM KeySprDisble,  dd 6
-NEWSYM KeyResetAll,   dd 7
-NEWSYM KeyExtraEnab1, dd 0
-NEWSYM KeyExtraEnab2, dd 0
-NEWSYM KeyNewGfxSwt,  dd 9
-NEWSYM KeyWinDisble,  dd 10
-NEWSYM KeyOffsetMSw,  dd 11
-NEWSYM KeyStateSlc0,  dd 0
-NEWSYM KeyStateSlc1,  dd 0
-NEWSYM KeyStateSlc2,  dd 0
-NEWSYM KeyStateSlc3,  dd 0
-NEWSYM KeyStateSlc4,  dd 0
-NEWSYM KeyStateSlc5,  dd 0
-NEWSYM KeyStateSlc6,  dd 0
-NEWSYM KeyStateSlc7,  dd 0
-NEWSYM KeyStateSlc8,  dd 0
-NEWSYM KeyStateSlc9,  dd 0
+@
+@ Percent to execute [50..150]
+per2exec dd 100
 
-GUIshowallext db 0
-GUIloadfntype    db 0
+@
+@ Update SRAM in real-time (0 = NO, 1 = Yes)
+SRAMSave5Sec db 0
 
-NEWSYM pl3selk,   dd 0   ; 3SELECT = SHIFT
-NEWSYM pl3startk, dd 0   ; 3START = ENTER
-NEWSYM pl3upk,    dd 0   ; 3UP = up
-NEWSYM pl3downk,  dd 0   ; 3DOWN = down
-NEWSYM pl3leftk,  dd 0   ; 3LEFT = left
-NEWSYM pl3rightk, dd 0   ; 3RIGHT = right
-NEWSYM pl3Xk,     dd 0   ; 3X = INS
-NEWSYM pl3Ak,     dd 0   ; 3A = HOME
-NEWSYM pl3Lk,     dd 0   ; 3L = PAGE UP
-NEWSYM pl3Yk,     dd 0   ; 3Y = DELETE
-NEWSYM pl3Bk,     dd 0   ; 3B = END
-NEWSYM pl3Rk,     dd 0   ; 3R = PAGE DOWN
-NEWSYM pl4selk,   dd 0   ; 4SELECT = SHIFT
-NEWSYM pl4startk, dd 0   ; 4START = ENTER
-NEWSYM pl4upk,    dd 0   ; 4UP = up
-NEWSYM pl4downk,  dd 0   ; 4DOWN = down
-NEWSYM pl4leftk,  dd 0   ; 4LEFT = left
-NEWSYM pl4rightk, dd 0   ; 4RIGHT = right
-NEWSYM pl4Xk,     dd 0   ; 4X = INS
-NEWSYM pl4Ak,     dd 0   ; 4A = HOME
-NEWSYM pl4Lk,     dd 0   ; 4L = PAGE UP
-NEWSYM pl4Yk,     dd 0   ; 4Y = DELETE
-NEWSYM pl4Bk,     dd 0   ; 4B = END
-NEWSYM pl4Rk,     dd 0   ; 4R = PAGE DOWN
-NEWSYM TimeChecker,  db 0   ; Future Reserved
-GUISoundBuffer db 1 ; Sound Buffer Disabled
-prevloadnames times 160 db 32
-prevlfreeze db 0
-GUIsmallscreenon db 0
-GUIScreenScale db 0
+@
+@ Use old implementation for snes mode 2 (0 = NO, 1 = Yes)
+OldGfxMode2 db 0
 
-NEWSYM pl3contrl, db 0
-NEWSYM pl4contrl, db 0
-NEWSYM pl1p209b, db 0
-NEWSYM pl2p209b, db 0
-NEWSYM pl3p209b, db 0
-NEWSYM pl4p209b, db 0
-JoyPad1Move db 0
-NEWSYM FirstTimeData, db 0
-NEWSYM PrevSWFix, db 0
-NEWSYM CalibXmin, dd 0
-NEWSYM CalibYmin, dd 0
-NEWSYM CalibXmax, dd 0
-NEWSYM CalibYmax, dd 0
-NEWSYM CalibXmin209, dd 0
-NEWSYM CalibYmin209, dd 0
-NEWSYM CalibXmax209, dd 0
-NEWSYM CalibYmax209, dd 0
-NEWSYM maxskip,      db 9
-NEWSYM FPSAtStart,   db 0
-NEWSYM SidewinderFix, db 0
-NEWSYM pl1Atk,    dd 0   ; Turbo A
-NEWSYM pl1Btk,    dd 0   ; Turbo B
-NEWSYM pl1Xtk,    dd 0   ; Turbo X
-NEWSYM pl1Ytk,    dd 0   ; Turbo Y
-NEWSYM pl2Atk,    dd 0   ; Turbo A
-NEWSYM pl2Btk,    dd 0   ; Turbo B
-NEWSYM pl2Xtk,    dd 0   ; Turbo X
-NEWSYM pl2Ytk,    dd 0   ; Turbo Y
-NEWSYM pl3Atk,    dd 0   ; Turbo A
-NEWSYM pl3Btk,    dd 0   ; Turbo B
-NEWSYM pl3Xtk,    dd 0   ; Turbo X
-NEWSYM pl3Ytk,    dd 0   ; Turbo Y
-NEWSYM pl4Atk,    dd 0   ; Turbo A
-NEWSYM pl4Btk,    dd 0   ; Turbo B
-NEWSYM pl4Xtk,    dd 0   ; Turbo X
-NEWSYM pl4Ytk,    dd 0   ; Turbo Y
-NEWSYM Turbo30hz, db 0   ; Turbo at 30hz instead of 60hz
+@
+@  ----
+@ -- Input --
+@  ----
 
-NEWSYM KeyVolUp,       dd 0
-NEWSYM KeyVolDown,     dd 0
-NEWSYM KeyFRateUp,     dd 0
-NEWSYM KeyFRateDown,   dd 0
+@
+@ Player 1 input stuff
+%ifdef __MSDOS__
+@ Input device: 0 = Unplugged, 1 = KEYBOARD, 2 = 2-button pad, 3 = 4-button pad
+@   4 = 6-button pad, 5 = 8-button pad, 6..9 = Sidewinder #1-4
+@   10-11 = Gamepad Pro #0-1, 12-15 = Parallel port LPT1 p1/2, LPT2 p1/2
+%else
+@ Input device: 0 = Unplugged, 1 = KEYBOARD/GAMEPAD
+%endif
+pl1contrl db 1
+@ Keys for select, start, up, down, left, right, X, A, L, Y, B, R
+pl1selk dd 54
+pl1startk dd 28
+%ifdef __MSDOS__
+pl1upk dd 72
+pl1downk dd 80
+pl1leftk dd 75
+pl1rightk dd 77
+%else
+pl1upk dd 200
+pl1downk dd 208
+pl1leftk dd 203
+pl1rightk dd 205
+%endif
+pl1Xk dd 31
+pl1Ak dd 45
+pl1Lk dd 32
+pl1Yk dd 30
+pl1Bk dd 44
+pl1Rk dd 46
+@ Turbo keys for A, B, X, Y, L, R
+pl1Atk dd 0
+pl1Btk dd 0
+pl1Xtk dd 0
+pl1Ytk dd 0
+pl1Ltk dd 0
+pl1Rtk dd 0
+@ Diagonal keys for up-right, down-left, down-right, up-left
+pl1ULk dd 0
+pl1URk dd 0
+pl1DLk dd 0
+pl1DRk dd 0
+%ifdef __MSDOS__
+@ Use port 209h (0 = NO, 1 = Yes)
+%else
+@ DOS-only option, don't edit it
+%endif
+pl1p209 db 0
 
-NEWSYM KeyQuickChat,  dd 20
-NEWSYM FossilUse,     db 0
-NEWSYM TimerEnable,   db 0
+@
+@ Player 2
+%ifdef __MSDOS__
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard, 2 = 2-button pad, 3 = 4-button pad
+@   4 = 6-button pad, 5 = 8-button pad, 6..9 = Sidewinder #1-4
+@   10-11 = Gamepad Pro #0-1, 12-15 = Parallel port LPT1 p1/2, LPT2 p1/2
+%else
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard/Gamepad
+%endif
+pl2contrl db 0
+@ Keys for select, start, up, down, left, right, X, A, L, Y, B, R
+pl2selk dd 0
+pl2startk dd 0
+pl2upk dd 0
+pl2downk dd 0
+pl2leftk dd 0
+pl2rightk dd 0
+pl2Xk dd 0
+pl2Ak dd 0
+pl2Lk dd 0
+pl2Yk dd 0
+pl2Bk dd 0
+pl2Rk dd 0
+@ Turbo keys for A, B, X, Y, L, R
+pl2Atk dd 0
+pl2Btk dd 0
+pl2Xtk dd 0
+pl2Ytk dd 0
+pl2Ltk dd 0
+pl2Rtk dd 0
+@ Diagonal keys for up-right, down-left, down-right, up-left
+pl2ULk dd 0
+pl2URk dd 0
+pl2DLk dd 0
+pl2DRk dd 0
+%ifdef __MSDOS__
+@ Use port 209h (0 = NO, 1 = Yes)
+%else
+@ DOS-only option, don't edit it
+%endif
+pl2p209 db 0
 
-NEWSYM Surround,      db 0
-NEWSYM InterSound,    db 1
-NEWSYM FastFwdToggle, db 0
-NEWSYM En2xSaI, db 0
-NEWSYM AutoLoadCht, db 0
-NEWSYM KeyQuickSnapShot,  dd 0
+@
+@ Player 3
+%ifdef __MSDOS__
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard, 2 = 2-button pad, 3 = 4-button pad
+@   4 = 6-button pad, 5 = 8-button pad, 6..9 = Sidewinder #1-4
+@   10-11 = Gamepad Pro #0-1, 12-15 = Parallel port LPT1 p1/2, LPT2 p1/2
+%else
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard/Gamepad
+%endif
+pl3contrl db 0
+@ Keys for select, start, up, down, left, right, X, A, L, Y, B, R
+pl3selk dd 0
+pl3startk dd 0
+pl3upk dd 0
+pl3downk dd 0
+pl3leftk dd 0
+pl3rightk dd 0
+pl3Xk dd 0
+pl3Ak dd 0
+pl3Lk dd 0
+pl3Yk dd 0
+pl3Bk dd 0
+pl3Rk dd 0
+@ Turbo keys for A, B, X, Y, L, R
+pl3Atk dd 0
+pl3Btk dd 0
+pl3Xtk dd 0
+pl3Ytk dd 0
+pl3Ltk dd 0
+pl3Rtk dd 0
+@ Diagonal keys for up-right, down-left, down-right, up-left
+pl3ULk dd 0
+pl3URk dd 0
+pl3DLk dd 0
+pl3DRk dd 0
+%ifdef __MSDOS__
+@ Use port 209h (0 = NO, 1 = Yes)
+%else
+@ DOS-only option, don't edit it
+%endif
+pl3p209 db 0
 
-CheatSrcByteSize db 0
-CheatSrcByteBase db 0
-CheatSrcSearchType db 0
-CheatUpperByteOnly db 0
-NEWSYM SRAMSave5Sec, db 0
-NEWSYM ReInitSoundC, db 0
-NEWSYM OldGfxMode2 , db 0
-NEWSYM PitchModEn  , db 0
-NEWSYM LatestSave  , db 0
-NEWSYM AutoState   , db 0
-NEWSYM OldVolume   , db 1
-NEWSYM BlankVar    , db 1
+@
+@ Player 4
+%ifdef __MSDOS__
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard, 2 = 2-button pad, 3 = 4-button pad
+@   4 = 6-button pad, 5 = 8-button pad, 6..9 = Sidewinder #1-4
+@   10-11 = Gamepad Pro #0-1, 12-15 = Parallel port LPT1 p1/2, LPT2 p1/2
+%else
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard/Gamepad
+%endif
+pl4contrl db 0
+@ Keys for select, start, up, down, left, right, X, A, L, Y, B, R
+pl4selk dd 0
+pl4startk dd 0
+pl4upk dd 0
+pl4downk dd 0
+pl4leftk dd 0
+pl4rightk dd 0
+pl4Xk dd 0
+pl4Ak dd 0
+pl4Lk dd 0
+pl4Yk dd 0
+pl4Bk dd 0
+pl4Rk dd 0
+@ Turbo keys for A, B, X, Y, L, R
+pl4Atk dd 0
+pl4Btk dd 0
+pl4Xtk dd 0
+pl4Ytk dd 0
+pl4Ltk dd 0
+pl4Rtk dd 0
+@ Diagonal keys for up-right, down-left, down-right, up-left
+pl4ULk dd 0
+pl4URk dd 0
+pl4DLk dd 0
+pl4DRk dd 0
+%ifdef __MSDOS__
+@ Use port 209h (0 = NO, 1 = Yes)
+%else
+@ DOS-only option, don't edit it
+%endif
+pl4p209 db 0
 
-NEWSYM pl1ULk, dd 0
-NEWSYM pl1URk, dd 0
-NEWSYM pl1DLk, dd 0
-NEWSYM pl1DRk, dd 0
-NEWSYM pl2ULk, dd 0
-NEWSYM pl2URk, dd 0
-NEWSYM pl2DLk, dd 0
-NEWSYM pl2DRk, dd 0
-NEWSYM pl3ULk, dd 0
-NEWSYM pl3URk, dd 0
-NEWSYM pl3DLk, dd 0
-NEWSYM pl3DRk, dd 0
-NEWSYM pl4ULk, dd 0
-NEWSYM pl4URk, dd 0
-NEWSYM pl4DLk, dd 0
-NEWSYM pl4DRk, dd 0
+@
+@ Player 5
+%ifdef __MSDOS__
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard, 2 = 2-button pad, 3 = 4-button pad
+@   4 = 6-button pad, 5 = 8-button pad, 6..9 = Sidewinder #1-4
+@   10-11 = Gamepad Pro #0-1, 12-15 = Parallel port LPT1 p1/2, LPT2 p1/2
+%else
+@ Input device: 0 = UNPLUGGED, 1 = Keyboard/Gamepad
+%endif
+pl5contrl db 0
+@ Keys for select, start, up, down, left, right, X, A, L, Y, B, R
+pl5selk dd 0
+pl5startk dd 0
+pl5upk dd 0
+pl5downk dd 0
+pl5leftk dd 0
+pl5rightk dd 0
+pl5Xk dd 0
+pl5Ak dd 0
+pl5Lk dd 0
+pl5Yk dd 0
+pl5Bk dd 0
+pl5Rk dd 0
+@ Turbo keys for A, B, X, Y, L, R
+pl5Atk dd 0
+pl5Btk dd 0
+pl5Xtk dd 0
+pl5Ytk dd 0
+pl5Ltk dd 0
+pl5Rtk dd 0
+@ Diagonal keys for up-right, down-left, down-right, up-left
+pl5ULk dd 0
+pl5URk dd 0
+pl5DLk dd 0
+pl5DRk dd 0
+%ifdef __MSDOS__
+@ Use port 209h (0 = NO, 1 = Yes)
+%else
+@ DOS-only option, don't edit it
+%endif
+pl5p209 db 0
 
-NEWSYM LowPassFilterType,  db 0
-NEWSYM DontSavePath,  db 0
-NEWSYM ReCalib, db 1
-NEWSYM GUIComboGameSpec, db 0
-NEWSYM SoundNoiseDis, db 0      ; Disable Noise
-NEWSYM Triplebufen, db 0
-NEWSYM SoundBufEn, db 0
-NEWSYM SPCDisable, db 0
-NEWSYM RaisePitch, db 0
+@
+@ Share player3 & 4 control inputs with Player 1 & 2 - allow 2 devices to be
+@ used for one player (this feature disables Multiplayer 5 support).
+@ (0 = DISABLE, 1 = Enable)
+pl12s34 db 0
 
+@
+@ Allow up+down and left+right pad input (0 = NO, 1 = Yes)
+AllowUDLR db 0
+
+@
+%ifdef __MSDOS__
+@ Use sidewinder fix (0 = NO, 1 = Yes)
+%else
+@ DOS-only, don't edit
+%endif
+SidewinderFix db 0
+
+@
+@  ----
+@ -- Video --
+@  ----
+
+@
+#ifdef __WIN32__
+@ Video Mode, 0 - 40
+@   0 = 256x224   R WIN       1 = 256x224   R FULL
+@   2 = 512x448   R WIN       3 = 512x448   DR WIN
+@   4 = 640x480   S WIN       5 = 640x480   DS WIN
+@   6 = 640x480   DR FULL     7 = 640x480   DS FULL
+@   8 = 640x480   S FULL      9 = 768x672   R WIN
+@  10 = 768x672   DR WIN     11 = 800x600   S WIN
+@  12 = 800x600   DS WIN     13 = 800x600   S FULL
+@  14 = 800x600   DR FULL    15 = 800x600   DS FULL
+@  16 = 1024x768  S WIN      17 = 1024x768  DS WIN
+@  18 = 1024x768  S FULL     19 = 1024x768  DR FULL
+@  20 = 1024x768  DS FULL    21 = 1024x896  R WIN
+@  22 = 1024x896  DR WIN     23 = 1280x960  S WIN
+@  24 = 1280x960  DS WIN     25 = 1280x960  S FULL
+@  26 = 1280x960  DR FULL    27 = 1280x960  DS FULL
+@  28 = 1280x1024 S WIN      29 = 1280x1024 DS WIN
+@  30 = 1280x1024 S FULL     31 = 1280x1024 DR FULL
+@  32 = 1280x1024 DS FULL    33 = 1600x1200 S WIN
+@  34 = 1600x1200 DS WIN     35 = 1600x1200 DR FULL
+@  36 = 1600x1200 DS FULL    37 = CUSTOM    D WIN
+@  38 = CUSTOM    DS FULL    39 = CUSTOM      WIN
+@  40 = CUSTOM    S FULL
+@ You need to select one of the custom video modes and modify CustomResX/Y to
+@ properly use custom res support.
+@ Custom resolutions are only valid if they are supported by your system!
+cvidmode db 3
+@ Last windowed & fullscreen modes (used when alt-tabbing)
+PrevWinMode db 3
+PrevFSMode db 6
+
+#elifdef __UNIXSDL__
+
+%ifndef __OPENGL__
+@ Video Mode, 0 - 5
+%else
+@ Video Mode, 0 - 23
+%endif
+@   0 = 256x224   R WIN       1 = 256x224   R FULL
+@   2 = 512x448   DR WIN      3 = 512x448   DR FULL
+@   4 = 640x480   DR FULL     5 = 800x600   DR FULL
+%ifdef __OPENGL__
+@   6 = 256x224   OR WIN      7 = 512x448   ODR WIN
+@   8 = 640x480   ODS FULL    9 = 640x480   ODS WIN
+@  10 = 640x576   ODR WIN    11 = 768x672   ODR WIN
+@  12 = 800x600   ODS FULL   13 = 800x600   ODS WIN
+@  14 = 896x784   ODR WIN    15 = 1024x768  ODS FULL
+@  16 = 1024x768  ODS WIN    17 = 1024x896  ODR WIN
+@  18 = 1280x960  ODS FULL   19 = 1280x1024 ODS FULL
+@  20 = 1600x1200 ODR FULL   21 = VARIABLE  ODR WIN
+@  22 = VARIABLE  ODS WIN    23 = CUSTOM    OD FULL
+@ You need to select the custom video mode and modify CustomResX/Y to properly
+@ use custom res support.
+%endif
+cvidmode db 2
+@ Last windowed & fullscreen modes (used when alt-tabbing)
+PrevWinMode db 2
+PrevFSMode db 3
+
+#else
+
+@ Video Mode, 0 - 18
+@  0 = 256x224x8B  (MODEQ)    1 = 256x240x8B (MODEQ)
+@  2 = 256x256x8B  (MODEQ)    3 = 320x224x8B (MODEX)
+@  4 = 320x240x8B  (MODEX)    5 = 320x256x8B (MODEX)
+@  6 = 640x480x16B (VESA1)    7 = 320x240x8B (VESA2)
+@  8 = 320x240x16B (VESA2)    9 = 320x480x8B (VESA2)
+@ 10 = 320x480x16B (VESA2)   11 = 512x384x8B (VESA2)
+@ 12 = 512x384x16B (VESA2)   13 = 640x400x8B (VESA2)
+@ 14 = 640x400x16B (VESA2)   15 = 640x480x8B (VESA2)
+@ 16 = 640x480x16B (VESA2)   17 = 800x600x8B (VESA2)
+@ 18 = 800x600x16B (VESA2)
+cvidmode db 4
+@ Non-DOS variables used for alt-tabbing, don't edit them
+PrevWinMode db 0
+PrevFSMode db 0
+#endif
+
+@
+@ Custom resolution X and Y for custom video modes [256x224..2048x1536]
+CustomResX dd 640
+CustomResY dd 480
+
+@
+@ Use new graphics engine (0 = No, 1 = YES)
+newengen db 1
+
+@
+@ Scanlines (0 = DISABLE, 1 = Full, 2 = 25%, 3 = 50%)
+#ifdef __MSDOS__
+@ 256x256 or 640x480 8bit modes only (25% and 50% in 640x480 16bit mode only)
+#endif
+scanlines db 0
+
+@
+#ifdef __MSDOS__
+@ Video interpolation (0 = OFF, 1 = On)
+@ Available in most VESA2 16-bit modes
+@ Note: this option controls Eagle filter in 640x480 8bit mode
+#else
+@ Video interpolation (0 = OFF, 1 = On)
+#endif
+antienab db 0
+
+@
+#ifndef __UNIXSDL__
+@ Sync frames with monitor refresh rate (0 = NO, 1 = Yes)
+#else
+@ VSync is forced - don't edit this value
+#endif
+vsyncon db 0
+
+@
+%ifdef __WIN32__
+@ Triple buffer - replaces vsync (0 = NO, 1 = Yes)
+%else
+@ Win port only, don't edit
+%endif
+TripleBufferWin db 0
+
+@
+%ifdef __MSDOS__
+@ Small screen, stretch screen, triple buffer (0 = NO, 1 = Yes)
+%else
+@ DOS-only options, don't edit them
+%endif
+smallscreenon dd 0
+ScreenScale db 0
+Triplebufen db 0
+
+@
+%ifdef __UNIXSDL__
+@ Bilinear filter (0 = NO, 1 = Yes)
+%else
+@ SDL-only option, don't edit it
+%endif
+BilinearFilter db 0
+
+@
+@ 2x filter used (0 = NONE, 1 = 2xSaI, 2 = Super Eagle, 3 = Super 2xSaI)
+En2xSaI db 0
+
+@
+@ Use hq*x filter (0 = NO, 1 = Yes)
+hqFilter db 0
+
+@
+@ Grayscale mode (0 = NO, 1 = Yes)
+GrayscaleMode db 0
+
+@
+@ High-res mode7 (0 = NO, 1 = Yes)
+Mode7HiRes16b dd 0
+
+@
+@ NTSC filter (0 = OFF, 1 = On)
+NTSCFilter db 0
+@ Blend frames (0 = OFF, 1 = On)
+NTSCBlend db 0
+@ Parameters [-100..100]
+NTSCHue sb 0
+NTSCSat sb 0
+NTSCCont sb 0
+NTSCBright sb 0
+NTSCSharp sb 0
+NTSCWarp sb 0
+@ Refresh screen during parameter update (0 = OFF, 1 = On)
+NTSCRef db 0
+
+@
+@  ----
+@ -- Sound --
+@  ----
+
+@
+@ Sound emulation (0 = off, 1 = ON)
+soundon db 1
+
+@
+@ Stereo (0 = off, 1 = ON)
+StereoSound db 1
+
+@
+@ Sampling rate: 0 = 8000Hz, 1 = 11025Hz, 2 = 22050Hz, 3 = 44.1kHz, 4 = 16kHz
+@                5 = 32kHz, 6 = 48kHz
+SoundQuality dd 5
+
+@
+@ Sound volume level [0..100]
+MusicRelVol db 100
+
+@
+@ Swap left audio channel with right (0 = NO, 1 = Yes)
+RevStereo db 0
+
+@
+#ifdef __MSDOS__
+@ Force 8-bit sound, raise pitch (0 = NO, 1 = Yes)
+Force8b db 0
+#else
+@ DOS-only option, don't edit
+RaisePitch db 0
+#endif
+
+@
+@ Disable SPC emulation, echo (0 = NO, 1 = Yes)
+SPCDisable db 0
+EchoDis db 0
+
+@
+@ Sound buffering (0 = NO, 1 = Yes)
+SoundBufEn db 0
+
+@
+@ Surround sound (0 = NO, 1 = Yes)
+Surround db 0
+
+@
+@ Sound interpolation (0 = None, 1 = GAUSSIAN, 2 = Cubic, 3 = 8-point)
+SoundInterpType db 1
+
+@
+@ Low-pass filter (0 = NONE, 1 = Simple, 2 = Dynamic, 3 = Hi-quality)
+LowPassFilterType db 0
+
+@
+%ifdef __WIN32__
+@ Use primary sound buffer (0 = NO, 1 = Yes)
+%else
+@ Windows-only option, don't edit
+%endif
+PrimaryBuffer db 0
+
+@
+@  ----
+@ -- Misc. --
+@  ----
+
+@
+@ Frameskip: [0..10] (0 = AUTO, 1-10 = manual 0-9)
+frameskip db 0
+
+@
+@ Max frameskip allowed for auto frameskip [0..9]
+maxskip db 9
+
+@
+@ Emulation speed throttle [0..58] (0 = speed/30, 29 = 1x, 58 = 30x)
+@ Fast-forward multiplicator is currently inaccurate
+EmuSpeed db 29
+
+@
+@ Turbo keys equal 30 presses per second instead of 60 (0 = No, 1 = YES)
+Turbo30hz db 1
+
+@
+@ Fastforward/slowdown keys behaviour (0 = HELD, 1 = toggle)
+FastFwdToggle db 0
+
+@ Fastforward/slowdown factors [0..28] (0 = factor 2, 28 = factor 30)
+FFRatio db 8
+SDRatio db 0
+
+@
+@ Load SRAM with savestates (0 = No, 1 = YES)
+SRAMState db 1
+
+@
+@ Auto increment state slot when saving (0 = NO, 1 = Yes)
+AutoIncSaveSlot db 0
+
+@
+@ Select latest save state slot on game load (0 = NO, 1 = Yes)
+LatestSave db 0
+
+@
+@ Auto state save/load - uses a special slot (0 = NO, 1 = Yes)
+AutoState db 0
+
+@
+@ Number of rewind states [0..99]
+RewindStates db 8
+@ Delay between rewinds [1..99] - (1 = 200ms, 5 = 1s, 10 = 2s)
+RewindFrames db 15
+
+@
+@ Paths:
+%ifndef __UNIXSDL__
+@ ROMs drive + directory
+%else
+@ ROMs directory (don't edit drive, MS-only)
+%endif
+LoadDrive times 2 db 0
+LoadDir times 1024 db ""
+@ Save states & SRAMs, snapshots, SPCs
+SRAMDir times 1024 db ""
+SnapPath times 1024 db ""
+SPCPath times 1024 db ""
+@ BIOS/base carts (BS-X, Sufami Turbo, Same Game & SD Gundam G-Next)
+BSXPath times 1024 db ""
+STPath times 1024 db ""
+SGPath times 1024 db ""
+GNextPath times 1024 db ""
+@ SPC7110 graphic packs
+FEOEZPath times 1024 db ""
+SJNSPath times 1024 db ""
+MDHPath times 1024 db ""
+SPL4Path times 1024 db ""
+
+@
+@ Snapshot format
+%ifdef __MSDOS__
+@ (0 = BMP, 1 = pcx - 8bit only)
+%elifdef NO_PNG
+@ (0 = BMP)
+%else
+@ (0 = BMP, 1 = png)
+%endif
+ScreenShotFormat db 0
+
+@
+@ MMX support (0 = No, 1 = YES)
+MMXSupport db 1
+
+@
+@ Use small font for messages (0 = NO, 1 = Yes)
+SmallMsgText db 0
+@ Transparent messages - doesn't work with small font (0 = NO, 1 = Yes)
+GUIEnableTransp db 0
+
+@
+@ Pause emulation after loading a save state (0 = NO, 1 = Yes)
+PauseLoad db 0
+@ Pause emulation after using rewind (0 = NO, 1 = Yes)
+PauseRewind db 0
+
+@
+@ Display FPS counter automatically (0 = NO, 1 = Yes)
+FPSAtStart db 0
+
+@
+@ Clock display (0 = NO, 1 = Yes) & Clock mode (0 = 24 HOURS, 1 = 12 hours)
+TimerEnable db 0
+TwelveHourClock db 0
+
+@
+@ Autoload .CHT files (0 = NO, 1 = Yes)
+AutoLoadCht db 0
+
+@
+@ Auto-patch ROM with IPS (0 = No, 1 = YES)
+AutoPatch db 1
+
+@
+@ Pause when out of focus (0 = NO, 1 = Yes)
+PauseFocusChange db 0
+
+@
+@ Display ROM info on load (0 = No, 1 = YES)
+DisplayInfo db 1
+@ Output rominfo.txt file about last ROM loaded (0 = No, 1 = YES)
+RomInfo db 1
+
+%ifdef __WIN32__
+@
+@ Give high priority to ZSNES (0 = NO, 1 = Yes)
+HighPriority db 0
+
+@
+@ Save main window position (0 = No, 1 = YES) and X/Y coordinates
+SaveMainWindowPos db 1
+MainWindowX sw -1
+MainWindowY sw -1
+
+@
+@ Allow multiple ZSNES instances at once (0 = No, 1 = YES)
+AllowMultipleInst db 1
+
+@
+@ Disable screensaver while ZSNES runs (0 = No, 1 = YES)
+DisableScreenSaver db 0
+%endif
+
+@
+@ Prevent ZSNES from saving the configuration on exit.
+@ (0 = NO, 1 = Yes)
+cfgdontsave db 0
+
+@
+@ Calculated checksum & hash: don't edit by hand !
+TimeChecker db 0
+PrevBuildNum dd 0
+
+@
+@ Display first-time use reminder (0 = YES, 1 = No)
+FirstTimeData db 0
+
+@
+@  ----
+@ -- GUI --
+@  ----
+
+@
+@ Disable GUI (0 = NO, 1 = Yes)
+guioff db 0
+
+@
+@ Show all files in 'Load Game' menu (0 = NO, 1 = Yes)
+showallext db 0
+
+@
+%ifdef __MSDOS__
+@ Filename display mode (0 = 8.3, 1 = Internal header name, 2 = Long filename)
+%else
+@ DOS-only option, don't edit it
+%endif
+GUIloadfntype db 0
+
+@
+@ Recent games played, you shouldn't edit this manually (8.3 / paths / LFN)
+prevloadnames packed 160 db 0
 prevloaddnamel packed 5120 db 0
 prevloadfnamel packed 5120 db 0
 
+@
+@ Freeze recent games list (0 = NO, 1 = Yes)
+prevlfreeze db 0
+
+@
+@ GUI palette mods:
+@ Background RGB tint [0..31]
+GUIRAdd db 15
+GUIGAdd db 10
+GUIBAdd db 31
+@ Titlebar RGB tint [0..31]
+GUITRAdd db 0
+GUITGAdd db 10
+GUITBAdd db 31
+@ Windows RGB tint [0..31]
+GUIWRAdd db 8
+GUIWGAdd db 8
+GUIWBAdd db 25
+
+@
+@ GUI background effect (0 = NONE, 1 = Snow, 2 = Water A, 3 = Water B, 4 = Burn)
+GUIEffect db 0
+
+@
+@ Filter GUI display (0 = No, 1 = YES)
+FilteredGUI db 1
+
+@
+@ Wrap mouse cursor (0 = NO, 1 = Yes)
+mousewrap db 0
+
+@
+@ Mouse cursor shadow (0 = No, 1 = YES)
+mouseshad db 1
+
+@
+@ Drop down 'Game' menu on launch (0 = YES, 1 = No)
+lastcursres db 0
+
+@
+@ Remember window positions (0 = Yes, 1 = NO)
+resetposn db 1
+
+@
+@ GUI windows X/Y coordinates - GUI setup showing windows #
+@
+@    Game          Config        Cheat      Netplay       Misc
+@ -------------------------------------------------------------------
+@  1:Load         3:Input      7:Add Code  [Internet]   9:Misc Keys
+@    Run          -------      7:Browse                10:GUI Opns
+@ 12:Reset       17:Devices   13:Search                15:Movie Opn
+@  -------       18:Chip Cfg                           16:Key Comb.
+@ 14:Save State   -------                                 Save Cfg
+@  2:Open State   4:Options                             -------
+@ 14:Pick State   5:Video                              11:About
+@  -------        6:Sound
+@    Quit        19:Paths
+@                20:Saves
+@                21:Speed
+@
+@ X positions [-233..254] (windows #0 to #22)
+GUIwinposx sd 0, 6,65,33,42, 2,34, 6,64, 8, 8,33,56,64,56, 5, 3,28,48, 6,28,53,0
+@ Y positions [8..221] (windows #0 to #22)
+GUIwinposy sd 0,20,70,30,20,20,20,20,30,30,20,20,60,30,60,20,20,60,60,20,30,20,0
+
 %ifdef __WIN32__
-NEWSYM PrevWinMode, db 2
-NEWSYM PrevFSMode, db 6
-%elifdef __UNIXSDL__
-NEWSYM PrevWinMode, db 2
-NEWSYM PrevFSMode, db 3
-%elifdef __MSDOS__
-NEWSYM PrevWinMode, db 0
-NEWSYM PrevFSMode, db 0
+@
+@ Use mouse wheel (0 = NO, 1 = Yes)
+MouseWheel db 0
+
+@
+@ Trap mouse cursor in window (0 = NO, 1 = Yes)
+TrapMouseCursor db 0
+
+@
+@ Main window always on top (0 = NO, 1 = Yes)
+AlwaysOnTop db 0
 %endif
 
-; Window position index
-; GAME       1 > Load
-;            2 > Pick state
-;           12 > Reset
-;           14 > Save/Open state
-; CONFIG     3 > Inputs
-;            4 > Options
-;            5 > Video
-;            6 > Sound
-;           17 > Add-ons
-;           18 > Chip cfg
-;           19 > Paths
-;           20 > Saves
-;           21 > Speed
-; CHEAT      7 > Add/Browse
-;           13 > Search
-;(NETPLAY    8 > Internet)
-; MISC       9 > Misc keys
-;           10 > GUI opns
-;           11 > About
-;           15 > Movie opn
-;           16 > Key comb.
+@
+@ Game-specific key combos (0 = NO, 1 = Yes)
+GUIComboGameSpec db 0
 
-;#             0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21
-OldWinPos db 0
-GUIwinposx   dd 0, 5,60,30,55,50,65, 5,30,20,10,80,65,20,70,50, 3,50,50, 5,10,20,0
-GUIwinposx2  dd 0, 5,60,30,55,50,65, 5,30,20,10,80,65,20,70,50, 3,50,50, 5,10,20,0
-GUIwinposxexp times 30 dd 0
-GUIwinposy   dd 0,20,70,30,20,22,36,20,30,20,30,20,60,30,65,50,22,60,20,20,20,20,0
-GUIwinposy2  dd 0,20,70,30,20,22,36,20,30,20,30,20,60,30,65,50,22,60,20,20,20,20,0
-GUIwinposyexp times 30 dd 0
+@
+@ Mouse click enters/exits GUI (0 = NO, 1 = Yes)
+GUIClick db 0
 
-NEWSYM GUIEffect, db 0
+@
+@ Move in GUI using gamepad 1 (0 = NO, 1 = Yes)
+JoyPad1Move db 0
 
-NEWSYM pl5selk,   dd 0   ; 4SELECT = SHIFT
-NEWSYM pl5startk, dd 0   ; 4START = ENTER
-NEWSYM pl5upk,    dd 0   ; 4UP = up
-NEWSYM pl5downk,  dd 0   ; 4DOWN = down
-NEWSYM pl5leftk,  dd 0   ; 4LEFT = left
-NEWSYM pl5rightk, dd 0   ; 4RIGHT = right
-NEWSYM pl5Xk,     dd 0   ; 4X = INS
-NEWSYM pl5Ak,     dd 0   ; 4A = HOME
-NEWSYM pl5Lk,     dd 0   ; 4L = PAGE UP
-NEWSYM pl5Yk,     dd 0   ; 4Y = DELETE
-NEWSYM pl5Bk,     dd 0   ; 4B = END
-NEWSYM pl5Rk,     dd 0   ; 4R = PAGE DOWN
-NEWSYM pl5ULk,    dd 0
-NEWSYM pl5URk,    dd 0
-NEWSYM pl5DLk,    dd 0
-NEWSYM pl5DRk,    dd 0
-NEWSYM pl5Atk,    dd 0   ; Turbo A
-NEWSYM pl5Btk,    dd 0   ; Turbo B
-NEWSYM pl5Xtk,    dd 0   ; Turbo X
-NEWSYM pl5Ytk,    dd 0   ; Turbo Y
-NEWSYM pl5contrl, db 0
-NEWSYM pl1p209,   db 0
-NEWSYM pl2p209,   db 0
-NEWSYM pl3p209,   db 0
-NEWSYM pl4p209,   db 0
-NEWSYM pl5p209,   db 0
+@
+@  ----
+@ -- Cheats
+@  ----
 
-NEWSYM GUIEnableTransp, db 0
-NEWSYM Mode7HiRes16b, dd 0
-NEWSYM NewEngEnForce, db 1
-NEWSYM KeyRewind, dd 0
-NEWSYM ChatNick, times 16 db 0
-NEWSYM KeySlowDown, dd 0
+@
+@ Selected size search (0 = 1 BYTE, 1 = 2B, 2 = 3B, 3 = 4B)
+CheatSrcByteSize db 0
 
-NEWSYM UseCubicSpline, db 1
+@
+@ Selected data base (0 = DECIMAL, 1 = Hexadecimal)
+CheatSrcByteBase db 0
 
-NEWSYM LargeSoundBuf, db 0
-NEWSYM HighPriority, db 0
-NEWSYM AlwaysOnTop, db 0
-NEWSYM SaveMainWindowPos, db 1
-NEWSYM MainWindowX, dw -1
-NEWSYM MainWindowY, dw -1
+@
+@ Search type (0 = EXACT VALUE, 1 = Comparative)
+CheatSrcSearchType db 0
 
-NEWSYM ScreenShotFormat, db 0
+@
+@ Add code for upmost byte only (0 = NO, 1 = Yes)
+CheatUpperByteOnly db 0
 
-NEWSYM pl1Ltk,    dd 0   ; Turbo L
-NEWSYM pl1Rtk,    dd 0   ; Turbo R
-NEWSYM pl2Ltk,    dd 0   ; Turbo L
-NEWSYM pl2Rtk,    dd 0   ; Turbo R
-NEWSYM pl3Ltk,    dd 0   ; Turbo L
-NEWSYM pl3Rtk,    dd 0   ; Turbo R
-NEWSYM pl4Ltk,    dd 0   ; Turbo L
-NEWSYM pl4Rtk,    dd 0   ; Turbo R
-NEWSYM pl5Ltk,    dd 0   ; Turbo L
-NEWSYM pl5Rtk,    dd 0   ; Turbo R
+@
+@  ----
+@ -- Movies
+@  ----
 
-NEWSYM GUITRAdd,  db 0
-NEWSYM GUITGAdd,  db 10
-NEWSYM GUITBAdd,  db 31
+@
+@ Display movie frame # during record/replay (0 = NO, 1 = Yes)
+MovieDisplayFrame db 0
 
-NEWSYM GUIWRAdd,  db 8
-NEWSYM GUIWGAdd,  db 8
-NEWSYM GUIWBAdd,  db 25
+@
+@ Movie default start method
+@ (0 = NOW, 1 = Power-on, 2 = Reset, 3 = Power-on without SRAM)
+MovieStartMethod db 0
 
-NEWSYM GrayscaleMode, db 0
-NEWSYM MouseWheel, db 1
-NEWSYM SmallMsgText, db 0
-NEWSYM AllowMultipleInst, db 0
-NEWSYM FilteredGUI, db 1
-NEWSYM BilinearFilter, db 0
-NEWSYM TripleBufferWin, db 0
+@
+@ ZMV -> AVI conversion mode: 0 = No video, 1 = Raw video, 2 = ffv1, 3 = x264,
+@                             4 = XVID, 5 = custom (not functional yet)
+@ The compression codecs can only be used if you provide them yourself.
+@ See zmovie.cfg for details.
+MovieVideoMode db 4
 
-NEWSYM ExclusiveSound, db 0
-NEWSYM DisableScreenSaver, db 0
-NEWSYM MMXSupport, db 1
-NEWSYM TrapMouseCursor, db 1
-NEWSYM KeyQuickClock, dd 0
-NEWSYM KeyQuickSaveSPC, dd 0
-NEWSYM AutoIncSaveSlot, db 0
-NEWSYM TCPIPAddress, times 29 db 0
-NEWSYM SoundInterpType, db 1
-NEWSYM KeyDisplayFPS, dd 0
-NEWSYM KeyIncStateSlot, dd 0
-NEWSYM KeyDecStateSlot, dd 0
-NEWSYM KeyUsePlayer1234, dd 0
-NEWSYM hqFilter, db 0
-NEWSYM SnapPath, times 1024 db ""
-NEWSYM SPCPath, times 1024 db ""
-NEWSYM BSXPath, times 1024 db ""
-NEWSYM STPath, times 1024 db ""
-NEWSYM GNextPath, times 1024 db ""
-NEWSYM SGPath, times 1024 db ""
-NEWSYM FEOEZPath, times 1024 db ""
-NEWSYM SJNSPath, times 1024 db ""
-NEWSYM MDHPath, times 1024 db ""
-NEWSYM SPL4Path, times 1024 db ""
-NEWSYM AutoPatch, db 1
-NEWSYM RomInfo, db 1
-NEWSYM SRAMState, db 0
-NEWSYM RewindStates, db 16
-NEWSYM PrimaryBuffer, db 0
-NEWSYM RewindFrames, db 15
-NEWSYM KeyInsrtChap,  dd 0
-NEWSYM KeyNextChap,   dd 0
-NEWSYM KeyPrevChap,   dd 0
-NEWSYM MovieDisplayFrame, db 0
-NEWSYM MovieStartMethod, db 0
-NEWSYM EMUPauseKey, dd 25
-NEWSYM INCRFrameKey, dd 0
-NEWSYM PauseLoad, db 0
-NEWSYM PauseRewind, db 0
-NEWSYM KeyResetSpeed, dd 0
-NEWSYM EmuSpeed, db 29        ; 29 = 1x, 0 = /30 and 58 = 30x
-NEWSYM FFRatio, db 9          ; 0 = 2x, 28 = 30x
-NEWSYM SDRatio, db 0          ; 0 = /2, 28 = /30
-NEWSYM KeyEmuSpeedUp, dd 0
-NEWSYM KeyEmuSpeedDown, dd 0
-NEWSYM AllowUDLR, db 0
-NEWSYM KeyDisplayBatt, dd 0
-NEWSYM PrevBuildNum, dd 0
-NEWSYM PauseFocusChange, db 0
-NEWSYM KeyIncreaseGamma, dd 0
-NEWSYM KeyDecreaseGamma, dd 0
-NEWSYM MovieVideoMode, db 4
-NEWSYM MovieAudio, db 1
-NEWSYM MovieVideoAudio, db 0
-NEWSYM MovieAudioCompress, db 0
-NEWSYM TwelveHourClock, db 0
-NEWSYM NTSCFilter, db 0
-NEWSYM NTSCBlend, db 0
-NEWSYM NTSCHue, db 0
-NEWSYM NTSCSat, db 0
-NEWSYM NTSCCont, db 0
-NEWSYM NTSCBright, db 0
-NEWSYM NTSCSharp, db 0
-NEWSYM NTSCWarp, db 0
-NEWSYM NTSCRef, db 0
-NEWSYM CustomResX, dd 640
-NEWSYM CustomResY, dd 480
+@
+@ Dump audio along with video (0 = No, 1 = YES)
+MovieAudio db 1
+
+@
+@ Merge audio and video streams upon conversion end (0 = No, 1 = YES)
+MovieVideoAudio db 1
+
+@
+@ Compress audio stream on-the-fly (0 = No, 1 = YES)
+MovieAudioCompress db 1
+
+@
+@  ----
+@ -- Keyboard hotkeys --
+@  ----
+@ (you shouldn't edit these directly unless you know what you're doing)
+
+@
+@ State keys:
+@ Save state / Select slot menu / Load state
+KeySaveState dd 60
+KeyStateSelct dd 61
+KeyLoadState dd 62
+@ Increase / decrease slot # / Direct slot # select
+KeyIncStateSlot dd 0
+KeyDecStateSlot dd 0
+KeyStateSlc0 dd 0
+KeyStateSlc1 dd 0
+KeyStateSlc2 dd 0
+KeyStateSlc3 dd 0
+KeyStateSlc4 dd 0
+KeyStateSlc5 dd 0
+KeyStateSlc6 dd 0
+KeyStateSlc7 dd 0
+KeyStateSlc8 dd 0
+KeyStateSlc9 dd 0
+@ Rewind
+KeyRewind dd 0
+
+@
+@ Speed keys:
+@ Fast-forward, Slow-motion
+KeyFastFrwrd dd 41
+KeySlowDown dd 0
+@ Frame rate up/down (manual frameskip)
+KeyFRateUp dd 0
+KeyFRateDown dd 0
+@ Speed throttle up/down/reset to normal (auto frameskip)
+KeyEmuSpeedUp dd 0
+KeyEmuSpeedDown dd 0
+KeyResetSpeed dd 0
+
+@
+@ Shortcuts: Quit zsnes / Load menu / Reset game / Panic key
+KeyQuickExit dd 0
+KeyQuickLoad dd 0
+KeyQuickRst dd 0
+KeyResetAll dd 7
+
+@
+@ FPS display toggle
+KeyDisplayFPS dd 0
+
+@
+@ Video engine: Old/new graphic engine | Windowing | Offset effects toggles
+KeyNewGfxSwt dd 9
+KeyWinDisble dd 10
+KeyOffsetMSw dd 11
+
+@
+@ BG 0-3, sprite layer display toggles
+KeyBGDisble0 dd 2
+KeyBGDisble1 dd 3
+KeyBGDisble2 dd 4
+KeyBGDisble3 dd 5
+KeySprDisble dd 6
+
+@
+@ Gamma correction up/down
+KeyIncreaseGamma dd 0
+KeyDecreaseGamma dd 0
+
+@
+@ Screenshot hotkey
+KeyQuickSnapShot dd 0
+
+@
+@ Sound channel 0-7 output toggles
+KeyDisableSC0 dd 63
+KeyDisableSC1 dd 64
+KeyDisableSC2 dd 65
+KeyDisableSC3 dd 66
+KeyDisableSC4 dd 67
+KeyDisableSC5 dd 68
+KeyDisableSC6 dd 87
+KeyDisableSC7 dd 88
+
+@
+@ Sound volume up/down
+KeyVolUp dd 0
+KeyVolDown dd 0
+
+@
+@ Capture SPC hotkey
+KeyQuickSaveSPC dd 0
+
+@
+@ Extra device in port 1/2 cycle
+KeyExtraEnab1 dd 0
+KeyExtraEnab2 dd 0
+
+@
+@ Use player3/4 input as player1/2's toggle
+KeyUsePlayer1234 dd 0
+
+@
+@ Netplay in-game chat
+KeyQuickChat dd 20
+
+@
+@ Movie chapters: insert / go to previous / go to next
+KeyInsrtChap dd 0
+KeyPrevChap dd 0
+KeyNextChap dd 0
+
+@
+@ Pause emulation, frame advance keys
+EMUPauseKey dd 25
+INCRFrameKey dd 0
+
+@
+@ Clock display toggle
+KeyQuickClock dd 0
+
+@
+@ Laptop battery display toggle
+KeyDisplayBatt dd 0
+
+@
+@ - EOF -

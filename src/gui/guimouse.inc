@@ -896,7 +896,6 @@ GUIProcVideo:
 ;    jmp .skipno16b
 .no16b
   mov byte[newengen],1
-  mov byte[cfgnewgfx],1
 .skipno16b
   call guiprevideo
   mov al,[cvidmode]
@@ -908,8 +907,6 @@ GUIProcVideo:
   cmp byte[videotroub],1
   je .failed
   call GUISetPal
-  mov al,[cvidmode]
-  mov [cfgcvidmode],al
   call guipostvideo
   cmp dword[GUIkeydelay],0
   je .failed2
@@ -922,7 +919,6 @@ GUIProcVideo:
   mov byte[videotroub],0
   mov al,[.prevvid]
   mov [cvidmode],al
-  mov [cfgcvidmode],al
   call initvideo
   call GUISetPal
   call guipostvideofail
@@ -932,7 +928,6 @@ GUIProcVideo:
   mov byte[videotroub],0
   mov al,[.prevvid]
   mov [cvidmode],al
-  mov [cfgcvidmode],al
   call initvideo
   call GUISetPal
   call vidpastecopyscr
@@ -951,14 +946,12 @@ NEWSYM SwitchFullScreen
   je .fullsc
   mov al,[PrevWinMode]
   mov [cvidmode],al
-  mov [cfgcvidmode],al
   call initvideo
   popad
   ret
 .fullsc
   mov al,[PrevFSMode]
   mov [cvidmode],al
-  mov [cfgcvidmode],al
   call initvideo
   popad
   ret
@@ -1070,42 +1063,25 @@ GUIWinClicked:
   je near DisplayGUISpeedClick
   ret
 
-%macro GUIClickCButton 3
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
-  xor %3,1
-%%noclick
+%macro GUIClickArea 5
+  cmp eax,%1
+  jl %5
+  cmp edx,%2
+  jl %5
+  cmp eax,%3
+  jg %5
+  cmp edx,%4
+  jg %5
 %endmacro
 
-%macro GUIClickCButtonat 3
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+%macro GUIClickCButton 3
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
-  call guimustrestartmsg
 %%noclick
 %endmacro
 
 %macro GUIClickCButtonf 4
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
 %ifdef __WIN32__
   pushad
@@ -1115,34 +1091,8 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
-%macro GUIClickCButtonfT 5
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
-  xor %3,1
-  mov %4,0
-%ifdef __WIN32__
-  pushad
-  call %5
-  popad
-%endif
-%%noclick
-%endmacro
-
 %macro GUIClickCButtonC 3
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
   mov dword[GUIccombviewloc],0
   mov dword[GUIccombcursloc],0
@@ -1150,28 +1100,8 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
-%macro GUIClickCButtonN 4
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
-  mov %3,%4
-%%noclick
-%endmacro
-
 %macro GUIClickCButtonO 3
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   push eax
   xor %3,1
   mov al,%3
@@ -1181,92 +1111,40 @@ GUIWinClicked:
 %endmacro
 
 %macro GUIClickCButtonM 3
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
   mov byte[MultiTap],1
   cmp byte[pl12s34],1
-  je .nomtap
+  je %%nomtap
   cmp byte[pl3contrl],0
-  jne .mtap
+  jne %%noclick
   cmp byte[pl4contrl],0
-  jne .mtap
+  jne %%noclick
   cmp byte[pl5contrl],0
-  jne .mtap
-.nomtap
+  jne %%noclick
+%%nomtap
   mov byte[MultiTap],0
-.mtap
 %%noclick
 %endmacro
 
 %macro GUIClickCButtonID 3
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
   call SetDevice
 %%noclick
 %endmacro
 
 %macro GUIClickCButton2 5
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,%5
   mov al,%3
   mov %4,al
   ret
 %%noclick
 %endmacro
-
-%ifndef __UNIXSDL__
-%macro GUIClickCButton2r 5
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
-  xor %3,%5
-  mov al,%3
-  mov %4,al
-%ifdef __WIN32__
-  pushad
-  call initDirectDraw
-  popad
-%endif
-  ret
-%%noclick
-%endmacro
-%endif
 
 %macro GUIClickCButton3 5
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,%5
   mov al,%3
   mov %4,al
@@ -1278,7 +1156,6 @@ GUIWinClicked:
 %%loop
   mov dword[eax],0
   add eax,4
-;    loop %%loop
   dec ecx
   jnz %%loop
   pop ecx
@@ -1288,14 +1165,7 @@ GUIWinClicked:
 %endmacro
 
 %macro GUIClickCButton4 5
-  cmp eax,%1+1
-  jl near %%noclick
-  cmp edx,%2+3
-  jl near %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   cmp %3,%5
   jne %%set
   xor %3,%5
@@ -1327,14 +1197,7 @@ GUIWinClicked:
 %endmacro
 
 %macro GUIClickCButton5 4
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   cmp %3,%4
   jne %%set
   xor %3,%4
@@ -1347,45 +1210,31 @@ GUIWinClicked:
 %endmacro
 
 %macro GUIClickCButton6 4
-    cmp eax,%1+1
-    jl %%noclick
-    cmp edx,%2+3
-    jl %%noclick
-    cmp eax,%1+6
-    jg %%noclick
-    cmp edx,%2+8
-    jg %%noclick
-    cmp %3,%4
-    jne %%set
-    xor %3,%4
-    jmp %%clear
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
+  cmp %3,%4
+  jne %%set
+  xor %3,%4
+  jmp %%clear
 %%set
-    mov %3,%4
-    push eax
-    push ecx
-    mov eax,[vidbufferofsb]
-    mov ecx,288*128
+  mov %3,%4
+  push eax
+  push ecx
+  mov eax,[vidbufferofsb]
+  mov ecx,288*128
 %%loop
-    mov dword[eax],0
-    add eax,4
-    dec ecx
-    jnz %%loop
-    pop ecx
-    pop eax
+  mov dword[eax],0
+  add eax,4
+  dec ecx
+  jnz %%loop
+  pop ecx
+  pop eax
 %%clear
-    ret
+  ret
 %%noclick
 %endmacro
 
 %macro GUIClickCButtonfr 3
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   mov byte[FPSOn],0
   cmp %3,0
   je %%zero
@@ -1398,30 +1247,15 @@ GUIWinClicked:
 %endmacro
 
 %macro GUIClickCButtonL 2
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor byte[showallext],1
-  xor byte[GUIshowallext],1
   call GetLoadData
   ret
 %%noclick
 %endmacro
 
 %macro GUIClickCButtonI 3
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
   pushad
   call Clear2xSaIBuffer
@@ -1430,56 +1264,28 @@ GUIWinClicked:
 %endmacro
 
 %macro GUIClickCButtonAS 3
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
   mov byte[firstsaveinc],1
 %%noclick
 %endmacro
 
 %macro GUIClickCButtonT 4
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
   mov %4,0
 %%noclick
 %endmacro
 
 %macro GUIClickCButtonMMX 3
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
   call MMXCheck
 %%noclick
 %endmacro
 
 %macro GUIClickCButton5MMXC 4
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+3
-  jl %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   cmp byte[MMXSupport],0
   je %%clear
   cmp %3,%4
@@ -1498,38 +1304,17 @@ GUIWinClicked:
   je near %%nolower
   cmp dword[GUIdispmode],1
   je near %%slidebar
-  cmp eax,%1
-  jl near %%noupper
-  cmp edx,%2-7
-  jl near %%noupper
-  cmp eax,%3
-  jg near %%noupper
-  cmp edx,%2-1
-  jg near %%noupper
+  GUIClickArea %1,%2-7,%3,%2-1,%%noupper
   mov byte[%12],%13
   mov byte[GUICHold],%7
   jmp %5
 %%noupper
-  cmp eax,%1
-  jl near %%nolower
-  cmp edx,%4+1
-  jl near %%nolower
-  cmp eax,%3
-  jg near %%nolower
-  cmp edx,%4+7
-  jg near %%nolower
+  GUIClickArea %1,%4+1,%3,%4+7,{near %%nolower}
   mov byte[%12],%13
   mov byte[GUICHold],%7+1
   jmp %6
 %%slidebar
-  cmp eax,%1
-  jl near %%nolower
-  cmp edx,%2
-  jl near %%nolower
-  cmp eax,%3
-  jg near %%nolower
-  cmp edx,%4
-  jg near %%nolower
+  GUIClickArea %1,%2,%3,%4,{near %%nolower}
   mov byte[%12],%13
   ; displacement = (GUIdispmode * pixeldisp. / (listsize-scsize))
   mov eax,[%11]
@@ -1583,14 +1368,7 @@ SECTION .text
 
 %macro GUISlidebarImpl 10 ; x1,y1,x2,y2,GUI?StA,ScrnSize,ViewLoc,CursLoc,Entries,win#
   mov dword[GUIdispmode],0
-  cmp eax,%1
-  jl near %%nobar
-  cmp edx,%2
-  jl near %%nobar
-  cmp eax,%3
-  jg near %%nobar
-  cmp edx,%4
-  jg near %%nobar
+  GUIClickArea %1,%2,%3,%4,{near %%nobar}
   sub edx,%2
   cmp [%5+4],edx
   ja near %%above
@@ -1648,14 +1426,7 @@ SECTION .text
   ret
 %%nobar
   ; upper arrow
-  cmp eax,%1
-  jl near %%noupper
-  cmp edx,%2-7
-  jl near %%noupper
-  cmp eax,%3
-  jg near %%noupper
-  cmp edx,%2-1
-  jg near %%noupper
+  GUIClickArea %1,%2+7,%3,%2-1,%%noupper
   mov eax,[GUIwinposy+%10*4]
   add eax,%2-7
   mov [GUIHoldYlim],eax
@@ -1672,14 +1443,7 @@ SECTION .text
   ret
 %%noupper
   ; lower arrow
-  cmp eax,%1
-  jl near %%nolower
-  cmp edx,%4+1
-  jl near %%nolower
-  cmp eax,%3
-  jg near %%nolower
-  cmp edx,%4+7
-  jg near %%nolower
+  GUIClickArea %1,%4+1,%3,%4+7,%%nolower
   mov eax,[GUIwinposy+%10*4]
   add eax,%4+1
   mov [GUIHoldYlim],eax
@@ -1758,14 +1522,7 @@ SECTION .text
 %endmacro
 
 %macro GUIPHoldbutton 5
-  cmp eax,%1
-  jl near %%nohold
-  cmp edx,%2
-  jl near %%nohold
-  cmp eax,%3
-  jg near %%nohold
-  cmp edx,%4
-  jg near %%nohold
+  GUIClickArea %1,%2,%3,%4,%%nohold
   mov dword[GUIHoldXlimL],%1
   mov dword[GUIHoldXlimR],%3
   mov dword[GUIHoldYlim],%2
@@ -1776,14 +1533,7 @@ SECTION .text
 %endmacro
 
 %macro GUIPHoldbutton2 8
-  cmp eax,%1
-  jl near %%nohold
-  cmp edx,%2
-  jl near %%nohold
-  cmp eax,%3
-  jg near %%nohold
-  cmp edx,%4
-  jg near %%nohold
+  GUIClickArea %1,%2,%3,%4,%%nohold
   cmp byte[GUIHold],0
   jne %%nohold
   mov dword[GUIHoldXlimL],%1
@@ -1799,14 +1549,7 @@ SECTION .text
 %endmacro
 
 %macro GUITextBoxInput 6
-  cmp eax,%1
-  jl %%noclick
-  cmp edx,%2
-  jl %%noclick
-  cmp eax,%3
-  jg %%noclick
-  cmp edx,%4
-  jg %%noclick
+  GUIClickArea %1,%2,%3,%4,%%noclick
   mov dword[GUIEditString],%5
   mov dword[GUIEditStringmLen],%6
   mov dword[GUIEditStringLTxt],0
@@ -1815,68 +1558,33 @@ SECTION .text
 %endmacro
 
 %macro GUITextBoxInputB 5
-  cmp eax,%1
-  jl %%noclick
-  cmp edx,%2
-  jl %%noclick
-  cmp eax,%3
-  jg %%noclick
-  cmp edx,%4
-  jg %%noclick
+  GUIClickArea %1,%2,%3,%4,%%noclick
   mov byte[GUINetTextm2],%5
 %%noclick
 %endmacro
 
 %macro GUITextBoxInputNach 6
-  cmp eax,%1
-  jl %%noclick
-  cmp edx,%2
-  jl %%noclick
-  cmp eax,%3
-  jg %%noclick
-  cmp edx,%4
-  jg %%noclick
+  GUIClickArea %1,%2,%3,%4,%%noclick
   mov dword[GUIInputBox],%5
   mov dword[GUIInputLimit],%6-1
 %%noclick
 %endmacro
 
 %macro GUIPButtonHole 4
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+1
-  jl %%noclick
-  cmp eax,%1+7
-  jg %%noclick
-  cmp edx,%2+7
-  jg %%noclick
+  GUIClickArea %1+1,%2+1,%1+7,%2+7,%%noclick
   mov %3,%4
 %%noclick
 %endmacro
 
 %macro GUIPButtonHole2 6
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+1
-  jl %%noclick
-  cmp eax,%1+7
-  jg %%noclick
-  cmp edx,%2+7
-  jg %%noclick
+  GUIClickArea %1+1,%2+1,%1+7,%2+7,%%noclick
   mov %3,%4
   mov %5,%6
 %%noclick
 %endmacro
 
 %macro GUIPButtonHoleLoad 4
-  cmp eax,%1+1
-  jl %%noclick
-  cmp edx,%2+1
-  jl %%noclick
-  cmp eax,%1+7
-  jg %%noclick
-  cmp edx,%2+7
-  jg %%noclick
+  GUIClickArea %1+1,%2+1,%1+7,%2+7,%%noclick
   mov %3,%4
   call GetLoadData
   ret
@@ -1884,14 +1592,7 @@ SECTION .text
 %endmacro
 
 %macro GUIWinControl 13 ;x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
-  cmp eax,%1
-  jl near %%noload
-  cmp edx,%2
-  jl near %%noload
-  cmp eax,%3
-  jg near %%noload
-  cmp edx,%4
-  jg near %%noload
+  GUIClickArea %1,%2,%3,%4,{near %%noload}
   cmp dword[%7],0
   je near %%noload
   mov dword[%5],%11
@@ -1947,14 +1648,7 @@ SECTION .text
 %endmacro
 
 %macro GUIWinControl2 13 ;Key Combination Editor Exclusive
-  cmp eax,%1
-  jl near %%noload
-  cmp edx,%2
-  jl near %%noload
-  cmp eax,%3
-  jg near %%noload
-  cmp edx,%4
-  jg near %%noload
+  GUIClickArea %1,%2,%3,%4,{near %%noload}
   cmp dword[%7],0
   je near %%noload
   mov dword[GUIccomblcursloc],0FFFFFFFFh
@@ -2010,6 +1704,135 @@ SECTION .text
 %%noload
 %endmacro
 
+%macro DGOptnsProcBox 3
+  GUIClickArea %1,%2,%1+19,%2+6,%%skip
+  push edi
+  call guipresstest
+  pop edi
+  cmp ebx,1
+  je %%cancelkey
+  cmp ebx,3Bh
+  je %%cancelkey
+  mov %3,ebx
+%ifndef __MSDOS__
+  cmp dword[keycontrolval],0
+  je %%notwin32
+  push ebx
+  mov ebx,[keycontrolval]
+  mov byte[ebx],1
+  pop ebx
+%%notwin32
+%endif
+  ret
+%%cancelkey
+  xor ebx,ebx
+  mov %3,ebx
+  ret
+%%skip
+%endmacro
+
+%macro DGOptnsProcBoxc 5
+  GUIClickArea %1,%2,%3,%4,%%skip
+  push edi
+  call guipresstest
+  pop edi
+  cmp ebx,1
+  je %%cancelkey
+  cmp ebx,3Bh
+  je %%cancelkey
+  mov %5,ebx
+  ret
+%%cancelkey
+  cmp ebx,1
+  jne %%noesc
+  mov byte[pressed+1],2
+%%noesc
+  xor ebx,ebx
+  mov %5,ebx
+  ret
+%%skip
+%endmacro
+
+%macro DGOptnsProcBoxb 3
+  GUIClickArea %1,%2,%1+19,%2+6,%%skip
+  push edi
+  call guipresstest
+  pop edi
+  cmp ebx,1
+  je %%cancelkey
+  cmp ebx,3Bh
+  je %%cancelkey
+  mov %3,ebx
+  jmp %%donekey
+%%cancelkey
+  cmp ebx,1
+  jne %%noesc
+  mov byte[pressed+1],2
+%%noesc
+  xor ebx,ebx
+  mov %3,ebx
+%%donekey
+  xor ecx,ecx
+%%joysloop
+  cmp dword[pl1ULk+ecx*4],80h
+  jbe %%nojoystick
+  mov dword[pl1ULk+ecx*4],0
+%%nojoystick
+  inc ecx
+  cmp ecx,16
+  jne %%joysloop
+  ret
+%%skip
+%endmacro
+
+%macro FilterExcl 3-* ; minX, minY, bytes to zero
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
+%rotate 1
+%rep (%0-2)
+  %rotate 1
+  mov byte[%1],0
+%endrep
+%%noclick
+%endmacro
+
+%macro GUIPTabClick 3-* ; minX, maxX, value, var, vars to zero
+  GUIClickArea %1+1,11,%2-1,22,%%noclick
+  mov dword[%4],%3
+%if (%0>4)
+  %rotate 4
+%rep (%0-4)
+  mov dword[%1],0
+  %rotate 1
+%endrep
+%endif
+%%noclick
+%endmacro
+
+%macro GUIBoxVar 6
+  GUIClickArea %1,%2,%3,%4,%%nope
+  mov dword[%5],%6
+%%nope
+%endmacro
+
+%macro ComboBoxProc 5
+  GUIClickArea %1,%2,%3,%4,%%nope
+  cmp byte[GUINumCombo],42
+  je %%nope
+  xor ebx,ebx
+  mov bl,[GUINumCombo]
+  mov byte[GUIComboData+ebx],%5
+  inc byte[GUINumCombo]
+%%nope
+%endmacro
+
+%macro ComboBoxProcD 4
+  GUIClickArea %1,%2,%3,%4,%%nope
+  cmp byte[GUINumCombo],0
+  je %%nope
+  dec byte[GUINumCombo]
+%%nope
+%endmacro
+
 ; Mouse implementation
 
 DisplayGUIConfirmClick2:
@@ -2063,40 +1886,6 @@ DisplayGUIChoseSaveClick:
   mov [fnamest+ebx],al
   ret
 
-%macro DGOptnsProcBox 3
-  cmp eax,%1
-  jl %%skip
-  cmp edx,%2
-  jl %%skip
-  cmp eax,%1+19
-  jg %%skip
-  cmp edx,%2+6
-  jg %%skip
-  push edi
-  call guipresstest
-  pop edi
-  cmp ebx,1
-  je %%cancelkey
-  cmp ebx,3Bh
-  je %%cancelkey
-  mov %3,ebx
-%ifndef __MSDOS__
-  cmp dword[keycontrolval],0
-  je %%notwin32
-  push ebx
-  mov ebx,[keycontrolval]
-  mov byte[ebx],1
-  pop ebx
-%%notwin32
-%endif
-  ret
-%%cancelkey
-  xor ebx,ebx
-  mov %3,ebx
-  ret
-%%skip
-%endmacro
-
 DisplayGUIMovieClick:
   cmp byte[MovieRecordWinVal],0        ; Overwrite Window
   je near .displayboxa
@@ -2147,111 +1936,6 @@ DisplayGUIMovieClick:
 
   GUIClickCButton 144,67,byte[MovieDisplayFrame]   ; Checkbox
   ret
-
-%macro DGOptnsProcBoxc 5
-  cmp eax,%1
-  jl %%skip
-  cmp edx,%2
-  jl %%skip
-  cmp eax,%3
-  jg %%skip
-  cmp edx,%4
-  jg %%skip
-  push edi
-  call guipresstest
-  pop edi
-  cmp ebx,1
-  je %%cancelkey
-  cmp ebx,3Bh
-  je %%cancelkey
-  mov %5,ebx
-  ret
-%%cancelkey
-  cmp ebx,1
-  jne %%noesc
-  mov byte[pressed+1],2
-%%noesc
-  xor ebx,ebx
-  mov %5,ebx
-  ret
-%%skip
-%endmacro
-
-%macro DGOptnsProcBoxb 3
-  cmp eax,%1
-  jl near %%skip
-  cmp edx,%2
-  jl near %%skip
-  cmp eax,%1+19
-  jg near %%skip
-  cmp edx,%2+6
-  jg near %%skip
-  push edi
-  call guipresstest
-  pop edi
-  cmp ebx,1
-  je %%cancelkey
-  cmp ebx,3Bh
-  je %%cancelkey
-  mov %3,ebx
-  jmp %%donekey
-%%cancelkey
-  cmp ebx,1
-  jne %%noesc
-  mov byte[pressed+1],2
-%%noesc
-  xor ebx,ebx
-  mov %3,ebx
-%%donekey
-  xor ecx,ecx
-%%joysloop
-  cmp dword[pl1ULk+ecx*4],80h
-  jbe %%nojoystick
-  mov dword[pl1ULk+ecx*4],0
-%%nojoystick
-  inc ecx
-  cmp ecx,16
-  jne %%joysloop
-  ret
-%%skip
-%endmacro
-
-%macro FilterExcl 3-* ; minX, minY, bytes to zero
-  cmp eax,%1+1
-  jl near %%noclick
-  cmp edx,%2+3
-  jl near %%noclick
-  cmp eax,%1+6
-  jg %%noclick
-  cmp edx,%2+8
-  jg %%noclick
-%rotate 1
-%rep (%0-2)
-  %rotate 1
-  mov byte[%1],0
-%endrep
-%%noclick
-%endmacro
-
-%macro GUIPTabClick 3-* ; minX, maxX, value, var, vars to zero
-  cmp eax,%1+1
-  jl %%noclick
-  cmp eax,%2-1
-  jg %%noclick
-  cmp edx,11
-  jl %%noclick
-  cmp edx,22
-  jg %%noclick
-  mov dword[%4],%3
-%if (%0>4)
-  %rotate 4
-%rep (%0-4)
-  mov dword[%1],0
-  %rotate 1
-%endrep
-%endif
-%%noclick
-%endmacro
 
 DisplayGUIInputClick2:
   push eax
@@ -2396,9 +2080,26 @@ DisplayGUIInputClick:
 .lockInputChange
 
 %ifdef __MSDOS__
-  xor ebx,ebx
-  mov bl,[cplayernum]
-  GUIClickCButtonID 5,163,byte[pl1p209+ebx]
+  cmp byte[cplayernum],0
+  jne .notpl1
+  GUIClickCButtonID 5,163,byte[pl1p209]
+.notpl1
+  cmp byte[cplayernum],1
+  jne .notpl2
+  GUIClickCButtonID 5,163,byte[pl2p209]
+.notpl2
+  cmp byte[cplayernum],2
+  jne .notpl3
+  GUIClickCButtonID 5,163,byte[pl3p209]
+.notpl3
+  cmp byte[cplayernum],3
+  jne .notpl4
+  GUIClickCButtonID 5,163,byte[pl4p209]
+.notpl4
+  cmp byte[cplayernum],4
+  jne .notpl5
+  GUIClickCButtonID 5,163,byte[pl5p209]
+.notpl5
 %endif
   ret
 
@@ -2407,7 +2108,7 @@ DisplayGUIOptionClick:
   mov bl,[cvidmode]
   cmp byte[GUINGVID+ebx],1
   jne near .invalidng
-  GUIClickCButton2 11,30,byte[newengen],byte[cfgnewgfx],1
+  GUIClickCButton2 11,30,byte[newengen],byte[newengen],1
 .invalidng
   GUIClickCButtonMMX 11,40,byte[MMXSupport]
   GUIClickCButtonM 11,50,byte[pl12s34]
@@ -2422,9 +2123,8 @@ DisplayGUIOptionClick:
   GUIClickCButton 11,70,byte[FPSAtStart]
   GUIClickCButton 11,80,byte[Turbo30hz]
   GUIClickCButton 11,90,byte[TimerEnable]
-  GUIClickCButton 130,90,byte[TwelveHourClock]
-  GUIClickCButtonO 11,100,byte[OldGfxMode2]
-  GUIClickCButton 11,110,byte[DontSavePath]
+  GUIClickCButton 11,100,byte[TwelveHourClock]
+  GUIClickCButtonO 11,110,byte[OldGfxMode2]
   GUIClickCButton 11,120,byte[SmallMsgText]
   GUIClickCButton 11,130,byte[AutoPatch]
   GUIClickCButton 11,140,byte[RomInfo]
@@ -2483,10 +2183,10 @@ DisplayGUIVideoClick:
   je near .nocheckboxb
 %ifdef __UNIXSDL__
   FilterExcl 21,119,En2xSaI,hqFilter,NTSCFilter
-  GUIClickCButton4 21,119,byte[scanlines],byte[cfgscanline],1
+  GUIClickCButton4 21,119,byte[scanlines],byte[scanlines],1
 %else
   FilterExcl 21,114,En2xSaI,hqFilter,NTSCFilter
-  GUIClickCButton4 21,114,byte[scanlines],byte[cfgscanline],1
+  GUIClickCButton4 21,114,byte[scanlines],byte[scanlines],1
 %endif
 .nocheckboxb
   xor ebx,ebx
@@ -2496,13 +2196,13 @@ DisplayGUIVideoClick:
 %ifdef __UNIXSDL__
   FilterExcl 61,119,En2xSaI,hqFilter,NTSCFilter
   FilterExcl 101,119,En2xSaI,hqFilter,NTSCFilter
-  GUIClickCButton4 61,119,byte[scanlines],byte[cfgscanline],3
-  GUIClickCButton4 101,119,byte[scanlines],byte[cfgscanline],2
+  GUIClickCButton4 61,119,byte[scanlines],byte[scanlines],3
+  GUIClickCButton4 101,119,byte[scanlines],byte[scanlines],2
 %else
   FilterExcl 61,114,En2xSaI,hqFilter,NTSCFilter
   FilterExcl 101,114,En2xSaI,hqFilter,NTSCFilter
-  GUIClickCButton4 61,114,byte[scanlines],byte[cfgscanline],3
-  GUIClickCButton4 101,114,byte[scanlines],byte[cfgscanline],2
+  GUIClickCButton4 61,114,byte[scanlines],byte[scanlines],3
+  GUIClickCButton4 101,114,byte[scanlines],byte[scanlines],2
 %endif
 .nohsline
   xor ebx,ebx                             ; hq filters
@@ -2515,16 +2215,16 @@ DisplayGUIVideoClick:
   jne .checkboxhq
   jmp .nocheckboxhq
 .checkboxhq
-  FilterExcl 115,163,En2xSaI,scanlines,cfgscanline,antienab,cfginterp,NTSCFilter
+  FilterExcl 115,163,En2xSaI,scanlines,scanlines,antienab,antienab,NTSCFilter
   GUIClickCButton 115,163,byte[hqFilter]
 .nocheckboxhq
   xor ebx,ebx                              ; 2xsai and supers
   mov bl,[cvidmode]
   cmp byte[GUI2xVID+ebx],0
   je near .no2xSaI
-  FilterExcl 11,133,hqFilter,scanlines,cfgscanline,antienab,cfginterp,NTSCFilter
-  FilterExcl 11,143,hqFilter,scanlines,cfgscanline,antienab,cfginterp,NTSCFilter
-  FilterExcl 11,153,hqFilter,scanlines,cfgscanline,antienab,cfginterp,NTSCFilter
+  FilterExcl 11,133,hqFilter,scanlines,scanlines,antienab,antienab,NTSCFilter
+  FilterExcl 11,143,hqFilter,scanlines,scanlines,antienab,antienab,NTSCFilter
+  FilterExcl 11,153,hqFilter,scanlines,scanlines,antienab,antienab,NTSCFilter
   GUIClickCButton6 11,133,byte[En2xSaI],1
   GUIClickCButton6 11,143,byte[En2xSaI],2
   GUIClickCButton6 11,153,byte[En2xSaI],3
@@ -2537,27 +2237,27 @@ DisplayGUIVideoClick:
   mov byte[hqFilter],0
   mov byte[NTSCFilter],0
   FilterExcl 11,78,hqFilter,NTSCFilter,En2xSaI
-  GUIClickCButton3 11,78,byte[antienab],byte[cfginterp],1
+  GUIClickCButton3 11,78,byte[antienab],byte[antienab],1
 .nocheckbox1b
   xor ebx,ebx
   mov bl,[cvidmode]
   cmp byte[GUII2VID+ebx],0
   je near .nocheckboxi2
   FilterExcl 11,163,hqFilter,NTSCFilter,En2xSaI
-  GUIClickCButton3 11,163,byte[antienab],byte[cfginterp],1
+  GUIClickCButton3 11,163,byte[antienab],byte[antienab],1
 .nocheckboxi2
 %ifdef __MSDOS__
   xor ebx,ebx                             ; small/fullscreen
   mov bl,[cvidmode]
   cmp byte[GUIFSVID+ebx],0
   je .nocheckbox2b
-  GUIClickCButton3 11,88,byte[ScreenScale],byte[GUIScreenScale],1
+  GUIClickCButton3 11,88,byte[ScreenScale],byte[ScreenScale],1
 .nocheckbox2b
   xor ebx,ebx
   mov bl,[cvidmode]
   cmp byte[GUISSVID+ebx],0
   je .nocheckbox3b
-  GUIClickCButton3 11,98,byte[smallscreenon],byte[GUIsmallscreenon],1
+  GUIClickCButton3 11,98,byte[smallscreenon],byte[smallscreenon],1
 .nocheckbox3b
 %endif
   xor ebx,ebx                             ; hires m7
@@ -2570,7 +2270,7 @@ DisplayGUIVideoClick:
   mov bl,[cvidmode]
   cmp byte[GUINTVID+ebx],0
   je near .nontscfilter
-  FilterExcl 115,173,En2xSaI,hqFilter,scanlines,cfgscanline,antienab,cfginterp,BilinearFilter
+  FilterExcl 115,173,En2xSaI,hqFilter,scanlines,scanlines,antienab,antienab,BilinearFilter
   GUIClickCButtonf 115,173,byte[NTSCFilter],initwinvideo
 .nontscfilter
 %ifdef __UNIXSDL__
@@ -2581,14 +2281,15 @@ DisplayGUIVideoClick:
   FilterExcl 11,163,NTSCFilter
   GUIClickCButton 11,163,byte[BilinearFilter]
 .nocheckbox1bf
-%endif
-  xor ebx,ebx                            ; triple buffs
+%elifdef __MSDOS__
+  xor ebx,ebx                            ; triple buffs/vsyncs
   mov bl,[cvidmode]
   cmp byte[GUITBVID+ebx],0
   je .nocheckboxttb
   GUIClickCButtonT 11,163,byte[Triplebufen],byte[vsyncon]
 .nocheckboxttb
-%ifdef __WIN32__
+  GUIClickCButtonT 115,183,byte[vsyncon],byte[Triplebufen]
+%else
   xor ebx,ebx
   mov bl,[cvidmode]
   cmp byte[GUITBWVID+ebx],0
@@ -2596,12 +2297,8 @@ DisplayGUIVideoClick:
   GUIClickCButtonf 11,123,byte[TripleBufferWin],initDirectDraw
 .notriplebufferwin
   GUIClickCButtonf 115,183,byte[vsyncon],initDirectDraw
-%elifdef __MSDOS__
-  GUIClickCButtonT 115,183,byte[vsyncon],byte[Triplebufen]
 %endif
   GUIClickCButton 11,183,byte[GrayscaleMode]
-  mov al,[vsyncon]
-  mov [cfgvsync],al
 .notfilterstab
 
   cmp dword[GUIVntscTab],1  ; NTSC
@@ -2727,15 +2424,14 @@ DisplayGUISoundClick:
   sub eax,[GUIwinposx+6*4]
   mov edx,[GUImouseposy]
   sub edx,[GUIwinposy+6*4]
-  GUIClickCButtonf 11,21,byte[cfgsoundon],reInitSound
+  GUIClickCButtonf 11,21,byte[soundon],reInitSound
 %ifdef __MSDOS__
-  GUIClickCButton 102,21,byte[cfgforce8b]
+  GUIClickCButton 102,21,byte[Force8b]
 %endif
-  GUIClickCButton 11,30,byte[cfgStereoSound]
+  GUIClickCButton 11,30,byte[StereoSound]
 %ifdef __MSDOS__
   GUIClickCButton 11,39,byte[RaisePitch]
 %endif
-;    GUIClickCButton 11,101,byte[SoundNoiseDis]
   GUIClickCButton 11,111,byte[RevStereo]
   GUIClickCButton 11,121,byte[Surround]
   GUIClickCButton 11,131,byte[SoundBufEn]
@@ -2753,30 +2449,14 @@ DisplayGUISoundClick:
 %ifdef __WIN32__
   GUIClickCButton 11,101,byte[PrimaryBuffer]
 %endif
-  cmp eax,15
-  jl near .nosrate
-  cmp edx,61
-  jl near .nosrate
-  cmp eax,69
-  jg near .nosrate
-  cmp edx,69
-  jg near .nosrate
-  xor eax,eax
-  mov al,[cfgSoundQuality]
+  GUIClickArea 15,61,69,69,.nosrate
+  mov eax,[SoundQuality]
   mov al,[sampratenext+eax]
-  mov [cfgSoundQuality],al
+  mov [SoundQuality],al
 .nosrate
-  cmp eax,15
-  jl near .nomovebar
-  cmp eax,15+100
-  jg near .nomovebar
-  cmp edx,89
-  jl near .nomovebar
-  cmp edx,93
-  jg near .nomovebar
+  GUIClickArea 15,89,115,93,{near .nomovebar}
   sub eax,15
   mov [MusicRelVol],al
-  mov [cfgvolume],al
   mov byte[GUIHold],5
   mov eax,[GUIwinposy+6*4]
   add eax,91
@@ -2806,21 +2486,8 @@ DisplayGUISoundClick:
   ret
 
 SECTION .data
-sampratenext db 1,4,5,6,2,3,0,0,0,0
+sampratenext db 1,4,5,6,2,3,0,0
 SECTION .text
-
-%macro GUIBoxVar 6
-  cmp eax,%1
-  jl %%nope
-  cmp edx,%2
-  jl %%nope
-  cmp eax,%3
-  jg %%nope
-  cmp edx,%4
-  jg %%nope
-  mov dword[%5],%6
-%%nope
-%endmacro
 
 DisplayGUICheatClick2:
   GUISlidebarPostImpl 231,28,238,100,.scrollup,.scrolldown,7,12,GUIcurrentcheatviewloc,GUIcurrentcheatcursloc,NumCheats,GUIBlankVar,1
@@ -3215,39 +2882,6 @@ DisplayGUIAboutClick:
 .eegg
 %endif
   ret
-
-%macro ComboBoxProc 5
-  cmp eax,%1
-  jl %%nope
-  cmp edx,%2
-  jl %%nope
-  cmp eax,%3
-  jg %%nope
-  cmp edx,%4
-  jg %%nope
-  cmp byte[GUINumCombo],42
-  je %%nope
-  xor ebx,ebx
-  mov bl,[GUINumCombo]
-  mov byte[GUIComboData+ebx],%5
-  inc byte[GUINumCombo]
-%%nope
-%endmacro
-
-%macro ComboBoxProcD 4
-  cmp eax,%1
-  jl %%nope
-  cmp edx,%2
-  jl %%nope
-  cmp eax,%3
-  jg %%nope
-  cmp edx,%4
-  jg %%nope
-  cmp byte[GUINumCombo],0
-  je %%nope
-  dec byte[GUINumCombo]
-%%nope
-%endmacro
 
 ; DrawSlideBar 16,192,20,[GUIccombviewloc],[NumCombo],8,61,GUICSStC,13,14
 ;    DrawBorderedBox 16,10,20,190,80,19

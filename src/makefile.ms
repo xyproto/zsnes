@@ -171,7 +171,7 @@ JMAOBJ=${JMADIR}/7zlzma${OE} ${JMADIR}/crc32${OE} ${JMADIR}/iiostrm${OE}\
 	${JMADIR}/inbyte${OE} ${JMADIR}/jma${OE} ${JMADIR}/lzma${OE} ${JMADIR}/lzmadec${OE}\
 	${JMADIR}/winout${OE} ${JMADIR}/zsnesjma${OE}
 
-MAINOBJ=cfgload${OE} endmem${OE} init${OE} initc${OE} uic${OE} patch${OE}\
+MAINOBJ=endmem${OE} init${OE} initc${OE} uic${OE} patch${OE}\
 	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE}\
 	cfg${OE} md${OE}
 
@@ -260,7 +260,6 @@ else
 	 cl /nologo @link.vc ${WINDIR}/zsnes.res /link
 endif
 
-cfgload${OE}: cfgload.c
 cfg${OE}: ${PSR} cfg.psr
 endmem${OE}: endmem.asm macros.mac
 init${OE}: init.asm macros.mac
@@ -271,7 +270,7 @@ ui${OE}: ui.asm macros.mac
 uic${OE}: uic.c asm_call.h ${MMLIBDIR}/mm.h
 vcache${OE}: vcache.asm macros.mac
 version${OE}: version.c
-zloader${OE}: zloader.c
+zloader${OE}: zloader.c cfg${OE}
 zmovie${OE}: zmovie.c asm_call.h gblvars.h numconv.h md${OE}
 zstate${OE}: zstate.c asm_call.h gblvars.h numconv.h
 md${OE}: md.psr ${PSR}
@@ -340,7 +339,7 @@ ${GUIDIR}/gui${OE}: ${GUIDIR}/gui.asm macros.mac ${GUIDIR}/guicheat.inc\
 	${GUIDIR}/guicombo.inc ${GUIDIR}/guikeys.inc ${GUIDIR}/guiload.inc\
 	${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guitools.inc\
 	${GUIDIR}/guiwindp.inc
-${GUIDIR}/guifuncs${OE}: ${GUIDIR}/guifuncs.c md${OE}
+${GUIDIR}/guifuncs${OE}: ${GUIDIR}/guifuncs.c md${OE} cfg${OE}
 ${GUIDIR}/menu${OE}: ${GUIDIR}/menu.asm macros.mac
 
 ${JMADIR}/7zlzma${OE}: ${JMADIR}/7zlzma.cpp ${JMADIR}/7z.h ${JMADIR}/lzmadec.h
@@ -383,7 +382,7 @@ ${VIDEODIR}/mv16tms${OE}: ${VIDEODIR}/mv16tms.asm macros.mac\
 ${VIDEODIR}/newg162${OE}: ${VIDEODIR}/newg162.asm macros.mac\
 	${VIDEODIR}/newg162.mac ${VIDEODIR}/newg16wn.mac ${VIDEODIR}/newgfx16.mac\
 	${VIDEODIR}/vidmacro.mac
-${VIDEODIR}/newfgx${OE}: ${VIDEODIR}/newfgx.asm macros.mac ${VIDEODIR}/newgfx.mac\
+${VIDEODIR}/newgfx${OE}: ${VIDEODIR}/newgfx.asm macros.mac ${VIDEODIR}/newgfx.mac\
 	${VIDEODIR}/newgfx2.mac ${VIDEODIR}/vidmacro.mac
 ${VIDEODIR}/newgfx16${OE}: ${VIDEODIR}/newgfx16.asm macros.mac\
 	${VIDEODIR}/newg162.mac ${VIDEODIR}/newgfx16.mac ${VIDEODIR}/vidmacro.mac

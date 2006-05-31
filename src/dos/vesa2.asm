@@ -31,7 +31,6 @@ SECTION .data
 ; add 0214h video mode
 anticrash times 10 db 0
 
-
 ALIGN32
 NEWSYM vesa2_usbit,     dd 0            ; Unused bit in proper bit location
 NEWSYM vesa2_clbit,     dd 0            ; clear all bit 0's if AND is used
@@ -66,14 +65,8 @@ NEWSYM ExitFromGUI,     db 0
 NEWSYM ErrorPointer,    dd 0
 NEWSYM TripBufAvail,    db 0
 
-
-;NEWSYM dcolortab, times 256 dd 0
-
-
 SECTION .bss
-
-NEWSYM dcolortab, times 256 resd 1
-
+NEWSYM dcolortab, resd 256
 
 SECTION .text
 
@@ -594,12 +587,10 @@ NEWSYM InitVesa2
     sub eax,[ZSNESBase]
     mov [VESAAddr],eax
 
-    xor eax,eax
-    xor ebx,ebx
     xor ecx,ecx
     xor edx,edx
-    mov ax,4f02h
-    mov bx,[vesamode]
+    mov eax,4f02h
+    movzx ebx,word[vesamode]
     int 10h             ; Set the vesa mode
     cmp ax,004fh
     jz .modesetok
@@ -656,11 +647,9 @@ NEWSYM InitVesa2
 
 .selectornowset
 
-    xor ecx,ecx
-    mov cx,[noblocks]
-    shl ecx,6           ; Multiply by 64
-    shl ecx,10          ; And again by 1024
-    sub ecx,1           ; Necessary!!!
+    movzx ecx,word[noblocks]
+    shl ecx,16          ; Multiply by 65536
+    dec ecx             ; Necessary!!!
     mov dx,cx
     shr ecx,16          ; CX:DX size of screen
     mov eax,8

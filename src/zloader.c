@@ -37,33 +37,29 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <unistd.h>
 #endif
 #endif
+#include "psrhead/cfg.h"
 
 #ifdef __WIN32__
 void ImportDirectX();
-
 extern unsigned char KitchenSync, Force60hz;
 #endif
 
-extern unsigned char Palette0, pl1contrl, pl2contrl, MMXSupport, Force8b, V8Mode,
-       ForcePal, GUIClick, MouseDis, MusicRelVol, ScreenScale, SoundQuality,
-       StereoSound, antienab, cvidmode, debugdisble, debugger, enterpress, vsyncon,
-       DisplayS, Triplebufen, DSPDisable, frameskip, gammalevel, guioff,
-       romtype, per2exec, scanlines, soundon, spcon, showallext, autoloadstate,
-       smallscreenon, autoloadmovie, ZMVZClose, ZMVRawDump, HacksDisable;
-
+extern unsigned char gammalevel, romtype, MouseDis, spcon, V8Mode, ForcePal;
+extern unsigned char HacksDisable, DSPDisable, ZMVZClose, ZMVRawDump;
+extern unsigned char autoloadstate, autoloadmovie;
 extern char *STCart2, fname[];
 
-void ConvertJoyMap1(), ConvertJoyMap2(), zstart(), makeextension();
+void zstart(), makeextension();
 
 #define put_line(x)                          \
-if (lines_out == 22)                         \
-{                                            \
-  puts("  -- Press Enter to Continue --");   \
-  getchar();                                 \
-  lines_out = 0;                             \
-}                                            \
-puts(x);                                     \
-lines_out++;
+  if (lines_out == 22)                       \
+  {                                          \
+    puts("  -- Press Enter to Continue --"); \
+    getchar();                               \
+    lines_out = 0;                           \
+  }                                          \
+  puts(x);                                   \
+  lines_out++;
 
 static void display_help()
 {
@@ -72,30 +68,33 @@ static void display_help()
   put_line("Usage : zsnes [-d,-f #, ... ] <filename.sfc>");
   put_line("   Eg : zsnes -s -r 2 game.sfc");
   put_line("");
-  put_line("  -0      Disable Color 0 modification in 8-bit modes");
+#ifdef __MSDOS__
+  put_line("  -0      Disable color 0 modification in 8-bit modes");
+#endif
   put_line("  -1 #/-2 #   Select Player 1/2 Input :");
-  put_line("                0 = None       1 = Keyboard   2 = Joystick   3 = Gamepad");
-  put_line("                4 = 4Button    5 = 6Button    6 = Sidewinder   ");
-  put_line("  -3      Enable triple buffering (disables vsync)");
+#ifdef __MSDOS__
+  put_line("                0 = None       1 = Keyboard   2 = 2-buttons   3 = 4-buttons");
+  put_line("                4 = 6-buttons  5 = 8-buttons  6 = Sidewinder");
+#else
+  put_line("                0 = None       1 = Keyboard/Gamepad");
+#endif
 #ifdef __WIN32__
+  put_line("  -3      Enable triple buffering (replaces vsync)");
   put_line("  -6      Force 60Hz refresh rate");
 #endif
+#ifdef __MSDOS__
   put_line("  -8      Force 8-bit sound");
   put_line("  -c      Enable full/wide screen (when available)");
   put_line("  -cc     Enable small screen (when available)");
-#ifdef __MSDOS__
   put_line("  -d      Start with debugger enabled");
 #endif
   put_line("  -dd     Disable sound DSP emulation");
-  put_line("  -dh     Disable hacks");
-#ifdef __MSDOS__
-  put_line("  -e      Skip enter key press at the beginning");
-#endif
-  put_line("  -f #    Enable fixed frame rate [0...9]");
-  put_line("  -g #    Specify gamma correction value [0...15]");
+  put_line("  -dh     Disable ROM-specific hacks");
+  put_line("  -f #    Enable fixed frame rate [0..9]");
+  put_line("  -g #    Specify gamma correction value [0..15]");
   put_line("  -h      Force HiROM");
-  put_line("  -j      Disable Mouse (Automatically turns off right mouse click)");
-  put_line("  -k #    Set Volume Level (0 .. 100)");
+  put_line("  -j      Disable mouse (Automatically turns off right mouse click)");
+  put_line("  -k #    Set volume level (0 .. 100)");
 #ifdef __WIN32__
   put_line("  -ks     Enable the KitchenSync");
 #endif
@@ -104,76 +103,80 @@ static void display_help()
   put_line("  -mc     Exit ZSNES when closing a movie (use with -zm)");
   put_line("  -md     Dump raw video (use with -zm)");
   put_line("  -n #    Enable scanlines (when available)");
-  put_line("          Where # is: 1 = full, 2 = 25%, 3 = 50%");
-  put_line("  -om     Enable MMX support (when available)");
+  put_line("             1 = Full, 2 = 25%, 3 = 50%");
+  put_line("  -o      Disable MMX support");
   put_line("  -p #    Percentage of instructions to execute [50..150]");
-  put_line("  -r #    Set Sampling Sound Blaster Sampling Rate & Bit :");
+  put_line("  -r #    Set sound sampling rate:");
   put_line("             0 = 8000Hz  1 = 11025Hz 2 = 22050Hz 3 = 44100Hz");
   put_line("             4 = 16000Hz 5 = 32000Hz 6 = 48000Hz");
   put_line("  -s      Enable SPC700/DSP emulation (Sound)");
-  put_line("  -sa     Show all extensions in GUI (*.*)");
+  put_line("  -sa     Show all files in GUI (*.*)");
+#ifdef __MSDOS__
+  put_line("  -sp     Display sound information");
+#endif
   put_line("  -t      Force NTSC timing");
   put_line("  -u      Force PAL timing");
-  put_line("  -v #    Select Video Mode :");
+  put_line("  -v #    Select video mode :");
 #ifdef __WIN32__
 #define VIDEO_MODE_COUNT 40
-  put_line("          0 = 256x224   R WIN       1 = 256x224   R FULL");
-  put_line("          2 = 512x448   R WIN       3 = 512x448   DR WIN");
-  put_line("          4 = 640x480   S WIN       5 = 640x480   DS WIN");
-  put_line("          6 = 640x480   DR FULL     7 = 640x480   DS FULL");
-  put_line("          8 = 640x480   S FULL      9 = 768x672   R WIN");
-  put_line("         10 = 768x672   DR WIN     11 = 800x600   S WIN");
-  put_line("         12 = 800x600   DS WIN     13 = 800x600   S FULL");
-  put_line("         14 = 800x600   DR FULL    15 = 800x600   DS FULL");
-  put_line("         16 = 1024x768  S WIN      17 = 1024x768  DS WIN");
-  put_line("         18 = 1024x768  S FULL     19 = 1024x768  DR FULL");
-  put_line("         20 = 1024x768  DS FULL    21 = 1024x896  R WIN");
-  put_line("         22 = 1024x896  DR WIN     23 = 1280x960  S WIN");
-  put_line("         24 = 1280x960  DS WIN     25 = 1280x960  S FULL");
-  put_line("         26 = 1280x960  DR FULL    27 = 1280x960  DS FULL");
-  put_line("         28 = 1280x1024 S WIN      29 = 1280x1024 DS WIN");
-  put_line("         30 = 1280x1024 S FULL     31 = 1280x1024 DR FULL");
-  put_line("         32 = 1280x1024 DS FULL    33 = 1600x1200 S WIN");
-  put_line("         34 = 1600x1200 DS WIN     35 = 1600x1200 DR FULL");
-  put_line("         36 = 1600x1200 DS FULL    37 = CUSTOM    D WIN");
-  put_line("         38 = CUSTOM    DS FULL    39 = CUSTOM      WIN");
-  put_line("         40 = CUSTOM    S FULL");
+  put_line("             0 = 256x224   R WIN       1 = 256x224   R FULL");
+  put_line("             2 = 512x448   R WIN       3 = 512x448   DR WIN");
+  put_line("             4 = 640x480   S WIN       5 = 640x480   DS WIN");
+  put_line("             6 = 640x480   DR FULL     7 = 640x480   DS FULL");
+  put_line("             8 = 640x480   S FULL      9 = 768x672   R WIN");
+  put_line("            10 = 768x672   DR WIN     11 = 800x600   S WIN");
+  put_line("            12 = 800x600   DS WIN     13 = 800x600   S FULL");
+  put_line("            14 = 800x600   DR FULL    15 = 800x600   DS FULL");
+  put_line("            16 = 1024x768  S WIN      17 = 1024x768  DS WIN");
+  put_line("            18 = 1024x768  S FULL     19 = 1024x768  DR FULL");
+  put_line("            20 = 1024x768  DS FULL    21 = 1024x896  R WIN");
+  put_line("            22 = 1024x896  DR WIN     23 = 1280x960  S WIN");
+  put_line("            24 = 1280x960  DS WIN     25 = 1280x960  S FULL");
+  put_line("            26 = 1280x960  DR FULL    27 = 1280x960  DS FULL");
+  put_line("            28 = 1280x1024 S WIN      29 = 1280x1024 DS WIN");
+  put_line("            30 = 1280x1024 S FULL     31 = 1280x1024 DR FULL");
+  put_line("            32 = 1280x1024 DS FULL    33 = 1600x1200 S WIN");
+  put_line("            34 = 1600x1200 DS WIN     35 = 1600x1200 DR FULL");
+  put_line("            36 = 1600x1200 DS FULL    37 = CUSTOM    D WIN");
+  put_line("            38 = CUSTOM    DS FULL    39 = CUSTOM      WIN");
+  put_line("            40 = CUSTOM    S FULL");
 #endif
 #ifdef __UNIXSDL__
-  put_line("          0 = 256x224   R WIN        1 = 256x224   R FULL");
-  put_line("          2 = 512x448   DR WIN       3 = 512x448   DR FULL");
-  put_line("          4 = 640x480   DR FULL      5 = 800x600   DR FULL");
+  put_line("             0 = 256x224   R WIN        1 = 256x224   R FULL");
+  put_line("             2 = 512x448   DR WIN       3 = 512x448   DR FULL");
+  put_line("             4 = 640x480   DR FULL      5 = 800x600   DR FULL");
 #ifndef __OPENGL__
 #define VIDEO_MODE_COUNT 5
 #else
 #define VIDEO_MODE_COUNT 23
-  put_line("          6 = 256x224   OR WIN       7 = 512x448   ODR WIN");
-  put_line("          8 = 640x480   ODS FULL     9 = 640x480   ODS WIN");
-  put_line("         10 = 640x576   ODR WIN     11 = 768x672   ODR WIN");
-  put_line("         12 = 800x600   ODS FULL    13 = 800x600   ODS WIN");
-  put_line("         14 = 896x784   ODR WIN     15 = 1024x768  ODS FULL");
-  put_line("         16 = 1024x768  ODS WIN     17 = 1024x896  ODR WIN");
-  put_line("         18 = 1280x960  ODS FULL    19 = 1280x1024 ODR FULL");
-  put_line("         20 = 1600x1200 ODS FULL    21 = VARIABLE  ODR WIN");
-  put_line("         22 = VARIABLE  ODS WIN     23 = CUSTOM    OD  FULL");
+  put_line("             6 = 256x224   OR WIN       7 = 512x448   ODR WIN");
+  put_line("             8 = 640x480   ODS FULL     9 = 640x480   ODS WIN");
+  put_line("            10 = 640x576   ODR WIN     11 = 768x672   ODR WIN");
+  put_line("            12 = 800x600   ODS FULL    13 = 800x600   ODS WIN");
+  put_line("            14 = 896x784   ODR WIN     15 = 1024x768  ODS FULL");
+  put_line("            16 = 1024x768  ODS WIN     17 = 1024x896  ODR WIN");
+  put_line("            18 = 1280x960  ODS FULL    19 = 1280x1024 ODR FULL");
+  put_line("            20 = 1600x1200 ODS FULL    21 = VARIABLE  ODR WIN");
+  put_line("            22 = VARIABLE  ODS WIN     23 = CUSTOM    OD  FULL");
 #endif
 #endif
 #ifdef __MSDOS__
 #define VIDEO_MODE_COUNT 18
-  put_line("          0 = 256x224x8B  (MODEQ)  1 = 256x240x8B (MODEQ)");
-  put_line("          2 = 256x256x8B  (MODEQ)  3 = 320x224x8B (MODEX)");
-  put_line("          4 = 320x240x8B  (MODEX)  5 = 320x256x8B (MODEX)");
-  put_line("          6 = 640x480x16B (VESA1)  7 = 320x240x8B (VESA2)");
-  put_line("          8 = 320x240x16B (VESA2)  9 = 320x480x8B (VESA2)");
-  put_line("         10 = 320x480x16B (VESA2) 11 = 512x384x8B (VESA2)");
-  put_line("         12 = 512x384x16B (VESA2) 13 = 640x400x8B (VESA2)");
-  put_line("         14 = 640x400x16B (VESA2) 15 = 640x480x8B (VESA2)");
-  put_line("         16 = 640x480x16B (VESA2) 17 = 800x600x8B (VESA2)");
-  put_line("         18 = 800x600x16B (VESA2)");
+  put_line("             0 = 256x224x8B  (MODEQ)  1 = 256x240x8B (MODEQ)");
+  put_line("             2 = 256x256x8B  (MODEQ)  3 = 320x224x8B (MODEX)");
+  put_line("             4 = 320x240x8B  (MODEX)  5 = 320x256x8B (MODEX)");
+  put_line("             6 = 640x480x16B (VESA1)  7 = 320x240x8B (VESA2)");
+  put_line("             8 = 320x240x16B (VESA2)  9 = 320x480x8B (VESA2)");
+  put_line("            10 = 320x480x16B (VESA2) 11 = 512x384x8B (VESA2)");
+  put_line("            12 = 512x384x16B (VESA2) 13 = 640x400x8B (VESA2)");
+  put_line("            14 = 640x400x16B (VESA2) 15 = 640x480x8B (VESA2)");
+  put_line("            16 = 640x480x16B (VESA2) 17 = 800x600x8B (VESA2)");
+  put_line("            18 = 800x600x16B (VESA2)");
 #endif
+  put_line("  -v8     Grayscale mode");
   put_line("  -w      Enable vsync (disables triple buffering)");
-  put_line("  -y      Enable Anti-Aliasing (video interpolation)");
-  put_line("  -z      Disable Stereo Sound");
+  put_line("  -y      Enable anti-aliasing (video interpolation)");
+  put_line("  -z      Disable stereo sound");
   put_line("  -zm #   Auto load specified movie slot on startup ");
   put_line("  -zs #   Auto load specified save state slot on startup ");
   put_line("");
@@ -204,6 +207,161 @@ static void display_help()
 */
 
   exit(1);
+}
+
+#define ConvertJoyMapHelp(a,b) if (b && (a == b)) { b += 0x81; }
+
+void ConvertJoyMap1()
+{
+  unsigned int bl;
+  // Convert if 2,4,6, or sidewinder
+  if (pl1contrl == 2)
+  {
+    pl1Bk = 0x83;
+    pl1Yk = 0x82;
+    pl1upk = 0xCC;
+    pl1downk = 0xCD;
+    pl1leftk = 0xCE;
+    pl1rightk = 0xCF;
+  }
+
+  bl = (pl1contrl == 3 || pl1contrl == 4) ? 4 : 0;
+  if (pl1contrl == 5) { bl = 6; }
+
+  if (bl)
+  {
+    // Convert button data
+    pl1upk = 0xCC;
+    pl1downk = 0xCD;
+    pl1leftk = 0xCE;
+    pl1rightk = 0xCF;
+    ConvertJoyMapHelp(bl, pl1startk);
+    ConvertJoyMapHelp(bl, pl1selk);
+    ConvertJoyMapHelp(bl, pl1Yk);
+    ConvertJoyMapHelp(bl, pl1Xk);
+    ConvertJoyMapHelp(bl, pl1Bk);
+    ConvertJoyMapHelp(bl, pl1Ak);
+    ConvertJoyMapHelp(bl, pl1Lk);
+    ConvertJoyMapHelp(bl, pl1Rk);
+  }
+
+  if (pl1contrl == 6)
+  {
+    pl1upk = 0xD4;
+    pl1downk = 0xD5;
+    pl1leftk = 0xD6;
+    pl1rightk = 0xD7;
+    pl1startk = 0xC8;
+    pl1selk = 0xC9;
+    pl1Ak = 0x89;
+    pl1Bk = 0x88;
+    pl1Xk = 0x8C;
+    pl1Yk = 0x8B;
+    pl1Lk = 0x8E;
+    pl1Rk = 0x8F;
+  }
+  return;
+}
+
+void ConvertJoyMap2()
+{
+  unsigned int bl;
+  //If pl1contrl=2 and pl2contrl=2, then set pl2 buttons to 3 & 4
+  if (pl2contrl == 2)
+  {
+    if (pl1contrl != 2)
+    {
+      pl2Bk = 0x83;
+      pl2Yk = 0x82;
+      pl2upk = 0xCC;
+      pl2downk = 0xCD;
+      pl2leftk = 0xCE;
+      pl2rightk = 0xCF;
+    }
+    else
+    {
+      pl2Bk = 0x85;
+      pl2Yk = 0x84;
+      pl2upk = 0xE8;
+      pl2downk = 0xE9;
+      pl2leftk = 0xEA;
+      pl2rightk = 0xEB;
+    }
+  }
+
+  bl = (pl2contrl == 3 || pl2contrl == 4) ? 4 : 0;
+  if (pl2contrl == 5) { bl = 6; }
+
+  if (bl)
+  {
+    //Convert button data
+    pl2upk = 0xCC;
+    pl2downk = 0xCD;
+    pl2leftk = 0xCE;
+    pl2rightk = 0xCF;
+    ConvertJoyMapHelp(bl, pl2startk);
+    ConvertJoyMapHelp(bl, pl2selk);
+    ConvertJoyMapHelp(bl, pl2Yk);
+    ConvertJoyMapHelp(bl, pl2Xk);
+    ConvertJoyMapHelp(bl, pl2Bk);
+    ConvertJoyMapHelp(bl, pl2Ak);
+    ConvertJoyMapHelp(bl, pl2Lk);
+    ConvertJoyMapHelp(bl, pl2Rk);
+  }
+
+  //If both sidewinder, set pl2 buttons to sw2
+  if (pl2contrl == 6)
+  {
+    if (pl1contrl != 6)
+    {
+      pl2upk = 0xD4;
+      pl2downk = 0xD5;
+      pl2leftk = 0xD6;
+      pl2rightk = 0xD7;
+      pl2startk = 0xC8;
+      pl2selk = 0xC9;
+      pl2Ak = 0x89;
+      pl2Bk = 0x88;
+      pl2Xk = 0x8C;
+      pl2Yk = 0x8B;
+      pl2Lk = 0x8E;
+      pl2Rk = 0x8F;
+    }
+    else
+    {
+      pl2contrl = 7;
+      pl2upk = 0xDC;
+      pl2downk = 0xDD;
+      pl2leftk = 0xDE;
+      pl2rightk = 0xDF;
+      pl2startk = 0xD0;
+      pl2selk = 0xD1;
+      pl2Ak = 0x91;
+      pl2Bk = 0x90;
+      pl2Xk = 0x94;
+      pl2Yk = 0x93;
+      pl2Lk = 0x96;
+      pl2Rk = 0x97;
+    }
+  }
+  return;
+}
+
+unsigned char SRAMChdirFail = 0;
+
+void SRAMChdir()
+{
+  SRAMChdirFail = chdir(SRAMDir);
+}
+
+void SRAMDirCurDir()
+{
+  getcwd(SRAMDir,1024);
+}
+
+void UpChdir()
+{
+  chdir("..");
 }
 
 static size_t zatoi(const char *str)
@@ -286,9 +444,11 @@ static void handle_params(int argc, char *argv[])
       {
         switch (tolower(argv[i][1]))
         {
-          case '0': //Palette 0 disable
+          #ifdef __MSDOS__
+          case '0': //Palette color 0 disable
             Palette0 = 1;
             break;
+          #endif
 
           case '1': //Player 1 Input
             i++;
@@ -310,17 +470,18 @@ static void handle_params(int argc, char *argv[])
             ConvertJoyMap2();
             break;
 
+          #ifdef __WIN32__
           case '3': //Enable triple buffering
             vsyncon = 0;
             Triplebufen = 1;
             break;
 
-          #ifdef __WIN32__
           case '6': //Force 60Hz
             Force60hz = 1;
             break;
           #endif
 
+          #ifdef __MSDOS__
           case '8': //Force 8-bit sound
             Force8b = 1;
             break;
@@ -333,10 +494,7 @@ static void handle_params(int argc, char *argv[])
             debugger = 1;
             debugdisble = 0;
             break;
-
-          case 'e': //Skip enter key press at the beginning
-            enterpress = 1;
-            break;
+          #endif
 
           case 'f': //Enable fixed frame rate
             i++;
@@ -360,12 +518,12 @@ static void handle_params(int argc, char *argv[])
             romtype = 2;
             break;
 
-          case 'j': //Disable Mouse
+          case 'j': //Disable mouse
             GUIClick = 0;
             MouseDis = 1;
             break;
 
-          case 'k': //Set Volume Level
+          case 'k': //Set volume level
             i++;
             if ((MusicRelVol = zatoi(argv[i])) > 100)
             {
@@ -378,7 +536,7 @@ static void handle_params(int argc, char *argv[])
             romtype = 1;
             break;
 
-          case 'm': //Disables GUI
+          case 'm': //Disable GUI
             guioff = 1;
             break;
 
@@ -391,7 +549,7 @@ static void handle_params(int argc, char *argv[])
             }
             break;
 
-          case 'o': //Enable MMX support
+          case 'o': //Disable MMX support
             MMXSupport = 0;
             break;
 
@@ -423,11 +581,11 @@ static void handle_params(int argc, char *argv[])
             ForcePal = 1;
             break;
 
-          case 'u': //Force Pal
+          case 'u': //Force PAL
             ForcePal = 2;
             break;
 
-          case 'v': //Select Video Mode
+          case 'v': //Select video mode
             i++;
             if ((cvidmode = zatoi(argv[i])) > VIDEO_MODE_COUNT)
             {
@@ -454,17 +612,19 @@ static void handle_params(int argc, char *argv[])
             break;
         }
       }
-      else if (!argv[i][3]) //- followed by a two letters
+      else if (!argv[i][3]) //- followed by two letters
       {
-        if (tolower(argv[i][1]) == 'c' && tolower(argv[i][2]) == 'c') //Enable small screen
-        {
-          smallscreenon = 1;
-        }
-
-        else if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 'd') //Disable sound DSP emulation
+        if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 'd') //Disable sound DSP emulation
         {
           DSPDisable = 1;
         }
+
+        #ifdef __MSDOS__
+        else if (tolower(argv[i][1]) == 'c' && tolower(argv[i][2]) == 'c') //Enable small screen
+        {
+          smallscreenon = 1;
+        }
+        #endif
 
         else if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 'h') //Disable hacks
         {
@@ -488,15 +648,12 @@ static void handle_params(int argc, char *argv[])
           ZMVRawDump = 1;
         }
 
-        else if (tolower(argv[i][1]) == 'o' && tolower(argv[i][2]) == 'm') //Enable MMX support
-        {
-          MMXSupport = 1;
-        }
-
+        #ifdef __MSDOS__
         else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'p') //Display sound information
         {
           DisplayS = 1;
         }
+        #endif
 
         else if (tolower(argv[i][1]) == 's' && tolower(argv[i][2]) == 'a') //Show all extensions in GUI
         {
@@ -511,9 +668,9 @@ static void handle_params(int argc, char *argv[])
         else if (tolower(argv[i][1]) == 'z' && argv[i][2] == 's') //Autoload save state
         {
           i++;
-          if ((autoloadstate = zatoi(argv[i])+1) > 10)
+          if ((autoloadstate = zatoi(argv[i])+1) > 100)
           {
-            puts("State load position must be a value of 0 to 9!");
+            puts("State load position must be a value of 0 to 99!");
             exit(1);
           }
         }

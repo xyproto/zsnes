@@ -21,25 +21,23 @@
 %include "macros.mac"
 
 EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,ZFileSystemInit,getcmdline
-EXTSYM GUIRestoreVars,getcfg,obtaindir,ConvertJoyMap,tparms,preparedir,V8Mode
-EXTSYM getblaster,Force8b,SBHDMA,ccmdline,InitDir,InitDrive,DOScreatenewcfg
-EXTSYM ExecGUISaveVars,allocptr,ZOpenFile,ZOpenMode,CurrentHandle,ZFileSeek
-EXTSYM ZOpenFileName,ZFileSeekMode,ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle
-EXTSYM ZFileWriteSize,ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize
-EXTSYM ZFileReadBlock,ZFileRead,ZFileDelFName,ZFileDelete,ZCloseFileHandle
-EXTSYM ZCloseFile,ZFileTellHandle,ZFileTell,GetTime,GetDate,ZFFTimeFName,ZFTime
-EXTSYM ZFDate,ZFileGetFTime,ZFileCHDir,CHPath
-EXTSYM ZFileGetDir,DirName,pressed,DTALoc,DTALocPos,ZFileFindATTRIB
-EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,oldhand9s,oldhand9o,interror
-EXTSYM oldhand8s,oldhand8o,oldhandSBs,oldhandSBo,NoSoundReinit,soundon
-EXTSYM DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB,handler8h
-EXTSYM handler9h,init60hz,Interror,init18_2hz,DeInitSPC,GUIinit36_4hz
+EXTSYM GUIRestoreVars,obtaindir,tparms,preparedir,V8Mode,getblaster,Force8b
+EXTSYM SBHDMA,ccmdline,InitDir,InitDrive,allocptr,ZOpenFile,ZOpenMode
+EXTSYM CurrentHandle,ZFileSeek,ZOpenFileName,ZFileSeekMode,ZFileSeekPos
+EXTSYM ZFileSeekHandle,ZFileWriteHandle,ZFileWriteSize,ZFileWriteBlock
+EXTSYM ZFileWrite,ZFileReadHandle,ZFileReadSize,ZFileReadBlock,ZFileRead
+EXTSYM ZFileDelFName,ZFileDelete,ZCloseFileHandle,ZCloseFile,ZFileTellHandle
+EXTSYM ZFileTell,GetTime,GetDate,ZFFTimeFName,ZFTime,ZFDate,ZFileGetFTime
+EXTSYM ZFileCHDir,CHPath,ZFileGetDir,DirName,pressed,DTALoc,DTALocPos
+EXTSYM ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
+EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
+EXTSYM NoSoundReinit,soundon,DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB
+EXTSYM handler8h,handler9h,init60hz,Interror,init18_2hz,DeInitSPC,GUIinit36_4hz
 EXTSYM GUIoldhand9s,GUIoldhand9o,GUIoldhand8s,GUIoldhand8o,GUIhandler9h
 EXTSYM GUIhandler8h,GUIinit18_2hz,dosmakepal,doschangepal,dosinitvideo
-EXTSYM DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB
-EXTSYM DOSClearScreen,DosUpdateDevices,DOSJoyRead,pl1contrl,pl2contrl,pl3contrl
-EXTSYM pl4contrl,pl5contrl
-EXTSYM GrayscaleMode
+EXTSYM DosDrawScreen,cvidmode,vidbuffer,GUICPC,DosDrawScreenB,DOSClearScreen
+EXTSYM DosUpdateDevices,DOSJoyRead,pl1contrl,pl2contrl,pl3contrl,pl4contrl
+EXTSYM pl5contrl,GrayscaleMode
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
@@ -112,9 +110,7 @@ NEWSYM SystemInit
     pushad
     call GUIRestoreVars                 ; Load GUI stuff
     popad
-    call getcfg                         ; Load cfg stuff
     call obtaindir                      ; Get Save/Init Directories
-    call ConvertJoyMap                  ; Mini joystick init
     call ccmdline
     call tparms
     call preparedir
@@ -124,18 +120,6 @@ NEWSYM SystemInit
     mov byte[SBHDMA],0
 .noforce8b
     pop es
-    ret
-
-; Configuration save re-routing functions.  You can comment these out
-;   for debugging purposes or change it if you're using a different
-;   configuration format
-NEWSYM createnewcfg
-    call DOScreatenewcfg
-    ret
-NEWSYM GUISaveVars
-    pushad
-    call ExecGUISaveVars
-    popad
     ret
 
 ; Allocate memory - see allocptr in ui.asm for details on what to allocate
@@ -878,6 +862,7 @@ NEWSYM saveselectpal
 ; ** init video mode functions **
 NEWSYM initvideo  ; Returns 1 in videotroub if trouble occurs
     jmp dosinitvideo
+
 NEWSYM deinitvideo
     mov al,[previdmode]
     mov ah,0
@@ -887,11 +872,11 @@ NEWSYM deinitvideo
 ; ** copy video mode functions **
 NEWSYM DrawScreen               ; In-game screen render w/ triple buffer check
    jmp DosDrawScreen
+
 NEWSYM vidpastecopyscr       ; GUI screen render
 ;   jmp dosvidpastecopyscr
    pushad
-   xor eax,eax
-   mov al,[cvidmode]
+   movzx eax,byte[cvidmode]
    cmp byte[GUI16VID+eax],1
    jne .no16bconv
    mov eax,[vidbuffer]
@@ -900,8 +885,7 @@ NEWSYM vidpastecopyscr       ; GUI screen render
    sub ecx,288
    dec edx
 .loop
-   xor ebx,ebx
-   mov bl,[eax+edx]
+   movzx ebx,byte[eax+edx]
    mov bx,[GUICPC+ebx*2]
    mov [eax+edx*2],bx
    dec edx

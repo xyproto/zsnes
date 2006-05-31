@@ -1297,19 +1297,42 @@ SECTION .text
   GUIOuttextwin2 3,%1+2,%2+1,GUIGameDisplayKy
 %endmacro
 
-%macro GUIInputDispKey 2
-  mov eax,[edi]
+%macro GUIInputDispAll 1
+  GUIInputDispKey 45,105,%1upk    ; Up
+  GUIInputDispKey 45,115,%1downk  ; Down
+  GUIInputDispKey 45,125,%1leftk  ; Left
+  GUIInputDispKey 45,135,%1rightk ; Right
+  GUIInputDispKey 45,145,%1startk ; Start
+  GUIInputDispKey 45,155,%1selk   ; Select
+  GUIInputDispKey 85,105,%1Ak     ; A
+  GUIInputDispKey 85,115,%1Bk     ; B
+  GUIInputDispKey 85,125,%1Xk     ; X
+  GUIInputDispKey 85,135,%1Yk     ; Y
+  GUIInputDispKey 85,145,%1Lk     ; L
+  GUIInputDispKey 85,155,%1Rk     ; R
+
+  GUIInputDispKey 125,105,%1Xtk   ; X Turbo
+  GUIInputDispKey 125,115,%1Ytk   ; Y Turbo
+  GUIInputDispKey 125,125,%1Ltk   ; L Turbo
+  GUIInputDispKey 165,105,%1Atk   ; A Turbo
+  GUIInputDispKey 165,115,%1Btk   ; B Turbo
+  GUIInputDispKey 165,125,%1Rtk   ; R Turbo
+
+  GUIInputDispKey 125,145,%1DLk   ; Down-Left
+  GUIInputDispKey 125,155,%1DRk   ; Down-Right
+  GUIInputDispKey 165,145,%1ULk   ; Up-Left
+  GUIInputDispKey 165,155,%1URk   ; Up-Right
+%endmacro
+
+%macro GUIInputDispKey 3
+  mov eax,[%3]
   mov [GUIInputTextE],eax
-  push edi
   DGOptnsDrawBox2 %1,%2,[GUIInputTextE]
-  pop edi
-  add edi,4
 %endmacro
 
 DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignments
 
   GUIDrawWindowBox 3,GUIInputDisp
-  xor eax,eax
   mov eax,[GUIInputTabs]
   dec al
   mov [cplayernum],al
@@ -1317,8 +1340,7 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
   GUIDrawTabs GUIInputTabs
 
   GUIDisplayTextY 3,6,26,GUIInputTextA
-  xor eax,eax
-  mov al,[cplayernum]
+  movzx eax,byte[cplayernum]
   mov ebx,[GUIInputRefP+eax*4]
   mov al,[ebx]
   mov al,[GUIInputRefB+eax]
@@ -1363,10 +1385,33 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
   GUIDisplayText 3,20,167,GUIInputTextE4
 
   mov dword[GUITemp],GUIIconDataCheckBoxUC              ; Checkbox
-  xor eax,eax
-  mov al,[cplayernum]
-  cmp byte[pl1p209+eax],0
+  cmp byte[cplayernum],0
+  jne .notp1
+  cmp byte[pl1p209],0
   je .nocheckbox2
+  jmp .checkbox2
+.notp1
+  cmp byte[cplayernum],1
+  jne .notp2
+  cmp byte[pl2p209],0
+  je .nocheckbox2
+  jmp .checkbox2
+.notp2
+  cmp byte[cplayernum],2
+  jne .notp3
+  cmp byte[pl3p209],0
+  je .nocheckbox2
+  jmp .checkbox2
+.notp3
+  cmp byte[cplayernum],3
+  jne .notp4
+  cmp byte[pl4p209],0
+  je .nocheckbox2
+  jmp .checkbox2
+.notp4
+  cmp byte[pl5p209],0
+  je .nocheckbox2
+.checkbox2
   mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox2
   GUIDisplayIconWin 3,5,162,[GUITemp]
@@ -1422,99 +1467,27 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
   sub byte[GUIWincoladd],3
 .noholdb2
 
-  mov edi,pl1selk                        ; Hotkey Boxes
+ ; Hotkey Boxes
+  cmp byte[cplayernum],0
+  jne near .notpl1
+  GUIInputDispAll pl1
+.notpl1
   cmp byte[cplayernum],1
-  jne .nopl2
-  mov edi,pl2selk
-.nopl2
+  jne near .notpl2
+  GUIInputDispAll pl2
+.notpl2
   cmp byte[cplayernum],2
-  jne .nopl3
-  mov edi,pl3selk
-.nopl3
+  jne near .notpl3
+  GUIInputDispAll pl3
+.notpl3
   cmp byte[cplayernum],3
-  jne .nopl4
-  mov edi,pl4selk
-.nopl4
+  jne near .notpl4
+  GUIInputDispAll pl4
+.notpl4
   cmp byte[cplayernum],4
-  jne .nopl5
-  mov edi,pl5selk
-.nopl5
-  GUIInputDispKey 45,155      ; Select
-  GUIInputDispKey 45,145      ; Start
-  GUIInputDispKey 45,105      ; Up
-  GUIInputDispKey 45,115      ; Down
-  GUIInputDispKey 45,125      ; Left
-  GUIInputDispKey 45,135      ; Right
-  GUIInputDispKey 85,125      ; X
-  GUIInputDispKey 85,105      ; A
-  GUIInputDispKey 85,145      ; L
-  GUIInputDispKey 85,135      ; Y
-  GUIInputDispKey 85,115      ; B
-  GUIInputDispKey 85,155      ; R
-
-  mov edi,pl1Atk
-  cmp byte[cplayernum],1
-  jne .nopl2t
-  mov edi,pl2Atk
-.nopl2t
-  cmp byte[cplayernum],2
-  jne .nopl3t
-  mov edi,pl3Atk
-.nopl3t
-  cmp byte[cplayernum],3
-  jne .nopl4t
-  mov edi,pl4Atk
-.nopl4t
-  cmp byte[cplayernum],4
-  jne .nopl5t
-  mov edi,pl5Atk
-.nopl5t
-  GUIInputDispKey 165,105      ; A Turbo
-  GUIInputDispKey 165,115      ; B Turbo
-  GUIInputDispKey 125,105      ; X Turbo
-  GUIInputDispKey 125,115      ; Y Turbo
-
-  mov edi,pl1Ltk
-  cmp byte[cplayernum],1
-  jne .nopl2tl
-  mov edi,pl2Ltk
-.nopl2tl
-  cmp byte[cplayernum],2
-  jne .nopl3tl
-  mov edi,pl3Ltk
-.nopl3tl
-  cmp byte[cplayernum],3
-  jne .nopl4tl
-  mov edi,pl4Ltk
-.nopl4tl
-  cmp byte[cplayernum],4
-  jne .nopl5tl
-  mov edi,pl5Ltk
-.nopl5tl
-  GUIInputDispKey 125,125      ; L Turbo
-  GUIInputDispKey 165,125      ; R Turbo
-
-  mov edi,pl1ULk
-  cmp byte[cplayernum],1
-  jne .nopl2tb
-  mov edi,pl2ULk
-.nopl2tb
-  cmp byte[cplayernum],2
-  jne .nopl3tb
-  mov edi,pl3ULk
-.nopl3tb
-  cmp byte[cplayernum],3
-  jne .nopl4tb
-  mov edi,pl4ULk
-.nopl4tb
-  cmp byte[cplayernum],4
-  jne .nopl5tb
-  mov edi,pl5ULk
-.nopl5tb
-  GUIInputDispKey 165,145      ; Up-Left
-  GUIInputDispKey 165,155      ; Up-Right
-  GUIInputDispKey 125,145      ; Down-Left
-  GUIInputDispKey 125,155      ; Down-Right
+  jne near .notpl5
+  GUIInputDispAll pl5
+.notpl5
 
   DGOptnsBorderBox 3,44,104    ; Box borders, keep them at bottom
   DGOptnsBorderBox 3,44,114
@@ -1528,16 +1501,16 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
   DGOptnsBorderBox 3,84,134
   DGOptnsBorderBox 3,84,144
   DGOptnsBorderBox 3,84,154
-  DGOptnsBorderBox 3,164,104
-  DGOptnsBorderBox 3,164,114
   DGOptnsBorderBox 3,124,104
   DGOptnsBorderBox 3,124,114
   DGOptnsBorderBox 3,124,124
+  DGOptnsBorderBox 3,124,144
+  DGOptnsBorderBox 3,124,154
+  DGOptnsBorderBox 3,164,104
+  DGOptnsBorderBox 3,164,114
   DGOptnsBorderBox 3,164,124
   DGOptnsBorderBox 3,164,144
   DGOptnsBorderBox 3,164,154
-  DGOptnsBorderBox 3,124,144
-  DGOptnsBorderBox 3,124,154
   ret
 
 SECTION .data
@@ -1605,15 +1578,14 @@ DisplayGUIOption:       ; Emu Options
   GUIDisplayCheckboxu 4,11,70,FPSAtStart,GUIOptionText7,0
   GUIDisplayCheckboxu 4,11,80,Turbo30hz,GUIOptionText8,2
   GUIDisplayCheckboxu 4,11,90,TimerEnable,GUIOptionText9,12
-  GUIDisplayCheckboxu 4,130,90,TwelveHourClock,GUIOptionText9a,0
-  GUIDisplayCheckboxu 4,11,100,OldGfxMode2,GUIOptionTextA,0
-  GUIDisplayCheckboxu 4,11,110,DontSavePath,GUIOptionTextB,0
-  GUIDisplayCheckboxu 4,11,120,SmallMsgText,GUIOptionTextC,1
-  GUIDisplayCheckboxu 4,11,130,AutoPatch,GUIOptionTextD,12
-  GUIDisplayCheckboxu 4,11,140,RomInfo,GUIOptionTextE,15
-  GUIDisplayCheckboxu 4,11,150,AllowUDLR,GUIOptionTextF,0
+  GUIDisplayCheckboxu 4,11,100,TwelveHourClock,GUIOptionText9a,0
+  GUIDisplayCheckboxu 4,11,110,OldGfxMode2,GUIOptionTextA,0
+  GUIDisplayCheckboxu 4,11,120,SmallMsgText,GUIOptionTextB,1
+  GUIDisplayCheckboxu 4,11,130,AutoPatch,GUIOptionTextC,12
+  GUIDisplayCheckboxu 4,11,140,RomInfo,GUIOptionTextD,15
+  GUIDisplayCheckboxu 4,11,150,AllowUDLR,GUIOptionTextE,0
 %ifndef __MSDOS__
-  GUIDisplayCheckboxu 4,11,160,PauseFocusChange,GUIOptionTextG,13
+  GUIDisplayCheckboxu 4,11,160,PauseFocusChange,GUIOptionTextF,13
 %endif
 %ifdef __WIN32__
   GUIDisplayCheckboxu 4,11,170,DisableScreenSaver,GUIOptionTextW,1
@@ -1629,14 +1601,13 @@ GUIOptionText6b db 'HIGH PRIORITY MODE',0
 GUIOptionText7 db 'FPS AT PROGRAM START',0
 GUIOptionText8 db 'USE 30HZ FOR TURBO',0
 GUIOptionText9 db 'ENABLE GAME CLOCK',0
-GUIOptionText9a db '12HR',0
+GUIOptionText9a db '12 HOUR MODE',0
 GUIOptionTextA db 'OLD GFX MODE 2',0
-GUIOptionTextB db 'DON',39,'T SAVE CUR PATH',0
-GUIOptionTextC db 'USE SMALL MESSAGE TEXT',0
-GUIOptionTextD db 'ENABLE AUTO-PATCH',0
-GUIOptionTextE db 'ENABLE ROMINFO.TXT',0
-GUIOptionTextF db 'ALLOW U+D/L+R',0
-GUIOptionTextG db 'PAUSE EMU IN BACKGROUND',0
+GUIOptionTextB db 'USE SMALL MESSAGE TEXT',0
+GUIOptionTextC db 'ENABLE AUTO-PATCH',0
+GUIOptionTextD db 'ENABLE ROMINFO.TXT',0
+GUIOptionTextE db 'ALLOW U+D/L+R',0
+GUIOptionTextF db 'PAUSE EMU IN BACKGROUND',0
 GUIOptionTextW db 'DISABLE SCREENSAVER',0 ; keep as last option, Win Only
 GUIOptionTextX db '-',0
 GUIOptionTextY db '+',0
@@ -1898,7 +1869,7 @@ DisplayGUIVideo:
   je near .nocheckboxtbb
   cmp byte[TripBufAvail],0
   je near .nocheckboxtbb
-  GUIDisplayCheckboxun 5,11,163,Triplebufen,1,GUIVideoText7,0
+  GUIDisplayCheckboxu 5,11,163,Triplebufen,GUIVideoText7,0
 .nocheckboxtbb
 
   xor eax,eax                                  ; 2xSaI & Supers
@@ -2046,11 +2017,11 @@ DisplayGUISound:                     ; Sound Related Options
   GUIDrawWindowBox 6,GUISoundDisp
 
   GUIDisplayTextY 6,6,16,GUISoundTextA
-  GUIDisplayCheckboxu 6,11,21,cfgsoundon,GUISoundTextA1,0
+  GUIDisplayCheckboxu 6,11,21,soundon,GUISoundTextA1,0
 %ifdef __MSDOS__
-  GUIDisplayCheckboxu 6,102,21,cfgforce8b,GUISoundTextA4,1
+  GUIDisplayCheckboxu 6,102,21,Force8b,GUISoundTextA4,1
 %endif
-  GUIDisplayCheckboxu 6,11,30,cfgStereoSound,GUISoundTextA2,0
+  GUIDisplayCheckboxu 6,11,30,StereoSound,GUISoundTextA2,0
 %ifdef __MSDOS__
   GUIDisplayCheckboxu 6,11,39,RaisePitch,GUISoundTextA3,1
 %endif
@@ -2085,11 +2056,9 @@ DisplayGUISound:                     ; Sound Related Options
 %endif
 
   GUIDisplayBBox 6,15,61,69,69,167            ;Sampling Rate Box
-  mov dword[GUITemp],GUISoundTextB1
-  xor eax,eax
-  mov al,[cfgSoundQuality]
-  shl eax,3
-  add [GUITemp],eax
+  mov eax,[SoundQuality]
+  lea eax,[eax*8+GUISoundTextB1]
+  mov [GUITemp],eax
   GUIDisplayTextG 6,23,64,[GUITemp]
 
   GUIDrawSlider 6,15,100,91,MusicRelVol,GUISoundTextC1,VolslidSet,VolslidText
@@ -3234,7 +3203,7 @@ SECTION .data
 GUIGUIOptnsTextA db 'GUI SWITCHES:',0
 GUIGUIOptnsTextA1a db 'MOUSE WRAP',0
 GUIGUIOptnsTextA1b db 'MOUSE SHADOW',0
-GUIGUIOptnsTextA1c db 'KEEP MENU POSITN',0
+GUIGUIOptnsTextA1c db 'NO MENU IN GUI',0
 GUIGUIOptnsTextA1d db 'SAVE WIN POSITNS',0
 GUIGUIOptnsTextA1e db 'CLICK ENTERS GUI',0
 GUIGUIOptnsTextA1f db 'USE JOYPAD1',0

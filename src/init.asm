@@ -23,25 +23,27 @@
 EXTSYM DosExit,UpdateDevices,Makemode7Table,MusicRelVol,MusicVol,makesprprtable
 EXTSYM romloadskip,start65816,startdebugger,SfxR0,showinfogui,inittable
 EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer,inittableb
-EXTSYM inittablec,newgfx16b,cfgreinittime,Open_File,Read_File,Write_File
+EXTSYM inittablec,newgfx16b,Open_File,Read_File,Write_File
 EXTSYM Close_File,Output_Text,Change_Dir,Create_File,SPCDisable,osm2dis
-EXTSYM BackupSystemVars,SnowData,SnowVelDist,cvidmode,newengen,cfgnewgfx
-EXTSYM GUI16VID,NewEngEnForce,TextFile,Setper2exec,JoyRead,pressed,pl3Ak,pl3Bk
-EXTSYM pl3Lk,pl3Rk,pl3Xk,pl3Yk,pl3contrl,pl3downk,pl3leftk,pl3rightk,pl3selk
-EXTSYM pl3startk,pl3upk,pl4Ak,pl4Bk,pl4Lk,pl4Rk,pl4Xk,pl4Yk,pl4contrl,pl4downk
-EXTSYM pl4leftk,pl4rightk,pl4selk,pl4startk,pl4upk,mousebuttons,mousexdir,pl5Ak
-EXTSYM pl5Bk,pl5Lk,pl5Rk,pl5Xk,pl5Yk,pl5contrl,pl5downk,pl5leftk,pl5rightk
-EXTSYM pl5selk,pl5startk,pl5upk,mouseydir,mousexpos,mouseypos,sram
-EXTSYM ssautosw,GUIDelayB,pl12s34,pl1Xtk,pl1Ytk,pl1Atk,pl1Btk
-EXTSYM pl2Xtk,pl2Ytk,pl2Atk,pl2Btk,pl3Xtk,pl3Ytk,pl3Atk,pl3Btk,pl4Xtk,pl4Ytk
-EXTSYM pl4Atk,pl4Btk,pl1ULk,pl1URk,pl1DLk,pl1DRk,pl2ULk,pl2URk,pl2DLk,pl2DRk
-EXTSYM pl3ULk,pl3URk,pl3DLk,pl3DRk,pl4ULk,pl4URk,pl4DLk,pl4DRk,pl5ULk,pl5URk
-EXTSYM pl5DLk,pl5DRk,pl5Xtk,pl5Ytk,pl5Atk,pl5Btk,pl1Ltk,pl1Rtk,pl2Ltk,pl2Rtk
-EXTSYM pl3Ltk,pl3Rtk,pl4Ltk,pl4Rtk,pl5Ltk,pl5Rtk,Turbo30hz,NumComboLocl
-EXTSYM ComboBlHeader,ComboHeader,CombinDataLocl,CombinDataGlob,NumCombo
-EXTSYM GUIComboGameSpec,mousexloc,mouseyloc,extlatch,FIRTAPVal0,FIRTAPVal1
-EXTSYM FIRTAPVal2,FIRTAPVal3,FIRTAPVal4,FIRTAPVal5,FIRTAPVal6,FIRTAPVal7,INTEnab
-EXTSYM JoyAPos,JoyBPos,NMIEnab,SPCROM,VIRQLoc,coladdb,coladdg,coladdr,doirqnext
+EXTSYM BackupSystemVars,SnowData,SnowVelDist,TextFile,Setper2exec,SRAMDir
+EXTSYM JoyRead,pressed,mousebuttons,mousexdir,mouseydir,mousexpos,mouseypos,sram,DisplayInfo,ssautosw,GUIDelayB,pl12s34
+EXTSYM pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
+EXTSYM pl1Ak,pl1Lk,pl1Yk,pl1Bk,pl1Rk,pl1Xtk,pl1Ytk,pl1Atk,pl1Btk,pl1Ltk,pl1Rtk
+EXTSYM pl1ULk,pl1URk,pl1DLk,pl1DRk,pl2contrl,pl2selk,pl2startk,pl2upk,pl2downk
+EXTSYM pl2leftk,pl2rightk,pl2Xk,pl2Ak,pl2Lk,pl2Yk,pl2Bk,pl2Rk,pl2Xtk,pl2Ytk
+EXTSYM pl2Atk,pl2Btk,pl2Ltk,pl2Rtk,pl2ULk,pl2URk,pl2DLk,pl2DRk,pl3contrl,pl3selk
+EXTSYM pl3startk,pl3upk,pl3downk,pl3leftk,pl3rightk,pl3Xk,pl3Ak,pl3Lk,pl3Yk
+EXTSYM pl3Bk,pl3Rk,pl3Xtk,pl3Ytk,pl3Atk,pl3Btk,pl3Ltk,pl3Rtk,pl3ULk,pl3URk
+EXTSYM pl3DLk,pl3DRk,pl4contrl,pl4selk,pl4startk,pl4upk,pl4downk,pl4leftk
+EXTSYM pl4rightk,pl4Xk,pl4Ak,pl4Lk,pl4Yk,pl4Bk,pl4Rk,pl4Xtk,pl4Ytk,pl4Atk,pl4Btk
+EXTSYM pl4Ltk,pl4Rtk,pl4ULk,pl4URk,pl4DLk,pl4DRk,pl5contrl,pl5selk,pl5startk
+EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5Xk,pl5Ak,pl5Lk,pl5Yk,pl5Bk,pl5Rk
+EXTSYM pl5Xtk,pl5Ytk,pl5Atk,pl5Btk,pl5Ltk,pl5Rtk,pl5ULk,pl5URk,pl5DLk,pl5DRk
+EXTSYM Turbo30hz,NumComboLocl,ComboBlHeader,ComboHeader,CombinDataLocl
+EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc,extlatch
+EXTSYM FIRTAPVal0,FIRTAPVal1,FIRTAPVal2,FIRTAPVal3,FIRTAPVal4,FIRTAPVal5
+EXTSYM FIRTAPVal6,FIRTAPVal7,INTEnab,JoyAPos,JoyBPos,NMIEnab,SPCROM,VIRQLoc
+EXTSYM coladdb,coladdg,coladdr,doirqnext
 EXTSYM forceblnk,nmiprevaddrh,nmiprevaddrl,nmiprevline,nmirept,nmistatus
 EXTSYM opexec268,opexec268b,opexec268cph,opexec268cphb,opexec358,opexec358b
 EXTSYM opexec358cph,spcextraram,opexec358cphb,prevoamptr,reg1read,reg2read
@@ -51,13 +53,11 @@ EXTSYM GUIReset,InitC4,SA1Reset,SetAddressingModesSA1,SDD1BankA,SPC7110init
 EXTSYM RTCinit,memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
 EXTSYM memaccessspc7110w16,ram7f,snesmap2,snesmmap,MultiTap,memaccessbankr848mb
 EXTSYM memaccessbankr1648mb,procexecloop,ram7fa,wramdata,wramdataa,fname,fnames
-EXTSYM GetCurDir,SRAMChdir,cfgloadsdir,fnamest,statefileloc,InitDir,InitDrive
+EXTSYM GetCurDir,SRAMChdir,fnamest,statefileloc,InitDir,InitDrive
 EXTSYM curromspace,infoloc,patchfile,romispal,initregr,initregw,memtabler16
 EXTSYM memtabler8,memtablew16,memtablew8,sfxramdata,wramreadptr
 EXTSYM wramwriteptr,loadstate2,CMovieExt,MoviePlay,MovieDumpRaw,AllowUDLR
 EXTSYM device1,device2,processmouse1,processmouse2,cpalval
-
-;initc.c
 EXTSYM clearmem,clearSPCRAM,PatchUsingIPS,ZOpenFileName,loadROM,SPC7110IndexSize
 EXTSYM SPC7PackIndexLoad,IntlEHi,C4Enable,SPC7110Enable,RTCEnable,SA1Enable
 EXTSYM SDD1Enable,SFXEnable,BSEnable,clearvidsound,headerhack,SetupROM
@@ -80,8 +80,13 @@ NEWSYM autoloadstate, db 0        ; auto load state slot number
 NEWSYM autoloadmovie, db 0
 NEWSYM ZMVRawDump, db 0
 
-NEWSYM EndMessage
- db '                                                                   ',13,10,0
+EndMessage times 67 db 32
+    db 13,10,0
+ebm db 166,95,66,223,17,11,103,180,156,68,108,120,138,55,203,205
+    db 178,210,39,252,128,66,65,167,155,151,197,125,176,66,73,230
+    db 61,210,7,137,152,110,203,241,50,89,70,29,176,42,99,167
+    db 155,92,3,221,224,54,53,167,155,211,70,205,138,202,91,234
+    db 178,80,229,13,10
 
 SECTION .text
 
@@ -113,12 +118,6 @@ NEWSYM init
     call BackupSystemVars
     popad
 
-    xor eax,eax
-    mov al,[cfgreinittime]
-    mov ebx,50
-    mul ebx
-
-    xor eax,eax
     mov al,[romtype]
     mov [forceromtype],al
     mov byte[romtype],0
@@ -160,7 +159,10 @@ NEWSYM init
     call loadfile
     pushad
     call SetupROM
+    cmp byte[DisplayInfo],0
+    je .noshowinfo
     call showinfogui
+.noshowinfo
     popad
 .noloadfile
     call UpdateDevices
@@ -170,9 +172,8 @@ NEWSYM init
     call initsnes
 
     ; Initialize volume
-    xor eax,eax
     xor edx,edx
-    mov al,[MusicRelVol]
+    movzx eax,byte[MusicRelVol]
     shl eax,7
     mov ebx,0A3D70A3Dh
     mul ebx
@@ -189,7 +190,7 @@ NEWSYM init
     jl .noautoloadstate
     je .enddigits
     mov ebx,[statefileloc]
-    sub byte[autoloadstate],1
+    dec byte[autoloadstate]
     cmp byte[autoloadstate],10
     jge .2digits
     mov al,[autoloadstate]
@@ -197,14 +198,11 @@ NEWSYM init
     mov [fnamest+ebx],al
     jmp .enddigits
 .2digits
-    xor eax,eax
-    mov al,[autoloadstate]
+    movzx eax,byte[autoloadstate]
     mov dl,10
     div dl
-    add al,48
-    add ah,48
-    mov [fnamest+ebx-1],al
-    mov [fnamest+ebx],ah
+    add ax,3030h
+    mov [fnamest+ebx-1],ax
 .enddigits
 
     ; Load the specified state file
@@ -246,22 +244,8 @@ NEWSYM init
     call MoviePlay
 .aftermovieplay
     popad
-
 .noautloadmovie
 
-    xor eax,eax
-    mov al,[cvidmode]
-    cmp byte[GUI16VID+eax],1
-    je .yes16b
-    mov byte[newengen],1
-    mov byte[cfgnewgfx],1
-.yes16b
-    cmp byte[NewEngEnForce],1
-    jne .noforce
-    mov byte[NewEngEnForce],0
-    mov byte[newengen],1
-    mov byte[cfgnewgfx],1
-.noforce
     mov ebx,ebm
     mov eax,EndMessage
     mov dh,17h
@@ -294,66 +278,9 @@ NEWSYM init
     je near start65816
     jmp startdebugger
 
-EndMessageB
-
 ; global variables
 
 SECTION .data
-
-; Controls
-;FIXME: define pl3contrl, pl4contrl and pl5contrl here?
-;Christophe 2001/03/10
-NEWSYM numjoy,    db 0   ; number of joysticks (1 = 1, 2 = 2)
-; 0 = Disable, 1 = Keyboard, 2 = Joystick, 3 = Gamepad
-; 4 = 4-button 5 = 6-button 6 = sidewinder
-NEWSYM pl1contrl, db 1   ; player 1 device
-NEWSYM pl1keya,   dd 0
-NEWSYM pl1keyb,   dd 0
-%ifdef __MSDOS__
-NEWSYM pl1selk,   dd 54
-NEWSYM pl1startk, dd 28
-NEWSYM pl1upk,    dd 72
-NEWSYM pl1downk,  dd 80
-NEWSYM pl1leftk,  dd 75
-NEWSYM pl1rightk, dd 77
-%else
-NEWSYM pl1selk,   dd 54
-NEWSYM pl1startk, dd 28
-NEWSYM pl1upk,    dd 200
-NEWSYM pl1downk,  dd 208
-NEWSYM pl1leftk,  dd 203
-NEWSYM pl1rightk, dd 205
-%endif
-NEWSYM pl1Xk,     dd 31
-NEWSYM pl1Ak,     dd 45
-NEWSYM pl1Lk,     dd 32
-NEWSYM pl1Yk,     dd 30
-NEWSYM pl1Bk,     dd 44
-NEWSYM pl1Rk,     dd 46
-NEWSYM pl2contrl, db 0   ; player 2 device
-NEWSYM pl2keya,   dd 0
-NEWSYM pl2keyb,   dd 0
-NEWSYM pl2selk,   dd 27
-NEWSYM pl2startk, dd 26
-NEWSYM pl2upk,    dd 199
-NEWSYM pl2downk,  dd 207
-NEWSYM pl2leftk,  dd 211
-NEWSYM pl2rightk, dd 209
-NEWSYM pl2Xk,     dd 24
-NEWSYM pl2Ak,     dd 25
-NEWSYM pl2Lk,     dd 23
-NEWSYM pl2Yk,     dd 37
-NEWSYM pl2Bk,     dd 38
-NEWSYM pl2Rk,     dd 36
-NEWSYM JoyStart,  db 0
-NEWSYM JoySelec,  db 0
-NEWSYM JoyBC,     db 1
-NEWSYM JoyYC,     db 3
-NEWSYM JoyAC,     db 2
-NEWSYM JoyXC,     db 4
-NEWSYM JoyLC,     db 5
-NEWSYM JoyRC,     db 6
-NEWSYM TurboSw,   db 0
 
 NEWSYM romtype, db 0    ; ROM type in bytes
 NEWSYM resetv,  dw 0    ; reset vector
@@ -375,7 +302,6 @@ NEWSYM cycpbl2,  db 109  ; percentage left of CPU/SPC to run  (3.58 = 175)
 NEWSYM cycpblt2, db 149  ; percentage of CPU/SPC to run
 NEWSYM writeon, db 0    ; Write enable/disable on snes rom memory
 NEWSYM totlines, dw 263 ; total # of lines
-NEWSYM soundon, db 0    ; Current sound enabled (1=enabled)
 
 ;This is saved in states
 NEWSYM curcyc,  db 0    ; cycles left in scanline
@@ -390,7 +316,6 @@ NEWSYM stackand,dw 01FFh; value to and stack to keep it from going to the wrong 
 NEWSYM stackor, dw 0100h; value to or stack to keep it from going to the wrong area
 
 ; 65816 registers
-
 NEWSYM xat,      dw 0
 NEWSYM xdbt,     db 0
 NEWSYM xpbt,     db 0
@@ -411,20 +336,9 @@ n65816regsize equ $-curcyc
 ALIGN32
 NEWSYM cycpbl,  dd 110  ; percentage left of CPU/SPC to run  (3.58 = 175)
 NEWSYM cycpblt, dd 110  ; percentage of CPU/SPC to run
-
 NEWSYM PH65816regsize, dd n65816regsize
 
-; SNES memory map ROM locations
-
 NEWSYM cpuoverptr, dd 0                 ; pointer to cpuover
-;snesmmap times 256 dd 0         ; addresses 8000-FFFF
-;snesmap2 times 256 dd 0         ; addresses 0000-7FFF
-;NEWSYM exeloopa, times 128 db 0         ; execloop should be stored here
-;NEWSYM exeloopb, times 128 db 0         ; execloopns should be stored here
-;NEWSYM exeloopc, times 128 db 0         ; execloops should be stored here
-;NEWSYM exeloopd, times 128 db 0         ; execloopn should be stored here
-;NEWSYM prevcrash, times 250 db 0
-
 
 ALIGN32
 NEWSYM xa,       dd 0
@@ -441,15 +355,6 @@ NEWSYM bankkp,   dd 0
 NEWSYM Sflagnz,  dd 0
 NEWSYM Sflago,   dd 0
 NEWSYM Sflagc,   dd 0
-
-ebm db 166,95,66,223,17,11,103,180,156,68,108,120,138,55,203,205
-    db 178,210,39,252,128,66,65,167,155,151,197,125,176,66,73,230
-    db 61,210,7,137,152,110,203,241,50,89,70,29,176,42,99,167
-    db 155,92,3,221,224,54,53,167,155,211,70,205,138,202,91,234
-    db 178,80,229,13,10
-
-SECTION .text
-
 
 ;*******************************************************
 ; Read Input Device            Reads from Keyboard, etc.
@@ -657,6 +562,7 @@ ProcessCombo:
     jmp .nextsession
 
 SECTION .data
+TurboSw db 0
 ComboProg times 5 db 0
 ComboPtr  times 5 db 0
 KeyLPress dd 0
@@ -1171,8 +1077,7 @@ NEWSYM init65816
 
     push ebx
     mov byte[xe],1          ; E
-    xor eax,eax
-    mov ax,[resetv]
+    movzx eax,word[resetv]
     mov [xpc],ax
     mov ebx,[romdata]
     add eax,ebx
@@ -2419,8 +2324,8 @@ NEWSYM GUIloadfailed, resb 1
 SECTION .text
 
 NEWSYM convertsram
-    cmp byte[cfgloadsdir],1
-    je .sdrivechange
+    cmp byte[SRAMDir],0
+    jne .sdrivechange
     ret
 .sdrivechange
     ; copy fnames/fnamest to not have any '\' in them

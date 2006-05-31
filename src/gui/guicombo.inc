@@ -23,8 +23,7 @@ SECTION .text
 
 
 ComboClip:
-    xor eax,eax
-    mov al,[GUINumCombo]
+    movzx eax,byte[GUINumCombo]
 .next
     cmp al,42
     jae .excess

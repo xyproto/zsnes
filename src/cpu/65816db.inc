@@ -30,7 +30,7 @@ EXTSYM flagnz,flago,flagc,cpucycle,doirqnext,dmadata
     inc esi
     sub dh,[cpucycle+ebx]
     jc %%cpuover
-    jmp dword near [edi+ebx*4]
+    jmp dword [edi+ebx*4]
 %%cpuover
     ret
 %endmacro
@@ -749,7 +749,7 @@ COPemulmode
     xor eax,eax
     add cx,[xx]
     mov bl,[xpb]
-    call dword near [memtabler16+ebx*4]
+    call dword [memtabler16+ebx*4]
     mov [xpc],ax
     mov bl,[xpb]
     test eax,8000h
@@ -906,7 +906,7 @@ COPemulmode
     mov cx,[esi]
     mov bl,[xpb]
     add cx,[xx]
-    call dword near [memtabler16+ebx*4]
+    call dword [memtabler16+ebx*4]
     mov [xpc],ax
     mov bl,[xpb]
     test eax,8000h
@@ -976,10 +976,10 @@ COPemulmode
     mov [xdb],al
     mov bl,ah
     mov cx,[xx]
-    call dword near [memtabler8+ebx*4]
+    call dword [memtabler8+ebx*4]
     mov bl,[xdb]
     mov cx,[xy]
-    call dword near [memtablew8+ebx*4]
+    call dword [memtablew8+ebx*4]
     test dl,10h
     jnz .pagezero
     inc word[xx]
@@ -1007,10 +1007,10 @@ COPemulmode
     mov [xdb],al
     mov bl,ah
     mov cx,[xx]
-    call dword near [memtabler8+ebx*4]
+    call dword [memtabler8+ebx*4]
     mov bl,[xdb]
     mov cx,[xy]
-    call dword near [memtablew8+ebx*4]
+    call dword [memtablew8+ebx*4]
     test dl,10h
     jnz .pagezero
     dec word[xx]
@@ -1213,7 +1213,6 @@ COPemulmode
 %endmacro
 
 %macro POPMacroP 0
-
     mov cx,[xs]
     inc cx
     and cx,word[stackand]

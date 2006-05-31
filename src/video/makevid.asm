@@ -29,7 +29,7 @@ EXTSYM colormodeofs,drawline16b,forceblnk,newengine8b,preparesprpr,scaddset
 EXTSYM spritetablea,sprleftpr,vidbright,ForceNewGfxOff,curypos,drawmode7
 EXTSYM mode7set,mosaicon,mosaicsz,sprleftpr1,sprleftpr2,sprleftpr3,sprlefttot
 EXTSYM sprprifix,drawmode7extbg,interlval,drawmode7extbg2,sprclprio,sprpriodata
-EXTSYM sprsingle,cachetile2b,cachetile4b,cachetile8b,vram
+EXTSYM sprsingle,cachetile2b,cachetile4b,cachetile8b,vram,newengen
 EXTSYM cachetile2b16x16,cachetile4b16x16,cachetile8b16x16,osm2dis,xtravbuf
 EXTSYM bg3ptr,bg3scrolx,bg3scroly,vidmemch4,ofsmcptr,ofsmady,ofsmadx,yposngom
 EXTSYM flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
@@ -37,14 +37,12 @@ EXTSYM bg1scrolx_m7,bg1scroly_m7
 
 %include "video/vidmacro.mac"
 
-;drawspritesprio
-
 SECTION .bss
 NEWSYM bgcoloradder, resb 1
 NEWSYM res512switch, resb 1
+
 SECTION .text
 
-;    mov cl,[bshifter]
 ;*******************************************************
 ; DrawLine                        Draws the current line
 ;*******************************************************
@@ -1374,7 +1372,6 @@ NEWSYM blanker
 ALIGN32
 SECTION .bss
 NEWSYM bg3high2, resd 1
-NEWSYM newengen, resd 1
 NEWSYM cwinenabm, resd 1
 SECTION .text
 

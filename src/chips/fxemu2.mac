@@ -18,12 +18,6 @@
 
 
 
-
-
-
-
-
-
 %macro FETCHPIPE 0
 ;    mov edx,[SfxPBR]
 ;    mov edx,[SfxMemTable+edx*4]
@@ -244,7 +238,7 @@
    mov bl,[SfxR1]
    xor bl,[SfxR2]
    test bl,01h
-   jz near .nodither4b
+   jz .nodither4b
    %4
    inc word[SfxR1]
    %1
@@ -311,7 +305,7 @@
    inc ebp
    mov eax,[eax+ebx*4]
    cmp eax,0FFFFFFFFh
-   je near .nodraw
+   je .nodraw
    %1 ret, drawpix2b, 4, drawpix2bd, 03h
 .nodraw
    inc word[SfxR1]
@@ -356,7 +350,7 @@
    inc ebp
    mov eax,[eax+ebx*4]
    cmp eax,0FFFFFFFFh
-   je near .nodraw
+   je .nodraw
    %1 FXReturn, drawpix8b, 6, drawpix8bd, 0FFh
 .nodraw
    inc word[SfxR1]
@@ -386,7 +380,7 @@
    inc ebp
    mov eax,[eax+ebx*4]
    cmp eax,0FFFFFFFFh
-   je near .nodraw
+   je .nodraw
    %1 FXReturn, drawpix8b, 6, drawpix8bd, 0Fh
 .nodraw
    inc word[SfxR1]

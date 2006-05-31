@@ -28,32 +28,32 @@ AC_CHECK_TOOL(NASMPATH,nasm,"no",$nasm_prefix:$PATH)
 if test x$NASMPATH = xno; then
   AC_MSG_ERROR(You need NASM installed to compile ZSNES)
 fi
-NFLAGS="$NFLAGS -w-orphan-labels"
-MMLIB_FILES="\$(MMLIBDIR)/mm.o"
 
+CFLAGS="$CFLAGS -D__UNIXSDL__"
+NFLAGS="$NFLAGS -w-orphan-labels -D__UNIXSDL__"
+PSRFLAGS="$PSRFLAGS -D__UNIXSDL__"
+MMLIB_FILES="\$(MMLIBDIR)/mm.o"
 case x$target in
   *-*-linux*)
-    CFLAGS="$CFLAGS -D__UNIXSDL__"
-    NFLAGS="$NFLAGS -D__UNIXSDL__ -f elf -DELF"
+    NFLAGS="$NFLAGS -f elf -DELF"
     MMLIB_FILES="\$(MMLIBDIR)/linux.o \$(MMLIBDIR)/mm.o"
     ;;
   *-*-beos*)
-    CFLAGS="$CFLAGS -D__UNIXSDL__ -D__BEOS__"
-    NFLAGS="$NFLAGS -D__UNIXSDL__ -D__BEOS__ -f elf -DELF"
+    CFLAGS="$CFLAGS -D__BEOS__"
+    NFLAGS="$NFLAGS -D__BEOS__ -f elf -DELF"
     ;;
   *-*-*bsd*)
-    CFLAGS="$CFLAGS -D__UNIXSDL__ -D__BSDSDL__"
-    NFLAGS="$NFLAGS -D__UNIXSDL__ -D__BSDSDL__ -DELF -f elf"
+    CFLAGS="$CFLAGS -D__BSDSDL__"
+    NFLAGS="$NFLAGS -D__BSDSDL__ -f elf -DELF"
     ;;
   *-*-darwin* )
-    CFLAGS="$CFLAGS -D__UNIXSDL__ -D__MACOSX__ -arch i386"
-    NFLAGS="$NFLAGS -D__UNIXSDL__ -D__MACOSX__ -f macho"
+    CFLAGS="$CFLAGS -D__MACOSX__ -arch i386"
+    NFLAGS="$NFLAGS -D__MACOSX__ -f macho"
     MMLIB_FILES="\$(MMLIBDIR)/osx.o \$(MMLIBDIR)/mm.o"
     LDFLAGS="$LDFLAGS -framework Carbon -framework IOKit -lcc_dynamic"
     ;;
   *-*-cygwin* | *-*-*ming*)
-    CFLAGS="$CFLAGS -D__UNIXSDL__"
-    NFLAGS="$NFLAGS -D__UNIXSDL__ -f win32"
+    NFLAGS="$NFLAGS -f win32"
     ;;
   *)
     AC_MSG_ERROR(This target is not supported)
@@ -79,6 +79,7 @@ LDFLAGS="$LDFLAGS $SDL_LIBS"
 if test x$with_libpng != xyes; then
   CFLAGS="$CFLAGS -DNO_PNG"
   NFLAGS="$NFLAGS -DNO_PNG"
+  PSRFLAGS="$PSRFLAGS -DNO_PNG"
 else
   CFLAGS="$CFLAGS $LIBPNG_CFLAGS"
   LDFLAGS="$LDFLAGS $LIBPNG_LIBS"
@@ -112,6 +113,7 @@ if test x$enable_opengl != xno; then
     LDFLAGS="$LDFLAGS -lGL"
     CFLAGS="$CFLAGS -D__OPENGL__"
     NFLAGS="$NFLAGS -D__OPENGL__"
+    PSRFLAGS="$PSRFLAGS -D__OPENGL__"
     GL_DRAW="\$(WINDIR)/gl_draw.o"
   fi
   AC_MSG_RESULT($found_opengl)
@@ -129,6 +131,7 @@ AC_MSG_RESULT($enable_jma)
 if test x$enable_jma != xyes; then
   CFLAGS="$CFLAGS -DNO_JMA"
   NFLAGS="$NFLAGS -DNO_JMA"
+  PSRFLAGS="$PSRFLAGS -DNO_JMA"
 fi
 
 dnl - Various debug and optimization option checks
@@ -143,10 +146,12 @@ AC_MSG_RESULT($debug)
 if test x$debug = xyes; then
 dnl - It is easier to debug zsnes with no optimization enabled.
   ZSNESEXE="zsnesd"
+  PSR_TEMP=""
   CFLAGS="$CFLAGS -Wall -W -DDEBUG -O0 -fno-omit-frame-pointer -gstabs3"
   NFLAGS="$NFLAGS -DDEBUG -g -F stabs -s -O0"
 else
   ZSNESEXE="zsnes"
+  PSR_TEMP="	rm -f t_\$*.c"
   AC_ARG_ENABLE(release,
     [  --enable-release        Build ultra-optimized binary (zsnes)],
     release=$enableval,
@@ -202,7 +207,6 @@ else
   fi
 fi
 CXXFLAGS="$CFLAGS -fno-rtti"
-PSRFLAGS="-D__UNIXSDL__"
 
 if test x$enable_jma != xno; then
   JMA_FILES="\$(JMADIR)/7zlzma.o \$(JMADIR)/crc32.o \$(JMADIR)/iiostrm.o\
@@ -230,6 +234,7 @@ AC_SUBST(NFLAGS)
 AC_SUBST(ZSNESEXE)
 AC_SUBST(GL_DRAW)
 AC_SUBST(JMA_FILES)
+AC_SUBST(PSR_TEMP)
 AC_SUBST(MMLIB_FILES)
 
 AC_CONFIG_FILES(Makefile)
