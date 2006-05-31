@@ -34,8 +34,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../psrhead/cfg.h"
 
 extern unsigned char ComboHeader[23], ComboBlHeader[23], CombinDataGlob[3300];
-extern unsigned char GUICName[256], GUIFName[256], ShowTimer, savecfgforce;
+extern unsigned char ShowTimer, savecfgforce;
 extern unsigned int SnowTimer, NumSnow, NumComboGlob;
+extern char GUICName[256], GUIFName[256];
 enum vtype { UB, UW, UD, SB, SW, SD };
 
 void CheckValueBounds(void *ptr, int min, int max, int val, enum vtype type)

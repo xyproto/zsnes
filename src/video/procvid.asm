@@ -26,7 +26,7 @@ EXTSYM gammalevel,hirestiledat,ignor512,latchx,latchy,maxbr,ForceNewGfxOff
 EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,resolutn
 EXTSYM romispal,scaddtype,scanlines,selcA000,t1cc,vcache4b,vesa2_bpos
 EXTSYM spritetablea,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10,vesa2selec
-EXTSYM vidbuffer,vram,KeyStateSelct,soundon,Open_File,Read_File
+EXTSYM vidbuffer,vram,KeyStateSelct,soundon,Open_File,Read_File,smallscreenon
 EXTSYM Close_File,Create_File,Write_File,Get_File_Date,makepal,ScreenScale
 EXTSYM changepal,saveselectpal,displayfpspal,superscopepal,DrawScreen,MMXSupport
 EXTSYM Get_MouseData,Get_MousePositionDisplacement,GUIEnableTransp,GUIFontData
