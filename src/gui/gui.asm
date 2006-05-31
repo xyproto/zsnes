@@ -149,7 +149,7 @@ EXTSYM MovieVideoMode, MovieAudio,MovieVideoAudio,MovieAudioCompress
 EXTSYM numlockptr
 %elifdef __WIN32__
 EXTSYM initDirectDraw,reInitSound,CheckAlwaysOnTop,CheckPriority,AlwaysOnTop
-EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor
+EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst
 %elifdef __MSDOS__
 EXTSYM dssel,SetInputDevice209,initvideo2
 %endif
