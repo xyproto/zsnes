@@ -3775,7 +3775,7 @@ NEWSYM NonEchoMono
 ALIGN16
 NEWSYM NonEchoStereo
 %ifdef __MSDOS__
-    movzx eax,byte,[ds:Voice0VolumeR+ebp]
+    movzx eax,byte[ds:Voice0VolumeR+ebp]
     mov ah,[ds:Voice0EnvInc+ebp*4+2]
     mov edx,[ds:BRRPlace0+ebp*8+3]
 %else
