@@ -464,8 +464,8 @@ RevStereo db 0
 Force8b db 0
 #else
 @ DOS-only option, don't edit
-RaisePitch db 0
 #endif
+RaisePitch db 0
 
 @
 @ Disable SPC emulation, echo (0 = NO, 1 = Yes)
