@@ -322,7 +322,7 @@ cvidmode db 2
 PrevWinMode db 2
 PrevFSMode db 3
 
-#else
+#elifdef __MSDOS__
 
 @ Video Mode, 0 - 18
 @  0 = 256x224x8B  (MODEQ)    1 = 256x240x8B (MODEQ)
