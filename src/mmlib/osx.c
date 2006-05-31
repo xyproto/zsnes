@@ -90,8 +90,8 @@ struct recElement
     long calMin;              // min returned value
     long calMax;              // max returned value (calibrate call)
     long userMin;               // user set value to scale to (scale call)
-    long userMax;             
-    
+    long userMax;
+
   struct recElement * pPrevious;      // previous element (NULL at list head)
     struct recElement * pChild;       // next child (only of collections)
     struct recElement * pSibling;     // next sibling (for elements and collections)
@@ -137,7 +137,7 @@ struct recDevice
     long sliders;             // number of sliders (calculated, not reported by device)
     long dials;               // number of dials (calculated, not reported by device)
     long wheels;              // number of wheels (calculated, not reported by device)
-    recElement* pListElements;        // head of linked list of elements 
+    recElement* pListElements;        // head of linked list of elements
     DisconnectState disconnect; // (ryan added this.)
     struct recDevice* pNext;        // next device
 };
@@ -662,7 +662,7 @@ static pRecElement hid_GetDeviceElement (pRecElement pElement, HIDElementTypeMas
 static unsigned long HIDCloseReleaseInterface (pRecDevice pDevice)
 {
   IOReturn result = kIOReturnSuccess;
-  
+
   if (HIDIsValidDevice(pDevice) && (NULL != pDevice->interface))
   {
     // close the interface
@@ -678,9 +678,9 @@ static unsigned long HIDCloseReleaseInterface (pRecDevice pDevice)
     if (kIOReturnSuccess != result)
       HIDREPORTERRORNUM ("HIDCloseReleaseInterface - Failed to release interface.", result);
     pDevice->interface = NULL;
-  } 
+  }
   return result;
-}      
+}
 
 
 // ---------------------------------
@@ -960,7 +960,7 @@ static unsigned long HIDCreateOpenDeviceInterface (UInt32 hidDevice, pRecDevice 
 static pRecDevice* hid_AddDevice (pRecDevice *ppListDeviceHead, pRecDevice pNewDevice)
 {
   pRecDevice* result = NULL;
-  
+
     if (NULL == *ppListDeviceHead)
         result = ppListDeviceHead;
     else
@@ -1442,7 +1442,7 @@ static unsigned long  HIDQueueDevice (pRecDevice pDevice)
     result = (*(IOHIDQueueInterface**) pDevice->queue)->start (pDevice->queue);
     if (kIOReturnSuccess != result)
       HIDREPORTERRORNUM ("HIDQueueDevice - Failed to start queue.", result);
-    
+
   }
   else
     HIDREPORTERROR ("HIDQueueDevice - Invalid device.");
