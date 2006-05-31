@@ -519,11 +519,6 @@ char *convert_asm_type(const char *str, bool unsigned_var = true)
     current_location.error("Not a valid type");
   }
 
-  if (var_type && !unsigned_var)
-  {
-    var_type += strlen("unsigned ");
-  }
-
   return(var_type);
 }
 
