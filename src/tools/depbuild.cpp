@@ -18,7 +18,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 /*
 This is part of a toolkit used to assist in ZSNES development
 
-This program tells us how far our port progress is.
+This program generates dependacies for all C/C++/Assembly files
 */
 
 #include <iostream>
@@ -36,25 +36,26 @@ string nflags;
 
 void fix_line(string &line, const char *filename)
 {
-  if (line.find(":") != string::npos)
+  if (line.find(":") != string::npos) //If this is the first line outputed for this file
   {
     string fname(filename);
     size_t last_slash = fname.find_last_of("/");
-    if (last_slash != string::npos)
+    if (last_slash != string::npos) //If it's in a subdirectory, add it to the object filename
     {
       line.replace(0, 3, fname, 0, last_slash+1);
     }
-    else
+    else //Otherwise just remove the leading spaces
     {
-      line.erase(0, 3);
+      line.erase(0, 3); 
     }
   }
-  else
+  else //Sequal lines need to make sure previous line ends with a \ and then go to next line
   {
     cout << " \\\n";
   }
 }
 
+//This function is so crazy because GCC doesn't put in proper directories, and adds system headers
 void dependancy_calculate_c(const char *filename)
 {
   string command = cc + " " + cflags + " -M " + filename;
@@ -64,26 +65,26 @@ void dependancy_calculate_c(const char *filename)
     char line[256];
     string processed_line("  ");
     bool line_read = false;
-    while (fgets(line, sizeof(line), fp))
+    while (fgets(line, sizeof(line), fp)) //Process all lines of output
     {
        line_read = true;
        vector<string> tokens;
-       Tokenize(string(line), tokens, " \t\n\\");
+       Tokenize(string(line), tokens, " \t\n\\"); //Break apart into each dependancy
        for (vector<string>::iterator i = tokens.begin(); i != tokens.end(); i++)
        {
-         if ((*i)[0] != '/')
+         if ((*i)[0] != '/') //If dependancy is a system header (all system headers would begin with /
          {
-           if (processed_line.length() > 50)
+           if (processed_line.length() > 50) //Let's wrap every time we go over 50 characters
            {
              fix_line(processed_line, filename);
              cout << processed_line;
              processed_line = "  ";
            }
-           processed_line += " " + *i;
+           processed_line += " " + *i; //Add dependacy to current line. Do not move this code to above the above if statement
          }
        }
     }
-    if (line_read)
+    if (line_read) //Only output if there was dependancy data
     {
       fix_line(processed_line, filename);
       cout << processed_line << "\n";
