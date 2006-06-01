@@ -47,10 +47,10 @@ case x$target in
     NFLAGS="$NFLAGS -D__BSDSDL__ -f elf -DELF"
     ;;
   *-*-darwin* )
-    CFLAGS="$CFLAGS -D__MACOSX__ -arch i386"
+    CFLAGS="$CFLAGS -D__MACOSX__ -arch i386 -mdynamic-no-pic"
     NFLAGS="$NFLAGS -D__MACOSX__ -f macho"
     MMLIB_FILES="\$(MMLIBDIR)/osx.o \$(MMLIBDIR)/mm.o"
-    LDFLAGS="$LDFLAGS -framework Carbon -framework IOKit"
+    LDFLAGS="$LDFLAGS -framework Carbon -framework IOKit -mdynamic-no-pic"
     ;;
   *-*-cygwin* | *-*-*ming*)
     NFLAGS="$NFLAGS -f win32"
