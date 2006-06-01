@@ -107,7 +107,7 @@ $(PSR): parsegen.cpp
 
 TOOLSEXE=$(TOOLSDIR)/archopt $(TOOLSDIR)/cutrtype $(TOOLSDIR)/extraext\
 	$(TOOLSDIR)/minwhite $(TOOLSDIR)/nreplace $(TOOLSDIR)/sec-test\
-	$(TOOLSDIR)/srccount
+	$(TOOLSDIR)/srccount $(TOOLSDIR)/depbuild
 tools: $(TOOLSEXE)
 $(TOOLSDIR)/archopt:
 	@CC@ @CFLAGS@ -m32 -o $@ $@.c
@@ -125,6 +125,8 @@ $(TOOLSDIR)/sec-test: $(TOOLSOBJ)
 	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOLSOBJ)
 $(TOOLSDIR)/srccount: $(TOOLSOBJ)
 	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOLSDIR)/fileutil.o
+$(TOOLSDIR)/depbuild: $(TOOLSOBJ)
+	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOLSOBJ)
 
 cfg.o: $< $(PSR)
 md.o: $< $(PSR)
