@@ -50,7 +50,7 @@ case x$target in
     CFLAGS="$CFLAGS -D__MACOSX__ -arch i386"
     NFLAGS="$NFLAGS -D__MACOSX__ -f macho"
     MMLIB_FILES="\$(MMLIBDIR)/osx.o \$(MMLIBDIR)/mm.o"
-    LDFLAGS="$LDFLAGS -framework Carbon -framework IOKit -lcc_dynamic"
+    LDFLAGS="$LDFLAGS -framework Carbon -framework IOKit"
     ;;
   *-*-cygwin* | *-*-*ming*)
     NFLAGS="$NFLAGS -f win32"
