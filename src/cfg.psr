@@ -6,15 +6,19 @@
 @  ----
 
 @
-@ Percent to execute [50..150]
+@ Percent to execute [50..150] - only modify if you know what you are doing
+@ Changing this value may help certain games run.
 per2exec dd 100
 
 @
 @ Update SRAM in real-time (0 = NO, 1 = Yes)
+@ This is useful if you fear something will prevent ZSNES from exiting normally.
+@ ZSNES normally updates SRAM on exit.
 SRAMSave5Sec db 0
 
 @
 @ Use old implementation for snes mode 2 (0 = NO, 1 = Yes)
+@ Enable if you experience graphic anomolies under Mode2
 OldGfxMode2 db 0
 
 @
@@ -66,6 +70,7 @@ pl1DLk dd 0
 pl1DRk dd 0
 %ifdef __MSDOS__
 @ Use port 209h (0 = NO, 1 = Yes)
+@ Enable if the gameport is using said resource to allow your gamepad/joystick to work 
 %else
 @ DOS-only option, don't edit it
 %endif
@@ -108,6 +113,7 @@ pl2DLk dd 0
 pl2DRk dd 0
 %ifdef __MSDOS__
 @ Use port 209h (0 = NO, 1 = Yes)
+@ Enable if the gameport is using said resource to allow your gamepad/joystick to work 
 %else
 @ DOS-only option, don't edit it
 %endif
@@ -150,6 +156,7 @@ pl3DLk dd 0
 pl3DRk dd 0
 %ifdef __MSDOS__
 @ Use port 209h (0 = NO, 1 = Yes)
+@ Enable if the gameport is using said resource to allow your gamepad/joystick to work 
 %else
 @ DOS-only option, don't edit it
 %endif
@@ -192,6 +199,7 @@ pl4DLk dd 0
 pl4DRk dd 0
 %ifdef __MSDOS__
 @ Use port 209h (0 = NO, 1 = Yes)
+@ Enable if the gameport is using said resource to allow your gamepad/joystick to work 
 %else
 @ DOS-only option, don't edit it
 %endif
@@ -234,6 +242,7 @@ pl5DLk dd 0
 pl5DRk dd 0
 %ifdef __MSDOS__
 @ Use port 209h (0 = NO, 1 = Yes)
+@ Enable if the gameport is using said resource to allow your gamepad/joystick to work 
 %else
 @ DOS-only option, don't edit it
 %endif
@@ -252,6 +261,7 @@ AllowUDLR db 0
 @
 %ifdef __MSDOS__
 @ Use sidewinder fix (0 = NO, 1 = Yes)
+@ Enable this if the Sidewinder is still not detected properly.
 %else
 @ DOS-only, don't edit
 %endif
@@ -348,10 +358,11 @@ CustomResY dd 480
 
 @
 @ Use new graphics engine (0 = No, 1 = YES)
+@ Toggle off when there are graphical problems in the new graphics engine
 newengen db 1
 
 @
-@ Scanlines (0 = DISABLE, 1 = Full, 2 = 25%, 3 = 50%)
+@ Scanlines (0 = DISABLE, 1 = Full, 2 = 25%, 3 = 50%) - simulate TV scanlines
 #ifdef __MSDOS__
 @ 256x256 or 640x480 8bit modes only (25% and 50% in 640x480 16bit mode only)
 #endif
@@ -360,23 +371,30 @@ scanlines db 0
 @
 #ifdef __MSDOS__
 @ Video interpolation (0 = OFF, 1 = On)
+@ Blends the neighboring pixels on the screen to create a blur effect,
+@ eliminating pixelation due to hardware stretching.
+@ This is disabled when other filters are used.
 @ Available in most VESA2 16-bit modes
 @ Note: this option controls Eagle filter in 640x480 8bit mode
 #else
 @ Video interpolation (0 = OFF, 1 = On)
+@ Blends the neighboring pixels on the screen to create a blur effect,
+@ eliminating pixelation due to hardware stretching.
+@ This is disabled when other filters are used.
 #endif
 antienab db 0
 
 @
 #ifndef __UNIXSDL__
 @ Sync frames with monitor refresh rate (0 = NO, 1 = Yes)
+@ Do not enable if you cannot normally sustain 60fps
 #else
 @ VSync is forced - don't edit this value
 #endif
 vsyncon db 0
 
 @
-%ifdef __WIN32__
+%ifndef __WIN32__
 @ Triple buffer - replaces vsync (0 = NO, 1 = Yes)
 %else
 @ Win port only, don't edit
@@ -385,7 +403,10 @@ TripleBufferWin db 0
 
 @
 %ifdef __MSDOS__
-@ Small screen, stretch screen, triple buffer (0 = NO, 1 = Yes)
+@ Small Screen, Stretch Screen, Triple buffer (0 = NO, 1 = Yes)
+@ Enabling small screen will render in 256x224 res (not a good idea to enable).
+@ Enabling stretch screen will stretch the image to fill the screen.
+@ Enabling Triple Buffering will disable the vsync option.
 %else
 @ DOS-only options, don't edit them
 %endif
@@ -396,6 +417,9 @@ Triplebufen db 0
 @
 %ifdef __UNIXSDL__
 @ Bilinear filter (0 = NO, 1 = Yes)
+@ Blends the neighboring pixels on the screen to create a blur effect,
+@ eliminating pixelation due to hardware stretching.
+@ This is disabled when other filters are used.
 %else
 @ SDL-only option, don't edit it
 %endif
@@ -403,24 +427,41 @@ BilinearFilter db 0
 
 @
 @ 2x filter used (0 = NONE, 1 = 2xSaI, 2 = Super Eagle, 3 = Super 2xSaI)
+@ These are the various Kreed filters. They are blur filters but do not exhibit
+@ the same level of blurring than interpolation/bilinear.
+@ This is disabled when other filters are used.
+@
 En2xSaI db 0
 
 @
 @ Use hq*x filter (0 = NO, 1 = Yes)
+@ This is a filter MaxSt has created. These are very CPU intensive filters that do
+@ very awesome blending to remove the pixelation.
+
+@ The level of HQ*x filtering depends on the current resolution used
+@ HQ2x = 512x448 but below HQ3x min res
+@ HQ3x = 768x672 but below HQ4x min res
+@ HQ4x = 1024x896 or above
+@ This is disabled when other filters are used.
 hqFilter db 0
 
 @
-@ Grayscale mode (0 = NO, 1 = Yes)
+@ Grayscale mode (0 = NO, 1 = Yes) - don't enable this for other than nostalgia
+@ The whole screen is displayed in monochrome color.
+@
 GrayscaleMode db 0
 
 @
-@ High-res mode7 (0 = NO, 1 = Yes)
+@ High-res mode7 (0 = NO, 1 = Yes) - enabling increases the resolution of Mode 7
+@ However this disables most filters, except for interpolation.
+@ This is only useful in certain games and is not useful in general.
 Mode7HiRes16b dd 0
 
 @
 @ NTSC filter (0 = OFF, 1 = On)
+@ Enable Blargg's wonderful NTSC filter which simulates the effect of an NTSC TV.
 NTSCFilter db 0
-@ Blend frames (0 = OFF, 1 = On)
+@ Blend frames (0 = OFF, 1 = On) - produces a smoother transition between frames
 NTSCBlend db 0
 @ Parameters [-100..100]
 NTSCHue sb 0
@@ -429,7 +470,7 @@ NTSCCont sb 0
 NTSCBright sb 0
 NTSCSharp sb 0
 NTSCWarp sb 0
-@ Refresh screen during parameter update (0 = OFF, 1 = On)
+@ Refresh screen while changing the filter's parameters (0 = OFF, 1 = On)
 NTSCRef db 0
 
 @
@@ -438,16 +479,18 @@ NTSCRef db 0
 @  ----
 
 @
-@ Sound emulation (0 = off, 1 = ON)
+@ Sound emulation (0 = off, 1 = ON) - disable if you need the performance
 soundon db 1
 
 @
-@ Stereo (0 = off, 1 = ON)
+@ Stereo (0 = off, 1 = ON) - disable if you need the performance
 StereoSound db 1
 
 @
-@ Sampling rate: 0 = 8000Hz, 1 = 11025Hz, 2 = 22050Hz, 3 = 44.1kHz, 4 = 16kHz
-@                5 = 32kHz, 6 = 48kHz
+@ Sampling rate: 0 = 8000Hz, 1 = 11025Hz, 2 = 22050Hz, 3 = 44100Hz,
+@                            4 = 16000Hz, 5 = 32000Hz, 6 = 48000Hz
+@ Using any other sound frequencies other than the default 32000Hz
+@ is COMPLETELY UNACCEPTABLE in use for sound bug reports.
 SoundQuality dd 5
 
 @
@@ -460,7 +503,9 @@ RevStereo db 0
 
 @
 #ifdef __MSDOS__
-@ Force 8-bit sound, raise pitch (0 = NO, 1 = Yes)
+@ Force 8-bit Sound, Raise Pitch (0 = NO, 1 = Yes)
+@ Enable Force 8-bit Sound if your sound card is producing nothing or static.
+@ Enable Raise Pitch to raise the pitch level.
 Force8b db 0
 #else
 @ DOS-only option, don't edit
@@ -468,29 +513,45 @@ Force8b db 0
 RaisePitch db 0
 
 @
-@ Disable SPC emulation, echo (0 = NO, 1 = Yes)
+@ Disable SPC emulation (0 = NO, 1 = Yes)
+@ Disabling SPC emulation can improve performance, but at the expense of emulation accuracy.
+@ It is not a good idea to disable this option.
 SPCDisable db 0
+
+@ Disable echo (0 = NO, 1 = Yes)
+@ Disables the echo effect in the sound.
+@ It is not a good idea to disable this option.
 EchoDis db 0
 
 @
 @ Sound buffering (0 = NO, 1 = Yes)
+@ Enabling this will increase the sound buffer size to reduce/prevent static
+@ on certain sound cards.
 SoundBufEn db 0
 
 @
 @ Surround sound (0 = NO, 1 = Yes)
+@ Enable a simulated 2 speaker surround sound effect.
+@ Do not enable if playing a game that has its own surround sound effects.
 Surround db 0
 
 @
 @ Sound interpolation (0 = None, 1 = GAUSSIAN, 2 = Cubic, 3 = 8-point)
+@ Sound interpolation smooths out the waveform of lower frequency sounds.
+@ Using any other setting other than the default Gaussian interpolation is
+@ COMPLETELY UNACCEPTABLE in sound bug reports.
 SoundInterpType db 1
 
 @
 @ Low-pass filter (0 = NONE, 1 = Simple, 2 = Dynamic, 3 = Hi-quality)
+@ A low-pass filter improves the base in the sounds.
+@ This is useful if you have a Subwoofer.
 LowPassFilterType db 0
 
 @
 %ifdef __WIN32__
 @ Use primary sound buffer (0 = NO, 1 = Yes)
+@ Enable this if you are experiencing sound playback/static problems.
 %else
 @ Windows-only option, don't edit
 %endif
@@ -502,7 +563,7 @@ PrimaryBuffer db 0
 @  ----
 
 @
-@ Frameskip: [0..10] (0 = AUTO, 1-10 = manual 0-9)
+@ Frameskip: [0..10] (0 = AUTO, 1-10 = Manual 0-9)
 frameskip db 0
 
 @
@@ -519,7 +580,7 @@ EmuSpeed db 29
 Turbo30hz db 1
 
 @
-@ Fastforward/slowdown keys behaviour (0 = HELD, 1 = toggle)
+@ Fastforward/slowdown keys behaviour (0 = HELD, 1 = Toggle)
 FastFwdToggle db 0
 
 @ Fastforward/slowdown factors [0..28] (0 = factor 2, 28 = factor 30)
@@ -528,18 +589,25 @@ SDRatio db 0
 
 @
 @ Load SRAM with savestates (0 = No, 1 = YES)
+@ Enable this when you want to use the SRM that is stored within the savestate.
+@ Warning: You will overwrite the existing SRM that you are currently using.
 SRAMState db 1
 
 @
 @ Auto increment state slot when saving (0 = NO, 1 = Yes)
+@ Enable this if you have a tendency in saving accidentally to an existing savestate.
 AutoIncSaveSlot db 0
 
 @
 @ Select latest save state slot on game load (0 = NO, 1 = Yes)
+@ Enable this if you want to load the last saved savestate quickly
+@ (via the load savestate button/GUI option) after loading the game.
 LatestSave db 0
 
 @
 @ Auto state save/load - uses a special slot (0 = NO, 1 = Yes)
+@ Enable this if you wish a special state to be saved on a visit to the GUI.
+@ This state will automatically be loaded when you load a game.
 AutoState db 0
 
 @
@@ -550,6 +618,7 @@ RewindFrames db 15
 
 @
 @ Paths:
+@ It is suggested to go to GUI->Paths and modify the paths from there.
 %ifndef __UNIXSDL__
 @ ROMs drive + directory
 %else
@@ -585,6 +654,8 @@ ScreenShotFormat db 0
 
 @
 @ MMX support (0 = No, 1 = YES)
+@ Disable this only if you actually do NOT have a processor that supports MMX.
+@ Disabling this option will prevent you from using some of the more advanced video/sound filters.
 MMXSupport db 1
 
 @
@@ -600,16 +671,18 @@ PauseLoad db 0
 PauseRewind db 0
 
 @
-@ Display FPS counter automatically (0 = NO, 1 = Yes)
+@ Display FPS counter when a game is loaded (0 = NO, 1 = Yes)
+@ This option is automatically disabled when Frame Skip is in use.
 FPSAtStart db 0
 
 @
-@ Clock display (0 = NO, 1 = Yes) & Clock mode (0 = 24 HOURS, 1 = 12 hours)
+@ Display Clock (0 = NO, 1 = Yes) & Clock mode (0 = 24 HOURS, 1 = 12 hours)
 TimerEnable db 0
 TwelveHourClock db 0
 
 @
 @ Autoload .CHT files (0 = NO, 1 = Yes)
+@ Enable the use of stored cheat files on load.
 AutoLoadCht db 0
 
 @
@@ -617,7 +690,7 @@ AutoLoadCht db 0
 AutoPatch db 1
 
 @
-@ Pause when out of focus (0 = NO, 1 = Yes)
+@ Pause emulation when out of focus (0 = NO, 1 = Yes)
 PauseFocusChange db 0
 
 @
@@ -629,6 +702,8 @@ RomInfo db 1
 %ifdef __WIN32__
 @
 @ Give high priority to ZSNES (0 = NO, 1 = Yes)
+@ Enable this if it improves performance. This option is not for everyone.
+@ This may cause other background apps to be sluggish.
 HighPriority db 0
 
 @
@@ -712,10 +787,12 @@ GUIEffect db 0
 
 @
 @ Filter GUI display (0 = No, 1 = YES)
+@ If enabled, the current filter you are using will also filter to GUI.
 FilteredGUI db 1
 
 @
 @ Wrap mouse cursor (0 = NO, 1 = Yes)
+@ If enabled, the cursor will wrap around to the other side.
 mousewrap db 0
 
 @
@@ -767,11 +844,11 @@ AlwaysOnTop db 0
 %endif
 
 @
-@ Game-specific key combos (0 = NO, 1 = Yes)
+@ Enable Game-specific key combos (0 = NO, 1 = Yes)
 GUIComboGameSpec db 0
 
 @
-@ Mouse click enters/exits GUI (0 = NO, 1 = Yes)
+@ Right mouse click enters/exits GUI (0 = NO, 1 = Yes)
 GUIClick db 0
 
 @
