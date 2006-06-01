@@ -92,7 +92,7 @@ EXTSYM GUITBWVID,Clear2xSaIBuffer,MouseWindow,ExitFromGUI,GUIWFVID,newgfx16b
 EXTSYM NumVideoModes,MusicVol,DSPMem,NumInputDevices,GUIInputNames
 EXTSYM GUIVideoModeNames,GUISLVID,GUIINVID,GUIEAVID,GUIIEVID,GUIFSVID,GUIWSVID
 EXTSYM GUISSVID,GUITBVID,GUIHSVID,GUI2xVID,GUII2VID,GUIM7VID,GUINTVID
-EXTSYM Force8b,convertnum,converthex,device1,device2,TwelveHourClock
+EXTSYM convertnum,converthex,device1,device2,TwelveHourClock
 EXTSYM outofmemfix,yesoutofmemory,JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY
 EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,GetCoords,GetCoords3,MultiTap
 EXTSYM SFXEnable,RestoreSystemVars,GUIBIFIL,GUIHQ2X,GUIHQ3X,GUIHQ4X,firstsaveinc
@@ -135,13 +135,13 @@ EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
 EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
 EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move
-EXTSYM mousewrap,GUIClick,PrevFSMode,PrevWinMode,HighPriority
+EXTSYM mousewrap,GUIClick,PrevFSMode,PrevWinMode
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,OldGfxMode2,SmallMsgText
-EXTSYM AutoPatch,RomInfo,AllowUDLR,DisableScreenSaver,Triplebufen,GrayscaleMode
+EXTSYM AutoPatch,RomInfo,AllowUDLR,Triplebufen,GrayscaleMode
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,TripleBufferWin
 EXTSYM BilinearFilter,lastcursres,SidewinderFix,RaisePitch
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SoundBufEn,SPCDisable
-EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SaveMainWindowPos,FastFwdToggle
+EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,FastFwdToggle
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM MovieVideoMode, MovieAudio,MovieVideoAudio,MovieAudioCompress
 
@@ -150,8 +150,9 @@ EXTSYM numlockptr
 %elifdef __WIN32__
 EXTSYM initDirectDraw,reInitSound,CheckAlwaysOnTop,CheckPriority,AlwaysOnTop
 EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst
+EXTSYM HighPriority,DisableScreenSaver,SaveMainWindowPos
 %elifdef __MSDOS__
-EXTSYM dssel,SetInputDevice209,initvideo2
+EXTSYM dssel,SetInputDevice209,initvideo2,Force8b
 %endif
 
 %ifndef __MSDOS__
