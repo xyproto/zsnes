@@ -72,7 +72,7 @@ void dependancy_calculate_c(const char *filename)
        Tokenize(string(line), tokens, " \t\n\\"); //Break apart into each dependancy
        for (vector<string>::iterator i = tokens.begin(); i != tokens.end(); i++)
        {
-         if ((*i)[0] != '/') //If dependancy isn't a system header (all system headers would begin with /
+         if ((*i)[0] != '/') //If dependancy isn't a system header (all system headers would begin with /)
          {
            if (processed_line.length() > 50) //Let's wrap every time we go over 50 characters
            {
