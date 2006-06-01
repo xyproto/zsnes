@@ -40,7 +40,7 @@ void fix_line(string &line, const char *filename)
   {
     string fname(filename);
     size_t last_slash = fname.find_last_of("/");
-    if (last_slash != string::npos) //If it's in a subdirectory, add it to the object filename
+    if (last_slash != string::npos) //If it's in a subdirectory, add directory path to the object filename
     {
       line.replace(0, 3, fname, 0, last_slash+1);
     }
@@ -72,7 +72,7 @@ void dependancy_calculate_c(const char *filename)
        Tokenize(string(line), tokens, " \t\n\\"); //Break apart into each dependancy
        for (vector<string>::iterator i = tokens.begin(); i != tokens.end(); i++)
        {
-         if ((*i)[0] != '/') //If dependancy is a system header (all system headers would begin with /
+         if ((*i)[0] != '/') //If dependancy isn't a system header (all system headers would begin with /
          {
            if (processed_line.length() > 50) //Let's wrap every time we go over 50 characters
            {
