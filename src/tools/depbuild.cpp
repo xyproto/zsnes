@@ -74,13 +74,21 @@ void dependancy_calculate_c(const char *filename)
        {
          if ((*i)[0] != '/') //If dependancy isn't a system header (all system headers would begin with /)
          {
+           //This if has to be before the dependacy is added onto the processed line string
            if (processed_line.length() > 50) //Let's wrap every time we go over 50 characters
            {
              fix_line(processed_line, filename);
              cout << processed_line;
              processed_line = "  ";
            }
-           processed_line += " " + *i; //Add dependacy to current line. Do not move this code to above the above if statement
+           string dependancy = *i;
+           //Now check if there is a needless dir/../
+           size_t first_slash = dependancy.find_first_of("/");
+           if ((first_slash != string::npos) && dependancy.compare(0, 2, "..") && !dependancy.compare(first_slash, 4, "/../"))
+           {
+             dependancy.erase(0, first_slash+strlen("/../"));
+           }
+           processed_line += " " + dependancy; //Add dependacy to current line. Output for overflow (wrapping) should be done before this
          }
        }
     }
