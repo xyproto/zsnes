@@ -1,5 +1,9 @@
 @ PSR-produced config file (stock default in CAPS)
-
+@
+@Note, if you're worried you messed up a setting, removing the line will have
+@ZSNES use the default settings for that option.
+@The next time ZSNES is ran, the line will reappear with the default settings.
+@
 @
 @  ----
 @ -- Emulation --
@@ -394,7 +398,7 @@ antienab db 0
 vsyncon db 0
 
 @
-%ifndef __WIN32__
+%ifdef __WIN32__
 @ Triple buffer - replaces vsync (0 = NO, 1 = Yes)
 %else
 @ Win port only, don't edit
@@ -621,6 +625,11 @@ RewindFrames db 15
 @ It is suggested to go to GUI->Paths and modify the paths from there.
 %ifndef __UNIXSDL__
 @ ROMs drive + directory
+@
+@ Note, when entering a path, make sure every backslash is doubled
+@ "C:\Games\SNES" for example is incorrect.
+@ "C:\\Games\\SNES" is correct.
+@
 %else
 @ ROMs directory (don't edit drive, MS-only)
 %endif
@@ -676,8 +685,9 @@ PauseRewind db 0
 FPSAtStart db 0
 
 @
-@ Display Clock (0 = NO, 1 = Yes) & Clock mode (0 = 24 HOURS, 1 = 12 hours)
+@ Display Clock (0 = NO, 1 = Yes)
 TimerEnable db 0
+@Clock mode (0 = 24 HOURS, 1 = 12 hours)
 TwelveHourClock db 0
 
 @
