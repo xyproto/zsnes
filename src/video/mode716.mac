@@ -199,15 +199,21 @@ SECTION .text
     Convert13Bit
     add bx,bx
     sub word[mcyloc],bx
-    CLIP mcyloc
+    test word[mcyloc],4000h
+    jz %%zero
+    or word[mcyloc],~7ffh
+    jmp %%notzero
+%%zero
+    and word[mcyloc],7ffh
+%%notzero
 
     ; 2.) Find position at scaled y, centered x at SCX=X0-(cy*C),SCY=Y0-(cy*D)
 
     movsx eax,word[mode7B]
     movsx ebx,word[mcyloc]
     imul eax,ebx
-    and eax,~63
     sar eax,1
+    and eax,~63
     mov [mmode7xpos],eax
     mov bx,[mode7X0]
     Convert13Bit
@@ -222,8 +228,8 @@ SECTION .text
     movsx ebx,word[mcyloc]
     movsx eax,word[mode7D]
     imul eax,ebx
-    and eax,~63
     sar eax,1
+    and eax,~63
     mov [mmode7ypos],eax
     mov bx,[mode7Y0]
     Convert13Bit
