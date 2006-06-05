@@ -416,6 +416,7 @@ NEWSYM conv2speed
     ret
 
 NEWSYM AdjustFrequency
+      xor ebx,ebx
       mov al,[SoundInterpType]
       mov ah,[MMXSupport]
       or al,al
