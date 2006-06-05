@@ -38,6 +38,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #endif
 #include "psrhead/cfg.h"
+#include "asm_call.h"
 
 #ifdef __WIN32__
 void ImportDirectX();
@@ -51,7 +52,8 @@ extern unsigned char autoloadstate, autoloadmovie, Palette0, debugger;
 extern unsigned char debugdisble, DisplayS;
 extern char *STCart2, fname[];
 
-void zstart(), makeextension();
+void zstart();
+void makeextension();
 
 #define put_line(x)                          \
   if (lines_out == 22)                       \
@@ -703,7 +705,7 @@ static void handle_params(int argc, char *argv[])
       char *fvar = fname;
       fvar[0] = strlen(argv[i]);
       strncpy(&fvar[1],argv[i],127);
-      makeextension();
+      asm_call(makeextension);
 
       STCart2 = argv[i+1]; //Sufami Turbo second cart
       break;
