@@ -45,7 +45,6 @@ extern unsigned char FPSAtStart, *Msgptr, CSStatus[], CSStatus2[], CSStatus3[];
 unsigned short selc0040, selcA000, selcB800;
 unsigned char string[512], fname[512], fnames[512], fnamest[512];
 
-unsigned char filefound;	// Parameter String Found
 unsigned char *vidbuffer;	//  video buffer (1024x239 = 244736)
 unsigned char *ngwinptr;
 unsigned char *vidbufferm;	// video buffer mirror
@@ -261,6 +260,17 @@ void zstart()
 #endif
 
   asm_call(SystemInit);
+
+  if (guioff && !*fname)
+  {
+    puts("Will not start without a GUI unless a filename is supplied.");
+    exit(0);
+  }
+  else
+  {
+    extern bool romloadskip;
+    romloadskip = true;
+  }
 
 #ifdef OPENSPC
   OSPC_Init();

@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM ZFileSystemInit,getcmdline,GUIRestoreVars,obtaindir
-EXTSYM tparms,SBHDMA,InitDir,InitDrive,SRAMChdir,allocptr,putchar
+EXTSYM SBHDMA,InitDir,InitDrive,SRAMChdir,allocptr,putchar
 EXTSYM getchar,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName,ZFileSeekMode
 EXTSYM ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle,ZFileWriteSize
 EXTSYM ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize,ZFileReadBlock
@@ -59,7 +59,6 @@ NEWSYM StartUp
 
 NEWSYM SystemInit
     ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
-    push es
     mov byte[cvidmode],2
     call getcmdline
     mov dword[esi],'zsne'
@@ -95,12 +94,10 @@ NEWSYM SystemInit
     call GUIRestoreVars                 ; Load GUI stuff
     popad
     call obtaindir                      ; Get Save/Init Directories
-    call tparms
     pushad
     call SRAMChdir
     popad
     mov byte[SBHDMA],1
-    pop es
     ret
 
 ; Allocate memory - see allocptr in ui.asm for details on what to allocate

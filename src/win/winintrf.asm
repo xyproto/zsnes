@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM ZFileSystemInit,getcmdline,GUIRestoreVars,obtaindir
-EXTSYM tparms,preparedir,SBHDMA,ccmdline,InitDir,InitDrive,allocptr
+EXTSYM preparedir,SBHDMA,ccmdline,InitDir,InitDrive,allocptr
 EXTSYM putchar,getch,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName
 EXTSYM ZFileSeekMode,ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle
 EXTSYM ZFileWriteSize,ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize
@@ -88,7 +88,6 @@ NEWSYM SystemInit
     popad
     call obtaindir                      ; Get Save/Init Directories
     call ccmdline
-    call tparms
     call preparedir
 
 %ifndef __DEVELOPER__

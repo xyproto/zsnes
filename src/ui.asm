@@ -590,48 +590,6 @@ DetermineNewest:
     mov [fnamest+eax],bl
     ret
 
-;*******************************************************
-; Get Parameters             Get Parameters Individually
-;*******************************************************
-
-NEWSYM tparms
-.donestring
-    test byte[.numparam],0FFh
-    jz .nochars
-    mov al,[filefound]
-    test al,0FFh
-    jz .nostring
-    ret
-
-.nostring
-    cmp byte[guioff],0
-    je .yesgui
-
-    mov edx,.nostr
-    call PrintStr
-    jmp DosExit
-
-.nochars
-    cmp byte[guioff],0
-    je .yesgui
-    cmp byte[fname],0
-    jne .yesgui
-    jmp DosExit
-
-.yesgui
-    mov byte[romloadskip],1
-    ret
-
-SECTION .bss
-.numparam resb 1
-
-SECTION .data
-.nostr db 'This emulator will not work without a filename!',13,10,0
-.waitkey   db 'Press Any Key to Continue.',0
-.ret       db 13,10,0
-
-SECTION .text
-
 %ifndef __UNIXSDL__
 NEWSYM obtaindir
     cmp byte[SRAMDir],0

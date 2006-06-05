@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,ZFileSystemInit,getcmdline
-EXTSYM GUIRestoreVars,obtaindir,tparms,preparedir,V8Mode,getblaster,Force8b
+EXTSYM GUIRestoreVars,obtaindir,preparedir,V8Mode,getblaster,Force8b
 EXTSYM SBHDMA,ccmdline,InitDir,InitDrive,allocptr,ZOpenFile,ZOpenMode
 EXTSYM CurrentHandle,ZFileSeek,ZOpenFileName,ZFileSeekMode,ZFileSeekPos
 EXTSYM ZFileSeekHandle,ZFileWriteHandle,ZFileWriteSize,ZFileWriteBlock
@@ -112,7 +112,6 @@ NEWSYM SystemInit
     popad
     call obtaindir                      ; Get Save/Init Directories
     call ccmdline
-    call tparms
     call preparedir
     call getblaster                     ; get set blaster environment
     cmp byte[Force8b],1
