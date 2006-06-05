@@ -126,7 +126,7 @@ void dependancy_calculate(const char *filename, struct stat& stat_buffer)
 
 int main(size_t argc, const char *const *const argv)
 {
-  if (argc != 5)
+  if (argc < 5)
   {
     cout << "Usage: depbuild CC CFLAGS NASM NFLAGS\n"
          << "\n"
@@ -140,7 +140,18 @@ int main(size_t argc, const char *const *const argv)
     nasm   = argv[3];
     nflags = argv[4];
 
-    parse_dir(".", dependancy_calculate);
+    if (argc == 5)
+    {
+      parse_dir(".", dependancy_calculate);
+    }
+    else
+    {
+      struct stat unused;
+      for (size_t i = 5; i < argc; i++)
+      {
+        dependancy_calculate(argv[i], unused);
+      }
+    }
   }
   return(0);
 }
