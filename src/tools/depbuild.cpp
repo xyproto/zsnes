@@ -130,7 +130,10 @@ int main(size_t argc, const char *const *const argv)
   {
     cout << "Usage: depbuild CC CFLAGS NASM NFLAGS\n"
          << "\n"
-         << "Make sure to properly quote (and possibly escape) the 4 parameters being passed\n"
+         << "Make sure to properly quote (and possibly escape) the 4 parameters being passed.\n"
+         << "\n"
+         << "If you don't pass anything else, current directory will be parsed for all\n"
+         << ".c, .cpp, .asm files. Otherwise only passed files will have dependancies built.\n"
          << endl;
   }
   else
