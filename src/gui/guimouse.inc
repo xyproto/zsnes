@@ -1425,7 +1425,7 @@ SECTION .text
   ret
 %%nobar
   ; upper arrow
-  GUIClickArea %1,%2+7,%3,%2-1,%%noupper
+  GUIClickArea %1,%2-7,%3,%2-1,%%noupper
   mov eax,[GUIwinposy+%10*4]
   add eax,%2-7
   mov [GUIHoldYlim],eax
