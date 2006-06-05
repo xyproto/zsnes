@@ -22,13 +22,13 @@
 
 EXTSYM PrintStr,WaitForKey,PrintChar,ram7fa,wramdataa,MMXSupport
 EXTSYM MMXextSupport,statefileloc,LatestSave,firstsaveinc,Open_File
-EXTSYM Get_File_Date,Close_File,Change_Dir,Get_Dir,romloadskip
+EXTSYM Get_File_Date,Close_File,Change_Dir,Get_Dir
 EXTSYM init18_2hz,SRAMDirCurDir,SRAMChdir,SRAMChdirFail,LoadDir,LoadDrive
 EXTSYM BitConv32Ptr,spcBuffera,spritetablea,vcache2bs,vcache4bs,vcache8bs
 EXTSYM RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa,vidbufferofsmos,ngwinptr
 EXTSYM vidbufferofsb,headdata,romdata,sfxramdata,setaramdata,wramdata,ram7f,vram
 EXTSYM sram,debugbuf,regptr,regptw,vcache2b,vcache4b,vcache8b,fname,fnames
-EXTSYM fnamest,filefound,vidbufferofsc,Sup48mbit,Sup16mbit,guioff,SRAMDir
+EXTSYM fnamest,vidbufferofsc,Sup48mbit,Sup16mbit,SRAMDir
 EXTSYM malloc_ptr,malloc_size,malloc_help
 
 %ifdef __UNIXSDL__
