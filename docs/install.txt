@@ -88,6 +88,10 @@ Windows port with MinGW:
 - NASM v0.98.39 : http://nasm.sf.net/ 
 - MinGW : http://www.mingw.org
 - Latest Win32API : http://www.mingw.org
+- DirectX 8+ for MinGW : Parts of it are included with Win32API, parts aren't.
+                     Check http://www.talula.demon.co.uk/allegro/wip.html
+                     and http://www.talula.demon.co.uk/allegro/wip.html
+                     for the rest of DirectX for MinGW.
 - zlib : http://www.zlib.net
 - libpng : http://www.libpng.org/
 
