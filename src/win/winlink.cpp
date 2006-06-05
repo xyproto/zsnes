@@ -1829,7 +1829,7 @@ void Start60HZ(void)
       MultiMouseInit();
    }
 
-   if (!device1 && !device2) MouseInput->Unacquire();
+   //if (!device1 && !device2) MouseInput->Unacquire();
 
 }
 
@@ -1879,7 +1879,7 @@ void initwinvideo(void)
    DWORD newmode=0;
    DWORD HQMode=0;
 
-   if (NTSCFilter) NTSCFilterInit();
+   if (FirstActivate && NTSCFilter) NTSCFilterInit();
 
    if ( hqFilter != 0 )
    {

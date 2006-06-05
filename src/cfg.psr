@@ -74,7 +74,7 @@ pl1DLk dd 0
 pl1DRk dd 0
 %ifdef __MSDOS__
 @ Use port 209h (0 = NO, 1 = Yes)
-@ Enable if the gameport is using said resource to allow your gamepad/joystick to work 
+@ Enable if the gameport is using said resource to allow your gamepad/joystick to work
 %else
 @ DOS-only option, don't edit it
 %endif
@@ -117,7 +117,7 @@ pl2DLk dd 0
 pl2DRk dd 0
 %ifdef __MSDOS__
 @ Use port 209h (0 = NO, 1 = Yes)
-@ Enable if the gameport is using said resource to allow your gamepad/joystick to work 
+@ Enable if the gameport is using said resource to allow your gamepad/joystick to work
 %else
 @ DOS-only option, don't edit it
 %endif
@@ -160,7 +160,7 @@ pl3DLk dd 0
 pl3DRk dd 0
 %ifdef __MSDOS__
 @ Use port 209h (0 = NO, 1 = Yes)
-@ Enable if the gameport is using said resource to allow your gamepad/joystick to work 
+@ Enable if the gameport is using said resource to allow your gamepad/joystick to work
 %else
 @ DOS-only option, don't edit it
 %endif
@@ -203,7 +203,7 @@ pl4DLk dd 0
 pl4DRk dd 0
 %ifdef __MSDOS__
 @ Use port 209h (0 = NO, 1 = Yes)
-@ Enable if the gameport is using said resource to allow your gamepad/joystick to work 
+@ Enable if the gameport is using said resource to allow your gamepad/joystick to work
 %else
 @ DOS-only option, don't edit it
 %endif
@@ -246,7 +246,7 @@ pl5DLk dd 0
 pl5DRk dd 0
 %ifdef __MSDOS__
 @ Use port 209h (0 = NO, 1 = Yes)
-@ Enable if the gameport is using said resource to allow your gamepad/joystick to work 
+@ Enable if the gameport is using said resource to allow your gamepad/joystick to work
 %else
 @ DOS-only option, don't edit it
 %endif

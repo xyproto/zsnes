@@ -46,7 +46,7 @@ void fix_line(string &line, const char *filename)
     }
     else //Otherwise just remove the leading spaces
     {
-      line.erase(0, 3); 
+      line.erase(0, 3);
     }
   }
   else //Sequal lines need to make sure previous line ends with a \ and then go to next line

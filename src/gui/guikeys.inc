@@ -1289,6 +1289,9 @@ GUIVideoKeys:
   mov byte[scanlines],0
   mov byte[antienab],0
   mov byte[BilinearFilter],0
+  pushad
+  call NTSCFilterInit
+  popad
 .nontscfilter
 %ifdef __UNIXSDL__
   cmp dh,'B'
