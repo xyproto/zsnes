@@ -34,6 +34,18 @@ string nasm;
 string cflags;
 string nflags;
 
+unsigned int count_slashes(const char *path)
+{
+  unsigned int slashes = 0;
+  const char *p = path;
+  while ((p = strchr(p, '/')))
+  {
+    slashes++;
+    p++;
+  }
+  return(slashes);
+}
+
 void fix_line(string &line, const char *filename)
 {
   if (line.find(":") != string::npos) //If this is the first line outputed for this file
@@ -82,12 +94,22 @@ void dependancy_calculate_c(const char *filename)
             processed_line = "  ";
           }
           string dependancy = *i;
+
           //Now check if there is a needless dir/../
           size_t first_slash = dependancy.find_first_of("/");
           if ((first_slash != string::npos) && dependancy.compare(0, 2, "..") && !dependancy.compare(first_slash, 4, "/../"))
           {
             dependancy.erase(0, first_slash+strlen("/../"));
           }
+
+          //Now remove improper ../ from GCC output
+          unsigned int slashes = count_slashes(filename);
+          while (!dependancy.compare(0, 3, "../") && slashes)
+          {
+             dependancy.erase(0, strlen("../"));
+             slashes--;
+          }
+
           processed_line += " " + dependancy; //Add dependacy to current line. Output for overflow (wrapping) should be done before this
         }
       }
@@ -107,7 +129,7 @@ void dependancy_calculate_c(const char *filename)
 
 void dependancy_calculate_asm(const char *filename)
 {
-  string command = nasm + " " + nflags + " -M -D__DEPBUILD__ " + filename;
+  string command = nasm + " " + nflags + " -M " + filename;
   system(command.c_str());
 }
 
