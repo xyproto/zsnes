@@ -58,7 +58,7 @@ void fix_line(string &line, const char *filename)
 //This function is so crazy because GCC doesn't put in proper directories, and adds system headers
 void dependancy_calculate_c(const char *filename)
 {
-  string command = cc + " " + cflags + " -M " + filename;
+  string command = cc + " " + cflags + " -M -D__DEPBUILD__ " + filename;
   FILE *fp = popen(command.c_str(), "r");
   if (fp)
   {
@@ -107,7 +107,7 @@ void dependancy_calculate_c(const char *filename)
 
 void dependancy_calculate_asm(const char *filename)
 {
-  string command = nasm + " " + nflags + " -M " + filename;
+  string command = nasm + " " + nflags + " -M -D__DEPBUILD__ " + filename;
   system(command.c_str());
 }
 

@@ -18,7 +18,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
+#if !defined(GBLHDR_H) && !defined(__DEPBUILD__)
+#define GBLHDR_H
 
 /*************************************\
 * Global Definitions and Headers File *
@@ -121,3 +122,4 @@ however it's a static value that we can just define */
 #endif
 
 
+#endif

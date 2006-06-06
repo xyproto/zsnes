@@ -49,7 +49,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "gblvars.h"
 #include "asm_call.h"
 #include "numconv.h"
+
+#ifndef __DEPBUILD__
 #include "psrhead/md.h"
+#endif
 
 #ifndef __WIN32__
 #define mkdir(path) mkdir(path, (S_IRWXU|S_IRWXG|S_IRWXO)) //0777
