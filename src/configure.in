@@ -36,7 +36,7 @@ MMLIB_FILES="\$(MMLIBDIR)/mm.o"
 case x$target in
   *-*-linux*)
     NFLAGS="$NFLAGS -f elf -DELF"
-    MMLIB_FILES="\$(MMLIBDIR)/linux.o \$(MMLIBDIR)/mm.o"
+    MMLIB_FILES="$MMLIB_FILES \$(MMLIBDIR)/linux.o"
     ;;
   *-*-beos*)
     CFLAGS="$CFLAGS -D__BEOS__"
@@ -49,7 +49,7 @@ case x$target in
   *-*-darwin* )
     CFLAGS="$CFLAGS -D__MACOSX__ -arch i386 -mdynamic-no-pic"
     NFLAGS="$NFLAGS -D__MACOSX__ -f macho"
-    MMLIB_FILES="\$(MMLIBDIR)/osx.o \$(MMLIBDIR)/mm.o"
+    MMLIB_FILES="$MMLIB_FILES \$(MMLIBDIR)/osx.o"
     LDFLAGS="$LDFLAGS -framework Carbon -framework IOKit -mdynamic-no-pic"
     ;;
   *-*-cygwin* | *-*-*ming*)
@@ -234,8 +234,8 @@ AC_SUBST(NFLAGS)
 AC_SUBST(ZSNESEXE)
 AC_SUBST(GL_DRAW)
 AC_SUBST(JMA_FILES)
-AC_SUBST(PSR_TEMP)
 AC_SUBST(MMLIB_FILES)
+AC_SUBST(PSR_TEMP)
 
 AC_CONFIG_FILES(Makefile)
 AC_OUTPUT

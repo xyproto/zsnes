@@ -64,15 +64,15 @@ int have_cpuid()
   #ifndef __x86_64__
   asm volatile
   (
-    "pushfl                  \n\t"
-    "pop %%eax               \n\t"
-    "movl %%eax,%%edx        \n\t"
-    "xorl %%ecx,%%eax        \n\t"
-    "push %%eax              \n\t"
-    "popfl                   \n\t"
-    "pushfl                  \n\t"
-    "pop %%eax               \n\t"
-    "xorl %%edx,%%eax        \n\t"
+  "  pushfl;"
+  "  pop %%eax;"
+  "  movl %%eax,%%edx;"
+  "  xorl %%ecx,%%eax;"
+  "  push %%eax;"
+  "  popfl;"
+  "  pushfl;"
+  "  pop %%eax;"
+  "  xorl %%edx,%%eax;"
     : "=a" (have)
     : "c" (have)
   );
@@ -411,6 +411,7 @@ int main()
   else
   {
     puts("Could not open /proc/cpuinfo, and CPUID instruction not available.");
+    return(1);
   }
 
   return(0);

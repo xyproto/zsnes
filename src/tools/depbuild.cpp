@@ -18,7 +18,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 /*
 This is part of a toolkit used to assist in ZSNES development
 
-This program generates dependacies for all C/C++/Assembly files
+This program generates dependencies for all C/C++/Assembly files
 */
 
 #include <iostream>
@@ -68,7 +68,7 @@ void fix_line(string &line, const char *filename)
 }
 
 //This function is so crazy because GCC doesn't put in proper directories, and adds system headers
-void dependancy_calculate_c(const char *filename)
+void dependency_calculate_c(const char *filename)
 {
   string command = cc + " " + cflags + " -M -MG " + filename;
   FILE *fp = popen(command.c_str(), "r");
@@ -81,40 +81,40 @@ void dependancy_calculate_c(const char *filename)
     {
       line_read = true;
       vector<string> tokens;
-      Tokenize(string(line), tokens, " \t\n\\"); //Break apart into each dependancy
+      Tokenize(string(line), tokens, " \t\n\\"); //Break apart into each dependency
       for (vector<string>::iterator i = tokens.begin(); i != tokens.end(); i++)
       {
-        if ((*i)[0] != '/') //If dependancy isn't a system header (all system headers would begin with /)
+        if ((*i)[0] != '/') //If dependency isn't a system header (all system headers would begin with /)
         {
-          //This if has to be before the dependacy is added onto the processed line string
+          //This if has to be before the dependency is added onto the processed line string
           if (processed_line.length() > 50) //Let's wrap every time we go over 50 characters
           {
             fix_line(processed_line, filename);
             cout << processed_line;
             processed_line = "  ";
           }
-          string dependancy = *i;
+          string dependency = *i;
 
           //Now check if there is a needless dir/../
-          size_t first_slash = dependancy.find_first_of("/");
-          if ((first_slash != string::npos) && dependancy.compare(0, 2, "..") && !dependancy.compare(first_slash, 4, "/../"))
+          size_t first_slash = dependency.find_first_of("/");
+          if ((first_slash != string::npos) && dependency.compare(0, 2, "..") && !dependency.compare(first_slash, 4, "/../"))
           {
-            dependancy.erase(0, first_slash+strlen("/../"));
+            dependency.erase(0, first_slash+strlen("/../"));
           }
 
           //Now remove improper ../ from GCC output
           unsigned int slashes = count_slashes(filename);
-          while (!dependancy.compare(0, 3, "../") && slashes)
+          while (!dependency.compare(0, 3, "../") && slashes)
           {
-             dependancy.erase(0, strlen("../"));
+             dependency.erase(0, strlen("../"));
              slashes--;
           }
 
-          processed_line += " " + dependancy; //Add dependacy to current line. Output for overflow (wrapping) should be done before this
+          processed_line += " " + dependency; //Add dependency to current line. Output for overflow (wrapping) should be done before this
         }
       }
     }
-    if (line_read) //Only output if there was dependancy data
+    if (line_read) //Only output if there was dependency data
     {
       fix_line(processed_line, filename);
       cout << processed_line << "\n";
@@ -127,24 +127,23 @@ void dependancy_calculate_c(const char *filename)
   }
 }
 
-void dependancy_calculate_asm(const char *filename)
+void dependency_calculate_asm(const char *filename)
 {
   string command = nasm + " " + nflags + " -M " + filename;
   system(command.c_str());
 }
 
-void dependancy_calculate(const char *filename, struct stat& stat_buffer)
+void dependency_calculate(const char *filename, struct stat& stat_buffer)
 {
   if (extension_match(filename, ".asm"))
   {
-    dependancy_calculate_asm(filename);
+    dependency_calculate_asm(filename);
   }
   else if (extension_match(filename, ".c") || extension_match(filename, ".cpp"))
   {
-    dependancy_calculate_c(filename);
+    dependency_calculate_c(filename);
   }
 }
-
 
 int main(size_t argc, const char *const *const argv)
 {
@@ -155,7 +154,7 @@ int main(size_t argc, const char *const *const argv)
          << "Make sure to properly quote (and possibly escape) the 4 parameters being passed.\n"
          << "\n"
          << "If you don't pass anything else, current directory will be parsed for all\n"
-         << ".c, .cpp, .asm files. Otherwise only passed files will have dependancies built.\n"
+         << ".c, .cpp, .asm files. Otherwise only passed files will have dependencies built.\n"
          << endl;
   }
   else
@@ -167,14 +166,14 @@ int main(size_t argc, const char *const *const argv)
 
     if (argc == 5)
     {
-      parse_dir(".", dependancy_calculate);
+      parse_dir(".", dependency_calculate);
     }
     else
     {
       struct stat unused;
       for (size_t i = 5; i < argc; i++)
       {
-        dependancy_calculate(argv[i], unused);
+        dependency_calculate(argv[i], unused);
       }
     }
   }
