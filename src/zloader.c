@@ -38,10 +38,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #endif
 #include "asm_call.h"
-
-#ifndef __DEPBUILD__
 #include "psrhead/cfg.h"
-#endif
 
 #ifdef __WIN32__
 void ImportDirectX();

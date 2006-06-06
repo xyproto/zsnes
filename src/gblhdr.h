@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#if !defined(GBLHDR_H) && !defined(__DEPBUILD__)
+#ifndef GBLHDR_H
 #define GBLHDR_H
 
 /*************************************\
