@@ -143,6 +143,26 @@ void dependency_calculate(const char *filename, struct stat& stat_buffer)
   {
     dependency_calculate_c(filename);
   }
+  else if (extension_match(filename, ".o"))
+  {
+    string fn_prefix(filename, strlen(filename)-2);
+    string asm_suffix(fn_prefix+".asm");
+    string c_suffix(fn_prefix+".c");
+    string cpp_suffix(fn_prefix+".cpp");
+
+    if (!access(asm_suffix.c_str(), F_OK))
+    {
+      dependency_calculate_asm(asm_suffix.c_str());
+    }
+    else if (!access(c_suffix.c_str(), F_OK))
+    {
+      dependency_calculate_c(c_suffix.c_str());
+    }
+    else if (!access(cpp_suffix.c_str(), F_OK))
+    {
+      dependency_calculate_c(cpp_suffix.c_str());
+    }
+  }
 }
 
 int main(size_t argc, const char *const *const argv)
