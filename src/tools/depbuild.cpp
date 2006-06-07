@@ -133,6 +133,14 @@ void dependency_calculate_asm(const char *filename)
   system(command.c_str());
 }
 
+void dependency_calculate_psr(const char *filename)
+{
+  string fn_prefix(filename, strlen(filename)-4);
+  string o_suffix(fn_prefix+".o");
+
+  cout << o_suffix << ": " << filename << "\n";
+}
+
 void dependency_calculate(const char *filename, struct stat& stat_buffer)
 {
   if (extension_match(filename, ".asm"))
@@ -143,12 +151,17 @@ void dependency_calculate(const char *filename, struct stat& stat_buffer)
   {
     dependency_calculate_c(filename);
   }
+  else if (extension_match(filename, ".psr"))
+  {
+    dependency_calculate_psr(filename);
+  }
   else if (extension_match(filename, ".o"))
   {
     string fn_prefix(filename, strlen(filename)-2);
     string asm_suffix(fn_prefix+".asm");
     string c_suffix(fn_prefix+".c");
     string cpp_suffix(fn_prefix+".cpp");
+    string psr_suffix(fn_prefix+".psr");
 
     if (!access(asm_suffix.c_str(), F_OK))
     {
@@ -161,6 +174,10 @@ void dependency_calculate(const char *filename, struct stat& stat_buffer)
     else if (!access(cpp_suffix.c_str(), F_OK))
     {
       dependency_calculate_c(cpp_suffix.c_str());
+    }
+    else if (!access(psr_suffix.c_str(), F_OK))
+    {
+      dependency_calculate_psr(psr_suffix.c_str());
     }
   }
 }
