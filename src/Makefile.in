@@ -148,8 +148,8 @@ uninstall:
 	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man1/zsnes.1
 
 clean:
-	rm -f $(ZOBJS) makefile.dep $(PSR) psrhead/*.h t_*.c @ZSNESEXE@
+	rm -f $(ZOBJS) $(PSR) psrhead/*.h t_*.c @ZSNESEXE@
 tclean:
 	rm -f $(TOOLSOBJ) $(TOOLSEXE)
 distclean: clean tclean
-	rm -f Makefile aclocal.m4 configure config.cache config.log config.status config.h
+	rm -f Makefile makefile.dep aclocal.m4 configure config.cache config.log config.status config.h
