@@ -239,7 +239,6 @@ AC_SUBST(PSR_TEMP)
 
 AC_CONFIG_FILES(Makefile)
 echo > makefile.dep
-
 AC_OUTPUT
 
 dnl - Info output

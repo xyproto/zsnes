@@ -30,6 +30,7 @@ WINDIR=linux
 ZIPDIR=zip
 
 PSR=parsegen
+PSRH=cfg.h md.h
 
 CHIPSOBJ=$(CHIPDIR)/sfxproc.o $(CHIPDIR)/fxemu2.o $(CHIPDIR)/dsp1proc.o\
 	$(CHIPDIR)/fxemu2b.o $(CHIPDIR)/fxemu2c.o $(CHIPDIR)/fxtable.o\
@@ -92,14 +93,17 @@ ZOBJS=$(MAINOBJ) $(CHIPSOBJ) $(CPUOBJ) $(GUIOBJ) $(EFFECTSOBJ) $(JMAOBJ)\
 	@CC@ @CFLAGS@ -o $@ -c $<
 %.o: %.cpp
 	@CXX@ @CXXFLAGS@ -o $@ -c $<
+%.h: %.psr $(PSR)
+	./$(PSR) @PSRFLAGS@ -cheader $*.h -fname $* t_$*.c $<
+@PSR_TEMP@
 %.o: %.psr $(PSR)
-	./$(PSR) @PSRFLAGS@ -cheader psrhead/$*.h -fname $* t_$*.c $<
+	./$(PSR) @PSRFLAGS@ -fname $* t_$*.c $<
 	@CC@ @CFLAGS@ -O1 -o $@ -c t_$*.c
 @PSR_TEMP@
 
 default: main
 all: main tools
-main: $(PSR) makefile.dep $(ZOBJS)
+main: makefile.dep $(ZOBJS)
 	@ZC@ -o @ZSNESEXE@ $(ZOBJS) @ZCFLAGS@ @LDFLAGS@
 	rm -f version.o
 
@@ -128,16 +132,9 @@ $(TOOLSDIR)/srccount: $(TOOLSOBJ)
 $(TOOLSDIR)/depbuild: $(TOOLSOBJ)
 	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOLSOBJ)
 
-psrhead/cfh.h: cfg.o
-psrhead/md.h: md.o
-
 include makefile.dep
-
 makefile.dep: $(TOOLSDIR)/depbuild Makefile
 	$(TOOLSDIR)/depbuild @CC@ "@CFLAGS@" @NASMPATH@ "@NFLAGS@" $(ZOBJS) > makefile.dep
-
-
-
 
 install:
 	@INSTALL@ -d -m 0755 $(DESTDIR)/@prefix@/bin
@@ -148,7 +145,7 @@ uninstall:
 	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man1/zsnes.1
 
 clean:
-	rm -f $(ZOBJS) $(PSR) psrhead/*.h t_*.c @ZSNESEXE@
+	rm -f $(ZOBJS) $(PSR) $(PSRH) t_*.c @ZSNESEXE@
 tclean:
 	rm -f $(TOOLSOBJ) $(TOOLSEXE)
 distclean: clean tclean

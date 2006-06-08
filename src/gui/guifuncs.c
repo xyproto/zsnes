@@ -30,8 +30,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <zlib.h>
 #define DIR_SLASH "\\"
 #endif
-#include "../psrhead/md.h"
-#include "../psrhead/cfg.h"
+#include "../md.h"
+#include "../cfg.h"
 
 extern unsigned char ComboHeader[23], ComboBlHeader[23], CombinDataGlob[3300];
 extern unsigned char ShowTimer, savecfgforce;
