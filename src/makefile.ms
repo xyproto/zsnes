@@ -239,7 +239,7 @@ else
 endif
 
 %${OE}: %.psr
-	${PSR} -D${OS} -cheader psrhead/$(patsubst %${OE},%.h,$@) -fname $(patsubst %${OE},%,$@) temppsr.c $<
+	${PSR} -D${OS} -cheader $(patsubst %${OE},%.h,$@) -fname $(patsubst %${OE},%,$@) temppsr.c $<
 ifneq (${ENV},msvc)
 	${CC} -D${OS} -o $@ -c temppsr.c
 else
@@ -444,7 +444,6 @@ clean:
 	${DELETECOMMAND} ${VIDEODIR}${SLASH}*${OE} ${TRUTH}
 	${DELETECOMMAND} ${WINDIR}${SLASH}*${OE} ${TRUTH}
 	${DELETECOMMAND} ${ZIPDIR}${SLASH}*${OE} ${TRUTH}
-	${DELETECOMMAND} psrhead${SLASH}*.h
 
 else  #else no ENV specified
 help:
