@@ -232,8 +232,8 @@ void setnoise()
 
 const unsigned int versionNumber = 0x0000008F; // 1.43
 char *ZVERSION = "Pre 1.43";
-unsigned char txtfailedalignd[25] = "Data Alignment Failure : ";
-unsigned char txtfailedalignc[25] = "Code Alignment Failure : ";
+unsigned char txtfailedalignd[] = "Data Alignment Failure : ";
+unsigned char txtfailedalignc[] = "Code Alignment Failure : ";
 
 void zstart()
 {
