@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "cpu/memtable.h"
 #include "zip/zunzip.h"
 #include "asm_call.h"
+#include "cfg.h"
 #ifndef NO_JMA
 #include "jma/zsnesjma.h"
 #endif
@@ -1628,8 +1629,6 @@ void headerhack()
   }
 }
 
-extern unsigned char per2exec;
-
 void Setper2exec()
 {
   if (per2exec != 100)
@@ -1859,7 +1858,8 @@ unsigned int showinfogui()
 extern unsigned int nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
 extern unsigned char spcnumread;
 extern unsigned char NextLineCache, sramsavedis, sndrot, regsbackup[3019];
-extern unsigned char yesoutofmemory, fnames[512];
+extern unsigned char yesoutofmemory;
+extern char fnames[512];
 
 void initsnes();
 void outofmemfix();
@@ -2209,4 +2209,149 @@ void powercycle(bool sramload)
   if (yesoutofmemory == 1)	{ asm_call(outofmemfix); }
 
   asm_call(GUIDoReset);
+}
+
+extern int NumComboLocl;
+extern unsigned char ComboHeader[23];
+extern bool romloadskip;
+extern char CombinDataLocl[3300];
+
+void SaveCombFile()
+{
+  if (romloadskip)
+  {
+    FILE *fp;
+
+    char *p = strrchr(fnames+1, '.');
+    p = p ? p+1 : fnames+1;
+    strcpy(p, "cmb");
+
+    if (NumComboLocl)
+    {
+      ComboHeader[22] = NumComboLocl;
+    }
+
+    fp = fopen(fnames+1, "wb");
+    if (fp)
+    {
+      fwrite(ComboHeader, 1, 23, fp);
+      fwrite(CombinDataLocl, 1, (NumComboLocl*2)+(NumComboLocl << 6), fp);
+      fclose(fp);
+    }
+    strcpy(p, "srm");
+  }
+}
+
+void OpenCombFile()
+{
+  if (romloadskip)
+  {
+    FILE *fp;
+
+    char *p = strrchr(fnames+1, '.');
+    p = p ? p+1 : fnames+1;
+    strcpy(p, "cmb");
+
+    NumComboLocl = 0;
+
+    fp = fopen(fnames+1, "rb");
+    if (fp)
+    {
+      fread(ComboHeader, 1, 23, fp);
+      NumComboLocl = ComboHeader[22];
+
+      if (NumComboLocl)
+      {
+        fread(CombinDataLocl, 1, (NumComboLocl*2)+(NumComboLocl << 6), fp);
+      }
+
+      fclose(fp);
+    }
+
+    strcpy(p, "srm");
+  }
+}
+
+#ifdef __UNIXSDL__
+extern void pushdir();
+extern void popdir();
+#endif
+
+extern char fname[512];
+extern char *patchfile;
+
+extern void PatchUsingIPS();
+
+void PatchIPS()
+{
+  int x;               //index of fname
+  int y;               //stores backup index
+  int stop_search = 0;  //0 = continue searching, 1 = can't find, 2 = success
+  char Prevextn[4];     //used for storing previous ext
+
+  #ifdef __UNIXSDL__
+  pushdir();
+  #endif
+
+  for(x = 1;x<512;x++)
+  {
+    if(fname[x] == 0)
+      break;
+  }
+
+  y = x;
+
+  for(x = x-1;x>=0;x--)
+  {
+    if(x == 0)
+    {
+      stop_search = 1;
+    }
+
+    #ifdef __UNIXSDL__
+    else if(fname[x] == '/')
+    #else
+    else if(fname[x] == '\\')
+    #endif
+    {
+       stop_search = 1;
+    }
+
+    else if(fname[x] == '.')
+      stop_search = 2;
+
+    if(stop_search > 0)
+      break;
+  }
+
+  if(stop_search == 1)
+    x = y;
+
+  Prevextn[0] = fname[x];
+  Prevextn[1] = fname[x+1];
+  Prevextn[2] = fname[x+2];
+  Prevextn[3] = fname[x+3];
+
+  fname[x+4] = 0;
+
+  fname[x] = '.';
+  fname[x+1] = 'i';
+  fname[x+2] = 'p';
+  fname[x+3] = 's';
+
+  #ifdef __UNIXSDL__
+    chdir(LoadDir);
+  #endif
+
+  patchfile = fname+1;
+  PatchUsingIPS();
+
+  fname[x] = Prevextn[0];
+  fname[x+1] = Prevextn[1];
+  fname[x+2] = Prevextn[2];
+  fname[x+3] = Prevextn[3];
+
+  #ifdef __UNIXSDL__
+    popdir();
+  #endif
 }

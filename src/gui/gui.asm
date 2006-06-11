@@ -77,7 +77,7 @@ EXTSYM sfxramdata,setaramdata,SETAEnable,cgram,srama,tempco0,prevbright,maxbr
 EXTSYM prevpal,coladdr,coladdg,coladdb,scaddtype,ScreenScale,initvideo,pressed
 EXTSYM UpdateDevices,memtabler8,memtablew8,writeon,JoyRead,SetInputDevice,delay
 EXTSYM FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,pl12s34,resolutn,InitDrive,InitDir
-EXTSYM Makemode7Table,vidbufferofsb,ZipSupport,wramdata,bgfixer
+EXTSYM Makemode7Table,vidbufferofsb,wramdata,bgfixer
 EXTSYM videotroub,Open_File,Read_File,Close_File,Write_File,Create_File
 EXTSYM File_Seek,File_Seek_End,Get_Date,Check_Key,Get_Key,Change_Drive
 EXTSYM Change_Single_Dir,Change_Dir,Get_Dir,Get_First_Entry,Get_Next_Entry
@@ -960,7 +960,9 @@ NEWSYM SaveSramData
   stim
 .savesramdone
 
+  pushad
   call SaveCombFile
+  popad
 
   ; change dir to InitDrive/InitDir
   mov dl,[InitDrive]

@@ -238,8 +238,6 @@ GUIloadfilename:
     mov byte[romloadskip],1
     ; load file
     call loadfileGUI
-    cmp byte[ZipSupport],2
-    je near .noloader
     cmp byte[GUIloadfailed],1
     je near .noloader
 

@@ -1,4 +1,4 @@
-;Copyright (C) 1997-2006 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
+i;Copyright (C) 1997-2006 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 ;
 ;http://www.zsnes.com
 ;http://sourceforge.net/projects/zsnes
@@ -23,8 +23,8 @@
 EXTSYM DosExit,UpdateDevices,Makemode7Table,MusicRelVol,MusicVol,makesprprtable
 EXTSYM romloadskip,start65816,startdebugger,SfxR0,showinfogui,inittable
 EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer,inittableb
-EXTSYM inittablec,newgfx16b,Open_File,Read_File,Write_File
-EXTSYM Close_File,Output_Text,Change_Dir,Create_File,SPCDisable,osm2dis
+EXTSYM inittablec,newgfx16b,Open_File,Read_File
+EXTSYM Close_File,Output_Text,Change_Dir,SPCDisable,osm2dis
 EXTSYM BackupSystemVars,SnowData,SnowVelDist,TextFile,Setper2exec,SRAMDir
 EXTSYM JoyRead,pressed,mousebuttons,mousexdir,mouseydir,mousexpos,mouseypos,sram,DisplayInfo,ssautosw,GUIDelayB,pl12s34
 EXTSYM pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
@@ -39,7 +39,7 @@ EXTSYM pl4rightk,pl4Xk,pl4Ak,pl4Lk,pl4Yk,pl4Bk,pl4Rk,pl4Xtk,pl4Ytk,pl4Atk,pl4Btk
 EXTSYM pl4Ltk,pl4Rtk,pl4ULk,pl4URk,pl4DLk,pl4DRk,pl5contrl,pl5selk,pl5startk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5Xk,pl5Ak,pl5Lk,pl5Yk,pl5Bk,pl5Rk
 EXTSYM pl5Xtk,pl5Ytk,pl5Atk,pl5Btk,pl5Ltk,pl5Rtk,pl5ULk,pl5URk,pl5DLk,pl5DRk
-EXTSYM Turbo30hz,NumComboLocl,ComboBlHeader,ComboHeader,CombinDataLocl
+EXTSYM Turbo30hz,CombinDataLocl
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc,extlatch
 EXTSYM FIRTAPVal0,FIRTAPVal1,FIRTAPVal2,FIRTAPVal3,FIRTAPVal4,FIRTAPVal5
 EXTSYM FIRTAPVal6,FIRTAPVal7,INTEnab,JoyAPos,JoyBPos,NMIEnab,SPCROM,VIRQLoc
@@ -54,17 +54,14 @@ EXTSYM RTCinit,memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
 EXTSYM memaccessspc7110w16,ram7f,snesmap2,snesmmap,MultiTap,memaccessbankr848mb
 EXTSYM memaccessbankr1648mb,procexecloop,ram7fa,wramdata,wramdataa,fname,fnames
 EXTSYM GetCurDir,SRAMChdir,fnamest,statefileloc,InitDir,InitDrive
-EXTSYM curromspace,infoloc,patchfile,romispal,initregr,initregw,memtabler16
+EXTSYM curromspace,infoloc,romispal,initregr,initregw,memtabler16
 EXTSYM memtabler8,memtablew16,memtablew8,sfxramdata,wramreadptr
 EXTSYM wramwriteptr,loadstate2,CMovieExt,MoviePlay,MovieDumpRaw,AllowUDLR
 EXTSYM device1,device2,processmouse1,processmouse2,cpalval
-EXTSYM clearmem,clearSPCRAM,PatchUsingIPS,ZOpenFileName,loadROM,SPC7110IndexSize
+EXTSYM clearmem,clearSPCRAM,ZOpenFileName,loadROM,SPC7110IndexSize
 EXTSYM SPC7PackIndexLoad,IntlEHi,C4Enable,SPC7110Enable,RTCEnable,SA1Enable
 EXTSYM SDD1Enable,SFXEnable,BSEnable,clearvidsound,headerhack,SetupROM
-
-%ifdef __UNIXSDL__
-EXTSYM LoadDir,popdir,pushdir
-%endif
+EXTSYM OpenCombFile,PatchIPS
 
 ; Initiation
 
@@ -1980,151 +1977,9 @@ NEWSYM printhex8
 ;*******************************************************
 ; Search for header size first which is filesize MOD 32768
 
-NEWSYM PatchIPS
-%ifdef __UNIXSDL__
-    pushad
-    call pushdir
-    popad
-%endif
-    mov eax,fname+1
-    ; search for . or 0
-.next
-    cmp byte[eax],0
-    je .foundend
-    inc eax
-    jmp .next
-.foundend
-    mov ebx,eax
-.findnext2
-    dec eax
-    cmp eax,fname
-    je .failfound
-%ifdef __UNIXSDL__
-    cmp byte[eax],'/'
-%else
-    cmp byte[eax],'\'
-%endif
-    je .failfound
-    cmp byte[eax],'.'
-    je .foundokay
-    jmp .findnext2
-.failfound
-    mov eax,ebx
-.foundokay
-    mov ebx,[eax]
-    mov [Prevextn],ebx
-    mov dword[eax],'.ips'
-    mov byte[eax+4],0
-    push eax
-%ifdef __UNIXSDL__
-    cmp byte[ZipSupport], 1
-    je .nochangedir
-    mov ebx,LoadDir
-    call Change_Dir
-.nochangedir:
-%endif
-    mov edx,fname+1
-    mov [patchfile],edx
-    pushad
-    call PatchUsingIPS
-    popad
-    pop eax
-    mov ebx,[Prevextn]
-    mov [eax],ebx
-%ifdef __UNIXSDL__
-    pushad
-    call popdir
-    popad
-%endif
-    ret
-
 SECTION .bss
-NEWSYM Prevextn,  resd 1
 NEWSYM IPSPatched, resb 1
 SECTION .text
-
-OpenCombFile:
-    mov edx,fnames+1
-.next
-    cmp byte[edx],0
-    je .found
-    inc edx
-    jmp .next
-.found
-    dec edx
-    cmp byte[edx],'.'
-    je .found2
-    jmp .found
-.found2
-    mov dword[edx],'.cmb'
-    push edx
-    mov dword[NumComboLocl],0
-    mov edx,fnames+1
-    call Open_File
-    jc .failb
-    mov bx,ax
-    mov edx,ComboBlHeader
-    mov ecx,23
-    call Read_File
-    mov al,[ComboBlHeader+22]
-    or al,al
-    jz .done
-    mov [NumComboLocl],al
-    mov ecx,[NumComboLocl]
-    mov edx,ecx
-    shl ecx,6
-    add ecx,edx
-    add ecx,edx
-    mov edx,CombinDataLocl
-    call Read_File
-.done
-    call Close_File
-.failb
-    pop edx
-    mov dword[edx],'.srm'
-    ret
-
-NEWSYM SaveCombFile
-    cmp byte[romloadskip],0
-    jne near .notfound
-    mov edx,fnames+1
-.next
-    cmp byte[edx],0
-    je .found
-    inc edx
-    jmp .next
-.found
-    dec edx
-    cmp byte[edx],'.'
-    je .found2
-    jmp .found
-.found2
-    mov dword[edx],'.cmb'
-    push edx
-    mov al,[NumComboLocl]
-    or al,al
-    jz .failb
-    mov [ComboHeader+22],al
-    mov edx,fnames+1
-    call Create_File
-    jc .failb
-    mov bx,ax
-    mov edx,ComboHeader
-    mov ecx,23
-    call Write_File
-    mov ecx,[NumComboLocl]
-    mov edx,ecx
-    shl ecx,6
-    add ecx,edx
-    add ecx,edx
-    mov edx,CombinDataLocl
-    call Write_File
-    call Close_File
-.failb
-    pop edx
-    mov dword[edx],'.srm'
-.notfound
-    ret
 
 NEWSYM loadfile
     mov byte[TextFile], 0
@@ -2157,7 +2012,6 @@ NEWSYM CRC32, resd 1
 NEWSYM SramExists,    resb 1
 NEWSYM NumofBanks,    resd 1
 NEWSYM NumofBytes,    resd 1
-NEWSYM ZipSupport, resb 1
 InGUI resb 1
 
 SECTION .data
@@ -2254,7 +2108,9 @@ NEWSYM loadfileGUI
     call Close_File
     jc near .failed2
 .notexist
+    pushad
     call OpenCombFile
+    popad
     cmp byte[InGUI],1
     je .inguib
     mov edx,.opened
@@ -2289,7 +2145,9 @@ NEWSYM loadfileGUI
     mov byte[TextFile], 1
     cmp byte[IPSPatched],0
     jne .patched
+    pushad
     call PatchIPS
+    popad
 .patched
     ret
 

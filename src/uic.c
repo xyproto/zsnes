@@ -40,7 +40,8 @@ extern unsigned char *vbufaptr, *vbufeptr, *ngwinptrb, *vbufdptr, *romaptr;
 extern unsigned int per2exec, xa, MessageOn;
 extern unsigned char cvidmode, frameskip, scanlines, vsyncon, guioff, antienab;
 extern unsigned char Force8b, MusicRelVol, soundon, SPCDisable, spcon, FPSOn;
-extern unsigned char FPSAtStart, *Msgptr, CSStatus[], CSStatus2[], CSStatus3[];
+extern unsigned char FPSAtStart;
+extern char *Msgptr, CSStatus[], CSStatus2[], CSStatus3[];
 
 unsigned short selc0040, selcA000, selcB800;
 unsigned char string[512], fname[512], fnames[512], fnamest[512];
