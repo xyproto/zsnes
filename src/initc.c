@@ -2428,7 +2428,7 @@ void map_lorom()
   map_set(snesmmap+0x40,ROM+0x8000*(0x40-1),0x40,0x8000);
 
   // set banks 80-BF (40h x 32KB ROM banks @ 8000h)
-  if(lorommapmode2 == 1)
+  if (!lorommapmode2)
   {
     map_set(snesmmap+0x80,ROM-0x8000,0x20,0x8000);
   }
