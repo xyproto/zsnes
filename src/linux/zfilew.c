@@ -93,8 +93,6 @@ char TextFile;
 char * DirName;
 unsigned int DriveNumber;
 
-// ZFileDelete
-char * ZFileDelFName;
 // return current position
 
 unsigned int ZFileSystemInit()
@@ -224,11 +222,6 @@ unsigned int ZFileTell()
 		if (res == -1) fprintf(stderr, "Oups!! gzTell\n");
 		return(res);
 	} else return gztell(FILEHANDLE[ZFileTellHandle]);
-}
-
-unsigned int ZFileDelete()
-{
-  return(remove(ZFileDelFName));
 }
 
 unsigned int ZFileMKDir()

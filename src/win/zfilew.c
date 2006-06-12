@@ -79,8 +79,6 @@ unsigned char * RMPath;
 unsigned char * DirName;
 unsigned int DriveNumber;
 
-// ZFileDelete
-unsigned char * ZFileDelFName;
 // return current position
 
 unsigned int ZFileSystemInit()
@@ -202,11 +200,6 @@ unsigned int ZFileTell()
   } else return gztell(FILEHANDLE[ZFileTellHandle]);
 }
 
-
-unsigned int ZFileDelete()
-{
-  return(remove(ZFileDelFName));
-}
 
 unsigned int ZFileMKDir()
 {

@@ -25,7 +25,7 @@ EXTSYM preparedir,SBHDMA,ccmdline,InitDir,InitDrive,allocptr
 EXTSYM putchar,getch,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName
 EXTSYM ZFileSeekMode,ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle
 EXTSYM ZFileWriteSize,ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize
-EXTSYM ZFileReadBlock,ZFileRead,ZFileDelFName,ZFileDelete,ZCloseFileHandle
+EXTSYM ZFileReadBlock,ZFileRead,ZCloseFileHandle
 EXTSYM ZCloseFile,ZFileTellHandle,ZFileTell
 EXTSYM GetTime,GetDate,GUIkeydelay2,_chdrive,ZFileCHDir
 EXTSYM CHPath,ZFileGetDir,DirName,_getdrive,DTALoc
@@ -239,16 +239,6 @@ NEWSYM Read_File
     clc
     ret
 ;    mov ah,3Fh
-;    int 21h
-;    ret
-
-NEWSYM Delete_File
-    mov [ZFileDelFName],edx
-    pushad
-    call ZFileDelete
-    popad
-    ret
-;    mov ah,41h
 ;    int 21h
 ;    ret
 
