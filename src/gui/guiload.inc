@@ -256,7 +256,9 @@ GUIloadfilename:
     call showinfogui
 .noshowinfo
     popad
+    pushad
     call initsnes
+    popad
     mov byte[sramsavedis],0
     mov eax,regsbackup
     mov ebx,sndrot
