@@ -182,31 +182,6 @@ NEWSYM Open_File
     ; return bx = file handle, carry = error
 ;    ret
 
-NEWSYM Open_File_Write
-    pushad
-    mov dword[ZOpenMode],2
-    mov [ZOpenFileName],edx
-    call ZOpenFile
-    cmp eax,0FFFFFFFFh
-    je .error
-    mov [TempHandle],eax
-    mov dword[ZFileSeekMode],0
-    mov dword[ZFileSeekPos],0
-    mov [ZFileSeekHandle],eax
-    call ZFileSeek
-    popad
-    mov ax,[TempHandle]
-    clc
-    ret
-.error
-    popad
-    stc
-    ret
-;    mov ax,3D01h
-;    int 21h
-    ; return bx = file handle, carry = error
-;    ret
-
 NEWSYM Create_File
     pushad
     mov dword[ZOpenMode],1
