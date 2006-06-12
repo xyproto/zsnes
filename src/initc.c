@@ -2355,3 +2355,15 @@ void PatchIPS()
     popdir();
   #endif
 }
+
+void OpenSramFile()
+{
+  FILE *fp = fopen(fnames+1, "rb");
+  if (fp)
+  {
+    fread(sram, 1, 65536, fp);
+    fclose(fp);
+
+    SramExists = true;
+  }
+}

@@ -23,8 +23,7 @@ i;Copyright (C) 1997-2006 ZSNES Team ( zsKnight, _Demo_, pagefault, Nach )
 EXTSYM DosExit,UpdateDevices,Makemode7Table,MusicRelVol,MusicVol,makesprprtable
 EXTSYM romloadskip,start65816,startdebugger,SfxR0,showinfogui,inittable
 EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer,inittableb
-EXTSYM inittablec,newgfx16b,Open_File,Read_File
-EXTSYM Close_File,Output_Text,Change_Dir,SPCDisable,osm2dis
+EXTSYM inittablec,newgfx16b,Output_Text,Change_Dir,SPCDisable,osm2dis
 EXTSYM BackupSystemVars,SnowData,SnowVelDist,TextFile,Setper2exec,SRAMDir
 EXTSYM JoyRead,pressed,mousebuttons,mousexdir,mouseydir,mousexpos,mouseypos,sram,DisplayInfo,ssautosw,GUIDelayB,pl12s34
 EXTSYM pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
@@ -61,7 +60,7 @@ EXTSYM device1,device2,processmouse1,processmouse2,cpalval
 EXTSYM clearmem,clearSPCRAM,ZOpenFileName,loadROM,SPC7110IndexSize
 EXTSYM SPC7PackIndexLoad,IntlEHi,C4Enable,SPC7110Enable,RTCEnable,SA1Enable
 EXTSYM SDD1Enable,SFXEnable,BSEnable,clearvidsound,headerhack,SetupROM
-EXTSYM OpenCombFile,PatchIPS
+EXTSYM OpenCombFile,PatchIPS,OpenSramFile
 
 ; Initiation
 
@@ -2097,17 +2096,10 @@ NEWSYM loadfileGUI
     popad
 
     ; open .srm file
-    mov edx,fnames+1
-    call Open_File
-    jc .notexist
-    mov byte[SramExists],1
-    mov bx,ax
-    mov ecx,65536
-    mov edx,[sram]
-    call Read_File
-    call Close_File
-    jc near .failed2
-.notexist
+    pushad
+    call OpenSramFile
+    popad
+
     pushad
     call OpenCombFile
     popad
