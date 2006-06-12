@@ -106,3 +106,20 @@ void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char *buffer
   // Change phase on alternating frames
   ntsc_phase ^= 1;
 }
+
+extern char fnamest[512];
+extern unsigned int statefileloc;
+
+unsigned char newestfileloc;
+time_t newestfiledate;
+
+void DetermineNew()
+{
+  struct stat filestat;
+  if (!stat(fnamest+1, &filestat) && filestat.st_mtime > newestfiledate)
+  {
+    newestfiledate = filestat.st_mtime;
+    newestfileloc = fnamest[statefileloc] == 't' ? 0 : fnamest[statefileloc]-'0';
+  }
+}
+

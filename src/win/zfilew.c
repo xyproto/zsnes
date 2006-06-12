@@ -70,12 +70,6 @@ unsigned int ZFileWriteHandle;
 // ZFileTell
 unsigned int ZFileTellHandle;
 
-// ZFileGetftime
-unsigned char * ZFFTimeFName;
-unsigned int ZFTimeHandle;
-unsigned int ZFDate;
-unsigned int ZFTime;
-
 // MKDir/CHDir
 unsigned char * MKPath;
 unsigned char * CHPath;
@@ -212,18 +206,6 @@ unsigned int ZFileTell()
 unsigned int ZFileDelete()
 {
   return(remove(ZFileDelFName));
-}
-
-unsigned int ZFileGetFTime()
-{
-  struct _stat filestat;
-
-  ZFTime=0;
-
-  if (_stat(ZFFTimeFName, &filestat) < 0) ZFDate=0;
-  else ZFDate = filestat.st_mtime;
-
-  return 0;
 }
 
 unsigned int ZFileMKDir()

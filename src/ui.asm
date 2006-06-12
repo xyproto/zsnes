@@ -21,8 +21,8 @@
 %include "macros.mac"
 
 EXTSYM PrintStr,WaitForKey,PrintChar,ram7fa,wramdataa,MMXSupport
-EXTSYM MMXextSupport,statefileloc,LatestSave,firstsaveinc,Open_File
-EXTSYM Get_File_Date,Close_File,Change_Dir,Get_Dir
+EXTSYM MMXextSupport,statefileloc,LatestSave,firstsaveinc
+EXTSYM Change_Dir,Get_Dir
 EXTSYM init18_2hz,SRAMDirCurDir,SRAMChdir,SRAMChdirFail,LoadDir,LoadDrive
 EXTSYM BitConv32Ptr,spcBuffera,spritetablea,vcache2bs,vcache4bs,vcache8bs
 EXTSYM RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa,vidbufferofsmos,ngwinptr
@@ -30,6 +30,7 @@ EXTSYM vidbufferofsb,headdata,romdata,sfxramdata,setaramdata,wramdata,ram7f,vram
 EXTSYM sram,debugbuf,regptr,regptw,vcache2b,vcache4b,vcache8b,fname,fnames
 EXTSYM fnamest,vidbufferofsc,Sup48mbit,Sup16mbit,SRAMDir
 EXTSYM malloc_ptr,malloc_size,malloc_help
+EXTSYM DetermineNew,newestfileloc,newestfiledate
 
 %ifdef __UNIXSDL__
 EXTSYM LinuxExit,GetFilename
@@ -458,9 +459,6 @@ section .data
 ; Check Parameter          This Processes the Parameters
 ;*******************************************************
 
-SECTION .bss
-newestfileloc resb 1
-newestfiledate resd 1
 SECTION .text
 
 NEWSYM makeextension
@@ -531,56 +529,28 @@ NEWSYM makeextension
     call Change_Dir
     ret
 
-%macro determinenewhelp 2
-    mov bl,%1
-    mov byte[fnamest+eax],%2
+%macro determinenewhelp 1
+    mov byte[fnamest+eax],%1
+    pushad
     call DetermineNew
+    popad
 %endmacro
 
-DetermineNew:
-    push eax
-    push ebx
-    mov edx,fnamest+1
-    call Open_File
-    jc near .nodraw
-    mov bx,ax
-    mov edx,fnamest+1
-    call Get_File_Date
-%ifdef __MSDOS__
-    shl edx,16
-    mov dx,cx
-%endif
-    push edx
-    call Close_File
-    pop edx
-    pop ebx
-    pop eax
-    ; date = edx, position = bl
-    cmp edx,[newestfiledate]
-    jbe .notlatest
-    mov [newestfiledate],edx
-    mov [newestfileloc],bl
-.notlatest
-    ret
-.nodraw
-    pop ebx
-    pop eax
-    ret
-
 DetermineNewest:
-    mov eax,[statefileloc]
     mov dword[newestfiledate],0
     mov byte[newestfileloc],0
-    determinenewhelp 0,'t'
-    determinenewhelp 1,'1'
-    determinenewhelp 2,'2'
-    determinenewhelp 3,'3'
-    determinenewhelp 4,'4'
-    determinenewhelp 5,'5'
-    determinenewhelp 6,'6'
-    determinenewhelp 7,'7'
-    determinenewhelp 8,'8'
-    determinenewhelp 9,'9'
+
+    mov eax,[statefileloc]
+    determinenewhelp 't'
+    determinenewhelp '1'
+    determinenewhelp '2'
+    determinenewhelp '3'
+    determinenewhelp '4'
+    determinenewhelp '5'
+    determinenewhelp '6'
+    determinenewhelp '7'
+    determinenewhelp '8'
+    determinenewhelp '9'
     mov bl,[newestfileloc]
     add bl,'0'
     cmp bl,'0'

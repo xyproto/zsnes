@@ -27,7 +27,7 @@ EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,resolutn
 EXTSYM romispal,scaddtype,scanlines,selcA000,t1cc,vcache4b,vesa2_bpos
 EXTSYM spritetablea,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10,vesa2selec
 EXTSYM vidbuffer,vram,KeyStateSelct,soundon,Open_File,Read_File,smallscreenon
-EXTSYM Close_File,Create_File,Write_File,Get_File_Date,makepal,ScreenScale
+EXTSYM Close_File,Create_File,Write_File,makepal,ScreenScale
 EXTSYM changepal,saveselectpal,displayfpspal,superscopepal,DrawScreen,MMXSupport
 EXTSYM Get_MouseData,Get_MousePositionDisplacement,GUIEnableTransp,GUIFontData
 EXTSYM StopSound,StartSound,PrevPicture,File_Seek,File_Seek_End,nggposng
@@ -39,6 +39,7 @@ EXTSYM CSStatus2,CSStatus3,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
 EXTSYM bg1objptr,DecompAPtr,HalfTransB,HalfTransC,cur_zst_size,old_zst_size
 EXTSYM MovieProcessing,mzt_chdir,UpChdir,MovieFrameStr,GetMovieFrameStr
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2
+EXTSYM DetermineNew,newestfileloc,newestfiledate
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -926,8 +927,6 @@ NEWSYM OutputGraphicString16b5x5
 SECTION .bss
 NEWSYM csounddisable, resb 1
 NEWSYM statefileloc,  resd 1
-newestfileloc resb 1
-newestfiledate resd 1
 f3menuen resb 1
 PrevPictureVal resb 1
 CurPictureVal resb 1
@@ -965,56 +964,27 @@ NEWSYM drawvline16b
     jnz .loop
     ret
 
-%macro determinenewhelp 2
-    mov bl,%1
-    mov byte[fnamest+eax],%2
+%macro determinenewhelp 1
+    mov byte[fnamest+eax],%1
+    pushad
     call DetermineNew
+    popad
 %endmacro
-
-DetermineNew:
-    push eax
-    push ebx
-    mov edx,fnamest+1
-    call Open_File
-    jc near .nodraw
-    mov bx,ax
-    mov edx,fnamest+1
-    call Get_File_Date
-%ifdef __MSDOS__
-    shl edx,16
-    mov dx,cx
-%endif
-    push edx
-    call Close_File
-    pop edx
-    pop ebx
-    pop eax
-    ; date = edx, position = bl
-    cmp edx,[newestfiledate]
-    jbe .notlatest
-    mov [newestfiledate],edx
-    mov [newestfileloc],bl
-.notlatest
-    ret
-.nodraw
-    pop ebx
-    pop eax
-    ret
 
 DetermineNewest:
     mov dword[newestfiledate],0
     mov byte[newestfileloc],0
 
-    determinenewhelp 0,'t'
-    determinenewhelp 1,'1'
-    determinenewhelp 2,'2'
-    determinenewhelp 3,'3'
-    determinenewhelp 4,'4'
-    determinenewhelp 5,'5'
-    determinenewhelp 6,'6'
-    determinenewhelp 7,'7'
-    determinenewhelp 8,'8'
-    determinenewhelp 9,'9'
+    determinenewhelp 't'
+    determinenewhelp '1'
+    determinenewhelp '2'
+    determinenewhelp '3'
+    determinenewhelp '4'
+    determinenewhelp '5'
+    determinenewhelp '6'
+    determinenewhelp '7'
+    determinenewhelp '8'
+    determinenewhelp '9'
     ret
 
 GetPicture:

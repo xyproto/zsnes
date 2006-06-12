@@ -73,12 +73,6 @@ unsigned int ZFileWriteHandle;
 // ZFileTell
 unsigned int ZFileTellHandle;
 
-// ZFileGetftime
-char * ZFFTimeFName;
-int ZFTimeHandle;
-unsigned int ZFDate;
-unsigned int ZFTime;
-
 // MKDir/CHDir
 char * MKPath;
 char * CHPath;
@@ -227,15 +221,6 @@ unsigned int ZFileTell()
 unsigned int ZFileDelete()
 {
   return(remove(ZFileDelFName));
-}
-
-
-unsigned int ZFileGetFTime()
-{
-  _dos_open(ZFFTimeFName, 0,&ZFTimeHandle);
-  _dos_getftime(ZFTimeHandle,&ZFDate,&ZFTime);
-  _dos_close(ZFTimeHandle);
-  return(0);
 }
 
 unsigned int ZFileMKDir()

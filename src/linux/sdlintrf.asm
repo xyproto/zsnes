@@ -26,7 +26,7 @@ EXTSYM getchar,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName,ZFileSeekMode
 EXTSYM ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle,ZFileWriteSize
 EXTSYM ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize,ZFileReadBlock
 EXTSYM ZFileRead,ZFileDelFName,ZFileDelete,ZCloseFileHandle,ZCloseFile
-EXTSYM ZFileTellHandle,ZFileTell,ZFFTimeFName,ZFTime,ZFDate,ZFileGetFTime
+EXTSYM ZFileTellHandle,ZFileTell
 EXTSYM GetTime,GetDate,GUIkeydelay2,ZFileCHDir,CHPath
 EXTSYM ZFileGetDir,DirName,DTALoc,DTALocPos,ZFileFindATTRIB
 EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,Start60HZ
@@ -318,15 +318,6 @@ NEWSYM Get_Date
     and al,0xF
     add cl,al
     add cx,1900
-    ret
-
-NEWSYM Get_File_Date
-    mov [ZFFTimeFName],edx
-    pushad
-    call ZFileGetFTime
-    popad
-    mov edx,[ZFDate]
-    mov ecx,[ZFTime]
     ret
 
 RefreshKeybBuffer:

@@ -27,7 +27,7 @@ EXTSYM CurrentHandle,ZFileSeek,ZOpenFileName,ZFileSeekMode,ZFileSeekPos
 EXTSYM ZFileSeekHandle,ZFileWriteHandle,ZFileWriteSize,ZFileWriteBlock
 EXTSYM ZFileWrite,ZFileReadHandle,ZFileReadSize,ZFileReadBlock,ZFileRead
 EXTSYM ZFileDelFName,ZFileDelete,ZCloseFileHandle,ZCloseFile,ZFileTellHandle
-EXTSYM ZFileTell,GetTime,GetDate,ZFFTimeFName,ZFTime,ZFDate,ZFileGetFTime
+EXTSYM ZFileTell,GetTime,GetDate
 EXTSYM ZFileCHDir,CHPath,ZFileGetDir,DirName,pressed,DTALoc,DTALocPos
 EXTSYM ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
@@ -365,20 +365,6 @@ NEWSYM Get_TimeDate
 NEWSYM Get_Date
     ; dl = day, dh = month, cx = year
     mov ah,2Ah
-    int 21h
-    ret
-
-NEWSYM Get_File_Date
-    mov [ZFFTimeFName],edx
-    pushad
-    call ZFileGetFTime
-    popad
-    mov dx,[ZFDate]
-    mov cx,[ZFTime]
-    ret
-    ; return packed date in dx:cx
-    mov ah,57h
-    mov al,00h
     int 21h
     ret
 
