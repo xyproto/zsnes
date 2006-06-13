@@ -60,7 +60,7 @@ void cfgpath_ensure()
 
   if ((userinfo = getpwuid(getuid())))
   {
-    ZCfgPath = malloc(strlen(userinfo->pw_dir)+strlen(zpath)+1);
+    ZCfgPath = malloc(PATH_SIZE);
     ZCfgAlloc = true;
   }
   else

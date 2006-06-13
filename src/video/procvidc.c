@@ -74,8 +74,12 @@ void CapturePicture()
   }
 }
 
+extern unsigned char MovieProcessing;
 extern unsigned int cur_zst_size, old_zst_size;
 extern char fnamest[512];
+
+void mzt_chdir_up();
+void mzt_chdir_down();
 
 void LoadPicture()
 {
@@ -84,6 +88,7 @@ void LoadPicture()
 
   memset(PrevPicture, 0, pic_size);
 
+  if (MovieProcessing) { mzt_chdir_up(); }
   if ((fp = fopen_dir(ZSramPath, fnamest+1, "rb")))
   {
     unsigned int file_size;
@@ -99,6 +104,7 @@ void LoadPicture()
 
     fclose(fp);
   }
+  if (MovieProcessing) { mzt_chdir_down(); }
 }
 
 void Clear2xSaIBuffer()
@@ -145,14 +151,23 @@ time_t newestfiledate;
 void DetermineNew()
 {
   struct stat filestat;
+
+  if (MovieProcessing) { mzt_chdir_up(); }
   if (!stat_dir(ZSramPath, fnamest+1, &filestat) && filestat.st_mtime > newestfiledate)
   {
     newestfiledate = filestat.st_mtime;
     newestfileloc = fnamest[statefileloc] == 't' ? 0 : fnamest[statefileloc]-'0';
   }
+  if (MovieProcessing) { mzt_chdir_down(); }
 }
 
 int StateExists()
 {
-  return(access_dir(ZSramPath, fnamest+1, F_OK) ? 0 : 1);
+  int ret;
+
+  if (MovieProcessing) { mzt_chdir_up(); }
+  ret = access_dir(ZSramPath, fnamest+1, F_OK) ? 0 : 1;
+  if (MovieProcessing) { mzt_chdir_down(); }
+
+  return(ret);
 }

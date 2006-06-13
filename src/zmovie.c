@@ -1656,7 +1656,7 @@ Save and load MZT
 
 */
 
-void mzt_chdir()
+size_t mzt_filename_generate()
 {
   size_t filename_len = strlen(zmv_vars.filename);
   memcpy(zmv_vars.filename+filename_len-3, "mz", 2);
@@ -1664,181 +1664,179 @@ void mzt_chdir()
   {
     zmv_vars.filename[filename_len-1] = 't';
   }
-  chdir(zmv_vars.filename);
+  return(filename_len);
+}
+
+void mzt_chdir_up()
+{
+  mzt_filename_generate();
+  strcat(ZSramPath, zmv_vars.filename);
+  strcatslash(ZSramPath);
+}
+
+void mzt_chdir_down()
+{
+  strdirname(ZSramPath);
+  strcatslash(ZSramPath);
 }
 
 //Currently this doesn't work right in playback
 bool mzt_save(char *statename, bool thumb, bool playback)
 {
-  size_t filename_len = strlen(zmv_vars.filename);
   struct stat stat_buffer;
+  FILE *fp;
   bool mzt_saved = false;
 
-  memcpy(zmv_vars.filename+filename_len-3, "mz", 2);
-  if (!isdigit(zmv_vars.filename[filename_len-1]))
-  {
-    zmv_vars.filename[filename_len-1] = 't';
-  }
-
-  if (stat(zmv_vars.filename, &stat_buffer))
+  size_t filename_len = mzt_filename_generate();
+  if (stat_dir(ZSramPath, zmv_vars.filename, &stat_buffer))
   {
     mkdir_dir(ZSramPath, zmv_vars.filename);
   }
 
-  if (!chdir(zmv_vars.filename))
+  mzt_chdir_up();
+
+  if ((fp = fopen_dir(ZSramPath, statename, "wb")))
   {
-    FILE *fp = 0;
+    char FileExt[3];
+    gzFile gzp = 0;
+    size_t rewind_point;
 
-    if ((fp = fopen(statename,"wb")))
+    zst_save(fp, thumb, false);
+    fclose(fp);
+
+    flush_input_buffer();
+    rewind_point = ftell(zmv_vars.fp);
+    internal_chapter_write(&zmv_vars.internal_chapters, zmv_vars.fp);
+
+    memcpy(FileExt, statename+filename_len-3, 3);
+    memcpy(statename+filename_len-3, "zm", 2);
+    if (!isdigit(statename[filename_len-1]))
     {
-      char FileExt[3];
-      gzFile gzp = 0;
-      size_t rewind_point;
-
-      zst_save(fp, thumb, false);
-      fclose(fp);
-
-      flush_input_buffer();
-      rewind_point = ftell(zmv_vars.fp);
-      internal_chapter_write(&zmv_vars.internal_chapters, zmv_vars.fp);
-
-      memcpy(FileExt, statename+filename_len-3, 3);
-      memcpy(statename+filename_len-3, "zm", 2);
-      if (!isdigit(statename[filename_len-1]))
-      {
-        statename[filename_len-1] = 'v';
-      }
-
-      if ((gzp = gzopen(statename, "wb9")))
-      {
-        rewind(zmv_vars.fp);
-        zmv_header_write(&zmv_vars.header, zmv_vars.fp);
-        rewind(zmv_vars.fp);
-
-        while (!feof(zmv_vars.fp))
-        {
-          size_t amount_read = fread(zmv_vars.write_buffer, 1, WRITE_BUFFER_SIZE, zmv_vars.fp);
-          gzwrite(gzp, zmv_vars.write_buffer, amount_read);
-        }
-        gzclose(gzp);
-
-        memcpy(statename+filename_len-3, "mz", 2);
-        if (!isdigit(statename[filename_len-1]))
-        {
-          statename[filename_len-1] = 'i';
-        }
-
-        if ((fp = fopen(statename,"wb")))
-        {
-          fwrite4((playback) ? zmv_open_vars.frames_replayed : zmv_vars.header.frames, fp);
-          write_last_joy_state(fp);
-          fwrite4(rewind_point, fp);
-          fclose(fp);
-
-          mzt_saved = true;
-        }
-
-        fseek(zmv_vars.fp, rewind_point, SEEK_SET);
-      }
-      memcpy(statename+filename_len-3, FileExt, 3);
+      statename[filename_len-1] = 'v';
     }
-    chdir("..");
-  }
-  return(mzt_saved);
-}
 
-bool mzt_load(char *statename, bool playback)
-{
-  size_t filename_len = strlen(zmv_vars.filename);
-  bool mzt_saved = false;
-
-  memcpy(zmv_vars.filename+filename_len-3, "mz", 2);
-  if (!isdigit(zmv_vars.filename[filename_len-1]))
-  {
-    zmv_vars.filename[filename_len-1] = 't';
-  }
-
-  if (!chdir(zmv_vars.filename))
-  {
-    FILE *fp = 0;
-
-    if ((fp = fopen(statename,"rb")))
+    if ((gzp = gzopen_dir(ZSramPath, statename, "wb9")))
     {
-      char FileExt[3];
+      rewind(zmv_vars.fp);
+      zmv_header_write(&zmv_vars.header, zmv_vars.fp);
+      rewind(zmv_vars.fp);
 
-      zst_load(fp, 0);
-      fclose(fp);
+      while (!feof(zmv_vars.fp))
+      {
+        size_t amount_read = fread(zmv_vars.write_buffer, 1, WRITE_BUFFER_SIZE, zmv_vars.fp);
+        gzwrite(gzp, zmv_vars.write_buffer, amount_read);
+      }
+      gzclose(gzp);
 
-      memcpy(FileExt, statename+filename_len-3, 3);
       memcpy(statename+filename_len-3, "mz", 2);
       if (!isdigit(statename[filename_len-1]))
       {
         statename[filename_len-1] = 'i';
       }
 
-      if ((fp = fopen(statename,"rb")))
+      if ((fp = fopen_dir(ZSramPath, statename,"wb")))
       {
-        size_t rewind_point;
-
-        size_t current_frame = fread4(fp);
-        read_last_joy_state(fp);
-        rewind_point = fread4(fp);
+        fwrite4((playback) ? zmv_open_vars.frames_replayed : zmv_vars.header.frames, fp);
+        write_last_joy_state(fp);
+        fwrite4(rewind_point, fp);
         fclose(fp);
-
-        zmv_vars.rle_count = 0;
-
-        if (!playback)
-        {
-          gzFile gzp = 0;
-
-          memcpy(statename+filename_len-3, "zm", 2);
-          if (!isdigit(statename[filename_len-1]))
-          {
-            statename[filename_len-1] = 'v';
-          }
-
-          if ((gzp = gzopen(statename, "rb")))
-          {
-            size_t rerecords = zmv_vars.header.rerecords+1;
-            size_t removed_frames = zmv_vars.header.removed_frames + (zmv_vars.header.frames - current_frame);
-
-            internal_chapter_free_chain(zmv_vars.internal_chapters.next);
-            memset(&zmv_vars.internal_chapters, 0, sizeof(struct internal_chapter_buf));
-
-            rewind(zmv_vars.fp);
-            while (!gzeof(gzp))
-            {
-              size_t amount_read = gzread(gzp, zmv_vars.write_buffer, WRITE_BUFFER_SIZE);
-              fwrite(zmv_vars.write_buffer, 1, amount_read, zmv_vars.fp);
-            }
-            gzclose(gzp);
-
-            rewind(zmv_vars.fp);
-            zmv_header_read(&zmv_vars.header, zmv_vars.fp);
-            zmv_vars.header.removed_frames = removed_frames;
-            zmv_vars.header.rerecords = rerecords;
-            zmv_vars.write_buffer_loc = 0;
-
-            fseek(zmv_vars.fp, rewind_point, SEEK_SET);
-            internal_chapter_read(&zmv_vars.internal_chapters, zmv_vars.fp, zmv_vars.header.internal_chapters);
-
-            fseek(zmv_vars.fp, rewind_point, SEEK_SET);
-            zmv_vars.last_internal_chapter_offset = internal_chapter_lesser(&zmv_vars.internal_chapters, ~0);
-            ftruncate(fileno(zmv_vars.fp), ftell(zmv_vars.fp));
-          }
-        }
-        else
-        {
-          zmv_open_vars.frames_replayed = current_frame;
-          fseek(zmv_vars.fp, rewind_point, SEEK_SET);
-        }
 
         mzt_saved = true;
       }
-      memcpy(statename+filename_len-3, FileExt, 3);
+
+      fseek(zmv_vars.fp, rewind_point, SEEK_SET);
     }
-    chdir("..");
+    memcpy(statename+filename_len-3, FileExt, 3);
   }
+  mzt_chdir_down();
+  return(mzt_saved);
+}
+
+bool mzt_load(char *statename, bool playback)
+{
+  FILE *fp;
+  bool mzt_saved = false;
+
+  size_t filename_len = mzt_filename_generate();
+
+  mzt_chdir_up();
+
+  if ((fp = fopen_dir(ZSramPath, statename,"rb")))
+  {
+    char FileExt[3];
+
+    zst_load(fp, 0);
+    fclose(fp);
+
+    memcpy(FileExt, statename+filename_len-3, 3);
+    memcpy(statename+filename_len-3, "mz", 2);
+    if (!isdigit(statename[filename_len-1]))
+    {
+      statename[filename_len-1] = 'i';
+    }
+
+    if ((fp = fopen_dir(ZSramPath, statename,"rb")))
+    {
+      size_t rewind_point;
+
+      size_t current_frame = fread4(fp);
+      read_last_joy_state(fp);
+      rewind_point = fread4(fp);
+      fclose(fp);
+
+      zmv_vars.rle_count = 0;
+
+      if (!playback)
+      {
+        gzFile gzp = 0;
+
+        memcpy(statename+filename_len-3, "zm", 2);
+        if (!isdigit(statename[filename_len-1]))
+        {
+          statename[filename_len-1] = 'v';
+        }
+
+        if ((gzp = gzopen_dir(ZSramPath, statename, "rb")))
+        {
+          size_t rerecords = zmv_vars.header.rerecords+1;
+          size_t removed_frames = zmv_vars.header.removed_frames + (zmv_vars.header.frames - current_frame);
+
+          internal_chapter_free_chain(zmv_vars.internal_chapters.next);
+          memset(&zmv_vars.internal_chapters, 0, sizeof(struct internal_chapter_buf));
+
+          rewind(zmv_vars.fp);
+          while (!gzeof(gzp))
+          {
+            size_t amount_read = gzread(gzp, zmv_vars.write_buffer, WRITE_BUFFER_SIZE);
+            fwrite(zmv_vars.write_buffer, 1, amount_read, zmv_vars.fp);
+          }
+          gzclose(gzp);
+
+          rewind(zmv_vars.fp);
+          zmv_header_read(&zmv_vars.header, zmv_vars.fp);
+          zmv_vars.header.removed_frames = removed_frames;
+          zmv_vars.header.rerecords = rerecords;
+          zmv_vars.write_buffer_loc = 0;
+
+          fseek(zmv_vars.fp, rewind_point, SEEK_SET);
+          internal_chapter_read(&zmv_vars.internal_chapters, zmv_vars.fp, zmv_vars.header.internal_chapters);
+
+          fseek(zmv_vars.fp, rewind_point, SEEK_SET);
+          zmv_vars.last_internal_chapter_offset = internal_chapter_lesser(&zmv_vars.internal_chapters, ~0);
+          ftruncate(fileno(zmv_vars.fp), ftell(zmv_vars.fp));
+        }
+      }
+      else
+      {
+        zmv_open_vars.frames_replayed = current_frame;
+        fseek(zmv_vars.fp, rewind_point, SEEK_SET);
+      }
+
+      mzt_saved = true;
+    }
+    memcpy(statename+filename_len-3, FileExt, 3);
+  }
+  mzt_chdir_down();
   return(mzt_saved);
 }
 

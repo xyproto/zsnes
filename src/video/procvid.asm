@@ -36,7 +36,7 @@ EXTSYM genfulladdtab,genfulladdtabng,TimerEnable,ShowTimer,debugdisble,GUIOn
 EXTSYM FilteredGUI,HalfTrans,SmallMsgText,ClearScreen,Mode7HiRes,mosenng,mosszng
 EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,CSStatus
 EXTSYM CSStatus2,CSStatus3,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
-EXTSYM MovieProcessing,mzt_chdir,UpChdir,MovieFrameStr,GetMovieFrameStr
+EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM DetermineNew,newestfileloc,newestfiledate,StateExists
 
@@ -1192,12 +1192,6 @@ NEWSYM drawbox16b
 
 
 NEWSYM saveselect
-    cmp byte[MovieProcessing],0
-    jz .nomovie
-    pushad
-    call mzt_chdir
-    popad
-.nomovie
     mov byte[f3menuen],1
     mov byte[ForceNonTransp],1
     cmp byte[ForceNewGfxOff],0
@@ -1426,12 +1420,6 @@ NEWSYM saveselect
     call makepal
     mov byte[f3menuen],0
     mov byte[ForceNonTransp],0
-    cmp byte[MovieProcessing],0
-    jz .nomovie2
-    pushad
-    call UpChdir
-    popad
-.nomovie2
     ret
 
 SECTION .bss
@@ -1741,12 +1729,6 @@ SECTION .text
     pushad
     call Clear2xSaIBuffer
     popad
-    cmp byte[MovieProcessing],0
-    jz .nomovie3
-    pushad
-    call UpChdir
-    popad
-.nomovie3
     ret
 
 SECTION .data
