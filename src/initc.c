@@ -2298,14 +2298,14 @@ void OpenCombFile()
 }
 
 #ifdef __UNIXSDL__
-extern void pushdir();
-extern void popdir();
+void pushdir();
+void popdir();
 #endif
 
 extern char fname[512];
 extern char *patchfile;
 
-extern void PatchUsingIPS();
+void PatchUsingIPS();
 
 void PatchIPS()
 {
