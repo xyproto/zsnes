@@ -1645,10 +1645,13 @@ extern char FEOEZPath[1024];
 extern char SJNSPath[1024];
 extern char MDHPath[1024];
 extern char SPL4Path[1024];
+
+extern unsigned int SPC7110Entries, SPC7110TempPosition, SPC7110TempLength, SPCDecmPtr;
+
 char *SPC7110filep;
 char SPC7110nfname[1024+12]; //12 is / plus 6.3
 unsigned int SPC7110IndexSize;
-extern unsigned int SPC7110Entries;
+
 void SPC7PackIndexLoad()
 {
   char *ROM = (char *)romdata;
@@ -1679,7 +1682,7 @@ void SPC7PackIndexLoad()
     strcat(SPC7110nfname, DIR_SLASH);
   }
 
-  //Set the pointer to after the slash - needed for sa1regs.asm
+  //Set the pointer to after the slash - needed for the case converters
   SPC7110filep = SPC7110nfname+strlen(SPC7110nfname);
 
   //Index file;
@@ -1717,7 +1720,31 @@ void SPC7_Convert_Lower()
   }
 }
 
-unsigned int crc32_table[256] = {
+void SPC7_Data_Load()
+{
+  FILE *fp = fopen(SPC7110nfname, "rb");
+  if (!fp)
+  {
+    SPC7_Convert_Upper();
+    fp = fopen(SPC7110nfname, "rb");
+  }
+  if (!fp)
+  {
+    SPC7_Convert_Lower();
+    fp = fopen(SPC7110nfname, "rb");
+  }
+
+  if (fp)
+  {
+    unsigned char *ROM = (unsigned char *)romdata;
+
+    fseek(fp, SPC7110TempPosition, SEEK_SET);
+    fread(ROM+0x510000+SPCDecmPtr, 1, SPC7110TempLength, fp);
+  }
+}
+
+
+static unsigned int crc32_table[256] = {
   0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F,
   0xE963A535, 0x9E6495A3, 0x0EDB8832, 0x79DCB8A4, 0xE0D5E91E, 0x97D2D988,
   0x09B64C2B, 0x7EB17CBD, 0xE7B82D07, 0x90BF1D91, 0x1DB71064, 0x6AB020F2,

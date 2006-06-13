@@ -43,10 +43,9 @@
 
 EXTSYM regptr,regptw,romdata,SA1Status,debstop4,SDD1BankA,curromsize,debuggeron
 EXTSYM Get_Time,Get_TimeDate,spc7110romptr,SPC7110Entries,SPC7110IndexSize
-EXTSYM SPC7110nfname,SPC7110filep,SPC7_Convert_Upper,SPC7_Convert_Lower
-EXTSYM Open_File,Close_File,Read_File,File_Seek,irqv2,irqv,nmiv2,nmiv,snesmmap
+EXTSYM irqv2,irqv,nmiv2,nmiv,snesmmap
 EXTSYM snesmap2,curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr
-EXTSYM NumofBanks,BWUsed2
+EXTSYM NumofBanks,BWUsed2,SPC7_Data_Load,SPC7110filep
 
 %include "cpu/regs.mac"
 %include "cpu/regsw.mac"
@@ -784,35 +783,9 @@ SPC4806w:
     dec ecx
     jnz .sploop2
 
-    mov edx,SPC7110nfname
-    call Open_File
-    jnc .nocaseerror
     pushad
-    call SPC7_Convert_Upper
+    call SPC7_Data_Load
     popad
-    call Open_File
-    jnc .nocaseerror
-    pushad
-    call SPC7_Convert_Lower
-    popad
-    call Open_File
-    jc .error
-.nocaseerror
-    mov bx,ax
-    mov dx,[SPC7110TempPosition]
-    mov cx,[SPC7110TempPosition+2]
-    call File_Seek
-    xor edx,edx
-    mov dx,[SPCDecmPtr]
-    add edx,[romdata]
-    add edx,510000h
-    mov ecx,[SPC7110TempLength]
-    call Read_File
-    call Close_File
-    jmp .foundentry
-.error
-;    mov dword[Msgptr],SPC7110nfname
-;    mov dword[MessageOn],60*6
 .notfoundentry
 .foundentry
 .previousequal
