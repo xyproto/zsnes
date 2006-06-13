@@ -2273,32 +2273,28 @@ void SaveCombFile()
 
 void OpenCombFile()
 {
-  if (romloadskip)
+  FILE *fp;
+
+  char *p = strrchr(fnames+1, '.');
+  p = p ? p+1 : fnames+1;
+  strcpy(p, "cmb");
+
+  NumComboLocl = 0;
+
+  if ((fp = fopen(fnames+1, "rb")))
   {
-    FILE *fp;
+    fread(ComboHeader, 1, 23, fp);
+    NumComboLocl = ComboHeader[22];
 
-    char *p = strrchr(fnames+1, '.');
-    p = p ? p+1 : fnames+1;
-    strcpy(p, "cmb");
-
-    NumComboLocl = 0;
-
-    fp = fopen(fnames+1, "rb");
-    if (fp)
+    if (NumComboLocl)
     {
-      fread(ComboHeader, 1, 23, fp);
-      NumComboLocl = ComboHeader[22];
-
-      if (NumComboLocl)
-      {
-        fread(CombinDataLocl, 1, (NumComboLocl*2)+(NumComboLocl << 6), fp);
-      }
-
-      fclose(fp);
+      fread(CombinDataLocl, 1, (NumComboLocl*2)+(NumComboLocl << 6), fp);
     }
 
-    strcpy(p, "srm");
+    fclose(fp);
   }
+
+  strcpy(p, "srm");
 }
 
 #ifdef __UNIXSDL__
