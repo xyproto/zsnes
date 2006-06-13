@@ -99,6 +99,7 @@ void GUIRestoreVars()
 {
   int i;
   unsigned char read_cfg_vars(const char *);
+  FILE *cfg_fp;
 
   char *path = strdupcat(ZCfgPath, ZCfgFile);
   if (path)
@@ -320,35 +321,30 @@ void GUIRestoreVars()
 
   NumComboGlob = 0;
 
-  if ((path = strdupcat(ZCfgPath, "data.cmb")))
+  if ((cfg_fp = fopen_dir(ZCfgPath, "data.cmb", "rb")))
   {
-    FILE *cfg_fp;
-    if ((cfg_fp = fopen(path, "rb")))
+    fread(ComboBlHeader, 1, 23, cfg_fp);
+
+    if (ComboBlHeader[22])
     {
-      fread(ComboBlHeader, 1, 23, cfg_fp);
-
-      if (ComboBlHeader[22])
-      {
-        NumComboGlob = ComboBlHeader[22];
-        fread(CombinDataGlob, 1, (NumComboGlob << 6)+2*NumComboGlob, cfg_fp);
-      }
-
-      fclose(cfg_fp);
+      NumComboGlob = ComboBlHeader[22];
+      fread(CombinDataGlob, 1, (NumComboGlob << 6)+2*NumComboGlob, cfg_fp);
     }
-    free(path);
+
+    fclose(cfg_fp);
   }
 }
 
 void GUISaveVars()
 {
   unsigned char write_cfg_vars(const char *);
-  char *path;
+  FILE *cfg_fp;
 
   if (ShowTimer == 1) { TimeChecker = CalcCfgChecksum(); }
 
   if (!cfgdontsave || savecfgforce)
   {
-    path = strdupcat(ZCfgPath, ZCfgFile);
+    char *path = strdupcat(ZCfgPath, ZCfgFile);
     if (path)
     {
       write_cfg_vars(path);
@@ -356,17 +352,12 @@ void GUISaveVars()
     }
   }
 
-  if ((path = strdupcat(ZCfgPath, "data.cmb")))
+  if (NumComboGlob && (cfg_fp = fopen_dir(ZCfgPath, "data.cmb", "wb")))
   {
-    FILE *cfg_fp;
-    if (NumComboGlob && (cfg_fp = fopen(path, "wb")))
-    {
-      ComboHeader[22] = NumComboGlob;
-      fwrite(ComboHeader, 1, 23, cfg_fp);
-      fwrite(CombinDataGlob, 1, (NumComboGlob << 6)+2*NumComboGlob, cfg_fp);
-      fclose(cfg_fp);
-    }
-    free(path);
+    ComboHeader[22] = NumComboGlob;
+    fwrite(ComboHeader, 1, 23, cfg_fp);
+    fwrite(CombinDataGlob, 1, (NumComboGlob << 6)+2*NumComboGlob, cfg_fp);
+    fclose(cfg_fp);
   }
 }
 
