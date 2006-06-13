@@ -196,17 +196,17 @@ int access_dir(const char *path, const char *file, int mode)
 
 int stat_dir(const char *path, const char *file, struct stat *buf)
 {
-  return(stat(strdupcat(path, file), buf));
+  return(stat(strdupcat_internal(path, file), buf));
 }
 
 FILE *fopen_dir(const char *path, const char *file, const char *mode)
 {
-  return(fopen(strdupcat(path, file), mode));
+  return(fopen(strdupcat_internal(path, file), mode));
 }
 
 int remove_dir(const char *pathname, const char *file)
 {
-  return(remove(strdupcat(pathname, file)));
+  return(remove(strdupcat_internal(pathname, file)));
 }
 
 void strcatslash(char *str)
