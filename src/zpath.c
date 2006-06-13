@@ -33,8 +33,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __WIN32__
 #define fullpath _fullpath
+#else
+#define mkdir_p(path) mkdir(path, (S_IRWXU|S_IRWXG|S_IRWXO)) //0777
 #endif
-
 
 #define PATH_SIZE 4096
 
@@ -204,9 +205,14 @@ FILE *fopen_dir(const char *path, const char *file, const char *mode)
   return(fopen(strdupcat_internal(path, file), mode));
 }
 
-int remove_dir(const char *pathname, const char *file)
+int remove_dir(const char *path, const char *file)
 {
-  return(remove(strdupcat_internal(pathname, file)));
+  return(remove(strdupcat_internal(path, file)));
+}
+
+int mkdir_dir(const char *path, const char *dir)
+{
+  return(mkdir_p(strdupcat_internal(path, dir)));
 }
 
 void strcatslash(char *str)

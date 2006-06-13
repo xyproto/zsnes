@@ -52,10 +52,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "md.h"
 #include "zpath.h"
 
-#ifndef __WIN32__
-#define mkdir(path) mkdir(path, (S_IRWXU|S_IRWXG|S_IRWXO)) //0777
-#endif
-
 #ifdef __GNUC__
 typedef unsigned long long uint64;
 #else //MSVC
@@ -1686,7 +1682,7 @@ bool mzt_save(char *statename, bool thumb, bool playback)
 
   if (stat(zmv_vars.filename, &stat_buffer))
   {
-    mkdir(zmv_vars.filename);
+    mkdir_dir(ZSramPath, zmv_vars.filename);
   }
 
   if (!chdir(zmv_vars.filename))

@@ -49,7 +49,8 @@ char *strdupcat(const char *str1, const char *str2);
 int access_dir(const char *path, const char *file, int mode);
 int stat_dir(const char *path, const char *file, struct stat *buf);
 FILE *fopen_dir(const char *path, const char *file, const char *mode);
-int remove_dir(const char *pathname, const char *file);
+int remove_dir(const char *path, const char *file);
+int mkdir_dir(const char *path, const char *dir);
 
 void strcatslash(char *str);
 
