@@ -33,6 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __WIN32__
 #define fullpath _fullpath
+#define mkdir_p(path) mkdir(path)
 #else
 #define mkdir_p(path) mkdir(path, (S_IRWXU|S_IRWXG|S_IRWXO)) //0777
 #endif
