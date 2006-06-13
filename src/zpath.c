@@ -224,6 +224,21 @@ FILE *fopen_dir(const char *path, const char *file, const char *mode)
   return(fp);
 }
 
+int remove_dir(const char *pathname, const char *file)
+{
+  int ret = -1;
+  char *fullpath = strdupcat(pathname, file);
+  if (fullpath)
+  {
+    ret = remove(fullpath);
+    free(fullpath);
+  }
+  else
+  {
+    errno = ENOMEM;
+  }
+  return(ret);
+}
 
 void strcatslash(char *str)
 {

@@ -50,6 +50,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "asm_call.h"
 #include "numconv.h"
 #include "md.h"
+#include "zpath.h"
 
 #ifndef __WIN32__
 #define mkdir(path) mkdir(path, (S_IRWXU|S_IRWXG|S_IRWXO)) //0777
@@ -897,7 +898,7 @@ Create and record ZMV
 static void zmv_create(char *filename)
 {
   memset(&zmv_vars, 0, sizeof(zmv_vars));
-  if ((zmv_vars.fp = fopen(filename,"w+b")))
+  if ((zmv_vars.fp = fopen_dir(ZSramPath, filename,"w+b")))
   {
     size_t filename_len = strlen(filename);
     strncpy(zmv_vars.header.magic, "ZMV", 3);
@@ -1148,7 +1149,7 @@ static bool zmv_open(char *filename)
   memset(&zmv_vars, 0, sizeof(zmv_vars));
   memset(&zmv_open_vars, 0, sizeof(zmv_open_vars));
 
-  zmv_vars.fp = fopen(filename,"r+b");
+  zmv_vars.fp = fopen_dir(ZSramPath, filename,"r+b");
   if (zmv_vars.fp && zmv_header_read(&zmv_vars.header, zmv_vars.fp) &&
       !strncmp(zmv_vars.header.magic, "ZMV", 3))
   {
@@ -1884,8 +1885,6 @@ extern unsigned char MovieAudio;
 extern unsigned char MovieVideoAudio;
 extern unsigned char MovieAudioCompress;
 
-extern char ZStartPath[PATH_MAX];
-
 #define PICK_HELP(var) if (!strncmp(*str, "$"#var, strlen(#var)+1)) { *str += strlen(#var)+1; return(var); }
 
 static char *pick_var(char **str)
@@ -2010,33 +2009,30 @@ static void raw_video_close()
 
   if (audio_and_video && MovieVideoAudio)
   {
-    chdir(ZStartPath);
     if (MovieAudioCompress)
     {
       if (mencoderExists) { system(encode_command(md_merge_compressed)); }
-      remove(md_compressed_audio);
+      remove_dir(ZStartPath, md_compressed_audio);
     }
     else
     {
       if (mencoderExists) { system(encode_command(md_merge)); }
-      remove(md_pcm_audio);
+      remove_dir(ZStartPath, md_pcm_audio);
     }
-    remove(md_file);
+    remove_dir(ZStartPath, md_file);
   }
   signal(SIGPIPE, SIG_IGN);
 }
 
 static bool raw_video_open()
 {
-  chdir(ZStartPath);
-
   switch (MovieVideoMode)
   {
     case 0:
       break;
 
     case 1:
-      raw_vid.vp = fopen(md_raw_file, "wb");
+      raw_vid.vp = fopen_dir(ZStartPath, md_raw_file, "wb");
       break;
 
     case 2: case 3: case 4:
@@ -2063,7 +2059,7 @@ static bool raw_video_open()
     }
     else
     {
-      raw_vid.ap = fopen(md_pcm_audio, "wb");
+      raw_vid.ap = fopen_dir(ZStartPath, md_pcm_audio, "wb");
     }
     if (raw_vid.ap)
     {
@@ -2214,7 +2210,7 @@ static struct
 static void MovieSub_Open(const char *filename)
 {
   memset(&MovieSub, 0, sizeof(MovieSub));
-  MovieSub.fp = fopen(filename, "r");
+  MovieSub.fp = fopen_dir(ZSramPath, filename, "r");
 }
 
 static void MovieSub_Close()
@@ -2658,9 +2654,7 @@ void MoviePlay()
     memcpy(&fnamest[fname_len-3], ".zmv", 4);
     fnamest[fname_len] = CMovieExt;
 
-    SRAMChdir();
-
-    if ((fp = fopen(fnamest+1, "rb")))
+    if ((fp = fopen_dir(ZSramPath, fnamest+1, "rb")))
     {
       char header_buf[3];
       fread(header_buf, 3, 1, fp);
@@ -2723,15 +2717,13 @@ void MovieRecord()
     memcpy(&fnamest[fname_len-3], ".zmv", 4);
     fnamest[fname_len] = CMovieExt;
 
-    SRAMChdir();
-
     if (MovieRecordWinVal == 1)
     {
       remove(fnamest+1);
       MovieRecordWinVal = 0;
     }
 
-    if (!(tempfhandle = fopen(fnamest+1,"rb")))
+    if (!(tempfhandle = fopen_dir(ZSramPath, fnamest+1,"rb")))
     {
       PrevSRAMState = SRAMState;
       SRAMState = true;
@@ -2782,9 +2774,7 @@ void MovieDumpRaw()
   {
     case MOVIE_OFF:
       MoviePlay();
-      SRAMChdir();
       RawDumpInProgress = raw_video_open();
-      asm_call(ChangetoLOADdir);
       break;
   }
 }
