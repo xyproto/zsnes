@@ -633,7 +633,7 @@ RewindFrames db 15
 %else
 @ ROMs directory (don't edit drive, MS-only)
 %endif
-LoadDrive times 2 db 2
+LoadDrive db 2,58
 LoadDir times 1024 db ""
 @ Save states & SRAMs, snapshots, SPCs
 SRAMDir times 1024 db ""
