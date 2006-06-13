@@ -26,20 +26,19 @@ EXTSYM gammalevel,hirestiledat,ignor512,latchx,latchy,maxbr,ForceNewGfxOff
 EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,resolutn
 EXTSYM romispal,scaddtype,scanlines,selcA000,t1cc,vcache4b,vesa2_bpos
 EXTSYM spritetablea,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10,vesa2selec
-EXTSYM vidbuffer,vram,KeyStateSelct,soundon,Open_File,smallscreenon
-EXTSYM Close_File,Create_File,Write_File,makepal,ScreenScale
+EXTSYM vidbuffer,vram,KeyStateSelct,soundon,smallscreenon
+EXTSYM makepal,ScreenScale,bg1objptr,DecompAPtr,HalfTransB,HalfTransC
 EXTSYM changepal,saveselectpal,displayfpspal,superscopepal,DrawScreen,MMXSupport
 EXTSYM Get_MouseData,Get_MousePositionDisplacement,GUIEnableTransp,GUIFontData
 EXTSYM StopSound,StartSound,PrevPicture,nggposng
-EXTSYM Palette0,GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram,dsp1array
+EXTSYM Palette0,GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram
 EXTSYM genfulladdtab,genfulladdtabng,TimerEnable,ShowTimer,debugdisble,GUIOn
 EXTSYM FilteredGUI,HalfTrans,SmallMsgText,ClearScreen,Mode7HiRes,mosenng,mosszng
 EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,CSStatus
 EXTSYM CSStatus2,CSStatus3,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
-EXTSYM bg1objptr,DecompAPtr,HalfTransB,HalfTransC
 EXTSYM MovieProcessing,mzt_chdir,UpChdir,MovieFrameStr,GetMovieFrameStr
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
-EXTSYM DetermineNew,newestfileloc,newestfiledate
+EXTSYM DetermineNew,newestfileloc,newestfiledate,StateExists
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -1056,14 +1055,13 @@ GetPicture:
     ret
 
 NEWSYM drawfillboxsc
+    pushad
+    call StateExists
+    cmp eax,1
+    popad
+    jne .nodraw
+
     push eax
-    push ebx
-    mov edx,fnamest+1
-    call Open_File
-    jc near .nodraw
-    mov bx,ax
-    call Close_File
-    pop ebx
     ; draws a 10x10 filled box according to position bl and color dl
     xor eax,eax
     mov al,11
@@ -1087,21 +1085,17 @@ NEWSYM drawfillboxsc
     dec ecx
     jnz .next
     pop eax
-    ret
 .nodraw
-    pop ebx
-    pop eax
     ret
 
 NEWSYM drawfillboxsc16b
+    pushad
+    call StateExists
+    cmp eax,1
+    popad
+    jne .nodraw
+
     push eax
-    push ebx
-    mov edx,fnamest+1
-    call Open_File
-    jc near .nodraw
-    mov bx,ax
-    call Close_File
-    pop ebx
     ; draws a 10x10 filled box according to position bl and color dl
     xor eax,eax
     mov al,11
@@ -1126,10 +1120,7 @@ NEWSYM drawfillboxsc16b
     dec ecx
     jnz .next
     pop eax
-    ret
 .nodraw
-    pop ebx
-    pop eax
     ret
 
 NEWSYM drawbox
@@ -2641,13 +2632,8 @@ NEWSYM ClockOutputB
     popad
     ret
 
-SECTION .data
-hextestfilen db 'DSP1DUMP.DAT',0
-
 SECTION .bss
 NEWSYM SoundTest, resb 1
-
-
 blahrnr resw 1
 
 SECTION .text
@@ -2677,22 +2663,6 @@ NEWSYM hextestoutput
     add eax,40h
     mov edx,eax
     mov [Testval],edx
-    cmp byte[pressed+25],1
-    jne .nopress25
-    jmp .nopress25
-    pushad
-    mov edx,hextestfilen
-    call Create_File
-    jc .failed
-    mov bx,ax
-    mov edx,dsp1array
-    mov ecx,4096
-    call Write_File
-    call Close_File
-.failed
-    popad
-    mov byte[pressed+25],2
-.nopress25
     call displayfpspal
 
     mov esi,[vram]

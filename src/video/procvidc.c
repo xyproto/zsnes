@@ -150,3 +150,7 @@ void DetermineNew()
   }
 }
 
+int StateExists()
+{
+  return(access(fnamest+1, F_OK) ? 0 : 1);
+}
