@@ -173,7 +173,7 @@ JMAOBJ=${JMADIR}/7zlzma${OE} ${JMADIR}/crc32${OE} ${JMADIR}/iiostrm${OE}\
 
 MAINOBJ=endmem${OE} init${OE} initc${OE} uic${OE} patch${OE}\
 	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE}\
-	cfg${OE} md${OE}
+	cfg${OE} md${OE} zpath${OE}
 
 NETOBJ=
 #${NETDIR}/ztcp${OE}
@@ -270,10 +270,11 @@ ui${OE}: ui.asm macros.mac
 uic${OE}: uic.c asm_call.h ${MMLIBDIR}/mm.h
 vcache${OE}: vcache.asm macros.mac
 version${OE}: version.c
-zloader${OE}: zloader.c cfg${OE}
+zloader${OE}: zloader.c cfg${OE} zpath.h
 zmovie${OE}: zmovie.c asm_call.h gblvars.h numconv.h md${OE}
 zstate${OE}: zstate.c asm_call.h gblvars.h numconv.h
 md${OE}: md.psr ${PSR}
+zpath${OE}: zpath.c zpath.h
 
 ${CHIPDIR}/c4emu${OE}: ${CHIPDIR}/c4emu.c
 ${CHIPDIR}/dsp1emu${OE}: ${CHIPDIR}/dsp1emu.c
@@ -339,7 +340,7 @@ ${GUIDIR}/gui${OE}: ${GUIDIR}/gui.asm macros.mac ${GUIDIR}/guicheat.inc\
 	${GUIDIR}/guicombo.inc ${GUIDIR}/guikeys.inc ${GUIDIR}/guiload.inc\
 	${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guitools.inc\
 	${GUIDIR}/guiwindp.inc
-${GUIDIR}/guifuncs${OE}: ${GUIDIR}/guifuncs.c md${OE} cfg${OE}
+${GUIDIR}/guifuncs${OE}: ${GUIDIR}/guifuncs.c md${OE} cfg${OE} zpath.h
 ${GUIDIR}/menu${OE}: ${GUIDIR}/menu.asm macros.mac
 
 ${JMADIR}/7zlzma${OE}: ${JMADIR}/7zlzma.cpp ${JMADIR}/7z.h ${JMADIR}/lzmadec.h

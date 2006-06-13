@@ -30,13 +30,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <zlib.h>
 #define DIR_SLASH "\\"
 #endif
+#include "../zpath.h"
 #include "../md.h"
 #include "../cfg.h"
 
 extern unsigned char ComboHeader[23], ComboBlHeader[23], CombinDataGlob[3300];
 extern unsigned char ShowTimer, savecfgforce;
 extern unsigned int SnowTimer, NumSnow, NumComboGlob;
-extern char GUICName[256], GUIFName[256];
 enum vtype { UB, UW, UD, SB, SW, SD };
 
 void CheckValueBounds(void *ptr, int min, int max, int val, enum vtype type)
@@ -99,10 +99,28 @@ void GUIRestoreVars()
 {
   int i;
   unsigned char read_cfg_vars(const char *);
-  FILE *cfg_fp;
 
-  read_cfg_vars(GUIFName);
-  read_md_vars("zmovie.cfg");
+  char *path = strdupcat(ZCfgPath, ZCfgFile);
+  if (path)
+  {
+    read_cfg_vars(path);
+    free(path);
+  }
+  else
+  {
+    read_cfg_vars(ZCfgFile);
+  }
+
+  path = strdupcat(ZCfgPath, "zmovie.cfg");
+  if (path)
+  {
+    read_md_vars(path);
+    free(path);
+  }
+  else
+  {
+    read_md_vars("zmovie.cfg");
+  }
 
   CheckValueBounds(&per2exec, 50, 150, 100, UD);
   CheckValueBounds(&SRAMSave5Sec, 0, 1, 0, UB);
@@ -302,38 +320,53 @@ void GUIRestoreVars()
 
   NumComboGlob = 0;
 
-  if ((cfg_fp = fopen(GUICName, "rb")))
+  if ((path = strdupcat(ZCfgPath, "data.cmb")))
   {
-    fread(ComboBlHeader, 1, 23, cfg_fp);
-
-    if (ComboBlHeader[22])
+    FILE *cfg_fp;
+    if ((cfg_fp = fopen(path, "rb")))
     {
-      NumComboGlob = ComboBlHeader[22];
-      fread(CombinDataGlob, 1, (NumComboGlob << 6)+2*NumComboGlob, cfg_fp);
-    }
+      fread(ComboBlHeader, 1, 23, cfg_fp);
 
-    fclose(cfg_fp);
+      if (ComboBlHeader[22])
+      {
+        NumComboGlob = ComboBlHeader[22];
+        fread(CombinDataGlob, 1, (NumComboGlob << 6)+2*NumComboGlob, cfg_fp);
+      }
+
+      fclose(cfg_fp);
+    }
+    free(path);
   }
 }
 
 void GUISaveVars()
 {
   unsigned char write_cfg_vars(const char *);
-  FILE *cfg_fp;
+  char *path;
 
   if (ShowTimer == 1) { TimeChecker = CalcCfgChecksum(); }
 
   if (!cfgdontsave || savecfgforce)
   {
-    write_cfg_vars(GUIFName);
+    path = strdupcat(ZCfgPath, ZCfgFile);
+    if (path)
+    {
+      write_cfg_vars(path);
+      free(path);
+    }
   }
 
-  if (NumComboGlob && (cfg_fp = fopen(GUICName, "wb")))
+  if ((path = strdupcat(ZCfgPath, "data.cmb")))
   {
-    ComboHeader[22] = NumComboGlob;
-    fwrite(ComboHeader, 1, 23, cfg_fp);
-    fwrite(CombinDataGlob, 1, (NumComboGlob << 6)+2*NumComboGlob, cfg_fp);
-    fclose(cfg_fp);
+    FILE *cfg_fp;
+    if (NumComboGlob && (cfg_fp = fopen(path, "wb")))
+    {
+      ComboHeader[22] = NumComboGlob;
+      fwrite(ComboHeader, 1, 23, cfg_fp);
+      fwrite(CombinDataGlob, 1, (NumComboGlob << 6)+2*NumComboGlob, cfg_fp);
+      fclose(cfg_fp);
+    }
+    free(path);
   }
 }
 

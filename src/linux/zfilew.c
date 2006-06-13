@@ -224,24 +224,9 @@ unsigned int ZFileTell()
 	} else return gztell(FILEHANDLE[ZFileTellHandle]);
 }
 
-unsigned int ZFileMKDir()
-{
-#ifdef __UNIXSDL__
-  return(mkdir(MKPath, (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)));
-#else
-  return(mkdir(MKPath));
-#endif
-}
-
-
 unsigned int ZFileCHDir()
 {
   return(chdir(CHPath));
-}
-
-unsigned int ZFileRMDir()
-{
-  return(rmdir(RMPath));
 }
 
 char *ZFileGetDir()
@@ -427,44 +412,6 @@ extern char SRAMDir[1024];
 extern char LoadDir[512];
 
 #ifdef __UNIXSDL__
-
-char zcfgdir[1024];
-#define ZCFG_DIR "/.zsnes"
-#define ZCFG_DIR_LEN (1023-strlen(ZCFG_DIR))
-
-void obtaindir()
-{
-  struct passwd *userinfo;
-  DIR *tmp;
-
-  if ((userinfo = getpwuid(getuid())))
-  {
-    strcpy(zcfgdir, userinfo->pw_dir);
-  }
-  else
-  {
-    getcwd(zcfgdir, ZCFG_DIR_LEN);
-  }
-  strcat(zcfgdir, ZCFG_DIR);
-  tmp = opendir(zcfgdir);
-  if (tmp == NULL)
-  {
-    MKPath = zcfgdir;
-    ZFileMKDir();
-  }
-  else
-  {
-    closedir(tmp);
-  }
-  if (*SRAMDir == 0)
-  {
-    strcpy(SRAMDir, zcfgdir);
-  }
-  if (*LoadDir == 0)
-  {
-    getcwd(LoadDir, 512);
-  }
-}
 
 void GetFilename()
 {

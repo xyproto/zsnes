@@ -20,7 +20,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
-#define DIR_SLASH '/'
 #else
 #define _POSIX_
 #include <stdio.h>
@@ -28,7 +27,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
-#define DIR_SLASH '\\'
 #ifdef __WIN32__
 #include <windows.h>
 #include <io.h>
@@ -39,6 +37,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include "asm_call.h"
 #include "cfg.h"
+#include "zpath.h"
 
 #ifdef __WIN32__
 void ImportDirectX();
@@ -716,13 +715,6 @@ static void handle_params(int argc, char *argv[])
 int argc;
 char **argv;
 
-void ccmdline()
-{
-  handle_params(argc, argv);
-}
-
-char ZStartPath[PATH_MAX];
-
 #ifdef __WIN32__
 extern HINSTANCE hInst;
 int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
@@ -733,9 +725,12 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
   hInst=hInstance;
   ImportDirectX();
 
-  getcwd(ZStartPath, PATH_MAX);
+  if (init_paths(*argv))
+  {
+    handle_params(argc, argv);
 
-  zstart();
+    zstart();
+  }
   return(0);
 }
 
@@ -746,13 +741,12 @@ int main(int zargc, char *zargv[])
   argc = zargc;
   argv = zargv;
 
-  #ifdef __UNIXSDL__
-  handle_params(zargc, zargv);
-  #endif
+  if (init_paths(*zargv))
+  {
+    handle_params(zargc, zargv);
 
-  getcwd(ZStartPath, PATH_MAX);
-
-  zstart();
+    zstart();
+  }
   return(0);
 }
 #endif

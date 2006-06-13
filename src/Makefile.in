@@ -54,7 +54,7 @@ JMAOBJ=@JMA_FILES@
 MMLIBOBJ=@MMLIB_FILES@
 
 MAINOBJ=cfg.o debug.o endmem.o init.o initc.o md.o patch.o ui.o uic.o vcache.o\
-	version.o zloader.o zmovie.o zstate.o
+	version.o zloader.o zmovie.o zstate.o zpath.o
 
 NETOBJ=
 #$(NETDIR)/ztcp.o

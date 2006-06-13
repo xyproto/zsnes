@@ -20,13 +20,12 @@
 
 %include "macros.mac"
 
-EXTSYM ZFileSystemInit,getcmdline,GUIRestoreVars,obtaindir
-EXTSYM SBHDMA,InitDir,InitDrive,SRAMChdir,allocptr,putchar
+EXTSYM ZFileSystemInit,SBHDMA,SRAMChdir,allocptr,putchar
 EXTSYM getchar,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName,ZFileSeekMode
 EXTSYM ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle,ZFileWriteSize
 EXTSYM ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize,ZFileReadBlock
 EXTSYM ZFileRead,ZCloseFileHandle,ZCloseFile
-EXTSYM ZFileTellHandle,ZFileTell
+EXTSYM ZFileTellHandle,ZFileTell,PrevFSMode,sem_sleep
 EXTSYM GetTime,GetDate,GUIkeydelay2,ZFileCHDir,CHPath
 EXTSYM ZFileGetDir,DirName,DTALoc,DTALocPos,ZFileFindATTRIB
 EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,Start60HZ
@@ -41,7 +40,6 @@ EXTSYM GetMouseY,GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
 EXTSYM MouseButton,Start36HZ,Stop36HZ,CheckTimers,vesa2_rfull,vesa2_rtrcl
 EXTSYM vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla,vesa2_bfull,vesa2_btrcl
 EXTSYM vesa2_btrcla,Init_2xSaIMMXW,GetLocalTime,V8Mode,GrayscaleMode,PrevWinMode
-EXTSYM PrevFSMode,sem_sleep
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
@@ -59,41 +57,6 @@ NEWSYM StartUp
 
 NEWSYM SystemInit
     ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
-    mov byte[cvidmode],2
-    call getcmdline
-    mov dword[esi],'zsne'
-    mov dword[esi+4],'sl.c'
-    mov word[esi+8],'fg'
-    mov byte[esi+10],0
-    mov dword[esi+256],'zgui'
-    mov dword[esi+4+256],'cfgl'
-    mov dword[esi+8+256],'.dat'
-    mov byte[esi+12+256],0
-
-    ; Get and set the initial directory
-%ifdef __UNIXSDL__
-    call obtaindir
-    mov ebx,InitDir
-    mov edx,InitDrive
-    call Get_Dir
-
-    pushad
-    call SRAMChdir
-    popad
-%else
-    mov ebx,InitDir
-    mov edx,InitDrive
-    call Get_Dir
-
-    mov dl,[InitDrive]
-    mov ebx,InitDir
-    call Change_Dir
-%endif
-
-    pushad
-    call GUIRestoreVars                 ; Load GUI stuff
-    popad
-    call obtaindir                      ; Get Save/Init Directories
     pushad
     call SRAMChdir
     popad

@@ -20,8 +20,8 @@
 
 %include "macros.mac"
 
-EXTSYM ZFileSystemInit,getcmdline,GUIRestoreVars,obtaindir
-EXTSYM preparedir,SBHDMA,ccmdline,InitDir,InitDrive,allocptr
+EXTSYM ZFileSystemInit,GUIRestoreVars
+EXTSYM preparedir,SBHDMA,allocptr
 EXTSYM putchar,getch,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName
 EXTSYM ZFileSeekMode,ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle
 EXTSYM ZFileWriteSize,ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize
@@ -63,31 +63,9 @@ NEWSYM StartUp
 NEWSYM SystemInit
     ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
     push es
-    mov byte[cvidmode],3
-    call getcmdline
-
-    mov dword[esi],'zsne'
-    mov dword[esi+4],'sw.c'
-    mov word[esi+8],'fg'
-    mov byte[esi+10],0
-    mov dword[esi+256],'zgui'
-    mov dword[esi+4+256],'cfgw'
-    mov dword[esi+8+256],'.dat'
-    mov byte[esi+12+256],0
-
-    ; Get and set the initial directory
-    mov ebx,InitDir
-    mov edx,InitDrive
-    call Get_Dir
-    mov dl,[InitDrive]
-    mov ebx,InitDir
-    call Change_Dir
-
     pushad
     call GUIRestoreVars                 ; Load GUI stuff
     popad
-    call obtaindir                      ; Get Save/Init Directories
-    call ccmdline
     call preparedir
 
 %ifndef __DEVELOPER__

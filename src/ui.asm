@@ -22,8 +22,8 @@
 
 EXTSYM PrintStr,WaitForKey,PrintChar,ram7fa,wramdataa,MMXSupport
 EXTSYM MMXextSupport,statefileloc,LatestSave,firstsaveinc
-EXTSYM Change_Dir,Get_Dir
-EXTSYM init18_2hz,SRAMDirCurDir,SRAMChdir,SRAMChdirFail,LoadDir,LoadDrive
+EXTSYM Change_Dir
+EXTSYM init18_2hz,SRAMDirCurDir,SRAMChdir,SRAMChdirFail
 EXTSYM BitConv32Ptr,spcBuffera,spritetablea,vcache2bs,vcache4bs,vcache8bs
 EXTSYM RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa,vidbufferofsmos,ngwinptr
 EXTSYM vidbufferofsb,headdata,romdata,sfxramdata,setaramdata,wramdata,ram7f,vram
@@ -35,9 +35,7 @@ EXTSYM DetermineNew,newestfileloc,newestfiledate
 %ifdef __UNIXSDL__
 EXTSYM LinuxExit,GetFilename
 %elifdef __WIN32__
-EXTSYM _imp__GetModuleFileNameA@12,memcpy,exit
-%elifdef __MSDOS__
-EXTSYM argv
+EXTSYM exit
 %endif
 
 ; Function 0501h
@@ -57,110 +55,6 @@ SECTION .data
 NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,10,0
 NEWSYM YesMMX, db 'MMX support found and enabled.',13,10,13,10,0
 
-SECTION .text
-
-;*******************************************************
-; Get Command Line       Locates SET CMDLINE environment
-;*******************************************************
-
-NEWSYM getcmdline
-%ifdef __MSDOS__
-%if 0
-    mov edx,.string2s
-    push edx
-    call getenv
-    pop edx
-%else
-    mov eax,[argv]
-%endif
-    cmp eax,0
-    je near .nfound
-    mov esi,eax
-    mov edi,CMDLineStr
-    cmp byte[esi],0
-    je near .nfound
-.a
-    mov dl,[esi]
-    cmp dl,'a'
-    jb .nocap
-    cmp dl,'z'
-    ja .nocap
-    sub dl,'a'-'A'
-.nocap
-    mov [edi],dl
-    mov [edi+256],dl
-    mov [edi+512],dl
-    inc esi
-    inc edi
-    cmp dl,32
-    je .b
-    cmp dl,0
-    jne .a
-.b
-%elifdef __WIN32__
-    push dword 256
-    push dword CMDLineStr
-    push byte +0
-    call [_imp__GetModuleFileNameA@12]
-    push eax
-    push eax
-    push dword CMDLineStr
-    push dword GUIFName
-    call memcpy
-    add esp,+12
-    mov eax,[esp]
-    push eax
-    push dword CMDLineStr
-    push dword GUICName
-    call memcpy
-    add esp,+12
-    pop edi
-    add edi,CMDLineStr
-%else
-    mov esi,CMDLineStr
-    ret ; *sigh*
-%endif
-    mov esi,CMDLineStr
-    mov eax,esi
-.next2
-    cmp eax,edi
-    je .nomore
-%ifdef __UNIXSDL__
-    cmp byte[eax],'/'
-%else
-    cmp byte[eax],'\'
-    je .found
-%endif
-    cmp byte[eax],':'
-    jne .next
-.found
-    mov esi,eax
-    inc esi
-.next
-    inc eax
-    jmp .next2
-.nfound
-    mov edx,.stringnf
-    call PrintStr
-    mov esi,CMDLineStr
-.nomore
-    mov [FilenameStart],esi
-    mov dword[esi+512],'data'
-    mov dword[esi+512+4],'.cmb'
-    mov byte[esi+512+8],0
-    ret
-
-SECTION .data
-.string2s db 'CMDLINE',0
-.stringnf db 'SET CMDLINE LINE NOT FOUND!',13,0
-
-SECTION .bss
-NEWSYM CMDLineStr, resb 256
-NEWSYM GUIFName, resb 256
-NEWSYM GUICName, resb 256
-NEWSYM FilenameStart, resd 1
-
-;SECTION .text
 ;*******************************************************
 ; Variable section
 ;*******************************************************
@@ -522,11 +416,6 @@ NEWSYM makeextension
     popad
 
     call DetermineNewest
-
-    ; change dir to LoadDrive/LoadDir
-    mov dl,[LoadDrive]
-    mov ebx,LoadDir
-    call Change_Dir
     ret
 
 %macro determinenewhelp 1
@@ -559,22 +448,6 @@ DetermineNewest:
 .nott
     mov [fnamest+eax],bl
     ret
-
-%ifndef __UNIXSDL__
-NEWSYM obtaindir
-    cmp byte[SRAMDir],0
-    jne .nosdriveb
-    pushad
-    call SRAMDirCurDir
-    popad
-.nosdriveb
-    mov ebx,LoadDir
-    mov edx,LoadDrive
-    call Get_Dir
-.noldriveb
-    ret
-%endif
-
 
 NEWSYM preparedir
 ;Function 47h - Get current directory

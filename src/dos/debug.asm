@@ -23,14 +23,12 @@
 EXTSYM DosExit,curblank,start65816,UpdateDPage,splitflags,joinflags,delay
 EXTSYM Create_File,Write_File,Close_File,Check_Key,Get_Key
 EXTSYM LastLog,endprog,printhex,vesa2_rfull,vesa2_rtrcl,vesa2_gfull,vesa2_gtrcl
-EXTSYM vesa2_bfull,vesa2_btrcl,BRRBuffer,DSPMem,ResetState,PHdspsave,printnum
-EXTSYM PHspcsave,ssdatst,timeron,timincr0,timincr1,timincr2,timinl0,timinl1
-EXTSYM timinl2,vram,spcnumread,Curtableaddr,statesaver,memtablew8,printhex8
+EXTSYM vram,spcnumread,Curtableaddr,statesaver,memtablew8,printhex8
 EXTSYM writeon,curcyc,dmadata,execsingle,initaddrl,memtabler8,pdh,debugloadstate
 EXTSYM regaccessbankr8,selcB800,snesmap2,snesmmap,ram7f,StringLength,exiter
 EXTSYM CurrentCPU,SA1RegP,curypos,xa,xd,xdb,xe,xp,xpb,xpc,xs,xx,xy,SA1xpb,SA1xpc
 EXTSYM SA1xa,SA1xx,SA1xy,SA1xd,SA1xdb,SA1xs,cycpbl,debugbuf,soundon,spcA,spcNZ
-EXTSYM spcP,spcPCRam,SPCRAM,spcS,spcX,spcY
+EXTSYM spcP,spcPCRam,SPCRAM,spcS,spcX,spcY,vesa2_bfull,vesa2_btrcl,DSPMem
 
 ; debstop at regsw.asm 2118/2119
 
