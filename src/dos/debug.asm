@@ -62,11 +62,7 @@ NEWSYM startdebugger
     EXTSYM oamram
     mov edx,oamram
     mov ecx,544
-
-    or ecx,ecx
-    jz .nofilecontents
     call Write_File
-.nofilecontents
     call Close_File
 .nofile
     popad
