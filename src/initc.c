@@ -2247,7 +2247,7 @@ extern char CombinDataLocl[3300];
 
 void SaveCombFile()
 {
-  if (romloadskip)
+  if (!romloadskip)
   {
     FILE *fp;
 
