@@ -30,6 +30,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <sys/stat.h>
 #include <io.h>
 #endif
+#include "../zpath.h"
 #include "ntsc.h"
 
 extern unsigned char newengen;
@@ -83,7 +84,7 @@ void LoadPicture()
 
   memset(PrevPicture, 0, pic_size);
 
-  if ((fp = fopen(fnamest+1, "rb")))
+  if ((fp = fopen_dir(ZSramPath, fnamest+1, "rb")))
   {
     unsigned int file_size;
 
@@ -144,7 +145,7 @@ time_t newestfiledate;
 void DetermineNew()
 {
   struct stat filestat;
-  if (!stat(fnamest+1, &filestat) && filestat.st_mtime > newestfiledate)
+  if (!stat_dir(ZCfgPath, fnamest+1, &filestat) && filestat.st_mtime > newestfiledate)
   {
     newestfiledate = filestat.st_mtime;
     newestfileloc = fnamest[statefileloc] == 't' ? 0 : fnamest[statefileloc]-'0';
@@ -153,5 +154,5 @@ void DetermineNew()
 
 int StateExists()
 {
-  return(access(fnamest+1, F_OK) ? 0 : 1);
+  return(access_dir(ZCfgPath, fnamest+1, F_OK) ? 0 : 1);
 }

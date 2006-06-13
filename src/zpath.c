@@ -28,11 +28,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include <errno.h>
 
+#include "zpath.h"
+#include "cfg.h"
+
 #ifdef __WIN32__
 #define fullpath _fullpath
 #endif
 
-#include "zpath.h"
 
 #define PATH_SIZE 4096
 
