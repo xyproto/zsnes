@@ -2258,14 +2258,13 @@ void SaveCombFile()
     if (NumComboLocl)
     {
       ComboHeader[22] = NumComboLocl;
-    }
 
-    fp = fopen(fnames+1, "wb");
-    if (fp)
-    {
-      fwrite(ComboHeader, 1, 23, fp);
-      fwrite(CombinDataLocl, 1, (NumComboLocl*2)+(NumComboLocl << 6), fp);
-      fclose(fp);
+      if ((fp = fopen(fnames+1, "wb")))
+      {
+        fwrite(ComboHeader, 1, 23, fp);
+        fwrite(CombinDataLocl, 1, NumComboLocl*66, fp);
+        fclose(fp);
+      }
     }
     strcpy(p, "srm");
   }
