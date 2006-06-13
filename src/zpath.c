@@ -48,8 +48,8 @@ char ZCfgFile[] = "zsnesw.cfg";
 char ZCfgFile[] = "zsnesl.cfg";
 #endif
 
-char *ZStartPath = 0, *ZCfgPath = 0, *ZSramPath = 0;
-static bool ZStartAlloc = false, ZCfgAlloc = false, ZSramAlloc = false;
+char *ZStartPath = 0, *ZCfgPath = 0, *ZSramPath = 0, *ZRomPath = 0;
+static bool ZStartAlloc = false, ZCfgAlloc = false, ZSramAlloc = false, ZRomAlloc = false;
 
 #ifdef __UNIXSDL__
 
@@ -125,6 +125,7 @@ void deinit_paths()
   if (ZStartAlloc && ZStartPath) { free(ZStartPath); }
   if (ZCfgAlloc && ZCfgPath) { free(ZCfgPath); }
   if (ZSramAlloc && ZSramPath) { free(ZSramPath); }
+  if (ZRomAlloc && ZRomPath) { free(ZRomPath); }
 }
 
 bool init_paths(char *launch_command)
@@ -136,32 +137,43 @@ bool init_paths(char *launch_command)
   {
     ZStartAlloc = true;
 
-    if (realpath(launch_command, ZStartPath))
+    ZRomPath = malloc(PATH_SIZE);
+    if (ZRomPath)
     {
-      strdirname(ZStartPath);
-    }
-    else
-    {
-      getcwd(ZStartPath, PATH_SIZE);
-    }
-    strcatslash(ZStartPath);
+      ZRomAlloc = true;
 
-    cfgpath_ensure();
+      if (realpath(launch_command, ZStartPath))
+      {
+        strdirname(ZStartPath);
+      }
+      else
+      {
+        getcwd(ZStartPath, PATH_SIZE);
+      }
+      strcatslash(ZStartPath);
 
-    GUIRestoreVars();
+      cfgpath_ensure();
 
-    //TODO - Get this working nicely for saving in ROM directory on DOS/Win
-    if (*SRAMDir)
-    {
-      ZSramPath = SRAMDir;
+      GUIRestoreVars();
+
+      //TODO - Get this working nicely for saving in ROM directory on DOS/Win
+      if (*SRAMDir)
+      {
+        ZSramPath = SRAMDir;
+      }
+      else
+      {
+        ZSramPath = ZCfgPath;
+      }
+
+      if (*LoadDir)
+      {
+        strcpy(ZRomPath, LoadDir);
+      }
+
+      atexit(deinit_paths);
+      return(true);
     }
-    else
-    {
-      ZSramPath = ZCfgPath;
-    }
-
-    atexit(deinit_paths);
-    return(true);
   }
   return(false);
 }

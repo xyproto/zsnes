@@ -29,16 +29,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <sys/stat.h>
 #endif
 #include "zip/zunzip.h"
+#include "zpath.h"
 
 #ifndef __GNUC__
 #define strcasecmp stricmp
 #define strncasecmp strnicmp
 #endif
-
-//C++ style code in C
-#define bool unsigned char
-#define true 1
-#define false 0
 
 #define BUFFER_SIZE 2048
 
@@ -109,7 +105,8 @@ bool initPatch()
   IPSPatch.zipfile = 0;
 
   IPSPatch.fp = 0;
-  IPSPatch.fp = fopen(patchfile, "rb");
+  IPSPatch.fp = fopen_dir(ZSramPath, patchfile, "rb");
+  if (!IPSPatch.fp) { IPSPatch.fp = fopen_dir(ZRomPath, patchfile, "rb"); }
   if (!IPSPatch.fp) { return(false); }
 
   return(reloadBuffer());
