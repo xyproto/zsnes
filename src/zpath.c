@@ -38,7 +38,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __MSDOS__
 char ZCfgFile[] = "zsnes.cfg";
-#elifdef __WIN32__
+#elif defined(__WIN32__)
 char ZCfgFile[] = "zsnesw.cfg";
 #else
 char ZCfgFile[] = "zsnesl.cfg";
@@ -149,6 +149,16 @@ bool init_paths(char *launch_command)
     cfgpath_ensure();
 
     GUIRestoreVars();
+
+    //TODO - Get this working nicely for saving in ROM directory on DOS/Win
+    if (*SRAMDir)
+    {
+      ZSramPath = SRAMDir;
+    }
+    else
+    {
+      ZSramPath = ZCfgPath;
+    }
 
     atexit(deinit_paths);
     return(true);
