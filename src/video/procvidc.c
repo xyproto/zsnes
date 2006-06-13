@@ -145,7 +145,7 @@ time_t newestfiledate;
 void DetermineNew()
 {
   struct stat filestat;
-  if (!stat_dir(ZCfgPath, fnamest+1, &filestat) && filestat.st_mtime > newestfiledate)
+  if (!stat_dir(ZSramPath, fnamest+1, &filestat) && filestat.st_mtime > newestfiledate)
   {
     newestfiledate = filestat.st_mtime;
     newestfileloc = fnamest[statefileloc] == 't' ? 0 : fnamest[statefileloc]-'0';
@@ -154,5 +154,5 @@ void DetermineNew()
 
 int StateExists()
 {
-  return(access_dir(ZCfgPath, fnamest+1, F_OK) ? 0 : 1);
+  return(access_dir(ZSramPath, fnamest+1, F_OK) ? 0 : 1);
 }
