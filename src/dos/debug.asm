@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM DosExit,curblank,start65816,UpdateDPage,splitflags,joinflags,delay
-EXTSYM Open_File,Read_File,Create_File,Write_File,Close_File,Check_Key,Get_Key
+EXTSYM Create_File,Write_File,Close_File,Check_Key,Get_Key
 EXTSYM LastLog,endprog,printhex,vesa2_rfull,vesa2_rtrcl,vesa2_gfull,vesa2_gtrcl
 EXTSYM vesa2_bfull,vesa2_btrcl,BRRBuffer,DSPMem,ResetState,PHdspsave,printnum
 EXTSYM PHspcsave,ssdatst,timeron,timincr0,timincr1,timincr2,timinl0,timinl1
@@ -41,14 +41,6 @@ NEWSYM startdebugger
     mov byte[debuggeron],1
     mov ax,0003h
     int 10h
-;    mov edx,.fname3+1
-;    call Open_File
-;    mov bx,ax
-;    mov ecx,480h
-;    mov edx,[romdata]
-;    add edx,65536*13h
-;    call Read_File
-;    call Close_File
 
     mov byte[execut],0
     call startdisplay
@@ -130,75 +122,6 @@ NEWSYM debstop, db 0
 NEWSYM debstop2, db 0
 NEWSYM debstop3, db 0
 NEWSYM debstop4, db 0
-SECTION .text
-
-NEWSYM loadtempstuff
-    ; Load stuff
-    mov edx,.spcfname
-    call Open_File
-    mov bx,ax
-;    mov ecx,64
-;    mov edx,ssdatst
-;    call Read_File
-    ; Load SPC stuff
-    mov ecx,[PHspcsave]
-    mov edx,SPCRAM
-    call Read_File
-    ; Load DSP stuff
-    mov ecx,[PHdspsave]
-    mov edx,BRRBuffer
-    call Read_File
-    mov ecx,256
-    mov edx,DSPMem
-    call Read_File
-    call Close_File
-    pushad
-    call ResetState
-    popad
-    ret
-    mov dword[spcPCRam],0
-    xor eax,eax
-    mov ax,[ssdatst+37]
-    mov [spcPCRam],ax
-    call printnum
-    mov al,[ssdatst+39]
-    mov [spcA],al
-    mov al,[ssdatst+40]
-    mov [spcX],al
-    mov al,[ssdatst+41]
-    mov [spcY],al
-    mov al,[ssdatst+42]
-    mov [spcP],al
-    mov al,[ssdatst+43]
-    mov [spcS],al
-    add dword[spcPCRam],SPCRAM
-    ; Assemble N/Z flags into P
-    mov byte[spcNZ],0
-    test byte[spcP],02h
-    jnz .zero
-    mov byte[spcNZ],1
-.zero
-    test byte[spcP],80h
-    jz .noneg
-    or byte[spcNZ],80h
-.noneg
-    ; Init separate variables
-    xor eax,eax
-    mov al,[SPCRAM+0F1h]
-    mov [timeron],al
-    mov al,[SPCRAM+0FAh]
-    mov [timincr0],al
-    mov [timinl0],al
-    mov al,[SPCRAM+0FBh]
-    mov [timincr1],al
-    mov [timinl1],al
-    mov al,[SPCRAM+0FCh]
-    mov [timincr2],al
-    mov [timinl2],al
-    ret
-
-SECTION .data
-.spcfname db 'temp.spc',0
 SECTION .text
 
 ;*******************************************************
@@ -293,7 +216,6 @@ NEWSYM debugloopb
     jmp debugloopa
 
 .clear
-;    call loadtempstuff
     mov dword[numinst],0
 ;    mov byte[DSPDet],0
 ;    mov esi,fxtrace
