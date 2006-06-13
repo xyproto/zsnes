@@ -33,6 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "numconv.h"
 #include "gblvars.h"
 #include "asm_call.h"
+#include "zpath.h"
 
 #ifdef __MSDOS__
 #define clim() __asm__ __volatile__ ("cli");
@@ -653,7 +654,7 @@ void statesaver()
 
   clim();
 
-  if ((fhandle = fopen(fnamest+1,"wb")))
+  if ((fhandle = fopen_dir(ZSramPath, fnamest+1,"wb")))
   {
     zst_save(fhandle, (bool)(cbitmode && !NoPictureSave), false);
     fclose(fhandle);
@@ -926,7 +927,7 @@ void stateloader (char *statename, unsigned char keycheck, unsigned char xferche
   clim();
 
   //Actual state loading code
-  if ((fhandle = fopen(statename,"rb")))
+  if ((fhandle = fopen_dir(ZSramPath, statename,"rb")))
   {
     if (xfercheck)      { Totalbyteloaded = 0; }
 
