@@ -168,6 +168,35 @@ char *strdupcat(const char *str1, const char *str2)
   return(0);
 }
 
+int access_dir(const char *path, const char *file, int mode)
+{
+  int ret = -1;
+  char *fullpath = strdupcat(path, file);
+  if (fullpath)
+  {
+    ret = access(fullpath, mode);
+    free(fullpath);
+  }
+  else
+  {
+    errno = ENOMEM;
+  }
+  return(ret);
+}
+
+FILE *fopen_dir(const char *path, const char *file, const char *mode)
+{
+  FILE *fp = 0;
+  char *fullpath = strdupcat(path, file);
+  if (fullpath)
+  {
+    fp = fopen(fullpath, mode);
+    free(fullpath);
+  }
+  return(fp);
+}
+
+
 void strcatslash(char *str)
 {
   if (str[strlen(str)-1] != DIR_SLASH_C)
