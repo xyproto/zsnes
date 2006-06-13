@@ -53,5 +53,6 @@ int remove_dir(const char *path, const char *file);
 int mkdir_dir(const char *path, const char *dir);
 
 void strcatslash(char *str);
+void strdirname(char *str);
 
 #endif

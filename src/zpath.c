@@ -138,11 +138,7 @@ bool init_paths(char *launch_command)
 
     if (realpath(launch_command, ZStartPath))
     {
-      char *p = strrchr(ZStartPath, DIR_SLASH_C);
-      if (p)
-      {
-        *p = 0;
-      }
+      strdirname(ZStartPath);
     }
     else
     {
@@ -221,5 +217,22 @@ void strcatslash(char *str)
   if (str[strlen(str)-1] != DIR_SLASH_C)
   {
     strcat(str, DIR_SLASH);
+  }
+}
+
+void strdirname(char *str)
+{
+  char *p;
+  size_t str_len = strlen(str);
+  do
+  {
+    str_len--;
+  } while (str_len && (str[str_len] == DIR_SLASH_C));
+  str[str_len+1] = 0;
+
+  p = strrchr(str, DIR_SLASH_C);
+  if (p > str)
+  {
+    *p = 0;
   }
 }
