@@ -22,6 +22,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define ZPATH_H
 
 #include <stdio.h>
+#include <sys/stat.h>
 
 #if !defined(__cplusplus) && !defined(bool)
 //C++ style code in C
@@ -44,7 +45,9 @@ extern char *ZStartPath, *ZCfgPath, *ZSramPath;
 bool init_paths(char *launch_command);
 
 char *strdupcat(const char *str1, const char *str2);
+
 int access_dir(const char *path, const char *file, int mode);
+int stat_dir(const char *path, const char *file, struct stat *buf);
 FILE *fopen_dir(const char *path, const char *file, const char *mode);
 
 void strcatslash(char *str);

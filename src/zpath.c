@@ -184,6 +184,22 @@ int access_dir(const char *path, const char *file, int mode)
   return(ret);
 }
 
+int stat_dir(const char *path, const char *file, struct stat *buf)
+{
+  int ret = -1;
+  char *fullpath = strdupcat(path, file);
+  if (fullpath)
+  {
+    ret = stat(fullpath, buf);
+    free(fullpath);
+  }
+  else
+  {
+    errno = ENOMEM;
+  }
+  return(ret);
+}
+
 FILE *fopen_dir(const char *path, const char *file, const char *mode)
 {
   FILE *fp = 0;
