@@ -72,6 +72,33 @@ void CapturePicture()
   }
 }
 
+extern unsigned int cur_zst_size, old_zst_size;
+extern char fnamest[512];
+
+void LoadPicture()
+{
+  const unsigned int pic_size = 64*56*2;
+  FILE *fp;
+
+  memset(PrevPicture, 0, pic_size);
+
+  if ((fp = fopen(fnamest+1, "rb")))
+  {
+    unsigned int file_size;
+
+    fseek(fp, 0, SEEK_END);
+    file_size = ftell(fp);
+
+    if ((file_size-pic_size == cur_zst_size) || (file_size-pic_size == old_zst_size))
+    {
+      fseek(fp, -(pic_size), SEEK_END);
+      fread(PrevPicture, 1, pic_size, fp);
+    }
+
+    fclose(fp);
+  }
+}
+
 void Clear2xSaIBuffer()
 {
   memset(vidbufferofsb+288, 0xFF, 576*239);

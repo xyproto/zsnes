@@ -26,19 +26,19 @@ EXTSYM gammalevel,hirestiledat,ignor512,latchx,latchy,maxbr,ForceNewGfxOff
 EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,resolutn
 EXTSYM romispal,scaddtype,scanlines,selcA000,t1cc,vcache4b,vesa2_bpos
 EXTSYM spritetablea,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2red10,vesa2selec
-EXTSYM vidbuffer,vram,KeyStateSelct,soundon,Open_File,Read_File,smallscreenon
+EXTSYM vidbuffer,vram,KeyStateSelct,soundon,Open_File,smallscreenon
 EXTSYM Close_File,Create_File,Write_File,makepal,ScreenScale
 EXTSYM changepal,saveselectpal,displayfpspal,superscopepal,DrawScreen,MMXSupport
 EXTSYM Get_MouseData,Get_MousePositionDisplacement,GUIEnableTransp,GUIFontData
-EXTSYM StopSound,StartSound,PrevPicture,File_Seek,File_Seek_End,nggposng
+EXTSYM StopSound,StartSound,PrevPicture,nggposng
 EXTSYM Palette0,GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram,dsp1array
 EXTSYM genfulladdtab,genfulladdtabng,TimerEnable,ShowTimer,debugdisble,GUIOn
 EXTSYM FilteredGUI,HalfTrans,SmallMsgText,ClearScreen,Mode7HiRes,mosenng,mosszng
 EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,CSStatus
 EXTSYM CSStatus2,CSStatus3,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
-EXTSYM bg1objptr,DecompAPtr,HalfTransB,HalfTransC,cur_zst_size,old_zst_size
+EXTSYM bg1objptr,DecompAPtr,HalfTransB,HalfTransC
 EXTSYM MovieProcessing,mzt_chdir,UpChdir,MovieFrameStr,GetMovieFrameStr
-EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2
+EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM DetermineNew,newestfileloc,newestfiledate
 
 %ifndef __MSDOS__
@@ -994,45 +994,11 @@ GetPicture:
     ret
 .notskip
     mov [PrevPictureVal],cl
-    mov edx,PrevPicture
-    mov ecx,64*56*2
-.loop
-    mov byte[edx],0
-    inc edx
-    dec ecx
-    jnz .loop
-    mov edx,fnamest+1
-    call Open_File
-    jc near .nodraw2
-    mov bx,ax
-    xor cx,cx
-    xor dx,dx
-    call File_Seek_End
-    shl edx,16
-    mov dx,ax
-    push eax
-    sub edx,64*56*2 ;Size of thumbnail
-    mov eax,[cur_zst_size]
-    cmp edx,eax
-    je .draw
-    mov eax,[old_zst_size]
-    cmp edx,eax
-    je .draw
-    pop eax
-    jmp .nodraw
-.draw
-    pop eax
-    mov ax,dx
-    shr edx,16
-    mov cx,dx
-    mov dx,ax
-    call File_Seek
-    mov ecx,64*56*2
-    mov edx,PrevPicture
-    call Read_File
-.nodraw
-    call Close_File
-.nodraw2
+
+    pushad
+    call LoadPicture
+    popad
+
     ; convert to 1:5:5:5
     cmp byte[newengen],0
     je .noneweng
