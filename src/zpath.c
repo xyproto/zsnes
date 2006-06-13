@@ -180,64 +180,33 @@ char *strdupcat(const char *str1, const char *str2)
   return(0);
 }
 
+//This function is only for this file, and it uses an internal buffer
+static const char *strdupcat_internal(const char *str1, const char *str2)
+{
+  static char buffer_dir[PATH_SIZE*2];
+  strcpy(buffer_dir, str1);
+  strcat(buffer_dir, str2);
+  return(buffer_dir);
+}
+
 int access_dir(const char *path, const char *file, int mode)
 {
-  int ret = -1;
-  char *fullpath = strdupcat(path, file);
-  if (fullpath)
-  {
-    ret = access(fullpath, mode);
-    free(fullpath);
-  }
-  else
-  {
-    errno = ENOMEM;
-  }
-  return(ret);
+  return(access(strdupcat_internal(path, file), mode));
 }
 
 int stat_dir(const char *path, const char *file, struct stat *buf)
 {
-  int ret = -1;
-  char *fullpath = strdupcat(path, file);
-  if (fullpath)
-  {
-    ret = stat(fullpath, buf);
-    free(fullpath);
-  }
-  else
-  {
-    errno = ENOMEM;
-  }
-  return(ret);
+  return(stat(strdupcat(path, file), buf));
 }
 
 FILE *fopen_dir(const char *path, const char *file, const char *mode)
 {
-  FILE *fp = 0;
-  char *fullpath = strdupcat(path, file);
-  if (fullpath)
-  {
-    fp = fopen(fullpath, mode);
-    free(fullpath);
-  }
-  return(fp);
+  return(fopen(strdupcat(path, file), mode));
 }
 
 int remove_dir(const char *pathname, const char *file)
 {
-  int ret = -1;
-  char *fullpath = strdupcat(pathname, file);
-  if (fullpath)
-  {
-    ret = remove(fullpath);
-    free(fullpath);
-  }
-  else
-  {
-    errno = ENOMEM;
-  }
-  return(ret);
+  return(remove(strdupcat(pathname, file)));
 }
 
 void strcatslash(char *str)
