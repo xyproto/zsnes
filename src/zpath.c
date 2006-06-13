@@ -202,6 +202,11 @@ FILE *fopen_dir(const char *path, const char *file, const char *mode)
   return(fopen(strdupcat_internal(path, file), mode));
 }
 
+gzFile gzopen_dir(const char *path, const char *file, const char *mode)
+{
+  return(gzopen(strdupcat_internal(path, file), mode));
+}
+
 int remove_dir(const char *path, const char *file)
 {
   return(remove(strdupcat_internal(path, file)));

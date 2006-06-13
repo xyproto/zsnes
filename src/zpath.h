@@ -21,6 +21,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef ZPATH_H
 #define ZPATH_H
 
+#include <zlib.h>
 #include <stdio.h>
 #include <sys/stat.h>
 
@@ -49,6 +50,7 @@ char *strdupcat(const char *str1, const char *str2);
 int access_dir(const char *path, const char *file, int mode);
 int stat_dir(const char *path, const char *file, struct stat *buf);
 FILE *fopen_dir(const char *path, const char *file, const char *mode);
+gzFile gzopen_dir(const char *path, const char *file, const char *mode);
 int remove_dir(const char *path, const char *file);
 int mkdir_dir(const char *path, const char *dir);
 
