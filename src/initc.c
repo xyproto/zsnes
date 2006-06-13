@@ -2352,32 +2352,20 @@ void PatchIPS()
   if(stop_search == 1)
     x = y;
 
-  Prevextn[0] = fname[x];
-  Prevextn[1] = fname[x+1];
-  Prevextn[2] = fname[x+2];
-  Prevextn[3] = fname[x+3];
-
-  fname[x+4] = 0;
-
-  fname[x] = '.';
-  fname[x+1] = 'i';
-  fname[x+2] = 'p';
-  fname[x+3] = 's';
+  memcpy(Prevextn, fname+x, 4);
+  strcpy(fname+x,".ips");
 
   #ifdef __UNIXSDL__
-    chdir(LoadDir);
+  chdir(LoadDir);
   #endif
 
   patchfile = fname+1;
   PatchUsingIPS();
 
-  fname[x] = Prevextn[0];
-  fname[x+1] = Prevextn[1];
-  fname[x+2] = Prevextn[2];
-  fname[x+3] = Prevextn[3];
+  memcpy(fname+x, Prevextn, 4);
 
   #ifdef __UNIXSDL__
-    popdir();
+  popdir();
   #endif
 }
 
