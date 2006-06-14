@@ -51,16 +51,16 @@ EXTSYM tableD,timeron,vidbright,SPC700read,SPC700write,spc700read
 EXTSYM GUIReset,InitC4,SA1Reset,SetAddressingModesSA1,SDD1BankA,SPC7110init
 EXTSYM RTCinit,memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
 EXTSYM memaccessspc7110w16,snesmap2,snesmmap
-EXTSYM procexecloop,wramdata,wramdataa,fname,fnames
+EXTSYM procexecloop,wramdata,wramdataa,fnames
 EXTSYM GetCurDir,SRAMChdir,fnamest,statefileloc,InitDir,InitDrive
 EXTSYM curromspace,romispal,initregr,initregw,memtabler16
 EXTSYM memtabler8,memtablew16,memtablew8,wramreadptr
 EXTSYM wramwriteptr,loadstate2,CMovieExt,MoviePlay,MovieDumpRaw,AllowUDLR
 EXTSYM device1,device2,processmouse1,processmouse2,cpalval
-EXTSYM clearmem,clearSPCRAM,ZOpenFileName,loadROM,SPC7110IndexSize
+EXTSYM clearmem,clearSPCRAM,loadROM,SPC7110IndexSize
 EXTSYM SPC7PackIndexLoad,C4Enable,SPC7110Enable,RTCEnable,SA1Enable
 EXTSYM BSEnable,clearvidsound,headerhack,SetupROM,ram7fa
-EXTSYM OpenCombFile,PatchIPS,OpenSramFile
+EXTSYM OpenCombFile,OpenSramFile,ZCartName,PatchUsingIPS
 
 EXTSYM initsnes
 
@@ -148,7 +148,8 @@ NEWSYM init
     popad
     call Makemode7Table
     call makesprprtable
-    cmp byte[fname],0
+    mov eax,[ZCartName]
+    cmp byte[eax],0
     jne .found
     cmp byte[romloadskip],1
     je .noloadfile
@@ -1368,9 +1369,6 @@ NEWSYM loadfileGUI
     mov byte[IPSPatched],0
     mov byte[GUIloadfailed],0
 
-    mov edx,fname+1
-    mov [ZOpenFileName],edx
-
     pushad
     call loadROM
     popad
@@ -1412,30 +1410,16 @@ NEWSYM loadfileGUI
     mov byte[yesoutofmemory],1
 .notfailed
 
-    ; copy fnames to fname
-    cmp byte[InGUI],1
-    je .nosramtof
-    mov eax,fname+1
-    mov ebx,fnames+1
-.loopsc
-    mov dl,[ebx]
-    mov [eax],dl
-    inc ebx
-    inc eax
-    or dl,dl
-    jnz .loopsc
-.nosramtof
     mov byte[TextFile], 1
     cmp byte[IPSPatched],0
     jne .patched
     pushad
-    call PatchIPS
+    call PatchUsingIPS
     popad
 .patched
     ret
 
 .failed
-.failed2
     mov byte[TextFile], 1
     cmp byte[InGUI],1
     je .noguic

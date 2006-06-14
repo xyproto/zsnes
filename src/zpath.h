@@ -25,6 +25,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdio.h>
 #include <sys/stat.h>
 
+#include "zip/zunzip.h"
+
+#ifndef NO_JMA
+#include "jma/zsnesjma.h"
+#endif
+
+
 #if !defined(__cplusplus) && !defined(bool)
 //C++ style code in C
 #define bool unsigned char
@@ -33,17 +40,21 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 #ifdef __UNIXSDL__
-#define DIR_SLASH_C '/'
 #define DIR_SLASH "/"
+#define DIR_SLASH_C '/'
+#define DIR_SLASH_C_OTHER '\\'
 #else
-#define DIR_SLASH_C '\\'
 #define DIR_SLASH "\\"
+#define DIR_SLASH_C '\\'
+#define DIR_SLASH_C_OTHER '/'
 #endif
 
 extern char ZCfgFile[];
 extern char *ZStartPath, *ZCfgPath, *ZSramPath, *ZRomPath;
+extern char *ZCartName;
 
 bool init_paths(char *launch_command);
+bool init_rom_path(char *path);
 
 char *strdupcat(const char *str1, const char *str2);
 
@@ -51,10 +62,16 @@ int access_dir(const char *path, const char *file, int mode);
 int stat_dir(const char *path, const char *file, struct stat *buf);
 FILE *fopen_dir(const char *path, const char *file, const char *mode);
 gzFile gzopen_dir(const char *path, const char *file, const char *mode);
+unzFile unzopen_dir(const char *path, const char *file);
+#ifndef NO_JMA
+void load_jma_file_dir(const char *path, const char *file);
+#endif
 int remove_dir(const char *path, const char *file);
 int mkdir_dir(const char *path, const char *dir);
 
+void natify_slashes(char *str);
 void strcatslash(char *str);
 void strdirname(char *str);
+void strbasename(char *str);
 
 #endif

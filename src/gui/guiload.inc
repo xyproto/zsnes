@@ -184,10 +184,9 @@ GUIloadfilename:
     inc cl
     jmp .findnext
 .foundend
-    mov [fname],cl
     ; copy filename
     mov esi,eax
-    mov edi,fname+1
+    mov edi,[ZCartName]
 .continuecopy
     mov al,[esi]
     mov [edi],al

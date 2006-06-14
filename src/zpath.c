@@ -39,6 +39,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 #define PATH_SIZE 4096
+#define NAME_SIZE 512
 
 #ifdef __MSDOS__
 char ZCfgFile[] = "zsnes.cfg";
@@ -49,7 +50,10 @@ char ZCfgFile[] = "zsnesl.cfg";
 #endif
 
 char *ZStartPath = 0, *ZCfgPath = 0, *ZSramPath = 0, *ZRomPath = 0;
+char *ZCartName = 0;
+
 static bool ZStartAlloc = false, ZCfgAlloc = false, ZSramAlloc = false, ZRomAlloc = false;
+static bool ZCartAlloc = false;
 
 #ifdef __UNIXSDL__
 
@@ -126,6 +130,8 @@ void deinit_paths()
   if (ZCfgAlloc && ZCfgPath) { free(ZCfgPath); }
   if (ZSramAlloc && ZSramPath) { free(ZSramPath); }
   if (ZRomAlloc && ZRomPath) { free(ZRomPath); }
+
+  if (ZCartAlloc && ZCartName) { free(ZCartName); }
 }
 
 bool init_paths(char *launch_command)
@@ -142,38 +148,70 @@ bool init_paths(char *launch_command)
     {
       ZRomAlloc = true;
 
-      if (realpath(launch_command, ZStartPath))
+      ZCartName = malloc(NAME_SIZE);
+      if (ZCartName)
       {
-        strdirname(ZStartPath);
-      }
-      else
-      {
-        getcwd(ZStartPath, PATH_SIZE);
-      }
-      strcatslash(ZStartPath);
+        ZCartAlloc = true;
+        *ZCartName = 0;
 
-      cfgpath_ensure();
+        if (realpath(launch_command, ZStartPath))
+        {
+          strdirname(ZStartPath);
+        }
+        else
+        {
+          getcwd(ZStartPath, PATH_SIZE);
+        }
+        strcatslash(ZStartPath);
 
-      GUIRestoreVars();
+        cfgpath_ensure();
 
-      //TODO - Get this working nicely for saving in ROM directory on DOS/Win
-      if (*SRAMDir)
-      {
-        ZSramPath = SRAMDir;
+        GUIRestoreVars();
+
+        //TODO - Get this working nicely for saving in ROM directory on DOS/Win
+        if (*SRAMDir)
+        {
+          ZSramPath = SRAMDir;
+        }
+        else
+        {
+          ZSramPath = ZCfgPath;
+        }
+
+        if (*LoadDir)
+        {
+          strcpy(ZRomPath, LoadDir);
+        }
+        strcatslash(ZRomPath);
+
+        atexit(deinit_paths);
+        return(true);
       }
-      else
-      {
-        ZSramPath = ZCfgPath;
-      }
-
-      if (*LoadDir)
-      {
-        strcpy(ZRomPath, LoadDir);
-      }
-
-      atexit(deinit_paths);
-      return(true);
     }
+  }
+  return(false);
+}
+
+bool init_rom_path(char *path)
+{
+  if (realpath(path, ZRomPath))
+  {
+    char *p;
+
+    natify_slashes(ZRomPath);
+    p = strrchr(ZRomPath, DIR_SLASH_C);
+    if (p)
+    {
+      strcpy(ZCartName, p+1);
+    }
+    else
+    {
+      strcpy(ZCartName, ZRomPath);
+    }
+    strdirname(ZRomPath);
+    strcatslash(ZRomPath);
+
+    return(true);
   }
   return(false);
 }
@@ -219,6 +257,18 @@ gzFile gzopen_dir(const char *path, const char *file, const char *mode)
   return(gzopen(strdupcat_internal(path, file), mode));
 }
 
+unzFile unzopen_dir(const char *path, const char *file)
+{
+  return(unzOpen(strdupcat_internal(path, file)));
+}
+
+#ifndef NO_JMA
+void load_jma_file_dir(const char *path, const char *file)
+{
+  return(load_jma_file(strdupcat_internal(path, file)));
+}
+#endif
+
 int remove_dir(const char *path, const char *file)
 {
   return(remove(strdupcat_internal(path, file)));
@@ -229,8 +279,21 @@ int mkdir_dir(const char *path, const char *dir)
   return(mkdir_p(strdupcat_internal(path, dir)));
 }
 
+void natify_slashes(char *str)
+{
+  while (*str)
+  {
+    if (*str == DIR_SLASH_C_OTHER)
+    {
+      *str = DIR_SLASH_C;
+    }
+    str++;
+  }
+}
+
 void strcatslash(char *str)
 {
+  natify_slashes(str);
   if (str[strlen(str)-1] != DIR_SLASH_C)
   {
     strcat(str, DIR_SLASH);
@@ -241,6 +304,9 @@ void strdirname(char *str)
 {
   char *p;
   size_t str_len = strlen(str);
+
+  natify_slashes(str);
+
   do
   {
     str_len--;
@@ -251,5 +317,17 @@ void strdirname(char *str)
   if (p > str)
   {
     *p = 0;
+  }
+}
+
+void strbasename(char *str)
+{
+  char *p;
+
+  natify_slashes(str);
+
+  if ((p = strrchr(str, DIR_SLASH_C)))
+  {
+    memmove(str, p+1, strlen(p));
   }
 }

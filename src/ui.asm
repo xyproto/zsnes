@@ -27,9 +27,9 @@ EXTSYM init18_2hz,SRAMDirCurDir,SRAMChdir,SRAMChdirFail
 EXTSYM BitConv32Ptr,spcBuffera,spritetablea,vcache2bs,vcache4bs,vcache8bs
 EXTSYM RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa,vidbufferofsmos,ngwinptr
 EXTSYM vidbufferofsb,headdata,romdata,sfxramdata,setaramdata,wramdata,ram7f,vram
-EXTSYM sram,debugbuf,regptr,regptw,vcache2b,vcache4b,vcache8b,fname,fnames
+EXTSYM sram,debugbuf,regptr,regptw,vcache2b,vcache4b,vcache8b,fnames
 EXTSYM fnamest,vidbufferofsc,Sup48mbit,Sup16mbit,SRAMDir
-EXTSYM malloc_ptr,malloc_size,malloc_help
+EXTSYM malloc_ptr,malloc_size,malloc_help,ZCartName
 EXTSYM DetermineNew,newestfileloc,newestfiledate
 
 %ifdef __UNIXSDL__
@@ -356,14 +356,15 @@ section .data
 SECTION .text
 
 NEWSYM makeextension
-    movzx ecx,byte[fname]
+    ;movzx ecx,byte[fname]
+    mov ecx,1
     mov [fnames],cl
     mov [fnamest],cl
     mov dl,cl
-    mov ebx,1
+    xor ebx,ebx
     xor ah,ah
 .loopc
-    mov al,[fname+ebx]
+    mov al,[ZCartName+ebx]
     mov [fnames+ebx],al
     mov [fnamest+ebx],al
     inc ebx

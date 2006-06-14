@@ -701,10 +701,10 @@ static void handle_params(int argc, char *argv[])
     }
     else //Param with no - or / prefix
     {
-      char *fvar = fname;
-      fvar[0] = strlen(argv[i]);
-      strncpy(&fvar[1],argv[i],127);
-      asm_call(makeextension);
+      if (argv[i] && !init_rom_path(argv[i]))
+      {
+        printf("Could not load: %s\n", argv[i]);
+      }
 
       STCart2 = argv[i+1]; //Sufami Turbo second cart
       break;

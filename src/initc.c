@@ -35,6 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "zip/zunzip.h"
 #include "asm_call.h"
 #include "cfg.h"
+#include "zpath.h"
 #ifndef NO_JMA
 #include "jma/zsnesjma.h"
 #endif
@@ -93,7 +94,7 @@ void procexecloop()
 void Debug_WriteString(char *str)
 {
   FILE *fp = 0;
-  fp = fopen("zsnes.dbg", "w");
+  fp = fopen_dir(ZStartPath,"zsnes.dbg", "w");
   if (!fp) { return; }
   fputs(str, fp);
   fclose(fp);
@@ -695,7 +696,6 @@ void SetupSramSize()
 }
 
 //File loading code
-extern char *ZOpenFileName;
 bool Header512;
 
 
@@ -710,7 +710,7 @@ void DumpROMLoadInfo()
 
   if (RomInfo) //rominfo.txt info dumping enabled?
   {
-    fp = fopen("rominfo.txt", "w");
+    fp = fopen_dir(ZStartPath, "rominfo.txt", "w");
     if (!fp) { return; }
     fputs("This is the info for the last game you ran.\n\nFile: ", fp);
     fputs(lastROMFileName, fp);
@@ -751,7 +751,7 @@ void loadFile(char *filename)
     if ((unsigned int)stat_results.st_size <= maxromspace+512-curromspace)
     {
       FILE *fp = 0;
-      fp = fopen(filename, "rb");
+      fp = fopen_dir(ZRomPath, filename, "rb");
 
       if (!fp) { return; }
 
@@ -782,7 +782,7 @@ void loadGZipFile(char *filename)
   int size, err;
   gzFile GZipFile;
   FILE *fp = 0;
-  fp = fopen(filename, "rb");
+  fp = fopen_dir(ZRomPath, filename, "rb");
   if (!fp) { return; }
   fseek(fp, -4, SEEK_END);
   //Size is read like this due to VC screwing up with optimizations
@@ -795,7 +795,7 @@ void loadGZipFile(char *filename)
   if ((unsigned int)size > maxromspace+512) { return; }
 
   //Open GZip file for decompression
-  GZipFile = gzopen(filename, "rb");
+  GZipFile = gzopen_dir(ZRomPath, filename, "rb");
 
   //Decompress file into memory
   err = gzread(GZipFile, romdata, size);
@@ -808,11 +808,6 @@ void loadGZipFile(char *filename)
   curromspace = size;
 }
 
-//void Output_Text();
-//asm volatile("movl _ZOpenFileName, %edx   \n"
-//             "movb $9, %ah                \n"
-//             "call _Output_Text           \n");
-//system("pause");
 
 void loadZipFile(char *filename)
 {
@@ -821,7 +816,7 @@ void loadZipFile(char *filename)
   bool multifile = false, NSS = false;
   char *incrementer = 0;
 
-  unzFile zipfile = unzOpen(filename); //Open zip file
+  unzFile zipfile = unzopen_dir(ZRomPath, filename); //Open zip file
   int cFile = unzGoToFirstFile(zipfile); //Set cFile to first compressed file
   unz_file_info cFileInfo; //Create variable to hold info for a compressed file
 
@@ -966,7 +961,7 @@ void load_file_fs(char *path)
     #ifdef NO_JMA
     puts("This binary was built without JMA support.");
     #else
-    load_jma_file(path);
+    load_jma_file_dir(ZRomPath, path);
     #endif
   }
   else if (pathlen >= 5 && !strcasecmp(ext, ".zip"))
@@ -1127,44 +1122,44 @@ void loadROM()
   if (Sup48mbit) { maxromspace += 2097152; }
   if (Sup16mbit) { maxromspace -= 2097152; } //I don't get it either
 
-  lastROMFileName = ZOpenFileName;
+  lastROMFileName = ZCartName;
 
-  if (strlen(ZOpenFileName) >= 5) //Char + ".jma"
+  if (strlen(ZCartName) >= 5) //Char + ".jma"
   {
-    char *ext = ZOpenFileName+strlen(ZOpenFileName)-4;
+    char *ext = ZCartName+strlen(ZCartName)-4;
     if (!strcasecmp(ext, ".jma"))
     {
       #ifdef NO_JMA
       puts("This binary was built without JMA support.");
       #else
       isCompressed = true;
-      load_jma_file(ZOpenFileName);
+      load_jma_file_dir(ZRomPath, ZCartName);
       #endif
     }
   }
 
-  if (strlen(ZOpenFileName) >= 5) //Char + ".zip"
+  if (strlen(ZCartName) >= 5) //Char + ".zip"
   {
-    char *ext = ZOpenFileName+strlen(ZOpenFileName)-4;
+    char *ext = ZCartName+strlen(ZCartName)-4;
     if (!strcasecmp(ext, ".zip"))
     {
       isCompressed = true;
       isZip = true;
-      loadZipFile(ZOpenFileName);
+      loadZipFile(ZCartName);
     }
   }
 
-  if (strlen(ZOpenFileName) >= 4) //Char + ".gz"
+  if (strlen(ZCartName) >= 4) //Char + ".gz"
   {
-    char *ext = ZOpenFileName+strlen(ZOpenFileName)-3;
+    char *ext = ZCartName+strlen(ZCartName)-3;
     if (!strcasecmp(ext, ".gz"))
     {
       isCompressed = true;
-      loadGZipFile(ZOpenFileName);
+      loadGZipFile(ZCartName);
     }
   }
 
-  if (!isCompressed) { loadFile(ZOpenFileName); }
+  if (!isCompressed) { loadFile(ZCartName); }
 
   Header512 = false;
 
@@ -1322,7 +1317,7 @@ void loadROM()
 
   SplitSupport();
 
-  if (isZip) { findZipIPS(ZOpenFileName); }
+  if (isZip) { findZipIPS(ZCartName); }
 }
 
 
@@ -1897,7 +1892,7 @@ bool loadSRAM(char *sramname)
   FILE *sramfp;
   int sramsize;
 
-  if ((sramfp = fopen(sramname, "rb")))
+  if ((sramfp = fopen_dir(ZSramPath, sramname, "rb")))
   {
     fseek(sramfp, 0, SEEK_END);
     sramsize = ftell(sramfp);
@@ -2259,7 +2254,7 @@ void SaveCombFile()
     {
       ComboHeader[22] = NumComboLocl;
 
-      if ((fp = fopen(fnames+1, "wb")))
+      if ((fp = fopen_dir(ZSramPath, fnames+1, "wb")))
       {
         fwrite(ComboHeader, 1, 23, fp);
         fwrite(CombinDataLocl, 1, NumComboLocl*66, fp);
@@ -2280,7 +2275,7 @@ void OpenCombFile()
 
   NumComboLocl = 0;
 
-  if ((fp = fopen(fnames+1, "rb")))
+  if ((fp = fopen_dir(ZSramPath, fnames+1, "rb")))
   {
     fread(ComboHeader, 1, 23, fp);
     NumComboLocl = ComboHeader[22];
@@ -2296,81 +2291,9 @@ void OpenCombFile()
   strcpy(p, "srm");
 }
 
-#ifdef __UNIXSDL__
-void pushdir();
-void popdir();
-#endif
-
-extern char fname[512];
-extern char *patchfile;
-
-void PatchUsingIPS();
-
-void PatchIPS()
-{
-  int x;               //index of fname
-  int y;               //stores backup index
-  int stop_search = 0;  //0 = continue searching, 1 = can't find, 2 = success
-  char Prevextn[4];     //used for storing previous ext
-
-  #ifdef __UNIXSDL__
-  pushdir();
-  #endif
-
-  for(x = 1;x<512;x++)
-  {
-    if(fname[x] == 0)
-      break;
-  }
-
-  y = x;
-
-  for(x = x-1;x>=0;x--)
-  {
-    if(x == 0)
-    {
-      stop_search = 1;
-    }
-
-    #ifdef __UNIXSDL__
-    else if(fname[x] == '/')
-    #else
-    else if(fname[x] == '\\')
-    #endif
-    {
-       stop_search = 1;
-    }
-
-    else if(fname[x] == '.')
-      stop_search = 2;
-
-    if(stop_search > 0)
-      break;
-  }
-
-  if(stop_search == 1)
-    x = y;
-
-  memcpy(Prevextn, fname+x, 4);
-  strcpy(fname+x,".ips");
-
-  #ifdef __UNIXSDL__
-  chdir(LoadDir);
-  #endif
-
-  patchfile = fname+1;
-  PatchUsingIPS();
-
-  memcpy(fname+x, Prevextn, 4);
-
-  #ifdef __UNIXSDL__
-  popdir();
-  #endif
-}
-
 void OpenSramFile()
 {
-  FILE *fp = fopen(fnames+1, "rb");
+  FILE *fp = fopen_dir(ZSramPath, fnames+1, "rb");
   if (fp)
   {
     fread(sram, 1, 65536, fp);

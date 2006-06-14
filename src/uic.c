@@ -30,6 +30,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "asm_call.h"
 #include "mmlib/mm.h"
+#include "zpath.h"
 
 //C++ style code in C
 #define bool unsigned char
@@ -44,7 +45,7 @@ extern unsigned char FPSAtStart;
 extern char *Msgptr, CSStatus[], CSStatus2[], CSStatus3[];
 
 unsigned short selc0040, selcA000, selcB800;
-unsigned char string[512], fname[512], fnames[512], fnamest[512];
+unsigned char string[512], fnames[512], fnamest[512];
 
 unsigned char *vidbuffer;	//  video buffer (1024x239 = 244736)
 unsigned char *ngwinptr;
@@ -262,7 +263,7 @@ void zstart()
 
   asm_call(SystemInit);
 
-  if (guioff && !*fname)
+  if (guioff && !*ZCartName)
   {
     puts("Will not start without a GUI unless a filename is supplied.");
     exit(0);

@@ -47,7 +47,6 @@ extern bool IPSPatched;
 extern unsigned char Header512;
 extern bool AutoPatch;
 void *doMemAlloc(int);
-char *patchfile;
 
 struct
 {
@@ -95,20 +94,28 @@ int IPSget()
 
 bool initPatch()
 {
-  struct stat stat_results;
-  stat(patchfile, &stat_results);
+  char prev_ext[5];     //used for storing previous ext
 
-  IPSPatch.file_size = (unsigned int)stat_results.st_size;
+  char *p = strrchr(ZCartName, '.');
+  if (!p) { p = ZCartName+strlen(ZCartName); }
+  strncpy(prev_ext, p, sizeof(prev_ext));
+  prev_ext[sizeof(prev_ext)-1] = 0;
+  strcpy(p, ".ips");
+
+  IPSPatch.fp = fopen_dir(ZSramPath, ZCartName, "rb");
+  if (!IPSPatch.fp) { IPSPatch.fp = fopen_dir(ZRomPath, ZCartName, "rb"); }
+  if (!IPSPatch.fp) { strcpy(p, prev_ext); return(false); }
+
+  strcpy(p, prev_ext);
+  fseek(IPSPatch.fp, 0, SEEK_END);
+
+  IPSPatch.file_size = (unsigned int)ftell(IPSPatch.fp);
   IPSPatch.data = (unsigned char *)doMemAlloc(BUFFER_SIZE);
   IPSPatch.proccessed = 0;
 
   IPSPatch.zipfile = 0;
 
-  IPSPatch.fp = 0;
-  IPSPatch.fp = fopen_dir(ZSramPath, patchfile, "rb");
-  if (!IPSPatch.fp) { IPSPatch.fp = fopen_dir(ZRomPath, patchfile, "rb"); }
-  if (!IPSPatch.fp) { return(false); }
-
+  rewind(IPSPatch.fp);
   return(reloadBuffer());
 }
 
@@ -149,7 +156,7 @@ void PatchUsingIPS()
     return;
   }
 
-  if (patchfile) //Regular file, not Zip
+  if (!IPSPatch.zipfile) //Regular file, not Zip
   {
     if (!initPatch())
     {
@@ -252,7 +259,7 @@ void findZipIPS(char *compressedfile)
   unz_file_info cFileInfo; //Create variable to hold info for a compressed file
   int cFile;
 
-  IPSPatch.zipfile = unzOpen(compressedfile); //Open zip file
+  IPSPatch.zipfile = unzopen_dir(ZRomPath, compressedfile); //Open zip file
   cFile = unzGoToFirstFile(IPSPatch.zipfile); //Set cFile to first compressed file
 
   while(cFile == UNZ_OK) //While not at end of compressed file list
@@ -288,7 +295,6 @@ void findZipIPS(char *compressedfile)
   //Open file
   unzOpenCurrentFile(IPSPatch.zipfile);
 
-  patchfile = 0;
   IPSPatch.file_size = (unsigned int)cFileInfo.uncompressed_size;
   IPSPatch.data = (unsigned char *)doMemAlloc(BUFFER_SIZE);
   IPSPatch.proccessed = 0;
