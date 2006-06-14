@@ -94,7 +94,7 @@ void procexecloop()
 void Debug_WriteString(char *str)
 {
   FILE *fp = 0;
-  fp = fopen_dir(ZStartPath,"zsnes.dbg", "w");
+  fp = fopen_dir(ZCfgPath, "zsnes.dbg", "w");
   if (!fp) { return; }
   fputs(str, fp);
   fclose(fp);
@@ -710,7 +710,7 @@ void DumpROMLoadInfo()
 
   if (RomInfo) //rominfo.txt info dumping enabled?
   {
-    fp = fopen_dir(ZStartPath, "rominfo.txt", "w");
+    fp = fopen_dir(ZCfgPath, "rominfo.txt", "w");
     if (!fp) { return; }
     fputs("This is the info for the last game you ran.\n\nFile: ", fp);
     fputs(lastROMFileName, fp);
