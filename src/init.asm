@@ -25,7 +25,7 @@ EXTSYM romloadskip,start65816,startdebugger,showinfogui,inittable
 EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer,inittableb
 EXTSYM inittablec,newgfx16b,DisplayInfo,ssautosw,GUIDelayB,pl12s34
 EXTSYM Output_Text,Change_Dir,SPCDisable,osm2dis,Turbo30hz,CombinDataLocl
-EXTSYM BackupSystemVars,SnowData,SnowVelDist,TextFile,Setper2exec,SRAMDir
+EXTSYM BackupSystemVars,SnowData,SnowVelDist,TextFile,Setper2exec
 EXTSYM JoyRead,pressed,mousebuttons,mousexdir,mouseydir,mousexpos,mouseypos
 EXTSYM pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
 EXTSYM pl1Ak,pl1Lk,pl1Yk,pl1Bk,pl1Rk,pl1Xtk,pl1Ytk,pl1Atk,pl1Btk,pl1Ltk,pl1Rtk
@@ -1376,7 +1376,6 @@ NEWSYM loadfileGUI
     cmp dword[curromspace],0
     je near .failed
 
-    call convertsram
     mov byte[SramExists],0
 
     ; open .srm file
@@ -1442,79 +1441,6 @@ SECTION .bss
 NEWSYM GUIloadfailed, resb 1
 
 SECTION .text
-
-NEWSYM convertsram
-    cmp byte[SRAMDir],0
-    jne .sdrivechange
-    ret
-.sdrivechange
-    ; copy fnames/fnamest to not have any '\' in them
-    mov esi,fnames+1
-    mov ebx,0
-.next
-    mov al,[esi]
-    cmp al,0
-    je .fincutoff
-    cmp al,'\'
-    je .cutoff
-    cmp al,'/'
-    je .cutoff
-    cmp al,':'
-    je .cutoff
-    inc esi
-    jmp .next
-.cutoff
-    inc esi
-    mov ebx,esi
-    jmp .next
-.fincutoff
-    cmp ebx,0
-    je .nocutoff
-    mov esi,ebx
-    mov edi,fnames+1
-.next2
-    mov al,[esi]
-    mov [edi],al
-    inc esi
-    inc edi
-    cmp al,0
-    jne .next2
-.nocutoff
-    mov esi,fnamest+1
-    mov ebx,0
-.nextb
-    mov al,[esi]
-    cmp al,0
-    je .fincutoffb
-    cmp al,'\'
-    je .cutoffb
-    cmp al,'/'
-    je .cutoffb
-    cmp al,':'
-    je .cutoffb
-    inc esi
-    jmp .nextb
-.cutoffb
-    inc esi
-    mov ebx,esi
-    jmp .nextb
-.fincutoffb
-    cmp ebx,0
-    je .nocutoffb
-    mov esi,ebx
-    sub esi,fnamest+1
-    sub [statefileloc],esi
-    mov esi,ebx
-    mov edi,fnamest+1
-.next2b
-    mov al,[esi]
-    mov [edi],al
-    inc esi
-    inc edi
-    cmp al,0
-    jne .next2b
-.nocutoffb
-    ret
 
 SECTION .data
 NEWSYM CSStatus,  db '                        TYPE:           ',0
