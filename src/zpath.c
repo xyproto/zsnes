@@ -168,14 +168,17 @@ bool init_paths(char *launch_command)
 
         GUIRestoreVars();
 
-        //TODO - Get this working nicely for saving in ROM directory on DOS/Win
         if (*SRAMDir)
         {
           ZSramPath = SRAMDir;
         }
         else
         {
+          #ifdef __UNIXSDL__
           ZSramPath = ZCfgPath;
+          #else
+          ZSramPath = ZRomPath;
+          #endif
         }
         strcatslash(ZSramPath);
 
