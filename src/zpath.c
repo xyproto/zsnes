@@ -229,6 +229,7 @@ char *strdupcat(const char *str1, const char *str2)
   return(0);
 }
 
+#ifndef DEBUG
 //This function is only for this file, and it uses an internal buffer
 static const char *strdupcat_internal(const char *str1, const char *str2)
 {
@@ -237,6 +238,22 @@ static const char *strdupcat_internal(const char *str1, const char *str2)
   strcat(buffer_dir, str2);
   return(buffer_dir);
 }
+
+#else
+
+static const char *strdupcat_internal(const char *str1, const char *str2, const char *func)
+{
+  static char buffer_dir[PATH_SIZE*2];
+  strcpy(buffer_dir, str1);
+  strcat(buffer_dir, str2);
+
+  printf("%s: %s\n", func, buffer_dir);
+
+  return(buffer_dir);
+}
+
+#define strdupcat_internal(x, y) strdupcat_internal(x, y, __func__)
+#endif
 
 int access_dir(const char *path, const char *file, int mode)
 {
