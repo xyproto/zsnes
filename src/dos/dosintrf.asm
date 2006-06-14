@@ -21,13 +21,12 @@
 %include "macros.mac"
 
 EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,ZFileSystemInit
-EXTSYM preparedir,V8Mode,getblaster,Force8b
 EXTSYM SBHDMA,InitDir,InitDrive,allocptr,ZOpenFile,ZOpenMode
 EXTSYM CurrentHandle,ZFileSeek,ZOpenFileName,ZFileSeekMode,ZFileSeekPos
 EXTSYM ZFileSeekHandle,ZFileWriteHandle,ZFileWriteSize,ZFileWriteBlock
 EXTSYM ZFileWrite,ZFileReadHandle,ZFileReadSize,ZFileReadBlock,ZFileRead
 EXTSYM ZCloseFileHandle,ZCloseFile,ZFileTellHandle
-EXTSYM ZFileTell,GetTime,GetDate
+EXTSYM ZFileTell,GetTime,GetDate,V8Mode,getblaster,Force8b
 EXTSYM ZFileCHDir,CHPath,ZFileGetDir,DirName,pressed,DTALoc,DTALocPos
 EXTSYM ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
@@ -97,7 +96,6 @@ NEWSYM SystemInit
     mov ebx,InitDir
     call Change_Dir
 
-    call preparedir
     call getblaster                     ; get set blaster environment
     cmp byte[Force8b],1
     jne .noforce8b

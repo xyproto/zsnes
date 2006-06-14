@@ -350,23 +350,6 @@ void ConvertJoyMap2()
   return;
 }
 
-unsigned char SRAMChdirFail = 0;
-
-void SRAMChdir()
-{
-  SRAMChdirFail = chdir(SRAMDir);
-}
-
-void SRAMDirCurDir()
-{
-  getcwd(SRAMDir,1024);
-}
-
-void UpChdir()
-{
-  chdir("..");
-}
-
 static size_t zatoi(const char *str)
 {
   const char *orig_str = str;

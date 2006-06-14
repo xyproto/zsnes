@@ -47,7 +47,7 @@ EXTSYM oamram,objhipr,objptr,objptrn,objsize1,objsize2,spritetablea,sprleftpr
 EXTSYM sprlefttot,vcache4b,objadds1,objadds2,objmovs1,objmovs2,tltype4b
 EXTSYM vidmemch4,vram,bgptr,bgptrc,bgptrd,curtileptr,vcache2b,vcache8b,vidmemch8
 EXTSYM offsetmshl,NextLineCache,tltype2b,tltype8b,objwlrpos
-EXTSYM SRAMChdir,EmuSpeed,SDRatio,FFRatio,DisplayBatteryStatus
+EXTSYM EmuSpeed,SDRatio,FFRatio,DisplayBatteryStatus
 EXTSYM KeyResetSpeed,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyDisplayBatt,EMUPause
 EXTSYM device1,device2,snesinputdefault1,snesinputdefault2
 EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2
@@ -286,10 +286,6 @@ NEWSYM cachevideo
     jne .nofocussave
     pushad
     call SaveSramData
-    popad
-    ; change to sram dir
-    pushad
-    call SRAMChdir
     popad
     jmp .nofocussave
 .nofocussaveb

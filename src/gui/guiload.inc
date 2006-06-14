@@ -201,14 +201,6 @@ GUIloadfilename:
     mov ebx,LoadDir
     mov edx,LoadDrive
     call Get_Dir
-%ifndef __UNIXSDL__
-    cmp byte[SRAMDir],0
-    jne .nosdrive
-    pushad
-    call SRAMDirCurDir
-    popad
-%endif
-.nosdrive
 
     ; create .srm header
     call makeextension

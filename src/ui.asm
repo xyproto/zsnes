@@ -20,14 +20,13 @@
 
 %include "macros.mac"
 
-EXTSYM PrintStr,WaitForKey,PrintChar,ram7fa,wramdataa,MMXSupport
-EXTSYM MMXextSupport,Change_Dir,malloc_ptr,malloc_size,malloc_help
-EXTSYM init18_2hz,SRAMDirCurDir,SRAMChdir,SRAMChdirFail
+EXTSYM PrintStr,PrintChar,ram7fa,wramdataa,MMXSupport
+EXTSYM MMXextSupport,malloc_ptr,malloc_size,malloc_help
 EXTSYM BitConv32Ptr,spcBuffera,spritetablea,vcache2bs,vcache4bs,vcache8bs
 EXTSYM RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa,vidbufferofsmos,ngwinptr
 EXTSYM vidbufferofsb,headdata,romdata,sfxramdata,setaramdata,wramdata,ram7f,vram
 EXTSYM sram,debugbuf,regptr,regptw,vcache2b,vcache4b,vcache8b
-EXTSYM vidbufferofsc,Sup48mbit,Sup16mbit,SRAMDir
+EXTSYM vidbufferofsc,Sup48mbit,Sup16mbit,init18_2hz
 
 %ifdef __UNIXSDL__
 EXTSYM LinuxExit
@@ -350,59 +349,7 @@ section .data
 ; Check Parameter          This Processes the Parameters
 ;*******************************************************
 
-NEWSYM preparedir
-;Function 47h - Get current directory
-;------------------------------------
-;
-;     AH = 47h
-;     DL = drive number (0 = default, 1 = A: etc.)
-;     DS:ESI -> 64 byte buffer to receive ASCIZ pathname
-; get current drive, ah = 19h, al = A=0,B=1, etc.
-
-%ifndef __UNIXSDL__
-    cmp byte[SRAMDir],0
-    je near .nosdrivec
-    ; verify sram drive/directory exists
-    ; change dir to SRAMDrive/SRAMDir
-    pushad
-    call SRAMChdir
-    popad
-    cmp byte[SRAMChdirFail],0
-    je .yessdrive
-
-    mov dl,[InitDrive]
-    mov ebx,InitDir
-    call Change_Dir
-    ; Get drive/dir
-    pushad
-    call SRAMDirCurDir
-    popad
-
-    mov edx,.sramerrorm
-    call PrintStr
-    call WaitForKey
-    cmp al,27
-    jne .noesc
-    jmp DosExit
-.noesc
-    mov edx,.enter
-    call PrintStr
-    jmp .nosdrivec
-
-.yessdrive
-    mov dl,[InitDrive]
-    mov ebx,InitDir
-    call Change_Dir
-.nosdrivec
-%endif
-    ret
-
-
 SECTION .data
-.sramerrorm db 'Invalid SRAM Directory in ZSNES.CFG!',13,10,13,10
-            db 'Press any key to continue.',0
-.enter      db 13,10,0
-
 NEWSYM InitDrive, db 2
 
 SECTION .bss

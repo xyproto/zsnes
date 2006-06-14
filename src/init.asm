@@ -52,7 +52,7 @@ EXTSYM GUIReset,InitC4,SA1Reset,SetAddressingModesSA1,SDD1BankA,SPC7110init
 EXTSYM RTCinit,memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
 EXTSYM memaccessspc7110w16,snesmap2,snesmmap
 EXTSYM procexecloop,wramdata,wramdataa,fnames
-EXTSYM GetCurDir,SRAMChdir,fnamest,statefileloc,InitDir,InitDrive
+EXTSYM GetCurDir,fnamest,statefileloc,InitDir,InitDrive
 EXTSYM curromspace,romispal,initregr,initregw,memtabler16
 EXTSYM memtabler8,memtablew16,memtablew8,wramreadptr
 EXTSYM wramwriteptr,loadstate2,CMovieExt,MoviePlay,MovieDumpRaw,AllowUDLR
@@ -1379,11 +1379,6 @@ NEWSYM loadfileGUI
     call convertsram
     mov byte[SramExists],0
 
-    ; change to sram dir
-    pushad
-    call SRAMChdir
-    popad
-
     ; open .srm file
     pushad
     call OpenSramFile
@@ -1519,10 +1514,6 @@ NEWSYM convertsram
     cmp al,0
     jne .next2b
 .nocutoffb
-    ; change to sram directory
-    pushad
-    call SRAMChdir
-    popad
     ret
 
 SECTION .data

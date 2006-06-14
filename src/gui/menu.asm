@@ -32,7 +32,7 @@ EXTSYM ForceNonTransp,GUIOn,Check_Key,JoyRead,GetScreen,SSKeyPressed
 EXTSYM SPCKeyPressed,StopSound,StartSound,ExecExitOkay,t1cc,Clear2xSaIBuffer
 EXTSYM romdata,infoloc,ScreenShotFormat,Voice0Disable,Voice1Disable
 EXTSYM Voice2Disable,Voice3Disable,Voice4Disable,Voice5Disable,Voice6Disable
-EXTSYM Voice7Disable,SRAMChdir,SPCPath,SnapPath,CHPath,ZFileCHDir
+EXTSYM Voice7Disable,SPCPath,SnapPath,CHPath,ZFileCHDir
 %ifndef NO_PNG
 EXTSYM Grab_PNG_Data
 %endif
@@ -46,12 +46,6 @@ EXTSYM Grab_PNG_Data
     call ZFileCHDir
     popad
 %%end
-%endmacro
-
-%macro ChangeDirSRAM 0
-    pushad
-    call SRAMChdir
-    popad
 %endmacro
 
 SECTION .text
@@ -1015,7 +1009,6 @@ NEWSYM savespcdata
 	mov [SPCSave_buffer], eax
 
 %endif
-    ChangeDirSRAM
     ret
 
 SECTION .bss
@@ -1158,7 +1151,6 @@ NEWSYM savepcx
     pushad
     call Grab_PNG_Data
     popad
-    ChangeDirSRAM
     ret
 .notpng
 %endif
@@ -1249,7 +1241,6 @@ NEWSYM savepcx
 ;    mov dword[Msgptr],.pcxsaved
 ;    mov eax,[MsgCount]
 ;    mov [MessageOn],eax
-    ChangeDirSRAM
     ret
 
 .save16b
@@ -1345,7 +1336,6 @@ NEWSYM savepcx
 ;    mov eax,[MsgCount]
 ;    mov [MessageOn],eax
     call restore16b
-    ChangeDirSRAM
     ret
 
 
@@ -1555,7 +1545,6 @@ NEWSYM save16b2
 ;    mov [MessageOn],eax
     pop es
     call restore16b
-    ChangeDirSRAM
     ret
 
 SECTION .data

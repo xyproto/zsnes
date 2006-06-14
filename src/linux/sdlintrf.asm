@@ -20,7 +20,7 @@
 
 %include "macros.mac"
 
-EXTSYM ZFileSystemInit,SBHDMA,SRAMChdir,allocptr,putchar
+EXTSYM ZFileSystemInit,SBHDMA,allocptr,putchar
 EXTSYM getchar,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName,ZFileSeekMode
 EXTSYM ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle,ZFileWriteSize
 EXTSYM ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize,ZFileReadBlock
@@ -57,9 +57,6 @@ NEWSYM StartUp
 
 NEWSYM SystemInit
     ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
-    pushad
-    call SRAMChdir
-    popad
     mov byte[SBHDMA],1
     ret
 

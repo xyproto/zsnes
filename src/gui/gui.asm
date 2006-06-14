@@ -66,7 +66,7 @@
 EXTSYM curblank,vidpastecopyscr,frameskip,newengen,vsyncon,cvidmode,antienab
 EXTSYM smallscreenon,soundon,StereoSound,SoundQuality,MusicRelVol,endprog
 EXTSYM continueprog,spcBuffera,spcRamcmp,cbitmode,makepal,t1cc,LoadDir,LoadDrive
-EXTSYM SRAMDir,SRAMChdir,SRAMDirCurDir,initsnes,makeextension,sram
+EXTSYM SRAMDir,initsnes,makeextension,sram
 EXTSYM loadfileGUI,GUIloadfailed,romloadskip,SetupROM,romdata,ramsize
 EXTSYM init65816,procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA
 EXTSYM spcX,spcY,spcP,spcNZ,Voice0Status,Voice1Status,Voice2Status,Voice3Status
@@ -912,11 +912,6 @@ cstempfname db 'tmpchtsr.___',0
 SECTION .text
 
 NEWSYM SaveSramData
-  ; change to sram dir
-  pushad
-  call SRAMChdir
-  popad
-
   cmp byte[sramsavedis],1
   je .savesramdone
 
@@ -1135,11 +1130,6 @@ NEWSYM StartGUI
 
   call SaveSramData
 
-  ; change to sram dir
-  pushad
-  call SRAMChdir
-  popad
-
   call GUIQuickLoadUpdate
   call LoadDetermine
 
@@ -1187,10 +1177,6 @@ NEWSYM StartGUI
 
   cmp byte[CheatWinMode],0
   je near .csskip
-  ; change to sram dir
-  pushad
-  call SRAMChdir
-  popad
 
   ; Load Cheat Search File
   mov edx,cstempfname
@@ -1337,11 +1323,6 @@ NEWSYM StartGUI
   call Change_Dir
   call GUISaveVars
 
-  ; change dir to SRAMDrive/SRAMDir
-  pushad
-  call SRAMChdir
-  popad
-
   mov byte[MousePRClick],1
   mov byte[prevbright],0
   mov ax,[PrevResoln]
@@ -1421,10 +1402,6 @@ SRAMDirc:
   mov ebx,LoadDir
   mov edx,LoadDrive
   call Get_Dir
-  ; change to sram dir
-  pushad
-  call SRAMChdir
-  popad
   ret
 
 LOADDir:
@@ -2344,9 +2321,6 @@ GUIProcStates:
   ret
 .yesstate
   mov byte[GUICBHold],0
-  pushad
-  call SRAMChdir
-  popad
   cmp byte[GUIStatesText5],1
   je .loadstate
   pushad
@@ -2363,9 +2337,6 @@ GUIProcStates:
   ret
 
 SaveSecondState:
-  pushad
-  call SRAMChdir
-  popad
   mov ebx,[statefileloc]
   mov al,[fnamest+ebx]
   mov byte[fnamest+ebx],'s'
@@ -2378,9 +2349,6 @@ SaveSecondState:
   ret
 
 LoadSecondState:
-  pushad
-  call SRAMChdir
-  popad
   mov ebx,[statefileloc]
   mov al,[fnamest+ebx]
   mov byte[fnamest+ebx],'s'

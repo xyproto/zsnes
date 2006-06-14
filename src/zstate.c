@@ -489,7 +489,6 @@ extern char *Msgptr, fnamest[512];
 extern unsigned short PrevPicture[64*56];
 
 static FILE *fhandle;
-void SRAMChdir();
 void CapturePicture();
 
 static void write_save_state_data(unsigned char **dest, void *data, size_t len)
@@ -609,11 +608,6 @@ void statesaver()
 
   static char *txtsavenum = 0;
   static char *txtrrsvnum = 0;
-
-  //Save State code
-  #ifdef __UNIXSDL__
-  SRAMChdir();
-  #endif
 
   //'Auto increment savestate slot' code
   if (AutoIncSaveSlot)
@@ -877,10 +871,6 @@ void stateloader (char *statename, unsigned char keycheck, unsigned char xferche
   INSERT_POSITION_NUMBER(txtconvmsg, txtconvnum);
   INSERT_POSITION_NUMBER(txtnfndmsg, txtnfndnum);
   INSERT_POSITION_NUMBER(txtrrldmsg, txtrrldnum);
-
-  #ifdef __UNIXSDL__
-  SRAMChdir();
-  #endif
 
   if (keycheck)
   {

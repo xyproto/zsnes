@@ -20,7 +20,7 @@
 
 %include "macros.mac"
 
-EXTSYM ZFileSystemInit,preparedir,SBHDMA,allocptr
+EXTSYM ZFileSystemInit,SBHDMA,allocptr
 EXTSYM putchar,getch,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName
 EXTSYM ZFileSeekMode,ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle
 EXTSYM ZFileWriteSize,ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize
@@ -61,16 +61,12 @@ NEWSYM StartUp
 
 NEWSYM SystemInit
     ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
-    push es
-    call preparedir
-
 %ifndef __DEVELOPER__
     pushad
     call DisplayWIPDisclaimer
     popad
 %endif
     mov byte[SBHDMA],1
-    pop es
     ret
 
 ; Allocate memory - see allocptr in ui.asm for details on what to allocate
