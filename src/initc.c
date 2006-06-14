@@ -746,7 +746,7 @@ void loadFile(char *filename)
   for (;;)
   {
     struct stat stat_results;
-    stat(filename, &stat_results);
+    stat_dir(ZRomPath, filename, &stat_results);
 
     if ((unsigned int)stat_results.st_size <= maxromspace+512-curromspace)
     {

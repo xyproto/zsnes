@@ -330,6 +330,7 @@ void makeextension()
 {
   char *p;
 
+  init_rom_path(ZCartName);
   strcpy(fnames+1,ZCartName);
   if ((p = strrchr(fnames+1, '.')))
   {
