@@ -20,8 +20,7 @@
 
 %include "macros.mac"
 
-EXTSYM ZFileSystemInit,GUIRestoreVars
-EXTSYM preparedir,SBHDMA,allocptr
+EXTSYM ZFileSystemInit,preparedir,SBHDMA,allocptr
 EXTSYM putchar,getch,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName
 EXTSYM ZFileSeekMode,ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle
 EXTSYM ZFileWriteSize,ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize
@@ -63,9 +62,6 @@ NEWSYM StartUp
 NEWSYM SystemInit
     ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
     push es
-    pushad
-    call GUIRestoreVars                 ; Load GUI stuff
-    popad
     call preparedir
 
 %ifndef __DEVELOPER__

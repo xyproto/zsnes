@@ -20,9 +20,9 @@
 
 %include "macros.mac"
 
-EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,ZFileSystemInit,getcmdline
-EXTSYM GUIRestoreVars,obtaindir,preparedir,V8Mode,getblaster,Force8b
-EXTSYM SBHDMA,ccmdline,InitDir,InitDrive,allocptr,ZOpenFile,ZOpenMode
+EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,ZFileSystemInit
+EXTSYM preparedir,V8Mode,getblaster,Force8b
+EXTSYM SBHDMA,InitDir,InitDrive,allocptr,ZOpenFile,ZOpenMode
 EXTSYM CurrentHandle,ZFileSeek,ZOpenFileName,ZFileSeekMode,ZFileSeekPos
 EXTSYM ZFileSeekHandle,ZFileWriteHandle,ZFileWriteSize,ZFileWriteBlock
 EXTSYM ZFileWrite,ZFileReadHandle,ZFileReadSize,ZFileReadBlock,ZFileRead
@@ -88,16 +88,6 @@ NEWSYM StartUp
 NEWSYM SystemInit
     ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
     push es
-    call getcmdline
-
-    mov dword[esi],'zsne'
-    mov dword[esi+4],'s.cf'
-    mov byte[esi+8],'g'
-    mov byte[esi+9],0
-    mov dword[esi+256],'zgui'
-    mov dword[esi+256+4],'cfg.'
-    mov dword[esi+256+8],'dat '
-    mov byte[esi+256+11],0
 
     ; Get and set the initial directory
     mov ebx,InitDir
@@ -107,11 +97,6 @@ NEWSYM SystemInit
     mov ebx,InitDir
     call Change_Dir
 
-    pushad
-    call GUIRestoreVars                 ; Load GUI stuff
-    popad
-    call obtaindir                      ; Get Save/Init Directories
-    call ccmdline
     call preparedir
     call getblaster                     ; get set blaster environment
     cmp byte[Force8b],1

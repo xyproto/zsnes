@@ -21,19 +21,16 @@
 %include "macros.mac"
 
 EXTSYM PrintStr,WaitForKey,PrintChar,ram7fa,wramdataa,MMXSupport
-EXTSYM MMXextSupport,statefileloc,LatestSave,firstsaveinc
-EXTSYM Change_Dir
+EXTSYM MMXextSupport,Change_Dir,malloc_ptr,malloc_size,malloc_help
 EXTSYM init18_2hz,SRAMDirCurDir,SRAMChdir,SRAMChdirFail
 EXTSYM BitConv32Ptr,spcBuffera,spritetablea,vcache2bs,vcache4bs,vcache8bs
 EXTSYM RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa,vidbufferofsmos,ngwinptr
 EXTSYM vidbufferofsb,headdata,romdata,sfxramdata,setaramdata,wramdata,ram7f,vram
-EXTSYM sram,debugbuf,regptr,regptw,vcache2b,vcache4b,vcache8b,fnames
-EXTSYM fnamest,vidbufferofsc,Sup48mbit,Sup16mbit,SRAMDir
-EXTSYM malloc_ptr,malloc_size,malloc_help,ZCartName
-EXTSYM DetermineNew,newestfileloc,newestfiledate
+EXTSYM sram,debugbuf,regptr,regptw,vcache2b,vcache4b,vcache8b
+EXTSYM vidbufferofsc,Sup48mbit,Sup16mbit,SRAMDir
 
 %ifdef __UNIXSDL__
-EXTSYM LinuxExit,GetFilename
+EXTSYM LinuxExit
 %elifdef __WIN32__
 EXTSYM exit
 %endif

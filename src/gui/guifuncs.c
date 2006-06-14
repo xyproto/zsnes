@@ -39,7 +39,7 @@ extern unsigned char ShowTimer, savecfgforce;
 extern unsigned int SnowTimer, NumSnow, NumComboGlob;
 enum vtype { UB, UW, UD, SB, SW, SD };
 
-void CheckValueBounds(void *ptr, int min, int max, int val, enum vtype type)
+static void CheckValueBounds(void *ptr, int min, int max, int val, enum vtype type)
 {
   switch (type)
   {
