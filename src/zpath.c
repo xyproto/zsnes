@@ -177,6 +177,7 @@ bool init_paths(char *launch_command)
         {
           ZSramPath = ZCfgPath;
         }
+        strcatslash(ZSramPath);
 
         if (*LoadDir)
         {
