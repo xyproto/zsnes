@@ -427,7 +427,7 @@ endif
 endif
 
 ${ZIPDIR}/unzip${OE}: ${ZIPDIR}/unzip.c ${ZIPDIR}/zunzip.h
-${ZIPDIR}/zpng${OE}: ${ZIPDIR}/zpng.c ${ZIPDIR}/zpng.h
+${ZIPDIR}/zpng${OE}: ${ZIPDIR}/zpng.c
 
 clean:
 
