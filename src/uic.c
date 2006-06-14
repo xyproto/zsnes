@@ -45,7 +45,7 @@ extern unsigned char FPSAtStart;
 extern char *Msgptr, CSStatus[], CSStatus2[], CSStatus3[];
 
 unsigned short selc0040, selcA000, selcB800;
-unsigned char string[512], fnames[512], fnamest[512];
+char fnames[512], fnamest[512];
 
 unsigned char *vidbuffer;	//  video buffer (1024x239 = 244736)
 unsigned char *ngwinptr;
@@ -312,6 +312,70 @@ void zstart()
   asm_call(init);
 }
 
+extern unsigned int statefileloc;
+void GetFilename();
+extern unsigned char firstsaveinc,LatestSave,newestfileloc;
+void SRAMChdir();
+void DetermineNew();
+
+extern time_t newestfiledate;
+
+void determinenewhelp(char ext)
+{
+    fnamest[statefileloc] = ext;
+    DetermineNew();
+}
+
+void makeextension()
+{
+  char *p;
+
+  strcpy(fnames+1,ZCartName);
+  if ((p = strrchr(fnames+1, '.')))
+  {
+    *p = 0;
+  }
+
+  memcpy(fnamest, fnames, strlen(fnames+1)+2);
+
+  strcat(fnames+1,".srm");
+  strcat(fnamest+1,".zst");
+
+  statefileloc = strlen(fnamest+1);
+
+  *fnames = strlen(fnames+1)+1;
+  *fnamest = *fnames;
+
+  #ifdef __UNIXSDL__
+  GetFilename();
+  #endif
+
+  firstsaveinc = 1;
+
+  newestfiledate = 0;
+  newestfileloc = 0;
+
+  determinenewhelp('t');
+  determinenewhelp('1');
+  determinenewhelp('2');
+  determinenewhelp('3');
+  determinenewhelp('4');
+  determinenewhelp('5');
+  determinenewhelp('6');
+  determinenewhelp('7');
+  determinenewhelp('8');
+  determinenewhelp('9');
+
+  if (!newestfileloc)
+  {
+    fnamest[statefileloc] = 't';
+  }
+  else
+  {
+    fnamest[statefileloc] = newestfileloc+'0';
+  }
+}
+
 static char *seconds_to_asc(unsigned int seconds)
 {
   static char buffer[50];
@@ -517,3 +581,4 @@ void MultiMouseProcess()
 }
 
 #endif
+
