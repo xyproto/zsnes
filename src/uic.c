@@ -346,10 +346,6 @@ void makeextension()
   *fnames = strlen(fnames+1)+1;
   *fnamest = *fnames;
 
-  #ifdef __UNIXSDL__
-  GetFilename();
-  #endif
-
   firstsaveinc = 1;
 
   newestfiledate = 0;

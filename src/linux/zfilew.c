@@ -408,44 +408,5 @@ unsigned int GetDate()
    return(value);
 }
 
-extern char SRAMDir[1024];
-extern char LoadDir[512];
-
-#ifdef __UNIXSDL__
-
-void GetFilename()
-{
-  extern char fnamest;
-  extern int statefileloc;
-  char *tmp = &fnamest;
-  char size;
-
-  *tmp = '/';
-  while (*tmp!=0) tmp++;
-  while (*tmp!='/') tmp--;
-  size = (strlen(tmp)-1) & 0xFF;
-  memmove(&fnamest, tmp, strlen(tmp));
-  fnamest = size;
-  statefileloc-=(tmp-&fnamest);
-}
-
-char *olddir = NULL;
-
-
-void pushdir()
-{
-	olddir = (char *)malloc(128);
-	getcwd(olddir, 128);
-}
-
-void popdir()
-{
-	CHPath = olddir;
-	ZFileCHDir();
-	free(olddir);
-	olddir = NULL;
-}
-#endif
-
 
 
