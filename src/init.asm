@@ -50,8 +50,7 @@ EXTSYM reg3read,reg4read,resolutn,romdata,scrndis,spcP,SPCRAM,spcnumread
 EXTSYM tableD,timeron,vidbright,SPC700read,SPC700write,spc700read
 EXTSYM GUIReset,InitC4,SA1Reset,SetAddressingModesSA1,SDD1BankA,SPC7110init
 EXTSYM RTCinit,memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
-EXTSYM memaccessspc7110w16,snesmap2,snesmmap
-EXTSYM procexecloop,wramdata,wramdataa,fnames
+EXTSYM memaccessspc7110w16,snesmap2,snesmmap,procexecloop,wramdata,wramdataa
 EXTSYM GetCurDir,fnamest,statefileloc,InitDir,InitDrive
 EXTSYM curromspace,romispal,initregr,initregw,memtabler16
 EXTSYM memtabler8,memtablew16,memtablew8,wramreadptr
