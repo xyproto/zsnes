@@ -405,12 +405,6 @@ SECTION .data
 
 NEWSYM InitDrive, db 2
 
-%ifdef __UNIXSDL__
-NEWSYM gotoroot, db '/',0
-%else
-NEWSYM gotoroot, db '\',0
-%endif
-
 SECTION .bss
 NEWSYM InitDir, resb 512
 
