@@ -47,7 +47,7 @@ case x$target in
     NFLAGS="$NFLAGS -D__BSDSDL__ -f elf -DELF"
     ;;
   *-*-darwin* )
-    CFLAGS="$CFLAGS -D__MACOSX__ -arch i386 -mdynamic-no-pic"
+    CFLAGS="$CFLAGS -D__MACOSX__ -arch i386 -mdynamic-no-pic -mstackrealign"
     NFLAGS="$NFLAGS -D__MACOSX__ -f macho"
     MMLIB_FILES="$MMLIB_FILES \$(MMLIBDIR)/osx.o"
     LDFLAGS="$LDFLAGS -framework Carbon -framework IOKit -mdynamic-no-pic"
