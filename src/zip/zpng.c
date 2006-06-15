@@ -25,7 +25,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../gblhdr.h"
 #else
 #include <stdlib.h>
+#ifdef __WIN32__
 #include <io.h>
+#else
+#include <unistd.h>
+#endif
 #endif
 #include "../zpath.h"
 
