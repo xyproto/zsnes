@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM PrintStr,PrintChar,ram7fa,wramdataa,MMXSupport
-EXTSYM MMXextSupport,malloc_ptr,malloc_size,malloc_help
+EXTSYM MMXextSupport,alloc_ptr,alloc_size,alloc_help
 EXTSYM BitConv32Ptr,spcBuffera,spritetablea,vcache2bs,vcache4bs,vcache8bs
 EXTSYM RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa,vidbufferofsmos,ngwinptr
 EXTSYM vidbufferofsb,headdata,romdata,sfxramdata,setaramdata,wramdata,ram7f,vram
@@ -115,11 +115,11 @@ SECTION .text
 %macro AllocmemFail 3
     mov eax,%1
     add eax,1000h
-    mov [malloc_size],eax
+    mov [alloc_size],eax
     pushad
-    call malloc_help
+    call alloc_help
     popad
-    mov eax,[malloc_ptr]
+    mov eax,[alloc_ptr]
     cmp eax,0
     je near %3
     mov ebx,[cmemallocptr]
@@ -133,11 +133,11 @@ SECTION .text
 %macro AllocmemOkay 3
     mov eax,%1
     add eax,1000h
-    mov [malloc_size],eax
+    mov [alloc_size],eax
     pushad
-    call malloc_help
+    call alloc_help
     popad
-    mov eax,[malloc_ptr]
+    mov eax,[alloc_ptr]
     push eax
     and eax,0FFFFFFE0h
     add eax,40h

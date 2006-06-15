@@ -132,12 +132,12 @@ void allocspc7110()
   spc7110romptr = (unsigned char *)doMemAlloc(8192*1024+4096);
 }
 
-void *malloc_ptr;
-unsigned int malloc_size;
+void *alloc_ptr;
+unsigned int alloc_size;
 
-void malloc_help()
+void alloc_help()
 {
-  malloc_ptr=malloc(malloc_size);
+  alloc_ptr=malloc(alloc_size);
 }
 
 extern bool input1gp;
