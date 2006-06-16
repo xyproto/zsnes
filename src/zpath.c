@@ -25,6 +25,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef __WIN32__
 #include <io.h>
 #else
+#include <dos.h>
 #include <unistd.h>
 #endif
 #include <string.h>
@@ -112,7 +113,7 @@ void cfgpath_ensure()
 
 #ifdef __WIN32__
 
-//Windows for some reason lacks this function, but DOS doesn't
+//Windows for some reason lacks this function
 char *realpath(const char *path, char *resolved_path)
 {
   char *ret = 0;
@@ -121,8 +122,116 @@ char *realpath(const char *path, char *resolved_path)
   else if (!access(path, F_OK))
   {
     ret = fullpath(resolved_path, path, MAX_PATH);
-  }
+  }_dos_getdrive(&drive);
 
+  return (ret);
+}
+
+#elif defined(__MSDOS__)
+
+/*
+Memory Swapper - designed to swap the positions of two chunks in an array
+p1 is first chunk in array
+p2 is second chunk in array
+p2len is the length of the second chunk
+
+p2 will be moved to before p1
+*/
+static void memswap(void *p1, void *p2, size_t p2len)
+{
+  char *ptr1 = (char *)p1;
+  char *ptr2 = (char *)p2;
+
+  size_t p1len = ptr2 - ptr1;
+  unsigned char byte;
+  while (p2len--)
+  {
+    byte = *ptr2++;
+    memmove(ptr1+1, ptr1, p1len);
+    *ptr1++ = byte;
+  }
+}
+
+//Only beta versions of DJGPP current have this function
+char *realpath(const char *path, char *resolved_path)
+{
+  char *ret = 0;
+  if (!path || !resolved_path) { errno = EINVAL; }
+  else if (1) //(!access(path, F_OK))
+  {
+    unsigned int saved_drive = 0;
+    char *p;
+    ret = strcpy(resolved_path, path);
+    natify_slashes(resolved_path);
+
+    //Make sure path is absolute
+    if (*resolved_path && (resolved_path[1] == ':') && (resolved_path[2] != DIR_SLASH_C))
+    {
+      unsigned int available_drives;
+      _dos_getdrive(&saved_drive);
+      _dos_setdrive((toupper(*resolved_path)+1)-'A', &available_drives);
+      memmove(resolved_path, resolved_path+2, strlen(resolved_path+2)+1);
+    }
+    if ((strlen(resolved_path) < 2) || (resolved_path[1] != ':'))
+    {
+      if (*resolved_path == DIR_SLASH_C)
+      {
+        unsigned int drive;
+        _dos_getdrive(&drive);
+        memmove(resolved_path+2, resolved_path, strlen(resolved_path)+1);
+        *resolved_path = ((char)drive-1)+'A';
+        resolved_path[1] = ':';
+      }
+      else
+      {
+        memmove(resolved_path+1, resolved_path, strlen(resolved_path)+1);
+        *resolved_path = DIR_SLASH_C;
+        p = getcwd(resolved_path+strlen(resolved_path)+1, PATH_SIZE-strlen(resolved_path)+1);
+        if (saved_drive) { _dos_setdrive(saved_drive, &saved_drive); }
+        if (!p)
+        {
+          errno = ENAMETOOLONG;
+          return(0); //I didn't want this here, but at the moment, I can't think of a way to restructure the code
+        }
+        natify_slashes(p);
+        memswap(resolved_path, p, strlen(p)+1);
+        memmove(resolved_path+strlen(resolved_path), resolved_path+strlen(resolved_path)+1, strlen(resolved_path+strlen(resolved_path)+1)+1);
+      }
+    }
+
+    //Remove doubled over backslashes
+    p = resolved_path;
+    while (*p)
+    {
+      while ((*p == DIR_SLASH_C) && (p[1] == DIR_SLASH_C))
+      {
+        memmove(p, p+1, strlen(p));
+      }
+      p++;
+    }
+
+    //Remove uselss current directory characters
+    while ((p = strstr(resolved_path, "\\.\\")))
+    {
+      memmove(p+1, p+3, strlen(p+3)+1);
+    }
+
+    //Remove useless previous directory characters
+    while ((p = strstr(resolved_path, "\\..\\")))
+    {
+      if (p[-1] == ':')
+      {
+        memmove(p, p+3, strlen(p+3)+1);
+      }
+      else
+      {
+        char *p2;
+        *p = 0;
+        p2 = strrchr(resolved_path, DIR_SLASH_C); //This can't fail
+        memmove(p2+1, p+4, strlen(p+4)+1);
+      }
+    }
+  }
   return (ret);
 }
 
