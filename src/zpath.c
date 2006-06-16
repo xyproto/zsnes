@@ -219,7 +219,7 @@ char *realpath(const char *path, char *resolved_path)
       memmove(p+1, p+3, strlen(p+3)+1);
     }
 
-    //Convert c:\.. to c:\..\
+    //Convert "\.." to "\..\" at end of path
     if (!memcmp(resolved_path+strlen(resolved_path)-3, "\\..", 4))
     {
       strcat(resolved_path, DIR_SLASH);
