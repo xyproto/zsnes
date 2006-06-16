@@ -130,7 +130,7 @@ char *realpath(const char *path, char *resolved_path)
   return(ret);
 }
 
-#elif defined(__MSDOS__)
+#elif defined(__MSDOS__) && (__DJGPP__ < 3) && (__DJGPP_MINOR__ < 4)
 
 /*
 Memory Swapper - designed to swap the positions of two chunks in an array
