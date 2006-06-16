@@ -122,9 +122,9 @@ char *realpath(const char *path, char *resolved_path)
   else if (!access(path, F_OK))
   {
     ret = fullpath(resolved_path, path, MAX_PATH);
-  }_dos_getdrive(&drive);
+  }
 
-  return (ret);
+  return(ret);
 }
 
 #elif defined(__MSDOS__)
@@ -232,7 +232,7 @@ char *realpath(const char *path, char *resolved_path)
       }
     }
   }
-  return (ret);
+  return(ret);
 }
 
 #endif
