@@ -152,7 +152,7 @@ static void memswap(void *p1, void *p2, size_t p2len)
   }
 }
 
-//Only beta versions of DJGPP current have this function
+//Only beta versions of DJGPP currently have this function
 char *realpath(const char *path, char *resolved_path)
 {
   char *ret = 0;
