@@ -160,7 +160,7 @@ char *realpath(const char *path, char *resolved_path)
 {
   char *ret = 0;
   if (!path || !resolved_path) { errno = EINVAL; }
-  else if (1) //(!access(path, F_OK))
+  else if (!access(path, F_OK))
   {
     unsigned int saved_drive = 0;
     char *p;
