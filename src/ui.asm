@@ -384,7 +384,6 @@ NEWSYM MMXCheck
     pushfd
     pop eax
     xor eax,edx
-    xor eax,eax
     jz .nommx
 
     ; MMX support
