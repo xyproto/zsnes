@@ -487,8 +487,10 @@ reexecuteb2:
 NEWSYM endprog
     call deinitvideo
 
+    pushad
     call SaveSramData
     call GUISaveVars
+    popad
 
     pushad
     call MovieStop

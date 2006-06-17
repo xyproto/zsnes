@@ -534,8 +534,8 @@ extern "C" void GUISaveVars(void);
 
 void ExitFunction()
 {
-   asm_call(SaveSramData);
-   asm_call(GUISaveVars);
+   SaveSramData();
+   GUISaveVars();
 
    // We need to clean up the debug window if it's running
 

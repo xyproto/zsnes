@@ -1074,7 +1074,9 @@ NEWSYM StartGUI
 .noof
   mov [GUIcurrentvideoviewloc],eax
 
+  pushad
   call SaveSramData
+  popad
 
   call GUIQuickLoadUpdate
   call LoadDetermine
@@ -1267,7 +1269,9 @@ NEWSYM StartGUI
   mov ebx,InitDir
   ; save config
   call Change_Dir
+  pushad
   call GUISaveVars
+  popad
 
   mov byte[MousePRClick],1
   mov byte[prevbright],0
