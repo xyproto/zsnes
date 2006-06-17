@@ -967,3 +967,48 @@ void loadstate2()
 {
   stateloader(fnamest+1, 0, 1);
 }
+
+extern unsigned int sramsavedis;
+extern unsigned char CHIPBATT;
+extern char fnames[512];
+void SaveCombFile();
+
+// Sram saving
+void SaveSramData()
+{
+  FILE *fp = 0;
+  unsigned char special = 0;
+  unsigned int *data_to_save;
+
+  if (ramsize && !sramsavedis)
+  {
+    if (SFXEnable)
+    {
+      data_to_save=sfxramdata;
+      special=1;
+    }
+    else if (SA1Enable)
+    {
+      data_to_save=(unsigned int *)SA1RAMArea;
+      special=1;
+    }
+    else if (SETAEnable)
+    {
+      data_to_save=setaramdata;
+      special=1;
+    }
+    else data_to_save=sram;
+
+    if (!special || CHIPBATT)
+    {
+      clim();
+      if ((fp = fopen_dir(ZSramPath,fnames+1,"wb")))
+      {
+        fwrite(data_to_save, 1, ramsize, fp);
+        fclose(fp);
+      }
+      stim();
+    }
+  }
+  SaveCombFile();
+}

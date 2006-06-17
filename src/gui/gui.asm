@@ -67,12 +67,12 @@ EXTSYM curblank,vidpastecopyscr,frameskip,newengen,vsyncon,cvidmode,antienab
 EXTSYM smallscreenon,soundon,StereoSound,SoundQuality,MusicRelVol,endprog
 EXTSYM continueprog,spcBuffera,spcRamcmp,cbitmode,makepal,t1cc,LoadDir,LoadDrive
 EXTSYM SRAMDir,initsnes,makeextension,sram
-EXTSYM loadfileGUI,GUIloadfailed,romloadskip,SetupROM,romdata,ramsize
+EXTSYM loadfileGUI,GUIloadfailed,romloadskip,SetupROM,romdata
 EXTSYM init65816,procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA
 EXTSYM spcX,spcY,spcP,spcNZ,Voice0Status,Voice1Status,Voice2Status,Voice3Status
 EXTSYM Voice4Status,Voice5Status,Voice6Status,Voice7Status,ClearScreen
 EXTSYM statesaver,loadstate2,vidbuffer,ASCII2Font,hirestiledat,showallext
-EXTSYM scanlines,statefileloc,fnamest,sprlefttot,spritetablea,fnames,CHIPBATT
+EXTSYM scanlines,statefileloc,fnamest,sprlefttot,spritetablea,CHIPBATT
 EXTSYM sfxramdata,setaramdata,SETAEnable,cgram,srama,tempco0,prevbright,maxbr
 EXTSYM prevpal,coladdr,coladdg,coladdb,scaddtype,ScreenScale,initvideo,pressed
 EXTSYM UpdateDevices,memtabler8,memtablew8,writeon,JoyRead,SetInputDevice,delay
@@ -86,7 +86,7 @@ EXTSYM nmirept,nmiprevline,nmistatus,spcnumread,NextLineCache,ResetTripleBuf
 EXTSYM GUINGVID,ScanCodeListing,AdjustFrequency,GUISaveVars,Init_Mouse
 EXTSYM Get_MouseData,Set_MouseXMax,Set_MouseYMax,Set_MousePosition
 EXTSYM Get_MousePositionDisplacement,GUIInit,GUIDeInit,SpecialLine,DrawWater
-EXTSYM DrawBurn,SA1Enable,SA1RAMArea,MMXCheck,SaveCombFile,showinfogui,GetDate
+EXTSYM DrawBurn,SA1Enable,SA1RAMArea,MMXCheck,showinfogui,GetDate
 EXTSYM horizon_get,ErrorPointer,MessageOn,GetTime,sndrot,regsbackup,GetScreen
 EXTSYM GUITBWVID,Clear2xSaIBuffer,MouseWindow,ExitFromGUI,GUIWFVID,newgfx16b
 EXTSYM NumVideoModes,MusicVol,DSPMem,NumInputDevices,GUIInputNames
@@ -135,7 +135,7 @@ EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
 EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
 EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,ZCartName
-EXTSYM mousewrap,GUIClick,PrevFSMode,PrevWinMode
+EXTSYM mousewrap,GUIClick,PrevFSMode,PrevWinMode,SaveSramData
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,OldGfxMode2,SmallMsgText
 EXTSYM AutoPatch,RomInfo,AllowUDLR,Triplebufen,GrayscaleMode
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,TripleBufferWin
@@ -910,60 +910,6 @@ OkaySC resb 1
 SECTION .data
 cstempfname db 'tmpchtsr.___',0
 SECTION .text
-
-NEWSYM SaveSramData
-  cmp byte[sramsavedis],1
-  je .savesramdone
-
-  cmp dword[ramsize],0
-  je .savesramdone
-
-  mov edx,[sram]
-  cmp byte[SFXEnable],1
-  jne .notsfx
-  mov edx,[sfxramdata]
-.notsfx
-  cmp byte[SA1Enable],1
-  jne .notsa1
-  mov edx,[SA1RAMArea]
-.notsa1
-  cmp byte[SETAEnable],1
-  jne .notseta
-  mov edx,[setaramdata]
-.notseta
-  cmp edx,[sram]
-  je .notspecial
-  cmp byte[CHIPBATT],0
-  je .savesramdone
-.notspecial
-
-  clim
-
-  push edx ;Backup data to save
-  mov edx,fnames+1
-  call Create_File
-  jc .failed
-  mov bx,ax
-  xor ecx,ecx
-  mov ecx,[ramsize]
-  pop edx ;Restore data to save
-  call Write_File
-  call Close_File
-  push edx ;Dirty hack for the next line
-.failed
-  pop edx ;This is needed here because if the jump to failed is carried out, edx is never popped
-  stim
-.savesramdone
-
-  pushad
-  call SaveCombFile
-  popad
-
-  ; change dir to InitDrive/InitDir
-  mov dl,[InitDrive]
-  mov ebx,InitDir
-  call Change_Dir
-  ret
 
 %macro ProcessOneDigit 1
   cmp dl,9
