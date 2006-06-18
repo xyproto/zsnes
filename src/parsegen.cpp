@@ -51,6 +51,8 @@ typedef int ssize_t;
 #define SLASH_STR "/"
 #endif
 
+string cflags;
+
 #ifdef _MSC_VER //MSVC
 static inline string COMPILE_EXE(string exe, string c)
 {
@@ -67,7 +69,7 @@ static inline string COMPILE_EXE(string exe, string c)
 }
 static inline string COMPILE_OBJ(string obj, string c)
 {
-  return(string(string("gcc -o ")+obj+string(" -c ")+c));
+  return(string(string("gcc ")+cflags+(" -o ")+obj+string(" -c ")+c));
 }
 #endif
 
@@ -1509,6 +1511,11 @@ int main(size_t argc, const char **argv)
     {
       compile = true;
     }
+    else if (!strcmp(argv[param_pos], "-flags"))
+    {
+      param_pos++;
+      cflags = argv[param_pos];
+    }
     else if (!strcmp(argv[param_pos], "-fname"))
     {
       param_pos++;
@@ -1546,7 +1553,8 @@ int main(size_t argc, const char **argv)
     return(1);
   }
 
-  const char *psr_file = argv[param_pos+1], *c_file = compile ? "psrtemp.c" : argv[param_pos];
+  string cname = family_name+string(".c");
+  const char *psr_file = argv[param_pos+1], *c_file = compile ? cname.c_str() : argv[param_pos];
   const char *obj_file = compile ? argv[param_pos] : 0;
   int ret_val = 0;
 
@@ -1594,11 +1602,10 @@ int main(size_t argc, const char **argv)
 
   if (!ret_val && compile)
   {
-    cout << COMPILE_OBJ("psrtemp.obj", "psrtemp.c") << "\n";
-    system(COMPILE_OBJ("psrtemp.obj", "psrtemp.c").c_str());
-    remove("psrtemp.c");
-    cout << "Renaming psrtemp.obj to " << obj_file << endl;
-    rename("psrtemp.obj", obj_file);
+    string command = COMPILE_OBJ(obj_file, cname);
+    cout << "parsegen: " << command << "\n";
+    system(command.c_str());
+    remove(cname.c_str());
   }
 
   return(ret_val);

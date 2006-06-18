@@ -137,8 +137,9 @@ void dependency_calculate_psr(const char *filename)
 {
   string fn_prefix(filename, strlen(filename)-4);
   string o_suffix(fn_prefix+".o");
+  string h_suffix(fn_prefix+".h");
 
-  cout << o_suffix << ": " << filename << "\n";
+  cout << o_suffix << " " << h_suffix << ": " << filename << "\n";
 }
 
 void dependency_calculate(const char *filename, struct stat& stat_buffer)

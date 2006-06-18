@@ -93,13 +93,8 @@ ZOBJS=$(MAINOBJ) $(CHIPSOBJ) $(CPUOBJ) $(GUIOBJ) $(EFFECTSOBJ) $(JMAOBJ)\
 	@CC@ @CFLAGS@ -o $@ -c $<
 %.o: %.cpp
 	@CXX@ @CXXFLAGS@ -o $@ -c $<
-%.h: %.psr $(PSR)
-	./$(PSR) @PSRFLAGS@ -cheader $*.h -fname $* t_$*.c $<
-@PSR_TEMP@
-%.o: %.psr $(PSR)
-	./$(PSR) @PSRFLAGS@ -fname $* t_$*.c $<
-	@CC@ @CFLAGS@ -O1 -o $@ -c t_$*.c
-@PSR_TEMP@
+%.o %.h: %.psr $(PSR)
+	./$(PSR) @PSRFLAGS@ -compile -flags "@CFLAGS@" -cheader $*.h -fname $* $*.o $<
 
 default: main
 all: main tools
@@ -145,7 +140,7 @@ uninstall:
 	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man1/zsnes.1
 
 clean:
-	rm -f $(ZOBJS) $(PSR) $(PSRH) t_*.c @ZSNESEXE@
+	rm -f $(ZOBJS) $(PSR) $(PSRH) @ZSNESEXE@
 tclean:
 	rm -f $(TOOLSOBJ) $(TOOLSEXE)
 distclean: clean tclean
