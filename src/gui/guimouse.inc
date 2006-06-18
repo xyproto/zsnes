@@ -1564,6 +1564,9 @@ SECTION .text
 
 %macro GUITextBoxInputNach 6
   GUIClickArea %1,%2,%3,%4,%%noclick
+  pushad
+  call init_save_paths
+  popad
   mov dword[GUIInputBox],%5
   mov dword[GUIInputLimit],%6-1
 %%noclick
