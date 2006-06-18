@@ -31,14 +31,18 @@ Config file handler creator by Nach (C) 2005-2006
 #include <sstream>
 #include <set>
 #include <stack>
+#include <cstdio>
 using namespace std;
 
 #include <errno.h>
 
 #ifdef _MSC_VER //MSVC
+#include <io.h>
 typedef int ssize_t;
 #define strcasecmp stricmp
 #define __WIN32__
+#else
+#include <unistd.h>
 #endif
 
 #if defined(__MSDOS__) || defined(__WIN32__)
@@ -48,16 +52,29 @@ typedef int ssize_t;
 #endif
 
 #ifdef _MSC_VER //MSVC
-#define COMPILE_EXE(exe, c) "cl /nologo /Fe"exe " "c
-#define COMPILE_OBJ(obj, c) "cl /nologo /Fo"obj " "c
+static inline string COMPILE_EXE(string exe, string c)
+{
+  return(string(string("cl /nologo /Fe")+exe+string(" ")+c));
+}
+static inline string COMPILE_OBJ(string obj, string c)
+{
+  return(string(string("cl /nologo /Fo")+obj+string(" ")+c));
+}
 #else
-#define COMPILE_EXE(exe, c) "gcc -o "exe " "c " -s"
-#define COMPILE_OBJ(obj, c) "gcc -o "obj " -c "c
+static inline string COMPILE_EXE(string exe, string c)
+{
+  return(string(string("gcc -o ")+exe+string(" ")+c+string(" -s")));
+}
+static inline string COMPILE_OBJ(string obj, string c)
+{
+  return(string(string("gcc -o ")+obj+string(" -c ")+c));
+}
 #endif
 
 #define LINE_LENGTH 2048*10
 char line[LINE_LENGTH];
 
+string family_name = "cfg";
 
 /*
 
@@ -222,53 +239,80 @@ string hex_convert(string str)
   return(str);
 }
 
+//Unforunetly, this can have a time of check vs. time of use race condition
+string temp_name(string prefix, string suffix)
+{
+  unsigned int count = 0;
+  char buff[6];
+  for (;;)
+  {
+    sprintf(buff, "%d", count);
+    string name = prefix+buff+suffix;
+    if (access(name.c_str(), F_OK))
+    {
+      return(name);
+    }
+    if (count == 99999)
+    {
+      break;
+    }
+    count++;
+  }
+  return(prefix+suffix); //Oh well, stupid fall back
+}
+
 //Ascii numbers to integer, with support for mathematics in the string
 ssize_t enhanced_atoi(const char *str)
 {
   ssize_t num = 0;
-
-  //Make sure result file doesn't exist
-  if (remove("eatio.res") && (errno != ENOENT))
-  {
-    cerr << "Error: Can not get accurate value information (eatio.res)." << endl;
-  }
+  string cname(temp_name(family_name, ".c"));
+  string ename(temp_name(string("."SLASH_STR)+family_name, ".exe"));
+  char buffer[20];
+  *buffer = 0;
 
   //Biggest cheat of all time
-  ofstream out_stream("eatio.c");
+  ofstream out_stream(cname.c_str());
   if (out_stream)
   {
     out_stream << "#include <stdio.h>\n"
                << "int main()\n"
                << "{\n"
-               << "  FILE *fp = fopen(\"eatio.res\", \"w\");\n"
-               << "  if (fp)\n"
-               << "  {\n"
-               << "    fprintf(fp, \"%d\", " << hex_convert(str) << ");\n"
-               << "    fclose(fp);\n"
-               << "  }\n"
+               << "  printf(\"%d\\n\", " << hex_convert(str) << ");\n"
                << "  return(0);\n"
                << "}\n\n";
     out_stream.close();
 
-    system(COMPILE_EXE("eatio.exe", "eatio.c"));
-    system("."SLASH_STR"eatio.exe");
+    cout << COMPILE_EXE(ename, cname) << endl;
+    system(COMPILE_EXE(ename, cname).c_str());
+    remove(cname.c_str());
 
-    remove("eatio.c");
-    remove("eatio.exe");
-    remove("eatio.obj"); //Needed for stupid MSVCs which leave object files lying around
-
-    ifstream in_stream("eatio.res");
-    if (in_stream)
+    if (!access(ename.c_str(), F_OK))
     {
-      in_stream >> num;
-      in_stream.close();
+      FILE *fp = popen(ename.c_str(), "r");
+      if (fp)
+      {
+        fgets(buffer, sizeof(buffer), fp);
+        pclose(fp);
+      }
+      remove(ename.c_str());
+    }
+
+    if (*buffer)
+    {
+      num = atoi(buffer);
     }
     else
     {
-      cerr << "Error: Can not get accurate value information (eatio.res)." << endl;
+      cerr << "Error: Can not get accurate value information (" << ename << ")." << endl;
     }
 
-    remove("eatio.res");
+    //Needed for stupid MSVCs which leave object files lying around
+    cname.erase(cname.length()-2);
+    cname += ".obj";
+    remove(cname.c_str());
+    ename.erase(ename.length()-4);
+    ename += ".obj";
+    remove(ename.c_str());
   }
 
   return(num);
@@ -357,8 +401,6 @@ class nstack
   private:
   vector<T> data;
 };
-
-string family_name = "cfg";
 
 set<string> defines;
 nstack<bool> ifs;
@@ -1514,7 +1556,7 @@ int main(size_t argc, const char **argv)
   if (!ret_val && compile)
   {
     cout << COMPILE_OBJ("psrtemp.obj", "psrtemp.c") << "\n";
-    system(COMPILE_OBJ("psrtemp.obj", "psrtemp.c"));
+    system(COMPILE_OBJ("psrtemp.obj", "psrtemp.c").c_str());
     remove("psrtemp.c");
     cout << "Renaming psrtemp.obj to " << obj_file << endl;
     rename("psrtemp.obj", obj_file);
