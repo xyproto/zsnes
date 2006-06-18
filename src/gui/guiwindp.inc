@@ -2375,7 +2375,7 @@ GUICheatPosA resb 1
 GUICheatPosB resb 1
 GUICStA resd 3
 GUIcurrentcheatviewloc resd 1
-GUIcurrentcheatcursloc resd 1
+NEWSYM GUIcurrentcheatcursloc, resd 1
 GUIcurrentcheatwin     resd 1
 ccheatnpos             resd 1
 ccheatnleft            resd 1

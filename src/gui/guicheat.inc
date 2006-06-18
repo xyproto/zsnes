@@ -16,7 +16,7 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-
+EXTSYM cheat_file_size
 
 
 
@@ -279,59 +279,8 @@ CheatCodeSearchInit:
     and byte[eax+16383],01Fh
     ret
 
-CheatCodeSave:
-    cmp byte[NumCheats],0
-    jne .okay
-    mov byte[GUICBHold],0
-    ret
-.okay
-    mov byte[cheatdata+6],254
-    mov byte[cheatdata+7],252
-
-    call SRAMDirc
-    mov byte[GUICBHold],0
-    mov ebx,[statefileloc]
-    sub ebx,2
-    mov eax,[fnamest+ebx]
-    mov dword[fnamest+ebx],'cht'
-    push eax
-    push ebx
-    mov edx,fnamest+1
-    call Create_File
-    jc .cheatsavefail
-    mov bx,ax
-    mov ecx,[NumCheats]
-    mov edx,ecx
-    shl ecx,4
-    shl edx,2
-    add ecx,edx
-    add ecx,edx
-    add ecx,edx
-    mov edx,cheatdata
-    call Write_File
-    call Close_File
-.cheatsavefail
-    pop ebx
-    pop eax
-    mov [fnamest+ebx],eax
-    call LOADDir
-    ret
-
-CheatCodeLoad:
-    call SRAMDirc
-    mov byte[GUICBHold],0
-    mov ebx,[statefileloc]
-    sub ebx,2
-    mov eax,[fnamest+ebx]
-    mov dword[fnamest+ebx],'cht'
-    push eax
-    push ebx
-    mov edx,fnamest+1
-    call Open_File
-    jc near .fail
-    mov bx,ax
-    ; Disable all codes
-    push ebx
+NEWSYM DisableCheatsOnLoad
+     ; Disable all codes
     mov esi,cheatdata
     mov ecx,[NumCheats]
     cmp ecx,0
@@ -349,19 +298,31 @@ CheatCodeLoad:
     dec ecx
     jnz .loop2
 .skip
-    pop ebx
-    mov ecx,255*28
-    mov edx,cheatdata
-    call Read_File
-    push eax
-    call Close_File
-    pop eax
-    cmp byte[cheatdata+6],254
-    jne .notnewformat
-    cmp byte[cheatdata+7],252
-    jne .notnewformat
-    jmp .newformat
-.notnewformat
+    ret
+
+NEWSYM EnableCheatsOnLoad
+    ; Enable all ON toggled cheat codes
+    mov esi,cheatdata
+    mov ecx,[NumCheats]
+    cmp ecx,0
+    je .skip2
+.loop
+    test byte[esi],4
+    jnz .disabled
+    push esi
+    push ecx
+    call EnableCheatCode
+    pop ecx
+    pop esi
+.disabled
+    add esi,28
+    dec ecx
+    jnz .loop
+.skip2
+    ret
+
+NEWSYM ConvertCheatFileFormat
+    mov eax,[cheat_file_size]
     ; Convert format
     mov esi,cheatdata
     mov ebx,18
@@ -398,55 +359,6 @@ CheatCodeLoad:
     jnz .convloopc
     or ecx,ecx
     jnz .convloop
-    jmp .fin
-.newformat
-    mov ebx,28
-    xor edx,edx
-    div ebx
-    mov [NumCheats],eax
-.fin
-    pop ebx
-    pop eax
-    mov [fnamest+ebx],eax
-    ; Enable all ON toggled cheat codes
-    mov esi,cheatdata
-    mov ecx,[NumCheats]
-    cmp ecx,0
-    je .skip2
-.loop
-    test byte[esi],4
-    jnz .disabled
-    push esi
-    push ecx
-    call EnableCheatCode
-    pop ecx
-    pop esi
-.disabled
-    add esi,28
-    dec ecx
-    jnz .loop
-.skip2
-    mov eax,[NumCheats]
-    cmp eax,[GUIcurrentcheatcursloc]
-    ja .noconf
-    dec eax
-    mov [GUIcurrentcheatcursloc],eax
-.noconf
-    cmp dword[NumCheats],0
-    jne .nozero
-    mov dword[GUIcurrentcheatcursloc],0
-    mov byte[CheatOn],0
-    call LOADDir
-    ret
-.nozero
-    mov byte[CheatOn],1
-    call LOADDir
-    ret
-.fail
-    pop ebx
-    pop eax
-    mov [fnamest+ebx],eax
-    call LOADDir
     ret
 
 CheatCodeRemove:

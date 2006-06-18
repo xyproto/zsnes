@@ -77,8 +77,8 @@ EXTSYM sfxramdata,setaramdata,SETAEnable,cgram,srama,tempco0,prevbright,maxbr
 EXTSYM prevpal,coladdr,coladdg,coladdb,scaddtype,ScreenScale,initvideo,pressed
 EXTSYM UpdateDevices,memtabler8,memtablew8,writeon,JoyRead,SetInputDevice,delay
 EXTSYM FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,pl12s34,resolutn,InitDrive,InitDir
-EXTSYM Makemode7Table,vidbufferofsb,wramdata,bgfixer
-EXTSYM videotroub,Open_File,Read_File,Close_File,Write_File,Create_File
+EXTSYM Makemode7Table,vidbufferofsb,wramdata,bgfixer,videotroub
+EXTSYM CheatCodeSave,CheatCodeLoad,LoadCheatSearchFile,SaveCheatSearchFile
 EXTSYM File_Seek,File_Seek_End,Get_Date,Check_Key,Get_Key,Change_Drive
 EXTSYM Change_Single_Dir,Change_Dir,Get_Dir,Get_First_Entry,Get_Next_Entry
 EXTSYM Set_DTA_Address,curexecstate,TripBufAvail,nmiprevaddrl,nmiprevaddrh
@@ -907,9 +907,6 @@ ProcessSnowVelocity:
 
 SECTION .bss
 OkaySC resb 1
-SECTION .data
-cstempfname db 'tmpchtsr.___',0
-SECTION .text
 
 %macro ProcessOneDigit 1
   cmp dl,9
@@ -1127,17 +1124,10 @@ NEWSYM StartGUI
   je near .csskip
 
   ; Load Cheat Search File
-  mov edx,cstempfname
-  call Open_File
-  jc .csskipb
-  mov bx,ax
-  mov edx,[vidbuffer]
-  add edx,129600
-  mov ecx,65536*2+32768
-  call Read_File
-  call Close_File
+  pushad
+  call LoadCheatSearchFile
+  popad
 
-.csskipb
   ; change dir to LoadDrive/LoadDir
   mov dl,[LoadDrive]
   mov ebx,LoadDir
@@ -1308,17 +1298,11 @@ NEWSYM StartGUI
 
   cmp byte[CheatWinMode],0
   je .csskip2
-  ; Save Cheat Search File
-  mov edx,cstempfname
-  call Create_File
-  jc .csskip2
-  mov bx,ax
-  mov edx,[vidbuffer]
-  add edx,129600
-  mov ecx,65536*2+32768
-  call Write_File
-  call Close_File
-.csskip2
+  ;Save Cheat Search File
+  pushad
+  call SaveCheatSearchFile
+  popad
+  .csskip2
 
   mov edi,[vidbuffer]
   mov ecx,288*120

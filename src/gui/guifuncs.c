@@ -33,6 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../zpath.h"
 #include "../md.h"
 #include "../cfg.h"
+#include "../asm_call.h"
 
 extern unsigned char ComboHeader[23], ComboBlHeader[23], CombinDataGlob[3300];
 extern unsigned char ShowTimer, savecfgforce;
@@ -478,4 +479,96 @@ unsigned int horizon[][4][8] = {{{0x6F746E41, 0x57656E69, 0x61772047, 0x65682073
 unsigned int *horizon_get(unsigned int distance)
 {
   return(horizon[distance%21][0]);
+}
+
+extern unsigned int GUICBHold, NumCheats, statefileloc;
+extern unsigned char cheatdata[28*255+56];
+extern char fnamest[512];
+
+void CheatCodeSave()
+{
+  FILE *fp = 0;
+  unsigned int size = 0;
+  char FileExt[2];
+
+  GUICBHold=0;
+
+  if (NumCheats)
+  {
+    cheatdata[6]=254;
+    cheatdata[7]=252;
+
+    memcpy(FileExt, &fnamest[statefileloc-2], 3);
+    memcpy(&fnamest[statefileloc-2], "cht", 3);
+
+    if ((fp = fopen_dir(ZSramPath,fnamest+1,"wb")))
+    {
+      size=(NumCheats<<4)+3*(NumCheats<<2);
+      fwrite(cheatdata, 1, size, fp);
+      fclose(fp);
+    }
+
+    memcpy(&fnamest[statefileloc-2], FileExt, 3);
+
+  }
+}
+
+unsigned int cheat_file_size;
+extern unsigned char CheatOn;
+void DisableCheatsOnLoad(), EnableCheatsOnLoad(), ConvertCheatFileFormat();
+extern unsigned int GUIcurrentcheatcursloc;
+
+void CheatCodeLoad()
+{
+  FILE *fp = 0;
+  char FileExt[2];
+
+  GUICBHold = 0;
+
+  memcpy(FileExt, &fnamest[statefileloc-2], 3);
+  memcpy(&fnamest[statefileloc-2], "cht", 3);
+
+  if ((fp = fopen_dir(ZSramPath,fnamest+1,"rb")))
+  {
+    asm_call(DisableCheatsOnLoad);
+
+    cheat_file_size = fread(cheatdata, 1, 255*28, fp);
+    fclose(fp);
+
+    if(cheatdata[6]==254 && cheatdata[7]==252)
+      NumCheats = cheat_file_size / 28;
+    else asm_call(ConvertCheatFileFormat);
+
+    asm_call(EnableCheatsOnLoad);
+
+    if (NumCheats <= GUIcurrentcheatcursloc) GUIcurrentcheatcursloc=NumCheats-1;
+    if (NumCheats) CheatOn=1;
+    else GUIcurrentcheatcursloc=CheatOn=0;
+  }
+
+  memcpy(&fnamest[statefileloc-2], FileExt, 3);
+}
+
+extern unsigned char *vidbuffer;
+
+void SaveCheatSearchFile()
+{
+  FILE *fp = 0;
+
+  if ((fp = fopen_dir(ZCfgPath,"tmpchtsr.___","wb")))
+  {
+    fwrite(vidbuffer+129600, 1, 65536*2+32768, fp);
+    fclose(fp);
+  }
+}
+
+void LoadCheatSearchFile()
+{
+  FILE *fp = 0;
+
+  if ((fp = fopen_dir(ZCfgPath,"tmpchtsr.___","rb")))
+  {
+    fread(vidbuffer+129600, 1, 65536*2+32768, fp);
+    fclose(fp);
+  }
 }
