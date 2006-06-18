@@ -290,6 +290,17 @@ bool init_paths(char *launch_command)
         cfgpath_ensure();
 
         GUIRestoreVars();
+
+        if (*LoadDir)
+        {
+          strcpy(ZRomPath, LoadDir);
+        }
+        else
+        {
+          strcpy(ZRomPath, ZStartPath);
+        }
+        strcatslash(ZRomPath);
+
         init_save_paths();
 
         atexit(deinit_paths);
@@ -315,16 +326,6 @@ void init_save_paths()
     #endif
   }
   strcatslash(ZSramPath);
-
-  if (*LoadDir)
-  {
-    strcpy(ZRomPath, LoadDir);
-  }
-  else
-  {
-    strcpy(ZRomPath, ZStartPath);
-  }
-  strcatslash(ZRomPath);
 
   if (*SnapPath)
   {

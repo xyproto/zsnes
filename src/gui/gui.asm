@@ -134,7 +134,7 @@ EXTSYM KeyInsrtChap,KeyPrevChap,KeyNextChap,KeyDisplayFPS,KeyNewGfxSwt
 EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
 EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
-EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,ZCartName
+EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,ZCartName,init_save_paths
 EXTSYM mousewrap,GUIClick,PrevFSMode,PrevWinMode,SaveSramData
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,OldGfxMode2,SmallMsgText
 EXTSYM AutoPatch,RomInfo,AllowUDLR,Triplebufen,GrayscaleMode

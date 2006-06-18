@@ -1544,6 +1544,9 @@ GUIPathKeys:
   cmp dh,13    ;Enter
   jne .notenter
   mov dword[GUIInputBox],0
+  pushad
+  call init_save_paths
+  popad
   ret
 .notenter
 
