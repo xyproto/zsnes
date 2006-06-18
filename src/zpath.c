@@ -58,6 +58,7 @@ char ZCfgFile[] = "zsnesl.cfg";
 #endif
 
 char *ZStartPath = 0, *ZCfgPath = 0, *ZSramPath = 0, *ZRomPath = 0;
+char *ZSnapPath = 0, *ZSpcPath = 0;
 char *ZCartName = 0;
 
 static bool ZStartAlloc = false, ZCfgAlloc = false, ZSramAlloc = false, ZRomAlloc = false;
@@ -289,26 +290,7 @@ bool init_paths(char *launch_command)
         cfgpath_ensure();
 
         GUIRestoreVars();
-
-        if (*SRAMDir)
-        {
-          ZSramPath = SRAMDir;
-        }
-        else
-        {
-          #ifdef __UNIXSDL__
-          ZSramPath = ZCfgPath;
-          #else
-          ZSramPath = ZRomPath;
-          #endif
-        }
-        strcatslash(ZSramPath);
-
-        if (*LoadDir)
-        {
-          strcpy(ZRomPath, LoadDir);
-        }
-        strcatslash(ZRomPath);
+        init_save_paths();
 
         atexit(deinit_paths);
         return(true);
@@ -316,6 +298,53 @@ bool init_paths(char *launch_command)
     }
   }
   return(false);
+}
+
+void init_save_paths()
+{
+  if (*SRAMDir)
+  {
+    ZSramPath = SRAMDir;
+  }
+  else
+  {
+    #ifdef __UNIXSDL__
+    ZSramPath = ZCfgPath;
+    #else
+    ZSramPath = ZRomPath;
+    #endif
+  }
+  strcatslash(ZSramPath);
+
+  if (*LoadDir)
+  {
+    strcpy(ZRomPath, LoadDir);
+  }
+  else
+  {
+    strcpy(ZRomPath, ZStartPath);
+  }
+  strcatslash(ZRomPath);
+
+  if (*SnapPath)
+  {
+    ZSnapPath = SnapPath;
+  }
+  else
+  {
+    ZSnapPath = ZSramPath;
+  }
+  strcatslash(ZSnapPath);
+
+  if (*SPCPath)
+  {
+    ZSpcPath = SPCPath;
+  }
+  else
+  {
+    ZSpcPath = ZSramPath;
+  }
+  strcatslash(ZSpcPath);
 }
 
 bool init_rom_path(char *path)

@@ -51,9 +51,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 extern char ZCfgFile[];
 extern char *ZStartPath, *ZCfgPath, *ZSramPath, *ZRomPath;
+extern char *ZSnapPath, *ZSpcPath;
 extern char *ZCartName;
 
 bool init_paths(char *launch_command);
+void init_save_paths();
 bool init_rom_path(char *path);
 
 char *strdupcat(const char *str1, const char *str2);
