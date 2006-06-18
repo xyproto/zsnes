@@ -1366,7 +1366,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                   {
                     ostringstream memset_line;
                     memset_line << "memset(" << varname << ", " << init_value_num << ", " << array;
-  
+
                     if (var_type_is_short(var_type))
                     {
                       memset_line << short_scale;
@@ -1375,7 +1375,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                     {
                       memset_line << int_scale;
                     }
-  
+
                     memset_line << ");";
                     memsets.push_back(memset_line.str());
                   }
