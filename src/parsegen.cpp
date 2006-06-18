@@ -282,7 +282,6 @@ ssize_t enhanced_atoi(const char *str)
                << "}\n\n";
     out_stream.close();
 
-    cout << COMPILE_EXE(ename, cname) << endl;
     system(COMPILE_EXE(ename, cname).c_str());
     remove(cname.c_str());
 
