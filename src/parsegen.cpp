@@ -1068,7 +1068,7 @@ void output_read_var(ostream& c_stream)
            << "}\n";
 }
 
-void handle_directive(char *instruction, char *label)
+void handle_directive(const char *instruction, const char *label)
 {
   if (!strcasecmp(instruction, "define"))
   {
@@ -1218,6 +1218,24 @@ void output_parser_comment(ostream& c_stream, const char *comment)
   c_stream << "\n";
 }
 
+void output_header_conditional(ostream& cheader_stream, const char *instruction, const char *label)
+{
+  if ((!strcasecmp(instruction, "elifdef") || !strcasecmp(instruction, "elseifdef")) && label)
+  {
+    cheader_stream << "#elif defined(" << label << ")\n";
+  }
+  else
+  {
+    cheader_stream << "#" << instruction;
+    if (label)
+    {
+      cheader_stream << " " << label;
+    }
+    cheader_stream << "\n";
+  }
+}
+
+
 #define CONFIG_COMMENT (config_comment ? config_comment : "")
 
 void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_stream)
@@ -1267,12 +1285,13 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
     {
       if ((*token == '#') || (*token == '%'))
       {
-        handle_directive(token+1, get_token(0, " "));
-        continue;
-      }
+        char *next_token = get_token(0, " ");
+        handle_directive(token+1, next_token);
 
-      if (!ifs.all_true())
-      {
+        if (cheader_stream)
+        {
+          output_header_conditional(cheader_stream, token+1, next_token);
+        }
         continue;
       }
 
@@ -1308,19 +1327,22 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
 
               var_init << "char " << varname << "[" << array << "];";
 
-              ostringstream memset_line;
+              if (ifs.all_true())
+              {
+                ostringstream memset_line;
 
-              if (initial_value.length()-2 < array)
-              {
-                memset_line << "strcpy(" << varname << ", " << initial_value << ");";
+                if (initial_value.length()-2 < array)
+                {
+                  memset_line << "strcpy(" << varname << ", " << initial_value << ");";
+                }
+                else
+                {
+                  memset_line << "strncpy(" << varname << ", " << initial_value << ", " << (array-1) << "); "
+                              << varname << "[" << array << "] = 0;";
+                }
+                memsets.push_back(memset_line.str());
+                variable::config_data.add_var_quoted(varname, CONFIG_COMMENT);
               }
-              else
-              {
-                memset_line << "strncpy(" << varname << ", " << initial_value << ", " << (array-1) << "); "
-                            << varname << "[" << array << "] = 0;";
-              }
-              memsets.push_back(memset_line.str());
-              variable::config_data.add_var_quoted(varname, CONFIG_COMMENT);
             }
             else
             {
@@ -1338,20 +1360,23 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                 {
                   var_init << "[" << array << "]";
 
-                  ostringstream memset_line;
-                  memset_line << "memset(" << varname << ", " << init_value_num << ", " << array;
-
-                  if (var_type_is_short(var_type))
+                  if (ifs.all_true())
                   {
-                    memset_line << short_scale;
+                    ostringstream memset_line;
+                    memset_line << "memset(" << varname << ", " << init_value_num << ", " << array;
+  
+                    if (var_type_is_short(var_type))
+                    {
+                      memset_line << short_scale;
+                    }
+                    else if (var_type_is_int(var_type))
+                    {
+                      memset_line << int_scale;
+                    }
+  
+                    memset_line << ");";
+                    memsets.push_back(memset_line.str());
                   }
-                  else if (var_type_is_int(var_type))
-                  {
-                    memset_line << int_scale;
-                  }
-
-                  memset_line << ");";
-                  memsets.push_back(memset_line.str());
                 }
                 else
                 {
@@ -1363,13 +1388,16 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                   var_init << init_value_num << "%d}";
                 }
 
-                if (is_array)
+                if (ifs.all_true())
                 {
-                  variable::config_data.add_var_mult(varname, var_type, array, CONFIG_COMMENT);
-                }
-                else if (is_packed)
-                {
-                  variable::config_data.add_var_packed(varname, array, CONFIG_COMMENT);
+                  if (is_array)
+                  {
+                    variable::config_data.add_var_mult(varname, var_type, array, CONFIG_COMMENT);
+                  }
+                  else if (is_packed)
+                  {
+                    variable::config_data.add_var_packed(varname, array, CONFIG_COMMENT);
+                  }
                 }
               }
               else
@@ -1385,19 +1413,28 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                   } while((token = get_token(0, " ,\n")));
                   var_init << "}";
 
-                  variable::config_data.add_var_mult(varname, var_type, array, CONFIG_COMMENT);
+                  if (ifs.all_true())
+                  {
+                    variable::config_data.add_var_mult(varname, var_type, array, CONFIG_COMMENT);
+                  }
                 }
                 else
                 {
                   var_init << " = " << init_value_num;
 
-                  variable::config_data.add_var_single(varname, var_type, CONFIG_COMMENT);
+                  if (ifs.all_true())
+                  {
+                    variable::config_data.add_var_single(varname, var_type, CONFIG_COMMENT);
+                  }
                 }
               }
               var_init << ";";
             }
 
-            c_stream << var_init.str();
+            if (ifs.all_true())
+            {
+              c_stream << var_init.str();
+            }
 
             if (cheader_stream)
             {
@@ -1428,7 +1465,10 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
       current_location.error("Could not get variable name");
     }
 
-    output_parser_comment(c_stream, parser_comment);
+    if (ifs.all_true())
+    {
+      output_parser_comment(c_stream, parser_comment);
+    }
   }
 
   output_init_var(c_stream);
