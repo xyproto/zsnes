@@ -41,7 +41,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 int Png_Dump(const char *filename, unsigned short width, unsigned short height, unsigned char *image_data, bool usebgr)
 {
-  FILE *fp = fopen(filename, "wb");
+  FILE *fp = fopen_dir(ZSnapPath, filename, "wb");
   if (fp)
   {
     //Try to create png write struct, fail if we cannot.
@@ -134,7 +134,7 @@ static char *generate_filename()
     for (i = 0; i < 100000; i++)
     {
       sprintf(p, "%05d.png", i);
-      if (access(filename, F_OK))
+      if (access_dir(ZSnapPath, filename, F_OK))
       {
         break;
       }
