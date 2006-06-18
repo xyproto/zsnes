@@ -79,8 +79,8 @@ EXTSYM UpdateDevices,memtabler8,memtablew8,writeon,JoyRead,SetInputDevice,delay
 EXTSYM FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,pl12s34,resolutn,InitDrive,InitDir
 EXTSYM Makemode7Table,vidbufferofsb,wramdata,bgfixer,videotroub
 EXTSYM CheatCodeSave,CheatCodeLoad,LoadCheatSearchFile,SaveCheatSearchFile
-EXTSYM File_Seek,File_Seek_End,Get_Date,Check_Key,Get_Key,Change_Drive
-EXTSYM Change_Single_Dir,Change_Dir,Get_Dir,Get_First_Entry,Get_Next_Entry
+EXTSYM Get_Date,Check_Key,Get_Key
+EXTSYM Change_Drive,Change_Single_Dir,Change_Dir,Get_Dir
 EXTSYM Set_DTA_Address,curexecstate,TripBufAvail,nmiprevaddrl,nmiprevaddrh
 EXTSYM nmirept,nmiprevline,nmistatus,spcnumread,NextLineCache,ResetTripleBuf
 EXTSYM GUINGVID,ScanCodeListing,AdjustFrequency,GUISaveVars,Init_Mouse

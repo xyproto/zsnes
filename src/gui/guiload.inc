@@ -17,7 +17,8 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-EXTSYM Open_File,Read_File,Close_File
+EXTSYM Open_File,Read_File,Close_File,File_Seek,File_Seek_End,Get_First_Entry
+EXTSYM Get_Next_Entry
 
 ; GUI File (Game) Loader
 
