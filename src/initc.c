@@ -1643,9 +1643,25 @@ extern char SPL4Path[1024];
 
 extern unsigned int SPC7110Entries, SPC7110TempPosition, SPC7110TempLength, SPCDecmPtr;
 
+static char *SPC7110path;
+static char SPC7110fname[8+1+6+4+1]; //dir / 12345 .bin
 char *SPC7110filep;
-char SPC7110nfname[1024+12]; //12 is / plus 6.3
 unsigned int SPC7110IndexSize;
+
+static void SPC7PathSetup(char *PathVar, const char *Default)
+{
+  if (*PathVar)
+  {
+    SPC7110path = PathVar;
+    *SPC7110fname = 0;
+  }
+  else
+  {
+    SPC7110path = ZSramPath;
+    strcpy(SPC7110fname, Default);
+    strcatslash(SPC7110fname);
+  }
+}
 
 void SPC7PackIndexLoad()
 {
@@ -1656,43 +1672,38 @@ void SPC7PackIndexLoad()
   //Get correct path for the ROM we just loaded
   if (!strncmp(ROM+infoloc, "HU TENGAI MAKYO ZERO ", 21))
   {
-    strcpy(SPC7110nfname, *FEOEZPath ? FEOEZPath : "FEOEZSP7");
+    SPC7PathSetup(FEOEZPath, "FEOEZSP7");
   }
   else if (!strncmp(ROM+infoloc, "JUMP TENGAIMAKYO ZERO", 21))
   {
-    strcpy(SPC7110nfname, *SJNSPath ? SJNSPath : "SJNS-SP7");
+    SPC7PathSetup(SJNSPath, "SJNS-SP7");
   }
   else if (!strncmp(ROM+infoloc, "MOMOTETSU HAPPY      ", 21))
   {
-    strcpy(SPC7110nfname, *MDHPath ? MDHPath : "MDH-SP7");
+    SPC7PathSetup(MDHPath, "MDH-SP7");
   }
   else if (!strncmp(ROM+infoloc, "SUPER POWER LEAG 4   ", 21))
   {
-    strcpy(SPC7110nfname, *SPL4Path ? SPL4Path : "SPL4-SP7");
-  }
-
-  //Add a slash if needed
-  if (SPC7110nfname[strlen(SPC7110nfname)-1] != *DIR_SLASH)
-  {
-    strcat(SPC7110nfname, DIR_SLASH);
+    SPC7PathSetup(SPL4Path, "SPL4-SP7");
   }
 
   //Set the pointer to after the slash - needed for the case converters
-  SPC7110filep = SPC7110nfname+strlen(SPC7110nfname);
+  SPC7110filep = SPC7110fname+strlen(SPC7110fname);
 
   //Index file;
-  strcat(SPC7110nfname, "index.bin");
+  strcat(SPC7110fname, "index.bin");
 
   //Load the index
-  fp = fopen(SPC7110nfname, "rb");
-  if (!fp) { return; }
-  SPC7110IndexSize = fread(ROM+0x580000, 1, 12*32768, fp);
-  fclose(fp);
+  fp = fopen_dir(SPC7110path, SPC7110fname, "rb");
+  if (fp)
+  {
+    SPC7110IndexSize = fread(ROM+0x580000, 1, 12*32768, fp);
+    fclose(fp);
 
+    //Get file pointer ready for individual pack files
+    strcpy(SPC7110filep, "123456.bin"); //Extension Lower Case
+  }
   SPC7110Entries = 0;
-
-  //Get file pointer ready for individual pack files
-  strcpy(SPC7110filep, "123456.bin"); //Extension Lower Case
 }
 
 void SPC7_Convert_Upper()
@@ -1717,16 +1728,16 @@ void SPC7_Convert_Lower()
 
 void SPC7_Data_Load()
 {
-  FILE *fp = fopen(SPC7110nfname, "rb");
+  FILE *fp = fopen_dir(SPC7110path, SPC7110fname, "rb");
   if (!fp)
   {
     SPC7_Convert_Upper();
-    fp = fopen(SPC7110nfname, "rb");
+    fp = fopen_dir(SPC7110path, SPC7110fname, "rb");
   }
   if (!fp)
   {
     SPC7_Convert_Lower();
-    fp = fopen(SPC7110nfname, "rb");
+    fp = fopen_dir(SPC7110path, SPC7110fname, "rb");
   }
 
   if (fp)
