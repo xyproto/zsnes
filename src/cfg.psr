@@ -21,11 +21,6 @@ per2exec dd 100
 SRAMSave5Sec db 0
 
 @
-@ Use older graphics engine #2 (0 = NO, 1 = Yes)
-@ Enable this to see if it helps with rendering problems
-OldGfxMode2 db 0
-
-@
 @  Disable Hacks (0 = NO, 1 = Yes)
 @  Set this to 1 if you want to disable game specific hacks
 HacksDisable db 0
@@ -372,6 +367,20 @@ CustomResY dd 480
 newengen db 1
 
 @
+@ Use older graphics engine #2 (0 = NO, 1 = Yes)
+@ Enable this to see if it helps with rendering problems
+OldGfxMode2 db 0
+
+@
+%ifdef __MSDOS__
+@ Force Black Background (0 = No, 1 = YES)
+@ This is necessary to get a black background for 8-bit modes
+%else
+@ DOS port only, don't edit
+%endif
+Palette0 db 1
+
+@
 @ Scanlines (0 = DISABLE, 1 = Full, 2 = 25%, 3 = 50%) - simulate TV scanlines
 #ifdef __MSDOS__
 @ 256x256 or 640x480 8bit modes only (25% and 50% in 640x480 16bit mode only)
@@ -454,7 +463,6 @@ BilinearFilter db 0
 @ These are the various Kreed filters. They are blur filters but do not exhibit
 @ the same level of blurring than interpolation/bilinear.
 @ This is disabled when other filters are used.
-@
 En2xSaI db 0
 
 @
@@ -529,11 +537,12 @@ RevStereo db 0
 #ifdef __MSDOS__
 @ Force 8-bit Sound (0 = NO, 1 = Yes)
 @ Enable Force 8-bit Sound if your sound card is producing nothing or static.
-Force8b db 0
 #else
 @ DOS-only option, don't edit
 #endif
-@
+Force8b db 0
+
+@
 #ifdef __MSDOS__
 @ Display ZSNES sound detection info (0 = NO, 1 = Yes)
 #else
@@ -547,6 +556,7 @@ DisplayS db 0
 @ It is not a good idea to disable this option.
 SPCDisable db 0
 
+@
 @ Disable echo (0 = NO, 1 = Yes)
 @ Disables the echo effect in the sound.
 @ It is not a good idea to disable this option.

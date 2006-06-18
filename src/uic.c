@@ -107,7 +107,6 @@ unsigned char fastmemptr    = 0;
 unsigned char ForcePal      = 0;    // 1 = NTSC, 2 = PAL
 unsigned char finterleave   = 0;
 unsigned char DSPDisable    = 0;	// Disable DSP emulation
-unsigned char Palette0      = 0;
 unsigned char *spc7110romptr;
 unsigned char MusicVol      = 0;
 unsigned char MMXextSupport = 0;

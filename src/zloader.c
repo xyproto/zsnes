@@ -72,7 +72,7 @@ static void display_help()
   put_line("   Eg : zsnes -s -r 2 game.sfc");
   put_line("");
 #ifdef __MSDOS__
-  put_line("  -0      Disable color 0 modification in 8-bit modes");
+  put_line("  -0      Force black blackground in 8-bit modes");
 #endif
   put_line("  -1 #/-2 #   Select Player 1/2 Input :");
 #ifdef __MSDOS__
