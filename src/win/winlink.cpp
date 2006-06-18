@@ -113,8 +113,6 @@ HANDLE debugWindow = 0;
 extern "C"
 {
 HINSTANCE hInst;
-unsigned char KitchenSync = 0;
-unsigned char Force60hz = 0;
 }
 
 LPDIRECTSOUND8          lpDirectSound = NULL;
@@ -341,9 +339,10 @@ void DDrawError(){
 
 extern "C" BYTE vsyncon;
 extern "C" BYTE curblank;
-extern "C" BYTE KitchenSync;
 extern "C" BYTE TripleBufferWin;
 extern "C" BYTE PauseFocusChange;
+extern "C" BYTE KitchenSync;
+extern "C" BYTE Force60hz;
 
 void DrawScreen()
 {

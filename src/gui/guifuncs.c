@@ -211,7 +211,6 @@ void GUIRestoreVars()
   CheckValueBounds(&RevStereo, 0, 1, 0, UB);
 #ifdef __MSDOS__
   CheckValueBounds(&Force8b, 0, 1, 0, UB);
-  CheckValueBounds(&RaisePitch, 0, 1, 0, UB);
 #endif
   CheckValueBounds(&SPCDisable, 0, 1, 0, UB);
   CheckValueBounds(&EchoDis, 0, 1, 0, UB);

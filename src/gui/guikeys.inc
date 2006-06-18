@@ -1384,9 +1384,6 @@ GUISoundKeys:
   GUIKeyCheckbox Force8b,'F'
 %endif
   GUIKeyCheckbox StereoSound,'S'
-%ifdef __MSDOS__
-  GUIKeyCheckbox RaisePitch,'A'
-%endif
   GUIKeyCheckbox PrimaryBuffer,'P'
   GUIKeyCheckbox RevStereo,'V'
   GUIKeyCheckbox Surround,'U'

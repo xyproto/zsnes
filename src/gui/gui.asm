@@ -139,7 +139,7 @@ EXTSYM mousewrap,GUIClick,PrevFSMode,PrevWinMode,SaveSramData
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,OldGfxMode2,SmallMsgText
 EXTSYM AutoPatch,RomInfo,AllowUDLR,Triplebufen,GrayscaleMode
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,TripleBufferWin
-EXTSYM BilinearFilter,lastcursres,SidewinderFix,RaisePitch
+EXTSYM BilinearFilter,lastcursres,SidewinderFix
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SoundBufEn,SPCDisable
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,FastFwdToggle
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma

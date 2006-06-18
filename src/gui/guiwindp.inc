@@ -2022,9 +2022,6 @@ DisplayGUISound:                     ; Sound Related Options
   GUIDisplayCheckboxu 6,102,21,Force8b,GUISoundTextA4,1
 %endif
   GUIDisplayCheckboxu 6,11,30,StereoSound,GUISoundTextA2,0
-%ifdef __MSDOS__
-  GUIDisplayCheckboxu 6,11,39,RaisePitch,GUISoundTextA3,1
-%endif
   GUIDisplayTextY 6,6,53,GUISoundTextB
   GUIDisplayTextY 6,6,76,GUISoundTextC
 %ifdef __WIN32__

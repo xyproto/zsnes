@@ -21,9 +21,14 @@ per2exec dd 100
 SRAMSave5Sec db 0
 
 @
-@ Use old implementation for snes mode 2 (0 = NO, 1 = Yes)
-@ Enable if you experience graphic anomolies under Mode2
+@ Use older graphics engine #2 (0 = NO, 1 = Yes)
+@ Enable this to see if it helps with rendering problems
 OldGfxMode2 db 0
+
+@
+@  Disable Hacks (0 = NO, 1 = Yes)
+@  Set this to 1 if you want to disable game specific hacks
+HacksDisable db 0
 
 @
 @  ----
@@ -357,6 +362,7 @@ PrevFSMode db 0
 
 @
 @ Custom resolution X and Y for custom video modes [256x224..2048x1536]
+@ Variables are only used for Windows or OpenGL
 CustomResX dd 640
 CustomResY dd 480
 
@@ -373,18 +379,13 @@ newengen db 1
 scanlines db 0
 
 @
-#ifdef __MSDOS__
 @ Video interpolation (0 = OFF, 1 = On)
 @ Blends the neighboring pixels on the screen to create a blur effect,
 @ eliminating pixelation due to hardware stretching.
 @ This is disabled when other filters are used.
+#ifdef __MSDOS__
 @ Available in most VESA2 16-bit modes
 @ Note: this option controls Eagle filter in 640x480 8bit mode
-#else
-@ Video interpolation (0 = OFF, 1 = On)
-@ Blends the neighboring pixels on the screen to create a blur effect,
-@ eliminating pixelation due to hardware stretching.
-@ This is disabled when other filters are used.
 #endif
 antienab db 0
 
@@ -404,6 +405,25 @@ vsyncon db 0
 @ Win port only, don't edit
 %endif
 TripleBufferWin db 0
+
+@
+%ifdef __WIN32__
+@ Force 60Hz (0 = NO, 1 = Yes)
+@ Enable this if you are experiencing visual tearing (not the same as vsync)
+%else
+@ Win port only, don't edit
+%endif
+Force60hz db 0
+
+@
+%ifdef __WIN32__
+@ Enable KitchenSync (0 = NO, 1 = Yes)
+@ You can enable this if you are using refresh rates > 100Hz(PAL), 120Hz(NTSC)
+@ Otherwise, it probably won't work for you
+%else
+@ Win port only, don't edit
+%endif
+KitchenSync db 0
 
 @
 %ifdef __MSDOS__
@@ -507,14 +527,19 @@ RevStereo db 0
 
 @
 #ifdef __MSDOS__
-@ Force 8-bit Sound, Raise Pitch (0 = NO, 1 = Yes)
+@ Force 8-bit Sound (0 = NO, 1 = Yes)
 @ Enable Force 8-bit Sound if your sound card is producing nothing or static.
-@ Enable Raise Pitch to raise the pitch level.
 Force8b db 0
 #else
 @ DOS-only option, don't edit
 #endif
-RaisePitch db 0
+@
+#ifdef __MSDOS__
+@ Display ZSNES sound detection info (0 = NO, 1 = Yes)
+#else
+@ DOS-only option, don't edit
+#endif
+DisplayS db 0
 
 @
 @ Disable SPC emulation (0 = NO, 1 = Yes)
@@ -1048,3 +1073,4 @@ KeyDisplayBatt dd 0
 
 @
 @ - EOF -
+

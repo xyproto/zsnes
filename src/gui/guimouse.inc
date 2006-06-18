@@ -2431,9 +2431,6 @@ DisplayGUISoundClick:
   GUIClickCButton 102,21,byte[Force8b]
 %endif
   GUIClickCButton 11,30,byte[StereoSound]
-%ifdef __MSDOS__
-  GUIClickCButton 11,39,byte[RaisePitch]
-%endif
   GUIClickCButton 11,111,byte[RevStereo]
   GUIClickCButton 11,121,byte[Surround]
   GUIClickCButton 11,131,byte[SoundBufEn]

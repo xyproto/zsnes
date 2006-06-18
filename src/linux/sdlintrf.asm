@@ -29,7 +29,7 @@ EXTSYM ZFileTellHandle,ZFileTell,PrevFSMode,sem_sleep
 EXTSYM GetTime,GetDate,GUIkeydelay2,ZFileCHDir,CHPath
 EXTSYM ZFileGetDir,DirName,DTALoc,DTALocPos,ZFileFindATTRIB
 EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,Start60HZ
-EXTSYM pressed,RaisePitch,AdjustFrequency,vidbufferofsb,vidbuffer,clearwin
+EXTSYM pressed,AdjustFrequency,vidbufferofsb,vidbuffer,clearwin
 EXTSYM Stop60HZ,initwinvideo,vesa2_rpos,vesa2_gpos,vesa2_bpos,vesa2_rposng
 EXTSYM vesa2_gposng,vesa2_bposng,vesa2_usbit,vesa2_clbit,vesa2_clbitng
 EXTSYM vesa2_clbitng2,vesa2_clbitng3,vesa2red10,res640,res480,cbitmode,cvidmode
@@ -485,7 +485,6 @@ NEWSYM InitPreGame   ; Executes before starting/continuing a game
     xor al,al
 .nochangemode
 
-    mov byte[RaisePitch],1
     pushad
     call AdjustFrequency
     popad

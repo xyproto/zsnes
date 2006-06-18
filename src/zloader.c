@@ -106,7 +106,7 @@ static void display_help()
   put_line("  -mc     Exit ZSNES when closing a movie (use with -zm)");
   put_line("  -md     Dump raw video (use with -zm)");
   put_line("  -n #    Enable scanlines (when available)");
-  put_line("             1 = Full, 2 = 25%, 3 = 50%");
+  put_line("             0 = None, 1 = Full, 2 = 25%, 3 = 50%");
   put_line("  -o      Disable MMX support");
   put_line("  -p #    Percentage of instructions to execute [50..150]");
   put_line("  -r #    Set sound sampling rate:");
@@ -438,30 +438,57 @@ static void handle_params(int argc, char *argv[])
 
           case '1': //Player 1 Input
             i++;
+
+            #ifdef __MSDOS__
             if ((pl1contrl = zatoi(argv[i])) > 6)
             {
-              puts("Player Input must be a value from 0 to 6!");
+              puts("Player 1 Input must be a value from 0 to 6!");
               exit(1);
             }
+            #else
+            if ((pl1contrl = zatoi(argv[i])) > 1)
+            {
+              puts("Player 1 Input must be a value from 0 to 1!");
+              exit(1);
+            }
+            #endif
+
             ConvertJoyMap1();
             break;
 
           case '2': //Player 2 Input
             i++;
+
+            #ifdef __MSDOS__
             if ((pl2contrl = zatoi(argv[i])) > 6)
             {
-              puts("Player Input must be a value from 0 to 6!");
+              puts("Player 2 Input must be a value from 0 to 6!");
               exit(1);
             }
+            #else
+            if ((pl2contrl = zatoi(argv[i])) > 1)
+            {
+              puts("Player 2 Input must be a value from 0 to 1!");
+              exit(1);
+            }
+            #endif
+
             ConvertJoyMap2();
             break;
 
-          #ifdef __WIN32__
-          case '3': //Enable triple buffering
+          #ifdef __MSDOS__
+          case '3': //Enable triple buffering for DOS
             vsyncon = 0;
             Triplebufen = 1;
             break;
+          #elif __WIN32__
+          case '3': //Enable triple buffering for Windows
+            vsyncon = 0;
+            TripleBufferWin = 1;
+            break;
+          #endif
 
+          #ifdef __WIN32__
           case '6': //Force 60Hz
             Force60hz = 1;
             break;
@@ -530,7 +557,7 @@ static void handle_params(int argc, char *argv[])
             i++;
             if ((scanlines = zatoi(argv[i])) > 3)
             {
-              puts("Scanlines must be a value 1 to 3!");
+              puts("Scanlines must be a value 0 to 3!");
               exit(1);
             }
             break;
@@ -580,10 +607,17 @@ static void handle_params(int argc, char *argv[])
             }
             break;
 
-          case 'w': //Enable vsync
+          #ifndef __WIN32__
+          case 'w': //Enable vsync for non-Windows
             Triplebufen = 0;
             vsyncon = 1;
             break;
+          #else
+          case 'w': //Enable vsync for Windows
+            TripleBufferWin = 0;
+            vsyncon = 1;
+            break;
+          #endif
 
           case 'y': //Enable anti-aliasing
             antienab = 1;
@@ -624,12 +658,12 @@ static void handle_params(int argc, char *argv[])
         }
         #endif
 
-        else if (tolower(argv[i][1]) == 'm' && argv[i][2] == 'c') //Close ZSNES when ZMV closes
+        else if (tolower(argv[i][1]) == 'm' && tolower(argv[i][2]) == 'c') //Close ZSNES when ZMV closes
         {
           ZMVZClose = 1;
         }
 
-        else if (tolower(argv[i][1]) == 'm' && argv[i][2] == 'd') //Dump raw vid with ZMV
+        else if (tolower(argv[i][1]) == 'm' && tolower(argv[i][2]) == 'd') //Dump raw vid with ZMV
         {
           ZMVRawDump = 1;
         }
@@ -651,7 +685,7 @@ static void handle_params(int argc, char *argv[])
           V8Mode = 1;
         }
 
-        else if (tolower(argv[i][1]) == 'z' && argv[i][2] == 's') //Autoload save state
+        else if (tolower(argv[i][1]) == 'z' && tolower(argv[i][2]) == 's') //Autoload save state
         {
           i++;
           if ((autoloadstate = zatoi(argv[i])+1) > 100)
@@ -661,7 +695,7 @@ static void handle_params(int argc, char *argv[])
           }
         }
 
-        else if (tolower(argv[i][1]) == 'z' && argv[i][2] == 'm') //Autoload movie
+        else if (tolower(argv[i][1]) == 'z' && tolower(argv[i][2]) == 'm') //Autoload movie
         {
           i++;
           if ((autoloadmovie = zatoi(argv[i])+1) > 10)
