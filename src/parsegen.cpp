@@ -329,10 +329,39 @@ Structures used to store config data
 
 */
 
+template <typename T>
+class nstack
+{
+  public:
+  nstack() {}
+  ~nstack() {}
+
+  void push(T data) { this->data.push_back(data); }
+  bool empty() { return(data.empty()); }
+  T top() { return(data.back()); }
+  void pop() { data.pop_back(); }
+  size_t size() { return(data.size()); }
+
+  bool all_true()
+  {
+    for (typename vector<T>::iterator i = data.begin(); i != data.end(); i++)
+    {
+      if (!*i)
+      {
+        return(false);
+      }
+    }
+    return(true);
+  }
+
+  private:
+  vector<T> data;
+};
+
 string family_name = "cfg";
 
 set<string> defines;
-stack<bool> ifs;
+nstack<bool> ifs;
 
 typedef vector<string> str_array;
 
@@ -1174,7 +1203,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
 
     if (all_spaces(line))
     {
-      if (ifs.empty() || ifs.top())
+      if (ifs.all_true())
       {
         output_parser_comment(c_stream, parser_comment);
       }
@@ -1185,7 +1214,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
 
     if (all_spaces(line) && config_comment)
     {
-      if (ifs.empty() || ifs.top())
+      if (ifs.all_true())
       {
         variable::config_data.add_comment(config_comment);
       }
@@ -1201,7 +1230,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
         continue;
       }
 
-      if (!ifs.empty() && !ifs.top())
+      if (!ifs.all_true())
       {
         continue;
       }
