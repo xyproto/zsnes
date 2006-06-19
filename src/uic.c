@@ -313,7 +313,6 @@ void zstart()
 extern unsigned int statefileloc;
 void GetFilename();
 extern unsigned char firstsaveinc,LatestSave,newestfileloc;
-void SRAMChdir();
 void DetermineNew();
 
 extern time_t newestfiledate;

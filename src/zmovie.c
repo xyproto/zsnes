@@ -2282,7 +2282,6 @@ bool PrevSRAMState;
 extern unsigned char ComboCounter, MovieRecordWinVal, AllocatedRewindStates;
 extern unsigned char SloMo, EMUPause;
 char MovieFrameStr[10];
-void SRAMChdir();
 void ChangetoLOADdir();
 
 /*
