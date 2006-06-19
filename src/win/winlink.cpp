@@ -1871,6 +1871,61 @@ extern void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char*
 extern "C" unsigned int CustomResX;
 extern "C" unsigned int CustomResY;
 
+extern "C" char GUIM7VID[];
+
+void SetHQx()
+{
+	int maxHQ;
+	if(CustomResX/256 < CustomResY/224)
+		maxHQ = CustomResX/256;
+	else
+		maxHQ = CustomResY/224;
+
+	if(maxHQ >= 4)
+	{
+		GUIHQ2X[cvidmode] = 0;
+		GUIHQ3X[cvidmode] = 0;
+		GUIHQ4X[cvidmode] = 1;
+	}
+
+	else if(maxHQ == 3)
+	{
+		GUIHQ2X[cvidmode] = 0;
+		GUIHQ3X[cvidmode] = 1;
+		GUIHQ4X[cvidmode] = 0;
+	}
+
+	else if(maxHQ == 2)
+	{
+		GUIHQ2X[cvidmode] = 1;
+		GUIHQ3X[cvidmode] = 0;
+		GUIHQ4X[cvidmode] = 0;
+	}
+
+	else
+	{
+		GUIHQ2X[cvidmode] = 0;
+		GUIHQ3X[cvidmode] = 0;
+		GUIHQ4X[cvidmode] = 0;
+	}
+}
+
+void SetNTSCFOpt()
+{
+	if(CustomResX >= 640 && CustomResY >= 480)
+		GUINTVID[cvidmode] = 1;
+	else
+		GUINTVID[cvidmode] = 0;
+}
+
+void SetHiresOpt()
+{
+	if(CustomResX >= 512 && CustomResY >= 448)
+		GUIM7VID[cvidmode] = 1;
+	else
+		GUIM7VID[cvidmode] = 0;
+}
+
 void initwinvideo(void)
 {
    WINDOWPLACEMENT wndpl;
@@ -1977,6 +2032,9 @@ void initwinvideo(void)
          break;
       case 37:
       case 38:
+         SetHQx();
+         SetNTSCFOpt();
+         SetHiresOpt();
       case 39:
       case 40:
          WindowWidth=CustomResX;
