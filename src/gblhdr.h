@@ -81,7 +81,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 // opengl stuff
 
 #ifdef __OPENGL__
+#ifndef __MACOSX__
 #include <GL/gl.h>
+#else
+#include <OpenGL/gl.h>
+#endif
 #endif
 
 // os specific stuff
