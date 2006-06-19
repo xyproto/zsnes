@@ -81,8 +81,10 @@ static void display_help()
 #else
   put_line("                0 = None       1 = Keyboard/Gamepad");
 #endif
-#ifdef __WIN32__
+#ifndef __UNIXSDL__
   put_line("  -3      Enable triple buffering (replaces vsync)");
+#endif
+#ifdef __WIN32__
   put_line("  -6      Force 60Hz refresh rate");
 #endif
 #ifdef __MSDOS__
@@ -177,7 +179,9 @@ static void display_help()
   put_line("            18 = 800x600x16B (VESA2)");
 #endif
   put_line("  -v8     Grayscale mode");
+#ifndef __UNIXSDL__
   put_line("  -w      Enable vsync (disables triple buffering)");
+#endif
   put_line("  -y      Enable anti-aliasing (video interpolation)");
   put_line("  -z      Disable stereo sound");
   put_line("  -zm #   Auto load specified movie slot on startup ");
@@ -607,12 +611,12 @@ static void handle_params(int argc, char *argv[])
             }
             break;
 
-          #ifndef __WIN32__
-          case 'w': //Enable vsync for non-Windows
+          #ifdef __MSDOS__
+          case 'w': //Enable vsync for DOS
             Triplebufen = 0;
             vsyncon = 1;
             break;
-          #else
+          #elif __WIN32__
           case 'w': //Enable vsync for Windows
             TripleBufferWin = 0;
             vsyncon = 1;
