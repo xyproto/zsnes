@@ -1422,10 +1422,10 @@ extern "C" BYTE GUIWFVID[];
 extern "C" BYTE GUIDSIZE[];
 extern "C" BYTE GUISMODE[];
 extern "C" BYTE GUIDSMODE[];
+extern "C" BYTE GUINTVID[];
 extern "C" BYTE GUIHQ2X[];
 extern "C" BYTE GUIHQ3X[];
 extern "C" BYTE GUIHQ4X[];
-extern "C" BYTE GUINTVID[];
 
 int InitDirectDraw()
 {
@@ -1871,6 +1871,22 @@ extern void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char*
 extern "C" unsigned int CustomResX;
 extern "C" unsigned int CustomResY;
 
+void SetHQx()
+{
+   int maxHQ;
+   if(CustomResX/256 < CustomResY/224)
+     maxHQ = CustomResX/256;
+   else
+     maxHQ = CustomResY/224;
+
+   if(maxHQ >= 4)
+     GUIHQ4X[cvidmode] = 1;
+   else if(maxHQ == 3)
+     GUIHQ3X[cvidmode] = 1;
+   else if(maxHQ == 2)
+     GUIHQ2X[cvidmode] = 1;
+}
+
 void initwinvideo(void)
 {
    WINDOWPLACEMENT wndpl;
@@ -1977,6 +1993,7 @@ void initwinvideo(void)
          break;
       case 37:
       case 38:
+         SetHQx();
       case 39:
       case 40:
          WindowWidth=CustomResX;
