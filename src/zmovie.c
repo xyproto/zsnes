@@ -2713,7 +2713,7 @@ void MovieRecord()
 
     if (MovieRecordWinVal == 1)
     {
-      remove(fnamest+1);
+      remove_dir(ZSramPath, fnamest+1);
       MovieRecordWinVal = 0;
     }
 
