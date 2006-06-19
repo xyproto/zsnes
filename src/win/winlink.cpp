@@ -1880,11 +1880,32 @@ void SetHQx()
      maxHQ = CustomResY/224;
 
    if(maxHQ >= 4)
+   {
+     GUIHQ2X[cvidmode] = 0;
+     GUIHQ3X[cvidmode] = 0;
      GUIHQ4X[cvidmode] = 1;
+   }
+
    else if(maxHQ == 3)
+   {
+     GUIHQ2X[cvidmode] = 0;
      GUIHQ3X[cvidmode] = 1;
+     GUIHQ4X[cvidmode] = 0;
+   }
+
    else if(maxHQ == 2)
+   {
      GUIHQ2X[cvidmode] = 1;
+     GUIHQ3X[cvidmode] = 0;
+     GUIHQ4X[cvidmode] = 0;
+   }
+
+   else
+   {
+     GUIHQ2X[cvidmode] = 0;
+     GUIHQ3X[cvidmode] = 0;
+     GUIHQ4X[cvidmode] = 0;
+   }
 }
 
 void initwinvideo(void)
