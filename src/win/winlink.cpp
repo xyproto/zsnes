@@ -113,6 +113,8 @@ HANDLE debugWindow = 0;
 extern "C"
 {
 HINSTANCE hInst;
+unsigned char KitchenSync = 0;
+unsigned char Force60hz = 0;
 }
 
 LPDIRECTSOUND8          lpDirectSound = NULL;
@@ -339,10 +341,9 @@ void DDrawError(){
 
 extern "C" BYTE vsyncon;
 extern "C" BYTE curblank;
+extern "C" BYTE KitchenSync;
 extern "C" BYTE TripleBufferWin;
 extern "C" BYTE PauseFocusChange;
-extern "C" BYTE KitchenSync;
-extern "C" BYTE Force60hz;
 
 void DrawScreen()
 {
@@ -1422,10 +1423,10 @@ extern "C" BYTE GUIWFVID[];
 extern "C" BYTE GUIDSIZE[];
 extern "C" BYTE GUISMODE[];
 extern "C" BYTE GUIDSMODE[];
-extern "C" BYTE GUINTVID[];
 extern "C" BYTE GUIHQ2X[];
 extern "C" BYTE GUIHQ3X[];
 extern "C" BYTE GUIHQ4X[];
+extern "C" BYTE GUINTVID[];
 
 int InitDirectDraw()
 {
@@ -1871,43 +1872,6 @@ extern void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char*
 extern "C" unsigned int CustomResX;
 extern "C" unsigned int CustomResY;
 
-void SetHQx()
-{
-   int maxHQ;
-   if(CustomResX/256 < CustomResY/224)
-     maxHQ = CustomResX/256;
-   else
-     maxHQ = CustomResY/224;
-
-   if(maxHQ >= 4)
-   {
-     GUIHQ2X[cvidmode] = 0;
-     GUIHQ3X[cvidmode] = 0;
-     GUIHQ4X[cvidmode] = 1;
-   }
-
-   else if(maxHQ == 3)
-   {
-     GUIHQ2X[cvidmode] = 0;
-     GUIHQ3X[cvidmode] = 1;
-     GUIHQ4X[cvidmode] = 0;
-   }
-
-   else if(maxHQ == 2)
-   {
-     GUIHQ2X[cvidmode] = 1;
-     GUIHQ3X[cvidmode] = 0;
-     GUIHQ4X[cvidmode] = 0;
-   }
-
-   else
-   {
-     GUIHQ2X[cvidmode] = 0;
-     GUIHQ3X[cvidmode] = 0;
-     GUIHQ4X[cvidmode] = 0;
-   }
-}
-
 void initwinvideo(void)
 {
    WINDOWPLACEMENT wndpl;
@@ -2014,7 +1978,6 @@ void initwinvideo(void)
          break;
       case 37:
       case 38:
-         SetHQx();
       case 39:
       case 40:
          WindowWidth=CustomResX;
