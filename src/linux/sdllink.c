@@ -87,6 +87,7 @@ extern BYTE GUIHQ2X[];
 extern BYTE GUIHQ3X[];
 extern BYTE GUIHQ4X[];
 extern BYTE GUIRESIZE[];
+extern BYTE GUIM7VID[];
 
 unsigned int CustomResX;
 unsigned int CustomResY;
@@ -828,6 +829,37 @@ void init_hqNx(void)
 	}
 }
 
+void SetHQx()
+{
+	int maxHQ;
+	if(CustomResX/256 < CustomResY/224)
+		maxHQ = CustomResX/256;
+	else
+		maxHQ = CustomResY/224;
+
+	if(maxHQ >= 2)
+	{
+		GUIHQ2X[cvidmode] = 1;
+		GUIHQ3X[cvidmode] = 0;
+		GUIHQ4X[cvidmode] = 0;
+	}
+
+	else
+	{
+		GUIHQ2X[cvidmode] = 0;
+		GUIHQ3X[cvidmode] = 0;
+		GUIHQ4X[cvidmode] = 0;
+	}
+}
+
+void SetHiresOpt()
+{
+	if(CustomResX >= 512 && CustomResY >= 448)
+		GUIM7VID[cvidmode] = 1;
+	else
+		GUIM7VID[cvidmode] = 0;
+}
+
 void initwinvideo(void)
 {
 	DWORD newmode = 0;
@@ -915,6 +947,8 @@ void initwinvideo(void)
 			case 23: //Custom
 				WindowWidth = CustomResX;
 				WindowHeight = CustomResY;
+				SetHQx();
+				SetHiresOpt();
 				break;
 		}
 		adjustMouseXScale();
