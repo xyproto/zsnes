@@ -89,7 +89,7 @@ else
 fi
 
 dnl - opengl stuff
-if test x$target != *-*-darwin*; then
+if test x$found_opengl != xyes; then
   AC_ARG_ENABLE(opengl,
     [  --disable-opengl        Build without OpenGL support],
     ,
