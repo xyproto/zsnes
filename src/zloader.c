@@ -93,7 +93,8 @@ static void display_help()
   put_line("  -cc     Enable small screen (when available)");
   put_line("  -d      Start with debugger enabled");
 #endif
-  put_line("  -dd     Disable sound DSP emulation");
+  put_line("  -dd     Disable sound SPC700/DSP emulation which also disables sound output");
+  put_line("  -ds     Disable sound output");
   put_line("  -dh     Disable ROM-specific hacks");
   put_line("  -f #    Enable fixed frame rate [0..9]");
   put_line("  -g #    Specify gamma correction value [0..15]");
@@ -114,7 +115,7 @@ static void display_help()
   put_line("  -r #    Set sound sampling rate:");
   put_line("             0 = 8000Hz  1 = 11025Hz 2 = 22050Hz 3 = 44100Hz");
   put_line("             4 = 16000Hz 5 = 32000Hz 6 = 48000Hz");
-  put_line("  -s      Enable SPC700/DSP emulation (Sound)");
+  put_line("  -s      Enable sound output and enable SPC700/DSP emulation");
   put_line("  -sa     Show all files in GUI (*.*)");
 #ifdef __MSDOS__
   put_line("  -sp     Display sound information");
@@ -589,7 +590,7 @@ static void handle_params(int argc, char *argv[])
             }
             break;
 
-          case 's': //Enable SPC700/DSP emulation
+          case 's': //Enable sound output, and SPC700/DSP emulation
             spcon = 1;
             soundon = 1;
             break;
@@ -641,6 +642,11 @@ static void handle_params(int argc, char *argv[])
         if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 'd') //Disable sound DSP emulation
         {
           DSPDisable = 1;
+        }
+
+        else if (tolower(argv[i][1]) == 'd' && tolower(argv[i][2]) == 's') //Disable sound output
+        {
+          soundon = 0;
         }
 
         #ifdef __MSDOS__

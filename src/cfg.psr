@@ -480,7 +480,6 @@ hqFilter db 0
 @
 @ Grayscale mode (0 = NO, 1 = Yes) - don't enable this for other than nostalgia
 @ The whole screen is displayed in monochrome color.
-@
 GrayscaleMode db 0
 
 @
@@ -511,7 +510,14 @@ NTSCRef db 0
 @  ----
 
 @
+@ Disable SPC emulation (0 = NO, 1 = Yes)
+@ Disabling SPC emulation can improve performance, but at the expense of emulation accuracy.
+@ If SPC emulation is disabled, there will be no sound output.
+SPCDisable db 0
+
+@
 @ Sound emulation (0 = off, 1 = ON) - disable if you need the performance
+@ If SPC emulation is disabled, there will be no sound output.
 soundon db 1
 
 @
@@ -549,12 +555,6 @@ Force8b db 0
 @ DOS-only option, don't edit
 #endif
 DisplayS db 0
-
-@
-@ Disable SPC emulation (0 = NO, 1 = Yes)
-@ Disabling SPC emulation can improve performance, but at the expense of emulation accuracy.
-@ It is not a good idea to disable this option.
-SPCDisable db 0
 
 @
 @ Disable echo (0 = NO, 1 = Yes)
