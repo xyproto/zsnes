@@ -1059,11 +1059,9 @@ char spcsaved[16];
 void savespcdata()
 {
   size_t fname_len = strlen(fnames+1);
-  unsigned char FileExt[4];
   unsigned int i = 0;
 
-  memcpy(FileExt, fnames+fname_len-3, 4);
-  memcpy(fnames+fname_len-3, ".spc", 4);
+  strcpy(fnames+fname_len-3, ".spc");
   while (i < 100)
   {
     if (i)
@@ -1155,5 +1153,5 @@ void savespcdata()
       sprintf(spcsaved, "%s FILE SAVED.", fnames+fname_len-2);
     }
   }
-  memcpy(fnamest+fname_len-3, FileExt, 4);
+  strcpy(fnames+fname_len-3, ".srm");
 }
