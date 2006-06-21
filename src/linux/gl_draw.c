@@ -79,7 +79,10 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 		return FALSE;
 	}
 
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+#if (SDL_MAJOR_VERSION > 1) || ((SDL_MINOR_VERSION > 2) || ((SDL_MINOR_VERSION == 2) && (SDL_PATCHLEVEL >= 10)))
+  SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
+#endif
 
 	glvidbuffer = (unsigned short *) malloc(512 * 512 * sizeof(short));
 	gl_clearwin();
