@@ -18,7 +18,7 @@
 
 
 EXTSYM Open_File,Read_File,Close_File,File_Seek,File_Seek_End,Get_First_Entry
-EXTSYM Get_Next_Entry
+EXTSYM Get_Next_Entry,clearmem2
 
 ; GUI File (Game) Loader
 
@@ -215,7 +215,6 @@ GUIloadfilename:
     add edi,4
     dec ecx
     jnz .n
-    EXTSYM clearmem2
     pushad
     call clearmem2
     popad
@@ -275,7 +274,9 @@ GUIloadfilename:
     mov dl,[LoadDrive]
     mov ebx,LoadDir
     call Change_Dir
+    pushad
     call CheatCodeLoad
+    popad
 .nocheatload
     cmp byte[AutoState],0
     je .noloader
