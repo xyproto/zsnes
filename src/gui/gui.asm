@@ -1331,13 +1331,6 @@ SECTION .data
 WrongCheckSum db 10,13,'ROM Data Mismatch',10,13,10,13,0
 SECTION .text
 
-SRAMDirc:
-  ; get LoadDrive/LoadDir
-  mov ebx,LoadDir
-  mov edx,LoadDrive
-  call Get_Dir
-  ret
-
 LOADDir:
   mov dl,[LoadDrive]
   mov ebx,LoadDir
