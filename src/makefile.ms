@@ -91,8 +91,8 @@ ifeq (${ENV},msvc)
 endif
 
 ifeq (${ENV},dos-cross)
-  CC = i386-pc-msdosdjgpp-gcc
-  CPPC = i386-pc-msdosdjgpp-g++
+  CC = i586-msdosdjgpp-gcc
+  CPPC = i586-msdosdjgpp-g++
   OS=__MSDOS__
   CROSS=yes
 endif

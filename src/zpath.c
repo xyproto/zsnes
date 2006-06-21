@@ -249,6 +249,14 @@ char *realpath(const char *path, char *resolved_path)
 
 void deinit_paths()
 {
+  //Save data that depends on paths before deinit of them
+  void SaveSramData();
+  void GUISaveVars();
+
+  SaveSramData();
+  GUISaveVars();
+
+  //Now deallocate the paths
   if (ZStartAlloc && ZStartPath) { free(ZStartPath); }
   if (ZCfgAlloc && ZCfgPath) { free(ZCfgPath); }
   if (ZSramAlloc && ZSramPath) { free(ZSramPath); }

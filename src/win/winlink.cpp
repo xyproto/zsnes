@@ -528,14 +528,8 @@ BOOL InputRead(void)
 	return TRUE;
 }
 
-extern "C" void SaveSramData(void);
-extern "C" void GUISaveVars(void);
-
 void ExitFunction()
 {
-   SaveSramData();
-   GUISaveVars();
-
    // We need to clean up the debug window if it's running
 
    if (debugWindow) FreeConsole();
