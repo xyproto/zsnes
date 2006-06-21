@@ -28,6 +28,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdlib.h>
 #include <string.h>
 #include <zlib.h>
+#include <time.h>
+#ifdef __WIN32__
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 #define DIR_SLASH "\\"
 #endif
 #include "numconv.h"
