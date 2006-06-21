@@ -106,15 +106,6 @@ NEWSYM MenuDisplace16, resd 1
 NEWSYM MenuNoExit, resb 1
 NEWSYM SPCSave, resb 1
 
-%ifdef SPCDUMP
-SECTION .data
-NEWSYM SPCSave_dump, db 0
-SECTION .bss
-
-EXTSYM SPCSave_buffer, SPCSave_ports
-NEWSYM SPCSave_handle, resd 1
-%endif
-
 SECTION .text
 
 NEWSYM showmenu
@@ -363,22 +354,6 @@ NEWSYM showmenu
 .savespckey
     cmp byte[spcon],0
     je .nospc
-
-%ifdef SPCDUMP
-	cmp byte[SPCSave_dump], 1
-	jne .start_dump
-
-	mov ebx, [SPCSave_handle]
-	mov eax, -1
-	mov [SPCSave_buffer], eax
-	mov ecx, 4
-	mov edx, SPCSave_buffer
-	call Write_File
-	call Close_File
-	mov byte[SPCSave_dump], 0
-	jmp .nospcsave
-.start_dump
-%endif
 
     mov dword[Msgptr],.search
     mov eax,[MsgCount]
@@ -985,30 +960,10 @@ NEWSYM savespcdata
     mov edx,DSPMem
     call Write_File
 
-%ifdef SPCDUMP
-	mov [SPCSave_handle], ebx
-%else
-    call Close_File
-%endif
-
     pushad
     call ResetState
     popad
 
-%ifdef SPCDUMP
-
-; w00t, reg dump crapola
-; using a time reference because I don't feel like adding
-; cycle counting to the SPC emulation just for this
-
-	mov byte[SPCSave_dump],1
-
-	mov eax, [SPCRAM+0F4h]
-	mov [SPCSave_ports], eax
-	xor eax, eax
-	mov [SPCSave_buffer], eax
-
-%endif
     ret
 
 SECTION .bss
