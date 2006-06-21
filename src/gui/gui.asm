@@ -1473,64 +1473,6 @@ guimsgptr dd 0
 guimsgmsg db '     WELCOME TO ZSNES',0
 SECTION .text
 
-guimustrestartmsg:
-  xor ebx,ebx
-  mov ecx,256
-.a
-  cmp byte[pressed+ebx],1
-  jne .npr1
-  mov byte[pressed+ebx],2
-.npr1
-  inc ebx
-  dec ecx
-  jnz .a
-  mov byte[pressed+2Ch],0
-.again
-  GUIBox 43,87,213,151,160
-  GUIBox 43,87,213,87,162
-  GUIBox 43,87,43,151,161
-  GUIBox 213,87,213,151,159
-  GUIBox 43,151,213,151,158
-  GUIOuttext 56,92,guiqtimemsg1,220-15
-  GUIOuttext 55,91,guiqtimemsg1,220
-  GUIOuttext 56,100,guiqtimemsg2,220-15
-  GUIOuttext 55,99,guiqtimemsg2,220
-  GUIOuttext 56,108,guiqtimemsg3,220-15
-  GUIOuttext 55,107,guiqtimemsg3,220
-  GUIOuttext 56,116,guiqtimemsg4,220-15
-  GUIOuttext 55,115,guiqtimemsg4,220
-  GUIOuttext 56,139,guiqtimemsg8,220-15
-  GUIOuttext 55,138,guiqtimemsg8,220
-  call vidpastecopyscr
-  call GUIUnBuffer
-  call DisplayBoxes
-  call DisplayMenu
-  call JoyRead
-
-  mov byte[pressed+2Ch],0
-
-  call JoyRead
-  xor ebx,ebx
-  mov ecx,256+128+64
-.b
-  cmp byte[pressed+ebx],1
-  je .pressedokay
-  inc ebx
-  dec ecx
-  jnz .b
-  jmp .again
-.pressedokay
-  mov byte[GUIQuit],1
-  ret
-
-SECTION .data
-guiqtimemsg1 db 'ZSNES MUST BE RESTARTED',0
-guiqtimemsg2 db 'TO USE THIS OPTION.',0
-guiqtimemsg3 db 'THIS PROGRAM WILL NOW',0
-guiqtimemsg4 db 'EXIT.',0
-guiqtimemsg8 db 'PRESS ANY KEY.',0
-SECTION .text
-
 guiprevideo:
   xor ebx,ebx
   mov ecx,256
