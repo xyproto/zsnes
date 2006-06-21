@@ -1012,3 +1012,142 @@ void SaveSramData()
   }
   SaveCombFile();
 }
+/*
+SPC File Format - Invented by _Demo_ & zsKnight
+Cleaned up by Nach
+
+00000h-00020h - File Header : SNES-SPC700 Sound File Data v0.00 (33 bytes)
+00021h-00023h - 0x1a,0x1a,0x1a (3 bytes)
+00024h        - 10 (1 byte)
+00025h        - PC Register value (1 Word)
+00027h        - A Register Value (1 byte)
+00028h        - X Register Value (1 byte)
+00029h        - Y Register Value (1 byte)
+0002Ah        - Status Flags Value (1 byte)
+0002Bh        - Stack Register Value (1 byte)
+0002Ch-0002Dh - Reserved (1 byte)
+0002Eh-0004Dh - SubTitle/Song Name (32 bytes)
+0004Eh-0006Dh - Title of Game (32 bytes)
+0006Eh-0007Dh - Name of Dumper (32 bytes)
+0007Eh-0009Dh - Comments (32 bytes)
+0009Eh-000A1h - Date the SPC was Dumped (4 bytes)
+000A2h-000A8h - Reserved (6 bytes)
+000A9h-000ACh - Length of SPC in seconds (4 bytes)
+000ADh-000AFh - Fade out length in milliseconds (3 bytes)
+000B0h-000CFh - Author of Song (32 bytes)
+000D0h        - Default Channel Disables (0 = enable, 1 = disable) (1 byte)
+000D1h        - Emulator used to dump .spc file (1 byte)
+                (0 = UNKNOWN, 1 = ZSNES, 2 = SNES9X)
+                (Note : Contact the authors if you're an snes emu author with
+                 an .spc capture in order to assign you a number)
+000D2h-000FFh - Reserved (46 bytes)
+00100h-100FFh - SPCRam (64 KB)
+10100h-101FFh - DSPRam (256 bytes)
+*/
+
+extern unsigned char spcextraram[64];
+extern unsigned char spcP, spcA, spcX, spcY, spcS, spcNZ;
+extern unsigned int infoloc;
+
+char spcsaved[16];
+void savespcdata()
+{
+  size_t fname_len = strlen(fnames+1);
+  unsigned char FileExt[4];
+  unsigned int i = 0;
+
+  memcpy(FileExt, fnames+fname_len-3, 4);
+  memcpy(fnames+fname_len-3, ".spc", 4);
+  while (i < 100)
+  {
+    if (i)
+    {
+      sprintf(fnames+fname_len - ((i < 10) ? 0 : 1), "%d", i);
+    }
+    if (access_dir(ZSpcPath, fnames+1, F_OK))
+    {
+      break;
+    }
+    i++;
+  }
+  if (i < 100)
+  {
+    FILE *fp = fopen_dir(ZSpcPath, fnames+1, "wb");
+    if (fp)
+    {
+      unsigned char ssdatst[256];
+      time_t t = time(0);
+      struct tm *lt = localtime(&t);
+
+      //Assemble N/Z flags into P
+      spcP &= 0xFD;
+      if (!(spcNZ & 0xFF))
+      {
+        spcP |= 2;
+      }
+      spcP &= 0x7F;
+      if (spcNZ & 0x80)
+      {
+        spcP |= 0x80;
+      }
+
+      strcpy((char *)ssdatst, "SNES-SPC700 Sound File Data v0.30"); //00000h - File Header : SNES-SPC700 Sound File Data v0.00
+      ssdatst[0x21] = ssdatst[0x22] = ssdatst[0x23] = 0x1a; //00021h - 0x1a,0x1a,0x1a
+      ssdatst[0x24] = 10;   //00024h - 10
+      *((unsigned short *)(ssdatst+0x25)) = spcPCRam-(unsigned int)SPCRAM; //00025h - PC Register value (1 Word)
+      ssdatst[0x27] = spcA; //00027h - A Register Value (1 byte)
+      ssdatst[0x28] = spcX; //00028h - X Register Value (1 byte)
+      ssdatst[0x29] = spcY; //00029h - Y Register Value (1 byte)
+      ssdatst[0x2A] = spcP; //0002Ah - Status Flags Value (1 byte)
+      ssdatst[0x2B] = spcS; //0002Bh - Stack Register Value (1 byte)
+
+      ssdatst[0x2C] = 0; //0002Ch - Reserved
+      ssdatst[0x2D] = 0; //0002Dh - Reserved
+
+      PrepareSaveState();
+
+      memset(ssdatst+0x2E, 0, 32); //0002Eh-0004Dh - SubTitle/Song Name
+      memset(ssdatst+0x4E, 0, 32); //0004Eh-0006Dh - Title of Game
+      //Because of backwards mapping, this won't work for DKJM2
+      memcpy(ssdatst+0x4E, ((unsigned char *)romdata)+infoloc, 21);
+      memset(ssdatst+0x6E, 0, 16); //0006Eh-0007Dh - Name of Dumper
+      memset(ssdatst+0x7E, 0, 32); //0007Eh-0009Dh - Comments
+
+      //0009Eh-000A1h - Date the SPC was Dumped
+      ssdatst[0x9E] = lt->tm_mday;
+      ssdatst[0x9F] = lt->tm_mon+1;
+      ssdatst[0xA0] = (lt->tm_year+1900) & 0xFF;
+      ssdatst[0xA1] = ((lt->tm_year+1900) >> 8) & 0xFF;
+
+      memset(ssdatst+0xA2, 0, 6);  //000A2h-000A8h - Reserved
+      memset(ssdatst+0xA9, 0, 4);  //000A9h-000ACh - Length of SPC in seconds
+      memset(ssdatst+0xAD, 0, 3);  //000ADh-000AFh - Fade out time in milliseconds
+      memset(ssdatst+0xB0, 0, 32); //000B0h-000CFh - Author of Song
+
+      //Set Channel Disables
+      ssdatst[0xD0] = 0; //000D0h - Default Channel Disables (0 = enable, 1 = disable)
+      if (Voice0Disable) { ssdatst[0xD0] |= BIT(0); }
+      if (Voice1Disable) { ssdatst[0xD0] |= BIT(1); }
+      if (Voice2Disable) { ssdatst[0xD0] |= BIT(2); }
+      if (Voice3Disable) { ssdatst[0xD0] |= BIT(3); }
+      if (Voice4Disable) { ssdatst[0xD0] |= BIT(4); }
+      if (Voice5Disable) { ssdatst[0xD0] |= BIT(5); }
+      if (Voice6Disable) { ssdatst[0xD0] |= BIT(6); }
+      if (Voice7Disable) { ssdatst[0xD0] |= BIT(7); }
+
+      ssdatst[0xD1] = 1; //000D1h - Emulator used to dump .spc file
+      memset(ssdatst+0xD2, 0, 46); //000D2h-000FFh - Reserved
+
+      fwrite(ssdatst, 1, sizeof(ssdatst), fp);
+      fwrite(SPCRAM, 1, 65536, fp); //00100h-100FFh - SPCRam
+      fwrite(DSPMem, 1, 192, fp);   //10100h-101FFh - DSPRam
+      fwrite(spcextraram, 1, 64, fp); //Seems DSPRam is split in two, but I don't get what's going on here
+      fclose(fp);
+
+      ResetState();
+
+      sprintf(spcsaved, "%s FILE SAVED.", fnames+fname_len-2);
+    }
+  }
+  memcpy(fnamest+fname_len-3, FileExt, 4);
+}

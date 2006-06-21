@@ -571,3 +571,4 @@ void LoadCheatSearchFile()
     fclose(fp);
   }
 }
+

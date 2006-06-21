@@ -20,19 +20,18 @@
 
 %include "macros.mac"
 
-EXTSYM DSPMem,FPSOn,Makemode7Table,MessageOn,vesa2red10,scanlines,smallscreenon
+EXTSYM FPSOn,Makemode7Table,MessageOn,vesa2red10,scanlines,smallscreenon
 EXTSYM MsgCount,Msgptr,OutputGraphicString,OutputGraphicString16b,vidbuffer
-EXTSYM PrepareSaveState,ResetState,breakatsignb,cvidmode,cbitmode,copyvid
+EXTSYM breakatsignb,cvidmode,cbitmode,copyvid
 EXTSYM curblank,drawhline,drawhline16b,drawvline,drawvline16b,fnames,frameskip
-EXTSYM mode7tab,pressed,spcA,spcBuffera,spcNZ,spcP,spcPCRam,SPCRAM,spcS,spcX
-EXTSYM spcY,spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2selec
-EXTSYM spritetablea,sprlefttot,newengen,spcextraram,resolutn,Open_File
-EXTSYM Close_File,Write_File,Create_File,Get_Key,Get_Date,continueprognokeys
+EXTSYM mode7tab,pressed,spcBuffera
+EXTSYM spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2selec
+EXTSYM spritetablea,sprlefttot,newengen,resolutn,Open_File
+EXTSYM Close_File,Write_File,Create_File,Get_Key,continueprognokeys
 EXTSYM ForceNonTransp,GUIOn,Check_Key,JoyRead,GetScreen,SSKeyPressed
 EXTSYM SPCKeyPressed,StopSound,StartSound,ExecExitOkay,t1cc,Clear2xSaIBuffer
-EXTSYM romdata,infoloc,ScreenShotFormat,Voice0Disable,Voice1Disable
-EXTSYM Voice2Disable,Voice3Disable,Voice4Disable,Voice5Disable,Voice6Disable
-EXTSYM Voice7Disable,SPCPath,SnapPath,CHPath,ZFileCHDir
+EXTSYM ScreenShotFormat,SnapPath,CHPath,ZFileCHDir,spcsaved,savespcdata
+
 %ifndef NO_PNG
 EXTSYM Grab_PNG_Data
 %endif
@@ -362,10 +361,12 @@ NEWSYM showmenu
     mov byte[SPCSave],1
     call breakatsignb
     mov byte[SPCSave],0
+    pushad
     call savespcdata
+    popad
 
     mov byte[curblank],40h
-    mov dword[Msgptr],.saved
+    mov dword[Msgptr],spcsaved
     mov eax,[MsgCount]
     mov [MessageOn],eax
     jmp .nospcsave
@@ -460,7 +461,7 @@ SECTION .data
 .nosound   db 'SOUND MUST BE ENABLED.',0
 .unable    db 'CANNOT USE IN NEW GFX ENGINE.',0
 .escpress  db 'ESC TERMINATED SEARCH.',0
-.saved     db '.SPC FILE SAVED.',0
+EXTSYM spcsaved
 SECTION .text
 
 NEWSYM menudrawbox8b
@@ -787,256 +788,6 @@ NEWSYM menudrawcursor16b
     jnz .loop
     mov al,128
     ret
-
-NEWSYM savespcdata
-    sub dword[spcPCRam],SPCRAM
-    ; Assemble N/Z flags into P
-    and byte[spcP],0FDh
-    test byte[spcNZ],0FFh
-    jnz .nozero
-    or byte[spcP],02h
-.nozero
-    and byte[spcP],07Fh
-    test byte[spcNZ],80h
-    jz .noneg
-    or byte[spcP],80h
-.noneg
-    mov ax,[spcPCRam]
-    mov [ssdatst+37],ax
-    mov al,[spcA]
-    mov [ssdatst+39],al
-    mov al,[spcX]
-    mov [ssdatst+40],al
-    mov al,[spcY]
-    mov [ssdatst+41],al
-    mov al,[spcP]
-    mov [ssdatst+42],al
-    mov al,[spcS]
-    mov [ssdatst+43],al
-    add dword[spcPCRam],SPCRAM
-;.savestuff
-    ChangeDir SPCPath
-    pushad
-    call PrepareSaveState
-    popad
-    ; Copy from fnames to .spcfname, replacing .srm with .spc
-    mov esi,fnames+1
-    mov edi,.spcfname
-.next
-    mov al,[esi]
-    mov [edi],al
-    inc esi
-    inc edi
-    cmp byte[esi+3],0       ;Check for end of filename
-    jne .next
-    ; Save stuff
-    mov dword[edi],'spc '
-    mov byte[edi+3],0
-    ; Find an unoccupied file
-.tryagainspc
-    mov edx,.spcfname
-    call Open_File
-    jc .nofileopen
-    mov bx,ax
-    call Close_File
-    cmp byte[edi+2],'c'
-    jne .notc
-    mov byte[edi+2],'1'
-    jmp .tryagainspc
-.notc
-    cmp byte[edi+2],'9'
-    je .donext10
-    inc byte[edi+2]
-    jmp .tryagainspc
-.donext10
-    mov al,[edi+1]
-    cmp al,[edi+2]
-    je .nofileopen
-    cmp byte[edi+1],'p'
-    jne .notp
-    mov byte[edi+1],'0'
-.notp
-    inc byte[edi+1]
-    mov byte[edi+2],'0'
-    jmp .tryagainspc
-.nofileopen
-    xor al,al
-    mov al,[edi+1]
-    mov [showmenu.saved+2],al
-    mov al,[edi+2]
-    mov [showmenu.saved+3],al
-    ; copy spcextra ram to dspmem+192
-    mov esi,spcextraram
-    mov edi,DSPMem+192
-    mov ecx,64
-.loop
-    mov al,[esi]
-    mov [edi],al
-    inc esi
-    inc edi
-    dec ecx
-    jnz .loop
-
-    ; Copy Game Title
-
-    mov esi,[romdata]
-    add esi,[infoloc]
-    cmp dword[infoloc],40ffc0h
-    jne .noehi
-    sub esi,408000h
-.noehi
-    mov ecx,20
-    mov edi,ssdatst+46+32
-.romloop
-    mov al,[esi]
-    mov [edi],al
-    inc esi
-    inc edi
-    dec ecx
-    jnz .romloop
-    ; Copy Date of spc dumped
-    call Get_Date
-    mov [ssdatst+09Eh],dl
-    mov [ssdatst+09Fh],dh
-    mov [ssdatst+0A0h],cx
-
-    ; Set Channel Disables
-    mov byte[ssdatst+0D0h],0
-    cmp byte[Voice0Disable],1
-    je .enable0
-    or byte[ssdatst+0D0h],1
-.enable0
-    cmp byte[Voice1Disable],1
-    je .enable1
-    or byte[ssdatst+0D0h],2
-.enable1
-    cmp byte[Voice2Disable],1
-    je .enable2
-    or byte[ssdatst+0D0h],4
-.enable2
-    cmp byte[Voice3Disable],1
-    je .enable3
-    or byte[ssdatst+0D0h],8
-.enable3
-    cmp byte[Voice4Disable],1
-    je .enable4
-    or byte[ssdatst+0D0h],16
-.enable4
-    cmp byte[Voice5Disable],1
-    je .enable5
-    or byte[ssdatst+0D0h],32
-.enable5
-    cmp byte[Voice6Disable],1
-    je .enable6
-    or byte[ssdatst+0D0h],64
-.enable6
-    cmp byte[Voice7Disable],1
-    je .enable7
-    or byte[ssdatst+0D0h],128
-.enable7
-
-;  times 32  ; Title of game (Offset 48)
-;  times 32  ; Song Name
-;  times 32  ; Author of Song
-;  times 32  ; Name of dumper
-;  times 32  ; Comments
-;  times 4   ; date of spc dumped
-;  times 4   ; time in milliseconds before fading out
-;  times 2   ; fade-out length in milliseconds
-;  0         ; default channel enables
-
-    mov edx,.spcfname
-    call Create_File
-    mov bx,ax
-    mov ecx,256
-    mov edx,ssdatst
-    call Write_File
-
-    ; Save SPC stuff
-    mov ecx,65536
-    mov edx,SPCRAM
-    call Write_File
-    mov ecx,256
-    mov edx,DSPMem
-    call Write_File
-
-    pushad
-    call ResetState
-    popad
-
-    ret
-
-SECTION .bss
-.spcfname resb 128
-
-SECTION .data
-;.SPC File Format
-
-;Offset 00000h - File Header : SNES-SPC700 Sound File Data v0.10
-;Offset 00021h - 0x26,0x26,0x26
-;Offset 00024h - Version #(/100)
-;Offset 00025h - PC Register value (1 Word)
-;Offset 00027h - A Register Value (1 byte)
-;Offset 00028h - X Register Value (1 byte)
-;Offset 00029h - Y Register Value (1 byte)
-
-;Offset 0002Ah - Status Flags Value (1 byte)
-;Offset 0002Bh - Stack Register Value (1 byte)
-;Offset 0002Ch-000FFh - Reserved For Future Use
-;Offset 00100h-100FFh - SPCRam
-;Offset 10100h-101FFh - DSPRam
-
-;Offset 0002Eh-0004Dh - SubTitle/Song Name
-;Offset 0004Eh-0006Dh - Title of Game
-;Offset 0006Eh-0007Dh - Name of Dumper
-;Offset 0007Eh-0009Dh - Comments
-;Offset 0009Eh-000A4h - Date of SPC Dumped in decimal (DD/MM/YYYY)
-;Offset 000A9h-000ABh - Time in seconds for the spc to play before fading
-;Offset 000ACh-000AFh - Fade out time in milliseconds
-;Offset 000B0h-000CFh - Author of Song
-;Offset 000D0h        - Default Channel Disables (0 = enable, 1 = disable)
-;Offset 000D1h        - Emulator used to dump .spc file
-;                       (0 = UNKNOWN, 1 = ZSNES, 2 = SNES9X)
-;                       (Note : Contact the authors if you're an snes emu
-;                       author with an .spc capture in order to assign
-;                       you a number)
-
-;Offset 0002Eh-0004Dh - Name of SPC (32 bytes)
-;Offset 0004Eh-0005Dh - Name of Game (16 bytes)
-;Offset 0006Eh-0007Dh - Name of SPC dumper (16 bytes)
-;Offset 0007Eh-0009Dh - Comments (32 bytes)
-;Offset 0009Eh-000A8h - Date the SPC was Dumped (10 bytes)
-;Offset 000A9h-000ABh - Internal SPC timer (3 bytes)
-
-NEWSYM ssdatst
-  db 'SNES-SPC700 Sound File Data v0.30',26,26,26     ; offset 0
-  db 10 ; Version #(/100), offset 36
-  ; SPC Registers
-  dw 0  ; PC, offset 37
-  db 0  ; A, offset 39
-  db 0  ; X, offset 40
-  db 0  ; Y, offset 41
-  db 0  ; P, offset 42
-  db 0  ; S, offset 43
-  db 0,0 ; offset 44 (reserved)
-
-  times 32 db 0 ; Title of game (Offset 46)
-  times 32 db 0 ; Song Name
-  times 16 db 0 ; Name of dumper
-  times 32 db 0 ; Comments
-  times 10 db 0 ; date of spc dumped
-  times 4  db 0 ; time in seconds before fading out
-  times 4  db 0 ; fade-out length in milliseconds
-  times 32 db 0 ; Author of Song
-  db 0          ; default channel enables
-  db 1          ; emulator used to dump .spc files
-  ; 32*5+20 = 180
-
-  times 48 db 0        ;(reserved), offset 224
-  ; SPCRAM (offset 256), 64k
-  ; DSPRAM (offset 256+65536), 256 bytes
-
-SECTION .text
 
 NEWSYM dumpsound
     mov cx,0
