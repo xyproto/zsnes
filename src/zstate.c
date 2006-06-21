@@ -1031,7 +1031,7 @@ Cleaned up by Nach
 0006Eh-0007Dh - Name of Dumper (32 bytes)
 0007Eh-0009Dh - Comments (32 bytes)
 0009Eh-000A1h - Date the SPC was Dumped (4 bytes)
-000A2h-000A8h - Reserved (6 bytes)
+000A2h-000A8h - Reserved (7 bytes)
 000A9h-000ACh - Length of SPC in seconds (4 bytes)
 000ADh-000AFh - Fade out length in milliseconds (3 bytes)
 000B0h-000CFh - Author of Song (32 bytes)
@@ -1119,7 +1119,7 @@ void savespcdata()
       ssdatst[0xA0] = (lt->tm_year+1900) & 0xFF;
       ssdatst[0xA1] = ((lt->tm_year+1900) >> 8) & 0xFF;
 
-      memset(ssdatst+0xA2, 0, 6);  //000A2h-000A8h - Reserved
+      memset(ssdatst+0xA2, 0, 7);  //000A2h-000A8h - Reserved
       memset(ssdatst+0xA9, 0, 4);  //000A9h-000ACh - Length of SPC in seconds
       memset(ssdatst+0xAD, 0, 3);  //000ADh-000AFh - Fade out time in milliseconds
       memset(ssdatst+0xB0, 0, 32); //000B0h-000CFh - Author of Song
