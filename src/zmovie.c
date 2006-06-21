@@ -2282,7 +2282,6 @@ bool PrevSRAMState;
 extern unsigned char ComboCounter, MovieRecordWinVal, AllocatedRewindStates;
 extern unsigned char SloMo, EMUPause;
 char MovieFrameStr[10];
-void ChangetoLOADdir();
 
 /*
 
@@ -2688,7 +2687,6 @@ void MoviePlay()
     }
 
     memcpy(&fnamest[fname_len-3], FileExt, 4);
-    asm_call(ChangetoLOADdir);
   }
 }
 
@@ -2738,9 +2736,7 @@ void MovieRecord()
       MovieRecordWinVal = 1;
     }
 
-    asm_call(ChangetoLOADdir);
-
-    memcpy (&fnamest[fname_len-3], FileExt, 4);
+    memcpy(&fnamest[fname_len-3], FileExt, 4);
   }
 }
 
