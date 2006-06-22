@@ -404,23 +404,43 @@ static const char *strdupcat_internal(const char *str1, const char *str2)
 
 #else
 
-static const char *strdupcat_internal(const char *str1, const char *str2, const char *func)
+static const char *strdupcat_internal(const char *str1, const char *str2, const char *func, const char *mode)
 {
   static char buffer_dir[PATH_SIZE*2];
   strcpy(buffer_dir, str1);
   strcat(buffer_dir, str2);
 
-  printf("%s: %s\n", func, buffer_dir);
+  if (mode)
+  {
+    printf("%s_%s: %s\n", func, mode, buffer_dir);
+  }
+  else
+  {
+    printf("%s: %s\n", func, buffer_dir);
+  }
 
   return(buffer_dir);
 }
 
-#define strdupcat_internal(x, y) strdupcat_internal(x, y, __func__)
+//This is to keep the modeless functions working right
+const char *mode = 0;
+const char *mode_text = 0;
+
+#define strdupcat_internal(x, y) strdupcat_internal(x, y, __func__, mode ? mode : mode_text)
 #endif
 
-int access_dir(const char *path, const char *file, int mode)
+
+int access_dir(const char *path, const char *file, int amode)
 {
-  return(access(strdupcat_internal(path, file), mode));
+#ifdef DEBUG
+  char mode_text[5];
+  strcpy(mode_text, "f");
+  if (amode & R_OK) { strcat(mode_text, "r"); }
+  if (amode & W_OK) { strcat(mode_text, "w"); }
+  if (amode & X_OK) { strcat(mode_text, "x"); }
+#endif
+
+  return(access(strdupcat_internal(path, file), amode));
 }
 
 int stat_dir(const char *path, const char *file, struct stat *buf)
