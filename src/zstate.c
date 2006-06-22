@@ -974,8 +974,7 @@ void loadstate2()
   stateloader(fnamest+1, 0, 1);
 }
 
-extern unsigned int sramsavedis;
-extern unsigned char CHIPBATT;
+extern unsigned char CHIPBATT, sramsavedis;
 extern char fnames[512];
 void SaveCombFile();
 
