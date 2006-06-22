@@ -1733,11 +1733,12 @@ void SPC7_Data_Load()
   {
     SPC7_Convert_Upper();
     fp = fopen_dir(SPC7110path, SPC7110fname, "rb");
-  }
-  if (!fp)
-  {
-    SPC7_Convert_Lower();
-    fp = fopen_dir(SPC7110path, SPC7110fname, "rb");
+
+    if (!fp)
+    {
+      SPC7_Convert_Lower();
+      fp = fopen_dir(SPC7110path, SPC7110fname, "rb");
+    }
   }
 
   if (fp)
@@ -1746,6 +1747,7 @@ void SPC7_Data_Load()
 
     fseek(fp, SPC7110TempPosition, SEEK_SET);
     fread(ROM+0x510000+SPCDecmPtr, 1, SPC7110TempLength, fp);
+    fclose(fp);
   }
 }
 
