@@ -2313,7 +2313,7 @@ void OpenSramFile()
   }
 }
 
-void map_set(void **dest, void *src, size_t count, size_t step)
+void map_set(void **dest, unsigned char *src, size_t count, size_t step)
 {
   while (count--)
   {
@@ -2339,6 +2339,7 @@ extern void (*memtabler8[256])();
 extern void (*memtabler16[256])();
 void memaccessbankr848mb();
 void memaccessbankr1648mb();
+void preparesfx();
 
 
 void map_lorom()
