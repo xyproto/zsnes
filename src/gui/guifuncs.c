@@ -35,6 +35,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../cfg.h"
 #include "../asm_call.h"
 
+#ifdef __WIN32__
+#define strcasecmp stricmp
+#endif
+
 extern unsigned char ComboHeader[23], ComboBlHeader[23], CombinDataGlob[3300];
 extern unsigned char ShowTimer, savecfgforce;
 extern unsigned int SnowTimer, NumSnow, NumComboGlob;
@@ -572,3 +576,180 @@ void LoadCheatSearchFile()
   }
 }
 
+
+
+
+#define HEADER_SIZE 512
+#define INFO_LEN (0xFF - 0xC0)
+
+static bool AllASCII(char *b, int size)
+{
+  int i;
+  for (i = 0; i < size; i++)
+  {
+    if (b[i] < 32 || b[i] > 126)
+    {
+      return(false);
+    }
+  }
+  return(true);
+}
+
+static int InfoScore(char *Buffer)
+{
+  int score = 0;
+  if (Buffer[28] + (Buffer[29] << 8) + Buffer[30] + (Buffer[31] << 8) == 0xFFFF) { score += 3; }
+  if (Buffer[26] == 0x33) { score += 2; }
+  if ((Buffer[21] & 0xf) < 4) { score += 2; }
+  if (!(Buffer[61] & 0x80)) { score -= 4; }
+  if ((1 << (Buffer[23] - 7)) > 48) { score -= 1; }
+  if (Buffer[25] < 14) { score += 1; }
+  if (!AllASCII(Buffer, 20)) { score -= 1; }
+  return (score);
+}
+
+static unsigned int sum(unsigned char *array, unsigned int size)
+{
+  register unsigned int theSum = 0, i;
+  for (i = 0; i < size; i++)
+  {
+    theSum += array[i];
+  }
+  return(theSum);
+}
+
+static void get_rom_name(const char *filename, char *namebuffer)
+{
+  char *last_dot = strrchr(filename, '.');
+  if (!last_dot || (strcasecmp(last_dot, ".zip") && strcasecmp(last_dot, ".gz") && strcasecmp(last_dot, ".jma")))
+  {
+    struct stat filestats;
+    stat(filename, &filestats);
+
+    if ((filestats.st_size >= 0x8000) && (filestats.st_size <= 0x600000))
+    {
+      FILE *fp = fopen(filename, "rb");
+      if (fp)
+      {
+        unsigned char HeaderBuffer[HEADER_SIZE];
+        int HeaderSize = 0, HasHeadScore = 0, NoHeadScore = 0, HeadRemain = filestats.st_size & 0x7FFF;
+        bool EHi = false;
+
+        switch(HeadRemain)
+        {
+          case 0:
+            NoHeadScore += 3;
+            break;
+
+          case HEADER_SIZE:
+            HasHeadScore += 2;
+            break;
+        }
+
+        fread(HeaderBuffer, 1, HEADER_SIZE, fp);
+
+        if (sum(HeaderBuffer, HEADER_SIZE) < 2500) { HasHeadScore += 2; }
+
+        //SMC/SWC Header
+        if (HeaderBuffer[8] == 0xAA && HeaderBuffer[9] == 0xBB && HeaderBuffer[10]== 4)
+        {
+          HasHeadScore += 3;
+        }
+        //FIG Header
+        else if ((HeaderBuffer[4] == 0x77 && HeaderBuffer[5] == 0x83) ||
+                (HeaderBuffer[4] == 0xDD && HeaderBuffer[5] == 0x82) ||
+                (HeaderBuffer[4] == 0xDD && HeaderBuffer[5] == 2) ||
+                (HeaderBuffer[4] == 0xF7 && HeaderBuffer[5] == 0x83) ||
+                (HeaderBuffer[4] == 0xFD && HeaderBuffer[5] == 0x82) ||
+                (HeaderBuffer[4] == 0x00 && HeaderBuffer[5] == 0x80) ||
+                (HeaderBuffer[4] == 0x47 && HeaderBuffer[5] == 0x83) ||
+                (HeaderBuffer[4] == 0x11 && HeaderBuffer[5] == 2))
+        {
+          HasHeadScore += 2;
+        }
+        else if (!strncmp("GAME DOCTOR SF 3", (char *)HeaderBuffer, 16))
+        {
+          HasHeadScore += 5;
+        }
+
+        HeaderSize = HasHeadScore > NoHeadScore ? HEADER_SIZE : 0;
+
+        if (filestats.st_size - HeaderSize >= 0x500000)
+        {
+          fseek(fp, 0x40FFC0 + HeaderSize, SEEK_SET);
+          fread(HeaderBuffer, 1, INFO_LEN, fp);
+          if (InfoScore((char *)HeaderBuffer) > 1)
+          {
+            EHi = true;
+            strncpy(namebuffer, (char *)HeaderBuffer, 21);
+          }
+        }
+
+        if (!EHi)
+        {
+          if (filestats.st_size - HeaderSize >= 0x10000)
+          {
+            char LoHead[INFO_LEN], HiHead[INFO_LEN];
+            int LoScore, HiScore;
+
+            fseek(fp, 0x7FC0 + HeaderSize, SEEK_SET);
+            fread(LoHead, 1, INFO_LEN, fp);
+            LoScore = InfoScore(LoHead);
+
+            fseek(fp, 0xFFC0 + HeaderSize, SEEK_SET);
+            fread(HiHead, 1, INFO_LEN, fp);
+            HiScore = InfoScore(HiHead);
+
+            strncpy(namebuffer, LoScore > HiScore ? LoHead : HiHead, 21);
+
+            if (filestats.st_size - HeaderSize >= 0x20000)
+            {
+              int IntLScore;
+              fseek(fp, (filestats.st_size - HeaderSize) / 2 + 0x7FC0 + HeaderSize, SEEK_SET);
+              fread(LoHead, 1, INFO_LEN, fp);
+              IntLScore = InfoScore(LoHead) / 2;
+
+              if (IntLScore > LoScore && IntLScore > HiScore)
+              {
+                strncpy(namebuffer, LoHead, 21);
+              }
+            }
+          }
+          else //ROM only has one block
+          {
+            fseek(fp, 0x7FC0 + HeaderSize, SEEK_SET);
+            fread(namebuffer, 21, 1, fp);
+          }
+        }
+        fclose(fp);
+      }
+      else //Couldn't open file
+      {
+        strcpy(namebuffer, "** READ FAILURE **");
+      }
+    }
+    else //Smaller than a block, or Larger than 6MB
+    {
+      strcpy(namebuffer, "** INVALID FILE **");
+    }
+  }
+  else //Compressed archive
+  {
+    strcpy(namebuffer, filename);
+  }
+}
+
+extern unsigned char spcRamcmp[65536];
+extern unsigned int GUInumentries;
+extern unsigned char *spcBuffera;
+
+void GetLoadHeader()
+{
+  unsigned int i = 0;
+  while (i < GUInumentries)
+  {
+    get_rom_name((char *)(spcRamcmp+1+i*14), (char *)(spcBuffera+1+i*32));
+    spcBuffera[21+i*32] = 0;
+    i++;
+  }
+}

@@ -17,8 +17,8 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-EXTSYM Open_File,Read_File,Close_File,File_Seek,File_Seek_End,Get_First_Entry
-EXTSYM Get_Next_Entry,clearmem2
+EXTSYM Open_File,Read_File,Close_File,Get_First_Entry
+EXTSYM Get_Next_Entry,clearmem2,GetLoadHeader
 
 ; GUI File (Game) Loader
 
@@ -697,259 +697,6 @@ GetLoadNormal:
     call GetNormalEntries2
     ret
 
-GetLoadHeader:
-    call GetNormalEntries
-    push edi
-    ; Copy every 14 bytes of spcRamcmp into every 32 bytes of spcBuffer
-    mov ecx,[GUInumentries]
-    mov esi,spcRamcmp+1
-    mov edi,[spcBuffera]
-    inc edi
-    cmp ecx,0
-    je near .none
-.loop
-    ; open file at esi and store in edi
-    push esi
-    push ecx
-    push edi
-    ; check if .zip file
-    mov eax,esi
-.zipdet
-    cmp byte[eax],0
-    je near .skipcheck
-    cmp byte[eax],'.'
-    je .dotdetected
-    inc eax
-    jmp .zipdet
-.dotdetected
-    cmp byte[eax+1],'z'
-    je near .yeszipa
-    cmp byte[eax+1],'Z'
-    jne near .skipcheck
-.yeszipa
-    cmp byte[eax+2],'i'
-    je near .yeszipb
-    cmp byte[eax+2],'I'
-    jne near .skipcheck
-.yeszipb
-    cmp byte[eax+3],'p'
-    je near .yeszipc
-    cmp byte[eax+3],'P'
-    jne near .skipcheck
-.yeszipc
-    ; move esi to edi
-.ziploop
-    mov al,[esi]
-    mov [edi],al
-    inc esi
-    inc edi
-    or al,al
-    jnz .ziploop
-    jmp .doneall
-.skipcheck
-    ; open file
-    mov edx,esi
-    call Open_File
-    jc near .fileerror
-    mov bx,ax
-    ; Check filesize
-    mov cx,0
-    mov dx,0
-    call File_Seek_End
-    jc near .fileerror
-    cmp dx,0
-    jne .locokay
-    cmp ax,32768
-    jae .locokay
-    jmp .fileerror
-.locokay
-    ; Look for 512 byte header
-    mov cx,0
-    mov dx,250
-    call File_Seek
-    jc near .fileerror
-    mov ecx,20
-    mov edx,fnameheadtemp
-    call Read_File
-    jc near .fileerror
-    ; if 10 or more 0's, then header
-    mov ecx,20
-    mov esi,fnameheadtemp
-    xor eax,eax
-.loop2
-    cmp byte[esi],0
-    jne .notzero2
-    inc eax
-.notzero2
-    inc esi
-    dec ecx
-    jnz .loop2
-    cmp eax,10
-    ja near .yes512header
-    mov cx,0
-    mov dx,32704
-    call File_Seek
-    jc near .fileerror
-    mov ecx,20
-    mov edx,edi
-    call Read_File
-    jc near .fileerror
-    mov cx,0
-    mov dx,32704+32768
-    call File_Seek
-    jc near .fileerror
-    mov ecx,20
-    mov edx,fnameheadtemp
-    call Read_File
-    jc near .fileerror
-    jmp .noheaderdone
-.yes512header
-    mov cx,0
-    mov dx,32704+512
-    call File_Seek
-    jc near .fileerror
-    mov ecx,20
-    mov edx,edi
-    call Read_File
-    jc near .fileerror
-    mov cx,1
-    mov dx,448
-    call File_Seek
-    jc near .fileerror
-    mov ecx,20
-    mov edx,fnameheadtemp
-    call Read_File
-    jc near .fileerror
-.noheaderdone
-    mov ecx,20
-.loops
-    cmp byte[edi],0
-    jne .notzero
-    mov byte[edi],32
-.notzero
-    inc edi
-    dec ecx
-    jnz .loops
-    ; Check which header has more alphabets, then move
-    sub edi,20
-    call .checkalpha
-    push eax
-    push edi
-    mov edi,fnameheadtemp
-    call .checkalpha
-    pop edi
-    mov ecx,eax
-    pop eax
-    cmp ecx,eax
-    jb .noswaps
-    mov ecx,20
-    sub edi,20
-    mov esi,fnameheadtemp
-.loops2
-    mov al,[esi]
-    mov [edi],al
-    inc edi
-    inc esi
-    dec ecx
-    jnz .loops2
-.noswaps
-    jmp .fileokay
-.fileerror
-    mov eax,[.invfile]
-    mov [edi],eax
-    mov eax,[.invfile+4]
-    mov [edi+4],eax
-    mov eax,[.invfile+8]
-    mov [edi+8],eax
-    mov eax,[.invfile+12]
-    mov [edi+12],eax
-    mov eax,[.invfile+16]
-    mov [edi+16],eax
-.fileokay
-    call Close_File
-.doneall
-    pop edi
-    pop ecx
-    pop esi
-    mov byte[edi+20],0
-    push edi
-    push esi
-    push ecx
-    ; check if first 20 bytes are all equal or not
-    mov al,[edi+1]
-    mov ecx,19
-.loopchk
-    cmp byte[edi+1],al
-    jne .notequal
-    inc edi
-    dec ecx
-    jnz .loopchk
-    sub edi,19
-    mov ecx,14
-.loopcpy
-    mov al,[esi]
-    mov [edi],al
-    inc esi
-    inc edi
-    dec ecx
-    jnz .loopcpy
-.notequal
-    pop ecx
-    pop esi
-    pop edi
-    ; Capitalize
-    push edi
-    push ecx
-    mov ecx,20
-.loop4
-    mov al,[edi]
-    cmp al,'a'
-    jb .nocap
-    cmp al,'z'
-    ja .nocap
-    sub al,'a'-'A'
-.nocap
-    mov [edi],al
-    dec ecx
-    jnz .loop4
-    pop ecx
-    pop edi
-    add esi,14
-    add edi,32
-    dec ecx
-    jnz near .loop
-.none
-    pop edi
-    ret
-
-.checkalpha
-    mov ecx,20
-    xor eax,eax
-.loop3
-    cmp byte[edi],32
-    je .alpha
-    cmp byte[edi],'A'
-    jb .noalpha
-    cmp byte[edi],'Z'
-    jbe .alpha
-    cmp byte[edi],'a'
-    jb .noalpha
-    cmp byte[edi],'z'
-    ja .noalpha
-.alpha
-    inc eax
-.noalpha
-    inc edi
-    dec ecx
-    jnz .loop3
-    ret
-
-SECTION .data
-.invfile db ' ** INVALID FILE **',0
-SECTION .bss
-fnameheadtemp resb 22
-SECTION .text
-
 GetNormalDirEntries2:
     GUIGetDir2
     ret
@@ -1064,7 +811,10 @@ GetLoadData:
     jmp .doneheader
 .snesheader
     mov byte[showallext],0
+    call GetNormalEntries
+    pushad
     call GetLoadHeader
+    popad
     jmp .doneheader
 .win95lfn
     call GetLoadLfn
@@ -1319,7 +1069,7 @@ GUIcurrentcursloc resd 1
 GUIcurrentdirviewloc resd 1
 GUIcurrentdircursloc resd 1
 GUIdirStartLoc    resd 1
-GUInumentries resd 1
+NEWSYM GUInumentries, resd 1
 GUIdirentries resd 1
 GUIfileentries resd 1
 
