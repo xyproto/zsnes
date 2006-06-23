@@ -24,6 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #else
 #ifdef __WIN32__
 #include <io.h>
+#include <direct.h>
 #else
 #include <unistd.h>
 #endif

@@ -40,6 +40,11 @@ using namespace std;
 #include <io.h>
 typedef int ssize_t;
 #define strcasecmp stricmp
+#ifndef F_OK
+#define F_OK 0
+#endif
+#define popen _popen
+#define pclose _pclose
 #define __WIN32__
 #else
 #include <unistd.h>

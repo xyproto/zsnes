@@ -31,6 +31,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "jma/zsnesjma.h"
 #endif
 
+#ifdef _MSC_VER
+#ifndef F_OK
+#define F_OK 0
+#endif
+#ifndef MAX_PATH
+#define MAX_PATH 260
+#endif
+#endif
 
 #if !defined(__cplusplus) && !defined(bool)
 //C++ style code in C
