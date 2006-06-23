@@ -20,6 +20,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifndef NO_PNG
 #include <png.h>
+#endif
 
 #ifdef __UNIXSDL__
 #include "../gblhdr.h"
@@ -38,6 +39,43 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #else
 #define MAX_PNGNAME_LEN (strlen(ZCartName)+11) //11 = _12345.png\0
 #endif
+
+char *generate_image_filename(const char *image_suffix)
+{
+  char *filename = (char *)malloc(MAX_PNGNAME_LEN);
+  if (filename)
+  {
+    unsigned int i;
+#ifdef __MSDOS__
+    char *p = filename+3;
+    strcpy(filename, "img");
+#else
+    char *p;
+    strcpy(filename, ZCartName);
+    p = strrchr(filename, '.');
+    if (!p) { p = filename+strlen(filename); }
+    *p++ = '_';
+#endif
+    for (i = 0; i < 100000; i++)
+    {
+      sprintf(p, "%05d.%s", i, image_suffix);
+      if (access_dir(ZSnapPath, filename, F_OK))
+      {
+        break;
+      }
+    }
+    if (i == 100000)
+    {
+      free(filename);
+      filename = 0;
+    }
+  }
+  return(filename);
+}
+
+
+
+#ifndef NO_PNG
 
 int Png_Dump(const char *filename, unsigned short width, unsigned short height, unsigned char *image_data, bool usebgr)
 {
@@ -115,39 +153,6 @@ int Png_Dump(const char *filename, unsigned short width, unsigned short height, 
   return(-1);
 }
 
-static char *generate_filename()
-{
-  char *filename = (char *)malloc(MAX_PNGNAME_LEN);
-  if (filename)
-  {
-    unsigned int i;
-#ifdef __MSDOS__
-    char *p = filename+3;
-    strcpy(filename, "img");
-#else
-    char *p;
-    strcpy(filename, ZCartName);
-    p = strrchr(filename, '.');
-    if (!p) { p = filename+strlen(filename); }
-    *p++ = '_';
-#endif
-    for (i = 0; i < 100000; i++)
-    {
-      sprintf(p, "%05d.png", i);
-      if (access_dir(ZSnapPath, filename, F_OK))
-      {
-        break;
-      }
-    }
-    if (i == 100000)
-    {
-      free(filename);
-      filename = 0;
-    }
-  }
-  return(filename);
-}
-
 extern unsigned short *vidbuffer;
 
 #define SNAP_HEIGHT 224
@@ -155,7 +160,7 @@ extern unsigned short *vidbuffer;
 #define PIXEL_SIZE 4
 void Grab_PNG_Data()
 {
-  char *filename = generate_filename();
+  char *filename = generate_image_filename("png");
   if (filename)
   {
     unsigned int *DBits = (unsigned int *)malloc(SNAP_HEIGHT*SNAP_WIDTH*PIXEL_SIZE);
