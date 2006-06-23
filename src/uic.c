@@ -467,7 +467,7 @@ unsigned short MouseButtons[2];
 
 static bool MouseWaiting[2];
 
-void MultiMouseShutdown()
+void MultiMouseShutdown(void)
 {
    MouseCount = 0;
    ManyMouse_Quit();

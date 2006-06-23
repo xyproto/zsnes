@@ -247,7 +247,7 @@ char *realpath(const char *path, char *resolved_path)
 
 #endif
 
-void deinit_paths()
+void deinit_paths(void)
 {
   //Save data that depends on paths before deinit of them
   void SaveSramData();

@@ -102,7 +102,7 @@ void LoadPicture()
 
     if ((file_size-pic_size == cur_zst_size) || (file_size-pic_size == old_zst_size))
     {
-      fseek(fp, -(pic_size), SEEK_END);
+      fseek(fp, -((signed)pic_size), SEEK_END);
       fread(PrevPicture, 1, pic_size, fp);
     }
 
