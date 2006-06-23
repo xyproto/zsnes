@@ -657,13 +657,13 @@ static void get_rom_name(const char *filename, char *namebuffer)
         }
         //FIG Header
         else if ((HeaderBuffer[4] == 0x77 && HeaderBuffer[5] == 0x83) ||
-                (HeaderBuffer[4] == 0xDD && HeaderBuffer[5] == 0x82) ||
-                (HeaderBuffer[4] == 0xDD && HeaderBuffer[5] == 2) ||
-                (HeaderBuffer[4] == 0xF7 && HeaderBuffer[5] == 0x83) ||
-                (HeaderBuffer[4] == 0xFD && HeaderBuffer[5] == 0x82) ||
-                (HeaderBuffer[4] == 0x00 && HeaderBuffer[5] == 0x80) ||
-                (HeaderBuffer[4] == 0x47 && HeaderBuffer[5] == 0x83) ||
-                (HeaderBuffer[4] == 0x11 && HeaderBuffer[5] == 2))
+                 (HeaderBuffer[4] == 0xDD && HeaderBuffer[5] == 0x82) ||
+                 (HeaderBuffer[4] == 0xDD && HeaderBuffer[5] == 2) ||
+                 (HeaderBuffer[4] == 0xF7 && HeaderBuffer[5] == 0x83) ||
+                 (HeaderBuffer[4] == 0xFD && HeaderBuffer[5] == 0x82) ||
+                 (HeaderBuffer[4] == 0x00 && HeaderBuffer[5] == 0x80) ||
+                 (HeaderBuffer[4] == 0x47 && HeaderBuffer[5] == 0x83) ||
+                 (HeaderBuffer[4] == 0x11 && HeaderBuffer[5] == 2))
         {
           HasHeadScore += 2;
         }
@@ -749,7 +749,6 @@ void GetLoadHeader()
   while (i < GUInumentries)
   {
     get_rom_name((char *)(spcRamcmp+1+i*14), (char *)(spcBuffera+1+i*32));
-    spcBuffera[21+i*32] = 0;
     i++;
   }
 }
