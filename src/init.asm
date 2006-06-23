@@ -22,7 +22,7 @@
 
 EXTSYM DosExit,UpdateDevices,Makemode7Table,MusicRelVol,MusicVol,makesprprtable
 EXTSYM romloadskip,start65816,startdebugger,showinfogui,inittable
-EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer,inittableb
+EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer
 EXTSYM inittablec,newgfx16b,DisplayInfo,ssautosw,GUIDelayB,pl12s34
 EXTSYM Output_Text,Change_Dir,SPCDisable,osm2dis,Turbo30hz,CombinDataLocl
 EXTSYM BackupSystemVars,SnowData,SnowVelDist,TextFile,Setper2exec
@@ -134,7 +134,6 @@ NEWSYM init
     call clearmem
     popad
     call inittable
-    call inittableb
     call inittablec
     call SA1inittable
     ; SPC Init
