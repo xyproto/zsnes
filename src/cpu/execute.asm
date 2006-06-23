@@ -790,11 +790,6 @@ NEWSYM execloop
    mov bl,dl
    test byte[curexecstate],2
    jnz .sound
-   mov edi,[tableadb+ebx*4]
-   mov bl,[esi]
-   inc esi
-   sub dh,[cpucycle+ebx]
-   jc .cpuover
 .startagain
    call dword near [edi+ebx*4]
 .cpuover
