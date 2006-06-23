@@ -24,7 +24,7 @@ EXTSYM FPSOn,Makemode7Table,MessageOn,vesa2red10,scanlines,smallscreenon
 EXTSYM MsgCount,Msgptr,OutputGraphicString,OutputGraphicString16b,vidbuffer
 EXTSYM breakatsignb,cvidmode,cbitmode,copyvid
 EXTSYM curblank,drawhline,drawhline16b,drawvline,drawvline16b,fnames,frameskip
-EXTSYM mode7tab,pressed,spcBuffera
+EXTSYM mode7tab,pressed,dumpsound
 EXTSYM spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2selec
 EXTSYM spritetablea,sprlefttot,newengen,resolutn,Open_File
 EXTSYM Close_File,Write_File,Create_File,Get_Key,continueprognokeys
@@ -387,7 +387,9 @@ NEWSYM showmenu
 .nospcsave
     cmp dword[menucloc],30*288
     jne .nosnddmp
+    pushad
     call dumpsound
+    popad
     mov dword[Msgptr],.sndbufsav
     mov eax,[MsgCount]
     mov [MessageOn],eax
@@ -788,51 +790,6 @@ NEWSYM menudrawcursor16b
     jnz .loop
     mov al,128
     ret
-
-NEWSYM dumpsound
-    mov cx,0
-    mov edx,.filename
-    call Create_File
-    ; Process sound data
-    mov bx,ax
-    xor ecx,ecx
-    xor esi,esi
-.loop
-    push eax
-    mov eax,[spcBuffera]
-    mov edx,[eax+ecx*4]
-    pop eax
-    cmp edx,0
-    je .nowrite
-    mov [mode7tab+esi],edx
-    add esi,4
-    cmp esi,65536
-    je .savenow
-.return
-.nowrite
-    inc cx
-    jnz .loop
-    cmp esi,0
-    je .nosave
-    mov ecx,esi
-    mov edx,mode7tab
-    call Write_File
-.nosave
-    call Close_File
-    call Makemode7Table
-    ret
-
-.savenow
-    push ecx
-    mov ecx,65536
-    mov edx,mode7tab
-    call Write_File
-    pop ecx
-    xor esi,esi
-    jmp .return
-
-SECTION .data
-.filename db 'SOUNDDMP.RAW',0
 
 NEWSYM pcxheader
           db 10,5,1,8

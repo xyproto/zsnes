@@ -752,3 +752,14 @@ void GetLoadHeader()
     i++;
   }
 }
+
+void dumpsound()
+{
+  FILE *fp = fopen_dir(ZSpcPath, "sounddmp.raw", "wb");
+  if (fp)
+  {
+    fwrite(spcBuffera, 1, 65536*4+4096, fp);
+    fclose(fp);
+  }
+}
+
