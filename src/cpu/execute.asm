@@ -28,7 +28,7 @@ EXTSYM KeyQuickSnapShot,csounddisable,videotroub,ResetTripleBuf
 EXTSYM Output_Text,Check_Key,Get_Key,Change_Dir
 EXTSYM InitPreGame,Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8
 EXTSYM SetupPreGame,memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap
-EXTSYM DeInitPostGame,spcPCRam,startdebugger,xp,xpb,xpc,tablead,tableadb
+EXTSYM DeInitPostGame,spcPCRam,startdebugger,xp,xpb,xpc,tablead
 EXTSYM tableadc,SA1UpdateDPage,Makemode7Table,nextmenupopup,MovieProcessing
 EXTSYM DosExit,InitDir,InitDrive,sfxramdata,deinitvideo
 EXTSYM SFXEnable,wramdata,cycpbl,cycpblt,irqon,spcon
@@ -341,11 +341,6 @@ reexecuteb2:
     je .nosoundta
     mov edi,[tableadc+ebx*4]
     or byte[curexecstate],2
-    jmp .soundta
-.nosoundta
-    mov edi,[tableadb+ebx*4]
-    and byte[curexecstate],0FDh
-.soundta
 
     mov ebp,[spcPCRam]
 
