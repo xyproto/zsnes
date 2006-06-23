@@ -67,13 +67,8 @@ unsigned int ZFileWriteSize;
 unsigned int ZFileWriteHandle;
 // return 0
 
-// ZFileTell
-unsigned int ZFileTellHandle;
-
 // MKDir/CHDir
-char * MKPath;
 char * CHPath;
-char * RMPath;
 
 // GetDir
 char * DirName;
@@ -190,30 +185,9 @@ unsigned int ZFileWrite()
   return(0);
 }
 
-unsigned int ZFileTell()
-{
-  int res = 0;
-  if (TextFile) {
-    res = ftell(FILEHANDLE[ZFileTellHandle]);
-    if (res == -1) fprintf(stderr, "Oups!! gzTell\n");
-    return(res);
-  } else return gztell(FILEHANDLE[ZFileTellHandle]);
-}
-
-
-unsigned int ZFileMKDir()
-{
-  return(mkdir(MKPath));
-}
-
 unsigned int ZFileCHDir()
 {
   return(chdir(CHPath));
-}
-
-unsigned int ZFileRMDir()
-{
-  return(rmdir(RMPath));
 }
 
 unsigned int ZFileGetDir()

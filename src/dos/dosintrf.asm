@@ -25,8 +25,7 @@ EXTSYM SBHDMA,InitDir,InitDrive,allocptr,ZOpenFile,ZOpenMode
 EXTSYM CurrentHandle,ZFileSeek,ZOpenFileName,ZFileSeekMode,ZFileSeekPos
 EXTSYM ZFileSeekHandle,ZFileWriteHandle,ZFileWriteSize,ZFileWriteBlock
 EXTSYM ZFileWrite,ZFileReadHandle,ZFileReadSize,ZFileReadBlock,ZFileRead
-EXTSYM ZCloseFileHandle,ZCloseFile,ZFileTellHandle
-EXTSYM ZFileTell,GetTime,GetDate,V8Mode,getblaster,Force8b
+EXTSYM ZCloseFileHandle,ZCloseFile,GetTime,GetDate,V8Mode,getblaster,Force8b
 EXTSYM ZFileCHDir,CHPath,ZFileGetDir,DirName,pressed,DTALoc,DTALocPos
 EXTSYM ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
@@ -249,45 +248,6 @@ NEWSYM Close_File
     clc
     ret
     mov ah,3Eh
-    int 21h
-    ret
-
-NEWSYM File_Seek
-    mov [ZFileSeekPos+2],cx
-    mov [ZFileSeekPos],dx
-    mov dword[ZFileSeekMode],0
-    mov dword[ZFileSeekHandle],0
-    mov [ZFileSeekHandle],bx
-    pushad
-    call ZFileSeek
-    popad
-    mov ax,dx
-    mov dx,cx
-    ret
-    ; seek to cx:dx from 0 position, return carry as error
-    mov ax,4200h
-    int 21h
-    ret
-
-NEWSYM File_Seek_End
-    mov [ZFileSeekPos+2],cx
-    mov [ZFileSeekPos],dx
-    mov dword[ZFileSeekHandle],0
-    mov [ZFileSeekHandle],bx
-    mov dword[ZFileSeekMode],1
-    mov dword[ZFileTellHandle],0
-    mov [ZFileTellHandle],bx
-    pushad
-    call ZFileSeek
-    call ZFileTell
-    mov [TempVarSeek],eax
-    popad
-    mov ax,[TempVarSeek]
-    mov dx,[TempVarSeek+2]
-    clc
-    ret
-    ; seek to cx:dx from end position, and return file location in dx:ax
-    mov ax,4202h
     int 21h
     ret
 

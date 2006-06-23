@@ -24,8 +24,7 @@ EXTSYM ZFileSystemInit,SBHDMA,allocptr,putchar
 EXTSYM getchar,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName,ZFileSeekMode
 EXTSYM ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle,ZFileWriteSize
 EXTSYM ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize,ZFileReadBlock
-EXTSYM ZFileRead,ZCloseFileHandle,ZCloseFile
-EXTSYM ZFileTellHandle,ZFileTell,PrevFSMode,sem_sleep
+EXTSYM ZFileRead,ZCloseFileHandle,ZCloseFile,PrevFSMode,sem_sleep
 EXTSYM GetTime,GetDate,GUIkeydelay2,ZFileCHDir,CHPath
 EXTSYM ZFileGetDir,DirName,DTALoc,DTALocPos,ZFileFindATTRIB
 EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,Start60HZ
@@ -181,36 +180,6 @@ NEWSYM Close_File
     call ZCloseFile
     popad
     clc
-    ret
-
-NEWSYM File_Seek
-    mov [ZFileSeekPos+2],cx
-    mov [ZFileSeekPos],dx
-    mov dword[ZFileSeekMode],0
-    mov dword[ZFileSeekHandle],0
-    mov [ZFileSeekHandle],bx
-    pushad
-    call ZFileSeek
-    popad
-    mov ax,dx
-    mov dx,cx
-    ret
-
-NEWSYM File_Seek_End
-    mov [ZFileSeekPos+2],cx
-    mov [ZFileSeekPos],dx
-    mov dword[ZFileSeekHandle],0
-    mov [ZFileSeekHandle],bx
-    mov dword[ZFileSeekMode],1
-    mov dword[ZFileTellHandle],0
-    mov [ZFileTellHandle],bx
-    pushad
-    call ZFileSeek
-    call ZFileTell
-    mov [TempVarSeek],eax
-    popad
-    mov ax,[TempVarSeek]
-    mov dx,[TempVarSeek+2]
     ret
 
 NEWSYM Get_Time
