@@ -487,7 +487,7 @@ GUIQuickLoadUpdate:
   mov edx,10
 .mainloop
 %ifdef __MSDOS__
-  mov ecx,16
+  mov ecx,15
 %else
   mov ecx,25
 %endif

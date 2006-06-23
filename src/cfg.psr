@@ -15,6 +15,12 @@
 per2exec dd 100
 
 @
+@ Disable SPC emulation (0 = NO, 1 = Yes)
+@ Disabling SPC emulation can improve performance, but at the expense of emulation accuracy.
+@ If SPC emulation is disabled, there will be no sound output.
+SPCDisable db 0
+
+@
 @ Update SRAM in real-time (0 = NO, 1 = Yes)
 @ This is useful if you fear something will prevent ZSNES from exiting normally.
 @ ZSNES normally updates SRAM on exit.
@@ -508,12 +514,6 @@ NTSCRef db 0
 @  ----
 @ -- Sound --
 @  ----
-
-@
-@ Disable SPC emulation (0 = NO, 1 = Yes)
-@ Disabling SPC emulation can improve performance, but at the expense of emulation accuracy.
-@ If SPC emulation is disabled, there will be no sound output.
-SPCDisable db 0
 
 @
 @ Sound emulation (0 = off, 1 = ON) - disable if you need the performance
