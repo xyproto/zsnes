@@ -337,8 +337,7 @@ reexecuteb2:
     mov dh,[curcyc]             ; set cycles
 
     mov bl,dl
-    cmp byte[spcon],0
-    je .nosoundta
+
     mov edi,[tableadc+ebx*4]
     or byte[curexecstate],2
 
