@@ -150,6 +150,11 @@ void GUIRestoreVars()
   CheckValueBounds(&pl4contrl, 0, 1, 0, UB);
   CheckValueBounds(&pl5contrl, 0, 1, 0, UB);
 #endif
+
+#ifdef __UNIXSDL__
+  CheckValueBounds(&joy_sensitivity, 0, 32768, 16384, UW);
+#endif
+
   CheckValueBounds(&pl12s34, 0, 1, 0, UB);
   CheckValueBounds(&AllowUDLR, 0, 1, 0, UB);
 #ifdef __MSDOS__

@@ -258,6 +258,15 @@ pl5DRk dd 0
 %endif
 pl5p209 db 0
 
+%ifdef __UNIXSDL__
+@
+@ Joystick Sensitivity
+@ Change this value if you have input issues. Higher values means less sensitive.
+@ If your joystick is not being read at all, try 128 or other low values.
+joy_sensitivity dw 16384
+%endif
+
+
 @
 @ Share player3 & 4 control inputs with Player 1 & 2 - allow 2 devices to be
 @ used for one player (this feature disables Multiplayer 5 support).
