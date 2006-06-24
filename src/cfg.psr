@@ -475,7 +475,6 @@ En2xSaI db 0
 @ Use hq*x filter (0 = NO, 1 = Yes)
 @ This is a filter MaxSt has created. These are very CPU intensive filters that do
 @ very awesome blending to remove the pixelation.
-
 @ The level of HQ*x filtering depends on the current resolution used
 @ HQ2x = 512x448 but below HQ3x min res
 @ HQ3x = 768x672 but below HQ4x min res

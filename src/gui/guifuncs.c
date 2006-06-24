@@ -315,6 +315,14 @@ void GUIRestoreVars()
   CheckValueBounds(&MovieAudio, 0, 1, 1, UB);
   CheckValueBounds(&MovieVideoAudio, 0, 1, 1, UB);
   CheckValueBounds(&MovieAudioCompress, 0, 1, 1, UB);
+#ifdef __MSDOS__
+  CheckValueBounds(&DisplayS, 0, 1, 0, UB);
+  CheckValueBounds(&Palette0, 0, 1, 1, UB);
+#endif
+#ifdef __WIN32__
+  CheckValueBounds(&KitchenSync, 0, 1, 0, UB);
+  CheckValueBounds(&Force60hz, 0, 1, 0, UB);
+#endif
 
   if (TimeChecker == CalcCfgChecksum())
   {
