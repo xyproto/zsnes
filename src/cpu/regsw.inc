@@ -396,7 +396,10 @@ reg2103w:
     mov [oamaddrs],bx
     test al,80h
     jnz .hipri
-;    mov byte[nexthprior],0
+    test bl,0FFh
+    jz .lowpri
+    mov byte[nexthprior],0
+.lowpri
     mov byte[NextLineCache],1
     ret
 .hipri
