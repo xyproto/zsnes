@@ -904,6 +904,7 @@ GUIGUIOptnsKeys:
   GUIKeyCheckbox GUIClick,'C'
   GUIKeyCheckbox JoyPad1Move,'U'
   GUIKeyCheckbox GUIEnableTransp,'T'
+  GUIKeyCheckbox newfont,'O'
 
   cmp dh,'F'
   jne .guioptn8
