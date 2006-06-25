@@ -745,14 +745,20 @@ section .data
 
 section .text
 
+EXTSYM HIRQLoc
+
 NEWSYM reg420Cw
     mov [curhdma],al
     mov bx,[resolutn]
     cmp word[curypos],bx
     jae near .nohdma
     mov al,[curhdma]
-    cmp byte[disablehdma],0
-    jne near .nohdma
+    mov bl,[nexthdma]
+    mov bx,[HIRQLoc]
+    cmp bx,80
+    jb near .nohdma
+    cmp bx,176
+    ja near .nohdma
     mov [nexthdma],al
     cmp al,0
     je near .nohdma
@@ -829,7 +835,6 @@ NEWSYM reg420Cw
     jne .notframe
     inc byte[hdmadelay]
 .notframe
-
     mov byte[hdmarestart],0
     ret
 
