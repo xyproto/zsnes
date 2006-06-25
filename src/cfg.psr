@@ -266,7 +266,6 @@ pl5p209 db 0
 joy_sensitivity dw 16384
 %endif
 
-
 @
 @ Share player3 & 4 control inputs with Player 1 & 2 - allow 2 devices to be
 @ used for one player (this feature disables Multiplayer 5 support).
@@ -396,7 +395,7 @@ OldGfxMode2 db 0
 Palette0 db 1
 
 @
-@ Scanlines (0 = DISABLE, 1 = Full, 2 = 25%, 3 = 50%) - simulate TV scanlines
+@ Scanlines (0 = NONE, 1 = Full, 2 = 25%, 3 = 50%) - simulate TV scanlines
 #ifdef __MSDOS__
 @ 256x256 or 640x480 8bit modes only (25% and 50% in 640x480 16bit mode only)
 #endif
@@ -1090,5 +1089,10 @@ KeyQuickClock dd 0
 KeyDisplayBatt dd 0
 
 @
-@ - EOF -
+@ Use Custom Font (0 = NO, 1 = Yes)
+@ The font currently reads off a format as defined by zfile.txt
+newfont db 0
 
+@
+@ - EOF -
+ 

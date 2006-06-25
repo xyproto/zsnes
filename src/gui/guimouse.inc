@@ -2719,6 +2719,7 @@ DisplayGUIOptnsClick:
   sub eax,[GUIwinposx+10*4]
   mov edx,[GUImouseposy]
   sub edx,[GUIwinposy+10*4]
+  GUIClickCButton 124,13,byte[newfont]
   GUIClickCButton 12,23,byte[mousewrap]     ; Checkboxes
   GUIClickCButton 12,33,byte[mouseshad]
   GUIClickCButton 12,43,byte[lastcursres]

@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../md.h"
 #include "../cfg.h"
 #include "../asm_call.h"
+#include "../numconv.h"
 
 #ifdef __WIN32__
 #define strcasecmp stricmp
@@ -42,6 +43,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 extern unsigned char ComboHeader[23], ComboBlHeader[23], CombinDataGlob[3300];
 extern unsigned char ShowTimer, savecfgforce;
 extern unsigned int SnowTimer, NumSnow, NumComboGlob;
+extern unsigned char GUIFontData1[705];
 enum vtype { UB, UW, UD, SB, SW, SD };
 
 static void CheckValueBounds(void *ptr, int min, int max, int val, enum vtype type)
@@ -776,3 +778,63 @@ void dumpsound()
   }
 }
 
+unsigned int ConvertBinaryToInt(char data[])
+{
+  int x;
+  int num = 0;
+
+  for(x = 0;x<8;x++) { if(data[x] == '1') { num |= BIT(7-x); } }
+
+  return(num);
+}
+
+void InsertFontChar(char data[], int pos)
+{
+  GUIFontData1[pos] = ConvertBinaryToInt(data);
+}
+
+extern unsigned char newfont;
+
+void UseCustomFont()
+{
+  FILE *fp;
+  char data[101];
+  int x = 0;
+
+  fp = fopen_dir(ZCfgPath, "zfont.txt", "r");
+  if(fp)
+  {
+    while(fgets(data,100,fp))
+    {
+      if(strcmp(data,"EOF\n") == 0)
+        break;
+
+      fgets(data,10,fp);		//get first line
+      InsertFontChar(data,x);
+      x++;
+
+      fgets(data,10,fp);		//get second line
+      InsertFontChar(data,x);
+      x++;
+
+      fgets(data,10,fp);		//get third line
+      InsertFontChar(data,x);
+      x++;
+
+      fgets(data,10,fp);		//get fourth line
+      InsertFontChar(data,x);
+      x++;
+
+      fgets(data,10,fp);		//get fifth line
+      InsertFontChar(data,x);
+      x++;
+    }
+
+    fclose(fp);
+  }
+
+  else
+  {
+    newfont = 0;
+  }
+}

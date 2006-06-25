@@ -110,7 +110,22 @@ GUIoutputchar:
   push eax
   xor ebx,ebx
   mov bl,al
+  
+  
+  cmp byte[newfont],0           ; Font Setup (Menus)
+  jne .nozero
   mov edi,GUIFontData
+  jmp .endfont
+.nozero
+  pushad
+  call UseCustomFont
+  popad
+  cmp byte[newfont],1
+  mov edi,GUIFontData1
+  jmp .endfont
+  .endfont
+  
+;  mov edi,GUIFontData
   lea ebx,[ebx*5]
   add edi,ebx
   mov cl,5
@@ -357,7 +372,18 @@ GUIoutputcharwin:
   push eax
   xor ebx,ebx
   mov bl,al
+  
+  cmp byte[newfont],0      ; Font Setup (Windows)
+  jne .nozero 
   mov edi,GUIFontData
+  jmp .endfont
+.nozero
+  cmp byte[newfont],1
+  mov edi,GUIFontData1
+  jmp .endfont
+.endfont
+  
+;  mov edi,GUIFontData
   lea ebx,[ebx*5]
   add edi,ebx
   mov cl,5

@@ -143,7 +143,7 @@ EXTSYM BilinearFilter,lastcursres,SidewinderFix
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SoundBufEn,SPCDisable
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,FastFwdToggle
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
-EXTSYM MovieVideoMode, MovieAudio,MovieVideoAudio,MovieAudioCompress
+EXTSYM MovieVideoMode, MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont,UseCustomFont
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
@@ -3705,6 +3705,8 @@ NEWSYM GUIFontData
   db 10000000b,01001000b,00001000b,00010000b,11100000b; shw n 0x8A
   db 10100000b,10100000b,00000000b,00000000b,00000000b; shw voiced 0x8B
   db 01000000b,10100000b,01000000b,00000000b,00000000b; shw halfvoiced 0x8C
+  
+NEWSYM GUIFontData1, resb 705
 
 ; 189 .. 220
 GUIIconDataClose:
