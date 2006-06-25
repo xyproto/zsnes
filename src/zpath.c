@@ -424,8 +424,8 @@ static const char *strdupcat_internal(const char *str1, const char *str2, const 
 }
 
 //This is to keep the modeless functions working right
-const char *mode = 0;
-const char *mode_text = 0;
+static const char *mode = 0;
+static const char *mode_text = 0;
 
 #define strdupcat_internal(x, y) strdupcat_internal(x, y, __func__, mode ? mode : mode_text)
 #endif
