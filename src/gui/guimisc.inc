@@ -426,7 +426,7 @@ NEWSYM GUIDoReset
 
     xor eax,eax
     mov edx,SPCRAM
-    mov ax,0FFC9h
+    mov ax,0FFC0h
     add edx,eax
     mov [spcPCRam],edx
     mov dword[spcS],1EFh
