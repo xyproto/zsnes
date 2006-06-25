@@ -810,24 +810,19 @@ void UseCustomFont()
         break;
 
       fgets(data,10,fp);		//get first line
-      InsertFontChar(data,x);
-      x++;
+      InsertFontChar(data,x++);
 
       fgets(data,10,fp);		//get second line
-      InsertFontChar(data,x);
-      x++;
+      InsertFontChar(data,x++);
 
       fgets(data,10,fp);		//get third line
-      InsertFontChar(data,x);
-      x++;
+      InsertFontChar(data,x++);
 
       fgets(data,10,fp);		//get fourth line
-      InsertFontChar(data,x);
-      x++;
+      InsertFontChar(data,x++);
 
       fgets(data,10,fp);		//get fifth line
-      InsertFontChar(data,x);
-      x++;
+      InsertFontChar(data,x++);
     }
 
     fclose(fp);

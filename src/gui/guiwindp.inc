@@ -3157,7 +3157,7 @@ DisplayGUIOptns:              ; GUI Options
 
   GUIDisplayTextY 10,6,16,GUIGUIOptnsTextA
   
-  GUIDisplayCheckboxu 10,124,13,newfont,GUIGUIOptnsTextFont,0
+  GUIDisplayCheckboxu 10,124,13,newfont,GUIGUIOptnsTextFont,12
   
   GUIDisplayCheckboxu 10,12,23,mousewrap,GUIGUIOptnsTextA1a,0     ; Checkboxes
   GUIDisplayCheckboxu 10,12,33,mouseshad,GUIGUIOptnsTextA1b,6
@@ -3230,7 +3230,7 @@ GUIGUIOptnsTextC3 db 'ALLOW MULTIPLE INSTANCES',0
 GUIGUIOptnsTextD1 db '@',0
 GUIGUIOptnsTextD2 db '  ',0
 
-GUIGUIOptnsTextFont db 'CUSTOM FONT',0
+GUIGUIOptnsTextFont db 'USE CUSTOM FONT',0
 
 SECTION .text
 

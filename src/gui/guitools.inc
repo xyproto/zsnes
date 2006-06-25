@@ -117,9 +117,6 @@ GUIoutputchar:
   mov edi,GUIFontData
   jmp .endfont
 .nozero
-  pushad
-  call UseCustomFont
-  popad
   cmp byte[newfont],1
   mov edi,GUIFontData1
   jmp .endfont

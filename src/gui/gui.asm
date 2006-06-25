@@ -2568,6 +2568,9 @@ InitGUI:
   je .nong16b
   call GetScreen
 .nong16b
+  pushad
+  call UseCustomFont
+  popad
   call ClearScreen
   pushad
   call Clear2xSaIBuffer
