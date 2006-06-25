@@ -1554,36 +1554,6 @@ void headerhack()
     cycpblt  = 157;
   }
 
-  //Clay Fighter (U), other versions are CLAYFIGHTER with no space
-  //Hangs in the intro. Missing sound in battles.
-  if (!strncmp((RomData+Hi),"CLAY FIGHTER    " ,16))
-  {
-    //Intro
-    RomData[0x1A10B9] = 0xDE;
-    //In Game
-    RomData[0x1A1996] = 0xDE;
-    RomData[0x1AE563] = 0xDE;
-    RomData[0x1AE600] = 0xDE;
-  }
-
-  //Bahamut Lagoon (J) and all known translations
-  //Garbled lines in the intro at some point on the bottom.
-  if (!strncmp((RomData+Hi),"Bahamut Lago" ,12))
-  {
-    RomData[0x10254] = 0xEE;
-  }
-
-  //Mortal Kombat (J/U/E), Super Punch-Out, Dragon Quest 5 (J)
-  //Messed up damage bar in battles. (Mortal Kombat)
-  //Messed up countdown. (Super Punch-Out)
-  //Flickering clouds in intro after starting a new game. (DQ5)
-  if (!strncmp((RomData+Lo),"DRAGONQUEST5" ,12) ||
-      !strncmp((RomData+Lo),"MORTAL KOMBAT   " ,16) ||
-      !strncmp((RomData+Lo),"Super Punch-Out!!   ", 20))
-  {
-    disablehdma = true;
-  }
-
   //Tuff E Nuff (U/E), Dead Dance (J),
   //Cyber Knight II - Tikyu Teikoku no Yabou (J)
   //Shows black screen after loading the ROM. (Tuff E Nuff, Dead Dance)
