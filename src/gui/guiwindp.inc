@@ -3156,9 +3156,9 @@ DisplayGUIOptns:              ; GUI Options
   GUIDrawSlider 10,25,127,148,TBVal2,GUIGUIOptnsTextD2,GUICslidSet,GUICslidText
 
   GUIDisplayTextY 10,6,16,GUIGUIOptnsTextA
-  
+
   GUIDisplayCheckboxu 10,124,13,newfont,GUIGUIOptnsTextFont,12
-  
+
   GUIDisplayCheckboxu 10,12,23,mousewrap,GUIGUIOptnsTextA1a,0     ; Checkboxes
   GUIDisplayCheckboxu 10,12,33,mouseshad,GUIGUIOptnsTextA1b,6
   GUIDisplayCheckboxu 10,12,43,lastcursres,GUIGUIOptnsTextA1c,0

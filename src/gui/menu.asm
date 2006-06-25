@@ -791,6 +791,8 @@ NEWSYM menudrawcursor16b
     mov al,128
     ret
 
+SECTION .data
+
 NEWSYM pcxheader
           db 10,5,1,8
           dw 0,0,255,223
