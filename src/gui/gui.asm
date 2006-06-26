@@ -152,7 +152,7 @@ EXTSYM initDirectDraw,reInitSound,CheckAlwaysOnTop,CheckPriority,AlwaysOnTop
 EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst
 EXTSYM HighPriority,DisableScreenSaver,SaveMainWindowPos
 %elifdef __MSDOS__
-EXTSYM dssel,SetInputDevice209,initvideo2,Force8b
+EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard
 %endif
 
 %ifndef __MSDOS__

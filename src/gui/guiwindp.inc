@@ -2052,11 +2052,28 @@ DisplayGUISound:                     ; Sound Related Options
 .nohiqualityfilter
 %endif
 
+%ifdef __MSDOS__
+  cmp byte[SoundQuality],2
+  jbe .okay
+  cmp byte[SoundQuality],4
+  je .okay
+  cmp byte[StereoSound],1
+  jne .okay
+  cmp byte[SBHDMA],0
+  jne .okay
+  cmp byte[vibracard], 1
+  je .okay
+  GUIDisplayBBox 6,15,61,69,69,167
+  GUIDisplayTextG 6,23,64,GUISoundTextB0
+  jmp .nosrate
+.okay
+%endif
   GUIDisplayBBox 6,15,61,69,69,167            ;Sampling Rate Box
   mov eax,[SoundQuality]
   lea eax,[eax*8+GUISoundTextB1]
   mov [GUITemp],eax
   GUIDisplayTextG 6,23,64,[GUITemp]
+.nosrate
 
   GUIDrawSlider 6,15,100,91,MusicRelVol,GUISoundTextC1,VolslidSet,VolslidText
   ret
@@ -2069,6 +2086,7 @@ GUISoundTextA3 db 'RAISE PITCH LEVEL',0  ; DOS Only
 GUISoundTextA4 db 'FORCE 8-BIT',0        ; DOS Only
 
 GUISoundTextB db 'SAMPLING RATE:',0
+GUISoundTextB0 db 'N/A',0
 GUISoundTextB1 db ' 8000HZ',0
 GUISoundTextB2 db '11025HZ',0
 GUISoundTextB3 db '22050HZ',0

@@ -1261,6 +1261,8 @@ NEWSYM SB_quality_limiter
 
       cmp dword[SoundQuality],2
       jbe .nostereo8b
+      cmp dword[SoundQuality],4
+      je .nostereo8b
       mov dword[SoundQuality],2
 .nostereo8b
       ret
