@@ -2437,14 +2437,10 @@ DisplayGUISoundClick:
   GUIClickCButton 11,141,byte[SPCDisable]
   GUIClickCButton5 11,163,byte[SoundInterpType],1
   GUIClickCButton5 11,173,byte[SoundInterpType],2
-%ifndef __MSDOS__
   GUIClickCButton5MMXC 11,183,byte[SoundInterpType],3
-%endif
   GUIClickCButton5 111,163,byte[LowPassFilterType],1
   GUIClickCButton5 111,173,byte[LowPassFilterType],2
-%ifndef __MSDOS__
   GUIClickCButton5MMXC 111,183,byte[LowPassFilterType],3
-%endif
 %ifdef __WIN32__
   GUIClickCButton 11,101,byte[PrimaryBuffer]
 %endif

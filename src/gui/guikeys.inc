@@ -1408,14 +1408,12 @@ GUISoundKeys:
   GUIkeystoggleoptn byte[SoundInterpType],2
 .nocubicinterp
 
-%ifndef __MSDOS__
   cmp dh,'8'
   jne .no8ptinterp
   cmp byte[MMXSupport],0
   je .no8ptinterp
   GUIkeystoggleoptn byte[SoundInterpType],3
 .no8ptinterp
-%endif
 
   cmp dh,'I'
   jne .nosimplefilter
@@ -1427,14 +1425,12 @@ GUISoundKeys:
   GUIkeystoggleoptn byte[LowPassFilterType],2
 .nodynamicfilter
 
-%ifndef __MSDOS__
   cmp dh,'H'
   jne .nohiqualityfilter
   cmp byte[MMXSupport],0
   je .nohiqualityfilter
   GUIkeystoggleoptn byte[LowPassFilterType],3
 .nohiqualityfilter
-%endif
 
   ret
 

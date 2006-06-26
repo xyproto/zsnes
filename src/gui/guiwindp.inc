@@ -2035,22 +2035,18 @@ DisplayGUISound:                     ; Sound Related Options
   GUIDisplayTextY 6,6,158,GUISoundTextE
   GUIDisplayCheckboxun 6,11,163,SoundInterpType,1,GUISoundTextE1,0
   GUIDisplayCheckboxun 6,11,173,SoundInterpType,2,GUISoundTextE2,0
-%ifndef __MSDOS__
   cmp byte[MMXSupport],0
   je near .no8ptinterp
   GUIDisplayCheckboxun 6,11,183,SoundInterpType,3,GUISoundTextE3,0
 .no8ptinterp
-%endif
 
   GUIDisplayTextY 6,106,158,GUISoundTextF
   GUIDisplayCheckboxun 6,111,163,LowPassFilterType,1,GUISoundTextF1,1
   GUIDisplayCheckboxun 6,111,173,LowPassFilterType,2,GUISoundTextF2,1
-%ifndef __MSDOS__
   cmp byte[MMXSupport],0
   je near .nohiqualityfilter
   GUIDisplayCheckboxun 6,111,183,LowPassFilterType,3,GUISoundTextF3,0
 .nohiqualityfilter
-%endif
 
 %ifdef __MSDOS__
   cmp byte[SoundQuality],2
