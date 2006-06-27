@@ -861,8 +861,8 @@ mousewrap db 0
 mouseshad db 1
 
 @
-@ Drop down 'Game' menu on launch (0 = YES, 1 = No)
-lastcursres db 0
+@ Drop down 'Game' menu when hitting ESC while in game (0 = No, 1 = YES)
+lastcursres db 1
 
 @
 @ Remember window positions (0 = Yes, 1 = NO)

@@ -3175,7 +3175,7 @@ DisplayGUIOptns:              ; GUI Options
 
   GUIDisplayCheckboxu 10,12,23,mousewrap,GUIGUIOptnsTextA1a,0     ; Checkboxes
   GUIDisplayCheckboxu 10,12,33,mouseshad,GUIGUIOptnsTextA1b,6
-  GUIDisplayCheckboxu 10,12,43,lastcursres,GUIGUIOptnsTextA1c,0
+  GUIDisplayCheckboxu 10,12,43,lastcursres,GUIGUIOptnsTextA1c,7
   GUIDisplayCheckboxun 10,12,53,resetposn,0,GUIGUIOptnsTextA1d,5
   ; ^ "Save Win Pos", but the option is really for Reset Pos
   GUIDisplayCheckboxu 10,12,63,GUIClick,GUIGUIOptnsTextA1e,0
@@ -3217,7 +3217,7 @@ SECTION .data
 GUIGUIOptnsTextA db 'GUI SWITCHES:',0
 GUIGUIOptnsTextA1a db 'MOUSE WRAP',0
 GUIGUIOptnsTextA1b db 'MOUSE SHADOW',0
-GUIGUIOptnsTextA1c db 'NO MENU IN GUI',0
+GUIGUIOptnsTextA1c db 'ESC TO GAME MENU',0
 GUIGUIOptnsTextA1d db 'SAVE WIN POSITNS',0
 GUIGUIOptnsTextA1e db 'CLICK ENTERS GUI',0
 GUIGUIOptnsTextA1f db 'USE JOYPAD1',0

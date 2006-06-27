@@ -899,7 +899,7 @@ GUIGUIOptnsKeys:
 .nocap
   GUIKeyCheckbox mousewrap,'M'            ; Checkboxes
   GUIKeyCheckbox mouseshad,'S'
-  GUIKeyCheckbox lastcursres,'K'
+  GUIKeyCheckbox lastcursres,'G'
   GUIKeyCheckbox resetposn,'W'
   GUIKeyCheckbox GUIClick,'C'
   GUIKeyCheckbox JoyPad1Move,'U'

@@ -1094,12 +1094,12 @@ NEWSYM StartGUI
 
   cmp byte[GUIwinptr],0
   jne .nomenuopen
-  cmp byte[lastcursres],1
+  cmp byte[lastcursres],0
   je .nomenuchange
   mov byte[GUIcmenupos],2
   mov byte[GUIcrowpos],0
   mov dword[GUICYLocPtr],MenuDat2
-  cmp byte[lastcursres],0
+  cmp byte[lastcursres],1
   je .nomenuchange
 .nomenuopen
   mov byte[GUIcmenupos],0
