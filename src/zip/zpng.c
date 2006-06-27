@@ -74,7 +74,8 @@ char *generate_image_filename(const char *image_suffix)
   return(filename);
 }
 
-
+extern unsigned short *vidbuffer;
+#define PIXEL (vidbuffer[(i*288) + j + 16])
 
 #ifndef NO_PNG
 
@@ -154,8 +155,6 @@ int Png_Dump(const char *filename, unsigned short width, unsigned short height, 
   return(-1);
 }
 
-extern unsigned short *vidbuffer;
-
 #define SNAP_HEIGHT 224
 #define SNAP_WIDTH 256
 #define PIXEL_SIZE 4
@@ -169,17 +168,12 @@ void Grab_PNG_Data()
     {
       //These are the variables used to perform the 32-bit conversion
       int i,j;
-      unsigned short *pixel;
-      unsigned short conv_pixel;
 
-      //Use zsKnight's 16 to 32 bit color conversion
-      pixel = vidbuffer;
       for (i = 0; i < SNAP_HEIGHT; i++)
       {
         for(j = 0; j < SNAP_WIDTH; j++)
         {
-          conv_pixel = pixel[(i*288)+j+16];
-          DBits[i*SNAP_WIDTH+j] = ((conv_pixel&0xF800)<<8) | ((conv_pixel&0x07E0)<<5) | ((conv_pixel&0x001F)<<3) | 0xFF000000;
+          DBits[i*SNAP_WIDTH+j] = ((PIXEL&0xF800)<<8) | ((PIXEL&0x07E0)<<5) | ((PIXEL&0x001F)<<3) | 0xFF000000;
         }
       }
 
@@ -193,7 +187,6 @@ void Grab_PNG_Data()
 
 #endif
 
-#define PIXEL (vidbuffer[(i*288) + j + 16])
 extern unsigned short resolutn;
 void Grab_BMP_Data()
 {
@@ -217,7 +210,7 @@ void Grab_BMP_Data()
       fwrite2(height, fp);                        //Height
       fwrite2(1, fp);                             //Planes
       fwrite2(24, fp);                            //Bits per pixel
-      for (i = height-1; i < height; i--)
+      for (i = height-1; i < height; i--) //Have to write image upside down
       {
         for (j = 0; j < width; j++)
         {
