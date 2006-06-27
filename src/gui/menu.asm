@@ -20,12 +20,11 @@
 
 %include "macros.mac"
 
-EXTSYM FPSOn,Makemode7Table,MessageOn,vesa2red10,scanlines,smallscreenon
+EXTSYM FPSOn,Makemode7Table,MessageOn,breakatsignb,cbitmode,copyvid
 EXTSYM MsgCount,Msgptr,OutputGraphicString,OutputGraphicString16b,vidbuffer
-EXTSYM breakatsignb,cvidmode,cbitmode,copyvid
 EXTSYM curblank,drawhline,drawhline16b,drawvline,drawvline16b,fnames,frameskip
 EXTSYM mode7tab,pressed,dumpsound,Grab_BMP_Data
-EXTSYM spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2selec
+EXTSYM spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,
 EXTSYM spritetablea,sprlefttot,newengen,resolutn,Open_File
 EXTSYM Close_File,Write_File,Create_File,Get_Key,continueprognokeys
 EXTSYM ForceNonTransp,GUIOn,Check_Key,JoyRead,GetScreen,SSKeyPressed
@@ -812,7 +811,6 @@ NEWSYM savepcx
 %ifndef NO_PNG
     cmp byte[ScreenShotFormat],1
     jne .notpng
-    ChangeDir SnapPath
     pushad
     call Grab_PNG_Data
     popad
@@ -846,7 +844,6 @@ NEWSYM savepcx
 
     ChangeDir SnapPath
 
-    mov ecx,0    ;GetFreeFile use ecx==0 to tell if it's PCX
     call GetFreeFile
 
     call Create_File
@@ -909,13 +906,9 @@ NEWSYM savepcx
     ret
 
 .save16b
-    test byte[pressed+14],1
-    jnz near save16b2
-
     pushad
     call Grab_BMP_Data
     popad
-
     ret
 
 
@@ -927,14 +920,6 @@ SECTION .text
 
 NEWSYM GetFreeFile
 %ifdef __MSDOS__
-    cmp ecx,0
-    jne .isbmp
-    mov dword[.filename+9],'pcx '
-    jmp .doneextselect
-.isbmp
-    mov dword[.filename+9],'bmp '
-.doneextselect
-    mov byte[.filename+12],0
     mov word[picnum],0
 .findagain
     mov edx,.filename
@@ -986,13 +971,7 @@ NEWSYM GetFreeFile
     mov esi,ebx
     mov dword[esi],' 000'
     mov word[esi+4],'0.'
-    cmp ecx,0
-    jne .isbmp
     mov dword[esi+6],'pcx '
-    jmp .doneextselect
-.isbmp
-    mov dword[esi+6],'bmp '
-.doneextselect
     mov byte[esi+9],0
 
     mov word[picnum],0
@@ -1034,123 +1013,5 @@ NEWSYM GetFreeFile
 
 SECTION .data
 .filename db 'image000.pcx',0,0,0,0
-;.pcxsaved db 'SNAPSHOT SAVED TO '
-;.rawsaved db 'SNAPSHOT SAVED TO '
 SECTION .bss
 .imagefname resb 128
-SECTION .text
-
-
-NEWSYM save16b2
-    call prepare16b
-    mov byte[pressed+14],2
-    push es
-    mov edi,pcxheader
-    mov ecx,128
-.clearhead2
-    mov byte[edi],0
-    inc edi
-    dec ecx
-    jnz .clearhead2
-    ; Initial header = 14 bytes
-    mov word[pcxheader],'BM'
-    mov dword[pcxheader+2],02A01Ah-256*224*3+512*448*3
-    mov dword[pcxheader+10],26
-    mov dword[pcxheader+14],12
-    mov word[pcxheader+18],512
-    mov word[pcxheader+20],448
-    mov word[pcxheader+22],1
-    mov word[pcxheader+24],24
-
-    ChangeDir SnapPath
-
-    mov ecx,1    ;GetFreeFile use ecx==1 to tell if it's BMP
-    call GetFreeFile
-
-    mov cx,0
-    call Create_File
-    ; Save header
-    mov bx,ax
-    mov ecx,26
-    mov edx,pcxheader
-    call Write_File
-    ; Save picture Data
-    mov dword[.rowsleft],448
-    mov ax,[vesa2selec]
-    mov es,ax
-    mov esi,32*2+640*2*223*2+640*2
-    mov [.curdptr],esi
-.a2
-    mov ecx,512
-    mov edi,mode7tab
-    mov esi,[.curdptr]
-    sub dword[.curdptr],640*2
-.b2
-    push ecx
-    mov ax,[es:esi]
-    mov cl,[vesa2_bpos]
-    shr ax,cl
-    and ax,1Fh
-    shl al,3
-    mov [edi],al
-    mov ax,[es:esi]
-    mov cl,[vesa2_gpos]
-    shr ax,cl
-    and ax,1Fh
-    shl al,3
-    mov [edi+1],al
-    mov ax,[es:esi]
-    mov cl,[vesa2_rpos]
-    shr ax,cl
-    and ax,1Fh
-    shl al,3
-    mov [edi+2],al
-    pop ecx
-    add edi,3
-    add esi,2
-    dec ecx
-    jnz .b2
-    push edx
-    mov ecx,768*2
-    mov edx,mode7tab
-    call Write_File
-    pop edx
-    add edx,288*2
-    dec dword[.rowsleft]
-    jnz near .a2
-    call Makemode7Table
-    call Close_File
-;    mov dword[Msgptr],.rawsaved
-;    mov eax,[MsgCount]
-;    mov [MessageOn],eax
-    pop es
-    call restore16b
-    ret
-
-SECTION .data
-;.rawsaved db 'SNAPSHOT SAVED TO '
-SECTION .bss
-.rowsleft resd 1
-.curdptr resd 1
-SECTION .text
-
-prepare16b:
-   cmp byte[vesa2red10],1
-   jne .nored
-   cmp byte[cvidmode],5
-   jne .nored
-   cmp byte[scanlines],1
-   je .nored
-   cmp byte[smallscreenon],1
-   je .nored
-   mov byte[vesa2_rpos],10
-   mov byte[vesa2_gpos],5
-.nored
-   ret
-restore16b:
-   cmp byte[vesa2red10],1
-   jne .nored
-   mov byte[vesa2_rpos],11
-   mov byte[vesa2_gpos],6
-.nored
-   ret
