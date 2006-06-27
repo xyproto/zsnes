@@ -33,6 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #endif
 #include "../zpath.h"
+#include "../numconv.h"
 
 #ifdef __MSDOS__
 #define MAX_PNGNAME_LEN 13
@@ -191,3 +192,40 @@ void Grab_PNG_Data()
 }
 
 #endif
+
+#define PIXEL (vidbuffer[(i*288) + j + 16])
+extern unsigned short resolutn;
+void Grab_BMP_Data()
+{
+  char *filename = generate_image_filename("bmp");
+  if (filename)
+  {
+    FILE *fp = fopen_dir(ZSnapPath, filename, "wb");
+    if (fp)
+    {
+      const unsigned int header_size = 26;
+      const unsigned short width = 256;
+      const unsigned short height = resolutn;
+      unsigned short i, j;
+
+      fputs("BM", fp);                            //Header
+      fwrite4(width*height*3+header_size, fp);    //File size
+      fwrite4(0, fp);                             //Reserved
+      fwrite4(header_size, fp);                   //Offset to bitmap
+      fwrite4(12, fp);                            //Length of color explain field;
+      fwrite2(width, fp);                         //Width
+      fwrite2(height, fp);                        //Height
+      fwrite2(1, fp);                             //Planes
+      fwrite2(24, fp);                            //Bits per pixel
+      for (i = height-1; i < height; i--)
+      {
+        for (j = 0; j < width; j++)
+        {
+          fwrite3(((PIXEL&0xF800) << 8) | ((PIXEL&0x07E0) << 5) | ((PIXEL&0x001F) << 3), fp);
+        }
+      }
+      fclose(fp);
+    }
+    free(filename);
+  }
+}

@@ -24,7 +24,7 @@ EXTSYM FPSOn,Makemode7Table,MessageOn,vesa2red10,scanlines,smallscreenon
 EXTSYM MsgCount,Msgptr,OutputGraphicString,OutputGraphicString16b,vidbuffer
 EXTSYM breakatsignb,cvidmode,cbitmode,copyvid
 EXTSYM curblank,drawhline,drawhline16b,drawvline,drawvline16b,fnames,frameskip
-EXTSYM mode7tab,pressed,dumpsound
+EXTSYM mode7tab,pressed,dumpsound,Grab_BMP_Data
 EXTSYM spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,vesa2selec
 EXTSYM spritetablea,sprlefttot,newengen,resolutn,Open_File
 EXTSYM Close_File,Write_File,Create_File,Get_Key,continueprognokeys
@@ -911,96 +911,11 @@ NEWSYM savepcx
 .save16b
     test byte[pressed+14],1
     jnz near save16b2
-    call prepare16b
-    mov edi,pcxheader
-    mov ecx,128
-.clearhead2
-    mov byte[edi],0
-    inc edi
-    dec ecx
-    jnz .clearhead2
-    ; Initial header = 14 bytes
-    mov word[pcxheader],'BM'
-    mov dword[pcxheader+2],02A01Ah-768
-    mov dword[pcxheader+10],26
 
-    mov dword[pcxheader+14],12
-    mov word[pcxheader+18],256
-    mov word[pcxheader+20],223
-    mov word[pcxheader+22],1
-    mov word[pcxheader+24],24
+    pushad
+    call Grab_BMP_Data
+    popad
 
-    cmp byte[resolutn],224
-    je .res224b
-    add dword[pcxheader+2],768*15
-    mov word[pcxheader+20],238
-.res224b
-
-    ChangeDir SnapPath
-
-    mov ecx,1    ;GetFreeFile use ecx==1 to tell if it's BMP
-    call GetFreeFile
-
-    call Create_File
-    ; Save header
-    mov bx,ax
-    mov ecx,26
-    mov edx,pcxheader
-    call Write_File
-    ; Save picture Data
-    mov byte[.rowsleft],223
-    mov esi,[vidbuffer]
-    add esi,32+288*2*223
-    cmp byte[resolutn],224
-    je .res224b2
-    mov byte[.rowsleft],238
-    add esi,288*2*15
-.res224b2
-    mov [.curdptr],esi
-.a2
-    mov ecx,256
-    mov edi,mode7tab
-    mov esi,[.curdptr]
-    sub dword[.curdptr],288*2
-.b2
-    push ecx
-    mov ax,[esi]
-    mov cl,[vesa2_bpos]
-    shr ax,cl
-    and ax,1Fh
-    shl al,3
-    mov [edi],al
-    mov ax,[esi]
-    mov cl,[vesa2_gpos]
-    shr ax,cl
-    and ax,1Fh
-    shl al,3
-    mov [edi+1],al
-    mov ax,[esi]
-    mov cl,[vesa2_rpos]
-    shr ax,cl
-    and ax,1Fh
-    shl al,3
-    mov [edi+2],al
-    pop ecx
-    add edi,3
-    add esi,2
-    dec ecx
-    jnz .b2
-    push edx
-    mov ecx,768
-    mov edx,mode7tab
-    call Write_File
-    pop edx
-    add edx,288*2
-    dec byte[.rowsleft]
-    jnz near .a2
-    call Makemode7Table
-    call Close_File
-;    mov dword[Msgptr],.rawsaved
-;    mov eax,[MsgCount]
-;    mov [MessageOn],eax
-    call restore16b
     ret
 
 
