@@ -443,10 +443,12 @@ Force60hz db 0
 @ Enable KitchenSync (0 = NO, 1 = Yes)
 @ You can enable this if you are using refresh rates > 100Hz(PAL), 120Hz(NTSC)
 @ Otherwise, it probably won't work for you
+@ KitchenSyncPAL only applies to PAL games, use KitchenSync for PAL+NTSC
 %else
 @ Win port only, don't edit
 %endif
 KitchenSync db 0
+KitchenSyncPAL db 0
 
 @
 %ifdef __MSDOS__

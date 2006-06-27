@@ -342,13 +342,14 @@ extern "C" BYTE curblank;
 extern "C" BYTE TripleBufferWin;
 extern "C" BYTE PauseFocusChange;
 extern "C" BYTE KitchenSync;
+extern "C" BYTE KitchenSyncPAL;
 extern "C" BYTE Force60hz;
 
 void DrawScreen()
 {
    if (FullScreen == 1)
    {
-      if (TripleBufferWin == 1 || KitchenSync == 1)
+      if (TripleBufferWin == 1 || KitchenSync == 1 || KitchenSyncPAL == 1)
       {
          if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
            DD_Primary->Restore();
@@ -356,7 +357,7 @@ void DrawScreen()
          if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
            DD_Primary->Restore();
 
-         if (KitchenSync == 1)
+         if (KitchenSync == 1 || KitchenSyncPAL == 1)
          {
             if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
               DD_Primary->Restore();
@@ -1530,6 +1531,7 @@ int InitDirectDraw()
          else
          {
            KitchenSync = 0;
+           KitchenSyncPAL = 0;
            Refresh = 0;
          }
       }
@@ -2601,7 +2603,7 @@ void drawscreenwin(void)
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
 
-   if (!KitchenSync && Refresh !=0 && !Force60hz)
+   if ((!KitchenSync || !KitchenSyncPAL) && Refresh !=0 && !Force60hz)
    {
       Refresh = 0;
       InitDirectDraw();
@@ -2613,7 +2615,7 @@ void drawscreenwin(void)
       InitDirectDraw();
    }
 
-   if (KitchenSync && Refresh != 100 && totlines == 314)
+   if ((KitchenSync||KitchenSyncPAL) && Refresh != 100 && totlines == 314)
    {
       Refresh = 100;
       InitDirectDraw();

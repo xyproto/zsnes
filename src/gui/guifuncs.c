@@ -527,6 +527,7 @@ void GUIRestoreVars()
 #endif
 #ifdef __WIN32__
   CheckValueBounds(&KitchenSync, 0, 1, 0, UB);
+  CheckValueBounds(&KitchenSyncPAL, 0, 1, 0, UB);
   CheckValueBounds(&Force60hz, 0, 1, 0, UB);
 #endif
 

@@ -41,7 +41,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __WIN32__
 void ImportDirectX();
-extern unsigned char KitchenSync, Force60hz;
+extern unsigned char KitchenSync, KitchenSyncPAL, Force60hz;
 #endif
 
 
@@ -102,6 +102,7 @@ static void display_help()
   put_line("  -j      Disable mouse (Automatically turns off right mouse click)");
   put_line("  -k #    Set volume level (0 .. 100)");
 #ifdef __WIN32__
+  put_line("  -kp     Enable the KitchenSync for PAL only");
   put_line("  -ks     Enable the KitchenSync");
 #endif
   put_line("  -l      Force LoROM");
@@ -665,6 +666,13 @@ static void handle_params(int argc, char *argv[])
         else if (tolower(argv[i][1]) == 'k' && tolower(argv[i][2]) == 's') //Enable KitchenSync
         {
           KitchenSync = 1;
+        }
+        #endif
+
+        #ifdef __WIN32__
+        else if (tolower(argv[i][1]) == 'k' && tolower(argv[i][2]) == 'p') //Enable KitchenSync for PAL only
+        {
+          KitchenSyncPAL = 1;
         }
         #endif
 
