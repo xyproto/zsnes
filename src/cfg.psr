@@ -708,13 +708,8 @@ SPL4Path times 1024 db ""
 
 @
 @ Snapshot format
-%ifdef __MSDOS__
-@ (0 = BMP, 1 = pcx - 8bit only)
-%elifdef NO_PNG
-@ (0 = BMP)
-%else
-@ (0 = BMP, 1 = png)
-%endif
+@ (0 = BMP, 1 = PNG)
+@ Note in 8 bit video modes PNG is not selectable
 ScreenShotFormat db 0
 
 @
