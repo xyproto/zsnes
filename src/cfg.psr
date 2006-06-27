@@ -861,7 +861,8 @@ mousewrap db 0
 mouseshad db 1
 
 @
-@ Drop down 'Game' menu when hitting ESC while in game (0 = No, 1 = YES)
+@ ESC to Game Menu (0 = No, 1 = YES)
+@ If enabled, visiting the GUI will have the Game Menu automatically selected.
 lastcursres db 1
 
 @
