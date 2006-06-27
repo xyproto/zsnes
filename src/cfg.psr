@@ -863,7 +863,7 @@ mouseshad db 1
 @
 @ ESC to Game Menu (0 = No, 1 = YES)
 @ If enabled, visiting the GUI will have the Game Menu automatically selected.
-lastcursres db 1
+lastcursres db 0
 
 @
 @ Remember window positions (0 = Yes, 1 = NO)
