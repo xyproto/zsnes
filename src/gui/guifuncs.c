@@ -74,7 +74,7 @@ void LoadCustomFont()
   {
     while(fgets(data,100,fp))
     {
-      if(strcmp(data,"EOF\n") == 0)
+      if((strcmp(data,"EOF\n") == 0)||(x == 705))
         break;
 
       fgets(data,10,fp);		//get first line
