@@ -157,14 +157,14 @@ NEWSYM showmenu
     cmp byte[SSKeyPressed],1
     jne .nosskey
     mov byte[SSKeyPressed],0
-    call savepcx
+    call saveimage
     jmp .nopalwrite
 .nosskey
     cmp byte[SPCKeyPressed],1
     je near .savespckey
     test byte[pressed+14],1
     jz .nof12
-    call savepcx
+    call saveimage
     jmp .nopalwrite
 .nof12
     mov dword[menucloc],0
@@ -192,10 +192,6 @@ NEWSYM showmenu
     mov dword[menudrawbox8b.stringi+13],' PNG'
 %endif
 .normalscrn
-    cmp byte[cbitmode],1
-    je near .nopcx
-    mov dword[menudrawbox8b.stringi+13],' PCX'
-.nopcx
     mov byte[nextmenupopup],0
     mov byte[menu16btrans],0
     mov byte[pressed+1],0
@@ -275,18 +271,18 @@ NEWSYM showmenu
 ;    pop eax
 ;    mov [newengen],al
     cmp dword[menucloc],0
-    jne .nosavepcx
-    call savepcx
-.nosavepcx
+    jne .nosaveimg
+    call saveimage
+.nosaveimg
     cmp dword[menucloc],40*288
-    jne .nosavepcx2
-    call savepcx
+    jne .nosaveimg2
+    call saveimage
     mov byte[ExecExitOkay],0
     mov byte[nextmenupopup],3
     mov byte[NoInputRead],1
     mov byte[t1cc],0
     mov byte[PrevMenuPos],0
-.nosavepcx2
+.nosaveimg2
     cmp dword[menucloc],50*288
     jne .noskipframe
     mov byte[ExecExitOkay],0
@@ -778,24 +774,7 @@ NEWSYM menudrawcursor16b
     mov al,128
     ret
 
-SECTION .data
-
-NEWSYM pcxheader
-          db 10,5,1,8
-          dw 0,0,255,223
-          dw 256,224
-          times 48 db 0
-          db 0,1
-.bpline   dw 256
-          times 128-68 db 0
-
-SECTION .bss
-
-NEWSYM picnum, resw 1
-
-SECTION .text
-
-NEWSYM savepcx
+saveimage:
     mov byte[pressed+1],0
     mov byte[pressed+59],0
 
