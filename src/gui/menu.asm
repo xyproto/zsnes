@@ -20,31 +20,19 @@
 
 %include "macros.mac"
 
-EXTSYM FPSOn,Makemode7Table,MessageOn,breakatsignb,cbitmode,copyvid
+EXTSYM FPSOn,MessageOn,breakatsignb,cbitmode,copyvid
 EXTSYM MsgCount,Msgptr,OutputGraphicString,OutputGraphicString16b,vidbuffer
-EXTSYM curblank,drawhline,drawhline16b,drawvline,drawvline16b,fnames,frameskip
-EXTSYM mode7tab,pressed,dumpsound,Grab_BMP_Data,Grab_BMP_Data_8
+EXTSYM curblank,drawhline,drawhline16b,drawvline,drawvline16b,frameskip
+EXTSYM pressed,dumpsound,Grab_BMP_Data,Grab_BMP_Data_8
 EXTSYM spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,
-EXTSYM spritetablea,sprlefttot,newengen,resolutn,Open_File
-EXTSYM Close_File,Write_File,Create_File,Get_Key,continueprognokeys
+EXTSYM spritetablea,sprlefttot,newengen,Get_Key,continueprognokeys
 EXTSYM ForceNonTransp,GUIOn,Check_Key,JoyRead,GetScreen,SSKeyPressed
 EXTSYM SPCKeyPressed,StopSound,StartSound,ExecExitOkay,t1cc,Clear2xSaIBuffer
-EXTSYM ScreenShotFormat,SnapPath,CHPath,ZFileCHDir,spcsaved,savespcdata
+EXTSYM ScreenShotFormat,spcsaved,savespcdata
 
 %ifndef NO_PNG
 EXTSYM Grab_PNG_Data
 %endif
-
-%macro ChangeDir 1
-    cmp byte[%1],0
-    je %%end
-    pushad
-    mov ebx,%1
-    mov [CHPath],ebx
-    call ZFileCHDir
-    popad
-%%end
-%endmacro
 
 SECTION .text
 
@@ -833,108 +821,3 @@ NEWSYM savepcx
     call Grab_BMP_Data
     popad
     ret
-
-
-SECTION .bss
-.rowsleft resb 1
-.curdptr resd 1
-
-SECTION .text
-
-NEWSYM GetFreeFile
-%ifdef __MSDOS__
-    mov word[picnum],0
-.findagain
-    mov edx,.filename
-    call Open_File
-    jc near .nofile
-    mov bx,ax
-    call Close_File
-
-    inc word[picnum]
-    cmp word[picnum],1000
-    je .nofile
-
-    mov ax,[picnum]
-    xor edx,edx
-    mov bx,100
-    div bx
-    mov cl,al
-    mov ax,dx
-    xor edx,edx
-    mov bx,10
-    div bx
-    mov esi,.filename+5
-    add cl,48
-    add al,48
-    add dl,48
-    mov esi,.filename+5
-    mov [esi],cl
-    mov [esi+1],al
-    mov [esi+2],dl
-    jmp .findagain
-.nofile
-    mov edx,.filename
-
-%else
-    mov esi,fnames+1
-    mov ebx,.imagefname
-.end1
-    inc esi
-    cmp byte[esi+4],0       ;Check for end of filename
-    jne .end1
-    mov edx,fnames+1
-.next
-    mov al,[edx]
-    mov [ebx],al
-    inc edx
-    inc ebx
-    cmp edx,esi
-    jne .next
-    mov esi,ebx
-    mov dword[esi],' 000'
-    mov word[esi+4],'0.'
-    mov dword[esi+6],'pcx '
-    mov byte[esi+9],0
-
-    mov word[picnum],0
-.findagain
-    mov edx,.imagefname
-    call Open_File
-    jc near .nofile
-    mov bx,ax
-    call Close_File
-
-    inc word[picnum]
-    cmp word[picnum],10000
-    je .nofile
-    mov ax,[picnum]
-    xor edx,edx
-    mov bx,1000
-    div bx
-    add al,48
-    mov [esi+1],al
-    mov ax,dx
-    xor edx,edx
-    mov bx,100
-    div bx
-    add al,48
-    mov [esi+2],al
-    mov ax,dx
-    xor edx,edx
-    mov bx,10
-    div bx
-    add al,48
-    add dl,48
-    mov [esi+3],al
-    mov [esi+4],dl
-    jmp .findagain
-.nofile
-    mov edx,.imagefname
-%endif
-    ret
-
-SECTION .data
-.filename db 'image000.pcx',0,0,0,0
-SECTION .bss
-.imagefname resb 128
