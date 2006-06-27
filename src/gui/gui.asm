@@ -143,7 +143,7 @@ EXTSYM BilinearFilter,lastcursres,SidewinderFix
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SoundBufEn,SPCDisable
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,FastFwdToggle
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
-EXTSYM MovieVideoMode, MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont,UseCustomFont
+EXTSYM MovieVideoMode, MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
@@ -2568,9 +2568,6 @@ InitGUI:
   je .nong16b
   call GetScreen
 .nong16b
-  pushad
-  call UseCustomFont
-  popad
   call ClearScreen
   pushad
   call Clear2xSaIBuffer

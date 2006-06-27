@@ -1,8 +1,8 @@
 @ PSR-produced config file (stock default in CAPS)
 @
-@Note, if you're worried you messed up a setting, removing the line will have
-@ZSNES use the default settings for that option.
-@The next time ZSNES is ran, the line will reappear with the default settings.
+@ Note, if you're worried you messed up a setting, removing the line will have
+@ ZSNES use the default settings for that option.
+@ The next time ZSNES is ran, the line will reappear with the default settings.
 @
 @
 @  ----
@@ -480,6 +480,7 @@ BilinearFilter db 0
 En2xSaI db 0
 
 @
+%ifndef __MSDOS__
 @ Use hq*x filter (0 = NO, 1 = Yes)
 @ This is a filter MaxSt has created. These are very CPU intensive filters that do
 @ very awesome blending to remove the pixelation.
@@ -488,6 +489,9 @@ En2xSaI db 0
 @ HQ3x = 768x672 but below HQ4x min res
 @ HQ4x = 1024x896 or above
 @ This is disabled when other filters are used.
+%else
+@ Non-DOS option, don't edit it
+%endif
 hqFilter db 0
 
 @
@@ -496,12 +500,16 @@ hqFilter db 0
 GrayscaleMode db 0
 
 @
-@ High-res mode7 (0 = NO, 1 = Yes) - enabling increases the resolution of Mode 7
+@ High-res mode7 (0 = NO, 1 = Yes)
+@ Doubles the internal resolution of the image when Mode 7 is in use
 @ However this disables most filters, except for interpolation.
 @ This is only useful in certain games and is not useful in general.
 Mode7HiRes16b dd 0
 
 @
+%ifdef __MSDOS__
+@ The NTSC filter is not available for DOS, changing the below settings will do nothing
+%endif
 @ NTSC filter (0 = OFF, 1 = On)
 @ Enable Blargg's wonderful NTSC filter which simulates the effect of an NTSC TV.
 NTSCFilter db 0
@@ -514,7 +522,7 @@ NTSCCont sb 0
 NTSCBright sb 0
 NTSCSharp sb 0
 NTSCWarp sb 0
-@ Refresh screen while changing the filter's parameters (0 = OFF, 1 = On)
+@ Refresh screen while changing the NTSC Filter's parameters (0 = OFF, 1 = On)
 NTSCRef db 0
 
 @
@@ -532,10 +540,23 @@ soundon db 1
 StereoSound db 1
 
 @
+#ifdef __MSDOS__
+@ Force 8-bit Sound (0 = NO, 1 = Yes)
+@ Enable this option if your sound card is producing nothing or static.
+@ This will limit the max frequency while using Stereo sound to 22KHz
+#else
+@ DOS-only option, don't edit
+#endif
+Force8b db 0
+
+@
 @ Sampling rate: 0 = 8000Hz, 1 = 11025Hz, 2 = 22050Hz, 3 = 44100Hz,
 @                            4 = 16000Hz, 5 = 32000Hz, 6 = 48000Hz
 @ Using any other sound frequencies other than the default 32000Hz
 @ is COMPLETELY UNACCEPTABLE in use for sound bug reports.
+#ifdef __MSDOS__
+@ Forcing 8-bit sound will limit the max sampling rate while using Stereo sound to 22KHz
+#endif
 SoundQuality dd 5
 
 @
@@ -545,15 +566,6 @@ MusicRelVol db 100
 @
 @ Swap left audio channel with right (0 = NO, 1 = Yes)
 RevStereo db 0
-
-@
-#ifdef __MSDOS__
-@ Force 8-bit Sound (0 = NO, 1 = Yes)
-@ Enable Force 8-bit Sound if your sound card is producing nothing or static.
-#else
-@ DOS-only option, don't edit
-#endif
-Force8b db 0
 
 @
 #ifdef __MSDOS__
@@ -908,6 +920,11 @@ GUIClick db 0
 JoyPad1Move db 0
 
 @
+@ Use Custom Font (0 = NO, 1 = Yes)
+@ The font currently reads off a format as defined by zfile.txt
+newfont db 0
+
+@
 @  ----
 @ -- Cheats
 @  ----
@@ -1087,11 +1104,6 @@ KeyQuickClock dd 0
 @
 @ Laptop battery display toggle
 KeyDisplayBatt dd 0
-
-@
-@ Use Custom Font (0 = NO, 1 = Yes)
-@ The font currently reads off a format as defined by zfile.txt
-newfont db 0
 
 @
 @ - EOF -
