@@ -23,7 +23,7 @@
 EXTSYM FPSOn,Makemode7Table,MessageOn,breakatsignb,cbitmode,copyvid
 EXTSYM MsgCount,Msgptr,OutputGraphicString,OutputGraphicString16b,vidbuffer
 EXTSYM curblank,drawhline,drawhline16b,drawvline,drawvline16b,fnames,frameskip
-EXTSYM mode7tab,pressed,dumpsound,Grab_BMP_Data
+EXTSYM mode7tab,pressed,dumpsound,Grab_BMP_Data,Grab_BMP_Data_8
 EXTSYM spcon,vesa2_bpos,vesa2_clbit,vesa2_gpos,vesa2_rpos,
 EXTSYM spritetablea,sprlefttot,newengen,resolutn,Open_File
 EXTSYM Close_File,Write_File,Create_File,Get_Key,continueprognokeys
@@ -808,6 +808,9 @@ NEWSYM picnum, resw 1
 SECTION .text
 
 NEWSYM savepcx
+    mov byte[pressed+1],0
+    mov byte[pressed+59],0
+
 %ifndef NO_PNG
     cmp byte[ScreenShotFormat],1
     jne .notpng
@@ -818,91 +821,11 @@ NEWSYM savepcx
 .notpng
 %endif
 
-    mov byte[pressed+1],0
-    mov byte[pressed+59],0
     cmp byte[cbitmode],1
     je near .save16b
-    mov edi,pcxheader
-    mov ecx,128
-.clearhead
-    mov byte[edi],0
-    inc edi
-    dec ecx
-    jnz .clearhead
-    mov byte[pcxheader+0],10
-    mov byte[pcxheader+1],5
-    mov byte[pcxheader+2],1
-    mov byte[pcxheader+3],8
-    mov word[pcxheader+8],255
-    mov word[pcxheader+10],222
-    mov byte[pcxheader.bpline-1],1
-    mov word[pcxheader.bpline],256
-    cmp byte[resolutn],224
-    je .res224ph
-    mov word[pcxheader+10],237
-.res224ph
-
-    ChangeDir SnapPath
-
-    call GetFreeFile
-
-    call Create_File
-    ; Save header
-    mov bx,ax
-    mov ecx,128
-    mov edx,pcxheader
-    call Write_File
-    ; Save picture Data
-    mov byte[.rowsleft],223
-    cmp byte[resolutn],224
-    je .res224p
-    mov byte[.rowsleft],238
-.res224p
-    mov ecx,256
-    mov edx,[vidbuffer]
-    add edx,16+288
-.a
-    xor ecx,ecx
-    mov esi,edx
-    mov edi,mode7tab
-    push ebx
-    mov ebx,256
-.loopp
-    mov al,[esi]
-    mov [edi],al
-    mov ah,al
-    and ah,0C0h
-    cmp ah,0C0h
-    jne .norep
-    mov byte[edi],0C1h
-    inc edi
-    inc ecx
-    mov [edi],al
-.norep
-    inc ecx
-    inc esi
-    inc edi
-    dec ebx
-    jnz .loopp
-    pop ebx
-    xor al,al
-    push edx
-    mov edx,mode7tab
-    call Write_File
-    pop edx
-    add edx,288
-    dec byte[.rowsleft]
-    jnz .a
-    ; Save Palette
-    mov ecx,769
-    mov edx,[vidbuffer]
-    add edx,100000
-    call Write_File
-    call Makemode7Table
-    call Close_File
-;    mov dword[Msgptr],.pcxsaved
-;    mov eax,[MsgCount]
-;    mov [MessageOn],eax
+    pushad
+    call Grab_BMP_Data_8
+    popad
     ret
 
 .save16b

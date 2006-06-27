@@ -222,3 +222,55 @@ void Grab_BMP_Data()
     free(filename);
   }
 }
+
+void Grab_BMP_Data_8()
+{
+  char *filename = generate_image_filename("bmp");
+  if (filename)
+  {
+    FILE *fp = fopen_dir(ZSnapPath, filename, "wb");
+    if (fp)
+    {
+      const unsigned int colors = 256;
+      const unsigned int palette_size = colors*4;
+      const unsigned int header_size = palette_size+54;
+      const unsigned short width = 256;
+      const unsigned short height = resolutn;
+      unsigned short i, j;
+
+      fputs("BM", fp);                          //Header
+      fwrite4(width*height+header_size, fp);    //File size
+      fwrite4(0, fp);                           //Reserved
+      fwrite4(header_size, fp);                 //Offset to bitmap
+      fwrite4(40, fp);                          //Length of color explain field;
+      fwrite4(width, fp);                       //Width
+      fwrite4(height, fp);                      //Height
+      fwrite2(1, fp);                           //Planes
+      fwrite2(8, fp);                           //Bits per pixel
+      fwrite4(0, fp);                           //Compression Format
+      fwrite4(width*height, fp);                //Bitmap data size
+      fwrite4(0, fp);                           //H-Res?
+      fwrite4(0, fp);                           //V-Res?
+      fwrite4(colors, fp);                      //Colors
+      fwrite4(colors, fp);                      //Important Colors
+
+      for (i = 0; i < colors; i++)
+      {
+        unsigned char byte = 0;
+        fwrite((unsigned char *)vidbuffer+100000+i*3+3, 1, 1, fp);
+        fwrite((unsigned char *)vidbuffer+100000+i*3+2, 1, 1, fp);
+        fwrite((unsigned char *)vidbuffer+100000+i*3+1, 1, 1, fp);
+        fwrite(&byte, 1, 1, fp);
+      }
+      for (i = height-1; i < height; i--) //Have to write image upside down
+      {
+        for (j = 0; j < width; j++)
+        {
+          fwrite((unsigned char *)vidbuffer+i*288+j+16, 1, 1, fp);
+        }
+      }
+      fclose(fp);
+    }
+    free(filename);
+  }
+}
