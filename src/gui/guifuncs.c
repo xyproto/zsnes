@@ -239,7 +239,7 @@ void LoadCustomFont()
     fputs("; shw n 0x8A\n10000000\n01001000\n00001000\n00010000\n11100000\n",fp);
     fputs("; shw voiced 0x8B\n10100000\n10100000\n00000000\n00000000\n00000000\n",fp);
     fputs("; shw halfvoiced 0x8C\n01000000\n10100000\n01000000\n00000000\n00000000\n",fp);
-    fputs("EOF\n\0",fp);
+    fputs("EOF\n",fp);
   }
 
   fclose(fp);
