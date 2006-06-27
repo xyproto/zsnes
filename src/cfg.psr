@@ -861,9 +861,9 @@ mousewrap db 0
 mouseshad db 1
 
 @
-@ ESC to Game Menu (1 = No, 0 = YES)
+@ ESC to Game Menu (0 = No, 1 = YES)
 @ If yes, visiting the GUI will have the Game Menu automatically selected.
-lastcursres db 0
+lastcursres db 1
 
 @
 @ Remember window positions (0 = Yes, 1 = NO)
