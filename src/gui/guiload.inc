@@ -692,24 +692,8 @@ LFNData resb 400
 LFNHandle resw 1
 SECTION .text
 
-GetLoadNormal:
-    call GetNormalEntries2
-    ret
-
-GetNormalDirEntries2:
-    GUIGetDir2
-    ret
-
-GetNormalDirEntries:
-    GUIGetDir
-    ret
-
-GetLoadDirNormal2:
-    call GetNormalDirEntries2
-    ret
-
 GetLoadDirNormal:
-    call GetNormalDirEntries
+    GUIGetDir
     push edi
     ; Copy every 14 bytes of spcRamcmp into every 32 bytes of spcBuffer
     mov ecx,[GUIdirentries]
@@ -737,7 +721,7 @@ GetLoadDirNormal:
     ret
 
 GetLoadDirNormallfn:
-    call GetNormalDirEntries
+    GUIGetDir
     push edi
     ; Copy every 14 bytes of spcRamcmp into every 32 bytes of spcBuffer
     mov edi,[GUIfileentries]
@@ -806,7 +790,7 @@ GetLoadData:
     cmp byte[GUIloadfntype],1
     je .snesheader
     mov edi,[spcBuffera]
-    call GetLoadNormal
+    call GetNormalEntries2
     jmp .doneheader
 .snesheader
     mov byte[showallext],0
@@ -929,7 +913,7 @@ GUIGetDirs:
     call GetLoadDirNormal
     jmp .nowin95
 .normaldir
-    call GetLoadDirNormal2
+    GUIGetDir2
     jmp .nowin95
 .win95lfn
     call GetLoadDirNormallfn
