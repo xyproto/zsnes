@@ -983,7 +983,6 @@ void dumpsound()
   }
 }
 
-extern unsigned char GUIwinptr, GUIcmenupos, GUIpmenupos;
 extern unsigned char GUIwinorder[18], GUIwinactiv[18], pressed[448];
 extern unsigned int GUIindex;
 
@@ -1004,33 +1003,26 @@ static void memswap(void *p1, void *p2, size_t p2len)
 
 void loadquickfname()
 {
-  for(GUIwinptr;GUIwinptr>0;--GUIwinptr)
-  {
-    unsigned char pos = GUIwinorder[GUIwinptr];
-    // close window
-    GUIwinorder[GUIwinptr] = 0;
-    GUIwinactiv[pos] = 0;
-    if(GUIwinptr)
-      GUIcmenupos = GUIpmenupos;
-  }
+  memset(GUIwinorder, 0, sizeof(GUIwinorder));
+  memset(GUIwinactiv, 0, sizeof(GUIwinactiv));
 
-//  if(!access(ZRomPath,R_OK))
-//  {
-    // move menuitem to top
-    if(GUIindex || !prevlfreeze)
+  if (!access(ZRomPath,R_OK))
+  {
+    //Move menuitem to top
+    if (GUIindex || !prevlfreeze)
     {
       memswap(prevloadnames,prevloadnames+GUIindex*16,16);
       memswap(prevloadfnamel,prevloadfnamel+GUIindex*512,512);
       memswap(prevloaddnamel,prevloaddnamel+GUIindex*512,512);
 
-      strncpy(ZRomPath,prevloaddnamel,512);
-      strncpy(ZCartName,prevloadfnamel,512);
+      strcpy(ZRomPath, (char *)prevloaddnamel);
+      strcpy(ZCartName, (char *)prevloadfnamel);
 
-      // clear pressed
-      memset(pressed, 0, 448);
+      //Clear pressed
+      memset(pressed, 0, sizeof(pressed));
+
       asm_call(GUIQuickLoadUpdate);
     }
-
     asm_call(GUIloadfilename);
-//  }
+  }
 }
