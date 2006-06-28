@@ -143,7 +143,7 @@ EXTSYM BilinearFilter,lastcursres,SidewinderFix
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SoundBufEn,SPCDisable
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,FastFwdToggle
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
-EXTSYM MovieVideoMode, MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
+EXTSYM MovieVideoMode, MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont,loadquickfname
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
@@ -291,7 +291,7 @@ GUIwinposxo dd 0,6   ,65  ,33  ,42  ,2   ,34  ,6   ,64  ,8    ,8    ,33  ,56  ,6
 GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,60  ,20  ,20  ,60  ,60  ,20   ,30  ,20
 GUIwinsizex dd 0,244 ,126 ,189 ,172 ,250 ,188 ,244 ,128 ,240  ,240  ,190 ,144 ,128 ,144 ,246 ,250 ,200 ,160 ,244  ,200 ,150
 GUIwinsizey dd 0,190 ,48  ,166 ,190 ,192 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,100 ,100 ,190  ,160 ,180
-GUIwinptr db 0
+NEWSYM GUIwinptr, db 0
 
 NEWSYM WaterOn,  db 1
 NEWSYM ForceROMTiming, db 0
@@ -314,16 +314,16 @@ SECTION .bss
 NEWSYM CombinDataGlob, resb 3300 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff
 NEWSYM CombinDataLocl, resb 3300
 
-GUIwinorder resb 18
+NEWSYM GUIwinorder, resb 18
 GUIwinpos   resb 18
-GUIwinactiv resb 18
+NEWSYM GUIwinactiv, resb 18
 ViewBuffer  resb 50*32
 
 GUItextcolor resb 5
-GUIcmenupos  resb 1
+NEWSYM GUIcmenupos, resb 1
 GUIescpress  resb 1
 GUIcwinpress resb 1
-GUIpmenupos  resb 1
+NEWSYM GUIpmenupos, resb 1
 GUIcrowpos   resd 1
 GUIpclicked  resb 1
 GUImouseposx resd 1
@@ -406,6 +406,8 @@ NEWSYM TRVal2, resw 1
 NEWSYM TGVal2, resw 1
 NEWSYM TBVal2, resw 1
 
+NEWSYM GUIindex, resd 1
+
 SECTION .text
 
 %macro stim 0
@@ -470,7 +472,7 @@ clearsram:
   pop eax
   ret
 
-GUIQuickLoadUpdate:
+NEWSYM GUIQuickLoadUpdate
   cmp byte[prevlfreeze],0
   je .off
   mov dword[GUIPrevMenuData.onoff+14],'ON  '
@@ -1843,7 +1845,10 @@ CheckMenuItemHelp:
   mov edi,prevloadfnamel+%1*512
   mov ebx,prevloadnames+%1*16
   mov ecx,%1
+  mov byte[GUIindex],%1
+  pushad
   call loadquickfname
+  popad
 %%notvalid
   ret
 %%skip

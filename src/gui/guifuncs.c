@@ -35,6 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../cfg.h"
 #include "../asm_call.h"
 #include "../numconv.h"
+#include <unistd.h>
 
 #ifdef __WIN32__
 #define strcasecmp stricmp
@@ -978,4 +979,56 @@ void dumpsound()
     fwrite(spcBuffera, 1, 65536*4+4096, fp);
     fclose(fp);
   }
+}
+
+extern unsigned char GUIwinptr, GUIcmenupos, GUIpmenupos;
+extern unsigned char GUIwinorder[18], GUIwinactiv[18], pressed[448];
+extern unsigned int GUIindex;
+
+static void memswap(void *p1, void *p2, size_t p2len)
+{
+  char *ptr1 = (char *)p1;
+  char *ptr2 = (char *)p2;
+
+  size_t p1len = ptr2 - ptr1;
+  unsigned char byte;
+  while (p2len--)
+  {
+    byte = *ptr2++;
+    memmove(ptr1+1, ptr1, p1len);
+    *ptr1++ = byte;
+  }
+}
+
+void loadquickfname()
+{
+  for(GUIwinptr;GUIwinptr>0;--GUIwinptr)
+  {
+    unsigned char pos = GUIwinorder[GUIwinptr];
+    // close window
+    GUIwinorder[GUIwinptr] = 0;
+    GUIwinactiv[pos] = 0;
+    if(GUIwinptr)
+      GUIcmenupos = GUIpmenupos;
+  }
+
+//  if(!access(ZRomPath,R_OK))
+//  {
+    // move menuitem to top
+    if(GUIindex || !prevlfreeze)
+    {
+      memswap(prevloadnames,prevloadnames+GUIindex*16,16);
+      memswap(prevloadfnamel,prevloadfnamel+GUIindex*512,512);
+      memswap(prevloaddnamel,prevloaddnamel+GUIindex*512,512);
+
+      strncpy(ZRomPath,prevloaddnamel,512);
+      strncpy(ZCartName,prevloadfnamel,512);
+
+      // clear pressed
+      memset(pressed, 0, 448);
+      asm_call(GUIQuickLoadUpdate);
+    }
+
+    asm_call(GUIloadfilename);
+//  }
 }
