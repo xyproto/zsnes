@@ -31,23 +31,14 @@ Config file handler creator by Nach (C) 2005-2006
 #include <sstream>
 #include <set>
 #include <stack>
-#include <cstdio>
 using namespace std;
 
 #include <errno.h>
 
 #ifdef _MSC_VER //MSVC
-#include <io.h>
 typedef int ssize_t;
 #define strcasecmp stricmp
-#ifndef F_OK
-#define F_OK 0
-#endif
-#define popen _popen
-#define pclose _pclose
 #define __WIN32__
-#else
-#include <unistd.h>
 #endif
 
 #if defined(__MSDOS__) || defined(__WIN32__)
@@ -59,19 +50,11 @@ typedef int ssize_t;
 string cflags;
 
 #ifdef _MSC_VER //MSVC
-static inline string COMPILE_EXE(string exe, string c)
-{
-  return(string(string("cl /nologo /Fe")+exe+string(" ")+c));
-}
 static inline string COMPILE_OBJ(string obj, string c)
 {
   return(string(string("cl /nologo /Fo")+obj+string(" ")+c));
 }
 #else
-static inline string COMPILE_EXE(string exe, string c)
-{
-  return(string(string("gcc -o ")+exe+string(" ")+c+string(" -s")));
-}
 static inline string COMPILE_OBJ(string obj, string c)
 {
   return(string(string("gcc ")+cflags+(" -o ")+obj+string(" -c ")+c));
@@ -246,82 +229,64 @@ string hex_convert(string str)
   return(str);
 }
 
-//Unforunetly, this can have a time of check vs. time of use race condition
-string temp_name(string prefix, string suffix)
-{
-  unsigned int count = 0;
-  char buff[6];
-  for (;;)
-  {
-    sprintf(buff, "%d", count);
-    string name = prefix+buff+suffix;
-    if (access(name.c_str(), F_OK))
-    {
-      return(name);
-    }
-    if (count == 99999)
-    {
-      break;
-    }
-    count++;
-  }
-  return(prefix+suffix); //Oh well, stupid fall back
-}
-
 //Ascii numbers to integer, with support for mathematics in the string
-ssize_t enhanced_atoi(const char *str)
+ssize_t enhanced_atoi(char *&s, int level = 0)
 {
-  ssize_t num = 0;
-  string cname(temp_name(family_name, ".c"));
-  string ename(temp_name(string("."SLASH_STR)+family_name, ".exe"));
-  char buffer[20];
-  *buffer = 0;
-
-  //Biggest cheat of all time
-  ofstream out_stream(cname.c_str());
-  if (out_stream)
+  const int max_level = 6;
+  if (level == max_level)
   {
-    out_stream << "#include <stdio.h>\n"
-               << "int main()\n"
-               << "{\n"
-               << "  printf(\"%d\\n\", " << hex_convert(str) << ");\n"
-               << "  return(0);\n"
-               << "}\n\n";
-    out_stream.close();
-
-    system(COMPILE_EXE(ename, cname).c_str());
-    remove(cname.c_str());
-
-    if (!access(ename.c_str(), F_OK))
+    if (*s == '(')
     {
-      FILE *fp = popen(ename.c_str(), "r");
-      if (fp)
-      {
-        fgets(buffer, sizeof(buffer), fp);
-        pclose(fp);
-      }
-      remove(ename.c_str());
+      ssize_t res = enhanced_atoi(++s);
+      if (*s != ')') { current_location.error("Missing ) in expression"); }
+      s++;
+      return(res);
     }
-
-    if (*buffer)
+    else if (isdigit(*s))
     {
-      num = atoi(buffer);
+      int numc, t;
+      sscanf(s, "%d%n", &t, &numc);
+      s += numc;
+      return((ssize_t)t);
     }
-    else
+    else if (*s == '-')
     {
-      cerr << "Error: Can not get accurate value information (" << ename << ")." << endl;
+      return(-enhanced_atoi(++s, max_level));
     }
-
-    //Needed for stupid MSVCs which leave object files lying around
-    cname.erase(cname.length()-2);
-    cname += ".obj";
-    remove(cname.c_str());
-    ename.erase(ename.length()-4);
-    ename += ".obj";
-    remove(ename.c_str());
+    else if (*s == '~')
+    {
+      return(~enhanced_atoi(++s, max_level));
+    }
   }
-
-  return(num);
+  ssize_t val = enhanced_atoi(s, level+1);
+  while (*s)
+  {
+    const char *org = s;
+    switch (level)
+    {
+      case 0: if (*s != '|') { return(val); } break;
+      case 1: if (*s != '^') { return(val); } break;
+      case 2: if (*s != '&') { return(val); } break;
+      case 3: if (!((s[0] == '<' && s[1] == '<') || (s[0] == '>' && s[1] == '>'))) { return(val); } else { ++s; } break;
+      case 4: if (!(*s == '+' || *s == '-')) { return(val); } break;
+      case 5: if (!(*s == '*' || *s == '/' || *s == '%')) { return(val); } break;
+    }
+    ssize_t res = enhanced_atoi(++s, level+1);
+    switch (*org)
+    {
+      case '|': val |= res; break;
+      case '^': val ^= res; break;
+      case '&': val &= res; break;
+      case '<': val <<= res; break;
+      case '>': val >>= res; break;
+      case '+': val += res; break;
+      case '-': val -= res; break;
+      case '*': val *= res; break;
+      case '/': val /= res; break;
+      case '%': val %= res; break;
+    }
+  }
+  return(val);
 }
 
 //Standard atoi(), but shows error if string isn't all a number
