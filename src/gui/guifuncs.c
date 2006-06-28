@@ -35,10 +35,12 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../cfg.h"
 #include "../asm_call.h"
 #include "../numconv.h"
-#include <unistd.h>
 
 #ifdef __WIN32__
+#include <io.h>
 #define strcasecmp stricmp
+#else
+#include <unistd.h>
 #endif
 
 extern unsigned char ComboHeader[23], ComboBlHeader[23], CombinDataGlob[3300];
