@@ -20,12 +20,8 @@
 
 %include "macros.mac"
 
-EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,ZFileSystemInit
-EXTSYM SBHDMA,InitDir,InitDrive,allocptr,ZOpenFile,ZOpenMode
-EXTSYM CurrentHandle,ZFileSeek,ZOpenFileName,ZFileSeekMode,ZFileSeekPos
-EXTSYM ZFileSeekHandle,ZFileWriteHandle,ZFileWriteSize,ZFileWriteBlock
-EXTSYM ZFileWrite,ZFileReadHandle,ZFileReadSize,ZFileReadBlock,ZFileRead
-EXTSYM ZCloseFileHandle,ZCloseFile,GetTime,GetDate,V8Mode,getblaster,Force8b
+EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,InitDir,InitDrive
+EXTSYM GetTime,GetDate,V8Mode,getblaster,Force8b,SBHDMA,allocptr
 EXTSYM ZFileCHDir,CHPath,ZFileGetDir,DirName,pressed,DTALoc,DTALocPos
 EXTSYM ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
@@ -78,7 +74,6 @@ NEWSYM StartUp
     mov [ZSNESBase+2],cx                ; These variables are used for
     mov [ZSNESBase],dx                  ; memory allocation so they can be
 .FatalError                             ; ignored for non-DOS ports
-    call ZFileSystemInit
     ret
 
 ; SystemInit - Initialize all Joystick stuff, load in all configuration data,
@@ -149,106 +144,6 @@ NEWSYM WaitForKey       ; Wait for a key to be pressed
     mov ah,7
     int 21h
     ; return key in al
-    ret
-
-NEWSYM Open_File
-    pushad
-    mov dword[ZOpenMode],0
-    mov [ZOpenFileName],edx
-    call ZOpenFile
-    cmp eax,0FFFFFFFFh
-    je .error
-    mov dword[ZFileSeekMode],0
-    mov dword[ZFileSeekPos],0
-    mov dword[ZFileSeekHandle],0
-    mov bx,[CurrentHandle]
-    dec bx
-    mov [ZFileSeekHandle],bx
-    call ZFileSeek
-    popad
-    mov ax,[CurrentHandle]
-    dec ax
-    clc
-    ret
-.error
-    popad
-    stc
-    ret
-    mov ax,3D00h
-    int 21h
-    ; return ax = file handle, carry = error
-    ret
-
-NEWSYM Create_File
-    pushad
-    mov dword[ZOpenMode],1
-    mov [ZOpenFileName],edx
-    call ZOpenFile
-    cmp eax,0FFFFFFFFh
-    je .error
-    popad
-    mov ax,[CurrentHandle]
-    dec ax
-    clc
-    ret
-.error
-    popad
-    stc
-    ret
-    mov ah,3Ch
-    mov cx,0
-    int 21h
-    ; return ax = file handle
-    ret
-
-NEWSYM Write_File
-    mov dword[ZFileWriteHandle],0
-    mov [ZFileWriteHandle],bx
-    mov [ZFileWriteSize],ecx
-    mov [ZFileWriteBlock],edx
-    pushad
-    call ZFileWrite
-    cmp eax,0FFFFFFFFh
-    je .fail
-    popad
-    mov eax,1
-    clc
-    ret
-.fail
-    popad
-    mov eax,0
-    stc
-    ret
-    mov ah,40h
-    int 21h
-    ret
-
-NEWSYM Read_File
-    mov dword[ZFileReadHandle],0
-    mov [ZFileReadHandle],bx
-    mov [ZFileReadSize],ecx
-    mov [ZFileReadBlock],edx
-    pushad
-    call ZFileRead
-    mov [TempVarSeek],eax
-    popad
-    mov eax,[TempVarSeek]
-    clc
-    ret
-    mov ah,3Fh
-    int 21h
-    ret
-
-NEWSYM Close_File
-    mov dword[ZCloseFileHandle],0
-    mov [ZCloseFileHandle],bx
-    pushad
-    call ZCloseFile
-    popad
-    clc
-    ret
-    mov ah,3Eh
-    int 21h
     ret
 
 NEWSYM Get_Time
