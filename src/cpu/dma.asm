@@ -20,7 +20,7 @@
 
 EXTSYM memtabler8,regptw,snesmap2,snesmmap,memtablew8,regptr,memtabler16
 EXTSYM dmadata,hdmatype,nexthdma,resolutn,curhdma,curypos,hdmadata
-EXTSYM hdmadelay,hdmarestart,nohdmaframe
+EXTSYM hdmadelay,hdmarestart,nohdmaframe,INTEnab,HIRQLoc
 
 ;*******************************************************
 ; Transfer DMA                     Inits & Transfers DMA
@@ -745,23 +745,24 @@ section .data
 
 section .text
 
-EXTSYM HIRQLoc
-
 NEWSYM reg420Cw
     mov [curhdma],al
     mov bx,[resolutn]
     cmp word[curypos],bx
     jae near .nohdma
     mov al,[curhdma]
-    mov bl,[nexthdma]
     mov bx,[HIRQLoc]
+    test byte[INTEnab],10h
+    jz .skipcheck
     cmp bx,80
     jb near .nohdma
     cmp bx,176
     ja near .nohdma
+.skipcheck
+    mov bl,[nexthdma]
+    and bl,al
+    jnz near .nohdma
     mov [nexthdma],al
-    cmp al,0
-    je near .nohdma
     push ebx
     push esi
     push edi

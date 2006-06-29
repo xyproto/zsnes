@@ -1523,19 +1523,6 @@ void headerhack()
   }
 
   /*
-  Super Mario World 2 - Yoshi's Island (U/E),
-  Super Mario - Yossy Island (J), and variants
-  */
-  //Probably some GFX bugs.
-  if (!strncmp((RomData+Lo),"YOSSY'S ISLA" ,12) ||
-      !strncmp((RomData+Lo),"YOSHI'S ISLA" ,12))
-  {
-    hdmaearlstart = 2;
-    opexec268 = 116;
-    opexec358 = 126;
-  }
-
-  /*
   Marvelous (J) has this hack in the asm, but disabled
 
   Alternate if for Marvelous-inclusive version
@@ -1569,9 +1556,6 @@ void headerhack()
     cycpbl   = 75;
     cycpblt  = 75;
   }
-
-  //Okaaay...
-  if(!strncmp((RomData+Lo),"PILOTWINGS  ",12)) { disablehdma = true; }
 
   //Addams Family Values (U/E)
   //Restarts or shows a black screen after starting a new game.
