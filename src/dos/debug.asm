@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM DosExit,curblank,start65816,UpdateDPage,splitflags,joinflags,delay
-EXTSYM Create_File,Write_File,Close_File,Check_Key,Get_Key
+EXTSYM Check_Key,Get_Key
 EXTSYM LastLog,endprog,printhex,vesa2_rfull,vesa2_rtrcl,vesa2_gfull,vesa2_gtrcl
 EXTSYM vram,spcnumread,Curtableaddr,statesaver,memtablew8,printhex8
 EXTSYM writeon,curcyc,dmadata,execsingle,initaddrl,memtabler8,pdh,debugloadstate
@@ -51,20 +51,6 @@ NEWSYM startdebugger
 
     pushad
     call LastLog
-;    cmp dword[DecompAPtr],0
-;    je near .nofile
-    mov edx,.fname2+1
-    call Create_File
-    xor ecx,ecx
-    mov bx,ax
-    mov ecx,65536
-    mov edx,[vram]
-    EXTSYM oamram
-    mov edx,oamram
-    mov ecx,544
-    call Write_File
-    call Close_File
-.nofile
     popad
 
     cmp byte[execut],1
@@ -288,21 +274,6 @@ NEWSYM debugloopb
 ;*******************************************************
 
 NEWSYM debugdump
-    ; Dump SPCRam
-    mov edx,.fname
-    call Create_File
-    mov bx,ax
-    mov ecx,65536
-    mov edx,SPCRAM
-    call Write_File
-    call Close_File
-    mov edx,.fname2
-    call Create_File
-    mov bx,ax
-    mov ecx,256
-    mov edx,DSPMem
-    call Write_File
-    call Close_File
     jmp debugloopb
 
 SECTION .data
@@ -1492,14 +1463,6 @@ NEWSYM breakatsignlog
     dec ecx
     jnz .loopb
 
-    pushad
-    mov ax,ds
-    mov es,ax
-    mov edx,.logfname
-    call Create_File
-    mov [.handle],ax
-    popad
-
     xor eax,eax
     xor ebx,ebx
     xor ecx,ecx
@@ -1530,28 +1493,6 @@ NEWSYM breakatsignlog
     call UpdateDPage
     ; execute
 .loopa
-
-    pushad
-    mov ax,ds
-    mov es,ax
-    mov [spcPCRam],ebp
-    mov [Curtableaddr],edi
-    mov [xp],dl
-    mov [curcyc],dh
-    mov eax,[initaddrl]
-    sub esi,eax                 ; subtract program counter by address
-    mov [xpc],si
-    mov edi,.loggeddata
-    call nextopcode.outputbuffer
-    mov byte[edi],13
-    mov byte[edi+1],10
-    mov byte[edi+2],0
-    mov eax,.loggeddata
-    call StringLength
-    mov edx,.loggeddata
-    mov bx,[.handle]
-    call Write_File
-    popad
 
     call splitflags
     call execsingle
@@ -1587,9 +1528,6 @@ NEWSYM breakatsignlog
     sub esi,eax                 ; subtract program counter by address
     mov [xpc],si
 
-    mov bx,[.handle]
-    call Close_File
-
     mov ah,02h
     mov bl,0
     mov dh,0
@@ -1597,39 +1535,6 @@ NEWSYM breakatsignlog
     int 10h
     pop es
     jmp debugloopa
-
-
-;    mov edx,.logfname
-;    call Create_File
-;    mov [.handle],ax
-
-
-    jmp .blah
-    pushad
-    mov ax,ds
-    mov es,ax
-    mov [spcPCRam],ebp
-    mov [Curtableaddr],edi
-    mov [xp],dl
-    mov [curcyc],dh
-    mov eax,[initaddrl]
-    sub esi,eax                 ; subtract program counter by address
-    mov [xpc],si
-    mov edi,.loggeddata
-    call nextopcode.outputbuffer
-    mov byte[edi],13
-    mov byte[edi+1],10
-    mov byte[edi+2],0
-    mov eax,.loggeddata
-    call StringLength
-    mov edx,.loggeddata
-    mov bx,[.handle]
-    call Write_File
-    popad
-.blah
-
-    mov bx,[.handle]
-    call Close_File
 
 SECTION .data
 .loggeddata times 128 db 0
