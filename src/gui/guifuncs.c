@@ -34,7 +34,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../md.h"
 #include "../cfg.h"
 #include "../asm_call.h"
-#include "../numconv.h"
+
+#define BIT(X) (1 << (X))
 
 #ifdef __WIN32__
 #include <io.h>
