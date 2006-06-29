@@ -506,7 +506,7 @@ void GUIRestoreVars()
     CheckValueBounds(GUIwinposy+i, 8, 221, 20, SD);
   }
 #ifdef __WIN32__
-  CheckValueBounds(&MouseWheel, 0, 1, 0, UB);
+  CheckValueBounds(&MouseWheel, 0, 1, 1, UB);
   CheckValueBounds(&TrapMouseCursor, 0, 1, 0, UB);
   CheckValueBounds(&AlwaysOnTop, 0, 1, 0, UB);
 #endif
