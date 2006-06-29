@@ -25,7 +25,7 @@ EXTSYM romloadskip,start65816,startdebugger,showinfogui,inittable
 EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer
 EXTSYM inittablec,newgfx16b,DisplayInfo,ssautosw,GUIDelayB,pl12s34
 EXTSYM Output_Text,Change_Dir,SPCDisable,osm2dis,Turbo30hz,CombinDataLocl
-EXTSYM BackupSystemVars,SnowData,SnowVelDist,TextFile,Setper2exec
+EXTSYM BackupSystemVars,SnowData,SnowVelDist,Setper2exec
 EXTSYM JoyRead,pressed,mousebuttons,mousexdir,mouseydir,mousexpos,mouseypos
 EXTSYM pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
 EXTSYM pl1Ak,pl1Lk,pl1Yk,pl1Bk,pl1Rk,pl1Xtk,pl1Ytk,pl1Atk,pl1Btk,pl1Ltk,pl1Rtk
@@ -1271,7 +1271,6 @@ NEWSYM IPSPatched, resb 1
 SECTION .text
 
 NEWSYM loadfile
-    mov byte[TextFile], 0
     call GetCurDir
     mov byte[InGUI],0
 %ifdef __UNIXSDL__
@@ -1360,7 +1359,6 @@ NEWSYM loadfileGUI
     mov byte[spcon],1
 .nosound
 
-    mov byte[TextFile], 0
     mov dword[MessageOn],0
     mov byte[yesoutofmemory],0
     mov byte[.fail],0
@@ -1402,7 +1400,6 @@ NEWSYM loadfileGUI
     mov byte[yesoutofmemory],1
 .notfailed
 
-    mov byte[TextFile], 1
     cmp byte[IPSPatched],0
     jne .patched
     pushad
@@ -1412,7 +1409,6 @@ NEWSYM loadfileGUI
     ret
 
 .failed
-    mov byte[TextFile], 1
     cmp byte[InGUI],1
     je .noguic
     mov edx,.failop

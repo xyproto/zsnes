@@ -20,11 +20,7 @@
 
 %include "macros.mac"
 
-EXTSYM ZFileSystemInit,SBHDMA,allocptr,putchar
-EXTSYM getchar,ZOpenFile,ZOpenMode,ZFileSeek,ZOpenFileName,ZFileSeekMode
-EXTSYM ZFileSeekPos,ZFileSeekHandle,ZFileWriteHandle,ZFileWriteSize
-EXTSYM ZFileWriteBlock,ZFileWrite,ZFileReadHandle,ZFileReadSize,ZFileReadBlock
-EXTSYM ZFileRead,ZCloseFileHandle,ZCloseFile,PrevFSMode,sem_sleep
+EXTSYM getchar,PrevFSMode,sem_sleep,SBHDMA,allocptr,putchar
 EXTSYM GetTime,GetDate,GUIkeydelay2,ZFileCHDir,CHPath
 EXTSYM ZFileGetDir,DirName,DTALoc,DTALocPos,ZFileFindATTRIB
 EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,Start60HZ
@@ -48,7 +44,6 @@ EXTSYM vesa2_btrcla,Init_2xSaIMMXW,GetLocalTime,V8Mode,GrayscaleMode,PrevWinMode
 SECTION .text
 
 NEWSYM StartUp
-    call ZFileSystemInit
     ret
 
 ; SystemInit - Initialize all Joystick stuff, load in all configuration data,
@@ -97,89 +92,6 @@ NEWSYM WaitForKey       ; Wait for a key to be pressed
     popad
     mov al,[wfkey]
     ; return key in al
-    ret
-
-SECTION .data
-NEWSYM TempHandle, dd 0
-
-SECTION .text
-NEWSYM Open_File
-    pushad
-    mov dword[ZOpenMode],0
-    mov [ZOpenFileName],edx
-    call ZOpenFile
-    cmp eax,0FFFFFFFFh
-    je .error
-    mov [TempHandle],eax
-    mov dword[ZFileSeekMode],0
-    mov dword[ZFileSeekPos],0
-    mov [ZFileSeekHandle],eax
-    call ZFileSeek
-    popad
-    mov ax,[TempHandle]
-    clc
-    ret
-.error
-    popad
-    stc
-    ret
-
-NEWSYM Create_File
-    pushad
-    mov dword[ZOpenMode],1
-    mov [ZOpenFileName],edx
-    call ZOpenFile
-    cmp eax,0FFFFFFFFh
-    je .error
-    mov [TempHandle],eax
-    popad
-    mov ax,[TempHandle]
-    clc
-    ret
-.error
-    popad
-    stc
-    ret
-
-NEWSYM Write_File
-    mov dword[ZFileWriteHandle],0
-    mov [ZFileWriteHandle],bx
-    mov [ZFileWriteSize],ecx
-    mov [ZFileWriteBlock],edx
-    pushad
-    call ZFileWrite
-    cmp eax,0FFFFFFFFh
-    je .fail
-    popad
-    mov eax,1
-    clc
-    ret
-.fail
-    popad
-    mov eax,0
-    stc
-    ret
-
-NEWSYM Read_File
-    mov dword[ZFileReadHandle],0
-    mov [ZFileReadHandle],bx
-    mov [ZFileReadSize],ecx
-    mov [ZFileReadBlock],edx
-    pushad
-    call ZFileRead
-    mov [TempVarSeek],eax
-    popad
-    mov eax,[TempVarSeek]
-    clc
-    ret
-
-NEWSYM Close_File
-    mov dword[ZCloseFileHandle],0
-    mov [ZCloseFileHandle],bx
-    pushad
-    call ZCloseFile
-    popad
-    clc
     ret
 
 NEWSYM Get_Time
