@@ -863,6 +863,7 @@ mouseshad db 1
 @
 @ ESC to Game Menu (0 = No, 1 = YES)
 @ If yes, visiting the GUI will have the Game Menu automatically selected.
+@ If yes, it will also enable the main menu keyboard shortcuts.
 lastcursres db 1
 
 @
