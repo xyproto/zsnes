@@ -2030,6 +2030,7 @@ static bool raw_video_open()
       break;
 
     case 2: case 3: case 4:
+      chdir(ZStartPath); //This is needed to call mencoder from proper location as well as saving there
       signal(SIGPIPE, broken_pipe);
       mencoderExists = (raw_vid.vp = popen(encode_command(md_command), WRITE_BINARY)) ? 1 : 0;
       break;
@@ -2048,6 +2049,7 @@ static bool raw_video_open()
   {
     if (MovieAudioCompress)
     {
+      chdir(ZStartPath); //This is needed to call lame from proper location as well as saving there
       signal(SIGPIPE, broken_pipe);
       raw_vid.ap = popen(encode_command(md_audio_compress), WRITE_BINARY);
     }
