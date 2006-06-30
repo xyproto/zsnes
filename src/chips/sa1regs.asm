@@ -513,7 +513,7 @@ SPC4800:
     mov al,[ebx]
     pop ebx
 ;    xor al,al
-    inc dword[SPCCompPtr]
+;    inc dword[SPCCompPtr]
 
     push eax
     inc word[SPCDecmPtr]
@@ -538,7 +538,7 @@ SPC4800:
     pop ebx
 
     dec word[SPCCompCounter]
-    inc dword[SPCCompPtr]
+;    inc dword[SPCCompPtr]
     inc word[SPCDecmPtr]
     inc word[CurDecompSize]
 ;    cmp word[SPCCompCounter],0FFFFh

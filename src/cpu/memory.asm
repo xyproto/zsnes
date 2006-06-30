@@ -30,7 +30,7 @@ EXTSYM DSP1Write8b,regptwa,writeon,DSP1Read16b
 EXTSYM Bank0datr8,Bank0datw8,Bank0datr16,Bank0datw16,xd,SA1xd
 EXTSYM DSP1Read8b,DSP1Type,SA1Enable,DSP1Write16b
 EXTSYM CurDecompPtr,PrevDecompPtr,CurDecompSize
-EXTSYM SPCDecmPtr,SPCCompPtr,SPCCompCounter
+EXTSYM SPCDecmPtr,SPCCompCounter
 EXTSYM ramsize,ramsizeand,sram,ram7fa
 EXTSYM SA1Status,IRAM,CurBWPtr,SA1RAMArea
 EXTSYM SA1Overflow
@@ -3641,7 +3641,7 @@ NEWSYM memaccessspc7110r8
     pop ebx
 
     dec word[SPCCompCounter]
-    inc dword[SPCCompPtr]
+;    inc dword[SPCCompPtr]
     inc word[SPCDecmPtr]
     inc word[CurDecompSize]
     ret
