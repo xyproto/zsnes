@@ -2003,6 +2003,7 @@ static void raw_video_close()
 
   if (audio_and_video && MovieVideoAudio)
   {
+    chdir(ZStartPath); //This is needed to call mencoder from proper location as well as saving there
     if (MovieAudioCompress)
     {
       if (mencoderExists) { system(encode_command(md_merge_compressed)); }
