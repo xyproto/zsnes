@@ -978,7 +978,6 @@ void loadstate2()
 }
 
 extern unsigned char CHIPBATT, sramsavedis;
-extern char fnames[512];
 void SaveCombFile();
 
 // Sram saving
@@ -987,6 +986,9 @@ void SaveSramData()
   FILE *fp = 0;
   unsigned char special = 0;
   unsigned int *data_to_save;
+
+  if(*ZSaveName)
+    setextension("srm");
 
   if (ramsize && !sramsavedis)
   {
@@ -1010,7 +1012,7 @@ void SaveSramData()
     if (!special || CHIPBATT)
     {
       clim();
-      if ((fp = fopen_dir(ZSramPath,fnames+1,"wb")))
+      if (*ZSaveName && (fp = fopen_dir(ZSramPath,ZSaveName,"wb")))
       {
         fwrite(data_to_save, 1, ramsize, fp);
         fclose(fp);
