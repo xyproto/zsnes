@@ -1847,7 +1847,6 @@ extern unsigned int nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
 extern unsigned char spcnumread;
 extern unsigned char NextLineCache, sramsavedis, sndrot, regsbackup[3019];
 extern unsigned char yesoutofmemory;
-extern char fnames[512];
 
 void outofmemfix();
 void GUIDoReset();
@@ -2173,6 +2172,9 @@ void SetupROM()
   }
 }
 
+extern char *ZSaveName;
+void setextension(char *str);
+
 void powercycle(bool sramload)
 { // currently only used by movies - rom already loaded, no need for init
   memset(sram, 0xFF, 32768);
@@ -2187,7 +2189,8 @@ void powercycle(bool sramload)
   NextLineCache = 0;
   curexecstate = 1;
 
-  if (sramload) { loadSRAM((char *)fnames+1); }
+  if (sramload) { setextension("srm"); 
+                  loadSRAM(ZSaveName); }
   SetupROM();
 
   sramsavedis = 0;
@@ -2210,22 +2213,19 @@ void SaveCombFile()
   {
     FILE *fp;
 
-    char *p = strrchr(fnames+1, '.');
-    p = p ? p+1 : fnames+1;
-    strcpy(p, "cmb");
+    setextension("cmb");
 
     if (NumComboLocl)
     {
       ComboHeader[22] = NumComboLocl;
 
-      if ((fp = fopen_dir(ZSramPath, fnames+1, "wb")))
+      if ((fp = fopen_dir(ZSramPath, ZSaveName, "wb")))
       {
         fwrite(ComboHeader, 1, 23, fp);
         fwrite(CombinDataLocl, 1, NumComboLocl*66, fp);
         fclose(fp);
       }
     }
-    strcpy(p, "srm");
   }
 }
 
@@ -2233,13 +2233,10 @@ void OpenCombFile()
 {
   FILE *fp;
 
-  char *p = strrchr(fnames+1, '.');
-  p = p ? p+1 : fnames+1;
-  strcpy(p, "cmb");
-
+  setextension("cmb");
   NumComboLocl = 0;
 
-  if ((fp = fopen_dir(ZSramPath, fnames+1, "rb")))
+  if ((fp = fopen_dir(ZSramPath, ZSaveName, "rb")))
   {
     fread(ComboHeader, 1, 23, fp);
     NumComboLocl = ComboHeader[22];
@@ -2251,13 +2248,12 @@ void OpenCombFile()
 
     fclose(fp);
   }
-
-  strcpy(p, "srm");
 }
 
 void OpenSramFile()
 {
-  FILE *fp = fopen_dir(ZSramPath, fnames+1, "rb");
+  setextension("srm");
+  FILE *fp = fopen_dir(ZSramPath, ZSaveName, "rb");
   if (fp)
   {
     fread(sram, 1, 65536, fp);

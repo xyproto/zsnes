@@ -53,6 +53,9 @@ void SA1UpdateDPageC(), unpackfunct(), repackfunct();
 void PrepareOffset(), ResetOffset(), initpitch(), UpdateBanksSDD1();
 void procexecloop(), outofmemory();
 
+extern char *ZSaveName;
+void setextension(char *str);
+
 static void copy_snes_data(unsigned char **buffer, void (*copy_func)(unsigned char **, void *, size_t))
 {
   //65816 status, etc.
@@ -1057,17 +1060,17 @@ extern unsigned int infoloc;
 char spcsaved[16];
 void savespcdata()
 {
-  size_t fname_len = strlen(fnames+1);
+  setextension("spc");
+  size_t fname_len = strlen(ZSaveName);
   unsigned int i = 0;
 
-  strcpy(fnames+fname_len-3, ".spc");
   while (i < 100)
   {
     if (i)
     {
-      sprintf(fnames+fname_len - ((i < 10) ? 0 : 1), "%d", i);
+      sprintf(ZSaveName-1+fname_len - ((i < 10) ? 0 : 1), "%d", i);
     }
-    if (access_dir(ZSpcPath, fnames+1, F_OK))
+    if (access_dir(ZSpcPath, ZSaveName, F_OK))
     {
       break;
     }
@@ -1075,7 +1078,7 @@ void savespcdata()
   }
   if (i < 100)
   {
-    FILE *fp = fopen_dir(ZSpcPath, fnames+1, "wb");
+    FILE *fp = fopen_dir(ZSpcPath, ZSaveName, "wb");
     if (fp)
     {
       unsigned char ssdatst[256];
@@ -1148,8 +1151,7 @@ void savespcdata()
 
       ResetState();
 
-      sprintf(spcsaved, "%s FILE SAVED.", fnames+fname_len-2);
+      sprintf(spcsaved, "%s FILE SAVED.", ZSaveName+fname_len-3);
     }
   }
-  strcpy(fnames+fname_len-3, ".srm");
 }

@@ -60,10 +60,10 @@ char ZCfgFile[] = "zsnesl.cfg";
 
 char *ZStartPath = 0, *ZCfgPath = 0, *ZSramPath = 0, *ZRomPath = 0;
 char *ZSnapPath = 0, *ZSpcPath = 0;
-char *ZCartName = 0;
+char *ZCartName = 0, *ZSaveName = 0;
 
 static bool ZStartAlloc = false, ZCfgAlloc = false, ZSramAlloc = false, ZRomAlloc = false;
-static bool ZCartAlloc = false;
+static bool ZCartAlloc = false, ZSaveAlloc = false;
 
 #ifdef __UNIXSDL__
 
@@ -264,6 +264,7 @@ void deinit_paths(void)
   if (ZRomAlloc && ZRomPath) { free(ZRomPath); }
 
   if (ZCartAlloc && ZCartName) { free(ZCartName); }
+  if (ZSaveAlloc && ZSaveName) { free(ZSaveName); }
 }
 
 bool init_paths(char *launch_command)
@@ -281,10 +282,14 @@ bool init_paths(char *launch_command)
       ZRomAlloc = true;
 
       ZCartName = malloc(NAME_SIZE);
+      ZSaveName = malloc(NAME_SIZE);
       if (ZCartName)
       {
         ZCartAlloc = true;
         *ZCartName = 0;
+
+        ZSaveAlloc = true;
+        *ZSaveName = 0;
 
         if (realpath(launch_command, ZStartPath))
         {
@@ -368,10 +373,12 @@ bool init_rom_path(char *path)
     if (p)
     {
       strcpy(ZCartName, p+1);
+      strcpy(ZSaveName, ZCartName);
     }
     else
     {
       strcpy(ZCartName, ZRomPath);
+      strcpy(ZSaveName, ZCartName);
     }
     strdirname(ZRomPath);
     strcatslash(ZRomPath);
@@ -531,5 +538,23 @@ void strbasename(char *str)
   if ((p = strrchr(str, DIR_SLASH_C)))
   {
     memmove(str, p+1, strlen(p));
+  }
+}
+
+void setextension(char *str)
+{
+  char *p;
+
+  p = strrchr(ZSaveName, '.');
+
+  if(p)
+  {
+    strncpy(p+1, str, 3);
+  }
+
+  else
+  {
+    strncpy(p+strlen(ZSaveName), ".", 1);
+    strncpy(p+strlen(ZSaveName)+1, str, 3);
   }
 }

@@ -707,13 +707,13 @@ unsigned int *horizon_get(unsigned int distance)
 
 extern unsigned int GUICBHold, NumCheats, statefileloc;
 extern unsigned char cheatdata[28*255+56];
-extern char fnamest[512];
+extern char *ZSaveName;
+void setextension(char *str);
 
 void CheatCodeSave()
 {
   FILE *fp = 0;
   unsigned int size = 0;
-  char FileExt[2];
 
   GUICBHold=0;
 
@@ -722,18 +722,14 @@ void CheatCodeSave()
     cheatdata[6]=254;
     cheatdata[7]=252;
 
-    memcpy(FileExt, &fnamest[statefileloc-2], 3);
-    memcpy(&fnamest[statefileloc-2], "cht", 3);
+    setextension("cht");
 
-    if ((fp = fopen_dir(ZSramPath,fnamest+1,"wb")))
+    if ((fp = fopen_dir(ZSramPath,ZSaveName,"wb")))
     {
       size=(NumCheats<<4)+3*(NumCheats<<2);
       fwrite(cheatdata, 1, size, fp);
       fclose(fp);
     }
-
-    memcpy(&fnamest[statefileloc-2], FileExt, 3);
-
   }
 }
 
@@ -745,14 +741,11 @@ extern unsigned int GUIcurrentcheatcursloc;
 void CheatCodeLoad()
 {
   FILE *fp = 0;
-  char FileExt[2];
 
+  setextension("cht");
   GUICBHold = 0;
 
-  memcpy(FileExt, &fnamest[statefileloc-2], 3);
-  memcpy(&fnamest[statefileloc-2], "cht", 3);
-
-  if ((fp = fopen_dir(ZSramPath,fnamest+1,"rb")))
+  if ((fp = fopen_dir(ZSramPath,ZSaveName,"rb")))
   {
     asm_call(DisableCheatsOnLoad);
 
@@ -769,8 +762,6 @@ void CheatCodeLoad()
     if (NumCheats) CheatOn=1;
     else GUIcurrentcheatcursloc=CheatOn=0;
   }
-
-  memcpy(&fnamest[statefileloc-2], FileExt, 3);
 }
 
 extern unsigned char *vidbuffer;

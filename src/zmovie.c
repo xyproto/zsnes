@@ -63,9 +63,12 @@ extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
 extern unsigned char pl1contrl, pl2contrl, pl3contrl, pl4contrl, pl5contrl;
 extern unsigned char MovieStartMethod, GUIReset, ReturnFromSPCStall, GUIQuit;
 extern unsigned char MovieProcessing, CMovieExt, EmuSpeed, mencoderExists;
-extern char *Msgptr, fnamest[512];
+extern char *Msgptr;
 extern bool romispal;
 bool MovieWaiting = false;
+
+extern char *ZSaveName;
+void setextension(char *str);
 
 enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY };
 #define SetMovieMode(mode) (MovieProcessing = (unsigned char)mode)
@@ -2050,7 +2053,7 @@ static bool raw_video_open()
   {
     if (MovieAudioCompress)
     {
-      chdir(ZStartPath); //This is needed to call lame from proper location as well as saving there
+      chdir(ZStartPath); //This is needed to call mencoder from proper location as well as saving there
       signal(SIGPIPE, broken_pipe);
       raw_vid.ap = popen(encode_command(md_audio_compress), WRITE_BINARY);
     }
@@ -2637,19 +2640,17 @@ void MoviePlay()
 {
   if (!MovieProcessing)
   {
-    size_t fname_len = strlen(fnamest+1);
-    unsigned char FileExt[4];
+    size_t fname_len = strlen(ZSaveName);
     FILE *fp;
 
     PrevSRAMState = SRAMState;
     SRAMState = true;
 
     GUIQuit = 2;
-    memcpy(FileExt, &fnamest[fname_len-3], 4);
-    memcpy(&fnamest[fname_len-3], ".zmv", 4);
-    fnamest[fname_len] = CMovieExt;
+    setextension("zmv");
+    ZSaveName[fname_len-1] = CMovieExt;
 
-    if ((fp = fopen_dir(ZSramPath, fnamest+1, "rb")))
+    if ((fp = fopen_dir(ZSramPath, ZSaveName, "rb")))
     {
       char header_buf[3];
       fread(header_buf, 3, 1, fp);
@@ -2658,13 +2659,13 @@ void MoviePlay()
       {
         fclose(fp);
 
-        if (zmv_open(fnamest+1))
+        if (zmv_open(ZSaveName))
         {
           zmv_alloc_rewind_buffer(AllocatedRewindStates);
           SetMovieMode(MOVIE_PLAYBACK);
-          memcpy(&fnamest[fname_len-3], ".sub", 4);
-          if (isdigit(CMovieExt)) { fnamest[fname_len] = CMovieExt; }
-          MovieSub_Open(fnamest+1);
+          setextension("sub");
+          if (isdigit(CMovieExt)) { ZSaveName[fname_len-1] = CMovieExt; }
+          MovieSub_Open(ZSaveName);
           MessageOn = MsgCount;
 
           oldframeskip = frameskip;
@@ -2688,8 +2689,6 @@ void MoviePlay()
       Msgptr = "MOVIE COULD NOT BE OPENED.";
       MessageOn = MsgCount;
     }
-
-    memcpy(&fnamest[fname_len-3], FileExt, 4);
   }
 }
 
@@ -2703,27 +2702,25 @@ void MovieRecord()
 
   if (!MovieProcessing)
   {
-    size_t fname_len = strlen(fnamest+1);
-    unsigned char FileExt[4];
+    size_t fname_len = strlen(ZSaveName);
     FILE *tempfhandle;
 
-    memcpy(FileExt, &fnamest[fname_len-3], 4);
-    memcpy(&fnamest[fname_len-3], ".zmv", 4);
-    fnamest[fname_len] = CMovieExt;
+    setextension("zmv");
+    ZSaveName[fname_len-1] = CMovieExt;
 
     if (MovieRecordWinVal == 1)
     {
-      remove_dir(ZSramPath, fnamest+1);
+      remove_dir(ZSramPath, ZSaveName);
       MovieRecordWinVal = 0;
     }
 
-    if (!(tempfhandle = fopen_dir(ZSramPath, fnamest+1,"rb")))
+    if (!(tempfhandle = fopen_dir(ZSramPath, ZSaveName,"rb")))
     {
       PrevSRAMState = SRAMState;
       SRAMState = true;
 
       SetMovieMode(MOVIE_RECORD);
-      zmv_create(fnamest+1);
+      zmv_create(ZSaveName);
       zmv_alloc_rewind_buffer(AllocatedRewindStates);
       Msgptr = "MOVIE RECORDING.";
       MessageOn = MsgCount;
@@ -2738,8 +2735,6 @@ void MovieRecord()
       fclose(tempfhandle);
       MovieRecordWinVal = 1;
     }
-
-    memcpy(&fnamest[fname_len-3], FileExt, 4);
   }
 }
 
