@@ -53,9 +53,6 @@ void SA1UpdateDPageC(), unpackfunct(), repackfunct();
 void PrepareOffset(), ResetOffset(), initpitch(), UpdateBanksSDD1();
 void procexecloop(), outofmemory();
 
-extern char *ZSaveName;
-void setextension(char *str);
-
 static void copy_snes_data(unsigned char **buffer, void (*copy_func)(unsigned char **, void *, size_t))
 {
   //65816 status, etc.
@@ -987,8 +984,7 @@ void SaveSramData()
   unsigned char special = 0;
   unsigned int *data_to_save;
 
-  if(*ZSaveName)
-    setextension("srm");
+  setextension(ZSaveName, "srm");
 
   if (ramsize && !sramsavedis)
   {
@@ -1062,7 +1058,7 @@ extern unsigned int infoloc;
 char spcsaved[16];
 void savespcdata()
 {
-  setextension("spc");
+  setextension(ZSaveName, "spc");
   size_t fname_len = strlen(ZSaveName);
   unsigned int i = 0;
 

@@ -81,8 +81,8 @@ int mkdir_dir(const char *path, const char *dir);
 
 void natify_slashes(char *str);
 void strcatslash(char *str);
+void setextension(char *base, const char *ext);
 void strdirname(char *str);
 void strbasename(char *str);
-void setextension(char *str);
 
 #endif

@@ -2172,9 +2172,6 @@ void SetupROM()
   }
 }
 
-extern char *ZSaveName;
-void setextension(char *str);
-
 void powercycle(bool sramload)
 { // currently only used by movies - rom already loaded, no need for init
   memset(sram, 0xFF, 32768);
@@ -2189,8 +2186,11 @@ void powercycle(bool sramload)
   NextLineCache = 0;
   curexecstate = 1;
 
-  if (sramload) { setextension("srm"); 
-                  loadSRAM(ZSaveName); }
+  if (sramload)
+  {
+    setextension(ZSaveName, "srm");
+    loadSRAM(ZSaveName);
+  }
   SetupROM();
 
   sramsavedis = 0;
@@ -2213,7 +2213,7 @@ void SaveCombFile()
   {
     FILE *fp;
 
-    setextension("cmb");
+    setextension(ZSaveName, "cmb");
 
     if (NumComboLocl)
     {
@@ -2233,7 +2233,7 @@ void OpenCombFile()
 {
   FILE *fp;
 
-  setextension("cmb");
+  setextension(ZSaveName, "cmb");
   NumComboLocl = 0;
 
   if ((fp = fopen_dir(ZSramPath, ZSaveName, "rb")))
@@ -2252,7 +2252,7 @@ void OpenCombFile()
 
 void OpenSramFile()
 {
-  setextension("srm");
+  setextension(ZSaveName, "srm");
   FILE *fp = fopen_dir(ZSramPath, ZSaveName, "rb");
   if (fp)
   {

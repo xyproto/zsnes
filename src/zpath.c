@@ -282,43 +282,46 @@ bool init_paths(char *launch_command)
       ZRomAlloc = true;
 
       ZCartName = malloc(NAME_SIZE);
-      ZSaveName = malloc(NAME_SIZE);
       if (ZCartName)
       {
         ZCartAlloc = true;
         *ZCartName = 0;
 
-        ZSaveAlloc = true;
-        *ZSaveName = 0;
-
-        if (realpath(launch_command, ZStartPath))
+        ZSaveName = malloc(NAME_SIZE);
+        if (ZSaveName)
         {
-          strdirname(ZStartPath);
+          ZSaveAlloc = true;
+          *ZSaveName = 0;
+
+          if (realpath(launch_command, ZStartPath))
+          {
+            strdirname(ZStartPath);
+          }
+          else
+          {
+            getcwd(ZStartPath, PATH_SIZE);
+          }
+          strcatslash(ZStartPath);
+
+          cfgpath_ensure();
+
+          GUIRestoreVars();
+
+          if (*LoadDir)
+          {
+            strcpy(ZRomPath, LoadDir);
+          }
+          else
+          {
+            strcpy(ZRomPath, ZStartPath);
+          }
+          strcatslash(ZRomPath);
+
+          init_save_paths();
+
+          atexit(deinit_paths);
+          return(true);
         }
-        else
-        {
-          getcwd(ZStartPath, PATH_SIZE);
-        }
-        strcatslash(ZStartPath);
-
-        cfgpath_ensure();
-
-        GUIRestoreVars();
-
-        if (*LoadDir)
-        {
-          strcpy(ZRomPath, LoadDir);
-        }
-        else
-        {
-          strcpy(ZRomPath, ZStartPath);
-        }
-        strcatslash(ZRomPath);
-
-        init_save_paths();
-
-        atexit(deinit_paths);
-        return(true);
       }
     }
   }
@@ -509,6 +512,21 @@ void strcatslash(char *str)
   }
 }
 
+void setextension(char *base, const char *ext)
+{
+  char *p = strrchr(base, '.');
+
+  if(p)
+  {
+    strcpy(p+1, ext);
+  }
+  else
+  {
+    strcat(base, ".");
+    strcat(base, ext);
+  }
+}
+
 void strdirname(char *str)
 {
   char *p;
@@ -538,23 +556,5 @@ void strbasename(char *str)
   if ((p = strrchr(str, DIR_SLASH_C)))
   {
     memmove(str, p+1, strlen(p));
-  }
-}
-
-void setextension(char *str)
-{
-  char *p;
-
-  p = strrchr(ZSaveName, '.');
-
-  if(p)
-  {
-    strncpy(p+1, str, 3);
-  }
-
-  else
-  {
-    strncpy(p+strlen(ZSaveName), ".", 1);
-    strncpy(p+strlen(ZSaveName)+1, str, 3);
   }
 }

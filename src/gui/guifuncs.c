@@ -707,8 +707,6 @@ unsigned int *horizon_get(unsigned int distance)
 
 extern unsigned int GUICBHold, NumCheats, statefileloc;
 extern unsigned char cheatdata[28*255+56];
-extern char *ZSaveName;
-void setextension(char *str);
 
 void CheatCodeSave()
 {
@@ -722,7 +720,7 @@ void CheatCodeSave()
     cheatdata[6]=254;
     cheatdata[7]=252;
 
-    setextension("cht");
+    setextension(ZSaveName, "cht");
 
     if ((fp = fopen_dir(ZSramPath,ZSaveName,"wb")))
     {
@@ -742,7 +740,7 @@ void CheatCodeLoad()
 {
   FILE *fp = 0;
 
-  setextension("cht");
+  setextension(ZSaveName, "cht");
   GUICBHold = 0;
 
   if ((fp = fopen_dir(ZSramPath,ZSaveName,"rb")))

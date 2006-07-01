@@ -67,9 +67,6 @@ extern char *Msgptr;
 extern bool romispal;
 bool MovieWaiting = false;
 
-extern char *ZSaveName;
-void setextension(char *str);
-
 enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY };
 #define SetMovieMode(mode) (MovieProcessing = (unsigned char)mode)
 
@@ -2647,7 +2644,7 @@ void MoviePlay()
     SRAMState = true;
 
     GUIQuit = 2;
-    setextension("zmv");
+    setextension(ZSaveName, "zmv");
     ZSaveName[fname_len-1] = CMovieExt;
 
     if ((fp = fopen_dir(ZSramPath, ZSaveName, "rb")))
@@ -2663,7 +2660,7 @@ void MoviePlay()
         {
           zmv_alloc_rewind_buffer(AllocatedRewindStates);
           SetMovieMode(MOVIE_PLAYBACK);
-          setextension("sub");
+          setextension(ZSaveName, "sub");
           if (isdigit(CMovieExt)) { ZSaveName[fname_len-1] = CMovieExt; }
           MovieSub_Open(ZSaveName);
           MessageOn = MsgCount;
@@ -2705,7 +2702,7 @@ void MovieRecord()
     size_t fname_len = strlen(ZSaveName);
     FILE *tempfhandle;
 
-    setextension("zmv");
+    setextension(ZSaveName, "zmv");
     ZSaveName[fname_len-1] = CMovieExt;
 
     if (MovieRecordWinVal == 1)
