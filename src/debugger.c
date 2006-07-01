@@ -294,6 +294,47 @@ void debugloop() {
   
        goto b;
    }
+   
+   case 'R': // repeat breakpoint
+       breakops_wrapper(PrevBreakPt.page, PrevBreakPt.offset);
+       goto a;
+
+   /*
+   case 'S': // SPC breakpoint
+   */
+
+   case 'A': // SPC modify
+   {
+       WINDOW *w;
+       unsigned addr, value, n;
+
+       w = openwindow(7, 33, 11, 24, "     Enter Address : ");
+       mvwaddstr(w, 3, 1,            "     Previous Value: ");
+       mvwaddstr(w, 5, 1,            "     Enter Value   : ");
+
+       wrefresh(w);
+       
+       echo();
+       n = mvwscanw(w, 1, 22, "%x", &addr);
+       noecho();
+
+       addr &= 0xFFFF;
+       
+       if (n == 1) {
+       mvwprintw(w, 3, 22, "%02x", SPCRAM[addr]);
+       wrefresh(w);
+       
+       echo();
+       n = mvwscanw(w, 5, 22, "%x", &value);
+       noecho();
+       
+       if (n == 1) {
+	   SPCRAM[addr] = value;
+       }}
+       
+       closewindow(w);
+       goto b;
+   }
 
    case '1': // toggle SPC
        debugds ^= 1;
