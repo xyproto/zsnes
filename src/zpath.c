@@ -20,11 +20,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
+#include "linux/safelib.h"
 #include <pwd.h>
 #else
 #ifdef __WIN32__
 #include <io.h>
 #include <direct.h>
+#include "win/safelib.h"
 #else
 #include <unistd.h>
 #endif
@@ -413,7 +415,7 @@ static const char *strdupcat_internal(const char *str1, const char *str2)
   return(buffer_dir);
 }
 
-#define chdir_dir chdir;
+#define chdir_dir(path) chdir(path);
 
 #else
 
@@ -441,11 +443,13 @@ static const char *mode_text = 0;
 
 #define strdupcat_internal(x, y) strdupcat_internal(x, y, __func__, mode ? mode : mode_text)
 
-int chdir_dir(const char *path)
+int chdir_internal(const char *path, const char *func, const char *command)
 {
-  printf("chdir_dir: %s\n", path);
+  printf("%s: %s%s\n", func, path, command);
   return(chdir(path));
 }
+
+#define chdir_dir(path) chdir_internal(path, __func__, command);
 
 #endif
 
@@ -506,6 +510,11 @@ int system_dir(const char *path, const char *command)
   return(system(command));
 }
 
+int popen_dir(const char *path, const char *command, const char *type)
+{
+  chdir_dir(path);
+  return(popen(command, type));
+}
 
 void natify_slashes(char *str)
 {

@@ -21,7 +21,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
 #include <signal.h>
-#include "linux/safelib.h"
 #define DIR_SLASH "/"
 #define WRITE_BINARY "w"
 #else
@@ -38,7 +37,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <direct.h>
 #undef _POSIX_
 #include <io.h>
-#include "win/safelib.h"
 #define ftruncate chsize
 #else
 #include <unistd.h>
@@ -1933,8 +1931,6 @@ static char *encode_command(char *p)
     }
   }
 
-  puts(command);
-
   return(command);
 }
 
@@ -2030,9 +2026,8 @@ static bool raw_video_open()
       break;
 
     case 2: case 3: case 4:
-      chdir(ZStartPath); //This is needed to call mencoder from proper location as well as saving there
       signal(SIGPIPE, broken_pipe);
-      mencoderExists = (raw_vid.vp = popen(encode_command(md_command), WRITE_BINARY)) ? 1 : 0;
+      mencoderExists = (raw_vid.vp = popen_dir(ZStartPath, encode_command(md_command), WRITE_BINARY)) ? 1 : 0;
       break;
 
     default:
@@ -2049,9 +2044,8 @@ static bool raw_video_open()
   {
     if (MovieAudioCompress)
     {
-      chdir(ZStartPath); //This is needed to call mencoder from proper location as well as saving there
       signal(SIGPIPE, broken_pipe);
-      raw_vid.ap = popen(encode_command(md_audio_compress), WRITE_BINARY);
+      raw_vid.ap = popen_dir(ZStartPath, encode_command(md_audio_compress), WRITE_BINARY);
     }
     else
     {
