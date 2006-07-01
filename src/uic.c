@@ -473,11 +473,11 @@ void MultiMouseShutdown(void)
 
 void MultiMouseInit()
 {
-  MouseCount = ManyMouse_Init();
-
 #ifdef linux
+  DIR *input_dir;
   puts("Starting Mouse detection.");
-  DIR *input_dir = opendir("/dev/input");
+
+  input_dir = opendir("/dev/input");
   if (input_dir)
   {
     struct dirent *ent;
@@ -500,6 +500,8 @@ void MultiMouseInit()
     puts("/dev/input does not exist or is inaccessable");
   }
 #endif
+
+  MouseCount = ManyMouse_Init();
   printf("ManyMouse: %d mice detected.\n", MouseCount);
 
   if (MouseCount > 1)
