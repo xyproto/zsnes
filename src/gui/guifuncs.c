@@ -1016,3 +1016,9 @@ void loadquickfname()
     asm_call(GUIloadfilename);
   }
 }
+
+char *gui_rom;
+void init_rom_path_gui()
+{
+  init_rom_path(gui_rom);
+}

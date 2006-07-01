@@ -66,7 +66,6 @@
 EXTSYM curblank,vidpastecopyscr,frameskip,newengen,vsyncon,cvidmode,antienab
 EXTSYM smallscreenon,soundon,StereoSound,SoundQuality,MusicRelVol,endprog
 EXTSYM continueprog,spcBuffera,spcRamcmp,cbitmode,makepal,t1cc,LoadDir,LoadDrive
-EXTSYM SRAMDir,initsnes,makeextension,sram
 EXTSYM loadfileGUI,GUIloadfailed,romloadskip,SetupROM,romdata
 EXTSYM init65816,procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA
 EXTSYM spcX,spcY,spcP,spcNZ,Voice0Status,Voice1Status,Voice2Status,Voice3Status
@@ -79,7 +78,7 @@ EXTSYM UpdateDevices,memtabler8,memtablew8,writeon,JoyRead,SetInputDevice,delay
 EXTSYM FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,pl12s34,resolutn,InitDrive,InitDir
 EXTSYM Makemode7Table,vidbufferofsb,wramdata,bgfixer,videotroub
 EXTSYM CheatCodeSave,CheatCodeLoad,LoadCheatSearchFile,SaveCheatSearchFile
-EXTSYM Get_Date,Check_Key,Get_Key
+EXTSYM Get_Date,Check_Key,Get_Key,SRAMDir,initsnes,sram
 EXTSYM Change_Drive,Change_Single_Dir,Change_Dir,Get_Dir
 EXTSYM Set_DTA_Address,curexecstate,TripBufAvail,nmiprevaddrl,nmiprevaddrh
 EXTSYM nmirept,nmiprevline,nmistatus,spcnumread,NextLineCache,ResetTripleBuf
@@ -139,7 +138,7 @@ EXTSYM mousewrap,GUIClick,PrevFSMode,PrevWinMode,SaveSramData
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,OldGfxMode2,SmallMsgText
 EXTSYM AutoPatch,RomInfo,AllowUDLR,Triplebufen,GrayscaleMode
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,TripleBufferWin
-EXTSYM BilinearFilter,esctomenu,SidewinderFix
+EXTSYM BilinearFilter,esctomenu,SidewinderFix,init_rom_path_gui,gui_rom
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SoundBufEn,SPCDisable
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,FastFwdToggle
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma

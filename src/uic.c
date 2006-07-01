@@ -327,9 +327,6 @@ void makeextension()
 {
   char *p;
 
-  init_rom_path(ZCartName);
-  strcpy(ZSaveName, ZCartName);
-
   strcpy(fnamest+1, ZCartName);
   if ((p = strrchr(fnamest+1, '.')))
   {
@@ -475,8 +472,8 @@ void MultiMouseInit()
 {
 #ifdef linux
   DIR *input_dir;
-  puts("Starting Mouse detection.");
 
+  puts("Starting Mouse detection.");
   input_dir = opendir("/dev/input");
   if (input_dir)
   {
@@ -486,7 +483,7 @@ void MultiMouseInit()
       if (!strncasecmp(ent->d_name, "event", strlen("event")))
       {
         char buffer[32];
-        if ((snprintf(buffer, sizeof(buffer), "/dev/input/%s", ent->d_name) < sizeof(buffer)) &&
+        if (((size_t)snprintf(buffer, sizeof(buffer), "/dev/input/%s", ent->d_name) < sizeof(buffer)) &&
             access(buffer, R_OK))
         {
           printf("Unable to poll %s. Make sure you have read permissions to it.\n", buffer);
@@ -500,7 +497,6 @@ void MultiMouseInit()
     puts("/dev/input does not exist or is inaccessable");
   }
 #endif
-
   MouseCount = ManyMouse_Init();
   printf("ManyMouse: %d mice detected.\n", MouseCount);
 

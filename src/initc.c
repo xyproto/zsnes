@@ -703,7 +703,6 @@ extern char CSStatus[40];
 extern char CSStatus2[40];
 extern char CSStatus3[40];
 extern bool RomInfo;
-char *lastROMFileName;
 void DumpROMLoadInfo()
 {
   FILE *fp = 0;
@@ -713,7 +712,7 @@ void DumpROMLoadInfo()
     fp = fopen_dir(ZCfgPath, "rominfo.txt", "w");
     if (!fp) { return; }
     fputs("This is the info for the last game you ran.\n\nFile: ", fp);
-    fputs(lastROMFileName, fp);
+    fputs(ZCartName, fp);
     fputs(" Header: ", fp);
     fputs(Header512 ? "Yes\n" : "No\n", fp);
     fputs(CSStatus, fp);
@@ -1111,9 +1110,12 @@ bool input2mouse;
 bool input2scope;
 bool input2just;
 void findZipIPS(char *);
+void makeextension();
 void loadROM()
 {
   bool isCompressed = false, isZip = false;
+
+  makeextension();
 
   EMUPause = false;
   curromspace = 0;
@@ -1121,8 +1123,6 @@ void loadROM()
   maxromspace = 4194304;
   if (Sup48mbit) { maxromspace += 2097152; }
   if (Sup16mbit) { maxromspace -= 2097152; } //I don't get it either
-
-  lastROMFileName = ZCartName;
 
   if (strlen(ZCartName) >= 5) //Char + ".jma"
   {
@@ -2252,8 +2252,10 @@ void OpenCombFile()
 
 void OpenSramFile()
 {
+  FILE *fp;
+
   setextension(ZSaveName, "srm");
-  FILE *fp = fopen_dir(ZSramPath, ZSaveName, "rb");
+  fp = fopen_dir(ZSramPath, ZSaveName, "rb");
   if (fp)
   {
     fread(sram, 1, 65536, fp);

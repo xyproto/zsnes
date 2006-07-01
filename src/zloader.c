@@ -52,7 +52,6 @@ extern unsigned char debugdisble, DisplayS;
 extern char *STCart2;
 
 void zstart();
-void makeextension();
 
 #define put_line(x)                          \
   if (lines_out == 22)                       \

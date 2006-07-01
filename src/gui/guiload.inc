@@ -174,37 +174,16 @@ netlastloaded resb 1
 SECTION .text
 
 NEWSYM GUIloadfilename
-    mov esi,eax
-    ; find length of string & copy filename
-    xor cl,cl
-.findnext
-    mov ch,[esi]
-    cmp byte[esi],0
-    je .foundend
-    inc esi
-    inc cl
-    jmp .findnext
-.foundend
-    ; copy filename
-    mov esi,eax
-    mov edi,[ZCartName]
-.continuecopy
-    mov al,[esi]
-    mov [edi],al
-    cmp al,0
-    je .foundzero
-    inc esi
-    inc edi
-    jmp .continuecopy
-.foundzero
+    mov [gui_rom],eax
+    pushad
+    call init_rom_path_gui
+    popad
 
     ; get LoadDrive/LoadDir & SRAMDrive/SRAMDir
     mov ebx,LoadDir
     mov edx,LoadDrive
     call Get_Dir
 
-    ; create .srm header
-    call makeextension
     ; clear memory
     mov edi,[sram]
     mov eax,0FFFFFFFFh
