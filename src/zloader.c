@@ -52,7 +52,7 @@ extern unsigned char debugdisble, DisplayS;
 extern char *STCart2;
 void zstart();
 #ifdef __WIN32__
-extern void InitDebugger
+extern void InitDebugger();
 #endif
 
 #define put_line(x)                          \
