@@ -310,8 +310,10 @@ NEWSYM reg3031r
     jmp .cleared
 .clear
     add dword[ChangeOps],350*240
+    jmp .doneclear
 .cleared
     mov al,[SfxSFR+1]
+.doneclear
     ret
 SECTION .bss
 .test resb 1
@@ -500,12 +502,6 @@ NEWSYM reg3030w
     mov [SfxSFR],al
     mov [SfxAC],al
     mov dh,10
-    ; Disassemble Flags
-    test al,20h
-    jz .noexec
-    mov dword[NumberOfOpcodes],100
-    call StartSFX
-.noexec
     ret
 NEWSYM reg3031w
     mov [SfxSFR+1],al
