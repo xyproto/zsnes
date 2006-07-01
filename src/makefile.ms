@@ -115,14 +115,14 @@ endif
 ifeq (${OS},__MSDOS__)
   EXE=zsnes.exe
   FILEFORMAT=coff
-  LIBS=${LIBSORIG} -lm
+  LIBS=${LIBSORIG} -lm -lpdcur
   OE=.do
 endif
 
 ifeq (${OS},__WIN32__)
   EXE=zsnesw.exe
   FILEFORMAT=win32
-  LIBS=${LIBSORIG} -ldxguid -ldinput8 -lwsock32 -luser32 -lgdi32 -lshell32 -lwinmm -mwindows
+  LIBS=${LIBSORIG} -ldxguid -ldinput8 -lwsock32 -luser32 -lgdi32 -lshell32 -lwinmm -mwindows -lpdcurses
   OE=.obj
 endif
 
@@ -161,7 +161,7 @@ CPUOBJ=${CPUDIR}/dma${OE} ${CPUDIR}/dsp${OE} ${CPUDIR}/dspproc${OE}\
 	${CPUDIR}/stable${OE} ${CPUDIR}/table${OE}\
 	${CPUDIR}/tablec${OE}
 
-DOSOBJORIG=${DOSDIR}/debug${OE} ${DOSDIR}/joy${OE} ${DOSDIR}/vesa2${OE}
+DOSOBJORIG=${DOSDIR}/joy${OE} ${DOSDIR}/vesa2${OE}
 
 EFFECTSOBJ=${EFFECTSDIR}/burn${OE} ${EFFECTSDIR}/water${OE} ${EFFECTSDIR}/smoke${OE}
 
@@ -173,7 +173,7 @@ JMAOBJ=${JMADIR}/7zlzma${OE} ${JMADIR}/crc32${OE} ${JMADIR}/iiostrm${OE}\
 
 MAINOBJ=endmem${OE} init${OE} initc${OE} uic${OE} patch${OE}\
 	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE}\
-	cfg${OE} md${OE} zpath${OE}
+	cfg${OE} md${OE} zpath${OE} debugger${OE} debugasm${OE}
 
 NETOBJ=
 #${NETDIR}/ztcp${OE}

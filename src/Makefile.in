@@ -54,7 +54,7 @@ JMAOBJ=@JMA_FILES@
 MMLIBOBJ=@MMLIB_FILES@
 
 MAINOBJ=cfg.o debug.o endmem.o init.o initc.o md.o patch.o ui.o uic.o vcache.o\
-	version.o zloader.o zmovie.o zpath.o zstate.o
+	version.o zloader.o zmovie.o zpath.o zstate.o debugger.o debugasm.o 
 
 NETOBJ=
 #$(NETDIR)/ztcp.o
@@ -75,7 +75,8 @@ VIDEOBJ=$(VIDEODIR)/makev16b.o $(VIDEODIR)/makev16t.o $(VIDEODIR)/makevid.o\
 WINOBJ=$(WINDIR)/copyvwin.o $(WINDIR)/sdlintrf.o $(WINDIR)/sdllink.o @GL_DRAW@\
 	$(WINDIR)/sw_draw.o $(WINDIR)/zfilew.o $(WINDIR)/safelib.o
 
-WINDOSOBJ=$(DOSDIR)/debug.o $(DOSDIR)/joy.o $(DOSDIR)/vesa2.o
+#WINDOSOBJ=$(DOSDIR)/debug.o $(DOSDIR)/joy.o $(DOSDIR)/vesa2.o
+WINDOSOBJ=$(DOSDIR)/joy.o $(DOSDIR)/vesa2.o
 
 ZIPOBJ=$(ZIPDIR)/unzip.o $(ZIPDIR)/zpng.o
 
@@ -90,7 +91,7 @@ ZOBJS=$(MAINOBJ) $(CHIPSOBJ) $(CPUOBJ) $(GUIOBJ) $(EFFECTSOBJ) $(JMAOBJ)\
 %.o: %.asm
 	@NASMPATH@ @NFLAGS@ -o $@ $<
 %.o: %.c
-	@CC@ @CFLAGS@ -o $@ -c $<
+	@CC@ @CFLAGS@ -Wdeclaration-after-statement -o $@ -c $<
 %.o: %.cpp
 	@CXX@ @CXXFLAGS@ -o $@ -c $<
 %.o %.h: %.psr $(PSR)

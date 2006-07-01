@@ -91,8 +91,8 @@ static void display_help()
   put_line("  -8      Force 8-bit sound");
   put_line("  -c      Enable full/wide screen (when available)");
   put_line("  -cc     Enable small screen (when available)");
-  put_line("  -d      Start with debugger enabled");
 #endif
+  put_line("  -d      Start with debugger enabled");
   put_line("  -dd     Disable sound SPC700/DSP emulation which also disables sound output");
   put_line("  -ds     Disable sound output");
   put_line("  -dh     Disable ROM-specific hacks");
@@ -508,12 +508,12 @@ static void handle_params(int argc, char *argv[])
           case 'c': //Enable full screen (when available)
             ScreenScale = 1;
             break;
+          #endif
 
           case 'd': //Start with debugger enabled
             debugger = 1;
             debugdisble = 0;
             break;
-          #endif
 
           case 'f': //Enable fixed frame rate
             i++;
