@@ -78,6 +78,7 @@ void load_jma_file_dir(const char *path, const char *file);
 #endif
 int remove_dir(const char *path, const char *file);
 int mkdir_dir(const char *path, const char *dir);
+int system_dir(const char *path, const char *command);
 
 void natify_slashes(char *str);
 void strcatslash(char *str);

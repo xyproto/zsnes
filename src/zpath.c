@@ -413,6 +413,8 @@ static const char *strdupcat_internal(const char *str1, const char *str2)
   return(buffer_dir);
 }
 
+#define chdir_dir chdir;
+
 #else
 
 static const char *strdupcat_internal(const char *str1, const char *str2, const char *func, const char *mode)
@@ -438,6 +440,13 @@ static const char *mode = 0;
 static const char *mode_text = 0;
 
 #define strdupcat_internal(x, y) strdupcat_internal(x, y, __func__, mode ? mode : mode_text)
+
+int chdir_dir(const char *path)
+{
+  printf("chdir_dir: %s\n", path);
+  return(chdir(path));
+}
+
 #endif
 
 
@@ -490,6 +499,13 @@ int mkdir_dir(const char *path, const char *dir)
 {
   return(mkdir_p(strdupcat_internal(path, dir)));
 }
+
+int system_dir(const char *path, const char *command)
+{
+  chdir_dir(path);
+  return(system(command));
+}
+
 
 void natify_slashes(char *str)
 {
