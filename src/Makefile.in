@@ -91,7 +91,7 @@ ZOBJS=$(MAINOBJ) $(CHIPSOBJ) $(CPUOBJ) $(GUIOBJ) $(EFFECTSOBJ) $(JMAOBJ)\
 %.o: %.asm
 	@NASMPATH@ @NFLAGS@ -o $@ $<
 %.o: %.c
-	@CC@ @CFLAGS@ -Wdeclaration-after-statement -o $@ -c $<
+	@CC@ @CFLAGS@ -o $@ -c $<
 %.o: %.cpp
 	@CXX@ @CXXFLAGS@ -o $@ -c $<
 %.o %.h: %.psr $(PSR)
