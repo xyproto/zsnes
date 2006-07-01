@@ -2718,7 +2718,7 @@ DisplayGUIOptnsClick:
   GUIClickCButton 124,13,byte[newfont]
   GUIClickCButton 12,23,byte[mousewrap]     ; Checkboxes
   GUIClickCButton 12,33,byte[mouseshad]
-  GUIClickCButton 12,43,byte[lastcursres]
+  GUIClickCButton 12,43,byte[esctomenu]
   GUIClickCButton 12,53,byte[resetposn]
   GUIClickCButton 12,63,byte[GUIClick]
   GUIClickCButton 12,73,byte[JoyPad1Move]

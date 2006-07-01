@@ -498,7 +498,7 @@ void GUIRestoreVars()
   CheckValueBounds(&FilteredGUI, 0, 1, 1, UB);
   CheckValueBounds(&mousewrap, 0, 1, 0, UB);
   CheckValueBounds(&mouseshad, 0, 1, 1, UB);
-  CheckValueBounds(&lastcursres, 0, 1, 1, UB);
+  CheckValueBounds(&esctomenu, 0, 1, 1, UB);
   CheckValueBounds(&resetposn, 0, 1, 1, UB);
   for (i=1 ; i<22 ; i++)
   {
