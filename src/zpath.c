@@ -445,7 +445,7 @@ static const char *mode_text = 0;
 
 int chdir_internal(const char *path, const char *func, const char *command)
 {
-  printf("%s: %s%s\n", func, path, command);
+  printf("%s: %s: %s\n", func, path, command);
   return(chdir(path));
 }
 
