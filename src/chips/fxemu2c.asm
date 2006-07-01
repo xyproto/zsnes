@@ -46,8 +46,6 @@ NEWSYM FxOpd00      ; STOP   stop GSU execution (and maybe generate an IRQ)     
          ; Set IRQ Flag
 .NoIRQ
    CLRFLAGS
-    and byte[SfxSFR+1],07fh
-
    inc ebp
    mov eax,[NumberOfOpcodes]
    add eax,0F0000000h

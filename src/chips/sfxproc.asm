@@ -498,7 +498,8 @@ NEWSYM reg301Fw
 
 NEWSYM reg3030w
     mov [SfxSFR],al
-;    mov dh,10
+    mov [SfxAC],al
+    mov dh,10
     ; Disassemble Flags
     test al,20h
     jz .noexec
