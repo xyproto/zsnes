@@ -45,7 +45,7 @@ extern unsigned char FPSAtStart;
 extern char *Msgptr, CSStatus[], CSStatus2[], CSStatus3[];
 
 unsigned short selc0040, selcA000, selcB800;
-char fnames[512], fnamest[512];
+char fnamest[512];
 
 unsigned char *vidbuffer;	//  video buffer (1024x239 = 244736)
 unsigned char *ngwinptr;
@@ -328,21 +328,19 @@ void makeextension()
   char *p;
 
   init_rom_path(ZCartName);
-  strcpy(fnames+1,ZCartName);
-  if ((p = strrchr(fnames+1, '.')))
+  strcpy(ZSaveName, ZCartName);
+
+  strcpy(fnamest+1, ZCartName);
+  if ((p = strrchr(fnamest+1, '.')))
   {
     *p = 0;
   }
 
-  memcpy(fnamest, fnames, strlen(fnames+1)+2);
-
-  strcat(fnames+1,".srm");
   strcat(fnamest+1,".zst");
 
   statefileloc = strlen(fnamest+1);
 
-  *fnames = strlen(fnames+1)+1;
-  *fnamest = *fnames;
+  *fnamest = strlen(fnamest+1)+1;
 
   firstsaveinc = 1;
 
