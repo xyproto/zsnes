@@ -510,7 +510,7 @@ int system_dir(const char *path, const char *command)
   return(system(command));
 }
 
-int popen_dir(const char *path, const char *command, const char *type)
+FILE *popen_dir(const char *path, char *command, const char *type)
 {
   chdir_dir(path);
   return(popen(command, type));

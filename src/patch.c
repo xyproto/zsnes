@@ -94,19 +94,12 @@ int IPSget()
 
 bool initPatch()
 {
-  char prev_ext[5];     //used for storing previous ext
+  setextension(ZSaveName, "ips");
 
-  char *p = strrchr(ZCartName, '.');
-  if (!p) { p = ZCartName+strlen(ZCartName); }
-  strncpy(prev_ext, p, sizeof(prev_ext));
-  prev_ext[sizeof(prev_ext)-1] = 0;
-  strcpy(p, ".ips");
+  IPSPatch.fp = fopen_dir(ZSramPath, ZSaveName, "rb");
+  if (!IPSPatch.fp) { IPSPatch.fp = fopen_dir(ZRomPath, ZSaveName, "rb"); }
+  if (!IPSPatch.fp) { return(false); }
 
-  IPSPatch.fp = fopen_dir(ZSramPath, ZCartName, "rb");
-  if (!IPSPatch.fp) { IPSPatch.fp = fopen_dir(ZRomPath, ZCartName, "rb"); }
-  if (!IPSPatch.fp) { strcpy(p, prev_ext); return(false); }
-
-  strcpy(p, prev_ext);
   fseek(IPSPatch.fp, 0, SEEK_END);
 
   IPSPatch.file_size = (unsigned int)ftell(IPSPatch.fp);

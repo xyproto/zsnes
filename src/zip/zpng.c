@@ -38,7 +38,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef __MSDOS__
 #define MAX_PNGNAME_LEN 13
 #else
-#define MAX_PNGNAME_LEN (strlen(ZCartName)+11) //11 = _12345.png\0
+#define MAX_PNGNAME_LEN (strlen(ZSaveName)+11) //11 = _12345.png\0
 #endif
 
 char *generate_image_filename(const char *image_suffix)
@@ -52,7 +52,7 @@ char *generate_image_filename(const char *image_suffix)
     strcpy(filename, "img");
 #else
     char *p;
-    strcpy(filename, ZCartName);
+    strcpy(filename, ZSaveName);
     p = strrchr(filename, '.');
     if (!p) { p = filename+strlen(filename); }
     *p++ = '_';
