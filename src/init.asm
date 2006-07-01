@@ -1179,10 +1179,7 @@ NEWSYM preparesfx
     ; make table
     mov byte[SfxAC],0
     mov eax,[romdata]
-    cmp dword[eax+02B80h],0AB6CAB6Ch
-    jne .noac
-    mov byte[SfxAC],1
-.noac
+
     ; duplicate sfx data
     mov esi,[romdata]
     mov edi,[romdata]
