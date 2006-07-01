@@ -1058,9 +1058,11 @@ extern unsigned int infoloc;
 char spcsaved[16];
 void savespcdata()
 {
-  setextension(ZSaveName, "spc");
-  size_t fname_len = strlen(ZSaveName);
+  size_t fname_len;
   unsigned int i = 0;
+
+  setextension(ZSaveName, "spc");
+  fname_len = strlen(ZSaveName);
 
   while (i < 100)
   {
