@@ -50,8 +50,10 @@ extern unsigned char HacksDisable, DSPDisable, ZMVZClose, ZMVRawDump;
 extern unsigned char autoloadstate, autoloadmovie, Palette0, debugger;
 extern unsigned char debugdisble, DisplayS;
 extern char *STCart2;
-
 void zstart();
+#ifdef __WIN32__
+extern void InitDebugger
+#endif
 
 #define put_line(x)                          \
   if (lines_out == 22)                       \
@@ -512,6 +514,9 @@ static void handle_params(int argc, char *argv[])
           case 'd': //Start with debugger enabled
             debugger = 1;
             debugdisble = 0;
+          #ifdef __WIN32__
+            InitDebugger();
+          #endif
             break;
 
           case 'f': //Enable fixed frame rate

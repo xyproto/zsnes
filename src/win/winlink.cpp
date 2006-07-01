@@ -2206,7 +2206,7 @@ void initwinvideo(void)
       InitSound();
       TestJoy();
 
-      if (debugger) InitDebugger(); // Start debugger such that it is at this point
+//      if (debugger) InitDebugger(); // Start debugger such that it is at this point
 
    }
 
