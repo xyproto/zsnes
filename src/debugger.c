@@ -38,7 +38,9 @@ extern unsigned char *spcPCRam;
 extern unsigned char spcA, spcX, spcY, spcS, spcNZ, spcP;
 
 
+// these really shouldn't be written in ASM... (they are in debugasm.asm)
 extern unsigned char memtabler8_wrapper(unsigned char, unsigned short);
+extern          void memtablew8_wrapper(unsigned char, unsigned short, unsigned char);
 extern void breakops_wrapper(unsigned char, unsigned short);
 
 extern void regaccessbankr8();
@@ -230,8 +232,39 @@ void debugloop() {
    /*
    case '-':      // skip opcode
    case 'C':      // clear ???
-   case 'M':      // modify ???
    */
+
+   case 'M':      // modify
+   {
+       WINDOW *w;
+       unsigned addr, value, n;
+
+       w = openwindow(7, 33, 11, 24, "    Enter Address : ");
+       mvwaddstr(w, 3, 1,            "    Previous Value: ");
+       mvwaddstr(w, 5, 1,            "    Enter Value   : ");
+
+       wrefresh(w);
+       
+       echo();
+       n = mvwscanw(w, 1, 21, "%x", &addr);
+       noecho();
+
+       if (n == 1) {
+       mvwprintw(w, 3, 21, "%02x", memtabler8_wrapper(addr >> 16, addr));
+       wrefresh(w);
+       
+       echo();
+       n = mvwscanw(w, 5, 21, "%x", &value);
+       noecho();
+       
+       if (n == 1) {
+	   memtablew8_wrapper(addr >> 16, addr, value);
+       }}
+       
+       closewindow(w);
+       goto b;
+   }
+       
    case 'B':      // breakpoint
    {
        WINDOW *w = openwindow(3, 33, 11, 24, "    Enter Address : ");

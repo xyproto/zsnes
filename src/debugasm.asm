@@ -2,44 +2,76 @@
 
 %include "macros.mac"
 
-EXTSYM snesmmap, snesmap2, memtabler8, regaccessbankr8, dmadata
-EXTSYM initaddrl, spcPCRam, UpdateDPage, pdh, numinst
+EXTSYM snesmmap, snesmap2, memtabler8, memtablew8, regaccessbankr8, dmadata
+EXTSYM initaddrl, spcPCRam, UpdateDPage, pdh, numinst, writeon
 EXTSYM xp, xpb, xpc, curcyc, Curtableaddr, splitflags, execsingle, joinflags
 
 ;;; from debugger.c
 EXTSYM PrevBreakPt, my_getch_ret, my_getch
 
-	
+        
 ;; Wrapper for calls to routines in memtabler8
 
 NEWSYM memtabler8_wrapper
         push    ebp
         mov     ebp, esp
+        
         push    ebx
-        mov     bl, BYTE [ebp+8]
-        mov     ecx, DWORD [ebp+12]
+        push    edi
+        push    esi
+                
+        movzx   ebx, BYTE [ebp+8]
+        movzx   ecx, WORD [ebp+12]
         xor     eax, eax
         mov     al, bl
         call    DWORD [memtabler8+eax*4]
         and     eax, 255
+
+        pop     esi
+        pop     edi
         pop     ebx
+
         pop     ebp
         ret
 
-	
-NEWSYM breakops_wrapper
-	push	ebp
-	mov	ebp, esp
-	pushad
-	xor     ebx, ebx
-        mov     bl, BYTE [ebp+8]
-        mov     ecx, DWORD [ebp+12]
-	call 	breakops
-	popad
+NEWSYM memtablew8_wrapper
+        push    ebp
+        mov     ebp, esp
+        
+        push    ebx
+        push    edi
+        push    esi
+                
+        movzx   ebx, BYTE [ebp+8]
+        movzx   ecx, WORD [ebp+12]
+        movzx   eax, BYTE [ebp+16]
+        mov     byte[writeon],1
+        call    DWORD [memtablew8+ebx*4]
+        mov     byte[writeon],0
+        and     eax, 255
+
+        pop     esi
+        pop     edi
+        pop     ebx
+
         pop     ebp
         ret
-	
-	
+
+
+        
+NEWSYM breakops_wrapper
+        push    ebp
+        mov     ebp, esp
+        pushad
+        xor     ebx, ebx
+        mov     bl, BYTE [ebp+8]
+        mov     ecx, DWORD [ebp+12]
+        call    breakops
+        popad
+        pop     ebp
+        ret
+        
+        
 ;*******************************************************
 ; BreakOps                          Breaks at Breakpoint
 ;*******************************************************
@@ -48,7 +80,7 @@ NEWSYM breakops
     ; set cursor to (12,60)
     mov [PrevBreakPt],cx
     mov [PrevBreakPt+2],bl
-	
+        
 ;     push ebx
 ;     mov ah,02h
 ;     mov bl,0
@@ -56,7 +88,7 @@ NEWSYM breakops
 ;     mov dl,60
 ;     int 10h
 ;     pop ebx
-	
+        
     test cx,8000h
     jz .loweraddr2
     mov esi,[snesmmap+ebx*4]
@@ -67,7 +99,7 @@ NEWSYM breakops
     add esi,ecx                 ; add program counter to address
     mov [breakarea],esi
 
-	;; factored out
+        ;; factored out
 ;     mov byte[wx],14
 ;     mov byte[wx2],65
 ;     mov byte[wy],11
@@ -122,7 +154,7 @@ NEWSYM breakops
     cmp byte[numinst],0
     jne .skipa
 
-	;; not DOS anymore
+        ;; not DOS anymore
 ;     mov ah,0bh
 ;     int 21h
 ;     test al,0FFh
@@ -155,9 +187,9 @@ NEWSYM breakops
 
 SECTION .data
 NEWSYM breakarea, dd 0
-SECTION .text	
-	
-		
+SECTION .text   
+        
+                
 ;*******************************************************
 ; Execute Next Opcode
 ;*******************************************************
