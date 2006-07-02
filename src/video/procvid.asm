@@ -31,7 +31,7 @@ EXTSYM makepal,ScreenScale,bg1objptr,DecompAPtr,HalfTransB,HalfTransC
 EXTSYM changepal,saveselectpal,displayfpspal,superscopepal,DrawScreen,MMXSupport
 EXTSYM Get_MouseData,Get_MousePositionDisplacement,GUIEnableTransp,GUIFontData
 EXTSYM StopSound,StartSound,PrevPicture,nggposng
-EXTSYM Palette0,GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram
+EXTSYM GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram
 EXTSYM genfulladdtab,genfulladdtabng,TimerEnable,ShowTimer,debugdisble,GUIOn
 EXTSYM FilteredGUI,HalfTrans,SmallMsgText,ClearScreen,Mode7HiRes,mosenng,mosszng
 EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,CSStatus
@@ -43,7 +43,7 @@ EXTSYM DetermineNew,newestfileloc,newestfiledate,StateExists
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
 %else
-EXTSYM SB_blank,vsyncon,Triplebufen,granadd
+EXTSYM SB_blank,vsyncon,Triplebufen,granadd,Palette0
 %endif
 
 %ifdef __MSDOS__
@@ -1912,9 +1912,11 @@ NEWSYM dovegrest
     ret
 
 SECTION .bss
-blahblahblah resw 1
+NEWSYM tempco0, resw 1
+NEWSYM prevbright, resb 1                 ; previous brightness
 SECTION .text
 
+%ifdef __MSDOS__
 NEWSYM dosmakepal
     cmp byte[V8Mode],1
     jne .noveg
@@ -2050,10 +2052,6 @@ NEWSYM makepalb
     call dovegrest
 .noveg2
     ret
-
-SECTION .bss
-NEWSYM tempco0, resw 1
-SECTION .text
 
 ;*******************************************************
 ; ChangePal                          Sets up the palette
@@ -2194,9 +2192,7 @@ NEWSYM doschangepal
 .noveg2
     ret
 
-SECTION .bss
-NEWSYM prevbright, resb 1                 ; previous brightness
-SECTION .text
+%endif
 
 ;*******************************************************
 ; CopyVid                       Copies buffer into video

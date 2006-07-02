@@ -405,7 +405,9 @@ void GUIRestoreVars()
   CheckValueBounds(&BilinearFilter, 0, 1, 0, UB);
 #endif
   CheckValueBounds(&En2xSaI, 0, 3, 0, UB);
+#ifndef __MSDOS__
   CheckValueBounds(&hqFilter, 0, 1, 0, UB);
+#endif
   CheckValueBounds(&GrayscaleMode, 0, 1, 0, UB);
   CheckValueBounds(&Mode7HiRes16b, 0, 1, 0, UD);
   CheckValueBounds(&NTSCFilter, 0, 1, 0, UB);
