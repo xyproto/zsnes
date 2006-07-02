@@ -2609,13 +2609,13 @@ void drawscreenwin(void)
       InitDirectDraw();
    }
 
-   if (KitchenSync && totlines == 263)
+   if (KitchenSync && Refresh != 120 && totlines == 263)
    {
       Refresh = 120;
       InitDirectDraw();
    }
 
-   if ((KitchenSync || KitchenSyncPAL) && totlines == 314)
+   if ((KitchenSync || KitchenSyncPAL) && Refresh != 100 && totlines == 314)
    {
       Refresh = 100;
       InitDirectDraw();
