@@ -1043,9 +1043,6 @@ void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
   SplittedROM = true;
 }
 
-extern char STPath[1024];
-extern char GNextPath[1024];
-extern char SGPath[1024];
 void SplitSupport()
 {
   char *ROM = (char *)romdata;
@@ -1588,11 +1585,6 @@ void Setper2exec()
     opexec358cphb = (unsigned char)((opexec358cph * 87 * per2exec) / 10000); // 82
   }
 }
-
-extern char FEOEZPath[1024];
-extern char SJNSPath[1024];
-extern char MDHPath[1024];
-extern char SPL4Path[1024];
 
 extern unsigned int SPC7110Entries, SPC7110TempPosition, SPC7110TempLength, SPCDecmPtr;
 

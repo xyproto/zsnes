@@ -3078,18 +3078,24 @@ DisplayGUIChipClick:
   GUIClickCButton 109,53,byte[nssdip6]
   ret
 
+%ifdef __MSDOS__
+%define path_length 256
+%else
+%define path_length 1024
+%endif
+
 DisplayGUIPathsClick:
-  GUITextBoxInputNach 75,15,230,25,1,1024       ;SRAMDir
-  GUITextBoxInputNach 75,35,230,45,2,1024       ;SnapPath
-  GUITextBoxInputNach 75,55,230,65,3,1024       ;SPCPath
-  GUITextBoxInputNach 8,95,100,105,4,1024       ;BSXPath
-  GUITextBoxInputNach 8,120,100,130,5,1024      ;SGPath
-  GUITextBoxInputNach 135,95,235,105,6,1024     ;STPath
-  GUITextBoxInputNach 135,120,235,130,7,1024    ;GNextPath
-  GUITextBoxInputNach 8,155,100,165,8,1024      ;FEOEZPath
-  GUITextBoxInputNach 135,155,235,165,9,1024    ;SJNSPath
-  GUITextBoxInputNach 8,180,100,190,10,1024     ;MDHPath
-  GUITextBoxInputNach 135,180,235,190,11,1024   ;SPL4Path
+  GUITextBoxInputNach 75,15,230,25,1,path_length       ;SRAMDir
+  GUITextBoxInputNach 75,35,230,45,2,path_length       ;SnapPath
+  GUITextBoxInputNach 75,55,230,65,3,path_length       ;SPCPath
+  GUITextBoxInputNach 8,95,100,105,4,path_length       ;BSXPath
+  GUITextBoxInputNach 8,120,100,130,5,path_length      ;SGPath
+  GUITextBoxInputNach 135,95,235,105,6,path_length     ;STPath
+  GUITextBoxInputNach 135,120,235,130,7,path_length    ;GNextPath
+  GUITextBoxInputNach 8,155,100,165,8,path_length      ;FEOEZPath
+  GUITextBoxInputNach 135,155,235,165,9,path_length    ;SJNSPath
+  GUITextBoxInputNach 8,180,100,190,10,path_length     ;MDHPath
+  GUITextBoxInputNach 135,180,235,190,11,path_length   ;SPL4Path
   ret
 
 DisplayGUISaveClick:
