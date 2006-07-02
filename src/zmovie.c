@@ -1931,6 +1931,10 @@ static char *encode_command(char *p)
     }
   }
 
+#ifndef DEBUG //Debug mode prints out commands used in system_dir and popen_dir anyway
+  puts(command);
+#endif
+
   return(command);
 }
 
