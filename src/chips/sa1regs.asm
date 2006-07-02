@@ -623,10 +623,15 @@ SPC4805w:
     ret
 SPC4806w:
     mov [SPCDecmPtr+1],al
-    cmp dword[SPCCompPtr],0124AD48h
-    jne .nodata
+;    cmp dword[SPCCompPtr],0124AD48h
+;    jne .nodata
 ;    mov byte[debstop3],1
-.nodata
+;.nodata
+
+    test byte[SPCDecmPtr],0ffh
+    jz .zero
+    shl dword[SPCDecmPtr],2
+.zero
 
     pushad
     cmp byte[CurValUsed],0
