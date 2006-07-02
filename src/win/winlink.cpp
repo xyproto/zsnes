@@ -344,12 +344,13 @@ extern "C" BYTE PauseFocusChange;
 extern "C" BYTE KitchenSync;
 extern "C" BYTE KitchenSyncPAL;
 extern "C" BYTE Force60hz;
+extern WORD totlines;
 
 void DrawScreen()
 {
    if (FullScreen == 1)
    {
-      if (TripleBufferWin == 1 || KitchenSync == 1 || KitchenSyncPAL == 1)
+      if (TripleBufferWin == 1 || KitchenSync == 1 || (KitchenSyncPAL == 1 && totlines == 314))
       {
          if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
            DD_Primary->Restore();
@@ -357,7 +358,7 @@ void DrawScreen()
          if (DD_Primary->Flip(NULL, DDFLIP_WAIT) == DDERR_SURFACELOST)
            DD_Primary->Restore();
 
-         if (KitchenSync == 1 || KitchenSyncPAL == 1)
+         if (KitchenSync == 1 || (KitchenSyncPAL == 1 && totlines == 314))
          {
             if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
               DD_Primary->Restore();
@@ -2539,7 +2540,6 @@ volatile __int64 copymagic = 0x0008010000080100LL;
 volatile __int64 coef = 0x0066009a0066009aLL;
 
 //extern BYTE MotionBlur;
-extern WORD totlines;
 
 void drawscreenwin(void)
 {
@@ -2603,22 +2603,34 @@ void drawscreenwin(void)
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
 
-   if (!(KitchenSync || KitchenSyncPAL) && Refresh !=0 && !Force60hz)
+   if (!(KitchenSync || KitchenSyncPAL) && Refresh != 0 && !Force60hz)
    {
       Refresh = 0;
+      ReleaseDirectDraw();
       InitDirectDraw();
+      clearwin();
+      Clear2xSaIBuffer();
+      clear_display();
    }
 
    if (KitchenSync && Refresh != 120 && totlines == 263)
    {
       Refresh = 120;
+      ReleaseDirectDraw();
       InitDirectDraw();
+      clearwin();
+      Clear2xSaIBuffer();
+      clear_display();
    }
 
    if ((KitchenSync || KitchenSyncPAL) && Refresh != 100 && totlines == 314)
    {
       Refresh = 100;
+      ReleaseDirectDraw();
       InitDirectDraw();
+      clearwin();
+      Clear2xSaIBuffer();
+      clear_display();
    }
 
    if ( HQMode == 0 )
