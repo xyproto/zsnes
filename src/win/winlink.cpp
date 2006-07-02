@@ -2603,19 +2603,19 @@ void drawscreenwin(void)
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
 
-   if ((!KitchenSync || !KitchenSyncPAL) && Refresh !=0 && !Force60hz)
+   if (!(KitchenSync || KitchenSyncPAL) && Refresh !=0 && !Force60hz)
    {
       Refresh = 0;
       InitDirectDraw();
    }
 
-   if (KitchenSync && Refresh != 120 && totlines == 263)
+   if (KitchenSync && totlines == 263)
    {
       Refresh = 120;
       InitDirectDraw();
    }
 
-   if ((KitchenSync||KitchenSyncPAL) && Refresh != 100 && totlines == 314)
+   if ((KitchenSync || KitchenSyncPAL) && totlines == 314)
    {
       Refresh = 100;
       InitDirectDraw();
