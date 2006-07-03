@@ -63,7 +63,7 @@ case x$target in
     ;;
 esac
 
-dnl - Checks for libraries: libSDL*, zlib*, libpng, curses*, OpenGL, JMAlib
+dnl - Checks for libraries: libSDL*, zlib*, libpng, curses, OpenGL, JMAlib
 dnl - libs marked * are required, the other are optionnal
 
 dnl - libsdl stuff
@@ -88,9 +88,25 @@ else
   LDFLAGS="$LDFLAGS $LIBPNG_LIBS"
 fi
 
-dnl - curses stuff
-# can't figure out how to locate curses, so:
-LDFLAGS="$LDFLAGS -lncurses"
+
+dnl - debugger check
+AC_ARG_ENABLE(debugger,
+  [  --disable-debugger      Build without debugger support],
+  ,
+  enable_debugger=yes)
+AC_MSG_CHECKING(for debugger support)
+AC_MSG_RESULT($enable_debugger)
+if test x$enable_debugger != xyes; then
+  CFLAGS="$CFLAGS -DNO_DEBUGGER"
+  NFLAGS="$NFLAGS -DNO_DEBUGGER"
+  PSRFLAGS="$PSRFLAGS -DNO_DEBUGGER"
+  DEBUGGER_FILES=""
+else
+  # can't figure out how to locate curses, so:
+  DEBUGGER_FILES="debugger.o debugasm.o"
+  LDFLAGS="$LDFLAGS -lcurses"
+fi
+
 
 dnl - opengl stuff
 if test x$found_opengl != xyes; then
@@ -244,6 +260,7 @@ AC_SUBST(ZSNESEXE)
 AC_SUBST(GL_DRAW)
 AC_SUBST(JMA_FILES)
 AC_SUBST(MMLIB_FILES)
+AC_SUBST(DEBUGGER_FILES)
 AC_SUBST(PSR_TEMP)
 
 AC_CONFIG_FILES(Makefile)
@@ -277,6 +294,12 @@ else
 fi
 echo $ECHO_N "JMA support                   $ECHO_C"
 if test x$enable_jma = xno; then
+  echo "${ECHO_T}Disabled by user"
+else
+  echo "${ECHO_T}Yes"
+fi
+echo $ECHO_N "debugger support              $ECHO_C"
+if test x$enable_debugger = xno; then
   echo "${ECHO_T}Disabled by user"
 else
   echo "${ECHO_T}Yes"

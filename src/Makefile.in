@@ -53,8 +53,10 @@ JMAOBJ=@JMA_FILES@
 
 MMLIBOBJ=@MMLIB_FILES@
 
+DEBUGGEROBJ=@DEBUGGER_FILES@
+
 MAINOBJ=cfg.o debug.o endmem.o init.o initc.o md.o patch.o ui.o uic.o vcache.o\
-	version.o zloader.o zmovie.o zpath.o zstate.o debugger.o debugasm.o 
+	version.o zloader.o zmovie.o zpath.o zstate.o
 
 NETOBJ=
 #$(NETDIR)/ztcp.o
@@ -81,7 +83,7 @@ WINDOSOBJ=$(DOSDIR)/joy.o $(DOSDIR)/vesa2.o
 ZIPOBJ=$(ZIPDIR)/unzip.o $(ZIPDIR)/zpng.o
 
 ZOBJS=$(MAINOBJ) $(CHIPSOBJ) $(CPUOBJ) $(GUIOBJ) $(EFFECTSOBJ) $(JMAOBJ)\
-	$(MMLIBOBJ) $(NETOBJ) $(VIDEOBJ) $(WINOBJ) $(WINDOSOBJ) $(ZIPOBJ)
+	$(MMLIBOBJ) $(NETOBJ) $(VIDEOBJ) $(WINOBJ) $(WINDOSOBJ) $(ZIPOBJ) $(DEBUGGEROBJ)
 
 .PHONY: default main tools all install clean tclean distclean
 .SUFFIXES: .asm .c .cpp .psr
