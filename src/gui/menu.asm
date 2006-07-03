@@ -808,6 +808,7 @@ saveimage:
     popad
     ret
 
+SECTION .data
 NEWSYM keyonsn, db 0
 NEWSYM prbreak, db 0
 SECTION .text

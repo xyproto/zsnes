@@ -9,6 +9,7 @@ EXTSYM xp, xpb, xpc, curcyc, Curtableaddr, splitflags, execsingle, joinflags
 ;;; from debugger.c
 EXTSYM PrevBreakPt, my_getch_ret, my_getch
 
+SECTION .text
 
 ;; Wrapper for calls to routines in memtabler8
 

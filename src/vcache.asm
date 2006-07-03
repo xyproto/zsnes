@@ -53,7 +53,7 @@ EXTSYM device1,device2,snesinputdefault1,snesinputdefault2
 EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2
 
 %ifndef NO_DEBUGGER
-debuggeron
+EXTSYM debuggeron
 %endif
 
 ; Process stuff & Cache sprites
