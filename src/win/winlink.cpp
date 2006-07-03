@@ -350,7 +350,7 @@ void DrawScreen()
 {
    if (FullScreen == 1)
    {
-      if (TripleBufferWin == 1 || KitchenSync == 1 || KitchenSyncPAL == 1)
+      if (TripleBufferWin == 1 || KitchenSync == 1 || (KitchenSyncPAL == 1 && totlines == 314))
       {
          if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
            DD_Primary->Restore();
