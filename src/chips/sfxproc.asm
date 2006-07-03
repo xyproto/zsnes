@@ -498,7 +498,7 @@ NEWSYM reg301Fw
 
 NEWSYM reg3030w
     mov [SfxSFR],al
-    mov [SfxAC],1
+    mov byte[SfxAC],1
     mov dh,10
     ret
 NEWSYM reg3031w
