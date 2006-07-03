@@ -310,10 +310,8 @@ NEWSYM reg3031r
     jmp .cleared
 .clear
     add dword[ChangeOps],350*240
-    jmp .doneclear
 .cleared
     mov al,[SfxSFR+1]
-.doneclear
     ret
 SECTION .bss
 .test resb 1
