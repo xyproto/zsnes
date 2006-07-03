@@ -285,8 +285,6 @@ ${CHIPDIR}/dsp3proc${OE}: ${CHIPDIR}/dsp3proc.asm macros.mac
 ${CHIPDIR}/dsp4emu${OE}: ${CHIPDIR}/dsp4emu.c
 ${CHIPDIR}/dsp4proc${OE}: ${CHIPDIR}/dsp4proc.asm macros.mac
 ${CHIPDIR}/fxemu2${OE}: ${CHIPDIR}/fxemu2.asm macros.mac ${CHIPDIR}/fxemu2.mac
-${CHIPDIR}/fxemu2b${OE}: ${CHIPDIR}/fxemu2b.asm macros.mac ${CHIPDIR}/fxemu2.mac\
-	${CHIPDIR}/fxemu2b.mac
 ${CHIPDIR}/fxemu2c${OE}: ${CHIPDIR}/fxemu2c.asm macros.mac ${CHIPDIR}/fxemu2.mac\
 	${CHIPDIR}/fxemu2c.mac
 ${CHIPDIR}/fxtable${OE}: ${CHIPDIR}/fxtable.asm macros.mac
