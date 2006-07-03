@@ -39,28 +39,6 @@
 ;   gameplay.  Do not replace StartGUI with a function since it is not
 ;   a function, but rather a label that is being jumped to.
 
-; **************************************
-;  GUI.ASM
-; **************************************
-;
-; Associated files :
-;   GUIWinDp.inc - Window Display Routines
-;   GUITools.inc - Misc routines for the GUI
-
-; Quick Searches :
-;   DisplayMenu           - routines to display top menu bar
-;   Incomp                - Search for start of modem processing
-;   GUIgetcurrentinput
-;   GUITryMenuItem        - Processes the menu item when user clicks item
-;   Mouseimplementation
-;   DGUIDisplayer
-;   LGUILoadData
-;   SetInputDevice
-;   CalibrateDev1
-;   ButtonProcess         - routines that processes boxed buttons
-;   CheatCodeSearchInit
-;   guiwincontrol
-
 %include "macros.mac"
 
 EXTSYM curblank,vidpastecopyscr,frameskip,newengen,vsyncon,cvidmode,antienab
@@ -532,7 +510,7 @@ NEWSYM GUIQuickLoadUpdate
 %ifdef __MSDOS__
   add esi,16
 %else
-  add esi,512 ;16
+  add esi,512
 %endif
   add edi,32
   dec edx

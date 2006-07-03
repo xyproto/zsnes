@@ -74,13 +74,10 @@ void LoadCustomFont()
   int x = 0;
 
   fp = fopen_dir(ZCfgPath, "zfont.txt", "r");
-  if(fp)
+  if (fp)
   {
-    while(fgets(data,100,fp))
+    while (fgets(data,100,fp) && strcmp(data,"EOF\n") && x < 705)
     {
-      if((strcmp(data,"EOF\n") == 0)||(x == 705))
-        break;
-
       fgets(data,10,fp);		//get first line
       InsertFontChar(data,x++);
 
@@ -97,7 +94,6 @@ void LoadCustomFont()
       InsertFontChar(data,x++);
     }
   }
-
   else
   {
     memcpy(GUIFontData1,GUIFontData,705);
@@ -553,7 +549,7 @@ void GUIRestoreVars()
     if (ComboBlHeader[22])
     {
       NumComboGlob = ComboBlHeader[22];
-      fread(CombinDataGlob, 1, (NumComboGlob << 6)+2*NumComboGlob, cfg_fp);
+      fread(CombinDataGlob, 1, 66*NumComboGlob, cfg_fp);
     }
 
     fclose(cfg_fp);
@@ -583,7 +579,7 @@ void GUISaveVars()
   {
     ComboHeader[22] = NumComboGlob;
     fwrite(ComboHeader, 1, 23, cfg_fp);
-    fwrite(CombinDataGlob, 1, (NumComboGlob << 6)+2*NumComboGlob, cfg_fp);
+    fwrite(CombinDataGlob, 1, 66*NumComboGlob, cfg_fp);
     fclose(cfg_fp);
   }
 }
@@ -787,9 +783,6 @@ void LoadCheatSearchFile()
     fclose(fp);
   }
 }
-
-
-
 
 #define HEADER_SIZE 512
 #define INFO_LEN (0xFF - 0xC0)

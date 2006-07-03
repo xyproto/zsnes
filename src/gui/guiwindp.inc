@@ -25,100 +25,6 @@ NEWSYM mencoderExists, db 0
 
 SECTION .text
 
-; Window Display Routines
-; Last button value used = 77
-
-GUIStringGreater:
-  ; compares string at esi to edi and returns 1 to al if esi is >, else 0
-  push esi
-  cmp word[esi],'.'
-  je .less
-  cmp word[esi+32],'.'
-  je .greater
-  cmp word[esi],'..'
-  je .less
-  cmp word[esi+32],'..'
-  je .greater
-.nextchar
-  cmp byte[esi],0
-  je .less
-  cmp byte[esi+32],0
-  je .greater
-  mov al,[esi]
-  mov cl,[esi+32]
-  cmp al,'a'
-  jb .noucase1
-  cmp al,'z'
-  ja .noucase1
-  sub al,'z'-'Z'
-.noucase1
-  cmp cl,'a'
-  jb .noucase2
-  cmp cl,'z'
-  ja .noucase2
-  sub cl,'z'-'Z'
-.noucase2
-  cmp al,cl
-  jb .less
-  ja .greater
-  inc esi
-  jmp .nextchar
-.less
-  mov al,0
-  jmp .skip
-.greater
-  mov al,1
-.skip
-  pop esi
-  ret
-
-GUIStringGreater2:
-  ; compares string at ebx to edx and returns 1 to al if esi is >, else 0
-  push edx
-  push ebx
-  cmp word[ebx],'.'
-  je .less
-  cmp word[edx],'.'
-  je .greater
-  cmp word[ebx],'..'
-  je .less
-  cmp word[ebx],'..'
-  je .greater
-.nextchar
-  cmp byte[ebx],0
-  je .less
-  cmp byte[edx],0
-  je .greater
-  mov al,[ebx]
-  mov cl,[edx]
-  cmp al,'a'
-  jb .noucase1
-  cmp al,'z'
-  ja .noucase1
-  sub al,'z'-'Z'
-.noucase1
-  cmp cl,'a'
-  jb .noucase2
-  cmp cl,'z'
-  ja .noucase2
-  sub cl,'z'-'Z'
-.noucase2
-  cmp al,cl
-  jb .less
-  ja .greater
-  inc ebx
-  inc edx
-  jmp .nextchar
-.less
-  mov al,0
-  jmp .skip
-.greater
-  mov al,1
-.skip
-  pop ebx
-  pop edx
-  ret
-
 %macro DrawGUILineSc 2
   mov dword[GUIcolscaleval],%2
   mov edx,%1
@@ -1051,9 +957,9 @@ DisplayGUILoad:
 SECTION .data
 GUILoadText1 db 'SELECT FILE TO LOAD:',0
 GUILoadText2 db 'DISPLAY TYPE:',0
-GUILoadText3 db 'NORMAL 8.3 FORMAT',0
+GUILoadText3 db 'DOS 8.3 FORMAT',0
 GUILoadText4 db 'SNES HEADER NAME',0
-GUILoadText5 db 'WIN95 LONG FILENAME',0
+GUILoadText5 db 'WIN9X LONG FILENAME',0
 GUILoadText6 db 'SHOW ALL EXTENSIONS',0
 GUILoadText7 db 'FILENAME',0
 GUILoadText8 db 'DIRECTORY',0
@@ -4849,5 +4755,3 @@ NEWSYM GUIMenuItem
   db 'NETPLAY',0
   db 'MISC  ',0
   db 25,0
-
-SECTION .text

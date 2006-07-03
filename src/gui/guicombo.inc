@@ -18,9 +18,7 @@
 
 
 
-
 SECTION .text
-
 
 ComboClip:
     movzx eax,byte[GUINumCombo]
@@ -192,5 +190,3 @@ ComboRemoval:
 .global
     popad
     ret
-
-

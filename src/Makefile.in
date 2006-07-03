@@ -49,11 +49,9 @@ EFFECTSOBJ=$(EFFECTSDIR)/burn.o $(EFFECTSDIR)/water.o $(EFFECTSDIR)/smoke.o
 
 GUIOBJ=$(GUIDIR)/gui.o $(GUIDIR)/guifuncs.o $(GUIDIR)/menu.o
 
-JMAOBJ=@JMA_FILES@
-
-MMLIBOBJ=@MMLIB_FILES@
-
 DEBUGGEROBJ=@DEBUGGER_FILES@
+JMAOBJ=@JMA_FILES@
+MMLIBOBJ=@MMLIB_FILES@
 
 MAINOBJ=cfg.o endmem.o init.o initc.o md.o patch.o ui.o uic.o vcache.o\
 	version.o zloader.o zmovie.o zpath.o zstate.o

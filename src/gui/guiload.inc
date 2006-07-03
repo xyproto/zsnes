@@ -19,6 +19,8 @@
 
 EXTSYM Get_First_Entry,Get_Next_Entry,clearmem2,GetLoadHeader
 
+SECTION .text
+
 ; GUI File (Game) Loader
 
 %macro GUIGetEntry 1
@@ -167,11 +169,96 @@ EXTSYM Get_First_Entry,Get_Next_Entry,clearmem2,GetLoadHeader
     inc dword[GUIdirentries]
 %endmacro
 
-;LGUI
+GUIStringGreater:
+  ; compares string at esi to edi and returns 1 to al if esi is >, else 0
+  push esi
+  cmp word[esi],'.'
+  je .less
+  cmp word[esi+32],'.'
+  je .greater
+  cmp word[esi],'..'
+  je .less
+  cmp word[esi+32],'..'
+  je .greater
+.nextchar
+  cmp byte[esi],0
+  je .less
+  cmp byte[esi+32],0
+  je .greater
+  mov al,[esi]
+  mov cl,[esi+32]
+  cmp al,'a'
+  jb .noucase1
+  cmp al,'z'
+  ja .noucase1
+  sub al,'z'-'Z'
+.noucase1
+  cmp cl,'a'
+  jb .noucase2
+  cmp cl,'z'
+  ja .noucase2
+  sub cl,'z'-'Z'
+.noucase2
+  cmp al,cl
+  jb .less
+  ja .greater
+  inc esi
+  jmp .nextchar
+.less
+  mov al,0
+  jmp .skip
+.greater
+  mov al,1
+.skip
+  pop esi
+  ret
 
-SECTION .bss
-netlastloaded resb 1
-SECTION .text
+GUIStringGreater2:
+  ; compares string at ebx to edx and returns 1 to al if esi is >, else 0
+  push edx
+  push ebx
+  cmp word[ebx],'.'
+  je .less
+  cmp word[edx],'.'
+  je .greater
+  cmp word[ebx],'..'
+  je .less
+  cmp word[ebx],'..'
+  je .greater
+.nextchar
+  cmp byte[ebx],0
+  je .less
+  cmp byte[edx],0
+  je .greater
+  mov al,[ebx]
+  mov cl,[edx]
+  cmp al,'a'
+  jb .noucase1
+  cmp al,'z'
+  ja .noucase1
+  sub al,'z'-'Z'
+.noucase1
+  cmp cl,'a'
+  jb .noucase2
+  cmp cl,'z'
+  ja .noucase2
+  sub cl,'z'-'Z'
+.noucase2
+  cmp al,cl
+  jb .less
+  ja .greater
+  inc ebx
+  inc edx
+  jmp .nextchar
+.less
+  mov al,0
+  jmp .skip
+.greater
+  mov al,1
+.skip
+  pop ebx
+  pop edx
+  ret
 
 NEWSYM GUIloadfilename
     mov [gui_rom],eax
@@ -225,8 +312,6 @@ NEWSYM GUIloadfilename
     je .noshowinfo
     call showinfogui
 .noshowinfo
-    popad
-    pushad
     call initsnes
     popad
     mov byte[sramsavedis],0
@@ -308,16 +393,11 @@ GUILoadData:
     call Change_Drive
     call GetLoadData.a
     ret
-.unableload
-    pop eax
-    ret
+
 .loadfiles
     mov byte[LoadDuplicFound],0
     cmp byte[prevlfreeze],0
     jne near .frozen
-;    cmp byte[GUIloadfntype],0
-;    je near .frozen
-
     ; check if a duplicate exists
     mov esi,prevloadnames
 .checkanother
@@ -352,7 +432,6 @@ GUILoadData:
     cmp esi,prevloadnames+10*16
     jne near .checkanother
 
-    ; copy game name
     ; shift names down
     mov esi,prevloadnames+16*9-1
     mov ecx,16*9
@@ -395,13 +474,12 @@ GUILoadData:
     inc ebx
     dec ecx
     jnz .loopfnc
-
     ; get Drive/Dir
     mov ebx,prevloaddnamel+1
     mov edx,prevloaddnamel
     call Get_Dir
-.frozen
 
+.frozen
     cmp byte[GUIloadfntype],0
     jne .nottype0b2
     mov eax,[GUIcurrentcursloc]
@@ -441,9 +519,6 @@ GUILoadData:
     mov byte[GUIwinorder+eax],0
     dec byte[GUIwinptr]
     ret
-SECTION .data
-.drivefn db 'A:\temp.tmp',0
-SECTION .text
 
 GetNormalEntries2:
     cmp byte[showallext],1
@@ -711,10 +786,6 @@ GetLoadDirNormallfn:
     pop edi
     ret
 
-SECTION .bss
-Win95Failed resb 1
-SECTION .text
-
 NEWSYM GetCurDir
     ; get Drive/Dir
 %ifndef __UNIXSDL__
@@ -727,7 +798,6 @@ NEWSYM GetCurDir
 
 %ifndef __UNIXSDL__
     add byte[GUIcurrentdir],65
-
     mov byte[GUIcurrentdir+1],':'
     mov byte[GUIcurrentdir+2],'\'
 %endif
@@ -753,7 +823,6 @@ GetLoadData:
     mov dword[GUIcurrentdirviewloc],0
     mov dword[GUIcurrentdircursloc],0
     mov edi,spcRamcmp
-    mov byte[Win95Failed],0
 %ifdef __MSDOS__
     cmp byte[GUIloadfntype],2
     jne .nowin95lfn
@@ -781,11 +850,6 @@ GetLoadData:
 .win95lfn
     call GetLoadLfn
 .doneheader
-    cmp byte[Win95Failed],1
-    jne .notfailed
-    mov byte[GUIloadfntype],0
-    jmp GetLoadData
-.notfailed
     mov eax,[GUInumentries]
     mov [GUIfileentries],eax
     cmp dword[GUIfileentries],0
@@ -876,7 +940,8 @@ GetLoadData:
     je near .sortagain
 .donesort
     pop edi
-GUIGetDirs:
+
+part2:
     mov dword[GUIdirentries],0
     mov [GUIdirStartLoc],edi
     cmp byte[GUIloadfntype],0
@@ -1080,6 +1145,4 @@ NEWSYM GUIfindall,    db '*',0
 GUIfindDIR    db '*.*',0
 NEWSYM GUIfindall,    db '*.*',0
 %endif
-
-SECTION .data
 NEWSYM DTALoc, times 2048+32 db 0

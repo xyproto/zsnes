@@ -1275,6 +1275,3 @@ guicheaterror4 db 'GOLD FINGER CODE.',0
 guicheaterror5 db 'PRESS ANY KEY.',0
 SECTION .bss
 guicheatvalrep resb 1
-SECTION .text
-
-
