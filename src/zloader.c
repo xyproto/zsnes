@@ -677,6 +677,7 @@ static void handle_params(int argc, char *argv[])
         else if (tolower(argv[i][1]) == 'k' && tolower(argv[i][2]) == 'p') //Enable KitchenSync for PAL only
         {
           KitchenSyncPAL = 1;
+          KitchenSync = 0;
         }
         #endif
 

@@ -350,7 +350,7 @@ void DrawScreen()
 {
    if (FullScreen == 1)
    {
-      if (TripleBufferWin == 1 || KitchenSync == 1 || (KitchenSyncPAL == 1 && totlines == 314))
+      if (TripleBufferWin == 1 || KitchenSync == 1 || KitchenSyncPAL == 1)
       {
          if (DD_BackBuffer->Blt(&rcWindow, DD_CFB, &BlitArea, DDBLT_WAIT, NULL) == DDERR_SURFACELOST)
            DD_Primary->Restore();
@@ -2603,7 +2603,7 @@ void drawscreenwin(void)
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
 
-   if (!(KitchenSync || KitchenSyncPAL) && Refresh != 0 && !Force60hz)
+   if (!(KitchenSync || (KitchenSyncPAL && totlines == 314)) && Refresh != 0 && !Force60hz)
    {
       Refresh = 0;
       ReleaseDirectDraw();
