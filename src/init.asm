@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM DosExit,UpdateDevices,Makemode7Table,MusicRelVol,MusicVol,makesprprtable
-EXTSYM romloadskip,start65816,startdebugger,showinfogui,inittable
+EXTSYM romloadskip,start65816,showinfogui,inittable
 EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer
 EXTSYM inittablec,newgfx16b,DisplayInfo,ssautosw,GUIDelayB,pl12s34
 EXTSYM Output_Text,Change_Dir,SPCDisable,osm2dis,Turbo30hz,CombinDataLocl
@@ -62,6 +62,10 @@ EXTSYM BSEnable,clearvidsound,headerhack,SetupROM,ram7fa
 EXTSYM OpenCombFile,OpenSramFile,ZCartName,PatchUsingIPS
 
 EXTSYM initsnes
+
+%ifndef NO_DEBUGGER
+EXTSYM startdebugger
+%endif
 
 ; Initiation
 
@@ -271,11 +275,15 @@ NEWSYM init
     jne .noout
     call outofmemfix
 .noout
+%ifndef NO_DEBUGGER
     cmp byte[debugger],0
     je near start65816
     cmp byte[romloadskip],1
     je near start65816
     jmp startdebugger
+%else
+    jmp start65816
+%endif
 
 ; global variables
 

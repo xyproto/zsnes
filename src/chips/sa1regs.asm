@@ -41,11 +41,15 @@
 
 %include "macros.mac"
 
-EXTSYM regptr,regptw,romdata,SA1Status,debstop4,SDD1BankA,curromsize,debuggeron
+EXTSYM regptr,regptw,romdata,SA1Status,SDD1BankA,curromsize
 EXTSYM Get_Time,Get_TimeDate,spc7110romptr,SPC7110Entries,SPC7110IndexSize
 EXTSYM irqv2,irqv,nmiv2,nmiv,snesmmap
 EXTSYM snesmap2,curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr
 EXTSYM NumofBanks,BWUsed2,SPC7_Data_Load,SPC7110filep
+
+%ifndef NO_DEBUGGER
+EXTSYM debuggeron,debstop4
+%endif
 
 %include "cpu/regs.mac"
 %include "cpu/regsw.mac"
@@ -95,8 +99,10 @@ RTC2800:
 .go
     cmp dword[RTCPtr],0
     jne near .notfirst
+%ifndef NO_DEBUGGER
     cmp byte[debuggeron],1
     je near .notfirst
+%endif
     ; fill time/date
     push ebx
     push eax
@@ -1296,8 +1302,10 @@ SPC4841:
 ;0b - year 10's digit                   00
 ;0c - day of week                       00
 
+%ifndef NO_DEBUGGER
     cmp byte[debuggeron],1
     je near .dontupdate
+%endif
     ; fill time/date
     push ebx
     push eax
@@ -2299,7 +2307,9 @@ sa1chconv:
 
 
     mov ebx,[SA1DMADest]
+%ifndef NO_DEBUGGER
     mov byte[debstop4],1
+%endif
 ;    and ebx,7FFh
     and ebx,3FFFFh
     add ebx,[SA1RAMArea]

@@ -24,7 +24,7 @@ EXTSYM MessageOn,MsgCount,Msgptr,Voice0Disable,Voice0Status,Voice1Disable
 EXTSYM Voice1Status,Voice2Disable,Voice2Status,Voice3Disable,Voice3Status
 EXTSYM Voice4Disable,Voice4Status,Voice5Disable,Voice5Status,Voice6Disable
 EXTSYM Voice6Status,Voice7Disable,Voice7Status,bgcmsung,bgmode,cbackofsaddr
-EXTSYM cgmod,debuggeron,disableeffects,frameskip,frskipper
+EXTSYM cgmod,disableeffects,frameskip,frskipper
 EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen
 EXTSYM nextdrawallng,oamaddr,pal16b,pal16bxcl,pressed,prevbright,prevpal
 EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,sprprdrn,t1cc
@@ -51,6 +51,10 @@ EXTSYM EmuSpeed,SDRatio,FFRatio,DisplayBatteryStatus
 EXTSYM KeyResetSpeed,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyDisplayBatt,EMUPause
 EXTSYM device1,device2,snesinputdefault1,snesinputdefault2
 EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2
+
+%ifndef NO_DEBUGGER
+debuggeron
+%endif
 
 ; Process stuff & Cache sprites
 
@@ -270,12 +274,14 @@ NEWSYM cachevideo
     mov byte[cgmod],1
     xor al,al
     mov [curblank],al
+%ifndef NO_DEBUGGER
     cmp byte[debuggeron],0
     je .nodebugger
     mov byte[curblank],40h
     mov al,40h
     jmp .nofrskip
 .nodebugger
+%endif
 
     cmp dword[sramb4save],0
     je .nofocussave
