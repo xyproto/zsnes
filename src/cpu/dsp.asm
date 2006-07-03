@@ -33,11 +33,7 @@ EXTSYM Voice4Status,Voice5Status,Voice6Status,Voice7Status
 EXTSYM GainDecBendDataPos,GainDecBendDataTime,GainDecBendDataDat
 EXTSYM AdsrSustLevLoc,AdsrBlocksLeft,AdsrNextTimeDepth
 EXTSYM MuteVoiceF,VoiceStarter,DecayRate,SustainRate
-EXTSYM KeyOnStA,KeyOnStB,SoundTest
-
-%ifndef NO_DEBUGGER
-EXTSYM keyonsn
-%endif
+EXTSYM KeyOnStA,KeyOnStB,SoundTest,keyonsn
 
 SECTION .data
 identcode db 255,1,78,78
@@ -2011,9 +2007,7 @@ NEWSYM ProcessKeyOn
 .TestVoice8
       test al,0FFh
       jz .novoice
-%ifndef NO_DEBUGGER
       mov byte[keyonsn],1
-%endif
 .novoice
       ret
 

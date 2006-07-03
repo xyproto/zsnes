@@ -19,10 +19,14 @@
 
 
 EXTSYM initsfxregsw,reg420Bw,reg420Cw,regptw,initSA1regsw,SDD1Reset
-EXTSYM SPC7110Reset,RTCReset2,debstop,NextLineCache,vidmemch2,vidmemch4
-EXTSYM vidmemch8,vrama,nmirept,sndwrit,SPCRAM,HIRQCycNext,HIRQNextExe
+EXTSYM SPC7110Reset,RTCReset2,NextLineCache,vidmemch2,vidmemch4
+EXTSYM vidmemch8,vrama,nmirept,SPCRAM,HIRQCycNext,HIRQNextExe
 EXTSYM cycpb268,cycpb358,cycpbl,cycpblt,opexec268,opexec268cph,opexec358
 EXTSYM opexec358cph
+
+%ifndef NO_DEBUGGER
+EXTSYM sndwrit,debstop
+%endif
 
 SECTION .text
 
@@ -883,7 +887,9 @@ NEWSYM reg2118inc8inc
 NEWSYM reg2119
     cmp dword[vramaddr],0E000h
     jb .skip
+%ifndef NO_DEBUGGER
     mov byte[debstop],1
+%endif
 .skip
     mov ebx,[vramaddr]
 ;    cmp [vrama+ebx+1],al
@@ -1175,7 +1181,9 @@ reg2133w:
 
 ; Sound Register #1
 reg2140w:
+%ifndef NO_DEBUGGER
     mov byte[sndwrit],1
+%endif
     cmp byte[nmistatus],2
     jne .n
     mov byte[nmirept],0
@@ -1193,7 +1201,9 @@ reg2140w:
 
 ; Sound Register #2
 reg2141w:
+%ifndef NO_DEBUGGER
     mov byte[sndwrit],1
+%endif
     mov [SPCRAM+0F5h],al
     inc dword[SPC700write]
     reenablespc
@@ -1207,7 +1217,9 @@ reg2141w:
 
 ; Sound Register #3
 reg2142w:
+%ifndef NO_DEBUGGER
     mov byte[sndwrit],1
+%endif
     mov [SPCRAM+0F6h],al
     inc dword[SPC700write]
     reenablespc
@@ -1221,7 +1233,9 @@ reg2142w:
 
 ; Sound Register #4
 reg2143w:
+%ifndef NO_DEBUGGER
     mov byte[sndwrit],1
+%endif
     mov [SPCRAM+0F7h],al
     inc dword[SPC700write]
     reenablespc

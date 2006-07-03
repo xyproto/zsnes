@@ -20,7 +20,7 @@
 
 %include "macros.mac"
 
-EXTSYM FPSOn,MessageOn,breakatsignb,cbitmode,copyvid
+EXTSYM FPSOn,MessageOn,cbitmode,copyvid
 EXTSYM MsgCount,Msgptr,OutputGraphicString,OutputGraphicString16b,vidbuffer
 EXTSYM curblank,drawhline,drawhline16b,drawvline,drawvline16b,frameskip
 EXTSYM pressed,dumpsound,Grab_BMP_Data,Grab_BMP_Data_8
@@ -29,6 +29,13 @@ EXTSYM spritetablea,sprlefttot,newengen,Get_Key,continueprognokeys
 EXTSYM ForceNonTransp,GUIOn,Check_Key,JoyRead,GetScreen,SSKeyPressed
 EXTSYM SPCKeyPressed,StopSound,StartSound,ExecExitOkay,t1cc,Clear2xSaIBuffer
 EXTSYM ScreenShotFormat,spcsaved,savespcdata
+EXTSYM exiter,xpb,xpc,snesmmap,memtabler8,snesmap2,regaccessbankr8,dmadata,initaddrl
+EXTSYM spcPCRam,xp,curcyc,Curtableaddr,UpdateDPage,splitflags,execsingle,joinflags
+EXTSYM pdh,SPCRAM
+
+%ifndef NO_DEBUGGER
+EXTSYM numinst,debuggeron
+%endif
 
 %ifndef NO_PNG
 EXTSYM Grab_PNG_Data
@@ -799,4 +806,91 @@ saveimage:
     pushad
     call Grab_BMP_Data
     popad
+    ret
+
+NEWSYM keyonsn, db 0
+NEWSYM prbreak, db 0
+SECTION .text
+
+breakatsignb:
+    mov byte[keyonsn],0
+    mov byte[prbreak],0
+%ifndef NO_DEBUGGER
+    cmp byte[SPCSave],1
+    jne .nospcsave
+    mov byte[debuggeron],1
+.nospcsave
+%endif
+
+    mov byte[exiter],01h
+    xor eax,eax
+    xor ebx,ebx
+    xor ecx,ecx
+    xor edx,edx
+    mov bl,[xpb]
+    mov ax,[xpc]
+    test ax,8000h
+    jz .loweraddr
+    mov esi,[snesmmap+ebx*4]
+    jmp .skiplower
+.loweraddr
+    cmp ax,4300h
+    jb .lower
+    cmp dword[memtabler8+ebx*4],regaccessbankr8
+    je .dma
+.lower
+    mov esi,[snesmap2+ebx*4]
+    jmp .skiplower
+.dma
+    mov esi,dmadata-4300h
+.skiplower
+    mov [initaddrl],esi
+    add esi,eax                 ; add program counter to address
+    mov ebp,[spcPCRam]
+    mov dl,[xp]                 ; set flags
+    mov dh,[curcyc]             ; set cycles
+    mov edi,[Curtableaddr]
+    call UpdateDPage
+    ; execute
+.loopa
+    call splitflags
+    call execsingle
+    call joinflags
+    mov dh,[pdh]
+%ifndef NO_DEBUGGER
+    inc dword[numinst]
+    cmp byte[numinst],0
+    jne .skipa
+    call Check_Key
+    test al,0FFh
+    jz .skipa
+    call Get_Key
+    cmp al,27
+    je .skipc
+.skipa
+%endif
+    cmp byte[SPCRAM+6],40h
+    je .skipc
+    cmp byte[keyonsn],1
+    jne .loopa
+    jmp .noesc
+.skipc
+    mov byte[prbreak],1
+.noesc
+    ; copy back data
+    mov [spcPCRam],ebp
+    mov [Curtableaddr],edi
+    mov [xp],dl
+    mov [curcyc],dh
+
+    mov eax,[initaddrl]
+    sub esi,eax                 ; subtract program counter by address
+    mov [xpc],si
+    mov byte[exiter],0
+%ifndef NO_DEBUGGER
+    cmp byte[SPCSave],1
+    jne .nospcsave2
+    mov byte[debuggeron],0
+.nospcsave2
+%endif
     ret

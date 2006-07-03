@@ -28,6 +28,7 @@ EXTSYM debstop4,SA1RegP,nextopcode,debugsa1,skipdebugsa1
 SECTION .text
 
 sa1debug:
+%ifndef NO_DEBUGGER
    cmp byte[debuggeron],0
    je .nodebugger
    cmp byte[skipdebugsa1],1
@@ -50,6 +51,7 @@ sa1debug:
    call nextopcode
    popad
 .nodebugger
+%endif
    ret
 
 
@@ -456,7 +458,9 @@ SA1COp3Cm16:; BIT a,x
    BITMacro16b
 
 SA1COp00:   ; BRK s
+%ifndef NO_DEBUGGER
    mov byte[debstop4],1
+%endif
    dec esi
    endloop
    BRKMacro

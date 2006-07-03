@@ -360,19 +360,6 @@ void debugloop() {
 }
 
 //*******************************************************
-// BreakatSignB               Breaks whenever keyonsn = 1
-//*******************************************************
-char keyonsn = 0;
-char prbreak = 0;
-
-/* extern FOO SPCSave */
-
-void breakatsignb() {
-    // ...
-}
-
-
-//*******************************************************
 // BreakatSignC               Breaks whenever sndwrit = 1
 //*******************************************************
 

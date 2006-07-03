@@ -19,7 +19,7 @@
 %include "macros.mac"
 
 EXTSYM KeyRewind,statesaver,Voice0Status,UpdateDPage
-EXTSYM StartGUI,debuggeron,romdata,initvideo,DosExit,sfxramdata,deinitvideo
+EXTSYM StartGUI,romdata,initvideo,DosExit,sfxramdata,deinitvideo
 EXTSYM vidbufferofsa,disable65816sh,GUISaveVars,device2
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
@@ -27,7 +27,7 @@ EXTSYM KeyQuickSaveSPC,TimerEnable,splitflags,joinflags
 EXTSYM KeyQuickSnapShot,csounddisable,videotroub,ResetTripleBuf
 EXTSYM InitPreGame,Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8
 EXTSYM SetupPreGame,memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap
-EXTSYM DeInitPostGame,spcPCRam,startdebugger,xp,xpb,xpc,tablead
+EXTSYM DeInitPostGame,spcPCRam,xp,xpb,xpc,tablead
 EXTSYM tableadc,SA1UpdateDPage,Makemode7Table,nextmenupopup,MovieProcessing
 EXTSYM SFXEnable,wramdata,cycpbl,cycpblt,irqon,spcon
 EXTSYM multchange,romispal,scrndis,sprlefttot,sprleftpr,processsprites
@@ -52,6 +52,10 @@ EXTSYM MovieSeekBehind,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
+
+%ifndef NO_DEBUGGER
+EXTSYM debuggeron,startdebugger
+%endif
 
 %ifdef __MSDOS__
 EXTSYM dssel,Game60hzcall,NextLineStart,FlipWait,LastLineStart
@@ -259,7 +263,9 @@ NEWSYM continueprog
     jnz .loopa
 
     mov byte[romloadskip],0
+%ifndef NO_DEBUGGER
     mov byte[debuggeron],0
+%endif
     mov byte[exiter],0
 
     call InitPreGame
@@ -267,7 +273,9 @@ NEWSYM continueprog
 
 NEWSYM continueprognokeys
     mov byte[romloadskip],0
+%ifndef NO_DEBUGGER
     mov byte[debuggeron],0
+%endif
     mov byte[exiter],0
 
     call InitPreGame
@@ -444,11 +452,13 @@ reexecuteb2:
     je near showmenu
     cmp byte[SPCKeyPressed],1
     je near showmenu
-    cmp byte[debugdisble],0
+%ifndef NO_DEBUGGER
+   cmp byte[debugdisble],0
     jne .nodebugger
     test byte[pressed+59],1
     jne near startdebugger
 .nodebugger
+%endif
     test byte[pressed+59],1
     jne near showmenu
     mov eax,[KeyQuickRst]
