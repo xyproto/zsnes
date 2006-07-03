@@ -9,17 +9,17 @@ EXTSYM xp, xpb, xpc, curcyc, Curtableaddr, splitflags, execsingle, joinflags
 ;;; from debugger.c
 EXTSYM PrevBreakPt, my_getch_ret, my_getch
 
-        
+
 ;; Wrapper for calls to routines in memtabler8
 
 NEWSYM memtabler8_wrapper
         push    ebp
         mov     ebp, esp
-        
+
         push    ebx
         push    edi
         push    esi
-                
+
         movzx   ebx, BYTE [ebp+8]
         movzx   ecx, WORD [ebp+12]
         xor     eax, eax
@@ -37,11 +37,11 @@ NEWSYM memtabler8_wrapper
 NEWSYM memtablew8_wrapper
         push    ebp
         mov     ebp, esp
-        
+
         push    ebx
         push    edi
         push    esi
-                
+
         movzx   ebx, BYTE [ebp+8]
         movzx   ecx, WORD [ebp+12]
         movzx   eax, BYTE [ebp+16]
@@ -58,7 +58,7 @@ NEWSYM memtablew8_wrapper
         ret
 
 
-        
+
 NEWSYM breakops_wrapper
         push    ebp
         mov     ebp, esp
@@ -70,8 +70,8 @@ NEWSYM breakops_wrapper
         popad
         pop     ebp
         ret
-        
-        
+
+
 ;*******************************************************
 ; BreakOps                          Breaks at Breakpoint
 ;*******************************************************
@@ -80,7 +80,7 @@ NEWSYM breakops
     ; set cursor to (12,60)
     mov [PrevBreakPt],cx
     mov [PrevBreakPt+2],bl
-        
+
 ;     push ebx
 ;     mov ah,02h
 ;     mov bl,0
@@ -88,7 +88,7 @@ NEWSYM breakops
 ;     mov dl,60
 ;     int 10h
 ;     pop ebx
-        
+
     test cx,8000h
     jz .loweraddr2
     mov esi,[snesmmap+ebx*4]
@@ -166,7 +166,7 @@ NEWSYM breakops
     call my_getch
     popad
     mov eax, [my_getch_ret]
-    
+
     cmp eax,27
     je .skipc
 .skipa
@@ -187,9 +187,9 @@ NEWSYM breakops
 
 SECTION .data
 NEWSYM breakarea, dd 0
-SECTION .text   
-        
-                
+SECTION .text
+
+
 ;*******************************************************
 ; Execute Next Opcode
 ;*******************************************************

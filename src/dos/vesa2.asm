@@ -20,8 +20,8 @@
 
 %include "macros.mac"
 
-EXTSYM DosExit,ZSNESBase,Change_Dir,PrintStr,newengen,HalfTransB,HalfTransC
-EXTSYM InitDrive,InitDir,fulladdtab,UnusedBit,HalfTrans,UnusedBitXor
+EXTSYM DosExit,ZSNESBase,PrintStr,newengen,HalfTransB,HalfTransC
+EXTSYM fulladdtab,UnusedBit,HalfTrans,UnusedBitXor
 EXTSYM ngrposng,nggposng,ngbposng
 %ifdef __MSDOS__
 EXTSYM Init_2xSaIMMX
@@ -146,9 +146,6 @@ NEWSYM VESA2EXITTODOS
     mov edx,.return
     call PrintStr
 
-    mov dl,[InitDrive]
-    mov ebx,InitDir
-    call Change_Dir
     jmp DosExit
 
 SECTION .data

@@ -75,7 +75,7 @@ EXTSYM scanlines,statefileloc,fnamest,sprlefttot,spritetablea,CHIPBATT
 EXTSYM sfxramdata,setaramdata,SETAEnable,cgram,srama,tempco0,prevbright,maxbr
 EXTSYM prevpal,coladdr,coladdg,coladdb,scaddtype,ScreenScale,initvideo,pressed
 EXTSYM UpdateDevices,memtabler8,memtablew8,writeon,JoyRead,SetInputDevice,delay
-EXTSYM FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,pl12s34,resolutn,InitDrive,InitDir
+EXTSYM FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,pl12s34,resolutn
 EXTSYM Makemode7Table,vidbufferofsb,wramdata,bgfixer,videotroub
 EXTSYM CheatCodeSave,CheatCodeLoad,LoadCheatSearchFile,SaveCheatSearchFile
 EXTSYM Get_Date,Check_Key,Get_Key,SRAMDir,initsnes,sram
@@ -133,7 +133,7 @@ EXTSYM KeyInsrtChap,KeyPrevChap,KeyNextChap,KeyDisplayFPS,KeyNewGfxSwt
 EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
 EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
-EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,ZCartName,init_save_paths
+EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths
 EXTSYM mousewrap,GUIClick,PrevFSMode,PrevWinMode,SaveSramData
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,OldGfxMode2,SmallMsgText
 EXTSYM AutoPatch,RomInfo,AllowUDLR,Triplebufen,GrayscaleMode
@@ -1255,11 +1255,6 @@ NEWSYM StartGUI
   mov edx,LoadDrive
   call Get_Dir
 
-  ; change dir to InitDrive/InitDir
-  mov dl,[InitDrive]
-  mov ebx,InitDir
-  ; save config
-  call Change_Dir
   pushad
   call GUISaveVars
   popad
@@ -1331,12 +1326,6 @@ CheckSumVal resd 1
 SECTION .data
 WrongCheckSum db 10,13,'ROM Data Mismatch',10,13,10,13,0
 SECTION .text
-
-LOADDir:
-  mov dl,[LoadDrive]
-  mov ebx,LoadDir
-  call Change_Dir
-  ret
 
 guimencodermsg:
   xor ebx,ebx
@@ -2008,11 +1997,6 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
   cmp byte[GUIcrowpos],4
   jne .nosavestuff
 
-  ; change dir to InitDrive/InitDir
-  mov dl,[InitDrive]
-  mov ebx,InitDir
-  call Change_Dir
-
   mov byte[savecfgforce],1
   pushad
   call GUISaveVars
@@ -2022,10 +2006,6 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
   call Makemode7Table
   mov dword[GUICMessage],.message1
   mov dword[GUICTimer],50
-  ; change dir to LoadDrive/LoadDir
-  mov dl,[LoadDrive]
-  mov ebx,LoadDir
-  call Change_Dir
 .nosavestuff
   GUICheckMenuItem 11, 6
 .nomisc
@@ -2175,12 +2155,6 @@ DisplayBoxes:                        ; Displays window when item is clicked
 .nomore
   ret
 
-NEWSYM ChangetoLOADdir
-  mov dl,[LoadDrive]
-  mov ebx,LoadDir
-  call Change_Dir
-  ret
-
 GUIProcStates:
   xor eax,eax
   mov al,[GUIwinptr]
@@ -2205,8 +2179,6 @@ GUIProcStates:
   call loadstate2
   popad
 .changedir
-  ; change dir to LoadDrive/LoadDir
-  call ChangetoLOADdir
   ret
 
 SaveSecondState:
@@ -2218,7 +2190,6 @@ SaveSecondState:
   popad
   mov ebx,[statefileloc]
   mov [fnamest+ebx],al
-  call ChangetoLOADdir
   ret
 
 LoadSecondState:
@@ -2230,7 +2201,6 @@ LoadSecondState:
   popad
   mov ebx,[statefileloc]
   mov [fnamest+ebx],al
-  call ChangetoLOADdir
   ret
 
 GUIProcReset:

@@ -19,21 +19,19 @@
 %include "macros.mac"
 
 EXTSYM KeyRewind,statesaver,Voice0Status,UpdateDPage
-EXTSYM StartGUI,debuggeron,romdata,initvideo
-EXTSYM vidbufferofsa,disable65816sh,GUISaveVars
+EXTSYM StartGUI,debuggeron,romdata,initvideo,DosExit,sfxramdata,deinitvideo
+EXTSYM vidbufferofsa,disable65816sh,GUISaveVars,device2
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
 EXTSYM KeyQuickSaveSPC,TimerEnable,splitflags,joinflags
 EXTSYM KeyQuickSnapShot,csounddisable,videotroub,ResetTripleBuf
-EXTSYM Output_Text,Check_Key,Get_Key,Change_Dir
 EXTSYM InitPreGame,Curtableaddr,curcyc,debugdisble,dmadata,guioff,memtabler8
 EXTSYM SetupPreGame,memtablew8,regaccessbankr8,showmenu,snesmap2,snesmmap
 EXTSYM DeInitPostGame,spcPCRam,startdebugger,xp,xpb,xpc,tablead
 EXTSYM tableadc,SA1UpdateDPage,Makemode7Table,nextmenupopup,MovieProcessing
-EXTSYM DosExit,InitDir,InitDrive,sfxramdata,deinitvideo
 EXTSYM SFXEnable,wramdata,cycpbl,cycpblt,irqon,spcon
 EXTSYM multchange,romispal,scrndis,sprlefttot,sprleftpr,processsprites
-EXTSYM cachesprites,opcjmptab,CheatOn
+EXTSYM cachesprites,opcjmptab,CheatOn,Output_Text,Check_Key,Get_Key,
 EXTSYM INTEnab,JoyCRead,NMIEnab,NumCheats,CurrentExecSA1,ReadInputDevice
 EXTSYM StartDrawNewGfx,VIRQLoc,cachevideo,cfield,cheatdata,curblank,curnmi
 EXTSYM curypos,cycpl,doirqnext,drawline,exechdma,hdmadelay,intrset,newengen
@@ -54,7 +52,6 @@ EXTSYM MovieSeekBehind,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
-EXTSYM device2
 
 %ifdef __MSDOS__
 EXTSYM dssel,Game60hzcall,NextLineStart,FlipWait,LastLineStart
@@ -489,11 +486,6 @@ NEWSYM endprog
     pushad
     call MovieStop
     popad
-
-    ; change dir to InitDrive/InitDir
-    mov dl,[InitDrive]
-    mov ebx,InitDir
-    call Change_Dir
 
     jmp DosExit
 

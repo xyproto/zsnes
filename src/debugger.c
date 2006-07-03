@@ -66,7 +66,7 @@ unsigned char  debugds = 0; // debug disable (bit 0 = 65816, bit 1 = SPC)
 unsigned int   numinst = 0; // # of instructions
 
 unsigned char wx = 0, wy = 0, wx2 = 0, wy2 = 0;
-unsigned char execut = 0; 
+unsigned char execut = 0;
 unsigned char debuggeron = 1;
 unsigned char debstop = 0, debstop2 = 0, debstop3 = 0, debstop4 = 0;
 
@@ -78,7 +78,7 @@ char skipdebugsa1 = 1;
 enum color_pair {
     cp_white = 1, cp_magenta, cp_red, cp_cyan, cp_green, cp_yellow,
     cp_white_on_blue,
-}; 
+};
 
 WINDOW *debugwin;
 
@@ -103,13 +103,13 @@ void startdebugger() {
 
     curblank = 0x40;
     debuggeron = 1;
-    
+
 #ifdef __MSDOS__
     __dpmi_regs regs;
     regs.x.ax = 0x0003;
     __dpmi_int(0x10, &regs);
 #endif // __MSDOS__
-            
+
     if (firsttime) {
     initscr(); cbreak(); noecho();
     intrflush(stdscr, FALSE);
@@ -125,20 +125,20 @@ void startdebugger() {
     init_pair(cp_yellow,        COLOR_YELLOW,  COLOR_BLACK);
     init_pair(cp_white_on_blue, COLOR_WHITE,   COLOR_BLUE);
     }
-    
+
     execut = 0;
 
     if (firsttime) {
     startdisplay();
 
     debugwin = newwin(20, 77, 2, 1);
-    
+
     wbkgd(debugwin, CP(cp_white_on_blue) | ' ');
     // wattrset(debugwin, CP(cp_white_on_blue));
 
     scrollok(debugwin, TRUE);
     idlok(debugwin, TRUE);
-    
+
     firsttime = 0;
     } else {
 	touchwin(stdscr);
@@ -153,11 +153,11 @@ void startdebugger() {
     // "pushad / call LastLog / ... / popad" elided
     SaveOAMRamLog();
 
-    
+
     if (execut == 1) {
 	start65816(); return;
     }
-  
+
 }
 
 // Called from ASM
@@ -173,11 +173,11 @@ WINDOW *openwindow(int nlines, int ncols, int begin_y, int begin_x,
     WINDOW *w = newwin(nlines, ncols, begin_y, begin_x);
     wbkgd(w, CP(cp_white_on_blue|' '));
     // wattrset(w, CP(cp_white_on_blue));
-    
+
     mvwprintw(w, 1, 1, "%s", message);
     wclrtoeol(w);
     box(w, 0, 0);
-	
+
     return w;
 }
 
@@ -205,7 +205,7 @@ void debugloop() {
     // redrawing the display is always a good idea
     refresh();
     wrefresh(debugwin);
-  
+
    key = getch();
    if (key >= 0 && key < 256)
        key = toupper(key);
@@ -222,7 +222,7 @@ void debugloop() {
    case KEY_F(4): // debugloadstate
        debugloadstate();
        goto a;
-       
+
    case 27:       // exit
        return;
 
@@ -244,7 +244,7 @@ void debugloop() {
        mvwaddstr(w, 5, 1,            "    Enter Value   : ");
 
        wrefresh(w);
-       
+
        echo();
        n = mvwscanw(w, 1, 21, "%x", &addr);
        noecho();
@@ -252,30 +252,30 @@ void debugloop() {
        if (n == 1) {
        mvwprintw(w, 3, 21, "%02x", memtabler8_wrapper(addr >> 16, addr));
        wrefresh(w);
-       
+
        echo();
        n = mvwscanw(w, 5, 21, "%x", &value);
        noecho();
-       
+
        if (n == 1) {
 	   memtablew8_wrapper(addr >> 16, addr, value);
        }}
-       
+
        closewindow(w);
        goto b;
    }
-       
+
    case 'B':      // breakpoint
    {
        WINDOW *w = openwindow(3, 33, 11, 24, "    Enter Address : ");
        unsigned addr, n;
 
-       wrefresh(w); 
+       wrefresh(w);
 
        echo();
        n = wscanw(w, "%x", &addr);
        noecho();
-       
+
        closewindow(w);
 
        if (n == 1) {
@@ -285,16 +285,16 @@ void debugloop() {
 	   nodelay(stdscr, 1);
 
 	   breakops_wrapper(addr >> 16, addr);
-	   
+
 	   nodelay(stdscr, 0);
 	   closewindow(w);
 
 	   goto a;
        }
-  
+
        goto b;
    }
-   
+
    case 'R': // repeat breakpoint
        breakops_wrapper(PrevBreakPt.page, PrevBreakPt.offset);
        goto a;
@@ -313,25 +313,25 @@ void debugloop() {
        mvwaddstr(w, 5, 1,            "     Enter Value   : ");
 
        wrefresh(w);
-       
+
        echo();
        n = mvwscanw(w, 1, 22, "%x", &addr);
        noecho();
 
        addr &= 0xFFFF;
-       
+
        if (n == 1) {
        mvwprintw(w, 3, 22, "%02x", SPCRAM[addr]);
        wrefresh(w);
-       
+
        echo();
        n = mvwscanw(w, 5, 22, "%x", &value);
        noecho();
-       
+
        if (n == 1) {
 	   SPCRAM[addr] = value;
        }}
-       
+
        closewindow(w);
        goto b;
    }
@@ -343,7 +343,7 @@ void debugloop() {
    case '2': // toggle 65816
        debugds ^= 2;
        break;
-   
+
    default:
        wprintw(debugwin, "Unknown key code: %d\n", key);
        goto b;
@@ -356,7 +356,7 @@ void debugloop() {
    if (soundon && (debugds & 2) && (cycpbl >= 55))
        goto e;
    goto a;
-	
+
 }
 
 //*******************************************************
@@ -385,9 +385,9 @@ unsigned char sndwrit;
 // BreakOps                          Breaks at Breakpoint
 //*******************************************************
 
-/* in ASM still, but not identical to other version 
+/* in ASM still, but not identical to other version
 void breakops(unsigned char page, unsigned short offset) {
-    
+
 }
 */
 
@@ -432,16 +432,16 @@ void startdisplay() {
 
     move(1, 0); attrset(CP(cp_white_on_blue));
     addch(CurrentCPU+'0');
-    for (i = 15; i; i--) 
+    for (i = 15; i; i--)
 	addch(ACS_HLINE);
     printw(" CC:    Y:    ");
-    for (i = 19; i; i--) 
+    for (i = 19; i; i--)
 	addch(ACS_HLINE);
     addch(' ');
-    for (i = 11; i; i--) 
+    for (i = 11; i; i--)
 	addch(' ');
     addch(' ');
-    for (i = 16; i; i--) 
+    for (i = 16; i; i--)
 	addch(ACS_HLINE);
     addch(ACS_URCORNER);
 
@@ -451,25 +451,25 @@ void startdisplay() {
 	mvaddch(i, 78, ACS_VLINE);
 	mvaddch(i, 79, CHECK);
     }
-    
+
     mvaddch(22, 0, ACS_LLCORNER);
     for(i = 77; i; i--)
 	addch(ACS_HLINE);
     mvaddch(22, 78, ACS_LRCORNER);
     mvaddch(22, 79, CHECK);
-    
+
     move(23, 1);
-    for(i = 79; i; i--) 
+    for(i = 79; i; i--)
 	addch(CHECK);
-    
+
     // Print debugger information
-    
+
     move(0, 2); attrset(CP(cp_white));
     printinfo("- @5Z@4S@3N@2E@6S@7 debugger -");
 
     move(1, 4); attrset(CP(cp_white_on_blue));
     printinfo(" 65816 ");
-    
+
     // HACK ALERT! this should really be on the bottom line, but
     // xterms default to being one line shorter than 80x25, so this
     // won't be on the bottom line on DOS!
@@ -524,7 +524,7 @@ void out65816_addrmode (unsigned char *instr) {
 
 	wprintw(debugwin, "%19s", padding);
 	break;
-	
+
     case 1:     // #$12,#$1234 (M-flag)
 	wprintw(debugwin, "#$");
 	if (xp != 0x20) {
@@ -535,13 +535,13 @@ void out65816_addrmode (unsigned char *instr) {
 	    wprintw(debugwin, "%13s", padding);
     	}
 	break;
-	
+
     case 2:     // $1234 : db+$1234
 	wprintw(debugwin, "$%04x", *(unsigned short *)(instr+1));
 	wprintw(debugwin, "%5s[%02x%04x] ", padding, GETXB(),
 		                            *(unsigned short *)(instr+1));
 	break;
-	
+
     case 3:     // $123456
 	wprintw(debugwin, "$%02x%04x", instr[3], *(unsigned short*)(instr+1));
 	wprintw(debugwin, "%12s", padding);
@@ -555,14 +555,14 @@ void out65816_addrmode (unsigned char *instr) {
     case 5:     // A
 	wprintw(debugwin, "A%18s", padding);
 	break;
-	
+
     case 8:     // [$12],y : [$12+$13+$14+d]+y
     {
 	unsigned short addr;
 	unsigned int t;
 
 	wprintw(debugwin, "[$%02x],Y   ", instr[1]);
-	
+
 	addr = instr[1] + xd;
 	t = memtabler8_wrapper(0, addr);
 	t |= memtabler8_wrapper(0, addr+1) << 8;
@@ -604,7 +604,7 @@ void out65816_addrmode (unsigned char *instr) {
     }
 
     case 15:    // +-$12 / $1234
-    {   
+    {
 	char c = instr[1];
 	unsigned short t = c + xpc + 2;
 
@@ -619,7 +619,7 @@ void out65816_addrmode (unsigned char *instr) {
 	unsigned short x;
 
 	wprintw(debugwin, "($%04x,X) [%02x", cx, xpb);
-	if (xp & 0x10) 
+	if (xp & 0x10)
 	    cx = (cx & 0xFF00) | ((cx + xx) & 0xFF);
 	else
 	    cx += xx;
@@ -629,8 +629,8 @@ void out65816_addrmode (unsigned char *instr) {
 	wprintw(debugwin, "%04x] ", x);
 
 	break;
-    }	
-   
+    }
+
 
     case 25:    // #$12 (Flag Operations)
 	wprintw(debugwin, "#$%02x%15s", instr[1], padding);
@@ -662,7 +662,7 @@ unsigned char *findoppage() {
 	    // dma
 	    return (unsigned char*)&dmadata[xpb-0x4300];
 	}
-    }    
+    }
 }
 
 unsigned char *findop() {
@@ -707,7 +707,7 @@ void nextopcode() {
 
     //if (debugsa1 != 1)
 	out65816();
-    //else 
+    //else
     //	outputbuffersa1();
 }
 
@@ -727,21 +727,21 @@ void outspc_addrmode() {
     char buf[16] = "               ";
     char *p;
 
-#define HEX8(val)   do { p += sprintf(p, "%02x", val); *p = ' '; } while (0) 
+#define HEX8(val)   do { p += sprintf(p, "%02x", val); *p = ' '; } while (0)
 #define HEX16(val)  do { p += sprintf(p, "%04x", val); *p = ' '; } while (0)
 
     mode = ArgumentTable[spcPCRam[0]];
     format = AddressTable[mode];
-    
+
     // memset(buf, ' ', 15); buf[15] = 0;
-    
+
     p = buf;
     while (*format) {
 	if (*format != '%') {
 	    *p++ = *format++;
 	    continue;
 	}
-	
+
 	format++;
 	switch (*format++) {
 
@@ -762,9 +762,9 @@ void outspc_addrmode() {
 	    *p++ = (spcPCRam[0] >> 5) + '0';
 	    *p++ = ' ';
 	    break;
-	    
+
 	case '5': // rela2pc2
-	{   
+	{
 	    signed char off;
 	    off = *(signed char*)(spcPCRam+1);
 	    HEX16(off + 2 + (spcPCRam - SPCRAM));
@@ -782,19 +782,19 @@ void outspc_addrmode() {
 		*p++ = '0';
 	    }
 
-	    break;	    
+	    break;
 	}
-	    
+
 	case '8': // memorybit
 	    HEX16((*(unsigned short*)(spcPCRam+1)) >> 3);
 	    // format += 2;
 	    break;
-	    
+
 	case '9': // memorybitlow
 	    *p++ = ',';
 	    *p++ = (spcPCRam[1] & 0x7) + '0';
 	    break;
-	    
+
 	case 'A': // rela2pc1
 	{
 	    signed char off;
@@ -814,9 +814,9 @@ void outspc_addrmode() {
 	}
 
 	}
-		
+
     }
-    
+
     buf[15] = 0;
     waddstr(debugwin, buf);
 }
@@ -826,11 +826,11 @@ void nextspcopcode() {
 	return;
     if (cycpbl >= 55)
 	return;
-    
+
     // output spc pc & opcode #
     wprintw(debugwin, " %04x/%02x ", spcPCRam - SPCRAM, spcPCRam[0]);
 
-    
+
     // output instruction
     wprintw(debugwin, "%-6s", spcnametab[spcPCRam[0]]);
     outspc_addrmode();
@@ -848,7 +848,7 @@ void nextspcopcode() {
 	    (spcP  & 0x01) ? '+' : '-');
 
     wprintw(debugwin, "\n");
-    
+
 }
 
 
@@ -908,23 +908,23 @@ char *spcnametab[256] = {
     "OR",   "OR",    "OR",    "OR",
     "OR",   "OR",    "OR1",   "ASL",
     "ASL",  "PUSH",  "TSET1", "BRK",
-    
+
     "BPL",  "TCALL", "CLR1",  "BBC",
     "OR",   "OR",    "OR",    "OR",
     "OR",   "OR",    "DECW",  "ASL",
     "ASL",  "DEC",   "CMP",   "JMP",
-    
+
     "CLRP", "TCALL", "SET1",  "BBS",
     "AND",  "AND",   "AND",   "AND",
     "AND",  "AND",   "OR1",   "ROL",
     "ROL",  "PUSH",  "CBNE",  "BRA",
-    
+
     "BMI",  "TCALL", "CLR1",  "BBC",
     "AND",  "AND",   "AND",   "AND",
     "AND",  "AND",   "INCW",  "ROL",
     "ROL",  "INC",   "CMP",   "CALL",
 
-    
+
     "SETP", "TCALL", "SET1",  "BBS",
     "EOR",  "EOR",   "EOR",   "EOR",
     "EOR",  "EOR",   "AND1",  "LSR",
@@ -934,12 +934,12 @@ char *spcnametab[256] = {
     "EOR",  "EOR",   "EOR",   "EOR",
     "EOR",  "EOR",   "CMPW",  "LSR",
     "LSR",  "MOV",   "CMP",   "JMP",
-    
+
     "CLRC", "TCALL", "SET1",  "BBS",
     "CMP",  "CMP",   "CMP",   "CMP",
     "CMP",  "CMP",   "AND1",  "ROR",
     "ROR",  "PUSH",  "DMNZ",  "RET",
-    
+
     "BVS",  "TCALL", "CLR1",  "BBC",
     "CMP",  "CMP",   "CMP",   "CMP",
     "CMP",  "CMP",   "ADDW",  "ROR",
@@ -960,7 +960,7 @@ char *spcnametab[256] = {
     "SBC",  "SBC",   "SBC",   "SBC",
     "SBC",  "SBC",   "MOV1",  "INC",
     "INC",  "CMP",   "POP",   "MOV",
-    
+
     "BCS",  "TCALL", "CLR1",  "BBC",
     "SBC",  "SBC",   "SBC",   "SBC",
     "SBC",  "SBC",   "MOVW",  "INC",
@@ -971,17 +971,17 @@ char *spcnametab[256] = {
     "MOV",  "MOV",   "MOV",   "MOV",
     "CMP",  "MOV",   "MOV1",  "MOV",
     "MOV",  "MOV",   "POP",   "MUL",
-    
+
     "BNE",  "TCALL", "CLR1",  "BBC",
     "MOV",  "MOV",   "MOV",   "MOV",
     "MOV",  "MOV",   "MOVW",  "MOV",
     "DEC",  "MOV",   "CBNE",  "DAA",
-    
+
     "CLRV", "TCALL", "SET1",  "BBS",
     "MOV",  "MOV",   "MOV",   "MOV",
     "MOV",  "MOV",   "NOT1",  "MOV",
     "MOV",  "NOTC",  "POP",   "SLEEP",
-    
+
     "BEQ",  "TCALL", "CLR1",  "BBC",
     "MOV",  "MOV",   "MOV",   "MOV",
     "MOV",  "MOV",   "MOV",   "MOV",
@@ -1012,7 +1012,7 @@ char *AddressTable[68] = {
 // 9 : dp(d),dp(s)   (two dp)
 // 10 : Carry flag, memory bit          (can only access from 0 to 1fff)
 // 11 : dp
-"$%2%1",           "PSW",             "$%A",             "A,%6%1+X",        
+"$%2%1",           "PSW",             "$%A",             "A,%6%1+X",
 // 12 : labs
 // 13 : PSW
 // 14 : rel

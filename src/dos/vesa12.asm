@@ -22,9 +22,9 @@
 
 EXTSYM vesa2_usbit,vesa2_clbit,vesa2_clbitng,vesa2_clbitng2,vesa2_clbitng3
 EXTSYM vesa2_x,vesa2_y,vesa2_bits,vesa2_rpos,vesa2_gpos,vesa2_bpos,vesa2_rposng
-EXTSYM vesa2_gposng,vesa2_bposng,vesa2_rtrcl,vesa2_rtrcla,vesa2_rfull,InitDrive
+EXTSYM vesa2_gposng,vesa2_bposng,vesa2_rtrcl,vesa2_rtrcla,vesa2_rfull
 EXTSYM vesa2_gtrcl,vesa2_gtrcla,vesa2_gfull,vesa2_btrcl,vesa2_btrcla,vesa2_bfull
-EXTSYM vesa2red10,videotroub,Change_Dir,genfulladdtab,DosExit,InitDir,noblocks
+EXTSYM vesa2red10,videotroub,genfulladdtab,DosExit,noblocks
 EXTSYM bytesperscanline,vesamode,VESAmodelist
 
 ; add 0214h video mode
@@ -47,10 +47,6 @@ NEWSYM VESA12EXITTODOS
     mov edx,.return
     mov ah,9
     int 21h
-
-    mov dl,[InitDrive]
-    mov ebx,InitDir
-    call Change_Dir
 
     mov byte[videotroub],1
     jmp DosExit
