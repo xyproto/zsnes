@@ -55,7 +55,7 @@ MMLIBOBJ=@MMLIB_FILES@
 
 DEBUGGEROBJ=@DEBUGGER_FILES@
 
-MAINOBJ=cfg.o debug.o endmem.o init.o initc.o md.o patch.o ui.o uic.o vcache.o\
+MAINOBJ=cfg.o endmem.o init.o initc.o md.o patch.o ui.o uic.o vcache.o\
 	version.o zloader.o zmovie.o zpath.o zstate.o
 
 NETOBJ=
@@ -77,7 +77,6 @@ VIDEOBJ=$(VIDEODIR)/makev16b.o $(VIDEODIR)/makev16t.o $(VIDEODIR)/makevid.o\
 WINOBJ=$(WINDIR)/copyvwin.o $(WINDIR)/sdlintrf.o $(WINDIR)/sdllink.o @GL_DRAW@\
 	$(WINDIR)/sw_draw.o $(WINDIR)/zfilew.o $(WINDIR)/safelib.o
 
-#WINDOSOBJ=$(DOSDIR)/debug.o $(DOSDIR)/joy.o $(DOSDIR)/vesa2.o
 WINDOSOBJ=$(DOSDIR)/joy.o $(DOSDIR)/vesa2.o
 
 ZIPOBJ=$(ZIPDIR)/unzip.o $(ZIPDIR)/zpng.o
