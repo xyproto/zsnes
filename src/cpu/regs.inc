@@ -20,8 +20,12 @@
 
 EXTSYM SFXEnable,regptr,initsfxregsr,initSA1regs,SA1Enable,initSDD1regs
 EXTSYM SPC7110Enable,initSPC7110regs,RTCEnable,RTCReset,curypos,cycpl
-EXTSYM debuggeron,pdh,vram,romispal,reg1read,spcnumread,spcon,reg2read,reg3read
+EXTSYM pdh,vram,romispal,reg1read,spcnumread,spcon,reg2read,reg3read
 EXTSYM reg4read,JoyEOrig,JoyENow,device2,cycphb,joycontren,totlines
+
+%ifndef NO_DEBUGGER
+EXTSYM debuggeron
+%endif
 
 SECTION .text
 
@@ -511,8 +515,10 @@ reg2136r:
 ; Software latch for horizontal/vertical counter
 reg2137r:
 ;    mov byte[debstop3],1
+%ifndef NO_DEBUGGER
     cmp byte[debuggeron],1
     je .debugger
+%endif
     cmp byte[iohvlatch],1
     je .dolatch
     test byte[ioportval],80h
@@ -1022,8 +1028,10 @@ reg4212r:
     jne .n
     mov byte[joycontren],0
 .n
+%ifndef NO_DEBUGGER
     cmp byte[debuggeron],1
     je .debugger
+%endif
     mov bx,[resolutn]
     cmp word[curypos],bx
     jne .notres
