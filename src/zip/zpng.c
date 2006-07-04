@@ -239,7 +239,7 @@ void Grab_BMP_Data_8()
       const unsigned int header_size = palette_size+54;
       const unsigned short width = 256;
       const unsigned short height = resolutn;
-      unsigned short i = height, j;
+      unsigned short i, j;
 
       fputs("BM", fp);                          //Header
       fwrite4(width*height+header_size, fp);    //File size
@@ -266,6 +266,7 @@ void Grab_BMP_Data_8()
         fwrite(&byte, 1, 1, fp);
       }
 
+      i = height;
       while (i--) //Have to write image upside down
       {
         for (j=0 ; j<width ; j++)
