@@ -257,7 +257,7 @@ void Grab_BMP_Data_8()
       fwrite4(colors, fp);                      //Colors
       fwrite4(colors, fp);                      //Important Colors
 
-      for (i = 0; i < colors; i++)
+      for (i = 0; i < colors; i++) //Write palette
       {
         unsigned char byte = 0;
         fwrite((unsigned char *)vidbuffer+100000+i*3+3, 1, 1, fp);
