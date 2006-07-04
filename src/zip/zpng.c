@@ -257,7 +257,7 @@ void Grab_BMP_Data_8()
       fwrite4(colors, fp);                      //Colors
       fwrite4(colors, fp);                      //Important Colors
 
-      for (i = 0; i < colors; i++) //Write palette
+      for (i=0 ; i<colors ; i++) //Write palette
       {
         unsigned char byte = 0;
         fwrite((unsigned char *)vidbuffer+100000+i*3+3, 1, 1, fp);
@@ -266,8 +266,7 @@ void Grab_BMP_Data_8()
         fwrite(&byte, 1, 1, fp);
       }
 
-      i = height;
-      while (i--) //Have to write image upside down
+      for (i=height ; i-- ;) //Have to write image upside down
       {
         for (j=0 ; j<width ; j++)
         {
