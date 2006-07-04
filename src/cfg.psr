@@ -16,13 +16,14 @@ per2exec dd 100
 
 @
 @ Disable SPC emulation (0 = NO, 1 = Yes)
-@ Disabling SPC emulation can improve performance, but at the expense of emulation accuracy.
-@ If SPC emulation is disabled, there will be no sound output.
+@ Disabling SPC emulation can improve performance, but at the expense of
+@ emulation accuracy. There will be no sound output and games might crash.
 SPCDisable db 0
 
 @
 @ Update SRAM in real-time (0 = NO, 1 = Yes)
 @ This is useful if you fear something will prevent ZSNES from exiting normally.
+@ It's required to play games that store important values directly to SRAM.
 @ ZSNES normally updates SRAM on exit.
 SRAMSave5Sec db 0
 
@@ -80,7 +81,7 @@ pl1DLk dd 0
 pl1DRk dd 0
 %ifdef __MSDOS__
 @ Use port 209h (0 = NO, 1 = Yes)
-@ Enable if the gameport is using said resource to allow your gamepad/joystick to work
+@ Enable if your gameport is using said resource
 pl1p209 db 0
 %endif
 
@@ -121,10 +122,9 @@ pl2DLk dd 0
 pl2DRk dd 0
 %ifdef __MSDOS__
 @ Use port 209h (0 = NO, 1 = Yes)
-@ Enable if the gameport is using said resource to allow your gamepad/joystick to work
+@ Enable if your gameport is using said resource
 pl2p209 db 0
 %endif
-
 
 @
 @ Player 3
@@ -163,10 +163,9 @@ pl3DLk dd 0
 pl3DRk dd 0
 %ifdef __MSDOS__
 @ Use port 209h (0 = NO, 1 = Yes)
-@ Enable if the gameport is using said resource to allow your gamepad/joystick to work
+@ Enable if your gameport is using said resource
 pl3p209 db 0
 %endif
-
 
 @
 @ Player 4
@@ -205,7 +204,7 @@ pl4DLk dd 0
 pl4DRk dd 0
 %ifdef __MSDOS__
 @ Use port 209h (0 = NO, 1 = Yes)
-@ Enable if the gameport is using said resource to allow your gamepad/joystick to work
+@ Enable if your gameport is using said resource
 pl4p209 db 0
 %endif
 
@@ -246,14 +245,14 @@ pl5DLk dd 0
 pl5DRk dd 0
 %ifdef __MSDOS__
 @ Use port 209h (0 = NO, 1 = Yes)
-@ Enable if the gameport is using said resource to allow your gamepad/joystick to work
+@ Enable if your gameport is using said resource
 pl5p209 db 0
 %endif
 
 %ifdef __UNIXSDL__
 @
 @ Joystick Sensitivity
-@ Change this value if you have input issues. Higher values means less sensitive.
+@ Change this value if you have input issues. Higher value = less sensitive.
 @ If your joystick is not being read at all, try 128 or other low values.
 joy_sensitivity dw 16384
 %endif
@@ -268,8 +267,8 @@ pl12s34 db 0
 @ Allow up+down and left+right pad input (0 = NO, 1 = Yes)
 AllowUDLR db 0
 
-@
 %ifdef __MSDOS__
+@
 @ Use sidewinder fix (0 = NO, 1 = Yes)
 @ Enable this if the Sidewinder is still not detected properly.
 SidewinderFix db 0
@@ -375,30 +374,12 @@ newengen db 1
 @ Enable this to see if it helps with rendering problems
 OldGfxMode2 db 0
 
-@
 %ifdef __MSDOS__
+@
 @ Force Black Background (0 = No, 1 = YES)
 @ This is necessary to get a black background for 8-bit modes
 Palette0 db 1
 %endif
-
-@
-@ Scanlines (0 = NONE, 1 = Full, 2 = 25%, 3 = 50%) - simulate TV scanlines
-#ifdef __MSDOS__
-@ 256x256 or 640x480 8bit modes only (25% and 50% in 640x480 16bit mode only)
-#endif
-scanlines db 0
-
-@
-@ Video interpolation (0 = OFF, 1 = On)
-@ Blends the neighboring pixels on the screen to create a blur effect,
-@ eliminating pixelation due to hardware stretching.
-@ This is disabled when other filters are used.
-#ifdef __MSDOS__
-@ Available in most VESA2 16-bit modes
-@ Note: this option controls Eagle filter in 640x480 8bit mode
-#endif
-antienab db 0
 
 @
 #ifndef __UNIXSDL__
@@ -417,15 +398,15 @@ vsyncon db 0
 %endif
 TripleBufferWin db 0
 
-@
 %ifdef __WIN32__
+@
 @ Force 60Hz (0 = NO, 1 = Yes)
 @ Enable this if you are experiencing visual tearing (not the same as vsync)
 Force60hz db 0
 %endif
 
-@
 %ifdef __WIN32__
+@
 @ Enable KitchenSync (0 = NO, 1 = Yes)
 @ You can enable this if you are using refresh rates > 100Hz(PAL), 120Hz(NTSC)
 @ Otherwise, it probably won't work for you
@@ -448,11 +429,27 @@ ScreenScale db 0
 Triplebufen db 0
 
 @
+@ Scanlines (0 = NONE, 1 = Full, 2 = 25%, 3 = 50%) - simulate TV scanlines
+#ifdef __MSDOS__
+@ 256x256 or 640x480 8bit modes only (25% and 50% in 640x480 16bit mode only)
+#endif
+scanlines db 0
+
+@
+@ Video interpolation (0 = OFF, 1 = On)
+@ Blends the neighboring pixels on the screen to eliminate pixelation.
+@ This is compatible with scanlines.
+#ifdef __MSDOS__
+@ Available in most VESA2 16-bit modes
+@ Note: this option controls Eagle filter in 640x480 8bit mode
+#endif
+antienab db 0
+
+@
 %ifdef __UNIXSDL__
 @ Bilinear filter (0 = NO, 1 = Yes)
-@ Blends the neighboring pixels on the screen to create a blur effect,
-@ eliminating pixelation due to hardware stretching.
-@ This is disabled when other filters are used.
+@ Blends the neighboring pixels on the screen to eliminate pixelation.
+@ This is compatible with all filters except NTSC.
 %else
 @ SDL-only option, don't edit it
 %endif
@@ -460,20 +457,20 @@ BilinearFilter db 0
 
 @
 @ 2x filter used (0 = NONE, 1 = 2xSaI, 2 = Super Eagle, 3 = Super 2xSaI)
-@ These are the various Kreed filters. They are blur filters but do not exhibit
-@ the same level of blurring than interpolation/bilinear.
+@ These are Kreed's various 2x filters. They do not exhibit the same level of
+@ blurring than interpolation/bilinear.
 @ This is disabled when other filters are used.
 En2xSaI db 0
 
 @
 %ifndef __MSDOS__
 @ Use hq*x filter (0 = NO, 1 = Yes)
-@ This is a filter MaxSt has created. These are very CPU intensive filters that do
-@ very awesome blending to remove the pixelation.
-@ The level of HQ*x filtering depends on the current resolution used
-@ HQ2x = 512x448 but below HQ3x min res
-@ HQ3x = 768x672 but below HQ4x min res
-@ HQ4x = 1024x896 or above
+@ This is a filter MaxSt has created. These are very CPU intensive filters that
+@ do very awesome blending to remove the pixelation.
+@ The level of filtering depends on the current resolution used
+@ hq2x = 512x448 but below HQ3x min res
+@ hq3x = 768x672 but below HQ4x min res
+@ hq4x = 1024x896 or above
 @ This is disabled when other filters are used.
 %else
 @ Non-DOS option, don't edit it
@@ -494,12 +491,14 @@ Mode7HiRes16b dd 0
 
 @
 %ifdef __MSDOS__
-@ The NTSC filter is not available for DOS, changing the below settings will do nothing
+@ The NTSC filter is not available for DOS, don't edit those settings.
 %endif
 @ NTSC filter (0 = OFF, 1 = On)
-@ Enable Blargg's wonderful NTSC filter which simulates the effect of an NTSC TV.
+@ Enable Blargg's wonderful NTSC filter which simulates the artefacts of an
+@ NTSC TV set - don't use it if you're already using TV-out...
 NTSCFilter db 0
-@ Blend frames (0 = OFF, 1 = On) - produces a smoother transition between frames
+@ Blend frames (0 = OFF, 1 = On)
+@ Smoother transition between frames for non-60Hz refresh rates
 NTSCBlend db 0
 @ Parameters [-100..100]
 NTSCHue sb 0
@@ -541,7 +540,8 @@ Force8b db 0
 @ Using any other sound frequencies other than the default 32000Hz
 @ is COMPLETELY UNACCEPTABLE in use for sound bug reports.
 #ifdef __MSDOS__
-@ Forcing 8-bit sound will limit the max sampling rate while using Stereo sound to 22KHz
+@ Forcing 8-bit sound will limit the max sampling rate while using Stereo sound
+@ to 22KHz
 #endif
 SoundQuality dd 5
 
@@ -588,7 +588,7 @@ SoundInterpType db 1
 
 @
 @ Low-pass filter (0 = NONE, 1 = Simple, 2 = Dynamic, 3 = Hi-quality)
-@ A low-pass filter improves the base in the sounds.
+@ A low-pass filter improves the bass in the sounds.
 @ This is useful if you have a Subwoofer.
 LowPassFilterType db 0
 
@@ -626,7 +626,6 @@ Turbo30hz db 1
 @
 @ Fastforward/slowdown keys behaviour (0 = HELD, 1 = Toggle)
 FastFwdToggle db 0
-
 @ Fastforward/slowdown factors [0..28] (0 = factor 2, 28 = factor 30)
 FFRatio db 8
 SDRatio db 0
@@ -635,11 +634,14 @@ SDRatio db 0
 @ Load SRAM with savestates (0 = No, 1 = YES)
 @ Enable this when you want to use the SRM that is stored within the savestate.
 @ Warning: You will overwrite the existing SRM that you are currently using.
+@ It is required to properly use states with games storing important values
+@ directly in SRM.
 SRAMState db 1
 
 @
 @ Auto increment state slot when saving (0 = NO, 1 = Yes)
-@ Enable this if you have a tendency in saving accidentally to an existing savestate.
+@ Enable this if you have a tendency in saving accidentally to an existing
+@ savestate.
 AutoIncSaveSlot db 0
 
 @
@@ -711,13 +713,14 @@ SPL4Path times 1024 db ""
 @
 @ Snapshot format
 @ (0 = BMP, 1 = PNG)
-@ Note in 8 bit video modes PNG is not selectable
+@ Note: in 8 bit video modes PNG is not selectable
 ScreenShotFormat db 0
 
 @
 @ MMX support (0 = No, 1 = YES)
 @ Disable this only if you actually do NOT have a processor that supports MMX.
-@ Disabling this option will prevent you from using some of the more advanced video/sound filters.
+@ Disabling this option will prevent you from using some of the more advanced
+@ video/sound filters.
 MMXSupport db 1
 
 @
@@ -734,13 +737,13 @@ PauseRewind db 0
 
 @
 @ Display FPS counter when a game is loaded (0 = NO, 1 = Yes)
-@ This option is automatically disabled when Frame Skip is in use.
+@ This option is disabled when manual frameskip is in use.
 FPSAtStart db 0
 
 @
 @ Display Clock (0 = NO, 1 = Yes)
 TimerEnable db 0
-@Clock mode (0 = 24 HOURS, 1 = 12 hours)
+@ Clock mode (0 = 24 HOURS, 1 = 12 hours)
 TwelveHourClock db 0
 
 @
@@ -781,7 +784,7 @@ AllowMultipleInst db 1
 
 @
 @ Disable screensaver while ZSNES runs (0 = No, 1 = YES)
-DisableScreenSaver db 0
+DisableScreenSaver db 1
 %endif
 
 @
@@ -850,7 +853,7 @@ GUIEffect db 0
 
 @
 @ Filter GUI display (0 = No, 1 = YES)
-@ If enabled, the current filter you are using will also filter to GUI.
+@ If enabled, the current filter you are using will also filter the GUI.
 FilteredGUI db 1
 
 @
@@ -860,12 +863,13 @@ mousewrap db 0
 
 @
 @ Mouse cursor shadow (0 = No, 1 = YES)
+@ Displays a shadow under the mouse cursor.
 mouseshad db 1
 
 @
 @ ESC to Game Menu (0 = No, 1 = YES)
 @ If yes, visiting the GUI will have the Game Menu automatically selected.
-@ If yes, it will also enable the main menu keyboard shortcuts.
+@ It will also enable the main menu keyboard shortcuts.
 esctomenu db 1
 
 @
@@ -943,7 +947,7 @@ CheatSrcByteBase db 0
 CheatSrcSearchType db 0
 
 @
-@ Add code for upmost byte only (0 = NO, 1 = Yes)
+@ Add code for most significant byte only (0 = NO, 1 = Yes)
 CheatUpperByteOnly db 0
 
 @
@@ -977,6 +981,8 @@ MovieVideoAudio db 1
 
 @
 @ Compress audio stream on-the-fly (0 = No, 1 = YES)
+@ The compression codecs can only be used if you provide them yourself.
+@ See zmovie.cfg for details.
 MovieAudioCompress db 1
 
 @
@@ -991,7 +997,7 @@ MovieAudioCompress db 1
 KeySaveState dd 60
 KeyStateSelct dd 61
 KeyLoadState dd 62
-@ Increase / decrease slot # / Direct slot # select
+@ Increase / Decrease slot # / Direct slot # select
 KeyIncStateSlot dd 0
 KeyDecStateSlot dd 0
 KeyStateSlc0 dd 0

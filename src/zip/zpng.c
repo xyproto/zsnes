@@ -79,6 +79,9 @@ extern unsigned short *vidbuffer;
 
 #ifndef NO_PNG
 
+#define SNAP_HEIGHT 224
+#define SNAP_WIDTH 256
+#define PIXEL_SIZE 3
 int Png_Dump(const char *filename, unsigned short width, unsigned short height, unsigned char *image_data, bool usebgr)
 {
   FILE *fp = fopen_dir(ZSnapPath, filename, "wb");
@@ -110,15 +113,16 @@ int Png_Dump(const char *filename, unsigned short width, unsigned short height, 
         png_bytep *row_pointers;
 
         //Set scanline width for 32-bit color data
-        unsigned int scanline = width*4;
+        unsigned int scanline = width*PIXEL_SIZE;
         int png_transforms = 0;
 
         unsigned int i;
 
         //set a lot of image info (code adapted from libpng documentation!)
-        png_set_IHDR(png_ptr, info_ptr, width, height, 8, PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE,
+        png_set_IHDR(png_ptr, info_ptr, width, height, 8,
+                     PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
                      PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-        info_ptr->color_type = PNG_COLOR_TYPE_RGB_ALPHA;
+        info_ptr->color_type = PNG_COLOR_TYPE_RGB;
 
         //Allocate an array of scanline pointers
         row_pointers = (png_bytep*)malloc(height*sizeof(png_bytep));
@@ -155,30 +159,28 @@ int Png_Dump(const char *filename, unsigned short width, unsigned short height, 
   return(-1);
 }
 
-#define SNAP_HEIGHT 224
-#define SNAP_WIDTH 256
-#define PIXEL_SIZE 4
 void Grab_PNG_Data()
 {
   char *filename = generate_image_filename("png");
   if (filename)
   {
-    unsigned int *DBits = (unsigned int *)malloc(SNAP_HEIGHT*SNAP_WIDTH*PIXEL_SIZE);
+    unsigned char *DBits = (unsigned char *)malloc(SNAP_HEIGHT*SNAP_WIDTH*PIXEL_SIZE);
     if (DBits)
     {
-      //These are the variables used to perform the 32-bit conversion
-      int i,j;
-
-      for (i = 0; i < SNAP_HEIGHT; i++)
+      //These are the variables used to perform the 24-bit conversion
+      unsigned int i = SNAP_HEIGHT, j;
+      // We can fill the array in any order, so might as well optimize loops
+      while (i--)
       {
-        for(j = 0; j < SNAP_WIDTH; j++)
+        for (j=SNAP_WIDTH ; j-- ;)
         {
-          DBits[i*SNAP_WIDTH+j] = ((PIXEL&0xF800)<<8) | ((PIXEL&0x07E0)<<5) | ((PIXEL&0x001F)<<3) | 0xFF000000;
+          DBits[PIXEL_SIZE*(i*SNAP_WIDTH+j)]   = (PIXEL&0xF800) >> 8;
+          DBits[PIXEL_SIZE*(i*SNAP_WIDTH+j)+1] = (PIXEL&0x07E0) >> 3;
+          DBits[PIXEL_SIZE*(i*SNAP_WIDTH+j)+2] = (PIXEL&0x001F) << 3;
         }
       }
-
       //compress and write the PNG
-      Png_Dump(filename, SNAP_WIDTH, SNAP_HEIGHT, (void *)DBits, true);
+      Png_Dump(filename, SNAP_WIDTH, SNAP_HEIGHT, DBits, false);
       free(DBits);
     }
     free(filename);
@@ -199,7 +201,7 @@ void Grab_BMP_Data()
       const unsigned int header_size = 26;
       const unsigned short width = 256;
       const unsigned short height = resolutn;
-      unsigned short i, j;
+      unsigned short i = height, j;
 
       fputs("BM", fp);                            //Header
       fwrite4(width*height*3+header_size, fp);    //File size
@@ -210,9 +212,10 @@ void Grab_BMP_Data()
       fwrite2(height, fp);                        //Height
       fwrite2(1, fp);                             //Planes
       fwrite2(24, fp);                            //Bits per pixel
-      for (i = height-1; i < height; i--) //Have to write image upside down
+
+      while (i--) //Have to write image upside down
       {
-        for (j = 0; j < width; j++)
+        for (j=0 ; j<width ; j++)
         {
           fwrite3(((PIXEL&0xF800) << 8) | ((PIXEL&0x07E0) << 5) | ((PIXEL&0x001F) << 3), fp);
         }
@@ -236,7 +239,7 @@ void Grab_BMP_Data_8()
       const unsigned int header_size = palette_size+54;
       const unsigned short width = 256;
       const unsigned short height = resolutn;
-      unsigned short i, j;
+      unsigned short i = height, j;
 
       fputs("BM", fp);                          //Header
       fwrite4(width*height+header_size, fp);    //File size
@@ -262,9 +265,10 @@ void Grab_BMP_Data_8()
         fwrite((unsigned char *)vidbuffer+100000+i*3+1, 1, 1, fp);
         fwrite(&byte, 1, 1, fp);
       }
-      for (i = height-1; i < height; i--) //Have to write image upside down
+
+      while (i--) //Have to write image upside down
       {
-        for (j = 0; j < width; j++)
+        for (j=0 ; j<width ; j++)
         {
           fwrite((unsigned char *)vidbuffer+i*288+j+16, 1, 1, fp);
         }
