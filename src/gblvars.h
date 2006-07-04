@@ -32,10 +32,10 @@ extern unsigned int nmirept, nmiprevline, nmistatus, joycontren;
 extern unsigned int SfxR0, *setaramdata, ramsize, *sram, nmiprevaddrh;
 extern unsigned int tempesi, tempedi, tempedx, tempebp;
 extern unsigned int SPCMultA, PHnum2writespc7110reg, PHdspsave2;
-extern unsigned char sndrot, SPCRAM[65472], DSPMem[256], SA1Status, *SA1RAMArea;
-extern unsigned char DSP1Type, DSP1COp, prevoamptr, BRRBuffer[32], *romdata;
+extern unsigned char sndrot, SPCRAM[], DSPMem[], SA1Status, *SA1RAMArea;
+extern unsigned char DSP1Type, DSP1COp, prevoamptr, BRRBuffer[], *romdata;
 extern unsigned char curcyc, echoon0, spcnumread, NextLineCache, HIRQNextExe;
-extern unsigned char vidmemch4[4096], vidmemch8[4096], vidmemch2[4096];
+extern unsigned char vidmemch4[], vidmemch8[], vidmemch2[];
 
 extern bool C4Enable, SFXEnable, SA1Enable, SPC7110Enable, SETAEnable, spcon;
 extern bool SRAMState;
