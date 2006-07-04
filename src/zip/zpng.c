@@ -116,9 +116,9 @@ int Png_Dump(const char *filename, unsigned short width, unsigned short height, 
         unsigned int i;
 
         //set a lot of image info (code adapted from libpng documentation!)
-        png_set_IHDR(png_ptr, info_ptr, width, height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+        png_set_IHDR(png_ptr, info_ptr, width, height, 8, PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE,
                      PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-        info_ptr->color_type = PNG_COLOR_TYPE_RGB;
+        info_ptr->color_type = PNG_COLOR_TYPE_RGB_ALPHA;
 
         //Allocate an array of scanline pointers
         row_pointers = (png_bytep*)malloc(height*sizeof(png_bytep));
