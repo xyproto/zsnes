@@ -364,6 +364,7 @@ struct backup_cmdline_vars saved_cmdline_vars;
 
 #ifdef __MSDOS__
 #define BACKUP_HELP_DOS(func) \
+  func(Palette0); \
 
 #else
 #define BACKUP_HELP_DOS(func)

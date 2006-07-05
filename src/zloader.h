@@ -23,6 +23,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 struct backup_cmdline_vars
 {
+#ifdef __MSDOS__
+  unsigned char _Palette0;
+#endif
 #ifdef __WIN32__
   unsigned char _KitchenSync, _KitchenSyncPAL, _ForceRefreshRate, _SetRefreshRate;
 #endif
