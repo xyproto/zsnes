@@ -343,7 +343,8 @@ extern "C" BYTE TripleBufferWin;
 extern "C" BYTE PauseFocusChange;
 extern "C" BYTE KitchenSync;
 extern "C" BYTE KitchenSyncPAL;
-extern "C" BYTE Force60hz;
+extern "C" BYTE ForceRefreshRate;
+extern "C" BYTE SetRefreshRate;
 extern WORD totlines;
 
 void DrawScreen()
@@ -2214,7 +2215,7 @@ void initwinvideo(void)
    if (FirstVid == 1)
    {
       FirstVid = 0;
-      if (Force60hz) Refresh = 60;
+      if (ForceRefreshRate) Refresh = SetRefreshRate;
       InitDirectDraw();
       clearwin();
       Clear2xSaIBuffer();
@@ -2603,7 +2604,7 @@ void drawscreenwin(void)
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
 
-   if (!(KitchenSync || (KitchenSyncPAL && totlines == 314)) && Refresh != 0 && !Force60hz)
+   if (!(KitchenSync || (KitchenSyncPAL && totlines == 314)) && Refresh != 0 && !ForceRefreshRate)
    {
       Refresh = 0;
       ReleaseDirectDraw();

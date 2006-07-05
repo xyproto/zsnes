@@ -400,9 +400,12 @@ TripleBufferWin db 0
 
 %ifdef __WIN32__
 @
-@ Force 60Hz (0 = NO, 1 = Yes)
-@ Enable this if you are experiencing visual tearing (not the same as vsync)
-Force60hz db 0
+@ Force Refresh Rate (0 = NO, 1 = Yes)
+@ Enable this if you are experiencing visual tearing
+@ WARNING: The DX Refresh Rate (dxdiag) must be set to default in order for this to work!
+@ You must also supply a legitimate refresh rate in order for this to work properly.
+ForceRefreshRate db 0
+SetRefreshRate db 60
 %endif
 
 %ifdef __WIN32__

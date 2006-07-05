@@ -41,7 +41,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __WIN32__
 void ImportDirectX();
-extern unsigned char KitchenSync, KitchenSyncPAL, Force60hz;
+extern unsigned char KitchenSync, KitchenSyncPAL, ForceRefreshRate, SetRefreshRate;
 #endif
 
 
@@ -496,8 +496,16 @@ static void handle_params(int argc, char *argv[])
           #endif
 
           #ifdef __WIN32__
-          case '6': //Force 60Hz
-            Force60hz = 1;
+          case '6': //Force Refresh Rate
+            SetRefreshRate = zatoi(argv[i]);
+            if((SetRefreshRate < 60) || (SetRefreshRate > 180))
+            {
+              ForceRefreshRate = 0;
+              puts("Refresh Rate must be a value 60 to 180!");
+              exit(1);
+            }
+            else
+              ForceRefreshRate = 1;
             break;
           #endif
 

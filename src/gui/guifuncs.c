@@ -530,7 +530,8 @@ void GUIRestoreVars()
 #ifdef __WIN32__
   CheckValueBounds(&KitchenSync, 0, 1, 0, UB);
   CheckValueBounds(&KitchenSyncPAL, 0, 1, 0, UB);
-  CheckValueBounds(&Force60hz, 0, 1, 0, UB);
+  CheckValueBounds(&ForceRefreshRate, 0, 1, 0, UB);
+  CheckValueBounds(&SetRefreshRate, 60, 180, 60, UB);
 #endif
 
   if (TimeChecker == CalcCfgChecksum())
