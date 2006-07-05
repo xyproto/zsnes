@@ -45,10 +45,9 @@ void ImportDirectX();
 #endif
 
 
-extern unsigned char gammalevel, romtype, MouseDis, spcon, V8Mode, ForcePal;
-extern unsigned char HacksDisable, DSPDisable, ZMVZClose, ZMVRawDump;
-extern unsigned char autoloadstate, autoloadmovie, Palette0, debugger;
-extern unsigned char debugdisble, DisplayS;
+extern unsigned char romtype, MouseDis, ZMVZClose, ZMVRawDump, debugger, debugdisble;
+extern unsigned char gammalevel, spcon, ForcePal, DSPDisable, V8Mode;
+extern unsigned char autoloadstate, autoloadmovie;
 extern char *STCart2;
 void zstart();
 #ifdef __WIN32__
