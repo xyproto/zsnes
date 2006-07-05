@@ -31,7 +31,7 @@ EXTSYM SPCKeyPressed,StopSound,StartSound,ExecExitOkay,t1cc,Clear2xSaIBuffer
 EXTSYM ScreenShotFormat,spcsaved,savespcdata
 EXTSYM exiter,xpb,xpc,snesmmap,memtabler8,snesmap2,regaccessbankr8,dmadata,initaddrl
 EXTSYM spcPCRam,xp,curcyc,Curtableaddr,UpdateDPage,splitflags,execsingle,joinflags
-EXTSYM pdh,SPCRAM
+EXTSYM pdh,SPCRAM,cvidmode,GUI16VID
 
 %ifndef NO_DEBUGGER
 EXTSYM numinst,debuggeron
@@ -196,6 +196,14 @@ NEWSYM showmenu
 %ifndef NO_PNG
     cmp byte[ScreenShotFormat],0
     je .normalscrn
+%ifdef __MSDOS__
+    movzx eax,byte[cvidmode]
+    cmp byte[GUI16VID+eax],1
+    je .pngok
+    mov byte[ScreenShotFormat],0
+    jmp .normalscrn
+%endif
+.pngok
     mov dword[menudrawbox8b.stringi+13],' PNG'
 %endif
 .normalscrn
