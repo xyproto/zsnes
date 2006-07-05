@@ -537,7 +537,7 @@ reg2137r:
     jne .novhirq
     cmp word[HIRQLoc],0F0h
     ja .incry
-    cmp dh,20
+    cmp dh,30
     jae .noincly
 .incry
     inc word[latchy]
