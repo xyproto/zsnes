@@ -371,7 +371,8 @@ struct backup_cmdline_vars saved_cmdline_vars;
   func(KitchenSync); \
   func(KitchenSyncPAL); \
   func(ForceRefreshRate); \
-  func(SetRefreshRate);
+  func(SetRefreshRate); \
+
 #else
 #define BACKUP_HELP_WIN(func)
 #endif
