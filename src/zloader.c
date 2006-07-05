@@ -731,7 +731,7 @@ static void handle_params(int argc, char *argv[])
         }
 
         #ifdef __UNIXSDL__
-        else if (tolower(argv[i][1]) == 'h' && tolower(argv[i][2]) == 's') //Enable KitchenSync
+        else if (tolower(argv[i][1]) == 'j' && tolower(argv[i][2]) == 's') //Enable KitchenSync
         {
           i++;
           if ((joy_sensitivity = zatoi(argv[i])+1) > 32767)
