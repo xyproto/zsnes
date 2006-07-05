@@ -38,6 +38,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "asm_call.h"
 #include "cfg.h"
 #include "zpath.h"
+#include "zloader.h"
 
 #ifdef __WIN32__
 void ImportDirectX();
@@ -356,7 +357,33 @@ void ConvertJoyMap2()
   return;
 }
 
+struct backup_cmdline_vars saved_cmdline_vars;
 
+#define BACKUP_VAR(var) (saved_cmdline_vars._ ## var = var)
+static void backup_all_vars()
+{
+#ifdef __WIN32__
+  BACKUP_VAR(KitchenSync);
+  BACKUP_VAR(KitchenSyncPAL);
+  BACKUP_VAR(ForceRefreshRate);
+  BACKUP_VAR(SetRefreshRate);
+#endif
+  BACKUP_VAR(guioff);
+  BACKUP_VAR(per2exec);
+}
+
+#define SWAP_BACKUP_VAR(var) (saved_cmdline_vars._ ## var ^= var ^= saved_cmdline_vars._ ## var ^= var)
+void swap_backup_vars()
+{
+#ifdef __WIN32__
+  SWAP_BACKUP_VAR(KitchenSync);
+  SWAP_BACKUP_VAR(KitchenSyncPAL);
+  SWAP_BACKUP_VAR(ForceRefreshRate);
+  SWAP_BACKUP_VAR(SetRefreshRate);
+#endif
+  SWAP_BACKUP_VAR(guioff);
+  SWAP_BACKUP_VAR(per2exec);
+}
 
 static size_t zatoi(const char *str)
 {
@@ -371,6 +398,8 @@ static size_t zatoi(const char *str)
 static void handle_params(int argc, char *argv[])
 {
   int i;
+
+  backup_all_vars();
 
   #ifndef __MSDOS__
 

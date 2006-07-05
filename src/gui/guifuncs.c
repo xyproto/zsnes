@@ -34,6 +34,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../md.h"
 #include "../cfg.h"
 #include "../asm_call.h"
+#include "../zloader.h"
 
 #define BIT(X) (1 << (X))
 
@@ -571,8 +572,10 @@ void GUISaveVars()
     char *path = strdupcat(ZCfgPath, ZCfgFile);
     if (path)
     {
+      swap_backup_vars();
       write_cfg_vars(path);
       free(path);
+      swap_backup_vars();
     }
   }
 

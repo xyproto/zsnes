@@ -24,12 +24,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 struct backup_cmdline_vars
 {
 #ifdef __WIN32__
-  unsigned char KitchenSync, KitchenSyncPAL, ForceRefreshRate, SetRefreshRate;
+  unsigned char _KitchenSync, _KitchenSyncPAL, _ForceRefreshRate, _SetRefreshRate;
 #endif
-  unsigned char guioff;
-  unsigned char per2exec;
+  unsigned char _guioff;
+  unsigned char _per2exec;
 };
 
-extern backup_cmdline_vars saved_cmdline_vars;
+extern struct backup_cmdline_vars saved_cmdline_vars;
+
+void swap_backup_vars();
 
 #endif
