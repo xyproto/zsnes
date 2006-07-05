@@ -148,7 +148,7 @@ ASMFLAGS=${ASMFLAGSORIG} -f ${FILEFORMAT} -D${OS}
 
 
 CHIPSOBJ=${CHIPDIR}/dsp1emu${OE} ${CHIPDIR}/fxemu2${OE} ${CHIPDIR}/sfxproc${OE}\
-	${CHIPDIR}/fxemu2c${OE} ${CHIPDIR}/fxtable${OE}\
+	${CHIPDIR}/fxemu2b${OE} ${CHIPDIR}/fxemu2c${OE} ${CHIPDIR}/fxtable${OE}\
 	${CHIPDIR}/sa1proc${OE} ${CHIPDIR}/sa1regs${OE} ${CHIPDIR}/dsp1proc${OE}\
 	${CHIPDIR}/st10proc${OE} ${CHIPDIR}/seta10${OE} ${CHIPDIR}/dsp2proc${OE}\
 	${CHIPDIR}/sdd1emu${OE} ${CHIPDIR}/c4emu${OE} ${CHIPDIR}/dsp4proc${OE}\
@@ -285,6 +285,8 @@ ${CHIPDIR}/dsp3proc${OE}: ${CHIPDIR}/dsp3proc.asm macros.mac
 ${CHIPDIR}/dsp4emu${OE}: ${CHIPDIR}/dsp4emu.c
 ${CHIPDIR}/dsp4proc${OE}: ${CHIPDIR}/dsp4proc.asm macros.mac
 ${CHIPDIR}/fxemu2${OE}: ${CHIPDIR}/fxemu2.asm macros.mac ${CHIPDIR}/fxemu2.mac
+${CHIPDIR}/fxemu2b${OE}: ${CHIPDIR}/fxemu2b.asm macros.mac ${CHIPDIR}/fxemu2.mac\
+	${CHIPDIR}/fxemu2b.mac
 ${CHIPDIR}/fxemu2c${OE}: ${CHIPDIR}/fxemu2c.asm macros.mac ${CHIPDIR}/fxemu2.mac\
 	${CHIPDIR}/fxemu2c.mac
 ${CHIPDIR}/fxtable${OE}: ${CHIPDIR}/fxtable.asm macros.mac

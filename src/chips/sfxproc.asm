@@ -18,11 +18,11 @@
 
 %include "macros.mac"
 
-EXTSYM SfxB,SfxBRAMR,SfxCBR,SfxCFGR,SfxCLSR,SfxCPB,SfxCROM
+EXTSYM NumberOfOpcodes,SfxB,SfxBRAMR,SfxCBR,SfxCFGR,SfxCLSR,SfxCPB,SfxCROM
 EXTSYM SfxCarry,SfxMemTable,SfxOverflow,SfxPBR,SfxPIPE,SfxR0,SfxR1,SfxR10
 EXTSYM SfxR11,SfxR12,SfxR13,SfxR14,SfxR15,SfxR2,SfxR3,SfxR4,SfxR5,SfxR6
 EXTSYM SfxR7,SfxR8,SfxR9,SfxRAMBR,SfxRAMMem,SfxROMBR,SfxSCBR,SfxSCMR,SfxSFR
-EXTSYM SfxSignZero,SfxnRamBanks,regptr,regptw,sfxramdata,ChangeOps
+EXTSYM SfxSignZero,SfxnRamBanks,StartSFX,regptr,regptw,sfxramdata,ChangeOps
 EXTSYM SfxPOR,sfxclineloc,UpdatePORSCMR,UpdateCLSR,UpdateSCBRCOLR,SfxAC
 EXTSYM sfx128lineloc,sfx160lineloc,sfx192lineloc,sfxobjlineloc,SFXProc
 
