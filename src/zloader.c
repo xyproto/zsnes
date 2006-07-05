@@ -359,30 +359,31 @@ void ConvertJoyMap2()
 
 struct backup_cmdline_vars saved_cmdline_vars;
 
+#ifdef __WIN32__
+#define BACKUP_HELP_WIN(func) \
+  func(KitchenSync); \
+  func(KitchenSyncPAL); \
+  func(ForceRefreshRate); \
+  func(SetRefreshRate);
+#else
+#define BACKUP_HELP_WIN(func)
+#endif
+
+#define BACKUP_HELP(func) \
+  func(guioff); \
+  func(per2exec); \
+  BACKUP_HELP_WIN(func)
+
 #define BACKUP_VAR(var) (saved_cmdline_vars._ ## var = var)
 static void backup_all_vars()
 {
-#ifdef __WIN32__
-  BACKUP_VAR(KitchenSync);
-  BACKUP_VAR(KitchenSyncPAL);
-  BACKUP_VAR(ForceRefreshRate);
-  BACKUP_VAR(SetRefreshRate);
-#endif
-  BACKUP_VAR(guioff);
-  BACKUP_VAR(per2exec);
+  BACKUP_HELP(BACKUP_VAR)
 }
 
 #define SWAP_BACKUP_VAR(var) (saved_cmdline_vars._ ## var ^= var ^= saved_cmdline_vars._ ## var ^= var)
 void swap_backup_vars()
 {
-#ifdef __WIN32__
-  SWAP_BACKUP_VAR(KitchenSync);
-  SWAP_BACKUP_VAR(KitchenSyncPAL);
-  SWAP_BACKUP_VAR(ForceRefreshRate);
-  SWAP_BACKUP_VAR(SetRefreshRate);
-#endif
-  SWAP_BACKUP_VAR(guioff);
-  SWAP_BACKUP_VAR(per2exec);
+  BACKUP_HELP(SWAP_BACKUP_VAR)
 }
 
 static size_t zatoi(const char *str)
