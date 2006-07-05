@@ -913,8 +913,11 @@ reg4017r:
     je .multitap
 .nomultitap
     xor al,al
+    test byte[JoyBNow],0FFh
+    jnz .reset
     test dword[JoyBNow],80000000h
     jz .noal
+.rest
     mov al,1
 .noal
     rol dword[JoyBNow],1
