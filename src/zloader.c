@@ -388,6 +388,7 @@ struct backup_cmdline_vars saved_cmdline_vars;
 #define BACKUP_HELP(func) \
   func(guioff); \
   func(per2exec); \
+  func(HacksDisable); \
   BACKUP_HELP_DOS(func) \
   BACKUP_HELP_WIN(func) \
   BACKUP_HELP_SDL(func)
