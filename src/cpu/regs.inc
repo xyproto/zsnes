@@ -917,7 +917,7 @@ reg4017r:
     jnz .reset
     test dword[JoyBNow],80000000h
     jz .noal
-.rest
+.reset
     mov al,1
 .noal
     rol dword[JoyBNow],1
