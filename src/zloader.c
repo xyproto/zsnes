@@ -497,6 +497,7 @@ static void handle_params(int argc, char *argv[])
 
           #ifdef __WIN32__
           case '6': //Force Refresh Rate
+            i++;
             SetRefreshRate = zatoi(argv[i]);
             if((SetRefreshRate < 60) || (SetRefreshRate > 180))
             {
