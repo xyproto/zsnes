@@ -41,7 +41,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __WIN32__
 void ImportDirectX();
-extern unsigned char KitchenSync, KitchenSyncPAL, ForceRefreshRate, SetRefreshRate;
 #endif
 
 
@@ -356,6 +355,8 @@ void ConvertJoyMap2()
   }
   return;
 }
+
+
 
 static size_t zatoi(const char *str)
 {
