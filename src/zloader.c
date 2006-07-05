@@ -101,6 +101,9 @@ static void display_help()
   put_line("  -g #    Specify gamma correction value [0..15]");
   put_line("  -h      Force HiROM");
   put_line("  -j      Disable mouse (Automatically turns off right mouse click)");
+#ifdef __UNIXSDL__
+  put_line("  -js #   Set joystick sensitivity [0..32767]");
+#endif
   put_line("  -k #    Set volume level (0 .. 100)");
 #ifdef __WIN32__
   put_line("  -kp     Enable the KitchenSync for PAL only");
@@ -379,6 +382,7 @@ struct backup_cmdline_vars saved_cmdline_vars;
 
 #ifdef __UNIXSDL__
 #define BACKUP_HELP_SDL(func) \
+func(joy_sensitivity); \
 
 #else
 #define BACKUP_HELP_SDL(func)
@@ -724,6 +728,18 @@ static void handle_params(int argc, char *argv[])
         {
           HacksDisable = 1;
         }
+
+        #ifdef __UNIXSDL__
+        else if (tolower(argv[i][1]) == 'h' && tolower(argv[i][2]) == 's') //Enable KitchenSync
+        {
+          i++;
+          if ((joy_sensitivity = zatoi(argv[i])+1) > 32767)
+          {
+            puts("Joystick sensitivity must be a value of 0 to 32767!");
+            exit(1);
+          }
+        }
+        #endif
 
         #ifdef __WIN32__
         else if (tolower(argv[i][1]) == 'k' && tolower(argv[i][2]) == 's') //Enable KitchenSync
