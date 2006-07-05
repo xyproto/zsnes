@@ -359,6 +359,13 @@ void ConvertJoyMap2()
 
 struct backup_cmdline_vars saved_cmdline_vars;
 
+#ifdef __MSDOS__
+#define BACKUP_HELP_DOS(func) \
+
+#else
+#define BACKUP_HELP_DOS(func)
+#endif
+
 #ifdef __WIN32__
 #define BACKUP_HELP_WIN(func) \
   func(KitchenSync); \
@@ -369,10 +376,20 @@ struct backup_cmdline_vars saved_cmdline_vars;
 #define BACKUP_HELP_WIN(func)
 #endif
 
+#ifdef __UNIXSDL__
+#define BACKUP_HELP_SDL(func) \
+
+#else
+#define BACKUP_HELP_SDL(func)
+#endif
+
+
 #define BACKUP_HELP(func) \
   func(guioff); \
   func(per2exec); \
-  BACKUP_HELP_WIN(func)
+  BACKUP_HELP_DOS(func) \
+  BACKUP_HELP_WIN(func) \
+  BACKUP_HELP_SDL(func)
 
 #define BACKUP_VAR(var) (saved_cmdline_vars._ ## var = var)
 static void backup_all_vars()
