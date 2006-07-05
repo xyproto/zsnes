@@ -404,6 +404,7 @@ TripleBufferWin db 0
 @ Enable this if you are experiencing visual tearing
 @ WARNING: The DX Refresh Rate (dxdiag) must be set to default in order for this to work!
 @ You must also supply a legitimate refresh rate in order for this to work properly.
+@ This option is completely useless in a non-fullscreen mode.
 ForceRefreshRate db 0
 SetRefreshRate db 60
 %endif
