@@ -416,6 +416,8 @@ SetRefreshRate db 60
 @ You can enable this if you are using refresh rates > 100Hz(PAL), 120Hz(NTSC)
 @ Otherwise, it probably won't work for you
 @ KitchenSyncPAL only applies to PAL games, use KitchenSync for PAL+NTSC
+@ WARNING: The DX Refresh Rate (dxdiag) must be set to default in order for this to work!
+@ This option is completely useless in a non-fullscreen mode.
 KitchenSync db 0
 KitchenSyncPAL db 0
 %endif
@@ -514,6 +516,13 @@ NTSCSharp sb 0
 NTSCWarp sb 0
 @ Refresh screen while changing the NTSC Filter's parameters (0 = OFF, 1 = On)
 NTSCRef db 0
+
+@
+%ifdef __WIN32__
+@ Enable Keep 4:3 Ratio Scaling (0 = NO, 1 = Yes)
+@ This is particularly useful for those that use laptops/LCDs+custom res.
+Keep4_3Ratio db 0
+%endif
 
 @
 @  ----

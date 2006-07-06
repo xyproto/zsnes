@@ -1924,6 +1924,8 @@ void SetHiresOpt()
 		GUIM7VID[cvidmode] = 0;
 }
 
+extern "C" unsigned char Keep4_3Ratio;
+
 void initwinvideo(void)
 {
    WINDOWPLACEMENT wndpl;
@@ -2136,6 +2138,7 @@ void initwinvideo(void)
         {
           int marginx = (rcWindow.right - rcWindow.left - BlitArea.right + BlitArea.left)/2;
           int marginy = (rcWindow.bottom - rcWindow.top - BlitArea.bottom + BlitArea.top)/2;
+
           if (marginx>0)
           {
             rcWindow.left += marginx;
@@ -2146,7 +2149,7 @@ void initwinvideo(void)
             rcWindow.top += marginy;
             rcWindow.bottom -= marginy;
           }
-        }
+        }    
 
         if ((DSMode == 1) && (scanlines != 0))
         {
@@ -2159,7 +2162,38 @@ void initwinvideo(void)
             clear_display();
           }
         }
-     }
+
+        if (((DSMode == 1)||(SMode == 1)) && (Keep4_3Ratio))
+        {
+          int ratiox = WindowWidth/4;
+          int ratioy = WindowHeight/3;
+
+          int marginchange;
+          int marginmod;
+          printf("rcWindow.right = %d, rcWindow.left = %d, BiltArea.right = %d, BlitArea.left = %d\n", rcWindow.right, rcWindow.left, BlitArea.right, BlitArea.left);
+          printf("rcWindow.bottom = %d, rcWindow.top = %d, BiltArea.bottom = %d, BlitArea.top = %d\n", rcWindow.bottom, rcWindow.top, BlitArea.bottom, BlitArea.top);
+
+          if (ratiox < ratioy)
+          {
+            marginchange = (WindowHeight-(ratiox*3))/2;
+            marginmod = (WindowHeight-(ratiox*3))%2;
+            rcWindow.top += marginchange;
+            rcWindow.bottom -= (marginchange+marginmod);
+          }
+          else
+          {
+            marginchange = (WindowWidth-(ratioy*4))/2;
+            marginmod = (WindowWidth-(ratioy*4))%2;
+            rcWindow.left += marginchange;
+            rcWindow.right -= (marginchange+marginmod);
+          }
+
+          printf("rcWindow.right = %d, rcWindow.left = %d, BiltArea.right = %d, BlitArea.left = %d\n", rcWindow.right, rcWindow.left, BlitArea.right, BlitArea.left);
+          printf("rcWindow.bottom = %d, rcWindow.top = %d, BiltArea.bottom = %d, BlitArea.top = %d\n", rcWindow.bottom, rcWindow.top, BlitArea.bottom, BlitArea.top);
+
+          clear_display();
+        }
+      }
    }
    else
    {
@@ -2627,6 +2661,16 @@ void drawscreenwin(void)
    if ((KitchenSync || KitchenSyncPAL) && Refresh != 100 && totlines == 314)
    {
       Refresh = 100;
+      ReleaseDirectDraw();
+      InitDirectDraw();
+      clearwin();
+      Clear2xSaIBuffer();
+      clear_display();
+   }
+
+   if (KitchenSyncPAL && totlines == 263 && Refresh != SetRefreshRate && ForceRefreshRate)
+   {
+      Refresh = SetRefreshRate;
       ReleaseDirectDraw();
       InitDirectDraw();
       clearwin();
