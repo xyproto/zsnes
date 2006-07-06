@@ -2170,8 +2170,6 @@ void initwinvideo(void)
 
           int marginchange;
           int marginmod;
-          printf("rcWindow.right = %d, rcWindow.left = %d, BiltArea.right = %d, BlitArea.left = %d\n", rcWindow.right, rcWindow.left, BlitArea.right, BlitArea.left);
-          printf("rcWindow.bottom = %d, rcWindow.top = %d, BiltArea.bottom = %d, BlitArea.top = %d\n", rcWindow.bottom, rcWindow.top, BlitArea.bottom, BlitArea.top);
 
           if (ratiox < ratioy)
           {
@@ -2187,9 +2185,6 @@ void initwinvideo(void)
             rcWindow.left += marginchange;
             rcWindow.right -= (marginchange+marginmod);
           }
-
-          printf("rcWindow.right = %d, rcWindow.left = %d, BiltArea.right = %d, BlitArea.left = %d\n", rcWindow.right, rcWindow.left, BlitArea.right, BlitArea.left);
-          printf("rcWindow.bottom = %d, rcWindow.top = %d, BiltArea.bottom = %d, BlitArea.top = %d\n", rcWindow.bottom, rcWindow.top, BlitArea.bottom, BlitArea.top);
 
           clear_display();
         }
@@ -2668,7 +2663,7 @@ void drawscreenwin(void)
       clear_display();
    }
 
-   if (KitchenSyncPAL && totlines == 263 && Refresh != SetRefreshRate && ForceRefreshRate)
+   if (!KitchenSync && KitchenSyncPAL && totlines == 263 && Refresh != SetRefreshRate && ForceRefreshRate)
    {
       Refresh = SetRefreshRate;
       ReleaseDirectDraw();
