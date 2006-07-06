@@ -1598,6 +1598,7 @@ static void SPC7PathSetup(char *PathVar, const char *Default)
   if (*PathVar)
   {
     SPC7110path = PathVar;
+    strcatslash(SPC7110path);
     *SPC7110fname = 0;
   }
   else
