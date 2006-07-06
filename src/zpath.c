@@ -72,64 +72,6 @@ char *ZCartName = 0, *ZSaveName = 0;
 static bool ZStartAlloc = false, ZCfgAlloc = false, ZSramAlloc = false, ZRomAlloc = false;
 static bool ZCartAlloc = false, ZSaveAlloc = false;
 
-#ifdef __UNIXSDL__
-
-void cfgpath_ensure(const char *launch_command)
-{
-  struct passwd *userinfo;
-  const char *const zpath = ".zsnes";
-
-  if ((userinfo = getpwuid(getuid())))
-  {
-    ZCfgPath = malloc(PATH_SIZE);
-    ZCfgAlloc = true;
-  }
-  else
-  {
-    puts("Error obtaining info about your user.");
-  }
-
-  if (ZCfgPath)
-  {
-    strcpy(ZCfgPath, userinfo->pw_dir);
-    strcatslash(ZCfgPath);
-    strcat(ZCfgPath, zpath);
-
-    if (access(ZCfgPath, F_OK) && mkdir(ZCfgPath, (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)))
-    {
-      printf("Error creating: %s\n", ZCfgPath);
-      free(ZCfgPath);
-      ZCfgAlloc = false;
-
-      ZCfgPath = ZStartPath;
-    }
-    else
-    {
-      strcatslash(ZCfgPath);
-    }
-  }
-  else
-  {
-    ZCfgPath = ZStartPath;
-  }
-}
-
-#else
-
-void cfgpath_ensure(const char *launch_command)
-{
-  if (realpath(launch_command, ZCfgPath))
-  {
-    strdirname(ZCfgPath);
-    strcatslash(ZCfgPath);
-  }
-  else
-  {
-    ZCfgPath = ZStartPath;
-  }
-}
-
-#endif
 
 #ifdef __WIN32__
 
@@ -259,6 +201,65 @@ char *realpath(const char *path, char *resolved_path)
     }
   }
   return(ret);
+}
+
+#endif
+
+#ifdef __UNIXSDL__
+
+void cfgpath_ensure(const char *launch_command)
+{
+  struct passwd *userinfo;
+  const char *const zpath = ".zsnes";
+
+  if ((userinfo = getpwuid(getuid())))
+  {
+    ZCfgPath = malloc(PATH_SIZE);
+    ZCfgAlloc = true;
+  }
+  else
+  {
+    puts("Error obtaining info about your user.");
+  }
+
+  if (ZCfgPath)
+  {
+    strcpy(ZCfgPath, userinfo->pw_dir);
+    strcatslash(ZCfgPath);
+    strcat(ZCfgPath, zpath);
+
+    if (access(ZCfgPath, F_OK) && mkdir(ZCfgPath, (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)))
+    {
+      printf("Error creating: %s\n", ZCfgPath);
+      free(ZCfgPath);
+      ZCfgAlloc = false;
+
+      ZCfgPath = ZStartPath;
+    }
+    else
+    {
+      strcatslash(ZCfgPath);
+    }
+  }
+  else
+  {
+    ZCfgPath = ZStartPath;
+  }
+}
+
+#else
+
+void cfgpath_ensure(const char *launch_command)
+{
+  if (realpath(launch_command, ZCfgPath))
+  {
+    strdirname(ZCfgPath);
+    strcatslash(ZCfgPath);
+  }
+  else
+  {
+    ZCfgPath = ZStartPath;
+  }
 }
 
 #endif
