@@ -16,71 +16,71 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-CHIPDIR=chips
-CPUDIR=cpu
-DOSDIR=dos
-EFFECTSDIR=effects
-GUIDIR=gui
-JMADIR=jma
-MMLIBDIR=mmlib
-NETDIR=net
-TOOLSDIR=tools
-VIDEODIR=video
-WINDIR=linux
-ZIPDIR=zip
+CHIP_D=chips
+CPU_D=cpu
+DOS_D=dos
+EFF_D=effects
+GUI_D=gui
+JMA_D=jma
+MMLIB_D=mmlib
+NET_D=net
+PORT_D=linux
+TOOL_D=tools
+VID_D=video
+ZIP_D=zip
 
 PSR=parsegen
-PSRH=cfg.h md.h
+PSR_H=cfg.h md.h
 
-CHIPSOBJ=$(CHIPDIR)/sfxproc.o $(CHIPDIR)/fxemu2.o $(CHIPDIR)/dsp1proc.o\
-	$(CHIPDIR)/fxemu2b.o $(CHIPDIR)/fxemu2c.o $(CHIPDIR)/fxtable.o\
-	$(CHIPDIR)/sa1proc.o $(CHIPDIR)/sa1regs.o $(CHIPDIR)/dsp1emu.o\
-	$(CHIPDIR)/st10proc.o $(CHIPDIR)/seta10.o $(CHIPDIR)/dsp2proc.o\
-	$(CHIPDIR)/sdd1emu.o $(CHIPDIR)/c4emu.o $(CHIPDIR)/dsp4proc.o\
-	$(CHIPDIR)/dsp4emu.o $(CHIPDIR)/dsp3proc.o $(CHIPDIR)/dsp3emu.o\
-	$(CHIPDIR)/obc1emu.o $(CHIPDIR)/obc1proc.o
+CHIP_O=$(CHIP_D)/c4emu.o $(CHIP_D)/dsp1emu.o $(CHIP_D)/dsp1proc.o\
+	$(CHIP_D)/dsp2proc.o $(CHIP_D)/dsp3emu.o $(CHIP_D)/dsp3proc.o\
+	$(CHIP_D)/dsp4emu.o $(CHIP_D)/dsp4proc.o $(CHIP_D)/fxemu2.o\
+	$(CHIP_D)/fxemu2b.o $(CHIP_D)/fxemu2c.o $(CHIP_D)/fxtable.o\
+	$(CHIP_D)/obc1emu.o $(CHIP_D)/obc1proc.o $(CHIP_D)/sa1proc.o\
+	$(CHIP_D)/sa1regs.o $(CHIP_D)/sdd1emu.o $(CHIP_D)/seta10.o\
+	$(CHIP_D)/sfxproc.o $(CHIP_D)/st10proc.o
 
-CPUOBJ=$(CPUDIR)/dma.o $(CPUDIR)/dsp.o $(CPUDIR)/dspproc.o $(CPUDIR)/execute.o\
-	$(CPUDIR)/executec.o $(CPUDIR)/irq.o $(CPUDIR)/memory.o\
-	$(CPUDIR)/memtable.o $(CPUDIR)/spc700.o $(CPUDIR)/stable.o\
-	$(CPUDIR)/table.o $(CPUDIR)/tablec.o
+CPU_O=$(CPU_D)/dma.o $(CPU_D)/dsp.o $(CPU_D)/dspproc.o $(CPU_D)/execute.o\
+	$(CPU_D)/executec.o $(CPU_D)/irq.o $(CPU_D)/memory.o $(CPU_D)/memtable.o\
+	$(CPU_D)/spc700.o $(CPU_D)/stable.o $(CPU_D)/table.o $(CPU_D)/tablec.o
 
-EFFECTSOBJ=$(EFFECTSDIR)/burn.o $(EFFECTSDIR)/water.o $(EFFECTSDIR)/smoke.o
+DEBUG_O=@DEBUGGER_FILES@
 
-GUIOBJ=$(GUIDIR)/gui.o $(GUIDIR)/guifuncs.o $(GUIDIR)/menu.o
+DOS_O=$(DOS_D)/joy.o $(DOS_D)/vesa2.o
 
-DEBUGGEROBJ=@DEBUGGER_FILES@
-JMAOBJ=@JMA_FILES@
-MMLIBOBJ=@MMLIB_FILES@
+EFF_O=$(EFF_D)/burn.o $(EFF_D)/water.o $(EFF_D)/smoke.o
 
-MAINOBJ=cfg.o endmem.o init.o initc.o md.o patch.o ui.o uic.o vcache.o\
-	version.o zloader.o zmovie.o zpath.o zstate.o
+GUI_O=$(GUI_D)/gui.o $(GUI_D)/guifuncs.o $(GUI_D)/menu.o
 
-NETOBJ=
-#$(NETDIR)/ztcp.o
+JMA_O=@JMA_FILES@
 
-TOOLSOBJ=$(TOOLSDIR)/fileutil.o $(TOOLSDIR)/strutil.o
+MAIN_O=cfg.o endmem.o init.o initc.o md.o patch.o ui.o uic.o vcache.o version.o\
+	zloader.o zmovie.o zpath.o zstate.o
 
-VIDEOBJ=$(VIDEODIR)/makev16b.o $(VIDEODIR)/makev16t.o $(VIDEODIR)/makevid.o\
-	$(VIDEODIR)/mode716.o $(VIDEODIR)/mode716b.o $(VIDEODIR)/mode716d.o\
-	$(VIDEODIR)/mode716e.o $(VIDEODIR)/mode716t.o $(VIDEODIR)/mode7.o\
-	$(VIDEODIR)/mode7ext.o $(VIDEODIR)/mv16tms.o $(VIDEODIR)/m716text.o\
-	$(VIDEODIR)/newg162.o $(VIDEODIR)/newgfx.o $(VIDEODIR)/newgfx16.o\
-	$(VIDEODIR)/newgfx2.o $(VIDEODIR)/procvid.o $(VIDEODIR)/procvidc.o\
-	$(VIDEODIR)/sw_draw.o $(VIDEODIR)/2xsaiw.o\
-	$(VIDEODIR)/hq2x16.o $(VIDEODIR)/hq2x32.o\
-	$(VIDEODIR)/hq3x16.o $(VIDEODIR)/hq3x32.o\
-	$(VIDEODIR)/hq4x16.o $(VIDEODIR)/hq4x32.o $(VIDEODIR)/ntsc.o
+MMLIB_O=@MMLIB_FILES@
 
-WINOBJ=$(WINDIR)/copyvwin.o $(WINDIR)/sdlintrf.o $(WINDIR)/sdllink.o @GL_DRAW@\
-	$(WINDIR)/sw_draw.o $(WINDIR)/zfilew.o $(WINDIR)/safelib.o
+NET_O=
+#$(NET_D)/ztcp.o
 
-WINDOSOBJ=$(DOSDIR)/joy.o $(DOSDIR)/vesa2.o
+PORT_O=$(PORT_D)/copyvwin.o $(PORT_D)/sdlintrf.o $(PORT_D)/sdllink.o @GL_DRAW@\
+	$(PORT_D)/sw_draw.o $(PORT_D)/zfilew.o $(PORT_D)/safelib.o
 
-ZIPOBJ=$(ZIPDIR)/unzip.o $(ZIPDIR)/zpng.o
+TOOL_O=$(TOOL_D)/fileutil.o $(TOOL_D)/strutil.o
 
-ZOBJS=$(MAINOBJ) $(CHIPSOBJ) $(CPUOBJ) $(GUIOBJ) $(EFFECTSOBJ) $(JMAOBJ)\
-	$(MMLIBOBJ) $(NETOBJ) $(VIDEOBJ) $(WINOBJ) $(WINDOSOBJ) $(ZIPOBJ) $(DEBUGGEROBJ)
+VID_O=$(VID_D)/makev16b.o $(VID_D)/makev16t.o $(VID_D)/makevid.o\
+	$(VID_D)/mode716.o $(VID_D)/mode716b.o $(VID_D)/mode716d.o\
+	$(VID_D)/mode716e.o $(VID_D)/mode716t.o $(VID_D)/mode7.o\
+	$(VID_D)/mode7ext.o $(VID_D)/mv16tms.o $(VID_D)/m716text.o\
+	$(VID_D)/newg162.o $(VID_D)/newgfx.o $(VID_D)/newgfx16.o\
+	$(VID_D)/newgfx2.o $(VID_D)/procvid.o $(VID_D)/procvidc.o\
+	$(VID_D)/sw_draw.o $(VID_D)/2xsaiw.o $(VID_D)/hq2x16.o $(VID_D)/hq2x32.o\
+	$(VID_D)/hq3x16.o $(VID_D)/hq3x32.o $(VID_D)/hq4x16.o $(VID_D)/hq4x32.o\
+	$(VID_D)/ntsc.o
+
+ZIP_O=$(ZIP_D)/unzip.o $(ZIP_D)/zpng.o
+
+Z_OBJS=$(MAIN_O) $(CHIP_O) $(CPU_O) $(DEBUG_O) $(GUI_O) $(EFF_O) $(JMA_O)\
+	$(MMLIB_O) $(NET_O) $(VID_O) $(PORT_O) $(DOS_O) $(ZIP_O)
 
 .PHONY: default main tools all install clean tclean distclean
 .SUFFIXES: .asm .c .cpp .psr
@@ -98,38 +98,44 @@ ZOBJS=$(MAINOBJ) $(CHIPSOBJ) $(CPUOBJ) $(GUIOBJ) $(EFFECTSOBJ) $(JMAOBJ)\
 
 default: main
 all: main tools
-main: makefile.dep $(ZOBJS)
-	@ZC@ -o @ZSNESEXE@ $(ZOBJS) @ZCFLAGS@ @LDFLAGS@
+main: makefile.dep $(Z_OBJS)
+	@ZC@ -o @ZSNESEXE@ $(Z_OBJS) @ZCFLAGS@ @LDFLAGS@
 	rm -f version.o
 
 $(PSR): parsegen.cpp
 
-TOOLSEXE=$(TOOLSDIR)/archopt $(TOOLSDIR)/cutrtype $(TOOLSDIR)/extraext\
-	$(TOOLSDIR)/minwhite $(TOOLSDIR)/nreplace $(TOOLSDIR)/sec-test\
-	$(TOOLSDIR)/srccount $(TOOLSDIR)/depbuild
+TOOLSEXE=$(TOOL_D)/archopt $(TOOL_D)/cutrtype $(TOOL_D)/extraext\
+	$(TOOL_D)/minwhite $(TOOL_D)/nreplace $(TOOL_D)/sec-test\
+	$(TOOL_D)/srccount $(TOOL_D)/depbuild
 tools: $(TOOLSEXE)
-$(TOOLSDIR)/archopt:
+$(TOOL_D)/archopt:
 	@CC@ @CFLAGS@ -m32 -o $@ $@.c
-$(TOOLSDIR)/cutrtype: $(TOOLSOBJ)
-	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOLSOBJ)
-$(TOOLSDIR)/extraext: $(TOOLSOBJ)
-	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOLSOBJ)
-$(TOOLSDIR)/minwhite: $(TOOLSOBJ)
-	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOLSDIR)/fileutil.o
-$(TOOLSDIR)/nreplace: $(TOOLSOBJ)
-	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOLSDIR)/fileutil.o
-$(TOOLSDIR)/scanskip: $(TOOLSOBJ)
-	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOLSOBJ)
-$(TOOLSDIR)/sec-test: $(TOOLSOBJ)
-	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOLSOBJ)
-$(TOOLSDIR)/srccount: $(TOOLSOBJ)
-	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOLSDIR)/fileutil.o
-$(TOOLSDIR)/depbuild: $(TOOLSOBJ)
-	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOLSOBJ)
+$(TOOL_D)/cutrtype: $(TOOL_O)
+	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_O)
+$(TOOL_D)/extraext: $(TOOL_O)
+	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_O)
+$(TOOL_D)/minwhite: $(TOOL_O)
+	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_D)/fileutil.o
+$(TOOL_D)/nreplace: $(TOOL_O)
+	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_D)/fileutil.o
+$(TOOL_D)/scanskip: $(TOOL_O)
+	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_O)
+$(TOOL_D)/sec-test: $(TOOL_O)
+	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_O)
+$(TOOL_D)/srccount: $(TOOL_O)
+	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_D)/fileutil.o
+$(TOOL_D)/depbuild: $(TOOL_O)
+	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_O)
 
 include makefile.dep
-makefile.dep: $(TOOLSDIR)/depbuild Makefile
-	$(TOOLSDIR)/depbuild @CC@ "@CFLAGS@" @NASMPATH@ "@NFLAGS@" $(ZOBJS) > makefile.dep
+makefile.dep: $(TOOL_D)/depbuild Makefile
+	$(TOOL_D)/depbuild @CC@ "@CFLAGS@" @NASMPATH@ "@NFLAGS@" $(Z_OBJS) > makefile.dep
+
+Makefile: Makefile.in config.status
+	./config.status
+
+config.status: configure.in
+	./autogen.sh --recheck
 
 install:
 	@INSTALL@ -d -m 0755 $(DESTDIR)/@prefix@/bin
@@ -140,8 +146,8 @@ uninstall:
 	rm -f @prefix@/bin/$(notdir @ZSNESEXE@) @prefix@/man/man1/zsnes.1
 
 clean:
-	rm -f $(ZOBJS) $(PSR) $(PSRH) @ZSNESEXE@
+	rm -f $(Z_OBJS) $(PSR) $(PSR_H) @ZSNESEXE@
 tclean:
-	rm -f $(TOOLSOBJ) $(TOOLSEXE)
+	rm -f $(TOOL_O) $(TOOLSEXE)
 distclean: clean tclean
-	rm -f Makefile makefile.dep aclocal.m4 configure config.cache config.log config.status config.h
+	rm -f Makefile makefile.dep aclocal.m4 configure config.log config.status config.h
