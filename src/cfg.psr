@@ -370,8 +370,9 @@ CustomResY dd 480
 newengen db 1
 
 @
-@ Use older graphics engine #2 (0 = NO, 1 = Yes)
+@ Use older graphics engine tweak for Mode 2 (0 = NO, 1 = Yes)
 @ Enable this to see if it helps with rendering problems
+@ Only works with old graphic engine
 OldGfxMode2 db 0
 
 %ifdef __MSDOS__

@@ -2217,16 +2217,16 @@ DisplayGUIVideoClick:
   jne .checkboxhq
   jmp .nocheckboxhq
 .checkboxhq
-  FilterExcl 115,163,En2xSaI,scanlines,scanlines,antienab,antienab,NTSCFilter
+  FilterExcl 115,163,En2xSaI,scanlines,antienab,NTSCFilter
   GUIClickCButton 115,163,byte[hqFilter]
 .nocheckboxhq
   xor ebx,ebx                              ; 2xsai and supers
   mov bl,[cvidmode]
   cmp byte[GUI2xVID+ebx],0
   je near .no2xSaI
-  FilterExcl 11,133,hqFilter,scanlines,scanlines,antienab,antienab,NTSCFilter
-  FilterExcl 11,143,hqFilter,scanlines,scanlines,antienab,antienab,NTSCFilter
-  FilterExcl 11,153,hqFilter,scanlines,scanlines,antienab,antienab,NTSCFilter
+  FilterExcl 11,133,hqFilter,scanlines,antienab,NTSCFilter
+  FilterExcl 11,143,hqFilter,scanlines,antienab,NTSCFilter
+  FilterExcl 11,153,hqFilter,scanlines,antienab,NTSCFilter
   GUIClickCButton6 11,133,byte[En2xSaI],1
   GUIClickCButton6 11,143,byte[En2xSaI],2
   GUIClickCButton6 11,153,byte[En2xSaI],3
@@ -2272,7 +2272,7 @@ DisplayGUIVideoClick:
   mov bl,[cvidmode]
   cmp byte[GUINTVID+ebx],0
   je near .nontscfilter
-  FilterExcl 115,173,En2xSaI,hqFilter,scanlines,scanlines,antienab,antienab,BilinearFilter
+  FilterExcl 115,173,En2xSaI,hqFilter,scanlines,antienab,BilinearFilter
   GUIClickCButtonf 115,173,byte[NTSCFilter],NTSCFilterInit
 .nontscfilter
 %ifdef __UNIXSDL__
