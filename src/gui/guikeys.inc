@@ -954,8 +954,7 @@ GUIVideoKeys:
   jne near .tabdone
   cmp byte[NTSCFilter],0
   je near .nontsc
-  xor eax,eax
-  mov al,[cvidmode]
+  movzx eax,byte[cvidmode]
   cmp byte[GUINTVID+eax],0
   je .nontsc
   KeyTabInc GUIVideoTabs,GUIVntscTab

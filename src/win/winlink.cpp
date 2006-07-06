@@ -2149,7 +2149,7 @@ void initwinvideo(void)
             rcWindow.top += marginy;
             rcWindow.bottom -= marginy;
           }
-        }    
+        }
 
         if ((DSMode == 1) && (scanlines != 0))
         {
