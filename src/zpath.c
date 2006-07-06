@@ -74,7 +74,7 @@ static bool ZCartAlloc = false, ZSaveAlloc = false;
 
 #ifdef __UNIXSDL__
 
-void cfgpath_ensure()
+void cfgpath_ensure(const char *launch_command)
 {
   struct passwd *userinfo;
   const char *const zpath = ".zsnes";
@@ -116,9 +116,17 @@ void cfgpath_ensure()
 
 #else
 
-void cfgpath_ensure()
+void cfgpath_ensure(const char *launch_command)
 {
-  ZCfgPath = ZStartPath;
+  if (realpath(launch_command, ZCfgPath))
+  {
+    strdirname(ZCfgPath);
+    strcatslash(ZCfgPath);
+  }
+  else
+  {
+    ZCfgPath = ZStartPath;
+  }
 }
 
 #endif
@@ -255,7 +263,7 @@ char *realpath(const char *path, char *resolved_path)
 
 #endif
 
-void deinit_paths(void)
+static void deinit_paths()
 {
   //Save data that depends on paths before deinit of them
   void SaveSramData();
@@ -300,37 +308,41 @@ bool init_paths(char *launch_command)
           ZSaveAlloc = true;
           *ZSaveName = 0;
 
-          if (realpath(launch_command, ZStartPath))
+          if (getcwd(ZStartPath, PATH_SIZE))
           {
-            strdirname(ZStartPath);
+            strcatslash(ZStartPath);
+
+            cfgpath_ensure(launch_command);
+
+            GUIRestoreVars();
+
+            if (*LoadDir)
+            {
+              strcpy(ZRomPath, LoadDir);
+            }
+            else
+            {
+              strcpy(ZRomPath, ZStartPath);
+            }
+            strcatslash(ZRomPath);
+
+            init_save_paths();
+
+#ifdef DEBUG
+            printf("ZStartPath: %s\n", ZStartPath);
+            printf("ZCfgPath: %s\n", ZCfgPath);
+            printf("ZSramPath: %s\n", ZSramPath);
+            printf("ZSnapPath: %s\n", ZSnapPath);
+            printf("ZSpcPath: %s\n", ZSpcPath);
+#endif
+
+            atexit(deinit_paths);
+            return(true);
           }
-          else
-          {
-            getcwd(ZStartPath, PATH_SIZE);
-          }
-          strcatslash(ZStartPath);
-
-          cfgpath_ensure();
-
-          GUIRestoreVars();
-
-          if (*LoadDir)
-          {
-            strcpy(ZRomPath, LoadDir);
-          }
-          else
-          {
-            strcpy(ZRomPath, ZStartPath);
-          }
-          strcatslash(ZRomPath);
-
-          init_save_paths();
-
-          atexit(deinit_paths);
-          return(true);
         }
       }
     }
+    atexit(deinit_paths);
   }
   return(false);
 }
@@ -511,14 +523,20 @@ int mkdir_dir(const char *path, const char *dir)
 
 int system_dir(const char *path, const char *command)
 {
+  int ret_val;
   chdir_dir(path);
-  return(system(command));
+  ret_val = system(command);
+  chdir(ZStartPath);
+  return(ret_val);
 }
 
 FILE *popen_dir(const char *path, char *command, const char *type)
 {
+  FILE *ret_val;
   chdir_dir(path);
-  return(popen(command, type));
+  ret_val = popen(command, type);
+  chdir(ZStartPath);
+  return(ret_val);
 }
 
 void natify_slashes(char *str)
