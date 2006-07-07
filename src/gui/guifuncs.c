@@ -533,7 +533,7 @@ void GUIRestoreVars()
   CheckValueBounds(&KitchenSyncPAL, 0, 1, 0, UB);
   CheckValueBounds(&ForceRefreshRate, 0, 1, 0, UB);
   CheckValueBounds(&SetRefreshRate, 60, 180, 60, UB);
-  CheckValueBounds(&Keep4_3Ratio, 0, 1, 0, UB);
+  CheckValueBounds(&Keep4_3Ratio, 0, 1, 1, UB);
 #endif
 
   if (TimeChecker == CalcCfgChecksum())

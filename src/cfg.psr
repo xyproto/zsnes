@@ -365,6 +365,15 @@ CustomResX dd 640
 CustomResY dd 480
 
 @
+%ifdef __WIN32__
+@ Enable Keep 4:3 Ratio (0 = No, 1 = YES)
+@ This is particularly handy for those that use laptops/LCDs+custom non 4:3 resolutions.
+@ This is only useful while using a S/DS Fullscreen mode.
+@ Disable this if you want to use the non-standard ratio instead.
+Keep4_3Ratio db 1
+%endif
+
+@
 @ Use new graphics engine (0 = No, 1 = YES)
 @ Toggle off when there are graphical problems in the new graphics engine
 newengen db 1
@@ -516,13 +525,6 @@ NTSCSharp sb 0
 NTSCWarp sb 0
 @ Refresh screen while changing the NTSC Filter's parameters (0 = OFF, 1 = On)
 NTSCRef db 0
-
-@
-%ifdef __WIN32__
-@ Enable Keep 4:3 Ratio Scaling (0 = NO, 1 = Yes)
-@ This is particularly useful for those that use laptops/LCDs+custom res.
-Keep4_3Ratio db 0
-%endif
 
 @
 @  ----
