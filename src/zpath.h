@@ -84,6 +84,7 @@ FILE *popen_dir(const char *path, char *command, const char *type);
 void natify_slashes(char *str);
 void strcatslash(char *str);
 void setextension(char *base, const char *ext);
+bool isextension(const char *fname, const char *ext);
 void strdirname(char *str);
 void strbasename(char *str);
 

@@ -83,7 +83,7 @@ char *realpath(const char *path, char *resolved_path)
   if (!path || !resolved_path) { errno = EINVAL; }
   else if (!access(path, F_OK))
   {
-    ret = fullpath(resolved_path, path, MAX_PATH);
+    ret = fullpath(resolved_path, path, PATH_SIZE);
   }
 
   return(ret);
@@ -215,7 +215,6 @@ void cfgpath_ensure(const char *launch_command)
   if ((userinfo = getpwuid(getuid())))
   {
     ZCfgPath = malloc(PATH_SIZE);
-    ZCfgAlloc = true;
   }
   else
   {
@@ -224,6 +223,7 @@ void cfgpath_ensure(const char *launch_command)
 
   if (ZCfgPath)
   {
+    ZCfgAlloc = true;
     strcpy(ZCfgPath, userinfo->pw_dir);
     strcatslash(ZCfgPath);
     strcat(ZCfgPath, zpath);
@@ -251,10 +251,35 @@ void cfgpath_ensure(const char *launch_command)
 
 void cfgpath_ensure(const char *launch_command)
 {
-  if (realpath(launch_command, ZCfgPath))
+  ZCfgPath = malloc(PATH_SIZE);
+  if (ZCfgPath)
   {
-    strdirname(ZCfgPath);
-    strcatslash(ZCfgPath);
+    char *p = 0;
+    ZCfgAlloc = true;
+
+    if (isextension(launch_command, "exe"))
+    {
+      p = realpath(launch_command, ZCfgPath);
+    }
+    else
+    {
+      char buff[PATH_SIZE];
+      strcpy(buff, launch_command);
+      setextension(buff, "exe");
+      p = realpath(buff, ZCfgPath);
+    }
+
+    if (p)
+    {
+      strdirname(ZCfgPath);
+      strcatslash(ZCfgPath);
+    }
+    else
+    {
+      free(ZCfgPath);
+      ZCfgAlloc = false;
+      ZCfgPath = ZStartPath;
+    }
   }
   else
   {
@@ -332,6 +357,7 @@ bool init_paths(char *launch_command)
 #ifdef DEBUG
             printf("ZStartPath: %s\n", ZStartPath);
             printf("ZCfgPath: %s\n", ZCfgPath);
+            printf("ZRomPath: %s\n", ZRomPath);
             printf("ZSramPath: %s\n", ZSramPath);
             printf("ZSnapPath: %s\n", ZSnapPath);
             printf("ZSpcPath: %s\n", ZSpcPath);
@@ -574,6 +600,13 @@ void setextension(char *base, const char *ext)
     strcat(base, ".");
     strcat(base, ext);
   }
+}
+
+bool isextension(const char *fname, const char *ext)
+{
+  size_t fname_len = strlen(fname),
+         ext_len = strlen(ext);
+  return((fname[fname_len-(ext_len+1)] == '.') && !strcmp(fname+fname_len-ext_len, ext));
 }
 
 void strdirname(char *str)
