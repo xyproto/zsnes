@@ -432,6 +432,11 @@ bool init_rom_path(char *path)
     strdirname(ZRomPath);
     strcatslash(ZRomPath);
 
+#ifdef DEBUG
+    printf("ZRomPath: %s\n", ZRomPath);
+    printf("ZCartName: %s\n", ZCartName);
+#endif
+
     return(true);
   }
   return(false);
