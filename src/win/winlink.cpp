@@ -2163,7 +2163,7 @@ void initwinvideo(void)
           }
         }
 
-        if (((DSMode == 1)||(SMode == 1)) && (Keep4_3Ratio))
+        if (((DSMode == 1)||(SMode == 1)) && (Keep4_3Ratio) && (WindowWidth >= 320) && (WindowHeight >= 240))
         {
           int ratiox = WindowWidth/4;
           int ratioy = WindowHeight/3;
