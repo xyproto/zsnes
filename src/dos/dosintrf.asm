@@ -20,7 +20,7 @@
 
 %include "macros.mac"
 
-EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,InitDir,InitDrive
+EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,
 EXTSYM GetTime,GetDate,V8Mode,getblaster,Force8b,SBHDMA,allocptr
 EXTSYM ZFileCHDir,CHPath,ZFileGetDir,DirName,pressed,DTALoc,DTALocPos
 EXTSYM ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
@@ -81,14 +81,6 @@ NEWSYM StartUp
 NEWSYM SystemInit
     ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
     push es
-
-    ; Get and set the initial directory
-    mov ebx,InitDir
-    mov edx,InitDrive
-    call Get_Dir
-    mov dl,[InitDrive]
-    mov ebx,InitDir
-    call Change_Dir
 
     call getblaster                     ; get set blaster environment
     cmp byte[Force8b],1

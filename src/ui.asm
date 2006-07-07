@@ -349,12 +349,6 @@ section .data
 ; Check Parameter          This Processes the Parameters
 ;*******************************************************
 
-SECTION .data
-NEWSYM InitDrive, db 2
-
-SECTION .bss
-NEWSYM InitDir, resb 512
-
 SECTION .text
 
 NEWSYM DosExit ; Terminate Program

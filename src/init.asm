@@ -51,7 +51,7 @@ EXTSYM tableD,timeron,vidbright,SPC700read,SPC700write,spc700read
 EXTSYM GUIReset,InitC4,SA1Reset,SetAddressingModesSA1,SDD1BankA,SPC7110init
 EXTSYM RTCinit,memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
 EXTSYM memaccessspc7110w16,snesmap2,snesmmap,procexecloop,wramdata,wramdataa
-EXTSYM GetCurDir,fnamest,statefileloc,InitDir,InitDrive
+EXTSYM GetCurDir,fnamest,statefileloc
 EXTSYM curromspace,romispal,initregr,initregw,memtabler16
 EXTSYM memtabler8,memtablew16,memtablew8,wramreadptr
 EXTSYM wramwriteptr,loadstate2,CMovieExt,MoviePlay,MovieDumpRaw,AllowUDLR
@@ -1278,11 +1278,6 @@ SECTION .text
 NEWSYM loadfile
     call GetCurDir
     mov byte[InGUI],0
-%ifdef __UNIXSDL__
-    mov dl,[InitDrive]
-    mov ebx,InitDir
-    call Change_Dir
-%endif
 
     jmp loadfileGUI.nogui
 
