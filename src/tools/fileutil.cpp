@@ -31,37 +31,40 @@ void parse_dir(const char *dir_loc, void (*func)(const char *, struct stat&))
 
   DIR *curDir = opendir(dir_loc);
   dirent *curFile;
-  while ((curFile = readdir(curDir)))
+  if (curDir)
   {
-    if (!strcmp(curFile->d_name, ".") || !strcmp(curFile->d_name, ".."))
+    while ((curFile = readdir(curDir)))
     {
-      continue;
-    }
+      if (!strcmp(curFile->d_name, ".") || !strcmp(curFile->d_name, ".."))
+      {
+        continue;
+      }
 
-    char *filename;
-    if (!strcmp(dir_loc, "."))
-    {
-      filename = curFile->d_name;
-    }
-    else
-    {
-      sprintf(path, "%s/%s", dir_loc, curFile->d_name);
-      filename = path;
-    }
+      char *filename;
+      if (!strcmp(dir_loc, "."))
+      {
+        filename = curFile->d_name;
+      }
+      else
+      {
+        sprintf(path, "%s/%s", dir_loc, curFile->d_name);
+        filename = path;
+      }
 
-    struct stat stat_buffer;
-    if (stat(filename, &stat_buffer)) { continue; }
+      struct stat stat_buffer;
+      if (stat(filename, &stat_buffer)) { continue; }
 
-    //Directory
-    if (S_ISDIR(stat_buffer.st_mode))
-    {
-      parse_dir(filename, func);
-      continue;
+      //Directory
+      if (S_ISDIR(stat_buffer.st_mode))
+      {
+        parse_dir(filename, func);
+        continue;
+      }
+
+      func(filename, stat_buffer);
     }
-
-    func(filename, stat_buffer);
+    closedir(curDir);
   }
-  closedir(curDir);
 }
 
 bool parse_path(const char *path, void (*func)(const char *, struct stat&))
