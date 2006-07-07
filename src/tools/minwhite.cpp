@@ -104,11 +104,16 @@ void trim_whitespace(const char *filename, struct stat& stat_buffer)
 
 int main(size_t argc, char **argv)
 {
-  for (char **i = argv+1; *i; i++)
+  if (argc > 1)
   {
-    parse_path(*i, force_trim);
+    for (char **i = argv+1; *i; i++)
+    {
+      parse_path(*i, force_trim);
+    }
   }
-
-  parse_dir(".", trim_whitespace);
+  else
+  {
+    parse_dir(".", trim_whitespace);
+  }
   return(0);
 }
