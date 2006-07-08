@@ -2005,15 +2005,15 @@ static void raw_video_close()
   {
     if (MovieAudioCompress)
     {
-      if (mencoderExists) { system_dir(ZStartPath, encode_command(md_merge_compressed)); }
-      remove_dir(ZStartPath, md_compressed_audio);
+      if (mencoderExists) { system_dir(ZCfgPath, encode_command(md_merge_compressed)); }
+      remove_dir(ZCfgPath, md_compressed_audio);
     }
     else
     {
-      if (mencoderExists) { system_dir(ZStartPath, encode_command(md_merge)); }
-      remove_dir(ZStartPath, md_pcm_audio);
+      if (mencoderExists) { system_dir(ZCfgPath, encode_command(md_merge)); }
+      remove_dir(ZCfgPath, md_pcm_audio);
     }
-    remove_dir(ZStartPath, md_file);
+    remove_dir(ZCfgPath, md_file);
   }
   signal(SIGPIPE, SIG_IGN);
 }
@@ -2026,12 +2026,12 @@ static bool raw_video_open()
       break;
 
     case 1:
-      raw_vid.vp = fopen_dir(ZStartPath, md_raw_file, "wb");
+      raw_vid.vp = fopen_dir(ZCfgPath, md_raw_file, "wb");
       break;
 
     case 2: case 3: case 4:
       signal(SIGPIPE, broken_pipe);
-      mencoderExists = (raw_vid.vp = popen_dir(ZStartPath, encode_command(md_command), WRITE_BINARY)) ? 1 : 0;
+      mencoderExists = (raw_vid.vp = popen_dir(ZCfgPath, encode_command(md_command), WRITE_BINARY)) ? 1 : 0;
       break;
 
     default:
@@ -2049,11 +2049,11 @@ static bool raw_video_open()
     if (MovieAudioCompress)
     {
       signal(SIGPIPE, broken_pipe);
-      raw_vid.ap = popen_dir(ZStartPath, encode_command(md_audio_compress), WRITE_BINARY);
+      raw_vid.ap = popen_dir(ZCfgPath, encode_command(md_audio_compress), WRITE_BINARY);
     }
     else
     {
-      raw_vid.ap = fopen_dir(ZStartPath, md_pcm_audio, "wb");
+      raw_vid.ap = fopen_dir(ZCfgPath, md_pcm_audio, "wb");
     }
     if (raw_vid.ap)
     {
