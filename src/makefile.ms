@@ -173,7 +173,13 @@ JMAOBJ=${JMADIR}/7zlzma${OE} ${JMADIR}/crc32${OE} ${JMADIR}/iiostrm${OE}\
 
 MAINOBJ=endmem${OE} init${OE} initc${OE} uic${OE} patch${OE}\
 	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE}\
-	cfg${OE} md${OE} zpath${OE} debugger${OE} debugasm${OE}
+	cfg${OE} md${OE} zpath${OE}
+
+ifeq (${OLDDEBUGGER},yes)
+  DOSOBJORIG += ${DOSDIR}/debug${OE}
+else
+  MAINOBJ += debugger${OE} debugasm${OE}
+endif
 
 NETOBJ=
 #${NETDIR}/ztcp${OE}
@@ -303,7 +309,7 @@ ${CHIPDIR}/st10proc${OE}: ${CHIPDIR}/st10proc.asm macros.mac
 
 ${CPUDIR}/dma${OE}: ${CPUDIR}/dma.asm macros.mac
 ${CPUDIR}/dsp${OE}: ${CPUDIR}/dsp.asm macros.mac
-${CPUDIR}/dspproc${OE}: ${CPUDIR}/dspproc.asm macros.mac ${CPUDIR}/fir_tables.inc
+${CPUDIR}/dspproc${OE}: ${CPUDIR}/dspproc.asm macros.mac ${CPUDIR}/firtable.inc
 ${CPUDIR}/execute${OE}: ${CPUDIR}/execute.asm macros.mac
 ${CPUDIR}/executec${OE}: ${CPUDIR}/executec.c gblvars.h
 ${CPUDIR}/irq${OE}: ${CPUDIR}/irq.asm macros.mac

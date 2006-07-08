@@ -368,7 +368,7 @@ CubicSpline:
   dw   -3,  -3,  -2,  -2,  -2,  -1,  -1,  -1
   dw    0,   0,   0,   0,   0,   0,   0,   0
 
-%include "cpu/fir_tables.inc"
+%include "cpu/firtable.inc"
 
 SECTION .bss
 

@@ -1542,6 +1542,9 @@ SECTION .data
 .handle dw 0
 .logfname db 'debug.log',0
 
+
+;;; Now at the bottom of gui/menu.asm
+%if 0
 ;*******************************************************
 ; BreakatSignB               Breaks whenever keyonsn = 1
 ;*******************************************************
@@ -1628,6 +1631,9 @@ NEWSYM breakatsignb
 .nospcsave2
 
     ret
+%else
+EXTSYM prbreak
+%endif
 
 ;*******************************************************
 ; BreakatSignC               Breaks whenever sndwrit = 1
