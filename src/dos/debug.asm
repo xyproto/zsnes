@@ -21,14 +21,13 @@
 %include "macros.mac"
 
 EXTSYM DosExit,curblank,start65816,UpdateDPage,splitflags,joinflags,delay
-EXTSYM Check_Key,Get_Key
 EXTSYM LastLog,endprog,printhex,vesa2_rfull,vesa2_rtrcl,vesa2_gfull,vesa2_gtrcl
-EXTSYM vram,spcnumread,Curtableaddr,statesaver,memtablew8,printhex8
+EXTSYM spcnumread,Curtableaddr,statesaver,memtablew8,printhex8
 EXTSYM writeon,curcyc,dmadata,execsingle,initaddrl,memtabler8,pdh,debugloadstate
-EXTSYM regaccessbankr8,selcB800,snesmap2,snesmmap,ram7f,StringLength,exiter
+EXTSYM regaccessbankr8,selcB800,snesmap2,snesmmap,ram7f,exiter,Check_Key,Get_Key
 EXTSYM CurrentCPU,SA1RegP,curypos,xa,xd,xdb,xe,xp,xpb,xpc,xs,xx,xy,SA1xpb,SA1xpc
 EXTSYM SA1xa,SA1xx,SA1xy,SA1xd,SA1xdb,SA1xs,cycpbl,debugbuf,soundon,spcA,spcNZ
-EXTSYM spcP,spcPCRam,SPCRAM,spcS,spcX,spcY,vesa2_bfull,vesa2_btrcl,DSPMem
+EXTSYM spcP,spcPCRam,SPCRAM,spcS,spcX,spcY,vesa2_bfull,vesa2_btrcl
 
 ; debstop at regsw.asm 2118/2119
 

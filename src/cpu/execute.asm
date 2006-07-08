@@ -20,7 +20,7 @@
 
 EXTSYM KeyRewind,statesaver,Voice0Status,UpdateDPage
 EXTSYM StartGUI,romdata,initvideo,DosExit,sfxramdata,deinitvideo
-EXTSYM vidbufferofsa,disable65816sh,GUISaveVars,device2
+EXTSYM vidbufferofsa,GUISaveVars,device2
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
 EXTSYM KeyQuickSaveSPC,TimerEnable,splitflags,joinflags
