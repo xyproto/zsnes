@@ -24,7 +24,7 @@ EXTSYM DosExit,UpdateDevices,Makemode7Table,MusicRelVol,MusicVol,makesprprtable
 EXTSYM romloadskip,start65816,showinfogui,inittable
 EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer
 EXTSYM inittablec,newgfx16b,DisplayInfo,ssautosw,GUIDelayB,pl12s34
-EXTSYM Output_Text,Change_Dir,SPCDisable,osm2dis,Turbo30hz,CombinDataLocl
+EXTSYM Output_Text,SPCDisable,osm2dis,Turbo30hz,CombinDataLocl
 EXTSYM BackupSystemVars,SnowData,SnowVelDist,Setper2exec
 EXTSYM JoyRead,pressed,mousebuttons,mousexdir,mouseydir,mousexpos,mouseypos
 EXTSYM pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
