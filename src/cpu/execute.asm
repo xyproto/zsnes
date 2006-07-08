@@ -729,25 +729,6 @@ Donextlinecache:
 ; 65816 execution
 ;*******************************************************
 
-SECTION .data
-
-SpeedHackSafeTable:
-       db 1,0,1,0,0,0,1,0,1,0,1,1,0,0,0,0
-       db 0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0
-       db 0,0,0,0,0,0,1,0,1,0,1,1,0,0,1,0
-       db 0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0
-       db 0,0,0,0,0,1,1,1,1,1,1,1,0,1,1,1
-       db 0,1,1,1,0,1,1,1,0,1,1,0,0,0,1,0
-       db 0,1,0,1,0,1,1,1,0,1,1,0,0,1,1,1
-       db 0,1,1,1,0,1,1,1,0,1,0,0,0,1,1,1
-       db 0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
-       db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-       db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-       db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-       db 0,0,0,0,0,0,1,0,1,0,1,0,0,0,1,0
-       db 0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0
-       db 0,1,0,1,0,1,1,1,1,1,0,0,0,1,1,1
-       db 0,1,1,1,0,1,1,1,0,1,0,0,0,1,1,1
 SECTION .text
 
 NEWSYM exitloop2
@@ -1115,20 +1096,8 @@ NEWSYM cpuover
 .nodec
     xor eax,eax
     mov al,[esi]
-    cmp byte[disable65816sh],1
-    je .ohno
-    cmp byte[SpeedHackSafeTable+eax],1
-    jne .okay
-.ohno
-    mov byte[nmirept],0
-    mov dword[nmiprevaddrl],0FFFFFFFFh
-    mov dword[nmiprevaddrh],0
-    jmp .noskip
-.okay
     mov byte[nmistatus],2
     and byte[curexecstate],0FEh
-.nodis65816
-    jmp .noskip
 .failcheck2
     add byte[nmiprevline],1
     mov byte[nmistatus],1
