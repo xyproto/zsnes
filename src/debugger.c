@@ -229,8 +229,14 @@ void debugloop() {
    case '\n':     // step
        goto e;
 
-   /*
+  
+   /* Ported this but couldn't bring myself to commit it.
+      pagefault said to remove it.
    case '-':      // skip opcode
+   */
+
+
+   /*
    case 'C':      // clear ???
    */
 
