@@ -35,12 +35,57 @@ using namespace std;
 
 set<string> ignore_include_file;
 
+struct macro_var
+{
+  string macro_name;
+  unsigned int param_num;
+  string suffix;
+
+  bool operator>(const macro_var &op2) const;
+  bool operator<(const macro_var &op2) const;
+};
+
+bool macro_var::operator>(const macro_var &op2) const
+{
+  if (macro_name > op2.macro_name) { return(true); }
+  if ((macro_name == op2.macro_name))
+  {
+    if (param_num > op2.param_num) { return(true); }
+    if (param_num == op2.param_num)
+    {
+      if (suffix > op2.suffix) { return(true); }
+    }
+  }
+  return(false);
+}
+
+bool macro_var::operator<(const macro_var &op2) const
+{
+  if (macro_name < op2.macro_name) { return(true); }
+  if ((macro_name == op2.macro_name))
+  {
+    if (param_num < op2.param_num) { return(true); }
+    if (param_num == op2.param_num)
+    {
+      if (suffix < op2.suffix) { return(true); }
+    }
+  }
+  return(false);
+}
+
+bool macro_match(const macro_var macro, const string name)
+{
+  return(macro.macro_name == name);
+}
+
 void handle_file(const char *filename)
 {
   queue<string> included_files;
   set<string> extsyms;
   set<string> used_vars;
+  set<macro_var> macro_vars;
   list<string> not_used_extsyms;
+  string current_macro;
 
   included_files.push(filename);
   do
@@ -91,6 +136,22 @@ void handle_file(const char *filename)
             extsyms.insert(*i);
           }
         }
+        else if (!strncasecmp(p, "%macro ", strlen("%macro ")))
+        {
+          p += strlen("%macro ");
+          Tokenize(p, tokens, ";");
+          string not_commented = tokens[0];
+          tokens.clear();
+          Tokenize(not_commented, tokens, " ");
+          if (atoi(tokens[1].c_str()))
+          {
+            current_macro = tokens[0];
+          }
+        }
+        else if (!strncasecmp(p, "%endmacro", strlen("%endmacro")))
+        {
+          current_macro.clear();
+        }
         else if (*p && (*p != ';'))
         {
           Tokenize(p, tokens, ";");
@@ -99,11 +160,44 @@ void handle_file(const char *filename)
             string not_commented = tokens[0];
             tokens.clear();
             Tokenize(not_commented, tokens, ", :[]+-*/\t");
-            for (vector<string>::iterator i = tokens.begin()+1; i != tokens.end(); i++)
+
+            set<macro_var>::iterator macro = find_if(macro_vars.begin(), macro_vars.end(), bind2nd(ptr_fun(macro_match), tokens[0]));
+            if (macro != macro_vars.end())
             {
-              if (!isdigit(i[0][0]) && (i[0][0] != '$'))
+              tokens.clear();
+              Tokenize(not_commented, tokens, ", []\t"); //Retokenize properly for macros
+              for (size_t i = 1; i < tokens.size(); i++)
               {
-                used_vars.insert(*i);
+                for (set<macro_var>::iterator j = macro; (j != macro_vars.end()) && (j->macro_name == tokens[0]); j++)
+                {
+                  if (j->param_num == i)
+                  {
+                    if (!isdigit(tokens[i][0]) && (tokens[i][0] != '$'))
+                    {
+                      used_vars.insert(tokens[i]+j->suffix);
+                    }
+                  }
+                }
+              }
+            }
+            else
+            {
+              for (vector<string>::iterator i = tokens.begin()+1; i != tokens.end(); i++)
+              {
+                if (current_macro.size() && (i[0][0] == '%') && isdigit(i[0][1]))
+                {
+                  char buff[50];
+                  *buff = 0;
+                  macro_var var;
+                  var.macro_name = current_macro;
+                  sscanf(i->c_str(), "%%%u%s", &var.param_num, buff);
+                  var.suffix = buff;
+                  macro_vars.insert(var);
+                }
+                else if (!isdigit(i[0][0]) && (i[0][0] != '$') && !((i[0][0] == '%') && (i[0][1] == '%')))
+                {
+                  used_vars.insert(*i);
+                }
               }
             }
           }
