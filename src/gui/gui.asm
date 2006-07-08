@@ -387,18 +387,6 @@ NEWSYM GUIindex, resd 1
 
 SECTION .text
 
-%macro stim 0
-%ifdef __MSDOS__
-  sti
-%endif
-%endmacro
-
-%macro clim 0
-%ifdef __MSDOS__
-  cli
-%endif
-%endmacro
-
 clearsram:
   push eax
   push ecx
