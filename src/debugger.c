@@ -93,7 +93,7 @@ void nextopcode();
 void cleardisplay();
 void nextspcopcode();
 void SaveOAMRamLog();
-extern void execnextop();
+void debugdump();
 
 unsigned char *findop();
 unsigned char *findoppage();
@@ -235,10 +235,9 @@ void debugloop() {
    case '-':      // skip opcode
    */
 
-
-   /*
-   case 'C':      // clear ???
-   */
+   case 'C':      // clear
+       numinst = 0;
+       goto a;
 
    case 'M':      // modify
    {
@@ -341,6 +340,19 @@ void debugloop() {
        closewindow(w);
        goto b;
    }
+
+   /*
+   case 'T': // trace
+   */
+  
+   case 'D': // debug dump
+       debugdump();
+       goto b;
+
+   /*
+   case 'W': // break at signal (breakatsign)
+   case 'L': // break at signal log (breakatsignlog)
+   */
 
    case '1': // toggle SPC
        debugds ^= 1;
