@@ -515,8 +515,8 @@ void out65816_addrmode (unsigned char *instr) {
 
     #define INDEX_RIGHT(addr, index)                         \
             ((xp & 0x10)                                     \
-	     ? ((addr & ~0xff)   | ((addr + index) & 0xff))  \
-	     : ((addr & ~0xffff) | ((addr + index) & 0xffff)))
+	     ? (((addr) & ~0xff)   | (((addr) + (index)) & 0xff))  \
+	     : (((addr) & ~0xffff) | (((addr) + (index)) & 0xffff)))
 
 
     // each mode must output 19 characters
@@ -576,6 +576,13 @@ void out65816_addrmode (unsigned char *instr) {
 	wprintw(debugwin, "[%06x] ", t);
 
 	break;
+    }
+
+    case 10:    // $12,x : $12+d+x
+    {
+	wprintw(debugwin, "$%02x,X%.5s", instr[1], padding);
+	
+	wprintw(debugwin, "[%06x] ", INDEX_RIGHT(instr[1] + xd, xx));
     }
 
     case 12:    // $1234,x : dbr+$1234+x
