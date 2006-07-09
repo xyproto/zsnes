@@ -40,16 +40,22 @@ set<string> ignore_include_file;
 struct macro_var
 {
   string macro_name;
+  unsigned int params;
   vector<string> lines;
 
-  macro_var(string &macro_name) : macro_name(macro_name) {}
-  macro_var(string &macro_name, vector<string> &lines) : macro_name(macro_name), lines(lines) {}
+  macro_var(string &macro_name, unsigned int params) : macro_name(macro_name), params(params) {}
+  macro_var(string &macro_name, unsigned int params, vector<string> &lines) : macro_name(macro_name), params(params), lines(lines) {}
   bool operator<(const macro_var &op2) const;
 };
 
 bool macro_var::operator<(const macro_var &op2) const
 {
-  return(macro_name < op2.macro_name);
+  if (macro_name < op2.macro_name) { return(true); }
+  if (macro_name == op2.macro_name)
+  {
+    return(params < op2.params);
+  }
+  return(false);
 }
 
 bool macro_match(const macro_var macro, const string name)
@@ -96,14 +102,11 @@ void parse_line(string line, set<string> &used_vars, set<macro_var> &macro_vars)
 {
   vector<string> tokens;
 
-  Tokenize(line, tokens, ", :[]+-*/\t");
+  Tokenize(line, tokens, ", \t");
 
-  set<macro_var>::iterator macro = macro_vars.find(macro_var(tokens[0]));
+  set<macro_var>::iterator macro = macro_vars.find(macro_var(tokens[0], tokens.size()-1));
   if (macro != macro_vars.end())
   {
-    tokens.clear();
-    Tokenize(line, tokens, ", []\t"); //Retokenize properly for macros
-
     for (vector<string>::const_iterator i = macro->lines.begin(); i != macro->lines.end(); i++)
     {
       parse_line(replace_params(*i, tokens), used_vars, macro_vars);
@@ -111,6 +114,9 @@ void parse_line(string line, set<string> &used_vars, set<macro_var> &macro_vars)
   }
   else
   {
+    tokens.clear();
+    Tokenize(line, tokens, ", :[]+-*/\t");
+
     for (vector<string>::iterator i = tokens.begin()+1; i != tokens.end(); i++)
     {
       if (!isdigit(i[0][0]) && (i[0][0] != '$') && !((i[0][0] == '%') && (i[0][1] == '%')))
@@ -179,6 +185,7 @@ void process_file(string filename, set<string> &extsyms, set<string> &used_vars,
         Tokenize(not_commented, tokens, " ");
 
         string macro_name = tokens[0];
+        unsigned int param_count = atoi(tokens[1].c_str());
         vector<string> lines;
 
         while (file.getline(line, LINE_LENGTH))
@@ -200,7 +207,7 @@ void process_file(string filename, set<string> &extsyms, set<string> &used_vars,
             }
           }
         }
-        macro_vars.insert(macro_var(macro_name, lines));
+        macro_vars.insert(macro_var(macro_name, param_count, lines));
       }
       else if (*p && (*p != ';'))
       {
