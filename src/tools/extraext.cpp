@@ -38,39 +38,16 @@ set<string> ignore_include_file;
 struct macro_var
 {
   string macro_name;
-  unsigned int param_num;
-  string suffix;
+  vector<string> lines;
 
-  bool operator>(const macro_var &op2) const;
+  macro_var(string &macro_name) : macro_name(macro_name) {}
+  macro_var(string &macro_name, vector<string> &lines) : macro_name(macro_name), lines(lines) {}
   bool operator<(const macro_var &op2) const;
 };
 
-bool macro_var::operator>(const macro_var &op2) const
-{
-  if (macro_name > op2.macro_name) { return(true); }
-  if ((macro_name == op2.macro_name))
-  {
-    if (param_num > op2.param_num) { return(true); }
-    if (param_num == op2.param_num)
-    {
-      if (suffix > op2.suffix) { return(true); }
-    }
-  }
-  return(false);
-}
-
 bool macro_var::operator<(const macro_var &op2) const
 {
-  if (macro_name < op2.macro_name) { return(true); }
-  if ((macro_name == op2.macro_name))
-  {
-    if (param_num < op2.param_num) { return(true); }
-    if (param_num == op2.param_num)
-    {
-      if (suffix < op2.suffix) { return(true); }
-    }
-  }
-  return(false);
+  return(macro_name < op2.macro_name);
 }
 
 bool macro_match(const macro_var macro, const string name)
@@ -78,137 +55,172 @@ bool macro_match(const macro_var macro, const string name)
   return(macro.macro_name == name);
 }
 
+string replace_params(string line, vector<string> &params)
+{
+  string replaced;
+  const char *p = line.c_str();
+  while (*p)
+  {
+    if (*p == '%')
+    {
+      if (isdigit(p[1]))
+      {
+        size_t num = 0;
+        p++;
+        while (isdigit(*p))
+        {
+          num *= 10;
+          num += *p-'0';
+          p++;
+        }
+        replaced += params[num];
+      }
+      else
+      {
+        replaced += *p++;
+        if (*p) { replaced += *p++; }
+      }
+    }
+    else
+    {
+      replaced += *p;
+      p++;
+    }
+  }
+  return(replaced);
+}
+
+void parse_line(string line, set<string> &used_vars, set<macro_var> &macro_vars)
+{
+  vector<string> tokens;
+
+  Tokenize(line, tokens, ", :[]+-*/\t");
+
+  set<macro_var>::iterator macro = macro_vars.find(macro_var(tokens[0]));
+  if (macro != macro_vars.end())
+  {
+    tokens.clear();
+    Tokenize(line, tokens, ", []\t"); //Retokenize properly for macros
+
+    for (vector<string>::const_iterator i = macro->lines.begin(); i != macro->lines.end(); i++)
+    {
+      parse_line(replace_params(*i, tokens), used_vars, macro_vars);
+    }
+  }
+  else
+  {
+    for (vector<string>::iterator i = tokens.begin()+1; i != tokens.end(); i++)
+    {
+      if (!isdigit(i[0][0]) && (i[0][0] != '$') && !((i[0][0] == '%') && (i[0][1] == '%')))
+      {
+        used_vars.insert(*i);
+      }
+    }
+  }
+}
+
+void process_file(string filename, set<string> &extsyms, set<string> &used_vars, set<macro_var> &macro_vars)
+{
+  ifstream file(filename.c_str(), ios::in);
+  if (file)
+  {
+    char line[LINE_LENGTH];
+
+    //Parse file
+    while (file.getline(line, LINE_LENGTH))
+    {
+      vector<string> tokens;
+      char *p = line;
+      while (isspace(*p)) { p++; }
+
+      if (!strncasecmp(p, "%include ", strlen("%include ")))
+      {
+        p += strlen("%include ");
+        Tokenize(p, tokens, ";");
+        string not_commented = tokens[0];
+        tokens.clear();
+        Tokenize(not_commented, tokens, "/\" \t");
+
+        string inc_fname(*(tokens.end()-1));
+        if (inc_fname != "macros.mac")
+        {
+          size_t last_slash = filename.find_last_of("/");
+          if (last_slash != string::npos)
+          {
+            inc_fname.insert(0, filename, 0, last_slash+1);
+          }
+          process_file(inc_fname, extsyms, used_vars, macro_vars);
+        }
+      }
+      else if (!strncasecmp(p, "extsym ", strlen("extsym ")))
+      {
+        p += strlen("extsym ");
+        Tokenize(p, tokens, ";");
+        string not_commented = tokens[0];
+        tokens.clear();
+        Tokenize(not_commented, tokens, ", ");
+        for (vector<string>::iterator i = tokens.begin(); i != tokens.end(); i++)
+        {
+          extsyms.insert(*i);
+        }
+      }
+      else if (!strncasecmp(p, "%macro ", strlen("%macro ")))
+      {
+        p += strlen("%macro ");
+        Tokenize(p, tokens, ";");
+        string not_commented = tokens[0];
+        tokens.clear();
+        Tokenize(not_commented, tokens, " ");
+
+        string macro_name = tokens[0];
+        vector<string> lines;
+
+        while (file.getline(line, LINE_LENGTH))
+        {
+          p = line;
+          while (isspace(*p)) { p++; }
+
+          if (*p && (*p != ';'))
+          {
+            tokens.clear();
+            Tokenize(p, tokens, ";");
+            if (tokens[0] == "%endmacro")
+            {
+              break;
+            }
+            if (tokens[0].size() && !((tokens[0][0] == '%') && !isdigit(tokens[0][1])))
+            {
+              lines.push_back(tokens[0]);
+            }
+          }
+        }
+        macro_vars.insert(macro_var(macro_name, lines));
+      }
+      else if (*p && (*p != ';'))
+      {
+        Tokenize(p, tokens, ";");
+        if (tokens.size())
+        {
+          parse_line(tokens[0], used_vars, macro_vars);
+        }
+        tokens.clear();
+      }
+    }
+  }
+  else if (ignore_include_file.find(filename) == ignore_include_file.end())
+  {
+    cout << "Error opening: " << filename << endl;
+  }
+}
+
 void handle_file(const char *filename)
 {
-  queue<string> included_files;
   set<string> extsyms;
   set<string> used_vars;
   set<macro_var> macro_vars;
   list<string> not_used_extsyms;
-  string current_macro;
 
-  included_files.push(filename);
-  do
-  {
-    string fname = included_files.front();
-    included_files.pop();
-
-    ifstream file(fname.c_str(), ios::in);
-    if (file)
-    {
-      char line[LINE_LENGTH];
-
-      //Build lists
-      for (size_t i = 0; file.getline(line, LINE_LENGTH); i++)
-      {
-        vector<string> tokens;
-        char *p = line;
-        while (isspace(*p)) { p++; }
-
-        if (!strncasecmp(p, "%include ", strlen("%include ")))
-        {
-          p += strlen("%include ");
-          Tokenize(p, tokens, ";");
-          string not_commented = tokens[0];
-          tokens.clear();
-          Tokenize(not_commented, tokens, "/\" \t");
-
-          string inc_fname(*(tokens.end()-1));
-          if (inc_fname != "macros.mac")
-          {
-            size_t last_slash = fname.find_last_of("/");
-            if (last_slash != string::npos)
-            {
-              inc_fname.insert(0, fname, 0, last_slash+1);
-            }
-            included_files.push(inc_fname);
-          }
-        }
-        else if (!strncasecmp(p, "extsym ", strlen("extsym ")))
-        {
-          p += strlen("extsym ");
-          Tokenize(p, tokens, ";");
-          string not_commented = tokens[0];
-          tokens.clear();
-          Tokenize(not_commented, tokens, ", ");
-          for (vector<string>::iterator i = tokens.begin(); i != tokens.end(); i++)
-          {
-            extsyms.insert(*i);
-          }
-        }
-        else if (!strncasecmp(p, "%macro ", strlen("%macro ")))
-        {
-          p += strlen("%macro ");
-          Tokenize(p, tokens, ";");
-          string not_commented = tokens[0];
-          tokens.clear();
-          Tokenize(not_commented, tokens, " ");
-          if (atoi(tokens[1].c_str()))
-          {
-            current_macro = tokens[0];
-          }
-        }
-        else if (!strncasecmp(p, "%endmacro", strlen("%endmacro")))
-        {
-          current_macro.clear();
-        }
-        else if (*p && (*p != ';'))
-        {
-          Tokenize(p, tokens, ";");
-          if (tokens.size())
-          {
-            string not_commented = tokens[0];
-            tokens.clear();
-            Tokenize(not_commented, tokens, ", :[]+-*/\t");
-
-            set<macro_var>::iterator macro = find_if(macro_vars.begin(), macro_vars.end(), bind2nd(ptr_fun(macro_match), tokens[0]));
-            if (macro != macro_vars.end())
-            {
-              tokens.clear();
-              Tokenize(not_commented, tokens, ", []\t"); //Retokenize properly for macros
-              for (size_t i = 1; i < tokens.size(); i++)
-              {
-                for (set<macro_var>::iterator j = macro; (j != macro_vars.end()) && (j->macro_name == tokens[0]); j++)
-                {
-                  if (j->param_num == i)
-                  {
-                    if (!isdigit(tokens[i][0]) && (tokens[i][0] != '$'))
-                    {
-                      used_vars.insert(tokens[i]+j->suffix);
-                    }
-                  }
-                }
-              }
-            }
-            else
-            {
-              for (vector<string>::iterator i = tokens.begin()+1; i != tokens.end(); i++)
-              {
-                if (current_macro.size() && (i[0][0] == '%') && isdigit(i[0][1]))
-                {
-                  char buff[50];
-                  *buff = 0;
-                  macro_var var;
-                  var.macro_name = current_macro;
-                  sscanf(i->c_str(), "%%%u%s", &var.param_num, buff);
-                  var.suffix = buff;
-                  macro_vars.insert(var);
-                }
-                else if (!isdigit(i[0][0]) && (i[0][0] != '$') && !((i[0][0] == '%') && (i[0][1] == '%')))
-                {
-                  used_vars.insert(*i);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    else if (ignore_include_file.find(fname) == ignore_include_file.end())
-    {
-      cout << "Error opening: " << fname << endl;
-    }
-  } while(!included_files.empty());
+  process_file(filename, extsyms, used_vars, macro_vars);
 
   set_difference(extsyms.begin(), extsyms.end(), used_vars.begin(), used_vars.end(), back_inserter(not_used_extsyms));
 
