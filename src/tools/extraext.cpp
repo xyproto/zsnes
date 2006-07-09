@@ -29,6 +29,8 @@ This program tells us if an assembly file has extra EXTSYMs.
 #include "strutil.h"
 using namespace std;
 
+#include <unistd.h>
+
 #include "fileutil.h"
 
 #define LINE_LENGTH 500
@@ -139,7 +141,7 @@ void process_file(string filename, set<string> &extsyms, set<string> &used_vars,
         Tokenize(p, tokens, ";");
         string not_commented = tokens[0];
         tokens.clear();
-        Tokenize(not_commented, tokens, "/\" \t");
+        Tokenize(not_commented, tokens, "\" \t");
 
         string inc_fname(*(tokens.end()-1));
         if (inc_fname != "macros.mac")
@@ -148,6 +150,10 @@ void process_file(string filename, set<string> &extsyms, set<string> &used_vars,
           if (last_slash != string::npos)
           {
             inc_fname.insert(0, filename, 0, last_slash+1);
+            if (access(inc_fname.c_str(), F_OK))
+            {
+              inc_fname.insert(last_slash+1, "../");
+            }
           }
           process_file(inc_fname, extsyms, used_vars, macro_vars);
         }
