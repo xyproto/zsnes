@@ -412,7 +412,7 @@ TripleBufferWin db 0
 @
 @ Force Refresh Rate (0 = NO, 1 = Yes)
 @ Enable this if you are experiencing visual tearing
-@ WARNING: The DX Refresh Rate (dxdiag) must be set to default in order for this to work!
+@ WARNING: The DX Refresh Rate Override in dxdiag must be set to default in order for this to work!
 @ You must also supply a legitimate refresh rate in order for this to work properly.
 @ This option is completely useless in a non-fullscreen mode.
 ForceRefreshRate db 0
@@ -421,11 +421,13 @@ SetRefreshRate db 60
 
 %ifdef __WIN32__
 @
-@ Enable KitchenSync (0 = NO, 1 = Yes)
-@ You can enable this if you are using refresh rates > 100Hz(PAL), 120Hz(NTSC)
-@ Otherwise, it probably won't work for you
-@ KitchenSyncPAL only applies to PAL games, use KitchenSync for PAL+NTSC
-@ WARNING: The DX Refresh Rate (dxdiag) must be set to default in order for this to work!
+@ Enable KitchenSync/KitchenSyncPAL (0 = NO, 1 = Yes)
+@ When enabled, ZSNES will use double the refresh rate of the game and use half of it to
+@ sync with the game to reduce/prevent visual tearing.
+@ You can enable this if your video card/monitor AND current ZSNES resolution supports
+@ 100Hz (for PAL games) and 120Hz (for NTSC games)
+@ KitchenSyncPAL applies to PAL games only, use KitchenSync for PAL+NTSC games.
+@ WARNING: The DX Refresh Rate Override in dxdiag must be set to default in order for this to work!
 @ This option is completely useless in a non-fullscreen mode.
 KitchenSync db 0
 KitchenSyncPAL db 0
