@@ -51,7 +51,7 @@ EXTSYM drawlineng16x84b16b,drawlineng16x82b16b,ofsmcyps,vram,ofsmcptr,ofsmady
 EXTSYM ofsmadx,ofsmtptr,yposngom,flipyposngom,ofsmmptr,ofsmval,ofsmvalh,V8Mode
 EXTSYM hdmaearlstart,cbgval,drawlinengom4b16b,ignor512,winbg1envals
 EXTSYM FillSubScr,scanlines,drawmode7win16bd,SpecialLine,vidmemch2s,dovegrest
-EXTSYM smallscreenon,ScreenScale,SA1Enable,drawlinengom16x164b16b,bgallchange
+EXTSYM smallscreenon,ScreenScale,drawlinengom16x164b16b,bgallchange
 EXTSYM bg1change,bg2change,bg3change,bg4change,ngwinptr,objwlrpos,objwen
 EXTSYM objclineptr,CSprWinPtr,BuildWindow2,NGNumSpr,fulladdtab,MMXSupport
 EXTSYM bgtxadd2,gammalevel16b
@@ -591,8 +591,6 @@ NEWSYM newengine16b
 .nosbg3pr
 
     ; Main/Sub Screen
-    cmp byte[SA1Enable],0
-    je .noscrnona
     cmp word[scrnon],1317h
     jne .noscrnona
     cmp byte[scaddtype],0
