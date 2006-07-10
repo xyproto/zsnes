@@ -1277,10 +1277,12 @@ void drawscreenwin(void)
 		sw_drawwin();
 }
 
+void gl_end();
 void UnloadSDL()
 {
   sem_sleep_die(); // Shutdown semaphore
   if (Buffer) { free(Buffer); }
+  gl_end();
   if (sdl_state != vid_null)
   {
     SDL_WM_GrabInput(SDL_GRAB_OFF); // probably redundant

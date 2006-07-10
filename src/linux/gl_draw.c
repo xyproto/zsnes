@@ -123,8 +123,11 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 
 void gl_end()
 {
-	glDeleteTextures(4, gltextures);
-	free(glvidbuffer);
+  if (glvidbuffer)
+  {
+    glDeleteTextures(4, gltextures);
+    free(glvidbuffer);
+  }
 }
 
 extern DWORD AddEndBytes;
