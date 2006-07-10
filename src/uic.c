@@ -124,11 +124,6 @@ void *doMemAlloc(size_t size)
   return(ptr);
 }
 
-void allocspc7110()
-{
-  spc7110romptr = (unsigned char *)doMemAlloc(8192*1024+4096);
-}
-
 void *alloc_ptr;
 unsigned int alloc_size;
 
