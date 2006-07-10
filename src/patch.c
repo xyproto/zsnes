@@ -46,7 +46,6 @@ extern unsigned int *romdata;
 extern bool IPSPatched;
 extern unsigned char Header512;
 extern bool AutoPatch;
-void *doMemAlloc(int);
 
 struct
 {
@@ -67,7 +66,7 @@ bool reloadBuffer()
 
   IPSPatch.buffer_total = IPSPatch.fp ?
   /* Regular Files */     fread(IPSPatch.data, 1, BUFFER_SIZE, IPSPatch.fp) :
-  /* Zip Files     */     unzReadCurrentFile(IPSPatch.zipfile, IPSPatch.data, BUFFER_SIZE);
+  /* Zip Files     */     (unsigned int)unzReadCurrentFile(IPSPatch.zipfile, IPSPatch.data, BUFFER_SIZE);
 
   IPSPatch.current = IPSPatch.data;
   if (IPSPatch.buffer_total && (IPSPatch.buffer_total <= BUFFER_SIZE))
@@ -94,6 +93,7 @@ int IPSget()
 
 bool initPatch()
 {
+  memset(&IPSPatch, 0, sizeof(IPSPatch));
   setextension(ZSaveName, "ips");
 
   IPSPatch.fp = fopen_dir(ZSramPath, ZSaveName, "rb");
@@ -101,15 +101,14 @@ bool initPatch()
   if (!IPSPatch.fp) { return(false); }
 
   fseek(IPSPatch.fp, 0, SEEK_END);
-
   IPSPatch.file_size = (unsigned int)ftell(IPSPatch.fp);
-  IPSPatch.data = (unsigned char *)doMemAlloc(BUFFER_SIZE);
-  IPSPatch.proccessed = 0;
-
-  IPSPatch.zipfile = 0;
-
   rewind(IPSPatch.fp);
-  return(reloadBuffer());
+
+  if ((IPSPatch.data = (unsigned char *)malloc(BUFFER_SIZE)))
+  {
+    return(reloadBuffer());
+  }
+  return(false);
 }
 
 void deinitPatch()
@@ -252,6 +251,8 @@ void findZipIPS(char *compressedfile)
   unz_file_info cFileInfo; //Create variable to hold info for a compressed file
   int cFile;
 
+  memset(&IPSPatch, 0, sizeof(IPSPatch));
+
   IPSPatch.zipfile = unzopen_dir(ZRomPath, compressedfile); //Open zip file
   cFile = unzGoToFirstFile(IPSPatch.zipfile); //Set cFile to first compressed file
 
@@ -278,23 +279,25 @@ void findZipIPS(char *compressedfile)
     cFile = unzGoToNextFile(IPSPatch.zipfile);
   }
 
-  if (!FoundIPS)
+  if (FoundIPS)
+  {
+    //Open file
+    unzOpenCurrentFile(IPSPatch.zipfile);
+
+    IPSPatch.file_size = (unsigned int)cFileInfo.uncompressed_size;
+    if ((IPSPatch.data = (unsigned char *)malloc(BUFFER_SIZE)))
+    {
+      reloadBuffer();
+      PatchUsingIPS();
+    }
+    else
+    {
+      deinitPatch();
+    }
+  }
+  else
   {
     unzClose(IPSPatch.zipfile);
     IPSPatch.zipfile = 0;
-    return;
   }
-
-  //Open file
-  unzOpenCurrentFile(IPSPatch.zipfile);
-
-  IPSPatch.file_size = (unsigned int)cFileInfo.uncompressed_size;
-  IPSPatch.data = (unsigned char *)doMemAlloc(BUFFER_SIZE);
-  IPSPatch.proccessed = 0;
-  IPSPatch.fp = 0;
-  reloadBuffer();
-  PatchUsingIPS();
 }
-
-
-
