@@ -496,7 +496,7 @@ unsigned char firstsaveinc = 0;
 extern unsigned int statefileloc, CurrentHandle, SfxRomBuffer, SfxCROM;
 extern unsigned int SfxLastRamAdr, SfxRAMMem, MsgCount, MessageOn;
 extern unsigned char AutoIncSaveSlot, cbitmode, NoPictureSave;
-extern char *Msgptr, fnamest[512];
+extern char *Msgptr;
 extern unsigned short PrevPicture[64*56];
 
 static FILE *fhandle;
@@ -610,7 +610,7 @@ if (!num)                                                             \
 {                                                                     \
   num = strchr(message, '-');                                         \
 }                                                                     \
-*num = (fnamest[statefileloc] == 't') ? '0' : fnamest[statefileloc];
+*num = (ZStateName[statefileloc] == 't') ? '0' : ZStateName[statefileloc];
 
 void statesaver()
 {
@@ -626,18 +626,18 @@ void statesaver()
     if (firstsaveinc) { firstsaveinc = 0; }
     else
     {
-      switch (fnamest[statefileloc])
+      switch (ZStateName[statefileloc])
       {
         case 't': // ZST state
         case 'v': // ZMV movie
-          fnamest[statefileloc] = '1';
+          ZStateName[statefileloc] = '1';
           break;
         case '9':
-          fnamest[statefileloc] = 't';
+          ZStateName[statefileloc] = 't';
         case 's': // ZSS state
           break;
         default:
-          fnamest[statefileloc]++;
+          ZStateName[statefileloc]++;
       }
     }
   }
@@ -649,7 +649,7 @@ void statesaver()
   if (MovieProcessing == 2)
   {
     bool mzt_save(char *, bool, bool);
-    if (mzt_save((char *)fnamest+1, (cbitmode && !NoPictureSave) ? true : false, false))
+    if (mzt_save(ZStateName, (cbitmode && !NoPictureSave) ? true : false, false))
     {
       Msgptr = txtrrsvmsg;
       MessageOn = MsgCount;
@@ -659,7 +659,7 @@ void statesaver()
 
   clim();
 
-  if ((fhandle = fopen_dir(ZSramPath, fnamest+1,"wb")))
+  if ((fhandle = fopen_dir(ZSramPath, ZStateName,"wb")))
   {
     zst_save(fhandle, (bool)(cbitmode && !NoPictureSave), false);
     fclose(fhandle);
@@ -966,17 +966,17 @@ void stateloader (char *statename, unsigned char keycheck, unsigned char xferche
 
 void debugloadstate()
 {
-  stateloader(fnamest+1, 0, 0);
+  stateloader(ZStateName, 0, 0);
 }
 
 void loadstate()
 {
-  stateloader(fnamest+1, 1, 0);
+  stateloader(ZStateName, 1, 0);
 }
 
 void loadstate2()
 {
-  stateloader(fnamest+1, 0, 1);
+  stateloader(ZStateName, 0, 1);
 }
 
 extern unsigned char CHIPBATT, sramsavedis;

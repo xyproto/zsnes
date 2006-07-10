@@ -29,7 +29,7 @@ EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen
 EXTSYM nextdrawallng,oamaddr,pal16b,pal16bxcl,pressed,prevbright,prevpal
 EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,sprprdrn,t1cc
 EXTSYM vidbright,vidbuffer,vidbufferm,vidbufferofsa,vidbufferofsb,vidmemch2
-EXTSYM statefileloc,fnamest,GUIClick,MousePRClick,ngmsdraw,cvidmode
+EXTSYM statefileloc,ZStateName,GUIClick,MousePRClick,ngmsdraw,cvidmode
 EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyDisableSC4
 EXTSYM KeyDisableSC5,KeyDisableSC6,KeyDisableSC7,KeyFastFrwrd,SRAMSave5Sec
 EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
@@ -85,7 +85,8 @@ SECTION .text
     mov byte[pressed+eax],2
     mov byte[sselm+11],%2
     mov eax,[statefileloc]
-    mov byte[fnamest+eax],%3
+    mov ecx,[ZStateName]
+    mov byte[ecx+eax],%3
     mov dword[Msgptr],sselm
     mov eax,[MsgCount]
     mov [MessageOn],eax
@@ -744,7 +745,8 @@ NEWSYM cachevideo
     je .noincstateslot
     mov byte[pressed+eax],2
     mov eax,[statefileloc]
-    mov dh,[fnamest+eax]
+    mov ecx,[ZStateName]
+    mov dh, [ecx+eax]
     cmp dh,'t'
     je .secondstate
     cmp dh,'9'
@@ -757,7 +759,8 @@ NEWSYM cachevideo
 .jumptofirststate
     mov dh,'t'
 .donextstate
-    mov [fnamest+eax],dh
+    mov ecx,[ZStateName]
+    mov [ecx+eax], dh
     cmp dh,'t'
     je .firststatemsg
     mov [sselm+11],dh
@@ -776,7 +779,8 @@ NEWSYM cachevideo
     je .nodecstateslot
     mov byte[pressed+eax],2
     mov eax,[statefileloc]
-    mov dh,[fnamest+eax]
+    mov ecx,[ZStateName]
+    mov dh, [ecx+eax]
     cmp dh,'t'
     je .jumptolaststate
     dec dh
@@ -788,7 +792,8 @@ NEWSYM cachevideo
 .jumptolaststate
     mov dh,'9'
 .doprevstate
-    mov [fnamest+eax],dh
+    mov ecx,[ZStateName]
+    mov [ecx+eax], dh
     cmp dh,'t'
     je .firststatemsg2
     mov [sselm+11],dh

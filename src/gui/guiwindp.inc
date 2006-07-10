@@ -1078,7 +1078,8 @@ DisplayGUIChoseSave:                    ; Pick Save State
 
   mov dword[GUITemp],GUIIconDataButtonHole           ; Radio Buttons
   mov ebx,[statefileloc]
-  mov al,[fnamest+ebx]
+  mov edx,[ZStateName]
+  mov al,[edx+ebx]
   mov [GUIChoseSaveText2],al
   GUIDisplayButtonHole 2,10,28,byte[GUIChoseSaveText2],'t'
   GUIDisplayButtonHole 2,30,28,byte[GUIChoseSaveText2],'1'

@@ -1885,7 +1885,8 @@ DisplayGUIChoseSaveClick:
   GUIPButtonHole 90,43,byte[GUIChoseSaveText2],'9'
   mov ebx,[statefileloc]
   mov al,[GUIChoseSaveText2]
-  mov [fnamest+ebx],al
+  mov edx,[ZStateName]
+  mov [edx+ebx], al
   ret
 
 DisplayGUIMovieClick:

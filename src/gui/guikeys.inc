@@ -2419,7 +2419,8 @@ GUIStateSelKeys:
   jne .noleft
 .yesleft
   mov ebx,[statefileloc]
-  mov cl,[fnamest+ebx]
+  mov edx,[ZStateName]
+  mov cl,[edx+ebx]
   cmp cl,'t'
   jne .no1st
   mov cl,'4'
@@ -2448,7 +2449,8 @@ GUIStateSelKeys:
   jne .noright
 .yesright
   mov ebx,[statefileloc]
-  mov cl,[fnamest+ebx]
+  mov edx,[ZStateName]
+  mov cl,[edx+ebx]
   cmp cl,'t'
   jne .noT
   mov cl,'1'
@@ -2486,7 +2488,8 @@ GUIStateSelKeys:
   jne .novert
 .yesvert
   mov ebx,[statefileloc]
-  mov cl,[fnamest+ebx]
+  mov edx,[ZStateName]
+  mov cl,[edx+ebx]
   cmp cl,'t'
   jne .noTv
   mov cl,'5'
@@ -2504,7 +2507,9 @@ GUIStateSelKeys:
 .noabove
   add cl,5
 .done
-  mov [fnamest+ebx],cl
+  mov edx,[ZStateName]
+  mov [edx+ebx],cl
+
 .novert
   ret
 

@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM BGMA,V8Mode,antienab,cacheud,cbitmode,ccud,cfield,cgram,coladdb,coladdg
-EXTSYM coladdr,curblank,curfps,cvidmode,delay,extlatch,fnamest,En2xSaI
+EXTSYM coladdr,curblank,curfps,cvidmode,delay,extlatch,ZStateName,En2xSaI
 EXTSYM gammalevel,hirestiledat,ignor512,latchx,latchy,maxbr,ForceNewGfxOff
 EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,resolutn
 EXTSYM romispal,scaddtype,scanlines,selcA000,t1cc,vcache4b,vesa2_bpos
@@ -964,7 +964,10 @@ NEWSYM drawvline16b
     ret
 
 %macro determinenewhelp 1
-    mov byte[fnamest+eax],%1
+    push ecx
+    mov ecx,[ZStateName]
+    mov byte[ecx+eax],%1
+    pop ecx
     pushad
     call DetermineNew
     popad
@@ -1180,13 +1183,19 @@ NEWSYM drawbox16b
 
 %macro drawfillboxhelp 2
     mov bl,%1
-    mov byte[fnamest+eax],%2
+    push ecx
+    mov ecx,[ZStateName]
+    mov byte[ecx+eax],%2
+    pop ecx
     call drawfillboxsc
 %endmacro
 
 %macro drawfillboxhelp16b 2
     mov bl,%1
-    mov byte[fnamest+eax],%2
+    push ecx
+    mov ecx,[ZStateName]
+    mov byte[ecx+eax],%2
+    pop ecx
     call drawfillboxsc16b
 %endmacro
 
@@ -1239,7 +1248,10 @@ NEWSYM saveselect
     jnz .loop
     ; draw filled boxes for existing files
     mov eax,[statefileloc]
-    mov bl,[fnamest+eax]
+    push edx
+    mov edx,[ZStateName]
+    mov bl,[edx+eax]
+    pop edx
     push ebx
     call DetermineNewest
     drawfillboxhelp 0,'t'
@@ -1254,7 +1266,10 @@ NEWSYM saveselect
     drawfillboxhelp 9,'9'
     pop ebx
     mov eax,[statefileloc]
-    mov [fnamest+eax],bl
+    push edx
+    mov edx,[ZStateName]
+    mov byte[edx+eax],bl
+    pop edx
 
     mov esi,75+73*288
     add esi,[vidbuffer]
@@ -1330,7 +1345,10 @@ NEWSYM saveselect
     mov byte[curblank],0h
     mov bl,0
     mov ebx,[statefileloc]
-    mov al,[fnamest+ebx]
+    push edx
+    mov edx,[ZStateName]
+    mov al,[edx+ebx]
+    pop edx
     cmp al,'t'
     jne .noT
     mov bl,0
@@ -1396,7 +1414,10 @@ NEWSYM saveselect
     mov al,bl
 .save
     mov ebx,[statefileloc]
-    mov [fnamest+ebx],al
+    push edx
+    mov edx,[ZStateName]
+    mov [edx+ebx],al
+    pop edx
 .esc
 
     mov eax,pressed
@@ -1509,7 +1530,10 @@ SECTION .text
 
     ; draw filled boxes for existing files
     mov eax,[statefileloc]
-    mov bl,[fnamest+eax]
+    push edx
+    mov edx,[ZStateName]
+    mov bl,[edx+eax]
+    pop edx
     push ebx
     call DetermineNewest
     drawfillboxhelp16b 0,'t'
@@ -1524,7 +1548,10 @@ SECTION .text
     drawfillboxhelp16b 9,'9'
     pop ebx
     mov eax,[statefileloc]
-    mov [fnamest+eax],bl
+    push edx
+    mov edx,[ZStateName]
+    mov [edx+eax],bl
+    pop edx
 
     mov esi,75*2+73*288*2
     add esi,[vidbuffer]
@@ -1601,7 +1628,10 @@ SECTION .text
     mov byte[curblank],0h
     mov bl,0
     mov ebx,[statefileloc]
-    mov al,[fnamest+ebx]
+    push edx
+    mov edx,[ZStateName]
+    mov al,[edx+ebx]
+    pop edx
     cmp al,'t'
     jne .noT16b
     mov bl,0
@@ -1627,7 +1657,10 @@ SECTION .text
     mov [CurPictureVal],bl
     pushad
     mov eax,[statefileloc]
-    mov cl,[fnamest+eax]
+    push edx
+    mov edx,[ZStateName]
+    mov cl,[edx+eax]
+    pop edx
     push ecx
     cmp bl,0
     jne .nozero16b2
@@ -1637,11 +1670,17 @@ SECTION .text
     mov cl,bl
     add cl,48
 .save16b2
-    mov [fnamest+eax],cl
+    push edx
+    mov edx,[ZStateName]
+    mov [edx+eax],cl
+    pop edx
     call GetPicture
     pop ecx
     mov eax,[statefileloc]
-    mov [fnamest+eax],cl
+    push edx
+    mov edx,[ZStateName]
+    mov [edx+eax],cl
+    pop edx
     popad
 
     mov dx,0FFFFh
@@ -1704,7 +1743,10 @@ SECTION .text
     mov al,bl
 .save16b
     mov ebx,[statefileloc]
-    mov [fnamest+ebx],al
+    push edx
+    mov edx,[ZStateName]
+    mov byte[edx+ebx],al
+    pop edx
 .esc16b
     mov eax,pressed
     mov ecx,256

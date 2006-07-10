@@ -67,10 +67,10 @@ char ZCfgFile[] = "zsnesl.cfg";
 
 char *ZStartPath = 0, *ZCfgPath = 0, *ZSramPath = 0, *ZRomPath = 0;
 char *ZSnapPath = 0, *ZSpcPath = 0;
-char *ZCartName = 0, *ZSaveName = 0;
+char *ZCartName = 0, *ZSaveName = 0, *ZStateName = 0;
 
 static bool ZStartAlloc = false, ZCfgAlloc = false, ZSramAlloc = false, ZRomAlloc = false;
-static bool ZCartAlloc = false, ZSaveAlloc = false;
+static bool ZCartAlloc = false, ZSaveAlloc = false, ZStateAlloc = false;
 
 
 #ifdef __WIN32__
@@ -334,35 +334,42 @@ bool init_paths(char *launch_command)
           ZSaveAlloc = true;
           *ZSaveName = 0;
 
-          if (getcwd(ZStartPath, PATH_SIZE))
+          ZStateName = malloc(NAME_SIZE);
+          if(ZStateName)
           {
-            strcatslash(ZStartPath);
+            ZStateAlloc = true;
+            *ZStateName = 0;
 
-            cfgpath_ensure(launch_command);
-
-            GUIRestoreVars();
-
-            if (*LoadDir)
+            if (getcwd(ZStartPath, PATH_SIZE))
             {
-              strcpy(ZRomPath, LoadDir);
-            }
-            else
-            {
-              strcpy(ZRomPath, ZStartPath);
-            }
-            strcatslash(ZRomPath);
+              strcatslash(ZStartPath);
 
-            init_save_paths();
+              cfgpath_ensure(launch_command);
+
+              GUIRestoreVars();
+
+              if (*LoadDir)
+              {
+                strcpy(ZRomPath, LoadDir);
+              }
+              else
+              {
+                strcpy(ZRomPath, ZStartPath);
+              }
+              strcatslash(ZRomPath);
+
+              init_save_paths();
 
 #ifdef DEBUG
-            printf("ZStartPath: %s\n", ZStartPath);
-            printf("ZCfgPath: %s\n", ZCfgPath);
-            printf("ZRomPath: %s\n", ZRomPath);
-            printf("ZSramPath: %s\n", ZSramPath);
-            printf("ZSnapPath: %s\n", ZSnapPath);
-            printf("ZSpcPath: %s\n", ZSpcPath);
+              printf("ZStartPath: %s\n", ZStartPath);
+              printf("ZCfgPath: %s\n", ZCfgPath);
+              printf("ZRomPath: %s\n", ZRomPath);
+              printf("ZSramPath: %s\n", ZSramPath);
+              printf("ZSnapPath: %s\n", ZSnapPath);
+              printf("ZSpcPath: %s\n", ZSpcPath);
 #endif
-            return(true);
+              return(true);
+            }
           }
         }
       }

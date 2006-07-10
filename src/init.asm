@@ -51,7 +51,7 @@ EXTSYM tableD,timeron,vidbright,SPC700read,SPC700write,spc700read
 EXTSYM GUIReset,InitC4,SA1Reset,SetAddressingModesSA1,SDD1BankA,SPC7110init
 EXTSYM RTCinit,memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
 EXTSYM memaccessspc7110w16,snesmap2,snesmmap,procexecloop,wramdata,wramdataa
-EXTSYM GetCurDir,fnamest,statefileloc
+EXTSYM GetCurDir,ZStateName,statefileloc
 EXTSYM curromspace,romispal,initregr,initregw,memtabler16
 EXTSYM memtabler8,memtablew16,memtablew8,wramreadptr
 EXTSYM wramwriteptr,loadstate2,CMovieExt,MoviePlay,MovieDumpRaw,AllowUDLR
@@ -198,14 +198,16 @@ NEWSYM init
     jge .2digits
     mov al,[autoloadstate]
     add al,48
-    mov [fnamest+ebx],al
+    mov ecx,[ZStateName]
+    mov [ecx+ebx],al
     jmp .enddigits
 .2digits
     movzx eax,byte[autoloadstate]
     mov dl,10
     div dl
     add ax,3030h
-    mov [fnamest+ebx-1],ax
+    mov ecx,[ZStateName]
+    mov [ecx+ebx-1], al
 .enddigits
 
     ; Load the specified state file
@@ -222,7 +224,8 @@ NEWSYM init
     ; as not to break any other code later on which depends
     ; on it being present.
     mov ebx,[statefileloc]
-    mov word[fnamest+ebx-1],'st'
+    mov ecx,[ZStateName]
+    mov word[ecx+ebx-1], 'st'
 
 .noautoloadstate
 

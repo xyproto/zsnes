@@ -45,7 +45,6 @@ extern unsigned char FPSAtStart;
 extern char *Msgptr, CSStatus[], CSStatus2[], CSStatus3[];
 
 unsigned short selc0040, selcA000, selcB800;
-char fnamest[512];
 
 unsigned char *vidbuffer;	//  video buffer (1024x239 = 244736)
 unsigned char *ngwinptr;
@@ -319,7 +318,7 @@ extern time_t newestfiledate;
 
 void determinenewhelp(char ext)
 {
-    fnamest[statefileloc] = ext;
+    ZStateName[statefileloc] = ext;
     DetermineNew();
 }
 
@@ -327,17 +326,17 @@ void makeextension()
 {
   char *p;
 
-  strcpy(fnamest+1, ZCartName);
-  if ((p = strrchr(fnamest+1, '.')))
+  strcpy(ZStateName, ZCartName);
+  if ((p = strrchr(ZStateName, '.')))
   {
     *p = 0;
   }
 
-  strcat(fnamest+1,".zst");
+  setextension(ZStateName, "zst");
 
-  statefileloc = strlen(fnamest+1);
+  statefileloc = strlen(ZStateName)-1;
 
-  *fnamest = strlen(fnamest+1)+1;
+  //*ZStateName = strlen(ZStateName+1)+1;
 
   firstsaveinc = 1;
 
@@ -359,11 +358,11 @@ void makeextension()
 
     if (!newestfileloc)
     {
-      fnamest[statefileloc] = 't';
+      ZStateName[statefileloc] = 't';
     }
     else
     {
-      fnamest[statefileloc] = newestfileloc+'0';
+      ZStateName[statefileloc] = newestfileloc+'0';
     }
   }
 }

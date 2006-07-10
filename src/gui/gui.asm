@@ -49,7 +49,7 @@ EXTSYM init65816,procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA
 EXTSYM spcX,spcY,spcP,spcNZ,Voice0Status,Voice1Status,Voice2Status,Voice3Status
 EXTSYM Voice4Status,Voice5Status,Voice6Status,Voice7Status,ClearScreen
 EXTSYM statesaver,loadstate2,vidbuffer,ASCII2Font,hirestiledat,showallext
-EXTSYM scanlines,statefileloc,fnamest,sprlefttot,spritetablea,CHIPBATT
+EXTSYM scanlines,statefileloc,ZStateName,sprlefttot,spritetablea,CHIPBATT
 EXTSYM sfxramdata,setaramdata,SETAEnable,cgram,srama,tempco0,prevbright,maxbr
 EXTSYM prevpal,coladdr,coladdg,coladdb,scaddtype,ScreenScale,initvideo,pressed
 EXTSYM UpdateDevices,memtabler8,memtablew8,writeon,JoyRead,SetInputDevice,delay
@@ -2149,24 +2149,30 @@ GUIProcStates:
 
 SaveSecondState:
   mov ebx,[statefileloc]
-  mov al,[fnamest+ebx]
-  mov byte[fnamest+ebx],'s'
+  mov ecx,[ZStateName]
+  mov al,[ecx+eax]
+  mov byte[ecx+ebx],'s'
+
   pushad
   call statesaver
   popad
   mov ebx,[statefileloc]
-  mov [fnamest+ebx],al
+  mov ecx,[ZStateName]
+  mov [ecx+ebx],al
   ret
 
 LoadSecondState:
   mov ebx,[statefileloc]
-  mov al,[fnamest+ebx]
-  mov byte[fnamest+ebx],'s'
+  mov ecx,[ZStateName]
+  mov al,[ecx+ebx]
+  mov byte[ecx+ebx],'s'
+
   pushad
   call loadstate2
   popad
   mov ebx,[statefileloc]
-  mov [fnamest+ebx],al
+  mov ecx,[ZStateName]
+  mov byte[ecx+ebx],al
   ret
 
 GUIProcReset:
