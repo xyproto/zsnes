@@ -832,10 +832,17 @@ static void ZCleanup()
 {
   void DeallocRewindBuffer();
   void deinit_paths();
+#ifdef __UNIXSDL__
+  void UnloadSDL();
+#endif
+
 
 
   DeallocRewindBuffer();
   deinit_paths();
+#ifdef __UNIXSDL__
+  UnloadSDL();
+#endif
 }
 
 #ifdef __WIN32__

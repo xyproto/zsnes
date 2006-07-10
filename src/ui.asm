@@ -28,9 +28,7 @@ EXTSYM vidbufferofsb,headdata,romdata,sfxramdata,setaramdata,wramdata,ram7f,vram
 EXTSYM sram,debugbuf,regptr,regptw,vcache2b,vcache4b,vcache8b
 EXTSYM vidbufferofsc,Sup48mbit,Sup16mbit,init18_2hz
 
-%ifdef __UNIXSDL__
-EXTSYM LinuxExit
-%elifdef __WIN32__
+%ifndef __MSDOS__
 EXTSYM exit
 %endif
 
@@ -352,14 +350,12 @@ section .data
 SECTION .text
 
 NEWSYM DosExit ; Terminate Program
-%ifdef __WIN32__
-	call exit
-%elifdef __UNIXSDL__
-	call LinuxExit
-%elifdef __MSDOS__
+%ifdef __MSDOS__
 	call init18_2hz
 	mov    ax,4c00h            ;terminate
 	int    21h
+%else
+  call exit
 %endif
 
 NEWSYM MMXCheck

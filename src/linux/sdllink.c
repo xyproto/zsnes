@@ -156,7 +156,6 @@ void drawscreenwin(void);
 void initwinvideo();
 unsigned int sdl_keysym_to_pc_scancode(int);
 void ProcessKeyBuf(int);
-void LinuxExit(void);
 void UpdateSound(void *userdata, Uint8 * stream, int len);
 
 extern int GUI36hzcall(void);
@@ -407,7 +406,7 @@ int Main_Proc(void)
         pressed[offset] = 0;
         break;
       case SDL_QUIT:
-        LinuxExit();
+        exit(0);
         break;
 #ifdef __OPENGL__
       case SDL_VIDEORESIZE:
@@ -862,17 +861,6 @@ int startgame(void)
 	return TRUE;
 }
 
-void LinuxExit(void)
-{
-	if (sdl_state != vid_null)
-	{
-		SDL_WM_GrabInput(SDL_GRAB_OFF);	// probably redundant
-		sem_sleep_die(); // Shutdown semaphore
-		SDL_Quit();
-	}
-	exit(0);
-}
-
 void Start60HZ(void)
 {
 	update_ticks_pc2 = UPDATE_TICKS_UDP;
@@ -1071,7 +1059,7 @@ void initwinvideo(void)
 	{
 		/* Exit zsnes if SDL could not be initialized */
 		if (sdl_state == vid_null)
-			LinuxExit ();
+			exit(0);
 		else
 			return;
 	}
@@ -1287,6 +1275,19 @@ void drawscreenwin(void)
 	else
 #endif
 		sw_drawwin();
+}
+
+void UnloadSDL()
+{
+  sem_sleep_die(); // Shutdown semaphore
+  if (Buffer) { free(Buffer); }
+  if (sdl_state != vid_null)
+  {
+    SDL_WM_GrabInput(SDL_GRAB_OFF); // probably redundant
+    SDL_FreeSurface(surface);
+  }
+  SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+  SDL_Quit();
 }
 
 int GetMouseX(void)
