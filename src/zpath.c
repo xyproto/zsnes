@@ -306,6 +306,7 @@ void deinit_paths()
 
   if (ZCartAlloc && ZCartName) { free(ZCartName); }
   if (ZSaveAlloc && ZSaveName) { free(ZSaveName); }
+  if (ZStateAlloc && ZStateName) { free(ZStateName); }
 }
 
 bool init_paths(char *launch_command)
@@ -433,12 +434,16 @@ bool init_rom_path(char *path)
       strcpy(ZCartName, ZRomPath);
       strcpy(ZSaveName, ZCartName);
     }
+    strcpy(ZStateName, ZSaveName);
+    setextension(ZStateName, "zst");
+
     strdirname(ZRomPath);
     strcatslash(ZRomPath);
 
 #ifdef DEBUG
     printf("ZRomPath: %s\n", ZRomPath);
     printf("ZCartName: %s\n", ZCartName);
+    printf("ZStateName: %s\n", ZStateName);
 #endif
 
     return(true);

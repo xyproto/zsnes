@@ -1107,12 +1107,12 @@ bool input2mouse;
 bool input2scope;
 bool input2just;
 void findZipIPS(char *);
-void makeextension();
+void zst_init();
 void loadROM()
 {
   bool isCompressed = false, isZip = false;
 
-  makeextension();
+  zst_init();
 
   EMUPause = false;
   curromspace = 0;

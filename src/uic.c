@@ -322,22 +322,9 @@ void determinenewhelp(char ext)
     DetermineNew();
 }
 
-void makeextension()
+void zst_init()
 {
-  char *p;
-
-  strcpy(ZStateName, ZCartName);
-  if ((p = strrchr(ZStateName, '.')))
-  {
-    *p = 0;
-  }
-
-  setextension(ZStateName, "zst");
-
   statefileloc = strlen(ZStateName)-1;
-
-  //*ZStateName = strlen(ZStateName+1)+1;
-
   firstsaveinc = 1;
 
   if(LatestSave)
