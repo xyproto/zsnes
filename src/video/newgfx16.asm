@@ -584,6 +584,7 @@ NEWSYM newengine16b
 .noscaddset
 
     mov bl,[bg3highst]
+    or bl,01h
     mov [BG3PRI+eax],bl
     cmp [BG3PRI+eax-1],bl
     je .nosbg3pr
