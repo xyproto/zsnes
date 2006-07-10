@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM cursprloc,curypos,scrndis,scrnon,winon,winonsp,drawmode716extbg
-EXTSYM drawmode716extbg2,SA1Enable,alreadydrawn,bg1cachloc,bg1tdabloc,bg1tdatloc
+EXTSYM drawmode716extbg2,alreadydrawn,bg1cachloc,bg1tdabloc,bg1tdatloc
 EXTSYM bg1vbufloc,bg1xposloc,bg1yaddval,bgcoloradder,bgmode,bgtilesz,curbgnum
 EXTSYM drawn,makewindow,winbg1en,winenabs,mosaicon,winenabm,vidbuffer,bg3high2
 EXTSYM colormodedef,colormodeofs,curbgpr,curblank,currentobjptr,curvidoffset
@@ -324,8 +324,6 @@ NEWSYM drawline16b
     mov [colormodeofs],ebx
     pop ebx
 
-    cmp byte[SA1Enable],0
-    je .noscrnona
     cmp word[scrnon],1317h
     jne .noscrnona
     cmp byte[scaddtype],0
