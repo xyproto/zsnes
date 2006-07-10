@@ -112,17 +112,6 @@ unsigned char MMXextSupport = 0;
 void outofmemory(), init(), WaitForKey(), MMXCheck(), allocmem(), InitSPC();
 void SystemInit(), StartUp(), MultiMouseInit();
 
-void *doMemAlloc(size_t size)
-{
-  void *ptr = NULL;
-  ptr = malloc(size);
-  if (!ptr)
-  {
-    asm_call(outofmemory);
-  }
-  return(ptr);
-}
-
 void *alloc_ptr;
 unsigned int alloc_size;
 

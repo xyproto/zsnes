@@ -240,19 +240,28 @@ Pause frame modes
 3 - pause frame ready for reload
 */
 
-void *doMemAlloc(size_t);
-
 void BackupPauseFrame()
 {
-  copy_state_data(SpecialPauseBackup, memcpyinc, csm_save_rewind);
-  PauseFrameMode = 2;
+  if (SpecialPauseBackup)
+  {
+    copy_state_data(SpecialPauseBackup, memcpyinc, csm_save_rewind);
+    PauseFrameMode = 2;
+  }
 }
 
 void RestorePauseFrame()
 {
-  copy_state_data(SpecialPauseBackup, memcpyrinc, csm_load_rewind);
-  //ClearCacheCheck();
-  PauseFrameMode = 0;
+  if (SpecialPauseBackup)
+  {
+    copy_state_data(SpecialPauseBackup, memcpyrinc, csm_load_rewind);
+    //ClearCacheCheck();
+    PauseFrameMode = 0;
+  }
+}
+
+void DeallocPauseFrame()
+{
+  if (SpecialPauseBackup) { free(SpecialPauseBackup); }
 }
 
 #define ActualRewindFrames (unsigned int)(RewindFrames * (romispal ? 10 : 12))
@@ -331,8 +340,8 @@ void RestoreCVFrame()
 void SetupRewindBuffer()
 {
   //For special rewind case to help out pauses
-  if (SpecialPauseBackup){ free(SpecialPauseBackup); }
-  SpecialPauseBackup = doMemAlloc(rewind_state_size);
+  DeallocPauseFrame();
+  SpecialPauseBackup = malloc(rewind_state_size);
 
   //For standard rewinds
   if (StateBackup) { free(StateBackup); }
@@ -385,22 +394,33 @@ void BackupSystemVars()
     copy_snes_data(&buffer, state_size_tally);
     copy_spc_data(&buffer, state_size_tally);
     copy_extra_data(&buffer, state_size_tally);
-    BackupSystemBuffer = doMemAlloc(state_size);
+    BackupSystemBuffer = (unsigned char *)malloc(state_size);
   }
 
-  buffer = BackupSystemBuffer;
-  copy_snes_data(&buffer, memcpyinc);
-  copy_spc_data(&buffer, memcpyinc);
-  copy_extra_data(&buffer, memcpyinc);
+  if (BackupSystemBuffer)
+  {
+    buffer = BackupSystemBuffer;
+    copy_snes_data(&buffer, memcpyinc);
+    copy_spc_data(&buffer, memcpyinc);
+    copy_extra_data(&buffer, memcpyinc);
+  }
 }
 
 void RestoreSystemVars()
 {
-  unsigned char *buffer = BackupSystemBuffer;
-  InitRewindVars();
-  copy_snes_data(&buffer, memcpyrinc);
-  copy_spc_data(&buffer, memcpyrinc);
-  copy_extra_data(&buffer, memcpyrinc);
+  if (BackupSystemBuffer)
+  {
+    unsigned char *buffer = BackupSystemBuffer;
+    InitRewindVars();
+    copy_snes_data(&buffer, memcpyrinc);
+    copy_spc_data(&buffer, memcpyrinc);
+    copy_extra_data(&buffer, memcpyrinc);
+  }
+}
+
+void DeallocSystemVars()
+{
+  if (BackupSystemBuffer) { free(BackupSystemBuffer); }
 }
 
 extern unsigned int spcBuffera;
