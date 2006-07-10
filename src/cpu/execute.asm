@@ -1451,7 +1451,7 @@ NEWSYM cpuover
 
 
 .overy
-    mov dh,40
+    mov dh,42
     cmp byte[smallscreenon],1
     je .nocfield
     cmp byte[ScreenScale],1
@@ -1888,7 +1888,7 @@ NEWSYM StartSFXdebugb
     test al,08h
     jz .noaccess
 .noram
-    mov dword[NumberOfOpcodes],400 ;678
+    mov dword[NumberOfOpcodes],420 ;678
     test byte[SfxCLSR],01h
     jz .nohighsfx
     mov dword[NumberOfOpcodes],800 ;678*2
@@ -1923,7 +1923,7 @@ NEWSYM StartSFXret
     test al,08h
     jz .noaccess
 .noram
-    mov dword[NumberOfOpcodes],400 ;678
+    mov dword[NumberOfOpcodes],420 ;678
     test byte[SfxCLSR],01h
     jz .nohighsfx
     mov dword[NumberOfOpcodes],800 ;678*2
@@ -2131,7 +2131,7 @@ NEWSYM execsingle
     jmp dword near [edi+ebx*4]
 
 .overy
-    mov dh,40
+    mov dh,42
     mov word[curypos],0
     xor byte[ppustatus],80h
     mov byte[NMIEnab],01h
