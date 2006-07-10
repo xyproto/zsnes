@@ -591,15 +591,6 @@ NEWSYM newengine16b
     mov byte[bgallchange+eax],1
 .nosbg3pr
 
-    ; Main/Sub Screen
-    cmp word[scrnon],1317h
-    jne .noscrnona
-    cmp byte[scaddtype],0
-    jne .noscrnona
-    mov word[scrnon],1317h
-    mov byte[scaddtype],44h
-    mov byte[scaddset],02h
-.noscrnona
     mov ebx,[scrnon]
     ; clear
     push ecx
