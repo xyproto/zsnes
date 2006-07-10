@@ -1451,7 +1451,7 @@ NEWSYM cpuover
 
 
 .overy
-    sub dh,80h
+    mov dh,45
     cmp byte[smallscreenon],1
     je .nocfield
     cmp byte[ScreenScale],1
