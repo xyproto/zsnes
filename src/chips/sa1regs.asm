@@ -42,7 +42,7 @@
 %include "macros.mac"
 
 EXTSYM regptr,regptw,romdata,SA1Status,SDD1BankA,curromsize
-EXTSYM Get_Time,Get_TimeDate,spc7110romptr,SPC7110Entries,SPC7110IndexSize
+EXTSYM Get_Time,Get_TimeDate,SPC7110Entries,SPC7110IndexSize
 EXTSYM irqv2,irqv,nmiv2,nmiv,snesmmap
 EXTSYM snesmap2,curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr
 EXTSYM NumofBanks,BWUsed2,SPC7_Data_Load,SPC7110filep
@@ -713,7 +713,8 @@ SPC4806w:
     mov ecx,[SPC7110Entries]
     mov ebx,[SPCCompPtr]
     and ebx,0FFFFFFh
-    mov eax,[spc7110romptr]
+    mov eax,[romdata]
+    add eax,580000h
     or ecx,ecx
     jz .noentries
 .loopc
