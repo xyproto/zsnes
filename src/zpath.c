@@ -289,7 +289,7 @@ void cfgpath_ensure(const char *launch_command)
 
 #endif
 
-static void deinit_paths()
+void deinit_paths()
 {
   //Save data that depends on paths before deinit of them
   void SaveSramData();
@@ -362,14 +362,11 @@ bool init_paths(char *launch_command)
             printf("ZSnapPath: %s\n", ZSnapPath);
             printf("ZSpcPath: %s\n", ZSpcPath);
 #endif
-
-            atexit(deinit_paths);
             return(true);
           }
         }
       }
     }
-    atexit(deinit_paths);
   }
   return(false);
 }

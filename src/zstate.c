@@ -335,7 +335,7 @@ void SetupRewindBuffer()
   SpecialPauseBackup = doMemAlloc(rewind_state_size);
 
   //For standard rewinds
-  if (StateBackup){ free(StateBackup); }
+  if (StateBackup) { free(StateBackup); }
   for (; RewindStates; RewindStates--)
   {
     StateBackup = 0;
@@ -343,6 +343,11 @@ void SetupRewindBuffer()
     if (StateBackup) { break; }
   }
   AllocatedRewindStates = RewindStates;
+}
+
+void DeallocRewindBuffer()
+{
+  if (StateBackup) { free(StateBackup); }
 }
 
 static size_t state_size;

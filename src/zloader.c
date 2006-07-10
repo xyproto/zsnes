@@ -828,23 +828,28 @@ static void handle_params(int argc, char *argv[])
   }
 }
 
-int argc;
-char **argv;
+static void ZCleanup()
+{
+  void DeallocRewindBuffer();
+  void deinit_paths();
+
+
+  DeallocRewindBuffer();
+  deinit_paths();
+}
 
 #ifdef __WIN32__
 extern HINSTANCE hInst;
 int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
-  argc = __argc;
-  argv = __argv;
-
   hInst=hInstance;
   ImportDirectX();
 
-  if (init_paths(*argv))
+  if (init_paths(*__argv))
   {
-    handle_params(argc, argv);
+    handle_params(__argc, __argv);
 
+    atexit(ZCleanup);
     zstart();
   }
   return(0);
@@ -854,13 +859,11 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
 
 int main(int zargc, char *zargv[])
 {
-  argc = zargc;
-  argv = zargv;
-
   if (init_paths(*zargv))
   {
     handle_params(zargc, zargv);
 
+    atexit(ZCleanup);
     zstart();
   }
   return(0);
