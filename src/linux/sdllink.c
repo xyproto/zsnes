@@ -31,6 +31,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "safelib.h"
 #include "../asm_call.h"
 
+//C++ style code in C
+#define bool unsigned char
+#define true 1
+#define false 0
+
 
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
@@ -822,43 +827,49 @@ BOOL InitInput()
 	return TRUE;
 }
 
-int startgame(void)
+int startgame()
 {
-	int status;
+  static bool ranonce = false;
+  int status;
 
-	if (sdl_state != vid_null)
-	{
-		if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER |
-	        SDL_INIT_VIDEO) < 0)
-		{
-			fprintf(stderr, "Could not initialize SDL: %s", SDL_GetError());
-			return FALSE;
-		}
-		sdl_state = vid_none;
-	}
+  if (!ranonce)
+  {
+    ranonce = true;
 
-        // Start semaphore code so ZSNES multitasks nicely :)
-	sem_sleep_rdy();
+    // Start semaphore code so ZSNES multitasks nicely :)
+    sem_sleep_rdy();
+  }
 
-	if (sdl_state == vid_soft) sw_end();
+  if (sdl_state != vid_null)
+  {
+    if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_VIDEO) < 0)
+    {
+      fprintf(stderr, "Could not initialize SDL: %s", SDL_GetError());
+      return FALSE;
+    }
+    sdl_state = vid_none;
+  }
+
+  if (sdl_state == vid_soft) { sw_end(); }
 #ifdef __OPENGL__
-	else if (sdl_state == vid_gl) gl_end();
+  else if (sdl_state == vid_gl) { gl_end(); }
 
-	SDL_Init(SDL_INIT_VIDEO);
+  SDL_Init(SDL_INIT_VIDEO);
 
-	if (UseOpenGL)
-	{
-		status = gl_start(WindowWidth, WindowHeight, BitDepth, FullScreen);
-	}
-	else
+  if (UseOpenGL)
+  {
+    status = gl_start(WindowWidth, WindowHeight, BitDepth, FullScreen);
+  }
+  else
 #endif
-	{
-		status = sw_start(WindowWidth, WindowHeight, BitDepth, FullScreen);
-	}
+  {
+    status = sw_start(WindowWidth, WindowHeight, BitDepth, FullScreen);
+  }
 
-	if (!status) return FALSE;
-	sdl_state = (UseOpenGL ? vid_gl : vid_soft);
-	return TRUE;
+  if (!status) return FALSE;
+  sdl_state = (UseOpenGL ? vid_gl : vid_soft);
+
+  return TRUE;
 }
 
 void Start60HZ(void)
@@ -1277,12 +1288,14 @@ void drawscreenwin(void)
 		sw_drawwin();
 }
 
-void gl_end();
 void UnloadSDL()
 {
   sem_sleep_die(); // Shutdown semaphore
   if (Buffer) { free(Buffer); }
-  gl_end();
+  if (sdl_state == vid_soft) { sw_end(); }
+#ifdef __OPENGL__
+  else if (sdl_state == vid_gl) { gl_end(); }
+#endif
   if (sdl_state != vid_null)
   {
     SDL_WM_GrabInput(SDL_GRAB_OFF); // probably redundant

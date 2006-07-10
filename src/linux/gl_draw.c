@@ -84,7 +84,10 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
   SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1);
 #endif
 
-	glvidbuffer = (unsigned short *) malloc(512 * 512 * sizeof(short));
+  if (!glvidbuffer)
+  {
+    glvidbuffer = (unsigned short *) malloc(512 * 512 * sizeof(short));
+  }
 	gl_clearwin();
 	SDL_WarpMouse(SurfaceX / 4, SurfaceY / 4);
 
@@ -127,6 +130,7 @@ void gl_end()
   {
     glDeleteTextures(4, gltextures);
     free(glvidbuffer);
+    glvidbuffer = 0;
   }
 }
 
@@ -140,9 +144,8 @@ extern unsigned char SpecialLine[224];	/* 0 if lo-res, > 0 if hi-res */
 
 void gl_clearwin()
 {
-	glClear(GL_COLOR_BUFFER_BIT);
-	if (En2xSaI)
-		memset(glvidbuffer, 0, 512 * 448 * 2);
+  glClear(GL_COLOR_BUFFER_BIT);
+  memset(glvidbuffer, 0, 512 * 448 * 2);
 }
 
 /* gl_drawspan:
