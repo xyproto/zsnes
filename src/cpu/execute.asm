@@ -210,7 +210,7 @@ VoiceStartMute:
     jnz %%noirq
 %%tryhirq
     jmp %%startirq
-%%irqd
+%%noirq
 %endmacro
 
 
