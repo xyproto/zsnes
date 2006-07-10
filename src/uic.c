@@ -341,27 +341,30 @@ void makeextension()
 
   firstsaveinc = 1;
 
-  newestfiledate = 0;
-  newestfileloc = 0;
-
-  determinenewhelp('t');
-  determinenewhelp('1');
-  determinenewhelp('2');
-  determinenewhelp('3');
-  determinenewhelp('4');
-  determinenewhelp('5');
-  determinenewhelp('6');
-  determinenewhelp('7');
-  determinenewhelp('8');
-  determinenewhelp('9');
-
-  if (!newestfileloc)
+  if(LatestSave)
   {
-    fnamest[statefileloc] = 't';
-  }
-  else
-  {
-    fnamest[statefileloc] = newestfileloc+'0';
+    newestfiledate = 0;
+    newestfileloc = 0;
+
+    determinenewhelp('t');
+    determinenewhelp('1');
+    determinenewhelp('2');
+    determinenewhelp('3');
+    determinenewhelp('4');
+    determinenewhelp('5');
+    determinenewhelp('6');
+    determinenewhelp('7');
+    determinenewhelp('8');
+    determinenewhelp('9');
+
+    if (!newestfileloc)
+    {
+      fnamest[statefileloc] = 't';
+    }
+    else
+    {
+      fnamest[statefileloc] = newestfileloc+'0';
+    }
   }
 }
 
