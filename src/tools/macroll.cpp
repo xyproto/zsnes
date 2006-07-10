@@ -209,17 +209,20 @@ void build_macro(const char *filename, struct stat& stat_buffer)
 
 int main(size_t argc, char **argv)
 {
-  parse_dir(".", build_macro);
-
-  string line;
-  argv++;
-  while (*argv)
+  if (argc > 1)
   {
-    line += *argv++;
-    line += " ";
+    parse_dir(".", build_macro);
+
+    string line;
+    argv++;
+    while (*argv)
+    {
+      line += *argv++;
+      line += " ";
+    }
+    cout << line << "\n";
+    parse_line(line);
+    cout << endl;
   }
-  cout << line << "\n";
-  parse_line(line);
-  cout << endl;
   return(0);
 }
