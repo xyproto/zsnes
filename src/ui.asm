@@ -47,7 +47,6 @@ NEWSYM outofmemory
 
 SECTION .data
 NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,10,0
-NEWSYM YesMMX, db 'MMX support found and enabled.',13,10,13,10,0
 
 ;*******************************************************
 ; Variable section
@@ -82,18 +81,9 @@ NEWSYM dspWptr,  resd 256
 NEWSYM dspRptr,  resd 256
 
 ; makevid.asm
-
-; makevid.asm
 NEWSYM vcache2ba,   resb 262144+256
 NEWSYM vcache4ba,   resb 131072+256
 NEWSYM vcache8ba,   resb 65536+256
-
-ZSNESBase         resd 1
-BlockSize         resd 1  ; Set before calling
-LinearAddress     resd 1  ; Returned by function
-BlockHandle       resd 1  ; Returned by function
-ZSNESAddress      resd 1  ; Returned by function
-
 
 ;ALIGN32
 vbufaptr resd 1
