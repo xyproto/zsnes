@@ -399,6 +399,5 @@ NEWSYM MMXCheck
     test edx,1 << 22
     jz .nommx
     mov byte[MMXextSupport],1
-.noprintstr
 .nommx
     ret
