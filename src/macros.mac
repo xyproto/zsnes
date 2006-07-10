@@ -17,8 +17,12 @@
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 
-
+%ifdef __AMD64__
+bits 64
+%else
 bits 32
+%endif
+
 section .text
 ; Zsnes required macros
 
