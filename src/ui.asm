@@ -20,33 +20,15 @@
 
 %include "macros.mac"
 
-EXTSYM PrintStr,PrintChar,ram7fa,wramdataa,MMXSupport
-EXTSYM MMXextSupport,alloc_ptr,alloc_size,alloc_help
-EXTSYM BitConv32Ptr,spcBuffera,spritetablea,vcache2bs,vcache4bs,vcache8bs
-EXTSYM RGBtoYUVPtr,newgfx16b,vidbuffer,vidbufferofsa,vidbufferofsmos,ngwinptr
-EXTSYM vidbufferofsb,headdata,romdata,sfxramdata,setaramdata,wramdata,ram7f,vram
-EXTSYM sram,debugbuf,regptr,regptw,vcache2b,vcache4b,vcache8b
-EXTSYM vidbufferofsc,Sup48mbit,Sup16mbit,init18_2hz
+EXTSYM MMXSupport,MMXextSupport,init18_2hz,PrintChar
 
 %ifndef __MSDOS__
 EXTSYM exit
 %endif
 
-; Function 0501h
-; User Interface
-
-; Search for CMDLINE= for commandline entry
-
 SECTION .text
 
 ALIGN32
-NEWSYM outofmemory
-	mov edx,outofmem
-	call PrintStr
-	jmp DosExit
-
-SECTION .data
-NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,10,0
 
 ;*******************************************************
 ; Variable section
@@ -55,15 +37,6 @@ NEWSYM outofmem, db 'You don',39,'t have enough memory to run this program!',13,
 SECTION .bss
 
 ;ALIGN32
-
-NEWSYM vrama,       resb 65536
-NEWSYM mode7tab,    resb 65536
-NEWSYM srama,       resb 65536*2
-NEWSYM debugbufa,   resb 10000
-NEWSYM wramreadptr, resd 1
-NEWSYM regptra,     resb 49152
-NEWSYM wramwriteptr, resd 1
-NEWSYM regptwa,     resb 49152
 
 ; vcache.asm
 
@@ -80,171 +53,7 @@ NEWSYM VolumeConvTable, resw 32768
 NEWSYM dspWptr,  resd 256
 NEWSYM dspRptr,  resd 256
 
-; makevid.asm
-NEWSYM vcache2ba,   resb 262144+256
-NEWSYM vcache4ba,   resb 131072+256
-NEWSYM vcache8ba,   resb 65536+256
-
-;ALIGN32
-vbufaptr resd 1
-vbufeptr resd 1
-ngwinptrb resd 1
-romaptr  resd 1
-vbufcptr resd 1
-NEWSYM vbufdptr, resd 1
-vc2bptr  resd 1
-vc4bptr  resd 1
-vc8bptr  resd 1
-cmemallocptr resd 1
-memfreearray resd 12
-
 SECTION .text
-
-%macro AllocmemFail 3
-    mov eax,%1
-    add eax,1000h
-    mov [alloc_size],eax
-    pushad
-    call alloc_help
-    popad
-    mov eax,[alloc_ptr]
-    cmp eax,0
-    je near %3
-    mov ebx,[cmemallocptr]
-    add dword[cmemallocptr],4
-    mov [ebx],eax
-    and eax,0FFFFFFE0h
-    add eax,40h
-    mov [%2],eax
-%endmacro
-
-%macro AllocmemOkay 3
-    mov eax,%1
-    add eax,1000h
-    mov [alloc_size],eax
-    pushad
-    call alloc_help
-    popad
-    mov eax,[alloc_ptr]
-    push eax
-    and eax,0FFFFFFE0h
-    add eax,40h
-    mov [%2],eax
-    pop eax
-    cmp eax,0
-    je %%nomalloc
-    mov ebx,[cmemallocptr]
-    add dword[cmemallocptr],4
-    mov [ebx],eax
-%%nomalloc
-    cmp eax,0
-    jne near %3
-%endmacro
-
-NEWSYM allocptr
-    mov dword[cmemallocptr],memfreearray
-
-
-%ifndef __MSDOS__
-    AllocmemFail 4096+65536*16,BitConv32Ptr,outofmemory
-%endif
-
-    ; Memory Allocation
-    AllocmemFail 65536*4+4096,spcBuffera,outofmemory
-    AllocmemFail 256*512+4096,spritetablea,outofmemory
-    AllocmemFail 512*296*4+4096+512*296,vbufaptr,outofmemory
-    AllocmemFail 288*2*256+4096,vbufeptr,outofmemory
-    AllocmemFail 256*224+4096,ngwinptrb,outofmemory
-    AllocmemFail 1024*296,vbufdptr,outofmemory
-    AllocmemFail 65536*4*4+4096,vcache2bs,outofmemory
-    AllocmemFail 65536*4*2+4096,vcache4bs,outofmemory
-    AllocmemFail 65536*4+4096,vcache8bs,outofmemory
-    AllocmemFail 65536*4+4096,RGBtoYUVPtr,outofmemory
-    mov byte[newgfx16b],1
-    AllocmemOkay 4096*1024+32768*2+2048*1024+4096,romaptr,.memoryokay
-    mov byte[Sup48mbit],0
-    AllocmemOkay 4096*1024+32768*2+4096,romaptr,.donememalloc
-    mov byte[Sup16mbit],1
-    AllocmemOkay 2048*1024+32768*2+4096,romaptr,.donememalloc
-    jmp outofmemory
-.memoryokay
-.donememalloc
-
-    ; Set up memory values
-    mov eax,[vbufaptr]
-    and eax,0FFFFFFF8h
-    add eax,8
-    mov [vidbuffer],eax
-    mov [vidbufferofsa],eax
-    add eax,75036
-    mov [vidbufferofsmos],eax
-
-    mov eax,[ngwinptrb]
-    and eax,0FFFFFFF8h
-    add eax,2048
-    mov [ngwinptr],eax
-
-    mov eax,[vbufeptr]
-    and eax,0FFFFFFF8h
-    add eax,8
-    mov [vidbufferofsb],eax
-
-    mov eax,[vbufdptr]
-    and eax,0FFFFFFF8h
-    add eax,8
-    mov [vidbufferofsc],eax
-
-    mov eax,[romaptr]
-    and eax,0FFFFFFF8h
-    add eax,8
-    mov [headdata],eax
-    mov [romdata],eax
-    add eax,4194304
-    mov [sfxramdata],eax
-    mov dword[setaramdata],eax	; share ram data with sfx
-    mov esi,[romdata]
-    cmp byte[Sup48mbit],0
-    je .no48mbit
-    add esi,4096*1024+2048*1024
-    jmp .done
-.no48mbit
-    cmp byte[Sup16mbit],0
-    je .no16mbit
-    add esi,2048*1024
-    jmp .done
-.no16mbit
-    add esi,4096*1024
-.done
-    mov byte[esi],58h
-    mov byte[esi+1],80h
-    mov byte[esi+2],0FEh
-
-    mov dword[wramdata],wramdataa
-    mov dword[ram7f],ram7fa
-    mov dword[vram],vrama
-    mov dword[sram],srama
-    mov dword[debugbuf],debugbufa
-    mov dword[regptr],regptra
-    sub dword[regptr],8000h   ; Since register address starts @ 2000h
-    mov dword[regptw],regptwa
-    sub dword[regptw],8000h   ; Since register address starts @ 2000h
-
-    ; 2-bit = 256k
-    mov eax,vcache2ba
-    and eax,0FFFFFFF8h
-    add eax,8
-    mov [vcache2b],eax
-    ; 4-bit = 128k
-    mov eax,vcache4ba
-    and eax,0FFFFFFF8h
-    add eax,8
-    mov [vcache4b],eax
-    ; 8 bit = 64k
-    mov eax,vcache8ba
-    and eax,0FFFFFFF8h
-    add eax,8
-    mov [vcache8b],eax
-    ret
 
 ;*******************************************************
 ; Print Numbers                Prints # in EAX to screen

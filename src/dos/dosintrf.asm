@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,
-EXTSYM GetTime,GetDate,V8Mode,getblaster,Force8b,SBHDMA,allocptr
+EXTSYM GetTime,GetDate,V8Mode,getblaster,Force8b,SBHDMA
 EXTSYM ZFileCHDir,CHPath,ZFileGetDir,DirName,pressed,DTALoc,DTALocPos
 EXTSYM ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
@@ -88,11 +88,6 @@ NEWSYM SystemInit
     mov byte[SBHDMA],0
 .noforce8b
     pop es
-    ret
-
-; Allocate memory - see allocptr in ui.asm for details on what to allocate
-NEWSYM allocmem
-    call allocptr
     ret
 
 ; Find Selector - DOS only

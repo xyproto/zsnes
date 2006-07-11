@@ -37,7 +37,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define true 1
 #define false 0
 
-extern unsigned char *vbufaptr, *vbufeptr, *ngwinptrb, *vbufdptr, *romaptr;
 extern unsigned int per2exec, xa, MessageOn;
 extern unsigned char cvidmode, frameskip, scanlines, vsyncon, guioff, antienab;
 extern unsigned char Force8b, MusicRelVol, soundon, SPCDisable, spcon, FPSOn;
@@ -64,8 +63,10 @@ unsigned char *sram;		// sram = 32768
 unsigned char *spritetablea;
 unsigned char *spcBuffera;
 unsigned char *debugbuf;	// debug buffer = 38x1000 = 38000
-void (**regptr)();		// pointer to registers
-void (**regptw)();		// pointer to registers
+unsigned char regptra[49152];
+unsigned char regptwa[49152];
+unsigned char *regptr = regptra;
+unsigned char *regptw = regptwa;
 unsigned char *vcache2b;	// 2-bit video cache
 unsigned char *vcache4b;	// 4-bit video cache
 unsigned char *vcache8b;	// 8-bit video cache
@@ -109,7 +110,7 @@ unsigned char DSPDisable    = 0;	// Disable DSP emulation
 unsigned char MusicVol      = 0;
 unsigned char MMXextSupport = 0;
 
-void outofmemory(), init(), WaitForKey(), MMXCheck(), allocmem(), InitSPC();
+void init(), WaitForKey(), MMXCheck(), InitSPC();
 void SystemInit(), StartUp(), MultiMouseInit();
 
 void *alloc_ptr;
@@ -212,6 +213,104 @@ void setnoise()
   }
 }
 
+static void outofmemory()
+{
+  puts("You don't have enough memory to run this program!");
+  asm_call(DosExit);
+}
+
+extern unsigned char wramdataa[65536], ram7fa[65536];
+
+unsigned char *vbufaptr, *vbufeptr, *ngwinptrb, *vbufdptr, *romaptr;
+
+unsigned char vrama[65536];
+unsigned char srama[65536*2];
+unsigned char debugbufa[80000];
+unsigned char vcache2ba[262144+256];
+unsigned char vcache4ba[131072+256];
+unsigned char vcache8ba[65536+256];
+
+unsigned char mode7tab[65536];
+unsigned char *wramreadptr, wramwriteptr;
+
+#define AllocmemFail(ptr, size) if (!(ptr = malloc(size))) { outofmemory(); }
+
+static void allocmem()
+{
+#ifndef __MSDOS__
+  AllocmemFail(BitConv32Ptr, 4096+65536*16);
+#endif
+  AllocmemFail(spcBuffera,65536*4+4096);
+  AllocmemFail(spritetablea,256*512+4096);
+  AllocmemFail(vbufaptr,512*296*4+4096+512*296);
+  AllocmemFail(vbufeptr,288*2*256+4096);
+  AllocmemFail(ngwinptrb,256*224+4096);
+  AllocmemFail(vbufdptr,1024*296);
+  AllocmemFail(vcache2bs,65536*4*4+4096);
+  AllocmemFail(vcache4bs,65536*4*2+4096);
+  AllocmemFail(vcache8bs,65536*4+4096);
+  AllocmemFail(RGBtoYUVPtr,65536*4+4096);
+
+  newgfx16b = 1;
+  if (!(romaptr = malloc(0x600000+32768*2+4096)))
+  {
+    Sup48mbit = 0;
+    if (!(romaptr = malloc(0x400000+32768*2+4096)))
+    {
+      Sup16mbit = 1;
+      if (!(romaptr = malloc(0x200000+32768*2+4096)))
+      {
+        outofmemory();
+      }
+    }
+  }
+
+  // Set up memory values
+  vidbuffer = vbufaptr;
+  vidbufferofsa = vbufaptr;
+  vidbufferofsmos = vidbuffer+75036;
+  ngwinptr = ngwinptrb;
+  vidbufferofsb = vbufeptr;
+  vidbufferofsc = vbufdptr;
+
+  headdata = romaptr;
+  romdata = romaptr;
+  sfxramdata = romaptr+0x400000;
+  setaramdata = romaptr+0x400000;
+
+  if (Sup48mbit)
+  {
+    romdata[0x600000] = 0x58;
+    romdata[0x600001] = 0x80;
+    romdata[0x600001] = 0xFE;
+  }
+  else if (Sup16mbit)
+  {
+    romdata[0x200000] = 0x58;
+    romdata[0x200001] = 0x80;
+    romdata[0x200001] = 0xFE;
+  }
+  else
+  {
+    romdata[0x400000] = 0x58;
+    romdata[0x400001] = 0x80;
+    romdata[0x400001] = 0xFE;
+  }
+
+  wramdata = wramdataa;
+  ram7f = ram7fa;
+  vram = vrama;
+  sram = srama;
+  debugbuf = debugbufa;
+
+  regptr -= 0x8000;
+  regptw -= 0x8000;
+
+  vcache2b = vcache2ba;
+  vcache4b = vcache4ba;
+  vcache8b = vcache8ba;
+}
+
 const unsigned int versionNumber = 0x0000008F; // 1.43
 char *ZVERSION = "Pre 1.43";
 unsigned char txtfailedalignd[] = "Data Alignment Failure : ";
@@ -261,7 +360,7 @@ void zstart()
   asm_call(InitSPC);
 #endif
 
-  asm_call(allocmem);
+  allocmem();
 
   if (!(spcon = !SPCDisable)) { soundon = 0; }
   DSPDisable = !soundon;
@@ -275,7 +374,7 @@ void zstart()
 
   asm_call(MMXCheck);
 
-  ptr = (unsigned int)&outofmemory;
+  ptr = (unsigned int)&init;
   if ((ptr & 3))
   {
     printf("%s%d", txtfailedalignc, (ptr & 0x1F));

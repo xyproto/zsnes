@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM GetTime,GetDate,GUIkeydelay2,_chdrive,ZFileCHDir
-EXTSYM CHPath,ZFileGetDir,DirName,_getdrive,DTALoc,SBHDMA,allocptr
+EXTSYM CHPath,ZFileGetDir,DirName,_getdrive,DTALoc,SBHDMA
 EXTSYM DTALocPos,ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
 EXTSYM soundon,DSPDisable,Start60HZ,pressed,putchar,getch
 EXTSYM vidbufferofsb,vidbuffer,clearwin,Stop60HZ,initwinvideo,vesa2_rpos
@@ -60,11 +60,6 @@ NEWSYM SystemInit
     popad
 %endif
     mov byte[SBHDMA],1
-    ret
-
-; Allocate memory - see allocptr in ui.asm for details on what to allocate
-NEWSYM allocmem
-    call allocptr
     ret
 
 NEWSYM PrintChar

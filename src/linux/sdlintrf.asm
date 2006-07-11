@@ -20,7 +20,7 @@
 
 %include "macros.mac"
 
-EXTSYM getchar,PrevFSMode,sem_sleep,SBHDMA,allocptr,putchar
+EXTSYM getchar,PrevFSMode,sem_sleep,SBHDMA,putchar
 EXTSYM GetTime,GetDate,GUIkeydelay2,ZFileCHDir,CHPath
 EXTSYM ZFileGetDir,DirName,DTALoc,DTALocPos,ZFileFindATTRIB
 EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,Start60HZ
@@ -52,11 +52,6 @@ NEWSYM StartUp
 NEWSYM SystemInit
     ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
     mov byte[SBHDMA],1
-    ret
-
-; Allocate memory - see allocptr in ui.asm for details on what to allocate
-NEWSYM allocmem
-    call allocptr
     ret
 
 NEWSYM PrintChar
