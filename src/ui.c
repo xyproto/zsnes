@@ -312,19 +312,19 @@ static void allocmem()
   {
     romdata[0x600000] = 0x58;
     romdata[0x600001] = 0x80;
-    romdata[0x600001] = 0xFE;
+    romdata[0x600002] = 0xFE;
   }
   else if (Sup16mbit)
   {
     romdata[0x200000] = 0x58;
     romdata[0x200001] = 0x80;
-    romdata[0x200001] = 0xFE;
+    romdata[0x200002] = 0xFE;
   }
   else
   {
     romdata[0x400000] = 0x58;
     romdata[0x400001] = 0x80;
-    romdata[0x400001] = 0xFE;
+    romdata[0x400002] = 0xFE;
   }
 
   wramdata = wramdataa;
