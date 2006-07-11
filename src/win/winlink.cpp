@@ -2245,7 +2245,8 @@ void initwinvideo(void)
    if (FirstVid == 1)
    {
       FirstVid = 0;
-      if (ForceRefreshRate && !KitchenSync) Refresh = SetRefreshRate;
+      if (KitchenSync) Refresh = 120;
+      else if (ForceRefreshRate) Refresh = SetRefreshRate;
       InitDirectDraw();
       clearwin();
       Clear2xSaIBuffer();
