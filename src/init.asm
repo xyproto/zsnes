@@ -207,7 +207,7 @@ NEWSYM init
     div dl
     add ax,3030h
     mov ecx,[ZStateName]
-    mov [ecx+ebx-1], al
+    mov word[ecx+ebx-1],ax
 .enddigits
 
     ; Load the specified state file

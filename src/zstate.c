@@ -630,7 +630,16 @@ if (!num)                                                             \
 {                                                                     \
   num = strchr(message, '-');                                         \
 }                                                                     \
-*num = (ZStateName[statefileloc] == 't') ? '0' : ZStateName[statefileloc];
+if(ZStateName[statefileloc-1] == 's')                                 \
+{                                                                     \
+  *num = (ZStateName[statefileloc] == 't') ? '0' : ZStateName[statefileloc];  \
+}                                                                             \
+else                                                                  \
+{                                                                     \
+  *num = ZStateName[statefileloc-1];                                  \
+  num++;                                                              \
+  *num = ZStateName[statefileloc];                                    \
+}
 
 void statesaver()
 {
@@ -887,9 +896,9 @@ void stateloader (char *statename, unsigned char keycheck, unsigned char xferche
 {
   extern unsigned char PauseLoad;
 
-  static char txtloadmsg[] = "STATE - LOADED.";
-  static char txtconvmsg[] = "STATE - TOO OLD.";
-  static char txtnfndmsg[] = "UNABLE TO LOAD STATE -.";
+  static char txtloadmsg[] = "STATE -  LOADED.";
+  static char txtconvmsg[] = "STATE -  TOO OLD.";
+  static char txtnfndmsg[] = "UNABLE TO LOAD STATE - .";
   static char txtrrldmsg[] = "RR STATE - LOADED.";
 
   static char *txtloadnum = 0;
