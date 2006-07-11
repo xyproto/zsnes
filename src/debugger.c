@@ -94,6 +94,8 @@ void cleardisplay();
 void nextspcopcode();
 void SaveOAMRamLog();
 void debugdump();
+
+void traceops(unsigned count);
 void SPCbreakops(unsigned short addr);
 
 unsigned char *findop();
@@ -359,9 +361,26 @@ void debugloop() {
        goto b;
    }
 
-   /*
    case 'T': // trace
-   */
+   {
+       WINDOW *w;
+       unsigned n, instrs;
+
+       w = openwindow(3,52,11,14, "   Enter # of Instructions to Trace : ");
+       wrefresh(w);
+       
+       echo();
+       wscanw(w, "%d", &instrs);
+       noecho();
+
+       closewindow(w);
+       if (n == 1) {
+	   traceops(instrs);
+	   goto a;
+       }
+
+       goto b;
+   }
 
    case 'D': // debug dump
        debugdump();
@@ -413,6 +432,20 @@ void breakops(unsigned char page, unsigned short offset) {
 
 }
 */
+
+void traceops(unsigned count) {
+    WINDOW *w;
+    
+    w = openwindow(3,52,11,14, "     Tracing.  Press ESC to stop.");
+    wrefresh(w);
+
+    nodelay(w, TRUE);
+    while (count-- && (wgetch(w) != 27)) {
+	asm_call(execnextop);
+    }
+
+    closewindow(w);
+}
 
 void SPCbreakops(unsigned short addr) {
     WINDOW *w;
