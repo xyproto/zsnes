@@ -238,6 +238,13 @@ unsigned char vcache8ba[65536+256];
 unsigned char mode7tab[65536];
 unsigned char *wramreadptr, wramwriteptr;
 
+
+unsigned short fulladdtab[65536];
+unsigned char spcRamcmp[65536];
+unsigned short VolumeConvTable[32768];
+unsigned int dspWptr[256];
+unsigned int dspRptr[256];
+
 #define deallocmemhelp(p) if (p) { free(p); }
 
 void deallocmem()

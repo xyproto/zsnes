@@ -171,7 +171,7 @@ JMAOBJ=${JMADIR}/7zlzma${OE} ${JMADIR}/crc32${OE} ${JMADIR}/iiostrm${OE}\
 	${JMADIR}/inbyte${OE} ${JMADIR}/jma${OE} ${JMADIR}/lzma${OE} ${JMADIR}/lzmadec${OE}\
 	${JMADIR}/winout${OE} ${JMADIR}/zsnesjma${OE}
 
-MAINOBJ=endmem${OE} init${OE} initc${OE} uic${OE} patch${OE}\
+MAINOBJ=endmem${OE} init${OE} initc${OE} patch${OE}\
 	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE}\
 	cfg${OE} md${OE} zpath${OE}
 
@@ -272,8 +272,7 @@ init${OE}: init.asm macros.mac
 initc${OE}: initc.c asm_call.h ${CPUDIR}/memtable.h ${JMADIR}/zsnesjma.h\
 	${ZIPDIR}/zunzip.h
 patch${OE}: patch.c ${ZIPDIR}/zunzip.h
-ui${OE}: ui.asm macros.mac
-uic${OE}: uic.c asm_call.h ${MMLIBDIR}/mm.h
+ui.c${OE}: ui.c asm_call.h ${MMLIBDIR}/mm.h
 vcache${OE}: vcache.asm macros.mac
 version${OE}: version.c
 zloader${OE}: zloader.c cfg${OE} zpath.h

@@ -18,13 +18,41 @@
 
 %include "macros.mac"
 
-EXTSYM ProcessSoundBuffer,DosExit,getenv,PrintStr,printhex,printnum,WaitForKey
+EXTSYM ProcessSoundBuffer,DosExit,getenv,PrintStr,printhex,WaitForKey
 EXTSYM SBHDMA,soundon,csounddisable,DisplayS,SPCRAM,DSPMem
 EXTSYM Surround,StereoSound,SoundQuality,SoundSpeeds,SBToSPCSpeeds2
 EXTSYM SoundSpeedt,DSPBuffer,BufferSize,BufferSizes,BufferSizeB
-EXTSYM BufferSizeW,dssel
+EXTSYM BufferSizeW,dssel,PrintChar
 
 SECTION .text
+
+printnum:
+    ; process through each digit
+    push edx
+    push eax
+    push ebx
+    push cx
+    xor edx,edx           ; clear high byte
+    xor cx,cx             ; clear counter variable
+    mov ebx,10
+.loopa
+    div ebx              ; get quotent and remainder
+    push edx              ; store number to stack
+    inc cl
+    xor edx,edx
+    test eax,0FFFFFFFFh
+    jnz .loopa
+.loopb
+    pop edx              ; get number back from stack
+    add dl,30h          ; adjust to ASCII value
+    call PrintChar
+    dec cl
+    jnz .loopb
+    pop cx
+    pop ebx
+    pop eax
+    pop edx
+    ret
 
 NEWSYM SB_alloc_dma
 

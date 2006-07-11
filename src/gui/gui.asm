@@ -69,7 +69,7 @@ EXTSYM GUITBWVID,Clear2xSaIBuffer,MouseWindow,ExitFromGUI,GUIWFVID,newgfx16b
 EXTSYM NumVideoModes,MusicVol,DSPMem,NumInputDevices,GUIInputNames
 EXTSYM GUIVideoModeNames,GUISLVID,GUIINVID,GUIEAVID,GUIIEVID,GUIFSVID,GUIWSVID
 EXTSYM GUISSVID,GUITBVID,GUIHSVID,GUI2xVID,GUII2VID,GUIM7VID,GUINTVID
-EXTSYM convertnum,converthex,device1,device2,TwelveHourClock
+EXTSYM device1,device2,TwelveHourClock
 EXTSYM outofmemfix,yesoutofmemory,JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY
 EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,GetCoords,GetCoords3,MultiTap
 EXTSYM SFXEnable,RestoreSystemVars,GUIBIFIL,GUIHQ2X,GUIHQ3X,GUIHQ4X,firstsaveinc
@@ -3497,7 +3497,61 @@ GUIconvpal:
   mov [cgram],ax
   ret
 
+convertnum:
+    ; process through each digit
+    push edx
+    push eax
+    push ebx
+    push cx
+    xor edx,edx           ; clear high byte
+    xor cx,cx             ; clear counter variable
+    mov ebx,10
+.loopa
+    div ebx              ; get quotent and remainder
+    push edx              ; store number to stack
+    inc cl
+    xor edx,edx
+    test eax,0FFFFFFFFh
+    jnz .loopa
+.loopb
+    pop edx              ; get number back from stack
+    add dl,30h          ; adjust to ASCII value
+    mov [esi],dl
+    inc esi
+    dec cl
+    jnz .loopb
+    pop cx
+    pop ebx
+    pop eax
+    pop edx
+    mov byte[esi],0
+    ret
+
+; eax = value, ecx = # of bytes
+converthex:
+    mov ebx,ecx
+    mov ecx,4
+    sub ecx,ebx
+    shl ecx,3
+    shl eax,cl
+    mov ecx,ebx
+    xor ebx,ebx
+    add ecx,ecx
+.loopb
+    mov ebx,eax
+    and ebx,0F0000000h
+    shr ebx,28
+    mov dl,[.hexdat+ebx]
+    mov [esi],dl
+    inc esi
+    shl eax,4
+    dec ecx
+    jnz .loopb
+    mov byte[esi],0
+    ret
+
 SECTION .data
+.hexdat db '0123456789ABCDEF'
 GUIMousePtr:
   db 50,47,45,43,40,0 ,0 ,0
   db 53,52,46,42,0 ,0 ,0 ,0

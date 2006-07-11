@@ -20,7 +20,7 @@
 
 %include "macros.mac"
 
-EXTSYM DosExit,UpdateDevices,Makemode7Table,MusicRelVol,MusicVol,makesprprtable
+EXTSYM UpdateDevices,Makemode7Table,MusicRelVol,MusicVol,makesprprtable
 EXTSYM romloadskip,start65816,showinfogui,inittable
 EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer
 EXTSYM inittablec,newgfx16b,DisplayInfo,ssautosw,GUIDelayB,pl12s34
@@ -42,7 +42,7 @@ EXTSYM pl5Xtk,pl5Ytk,pl5Atk,pl5Btk,pl5Ltk,pl5Rtk,pl5ULk,pl5URk,pl5DLk,pl5DRk
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc,extlatch
 EXTSYM FIRTAPVal0,FIRTAPVal1,FIRTAPVal2,FIRTAPVal3,FIRTAPVal4,FIRTAPVal5
 EXTSYM FIRTAPVal6,FIRTAPVal7,INTEnab,JoyAPos,JoyBPos,NMIEnab,SPCROM,VIRQLoc
-EXTSYM coladdb,coladdg,coladdr,doirqnext
+EXTSYM coladdb,coladdg,coladdr,doirqnext,MMXSupport,MMXextSupport
 EXTSYM forceblnk,nmiprevaddrh,nmiprevaddrl,nmiprevline,nmirept,nmistatus
 EXTSYM opexec268,opexec268b,opexec268cph,opexec268cphb,opexec358,opexec358b
 EXTSYM opexec358cph,spcextraram,opexec358cphb,prevoamptr,reg1read,reg2read
@@ -62,6 +62,12 @@ EXTSYM BSEnable,clearvidsound,headerhack,SetupROM,ram7fa
 EXTSYM OpenCombFile,OpenSramFile,ZCartName,PatchUsingIPS
 
 EXTSYM initsnes
+
+%ifdef __MSDOS__
+EXTSYM init18_2hz
+%else
+EXTSYM exit
+%endif
 
 %ifndef NO_DEBUGGER
 EXTSYM startdebugger
@@ -1438,6 +1444,59 @@ SECTION .bss
 NEWSYM GUIloadfailed, resb 1
 
 SECTION .text
+
+NEWSYM DosExit ; Terminate Program
+%ifdef __MSDOS__
+  call init18_2hz
+  mov    ax,4c00h            ;terminate
+  int    21h
+%else
+  call exit
+%endif
+
+NEWSYM MMXCheck
+    ; Check for cpu that doesn't support CPUID
+
+    cmp byte[MMXSupport],0
+    je .nommx
+
+    ; Real way to check for presence of CPUID instruction  -kode54
+    pushfd
+    pop eax
+    mov edx,eax
+    xor eax,1 << 21
+    push eax
+    popfd
+    pushfd
+    pop eax
+    xor eax,edx
+    jz .nommx
+
+    ; MMX support
+    mov byte[MMXSupport],0
+    mov byte[MMXextSupport],0
+    mov eax,1
+    CPUID
+
+    test edx,1 << 23
+    jz .nommx
+    mov byte[MMXSupport],1
+
+    ; Check if CPU has SSE (also support mmxext)
+    test edx,1 << 25
+    jz .tryextmmx
+    mov byte[MMXextSupport],1
+    jmp .nommx
+
+.tryextmmx
+    ; Test extended CPU flag
+    mov eax,80000001h
+    CPUID
+    test edx,1 << 22
+    jz .nommx
+    mov byte[MMXextSupport],1
+.nommx
+    ret
 
 SECTION .data
 NEWSYM CSStatus,  db '                        TYPE:           ',0
