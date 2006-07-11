@@ -2245,7 +2245,8 @@ void initwinvideo(void)
    if (FirstVid == 1)
    {
       FirstVid = 0;
-      if (KitchenSync) Refresh = 120;
+      if (KitchenSync) Refresh = totlines == 263 ? 120 : 100;
+      else if (KitchenSyncPAL && totlines == 314) Refresh = 100;
       else if (ForceRefreshRate) Refresh = SetRefreshRate;
       InitDirectDraw();
       clearwin();
