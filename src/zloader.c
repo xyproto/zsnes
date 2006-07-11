@@ -830,21 +830,21 @@ static void handle_params(int argc, char *argv[])
 
 static void ZCleanup()
 {
+  void deinit_paths();
   void deallocmem();
   void DeallocRewindBuffer();
   void DeallocPauseFrame();
   void DeallocSystemVars();
-  void deinit_paths();
 #ifdef __UNIXSDL__
   void UnloadSDL();
 #endif
 
 
+  deinit_paths();
   deallocmem();
   DeallocRewindBuffer();
   DeallocPauseFrame();
   DeallocSystemVars();
-  deinit_paths();
 #ifdef __UNIXSDL__
   UnloadSDL();
 #endif
