@@ -830,6 +830,7 @@ static void handle_params(int argc, char *argv[])
 
 static void ZCleanup()
 {
+  void deallocmem();
   void DeallocRewindBuffer();
   void DeallocPauseFrame();
   void DeallocSystemVars();
@@ -839,7 +840,7 @@ static void ZCleanup()
 #endif
 
 
-
+  deallocmem();
   DeallocRewindBuffer();
   DeallocPauseFrame();
   DeallocSystemVars();

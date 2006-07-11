@@ -60,8 +60,6 @@ unsigned char *wramdata;	// stack (64K = 32768)
 unsigned char *ram7f;		// ram @ 7f = 65536
 unsigned char *vram;		// vram = 65536
 unsigned char *sram;		// sram = 32768
-unsigned char *spritetablea;
-unsigned char *spcBuffera;
 unsigned char *debugbuf;	// debug buffer = 38x1000 = 38000
 unsigned char regptra[49152];
 unsigned char regptwa[49152];
@@ -70,13 +68,8 @@ unsigned char *regptw = regptwa;
 unsigned char *vcache2b;	// 2-bit video cache
 unsigned char *vcache4b;	// 4-bit video cache
 unsigned char *vcache8b;	// 8-bit video cache
-unsigned char *vcache2bs;	// 2-bit video secondary cache
-unsigned char *vcache4bs;	// 4-bit video secondary cache
-unsigned char *vcache8bs;	// 8-bit video secondary cache
 unsigned char romispal;		// 0 = NTSC, 1 = PAL
 unsigned char newgfx16b;
-unsigned char *BitConv32Ptr;
-unsigned char *RGBtoYUVPtr;
 
 unsigned char previdmode;	// previous video mode
 unsigned char cbitmode;		// bit mode, 0=8bit, 1=16bit
@@ -221,7 +214,19 @@ static void outofmemory()
 
 extern unsigned char wramdataa[65536], ram7fa[65536];
 
-unsigned char *vbufaptr, *vbufeptr, *ngwinptrb, *vbufdptr, *romaptr;
+unsigned char *BitConv32Ptr = 0;
+unsigned char *RGBtoYUVPtr = 0;
+unsigned char *spcBuffera = 0;
+unsigned char *spritetablea = 0;
+unsigned char *vbufaptr = 0;
+unsigned char *vbufeptr = 0;
+unsigned char *ngwinptrb = 0;
+unsigned char *vbufdptr = 0;
+unsigned char *romaptr = 0;
+unsigned char *vcache2bs = 0; // 2-bit video secondary cache
+unsigned char *vcache4bs = 0; // 4-bit video secondary cache
+unsigned char *vcache8bs = 0; // 8-bit video secondary cache
+
 
 unsigned char vrama[65536];
 unsigned char srama[65536*2];
@@ -232,6 +237,24 @@ unsigned char vcache8ba[65536+256];
 
 unsigned char mode7tab[65536];
 unsigned char *wramreadptr, wramwriteptr;
+
+#define deallocmemhelp(p) if (p) { free(p); }
+
+void deallocmem()
+{
+  deallocmemhelp(BitConv32Ptr);
+  deallocmemhelp(RGBtoYUVPtr);
+  deallocmemhelp(spcBuffera);
+  deallocmemhelp(spritetablea);
+  deallocmemhelp(vbufaptr);
+  deallocmemhelp(vbufeptr);
+  deallocmemhelp(ngwinptrb);
+  deallocmemhelp(vbufdptr);
+  deallocmemhelp(romaptr);
+  deallocmemhelp(vcache2bs);
+  deallocmemhelp(vcache4bs);
+  deallocmemhelp(vcache8bs);
+}
 
 #define AllocmemFail(ptr, size) if (!(ptr = malloc(size))) { outofmemory(); }
 
