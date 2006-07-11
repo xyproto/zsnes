@@ -309,7 +309,7 @@ void debugloop() {
    {
        WINDOW *w;
        unsigned addr, n;
-       
+
        w = openwindow(3, 33, 11, 24, "     Enter Address : ");
        wrefresh(w);
 
@@ -417,9 +417,9 @@ void breakops(unsigned char page, unsigned short offset) {
 void SPCbreakops(unsigned short addr) {
     WINDOW *w;
     unsigned char *breakarea;
-    
+
     breakarea = SPCRAM+addr;
-    
+
     w = openwindow(3,52,11,14, "Locating Breakpoint ... Press ESC to stop.");
     wrefresh(w);
 
