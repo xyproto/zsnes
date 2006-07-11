@@ -128,7 +128,7 @@ static void display_help()
   put_line("  -u      Force PAL timing");
   put_line("  -v #    Select video mode :");
 #ifdef __WIN32__
-#define VIDEO_MODE_COUNT 40
+#define VIDEO_MODE_COUNT 41
   put_line("             0 = 256x224   R WIN       1 = 256x224   R FULL");
   put_line("             2 = 512x448   R WIN       3 = 512x448   DR WIN");
   put_line("             4 = 640x480   S WIN       5 = 640x480   DS WIN");
@@ -148,8 +148,8 @@ static void display_help()
   put_line("            32 = 1280x1024 DS FULL    33 = 1600x1200 S WIN");
   put_line("            34 = 1600x1200 DS WIN     35 = 1600x1200 DR FULL");
   put_line("            36 = 1600x1200 DS FULL    37 = CUSTOM    D WIN");
-  put_line("            38 = CUSTOM    DS FULL    39 = CUSTOM      WIN");
-  put_line("            40 = CUSTOM    S FULL");
+  put_line("            38 = CUSTOM    DS FULL    39 = CUSTOM    WIN");
+  put_line("            40 = CUSTOM    S FULL     41 = CUSTOM    DR FULL");
 #endif
 #ifdef __UNIXSDL__
   put_line("             0 = 256x224   R WIN        1 = 256x224   R FULL");
@@ -731,7 +731,7 @@ static void handle_params(int argc, char *argv[])
         }
 
         #ifdef __UNIXSDL__
-        else if (tolower(argv[i][1]) == 'j' && tolower(argv[i][2]) == 's') //Enable KitchenSync
+        else if (tolower(argv[i][1]) == 'j' && tolower(argv[i][2]) == 's') //Set joystick sensitivity
         {
           i++;
           if ((joy_sensitivity = zatoi(argv[i])+1) > 32767)

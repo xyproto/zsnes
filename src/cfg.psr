@@ -281,7 +281,7 @@ SidewinderFix db 0
 
 @
 #ifdef __WIN32__
-@ Video Mode, 0 - 40
+@ Video Mode, 0 - 41
 @   0 = 256x224   R WIN       1 = 256x224   R FULL
 @   2 = 512x448   R WIN       3 = 512x448   DR WIN
 @   4 = 640x480   S WIN       5 = 640x480   DS WIN
@@ -301,8 +301,8 @@ SidewinderFix db 0
 @  32 = 1280x1024 DS FULL    33 = 1600x1200 S WIN
 @  34 = 1600x1200 DS WIN     35 = 1600x1200 DR FULL
 @  36 = 1600x1200 DS FULL    37 = CUSTOM    D WIN
-@  38 = CUSTOM    DS FULL    39 = CUSTOM      WIN
-@  40 = CUSTOM    S FULL
+@  38 = CUSTOM    DS FULL    39 = CUSTOM    WIN
+@  40 = CUSTOM    S FULL     41 = CUSTOM    DR FULL
 @ You need to select one of the custom video modes and modify CustomResX/Y to
 @ properly use custom res support.
 @ Custom resolutions are only valid if they are supported by your system!

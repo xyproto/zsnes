@@ -2032,6 +2032,7 @@ void initwinvideo(void)
          break;
       case 37:
       case 38:
+      case 41:
          SetHQx();
          SetNTSCFOpt();
          SetHiresOpt();
@@ -2244,7 +2245,7 @@ void initwinvideo(void)
    if (FirstVid == 1)
    {
       FirstVid = 0;
-      if (ForceRefreshRate) Refresh = SetRefreshRate;
+      if (ForceRefreshRate && !KitchenSync) Refresh = SetRefreshRate;
       InitDirectDraw();
       clearwin();
       Clear2xSaIBuffer();
