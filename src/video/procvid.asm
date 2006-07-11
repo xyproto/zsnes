@@ -1268,7 +1268,7 @@ NEWSYM saveselect
     mov eax,[statefileloc]
     push edx
     mov edx,[ZStateName]
-    mov byte[edx+eax],bl
+    mov [edx+eax],bl
     pop edx
 
     mov esi,75+73*288
@@ -1745,7 +1745,7 @@ SECTION .text
     mov ebx,[statefileloc]
     push edx
     mov edx,[ZStateName]
-    mov byte[edx+ebx],al
+    mov [edx+ebx],al
     pop edx
 .esc16b
     mov eax,pressed

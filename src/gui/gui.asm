@@ -2172,7 +2172,7 @@ LoadSecondState:
   popad
   mov ebx,[statefileloc]
   mov ecx,[ZStateName]
-  mov byte[ecx+ebx],al
+  mov [ecx+ebx],al
   ret
 
 GUIProcReset:
