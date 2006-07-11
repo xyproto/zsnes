@@ -94,6 +94,7 @@ void cleardisplay();
 void nextspcopcode();
 void SaveOAMRamLog();
 void debugdump();
+void SPCbreakops(unsigned short addr);
 
 unsigned char *findop();
 unsigned char *findoppage();
@@ -304,9 +305,26 @@ void debugloop() {
        breakops_wrapper(PrevBreakPt.page, PrevBreakPt.offset);
        goto a;
 
-   /*
    case 'S': // SPC breakpoint
-   */
+   {
+       WINDOW *w;
+       unsigned addr, n;
+       
+       w = openwindow(3, 33, 11, 24, "     Enter Address : ");
+       wrefresh(w);
+
+       echo();
+       n = mvwscanw(w, 1, 22, "%x", &addr);
+       noecho();
+
+       closewindow(w);
+
+       if (n == 1) {
+	   SPCbreakops(addr);
+	   goto a;
+       }
+       goto b;
+   }
 
    case 'A': // SPC modify
    {
@@ -396,6 +414,25 @@ void breakops(unsigned char page, unsigned short offset) {
 }
 */
 
+void SPCbreakops(unsigned short addr) {
+    WINDOW *w;
+    unsigned char *breakarea;
+    
+    breakarea = SPCRAM+addr;
+    
+    w = openwindow(3,52,11,14, "Locating Breakpoint ... Press ESC to stop.");
+    wrefresh(w);
+
+    nodelay(w, TRUE);
+    do {
+	asm_call(execnextop);
+    } while ((!((++numinst % 256)
+		&& (wgetch(w) == 27)))
+	     && (spcPCRam != breakarea));
+    nodelay(w, FALSE);
+
+    closewindow(w);
+}
 
 
 void printinfo(char *s) {
