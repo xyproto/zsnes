@@ -272,7 +272,7 @@ init${OE}: init.asm macros.mac
 initc${OE}: initc.c asm_call.h ${CPUDIR}/memtable.h ${JMADIR}/zsnesjma.h\
 	${ZIPDIR}/zunzip.h
 patch${OE}: patch.c ${ZIPDIR}/zunzip.h
-ui.c${OE}: ui.c asm_call.h ${MMLIBDIR}/mm.h
+ui${OE}: ui.c asm_call.h ${MMLIBDIR}/mm.h
 vcache${OE}: vcache.asm macros.mac
 version${OE}: version.c
 zloader${OE}: zloader.c cfg${OE} zpath.h
