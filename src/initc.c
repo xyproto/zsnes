@@ -1096,8 +1096,6 @@ bool NSRTHead(unsigned char *ROM)
 }
 
 extern bool EMUPause;
-extern bool Sup48mbit;
-extern bool Sup16mbit;
 extern unsigned char device1, device2;
 unsigned char snesinputdefault1, snesinputdefault2;
 bool input1gp;
@@ -1116,10 +1114,6 @@ void loadROM()
 
   EMUPause = false;
   curromspace = 0;
-
-  maxromspace = 4194304;
-  if (Sup48mbit) { maxromspace += 2097152; }
-  if (Sup16mbit) { maxromspace -= 2097152; } //I don't get it either
 
   if (strlen(ZCartName) >= 5) //Char + ".jma"
   {
@@ -1978,7 +1972,7 @@ void CheckROMType()
   if (SFXEnable)
   {
     // Setup SuperFX stuff
-    if (Sup48mbit)
+    if (maxromspace >= 0x600000)
     {
       //SuperFX mapping, banks 70 - 73
       map_mem(0x70, &sfxbank, 1);

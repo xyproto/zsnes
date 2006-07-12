@@ -37,7 +37,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define true 1
 #define false 0
 
-extern unsigned int per2exec, xa, MessageOn;
+extern unsigned int per2exec, xa, MessageOn, maxromspace;
 extern unsigned char cvidmode, frameskip, scanlines, vsyncon, guioff, antienab;
 extern unsigned char Force8b, MusicRelVol, soundon, SPCDisable, spcon, FPSOn;
 extern unsigned char FPSAtStart;
@@ -86,8 +86,6 @@ unsigned char debugdisble   = 1;	// debugger disable.  0 = no, 1 = yes
 unsigned char gammalevel    = 0;	// gamma level (8-bit engine)
 unsigned char gammalevel16b = 0;	// gamma level (16-bit engine)
 unsigned char AddSub256     = 0;	// screen add/sub in 256 colors
-unsigned char Sup48mbit     = 1;	// Support 48mbit roms
-unsigned char Sup16mbit     = 0;	// Support 16mbit roms
 unsigned char dmadeddis     = 0;	// DMA deduction
 unsigned char device1       = 0;  // Device in port 1?
 unsigned char device2       = 0;  // Device in port 2?
@@ -282,13 +280,23 @@ static void allocmem()
   AllocmemFail(RGBtoYUVPtr,65536*4+4096);
 
   newgfx16b = 1;
-  if (!(romaptr = malloc(0x600000+32768*2+4096)))
+  if ((romaptr = malloc(0x600000+32768*2+4096)))
   {
-    Sup48mbit = 0;
-    if (!(romaptr = malloc(0x400000+32768*2+4096)))
+    maxromspace = 0x600000;
+  }
+  else
+  {
+    if ((romaptr = malloc(0x400000+32768*2+4096)))
     {
-      Sup16mbit = 1;
-      if (!(romaptr = malloc(0x200000+32768*2+4096)))
+      maxromspace = 0x400000;
+    }
+    else
+    {
+      if ((romaptr = malloc(0x200000+32768*2+4096)))
+      {
+        maxromspace = 0x200000;
+      }
+      else
       {
         outofmemory();
       }
@@ -308,24 +316,9 @@ static void allocmem()
   sfxramdata = romaptr+0x400000;
   setaramdata = romaptr+0x400000;
 
-  if (Sup48mbit)
-  {
-    romdata[0x600000] = 0x58;
-    romdata[0x600001] = 0x80;
-    romdata[0x600002] = 0xFE;
-  }
-  else if (Sup16mbit)
-  {
-    romdata[0x200000] = 0x58;
-    romdata[0x200001] = 0x80;
-    romdata[0x200002] = 0xFE;
-  }
-  else
-  {
-    romdata[0x400000] = 0x58;
-    romdata[0x400001] = 0x80;
-    romdata[0x400002] = 0xFE;
-  }
+  romdata[maxromspace+0] = 0x58;
+  romdata[maxromspace+1] = 0x80;
+  romdata[maxromspace+2] = 0xFE;
 
   wramdata = wramdataa;
   ram7f = ram7fa;
