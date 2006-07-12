@@ -371,7 +371,7 @@ void debugloop() {
        wrefresh(w);
 
        echo();
-       wscanw(w, "%d", &instrs);
+       n = wscanw(w, "%d", &instrs);
        noecho();
 
        closewindow(w);
