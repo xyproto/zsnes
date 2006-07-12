@@ -393,11 +393,11 @@ void debugloop() {
        w = openwindow(3,52,11,14,
 		      "   Waiting for Signal .... Press ESC to stop.");
        wrefresh(w);
-       
+
        nodelay(w, TRUE);
        do {
 	   asm_call(execnextop);
-       } while ( (! ((++numinst % 256) && (wgetch(w) == 27))) 
+       } while ( (! ((++numinst % 256) && (wgetch(w) == 27)))
 		 && (debstop != 1) );
        debstop = 0;
        nodelay(w, FALSE);
