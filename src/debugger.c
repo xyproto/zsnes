@@ -368,7 +368,7 @@ void debugloop() {
 
        w = openwindow(3,52,11,14, "   Enter # of Instructions to Trace : ");
        wrefresh(w);
-       
+
        echo();
        wscanw(w, "%d", &instrs);
        noecho();
@@ -435,7 +435,7 @@ void breakops(unsigned char page, unsigned short offset) {
 
 void traceops(unsigned count) {
     WINDOW *w;
-    
+
     w = openwindow(3,52,11,14, "     Tracing.  Press ESC to stop.");
     wrefresh(w);
 
