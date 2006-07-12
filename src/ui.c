@@ -256,6 +256,10 @@ void deallocmem()
   deallocmemhelp(vcache2bs);
   deallocmemhelp(vcache4bs);
   deallocmemhelp(vcache8bs);
+  deallocmemhelp(vcache2b);
+  deallocmemhelp(vcache4b);
+  deallocmemhelp(vcache8b);
+
 }
 
 #define AllocmemFail(ptr, size) if (!(ptr = malloc(size))) { outofmemory(); }
@@ -265,6 +269,7 @@ static void allocmem()
 #ifndef __MSDOS__
   AllocmemFail(BitConv32Ptr, 4096+65536*16);
 #endif
+  AllocmemFail(RGBtoYUVPtr,65536*4+4096);
   AllocmemFail(spcBuffera,65536*4+4096);
   AllocmemFail(spritetablea,256*512+4096);
   AllocmemFail(vbufaptr,512*296*4+4096+512*296);
@@ -274,7 +279,10 @@ static void allocmem()
   AllocmemFail(vcache2bs,65536*4*4+4096);
   AllocmemFail(vcache4bs,65536*4*2+4096);
   AllocmemFail(vcache8bs,65536*4+4096);
-  AllocmemFail(RGBtoYUVPtr,65536*4+4096);
+  AllocmemFail(vcache2b,262144+256);
+  AllocmemFail(vcache4b,131072+256);
+  AllocmemFail(vcache8b,65536+256);
+
 
   newgfx16b = 1;
   if ((romaptr = malloc(0x600000+32768*2+4096)))
@@ -329,10 +337,6 @@ static void allocmem()
 
   regptr -= 0x8000;
   regptw -= 0x8000;
-
-  vcache2b = malloc(262144+256);
-  vcache4b = malloc(131072+256);
-  vcache8b = malloc(65536+256);
 }
 
 const unsigned int versionNumber = 0x0000008F; // 1.43
