@@ -1374,9 +1374,9 @@ void clearmem()
   memset(debugbufa, 0, 80000);
   memset(regptra, 0, 49152);
   memset(regptwa, 0, 49152);
-  memset(vcache2b, 0, 262144);
-  memset(vcache4b, 0, 131072);
-  memset(vcache8b, 0, 65536);
+  memset(vcache2b, 0, 262144+256);
+  memset(vcache4b, 0, 131072+256);
+  memset(vcache8b, 0, 65536+256);
   memset(vidmemch2, 0, 4096);
   memset(vidmemch4, 0, 4096);
   memset(vidmemch8, 0, 4096);

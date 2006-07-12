@@ -38,7 +38,7 @@ EXTSYM vidbuffer,coladdb,coladdg,coladdr,vesa2_bpos,vesa2_gpos,vesa2_rpos
 EXTSYM vidbright,winptrref,fulladdtab,pal16b,vesa2_clbit,csprbit,sprclprio
 EXTSYM csprprlft,sprsingle,sprpriodata,pal16bcl,pal16bxcl,bgofwptr,bgsubby
 EXTSYM bshifter,domosaic16b,temp,tempcach,temptile,tileleft16b,xtravbuf,yadder
-EXTSYM yrevadder,vcache2ba,vcache4ba,vcache8ba,draw8x816boffset,osm2dis
+EXTSYM yrevadder,vcache2b,vcache4b,vcache8b,draw8x816boffset,osm2dis
 EXTSYM hirestiledat,res512switch,bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly
 EXTSYM vidmemch4,vram,ofsmcptr,ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr
 EXTSYM ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc
@@ -2691,17 +2691,25 @@ NEWSYM draw8x816bt
     sub esi,eax
 .nomosaic
     mov [temptile],edx
-    mov dword[bgofwptr],vcache2ba+262144
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
 ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
 ;              bit 10-12 = palette, 0-9=tile#
     cmp byte[curmosaicsz],1
@@ -2908,17 +2916,25 @@ NEWSYM draw8x816t
     sub esi,eax
 .nomosaic
     mov [temptile],edx
-    mov dword[bgofwptr],vcache2ba+262144
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
 ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
 ;              bit 10-12 = palette, 0-9=tile#
     cmp byte[curmosaicsz],1
@@ -3674,17 +3690,25 @@ NEWSYM draw16x816t
     sub esi,eax
 .nomosaic
     mov [temptile],edx
-    mov dword[bgofwptr],vcache2ba+262144
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
 ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
 ;              bit 10-12 = palette, 0-9=tile#
     mov ebp,transpbuf+32
@@ -3793,17 +3817,25 @@ NEWSYM draw8x816toffset
     sub esi,eax
 .nomosaic
     mov [temptile],edx
-    mov dword[bgofwptr],vcache2ba+262144
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
 ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
 ;              bit 10-12 = palette, 0-9=tile#
     cmp byte[curmosaicsz],1
@@ -4323,17 +4355,26 @@ NEWSYM draw16x1616bt
     sub esi,eax
     sub esi,eax
 .nomosaic
-    mov dword[bgofwptr],vcache2ba+262144
+    mov [temptile],edx
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
     cmp byte[curmosaicsz],1
     jne .domosaic
     cmp byte[winon],0
@@ -4609,17 +4650,26 @@ NEWSYM draw16x1616t
     sub esi,eax
     sub esi,eax
 .nomosaic
-    mov dword[bgofwptr],vcache2ba+262144
+    mov [temptile],edx
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
     cmp byte[curmosaicsz],1
     jne .domosaic
     cmp byte[winon],0

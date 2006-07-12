@@ -229,9 +229,6 @@ unsigned char *vcache8bs = 0; // 8-bit video secondary cache
 unsigned char vrama[65536];
 unsigned char srama[65536*2];
 unsigned char debugbufa[80000];
-unsigned char vcache2ba[262144+256];
-unsigned char vcache4ba[131072+256];
-unsigned char vcache8ba[65536+256];
 
 unsigned char mode7tab[65536];
 unsigned char *wramreadptr, wramwriteptr;
@@ -333,9 +330,9 @@ static void allocmem()
   regptr -= 0x8000;
   regptw -= 0x8000;
 
-  vcache2b = vcache2ba;
-  vcache4b = vcache4ba;
-  vcache8b = vcache8ba;
+  vcache2b = malloc(262144+256);
+  vcache4b = malloc(131072+256);
+  vcache8b = malloc(65536+256);
 }
 
 const unsigned int versionNumber = 0x0000008F; // 1.43

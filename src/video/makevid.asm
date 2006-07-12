@@ -23,8 +23,8 @@
 EXTSYM disableeffects,winl1,winl2,winbgdata,winr1,winr2,winspdata,winlogica
 EXTSYM winenabm,winobjen,winlogicb,scrndis,scrnon,bgmode,bgtilesz,winbg1en
 EXTSYM winenabs,bg1objptr,bg1ptr,bg1ptrb,bg1ptrc,bg1ptrd,bg1scrolx,bg1scroly
-EXTSYM cachebg1,curbgofs1,curcolbg1,vcache2b,vcache4b,vcache8b,vcache2ba
-EXTSYM vcache4ba,vcache8ba,vidbuffer,bg3highst,cbitmode,colormodedef
+EXTSYM cachebg1,curbgofs1,curcolbg1,vcache2b,vcache4b,vcache8b
+EXTSYM vidbuffer,bg3highst,cbitmode,colormodedef
 EXTSYM colormodeofs,drawline16b,forceblnk,newengine8b,preparesprpr,scaddset
 EXTSYM spritetablea,sprleftpr,vidbright,ForceNewGfxOff,curypos,drawmode7
 EXTSYM mode7set,mosaicon,mosaicsz,sprleftpr1,sprleftpr2,sprleftpr3,sprlefttot
@@ -2697,17 +2697,25 @@ NEWSYM draw8x8
     sub esi,eax
 .nomosaic
     mov [temptile],edx
-    mov dword[bgofwptr],vcache2ba+262144
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
 ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
 ;              bit 10-12 = palette, 0-9=tile#
     cmp byte[curmosaicsz],1
@@ -2967,17 +2975,26 @@ NEWSYM draw16x8
     sub esi,eax
 .nomosaic
     mov [temptile],edx
-    mov dword[bgofwptr],vcache2ba+262144
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    ;mov dword[bgofwptr],vcache8b+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
 ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
 ;              bit 10-12 = palette, 0-9=tile#
     cmp byte[curmosaicsz],1
@@ -3702,17 +3719,25 @@ NEWSYM draw8x8offset
     sub esi,eax
 .nomosaic
     mov [temptile],edx
-    mov dword[bgofwptr],vcache2ba+262144
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
 ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
 ;              bit 10-12 = palette, 0-9=tile#
     cmp byte[curmosaicsz],1
@@ -4069,17 +4094,25 @@ NEWSYM draw16x16
     xor ebx,ebx
     mov bl,[curypos]
     mov [temptile],edx
-    mov dword[bgofwptr],vcache2ba+262144
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
     ; set up y adders
     test byte[a16x16yinc],01h
     jz .noincrc

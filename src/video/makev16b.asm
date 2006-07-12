@@ -34,7 +34,7 @@ EXTSYM prevbright,prevpal,vesa2_clbit,vesa2_gpos,vesa2_rpos,vidbright,cgmod
 EXTSYM cgram,gammalevel16b,dovegrest,winspdata,csprbit,csprprlft,sprclprio
 EXTSYM sprsingle,sprpriodata,bgofwptr,bgsubby,bshifter,curmosaicsz,cwinptr
 EXTSYM osm2dis,temp,tempcach,temptile,winptrref,xtravbuf,yadder,yrevadder
-EXTSYM vcache2ba,vcache4ba,vcache8ba,hirestiledat,res512switch,numwin,windowdata
+EXTSYM vcache2b,vcache4b,vcache8b,hirestiledat,res512switch,numwin,windowdata
 EXTSYM bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly,vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
 EXTSYM bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc,bg1scrolx_m7,bg1scroly_m7
@@ -1718,17 +1718,25 @@ NEWSYM draw8x816b
     sub esi,eax
 .nomosaic
     mov [temptile],edx
-    mov dword[bgofwptr],vcache2ba+262144
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
 ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
 ;              bit 10-12 = palette, 0-9=tile#
     cmp byte[curmosaicsz],1
@@ -1987,17 +1995,25 @@ NEWSYM draw16x816
     sub esi,eax
 .nomosaic
     mov [temptile],edx
-    mov dword[bgofwptr],vcache2ba+262144
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
 ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
 ;              bit 10-12 = palette, 0-9=tile#
     cmp byte[curmosaicsz],1
@@ -2553,17 +2569,25 @@ NEWSYM draw8x816boffset
     sub esi,eax
 .nomosaic
     mov [temptile],edx
-    mov dword[bgofwptr],vcache2ba+262144
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
 ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
 ;              bit 10-12 = palette, 0-9=tile#
     cmp byte[curmosaicsz],1
@@ -2803,17 +2827,26 @@ NEWSYM draw16x1616b
     sub esi,eax
     sub esi,eax
 .nomosaic
-    mov dword[bgofwptr],vcache2ba+262144
+    mov [temptile],edx
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
     cmp byte[curmosaicsz],1
     jne .domosaic
     cmp byte[winon],0

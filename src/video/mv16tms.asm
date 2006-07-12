@@ -23,7 +23,7 @@
 EXTSYM bgcoloradder,bgofwptr,bgsubby,bshifter,curbgpr,curmosaicsz,curvidoffset
 EXTSYM cwinptr,domosaic16b,drawn,pal16b,scaddtype,scrnon,temp,tempcach,temptile
 EXTSYM tileleft16b,transpbuf,winon,winptrref,xtravbuf,yadd,yadder,yrevadder
-EXTSYM draw16x816t,bgmode,vcache2ba,vcache4ba,vcache8ba,fulladdtab,pal16bcl
+EXTSYM draw16x816t,bgmode,vcache2b,vcache4b,vcache8b,fulladdtab,pal16bcl
 EXTSYM pal16bxcl,coadder16,a16x16xinc,a16x16yinc,curypos,yflipadd
 
 %include "video/vidmacro.mac"
@@ -238,17 +238,25 @@ NEWSYM draw8x816tms
     sub esi,eax
 .nomosaic
     mov [temptile],edx
-    mov dword[bgofwptr],vcache2ba+262144
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
 ; tile value : bit 15 = flipy, bit 14 = flipx, bit 13 = priority value
 ;              bit 10-12 = palette, 0-9=tile#
     cmp byte[curmosaicsz],1
@@ -798,17 +806,26 @@ NEWSYM draw16x1616tms
     sub esi,eax
     sub esi,eax
 .nomosaic
-    mov dword[bgofwptr],vcache2ba+262144
+    mov [temptile],edx
+    push ecx
     mov dword[bgsubby],262144
-    cmp dword[tempcach],vcache2ba+262144
+    mov ecx,vcache2b
+    add ecx,262144
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache4ba+131072
     mov dword[bgsubby],131072
-    cmp dword[tempcach],vcache4ba+131072
+    mov ecx,vcache4b
+    add ecx,131072
+    mov [bgofwptr],ecx
+    cmp dword[tempcach],ecx
     jb .nobit
-    mov dword[bgofwptr],vcache8ba+65536
+    mov ecx,vcache8b
+    add ecx,65536
+    mov [bgofwptr],ecx
     mov dword[bgsubby],65536
 .nobit
+    pop ecx
     cmp byte[curmosaicsz],1
     jne .domosaic
     cmp byte[winon],0
