@@ -2699,18 +2699,18 @@ NEWSYM draw8x8
     mov [temptile],edx
     push ecx
     mov dword[bgsubby],262144
-    mov ecx,vcache2b
+    mov ecx,[vcache2b]
     add ecx,262144
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
     mov dword[bgsubby],131072
-    mov ecx,vcache4b
+    mov ecx,[vcache4b]
     add ecx,131072
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
-    mov ecx,vcache8b
+    mov ecx,[vcache8b]
     add ecx,65536
     mov [bgofwptr],ecx
     mov dword[bgsubby],65536
@@ -2977,19 +2977,19 @@ NEWSYM draw16x8
     mov [temptile],edx
     push ecx
     mov dword[bgsubby],262144
-    mov ecx,vcache2b
+    mov ecx,[vcache2b]
     add ecx,262144
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
     mov dword[bgsubby],131072
-    mov ecx,vcache4b
+    mov ecx,[vcache4b]
     add ecx,131072
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
     ;mov dword[bgofwptr],vcache8b+65536
-    mov ecx,vcache8b
+    mov ecx,[vcache8b]
     add ecx,65536
     mov [bgofwptr],ecx
     mov dword[bgsubby],65536
@@ -3721,18 +3721,18 @@ NEWSYM draw8x8offset
     mov [temptile],edx
     push ecx
     mov dword[bgsubby],262144
-    mov ecx,vcache2b
+    mov ecx,[vcache2b]
     add ecx,262144
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
     mov dword[bgsubby],131072
-    mov ecx,vcache4b
+    mov ecx,[vcache4b]
     add ecx,131072
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
-    mov ecx,vcache8b
+    mov ecx,[vcache8b]
     add ecx,65536
     mov [bgofwptr],ecx
     mov dword[bgsubby],65536
@@ -4096,18 +4096,18 @@ NEWSYM draw16x16
     mov [temptile],edx
     push ecx
     mov dword[bgsubby],262144
-    mov ecx,vcache2b
+    mov ecx,[vcache2b]
     add ecx,262144
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
     mov dword[bgsubby],131072
-    mov ecx,vcache4b
+    mov ecx,[vcache4b]
     add ecx,131072
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
-    mov ecx,vcache8b
+    mov ecx,[vcache8b]
     add ecx,65536
     mov [bgofwptr],ecx
     mov dword[bgsubby],65536

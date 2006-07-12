@@ -2693,18 +2693,18 @@ NEWSYM draw8x816bt
     mov [temptile],edx
     push ecx
     mov dword[bgsubby],262144
-    mov ecx,vcache2b
+    mov ecx,[vcache2b]
     add ecx,262144
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
     mov dword[bgsubby],131072
-    mov ecx,vcache4b
+    mov ecx,[vcache4b]
     add ecx,131072
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
-    mov ecx,vcache8b
+    mov ecx,[vcache8b]
     add ecx,65536
     mov [bgofwptr],ecx
     mov dword[bgsubby],65536
@@ -2918,18 +2918,18 @@ NEWSYM draw8x816t
     mov [temptile],edx
     push ecx
     mov dword[bgsubby],262144
-    mov ecx,vcache2b
+    mov ecx,[vcache2b]
     add ecx,262144
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
     mov dword[bgsubby],131072
-    mov ecx,vcache4b
+    mov ecx,[vcache4b]
     add ecx,131072
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
-    mov ecx,vcache8b
+    mov ecx,[vcache8b]
     add ecx,65536
     mov [bgofwptr],ecx
     mov dword[bgsubby],65536
@@ -3692,18 +3692,18 @@ NEWSYM draw16x816t
     mov [temptile],edx
     push ecx
     mov dword[bgsubby],262144
-    mov ecx,vcache2b
+    mov ecx,[vcache2b]
     add ecx,262144
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
     mov dword[bgsubby],131072
-    mov ecx,vcache4b
+    mov ecx,[vcache4b]
     add ecx,131072
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
-    mov ecx,vcache8b
+    mov ecx,[vcache8b]
     add ecx,65536
     mov [bgofwptr],ecx
     mov dword[bgsubby],65536
@@ -3819,18 +3819,18 @@ NEWSYM draw8x816toffset
     mov [temptile],edx
     push ecx
     mov dword[bgsubby],262144
-    mov ecx,vcache2b
+    mov ecx,[vcache2b]
     add ecx,262144
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
     mov dword[bgsubby],131072
-    mov ecx,vcache4b
+    mov ecx,[vcache4b]
     add ecx,131072
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
-    mov ecx,vcache8b
+    mov ecx,[vcache8b]
     add ecx,65536
     mov [bgofwptr],ecx
     mov dword[bgsubby],65536
@@ -4358,18 +4358,18 @@ NEWSYM draw16x1616bt
     mov [temptile],edx
     push ecx
     mov dword[bgsubby],262144
-    mov ecx,vcache2b
+    mov ecx,[vcache2b]
     add ecx,262144
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
     mov dword[bgsubby],131072
-    mov ecx,vcache4b
+    mov ecx,[vcache4b]
     add ecx,131072
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
-    mov ecx,vcache8b
+    mov ecx,[vcache8b]
     add ecx,65536
     mov [bgofwptr],ecx
     mov dword[bgsubby],65536
@@ -4653,18 +4653,18 @@ NEWSYM draw16x1616t
     mov [temptile],edx
     push ecx
     mov dword[bgsubby],262144
-    mov ecx,vcache2b
+    mov ecx,[vcache2b]
     add ecx,262144
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
     mov dword[bgsubby],131072
-    mov ecx,vcache4b
+    mov ecx,[vcache4b]
     add ecx,131072
     mov [bgofwptr],ecx
     cmp dword[tempcach],ecx
     jb .nobit
-    mov ecx,vcache8b
+    mov ecx,[vcache8b]
     add ecx,65536
     mov [bgofwptr],ecx
     mov dword[bgsubby],65536
