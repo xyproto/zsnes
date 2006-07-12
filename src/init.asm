@@ -1291,20 +1291,10 @@ NEWSYM loadfile
     jmp loadfileGUI.nogui
 
 SECTION .data
-.failop   db 'Error opening file!',13,10,0
 .opened db 'File opened successfully!',13,10,0
-.mult   db 'Multiple file format detected.',13,10,13,10,0
 SECTION .bss
-.cchar resb 1
-.dotpos resd 1
-.curfileofs resd 1
-.filehand resw 1
-.temp   resb 1
-.fail   resb 1
-
 
 NEWSYM Checksumvalue, resw 1
-NEWSYM Checksumvalue2, resw 1 ;outdated, but needed for the command line loader
 NEWSYM CRC32, resd 1
 NEWSYM SramExists,    resb 1
 NEWSYM NumofBanks,    resd 1
@@ -1358,7 +1348,6 @@ NEWSYM loadfileGUI
 
     mov dword[MessageOn],0
     mov byte[yesoutofmemory],0
-    mov byte[.fail],0
     mov byte[IPSPatched],0
     mov byte[GUIloadfailed],0
 
@@ -1387,15 +1376,9 @@ NEWSYM loadfileGUI
 .inguib
 
     mov eax,[curromspace]
-    mov [.curfileofs],eax
     mov [NumofBytes],eax
     shr eax,15
     mov [NumofBanks],eax
-
-    cmp byte[.fail],0
-    je .notfailed
-    mov byte[yesoutofmemory],1
-.notfailed
 
     cmp byte[IPSPatched],0
     jne .patched
@@ -1419,16 +1402,9 @@ NEWSYM loadfileGUI
 SECTION .data
 .failop   db 'Error opening file!',13,10,0
 .opened db 'File opened successfully!',13,10,0
-.mult   db 'Multiple file format detected.',13,10,13,10,0
 
 SECTION .bss
 
-.cchar resb 1
-.dotpos resd 1
-.curfileofs resd 1
-.filehand resw 1
-.temp resb 1
-.fail resb 1
 NEWSYM GUIloadfailed, resb 1
 
 SECTION .text
@@ -1508,11 +1484,9 @@ NEWSYM CSStatus3, db 'VIDEO:                    CRC32:        ',0
 
 SECTION .bss
 NEWSYM DSP1Type, resb 1
-NEWSYM intldone, resb 1
 NEWSYM C4RamR,   resd 1
 NEWSYM C4RamW,   resd 1
 NEWSYM C4Ram,   resd 1
-NEWSYM ROMTypeNOTFound, resb 1
 NEWSYM Interleaved, resb 1
 SECTION .text
 

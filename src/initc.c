@@ -2250,6 +2250,10 @@ void OpenSramFile()
 
     SramExists = true;
   }
+  else
+  {
+    SramExists = false;
+  }
 }
 
 void map_set(void **dest, unsigned char *src, size_t count, size_t step)
