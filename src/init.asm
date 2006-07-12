@@ -898,9 +898,7 @@ NEWSYM ReadInputDevice
 ;*******************************************************
 
 SECTION .data
-NEWSYM disablehdma,    db 0
 NEWSYM disableeffects, db 0
-NEWSYM hdmaearlstart,  db 0
 NEWSYM disable65816sh, db 0
 NEWSYM disablespcclr,  db 0
 NEWSYM numspcvblleft,  dd 0
@@ -1027,7 +1025,6 @@ NEWSYM init65816
     popad
 
     mov byte[prevoamptr],0FFh
-    mov byte[disablehdma],0
     mov byte[disableeffects],0
     mov al,[opexec268b]
     mov [opexec268],al
@@ -1151,10 +1148,6 @@ NEWSYM init65816
     mov dword[wramreadptr],getwram1fff
     mov dword[wramwriteptr],setwram1fff
     ret
-
-SECTION .data
-.boffound db '.....',0
-SECTION .text
 
 getwram1fff:
     mov al,[wramdataa+1fffh]

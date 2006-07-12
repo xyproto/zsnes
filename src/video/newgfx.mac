@@ -2986,10 +2986,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    cmp byte[hdmaearlstart],0
-    je .ofsmvalhack
     mov dword[ofsmvalh],0
-.ofsmvalhack
     mov dword[cbgval],%1
     ProcessBuildWindow %1
     jmp drawlinengom4b
@@ -3337,10 +3334,7 @@ EXTSYM drawmode7ngextbg,drawmode7ngextbg2
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    cmp byte[hdmaearlstart],0
-    je .ofsmvalhack
     mov dword[ofsmvalh],0
-.ofsmvalhack
     mov dword[cbgval],%1
     ProcessBuildWindow %1
     jmp drawlinengom4b

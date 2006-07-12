@@ -1417,8 +1417,6 @@ Would be nice to trash this section in the future
 */
 
 
-extern unsigned char  disablehdma;
-extern unsigned char  hdmaearlstart;
 extern unsigned char  ENVDisable;
 extern unsigned char  cycpb268;
 extern unsigned char  cycpb358;
@@ -1439,8 +1437,6 @@ unsigned char HacksDisable;
 void headerhack()
 {
   char *RomData = (char *)romdata;
-  disablehdma = 0;
-  hdmaearlstart = 0;
   ENVDisable = 0;
 
   if ((curromspace < Lo) || HacksDisable)

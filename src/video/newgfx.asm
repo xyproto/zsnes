@@ -36,7 +36,7 @@ EXTSYM sprlefttot,sprpriodata,sprtbng,sprtlng,t16x161,t16x162,t16x163,t16x164
 EXTSYM tltype2b,tltype8b,vcache2b,vcache4b,vcache8b,vidbuffer,vidmemch2
 EXTSYM vidmemch4,vidmemch8,vram,vrama,winon,xtravbuf,ng16bbgval,ng16bprval
 EXTSYM bgwinchange,res480,drawtileng2b,drawtileng4b,drawtileng8b,drawmode7win
-EXTSYM hdmaearlstart,drawtileng16x162b,drawtileng16x164b,drawtileng16x168b
+EXTSYM drawtileng16x162b,drawtileng16x164b,drawtileng16x168b
 EXTSYM osm2dis,drawlineng2b,drawlineng4b,drawlineng8b,processmode7hires
 EXTSYM drawlineng16x162b,drawlineng16x164b,drawlineng16x168b,winboundary
 EXTSYM winbg1enval,winbg2enval,winbg3enval,winbg4enval,winbgobjenval
