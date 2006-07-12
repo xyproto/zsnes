@@ -45,6 +45,7 @@ extern void breakops_wrapper(unsigned char, unsigned short);
 
 extern void regaccessbankr8();
 extern void start65816();
+extern void endprog();
 
 // should be in "zstate.h"
 extern void debugloadstate();
@@ -160,7 +161,7 @@ void startdebugger() {
     if (execut == 1) {
 	start65816(); return;
     }
-
+    endprog(); return;
 }
 
 // Called from ASM
