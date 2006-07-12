@@ -1313,22 +1313,10 @@ InGUI resb 1
 
 SECTION .data
 
-PrevDir db '..',0
-GUIfindBlank db '*.',0
-
-SECTION .bss
-ZipError resb 1
-
-SECTION .data
-
-SPC7110DirEntry db '*.bin',0
 spc7110notfound db 'DECOMPRESSED PACK NOT FOUND',0
 
 SECTION .bss
 
-SPC7110Allocated resb 1
-SPC7110CPtr resd 1
-SPC7110CPtr2 resd 1
 NEWSYM SPC7110Entries, resd 1
 
 SECTION .text
