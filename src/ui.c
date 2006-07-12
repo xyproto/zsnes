@@ -316,6 +316,10 @@ static void allocmem()
   sfxramdata = romaptr+0x400000;
   setaramdata = romaptr+0x400000;
 
+  // Puts this ASM after the end of the ROM:
+  //         CLI
+  // here:   BRA here
+  // But why?
   romdata[maxromspace+0] = 0x58;
   romdata[maxromspace+1] = 0x80;
   romdata[maxromspace+2] = 0xFE;
