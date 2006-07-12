@@ -1256,24 +1256,6 @@ NEWSYM printhex
 
 SECTION .data
 .hexdat db '0123456789ABCDEF'
-SECTION .text
-
-NEWSYM printhex8
-    mov ecx,2
-    xor ebx,ebx
-.loopb
-    mov bx,ax
-    and bx,0F0h
-    shr bx,4
-    mov dl,[printhex.hexdat+ebx]
-    push ax
-    mov ah,02h
-    call Output_Text
-    pop ax
-    shl ax,4
-    dec ecx
-    jnz .loopb
-    ret
 
 ;*******************************************************
 ; Load File
