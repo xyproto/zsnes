@@ -87,14 +87,6 @@ NEWSYM autoloadstate, db 0        ; auto load state slot number
 NEWSYM autoloadmovie, db 0
 NEWSYM ZMVRawDump, db 0
 
-EndMessage times 67 db 32
-    db 13,10,0
-ebm db 166,95,66,223,17,11,103,180,156,68,108,120,138,55,203,205
-    db 178,210,39,252,128,66,65,167,155,151,197,125,176,66,73,230
-    db 61,210,7,137,152,110,203,241,50,89,70,29,176,42,99,167
-    db 155,92,3,221,224,54,53,167,155,211,70,205,138,202,91,234
-    db 178,80,229,13,10
-
 SECTION .text
 
 NEWSYM init
@@ -257,28 +249,6 @@ NEWSYM init
 .aftermovieplay
     popad
 .noautloadmovie
-
-    mov ebx,ebm
-    mov eax,EndMessage
-    mov dh,17h
-    mov ch,67
-    mov cl,1
-.loopen
-    mov dl,[ebx]
-    rol dl,cl
-    xor dl,dh
-    mov [eax],dl
-    rol dh,1
-    inc cl
-    or cl,cl
-    jne .notzero
-    inc cl
-.notzero
-    and cl,07h
-    inc eax
-    inc ebx
-    dec ch
-    jnz .loopen
 
     cmp byte[yesoutofmemory],1
     jne .noout
