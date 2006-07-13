@@ -387,56 +387,6 @@ NEWSYM GUIindex, resd 1
 
 SECTION .text
 
-clearsram:
-  push eax
-  push ecx
-  mov eax,srama
-  mov ecx,65536
-.loop
-  mov byte[eax],0FFh
-  inc eax
-  dec ecx
-  jnz .loop
-  cmp byte[SFXEnable],0
-  je .nosfxbatt
-  cmp byte[CHIPBATT],0
-  je .nosfxbatt
-  mov eax,[sfxramdata]
-  mov ecx,65536
-.loop2
-  mov byte[eax],0FFh
-  inc eax
-  dec ecx
-  jnz .loop2
-.nosfxbatt
-
-  cmp byte[SETAEnable],0
-  je .nosetasram
-  mov eax,[setaramdata]
-  mov ecx,4096
-.loop2seta
-  mov byte[eax],0FFh
-  inc eax
-  dec ecx
-  jnz .loop2seta
-.nosetasram
-
-  cmp byte[SA1Enable],1
-  jne .nosa1
-  cmp byte[CHIPBATT],1
-  jne .nosa1
-  mov eax,[SA1RAMArea]
-  mov ecx,65536*2
-.loop3
-  mov byte[eax],0FFh
-  inc eax
-  dec ecx
-  jnz .loop3
-.nosa1
-  pop ecx
-  pop eax
-  ret
-
 NEWSYM GUIQuickLoadUpdate
   cmp byte[prevlfreeze],0
   je .off

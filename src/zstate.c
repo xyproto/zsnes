@@ -1043,6 +1043,27 @@ void SaveSramData()
   }
   SaveCombFile();
 }
+
+extern bool SramExists;
+void OpenSramFile()
+{
+  FILE *fp;
+
+  setextension(ZSaveName, "srm");
+  fp = fopen_dir(ZSramPath, ZSaveName, "rb");
+  if (fp)
+  {
+    fread(sram, 1, ramsize, fp);
+    fclose(fp);
+
+    SramExists = true;
+  }
+  else
+  {
+    SramExists = false;
+  }
+}
+
 /*
 SPC File Format - Invented by _Demo_ & zsKnight
 Cleaned up by Nach

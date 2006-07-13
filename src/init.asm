@@ -158,10 +158,11 @@ NEWSYM init
     call loadfile
     pushad
     call SetupROM
+    popad
     cmp byte[DisplayInfo],0
-    je .noshowinfo
+    je .noloadfile
+    pushad
     call showinfogui
-.noshowinfo
     popad
 .noloadfile
     call UpdateDevices

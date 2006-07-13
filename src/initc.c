@@ -1095,8 +1095,10 @@ bool NSRTHead(unsigned char *ROM)
   return(false); //None
 }
 
+void calculate_state_sizes(), InitRewindVars();
 extern bool EMUPause;
 extern unsigned char device1, device2;
+unsigned char lorommapmode2, curromsize;
 unsigned char snesinputdefault1, snesinputdefault2;
 bool input1gp;
 bool input1mouse;
@@ -1309,6 +1311,17 @@ void loadROM()
   SplitSupport();
 
   if (isZip) { findZipIPS(ZCartName); }
+
+  if (curromspace)
+  {
+    unsigned char *ROM = (unsigned char *)romdata;
+    BankCheck();
+    curromsize = ROM[infoloc+ROMSizeOffset];
+    chip_detect();
+    SetupSramSize();
+    calculate_state_sizes();
+    InitRewindVars();
+  }
 }
 
 
@@ -1834,23 +1847,6 @@ extern unsigned char yesoutofmemory;
 void outofmemfix();
 void GUIDoReset();
 
-bool loadSRAM(char *sramname)
-{
-  FILE *sramfp;
-  int sramsize;
-
-  if ((sramfp = fopen_dir(ZSramPath, sramname, "rb")))
-  {
-    fseek(sramfp, 0, SEEK_END);
-    sramsize = ftell(sramfp);
-    rewind(sramfp);
-    if (sramsize) { fread(sram, 1, sramsize, sramfp); }
-    fclose(sramfp);
-    return (true);
-  }
-  else  { return(false); }
-}
-
 extern unsigned int Voice0Freq, Voice1Freq, Voice2Freq, Voice3Freq;
 extern unsigned int Voice4Freq, Voice5Freq, Voice6Freq, Voice7Freq;
 extern unsigned int dspPAdj;
@@ -1884,17 +1880,13 @@ extern unsigned char ForcePal, ForceROMTiming, romispal, MovieWaiting, DSP1Type;
 extern unsigned short totlines;
 void SetAddressingModes(), GenerateBank0Table();
 void SetAddressingModesSA1(), GenerateBank0TableSA1();
-void calculate_state_sizes(), InitRewindVars();
 void InitDSP(), InitDSP2(), InitDSP3(), InitDSP4(), InitOBC1(), InitFxTables(), initregr(), initregw();
 void SPC7110Load(), DOSClearScreen(), dosmakepal();
-
-unsigned char lorommapmode2, curromsize;
 
 void CheckROMType()
 { // used by both movie and normal powercycles
   unsigned char *ROM = (unsigned char *)romdata;
 
-  BankCheck();
   if (!MovieWaiting) { MirrorROM(); }
 
   lorommapmode2 = 0;
@@ -1906,7 +1898,6 @@ void CheckROMType()
   // Setup memmapping
   SetAddressingModes();
   GenerateBank0Table();
-  chip_detect();
 
   disablespcclr = (memcmp(ROM+Hi, "\0x42\0x53\0x20\0x5A", 4)) ? 0 : 1;
 
@@ -2115,13 +2106,6 @@ void SetupROM()
   }
   #endif
 
-  // get ROM and SRAM sizes
-  curromsize = ROM[infoloc+ROMSizeOffset];
-
-  SetupSramSize();
-  calculate_state_sizes();
-  InitRewindVars();
-
   /* get timing (pal/ntsc)
   ForceROMTiming is from the GUI.
   ForcePal is from Command line, we have a static var
@@ -2155,6 +2139,7 @@ void SetupROM()
   }
 }
 
+void OpenSramFile();
 void powercycle(bool sramload)
 { // currently only used by movies - rom already loaded, no need for init
   memset(sram, 0xFF, 32768);
@@ -2171,8 +2156,7 @@ void powercycle(bool sramload)
 
   if (sramload)
   {
-    setextension(ZSaveName, "srm");
-    loadSRAM(ZSaveName);
+    OpenSramFile();
   }
   SetupROM();
 
@@ -2230,25 +2214,6 @@ void OpenCombFile()
     }
 
     fclose(fp);
-  }
-}
-
-void OpenSramFile()
-{
-  FILE *fp;
-
-  setextension(ZSaveName, "srm");
-  fp = fopen_dir(ZSramPath, ZSaveName, "rb");
-  if (fp)
-  {
-    fread(sram, 1, 65536, fp);
-    fclose(fp);
-
-    SramExists = true;
-  }
-  else
-  {
-    SramExists = false;
   }
 }
 
