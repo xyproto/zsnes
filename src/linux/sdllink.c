@@ -27,9 +27,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <sys/time.h>
 #include <time.h>
 #include <dirent.h>
-#include <sys/soundcard.h>
-#include <math.h>
-#include <stropts.h>
+
 #include "safelib.h"
 #include "../asm_call.h"
 
@@ -52,6 +50,7 @@ typedef enum { FALSE = 0, TRUE = 1 } BOOL;
 typedef enum vidstate_e { vid_null, vid_none, vid_soft, vid_gl } vidstate_t;
 
 // SOUND RELATED VARIABLES
+SDL_AudioSpec audiospec;
 int SoundEnabled = 1;
 BYTE PrevStereoSound;
 DWORD PrevSoundQuality;
@@ -133,10 +132,9 @@ static BYTE IsActivated = 1;
 
 /* TIMER VARIABLES/MACROS */
 // millisecond per world update
-//#define UPDATE_TICKS_GAME (1000.0/60)
+#define UPDATE_TICKS_GAME (1000.0/59.948743718592964824120603015060)
 #define UPDATE_TICKS_GAMEPAL (20.0)
 #define UPDATE_TICKS_GUI (1000.0/36.0)
-#define UPDATE_TICKS_GAME (1000.0/59.948743718592964824120603015060)
 #define UPDATE_TICKS_UDP (1000.0/60.0)
 
 int T60HZEnabled = 0;
@@ -688,161 +686,67 @@ void ProcessKeyBuf(int scancode)
 	}
 }
 
-
-#define SAMPLE_NTSC_HI_SCALE 995ULL
-#define SAMPLE_NTSC_LO 59649ULL
-
-static unsigned int ntschi;
-static unsigned int ntsclo;
-static unsigned int ntscbalance;
-
-static int fdAudio = 0;
-static int oss_format = AFMT_S16_LE;
-static int result = 0;
-static int lastresult = 0;
-
-static const int freqtab[7] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
-
 int InitSound(void)
 {
-  int oss_channels = StereoSound+1;
-  int oss_samplerate = freqtab[SoundQuality = ((SoundQuality > 6) ? 1 : SoundQuality)];
-  int blah = 1;
+	SDL_AudioSpec wanted;
+	const int samptab[7] = { 1, 1, 2, 4, 2, 4, 4 };
+	const int freqtab[7] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
 
-  PrevSoundQuality = SoundQuality;
-  PrevStereoSound = StereoSound;
+	SDL_CloseAudio();
 
-  if (!SoundEnabled)
-  {
-    return FALSE;
-    close(fdAudio);
-    fdAudio = 0;
-  }
+	if (!SoundEnabled)
+	{
+		return FALSE;
+	}
 
-  printf("Sample: %d\n", oss_samplerate);
+	if (Buffer)
+		free(Buffer);
+	Buffer = NULL;
+	Buffer_len = 0;
 
-  if (fdAudio)
-  {
-    ioctl(fdAudio, SNDCTL_DSP_RESET, 0);
-    close(fdAudio);
-  }
+	PrevSoundQuality = SoundQuality;
+	PrevStereoSound = StereoSound;
 
-  if ((fdAudio = open("/dev/dsp",  O_WRONLY, 0)) == -1)
-  fprintf(stderr, "Error opening /dev/dsp\n");
+	if (SoundQuality > 6)
+		SoundQuality = 1;
+	wanted.freq = freqtab[SoundQuality];
 
-  if (ioctl(fdAudio, SNDCTL_DSP_SETFMT, &oss_format) == -1)
-  fprintf(stderr, "Could not set DSP SETFMT on device.\n");
+	if (StereoSound)
+	{
+		wanted.channels = 2;
+	}
+	else
+	{
+		wanted.channels = 1;
+	}
 
-  if (ioctl(fdAudio, SNDCTL_DSP_SETFRAGMENT, "32") == -1)
-  fprintf(stderr, "Could not set DSP FRAGMENT on device.\n");
+	wanted.samples = samptab[SoundQuality] * 128 * wanted.channels;
 
-  if (ioctl(fdAudio, SNDCTL_DSP_SPEED, &oss_samplerate) == -1)
-  fprintf(stderr, "Could not set DSP SPEED on device.\n");
+	wanted.format = AUDIO_S16LSB;
+	wanted.userdata = NULL;
+	wanted.callback = UpdateSound;
 
-  if (ioctl(fdAudio, SNDCTL_DSP_CHANNELS, &oss_channels) == -1)
-  fprintf(stderr, "Could not set DSP CHANNELS on device.\n");
+	if (SDL_OpenAudio(&wanted, &audiospec) < 0)
+	{
+		fprintf(stderr, "Sound init failed!\n");
+		fprintf(stderr, "freq: %d, channels: %d, samples: %d\n",
+			wanted.freq, wanted.channels, wanted.samples);
+		SoundEnabled = 0;
+		return FALSE;
+	}
+	SDL_PauseAudio(0);
 
-  //if (ioctl(fdAudio, SNDCTL_DSP_SYNC, &blah) == -1)
-  //fprintf(stderr, "Could not set DSP SYNC on device.\n");
+	Buffer_len = (audiospec.size * 2);
+	Buffer_len = (Buffer_len + 255) & ~255; /* Align to SPCSize */
+	Buffer = malloc(Buffer_len);
 
-  if (ioctl(fdAudio, SNDCTL_DSP_NONBLOCK, &blah) == -1)
-  fprintf(stderr, "Could not set DSP NONBLOCK on device.\n");
-
-  ntschi = SAMPLE_NTSC_HI_SCALE*oss_samplerate;
-  ntsclo = SAMPLE_NTSC_LO;
-  ntscbalance = ntschi;
-
-  result = 0;
-  lastresult = 0;
-
-  return TRUE;
+	return TRUE;
 }
 
 int ReInitSound(void)
 {
-  return InitSound();
+	return InitSound();
 }
-
-void WriteSamples(unsigned int samples)
-{
-  //extern unsigned char soundon, DSPDisable;
-  extern unsigned int BufferSizeB, BufferSizeW;
-  void ProcessSoundBuffer();
-  extern int DSPBuffer[1280];
-  short stemp[1280];
-  int *d = 0;
-  short *p = 0;
-
-  if (samples > 1280)
-  {
-
-    WriteSamples(1280);
-    samples -= 1280;
-  }
-
-  //printf("samples %d\n", result);
-
-  BufferSizeB = samples;
-  BufferSizeW = samples<<1;
-
-  asm_call(ProcessSoundBuffer);
-
-  d = DSPBuffer;
-  p = stemp;
-
-  for (; d < DSPBuffer+samples; d++, p++)
-  {
-    if ((unsigned int)(*d + 0x8000) <= 0xFFFF) { *p = *d; continue; }
-    if (*d > 0x7FFF) { *p = 0x7FFF; }
-    else { *p = 0x8000; }
-  }
-
-  lastresult = result;
-  lastresult += samples*2;
-  while (result >= lastresult || result == -1)
-  {
-    ioctl(fdAudio, SNDCTL_DSP_GETOPTR, &result);
-  }
-
-  write(fdAudio, stemp, samples*2);
-}
-
-void WriteAudio()
-{
-  unsigned int samples;
-  if (romispal)
-  {
-    if (StereoSound)
-    {
-      samples = freqtab[SoundQuality]*2/50;
-      if (samples & 1)
-      {
-        static signed char odd_carry = 0;
-        samples += odd_carry-1;
-        odd_carry ^= 2;
-      }
-    }
-    else
-    {
-      samples = freqtab[SoundQuality]/50;
-      if (freqtab[SoundQuality] & 1)
-      {
-          static signed char half_carry = 0;
-          samples += half_carry;
-          half_carry ^= 1;
-      }
-    }
-  }
-  else
-  {
-    samples = (ntscbalance/ntsclo) << StereoSound;
-    ntscbalance %= ntsclo;
-    ntscbalance += ntschi;
-  }
-
-  WriteSamples(samples);
-}
-
 
 BOOL InitJoystickInput(void)
 {
@@ -1237,6 +1141,33 @@ void CheckTimers(void)
 	}
 }
 
+//Why in the world did someone make this use signed values??? -Nach
+void UpdateSound(void *userdata, Uint8 * stream, int len)
+{
+  int left = Buffer_len - Buffer_head;
+
+  if (left < 0)
+  {
+    return;
+  }
+
+  if (left <= len)
+  {
+    memcpy(stream, &Buffer[Buffer_head], left);
+    stream += left;
+    len -= left;
+    Buffer_head = 0;
+    Buffer_fill -= left;
+  }
+
+  if (len)
+  {
+    memcpy(stream, &Buffer[Buffer_head], len);
+    Buffer_head += len;
+    Buffer_fill -= len;
+  }
+}
+
 void sem_sleep(void)
 {
 	end = update_ticks_pc - (sem_GetTicks() - start) - .2f;
@@ -1286,16 +1217,48 @@ void sem_sleep_die(void)
 
 void UpdateVFrame(void)
 {
+  extern unsigned char soundon, DSPDisable;
+  extern unsigned int BufferSizeB, BufferSizeW;
 
   //Quick fix for GUI CPU usage
-//  if (GUIOn || 2 || EMUPause) { usleep(6000); }
+  if (GUIOn || GUIOn2 || EMUPause) { usleep(6000); }
 
   CheckTimers();
   Main_Proc();
 
+  /* Process sound */
+  BufferSizeB = 256;
+  BufferSizeW = BufferSizeB+BufferSizeB;
 
   /* take care of the things we left behind last time */
-//  SDL_LockAudio();
+  SDL_LockAudio();
+  while (Buffer_fill < Buffer_len)
+  {
+    short *ptr = (short*)&Buffer[Buffer_tail];
+
+    if (soundon && !DSPDisable) { asm_call(ProcessSoundBuffer); }
+
+    if (T36HZEnabled)
+    {
+      memset(ptr, 0, BufferSizeW);
+    }
+    else
+    {
+      int *d = DSPBuffer;
+      int *end_d = DSPBuffer+BufferSizeB;
+      for (; d < end_d; d++, ptr++)
+      {
+        if ((unsigned) (*d + 0x8000) <= 0xFFFF) { *ptr = *d; continue; }
+        if (*d > 0x7FFF) { *ptr = 0x7FFF; }
+        else { *d = 0x8000; }
+      }
+    }
+
+    Buffer_fill += BufferSizeW;
+    Buffer_tail += BufferSizeW;
+    if (Buffer_tail >= Buffer_len) { Buffer_tail = 0; }
+  }
+  SDL_UnlockAudio();
 }
 
 void clearwin()
@@ -1312,12 +1275,6 @@ void clearwin()
 		sw_clearwin();
 }
 
-int writesound()
-{
-
-return 0;
-}
-
 void drawscreenwin(void)
 {
 	/* Just in case - DDOI */
@@ -1329,12 +1286,6 @@ void drawscreenwin(void)
 	else
 #endif
 		sw_drawwin();
-
-	/* Process sound */
- 
-	if (GUIOn2 || GUIOn || EMUPause) { return; }
- 
-	WriteAudio();
 }
 
 void UnloadSDL()
