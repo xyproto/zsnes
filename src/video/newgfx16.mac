@@ -3276,7 +3276,6 @@ EXTSYM drawmode7ngextbg216b,osm2dis
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    mov dword[ofsmvalh],0
     mov dword[cbgval],%1
     ProcessBuildWindow %1
     mov ecx,ebx
@@ -3401,7 +3400,6 @@ EXTSYM drawmode7ngextbg216b,osm2dis
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    mov dword[ofsmvalh],0
     mov dword[cbgval],%1
     ProcessBuildWindow %1
     mov ecx,ebx
@@ -3785,7 +3783,6 @@ EXTSYM drawmode7ngextbg216b,osm2dis
     ; eax = pointer to beginning of tile area
     mov dword[ofsmval],2000h << %1
     mov dword[ofsmvalh],2000h << %1
-    mov dword[ofsmvalh],0
     mov dword[cbgval],%1
     ProcessBuildWindow %1
     mov ecx,ebx
