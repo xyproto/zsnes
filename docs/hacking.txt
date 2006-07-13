@@ -1,3 +1,3 @@
 Guidelines for hacking ZSNES:
 
-* Alway run ./tools/minwhite on your file before committing
+* Alway run minwhite on your file before committing
