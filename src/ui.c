@@ -60,7 +60,7 @@ unsigned char *wramdata;	// stack (64K = 32768)
 unsigned char *ram7f;		// ram @ 7f = 65536
 unsigned char *vram;		// vram = 65536
 unsigned char *sram;		// sram = 32768
-unsigned char *debugbuf;	// debug buffer = 38x1000 = 38000
+unsigned char *debugbuf;	// debug buffer = 80x1000 = 80000
 unsigned char regptra[49152];
 unsigned char regptwa[49152];
 unsigned char *regptr = regptra;
@@ -225,14 +225,11 @@ unsigned char *vcache2bs = 0; // 2-bit video secondary cache
 unsigned char *vcache4bs = 0; // 4-bit video secondary cache
 unsigned char *vcache8bs = 0; // 8-bit video secondary cache
 
-
 unsigned char vrama[65536];
 unsigned char srama[65536*2];
-unsigned char debugbufa[80000];
 
 unsigned char mode7tab[65536];
 unsigned char *wramreadptr, wramwriteptr;
-
 
 unsigned short fulladdtab[65536];
 unsigned char spcRamcmp[65536];
@@ -259,7 +256,7 @@ void deallocmem()
   deallocmemhelp(vcache2b);
   deallocmemhelp(vcache4b);
   deallocmemhelp(vcache8b);
-
+  deallocmemhelp(debugbuf);
 }
 
 #define AllocmemFail(ptr, size) if (!(ptr = malloc(size))) { outofmemory(); }
@@ -282,6 +279,7 @@ static void allocmem()
   AllocmemFail(vcache2b,262144+256);
   AllocmemFail(vcache4b,131072+256);
   AllocmemFail(vcache8b,65536+256);
+  AllocmemFail(debugbuf,80000);
 
 
   newgfx16b = 1;
@@ -333,7 +331,6 @@ static void allocmem()
   ram7f = ram7fa;
   vram = vrama;
   sram = srama;
-  debugbuf = debugbufa;
 
   regptr -= 0x8000;
   regptw -= 0x8000;

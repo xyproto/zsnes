@@ -1316,7 +1316,6 @@ void loadROM()
 extern unsigned char wramdataa[65536];
 extern unsigned char ram7fa[65536];
 extern unsigned char srama[65536];
-extern unsigned char debugbufa[80000];
 extern unsigned char regptra[49152];
 extern unsigned char regptwa[49152];
 extern unsigned char vidmemch2[4096];
@@ -1334,6 +1333,7 @@ extern unsigned char *vram;
 extern unsigned char *vcache2b;
 extern unsigned char *vcache4b;
 extern unsigned char *vcache8b;
+extern unsigned char *debugbuf;
 
 void clearSPCRAM()
 {
@@ -1371,7 +1371,7 @@ void clearmem()
   memset(ram7fa, 0, 65536);
   memset(vram, 0, 65536);
   memset(srama, 0, 65536);
-  memset(debugbufa, 0, 80000);
+  memset(debugbuf, 0, 80000);
   memset(regptra, 0, 49152);
   memset(regptwa, 0, 49152);
   memset(vcache2b, 0, 262144+256);
