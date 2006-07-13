@@ -69,7 +69,7 @@ EXTSYM GUITBWVID,Clear2xSaIBuffer,MouseWindow,ExitFromGUI,GUIWFVID,newgfx16b
 EXTSYM NumVideoModes,MusicVol,DSPMem,NumInputDevices,GUIInputNames
 EXTSYM GUIVideoModeNames,GUISLVID,GUIINVID,GUIEAVID,GUIIEVID,GUIFSVID,GUIWSVID
 EXTSYM GUISSVID,GUITBVID,GUIHSVID,GUI2xVID,GUII2VID,GUIM7VID,GUINTVID
-EXTSYM device1,device2,TwelveHourClock
+EXTSYM device1,device2,TwelveHourClock,InGUI
 EXTSYM outofmemfix,yesoutofmemory,JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY
 EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,GetCoords,GetCoords3,MultiTap
 EXTSYM SFXEnable,RestoreSystemVars,GUIBIFIL,GUIHQ2X,GUIHQ3X,GUIHQ4X,firstsaveinc

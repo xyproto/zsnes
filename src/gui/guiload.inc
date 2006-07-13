@@ -294,7 +294,10 @@ NEWSYM GUIloadfilename
 
     mov byte[romloadskip],1
     ; load file
+    mov byte[InGUI],1
+    pushad
     call loadfileGUI
+    popad
     cmp byte[GUIloadfailed],1
     je near .noloader
 

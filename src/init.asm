@@ -24,7 +24,7 @@ EXTSYM UpdateDevices,Makemode7Table,MusicRelVol,MusicVol,makesprprtable
 EXTSYM romloadskip,start65816,showinfogui,inittable
 EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer
 EXTSYM inittablec,newgfx16b,DisplayInfo,ssautosw,GUIDelayB,pl12s34
-EXTSYM Output_Text,SPCDisable,osm2dis,Turbo30hz,CombinDataLocl
+EXTSYM Output_Text,osm2dis,Turbo30hz,CombinDataLocl
 EXTSYM BackupSystemVars,SnowData,SnowVelDist,Setper2exec
 EXTSYM JoyRead,pressed,mousebuttons,mousexdir,mouseydir,mousexpos,mouseypos
 EXTSYM pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
@@ -51,15 +51,15 @@ EXTSYM tableD,timeron,vidbright,SPC700read,SPC700write,spc700read
 EXTSYM GUIReset,InitC4,SA1Reset,SetAddressingModesSA1,SDD1BankA,SPC7110init
 EXTSYM RTCinit,memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
 EXTSYM memaccessspc7110w16,snesmap2,snesmmap,procexecloop,wramdata,wramdataa
-EXTSYM GetCurDir,ZStateName,statefileloc
-EXTSYM curromspace,romispal,initregr,initregw,memtabler16
-EXTSYM memtabler8,memtablew16,memtablew8,wramreadptr
+EXTSYM GetCurDir,ZStateName,statefileloc,loadfileGUI
+EXTSYM romispal,initregr,initregw,memtabler16
+EXTSYM memtabler8,memtablew16,memtablew8,wramreadptr,InGUI
 EXTSYM wramwriteptr,loadstate2,CMovieExt,MoviePlay,MovieDumpRaw,AllowUDLR
 EXTSYM device1,device2,processmouse1,processmouse2,cpalval
-EXTSYM clearmem,clearSPCRAM,loadROM,SPC7110IndexSize
+EXTSYM clearmem,clearSPCRAM,SPC7110IndexSize
 EXTSYM SPC7PackIndexLoad,C4Enable,SPC7110Enable,RTCEnable,SA1Enable
 EXTSYM BSEnable,clearvidsound,headerhack,SetupROM,ram7fa
-EXTSYM OpenCombFile,OpenSramFile,ZCartName,PatchUsingIPS
+EXTSYM ZCartName
 
 EXTSYM initsnes
 
@@ -1233,8 +1233,10 @@ SECTION .text
 NEWSYM loadfile
     call GetCurDir
     mov byte[InGUI],0
-
-    jmp loadfileGUI.nogui
+    pushad
+    call loadfileGUI
+    popad
+    ret
 
 SECTION .data
 .opened db 'File opened successfully!',13,10,0
@@ -1245,7 +1247,6 @@ NEWSYM CRC32, resd 1
 NEWSYM SramExists,    resb 1
 NEWSYM NumofBanks,    resd 1
 NEWSYM NumofBytes,    resd 1
-InGUI resb 1
 
 SECTION .data
 
@@ -1282,78 +1283,6 @@ NEWSYM SPC7110Load
     mov dword[Msgptr],spc7110notfound
     mov dword[MessageOn],60*6
     ret
-
-NEWSYM loadfileGUI
-    mov byte[InGUI],1
-.nogui
-    mov byte[spcon],0
-    cmp byte[SPCDisable],1
-    je .nosound
-    mov byte[spcon],1
-.nosound
-
-    mov dword[MessageOn],0
-    mov byte[yesoutofmemory],0
-    mov byte[IPSPatched],0
-    mov byte[GUIloadfailed],0
-
-    pushad
-    call loadROM
-    popad
-
-    cmp dword[curromspace],0
-    je near .failed
-
-    mov byte[SramExists],0
-
-    ; open .srm file
-    pushad
-    call OpenSramFile
-    popad
-
-    pushad
-    call OpenCombFile
-    popad
-    cmp byte[InGUI],1
-    je .inguib
-    mov edx,.opened
-    mov ah,9
-    call Output_Text
-.inguib
-
-    mov eax,[curromspace]
-    mov [NumofBytes],eax
-    shr eax,15
-    mov [NumofBanks],eax
-
-    cmp byte[IPSPatched],0
-    jne .patched
-    pushad
-    call PatchUsingIPS
-    popad
-.patched
-    ret
-
-.failed
-    cmp byte[InGUI],1
-    je .noguic
-    mov edx,.failop
-    mov ah,9
-    call Output_Text
-    jmp DosExit
-.noguic
-    mov byte[GUIloadfailed],1
-    ret
-
-SECTION .data
-.failop   db 'Error opening file!',13,10,0
-.opened db 'File opened successfully!',13,10,0
-
-SECTION .bss
-
-NEWSYM GUIloadfailed, resb 1
-
-SECTION .text
 
 NEWSYM DosExit ; Terminate Program
 %ifdef __MSDOS__

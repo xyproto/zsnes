@@ -1324,7 +1324,6 @@ void loadROM()
   }
 }
 
-
 //Memory Setup functions
 extern unsigned char wramdataa[65536];
 extern unsigned char ram7fa[65536];
@@ -2546,5 +2545,42 @@ void initsnes()
   else
   {
     map_bsx();
+  }
+}
+
+bool InGUI;
+bool GUIloadfailed;
+void loadfileGUI()
+{
+  spcon = !SPCDisable;
+
+  MessageOn      = 0;
+  yesoutofmemory = 0;
+  IPSPatched     = 0;
+  GUIloadfailed  = 0;
+
+  loadROM();
+
+  if (curromspace)
+  {
+    SramExists = 0;
+    OpenSramFile();
+    OpenCombFile();
+
+    if (!InGUI) puts("File opened successfully!\n");
+
+    NumofBytes = curromspace;
+    NumofBanks = curromspace >> 15;
+
+    if (!IPSPatched) { PatchUsingIPS(); }
+  }
+  else //failed
+  {
+    if (!InGUI)
+    {
+      puts("Error opening file!\n");
+      asm_call(DosExit);
+    }
+    GUIloadfailed = 1;
   }
 }
