@@ -95,6 +95,7 @@ void cleardisplay();
 void nextspcopcode();
 void SaveOAMRamLog();
 void debugdump();
+void out65816();
 
 void traceops(unsigned count);
 void SPCbreakops(unsigned short addr);
@@ -390,25 +391,65 @@ void debugloop() {
    case 'W': // break at signal (breakatsign)
    {
        WINDOW *w;
+
        w = openwindow(3,52,11,14,
 		      "   Waiting for Signal .... Press ESC to stop.");
        wrefresh(w);
 
+       debstop3 = 0;
        nodelay(w, TRUE);
        do {
 	   asm_call(execnextop);
        } while ( (! ((++numinst % 256) && (wgetch(w) == 27)))
-		 && (debstop != 1) );
-       debstop = 0;
+		 && (debstop3 != 1) );
+       debstop3 = 0;
        nodelay(w, FALSE);
 
        closewindow(w);
        goto a;
    }
 
-   /*
-   case 'L': // break at signal log (breakatsignlog)
-   */
+   case 'L': // break at signal & log (breakatsignlog)
+   {
+       FILE *fp;
+       WINDOW *w, *real_debugwin;
+
+       w = openwindow(3,52,11,14,
+		      "   Waiting for Signal .... Press ESC to stop.");
+       wrefresh(w);
+
+       // Open output file
+       fp = fopen_dir(ZStartPath, "debug.log","w");
+
+       real_debugwin = debugwin;
+       debugwin = newpad(1, 77);
+       scrollok(debugwin, TRUE);
+
+       debstop3 = 0;
+       nodelay(w, TRUE);
+       do {
+	   // log instruction
+	   out65816();
+	   
+	   char buf[78];
+	   mvwinnstr(debugwin, 0, 0, buf, 77);
+	   buf[77] = 0;
+	   fprintf(fp, "%s\n", buf);
+
+	   asm_call(execnextop);
+       } while ( (! ((++numinst % 256) && (wgetch(w) == 27)))
+		 && (debstop3 != 1) );
+       debstop3 = 0;
+       nodelay(w, FALSE);
+
+       fclose(fp);
+       delwin(debugwin);
+       debugwin = real_debugwin;
+       
+       closewindow(w);
+       goto a;
+   }
+   
 
    case '1': // toggle SPC
        debugds ^= 1;
