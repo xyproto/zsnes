@@ -49,8 +49,8 @@ EXTSYM init65816,procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA
 EXTSYM spcX,spcY,spcP,spcNZ,Voice0Status,Voice1Status,Voice2Status,Voice3Status
 EXTSYM Voice4Status,Voice5Status,Voice6Status,Voice7Status,ClearScreen
 EXTSYM statesaver,loadstate2,vidbuffer,ASCII2Font,hirestiledat,showallext
-EXTSYM scanlines,statefileloc,ZStateName,sprlefttot,spritetablea,CHIPBATT
-EXTSYM sfxramdata,setaramdata,SETAEnable,cgram,srama,tempco0,prevbright,maxbr
+EXTSYM scanlines,statefileloc,ZStateName,sprlefttot,spritetablea
+EXTSYM cgram,tempco0,prevbright,maxbr
 EXTSYM prevpal,coladdr,coladdg,coladdb,scaddtype,ScreenScale,initvideo,pressed
 EXTSYM UpdateDevices,memtabler8,memtablew8,writeon,JoyRead,SetInputDevice,delay
 EXTSYM FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,pl12s34,resolutn
@@ -63,7 +63,7 @@ EXTSYM nmirept,nmiprevline,nmistatus,spcnumread,NextLineCache,ResetTripleBuf
 EXTSYM GUINGVID,ScanCodeListing,AdjustFrequency,GUISaveVars,Init_Mouse
 EXTSYM Get_MouseData,Set_MouseXMax,Set_MouseYMax,Set_MousePosition
 EXTSYM Get_MousePositionDisplacement,GUIInit,GUIDeInit,SpecialLine,DrawWater
-EXTSYM DrawBurn,SA1Enable,SA1RAMArea,MMXCheck,showinfogui,GetDate
+EXTSYM DrawBurn,MMXCheck,showinfogui,GetDate
 EXTSYM horizon_get,ErrorPointer,MessageOn,GetTime,sndrot,regsbackup,GetScreen
 EXTSYM GUITBWVID,Clear2xSaIBuffer,MouseWindow,ExitFromGUI,GUIWFVID,newgfx16b
 EXTSYM NumVideoModes,MusicVol,DSPMem,NumInputDevices,GUIInputNames
