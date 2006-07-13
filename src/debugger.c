@@ -430,7 +430,7 @@ void debugloop() {
        do {
 	   // log instruction
 	   out65816();
-	   
+
 	   char buf[78];
 	   mvwinnstr(debugwin, 0, 0, buf, 77);
 	   buf[77] = 0;
@@ -445,11 +445,11 @@ void debugloop() {
        fclose(fp);
        delwin(debugwin);
        debugwin = real_debugwin;
-       
+
        closewindow(w);
        goto a;
    }
-   
+
 
    case '1': // toggle SPC
        debugds ^= 1;
