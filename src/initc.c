@@ -2550,6 +2550,8 @@ void initsnes()
   }
 }
 
+void PatchUsingIPS();
+
 bool InGUI;
 bool GUIloadfailed;
 void loadfileGUI()
