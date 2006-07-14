@@ -71,6 +71,9 @@ EXTSYM exit
 
 %ifndef NO_DEBUGGER
 EXTSYM startdebugger
+%ifdef __UNIXSDL__
+EXTSYM Start60HZ
+%endif
 %endif
 
 ; Initiation
@@ -260,6 +263,14 @@ NEWSYM init
     je near start65816
     cmp byte[romloadskip],1
     je near start65816
+%ifdef __UNIXSDL__
+    ;; Prevent nasty hang in debugger. Likely not a good way...
+    ;; If windows doesn't need this, figure out what winlink/wininterf do right
+    ;; and copy it.
+    pushad
+    call Start60HZ
+    popad
+%endif
     jmp startdebugger
 %else
     jmp start65816
