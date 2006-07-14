@@ -263,10 +263,14 @@ NEWSYM init
     je near start65816
     cmp byte[romloadskip],1
     je near start65816
-%ifdef __UNIXSDL__
+%ifndef __MSDOS__
     ;; Prevent nasty hang in debugger. Likely not a good way...
-    ;; If windows doesn't need this, figure out what winlink/wininterf do right
-    ;; and copy it.
+    ;; If we don't do this, then on the SDL and win32 ports, update_ticks_pc2
+    ;; won't be set and CheckTimers will hang.
+
+    ;; Most likely it isn't desirable to be checking timers under the
+    ;; debugger anyway, but this is a much simpler fix.
+
     pushad
     call Start60HZ
     popad
