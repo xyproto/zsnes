@@ -39,7 +39,7 @@ bool create_section_file()
   ofstream stream(section_fname, ios::out);
   if (stream)
   {
-    for (set<string>::iterator i = symbols.begin(); i != symbols.end(); i++)
+    for (set<string>::iterator i = sections.begin(); i != sections.end(); i++)
     {
       stream << "--rename-section " << *i << " ";
     }
