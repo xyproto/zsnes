@@ -240,7 +240,9 @@ unsigned int dspRptr[256];
 
 void deallocmem()
 {
+#ifndef __MSDOS__
   deallocmemhelp(BitConv32Ptr);
+#endif
   deallocmemhelp(RGBtoYUVPtr);
   deallocmemhelp(spcBuffera);
   deallocmemhelp(spritetablea);
