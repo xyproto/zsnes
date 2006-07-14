@@ -13,8 +13,11 @@ string extension;
 
 vector<string> files;
 set<string> symbols;
+set<string> sections;
+
 
 const char *symbol_fname = "symbol.map";
+const char *section_fname = "section.map";
 
 bool create_symbol_file()
 {
@@ -23,7 +26,22 @@ bool create_symbol_file()
   {
     for (set<string>::iterator i = symbols.begin(); i != symbols.end(); i++)
     {
-      stream << *i << " " << prefix << *i << "\n";
+      stream << *i << "\n";
+    }
+    stream.close();
+    return(true);
+  }
+  return(false);
+}
+
+bool create_section_file()
+{
+  ofstream stream(section_fname, ios::out);
+  if (stream)
+  {
+    for (set<string>::iterator i = symbols.begin(); i != symbols.end(); i++)
+    {
+      stream << "--rename-section " << *i << " ";
     }
     stream.close();
     return(true);
@@ -52,7 +70,18 @@ void handle_file(const char *filename)
         i++;
         if ((*i)[0] != '.')
         {
-          symbols.insert(*i);
+          symbols.insert(*i+" "+prefix+*i);
+        }
+        else
+        {
+          size_t p = i->find('$');
+          if (p != string::npos)
+          {
+            string change(*i);
+            i->insert(p+1, prefix);
+            symbols.insert(change+" "+*i);
+            sections.insert(change+"="+*i);
+          }
         }
       }
     }
@@ -82,7 +111,14 @@ int main(size_t argc, char **argv)
 
      if (create_symbol_file())
      {
-       string objcopy("objcopy --redefine-syms ");
+       string objcopy("objcopy ");
+       if (sections.size() && create_section_file())
+       {
+         objcopy += "@";
+         objcopy += section_fname;
+         objcopy += " ";
+       }
+       objcopy += "--redefine-syms ";
        objcopy += symbol_fname;
        objcopy += " ";
        for (vector<string>::iterator i = files.begin(); i != files.end(); i++)
