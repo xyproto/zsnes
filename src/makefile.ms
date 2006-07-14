@@ -135,12 +135,21 @@ ifeq (${DEBUG},yes)
 endif
 
 ifeq (${DEV},yes)
-  CFLAGSORIG+=-D__DEVELOPER__
-  ASMFLAGSORIG+=-D__DEVELOPER__
+  CFLAGSORIG+= -D__DEVELOPER__
+  ASMFLAGSORIG+= -D__DEVELOPER__
 endif
 
 ifeq (${RELEASEGRADE},yes)
   ASMOPT=-O9999
+endif
+
+LINK=${CPPC}
+
+ifeq (${JMA},no)
+  CFLAGSORIG+= -DNO_JMA
+  ifeq (${OS},__MSDOS__)
+    LINK=${CC}
+  endif
 endif
 
 CFLAGS=${CFLAGSORIG} -D${OS}
@@ -167,9 +176,11 @@ EFFECTSOBJ=${EFFECTSDIR}/burn${OE} ${EFFECTSDIR}/water${OE} ${EFFECTSDIR}/smoke$
 
 GUIOBJ=${GUIDIR}/gui${OE} ${GUIDIR}/guifuncs${OE} ${GUIDIR}/menu${OE}
 
+ifneq (${JMA},no)
 JMAOBJ=${JMADIR}/7zlzma${OE} ${JMADIR}/crc32${OE} ${JMADIR}/iiostrm${OE}\
 	${JMADIR}/inbyte${OE} ${JMADIR}/jma${OE} ${JMADIR}/lzma${OE} ${JMADIR}/lzmadec${OE}\
 	${JMADIR}/winout${OE} ${JMADIR}/zsnesjma${OE}
+endif
 
 MAINOBJ=endmem${OE} init${OE} initc${OE} patch${OE}\
 	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE}\
@@ -258,7 +269,7 @@ ALL: zsnes
 
 zsnes: ${PSR} ${OBJFIX} ${OBJS}
 ifneq (${ENV},msvc)
-	${CPPC} ${STRIP} -o ${EXE} ${OBJS} ${LIBS}
+	${LINK} ${STRIP} -o ${EXE} ${OBJS} ${LIBS}
 else
 	 @echo /Fezsnesw.exe *.obj ${CPUDIR}\*.obj ${VIDEODIR}\*.obj ${CHIPDIR}\*.obj ${EFFECTSDIR}\*.obj ${DOSDIR}\*.obj ${WINDIR}\*.obj ${GUIDIR}\*.obj > link.vc
 	 @echo ${ZIPDIR}\*.obj ${JMADIR}\*.obj ${NETDIR}\*.obj ${MMLIBDIR}\*.obj >> link.vc
