@@ -71,7 +71,7 @@ EXTSYM exit
 
 %ifndef NO_DEBUGGER
 EXTSYM startdebugger
-%ifdef __UNIXSDL__
+%ifndef __MSDOS__
 EXTSYM Start60HZ
 %endif
 %endif
