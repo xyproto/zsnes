@@ -1315,6 +1315,8 @@ void loadROM()
   if (curromspace)
   {
     unsigned char *ROM = (unsigned char *)romdata;
+    NumofBytes = curromspace;
+    NumofBanks = curromspace >> 15;
     BankCheck();
     curromsize = ROM[infoloc+ROMSizeOffset];
     chip_detect();
@@ -2568,9 +2570,6 @@ void loadfileGUI()
     OpenCombFile();
 
     if (!InGUI) puts("File opened successfully!\n");
-
-    NumofBytes = curromspace;
-    NumofBanks = curromspace >> 15;
 
     if (!IPSPatched) { PatchUsingIPS(); }
   }
