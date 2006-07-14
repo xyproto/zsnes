@@ -262,6 +262,7 @@ void sfxaccessbankr8b(), sfxaccessbankw8b(), sfxaccessbankr16b(), sfxaccessbankw
 void sfxaccessbankr8c(), sfxaccessbankw8c(), sfxaccessbankr16c(), sfxaccessbankw16c();
 void sfxaccessbankr8d(), sfxaccessbankw8d(), sfxaccessbankr16d(), sfxaccessbankw16d();
 void OBC1Read8b(), OBC1Write8b(), OBC1Read16b(), OBC1Write16b();
+void C4Read8b(), C4Write8b(), C4Read16b(), C4Write16b();
 
 mrwp regbank = { regaccessbankr8, regaccessbankw8, regaccessbankr16, regaccessbankw16 };
 mrwp membank = { memaccessbankr8, memaccessbankw8, memaccessbankr16, memaccessbankw16 };
@@ -285,7 +286,7 @@ mrwp sfxbankb = { sfxaccessbankr8b, sfxaccessbankw8b, sfxaccessbankr16b, sfxacce
 mrwp sfxbankc = { sfxaccessbankr8c, sfxaccessbankw8c, sfxaccessbankr16c, sfxaccessbankw16c };
 mrwp sfxbankd = { sfxaccessbankr8d, sfxaccessbankw8d, sfxaccessbankr16d, sfxaccessbankw16d };
 mrwp obc1bank = { OBC1Read8b, OBC1Write8b, OBC1Read16b, OBC1Write16b };
-
+mrwp c4bank = { C4Read8b, C4Write8b, C4Read16b, C4Write16b };
 
 void SetAddressingModes()
 {                                       //  Banks

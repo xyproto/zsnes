@@ -1957,6 +1957,12 @@ void CheckROMType()
     map_mem(0x80, &obc1bank, 0x40);
   }
 
+  if (C4Enable)
+  {
+    map_mem(0x00, &c4bank, 0x40);
+    map_mem(0x80, &c4bank, 0x40);
+  }
+
   if (SFXEnable)
   {
     // Setup SuperFX stuff

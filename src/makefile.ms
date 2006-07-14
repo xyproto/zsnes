@@ -162,7 +162,7 @@ CHIPSOBJ=${CHIPDIR}/dsp1emu${OE} ${CHIPDIR}/fxemu2${OE} ${CHIPDIR}/sfxproc${OE}\
 	${CHIPDIR}/st10proc${OE} ${CHIPDIR}/seta10${OE} ${CHIPDIR}/dsp2proc${OE}\
 	${CHIPDIR}/sdd1emu${OE} ${CHIPDIR}/c4emu${OE} ${CHIPDIR}/dsp4proc${OE}\
 	${CHIPDIR}/dsp4emu${OE} ${CHIPDIR}/dsp3proc${OE} ${CHIPDIR}/dsp3emu${OE}\
-	${CHIPDIR}/obc1emu${OE} ${CHIPDIR}/obc1proc${OE}
+	${CHIPDIR}/obc1emu${OE} ${CHIPDIR}/obc1proc${OE} ${CHIPDIR}/c4proc${OE}
 
 CPUOBJ=${CPUDIR}/dma${OE} ${CPUDIR}/dsp${OE} ${CPUDIR}/dspproc${OE}\
 	${CPUDIR}/execute${OE} ${CPUDIR}/executec${OE} ${CPUDIR}/irq${OE}\
@@ -293,6 +293,7 @@ md${OE}: md.psr ${PSR}
 zpath${OE}: zpath.c zpath.h
 
 ${CHIPDIR}/c4emu${OE}: ${CHIPDIR}/c4emu.c
+${CHIPDIR}/c4proc${OE}: ${CHIPDIR}/c4proc.asm macros.mac
 ${CHIPDIR}/dsp1emu${OE}: ${CHIPDIR}/dsp1emu.c
 ${CHIPDIR}/dsp1proc${OE}: ${CHIPDIR}/dsp1proc.asm macros.mac
 ${CHIPDIR}/dsp2proc${OE}: ${CHIPDIR}/dsp2proc.asm macros.mac

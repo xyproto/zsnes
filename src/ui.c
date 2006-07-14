@@ -282,7 +282,7 @@ static void allocmem()
   AllocmemFail(vcache4b,131072+256);
   AllocmemFail(vcache8b,65536+256);
   AllocmemFail(debugbuf,80000);
-  AllocmemFail(sram,65536*2);  
+  AllocmemFail(sram,65536*2);
 
   newgfx16b = 1;
   if ((romaptr = malloc(0x600000+32768*2+4096)))

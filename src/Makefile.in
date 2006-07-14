@@ -38,7 +38,7 @@ CHIP_O=$(CHIP_D)/c4emu.o $(CHIP_D)/dsp1emu.o $(CHIP_D)/dsp1proc.o\
 	$(CHIP_D)/fxemu2b.o $(CHIP_D)/fxemu2c.o $(CHIP_D)/fxtable.o\
 	$(CHIP_D)/obc1emu.o $(CHIP_D)/obc1proc.o $(CHIP_D)/sa1proc.o\
 	$(CHIP_D)/sa1regs.o $(CHIP_D)/sdd1emu.o $(CHIP_D)/seta10.o\
-	$(CHIP_D)/sfxproc.o $(CHIP_D)/st10proc.o
+	$(CHIP_D)/sfxproc.o $(CHIP_D)/st10proc.o $(CHIP_D)/c4proc.o
 
 CPU_O=$(CPU_D)/dma.o $(CPU_D)/dsp.o $(CPU_D)/dspproc.o $(CPU_D)/execute.o\
 	$(CPU_D)/executec.o $(CPU_D)/irq.o $(CPU_D)/memory.o $(CPU_D)/memtable.o\

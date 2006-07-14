@@ -1359,9 +1359,6 @@ NEWSYM CSStatus3, db 'VIDEO:                    CRC32:        ',0
 
 SECTION .bss
 NEWSYM DSP1Type, resb 1
-NEWSYM C4RamR,   resd 1
-NEWSYM C4RamW,   resd 1
-NEWSYM C4Ram,   resd 1
 NEWSYM Interleaved, resb 1
 SECTION .text
 
