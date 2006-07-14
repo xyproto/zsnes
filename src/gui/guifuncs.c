@@ -792,41 +792,8 @@ void LoadCheatSearchFile()
 #define HEADER_SIZE 512
 #define INFO_LEN (0xFF - 0xC0)
 
-static bool AllASCII(char *b, int size)
-{
-  int i;
-  for (i = 0; i < size; i++)
-  {
-    if (b[i] < 32 || b[i] > 126)
-    {
-      return(false);
-    }
-  }
-  return(true);
-}
-
-static int InfoScore(char *Buffer)
-{
-  int score = 0;
-  if (Buffer[28] + (Buffer[29] << 8) + Buffer[30] + (Buffer[31] << 8) == 0xFFFF) { score += 3; }
-  if (Buffer[26] == 0x33) { score += 2; }
-  if ((Buffer[21] & 0xf) < 4) { score += 2; }
-  if (!(Buffer[61] & 0x80)) { score -= 4; }
-  if ((1 << (Buffer[23] - 7)) > 48) { score -= 1; }
-  if (Buffer[25] < 14) { score += 1; }
-  if (!AllASCII(Buffer, 20)) { score -= 1; }
-  return (score);
-}
-
-static unsigned int sum(unsigned char *array, unsigned int size)
-{
-  register unsigned int theSum = 0, i;
-  for (i = 0; i < size; i++)
-  {
-    theSum += array[i];
-  }
-  return(theSum);
-}
+int InfoScore(char *);
+unsigned int sum(unsigned char *array, unsigned int size);
 
 static void get_rom_name(const char *filename, char *namebuffer)
 {
