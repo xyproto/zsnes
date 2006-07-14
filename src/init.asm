@@ -72,6 +72,9 @@ EXTSYM exit
 %ifndef NO_DEBUGGER
 EXTSYM startdebugger
 %ifndef __MSDOS__
+%ifdef __WIN32__
+EXTSYM initwinvideo
+%endif
 EXTSYM Start60HZ
 %endif
 %endif
@@ -272,6 +275,10 @@ NEWSYM init
     ;; debugger anyway, but this is a much simpler fix.
 
     pushad
+%ifdef __WIN32__
+    ;; need to get "freq" set first
+    call initwinvideo
+%endif
     call Start60HZ
     popad
 %endif
