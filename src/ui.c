@@ -59,7 +59,7 @@ unsigned char *setaramdata;	// Seta ST010/ST011 SRam Data
 unsigned char *wramdata;	// stack (64K = 32768)
 unsigned char *ram7f;		// ram @ 7f = 65536
 unsigned char *vram;		// vram = 65536
-unsigned char *sram;		// sram = 32768
+unsigned char *sram;		// sram = 65536*2 = 131072
 unsigned char *debugbuf;	// debug buffer = 80x1000 = 80000
 unsigned char regptra[49152];
 unsigned char regptwa[49152];
@@ -87,15 +87,15 @@ unsigned char gammalevel    = 0;	// gamma level (8-bit engine)
 unsigned char gammalevel16b = 0;	// gamma level (16-bit engine)
 unsigned char AddSub256     = 0;	// screen add/sub in 256 colors
 unsigned char dmadeddis     = 0;	// DMA deduction
-unsigned char device1       = 0;  // Device in port 1?
-unsigned char device2       = 0;  // Device in port 2?
+unsigned char device1       = 0;	// Device in port 1?
+unsigned char device2       = 0;	// Device in port 2?
 unsigned char OldStyle      = 1;	// Old style joystick on
 unsigned char SecondPort    = 0;	// Secondary Joystick Port Enabled (209h) (DOS port only)
 
 unsigned char Doublevbuf    = 1;	// Double video buffer
 unsigned char V8Mode        = 0;	// Vegetable mode! =) (Greyscale mode)
 unsigned char fastmemptr    = 0;
-unsigned char ForcePal      = 0;    // 1 = NTSC, 2 = PAL
+unsigned char ForcePal      = 0;	// 1 = NTSC, 2 = PAL
 unsigned char finterleave   = 0;
 unsigned char DSPDisable    = 0;	// Disable DSP emulation
 unsigned char MusicVol      = 0;
@@ -226,7 +226,6 @@ unsigned char *vcache4bs = 0; // 4-bit video secondary cache
 unsigned char *vcache8bs = 0; // 8-bit video secondary cache
 
 unsigned char vrama[65536];
-unsigned char srama[65536*2];
 
 unsigned char mode7tab[65536];
 unsigned char *wramreadptr, wramwriteptr;
@@ -257,6 +256,7 @@ void deallocmem()
   deallocmemhelp(vcache4b);
   deallocmemhelp(vcache8b);
   deallocmemhelp(debugbuf);
+  deallocmemhelp(sram);
 }
 
 #define AllocmemFail(ptr, size) if (!(ptr = malloc(size))) { outofmemory(); }
@@ -280,7 +280,7 @@ static void allocmem()
   AllocmemFail(vcache4b,131072+256);
   AllocmemFail(vcache8b,65536+256);
   AllocmemFail(debugbuf,80000);
-
+  AllocmemFail(sram,65536*2);  
 
   newgfx16b = 1;
   if ((romaptr = malloc(0x600000+32768*2+4096)))
@@ -330,7 +330,6 @@ static void allocmem()
   wramdata = wramdataa;
   ram7f = ram7fa;
   vram = vrama;
-  sram = srama;
 
   regptr -= 0x8000;
   regptw -= 0x8000;
