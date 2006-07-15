@@ -1935,6 +1935,13 @@ void initwinvideo(void)
 
    if (FirstActivate && NTSCFilter) NTSCFilterInit();
 
+   if (cvidmode==37 || cvidmode==38 || cvidmode==41)
+   {
+     SetHQx();
+     SetNTSCFOpt();
+     SetHiresOpt();
+   }
+
    if ( hqFilter != 0 )
    {
      if ( GUIHQ2X[cvidmode] != 0 ) HQMode=2;
@@ -2033,9 +2040,6 @@ void initwinvideo(void)
       case 37:
       case 38:
       case 41:
-         SetHQx();
-         SetNTSCFOpt();
-         SetHiresOpt();
       case 39:
       case 40:
          WindowWidth=CustomResX;
