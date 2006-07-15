@@ -989,6 +989,12 @@ void initwinvideo(void)
 		UseOpenGL = 0;
 		if (cvidmode > 5)
 		   UseOpenGL = 1;
+
+		if (cvidmode == 23)
+		{
+		   SetHQx();
+		   SetHiresOpt();
+		}
 #else
 		if (cvidmode > 5)
 		  cvidmode = 2; // set it to the default 512x448 W
@@ -1058,8 +1064,6 @@ void initwinvideo(void)
 			case 23: //Custom
 				WindowWidth = CustomResX;
 				WindowHeight = CustomResY;
-				SetHQx();
-				SetHiresOpt();
 				break;
 		}
 		adjustMouseXScale();
