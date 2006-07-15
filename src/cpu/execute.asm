@@ -188,6 +188,7 @@ VoiceStartMute:
 %%nointrseta
     mov byte[irqon],80h
     test dl,04h
+    jnz %%irqd
     jmp .virq
 %%novirq
     test byte[INTEnab],10h
@@ -210,6 +211,8 @@ VoiceStartMute:
     jnz %%noirq
 %%tryhirq
     jmp %%startirq
+%%irqd
+    mov byte[doirqnext],1
 %%noirq
 %endmacro
 
