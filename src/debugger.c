@@ -27,7 +27,7 @@ extern unsigned char  xpb, xdb, xp, xe;
 
 extern void *snesmmap[256];
 extern void *snesmap2[256];
-extern char *dmadata;
+extern char dmadata[];
 
 extern void (*memtabler8[256])();
 
@@ -801,15 +801,29 @@ unsigned char *findoppage() {
 	return snesmmap[xpb];
     } else {
 	// lower address
-	if ((xpc < 0x4300) && (memtabler8[xpb] != regaccessbankr8)) {
+	if ((xpc < 0x4300) || (memtabler8[xpb] != regaccessbankr8)) {
 	    // lower memory
 	    return snesmap2[xpb];
 	} else {
 	    // dma
-	    return (unsigned char*)&dmadata[xpb-0x4300];
+	    return (unsigned char*)(dmadata-0x4300);
 	}
     }
 }
+
+/* grinvader's version -- kept incase I didn't get mine to match
+unsigned char *findoppage()
+{
+  if (xpc & 0x8000) { return(snesmmap[xpb]); }
+  else
+  { // lower address
+    if (xpc < 0x4300 || memtabler8[xpb] != regaccessbankr8)
+    { return(snesmap2[xpb]); }
+    // dma
+    return(dmadata - 0x4300); // or maybe (&dmadata - 0x4300)
+  }
+}
+*/
 
 unsigned char *findop() {
     unsigned char *address = findoppage()+xpc;
