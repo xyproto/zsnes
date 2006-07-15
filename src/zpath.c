@@ -479,10 +479,18 @@ static const char *strdupcat_internal(const char *str1, const char *str2)
 
 static const char *strdupcat_internal(const char *str1, const char *str2, const char *func, const char *mode)
 {
+#ifndef NO_DEBUGGER
+  extern char debuggeron; // should put this in a file called debugger.h?
+#endif
   static char buffer_dir[PATH_SIZE*2];
   strcpy(buffer_dir, str1);
   strcat(buffer_dir, str2);
 
+#ifndef NO_DEBUGGER
+  // maybe checking isendwin() would be better anyway, but only after we scrap
+  // the old debugger, because that won't work when not actually using curses
+  if (!debuggeron) {
+#endif
   if (mode)
   {
     printf("%s_%s: %s\n", func, mode, buffer_dir);
@@ -491,6 +499,9 @@ static const char *strdupcat_internal(const char *str1, const char *str2, const 
   {
     printf("%s: %s\n", func, buffer_dir);
   }
+#ifndef NO_DEBUGGER
+  }
+#endif
 
   return(buffer_dir);
 }
