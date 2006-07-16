@@ -23,6 +23,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <signal.h>
 #define DIR_SLASH "/"
 #define WRITE_BINARY "w"
+#include "linux/safelib.h"
 #else
 #define _POSIX_
 #include <stdio.h>
@@ -38,6 +39,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #undef _POSIX_
 #include <io.h>
 #define ftruncate chsize
+#include "win/safelib.h"
 #else
 #include <unistd.h>
 #endif
@@ -54,7 +56,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 typedef unsigned long long uint64;
 #else //MSVC
 typedef unsigned __int64 uint64;
-#define pclose _pclose
 #endif
 
 extern unsigned int versionNumber, CRC32, cur_zst_size, MsgCount, MessageOn;
