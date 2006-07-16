@@ -4513,7 +4513,7 @@ call VoiceStarter
     mov al,[Voice0EnvInc+%1*4+2]
     mov [DSPMem+08h+%1*10h],al
     cmp byte[ENVDisable],1
-    je %%skipenvclear2
+    jne %%skipenvclear2
     mov byte[DSPMem+08h+%1*10h],0
 %%skipenvclear2
 %%noclearenv
