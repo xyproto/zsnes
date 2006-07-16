@@ -429,11 +429,11 @@ void debugloop() {
        debstop3 = 0;
        nodelay(w, TRUE);
        do {
+     char buf[78];
 	   // log instruction
 	   move(0,0);
 	   out65816();
 
-	   char buf[78];
 	   mvwinnstr(debugwin, 0, 0, buf, 77);
 	   buf[77] = 0;
 	   fprintf(fp, "%s\n", buf);
