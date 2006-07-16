@@ -1878,6 +1878,7 @@ extern unsigned char MovieVideoMode;
 extern unsigned char MovieAudio;
 extern unsigned char MovieVideoAudio;
 extern unsigned char MovieAudioCompress;
+extern unsigned char ZMVRawDump;
 
 #define PICK_HELP(var) if (!strncmp(*str, "$"#var, strlen(#var)+1)) { *str += strlen(#var)+1; return(var); }
 
@@ -2022,6 +2023,11 @@ static void raw_video_close()
 
 static bool raw_video_open()
 {
+  if (ZMVRawDump) //Command line
+  {
+    MovieVideoMode = 1;
+  }
+
   switch (MovieVideoMode)
   {
     case 0:
