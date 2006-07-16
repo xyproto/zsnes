@@ -85,7 +85,7 @@ ifeq (${ENV},win32)
 endif
 
 ifeq (${ENV},msvc)
-  MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shell32.lib winmm.lib dinput8.lib dxguid.lib
+  MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shell32.lib winmm.lib dinput8.lib dxguid.lib pdcurses.lib
   DRESOBJ=${WINDIR}/zsnes.res
   OS=__WIN32__
 endif
@@ -418,11 +418,11 @@ ${WINDIR}/winintrf${OE}: ${WINDIR}/winintrf.asm macros.mac
 ${WINDIR}/zfilew${OE}: ${WINDIR}/zfilew.c ${WINDIR}/resource.h
 ${WINDIR}/safelib${OE}: ${WINDIR}/safelib.c ${WINDIR}/safelib.h argv.h
 ifeq (${ENV},msvc)
-${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
+${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h cfg.h
 ${WINDIR}/zsnes.res: ${WINDIR}/zsnes.rc ${WINDIR}/afxres.h ${WINDIR}/resource.h
 	rc ${WINDIR}/zsnes.rc
 else
-${WINDIR}/winlink${OE}: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h
+${WINDIR}/winlink${OE}: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h cfg.h
 	${CPPC} ${COPT} ${CFLAGS} -masm=intel -o $@ -c ${WINDIR}/winlink.cpp
 ${WINDIR}/zsnes${OE}: ${WINDIR}/zsnes.rc ${WINDIR}/afxres.h ${WINDIR}/resource.h
 	${WINDRES} --include-dir ${WINDIR} ${WINDIR}/zsnes.rc -o${WINDIR}/zsnes${OE}

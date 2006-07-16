@@ -48,8 +48,8 @@ extern void start65816();
 extern void endprog();
 
 // should be in "zstate.h"
-extern void debugloadstate();
-extern void statesaver();
+void debugloadstate();
+void statesaver();
 
 char *ocname;
 unsigned char addrmode[];
@@ -96,6 +96,7 @@ void nextspcopcode();
 void SaveOAMRamLog();
 void debugdump();
 void out65816();
+void execnextop();
 
 void traceops(unsigned count);
 void SPCbreakops(unsigned short addr);
@@ -795,12 +796,12 @@ void out65816_addrmode (unsigned char *instr) {
     {
 	unsigned short s = instr[1] | (instr[2] << 8);
 	unsigned short t = s + xpc + 3;
-	
+
 	wprintw(debugwin, "$%04x%4s [%02x%04x] ", t, padding, xpb, t);
 
 	break;
     }
-    
+
     case 17:    // ($1234)
     {
    	wprintw(debugwin, "($%04x)   ", instr[1]);

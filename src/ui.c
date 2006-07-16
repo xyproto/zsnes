@@ -101,7 +101,7 @@ unsigned char DSPDisable    = 0;	// Disable DSP emulation
 unsigned char MusicVol      = 0;
 unsigned char MMXextSupport = 0;
 
-void init(), WaitForKey(), MMXCheck(), InitSPC();
+void init(), WaitForKey(), MMXCheck(), InitSPC(), DosExit();
 void SystemInit(), StartUp(), MultiMouseInit();
 
 void *alloc_ptr;

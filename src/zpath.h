@@ -32,9 +32,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 #ifdef _MSC_VER
-#ifndef F_OK
 #define F_OK 0
-#endif
+#define X_OK 1
+#define W_OK 2
+#define R_OK 4
 #ifndef MAX_PATH
 #define MAX_PATH 260
 #endif

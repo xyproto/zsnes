@@ -54,6 +54,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 typedef unsigned long long uint64;
 #else //MSVC
 typedef unsigned __int64 uint64;
+#define pclose _pclose
 #endif
 
 extern unsigned int versionNumber, CRC32, cur_zst_size, MsgCount, MessageOn;

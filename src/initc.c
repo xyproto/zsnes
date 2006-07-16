@@ -2649,7 +2649,7 @@ void initsnes()
   }
 }
 
-void PatchUsingIPS();
+void PatchUsingIPS(), DosExit();
 
 bool InGUI;
 bool GUIloadfailed;

@@ -33,6 +33,7 @@ extern "C" {
 #include <dinput.h>
 #include <winuser.h>
 #include "resource.h"
+#include "../cfg.h"
 
 
 /*
@@ -337,15 +338,8 @@ void DDrawError(){
    MessageBox (NULL, message1, "DirectDraw Error" , MB_ICONERROR );
 }
 
-extern "C" BYTE vsyncon;
 extern "C" BYTE curblank;
-extern "C" BYTE TripleBufferWin;
-extern "C" BYTE PauseFocusChange;
-extern "C" BYTE KitchenSync;
-extern "C" BYTE KitchenSyncPAL;
-extern "C" BYTE ForceRefreshRate;
-extern "C" BYTE SetRefreshRate;
-extern WORD totlines;
+extern "C" WORD totlines;
 
 void DrawScreen()
 {
@@ -436,17 +430,6 @@ extern "C" {
 void initwinvideo();
 void DosExit(void);
 extern BYTE EMUPause;
-extern BYTE soundon;
-extern BYTE StereoSound;
-extern DWORD SoundQuality;
-extern BYTE HighPriority;
-extern BYTE AlwaysOnTop;
-extern BYTE SaveMainWindowPos;
-extern BYTE AllowMultipleInst;
-extern BYTE DisableScreenSaver;
-extern BYTE TrapMouseCursor;
-extern signed short int MainWindowX;
-extern signed short int MainWindowY;
 extern int CurKeyPos;
 extern int CurKeyReadPos;
 extern int KeyBuffer[16];
@@ -476,8 +459,6 @@ extern "C" void MinimizeWindow()
    ShowWindow(hMainWindow, SW_MINIMIZE);
    IsActivated = 0;
 }
-
-extern "C" BYTE MouseWheel;
 
 BOOL InputRead(void)
 {
@@ -728,8 +709,6 @@ int RegisterWinClass(void)
 
 BYTE PrevStereoSound;
 DWORD PrevSoundQuality;
-
-extern "C" { extern unsigned char PrimaryBuffer; }
 
 BOOL InitSound()
 {
@@ -1400,11 +1379,7 @@ void TestJoy()
 extern "C" DWORD converta;
 extern "C" unsigned int BitConv32Ptr;
 extern "C" unsigned int RGBtoYUVPtr;
-extern "C" unsigned char cvidmode;
-extern "C" unsigned char hqFilter;
-extern "C" unsigned char NTSCFilter;
 extern "C" unsigned short resolutn;
-extern "C" unsigned short scanlines;
 DWORD FirstVid=1;
 DWORD FirstFull=1;
 DWORD DMode=0;
@@ -1866,9 +1841,6 @@ char WinName[]={"ZSNESW\0"};
 extern void NTSCFilterInit();
 extern void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char* buffer);
 
-extern "C" unsigned int CustomResX;
-extern "C" unsigned int CustomResY;
-
 extern "C" char GUIM7VID[];
 
 void SetHQx()
@@ -1923,8 +1895,6 @@ void SetHiresOpt()
 	else
 		GUIM7VID[cvidmode] = 0;
 }
-
-extern "C" unsigned char Keep4_3Ratio;
 
 void initwinvideo(void)
 {
@@ -2278,8 +2248,8 @@ extern int DSPBuffer;
 int * DSPBuffer1;
 DWORD ScreenPtr;
 DWORD ScreenPtr2;
-extern void GUI36hzcall(void);
-extern void Game60hzcall(void);
+void GUI36hzcall(void);
+void Game60hzcall(void);
 
 void CheckTimers(void)
 {
@@ -2316,8 +2286,6 @@ void CheckTimers(void)
       }
    }
 }
-
-extern unsigned char MMXSupport;
 
 extern "C" {
 volatile int SPCSize;
@@ -2484,16 +2452,15 @@ extern DWORD AddEndBytes;
 extern DWORD NumBytesPerLine;
 extern unsigned char * WinVidMemStart;
 extern void copy640x480x16bwin(void);
-extern void hq2x_16b(void);
-extern void hq2x_32b(void);
-extern void hq3x_16b(void);
-extern void hq3x_32b(void);
-extern void hq4x_16b(void);
-extern void hq4x_32b(void);
+void hq2x_16b(void);
+void hq2x_32b(void);
+void hq3x_16b(void);
+void hq3x_32b(void);
+void hq4x_16b(void);
+void hq4x_32b(void);
 extern unsigned char NGNoTransp;
-extern unsigned char newengen;
-extern void ClearWin16();
-extern void ClearWin32();
+void ClearWin16();
+void ClearWin32();
 
 void clearwin()
 {
@@ -2567,16 +2534,14 @@ void clear_display()
   }
 }
 
-extern void DrawWin256x224x16();
-extern void DrawWin256x224x32();
-extern void DrawWin320x240x16();
+void DrawWin256x224x16();
+void DrawWin256x224x32();
+void DrawWin320x240x16();
 
 volatile __int64 copymaskRB = 0x001FF800001FF800LL;
 volatile __int64 copymaskG = 0x0000FC000000FC00LL;
 volatile __int64 copymagic = 0x0008010000080100LL;
 volatile __int64 coef = 0x0066009a0066009aLL;
-
-//extern BYTE MotionBlur;
 
 void drawscreenwin(void)
 {
@@ -2905,7 +2870,7 @@ void drawscreenwin(void)
    DrawScreen();
 }
 
-extern void SwitchFullScreen(void);
+void SwitchFullScreen(void);
 
 void WinUpdateDevices()
 {

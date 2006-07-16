@@ -958,6 +958,8 @@ static void memswap(void *p1, void *p2, size_t p2len)
   }
 }
 
+void GUIloadfilename(), GUIQuickLoadUpdate();
+
 void loadquickfname()
 {
   memset(GUIwinorder, 0, sizeof(GUIwinorder));

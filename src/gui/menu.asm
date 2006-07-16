@@ -461,7 +461,6 @@ SECTION .data
 .nosound   db 'SOUND MUST BE ENABLED.',0
 .unable    db 'CANNOT USE IN NEW GFX ENGINE.',0
 .escpress  db 'ESC TERMINATED SEARCH.',0
-EXTSYM spcsaved
 SECTION .text
 
 NEWSYM menudrawbox8b

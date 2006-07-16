@@ -20,11 +20,12 @@
 
 %include "macros.mac"
 
-EXTSYM initaddrl,wramdata,IRAM,SA1DoIRQ,nextopcodesa1,debugds,SNSRegP,SNSRegPCS
+EXTSYM initaddrl,wramdata,IRAM,SA1DoIRQ,debugds,SNSRegP,SNSRegPCS
 EXTSYM SA1Ptr,SNSPtr,snesmap2,SA1tablead,SA1xpb,SA1RegP,wramdataa,SA1TimerVal
 EXTSYM debuggeron,SA1RegPCS,SA1BWPtr,SNSBWPtr,CurBWPtr,SA1NMIV,SA1IRQV
 EXTSYM membank0w8,SA1LBound,SA1UBound,SA1SH,SA1SHb,stackor,stackand,snesmmap
 EXTSYM SA1xs,SA1IRQExec,SA1Message,Sflagnz,Sflagc,Sflago
+;EXTSYM nextopcodesa1
 
 ; In exec loop, jump to execloop if SA1Status != 0
 ; *** Disable spc700 if possible ***

@@ -116,9 +116,9 @@ EXTSYM mousewrap,GUIClick,PrevFSMode,PrevWinMode,SaveSramData
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,OldGfxMode2,SmallMsgText
 EXTSYM AutoPatch,RomInfo,AllowUDLR,Triplebufen,GrayscaleMode
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,TripleBufferWin
-EXTSYM BilinearFilter,esctomenu,SidewinderFix,init_rom_path_gui,gui_rom
+EXTSYM BilinearFilter,esctomenu,init_rom_path_gui,gui_rom
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SoundBufEn,SPCDisable
-EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,FastFwdToggle
+EXTSYM FastFwdToggle
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM MovieVideoMode, MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont,loadquickfname
 
@@ -130,6 +130,7 @@ EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst
 EXTSYM HighPriority,DisableScreenSaver,SaveMainWindowPos
 %elifdef __MSDOS__
 EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard
+EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix
 %endif
 
 %ifndef __MSDOS__

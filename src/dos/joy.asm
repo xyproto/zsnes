@@ -21,12 +21,13 @@
 %include "macros.mac"
 
 EXTSYM WhichSW,delay,pl1contrl
-EXTSYM pl2contrl,pl1p209,pl2p209,pl3p209,pl4p209,pl3contrl,pl4contrl,pressed
-EXTSYM pl5contrl,pl5p209,CalibXmin,CalibYmin,CalibXmax,CalibYmax
+EXTSYM pl2contrl,pl3contrl,pl4contrl,pressed
+EXTSYM pl5contrl,CalibXmin,CalibYmin,CalibXmax,CalibYmax
 EXTSYM CalibXmin209,CalibYmin209,CalibXmax209,CalibYmax209
 
 %ifdef __MSDOS__
 EXTSYM read_gpp,_readSideWinder,_SW1,_SW2,_SW3,_SW4,_SWCount
+EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209
 %endif
 
 SECTION .data
