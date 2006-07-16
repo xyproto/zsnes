@@ -78,6 +78,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define BSBankOffset     24
 #define BSSizeOffset     25 //Contains Type as well
 //26 - 31 is the same
+#define ResetLoOffset    60
+#define ResetHiOffset    61
+
 
 // Some archaic code from an unfinished Dynarec
 extern unsigned int curexecstate;
@@ -129,6 +132,17 @@ bool validChecksum(unsigned char *ROM, int BankLoc)
       ROM[BankLoc + CSLowOffset] + (ROM[BankLoc + CSHiOffset] << 8) == 0xFFFF)
   {
     return(true);
+  }
+  return(false);
+}
+
+bool valid_normal_bank(unsigned char bankbyte)
+{
+  switch (bankbyte)
+  {
+    case 32: case 33: case 48: case 49:
+    return(true);
+    break;
   }
   return(false);
 }
@@ -267,7 +281,7 @@ bool AllASCII(unsigned char *b, int size)
   int i;
   for (i = 0; i < size; i++)
   {
-    if (b[i] < 32 || b[i] > 126)
+    if (b[i] && (b[i] < 32 || b[i] > 126))
     {
       return(false);
     }
@@ -275,15 +289,109 @@ bool AllASCII(unsigned char *b, int size)
   return(true);
 }
 
+//Code to detect if opcode sequence is a valid and popular one for an SNES ROM
+//Code by Cowering
+static bool valid_start_sequence(unsigned char opcode1, unsigned char opcode2, unsigned char opcode3)
+{
+  switch (opcode1)
+  {
+    case 0x78: case 0x5c: case 0x18: case 0xad:
+      return(true);
+      break;
+    case 0x4b:
+      if (opcode2 == 0xab && (opcode3 == 0x18 || opcode3 == 0x20))
+      {
+        return(true);
+      }
+      break;
+    case 0x4c:
+      if ((opcode2 == 0x00 || opcode2 == 0xc0) && opcode3 == 0x84)
+      {
+        return(true);
+      }
+      if (opcode2 == 0x6d && opcode3 == 0x86)
+      {
+        return(true);
+      }
+      if (opcode2 == 0x00 && opcode3 == 0x80)
+      {
+        return(true);
+      }
+      break;
+    case 0xc2:
+      if (opcode2 == 0x30 && opcode3 == 0xa9)
+      {
+        return(true);
+      }
+      break;
+    case 0x20:
+      if ((opcode2 == 0x16 || opcode2 == 0x06) && opcode3 == 0x80)
+      {
+        return(true);
+      }
+      break;
+    case 0x80:
+      if ((opcode2 == 0x16 && opcode3 == 0x4c) ||
+          (opcode2 == 0x07 && opcode3 == 0x82))
+      {
+        return(true);
+      }
+      break;
+    case 0x9c:
+      if (opcode2 == 0x00 && opcode3 == 0x21)
+      {
+        return(true);
+      }
+      break;
+    case 0xa2:
+      if (opcode2 == 0xff && opcode3 == 0x86)
+      {
+        return(true);
+      }
+      break;
+    case 0xa9:
+      if ((opcode2 == 0x00 && (opcode3 = 0x48 || opcode3  == 0x4b)) ||
+          (opcode2 == 0x8f && opcode3 == 0x8d) ||
+          (opcode2 == 0x20 && opcode3 == 0x4b) ||
+          (opcode2 == 0x1f && opcode3 == 0x4b))
+      {
+        return(true);
+      }
+      break;
+  }
+  return(false);
+}
+
+static int valid_reset(unsigned char *Buffer)
+{
+  unsigned char *ROM = (unsigned char *)romdata;
+  unsigned short Reset = Buffer[ResetLoOffset] | ((unsigned short)Buffer[ResetHiOffset] << 8);
+  if ((Reset != 0xFFFF) && (Reset & 0x8000))
+  {
+    unsigned char opcode1 = ROM[Reset+0 & 0x7fff];
+    unsigned char opcode2 = ROM[Reset+1 & 0x7fff];
+    unsigned char opcode3 = ROM[Reset+2 & 0x7fff];
+
+    if (valid_start_sequence(opcode1, opcode2, opcode3))
+    {
+      return(10);
+    }
+    return(2);
+  }
+  return(-4);
+}
+
 int InfoScore(unsigned char *Buffer)
 {
-  int score = 0;
-  if (validChecksum(Buffer, 0))      { score += 4; }
-  if (Buffer[CompanyOffset] == 0x33)            { score += 2; }
-  if (!(Buffer[61] & 0x80))          { score -= 4; }
-  if ((1 << (Buffer[ROMSizeOffset] - 7)) > 48)  { score -= 1; }
-  if (Buffer[CountryOffset] < 14)               { score += 1; }
-  if (!AllASCII(Buffer, 20))         { score -= 1; }
+  int score = valid_reset(Buffer);
+  if (validChecksum(Buffer, 0))                 { score += 5; }
+  if (Buffer[CompanyOffset] == 0x33)            { score += 3; }
+  if (!Buffer[ROMSizeOffset])                   { score += 2; }
+  if ((1 << (Buffer[ROMSizeOffset] - 7)) > 48)  { score -= 2; }
+  if ((8 << Buffer[SRAMSizeOffset]) > 1024)     { score -= 2; }
+  if (Buffer[CountryOffset] < 14)               { score += 2; }
+  if (!AllASCII(Buffer, 20))                    { score -= 2; }
+  if (valid_normal_bank(Buffer[BSBankOffset]))  { score += 2; }
   return(score);
 }
 
@@ -334,17 +442,13 @@ void BankCheck()
     switch(ROM[Lo + BankOffset])
     {
       case 32: case 35: case 48: case 50:
-        loscore += 2;
-      case 128: case 156: case 176: case 188: case 252: //BS
-        loscore += 1;
+        loscore += 3;
         break;
     }
     switch(ROM[Hi + BankOffset])
     {
       case 33: case 49: case 53: case 58:
-        hiscore += 2;
-      case 128: case 156: case 176: case 188: case 252: //BS
-        hiscore += 1;
+        hiscore += 3;
         break;
     }
 
@@ -398,17 +502,6 @@ bool SFXEnable;
 bool SGBEnable;
 bool SPC7110Enable;
 bool ST18Enable;
-
-bool valid_normal_bank(unsigned char bankbyte)
-{
-  switch (bankbyte)
-  {
-    case 32: case 33: case 48: case 49:
-    return(true);
-    break;
-  }
-  return(false);
-}
 
 void chip_detect()
 {
