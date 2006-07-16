@@ -649,6 +649,10 @@ void addtail() {
 // memtabler8_wrapper, too). Also, preferably read memory in a
 // non-destructive way.
 
+// This whole instr[1] thing probably isn't quite right either, but it
+// seems unlikely that instructions would be stored discontiguously
+// than that data would span 64kb boundaries.
+
 void out65816_addrmode (unsigned char *instr) {
     char *padding = "";
 
@@ -702,7 +706,14 @@ void out65816_addrmode (unsigned char *instr) {
 	wprintw(debugwin, "A%18s", padding);
 	break;
 
-    case 8:     // [$12],y : [$12+$13+$14+d]+y
+    case 7:     // ($12),y
+    {
+	wprintw(debugwin, "($%02x),Y   ", instr[1]);
+	wprintw(debugwin, "[nnnnnn] ");
+	break;
+    }
+
+    case 8:     // [$12],y
     {
 	unsigned short addr;
 	unsigned int t;
@@ -716,6 +727,13 @@ void out65816_addrmode (unsigned char *instr) {
 	t = INDEX_RIGHT(t, xy);
 	wprintw(debugwin, "[%06x] ", t);
 
+	break;
+    }
+
+    case 9:     // ($12,x)
+    {
+	wprintw(debugwin, "($%02x,X)   ", instr[1]);
+	wprintw(debugwin, "[nnnnnn] ");
 	break;
     }
 
@@ -820,6 +838,15 @@ void out65816_addrmode (unsigned char *instr) {
 	break;
     }
 
+    case 22:    // d,s
+	wprintw(debugwin, "$%02x,S%5s", instr[1], padding);
+	wprintw(debugwin, "[nnnnnn] ");
+	break;
+
+    case 23:    // (d,s),y
+  	wprintw(debugwin, "($%02x,S),Y ", instr[1]);
+	wprintw(debugwin, "[nnnnnn] ");
+	break;
 
     case 25:    // #$12 (Flag Operations)
 	wprintw(debugwin, "#$%02x%15s", instr[1], padding);
