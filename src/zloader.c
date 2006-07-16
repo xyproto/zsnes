@@ -62,7 +62,7 @@ void InitDebugger();
     lines_out = 0;                           \
   }                                          \
   puts(x);                                   \
-  lines_out++;
+  if (isatty(fileno(stdout))) { lines_out++; }
 
 static void display_help()
 {
