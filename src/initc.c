@@ -368,9 +368,9 @@ static int valid_reset(unsigned char *Buffer)
   unsigned short Reset = Buffer[ResetLoOffset] | ((unsigned short)Buffer[ResetHiOffset] << 8);
   if ((Reset != 0xFFFF) && (Reset & 0x8000))
   {
-    unsigned char opcode1 = ROM[Reset+0 & 0x7fff];
-    unsigned char opcode2 = ROM[Reset+1 & 0x7fff];
-    unsigned char opcode3 = ROM[Reset+2 & 0x7fff];
+    unsigned char opcode1 = ROM[(Reset+0) & 0x7FFF];
+    unsigned char opcode2 = ROM[(Reset+1) & 0x7FFF];
+    unsigned char opcode3 = ROM[(Reset+2) & 0x7FFF];
 
     if (valid_start_sequence(opcode1, opcode2, opcode3))
     {
