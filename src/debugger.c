@@ -715,7 +715,7 @@ void out65816_addrmode (unsigned char *instr) {
 	wprintw(debugwin, "$%02x,X%5s", instr[1], padding);
 
 	wprintw(debugwin, "[%06x] ", INDEX_RIGHT(instr[1] + xd, xx));
-	
+
 	break;
     }
 

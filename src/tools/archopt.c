@@ -80,7 +80,7 @@ int have_cpuid()
   return(have);
 }
 
-int main()
+int main(int argc, const char *const *const argv)
 {
   char model_name[216];
   char flags[216];
@@ -180,6 +180,14 @@ int main()
         strncat(model_name, (char *)&edx, 4);
       }
     }
+  }
+
+  if (argc > 1)
+  {
+    printf("cpu family: %s\n", cpu_family);
+    printf("model: %s\n", model);
+    printf("model name: %s\n", model_name);
+    printf("flags: %s\n", flags);
   }
 
   if (*cpu_family && *vendor_id)
