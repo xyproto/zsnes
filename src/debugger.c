@@ -640,6 +640,15 @@ void addtail() {
 */
 
 
+// I'm going to have to completely rip out byuu's effective address
+// stuff, it is just plain *WRONG*, besides being unsafe...
+
+// For next time, http://www.zophar.net/tech/files/65c816.txt seems
+// like a good reference for effective address calculation; also, use
+// 24-bit addresses for all calculations (so completely rip out
+// memtabler8_wrapper, too). Also, preferably read memory in a
+// non-destructive way.
+
 void out65816_addrmode (unsigned char *instr) {
     char *padding = "";
 
@@ -755,6 +764,40 @@ void out65816_addrmode (unsigned char *instr) {
 	unsigned short t = c + xpc + 2;
 
 	wprintw(debugwin, "$%04x%4s [%02x%04x] ", t, padding, xpb, t);
+
+	break;
+    }
+
+    case 18:    // ($12)
+    {
+	unsigned short addr1, addr2;
+	wprintw(debugwin, "($%02x)%5s", instr[1], padding);
+
+	addr1 = instr[1] + xd;
+
+	addr2  = memtabler8_wrapper(00, addr1);
+	addr2 |= memtabler8_wrapper(00, addr1+1) << 8;
+
+	wprintw(debugwin, "[%02x%04x] ", xdb, addr2);
+
+	break;
+    }
+
+    case 19:    // [$12]
+    {
+	// unsigned short addr1;
+	// unsigned int   addr2;
+
+	wprintw(debugwin, "[$%02x]%5s", instr[1], padding);
+
+	/*
+	addr1 = instr[1] + xd;
+
+	addr2  = memtabler8_wrapper(0, addr1);
+	addr2 |= memtabler8_wrapper(
+	*/
+
+	wprintw(debugwin, "[nnnnnn] ");
 
 	break;
     }
