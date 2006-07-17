@@ -3029,18 +3029,6 @@ powhack resd 1
 paramhack resd 4
 section .text
 
-%macro powshithack    0
-%if 0
-    push ecx
-    mov eax,1
-    mov ecx,ebp
-    shl eax,cl
-    pop ecx
-%else
-    mov al,[powhack]
-%endif
-%endmacro
-
 ALIGN16
 NEWSYM NonEchoMonoPM
 %ifdef __MSDOS__
@@ -3055,7 +3043,7 @@ NEWSYM NonEchoMonoPM
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1
-    powshithack
+    mov al,[powhack]
     test byte[DSPMem+3Dh],al
     jz .PMod
     mov eax, [NoiseInc]
@@ -3099,7 +3087,7 @@ NEWSYM NonEchoStereoPM
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1b
-    powshithack
+    mov al,[powhack]
     test byte[DSPMem+3Dh],al
     jz .PMod
     mov eax, [NoiseInc]
@@ -3160,7 +3148,7 @@ NEWSYM EchoMonoPM
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1
-    powshithack
+    mov al,[powhack]
     test byte[DSPMem+3Dh],al
     jz .PMod
     mov eax, [NoiseInc]
@@ -3223,7 +3211,7 @@ NEWSYM EchoStereoPM
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1b
-    powshithack
+    mov al,[powhack]
     test byte[DSPMem+3Dh],al
     jz .PMod
     mov eax, [NoiseInc]
@@ -3472,7 +3460,7 @@ NEWSYM NonEchoMonoInterpolated
 %endif
     cmp byte[UniqueSoundv],0
     je .NotNoise1
-    powshithack
+    mov al,[powhack]
     test byte[DSPMem+3Dh],al
     jz .PMod
     mov eax, [NoiseInc]
@@ -3523,7 +3511,7 @@ NEWSYM EchoMonoInterpolated
 %endif
     cmp byte[UniqueSoundv],0
     je .NotNoise1
-    powshithack
+    mov al,[powhack]
     test byte[DSPMem+3Dh],al
     jz .PMod
     mov eax, [NoiseInc]
@@ -3592,7 +3580,7 @@ NEWSYM NonEchoStereoInterpolated
 %endif
     cmp byte[UniqueSoundv],0
     je .NotNoise1b
-    powshithack
+    mov al,[powhack]
     test byte[DSPMem+3Dh],al
     jz .PMod
     mov eax, [NoiseInc]
@@ -3658,7 +3646,7 @@ NEWSYM EchoStereoInterpolated
 %endif
     cmp byte[UniqueSoundv],0
     je .NotNoise1b
-    powshithack
+    mov al,[powhack]
     test byte[DSPMem+3Dh],al
     jz .PMod
     mov eax, [NoiseInc]
@@ -3766,7 +3754,7 @@ NEWSYM NonEchoMono
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1
-    powshithack
+    mov al,[powhack]
     test byte[DSPMem+3Dh],al
     jz .PMod
     mov eax, [NoiseInc]
@@ -3809,7 +3797,7 @@ NEWSYM NonEchoStereo
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1b
-    powshithack
+    mov al,[powhack]
     test byte[DSPMem+3Dh],al
     jz .PMod
     mov eax, [NoiseInc]
@@ -3869,7 +3857,7 @@ NEWSYM EchoMono
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1
-    powshithack
+    mov al,[powhack]
     test byte[DSPMem+3Dh],al
     jz .PMod
     mov eax, [NoiseInc]
@@ -3932,7 +3920,7 @@ NEWSYM EchoStereo
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
     je .NotNoise1b
-    powshithack
+    mov al,[powhack]
     test byte[DSPMem+3Dh],al
     jz .PMod
     mov eax, [NoiseInc]
