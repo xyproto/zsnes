@@ -2241,10 +2241,10 @@ NEWSYM doschangepal
 ;*******************************************************
 
 NEWSYM showfps
-    mov al,60
+    mov ax,60
     cmp byte[romispal],0
     je .ntsc
-    mov al,50
+    mov ax,50
 .ntsc
     inc byte[curfps]
     cmp byte[nextframe],al
@@ -2260,7 +2260,6 @@ NEWSYM showfps
     mov cl,[SloMo]
     or cl,cl
     jz .noslw
-    xor ah,ah
     inc cl
     div cl
 .noslw
@@ -2271,9 +2270,8 @@ NEWSYM showfps
 
     call displayfpspal
 
-    mov al,[lastfps]
+    movzx ax,byte[lastfps]
     mov bl,10
-    xor ah,ah
     div bl
     shl al,4
     add ah,al
