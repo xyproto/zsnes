@@ -2035,6 +2035,7 @@ static bool raw_video_open()
 
     case 1:
       raw_vid.vp = fopen_dir(ZCfgPath, md_raw_file, "wb");
+      MovieVideoAudio = false;
       break;
 
     case 2: case 3: case 4:
