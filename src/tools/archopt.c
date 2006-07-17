@@ -96,7 +96,7 @@ int main(int argc, const char *const *const argv)
   *cpu_family = 0;
   *vendor_id = 0;
   *model = 0;
-  strcpy(flags, " ");
+  strcpy(flags, "");
 
   if ((fp = fopen("/proc/cpuinfo", "r")))
   {
@@ -184,6 +184,7 @@ int main(int argc, const char *const *const argv)
 
   if (argc > 1)
   {
+    printf("vendor_id: %s\n", vendor_id);
     printf("cpu family: %s\n", cpu_family);
     printf("model: %s\n", model);
     printf("model name: %s\n", model_name);
