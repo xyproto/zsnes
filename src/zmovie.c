@@ -1915,7 +1915,7 @@ static char *pick_var(char **str)
 
 static char *encode_command(char *p)
 {
-  static char command[700];
+  static char command[800];
   char *var;
   *command = 0;
 
