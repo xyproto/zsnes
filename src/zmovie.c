@@ -2025,7 +2025,7 @@ static bool raw_video_open()
 {
   if (ZMVRawDump) //Command line
   {
-    MovieVideoMode = 1;
+    MovieVideoMode = ZMVRawDump;
   }
 
   switch (MovieVideoMode)

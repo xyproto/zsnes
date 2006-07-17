@@ -247,8 +247,8 @@ NEWSYM init
     mov [CMovieExt],al
 
     pushad
-    cmp byte[ZMVRawDump],1
-    jne .norawdump
+    cmp byte[ZMVRawDump],0
+    je .norawdump
     call MovieDumpRaw
     jmp .aftermovieplay
 .norawdump

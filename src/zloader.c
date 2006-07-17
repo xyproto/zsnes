@@ -112,7 +112,9 @@ static void display_help()
   put_line("  -l      Force LoROM");
   put_line("  -m      Disable GUI (Must specify ROM filename)");
   put_line("  -mc     Exit ZSNES when closing a movie (use with -zm)");
-  put_line("  -md     Dump raw video (use with -zm)");
+  put_line("  -md #   Dump Video (use with -zm)");
+  put_line("             1 = raw  2 = FFV1 3 = x264");
+  put_line("             4 = XviD 5 = Custom");
   put_line("  -n #    Enable scanlines (when available)");
   put_line("             0 = None, 1 = Full, 2 = 25%, 3 = 50%");
   put_line("  -o      Disable MMX support");
@@ -765,7 +767,12 @@ static void handle_params(int argc, char *argv[])
 
         else if (tolower(argv[i][1]) == 'm' && tolower(argv[i][2]) == 'd') //Dump raw vid with ZMV
         {
-          ZMVRawDump = 1;
+          i++;
+          if ((ZMVRawDump = zatoi(argv[i])) > 5)
+          {
+            puts("Movie mode must be a number 1 to 5");
+            exit(1);
+          }
         }
 
         #ifdef __MSDOS__
