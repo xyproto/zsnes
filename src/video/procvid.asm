@@ -2258,8 +2258,8 @@ NEWSYM showfps
     sub byte[nextframe],al
 .nofrc
     mov cl,[SloMo]
-    cmp cl,0
-    je .noslw
+    test cl,0
+    jz .noslw
     inc cl
     div cl
 .noslw
