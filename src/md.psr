@@ -25,5 +25,4 @@ md_xvid times 100 db "-ovc xvid -xvidencopts fixed_quant=2"
 md_command times 256 db "$md_prog $md_other $md_no_sound $md_raw:fps=$md_video_rate $md_vcodec -o $md_file -"
 md_merge times 256 db "$md_prog $md_other $md_sound -audiofile $md_pcm_audio -force-avi-aspect 4:3 -ovc copy -o merged.avi $md_file"
 md_audio_compress times 256 db "lame -m j --preset 64 -q 0 - $md_compressed_audio"
-md_merge_compressed times 256 db "$md_prog $md_other -oac copy -audiofile $md_compressed_audio -force-avi-aspect 4:3 -ovc copy -o merged.avi 
-$md_file"
+md_merge_compressed times 256 db "$md_prog $md_other -oac copy -audiofile $md_compressed_audio -force-avi-aspect 4:3 -ovc copy -o merged.avi $md_file"
