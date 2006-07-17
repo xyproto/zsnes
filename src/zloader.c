@@ -55,18 +55,19 @@ void InitDebugger();
 #endif
 
 #define put_line(x)                          \
-  if (lines_out == 22)                       \
+  if (tty && (lines_out == 22))              \
   {                                          \
     puts("  -- Press Enter to Continue --"); \
     getchar();                               \
     lines_out = 0;                           \
   }                                          \
   puts(x);                                   \
-  if (isatty(fileno(stdout))) { lines_out++; }
+  lines_out++;
 
 static void display_help()
 {
   size_t lines_out = 0;
+  bool tty = isatty(fileno(stdout));
 
   put_line("Usage : zsnes [-d,-f #, ... ] <filename.sfc>");
   put_line("   Eg : zsnes -s -r 2 game.sfc");
