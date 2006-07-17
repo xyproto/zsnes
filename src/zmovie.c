@@ -1852,7 +1852,7 @@ Code for dumping raw video
 #define RAW_HEIGHT 224
 
 //NTSC FPS is  59.948743718592964824120603015060 in AVI that's a fraction of 59649/995
-//which equals 59.948743718592964824120603015075, so videos should not desync for several millinium
+//which equals 59.948743718592964824120603015075, so videos should not desync for several millenia
 
 //FPS = Rate*Stereo / Samples per Frame
 
@@ -1862,8 +1862,14 @@ Code for dumping raw video
 
 #define SAMPLE_NTSC_HI_SCALE 995ULL
 #define SAMPLE_NTSC_LO 59649ULL
+
+//* PAL is much simpler, FPS is 50.0000000000000000000 which is a fraction of 50/1
+#define SAMPLE_PAL_HI_SCALE  1ULL
+#define SAMPLE_PAL_LO       50ULL
+
 //Code using this by Bisqwit
-//Used by raw videos for calculating sample rate in NTSC mode
+//Used by raw videos for calculating sample rate
+
 
 static const unsigned int freqtab[] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
 extern unsigned int SoundQuality;
@@ -1954,10 +1960,10 @@ struct
   FILE *ap;
 
   size_t aud_dsize_pos;
-  //These next three are only used for NTSC videos to keep sample rate correct
-  uint64 sample_ntsc_hi;
-  uint64 sample_ntsc_lo;
-  uint64 sample_ntsc_balance;
+
+  uint64 sample_hi;
+  uint64 sample_lo;
+  uint64 sample_balance;
 } raw_vid;
 
 static void raw_video_close()
@@ -2081,12 +2087,17 @@ static bool raw_video_open()
       raw_vid.aud_dsize_pos = ftell(raw_vid.ap); //Save current position for use later
       fwrite4(~0, raw_vid.ap);                   //data size - unknown till file close
 
-      if (!romispal)
+      if (romispal)
       {
-        raw_vid.sample_ntsc_hi = SAMPLE_NTSC_HI_SCALE*RATE;
-        raw_vid.sample_ntsc_lo = SAMPLE_NTSC_LO;
-        raw_vid.sample_ntsc_balance = raw_vid.sample_ntsc_hi;
+        raw_vid.sample_hi = SAMPLE_PAL_HI_SCALE*RATE;
+        raw_vid.sample_lo = SAMPLE_PAL_LO;
       }
+      else
+      {
+        raw_vid.sample_hi = SAMPLE_NTSC_HI_SCALE*RATE;
+        raw_vid.sample_lo = SAMPLE_NTSC_LO;
+      }
+      raw_vid.sample_balance = raw_vid.sample_hi;
 
       AudioLogging = 1;
       return(true);
@@ -2104,7 +2115,7 @@ static void raw_audio_write(unsigned int samples)
   extern unsigned int BufferSizeB, BufferSizeW;
   int *d = DSPBuffer, *d_end;
 
-  if (samples > 1280)
+  while (samples > 1280) //This is in a loop for future proofing if we ever add above 48KHz
   {
     raw_audio_write(1280);
     samples -= 1280;
@@ -2123,18 +2134,18 @@ static void raw_audio_write(unsigned int samples)
   }
 }
 
-#define PIXEL (vidbuffer[(i*288) + j + 16])
+#define PIXEL (vidbuffer[(y*288) + x + 16])
 static void raw_video_write_frame()
 {
   if (raw_vid.vp)
   {
     extern unsigned short *vidbuffer;
-    size_t i, j;
+    size_t x, y;
 
-    //Use zsKnight's 16 to 32 bit color conversion (optimized by Nach)
-    for (i = 0; i < RAW_HEIGHT; i++)
+    //Convert 16 bit image to 24 bit image
+    for (y = 0; y < RAW_HEIGHT; y++)
     {
-      for (j = 0; j < RAW_WIDTH; j++)
+      for (x = 0; x < RAW_WIDTH; x++)
       {
         fwrite3(((PIXEL&0xF800) << 8) | ((PIXEL&0x07E0) << 5) | ((PIXEL&0x001F) << 3), raw_vid.vp);
       }
@@ -2143,38 +2154,12 @@ static void raw_video_write_frame()
 
   if (raw_vid.ap)
   {
-    unsigned int samples;
-    if (romispal)
-    {
-      if (StereoSound)
-      {
-        samples = RATE*2/50;
-        if (samples & 1)
-        {
-          static signed char odd_carry = 0;
-          samples += odd_carry-1;
-          odd_carry ^= 2;
-        }
-      }
-      else
-      {
-        samples = RATE/50;
-        if (freqtab[SoundQuality] & 1)
-        {
-          static signed char half_carry = 0;
-          samples += half_carry;
-          half_carry ^= 1;
-        }
-      }
-    }
-    else
-    {
-      //Thanks Bisqwit for this algorithm
-      samples = (unsigned int)((raw_vid.sample_ntsc_balance/raw_vid.sample_ntsc_lo) << StereoSound);
-      raw_vid.sample_ntsc_balance %= raw_vid.sample_ntsc_lo;
-      raw_vid.sample_ntsc_balance += raw_vid.sample_ntsc_hi;
-      //printf("Frame %u: %u samples\n", raw_vid.sample_index, BufferSizeB);
-    }
+    //Thanks Bisqwit for this algorithm
+    unsigned int samples = (unsigned int)((raw_vid.sample_balance/raw_vid.sample_lo) << StereoSound);
+    raw_vid.sample_balance %= raw_vid.sample_lo;
+    raw_vid.sample_balance += raw_vid.sample_hi;
+    //printf("Samples: %u\n", samples);
+
     AudioLogging = 2;
     raw_audio_write(samples);
     AudioLogging = 1;
