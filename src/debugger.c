@@ -68,7 +68,7 @@ unsigned int   numinst = 0; // # of instructions
 
 unsigned char wx = 0, wy = 0, wx2 = 0, wy2 = 0;
 unsigned char execut = 0;
-unsigned char debuggeron = 1;
+unsigned char debuggeron = 0;
 unsigned char debstop = 0, debstop2 = 0, debstop3 = 0, debstop4 = 0;
 
 char debugsa1 = 0;
