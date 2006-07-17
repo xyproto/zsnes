@@ -3098,8 +3098,8 @@ NEWSYM NonEchoStereoPM
 %endif
     mov cx,[VolumeConvTable+eax*2]
     cmp byte[UniqueSoundv],0
-    powshithack
     je .NotNoise1b
+    powshithack
     test byte[DSPMem+3Dh],al
     jz .PMod
     mov eax, [NoiseInc]
