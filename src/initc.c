@@ -682,7 +682,7 @@ unsigned short sum(unsigned char *array, unsigned int size)
   return(theSum);
 }
 
-extern unsigned short Checksumvalue;
+static unsigned short Checksumvalue;
 void CalcChecksum()
 {
   unsigned char *ROM = (unsigned char *)romdata;
@@ -694,11 +694,7 @@ void CalcChecksum()
   }
   else if (SPC7110Enable)
   {
-    Checksumvalue = sum(ROM, NumofBytes);
-    if (NumofBytes == 0x300000) //Fix for 24Mb SPC7110 ROMs
-    {
-      Checksumvalue += Checksumvalue;
-    }
+    Checksumvalue = sum(ROM, curromspace);
   }
   else
   {
@@ -714,34 +710,60 @@ void CalcChecksum()
   }
 }
 
-//Misc functions
-void MirrorROM()
+static void rom_memcpy(unsigned char *dest, unsigned char *src, size_t len)
 {
-  unsigned char *ROM = (unsigned char *)romdata;
-  unsigned int size, StartMirror = 0, ROMSize = curromspace;
-  //This will mirror up non power of two ROMs to powers of two
-  for (size = 1; size <= 64; size +=size)
+  unsigned char *endrom = (unsigned char *)romdata+maxromspace;
+  while (len-- && (dest < endrom) && (src < endrom))
   {
-    unsigned int fullSize = size * Mbit_bytes,
-                 halfSize = fullSize >> 1;
-    if ((ROMSize > halfSize) && (ROMSize < fullSize))
-    {
-      for (StartMirror = halfSize;
-           ROMSize < fullSize && ROMSize < maxromspace;)
-      {
-        ROM[ROMSize++] = ROM[StartMirror++];
-      }
-      curromspace = ROMSize;
-      break;
-    }
+    *dest++ = *src++;
   }
+}
+
+//This will mirror up non power of two ROMs to powers of two
+static unsigned int mirror_rom(unsigned char *start, unsigned int length)
+{
+  unsigned int mask = 0x800000, next_length;
+  while (!(length & mask)) { mask >>= 1; }
+  next_length = length-mask;
+  if (next_length)
+  {
+    next_length = mirror_rom(start+mask, next_length);
+    while (next_length < mask)
+    {
+      rom_memcpy(start+mask+next_length, start+mask, next_length);
+      next_length += next_length;
+    }
+    length = mask+next_length;
+  }
+  return(length);
+}
+
+//Misc functions
+void MirrorROM(unsigned char *ROM)
+{
+  unsigned int ROMSize, StartMirror = 0;
+  if (!SPC7110Enable)
+  {
+    curromspace = mirror_rom((unsigned char *)romdata, curromspace);
+  }
+  else if (curromspace == 0x300000)
+  {
+    memcpy((unsigned char *)romdata+curromspace, romdata, curromspace);
+    curromspace += curromspace;
+  }
+
+  if (curromspace > maxromspace)
+  {
+    curromspace = maxromspace;
+  }
+  NumofBanks = curromspace >> 15;
+
   //This will mirror (now) full sized ROMs through the ROM buffer
-  for (StartMirror = 0; ROMSize < maxromspace;)
+  ROMSize = curromspace;
+  while (ROMSize < maxromspace)
   {
     ROM[ROMSize++] = ROM[StartMirror++];
   }
-
-  NumofBanks = curromspace >> 15;
 
   //If ROM was too small before, but now decent size with mirroring, adjust location
   if (infoloc < Lo)
@@ -749,6 +771,7 @@ void MirrorROM()
     infoloc = Lo;
   }
 }
+
 
 void SetupSramSize()
 {
@@ -1918,8 +1941,6 @@ unsigned int showinfogui()
   // place CRC32 on line
   sprintf (CSStatus3+32, "%08X", CRC32);
 
-  CalcChecksum();
-
   i = (SplittedROM) ? infoloc + 0x1E + addOnStart: infoloc + 0x1E;
 
   if ((ROM[i] == (Checksumvalue & 0xFF)) && (ROM[i+1] == (Checksumvalue >> 8)))
@@ -1981,7 +2002,11 @@ void CheckROMType()
 { // used by both movie and normal powercycles
   unsigned char *ROM = (unsigned char *)romdata;
 
-  if (!MovieWaiting) { MirrorROM(); }
+  if (!MovieWaiting)
+  {
+    MirrorROM((unsigned char *)romdata);
+    CalcChecksum();
+  }
 
   lorommapmode2 = 0;
   if (!strncmp((char *)ROM+0x207FC0, "DERBY STALLION 96", 17) || !strncmp((char *)ROM+Lo, "SOUND NOVEL-TCOOL", 17))
