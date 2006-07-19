@@ -305,9 +305,9 @@ void DSP4_OP01()
   view_yofsenv = DSP4_READ_WORD();
 
   // initial (x,y,offset) at starting raster line
-  view_x1 = (world_x + world_xenv) >> 16;
-  view_y1 = world_y >> 16;
-  view_xofs1 = world_x >> 16;
+  view_x1 = (int16)((world_x + world_xenv) >> 16);
+  view_y1 = (int16)(world_y >> 16);
+  view_xofs1 = (int16)(world_x >> 16);
   view_yofs1 = world_yofs;
   view_turnoff_x = 0;
   view_turnoff_dx = 0;
@@ -322,8 +322,8 @@ void DSP4_OP01()
 
     // perspective projection of world (x,y,scroll) points
     // based on the current projection lines
-    view_x2 = ( ( ( world_x + world_xenv ) >> 16 ) * distance >> 15 ) + ( view_turnoff_x * distance >> 15 );
-    view_y2 = (world_y >> 16) * distance >> 15;
+    view_x2 = (int16)(( ( ( world_x + world_xenv ) >> 16 ) * distance >> 15 ) + ( view_turnoff_x * distance >> 15 ));
+    view_y2 = (int16)((world_y >> 16) * distance >> 15);
     view_xofs2 = view_x2;
     view_yofs2 = (world_yofs * distance >> 15) + poly_bottom[0][0] - view_y2;
 
@@ -335,9 +335,9 @@ void DSP4_OP01()
     // 5. Number of raster lines drawn in this iteration
 
     DSP4_CLEAR_OUT();
-    DSP4_WRITE_WORD((world_x + world_xenv) >> 16);
+    DSP4_WRITE_WORD((uint16)((world_x + world_xenv) >> 16));
     DSP4_WRITE_WORD(view_x2);
-    DSP4_WRITE_WORD(world_y >> 16);
+    DSP4_WRITE_WORD((uint16)(world_y >> 16));
     DSP4_WRITE_WORD(view_y2);
 
     //////////////////////////////////////////////////////
@@ -395,8 +395,8 @@ void DSP4_OP01()
         // 3. horizontal scroll offset ($210D)
 
         DSP4_WRITE_WORD(poly_ptr[0][0]);
-        DSP4_WRITE_WORD((y_scroll + 0x8000) >> 16);
-        DSP4_WRITE_WORD((x_scroll + 0x8000) >> 16);
+        DSP4_WRITE_WORD((uint16)((y_scroll + 0x8000) >> 16));
+        DSP4_WRITE_WORD((uint16)((x_scroll + 0x8000) >> 16));
 
 
         // update memory address
@@ -545,8 +545,8 @@ void DSP4_OP07()
   view_yofsenv = DSP4_READ_WORD();
 
   // initial (x,y,offset) at starting raster line
-  view_x1 = world_x >> 16;
-  view_y1 = world_y >> 16;
+  view_x1 = (int16)(world_x >> 16);
+  view_y1 = (int16)(world_y >> 16);
   view_xofs1 = view_x1;
   view_yofs1 = world_yofs;
 
@@ -630,8 +630,8 @@ void DSP4_OP07()
         // 3. horizontal scroll offset ($210F)
 
         DSP4_WRITE_WORD(poly_ptr[0][0]);
-        DSP4_WRITE_WORD((y_scroll + 0x8000) >> 16);
-        DSP4_WRITE_WORD((x_scroll + 0x8000) >> 16);
+        DSP4_WRITE_WORD((uint16)((y_scroll + 0x8000) >> 16));
+        DSP4_WRITE_WORD((uint16)((x_scroll + 0x8000) >> 16));
 
         // update memory address
         poly_ptr[0][0] -= 4;
@@ -965,8 +965,8 @@ void DSP4_OP08()
           win_right += right_inc;
 
           // grab integer portion, drop fraction (no rounding)
-          x_left = win_left >> 16;
-          x_right = win_right >> 16;
+          x_left = (int16)(win_left >> 16);
+          x_right = (int16)(win_right >> 16);
 
           // saturate offscreen data
           if (x_left < poly_clipLf[polygon][0])
@@ -1409,9 +1409,9 @@ void DSP4_OP0D()
   view_yofsenv = DSP4_READ_WORD();
 
   // initial (x,y,offset) at starting raster line
-  view_x1 = (world_x + world_xenv) >> 16;
-  view_y1 = world_y >> 16;
-  view_xofs1 = world_x >> 16;
+  view_x1 = (int16)((world_x + world_xenv) >> 16);
+  view_y1 = (int16)(world_y >> 16);
+  view_xofs1 = (int16)(world_x >> 16);
   view_yofs1 = world_yofs;
 
   // first raster line
@@ -1425,8 +1425,8 @@ void DSP4_OP0D()
 
     // perspective projection of world (x,y,scroll) points
     // based on the current projection lines
-    view_x2 = ( ( ( world_x + world_xenv ) >> 16 ) * distance >> 15 ) + ( view_turnoff_x * distance >> 15 );
-    view_y2 = (world_y >> 16) * distance >> 15;
+    view_x2 = (int16)(( ( ( world_x + world_xenv ) >> 16 ) * distance >> 15 ) + ( view_turnoff_x * distance >> 15 ));
+    view_y2 = (int16)((world_y >> 16) * distance >> 15);
     view_xofs2 = view_x2;
     view_yofs2 = (world_yofs * distance >> 15) + poly_bottom[0][0] - view_y2;
 
@@ -1437,9 +1437,9 @@ void DSP4_OP0D()
     // 5. Number of raster lines drawn in this iteration
 
     DSP4_CLEAR_OUT();
-    DSP4_WRITE_WORD((world_x + world_xenv) >> 16);
+    DSP4_WRITE_WORD((uint16)((world_x + world_xenv) >> 16));
     DSP4_WRITE_WORD(view_x2);
-    DSP4_WRITE_WORD(world_y >> 16);
+    DSP4_WRITE_WORD((uint16)(world_y >> 16));
     DSP4_WRITE_WORD(view_y2);
 
     //////////////////////////////////////////////////////////
@@ -1497,8 +1497,8 @@ void DSP4_OP0D()
         // 3. horizontal scroll offset ($210D)
 
         DSP4_WRITE_WORD(poly_ptr[0][0]);
-        DSP4_WRITE_WORD((y_scroll + 0x8000) >> 16);
-        DSP4_WRITE_WORD((x_scroll + 0x8000) >> 16);
+        DSP4_WRITE_WORD((uint16)((y_scroll + 0x8000) >> 16));
+        DSP4_WRITE_WORD((uint16)((x_scroll + 0x8000) >> 16));
 
 
         // update memory address
@@ -1611,9 +1611,9 @@ void DSP4_OP0F()
   view_yofsenv = DSP4_READ_WORD();
 
   // initial (x,y,offset) at starting raster line
-  view_x1 = (world_x + world_xenv) >> 16;
-  view_y1 = world_y >> 16;
-  view_xofs1 = world_x >> 16;
+  view_x1 = (int16)((world_x + world_xenv) >> 16);
+  view_y1 = (int16)(world_y >> 16);
+  view_xofs1 = (int16)(world_x >> 16);
   view_yofs1 = world_yofs;
   view_turnoff_x = 0;
   view_turnoff_dx = 0;
@@ -1629,8 +1629,8 @@ void DSP4_OP0F()
 
     // perspective projection of world (x,y,scroll) points
     // based on the current projection lines
-    view_x2 = ((world_x + world_xenv) >> 16) * distance >> 15;
-    view_y2 = (world_y >> 16) * distance >> 15;
+    view_x2 = (int16)(((world_x + world_xenv) >> 16) * distance >> 15);
+    view_y2 = (int16)((world_y >> 16) * distance >> 15);
     view_xofs2 = view_x2;
     view_yofs2 = (world_yofs * distance >> 15) + poly_bottom[0][0] - view_y2;
 
@@ -1641,9 +1641,9 @@ void DSP4_OP0F()
     // 5. Number of raster lines drawn in this iteration
 
     DSP4_CLEAR_OUT();
-    DSP4_WRITE_WORD((world_x + world_xenv) >> 16);
+    DSP4_WRITE_WORD((uint16)((world_x + world_xenv) >> 16));
     DSP4_WRITE_WORD(view_x2);
-    DSP4_WRITE_WORD(world_y >> 16);
+    DSP4_WRITE_WORD((uint16)(world_y >> 16));
     DSP4_WRITE_WORD(view_y2);
 
     //////////////////////////////////////////////////////
@@ -1735,8 +1735,8 @@ void DSP4_OP0F()
         // 3. horizontal scroll offset ($210D)
 
         DSP4_WRITE_WORD(poly_ptr[0][0]);
-        DSP4_WRITE_WORD((y_scroll + 0x8000) >> 16);
-        DSP4_WRITE_WORD((x_scroll + 0x8000) >> 16);
+        DSP4_WRITE_WORD((uint16)((y_scroll + 0x8000) >> 16));
+        DSP4_WRITE_WORD((uint16)((x_scroll + 0x8000) >> 16));
 
         // update memory address
         poly_ptr[0][0] -= 4;
@@ -1857,8 +1857,8 @@ void DSP4_OP10()
   view_yofsenv = DSP4_READ_WORD();
 
   // initial (x,y,offset) at starting raster line
-  view_x1 = world_x >> 16;
-  view_y1 = world_y >> 16;
+  view_x1 = (int16)(world_x >> 16);
+  view_y1 = (int16)(world_y >> 16);
   view_xofs1 = view_x1;
   view_yofs1 = world_yofs;
 
@@ -1978,8 +1978,8 @@ void DSP4_OP10()
         // 3. horizontal scroll offset ($210F)
 
         DSP4_WRITE_WORD(poly_ptr[0][0]);
-        DSP4_WRITE_WORD((y_scroll + 0x8000) >> 16);
-        DSP4_WRITE_WORD((x_scroll + 0x8000) >> 16);
+        DSP4_WRITE_WORD((uint16)((y_scroll + 0x8000) >> 16));
+        DSP4_WRITE_WORD((uint16)((x_scroll + 0x8000) >> 16));
 
         // update memory address
         poly_ptr[0][0] -= 4;
@@ -2147,8 +2147,8 @@ void DSP4SetByte()
         DSP4_Multiply(multiplicand, multiplier, &product);
 
         DSP4_CLEAR_OUT();
-        DSP4_WRITE_WORD(product);
-        DSP4_WRITE_WORD(product >> 16);
+        DSP4_WRITE_WORD((uint16)(product));
+        DSP4_WRITE_WORD((uint16)(product >> 16));
       }
       break;
 

@@ -559,7 +559,7 @@ unzFile unzopen_dir(const char *path, const char *file)
 #ifndef NO_JMA
 void load_jma_file_dir(const char *path, const char *file)
 {
-  return(load_jma_file(strdupcat_internal(path, file)));
+  load_jma_file(strdupcat_internal(path, file));
 }
 #endif
 

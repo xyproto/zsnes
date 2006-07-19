@@ -56,7 +56,7 @@ misrepresented as being the original software.
 static ManyMouseEvent input_events[MAX_EVENTS];
 static volatile int input_events_read = 0;
 static volatile int input_events_write = 0;
-static int available_mice = 0;
+static unsigned int available_mice = 0;
 static int did_api_lookup = 0;
 static HWND raw_hwnd = NULL;
 static const char *class_name = "ManyMouseRawInputCatcher";
@@ -276,7 +276,7 @@ static void queue_event(const ManyMouseEvent *event)
 
 static void queue_from_rawinput(const RAWINPUT *raw)
 {
-    int i;
+    unsigned int i;
     const RAWINPUTHEADER *header = &raw->header;
     const RAWMOUSE *mouse = &raw->data.mouse;
     ManyMouseEvent event;

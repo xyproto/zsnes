@@ -418,11 +418,11 @@ ${WINDIR}/winintrf${OE}: ${WINDIR}/winintrf.asm macros.mac
 ${WINDIR}/zfilew${OE}: ${WINDIR}/zfilew.c ${WINDIR}/resource.h
 ${WINDIR}/safelib${OE}: ${WINDIR}/safelib.c ${WINDIR}/safelib.h argv.h
 ifeq (${ENV},msvc)
-${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h cfg.h
+${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h cfg${OE}
 ${WINDIR}/zsnes.res: ${WINDIR}/zsnes.rc ${WINDIR}/afxres.h ${WINDIR}/resource.h
 	rc ${WINDIR}/zsnes.rc
 else
-${WINDIR}/winlink${OE}: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h cfg.h
+${WINDIR}/winlink${OE}: ${WINDIR}/winlink.cpp ${WINDIR}/resource.h cfg${OE}
 	${CPPC} ${COPT} ${CFLAGS} -masm=intel -o $@ -c ${WINDIR}/winlink.cpp
 ${WINDIR}/zsnes${OE}: ${WINDIR}/zsnes.rc ${WINDIR}/afxres.h ${WINDIR}/resource.h
 	${WINDRES} --include-dir ${WINDIR} ${WINDIR}/zsnes.rc -o${WINDIR}/zsnes${OE}

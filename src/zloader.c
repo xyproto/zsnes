@@ -29,8 +29,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <limits.h>
 #ifdef __WIN32__
 #include <windows.h>
-#include <io.h>
 #include <direct.h>
+#undef _POSIX_
+#include <io.h>
 #else
 #include <unistd.h>
 #endif
@@ -836,7 +837,7 @@ static void handle_params(int argc, char *argv[])
   }
 }
 
-static void ZCleanup()
+static void ZCleanup(void)
 {
   void deinit_paths();
   void deallocmem();
