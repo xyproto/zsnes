@@ -43,7 +43,7 @@
 
 EXTSYM regptr,regptw,romdata,SA1Status,SDD1BankA,curromsize
 EXTSYM Get_Time,Get_TimeDate,SPC7110Entries,SPC7110IndexSize
-EXTSYM irqv2,irqv,nmiv2,nmiv,snesmmap
+EXTSYM irqv2,irqv,nmiv2,nmiv,snesmmap,SPC7110PackPtr,SPC7110IndexPtr
 EXTSYM snesmap2,curypos,CurrentExecSA1,memaccessbankr8sdd1,memtabler8,AddrNoIncr
 EXTSYM NumofBanks,BWUsed2,SPC7_Data_Load,SPC7110filep
 
@@ -514,8 +514,7 @@ SPC4800:
 ;    add ebx,[romdata]
 ;    add ebx,100000h
     mov bx,[SPCDecmPtr]
-    add ebx,[romdata]
-    add ebx,510000h
+    add ebx,SPC7110PackPtr
     mov al,[ebx]
     pop ebx
 ;    xor al,al
@@ -538,8 +537,7 @@ SPC4800:
     push ebx
     xor ebx,ebx
     mov bx,[SPCDecmPtr]
-    add ebx,[romdata]
-    add ebx,510000h
+    add ebx,SPC7110PackPtr
     mov al,[ebx]
     pop ebx
 
@@ -713,8 +711,7 @@ SPC4806w:
     mov ecx,[SPC7110Entries]
     mov ebx,[SPCCompPtr]
     and ebx,0FFFFFFh
-    mov eax,[romdata]
-    add eax,580000h
+    mov eax,SPC7110IndexPtr
     or ecx,ecx
     jz .noentries
 .loopc
@@ -735,8 +732,7 @@ SPC4806w:
     mov ebx,[eax+4]
     xor edx,edx
     mov dx,[SPCDecmPtr]
-    add edx,[romdata]
-    add edx,510000h
+    add edx,SPC7110PackPtr
     push eax
 .loopb
     mov al,[ebx]
@@ -756,8 +752,7 @@ SPC4806w:
 
     mov ecx,[SPC7110IndexSize]
     ; Address/index, pointer, length, SPC7110nfname
-    mov edx,[romdata]
-    add edx,580000h
+    mov edx,SPC7110IndexPtr
 .sploop
     mov eax,[SPCCompPtr]
     shl eax,8

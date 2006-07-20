@@ -1711,6 +1711,7 @@ extern unsigned int SPC7110Entries, SPC7110TempPosition, SPC7110TempLength, SPCD
 static char *SPC7110path;
 static char SPC7110fname[8+1+6+4+1]; //dir / 12345 .bin
 char *SPC7110filep;
+unsigned char SPC7110IndexPtr[12*32768], SPC7110PackPtr[65536];
 unsigned int SPC7110IndexSize;
 
 static void SPC7PathSetup(char *PathVar, const char *Default)
@@ -1763,7 +1764,7 @@ void SPC7PackIndexLoad()
   fp = fopen_dir(SPC7110path, SPC7110fname, "rb");
   if (fp)
   {
-    SPC7110IndexSize = fread(ROM+0x580000, 1, 12*32768, fp);
+    SPC7110IndexSize = fread(SPC7110IndexPtr, 1, 12*32768, fp);
     fclose(fp);
 
     //Get file pointer ready for individual pack files
@@ -1812,7 +1813,7 @@ void SPC7_Data_Load()
     unsigned char *ROM = (unsigned char *)romdata;
 
     fseek(fp, SPC7110TempPosition, SEEK_SET);
-    fread(ROM+0x510000+SPCDecmPtr, 1, SPC7110TempLength, fp);
+    fread(SPC7110PackPtr+SPCDecmPtr, 1, SPC7110TempLength, fp);
     fclose(fp);
   }
 }

@@ -18,7 +18,7 @@
 
 %include "macros.mac"
 
-EXTSYM romdata,sramb4save
+EXTSYM romdata,sramb4save,SPC7110PackPtr
 EXTSYM SFXEnable,regptra,sfxramdata,snesmmap,wramdataa
 EXTSYM snesmap2,SPC7110Enable
 EXTSYM DSP1Write8b,regptwa,writeon,DSP1Read16b
@@ -1426,8 +1426,7 @@ NEWSYM membank0w16SA1
 NEWSYM memaccessspc7110r8
     push ebx
     movzx ebx,word[SPCDecmPtr]
-    add ebx,[romdata]
-    add ebx,510000h
+    add ebx,SPC7110PackPtr
     mov al,[ebx]
     pop ebx
 
@@ -1437,8 +1436,7 @@ NEWSYM memaccessspc7110r8
     inc word[CurDecompSize]
     ret
 
-    mov ebx,[romdata]
-    add ebx,510000h
+    mov ebx,SPC7110PackPtr
     mov al,[ebx+ecx]
     cmp cx,[CurDecompPtr]
     jb .noptr
@@ -1451,8 +1449,7 @@ NEWSYM memaccessspc7110r8
     xor ebx,ebx
     ret
 NEWSYM memaccessspc7110r16
-    mov ebx,[romdata]
-    add ebx,510000h
+    mov ebx,SPC7110PackPtr
     mov ax,[ebx+ecx]
     cmp cx,[CurDecompPtr]
     jb .noptr
@@ -1465,14 +1462,12 @@ NEWSYM memaccessspc7110r16
     xor ebx,ebx
     ret
 NEWSYM memaccessspc7110w8
-    mov ebx,[romdata]
-    add ebx,510000h
+    mov ebx,SPC7110PackPtr
     mov [ebx+ecx],al
     xor ebx,ebx
     ret
 NEWSYM memaccessspc7110w16
-    mov ebx,[romdata]
-    add ebx,510000h
+    mov ebx,SPC7110PackPtr
     mov [ebx+ecx],ax
     xor ebx,ebx
     ret
