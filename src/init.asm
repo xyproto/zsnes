@@ -59,7 +59,7 @@ EXTSYM device1,device2,processmouse1,processmouse2,cpalval
 EXTSYM clearmem,clearSPCRAM,SPC7110IndexSize
 EXTSYM SPC7PackIndexLoad,C4Enable,SPC7110Enable,RTCEnable,SA1Enable
 EXTSYM BSEnable,clearvidsound,headerhack,SetupROM,ram7fa
-EXTSYM ZCartName
+EXTSYM ZCartName,SPC7110PackPtr
 
 EXTSYM initsnes
 
@@ -955,8 +955,7 @@ NEWSYM init65816
     mov dword[memtabler16+50h*4],memaccessspc7110r16
     mov dword[memtablew8+50h*4],memaccessspc7110w8
     mov dword[memtablew16+50h*4],memaccessspc7110w16
-    mov eax,[romdata]
-    add eax,510000h
+    mov eax,SPC7110PackPtr
     mov [snesmmap+50h*4],eax
     mov [snesmap2+50h*4],eax
     mov ecx,16384
