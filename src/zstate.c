@@ -101,6 +101,8 @@ enum copy_state_method { csm_save_zst_new,
                          csm_save_rewind,
                          csm_load_rewind };
 
+extern unsigned char SPC7110PackPtr[65536];
+
 static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t), enum copy_state_method method)
 {
   copy_snes_data(&buffer, copy_func);
@@ -173,7 +175,7 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
 
   if (SPC7110Enable)
   {
-    copy_func(&buffer, romdata+0x510000, 65536);
+    copy_func(&buffer, SPC7110PackPtr, 65536);
     copy_func(&buffer, &SPCMultA, PHnum2writespc7110reg);
   }
 
