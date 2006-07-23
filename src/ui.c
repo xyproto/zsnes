@@ -228,7 +228,6 @@ unsigned char *vcache8bs = 0; // 8-bit video secondary cache
 unsigned char vrama[65536];
 
 unsigned char mode7tab[65536];
-unsigned char *wramreadptr, wramwriteptr;
 
 unsigned short fulladdtab[65536];
 unsigned char spcRamcmp[65536];

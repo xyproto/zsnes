@@ -53,8 +53,8 @@ EXTSYM RTCinit,memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
 EXTSYM memaccessspc7110w16,snesmap2,snesmmap,procexecloop,wramdata,wramdataa
 EXTSYM GetCurDir,ZStateName,statefileloc,loadfileGUI
 EXTSYM romispal,initregr,initregw,memtabler16
-EXTSYM memtabler8,memtablew16,memtablew8,wramreadptr,InGUI
-EXTSYM wramwriteptr,loadstate2,CMovieExt,MoviePlay,MovieDumpRaw,AllowUDLR
+EXTSYM memtabler8,memtablew16,memtablew8,InGUI
+EXTSYM loadstate2,CMovieExt,MoviePlay,MovieDumpRaw,AllowUDLR
 EXTSYM device1,device2,processmouse1,processmouse2,cpalval
 EXTSYM clearmem,clearSPCRAM,SPC7110IndexSize
 EXTSYM SPC7PackIndexLoad,C4Enable,SPC7110Enable,RTCEnable,SA1Enable
@@ -1137,15 +1137,6 @@ NEWSYM init65816
     mov dword[ram7fa+65528],01010101h
     mov dword[ram7fa+65532],01010101h
 .notbsx2
-    mov dword[wramreadptr],getwram1fff
-    mov dword[wramwriteptr],setwram1fff
-    ret
-
-getwram1fff:
-    mov al,[wramdataa+1fffh]
-    ret
-setwram1fff:
-    mov [wramdata+1fffh],al
     ret
 
 ;*******************************************************
