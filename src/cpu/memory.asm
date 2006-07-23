@@ -124,7 +124,7 @@ NEWSYM regaccessbankr16
     ret
 .regacc
     cmp ecx,1FFFh
-    jae .regs
+    ja .regs
     mov ax,[wramdataa+ecx]
     ret
 .regs
@@ -292,7 +292,7 @@ NEWSYM regaccessbankw16
     test ecx,8000h
     jnz .romacc
     cmp ecx,1FFFh
-    jae .regs
+    ja .regs
     mov [wramdataa+ecx],ax
     ret
 .romacc
