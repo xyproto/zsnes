@@ -123,9 +123,13 @@ NEWSYM regaccessbankr16
     xor ebx,ebx
     ret
 .regacc
-    cmp ecx,1FFFh
-    ja .regs
+    cmp ecx,2000h
+    jae .regs
     mov ax,[wramdataa+ecx]
+    cmp ecx,1FFFh
+    jne .notopenbus
+    mov ah,al
+.notopenbus
     ret
 .regs
     cmp ecx,48FFh
@@ -291,9 +295,14 @@ NEWSYM regaccessbankw8
 NEWSYM regaccessbankw16
     test ecx,8000h
     jnz .romacc
+    cmp ecx,2000h
+    jae .regs
     cmp ecx,1FFFh
-    ja .regs
+    je .endwram
     mov [wramdataa+ecx],ax
+    ret
+.endwram
+    mov [wramdataa+ecx],al
     ret
 .romacc
     cmp byte[writeon],0
@@ -871,7 +880,7 @@ NEWSYM membank0r16ramh            ; 1F00-1FFF
     ret
 .over
     mov al,[wramdataa+ecx]
-    xor ah,ah
+    mov ah,al ;open bus
     ret
 NEWSYM membank0r16reg             ; 2000-48FF
     add ecx,ebx
