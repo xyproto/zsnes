@@ -55,18 +55,16 @@ pl1upk dd 72
 pl1downk dd 80
 pl1leftk dd 75
 pl1rightk dd 77
-%else
-%ifdef __UNIXSDL__
+%elifdef __UNIXSDL__
 pl1upk dd 90
 pl1downk dd 96
 pl1leftk dd 92
 pl1rightk dd 94
-#else
+%elifdef __WIN32__
 pl1upk dd 200
 pl1downk dd 208
 pl1leftk dd 203
 pl1rightk dd 205
-%endif
 %endif
 pl1Xk dd 31
 pl1Ak dd 45
