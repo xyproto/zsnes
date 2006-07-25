@@ -27,7 +27,7 @@ EXTSYM initaddrl, spcPCRam, UpdateDPage, pdh, numinst, writeon
 EXTSYM xp, xpb, xpc, curcyc, Curtableaddr, splitflags, execsingle, joinflags
 
 ;;; from debugger.c
-EXTSYM PrevBreakPt, my_getch_ret, my_getch
+EXTSYM PrevBreakPt_page, PrevBreakPt_offset, my_getch_ret, my_getch
 
 SECTION .text
 
@@ -84,9 +84,8 @@ NEWSYM breakops_wrapper
         push    ebp
         mov     ebp, esp
         pushad
-        xor     ebx, ebx
-        mov     bl, BYTE [ebp+8]
-        mov     ecx, DWORD [ebp+12]
+        movzx   ebx, BYTE [PrevBreakPt_page]
+        movzx   ecx, WORD [PrevBreakPt_offset]
         call    breakops
         popad
         pop     ebp
@@ -99,8 +98,8 @@ NEWSYM breakops_wrapper
 
 NEWSYM breakops
     ; set cursor to (12,60)
-    mov [PrevBreakPt],cx
-    mov [PrevBreakPt+2],bl
+    mov [PrevBreakPt_offset],cx
+    mov [PrevBreakPt_page],bl
 
 ;     push ebx
 ;     mov ah,02h

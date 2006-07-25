@@ -60,7 +60,7 @@ extern unsigned char spcA, spcX, spcY, spcS, spcNZ, spcP;
 // these really shouldn't be written in ASM... (they are in debugasm.asm)
 extern unsigned char memtabler8_wrapper(unsigned char, unsigned short);
 extern          void memtablew8_wrapper(unsigned char, unsigned short, unsigned char);
-extern void breakops_wrapper(unsigned char, unsigned short);
+extern void breakops_wrapper(void);
 
 extern void regaccessbankr8();
 extern void start65816();
@@ -216,7 +216,8 @@ void closewindow(WINDOW *w) {
 // Debug Loop
 //*******************************************************
 
-struct { unsigned short offset; unsigned char page; } PrevBreakPt;
+unsigned short PrevBreakPt_offset;
+unsigned char  PrevBreakPt_page;
 
 void debugloop() {
     int key;
@@ -314,7 +315,9 @@ void debugloop() {
 	   wrefresh(w);
 	   nodelay(stdscr, 1);
 
-	   breakops_wrapper(addr >> 16, addr);
+	   PrevBreakPt_page = addr >> 16;
+	   PrevBreakPt_offset = addr;
+	   breakops_wrapper();
 
 	   nodelay(stdscr, 0);
 	   closewindow(w);
@@ -326,7 +329,7 @@ void debugloop() {
    }
 
    case 'R': // repeat breakpoint
-       breakops_wrapper(PrevBreakPt.page, PrevBreakPt.offset);
+       breakops_wrapper();
        goto a;
 
    case 'S': // SPC breakpoint
