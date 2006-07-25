@@ -50,12 +50,13 @@ pl1contrl db 1
 @ Keys for select, start, up, down, left, right, X, A, L, Y, B, R
 pl1selk dd 54
 pl1startk dd 28
-#ifdef __MSDOS__
+%ifdef __MSDOS__
 pl1upk dd 72
 pl1downk dd 80
 pl1leftk dd 75
 pl1rightk dd 77
-#elifdef __UNIXSDL__
+%else
+%ifdef __UNIXSDL__
 pl1upk dd 90
 pl1downk dd 96
 pl1leftk dd 92
@@ -65,7 +66,8 @@ pl1upk dd 200
 pl1downk dd 208
 pl1leftk dd 203
 pl1rightk dd 205
-#endif
+%endif
+%endif
 pl1Xk dd 31
 pl1Ak dd 45
 pl1Lk dd 32
