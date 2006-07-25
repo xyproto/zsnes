@@ -668,19 +668,11 @@ NEWSYM ScanCodeListing
         db ' " ',' ~ ','LSH',' \ ',' Z ',' X ',' C ',' V '
         db ' B ',' N ',' M ',' , ',' . ',' / ','RSH',' * '  ; 30h
         db 'LAL','SPC','CAP','F1 ','F2 ','F3 ','F4 ','F5 '
-%ifdef __UNIXSDL__
         db 'F6 ','F7 ','F8 ','F9 ','F10','NUM','SCR','KP7'  ; 40h
         db 'KP8','KP9','KP-','KP4','KP5','KP6','KP+','KP1'
         db 'KP2','KP3','KP0','KP.','   ','   ','OEM','F11'  ; 50h
-        db 'F12','HOM',' UP','PGU','LFT','5DH','RGT','END'
+        db 'F12','HOM','UP ','PGU','LFT','5DH','RGT','END'
         db 'DWN','PGD','INS','DEL','64H','65H','66H','67H'  ; 60h
-%else
-        db 'F6 ','F7 ','F8 ','F9 ','F10','NUM','SCR','N 7'  ; 40h
-        db 'N 8','N 9','N -','N 4','N 5','N 6','N +','N 1'
-        db 'N 2','N 3','N 0','N .','   ','   ','OEM','F11'  ; 50h
-        db 'F12','59h','5Ah','5BH','5CH','5DH','5EH','5FH'
-        db '60H','61H','62H','63H','64H','65H','66H','67H'  ; 60h
-%endif
         db '68H','69H','6AH','6BH','6CH','6DH','6EH','6FH'
         db '70H','71H','72H','73H','74H','75H','76H','77H'  ; 70h
         db '78H','79H','7AH','7BH','7CH','7DH','7EH','7FH'
