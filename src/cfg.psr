@@ -347,16 +347,16 @@ PrevFSMode db 3
 #elifdef __MSDOS__
 
 @ Video Mode, 0 - 18
-@  0 = 256x224x8B  (MODEQ)    1 = 256x240x8B (MODEQ)
-@  2 = 256x256x8B  (MODEQ)    3 = 320x224x8B (MODEX)
-@  4 = 320x240x8B  (MODEX)    5 = 320x256x8B (MODEX)
-@  6 = 640x480x16B (VESA1)    7 = 320x240x8B (VESA2)
-@  8 = 320x240x16B (VESA2)    9 = 320x480x8B (VESA2)
-@ 10 = 320x480x16B (VESA2)   11 = 512x384x8B (VESA2)
-@ 12 = 512x384x16B (VESA2)   13 = 640x400x8B (VESA2)
-@ 14 = 640x400x16B (VESA2)   15 = 640x480x8B (VESA2)
-@ 16 = 640x480x16B (VESA2)   17 = 800x600x8B (VESA2)
-@ 18 = 800x600x16B (VESA2)
+@   0 = 256x224x8B  (MODEQ)   1 = 256x240x8B (MODEQ)
+@   2 = 256x256x8B  (MODEQ)   3 = 320x224x8B (MODEX)
+@   4 = 320x240x8B  (MODEX)   5 = 320x256x8B (MODEX)
+@   6 = 640x480x16B (VESA1)   7 = 320x240x8B (VESA2)
+@   8 = 320x240x16B (VESA2)   9 = 320x480x8B (VESA2)
+@  10 = 320x480x16B (VESA2)  11 = 512x384x8B (VESA2)
+@  12 = 512x384x16B (VESA2)  13 = 640x400x8B (VESA2)
+@  14 = 640x400x16B (VESA2)  15 = 640x480x8B (VESA2)
+@  16 = 640x480x16B (VESA2)  17 = 800x600x8B (VESA2)
+@  18 = 800x600x16B (VESA2)
 cvidmode db 4
 @ Non-DOS variables used for alt-tabbing, don't edit them
 PrevWinMode db 0
@@ -369,8 +369,8 @@ PrevFSMode db 0
 CustomResX dd 640
 CustomResY dd 480
 
-@
 %ifndef __MSDOS__
+@
 @ Enable Keep 4:3 Ratio (0 = No, 1 = YES)
 @ This is particularly handy for those that use laptops/LCDs+non 4:3 resolutions.
 %ifdef __WIN32__
