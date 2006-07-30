@@ -722,20 +722,20 @@ static void rom_memcpy(unsigned char *dest, unsigned char *src, size_t len)
 //This will mirror up non power of two ROMs to powers of two
 static unsigned int mirror_rom(unsigned char *start, unsigned int length)
 {
-  unsigned int mask = 0x800000, next_length;
+  unsigned int mask = 0x800000;
   while (!(length & mask)) { mask >>= 1; }
-  next_length = length-mask;
-  if (next_length)
+  length -= mask;
+  if (length)
   {
-    next_length = mirror_rom(start+mask, next_length);
-    while (next_length < mask)
+    start += mask;
+    length = mirror_rom(start, length);
+    while (length != mask)
     {
-      rom_memcpy(start+mask+next_length, start+mask, next_length);
-      next_length += next_length;
+      rom_memcpy(start+length, start, length);
+      length += length;
     }
-    length = mask+next_length;
   }
-  return(length);
+  return(length+mask);
 }
 
 //Misc functions
@@ -1331,12 +1331,30 @@ void loadROM()
     unsigned char *ROM = (unsigned char *)romdata;
     if (NSRTHead(ROM))
     {
-      switch (ROM[0x1ED])
+      switch (ROM[0x1ED] & 0xF0) //Port 1
       {
-        default: break;
-
-        case 0:
+        case 0x00: //Gamepad
           input1mouse = false;
+          break;
+
+        case 0x10: //Mouse port 1
+          device1 = 1;
+          input1gp = false;
+          break;
+
+        case 0x20: //Mouse or Gamepad port 1
+          device1 = 1;
+          break;
+
+        case 0x90: //Lasabirdie - not yet supported
+          input1gp = false;
+          input1mouse = false;
+          break;
+      }
+
+      switch (ROM[0x1ED] & 0x0F) //Port 1
+      {
+        case 0x00: //Gamepad
           input2mouse = false;
           input2scope = false;
           input2just = false;
@@ -1347,7 +1365,12 @@ void loadROM()
           input2gp = false;
           input2scope = false;
           input2just = false;
-          input1mouse = false;
+          break;
+
+        case 0x02: //Mouse or Gamepad port 2
+          device1 = 2;
+          input2just = false;
+          input2scope = false;
           break;
 
         case 0x03: //Super Scope port 2
@@ -1355,21 +1378,18 @@ void loadROM()
           input2gp = false;
           input2mouse = false;
           input2just = false;
-          input1mouse = false;
           break;
 
         case 0x04: //Super Scope or Gamepad port 2
           device2 = 2;
           input2mouse = false;
           input2just = false;
-          input1mouse = false;
           break;
 
         case 0x05: //Justifier (Lethal Enforcer gun) port 2
           device2 = 3;
           input2mouse = false;
           input2scope = false;
-          input1mouse = false;
           break;
 
         case 0x06: //Multitap port 2
@@ -1377,44 +1397,31 @@ void loadROM()
           input2mouse = false;
           input2just = false;
           input2scope = false;
-          input1mouse = false;
+          break;
+
+        case 0x07: //Mouse or Gamepad port 1, Mouse, Super Scope, or Gamepad port 2
+          input2just = false;
           break;
 
         case 0x08: //Mouse or Multitap port 2
           device2 = 1;
           input2just = false;
           input2scope = false;
-          input1mouse = false;
           break;
 
-        case 0x10: //Mouse port 1
-          device1 = 1;
-          input2mouse = false;
-          input2just = false;
-          input2scope = false;
-          input1gp = false;
-          break;
-
-        case 0x20: //Mouse or Gamepad port 1
-          device1 = 1;
+        case 0x09: //Lasabirdie - not yet supported
+          input2gp = false;
           input2mouse = false;
           input2just = false;
           input2scope = false;
           break;
 
-        case 0x22: //Mouse or Gamepad port 1 and port 2
-          device1 = 1;
-          device2 = 1;
+        case 0x0A: //Barcode Battler - not yet supported
+          input2gp = false;
+          input2mouse = false;
           input2just = false;
           input2scope = false;
           break;
-
-        case 0x27: //Mouse or Gamepad port 1, Mouse, Super Scope, or Gamepad port 2
-          input2just = false;
-          break;
-
-        case 0x99: break; //Lasabirdie
-        case 0x0A: break; //Barcode Battler
       }
     }
     curromspace -= 512;
