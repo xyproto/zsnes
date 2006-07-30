@@ -93,6 +93,7 @@ extern BYTE GUIHQ3X[];
 extern BYTE GUIHQ4X[];
 extern BYTE GUIRESIZE[];
 extern BYTE GUIM7VID[];
+extern unsigned char Keep4_3Ratio;
 
 unsigned int CustomResX;
 unsigned int CustomResY;
@@ -442,6 +443,24 @@ int Main_Proc(void)
           {
             glOrtho (-1, 1,- ((float) 256*WindowHeight)/((float) 224*WindowWidth),
                    ((float) 256*WindowHeight)/((float) 224*WindowWidth), -1, 1);
+          }
+          else
+          {
+            glOrtho (-1, 1, -1, 1, -1, 1);
+          }
+        }
+
+        if ((cvidmode == 22) && Keep4_3Ratio)
+        {
+          if (3*WindowWidth > 4*WindowHeight && WindowHeight)
+          {
+            glOrtho (- ((float) 3*WindowWidth)/((float) 4*WindowHeight),
+                     ((float) 3*WindowWidth)/((float) 4*WindowHeight), -1, 1, -1, 1);
+          }
+          else if (3*WindowWidth < 4*WindowHeight && WindowWidth)
+          {
+            glOrtho (-1, 1,- ((float) 4*WindowHeight)/((float) 3*WindowWidth),
+                   ((float) 4*WindowHeight)/((float) 3*WindowWidth), -1, 1);
           }
           else
           {
@@ -1011,8 +1030,6 @@ void initwinvideo(void)
 			case 2:
 			case 3:
 			case 7:
-			case 21: // variable
-			case 22: // variable
 				WindowWidth = 512;
 				WindowHeight = 448;
 				break;
@@ -1024,7 +1041,7 @@ void initwinvideo(void)
 				break;
 			case 10:
 				WindowWidth = 640;
-				WindowHeight = 576;
+				WindowHeight = 560;
 				break;
 			case 11:
 				WindowWidth = 768;
@@ -1061,7 +1078,9 @@ void initwinvideo(void)
 				WindowWidth = 1600;
 				WindowHeight = 1200;
 				break;
-			case 23: //Custom
+			case 21: // Variable ODR
+			case 22: // Variable ODS
+			case 23: // Custom Res
 				WindowWidth = CustomResX;
 				WindowHeight = CustomResY;
 				break;

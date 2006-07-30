@@ -133,58 +133,58 @@ static void display_help()
   put_line("  -v #    Select video mode :");
 #ifdef __WIN32__
 #define VIDEO_MODE_COUNT 41
-  put_line("             0 = 256x224   R WIN       1 = 256x224   R FULL");
-  put_line("             2 = 512x448   R WIN       3 = 512x448   DR WIN");
-  put_line("             4 = 640x480   S WIN       5 = 640x480   DS WIN");
-  put_line("             6 = 640x480   DR FULL     7 = 640x480   DS FULL");
-  put_line("             8 = 640x480   S FULL      9 = 768x672   R WIN");
-  put_line("            10 = 768x672   DR WIN     11 = 800x600   S WIN");
-  put_line("            12 = 800x600   DS WIN     13 = 800x600   S FULL");
-  put_line("            14 = 800x600   DR FULL    15 = 800x600   DS FULL");
-  put_line("            16 = 1024x768  S WIN      17 = 1024x768  DS WIN");
-  put_line("            18 = 1024x768  S FULL     19 = 1024x768  DR FULL");
-  put_line("            20 = 1024x768  DS FULL    21 = 1024x896  R WIN");
-  put_line("            22 = 1024x896  DR WIN     23 = 1280x960  S WIN");
-  put_line("            24 = 1280x960  DS WIN     25 = 1280x960  S FULL");
-  put_line("            26 = 1280x960  DR FULL    27 = 1280x960  DS FULL");
-  put_line("            28 = 1280x1024 S WIN      29 = 1280x1024 DS WIN");
-  put_line("            30 = 1280x1024 S FULL     31 = 1280x1024 DR FULL");
-  put_line("            32 = 1280x1024 DS FULL    33 = 1600x1200 S WIN");
-  put_line("            34 = 1600x1200 DS WIN     35 = 1600x1200 DR FULL");
-  put_line("            36 = 1600x1200 DS FULL    37 = CUSTOM    D WIN");
-  put_line("            38 = CUSTOM    DS FULL    39 = CUSTOM    WIN");
-  put_line("            40 = CUSTOM    S FULL     41 = CUSTOM    DR FULL");
+  put_line("             0 = 256x224   R  WIN       1 = 256x224   R  FULL");
+  put_line("             2 = 512x448   R  WIN       3 = 512x448   DR WIN");
+  put_line("             4 = 640x480   S  WIN       5 = 640x480   DS WIN");
+  put_line("             6 = 640x480   DR FULL      7 = 640x480   DS FULL");
+  put_line("             8 = 640x480   S  FULL      9 = 768x672   R  WIN");
+  put_line("            10 = 768x672   DR WIN      11 = 800x600   S  WIN");
+  put_line("            12 = 800x600   DS WIN      13 = 800x600   S  FULL");
+  put_line("            14 = 800x600   DR FULL     15 = 800x600   DS FULL");
+  put_line("            16 = 1024x768  S  WIN      17 = 1024x768  DS WIN");
+  put_line("            18 = 1024x768  S  FULL     19 = 1024x768  DR FULL");
+  put_line("            20 = 1024x768  DS FULL     21 = 1024x896  R  WIN");
+  put_line("            22 = 1024x896  DR WIN      23 = 1280x960  S  WIN");
+  put_line("            24 = 1280x960  DS WIN      25 = 1280x960  S  FULL");
+  put_line("            26 = 1280x960  DR FULL     27 = 1280x960  DS FULL");
+  put_line("            28 = 1280x1024 S  WIN      29 = 1280x1024 DS WIN");
+  put_line("            30 = 1280x1024 S  FULL     31 = 1280x1024 DR FULL");
+  put_line("            32 = 1280x1024 DS FULL     33 = 1600x1200 S  WIN");
+  put_line("            34 = 1600x1200 DS WIN      35 = 1600x1200 DR FULL");
+  put_line("            36 = 1600x1200 DS FULL     37 = CUSTOM    D  WIN");
+  put_line("            38 = CUSTOM    DS FULL     39 = CUSTOM       WIN");
+  put_line("            40 = CUSTOM    S  FULL     41 = CUSTOM    DR FULL");
 #endif
 #ifdef __UNIXSDL__
-  put_line("             0 = 256x224   R WIN        1 = 256x224   R FULL");
+  put_line("             0 = 256x224   R  WIN       1 = 256x224   R  FULL");
   put_line("             2 = 512x448   DR WIN       3 = 512x448   DR FULL");
   put_line("             4 = 640x480   DR FULL      5 = 800x600   DR FULL");
 #ifndef __OPENGL__
 #define VIDEO_MODE_COUNT 5
 #else
 #define VIDEO_MODE_COUNT 23
-  put_line("             6 = 256x224   OR WIN       7 = 512x448   ODR WIN");
+  put_line("             6 = 256x224   OR  WIN      7 = 512x448   ODR WIN");
   put_line("             8 = 640x480   ODS FULL     9 = 640x480   ODS WIN");
-  put_line("            10 = 640x576   ODR WIN     11 = 768x672   ODR WIN");
+  put_line("            10 = 640x560   ODR WIN     11 = 768x672   ODR WIN");
   put_line("            12 = 800x600   ODS FULL    13 = 800x600   ODS WIN");
   put_line("            14 = 896x784   ODR WIN     15 = 1024x768  ODS FULL");
   put_line("            16 = 1024x768  ODS WIN     17 = 1024x896  ODR WIN");
-  put_line("            18 = 1280x960  ODS FULL    19 = 1280x1024 ODR FULL");
+  put_line("            18 = 1280x960  ODS FULL    19 = 1280x1024 ODS FULL");
   put_line("            20 = 1600x1200 ODS FULL    21 = VARIABLE  ODR WIN");
   put_line("            22 = VARIABLE  ODS WIN     23 = CUSTOM    OD  FULL");
 #endif
 #endif
 #ifdef __MSDOS__
 #define VIDEO_MODE_COUNT 18
-  put_line("             0 = 256x224x8B  (MODEQ)  1 = 256x240x8B (MODEQ)");
-  put_line("             2 = 256x256x8B  (MODEQ)  3 = 320x224x8B (MODEX)");
-  put_line("             4 = 320x240x8B  (MODEX)  5 = 320x256x8B (MODEX)");
-  put_line("             6 = 640x480x16B (VESA1)  7 = 320x240x8B (VESA2)");
-  put_line("             8 = 320x240x16B (VESA2)  9 = 320x480x8B (VESA2)");
-  put_line("            10 = 320x480x16B (VESA2) 11 = 512x384x8B (VESA2)");
-  put_line("            12 = 512x384x16B (VESA2) 13 = 640x400x8B (VESA2)");
-  put_line("            14 = 640x400x16B (VESA2) 15 = 640x480x8B (VESA2)");
-  put_line("            16 = 640x480x16B (VESA2) 17 = 800x600x8B (VESA2)");
+  put_line("             0 = 256x224x8B  (MODEQ)    1 = 256x240x8B (MODEQ)");
+  put_line("             2 = 256x256x8B  (MODEQ)    3 = 320x224x8B (MODEX)");
+  put_line("             4 = 320x240x8B  (MODEX)    5 = 320x256x8B (MODEX)");
+  put_line("             6 = 640x480x16B (VESA1)    7 = 320x240x8B (VESA2)");
+  put_line("             8 = 320x240x16B (VESA2)    9 = 320x480x8B (VESA2)");
+  put_line("            10 = 320x480x16B (VESA2)   11 = 512x384x8B (VESA2)");
+  put_line("            12 = 512x384x16B (VESA2)   13 = 640x400x8B (VESA2)");
+  put_line("            14 = 640x400x16B (VESA2)   15 = 640x480x8B (VESA2)");
+  put_line("            16 = 640x480x16B (VESA2)   17 = 800x600x8B (VESA2)");
   put_line("            18 = 800x600x16B (VESA2)");
 #endif
   put_line("  -v8     Grayscale mode");
