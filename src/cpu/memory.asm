@@ -18,7 +18,7 @@
 
 %include "macros.mac"
 
-EXTSYM romdata,sramb4save,SPC7110PackPtr
+EXTSYM romdata,sramb4save,SPC7110PackPtr,curromspace
 EXTSYM SFXEnable,regptra,sfxramdata,snesmmap,wramdataa
 EXTSYM snesmap2,SPC7110Enable
 EXTSYM DSP1Write8b,regptwa,writeon,DSP1Read16b
@@ -1543,9 +1543,20 @@ NEWSYM memaccessbankr1648mb
 ; SRAM Access Bank (70h)
 ;*******************************************************
 
-NEWSYM sramaccessbankr8
+%macro SRAMAccess 1
+    cmp dword[curromspace],0x200000
+    ja .large
+    cmp  dword[ramsize],0x8000
+    ja .large
+    jmp .notlarge
+.large
     test ecx,8000h
-    jnz memaccessbankr8
+    jnz %1
+.notlarge
+%endmacro
+
+NEWSYM sramaccessbankr8
+    SRAMAccess memaccessbankr8
     push ecx
     cmp bl,0F0h
     jne .notf0
@@ -1557,9 +1568,9 @@ NEWSYM sramaccessbankr8
     call sramaccessbankr8b
     pop ecx
     ret
+
 NEWSYM sramaccessbankr16
-    test ecx,8000h
-    jnz memaccessbankr16
+    SRAMAccess memaccessbankr16
     push ecx
     sub bl,70h
     shl ebx,15
@@ -1567,9 +1578,9 @@ NEWSYM sramaccessbankr16
     call sramaccessbankr16b
     pop ecx
     ret
+
 NEWSYM sramaccessbankw8
-    test ecx,8000h
-    jnz memaccessbankw8
+    SRAMAccess memaccessbankw8
     push ecx
     sub bl,70h
     cmp bl,0F0h
@@ -1581,9 +1592,9 @@ NEWSYM sramaccessbankw8
     call sramaccessbankw8b
     pop ecx
     ret
+
 NEWSYM sramaccessbankw16
-    test ecx,8000h
-    jnz memaccessbankw16
+    SRAMAccess memaccessbankw16
     push ecx
     cmp bl,0F0h
     jne .notf0
@@ -1595,6 +1606,7 @@ NEWSYM sramaccessbankw16
     call sramaccessbankw16b
     pop ecx
     ret
+
 
 NEWSYM sramaccessbankr8s
     push ecx
