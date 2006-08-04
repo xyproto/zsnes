@@ -1558,10 +1558,7 @@ NEWSYM memaccessbankr1648mb
 NEWSYM sramaccessbankr8
     SRAMAccess memaccessbankr8
     push ecx
-    cmp bl,0F0h
-    jne .notf0
-    sub bl,80h
-.notf0
+    and bl,7Fh
     sub bl,70h
     shl ebx,15
     add ecx,ebx
@@ -1572,6 +1569,7 @@ NEWSYM sramaccessbankr8
 NEWSYM sramaccessbankr16
     SRAMAccess memaccessbankr16
     push ecx
+    and bl,7Fh
     sub bl,70h
     shl ebx,15
     add ecx,ebx
@@ -1582,11 +1580,8 @@ NEWSYM sramaccessbankr16
 NEWSYM sramaccessbankw8
     SRAMAccess memaccessbankw8
     push ecx
+    and bl,7Fh
     sub bl,70h
-    cmp bl,0F0h
-    jne .notf0
-    sub bl,80h
-.notf0
     shl ebx,15
     add ecx,ebx
     call sramaccessbankw8b
@@ -1596,10 +1591,7 @@ NEWSYM sramaccessbankw8
 NEWSYM sramaccessbankw16
     SRAMAccess memaccessbankw16
     push ecx
-    cmp bl,0F0h
-    jne .notf0
-    sub bl,80h
-.notf0
+    and bl,7Fh
     sub bl,70h
     shl ebx,15
     add ecx,ebx
