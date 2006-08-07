@@ -432,10 +432,8 @@ NEWSYM AdjustFrequency
       je near .cubicspline
       ja near .fir_mmx
       ; Copy from Gaussian to DSPInterP
-%ifndef __MSDOS__
       test ah,ah
       jne .gaussian_mmx
-%endif
       mov ebx,DSPInterP+1024
       mov edx,DSPInterP+1022
       mov esi,Gaussian
