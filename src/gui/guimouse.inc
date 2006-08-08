@@ -2179,7 +2179,6 @@ DisplayGUIVideoClick:
   pushad
   call Clear2xSaIBuffer
   popad
-  call ClearScreen
   xor ebx,ebx                             ; scanlines
   mov bl,[cvidmode]
   cmp byte[GUISLVID+ebx],0
