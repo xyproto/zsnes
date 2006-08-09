@@ -1311,6 +1311,9 @@ NEWSYM MMXCheck
     cmp byte[MMXSupport],0
     je .nommx
 
+    mov byte[MMXSupport],0
+    mov byte[MMXextSupport],0
+
     ; Real way to check for presence of CPUID instruction  -kode54
     pushfd
     pop eax
@@ -1324,8 +1327,6 @@ NEWSYM MMXCheck
     jz .nommx
 
     ; MMX support
-    mov byte[MMXSupport],0
-    mov byte[MMXextSupport],0
     mov eax,1
     CPUID
 
