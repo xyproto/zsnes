@@ -417,8 +417,15 @@ NEWSYM conv2speed
 
 NEWSYM AdjustFrequency
       xor ebx,ebx
-      mov al,[SoundInterpType]
       mov ah,[MMXSupport]
+      mov al,[LowPassFilterType]
+      or ah,ah
+      jnz .nothq
+      cmp al,3
+      jb .nothq
+      mov byte[LowPassFilterType],0
+.nothq
+      mov al,[SoundInterpType]
       or al,al
       jz near .notgaussian
       or ah,ah
