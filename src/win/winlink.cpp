@@ -1896,6 +1896,30 @@ void SetHiresOpt()
 		GUIM7VID[cvidmode] = 0;
 }
 
+void KeepTVRatio()
+{
+	int ratiox = WindowWidth/4;
+	int ratioy = WindowHeight/3;
+
+	int marginchange;
+	int marginmod;
+
+	if (ratiox < ratioy)
+	{
+		marginchange = (WindowHeight-(ratiox*3))/2;
+		marginmod = (WindowHeight-(ratiox*3))%2;
+		rcWindow.top += marginchange;
+		rcWindow.bottom -= (marginchange+marginmod);
+	}
+	else
+	{
+		marginchange = (WindowWidth-(ratioy*4))/2;
+		marginmod = (WindowWidth-(ratioy*4))%2;
+		rcWindow.left += marginchange;
+		rcWindow.right -= (marginchange+marginmod);
+	}
+}
+
 void initwinvideo(void)
 {
    WINDOWPLACEMENT wndpl;
@@ -2139,30 +2163,7 @@ void initwinvideo(void)
         }
 
         if (((DSMode == 1)||(SMode == 1)) && (Keep4_3Ratio) && (WindowWidth >= 320) && (WindowHeight >= 240))
-        {
-          int ratiox = WindowWidth/4;
-          int ratioy = WindowHeight/3;
-
-          int marginchange;
-          int marginmod;
-
-          if (ratiox < ratioy)
-          {
-            marginchange = (WindowHeight-(ratiox*3))/2;
-            marginmod = (WindowHeight-(ratiox*3))%2;
-            rcWindow.top += marginchange;
-            rcWindow.bottom -= (marginchange+marginmod);
-          }
-          else
-          {
-            marginchange = (WindowWidth-(ratioy*4))/2;
-            marginmod = (WindowWidth-(ratioy*4))%2;
-            rcWindow.left += marginchange;
-            rcWindow.right -= (marginchange+marginmod);
-          }
-
-          clear_display();
-        }
+          KeepTVRatio();
       }
    }
    else
@@ -2235,6 +2236,8 @@ void initwinvideo(void)
    {
       ReleaseDirectDraw();
       InitDirectDraw();
+      if (((DSMode == 1)||(SMode == 1)) && (Keep4_3Ratio) && (WindowWidth >= 320) && (WindowHeight >= 240))
+        KeepTVRatio();
       clearwin();
       Clear2xSaIBuffer();
       clear_display();
