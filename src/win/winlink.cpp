@@ -1922,6 +1922,11 @@ void KeepTVRatio()
 	}
 }
 
+bool CheckTVRatioReq()
+{
+	return((Keep4_3Ratio) && ((DSMode == 1)||(SMode == 1)) && (WindowWidth >= 320) && (WindowHeight >= 240));
+}
+
 void initwinvideo(void)
 {
    WINDOWPLACEMENT wndpl;
@@ -2133,6 +2138,9 @@ void initwinvideo(void)
       ClientToScreen(hMainWindow, (LPPOINT) &rcWindow);
       ClientToScreen(hMainWindow, (LPPOINT) &rcWindow + 1);
 
+      if (CheckTVRatioReq())
+        KeepTVRatio();
+
       if (FullScreen == 1)
       {
         if (HQMode && !DSMode)
@@ -2163,9 +2171,6 @@ void initwinvideo(void)
             clear_display();
           }
         }
-
-        if (((DSMode == 1)||(SMode == 1)) && (Keep4_3Ratio) && (WindowWidth >= 320) && (WindowHeight >= 240))
-          KeepTVRatio();
       }
    }
    else
@@ -2238,7 +2243,7 @@ void initwinvideo(void)
    {
       ReleaseDirectDraw();
       InitDirectDraw();
-      if (((DSMode == 1)||(SMode == 1)) && (Keep4_3Ratio) && (WindowWidth >= 320) && (WindowHeight >= 240))
+      if (CheckTVRatioReq())
         KeepTVRatio();
       clearwin();
       Clear2xSaIBuffer();

@@ -374,7 +374,7 @@ CustomResY dd 480
 @ Enable Keep 4:3 Ratio (0 = No, 1 = YES)
 @ This is particularly handy for those that use laptops/LCDs+non 4:3 resolutions.
 %ifdef __WIN32__
-@ This is only useful while using a S/DS Fullscreen mode.
+@ This can be used for any S/DS mode and any Custom Windowed mode.
 %elifdef __UNIXSDL__
 @ This is only available for OpenGL Variable ODS Win mode.
 %endif
