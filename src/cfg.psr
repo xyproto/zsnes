@@ -254,7 +254,7 @@ pl5DRk dd 0
 pl5p209 db 0
 %endif
 
-%ifdef __UNIXSDL__
+%ifndef __MSDOS__
 @
 @ Joystick Sensitivity
 @ Change this value if you have input issues. Higher value = less sensitive.

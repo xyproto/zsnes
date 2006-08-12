@@ -353,7 +353,7 @@ void GUIRestoreVars()
   CheckValueBounds(&pl5contrl, 0, 1, 0, UB);
 #endif
 
-#ifdef __UNIXSDL__
+#ifndef __MSDOS__
   CheckValueBounds(&joy_sensitivity, 0, 32767, 16384, UW);
 #endif
 

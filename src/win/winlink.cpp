@@ -975,6 +975,8 @@ BOOL ReInitSound()
    }
 }
 
+extern "C" unsigned short joy_sensitivity;
+
 BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 {
    LPDIRECTINPUT8 pdi = (LPDIRECTINPUT8)pvRef;
@@ -1007,8 +1009,8 @@ BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
    diprg.diph.dwHeaderSize = sizeof(diprg.diph);
    diprg.diph.dwObj = DIJOFS_X;
    diprg.diph.dwHow = DIPH_BYOFFSET;
-   diprg.lMin = -1000;
-   diprg.lMax = +1000;
+   diprg.lMin = joy_sensitivity*-1;
+   diprg.lMax = joy_sensitivity;
 
    if FAILED(JoystickInput[CurrentJoy]->SetProperty(DIPROP_RANGE, &diprg.diph))
    {
@@ -1272,7 +1274,7 @@ bool InitInput()
    hr=MouseInput->SetCooperativeLevel(hMainWindow,DISCL_EXCLUSIVE|DISCL_FOREGROUND);
    if (FAILED(hr)) {DInputError();return FALSE;}
 
-   JoystickInput[0]=NULL;JoystickInput[1]=NULL;JoystickInput[2]=NULL;JoystickInput[3]=NULL;
+   JoystickInput[0]=NULL;JoystickInput[1]=NULL;JoystickInput[2]=NULL;JoystickInput[3]=NULL;JoystickInput[4]=NULL;
 
    hr=DInput->EnumDevices(DI8DEVCLASS_GAMECTRL, InitJoystickInput,
                        DInput, DIEDFL_ATTACHEDONLY);
