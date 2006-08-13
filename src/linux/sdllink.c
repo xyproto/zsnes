@@ -450,7 +450,7 @@ int Main_Proc(void)
           }
         }
 
-        if ((cvidmode == 22) && Keep4_3Ratio)
+        if (Keep4_3Ratio && (cvidmode == 22))
         {
           if (3*WindowWidth > 4*WindowHeight && WindowHeight)
           {
@@ -1099,7 +1099,62 @@ void initwinvideo(void)
 	}
 
 	if (newmode == 1)
+	{
+		#ifdef __OPENGL__
+		if(cvidmode > 5)
+		{
+			surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags);
+			adjustMouseXScale();
+			adjustMouseYScale();
+			glViewport(0,0, WindowWidth, WindowHeight);
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+
+			if (cvidmode == 21)
+			{
+				if (224*WindowWidth > 256*WindowHeight && WindowHeight)
+				{
+					glOrtho (- ((float) 224*WindowWidth)/((float) 256*WindowHeight),
+						((float) 224*WindowWidth)/((float) 256*WindowHeight), -1, 1, -1, 1);
+				}
+				else if (224*WindowWidth < 256*WindowHeight && WindowWidth)
+				{
+					glOrtho (-1, 1,- ((float) 256*WindowHeight)/((float) 224*WindowWidth),
+						((float) 256*WindowHeight)/((float) 224*WindowWidth), -1, 1);
+				}
+				else
+				{
+					glOrtho (-1, 1, -1, 1, -1, 1);
+				}
+			}
+
+			if (Keep4_3Ratio && (cvidmode == 22)||(cvidmode == 23))
+			{
+				if (3*WindowWidth > 4*WindowHeight && WindowHeight)
+				{
+					glOrtho (- ((float) 3*WindowWidth)/((float) 4*WindowHeight),
+						((float) 3*WindowWidth)/((float) 4*WindowHeight), -1, 1, -1, 1);
+				}
+				else if (3*WindowWidth < 4*WindowHeight && WindowWidth)
+				{
+					glOrtho (-1, 1,- ((float) 4*WindowHeight)/((float) 3*WindowWidth),
+						((float) 4*WindowHeight)/((float) 3*WindowWidth), -1, 1);
+				}
+				else
+				{
+					glOrtho (-1, 1, -1, 1, -1, 1);
+				}
+			}
+
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glDisable(GL_DEPTH_TEST);
+			glFlush();
+			gl_clearwin();
+		}
+		#endif
 		clearwin();
+	}
 
 	if (FirstVid == 1)
 	{
