@@ -205,7 +205,7 @@ VIDEOBJ=${VIDEODIR}/makev16b${OE} ${VIDEODIR}/makev16t${OE} ${VIDEODIR}/makevid$
 
 #only used on Win32
 WINOBJ=${WINDIR}/copyvwin${OE} ${DRESOBJ}\
-	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE} ${WINDIR}/zfilew${OE}\
+	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE} ${WINDIR}/zfilew${OE} ${WINDIR}/lib${OE}\
 	${WINDIR}/safelib${OE} ${MMLIBDIR}/mm${OE} ${MMLIBDIR}/windows${OE}
 
 WINVIDOBJ=${VIDEODIR}/sw_draw${OE} ${VIDEODIR}/hq2x16${OE} ${VIDEODIR}/hq2x32${OE}\
@@ -219,7 +219,8 @@ OBJSORIG=${CHIPSOBJ} ${CPUOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${ZIPOBJ} ${EFFEC
 
 ifeq (${OS},__MSDOS__)
 DOSOBJ=${DOSOBJORIG} ${DOSDIR}/dosintrf${OE} ${DOSDIR}/gppro${OE} ${DOSDIR}/initvid${OE}\
-	${DOSDIR}/sound${OE} ${DOSDIR}/sw${OE} ${DOSDIR}/vesa12${OE} ${DOSDIR}/zfile${OE}
+	${DOSDIR}/sound${OE} ${DOSDIR}/sw${OE} ${DOSDIR}/vesa12${OE} ${DOSDIR}/zfile${OE} \
+	${DOSDIR}/lib${OE}
 OBJS=${OBJSORIG} ${DOSOBJ}
 DELETEOBJS=${OBJSORIG} ${DOSOBJ}
 endif
@@ -290,7 +291,7 @@ zloader${OE}: zloader.c cfg${OE} zpath.h
 zmovie${OE}: zmovie.c asm_call.h gblvars.h numconv.h md${OE}
 zstate${OE}: zstate.c asm_call.h gblvars.h numconv.h
 md${OE}: md.psr ${PSR}
-zpath${OE}: zpath.c zpath.h
+zpath${OE}: zpath.c zpath.h ${DOSDIR}/lib.h ${WINDIR}/lib.h
 
 ${CHIPDIR}/c4emu${OE}: ${CHIPDIR}/c4emu.c
 ${CHIPDIR}/c4proc${OE}: ${CHIPDIR}/c4proc.asm macros.mac
