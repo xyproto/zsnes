@@ -1128,7 +1128,7 @@ void initwinvideo(void)
 				}
 			}
 
-			if (Keep4_3Ratio && (cvidmode == 22)||(cvidmode == 23))
+			if (Keep4_3Ratio && ((cvidmode == 22)||(cvidmode == 23)))
 			{
 				if (3*WindowWidth > 4*WindowHeight && WindowHeight)
 				{
