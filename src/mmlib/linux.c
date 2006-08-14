@@ -183,14 +183,14 @@ static int init_mouse(const char *fname, int fd)
 
     if (ioctl(fd, EVIOCGBIT(EV_REL, sizeof (relcaps)), relcaps) != -1)
     {
-    	if ( (test_bit(relcaps, REL_X)) && (test_bit(relcaps, REL_Y)) )
+        if ( (test_bit(relcaps, REL_X)) && (test_bit(relcaps, REL_Y)) )
         {
             if (test_bit(keycaps, BTN_MOUSE))
                 is_mouse = 1;
         } /* if */
 
         #if ALLOW_DIALS_TO_BE_MICE
-    	if (test_bit(relcaps, REL_DIAL))
+        if (test_bit(relcaps, REL_DIAL))
             is_mouse = 1;  // griffin powermate?
         #endif
     } /* if */

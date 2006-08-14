@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "gblhdr.h"
+#include "../gblhdr.h"
 #include "sw_draw.h"
 #include "gl_draw.h"
 
@@ -30,6 +30,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include "safelib.h"
 #include "../asm_call.h"
+#include "../cfg.h"
 
 //C++ style code in C
 #define bool unsigned char
@@ -58,8 +59,6 @@ Uint8 *Buffer = NULL;
 int Buffer_len = 0, Buffer_fill = 0;
 int Buffer_head = 0, Buffer_tail = 0;
 
-extern BYTE StereoSound;
-extern DWORD SoundQuality;
 extern int DSPBuffer[];
 
 /* VIDEO VARIABLES */
@@ -74,8 +73,7 @@ static int UseOpenGL = 0;
 static const int BitDepth = 16;
 DWORD FirstVid = 1;
 
-extern void SwitchFullScreen (void);
-extern unsigned char cvidmode;
+void SwitchFullScreen (void);
 DWORD SMode=0;
 DWORD DSMode=0;
 DWORD prevHQMode=-1;
@@ -83,7 +81,6 @@ DWORD prevHQMode=-1;
 extern DWORD converta;
 extern DWORD *BitConv32Ptr;
 extern DWORD *RGBtoYUVPtr;
-extern unsigned char hqFilter;
 
 extern BYTE GUIWFVID[];
 extern BYTE GUISMODE[];
@@ -93,17 +90,13 @@ extern BYTE GUIHQ3X[];
 extern BYTE GUIHQ4X[];
 extern BYTE GUIRESIZE[];
 extern BYTE GUIM7VID[];
-extern unsigned char Keep4_3Ratio;
-
-unsigned int CustomResX;
-unsigned int CustomResY;
 
 /* JOYSTICK AND KEYBOARD INPUT */
 SDL_Joystick *JoystickInput[5];
-unsigned int AxisOffset[5] = {256 + 128 + 64};	// per joystick offsets in
-unsigned int ButtonOffset[5] = {448};		// pressed. We have 128 + 64
-unsigned int HatOffset[5] = {448};		// bytes for all joysticks. We
-unsigned int BallOffset[5] = {448};		// can control all 5 players.
+unsigned int AxisOffset[5] = {256 + 128 + 64};  // per joystick offsets in
+unsigned int ButtonOffset[5] = {448};           // pressed. We have 128 + 64
+unsigned int HatOffset[5] = {448};              // bytes for all joysticks. We
+unsigned int BallOffset[5] = {448};             // can control all 5 players.
 int shiftptr = 0;
 int offset;
 DWORD numlockptr;
@@ -164,28 +157,25 @@ unsigned int sdl_keysym_to_pc_scancode(int);
 void ProcessKeyBuf(int);
 void UpdateSound(void *userdata, Uint8 * stream, int len);
 
-extern int GUI36hzcall(void);
-extern int Game60hzcall(void);
+void GUI36hzcall(void);
+void Game60hzcall(void);
 _int64 copymaskRB = 0x001FF800001FF800LL;
 _int64 copymaskG = 0x0000FC000000FC00LL;
 _int64 copymagic = 0x0008010000080100LL;
 _int64 coef = 0x0066009a0066009aLL;
 #ifdef __OPENGL__
-extern void gl_clearwin(void);
+void gl_clearwin(void);
 #endif
 
 static void adjustMouseXScale(void)
 {
-	MouseXScale = (MouseMaxX - MouseMinX) / ((float) WindowWidth);
+  MouseXScale = (MouseMaxX - MouseMinX) / ((float) WindowWidth);
 }
 
 static void adjustMouseYScale(void)
 {
-	MouseYScale = (MouseMaxY - MouseMinY) / ((float) WindowHeight);
+  MouseYScale = (MouseMaxY - MouseMinY) / ((float) WindowHeight);
 }
-
-
-extern unsigned short joy_sensitivity;
 
 int Main_Proc(void)
 {
@@ -590,260 +580,260 @@ unsigned int sdl_keysym_to_pc_scancode(int sym)
 
 void ProcessKeyBuf(int scancode)
 {
-	int accept = 0;
-	int vkeyval = 0;
+  int accept = 0;
+  int vkeyval = 0;
 
-	if (((scancode >= 'A') && (scancode <= 'Z')) ||
-	    ((scancode >= 'a') && (scancode <= 'z')) ||
-	    (scancode == SDLK_ESCAPE) || (scancode == SDLK_SPACE) ||
-	    (scancode == SDLK_BACKSPACE) || (scancode == SDLK_RETURN) ||
-	    (scancode == SDLK_TAB))
-	{
-		accept = 1;
-		vkeyval = scancode;
-	}
-	if ((scancode >= '0') && (scancode <= '9'))
-	{
-		accept = 1;
-		vkeyval = scancode;
-		if (shiftptr)
-		{
-			switch (scancode)
-			{
-				case '1': vkeyval = '!'; break;
-				case '2': vkeyval = '@'; break;
-				case '3': vkeyval = '#'; break;
-				case '4': vkeyval = '$'; break;
-				case '5': vkeyval = '%'; break;
-				case '6': vkeyval = '^'; break;
-				case '7': vkeyval = '&'; break;
-				case '8': vkeyval = '*'; break;
-				case '9': vkeyval = '('; break;
-				case '0': vkeyval = ')'; break;
-			}
-		}
-	}
-	if ((scancode >= SDLK_KP0) && (scancode <= SDLK_KP9))
-	{
-		if (numlockptr)
-		{
-			accept = 1;
-			vkeyval = scancode - SDLK_KP0 + '0';
-		}
-		else
-		{
+  if (((scancode >= 'A') && (scancode <= 'Z')) ||
+      ((scancode >= 'a') && (scancode <= 'z')) ||
+      (scancode == SDLK_ESCAPE) || (scancode == SDLK_SPACE) ||
+      (scancode == SDLK_BACKSPACE) || (scancode == SDLK_RETURN) ||
+      (scancode == SDLK_TAB))
+  {
+    accept = 1;
+    vkeyval = scancode;
+  }
+  if ((scancode >= '0') && (scancode <= '9'))
+  {
+    accept = 1;
+    vkeyval = scancode;
+    if (shiftptr)
+    {
+      switch (scancode)
+      {
+        case '1': vkeyval = '!'; break;
+        case '2': vkeyval = '@'; break;
+        case '3': vkeyval = '#'; break;
+        case '4': vkeyval = '$'; break;
+        case '5': vkeyval = '%'; break;
+        case '6': vkeyval = '^'; break;
+        case '7': vkeyval = '&'; break;
+        case '8': vkeyval = '*'; break;
+        case '9': vkeyval = '('; break;
+        case '0': vkeyval = ')'; break;
+      }
+    }
+  }
+  if ((scancode >= SDLK_KP0) && (scancode <= SDLK_KP9))
+  {
+    if (numlockptr)
+    {
+      accept = 1;
+      vkeyval = scancode - SDLK_KP0 + '0';
+    }
+    else
+    {
 
-			switch (scancode)
-			{
-				case SDLK_KP9: vkeyval = 256 + 73; accept = 1; break;
-				case SDLK_KP8: vkeyval = 256 + 72; accept = 1; break;
-				case SDLK_KP7: vkeyval = 256 + 71; accept = 1; break;
-				case SDLK_KP6: vkeyval = 256 + 77; accept = 1; break;
-				case SDLK_KP5: vkeyval = 256 + 76; accept = 1; break;
-				case SDLK_KP4: vkeyval = 256 + 75; accept = 1; break;
-				case SDLK_KP3: vkeyval = 256 + 81; accept = 1; break;
-				case SDLK_KP2: vkeyval = 256 + 80; accept = 1; break;
-				case SDLK_KP1: vkeyval = 256 + 79; accept = 1; break;
-			}
-		}		// end no-numlock
-	}			// end testing of keypad
-	if (!shiftptr)
-	{
-		switch (scancode)
-		{
-			case SDLK_MINUS:        vkeyval = '-'; accept = 1; break;
-			case SDLK_EQUALS:       vkeyval = '='; accept = 1; break;
-			case SDLK_LEFTBRACKET:  vkeyval = '['; accept = 1; break;
-			case SDLK_RIGHTBRACKET: vkeyval = ']'; accept = 1; break;
-			case SDLK_SEMICOLON:    vkeyval = ';'; accept = 1; break;
-			case SDLK_COMMA:        vkeyval = ','; accept = 1; break;
-			case SDLK_PERIOD:       vkeyval = '.'; accept = 1; break;
-			case SDLK_SLASH:        vkeyval = '/'; accept = 1; break;
-			case SDLK_QUOTE:        vkeyval = '`'; accept = 1; break;
-		}
-	}
-	else
-	{
-		switch (scancode)
-		{
-			case SDLK_MINUS:        vkeyval = '_'; accept = 1; break;
-			case SDLK_EQUALS:       vkeyval = '+'; accept = 1; break;
-			case SDLK_LEFTBRACKET:  vkeyval = '{'; accept = 1; break;
-			case SDLK_RIGHTBRACKET: vkeyval = '}'; accept = 1; break;
-			case SDLK_SEMICOLON:    vkeyval = ':'; accept = 1; break;
-			case SDLK_QUOTE:        vkeyval = '"'; accept = 1; break;
-			case SDLK_COMMA:        vkeyval = '<'; accept = 1; break;
-			case SDLK_PERIOD:       vkeyval = '>'; accept = 1; break;
-			case SDLK_SLASH:        vkeyval = '?'; accept = 1; break;
-			case SDLK_BACKQUOTE:    vkeyval = '~'; accept = 1; break;
-			case SDLK_BACKSLASH:    vkeyval = '|'; accept = 1; break;
-		}
-	}
-	switch (scancode)
-	{
-		case SDLK_PAGEUP:      vkeyval = 256 + 73; accept = 1; break;
-		case SDLK_UP:          vkeyval = 256 + 72; accept = 1; break;
-		case SDLK_HOME:        vkeyval = 256 + 71; accept = 1; break;
-		case SDLK_RIGHT:       vkeyval = 256 + 77; accept = 1; break;
-		case SDLK_LEFT:        vkeyval = 256 + 75; accept = 1; break;
-		case SDLK_PAGEDOWN:    vkeyval = 256 + 81; accept = 1; break;
-		case SDLK_DOWN:        vkeyval = 256 + 80; accept = 1; break;
-		case SDLK_END:         vkeyval = 256 + 79; accept = 1; break;
-		case SDLK_KP_PLUS:     vkeyval = '+'; accept = 1; break;
-		case SDLK_KP_MINUS:    vkeyval = '-'; accept = 1; break;
-		case SDLK_KP_MULTIPLY: vkeyval = '*'; accept = 1; break;
-		case SDLK_KP_DIVIDE:   vkeyval = '/'; accept = 1; break;
-		case SDLK_KP_PERIOD:   vkeyval = '.'; accept = 1; break;
-	}
+      switch (scancode)
+      {
+        case SDLK_KP9: vkeyval = 256 + 73; accept = 1; break;
+        case SDLK_KP8: vkeyval = 256 + 72; accept = 1; break;
+        case SDLK_KP7: vkeyval = 256 + 71; accept = 1; break;
+        case SDLK_KP6: vkeyval = 256 + 77; accept = 1; break;
+        case SDLK_KP5: vkeyval = 256 + 76; accept = 1; break;
+        case SDLK_KP4: vkeyval = 256 + 75; accept = 1; break;
+        case SDLK_KP3: vkeyval = 256 + 81; accept = 1; break;
+        case SDLK_KP2: vkeyval = 256 + 80; accept = 1; break;
+        case SDLK_KP1: vkeyval = 256 + 79; accept = 1; break;
+      }
+    }    // end no-numlock
+  }      // end testing of keypad
+  if (!shiftptr)
+  {
+    switch (scancode)
+    {
+      case SDLK_MINUS:        vkeyval = '-'; accept = 1; break;
+      case SDLK_EQUALS:       vkeyval = '='; accept = 1; break;
+      case SDLK_LEFTBRACKET:  vkeyval = '['; accept = 1; break;
+      case SDLK_RIGHTBRACKET: vkeyval = ']'; accept = 1; break;
+      case SDLK_SEMICOLON:    vkeyval = ';'; accept = 1; break;
+      case SDLK_COMMA:        vkeyval = ','; accept = 1; break;
+      case SDLK_PERIOD:       vkeyval = '.'; accept = 1; break;
+      case SDLK_SLASH:        vkeyval = '/'; accept = 1; break;
+      case SDLK_QUOTE:        vkeyval = '`'; accept = 1; break;
+    }
+  }
+  else
+  {
+    switch (scancode)
+    {
+      case SDLK_MINUS:        vkeyval = '_'; accept = 1; break;
+      case SDLK_EQUALS:       vkeyval = '+'; accept = 1; break;
+      case SDLK_LEFTBRACKET:  vkeyval = '{'; accept = 1; break;
+      case SDLK_RIGHTBRACKET: vkeyval = '}'; accept = 1; break;
+      case SDLK_SEMICOLON:    vkeyval = ':'; accept = 1; break;
+      case SDLK_QUOTE:        vkeyval = '"'; accept = 1; break;
+      case SDLK_COMMA:        vkeyval = '<'; accept = 1; break;
+      case SDLK_PERIOD:       vkeyval = '>'; accept = 1; break;
+      case SDLK_SLASH:        vkeyval = '?'; accept = 1; break;
+      case SDLK_BACKQUOTE:    vkeyval = '~'; accept = 1; break;
+      case SDLK_BACKSLASH:    vkeyval = '|'; accept = 1; break;
+    }
+  }
+  switch (scancode)
+  {
+    case SDLK_PAGEUP:      vkeyval = 256 + 73; accept = 1; break;
+    case SDLK_UP:          vkeyval = 256 + 72; accept = 1; break;
+    case SDLK_HOME:        vkeyval = 256 + 71; accept = 1; break;
+    case SDLK_RIGHT:       vkeyval = 256 + 77; accept = 1; break;
+    case SDLK_LEFT:        vkeyval = 256 + 75; accept = 1; break;
+    case SDLK_PAGEDOWN:    vkeyval = 256 + 81; accept = 1; break;
+    case SDLK_DOWN:        vkeyval = 256 + 80; accept = 1; break;
+    case SDLK_END:         vkeyval = 256 + 79; accept = 1; break;
+    case SDLK_KP_PLUS:     vkeyval = '+'; accept = 1; break;
+    case SDLK_KP_MINUS:    vkeyval = '-'; accept = 1; break;
+    case SDLK_KP_MULTIPLY: vkeyval = '*'; accept = 1; break;
+    case SDLK_KP_DIVIDE:   vkeyval = '/'; accept = 1; break;
+    case SDLK_KP_PERIOD:   vkeyval = '.'; accept = 1; break;
+  }
 
-	if (accept)
-	{
-		KeyBuffer[CurKeyPos] = vkeyval;
-		CurKeyPos++;
-		if (CurKeyPos == 16)
-			CurKeyPos = 0;
-	}
+  if (accept)
+  {
+    KeyBuffer[CurKeyPos] = vkeyval;
+    CurKeyPos++;
+    if (CurKeyPos == 16)
+      CurKeyPos = 0;
+  }
 }
 
 int InitSound(void)
 {
-	SDL_AudioSpec wanted;
-	const int samptab[7] = { 1, 1, 2, 4, 2, 4, 4 };
-	const int freqtab[7] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
+  SDL_AudioSpec wanted;
+  const int samptab[7] = { 1, 1, 2, 4, 2, 4, 4 };
+  const int freqtab[7] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
 
-	SDL_CloseAudio();
+  SDL_CloseAudio();
 
-	if (!SoundEnabled)
-	{
-		return FALSE;
-	}
+  if (!SoundEnabled)
+  {
+    return FALSE;
+  }
 
-	if (Buffer)
-		free(Buffer);
-	Buffer = NULL;
-	Buffer_len = 0;
+  if (Buffer)
+    free(Buffer);
+  Buffer = NULL;
+  Buffer_len = 0;
 
-	PrevSoundQuality = SoundQuality;
-	PrevStereoSound = StereoSound;
+  PrevSoundQuality = SoundQuality;
+  PrevStereoSound = StereoSound;
 
-	if (SoundQuality > 6)
-		SoundQuality = 1;
-	wanted.freq = freqtab[SoundQuality];
+  if (SoundQuality > 6)
+    SoundQuality = 1;
+  wanted.freq = freqtab[SoundQuality];
 
-	if (StereoSound)
-	{
-		wanted.channels = 2;
-	}
-	else
-	{
-		wanted.channels = 1;
-	}
+  if (StereoSound)
+  {
+    wanted.channels = 2;
+  }
+  else
+  {
+    wanted.channels = 1;
+  }
 
-	wanted.samples = samptab[SoundQuality] * 128 * wanted.channels;
+  wanted.samples = samptab[SoundQuality] * 128 * wanted.channels;
 
-	wanted.format = AUDIO_S16LSB;
-	wanted.userdata = NULL;
-	wanted.callback = UpdateSound;
+  wanted.format = AUDIO_S16LSB;
+  wanted.userdata = NULL;
+  wanted.callback = UpdateSound;
 
-	if (SDL_OpenAudio(&wanted, &audiospec) < 0)
-	{
-		fprintf(stderr, "Sound init failed!\n");
-		fprintf(stderr, "freq: %d, channels: %d, samples: %d\n",
-			wanted.freq, wanted.channels, wanted.samples);
-		SoundEnabled = 0;
-		return FALSE;
-	}
-	SDL_PauseAudio(0);
+  if (SDL_OpenAudio(&wanted, &audiospec) < 0)
+  {
+    fprintf(stderr, "Sound init failed!\n");
+    fprintf(stderr, "freq: %d, channels: %d, samples: %d\n",
+      wanted.freq, wanted.channels, wanted.samples);
+    SoundEnabled = 0;
+    return FALSE;
+  }
+  SDL_PauseAudio(0);
 
-	Buffer_len = (audiospec.size * 2);
-	Buffer_len = (Buffer_len + 255) & ~255; /* Align to SPCSize */
-	Buffer = malloc(Buffer_len);
+  Buffer_len = (audiospec.size * 2);
+  Buffer_len = (Buffer_len + 255) & ~255; /* Align to SPCSize */
+  Buffer = malloc(Buffer_len);
 
-	return TRUE;
+  return TRUE;
 }
 
 int ReInitSound(void)
 {
-	return InitSound();
+  return InitSound();
 }
 
 BOOL InitJoystickInput(void)
 {
-	int i, max_num_joysticks;
-	int num_axes, num_buttons, num_hats, num_balls;
-	int js_fail = 0;
+  int i, max_num_joysticks;
+  int num_axes, num_buttons, num_hats, num_balls;
+  int js_fail = 0;
 
-	for (i = 0; i < 5; i++)
-		JoystickInput[i] = NULL;
+  for (i = 0; i < 5; i++)
+    JoystickInput[i] = NULL;
 
-	// If it is possible to use SDL_NumJoysticks
-	// before initialising SDL_INIT_JOYSTICK then
-	// this call can be replaced with SDL_InitSubSystem
-	SDL_InitSubSystem (SDL_INIT_JOYSTICK);
-	max_num_joysticks = SDL_NumJoysticks();
-	if (!max_num_joysticks)
-	{
-		printf("ZSNES could not find any joysticks.\n");
-		SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
-		return FALSE;
-	}
-	SDL_JoystickEventState(SDL_ENABLE);
+  // If it is possible to use SDL_NumJoysticks
+  // before initialising SDL_INIT_JOYSTICK then
+  // this call can be replaced with SDL_InitSubSystem
+  SDL_InitSubSystem (SDL_INIT_JOYSTICK);
+  max_num_joysticks = SDL_NumJoysticks();
+  if (!max_num_joysticks)
+  {
+    printf("ZSNES could not find any joysticks.\n");
+    SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+    return FALSE;
+  }
+  SDL_JoystickEventState(SDL_ENABLE);
 
-	if (max_num_joysticks > 5) max_num_joysticks = 5;
+  if (max_num_joysticks > 5) max_num_joysticks = 5;
 
-	for (i = 0; i < max_num_joysticks; i++)
-	{
-		JoystickInput[i] = SDL_JoystickOpen(i);
-		num_axes = SDL_JoystickNumAxes(JoystickInput[i]);
-		num_buttons = SDL_JoystickNumButtons(JoystickInput[i]);
-		num_hats = SDL_JoystickNumHats(JoystickInput[i]);
-		num_balls = SDL_JoystickNumBalls(JoystickInput[i]);
-		printf("Device %i %s\n", i, SDL_JoystickName(i));
-		printf("  %i axis, %i buttons, %i hats, %i balls\n",
-			num_axes, num_buttons, num_hats, num_balls);
+  for (i = 0; i < max_num_joysticks; i++)
+  {
+    JoystickInput[i] = SDL_JoystickOpen(i);
+    num_axes = SDL_JoystickNumAxes(JoystickInput[i]);
+    num_buttons = SDL_JoystickNumButtons(JoystickInput[i]);
+    num_hats = SDL_JoystickNumHats(JoystickInput[i]);
+    num_balls = SDL_JoystickNumBalls(JoystickInput[i]);
+    printf("Device %i %s\n", i, SDL_JoystickName(i));
+    printf("  %i axis, %i buttons, %i hats, %i balls\n",
+      num_axes, num_buttons, num_hats, num_balls);
 
-		if (js_fail)
-		{
-			printf("Warning: Joystick won't work.\n");
-			continue;
-		}
-		if (i == 0)
-		{
-			AxisOffset[0] = 256;		// After key data
-			ButtonOffset[0] = AxisOffset[0] + num_axes * 2;
-//			printf("ButtonOffset %d\n", ButtonOffset[0]);
-			HatOffset[0] = ButtonOffset[0] + num_buttons;
-//			printf("HatOffset %d\n", HatOffset[0]);
-			BallOffset[0] = HatOffset[0] + num_hats * 4;
-//			printf("BallOffset %d\n", BallOffset[0]);
-			if ((BallOffset[0] + num_balls * 4) >= (256 + 128 + 64))
-				js_fail = 1;
-		}
-		else
-		{
-			AxisOffset[i] = BallOffset[i - 1] +
-				SDL_JoystickNumBalls(JoystickInput[i - 1]);
-			ButtonOffset[i] = AxisOffset[i] + num_axes * 2;
-			HatOffset[i] = ButtonOffset[i] + num_buttons;
-			BallOffset[i] = HatOffset[i] + num_hats * 4;
-			if ((BallOffset[i] + num_balls * 4) >= (256 + 128 + 64))
-				js_fail = 1;
+    if (js_fail)
+    {
+      printf("Warning: Joystick won't work.\n");
+      continue;
+    }
+    if (i == 0)
+    {
+      AxisOffset[0] = 256;    // After key data
+      ButtonOffset[0] = AxisOffset[0] + num_axes * 2;
+//      printf("ButtonOffset %d\n", ButtonOffset[0]);
+      HatOffset[0] = ButtonOffset[0] + num_buttons;
+//      printf("HatOffset %d\n", HatOffset[0]);
+      BallOffset[0] = HatOffset[0] + num_hats * 4;
+//      printf("BallOffset %d\n", BallOffset[0]);
+      if ((BallOffset[0] + num_balls * 4) >= (256 + 128 + 64))
+        js_fail = 1;
+    }
+    else
+    {
+      AxisOffset[i] = BallOffset[i - 1] +
+        SDL_JoystickNumBalls(JoystickInput[i - 1]);
+      ButtonOffset[i] = AxisOffset[i] + num_axes * 2;
+      HatOffset[i] = ButtonOffset[i] + num_buttons;
+      BallOffset[i] = HatOffset[i] + num_hats * 4;
+      if ((BallOffset[i] + num_balls * 4) >= (256 + 128 + 64))
+        js_fail = 1;
 
-		}
-		if (js_fail)
-		{
-			printf("Warning: Too many buttons, axes, hats and/or Balls!\n");
-			printf("Warning: Joystick won't work fully.\n");
-		}
-	}
+    }
+    if (js_fail)
+    {
+      printf("Warning: Too many buttons, axes, hats and/or Balls!\n");
+      printf("Warning: Joystick won't work fully.\n");
+    }
+  }
 
-	return TRUE;
+  return TRUE;
 }
 
 BOOL InitInput()
 {
-	InitJoystickInput();
-	return TRUE;
+  InitJoystickInput();
+  return TRUE;
 }
 
 int startgame()
@@ -893,330 +883,316 @@ int startgame()
 
 void Start60HZ(void)
 {
-	update_ticks_pc2 = UPDATE_TICKS_UDP;
-	if (romispal == 1)
-	{
-		update_ticks_pc = UPDATE_TICKS_GAMEPAL;
-	}
-	else
-	{
-		update_ticks_pc = UPDATE_TICKS_GAME;
-	}
+  update_ticks_pc2 = UPDATE_TICKS_UDP;
+  if (romispal == 1)
+  {
+    update_ticks_pc = UPDATE_TICKS_GAMEPAL;
+  }
+  else
+  {
+    update_ticks_pc = UPDATE_TICKS_GAME;
+  }
 
-	// Restore timer data from semaphore data
-	start = sem_GetTicks();
-	start2 = sem_GetTicks();
-	T36HZEnabled = 0;
-	T60HZEnabled = 1;
+  // Restore timer data from semaphore data
+  start = sem_GetTicks();
+  start2 = sem_GetTicks();
+  T36HZEnabled = 0;
+  T60HZEnabled = 1;
 }
 
 void Stop60HZ(void)
 {
-	T60HZEnabled = 0;
+  T60HZEnabled = 0;
 }
 
 void Start36HZ(void)
 {
-	update_ticks_pc2 = UPDATE_TICKS_UDP;
-	update_ticks_pc = UPDATE_TICKS_GUI;
+  update_ticks_pc2 = UPDATE_TICKS_UDP;
+  update_ticks_pc = UPDATE_TICKS_GUI;
 
-	// Restore timer data from semaphore data
-	start = sem_GetTicks();
-	start2 = sem_GetTicks();
-	T60HZEnabled = 0;
-	T36HZEnabled = 1;
+  // Restore timer data from semaphore data
+  start = sem_GetTicks();
+  start2 = sem_GetTicks();
+  T60HZEnabled = 0;
+  T36HZEnabled = 1;
 }
 
 void Stop36HZ(void)
 {
-	T36HZEnabled = 0;
+  T36HZEnabled = 0;
 }
 
 void init_hqNx(void)
 {
-	DWORD color32;
-	DWORD *p;
-	int i, j, k, r, g, b, Y, u, v;
+  DWORD color32;
+  DWORD *p;
+  int i, j, k, r, g, b, Y, u, v;
 
-	for(i = 0, p = BitConv32Ptr; i < 65536; i++, p++) {
-		color32=((i&0xF800)<<8)+
-		        ((i&0x07E0)<<5)+
-		        ((i&0x001F)<<3)+0xFF000000;
+  for(i = 0, p = BitConv32Ptr; i < 65536; i++, p++) {
+    color32=((i&0xF800)<<8)+
+            ((i&0x07E0)<<5)+
+            ((i&0x001F)<<3)+0xFF000000;
 
-		*p = color32;
-	}
+    *p = color32;
+  }
 
-	for (i=0; i<32; i++)
-	for (j=0; j<64; j++)
-	for (k=0; k<32; k++) {
-		r = i << 3;
-		g = j << 2;
-		b = k << 3;
-		Y = (r + g + b) >> 2;
-		u = 128 + ((r - b) >> 2);
-		v = 128 + ((-r + 2*g -b)>>3);
-		RGBtoYUVPtr[(i << 11) + (j << 5) + k] = (Y<<16) + (u<<8) + v;
-	}
+  for (i=0; i<32; i++)
+  for (j=0; j<64; j++)
+  for (k=0; k<32; k++) {
+    r = i << 3;
+    g = j << 2;
+    b = k << 3;
+    Y = (r + g + b) >> 2;
+    u = 128 + ((r - b) >> 2);
+    v = 128 + ((-r + 2*g -b)>>3);
+    RGBtoYUVPtr[(i << 11) + (j << 5) + k] = (Y<<16) + (u<<8) + v;
+  }
 }
 
 void SetHQx()
 {
-	int maxHQ;
-	if(CustomResX/256 < CustomResY/224)
-		maxHQ = CustomResX/256;
-	else
-		maxHQ = CustomResY/224;
+  int maxHQ;
+  if(CustomResX/256 < CustomResY/224)
+    maxHQ = CustomResX/256;
+  else
+    maxHQ = CustomResY/224;
 
-	if(maxHQ >= 2)
-	{
-		GUIHQ2X[cvidmode] = 1;
-		GUIHQ3X[cvidmode] = 0;
-		GUIHQ4X[cvidmode] = 0;
-	}
+  if(maxHQ >= 2)
+  {
+    GUIHQ2X[cvidmode] = 1;
+    GUIHQ3X[cvidmode] = 0;
+    GUIHQ4X[cvidmode] = 0;
+  }
 
-	else
-	{
-		GUIHQ2X[cvidmode] = 0;
-		GUIHQ3X[cvidmode] = 0;
-		GUIHQ4X[cvidmode] = 0;
-	}
+  else
+  {
+    GUIHQ2X[cvidmode] = 0;
+    GUIHQ3X[cvidmode] = 0;
+    GUIHQ4X[cvidmode] = 0;
+  }
 }
 
 void SetHiresOpt()
 {
-	if(CustomResX >= 512 && CustomResY >= 448)
-		GUIM7VID[cvidmode] = 1;
-	else
-		GUIM7VID[cvidmode] = 0;
+  if(CustomResX >= 512 && CustomResY >= 448)
+    GUIM7VID[cvidmode] = 1;
+  else
+    GUIM7VID[cvidmode] = 0;
 }
 
 void initwinvideo(void)
 {
-	DWORD newmode = 0;
+  DWORD newmode = 0;
 
-	init_hqNx();
+  init_hqNx();
 
-	if (CurMode != cvidmode)
-	{
-		CurMode = cvidmode;
-		newmode = 1;
-		WindowWidth = 256;
-		WindowHeight = 224;
+  if (CurMode != cvidmode)
+  {
+    CurMode = cvidmode;
+    newmode = 1;
+    WindowWidth = 256;
+    WindowHeight = 224;
 
-		FullScreen = GUIWFVID[cvidmode];
+    FullScreen = GUIWFVID[cvidmode];
 #ifdef __OPENGL__
-		UseOpenGL = 0;
-		if (cvidmode > 5)
-		   UseOpenGL = 1;
+    UseOpenGL = 0;
+    if (cvidmode > 5)
+       UseOpenGL = 1;
 
-		if (cvidmode == 23)
-		{
-		   SetHQx();
-		   SetHiresOpt();
-		}
+    if (cvidmode == 23)
+    {
+       SetHQx();
+       SetHiresOpt();
+    }
 #else
-		if (cvidmode > 5)
-		  cvidmode = 2; // set it to the default 512x448 W
+    if (cvidmode > 5)
+      cvidmode = 2; // set it to the default 512x448 W
 #endif
 
-		switch (cvidmode)
-		{
-			default:
-			case 0:
-			case 1:
-				WindowWidth = 256;
-				WindowHeight = 224;
-				break;
-			case 2:
-			case 3:
-			case 7:
-				WindowWidth = 512;
-				WindowHeight = 448;
-				break;
-			case 4:
-			case 8:
-			case 9:
-				WindowWidth = 640;
-				WindowHeight = 480;
-				break;
-			case 10:
-				WindowWidth = 640;
-				WindowHeight = 560;
-				break;
-			case 11:
-				WindowWidth = 768;
-				WindowHeight = 672;
-				break;
-			case 5:
-			case 12:
-			case 13:
-				WindowWidth = 800;
-				WindowHeight = 600;
-				break;
-			case 14:
-				WindowWidth = 896;
-				WindowHeight = 784;
-				break;
-			case 15:
-			case 16:
-				WindowWidth = 1024;
-				WindowHeight = 768;
-				break;
-			case 17:
-				WindowWidth = 1024;
-				WindowHeight = 896;
-				break;
-			case 18:
-				WindowWidth = 1280;
-				WindowHeight = 960;
-				break;
-			case 19:
-				WindowWidth = 1280;
-				WindowHeight = 1024;
-				break;
-			case 20:
-				WindowWidth = 1600;
-				WindowHeight = 1200;
-				break;
-			case 21: // Variable ODR
-			case 22: // Variable ODS
-			case 23: // Custom Res
-				WindowWidth = CustomResX;
-				WindowHeight = CustomResY;
-				break;
-		}
-		adjustMouseXScale();
-		adjustMouseYScale();
-	}
+    switch (cvidmode)
+    {
+      default:
+      case 0:
+      case 1:
+        WindowWidth = 256;
+        WindowHeight = 224;
+        break;
+      case 2:
+      case 3:
+      case 7:
+        WindowWidth = 512;
+        WindowHeight = 448;
+        break;
+      case 4:
+      case 8:
+      case 9:
+        WindowWidth = 640;
+        WindowHeight = 480;
+        break;
+      case 10:
+        WindowWidth = 640;
+        WindowHeight = 560;
+        break;
+      case 11:
+        WindowWidth = 768;
+        WindowHeight = 672;
+        break;
+      case 5:
+      case 12:
+      case 13:
+        WindowWidth = 800;
+        WindowHeight = 600;
+        break;
+      case 14:
+        WindowWidth = 896;
+        WindowHeight = 784;
+        break;
+      case 15:
+      case 16:
+        WindowWidth = 1024;
+        WindowHeight = 768;
+        break;
+      case 17:
+        WindowWidth = 1024;
+        WindowHeight = 896;
+        break;
+      case 18:
+        WindowWidth = 1280;
+        WindowHeight = 960;
+        break;
+      case 19:
+        WindowWidth = 1280;
+        WindowHeight = 1024;
+        break;
+      case 20:
+        WindowWidth = 1600;
+        WindowHeight = 1200;
+        break;
+      case 21: // Variable ODR
+      case 22: // Variable ODS
+      case 23: // Custom Res
+        WindowWidth = CustomResX;
+        WindowHeight = CustomResY;
+        break;
+    }
+    adjustMouseXScale();
+    adjustMouseYScale();
+  }
 
-	if (startgame() != TRUE)
-	{
-		/* Exit zsnes if SDL could not be initialized */
-		if (sdl_state == vid_null)
-			exit(0);
-		else
-			return;
-	}
+  if (startgame() != TRUE)
+  {
+    /* Exit zsnes if SDL could not be initialized */
+    if (sdl_state == vid_null)
+      exit(0);
+    else
+      return;
+  }
 
-	if (newmode == 1)
-	{
-		#ifdef __OPENGL__
-		if(cvidmode > 5)
-		{
-			surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags);
-			adjustMouseXScale();
-			adjustMouseYScale();
-			glViewport(0,0, WindowWidth, WindowHeight);
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
+  if (newmode == 1)
+  {
+    #ifdef __OPENGL__
+    if(cvidmode > 5)
+    {
+      surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags);
+      adjustMouseXScale();
+      adjustMouseYScale();
+      glViewport(0,0, WindowWidth, WindowHeight);
+      glMatrixMode(GL_PROJECTION);
+      glLoadIdentity();
 
-			if (cvidmode == 21)
-			{
-				if (224*WindowWidth > 256*WindowHeight && WindowHeight)
-				{
-					glOrtho (- ((float) 224*WindowWidth)/((float) 256*WindowHeight),
-						((float) 224*WindowWidth)/((float) 256*WindowHeight), -1, 1, -1, 1);
-				}
-				else if (224*WindowWidth < 256*WindowHeight && WindowWidth)
-				{
-					glOrtho (-1, 1,- ((float) 256*WindowHeight)/((float) 224*WindowWidth),
-						((float) 256*WindowHeight)/((float) 224*WindowWidth), -1, 1);
-				}
-				else
-				{
-					glOrtho (-1, 1, -1, 1, -1, 1);
-				}
-			}
+      if (cvidmode == 21)
+      {
+        if (224*WindowWidth > 256*WindowHeight && WindowHeight)
+        {
+          glOrtho (- ((float) 224*WindowWidth)/((float) 256*WindowHeight),
+            ((float) 224*WindowWidth)/((float) 256*WindowHeight), -1, 1, -1, 1);
+        }
+        else if (224*WindowWidth < 256*WindowHeight && WindowWidth)
+        {
+          glOrtho (-1, 1,- ((float) 256*WindowHeight)/((float) 224*WindowWidth),
+            ((float) 256*WindowHeight)/((float) 224*WindowWidth), -1, 1);
+        }
+        else
+        {
+          glOrtho (-1, 1, -1, 1, -1, 1);
+        }
+      }
 
-			if (Keep4_3Ratio && ((cvidmode == 22)||(cvidmode == 23)))
-			{
-				if (3*WindowWidth > 4*WindowHeight && WindowHeight)
-				{
-					glOrtho (- ((float) 3*WindowWidth)/((float) 4*WindowHeight),
-						((float) 3*WindowWidth)/((float) 4*WindowHeight), -1, 1, -1, 1);
-				}
-				else if (3*WindowWidth < 4*WindowHeight && WindowWidth)
-				{
-					glOrtho (-1, 1,- ((float) 4*WindowHeight)/((float) 3*WindowWidth),
-						((float) 4*WindowHeight)/((float) 3*WindowWidth), -1, 1);
-				}
-				else
-				{
-					glOrtho (-1, 1, -1, 1, -1, 1);
-				}
-			}
+      if (Keep4_3Ratio && ((cvidmode == 22)||(cvidmode == 23)))
+      {
+        if (3*WindowWidth > 4*WindowHeight && WindowHeight)
+        {
+          glOrtho (- ((float) 3*WindowWidth)/((float) 4*WindowHeight),
+            ((float) 3*WindowWidth)/((float) 4*WindowHeight), -1, 1, -1, 1);
+        }
+        else if (3*WindowWidth < 4*WindowHeight && WindowWidth)
+        {
+          glOrtho (-1, 1,- ((float) 4*WindowHeight)/((float) 3*WindowWidth),
+            ((float) 4*WindowHeight)/((float) 3*WindowWidth), -1, 1);
+        }
+        else
+        {
+          glOrtho (-1, 1, -1, 1, -1, 1);
+        }
+      }
 
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			glDisable(GL_DEPTH_TEST);
-			glFlush();
-			gl_clearwin();
-		}
-		#endif
-		clearwin();
-	}
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();
+      glDisable(GL_DEPTH_TEST);
+      glFlush();
+      gl_clearwin();
+    }
+    #endif
+    clearwin();
+  }
 
-	if (FirstVid == 1)
-	{
-		FirstVid = 0;
+  if (FirstVid == 1)
+  {
+    FirstVid = 0;
 
-		InitSound();
-		InitInput();
-	}
+    InitSound();
+    InitInput();
+  }
 
-	if (((PrevStereoSound != StereoSound)
-	     || (PrevSoundQuality != SoundQuality)))
-		ReInitSound();
+  if (((PrevStereoSound != StereoSound)
+       || (PrevSoundQuality != SoundQuality)))
+    ReInitSound();
 }
 
 void CheckTimers(void)
 {
-	//QueryPerformanceCounter((LARGE_INTEGER*)&end2);
-	end2 = sem_GetTicks();
+  //QueryPerformanceCounter((LARGE_INTEGER*)&end2);
+  end2 = sem_GetTicks();
 
-	while ((end2 - start2) >= update_ticks_pc2)
-	{
-		start2 += update_ticks_pc2;
-	}
+  while ((end2 - start2) >= update_ticks_pc2)
+  {
+    start2 += update_ticks_pc2;
+  }
 
-	if (T60HZEnabled)
-	{
-		//QueryPerformanceCounter((LARGE_INTEGER*)&end);
-		end = sem_GetTicks();
+  if (T60HZEnabled)
+  {
+    //QueryPerformanceCounter((LARGE_INTEGER*)&end);
+    end = sem_GetTicks();
 
-		while ((end - start) >= update_ticks_pc)
-		{
-			/*
-			   _asm{
-			   pushad
-			   call Game60hzcall
-			   popad
-			   }
-			 */
-			Game60hzcall();
-			SDL_SemPost(sem_frames);
-			start += update_ticks_pc;
-		}
-	}
+    while ((end - start) >= update_ticks_pc)
+    {
+      Game60hzcall();
+      SDL_SemPost(sem_frames);
+      start += update_ticks_pc;
+    }
+  }
 
-	if (T36HZEnabled)
-	{
-		//QueryPerformanceCounter((LARGE_INTEGER*)&end);
-		end = sem_GetTicks();
+  if (T36HZEnabled)
+  {
+    //QueryPerformanceCounter((LARGE_INTEGER*)&end);
+    end = sem_GetTicks();
 
-		while ((end - start) >= update_ticks_pc)
-		{
-			/*
-			   _asm{
-			   pushad
-			   call GUI36hzcall
-			   popad
-			   }
-			 */
-			GUI36hzcall();
-			start += update_ticks_pc;
-		}
-	}
+    while ((end - start) >= update_ticks_pc)
+    {
+      GUI36hzcall();
+      start += update_ticks_pc;
+    }
+  }
 }
 
 //Why in the world did someone make this use signed values??? -Nach
@@ -1248,8 +1224,8 @@ void UpdateSound(void *userdata, Uint8 * stream, int len)
 
 void sem_sleep(void)
 {
-	end = update_ticks_pc - (sem_GetTicks() - start) - .2f;
-	if (end>0.f) SDL_SemWaitTimeout(sem_frames, (int)end);
+  end = update_ticks_pc - (sem_GetTicks() - start) - .2f;
+  if (end>0.f) SDL_SemWaitTimeout(sem_frames, (int)end);
 }
 
 static SDL_Thread *sem_threadid = NULL;
@@ -1257,45 +1233,45 @@ static int sem_threadrun;
 
 int sem_thread(void *param)
 {
-	while (sem_threadrun)
-	{
-		if (T60HZEnabled)
-		{
-			SDL_SemPost(sem_frames);
-			usleep(romispal ? 2000 : 1000);
-		}
-		else
-			usleep(20000);
-	}
-	return(0);
+  while (sem_threadrun)
+  {
+    if (T60HZEnabled)
+    {
+      SDL_SemPost(sem_frames);
+      usleep(romispal ? 2000 : 1000);
+    }
+    else
+      usleep(20000);
+  }
+  return(0);
 }
 
 void sem_sleep_rdy(void)
 {
-	if (sem_frames) return;
-	sem_frames = SDL_CreateSemaphore(0);
-	sem_threadrun = 1;
-	sem_threadid = SDL_CreateThread(sem_thread, 0);
+  if (sem_frames) return;
+  sem_frames = SDL_CreateSemaphore(0);
+  sem_threadrun = 1;
+  sem_threadid = SDL_CreateThread(sem_thread, 0);
 }
 
 void sem_sleep_die(void)
 {
-	if (sem_threadid)
-	{
-		sem_threadrun = 0;
-		SDL_WaitThread(sem_threadid, NULL);
-		sem_threadid = NULL;
-	}
-	if (sem_frames)
-	{
-		SDL_DestroySemaphore(sem_frames);
-		sem_frames = NULL;
-	}
+  if (sem_threadid)
+  {
+    sem_threadrun = 0;
+    SDL_WaitThread(sem_threadid, NULL);
+    sem_threadid = NULL;
+  }
+  if (sem_frames)
+  {
+    SDL_DestroySemaphore(sem_frames);
+    sem_frames = NULL;
+  }
 }
 
 void UpdateVFrame(void)
 {
-  extern unsigned char soundon, DSPDisable;
+  extern unsigned char DSPDisable;
   extern unsigned int BufferSizeB, BufferSizeW;
 
   //Quick fix for GUI CPU usage
@@ -1341,29 +1317,29 @@ void UpdateVFrame(void)
 
 void clearwin()
 {
-	/* If we're vid_null and we get here, there's a problem */
-	/* elsewhere - DDOI */
-	if (sdl_state == vid_none) return;
+  /* If we're vid_null and we get here, there's a problem */
+  /* elsewhere - DDOI */
+  if (sdl_state == vid_none) return;
 
 #ifdef __OPENGL__
-	if (UseOpenGL)
-		gl_clearwin();
-	else
+  if (UseOpenGL)
+    gl_clearwin();
+  else
 #endif
-		sw_clearwin();
+    sw_clearwin();
 }
 
 void drawscreenwin(void)
 {
-	/* Just in case - DDOI */
-	if (sdl_state == vid_none) return;
+  /* Just in case - DDOI */
+  if (sdl_state == vid_none) return;
 
 #ifdef __OPENGL__
-	if (UseOpenGL)
-		gl_drawwin();
-	else
+  if (UseOpenGL)
+    gl_drawwin();
+  else
 #endif
-		sw_drawwin();
+    sw_drawwin();
 }
 
 void UnloadSDL()
@@ -1385,85 +1361,85 @@ void UnloadSDL()
 
 int GetMouseX(void)
 {
-	return ((int) MouseX);
+  return ((int) MouseX);
 }
 int GetMouseY(void)
 {
-	return ((int) MouseY);
+  return ((int) MouseY);
 }
 
 int GetMouseMoveX(void)
 {
-	//   InputRead();
-	//SDL_GetRelativeMouseState(&MouseMove2X, NULL);
-	SDL_GetRelativeMouseState(&MouseMove2X, &MouseMove2Y);
-	return (MouseMove2X);
+  //   InputRead();
+  //SDL_GetRelativeMouseState(&MouseMove2X, NULL);
+  SDL_GetRelativeMouseState(&MouseMove2X, &MouseMove2Y);
+  return (MouseMove2X);
 }
 
 int GetMouseMoveY(void)
 {
-	return (MouseMove2Y);
+  return (MouseMove2Y);
 }
 int GetMouseButton(void)
 {
-	return ((int) MouseButton);
+  return ((int) MouseButton);
 }
 
 void SetMouseMinX(int MinX)
 {
-	MouseMinX = MinX;
-	adjustMouseXScale();
+  MouseMinX = MinX;
+  adjustMouseXScale();
 }
 void SetMouseMaxX(int MaxX)
 {
-	MouseMaxX = MaxX;
-	adjustMouseXScale();
+  MouseMaxX = MaxX;
+  adjustMouseXScale();
 }
 void SetMouseMinY(int MinY)
 {
-	MouseMinY = MinY;
-	adjustMouseYScale();
+  MouseMinY = MinY;
+  adjustMouseYScale();
 }
 void SetMouseMaxY(int MaxY)
 {
-	MouseMaxY = MaxY;
-	adjustMouseYScale();
+  MouseMaxY = MaxY;
+  adjustMouseYScale();
 }
 void SetMouseX(int X)
 {
-	MouseX = X;
+  MouseX = X;
 }
 void SetMouseY(int Y)
 {
-	MouseY = Y;
+  MouseY = Y;
 }
 
 void GetLocalTime()
 {
-	time_t current;
-	struct tm *timeptr;
+  time_t current;
+  struct tm *timeptr;
 
-	time(&current);
-	timeptr = localtime(&current);
-	SystemTimewHour = timeptr->tm_hour;
-	SystemTimewMinute = timeptr->tm_min;
-	SystemTimewSecond = timeptr->tm_sec;
+  time(&current);
+  timeptr = localtime(&current);
+  SystemTimewHour = timeptr->tm_hour;
+  SystemTimewMinute = timeptr->tm_min;
+  SystemTimewSecond = timeptr->tm_sec;
 }
 
 /* evul, maybe should use something other than constructor method */
 void __attribute__ ((stdcall, constructor)) sem_StartTicks()
 {
-	gettimeofday(&sem_start, NULL);
+  gettimeofday(&sem_start, NULL);
 }
 
 float sem_GetTicks()
 {
-	struct timeval now;
-	float ticks;
+  struct timeval now;
+  float ticks;
 
-	gettimeofday(&now, NULL);
-	ticks=((float)(now.tv_sec-sem_start.tv_sec))*1000.f+((float)(now.tv_usec-sem_start.tv_usec))*.001f;
-	return(ticks);
+  gettimeofday(&now, NULL);
+  ticks=((float)(now.tv_sec-sem_start.tv_sec))*1000.f+((float)(now.tv_usec-sem_start.tv_usec))*.001f;
+  return(ticks);
 }
 
 

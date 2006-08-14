@@ -1384,7 +1384,9 @@ GUISoundKeys:
   GUIKeyCheckbox Force8b,'F'
 %endif
   GUIKeyCheckbox StereoSound,'S'
+%ifdef __WIN32__
   GUIKeyCheckbox PrimaryBuffer,'P'
+%endif
   GUIKeyCheckbox RevStereo,'V'
   GUIKeyCheckbox Surround,'U'
   GUIKeyCheckbox SoundBufEn,'B'

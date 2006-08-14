@@ -34,7 +34,7 @@ NEWSYM setaaccessbankr8
 
 NEWSYM setaaccessbankw8
     test ecx,8000h
-    jnz .nosetenablew8	; ignore ROM writes
+    jnz .nosetenablew8  ; ignore ROM writes
     and ecx,0fffh
     mov ebx,[setaramdata]
     mov [ebx+ecx],al
@@ -57,10 +57,10 @@ NEWSYM setaaccessbankr16
 
 NEWSYM setaaccessbankw16
     test ecx,8000h
-    jnz .nosetenablew16	; ignore ROM writes
+    jnz .nosetenablew16  ; ignore ROM writes
     cmp ecx,7fffh
     jne .noromw16
-    mov [setaramdata+0fffh],al	; only write ram part in, not rom part
+    mov [setaramdata+0fffh],al  ; only write ram part in, not rom part
     jmp short .nosetenablew16
 .noromw16
     and ecx,0fffh

@@ -84,7 +84,7 @@ EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath,FEOEZPath,SJNSPath
 EXTSYM MDHPath,SPL4Path,CheatSrcByteSize,prevloadfnamel,NTSCFilterInit
 EXTSYM prevloadnames,prevloaddnamel,prevlfreeze,FirstTimeData,MMXSupport
 EXTSYM GUIRAdd,GUIGAdd,GUIBAdd,GUITRAdd,GUITGAdd,GUITBAdd,GUIWRAdd
-EXTSYM GUIWGAdd,GUIWBAdd,GUIloadfntype,SoundInterpType,PrimaryBuffer
+EXTSYM GUIWGAdd,GUIWBAdd,GUIloadfntype,SoundInterpType
 EXTSYM CheatSrcByteBase,CheatSrcSearchType,CheatUpperByteOnly,GUIComboGameSpec
 EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
@@ -127,7 +127,7 @@ EXTSYM numlockptr
 %elifdef __WIN32__
 EXTSYM initDirectDraw,reInitSound,CheckAlwaysOnTop,CheckPriority,AlwaysOnTop
 EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst
-EXTSYM HighPriority,DisableScreenSaver,SaveMainWindowPos
+EXTSYM HighPriority,DisableScreenSaver,SaveMainWindowPos,PrimaryBuffer
 %elifdef __MSDOS__
 EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix

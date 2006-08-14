@@ -40,6 +40,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "gblvars.h"
 #include "asm_call.h"
 #include "zpath.h"
+#include "cfg.h"
 
 #ifdef __MSDOS__
 #define clim() __asm__ __volatile__ ("cli");
@@ -212,7 +213,7 @@ static void memcpyrinc(unsigned char **src, void *dest, size_t len)
 }
 
 extern unsigned int RewindTimer, DblRewTimer;
-extern unsigned char RewindStates, EMUPause, PauseRewind, EmuSpeed;
+extern unsigned char EMUPause;
 
 unsigned char *StateBackup = 0;
 unsigned char AllocatedRewindStates, LatestRewindPos, EarliestRewindPos;
@@ -220,7 +221,7 @@ bool RewindPosPassed;
 
 size_t rewind_state_size, cur_zst_size, old_zst_size;
 
-extern unsigned char RewindFrames, romispal, MovieProcessing;
+extern unsigned char romispal, MovieProcessing;
 void zmv_rewind_save(size_t, bool);
 void zmv_rewind_load(size_t, bool);
 
@@ -700,7 +701,7 @@ void statesaver()
   stim();
 }
 
-extern unsigned int KeyLoadState, Totalbyteloaded, SfxMemTable[256], SfxCPB;
+extern unsigned int Totalbyteloaded, SfxMemTable[256], SfxCPB;
 extern unsigned int SfxPBR, SfxROMBR, SfxRAMBR, SCBRrel, SfxSCBR;
 extern unsigned char pressed[256+128+64], multchange, ioportval, SDD1Enable;
 extern unsigned char nexthdma;
@@ -821,20 +822,20 @@ bool zst_compressed_loader(FILE *fp)
 void zst_sram_load(FILE *fp)
 {
   fseek(fp, sizeof(zst_header_cur)-1 + PH65816regsize + 199635, SEEK_CUR);
-  if (spcon)	{ fseek(fp, PHspcsave + PHdspsave + sizeof(DSPMem), SEEK_CUR); }
-  if (C4Enable)	{ fseek(fp, 8192, SEEK_CUR); }
-  if (SFXEnable)	{ fseek(fp, PHnum2writesfxreg + 131072, SEEK_CUR); }
+  if (spcon) { fseek(fp, PHspcsave + PHdspsave + sizeof(DSPMem), SEEK_CUR); }
+  if (C4Enable) { fseek(fp, 8192, SEEK_CUR); }
+  if (SFXEnable) { fseek(fp, PHnum2writesfxreg + 131072, SEEK_CUR); }
   if (SA1Enable)
   {
     fseek(fp, PHnum2writesa1reg, SEEK_CUR);
-    fread(SA1RAMArea, 1, 131072, fp);	// SA-1 sram
+    fread(SA1RAMArea, 1, 131072, fp);  // SA-1 sram
     fseek(fp, 15, SEEK_CUR);
   }
-  if (DSP1Type)	{ fseek(fp, 2874, SEEK_CUR); }
-  if (SETAEnable)	{ fread(setaramdata, 1, 4096, fp); } // SETA sram
-  if (SPC7110Enable)	{ fseek(fp, PHnum2writespc7110reg + 65536, SEEK_CUR); }
+  if (DSP1Type) { fseek(fp, 2874, SEEK_CUR); }
+  if (SETAEnable) { fread(setaramdata, 1, 4096, fp); } // SETA sram
+  if (SPC7110Enable) { fseek(fp, PHnum2writespc7110reg + 65536, SEEK_CUR); }
   fseek(fp, 227, SEEK_CUR);
-  if (ramsize)	{ fread(sram, 1, ramsize, fp); } // normal sram
+  if (ramsize) { fread(sram, 1, ramsize, fp); } // normal sram
 }
 
 void zst_sram_load_compressed(FILE *fp)

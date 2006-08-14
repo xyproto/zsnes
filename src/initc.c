@@ -818,7 +818,7 @@ bool Header512;
 extern char CSStatus[40];
 extern char CSStatus2[40];
 extern char CSStatus3[40];
-extern bool RomInfo;
+
 void DumpROMLoadInfo()
 {
   FILE *fp = 0;
@@ -1469,7 +1469,9 @@ extern unsigned char *vram;
 extern unsigned char *vcache2b;
 extern unsigned char *vcache4b;
 extern unsigned char *vcache8b;
+#ifdef OLD_DEBUGGER
 extern unsigned char *debugbuf;
+#endif
 extern unsigned char *sram;
 
 void clearSPCRAM()
@@ -1508,7 +1510,9 @@ void clearmem()
   memset(ram7fa, 0, 65536);
   memset(vram, 0, 65536);
   memset(sram, 0, 65536*2);
+#ifdef OLD_DEBUGGER
   memset(debugbuf, 0, 80000);
+#endif
   memset(regptra, 0, 49152);
   memset(regptwa, 0, 49152);
   memset(vcache2b, 0, 262144+256);
@@ -1569,7 +1573,6 @@ extern unsigned char  opexec268cph;
 extern unsigned char  opexec358cph;
 extern unsigned char  opexec268cphb;
 extern unsigned char  opexec358cphb;
-unsigned char HacksDisable;
 
 void headerhack()
 {
@@ -2367,7 +2370,6 @@ extern void *snesmap2[256];
 
 unsigned int cromptradd;
 extern unsigned char MultiTap;
-extern unsigned char pl12s34;
 extern unsigned int SfxR0, SfxR1, SfxR2, SfxR3, SfxR4, SfxR5, SfxR6, SfxR7,
                     SfxR8, SfxR9, SfxR10, SfxR11, SfxR12, SfxR13, SfxR14, SfxR15;
 extern void *ram7f;

@@ -115,14 +115,14 @@ endif
 ifeq (${OS},__MSDOS__)
   EXE=zsnes.exe
   FILEFORMAT=coff
-  LIBS=${LIBSORIG} -lm -lpdcur
+  LIBS=${LIBSORIG} -lm
   OE=.do
 endif
 
 ifeq (${OS},__WIN32__)
   EXE=zsnesw.exe
   FILEFORMAT=win32
-  LIBS=${LIBSORIG} -ldxguid -ldinput8 -lwsock32 -luser32 -lgdi32 -lshell32 -lwinmm -mwindows -lpdcurses
+  LIBS=${LIBSORIG} -ldxguid -ldinput8 -lwsock32 -luser32 -lgdi32 -lshell32 -lwinmm -mwindows
   OE=.obj
 endif
 
@@ -143,10 +143,16 @@ ifeq (${RELEASEGRADE},yes)
   ASMOPT=-O9999
 endif
 
+ifeq (${DEBUGGER},no)
+  CFLAGSORIG+= -DNO_DEBUGGER
+  ASMFLAGSORIG+= -DNO_DEBUGGER
+endif
+
 LINK=${CPPC}
 
 ifeq (${JMA},no)
   CFLAGSORIG+= -DNO_JMA
+  ASMFLAGSORIG+= -DNO_JMA
   ifeq (${OS},__MSDOS__)
     LINK=${CC}
   endif
@@ -186,10 +192,17 @@ MAINOBJ=endmem${OE} init${OE} initc${OE} patch${OE}\
 	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE}\
 	cfg${OE} md${OE} zpath${OE}
 
+ifneq (${DEBUGGER},no)
 ifeq (${OLDDEBUGGER},yes)
   DOSOBJORIG += ${DOSDIR}/debug${OE}
 else
   MAINOBJ += debugger${OE} debugasm${OE}
+ifeq (${OS},__MSDOS__)
+  LIBS+= -lpdcur
+else
+  LIBS+= -lpdcurses
+endif
+endif
 endif
 
 NETOBJ=
@@ -259,7 +272,7 @@ endif
 %${OE}: %.psr
 	${PSR} -D${OS} -cheader $(patsubst %${OE},%.h,$@) -fname $(patsubst %${OE},%,$@) temppsr.c $<
 ifneq (${ENV},msvc)
-	${CC} -D${OS} -o $@ -c temppsr.c
+	${CC} -O1 ${CFLAGS} -O3 -o $@ -c temppsr.c
 else
 	cl /nologo /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ temppsr.c
 endif

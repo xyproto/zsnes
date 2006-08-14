@@ -22,7 +22,7 @@
 
 EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,
 EXTSYM GetTime,GetDate,V8Mode,getblaster,Force8b,SBHDMA
-EXTSYM ZFileCHDir,CHPath,ZFileGetDir,DirName,pressed,DTALoc,DTALocPos
+EXTSYM ZFileCHDir,CHPath,ZFileGetDir,DirName,DTALoc,DTALocPos
 EXTSYM ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
 EXTSYM NoSoundReinit,soundon,DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB
@@ -455,14 +455,14 @@ NEWSYM SetupPreGame   ; Executes after pre-game init, can execute multiple
     cli
     mov ax,205h
     mov bl,09h
-    mov cx,cs			; Requires CS rather than DS
+    mov cx,cs           ; Requires CS rather than DS
     mov edx,handler9h
     int 31h
     jc near interror
 
     mov ax,205h
     mov bl,08h
-    mov cx,cs			; Requires CS rather than DS
+    mov cx,cs           ; Requires CS rather than DS
     mov edx,handler8h
     int 31h
     jc near interror

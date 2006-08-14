@@ -66,8 +66,6 @@ void InsertFontChar(char data[], int pos)
   GUIFontData1[pos] = ConvertBinaryToInt(data);
 }
 
-extern unsigned char newfont;
-
 void LoadCustomFont()
 {
   FILE *fp;
@@ -79,19 +77,19 @@ void LoadCustomFont()
   {
     while (fgets(data,100,fp) && strcmp(data,"EOF\n") && x < 705)
     {
-      fgets(data,10,fp);		//get first line
+      fgets(data,10,fp);        //get first line
       InsertFontChar(data,x++);
 
-      fgets(data,10,fp);		//get second line
+      fgets(data,10,fp);        //get second line
       InsertFontChar(data,x++);
 
-      fgets(data,10,fp);		//get third line
+      fgets(data,10,fp);        //get third line
       InsertFontChar(data,x++);
 
-      fgets(data,10,fp);		//get fourth line
+      fgets(data,10,fp);        //get fourth line
       InsertFontChar(data,x++);
 
-      fgets(data,10,fp);		//get fifth line
+      fgets(data,10,fp);        //get fifth line
       InsertFontChar(data,x++);
     }
   }

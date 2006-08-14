@@ -580,13 +580,11 @@ MusicRelVol db 100
 @ Swap left audio channel with right (0 = NO, 1 = Yes)
 RevStereo db 0
 
-@
 #ifdef __MSDOS__
+@
 @ Display ZSNES sound detection info (0 = NO, 1 = Yes)
-#else
-@ DOS-only option, don't edit
-#endif
 DisplayS db 0
+#endif
 
 @
 @ Disable echo (0 = NO, 1 = Yes)
@@ -619,14 +617,12 @@ SoundInterpType db 1
 @ This is useful if you have a Subwoofer.
 LowPassFilterType db 0
 
-@
 %ifdef __WIN32__
+@
 @ Use primary sound buffer (0 = NO, 1 = Yes)
 @ Enable this if you are experiencing sound playback/static problems.
-%else
-@ Windows-only option, don't edit
-%endif
 PrimaryBuffer db 0
+%endif
 
 @
 @  ----
@@ -770,6 +766,8 @@ FPSAtStart db 0
 @
 @ Display Clock (0 = NO, 1 = Yes)
 TimerEnable db 0
+
+@
 @ Clock mode (0 = 24 HOURS, 1 = 12 hours)
 TwelveHourClock db 0
 

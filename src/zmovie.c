@@ -51,6 +51,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "numconv.h"
 #include "md.h"
 #include "zpath.h"
+#include "cfg.h"
 
 #ifdef __GNUC__
 typedef unsigned long long uint64;
@@ -60,9 +61,8 @@ typedef unsigned __int64 uint64;
 
 extern unsigned int versionNumber, CRC32, cur_zst_size, MsgCount, MessageOn;
 extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
-extern unsigned char pl1contrl, pl2contrl, pl3contrl, pl4contrl, pl5contrl;
-extern unsigned char MovieStartMethod, GUIReset, ReturnFromSPCStall, GUIQuit;
-extern unsigned char MovieProcessing, CMovieExt, EmuSpeed, mencoderExists;
+extern unsigned char GUIReset, ReturnFromSPCStall, GUIQuit;
+extern unsigned char MovieProcessing, CMovieExt, mencoderExists;
 extern char *Msgptr;
 extern bool romispal;
 bool MovieWaiting = false;
@@ -1872,18 +1872,12 @@ Code for dumping raw video
 
 
 static const unsigned int freqtab[] = { 8000, 11025, 22050, 44100, 16000, 32000, 48000 };
-extern unsigned int SoundQuality;
-extern unsigned char StereoSound;
 #define RATE freqtab[SoundQuality]
 
 
 //0 = None; 1 Logging, but not now, 2 Log now
 unsigned char AudioLogging;
 
-extern unsigned char MovieVideoMode;
-extern unsigned char MovieAudio;
-extern unsigned char MovieVideoAudio;
-extern unsigned char MovieAudioCompress;
 extern unsigned char ZMVRawDump;
 
 #define PICK_HELP(var) if (!strncmp(*str, "$"#var, strlen(#var)+1)) { *str += strlen(#var)+1; return(var); }
@@ -2368,15 +2362,13 @@ static void OldMovieReplay()
   }
 }
 
-extern unsigned char frameskip;
-extern unsigned char maxskip;
 static unsigned char oldframeskip = 0;
 static unsigned char oldmaxskip = 0;
 
 static void OldMoviePlay(FILE *fp)
 {
   unsigned char RecData[16];
-  extern unsigned char NextLineCache, soundon, sramsavedis;
+  extern unsigned char NextLineCache, sramsavedis;
   extern size_t Totalbyteloaded;
   extern unsigned int curexecstate;
   extern unsigned int nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
@@ -2455,7 +2447,7 @@ void MovieInsertChapter()
     case MOVIE_OLD_PLAY:
       Msgptr = "OLD MOVIES DO NOT SUPPORT CHAPTERS.";
       break;
-    default:	// no movie processing
+    default:  // no movie processing
       Msgptr = "NO MOVIE PROCESSING.";
   }
 

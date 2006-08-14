@@ -216,7 +216,7 @@ int InitTCP()
 void DeInitTCP()
 {
 #ifndef __UNIXSDL__
-	WSACleanup();
+   WSACleanup();
 #endif
 }
 
@@ -336,7 +336,7 @@ int ConnectServer(char *servername, unsigned int port)
       if (ugamesocket == INVALID_SOCKET)
       {
 #ifdef __UNIXSDL__
-	      STUB_FUNCTION;
+         STUB_FUNCTION;
 #else
                  tcperr=WSAGetLastError();
                  sprintf(blah,"Could not initialize UDP(2) : %d",tcperr);
@@ -348,20 +348,20 @@ int ConnectServer(char *servername, unsigned int port)
       if (userversocket == INVALID_SOCKET)
       {
 #ifdef __UNIXSDL__
-	      STUB_FUNCTION;
+         STUB_FUNCTION;
 #else
                  tcperr=WSAGetLastError();
                  sprintf(blah,"Could not initialize UDP(2.5) : %d",tcperr);
                  MessageBox(NULL,blah,"Error",MB_SYSTEMMODAL|MB_OK);
 #endif
-		 return(-2);
+       return(-2);
       }
 
       if (bind(userversocket,(struct sockaddr*)&userveraddress,sizeof(userveraddress))==
           SOCKET_ERROR)
       {
 #ifdef __UNIXSDL__
-	      STUB_FUNCTION;
+         STUB_FUNCTION;
 #else
          tcperr=WSAGetLastError();
          sprintf(blah,"Could not initialize UDP(16) : %d",tcperr);
@@ -397,9 +397,9 @@ int ConnectServer(char *servername, unsigned int port)
    /* create the game socket and verify if it is valid */
    gamesocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
    if (gamesocket == INVALID_SOCKET)
-	{
+   {
       return(-2);
-	}
+   }
 
 
    /* initialize server address */
@@ -417,9 +417,9 @@ int ConnectServer(char *servername, unsigned int port)
                      (LPSOCKADDR)&serveraddress,
                      sizeof(struct sockaddr));
    if (retval == SOCKET_ERROR)
-	{
+   {
 #ifdef __UNIXSDL__
-		STUB_FUNCTION;
+      STUB_FUNCTION;
 #else
       sprintf(blah,"Could not connect to other side");
       MessageBox(NULL,blah,
@@ -429,7 +429,7 @@ int ConnectServer(char *servername, unsigned int port)
 
       closesocket(gamesocket);
       return(-3);
-	}
+   }
 
 //   GetUDPStatus();
 
@@ -523,7 +523,7 @@ int StartServerCycle(unsigned short port)
       if (userversocket == INVALID_SOCKET)
       {
 #ifdef __UNIXSDL__
-	      STUB_FUNCTION;
+         STUB_FUNCTION;
 #else
          tcperr=WSAGetLastError();
                  sprintf(blah,"Could not initialize UDP(5) : %d",tcperr);
@@ -535,7 +535,7 @@ int StartServerCycle(unsigned short port)
           SOCKET_ERROR)
       {
 #ifdef __UNIXSDL__
-	      STUB_FUNCTION;
+         STUB_FUNCTION;
 #else
          tcperr=WSAGetLastError();
          sprintf(blah,"Could not initialize UDP(6) : %d",tcperr);
@@ -569,13 +569,13 @@ int StartServerCycle(unsigned short port)
    /* Create the listen socket */
    serversocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
    if (serversocket == INVALID_SOCKET)
-	{
+   {
 #ifndef __UNIXSDL__
-	  tcperr=WSAGetLastError();
+     tcperr=WSAGetLastError();
 #endif
 
       return(-1);
-	}
+   }
 
    serveraddress.sin_family = AF_INET;
    serveraddress.sin_addr.s_addr = INADDR_ANY;
@@ -586,24 +586,24 @@ int StartServerCycle(unsigned short port)
                  (LPSOCKADDR)&serveraddress,
                  sizeof(struct sockaddr));
    if (retval == SOCKET_ERROR)
-	{
+   {
 #ifndef __UNIXSDL__
-	  tcperr=WSAGetLastError();
+     tcperr=WSAGetLastError();
 #endif
       closesocket(serversocket);
       return(-2);
-	}
+   }
 
    /* setup socket to listen */
    retval = listen(serversocket, SOMAXCONN);
    if (retval == SOCKET_ERROR)
-	{
+   {
 #ifndef __UNIXSDL__
       tcperr=WSAGetLastError();
 #endif
       closesocket(serversocket);
       return(-3);
-	}
+   }
 
    return 0;
 }
@@ -619,14 +619,14 @@ int acceptzuser()
 
    gamesocket = accept(serversocket, NULL, NULL);
    if (gamesocket == INVALID_SOCKET)
-	{
+   {
 #ifndef __UNIXSDL__
       tcperr=WSAGetLastError();
 #endif
       closesocket(serversocket);
       serversocket=-1;
       return(-1);
-	}
+   }
 
 //   GetUDPStatus();
 
@@ -635,9 +635,9 @@ int acceptzuser()
 
 int ServerCheckNewClient()
 {
-	FD_SET_VAR zrf;
-	struct timeval nto;
-	int r;
+   FD_SET_VAR zrf;
+   struct timeval nto;
+   int r;
 
         if (UDPEnable)
         {
@@ -653,33 +653,33 @@ int ServerCheckNewClient()
           return(0);
         }
 
-	if(serversocket == INVALID_SOCKET)
-	{
-		return(-1);
-	}
-	nto.tv_sec=0;
-	nto.tv_usec=0; /* return immediately */
+   if(serversocket == INVALID_SOCKET)
+   {
+      return(-1);
+   }
+   nto.tv_sec=0;
+   nto.tv_usec=0; /* return immediately */
 
         FD_ZERO(&zrf);
-	FD_SET(serversocket,&zrf);
-	r=select(serversocket+1,&zrf,0,0,&nto);
+   FD_SET(serversocket,&zrf);
+   r=select(serversocket+1,&zrf,0,0,&nto);
 
-	if(r == -1)
-	{
+   if(r == -1)
+   {
 #ifndef __UNIXSDL__
                 tcperr=WSAGetLastError();
 #endif
                 return(-2);
-	}
-	if(r == 0)
-	{
-		return(0);
-	}
+   }
+   if(r == 0)
+   {
+      return(0);
+   }
         if(FD_ISSET(serversocket,&zrf))
-	{
-		return 1;
-	}
-	return(0);
+   {
+      return 1;
+   }
+   return(0);
 
 }
 
@@ -913,10 +913,10 @@ int SendData(int dsize,unsigned char *dptr)
    /* send data with the socket */
    retval = send(gamesocket,dptr,dsize,0);
    if (retval == SOCKET_ERROR)
-	{
+   {
       closesocket(gamesocket);
       return(-1);
-	}
+   }
    return(0);
 }
 
@@ -1060,10 +1060,10 @@ char SendBufferSize[256];*/
    /* send data with the socket */
    retval = sendto(gamesocket,dptr,dsize,0,(struct sockaddr *) &ugameaddress,sizeof(struct sockaddr));
    if (retval == SOCKET_ERROR)
-	{
+   {
       closesocket(gamesocket);
       return(-1);
-	}
+   }
    return(0);
 }
 
@@ -1086,10 +1086,10 @@ int GetLeft()
    int tempsize;
    retval = ioctlsocket(gamesocket,FIONREAD,&tempsize);
    if (retval == SOCKET_ERROR)
-	{
+   {
       closesocket(gamesocket);
       return(-1);
-	}
+   }
    return(tempsize);
 }
 
@@ -1107,10 +1107,10 @@ int GetLeftUDP()
    r=select(userversocket+1,&zrf,0,0,&nto);
 
    if (r == SOCKET_ERROR)
-	{
+   {
       closesocket(userversocket);
       return(-1);
-	}
+   }
    return(r);
 }
 
@@ -1180,10 +1180,10 @@ int GetData(int dsize,unsigned char *dptr)
    /* get data with the socket */
    retval = recv(gamesocket,dptr,dsize,0);
    if (retval == SOCKET_ERROR)
-	{
+   {
       closesocket(gamesocket);
       return(-1);
-	}
+   }
    return(retval);
 }
 
@@ -1235,7 +1235,7 @@ void UDPDisableMode(){
 
 void WinErrorA2(void){
 #ifdef __UNIXSDL__
-	STUB_FUNCTION;
+    STUB_FUNCTION;
 #else
     char message1[256];
     sprintf(message1,"Failed waiting for checksum.");
@@ -1245,7 +1245,7 @@ void WinErrorA2(void){
 
 void WinErrorB2(void){
 #ifdef __UNIXSDL__
-	STUB_FUNCTION;
+    STUB_FUNCTION;
 #else
     char message1[256];
     sprintf(message1,"Failed waiting for confirmation.");
@@ -1255,7 +1255,7 @@ void WinErrorB2(void){
 
 void WinErrorC2(void){
 #ifdef __UNIXSDL__
-	STUB_FUNCTION;
+    STUB_FUNCTION;
 #else
     char message1[256];
     sprintf(message1,"Failed waiting for confirmation(B).");

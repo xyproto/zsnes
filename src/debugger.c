@@ -166,10 +166,10 @@ void startdebugger() {
 
     firsttime = 0;
     } else {
-	touchwin(stdscr);
-	touchwin(debugwin);
-	refresh();
-	wrefresh(debugwin);
+        touchwin(stdscr);
+        touchwin(debugwin);
+        refresh();
+        wrefresh(debugwin);
     }
 
     debugloop();
@@ -180,7 +180,7 @@ void startdebugger() {
 
 
     if (execut == 1) {
-	start65816(); return;
+        start65816(); return;
     }
     endprog(); return;
 }
@@ -194,7 +194,7 @@ void my_getch() {
 
 
 WINDOW *openwindow(int nlines, int ncols, int begin_y, int begin_x,
-		   char *message) {
+           char *message) {
     WINDOW *w = newwin(nlines, ncols, begin_y, begin_x);
     wbkgd(w, CP(cp_white_on_blue|' '));
     // wattrset(w, CP(cp_white_on_blue));
@@ -223,9 +223,9 @@ void debugloop() {
     int key;
   a:
     if (!(debugds & 2))
-	nextopcode();
+        nextopcode();
     if (!(debugds & 1))
-	nextspcopcode();
+        nextspcopcode();
 
   b:
     // redrawing the display is always a good idea
@@ -289,7 +289,7 @@ void debugloop() {
        noecho();
 
        if (n == 1) {
-	   memtablew8_wrapper(addr >> 16, addr, value);
+          memtablew8_wrapper(addr >> 16, addr, value);
        }}
 
        closewindow(w);
@@ -310,19 +310,19 @@ void debugloop() {
        closewindow(w);
 
        if (n == 1) {
-	   w = openwindow(3, 52, 11, 14,
-			  "   Locating Breakpoint ... Press ESC to stop.    ");
-	   wrefresh(w);
-	   nodelay(stdscr, 1);
+          w = openwindow(3, 52, 11, 14,
+              "   Locating Breakpoint ... Press ESC to stop.    ");
+          wrefresh(w);
+          nodelay(stdscr, 1);
 
-	   PrevBreakPt_page = addr >> 16;
-	   PrevBreakPt_offset = addr;
-	   breakops_wrapper();
+          PrevBreakPt_page = addr >> 16;
+          PrevBreakPt_offset = addr;
+          breakops_wrapper();
 
-	   nodelay(stdscr, 0);
-	   closewindow(w);
+          nodelay(stdscr, 0);
+          closewindow(w);
 
-	   goto a;
+          goto a;
        }
 
        goto b;
@@ -347,8 +347,8 @@ void debugloop() {
        closewindow(w);
 
        if (n == 1) {
-	   SPCbreakops(addr);
-	   goto a;
+          SPCbreakops(addr);
+          goto a;
        }
        goto b;
    }
@@ -379,7 +379,7 @@ void debugloop() {
        noecho();
 
        if (n == 1) {
-	   SPCRAM[addr] = value;
+          SPCRAM[addr] = value;
        }}
 
        closewindow(w);
@@ -400,8 +400,8 @@ void debugloop() {
 
        closewindow(w);
        if (n == 1) {
-	   traceops(instrs);
-	   goto a;
+          traceops(instrs);
+          goto a;
        }
 
        goto b;
@@ -416,15 +416,15 @@ void debugloop() {
        WINDOW *w;
 
        w = openwindow(3,52,11,14,
-		      "   Waiting for Signal .... Press ESC to stop.");
+              "   Waiting for Signal .... Press ESC to stop.");
        wrefresh(w);
 
        debstop3 = 0;
        nodelay(w, TRUE);
        do {
-	   asm_call(execnextop);
+          asm_call(execnextop);
        } while ( (! ((++numinst % 256) && (wgetch(w) == 27)))
-		 && (debstop3 != 1) );
+               && (debstop3 != 1) );
        debstop3 = 0;
        nodelay(w, FALSE);
 
@@ -438,7 +438,7 @@ void debugloop() {
        WINDOW *w, *real_debugwin;
 
        w = openwindow(3,52,11,14,
-		      "   Waiting for Signal .... Press ESC to stop.");
+              "   Waiting for Signal .... Press ESC to stop.");
        wrefresh(w);
 
        // Open output file
@@ -451,19 +451,19 @@ void debugloop() {
        debstop3 = 0;
        nodelay(w, TRUE);
        do {
-     char buf[78];
-	   // log instruction
-	   move(0,0);
-	   out65816();
+          char buf[78];
+          // log instruction
+          move(0,0);
+          out65816();
 
-	   mvwinnstr(debugwin, 0, 0, buf, 77);
-	   buf[77] = 0;
-	   fprintf(fp, "%s\n", buf);
-	   fflush(fp);
+          mvwinnstr(debugwin, 0, 0, buf, 77);
+          buf[77] = 0;
+          fprintf(fp, "%s\n", buf);
+          fflush(fp);
 
-	   asm_call(execnextop);
+          asm_call(execnextop);
        } while ( (! ((++numinst % 256) && (wgetch(w) == 27)))
-		 && (debstop3 != 1) );
+                && (debstop3 != 1) );
        debstop3 = 0;
        nodelay(w, FALSE);
 
@@ -526,7 +526,7 @@ void traceops(unsigned count) {
 
     nodelay(w, TRUE);
     while (count-- && (wgetch(w) != 27)) {
-	asm_call(execnextop);
+        asm_call(execnextop);
     }
 
     closewindow(w);
@@ -543,10 +543,10 @@ void SPCbreakops(unsigned short addr) {
 
     nodelay(w, TRUE);
     do {
-	asm_call(execnextop);
+        asm_call(execnextop);
     } while ((!((++numinst % 256)
-		&& (wgetch(w) == 27)))
-	     && (spcPCRam != breakarea));
+         && (wgetch(w) == 27)))
+         && (spcPCRam != breakarea));
     nodelay(w, FALSE);
 
     closewindow(w);
@@ -554,19 +554,19 @@ void SPCbreakops(unsigned short addr) {
 
 
 void printinfo(char *s) {
-    while (s[0]) {
-	if (s[0] == '@') {
-	    int colors[] = {
-		0, 0, cp_green, cp_cyan,
-		cp_red, cp_magenta, cp_yellow, cp_white
-	    };
-	    attrset(COLOR_PAIR(colors[s[1]-'0']));
-	    s += 2;
-	} else {
-	    addch(s[0]);
-	    s += 1;
-	}
+  while (s[0]) {
+    if (s[0] == '@') {
+      int colors[] = {
+        0, 0, cp_green, cp_cyan,
+        cp_red, cp_magenta, cp_yellow, cp_white
+      };
+      attrset(COLOR_PAIR(colors[s[1]-'0']));
+      s += 2;
+    } else {
+      addch(s[0]);
+      s += 1;
     }
+  }
 }
 
 /* Won't port too well - stuck it in debugasm.asm for now */
@@ -593,34 +593,34 @@ void startdisplay() {
     move(1, 0); attrset(CP(cp_white_on_blue));
     addch(CurrentCPU+'0');
     for (i = 15; i; i--)
-	addch(ACS_HLINE);
+        addch(ACS_HLINE);
     printw(" CC:    Y:    ");
     for (i = 19; i; i--)
-	addch(ACS_HLINE);
+        addch(ACS_HLINE);
     addch(' ');
     for (i = 11; i; i--)
-	addch(' ');
+        addch(' ');
     addch(' ');
     for (i = 16; i; i--)
-	addch(ACS_HLINE);
+        addch(ACS_HLINE);
     addch(ACS_URCORNER);
 
     for (i = 2; i < 22; i++) {
-	mvaddch(i, 0, ACS_VLINE);
-	hline(' ', 77);
-	mvaddch(i, 78, ACS_VLINE);
-	mvaddch(i, 79, CHECK);
+        mvaddch(i, 0, ACS_VLINE);
+        hline(' ', 77);
+        mvaddch(i, 78, ACS_VLINE);
+        mvaddch(i, 79, CHECK);
     }
 
     mvaddch(22, 0, ACS_LLCORNER);
     for(i = 77; i; i--)
-	addch(ACS_HLINE);
+        addch(ACS_HLINE);
     mvaddch(22, 78, ACS_LRCORNER);
     mvaddch(22, 79, CHECK);
 
     move(23, 1);
     for(i = 79; i; i--)
-	addch(CHECK);
+        addch(CHECK);
 
     // Print debugger information
 
@@ -636,8 +636,8 @@ void startdisplay() {
     // Also, we are printing on top of the (currently invisible) drop shadow!"
     move(23, 0);
     printinfo("@4(@6T@4)@7race for  @4(@6B@4)@7reakpoint  "
-	      "@4(@6Enter@4)@7 Next  "
-	      "@4(@6M@4)@7odify  @4(@6F9@4)@7 Signal  @4(@6F1@4)@7 Run");
+          "@4(@6Enter@4)@7 Next  "
+          "@4(@6M@4)@7odify  @4(@6F9@4)@7 Signal  @4(@6F1@4)@7 Run");
 
     // ...
     move(0, 0);
@@ -654,11 +654,11 @@ void startdisplay() {
 void addtail() {
     debugt++;
     if (debugt == 100)
-	debugt = 0;
+    debugt = 0;
     if (debugt == debugh)
-	debugh++;
+    debugh++;
     if (debugh == 100)
-	debugh = 0;
+    debugh = 0;
 }
 */
 
@@ -683,8 +683,8 @@ void out65816_addrmode (unsigned char *instr) {
 
     #define INDEX_RIGHT(addr, index)                         \
             ((xp & 0x10)                                     \
-	     ? (((addr) & ~0xff)   | (((addr) + (index)) & 0xff))  \
-	     : (((addr) & ~0xffff) | (((addr) + (index)) & 0xffff)))
+         ? (((addr) & ~0xff)   | (((addr) + (index)) & 0xff))  \
+         : (((addr) & ~0xffff) | (((addr) + (index)) & 0xffff)))
 
 
     // each mode must output 19 characters
@@ -693,244 +693,244 @@ void out65816_addrmode (unsigned char *instr) {
     case 0:
     case 6:
     case 21:
-	// nothing to show
+        // nothing to show
 
-	wprintw(debugwin, "%19s", padding);
-	break;
+        wprintw(debugwin, "%19s", padding);
+        break;
 
     case 1:     // #$12,#$1234 (M-flag)
-	wprintw(debugwin, "#$");
-	if (xp != 0x20) {
-	    wprintw(debugwin, "%02x", instr[1]);
-	    wprintw(debugwin, "%15s", padding);
-	} else {
-	    wprintw(debugwin, "%04x", *(unsigned short *)(instr+1));
-	    wprintw(debugwin, "%13s", padding);
-    	}
-	break;
+        wprintw(debugwin, "#$");
+        if (xp != 0x20) {
+            wprintw(debugwin, "%02x", instr[1]);
+            wprintw(debugwin, "%15s", padding);
+        } else {
+            wprintw(debugwin, "%04x", *(unsigned short *)(instr+1));
+            wprintw(debugwin, "%13s", padding);
+        }
+        break;
 
     case 2:     // $1234 : db+$1234
-	wprintw(debugwin, "$%04x", *(unsigned short *)(instr+1));
-	wprintw(debugwin, "%5s[%02x%04x] ", padding, GETXB(),
-		                            *(unsigned short *)(instr+1));
-	break;
+        wprintw(debugwin, "$%04x", *(unsigned short *)(instr+1));
+        wprintw(debugwin, "%5s[%02x%04x] ", padding, GETXB(),
+                                    *(unsigned short *)(instr+1));
+        break;
 
     case 3:     // $123456
-	wprintw(debugwin, "$%02x%04x", instr[3], *(unsigned short*)(instr+1));
-	wprintw(debugwin, "%12s", padding);
-	break;
+        wprintw(debugwin, "$%02x%04x", instr[3], *(unsigned short*)(instr+1));
+        wprintw(debugwin, "%12s", padding);
+        break;
 
     case 4:     // $12 : $12+d
-	wprintw(debugwin, "$%02x%7s[%02x%04x] ", instr[1], padding, 0,
-		                                 instr[1]+xd);
-	break;
+        wprintw(debugwin, "$%02x%7s[%02x%04x] ", instr[1], padding, 0,
+                                        instr[1]+xd);
+        break;
 
     case 5:     // A
-	wprintw(debugwin, "A%18s", padding);
-	break;
+        wprintw(debugwin, "A%18s", padding);
+        break;
 
     case 7:     // ($12),y
     {
-	wprintw(debugwin, "($%02x),Y   ", instr[1]);
-	wprintw(debugwin, "[nnnnnn] ");
-	break;
+        wprintw(debugwin, "($%02x),Y   ", instr[1]);
+        wprintw(debugwin, "[nnnnnn] ");
+        break;
     }
 
     case 8:     // [$12],y
     {
-	unsigned short addr;
-	unsigned int t;
+        unsigned short addr;
+        unsigned int t;
 
-	wprintw(debugwin, "[$%02x],Y   ", instr[1]);
+        wprintw(debugwin, "[$%02x],Y   ", instr[1]);
 
-	addr = instr[1] + xd;
-	t = memtabler8_wrapper(0, addr);
-	t |= memtabler8_wrapper(0, addr+1) << 8;
-	t |= memtabler8_wrapper(0, addr+2) << 16;
-	t = INDEX_RIGHT(t, xy);
-	wprintw(debugwin, "[%06x] ", t);
+        addr = instr[1] + xd;
+        t = memtabler8_wrapper(0, addr);
+        t |= memtabler8_wrapper(0, addr+1) << 8;
+        t |= memtabler8_wrapper(0, addr+2) << 16;
+        t = INDEX_RIGHT(t, xy);
+        wprintw(debugwin, "[%06x] ", t);
 
-	break;
+        break;
     }
 
     case 9:     // ($12,x)
     {
-	wprintw(debugwin, "($%02x,X)   ", instr[1]);
-	wprintw(debugwin, "[nnnnnn] ");
-	break;
+        wprintw(debugwin, "($%02x,X)   ", instr[1]);
+        wprintw(debugwin, "[nnnnnn] ");
+        break;
     }
 
     case 10:    // $12,x : $12+d+x
     {
-	wprintw(debugwin, "$%02x,X%5s", instr[1], padding);
-	wprintw(debugwin, "[%06x] ", INDEX_RIGHT(instr[1] + xd, xx));
-	break;
+        wprintw(debugwin, "$%02x,X%5s", instr[1], padding);
+        wprintw(debugwin, "[%06x] ", INDEX_RIGHT(instr[1] + xd, xx));
+        break;
     }
 
     case 11:    // $12,y
     {
-	wprintw(debugwin, "$%02x,Y%5s", instr[1], padding);
-	wprintw(debugwin, "[%06x] ", INDEX_RIGHT(instr[1] + xd, xy));
-	break;
+        wprintw(debugwin, "$%02x,Y%5s", instr[1], padding);
+        wprintw(debugwin, "[%06x] ", INDEX_RIGHT(instr[1] + xd, xy));
+        break;
     }
 
     case 12:    // $1234,x : dbr+$1234+x
     {
-	unsigned int t = instr[1] | (instr[2] << 8);
-	wprintw(debugwin, "$%04x,X   ", t);
-	t = INDEX_RIGHT(t, xx);
-	wprintw(debugwin, "[%02x%04x] ", xdb, t);
+        unsigned int t = instr[1] | (instr[2] << 8);
+        wprintw(debugwin, "$%04x,X   ", t);
+        t = INDEX_RIGHT(t, xx);
+        wprintw(debugwin, "[%02x%04x] ", xdb, t);
 
-	break;
+        break;
     }
 
     case 13:    // $1234,y : dbr+$1234+y
     {
-	unsigned int t = instr[1] | (instr[2] << 8);
-	wprintw(debugwin, "$%04x,Y   ", t);
-	t = INDEX_RIGHT(t, xy);
-	wprintw(debugwin, "[%02x%04x] ", xdb, t);
+        unsigned int t = instr[1] | (instr[2] << 8);
+        wprintw(debugwin, "$%04x,Y   ", t);
+        t = INDEX_RIGHT(t, xy);
+        wprintw(debugwin, "[%02x%04x] ", xdb, t);
 
-	break;
+        break;
     }
 
     case 14:    // $123456,x : $123456+x
     {
-	unsigned int t = instr[1] | (instr[2] << 8) | (instr[3] << 16);
-	wprintw(debugwin, "$%06x,X ", t);
-	t = INDEX_RIGHT(t, xx);
-	wprintw(debugwin, "[%06x] ", t);
+        unsigned int t = instr[1] | (instr[2] << 8) | (instr[3] << 16);
+        wprintw(debugwin, "$%06x,X ", t);
+        t = INDEX_RIGHT(t, xx);
+        wprintw(debugwin, "[%06x] ", t);
 
-	break;
+        break;
     }
 
     case 15:    // +-$12 / $1234
     {
-	signed char c = instr[1];
-	unsigned short t = c + xpc + 2;
+        signed char c = instr[1];
+        unsigned short t = c + xpc + 2;
 
-	wprintw(debugwin, "$%04x%4s [%02x%04x] ", t, padding, xpb, t);
+        wprintw(debugwin, "$%04x%4s [%02x%04x] ", t, padding, xpb, t);
 
-	break;
+        break;
     }
 
     case 16:    // +-$1234 / $1234
     {
-	unsigned short s = instr[1] | (instr[2] << 8);
-	unsigned short t = s + xpc + 3;
+        unsigned short s = instr[1] | (instr[2] << 8);
+        unsigned short t = s + xpc + 3;
 
-	wprintw(debugwin, "$%04x%4s [%02x%04x] ", t, padding, xpb, t);
+        wprintw(debugwin, "$%04x%4s [%02x%04x] ", t, padding, xpb, t);
 
-	break;
+        break;
     }
 
     case 17:    // ($1234)
     {
-   	wprintw(debugwin, "($%04x)   ", instr[1]);
-	wprintw(debugwin, "[nnnnnn] ");
-	break;
+        wprintw(debugwin, "($%04x)   ", instr[1]);
+        wprintw(debugwin, "[nnnnnn] ");
+        break;
     }
 
     case 18:    // ($12)
     {
-	unsigned short addr1, addr2;
-	wprintw(debugwin, "($%02x)%5s", instr[1], padding);
+        unsigned short addr1, addr2;
+        wprintw(debugwin, "($%02x)%5s", instr[1], padding);
 
-	addr1 = instr[1] + xd;
+        addr1 = instr[1] + xd;
 
-	addr2  = memtabler8_wrapper(00, addr1);
-	addr2 |= memtabler8_wrapper(00, addr1+1) << 8;
+        addr2  = memtabler8_wrapper(00, addr1);
+        addr2 |= memtabler8_wrapper(00, addr1+1) << 8;
 
-	wprintw(debugwin, "[%02x%04x] ", xdb, addr2);
+        wprintw(debugwin, "[%02x%04x] ", xdb, addr2);
 
-	break;
+        break;
     }
 
     case 19:    // [$12]
     {
-	// unsigned short addr1;
-	// unsigned int   addr2;
+        // unsigned short addr1;
+        // unsigned int   addr2;
 
-	wprintw(debugwin, "[$%02x]%5s", instr[1], padding);
+        wprintw(debugwin, "[$%02x]%5s", instr[1], padding);
 
-	/*
-	addr1 = instr[1] + xd;
+        /*
+        addr1 = instr[1] + xd;
 
-	addr2  = memtabler8_wrapper(0, addr1);
-	addr2 |= memtabler8_wrapper(
-	*/
+        addr2  = memtabler8_wrapper(0, addr1);
+        addr2 |= memtabler8_wrapper(
+        */
 
-	wprintw(debugwin, "[nnnnnn] ");
+        wprintw(debugwin, "[nnnnnn] ");
 
-	break;
+        break;
     }
 
     case 20:    // ($1234,x)
     {
-	unsigned short cx = *(unsigned short*)(instr+1);
-	unsigned short x;
+        unsigned short cx = *(unsigned short*)(instr+1);
+        unsigned short x;
 
-	wprintw(debugwin, "($%04x,X) [%02x", cx, xpb);
-	if (xp & 0x10)
-	    cx = (cx & 0xFF00) | ((cx + xx) & 0xFF);
-	else
-	    cx += xx;
-	// .out20n
-	x = memtabler8_wrapper(xpb, cx);
-	x += memtabler8_wrapper(xpb, cx+1) << 8;
-	wprintw(debugwin, "%04x] ", x);
+        wprintw(debugwin, "($%04x,X) [%02x", cx, xpb);
+        if (xp & 0x10)
+            cx = (cx & 0xFF00) | ((cx + xx) & 0xFF);
+        else
+            cx += xx;
+        // .out20n
+        x = memtabler8_wrapper(xpb, cx);
+        x += memtabler8_wrapper(xpb, cx+1) << 8;
+        wprintw(debugwin, "%04x] ", x);
 
-	break;
+        break;
     }
 
     case 22:    // d,s
-	wprintw(debugwin, "$%02x,S%5s", instr[1], padding);
-	wprintw(debugwin, "[nnnnnn] ");
-	break;
+        wprintw(debugwin, "$%02x,S%5s", instr[1], padding);
+        wprintw(debugwin, "[nnnnnn] ");
+        break;
 
     case 23:    // (d,s),y
-  	wprintw(debugwin, "($%02x,S),Y ", instr[1]);
-	wprintw(debugwin, "[nnnnnn] ");
-	break;
+        wprintw(debugwin, "($%02x,S),Y ", instr[1]);
+        wprintw(debugwin, "[nnnnnn] ");
+        break;
 
     case 24:    // xyc - $1234
-	wprintw(debugwin, "$%02x%02x%14s", instr[2], instr[1], padding);
-	break;
+        wprintw(debugwin, "$%02x%02x%14s", instr[2], instr[1], padding);
+        break;
 
     case 25:    // #$12 (Flag Operations)
-	wprintw(debugwin, "#$%02x%15s", instr[1], padding);
-	break;
+        wprintw(debugwin, "#$%02x%15s", instr[1], padding);
+        break;
 
     case 26:    // #$12,#$1234 (X-flag)
-	if (xp & 0x10) {
-	    wprintw(debugwin, "#$%02x%15s", instr[1], padding);
-	} else {
-	    wprintw(debugwin, "#$%04x%13s",
-		    *(unsigned short*)(instr+1), padding);
-	}
-	break;
+        if (xp & 0x10) {
+            wprintw(debugwin, "#$%02x%15s", instr[1], padding);
+        } else {
+            wprintw(debugwin, "#$%04x%13s",
+                   *(unsigned short*)(instr+1), padding);
+        }
+        break;
 
     case 27:    // [$1234]
-	wprintw(debugwin, "[$%02x%02x]    ", instr[2], instr[1]);
-	break;
+        wprintw(debugwin, "[$%02x%02x]    ", instr[2], instr[1]);
+        break;
 
     default:
-	wprintw(debugwin, "%15s %02d ", "bad addr mode", addrmode[instr[0]]);
+        wprintw(debugwin, "%15s %02d ", "bad addr mode", addrmode[instr[0]]);
     }
 }
 
 unsigned char *findoppage() {
     if (xpc & 0x8000) {
-	return snesmmap[xpb];
+        return snesmmap[xpb];
     } else {
-	// lower address
-	if ((xpc < 0x4300) || (memtabler8[xpb] != regaccessbankr8)) {
-	    // lower memory
-	    return snesmap2[xpb];
-	} else {
-	    // dma
-	    return (unsigned char*)(dmadata-0x4300);
-	}
+        // lower address
+        if ((xpc < 0x4300) || (memtabler8[xpb] != regaccessbankr8)) {
+            // lower memory
+            return snesmap2[xpb];
+        } else {
+            // dma
+            return (unsigned char*)(dmadata-0x4300);
+        }
     }
 }
 
@@ -970,7 +970,7 @@ void out65816() {
     out65816_addrmode(address);
 
     wprintw(debugwin, "A:%04x X:%04x Y:%04x S:%04x DB:%02x D:%04x P:%02x %c",
-	    xa, xx, xy, xs, xdb, xd, xp, (xe == 1) ? 'E' : 'e');
+            xa, xx, xy, xs, xdb, xd, xp, (xe == 1) ? 'E' : 'e');
 }
 
 void outsa1() {
@@ -989,9 +989,9 @@ void nextopcode() {
     // to hope it isn't really all that important.
 
     //if (debugsa1 != 1)
-	out65816();
+    out65816();
     //else
-    //	outputbuffersa1();
+    //  outputbuffersa1();
 }
 
 
@@ -1020,83 +1020,83 @@ void outspc_addrmode() {
 
     p = buf;
     while (*format) {
-	if (*format != '%') {
-	    *p++ = *format++;
-	    continue;
-	}
+        if (*format != '%') {
+            *p++ = *format++;
+            continue;
+        }
 
-	format++;
-	switch (*format++) {
+        format++;
+        switch (*format++) {
 
-	case '1': // first byte
-	    HEX8(spcPCRam[1]);
-	    break;
+            case '1': // first byte
+                HEX8(spcPCRam[1]);
+                break;
 
-	case '2': // second byte
-	    HEX8(spcPCRam[2]);
-	    break;
+            case '2': // second byte
+                HEX8(spcPCRam[2]);
+                break;
 
-	case '3': // hinib
-	    *p++ = (spcPCRam[0] >> 4) + '0';
-	    *p++ = ' ';
-	    break;
+            case '3': // hinib
+                *p++ = (spcPCRam[0] >> 4) + '0';
+                *p++ = ' ';
+                break;
 
-	case '4': // hinib2
-	    *p++ = (spcPCRam[0] >> 5) + '0';
-	    *p++ = ' ';
-	    break;
+            case '4': // hinib2
+                *p++ = (spcPCRam[0] >> 5) + '0';
+                *p++ = ' ';
+                break;
 
-	case '5': // rela2pc2
-	{
-	    signed char off;
-	    off = *(signed char*)(spcPCRam+1);
-	    HEX16(off + 2 + (spcPCRam - SPCRAM));
-	    // format += 3;
-	    break;
-	}
+            case '5': // rela2pc2
+            {
+                signed char off;
+                off = *(signed char*)(spcPCRam+1);
+                HEX16(off + 2 + (spcPCRam - SPCRAM));
+                // format += 3;
+                break;
+            }
 
-	case '6': // dp
-	{
-	    *p++ = '$';
+            case '6': // dp
+            {
+                *p++ = '$';
 
-	    if (spcP & 0x20) {
-		*p++ = '1';
-	    } else {
-		*p++ = '0';
-	    }
+                if (spcP & 0x20) {
+                    *p++ = '1';
+                } else {
+                    *p++ = '0';
+                }
 
-	    break;
-	}
+                break;
+            }
 
-	case '8': // memorybit
-	    HEX16((*(unsigned short*)(spcPCRam+1)) >> 3);
-	    // format += 2;
-	    break;
+            case '8': // memorybit
+                HEX16((*(unsigned short*)(spcPCRam+1)) >> 3);
+                // format += 2;
+                break;
 
-	case '9': // memorybitlow
-	    *p++ = ',';
-	    *p++ = (spcPCRam[1] & 0x7) + '0';
-	    break;
+            case '9': // memorybitlow
+                *p++ = ',';
+                *p++ = (spcPCRam[1] & 0x7) + '0';
+                break;
 
-	case 'A': // rela2pc1
-	{
-	    signed char off;
-	    off = *(signed char*)(spcPCRam+1);
-	    HEX16(off + 2 + spcPCRam - SPCRAM);
-	    // format += 2;
-	    break;
-	}
+            case 'A': // rela2pc1
+            {
+                signed char off;
+                off = *(signed char*)(spcPCRam+1);
+                HEX16(off + 2 + spcPCRam - SPCRAM);
+                // format += 2;
+                break;
+            }
 
-	case 'B': // rela2pc2at2
-	{
-	    signed char off;
-	    off = *(signed char*)(spcPCRam+2);
-	    HEX16(off + 2 + spcPCRam - SPCRAM);
-	    // format += 2;
-	    break;
-	}
+            case 'B': // rela2pc2at2
+            {
+                signed char off;
+                off = *(signed char*)(spcPCRam+2);
+                HEX16(off + 2 + spcPCRam - SPCRAM);
+                // format += 2;
+                break;
+            }
 
-	}
+        }
 
     }
 
@@ -1106,9 +1106,9 @@ void outspc_addrmode() {
 
 void nextspcopcode() {
     if (!soundon)
-	return;
+        return;
     if (cycpbl >= 55)
-	return;
+        return;
 
     // output spc pc & opcode #
     wprintw(debugwin, " %04x/%02x ", spcPCRam - SPCRAM, spcPCRam[0]);
@@ -1121,14 +1121,14 @@ void nextspcopcode() {
     // output registers
     wprintw(debugwin, "A:%02x X:%02x Y:%02x S:%02x ", spcA, spcX, spcY, spcS);
     wprintw(debugwin, "N%cO%cD%c?%cH%cI%cZ%cC%c",
-	    (spcNZ & 0x80) ? '+' : '-',
-	    (spcP  & 0x40) ? '+' : '-',
-	    (spcP  & 0x20) ? '+' : '-',
-	    (spcP  & 0x10) ? '+' : '-',
-	    (spcP  & 0x08) ? '+' : '-',
-	    (spcP  & 0x04) ? '+' : '-',
-	    (spcP  & 0x02) ? '+' : '-',
-	    (spcP  & 0x01) ? '+' : '-');
+            (spcNZ & 0x80) ? '+' : '-',
+            (spcP  & 0x40) ? '+' : '-',
+            (spcP  & 0x20) ? '+' : '-',
+            (spcP  & 0x10) ? '+' : '-',
+            (spcP  & 0x08) ? '+' : '-',
+            (spcP  & 0x04) ? '+' : '-',
+            (spcP  & 0x02) ? '+' : '-',
+            (spcP  & 0x01) ? '+' : '-');
 
     wprintw(debugwin, "\n");
 

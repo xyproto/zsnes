@@ -127,7 +127,7 @@ EXTSYM SB_alloc_dma,SB_quality_limiter,vibracard
 %endif
 
 SECTION .data
-NEWSYM SBHDMA, db 0			; stupid legacy code ...
+NEWSYM SBHDMA, db 0         ; stupid legacy code ...
 
 SECTION .bss
 
@@ -1691,7 +1691,7 @@ ALIGN16
     add eax,esi
     add eax,ebp
     add eax,ecx
-    mov edx,33333333h	; 1/5
+    mov edx,33333333h   ; 1/5
     imul edx
     mov [edi],dx
     add edi,2
@@ -1818,9 +1818,9 @@ BRRDecode:
     mov ebx,[Filter+eax*2]
     shr cl,4
     mov [filter0],ebx
-	mov ebx,[Filter+eax*2+4]
+    mov ebx,[Filter+eax*2+4]
     mov [bshift],cl
-	mov [filter1],ebx
+    mov [filter1],ebx
     mov byte[sampleleft],8
     jmp .nextsample
     ALIGN16
@@ -1873,7 +1873,7 @@ BRRDecode:
     mov [filter0],ebx
     mov ebx,[Filter+eax*2+4]
     mov [bshift],cl
-	mov [filter1],ebx
+    mov [filter1],ebx
 
     ProcessSample ProcessA
     mov [BRRreadahead],dx
@@ -1885,7 +1885,7 @@ BRRDecode:
     ProcessSample ProcessB
     mov [BRRreadahead+6],dx
 
-	pop dword[prev1]
+    pop dword[prev1]
     pop dword[prev0]
     pop esi
     jmp .no_dlpf
@@ -4501,7 +4501,7 @@ call VoiceStarter
     jz %%ProcessNextEnvelope
 %%EndofProcessNEnvi
     ;%7 %1, %2, %3, %4
-	call dword[paramhack+8];%7
+    call dword[paramhack+8];%7
     cmp esi,[BufferSizeW]
     jne %%NextSamplei
 ;    mov [DSPMem+09h+%1*10h],ah
@@ -4521,7 +4521,7 @@ call VoiceStarter
     jz %%ProcessNextEnvelope
 %%EndofProcessNEnvs
     ;%6 %1, %2, %3, %4
-	call dword[paramhack+4];%6
+    call dword[paramhack+4];%6
     cmp esi,[BufferSizeB]
     jne %%NextSampleS
 ;    mov [DSPMem+09h+%1*10h],ah
@@ -4600,14 +4600,14 @@ call VoiceStarter
     movsx eax,word[edi+2*15]
     mov [PSampleBuf+18*4+%1*24*4],eax
 
-	movsx eax,word[BRRreadahead]
-	mov [PSampleBuf+19*4+%1*24*4],eax
-	movsx eax,word[BRRreadahead+2]
-	mov [PSampleBuf+20*4+%1*24*4],eax
-	movsx eax,word[BRRreadahead+4]
-	mov [PSampleBuf+21*4+%1*24*4],eax
-	movsx eax,word[BRRreadahead+6]
-	mov [PSampleBuf+22*4+%1*24*4],eax
+    movsx eax,word[BRRreadahead]
+    mov [PSampleBuf+19*4+%1*24*4],eax
+    movsx eax,word[BRRreadahead+2]
+    mov [PSampleBuf+20*4+%1*24*4],eax
+    movsx eax,word[BRRreadahead+4]
+    mov [PSampleBuf+21*4+%1*24*4],eax
+    movsx eax,word[BRRreadahead+6]
+    mov [PSampleBuf+22*4+%1*24*4],eax
 
     mov eax,[prev0]
     mov [Voice0Prev0+%1*4],eax
@@ -4711,20 +4711,20 @@ call VoiceStarter
     cmp byte[echoon0+%1],1
     je .echostuff
 .NoEcho
-	mov dword[paramhack],NonEchoMono
-	mov dword[paramhack+4],NonEchoStereo
-	mov dword[paramhack+8],NonEchoMonoInterpolated
-	mov dword[paramhack+12],NonEchoStereoInterpolated
-	jmp .pvs
+    mov dword[paramhack],NonEchoMono
+    mov dword[paramhack+4],NonEchoStereo
+    mov dword[paramhack+8],NonEchoMonoInterpolated
+    mov dword[paramhack+12],NonEchoStereoInterpolated
+    jmp .pvs
     ;ProcessVoiceStuff %1, %2, %3, %4, NonEchoMono, NonEchoStereo, NonEchoMonoInterpolated, NonEchoStereoInterpolated
     ; Process Echo
 .echostuff
-	mov dword[paramhack],EchoMono
-	mov dword[paramhack+4],EchoStereo
-	mov dword[paramhack+8],EchoMonoInterpolated
-	mov dword[paramhack+12],EchoStereoInterpolated
-	jmp .pvs
-	;ProcessVoiceStuff %1, %2, %3, %4, EchoMono, EchoStereo, EchoMonoInterpolated, EchoStereoInterpolated
+    mov dword[paramhack],EchoMono
+    mov dword[paramhack+4],EchoStereo
+    mov dword[paramhack+8],EchoMonoInterpolated
+    mov dword[paramhack+12],EchoStereoInterpolated
+    jmp .pvs
+    ;ProcessVoiceStuff %1, %2, %3, %4, EchoMono, EchoStereo, EchoMonoInterpolated, EchoStereoInterpolated
 .pitchmod
     mov al,[DSPMem+4+%1*10h]
     cmp al,[DSPMem+4+%1*10h-10h]
@@ -4734,21 +4734,21 @@ call VoiceStarter
     cmp byte[echoon0+%1],1
     je .echopm
 .NoEchopm
-	mov dword[paramhack],NonEchoMonoPM
-	mov dword[paramhack+4],NonEchoStereoPM
-	mov dword[paramhack+8],NonEchoMonoPM
-	mov dword[paramhack+12],NonEchoStereoPM
-	jmp .pvs
+    mov dword[paramhack],NonEchoMonoPM
+    mov dword[paramhack+4],NonEchoStereoPM
+    mov dword[paramhack+8],NonEchoMonoPM
+    mov dword[paramhack+12],NonEchoStereoPM
+    jmp .pvs
     ;ProcessVoiceStuff %1, %2, %3, %4, NonEchoMonoPM, NonEchoStereoPM, NonEchoMonoPM, NonEchoStereoPM
 .echopm
-	mov dword[paramhack],EchoMonoPM
-	mov dword[paramhack+4],EchoStereoPM
-	mov dword[paramhack+8],EchoMonoPM
-	mov dword[paramhack+12],EchoStereoPM
+    mov dword[paramhack],EchoMonoPM
+    mov dword[paramhack+4],EchoStereoPM
+    mov dword[paramhack+8],EchoMonoPM
+    mov dword[paramhack+12],EchoStereoPM
 
     ;ProcessVoiceStuff %1, %2, %3, %4, EchoMonoPM, EchoStereoPM, EchoMonoPM, EchoStereoPM
 .pvs
-	ProcessVoiceStuff %1, %2, %3, %4
+    ProcessVoiceStuff %1, %2, %3, %4
 %endmacro
 
 %macro FiltTapProc 1

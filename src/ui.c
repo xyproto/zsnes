@@ -29,6 +29,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 #include "asm_call.h"
+#include "cfg.h"
 #include "mmlib/mm.h"
 #include "zpath.h"
 
@@ -37,67 +38,65 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define true 1
 #define false 0
 
-extern unsigned int per2exec, xa, MessageOn, maxromspace;
-extern unsigned char cvidmode, frameskip, scanlines, vsyncon, guioff, antienab;
-extern unsigned char Force8b, MusicRelVol, soundon, SPCDisable, spcon, FPSOn;
-extern unsigned char FPSAtStart;
+extern unsigned int xa, MessageOn, maxromspace;
+extern unsigned char FPSOn, spcon;
 extern char *Msgptr, CSStatus[], CSStatus2[], CSStatus3[];
 
 unsigned short selc0040, selcA000, selcB800;
 
-unsigned char *vidbuffer;	//  video buffer (1024x239 = 244736)
+unsigned char *vidbuffer;           //  video buffer (1024x239 = 244736)
 unsigned char *ngwinptr;
-unsigned char *vidbufferm;	// video buffer mirror
-unsigned char *vidbufferofsa;	// offset 1
-unsigned char *vidbufferofsb;	// offset 2
-unsigned char *vidbufferofsc;	// offset 3
-unsigned char *vidbufferofsmos;	// mosaic offset for new graphics engine
+unsigned char *vidbufferm;          // video buffer mirror
+unsigned char *vidbufferofsa;       // offset 1
+unsigned char *vidbufferofsb;       // offset 2
 unsigned char *headdata;
-unsigned char *romdata;		// rom data  (4MB = 4194304)
-unsigned char *sfxramdata;	// SuperFX Ram Data
-unsigned char *setaramdata;	// Seta ST010/ST011 SRam Data
-unsigned char *wramdata;	// stack (64K = 32768)
-unsigned char *ram7f;		// ram @ 7f = 65536
-unsigned char *vram;		// vram = 65536
-unsigned char *sram;		// sram = 65536*2 = 131072
-unsigned char *debugbuf;	// debug buffer = 80x1000 = 80000
+unsigned char *romdata;             // rom data  (4MB = 4194304)
+unsigned char *sfxramdata;          // SuperFX Ram Data
+unsigned char *setaramdata;         // Seta ST010/ST011 SRam Data
+unsigned char *wramdata;            // stack (64K = 32768)
+unsigned char *ram7f;               // ram @ 7f = 65536
+unsigned char *vram;                // vram = 65536
+unsigned char *sram;                // sram = 65536*2 = 131072
+#ifdef OLD_DEBUGGER
+unsigned char *debugbuf;            // debug buffer = 80x1000 = 80000
+#endif
 unsigned char regptra[49152];
 unsigned char regptwa[49152];
 unsigned char *regptr = regptra;
 unsigned char *regptw = regptwa;
-unsigned char *vcache2b;	// 2-bit video cache
-unsigned char *vcache4b;	// 4-bit video cache
-unsigned char *vcache8b;	// 8-bit video cache
-unsigned char romispal;		// 0 = NTSC, 1 = PAL
+unsigned char *vcache2b;            // 2-bit video cache
+unsigned char *vcache4b;            // 4-bit video cache
+unsigned char *vcache8b;            // 8-bit video cache
+unsigned char romispal;             // 0 = NTSC, 1 = PAL
 unsigned char newgfx16b;
 
-unsigned char previdmode;	// previous video mode
-unsigned char cbitmode;		// bit mode, 0=8bit, 1=16bit
+unsigned char previdmode;           // previous video mode
+unsigned char cbitmode;             // bit mode, 0=8bit, 1=16bit
 
-unsigned char opexec268     = 155;	// # of opcodes/scanline in 2.68Mhz mode
-unsigned char opexec358     = 142;	// # of opcodes/scanline in 3.58Mhz mode (228/180)
-unsigned char opexec268cph  = 42;	// # of opcodes/hblank in 2.68Mhz mode
-unsigned char opexec358cph  = 45;	// # of opcodes/hblank in 3.58Mhz mode (56/50)
-unsigned char opexec268b    = 155;	// # of opcodes/scanline in 2.68Mhz mode
-unsigned char opexec358b    = 142;	// # of opcodes/scanline in 3.58Mhz mode (228/180)
-unsigned char opexec268cphb = 42;	// # of opcodes/hblank in 2.68Mhz mode
-unsigned char opexec358cphb = 45;	// # of opcodes/hblank in 3.58Mhz mode (56/50)
-unsigned char debugdisble   = 1;	// debugger disable.  0 = no, 1 = yes
-unsigned char gammalevel    = 0;	// gamma level (8-bit engine)
-unsigned char gammalevel16b = 0;	// gamma level (16-bit engine)
-unsigned char AddSub256     = 0;	// screen add/sub in 256 colors
-unsigned char dmadeddis     = 0;	// DMA deduction
-unsigned char device1       = 0;	// Device in port 1?
-unsigned char device2       = 0;	// Device in port 2?
-unsigned char OldStyle      = 1;	// Old style joystick on
-unsigned char SecondPort    = 0;	// Secondary Joystick Port Enabled (209h) (DOS port only)
+unsigned char opexec268     = 155;  // # of opcodes/scanline in 2.68Mhz mode
+unsigned char opexec358     = 142;  // # of opcodes/scanline in 3.58Mhz mode (228/180)
+unsigned char opexec268cph  = 42;   // # of opcodes/hblank in 2.68Mhz mode
+unsigned char opexec358cph  = 45;   // # of opcodes/hblank in 3.58Mhz mode (56/50)
+unsigned char opexec268b    = 155;  // # of opcodes/scanline in 2.68Mhz mode
+unsigned char opexec358b    = 142;  // # of opcodes/scanline in 3.58Mhz mode (228/180)
+unsigned char opexec268cphb = 42;   // # of opcodes/hblank in 2.68Mhz mode
+unsigned char opexec358cphb = 45;   // # of opcodes/hblank in 3.58Mhz mode (56/50)
+unsigned char debugdisble   = 1;    // debugger disable.  0 = no, 1 = yes
+unsigned char gammalevel    = 0;    // gamma level (8-bit engine)
+unsigned char gammalevel16b = 0;    // gamma level (16-bit engine)
+unsigned char AddSub256     = 0;    // screen add/sub in 256 colors
+unsigned char dmadeddis     = 0;    // DMA deduction
+unsigned char device1       = 0;    // Device in port 1?
+unsigned char device2       = 0;    // Device in port 2?
+unsigned char OldStyle      = 1;    // Old style joystick on
+unsigned char SecondPort    = 0;    // Secondary Joystick Port Enabled (209h) (DOS port only)
 
-unsigned char Doublevbuf    = 1;	// Double video buffer
-unsigned char V8Mode        = 0;	// Vegetable mode! =) (Greyscale mode)
+unsigned char Doublevbuf    = 1;    // Double video buffer
+unsigned char V8Mode        = 0;    // Vegetable mode! =) (Greyscale mode)
 unsigned char fastmemptr    = 0;
-unsigned char ForcePal      = 0;	// 1 = NTSC, 2 = PAL
+unsigned char ForcePal      = 0;    // 1 = NTSC, 2 = PAL
 unsigned char finterleave   = 0;
-unsigned char DSPDisable    = 0;	// Disable DSP emulation
+unsigned char DSPDisable    = 0;    // Disable DSP emulation
 unsigned char MusicVol      = 0;
 unsigned char MMXextSupport = 0;
 
@@ -212,8 +211,10 @@ static void outofmemory()
 
 extern unsigned char wramdataa[65536], ram7fa[65536];
 
+#ifndef __MSDOS__
 unsigned char *BitConv32Ptr = 0;
 unsigned char *RGBtoYUVPtr = 0;
+#endif
 unsigned char *spcBuffera = 0;
 unsigned char *spritetablea = 0;
 unsigned char *vbufaptr = 0;
@@ -241,8 +242,8 @@ void deallocmem()
 {
 #ifndef __MSDOS__
   deallocmemhelp(BitConv32Ptr);
-#endif
   deallocmemhelp(RGBtoYUVPtr);
+#endif
   deallocmemhelp(spcBuffera);
   deallocmemhelp(spritetablea);
   deallocmemhelp(vbufaptr);
@@ -256,7 +257,9 @@ void deallocmem()
   deallocmemhelp(vcache2b);
   deallocmemhelp(vcache4b);
   deallocmemhelp(vcache8b);
+#ifdef OLD_DEBUGGER
   deallocmemhelp(debugbuf);
+#endif
   deallocmemhelp(sram);
 }
 
@@ -266,8 +269,8 @@ static void allocmem()
 {
 #ifndef __MSDOS__
   AllocmemFail(BitConv32Ptr, 4096+65536*16);
-#endif
   AllocmemFail(RGBtoYUVPtr,65536*4+4096);
+#endif
   AllocmemFail(spcBuffera,65536*4+4096);
   AllocmemFail(spritetablea,256*512+4096);
   AllocmemFail(vbufaptr,512*296*4+4096+512*296);
@@ -277,7 +280,9 @@ static void allocmem()
   AllocmemFail(vcache2bs,65536*4*4+4096);
   AllocmemFail(vcache4bs,65536*4*2+4096);
   AllocmemFail(vcache8bs,65536*4+4096);
+#ifdef OLD_DEBUGGER
   AllocmemFail(debugbuf,80000);
+#endif
   AllocmemFail(sram,65536*2);
   AllocmemFail(vcache2b,262144+256);
   AllocmemFail(vcache4b,131072+256);
@@ -310,10 +315,8 @@ static void allocmem()
   // Set up memory values
   vidbuffer = vbufaptr;
   vidbufferofsa = vbufaptr;
-  vidbufferofsmos = vidbuffer+75036;
   ngwinptr = ngwinptrb;
   vidbufferofsb = vbufeptr;
-  vidbufferofsc = vbufdptr;
 
   headdata = romaptr;
   romdata = romaptr;

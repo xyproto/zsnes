@@ -83,7 +83,7 @@ int have_cpuid()
 int main(int argc, const char *const *const argv)
 {
   char model_name[216];
-  char flags[216];
+  char flags[216] = "";
   char cpu_family[216];
   char vendor_id[216];
   char model[216];
@@ -96,7 +96,6 @@ int main(int argc, const char *const *const argv)
   *cpu_family = 0;
   *vendor_id = 0;
   *model = 0;
-  strcpy(flags, "");
 
   if ((fp = fopen("/proc/cpuinfo", "r")))
   {

@@ -61,8 +61,8 @@ section .bss  align=4
 %endmacro
 %imacro EXTSYM 1-*
 %rep %0
-  	EXTERN _%1
-  	%define %1 _%1
+  EXTERN _%1
+  %define %1 _%1
 %rotate 1
 %endrep
 %endmacro

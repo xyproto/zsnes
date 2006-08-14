@@ -93,17 +93,17 @@ unsigned int ZFileFindNext()
    struct stat filetype;
 
    if (globcur == -1)
-   	return -1;
+      return -1;
 
    globcur++;
    if (globcur > globbuf.gl_pathc) /* >= */
-   	return -1;
+      return -1;
 
    if (globcur == globbuf.gl_pathc) {
-   	/* this is the end, so just add it ourselves */
-   	*(char *)(DTALocPos + 0x15) = 0x10;
-   	strcpy((char *)DTALocPos + 0x1E, "..");
-   	return 0;
+      /* this is the end, so just add it ourselves */
+      *(char *)(DTALocPos + 0x15) = 0x10;
+      strcpy((char *)DTALocPos + 0x1E, "..");
+      return 0;
    }
 
    *(char *)(DTALocPos + 0x15) = 0;
@@ -137,23 +137,23 @@ unsigned int ZFileFindNext()
 unsigned int ZFileFindFirst()
 {
 #ifdef __UNIXSDL__
-	//STUB_FUNCTION;
+    //STUB_FUNCTION;
    struct stat filetype;
 
    if (globcur != -1) {
-   	globfree(&globbuf);
-   	globcur = -1;
+      globfree(&globbuf);
+      globcur = -1;
    }
 
    if (glob(ZFileFindPATH, 0, NULL, &globbuf))
-   	return -1;
+      return -1;
    globcur = 0;
 
    *(char *)(DTALocPos + 0x15) = 0;
 
 #ifdef __BSDSDL__
    if (globbuf.gl_matchc == 0)
-	return -1;
+      return -1;
 #endif
 
    stat ( globbuf.gl_pathv[globcur], &filetype );
@@ -185,11 +185,11 @@ unsigned int ZFileFindFirst()
 unsigned int ZFileFindEnd()  // for compatibility with windows later
 {
 #ifdef __UNIXSDL__
-	//STUB_FUNCTION;
-	if (globcur != -1) {
-		globfree(&globbuf);
-		globcur = -1;
-	}
+   //STUB_FUNCTION;
+   if (globcur != -1) {
+      globfree(&globbuf);
+      globcur = -1;
+   }
 #else
    _findclose(FindFirstHandle);
 #endif

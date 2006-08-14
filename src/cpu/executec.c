@@ -39,7 +39,7 @@ extern unsigned short int nextframe; // framecounter for frameskipping
 
 void Game60hzcall()
 {
-	t1cc++;
-	nextframe++;
+  t1cc++;
+  nextframe++;
 }
 

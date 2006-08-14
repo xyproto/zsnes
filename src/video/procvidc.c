@@ -48,11 +48,11 @@ void CapturePicture()
 
   if (newengen && ((*nggposng & 0xFF) == 5))
   {
-    filter = 0x7BDE;	// 0111 1011 1101 1110
+    filter = 0x7BDE;  // 0111 1011 1101 1110
   }
   else
   {
-    filter = 0xF7DE;	// 1111 0111 1101 1110
+    filter = 0xF7DE;  // 1111 0111 1101 1110
   }
 
   for (j=0 ; j<56 ; j++)

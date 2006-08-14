@@ -177,8 +177,6 @@ float                   MouseX;
 float                   MouseY;
 float                   MouseMoveX;
 float                   MouseMoveY;
-int                     MouseMove2X;
-int                     MouseMove2Y;
 BYTE                    MouseButtonPressed;
 
 BYTE                    IsActivated=1;
@@ -389,8 +387,8 @@ void DrawScreen()
 }
 
 extern "C" {
-extern void MultiMouseInit();
-extern void MultiMouseShutdown();
+void MultiMouseInit();
+void MultiMouseShutdown();
 extern BYTE device1,device2;
 extern BYTE GUIOn;
 extern BYTE GUIOn2;
@@ -502,14 +500,10 @@ BOOL InputRead(void)
          }
 
          MouseButton=(dims.rgbButtons[0]>>7)|(dims.rgbButtons[1]>>6)|(dims.rgbButtons[2]>>5)|(dims.rgbButtons[3]>>4);
+      }
+      else return FALSE;
    }
-   else
-   {
-      return FALSE;
-   }
-
-   }
-	return TRUE;
+   return TRUE;
 }
 
 void ExitFunction()
@@ -622,8 +616,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          }
          break;
       case WM_KEYUP:          // sent when user releases a key
-         if (wParam==16)
-            shiftpr=false;
+         if (wParam==16) shiftpr=false;
          break;
       case WM_MOUSEMOVE:
          if (MouseInput && GUIOn2) MouseInput->Acquire();
@@ -671,7 +664,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
       case WM_CLOSE:
          break;
    }
-	return DefWindowProc(hWnd,uMsg,wParam,lParam);;
+   return DefWindowProc(hWnd,uMsg,wParam,lParam);;
 }
 
 int RegisterWinClass(void)
@@ -692,7 +685,7 @@ int RegisterWinClass(void)
    WNDCLASS wcl;
 
    wcl.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW | CS_NOCLOSE;
-   wcl.cbClsExtra	= 0;
+   wcl.cbClsExtra = 0;
    wcl.cbWndExtra = 0;
    wcl.hIcon = LoadIcon(NULL,"ZSNESW.ICO");
    wcl.hCursor = NULL;
@@ -713,7 +706,7 @@ DWORD PrevSoundQuality;
 BOOL InitSound()
 {
    WAVEFORMATEX wfx;
-	DSBCAPS dsbcaps;
+   DSBCAPS dsbcaps;
 
    SoundEnabled = 0;
 
@@ -723,34 +716,34 @@ BOOL InitSound()
    PrevStereoSound=StereoSound;
 
    if (DS_OK == pDirectSoundCreate8(NULL, &lpDirectSound,NULL))
-	{
-		lpDirectSound->Initialize(NULL);
+   {
+      lpDirectSound->Initialize(NULL);
 
-        if (PrimaryBuffer)
+      if (PrimaryBuffer)
+      {
+        if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_WRITEPRIMARY))
         {
-		  if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_WRITEPRIMARY))
-		  {
-		  	if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
-			  	return FALSE;
-		  }
-		  else UsePrimaryBuffer=1;
+           if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
+              return FALSE;
         }
-        else
-        {
-		  if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL))
-		  {
-		  	if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
-			  	return FALSE;
-		  }
-		  else UsePrimaryBuffer=0;
-        }
-    }
-	else
-	{
-		return FALSE;
-	}
+        else UsePrimaryBuffer=1;
+      }
+      else
+      {
+         if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_NORMAL))
+         {
+            if (DS_OK != lpDirectSound->SetCooperativeLevel(hMainWindow, DSSCL_EXCLUSIVE))
+               return FALSE;
+         }
+         else UsePrimaryBuffer=0;
+      }
+   }
+   else
+   {
+      return FALSE;
+   }
 
-	wfx.wFormatTag = WAVE_FORMAT_PCM;
+   wfx.wFormatTag = WAVE_FORMAT_PCM;
 
    switch (SoundQuality)
    {
@@ -806,35 +799,35 @@ BOOL InitSound()
    memset(&dsbd, 0, sizeof(DSBUFFERDESC));
    dsbd.dwSize = sizeof(DSBUFFERDESC);
    dsbd.dwFlags = DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_STICKYFOCUS;
-	if(UsePrimaryBuffer) dsbd.dwFlags |= DSBCAPS_PRIMARYBUFFER;
+   if(UsePrimaryBuffer) dsbd.dwFlags |= DSBCAPS_PRIMARYBUFFER;
    dsbd.dwBufferBytes = UsePrimaryBuffer ? 0 : SoundBufferSize;
    dsbd.lpwfxFormat = UsePrimaryBuffer ? NULL : &wfx;
 
    if (DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &lpPrimaryBuffer, NULL))
-	{
-		if(!UsePrimaryBuffer)
-		{
-	      if (DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
-	      {
-		      if (DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING))
-		      {
-		         return FALSE;
-		      }
-			}
-			else return FALSE;
-		}
-		else
-		{
-			lpPrimaryBuffer->SetFormat(&wfx);
-			dsbcaps.dwSize=sizeof(DSBCAPS);
-			lpPrimaryBuffer->GetCaps(&dsbcaps);
-			SoundBufferSize=dsbcaps.dwBufferBytes;
+   {
+      if(!UsePrimaryBuffer)
+      {
+         if (DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
+         {
+            if (DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING))
+            {
+               return FALSE;
+            }
+         }
+         else return FALSE;
+      }
+      else
+      {
+         lpPrimaryBuffer->SetFormat(&wfx);
+         dsbcaps.dwSize=sizeof(DSBCAPS);
+         lpPrimaryBuffer->GetCaps(&dsbcaps);
+         SoundBufferSize=dsbcaps.dwBufferBytes;
 
-	      if (DS_OK != lpPrimaryBuffer->Play(0,0,DSBPLAY_LOOPING))
-	      {
-	         return FALSE;
-	      }
-		}
+         if (DS_OK != lpPrimaryBuffer->Play(0,0,DSBPLAY_LOOPING))
+         {
+            return FALSE;
+         }
+      }
 
       SoundEnabled=1;
       FirstSound=0;
@@ -849,7 +842,7 @@ BOOL InitSound()
 BOOL ReInitSound()
 {
    WAVEFORMATEX wfx;
-	DSBCAPS dsbcaps;
+   DSBCAPS dsbcaps;
 
    if (lpSoundBuffer)
    {
@@ -914,7 +907,7 @@ BOOL ReInitSound()
       default:
          wfx.nSamplesPerSec = 11025;
          SoundBufferSize=1024*2;
-  }
+   }
 
    if (StereoSound==1)
    {
@@ -935,35 +928,35 @@ BOOL ReInitSound()
    memset(&dsbd, 0, sizeof(DSBUFFERDESC));
    dsbd.dwSize = sizeof(DSBUFFERDESC);
    dsbd.dwFlags = DSBCAPS_GETCURRENTPOSITION2 | DSBCAPS_STICKYFOCUS;
-	if(UsePrimaryBuffer) dsbd.dwFlags |= DSBCAPS_PRIMARYBUFFER;
+   if(UsePrimaryBuffer) dsbd.dwFlags |= DSBCAPS_PRIMARYBUFFER;
    dsbd.dwBufferBytes = UsePrimaryBuffer ? 0 : SoundBufferSize;
    dsbd.lpwfxFormat = UsePrimaryBuffer ? NULL : &wfx;
 
    if (DS_OK == lpDirectSound->CreateSoundBuffer(&dsbd, &lpPrimaryBuffer, NULL))
-	{
-		if(!UsePrimaryBuffer)
-		{
-	      if (DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
-	      {
-		      if (DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING))
-		      {
-		         return FALSE;
-		      }
-			}
-			else return FALSE;
-		}
-		else
-		{
-			lpPrimaryBuffer->SetFormat(&wfx);
-			dsbcaps.dwSize=sizeof(DSBCAPS);
-			lpPrimaryBuffer->GetCaps(&dsbcaps);
-			SoundBufferSize=dsbcaps.dwBufferBytes;
+   {
+      if(!UsePrimaryBuffer)
+      {
+         if (DS_OK == lpPrimaryBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID *) &lpSoundBuffer))
+         {
+            if (DS_OK != lpSoundBuffer->Play(0,0,DSBPLAY_LOOPING))
+            {
+               return FALSE;
+            }
+         }
+         else return FALSE;
+      }
+      else
+      {
+         lpPrimaryBuffer->SetFormat(&wfx);
+         dsbcaps.dwSize=sizeof(DSBCAPS);
+         lpPrimaryBuffer->GetCaps(&dsbcaps);
+         SoundBufferSize=dsbcaps.dwBufferBytes;
 
-	      if (DS_OK != lpPrimaryBuffer->Play(0,0,DSBPLAY_LOOPING))
-	      {
-	         return FALSE;
-	      }
-		}
+         if (DS_OK != lpPrimaryBuffer->Play(0,0,DSBPLAY_LOOPING))
+         {
+            return FALSE;
+         }
+      }
 
       SoundEnabled=1;
       FirstSound=0;
@@ -974,8 +967,6 @@ BOOL ReInitSound()
       return FALSE;
    }
 }
-
-extern "C" unsigned short joy_sensitivity;
 
 BOOL FAR PASCAL InitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 {
@@ -1284,7 +1275,6 @@ bool InitInput()
    InputAcquire();
 
    return TRUE;
-
 }
 
 void TestJoy()
@@ -1375,7 +1365,6 @@ void TestJoy()
 
       }
    }
-
 }
 
 extern "C" DWORD converta;
@@ -1417,7 +1406,7 @@ int InitDirectDraw()
       color32=((i&0xF800)<<8)+
               ((i&0x07E0)<<5)+
               ((i&0x001F)<<3)+0xFF000000;
-              (*(unsigned int *)(ScreenPtr2))=color32;
+      (*(unsigned int *)(ScreenPtr2))=color32;
       ScreenPtr2+=4;
    }
 
@@ -1750,27 +1739,29 @@ DWORD WINAPI SemaphoreThread( LPVOID lpParam )
 
 void InitSemaphore()
 {
-   if (hLock) return;
+   if (!hLock)
+   {
+      hLock = CreateSemaphore(NULL, 1, SemaphoreMax, NULL);
 
-   hLock = CreateSemaphore(NULL, 1, SemaphoreMax, NULL);
+      semaphore_run = 1;
 
-   semaphore_run = 1;
-
-   hThread = CreateThread(NULL, 0, SemaphoreThread, &dwThreadParam, 0, &dwThreadId);
+      hThread = CreateThread(NULL, 0, SemaphoreThread, &dwThreadParam, 0, &dwThreadId);
+   }
 }
 
 void ShutdownSemaphore()
 {
-   if (!hLock) return;
+   if (hLock)
+   {
+      semaphore_run = 0;
 
-   semaphore_run = 0;
+      WaitForSingleObject(hThread, INFINITE);
+      CloseHandle(hThread);
 
-   WaitForSingleObject(hThread, INFINITE);
-   CloseHandle(hThread);
+      CloseHandle(hLock);
 
-   CloseHandle(hLock);
-
-   hLock = NULL;
+      hLock = NULL;
+   }
 }
 
 extern unsigned int pressed;
@@ -1840,91 +1831,91 @@ char WinMessage[256];
 void clearwin();
 
 char WinName[]={"ZSNESW\0"};
-extern void NTSCFilterInit();
-extern void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char* buffer);
+void NTSCFilterInit();
+void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char* buffer);
 
 extern "C" char GUIM7VID[];
 
 void SetHQx()
 {
-	int maxHQ;
-	if(CustomResX/256 < CustomResY/224)
-		maxHQ = CustomResX/256;
-	else
-		maxHQ = CustomResY/224;
+  int maxHQ;
+  if(CustomResX/256 < CustomResY/224)
+    maxHQ = CustomResX/256;
+  else
+    maxHQ = CustomResY/224;
 
-	if(maxHQ >= 4)
-	{
-		GUIHQ2X[cvidmode] = 0;
-		GUIHQ3X[cvidmode] = 0;
-		GUIHQ4X[cvidmode] = 1;
-	}
+  if(maxHQ >= 4)
+  {
+    GUIHQ2X[cvidmode] = 0;
+    GUIHQ3X[cvidmode] = 0;
+    GUIHQ4X[cvidmode] = 1;
+  }
 
-	else if(maxHQ == 3)
-	{
-		GUIHQ2X[cvidmode] = 0;
-		GUIHQ3X[cvidmode] = 1;
-		GUIHQ4X[cvidmode] = 0;
-	}
+  else if(maxHQ == 3)
+  {
+    GUIHQ2X[cvidmode] = 0;
+    GUIHQ3X[cvidmode] = 1;
+    GUIHQ4X[cvidmode] = 0;
+  }
 
-	else if(maxHQ == 2)
-	{
-		GUIHQ2X[cvidmode] = 1;
-		GUIHQ3X[cvidmode] = 0;
-		GUIHQ4X[cvidmode] = 0;
-	}
+  else if(maxHQ == 2)
+  {
+    GUIHQ2X[cvidmode] = 1;
+    GUIHQ3X[cvidmode] = 0;
+    GUIHQ4X[cvidmode] = 0;
+  }
 
-	else
-	{
-		GUIHQ2X[cvidmode] = 0;
-		GUIHQ3X[cvidmode] = 0;
-		GUIHQ4X[cvidmode] = 0;
-	}
+  else
+  {
+    GUIHQ2X[cvidmode] = 0;
+    GUIHQ3X[cvidmode] = 0;
+    GUIHQ4X[cvidmode] = 0;
+  }
 }
 
 void SetNTSCFOpt()
 {
-	if(CustomResX >= 640 && CustomResY >= 480)
-		GUINTVID[cvidmode] = 1;
-	else
-		GUINTVID[cvidmode] = 0;
+  if(CustomResX >= 640 && CustomResY >= 480)
+    GUINTVID[cvidmode] = 1;
+  else
+    GUINTVID[cvidmode] = 0;
 }
 
 void SetHiresOpt()
 {
-	if(CustomResX >= 512 && CustomResY >= 448)
-		GUIM7VID[cvidmode] = 1;
-	else
-		GUIM7VID[cvidmode] = 0;
+  if(CustomResX >= 512 && CustomResY >= 448)
+    GUIM7VID[cvidmode] = 1;
+  else
+    GUIM7VID[cvidmode] = 0;
 }
 
 void KeepTVRatio()
 {
-	int ratiox = WindowWidth/4;
-	int ratioy = WindowHeight/3;
+  int ratiox = WindowWidth/4;
+  int ratioy = WindowHeight/3;
 
-	int marginchange;
-	int marginmod;
+  int marginchange;
+  int marginmod;
 
-	if (ratiox < ratioy)
-	{
-		marginchange = (WindowHeight-(ratiox*3))/2;
-		marginmod = (WindowHeight-(ratiox*3))%2;
-		rcWindow.top += marginchange;
-		rcWindow.bottom -= (marginchange+marginmod);
-	}
-	else
-	{
-		marginchange = (WindowWidth-(ratioy*4))/2;
-		marginmod = (WindowWidth-(ratioy*4))%2;
-		rcWindow.left += marginchange;
-		rcWindow.right -= (marginchange+marginmod);
-	}
+  if (ratiox < ratioy)
+  {
+    marginchange = (WindowHeight-(ratiox*3))/2;
+    marginmod = (WindowHeight-(ratiox*3))%2;
+    rcWindow.top += marginchange;
+    rcWindow.bottom -= (marginchange+marginmod);
+  }
+  else
+  {
+    marginchange = (WindowWidth-(ratioy*4))/2;
+    marginmod = (WindowWidth-(ratioy*4))%2;
+    rcWindow.left += marginchange;
+    rcWindow.right -= (marginchange+marginmod);
+  }
 }
 
 bool CheckTVRatioReq()
 {
-	return((Keep4_3Ratio) && ((DSMode == 1)||(SMode == 1)) && (WindowWidth >= 320) && (WindowHeight >= 240));
+  return((Keep4_3Ratio) && ((DSMode == 1)||(SMode == 1)) && (WindowWidth >= 320) && (WindowHeight >= 240));
 }
 
 void initwinvideo(void)
@@ -2234,12 +2225,9 @@ void initwinvideo(void)
       clearwin();
       Clear2xSaIBuffer();
       clear_display();
-      return;
    }
 
-   if (Moving == 1) return;
-
-   if (newmode == 1)
+   else if (newmode == 1 && Moving != 1)
    {
       ReleaseDirectDraw();
       InitDirectDraw();
@@ -2248,7 +2236,6 @@ void initwinvideo(void)
       clearwin();
       Clear2xSaIBuffer();
       clear_display();
-      return;
    }
 }
 
@@ -2270,15 +2257,15 @@ void CheckTimers(void)
    QueryPerformanceCounter((LARGE_INTEGER*)&end2);
 
    while ((end2 - start2) >= update_ticks_pc2)
-      {
-         start2 += update_ticks_pc2;
-      }
+   {
+      start2 += update_ticks_pc2;
+   }
 
    if (T60HZEnabled == 1)
    {
       QueryPerformanceCounter((LARGE_INTEGER*)&end);
 
-   while ((end - start) >= update_ticks_pc)
+      while ((end - start) >= update_ticks_pc)
       {
          Game60hzcall();
          start += update_ticks_pc;
@@ -2289,7 +2276,7 @@ void CheckTimers(void)
    {
       QueryPerformanceCounter((LARGE_INTEGER*)&end);
 
-   while ((end - start) >= update_ticks_pc)
+      while ((end - start) >= update_ticks_pc)
       {
          GUI36hzcall();
          start += update_ticks_pc;
@@ -2307,7 +2294,7 @@ void UpdateVFrame(void)
   int DataNeeded;
   SPCSize=256;
 
-  if (StereoSound==1) SPCSize=256;
+  //if (StereoSound==1) SPCSize=256;
 
   while (PeekMessage(&msg,NULL,0,0,PM_REMOVE))
   {
@@ -2461,7 +2448,7 @@ extern unsigned char curblank;
 extern DWORD AddEndBytes;
 extern DWORD NumBytesPerLine;
 extern unsigned char * WinVidMemStart;
-extern void copy640x480x16bwin(void);
+void copy640x480x16bwin(void);
 void hq2x_16b(void);
 void hq2x_32b(void);
 void hq3x_16b(void);
@@ -2655,7 +2642,7 @@ void drawscreenwin(void)
       clear_display();
    }
 
-   if ( HQMode == 0 )
+   if (!HQMode)
    {
      if (SurfaceX == 256 && SurfaceY == 240)
      {
@@ -2694,7 +2681,7 @@ void drawscreenwin(void)
             Sleep(1000);
             drawscreenwin();
             break;
-          default:
+         default:
             UnlockSurface();
             MessageBox (NULL, "Mode only available in 16 and 32 bit color", "DDRAW Error" , MB_ICONERROR );
             cvidmode=2;
@@ -2887,8 +2874,6 @@ void WinUpdateDevices()
    int i,j;
    unsigned char * keys;
    unsigned char keys2[256];
-   //MK: unused 2003/08/31
-   //HRESULT hRes;
 
    for (i = 0; i<256; i++)
    keys2[i] = 0;
@@ -3054,7 +3039,6 @@ void WinUpdateDevices()
          }
       }
    }
-
 }
 
 int GetMouseX(void)
@@ -3149,26 +3133,22 @@ int GetMouseY(void)
 
 int GetMouseMoveX(void)
 {
-   MouseMove2X=(int)MouseMoveX;
-   return(MouseMove2X);
+   return((int)MouseMoveX);
 }
 
 int GetMouseMoveY(void)
 {
-   MouseMove2Y=(int)MouseMoveY;
-   return(MouseMove2Y);
+   return((int)MouseMoveY);
 }
 
 int GetMouseButton(void)
 {
-   //MK: unused 2003/08/31
-	//RECT rc1;
    if (MouseButton == 1) MouseButtonPressed = 1;
       else MouseButtonPressed = 0;
    if (MouseButton&2)
    {
-   while (MouseButton != 0 && T36HZEnabled && FullScreen == 0)
-   {
+      while (MouseButton != 0 && T36HZEnabled && FullScreen == 0)
+      {
          Moving = 1;
          X += (int) MouseMoveX;
          Y += (int) MouseMoveY;
@@ -3228,7 +3208,6 @@ void FrameSemaphore()
       delay = ((update_ticks_pc - (end - start)) * 1000.0 / freq) - 3.0;
 
       if (delay>0.0) WaitForSingleObject(hLock, (unsigned int)delay);
-
    }
 }
 
@@ -3250,11 +3229,11 @@ extern "C" signed int NumberOfOpcodes;
 
 void WriteLine()
 {
-char buf[50];
-sprintf(buf, "%d\n", NumberOfOpcodes);
-WriteConsole(debugWindow, buf, strlen(buf), NULL, NULL);
-
+   char buf[50];
+   sprintf(buf, "%d\n", NumberOfOpcodes);
+   WriteConsole(debugWindow, buf, strlen(buf), NULL, NULL);
 }
+
 // This function creates the debug console
 void InitDebugger()
 {
