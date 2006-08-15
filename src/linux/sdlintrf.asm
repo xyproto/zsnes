@@ -549,7 +549,7 @@ db '256x224      OR W',0  ;6
 db '512x448     ODR W',0  ;7
 db '640x480     ODS F',0  ;8
 db '640x480     ODS W',0  ;9
-db '640x576     ODR W',0  ;10
+db '640x560     ODR W',0  ;10
 db '768x672     ODR W',0  ;11
 db '800x600     ODS F',0  ;12
 db '800x600     ODS W',0  ;13
