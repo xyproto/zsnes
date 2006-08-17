@@ -1350,11 +1350,6 @@ NEWSYM MMXCheck
 .nommx
     ret
 
-SECTION .data
-NEWSYM CSStatus,  db '                        TYPE:           ',0
-NEWSYM CSStatus2, db 'INTERLEAVED:      BANK:      CHKSUM:    ',0
-NEWSYM CSStatus3, db 'VIDEO:                    CRC32:        ',0
-
 ;*******************************************************
 ; Show Information
 ;*******************************************************

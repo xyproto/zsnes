@@ -35,10 +35,10 @@ EXTSYM GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram
 EXTSYM genfulladdtab,genfulladdtabng,TimerEnable,ShowTimer,debugdisble,GUIOn
 EXTSYM FilteredGUI,HalfTrans,SmallMsgText,ClearScreen,Mode7HiRes,mosenng,mosszng
 EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,CSStatus
-EXTSYM CSStatus2,CSStatus3,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
+EXTSYM CSStatus2,CSStatus3,CSStatus4,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
 EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
-EXTSYM DetermineNew,newestfileloc,newestfiledate,StateExists
+EXTSYM DetermineNew,newestfileloc,newestfiledate,StateExists,ClockBox
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -2375,12 +2375,17 @@ NEWSYM ClockOutput
     mov ebx,7
 .loop2b
     mov ecx,24
+    cmp byte[ClockBox],1
+    jne .loopb
     mov word[esi-2],0
     mov word[esi-2+75036*4],0
 .loopb
+    cmp byte[ClockBox],1
+    jne .nobox
     mov dword[esi],0
     mov dword[esi+75036*4],0
     add esi,4
+.nobox
     dec ecx
     jnz .loopb
     add esi,288*2-48*2
@@ -2417,8 +2422,12 @@ NEWSYM ClockOutput
     jne .no12hour
     ; check to see if it's 12 PM
     cmp eax,12
-    jbe .no12hour
+    jbe .not12pm
     sub eax,12
+.not12pm
+    cmp eax,0
+    jne .no12hour
+    add eax,12
 .no12hour
     xor edx,edx
     mov ebx,10
@@ -2877,7 +2886,7 @@ NEWSYM copyvid
     je near .do16b
 .no16b
     mov edi,[Msgptr]
-    mov esi,200*288+32
+    mov esi,192*288+32
     add esi,[vidbuffer]
     cmp edi,CSStatus
     je .fivex5b
@@ -2888,10 +2897,14 @@ NEWSYM copyvid
 .fivex5b
     call OutputGraphicString5x5
     mov edi,CSStatus2
-    mov esi,208*288+32
+    mov esi,200*288+32
     add esi,[vidbuffer]
     call OutputGraphicString5x5
     mov edi,CSStatus3
+    mov esi,208*288+32
+    add esi,[vidbuffer]
+    call OutputGraphicString5x5
+    mov edi,CSStatus4
     mov esi,216*288+32
     add esi,[vidbuffer]
     call OutputGraphicString5x5
@@ -2907,7 +2920,7 @@ NEWSYM copyvid
     jmp .nomsg
 .do16b
     mov edi,[Msgptr]
-    mov esi,200*288*2+32*2
+    mov esi,192*288*2+32*2
     add esi,[vidbuffer]
     cmp edi,CSStatus
     je .fivex5
@@ -2918,10 +2931,14 @@ NEWSYM copyvid
 .fivex5
     call OutputGraphicString16b5x5
     mov edi,CSStatus2
-    mov esi,208*288*2+32*2
+    mov esi,200*288*2+32*2
     add esi,[vidbuffer]
     call OutputGraphicString16b5x5
     mov edi,CSStatus3
+    mov esi,208*288*2+32*2
+    add esi,[vidbuffer]
+    call OutputGraphicString16b5x5
+    mov edi,CSStatus4
     mov esi,216*288*2+32*2
     add esi,[vidbuffer]
     call OutputGraphicString16b5x5

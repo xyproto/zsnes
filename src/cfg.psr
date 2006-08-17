@@ -772,6 +772,10 @@ TimerEnable db 0
 TwelveHourClock db 0
 
 @
+@ Display black box around clock (0 = No, 1 = YES)
+ClockBox db 1
+
+@
 @ Autoload .CHT files (0 = NO, 1 = Yes)
 @ Enable the use of stored cheat files on load.
 AutoLoadCht db 0

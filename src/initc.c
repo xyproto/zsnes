@@ -814,10 +814,10 @@ void SetupSramSize()
 //File loading code
 bool Header512;
 
-
-extern char CSStatus[40];
-extern char CSStatus2[40];
-extern char CSStatus3[40];
+char CSStatus[40];
+char CSStatus2[40];
+char CSStatus3[40];
+char CSStatus4[40];
 
 void DumpROMLoadInfo()
 {
@@ -836,6 +836,8 @@ void DumpROMLoadInfo()
     fputs(CSStatus2, fp);
     fputs("\n", fp);
     fputs(CSStatus3, fp);
+    fputs("\n", fp);
+    fputs(CSStatus4, fp);
     fputs("\n", fp);
     fclose(fp);
   }
@@ -1895,18 +1897,19 @@ unsigned int showinfogui()
   unsigned int i;
   unsigned char *ROM = (unsigned char *)romdata;
 
-  strcpy(CSStatus, "                        TYPE:           ");
-  strcpy(CSStatus2, "INTERLEAVED:      BANK:      CHKSUM:    ");
-  strcpy(CSStatus3, "VIDEO:                    CRC32:        ");
+  strcpy(CSStatus, "                          TYPE:         ");
+  strcpy(CSStatus2, "INTERLEAVED:                 CHKSUM:    ");
+  strcpy(CSStatus3, "VIDEO:        BANK:       CRC32:        ");
+  strcpy(CSStatus4, "                                        ");
 
-  if (infoloc == 0x40FFC0)  { memcpy (CSStatus2+23, "EHi ", 4); }
+  if (infoloc == 0x40FFC0)  { memcpy (CSStatus3+19, "EHi ", 4); }
   else
   {
-    if (romtype == 2) { memcpy (CSStatus2+23, "Hi  ", 4); }
-    else  { memcpy (CSStatus2+23, "Lo  ", 4); }
+    if (romtype == 2) { memcpy (CSStatus3+19, "Hi  ", 4); }
+    else  { memcpy (CSStatus3+19, "Lo  ", 4); }
   }
 
-  for (i=0 ; i<20 ; i++)
+  for (i=0 ; i<21 ; i++)
   {
     CSStatus[i] = (ROM[infoloc + i]) ? ROM[infoloc + i] : 32;
   }
@@ -1917,34 +1920,34 @@ unsigned int showinfogui()
   }
   else  { memcpy (CSStatus3+6, "PAL ", 4); }
 
-  if (IPSPatched) { memcpy (CSStatus3+16, "IPS ", 4); }
-  else  { memcpy (CSStatus3+16, "    ", 4); }
+  if (IPSPatched) { memcpy (CSStatus2+20, "IPS ", 4); }
+  else  { memcpy (CSStatus2+20, "    ", 4); }
 
-  memcpy (CSStatus+29, "NORMAL  ", 8);
+  memcpy (CSStatus+31, "NORMAL      ", 10);
 
-  if (SA1Enable)     { memcpy (CSStatus+29, "SA-1    ", 8); }
-  if (RTCEnable)     { memcpy (CSStatus+29, "RTC     ", 8); }
-  if (SPC7110Enable) { memcpy (CSStatus+29, "SPC7110 ", 8); }
-  if (SFXEnable)     { memcpy (CSStatus+29, "SUPER FX", 8); }
-  if (C4Enable)      { memcpy (CSStatus+29, "C4      ", 8); }
-  if (DSP1Enable)    { memcpy (CSStatus+29, "DSP-1   ", 8); }
-  if (DSP2Enable)    { memcpy (CSStatus+29, "DSP-2   ", 8); }
-  if (DSP3Enable)    { memcpy (CSStatus+29, "DSP-3   ", 8); }
-  if (DSP4Enable)    { memcpy (CSStatus+29, "DSP-4   ", 8); }
-  if (SDD1Enable)    { memcpy (CSStatus+29, "S-DD1   ", 8); }
-  if (OBCEnable)     { memcpy (CSStatus+29, "OBC1    ", 8); }
-  if (SETAEnable)    { memcpy (CSStatus+29, "SETA DSP", 8); }
-  if (ST18Enable)    { memcpy (CSStatus+29, "ST018   ", 8); }
-  if (SGBEnable)     { memcpy (CSStatus+29, "SGB     ", 8); }
-  if (BSEnable)      { memcpy (CSStatus+29, "BROADCST", 8);
+  if (SA1Enable)     { memcpy (CSStatus+31, "SA-1     ", 9); }
+  if (RTCEnable)     { memcpy (CSStatus+31, "RTC      ", 9); }
+  if (SPC7110Enable) { memcpy (CSStatus+31, "SPC7110  ", 9); }
+  if (SFXEnable)     { memcpy (CSStatus+31, "SUPER FX ", 9); }
+  if (C4Enable)      { memcpy (CSStatus+31, "C4       ", 9); }
+  if (DSP1Enable)    { memcpy (CSStatus+31, "DSP-1    ", 9); }
+  if (DSP2Enable)    { memcpy (CSStatus+31, "DSP-2    ", 9); }
+  if (DSP3Enable)    { memcpy (CSStatus+31, "DSP-3    ", 9); }
+  if (DSP4Enable)    { memcpy (CSStatus+31, "DSP-4    ", 9); }
+  if (SDD1Enable)    { memcpy (CSStatus+31, "S-DD1    ", 9); }
+  if (OBCEnable)     { memcpy (CSStatus+31, "OBC1     ", 9); }
+  if (SETAEnable)    { memcpy (CSStatus+31, "SETA DSP ", 9); }
+  if (ST18Enable)    { memcpy (CSStatus+31, "ST018    ", 9); }
+  if (SGBEnable)     { memcpy (CSStatus+31, "SGB      ", 9); }
+  if (BSEnable)      { memcpy (CSStatus+31, "BROADCAST", 9);
   // dummy out date so CRC32 matches
     ROM[infoloc + 22] = 0x42;
     ROM[infoloc + 23] = 0x00;
   // 42 is the answer, and the uCONSRT standard
   }
 
-  if (Interleaved)  { memcpy (CSStatus2+12, "Yes ", 4); }
-  else  { memcpy (CSStatus2+12, "No  ", 4); }
+  if (Interleaved)  { memcpy (CSStatus2+12, "Yes ", 4); memcpy (CSStatus4+8, "PLEASE DEINTERLEAVE ROM",23); }
+  else  { memcpy (CSStatus2+12, "No  ", 4); memcpy (CSStatus4+8, "                        ",23); }
 
   // calculate CRC32 for the whole ROM, or Add-on ROM only
   CRC32 = (SplittedROM) ? CalcCRC32(ROM+addOnStart, addOnSize) : CalcCRC32(ROM, NumofBytes);
@@ -1956,7 +1959,10 @@ unsigned int showinfogui()
 
   if ((ROM[i] == (Checksumvalue & 0xFF)) && (ROM[i+1] == (Checksumvalue >> 8)))
   { memcpy (CSStatus2+36, "OK  ", 4); }
-  else  { memcpy (CSStatus2+36, "FAIL", 4); }
+  else  { memcpy (CSStatus2+36, "FAIL", 4);
+    if(!IPSPatched) { memcpy (CSStatus4, "BAD ROM",7); }
+    else {  memcpy (CSStatus4, "        ",7); }
+  }
 
   DumpROMLoadInfo();
 
