@@ -2783,13 +2783,10 @@ void init65816()
     if(SPC7110Enable)
     {
       SPC7110init();
-      memtabler8[0x50] = memaccessspc7110r8;
-      memtabler16[0x50] = memaccessspc7110r16;
-      memtablew8[0x50] = memaccessspc7110w8;
-      memtablew16[0x50] = memaccessspc7110w16;
+      map_mem(0x50, &SPC7110bank, 1);
       snesmmap[0x50] = SPC7110PackPtr;
       snesmap2[0x50] = SPC7110PackPtr;
-      memset(SPC7110PackPtr, 0, 16384);
+      memset(SPC7110PackPtr, 0, 0x10000);
     }
 
     cycpb268 = 117;
