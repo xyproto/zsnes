@@ -2825,7 +2825,7 @@ void init65816()
       SPCStallSetting = 0;
     }
 
-    numspcvblleft = 240;
+    numspcvblleft = 480;
     SPC700write = 0;
     SPC700read = 0;
     spc700read = 0;
@@ -2947,7 +2947,7 @@ void init65816()
     {
       memset(wramdataa,0x0FFFFFFFF,65536);
       memset(ram7fa,0x0FFFFFFFF,65536);
-      if(romtype)
+      if(romtype == 1)
       {
         for(i=0;i<8;i++)
           ram7fa[65528+i] = 0x01;
