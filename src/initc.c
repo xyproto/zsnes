@@ -2386,7 +2386,6 @@ void memaccessbankr848mb();
 void memaccessbankr1648mb();
 void preparesfx();
 
-
 void map_lorom()
 {
   unsigned char *ROM = (unsigned char *)romdata;
@@ -2724,4 +2723,234 @@ void loadfileGUI()
     }
     GUIloadfailed = 1;
   }
+}
+
+extern unsigned char osm2dis, ReturnFromSPCStall, SPCStallSetting, prevoamptr;
+extern unsigned char reg1read, reg2read, reg3read, reg4read, NMIEnab, INTEnab;
+extern unsigned char doirqnext, vidbright, forceblnk, timeron, spcP, JoyAPos, JoyBPos;
+extern unsigned char coladdr, coladdg, coladdb;
+extern unsigned char SDD1BankA,SDD1BankB, SDD1BankC, SDD1BankD;
+extern unsigned char intrset, curcyc, cycpl, GUIReset;
+extern unsigned int numspcvblleft, spc700read, SPC700read, SPC700write, spc700idle;
+extern unsigned int FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4, FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
+extern unsigned int xa, xdb, xpb, xs, xd, xx, xy, scrndis;
+extern unsigned short VIRQLoc, resolutn, xpc;
+extern unsigned char spcextraram[64], SPCROM[64];
+extern unsigned int tableD[256];
+extern void (*memaccessspc7110r8)(), (*memaccessspc7110r16)(), (*memaccessspc7110w8)(), (*memaccessspc7110w16)();
+unsigned char SPCSkipXtraROM, bgfixer2 = 0, disableeffects = 0;
+unsigned int disable65816sh = 0;
+//This is saved in states
+unsigned char cycpl = 0;   // cycles per scanline
+unsigned char cycphb = 0;    // cycles per hblank
+unsigned char intrset = 0;   // interrupt set
+unsigned short curypos = 0;    // current y position
+unsigned short stackand = 0x01FF; // value to and stack to keep it from going to the wrong area
+unsigned short stackor = 0x0100; // value to or stack to keep it from going to the wrong area
+
+// 65816 registers
+unsigned char xp = 0;
+unsigned char xe = 0;
+unsigned char xirqb = 0;           // which bank the irqs start at
+unsigned int Curtableaddr = 0;     // Current table address
+
+void SA1Reset();
+void InitC4();
+void RTCinit();
+void SPC7110init();
+
+void init65816()
+{
+    unsigned int i;
+    osm2dis = 0;
+    bgfixer2 = 0;
+    if(SA1Enable)
+    {
+      SA1Reset();
+      SetAddressingModesSA1();
+    }
+
+    if(C4Enable)
+    {
+      osm2dis = 1;
+      bgfixer2 = 1;
+      InitC4();
+    }
+
+    if(RTCEnable)
+      RTCinit();
+    
+    if(SPC7110Enable)
+    {
+      SPC7110init();
+      memtabler8[0x50] = memaccessspc7110r8;
+      memtabler16[0x50] = memaccessspc7110r16;
+      memtablew8[0x50] = memaccessspc7110w8;
+      memtablew16[0x50] = memaccessspc7110w16;
+      snesmmap[0x50] = SPC7110PackPtr;
+      snesmap2[0x50] = SPC7110PackPtr;
+      memset(SPC7110PackPtr, 0, 16384);
+    }
+
+    cycpb268 = 117;
+    cycpb358 = 127;
+    cycpbl2 = 117;
+    cycpblt2 = 117;
+    cycpbl = 117;
+    cycpblt = 117;
+
+    SPCSkipXtraROM = 0;
+    if(ReturnFromSPCStall)
+    {
+      cycpb268 = 69;
+      cycpb358 = 81;
+      cycpbl2 = 69;
+      cycpblt2 = 69;
+      cycpbl = 69;
+      cycpblt = 69;
+      SPCSkipXtraROM = 1;
+      if(SPCStallSetting == 2)
+      {
+        cycpb268 = 240;
+        cycpb358 = 240;
+        cycpbl = 240;
+        cycpblt = 240;
+        cycpbl2 = 240;
+        cycpblt2 = 240;
+        SPCSkipXtraROM = 0;
+      }
+    }
+    else
+    {
+      SPCStallSetting = 0;
+    }
+
+    numspcvblleft = 240;
+    SPC700write = 0;
+    SPC700read = 0;
+    spc700read = 0;
+    spc700idle = 0;
+    
+    for(i = 0;i<0x40;i++)
+    {
+      spcextraram[i] = 0xFF;
+      SPCRAM[0xFFC0+i] = SPCROM[i];
+    }
+
+    // Clear SPC Memory
+    clearSPCRAM();
+    clearvidsound();
+
+    prevoamptr = 0xFF;
+    disableeffects = 0;
+    opexec268 = opexec268b;
+    opexec358 = opexec358b;
+    opexec268cph = opexec268cphb;
+    opexec358cph = opexec358cphb;
+
+    FIRTAPVal0 = 0x7F;
+    FIRTAPVal1 = 0;
+    FIRTAPVal2 = 0;
+    FIRTAPVal3 = 0;
+    FIRTAPVal4 = 0;
+    FIRTAPVal5 = 0;
+    FIRTAPVal6 = 0;
+    FIRTAPVal7 = 0;
+    disable65816sh = 0;
+
+    // Check Headers
+    headerhack();
+
+    SPCRAM[0xF4] = 0;
+    SPCRAM[0xF5] = 0;
+    SPCRAM[0xF6] = 0;
+    SPCRAM[0xF7] = 0;
+    reg1read = 0;
+    reg2read = 0;
+    reg3read = 0;
+    reg4read = 0;
+    cycpbl = 0;
+    spcnumread = 0;
+    NMIEnab = 1;
+    VIRQLoc = 0;
+    doirqnext = 0;
+    reg1read = 0;
+    resolutn = 224;
+    vidbright = 0;
+    forceblnk = 0;
+    spcP = 0;
+    timeron = 0;
+    JoyAPos = 0;
+    JoyBPos = 0;
+    coladdr = 0;
+    coladdg = 0;
+    coladdb = 0;
+    INTEnab = 0;
+    xa = 0;
+    xdb = 0;
+    xpb = 0;
+    xs = 0x01FF;
+    xd = 0;
+    xx = 0;
+    xy = 0;
+    SDD1BankA = 0;
+    SDD1BankB = 0x01;
+    SDD1BankC = 0x02;
+    SDD1BankD = 0x03;
+    xirqb = 0;
+    xp = 52;         // NVMXDIZC
+    xe = 1;          // E
+    xpc = resetv;
+
+    intrset = 0;
+    if(romtype != 1)
+    {
+      xpb = 0;
+      xirqb = 0;
+    }
+
+    if(xpc < 0x8000)
+    {
+      xpc += 0x8000;
+//    xpb = 0x40;
+    }
+
+    // 2.68 Mhz  / 3.58 Mhz = 228
+    curcyc = cycpl = opexec268;
+    cycphb = opexec268cph;     // 2.68 Mhz  / 3.58 Mhz = 56
+    cycpbl = 110;              // 3.58Mhz = 175
+    cycpblt = 110;
+    curypos = 0;
+    Curtableaddr = *tableD;
+    scrndis = 0;
+    stackand = 0x01FF;
+    stackor = 0x0100;
+
+    nmiprevaddrl = 0;
+    nmiprevaddrh = 0;
+    nmirept = 0;
+    nmiprevline = 224;
+    nmistatus = 0;
+
+    if(GUIReset)
+    {
+      GUIReset = 0;
+    }
+
+    else
+    {
+      memset(wramdataa,0x55555555,65536);
+      memset(ram7fa, 0x55555555,65536);
+    }
+
+    if(BSEnable)
+    {
+      memset(wramdataa,0x0FFFFFFFF,65536);
+      memset(ram7fa,0x0FFFFFFFF,65536);
+      if(romtype)
+      {
+        for(i=0;i<8;i++)
+          ram7fa[65528+i] = 0x01;
+      }
+    }
 }

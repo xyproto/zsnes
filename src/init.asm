@@ -24,7 +24,7 @@ EXTSYM UpdateDevices,Makemode7Table,MusicRelVol,MusicVol,makesprprtable
 EXTSYM romloadskip,start65816,showinfogui,inittable
 EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer
 EXTSYM inittablec,newgfx16b,DisplayInfo,ssautosw,GUIDelayB,pl12s34
-EXTSYM Output_Text,osm2dis,Turbo30hz,CombinDataLocl
+EXTSYM Output_Text,Turbo30hz,CombinDataLocl
 EXTSYM BackupSystemVars,SnowData,SnowVelDist,Setper2exec
 EXTSYM JoyRead,pressed,mousebuttons,mousexdir,mouseydir,mousexpos,mouseypos
 EXTSYM pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
@@ -40,27 +40,18 @@ EXTSYM pl4Ltk,pl4Rtk,pl4ULk,pl4URk,pl4DLk,pl4DRk,pl5contrl,pl5selk,pl5startk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5Xk,pl5Ak,pl5Lk,pl5Yk,pl5Bk,pl5Rk
 EXTSYM pl5Xtk,pl5Ytk,pl5Atk,pl5Btk,pl5Ltk,pl5Rtk,pl5ULk,pl5URk,pl5DLk,pl5DRk
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc,extlatch
-EXTSYM FIRTAPVal0,FIRTAPVal1,FIRTAPVal2,FIRTAPVal3,FIRTAPVal4,FIRTAPVal5
-EXTSYM FIRTAPVal6,FIRTAPVal7,INTEnab,JoyAPos,JoyBPos,NMIEnab,SPCROM,VIRQLoc
-EXTSYM coladdb,coladdg,coladdr,doirqnext,MMXSupport,MMXextSupport
-EXTSYM forceblnk,nmiprevaddrh,nmiprevaddrl,nmiprevline,nmirept,nmistatus
-EXTSYM opexec268,opexec268b,opexec268cph,opexec268cphb,opexec358,opexec358b
-EXTSYM opexec358cph,spcextraram,opexec358cphb,prevoamptr,reg1read,reg2read
-EXTSYM reg3read,reg4read,resolutn,romdata,scrndis,spcP,SPCRAM,spcnumread
-EXTSYM tableD,timeron,vidbright,SPC700read,SPC700write,spc700read
-EXTSYM GUIReset,InitC4,SA1Reset,SetAddressingModesSA1,SDD1BankA,SPC7110init
-EXTSYM RTCinit,memaccessspc7110r8,memaccessspc7110r16,memaccessspc7110w8
-EXTSYM memaccessspc7110w16,snesmap2,snesmmap,procexecloop,wramdata,wramdataa
+EXTSYM MMXSupport,MMXextSupport
+EXTSYM romdata
+EXTSYM procexecloop,wramdata
 EXTSYM GetCurDir,ZStateName,statefileloc,loadfileGUI
-EXTSYM romispal,initregr,initregw,memtabler16
-EXTSYM memtabler8,memtablew16,memtablew8,InGUI
+EXTSYM romispal,initregr,initregw
+EXTSYM InGUI
 EXTSYM loadstate2,CMovieExt,MoviePlay,MovieDumpRaw,AllowUDLR
 EXTSYM device1,device2,processmouse1,processmouse2,cpalval
-EXTSYM clearmem,clearSPCRAM,SPC7110IndexSize
-EXTSYM SPC7PackIndexLoad,C4Enable,SPC7110Enable,RTCEnable,SA1Enable
-EXTSYM BSEnable,clearvidsound,headerhack,SetupROM,ram7fa
-EXTSYM ZCartName,SPC7110PackPtr
-
+EXTSYM clearmem,SPC7110IndexSize
+EXTSYM SPC7PackIndexLoad
+EXTSYM headerhack,SetupROM
+EXTSYM ZCartName,init65816
 EXTSYM initsnes
 
 %ifdef __MSDOS__
@@ -85,7 +76,6 @@ SECTION .data
 NEWSYM regsbackup, times 3019 db 0
 NEWSYM forceromtype, db 0
 NEWSYM bgfixer, db 0
-NEWSYM bgfixer2, db 0
 NEWSYM ForceNewGfxOff, dd 0
 NEWSYM SfxAC, db 0
 ; FIX STATMAT
@@ -172,7 +162,9 @@ NEWSYM init
     popad
 .noloadfile
     call UpdateDevices
+    pushad
     call init65816
+    popad
     call initregr
     call initregw
     pushad
@@ -314,15 +306,9 @@ NEWSYM totlines, dw 263 ; total # of lines
 
 ;This is saved in states
 NEWSYM curcyc,  db 0    ; cycles left in scanline
-NEWSYM curypos, dw 0    ; current y position
 NEWSYM cacheud, db 1    ; update cache every ? frames
 NEWSYM ccud,    db 0    ; current cache increment
-NEWSYM intrset, db 0    ; interrupt set
-NEWSYM cycpl,   db 0    ; cycles per scanline
-NEWSYM cycphb,  db 0    ; cycles per hblank
 NEWSYM spcon,   db 0    ; SPC Enable (1=enabled)
-NEWSYM stackand,dw 01FFh; value to and stack to keep it from going to the wrong area
-NEWSYM stackor, dw 0100h; value to or stack to keep it from going to the wrong area
 
 ; 65816 registers
 NEWSYM xat,      dw 0
@@ -332,12 +318,8 @@ NEWSYM xst,      dw 0
 NEWSYM xdt,      dw 0
 NEWSYM xxt,      dw 0
 NEWSYM xyt,      dw 0
-NEWSYM xp,       db 0
-NEWSYM xe,       db 0
 NEWSYM xpc,      dw 0
-NEWSYM xirqb,    db 0           ; which bank the irqs start at
 NEWSYM debugger, db 0              ; Start with debugger (1=yes,0=no)
-NEWSYM Curtableaddr,  dd 0                 ; Current table address
 NEWSYM curnmi,   db 0           ; if in NMI(1) or not(0)
 ; pharos - equ hack *sigh*
 n65816regsize equ $-curcyc
@@ -891,8 +873,7 @@ NEWSYM ReadInputDevice
 ;*******************************************************
 
 SECTION .data
-NEWSYM disableeffects, db 0
-NEWSYM disable65816sh, db 0
+
 NEWSYM disablespcclr,  db 0
 NEWSYM numspcvblleft,  dd 0
 NEWSYM spc700idle,     dd 0
@@ -919,235 +900,6 @@ SECTION .data
 SECTION .bss
 NEWSYM ReturnFromSPCStall, resb 1
 NEWSYM SPCStallSetting, resb 1
-NEWSYM SPCSkipXtraROM, resb 1
-SECTION .text
-
-%macro helpclearmem 2
-    mov edi,%1
-    mov ecx,%2
-    rep stosb
-%endmacro
-
-NEWSYM init65816
-    mov byte[osm2dis],0
-    mov byte[bgfixer2],0
-    cmp byte[SA1Enable],0
-    je .nosa1init
-    call SA1Reset
-    pushad
-    call SetAddressingModesSA1
-    popad
-.nosa1init
-    cmp byte[C4Enable],0
-    je .noc4init
-    mov byte[osm2dis],1
-    mov byte[bgfixer2],1
-    call InitC4
-.noc4init
-    cmp byte[RTCEnable],0
-    je .noRTCinit
-    call RTCinit
-.noRTCinit
-    cmp byte[SPC7110Enable],0
-    je .nospc7110init
-    call SPC7110init
-    mov dword[memtabler8+50h*4],memaccessspc7110r8
-    mov dword[memtabler16+50h*4],memaccessspc7110r16
-    mov dword[memtablew8+50h*4],memaccessspc7110w8
-    mov dword[memtablew16+50h*4],memaccessspc7110w16
-    mov eax,SPC7110PackPtr
-    mov [snesmmap+50h*4],eax
-    mov [snesmap2+50h*4],eax
-    mov ecx,16384
-.spc7110clear
-    mov dword[eax],0
-    add eax,4
-    dec ecx
-    jnz .spc7110clear
-.nospc7110init
-    mov byte[cycpb268],117
-    mov byte[cycpb358],127
-    mov byte[cycpbl2],117
-    mov byte[cycpblt2],117
-    mov byte[cycpbl],117
-    mov byte[cycpblt],117
-
-    mov byte[SPCSkipXtraROM],0
-    cmp byte[ReturnFromSPCStall],1
-    jne near .nostall
-    mov byte[cycpb268],69
-    mov byte[cycpb358],81
-    mov byte[cycpbl2],69
-    mov byte[cycpblt2],69
-    mov byte[cycpbl],69
-    mov byte[cycpblt],69
-    mov byte[SPCSkipXtraROM],1
-    cmp byte[SPCStallSetting],2
-    jne .nostall2
-    mov byte[cycpb268],240
-    mov byte[cycpb358],240
-    mov byte[cycpbl],240
-    mov byte[cycpblt],240
-    mov byte[cycpbl2],240
-    mov byte[cycpblt2],240
-    mov byte[SPCSkipXtraROM],0
-.nostall2
-    jmp .stalled
-.nostall
-    mov byte[SPCStallSetting],0
-.stalled
-    mov dword[numspcvblleft],60*8
-    mov dword[SPC700write],0
-    mov dword[SPC700read],0
-    cmp dword[spc700read],0
-    mov dword[spc700idle],0
-    xor esi,esi
-.loopa
-    mov al,[SPCROM+esi]
-    mov byte[spcextraram+esi],0FFh
-    mov [SPCRAM+0FFC0h+esi],al
-    inc esi
-    cmp esi,040h
-    jne .loopa
-
-    ; Clear SPC Memory
-    pushad
-    call clearSPCRAM
-    call clearvidsound
-    popad
-
-    mov byte[prevoamptr],0FFh
-    mov byte[disableeffects],0
-    mov al,[opexec268b]
-    mov [opexec268],al
-    mov al,[opexec358b]
-    mov [opexec358],al
-    mov al,[opexec268cphb]
-    mov [opexec268cph],al
-    mov al,[opexec358cphb]
-    mov [opexec358cph],al
-
-    mov dword[FIRTAPVal0],7Fh
-    mov dword[FIRTAPVal1],0
-    mov dword[FIRTAPVal2],0
-    mov dword[FIRTAPVal3],0
-    mov dword[FIRTAPVal4],0
-    mov dword[FIRTAPVal5],0
-    mov dword[FIRTAPVal6],0
-    mov dword[FIRTAPVal7],0
-    mov byte[disable65816sh],0
-
-    ; Check Headers
-    pushad
-    call headerhack
-    popad
-
-    mov byte[SPCRAM+0F4h],0
-    mov byte[SPCRAM+0F5h],0
-    mov byte[SPCRAM+0F6h],0
-    mov byte[SPCRAM+0F7h],0
-    mov byte[reg1read],0
-    mov byte[reg2read],0
-    mov byte[reg3read],0
-    mov byte[reg4read],0
-    mov dword[cycpbl],0
-    mov byte[spcnumread],0
-    mov dword[coladdr],0
-    mov byte[NMIEnab],1
-    mov word[VIRQLoc],0
-    mov byte[doirqnext],0
-    mov dword[reg1read],0
-    mov word[resolutn],224
-    mov byte[vidbright],0
-    mov byte[forceblnk],0
-    mov byte[spcP],0
-    mov byte[timeron],0
-    mov byte[JoyAPos],0
-    mov byte[JoyBPos],0
-    mov byte[coladdr],0
-    mov byte[coladdg],0
-    mov byte[coladdb],0
-
-    mov byte[INTEnab],0
-    mov word[xa],0
-    mov byte[xdb],0
-    mov byte[xpb],0
-    mov byte[xirqb],0
-    mov word[xs],01FFh
-    mov word[xd],0
-    mov word[xx],0
-    mov word[xy],0
-    mov dword[SDD1BankA],03020100h
-    mov byte[xp],00110100b  ; NVMXDIZC
-
-    push ebx
-    mov byte[xe],1          ; E
-    movzx eax,word[resetv]
-    mov [xpc],ax
-    mov ebx,[romdata]
-    add eax,ebx
-    pop ebx
-    mov byte[intrset],0
-    cmp byte[romtype],1
-    je .nohirom
-    mov byte[xpb],00h
-    mov byte[xirqb],00h
-.nohirom
-    cmp word[xpc],8000h
-    jae .n
-    add word[xpc],8000h
-;    mov byte[xpb],40h
-.n
-    mov al,[opexec268]
-    mov [cycpl],al      ; 2.68 Mhz  / 3.58 Mhz = 228
-    mov [curcyc],al
-    mov al,[opexec268cph]
-    mov [cycphb],al     ; 2.68 Mhz  / 3.58 Mhz = 56
-    mov byte[cycpbl],110        ; 3.58Mhz = 175
-    mov byte[cycpblt],110
-    mov word[curypos],0
-    mov eax,tableD
-    mov [Curtableaddr],eax
-    mov byte[scrndis],00h
-    mov word[stackand],01FFh
-    mov word[stackor],0100h
-
-    mov dword[nmiprevaddrl],0
-    mov dword[nmiprevaddrh],0
-    mov byte[nmirept],0
-    mov byte[nmiprevline],224
-    mov byte[nmistatus],0
-
-    cmp byte[GUIReset],1
-    jne .notreseting
-    mov byte[GUIReset],0
-    jmp .afterramclear
-.notreseting
-    mov eax,055555555h
-    helpclearmem wramdataa, 65536
-    helpclearmem ram7fa, 65536
-.afterramclear
-    cmp byte[BSEnable],1
-    jne .notbsx2
-    mov eax,0FFFFFFFFh
-    helpclearmem wramdataa, 65536
-    helpclearmem ram7fa, 65536
-    cmp byte[romtype],1 ;Hack for BS HiROMs
-    jne .notbsx2
-    mov dword[ram7fa+65528],01010101h
-    mov dword[ram7fa+65532],01010101h
-.notbsx2
-    ret
-
-;*******************************************************
-; Init SNES                      Sets the pointers, etc.
-;*******************************************************
-; Set banks according to :
-;   Banks 00-3F,80-BF : WRAM (0000h-7FFFh), ROM Data (8000h-FFFFh)
-;   Banks 40-7F,C0-FF : ROM Data (0000h-FFFFh)
-;   Bank  70-77       : SRAM (0000h-7FFFh)
-;   Bank  7E          : WRAM (0000h-FFFFh)
-;   Bank  7F          : ExtendRAM (0000h-FFFFh)
 
 SECTION .data
 NEWSYM SFXCounter, dd 0
