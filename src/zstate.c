@@ -54,12 +54,41 @@ void SA1UpdateDPageC(), unpackfunct(), repackfunct();
 void PrepareOffset(), ResetOffset(), initpitch(), UpdateBanksSDD1();
 void procexecloop(), outofmemory();
 
+extern unsigned char cacheud, ccud, intrset, cycpl, cycphb, xdbt, xpbt, xp;
+extern unsigned char xe, xirqb, debugger, curnmi;
+extern unsigned short curypos, stackand, stackor, xat, xst, xdt, xxt, xyt, xpc;
+extern unsigned int Curtableaddr, cycpblt;
+
 static void copy_snes_data(unsigned char **buffer, void (*copy_func)(unsigned char **, void *, size_t))
 {
   //65816 status, etc.
-  copy_func(buffer, &curcyc, PH65816regsize);
+  copy_func(buffer, &curcyc, 1);
+  copy_func(buffer, &curypos, 2);
+  copy_func(buffer, &cacheud, 1);
+  copy_func(buffer, &ccud, 1);
+  copy_func(buffer, &intrset, 1);
+  copy_func(buffer, &cycpl, 1);
+  copy_func(buffer, &cycphb, 1);
+  copy_func(buffer, &spcon, 1);
+  copy_func(buffer, &stackand, 2);
+  copy_func(buffer, &stackor, 2);
+  copy_func(buffer, &xat, 2);
+  copy_func(buffer, &xdbt, 1);
+  copy_func(buffer, &xpbt, 1);
+  copy_func(buffer, &xst, 2);
+  copy_func(buffer, &xdt, 2);
+  copy_func(buffer, &xxt, 2);
+  copy_func(buffer, &xyt, 2);
+  copy_func(buffer, &xp, 1);
+  copy_func(buffer, &xe, 1);
+  copy_func(buffer, &xpc, 2);
+  copy_func(buffer, &xirqb, 1);
+  copy_func(buffer, &debugger, 1);
+  copy_func(buffer, &Curtableaddr, 4);
+  copy_func(buffer, &curnmi, 1);
   //SPC Timers
-  copy_func(buffer, &cycpbl, 2*4);
+  copy_func(buffer, &cycpbl, 4);
+  copy_func(buffer, &cycpblt, 4);
   //SNES PPU Register status
   copy_func(buffer, &sndrot, 3019);
 }
