@@ -848,6 +848,7 @@ bool zst_compressed_loader(FILE *fp)
   return((data_size & 0x00800000) ? zst_load(fp, 0) : zst_load(fp, data_size));
 }
 
+#define PH65816regsize 36
 void zst_sram_load(FILE *fp)
 {
   fseek(fp, sizeof(zst_header_cur)-1 + PH65816regsize + 199635, SEEK_CUR);

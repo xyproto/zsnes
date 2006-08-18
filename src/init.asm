@@ -321,13 +321,10 @@ NEWSYM xyt,      dw 0
 NEWSYM xpc,      dw 0
 NEWSYM debugger, db 0              ; Start with debugger (1=yes,0=no)
 NEWSYM curnmi,   db 0           ; if in NMI(1) or not(0)
-; pharos - equ hack *sigh*
-n65816regsize equ $-curcyc
 
 ALIGN32
 NEWSYM cycpbl,  dd 110  ; percentage left of CPU/SPC to run  (3.58 = 175)
 NEWSYM cycpblt, dd 110  ; percentage of CPU/SPC to run
-NEWSYM PH65816regsize, dd n65816regsize
 
 NEWSYM cpuoverptr, dd 0                 ; pointer to cpuover
 
