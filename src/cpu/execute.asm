@@ -1056,9 +1056,8 @@ NEWSYM cpuover
     ; check for VIRQ/HIRQ/NMI
     ProcessIRQStuff
     mov ax,[resolutn]
-    dec ax
     cmp [curypos],ax
-    jb .drawline
+    jbe .drawline
 
 
 ;    mov ax,[resolutn]
