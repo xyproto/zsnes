@@ -2737,9 +2737,7 @@ extern unsigned int xa, xdb, xpb, xs, xd, xx, xy, scrndis;
 extern unsigned short VIRQLoc, resolutn, xpc;
 extern unsigned char spcextraram[64], SPCROM[64];
 extern unsigned int tableD[256];
-extern void (*memaccessspc7110r8)(), (*memaccessspc7110r16)(), (*memaccessspc7110w8)(), (*memaccessspc7110w16)();
 unsigned char SPCSkipXtraROM, bgfixer2 = 0, disableeffects = 0;
-unsigned int disable65816sh = 0;
 //This is saved in states
 unsigned char cycpl = 0;   // cycles per scanline
 unsigned char cycphb = 0;    // cycles per hblank
@@ -2853,7 +2851,6 @@ void init65816()
     FIRTAPVal5 = 0;
     FIRTAPVal6 = 0;
     FIRTAPVal7 = 0;
-    disable65816sh = 0;
 
     // Check Headers
     headerhack();
@@ -2871,7 +2868,6 @@ void init65816()
     NMIEnab = 1;
     VIRQLoc = 0;
     doirqnext = 0;
-    reg1read = 0;
     resolutn = 224;
     vidbright = 0;
     forceblnk = 0;
@@ -2945,9 +2941,6 @@ void init65816()
       memset(wramdataa,0x0FFFFFFFF,65536);
       memset(ram7fa,0x0FFFFFFFF,65536);
       if(romtype == 1)
-      {
-        for(i=0;i<8;i++)
-          ram7fa[65528+i] = 0x01;
-      }
+        memset(ram7fa+65528, 0x01, 8);
     }
 }
