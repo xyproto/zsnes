@@ -2932,14 +2932,14 @@ void init65816()
 
     else
     {
-      memset(wramdataa,0x55555555,65536);
-      memset(ram7fa, 0x55555555,65536);
+      memset(wramdataa,0x55,0x10000);
+      memset(ram7fa, 0x55,0x10000);
     }
 
     if(BSEnable)
     {
-      memset(wramdataa,0x0FFFFFFFF,65536);
-      memset(ram7fa,0x0FFFFFFFF,65536);
+      memset(wramdataa,0xFF,0x10000);
+      memset(ram7fa,0xFF,0x10000);
       if(romtype == 1)
         memset(ram7fa+65528, 0x01, 8);
     }
