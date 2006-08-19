@@ -134,9 +134,10 @@ ifeq (${DEBUG},yes)
   STRIP=
 endif
 
-ifeq (${DEV},yes)
-  CFLAGSORIG+= -D__DEVELOPER__
-  ASMFLAGSORIG+= -D__DEVELOPER__
+ifeq (${RELEASE},yes)
+  CFLAGSORIG+= -D__RELEASE__
+  ASMFLAGSORIG+= -D__RELEASE__
+  RELEASEGRADE=yes
 endif
 
 ifeq (${RELEASEGRADE},yes)

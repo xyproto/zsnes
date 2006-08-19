@@ -54,7 +54,7 @@ NEWSYM StartUp
 
 NEWSYM SystemInit
     ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
-%ifndef __DEVELOPER__
+%ifndef __RELEASE__
     pushad
     call DisplayWIPDisclaimer
     popad
