@@ -1603,17 +1603,17 @@ DisplayGUIVideo:
   DrawGUIButton 5,128,60,164,71,GUIVideoText8,4,0,0        ; Set Button
 
 %ifndef __MSDOS__                              ; Legend
-  GUIDisplayText 5,8,76,GUIVideoTextB
-  GUIDisplayText 5,10,85,GUIVideoTextB1
-  GUIDisplayText 5,10,92,GUIVideoTextB2
-  GUIDisplayText 5,10,99,GUIVideoTextB3
+  GUIDisplayText 5,8,116,GUIVideoTextB
+  GUIDisplayText 5,10,125,GUIVideoTextB1
+  GUIDisplayText 5,10,132,GUIVideoTextB2
+  GUIDisplayText 5,10,139,GUIVideoTextB3
 %endif
 %ifdef __UNIXSDL__
-  GUIDisplayText 5,10,106,GUIVideoTextB4
+  GUIDisplayText 5,10,146,GUIVideoTextB4
 %endif
 
-  GUIDisplayBBoxS 5,5,26,115,69,167           ; Video Modes Box
-  DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],5,28,GUIVStA
+  GUIDisplayBBoxS 5,5,26,115,109,167           ; Video Modes Box
+  DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],10,68,GUIVStA
   cmp byte[GUICHold],5                        ; Scrollbar
   jne .noholda
   add byte[GUIWincoladd],3
@@ -1627,7 +1627,7 @@ DisplayGUIVideo:
   jne .noholdc
   add byte[GUIWincoladd],3
 .noholdc
-  GUIDisplayIconWin 5,117,62,GUIIconDataDownArrow
+  GUIDisplayIconWin 5,117,102,GUIIconDataDownArrow
   cmp byte[GUICHold],6
   jne .noholdd
   sub byte[GUIWincoladd],3
@@ -1656,6 +1656,16 @@ DisplayGUIVideo:
   GUIDisplayTextG 5,11,30+8*3,[GUITemp]
   add dword[GUITemp],18
   GUIDisplayTextG 5,11,30+8*4,[GUITemp]
+  add dword[GUITemp],18
+  GUIDisplayTextG 5,11,30+8*5,[GUITemp]
+  add dword[GUITemp],18
+  GUIDisplayTextG 5,11,30+8*6,[GUITemp]
+  add dword[GUITemp],18
+  GUIDisplayTextG 5,11,30+8*7,[GUITemp]
+  add dword[GUITemp],18
+  GUIDisplayTextG 5,11,30+8*8,[GUITemp]
+  add dword[GUITemp],18
+  GUIDisplayTextG 5,11,30+8*9,[GUITemp]
 
   xor eax,eax                      ; Mode Value
   mov al,[cvidmode]

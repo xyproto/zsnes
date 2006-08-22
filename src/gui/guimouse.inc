@@ -2150,8 +2150,8 @@ DisplayGUIVideoClick2:
   mov eax,[NumVideoModes]
   mov [GUINumValue],eax
   pop eax
-  GUISlidebarPostImpl 117,33,124,62,.scrollup,.scrolldown,5,5,GUIcurrentvideoviewloc,GUIcurrentvideocursloc,GUINumValue,GUIBlankVar,1
-  GUIPostWinBoxMove 5,27,115,27+5*8,GUIcurrentvideoviewloc,GUIcurrentvideocursloc,GUINumValue,.scrollup,.scrolldown,DisplayGUIVideoClick.skipscrol,5
+  GUISlidebarPostImpl 117,33,124,102,.scrollup,.scrolldown,5,10,GUIcurrentvideoviewloc,GUIcurrentvideocursloc,GUINumValue,GUIBlankVar,1
+  GUIPostWinBoxMove 5,27,115,27+10*8,GUIcurrentvideoviewloc,GUIcurrentvideocursloc,GUINumValue,.scrollup,.scrolldown,DisplayGUIVideoClick.skipscrol,10
 .notmodestab2
 DisplayGUIVideoClick:
   GUIPTabClick 0,39,1,GUIVideoTabs,GUIVntscTab
@@ -2168,9 +2168,9 @@ DisplayGUIVideoClick:
   mov eax,[NumVideoModes]
   mov [GUINumValue],eax
   pop eax
-  GUISlidebarImpl 117,33,124,62,GUIVStA,5,GUIcurrentvideoviewloc,GUIcurrentvideocursloc,GUINumValue,5
+  GUISlidebarImpl 117,33,124,102,GUIVStA,10,GUIcurrentvideoviewloc,GUIcurrentvideocursloc,GUINumValue,5
 .skipscrol
-  GUIWinControl 5,28,115,26+5*8,GUIBlankVar,GUIcurrentvideoviewloc,GUINumValue,27,8,GUIcurrentvideocursloc,2,5,0
+  GUIWinControl 5,27,115,27+10*8,GUIBlankVar,GUIcurrentvideoviewloc,GUINumValue,27,8,GUIcurrentvideocursloc,2,5,0
   GUIPHoldbutton 128,60,164,71,4
 .notmodestab
 

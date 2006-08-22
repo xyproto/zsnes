@@ -982,7 +982,7 @@ NEWSYM StartGUI
   mov al,[cvidmode]
   mov [GUIcurrentvideocursloc],eax
   mov ebx,[NumVideoModes]
-  sub ebx,5
+  sub ebx,10
   cmp eax,ebx
   jbe .noof
   mov eax,ebx
@@ -1859,7 +1859,7 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
   mov al,[cvidmode]
   mov [GUIcurrentvideocursloc],eax
   mov edx,[NumVideoModes]
-  sub edx,5
+  sub edx,10
   cmp eax,edx
   jbe .noof
   mov eax,edx
