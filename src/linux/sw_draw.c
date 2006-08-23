@@ -157,11 +157,13 @@ void sw_drawwin()
 
   if (SurfaceX == 256 && SurfaceY == 224) DrawWin256x224x16();
   else if (SurfaceX == 320 && SurfaceY == 240) DrawWin320x240x16();
-  else if(SurfaceX == 512 && SurfaceY == 448) {
+  else if(SurfaceX == 512 && SurfaceY == 448)
+  {
     AddEndBytes = pitch-1024;
     NumBytesPerLine = pitch;
     WinVidMemStart = (void*)SurfBufD;
-    if (hqFilter) {
+    if (hqFilter)
+    {
       switch (hqFilter)
       {
         case 1:
@@ -176,12 +178,16 @@ void sw_drawwin()
         default:
           break;
       }
-    } else copy640x480x16bwin();
-  } else if (SurfaceX == 640 && SurfaceY == 480) {
+    }
+    else copy640x480x16bwin();
+  }
+  else if (SurfaceX == 640 && SurfaceY == 480)
+  {
     AddEndBytes = pitch-1024;
     NumBytesPerLine = pitch;
     WinVidMemStart = (void*) (SurfBufD + 16*640*2 + 64*2);
-    if (hqFilter) {
+    if (hqFilter)
+    {
       switch (hqFilter)
       {
         case 1:
@@ -196,7 +202,9 @@ void sw_drawwin()
         default:
           break;
       }
-    } else copy640x480x16bwin();
+    }
+    else copy640x480x16bwin();
   }
+
   UnlockSurface();
 }
