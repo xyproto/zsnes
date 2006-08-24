@@ -1904,7 +1904,7 @@ void KeepTVRatio()
     rcWindow.top += marginchange;
     rcWindow.bottom -= (marginchange+marginmod);
   }
-  else
+  else if (ratiox > ratioy)
   {
     marginchange = (WindowWidth-(ratioy/3))/2;
     marginmod = (WindowWidth-(ratioy/3))%2;
