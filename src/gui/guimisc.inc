@@ -93,6 +93,79 @@ guicalberror6 db 'PRESS A BUTTON OR',0
 guicalberror7 db 'KEY',0
 SECTION .text
 
+%macro ConfigureKey2 2
+  cmp ebx,0
+  jne near %%no0
+  mov dword[%2],%1upk    ; Up
+%%no0
+  cmp ebx,1
+  jne near %%no1
+  mov dword[%2],%1downk  ; Down
+%%no1
+  cmp ebx,2
+  jne near %%no2
+  mov dword[%2],%1leftk  ; Left
+%%no2
+  cmp ebx,3
+  jne near %%no3
+  mov dword[%2],%1rightk ; Right
+%%no3
+  cmp ebx,4
+  jne near %%no4
+  mov dword[%2],%1startk ; Start
+%%no4
+  cmp ebx,5
+  jne near %%no5
+  mov dword[%2],%1selk   ; Select
+%%no5
+  cmp ebx,6
+  jne near %%no6
+  mov dword[%2],%1Ak     ; A
+%%no6
+  cmp ebx,7
+  jne near %%no7
+  mov dword[%2],%1Bk     ; B
+%%no7
+  cmp ebx,8
+  jne near %%no8
+  mov dword[%2],%1Xk     ; X
+%%no8
+  cmp ebx,9
+  jne near %%no9
+  mov dword[%2],%1Yk     ; Y
+%%no9
+  cmp ebx,10
+  jne near %%no10
+  mov dword[%2],%1Lk     ; L
+%%no10
+  cmp ebx,11
+  jne near %%no11
+  mov dword[%2],%1Rk     ; R
+%%no11
+%endmacro
+
+%macro ConfigureKey 2
+  cmp byte[%2],0
+  jne %%nopl1
+  ConfigureKey2 pl1,%1
+%%nopl1
+  cmp byte[%2],1
+  jne %%nopl2
+  ConfigureKey2 pl2,%1
+%%nopl2
+  cmp byte[%2],2
+  jne %%nopl3
+  ConfigureKey2 pl3,%1
+%%nopl3
+  cmp byte[%2],3
+  jne %%nopl4
+  ConfigureKey2 pl4,%1
+%%nopl4
+  cmp byte[%2],4
+  jne %%nopl5
+  ConfigureKey2 pl5,%1
+%%nopl5
+%endmacro
 
 SetAllKeys:
     xor ebx,ebx
@@ -104,26 +177,21 @@ SetAllKeys:
     jnz .a
 
     mov byte[GUICBHold],0
-    mov edi,pl1selk
     mov dword[keycontrolval],pl1contrl
     cmp byte[cplayernum],1
     jne .nopl2
-    mov edi,pl2selk
     mov dword[keycontrolval],pl2contrl
 .nopl2
     cmp byte[cplayernum],2
     jne .nopl3
-    mov edi,pl3selk
     mov dword[keycontrolval],pl3contrl
 .nopl3
     cmp byte[cplayernum],3
     jne .nopl4
-    mov edi,pl4selk
     mov dword[keycontrolval],pl4contrl
 .nopl4
     cmp byte[cplayernum],4
     jne .nopl5
-    mov edi,pl5selk
     mov dword[keycontrolval],pl5contrl
 .nopl5
 
@@ -135,29 +203,22 @@ SetAllKeys:
     jne .noLockInputChange
     ret
 .noLockInputChange
-    mov [guicpressptr],edi
     xor ebx,ebx
     mov ecx,12
     mov dword[guipressptr],guipresstext4b
 .loop
-    mov eax,[.ordercalb+ebx*4]
-    shl eax,2
-    add dword[guicpressptr],eax
+    ConfigureKey guicpressptr,cplayernum
     push ebx
     push ecx
     call guipresstestb
     pop ecx
     pop ebx
     add dword[guipressptr],21
-    mov eax,[.ordercalb+ebx*4]
-    shl eax,2
-    sub dword[guicpressptr],eax
     inc ebx
     dec ecx
     jnz .loop
     ret
 SECTION .data
-.ordercalb dd 2,3,4,5,1,0,7,10,6,9,8,11
 SECTION .text
 
 CalibrateDev1:
