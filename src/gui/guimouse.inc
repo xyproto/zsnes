@@ -1940,6 +1940,41 @@ DisplayGUIMovieClick:
   GUIClickCButton 144,67,byte[MovieDisplayFrame]   ; Checkbox
   ret
 
+%macro GUIInputSetIndKey 1
+  ;Check if controller is set
+  push eax
+  mov eax,[keycontrolval]
+  cmp dword[eax],0
+  pop eax
+  je near %%lockInputChange
+
+  DGOptnsProcBox 45,105,[%1upk]    ; Up
+  DGOptnsProcBox 45,115,[%1downk]  ; Down
+  DGOptnsProcBox 45,125,[%1leftk]  ; Left
+  DGOptnsProcBox 45,135,[%1rightk] ; Right
+  DGOptnsProcBox 45,145,[%1startk] ; Start
+  DGOptnsProcBox 45,155,[%1selk]   ; Select
+  DGOptnsProcBox 85,105,[%1Ak]     ; A
+  DGOptnsProcBox 85,115,[%1Bk]     ; B
+  DGOptnsProcBox 85,125,[%1Xk]     ; X
+  DGOptnsProcBox 85,135,[%1Yk]     ; Y
+  DGOptnsProcBox 85,145,[%1Lk]     ; L
+  DGOptnsProcBox 85,155,[%1Rk]     ; R
+
+  DGOptnsProcBox 125,105,[%1Xtk]   ; X Turbo
+  DGOptnsProcBox 125,115,[%1Ytk]   ; Y Turbo
+  DGOptnsProcBox 125,125,[%1Ltk]   ; L Turbo
+  DGOptnsProcBox 165,105,[%1Atk]   ; A Turbo
+  DGOptnsProcBox 165,115,[%1Btk]   ; B Turbo
+  DGOptnsProcBox 165,125,[%1Rtk]   ; R Turbo
+
+  DGOptnsProcBox 125,145,[%1DLk]   ; Down-Left
+  DGOptnsProcBox 125,155,[%1DRk]   ; Down-Right
+  DGOptnsProcBox 165,145,[%1ULk]   ; Up-Left
+  DGOptnsProcBox 165,155,[%1URk]   ; Up-Right
+%%lockInputChange
+%endmacro
+
 DisplayGUIInputClick2:
   push eax
   mov eax,[NumInputDevices]
@@ -1970,117 +2005,31 @@ DisplayGUIInputClick:
   GUIPHoldbutton 123,66,183,77,15
 %endif
 
-  mov edi,pl1selk
+  cmp byte[cplayernum],0
+  jne .nopl1
   mov dword[keycontrolval],pl1contrl
+  GUIInputSetIndKey pl1
+.nopl1
   cmp byte[cplayernum],1
   jne .nopl2
-  mov edi,pl2selk
   mov dword[keycontrolval],pl2contrl
+  GUIInputSetIndKey pl2
 .nopl2
   cmp byte[cplayernum],2
   jne .nopl3
-  mov edi,pl3selk
   mov dword[keycontrolval],pl3contrl
+  GUIInputSetIndKey pl3
 .nopl3
   cmp byte[cplayernum],3
   jne .nopl4
-  mov edi,pl4selk
   mov dword[keycontrolval],pl4contrl
+  GUIInputSetIndKey pl4
 .nopl4
   cmp byte[cplayernum],4
   jne .nopl5
-  mov edi,pl5selk
   mov dword[keycontrolval],pl5contrl
+  GUIInputSetIndKey pl5
 .nopl5
-
-  ;Check if controller is set
-  push eax
-  mov eax,[keycontrolval]
-  cmp dword[eax],0
-  pop eax
-  je near .lockInputChange
-
-  DGOptnsProcBox 45,155,[edi]    ; select
-  DGOptnsProcBox 45,145,[edi+4]  ; start
-  DGOptnsProcBox 45,105,[edi+8]  ; up
-  DGOptnsProcBox 45,115,[edi+12] ; down
-  DGOptnsProcBox 45,125,[edi+16] ; left
-  DGOptnsProcBox 45,135,[edi+20] ; right
-  DGOptnsProcBox 85,125,[edi+24] ; x
-  DGOptnsProcBox 85,105,[edi+28] ; a
-  DGOptnsProcBox 85,145,[edi+32] ; l
-  DGOptnsProcBox 85,135,[edi+36] ; y
-  DGOptnsProcBox 85,115,[edi+40] ; b
-  DGOptnsProcBox 85,155,[edi+44] ; r
-
-  mov edi,pl1Atk
-  cmp byte[cplayernum],1
-  jne .nopl2t
-  mov edi,pl2Atk
-.nopl2t
-  cmp byte[cplayernum],2
-  jne .nopl3t
-  mov edi,pl3Atk
-.nopl3t
-  cmp byte[cplayernum],3
-  jne .nopl4t
-  mov edi,pl4Atk
-.nopl4t
-  cmp byte[cplayernum],4
-  jne .nopl5t
-  mov edi,pl5Atk
-.nopl5t
-
-  DGOptnsProcBox 165,105,[edi]      ; A Turbo
-  DGOptnsProcBox 165,115,[edi+4]    ; B Turbo
-  DGOptnsProcBox 125,105,[edi+8]    ; X Turbo
-  DGOptnsProcBox 125,115,[edi+12]   ; Y Turbo
-
-  mov edi,pl1Ltk
-  cmp byte[cplayernum],1
-  jne .nopl2tl
-  mov edi,pl2Ltk
-.nopl2tl
-  cmp byte[cplayernum],2
-  jne .nopl3tl
-  mov edi,pl3Ltk
-.nopl3tl
-  cmp byte[cplayernum],3
-  jne .nopl4tl
-  mov edi,pl4Ltk
-.nopl4tl
-  cmp byte[cplayernum],4
-  jne .nopl5tl
-  mov edi,pl5Ltk
-.nopl5tl
-
-  DGOptnsProcBox 125,125,[edi]      ; L Turbo
-  DGOptnsProcBox 165,125,[edi+4]    ; R Turbo
-
-  mov edi,pl1ULk
-  cmp byte[cplayernum],1
-  jne .nopl2tb
-  mov edi,pl2ULk
-.nopl2tb
-  cmp byte[cplayernum],2
-  jne .nopl3tb
-  mov edi,pl3ULk
-.nopl3tb
-  cmp byte[cplayernum],3
-  jne .nopl4tb
-  mov edi,pl4ULk
-.nopl4tb
-  cmp byte[cplayernum],4
-  jne .nopl5tb
-  mov edi,pl5ULk
-.nopl5tb
-
-  DGOptnsProcBoxb 165,145,[edi]    ; diagonals
-  DGOptnsProcBoxb 165,155,[edi+4]
-  DGOptnsProcBoxb 125,145,[edi+8]
-  DGOptnsProcBoxb 125,155,[edi+12]
-
-.lockInputChange
 
 %ifdef __MSDOS__
   cmp byte[cplayernum],0
