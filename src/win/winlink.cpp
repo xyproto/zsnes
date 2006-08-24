@@ -1875,7 +1875,7 @@ void SetHQx()
 
 void SetNTSCFOpt()
 {
-  if(CustomResX >= 640 && CustomResY >= 480)
+  if(CustomResX >= 600 && CustomResY >= 448)
     GUINTVID[cvidmode] = 1;
   else
     GUINTVID[cvidmode] = 0;
@@ -1891,23 +1891,23 @@ void SetHiresOpt()
 
 void KeepTVRatio()
 {
-  int ratiox = WindowWidth/4;
-  int ratioy = WindowHeight/3;
+  int ratiox = WindowWidth*3;
+  int ratioy = WindowHeight*4;
 
   int marginchange;
   int marginmod;
 
   if (ratiox < ratioy)
   {
-    marginchange = (WindowHeight-(ratiox*3))/2;
-    marginmod = (WindowHeight-(ratiox*3))%2;
+    marginchange = (WindowHeight-(ratiox/4))/2;
+    marginmod = (WindowHeight-(ratiox/4))%2;
     rcWindow.top += marginchange;
     rcWindow.bottom -= (marginchange+marginmod);
   }
   else
   {
-    marginchange = (WindowWidth-(ratioy*4))/2;
-    marginmod = (WindowWidth-(ratioy*4))%2;
+    marginchange = (WindowWidth-(ratioy/3))/2;
+    marginmod = (WindowWidth-(ratioy/3))%2;
     rcWindow.left += marginchange;
     rcWindow.right -= (marginchange+marginmod);
   }
