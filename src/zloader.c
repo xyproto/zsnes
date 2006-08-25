@@ -87,7 +87,7 @@ static void display_help()
   put_line("  -3      Enable triple buffering (replaces vsync)");
 #endif
 #ifdef __WIN32__
-  put_line("  -6 #    Force a user-specified refresh rate for fullscreen modes [60..180]");
+  put_line("  -6 #    Force a user-specified refresh rate for fullscreen modes [50..180]");
 #endif
 #ifdef __MSDOS__
   put_line("  -8      Force 8-bit sound");
@@ -559,10 +559,10 @@ static void handle_params(int argc, char *argv[])
           case '6': //Force Refresh Rate
             i++;
             SetRefreshRate = zatoi(argv[i]);
-            if((SetRefreshRate < 60) || (SetRefreshRate > 180))
+            if((SetRefreshRate < 50) || (SetRefreshRate > 180))
             {
               ForceRefreshRate = 0;
-              puts("Refresh Rate must be a value 60 to 180!");
+              puts("Refresh Rate must be a value 50 to 180!");
               exit(1);
             }
             else

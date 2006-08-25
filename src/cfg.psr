@@ -310,7 +310,8 @@ SidewinderFix db 0
 @  40 = CUSTOM    S  FULL    41 = CUSTOM    DR FULL
 @ You need to select one of the custom video modes and modify CustomResX/Y to
 @ properly use custom res support.
-@ Custom resolutions are only valid if they are supported by your system!
+@ WARNING: Custom resolutions are only valid if they are supported by your system!
+@ ZSNES will hang if an invalid fullscreen resolution is used.
 cvidmode db 3
 @ Last windowed & fullscreen modes (used when alt-tabbing)
 PrevWinMode db 3
@@ -421,9 +422,10 @@ TripleBufferWin db 0
 @
 @ Force Refresh Rate (0 = NO, 1 = Yes)
 @ Enable this if you are experiencing visual tearing
-@ WARNING: The DX Refresh Rate Override in dxdiag must be set to default in order for this to work!
-@ You must also supply a legitimate refresh rate in order for this to work properly.
-@ This option is completely useless in a non-fullscreen mode.
+@ WARNING: Setting a refresh rate that your monitor cannot handle will have consequences!
+@ The DX Refresh Rate Override in dxdiag must be set to default in order for this to work!
+@ The refresh rate is only valid if it is supported by your system!
+@ This option is only useful in fullscreen modes.
 ForceRefreshRate db 0
 SetRefreshRate db 60
 %endif
