@@ -428,12 +428,10 @@ SetDevice:
 %endif
 ;.notdos
     mov dword[CalibXmin],0
-    mov ecx,[DevicePtr+eax*4]
     mov eax,[GUIInputRefP+eax*4]
     mov ebx,[GUIcurrentinputcursloc]
     mov bl,[GUIInputRefF+ebx]
     mov [eax],bl
-    mov eax,ecx
     mov bh,[cplayernum]
     call SetInputDevice
     call UpdateDevices
@@ -441,12 +439,10 @@ SetDevice:
 %ifdef __MSDOS__
 .port209
     mov dword[CalibXmin209],0
-    mov ecx,[DevicePtr+eax*4]
     mov eax,[GUIInputRefP+eax*4]
     mov ebx,[GUIcurrentinputcursloc]
     mov bl,[GUIInputRefF+ebx]
     mov [eax],bl
-    mov eax,ecx
     mov bh,[cplayernum]
     call SetInputDevice209
     call UpdateDevices

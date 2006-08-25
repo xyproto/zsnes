@@ -38,6 +38,16 @@ EXTSYM vesa2_rfull,vesa2_rtrcl,vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla
 EXTSYM vesa2_bfull,vesa2_btrcl,vesa2_btrcla,Init_2xSaIMMXW,DoSleep
 EXTSYM V8Mode,GrayscaleMode,PrevWinMode,PrevFSMode,FrameSemaphore
 EXTSYM _imp__GetLocalTime@4,DisplayWIPDisclaimer
+EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
+EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
+EXTSYM pl2upk,pl2downk,pl2leftk,pl2rightk,pl2startk,pl2selk
+EXTSYM pl2Ak,pl2Bk,pl2Xk,pl2Yk,pl2Lk,pl2Rk
+EXTSYM pl3upk,pl3downk,pl3leftk,pl3rightk,pl3startk,pl3selk
+EXTSYM pl3Ak,pl3Bk,pl3Xk,pl3Yk,pl3Lk,pl3Rk
+EXTSYM pl4upk,pl4downk,pl4leftk,pl4rightk,pl4startk,pl4selk
+EXTSYM pl4Ak,pl4Bk,pl4Xk,pl4Yk,pl4Lk,pl4Rk
+EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5startk,pl5selk
+EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
@@ -1160,54 +1170,58 @@ InitializeGfxStuff:
 
         ret
 
+%macro SetDefaultKey2 13
+  mov dword[%1upk],%4    ; Up
+  mov dword[%1downk],%5  ; Down
+  mov dword[%1leftk],%6  ; Left
+  mov dword[%1rightk],%7 ; Right
+  mov dword[%1startk],%3 ; Start
+  mov dword[%1selk],%2   ; Select
+  mov dword[%1Ak],%9     ; A
+  mov dword[%1Bk],%12    ; B
+  mov dword[%1Xk],%8     ; X
+  mov dword[%1Yk],%11    ; Y
+  mov dword[%1Lk],%10    ; L
+  mov dword[%1Rk],%13    ; R
+%endmacro
+
+%macro SetDefaultKey 12
+  cmp bh,0
+  jne %%nopl1
+  SetDefaultKey2 pl1,%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12
+%%nopl1
+  cmp bh,1
+  jne %%nopl2
+  SetDefaultKey2 pl2,%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12
+%%nopl2
+  cmp bh,2
+  jne %%nopl3
+  SetDefaultKey2 pl3,%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12
+%%nopl3
+  cmp bh,3
+  jne %%nopl4
+  SetDefaultKey2 pl4,%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12
+%%nopl4
+  cmp bh,4
+  jne %%nopl5
+  SetDefaultKey2 pl5,%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12
+%%nopl5
+%endmacro
 
 NEWSYM SetInputDevice
-    ; eax = pointer to devices, bl = device #, bh = player # (0-4)
+    ; bl = device #, bh = player # (0-4)
     ; Sets keys according to input device selected
     cmp bl,0
     jne near .nozero
-    mov dword[eax],0
-    mov dword[eax+4],0
-    mov dword[eax+8],0
-    mov dword[eax+12],0
-    mov dword[eax+16],0
-    mov dword[eax+20],0
-    mov dword[eax+24],0
-    mov dword[eax+28],0
-    mov dword[eax+32],0
-    mov dword[eax+36],0
-    mov dword[eax+40],0
-    mov dword[eax+44],0
+    SetDefaultKey 0,0,0,0,0,0,0,0,0,0,0,0
     ret
 .nozero
     cmp bh,1
     je near .input2
-    mov dword[eax],54
-    mov dword[eax+4],28
-    mov dword[eax+8],200
-    mov dword[eax+12],208
-    mov dword[eax+16],203
-    mov dword[eax+20],205
-    mov dword[eax+24],31
-    mov dword[eax+28],45
-    mov dword[eax+32],32
-    mov dword[eax+36],30
-    mov dword[eax+40],44
-    mov dword[eax+44],46
+    SetDefaultKey 54,28,200,208,203,205,31,45,32,30,44,46
     ret
 .input2
-    mov dword[eax],56
-    mov dword[eax+4],29
-    mov dword[eax+8],37
-    mov dword[eax+12],50
-    mov dword[eax+16],49
-    mov dword[eax+20],51
-    mov dword[eax+24],31
-    mov dword[eax+28],32
-    mov dword[eax+32],33
-    mov dword[eax+36],44
-    mov dword[eax+40],45
-    mov dword[eax+44],46
+    SetDefaultKey 56,29,37,50,49,51,31,32,33,44,45,46
     ret
 
 NEWSYM GetTimeInSeconds

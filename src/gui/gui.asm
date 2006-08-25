@@ -1689,7 +1689,6 @@ NEWSYM Totalbyteloaded, resd 1
 NEWSYM sramsavedis, resb 1
 
 SECTION .data
-DevicePtr dd pl1selk,pl2selk,pl3selk,pl4selk,pl5selk
 
 SECTION .text
 
