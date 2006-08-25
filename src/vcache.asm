@@ -54,6 +54,8 @@ EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron
+%else
+EXTSYM SPCSave
 %endif
 
 ; Process stuff & Cache sprites
@@ -282,6 +284,13 @@ NEWSYM cachevideo
     mov al,40h
     jmp .nofrskip
 .nodebugger
+%else
+    cmp byte[SPCSave],1
+    jne .nospcsave
+    mov byte[curblank],40h
+    mov al,40h
+    jmp .nofrskip
+.nospcsave
 %endif
 
     cmp dword[sramb4save],0
