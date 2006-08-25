@@ -87,7 +87,7 @@ static void display_help()
   put_line("  -3      Enable triple buffering (replaces vsync)");
 #endif
 #ifdef __WIN32__
-  put_line("  -6      Force 60Hz refresh rate");
+  put_line("  -6 #    Force a user-specified refresh rate for fullscreen modes [60..180]");
 #endif
 #ifdef __MSDOS__
   put_line("  -8      Force 8-bit sound");
@@ -105,7 +105,7 @@ static void display_help()
 #ifndef __MSDOS__
   put_line("  -js #   Set joystick sensitivity [0..32767]");
 #endif
-  put_line("  -k #    Set volume level (0 .. 100)");
+  put_line("  -k #    Set volume level [0..100]");
 #ifdef __WIN32__
   put_line("  -kp     Enable the KitchenSync for PAL only");
   put_line("  -ks     Enable the KitchenSync");
@@ -193,8 +193,8 @@ static void display_help()
 #endif
   put_line("  -y      Enable anti-aliasing (video interpolation)");
   put_line("  -z      Disable stereo sound");
-  put_line("  -zm #   Auto load specified movie slot on startup ");
-  put_line("  -zs #   Auto load specified save state slot on startup ");
+  put_line("  -zm #   Auto load specified movie slot on startup [0..9]");
+  put_line("  -zs #   Auto load specified save state slot on startup [0..99]");
   put_line("");
   put_line("  File Formats Supported by GUI : SMC,SFC,SWC,FIG,MGD,UFO,BIN,");
   put_line("                                  058,078,1,USA,EUR,JAP,ZIP,JMA");
