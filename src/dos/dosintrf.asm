@@ -710,32 +710,31 @@ db '640x480x8B  VESA2',0    ; 15
 db '640x480x16B VESA2',0    ; 16
 db '800x600x8B  VESA2',0    ; 17
 db '800x600x16B VESA2',0    ; 18
-db '                 ',0
 
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)
 ; Left side starts with Video Mode 0
-;                    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
-NEWSYM GUI16VID,  db 0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0 ; 16-bit mode
-NEWSYM GUINGVID,  db 1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,0 ; New Graphics Engine
-NEWSYM GUISLVID,  db 0,0,1,0,0,1,1,0,0,1,1,0,0,0,0,1,1,1,1,0 ; Scanlines
-NEWSYM GUIINVID,  db 0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0 ; DOS Interpolation
-NEWSYM GUIEAVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0 ; DOS Eagle
-NEWSYM GUIIEVID,  db 0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,1,1,0,1,0 ; DOS Eagle+Int
-NEWSYM GUIFSVID,  db 0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0,0 ; DOS Fullscreen
-NEWSYM GUIWSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0 ; DOS Widescreen
-NEWSYM GUISSVID,  db 0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,1,1,1,1,0 ; DOS Smallscreen
-NEWSYM GUITBVID,  db 0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0 ; DOS Triple Buffer
-NEWSYM GUIHSVID,  db 0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0 ; Half/Quarter Scanlines
-NEWSYM GUI2xVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0 ; 2xSaI/Super Engines
-NEWSYM GUIWFVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Fullscreen)
-NEWSYM GUII2VID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Interpolation)
-NEWSYM GUIM7VID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0 ; Hires Mode 7
-NEWSYM GUIBIFIL,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (SDL Bilinear Filter)
-NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Win Triple Buffer)
-NEWSYM GUIHQ2X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq2x Filter)
-NEWSYM GUIHQ3X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq3x Filter)
-NEWSYM GUIHQ4X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq4x Filter)
-NEWSYM GUINTVID,  db 0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0 ; NTSC Filter
+;                    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8
+NEWSYM GUI16VID,  db 0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1 ; 16-bit mode
+NEWSYM GUINGVID,  db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; New Graphics Engine
+NEWSYM GUISLVID,  db 0,0,1,0,0,1,1,0,0,1,1,0,0,0,0,1,1,1,1 ; Scanlines
+NEWSYM GUIINVID,  db 0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0,1 ; DOS Interpolation
+NEWSYM GUIEAVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0 ; DOS Eagle
+NEWSYM GUIIEVID,  db 0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,1,1,0,1 ; DOS Eagle+Int
+NEWSYM GUIFSVID,  db 0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,0,0 ; DOS Fullscreen
+NEWSYM GUIWSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0 ; DOS Widescreen
+NEWSYM GUISSVID,  db 0,0,0,0,0,0,1,0,0,0,0,1,1,1,1,1,1,1,1 ; DOS Smallscreen
+NEWSYM GUITBVID,  db 0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1 ; DOS Triple Buffer
+NEWSYM GUIHSVID,  db 0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0 ; Half/Quarter Scanlines
+NEWSYM GUI2xVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0 ; 2xSaI/Super Engines
+NEWSYM GUIWFVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Fullscreen)
+NEWSYM GUII2VID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Interpolation)
+NEWSYM GUIM7VID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0 ; Hires Mode 7
+NEWSYM GUIBIFIL,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (SDL Bilinear Filter)
+NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Win Triple Buffer)
+NEWSYM GUIHQ2X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq2x Filter)
+NEWSYM GUIHQ3X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq3x Filter)
+NEWSYM GUIHQ4X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq4x Filter)
+NEWSYM GUINTVID,  db 0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1 ; NTSC Filter
 SECTION .text
 
 ; ****************************

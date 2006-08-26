@@ -1289,6 +1289,12 @@ GUIVideoKeys:
   mov byte[scanlines],0
   mov byte[antienab],0
   mov byte[BilinearFilter],0
+%ifdef __WIN32__
+  cmp byte[NTSCFilter],1
+  jne .noforce4_3  
+  mov byte[Keep4_3Ratio],1
+.noforce4_3
+%endif
   pushad
   call NTSCFilterInit
   popad
@@ -1326,7 +1332,6 @@ GUIVideoKeys:
   je .notriplebuffer
   xor byte[Triplebufen],1
 ;    mov byte[vsyncon],0
-;    mov byte[cfgvsync],0
 .notriplebuffer
 %endif
 %ifndef __UNIXSDL__
@@ -1347,6 +1352,16 @@ GUIVideoKeys:
   jne .nograyscale
   xor byte[GrayscaleMode],1
 .nograyscale
+%ifdef __WIN32__
+  cmp dh,'R'
+  jne .nokeep4_3
+  xor byte[Keep4_3Ratio],1
+  call initDirectDraw
+  pushad
+  call Clear2xSaIBuffer
+  popad
+.nokeep4_3
+%endif
 .notfilterstab
 
   cmp dword[GUIVntscTab],1

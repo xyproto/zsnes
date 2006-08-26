@@ -319,10 +319,6 @@ extern "C"
    void drawscreenwin(void);
    DWORD LastUsedPos=0;
    DWORD CurMode=~0;
-   void initDirectDraw()
-   {
-      InitDirectDraw();
-   }
    void reInitSound()
    {
       ReInitSound();
@@ -2482,6 +2478,16 @@ void clearwin()
      ClearWin16();
 
    UnlockSurface();
+}
+
+extern "C"
+{
+   void initDirectDraw()
+   {
+      InitDirectDraw();
+      if (CheckTVRatioReq())
+        KeepTVRatio();
+   }
 }
 
 void clear_display()
