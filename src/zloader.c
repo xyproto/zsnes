@@ -398,7 +398,6 @@ func(joy_sensitivity); \
   func(guioff); \
   func(per2exec); \
   func(HacksDisable); \
-  func(GUIClick); \
   BACKUP_HELP_DOS(func) \
   BACKUP_HELP_WIN(func) \
   BACKUP_HELP_SDL(func)
@@ -611,7 +610,6 @@ static void handle_params(int argc, char *argv[])
             break;
 
           case 'j': //Disable mouse
-            GUIClick = 0;
             MouseDis = 1;
             break;
 

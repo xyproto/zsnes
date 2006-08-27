@@ -50,7 +50,7 @@ EXTSYM offsetmshl,NextLineCache,tltype2b,tltype8b,objwlrpos
 EXTSYM EmuSpeed,SDRatio,FFRatio,DisplayBatteryStatus
 EXTSYM KeyResetSpeed,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyDisplayBatt,EMUPause
 EXTSYM device1,device2,snesinputdefault1,snesinputdefault2
-EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2
+EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2,MouseDis
 
 %ifndef NO_DEBUGGER
 EXTSYM debuggeron
@@ -416,6 +416,8 @@ NEWSYM cachevideo
     push esi
     push edi
     push edx
+    cmp byte[MouseDis],1
+    je .noclick
     cmp byte[GUIClick],0
     je .noclick
     cmp byte[device1],0

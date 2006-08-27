@@ -3096,7 +3096,7 @@ DisplayGUIOptns:              ; GUI Options
   GUIDisplayCheckboxu 10,12,43,esctomenu,GUIGUIOptnsTextA1c,7
   GUIDisplayCheckboxun 10,12,53,resetposn,0,GUIGUIOptnsTextA1d,5
   ; ^ "Save Win Pos", but the option is really for Reset Pos
-  GUIDisplayCheckboxu 10,12,63,GUIClick,GUIGUIOptnsTextA1e,0
+  GUIDisplayCheckboxu 10,12,63,GUIClick,GUIGUIOptnsTextA1e,1
   GUIDisplayCheckboxu 10,12,73,JoyPad1Move,GUIGUIOptnsTextA1f,6
   GUIDisplayCheckboxu 10,124,23,GUIEnableTransp,GUIGUIOptnsTextA2a,0
   GUIDisplayCheckboxu 10,124,33,FilteredGUI,GUIGUIOptnsTextA2b,0
@@ -3137,7 +3137,7 @@ GUIGUIOptnsTextA1a db 'MOUSE WRAP',0
 GUIGUIOptnsTextA1b db 'MOUSE SHADOW',0
 GUIGUIOptnsTextA1c db 'ESC TO GAME MENU',0
 GUIGUIOptnsTextA1d db 'SAVE WIN POSITNS',0
-GUIGUIOptnsTextA1e db 'CLICK ENTERS GUI',0
+GUIGUIOptnsTextA1e db 'RCLICK OPENS GUI',0
 GUIGUIOptnsTextA1f db 'CTRL GUI W/GPAD1',0
 
 GUIGUIOptnsTextA2a db 'TRANSPARENT MSGS',0
