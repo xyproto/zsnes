@@ -894,15 +894,6 @@ NEWSYM StartGUI
   mov dword[GUIwinposx+16*4],3
   mov dword[GUIwinposy+16*4],22
 .notzero
-  xor ecx,ecx
-.joysloop
-  cmp dword[pl1ULk+ecx*4],80h
-  jbe .nojoystick
-  mov dword[pl1ULk+ecx*4],0
-.nojoystick
-  inc ecx
-  cmp ecx,16
-  jne .joysloop
 
   mov dword[GUICTimer],0
   ; Initialize volume

@@ -1791,15 +1791,6 @@ SECTION .text
   xor ebx,ebx
   mov %3,ebx
 %%donekey
-  xor ecx,ecx
-%%joysloop
-  cmp dword[pl1ULk+ecx*4],80h
-  jbe %%nojoystick
-  mov dword[pl1ULk+ecx*4],0
-%%nojoystick
-  inc ecx
-  cmp ecx,16
-  jne %%joysloop
   ret
 %%skip
 %endmacro
