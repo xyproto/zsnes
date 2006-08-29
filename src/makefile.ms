@@ -113,7 +113,7 @@ ifeq (${CROSS},no)
     DELPRE=for %%n in (znotfile.nt,
     DELSUF=) do @if exist %%n del %%n
   else
-    DELPRE=@for %n in (
+    DELPRE=@for %n in (znotfile.nt,
     DELSUF=) do if exist %n del %n
   endif
   SLASH=\${BLAHBLAHBLAH}
@@ -482,6 +482,7 @@ ifneq (${ENV},)
 	${DELPRE} ${EFFECTSDIR}${SLASH}*${OE}${SEP} ${ZIPDIR}${SLASH}*${OE}${DELSUF}
 	${DELPRE} ${DOSDIR}${SLASH}*${OE}${SEP} ${WINDIR}${SLASH}*${OE}${DELSUF}
 	${DELPRE} ${CHIPDIR}${SLASH}*${OE}${SEP} ${VIDEODIR}${SLASH}*${OE}${DELSUF}
+	@echo
 else
 	@echo Please specify which platform to clean for with PLATFORM=platform_name
 endif
