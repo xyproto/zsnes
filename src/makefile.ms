@@ -49,6 +49,7 @@ MMLIBDIR=mmlib
 DELETECOMMAND=rm -f
 DELPRE=rm -f
 DELSUF=
+NULL=/dev/null
 SLASH=/
 PSR=parsegen.exe
 ASM=nasm
@@ -116,6 +117,7 @@ ifeq (${CROSS},no)
     DELPRE=@for %n in (znotfile.nt,
     DELSUF=) do if exist %n del %n
   endif
+  NULL=nul
   SLASH=\${BLAHBLAHBLAH}
   SEP=,
 endif
@@ -482,7 +484,7 @@ ifneq (${ENV},)
 	${DELPRE} ${EFFECTSDIR}${SLASH}*${OE}${SEP} ${ZIPDIR}${SLASH}*${OE}${DELSUF}
 	${DELPRE} ${DOSDIR}${SLASH}*${OE}${SEP} ${WINDIR}${SLASH}*${OE}${DELSUF}
 	${DELPRE} ${CHIPDIR}${SLASH}*${OE}${SEP} ${VIDEODIR}${SLASH}*${OE}${DELSUF}
-	@echo
+	@echo > ${NULL}
 else
 	@echo Please specify which platform to clean for with PLATFORM=platform_name
 endif
