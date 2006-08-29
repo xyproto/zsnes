@@ -109,9 +109,10 @@ endif
 
 ifeq (${CROSS},no)
   DELETECOMMAND=del
-  DELPRE=for %%n in (znotfile.nt
+  DELPRE=for %%n in (znotfile.nt,
   DELSUF=) do @if exist %%n del %%n
   SLASH=\${BLAHBLAHBLAH}
+  SEP=,
 endif
 
 ifeq (${OS},__MSDOS__)
@@ -469,13 +470,13 @@ clean:
 
 ifneq (${ENV},)
 # Take care that the expanded text between pre and suf is less than 28 characters
-	${DELPRE} ${EXE} ${PSR}${DELSUF}
-	${DELPRE} *${OE} ${NETDIR}${SLASH}*${OE}${DELSUF}
-	${DELPRE} ${CPUDIR}${SLASH}*${OE} ${GUIDIR}${SLASH}*${OE}${DELSUF}
-	${DELPRE} ${JMADIR}${SLASH}*${OE} ${MMLIBDIR}${SLASH}*${OE}${DELSUF}
-	${DELPRE} ${EFFECTSDIR}${SLASH}*${OE} ${ZIPDIR}${SLASH}*${OE}${DELSUF}
-	${DELPRE} ${DOSDIR}${SLASH}*${OE} ${WINDIR}${SLASH}*${OE}${DELSUF}
-	${DELPRE} ${CHIPDIR}${SLASH}*${OE} ${VIDEODIR}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${EXE}${SEP} ${PSR}${DELSUF}
+	${DELPRE} *${OE}${SEP} ${NETDIR}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${CPUDIR}${SLASH}*${OE}${SEP} ${GUIDIR}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${JMADIR}${SLASH}*${OE}${SEP} ${MMLIBDIR}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${EFFECTSDIR}${SLASH}*${OE}${SEP} ${ZIPDIR}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${DOSDIR}${SLASH}*${OE}${SEP} ${WINDIR}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${CHIPDIR}${SLASH}*${OE}${SEP} ${VIDEODIR}${SLASH}*${OE}${DELSUF}
 else
 	@echo Please specify which platform to clean for with PLATFORM=platform_name
 endif
