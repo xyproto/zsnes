@@ -2823,9 +2823,8 @@ void init65816()
     numspcvblleft = 480;
     SPC700write = 0;
     SPC700read = 0;
-    spc700read = 0;
     spc700idle = 0;
-    
+
     for(i = 0;i<0x40;i++)
     {
       spcextraram[i] = 0xFF;
