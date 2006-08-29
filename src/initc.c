@@ -2777,7 +2777,7 @@ void init65816()
 
     if(RTCEnable)
       RTCinit();
-    
+
     if(SPC7110Enable)
     {
       SPC7110init();

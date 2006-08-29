@@ -1291,7 +1291,7 @@ GUIVideoKeys:
   mov byte[BilinearFilter],0
 %ifdef __WIN32__
   cmp byte[NTSCFilter],1
-  jne .noforce4_3  
+  jne .noforce4_3
   mov byte[Keep4_3Ratio],1
 .noforce4_3
 %endif
