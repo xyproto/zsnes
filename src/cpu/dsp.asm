@@ -89,7 +89,7 @@ NEWSYM RDSPReg07       ; Voice  0  GAIN
 
 NEWSYM RDSPReg08       ; Voice  0  ENVX
       mov al,[DSPMem+08h]
-      and al,0FEh
+      and al,07Fh
       ret
 
 NEWSYM RDSPReg09       ; Voice  0  OUTX
@@ -154,7 +154,7 @@ NEWSYM RDSPReg17       ; Voice  1  GAIN
 
 NEWSYM RDSPReg18       ; Voice  1  ENVX
       mov al,[DSPMem+018h]
-      and al,0FEh
+      and al,07Fh
       ret
 
 NEWSYM RDSPReg19       ; Voice  1  OUTX
@@ -219,7 +219,7 @@ NEWSYM RDSPReg27       ; Voice  2  GAIN
 
 NEWSYM RDSPReg28       ; Voice  2  ENVX
       mov al,[DSPMem+028h]
-      and al,0FEh
+      and al,07Fh
       ret
 
 NEWSYM RDSPReg29       ; Voice  2  OUTX
@@ -284,7 +284,7 @@ NEWSYM RDSPReg37       ; Voice  3  GAIN
 
 NEWSYM RDSPReg38       ; Voice  3  ENVX
       mov al,[DSPMem+038h]
-      and al,0FEh
+      and al,07Fh
       ret
 
 NEWSYM RDSPReg39       ; Voice  3  OUTX
@@ -349,7 +349,7 @@ NEWSYM RDSPReg47       ; Voice  4  GAIN
 
 NEWSYM RDSPReg48       ; Voice  4  ENVX
       mov al,[DSPMem+048h]
-      and al,0FEh
+      and al,07Fh
       ret
 
 NEWSYM RDSPReg49       ; Voice  4  OUTX
@@ -414,7 +414,7 @@ NEWSYM RDSPReg57       ; Voice  5  GAIN
 
 NEWSYM RDSPReg58       ; Voice  5  ENVX
       mov al,[DSPMem+058h]
-      and al,0FEh
+      and al,07Fh
       ret
 
 NEWSYM RDSPReg59       ; Voice  5  OUTX
@@ -479,7 +479,7 @@ NEWSYM RDSPReg67       ; Voice  6  GAIN
 
 NEWSYM RDSPReg68       ; Voice  6  ENVX
       mov al,[DSPMem+068h]
-      and al,0FEh
+      and al,07Fh
       ret
 
 NEWSYM RDSPReg69       ; Voice  6  OUTX
@@ -544,7 +544,7 @@ NEWSYM RDSPReg77       ; Voice  7  GAIN
 
 NEWSYM RDSPReg78       ; Voice  7  ENVX
       mov al,[DSPMem+078h]
-      and al,0FEh
+      and al,07Fh
       ret
 
 NEWSYM RDSPReg79       ; Voice  7  OUTX
