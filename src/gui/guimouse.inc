@@ -2014,27 +2014,27 @@ DisplayGUIInputClick:
 %endif
 
   cmp byte[cplayernum],0
-  jne .nopl1
+  jne near .nopl1
   mov dword[keycontrolval],pl1contrl
   GUIInputSetIndKey pl1
 .nopl1
   cmp byte[cplayernum],1
-  jne .nopl2
+  jne near .nopl2
   mov dword[keycontrolval],pl2contrl
   GUIInputSetIndKey pl2
 .nopl2
   cmp byte[cplayernum],2
-  jne .nopl3
+  jne near .nopl3
   mov dword[keycontrolval],pl3contrl
   GUIInputSetIndKey pl3
 .nopl3
   cmp byte[cplayernum],3
-  jne .nopl4
+  jne near .nopl4
   mov dword[keycontrolval],pl4contrl
   GUIInputSetIndKey pl4
 .nopl4
   cmp byte[cplayernum],4
-  jne .nopl5
+  jne near .nopl5
   mov dword[keycontrolval],pl5contrl
   GUIInputSetIndKey pl5
 .nopl5

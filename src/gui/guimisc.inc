@@ -146,23 +146,23 @@ SECTION .text
 
 %macro ConfigureKey 2
   cmp byte[%2],0
-  jne %%nopl1
+  jne near %%nopl1
   ConfigureKey2 pl1,%1
 %%nopl1
   cmp byte[%2],1
-  jne %%nopl2
+  jne near %%nopl2
   ConfigureKey2 pl2,%1
 %%nopl2
   cmp byte[%2],2
-  jne %%nopl3
+  jne near %%nopl3
   ConfigureKey2 pl3,%1
 %%nopl3
   cmp byte[%2],3
-  jne %%nopl4
+  jne near %%nopl4
   ConfigureKey2 pl4,%1
 %%nopl4
   cmp byte[%2],4
-  jne %%nopl5
+  jne near %%nopl5
   ConfigureKey2 pl5,%1
 %%nopl5
 %endmacro
