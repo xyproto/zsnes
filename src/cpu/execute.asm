@@ -1057,7 +1057,7 @@ NEWSYM cpuover
     ProcessIRQStuff
     mov ax,[resolutn]
     cmp [curypos],ax
-    jbe .drawline
+    jb .drawline
 
 
 ;    mov ax,[resolutn]
