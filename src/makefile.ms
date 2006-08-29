@@ -109,8 +109,13 @@ endif
 
 ifeq (${CROSS},no)
   DELETECOMMAND=del
-  DELPRE=for %%n in (znotfile.nt,
-  DELSUF=) do @if exist %%n del %%n
+  ifeq (${OS},__WIN32__)
+    DELPRE=for %%n in (znotfile.nt,
+    DELSUF=) do @if exist %%n del %%n
+  else
+    DELPRE=@for %n in (
+    DELSUF=) do if exist %n del %n
+  endif
   SLASH=\${BLAHBLAHBLAH}
   SEP=,
 endif
