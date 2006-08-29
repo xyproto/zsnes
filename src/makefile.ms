@@ -47,7 +47,8 @@ ZIPDIR=zip
 MMLIBDIR=mmlib
 
 DELETECOMMAND=rm -f
-TRUTH=;true
+DELPRE=rm -f
+DELSUF=
 SLASH=/
 PSR=parsegen.exe
 ASM=nasm
@@ -107,8 +108,9 @@ ifeq (${ENV},win32-cross)
 endif
 
 ifeq (${CROSS},no)
-  TRUTH=
   DELETECOMMAND=del
+  DELPRE=for %%n in (znotfile.nt
+  DELSUF=) do @if exist %%n del %%n
   SLASH=\${BLAHBLAHBLAH}
 endif
 
@@ -459,24 +461,21 @@ endif
 ${ZIPDIR}/unzip${OE}: ${ZIPDIR}/unzip.c ${ZIPDIR}/zunzip.h
 ${ZIPDIR}/zpng${OE}: ${ZIPDIR}/zpng.c
 
+else  #else no ENV specified
+	@echo Please specify which platform to compile for with PLATFORM=platform_name
+endif #endif on the ENV being empty
+
 clean:
 
-	${DELETECOMMAND} ${EXE} ${TRUTH}
-	${DELETECOMMAND} ${PSR} ${TRUTH}
-	${DELETECOMMAND} *${OE} ${TRUTH}
-	${DELETECOMMAND} ${CHIPDIR}${SLASH}*${OE} ${TRUTH}
-	${DELETECOMMAND} ${CPUDIR}${SLASH}*${OE} ${TRUTH}
-	${DELETECOMMAND} ${DOSDIR}${SLASH}*${OE} ${TRUTH}
-	${DELETECOMMAND} ${EFFECTSDIR}${SLASH}*${OE} ${TRUTH}
-	${DELETECOMMAND} ${GUIDIR}${SLASH}*${OE} ${TRUTH}
-	${DELETECOMMAND} ${JMADIR}${SLASH}*${OE} ${TRUTH}
-	${DELETECOMMAND} ${MMLIBDIR}${SLASH}*${OE} ${TRUTH}
-	${DELETECOMMAND} ${VIDEODIR}${SLASH}*${OE} ${TRUTH}
-	${DELETECOMMAND} ${WINDIR}${SLASH}*${OE} ${TRUTH}
-	${DELETECOMMAND} ${ZIPDIR}${SLASH}*${OE} ${TRUTH}
-#	${DELETECOMMAND} ${NETDIR}${SLASH}*${OE} ${TRUTH}
-
-else  #else no ENV specified
-help:
-	@echo Please specify which platform to compile/clean for with PLATFORM=platform_name
-endif #endif on the ENV being empty
+ifneq (${ENV},)
+# Take care that the expanded text between pre and suf is less than 28 characters
+	${DELPRE} ${EXE} ${PSR}${DELSUF}
+	${DELPRE} *${OE} ${NETDIR}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${CPUDIR}${SLASH}*${OE} ${GUIDIR}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${JMADIR}${SLASH}*${OE} ${MMLIBDIR}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${EFFECTSDIR}${SLASH}*${OE} ${ZIPDIR}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${DOSDIR}${SLASH}*${OE} ${WINDIR}${SLASH}*${OE}${DELSUF}
+	${DELPRE} ${CHIPDIR}${SLASH}*${OE} ${VIDEODIR}${SLASH}*${OE}${DELSUF}
+else
+	@echo Please specify which platform to clean for with PLATFORM=platform_name
+endif
