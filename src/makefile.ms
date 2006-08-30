@@ -110,8 +110,8 @@ endif
 ifeq (${CROSS},no)
   DELETECOMMAND=del
   ifeq (${OS},__WIN32__)
-    DELPRE=for %%n in (znotfile.nt,
-    DELSUF=) do @if exist %%n del %%n
+    DELPRE=@for %%n in (znotfile.nt,
+    DELSUF=) do if exist %%n del %%n
   else
     DELPRE=@for %n in (znotfile.nt,
     DELSUF=) do if exist %n del %n
