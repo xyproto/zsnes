@@ -116,9 +116,9 @@ ifeq (${CROSS},no)
     DELPRE=@for %n in (znotfile.nt,
     DELSUF=) do if exist %n del %n
   endif
+  NEWLINE=@echo.
   SLASH=\${BLAHBLAHBLAH}
   SEP=,
-  NEWLINE=@type nul
 endif
 
 ifeq (${OS},__MSDOS__)
