@@ -334,8 +334,8 @@ EXTSYM puts
 %macro GUIOuttextwinloadfile 3
   test dword[cloadnleft],80000000h
   jnz near %%skip
-  mov eax,[GUIfileentries]
-  cmp eax,[cloadnposb]
+  mov eax,[cloadnposb]
+  cmp eax,[GUIfileentries]
   jae near %%skip
   mov eax,[cloadnposb]
   shl eax,2
@@ -347,8 +347,8 @@ EXTSYM puts
 %macro GUIOuttextwinloaddir 3
   test dword[cloadnleft],80000000h
   jnz near %%skip
-  mov eax,[GUIdirentries]
-  cmp eax,[cloadnposb]
+  mov eax,[cloadnposb]
+  cmp eax,[GUIdirentries]
   jae near %%skip
   mov eax,[cloadnposb]
   shl eax,2
@@ -791,8 +791,12 @@ DisplayGUILoad:
   mov dword[cloadmaxlen],39
   cmp dword[GUIcurrentfilewin],0
   jne near .nofiles
+  cmp dword[GUIfileentries],0
+  je near .nofiles
 %ifndef __MSDOS__
   mov eax,[GUIcurrentcursloc]
+  cmp eax,[GUIfileentries]
+  jae near .nofiles
   shl eax,2
   add eax,[selected_names]
   mov eax,[eax]
@@ -800,8 +804,6 @@ DisplayGUILoad:
   GUIOuttextwin2l 1,6,158,[cloadnpos]
   add byte[GUItextcolor],15
   GUIOuttextwin2l 1,5,157,[cloadnpos]
-%else
-  add byte[GUItextcolor],15
 %endif
 
 .nofiles                           ; Button
