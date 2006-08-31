@@ -760,7 +760,7 @@ DisplayGUILoad:
 %endif
   GUIDisplayText 1,6,16,GUILoadText7
   GUIDisplayText 1,161,16,GUILoadText8
-  GUIDisplayText 1,6,138,ZRomPath
+  GUIDisplayText 1,6,138,[ZRomPath]
   GUIDisplayText 1,146,172,GUILoadTextB
 
   mov byte[GUItextcolor],202
