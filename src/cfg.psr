@@ -698,9 +698,8 @@ RewindFrames db 15
 @ "C:\\Games\\SNES" is correct.
 @
 %else
-@ ROMs directory (don't edit drive, MS-only)
+@ ROMs directory
 %endif
-LoadDrive db 2,58
 %ifdef __MSDOS__
 LoadDir times 256 db ""
 @ Save states & SRAMs, snapshots, SPCs

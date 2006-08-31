@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM GetTime,GetDate,GUIkeydelay2,_chdrive,ZFileCHDir
-EXTSYM CHPath,ZFileGetDir,DirName,_getdrive,SBHDMA
+EXTSYM CHPath,SBHDMA
 EXTSYM soundon,DSPDisable,Start60HZ,pressed,putchar,getch
 EXTSYM vidbufferofsb,vidbuffer,clearwin,Stop60HZ,initwinvideo,vesa2_rpos
 EXTSYM vesa2_gpos,vesa2_bpos,vesa2_rposng,vesa2_gposng,vesa2_bposng,vesa2_usbit
@@ -364,66 +364,6 @@ NEWSYM Change_Single_Dir
 ;    mov ah,3Bh
 ;    int 21h
 ;    ret
-
-NEWSYM Change_Dir
-    pushad
-
-    and edx,0FFh
-    add edx,1
-    push edx
-    call _chdrive
-    pop edx
-
-;    mov ah,0Eh
-;    int 21h
-;    jc .fail
-    mov dword[CHPath],gotoroot
-    call ZFileCHDir
-    or eax,eax
-    jnz .fail
-    popad
-    mov [CHPath],ebx
-    cmp byte[ebx],0
-    je .nocdir
-    pushad
-    call ZFileCHDir
-    or eax,eax
-    jnz .fail
-    popad
-.nocdir
-    clc
-    ret
-.fail
-    popad
-    stc
-    ret
-
-NEWSYM Get_Dir
-    mov [DirName],ebx
-    pushad
-    call ZFileGetDir
-    mov eax,[DirName]
-    mov ebx,eax
-    mov ecx,125
-.loop
-    mov dl,[eax+3]
-    cmp dl,'/'
-    jne .noslash
-    mov dl,'\'
-.noslash
-    mov [eax],dl
-    inc eax
-    dec ecx
-    jnz .loop
-    popad
-    push edx
-    call _getdrive
-;    mov ah,19h
-;    int 21h
-    add al,-1
-    pop edx
-    mov [edx],al
-    ret
 
 NEWSYM Get_Memfree
     mov eax,02000000h
@@ -847,7 +787,6 @@ NEWSYM ScanCodeListing
 
 NEWSYM ZSNESBase, dd 0
 TempVarSeek dd 0
-gotoroot db '\',0
 
 SECTION .text
 

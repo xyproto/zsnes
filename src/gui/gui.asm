@@ -43,7 +43,7 @@
 
 EXTSYM curblank,vidpastecopyscr,frameskip,newengen,vsyncon,cvidmode,antienab
 EXTSYM smallscreenon,soundon,StereoSound,SoundQuality,MusicRelVol,endprog
-EXTSYM continueprog,spcBuffera,cbitmode,makepal,t1cc,LoadDir,LoadDrive
+EXTSYM continueprog,spcBuffera,cbitmode,makepal,t1cc
 EXTSYM romloadskip,romdata,init65816
 EXTSYM procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA,spcX,spcY,spcP,spcNZ
 EXTSYM Voice0Status,Voice1Status,Voice2Status,Voice3Status,Voice4Status
@@ -56,7 +56,7 @@ EXTSYM memtablew8,writeon,JoyRead,SetInputDevice,delay,FPSOn,RevStereo,WDSPReg0C
 EXTSYM WDSPReg1C,pl12s34,resolutn,Makemode7Table,vidbufferofsb,wramdata,bgfixer
 EXTSYM videotroub,CheatCodeSave,CheatCodeLoad,LoadCheatSearchFile
 EXTSYM SaveCheatSearchFile,Get_Date,Check_Key,Get_Key,SRAMDir,sram
-EXTSYM Change_Drive,Change_Single_Dir,Change_Dir,Get_Dir
+EXTSYM Change_Drive,Change_Single_Dir
 EXTSYM TripBufAvail,ResetTripleBuf,GUINGVID,ScanCodeListing
 EXTSYM AdjustFrequency,GUISaveVars,Init_Mouse,Get_MouseData,Set_MouseXMax
 EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
@@ -916,11 +916,6 @@ NEWSYM StartGUI
 
   call LoadDetermine
 
-  ; change dir to LoadDrive/LoadDir
-  mov dl,[LoadDrive]
-  mov ebx,LoadDir
-  call Change_Dir
-
   cmp byte[AutoState],0
   je .noautostate
   cmp byte[romloadskip],0
@@ -967,10 +962,6 @@ NEWSYM StartGUI
   call LoadCheatSearchFile
   popad
 
-  ; change dir to LoadDrive/LoadDir
-  mov dl,[LoadDrive]
-  mov ebx,LoadDir
-  call Change_Dir
 .csskip
 
   mov byte[GUIQuit],0
@@ -1083,11 +1074,6 @@ NEWSYM StartGUI
   call makepal
 .nomakepal
   mov word[t1cc],1
-
-  ; get LoadDrive/LoadDir
-  mov ebx,LoadDir
-  mov edx,LoadDrive
-  call Get_Dir
 
   pushad
   call GUISaveVars

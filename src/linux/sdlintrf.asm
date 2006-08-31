@@ -22,7 +22,7 @@
 
 EXTSYM getchar,PrevFSMode,sem_sleep,SBHDMA,putchar
 EXTSYM GetTime,GetDate,GUIkeydelay2,ZFileCHDir,CHPath
-EXTSYM ZFileGetDir,DirName,Start60HZ
+EXTSYM Start60HZ
 EXTSYM pressed,AdjustFrequency,vidbufferofsb,vidbuffer,clearwin
 EXTSYM Stop60HZ,initwinvideo,vesa2_rpos,vesa2_gpos,vesa2_bpos,vesa2_rposng
 EXTSYM vesa2_gposng,vesa2_bposng,vesa2_usbit,vesa2_clbit,vesa2_clbitng
@@ -251,30 +251,6 @@ NEWSYM Change_Single_Dir
 .notokay
     popad
     stc
-    ret
-
-NEWSYM Change_Dir
-    mov [CHPath],ebx
-    cmp byte[ebx],0
-    je .nocdir
-    pushad
-    call ZFileCHDir
-    or eax,eax
-    jnz .fail
-    popad
-.nocdir
-    clc
-    ret
-.fail
-    popad
-    stc
-    ret
-
-NEWSYM Get_Dir
-    mov [DirName],ebx
-    pushad
-    call ZFileGetDir
-    popad
     ret
 
 NEWSYM Get_Memfree
@@ -692,7 +668,6 @@ NEWSYM ScanCodeListing
 
 NEWSYM ZSNESBase, dd 0
 TempVarSeek dd 0
-gotoroot db '/',0
 SECTION .text
 
 ; ****************************

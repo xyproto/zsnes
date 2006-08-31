@@ -32,19 +32,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 // MKDir/CHDir
 char * CHPath;
 
-// GetDir
-char * DirName;
-unsigned int DriveNumber;
-
 unsigned int ZFileCHDir()
 {
   return(chdir(CHPath));
-}
-
-unsigned int ZFileGetDir()
-{
-  /*return(getcwd(DirName,128));*/
-  return(*getcwd(DirName,128));
 }
 
 unsigned int GetTime()

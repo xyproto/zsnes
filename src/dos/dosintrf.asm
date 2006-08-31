@@ -22,7 +22,7 @@
 
 EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,
 EXTSYM GetTime,GetDate,V8Mode,getblaster,Force8b,SBHDMA
-EXTSYM ZFileCHDir,CHPath,ZFileGetDir,DirName
+EXTSYM ZFileCHDir,CHPath
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
 EXTSYM NoSoundReinit,soundon,DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB
 EXTSYM handler8h,handler9h,init60hz,Interror,init18_2hz,DeInitSPC,GUIinit36_4hz
@@ -224,69 +224,6 @@ NEWSYM Change_Single_Dir
     ; Dir in edx, return error in carry flag
     mov ah,3Bh
     int 21h
-    ret
-
-
-NEWSYM Change_Dir
-    pushad
-    mov ah,0Eh
-    int 21h
-;    jc .fail
-    mov dword[CHPath],gotoroot
-    call ZFileCHDir
-    or eax,eax
-    jnz .fail
-    popad
-    mov [CHPath],ebx
-    cmp byte[ebx],0
-    je .nocdir
-    pushad
-    call ZFileCHDir
-    or eax,eax
-    jnz .fail
-    popad
-.nocdir
-    clc
-    ret
-.fail
-    popad
-    stc
-    ret
-
-NEWSYM Get_Dir
-    mov [DirName],ebx
-    pushad
-    call ZFileGetDir
-    mov eax,[DirName]
-    mov ebx,eax
-    mov ecx,125
-.loop
-    mov dl,[eax+3]
-    cmp dl,'/'
-    jne .noslash
-    mov dl,'\'
-.noslash
-    mov [eax],dl
-    inc eax
-    dec ecx
-    jnz .loop
-    popad
-    push edx
-    mov ah,19h
-    int 21h
-    pop edx
-    mov [edx],al
-    ret
-
-    push edx
-    mov ah,47h
-    mov dl,0
-    mov esi,ebx
-    int 21h
-    mov ah,19h
-    int 21h
-    pop edx
-    mov [edx],al
     ret
 
 NEWSYM Get_Memfree
@@ -972,13 +909,6 @@ NEWSYM ScanCodeListing
         db 'PPA','PPX','PPL','PPR','   ','   ','   ','   '
         db 'P2B','P2Y','P2S','P2T','P2U','P2D','P2L','P2R'
         db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
-
-;SECTION .text
-
-;SECTION .data
-;NEWSYM ZSNESBase, dd 0
-;TempVarSeek dd 0
-gotoroot db '\',0
 
 SECTION .bss
 

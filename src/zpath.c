@@ -159,6 +159,8 @@ void deinit_paths()
   void SaveSramData();
   void GUISaveVars();
 
+  strcpy(LoadDir, ZRomPath);
+
   SaveSramData();
   GUISaveVars();
 

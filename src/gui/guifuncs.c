@@ -458,9 +458,6 @@ void GUIRestoreVars()
   CheckValueBounds(&AutoState, 0, 1, 0, UB);
   CheckValueBounds(&RewindStates, 0, 99, 8, UB);
   CheckValueBounds(&RewindFrames, 1, 99, 15, UB);
-#ifndef __UNIXSDL__
-  CheckValueBounds(LoadDrive, 0, 25, 2, UB);
-#endif
 #ifdef NO_PNG
   CheckValueBounds(&ScreenShotFormat, 0, 0, 0, UB);
 #else
