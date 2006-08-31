@@ -1379,7 +1379,7 @@ void GUILoadData()
       }
       else
       {
-        strcpy(ZRomPath, nameptr);
+        strcat(ZRomPath, nameptr);
       }
       strcatslash(ZRomPath);
     }
