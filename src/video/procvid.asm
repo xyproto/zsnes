@@ -2913,9 +2913,9 @@ NEWSYM copyvid
     call OutputGraphicString5x5
 .nfivex5b
     dec dword[MessageOn]
-    jnz .nomsg
+    jnz near .nomsg
     cmp byte[cbitmode],1
-    je .nomsg
+    je near .nomsg
     call makepal
     jmp .nomsg
 .do16b
