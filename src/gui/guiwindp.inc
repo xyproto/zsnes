@@ -334,6 +334,9 @@ EXTSYM puts
 %macro GUIOuttextwinloadfile 3
   test dword[cloadnleft],80000000h
   jnz near %%skip
+  mov eax,[GUIfileentries]
+  cmp eax,[cloadnposb]
+  jae near %%skip
   mov eax,[cloadnposb]
   shl eax,2
   add eax,[selected_names]
@@ -344,6 +347,9 @@ EXTSYM puts
 %macro GUIOuttextwinloaddir 3
   test dword[cloadnleft],80000000h
   jnz near %%skip
+  mov eax,[GUIdirentries]
+  cmp eax,[cloadnposb]
+  jae near %%skip
   mov eax,[cloadnposb]
   shl eax,2
   add eax,[d_names]
