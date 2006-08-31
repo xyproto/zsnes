@@ -231,7 +231,6 @@ unsigned char vrama[65536];
 unsigned char mode7tab[65536];
 
 unsigned short fulladdtab[65536];
-unsigned char spcRamcmp[65536];
 unsigned short VolumeConvTable[32768];
 unsigned int dspWptr[256];
 unsigned int dspRptr[256];

@@ -916,7 +916,7 @@ void zst_sram_load_compressed(FILE *fp)
 extern unsigned char Voice0Disable, Voice1Disable, Voice2Disable, Voice3Disable;
 extern unsigned char Voice4Disable, Voice5Disable, Voice6Disable, Voice7Disable;
 
-void stateloader (char *statename, unsigned char keycheck, unsigned char xfercheck)
+void stateloader(char *statename, bool keycheck, bool xfercheck)
 {
   extern unsigned char PauseLoad;
 
@@ -983,7 +983,7 @@ void stateloader (char *statename, unsigned char keycheck, unsigned char xferche
   //Actual state loading code
   if ((fhandle = fopen_dir(ZSramPath, statename,"rb")))
   {
-    if (xfercheck)      { Totalbyteloaded = 0; }
+    if (xfercheck) { Totalbyteloaded = 0; }
 
     if (zst_load(fhandle, 0))
     {
@@ -1005,14 +1005,8 @@ void stateloader (char *statename, unsigned char keycheck, unsigned char xferche
     Msgptr = txtnfndmsg; // 'UNABLE TO LOAD STATE X.'
   }
 
-  Voice0Disable = 1;
-  Voice1Disable = 1;
-  Voice2Disable = 1;
-  Voice3Disable = 1;
-  Voice4Disable = 1;
-  Voice5Disable = 1;
-  Voice6Disable = 1;
-  Voice7Disable = 1;
+  Voice0Disable = Voice1Disable = Voice2Disable = Voice3Disable = 1;
+  Voice4Disable = Voice5Disable = Voice6Disable = Voice7Disable = 1;
 
   stim();
 }
@@ -1030,6 +1024,16 @@ void loadstate()
 void loadstate2()
 {
   stateloader(ZStateName, 0, 1);
+}
+
+void LoadSecondState() // direct port, need zpath
+{
+  unsigned char backup = ZStateName[statefileloc];
+  ZStateName[statefileloc] = 's';
+
+  loadstate2();
+
+  ZStateName[statefileloc] = backup;
 }
 
 extern unsigned char CHIPBATT, sramsavedis;

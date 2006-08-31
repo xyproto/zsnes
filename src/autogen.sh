@@ -8,6 +8,8 @@ autoconf
 
 # Run configure for this platform, or simply update Makefile
 case $1 in
+  --noconf )
+    break ;;
   --recheck )
     ./config.status --recheck; break ;;
   * )

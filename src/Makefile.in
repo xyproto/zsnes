@@ -32,13 +32,13 @@ ZIP_D=zip
 PSR=parsegen
 PSR_H=cfg.h md.h
 
-CHIP_O=$(CHIP_D)/c4emu.o $(CHIP_D)/dsp1emu.o $(CHIP_D)/dsp1proc.o\
-	$(CHIP_D)/dsp2proc.o $(CHIP_D)/dsp3emu.o $(CHIP_D)/dsp3proc.o\
-	$(CHIP_D)/dsp4emu.o $(CHIP_D)/dsp4proc.o $(CHIP_D)/fxemu2.o\
-	$(CHIP_D)/fxemu2b.o $(CHIP_D)/fxemu2c.o $(CHIP_D)/fxtable.o\
-	$(CHIP_D)/obc1emu.o $(CHIP_D)/obc1proc.o $(CHIP_D)/sa1proc.o\
-	$(CHIP_D)/sa1regs.o $(CHIP_D)/sdd1emu.o $(CHIP_D)/seta10.o\
-	$(CHIP_D)/sfxproc.o $(CHIP_D)/st10proc.o $(CHIP_D)/c4proc.o
+CHIP_O=$(CHIP_D)/c4emu.o $(CHIP_D)/c4proc.o $(CHIP_D)/dsp1emu.o\
+	$(CHIP_D)/dsp1proc.o $(CHIP_D)/dsp2proc.o $(CHIP_D)/dsp3emu.o\
+	$(CHIP_D)/dsp3proc.o $(CHIP_D)/dsp4emu.o $(CHIP_D)/dsp4proc.o\
+	$(CHIP_D)/fxemu2.o $(CHIP_D)/fxemu2b.o $(CHIP_D)/fxemu2c.o\
+	$(CHIP_D)/fxtable.o $(CHIP_D)/obc1emu.o $(CHIP_D)/obc1proc.o\
+	$(CHIP_D)/sa1proc.o $(CHIP_D)/sa1regs.o $(CHIP_D)/sdd1emu.o\
+	 $(CHIP_D)/seta10.o $(CHIP_D)/sfxproc.o $(CHIP_D)/st10proc.o
 
 CPU_O=$(CPU_D)/dma.o $(CPU_D)/dsp.o $(CPU_D)/dspproc.o $(CPU_D)/execute.o\
 	$(CPU_D)/executec.o $(CPU_D)/irq.o $(CPU_D)/memory.o $(CPU_D)/memtable.o\
@@ -105,29 +105,27 @@ main: makefile.dep $(Z_OBJS)
 $(PSR): parsegen.cpp
 
 TOOLSEXE=$(TOOL_D)/archopt $(TOOL_D)/cutrtype $(TOOL_D)/extraext\
-	$(TOOL_D)/minwhite $(TOOL_D)/nreplace $(TOOL_D)/sec-test\
-	$(TOOL_D)/srccount $(TOOL_D)/depbuild $(TOOL_D)/macroll
-tools: $(TOOLSEXE)
-$(TOOL_D)/archopt:
+	$(TOOL_D)/macroll $(TOOL_D)/minwhite $(TOOL_D)/nreplace\
+	$(TOOL_D)/sec-test $(TOOL_D)/srccount
+tools: $(TOOLSEXE) $(TOOL_D)/depbuild
+$(TOOL_D)/archopt: $(TOOL_D)/archopt.c
 	@CC@ @CFLAGS@ -m32 -o $@ $@.c
-$(TOOL_D)/cutrtype: $(TOOL_O)
+$(TOOL_D)/cutrtype: $(TOOL_D)/cutrtype.cpp $(TOOL_O)
 	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_O)
-$(TOOL_D)/extraext: $(TOOL_O)
+$(TOOL_D)/depbuild: $(TOOL_D)/depbuild.cpp $(TOOL_O)
 	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_O)
-$(TOOL_D)/minwhite: $(TOOL_O)
+$(TOOL_D)/extraext: $(TOOL_D)/extraext.cpp $(TOOL_O)
+	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_O)
+$(TOOL_D)/macroll: $(TOOL_D)/macroll.cpp $(TOOL_O)
+	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_O)
+$(TOOL_D)/minwhite: $(TOOL_D)/minwhite.cpp $(TOOL_O)
 	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_D)/fileutil.o
-$(TOOL_D)/nreplace: $(TOOL_O)
+$(TOOL_D)/nreplace: $(TOOL_D)/nreplace.cpp $(TOOL_O)
 	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_D)/fileutil.o
-$(TOOL_D)/scanskip: $(TOOL_O)
+$(TOOL_D)/sec-test: $(TOOL_D)/sec-test.cpp $(TOOL_O)
 	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_O)
-$(TOOL_D)/sec-test: $(TOOL_O)
-	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_O)
-$(TOOL_D)/srccount: $(TOOL_O)
+$(TOOL_D)/srccount: $(TOOL_D)/srccount.cpp $(TOOL_O)
 	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_D)/fileutil.o
-$(TOOL_D)/depbuild: $(TOOL_O)
-	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_O)
-$(TOOL_D)/macroll: $(TOOL_O)
-	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_O)
 
 include makefile.dep
 makefile.dep: $(TOOL_D)/depbuild Makefile
@@ -152,4 +150,5 @@ clean:
 tclean:
 	rm -f $(TOOL_O) $(TOOLSEXE)
 distclean: clean tclean
-	rm -f Makefile makefile.dep aclocal.m4 configure config.log config.status config.h
+	rm -f Makefile makefile.dep aclocal.m4 configure config.log config.status\
+	config.h $(TOOL_D)/depbuild

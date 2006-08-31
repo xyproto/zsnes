@@ -319,8 +319,9 @@ SECTION .text
   cmp byte[GUIloadfntype],0
   jne %%nottype0
   mov eax,[cloadnposb]
-  mov eax,[spcRamcmp+eax*4]
-  inc eax
+  shl eax,2
+  add eax,d_names
+  add eax,8
   mov [cloadnpos],eax
   inc dword[cloadnposb]
 %%nottype0
@@ -759,7 +760,7 @@ DisplayGUILoad:
 %endif
   GUIDisplayText 1,6,16,GUILoadText7
   GUIDisplayText 1,161,16,GUILoadText8
-  GUIDisplayText 1,6,138,GUIcurrentdir
+  GUIDisplayText 1,6,138,ZRomPath
   GUIDisplayText 1,146,172,GUILoadTextB
 
   mov byte[GUItextcolor],202
@@ -772,8 +773,8 @@ DisplayGUILoad:
   jne near .nofiles
 %ifndef __MSDOS__
   mov eax,[GUIcurrentcursloc]
-  mov eax,[spcRamcmp+eax*4]
-  inc eax
+  shl eax,2
+  add eax,selected_names
   mov [cloadnpos],eax
   GUIOuttextwin2l 1,6,158,[cloadnpos]
   add byte[GUItextcolor],15
@@ -1486,7 +1487,7 @@ DisplayGUIOption:       ; Emu Options
   GUIDisplayCheckboxu 4,11,80,Turbo30hz,GUIOptionText8,2
   GUIDisplayCheckboxu 4,11,90,TimerEnable,GUIOptionText9,12
   GUIDisplayCheckboxu 4,11,100,TwelveHourClock,GUIOptionText9a,0
-  GUIDisplayCheckboxu 4,11,110,OldGfxMode2,GUIOptionTextA,0
+  GUIDisplayCheckboxu 4,11,110,bgfixer,GUIOptionTextA,0
   GUIDisplayCheckboxu 4,11,120,SmallMsgText,GUIOptionTextB,1
   GUIDisplayCheckboxu 4,11,130,AutoPatch,GUIOptionTextC,12
   GUIDisplayCheckboxu 4,11,140,RomInfo,GUIOptionTextD,15
@@ -2792,8 +2793,8 @@ Cheatmodeadd:                                 ; Add Window
   ret
 
 SECTION .bss
-CheatWinMode resb 1
-CheatSearchStatus resb 1
+NEWSYM CheatWinMode, resb 1
+NEWSYM CheatSearchStatus, resb 1
 CheatCompareValue resd 1
 NumCheatSrc       resd 1
 GUIcurrentchtsrcviewloc resd 1

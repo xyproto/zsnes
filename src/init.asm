@@ -40,19 +40,11 @@ EXTSYM pl4Ltk,pl4Rtk,pl4ULk,pl4URk,pl4DLk,pl4DRk,pl5contrl,pl5selk,pl5startk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5Xk,pl5Ak,pl5Lk,pl5Yk,pl5Bk,pl5Rk
 EXTSYM pl5Xtk,pl5Ytk,pl5Atk,pl5Btk,pl5Ltk,pl5Rtk,pl5ULk,pl5URk,pl5DLk,pl5DRk
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc,extlatch
-EXTSYM MMXSupport,MMXextSupport
-EXTSYM romdata
-EXTSYM procexecloop,wramdata
-EXTSYM GetCurDir,ZStateName,statefileloc,loadfileGUI
-EXTSYM romispal,initregr,initregw
-EXTSYM InGUI
-EXTSYM loadstate2,CMovieExt,MoviePlay,MovieDumpRaw,AllowUDLR
-EXTSYM device1,device2,processmouse1,processmouse2,cpalval
-EXTSYM clearmem,SPC7110IndexSize
-EXTSYM SPC7PackIndexLoad
-EXTSYM headerhack,SetupROM
-EXTSYM ZCartName,init65816
-EXTSYM initsnes
+EXTSYM MMXSupport,MMXextSupport,romdata,procexecloop,wramdata,ZStateName
+EXTSYM romispal,initregr,initregw,statefileloc,loadfileGUI,loadstate2,CMovieExt
+EXTSYM MoviePlay,MovieDumpRaw,AllowUDLR,device1,device2,processmouse1
+EXTSYM processmouse2,cpalval,init65816,clearmem,SPC7110IndexSize
+EXTSYM SPC7PackIndexLoad,SetupROM,ZCartName,initsnes
 
 %ifdef __MSDOS__
 EXTSYM init18_2hz
@@ -75,7 +67,6 @@ EXTSYM Start60HZ
 SECTION .data
 NEWSYM regsbackup, times 3019 db 0
 NEWSYM forceromtype, db 0
-NEWSYM bgfixer, db 0
 NEWSYM ForceNewGfxOff, dd 0
 NEWSYM SfxAC, db 0
 ; FIX STATMAT
@@ -151,8 +142,8 @@ NEWSYM init
     je .noloadfile
 .found
     mov byte[romloadskip],0
-    call loadfile
     pushad
+    call loadfileGUI
     call SetupROM
     popad
     cmp byte[DisplayInfo],0
@@ -982,27 +973,9 @@ NEWSYM printhex
 SECTION .data
 .hexdat db '0123456789ABCDEF'
 
-;*******************************************************
-; Load File
-;*******************************************************
-; Search for header size first which is filesize MOD 32768
-
 SECTION .bss
+NEWSYM SPC7110Entries, resd 1
 NEWSYM IPSPatched, resb 1
-SECTION .text
-
-NEWSYM loadfile
-    call GetCurDir
-    mov byte[InGUI],0
-    pushad
-    call loadfileGUI
-    popad
-    ret
-
-SECTION .data
-.opened db 'File opened successfully!',13,10,0
-SECTION .bss
-
 NEWSYM Checksumvalue, resw 1
 NEWSYM CRC32, resd 1
 NEWSYM SramExists,    resb 1
@@ -1010,12 +983,7 @@ NEWSYM NumofBanks,    resd 1
 NEWSYM NumofBytes,    resd 1
 
 SECTION .data
-
 spc7110notfound db 'DECOMPRESSED PACK NOT FOUND',0
-
-SECTION .bss
-
-NEWSYM SPC7110Entries, resd 1
 
 SECTION .text
 

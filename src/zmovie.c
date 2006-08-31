@@ -77,7 +77,7 @@ extern unsigned short latchx, latchy;
 #define IS_SCOPE()   (device2 == 2)
 
 void GUIDoReset();
-void powercycle(bool);
+void powercycle(bool, bool);
 void zst_sram_load(FILE *);
 void zst_sram_load_compressed(FILE *);
 void zst_save(FILE *, bool, bool);
@@ -923,7 +923,7 @@ static void zmv_create(char *filename)
         break;
       case zmv_sm_power:
         MovieWaiting = true;
-        powercycle(true);
+        powercycle(true, false);
         break;
       case zmv_sm_reset:
         GUIReset = 1;
@@ -932,7 +932,7 @@ static void zmv_create(char *filename)
         break;
       case zmv_sm_clear_all:
         MovieWaiting = true;
-        powercycle(false);
+        powercycle(false, false);
         break;
     }
 
@@ -1175,7 +1175,7 @@ static bool zmv_open(char *filename)
           break;
         case zmv_sm_power:
           MovieWaiting = true;
-          powercycle(false);
+          powercycle(false, false);
           zst_sram_load_compressed(zmv_vars.fp);
           break;
         case zmv_sm_reset:
@@ -1186,7 +1186,7 @@ static bool zmv_open(char *filename)
           break;
         case zmv_sm_clear_all:
           MovieWaiting = true;
-          powercycle(false);
+          powercycle(false, false);
           fseek(zmv_vars.fp, internal_chapter_length(ftell(zmv_vars.fp)), SEEK_CUR);
           break;
       }

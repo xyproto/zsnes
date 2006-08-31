@@ -375,9 +375,8 @@ ${EFFECTSDIR}/smoke${OE}: ${EFFECTSDIR}/smoke.c
 ${EFFECTSDIR}/water${OE}: ${EFFECTSDIR}/water.c ${EFFECTSDIR}/fixsin.h
 
 ${GUIDIR}/gui${OE}: ${GUIDIR}/gui.asm macros.mac ${GUIDIR}/guicheat.inc\
-	${GUIDIR}/guicombo.inc ${GUIDIR}/guikeys.inc ${GUIDIR}/guiload.inc\
-	${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guitools.inc\
-	${GUIDIR}/guiwindp.inc
+	${GUIDIR}/guicombo.inc ${GUIDIR}/guikeys.inc ${GUIDIR}/guiwindp.inc\
+	${GUIDIR}/guimisc.inc ${GUIDIR}/guimouse.inc ${GUIDIR}/guitools.inc
 ${GUIDIR}/guifuncs${OE}: ${GUIDIR}/guifuncs.c md${OE} cfg${OE} zpath.h
 ${GUIDIR}/menu${OE}: ${GUIDIR}/menu.asm macros.mac
 

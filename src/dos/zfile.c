@@ -47,45 +47,6 @@ unsigned int ZFileGetDir()
   return(*getcwd(DirName,128));
 }
 
-char * ZFileFindPATH;
-unsigned int ZFileFindATTRIB;
-unsigned int DTALocPos;
-
-//struct _find_t {
-//  char reserved[21] __attribute__((packed));
-//  unsigned char attrib __attribute__((packed));
-//  unsigned short wr_time __attribute__((packed));
-//  unsigned short wr_date __attribute__((packed));
-//  unsigned long size __attribute__((packed));
-//  char name[256] __attribute__((packed));
-//};
-
-unsigned int ZFileFindFirst()
-{
-   /*return(_dos_findfirst(ZFileFindPATH,ZFileFindATTRIB,DTALocPos));*/
-   return(_dos_findfirst(ZFileFindPATH,ZFileFindATTRIB,((struct find_t *)DTALocPos)));
-
-}
-
-unsigned int ZFileFindNext()
-{
-   /*return(_dos_findnext(DTALocPos));*/
-   return(_dos_findnext(((struct find_t *) DTALocPos)));
-}
-
-unsigned int ZFileFindEnd()  // for compatibility with windows later
-{
-   return(0);
-}
-
-
-//unsigned char * DirName;
-//unsigned int DriveNumber;
-
-//unsigned int   _dos_findfirst(char *_name, unsigned int _attr, struct _find_t *_result);
-//unsigned int   _dos_findnext(struct _find_t *_result);
-
-
 unsigned int GetTime()
 {
    unsigned int value;

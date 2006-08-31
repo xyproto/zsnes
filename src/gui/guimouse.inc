@@ -1116,16 +1116,6 @@ GUIWinClicked:
 %%noclick
 %endmacro
 
-%macro GUIClickCButtonO 3
-  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
-  push eax
-  xor %3,1
-  mov al,%3
-  mov [bgfixer],al
-  pop eax
-%%noclick
-%endmacro
-
 %macro GUIClickCButtonM 3
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
@@ -1265,6 +1255,7 @@ GUIWinClicked:
 %macro GUIClickCButtonL 2
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor byte[showallext],1
+  mov dword[GUIcurrentfilewin],0
   call GetLoadData
   ret
 %%noclick
@@ -1602,14 +1593,6 @@ SECTION .text
 %%noclick
 %endmacro
 
-%macro GUIPButtonHoleLoad 4
-  GUIClickArea %1+1,%2+1,%1+7,%2+7,%%noclick
-  mov %3,%4
-  call GetLoadData
-  ret
-%%noclick
-%endmacro
-
 %macro GUIWinControl 13 ;x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
   GUIClickArea %1,%2,%3,%4,{near %%noload}
   cmp dword[%7],0
@@ -1869,11 +1852,11 @@ DisplayGUIConfirmClick:
   GUIWinControl 5,27,144,26+15*7,GUIcurrentfilewin,GUIcurrentviewloc,GUIfileentries,27,7,GUIcurrentcursloc,0,1,30
   GUIWinControl 160,27,228,26+15*7,GUIcurrentfilewin,GUIcurrentdirviewloc,GUIdirentries,27,7,GUIcurrentdircursloc,1,1,30
   GUIPHoldbutton 186,165,228,176,1
-%ifdef __MSDOS__
-  GUIPButtonHoleLoad 9,163,byte[GUIloadfntype],0
-  GUIPButtonHoleLoad 9,171,byte[GUIloadfntype],1
-  GUIPButtonHoleLoad 9,179,byte[GUIloadfntype],2
-%endif
+;%ifdef __MSDOS__
+;  GUIPButtonHoleLoad 9,163,byte[GUIloadfntype],0
+;  GUIPButtonHoleLoad 9,171,byte[GUIloadfntype],1
+;  GUIPButtonHoleLoad 9,179,byte[GUIloadfntype],2
+;%endif
   GUIClickCButton5 144,177,byte[ForceROMTiming],1
   GUIClickCButton5 144,187,byte[ForceROMTiming],2
   GUIClickCButton5 184,177,byte[ForceHiLoROM],1
@@ -2084,7 +2067,7 @@ DisplayGUIOptionClick:
   GUIClickCButton 11,80,byte[Turbo30hz]
   GUIClickCButton 11,90,byte[TimerEnable]
   GUIClickCButton 11,100,byte[TwelveHourClock]
-  GUIClickCButtonO 11,110,byte[OldGfxMode2]
+  GUIClickCButton 11,110,byte[bgfixer]
   GUIClickCButton 11,120,byte[SmallMsgText]
   GUIClickCButton 11,130,byte[AutoPatch]
   GUIClickCButton 11,140,byte[RomInfo]

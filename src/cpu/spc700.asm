@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM DSPMem,spcWptr,disablespcclr,SPCSkipXtraROM,cycpbl,spcRptr
-EXTSYM spc700read,dspWptr,curexecstate
+EXTSYM spc700read,dspWptr,curexecstate,tableadc
 
 %include "cpu/regsw.mac"
 %include "cpu/spcdef.inc"
@@ -40,7 +40,6 @@ SECTION .data
 ALIGN32
 
 ;spcBuffer times 65536*4 db 0    ; The buffer of brr blocks... 4 bits -> 16 bits
-;spcRamcmp times 65536   db 0    ; SPC Ram compare buffer
 ;spcPrevbf times 65536   db 0    ; SPC PrevX compare buffer
 NEWSYM SPCRAM,   times 65472 db 0FFh  ; Pointer to the SPC's RAM
 ; copy #1

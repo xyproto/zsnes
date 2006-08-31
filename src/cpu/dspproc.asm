@@ -2382,17 +2382,6 @@ NEWSYM Voice5GainTime,       resd 1
 NEWSYM Voice6GainTime,       resd 1
 NEWSYM Voice7GainTime,       resd 1
 
-; END that block
-
-NEWSYM Voice0Starting,          resb 1
-NEWSYM Voice1Starting,          resb 1
-NEWSYM Voice2Starting,          resb 1
-NEWSYM Voice3Starting,          resb 1
-NEWSYM Voice4Starting,          resb 1
-NEWSYM Voice5Starting,          resb 1
-NEWSYM Voice6Starting,          resb 1
-NEWSYM Voice7Starting,          resb 1
-
 NEWSYM Freqdisp,        resd 1
 NEWSYM SBRateb,         resd 1
 

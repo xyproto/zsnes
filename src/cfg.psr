@@ -392,7 +392,7 @@ newengen db 1
 @ Use older graphics engine tweak for Mode 2 (0 = NO, 1 = Yes)
 @ Enable this to see if it helps with rendering problems
 @ Only works with old graphic engine
-OldGfxMode2 db 0
+bgfixer db 0
 
 %ifdef __MSDOS__
 @
@@ -855,7 +855,7 @@ GUIloadfntype db 0
 
 @
 @ Recent games played, you shouldn't edit this manually (8.3 / paths / LFN)
-prevloadnames times 160 db 0
+prevloadnames times 160 db ""
 prevloaddnamel packed 5120 db 0
 prevloadfnamel packed 5120 db 0
 

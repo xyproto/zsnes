@@ -787,7 +787,7 @@ GUIOptionKeys:
   GUIKeyCheckbox Turbo30hz,'E'
   GUIKeyCheckbox TimerEnable,'C'
   GUIKeyCheckbox TwelveHourClock,'1'
-  GUIKeyCheckbox OldGfxMode2,'O'
+  GUIKeyCheckbox bgfixer,'O'
   GUIKeyCheckbox SmallMsgText,'S'
   GUIKeyCheckbox AutoPatch,'P'
   GUIKeyCheckbox RomInfo,'T'
@@ -2717,7 +2717,7 @@ GUILoadKeys:
   mov edx,ebx
   call Change_Single_Dir
   jc .nodirtry
-  call GetLoadData.a
+  call GetLoadData
   ret
 .nodirtry
   call GUILoadData
@@ -2911,29 +2911,21 @@ GUILoadKeys:
   jmp .next
 .done
 
-  mov ebx,[GUIfileentries]
   xor esi,esi
+  mov ebx,[GUIfileentries]
+  mov eax,selected_names
   cmp dword[GUIcurrentfilewin],1
   jne near .notdir
-  mov esi,[GUIfileentries]
-  mov ebx,[GUIfileentries]
-  add ebx,[GUIdirentries]
+  mov ebx,[GUIdirentries]
+  mov eax,d_names
 .notdir
   mov ecx,esi
   mov [.foundval],esi
   mov dword[.maxfound],0
 .loop2
   mov dword[.numfound],0
-  cmp byte[GUIloadfntype],0
-  jne .nottype02
-  mov eax,[spcRamcmp+esi*4]
-  jmp .type02
-.nottype02
-  mov eax,esi
-  shl eax,5
-  add eax,[spcBuffera]
+  add eax,8
 .type02
-  inc eax
   mov edi,[ManualCPtr]
   cmp byte[eax],'['
   jne .nodrive

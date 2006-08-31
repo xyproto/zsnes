@@ -23,13 +23,32 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
 #define DIR_SLASH "/"
+#define ROOT_LEN 1 //"/"
 #else
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <zlib.h>
 #define DIR_SLASH "\\"
+#define ROOT_LEN 3 //"A:\"
 #endif
+
+#ifndef _MSC_VER
+#include <stdint.h>
+#include <dirent.h>
+#include <unistd.h>
+#endif
+
+#ifdef __WIN32__
+#include "win/lib.h"
+#endif
+
+
+#ifdef __MSDOS__
+#include <fcntl.h>
+#include "dos/lib.h"
+#endif
+
 #include "../zpath.h"
 #include "../md.h"
 #include "../cfg.h"
@@ -37,13 +56,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../zloader.h"
 
 #define BIT(X) (1 << (X))
-
-#ifdef __WIN32__
-#include <io.h>
-#define strcasecmp stricmp
-#else
-#include <unistd.h>
-#endif
 
 extern unsigned char ComboHeader[23], ComboBlHeader[23], CombinDataGlob[3300];
 extern unsigned char ShowTimer, savecfgforce;
@@ -330,7 +342,7 @@ void GUIRestoreVars()
 
   CheckValueBounds(&per2exec, 50, 150, 100, UD);
   CheckValueBounds(&SRAMSave5Sec, 0, 1, 0, UB);
-  CheckValueBounds(&OldGfxMode2, 0, 1, 0, UB);
+  CheckValueBounds(&bgfixer, 0, 1, 0, UB);
 
 #ifdef __MSDOS__
   CheckValueBounds(&pl1contrl, 0, 15, 1, UB);
@@ -788,21 +800,72 @@ void LoadCheatSearchFile()
   }
 }
 
+extern unsigned char *spcBuffera;
+
+void dumpsound()
+{
+  FILE *fp = fopen_dir(ZSpcPath, "sounddmp.raw", "wb");
+  if (fp)
+  {
+    fwrite(spcBuffera, 1, 65536*4+4096, fp);
+    fclose(fp);
+  }
+}
+
+static bool snes_extension_match(const char *filename)
+{
+  char *dot = strrchr(filename, '.');
+  if (dot)
+  {
+    dot++;
+    if (!strcasecmp(dot, "sfc") ||
+        !strcasecmp(dot, "jma") ||
+        !strcasecmp(dot, "zip") ||
+        !strcasecmp(dot, "gz") ||
+        !strcasecmp(dot, "st") ||
+        !strcasecmp(dot, "bs") ||
+        !strcasecmp(dot, "smc") ||
+        !strcasecmp(dot, "swc") ||
+        !strcasecmp(dot, "fig") ||
+        !strcasecmp(dot, "dx2") ||
+        !strcasecmp(dot, "ufo") ||
+        !strcasecmp(dot, "gd3") ||
+        !strcasecmp(dot, "gd7") ||
+        !strcasecmp(dot, "mgd") ||
+        !strcasecmp(dot, "mgh") ||
+        !strcasecmp(dot, "048") ||
+        !strcasecmp(dot, "058") ||
+        !strcasecmp(dot, "078") ||
+        !strcasecmp(dot, "bin") ||
+        !strcasecmp(dot, "usa") ||
+        !strcasecmp(dot, "eur") ||
+        !strcasecmp(dot, "jap") ||
+        !strcasecmp(dot, "aus") ||
+        !strcasecmp(dot, "1") ||
+        !strcasecmp(dot, "a"))
+    {
+      return(true);
+    }
+  }
+  return(false);
+}
+
 #define HEADER_SIZE 512
 #define INFO_LEN (0xFF - 0xC0)
+#define INAME_LEN 21
 
-int InfoScore(char *);
-unsigned int sum(unsigned char *array, unsigned int size);
-
-static void get_rom_name(const char *filename, char *namebuffer)
+static const char *get_rom_name(const char *filename, char *namebuffer)
 {
+  int InfoScore(char *);
+  unsigned int sum(unsigned char *array, unsigned int size);
+
   char *last_dot = strrchr(filename, '.');
   if (!last_dot || (strcasecmp(last_dot, ".zip") && strcasecmp(last_dot, ".gz") && strcasecmp(last_dot, ".jma")))
   {
     struct stat filestats;
     stat(filename, &filestats);
 
-    if ((filestats.st_size >= 0x8000) && (filestats.st_size <= 0x600000))
+    if ((filestats.st_size >= 0x8000) && (filestats.st_size <= 0x600000+HEADER_SIZE))
     {
       FILE *fp = fopen(filename, "rb");
       if (fp)
@@ -857,7 +920,7 @@ static void get_rom_name(const char *filename, char *namebuffer)
           if (InfoScore((char *)HeaderBuffer) > 1)
           {
             EHi = true;
-            strncpy(namebuffer, (char *)HeaderBuffer, 21);
+            strncpy(namebuffer, (char *)HeaderBuffer, INAME_LEN);
           }
         }
 
@@ -876,7 +939,7 @@ static void get_rom_name(const char *filename, char *namebuffer)
             fread(HiHead, 1, INFO_LEN, fp);
             HiScore = InfoScore(HiHead);
 
-            strncpy(namebuffer, LoScore > HiScore ? LoHead : HiHead, 21);
+            strncpy(namebuffer, LoScore > HiScore ? LoHead : HiHead, INAME_LEN);
 
             if (filestats.st_size - HeaderSize >= 0x20000)
             {
@@ -887,14 +950,14 @@ static void get_rom_name(const char *filename, char *namebuffer)
 
               if (IntLScore > LoScore && IntLScore > HiScore)
               {
-                strncpy(namebuffer, LoHead, 21);
+                strncpy(namebuffer, LoHead, INAME_LEN);
               }
             }
           }
           else //ROM only has one block
           {
             fseek(fp, 0x7FC0 + HeaderSize, SEEK_SET);
-            fread(namebuffer, 21, 1, fp);
+            fread(namebuffer, INAME_LEN, 1, fp);
           }
         }
         fclose(fp);
@@ -911,43 +974,244 @@ static void get_rom_name(const char *filename, char *namebuffer)
   }
   else //Compressed archive
   {
-    strcpy(namebuffer, filename);
+    return(filename);
   }
+  namebuffer[21] = 0;
+  return(namebuffer);
 }
 
-extern unsigned char spcRamcmp[65536];
-extern unsigned int GUInumentries;
-extern unsigned char *spcBuffera;
+char **lf_names = 0; //Long File Names
+char **et_names = 0; //Eight Three Names
+char **i_names = 0; //Internal Names
+char **d_names = 0; //Directory Names
 
-void GetLoadHeader()
+char **selected_names = 0; //Used to point to requested one
+
+#define LIST_LFN BIT(0)
+#define LIST_ETN BIT(1)
+#define LIST_IN  BIT(2)
+#define LIST_DN  BIT(3)
+
+#ifdef __MSDOS__
+#define main_names et_names
+#define LIST_MAIN LIST_ETN
+#else
+#define main_names lf_names
+#define LIST_MAIN LIST_LFN
+#endif
+
+#ifndef _USE_LFN
+#define _USE_LFN 1
+#endif
+
+#define swapper(array) if (array) { hold = array[x]; array[x] = array[y]; array[y] = hold; }
+
+static void swapfiles(size_t x, size_t y)
 {
-  unsigned int i = 0;
-  while (i < GUInumentries)
-  {
-    get_rom_name((char *)(spcRamcmp+1+i*14), (char *)(spcBuffera+1+i*32));
-    i++;
-  }
+  char *hold;
+  swapper(lf_names);
+  swapper(et_names);
+  swapper(i_names);
 }
 
-void dumpsound()
+static void swapdirs(size_t x, size_t y)
 {
-  FILE *fp = fopen_dir(ZSpcPath, "sounddmp.raw", "wb");
-  if (fp)
+  char *hold = d_names[x];
+  d_names[x] = d_names[y];
+  d_names[y] = hold;
+}
+
+static void sort(intptr_t *array, int begin, int end, void (*swapfunc)(size_t, size_t))
+{
+  if (end > begin)
   {
-    fwrite(spcBuffera, 1, 65536*4+4096, fp);
-    fclose(fp);
+    intptr_t *pivot = array + begin;
+    int l = begin + 1;
+    int r = end;
+    while (l < r)
+    {
+      if (strcasecmp((void *)*(array+l), (void *)*pivot) <= 0)
+      {
+        l++;
+      }
+      else
+      {
+        r--;
+        swapfunc(l, r);
+      }
+    }
+    l--;
+    swapfunc(begin, l);
+    sort(array, begin, l, swapfunc);
+    sort(array, r, end, swapfunc);
   }
 }
 
-extern unsigned char GUIwinorder[18], GUIwinactiv[18], pressed[448];
-extern unsigned int GUIindex;
+
+void free_list(char ***list)
+{
+  char **p = *list;
+  if (p)
+  {
+    p += 2;
+    while (*p)
+    {
+      free(*p++);
+    }
+    free(*list);
+    *list = 0;
+  }
+}
+
+//A possible problem here would be if one of the list arrays got enlarged but a corosponding one ran out of memory
+static void add_list(char ***reallist, const char *p)
+{
+  char **list = *reallist;
+  if (!list)
+  {
+    if (!(list = malloc(503*sizeof(void *)))) { return; }
+    list[0] = (char *)2;
+    list[1] = (char *)502;
+    list[2] = 0;
+  }
+
+  if (list[0] == list[1]-1)
+  {
+    char **p = realloc(list, ((size_t)list[1]+500)*sizeof(void *));
+    if (p)
+    {
+      list = p;
+      list[1] += 500;
+    }
+    else
+    {
+      return;
+    }
+  }
+
+  if ((list[(size_t)*list] = malloc(strlen(p)+1)))
+  {
+    strcpy(list[(size_t)*list], p);
+    list[0]++;
+    list[(size_t)*list] = 0;
+  }
+  *reallist = list;
+}
+
+//Make sure ZRomPath contains a full absolute directory name before calling
+void populate_lists(unsigned int lists, bool snes_ext_match)
+{
+  DIR *dir = opendir(ZRomPath);
+  if (dir)
+  {
+    struct stat stat_buffer;
+    struct dirent *entry;
+
+    if ((lists&LIST_DN) && (strlen(ZRomPath) > ROOT_LEN))
+    {
+      add_list(&d_names, "..");
+    }
+
+    while ((entry = readdir(dir)))
+    {
+      if ((*entry->d_name != '.') && !stat(entry->d_name, &stat_buffer))
+      {
+        if (S_ISDIR(stat_buffer.st_mode))
+        {
+          if (lists&LIST_DN)
+          {
+            add_list(&d_names, entry->d_name);
+          }
+        }
+        else if (!snes_ext_match || snes_extension_match(entry->d_name))
+        {
+          if (_USE_LFN && (lists&LIST_LFN))
+          {
+            add_list(&lf_names, entry->d_name);
+          }
+
+          if (lists&LIST_IN)
+          {
+            char namebuffer[22];
+            add_list(&i_names, get_rom_name(entry->d_name, namebuffer));
+          }
+
+#ifdef __MSDOS__
+          if (lists&LIST_ETN)
+          {
+            if (!_USE_LFN) //_USE_LFN won't be true when running under pure DOS
+            {
+              add_list(&et_names, entry->d_name);
+            }
+            else
+            {
+              char *sfn = realpath_sfn(entry->d_name, 0);
+              if (sfn)
+              {
+                add_list(&et_names, basename(sfn));
+                free(sfn);
+              }
+              else
+              {
+                char sfn[13];
+                _lfn_gen_short_fname(entry->d_name, sfn);
+                add_list(&et_names, sfn);
+              }
+            }
+          }
+#endif
+        }
+      }
+    }
+    closedir(dir);
+
+    if (lists&LIST_DN)
+    {
+#ifndef __UNIXSDL__
+      unsigned int drives = GetLogicalDrives(), i = 0;
+#endif
+
+      if (d_names)
+      {
+        unsigned int offset = (d_names[2][0] == '.') ? 3 : 2;
+        sort((intptr_t *)d_names, offset, (size_t)(*d_names), swapdirs);
+      }
+
+#ifndef __UNIXSDL__
+      while (i < 26)
+      {
+        if (drives&BIT(i))
+        {
+          char drive[] = { '[', 'A', ':', ']', 0 };
+          drive[1] = 'A'+i;
+          add_list(&d_names, drive);
+        }
+        i++;
+      }
+#endif
+    }
+
+    if ((lists&LIST_IN) && i_names)
+    {
+      sort((intptr_t *)i_names, 2, (size_t)(*i_names), swapfiles);
+    }
+    else if ((lists&LIST_LFN) && lf_names)
+    {
+      sort((intptr_t *)lf_names, 2, (size_t)(*lf_names), swapfiles);
+    }
+    else if ((lists&LIST_ETN) && et_names)
+    {
+      sort((intptr_t *)et_names, 2, (size_t)(*et_names), swapfiles);
+    }
+  }
+}
 
 static void memswap(void *p1, void *p2, size_t p2len)
 {
   char *ptr1 = (char *)p1;
   char *ptr2 = (char *)p2;
 
-  size_t p1len = ptr2 - ptr1;
+  const size_t p1len = ptr2 - ptr1;
   unsigned char byte;
   while (p2len--)
   {
@@ -957,31 +1221,194 @@ static void memswap(void *p1, void *p2, size_t p2len)
   }
 }
 
-void GUIloadfilename(), GUIQuickLoadUpdate();
+extern unsigned char GUIwinptr, GUIcmenupos, GUIpmenupos;
+extern unsigned char GUIwinorder[], GUIwinactiv[], pressed[];
 
-void loadquickfname()
+extern void GUIPrevMenuData;
+
+void powercycle(bool, bool);
+
+void GUIloadfilename(char *filename)
 {
-  memset(GUIwinorder, 0, sizeof(GUIwinorder));
-  memset(GUIwinactiv, 0, sizeof(GUIwinactiv));
-
-  if (!access(ZRomPath,R_OK))
+  char *p = strdupcat(ZRomPath, filename);
+  if (p)
   {
-    //Move menuitem to top
-    if (GUIindex || !prevlfreeze)
+    if (init_rom_path(p)) { powercycle(false, true); }
+    free(p);
+  }
+  if (GUIwinptr) { GUIcmenupos = GUIpmenupos; }
+}
+
+void loadquickfname(const unsigned char slot)
+{
+  if (prevloaddnamel[1+slot*512]) // replace with better test
+  {
+    strcpy(ZRomPath, (char *)prevloaddnamel+1+slot*512);
+    strcatslash(ZRomPath);
+    strcpy(ZCartName, (char *)prevloadfnamel+slot*512);
+
+    if (!access_dir(ZRomPath, ZCartName, R_OK))
     {
-      memswap(prevloadnames,prevloadnames+GUIindex*16,16);
-      memswap(prevloadfnamel,prevloadfnamel+GUIindex*512,512);
-      memswap(prevloaddnamel,prevloaddnamel+GUIindex*512,512);
+      if (slot || !prevlfreeze)
+      {
+        // move menuitem to top
+        memswap(prevloadnames,prevloadnames+slot*16,16);
+        memswap(prevloadfnamel,prevloadfnamel+slot*512,512);
+        memswap(prevloaddnamel,prevloaddnamel+slot*512,512);
+      }
 
-      strcpy(ZRomPath, (char *)prevloaddnamel);
-      strcpy(ZCartName, (char *)prevloadfnamel);
-
-      //Clear pressed
-      memset(pressed, 0, sizeof(pressed));
-
-      asm_call(GUIQuickLoadUpdate);
+      GUIloadfilename(ZCartName);
     }
-    asm_call(GUIloadfilename);
+  }
+}
+
+void GUIQuickLoadUpdate()
+{
+  size_t entry_size, copy_num, i = 10;
+  char *src;
+
+  memcpy(&GUIPrevMenuData+347, (prevlfreeze) ? " ON " : " OFF", 4);
+
+  #ifdef __MSDOS__
+  src = (char *)prevloadnames;
+  entry_size = 16;
+  copy_num = 15; // internal header name > 8.3
+  #else
+  src = (char *)prevloadfnamel;
+  entry_size = 512;
+  copy_num = 28; // full window width
+  #endif
+
+  while (i--)
+  {
+    char *p_src = src + i*entry_size;
+    char *p_dest = &GUIPrevMenuData+3 + i*32;
+    size_t srclen = strlen(p_src);
+
+    if (srclen >= copy_num)
+    {
+      strncpy(p_dest, p_src, copy_num);
+      #ifdef __MSDOS__
+      p_dest += copy_num;
+      memset(p_dest, '.', 3);
+      memset(p_dest+3, ' ', 25-copy_num);
+      #else
+      if (srclen > copy_num) { memset(p_dest+25, '.', 3); }
+      #endif
+    }
+    else
+    {
+      strncpy(p_dest, p_src, srclen);
+      memset(p_dest+srclen, ' ', 28-srclen);
+    }
+  }
+}
+
+
+unsigned int GUInumentries; //total entries
+unsigned int GUIcurrentviewloc; //current file position
+unsigned int GUIcurrentcursloc; //current cursor position (GUI)
+unsigned int GUIcurrentdirviewloc; //current directory position
+unsigned int GUIcurrentdircursloc; //current dir position (GUI)
+unsigned int GUIdirentries;
+unsigned int GUIfileentries;
+
+void GetLoadData()
+{
+  GUIcurrentviewloc = GUIcurrentcursloc = GUIcurrentdirviewloc = GUIcurrentdircursloc = 0;
+
+  free_list(&d_names);
+  free_list(&i_names);
+  free_list(&lf_names);
+  free_list(&et_names);
+
+  switch (GUIloadfntype)
+  {
+    case 0: //LFN
+      populate_lists(LIST_DN|LIST_ETN|LIST_LFN, true);
+      selected_names = lf_names ? lf_names : et_names;
+      break;
+    case 1: //IN
+      populate_lists(LIST_DN|LIST_MAIN|LIST_IN, true);
+      selected_names = i_names;
+      break;
+    case 2:
+      populate_lists(LIST_DN|LIST_ETN, true);
+      selected_names = et_names;
+      break;
+  }
+  selected_names += 2;
+  GUIfileentries = (unsigned int)*main_names -2;
+  GUIdirentries = (unsigned int)*d_names -2;
+  GUInumentries = GUIfileentries+GUIdirentries;
+}
+
+unsigned int GUIcurrentfilewin;
+unsigned int GUIdirStartLoc;
+
+void GUILoadData()
+{
+  char *nameptr;
+
+  GUICBHold = 0;
+  if (GUIcurrentfilewin) // directories
+  {
+    nameptr = d_names[GUIcurrentdircursloc+2];
+
+    strcatslash(ZRomPath);
+    #ifndef __UNIXSDL__
+    if (*(nameptr+2) == ':') // MS drives are stored as '[?:]',
+    { // so we can't use quick string catenation to browse through
+      strncpy(ZRomPath, nameptr+1, 2);
+      ZRomPath[2] = '\\';
+      ZRomPath[3] = 0;
+      init_rom_path(ZRomPath);
+    }
+    else
+    #endif
+    {
+      char *p = strdupcat(ZRomPath, nameptr);
+      if (p)
+      {
+        init_rom_path(p);
+        free(p);
+      }
+    }
+
+    GetLoadData();
+  }
+  else // files
+  {
+    nameptr = main_names[GUIcurrentcursloc+2];
+
+    strcpy(ZCartName, nameptr);
+
+    if (!prevlfreeze)
+    {
+      int i = 0;
+      bool dupfound = false;
+      nameptr = selected_names[GUIcurrentcursloc];
+
+      while (!dupfound && i<10)
+      {
+        dupfound = !strncmp(nameptr, (char *)prevloadnames+i*16, 16);
+        i++;
+      }
+      i--;
+
+      if (!dupfound)
+      {
+        memcpy(prevloadnames+9*16, nameptr, 16);
+        strcpy((char *)prevloaddnamel+9*512+1, ZRomPath);
+        strcpy((char *)prevloadfnamel+9*512, ZCartName);
+      }
+
+      loadquickfname(i);
+    }
+    else { GUIloadfilename(ZCartName); }
+
+    GUIwinactiv[1] = 0; // close load dialog
+    GUIwinorder[--GUIwinptr] = 0;
   }
 }
 

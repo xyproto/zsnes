@@ -288,17 +288,9 @@ bool init_rom_path(char *path)
 
     natify_slashes(ZRomPath);
     p = strrchr(ZRomPath, DIR_SLASH_C);
-    if (p)
-    {
-      strcpy(ZCartName, p+1);
-      strcpy(ZSaveName, ZCartName);
-    }
-    else
-    {
-      strcpy(ZCartName, ZRomPath);
-      strcpy(ZSaveName, ZCartName);
-    }
-    strcpy(ZStateName, ZSaveName);
+    strcpy(ZCartName, (p) ? p+1 : ZRomPath);
+    strcpy(ZSaveName, ZCartName);
+    strcpy(ZStateName, ZCartName);
     setextension(ZStateName, "zst");
 
     strdirname(ZRomPath);

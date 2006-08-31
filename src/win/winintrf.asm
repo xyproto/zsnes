@@ -426,54 +426,6 @@ NEWSYM Get_Dir
     mov [edx],al
     ret
 
-NEWSYM Get_First_Entry
-    ; cx = attributes, edx = pointer to wildcard
-    ; returns : DTALoc+15h, bit 4 = Dir (1) or File (0)
-    ;           DTALoc+1Eh = filename, carry flag set = no more entry
-    mov [ZFileFindPATH],edx
-    mov dword[ZFileFindATTRIB],0
-    mov [ZFileFindATTRIB],cx
-    mov dword[DTALocPos],DTALoc
-    pushad
-    call ZFileFindFirst
-    or eax,eax
-    jnz .end
-    popad
-    clc
-    ret
-.end
-    popad
-    stc
-    ret
-;    mov ah,4Eh
-;    mov al,0
-;    int 21h
-;    ret
-
-NEWSYM Get_Next_Entry
-    mov dword[DTALocPos],DTALoc
-    pushad
-    call ZFileFindNext
-    or eax,eax
-    jnz .end
-    popad
-    clc
-    ret
-.end
-    popad
-    stc
-    ret
-;    mov ah,04Fh
-;    int 21h
-;    ret
-
-NEWSYM Set_DTA_Address
-    ; Only needed for dos stuff
-;    mov edx,DTALoc
-;    mov ah,1Ah
-;    int 21h
-    ret
-
 NEWSYM Get_Memfree
     mov eax,02000000h
 ;    mov ax,0500h

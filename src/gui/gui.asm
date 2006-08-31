@@ -43,39 +43,36 @@
 
 EXTSYM curblank,vidpastecopyscr,frameskip,newengen,vsyncon,cvidmode,antienab
 EXTSYM smallscreenon,soundon,StereoSound,SoundQuality,MusicRelVol,endprog
-EXTSYM continueprog,spcBuffera,spcRamcmp,cbitmode,makepal,t1cc,LoadDir,LoadDrive
-EXTSYM loadfileGUI,GUIloadfailed,romloadskip,SetupROM,romdata
-EXTSYM init65816,procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA
-EXTSYM spcX,spcY,spcP,spcNZ,Voice0Status,Voice1Status,Voice2Status,Voice3Status
-EXTSYM Voice4Status,Voice5Status,Voice6Status,Voice7Status,ClearScreen
-EXTSYM statesaver,loadstate2,vidbuffer,ASCII2Font,hirestiledat,showallext
-EXTSYM scanlines,statefileloc,ZStateName,sprlefttot,spritetablea
-EXTSYM cgram,tempco0,prevbright,maxbr
-EXTSYM prevpal,coladdr,coladdg,coladdb,scaddtype,ScreenScale,initvideo,pressed
-EXTSYM UpdateDevices,memtabler8,memtablew8,writeon,JoyRead,SetInputDevice,delay
-EXTSYM FPSOn,RevStereo,WDSPReg0C,WDSPReg1C,pl12s34,resolutn
-EXTSYM Makemode7Table,vidbufferofsb,wramdata,bgfixer,videotroub
-EXTSYM CheatCodeSave,CheatCodeLoad,LoadCheatSearchFile,SaveCheatSearchFile
-EXTSYM Get_Date,Check_Key,Get_Key,SRAMDir,initsnes,sram
+EXTSYM continueprog,spcBuffera,cbitmode,makepal,t1cc,LoadDir,LoadDrive
+EXTSYM romloadskip,romdata,init65816
+EXTSYM procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA,spcX,spcY,spcP,spcNZ
+EXTSYM Voice0Status,Voice1Status,Voice2Status,Voice3Status,Voice4Status
+EXTSYM Voice5Status,Voice6Status,Voice7Status,ClearScreen,statesaver,loadstate2
+EXTSYM vidbuffer,ASCII2Font,hirestiledat,showallext,scanlines,statefileloc
+EXTSYM ZStateName,sprlefttot,spritetablea
+EXTSYM cgram,tempco0,prevbright,maxbr,prevpal,coladdr,coladdg
+EXTSYM coladdb,scaddtype,ScreenScale,initvideo,pressed,UpdateDevices,memtabler8
+EXTSYM memtablew8,writeon,JoyRead,SetInputDevice,delay,FPSOn,RevStereo,WDSPReg0C
+EXTSYM WDSPReg1C,pl12s34,resolutn,Makemode7Table,vidbufferofsb,wramdata,bgfixer
+EXTSYM videotroub,CheatCodeSave,CheatCodeLoad,LoadCheatSearchFile
+EXTSYM SaveCheatSearchFile,Get_Date,Check_Key,Get_Key,SRAMDir,sram
 EXTSYM Change_Drive,Change_Single_Dir,Change_Dir,Get_Dir
-EXTSYM Set_DTA_Address,curexecstate,TripBufAvail,nmiprevaddrl,nmiprevaddrh
-EXTSYM nmirept,nmiprevline,nmistatus,spcnumread,NextLineCache,ResetTripleBuf
-EXTSYM GUINGVID,ScanCodeListing,AdjustFrequency,GUISaveVars,Init_Mouse
-EXTSYM Get_MouseData,Set_MouseXMax,Set_MouseYMax,Set_MousePosition
-EXTSYM Get_MousePositionDisplacement,GUIInit,GUIDeInit,SpecialLine,DrawWater
-EXTSYM DrawBurn,MMXCheck,showinfogui,GetDate
-EXTSYM horizon_get,ErrorPointer,MessageOn,GetTime,sndrot,regsbackup,GetScreen
-EXTSYM GUITBWVID,Clear2xSaIBuffer,MouseWindow,ExitFromGUI,GUIWFVID,newgfx16b
-EXTSYM NumVideoModes,MusicVol,DSPMem,NumInputDevices,GUIInputNames
-EXTSYM GUIVideoModeNames,GUISLVID,GUIINVID,GUIEAVID,GUIIEVID,GUIFSVID,GUIWSVID
-EXTSYM GUISSVID,GUITBVID,GUIHSVID,GUI2xVID,GUII2VID,GUIM7VID,GUINTVID
-EXTSYM device1,device2,TwelveHourClock,InGUI
-EXTSYM outofmemfix,yesoutofmemory,JoyX,JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY
-EXTSYM JoyMinX209,JoyMaxX209,JoyMinY209,JoyMaxY209,GetCoords,GetCoords3,MultiTap
-EXTSYM SFXEnable,RestoreSystemVars,GUIBIFIL,GUIHQ2X,GUIHQ3X,GUIHQ4X,firstsaveinc
-EXTSYM nssdip1,nssdip2,nssdip3,nssdip4,nssdip5,nssdip6,SkipMovie,MovieStop
-EXTSYM MoviePlay,MovieRecord,MovieInsertChapter,MovieSeekAhead,MovieSeekBehind
-EXTSYM ResetDuringMovie,MovieDumpRaw,AutoLoadCht,DisplayInfo
+EXTSYM TripBufAvail,ResetTripleBuf,GUINGVID,ScanCodeListing
+EXTSYM AdjustFrequency,GUISaveVars,Init_Mouse,Get_MouseData,Set_MouseXMax
+EXTSYM Set_MouseYMax,Set_MousePosition,Get_MousePositionDisplacement,GUIInit
+EXTSYM GUIDeInit,SpecialLine,DrawWater,DrawBurn,MMXCheck
+EXTSYM GetDate,horizon_get,ErrorPointer,MessageOn,GetTime
+EXTSYM GetScreen,GUITBWVID,Clear2xSaIBuffer,MouseWindow,ExitFromGUI
+EXTSYM GUIWFVID,newgfx16b,NumVideoModes,MusicVol,DSPMem,NumInputDevices
+EXTSYM GUIInputNames,GUIVideoModeNames,GUISLVID,GUIINVID,GUIEAVID,GUIIEVID
+EXTSYM GUIFSVID,GUIWSVID,GUISSVID,GUITBVID,GUIHSVID,GUI2xVID,GUII2VID,GUIM7VID
+EXTSYM GUINTVID,device1,device2,TwelveHourClock,JoyX
+EXTSYM JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209,JoyMaxX209,JoyMinY209
+EXTSYM JoyMaxY209,GetCoords,GetCoords3,MultiTap,SFXEnable,RestoreSystemVars
+EXTSYM GUIBIFIL,GUIHQ2X,GUIHQ3X,GUIHQ4X,firstsaveinc,nssdip1,nssdip2,nssdip3
+EXTSYM nssdip4,nssdip5,nssdip6,SkipMovie,MovieStop,MoviePlay,MovieRecord
+EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
+EXTSYM MovieDumpRaw,AutoLoadCht,GUIQuickLoadUpdate,GUILoadData
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCWarp,NTSCRef
@@ -111,16 +108,19 @@ EXTSYM KeyInsrtChap,KeyPrevChap,KeyNextChap,KeyDisplayFPS,KeyNewGfxSwt
 EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
 EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
-EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths
+EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths,loadquickfname
 EXTSYM mousewrap,GUIClick,PrevFSMode,PrevWinMode,SaveSramData
-EXTSYM FPSAtStart,Turbo30hz,TimerEnable,OldGfxMode2,SmallMsgText
+EXTSYM FPSAtStart,Turbo30hz,TimerEnable,SmallMsgText
 EXTSYM AutoPatch,RomInfo,AllowUDLR,Triplebufen,GrayscaleMode
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,TripleBufferWin
-EXTSYM BilinearFilter,esctomenu,init_rom_path_gui,gui_rom
+EXTSYM BilinearFilter,esctomenu
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SoundBufEn,SPCDisable
 EXTSYM FastFwdToggle
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
-EXTSYM MovieVideoMode, MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont,loadquickfname
+EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
+EXTSYM d_names,selected_names,GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
+EXTSYM GUIcurrentfilewin,GUIcurrentcursloc,GUIcurrentviewloc
+EXTSYM GUIcurrentdircursloc,GetLoadData,ZRomPath
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
@@ -145,9 +145,6 @@ EXTSYM ZsnesPage,DocsPage
 %include "gui/guikeys.inc"
 %include "gui/guicheat.inc"
 %include "gui/guicombo.inc"
-%include "gui/guiload.inc"
-
-SECTION .data
 
 ; Things to do :
 ;
@@ -195,6 +192,8 @@ SECTION .data
 ;           20 = Saves
 ;           21 = Speed
 
+SECTION .data
+
 ;The first byte is the number of fields on the right not including the seperators
 MenuDat1 db 12, 3,1,1,1,1,1,1,1,1,1,0,1,2,0
 MenuDat2 db 8,  3,1,1,0,1,1,1,0,2,0
@@ -207,7 +206,7 @@ MenuDat5 db 1,  3,2,0
 %endif
 MenuDat6 db 6,  3,1,1,1,1,0,2,0
 
-GUIPrevMenuData:
+NEWSYM GUIPrevMenuData,
   db 1,'1.                            ',0
   db 1,'2.                            ',0
   db 1,'3.                            ',0
@@ -219,7 +218,7 @@ GUIPrevMenuData:
   db 1,'9.                            ',0
   db 1,'0.                            ',0
   db 0,'------------',0
-.onoff db 1,'FREEZE DATA: OFF   ',0
+  db 1,'FREEZE DATA: OFF   ',0
   db 1,'CLEAR ALL DATA     ',0
 GUIGameMenuData:
   db 1,'LOAD        ',0
@@ -293,9 +292,9 @@ SECTION .bss
 NEWSYM CombinDataGlob, resb 3300 ; 20-name, 42-combo, 2-key#, 1-P#, 1-ff
 NEWSYM CombinDataLocl, resb 3300
 
-NEWSYM GUIwinorder, resb 18
-GUIwinpos   resb 18
-NEWSYM GUIwinactiv, resb 18
+NEWSYM GUIwinorder, resb 22
+GUIwinpos   resb 22
+NEWSYM GUIwinactiv, resb 22
 ViewBuffer  resb 50*32
 
 GUItextcolor resb 5
@@ -361,7 +360,6 @@ NEWSYM NumCheats, resd 1
 NEWSYM cheatdataprev, resb 28 ; leave contents blank
 NEWSYM cheatdata, resb 28*255+56 ; toggle, value, address, pvalue, name(22)
 
-NEWSYM GUIcurrentdir, resb 131
 curgsval resb 1
 
 NEWSYM GUICMessage, resd 1
@@ -385,77 +383,7 @@ NEWSYM TRVal2, resw 1
 NEWSYM TGVal2, resw 1
 NEWSYM TBVal2, resw 1
 
-NEWSYM GUIindex, resd 1
-
 SECTION .text
-
-NEWSYM GUIQuickLoadUpdate
-  cmp byte[prevlfreeze],0
-  je .off
-  mov dword[GUIPrevMenuData.onoff+14],'ON  '
-  jmp .on
-.off
-  mov dword[GUIPrevMenuData.onoff+14],'OFF '
-.on
-%ifdef __MSDOS__
-  mov esi,prevloadnames
-%else
-  mov esi,prevloadfnamel
-%endif
-  mov edi,GUIPrevMenuData+3
-  mov edx,10
-.mainloop
-%ifdef __MSDOS__
-  mov ecx,15
-%else
-  mov ecx,25
-%endif
-  push edi
-  push esi
-  cmp byte[esi],32
-  je near .fin2
-.loop
-  mov al,[esi]
-  cmp al,0
-  je .zero
-  mov [edi],al
-  inc esi
-  inc edi
-  dec ecx
-  jnz .loop
-  cmp byte[esi],0
-  je .zero
-  mov byte[edi],'.'
-  mov byte[edi+1],'.'
-  mov byte[edi+2],'.'
-  jmp .fin
-.zero
-  add ecx,3
-.loop2
-  mov byte[edi],32
-  inc edi
-  dec ecx
-  jnz .loop2
-  jmp .fin
-.fin2
-  mov ecx,18
-.loop3
-  mov byte[edi],32
-  inc edi
-  dec ecx
-  jnz .loop3
-.fin
-  pop esi
-  pop edi
-%ifdef __MSDOS__
-  add esi,16
-%else
-  add esi,512
-%endif
-  add edi,32
-  dec edx
-  jnz near .mainloop
-  ret
 
 SECTION .data
 NEWSYM ComboHeader, db 'Key Combination File',26,1,0
@@ -894,6 +822,15 @@ NEWSYM StartGUI
   mov dword[GUIwinposx+16*4],3
   mov dword[GUIwinposy+16*4],22
 .notzero
+  xor ecx,ecx
+.joysloop
+  cmp dword[pl1ULk+ecx*4],80h
+  jbe .nojoystick
+  mov dword[pl1ULk+ecx*4],0
+.nojoystick
+  inc ecx
+  cmp ecx,16
+  jne .joysloop
 
   mov dword[GUICTimer],0
   ; Initialize volume
@@ -983,9 +920,9 @@ NEWSYM StartGUI
 
   pushad
   call SaveSramData
+  call GUIQuickLoadUpdate
   popad
 
-  call GUIQuickLoadUpdate
   call LoadDetermine
 
   ; change dir to LoadDrive/LoadDir
@@ -1016,6 +953,7 @@ NEWSYM StartGUI
 .nomenuchange
   cmp byte[GUIwinactiv+1],0
   je .noloadrefresh
+  mov dword[GUIcurrentfilewin],0
   call GetLoadData
 .noloadrefresh
   mov byte[GUIHold],0
@@ -1147,10 +1085,6 @@ NEWSYM StartGUI
   mov ecx,65536
   xor eax,eax
   rep stosd
-  mov edi,spcRamcmp
-  mov ecx,65536/4
-  xor eax,eax
-  rep stosd
   GUIDeInitIRQs
   call ClearScreen
   cmp byte[cbitmode],0
@@ -1229,12 +1163,6 @@ NEWSYM StartGUI
   mov dword[StartLL],0
   mov dword[StartLR],0
   jmp continueprog
-
-SECTION .bss
-CheckSumVal resd 1
-SECTION .data
-WrongCheckSum db 10,13,'ROM Data Mismatch',10,13,10,13,0
-SECTION .text
 
 guimencodermsg:
   xor ebx,ebx
@@ -1670,7 +1598,7 @@ GUILoadManualDir
   ; refresh dir if necessary
   cmp byte[ManualStatus],1
   jne .norefresh
-  call GetLoadData.a
+  call GetLoadData
 .norefresh
   ret
 
@@ -1735,17 +1663,11 @@ CheckMenuItemHelp:
 %macro checkqloadvalue 1
   cmp byte[GUIcrowpos],%1
   jne %%skip
-  mov esi,prevloaddnamel+%1*512
-  cmp byte[esi+1],0
-  je %%notvalid
-  mov edi,prevloadfnamel+%1*512
-  mov ebx,prevloadnames+%1*16
-  mov ecx,%1
-  mov byte[GUIindex],%1
   pushad
+  push %1
   call loadquickfname
+  pop eax
   popad
-%%notvalid
   ret
 %%skip
 %endmacro
@@ -1768,10 +1690,10 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
   xor byte[prevlfreeze],1
   cmp byte[prevlfreeze],0
   je .off
-  mov dword[GUIPrevMenuData.onoff+14],'ON  '
+  mov dword[GUIPrevMenuData+347],' ON '
   jmp .on
 .off
-  mov dword[GUIPrevMenuData.onoff+14],'OFF '
+  mov dword[GUIPrevMenuData+347],' OFF'
 .on
 .skipswitch
   cmp byte[GUIcrowpos],12
@@ -1780,17 +1702,18 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
   jne .skipclear
   mov edi,prevloadnames
   mov eax,20202020h
-  mov ecx,4*10
+  mov ecx,40
   rep stosd
   mov edi,prevloaddnamel
   xor eax,eax
-  mov ecx,128*10
+  mov ecx,1280
   rep stosd
   mov edi,prevloadfnamel
-  mov eax,0 ;20202020h
-  mov ecx,128*10
+  mov ecx,1280
   rep stosd
+  pushad
   call GUIQuickLoadUpdate
+  popad
   ret
 .skipclear
 .noquickload
@@ -1799,6 +1722,7 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
   GUICheckMenuItem 1, 0               ; Load
   cmp byte[GUIcrowpos],0
   jne .noloadrefresh
+  mov dword[GUIcurrentfilewin],0
   jmp GetLoadData
 .noloadrefresh
   cmp byte[romloadskip],0
@@ -2103,20 +2027,6 @@ SaveSecondState:
   mov [ecx+ebx],al
   ret
 
-LoadSecondState:
-  mov ebx,[statefileloc]
-  mov ecx,[ZStateName]
-  mov al,[ecx+ebx]
-  mov byte[ecx+ebx],'s'
-
-  pushad
-  call loadstate2
-  popad
-  mov ebx,[statefileloc]
-  mov ecx,[ZStateName]
-  mov [ecx+ebx],al
-  ret
-
 GUIProcReset:
   cmp byte[GUICBHold],2
   jne .noreset
@@ -2139,10 +2049,6 @@ GUIProcReset:
   mov byte[GUIwinorder+eax],0
   dec byte[GUIwinptr]
   ret
-
-SECTION .bss
-LoadDuplicFound resb 1
-SECTION .text
 
 %macro GUIDMHelp 4
   mov byte[GUItextcolor],46

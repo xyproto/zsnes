@@ -486,72 +486,34 @@ void BankCheck()
 }
 
 //Chip detection functions
-bool CHIPBATT;
-bool BSEnable;
-bool C4Enable;
-bool DSP1Enable;
-bool DSP2Enable;
-bool DSP3Enable;
-bool DSP4Enable;
-bool OBCEnable;
-bool RTCEnable;
-bool SA1Enable;
-bool SDD1Enable;
+bool CHIPBATT, BSEnable, C4Enable, DSP1Enable, DSP2Enable, DSP3Enable;
+bool DSP4Enable, OBCEnable, RTCEnable, SA1Enable, SDD1Enable, SFXEnable;
 bool SETAEnable; //ST010 & 11
-bool SFXEnable;
-bool SGBEnable;
-bool SPC7110Enable;
-bool ST18Enable;
+bool SGBEnable, SPC7110Enable, ST18Enable;
 
 void chip_detect()
 {
   unsigned char *ROM = (unsigned char *)romdata;
 
-  C4Enable = false;
-  RTCEnable = false;
-  SA1Enable = false;
-  SDD1Enable = false;
-  OBCEnable = false;
-  CHIPBATT = false;
-  SGBEnable = false;
-  ST18Enable = false;
-  DSP1Enable = false;
-  DSP2Enable = false;
-  DSP3Enable = false;
-  DSP4Enable = false;
-  SPC7110Enable = false;
-  BSEnable = false;
-  SFXEnable = false;
-  SETAEnable = false;
+  C4Enable = RTCEnable = SA1Enable = SDD1Enable = OBCEnable = CHIPBATT = false;
+  SGBEnable = ST18Enable = DSP1Enable = DSP2Enable = DSP3Enable = false;
+  DSP4Enable = SPC7110Enable = BSEnable = SFXEnable = SETAEnable = false;
 
   //DSP Family
   if (ROM[infoloc+TypeOffset] == 3)
   {
-    if (ROM[infoloc+BankOffset] == 48)
-    {
-      DSP4Enable = true;
-    }
-    else
-    {
-      DSP1Enable = true;
-    }
+    if (ROM[infoloc+BankOffset] == 48) { DSP4Enable = true; }
+    else { DSP1Enable = true; }
     return;
   }
+
   if (ROM[infoloc+TypeOffset] == 5)
   {
     CHIPBATT = true;
-    if (ROM[infoloc+BankOffset] == 32)
-    {
-      DSP2Enable = true;
-    }
+    if (ROM[infoloc+BankOffset] == 32) { DSP2Enable = true; }
     else if (ROM[infoloc+BankOffset] == 48 && ROM[infoloc+CompanyOffset] == 0xB2) //Bandai
-    {
-      DSP3Enable = true;
-    }
-    else
-    {
-      DSP1Enable = true;
-    }
+    { DSP3Enable = true; }
+    else { DSP1Enable = true; }
     return;
   }
 
@@ -562,7 +524,6 @@ void chip_detect()
       SFXEnable = true;
       return;
       break;
-
 
     case 0x1520:                            //GSU-x + Battery
     case 0x1A20:                            //GSU-1 + Battery + Start in 21MHz
@@ -660,7 +621,6 @@ void chip_detect()
       return;
     }
   }
-
 }
 
 //Checksum functions
@@ -724,17 +684,20 @@ static unsigned int mirror_rom(unsigned char *start, unsigned int length)
 {
   unsigned int mask = 0x800000;
   while (!(length & mask)) { mask >>= 1; }
+
   length -= mask;
   if (length)
   {
     start += mask;
     length = mirror_rom(start, length);
+
     while (length != mask)
     {
       rom_memcpy(start+length, start, length);
       length += length;
     }
   }
+
   return(length+mask);
 }
 
@@ -814,10 +777,7 @@ void SetupSramSize()
 //File loading code
 bool Header512;
 
-char CSStatus[40];
-char CSStatus2[40];
-char CSStatus3[40];
-char CSStatus4[40];
+char CSStatus[40], CSStatus2[40], CSStatus3[40], CSStatus4[40];
 
 void DumpROMLoadInfo()
 {
@@ -842,7 +802,6 @@ void DumpROMLoadInfo()
     fclose(fp);
   }
 }
-
 
 void loadFile(char *filename)
 {
@@ -924,7 +883,6 @@ void loadGZipFile(char *filename)
 
   curromspace = size;
 }
-
 
 void loadZipFile(char *filename)
 {
@@ -1102,6 +1060,7 @@ void load_file_fs(char *path)
 }
 
 char *STCart2 = 0;
+
 void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
 {
   unsigned char *ROM = (unsigned char *)romdata;
@@ -1213,19 +1172,12 @@ bool NSRTHead(unsigned char *ROM)
   return(false); //None
 }
 
-void calculate_state_sizes(), InitRewindVars();
+void calculate_state_sizes(), InitRewindVars(), findZipIPS(char *), zst_init();
 extern bool EMUPause;
 extern unsigned char device1, device2;
-unsigned char lorommapmode2, curromsize;
-unsigned char snesinputdefault1, snesinputdefault2;
-bool input1gp;
-bool input1mouse;
-bool input2gp;
-bool input2mouse;
-bool input2scope;
-bool input2just;
-void findZipIPS(char *);
-void zst_init();
+unsigned char lorommapmode2, curromsize, snesinputdefault1, snesinputdefault2;
+bool input1gp, input1mouse, input2gp, input2mouse, input2scope, input2just;
+
 void loadROM()
 {
   bool isCompressed = false, isZip = false;
@@ -1501,12 +1453,14 @@ void clearSPCRAM()
 
 void clearmem2()
 {
-  memset(sram, 0xFF, 16384);
+  memset(sram, 0xFF, 65536);
   clearSPCRAM();
 }
 
 void clearmem()
 {
+  int i;
+
   memset(vidbuffer, 0, 131072);
   memset(wramdataa, 0, 65536);
   memset(ram7fa, 0, 65536);
@@ -1526,7 +1480,11 @@ void clearmem()
   memset(pal16b, 0, 1024);
   memset(pal16bcl, 0, 1024);
   memset(pal16bclha, 0, 1024);
-  memset(pal16bxcl, 0xFF, 256);
+  for (i=0 ; i<1024 ; i+=4)
+  {
+    memset(pal16bxcl+i, 255, 2);
+    memset(pal16bxcl+i+2, 0, 2);
+  }
   memset(romdata, 0xFF, maxromspace+32768);
   clearmem2();
 }
@@ -1545,7 +1503,7 @@ void clearvidsound()
   memset(vidmemch2, 0, 4096);
   memset(vidmemch4, 0, 4096);
   memset(vidmemch8, 0, 4096);
-  memset(&BRRBuffer, 0, PHdspsave);
+  memset(BRRBuffer, 0, PHdspsave);
   memset(&echoon0, 0, PHdspsave2);
   memset(echobuf, 0, 90000);
   memset(spcBuffera, 0, 65536*4+4096);
@@ -1559,46 +1517,29 @@ void clearvidsound()
 Would be nice to trash this section in the future
 */
 
-
-extern unsigned char  ENVDisable;
-extern unsigned char  cycpb268;
-extern unsigned char  cycpb358;
-extern unsigned char  cycpbl2;
-extern unsigned char  cycpblt2;
-extern unsigned char  cycpbl;
-extern unsigned char  cycpblt;
-extern unsigned char  opexec268;
-extern unsigned char  opexec358;
-extern unsigned char  opexec268b;
-extern unsigned char  opexec358b;
-extern unsigned char  opexec268cph;
-extern unsigned char  opexec358cph;
-extern unsigned char  opexec268cphb;
-extern unsigned char  opexec358cphb;
+extern unsigned char ENVDisable, cycpb268, cycpb358, cycpbl2, cycpblt2, cycpbl;
+extern unsigned char cycpblt, opexec268, opexec358, opexec268b, opexec358b;
+extern unsigned char opexec268cph, opexec358cph, opexec268cphb, opexec358cphb;
+bool HacksDisable;
 
 void headerhack()
 {
   char *RomData = (char *)romdata;
   ENVDisable = 0;
 
-  if ((curromspace < Lo) || HacksDisable)
-  {
-    return;
-  }
+  if (curromspace < Lo || HacksDisable) { return; }
 
-  //These next few look like RAM init hacks, should be looked into
-
-  //Should be Super Famista (J), uses non-standard characters
+  //Super Famista (J)
   //Shows black screen after one screen.
-  if (!strncmp((RomData+Lo),"\x0bd\x0b0\x0ca\x0df\x0b0\x0cc\x0a7\x0d0\x0bd\x0c0      " ,16))
+  if (!strncmp((RomData+Lo),"\xbd\xb0\xca\xdf\xb0\xcc\xa7\xd0\xbd\xc0  ", 12))
   {
     RomData[0x2762F] = 0xEA;
     RomData[0x27630] = 0xEA;
   }
 
-  //Should be Super Famista 2 (J), uses non-standard characters
+  //Super Famista 2 (J)
   //Shows black screen after loading the ROM.
-  if (!strncmp((RomData+Lo),"\x0bd\x0b0\x0ca\x0df\x0b0\x0cc\x0a7\x0d0\x0bd\x0c0 \x032    " ,16))
+  if (!strncmp((RomData+Lo),"\xbd\xb0\xca\xdf\xb0\xcc\xa7\xd0\xbd\xc0 2", 12))
   {
     //Skip a check for value FF at 2140 when spc not initialized yet?!?
     RomData[0x6CED] = 0xEA;
@@ -1610,7 +1551,7 @@ void headerhack()
 
   //Deae Tonosama Appare Ichiban (J)
   //Shows some screen and hangs there.
-  if (!strncmp((RomData+Lo),"\x0c3\x0de\x0b1\x0b4\x0c4\x0c9\x0bb\x0cf \x0b1\x0af\x0ca" ,12))
+  if (!strncmp((RomData+Lo),"\xc3\xde\xb1\xb4\xc4\xc9\xbb\xcf", 8))
   {
     RomData[0x17837C] = 0xEA;
     RomData[0x17837D] = 0xEA;
@@ -1618,7 +1559,7 @@ void headerhack()
 
   //Human Grand Prix III - F1 Triple Battle (J)
   //Shows black screen after loading the ROM.
-  if (!strncmp((RomData+Lo),"HUMAN GRANDPRIX 3   " ,20))
+  if (!strncmp((RomData+Lo),"HUMAN GRANDPRIX 3   ", 20))
   {
     cycpb268 = 135;
     cycpb358 = 157;
@@ -1630,7 +1571,7 @@ void headerhack()
 
   //Accele Brid (J)
   //Hangs after some time in the first level.
-  if (!strncmp((RomData+Lo),"ACCELEBRID  " ,12))
+  if (!strncmp((RomData+Lo),"ACCELEBRID  ", 12))
   {
     RomData[0x34DA2] = 0;
     RomData[0x34DA3] = 0;
@@ -1638,7 +1579,7 @@ void headerhack()
 
   //Home Alone (J/E/U)
   //Hangs after starting a new game.
-  if (!strncmp((RomData+Lo),"HOME ALONE  " ,12))
+  if (!strncmp((RomData+Lo),"HOME ALONE  ", 12))
   {
     RomData[0x666B] = 0xEE;
     RomData[0x666C] = 0xBC;
@@ -1646,18 +1587,11 @@ void headerhack()
 
   //Emerald Dragon (J)
   //Hangs while drawing the logo after loading the ROM.
-  if (!strncmp((RomData+Hi),"EMERALD DRAG" ,12))
+  if (!strncmp((RomData+Hi),"EMERALD DRAG", 12))
   {
     ENVDisable = true;
   }
 
-  /*
-  Marvelous (J) has this hack in the asm, but disabled
-
-  Alternate if for Marvelous-inclusive version
-  if (!strncmp((RomData+Lo),"\x0cf\x0bo\x0b3\x0de", 4) ||
-      !strncmp((RomData+Lo),"REND", 4))
-  */
   //Rendering Ranger R2
   //Shows black screen after loading the ROM.
   if (!strncmp((RomData+Lo),"REND", 4))
@@ -1674,7 +1608,7 @@ void headerhack()
   //Cyber Knight II - Tikyu Teikoku no Yabou (J)
   //Shows black screen after loading the ROM. (Tuff E Nuff, Dead Dance)
   //Shows black screen after two screens. (Cyber Knight II)
-  if (!strncmp((RomData+Lo),"CYBER KNIGHT 2  " ,16) ||
+  if (!strncmp((RomData+Lo),"CYBER KNIGHT 2  ", 16) ||
       !strncmp((RomData+Lo),"DEAD", 4) ||
       !strncmp((RomData+Lo),"TUFF", 4))
   {
@@ -1696,7 +1630,7 @@ void headerhack()
 
   //Front Mission
   //Flickering worldmap and statusbar.
-  if (!strncmp((RomData+Hi), "\x0cc\x0db\x0dd\x0c4\x0d0\x0af\x0bc\x0ae", 8) ||
+  if (!strncmp((RomData+Hi), "\xcc\xdb\xdd\xc4\xd0\xaf\xbc\xae", 8) ||
       !strncmp((RomData+Hi), "FRONT MI", 8))
   {
     opexec268 = 226;
@@ -1719,9 +1653,7 @@ void Setper2exec()
 }
 
 extern unsigned int SPC7110Entries, SPC7110TempPosition, SPC7110TempLength, SPCDecmPtr;
-
-static char *SPC7110path;
-static char SPC7110fname[8+1+6+4+1]; //dir / 12345 .bin
+static char *SPC7110path, SPC7110fname[8+1+6+4+1]; //dir / 12345 .bin
 char *SPC7110filep;
 unsigned char SPC7110IndexPtr[12*32768], SPC7110PackPtr[65536];
 unsigned int SPC7110IndexSize;
@@ -1750,21 +1682,13 @@ void SPC7PackIndexLoad()
 
   //Get correct path for the ROM we just loaded
   if (!strncmp(ROM+infoloc, "HU TENGAI MAKYO ZERO ", 21))
-  {
-    SPC7PathSetup(FEOEZPath, "FEOEZSP7");
-  }
+  { SPC7PathSetup(FEOEZPath, "FEOEZSP7"); }
   else if (!strncmp(ROM+infoloc, "JUMP TENGAIMAKYO ZERO", 21))
-  {
-    SPC7PathSetup(SJNSPath, "SJNS-SP7");
-  }
+  { SPC7PathSetup(SJNSPath, "SJNS-SP7"); }
   else if (!strncmp(ROM+infoloc, "MOMOTETSU HAPPY      ", 21))
-  {
-    SPC7PathSetup(MDHPath, "MDH-SP7");
-  }
+  { SPC7PathSetup(MDHPath, "MDH-SP7"); }
   else if (!strncmp(ROM+infoloc, "SUPER POWER LEAG 4   ", 21))
-  {
-    SPC7PathSetup(SPL4Path, "SPL4-SP7");
-  }
+  { SPC7PathSetup(SPL4Path, "SPL4-SP7"); }
 
   //Set the pointer to after the slash - needed for the case converters
   SPC7110filep = SPC7110fname+strlen(SPC7110fname);
@@ -1782,6 +1706,7 @@ void SPC7PackIndexLoad()
     //Get file pointer ready for individual pack files
     strcpy(SPC7110filep, "123456.bin"); //Extension Lower Case
   }
+
   SPC7110Entries = 0;
 }
 
@@ -1822,8 +1747,6 @@ void SPC7_Data_Load()
 
   if (fp)
   {
-    unsigned char *ROM = (unsigned char *)romdata;
-
     fseek(fp, SPC7110TempPosition, SEEK_SET);
     fread(SPC7110PackPtr+SPCDecmPtr, 1, SPC7110TempLength, fp);
     fclose(fp);
@@ -1876,14 +1799,12 @@ static unsigned int crc32_table[256] = {
   0x54DE5729, 0x23D967BF, 0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94,
   0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D };
 
-unsigned int CalcCRC32 (unsigned char *start, unsigned int size)
+unsigned int CalcCRC32(unsigned char *start, unsigned int size)
 {
   unsigned int i, result=0xFFFFFFFF;
 
   for (i=0 ; i<size ; i++)
-  {
-    result = (result >> 8) ^ (crc32_table[(result ^ (*(start+i))) & 0xFF]);
-  }
+  { result = (result >> 8) ^ (crc32_table[(result ^ (*(start+i))) & 0xFF]); }
 
   return (~result);
 }
@@ -1902,66 +1823,61 @@ unsigned int showinfogui()
   strcpy(CSStatus3, "VIDEO:        BANK:       CRC32:        ");
   strcpy(CSStatus4, "                                        ");
 
-  if (infoloc == 0x40FFC0)  { memcpy (CSStatus3+19, "EHi ", 4); }
+  for (i=0 ; i<21 ; i++)
+  { CSStatus[i] = (ROM[infoloc + i]) ? ROM[infoloc + i] : 32; }
+
+  if (Interleaved)
+  {
+    memcpy(CSStatus2+12, "Yes ", 4);
+    memcpy(CSStatus4+10, "PLEASE DEINTERLEAVE ROM", 23);
+  }
   else
   {
-    if (romtype == 2) { memcpy (CSStatus3+19, "Hi  ", 4); }
-    else  { memcpy (CSStatus3+19, "Lo  ", 4); }
+    memcpy(CSStatus2+12, "No  ", 4);
+    memset(CSStatus4+10, ' ', 23);
   }
 
-  for (i=0 ; i<21 ; i++)
-  {
-    CSStatus[i] = (ROM[infoloc + i]) ? ROM[infoloc + i] : 32;
-  }
+  memcpy(CSStatus2+20, (IPSPatched) ? "IPS ":"    ", 4);
+  memcpy(CSStatus3+6, (ROM[infoloc + 25] < 2 || ROM[infoloc + 25] > 12) ? "NTSC":"PAL ", 4);
 
-  if ((ROM[infoloc + 25] < 2 ) || (ROM[infoloc + 25] > 12))
-  {
-    memcpy (CSStatus3+6, "NTSC", 4);
-  }
-  else  { memcpy (CSStatus3+6, "PAL ", 4); }
+  if (infoloc == EHi) { memcpy(CSStatus3+19, "EHi ", 4); }
+  else { memcpy(CSStatus3+19, (romtype == 2) ? "Hi  ":"Lo  ", 4); }
 
-  if (IPSPatched) { memcpy (CSStatus2+20, "IPS ", 4); }
-  else  { memcpy (CSStatus2+20, "    ", 4); }
-
-  memcpy (CSStatus+31, "NORMAL      ", 10);
-
-  if (SA1Enable)     { memcpy (CSStatus+31, "SA-1     ", 9); }
-  if (RTCEnable)     { memcpy (CSStatus+31, "RTC      ", 9); }
-  if (SPC7110Enable) { memcpy (CSStatus+31, "SPC7110  ", 9); }
-  if (SFXEnable)     { memcpy (CSStatus+31, "SUPER FX ", 9); }
-  if (C4Enable)      { memcpy (CSStatus+31, "C4       ", 9); }
-  if (DSP1Enable)    { memcpy (CSStatus+31, "DSP-1    ", 9); }
-  if (DSP2Enable)    { memcpy (CSStatus+31, "DSP-2    ", 9); }
-  if (DSP3Enable)    { memcpy (CSStatus+31, "DSP-3    ", 9); }
-  if (DSP4Enable)    { memcpy (CSStatus+31, "DSP-4    ", 9); }
-  if (SDD1Enable)    { memcpy (CSStatus+31, "S-DD1    ", 9); }
-  if (OBCEnable)     { memcpy (CSStatus+31, "OBC1     ", 9); }
-  if (SETAEnable)    { memcpy (CSStatus+31, "SETA DSP ", 9); }
-  if (ST18Enable)    { memcpy (CSStatus+31, "ST018    ", 9); }
-  if (SGBEnable)     { memcpy (CSStatus+31, "SGB      ", 9); }
-  if (BSEnable)      { memcpy (CSStatus+31, "BROADCAST", 9);
+  memcpy(CSStatus+31, "NORMAL   ", 9);
+  if (SA1Enable)     { memcpy(CSStatus+31, "SA-1     ", 9); }
+  if (RTCEnable)     { memcpy(CSStatus+31, "RTC      ", 9); }
+  if (SPC7110Enable) { memcpy(CSStatus+31, "SPC7110  ", 9); }
+  if (SFXEnable)     { memcpy(CSStatus+31, "SUPER FX ", 9); }
+  if (C4Enable)      { memcpy(CSStatus+31, "C4       ", 9); }
+  if (DSP1Enable)    { memcpy(CSStatus+31, "DSP-1    ", 9); }
+  if (DSP2Enable)    { memcpy(CSStatus+31, "DSP-2    ", 9); }
+  if (DSP3Enable)    { memcpy(CSStatus+31, "DSP-3    ", 9); }
+  if (DSP4Enable)    { memcpy(CSStatus+31, "DSP-4    ", 9); }
+  if (SDD1Enable)    { memcpy(CSStatus+31, "S-DD1    ", 9); }
+  if (OBCEnable)     { memcpy(CSStatus+31, "OBC1     ", 9); }
+  if (SETAEnable)    { memcpy(CSStatus+31, "SETA DSP ", 9); }
+  if (ST18Enable)    { memcpy(CSStatus+31, "ST018    ", 9); }
+  if (SGBEnable)     { memcpy(CSStatus+31, "SGB      ", 9); }
+  if (BSEnable)      { memcpy(CSStatus+31, "BROADCAST", 9);
   // dummy out date so CRC32 matches
-    ROM[infoloc + 22] = 0x42;
-    ROM[infoloc + 23] = 0x00;
+    ROM[infoloc+BSMonthOffset] = 0x42;
+    ROM[infoloc+BSDayOffset] = 0x00; }
   // 42 is the answer, and the uCONSRT standard
-  }
-
-  if (Interleaved)  { memcpy (CSStatus2+12, "Yes ", 4); memcpy (CSStatus4+8, "PLEASE DEINTERLEAVE ROM",23); }
-  else  { memcpy (CSStatus2+12, "No  ", 4); memcpy (CSStatus4+8, "                        ",23); }
 
   // calculate CRC32 for the whole ROM, or Add-on ROM only
   CRC32 = (SplittedROM) ? CalcCRC32(ROM+addOnStart, addOnSize) : CalcCRC32(ROM, NumofBytes);
-
   // place CRC32 on line
-  sprintf (CSStatus3+32, "%08X", CRC32);
+  sprintf(CSStatus3+32, "%08X", CRC32);
 
   i = (SplittedROM) ? infoloc + 0x1E + addOnStart: infoloc + 0x1E;
 
   if ((ROM[i] == (Checksumvalue & 0xFF)) && (ROM[i+1] == (Checksumvalue >> 8)))
-  { memcpy (CSStatus2+36, "OK  ", 4); }
-  else  { memcpy (CSStatus2+36, "FAIL", 4);
-    if(!IPSPatched) { memcpy (CSStatus4, "BAD ROM",7); }
-    else {  memcpy (CSStatus4, "        ",7); }
+  { memcpy(CSStatus2+36, "OK  ", 4); }
+  else
+  {
+    memcpy(CSStatus2+36, "FAIL", 4);
+    if (!IPSPatched) { memcpy(CSStatus4, "BAD ROM ",8); }
+    else { memset(CSStatus4, ' ', 7); }
   }
 
   DumpROMLoadInfo();
@@ -1972,18 +1888,14 @@ unsigned int showinfogui()
 }
 
 extern unsigned int nmiprevaddrl, nmiprevaddrh, nmirept, nmiprevline, nmistatus;
-extern unsigned char spcnumread;
+extern unsigned char spcnumread, yesoutofmemory;
 extern unsigned char NextLineCache, sramsavedis, sndrot, regsbackup[3019];
-extern unsigned char yesoutofmemory;
-
-void outofmemfix();
-void GUIDoReset();
-
 extern unsigned int Voice0Freq, Voice1Freq, Voice2Freq, Voice3Freq;
 extern unsigned int Voice4Freq, Voice5Freq, Voice6Freq, Voice7Freq;
 extern unsigned int dspPAdj;
 extern unsigned short Voice0Pitch, Voice1Pitch, Voice2Pitch, Voice3Pitch;
 extern unsigned short Voice4Pitch, Voice5Pitch, Voice6Pitch, Voice7Pitch;
+void outofmemfix(), GUIDoReset();
 
 void initpitch()
 {
@@ -2012,11 +1924,11 @@ extern unsigned char ForcePal, ForceROMTiming, romispal, MovieWaiting, DSP1Type;
 extern unsigned short totlines;
 void SetAddressingModes(), GenerateBank0Table();
 void SetAddressingModesSA1(), GenerateBank0TableSA1();
-void InitDSP(), InitDSP2(), InitDSP3(), InitDSP4(), InitOBC1(), InitFxTables(), initregr(), initregw();
-void SPC7110Load(), DOSClearScreen(), dosmakepal();
+void InitDSP(), InitDSP2(), InitDSP3(), InitDSP4(), InitOBC1(), InitFxTables();
+void initregr(), initregw(), SPC7110Load(), DOSClearScreen(), dosmakepal();
 
 void CheckROMType()
-{ // used by both movie and normal powercycles
+{
   unsigned char *ROM = (unsigned char *)romdata;
 
   if (!MovieWaiting)
@@ -2026,16 +1938,15 @@ void CheckROMType()
   }
 
   lorommapmode2 = 0;
-  if (!strncmp((char *)ROM+0x207FC0, "DERBY STALLION 96", 17) || !strncmp((char *)ROM+Lo, "SOUND NOVEL-TCOOL", 17))
-  {
-    lorommapmode2 = 1;
-  }
+  if (!strncmp((char *)ROM+0x207FC0, "DERBY STALLION 96", 17) ||
+      !strncmp((char *)ROM+Lo, "SOUND NOVEL-TCOOL", 17))
+  { lorommapmode2 = 1; }
 
   // Setup memmapping
   SetAddressingModes();
   GenerateBank0Table();
 
-  disablespcclr = (memcmp(ROM+Hi, "\0x42\0x53\0x20\0x5A", 4)) ? 0 : 1;
+  disablespcclr = (memcmp(ROM+Hi, "BS Z", 4)) ? 0 : 1;
 
   // LoROM SRAM mapping
   if (romtype == 1)
@@ -2281,40 +2192,10 @@ void SetupROM()
   }
 }
 
-void OpenSramFile();
-void powercycle(bool sramload)
-{ // currently only used by movies - rom already loaded, no need for init
-  memset(sram, 0xFF, 32768);
-  clearSPCRAM();
-
-  nmiprevaddrl = 0;
-  nmiprevaddrh = 0;
-  nmirept = 0;
-  nmiprevline = 224;
-  nmistatus = 0;
-  spcnumread = 0;
-  NextLineCache = 0;
-  curexecstate = 1;
-
-  if (sramload)
-  {
-    OpenSramFile();
-  }
-  SetupROM();
-
-  sramsavedis = 0;
-
-  memcpy(&sndrot, regsbackup, 3019);
-
-  if (yesoutofmemory == 1)  { asm_call(outofmemfix); }
-
-  asm_call(GUIDoReset);
-}
-
 extern int NumComboLocl;
 extern unsigned char ComboHeader[23];
-extern bool romloadskip;
 extern char CombinDataLocl[3300];
+extern bool romloadskip;
 
 void SaveCombFile()
 {
@@ -2377,14 +2258,12 @@ extern void *snesmap2[256];
 unsigned int cromptradd;
 extern unsigned char MultiTap;
 extern unsigned int SfxR0, SfxR1, SfxR2, SfxR3, SfxR4, SfxR5, SfxR6, SfxR7,
-                    SfxR8, SfxR9, SfxR10, SfxR11, SfxR12, SfxR13, SfxR14, SfxR15;
+                   SfxR8, SfxR9, SfxR10, SfxR11, SfxR12, SfxR13, SfxR14, SfxR15;
 extern void *ram7f;
 
 extern void (*memtabler8[256])();
 extern void (*memtabler16[256])();
-void memaccessbankr848mb();
-void memaccessbankr1648mb();
-void preparesfx();
+void memaccessbankr848mb(), memaccessbankr1648mb(), preparesfx();
 
 void map_lorom()
 {
@@ -2689,18 +2568,15 @@ void initsnes()
   }
 }
 
-void PatchUsingIPS(), DosExit();
+void PatchUsingIPS(), DosExit(), OpenSramFile();
+extern unsigned char GUIOn, GUIOn2;
 
-bool InGUI;
-bool GUIloadfailed;
-void loadfileGUI()
+bool loadfileGUI()
 {
-  spcon = !SPCDisable;
+  bool result = true;
 
-  MessageOn      = 0;
-  yesoutofmemory = 0;
-  IPSPatched     = 0;
-  GUIloadfailed  = 0;
+  spcon = !SPCDisable;
+  MessageOn = yesoutofmemory = IPSPatched = 0;
 
   loadROM();
 
@@ -2710,18 +2586,68 @@ void loadfileGUI()
     OpenSramFile();
     OpenCombFile();
 
-    if (!InGUI) puts("File opened successfully!\n");
-
+    if (!(GUIOn || GUIOn2)) { puts("File opened successfully !"); }
     if (!IPSPatched) { PatchUsingIPS(); }
   }
-  else //failed
+  else
   {
-    if (!InGUI)
+    if (GUIOn || GUIOn2) { result = false; }
+    else
     {
       puts("Error opening file!\n");
       asm_call(DosExit);
     }
-    GUIloadfailed = 1;
+  }
+
+  return (result);
+}
+
+extern unsigned int CheatOn, NumCheats;
+extern unsigned char CheatWinMode, CheatSearchStatus;
+void GUIQuickLoadUpdate(), CheatCodeLoad(), LoadSecondState();
+
+void powercycle(bool sramload, bool romload)
+{
+  clearmem2();
+
+  nmiprevaddrl = 0;
+  nmiprevaddrh = 0;
+  nmirept = 0;
+  nmiprevline = 224;
+  nmistatus = 0;
+  spcnumread = 0;
+  NextLineCache = 0;
+  curexecstate = 1;
+
+  if (sramload) { OpenSramFile(); }
+  if (romload) { romloadskip = 1; }
+
+  if (!romload || (loadfileGUI()))
+  {
+    if (romload)
+    { CheatOn = NumCheats = CheatWinMode = CheatSearchStatus = 0; }
+
+    SetupROM();
+
+    if (romload)
+    {
+      if (DisplayInfo) { showinfogui(); }
+      initsnes();
+    }
+
+    sramsavedis = 0;
+    memcpy(&sndrot, regsbackup, 3019);
+
+    if (yesoutofmemory) { asm_call(outofmemfix); }
+    asm_call(GUIDoReset);
+
+    if (romload)
+    {
+      GUIQuickLoadUpdate();
+
+      if (AutoLoadCht) { CheatCodeLoad(); }
+      if (AutoState) { asm_call(LoadSecondState); }
+    }
   }
 }
 
@@ -2823,6 +2749,7 @@ void init65816()
     numspcvblleft = 480;
     SPC700write = 0;
     SPC700read = 0;
+    spc700read = 0;
     spc700idle = 0;
 
     for(i = 0;i<0x40;i++)

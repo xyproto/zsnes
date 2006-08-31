@@ -44,53 +44,6 @@ unsigned int ZFileGetDir()
   return (unsigned int) (getcwd(DirName,128));
 }
 
-char * ZFileFindPATH;
-unsigned int ZFileFindATTRIB;
-unsigned int DTALocPos;
-
-int FindFirstHandle;
-int TempFind;
-struct _finddata_t FindDataStruct;
-
-unsigned int ZFileFindNext()
-{
-  TempFind=_findnext(FindFirstHandle,&FindDataStruct);
-  if(TempFind==-1) return(-1);
-
-  *(char *)(DTALocPos+0x15)=0;
-
-  if(ZFileFindATTRIB&0x10 && (FindDataStruct.attrib&0x10)==0) return(ZFileFindNext());
-  if(((ZFileFindATTRIB&0x10)==0) && FindDataStruct.attrib&0x10) return(ZFileFindNext());
-
-  if(FindDataStruct.attrib&_A_SUBDIR)  *(char *)(DTALocPos+0x15)=0x10;
-  strcpy((char *)DTALocPos+0x1E,FindDataStruct.name);
-  if(TempFind==-1) return(-1);
-  return(0);
-}
-
-unsigned int ZFileFindFirst()
-{
-  FindFirstHandle=_findfirst(ZFileFindPATH,&FindDataStruct);
-  *(char *)(DTALocPos+0x15)=0;
-  TempFind=0;
-  if(FindFirstHandle==-1) return(-1);
-  if(ZFileFindATTRIB&0x10 && (FindDataStruct.attrib&0x10)==0) return(ZFileFindNext());
-  if(((ZFileFindATTRIB&0x10)==0) && FindDataStruct.attrib&0x10) return(ZFileFindNext());
-
-  if(FindDataStruct.attrib&_A_SUBDIR) *(char *)(DTALocPos+0x15)=0x10;
-  strcpy((char *) DTALocPos+0x1E,FindDataStruct.name);
-  if(FindFirstHandle==-1) return(-1);
-  return(0);
-}
-
-
-unsigned int ZFileFindEnd()  // for compatibility with windows later
-{
-  _findclose(FindFirstHandle);
-  return(0);
-}
-
-
 unsigned int GetTime()
 {
   unsigned int value;
