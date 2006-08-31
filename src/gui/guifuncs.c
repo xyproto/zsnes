@@ -1305,7 +1305,6 @@ void GUIQuickLoadUpdate()
 }
 
 
-unsigned int GUInumentries; //total entries
 unsigned int GUIcurrentviewloc; //current file position
 unsigned int GUIcurrentcursloc; //current cursor position (GUI)
 unsigned int GUIcurrentdirviewloc; //current directory position
@@ -1344,7 +1343,6 @@ void GetLoadData()
   selected_names += 2;
   GUIfileentries = main_names ? ((unsigned int)(*main_names))-2 : 0;
   GUIdirentries = d_names ? ((unsigned int)(*d_names))-2 : 0;
-  GUInumentries = GUIfileentries+GUIdirentries;
 }
 
 unsigned int GUIcurrentfilewin;
