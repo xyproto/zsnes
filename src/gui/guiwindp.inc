@@ -340,7 +340,7 @@ EXTSYM puts
   mov eax,[cloadnposb]
   shl eax,2
   add eax,[selected_names]
-  GUIOuttextwin2load  %1,%2,%2
+  GUIOuttextwin2load  %1,%2,%3
 %%skip
 %endmacro
 
@@ -354,7 +354,7 @@ EXTSYM puts
   shl eax,2
   add eax,[d_names]
   add eax,8
-  GUIOuttextwin2load  %1,%2,%2
+  GUIOuttextwin2load  %1,%2,%3
 %%skip
 %endmacro
 
