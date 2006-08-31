@@ -316,14 +316,17 @@ SECTION .text
 %macro GUIOuttextwin2load 3
   test dword[cloadnleft],80000000h
   jnz near %%skip
-  cmp byte[GUIloadfntype],0
-  jne %%nottype0
   mov eax,[cloadnposb]
   shl eax,2
+  cmp dword[GUIcurrentfilewin],1
+  jne %%notdir
   add eax,d_names+8
+  jmp %%colorize
+%%notdir
+  add eax,selected_names
+%%colorize
   mov [cloadnpos],eax
   inc dword[cloadnposb]
-%%nottype0
   mov byte[GUItextcolor],223
   GUIOuttextwin2l %1,%2,%3,[cloadnpos]
   mov byte[GUItextcolor],221
