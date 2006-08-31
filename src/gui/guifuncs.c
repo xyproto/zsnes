@@ -1336,6 +1336,10 @@ void GetLoadData()
       populate_lists(LIST_DN|LIST_ETN, true);
       selected_names = et_names;
       break;
+    default:
+      populate_lists(LIST_DN|LIST_MAIN, true);
+      selected_names = main_names;
+      break;
   }
   selected_names += 2;
   GUIfileentries = (unsigned int)*main_names -2;
