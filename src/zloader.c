@@ -843,19 +843,21 @@ static void ZCleanup(void)
   void DeallocRewindBuffer();
   void DeallocPauseFrame();
   void DeallocSystemVars();
+  void free_all_file_lists();
 #ifdef __UNIXSDL__
   void UnloadSDL();
 #endif
-
 
   deinit_paths();
   deallocmem();
   DeallocRewindBuffer();
   DeallocPauseFrame();
   DeallocSystemVars();
+  free_all_file_lists();
 #ifdef __UNIXSDL__
   UnloadSDL();
 #endif
+
 }
 
 #ifdef __WIN32__

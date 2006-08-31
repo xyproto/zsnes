@@ -1312,14 +1312,19 @@ unsigned int GUIcurrentdircursloc; //current dir position (GUI)
 unsigned int GUIdirentries;
 unsigned int GUIfileentries;
 
-void GetLoadData()
+void free_all_file_lists()
 {
-  GUIcurrentviewloc = GUIcurrentcursloc = GUIcurrentdirviewloc = GUIcurrentdircursloc = 0;
-
   free_list(&d_names);
   free_list(&i_names);
   free_list(&lf_names);
   free_list(&et_names);
+}
+
+void GetLoadData()
+{
+  GUIcurrentviewloc = GUIcurrentcursloc = GUIcurrentdirviewloc = GUIcurrentdircursloc = 0;
+
+  free_all_file_lists();
 
   switch (GUIloadfntype)
   {
@@ -1409,7 +1414,10 @@ void GUILoadData()
 
       loadquickfname(i);
     }
-    else { GUIloadfilename(ZCartName); }
+    else
+    {
+      GUIloadfilename(ZCartName);
+    }
 
     GUIwinactiv[1] = 0; // close load dialog
     GUIwinorder[--GUIwinptr] = 0;
