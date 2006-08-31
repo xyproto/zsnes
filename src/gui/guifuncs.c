@@ -1069,19 +1069,19 @@ static void add_list(char ***reallist, const char *p)
   char **list = *reallist;
   if (!list)
   {
-    if (!(list = malloc(503*sizeof(void *)))) { return; }
+    if (!(list = malloc(1003*sizeof(void *)))) { return; }
     list[0] = (char *)2;
-    list[1] = (char *)502;
+    list[1] = (char *)1002;
     list[2] = 0;
   }
 
   if (list[0] == list[1]-1)
   {
-    char **p = realloc(list, ((size_t)list[1]+500)*sizeof(void *));
+    char **p = realloc(list, ((size_t)list[1]+1000)*sizeof(void *));
     if (p)
     {
       list = p;
-      list[1] += 500;
+      list[1] += 1000;
     }
     else
     {
