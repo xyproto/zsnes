@@ -313,8 +313,6 @@ SECTION .text
 %%yes
 %endmacro
 
-EXTSYM puts
-
 %macro GUIOuttextwin2load 3
   mov eax,[eax]
   mov [cloadnpos],eax

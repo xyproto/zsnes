@@ -22,8 +22,7 @@
 
 EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,
 EXTSYM GetTime,GetDate,V8Mode,getblaster,Force8b,SBHDMA
-EXTSYM ZFileCHDir,CHPath,ZFileGetDir,DirName,DTALoc,DTALocPos
-EXTSYM ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
+EXTSYM ZFileCHDir,CHPath,ZFileGetDir,DirName
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
 EXTSYM NoSoundReinit,soundon,DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB
 EXTSYM handler8h,handler9h,init60hz,Interror,init18_2hz,DeInitSPC,GUIinit36_4hz

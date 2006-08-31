@@ -21,8 +21,7 @@
 %include "macros.mac"
 
 EXTSYM GetTime,GetDate,GUIkeydelay2,_chdrive,ZFileCHDir
-EXTSYM CHPath,ZFileGetDir,DirName,_getdrive,DTALoc,SBHDMA
-EXTSYM DTALocPos,ZFileFindATTRIB,ZFileFindFirst,ZFileFindNext,ZFileFindPATH
+EXTSYM CHPath,ZFileGetDir,DirName,_getdrive,SBHDMA
 EXTSYM soundon,DSPDisable,Start60HZ,pressed,putchar,getch
 EXTSYM vidbufferofsb,vidbuffer,clearwin,Stop60HZ,initwinvideo,vesa2_rpos
 EXTSYM vesa2_gpos,vesa2_bpos,vesa2_rposng,vesa2_gposng,vesa2_bposng,vesa2_usbit

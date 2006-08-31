@@ -22,8 +22,7 @@
 
 EXTSYM getchar,PrevFSMode,sem_sleep,SBHDMA,putchar
 EXTSYM GetTime,GetDate,GUIkeydelay2,ZFileCHDir,CHPath
-EXTSYM ZFileGetDir,DirName,DTALoc,DTALocPos,ZFileFindATTRIB
-EXTSYM ZFileFindFirst,ZFileFindNext,ZFileFindPATH,Start60HZ
+EXTSYM ZFileGetDir,DirName,Start60HZ
 EXTSYM pressed,AdjustFrequency,vidbufferofsb,vidbuffer,clearwin
 EXTSYM Stop60HZ,initwinvideo,vesa2_rpos,vesa2_gpos,vesa2_bpos,vesa2_rposng
 EXTSYM vesa2_gposng,vesa2_bposng,vesa2_usbit,vesa2_clbit,vesa2_clbitng
