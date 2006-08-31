@@ -851,6 +851,11 @@ DisplayGUILoad:
   mov byte[GUItextcolor],223             ; Green Shadow
   GUIOuttextwin2 1,8,148, GUILoadTextA
 
+  cmp dword[GUIfileentries],0
+  jne .yesfiles
+  mov dword[GUIcurrentfilewin],1
+.yesfiles
+
   mov eax,[GUIfileentries]
   sub eax,[GUIcurrentviewloc]
   mov [cloadnleft],eax
