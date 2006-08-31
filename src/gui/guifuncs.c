@@ -1343,7 +1343,7 @@ void GetLoadData()
   }
   selected_names += 2;
   GUIfileentries = main_names ? ((unsigned int)(*main_names))-2 : 0;
-  GUIdirentries = ((unsigned int)(*d_names))-2;
+  GUIdirentries = d_names ? ((unsigned int)(*d_names))-2 : 0;
   GUInumentries = GUIfileentries+GUIdirentries;
 }
 
@@ -1366,17 +1366,19 @@ void GUILoadData()
       strncpy(ZRomPath, nameptr+1, 2);
       ZRomPath[2] = '\\';
       ZRomPath[3] = 0;
-      init_rom_path(ZRomPath);
     }
     else
     #endif
     {
-      char *p = strdupcat(ZRomPath, nameptr);
-      if (p)
+      if (!strcmp(nameptr, ".."))
       {
-        init_rom_path(p);
-        free(p);
+        strdirname(ZRomPath);
       }
+      else
+      {
+        strcpy(ZRomPath, nameptr);
+      }
+      strcatslash(ZRomPath);
     }
 
     GetLoadData();

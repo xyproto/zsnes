@@ -508,6 +508,10 @@ void strdirname(char *str)
   {
     *p = 0;
   }
+  else if (p == str)
+  {
+    str[1] = 0;
+  }
 }
 
 void strbasename(char *str)
