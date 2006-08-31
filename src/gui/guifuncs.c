@@ -1342,8 +1342,8 @@ void GetLoadData()
       break;
   }
   selected_names += 2;
-  GUIfileentries = (unsigned int)*main_names -2;
-  GUIdirentries = (unsigned int)*d_names -2;
+  GUIfileentries = main_names ? ((unsigned int)(*main_names))-2 : 0;
+  GUIdirentries = ((unsigned int)(*d_names))-2;
   GUInumentries = GUIfileentries+GUIdirentries;
 }
 
