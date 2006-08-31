@@ -320,8 +320,7 @@ SECTION .text
   jne %%nottype0
   mov eax,[cloadnposb]
   shl eax,2
-  add eax,d_names
-  add eax,8
+  add eax,d_names+8
   mov [cloadnpos],eax
   inc dword[cloadnposb]
 %%nottype0
@@ -830,16 +829,13 @@ DisplayGUILoad:
   mov byte[GUItextcolor],223             ; Green Shadow
   GUIOuttextwin2 1,8,148, GUILoadTextA
 
-  mov eax,[spcBuffera]
-  inc eax
+  mov eax,selected_names
   mov [cloadnpos],eax
   mov eax,[GUIfileentries]
   sub eax,[GUIcurrentviewloc]
-  dec eax
   mov [cloadnleft],eax
   mov eax,[GUIcurrentviewloc]
   mov [cloadnposb],eax
-  shl eax,5
   add [cloadnpos],eax
   mov dword[cloadmaxlen],23
 
@@ -859,17 +855,14 @@ DisplayGUILoad:
   GUIOuttextwin2load 1,8,29+7*13
   GUIOuttextwin2load 1,8,29+7*14
 
-  mov eax,[spcBuffera]
-  inc eax
+  mov eax,d_names+8
   mov [cloadnpos],eax
   mov eax,[GUIdirentries]
   sub eax,[GUIcurrentdirviewloc]
-  dec eax
   mov [cloadnleft],eax
   mov eax,[GUIcurrentdirviewloc]
   add eax,[GUIfileentries]
   mov [cloadnposb],eax
-  shl eax,5
   add [cloadnpos],eax
   mov dword[cloadmaxlen],11
   GUIOuttextwin2load 1,164,29              ; Text/Shadow for DIR Box
