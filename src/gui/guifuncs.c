@@ -1417,9 +1417,3 @@ void GUILoadData()
     GUIwinorder[--GUIwinptr] = 0;
   }
 }
-
-char *gui_rom;
-void init_rom_path_gui()
-{
-  init_rom_path(gui_rom);
-}

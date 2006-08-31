@@ -2913,12 +2913,14 @@ GUILoadKeys:
 
   xor esi,esi
   mov ebx,[GUIfileentries]
-  mov eax,selected_names
+  mov eax,[selected_names]
   cmp dword[GUIcurrentfilewin],1
   jne near .notdir
   mov ebx,[GUIdirentries]
-  mov eax,d_names
+  mov eax,[d_names]
+  add eax,8
 .notdir
+  mov eax,[eax]
   mov ecx,esi
   mov [.foundval],esi
   mov dword[.maxfound],0

@@ -313,6 +313,8 @@ SECTION .text
 %%yes
 %endmacro
 
+EXTSYM puts
+
 %macro GUIOuttextwin2load 3
   test dword[cloadnleft],80000000h
   jnz near %%skip
@@ -320,10 +322,13 @@ SECTION .text
   shl eax,2
   cmp dword[GUIcurrentfilewin],1
   jne %%notdir
-  add eax,d_names+8
+  add eax,[d_names]
+  add eax,8
+  mov eax,[eax]
   jmp %%colorize
 %%notdir
-  add eax,selected_names
+  add eax,[selected_names]
+  mov eax,[eax]
 %%colorize
   mov [cloadnpos],eax
   inc dword[cloadnposb]
@@ -776,7 +781,8 @@ DisplayGUILoad:
 %ifndef __MSDOS__
   mov eax,[GUIcurrentcursloc]
   shl eax,2
-  add eax,selected_names
+  add eax,[selected_names]
+  mov eax,[eax]
   mov [cloadnpos],eax
   GUIOuttextwin2l 1,6,158,[cloadnpos]
   add byte[GUItextcolor],15
@@ -832,7 +838,8 @@ DisplayGUILoad:
   mov byte[GUItextcolor],223             ; Green Shadow
   GUIOuttextwin2 1,8,148, GUILoadTextA
 
-  mov eax,selected_names
+  mov eax,[selected_names]
+  mov eax,[eax]
   mov [cloadnpos],eax
   mov eax,[GUIfileentries]
   sub eax,[GUIcurrentviewloc]
@@ -858,7 +865,9 @@ DisplayGUILoad:
   GUIOuttextwin2load 1,8,29+7*13
   GUIOuttextwin2load 1,8,29+7*14
 
-  mov eax,d_names+8
+  mov eax,[d_names]
+  add eax,8
+  mov eax,[eax]
   mov [cloadnpos],eax
   mov eax,[GUIdirentries]
   sub eax,[GUIcurrentdirviewloc]
@@ -868,21 +877,21 @@ DisplayGUILoad:
   mov [cloadnposb],eax
   add [cloadnpos],eax
   mov dword[cloadmaxlen],11
-  GUIOuttextwin2load 1,164,29              ; Text/Shadow for DIR Box
-  GUIOuttextwin2load 1,164,29+7
-  GUIOuttextwin2load 1,164,29+7*2
-  GUIOuttextwin2load 1,164,29+7*3
-  GUIOuttextwin2load 1,164,29+7*4
-  GUIOuttextwin2load 1,164,29+7*5
-  GUIOuttextwin2load 1,164,29+7*6
-  GUIOuttextwin2load 1,164,29+7*7
-  GUIOuttextwin2load 1,164,29+7*8
-  GUIOuttextwin2load 1,164,29+7*9
-  GUIOuttextwin2load 1,164,29+7*10
-  GUIOuttextwin2load 1,164,29+7*11
-  GUIOuttextwin2load 1,164,29+7*12
-  GUIOuttextwin2load 1,164,29+7*13
-  GUIOuttextwin2load 1,164,29+7*14
+  ;GUIOuttextwin2load 1,164,29              ; Text/Shadow for DIR Box
+  ;GUIOuttextwin2load 1,164,29+7
+  ;GUIOuttextwin2load 1,164,29+7*2
+  ;GUIOuttextwin2load 1,164,29+7*3
+  ;GUIOuttextwin2load 1,164,29+7*4
+  ;GUIOuttextwin2load 1,164,29+7*5
+  ;GUIOuttextwin2load 1,164,29+7*6
+  ;GUIOuttextwin2load 1,164,29+7*7
+  ;GUIOuttextwin2load 1,164,29+7*8
+  ;GUIOuttextwin2load 1,164,29+7*9
+  ;GUIOuttextwin2load 1,164,29+7*10
+  ;GUIOuttextwin2load 1,164,29+7*11
+  ;GUIOuttextwin2load 1,164,29+7*12
+  ;GUIOuttextwin2load 1,164,29+7*13
+  ;GUIOuttextwin2load 1,164,29+7*14
 
   mov byte[GUItextcolor],221              ; Green Text
   cmp byte[GUIWincoladd],0
