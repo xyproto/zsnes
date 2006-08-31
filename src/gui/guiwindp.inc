@@ -316,18 +316,6 @@ SECTION .text
 EXTSYM puts
 
 %macro GUIOuttextwin2load 3
-  test dword[cloadnleft],80000000h
-  jnz near %%skip
-  mov eax,[cloadnposb]
-  shl eax,2
-  cmp dword[GUIcurrentfilewin],1
-  jne %%notdir
-  add eax,[d_names]
-  add eax,8
-  jmp %%colorize
-%%notdir
-  add eax,[selected_names]
-%%colorize
   mov eax,[eax]
   mov [cloadnpos],eax
   inc dword[cloadnposb]
@@ -341,6 +329,26 @@ EXTSYM puts
   GUIOuttextwin2l %1,%2-1,%3-1,[cloadnpos]
   add dword[cloadnpos],32
   dec dword[cloadnleft]
+%endmacro
+
+%macro GUIOuttextwinloadfile 3
+  test dword[cloadnleft],80000000h
+  jnz near %%skip
+  mov eax,[cloadnposb]
+  shl eax,2
+  add eax,[selected_names]
+  GUIOuttextwin2load  %1,%2,%2
+%%skip
+%endmacro
+
+%macro GUIOuttextwinloaddir 3
+  test dword[cloadnleft],80000000h
+  jnz near %%skip
+  mov eax,[cloadnposb]
+  shl eax,2
+  add eax,[d_names]
+  add eax,8
+  GUIOuttextwin2load  %1,%2,%2
 %%skip
 %endmacro
 
@@ -837,8 +845,6 @@ DisplayGUILoad:
   mov byte[GUItextcolor],223             ; Green Shadow
   GUIOuttextwin2 1,8,148, GUILoadTextA
 
-  mov eax,[selected_names]
-  mov eax,[eax]
   mov eax,[GUIfileentries]
   sub eax,[GUIcurrentviewloc]
   mov [cloadnleft],eax
@@ -846,47 +852,44 @@ DisplayGUILoad:
   mov [cloadnposb],eax
   mov dword[cloadmaxlen],23
 
-  GUIOuttextwin2load 1,8,29              ; Text/Shadow for Filename Box
-  GUIOuttextwin2load 1,8,29+7
-  GUIOuttextwin2load 1,8,29+7*2
-  GUIOuttextwin2load 1,8,29+7*3
-  GUIOuttextwin2load 1,8,29+7*4
-  GUIOuttextwin2load 1,8,29+7*5
-  GUIOuttextwin2load 1,8,29+7*6
-  GUIOuttextwin2load 1,8,29+7*7
-  GUIOuttextwin2load 1,8,29+7*8
-  GUIOuttextwin2load 1,8,29+7*9
-  GUIOuttextwin2load 1,8,29+7*10
-  GUIOuttextwin2load 1,8,29+7*11
-  GUIOuttextwin2load 1,8,29+7*12
-  GUIOuttextwin2load 1,8,29+7*13
-  GUIOuttextwin2load 1,8,29+7*14
+  GUIOuttextwinloadfile 1,8,29              ; Text/Shadow for Filename Box
+  GUIOuttextwinloadfile 1,8,29+7
+  GUIOuttextwinloadfile 1,8,29+7*2
+  GUIOuttextwinloadfile 1,8,29+7*3
+  GUIOuttextwinloadfile 1,8,29+7*4
+  GUIOuttextwinloadfile 1,8,29+7*5
+  GUIOuttextwinloadfile 1,8,29+7*6
+  GUIOuttextwinloadfile 1,8,29+7*7
+  GUIOuttextwinloadfile 1,8,29+7*8
+  GUIOuttextwinloadfile 1,8,29+7*9
+  GUIOuttextwinloadfile 1,8,29+7*10
+  GUIOuttextwinloadfile 1,8,29+7*11
+  GUIOuttextwinloadfile 1,8,29+7*12
+  GUIOuttextwinloadfile 1,8,29+7*13
+  GUIOuttextwinloadfile 1,8,29+7*14
 
-  mov eax,[d_names]
-  add eax,8
-  mov eax,[eax]
   mov eax,[GUIdirentries]
   sub eax,[GUIcurrentdirviewloc]
   mov [cloadnleft],eax
   mov eax,[GUIcurrentdirviewloc]
-  add eax,[GUIfileentries]
   mov [cloadnposb],eax
   mov dword[cloadmaxlen],11
-  ;GUIOuttextwin2load 1,164,29              ; Text/Shadow for DIR Box
-  ;GUIOuttextwin2load 1,164,29+7
-  ;GUIOuttextwin2load 1,164,29+7*2
-  ;GUIOuttextwin2load 1,164,29+7*3
-  ;GUIOuttextwin2load 1,164,29+7*4
-  ;GUIOuttextwin2load 1,164,29+7*5
-  ;GUIOuttextwin2load 1,164,29+7*6
-  ;GUIOuttextwin2load 1,164,29+7*7
-  ;GUIOuttextwin2load 1,164,29+7*8
-  ;GUIOuttextwin2load 1,164,29+7*9
-  ;GUIOuttextwin2load 1,164,29+7*10
-  ;GUIOuttextwin2load 1,164,29+7*11
-  ;GUIOuttextwin2load 1,164,29+7*12
-  ;GUIOuttextwin2load 1,164,29+7*13
-  ;GUIOuttextwin2load 1,164,29+7*14
+
+  GUIOuttextwinloaddir 1,164,29              ; Text/Shadow for DIR Box
+  GUIOuttextwinloaddir 1,164,29+7
+  GUIOuttextwinloaddir 1,164,29+7*2
+  GUIOuttextwinloaddir 1,164,29+7*3
+  GUIOuttextwinloaddir 1,164,29+7*4
+  GUIOuttextwinloaddir 1,164,29+7*5
+  GUIOuttextwinloaddir 1,164,29+7*6
+  GUIOuttextwinloaddir 1,164,29+7*7
+  GUIOuttextwinloaddir 1,164,29+7*8
+  GUIOuttextwinloaddir 1,164,29+7*9
+  GUIOuttextwinloaddir 1,164,29+7*10
+  GUIOuttextwinloaddir 1,164,29+7*11
+  GUIOuttextwinloaddir 1,164,29+7*12
+  GUIOuttextwinloaddir 1,164,29+7*13
+  GUIOuttextwinloaddir 1,164,29+7*14
 
   mov byte[GUItextcolor],221              ; Green Text
   cmp byte[GUIWincoladd],0
