@@ -324,12 +324,11 @@ EXTSYM puts
   jne %%notdir
   add eax,[d_names]
   add eax,8
-  mov eax,[eax]
   jmp %%colorize
 %%notdir
   add eax,[selected_names]
-  mov eax,[eax]
 %%colorize
+  mov eax,[eax]
   mov [cloadnpos],eax
   inc dword[cloadnposb]
   mov byte[GUItextcolor],223
@@ -840,13 +839,11 @@ DisplayGUILoad:
 
   mov eax,[selected_names]
   mov eax,[eax]
-  mov [cloadnpos],eax
   mov eax,[GUIfileentries]
   sub eax,[GUIcurrentviewloc]
   mov [cloadnleft],eax
   mov eax,[GUIcurrentviewloc]
   mov [cloadnposb],eax
-  add [cloadnpos],eax
   mov dword[cloadmaxlen],23
 
   GUIOuttextwin2load 1,8,29              ; Text/Shadow for Filename Box
@@ -868,14 +865,12 @@ DisplayGUILoad:
   mov eax,[d_names]
   add eax,8
   mov eax,[eax]
-  mov [cloadnpos],eax
   mov eax,[GUIdirentries]
   sub eax,[GUIcurrentdirviewloc]
   mov [cloadnleft],eax
   mov eax,[GUIcurrentdirviewloc]
   add eax,[GUIfileentries]
   mov [cloadnposb],eax
-  add [cloadnpos],eax
   mov dword[cloadmaxlen],11
   ;GUIOuttextwin2load 1,164,29              ; Text/Shadow for DIR Box
   ;GUIOuttextwin2load 1,164,29+7
