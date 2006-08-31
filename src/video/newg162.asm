@@ -27,9 +27,10 @@ EXTSYM mode0add,vcache4b,vcache2b,vcache8b,cachesingle2bng,cachesingle8bng
 EXTSYM ngpalcon4b,ngpalcon8b,ngpalcon2b,tleftnb,tltype2b,tltype4b,tltype8b
 EXTSYM yposng,flipyposng,ofsmcptr,ofsmtptr,ofsmmptr,ofsmcyps,ofsmady,ofsmadx
 EXTSYM FillSubScr,UnusedBitXor,yposngom,flipyposngom,cbgval,ofsmval,ofsmvalh
-EXTSYM vram,CPalPtrng,BGMS1,scadtng,CMainWinScr,CSubWinScr,UnusedBit,res640
+EXTSYM CPalPtrng,BGMS1,scadtng,CMainWinScr,CSubWinScr,UnusedBit,res640
 EXTSYM mosclineval,mostranspval,vcache2bs,vcache4bs,vcache8bs,vidmemch2s
-EXTSYM vidmemch4s,vidmemch8s,cpalval,bgtxadd2,SpecialLine
+EXTSYM vidmemch4s,vidmemch8s,cpalval,bgtxadd2,SpecialLine,cachesingle4bng
+EXTSYM ofshvaladd,ofsmtptrs,ofsmcptr2,ngptrdat2
 
 %include "video/vidmacro.mac"
 %include "video/newg162.mac"

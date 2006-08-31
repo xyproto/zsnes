@@ -18,10 +18,7 @@
 
 
 
-
-
 SECTION .text
-
 
 Nextwinmode:
     push ebx
@@ -1045,6 +1042,3 @@ Nextwinmode:
     add ax,[bgtxadd]
     jmp %%next
 %endmacro
-
-
-

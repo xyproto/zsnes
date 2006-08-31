@@ -24,16 +24,17 @@ EXTSYM disableeffects,winl1,winl2,winbgdata,winr1,winr2,winspdata,winlogica
 EXTSYM winenabm,winobjen,winlogicb,scrndis,scrnon,bgmode,bgtilesz,winbg1en
 EXTSYM winenabs,bg1objptr,bg1ptr,bg1ptrb,bg1ptrc,bg1ptrd,bg1scrolx,bg1scroly
 EXTSYM cachebg1,curbgofs1,curcolbg1,vcache2b,vcache4b,vcache8b
-EXTSYM vidbuffer,bg3highst,cbitmode,colormodedef
+EXTSYM vidbuffer,bg3highst,cbitmode,colormodedef,ngptrdat2
 EXTSYM colormodeofs,drawline16b,forceblnk,newengine8b,preparesprpr,scaddset
 EXTSYM spritetablea,sprleftpr,vidbright,ForceNewGfxOff,curypos,drawmode7
 EXTSYM mode7set,mosaicon,mosaicsz,sprleftpr1,sprleftpr2,sprleftpr3,sprlefttot
 EXTSYM sprprifix,drawmode7extbg,interlval,drawmode7extbg2,sprclprio,sprpriodata
-EXTSYM sprsingle,cachetile2b,cachetile4b,cachetile8b,vram,newengen
+EXTSYM sprsingle,cachetile2b,cachetile4b,cachetile8b,vram,newengen,ofshvaladd
 EXTSYM cachetile2b16x16,cachetile4b16x16,cachetile8b16x16,osm2dis,xtravbuf
 EXTSYM bg3ptr,bg3scrolx,bg3scroly,vidmemch4,ofsmcptr,ofsmady,ofsmadx,yposngom
 EXTSYM flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry
-EXTSYM bg1scrolx_m7,bg1scroly_m7
+EXTSYM bg1scrolx_m7,bg1scroly_m7,OMBGTestVal,Testval,cachesingle4bng,m7starty
+EXTSYM ofsmtptrs,ofsmcptr2
 
 %include "video/vidmacro.mac"
 

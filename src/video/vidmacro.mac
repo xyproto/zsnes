@@ -18,9 +18,6 @@
 
 
 
-EXTSYM OMBGTestVal,ngptrdat2,cachesingle4bng,ofshvaladd,ofsmtptrs,ofsmcptr2
-EXTSYM Testval,m7starty
-
 ; makev16t macros
 
 %macro procwindowback 0

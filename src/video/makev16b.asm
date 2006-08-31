@@ -37,7 +37,9 @@ EXTSYM osm2dis,temp,tempcach,temptile,winptrref,xtravbuf,yadder,yrevadder
 EXTSYM vcache2b,vcache4b,vcache8b,hirestiledat,res512switch,numwin,windowdata
 EXTSYM bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly,vidmemch4,vram,ofsmcptr
 EXTSYM ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr,ofsmmptr,ofsmcyps,bgtxadd
-EXTSYM bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc,bg1scrolx_m7,bg1scroly_m7
+EXTSYM bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc,bg1scrolx_m7,bg1scroly_m7,ngptrdat2
+EXTSYM OMBGTestVal,Testval,cachesingle4bng,m7starty,ofsmtptrs,ofsmcptr2
+EXTSYM ofshvaladd
 
 %include "video/vidmacro.mac"
 

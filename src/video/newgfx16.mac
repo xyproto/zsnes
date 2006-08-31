@@ -18,9 +18,6 @@
 
 
 
-EXTSYM processmode7hires16b,processmode7hires16bd,drawmode7ngextbg16b
-EXTSYM drawmode7ngextbg216b,osm2dis
-
 ; drawtileng16b
 
 %macro ngsub 2

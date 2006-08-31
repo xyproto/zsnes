@@ -28,13 +28,13 @@ EXTSYM bg1scrolx,bg1scroly,bg2objptr,bg2ptr,bg2ptrx,bg2ptry,bg2scrolx,bg2scroly
 EXTSYM bg3highst,bg3objptr,bg3ptr,bg3ptrx,bg3ptry,bg3scrolx,bg3scroly,bg4objptr
 EXTSYM bg4ptr,bg4ptrx,bg4ptry,bg4scrolx,bg4scroly,bgmode,bgtxad,cachesingle2bng
 EXTSYM cachesingle8bng,cbitmode,cfield,colormodedef,csprbit,curmosaicsz
-EXTSYM curvidoffset,curypos,drawmode716b,forceblnk,interlval,intrlng,mode7A
+EXTSYM curvidoffset,curypos,forceblnk,interlval,intrlng,mode7A,m7starty
 EXTSYM mode7C,mode7X0,mode7ab,mode7cd,mode7set,mode7st,mode7xy,mosaicon,mosaicsz
 EXTSYM mosenng,mosszng,ngceax,ngcedi,ngpalcon2b,ngpalcon8b,ngptrdat,prdata
 EXTSYM prdatb,prdatc,res640,resolutn,scrndis,scrnon,spritetablea,sprleftpr
 EXTSYM sprlefttot,sprpriodata,sprtbng,sprtlng,t16x161,t16x162,t16x163,t16x164
-EXTSYM tltype2b,tltype8b,vcache2b,vcache4b,vcache8b,vidbuffer,vidmemch2
-EXTSYM vidmemch4,vidmemch8,vram,vrama,winon,xtravbuf,ng16bbgval,ng16bprval
+EXTSYM tltype2b,tltype8b,vcache2b,vcache8b,vidbuffer,vidmemch2,ngptrdat2
+EXTSYM vidmemch8,vram,vrama,winon,xtravbuf,ng16bbgval,ng16bprval,ofshvaladd
 EXTSYM bgwinchange,res480,drawtileng2b,drawtileng4b,drawtileng8b,drawmode7win
 EXTSYM drawtileng16x162b,drawtileng16x164b,drawtileng16x168b
 EXTSYM osm2dis,drawlineng2b,drawlineng4b,drawlineng8b,processmode7hires
@@ -44,6 +44,7 @@ EXTSYM winlogicaval,disableeffects,winenabs,scanlines,winl1,winbg1en,winobjen
 EXTSYM winlogica,winenabm,bgallchange,bg1change,bg2change,bg3change,bg4change
 EXTSYM hiresstuff,drawlineng16x84b,drawlineng16x82b,drawlinengom4b,WindowRedraw
 EXTSYM winlogicb,ngwinptr,objwlrpos,objwen,objclineptr,CSprWinPtr
+EXTSYM ofsmtptrs,ofsmcptr2,drawmode7ngextbg,drawmode7ngextbg2
 
 %include "video/vidmacro.mac"
 %include "video/newgfx2.mac"

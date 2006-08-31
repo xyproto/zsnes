@@ -18,14 +18,14 @@
 
 %include "macros.mac"
 
-EXTSYM ngwintable,ngwinen,ngcwinptr,ngcpixleft,ngcwinmode
-EXTSYM tleftn,ng16bprval,vrama,bg1drwng,ng16bbgval,bg1totng
+EXTSYM ngwintable,ngwinen,ngcwinptr,ngcpixleft,ngcwinmode,cachesingle4bng
+EXTSYM tleftn,ng16bprval,vrama,bg1drwng,ng16bbgval,bg1totng,ngptrdat2
 EXTSYM bgtxadd,taddnfy16x16,taddfy16x16,switch16x16,curmosaicsz,domosaicng
 EXTSYM vidmemch4,vidmemch2,vidmemch8,mode0add,vcache4b,vcache2b,vcache8b
-EXTSYM cachesingle2bng,cachesingle8bng,ngpalcon4b,ngpalcon8b
+EXTSYM cachesingle2bng,cachesingle8bng,ngpalcon4b,ngpalcon8b,ofshvaladd
 EXTSYM ngpalcon2b,tleftnb,tltype2b,tltype4b,tltype8b,yposng,flipyposng
-EXTSYM ofsmcptr,ofsmtptr,ofsmmptr,ofsmcyps,ofsmady,ofsmadx
-EXTSYM yposngom,flipyposngom,cbgval,ofsmval,ofsmvalh,vram,bgtxadd2
+EXTSYM ofsmcptr,ofsmtptr,ofsmmptr,ofsmcyps,ofsmady,ofsmadx,ofsmtptrs,ofsmcptr2
+EXTSYM yposngom,flipyposngom,cbgval,ofsmval,ofsmvalh,bgtxadd2
 
 %include "video/vidmacro.mac"
 %include "video/newgfx2.mac"

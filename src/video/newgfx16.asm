@@ -36,9 +36,9 @@ EXTSYM mode7xy,modeused,mosaicon,mosaicsz,mosenng,mosszng,ngceax,ngcedi
 EXTSYM ngpalcon2b,ngpalcon8b,ngptrdat,pesimpng,prdata,prdatb,prdatc,prevbright
 EXTSYM reslbyl,resolutn,scaddset,scaddtype,scadsng,scadtng,scfbl,scrndis,scrnon
 EXTSYM spritetablea,sprleftpr,sprlefttot,sprprdrn,sprpriodata,sprtbng,sprtlng
-EXTSYM switch16x16,t16x161,t16x162,t16x163,t16x164,taddfy16x16,taddnfy16x16
-EXTSYM tleftn,tleftnb,tltype2b,tltype8b,vcache2b,vcache4b,vcache8b,vidbright
-EXTSYM vidbuffer,vidmemch2,vidmemch4,vidmemch8,vrama,winon,xtravbuf,yposng
+EXTSYM t16x161,t16x162,t16x163,t16x164,taddfy16x16,taddnfy16x16,ngptrdat2
+EXTSYM tleftn,tltype2b,tltype8b,vcache2b,vcache8b,vidbright,ofshvaladd
+EXTSYM vidbuffer,vidmemch2,vidmemch8,vrama,winon,xtravbuf,yposng
 EXTSYM vbufdptr,drawtileng2b16b,drawtileng4b16b,drawtileng8b16b,bgwinchange
 EXTSYM drawtileng16x162b16b,drawtileng16x164b16b,drawtileng16x168b16b,winbg1en
 EXTSYM drawlineng2b16b,drawlineng4b16b,drawlineng8b16b,BuildWindow,winenabs
@@ -49,12 +49,13 @@ EXTSYM winbg3enval,winbg4enval,winbgobjenval,Mode7HiRes16b,res640,hiresstuff
 EXTSYM Mode7BackA,Mode7BackC,Mode7BackX0,Mode7BackSet,drawmode7win16b,ngwinen
 EXTSYM drawlineng16x84b16b,drawlineng16x82b16b,ofsmcyps,vram,ofsmcptr,ofsmady
 EXTSYM ofsmadx,ofsmtptr,yposngom,flipyposngom,ofsmmptr,ofsmval,ofsmvalh,V8Mode
-EXTSYM cbgval,drawlinengom4b16b,ignor512,winbg1envals
+EXTSYM cbgval,drawlinengom4b16b,ignor512,winbg1envals,m7starty
 EXTSYM FillSubScr,scanlines,drawmode7win16bd,SpecialLine,vidmemch2s,dovegrest
 EXTSYM smallscreenon,ScreenScale,drawlinengom16x164b16b,bgallchange
 EXTSYM bg1change,bg2change,bg3change,bg4change,ngwinptr,objwlrpos,objwen
 EXTSYM objclineptr,CSprWinPtr,BuildWindow2,NGNumSpr,fulladdtab,MMXSupport
-EXTSYM bgtxadd2,gammalevel16b
+EXTSYM bgtxadd2,gammalevel16b,drawmode7ngextbg16b,processmode7hires16b
+EXTSYM processmode7hires16bd,drawmode7ngextbg216b,osm2dis,ofsmtptrs,ofsmcptr2
 
 %include "video/vidmacro.mac"
 %include "video/newgfx16.mac"

@@ -18,7 +18,6 @@
 
 
 
-
 %include "macros.mac"
 
 EXTSYM cwinptr,dualstartprocess,dualwinbg,dualwinsp,dwinptrproc,pwinbgenab
@@ -30,7 +29,7 @@ EXTSYM drawmode716tb,drawmode716b,drawmode716extbg,drawmode716extbg2,cursprloc
 EXTSYM drawsprites16b,scrndis,sprprifix,winonsp,bgfixer,bgfixer2,scaddtype
 EXTSYM alreadydrawn,bg1cachloc,bg1tdabloc,bg1tdatloc,bg1vbufloc,bg1xposloc
 EXTSYM bg1yaddval,bgcoloradder,bgmode,bgtilesz,colormodeofs,curbgnum
-EXTSYM draw16x1616b,draw8x816b,drawn,winenabs,curbgpr,draw16x1616tms
+EXTSYM draw16x1616b,draw8x816b,drawn,winenabs,curbgpr,draw16x1616tms,ngptrdat2
 EXTSYM draw8x816tms,bg3high2,currentobjptr,curvidoffset,cwinenabm,makewindowsp
 EXTSYM preparesprpr,procbackgrnd,setpalette16b,spritetablea,sprleftpr,sprlefttot
 EXTSYM numwin,scaddset,wincolen,windowdata,winl1,winl2,winon,winr1,winr2
@@ -42,7 +41,8 @@ EXTSYM yrevadder,vcache2b,vcache4b,vcache8b,draw8x816boffset,osm2dis
 EXTSYM hirestiledat,res512switch,bg1objptr,bg1ptr,bg3ptr,bg3scrolx,bg3scroly
 EXTSYM vidmemch4,vram,ofsmcptr,ofsmady,ofsmadx,yposngom,flipyposngom,ofsmtptr
 EXTSYM ofsmmptr,ofsmcyps,bgtxadd,bg1ptrx,bg1ptry,a16x16xinc,a16x16yinc
-EXTSYM bg1scrolx_m7,bg1scroly_m7
+EXTSYM bg1scrolx_m7,bg1scroly_m7,OMBGTestVal,Testval,cachesingle4bng,m7starty
+EXTSYM ofsmtptrs,ofsmcptr2,ofshvaladd
 
 %include "video/vidmacro.mac"
 

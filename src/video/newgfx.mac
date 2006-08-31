@@ -18,8 +18,6 @@
 
 
 
-EXTSYM drawmode7ngextbg,drawmode7ngextbg2
-
 %macro Procbgpr0 5
     ; Draw BG 2
     ; Start line by line drawing/check
