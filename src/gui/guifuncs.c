@@ -1114,7 +1114,7 @@ void populate_lists(unsigned int lists, bool snes_ext_match)
 
     while ((entry = readdir(dir)))
     {
-      if ((*entry->d_name != '.') && !stat(entry->d_name, &stat_buffer))
+      if ((*entry->d_name != '.') && !stat_dir(ZRomPath, entry->d_name, &stat_buffer))
       {
         if (S_ISDIR(stat_buffer.st_mode))
         {
