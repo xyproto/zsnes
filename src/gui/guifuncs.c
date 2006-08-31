@@ -40,13 +40,13 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 
 #ifdef __WIN32__
-#include "win/lib.h"
+#include "../win/lib.h"
 #endif
 
 
 #ifdef __MSDOS__
 #include <fcntl.h>
-#include "dos/lib.h"
+#include "../dos/lib.h"
 #endif
 
 #include "../zpath.h"
