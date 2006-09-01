@@ -56,7 +56,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../zloader.h"
 
 #ifndef S_ISDIR
-#define S_IFDIR S_ISDIR
+#define S_ISDIR S_IFDIR
 #endif
 
 #define BIT(X) (1 << (X))
