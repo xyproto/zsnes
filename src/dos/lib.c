@@ -141,16 +141,19 @@ char *realpath_lfn(const char *file, char *buf)
 //It should also be tested with RAM drives and on more versions of DOS (DR-DOS, MS-DOS 5.0, etc...)
 static bool _is_drive(unsigned char drive) //A == 1, B == 2, etc...
 {
-  __dpmi_regs     regs;
-
-  regs.x.ax = 0x4408;
-  regs.x.bx = drive;
-  __dpmi_int(0x21, &regs);
-
-  if (regs.x.flags & 1)
+  if (!_is_cdrom_drive(drive))
   {
-    errno = __doserr_to_errno(regs.x.ax);
-    return(false);
+    __dpmi_regs     regs;
+
+    regs.x.ax = 0x4408;
+    regs.x.bx = drive;
+    __dpmi_int(0x21, &regs);
+
+    if (regs.x.flags & 1)
+    {
+      errno = __doserr_to_errno(regs.x.ax);
+      return(false);
+    }
   }
   return(true);
 }
@@ -162,7 +165,7 @@ unsigned int GetLogicalDrives()
   int i;
   for (i = 0; i < 26; i++)
   {
-    if (_is_cdrom_drive(i+1) || _is_drive(i+1))
+    if (_is_drive(i+1))
     {
       drives |= BIT(i);
     }
