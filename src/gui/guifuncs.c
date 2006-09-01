@@ -1100,16 +1100,17 @@ static void add_list(char ***reallist, const char *p)
 //Make sure ZRomPath contains a full absolute directory name before calling
 void populate_lists(unsigned int lists, bool snes_ext_match)
 {
-  DIR *dir = opendir(ZRomPath);
-  if (dir)
+  DIR *dir;
+
+  if ((lists&LIST_DN) && (strlen(ZRomPath) > ROOT_LEN))
+  {
+    add_list(&d_names, "..");
+  }
+
+  if ((dir = opendir(ZRomPath)))
   {
     struct stat stat_buffer;
     struct dirent *entry;
-
-    if ((lists&LIST_DN) && (strlen(ZRomPath) > ROOT_LEN))
-    {
-      add_list(&d_names, "..");
-    }
 
     while ((entry = readdir(dir)))
     {
@@ -1163,45 +1164,45 @@ void populate_lists(unsigned int lists, bool snes_ext_match)
       }
     }
     closedir(dir);
+  }
 
-    if (lists&LIST_DN)
-    {
+  if (lists&LIST_DN)
+  {
 #ifndef __UNIXSDL__
-      unsigned int drives = GetLogicalDrives(), i = 0;
+    unsigned int drives = GetLogicalDrives(), i = 0;
 #endif
 
-      if (d_names)
-      {
-        unsigned int offset = (d_names[2][0] == '.') ? 3 : 2;
-        sort((intptr_t *)d_names, offset, (size_t)(*d_names), swapdirs);
-      }
+    if (d_names)
+    {
+      unsigned int offset = (d_names[2][0] == '.') ? 3 : 2;
+      sort((intptr_t *)d_names, offset, (size_t)(*d_names), swapdirs);
+    }
 
 #ifndef __UNIXSDL__
-      while (i < 26)
+    while (i < 26)
+    {
+      if (drives&BIT(i))
       {
-        if (drives&BIT(i))
-        {
-          char drive[] = { '[', 'A', ':', ']', 0 };
-          drive[1] = 'A'+i;
-          add_list(&d_names, drive);
-        }
-        i++;
+        char drive[] = { '[', 'A', ':', ']', 0 };
+        drive[1] = 'A'+i;
+        add_list(&d_names, drive);
       }
+      i++;
+    }
 #endif
-    }
+  }
 
-    if ((lists&LIST_IN) && i_names)
-    {
-      sort((intptr_t *)i_names, 2, (size_t)(*i_names), swapfiles);
-    }
-    else if ((lists&LIST_LFN) && lf_names)
-    {
-      sort((intptr_t *)lf_names, 2, (size_t)(*lf_names), swapfiles);
-    }
-    else if ((lists&LIST_ETN) && et_names)
-    {
-      sort((intptr_t *)et_names, 2, (size_t)(*et_names), swapfiles);
-    }
+  if ((lists&LIST_IN) && i_names)
+  {
+    sort((intptr_t *)i_names, 2, (size_t)(*i_names), swapfiles);
+  }
+  else if ((lists&LIST_LFN) && lf_names)
+  {
+    sort((intptr_t *)lf_names, 2, (size_t)(*lf_names), swapfiles);
+  }
+  else if ((lists&LIST_ETN) && et_names)
+  {
+    sort((intptr_t *)et_names, 2, (size_t)(*et_names), swapfiles);
   }
 }
 
