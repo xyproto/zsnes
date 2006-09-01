@@ -580,11 +580,9 @@ void MultiMouseInit()
     {
       if (!strncasecmp(ent->d_name, "event", strlen("event")))
       {
-        char buffer[32];
-        if (((size_t)snprintf(buffer, sizeof(buffer), "/dev/input/%s", ent->d_name) < sizeof(buffer)) &&
-            access(buffer, R_OK))
+        if (access_dir("/dev/input/", ent->d_name, R_OK))
         {
-          printf("Unable to poll %s. Make sure you have read permissions to it.\n", buffer);
+          printf("Unable to poll /dev/input/%s. Make sure you have read permissions to it.\n", ent->d_name);
         }
       }
     }
