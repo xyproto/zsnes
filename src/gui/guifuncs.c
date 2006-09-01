@@ -489,6 +489,8 @@ void GUIRestoreVars()
   CheckValueBounds(&showallext, 0, 1, 0, UB);
 #ifdef __MSDOS__
   CheckValueBounds(&GUIloadfntype, 0, 2, 0, UB);
+#else
+  CheckValueBounds(&GUIloadfntype, 0, 1, 0, UB);
 #endif
   CheckValueBounds(&prevlfreeze, 0, 1, 0, UB);
   CheckValueBounds(&GUIRAdd, 0, 31, 15, UB);
@@ -860,7 +862,7 @@ static const char *get_rom_name(const char *filename, char *namebuffer)
   if (!last_dot || (strcasecmp(last_dot, ".zip") && strcasecmp(last_dot, ".gz") && strcasecmp(last_dot, ".jma")))
   {
     struct stat filestats;
-    stat(filename, &filestats);
+    stat_dir(ZRomPath, filename, &filestats);
 
     if ((filestats.st_size >= 0x8000) && (filestats.st_size <= 0x600000+HEADER_SIZE))
     {

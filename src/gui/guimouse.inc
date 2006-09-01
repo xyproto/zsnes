@@ -1593,6 +1593,15 @@ SECTION .text
 %%noclick
 %endmacro
 
+%macro GUIPButtonHoleLoad 4
+  GUIClickArea %1+1,%2+1,%1+7,%2+7,%%noclick
+  mov %3,%4
+  pushad
+  call GetLoadData
+  popad
+%%noclick
+%endmacro
+
 %macro GUIWinControl 13 ;x,y,x2,y2,currentwin,vpos,#entries,starty,y/entry,cpos,winval,win#,dclicktick#
   GUIClickArea %1,%2,%3,%4,{near %%noload}
   cmp dword[%7],0
@@ -1852,11 +1861,11 @@ DisplayGUIConfirmClick:
   GUIWinControl 5,27,144,26+15*7,GUIcurrentfilewin,GUIcurrentviewloc,GUIfileentries,27,7,GUIcurrentcursloc,0,1,30
   GUIWinControl 160,27,228,26+15*7,GUIcurrentfilewin,GUIcurrentdirviewloc,GUIdirentries,27,7,GUIcurrentdircursloc,1,1,30
   GUIPHoldbutton 186,165,228,176,1
-;%ifdef __MSDOS__
-;  GUIPButtonHoleLoad 9,163,byte[GUIloadfntype],0
-;  GUIPButtonHoleLoad 9,171,byte[GUIloadfntype],1
-;  GUIPButtonHoleLoad 9,179,byte[GUIloadfntype],2
-;%endif
+  GUIPButtonHoleLoad 9,163,byte[GUIloadfntype],0
+  GUIPButtonHoleLoad 9,171,byte[GUIloadfntype],1
+%ifdef __MSDOS__
+  GUIPButtonHoleLoad 9,179,byte[GUIloadfntype],2
+%endif
   GUIClickCButton5 144,177,byte[ForceROMTiming],1
   GUIClickCButton5 144,187,byte[ForceROMTiming],2
   GUIClickCButton5 184,177,byte[ForceHiLoROM],1

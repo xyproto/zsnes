@@ -773,7 +773,11 @@ DisplayGUILoad:
 %ifdef __MSDOS__
   GUIDisplayTextY 1,6,157,GUILoadText2
   GUIDisplayText 1,21,166,GUILoadText3
+%else
+  GUIDisplayText 1,21,166,GUILoadText3b
+%endif
   GUIDisplayText 1,21,174,GUILoadText4
+%ifdef __MSDOS__
   GUIDisplayText 1,21,182,GUILoadText5
 %endif
   GUIDisplayText 1,6,16,GUILoadText7
@@ -913,9 +917,9 @@ DisplayGUILoad:
   mov bl,[GUILoadPos]
   mov byte[GUILoadTextA+ebx],0
 
-%ifdef __MSDOS__
   GUIDisplayButtonHole 1,9,163,byte[GUIloadfntype],0 ; Radio Buttons
   GUIDisplayButtonHole 1,9,171,byte[GUIloadfntype],1
+%ifdef __MSDOS__
   GUIDisplayButtonHole 1,9,179,byte[GUIloadfntype],2
 %endif
 
@@ -973,6 +977,7 @@ SECTION .data
 GUILoadText1 db 'SELECT FILE TO LOAD:',0
 GUILoadText2 db 'DISPLAY TYPE:',0
 GUILoadText3 db 'DOS 8.3 FORMAT',0
+GUILoadText3b db 'LONG FILENAME',0
 GUILoadText4 db 'SNES HEADER NAME',0
 GUILoadText5 db 'WIN9X LONG FILENAME',0
 GUILoadText6 db 'SHOW ALL EXTENSIONS',0

@@ -848,7 +848,7 @@ showallext db 0
 %ifdef __MSDOS__
 @ Filename display mode (0 = 8.3, 1 = Internal header name, 2 = Long filename)
 %else
-@ DOS-only option, don't edit it
+@ Filename display mode (0 = Long filename, 1 = Internal header name)
 %endif
 GUIloadfntype db 0
 
