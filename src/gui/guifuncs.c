@@ -1224,7 +1224,7 @@ static void memswap(void *p1, void *p2, size_t p2len)
 extern unsigned char GUIwinptr, GUIcmenupos, GUIpmenupos;
 extern unsigned char GUIwinorder[], GUIwinactiv[], pressed[];
 
-extern void GUIPrevMenuData;
+extern char GUIPrevMenuData[];
 
 void powercycle(bool, bool);
 
@@ -1267,7 +1267,7 @@ void GUIQuickLoadUpdate()
   size_t entry_size, copy_num, i = 10;
   char *src;
 
-  memcpy(&GUIPrevMenuData+347, (prevlfreeze) ? " ON " : " OFF", 4);
+  memcpy(GUIPrevMenuData+347, (prevlfreeze) ? " ON " : " OFF", 4);
 
   #ifdef __MSDOS__
   src = (char *)prevloadnames;
@@ -1282,7 +1282,7 @@ void GUIQuickLoadUpdate()
   while (i--)
   {
     char *p_src = src + i*entry_size;
-    char *p_dest = &GUIPrevMenuData+3 + i*32;
+    char *p_dest = GUIPrevMenuData+3 + i*32;
     size_t srclen = strlen(p_src);
 
     if (srclen >= copy_num)
