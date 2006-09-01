@@ -215,7 +215,7 @@ bool init_paths(char *launch_command)
 
               GUIRestoreVars();
 
-              if (*LoadDir)
+              if (*LoadDir && !access(LoadDir, F_OK|X_OK|R_OK))
               {
                 strcpy(ZRomPath, LoadDir);
               }
