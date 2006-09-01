@@ -1397,7 +1397,7 @@ void GUILoadData()
 
       while (!dupfound && i<10)
       {
-        dupfound = !strncmp(nameptr, (char *)prevloadnames+i*16, 16);
+        dupfound = (!strncmp(nameptr, (char *)prevloadnames+i*16, 16) && (!strncmp(nameptr, (char *)prevloaddnamel+i*512+1, 512)));
         i++;
       }
       i--;
