@@ -864,7 +864,7 @@ static const char *get_rom_name(const char *filename, char *namebuffer)
 
     if ((filestats.st_size >= 0x8000) && (filestats.st_size <= 0x600000+HEADER_SIZE))
     {
-      FILE *fp = fopen(filename, "rb");
+      FILE *fp = fopen_dir(ZRomPath, filename, "rb");
       if (fp)
       {
         unsigned char HeaderBuffer[HEADER_SIZE];
