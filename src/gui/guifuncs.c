@@ -1328,19 +1328,15 @@ void GetLoadData()
   switch (GUIloadfntype)
   {
     case 0: //LFN
-      populate_lists(LIST_DN|LIST_ETN|LIST_LFN, true);
+      populate_lists(LIST_DN|LIST_ETN|LIST_LFN, !showallext);
       selected_names = lf_names ? lf_names : et_names;
       break;
     case 1: //IN
-      populate_lists(LIST_DN|LIST_MAIN|LIST_IN, true);
+      populate_lists(LIST_DN|LIST_MAIN|LIST_IN, !showallext);
       selected_names = i_names;
       break;
-    case 2:
-      populate_lists(LIST_DN|LIST_ETN, true);
-      selected_names = et_names;
-      break;
     default:
-      populate_lists(LIST_DN|LIST_MAIN, true);
+      populate_lists(LIST_DN|LIST_MAIN, !showallext);
       selected_names = main_names;
       break;
   }
