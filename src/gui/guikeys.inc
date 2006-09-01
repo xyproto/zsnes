@@ -2911,11 +2911,12 @@ GUILoadKeys:
   jmp .next
 .done
 
-  xor esi,esi
   mov ebx,[GUIfileentries]
+  xor esi,esi
   mov eax,[selected_names]
   cmp dword[GUIcurrentfilewin],1
   jne near .notdir
+  mov esi,[GUIfileentries]
   mov ebx,[GUIdirentries]
   mov eax,[d_names]
   add eax,8
@@ -2923,11 +2924,8 @@ GUILoadKeys:
   mov eax,[eax]
   mov ecx,esi
   mov [.foundval],esi
-  mov dword[.maxfound],0
 .loop2
   mov dword[.numfound],0
-  add eax,8
-.type02
   mov edi,[ManualCPtr]
   cmp byte[eax],'['
   jne .nodrive
