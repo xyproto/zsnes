@@ -431,6 +431,13 @@ int mkdir_dir(const char *path, const char *dir)
   return(mkdir_p(strdupcat_internal(path, dir)));
 }
 
+#ifdef __MSDOS__
+char *realpath_sfn_dir(const char *path, const char *file, char *buf)
+{
+  return(realpath_sfn(strdupcat_internal(path, file), buf));
+}
+#endif
+
 int system_dir(const char *path, const char *command)
 {
   int ret_val;

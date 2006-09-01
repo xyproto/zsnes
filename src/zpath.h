@@ -76,6 +76,9 @@ void load_jma_file_dir(const char *path, const char *file);
 #endif
 int remove_dir(const char *path, const char *file);
 int mkdir_dir(const char *path, const char *dir);
+#ifdef __MSDOS__
+char *realpath_sfn_dir(const char *path, const char *file, char *buf);
+#endif
 int system_dir(const char *path, const char *command);
 FILE *popen_dir(const char *path, char *command, const char *type);
 

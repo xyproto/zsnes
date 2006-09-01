@@ -1145,7 +1145,7 @@ void populate_lists(unsigned int lists, bool snes_ext_match)
             }
             else
             {
-              char *sfn = realpath_sfn(entry->d_name, 0);
+              char *sfn = realpath_sfn_dir(ZRomPath, entry->d_name, 0);
               if (sfn)
               {
                 add_list(&et_names, basename(sfn));
