@@ -846,11 +846,13 @@ showallext db 0
 
 @
 %ifdef __MSDOS__
-@ Filename display mode (0 = 8.3, 1 = Internal header name, 2 = Long filename)
+@ Filename display mode (0 = Long filename, 1 = Internal header name, 2 = 8.3)
+GUIloadfntype db 2
 %else
 @ Filename display mode (0 = Long filename, 1 = Internal header name)
-%endif
 GUIloadfntype db 0
+%endif
+
 
 @
 @ Recent games played, you shouldn't edit this manually (8.3 / paths / LFN)
