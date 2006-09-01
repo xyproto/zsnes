@@ -1957,7 +1957,7 @@ DisplayGUISound:                     ; Sound Related Options
   GUIDisplayTextY 6,6,16,GUISoundTextA
   GUIDisplayCheckboxu 6,11,21,soundon,GUISoundTextA1,0
 %ifdef __MSDOS__
-  GUIDisplayCheckboxu 6,102,21,Force8b,GUISoundTextA4,1
+  GUIDisplayCheckboxu 6,102,21,Force8b,GUISoundTextA4,0
 %endif
   GUIDisplayCheckboxu 6,11,30,StereoSound,GUISoundTextA2,0
   GUIDisplayTextY 6,6,53,GUISoundTextB
