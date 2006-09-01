@@ -162,7 +162,7 @@ unsigned int GetLogicalDrives()
   int i;
   for (i = 0; i < 26; i++)
   {
-    if (_is_drive(i+1))
+    if (_is_cdrom_drive(i+1) || _is_drive(i+1))
     {
       drives |= BIT(i);
     }
