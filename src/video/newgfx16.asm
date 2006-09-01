@@ -2592,6 +2592,8 @@ drawsprng16bt:
     shr al,2
     test byte[BGMS1+ebx*2],al
     jnz .transpwin
+    test byte[scaddset],0C0h
+    jz .transpwin
     cmp byte[BGMS1+ebx*2+1],0
     jnz .main
 .transpwin
