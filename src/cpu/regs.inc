@@ -943,12 +943,12 @@ SECTION .text
 
 ; Joystick Data for controller 2 and 4
 reg4017r:
+    mov al,28
     cmp byte[device2],0
     jne .nomultitap
     cmp byte[MultiTap],1
     je .multitap
 .nomultitap
-    xor al,al
     cmp byte[device2],1
     je .mouse2
     test byte[JoyBNow],0FFh
@@ -957,39 +957,37 @@ reg4017r:
     test dword[JoyBNow],80000000h
     jz .noal
 .reset
-    mov al,1
+    or al,1
 .noal
     rol dword[JoyBNow],1
     ret
 .multitap
     test byte[MultiTapStat],1
     jz .no1
-    mov al,0FFh
+    or al,3
     ret
 .no1
     test byte[MultiTapStat],80h
     jz .contr45
-    xor al,al
     test dword[JoyBNow],80000000h
     jz .nojb
-    or al,01h
+    or al,1
 .nojb
     test dword[JoyCNow],80000000h
     jz .nojc
-    or al,02h
+    or al,2
 .nojc
     rol dword[JoyBNow],1
     rol dword[JoyCNow],1
     ret
 .contr45
-    xor al,al
     test dword[JoyDNow],80000000h
     jz .nojd
     or al,1
 .nojd
     test dword[JoyENow],80000000h
     jz .noje
-    or al,02h
+    or al,2
 .noje
     rol dword[JoyDNow],1
     rol dword[JoyENow],1
