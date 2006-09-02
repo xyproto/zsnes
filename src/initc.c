@@ -2657,7 +2657,7 @@ extern unsigned char doirqnext, vidbright, forceblnk, timeron, spcP, JoyAPos, Jo
 extern unsigned char coladdr, coladdg, coladdb;
 extern unsigned char SDD1BankA,SDD1BankB, SDD1BankC, SDD1BankD;
 extern unsigned char intrset, curcyc, cycpl, GUIReset;
-extern unsigned int numspcvblleft, spc700read, SPC700read, SPC700write, spc700idle;
+extern unsigned int numspcvblleft, SPC700read, SPC700write, spc700idle;
 extern unsigned int FIRTAPVal0, FIRTAPVal1, FIRTAPVal2, FIRTAPVal3, FIRTAPVal4, FIRTAPVal5, FIRTAPVal6, FIRTAPVal7;
 extern unsigned int xa, xdb, xpb, xs, xd, xx, xy, scrndis;
 extern unsigned short VIRQLoc, resolutn, xpc;
@@ -2749,7 +2749,6 @@ void init65816()
     numspcvblleft = 480;
     SPC700write = 0;
     SPC700read = 0;
-    spc700read = 0;
     spc700idle = 0;
 
     for(i = 0;i<0x40;i++)

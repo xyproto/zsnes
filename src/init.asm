@@ -355,11 +355,6 @@ NEWSYM JoyBNow, resd 1
 NEWSYM JoyCNow, resd 1
 NEWSYM JoyDNow, resd 1
 NEWSYM JoyENow, resd 1
-NEWSYM PJoyAOrig, resd 1
-NEWSYM PJoyBOrig, resd 1
-NEWSYM PJoyCOrig, resd 1
-NEWSYM PJoyDOrig, resd 1
-NEWSYM PJoyEOrig, resd 1
 NEWSYM LethEnData, resd 1
 NEWSYM ComboCounter, resb 1
 SECTION .text
