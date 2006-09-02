@@ -24,6 +24,7 @@ EXTSYM C4WFDist,C4WFScale,C4TransfWireFrame,C4WFZVal
 EXTSYM C41FXVal,C41FYVal,C41FAngleRes,C41FDist,C4Op1F,C4Op15
 EXTSYM C41FDistVal,C4Op0D,C4Op22,SinTable,CosTable
 EXTSYM regaccessbankr8,regaccessbankr16,regaccessbankw8,regaccessbankw16
+EXTSYM memaccessbankr16,memaccessbankr8,memaccessbankw16,memaccessbankw8
 
 ; ******************************************************
 ; C4 Emulation, reverse engineered & written by zsKnight
@@ -33,13 +34,13 @@ SECTION .text
 
 %macro RouteAccess 1
     test ecx,8000h
-    jnz %1
+    jnz memaccessbank%1
     cmp ecx,6000h
-    jb %1
+    jb regaccessbank%1
 %endmacro
 
 NEWSYM C4Read8b
-    RouteAccess regaccessbankr8
+    RouteAccess r8
     push ecx
     sub ecx,6000h
     and ecx,1fffh
@@ -50,7 +51,7 @@ NEWSYM C4Read8b
     ret
 
 NEWSYM C4Read16b
-    RouteAccess regaccessbankr16
+    RouteAccess r16
     push ecx
     sub ecx,6000h
     and ecx,1fffh
@@ -65,7 +66,7 @@ NEWSYM C4Read16b
     ret
 
 NEWSYM C4Write8b
-    RouteAccess regaccessbankw8
+    RouteAccess w8
     push ecx
     sub ecx,6000h
     and ecx,1fffh
@@ -76,7 +77,7 @@ NEWSYM C4Write8b
     ret
 
 NEWSYM C4Write16b
-    RouteAccess regaccessbankw16
+    RouteAccess w16
     push ecx
     sub ecx,6000h
     and ecx,1fffh
@@ -89,7 +90,6 @@ NEWSYM C4Write16b
     mov al,ah
     call dword near [ebx+ecx*4]
     pop eax
-    dec ecx
     xor ebx,ebx
     pop ecx
     ret
@@ -454,10 +454,6 @@ C4AddSprite:
     ret
 
 C4ConvOAM:
-    inc byte[C4Timer]
-    and byte[C4Timer],15
-    inc byte[C4Timer2]
-    and byte[C4Timer2],7
     mov esi,[C4Ram]
     mov edi,esi
     movzx ecx,byte[esi+620h]
@@ -510,25 +506,6 @@ C4ConvOAM:
     mov al,[esi+4]
     mov ah,al
     and ah,0Eh
-    cmp ah,0
-    jmp .notstage2
-    jne .notstage1
-    cmp byte[C4Timer],0
-    je .flash
-    jmp .noflash
-.notstage1
-    jmp .notstage2
-    cmp ah,4
-    jne .notstage2
-    cmp byte[C4Timer2],0
-    je .flash
-.noflash
-    and al,0F1h
-    or al,2
-    jmp .notstage2
-.flash
-    and al,0F1h
-.notstage2
     mov [C4SprAttr],al
     mov al,[esi+6]
     or [C4SprAttr],al
@@ -635,8 +612,6 @@ C4SprCnt  resb 1
 C4SprAttr resb 1
 C4SprOAM  resb 1
 C4SprFlip resb 1
-C4Timer   resb 1
-C4Timer2  resb 1
 
 section .text
 

@@ -20,18 +20,19 @@
 
 EXTSYM obc1_address,obc1_byte,SetOBC1,GetOBC1
 EXTSYM regaccessbankr16,regaccessbankr8,regaccessbankw16,regaccessbankw8
+EXTSYM memaccessbankr16,memaccessbankr8,memaccessbankw16,memaccessbankw8
 
 SECTION .text
 
 %macro RouteAccess 1
     test ecx,8000h
-    jnz %1
+    jnz memaccessbank%1
     cmp ecx,6000h
-    jb %1
+    jb regaccessbank%1
 %endmacro
 
 NEWSYM OBC1Read8b
-    RouteAccess regaccessbankr8
+    RouteAccess r8
     mov [obc1_address],cx
     pushad
     call GetOBC1
@@ -40,7 +41,7 @@ NEWSYM OBC1Read8b
     ret
 
 NEWSYM OBC1Write8b
-    RouteAccess regaccessbankw8
+    RouteAccess w8
     mov [obc1_address],cx
     mov [obc1_byte],al
     pushad
@@ -49,7 +50,7 @@ NEWSYM OBC1Write8b
     ret
 
 NEWSYM OBC1Read16b
-    RouteAccess regaccessbankr16
+    RouteAccess r16
     mov [obc1_address],cx
     pushad
     call GetOBC1
@@ -63,7 +64,7 @@ NEWSYM OBC1Read16b
     ret
 
 NEWSYM OBC1Write16b
-    RouteAccess regaccessbankw16
+    RouteAccess w16
     mov [obc1_address],cx
     mov [obc1_byte],al
     mov [obc1temp],ah
