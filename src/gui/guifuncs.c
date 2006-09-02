@@ -1416,7 +1416,7 @@ void GUILoadData()
 
       if (!dupfound)
       {
-        memcpy(prevloadnames+9*16, selected_names[GUIcurrentcursloc], 16);
+        memcpy(prevloadnames+9*16, nameptr, 16);
         strcpy((char *)prevloaddnamel+9*512+1, ZRomPath);
         strcpy((char *)prevloadfnamel+9*512, ZCartName);
       }
