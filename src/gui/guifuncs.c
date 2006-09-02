@@ -728,7 +728,6 @@ extern unsigned char cheatdata[28*255+56];
 void CheatCodeSave()
 {
   FILE *fp = 0;
-  unsigned int size = 0;
 
   GUICBHold=0;
 
@@ -741,21 +740,20 @@ void CheatCodeSave()
 
     if ((fp = fopen_dir(ZSramPath,ZSaveName,"wb")))
     {
-      size=(NumCheats<<4)+3*(NumCheats<<2);
-      fwrite(cheatdata, 1, size, fp);
+      fwrite(cheatdata, 1, 28*NumCheats, fp);
       fclose(fp);
     }
   }
 }
 
-unsigned int cheat_file_size;
 extern unsigned char CheatOn;
-void DisableCheatsOnLoad(), EnableCheatsOnLoad(), ConvertCheatFileFormat();
+void DisableCheatsOnLoad(), EnableCheatsOnLoad();
 extern unsigned int GUIcurrentcheatcursloc;
 
 void CheatCodeLoad()
 {
   FILE *fp = 0;
+  unsigned int cheat_file_size, i, j, k;
 
   setextension(ZSaveName, "cht");
   GUICBHold = 0;
@@ -769,7 +767,22 @@ void CheatCodeLoad()
 
     if(cheatdata[6]==254 && cheatdata[7]==252)
       NumCheats = cheat_file_size / 28;
-    else asm_call(ConvertCheatFileFormat);
+    else
+    {
+      NumCheats = cheat_file_size / 18;
+      i = 28 * NumCheats;
+      j = cheat_file_size - (cheat_file_size % 18);
+
+      do
+      {
+        i-=28;
+        j-=18;
+
+        for (k=6;k>0;k--) cheatdata[i+k-1]=cheatdata[j+k-1];
+        for (k=12;k>0;k--) cheatdata[i+k+7]=cheatdata[j+k+5];
+        for (k=8;k>0;k--) cheatdata[i+k+19] = 0;
+      } while(i>0);
+    }
 
     asm_call(EnableCheatsOnLoad);
 

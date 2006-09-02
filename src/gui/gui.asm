@@ -383,8 +383,6 @@ NEWSYM TRVal2, resw 1
 NEWSYM TGVal2, resw 1
 NEWSYM TBVal2, resw 1
 
-SECTION .text
-
 SECTION .data
 NEWSYM ComboHeader, db 'Key Combination File',26,1,0
 NEWSYM ComboBlHeader, times 23 db 0
@@ -1486,6 +1484,77 @@ guipostvidmsg5b db 'AAAAAAAAAAAAAAAAAAAAAAAAA',0
 guipostvidmsg8b db 'PRESS ANY KEY',0
 SECTION .bss
 guipostvidptr resd 1
+SECTION .text
+
+NEWSYM guicheaterror
+    xor ebx,ebx
+    mov ecx,256+128+64
+.a
+    mov byte[pressed+ebx],0
+    inc ebx
+    dec ecx
+    jnz .a
+.again
+    call GUIUnBuffer
+    call DisplayBoxes
+    call DisplayMenu
+    GUIBox 75,95,192,143,160
+    GUIBox 75,95,192,95,162
+    GUIBox 75,95,75,143,161
+    GUIBox 192,95,192,143,159
+    GUIBox 75,143,192,143,158
+    GUIOuttext 81,101,guicheaterror1,220-15
+    GUIOuttext 80,100,guicheaterror1,220
+    GUIOuttext 81,109,guicheaterror2,220-15
+    GUIOuttext 80,108,guicheaterror2,220
+    GUIOuttext 81,117,guicheaterror3,220-15
+    GUIOuttext 80,116,guicheaterror3,220
+    GUIOuttext 81,125,guicheaterror4,220-15
+    GUIOuttext 80,124,guicheaterror4,220
+    GUIOuttext 81,135,guicheaterror5,220-15
+    GUIOuttext 80,134,guicheaterror5,220
+    call vidpastecopyscr
+    call JoyRead
+    xor ebx,ebx
+    mov ecx,256+128+64
+.b
+    cmp byte[pressed+ebx],0
+    jne .pressedokay
+    inc ebx
+    dec ecx
+    jnz .b
+    cmp byte[MouseDis],1
+    je .mousedis
+    call Get_MouseData
+    test bx,01h
+    jnz .pressedokay
+.mousedis
+    jmp .again
+.pressedokay
+.again2
+    call Check_Key
+    or al,al
+    jz .nokey
+    call Get_Key
+    jmp .again2
+.nokey
+    cmp byte[MouseDis],1
+    je .mousedis2
+    push ebx
+;    mov eax,0Bh
+;    int 33h
+    pop ebx
+.mousedis2
+    mov dword[GUIcurrentcheatwin],1
+    mov byte[GUIpclicked],1
+    ret
+
+SECTION .data
+guicheaterror1 db 'INVALID CODE!  YOU',0
+guicheaterror2 db 'MUST ENTER A VALID',0
+guicheaterror3 db 'GAME GENIE,PAR, OR',0
+guicheaterror4 db 'GOLD FINGER CODE.',0
+guicheaterror5 db 'PRESS ANY KEY.',0
 SECTION .text
 
 GUILoadManualDir

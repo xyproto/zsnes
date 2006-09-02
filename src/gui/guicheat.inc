@@ -16,9 +16,6 @@
 ;along with this program; if not, write to the Free Software
 ;Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-EXTSYM cheat_file_size
-
-
 
 SECTION .text
 
@@ -232,7 +229,6 @@ CheatCodeSearchInit:
     mov byte[CSInputDisplay+1],0
     mov byte[CheatWinMode],1
     mov byte[CheatSearchStatus],0
-    cmp byte[CopyRamToggle],0
     mov byte[FirstSearch],1
     mov eax,[vidbuffer]
     add eax,129600
@@ -321,53 +317,12 @@ NEWSYM EnableCheatsOnLoad
 .skip2
     ret
 
-NEWSYM ConvertCheatFileFormat
-    mov eax,[cheat_file_size]
-    ; Convert format
-    mov esi,cheatdata
-    mov ebx,18
-    push eax
-    xor edx,edx
-    div ebx
-    push edx
-    mov [NumCheats],eax
-    mov ebx,28
-    mul ebx
-    mov ecx,eax
-    pop edx
-    pop eax
-    sub eax,edx
-.convloop
-    sub ecx,28
-    sub eax,18
-    mov ebx,6
-.convloopb
-    mov dl,[cheatdata+eax+ebx-1]
-    mov [cheatdata+ecx+ebx-1],dl
-    dec ebx
-    jnz .convloopb
-    mov ebx,12
-.convloopd
-    mov dl,[cheatdata+eax+ebx+5]
-    mov [cheatdata+ecx+ebx+7],dl
-    dec ebx
-    jnz .convloopd
-    mov ebx,8
-.convloopc
-    mov byte[cheatdata+ecx+ebx+19],0
-    dec ebx
-    jnz .convloopc
-    or ecx,ecx
-    jnz .convloop
-    ret
-
 CheatCodeRemove:
+    mov byte[GUICBHold],0
     cmp dword[NumCheats],0
     jne .nonone
-    mov byte[GUICBHold],0
     ret
 .nonone
-    mov byte[GUICBHold],0
     mov esi,[GUIcurrentcheatcursloc]
     shl esi,5
     sub esi,[GUIcurrentcheatcursloc]
@@ -412,12 +367,11 @@ CheatCodeRemove:
     ret
 
 CheatCodeFix:
+    mov byte[GUICBHold],0
     cmp dword[NumCheats],0
     jne .nonone
-    mov byte[GUICBHold],0
     ret
 .nonone
-    mov byte[GUICBHold],0
     call DisableCheatCode
     mov esi,[GUIcurrentcheatcursloc]
     shl esi,5
@@ -431,12 +385,11 @@ CheatCodeFix:
     ret
 
 CheatCodeToggle:
+    mov byte[GUICBHold],0
     cmp dword[NumCheats],0
     jne .nonone
-    mov byte[GUICBHold],0
     ret
 .nonone
-    mov byte[GUICBHold],0
     mov esi,[GUIcurrentcheatcursloc]
     shl esi,5
     sub esi,[GUIcurrentcheatcursloc]
@@ -1205,73 +1158,5 @@ decodepar:
 .noview
     ret
 
-guicheaterror:
-    xor ebx,ebx
-    mov ecx,256+128+64
-.a
-    mov byte[pressed+ebx],0
-    inc ebx
-    dec ecx
-    jnz .a
-.again
-    call GUIUnBuffer
-    call DisplayBoxes
-    call DisplayMenu
-    GUIBox 75,95,192,143,160
-    GUIBox 75,95,192,95,162
-    GUIBox 75,95,75,143,161
-    GUIBox 192,95,192,143,159
-    GUIBox 75,143,192,143,158
-    GUIOuttext 81,101,guicheaterror1,220-15
-    GUIOuttext 80,100,guicheaterror1,220
-    GUIOuttext 81,109,guicheaterror2,220-15
-    GUIOuttext 80,108,guicheaterror2,220
-    GUIOuttext 81,117,guicheaterror3,220-15
-    GUIOuttext 80,116,guicheaterror3,220
-    GUIOuttext 81,125,guicheaterror4,220-15
-    GUIOuttext 80,124,guicheaterror4,220
-    GUIOuttext 81,135,guicheaterror5,220-15
-    GUIOuttext 80,134,guicheaterror5,220
-    call vidpastecopyscr
-    call JoyRead
-    xor ebx,ebx
-    mov ecx,256+128+64
-.b
-    cmp byte[pressed+ebx],0
-    jne .pressedokay
-    inc ebx
-    dec ecx
-    jnz .b
-    cmp byte[MouseDis],1
-    je .mousedis
-    call Get_MouseData
-    test bx,01h
-    jnz .pressedokay
-.mousedis
-    jmp .again
-.pressedokay
-.again2
-    call Check_Key
-    or al,al
-    jz .nokey
-    call Get_Key
-    jmp .again2
-.nokey
-    cmp byte[MouseDis],1
-    je .mousedis2
-    push ebx
-;    mov eax,0Bh
-;    int 33h
-    pop ebx
-.mousedis2
-    mov dword[GUIcurrentcheatwin],1
-    mov byte[GUIpclicked],1
-    ret
-SECTION .data
-guicheaterror1 db 'INVALID CODE!  YOU',0
-guicheaterror2 db 'MUST ENTER A VALID',0
-guicheaterror3 db 'GAME GENIE,PAR, OR',0
-guicheaterror4 db 'GOLD FINGER CODE.',0
-guicheaterror5 db 'PRESS ANY KEY.',0
 SECTION .bss
 guicheatvalrep resb 1
