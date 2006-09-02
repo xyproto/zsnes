@@ -1406,10 +1406,16 @@ void GUILoadData()
     {
       int i = 0;
       bool dupfound = false;
+      bool modheader = true;
 
       while (!dupfound && i<10)
       {
-        dupfound = (!strncmp(nameptr, (char *)prevloadnames+i*16, 16) && (!strncmp(ZRomPath, (char *)prevloaddnamel+i*512+1, 512)));
+        dupfound = (!strncmp(ZCartName, (char *)prevloadfnamel+i*512, 512) && (!strncmp(ZRomPath, (char *)prevloaddnamel+i*512+1, 512)));
+        if(dupfound && modheader)
+        {
+          memcpy(prevloadnames+i*16, nameptr, 16);
+          modheader = false;
+        }
         i++;
       }
       i--;
