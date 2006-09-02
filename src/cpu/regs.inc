@@ -59,6 +59,65 @@ NEWSYM initregr
     setreg 2142h*4,reg2142r
     setreg 2143h*4,reg2143r
     setreg 2144h*4,reg2140r
+    setreg 2145h*4,reg2141r
+    setreg 2146h*4,reg2142r
+    setreg 2147h*4,reg2143r
+    setreg 2148h*4,reg2140r
+    setreg 2149h*4,reg2141r
+    setreg 214Ah*4,reg2142r
+    setreg 214Bh*4,reg2143r
+    setreg 214Ch*4,reg2140r
+    setreg 214Dh*4,reg2141r
+    setreg 214Eh*4,reg2142r
+    setreg 214Fh*4,reg2143r
+    setreg 2150h*4,reg2140r
+    setreg 2151h*4,reg2141r
+    setreg 2152h*4,reg2142r
+    setreg 2153h*4,reg2143r
+    setreg 2154h*4,reg2140r
+    setreg 2155h*4,reg2141r
+    setreg 2156h*4,reg2142r
+    setreg 2157h*4,reg2143r
+    setreg 2158h*4,reg2140r
+    setreg 2159h*4,reg2141r
+    setreg 215Ah*4,reg2142r
+    setreg 215Bh*4,reg2143r
+    setreg 215Ch*4,reg2140r
+    setreg 215Dh*4,reg2141r
+    setreg 215Eh*4,reg2142r
+    setreg 215Fh*4,reg2143r
+    setreg 2160h*4,reg2140r
+    setreg 2161h*4,reg2141r
+    setreg 2162h*4,reg2142r
+    setreg 2163h*4,reg2143r
+    setreg 2164h*4,reg2140r
+    setreg 2165h*4,reg2141r
+    setreg 2166h*4,reg2142r
+    setreg 2167h*4,reg2143r
+    setreg 2168h*4,reg2140r
+    setreg 2169h*4,reg2141r
+    setreg 216Ah*4,reg2142r
+    setreg 216Bh*4,reg2143r
+    setreg 216Ch*4,reg2140r
+    setreg 216Dh*4,reg2141r
+    setreg 216Eh*4,reg2142r
+    setreg 216Fh*4,reg2143r
+    setreg 2170h*4,reg2140r
+    setreg 2171h*4,reg2141r
+    setreg 2172h*4,reg2142r
+    setreg 2173h*4,reg2143r
+    setreg 2174h*4,reg2140r
+    setreg 2175h*4,reg2141r
+    setreg 2176h*4,reg2142r
+    setreg 2177h*4,reg2143r
+    setreg 2178h*4,reg2140r
+    setreg 2179h*4,reg2141r
+    setreg 217Ah*4,reg2142r
+    setreg 217Bh*4,reg2143r
+    setreg 217Ch*4,reg2140r
+    setreg 217Dh*4,reg2141r
+    setreg 217Eh*4,reg2142r
+    setreg 217Fh*4,reg2143r
     setreg 2180h*4,reg2180r
     setreg 21C2h*4,reg21C2r
     setreg 21C3h*4,reg21C3r
@@ -104,9 +163,6 @@ NEWSYM initregr
     setreg 4309h*4,reg43XXr
     setreg 430Ah*4,reg43XXr
     setreg 430Bh*4,reg43XXr
-    setreg 430Ch*4,reg43XXr
-    setreg 430Dh*4,reg43XXr
-    setreg 430Eh*4,reg43XXr
     setreg 430Fh*4,reg43XXr
     setreg 4310h*4,reg43XXr
     setreg 4311h*4,reg43XXr
@@ -120,9 +176,6 @@ NEWSYM initregr
     setreg 4319h*4,reg43XXr
     setreg 431Ah*4,reg43XXr
     setreg 431Bh*4,reg43XXr
-    setreg 431Ch*4,reg43XXr
-    setreg 431Dh*4,reg43XXr
-    setreg 431Eh*4,reg43XXr
     setreg 431Fh*4,reg43XXr
     setreg 4320h*4,reg43XXr
     setreg 4321h*4,reg43XXr
@@ -136,9 +189,6 @@ NEWSYM initregr
     setreg 4329h*4,reg43XXr
     setreg 432Ah*4,reg43XXr
     setreg 432Bh*4,reg43XXr
-    setreg 432Ch*4,reg43XXr
-    setreg 432Dh*4,reg43XXr
-    setreg 432Eh*4,reg43XXr
     setreg 432Fh*4,reg43XXr
     setreg 4330h*4,reg43XXr
     setreg 4331h*4,reg43XXr
@@ -152,9 +202,6 @@ NEWSYM initregr
     setreg 4339h*4,reg43XXr
     setreg 433Ah*4,reg43XXr
     setreg 433Bh*4,reg43XXr
-    setreg 433Ch*4,reg43XXr
-    setreg 433Dh*4,reg43XXr
-    setreg 433Eh*4,reg43XXr
     setreg 433Fh*4,reg43XXr
     setreg 4340h*4,reg43XXr
     setreg 4341h*4,reg43XXr
@@ -168,9 +215,6 @@ NEWSYM initregr
     setreg 4349h*4,reg43XXr
     setreg 434Ah*4,reg43XXr
     setreg 434Bh*4,reg43XXr
-    setreg 434Ch*4,reg43XXr
-    setreg 434Dh*4,reg43XXr
-    setreg 434Eh*4,reg43XXr
     setreg 434Fh*4,reg43XXr
     setreg 4350h*4,reg43XXr
     setreg 4351h*4,reg43XXr
@@ -184,9 +228,6 @@ NEWSYM initregr
     setreg 4359h*4,reg43XXr
     setreg 435Ah*4,reg43XXr
     setreg 435Bh*4,reg43XXr
-    setreg 435Ch*4,reg43XXr
-    setreg 435Dh*4,reg43XXr
-    setreg 435Eh*4,reg43XXr
     setreg 435Fh*4,reg43XXr
     setreg 4360h*4,reg43XXr
     setreg 4361h*4,reg43XXr
@@ -200,9 +241,6 @@ NEWSYM initregr
     setreg 4369h*4,reg43XXr
     setreg 436Ah*4,reg43XXr
     setreg 436Bh*4,reg43XXr
-    setreg 436Ch*4,reg43XXr
-    setreg 436Dh*4,reg43XXr
-    setreg 436Eh*4,reg43XXr
     setreg 436Fh*4,reg43XXr
     setreg 4370h*4,reg43XXr
     setreg 4371h*4,reg43XXr
@@ -216,9 +254,6 @@ NEWSYM initregr
     setreg 4379h*4,reg43XXr
     setreg 437Ah*4,reg43XXr
     setreg 437Bh*4,reg43XXr
-    setreg 437Ch*4,reg43XXr
-    setreg 437Dh*4,reg43XXr
-    setreg 437Eh*4,reg43XXr
     setreg 437Fh*4,reg43XXr
 
     cmp byte[SFXEnable],0
@@ -490,6 +525,7 @@ NEWSYM ClearRegs
     ret
 
 reg2100r:
+    ;Should be Openbus
     mov al,[vidbright]
     or al,[forceblnk]
     ret
@@ -990,6 +1026,7 @@ reg420Cr:
 reg420Dr:
 reg420Er:
 reg420Fr:
+    ;Should be Openbus
     xor al,al
     ret
 

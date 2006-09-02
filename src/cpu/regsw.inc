@@ -99,12 +99,70 @@ NEWSYM initregw
     setregw 2142h*4,reg2142w
     setregw 2143h*4,reg2143w
     setregw 2144h*4,reg2140w
+    setregw 2145h*4,reg2141w
+    setregw 2146h*4,reg2142w
+    setregw 2147h*4,reg2143w
+    setregw 2148h*4,reg2140w
+    setregw 2149h*4,reg2141w
+    setregw 214Ah*4,reg2142w
+    setregw 214Bh*4,reg2143w
+    setregw 214Ch*4,reg2140w
+    setregw 214Dh*4,reg2141w
+    setregw 214Eh*4,reg2142w
+    setregw 214Fh*4,reg2143w
+    setregw 2150h*4,reg2140w
+    setregw 2151h*4,reg2141w
+    setregw 2152h*4,reg2142w
+    setregw 2153h*4,reg2143w
+    setregw 2154h*4,reg2140w
+    setregw 2155h*4,reg2141w
+    setregw 2156h*4,reg2142w
+    setregw 2157h*4,reg2143w
+    setregw 2158h*4,reg2140w
+    setregw 2159h*4,reg2141w
+    setregw 215Ah*4,reg2142w
+    setregw 215Bh*4,reg2143w
+    setregw 215Ch*4,reg2140w
+    setregw 215Dh*4,reg2141w
+    setregw 215Eh*4,reg2142w
+    setregw 215Fh*4,reg2143w
+    setregw 2160h*4,reg2140w
+    setregw 2161h*4,reg2141w
+    setregw 2162h*4,reg2142w
+    setregw 2163h*4,reg2143w
+    setregw 2164h*4,reg2140w
+    setregw 2165h*4,reg2141w
+    setregw 2166h*4,reg2142w
+    setregw 2167h*4,reg2143w
+    setregw 2168h*4,reg2140w
+    setregw 2169h*4,reg2141w
+    setregw 216Ah*4,reg2142w
+    setregw 216Bh*4,reg2143w
+    setregw 216Ch*4,reg2140w
+    setregw 216Dh*4,reg2141w
+    setregw 216Eh*4,reg2142w
+    setregw 216Fh*4,reg2143w
+    setregw 2170h*4,reg2140w
+    setregw 2171h*4,reg2141w
+    setregw 2172h*4,reg2142w
+    setregw 2173h*4,reg2143w
+    setregw 2174h*4,reg2140w
+    setregw 2175h*4,reg2141w
+    setregw 2176h*4,reg2142w
+    setregw 2177h*4,reg2143w
+    setregw 2178h*4,reg2140w
+    setregw 2179h*4,reg2141w
+    setregw 217Ah*4,reg2142w
+    setregw 217Bh*4,reg2143w
+    setregw 217Ch*4,reg2140w
+    setregw 217Dh*4,reg2141w
+    setregw 217Eh*4,reg2142w
+    setregw 217Fh*4,reg2143w
     setregw 2180h*4,reg2180w
     setregw 2181h*4,reg2181w
     setregw 2182h*4,reg2182w
     setregw 2183h*4,reg2183w
     setregw 4016h*4,reg4016w
-    setregw 4017h*4,reg4017w
     setregw 4200h*4,reg4200w
     setregw 4201h*4,reg4201w
     setregw 4202h*4,reg4202w
@@ -119,11 +177,6 @@ NEWSYM initregw
     setregw 420Bh*4,reg420Bw
     setregw 420Ch*4,reg420Cw
     setregw 420Dh*4,reg420Dw
-    setregw 420Eh*4,reg420Ew
-    setregw 4210h*4,reg4210w
-    setregw 4211h*4,reg4211w
-    setregw 4212h*4,reg4212w
-    setregw 4216h*4,reg4216w
     setregw 4300h*4,reg43X0w
     setregw 4301h*4,reg43X1w
     setregw 4302h*4,reg43x2w
@@ -135,11 +188,8 @@ NEWSYM initregw
     setregw 4308h*4,reg43x8w
     setregw 4309h*4,reg43x9w
     setregw 430Ah*4,reg43XAw
-    setregw 430Bh*4,reg43XAw
-    setregw 430Ch*4,reg43XAw
-    setregw 430Dh*4,reg43XAw
-    setregw 430Eh*4,reg43XAw
-    setregw 430Fh*4,reg43XAw
+    setregw 430Bh*4,reg43XBw
+    setregw 430Fh*4,reg43XBw
     setregw 4310h*4,reg43X0w
     setregw 4311h*4,reg43X1w
     setregw 4312h*4,reg43x2w
@@ -151,11 +201,8 @@ NEWSYM initregw
     setregw 4318h*4,reg43x8w
     setregw 4319h*4,reg43x9w
     setregw 431Ah*4,reg43XAw
-    setregw 431Bh*4,reg43XAw
-    setregw 431Ch*4,reg43XAw
-    setregw 431Dh*4,reg43XAw
-    setregw 431Eh*4,reg43XAw
-    setregw 431Fh*4,reg43XAw
+    setregw 431Bh*4,reg43XBw
+    setregw 431Fh*4,reg43XBw
     setregw 4320h*4,reg43X0w
     setregw 4321h*4,reg43X1w
     setregw 4322h*4,reg43x2w
@@ -167,11 +214,8 @@ NEWSYM initregw
     setregw 4328h*4,reg43x8w
     setregw 4329h*4,reg43x9w
     setregw 432Ah*4,reg43XAw
-    setregw 432Bh*4,reg43XAw
-    setregw 432Ch*4,reg43XAw
-    setregw 432Dh*4,reg43XAw
-    setregw 432Eh*4,reg43XAw
-    setregw 432Fh*4,reg43XAw
+    setregw 432Bh*4,reg43XBw
+    setregw 432Fh*4,reg43XBw
     setregw 4330h*4,reg43X0w
     setregw 4331h*4,reg43X1w
     setregw 4332h*4,reg43x2w
@@ -183,11 +227,8 @@ NEWSYM initregw
     setregw 4338h*4,reg43x8w
     setregw 4339h*4,reg43x9w
     setregw 433Ah*4,reg43XAw
-    setregw 433Bh*4,reg43XAw
-    setregw 433Ch*4,reg43XAw
-    setregw 433Dh*4,reg43XAw
-    setregw 433Eh*4,reg43XAw
-    setregw 433Fh*4,reg43XAw
+    setregw 433Bh*4,reg43XBw
+    setregw 433Fh*4,reg43XBw
     setregw 4340h*4,reg43X0w
     setregw 4341h*4,reg43X1w
     setregw 4342h*4,reg43x2w
@@ -199,11 +240,8 @@ NEWSYM initregw
     setregw 4348h*4,reg43x8w
     setregw 4349h*4,reg43x9w
     setregw 434Ah*4,reg43XAw
-    setregw 434Bh*4,reg43XAw
-    setregw 434Ch*4,reg43XAw
-    setregw 434Dh*4,reg43XAw
-    setregw 434Eh*4,reg43XAw
-    setregw 434Fh*4,reg43XAw
+    setregw 434Bh*4,reg43XBw
+    setregw 434Fh*4,reg43XBw
     setregw 4350h*4,reg43X0w
     setregw 4351h*4,reg43X1w
     setregw 4352h*4,reg43x2w
@@ -215,11 +253,8 @@ NEWSYM initregw
     setregw 4358h*4,reg43x8w
     setregw 4359h*4,reg43x9w
     setregw 435Ah*4,reg43XAw
-    setregw 435Bh*4,reg43XAw
-    setregw 435Ch*4,reg43XAw
-    setregw 435Dh*4,reg43XAw
-    setregw 435Eh*4,reg43XAw
-    setregw 435Fh*4,reg43XAw
+    setregw 435Bh*4,reg43XBw
+    setregw 435Fh*4,reg43XBw
     setregw 4360h*4,reg43X0w
     setregw 4361h*4,reg43X1w
     setregw 4362h*4,reg43x2w
@@ -231,11 +266,8 @@ NEWSYM initregw
     setregw 4368h*4,reg43x8w
     setregw 4369h*4,reg43x9w
     setregw 436Ah*4,reg43XAw
-    setregw 436Bh*4,reg43XAw
-    setregw 436Ch*4,reg43XAw
-    setregw 436Dh*4,reg43XAw
-    setregw 436Eh*4,reg43XAw
-    setregw 436Fh*4,reg43XAw
+    setregw 436Bh*4,reg43XBw
+    setregw 436Fh*4,reg43XBw
     setregw 4370h*4,reg43X0w
     setregw 4371h*4,reg43X1w
     setregw 4372h*4,reg43x2w
@@ -247,11 +279,8 @@ NEWSYM initregw
     setregw 4378h*4,reg43x8w
     setregw 4379h*4,reg43x9w
     setregw 437Ah*4,reg43XAw
-    setregw 437Bh*4,reg43XAw
-    setregw 437Ch*4,reg43XAw
-    setregw 437Dh*4,reg43XAw
-    setregw 437Eh*4,reg43XAw
-    setregw 437Fh*4,reg43XAw
+    setregw 437Bh*4,reg43XBw
+    setregw 437Fh*4,reg43XBw
     cmp byte[SFXEnable],0
     je .nosfx
     call initsfxregsw
@@ -1337,10 +1366,6 @@ reg4016w:
 .nozero
     ret
 
-; Joystick 1 & 2 status bytes
-reg4017w:
-    ret
-
 ; Counter enable
 reg4200w:
     mov [INTEnab],al
@@ -1536,26 +1561,6 @@ reg420Dw:
     mov [cycpblt],bl  ; percentage of CPU/SPC to run
     ret
 
-; ???
-reg420Ew:
-    ret
-
-; NMI Check register
-reg4210w:
-    ret
-
-; Video IRQ register
-reg4211w:
-    ret
-
-; Status register
-reg4212w:
-    ret
-
-; Product of Multiplication Result or Remainder of Divide Result (Low)
-reg4216w:
-    ret
-
 ; DMA Control register
 reg43X0w:
     xor ebx,ebx
@@ -1655,6 +1660,14 @@ reg43XAw:
     mov byte[nohdmaframe],1
     inc byte[hdmadelay]
 .nodma
+    ret
+
+; Unknown DMA byte
+reg43XBw:
+    xor ebx,ebx
+    mov bx,cx
+    sub bx,4300h
+    mov [dmadata+ebx],al
     ret
 
 regINVALIDw:     ; Invalid Register
