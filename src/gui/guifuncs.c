@@ -870,7 +870,7 @@ static bool snes_extension_match(const char *filename)
 #define INFO_LEN (0xFF - 0xC0)
 #define INAME_LEN 21
 
-static const char *get_rom_name(const char *filename, char *namebuffer)
+static const char *get_rom_name(const char *filename, char *namebuffer, struct stat *filestats)
 {
   int InfoScore(char *);
   unsigned int sum(unsigned char *array, unsigned int size);
@@ -878,16 +878,13 @@ static const char *get_rom_name(const char *filename, char *namebuffer)
   char *last_dot = strrchr(filename, '.');
   if (!last_dot || (strcasecmp(last_dot, ".zip") && strcasecmp(last_dot, ".gz") && strcasecmp(last_dot, ".jma")))
   {
-    struct stat filestats;
-    stat_dir(ZRomPath, filename, &filestats);
-
-    if ((filestats.st_size >= 0x8000) && (filestats.st_size <= 0x600000+HEADER_SIZE))
+    if ((filestats->st_size >= 0x8000) && (filestats->st_size <= 0x600000+HEADER_SIZE))
     {
       FILE *fp = fopen_dir(ZRomPath, filename, "rb");
       if (fp)
       {
         unsigned char HeaderBuffer[HEADER_SIZE];
-        int HeaderSize = 0, HasHeadScore = 0, NoHeadScore = 0, HeadRemain = filestats.st_size & 0x7FFF;
+        int HeaderSize = 0, HasHeadScore = 0, NoHeadScore = 0, HeadRemain = filestats->st_size & 0x7FFF;
         bool EHi = false;
 
         switch(HeadRemain)
@@ -929,7 +926,7 @@ static const char *get_rom_name(const char *filename, char *namebuffer)
 
         HeaderSize = HasHeadScore > NoHeadScore ? HEADER_SIZE : 0;
 
-        if (filestats.st_size - HeaderSize >= 0x500000)
+        if (filestats->st_size - HeaderSize >= 0x500000)
         {
           fseek(fp, 0x40FFC0 + HeaderSize, SEEK_SET);
           fread(HeaderBuffer, 1, INFO_LEN, fp);
@@ -942,7 +939,7 @@ static const char *get_rom_name(const char *filename, char *namebuffer)
 
         if (!EHi)
         {
-          if (filestats.st_size - HeaderSize >= 0x10000)
+          if (filestats->st_size - HeaderSize >= 0x10000)
           {
             char LoHead[INFO_LEN], HiHead[INFO_LEN];
             int LoScore, HiScore;
@@ -957,10 +954,10 @@ static const char *get_rom_name(const char *filename, char *namebuffer)
 
             strncpy(namebuffer, LoScore > HiScore ? LoHead : HiHead, INAME_LEN);
 
-            if (filestats.st_size - HeaderSize >= 0x20000)
+            if (filestats->st_size - HeaderSize >= 0x20000)
             {
               int IntLScore;
-              fseek(fp, (filestats.st_size - HeaderSize) / 2 + 0x7FC0 + HeaderSize, SEEK_SET);
+              fseek(fp, (filestats->st_size - HeaderSize) / 2 + 0x7FC0 + HeaderSize, SEEK_SET);
               fread(LoHead, 1, INFO_LEN, fp);
               IntLScore = InfoScore(LoHead) / 2;
 
@@ -1150,7 +1147,7 @@ void populate_lists(unsigned int lists, bool snes_ext_match)
           if (lists&LIST_IN)
           {
             char namebuffer[22];
-            add_list(&i_names, get_rom_name(entry->d_name, namebuffer));
+            add_list(&i_names, get_rom_name(entry->d_name, namebuffer, &stat_buffer));
           }
 
 #ifdef __MSDOS__
