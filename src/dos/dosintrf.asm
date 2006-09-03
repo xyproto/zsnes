@@ -22,7 +22,6 @@
 
 EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,
 EXTSYM GetTime,GetDate,V8Mode,getblaster,Force8b,SBHDMA
-EXTSYM ZFileCHDir,CHPath
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
 EXTSYM NoSoundReinit,soundon,DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB
 EXTSYM handler8h,handler9h,init60hz,Interror,init18_2hz,DeInitSPC,GUIinit36_4hz
@@ -199,30 +198,6 @@ NEWSYM Get_Key
     ; wait if there are no keys in buffer, then return key in al
     ; for extended keys, return a 0, then the extended key afterwards
     mov ah,07h
-    int 21h
-    ret
-
-NEWSYM Change_Drive
-    ; change to drive in dl (0 = A, 1 = B, etc.)
-    mov ah,0Eh
-    int 21h
-    ret
-
-NEWSYM Change_Single_Dir
-    mov [CHPath],edx
-    pushad
-    call ZFileCHDir
-    or eax,eax
-    jnz .notokay
-    popad
-    clc
-    ret
-.notokay
-    popad
-    stc
-    ret
-    ; Dir in edx, return error in carry flag
-    mov ah,3Bh
     int 21h
     ret
 

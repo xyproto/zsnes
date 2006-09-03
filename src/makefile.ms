@@ -227,7 +227,7 @@ VIDEOBJ=${VIDEODIR}/makev16b${OE} ${VIDEODIR}/makev16t${OE} ${VIDEODIR}/makevid$
 
 #only used on Win32
 WINOBJ=${WINDIR}/copyvwin${OE} ${DRESOBJ}\
-	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE} ${WINDIR}/zfilew${OE} ${WINDIR}/lib${OE}\
+	${WINDIR}/winintrf${OE} ${WINDIR}/winlink${OE} ${WINDIR}/lib${OE}\
 	${WINDIR}/safelib${OE} ${MMLIBDIR}/mm${OE} ${MMLIBDIR}/windows${OE}
 
 WINVIDOBJ=${VIDEODIR}/sw_draw${OE} ${VIDEODIR}/hq2x16${OE} ${VIDEODIR}/hq2x32${OE}\
@@ -241,8 +241,7 @@ OBJSORIG=${CHIPSOBJ} ${CPUOBJ} ${GUIOBJ} ${VIDEOBJ} ${MAINOBJ} ${ZIPOBJ} ${EFFEC
 
 ifeq (${OS},__MSDOS__)
 DOSOBJ=${DOSOBJORIG} ${DOSDIR}/dosintrf${OE} ${DOSDIR}/gppro${OE} ${DOSDIR}/initvid${OE}\
-	${DOSDIR}/sound${OE} ${DOSDIR}/sw${OE} ${DOSDIR}/vesa12${OE} ${DOSDIR}/zfile${OE} \
-	${DOSDIR}/lib${OE}
+	${DOSDIR}/sound${OE} ${DOSDIR}/sw${OE} ${DOSDIR}/vesa12${OE} ${DOSDIR}/lib${OE}
 OBJS=${OBJSORIG} ${DOSOBJ}
 DELETEOBJS=${OBJSORIG} ${DOSOBJ}
 endif
@@ -378,7 +377,6 @@ ${DOSDIR}/sound${OE}: ${DOSDIR}/sound.asm macros.mac
 ${DOSDIR}/sw${OE}: ${DOSDIR}/sw.asm macros.mac
 ${DOSDIR}/vesa12${OE}: ${DOSDIR}/vesa12.asm macros.mac
 ${DOSDIR}/vesa2${OE}: ${DOSDIR}/vesa2.asm macros.mac
-${DOSDIR}/zfile${OE}: ${DOSDIR}/zfile.c
 
 ${EFFECTSDIR}/burn${OE}: ${EFFECTSDIR}/burn.c
 ${EFFECTSDIR}/smoke${OE}: ${EFFECTSDIR}/smoke.c
@@ -473,7 +471,6 @@ ${WINDIR}/lib${OE}: ${WINDIR}/lib.c zpath.h ${JMADIR}/zsnesjma.h \
 ${WINDIR}/safelib${OE}: ${WINDIR}/safelib.c argv.h
 ifeq (${ENV},msvc)
 ${WINDIR}/winintrf${OE}: ${WINDIR}/winintrf.asm macros.mac
-${WINDIR}/zfilew${OE}: ${WINDIR}/zfilew.c
 ${WINDIR}/winlink.obj: ${WINDIR}/winlink.cpp cfg${OE} ${WINDIR}/resource.h
 ${WINDIR}/zsnes.res: ${WINDIR}/zsnes.rc ${WINDIR}/resource.h
 	rc ${WINDIR}/zsnes.rc

@@ -21,8 +21,7 @@
 %include "macros.mac"
 
 EXTSYM getchar,PrevFSMode,sem_sleep,SBHDMA,putchar
-EXTSYM GetTime,GetDate,GUIkeydelay2,ZFileCHDir,CHPath
-EXTSYM Start60HZ
+EXTSYM GetTime,GetDate,GUIkeydelay2,Start60HZ
 EXTSYM pressed,AdjustFrequency,vidbufferofsb,vidbuffer,clearwin
 EXTSYM Stop60HZ,initwinvideo,vesa2_rpos,vesa2_gpos,vesa2_bpos,vesa2_rposng
 EXTSYM vesa2_gposng,vesa2_bposng,vesa2_usbit,vesa2_clbit,vesa2_clbitng
@@ -234,23 +233,6 @@ NEWSYM Get_Key
 .upper
     sub word[KeyBuffer+eax*4],100h
     xor al,al
-    ret
-
-NEWSYM Change_Drive
-    ret
-
-NEWSYM Change_Single_Dir
-    mov [CHPath],edx
-    pushad
-    call ZFileCHDir
-    or eax,eax
-    jnz .notokay
-    popad
-    clc
-    ret
-.notokay
-    popad
-    stc
     ret
 
 NEWSYM Get_Memfree

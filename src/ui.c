@@ -26,6 +26,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #endif
 
 #include "asm_call.h"
@@ -461,6 +462,36 @@ void zst_init()
       ZStateName[statefileloc] = newestfileloc+'0';
     }
   }
+}
+
+unsigned int GetTime()
+{
+  unsigned int value;
+  struct tm *newtime;
+  time_t long_time;
+
+  time(&long_time);
+  newtime = localtime(&long_time);
+
+  value = ((newtime->tm_sec)  % 10)+((newtime->tm_sec) /10)*16
+         +((((newtime->tm_min)  % 10)+((newtime->tm_min) /10)*16) <<  8)
+         +((((newtime->tm_hour) % 10)+((newtime->tm_hour)/10)*16) << 16);
+  return(value);
+}
+
+unsigned int GetDate()
+{
+  unsigned int value;
+  struct tm *newtime;
+  time_t long_time;
+
+  time(&long_time);
+  newtime = localtime( &long_time );
+  value = ((newtime->tm_mday) % 10)+((newtime->tm_mday)/10)*16
+         +(((newtime->tm_mon)+1) << 8)
+         +((((newtime->tm_year) % 10)+((newtime->tm_year)/10)*16) << 16)
+         +((newtime->tm_wday) << 28);
+  return(value);
 }
 
 static char *seconds_to_asc(unsigned int seconds)

@@ -20,8 +20,7 @@
 
 %include "macros.mac"
 
-EXTSYM GetTime,GetDate,GUIkeydelay2,_chdrive,ZFileCHDir
-EXTSYM CHPath,SBHDMA
+EXTSYM GetTime,GetDate,GUIkeydelay2,SBHDMA
 EXTSYM soundon,DSPDisable,Start60HZ,pressed,putchar,getch
 EXTSYM vidbufferofsb,vidbuffer,clearwin,Stop60HZ,initwinvideo,vesa2_rpos
 EXTSYM vesa2_gpos,vesa2_bpos,vesa2_rposng,vesa2_gposng,vesa2_bposng,vesa2_usbit
@@ -335,35 +334,6 @@ KeyConvTableS:
    db 200,201,202,203,204,205,206,207
    db 208,209,210,211,255,255,255,255  ; 50h
 SECTION .text
-
-NEWSYM Change_Drive
-    ; change to drive in dl (0 = A, 1 = B, etc.)
-    and edx,0FFh
-    add edx,1
-    push edx
-    call _chdrive
-    pop edx
-;    mov ah,0Eh
-;    int 21h
-    ret
-
-NEWSYM Change_Single_Dir
-    mov [CHPath],edx
-    pushad
-    call ZFileCHDir
-    or eax,eax
-    jnz .notokay
-    popad
-    clc
-    ret
-.notokay
-    popad
-    stc
-    ret
-    ; Dir in edx, return error in carry flag
-;    mov ah,3Bh
-;    int 21h
-;    ret
 
 NEWSYM Get_Memfree
     mov eax,02000000h

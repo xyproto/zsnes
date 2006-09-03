@@ -63,7 +63,7 @@ NET_O=
 #$(NET_D)/ztcp.o
 
 PORT_O=$(PORT_D)/copyvwin.o $(PORT_D)/sdlintrf.o $(PORT_D)/sdllink.o @GL_DRAW@\
-	$(PORT_D)/sw_draw.o $(PORT_D)/zfilew.o $(PORT_D)/safelib.o
+	$(PORT_D)/sw_draw.o $(PORT_D)/safelib.o
 
 TOOL_O=$(TOOL_D)/fileutil.o $(TOOL_D)/strutil.o
 
