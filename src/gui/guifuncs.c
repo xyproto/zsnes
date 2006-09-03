@@ -1668,11 +1668,14 @@ void GUILoadKeysJumpTo()
   found = *entries;
   while (start <= end)
   {
-    unsigned mid = (start+end)>>1;
+    int mid = (start+end)>>1;
     int pos = strncasecmp(base[mid], GUILoadTextA, GUILoadPos);
     if (!pos)
     {
-      found = mid;
+      do
+      {
+        found = mid--;
+      } while ((mid >= 0) && !strncasecmp(base[mid], GUILoadTextA, GUILoadPos));
       break;
     }
     if (pos > 0)
