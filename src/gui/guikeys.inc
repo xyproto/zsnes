@@ -2656,6 +2656,8 @@ GUILoadKeys:
 .nokeypressed
   ret
 .keypressed
+  mov eax,[GUILoadPos]
+  mov byte[GUILoadTextA+eax],0
   mov byte[gui_key],dh
   mov byte[gui_key_extended],dl
   pushad
@@ -2663,9 +2665,6 @@ GUILoadKeys:
   cmp eax,1
   popad
   je .nokeypressed
-  mov eax,edx
-  mov byte[ManualStatus],0
-  mov dword[ManualCPtr],GUILoadTextA
   cmp byte[GUILoadPos],0
   je near .nobacksp
   cmp dh,8
@@ -2676,132 +2675,13 @@ GUILoadKeys:
   mov al,[GUILoadPos]
   ret
 .nobacksp
-  cmp dh,0
-  je near .posvl2
-  cmp dh,13
-  je near .posvl2
-  cmp dh,8
-  je near .posvl2
-  cmp dh,9
-  je near .posvl2
   cmp byte[GUILoadPos],36
-  je near .posvl2
+  je near .nokeypressed
   mov byte[GUILDFlash],0
   xor eax,eax
   mov al,[GUILoadPos]
   mov [GUILoadTextA+eax],dh
   inc byte[GUILoadPos]
-  ; Go to closest matching filename if there are no :, /, or \ in the filename
-  mov ebx,[ManualCPtr]
-  cmp byte[ebx],0
-  je near .posvl2
-.next
-  cmp byte[ebx],':'
-  je near .posvl2
-  cmp byte[ebx],'/'
-  je near .posvl2
-  cmp byte[ebx],'\'
-  je near .posvl2
-  inc ebx
-  cmp byte[ebx],0
-  je .done
-  jmp .next
-.done
-
-  mov ebx,[GUIfileentries]
-  xor esi,esi
-  mov eax,[selected_names]
-  cmp dword[GUIcurrentfilewin],1
-  jne near .notdir
-  mov ebx,[GUIdirentries]
-  mov eax,[d_names]
-  add eax,8
-.notdir
-  mov eax,[eax]
-  mov ecx,esi
-  mov [.foundval],esi
-.loop2
-  mov dword[.numfound],0
-  mov edi,[ManualCPtr]
-  cmp byte[eax],'['
-  jne .nodrive
-  inc eax
-.nodrive
-.loop3
-  mov dl,[eax]
-  cmp dl,'a'
-  jb .nolowerb2
-  cmp dl,'z'
-  ja .nolowerb2
-  sub dl,'a'-'A'
-.nolowerb2
-  mov dh,[edi]
-  cmp dh,'a'
-  jb .nolowerb3
-  cmp dh,'z'
-  ja .nolowerb3
-  sub dh,'a'-'A'
-.nolowerb3
-  cmp dl,dh
-  jne .notfound
-  cmp byte[ManualStatus],2
-  jne .notfullload
-  or dh,dh
-  jnz .notfullload
-  or dl,dl
-  jnz .notfullload
-  mov byte[ManualStatus],3
-.notfullload
-  or dh,dh
-  jz .notfound
-  or dl,dl
-  jz .notfound
-  inc dword[.numfound]
-  inc eax
-  inc edi
-  jmp .loop3
-.notfound
-  mov edx,[.numfound]
-  cmp edx,[.maxfound]
-  jbe .nfound
-  mov [.maxfound],edx
-  mov [.foundval],esi
-.nfound
-  inc esi
-  cmp esi,ebx
-  jne .noend2
-  mov esi,[GUIfileentries]
-  cmp dword[GUIcurrentfilewin],1
-  jne .noend2
-  mov esi,[GUIdirentries]
-.noend2
-  cmp esi,ecx
-  jne near .loop2
-.skipall
-  mov esi,[.foundval]
-  cmp dword[GUIcurrentfilewin],1
-  jne .notdir2
-  mov [GUIcurrentdircursloc],esi
-  mov [GUIcurrentdirviewloc],esi
-  mov ebx,[GUIdirentries]
-  sub ebx,15
-  cmp dword[GUIcurrentdirviewloc],ebx
-  jb .posvl2
-  mov [GUIcurrentdirviewloc],ebx
-  jmp .posvl2
-.notdir2
-  mov [GUIcurrentcursloc],esi
-  mov [GUIcurrentviewloc],esi
-  mov ebx,[GUIfileentries]
-  sub ebx,15
-  cmp dword[GUIcurrentviewloc],ebx
-  jb .posvl2
-  mov [GUIcurrentviewloc],ebx
-.posvl2
-  cmp byte[ManualStatus],3
-  jne .notdirectload
-  call GUILoadData
-.notdirectload
   ret
 
 SECTION .bss
