@@ -2656,8 +2656,6 @@ GUILoadKeys:
 .nokeypressed
   ret
 .keypressed
-  mov eax,[GUILoadPos]
-  mov byte[GUILoadTextA+eax],0
   mov byte[gui_key],dh
   mov byte[gui_key_extended],dl
   pushad
@@ -2675,6 +2673,8 @@ GUILoadKeys:
   mov al,[GUILoadPos]
   ret
 .nobacksp
+  cmp dh,8
+  je near .nokeypressed
   cmp byte[GUILoadPos],36
   je near .nokeypressed
   mov byte[GUILDFlash],0
@@ -2682,6 +2682,9 @@ GUILoadKeys:
   mov al,[GUILoadPos]
   mov [GUILoadTextA+eax],dh
   inc byte[GUILoadPos]
+  pushad
+  call GUILoadKeysJumpTo
+  popad
   ret
 
 SECTION .bss

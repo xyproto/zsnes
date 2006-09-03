@@ -1636,3 +1636,58 @@ int GUILoadKeysNavigate()
 
   return(0);
 }
+
+void GUILoadKeysJumpTo()
+{
+  extern char GUILoadTextA[];
+  extern unsigned char GUILoadPos;
+
+  int *currentviewloc, *currentcursloc, *entries;
+  char **base;
+  unsigned int start, end, found;
+
+  GUILoadTextA[GUILoadPos] = 0;
+
+  if (GUIcurrentfilewin == 1)
+  {
+    currentviewloc = &GUIcurrentdirviewloc;
+    currentcursloc = &GUIcurrentdircursloc;
+    entries = &GUIdirentries;
+    base = d_names+2;
+  }
+  else
+  {
+    currentviewloc = &GUIcurrentviewloc;
+    currentcursloc = &GUIcurrentcursloc;
+    entries = &GUIfileentries;
+    base = selected_names;
+  }
+
+  start = 0;
+  end = (*entries)-1;
+  found = *entries;
+  while (start <= end)
+  {
+    unsigned mid = (start+end)>>1;
+    int pos = strncasecmp(base[mid], GUILoadTextA, GUILoadPos);
+    if (!pos)
+    {
+      found = mid;
+      break;
+    }
+    if (pos > 0)
+    {
+      end = mid-1;
+    }
+    else
+    {
+      start = mid+1;
+    }
+  }
+
+  if (found < (unsigned int)*entries)
+  {
+    *currentviewloc = found;
+    *currentcursloc = found;
+  }
+}
