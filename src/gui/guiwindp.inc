@@ -1003,7 +1003,7 @@ GUILoadText6 db 'SHOW ALL EXTENSIONS',0
 GUILoadText7 db 'FILENAME',0
 GUILoadText8 db 'DIRECTORY',0
 GUILoadText9 db 'LOAD',0
-NEWSYM GUILoadTextA, times 40 db 0
+NEWSYM GUILoadTextA, times 38 db 0
 GUILoadTextB db 'FORCE',0
 GUILoadTextC db 'NTSC',0
 GUILoadTextD db 'PAL',0

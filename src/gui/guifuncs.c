@@ -1685,7 +1685,7 @@ void GUILoadKeysJumpTo()
     }
   }
 
-  if (found < (unsigned int)*entries)
+  if (found < *entries)
   {
     *currentviewloc = found;
     *currentcursloc = found;

@@ -768,6 +768,7 @@ SECTION .data
 SECTION .text
 
 NEWSYM StartGUI
+  mov byte[GUILoadPos],0
   cmp byte[TripBufAvail],0
   jne .notexttb
   mov byte[Triplebufen],0
