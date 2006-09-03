@@ -1713,6 +1713,7 @@ void GUILoadKeysJumpTo()
     if ((GUIcurrentfilewin == 1) && (base > d_names+2))
     {
       found++;
+      entries++;
     }
 
     *currentviewloc = (found<entries-7)?found-7:entries-15;
