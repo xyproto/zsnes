@@ -2886,7 +2886,6 @@ GUILoadKeys:
   mov eax,[selected_names]
   cmp dword[GUIcurrentfilewin],1
   jne near .notdir
-  mov esi,[GUIfileentries]
   mov ebx,[GUIdirentries]
   mov eax,[d_names]
   add eax,8
@@ -2946,8 +2945,8 @@ GUILoadKeys:
   jne .noend2
   mov esi,[GUIfileentries]
   cmp dword[GUIcurrentfilewin],1
-  je .noend2
-  xor esi,esi
+  jne .noend2
+  mov esi,[GUIdirentries]
 .noend2
   cmp esi,ecx
   jne near .loop2
@@ -2955,7 +2954,6 @@ GUILoadKeys:
   mov esi,[.foundval]
   cmp dword[GUIcurrentfilewin],1
   jne .notdir2
-  sub esi,[GUIfileentries]
   mov [GUIcurrentdircursloc],esi
   mov [GUIcurrentdirviewloc],esi
   mov ebx,[GUIdirentries]
