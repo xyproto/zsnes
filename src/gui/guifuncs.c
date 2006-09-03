@@ -1410,10 +1410,10 @@ void GUILoadData()
 
       while (!dupfound && i<10)
       {
-        dupfound = (!strncmp(ZCartName, (char *)prevloadfnamel+i*512, 512) && (!strncmp(ZRomPath, (char *)prevloaddnamel+i*512+1, 512)));
+        dupfound = (!strncmp(nameptr, (char *)prevloadfnamel+i*512, 512) && (!strncmp(ZRomPath, (char *)prevloaddnamel+i*512+1, 512)));
         if(dupfound && modheader)
         {
-          memcpy(prevloadnames+i*16, nameptr, 16);
+          memcpy(prevloadnames+i*16, selected_names[GUIcurrentcursloc], 16);
           modheader = false;
         }
         i++;
@@ -1422,7 +1422,7 @@ void GUILoadData()
 
       if (!dupfound)
       {
-        memcpy(prevloadnames+9*16, nameptr, 16);
+        memcpy(prevloadnames+9*16, selected_names[GUIcurrentcursloc], 16);
         strcpy((char *)prevloaddnamel+9*512+1, ZRomPath);
         strcpy((char *)prevloadfnamel+9*512, ZCartName);
       }
