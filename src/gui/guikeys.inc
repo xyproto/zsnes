@@ -2687,12 +2687,6 @@ GUILoadKeys:
   popad
   ret
 
-SECTION .bss
-.foundval resd 1
-.numfound resd 1
-.maxfound resd 1
-SECTION .text
-
 WaitForKey:
 .again3
   mov edx,10

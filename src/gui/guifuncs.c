@@ -1644,7 +1644,7 @@ void GUILoadKeysJumpTo()
 
   int *currentviewloc, *currentcursloc, *entries;
   char **base;
-  unsigned int start, end, found;
+  int start, end, found;
 
   GUILoadTextA[GUILoadPos] = 0;
 
