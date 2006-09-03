@@ -24,21 +24,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "gblhdr.h"
 #define DIR_SLASH "/"
 #define ROOT_LEN 1 //"/"
+#define fnamecmp strcmp
+#define fnamencmp strncmp
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <zlib.h>
-#define DIR_SLASH "\\"
-#define ROOT_LEN 3 //"A:\"
-#endif
-
-#ifndef _MSC_VER
-#include <stdint.h>
-#include <dirent.h>
-#include <unistd.h>
-#endif
-
 #ifdef __WIN32__
 #include "../win/lib.h"
 #endif
@@ -49,6 +37,22 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../dos/lib.h"
 #endif
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <zlib.h>
+#define DIR_SLASH "\\"
+#define ROOT_LEN 3 //"A:\"
+#define fnamencmp strncasecmp
+#define fnamecmp strcasecmp
+#endif
+
+#ifndef _MSC_VER
+#include <stdint.h>
+#include <dirent.h>
+#include <unistd.h>
+#endif
+
 #include "../zpath.h"
 #include "../md.h"
 #include "../cfg.h"
@@ -56,7 +60,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../zloader.h"
 
 #ifndef S_ISDIR
-#define	S_ISDIR(m)	(((m) & S_IFMT) == S_IFDIR)
+#define S_ISDIR(m)	(((m) & S_IFMT) == S_IFDIR)
 #endif
 
 #define BIT(X) (1 << (X))
@@ -1398,7 +1402,7 @@ void GUILoadData()
 
       while (!dupfound && i<10)
       {
-        dupfound = (!strncmp(nameptr, (char *)prevloadfnamel+i*512, 512) && (!strncmp(ZRomPath, (char *)prevloaddnamel+i*512+1, 512)));
+        dupfound = (!fnamencmp(nameptr, (char *)prevloadfnamel+i*512, 512) && (!fnamencmp(ZRomPath, (char *)prevloaddnamel+i*512+1, 512)));
         if(dupfound && modheader)
         {
           memcpy(prevloadiname+i*28, selected_names[GUIcurrentcursloc], 28);
