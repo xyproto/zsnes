@@ -1671,6 +1671,7 @@ void GUILoadKeysJumpTo()
       {
         found++;
       }
+      end++;
     }
     entries -= found;
 #endif
