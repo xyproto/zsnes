@@ -348,6 +348,7 @@ void zstart()
 {
   unsigned int ptr;
 
+  asm_call(MMXCheck);
   asm_call(StartUp);
 
   // Print welcome message.
@@ -399,8 +400,6 @@ void zstart()
   }
 
   gammalevel16b = gammalevel >> 1;
-
-  asm_call(MMXCheck);
 
   ptr = (unsigned int)&init;
   if ((ptr & 3))
