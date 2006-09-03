@@ -120,7 +120,7 @@ EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
 EXTSYM d_names,selected_names,GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
 EXTSYM GUIcurrentfilewin,GUIcurrentcursloc,GUIcurrentviewloc
-EXTSYM GUIcurrentdircursloc,GetLoadData,ZRomPath
+EXTSYM GUIcurrentdircursloc,GetLoadData,ZRomPath,GUILoadManualDir
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
@@ -1556,97 +1556,6 @@ guicheaterror3 db 'GAME GENIE,PAR, OR',0
 guicheaterror4 db 'GOLD FINGER CODE.',0
 guicheaterror5 db 'PRESS ANY KEY.',0
 SECTION .text
-
-GUILoadManualDir
-  mov ebx,GUILoadTextA
-  mov [ManualCPtr],ebx
-  cmp byte[ebx],0
-  je near .nofindfile
-  xor eax,eax
-.next
-  cmp byte[ebx],':'
-  jne .nocolon
-  mov eax,ebx
-.nocolon
-  inc ebx
-  cmp byte[ebx],0
-  jne .next
-  or eax,eax
-  jz .nomorecolon
-  cmp eax,GUILoadTextA
-  je .invalidcolon
-  mov bl,[eax-1]
-  cmp bl,'a'
-  jb .nolower
-  cmp bl,'z'
-  ja .nolower
-  sub bl,'a'-'A'
-.nolower
-  cmp bl,'A'
-  jb .invalidcolon
-  cmp bl,'Z'
-  ja .invalidcolon
-  sub bl,'A'
-  mov dl,bl
-  push eax
-  call Change_Drive
-  pop eax
-  mov byte[ManualStatus],1
-.invalidcolon
-  inc eax
-  mov [ManualCPtr],eax
-.nomorecolon
-  mov ebx,[ManualCPtr]
-  cmp byte[ebx],0
-  je near .finish
-  xor eax,eax
-.next2
-  cmp byte[ebx],'\'
-  jne .nobackslash
-  mov eax,ebx
-.nobackslash
-  inc ebx
-  cmp byte[ebx],0
-  jne .next2
-  or eax,eax
-  jz .finish
-  inc eax
-  mov cl,[eax]
-  mov byte[eax],0
-  push ecx
-  push eax
-  mov edx,[ManualCPtr]
-  call Change_Single_Dir
-  jc .nosuchdir
-  mov byte[ManualStatus],1
-.nosuchdir
-  pop eax
-  pop ecx
-  mov [eax],cl
-  mov [ManualCPtr],eax
-.finish
-  mov edx,[ManualCPtr]
-  call Change_Single_Dir
-  jc .notdir
-  mov byte[ManualStatus],1
-  jmp .nomoredir
-.notdir
-  call .nomoredir
-  mov edx,[ManualCPtr]
-  cmp byte[edx],0
-  je .nofindfile
-  ; otherwise set ManualStatus to 2
-  mov byte[ManualStatus],2
-  mov dword[GUIcurrentfilewin],0
-.nofindfile
-  ret
-.nomoredir
-  ; refresh dir if necessary
-  cmp byte[ManualStatus],1
-  jne .norefresh
-  call GetLoadData
-.norefresh
-  ret
 
 SECTION .bss
 ManualCPtr resd 1

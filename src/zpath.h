@@ -49,10 +49,20 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIR_SLASH "/"
 #define DIR_SLASH_C '/'
 #define DIR_SLASH_C_OTHER '\\'
+#define ROOT_LEN 1 //"/"
 #else
 #define DIR_SLASH "\\"
 #define DIR_SLASH_C '\\'
 #define DIR_SLASH_C_OTHER '/'
+#define ROOT_LEN 3 //"A:\"
+#endif
+
+#ifndef __MSDOS__
+#define PATH_SIZE 4096
+#define NAME_SIZE 512
+#else
+#define PATH_SIZE 256
+#define NAME_SIZE 13
 #endif
 
 extern char ZCfgFile[];
@@ -76,6 +86,7 @@ void load_jma_file_dir(const char *path, const char *file);
 #endif
 int remove_dir(const char *path, const char *file);
 int mkdir_dir(const char *path, const char *dir);
+char *realpath_dir(const char *path, const char *file, char *buf);
 #ifdef __MSDOS__
 char *realpath_sfn_dir(const char *path, const char *file, char *buf);
 #endif

@@ -2690,37 +2690,7 @@ GUILoadKeys:
   cmp al,13
   jne .noenter
   mov byte[GUILoadPos],0
-
-  mov ebx,GUILoadTextA
-.nextl
-  cmp byte[ebx],':'
-  je .donel
-%ifdef __UNIXSDL__
-  cmp byte[ebx],'/'
-%else
-  cmp byte[ebx],'\'
-%endif
-  je .donel
-  inc ebx
-  cmp byte[ebx],0
-  je .nofnamel
-  jmp .nextl
-.donel
   call GUILoadManualDir
-  cmp byte[ManualStatus],2
-  je near .done
-  ret
-.nofnamel
-  mov ebx,GUILoadTextA
-  cmp byte[ebx],0
-  je .nodirtry
-  mov edx,ebx
-  call Change_Single_Dir
-  jc .nodirtry
-  call GetLoadData
-  ret
-.nodirtry
-  call GUILoadData
   ret
 .noenter
   cmp dword[GUIcurrentfilewin],1

@@ -25,7 +25,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "../zpath.h"
 
 #define fullpath _fullpath
-#define PATH_SIZE 4096
 
 
 //This file contains library functions that can be found on other OSs

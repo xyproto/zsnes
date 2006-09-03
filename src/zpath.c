@@ -46,14 +46,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define mkdir_p(path) mkdir(path, (S_IRWXU|S_IRWXG|S_IRWXO)) //0777
 #endif
 
-#ifndef __MSDOS__
-#define PATH_SIZE 4096
-#define NAME_SIZE 512
-#else
-#define PATH_SIZE 256
-#define NAME_SIZE 13
-#endif
-
 #ifdef __MSDOS__
 char ZCfgFile[] = "zsnes.cfg";
 #elif defined(__WIN32__)
@@ -429,6 +421,11 @@ int remove_dir(const char *path, const char *file)
 int mkdir_dir(const char *path, const char *dir)
 {
   return(mkdir_p(strdupcat_internal(path, dir)));
+}
+
+char *realpath_dir(const char *path, const char *file, char *buf)
+{
+  return(realpath(strdupcat_internal(path, file), buf));
 }
 
 #ifdef __MSDOS__

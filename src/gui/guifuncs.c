@@ -22,10 +22,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef __UNIXSDL__
 #include "gblhdr.h"
-#define DIR_SLASH "/"
-#define ROOT_LEN 1 //"/"
 #define fnamecmp strcmp
 #define fnamencmp strncmp
+#define IS_ABSOLUTE(path) (*(path) == '/')
 #else
 #ifdef __WIN32__
 #include "../win/lib.h"
@@ -41,10 +40,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <stdlib.h>
 #include <string.h>
 #include <zlib.h>
-#define DIR_SLASH "\\"
-#define ROOT_LEN 3 //"A:\"
 #define fnamencmp strncasecmp
 #define fnamecmp strcasecmp
+#define IS_ABSOLUTE(path) ((*(path) == '\\') || (*(path) && ((path)[1] == ':')))
 #endif
 
 #ifndef _MSC_VER
@@ -1429,4 +1427,44 @@ void GUILoadData()
     GUIwinactiv[1] = 0; // close load dialog
     GUIwinorder[--GUIwinptr] = 0;
   }
+}
+
+
+void GUILoadManualDir()
+{
+  extern char GUILoadTextA[];
+
+  if (*GUILoadTextA)
+  {
+    char path_buff[PATH_SIZE];
+    bool realpath_success;
+    if (IS_ABSOLUTE(GUILoadTextA))
+    {
+      realpath_success = (int)realpath(GUILoadTextA, path_buff);
+    }
+    else
+    {
+      realpath_success = (int)realpath_dir(ZRomPath, GUILoadTextA, path_buff);
+    }
+    if (realpath_success)
+    {
+      struct stat stat_buffer;
+      if (!stat(path_buff, &stat_buffer))
+      {
+        if (S_ISDIR(stat_buffer.st_mode))
+        {
+          strcpy(ZRomPath, path_buff);
+          strcatslash(ZRomPath);
+          GetLoadData();
+        }
+        else
+        {
+          if (init_rom_path(path_buff)) { puts("Power Cycle"); powercycle(false, true); }
+        }
+        return;
+      }
+    }
+  }
+
+  GUILoadData();
 }
