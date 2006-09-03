@@ -31,15 +31,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <sys/stat.h>
 #define DIR_SLASH "\\"
 #endif
-#include "cpu/memtable.h"
-#include "zip/zunzip.h"
 #include "asm_call.h"
 #include "cfg.h"
 #include "zpath.h"
-#ifndef NO_JMA
-#include "jma/zsnesjma.h"
-#endif
-
+#include "cpu/memtable.h"
 
 #ifndef __GNUC__
 #define strcasecmp stricmp
