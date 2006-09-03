@@ -1012,7 +1012,7 @@ GUILoadTextF db 'HIROM',0
 SECTION .bss
 GUILStA resd 3
 GUILStB resd 3
-GUILoadPos resb 1
+NEWSYM GUILoadPos, resb 1
 
 SECTION .text
 

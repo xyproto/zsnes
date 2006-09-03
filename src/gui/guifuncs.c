@@ -1309,12 +1309,12 @@ void GUIQuickLoadUpdate()
 }
 
 
-unsigned int GUIcurrentviewloc; //current file position
-unsigned int GUIcurrentcursloc; //current cursor position (GUI)
-unsigned int GUIcurrentdirviewloc; //current directory position
-unsigned int GUIcurrentdircursloc; //current dir position (GUI)
-unsigned int GUIdirentries;
-unsigned int GUIfileentries;
+int GUIcurrentviewloc; //current file position
+int GUIcurrentcursloc; //current cursor position (GUI)
+int GUIcurrentdirviewloc; //current directory position
+int GUIcurrentdircursloc; //current dir position (GUI)
+int GUIdirentries;
+int GUIfileentries;
 
 void free_all_file_lists()
 {
@@ -1429,7 +1429,6 @@ void GUILoadData()
   }
 }
 
-
 void GUILoadManualDir()
 {
   extern char GUILoadTextA[];
@@ -1467,4 +1466,173 @@ void GUILoadManualDir()
   }
 
   GUILoadData();
+}
+
+
+unsigned char gui_key;
+unsigned char gui_key_extended;
+int GUILoadKeysNavigate()
+{
+  extern unsigned int numlockptr;
+  extern unsigned char GUILoadPos;
+
+  int *currentviewloc, *currentcursloc, *entries;
+  if (GUIcurrentfilewin == 1)
+  {
+    currentviewloc = &GUIcurrentdirviewloc;
+    currentcursloc = &GUIcurrentdircursloc;
+    entries = &GUIdirentries;
+  }
+  else
+  {
+    currentviewloc = &GUIcurrentviewloc;
+    currentcursloc = &GUIcurrentcursloc;
+    entries = &GUIfileentries;
+  }
+
+  //Handle left and right
+  if(GUIfileentries && GUIdirentries)
+  {
+    #ifdef __UNIXSDL__
+    if ((gui_key_extended == 92) || ((numlockptr != 1) && (gui_key_extended == 75)))
+    #else
+    if (gui_key_extended == 75)
+    #endif
+    {
+      GUILoadPos = 0;
+      GUIcurrentfilewin ^= 1;
+      return(1);
+    }
+
+    #ifdef __UNIXSDL__
+    if ((gui_key_extended == 94) || ((numlockptr != 1) && (gui_key_extended == 77)))
+    #else
+    if(gui_key_extended == 77)
+    #endif
+    {
+      GUILoadPos = 0;
+      GUIcurrentfilewin ^= 1;
+      return(1);
+    }
+  }
+
+  //Enter press
+  if (gui_key_extended == 13)
+  {
+    GUILoadPos = 0;
+    GUILoadManualDir();
+    return(1);
+  }
+
+  //Home key
+  #ifdef __UNIXSDL__
+  if ((gui_key_extended == 89)||((numlockptr != 1) && (gui_key_extended == 71)))
+  #else
+  if (gui_key_extended == 71)
+  #endif
+  {
+    GUILoadPos = 0;
+    *currentcursloc = 0;
+    *currentviewloc = 0;
+    return(1);
+  }
+
+  //End key
+  #ifdef __UNIXSDL__
+  if ((gui_key_extended == 95)||((numlockptr != 1) && (gui_key_extended == 79)))
+  #else
+  if (gui_key_extended == 79)
+  #endif
+  {
+    GUILoadPos = 0;
+    *currentcursloc = (*entries)-1;
+    *currentviewloc = (*entries)-15;
+    if (*currentviewloc < 0)
+    {
+      *currentviewloc = 0;
+    }
+    return(1);
+  }
+
+  //Up arrow key
+  #ifdef __UNIXSDL__
+  if ((gui_key_extended == 90)||((numlockptr != 1) && (gui_key_extended == 72)))
+  #else
+  if (gui_key_extended == 72)
+  #endif
+  {
+    GUILoadPos = 0;
+    if (*currentcursloc)
+    {
+      if (*currentviewloc == *currentcursloc)
+      {
+        (*currentviewloc)--;
+      }
+      (*currentcursloc)--;
+    }
+    return(1);
+  }
+
+  //Down arrow key
+  #ifdef __UNIXSDL__
+  if ((gui_key_extended == 96)||((numlockptr != 1) && (gui_key_extended == 80)))
+  #else
+  if (gui_key_extended == 80)
+  #endif
+  {
+    GUILoadPos = 0;
+    if ((*currentcursloc)+1 != *entries)
+    {
+      (*currentcursloc)++;
+      if ((*currentcursloc)-15 == *currentviewloc)
+      {
+        (*currentviewloc)++;
+      }
+    }
+    return(1);
+  }
+
+  //Page up key
+  #ifdef __UNIXSDL__
+  if ((gui_key_extended == 91)||((numlockptr != 1) && (gui_key_extended == 73)))
+  #else
+  if (gui_key_extended == 73)
+  #endif
+  {
+    GUILoadPos = 0;
+    *currentviewloc -= 15;
+    *currentcursloc -= 15;
+    if (*currentviewloc < 0)
+    {
+      *currentviewloc = 0;
+    }
+    if (*currentcursloc < 0)
+    {
+      *currentcursloc = 0;
+    }
+    return(1);
+  }
+
+  //Page down key
+  #ifdef __UNIXSDL__
+  if ((gui_key_extended == 97)||((numlockptr != 1) && (gui_key_extended == 81)))
+  #else
+  if (gui_key_extended == 81)
+  #endif
+  {
+    GUILoadPos = 0;
+    *currentviewloc += 15;
+    *currentcursloc += 15;
+    if (*currentcursloc >= (*entries)-1)
+    {
+      *currentcursloc = (*entries)-1;
+    }
+    if (*currentviewloc >= (*entries)-15)
+    {
+      *currentviewloc = ((*entries)-15)>0 ? (*entries)-15 : 0;
+    }
+   return(1);
+  }
+
+  return(0);
 }

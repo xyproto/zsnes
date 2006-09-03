@@ -114,7 +114,7 @@ EXTSYM AutoPatch,RomInfo,AllowUDLR,Triplebufen,GrayscaleMode
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,TripleBufferWin
 EXTSYM BilinearFilter,esctomenu
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SoundBufEn,SPCDisable
-EXTSYM FastFwdToggle
+EXTSYM FastFwdToggle,gui_key,gui_key_extended,GUILoadKeysNavigate
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
 EXTSYM d_names,selected_names,GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
