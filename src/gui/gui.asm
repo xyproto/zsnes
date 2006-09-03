@@ -119,7 +119,7 @@ EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
 EXTSYM d_names,selected_names,GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
 EXTSYM GUIcurrentfilewin,GUIcurrentcursloc,GUIcurrentviewloc
-EXTSYM GUIcurrentdircursloc,GetLoadData,ZRomPath,GUILoadManualDir
+EXTSYM GUIcurrentdircursloc,GetLoadData,ZRomPath
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr

@@ -1642,7 +1642,7 @@ void GUILoadKeysJumpTo()
   extern char GUILoadTextA[];
   extern unsigned char GUILoadPos;
 
-  int *currentviewloc, *currentcursloc, *entries;
+  int *currentviewloc, *currentcursloc, entries;
   char **base;
   int start, end, found;
 
@@ -1652,20 +1652,40 @@ void GUILoadKeysJumpTo()
   {
     currentviewloc = &GUIcurrentdirviewloc;
     currentcursloc = &GUIcurrentdircursloc;
-    entries = &GUIdirentries;
+    entries = GUIdirentries;
     base = d_names+2;
+    if (!strcmp(*base, ".."))
+    {
+      base++;
+      entries--;
+    }
+
+#ifndef __UNIXSDL__
+    //Don't mind the bad variable usage
+    start = GetLogicalDrives();
+    found = end = 0;
+
+    while (end < 26)
+    {
+      if (start&BIT(end))
+      {
+        found++;
+      }
+    }
+    entries -= found;
+#endif
   }
   else
   {
     currentviewloc = &GUIcurrentviewloc;
     currentcursloc = &GUIcurrentcursloc;
-    entries = &GUIfileentries;
+    entries = GUIfileentries;
     base = selected_names;
   }
 
   start = 0;
-  end = (*entries)-1;
-  found = *entries;
+  end = entries-1;
+  found = entries;
   while (start <= end)
   {
     int mid = (start+end)>>1;
@@ -1688,9 +1708,14 @@ void GUILoadKeysJumpTo()
     }
   }
 
-  if (found < *entries)
+  if (found < entries)
   {
-    *currentviewloc = (found<*entries-7)?found-7:*entries-15;
+    if ((GUIcurrentfilewin == 1) && (base > d_names+2))
+    {
+      found++;
+    }
+
+    *currentviewloc = (found<entries-7)?found-7:entries-15;
     if (*currentviewloc < 0) { *currentviewloc = 0; }
     *currentcursloc = found;
   }
