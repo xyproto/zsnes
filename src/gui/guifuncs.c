@@ -1690,7 +1690,7 @@ void GUILoadKeysJumpTo()
 
   if (found < *entries)
   {
-    *currentviewloc = (found+15)-(*entries)>0 ? (*entries)-15 : found;
+    *currentviewloc = (found<*entries-7)?found-7:*entries-15;
     if (*currentviewloc < 0) { *currentviewloc = 0; }
     *currentcursloc = found;
   }
