@@ -1637,6 +1637,24 @@ int GUILoadKeysNavigate()
   return(0);
 }
 
+#ifdef __UNIXSDL__
+#define DriveCount() 0
+#else
+static unsigned int DriveCount()
+{
+  unsigned int drives = GetLogicalDrives(), count = 0, i = 0;
+  while (i < 26)
+  {
+    if (drives&BIT(i))
+    {
+      count++;
+    }
+    i++;
+  }
+  return(count);
+}
+#endif
+
 void GUILoadKeysJumpTo()
 {
   extern char GUILoadTextA[];
@@ -1660,21 +1678,7 @@ void GUILoadKeysJumpTo()
       entries--;
     }
 
-#ifndef __UNIXSDL__
-    //Don't mind the bad variable usage
-    start = GetLogicalDrives();
-    found = end = 0;
-
-    while (end < 26)
-    {
-      if (start&BIT(end))
-      {
-        found++;
-      }
-      end++;
-    }
-    entries -= found;
-#endif
+    entries -= DriveCount();
   }
   else
   {
@@ -1711,10 +1715,14 @@ void GUILoadKeysJumpTo()
 
   if (found < entries)
   {
-    if ((GUIcurrentfilewin == 1) && (base > d_names+2))
+    if (GUIcurrentfilewin == 1)
     {
-      found++;
-      entries++;
+      entries += DriveCount();
+      if (base > d_names+2)
+      {
+        found++;
+        entries++;
+      }
     }
 
     *currentviewloc = (found<entries-7)?found-7:entries-15;
