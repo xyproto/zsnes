@@ -856,7 +856,7 @@ GUIloadfntype db 0
 
 @
 @ Recent games played, you shouldn't edit this manually (8.3 / paths / LFN)
-prevloadnames times 160 db ""
+prevloadiname packed 280 db 0
 prevloaddnamel packed 5120 db 0
 prevloadfnamel packed 5120 db 0
 

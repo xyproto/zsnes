@@ -1266,7 +1266,7 @@ void loadquickfname(const unsigned char slot)
       if (slot || !prevlfreeze)
       {
         // move menuitem to top
-        memswap(prevloadnames,prevloadnames+slot*16,16);
+        memswap(prevloadiname,prevloadiname+slot*28,28);
         memswap(prevloadfnamel,prevloadfnamel+slot*512,512);
         memswap(prevloaddnamel,prevloaddnamel+slot*512,512);
       }
@@ -1283,15 +1283,9 @@ void GUIQuickLoadUpdate()
 
   memcpy(GUIPrevMenuData+347, (prevlfreeze) ? " ON " : " OFF", 4);
 
-  #ifdef __MSDOS__
-  src = (char *)prevloadnames;
-  entry_size = 16;
-  copy_num = 15; // internal header name > 8.3
-  #else
-  src = (char *)prevloadfnamel;
-  entry_size = 512;
-  copy_num = 28; // full window width
-  #endif
+  src = (char *)prevloadiname;
+  entry_size = 28;
+  copy_num = 28; //full window width
 
   while (i--)
   {
@@ -1302,13 +1296,7 @@ void GUIQuickLoadUpdate()
     if (srclen >= copy_num)
     {
       strncpy(p_dest, p_src, copy_num);
-      #ifdef __MSDOS__
-      p_dest += copy_num;
-      memset(p_dest, '.', 3);
-      memset(p_dest+3, ' ', 25-copy_num);
-      #else
       if (srclen > copy_num) { memset(p_dest+25, '.', 3); }
-      #endif
     }
     else
     {
@@ -1413,7 +1401,7 @@ void GUILoadData()
         dupfound = (!strncmp(nameptr, (char *)prevloadfnamel+i*512, 512) && (!strncmp(ZRomPath, (char *)prevloaddnamel+i*512+1, 512)));
         if(dupfound && modheader)
         {
-          memcpy(prevloadnames+i*16, selected_names[GUIcurrentcursloc], 16);
+          memcpy(prevloadiname+i*28, selected_names[GUIcurrentcursloc], 28);
           modheader = false;
         }
         i++;
@@ -1422,7 +1410,7 @@ void GUILoadData()
 
       if (!dupfound)
       {
-        memcpy(prevloadnames+9*16, selected_names[GUIcurrentcursloc], 16);
+        memcpy(prevloadiname+9*28, selected_names[GUIcurrentcursloc], 28);
         strcpy((char *)prevloaddnamel+9*512+1, ZRomPath);
         strcpy((char *)prevloadfnamel+9*512, ZCartName);
       }

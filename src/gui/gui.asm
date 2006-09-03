@@ -79,7 +79,7 @@ EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCWarp,NTSCRef
 EXTSYM LowPassFilterType,MovieStartMethod,MovieDisplayFrame,resetposn
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath,FEOEZPath,SJNSPath
 EXTSYM MDHPath,SPL4Path,CheatSrcByteSize,prevloadfnamel,NTSCFilterInit
-EXTSYM prevloadnames,prevloaddnamel,prevlfreeze,FirstTimeData,MMXSupport
+EXTSYM prevloadiname,prevloaddnamel,prevlfreeze,FirstTimeData,MMXSupport
 EXTSYM GUIRAdd,GUIGAdd,GUIBAdd,GUITRAdd,GUITGAdd,GUITBAdd,GUIWRAdd
 EXTSYM GUIWGAdd,GUIWBAdd,GUIloadfntype,SoundInterpType
 EXTSYM CheatSrcByteBase,CheatSrcSearchType,CheatUpperByteOnly,GUIComboGameSpec
@@ -1746,9 +1746,9 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
   jne .skipclear
   cmp byte[prevlfreeze],0
   jne .skipclear
-  mov edi,prevloadnames
+  mov edi,prevloadiname
   mov eax,20202020h
-  mov ecx,40
+  mov ecx,70
   rep stosd
   mov edi,prevloaddnamel
   xor eax,eax
