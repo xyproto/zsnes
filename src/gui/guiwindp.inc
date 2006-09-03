@@ -782,8 +782,27 @@ DisplayGUILoad:
 %endif
   GUIDisplayText 1,6,16,GUILoadText7
   GUIDisplayText 1,161,16,GUILoadText8
-  GUIDisplayText 1,6,138,[ZRomPath]
   GUIDisplayText 1,146,172,GUILoadTextB
+
+  push ecx
+  push esi
+  xor ecx,ecx
+  mov esi,[ZRomPath]
+.strlenloop
+  cmp byte[esi+ecx],0
+  je .foundend
+  inc ecx
+  jmp .strlenloop
+.foundend
+  cmp ecx,39
+  jb .notoverflow
+  add esi,ecx
+  sub esi,39
+.notoverflow
+  mov [GUITemp],esi
+  pop esi
+  pop ecx
+  GUIDisplayText 1,6,138,[GUITemp]
 
   mov byte[GUItextcolor],202
   cmp byte[GUIWincoladd],0
