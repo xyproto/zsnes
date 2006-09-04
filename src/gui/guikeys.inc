@@ -2656,8 +2656,8 @@ GUILoadKeys:
 .nokeypressed
   ret
 .keypressed
-  mov byte[gui_key],dh
-  mov byte[gui_key_extended],dl
+  mov [gui_key],dh
+  mov [gui_key_extended],dl
   pushad
   call GUILoadKeysNavigate
   cmp eax,1

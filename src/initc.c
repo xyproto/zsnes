@@ -1647,7 +1647,7 @@ void Setper2exec()
   }
 }
 
-extern unsigned int SPC7110Entries, SPC7110TempPosition, SPC7110TempLength, SPCDecmPtr;
+extern unsigned int SPC7110TempPosition, SPC7110TempLength, SPCDecmPtr;
 static char *SPC7110path, SPC7110fname[8+1+6+4+1]; //dir / 12345 .bin
 char *SPC7110filep;
 unsigned char SPC7110IndexPtr[12*32768], SPC7110PackPtr[65536];
@@ -1668,6 +1668,10 @@ static void SPC7PathSetup(char *PathVar, const char *Default)
     strcatslash(SPC7110fname);
   }
 }
+
+extern unsigned int MsgCount, MessageOn, CRC32;
+extern char *Msgptr;
+unsigned int SPC7110Entries;
 
 void SPC7PackIndexLoad()
 {
@@ -1703,6 +1707,12 @@ void SPC7PackIndexLoad()
   }
 
   SPC7110Entries = 0;
+
+  if (!SPC7110IndexSize)
+  {
+    Msgptr = "DECOMPRESSED PACK NOT FOUND";
+    MessageOn = 360;
+  }
 }
 
 void SPC7_Convert_Upper()
@@ -1804,9 +1814,7 @@ unsigned int CalcCRC32(unsigned char *start, unsigned int size)
   return (~result);
 }
 
-extern unsigned int MsgCount, MessageOn, CRC32;
 extern unsigned char IPSPatched;
-extern char *Msgptr;
 
 unsigned int showinfogui()
 {
@@ -1920,7 +1928,7 @@ extern unsigned short totlines;
 void SetAddressingModes(), GenerateBank0Table();
 void SetAddressingModesSA1(), GenerateBank0TableSA1();
 void InitDSP(), InitDSP2(), InitDSP3(), InitDSP4(), InitOBC1(), InitFxTables();
-void initregr(), initregw(), SPC7110Load(), DOSClearScreen(), dosmakepal();
+void initregr(), initregw(), DOSClearScreen(), dosmakepal();
 
 void CheckROMType()
 {
@@ -2089,8 +2097,6 @@ void CheckROMType()
   }
 
   wramdata = wramdataa;
-
-  asm_call(SPC7110Load);
 }
 
 extern unsigned short copv, brkv, abortv, nmiv, nmiv2, irqv, irqv2, resetv;
@@ -2701,6 +2707,8 @@ void init65816()
 
     if(SPC7110Enable)
     {
+      SPC7PackIndexLoad();
+
       SPC7110init();
       map_mem(0x50, &SPC7110bank, 1);
       snesmmap[0x50] = SPC7110PackPtr;

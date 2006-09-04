@@ -43,8 +43,7 @@ EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc,extlatch
 EXTSYM MMXSupport,MMXextSupport,romdata,procexecloop,wramdata,ZStateName
 EXTSYM romispal,initregr,initregw,statefileloc,loadfileGUI,loadstate2,CMovieExt
 EXTSYM MoviePlay,MovieDumpRaw,AllowUDLR,device1,device2,processmouse1
-EXTSYM processmouse2,cpalval,init65816,clearmem,SPC7110IndexSize
-EXTSYM SPC7PackIndexLoad,SetupROM,ZCartName,initsnes
+EXTSYM processmouse2,cpalval,init65816,clearmem,SetupROM,ZCartName,initsnes
 
 %ifdef __MSDOS__
 EXTSYM init18_2hz
@@ -969,7 +968,6 @@ SECTION .data
 .hexdat db '0123456789ABCDEF'
 
 SECTION .bss
-NEWSYM SPC7110Entries, resd 1
 NEWSYM IPSPatched, resb 1
 NEWSYM Checksumvalue, resw 1
 NEWSYM CRC32, resd 1
@@ -977,36 +975,7 @@ NEWSYM SramExists,    resb 1
 NEWSYM NumofBanks,    resd 1
 NEWSYM NumofBytes,    resd 1
 
-SECTION .data
-spc7110notfound db 'DECOMPRESSED PACK NOT FOUND',0
-
 SECTION .text
-
-NEWSYM SPC7110Load
-    mov dword[SPC7110Entries],0
-    mov esi,[romdata]
-    add esi,32704+22
-    add esi,8000h
-    mov al,[esi]
-    cmp byte[romtype],2
-    jne .nothirom
-    cmp al,0F9h
-    je .spc7110
-    cmp al,0F5h
-    je .spc7110
-.nothirom
-    ret
-.spc7110
-    pushad
-    call SPC7PackIndexLoad
-    popad
-    cmp dword[SPC7110IndexSize],0
-    je .nodir
-    ret
-.nodir
-    mov dword[Msgptr],spc7110notfound
-    mov dword[MessageOn],60*6
-    ret
 
 NEWSYM DosExit ; Terminate Program
 %ifdef __MSDOS__
