@@ -2152,7 +2152,7 @@ void SetupROM()
   SetIRQVectors();
 
   #ifdef __MSDOS__
-  asm_call(DOSClearScreen);
+//  asm_call(DOSClearScreen);
 
   if (!cbitmode) // 8-bit mode uses a palette
   {
