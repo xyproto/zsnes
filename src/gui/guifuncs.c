@@ -1429,14 +1429,22 @@ void GUILoadData()
   }
 }
 
+extern char GUILoadTextA[];
+extern unsigned char GUILoadPos;
+
 void GUILoadManualDir()
 {
-  extern char GUILoadTextA[];
 
   if (*GUILoadTextA)
   {
     char path_buff[PATH_SIZE];
     bool realpath_success;
+
+    if ((GUILoadPos > ROOT_LEN) && (GUILoadTextA[-1] == DIR_SLASH_C))
+    {
+      GUILoadTextA[-1] = 0;
+    }
+
     if (IS_ABSOLUTE(GUILoadTextA))
     {
       realpath_success = (int)realpath(GUILoadTextA, path_buff);
@@ -1474,7 +1482,6 @@ unsigned char gui_key_extended;
 int GUILoadKeysNavigate()
 {
   extern unsigned int numlockptr;
-  extern unsigned char GUILoadPos;
 
   int *currentviewloc, *currentcursloc, *entries;
   if (GUIcurrentfilewin == 1)
@@ -1657,9 +1664,6 @@ static unsigned int DriveCount()
 
 void GUILoadKeysJumpTo()
 {
-  extern char GUILoadTextA[];
-  extern unsigned char GUILoadPos;
-
   int *currentviewloc, *currentcursloc, entries;
   char **base;
   int start, end, found;
