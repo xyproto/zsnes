@@ -1440,9 +1440,9 @@ void GUILoadManualDir()
     char path_buff[PATH_SIZE];
     bool realpath_success;
 
-    if ((GUILoadPos > ROOT_LEN) && (GUILoadTextA[-1] == DIR_SLASH_C))
+    if ((GUILoadPos > ROOT_LEN) && (GUILoadTextA[GUILoadPos-1] == DIR_SLASH_C))
     {
-      GUILoadTextA[-1] = 0;
+      GUILoadTextA[GUILoadPos-1] = 0;
     }
 
     if (IS_ABSOLUTE(GUILoadTextA))
