@@ -2487,6 +2487,9 @@ extern "C"
       InitDirectDraw();
       if (CheckTVRatioReq())
         KeepTVRatio();
+      clearwin();
+      Clear2xSaIBuffer();
+      clear_display();
    }
 }
 
