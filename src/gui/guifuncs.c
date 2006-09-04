@@ -1466,7 +1466,7 @@ void GUILoadManualDir()
         }
         else
         {
-          if (init_rom_path(path_buff)) { puts("Power Cycle"); powercycle(false, true); }
+          if (init_rom_path(path_buff)) { powercycle(false, true); }
         }
         return;
       }
