@@ -2125,9 +2125,6 @@ void initwinvideo(void)
       ClientToScreen(hMainWindow, (LPPOINT) &rcWindow);
       ClientToScreen(hMainWindow, (LPPOINT) &rcWindow + 1);
 
-      if (CheckTVRatioReq())
-        KeepTVRatio();
-
       if (FullScreen == 1)
       {
         if (HQMode && !DSMode)
@@ -2159,6 +2156,9 @@ void initwinvideo(void)
           }
         }
       }
+
+      if (CheckTVRatioReq())
+        KeepTVRatio();
    }
    else
    {
