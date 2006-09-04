@@ -26,6 +26,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef _MSC_VER
 #define strcasecmp stricmp
+#define strncasecmp strnicmp
 
 struct dirent
 {
