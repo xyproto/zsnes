@@ -1653,9 +1653,11 @@ DWORD LockSurface()
       else
       {
         if (hRes == DDERR_SURFACELOST)
+        {
           DD_Primary->Restore();
           DD_CFB->Restore();
           Clear2xSaIBuffer();
+        }
         return(0);
       }
     }
@@ -1680,9 +1682,11 @@ DWORD LockSurface()
       else
       {
         if (hRes == DDERR_SURFACELOST)
+        {
           DD_Primary->Restore();
           DD_CFB16->Restore();
           Clear2xSaIBuffer();
+        }
         return(0);
       }
     }
