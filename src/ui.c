@@ -74,12 +74,12 @@ unsigned char newgfx16b;
 unsigned char previdmode;           // previous video mode
 unsigned char cbitmode;             // bit mode, 0=8bit, 1=16bit
 
-unsigned char opexec268     = 155;  // # of opcodes/scanline in 2.68Mhz mode
-unsigned char opexec358     = 142;  // # of opcodes/scanline in 3.58Mhz mode (228/180)
+unsigned char opexec268     = 142;  // # of opcodes/scanline in 2.68Mhz mode
+unsigned char opexec358     = 155;  // # of opcodes/scanline in 3.58Mhz mode (228/180)
 unsigned char opexec268cph  = 42;   // # of opcodes/hblank in 2.68Mhz mode
 unsigned char opexec358cph  = 45;   // # of opcodes/hblank in 3.58Mhz mode (56/50)
-unsigned char opexec268b    = 155;  // # of opcodes/scanline in 2.68Mhz mode
-unsigned char opexec358b    = 142;  // # of opcodes/scanline in 3.58Mhz mode (228/180)
+unsigned char opexec268b    = 142;  // # of opcodes/scanline in 2.68Mhz mode
+unsigned char opexec358b    = 155;  // # of opcodes/scanline in 3.58Mhz mode (228/180)
 unsigned char opexec268cphb = 42;   // # of opcodes/hblank in 2.68Mhz mode
 unsigned char opexec358cphb = 45;   // # of opcodes/hblank in 3.58Mhz mode (56/50)
 unsigned char debugdisble   = 1;    // debugger disable.  0 = no, 1 = yes
