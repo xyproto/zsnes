@@ -2382,6 +2382,9 @@ NEWSYM Voice5GainTime,       resd 1
 NEWSYM Voice6GainTime,       resd 1
 NEWSYM Voice7GainTime,       resd 1
 
+NEWSYM useless, resd 2    ;This is needed because of the stupid
+                          ;alignment dependency in the savestates.
+
 NEWSYM Freqdisp,        resd 1
 NEWSYM SBRateb,         resd 1
 
