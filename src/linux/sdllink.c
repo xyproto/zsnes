@@ -1140,7 +1140,6 @@ void initwinvideo(void)
       glLoadIdentity();
       glDisable(GL_DEPTH_TEST);
       glFlush();
-      gl_clearwin();
     }
     #endif
     clearwin();
