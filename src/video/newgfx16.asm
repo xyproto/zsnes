@@ -585,6 +585,10 @@ NEWSYM newengine16b
 .noscaddset
 
     mov bl,[bg3highst]
+    cmp [bgmode],7
+    mov bl,1
+    je .notmode7
+.notmode7    
     mov [BG3PRI+eax],bl
     cmp [BG3PRI+eax-1],bl
     je .nosbg3pr
