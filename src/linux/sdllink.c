@@ -980,6 +980,8 @@ void SetHiresOpt()
     GUIM7VID[cvidmode] = 0;
 }
 
+unsigned char prevNTSCMode = 0;
+
 void initwinvideo(void)
 {
   DWORD newmode = 0;
@@ -992,7 +994,8 @@ void initwinvideo(void)
     newmode = 1;
     WindowWidth = 256;
     WindowHeight = 224;
-
+    prevNTSCMode = NTSCFilter;
+    
     FullScreen = GUIWFVID[cvidmode];
 #ifdef __OPENGL__
     UseOpenGL = 0;
@@ -1020,8 +1023,16 @@ void initwinvideo(void)
       case 2:
       case 3:
       case 7:
-        WindowWidth = 512;
-        WindowHeight = 448;
+        if (NTSCFilter)
+        {
+           WindowWidth = 600;
+           WindowHeight = 446;
+        }
+        else
+        {
+           WindowWidth = 512;
+           WindowHeight = 448;
+        }
         break;
       case 4:
       case 8:

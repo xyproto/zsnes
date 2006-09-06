@@ -41,6 +41,8 @@ extern int frametot;
 extern BYTE GUIOn,GUIOn2;
 int prevtot = 0;
 void UpdateVFrame(void);
+void NTSCFilterInit();
+void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char * buffer);
 
 BOOL sw_start(int width, int height, int req_depth, int FullScreen)
 {
@@ -54,7 +56,9 @@ BOOL sw_start(int width, int height, int req_depth, int FullScreen)
   DWORD GBitMask;
 
   flags |= (FullScreen ? SDL_FULLSCREEN : 0);
-
+  
+  if (NTSCFilter) NTSCFilterInit();
+  
   SurfaceX = width; SurfaceY = height;
   surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
   if (surface == NULL) {
@@ -157,11 +161,12 @@ void sw_drawwin()
 
   if (SurfaceX == 256 && SurfaceY == 224) DrawWin256x224x16();
   else if (SurfaceX == 320 && SurfaceY == 240) DrawWin320x240x16();
-  else if(SurfaceX == 512 && SurfaceY == 448)
+  else if((SurfaceX == 512 && SurfaceY == 448))
   {
     AddEndBytes = pitch-1024;
     NumBytesPerLine = pitch;
     WinVidMemStart = (void*)SurfBufD;
+    
     if (hqFilter)
     {
       switch (hqFilter)
@@ -181,6 +186,15 @@ void sw_drawwin()
     }
     else copy640x480x16bwin();
   }
+  else if ((SurfaceX == 600) && NTSCFilter)
+  {
+    AddEndBytes = pitch-1024;
+    NumBytesPerLine = pitch;
+    WinVidMemStart = (void*)SurfBufD;
+    
+    NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart);
+  }
+  
   else if (SurfaceX == 640 && SurfaceY == 480)
   {
     AddEndBytes = pitch-1024;

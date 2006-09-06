@@ -122,7 +122,6 @@ snes_ntsc_setup_t ntsc_setup;
 snes_ntsc_t ntsc_snes;
 extern unsigned char NTSCBlend;
 extern signed char NTSCHue, NTSCSat, NTSCCont, NTSCBright, NTSCSharp, NTSCWarp;
-
 // Init NTSC filter command, should be called whenever changes are made in the GUI related to the GUI
 void NTSCFilterInit()
 {
