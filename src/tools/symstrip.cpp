@@ -22,17 +22,9 @@ This program can add a prefix to every symbol in an object file.
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <set>
-#include <vector>
 using namespace std;
 
 #include "fileutil.h"
-#include <iostream>
-#include <fstream>
-#include <string>
-using namespace std;
-
-#include "tools\fileutil.h"
 
 #define MAXLINE 5000
 
