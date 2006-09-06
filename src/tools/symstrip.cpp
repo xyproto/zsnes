@@ -1,45 +1,5 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-using namespace std;
-
-#include "tools\fileutil.h"
-
-#define MAXLINE 5000
-
-string pline,fname,symbol;
-
-
-void size_tally(const char *filename, struct stat& stat_buffer)
-{
-  string Filename = filename;
-  if (string::npos != Filename.find(fname)) { cout << Filename << " " << symbol << endl; }
-}
-
-main()
-{
-   char line[MAXLINE]; // Max size per line
-   int loc;
-char *ptr;
-
-   fstream file("gcc.txt",ios::in);
-   while (!file.eof())
-   {   
-     file.getline(line, MAXLINE);
-     pline = line;
-     loc = pline.find(".obj");
-     
-     if (loc)
-     {
-        fname = pline.substr(0, loc+3);
-        symbol = pline.substr(pline.find("`")+1,pline.find("'"));
-        symbol = symbol.substr(0,symbol.size()-1);
-     }
-
-    parse_dir(".", size_tally);
-   }
-}/*
-Copyright (C) 2005-2006 Nach, grinvader ( http://www.zsnes.com )
+/*
+Copyright (C) 2005-2006 pagefault, Nach, grinvader ( http://www.zsnes.com )
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
