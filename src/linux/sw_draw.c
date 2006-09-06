@@ -110,7 +110,6 @@ void hq4x_16b(void);
 void ClearWin16 (void);
 void DrawWin256x224x16(void);
 void DrawWin320x240x16(void);
-
 DWORD ScreenPtr;
 DWORD SurfBufD;
 DWORD pitch;
@@ -126,6 +125,8 @@ void sw_clearwin()
 }
 
 extern unsigned char prevNTSCMode;
+extern unsigned char NTSCFilter;
+
 void sw_drawwin()
 {
   NGNoTransp = 0;             // Set this value to 1 within the appropriate
@@ -220,7 +221,7 @@ void sw_drawwin()
           break;
       }
     }
-    else copy640x480x16bwin();
+    else if (NTSCFilter) NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart-16*640*2-64*2); else copy640x480x16bwin();
   }
 
   UnlockSurface();
