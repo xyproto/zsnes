@@ -125,6 +125,7 @@ void sw_clearwin()
   UnlockSurface();
 }
 
+extern unsigned char prevNTSCMode;
 void sw_drawwin()
 {
   NGNoTransp = 0;             // Set this value to 1 within the appropriate
@@ -146,6 +147,8 @@ void sw_drawwin()
   if (curblank || cvidmode > 5) return;
   LockSurface();
 
+  if (NTSCFilter != prevNTSCMode) initwinvideo();
+  
   ScreenPtr = vidbuffer;
   ScreenPtr += 16*2+32*2+256*2;
 

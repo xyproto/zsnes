@@ -988,7 +988,7 @@ void initwinvideo(void)
 
   init_hqNx();
 
-  if (CurMode != cvidmode)
+  if (CurMode != cvidmode || (prevNTSCMode != NTSCFilter))
   {
     CurMode = cvidmode;
     newmode = 1;
