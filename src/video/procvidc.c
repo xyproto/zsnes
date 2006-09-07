@@ -112,7 +112,7 @@ void LoadPicture()
 
 void Clear2xSaIBuffer()
 {
-  memset(vidbufferofsb+288, 0xFF, 576*239);
+  memset(vidbufferofsb, 0xFF, 576*256);
 }
 
 // NTSC filter variables

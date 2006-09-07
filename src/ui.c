@@ -54,7 +54,7 @@ unsigned char *headdata;
 unsigned char *romdata;             // rom data  (4MB = 4194304)
 unsigned char *sfxramdata;          // SuperFX Ram Data
 unsigned char *setaramdata;         // Seta ST010/ST011 SRam Data
-unsigned char *wramdata;            // stack (64K = 32768)
+unsigned char *wramdata;            // stack (64K = 65536)
 unsigned char *ram7f;               // ram @ 7f = 65536
 unsigned char *vram;                // vram = 65536
 unsigned char *sram;                // sram = 65536*2 = 131072

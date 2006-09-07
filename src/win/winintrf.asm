@@ -385,7 +385,7 @@ NEWSYM InitPreGame   ; Executes before starting/continuing a game
     pushad
     xor eax,eax
     mov edi,[vidbufferofsb]
-    mov ecx,228*120
+    mov ecx,288*128
     rep stosd
     popad
 
