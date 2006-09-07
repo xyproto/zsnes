@@ -276,7 +276,7 @@ void init_save_paths()
 
 bool init_rom_path(char *path)
 {
-  if (realpath(path, ZRomPath))
+  if (realpath_native(path, ZRomPath))
   {
     char *p;
 

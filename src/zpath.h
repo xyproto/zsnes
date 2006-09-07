@@ -60,9 +60,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef __MSDOS__
 #define PATH_SIZE 4096
 #define NAME_SIZE 512
+#define realpath_native realpath
 #else
 #define PATH_SIZE 256
 #define NAME_SIZE 13
+#define realpath_native realpath_sfn
 #endif
 
 extern char ZCfgFile[];
