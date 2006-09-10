@@ -449,6 +449,7 @@ NEWSYM initSPC7110regs
     ret
 %endmacro
 
+%ifndef NO_DEBUGGER
 NEWSYM LastLog
     pushad
     cmp byte[CurValUsed],0
@@ -494,7 +495,7 @@ NEWSYM LastLog
     mov [CurPtrVal],eax
     popad
     ret
-
+%endif
 
 SPC4800:
 ;    mov byte[debstop3],1
@@ -591,7 +592,6 @@ SPC480C:        ; decompression finished status
 
 SECTION .bss
 NEWSYM CurPtrVal, resd 1
-NEWSYM CurCompCounter2, resd 1
 NEWSYM CurPtrLen, resd 1
 NEWSYM CurValUsed, resb 1
 NEWSYM PrevDecompPtr, resw 1
@@ -632,10 +632,30 @@ SPC4806w:
 ;    mov byte[debstop3],1
 ;.nodata
 
-    test byte[SPCDecmPtr],0ffh
-    jz .zero
-    shl dword[SPCDecmPtr],2
-.zero
+    push ebx
+    mov ebx,[SPCCompPtr]
+    and ebx,0ffffffh
+    push ecx
+    movzx ecx,byte[SPCCompPtr+3]
+    shl ecx,2
+    add ebx,ecx
+    pop ecx
+    add ebx,100000h
+    add ebx,[romdata]
+    cmp byte[ebx],3
+    jne .try2
+    shl word[SPCDecmPtr],3
+.try2
+    cmp byte[ebx],2
+    jne .try1
+    shl word[SPCDecmPtr],2
+.try1
+    cmp byte[ebx],1
+    jne .skip
+    shl word[SPCDecmPtr],1
+.skip
+    pop ebx
+
 
     pushad
     cmp byte[CurValUsed],0
@@ -688,7 +708,7 @@ SPC4806w:
     push eax
     mov al,[SPCCompPtr+3]
     mov [CurPtrLen+2],al
-    mov ax,[SPCDecmPtr]  ;CurCompCounter2]
+    mov ax,[SPCDecmPtr]
     mov [CurPtrLen],ax
     mov eax,[SPCCompPtr]
     mov [CurPtrVal],eax
@@ -809,11 +829,9 @@ SPC4808w:
     ret
 SPC4809w:
     mov [SPCCompCounter],al
-    mov [CurCompCounter2],al
     ret
 SPC480Aw:
     mov [SPCCompCounter+1],al
-    mov [CurCompCounter2+1],al
     ret
 SPC480Bw:
     mov [SPCCompCommand],al
@@ -848,10 +866,17 @@ SPC4810:
     ret
 .okay
     push ebx
-    push ecx
     mov ebx,[SPCROMPtr]
     add ebx,[romdata]
     add ebx,100000h
+    test byte[SPCROMCom],2
+    jz .no2
+    add ebx,[SPCROMAdj]
+    inc word[SPCROMAdj]
+    mov al,[ebx]
+    pop ebx
+    ret
+.no2
     mov al,[ebx]
     cmp byte[SPCROMCom+1],0
     jne .noincr1
@@ -861,10 +886,11 @@ SPC4810:
     cmp byte[SPCROMCom+1],1     ; add 4816 after 4810 read
     jne .noincr1b
     mov ebx,[SPCROMtoI]
+    push ecx
     mov ecx,[SPCROMInc]
     add dword[ebx],ecx
-.noincr1b
     pop ecx
+.noincr1b
     pop ebx
     ret
 SPC4811:
@@ -898,9 +924,7 @@ SPC481A:
     ret
 .okay
     push ebx
-    push ecx
     xor ebx,ebx
-    xor ecx,ecx
     mov bx,[SPCROMAdj]
     add ebx,[SPCROMPtr]
     add ebx,[romdata]
@@ -909,11 +933,12 @@ SPC481A:
 
     cmp byte[SPCROMCom+1],4     ; 16bit 4814
     jne .notincr
-    mov ecx,[SPCROMtoI]
     mov ebx,[SPCROMAdj]
+    push ecx
+    mov ecx,[SPCROMtoI]
     add [ecx],ebx
-.notincr
     pop ecx
+.notincr
     pop ebx
     ret
 

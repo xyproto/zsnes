@@ -2342,7 +2342,6 @@ NEWSYM showfps
   ret
 
 SECTION .bss
-NEWSYM spcdebugaddr, resd 1
 NEWSYM tempoffset, resw 1
 NEWSYM Testval, resd 1
 SECTION .text

@@ -1753,7 +1753,7 @@ void SPC7_Data_Load()
   if (fp)
   {
     fseek(fp, SPC7110TempPosition, SEEK_SET);
-    fread(SPC7110PackPtr+SPCDecmPtr, 1, SPC7110TempLength, fp);
+    fread(SPC7110PackPtr, 1, SPC7110TempLength, fp);
     fclose(fp);
   }
 }
