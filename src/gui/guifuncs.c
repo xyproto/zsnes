@@ -1364,7 +1364,7 @@ void GUILoadData()
 
     strcatslash(ZRomPath);
     #ifndef __UNIXSDL__
-    if (*(nameptr+2) == ':') // MS drives are stored as '[?:]',
+    if ((strlen(nameptr) == 4) && (nameptr[2] == ':')) // MS drives are stored as '[?:]',
     { // so we can't use quick string catenation to browse through
       strncpy(ZRomPath, nameptr+1, 2);
       ZRomPath[2] = '\\';
