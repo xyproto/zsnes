@@ -772,7 +772,7 @@ void SetupSramSize()
 //File loading code
 bool Header512;
 
-char CSStatus[40], CSStatus2[40], CSStatus3[40], CSStatus4[40];
+char CSStatus[41], CSStatus2[41], CSStatus3[41], CSStatus4[41];
 
 void DumpROMLoadInfo()
 {
