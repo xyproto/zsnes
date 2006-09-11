@@ -1688,6 +1688,12 @@ void SPC7PackIndexLoad()
   { SPC7PathSetup(MDHPath, "MDH-SP7"); }
   else if (!strncmp(ROM+infoloc, "SUPER POWER LEAG 4   ", 21))
   { SPC7PathSetup(SPL4Path, "SPL4-SP7"); }
+  else
+  {
+    Msgptr = "DECOMPRESSED PACK NOT FOUND";
+    MessageOn = 360;
+    return;
+  }
 
   //Set the pointer to after the slash - needed for the case converters
   SPC7110filep = SPC7110fname+strlen(SPC7110fname);
