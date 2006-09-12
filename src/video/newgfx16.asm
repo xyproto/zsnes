@@ -1334,46 +1334,46 @@ NEWSYM newengine16b
     xor ebx,ebx
     ret
 
-section .bss
-alignb 32
-NEWSYM ngwinenval,  resd 1
-NEWSYM cdrawbuffer, resd 1
-NEWSYM draw16bnng,  resd 1
-NEWSYM scaddsngb,   resd 1
-NEWSYM scaddtngb,   resd 1
-NEWSYM scaddtngbx,  resd 1
-NEWSYM prevbcolng,  resd 1
-NEWSYM bcolvalng,   resd 1
-NEWSYM cebppos,     resd 1
-NEWSYM subscreenonng, resd 1
-NEWSYM cdrawmeth,   resd 1
-NEWSYM cpalptrng,   resd 1
-NEWSYM prevcoladdrng, resd 1
-NEWSYM prevcolvalng,  resd 1
-NEWSYM cbackofsaddr,  resd 1
-NEWSYM cbackofsaddrs, resd 1
-NEWSYM cbackofsaddrm, resd 1
-NEWSYM subscrng,      resd 1
-NEWSYM ngmsdraw,      resd 1
-NEWSYM CMainWinScr,   resd 1
-NEWSYM CSubWinScr,    resd 1
-NEWSYM Prevcoladdr,   resd 1
-NEWSYM ColResult,     resd 1
-NEWSYM CPalPtrng,     resd 1
-NEWSYM WindowRedraw,  resd 1
-NEWSYM mostranspval,  resd 1
-NEWSYM mosclineval,   resd 1
-NEWSYM startlinet,    resd 1
-NEWSYM endlinet,      resd 1
-NEWSYM palchanged,    resd 1
+section .data
+align 32
+NEWSYM ngwinenval,  dd 0
+NEWSYM cdrawbuffer, dd 0
+NEWSYM draw16bnng,  dd 0
+NEWSYM scaddsngb,   dd 0
+NEWSYM scaddtngb,   dd 0
+NEWSYM scaddtngbx,  dd 0
+NEWSYM prevbcolng,  dd 0
+NEWSYM bcolvalng,   dd 0
+NEWSYM cebppos,     dd 0
+NEWSYM subscreenonng, dd 0
+NEWSYM cdrawmeth,   dd 0
+NEWSYM cpalptrng,   dd 0
+NEWSYM prevcoladdrng, dd 0
+NEWSYM prevcolvalng,  dd 0
+NEWSYM cbackofsaddr,  dd 0
+NEWSYM cbackofsaddrs, dd 0
+NEWSYM cbackofsaddrm, dd 0
+NEWSYM subscrng,      dd 0
+NEWSYM ngmsdraw,      dd 0
+NEWSYM CMainWinScr,   dd 0
+NEWSYM CSubWinScr,    dd 0
+NEWSYM Prevcoladdr,   dd 0
+NEWSYM ColResult,     dd 0
+NEWSYM CPalPtrng,     dd 0
+NEWSYM WindowRedraw,  dd 0
+NEWSYM mostranspval,  dd 0
+NEWSYM mosclineval,   dd 0
+NEWSYM startlinet,    dd 0
+NEWSYM endlinet,      dd 0
+NEWSYM palchanged,    dd 0
 
-NEWSYM ng16bbgval, resd 1         ; bg # (mov dword[ng16bbgval],%1)
-NEWSYM ng16bprval, resd 1         ; 0 = pr0, 2000h = pr1
+NEWSYM ng16bbgval, dd 0         ; bg # (mov dword[ng16bbgval],%1)
+NEWSYM ng16bprval, dd 0         ; 0 = pr0, 2000h = pr1
 
-NEWSYM mosjmptab16b, resd 15
-NEWSYM mosjmptab16bt, resd 15
-NEWSYM mosjmptab16btms, resd 15
-NEWSYM mosjmptab16bntms, resd 15
+NEWSYM mosjmptab16b, times 15 dd 0
+NEWSYM mosjmptab16bt, times 15 dd 0
+NEWSYM mosjmptab16btms, times 15 dd 0 
+NEWSYM mosjmptab16bntms, times 15 dd 0
 section .text
 
 NEWSYM StartDrawNewGfx16b
