@@ -588,7 +588,7 @@ NEWSYM newengine16b
     cmp byte[bgmode],7
     mov bl,1
     je .notmode7
-.notmode7    
+.notmode7
     mov [BG3PRI+eax],bl
     cmp [BG3PRI+eax-1],bl
     je .nosbg3pr
@@ -1372,7 +1372,7 @@ NEWSYM ng16bprval, dd 0         ; 0 = pr0, 2000h = pr1
 
 NEWSYM mosjmptab16b, times 15 dd 0
 NEWSYM mosjmptab16bt, times 15 dd 0
-NEWSYM mosjmptab16btms, times 15 dd 0 
+NEWSYM mosjmptab16btms, times 15 dd 0
 NEWSYM mosjmptab16bntms, times 15 dd 0
 section .text
 

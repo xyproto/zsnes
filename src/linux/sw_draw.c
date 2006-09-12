@@ -56,9 +56,9 @@ BOOL sw_start(int width, int height, int req_depth, int FullScreen)
   DWORD GBitMask;
 
   flags |= (FullScreen ? SDL_FULLSCREEN : 0);
-  
+
   if (NTSCFilter) NTSCFilterInit();
-  
+
   SurfaceX = width; SurfaceY = height;
   surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
   if (surface == NULL) {
@@ -149,7 +149,7 @@ void sw_drawwin()
   LockSurface();
 
   if (NTSCFilter != prevNTSCMode) initwinvideo();
-  
+
   ScreenPtr = vidbuffer;
   ScreenPtr += 16*2+32*2+256*2;
 
@@ -170,7 +170,7 @@ void sw_drawwin()
     AddEndBytes = pitch-1024;
     NumBytesPerLine = pitch;
     WinVidMemStart = (void*)SurfBufD;
-    
+
     if (hqFilter)
     {
       switch (hqFilter)
@@ -195,10 +195,10 @@ void sw_drawwin()
     AddEndBytes = pitch-1024;
     NumBytesPerLine = pitch;
     WinVidMemStart = (void*)SurfBufD;
-    
+
     NTSCFilterDraw(SurfaceX, SurfaceY, pitch, WinVidMemStart);
   }
-  
+
   else if (SurfaceX == 640 && SurfaceY == 480)
   {
     AddEndBytes = pitch-1024;

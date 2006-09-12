@@ -995,7 +995,7 @@ void initwinvideo(void)
     WindowWidth = 256;
     WindowHeight = 224;
     prevNTSCMode = NTSCFilter;
-    
+
     FullScreen = GUIWFVID[cvidmode];
 #ifdef __OPENGL__
     UseOpenGL = 0;

@@ -45,11 +45,11 @@ char *ptr;
 
    fstream file("gcc.txt",ios::in);
    while (!file.eof())
-   {   
+   {
      file.getline(line, MAXLINE);
      pline = line;
      loc = pline.find(".obj");
-     
+
      if (loc)
      {
         fname = pline.substr(0, loc+3);
