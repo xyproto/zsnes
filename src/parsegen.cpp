@@ -514,7 +514,7 @@ namespace variable
    {
       for (config_data_array::iterator i = data_array.begin(); i != data_array.end(); i++)
       {
-        if (i->format == mult)
+        if (i->format == mult_packed)
         {
           return(true);
         }
