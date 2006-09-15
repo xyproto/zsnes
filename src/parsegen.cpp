@@ -1311,12 +1311,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
 {
   current_location.line_number = current_location.column_number = 0;
 
-  output_parser_start(c_stream);
-
-  if (cheader_stream)
-  {
-    output_cheader_start(cheader_stream);
-  }
+  ostringstream cvars(""), hvars("");
 
   while (!psr_stream.eof())
   {
@@ -1333,7 +1328,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
     {
       if (ifs.all_true())
       {
-        output_parser_comment(c_stream, parser_comment);
+        output_parser_comment(cvars, parser_comment);
       }
       continue;
     }
@@ -1359,7 +1354,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
 
         if (cheader_stream)
         {
-          output_header_conditional(cheader_stream, token+1, next_token);
+          output_header_conditional(hvars, token+1, next_token);
         }
         continue;
       }
@@ -1447,12 +1442,12 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                     memsets.push_back(memset_line.str());
                   }
                 }
-                else
+                else //To do, test this block
                 {
                   var_init << "[" << array << "] = {";
                   for (size_t i = array; i > 1; i--)
                   {
-                    c_stream << init_value_num << ",";
+                    cvars << init_value_num << ",";
                   }
                   var_init << init_value_num << "%d}";
                 }
@@ -1502,7 +1497,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
 
             if (ifs.all_true())
             {
-              c_stream << var_init.str();
+              cvars << var_init.str();
             }
 
             if (cheader_stream)
@@ -1514,7 +1509,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                 header_data.erase(equal_pos-1);
                 header_data.append(";");
               }
-              cheader_stream << "extern " << header_data << "\n";
+              hvars << "extern " << header_data << "\n";
             }
           }
           //Else already handled
@@ -1536,17 +1531,22 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
 
     if (ifs.all_true())
     {
-      output_parser_comment(c_stream, parser_comment);
+      output_parser_comment(cvars, parser_comment);
     }
   }
 
+  output_parser_start(c_stream);
+  c_stream << cvars.str();
   output_init_var(c_stream);
   output_write_var(c_stream);
   output_read_var(c_stream);
   c_stream << "\n";
 
+
   if (cheader_stream)
   {
+    output_cheader_start(cheader_stream);
+    cheader_stream << hvars.str();
     output_cheader_end(cheader_stream);
   }
 
