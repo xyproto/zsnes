@@ -1442,14 +1442,14 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                     memsets.push_back(memset_line.str());
                   }
                 }
-                else //To do, test this block
+                else
                 {
                   var_init << "[" << array << "] = {";
                   for (size_t i = array; i > 1; i--)
                   {
-                    cvars << init_value_num << ",";
+                    var_init << init_value_num << ",";
                   }
-                  var_init << init_value_num << "%d}";
+                  var_init << init_value_num << "}";
                 }
 
                 if (ifs.all_true())
