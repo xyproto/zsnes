@@ -321,7 +321,6 @@ unsigned char CalcCfgChecksum()
 void GUIRestoreVars()
 {
   int i;
-  unsigned char read_cfg_vars(const char *);
   FILE *cfg_fp;
 
   char *path = strdupcat(ZCfgPath, ZCfgFile);
@@ -579,7 +578,6 @@ void GUIRestoreVars()
 
 void GUISaveVars()
 {
-  unsigned char write_cfg_vars(const char *);
   FILE *cfg_fp;
 
   if (ShowTimer == 1) { TimeChecker = CalcCfgChecksum(); }

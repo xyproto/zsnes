@@ -590,8 +590,12 @@ void output_parser_start(ostream& c_stream)
            << "#include <stdio.h>\n"
            << "#include <stdlib.h>\n"
            << "#include <ctype.h>\n"
-           << "#include <string.h>\n"
-           << "\n"
+           << "#include <string.h>\n";
+  if (defines.find("PSR_COMPRESSED") != defines.end())
+  {
+    c_stream << "#include <zlib.h>\n";
+  }
+  c_stream << "\n"
            << "\n"
            << "#define LINE_LENGTH " << LINE_LENGTH << "\n"
            << "static char line[LINE_LENGTH];\n"
@@ -706,8 +710,13 @@ void output_cheader_start(ostream& cheader_stream)
                  << "#endif\n"
                  << "\n"
                  << "unsigned char read_" << family_name << "_vars(const char *);\n"
-                 << "unsigned char write_" << family_name << "_vars(const char *);\n"
-                 << "\n";
+                 << "unsigned char write_" << family_name << "_vars(const char *);\n";
+  if (defines.find("PSR_COMPRESSED") != defines.end())
+  {
+    cheader_stream << "unsigned char read_" << family_name << "_vars_compressed(const char *);\n"
+                   << "unsigned char write_" << family_name << "_vars_compressed(const char *);\n";
+  }
+  cheader_stream << "\n";
 }
 
 void output_cheader_end(ostream& cheader_stream)
@@ -880,6 +889,27 @@ void output_write_var(ostream& c_stream)
            << "  }\n"
            << "  return(0);\n"
            << "}\n";
+
+  if (defines.find("PSR_COMPRESSED") != defines.end())
+  {
+    c_stream << "\n"
+             << "unsigned char write_" << family_name << "_vars_compressed(const char *file)\n"
+             << "{\n"
+             << "  gzFile gzfp;\n"
+             << "\n"
+             << "  init_cfg_vars();\n"
+             << "\n"
+             << "  if ((gzfp = gzopen(file, \"wb9\")))\n"
+             << "  {\n"
+             << "    write_cfg_vars_internal(gzfp, gzprintf);\n"
+             << "    gzclose(gzfp);\n"
+             << "\n"
+             << "    return(1);\n"
+             << "  }\n"
+             << "\n"
+             << "  return(0);\n"
+             << "}\n";
+  }
 }
 
 void output_packed_read(ostream& c_stream)
@@ -1078,6 +1108,33 @@ void output_read_var(ostream& c_stream)
            << "  write_" << family_name << "_vars(file);\n"
            << "  return(0);\n"
            << "}\n";
+
+  if (defines.find("PSR_COMPRESSED") != defines.end())
+  {
+    c_stream << "\n"
+             << "static char *gzgets_fix(char *buf, int len, void *file)\n"
+             << "{\n"
+             << "  return(gzgets(file, buf, len));\n"
+             << "}\n"
+             << "\n"
+             << "unsigned char read_" << family_name << "_vars_compressed(const char *file)\n"
+             << "{\n"
+             << "  gzFile gzfp;\n"
+             << "\n"
+             << "  init_cfg_vars();\n"
+             << "\n"
+             << "  if ((gzfp = gzopen(file, \"rb\")))\n"
+             << "  {\n"
+             << "    read_cfg_vars_internal(gzfp, gzgets_fix, gzeof);\n"
+             << "    gzclose(gzfp);\n"
+             << "    write_cfg_vars_compressed(file);\n"
+             << "    return(1);\n"
+             << "  }\n"
+             << "\n"
+             << "  write_cfg_vars_compressed(file);\n"
+             << "  return(0);\n"
+             << "}\n";
+  }
 }
 
 void handle_directive(const char *instruction, const char *label)
@@ -1486,7 +1543,6 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
   output_init_var(c_stream);
   output_write_var(c_stream);
   output_read_var(c_stream);
-
   c_stream << "\n";
 
   if (cheader_stream)
