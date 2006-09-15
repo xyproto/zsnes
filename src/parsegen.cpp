@@ -61,7 +61,7 @@ static inline string COMPILE_OBJ(string obj, string c)
 }
 #endif
 
-#define LINE_LENGTH 2048*10
+#define LINE_LENGTH 2048*4
 char line[LINE_LENGTH];
 
 string family_name = "cfg";
@@ -510,6 +510,18 @@ namespace variable
       return(false);
     }
 
+   bool packed_used()
+   {
+      for (config_data_array::iterator i = data_array.begin(); i != data_array.end(); i++)
+      {
+        if (i->format == mult)
+        {
+          return(true);
+        }
+      }
+      return(false);
+   }
+
     config_data_array::iterator begin() { return(data_array.begin()); }
     config_data_array::iterator end() { return(data_array.end()); }
   } config_data;
@@ -583,7 +595,6 @@ void output_parser_start(ostream& c_stream)
            << "\n"
            << "#define LINE_LENGTH " << LINE_LENGTH << "\n"
            << "static char line[LINE_LENGTH];\n"
-           << "static char packed[LINE_LENGTH];\n"
            << "\n"
            << "\n"
            << "static char *encode_string(const char *str)\n"
@@ -681,138 +692,6 @@ void output_parser_start(ostream& c_stream)
            << "  return(pos);\n"
            << "}\n"
            << "\n"
-           << "static char *get_token(char *str, char *delim)\n"
-           << "{\n"
-           << "  static char *pos = 0;\n"
-           << "  char *token = 0;\n"
-           << "\n"
-           << "  if (str) //Start a new string?\n"
-           << "  {\n"
-           << "    pos = str;\n"
-           << "  }\n"
-           << "\n"
-           << "  if (pos)\n"
-           << "  {\n"
-           << "    //Skip delimiters\n"
-           << "    while (*pos && strchr(delim, *pos))\n"
-           << "    {\n"
-           << "      pos++;\n"
-           << "    }\n"
-           << "    if (*pos)\n"
-           << "    {\n"
-           << "      token = pos;\n"
-           << "\n"
-           << "      //Skip non-delimiters\n"
-           << "      while (*pos && !strchr(delim, *pos))\n"
-           << "      {\n"
-           << "        //Skip quoted characters\n"
-           << "        if ((*pos == '\\\"') || (*pos == '\\''))\n"
-           << "        {\n"
-           << "          char *match_pos = 0;\n"
-           << "          if ((match_pos = find_next_match(pos+1, *pos)))\n"
-           << "          {\n"
-           << "            pos = match_pos;\n"
-           << "          }\n"
-           << "        }\n"
-           << "        pos++;\n"
-           << "      }\n"
-           << "      if (*pos)\n"
-           << "      {\n"
-           << "        *pos++ = '\\0';\n"
-           << "      }\n"
-           << "    }\n"
-           << "  }\n"
-           << "  return(token);\n"
-           << "}\n"
-           << "\n"
-           << "static char *base94_encode(size_t size)\n"
-           << "{\n"
-           << "  unsigned int i;\n"
-           << "  static char buffer[] = { 0, 0, 0, 0, 0, 0};\n"
-           << "  for (i = 0; i < 5; i++)\n"
-           << "  {\n"
-           << "    buffer[i] = ' ' + (char)(size % 94);\n"
-           << "    size /= 94;\n"
-           << "  }\n"
-           << "  return(buffer);\n"
-           << "}\n"
-           << "\n"
-           << "static size_t base94_decode(const char *buffer)\n"
-           << "{\n"
-           << "  size_t size = 0;\n"
-           << "  int i;\n"
-           << "  for (i = 4; i >= 0; i--)\n"
-           << "  {\n"
-           << "    size *= 94;\n"
-           << "    size += (size_t)(buffer[i]-' ');\n"
-           << "  }\n"
-           << "  return(size);\n"
-           << "}\n"
-           << "\n"
-           << "static char *char_array_pack(const char *str, size_t len)\n"
-           << "{\n"
-           << "  char *p = packed;\n"
-           << "  while (len)\n"
-           << "  {\n"
-           << "    if (*str)\n"
-           << "    {\n"
-           << "      size_t length = strlen(str);\n"
-           << "      strcpy(p, encode_string(str));\n"
-           << "      str += length;\n"
-           << "      len -= length;\n"
-           << "      p += strlen(p);\n"
-           << "    }\n"
-           << "    else\n"
-           << "    {\n"
-           << "      size_t i = 0;\n"
-           << "      while (!*str && len)\n"
-           << "      {\n"
-           << "        i++;\n"
-           << "        str++;\n"
-           << "        len--;\n"
-           << "      }\n"
-           << "\n"
-           << "      sprintf(p, \"0%s\", encode_string(base94_encode(i)));\n"
-           << "      p += strlen(p);\n"
-           << "    }\n"
-           << "    *p++ = '\\\\';\n"
-           << "  }\n"
-           << "  p[-1] = 0;\n"
-           << "  return(packed);\n"
-           << "}\n"
-           << "\n"
-           << "static char *char_array_unpack(char *str)\n"
-           << "{\n"
-           << "  char *p = packed, *token;\n"
-           << "  size_t len = 0;\n"
-           << "  memset(packed, 0, sizeof(packed));\n"
-           << "  for (token = get_token(str, \"\\\\\"); token; token = get_token(0, \"\\\\\"))\n"
-           << "  {\n"
-           << "    if (*token == '0')\n"
-           << "    {\n"
-           << "      size_t i = base94_decode(decode_string(token+1));\n"
-           << "      len += i;\n"
-           << "      if (len > sizeof(packed)) { break; }\n"
-           << "      memset(p, 0, i);\n"
-           << "      p += i;\n"
-           << "    }\n"
-           << "    else\n"
-           << "    {\n"
-           << "      char *decoded = decode_string(token);\n"
-           << "      size_t decoded_length = strlen(decoded);\n"
-           << "      len += decoded_length;\n"
-           << "      if (len > sizeof(packed))\n"
-           << "      {\n"
-           << "        memcpy(p, decoded, sizeof(packed)-(len-decoded_length));\n"
-           << "        break;\n"
-           << "      }\n"
-           << "      memcpy(p, decoded, decoded_length);\n"
-           << "      p += decoded_length;\n"
-           << "    }\n"
-           << "  }\n"
-           << "  return(packed);\n"
-           << "}\n"
-           << "\n"
            << "\n";
 }
 
@@ -859,30 +738,84 @@ void output_init_var(ostream& c_stream)
            << "}\n";
 }
 
+void output_packed_write(ostream& c_stream)
+{
+  if (variable::config_data.packed_used())
+  {
+    c_stream << "\n"
+             << "static char *base94_encode(size_t size)\n"
+             << "{\n"
+             << "  unsigned int i;\n"
+             << "  static char buffer[] = { 0, 0, 0, 0, 0, 0};\n"
+             << "  for (i = 0; i < 5; i++)\n"
+             << "  {\n"
+             << "    buffer[i] = ' ' + (char)(size % 94);\n"
+             << "    size /= 94;\n"
+             << "  }\n"
+             << "  return(buffer);\n"
+             << "}\n"
+             << "\n"
+             << "static char *char_array_pack(const char *str, size_t len)\n"
+             << "{\n"
+             << "  char packed[LINE_LENGTH];\n"
+             << "  char *p = packed;\n"
+             << "  while (len)\n"
+             << "  {\n"
+             << "    if (*str)\n"
+             << "    {\n"
+             << "      size_t length = strlen(str);\n"
+             << "      strcpy(p, encode_string(str));\n"
+             << "      str += length;\n"
+             << "      len -= length;\n"
+             << "      p += strlen(p);\n"
+             << "    }\n"
+             << "    else\n"
+             << "    {\n"
+             << "      size_t i = 0;\n"
+             << "      while (!*str && len)\n"
+             << "      {\n"
+             << "        i++;\n"
+             << "        str++;\n"
+             << "        len--;\n"
+             << "      }\n"
+             << "\n"
+             << "      sprintf(p, \"0%s\", encode_string(base94_encode(i)));\n"
+             << "      p += strlen(p);\n"
+             << "    }\n"
+             << "    *p++ = '\\\\';\n"
+             << "  }\n"
+             << "  p[-1] = 0;\n"
+             << "  strcpy(line, packed);"
+             << "  return(line);\n"
+             << "}\n";
+  }
+}
+
 void output_array_write(ostream& c_stream, variable::ctype type)
 {
   if (variable::config_data.ctype_mult_used(type))
   {
     c_stream << "\n"
-             << "static void write_" << variable::info[type].CTypeUnderscore << "_array(FILE *fp, const char *var_name, " << variable::info[type].CTypeSpace << " *var, size_t size, const char *comment)\n"
+             << "static void write_" << variable::info[type].CTypeUnderscore << "_array(int (*outf)(void *, const char *, ...), void *fp, const char *var_name, " << variable::info[type].CTypeSpace << " *var, size_t size, const char *comment)\n"
              << "{\n"
              << "  size_t i;\n"
-             << "  fprintf(fp, \"%s=%" << variable::info[type].FormatChar << "\", var_name, (int)*var);\n"
+             << "  outf(fp, \"%s=%" << variable::info[type].FormatChar << "\", var_name, (int)*var);\n"
              << "  for (i = 1; i < size; i++)\n"
              << "  {\n"
-             << "    fprintf(fp, \",%" << variable::info[type].FormatChar << "\", (int)(var[i]));\n"
+             << "    outf(fp, \",%" << variable::info[type].FormatChar << "\", (int)(var[i]));\n"
              << "  }\n"
              << "  if (comment)\n"
              << "  {\n"
-             << "    fprintf(fp, \" ;%s\", comment);\n"
+             << "    outf(fp, \" ;%s\", comment);\n"
              << "  }\n"
-             << "  fprintf(fp, \"\\n\");\n"
+             << "  outf(fp, \"\\n\");\n"
              << "}\n";
   }
 }
 
 void output_write_var(ostream& c_stream)
 {
+  output_packed_write(c_stream);
   output_array_write(c_stream, variable::UC);
   output_array_write(c_stream, variable::US);
   output_array_write(c_stream, variable::UD);
@@ -891,36 +824,30 @@ void output_write_var(ostream& c_stream)
   output_array_write(c_stream, variable::SD);
 
   c_stream << "\n"
-           << "unsigned char write_" << family_name << "_vars(const char *file)\n"
-           << "{\n"
-           << "  FILE *fp = 0;\n"
-           << "\n"
-           << "  init_" << family_name << "_vars();\n"
-           << "\n"
-           << "  if ((fp = fopen(file, \"w\")))\n"
-           << "  {\n";
+           << "static void write_" << family_name << "_vars_internal(void *fp, int (*outf)(void *, const char *, ...))\n"
+           << "{\n";
   for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)
   {
     if (i->format == variable::none)
     {
       if (i->comment != "")
       {
-        c_stream << "    fprintf(fp, \";%s\\n\", " << encode_string(i->comment) << ");\n";
+        c_stream << "  outf(fp, \";%s\\n\", " << encode_string(i->comment) << ");\n";
       }
       else
       {
-        c_stream << "    fprintf(fp, \"\\n\");\n";
+        c_stream << "  outf(fp, \"\\n\");\n";
       }
     }
     else if (i->format == variable::mult)
     {
-      c_stream << "    write_" << variable::info[i->type].CTypeUnderscore
-               << "_array(fp, \"" << i->name << "\", " << i->name << ", " << i->length << ", " << ((i->comment != "") ? encode_string(i->comment) : "0") << ");\n";
+      c_stream << "  write_" << variable::info[i->type].CTypeUnderscore
+               << "_array(outf, fp, \"" << i->name << "\", " << i->name << ", " << i->length << ", " << ((i->comment != "") ? encode_string(i->comment) : "0") << ");\n";
     }
     else
     {
       string config_comment = (i->comment != "") ? (string(" ;") + encode_string(i->comment, false)) : "";
-      c_stream << "    fprintf(fp, \"" << i->name << "=";
+      c_stream << "  outf(fp, \"" << i->name << "=";
       if (i->format == variable::single)
       {
         c_stream << "%" << variable::info[i->type].FormatChar << config_comment << "\\n\", " << i->name;
@@ -936,12 +863,120 @@ void output_write_var(ostream& c_stream)
       c_stream << ");\n";
     }
   }
-  c_stream << "    fclose(fp);\n"
+  c_stream << "}\n"
+           << "\n"
+           << "unsigned char write_" << family_name << "_vars(const char *file)\n"
+           << "{\n"
+           << "  FILE *fp = 0;\n"
+           << "\n"
+           << "  init_" << family_name << "_vars();\n"
+           << "\n"
+           << "  if ((fp = fopen(file, \"w\")))\n"
+           << "  {\n"
+           << "    write_" << family_name << "_vars_internal(fp, (int (*)(void *, const char *, ...))fprintf);\n"
+           << "    fclose(fp);\n"
            << "\n"
            << "    return(1);\n"
            << "  }\n"
            << "  return(0);\n"
            << "}\n";
+}
+
+void output_packed_read(ostream& c_stream)
+{
+  if (variable::config_data.packed_used())
+  {
+    c_stream << "\n"
+             << "static size_t base94_decode(const char *buffer)\n"
+             << "{\n"
+             << "  size_t size = 0;\n"
+             << "  int i;\n"
+             << "  for (i = 4; i >= 0; i--)\n"
+             << "  {\n"
+             << "    size *= 94;\n"
+             << "    size += (size_t)(buffer[i]-' ');\n"
+             << "  }\n"
+             << "  return(size);\n"
+             << "}\n"
+             << "\n"
+             << "static char *get_token(char *str, char *delim)\n"
+             << "{\n"
+             << "  static char *pos = 0;\n"
+             << "  char *token = 0;\n"
+             << "\n"
+             << "  if (str) //Start a new string?\n"
+             << "  {\n"
+             << "    pos = str;\n"
+             << "  }\n"
+             << "\n"
+             << "  if (pos)\n"
+             << "  {\n"
+             << "    //Skip delimiters\n"
+             << "    while (*pos && strchr(delim, *pos))\n"
+             << "    {\n"
+             << "      pos++;\n"
+             << "    }\n"
+             << "    if (*pos)\n"
+             << "    {\n"
+             << "      token = pos;\n"
+             << "\n"
+             << "      //Skip non-delimiters\n"
+             << "      while (*pos && !strchr(delim, *pos))\n"
+             << "      {\n"
+             << "        //Skip quoted characters\n"
+             << "        if ((*pos == '\\\"') || (*pos == '\\''))\n"
+             << "        {\n"
+             << "          char *match_pos = 0;\n"
+             << "          if ((match_pos = find_next_match(pos+1, *pos)))\n"
+             << "          {\n"
+             << "            pos = match_pos;\n"
+             << "          }\n"
+             << "        }\n"
+             << "        pos++;\n"
+             << "      }\n"
+             << "      if (*pos)\n"
+             << "      {\n"
+             << "        *pos++ = '\\0';\n"
+             << "      }\n"
+             << "    }\n"
+             << "  }\n"
+             << "  return(token);\n"
+             << "}\n"
+             << "\n"
+             << "static char *char_array_unpack(char *str)\n"
+             << "{\n"
+             << "  char packed[LINE_LENGTH];\n"
+             << "  char *p = packed, *token;\n"
+             << "  size_t len = 0;\n"
+             << "  memset(packed, 0, sizeof(packed));\n"
+             << "  for (token = get_token(str, \"\\\\\"); token; token = get_token(0, \"\\\\\"))\n"
+             << "  {\n"
+             << "    if (*token == '0')\n"
+             << "    {\n"
+             << "      size_t i = base94_decode(decode_string(token+1));\n"
+             << "      len += i;\n"
+             << "      if (len > sizeof(packed)) { break; }\n"
+             << "      memset(p, 0, i);\n"
+             << "      p += i;\n"
+             << "    }\n"
+             << "    else\n"
+             << "    {\n"
+             << "      char *decoded = decode_string(token);\n"
+             << "      size_t decoded_length = strlen(decoded);\n"
+             << "      len += decoded_length;\n"
+             << "      if (len > sizeof(packed))\n"
+             << "      {\n"
+             << "        memcpy(p, decoded, sizeof(packed)-(len-decoded_length));\n"
+             << "        break;\n"
+             << "      }\n"
+             << "      memcpy(p, decoded, decoded_length);\n"
+             << "      p += decoded_length;\n"
+             << "    }\n"
+             << "  }\n"
+             << "  memcpy(line, packed, sizeof(packed));"
+             << "  return(line);\n"
+             << "}\n";
+  }
 }
 
 void output_array_read(ostream& c_stream, variable::ctype type)
@@ -964,6 +999,7 @@ void output_array_read(ostream& c_stream, variable::ctype type)
 
 void output_read_var(ostream& c_stream)
 {
+  output_packed_read(c_stream);
   output_array_read(c_stream, variable::UC);
   output_array_read(c_stream, variable::US);
   output_array_read(c_stream, variable::UD);
@@ -972,23 +1008,13 @@ void output_read_var(ostream& c_stream)
   output_array_read(c_stream, variable::SD);
 
   c_stream << "\n"
-           << "unsigned char read_" << family_name << "_vars(const char *file)\n"
+           << "static void read_" << family_name << "_vars_internal(void *fp, char *(*fin)(char *, int, void *), int (*fend)(void *))\n"
            << "{\n"
-           << "  FILE *fp = 0;\n"
-           << "\n"
-           << "  init_" << family_name << "_vars();\n"
-           << "\n"
-           << "  if (!(fp = fopen(file, \"r\")))\n"
-           << "  {\n"
-           << "    write_" << family_name << "_vars(file);\n"
-           << "    return(0);\n"
-           << "  }\n"
-           << "\n"
-           << "  while (!feof(fp))\n"
+           << "  while (!fend(fp))\n"
            << "  {\n"
            << "    char *p, *var, *value;\n"
            << "\n"
-           << "    fgets(line, LINE_LENGTH, fp);\n"
+           << "    fin(line, LINE_LENGTH, fp);\n"
            << "    if ((p = find_str(line, \";\"))) { *p = 0; }\n"
            << "    if ((p = strchr(line, '=')))\n"
            << "    {\n"
@@ -1033,10 +1059,24 @@ void output_read_var(ostream& c_stream)
     }
   }
   c_stream << "  }\n"
+           << "}\n"
            << "\n"
-           << "  fclose(fp);\n"
+           << "unsigned char read_" << family_name << "_vars(const char *file)\n"
+           << "{\n"
+           << "  FILE *fp = 0;\n"
+           << "\n"
+           << "  init_" << family_name << "_vars();\n"
+           << "\n"
+           << "  if ((fp = fopen(file, \"r\")))\n"
+           << "  {\n"
+           << "    read_" << family_name << "_vars_internal(fp, (char *(*)(char *, int, void *))fgets, (int (*)(void *))feof);\n"
+           << "    fclose(fp);\n"
+           << "    write_" << family_name << "_vars(file);\n"
+           << "    return(1);\n"
+           << "  }\n"
+           << "\n"
            << "  write_" << family_name << "_vars(file);\n"
-           << "  return(1);\n"
+           << "  return(0);\n"
            << "}\n";
 }
 
