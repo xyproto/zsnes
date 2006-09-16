@@ -127,11 +127,6 @@ void sw_clearwin()
 extern unsigned char prevNTSCMode;
 extern unsigned char NTSCFilter;
 
-bool OGLModeCheck()
-{
-   return(cvidmode > 4);
-}
-
 void sw_drawwin()
 {
   NGNoTransp = 0;             // Set this value to 1 within the appropriate
