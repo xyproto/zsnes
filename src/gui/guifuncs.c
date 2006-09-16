@@ -385,13 +385,13 @@ void GUIRestoreVars()
 #endif
 #ifdef __UNIXSDL__
 #ifdef __OPENGL__
-  CheckValueBounds(&cvidmode, 0, 23, 2, UB);
-  CheckValueBounds(&PrevWinMode, 0, 23, 2, UB);
-  CheckValueBounds(&PrevFSMode, 0, 23, 3, UB);
+  CheckValueBounds(&cvidmode, 0, 22, 2, UB);
+  CheckValueBounds(&PrevWinMode, 0, 22, 2, UB);
+  CheckValueBounds(&PrevFSMode, 0, 22, 3, UB);
 #else
-  CheckValueBounds(&cvidmode, 0, 5, 2, UB);
-  CheckValueBounds(&PrevWinMode, 0, 5, 2, UB);
-  CheckValueBounds(&PrevFSMode, 0, 5, 3, UB);
+  CheckValueBounds(&cvidmode, 0, 4, 2, UB);
+  CheckValueBounds(&PrevWinMode, 0, 4, 2, UB);
+  CheckValueBounds(&PrevFSMode, 0, 4, 3, UB);
 #endif
 #endif
 #ifdef __MSDOS__

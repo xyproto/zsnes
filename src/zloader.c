@@ -158,20 +158,20 @@ static void display_help()
 #ifdef __UNIXSDL__
   put_line("             0 = 256x224   R  WIN       1 = 256x224   R  FULL");
   put_line("             2 = 512x448   DR WIN       3 = 512x448   DR FULL");
-  put_line("             4 = 640x480   DR FULL      5 = 800x600   DR FULL");
+  put_line("             4 = 640x480   DR FULL");
 #ifndef __OPENGL__
-#define VIDEO_MODE_COUNT 5
+#define VIDEO_MODE_COUNT 4
 #else
-#define VIDEO_MODE_COUNT 23
-  put_line("             6 = 256x224   OR  WIN      7 = 512x448   ODR WIN");
-  put_line("             8 = 640x480   ODS FULL     9 = 640x480   ODS WIN");
-  put_line("            10 = 640x560   ODR WIN     11 = 768x672   ODR WIN");
-  put_line("            12 = 800x600   ODS FULL    13 = 800x600   ODS WIN");
-  put_line("            14 = 896x784   ODR WIN     15 = 1024x768  ODS FULL");
-  put_line("            16 = 1024x768  ODS WIN     17 = 1024x896  ODR WIN");
-  put_line("            18 = 1280x960  ODS FULL    19 = 1280x1024 ODS FULL");
-  put_line("            20 = 1600x1200 ODS FULL    21 = VARIABLE  ODR WIN");
-  put_line("            22 = VARIABLE  ODS WIN     23 = CUSTOM    OD  FULL");
+#define VIDEO_MODE_COUNT 22
+  put_line("             5 = 256x224   OR  WIN      6 = 512x448   ODR WIN");
+  put_line("             7 = 640x480   ODS FULL     8 = 640x480   ODS WIN");
+  put_line("             9 = 640x560   ODR WIN     10 = 768x672   ODR WIN");
+  put_line("            11 = 800x600   ODS FULL    12 = 800x600   ODS WIN");
+  put_line("            13 = 896x784   ODR WIN     14 = 1024x768  ODS FULL");
+  put_line("            15 = 1024x768  ODS WIN     16 = 1024x896  ODR WIN");
+  put_line("            17 = 1280x960  ODS FULL    18 = 1280x1024 ODS FULL");
+  put_line("            19 = 1600x1200 ODS FULL    20 = VARIABLE  ODR WIN");
+  put_line("            21 = VARIABLE  ODS WIN     22 = CUSTOM    OD  FULL");
 #endif
 #endif
 #ifdef __MSDOS__

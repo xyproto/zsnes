@@ -422,7 +422,7 @@ int Main_Proc(void)
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
 
-        if (cvidmode == 21)
+        if (cvidmode == 20)
         {
           if (224*WindowWidth > 256*WindowHeight && WindowHeight)
           {
@@ -440,7 +440,7 @@ int Main_Proc(void)
           }
         }
 
-        if (Keep4_3Ratio && (cvidmode == 22))
+        if (Keep4_3Ratio && (cvidmode == 21))
         {
           if (3*WindowWidth > 4*WindowHeight && WindowHeight)
           {
@@ -982,6 +982,11 @@ void SetHiresOpt()
 
 unsigned char prevNTSCMode = 0;
 
+void OGLModeCheck()
+{
+   return(cvidmode > 4);
+}
+
 void initwinvideo(void)
 {
   DWORD newmode = 0;
@@ -999,16 +1004,16 @@ void initwinvideo(void)
     FullScreen = GUIWFVID[cvidmode];
 #ifdef __OPENGL__
     UseOpenGL = 0;
-    if (cvidmode > 5)
+    if (OGLModeCheck())
        UseOpenGL = 1;
 
-    if (cvidmode == 23)
+    if (cvidmode == 22)
     {
        SetHQx();
        SetHiresOpt();
     }
 #else
-    if (cvidmode > 5)
+    if (OGLModeCheck)
       cvidmode = 2; // set it to the default 512x448 W
 #endif
 
@@ -1022,7 +1027,7 @@ void initwinvideo(void)
         break;
       case 2:
       case 3:
-      case 7:
+      case 6:
         if (NTSCFilter)
         {
            WindowWidth = 600;
@@ -1035,53 +1040,52 @@ void initwinvideo(void)
         }
         break;
       case 4:
+      case 7:
       case 8:
-      case 9:
         WindowWidth = 640;
         WindowHeight = 480;
         break;
-      case 10:
+      case 9:
         WindowWidth = 640;
         WindowHeight = 560;
         break;
-      case 11:
+      case 10:
         WindowWidth = 768;
         WindowHeight = 672;
         break;
-      case 5:
+      case 11:
       case 12:
-      case 13:
         WindowWidth = 800;
         WindowHeight = 600;
         break;
-      case 14:
+      case 13:
         WindowWidth = 896;
         WindowHeight = 784;
         break;
+      case 14:
       case 15:
-      case 16:
         WindowWidth = 1024;
         WindowHeight = 768;
         break;
-      case 17:
+      case 16:
         WindowWidth = 1024;
         WindowHeight = 896;
         break;
-      case 18:
+      case 17:
         WindowWidth = 1280;
         WindowHeight = 960;
         break;
-      case 19:
+      case 18:
         WindowWidth = 1280;
         WindowHeight = 1024;
         break;
-      case 20:
+      case 19:
         WindowWidth = 1600;
         WindowHeight = 1200;
         break;
-      case 21: // Variable ODR
-      case 22: // Variable ODS
-      case 23: // Custom Res
+      case 20: // Variable ODR
+      case 21: // Variable ODS
+      case 22: // Custom Res
         WindowWidth = CustomResX;
         WindowHeight = CustomResY;
         break;
@@ -1102,7 +1106,7 @@ void initwinvideo(void)
   if (newmode == 1)
   {
     #ifdef __OPENGL__
-    if(cvidmode > 5)
+    if(OGLModeCheck)
     {
       surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags);
       adjustMouseXScale();
@@ -1111,7 +1115,7 @@ void initwinvideo(void)
       glMatrixMode(GL_PROJECTION);
       glLoadIdentity();
 
-      if (cvidmode == 21)
+      if (cvidmode == 20)
       {
         if (224*WindowWidth > 256*WindowHeight && WindowHeight)
         {
@@ -1129,7 +1133,7 @@ void initwinvideo(void)
         }
       }
 
-      if (Keep4_3Ratio && ((cvidmode == 22)||(cvidmode == 23)))
+      if (Keep4_3Ratio && ((cvidmode == 21)||(cvidmode == 22)))
       {
         if (3*WindowWidth > 4*WindowHeight && WindowHeight)
         {

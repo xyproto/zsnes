@@ -446,9 +446,9 @@ SECTION .data
 
 ; Total Number of Video Modes
 %ifdef __OPENGL__
-NEWSYM NumVideoModes, dd 24
+NEWSYM NumVideoModes, dd 23
 %else
-NEWSYM NumVideoModes, dd 6
+NEWSYM NumVideoModes, dd 5
 %endif
 
 ; GUI Video Mode Names - Make sure that all names are of the same length
@@ -459,56 +459,55 @@ db '256x224       R F',0  ;1
 db '512x448      DR W',0  ;2
 db '512x448      DR F',0  ;3
 db '640x480      DR F',0  ;4
-db '800x600      DR F',0  ;5
 %ifdef __OPENGL__
-db '256x224      OR W',0  ;6
-db '512x448     ODR W',0  ;7
-db '640x480     ODS F',0  ;8
-db '640x480     ODS W',0  ;9
-db '640x560     ODR W',0  ;10
-db '768x672     ODR W',0  ;11
-db '800x600     ODS F',0  ;12
-db '800x600     ODS W',0  ;13
-db '896x784     ODR W',0  ;14
-db '1024x768    ODS F',0  ;15
-db '1024x768    ODS W',0  ;16
-db '1024x896    ODR W',0  ;17
-db '1280x960    ODS F',0  ;18
-db '1280x1024   ODS F',0  ;19
-db '1600x1200   ODS F',0  ;20
-db 'VARIABLE    ODR W',0  ;21
-db 'VARIABLE    ODS W',0  ;22
-db 'CUSTOM       OD F',0  ;23
+db '256x224      OR W',0  ;5
+db '512x448     ODR W',0  ;6
+db '640x480     ODS F',0  ;7
+db '640x480     ODS W',0  ;8
+db '640x560     ODR W',0  ;9
+db '768x672     ODR W',0  ;10
+db '800x600     ODS F',0  ;11
+db '800x600     ODS W',0  ;12
+db '896x784     ODR W',0  ;13
+db '1024x768    ODS F',0  ;14
+db '1024x768    ODS W',0  ;15
+db '1024x896    ODR W',0  ;16
+db '1280x960    ODS F',0  ;17
+db '1280x1024   ODS F',0  ;18
+db '1600x1200   ODS F',0  ;19
+db 'VARIABLE    ODR W',0  ;20
+db 'VARIABLE    ODS W',0  ;21
+db 'CUSTOM       OD F',0  ;22
 
 %endif
 
 ; Video Mode Feature Availability (1 = Available, 0 = Not Available)
 ; Left side starts with Video Mode 0
-; vid mode column =  0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3
-NEWSYM GUI16VID,  db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; 16-bit mode
-NEWSYM GUINGVID,  db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; New Graphics Engine
-NEWSYM GUISLVID,  db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Scanlines
-NEWSYM GUIINVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Interpolation)
-NEWSYM GUII2VID,  db 0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; Interpolation
-NEWSYM GUIEAVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Eagle)
-NEWSYM GUIIEVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Eagle+Int)
-NEWSYM GUIFSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Fullscreen)
-NEWSYM GUIWSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Widescreen)
-NEWSYM GUISSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Smallscreen)
-NEWSYM GUITBVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Triple Buffer)
-NEWSYM GUIHSVID,  db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Half/Quarter Scanlines
-NEWSYM GUI2xVID,  db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; 2xSaI/Super Engines
-NEWSYM GUIM7VID,  db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Hires Mode 7
-NEWSYM GUIWFVID,  db 0,1,0,1,1,1,0,0,1,0,0,0,1,0,0,1,0,0,1,1,1,0,0,1 ; Fullscreen
-NEWSYM GUIDSIZE,  db 0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; D modes
-NEWSYM GUIRATIO,  db 0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; Ratio-Fullscreen modes
-NEWSYM GUIBIFIL,  db 0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; SDL Bilinear Filter
-NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Win Triple Buffer)
-NEWSYM GUIHQ2X,   db 0,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1 ; hq2x filter
-NEWSYM GUIHQ3X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq3x filter)
-NEWSYM GUIHQ4X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq4x filter)
-NEWSYM GUIRESIZE, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0 ; SDL Resizable
-NEWSYM GUINTVID,  db 0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; NTSC Filter
+; vid mode column =  0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2
+NEWSYM GUI16VID,  db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; 16-bit mode
+NEWSYM GUINGVID,  db 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; New Graphics Engine
+NEWSYM GUISLVID,  db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Scanlines
+NEWSYM GUIINVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Interpolation)
+NEWSYM GUII2VID,  db 0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; Interpolation
+NEWSYM GUIEAVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Eagle)
+NEWSYM GUIIEVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Eagle+Int)
+NEWSYM GUIFSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Fullscreen)
+NEWSYM GUIWSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Widescreen)
+NEWSYM GUISSVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Smallscreen)
+NEWSYM GUITBVID,  db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (DOS Triple Buffer)
+NEWSYM GUIHSVID,  db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Half/Quarter Scanlines
+NEWSYM GUI2xVID,  db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; 2xSaI/Super Engines
+NEWSYM GUIM7VID,  db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; Hires Mode 7
+NEWSYM GUIWFVID,  db 0,1,0,1,1,0,0,1,0,0,0,1,0,0,1,0,0,1,1,1,0,0,1 ; Fullscreen
+NEWSYM GUIDSIZE,  db 0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; D modes
+NEWSYM GUIRATIO,  db 0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; Ratio-Fullscreen modes
+NEWSYM GUIBIFIL,  db 0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1 ; SDL Bilinear Filter
+NEWSYM GUITBWVID, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (Win Triple Buffer)
+NEWSYM GUIHQ2X,   db 0,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1 ; hq2x filter
+NEWSYM GUIHQ3X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq3x filter)
+NEWSYM GUIHQ4X,   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; (hq4x filter)
+NEWSYM GUIRESIZE, db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0 ; SDL Resizable
+NEWSYM GUINTVID,  db 0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; NTSC Filter
 
 SECTION .text
 

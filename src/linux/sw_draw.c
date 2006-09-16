@@ -127,6 +127,11 @@ void sw_clearwin()
 extern unsigned char prevNTSCMode;
 extern unsigned char NTSCFilter;
 
+void OGLModeCheck()
+{
+   return(cvidmode > 4);
+}
+
 void sw_drawwin()
 {
   NGNoTransp = 0;             // Set this value to 1 within the appropriate
@@ -145,7 +150,7 @@ void sw_drawwin()
 
   if (prevtot == frametot && (!GUIOn || !GUIOn2)) { return; }
 
-  if (curblank || cvidmode > 5) return;
+  if (curblank || OGLModeCheck) return;
   LockSurface();
 
   if (NTSCFilter != prevNTSCMode) initwinvideo();

@@ -254,6 +254,11 @@ static void gl_drawspan(int hires, int start, int end)
   }
 }
 
+void OGLModeCheck()
+{
+   return(cvidmode > 4);
+}
+
 void gl_drawwin()
 {
   int i;
@@ -266,7 +271,7 @@ void gl_drawwin()
         // (see ProcessTransparencies in newgfx16.asm
         //  for ZSNES' current transparency code)
   UpdateVFrame();
-  if (curblank || cvidmode<6)
+  if (curblank || !OGLModeCheck())
     return;
 
   if (BilinearFilter)
