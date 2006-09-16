@@ -254,7 +254,7 @@ static void gl_drawspan(int hires, int start, int end)
   }
 }
 
-void OGLModeCheck()
+bool OGLModeCheck()
 {
    return(cvidmode > 4);
 }

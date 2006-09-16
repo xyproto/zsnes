@@ -982,7 +982,7 @@ void SetHiresOpt()
 
 unsigned char prevNTSCMode = 0;
 
-void OGLModeCheck()
+bool OGLModeCheck()
 {
    return(cvidmode > 4);
 }
@@ -1013,7 +1013,7 @@ void initwinvideo(void)
        SetHiresOpt();
     }
 #else
-    if (OGLModeCheck)
+    if (OGLModeCheck())
       cvidmode = 2; // set it to the default 512x448 W
 #endif
 
@@ -1106,7 +1106,7 @@ void initwinvideo(void)
   if (newmode == 1)
   {
     #ifdef __OPENGL__
-    if(OGLModeCheck)
+    if(OGLModeCheck())
     {
       surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags);
       adjustMouseXScale();
