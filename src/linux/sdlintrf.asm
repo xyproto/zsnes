@@ -925,7 +925,11 @@ NEWSYM SetInputDevice
 %endif
     ret
 .input2
-    SetDefaultKey 56,29,37,50,49,51,31,32,33,44,45,46
+%ifdef __UNIXSDL__
+    SetDefaultKey 56,29,37,50,49,51,98,89,91,99,95,97
+%else
+    SetDefaultKey 56,29,37,50,49,51,210,199,201,211,207,209
+%endif
     ret
 
 EXTSYM SystemTimewHour
