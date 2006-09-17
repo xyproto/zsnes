@@ -689,7 +689,7 @@ NEWSYM SetInputDevice
     ja near .exit
     cmp bh,1
     je near .input2
-    SetDefaultKey 54,28,72,80,75,77,82,71,73,83,79,81
+    SetDefaultKey 54,28,72,80,75,77,31,45,32,30,44,46
     ret
 .input2
     SetDefaultKey 56,29,37,50,49,51,31,32,33,44,45,46
@@ -831,7 +831,7 @@ NEWSYM ScanCodeListing
         db ' O ',' P ',' [ ',' ] ','RET','CTL',' A ',' S '
         db ' D ',' F ',' G ',' H ',' J ',' K ',' L ',' : '
         db ' " ',' ~ ','LSH',' \ ',' Z ',' X ',' C ',' V '
-        db ' B ',' N ',' M ',' < ',' > ',' / ','RSH',' * '
+        db ' B ',' N ',' M ',' , ',' . ',' / ','RSH',' * '
         db 'ALT','SPC','CAP','F1 ','F2 ','F3 ','F4 ','F5 '
         db 'F6 ','F7 ','F8 ','F9 ','F10','NUM','SCR','HOM'
         db 'UP ','PGU',' - ','LFT',' 5 ','RGT',' + ','END'
