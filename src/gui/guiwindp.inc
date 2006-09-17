@@ -1517,9 +1517,8 @@ DisplayGUIOption:       ; Emu Options
   GUIDisplayCheckboxu 4,11,50,pl12s34,GUIOptionText5,0
 %ifdef __MSDOS__
   GUIDisplayCheckboxu 4,11,60,SidewinderFix,GUIOptionText6,1
-%endif
-%ifdef __WIN32__
-  GUIDisplayCheckboxu 4,11,60,HighPriority,GUIOptionText6b,0
+%else
+  GUIDisplayCheckboxu 4,11,60,PauseFocusChange,GUIOptionTextF,13
 %endif
   GUIDisplayCheckboxu 4,11,70,FPSAtStart,GUIOptionText7,0
   GUIDisplayCheckboxu 4,11,80,Turbo30hz,GUIOptionText8,2
@@ -1530,10 +1529,8 @@ DisplayGUIOption:       ; Emu Options
   GUIDisplayCheckboxu 4,11,130,AutoPatch,GUIOptionTextC,12
   GUIDisplayCheckboxu 4,11,140,RomInfo,GUIOptionTextD,15
   GUIDisplayCheckboxu 4,11,150,AllowUDLR,GUIOptionTextE,0
-%ifndef __MSDOS__
-  GUIDisplayCheckboxu 4,11,160,PauseFocusChange,GUIOptionTextF,13
-%endif
 %ifdef __WIN32__
+  GUIDisplayCheckboxu 4,11,160,HighPriority,GUIOptionText6b,0
   GUIDisplayCheckboxu 4,11,170,DisableScreenSaver,GUIOptionTextW,1
 %endif
   ret
@@ -3144,8 +3141,8 @@ DisplayGUIOptns:              ; GUI Options
   GUIDisplayCheckboxun 10,124,63,GUIEffect,3,GUIGUIOptnsTextA2e,13
   GUIDisplayCheckboxun 10,124,73,GUIEffect,4,GUIGUIOptnsTextA2f,2
 %ifdef __WIN32__
-  GUIDisplayCheckboxu 10,124,83,MouseWheel,GUIGUIOptnsTextA2g,1
-  GUIDisplayCheckboxu 10,124,93,TrapMouseCursor,GUIGUIOptnsTextA2h,3
+  GUIDisplayCheckboxu 10,12,83,MouseWheel,GUIGUIOptnsTextA2g,1
+  GUIDisplayCheckboxu 10,124,83,TrapMouseCursor,GUIGUIOptnsTextA2h,3
 %endif
   GUIDisplayTextY 10,6,111,GUIGUIOptnsTextB
   GUIDisplayText 10,60,111,GUIGUIOptnsTextB1

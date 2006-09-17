@@ -2066,11 +2066,8 @@ DisplayGUIOptionClick:
   GUIClickCButtonM 11,50,byte[pl12s34]
 %ifdef __MSDOS__
   GUIClickCButton 11,60,byte[SidewinderFix]
-%elifdef __WIN32__
-  GUIClickCButton 11,60,byte[HighPriority]
-  pushad
-  call CheckPriority
-  popad
+%else
+  GUIClickCButton 11,60,byte[PauseFocusChange]
 %endif
   GUIClickCButton 11,70,byte[FPSAtStart]
   GUIClickCButton 11,80,byte[Turbo30hz]
@@ -2081,10 +2078,11 @@ DisplayGUIOptionClick:
   GUIClickCButton 11,130,byte[AutoPatch]
   GUIClickCButton 11,140,byte[RomInfo]
   GUIClickCButton 11,150,byte[AllowUDLR]
-%ifndef __MSDOS__
-  GUIClickCButton 11,160,byte[PauseFocusChange]
-%endif
 %ifdef __WIN32__
+  GUIClickCButton 11,160,byte[HighPriority]
+  pushad
+  call CheckPriority
+  popad
   GUIClickCButton 11,170,byte[DisableScreenSaver]
   pushad
   call CheckScreenSaver
@@ -2679,8 +2677,8 @@ DisplayGUIOptnsClick:
   GUIClickCButton6 124,63,byte[GUIEffect],3
   GUIClickCButton6 124,73,byte[GUIEffect],4
 %ifdef __WIN32__
-  GUIClickCButton 124,83,byte[MouseWheel]
-  GUIClickCButton 124,93,byte[TrapMouseCursor]
+  GUIClickCButton 12,83,byte[MouseWheel]
+  GUIClickCButton 124,83,byte[TrapMouseCursor]
   GUIClickCButton 12,168,byte[AlwaysOnTop]
   GUIClickCButton 12,178,byte[SaveMainWindowPos]
   GUIClickCButton 12,188,byte[AllowMultipleInst]
