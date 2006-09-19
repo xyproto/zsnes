@@ -18,14 +18,12 @@
 
 %include "macros.mac"
 
-EXTSYM romdata,sramb4save,SPC7110PackPtr,curromspace
+EXTSYM romdata,sramb4save,curromspace
 EXTSYM SFXEnable,regptra,sfxramdata,snesmmap,wramdataa
-EXTSYM snesmap2,SPC7110Enable
+EXTSYM snesmap2
 EXTSYM DSP1Write8b,regptwa,writeon,DSP1Read16b
 EXTSYM Bank0datr8,Bank0datw8,Bank0datr16,Bank0datw16,xd,SA1xd
 EXTSYM DSP1Read8b,DSP1Type,SA1Enable,DSP1Write16b
-EXTSYM CurDecompPtr,PrevDecompPtr,CurDecompSize
-EXTSYM SPCDecmPtr,SPCCompCounter
 EXTSYM ramsize,ramsizeand,sram,ram7fa
 EXTSYM SA1Status,IRAM,CurBWPtr,SA1RAMArea
 EXTSYM SA1Overflow
@@ -64,8 +62,6 @@ NEWSYM regaccessbankr8
     mov al,ch
     ret
 .hiromsram
-    cmp byte[SPC7110Enable],1
-    je near .spc7110ram
     cmp byte[SFXEnable],1
     je .sfxram
     and ebx,7Fh
@@ -102,16 +98,6 @@ NEWSYM regaccessbankr8
     mov ebx,[sfxramdata]
     mov al,[ebx+ecx]
     xor ebx,ebx
-    pop ecx
-    ret
-.spc7110ram
-    push ecx
-    sub ecx,6000h
-    and ecx,1fffh
-    shl ebx,13
-    add ecx,ebx
-    and ecx,0FFFFh
-    call sramaccessbankr8b
     pop ecx
     ret
 
@@ -160,8 +146,6 @@ NEWSYM regaccessbankr16
     mov ah,ch
     ret
 .hiromsram
-    cmp byte[SPC7110Enable],1
-    je near .spc7110ram
     cmp byte[SFXEnable],1
     je .sfxram
     and ebx,7Fh
@@ -200,16 +184,6 @@ NEWSYM regaccessbankr16
     xor ebx,ebx
     pop ecx
     ret
-.spc7110ram
-    push ecx
-    sub ecx,6000h
-    and ecx,1fffh
-    shl ebx,13
-    add ecx,ebx
-    and ecx,0FFFFh
-    call sramaccessbankr16b
-    pop ecx
-    ret
 
 NEWSYM regaccessbankw8
     test ecx,8000h
@@ -243,8 +217,6 @@ NEWSYM regaccessbankw8
     jae .hiromsram
     ret
 .hiromsram
-    cmp byte[SPC7110Enable],1
-    je near .spc7110ram
     cmp byte[SFXEnable],1
     je .sfxram
     and ebx,7Fh
@@ -279,16 +251,6 @@ NEWSYM regaccessbankw8
     mov ebx,[sfxramdata]
     mov [ebx+ecx],al
     xor ebx,ebx
-    pop ecx
-    ret
-.spc7110ram
-    push ecx
-    sub ecx,6000h
-    and ecx,1fffh
-    shl ebx,13
-    add ecx,ebx
-    and ecx,0FFFFh
-    call sramaccessbankw8b
     pop ecx
     ret
 
@@ -337,8 +299,6 @@ NEWSYM regaccessbankw16
     jae .hiromsram
     ret
 .hiromsram
-    cmp byte[SPC7110Enable],1
-    je near .spc7110ram
     cmp byte[SFXEnable],1
     je .sfxram
     and ebx,7Fh
@@ -373,16 +333,6 @@ NEWSYM regaccessbankw16
     mov ebx,[sfxramdata]
     mov [ebx+ecx],ax
     xor ebx,ebx
-    pop ecx
-    ret
-.spc7110ram
-    push ecx
-    sub ecx,6000h
-    and ecx,1fffh
-    shl ebx,13
-    add ecx,ebx
-    and ecx,0FFFFh
-    call sramaccessbankw16b
     pop ecx
     ret
 
@@ -1431,55 +1381,6 @@ NEWSYM membank0w16SA1
 ;*******************************************************
 ; ROM Only Access Banks (40 - 6F) / (C0 - FF)
 ;*******************************************************
-
-NEWSYM memaccessspc7110r8
-    push ebx
-    movzx ebx,word[SPCDecmPtr]
-    add ebx,SPC7110PackPtr
-    mov al,[ebx]
-    pop ebx
-
-    dec word[SPCCompCounter]
-;    inc dword[SPCCompPtr]
-    inc word[SPCDecmPtr]
-    inc word[CurDecompSize]
-    ret
-
-    mov ebx,SPC7110PackPtr
-    mov al,[ebx+ecx]
-    cmp cx,[CurDecompPtr]
-    jb .noptr
-    mov [CurDecompPtr],cx
-    mov bx,cx
-    sub bx,[PrevDecompPtr]
-    inc bx
-    mov [CurDecompSize],bx
-.noptr
-    xor ebx,ebx
-    ret
-NEWSYM memaccessspc7110r16
-    mov ebx,SPC7110PackPtr
-    mov ax,[ebx+ecx]
-    cmp cx,[CurDecompPtr]
-    jb .noptr
-    mov [CurDecompPtr],cx
-    mov bx,cx
-    sub bx,[PrevDecompPtr]
-    add bx,2
-    mov [CurDecompSize],bx
-.noptr
-    xor ebx,ebx
-    ret
-NEWSYM memaccessspc7110w8
-    mov ebx,SPC7110PackPtr
-    mov [ebx+ecx],al
-    xor ebx,ebx
-    ret
-NEWSYM memaccessspc7110w16
-    mov ebx,SPC7110PackPtr
-    mov [ebx+ecx],ax
-    xor ebx,ebx
-    ret
 
 NEWSYM memaccessbankr8
     mov ebx,[snesmmap+ebx*4]

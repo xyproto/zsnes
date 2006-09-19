@@ -131,7 +131,7 @@ enum copy_state_method { csm_save_zst_new,
                          csm_save_rewind,
                          csm_load_rewind };
 
-extern unsigned char SPC7110PackPtr[65536];
+extern unsigned char *SPC7110PackPtr;
 
 static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned char **, void *, size_t), enum copy_state_method method)
 {
