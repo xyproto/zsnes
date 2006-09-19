@@ -379,8 +379,8 @@ void GUIRestoreVars()
 #endif
 
 #ifdef __WIN32__
-  CheckValueBounds(&cvidmode, 0, 41, 3, UB);
-  CheckValueBounds(&PrevWinMode, 0, 41, 3, UB);
+  CheckValueBounds(&cvidmode, 0, 41, 2, UB);
+  CheckValueBounds(&PrevWinMode, 0, 41, 2, UB);
   CheckValueBounds(&PrevFSMode, 0, 41, 6, UB);
 #endif
 #ifdef __UNIXSDL__

@@ -1607,6 +1607,8 @@ int InitDirectDraw()
    // create alt. drawing surface
    if ( BitDepth == 32 )
    {
+     if(DMode == 1 && HQMode == 0)
+       ddsd2.ddsCaps.dwCaps |= DDSCAPS_VIDEOMEMORY;
      ddsd2.dwFlags |= DDSD_PIXELFORMAT;
      ddsd2.ddpfPixelFormat.dwSize        = sizeof(DDPIXELFORMAT);
      ddsd2.ddpfPixelFormat.dwFlags       = DDPF_RGB;
@@ -1617,7 +1619,7 @@ int InitDirectDraw()
 
      if (lpDD->CreateSurface(&ddsd2, &DD_CFB16, NULL) != DD_OK)
      {
-        MessageBox(NULL, "IDirectDraw7::CreateSurface failed.", "DirectDraw Error", MB_ICONERROR);
+        MessageBox(NULL, "IDirectDraw7::CreateSurface failed. You should update your video card drivers. Alternatively, you could use a 16-bit desktop or use a non-D mode.", "DirectDraw Error", MB_ICONERROR);
         return FALSE;
      }
 
