@@ -810,11 +810,22 @@ DisplayGUILoad:
   mov byte[GUItextcolor],196
 .text
   mov dword[cloadmaxlen],39
+%ifndef __MSDOS__
   cmp dword[GUIcurrentfilewin],0
-  jne near .nofiles
+  je near .nodir
+  mov eax,dword[GUIcurrentdircursloc]
+  add eax,2
+  shl eax,2
+  add eax,[d_names]
+  mov eax,[eax]
+  mov [GUITemp],eax
+  GUIOuttextwin2l 1,6,158,[GUITemp]
+  add byte[GUItextcolor],15
+  GUIOuttextwin2l 1,5,157,[GUITemp]
+  jmp .nofiles
+.nodir
   cmp dword[GUIfileentries],0
   je near .nofiles
-%ifndef __MSDOS__
   mov eax,[GUIcurrentcursloc]
   cmp eax,[GUIfileentries]
   jae near .nofiles
@@ -825,9 +836,8 @@ DisplayGUILoad:
   GUIOuttextwin2l 1,6,158,[cloadnpos]
   add byte[GUItextcolor],15
   GUIOuttextwin2l 1,5,157,[cloadnpos]
-%endif
-
 .nofiles                           ; Button
+%endif
   mov byte[GUItextcolor],217
   cmp byte[GUIWincoladd],0
   je .text2
