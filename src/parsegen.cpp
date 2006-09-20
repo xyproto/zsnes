@@ -910,22 +910,22 @@ void output_write_var(ostream& c_stream)
              << "  return(0);\n"
              << "}\n";
   }
-  
+
   if (defines.find("PSR_MEMCPY") != defines.end())
   {
     c_stream << "\n"
              << "static unsigned int " << family_name << "_vars_memory(unsigned char *buffer, void *(*cpy)(void *, void *, size_t))\n"
 			 << "{\n"
 			 << "  unsigned char *p = buffer;\n";
-	for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)  
+	for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)
 	{
 	  if ((i->format == variable::mult) || (i->format == variable::quoted) || (i->format == variable::mult_packed))
 	  {
-		c_stream << "  cpy(p, " << i->name << ", sizeof(" << i->name << ")); p += sizeof(" << i->name << ");\n"; 
+		c_stream << "  cpy(p, " << i->name << ", sizeof(" << i->name << ")); p += sizeof(" << i->name << ");\n";
 	  }
 	  else if (i->format == variable::single)
 	  {
-		c_stream << "  cpy(p, &" << i->name << ", sizeof(" << i->name << ")); p += sizeof(" << i->name << ");\n"; 
+		c_stream << "  cpy(p, &" << i->name << ", sizeof(" << i->name << ")); p += sizeof(" << i->name << ");\n";
 	  }
     }
     c_stream << "  return(p-buffer);\n"
@@ -1133,13 +1133,19 @@ void output_read_var(ostream& c_stream)
            << "  if ((fp = fopen(file, \"r\")))\n"
            << "  {\n"
            << "    read_" << family_name << "_vars_internal(fp, (char *(*)(char *, int, void *))fgets, (int (*)(void *))feof);\n"
-           << "    fclose(fp);\n"
-           << "    write_" << family_name << "_vars(file);\n"
-           << "    return(1);\n"
+           << "    fclose(fp);\n";
+  if (defines.find("PSR_NOUPDATE") == defines.end())
+  {
+	c_stream << "    write_" << family_name << "_vars(file);\n";
+  }
+  c_stream << "    return(1);\n"
            << "  }\n"
-           << "\n"
-           << "  write_" << family_name << "_vars(file);\n"
-           << "  return(0);\n"
+           << "\n";
+  if (defines.find("PSR_NOUPDATE") == defines.end())
+  {
+	c_stream << "  write_" << family_name << "_vars(file);\n";
+  }
+  c_stream << "  return(0);\n"
            << "}\n";
 
   if (defines.find("PSR_COMPRESSED") != defines.end())
@@ -1159,16 +1165,22 @@ void output_read_var(ostream& c_stream)
              << "  if ((gzfp = gzopen(file, \"rb\")))\n"
              << "  {\n"
              << "    read_cfg_vars_internal(gzfp, gzgets_fix, gzeof);\n"
-             << "    gzclose(gzfp);\n"
-             << "    write_cfg_vars_compressed(file);\n"
-             << "    return(1);\n"
+             << "    gzclose(gzfp);\n";
+    if (defines.find("PSR_NOUPDATE") == defines.end())
+    {
+	  c_stream << "    write_" << family_name << "_vars_compressed(file);\n";
+    }
+    c_stream << "    return(1);\n"
              << "  }\n"
-             << "\n"
-             << "  write_cfg_vars_compressed(file);\n"
-             << "  return(0);\n"
+             << "\n";
+    if (defines.find("PSR_NOUPDATE") == defines.end())
+    {
+	  c_stream << "  write_" << family_name << "_vars_compressed(file);\n";
+    }
+    c_stream << "  return(0);\n"
              << "}\n";
   }
-  
+
   if (defines.find("PSR_MEMCPY") != defines.end())
   {
     c_stream << "\n"
