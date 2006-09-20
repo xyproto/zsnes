@@ -223,8 +223,7 @@ VIDEOBJ=${VIDEODIR}/makev16b${OE} ${VIDEODIR}/makev16t${OE} ${VIDEODIR}/makevid$
 	${VIDEODIR}/mode716e${OE} ${VIDEODIR}/mode716t${OE} ${VIDEODIR}/mode7${OE}\
 	${VIDEODIR}/mode7ext${OE} ${VIDEODIR}/mv16tms${OE} ${VIDEODIR}/newg162${OE}\
 	${VIDEODIR}/newgfx16${OE} ${VIDEODIR}/newgfx2${OE} ${VIDEODIR}/newgfx${OE}\
-	${VIDEODIR}/m716text${OE} ${VIDEODIR}/procvid${OE} ${VIDEODIR}/procvidc${OE}\
-	${VIDEODIR}/ntsc${OE}
+	${VIDEODIR}/m716text${OE} ${VIDEODIR}/procvid${OE} ${VIDEODIR}/procvidc${OE}
 
 #only used on Win32
 WINOBJ=${WINDIR}/copyvwin${OE} ${DRESOBJ}\
@@ -248,6 +247,7 @@ DELETEOBJS=${OBJSORIG} ${DOSOBJ}
 endif
 
 ifeq (${OS},__WIN32__)
+VIDEOBJ+= ${VIDEODIR}/ntsc${OE}
 OBJS=${OBJSORIG} ${WINOBJ} ${DOSOBJORIG} ${WINVIDOBJ} ${NETOBJ}
 DELETEOBJS=${OBJS}
 endif

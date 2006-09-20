@@ -35,7 +35,9 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #endif
 #include "../zpath.h"
+#ifndef __MSDOS__
 #include "ntsc.h"
+#endif
 
 extern unsigned char newengen;
 extern unsigned int nggposng[];
@@ -117,14 +119,18 @@ void Clear2xSaIBuffer()
 
 // NTSC filter variables
 
+#ifndef __MSDOS__
 unsigned char ntsc_phase = 0;
 snes_ntsc_setup_t ntsc_setup;
 snes_ntsc_t ntsc_snes;
 extern unsigned char NTSCBlend;
 extern signed char NTSCHue, NTSCSat, NTSCCont, NTSCBright, NTSCSharp, NTSCWarp;
+#endif
+
 // Init NTSC filter command, should be called whenever changes are made in the GUI related to the GUI
 void NTSCFilterInit()
 {
+#ifndef __MSDOS__
   // Set GUI options
   ntsc_setup.hue = (float)(NTSCHue / 100.0);
   ntsc_setup.saturation = (float)(NTSCSat / 100.0);
@@ -134,14 +140,17 @@ void NTSCFilterInit()
   ntsc_setup.hue_warping = (float)(NTSCWarp / 100.0);
   ntsc_setup.merge_fields = (int) NTSCBlend;
   snes_ntsc_init(&ntsc_snes, &ntsc_setup);
+#endif
 }
 
 void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char *buffer)
 {
+#ifndef __MSDOS__
   snes_ntsc_blit(&ntsc_snes, vidbuffer+16, 576, ntsc_phase, SurfaceX, SurfaceY, buffer, pitch);
 
   // Change phase on alternating frames
   ntsc_phase ^= 1;
+#endif
 }
 
 extern unsigned int statefileloc;
