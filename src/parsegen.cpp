@@ -425,6 +425,7 @@ namespace variable
     storage_format format;
     ctype type;
     size_t length;
+    string dependancy;
     string comment;
 
     bool operator==(const string& name) const { return(this->name == name); }
@@ -450,50 +451,50 @@ namespace variable
     public:
     void add_comment(string comment)
     {
-      config_data_element new_element = { "", none, NT, 0, comment };
+      config_data_element new_element = { "", none, NT, 0, "", comment };
       data_array.push_back(new_element);
     }
 
-    void add_var_single(string& name, ctype type, string comment = "")
+    void add_var_single(string& name, ctype type, string dependancy, string comment = "")
     {
       if (!duplicate_name(name))
       {
-        config_data_element new_element = { name, single, type, 0, comment };
+        config_data_element new_element = { name, single, type, 0, dependancy, comment };
         data_array.push_back(new_element);
       }
     }
-    void add_var_single(string& name, const char *type, string comment = "")
+    void add_var_single(string& name, const char *type, string dependancy, string comment = "")
     {
-      add_var_single(name, GetCType(type), comment);
+      add_var_single(name, GetCType(type), dependancy, comment);
     }
 
-    void add_var_quoted(string& name, string comment = "")
+    void add_var_quoted(string& name, string dependancy, string comment = "")
     {
       if (!duplicate_name(name))
       {
-        config_data_element new_element = { name, quoted, NT, 0, comment };
+        config_data_element new_element = { name, quoted, NT, 0, dependancy, comment };
         data_array.push_back(new_element);
       }
     }
 
-    void add_var_mult(string& name, ctype type, size_t length, string comment = "")
+    void add_var_mult(string& name, ctype type, size_t length, string dependancy, string comment = "")
     {
       if (!duplicate_name(name))
       {
-        config_data_element new_element = { name, mult, type, length, comment };
+        config_data_element new_element = { name, mult, type, length, dependancy, comment };
         data_array.push_back(new_element);
       }
     }
-    void add_var_mult(string& name, const char *type, size_t length, string comment = "")
+    void add_var_mult(string& name, const char *type, size_t length, string dependancy, string comment = "")
     {
-      add_var_mult(name, GetCType(type), length, comment);
+      add_var_mult(name, GetCType(type), length, dependancy, comment);
     }
 
-    void add_var_packed(string& name, size_t length, string comment = "")
+    void add_var_packed(string& name, size_t length, string dependancy, string comment = "")
     {
       if (!duplicate_name(name))
       {
-        config_data_element new_element = { name, mult_packed, NT, length, comment };
+        config_data_element new_element = { name, mult_packed, NT, length, dependancy, comment };
         data_array.push_back(new_element);
       }
     }
@@ -729,6 +730,18 @@ void output_cheader_end(ostream& cheader_stream)
 }
 
 
+void output_extsym_dependancies(ostream& c_stream)
+{
+  c_stream << "\n";
+  for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)
+  {
+    if (i->dependancy != "")
+    {
+      c_stream << "extern unsigned char " << string(i->dependancy, 0, i->dependancy.length()-1) << ";\n";
+    }
+  }
+}
+
 void output_init_var(ostream& c_stream)
 {
   c_stream << "\n"
@@ -837,6 +850,13 @@ void output_write_var(ostream& c_stream)
            << "{\n";
   for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)
   {
+    string dependancy_prefix, dependancy_suffix;
+    if (i->dependancy != "")
+    {
+      dependancy_prefix = string("if (") + string(i->dependancy, 0, i->dependancy.length()-1) + string(") { ");
+      dependancy_suffix = " }";
+    }
+
     if (i->format == variable::none)
     {
       if (i->comment != "")
@@ -850,13 +870,13 @@ void output_write_var(ostream& c_stream)
     }
     else if (i->format == variable::mult)
     {
-      c_stream << "  write_" << variable::info[i->type].CTypeUnderscore
-               << "_array(outf, fp, \"" << i->name << "\", " << i->name << ", " << i->length << ", " << ((i->comment != "") ? encode_string(i->comment) : "0") << ");\n";
+      c_stream << "  " << dependancy_prefix << "write_" << variable::info[i->type].CTypeUnderscore
+               << "_array(outf, fp, \"" << i->dependancy << i->name << "\", " << i->name << ", " << i->length << ", " << ((i->comment != "") ? encode_string(i->comment) : "0") << ");" << dependancy_suffix << "\n";
     }
     else
     {
       string config_comment = (i->comment != "") ? (string(" ;") + encode_string(i->comment, false)) : "";
-      c_stream << "  outf(fp, \"" << i->name << "=";
+      c_stream << "  " << dependancy_prefix << "outf(fp, \"" << i->dependancy << i->name << "=";
       if (i->format == variable::single)
       {
         c_stream << "%" << variable::info[i->type].FormatChar << config_comment << "\\n\", " << i->name;
@@ -869,7 +889,7 @@ void output_write_var(ostream& c_stream)
       {
         c_stream << "%s" << config_comment << "\\n\", char_array_pack((char *)" << i->name << ", " << i->length << ")";
       }
-      c_stream << ");\n";
+      c_stream << ");" << dependancy_suffix << "\n";
     }
   }
   c_stream << "}\n"
@@ -917,31 +937,34 @@ void output_write_var(ostream& c_stream)
              << "static unsigned int " << family_name << "_vars_memory(unsigned char *buffer, void *(*cpy)(void *, void *, size_t))\n"
 			 << "{\n"
 			 << "  unsigned char *p = buffer;\n";
-	for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)
-	{
-	  if ((i->format == variable::mult) || (i->format == variable::quoted) || (i->format == variable::mult_packed))
+	  for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)
 	  {
-		c_stream << "  cpy(p, " << i->name << ", sizeof(" << i->name << ")); p += sizeof(" << i->name << ");\n";
-	  }
-	  else if (i->format == variable::single)
-	  {
-		c_stream << "  cpy(p, &" << i->name << ", sizeof(" << i->name << ")); p += sizeof(" << i->name << ");\n";
-	  }
+      string dependancy_prefix, dependancy_suffix;
+      if (i->dependancy != "")
+      {
+        dependancy_prefix = string("if (") + string(i->dependancy, 0, i->dependancy.length()-1) + string(") { ");
+        dependancy_suffix = " }";
+      }
+
+      if (i->format != variable::none)
+      {
+        c_stream << "  " << dependancy_prefix << "cpy(p, " << ((i->format == variable::single) ? "&" : "") << i->name << ", sizeof(" << i->name << ")); p += sizeof(" << i->name << ");" << dependancy_suffix << "\n";
+      }
     }
     c_stream << "  return(p-buffer);\n"
              << "}\n"
-	  	     << "\n"
-		     << "static void *cpynull(void *, void *, size_t){ return(0); }\n"
-			 << "\n"
-		     << "unsigned int size_" << family_name << "_vars_memory()\n"
-		     << "{\n"
-		     << "  return(" << family_name << "_vars_memory(0, cpynull));\n"
+             << "\n"
+		         << "static void *cpynull(void *, void *, size_t){ return(0); }\n"
+             << "\n"
+		         << "unsigned int size_" << family_name << "_vars_memory()\n"
+             << "{\n"
+		         << "  return(" << family_name << "_vars_memory(0, cpynull));\n"
              << "}\n"
-		     << "\n"
-		     << "void write_" << family_name << "_vars_memory(unsigned char *buffer)\n"
-		     << "{\n"
-		     << "  " << family_name << "_vars_memory(buffer, (void *(*)(void *, void *, size_t))memcpy);\n"
-		     << "}\n";
+		         << "\n"
+		         << "void write_" << family_name << "_vars_memory(unsigned char *buffer)\n"
+		         << "{\n"
+		         << "  " << family_name << "_vars_memory(buffer, (void *(*)(void *, void *, size_t))memcpy);\n"
+		         << "}\n";
   }
 }
 
@@ -1136,14 +1159,14 @@ void output_read_var(ostream& c_stream)
            << "    fclose(fp);\n";
   if (defines.find("PSR_NOUPDATE") == defines.end())
   {
-	c_stream << "    write_" << family_name << "_vars(file);\n";
+    c_stream << "    write_" << family_name << "_vars(file);\n";
   }
   c_stream << "    return(1);\n"
            << "  }\n"
            << "\n";
   if (defines.find("PSR_NOUPDATE") == defines.end())
   {
-	c_stream << "  write_" << family_name << "_vars(file);\n";
+	  c_stream << "  write_" << family_name << "_vars(file);\n";
   }
   c_stream << "  return(0);\n"
            << "}\n";
@@ -1168,14 +1191,14 @@ void output_read_var(ostream& c_stream)
              << "    gzclose(gzfp);\n";
     if (defines.find("PSR_NOUPDATE") == defines.end())
     {
-	  c_stream << "    write_" << family_name << "_vars_compressed(file);\n";
+	    c_stream << "    write_" << family_name << "_vars_compressed(file);\n";
     }
     c_stream << "    return(1);\n"
              << "  }\n"
              << "\n";
     if (defines.find("PSR_NOUPDATE") == defines.end())
     {
-	  c_stream << "  write_" << family_name << "_vars_compressed(file);\n";
+	    c_stream << "  write_" << family_name << "_vars_compressed(file);\n";
     }
     c_stream << "  return(0);\n"
              << "}\n";
@@ -1184,16 +1207,16 @@ void output_read_var(ostream& c_stream)
   if (defines.find("PSR_MEMCPY") != defines.end())
   {
     c_stream << "\n"
-		     << "static void *cpyright(void *src, void *dest, size_t len)\n"
-			 << "{\n"
-			 << "  memcpy(dest, src, len);\n"
-			 << "  return(0);\n"
-			 << "}\n"
-		     << "\n"
-		     << "void read_" << family_name << "_vars_memory(unsigned char *buffer)\n"
-		     << "{\n"
-		     << "  " << family_name << "_vars_memory(buffer, cpyright);\n"
-		     << "}\n";
+		         << "static void *cpyright(void *src, void *dest, size_t len)\n"
+			       << "{\n"
+		      	 << "  memcpy(dest, src, len);\n"
+			       << "  return(0);\n"
+			       << "}\n"
+		         << "\n"
+		         << "void read_" << family_name << "_vars_memory(unsigned char *buffer)\n"
+		         << "{\n"
+		         << "  " << family_name << "_vars_memory(buffer, cpyright);\n"
+		         << "}\n";
   }
 }
 
@@ -1419,7 +1442,19 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
         continue;
       }
 
-      string varname = token;
+      string varname;
+      string dependancy;
+      char *d;
+
+      if ((d = strchr(token, ':')))
+      {
+        varname = d+1;
+        dependancy.assign(token, (d-token)+1);
+      }
+      else
+      {
+        varname = token;
+      }
 
       if ((token = get_token(0, " ,")))
       {
@@ -1465,7 +1500,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                               << varname << "[" << array << "] = 0;";
                 }
                 memsets.push_back(memset_line.str());
-                variable::config_data.add_var_quoted(varname, CONFIG_COMMENT);
+                variable::config_data.add_var_quoted(varname, dependancy, CONFIG_COMMENT);
               }
             }
             else
@@ -1516,11 +1551,11 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                 {
                   if (is_array)
                   {
-                    variable::config_data.add_var_mult(varname, var_type, array, CONFIG_COMMENT);
+                    variable::config_data.add_var_mult(varname, var_type, array, dependancy, CONFIG_COMMENT);
                   }
                   else if (is_packed)
                   {
-                    variable::config_data.add_var_packed(varname, array, CONFIG_COMMENT);
+                    variable::config_data.add_var_packed(varname, array, dependancy, CONFIG_COMMENT);
                   }
                 }
               }
@@ -1539,7 +1574,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
 
                   if (ifs.all_true())
                   {
-                    variable::config_data.add_var_mult(varname, var_type, array, CONFIG_COMMENT);
+                    variable::config_data.add_var_mult(varname, var_type, array, dependancy, CONFIG_COMMENT);
                   }
                 }
                 else
@@ -1548,7 +1583,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
 
                   if (ifs.all_true())
                   {
-                    variable::config_data.add_var_single(varname, var_type, CONFIG_COMMENT);
+                    variable::config_data.add_var_single(varname, var_type, dependancy, CONFIG_COMMENT);
                   }
                 }
               }
@@ -1596,6 +1631,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
   }
 
   output_parser_start(c_stream);
+  output_extsym_dependancies(c_stream);
   c_stream << cvars.str();
   output_init_var(c_stream);
   output_write_var(c_stream);
