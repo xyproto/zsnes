@@ -910,6 +910,39 @@ void output_write_var(ostream& c_stream)
              << "  return(0);\n"
              << "}\n";
   }
+  
+  if (defines.find("PSR_MEMCPY") != defines.end())
+  {
+    c_stream << "\n"
+             << "static unsigned int " << family_name << "_vars_memory(unsigned char *buffer, void *(*cpy)(void *, void *, size_t))\n"
+			 << "{\n"
+			 << "  unsigned char *p = buffer;\n";
+	for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)  
+	{
+	  if ((i->format == variable::mult) || (i->format == variable::quoted) || (i->format == variable::mult_packed))
+	  {
+		c_stream << "  cpy(p, " << i->name << ", sizeof(" << i->name << ")); p += sizeof(" << i->name << ");\n"; 
+	  }
+	  else if (i->format == variable::single)
+	  {
+		c_stream << "  cpy(p, &" << i->name << ", sizeof(" << i->name << ")); p += sizeof(" << i->name << ");\n"; 
+	  }
+    }
+    c_stream << "  return(p-buffer);\n"
+             << "}\n"
+	  	     << "\n"
+		     << "static void *cpynull(void *, void *, size_t){ return(0); }\n"
+			 << "\n"
+		     << "unsigned int size_" << family_name << "_vars_memory()\n"
+		     << "{\n"
+		     << "  return(" << family_name << "_vars_memory(0, cpynull));\n"
+             << "}\n"
+		     << "\n"
+		     << "void write_" << family_name << "_vars_memory(unsigned char *buffer)\n"
+		     << "{\n"
+		     << "  " << family_name << "_vars_memory(buffer, (void *(*)(void *, void *, size_t))memcpy);\n"
+		     << "}\n";
+  }
 }
 
 void output_packed_read(ostream& c_stream)
@@ -1134,6 +1167,21 @@ void output_read_var(ostream& c_stream)
              << "  write_cfg_vars_compressed(file);\n"
              << "  return(0);\n"
              << "}\n";
+  }
+  
+  if (defines.find("PSR_MEMCPY") != defines.end())
+  {
+    c_stream << "\n"
+		     << "static void *cpyright(void *src, void *dest, size_t len)\n"
+			 << "{\n"
+			 << "  memcpy(dest, src, len);\n"
+			 << "  return(0);\n"
+			 << "}\n"
+		     << "\n"
+		     << "void read_" << family_name << "_vars_memory(unsigned char *buffer)\n"
+		     << "{\n"
+		     << "  " << family_name << "_vars_memory(buffer, cpyright);\n"
+		     << "}\n";
   }
 }
 
