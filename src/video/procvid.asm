@@ -976,8 +976,17 @@ NEWSYM drawvline16b
 DetermineNewest:
     mov dword[newestfiledate],0
     mov byte[newestfileloc],0
-
+    push edx
+    mov edx,[ZStateName]
+    add edx,[statefileloc]    
+    dec edx
+    cmp byte[edx],'s'
+    jne .isnott
     determinenewhelp 't'
+    jmp .isnext
+.isnott
+    determinenewhelp '0'
+.isnext
     determinenewhelp '1'
     determinenewhelp '2'
     determinenewhelp '3'
@@ -987,6 +996,7 @@ DetermineNewest:
     determinenewhelp '7'
     determinenewhelp '8'
     determinenewhelp '9'
+    pop edx
     ret
 
 GetPicture:
@@ -1254,7 +1264,19 @@ NEWSYM saveselect
     pop edx
     push ebx
     call DetermineNewest
+    push edx
+    mov edx,[ZStateName]
+    add edx,[statefileloc]
+    dec edx
+    cmp byte[edx+eax-1],'s'
+    jne .isnott2
+    pop edx
     drawfillboxhelp 0,'t'
+    jmp .isnext2
+.isnott2
+    pop edx
+    drawfillboxhelp 0,'0'
+.isnext2
     drawfillboxhelp 1,'1'
     drawfillboxhelp 2,'2'
     drawfillboxhelp 3,'3'
@@ -1407,7 +1429,18 @@ NEWSYM saveselect
     mov byte[pressed+28],2
     cmp bl,0
     jne .nozero
+    push edx
+    mov edx,[ZStateName]
+    add edx,[statefileloc]
+    dec edx
+    cmp byte[edx],'s'
+    jne .plznot
     mov al,'t'
+    jmp .addext
+.plznot
+    mov al,'0'
+.addext
+    pop edx
     jmp .save
 .nozero
     add bl,48
@@ -1536,7 +1569,19 @@ SECTION .text
     pop edx
     push ebx
     call DetermineNewest
+    push edx
+    mov edx,[ZStateName]
+    add edx,[statefileloc]
+    dec edx
+    cmp byte[edx],'s'
+    jne .isnott2b
+    pop edx
     drawfillboxhelp16b 0,'t'
+    jmp .isnext2b
+.isnott2b
+    pop edx
+    drawfillboxhelp16b 0,'0'
+.isnext2b
     drawfillboxhelp16b 1,'1'
     drawfillboxhelp16b 2,'2'
     drawfillboxhelp16b 3,'3'
@@ -1736,7 +1781,18 @@ SECTION .text
     mov byte[pressed+28],2
     cmp bl,0
     jne .nozero16b
+    push edx
+    mov edx,[ZStateName]
+    add edx,[statefileloc]
+    dec edx
+    cmp byte[edx],'s'
+    jne .plznot16b
     mov al,'t'
+    jmp .addext16b
+.plznot16b
+    mov al,'0'
+.addext16b
+    pop edx
     jmp .save16b
 .nozero16b
     add bl,48
@@ -1840,6 +1896,47 @@ NEWSYM testpressed8b
     inc bl
     mov byte[pressed+77],2
 .noright
+    push ecx
+    mov ecx,[ZStateName]
+    add ecx,[statefileloc]
+    dec ecx
+    test byte[pressed+72],1
+    jz .noup
+    cmp byte[ecx],'s'
+    je .noup
+    cmp byte[ecx],'1'
+    jne .goup
+    mov byte[ecx],'s'
+    inc ecx
+    cmp byte[ecx],'0'
+    jne .noaddt
+    mov byte[ecx],'t'
+.noaddt
+    dec ecx
+    jmp .goneup
+.goup
+    dec byte[ecx]
+.goneup
+    mov byte[pressed+72],2
+.noup
+    test byte[pressed+80],1
+    jz .nodown
+    cmp byte[ecx],'9'
+    je .nodown
+    cmp byte[ecx],'s'
+    jne .godown
+    mov byte[ecx],'0'
+    inc ecx
+    cmp byte[ecx],'t'
+    jne .noremt
+    mov byte[ecx],'0'
+.noremt
+    dec ecx
+.godown
+    inc byte[ecx]
+    mov byte[pressed+80],2
+.nodown
+    pop ecx
 %ifndef __MSDOS__
 %ifdef __UNIXSDL__
     test byte[pressed+92],1
@@ -1871,6 +1968,63 @@ NEWSYM testpressed8b
     mov byte[pressed+0CDh],2
 %endif
 .noright2
+    push ecx
+    mov ecx,[ZStateName]
+    add ecx,[statefileloc]
+    dec ecx
+%ifdef __UNIXSDL__
+    test byte[pressed+90],1
+%else
+    test byte[pressed+0C8h],1
+%endif
+    jz .noup2
+    cmp byte[ecx],'s'
+    je .noup2
+    cmp byte[ecx],'1'
+    jne .goup2
+    mov byte[ecx],'s'
+    inc ecx
+    cmp byte[ecx],'0'
+    jne .noaddt2
+    mov byte[ecx],'t'
+.noaddt2
+    dec ecx
+    jmp .goneup2
+.goup2
+    dec byte[ecx]
+.goneup2
+%ifdef __UNIXSDL__
+    mov byte[pressed+90],2
+%else
+    mov byte[pressed+0C8h],2
+%endif
+.noup2
+%ifdef __UNIXSDL__
+    test byte[pressed+96],1
+%else
+    test byte[pressed+0D0h],1
+%endif
+    jz .nodown2
+    cmp byte[ecx],'9'
+    je .nodown2
+    cmp byte[ecx],'s'
+    jne .godown2
+    mov byte[ecx],'0'
+    inc ecx
+    cmp byte[ecx],'t'
+    jne .noremt2
+    mov byte[ecx],'0'
+.noremt2
+    dec ecx
+.godown2
+    inc byte[ecx]
+%ifdef __UNIXSDL__
+    mov byte[pressed+96],2
+%else
+    mov byte[pressed+0D0h],2
+%endif
+.nodown2
+    pop ecx
 ;.nowin32
 %endif
     ret
