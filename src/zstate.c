@@ -662,12 +662,16 @@ if (!num)                                                             \
 {                                                                     \
   num = strchr(message, '-');                                         \
 }                                                                     \
-*num = (ZStateName[statefileloc] == 't') ? '0' : ZStateName[statefileloc];
+*num = (ZStateName[statefileloc-1] == 's') ? '0' : ZStateName[statefileloc-1];  \
+num++;                                                                \
+*num = (ZStateName[statefileloc] == 't') ? '0' : ZStateName[statefileloc];    \
+num--;
+
 
 void statesaver()
 {
-  static char txtsavemsg[] = "STATE - SAVED.";
-  static char txtrrsvmsg[] = "RR STATE - SAVED.";
+  static char txtsavemsg[] = "STATE -  SAVED.";
+  static char txtrrsvmsg[] = "RR STATE -  SAVED.";
 
   static char *txtsavenum = 0;
   static char *txtrrsvnum = 0;
@@ -716,7 +720,7 @@ void statesaver()
     zst_save(fhandle, (bool)(cbitmode && !NoPictureSave), false);
     fclose(fhandle);
 
-    //Display message onscreen, 'STATE X SAVED.'
+    //Display message onscreen, 'STATE XX SAVED.'
     Msgptr = txtsavemsg;
   }
   else
@@ -920,10 +924,10 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
 {
   extern unsigned char PauseLoad;
 
-  static char txtloadmsg[] = "STATE - LOADED.";
-  static char txtconvmsg[] = "STATE - TOO OLD.";
-  static char txtnfndmsg[] = "UNABLE TO LOAD STATE -";
-  static char txtrrldmsg[] = "RR STATE - LOADED.";
+  static char txtloadmsg[] = "STATE -  LOADED.";
+  static char txtconvmsg[] = "STATE -  TOO OLD.";
+  static char txtnfndmsg[] = "UNABLE TO LOAD STATE - .";
+  static char txtrrldmsg[] = "RR STATE -  LOADED.";
 
   static char *txtloadnum = 0;
   static char *txtconvnum = 0;
@@ -987,7 +991,7 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
 
     if (zst_load(fhandle, 0))
     {
-      Msgptr = txtloadmsg; // 'STATE X LOADED.'
+      Msgptr = txtloadmsg; // 'STATE XX LOADED.'
 
       if (PauseLoad || EMUPause)
       {
@@ -1002,7 +1006,7 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
   }
   else
   {
-    Msgptr = txtnfndmsg; // 'UNABLE TO LOAD STATE X.'
+    Msgptr = txtnfndmsg; // 'UNABLE TO LOAD STATE XX.'
   }
 
   Voice0Disable = Voice1Disable = Voice2Disable = Voice3Disable = 1;
