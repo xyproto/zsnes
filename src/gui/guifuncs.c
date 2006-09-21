@@ -1401,7 +1401,7 @@ void GUILoadData()
         dupfound = (!fnamencmp(nameptr, (char *)prevloadfnamel+i*512, 512) && (!fnamencmp(ZRomPath, (char *)prevloaddnamel+i*512+1, 512)));
         if(dupfound && modheader)
         {
-          strncpy(prevloadiname+i*28, selected_names[GUIcurrentcursloc], 28);
+          strncpy((char *)prevloadiname+i*28, selected_names[GUIcurrentcursloc], 28);
           prevloadiname[i*28+27] = 0;
           modheader = false;
         }
@@ -1411,7 +1411,7 @@ void GUILoadData()
 
       if (!dupfound)
       {
-        strncpy(prevloadiname+9*28, selected_names[GUIcurrentcursloc], 28);
+        strncpy((char *)prevloadiname+9*28, selected_names[GUIcurrentcursloc], 28);
         prevloadiname[9*28+27] = 0;
         strcpy((char *)prevloaddnamel+9*512+1, ZRomPath);
         strcpy((char *)prevloadfnamel+9*512, ZCartName);
