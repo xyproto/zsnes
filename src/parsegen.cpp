@@ -373,7 +373,7 @@ class nstack
   vector<T> data;
 };
 
-set<string> defines;
+set<string> defines, dependancies;
 nstack<bool> ifs;
 
 typedef vector<string> str_array;
@@ -511,8 +511,8 @@ namespace variable
       return(false);
     }
 
-   bool packed_used()
-   {
+    bool packed_used()
+    {
       for (config_data_array::iterator i = data_array.begin(); i != data_array.end(); i++)
       {
         if (i->format == mult_packed)
@@ -521,7 +521,7 @@ namespace variable
         }
       }
       return(false);
-   }
+    }
 
     config_data_array::iterator begin() { return(data_array.begin()); }
     config_data_array::iterator end() { return(data_array.end()); }
@@ -733,12 +733,9 @@ void output_cheader_end(ostream& cheader_stream)
 void output_extsym_dependancies(ostream& c_stream)
 {
   c_stream << "\n";
-  for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)
+  for (set<string>::iterator i = dependancies.begin(); i != dependancies.end(); i++)
   {
-    if (i->dependancy != "")
-    {
-      c_stream << "extern unsigned char " << string(i->dependancy, 0, i->dependancy.length()-1) << ";\n";
-    }
+    c_stream << "extern unsigned char " << *i << ";\n";
   }
 }
 
@@ -1111,8 +1108,22 @@ void output_read_var(ostream& c_stream)
            << "      while (isspace(*value)) { value++; }\n"
            << "      if ((p = find_str(var, \" \\t\\r\\n\"))) { *p = 0; }\n"
            << "      if ((p = find_str(value, \" \\t\\r\\n\"))) { *p = 0; }\n"
-           << "      if (!*var || !*value) { continue; }\n"
-           << "    }\n"
+           << "      if (!*var || !*value) { continue; }\n";
+  if (dependancies.size())
+  {
+    c_stream << "      if ((p = strchr(var, ':')))\n"
+             << "      {\n"
+             << "        if (!strlen(p+1)) { continue; }\n";
+    set<string>::iterator i = dependancies.begin();
+    c_stream << "        if (!strncmp(var, \"" << *i << ":\", (p-var)+1)) { if (!" << *i << ") { continue; } }\n";
+    for (i++; i != dependancies.end(); i++)
+    {
+      c_stream << "        else if (!strncmp(var, \"" << *i << ":\", (p-var)+1)) { if (!" << *i << ") { continue; } }\n";
+    }
+    c_stream << "        else { continue; }\n"
+             << "      }\n";
+  }
+  c_stream << "    }\n"
            << "    else\n"
            << "    {\n"
            << "      continue;\n"
@@ -1122,7 +1133,7 @@ void output_read_var(ostream& c_stream)
   {
     if (i->format != variable::none)
     {
-      c_stream << "    if (!strcmp(var, \"" + i->name + "\")) { ";
+      c_stream << "    if (!strcmp(var, \"" << i->dependancy << i->name << "\")) { ";
       if (i->format == variable::single)
       {
         c_stream << i->name << " = (" << variable::info[i->type].CTypeSpace << ")atoi(value);";
@@ -1449,7 +1460,9 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
       if ((d = strchr(token, ':')))
       {
         varname = d+1;
-        dependancy.assign(token, (d-token)+1);
+        dependancy.assign(token, d-token);
+        dependancies.insert(dependancy);
+        dependancy += ':';
       }
       else
       {
