@@ -156,6 +156,7 @@ void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char *buffer
 extern unsigned int statefileloc;
 
 unsigned char newestfileloc;
+unsigned char newestfileloc10;
 time_t newestfiledate;
 
 void DetermineNew()
@@ -167,6 +168,7 @@ void DetermineNew()
   {
     newestfiledate = filestat.st_mtime;
     newestfileloc = ZStateName[statefileloc] == 't' ? 0 : ZStateName[statefileloc]-'0';
+    newestfileloc10 = ZStateName[statefileloc-1] == 's' ? 0 : ZStateName[statefileloc-1]-'0';
   }
   if (MovieProcessing) { mzt_chdir_down(); }
 }
