@@ -1130,7 +1130,13 @@ DisplayGUIChoseSave:                    ; Pick Save State
   mov edx,[ZStateName]
   mov al,[edx+ebx]
   mov [GUIChoseSaveText2],al
+  cmp byte[edx+ebx-1],'s'
+  jne .nots
   GUIDisplayButtonHole 2,10,28,byte[GUIChoseSaveText2],'t'
+  jmp .next1
+.nots
+  GUIDisplayButtonHole 2,10,28,byte[GUIChoseSaveText2],'0'
+.next1
   GUIDisplayButtonHole 2,30,28,byte[GUIChoseSaveText2],'1'
   GUIDisplayButtonHole 2,50,28,byte[GUIChoseSaveText2],'2'
   GUIDisplayButtonHole 2,70,28,byte[GUIChoseSaveText2],'3'

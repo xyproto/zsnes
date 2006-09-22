@@ -1873,7 +1873,18 @@ DisplayGUIConfirmClick:
   ret
 
 DisplayGUIChoseSaveClick:
+  push edx
+  mov al,[GUIChoseSaveText2]
+  mov edx,[ZStateName]
+  add edx,[statefileloc]
+  dec edx
+  cmp byte[edx],'s'
+  jne .nots
   GUIPButtonHole 10,28,byte[GUIChoseSaveText2],'t'
+  jmp .next1
+.nots
+  GUIPButtonHole 10,28,byte[GUIChoseSaveText2],'0'
+.next1
   GUIPButtonHole 30,28,byte[GUIChoseSaveText2],'1'
   GUIPButtonHole 50,28,byte[GUIChoseSaveText2],'2'
   GUIPButtonHole 70,28,byte[GUIChoseSaveText2],'3'
@@ -1883,6 +1894,7 @@ DisplayGUIChoseSaveClick:
   GUIPButtonHole 50,43,byte[GUIChoseSaveText2],'7'
   GUIPButtonHole 70,43,byte[GUIChoseSaveText2],'8'
   GUIPButtonHole 90,43,byte[GUIChoseSaveText2],'9'
+  pop edx
   mov ebx,[statefileloc]
   mov al,[GUIChoseSaveText2]
   mov edx,[ZStateName]
