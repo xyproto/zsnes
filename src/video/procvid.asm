@@ -2533,8 +2533,11 @@ NEWSYM ClockOutput
     mov word[esi-2],0
     mov word[esi-2+75036*4],0
 .loopb
+    cmp byte[ForceNonTransp],1
+    je .menuon
     cmp byte[ClockBox],1
     jne .nobox
+.menuon
     mov dword[esi],0
     mov dword[esi+75036*4],0
     add esi,4

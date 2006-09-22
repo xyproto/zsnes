@@ -396,9 +396,10 @@ bgfixer db 0
 
 %ifdef __MSDOS__
 @
-@ Force Black Background (0 = No, 1 = YES)
-@ This is necessary to get a black background for 8-bit modes
-Palette0 db 1
+@ Force Black Background (0 = NO, 1 = Yes)
+@ This is necessary to get a black background for 8-bit modes.
+@ This can cause rendering problems in certain games.
+Palette0 db 0
 %endif
 
 @
