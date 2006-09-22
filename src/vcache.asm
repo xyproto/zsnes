@@ -85,10 +85,14 @@ SECTION .text
     test byte[pressed+eax],1
     je %%nostsl
     mov byte[pressed+eax],2
-    mov byte[sselm+11],%2
+    mov byte[sselm+12],%2
     mov eax,[statefileloc]
     mov ecx,[ZStateName]
-    mov byte[ecx+eax],%3
+    add ecx,[statefileloc]
+    mov byte[ecx],%3
+    dec ecx
+    mov cl,[ecx]
+    mov [sselm+11],cl
     mov dword[Msgptr],sselm
     mov eax,[MsgCount]
     mov [MessageOn],eax
@@ -731,7 +735,17 @@ NEWSYM cachevideo
 .nodisplayfps
 
     ; do state selects
+    push edx
+    mov edx,[ZStateName]
+    add edx,[statefileloc]
+    dec edx
+    cmp byte[edx],'s'
+    jne .nots
     stateselcomp KeyStateSlc0,'0','t'
+    jmp .next1
+.nots
+    stateselcomp KeyStateSlc0,'0','0'
+.next1
     stateselcomp KeyStateSlc1,'1','1'
     stateselcomp KeyStateSlc2,'2','2'
     stateselcomp KeyStateSlc3,'3','3'
@@ -741,11 +755,12 @@ NEWSYM cachevideo
     stateselcomp KeyStateSlc7,'7','7'
     stateselcomp KeyStateSlc8,'8','8'
     stateselcomp KeyStateSlc9,'9','9'
+    pop edx
     mov eax,[KeyStateSlc0]
     test byte[pressed+eax],1
     je .nostsl0
     mov byte[pressed+eax],2
-    mov byte[sselm+11],'0'
+    mov byte[sselm+12],'0'
     mov dword[Msgptr],sselm
     mov eax,[MsgCount]
     mov [MessageOn],eax
@@ -774,10 +789,10 @@ NEWSYM cachevideo
     mov [ecx+eax], dh
     cmp dh,'t'
     je .firststatemsg
-    mov [sselm+11],dh
+    mov [sselm+12],dh
     jmp .incstatemsg
 .firststatemsg
-    mov byte[sselm+11],'0'
+    mov byte[sselm+12],'0'
 .incstatemsg
     mov dword[Msgptr],sselm
     mov eax,[MsgCount]
@@ -807,10 +822,10 @@ NEWSYM cachevideo
     mov [ecx+eax], dh
     cmp dh,'t'
     je .firststatemsg2
-    mov [sselm+11],dh
+    mov [sselm+12],dh
     jmp .decstatemsg
 .firststatemsg2
-    mov byte[sselm+11],'0'
+    mov byte[sselm+12],'0'
 .decstatemsg
     mov dword[Msgptr],sselm
     mov eax,[MsgCount]
@@ -999,7 +1014,7 @@ NEWSYM ofsdissw,    db 'OFFSET MODE DISABLED',0
 NEWSYM ofsenasw,    db 'OFFSET MODE ENABLED',0
 NEWSYM ngena, db 'NEW GFX ENGINE ENABLED',0
 NEWSYM ngdis, db 'NEW GFX ENGINE DISABLED',0
-NEWSYM sselm, db 'STATE SLOT 0 SELECTED',0
+NEWSYM sselm, db 'STATE SLOT  0 SELECTED',0
 NEWSYM vollv, db 'VOLUME LEVEL :    ',0
 NEWSYM frlev, db 'FRAME SKIP SET TO  ',0
 NEWSYM frlv0, db 'AUTO FRAMERATE ENABLED',0
