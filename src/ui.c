@@ -437,9 +437,9 @@ void determinenewhelp(char ext)
 
 void zst_init()
 {
+  int tenslots = 0;
   statefileloc = strlen(ZStateName)-1;
   firstsaveinc = 1;
-  int tenslots = 0;
 
   if(LatestSave)
   {
