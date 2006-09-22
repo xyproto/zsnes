@@ -1709,7 +1709,17 @@ SECTION .text
     push ecx
     cmp bl,0
     jne .nozero16b2
+    push edx
+    mov edx,[ZStateName]
+    add edx,[statefileloc]
+    dec edx
+    cmp byte[edx],'s'
+    pop edx
+    jne .plznotpic
     mov cl,'t'
+    jmp .save16b2
+.plznotpic
+    mov cl,'0'
     jmp .save16b2
 .nozero16b2
     mov cl,bl
