@@ -662,7 +662,7 @@ if (!num)                                                             \
 {                                                                     \
   num = strchr(message, '-');                                         \
 }                                                                     \
-*num = (ZStateName[statefileloc-1] == 's') ? '0' : ZStateName[statefileloc-1];  \
+*num = ZStateName[statefileloc-1];                                    \
 num++;                                                                \
 *num = (ZStateName[statefileloc] == 't') ? '0' : ZStateName[statefileloc];    \
 num--;
@@ -1033,11 +1033,14 @@ void loadstate2()
 void LoadSecondState() // direct port, need zpath
 {
   unsigned char backup = ZStateName[statefileloc];
+  unsigned char backup2 = ZStateName[statefileloc-1];
   ZStateName[statefileloc] = 's';
+  ZStateName[statefileloc-1] = 's';
 
   loadstate2();
 
   ZStateName[statefileloc] = backup;
+  ZStateName[statefileloc-1] = backup2;
 }
 
 extern unsigned char CHIPBATT, sramsavedis;
