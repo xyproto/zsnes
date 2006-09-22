@@ -439,6 +439,7 @@ void zst_init()
 {
   statefileloc = strlen(ZStateName)-1;
   firstsaveinc = 1;
+  int tenslots = 0;
 
   if(LatestSave)
   {
@@ -446,8 +447,7 @@ void zst_init()
     newestfileloc = 0;
     newestfileloc10 = 0;
 
-    int tenslots;
-    for(tenslots = 0;tenslots<10;tenslots++)
+    for(tenslots;tenslots<10;tenslots++)
     {
       if(tenslots)
         ZStateName[statefileloc-1] = tenslots+'0';

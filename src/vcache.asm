@@ -773,6 +773,7 @@ NEWSYM cachevideo
     mov eax,[statefileloc]
     mov ecx,[ZStateName]
     mov dh, [ecx+eax]
+    mov dl, [ecx+eax-1]
     cmp dh,'t'
     je .secondstate
     cmp dh,'9'
@@ -783,10 +784,23 @@ NEWSYM cachevideo
     mov dh,'1'
     jmp .donextstate
 .jumptofirststate
+    cmp dl,'9'
+    je .jumptoveryfirststate
+    mov dh,'0'
+    cmp dl,'s'
+    je .jumptotenthstate
+    inc dl
+    jmp .donextstate
+.jumptotenthstate
+    mov dl,'1'
+    jmp .donextstate
+.jumptoveryfirststate
+    mov dl,'s'
     mov dh,'t'
 .donextstate
     mov ecx,[ZStateName]
-    mov [ecx+eax], dh
+    mov [ecx+eax],dh
+    mov [ecx+eax-1],dl
     cmp dh,'t'
     je .firststatemsg
     mov [sselm+12],dh
@@ -794,10 +808,11 @@ NEWSYM cachevideo
 .firststatemsg
     mov byte[sselm+12],'0'
 .incstatemsg
+    mov [sselm+11],dl
     mov dword[Msgptr],sselm
     mov eax,[MsgCount]
     mov [MessageOn],eax
-    xor dh,dh
+    xor dx,dx
 .noincstateslot
 
     mov eax,[KeyDecStateSlot]
@@ -807,19 +822,36 @@ NEWSYM cachevideo
     mov eax,[statefileloc]
     mov ecx,[ZStateName]
     mov dh, [ecx+eax]
+    mov dl, [ecx+eax-1]
     cmp dh,'t'
-    je .jumptolaststate
+    je .jumptoverylaststate
+    cmp dh,'0'
+    je .doninthstate
     dec dh
     cmp dh,'0'
+    jne .doprevstate
+    cmp dl,'s'
     jne .doprevstate
 .firststate
     mov dh,'t'
     jmp .doprevstate
-.jumptolaststate
+.doninthstate
+    cmp dl,'1'
+    jne .doninthstate2
+    mov dl,'s'
+    jmp .settonine
+.doninthstate2
+    dec dl
+.settonine    
     mov dh,'9'
+    jmp .doprevstate
+.jumptoverylaststate
+    mov dh,'9'
+    mov dl,'9'
 .doprevstate
     mov ecx,[ZStateName]
-    mov [ecx+eax], dh
+    mov [ecx+eax],dh
+    mov [ecx+eax-1],dl
     cmp dh,'t'
     je .firststatemsg2
     mov [sselm+12],dh
@@ -827,10 +859,11 @@ NEWSYM cachevideo
 .firststatemsg2
     mov byte[sselm+12],'0'
 .decstatemsg
+    mov [sselm+11],dl
     mov dword[Msgptr],sselm
     mov eax,[MsgCount]
     mov [MessageOn],eax
-    xor dh,dh
+    xor dx,dx
 .nodecstateslot
     mov eax,[KeyUsePlayer1234]
     test byte[pressed+eax],1
