@@ -1043,6 +1043,19 @@ void LoadSecondState() // direct port, need zpath
   ZStateName[statefileloc-1] = backup2;
 }
 
+void SaveSecondState()
+{
+  unsigned char backup = ZStateName[statefileloc];
+  unsigned char backup2 = ZStateName[statefileloc-1];
+  ZStateName[statefileloc] = 's';
+  ZStateName[statefileloc-1] = 's';
+
+  statesaver();
+
+  ZStateName[statefileloc] = backup;
+  ZStateName[statefileloc-1] = backup2;
+}
+
 extern unsigned char CHIPBATT, sramsavedis;
 void SaveCombFile();
 

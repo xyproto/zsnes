@@ -119,7 +119,7 @@ EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
 EXTSYM d_names,selected_names,GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
 EXTSYM GUIcurrentfilewin,GUIcurrentcursloc,GUIcurrentviewloc
-EXTSYM GUIcurrentdircursloc,GetLoadData,ZRomPath
+EXTSYM GUIcurrentdircursloc,GetLoadData,ZRomPath,SaveSecondState
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
@@ -918,7 +918,9 @@ NEWSYM StartGUI
   je .noautostate
   cmp byte[romloadskip],0
   jne .noautostate
+  pushad
   call SaveSecondState
+  popad
 .noautostate
 
   GUIInitIRQs
@@ -1966,20 +1968,6 @@ GUIProcStates:
   call loadstate2
   popad
 .changedir
-  ret
-
-SaveSecondState:
-  mov ebx,[statefileloc]
-  mov ecx,[ZStateName]
-  mov al,[ecx+eax]
-  mov byte[ecx+ebx],'s'
-
-  pushad
-  call statesaver
-  popad
-  mov ebx,[statefileloc]
-  mov ecx,[ZStateName]
-  mov [ecx+ebx],al
   ret
 
 GUIProcReset:
