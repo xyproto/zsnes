@@ -668,6 +668,9 @@ SRAMState db 1
 @ Enable this if you have a tendency in saving accidentally to an existing
 @ savestate.
 AutoIncSaveSlot db 0
+@ Save in 10 save block (0 = NO, 1 = Yes)
+@ This may be handy if you want to save within a block (0-9, 11-19, etc.)
+AutoIncSaveSlotBlock db 0
 
 @
 @ Select latest save state slot on game load (0 = NO, 1 = Yes)

@@ -459,6 +459,7 @@ void GUIRestoreVars()
   CheckValueBounds(&SDRatio, 0, 28, 0, UB);
   CheckValueBounds(&SRAMState, 0, 1, 1, UB);
   CheckValueBounds(&AutoIncSaveSlot, 0, 1, 0, UB);
+  CheckValueBounds(&AutoIncSaveSlotBlock, 0, 1, 0, UB);
   CheckValueBounds(&LatestSave, 0, 1, 0, UB);
   CheckValueBounds(&AutoState, 0, 1, 0, UB);
   CheckValueBounds(&RewindStates, 0, 99, 8, UB);

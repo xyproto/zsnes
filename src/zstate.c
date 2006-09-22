@@ -689,7 +689,38 @@ void statesaver()
           ZStateName[statefileloc] = '1';
           break;
         case '9':
-          ZStateName[statefileloc] = 't';
+          if(AutoIncSaveSlotBlock)
+          {
+            if(ZStateName[statefileloc-1] == 's')
+            {
+              ZStateName[statefileloc] = 't';
+            }
+            else
+            {
+              ZStateName[statefileloc] = '0';
+            }
+          }
+          else
+          {
+            if(ZStateName[statefileloc-1] == '9')
+            {
+              ZStateName[statefileloc-1] = 's';
+              ZStateName[statefileloc] = 't';
+            }
+
+            else
+            {
+              if(ZStateName[statefileloc-1] == 's')
+              {
+                ZStateName[statefileloc-1] = '1';
+              }
+              else
+              {
+                ZStateName[statefileloc-1]++;
+              }
+              ZStateName[statefileloc] = '0';
+            }
+          }
         case 's': // ZSS state
           break;
         default:
