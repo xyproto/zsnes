@@ -1909,6 +1909,10 @@ NEWSYM ForceNonTransp, resb 1
 SECTION .text
 
 NEWSYM testpressed8b
+    push eax
+    push ecx
+    mov ecx,[ZStateName]
+    add ecx,[statefileloc]
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
     je .try1
@@ -1921,6 +1925,7 @@ NEWSYM testpressed8b
     jz .no1
 .yes1
     mov bl,1
+    mov byte[ecx],'1'
 .no1
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -1934,6 +1939,7 @@ NEWSYM testpressed8b
     jz .no2
 .yes2
     mov bl,2
+    mov byte[ecx],'2'
 .no2
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -1947,6 +1953,7 @@ NEWSYM testpressed8b
     jz .no3
 .yes3
     mov bl,3
+    mov byte[ecx],'3'
 .no3
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -1960,6 +1967,7 @@ NEWSYM testpressed8b
     jz .no4
 .yes4
     mov bl,4
+    mov byte[ecx],'4'
 .no4
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -1973,6 +1981,7 @@ NEWSYM testpressed8b
     jz .no5
 .yes5
     mov bl,5
+    mov byte[ecx],'5'
 .no5
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -1986,6 +1995,7 @@ NEWSYM testpressed8b
     jz .no6
 .yes6
     mov bl,6
+    mov byte[ecx],'6'
 .no6
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -1999,6 +2009,7 @@ NEWSYM testpressed8b
     jz .no7
 .yes7
     mov bl,7
+    mov byte[ecx],'7'
 .no7
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -2012,6 +2023,7 @@ NEWSYM testpressed8b
     jz .no8
 .yes8
     mov bl,8
+    mov byte[ecx],'8'
 .no8
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -2025,6 +2037,7 @@ NEWSYM testpressed8b
     jz .no9
 .yes9
     mov bl,9
+    mov byte[ecx],'9'
 .no9
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -2038,11 +2051,16 @@ NEWSYM testpressed8b
     jz .no0
 .yes0
     mov bl,0
+    dec ecx
+    cmp byte[ecx],'s'
+    jne .insert0
+    inc ecx
+    mov byte[ecx],'t'
+    jmp .no0
+.insert0
+    inc ecx
+    mov byte[ecx],'0'
 .no0
-    push eax
-    push ecx
-    mov ecx,[ZStateName]
-    add ecx,[statefileloc]
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],1 ; if numlock on, disregard numpad
     je .noleft
