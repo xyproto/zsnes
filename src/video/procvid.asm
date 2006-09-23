@@ -1079,7 +1079,7 @@ NEWSYM drawfillboxsc
     xor eax,eax
     mov al,11
     mul bl
-    mov esi,76+94*288
+    mov esi,76+104*288
     add esi,[vidbuffer]
     add esi,eax
     mov ecx,10
@@ -1113,7 +1113,7 @@ NEWSYM drawfillboxsc16b
     xor eax,eax
     mov al,11
     mul bl
-    mov esi,76*2+94*288*2
+    mov esi,76*2+104*288*2
     add esi,[vidbuffer]
     add esi,eax
     add esi,eax
@@ -1141,7 +1141,7 @@ NEWSYM drawbox
     xor eax,eax
     mov al,11
     mul bl
-    mov esi,75+93*288
+    mov esi,75+103*288
     add esi,[vidbuffer]
     add esi,eax
     mov al,dl
@@ -1168,7 +1168,7 @@ NEWSYM drawbox16b
     xor eax,eax
     mov al,11
     mul bl
-    mov esi,75*2+93*288*2
+    mov esi,75*2+103*288*2
     add esi,[vidbuffer]
     add esi,eax
     add esi,eax
@@ -1265,7 +1265,7 @@ NEWSYM saveselect
     mov esi,70+70*288
     add esi,[vidbuffer]
     mov ecx,150
-    mov al,70
+    mov al,80
 .loop
     mov byte[esi],144
     inc esi
@@ -1320,15 +1320,23 @@ NEWSYM saveselect
     add esi,[vidbuffer]
     mov edi,.stringb
     call OutputGraphicString
-    mov esi,75+108*288
+    mov esi,75+93*288
     add esi,[vidbuffer]
-    mov edi,.stringc
+    mov edi,.stringb2
+    call OutputGraphicString
+    mov esi,171+93*288
+    add esi,[vidbuffer]
+    mov edi,slotnum
     call OutputGraphicString
     mov esi,75+118*288
     add esi,[vidbuffer]
-    mov edi,.stringd
+    mov edi,.stringc
     call OutputGraphicString
     mov esi,75+128*288
+    add esi,[vidbuffer]
+    mov edi,.stringd
+    call OutputGraphicString
+    mov esi,75+138*288
     add esi,[vidbuffer]
     mov edi,.stringe
     call OutputGraphicString
@@ -1339,25 +1347,25 @@ NEWSYM saveselect
     call drawhline
     mov esi,70+70*288
     add esi,[vidbuffer]
-    mov ecx,70
+    mov ecx,80
     call drawvline
-    mov esi,70+139*288
+    mov esi,70+149*288
     add esi,[vidbuffer]
     mov ecx,150
     call drawhline
     mov esi,219+70*288
     add esi,[vidbuffer]
-    mov ecx,70
+    mov ecx,80
     call drawvline
-    mov esi,75+93*288
+    mov esi,75+103*288
+    add esi,[vidbuffer]
+    mov ecx,111
+    call drawhline
+    mov esi,75+114*288
     add esi,[vidbuffer]
     mov ecx,111
     call drawhline
     mov esi,75+104*288
-    add esi,[vidbuffer]
-    mov ecx,111
-    call drawhline
-    mov esi,75+94*288
     add esi,[vidbuffer]
     mov bl,11
 .nextvline
@@ -1370,7 +1378,7 @@ NEWSYM saveselect
     add esi,11
     dec bl
     jnz .nextvline
-    mov esi,78+96*288
+    mov esi,78+106*288
     add esi,[vidbuffer]
     mov al,1
     call outputchar
@@ -1568,7 +1576,7 @@ SECTION .text
     mov esi,70*2+70*288*2
     add esi,[vidbuffer]
     mov ecx,150
-    mov al,70
+    mov al,80
     mov ah,5
 .loop16b
     mov [esi],dx
@@ -1630,15 +1638,23 @@ SECTION .text
     add esi,[vidbuffer]
     mov edi,.stringb
     call OutputGraphicString16b
-    mov esi,75*2+108*288*2
+    mov esi,75*2+93*288*2
     add esi,[vidbuffer]
-    mov edi,.stringc
+    mov edi,.stringb2
+    call OutputGraphicString16b
+    mov esi,171*2+93*288*2
+    add esi,[vidbuffer]
+    mov edi,slotnum
     call OutputGraphicString16b
     mov esi,75*2+118*288*2
     add esi,[vidbuffer]
-    mov edi,.stringd
+    mov edi,.stringc
     call OutputGraphicString16b
     mov esi,75*2+128*288*2
+    add esi,[vidbuffer]
+    mov edi,.stringd
+    call OutputGraphicString16b
+    mov esi,75*2+138*288*2
     add esi,[vidbuffer]
     mov edi,.stringe
     call OutputGraphicString16b
@@ -1649,25 +1665,25 @@ SECTION .text
     call drawhline16b
     mov esi,70*2+70*288*2
     add esi,[vidbuffer]
-    mov ecx,70
+    mov ecx,80
     call drawvline16b
-    mov esi,70*2+139*288*2
+    mov esi,70*2+149*288*2
     add esi,[vidbuffer]
     mov ecx,150
     call drawhline16b
     mov esi,219*2+70*288*2
     add esi,[vidbuffer]
-    mov ecx,70
+    mov ecx,80
     call drawvline16b
-    mov esi,75*2+93*288*2
+    mov esi,75*2+103*288*2
+    add esi,[vidbuffer]
+    mov ecx,111
+    call drawhline16b
+    mov esi,75*2+114*288*2
     add esi,[vidbuffer]
     mov ecx,111
     call drawhline16b
     mov esi,75*2+104*288*2
-    add esi,[vidbuffer]
-    mov ecx,111
-    call drawhline16b
-    mov esi,75*2+94*288*2
     add esi,[vidbuffer]
     mov bl,11
 .nextvline16b
@@ -1680,7 +1696,7 @@ SECTION .text
     add esi,22
     dec bl
     jnz .nextvline16b
-    mov esi,78*2+96*288*2
+    mov esi,78*2+106*288*2
     add esi,[vidbuffer]
     mov al,1
     call outputchar16b
@@ -1870,9 +1886,11 @@ SECTION .text
 SECTION .data
 .stringa db 'PLEASE SELECT',0
 .stringb db 'SAVE STATE SLOT',0
+.stringb2 db 'SLOT LEVEL:',0
 .stringc db 'USE CURSOR KEYS',0
 .stringd db 'TO MOVE AND',0
 .stringe db 'ENTER TO SELECT',0
+slotnum db '0',0
 
 SECTION .bss
 NEWSYM ForceNonTransp, resb 1
@@ -1934,6 +1952,7 @@ NEWSYM testpressed8b
     inc bl
     mov byte[pressed+77],2
 .noright
+    push eax
     push ecx
     mov ecx,[ZStateName]
     add ecx,[statefileloc]
@@ -1951,9 +1970,13 @@ NEWSYM testpressed8b
     mov byte[ecx],'t'
 .noaddt
     dec ecx
+    mov al,'0'
+    mov [slotnum],al
     jmp .goneup
 .goup
     dec byte[ecx]
+    mov al,byte[ecx]
+    mov [slotnum],al
 .goneup
     mov byte[pressed+72],2
 .noup
@@ -1972,9 +1995,12 @@ NEWSYM testpressed8b
     dec ecx
 .godown
     inc byte[ecx]
+    mov al,byte[ecx]
+    mov [slotnum],al
     mov byte[pressed+80],2
 .nodown
     pop ecx
+    pop eax
 %ifndef __MSDOS__
 %ifdef __UNIXSDL__
     test byte[pressed+92],1
@@ -2006,6 +2032,7 @@ NEWSYM testpressed8b
     mov byte[pressed+0CDh],2
 %endif
 .noright2
+    push eax
     push ecx
     mov ecx,[ZStateName]
     add ecx,[statefileloc]
@@ -2027,9 +2054,13 @@ NEWSYM testpressed8b
     mov byte[ecx],'t'
 .noaddt2
     dec ecx
+    mov al,'0'
+    mov [slotnum],al
     jmp .goneup2
 .goup2
     dec byte[ecx]
+    mov al,byte[ecx]
+    mov [slotnum],al
 .goneup2
 %ifdef __UNIXSDL__
     mov byte[pressed+90],2
@@ -2056,6 +2087,8 @@ NEWSYM testpressed8b
     dec ecx
 .godown2
     inc byte[ecx]
+    mov al,byte[ecx]
+    mov [slotnum],al
 %ifdef __UNIXSDL__
     mov byte[pressed+96],2
 %else
@@ -2063,6 +2096,7 @@ NEWSYM testpressed8b
 %endif
 .nodown2
     pop ecx
+    pop eax
 ;.nowin32
 %endif
     ret
