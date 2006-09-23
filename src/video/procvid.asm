@@ -2106,7 +2106,7 @@ NEWSYM testpressed8b
     test byte[pressed+72],1
     jz .noup
     cmp byte[ecx],'s'
-    je .noup
+    je .goneup
     cmp byte[ecx],'1'
     jne .goup
     mov byte[ecx],'s'
@@ -2133,7 +2133,7 @@ NEWSYM testpressed8b
     test byte[pressed+80],1
     jz .nodown
     cmp byte[ecx],'9'
-    je .nodown
+    je .gonedown
     cmp byte[ecx],'s'
     jne .godown
     mov byte[ecx],'0'
@@ -2147,6 +2147,7 @@ NEWSYM testpressed8b
     inc byte[ecx]
     mov al,byte[ecx]
     mov [slotlevelnum],al
+.gonedown
     mov byte[pressed+80],2
 .nodown
     pop ecx
@@ -2209,7 +2210,7 @@ NEWSYM testpressed8b
 %endif
     jz .noup2
     cmp byte[ecx],'s'
-    je .noup2
+    je .goneup2
     cmp byte[ecx],'1'
     jne .goup2
     mov byte[ecx],'s'
@@ -2240,7 +2241,7 @@ NEWSYM testpressed8b
 %endif
     jz .nodown2
     cmp byte[ecx],'9'
-    je .nodown2
+    je .gonedown2
     cmp byte[ecx],'s'
     jne .godown2
     mov byte[ecx],'0'
@@ -2254,6 +2255,7 @@ NEWSYM testpressed8b
     inc byte[ecx]
     mov al,byte[ecx]
     mov [slotlevelnum],al
+.gonedown2
 %ifdef __UNIXSDL__
     mov byte[pressed+96],2
 %else
