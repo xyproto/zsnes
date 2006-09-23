@@ -1909,42 +1909,132 @@ NEWSYM ForceNonTransp, resb 1
 SECTION .text
 
 NEWSYM testpressed8b
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je .try1
+    test byte[pressed+04Fh],1
+    jz .try1
+    jmp .yes1
+.try1
+%endif
     test byte[pressed+2],1
     jz .no1
+.yes1
     mov bl,1
 .no1
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je .try2
+    test byte[pressed+050h],1
+    jz .try2
+    jmp .yes2
+.try2
+%endif
     test byte[pressed+3],1
     jz .no2
+.yes2
     mov bl,2
 .no2
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je .try3
+    test byte[pressed+051h],1
+    jz .try3
+    jmp .yes3
+.try3
+%endif
     test byte[pressed+4],1
     jz .no3
+.yes3
     mov bl,3
 .no3
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je .try4
+    test byte[pressed+04Bh],1
+    jz .try4
+    jmp .yes4
+.try4
+%endif
     test byte[pressed+5],1
     jz .no4
+.yes4
     mov bl,4
 .no4
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je .try5
+    test byte[pressed+04Ch],1
+    jz .try5
+    jmp .yes5
+.try5
+%endif
     test byte[pressed+6],1
     jz .no5
+.yes5
     mov bl,5
 .no5
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je .try6
+    test byte[pressed+04Dh],1
+    jz .try6
+    jmp .yes6
+.try6
+%endif
     test byte[pressed+7],1
     jz .no6
+.yes6
     mov bl,6
 .no6
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je .try7
+    test byte[pressed+047h],1
+    jz .try7
+    jmp .yes7
+.try7
+%endif
     test byte[pressed+8],1
     jz .no7
+.yes7
     mov bl,7
 .no7
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je .try8
+    test byte[pressed+048h],1
+    jz .try8
+    jmp .yes8
+.try8
+%endif
     test byte[pressed+9],1
     jz .no8
+.yes8
     mov bl,8
 .no8
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je .try9
+    test byte[pressed+049h],1
+    jz .try9
+    jmp .yes9
+.try9
+%endif
     test byte[pressed+10],1
     jz .no9
+.yes9
     mov bl,9
 .no9
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je .try1
+    test byte[pressed+04Fh],1
+    jz .try1
+    jmp .yes1
+.try1
+%endif
+
     test byte[pressed+11],1
     jz .no0
     mov bl,0
