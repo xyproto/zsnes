@@ -1209,6 +1209,24 @@ NEWSYM drawbox16b
     call drawfillboxsc16b
 %endmacro
 
+%macro checkkeys_f3 1
+%ifdef __MSDOS__
+    cmp byte[pressed+72],2
+    je .updatescreen%1
+    cmp byte[pressed+80],2
+    je .updatescreen%1
+%elifdef __UNIXSDL__
+    cmp byte[pressed+90],2
+    je .updatescreen%1
+    cmp byte[pressed+96],2
+    je .updatescreen%1
+%elifdef __WIN32__
+    cmp byte[pressed+0C8h],2
+    je .updatescreen%1
+    cmp byte[pressed+0D0h],2
+    je .updatescreen%1
+%endif
+%endmacro
 
 NEWSYM saveselect
     mov byte[f3menuen],1
@@ -1241,6 +1259,7 @@ NEWSYM saveselect
 .nosound
     cmp byte[cbitmode],1
     je near .16b
+.updatescreen8b
     call saveselectpal
     ; draw a small blue box with a white border
     mov esi,70+70*288
@@ -1391,6 +1410,7 @@ NEWSYM saveselect
     mov ecx,2500
     call delay
     call testpressed8b
+    checkkeys_f3 8b
     test byte[pressed+1],1
     jnz near .esc
     test byte[pressed+28],1
@@ -1398,6 +1418,7 @@ NEWSYM saveselect
     mov ecx,2500
     call delay
     call testpressed8b
+    checkkeys_f3 8b
     test byte[pressed+1],1
     jnz near .esc
     test byte[pressed+28],1
@@ -1408,6 +1429,7 @@ NEWSYM saveselect
     mov ecx,2500
     call delay
     call testpressed8b
+    checkkeys_f3 8b
     test byte[pressed+1],1
     jnz near .esc
     test byte[pressed+28],1
@@ -1415,6 +1437,7 @@ NEWSYM saveselect
     mov ecx,2500
     call delay
     call testpressed8b
+    checkkeys_f3 8b
     test byte[pressed+1],1
     jnz near .esc
     test byte[pressed+28],1
@@ -1509,6 +1532,7 @@ SECTION .text
     mov ecx,150
     jnz .loop16b2
 
+.updatescreen16b
     mov ax,018h
     mov cl,[vesa2_rpos]
     shl ax,cl
@@ -1743,6 +1767,7 @@ SECTION .text
     mov ecx,2500
     call delay
     call testpressed8b
+    checkkeys_f3 16b
     test byte[pressed+1],1
     jnz near .esc16b
     test byte[pressed+28],1
@@ -1750,6 +1775,7 @@ SECTION .text
     mov ecx,2500
     call delay
     call testpressed8b
+    checkkeys_f3 16b
     test byte[pressed+1],1
     jnz near .esc16b
     test byte[pressed+28],1
@@ -1765,6 +1791,7 @@ SECTION .text
     mov ecx,2500
     call delay
     call testpressed8b
+    checkkeys_f3 16b
     test byte[pressed+1],1
     jnz near .esc16b
     test byte[pressed+28],1
@@ -1772,6 +1799,7 @@ SECTION .text
     mov ecx,2500
     call delay
     call testpressed8b
+    checkkeys_f3 16b
     test byte[pressed+1],1
     jnz near .esc16b
     test byte[pressed+28],1
