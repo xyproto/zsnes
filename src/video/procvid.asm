@@ -2028,15 +2028,15 @@ NEWSYM testpressed8b
 .no9
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try1
-    test byte[pressed+04Fh],1
-    jz .try1
-    jmp .yes1
-.try1
+    je .try0
+    test byte[pressed+052h],1
+    jz .try0
+    jmp .yes0
+.try0
 %endif
-
     test byte[pressed+11],1
     jz .no0
+.yes0
     mov bl,0
 .no0
     push eax
