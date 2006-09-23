@@ -1226,9 +1226,9 @@ NEWSYM drawbox16b
     je .updatescreen%1
     cmp dword[numlockptr],1 ; if numlock on, disregard numpad
     je %%notupdown
-    cmp byte[pressed+72],1
+    cmp byte[pressed+72],2
     je .updatescreen%1
-    cmp byte[pressed+80],1
+    cmp byte[pressed+80],2
     je .updatescreen%1
 %%notupdown
 %elifdef __WIN32__
