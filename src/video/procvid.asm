@@ -1938,11 +1938,28 @@ NEWSYM testpressed8b
     jz .no0
     mov bl,0
 .no0
+    push eax
+    push ecx
+    mov ecx,[ZStateName]
+    add ecx,[statefileloc]
     test byte[pressed+75],1
     jz .noleft
     cmp bl,0
     je .noleft
     dec bl
+    dec ecx
+    cmp bl,0
+    jne .plznot
+    cmp byte[ecx],'s'
+    jne .plznot
+    inc ecx
+    mov byte[ecx],'t'
+    jmp .doneaddt
+.plznot
+    inc ecx
+    mov [ecx],bl
+    add byte[ecx],'0'
+.doneaddt
     mov byte[pressed+75],2
 .noleft
     test byte[pressed+77],1
@@ -1950,12 +1967,10 @@ NEWSYM testpressed8b
     cmp bl,9
     je .noright
     inc bl
+    mov [ecx],bl
+    add byte[ecx],'0'
     mov byte[pressed+77],2
 .noright
-    push eax
-    push ecx
-    mov ecx,[ZStateName]
-    add ecx,[statefileloc]
     dec ecx
     test byte[pressed+72],1
     jz .noup
@@ -2002,6 +2017,10 @@ NEWSYM testpressed8b
     pop ecx
     pop eax
 %ifndef __MSDOS__
+    push eax
+    push ecx
+    mov ecx,[ZStateName]
+    add ecx,[statefileloc]
 %ifdef __UNIXSDL__
     test byte[pressed+92],1
 %else
@@ -2011,6 +2030,19 @@ NEWSYM testpressed8b
     cmp bl,0
     je .noleft2
     dec bl
+    dec ecx
+    cmp bl,0
+    jne .plznot2
+    cmp byte[ecx],'s'
+    jne .plznot2
+    inc ecx
+    mov byte[ecx],'t'
+    jmp .doneaddt2
+.plznot2
+    inc ecx
+    mov [ecx],bl
+    add byte[ecx],'0'
+.doneaddt2
 %ifdef __UNIXSDL__
     mov byte[pressed+92],2
 %else
@@ -2026,16 +2058,14 @@ NEWSYM testpressed8b
     cmp bl,9
     je .noright2
     inc bl
+    mov [ecx],bl
+    add byte[ecx],'0'
 %ifdef __UNIXSDL__
     mov byte[pressed+94],2
 %else
     mov byte[pressed+0CDh],2
 %endif
 .noright2
-    push eax
-    push ecx
-    mov ecx,[ZStateName]
-    add ecx,[statefileloc]
     dec ecx
 %ifdef __UNIXSDL__
     test byte[pressed+90],1
