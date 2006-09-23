@@ -46,6 +46,10 @@ EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
 EXTSYM SB_blank,vsyncon,Triplebufen,granadd,Palette0
 %endif
 
+%ifdef __UNIXSDL__
+EXTSYM numlockptr
+%endif
+
 %ifdef __MSDOS__
 %include "video/2xsaimmx.inc"
 %endif
@@ -1942,6 +1946,10 @@ NEWSYM testpressed8b
     push ecx
     mov ecx,[ZStateName]
     add ecx,[statefileloc]
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
+    je .noleft
+%endif
     test byte[pressed+75],1
     jz .noleft
     cmp bl,0
@@ -1962,6 +1970,10 @@ NEWSYM testpressed8b
 .doneaddt
     mov byte[pressed+75],2
 .noleft
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
+    je .noright
+%endif
     test byte[pressed+77],1
     jz .noright
     cmp bl,9
@@ -1972,6 +1984,10 @@ NEWSYM testpressed8b
     mov byte[pressed+77],2
 .noright
     dec ecx
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
+    je .noup
+%endif
     test byte[pressed+72],1
     jz .noup
     cmp byte[ecx],'s'
@@ -1995,6 +2011,10 @@ NEWSYM testpressed8b
 .goneup
     mov byte[pressed+72],2
 .noup
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
+    je .nodown
+%endif
     test byte[pressed+80],1
     jz .nodown
     cmp byte[ecx],'9'
