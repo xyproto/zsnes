@@ -2439,13 +2439,22 @@ GUIStateSelKeys:
   mov edx,[ZStateName]
   mov cl,[edx+ebx]
   cmp cl,'t'
-  jne .no1st
+  je .yes1st
+  cmp cl,'0'
+  je .yes1st
+  jmp .no1st
+.yes1st
   mov cl,'4'
   jmp .done
 .no1st
   cmp cl,'1'
   jne .no2nd
+  cmp byte[edx+ebx-1],'s'
+  jne .nottl
   mov cl,'t'
+  jmp .done
+.nottl
+  mov cl,'0'
   jmp .done
 .no2nd
   cmp cl,'5'
@@ -2469,13 +2478,22 @@ GUIStateSelKeys:
   mov edx,[ZStateName]
   mov cl,[edx+ebx]
   cmp cl,'t'
-  jne .noT
+  je .yesT
+  cmp cl,'0'
+  je .yesT
+  jmp .noT
+.yesT
   mov cl,'1'
   jmp .done
 .noT
   cmp cl,'4'
   jne .no4th
+  cmp byte[edx+ebx-1],'s'
+  jne .nottr
   mov cl,'t'
+  jmp .done
+.nottr
+  mov cl,'0'
   jmp .done
 .no4th
   cmp cl,'9'
@@ -2508,13 +2526,22 @@ GUIStateSelKeys:
   mov edx,[ZStateName]
   mov cl,[edx+ebx]
   cmp cl,'t'
-  jne .noTv
+  je .yesud
+  cmp cl,'0'
+  je .yesud
+  jmp .noTv
+.yesud
   mov cl,'5'
   jmp .done
 .noTv
   cmp cl,'5'
   jne .no5v
+  cmp byte[edx+ebx-1],'s'
+  jne .nottud
   mov cl,'t'
+  jmp .done
+.nottud
+  mov cl,'0'
   jmp .done
 .no5v
   cmp cl,'5'
