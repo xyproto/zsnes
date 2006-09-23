@@ -1326,7 +1326,7 @@ NEWSYM saveselect
     call OutputGraphicString
     mov esi,171+93*288
     add esi,[vidbuffer]
-    mov edi,slotnum
+    mov edi,slotlevelnum
     call OutputGraphicString
     mov esi,75+118*288
     add esi,[vidbuffer]
@@ -1644,7 +1644,7 @@ SECTION .text
     call OutputGraphicString16b
     mov esi,171*2+93*288*2
     add esi,[vidbuffer]
-    mov edi,slotnum
+    mov edi,slotlevelnum
     call OutputGraphicString16b
     mov esi,75*2+118*288*2
     add esi,[vidbuffer]
@@ -1890,7 +1890,7 @@ SECTION .data
 .stringc db 'USE CURSOR KEYS',0
 .stringd db 'TO MOVE AND',0
 .stringe db 'ENTER TO SELECT',0
-slotnum db '0',0
+NEWSYM slotlevelnum , db '0',0
 
 SECTION .bss
 NEWSYM ForceNonTransp, resb 1
@@ -1971,12 +1971,12 @@ NEWSYM testpressed8b
 .noaddt
     dec ecx
     mov al,'0'
-    mov [slotnum],al
+    mov [slotlevelnum],al
     jmp .goneup
 .goup
     dec byte[ecx]
     mov al,byte[ecx]
-    mov [slotnum],al
+    mov [slotlevelnum],al
 .goneup
     mov byte[pressed+72],2
 .noup
@@ -1996,7 +1996,7 @@ NEWSYM testpressed8b
 .godown
     inc byte[ecx]
     mov al,byte[ecx]
-    mov [slotnum],al
+    mov [slotlevelnum],al
     mov byte[pressed+80],2
 .nodown
     pop ecx
@@ -2055,12 +2055,12 @@ NEWSYM testpressed8b
 .noaddt2
     dec ecx
     mov al,'0'
-    mov [slotnum],al
+    mov [slotlevelnum],al
     jmp .goneup2
 .goup2
     dec byte[ecx]
     mov al,byte[ecx]
-    mov [slotnum],al
+    mov [slotlevelnum],al
 .goneup2
 %ifdef __UNIXSDL__
     mov byte[pressed+90],2
@@ -2088,7 +2088,7 @@ NEWSYM testpressed8b
 .godown2
     inc byte[ecx]
     mov al,byte[ecx]
-    mov [slotnum],al
+    mov [slotlevelnum],al
 %ifdef __UNIXSDL__
     mov byte[pressed+96],2
 %else
