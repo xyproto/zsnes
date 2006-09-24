@@ -3056,10 +3056,12 @@ void WinUpdateDevices()
    }
 }
 
+extern "C" unsigned char MouseSensitivity;
+
 int GetMouseX(void)
 {
    InputRead();
-   MouseX += MouseMoveX;
+   MouseX += MouseMoveX/MouseSensitivity;
 
    if (MouseX > MouseMaxX)
    {
@@ -3103,7 +3105,7 @@ int GetMouseX(void)
 
 int GetMouseY(void)
 {
-   MouseY += MouseMoveY;
+   MouseY += MouseMoveY/MouseSensitivity;
 
    if (MouseY > MouseMaxY)
    {

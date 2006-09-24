@@ -549,6 +549,7 @@ void GUIRestoreVars()
   CheckValueBounds(&ForceRefreshRate, 0, 1, 0, UB);
   CheckValueBounds(&SetRefreshRate, 50, 180, 60, UB);
   CheckValueBounds(&Keep4_3Ratio, 0, 1, 1, UB);
+  CheckValueBounds(&MouseSensitivity, 1, 255, 1, UB);
 #endif
   CheckValueBounds(&ClockBox, 0, 1, 1, UB);
 

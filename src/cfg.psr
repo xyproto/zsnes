@@ -778,6 +778,9 @@ TwelveHourClock db 0
 
 @
 @ Display black box around clock (0 = No, 1 = YES)
+%ifdef __MSDOS__
+@ This does not work under an 8-bit mode
+%endif
 ClockBox db 1
 
 @
@@ -946,6 +949,12 @@ TrapMouseCursor db 0
 @
 @ Main window always on top (0 = NO, 1 = Yes)
 AlwaysOnTop db 0
+
+@
+@ Mouse sensitivity [1..255]
+@ Only change this value to lower the mouse movement speed on certain mice
+@ The mouse speed will be lowered by a factor of the entered number
+MouseSensitivity db 1
 %endif
 
 @
@@ -1150,3 +1159,4 @@ KeyDisplayBatt dd 0
 
 @
 @ - EOF -
+ 
