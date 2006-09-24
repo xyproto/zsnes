@@ -2072,30 +2072,32 @@ DisplayGUIOptionClick:
   mov bl,[cvidmode]
   cmp byte[GUINGVID+ebx],1
   jne near .invalidng
-  GUIClickCButton2 11,30,byte[newengen],byte[newengen],1
+  GUIClickCButton2 11,11,byte[newengen],byte[newengen],1
 .invalidng
-  GUIClickCButtonMMX 11,40,byte[MMXSupport]
-  GUIClickCButtonM 11,50,byte[pl12s34]
+  GUIClickCButtonMMX 11,21,byte[MMXSupport]
+  GUIClickCButtonM 11,31,byte[pl12s34]
 %ifdef __MSDOS__
-  GUIClickCButton 11,60,byte[SidewinderFix]
+  GUIClickCButton 11,41,byte[SidewinderFix]
 %else
-  GUIClickCButton 11,60,byte[PauseFocusChange]
+  GUIClickCButton 11,41,byte[PauseFocusChange]
 %endif
-  GUIClickCButton 11,70,byte[FPSAtStart]
-  GUIClickCButton 11,80,byte[Turbo30hz]
-  GUIClickCButton 11,90,byte[TimerEnable]
-  GUIClickCButton 11,100,byte[TwelveHourClock]
-  GUIClickCButton 11,110,byte[bgfixer]
-  GUIClickCButton 11,120,byte[SmallMsgText]
-  GUIClickCButton 11,130,byte[AutoPatch]
-  GUIClickCButton 11,140,byte[RomInfo]
-  GUIClickCButton 11,150,byte[AllowUDLR]
+  GUIClickCButton 11,51,byte[FPSAtStart]
+  GUIClickCButton 11,61,byte[Turbo30hz]
+  GUIClickCButton 11,71,byte[TimerEnable]
+  GUIClickCButton 11,81,byte[TwelveHourClock]
+  GUIClickCButton 11,91,byte[ClockBox]
+  GUIClickCButton 11,101,byte[bgfixer]
+  GUIClickCButton 11,111,byte[SmallMsgText]
+  GUIClickCButton 11,121,byte[AutoPatch]
+  GUIClickCButton 11,131,byte[RomInfo]
+  GUIClickCButton 11,141,byte[DisplayInfo]
+  GUIClickCButton 11,151,byte[AllowUDLR]
 %ifdef __WIN32__
-  GUIClickCButton 11,160,byte[HighPriority]
+  GUIClickCButton 11,161,byte[HighPriority]
   pushad
   call CheckPriority
   popad
-  GUIClickCButton 11,170,byte[DisableScreenSaver]
+  GUIClickCButton 11,171,byte[DisableScreenSaver]
   pushad
   call CheckScreenSaver
   popad

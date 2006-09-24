@@ -786,11 +786,13 @@ GUIOptionKeys:
   GUIKeyCheckbox FPSAtStart,'F'
   GUIKeyCheckbox Turbo30hz,'E'
   GUIKeyCheckbox TimerEnable,'C'
+  GUIKeyCheckbox ClockBox,'X'
   GUIKeyCheckbox TwelveHourClock,'1'
   GUIKeyCheckbox bgfixer,'O'
   GUIKeyCheckbox SmallMsgText,'S'
   GUIKeyCheckbox AutoPatch,'P'
   GUIKeyCheckbox RomInfo,'T'
+  GUIKeyCheckbox DisplayInfo,'L'
   GUIKeyCheckbox AllowUDLR,'A'
 %ifndef __MSDOS__
   GUIKeyCheckbox PauseFocusChange,'B'

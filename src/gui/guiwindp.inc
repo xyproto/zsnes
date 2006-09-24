@@ -1528,26 +1528,28 @@ SECTION .text
 DisplayGUIOption:       ; Emu Options
   GUIDrawWindowBox 4,GUIOptionDisp
 
-  GUIDisplayCheckboxu 4,11,30,newengen,GUIOptionText3,0
-  GUIDisplayCheckboxu 4,11,40,MMXSupport,GUIOptionText4,0
-  GUIDisplayCheckboxu 4,11,50,pl12s34,GUIOptionText5,0
+  GUIDisplayCheckboxu 4,11,11,newengen,GUIOptionText3,0
+  GUIDisplayCheckboxu 4,11,21,MMXSupport,GUIOptionText4,0
+  GUIDisplayCheckboxu 4,11,31,pl12s34,GUIOptionText5,0
 %ifdef __MSDOS__
-  GUIDisplayCheckboxu 4,11,60,SidewinderFix,GUIOptionText6,1
+  GUIDisplayCheckboxu 4,11,41,SidewinderFix,GUIOptionText6,1
 %else
-  GUIDisplayCheckboxu 4,11,60,PauseFocusChange,GUIOptionTextF,13
+  GUIDisplayCheckboxu 4,11,41,PauseFocusChange,GUIOptionText6b,13
 %endif
-  GUIDisplayCheckboxu 4,11,70,FPSAtStart,GUIOptionText7,0
-  GUIDisplayCheckboxu 4,11,80,Turbo30hz,GUIOptionText8,2
-  GUIDisplayCheckboxu 4,11,90,TimerEnable,GUIOptionText9,9
-  GUIDisplayCheckboxu 4,11,100,TwelveHourClock,GUIOptionText9a,0
-  GUIDisplayCheckboxu 4,11,110,bgfixer,GUIOptionTextA,0
-  GUIDisplayCheckboxu 4,11,120,SmallMsgText,GUIOptionTextB,1
-  GUIDisplayCheckboxu 4,11,130,AutoPatch,GUIOptionTextC,12
-  GUIDisplayCheckboxu 4,11,140,RomInfo,GUIOptionTextD,15
-  GUIDisplayCheckboxu 4,11,150,AllowUDLR,GUIOptionTextE,0
+  GUIDisplayCheckboxu 4,11,51,FPSAtStart,GUIOptionText7,0
+  GUIDisplayCheckboxu 4,11,61,Turbo30hz,GUIOptionText8,2
+  GUIDisplayCheckboxu 4,11,71,TimerEnable,GUIOptionText9,7
+  GUIDisplayCheckboxu 4,11,81,TwelveHourClock,GUIOptionText9a,0
+  GUIDisplayCheckboxu 4,11,91,ClockBox,GUIOptionText9b,13
+  GUIDisplayCheckboxu 4,11,101,bgfixer,GUIOptionTextA,0
+  GUIDisplayCheckboxu 4,11,111,SmallMsgText,GUIOptionTextB,1
+  GUIDisplayCheckboxu 4,11,121,AutoPatch,GUIOptionTextC,12
+  GUIDisplayCheckboxu 4,11,131,RomInfo,GUIOptionTextD,15
+  GUIDisplayCheckboxu 4,11,141,DisplayInfo,GUIOptionTextDa,17
+  GUIDisplayCheckboxu 4,11,151,AllowUDLR,GUIOptionTextE,0
 %ifdef __WIN32__
-  GUIDisplayCheckboxu 4,11,160,HighPriority,GUIOptionText6b,0
-  GUIDisplayCheckboxu 4,11,170,DisableScreenSaver,GUIOptionTextW,1
+  GUIDisplayCheckboxu 4,11,161,HighPriority,GUIOptionTextV,0
+  GUIDisplayCheckboxu 4,11,171,DisableScreenSaver,GUIOptionTextW,1
 %endif
   ret
 
@@ -1556,17 +1558,19 @@ GUIOptionText3 db 'NEW GFX ENGINE',0
 GUIOptionText4 db 'MMX SUPPORT',0
 GUIOptionText5 db 'USE PL3/4 AS PL1/2',0
 GUIOptionText6 db 'SIDEWINDER FIX',0
-GUIOptionText6b db 'HIGH PRIORITY MODE',0
+GUIOptionText6b db 'PAUSE EMU IN BACKGROUND',0
 GUIOptionText7 db 'FPS AT PROGRAM START',0
 GUIOptionText8 db 'USE 30HZ FOR TURBO',0
 GUIOptionText9 db 'ENABLE CLOCK',0
 GUIOptionText9a db '12 HOUR MODE',0
+GUIOptionText9b db 'SHOW CLOCK BOX',0
 GUIOptionTextA db 'OLD GFX MODE 2',0
 GUIOptionTextB db 'USE SMALL MESSAGE TEXT',0
 GUIOptionTextC db 'ENABLE AUTO-PATCH',0
 GUIOptionTextD db 'ENABLE ROMINFO.TXT',0
+GUIOptionTextDa db 'SHOW ROM INFO ON LOAD',0
 GUIOptionTextE db 'ALLOW U+D/L+R',0
-GUIOptionTextF db 'PAUSE EMU IN BACKGROUND',0
+GUIOptionTextV db 'HIGH PRIORITY MODE',0
 GUIOptionTextW db 'DISABLE SCREENSAVER',0 ; keep as last option, Win Only
 GUIOptionTextX db '-',0
 GUIOptionTextY db '+',0
