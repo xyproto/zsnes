@@ -33,7 +33,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #ifdef _MSC_VER
 #define F_OK 0
-#define X_OK 1
+#define X_OK F_OK //Drop down to F_OK because MSVC is stupid
 #define W_OK 2
 #define R_OK 4
 #endif
