@@ -2052,7 +2052,6 @@ SECTION .data
 GUISoundTextA db 'SOUND SWITCHES:',0
 GUISoundTextA1 db 'ENABLE SOUND',0
 GUISoundTextA2 db 'STEREO SOUND',0
-GUISoundTextA3 db 'RAISE PITCH LEVEL',0  ; DOS Only
 GUISoundTextA4 db 'FORCE 8-BIT',0        ; DOS Only
 
 GUISoundTextB db 'SAMPLING RATE:',0
@@ -2077,12 +2076,12 @@ GUISoundTextD5 db 'DISABLE SPC EMULATION',0
 GUISoundTextE db 'INTERPOLATION:',0
 GUISoundTextE1 db 'GAUSSIAN',0
 GUISoundTextE2 db 'CUBIC SPLINE',0
-GUISoundTextE3 db '8-POINT',0         ; Non-DOS Only
+GUISoundTextE3 db '8-POINT',0
 
 GUISoundTextF db 'LOWPASS:',0
 GUISoundTextF1 db 'SIMPLE',0
 GUISoundTextF2 db 'DYNAMIC',0
-GUISoundTextF3 db 'HI QUALITY',0      ; Non-DOS Only
+GUISoundTextF3 db 'HI QUALITY',0
 
 SECTION .text
 
