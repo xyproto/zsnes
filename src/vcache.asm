@@ -768,7 +768,7 @@ NEWSYM cachevideo
 
     mov eax,[KeyIncStateSlot]
     test byte[pressed+eax],1
-    je .noincstateslot
+    je near .noincstateslot
     mov byte[pressed+eax],2
     mov eax,[statefileloc]
     mov ecx,[ZStateName]
@@ -817,7 +817,7 @@ NEWSYM cachevideo
 
     mov eax,[KeyDecStateSlot]
     test byte[pressed+eax],1
-    je .nodecstateslot
+    je near .nodecstateslot
     mov byte[pressed+eax],2
     mov eax,[statefileloc]
     mov ecx,[ZStateName]
