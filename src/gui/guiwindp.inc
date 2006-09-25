@@ -1548,8 +1548,8 @@ DisplayGUIOption:       ; Emu Options
   GUIDisplayCheckboxu 4,11,141,DisplayInfo,GUIOptionTextDa,17
   GUIDisplayCheckboxu 4,11,151,AllowUDLR,GUIOptionTextE,0
 %ifdef __WIN32__
-  GUIDisplayCheckboxu 4,11,161,HighPriority,GUIOptionTextV,6
-  GUIDisplayCheckboxu 4,11,171,DisableScreenSaver,GUIOptionTextW,1
+  GUIDisplayCheckboxu 4,11,161,HighPriority,GUIOptionTextF,6
+  GUIDisplayCheckboxu 4,11,171,DisableScreenSaver,GUIOptionTextZ,1
 %endif
   ret
 
@@ -1570,11 +1570,8 @@ GUIOptionTextC db 'ENABLE AUTO-PATCH',0
 GUIOptionTextD db 'ENABLE ROMINFO.TXT',0
 GUIOptionTextDa db 'SHOW ROM INFO ON LOAD',0
 GUIOptionTextE db 'ALLOW U+D/L+R',0
-GUIOptionTextV db 'USE A HIGHER PRIORITY',0
-GUIOptionTextW db 'DISABLE SCREENSAVER',0 ; keep as last option, Win Only
-GUIOptionTextX db '-',0
-GUIOptionTextY db '+',0
-GUIOptionTextZ db '-',0
+GUIOptionTextF db 'USE A HIGHER PRIORITY',0
+GUIOptionTextZ db 'DISABLE SCREENSAVER',0 ; keep as last option, Win Only
 
 SECTION .text
 
@@ -4720,19 +4717,19 @@ DisplayGUISpeed:                    ;Speed Options
   cmp byte[frameskip],0                    ; Determine if AutoFR is enabled
   je near .auto
 
-  GUIDisplayBBox 21,75,13,93,20,167           ; Non AFR FrameRate +/- Box
+  GUIDisplayBBox 21,96,13,114,20,167           ; Non AFR FrameRate +/- Box
   mov al,[frameskip]
   add al,47
   mov [GUISpeedTextX],al
-  GUIDisplayTextG 21,85,15,GUISpeedTextX
+  GUIDisplayTextG 21,107,15,GUISpeedTextX
 
   mov byte[GUItextcolor],217
   cmp byte[GUIWincoladd],0
   je .zero6
   mov byte[GUItextcolor],211
 .zero6
-  DrawGUIButton 21,97,13,105,21,GUISpeedTextY,12,-2,-1
-  DrawGUIButton 21,108,13,116,21,GUISpeedTextZ,13,-2,-1
+  DrawGUIButton 21,118,13,126,21,GUISpeedTextY,12,-2,-1
+  DrawGUIButton 21,129,13,137,21,GUISpeedTextZ,13,-2,-1
   jmp .ratioborders
 
 .auto                                          ; AFR Max Frameskip +/- Box

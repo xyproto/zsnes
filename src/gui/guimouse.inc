@@ -3121,8 +3121,8 @@ DisplayGUISpeedClick:
   GUIPHoldbutton2 129,35,137,43,77,byte[SDRatio],-1,0
   cmp byte[frameskip],0
   je near .autopress
-  GUIPHoldbutton2 97,13,105,21,12,byte[frameskip],1,10
-  GUIPHoldbutton2 108,13,116,21,13,byte[frameskip],-1,1
+  GUIPHoldbutton2 118,13,126,21,12,byte[frameskip],1,10
+  GUIPHoldbutton2 129,13,137,21,13,byte[frameskip],-1,1
   ret
 
 .autopress
