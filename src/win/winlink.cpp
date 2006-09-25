@@ -432,8 +432,15 @@ extern BYTE debugger;
 
 extern "C" void CheckPriority()
 {
-   if (HighPriority == 1) SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
-      else SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+   if (HighPriority == 1)
+   {
+     if(!SetPriorityClass(GetCurrentProcess(), ABOVE_NORMAL_PRIORITY_CLASS))
+       SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
+   }
+   else
+   {
+     SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+   }
 }
 
 extern "C" void CheckAlwaysOnTop()

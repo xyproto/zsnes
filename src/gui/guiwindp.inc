@@ -1548,7 +1548,7 @@ DisplayGUIOption:       ; Emu Options
   GUIDisplayCheckboxu 4,11,141,DisplayInfo,GUIOptionTextDa,17
   GUIDisplayCheckboxu 4,11,151,AllowUDLR,GUIOptionTextE,0
 %ifdef __WIN32__
-  GUIDisplayCheckboxu 4,11,161,HighPriority,GUIOptionTextV,0
+  GUIDisplayCheckboxu 4,11,161,HighPriority,GUIOptionTextV,6
   GUIDisplayCheckboxu 4,11,171,DisableScreenSaver,GUIOptionTextW,1
 %endif
   ret
@@ -1570,7 +1570,7 @@ GUIOptionTextC db 'ENABLE AUTO-PATCH',0
 GUIOptionTextD db 'ENABLE ROMINFO.TXT',0
 GUIOptionTextDa db 'SHOW ROM INFO ON LOAD',0
 GUIOptionTextE db 'ALLOW U+D/L+R',0
-GUIOptionTextV db 'HIGH PRIORITY MODE',0
+GUIOptionTextV db 'USE A HIGHER PRIORITY',0
 GUIOptionTextW db 'DISABLE SCREENSAVER',0 ; keep as last option, Win Only
 GUIOptionTextX db '-',0
 GUIOptionTextY db '+',0
