@@ -1247,7 +1247,7 @@ GUIWinClicked:
   mov %3,0
   jmp %%notzero
 %%zero
-  mov %3,2
+  mov %3,1
 %%notzero
 %%noclick
 %endmacro
