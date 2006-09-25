@@ -842,7 +842,7 @@ NEWSYM cachevideo
     jmp .settonine
 .doninthstate2
     dec dl
-.settonine    
+.settonine
     mov dh,'9'
     jmp .doprevstate
 .jumptoverylaststate

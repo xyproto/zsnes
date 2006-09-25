@@ -982,7 +982,7 @@ DetermineNewest:
     mov byte[newestfileloc],0
     push edx
     mov edx,[ZStateName]
-    add edx,[statefileloc]    
+    add edx,[statefileloc]
     dec edx
     cmp byte[edx],'s'
     jne .isnott
