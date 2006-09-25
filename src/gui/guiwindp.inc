@@ -813,7 +813,7 @@ DisplayGUILoad:
 %ifndef __MSDOS__
   cmp dword[GUIcurrentfilewin],0
   je near .nodir
-  mov eax,dword[GUIcurrentdircursloc]
+  mov eax,[GUIcurrentdircursloc]
   add eax,2
   shl eax,2
   add eax,[d_names]

@@ -2121,7 +2121,7 @@ NEWSYM testpressed8b
     jmp .goneup
 .goup
     dec byte[ecx]
-    mov al,byte[ecx]
+    mov al,[ecx]
     mov [slotlevelnum],al
 .goneup
     mov byte[pressed+72],2
@@ -2145,7 +2145,7 @@ NEWSYM testpressed8b
     dec ecx
 .godown
     inc byte[ecx]
-    mov al,byte[ecx]
+    mov al,[ecx]
     mov [slotlevelnum],al
 .gonedown
     mov byte[pressed+80],2
@@ -2225,7 +2225,7 @@ NEWSYM testpressed8b
     jmp .goneup2
 .goup2
     dec byte[ecx]
-    mov al,byte[ecx]
+    mov al,[ecx]
     mov [slotlevelnum],al
 .goneup2
 %ifdef __UNIXSDL__
@@ -2253,7 +2253,7 @@ NEWSYM testpressed8b
     dec ecx
 .godown2
     inc byte[ecx]
-    mov al,byte[ecx]
+    mov al,[ecx]
     mov [slotlevelnum],al
 .gonedown2
 %ifdef __UNIXSDL__
