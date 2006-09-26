@@ -3378,7 +3378,7 @@ DisplayGUIMovies:    ; Movie Record/Playback options
   GUIDisplayCheckboxu 15,130,138,MovieAudioCompress,GUIMovieTextE3,2
   cmp byte[MovieVideoMode],2
   jl near .nomux
-  GUIDisplayCheckboxu 15,130,148,MovieVideoAudio,GUIMovieTextE2,9
+  GUIDisplayCheckboxu 15,130,148,MovieVideoAudio,GUIMovieTextE2,11
 .nomux
 
   mov dword[GUIMovieTextZ+8],'INAC'    ; Determine and Display Status
