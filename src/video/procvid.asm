@@ -1213,29 +1213,374 @@ NEWSYM drawbox16b
     call drawfillboxsc16b
 %endmacro
 
-%macro checkkeys_f3 1
-%ifdef __MSDOS__
-    cmp byte[pressed+72],2
-    je .updatescreen%1
-    cmp byte[pressed+80],2
-    je .updatescreen%1
-%elifdef __UNIXSDL__
-    cmp byte[pressed+90],2
-    je .updatescreen%1
-    cmp byte[pressed+96],2
-    je .updatescreen%1
+%macro testpressed 1
+    push eax
+    push ecx
+    mov ecx,[ZStateName]
+    add ecx,[statefileloc]
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je %%try1
+    test byte[pressed+04Fh],1
+    jz %%try1
+    jmp %%yes1
+%%try1
+%endif
+    test byte[pressed+2],1
+    jz %%no1
+%%yes1
+    mov bl,1
+    mov byte[ecx],'1'
+%%no1
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je %%try2
+    test byte[pressed+050h],1
+    jz %%try2
+    jmp %%yes2
+%%try2
+%endif
+    test byte[pressed+3],1
+    jz %%no2
+%%yes2
+    mov bl,2
+    mov byte[ecx],'2'
+%%no2
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je %%try3
+    test byte[pressed+051h],1
+    jz %%try3
+    jmp %%yes3
+%%try3
+%endif
+    test byte[pressed+4],1
+    jz %%no3
+%%yes3
+    mov bl,3
+    mov byte[ecx],'3'
+%%no3
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je %%try4
+    test byte[pressed+04Bh],1
+    jz %%try4
+    jmp %%yes4
+%%try4
+%endif
+    test byte[pressed+5],1
+    jz %%no4
+%%yes4
+    mov bl,4
+    mov byte[ecx],'4'
+%%no4
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je %%try5
+    test byte[pressed+04Ch],1
+    jz %%try5
+    jmp %%yes5
+%%try5
+%endif
+    test byte[pressed+6],1
+    jz %%no5
+%%yes5
+    mov bl,5
+    mov byte[ecx],'5'
+%%no5
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je %%try6
+    test byte[pressed+04Dh],1
+    jz %%try6
+    jmp %%yes6
+%%try6
+%endif
+    test byte[pressed+7],1
+    jz %%no6
+%%yes6
+    mov bl,6
+    mov byte[ecx],'6'
+%%no6
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je %%try7
+    test byte[pressed+047h],1
+    jz %%try7
+    jmp %%yes7
+%%try7
+%endif
+    test byte[pressed+8],1
+    jz %%no7
+%%yes7
+    mov bl,7
+    mov byte[ecx],'7'
+%%no7
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je %%try8
+    test byte[pressed+048h],1
+    jz %%try8
+    jmp %%yes8
+%%try8
+%endif
+    test byte[pressed+9],1
+    jz %%no8
+%%yes8
+    mov bl,8
+    mov byte[ecx],'8'
+%%no8
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je %%try9
+    test byte[pressed+049h],1
+    jz %%try9
+    jmp %%yes9
+%%try9
+%endif
+    test byte[pressed+10],1
+    jz %%no9
+%%yes9
+    mov bl,9
+    mov byte[ecx],'9'
+%%no9
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je %%try0
+    test byte[pressed+052h],1
+    jz %%try0
+    jmp %%yes0
+%%try0
+%endif
+    test byte[pressed+11],1
+    jz %%no0
+%%yes0
+    mov bl,0
+    dec ecx
+    cmp byte[ecx],'s'
+    jne %%insert0
+    inc ecx
+    mov byte[ecx],'t'
+    jmp %%no0
+%%insert0
+    inc ecx
+    mov byte[ecx],'0'
+%%no0
+%ifdef __UNIXSDL__
     cmp dword[numlockptr],1 ; if numlock on, disregard numpad
-    je %%notupdown
-    cmp byte[pressed+72],2
-    je .updatescreen%1
-    cmp byte[pressed+80],2
-    je .updatescreen%1
-%%notupdown
-%elifdef __WIN32__
-    cmp byte[pressed+0C8h],2
-    je .updatescreen%1
-    cmp byte[pressed+0D0h],2
-    je .updatescreen%1
+    je %%noleft
+%endif
+    test byte[pressed+75],1
+    jz %%noleft
+    cmp bl,0
+    je %%noleft
+    dec bl
+    dec ecx
+    cmp bl,0
+    jne %%plznot
+    cmp byte[ecx],'s'
+    jne %%plznot
+    inc ecx
+    mov byte[ecx],'t'
+    jmp %%doneaddt
+%%plznot
+    inc ecx
+    mov [ecx],bl
+    add byte[ecx],'0'
+%%doneaddt
+    mov byte[pressed+75],2
+%%noleft
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
+    je %%noright
+%endif
+    test byte[pressed+77],1
+    jz %%noright
+    cmp bl,9
+    je %%noright
+    inc bl
+    mov [ecx],bl
+    add byte[ecx],'0'
+    mov byte[pressed+77],2
+%%noright
+    dec ecx
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
+    je %%noup
+%endif
+    test byte[pressed+72],1
+    jz %%noup
+    cmp byte[ecx],'s'
+    je %%goneup
+    cmp byte[ecx],'1'
+    jne %%goup
+    mov byte[ecx],'s'
+    inc ecx
+    cmp byte[ecx],'0'
+    jne %%noaddt
+    mov byte[ecx],'t'
+%%noaddt
+    dec ecx
+    mov al,'0'
+    mov [slotlevelnum],al
+    jmp %%goneup
+%%goup
+    dec byte[ecx]
+    mov al,[ecx]
+    mov [slotlevelnum],al
+%%goneup
+    mov byte[pressed+72],2
+    pop ecx
+    pop eax
+    jmp .updatescreen%1
+%%noup
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
+    je %%nodown
+%endif
+    test byte[pressed+80],1
+    jz %%nodown
+    cmp byte[ecx],'9'
+    je %%gonedown
+    cmp byte[ecx],'s'
+    jne %%godown
+    mov byte[ecx],'0'
+    inc ecx
+    cmp byte[ecx],'t'
+    jne %%noremt
+    mov byte[ecx],'0'
+%%noremt
+    dec ecx
+%%godown
+    inc byte[ecx]
+    mov al,[ecx]
+    mov [slotlevelnum],al
+%%gonedown
+    mov byte[pressed+80],2
+    pop ecx
+    pop eax
+    jmp .updatescreen%1
+%%nodown
+    pop ecx
+    pop eax
+%ifndef __MSDOS__
+    push eax
+    push ecx
+    mov ecx,[ZStateName]
+    add ecx,[statefileloc]
+%ifdef __UNIXSDL__
+    test byte[pressed+92],1
+%else
+    test byte[pressed+0CBh],1
+%endif
+    jz %%noleft2
+    cmp bl,0
+    je %%noleft2
+    dec bl
+    dec ecx
+    cmp bl,0
+    jne %%plznot2
+    cmp byte[ecx],'s'
+    jne %%plznot2
+    inc ecx
+    mov byte[ecx],'t'
+    jmp %%doneaddt2
+%%plznot2
+    inc ecx
+    mov [ecx],bl
+    add byte[ecx],'0'
+%%doneaddt2
+%ifdef __UNIXSDL__
+    mov byte[pressed+92],2
+%else
+    mov byte[pressed+0CBh],2
+%endif
+%%noleft2
+%ifdef __UNIXSDL__
+    test byte[pressed+94],1
+%else
+    test byte[pressed+0CDh],1
+%endif
+    jz %%noright2
+    cmp bl,9
+    je %%noright2
+    inc bl
+    mov [ecx],bl
+    add byte[ecx],'0'
+%ifdef __UNIXSDL__
+    mov byte[pressed+94],2
+%else
+    mov byte[pressed+0CDh],2
+%endif
+%%noright2
+    dec ecx
+%ifdef __UNIXSDL__
+    test byte[pressed+90],1
+%else
+    test byte[pressed+0C8h],1
+%endif
+    jz %%noup2
+    cmp byte[ecx],'s'
+    je %%goneup2
+    cmp byte[ecx],'1'
+    jne %%goup2
+    mov byte[ecx],'s'
+    inc ecx
+    cmp byte[ecx],'0'
+    jne %%noaddt2
+    mov byte[ecx],'t'
+%%noaddt2
+    dec ecx
+    mov al,'0'
+    mov [slotlevelnum],al
+    jmp %%goneup2
+%%goup2
+    dec byte[ecx]
+    mov al,[ecx]
+    mov [slotlevelnum],al
+%%goneup2
+%ifdef __UNIXSDL__
+    mov byte[pressed+90],2
+%else
+    mov byte[pressed+0C8h],2
+%endif
+    pop ecx
+    pop eax
+    jmp .updatescreen%1
+%%noup2
+%ifdef __UNIXSDL__
+    test byte[pressed+96],1
+%else
+    test byte[pressed+0D0h],1
+%endif
+    jz %%nodown2
+    cmp byte[ecx],'9'
+    je %%gonedown2
+    cmp byte[ecx],'s'
+    jne %%godown2
+    mov byte[ecx],'0'
+    inc ecx
+    cmp byte[ecx],'t'
+    jne %%noremt2
+    mov byte[ecx],'0'
+%%noremt2
+    dec ecx
+%%godown2
+    inc byte[ecx]
+    mov al,[ecx]
+    mov [slotlevelnum],al
+%%gonedown2
+%ifdef __UNIXSDL__
+    mov byte[pressed+96],2
+%else
+    mov byte[pressed+0D0h],2
+%endif
+    pop ecx
+    pop eax
+    jmp .updatescreen%1
+%%nodown2
+    pop ecx
+    pop eax
 %endif
 %endmacro
 
@@ -1428,16 +1773,14 @@ NEWSYM saveselect
     call drawbox
     mov ecx,2500
     call delay
-    call testpressed8b
-    checkkeys_f3 8b
+    testpressed 8b
     test byte[pressed+1],1
     jnz near .esc
     test byte[pressed+28],1
     jnz near .enter
     mov ecx,2500
     call delay
-    call testpressed8b
-    checkkeys_f3 8b
+    testpressed 8b    
     test byte[pressed+1],1
     jnz near .esc
     test byte[pressed+28],1
@@ -1447,16 +1790,14 @@ NEWSYM saveselect
     pop ebx
     mov ecx,2500
     call delay
-    call testpressed8b
-    checkkeys_f3 8b
+    testpressed 8b
     test byte[pressed+1],1
     jnz near .esc
     test byte[pressed+28],1
     jnz near .enter
     mov ecx,2500
     call delay
-    call testpressed8b
-    checkkeys_f3 8b
+    testpressed 8b
     test byte[pressed+1],1
     jnz near .esc
     test byte[pressed+28],1
@@ -1793,16 +2134,14 @@ SECTION .text
     call drawbox16b
     mov ecx,2500
     call delay
-    call testpressed8b
-    checkkeys_f3 16b
+    testpressed 16b
     test byte[pressed+1],1
     jnz near .esc16b
     test byte[pressed+28],1
     jnz near .enter16b
     mov ecx,2500
     call delay
-    call testpressed8b
-    checkkeys_f3 16b
+    testpressed 16b
     test byte[pressed+1],1
     jnz near .esc16b
     test byte[pressed+28],1
@@ -1817,16 +2156,14 @@ SECTION .text
     pop ebx
     mov ecx,2500
     call delay
-    call testpressed8b
-    checkkeys_f3 16b
+    testpressed 16b
     test byte[pressed+1],1
     jnz near .esc16b
     test byte[pressed+28],1
     jnz near .enter16b
     mov ecx,2500
     call delay
-    call testpressed8b
-    checkkeys_f3 16b
+    testpressed 16b
     test byte[pressed+1],1
     jnz near .esc16b
     test byte[pressed+28],1
@@ -1905,368 +2242,6 @@ NEWSYM slotlevelnum , db '0',0
 
 SECTION .bss
 NEWSYM ForceNonTransp, resb 1
-
-SECTION .text
-
-NEWSYM testpressed8b
-    push eax
-    push ecx
-    mov ecx,[ZStateName]
-    add ecx,[statefileloc]
-%ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try1
-    test byte[pressed+04Fh],1
-    jz .try1
-    jmp .yes1
-.try1
-%endif
-    test byte[pressed+2],1
-    jz .no1
-.yes1
-    mov bl,1
-    mov byte[ecx],'1'
-.no1
-%ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try2
-    test byte[pressed+050h],1
-    jz .try2
-    jmp .yes2
-.try2
-%endif
-    test byte[pressed+3],1
-    jz .no2
-.yes2
-    mov bl,2
-    mov byte[ecx],'2'
-.no2
-%ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try3
-    test byte[pressed+051h],1
-    jz .try3
-    jmp .yes3
-.try3
-%endif
-    test byte[pressed+4],1
-    jz .no3
-.yes3
-    mov bl,3
-    mov byte[ecx],'3'
-.no3
-%ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try4
-    test byte[pressed+04Bh],1
-    jz .try4
-    jmp .yes4
-.try4
-%endif
-    test byte[pressed+5],1
-    jz .no4
-.yes4
-    mov bl,4
-    mov byte[ecx],'4'
-.no4
-%ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try5
-    test byte[pressed+04Ch],1
-    jz .try5
-    jmp .yes5
-.try5
-%endif
-    test byte[pressed+6],1
-    jz .no5
-.yes5
-    mov bl,5
-    mov byte[ecx],'5'
-.no5
-%ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try6
-    test byte[pressed+04Dh],1
-    jz .try6
-    jmp .yes6
-.try6
-%endif
-    test byte[pressed+7],1
-    jz .no6
-.yes6
-    mov bl,6
-    mov byte[ecx],'6'
-.no6
-%ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try7
-    test byte[pressed+047h],1
-    jz .try7
-    jmp .yes7
-.try7
-%endif
-    test byte[pressed+8],1
-    jz .no7
-.yes7
-    mov bl,7
-    mov byte[ecx],'7'
-.no7
-%ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try8
-    test byte[pressed+048h],1
-    jz .try8
-    jmp .yes8
-.try8
-%endif
-    test byte[pressed+9],1
-    jz .no8
-.yes8
-    mov bl,8
-    mov byte[ecx],'8'
-.no8
-%ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try9
-    test byte[pressed+049h],1
-    jz .try9
-    jmp .yes9
-.try9
-%endif
-    test byte[pressed+10],1
-    jz .no9
-.yes9
-    mov bl,9
-    mov byte[ecx],'9'
-.no9
-%ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try0
-    test byte[pressed+052h],1
-    jz .try0
-    jmp .yes0
-.try0
-%endif
-    test byte[pressed+11],1
-    jz .no0
-.yes0
-    mov bl,0
-    dec ecx
-    cmp byte[ecx],'s'
-    jne .insert0
-    inc ecx
-    mov byte[ecx],'t'
-    jmp .no0
-.insert0
-    inc ecx
-    mov byte[ecx],'0'
-.no0
-%ifdef __UNIXSDL__
-    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
-    je .noleft
-%endif
-    test byte[pressed+75],1
-    jz .noleft
-    cmp bl,0
-    je .noleft
-    dec bl
-    dec ecx
-    cmp bl,0
-    jne .plznot
-    cmp byte[ecx],'s'
-    jne .plznot
-    inc ecx
-    mov byte[ecx],'t'
-    jmp .doneaddt
-.plznot
-    inc ecx
-    mov [ecx],bl
-    add byte[ecx],'0'
-.doneaddt
-    mov byte[pressed+75],2
-.noleft
-%ifdef __UNIXSDL__
-    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
-    je .noright
-%endif
-    test byte[pressed+77],1
-    jz .noright
-    cmp bl,9
-    je .noright
-    inc bl
-    mov [ecx],bl
-    add byte[ecx],'0'
-    mov byte[pressed+77],2
-.noright
-    dec ecx
-%ifdef __UNIXSDL__
-    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
-    je .noup
-%endif
-    test byte[pressed+72],1
-    jz .noup
-    cmp byte[ecx],'s'
-    je .goneup
-    cmp byte[ecx],'1'
-    jne .goup
-    mov byte[ecx],'s'
-    inc ecx
-    cmp byte[ecx],'0'
-    jne .noaddt
-    mov byte[ecx],'t'
-.noaddt
-    dec ecx
-    mov al,'0'
-    mov [slotlevelnum],al
-    jmp .goneup
-.goup
-    dec byte[ecx]
-    mov al,[ecx]
-    mov [slotlevelnum],al
-.goneup
-    mov byte[pressed+72],2
-.noup
-%ifdef __UNIXSDL__
-    cmp dword[numlockptr],1 ; if numlock on, disregard numpad
-    je .nodown
-%endif
-    test byte[pressed+80],1
-    jz .nodown
-    cmp byte[ecx],'9'
-    je .gonedown
-    cmp byte[ecx],'s'
-    jne .godown
-    mov byte[ecx],'0'
-    inc ecx
-    cmp byte[ecx],'t'
-    jne .noremt
-    mov byte[ecx],'0'
-.noremt
-    dec ecx
-.godown
-    inc byte[ecx]
-    mov al,[ecx]
-    mov [slotlevelnum],al
-.gonedown
-    mov byte[pressed+80],2
-.nodown
-    pop ecx
-    pop eax
-%ifndef __MSDOS__
-    push eax
-    push ecx
-    mov ecx,[ZStateName]
-    add ecx,[statefileloc]
-%ifdef __UNIXSDL__
-    test byte[pressed+92],1
-%else
-    test byte[pressed+0CBh],1
-%endif
-    jz .noleft2
-    cmp bl,0
-    je .noleft2
-    dec bl
-    dec ecx
-    cmp bl,0
-    jne .plznot2
-    cmp byte[ecx],'s'
-    jne .plznot2
-    inc ecx
-    mov byte[ecx],'t'
-    jmp .doneaddt2
-.plznot2
-    inc ecx
-    mov [ecx],bl
-    add byte[ecx],'0'
-.doneaddt2
-%ifdef __UNIXSDL__
-    mov byte[pressed+92],2
-%else
-    mov byte[pressed+0CBh],2
-%endif
-.noleft2
-%ifdef __UNIXSDL__
-    test byte[pressed+94],1
-%else
-    test byte[pressed+0CDh],1
-%endif
-    jz .noright2
-    cmp bl,9
-    je .noright2
-    inc bl
-    mov [ecx],bl
-    add byte[ecx],'0'
-%ifdef __UNIXSDL__
-    mov byte[pressed+94],2
-%else
-    mov byte[pressed+0CDh],2
-%endif
-.noright2
-    dec ecx
-%ifdef __UNIXSDL__
-    test byte[pressed+90],1
-%else
-    test byte[pressed+0C8h],1
-%endif
-    jz .noup2
-    cmp byte[ecx],'s'
-    je .goneup2
-    cmp byte[ecx],'1'
-    jne .goup2
-    mov byte[ecx],'s'
-    inc ecx
-    cmp byte[ecx],'0'
-    jne .noaddt2
-    mov byte[ecx],'t'
-.noaddt2
-    dec ecx
-    mov al,'0'
-    mov [slotlevelnum],al
-    jmp .goneup2
-.goup2
-    dec byte[ecx]
-    mov al,[ecx]
-    mov [slotlevelnum],al
-.goneup2
-%ifdef __UNIXSDL__
-    mov byte[pressed+90],2
-%else
-    mov byte[pressed+0C8h],2
-%endif
-.noup2
-%ifdef __UNIXSDL__
-    test byte[pressed+96],1
-%else
-    test byte[pressed+0D0h],1
-%endif
-    jz .nodown2
-    cmp byte[ecx],'9'
-    je .gonedown2
-    cmp byte[ecx],'s'
-    jne .godown2
-    mov byte[ecx],'0'
-    inc ecx
-    cmp byte[ecx],'t'
-    jne .noremt2
-    mov byte[ecx],'0'
-.noremt2
-    dec ecx
-.godown2
-    inc byte[ecx]
-    mov al,[ecx]
-    mov [slotlevelnum],al
-.gonedown2
-%ifdef __UNIXSDL__
-    mov byte[pressed+96],2
-%else
-    mov byte[pressed+0D0h],2
-%endif
-.nodown2
-    pop ecx
-    pop eax
-;.nowin32
-%endif
-    ret
 
 ;*******************************************************
 ; MakePal                     Changes the entire palette
