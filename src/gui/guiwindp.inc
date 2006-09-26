@@ -1571,7 +1571,7 @@ GUIOptionTextD db 'ENABLE ROMINFO.TXT',0
 GUIOptionTextDa db 'SHOW ROM INFO ON LOAD',0
 GUIOptionTextE db 'ALLOW U+D/L+R',0
 GUIOptionTextF db 'USE A HIGHER PRIORITY',0
-GUIOptionTextZ db 'DISABLE SCREENSAVER',0 ; keep as last option, Win Only
+GUIOptionTextZ db 'DISABLE POWER MANAGEMENT',0 ; keep as last option, Win Only
 
 SECTION .text
 

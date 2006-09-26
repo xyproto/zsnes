@@ -821,7 +821,8 @@ MainWindowY sw -1
 AllowMultipleInst db 1
 
 @
-@ Disable screensaver while ZSNES runs (0 = No, 1 = YES)
+@ Disable power management while ZSNES runs (0 = No, 1 = YES)
+@ This is very necessary for gamepad users 
 DisableScreenSaver db 1
 %endif
 
