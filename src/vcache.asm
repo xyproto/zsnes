@@ -973,37 +973,6 @@ NEWSYM yesblank
     pop ebx
     ret
 
-NEWSYM ClearBGFPUCopy
-    mov edi,[vidbuffer]
-    xor eax,eax
-    add edi,16
-    mov dl,[resolutn]
-.loopa
-    mov ecx,16
-.TopOfLoop
-    FLDZ
-    FLDZ
-    FISTP QWORD[EDI]
-    FISTP QWORD[EDI+8]
-    ADD EDI,16
-    DEC ECX
-    JNZ .TopOfLoop
-    add edi,32
-    dec dl
-    jnz .loopa
-.skipbgclear
-    xor ecx,ecx
-    pop es
-    pop edx
-    pop edi
-    pop esi
-    pop ebx
-    ret
-
-SECTION .bss
-.Zero resd 2
-.Zero2 resd 2
-
 SECTION .data
 NEWSYM osm2dis,      db 0
 NEWSYM cachedmode,   db 0
