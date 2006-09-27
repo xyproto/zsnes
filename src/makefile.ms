@@ -279,11 +279,13 @@ else
 endif
 
 %${OE}: %.psr
+	${PSR} -D${OS} -cheader $(patsubst %${OE},%.h,$@) -fname $(patsubst %${OE},%,$@) temppsr.c $<
 ifneq (${ENV},msvc)
-	${PSR} -D${OS} -cheader $(patsubst %${OE},%.h,$@) -fname $(patsubst %${OE},%,$@) -compile -flags "${CFLAGS} -O1" $@ $<
+	${CC} ${CFLAGS} -O1 -o $@ -c temppsr.c
 else
-	${PSR} -D${OS} -cheader $(patsubst %${OE},%.h,$@) -fname $(patsubst %${OE},%,$@) -compile -flags "/Ox /G6 /c /EHsc /D__WIN32__" $@ $<
+	cl /nologo /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ temppsr.c
 endif
+	${DELETECOMMAND} temppsr.c
 
 ALL: zsnes
 	${DELETECOMMAND} version${OE}
