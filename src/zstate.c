@@ -656,26 +656,36 @@ void zst_save(FILE *fp, bool Thumbnail, bool Compress)
   ResetState();
 }
 
+static char txtmsg[25];
 
-#define INSERT_POSITION_NUMBER(message, num)                          \
-if (!num)                                                             \
-{                                                                     \
-  num = strchr(message, '-');                                         \
-}                                                                     \
-*num = ZStateName[statefileloc-1];                                    \
-num++;                                                                \
-*num = (ZStateName[statefileloc] == 't') ? '0' : ZStateName[statefileloc];    \
-num--;
+void set_state_message(char *prefix, char *suffix)
+{
+  char num[3];
 
+  if (tolower(ZStateName[statefileloc-1]) == 's')
+  {
+    num[0] = (tolower(ZStateName[statefileloc]) == 't') ? '0' : ZStateName[statefileloc];
+    num[1] = 0;
+  }
+  else
+  {
+    num[0] = ZStateName[statefileloc-1];
+    num[1] = ZStateName[statefileloc];
+    num[2] = 0;
+  }
+
+  //Set null if message got too big. Note if message got too big, we should increase size of txtmsg
+  if ((unsigned int)snprintf(txtmsg, sizeof(txtmsg), "%s%s%s", prefix, num, suffix) > sizeof(txtmsg))
+  {
+    txtmsg[sizeof(txtmsg)-1] = 0;
+  }
+
+  Msgptr = txtmsg;
+  MessageOn = MsgCount;
+}
 
 void statesaver()
 {
-  static char txtsavemsg[] = "STATE -  SAVED.";
-  static char txtrrsvmsg[] = "RR STATE -  SAVED.";
-
-  static char *txtsavenum = 0;
-  static char *txtrrsvnum = 0;
-
   //'Auto increment savestate slot' code
   if (AutoIncSaveSlot)
   {
@@ -689,9 +699,9 @@ void statesaver()
           ZStateName[statefileloc] = '1';
           break;
         case '9':
-          if(AutoIncSaveSlotBlock)
+          if (AutoIncSaveSlotBlock)
           {
-            if(ZStateName[statefileloc-1] == 's')
+            if (ZStateName[statefileloc-1] == 's')
             {
               ZStateName[statefileloc] = 't';
             }
@@ -702,7 +712,7 @@ void statesaver()
           }
           else
           {
-            if(ZStateName[statefileloc-1] == '9')
+            if (ZStateName[statefileloc-1] == '9')
             {
               ZStateName[statefileloc-1] = 's';
               ZStateName[statefileloc] = 't';
@@ -710,7 +720,7 @@ void statesaver()
 
             else
             {
-              if(ZStateName[statefileloc-1] == 's')
+              if (ZStateName[statefileloc-1] == 's')
               {
                 ZStateName[statefileloc-1] = '1';
               }
@@ -729,17 +739,12 @@ void statesaver()
     }
   }
 
-  //Get the state number
-  INSERT_POSITION_NUMBER(txtsavemsg, txtsavenum);
-  INSERT_POSITION_NUMBER(txtrrsvmsg, txtrrsvnum);
-
   if (MovieProcessing == 2)
   {
     bool mzt_save(char *, bool, bool);
     if (mzt_save(ZStateName, (cbitmode && !NoPictureSave) ? true : false, false))
     {
-      Msgptr = txtrrsvmsg;
-      MessageOn = MsgCount;
+      set_state_message("RR STATE ", " SAVED.");
     }
     return;
   }
@@ -752,15 +757,14 @@ void statesaver()
     fclose(fhandle);
 
     //Display message onscreen, 'STATE XX SAVED.'
-    Msgptr = txtsavemsg;
+    set_state_message("STATE ", " SAVED.");
   }
   else
   {
     //Display message onscreen, 'UNABLE TO SAVE.'
     Msgptr = "UNABLE TO SAVE.";
+    MessageOn = MsgCount;
   }
-
-  MessageOn = MsgCount;
 
   stim();
 }
@@ -955,22 +959,6 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
 {
   extern unsigned char PauseLoad;
 
-  static char txtloadmsg[] = "STATE -  LOADED.";
-  static char txtconvmsg[] = "STATE -  TOO OLD.";
-  static char txtnfndmsg[] = "UNABLE TO LOAD STATE - .";
-  static char txtrrldmsg[] = "RR STATE -  LOADED.";
-
-  static char *txtloadnum = 0;
-  static char *txtconvnum = 0;
-  static char *txtnfndnum = 0;
-  static char *txtrrldnum = 0;
-
-  //Get the state number
-  INSERT_POSITION_NUMBER(txtloadmsg, txtloadnum);
-  INSERT_POSITION_NUMBER(txtconvmsg, txtconvnum);
-  INSERT_POSITION_NUMBER(txtnfndmsg, txtnfndnum);
-  INSERT_POSITION_NUMBER(txtrrldmsg, txtrrldnum);
-
   if (keycheck)
   {
     pressed[1] = 0;
@@ -987,18 +975,17 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
       if (mzt_load(statename, true))
       {
         Msgptr = "CHAPTER LOADED.";
+        MessageOn = MsgCount;
       }
       else
       {
-        Msgptr = txtnfndmsg;
+        set_state_message("UNABLE TO LOAD STATE ", ".");
       }
-      MessageOn = MsgCount;
       return;
     case 2:
       if (mzt_load(statename, false))
       {
-        Msgptr = txtrrldmsg;
-        MessageOn = MsgCount;
+        set_state_message("RR STATE ", " LOADED.");
 
         if (PauseLoad || EMUPause)
         {
@@ -1007,9 +994,8 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
       }
       else
       {
-        Msgptr = txtnfndmsg;
+        set_state_message("UNABLE TO LOAD STATE ", ".");
       }
-      MessageOn = MsgCount;
       return;
   }
 
@@ -1022,7 +1008,7 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
 
     if (zst_load(fhandle, 0))
     {
-      Msgptr = txtloadmsg; // 'STATE XX LOADED.'
+      set_state_message("STATE ", " LOADED."); // 'STATE XX LOADED.'
 
       if (PauseLoad || EMUPause)
       {
@@ -1031,13 +1017,13 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
     }
     else
     {
-      Msgptr = txtconvmsg; // 'STATE X TOO OLD.' - I don't think this is always accurate -Nach
+      set_state_message("STATE ", " TOO OLD."); // 'STATE X TOO OLD.' - I don't think this is always accurate -Nach
     }
     fclose(fhandle);
   }
   else
   {
-    Msgptr = txtnfndmsg; // 'UNABLE TO LOAD STATE XX.'
+    set_state_message("UNABLE TO LOAD STATE ", "."); // 'UNABLE TO LOAD STATE XX.'
   }
 
   Voice0Disable = Voice1Disable = Voice2Disable = Voice3Disable = 1;
