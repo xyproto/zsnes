@@ -822,7 +822,7 @@ AllowMultipleInst db 1
 
 @
 @ Disable power management while ZSNES runs (0 = No, 1 = YES)
-@ This is very necessary for gamepad users 
+@ This is very necessary for gamepad users
 DisableScreenSaver db 1
 %endif
 
@@ -1161,4 +1161,4 @@ KeyDisplayBatt dd 0
 
 @
 @ - EOF -
- 
+

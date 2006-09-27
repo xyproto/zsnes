@@ -1780,7 +1780,7 @@ NEWSYM saveselect
     jnz near .enter
     mov ecx,2500
     call delay
-    testpressed 8b    
+    testpressed 8b
     test byte[pressed+1],1
     jnz near .esc
     test byte[pressed+28],1

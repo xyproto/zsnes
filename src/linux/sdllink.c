@@ -761,7 +761,7 @@ BOOL InitJoystickInput(void)
 {
   int i, max_num_joysticks;
   int num_axes, num_buttons, num_hats, num_balls;
-  int js_fail = 0;
+  int next_offset = 256;
 
   for (i = 0; i < 5; i++)
     JoystickInput[i] = NULL;
@@ -792,35 +792,19 @@ BOOL InitJoystickInput(void)
     printf("  %i axis, %i buttons, %i hats, %i balls\n",
       num_axes, num_buttons, num_hats, num_balls);
 
-    if (js_fail)
+    if (next_offset >= 448)
     {
       printf("Warning: Joystick won't work.\n");
       continue;
     }
-    if (i == 0)
-    {
-      AxisOffset[0] = 256;    // After key data
-      ButtonOffset[0] = AxisOffset[0] + num_axes * 2;
-//      printf("ButtonOffset %d\n", ButtonOffset[0]);
-      HatOffset[0] = ButtonOffset[0] + num_buttons;
-//      printf("HatOffset %d\n", HatOffset[0]);
-      BallOffset[0] = HatOffset[0] + num_hats * 4;
-//      printf("BallOffset %d\n", BallOffset[0]);
-      if ((BallOffset[0] + num_balls * 4) >= (256 + 128 + 64))
-        js_fail = 1;
-    }
-    else
-    {
-      AxisOffset[i] = BallOffset[i - 1] +
-        SDL_JoystickNumBalls(JoystickInput[i - 1]);
-      ButtonOffset[i] = AxisOffset[i] + num_axes * 2;
-      HatOffset[i] = ButtonOffset[i] + num_buttons;
-      BallOffset[i] = HatOffset[i] + num_hats * 4;
-      if ((BallOffset[i] + num_balls * 4) >= (256 + 128 + 64))
-        js_fail = 1;
 
-    }
-    if (js_fail)
+    AxisOffset[i] = next_offset;
+    ButtonOffset[i] = AxisOffset[i] + num_axes * 2;
+    HatOffset[i] = ButtonOffset[i] + num_buttons;
+    BallOffset[i] = HatOffset[i] + num_hats * 4;
+    next_offset = BallOffset[i] + num_balls * 4;
+
+    if (next_offset > (256 + 128 + 64))
     {
       printf("Warning: Too many buttons, axes, hats and/or Balls!\n");
       printf("Warning: Joystick won't work fully.\n");
