@@ -2653,7 +2653,7 @@ void powercycle(bool sramload, bool romload)
       GUIQuickLoadUpdate();
 
       if (AutoLoadCht) { CheatCodeLoad(); }
-      if (AutoState) { LoadSecondState; }
+      if (AutoState) { LoadSecondState(); }
     }
   }
 }
