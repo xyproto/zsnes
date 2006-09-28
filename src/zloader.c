@@ -196,8 +196,9 @@ static void display_help()
   put_line("  -zm #   Auto load specified movie slot on startup [0..9]");
   put_line("  -zs #   Auto load specified save state slot on startup [0..99]");
   put_line("");
-  put_line("  File Formats Supported by GUI : SMC,SFC,SWC,FIG,MGD,UFO,BIN,");
-  put_line("                                  058,078,1,USA,EUR,JAP,ZIP,JMA");
+  put_line("  File Formats Supported by GUI : SMC,SFC,SWC,FIG,MGD,MGH,UFO,BIN,");
+  put_line("                                  GD3,GD7,USA,EUR,JAP,AUS,ST,BS,");
+  put_line("                                  DX2,048,058,078,1,A,GZ,ZIP,JMA");
   put_line("");
 #ifndef __UNIXSDL__
   put_line("  Microsoft-style options (/option) are also accepted");
