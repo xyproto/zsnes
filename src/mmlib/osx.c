@@ -139,6 +139,7 @@ struct recDevice
     long wheels;              // number of wheels (calculated, not reported by device)
     recElement* pListElements;        // head of linked list of elements
     DisconnectState disconnect; // (ryan added this.)
+    AbsoluteTime lastScrollTime;  // (ryan added this.)
     struct recDevice* pNext;        // next device
 };
 typedef struct recDevice recDevice;
@@ -1458,6 +1459,17 @@ static int available_mice = 0;
 static pRecDevice *devices = NULL;
 
 
+/* returns non-zero if (a <= b). */
+typedef unsigned long long ui64;
+static inline int oldEvent(const AbsoluteTime *a, const AbsoluteTime *b)
+{
+#if 0  // !!! FIXME: doesn't work, timestamps aren't reliable.
+    const ui64 a64 = (((unsigned long long) a->hi) << 32) | a->lo;
+    const ui64 b64 = (((unsigned long long) b->hi) << 32) | b->lo;
+#endif
+    return 0;
+} /* oldEvent */
+
 static int poll_mouse(pRecDevice mouse, ManyMouseEvent *outevent)
 {
     int unhandled = 1;
@@ -1481,25 +1493,44 @@ static int poll_mouse(pRecDevice mouse, ManyMouseEvent *outevent)
         if (recelem == NULL)
             continue;  /* unknown device element. Can this actually happen? */
 
-
         outevent->value = event.value;
         if (recelem->usagePage == kHIDPage_GenericDesktop)
         {
-            /* !!! FIXME: absolute motion? */
-            outevent->type = MANYMOUSE_EVENT_RELMOTION;  /* assume this. */
-            if (recelem->usage == kHIDUsage_GD_X)
-                outevent->item = 0;
-            else if (recelem->usage == kHIDUsage_GD_Y)
-                outevent->item = 1;
-            else if (recelem->usage == kHIDUsage_GD_Wheel)
-            {
-                /* !!! FIXME: find horizontal scroll? */
-                outevent->type = MANYMOUSE_EVENT_SCROLL;
-                outevent->item = 0;
-            } /* else if */
+            /*
+             * some devices (two-finger-scroll trackpads?) seem to give
+             *  a flood of events with values of zero for every legitimate
+             *  event. Throw these zero events out.
+             */
+            if (outevent->value == 0)
+                unhandled = 1;
             else
             {
-                unhandled = 1;
+                switch (recelem->usage)
+                {
+                    case kHIDUsage_GD_X:
+                    case kHIDUsage_GD_Y:
+                        if (oldEvent(&event.timestamp, &mouse->lastScrollTime))
+                            unhandled = 1;
+                        else
+                        {
+                            outevent->type = MANYMOUSE_EVENT_RELMOTION;
+                            if (recelem->usage == kHIDUsage_GD_X)
+                                outevent->item = 0;
+                            else
+                                outevent->item = 1;
+                        } /* else */
+                        break;
+
+                    case kHIDUsage_GD_Wheel:
+                        memcpy(&mouse->lastScrollTime, &event.timestamp,
+                               sizeof (AbsoluteTime));
+                        outevent->type = MANYMOUSE_EVENT_SCROLL;
+                        outevent->item = 0;  /* !!! FIXME: horiz scroll? */
+                        break;
+
+                    default:  /* !!! FIXME: absolute motion? */
+                        unhandled = 1;
+                } /* switch */
             } /* else */
         } /* if */
 
