@@ -318,15 +318,15 @@ char *strdupcat(const char *str1, const char *str2)
 static const char *strdupcat_internal(const char *path, const char *file)
 {
   static char buffer_dir[PATH_SIZE*2];
-  if (!IS_ABSOLUTE(str2))
+  if (!IS_ABSOLUTE(file))
   {
-    strcpy(buffer_dir, str1);
+    strcpy(buffer_dir, path);
   }
   else
   {
     *buffer_dir = 0;
   }
-  strcat(buffer_dir, str2);
+  strcat(buffer_dir, file);
   return(buffer_dir);
 }
 
@@ -334,21 +334,21 @@ static const char *strdupcat_internal(const char *path, const char *file)
 
 #else
 
-static const char *strdupcat_internal(const char *str1, const char *str2, const char *func, const char *mode)
+static const char *strdupcat_internal(const char *path, const char *file, const char *func, const char *mode)
 {
 #ifndef NO_DEBUGGER
   extern char debuggeron; // should put this in a file called debugger.h?
 #endif
   static char buffer_dir[PATH_SIZE*2];
-  if (!IS_ABSOLUTE(str2))
+  if (!IS_ABSOLUTE(file))
   {
-    strcpy(buffer_dir, str1);
+    strcpy(buffer_dir, path);
   }
   else
   {
     *buffer_dir = 0;
   }
-  strcat(buffer_dir, str2);
+  strcat(buffer_dir, file);
 
 #ifndef NO_DEBUGGER
   // maybe checking isendwin() would be better anyway, but only after we scrap
