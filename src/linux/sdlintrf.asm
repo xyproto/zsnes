@@ -43,6 +43,7 @@ EXTSYM pl4upk,pl4downk,pl4leftk,pl4rightk,pl4startk,pl4selk
 EXTSYM pl4Ak,pl4Bk,pl4Xk,pl4Yk,pl4Lk,pl4Rk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5startk,pl5selk
 EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
+EXTSYM SystemTimewHour,SystemTimewMinute,SystemTimewSecond
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
@@ -61,10 +62,6 @@ NEWSYM SystemInit
     ; Be sure to set SBHDMA to a value other than 0 if 16bit sound exists
     mov byte[SBHDMA],1
     ret
-
-NEWSYM PrintChar
-    ret
-    ; print character at dl, push all modified registers
 
 NEWSYM PrintStr          ; Print ASCIIZ string
     pushad
@@ -136,70 +133,20 @@ NEWSYM Get_Date
     add cx,1900
     ret
 
-RefreshKeybBuffer:
-    call JoyRead
-    mov ebx,[HoldKey]
-    cmp byte[pressed+ebx],0
-    jne .holding
-    mov dword[HoldKey],0
-.holding
-    xor eax,eax
-    xor ebx,ebx
-.loop
-    cmp byte[PKeyBuf+eax],0
-    jne .not1
-    cmp byte[pressed+eax],0
-    je .not1
-    mov byte[PKeyBuf+eax],1
-    mov ebx,eax
-.not1
-    cmp byte[pressed+eax],0
-    jne .not0
-    mov byte[PKeyBuf+eax],0
-.not0
-    inc eax
-    cmp eax,100h
-    jne .loop
-    or ebx,ebx
-    jz .notpressed
-    mov [HoldKey],ebx
-    mov byte[GUIkeydelay2],14
-    call .processkey
-.notpressed
-    ; Execute the following at 36hz
-    cmp dword[HoldKey],0
-    je .noholder
-    cmp byte[GUIkeydelay2],0
-    jne .noholder
-    mov byte[GUIkeydelay2],3
-    call .processkey
-.noholder
-    ret
-.processkey
-    mov ebx,[HoldKey]
-    cmp ebx,0A8h
-    jb .skipdecval
-    sub ebx,80h
-.skipdecval
-    cmp ebx,58h
-    jae .none
-    movzx eax,byte[Keybtail]
-    inc al
-    and al,0Fh
-    cmp al,[Keybhead]
-    je .none
-    mov al,[Keybtail]
-    inc al
-    and al,0Fh
-    mov [Keybtail],al
-.none
+NEWSYM GetTimeInSeconds
+    call GetLocalTime
+    movzx eax,word[SystemTimewHour]
+    mov ebx,60
+    mul ebx
+    movzx ebx,word[SystemTimewMinute]
+    add eax,ebx
+    mov ebx,60
+    mul ebx
+    movzx ebx,word[SystemTimewSecond]
+    add eax,ebx
     ret
 
 SECTION .data
-Keybhead db 0
-Keybtail db 0
-HoldKey dd 0
-PKeyBuf times 100h db 0
 NEWSYM CurKeyPos, dd 0
 NEWSYM CurKeyReadPos, dd 0
 NEWSYM KeyBuffer, times 16 dd 0
@@ -647,7 +594,6 @@ NEWSYM ScanCodeListing
         db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
 %endif
 
-NEWSYM ZSNESBase, dd 0
 TempVarSeek dd 0
 SECTION .text
 
@@ -932,19 +878,3 @@ NEWSYM SetInputDevice
 %endif
     ret
 
-EXTSYM SystemTimewHour
-EXTSYM SystemTimewMinute
-EXTSYM SystemTimewSecond
-
-NEWSYM GetTimeInSeconds
-    call GetLocalTime
-    movzx eax,word[SystemTimewHour]
-    mov ebx,60
-    mul ebx
-    movzx ebx,word[SystemTimewMinute]
-    add eax,ebx
-    mov ebx,60
-    mul ebx
-    movzx ebx,word[SystemTimewSecond]
-    add eax,ebx
-    ret
