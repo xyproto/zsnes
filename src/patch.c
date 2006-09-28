@@ -269,6 +269,7 @@ bool findZipIPS(char *compressedfile, const char *ext)
     if (isextension(cFileName, ext))
     {
       FoundIPS = true;
+      break;
     }
 
     //Go to next file in zip file
