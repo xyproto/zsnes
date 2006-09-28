@@ -441,20 +441,23 @@ void zst_init()
   statefileloc = strlen(ZStateName)-1;
   firstsaveinc = 1;
 
-  if(LatestSave)
+  if (LatestSave)
   {
     newestfiledate = 0;
     newestfileloc = 0;
     newestfileloc10 = 0;
 
-    for(tenslots;tenslots<10;tenslots++)
+    for (; tenslots < 10; tenslots++)
     {
-      if(tenslots)
+      if (tenslots)
+      {
         ZStateName[statefileloc-1] = tenslots+'0';
-      if(tenslots == 0)
-        determinenewhelp('t');
-      else
         determinenewhelp('0');
+      }
+      else
+      {
+        determinenewhelp('t');
+      }
       determinenewhelp('1');
       determinenewhelp('2');
       determinenewhelp('3');
@@ -466,7 +469,7 @@ void zst_init()
       determinenewhelp('9');
     }
 
-    if(!newestfileloc10)
+    if (!newestfileloc10)
     {
       ZStateName[statefileloc-1] = 's';
       slotlevelnum = '0';

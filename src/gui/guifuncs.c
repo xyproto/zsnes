@@ -24,7 +24,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "gblhdr.h"
 #define fnamecmp strcmp
 #define fnamencmp strncmp
-#define IS_ABSOLUTE(path) (*(path) == '/')
 #else
 #ifdef __WIN32__
 #include "../win/lib.h"
@@ -42,7 +41,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <zlib.h>
 #define fnamencmp strncasecmp
 #define fnamecmp strcasecmp
-#define IS_ABSOLUTE(path) ((*(path) == '\\') || (*(path) && ((path)[1] == ':')))
 #endif
 
 #ifndef _MSC_VER

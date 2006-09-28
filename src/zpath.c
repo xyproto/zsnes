@@ -314,11 +314,18 @@ char *strdupcat(const char *str1, const char *str2)
 }
 
 #ifndef DEBUG
-//This function is only for this file, and it uses an internal buffer
-static const char *strdupcat_internal(const char *str1, const char *str2)
+//This function is only for this file, and it uses an internal buffer, and is intended for path file merging
+static const char *strdupcat_internal(const char *path, const char *file)
 {
   static char buffer_dir[PATH_SIZE*2];
-  strcpy(buffer_dir, str1);
+  if (!IS_ABSOLUTE(str2))
+  {
+    strcpy(buffer_dir, str1);
+  }
+  else
+  {
+    *buffer_dir = 0;
+  }
   strcat(buffer_dir, str2);
   return(buffer_dir);
 }
@@ -333,7 +340,14 @@ static const char *strdupcat_internal(const char *str1, const char *str2, const 
   extern char debuggeron; // should put this in a file called debugger.h?
 #endif
   static char buffer_dir[PATH_SIZE*2];
-  strcpy(buffer_dir, str1);
+  if (!IS_ABSOLUTE(str2))
+  {
+    strcpy(buffer_dir, str1);
+  }
+  else
+  {
+    *buffer_dir = 0;
+  }
   strcat(buffer_dir, str2);
 
 #ifndef NO_DEBUGGER
