@@ -1024,9 +1024,7 @@ void load_file_fs(char *path)
 {
   unsigned char *ROM = (unsigned char *)romdata;
 
-  unsigned int pathlen = strlen(path);
-  const char *ext = path+pathlen-4;
-  if (pathlen >= 5 && !strcasecmp(ext, ".jma"))
+  if (isextension(path, "jma"))
   {
     #ifdef NO_JMA
     puts("This binary was built without JMA support.");
@@ -1034,11 +1032,11 @@ void load_file_fs(char *path)
     load_jma_file_dir(ZRomPath, path);
     #endif
   }
-  else if (pathlen >= 5 && !strcasecmp(ext, ".zip"))
+  if (isextension(path, "zip"))
   {
     loadZipFile(path);
   }
-  else if (pathlen >= 4 && !strcasecmp(ext+1, ".gz"))
+  if (isextension(path, "gz"))
   {
     loadGZipFile(path);
   }
@@ -1183,39 +1181,25 @@ void loadROM()
   EMUPause = false;
   curromspace = 0;
 
-  if (strlen(ZCartName) >= 5) //Char + ".jma"
+  if (isextension(ZCartName, "jma"))
   {
-    char *ext = ZCartName+strlen(ZCartName)-4;
-    if (!strcasecmp(ext, ".jma"))
-    {
-      #ifdef NO_JMA
-      puts("This binary was built without JMA support.");
-      #else
-      isCompressed = true;
-      load_jma_file_dir(ZRomPath, ZCartName);
-      #endif
-    }
+    #ifdef NO_JMA
+    puts("This binary was built without JMA support.");
+    #else
+    isCompressed = true;
+    load_jma_file_dir(ZRomPath, ZCartName);
+    #endif
   }
-
-  if (strlen(ZCartName) >= 5) //Char + ".zip"
+  else if (isextension(ZCartName, "zip"))
   {
-    char *ext = ZCartName+strlen(ZCartName)-4;
-    if (!strcasecmp(ext, ".zip"))
-    {
-      isCompressed = true;
-      isZip = true;
-      loadZipFile(ZCartName);
-    }
+    isCompressed = true;
+    isZip = true;
+    loadZipFile(ZCartName);
   }
-
-  if (strlen(ZCartName) >= 4) //Char + ".gz"
+  else if (isextension(ZCartName, "gz"))
   {
-    char *ext = ZCartName+strlen(ZCartName)-3;
-    if (!strcasecmp(ext, ".gz"))
-    {
-      isCompressed = true;
-      loadGZipFile(ZCartName);
-    }
+    isCompressed = true;
+    loadGZipFile(ZCartName);
   }
 
   if (!isCompressed) { loadFile(ZCartName); }
