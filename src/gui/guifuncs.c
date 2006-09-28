@@ -1445,14 +1445,7 @@ void GUILoadManualDir()
       GUILoadTextA[GUILoadPos-1] = 0;
     }
 
-    if (IS_ABSOLUTE(GUILoadTextA))
-    {
-      realpath_success = (int)realpath(GUILoadTextA, path_buff);
-    }
-    else
-    {
-      realpath_success = (int)realpath_dir(ZRomPath, GUILoadTextA, path_buff);
-    }
+    realpath_success = (int)realpath_dir(ZRomPath, GUILoadTextA, path_buff);
     if (realpath_success)
     {
       struct stat stat_buffer;
