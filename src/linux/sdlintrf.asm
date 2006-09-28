@@ -20,8 +20,7 @@
 
 %include "macros.mac"
 
-EXTSYM getchar,PrevFSMode,sem_sleep,SBHDMA,putchar
-EXTSYM GetTime,GetDate,GUIkeydelay2,Start60HZ
+EXTSYM getchar,PrevFSMode,sem_sleep,SBHDMA,putchar,Start60HZ
 EXTSYM pressed,AdjustFrequency,vidbufferofsb,vidbuffer,clearwin
 EXTSYM Stop60HZ,initwinvideo,vesa2_rpos,vesa2_gpos,vesa2_bpos,vesa2_rposng
 EXTSYM vesa2_gposng,vesa2_bposng,vesa2_usbit,vesa2_clbit,vesa2_clbitng
@@ -32,7 +31,7 @@ EXTSYM ngrposng,nggposng,ngbposng,HalfTransB,HalfTransC,UpdateVFrame,GetMouseX
 EXTSYM GetMouseY,GetMouseMoveX,GetMouseMoveY,GetMouseButton,T36HZEnabled
 EXTSYM MouseButton,Start36HZ,Stop36HZ,CheckTimers,vesa2_rfull,vesa2_rtrcl
 EXTSYM vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla,vesa2_bfull,vesa2_btrcl
-EXTSYM vesa2_btrcla,Init_2xSaIMMXW,GetLocalTime,V8Mode,GrayscaleMode,PrevWinMode
+EXTSYM vesa2_btrcla,Init_2xSaIMMXW,V8Mode,GrayscaleMode,PrevWinMode
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
 EXTSYM pl2upk,pl2downk,pl2leftk,pl2rightk,pl2startk,pl2selk
@@ -43,7 +42,6 @@ EXTSYM pl4upk,pl4downk,pl4leftk,pl4rightk,pl4startk,pl4selk
 EXTSYM pl4Ak,pl4Bk,pl4Xk,pl4Yk,pl4Lk,pl4Rk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5startk,pl5selk
 EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
-EXTSYM SystemTimewHour,SystemTimewMinute,SystemTimewSecond
 
 ; NOTE: For timing, Game60hzcall should be called at 50hz or 60hz (depending
 ;   on romispal) after a call to InitPreGame and before DeInitPostGame are
@@ -92,58 +90,6 @@ NEWSYM WaitForKey       ; Wait for a key to be pressed
     popad
     mov al,[wfkey]
     ; return key in al
-    ret
-
-NEWSYM Get_Time
-    pushad
-    call GetTime
-    mov [TempVarSeek],eax
-    popad
-    mov eax,[TempVarSeek]
-    ret
-
-NEWSYM Get_TimeDate
-    pushad
-    call GetDate
-    mov [TempVarSeek],eax
-    popad
-    mov eax,[TempVarSeek]
-    ret
-
-NEWSYM Get_Date
-    ; dl = day, dh = month, cx = year
-    pushad
-    call GetDate
-    mov [TempVarSeek],eax
-    popad
-    mov eax,[TempVarSeek]
-    movzx edx,al ;Move day into edx, day is in BCD
-    shr edx,4    ;Chop off the second digit
-    imul edx,10  ;Multiply first digit by 10, since we want decimal
-    and al,0xF   ;Remove first BCD digit
-    add dl,al    ;Add second digit to first*10
-    mov dh,ah    ;Copy month
-    ;Year Calculation
-    shr eax,16
-    movzx ecx,al
-    shr ecx,4
-    imul ecx,10
-    and al,0xF
-    add cl,al
-    add cx,1900
-    ret
-
-NEWSYM GetTimeInSeconds
-    call GetLocalTime
-    movzx eax,word[SystemTimewHour]
-    mov ebx,60
-    mul ebx
-    movzx ebx,word[SystemTimewMinute]
-    add eax,ebx
-    mov ebx,60
-    mul ebx
-    movzx ebx,word[SystemTimewSecond]
-    add eax,ebx
     ret
 
 SECTION .data
@@ -594,7 +540,6 @@ NEWSYM ScanCodeListing
         db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
 %endif
 
-TempVarSeek dd 0
 SECTION .text
 
 ; ****************************

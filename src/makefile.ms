@@ -200,7 +200,7 @@ endif
 
 MAINOBJ=endmem${OE} init${OE} initc${OE} patch${OE}\
 	ui${OE} vcache${OE} version${OE} zmovie${OE} zstate${OE} zloader${OE}\
-	cfg${OE} md${OE} zpath${OE}
+	cfg${OE} md${OE} zpath${OE} ztimec${OE} ztime${OE}
 
 ifneq (${DEBUGGER},no)
 ifeq (${OLDDEBUGGER},yes)
@@ -322,6 +322,8 @@ zpath${OE}: zpath.c cfg${OE} zpath.h ${DOSDIR}/lib.h ${JMADIR}/zsnesjma.h \
 	${WINDIR}/lib.h ${WINDIR}/safelib.h ${ZIPDIR}/zunzip.h
 zstate${OE}: zstate.c asm_call.h cfg${OE} gblvars.h numconv.h zpath.h \
 	${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h
+ztime${OE}: ztime.asm
+ztimec${OE}: ztimec.c
 
 ${CHIPDIR}/7110proc${OE}: ${CHIPDIR}/7110proc.asm macros.mac \
 	${CPUDIR}/regs.mac ${CPUDIR}/regsw.mac

@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM selcA000,selcB800,selc0040,previdmode,DosExit,
-EXTSYM GetTime,GetDate,V8Mode,getblaster,Force8b,SBHDMA
+EXTSYM V8Mode,getblaster,Force8b,SBHDMA
 EXTSYM oldhand9s,oldhand9o,interror,oldhand8s,oldhand8o,oldhandSBs,oldhandSBo
 EXTSYM NoSoundReinit,soundon,DSPDisable,SBInt,PICMaskP,SBIrq,SBHandler,InitSB
 EXTSYM handler8h,handler9h,init60hz,Interror,init18_2hz,DeInitSPC,GUIinit36_4hz
@@ -139,28 +139,6 @@ NEWSYM WaitForKey       ; Wait for a key to be pressed
     mov ah,7
     int 21h
     ; return key in al
-    ret
-
-NEWSYM Get_Time
-    pushad
-    call GetTime
-    mov [TempVarSeek],eax
-    popad
-    mov eax,[TempVarSeek]
-    ret
-
-NEWSYM Get_TimeDate
-    pushad
-    call GetDate
-    mov [TempVarSeek],eax
-    popad
-    mov eax,[TempVarSeek]
-    ret
-
-NEWSYM Get_Date
-    ; dl = day, dh = month, cx = year
-    mov ah,2Ah
-    int 21h
     ret
 
 %macro PressConv 3
@@ -966,18 +944,4 @@ NEWSYM StartSound
 
 NEWSYM Check60hz
     ; Call the timer update function here
-    ret
-
-NEWSYM GetTimeInSeconds
-    push es
-    mov ax,[selc0040]
-    mov es,ax
-    mov eax,[es:108]
-    and eax,0FFFFFFh
-    xor edx,edx
-    mov ebx,86400
-    mul ebx
-    mov ebx,1573039
-    div ebx
-    pop es
     ret

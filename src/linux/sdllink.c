@@ -133,9 +133,6 @@ static BYTE IsActivated = 1;
 
 int T60HZEnabled = 0;
 int T36HZEnabled = 0;
-short SystemTimewHour;
-short SystemTimewMinute;
-short SystemTimewSecond;
 float end, end2;
 float start, start2;
 float update_ticks_pc, update_ticks_pc2;
@@ -1410,18 +1407,6 @@ void SetMouseX(int X)
 void SetMouseY(int Y)
 {
   MouseY = Y;
-}
-
-void GetLocalTime()
-{
-  time_t current;
-  struct tm *timeptr;
-
-  time(&current);
-  timeptr = localtime(&current);
-  SystemTimewHour = timeptr->tm_hour;
-  SystemTimewMinute = timeptr->tm_min;
-  SystemTimewSecond = timeptr->tm_sec;
 }
 
 /* evul, maybe should use something other than constructor method */

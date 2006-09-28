@@ -56,7 +56,7 @@ GUI_O=$(GUI_D)/gui.o $(GUI_D)/guifuncs.o $(GUI_D)/menu.o
 JMA_O=@JMA_FILES@
 
 MAIN_O=cfg.o endmem.o init.o initc.o md.o patch.o ui.o vcache.o version.o\
-	zloader.o zmovie.o zpath.o zstate.o
+	zloader.o zmovie.o zpath.o zstate.o ztime.o ztimec.o
 
 MMLIB_O=@MMLIB_FILES@
 

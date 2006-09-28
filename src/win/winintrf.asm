@@ -20,7 +20,7 @@
 
 %include "macros.mac"
 
-EXTSYM GetTime,GetDate,GUIkeydelay2,SBHDMA
+EXTSYM GUIkeydelay2,SBHDMA
 EXTSYM soundon,DSPDisable,Start60HZ,pressed,putchar,getch
 EXTSYM vidbufferofsb,vidbuffer,clearwin,Stop60HZ,initwinvideo,vesa2_rpos
 EXTSYM vesa2_gpos,vesa2_bpos,vesa2_rposng,vesa2_gposng,vesa2_bposng,vesa2_usbit
@@ -35,7 +35,7 @@ EXTSYM Stop36HZ,BufferSizeW,BufferSizeB,ProcessSoundBuffer,CheckTimers
 EXTSYM vesa2_rfull,vesa2_rtrcl,vesa2_rtrcla,vesa2_gfull,vesa2_gtrcl,vesa2_gtrcla
 EXTSYM vesa2_bfull,vesa2_btrcl,vesa2_btrcla,Init_2xSaIMMXW,DoSleep
 EXTSYM V8Mode,GrayscaleMode,PrevWinMode,PrevFSMode,FrameSemaphore
-EXTSYM _imp__GetLocalTime@4,DisplayWIPDisclaimer
+EXTSYM DisplayWIPDisclaimer
 EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
 EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
 EXTSYM pl2upk,pl2downk,pl2leftk,pl2rightk,pl2startk,pl2selk
@@ -68,20 +68,6 @@ NEWSYM SystemInit
     popad
 %endif
     mov byte[SBHDMA],1
-    ret
-
-NEWSYM PrintChar
-    ret
-    ; print character at dl, push all modified registers
-    pushad
-    push eax
-    push edx
-    call putchar
-    pop edx
-;    mov ah,02h
-;    int 21h
-    pop eax
-    popad
     ret
 
 NEWSYM PrintStr          ; Print ASCIIZ string
@@ -117,45 +103,6 @@ NEWSYM WaitForKey       ; Wait for a key to be pressed
     ;mov ah,7
     ;int 21h
     ; return key in al
-    ret
-
-NEWSYM Get_Time
-    pushad
-    call GetTime
-    mov [TempVarSeek],eax
-    popad
-    mov eax,[TempVarSeek]
-    ret
-
-NEWSYM Get_TimeDate
-    pushad
-    call GetDate
-    mov [TempVarSeek],eax
-    popad
-    mov eax,[TempVarSeek]
-    ret
-
-NEWSYM Get_Date
-    ; dl = day, dh = month, cx = year
-    pushad
-    call GetDate
-    mov [TempVarSeek],eax
-    popad
-    mov eax,[TempVarSeek]
-    movzx edx,al ;Move day into edx, day is in BCD
-    shr edx,4    ;Chop off the second digit
-    imul edx,10  ;Multiply first digit by 10, since we want decimal
-    and al,0xF   ;Remove first BCD digit
-    add dl,al    ;Add second digit to first*10
-    mov dh,ah    ;Copy month
-    ;Year Calculation
-    shr eax,16
-    movzx ecx,al
-    shr ecx,4
-    imul ecx,10
-    and al,0xF
-    add cl,al
-    add cx,1900
     ret
 
 RefreshKeybBuffer:
@@ -755,9 +702,6 @@ NEWSYM ScanCodeListing
         db 'P2B','P2Y','P2S','P2T','P2U','P2D','P2L','P2R'
         db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
 
-NEWSYM ZSNESBase, dd 0
-TempVarSeek dd 0
-
 SECTION .text
 
 ; ****************************
@@ -1083,30 +1027,3 @@ NEWSYM SetInputDevice
 .input2
     SetDefaultKey 56,29,37,50,49,51,210,199,201,211,207,209
     ret
-
-NEWSYM GetTimeInSeconds
-    push dword SystemTime
-    call [_imp__GetLocalTime@4]
-    movzx eax,word[SystemTime.wHour]
-    mov ebx,60
-    mul ebx
-    movzx ebx,word[SystemTime.wMinute]
-    add eax,ebx
-    mov ebx,60
-    mul ebx
-    movzx ebx,word[SystemTime.wSecond]
-    add eax,ebx
-    ret
-
-SECTION .data
-ALIGN32
-
-SystemTime:
-.wYear                  dw    0
-.wMonth                 dw    0
-.wDayOfWeek             dw    0
-.wDay                   dw    0
-.wHour                  dw    0
-.wMinute                dw    0
-.wSecond                dw    0
-.wMilliseconds          dw    0
