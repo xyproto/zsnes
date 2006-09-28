@@ -1167,7 +1167,8 @@ bool NSRTHead(unsigned char *ROM)
   return(false); //None
 }
 
-void calculate_state_sizes(), InitRewindVars(), findZipIPS(char *), zst_init();
+void calculate_state_sizes(), InitRewindVars(), zst_init();
+bool findZipIPS(char *, char *);
 extern bool EMUPause;
 extern unsigned char device1, device2;
 unsigned char lorommapmode2, curromsize, snesinputdefault1, snesinputdefault2;
@@ -1382,7 +1383,18 @@ void loadROM()
 
   SplitSupport();
 
-  if (isZip) { findZipIPS(ZCartName); }
+  if (isZip)
+  {
+    int i;
+    char ext[4];
+
+    strcpy(ext, "ips");
+    for (i = 0; findZipIPS(ZCartName, ext); i++)
+    {
+      if (i > 9) { break; }
+      ext[2] = i+'0';
+    }
+  }
 
   if (curromspace)
   {
@@ -2575,7 +2587,8 @@ void initsnes()
   }
 }
 
-void PatchUsingIPS(), DosExit(), OpenSramFile();
+bool PatchUsingIPS(char *);
+void DosExit(), OpenSramFile();
 extern unsigned char GUIOn, GUIOn2;
 
 bool loadfileGUI()
@@ -2594,7 +2607,18 @@ bool loadfileGUI()
     OpenCombFile();
 
     if (!(GUIOn || GUIOn2)) { puts("File opened successfully !"); }
-    if (!IPSPatched) { PatchUsingIPS(); }
+    if (!IPSPatched)
+    {
+      int i;
+      char ext[4];
+
+      strcpy(ext, "ips");
+      for (i = 0; PatchUsingIPS(ext); i++)
+      {
+        if (i > 9) { break; }
+        ext[2] = i+'0';
+      }
+    }
   }
   else
   {

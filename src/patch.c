@@ -90,10 +90,10 @@ int IPSget()
   return(retVal);
 }
 
-bool initPatch()
+bool initPatch(const char *ext)
 {
   memset(&IPSPatch, 0, sizeof(IPSPatch));
-  setextension(ZSaveName, "ips");
+  setextension(ZSaveName, ext);
 
   IPSPatch.fp = fopen_dir(ZSramPath, ZSaveName, "rb");
   if (!IPSPatch.fp) { IPSPatch.fp = fopen_dir(ZRomPath, ZSaveName, "rb"); }
@@ -133,7 +133,7 @@ void deinitPatch()
 }
 
 
-void PatchUsingIPS()
+bool PatchUsingIPS(const char *ext)
 {
   unsigned char *ROM = (unsigned char *)romdata;
   int location = 0, length = 0, last = 0;
@@ -144,15 +144,15 @@ void PatchUsingIPS()
   if (!AutoPatch)
   {
     deinitPatch(); //Needed if the call to this function was done from findZipIPS()
-    return;
+    return(false);
   }
 
   if (!IPSPatch.zipfile) //Regular file, not Zip
   {
-    if (!initPatch())
+    if (!initPatch(ext))
     {
       deinitPatch(); //Needed because if it didn't fully init, some things could have
-      return;
+      return(false);
     }
   }
 
@@ -242,9 +242,11 @@ void PatchUsingIPS()
     fclose(fp);
   }
   */
+
+  return(true);
 }
 
-void findZipIPS(char *compressedfile)
+bool findZipIPS(char *compressedfile, const char *ext)
 {
   bool FoundIPS = false;
   unz_file_info cFileInfo; //Create variable to hold info for a compressed file
@@ -264,14 +266,9 @@ void findZipIPS(char *compressedfile)
     unzGetCurrentFileInfo(IPSPatch.zipfile, &cFileInfo, cFileName, 256, NULL, 0, NULL, 0);
 
     //Find IPS file
-    if (strlen(cFileName) >= 5) //Char + ".IPS"
+    if (isextension(cFileName, ext))
     {
-      char *ext = cFileName+strlen(cFileName)-4;
-      if (!strncasecmp(ext, ".IPS", 4))
-      {
-        FoundIPS = true;
-        break;
-      }
+      FoundIPS = true;
     }
 
     //Go to next file in zip file
@@ -287,7 +284,7 @@ void findZipIPS(char *compressedfile)
     if ((IPSPatch.data = (unsigned char *)malloc(BUFFER_SIZE)))
     {
       reloadBuffer();
-      PatchUsingIPS();
+      return(PatchUsingIPS(0));
     }
     else
     {
@@ -299,4 +296,5 @@ void findZipIPS(char *compressedfile)
     unzClose(IPSPatch.zipfile);
     IPSPatch.zipfile = 0;
   }
+  return(false);
 }
