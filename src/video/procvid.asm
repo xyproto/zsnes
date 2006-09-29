@@ -1874,7 +1874,7 @@ SECTION .text
     mov byte[GUIOn],1
 .notng
     ; draw shadow behind box
-    mov esi,80*2+80*288*2
+    mov esi,80*2+90*288*2
     add esi,[vidbuffer]
     mov ecx,150
     mov al,70
