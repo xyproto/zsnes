@@ -507,7 +507,7 @@ bool isextension(const char *fname, const char *ext)
 {
   size_t fname_len = strlen(fname),
          ext_len = strlen(ext);
-  return((fname[fname_len-(ext_len+1)] == '.') && !strcmp(fname+fname_len-ext_len, ext));
+  return((fname[fname_len-(ext_len+1)] == '.') && !strcasecmp(fname+fname_len-ext_len, ext));
 }
 
 void strdirname(char *str)
