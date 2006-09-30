@@ -139,8 +139,6 @@ bool PatchUsingIPS(const char *ext)
   int location = 0, length = 0, last = 0;
   int sub = Header512 ? 512 : 0;
 
-  IPSPatched = false;
-
   if (!AutoPatch)
   {
     deinitPatch(); //Needed if the call to this function was done from findZipIPS()
