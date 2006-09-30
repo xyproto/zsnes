@@ -657,6 +657,29 @@ void zst_save(FILE *fp, bool Thumbnail, bool Compress)
   ResetState();
 }
 
+static size_t string_merge(char *buffer, size_t buffer_len, ...)
+{
+  char *s;
+  size_t copied = 0, needed = 0;;
+
+  va_list ap;
+  va_start(ap, buffer_len);
+
+  while ((s = va_arg(ap, char *)))
+  {
+    needed += strlen(s);
+    if (copied < buffer_len-1)
+    {
+      strncpy(buffer+copied, s, (buffer_len-copied)-1);
+      buffer[buffer_len-1] = 0;
+      copied += strlen(buffer+copied);
+    }
+  }
+
+  va_end(ap);
+  return(needed+1);
+}
+
 static char txtmsg[25];
 
 void set_state_message(char *prefix, char *suffix)
@@ -675,11 +698,7 @@ void set_state_message(char *prefix, char *suffix)
     num[2] = 0;
   }
 
-  //Set null if message got too big. Note if message got too big, we should increase size of txtmsg
-  if ((unsigned int)snprintf(txtmsg, sizeof(txtmsg), "%s%s%s", prefix, num, suffix) > sizeof(txtmsg))
-  {
-    txtmsg[sizeof(txtmsg)-1] = 0;
-  }
+  string_merge(txtmsg, sizeof(txtmsg), prefix, num, suffix, 0);
 
   Msgptr = txtmsg;
   MessageOn = MsgCount;
