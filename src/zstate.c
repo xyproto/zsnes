@@ -37,6 +37,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #define DIR_SLASH "\\"
 #endif
+#include <stdarg.h>
 #include "numconv.h"
 #include "gblvars.h"
 #include "asm_call.h"
@@ -657,6 +658,12 @@ void zst_save(FILE *fp, bool Thumbnail, bool Compress)
   ResetState();
 }
 
+/*
+Merges all the passed strings into buffer. Make sure to pass an extra parameter as 0 after all the strings.
+Copies at most buffer_len characters. Result is always null terminated.
+Returns how many bytes are needed to store all strings.
+Thus if return is <= buffer_len, everything was copied.
+*/
 static size_t string_merge(char *buffer, size_t buffer_len, ...)
 {
   char *s;
@@ -665,12 +672,14 @@ static size_t string_merge(char *buffer, size_t buffer_len, ...)
   va_list ap;
   va_start(ap, buffer_len);
 
+  if (buffer_len) { *buffer = 0; }
+
   while ((s = va_arg(ap, char *)))
   {
     needed += strlen(s);
-    if (copied < buffer_len-1)
+    if (buffer && (copied+1 < buffer_len))
     {
-      strncpy(buffer+copied, s, (buffer_len-copied)-1);
+      strncpy(buffer+copied, s, buffer_len-copied);
       buffer[buffer_len-1] = 0;
       copied += strlen(buffer+copied);
     }
