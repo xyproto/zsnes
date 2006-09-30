@@ -980,8 +980,6 @@ SECTION .text
 NEWSYM DosExit ; Terminate Program
 %ifdef __MSDOS__
   call init18_2hz
-  mov    ax,4c00h            ;terminate
-  int    21h
 %else
   call exit
 %endif
