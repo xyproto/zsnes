@@ -220,6 +220,11 @@ bool init_paths(char *launch_command)
               init_save_paths();
 
 #ifdef DEBUG
+#ifndef __UNIXSDL__
+              freopen_dir(ZCfgPath, "stderr.txt", "w", stderr);
+              freopen_dir(ZCfgPath, "stdout.txt", "w", stdout);
+#endif
+
               printf("ZStartPath: %s\n", ZStartPath);
               printf("ZCfgPath: %s\n", ZCfgPath);
               printf("ZRomPath: %s\n", ZRomPath);
@@ -448,6 +453,11 @@ char *realpath_sfn_dir(const char *path, const char *file, char *buf)
   return(realpath_sfn(strdupcat_internal(path, file), buf));
 }
 #endif
+
+FILE *freopen_dir(const char *path, const char *file, const char *mode, FILE *stream)
+{
+  return(freopen(strdupcat_internal(path, file), mode, stream));
+}
 
 int system_dir(const char *path, const char *command)
 {
