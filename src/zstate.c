@@ -176,7 +176,7 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
     }
   }
 
-  if (DSP1Type && (method != csm_load_zst_old))
+  if (DSP1Enable && (method != csm_load_zst_old))
   {
     copy_func(&buffer, &DSP1COp, 70+128);
     copy_func(&buffer, &Op00Multiplicand, 3*4+128);
@@ -901,7 +901,7 @@ void zst_sram_load(FILE *fp)
     fread(SA1RAMArea, 1, 131072, fp);  // SA-1 sram
     fseek(fp, 15, SEEK_CUR);
   }
-  if (DSP1Type) { fseek(fp, 2874, SEEK_CUR); }
+  if (DSP1Enable) { fseek(fp, 2874, SEEK_CUR); }
   if (SETAEnable) { fread(setaramdata, 1, 4096, fp); } // SETA sram
   if (SPC7110Enable) { fseek(fp, PHnum2writespc7110reg + 65536, SEEK_CUR); }
   fseek(fp, 227, SEEK_CUR);
@@ -939,7 +939,7 @@ void zst_sram_load_compressed(FILE *fp)
             memcpyrinc(&data, SA1RAMArea, 131072); // SA-1 sram
             data += 15;
           }
-          if (DSP1Type) { data += 2874; }
+          if (DSP1Enable) { data += 2874; }
           if (SETAEnable) { memcpyrinc(&data, setaramdata, 4096); } // SETA sram
           if (SPC7110Enable)  { data += PHnum2writespc7110reg + 65536; }
           data += 227;

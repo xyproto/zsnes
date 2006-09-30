@@ -1972,16 +1972,27 @@ void CheckROMType()
   // Setup DSP-X stuff
   DSP1Type = 0;
 
-  if (DSP1Enable || DSP2Enable)
+  if (DSP1Enable)
   {
-    if (DSP2Enable)
-    {
-      asm_call(InitDSP2);
-    }
-
     InitDSP();
 
-    DSP1Type = (romtype == 2) ? 2 : 1;
+    if (romtype == 1)
+    {
+      DSP1Type = 1;
+      map_mem(0x30, &dsp1bank, 0x10);
+      map_mem(0xB0, &dsp1bank, 0x10);
+      map_mem(0xE0, &dsp1bank, 0x10);
+    }
+    else
+    {
+      DSP1Type = 2;
+    }
+  }
+
+  if (DSP2Enable)
+  {
+    asm_call(InitDSP2);
+    map_mem(0x3F, &dsp2bank, 1);
   }
 
   if (DSP3Enable)
@@ -2083,18 +2094,6 @@ void CheckROMType()
     {
       memset(SA1RAMArea, 0, 131072);
       if (SramExists) { memcpy(SA1RAMArea, sram, 131072); }
-    }
-  }
-
-  if (DSP1Type == 1)
-  {
-    map_mem(0x30, &dsp1bank, 0x10);
-    map_mem(0xB0, &dsp1bank, 0x10);
-    map_mem(0xE0, &dsp1bank, 0x10);
-
-    if (DSP2Enable)
-    {
-      map_mem(0x3F, &dsp2bank, 1);
     }
   }
 
