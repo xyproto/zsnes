@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM UpdateDevices,Makemode7Table,MusicRelVol,MusicVol,makesprprtable
-EXTSYM romloadskip,start65816,showinfogui,inittable
+EXTSYM romloadskip,start65816,showinfogui,inittable,exit
 EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer
 EXTSYM inittablec,newgfx16b,DisplayInfo,ssautosw,GUIDelayB,pl12s34
 EXTSYM Output_Text,Turbo30hz,CombinDataLocl
@@ -47,8 +47,6 @@ EXTSYM processmouse2,cpalval,init65816,clearmem,SetupROM,ZCartName,initsnes
 
 %ifdef __MSDOS__
 EXTSYM init18_2hz
-%else
-EXTSYM exit
 %endif
 
 %ifndef NO_DEBUGGER
@@ -980,9 +978,8 @@ SECTION .text
 NEWSYM DosExit ; Terminate Program
 %ifdef __MSDOS__
   call init18_2hz
-%else
-  call exit
 %endif
+  call exit
 
 NEWSYM MMXCheck
     ; Check for cpu that doesn't support CPUID
