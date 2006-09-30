@@ -35,6 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "cfg.h"
 #include "zpath.h"
 #include "cpu/memtable.h"
+#include "numconv.h"
 
 #ifndef __GNUC__
 #define strcasecmp stricmp
@@ -850,33 +851,30 @@ void loadFile(char *filename)
 
 void loadGZipFile(char *filename)
 {
-  int size, err;
-  gzFile GZipFile;
-  FILE *fp = 0;
-  fp = fopen_dir(ZRomPath, filename, "rb");
-  if (!fp) { return; }
-  fseek(fp, -4, SEEK_END);
-  //Size is read like this due to VC screwing up with optimizations
-  size = fgetc(fp);
-  size |= fgetc(fp) << 8;
-  size |= fgetc(fp) << 16;
-  size |= fgetc(fp) << 24;
-  fclose(fp);
+  //Open file for size reading
+  FILE *fp = fopen_dir(ZRomPath, filename, "rb");
+  if (fp)
+  {
+    int fsize, gzsize;
+    gzFile GZipFile;
 
-  if ((unsigned int)size > maxromspace+512) { return; }
+    fseek(fp, -4, SEEK_END);
+    gzsize = fread4(fp);
+    fsize = ftell(fp);
+    rewind(fp);
 
-  //Open GZip file for decompression
-  GZipFile = gzopen_dir(ZRomPath, filename, "rb");
-
-  //Decompress file into memory
-  err = gzread(GZipFile, romdata, size);
-
-  //Close compressed file
-  gzclose(GZipFile);
-
-  if (err != size) { return; }
-
-  curromspace = size;
+    //Open GZip file for decompression, use existing file handle
+    if ((GZipFile = gzdopen(fileno(fp), "rb")))
+    {
+      int len = gzdirect(GZipFile) ? fsize : gzsize;
+      if (len && ((unsigned int)len <= maxromspace+512) && (gzread(GZipFile, romdata, len) == len))
+      {
+        curromspace = len; //Success
+      }
+      gzclose(GZipFile);
+    }
+    fclose(fp);
+  }
 }
 
 void loadZipFile(char *filename)
