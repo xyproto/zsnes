@@ -456,7 +456,13 @@ char *realpath_sfn_dir(const char *path, const char *file, char *buf)
 
 FILE *freopen_dir(const char *path, const char *file, const char *mode, FILE *stream)
 {
-  return(freopen(strdupcat_internal(path, file), mode, stream));
+  //Because DOSBox is stupid, we're implementing this manually;
+  FILE *fp = fopen(strdupcat_internal(path, file), mode);
+  if (fp)
+  {
+    dup2(fileno(fp), fileno(stream));
+  }
+  return(fp);
 }
 
 int system_dir(const char *path, const char *command)
