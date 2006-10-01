@@ -38,11 +38,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIR_SLASH "\\"
 #endif
 #include <stdarg.h>
-#include "numconv.h"
 #include "gblvars.h"
 #include "asm_call.h"
 #include "zpath.h"
 #include "cfg.h"
+
+#define NUMCONV_FR3
+#define NUMCONV_FW3
+#include "numconv.h"
 
 #ifdef __MSDOS__
 #define clim() __asm__ __volatile__ ("cli");

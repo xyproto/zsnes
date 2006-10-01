@@ -33,6 +33,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #endif
 #include "../zpath.h"
+
+#define NUMCONV_FW2
+#define NUMCONV_FW3
+#define NUMCONV_FW4
 #include "../numconv.h"
 
 #ifdef __MSDOS__

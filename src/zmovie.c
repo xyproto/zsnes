@@ -48,10 +48,18 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #include "gblvars.h"
 #include "asm_call.h"
-#include "numconv.h"
 #include "md.h"
 #include "zpath.h"
 #include "cfg.h"
+
+#define NUMCONV_FR2
+#define NUMCONV_FR3
+#define NUMCONV_FR4
+#define NUMCONV_FW2
+#define NUMCONV_FW3
+#define NUMCONV_FW4
+#include "numconv.h"
+
 
 #ifdef __GNUC__
 typedef unsigned long long uint64;
