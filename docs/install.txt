@@ -12,16 +12,18 @@ win version, I hope it will also work for you
 First, you need the following software:
 
 DOS port: 
-- NASM v0.98.39 or higher
-- DJGPP v2 or higher, (GCC also installed) : http://www.delorie.com/djgpp/
+- NASM v0.98.39 or higher : http://nasm.sourceforge.net
+- DJGPP v2.03 or higher, (GCC also installed) : http://www.delorie.com/djgpp/
                    using the zip picker, the default choices are ok if you
                    check C and C++ in the programming languages.
-- zlib : http://www.zlib.net
+- zlib v1.2.3 or higher : http://www.zlib.net
 - libpng : http://www.libpng.org/
                 Build the static versions of both of these libraries using
                 DJGPP and do a 'make install' to put them where DJGPP
                 can find them.  Afterwards you can go ahead and delete
                 the source for them from your hard drive.
+- PDCurses : http://pdcurses.sourceforge.net
+                Only needed if you compile with the debugger.
 
 Then to build the executable, go to the src directory and type:
 make -f makefile.ms PLATFORM=dos
@@ -63,7 +65,7 @@ Windows port with MSVC:
                    (old) directx headers instead of the sdk headers. I replaced 
                    these old headers (in the include directory of vc++ dir) 
                    with the newer ones.
-- zlib : http://www.zlib.net
+- zlib v1.2.3 or higher : http://www.zlib.net
 		   you need the Win9x/WinNT static library (the dll version 
 		   doesn't seem to work with zsnes). Rename the static version 
 		   to zlib.lib and put it somewhere where vc++ will find it 
@@ -74,6 +76,7 @@ Windows port with MSVC:
             go ahead and build the static version.  Rename it to libpng.lib
             and put it somewhere where MSVC++ will find it (usually the
             lib subdirectory of your main MSVC++ directory).
+- PDCurses : http://pdcurses.sourceforge.net
 
 Then to build the executable, go to the src directory and type:
 make -f makefile.ms PLATFORM=msvc
@@ -85,15 +88,17 @@ it will divide its size by 10.
 
 Windows port with MinGW:
 - GNU Make (don't use included in mingw): http://unxutils.sourceforge.net/
-- NASM v0.98.39 : http://nasm.sf.net/ 
+- NASM v0.98.39 : http://nasm.sf.net/
 - MinGW : http://www.mingw.org
 - Latest Win32API : http://www.mingw.org
 - DirectX 8+ for MinGW : Parts of it are included with Win32API, parts aren't.
                      Check http://www.talula.demon.co.uk/allegro/wip.html
                      and http://www.talula.demon.co.uk/allegro/wip.html
                      for the rest of DirectX for MinGW.
-- zlib : http://www.zlib.net
+- zlib v1.2.3 or higher : http://www.zlib.net
 - libpng : http://www.libpng.org/
+- PDCurses : http://pdcurses.sourceforge.net
+                Only needed if you compile with the debugger.
 
 Then to build the executable, go to the src directory and type:
 make -f makefile.ms PLATFORM=win32
@@ -123,7 +128,7 @@ You'll also need :
                                    later. If you are using rpm packages, don't
                                    forget the -devel package.
 - NASM v0.98.39 : http://nasm.sf.net/
-- zlib : http://www.zlib.net
+- zlib v1.2.3 or higher : http://www.zlib.net
                                    it is probably already installed on your 
                                    system, maybe you are just missing the 
                                    development headers. Check in the 
@@ -135,6 +140,10 @@ You'll also need :
                     unstable for some weird reason.  If you don't have
                     libpng, either get it and install it or pass the
                     --without-png option to the 'configure' script.
+- Curses/NCurses
+             Check your distro. One of these is needed if you compile with
+             the debugger enabled. You may also have to symlink ncurses.h
+             to curses.h in your include directory.
 
 Then to build the executable, go to the src directory and type:
 sh ./autogen.sh && gmake && gmake install
