@@ -31,6 +31,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <sys/stat.h>
 #define DIR_SLASH "\\"
 #endif
+#include <zlib.h>
 #include "asm_call.h"
 #include "cfg.h"
 #include "zpath.h"
