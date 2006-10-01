@@ -988,7 +988,7 @@ void DSP3_OP1E_D( int16 move, int16 *lo, int16 *hi )
 
 void DSP3_OP1E_D1( int16 move, int16 *lo, int16 *hi )
 {
-	uint32 dataOfs = ((move << 1) + 0x03b2) & 0x03ff;
+	//uint32 dataOfs = ((move << 1) + 0x03b2) & 0x03ff;
 	int16 Lo;
 	int16 Hi;
 
