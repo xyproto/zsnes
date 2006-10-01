@@ -1474,7 +1474,9 @@ unsigned char gui_key;
 unsigned char gui_key_extended;
 int GUILoadKeysNavigate()
 {
+#ifdef __UNIXSDL__
   extern unsigned int numlockptr;
+#endif
 
   int *currentviewloc, *currentcursloc, *entries;
   if (GUIcurrentfilewin == 1)

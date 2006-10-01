@@ -1949,11 +1949,13 @@ static char *encode_command(char *p)
   return(command);
 }
 
+#ifdef __UNIXSDL__
 static void broken_pipe(int sig)
 {
   Msgptr = "BROKEN PIPE!";
   MessageOn = MsgCount;
 }
+#endif
 
 struct
 {
