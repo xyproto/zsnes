@@ -27,7 +27,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define WORD  unsigned short
 #define DWORD unsigned long
 
-typedef enum { FALSE = 0, TRUE = !FALSE } BOOL;
+//C++ style code in C
+#define bool unsigned char
+#define true 1
+#define false 0
+
 void CheckFrame();
 // VIDEO VARIABLES
 extern SDL_Surface *surface;
@@ -44,7 +48,10 @@ void UpdateVFrame(void);
 void NTSCFilterInit();
 void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char * buffer);
 
-BOOL sw_start(int width, int height, int req_depth, int FullScreen)
+bool OGLModeCheck();
+void initwinvideo();
+
+bool sw_start(int width, int height, int req_depth, int FullScreen)
 {
   //unsigned int color32, p;
   //int i;
@@ -63,7 +70,7 @@ BOOL sw_start(int width, int height, int req_depth, int FullScreen)
   surface = SDL_SetVideoMode(SurfaceX, SurfaceY, req_depth, flags);
   if (surface == NULL) {
     fprintf (stderr, "Could not set %dx%d video mode: %s\n", SurfaceX, SurfaceY, SDL_GetError ());
-    return FALSE;
+    return false;
   }
 
   SurfaceLocking = SDL_MUSTLOCK(surface);
@@ -80,7 +87,7 @@ BOOL sw_start(int width, int height, int req_depth, int FullScreen)
   if(GBitMask != 0x07E0) converta = 1;
   else converta = 0;
 
-  return TRUE;
+  return true;
 }
 
 void sw_end() {

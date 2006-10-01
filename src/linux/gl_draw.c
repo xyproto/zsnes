@@ -26,9 +26,10 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define WORD  unsigned short
 #define DWORD unsigned long
 
-typedef enum
-{ FALSE = 0, TRUE = !FALSE }
-BOOL;
+//C++ style code in C
+#define bool unsigned char
+#define true 1
+#define false 0
 
 // FUNCTIONS
 void hq2x_16b(void);
@@ -52,9 +53,11 @@ extern unsigned char curblank;
 extern BYTE GUIRESIZE[];
 
 void gl_clearwin();
-void UpdateVFrame(void);
+void UpdateVFrame();
 
-void gl_scanlines(void);
+void gl_scanlines();
+
+bool OGLModeCheck();
 
 int gl_start(int width, int height, int req_depth, int FullScreen)
 {
@@ -70,7 +73,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
   if (surface == NULL)
   {
     fprintf(stderr, "Could not set %dx%d-GL video mode.\n",SurfaceX, SurfaceY);
-    return FALSE;
+    return false;
   }
 
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -115,7 +118,7 @@ int gl_start(int width, int height, int req_depth, int FullScreen)
 
   if (scanlines) gl_scanlines();
 
-  return TRUE;
+  return true;
 }
 
 void gl_end()

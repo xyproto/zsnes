@@ -31,7 +31,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define PI 3.1415926535897932384626433832795
 #define Cos(a) ((double) CosTable[a])
 #define Sin(a) ((double) SinTable[a])
-#define Tan(a) (CosTable[a]?((((int)SinTable[a])<<16)/CosTable[a]):0x80000000)
+#define Tan(a) (CosTable[a]?((((int)SinTable[a])<<16)/CosTable[a]):(int)0x80000000)
 
 short SinTable[512] = {
          0,    402,    804,   1206,   1607,   2009,   2410,   2811,
