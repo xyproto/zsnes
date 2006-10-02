@@ -94,7 +94,7 @@ char *realpath_dir(const char *path, const char *file, char *buf);
 #ifdef __MSDOS__
 char *realpath_sfn_dir(const char *path, const char *file, char *buf);
 #endif
-FILE *freopen_dir(const char *path, const char *file, const char *mode, FILE *stream);
+FILE *fdreopen_dir(const char *path, const char *file, const char *mode, int fd);
 int system_dir(const char *path, const char *command);
 FILE *popen_dir(const char *path, char *command, const char *type);
 

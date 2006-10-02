@@ -14,13 +14,6 @@
 #define pipe _pipe
 #define flushall _flushall
 
-#ifndef STDIN_FILENO
-#define STDIN_FILENO 0
-#endif
-
-#ifndef STDOUT_FILENO
-#define STDOUT_FILENO 1
-#endif
 
 //Introducing a popen which doesn't return until it knows for sure of program launched or couldn't open -Nach
 

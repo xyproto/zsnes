@@ -221,8 +221,8 @@ bool init_paths(char *launch_command)
 
 #ifdef DEBUG
 #ifndef __UNIXSDL__
-              freopen_dir(ZCfgPath, "stderr.txt", "w", stderr);
-              freopen_dir(ZCfgPath, "stdout.txt", "w", stdout);
+              fdreopen_dir(ZCfgPath, "stderr.txt", "w", STDERR_FILENO);
+              fdreopen_dir(ZCfgPath, "stdout.txt", "w", STDOUT_FILENO);
 #endif
 
               printf("ZStartPath: %s\n", ZStartPath);
@@ -454,13 +454,13 @@ char *realpath_sfn_dir(const char *path, const char *file, char *buf)
 }
 #endif
 
-FILE *freopen_dir(const char *path, const char *file, const char *mode, FILE *stream)
+FILE *fdreopen_dir(const char *path, const char *file, const char *mode, int fd)
 {
-  //Because DOSBox is stupid, we're implementing this manually;
+  //Because DOSBox and Windows is stupid, we're implementing this manually;
   FILE *fp = fopen(strdupcat_internal(path, file), mode);
   if (fp)
   {
-    dup2(fileno(fp), fileno(stream));
+    dup2(fileno(fp), fd);
   }
   return(fp);
 }
