@@ -141,7 +141,7 @@ void DrawWater(void)
 		if(mode&4)
 		{
             int x,y;
-            srand(time(0));
+            srand((unsigned int)time(0));
             if(rand()%14 == 7)
 			{
 /*

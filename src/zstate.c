@@ -670,7 +670,7 @@ Thus if return is <= buffer_len, everything was copied.
 static size_t string_merge(char *buffer, size_t buffer_len, ...)
 {
   char *s;
-  size_t copied = 0, needed = 0;;
+  size_t copied = 0, needed = 0;
 
   va_list ap;
   va_start(ap, buffer_len);

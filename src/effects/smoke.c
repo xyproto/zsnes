@@ -91,7 +91,7 @@ static void init_fire (void)
     int x, y, pixel, count;
 
 
-    srand (time (0));
+    srand ((unsigned int)time (0));
 
 
     for (count = 0; count < FIRE_HOTSPOTS; count ++)

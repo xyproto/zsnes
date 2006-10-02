@@ -20,11 +20,11 @@
 
 %include "macros.mac"
 
-EXTSYM DosExit,ZSNESBase,PrintStr,newengen,HalfTransB,HalfTransC
+EXTSYM DosExit,PrintStr,newengen,HalfTransB,HalfTransC
 EXTSYM fulladdtab,UnusedBit,HalfTrans,UnusedBitXor
 EXTSYM ngrposng,nggposng,ngbposng
 %ifdef __MSDOS__
-EXTSYM Init_2xSaIMMX
+EXTSYM Init_2xSaIMMX,ZSNESBase
 %endif
 
 SECTION .data
