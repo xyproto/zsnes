@@ -1653,20 +1653,22 @@ DisplayGUIVideo:
 
   cmp dword[GUIVideoTabs],1
   jne near .notmodestab
-  DrawGUIButton 5,128,60,164,71,GUIVideoText8,4,0,0        ; Set Button
+  DrawGUIButton 5,128,30,164,41,GUIVideoText8,4,0,0        ; Set Button
 
 %ifndef __MSDOS__                              ; Legend
-  GUIDisplayText 5,8,116,GUIVideoTextB
-  GUIDisplayText 5,10,125,GUIVideoTextB1
-  GUIDisplayText 5,10,132,GUIVideoTextB2
-  GUIDisplayText 5,10,139,GUIVideoTextB3
+  GUIDisplayText 5,130,50,GUIVideoTextB
+  GUIDisplayText 5,130,58,GUIVideoTextB1
+  GUIDisplayText 5,130,66,GUIVideoTextB2
+  GUIDisplayText 5,130,74,GUIVideoTextB3
+  GUIDisplayText 5,130,82,GUIVideoTextB4
+  GUIDisplayText 5,130,90,GUIVideoTextB5
 %endif
 %ifdef __UNIXSDL__
-  GUIDisplayText 5,10,146,GUIVideoTextB4
+  GUIDisplayText 5,130,98,GUIVideoTextB6
 %endif
 
-  GUIDisplayBBoxS 5,5,26,115,109,167           ; Video Modes Box
-  DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],10,68,GUIVStA
+  GUIDisplayBBoxS 5,5,26,115,179,167           ; Video Modes Box (5,5,26,115,109,167)
+  DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],18,138,GUIVStA ; (5,117,34,10,68)
   cmp byte[GUICHold],5                        ; Scrollbar
   jne .noholda
   add byte[GUIWincoladd],3
@@ -1680,7 +1682,7 @@ DisplayGUIVideo:
   jne .noholdc
   add byte[GUIWincoladd],3
 .noholdc
-  GUIDisplayIconWin 5,117,102,GUIIconDataDownArrow
+  GUIDisplayIconWin 5,117,172,GUIIconDataDownArrow
   cmp byte[GUICHold],6
   jne .noholdd
   sub byte[GUIWincoladd],3
@@ -1719,7 +1721,23 @@ DisplayGUIVideo:
   GUIDisplayTextG 5,11,30+8*8,[GUITemp]
   add dword[GUITemp],18
   GUIDisplayTextG 5,11,30+8*9,[GUITemp]
-
+  add dword[GUITemp],18
+  GUIDisplayTextG 5,11,30+8*10,[GUITemp]
+  add dword[GUITemp],18
+  GUIDisplayTextG 5,11,30+8*11,[GUITemp]
+  add dword[GUITemp],18
+  GUIDisplayTextG 5,11,30+8*12,[GUITemp]
+  add dword[GUITemp],18
+  GUIDisplayTextG 5,11,30+8*13,[GUITemp]
+  add dword[GUITemp],18
+  GUIDisplayTextG 5,11,30+8*14,[GUITemp]
+  add dword[GUITemp],18
+  GUIDisplayTextG 5,11,30+8*15,[GUITemp]
+  add dword[GUITemp],18
+  GUIDisplayTextG 5,11,30+8*16,[GUITemp]
+  add dword[GUITemp],18
+  GUIDisplayTextG 5,11,30+8*17,[GUITemp]
+  
   xor eax,eax                      ; Mode Value
   mov al,[cvidmode]
   mov ebx,eax
@@ -1729,9 +1747,9 @@ DisplayGUIVideo:
   add eax,GUIVideoModeNames
   mov [GUITemp],eax
   GUIDisplayTextY 5,7,194,GUIVideoTextE
-  GUIDisplayTextY 5,61,194,[GUITemp]
-.notmodestab
-
+  GUIDisplayTextY 5,91,194,[GUITemp] ; (5,61,194)
+.notmodestab 
+                                               ; Filters tab
   cmp dword[GUIVideoTabs],2
   jne near .notfilterstab
   xor eax,eax                                  ; Scanlines text
@@ -1912,11 +1930,13 @@ GUIVideoTabs dd 1,2
 GUIVntscTab dd 0,1
   db 'NTSC',0
 
-GUIVideoTextB db 'LEGEND:',0
-GUIVideoTextB1 db 'S = STRETCH  R = KEEP RATIO (8:7)',0
-GUIVideoTextB2 db ' D = ALLOW SPECIAL FILTERS',0
-GUIVideoTextB3 db ' W = WIN          F = FULL',0
-GUIVideoTextB4 db '      O = USES OPENGL',0
+GUIVideoTextB  db 'LEGEND:',0
+GUIVideoTextB1 db 'S = STRETCH',0
+GUIVideoTextB2 db 'R = KEEP 8:7 RATIO',0
+GUIVideoTextB3 db 'D = ALLOW FILTERS',0
+GUIVideoTextB4 db 'W = WIN',0
+GUIVideoTextB5 db 'F = FULL',0
+GUIVideoTextB6 db 'O = USES OPENGL',0
 
 GUIVideoTextC db 'SCANLINES:',0
 GUIVideoTextC1 db 'FULL',0

@@ -264,10 +264,10 @@ GUIMiscMenuData:
 
 ; Window sizes and positions
 ;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE SPED
-GUIwinposxo dd 0,6   ,65  ,33  ,42  ,2   ,34  ,6   ,64  ,8    ,8    ,33  ,56  ,64  ,56  ,5   ,3   ,28  ,48  ,6    ,28  ,53
+GUIwinposxo dd 0,6   ,65  ,33  ,42  ,7   ,34  ,6   ,64  ,8    ,8    ,33  ,56  ,64  ,56  ,5   ,3   ,28  ,48  ,6    ,28  ,53
 GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,60  ,20  ,20  ,60  ,60  ,20   ,30  ,20
-GUIwinsizex dd 0,244 ,126 ,189 ,172 ,250 ,188 ,244 ,128 ,240  ,240  ,190 ,144 ,128 ,144 ,246 ,250 ,200 ,160 ,244  ,200 ,150
-GUIwinsizey dd 0,190 ,48  ,166 ,190 ,192 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,100 ,100 ,190  ,160 ,180
+GUIwinsizex dd 0,244 ,126 ,189 ,172 ,237 ,188 ,244 ,128 ,240  ,240  ,190 ,144 ,128 ,144 ,246 ,250 ,200 ,160 ,244  ,200 ,150
+GUIwinsizey dd 0,190 ,48  ,166 ,190 ,190 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,100 ,100 ,190  ,160 ,180
 NEWSYM GUIwinptr, db 0
 
 NEWSYM WaterOn,  db 1
@@ -900,7 +900,7 @@ NEWSYM StartGUI
   mov al,[cvidmode]
   mov [GUIcurrentvideocursloc],eax
   mov ebx,[NumVideoModes]
-  sub ebx,10
+  sub ebx,18
   cmp eax,ebx
   jbe .noof
   mov eax,ebx
@@ -1731,7 +1731,7 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
   mov al,[cvidmode]
   mov [GUIcurrentvideocursloc],eax
   mov edx,[NumVideoModes]
-  sub edx,10
+  sub edx,18
   cmp eax,edx
   jbe .noof
   mov eax,edx
