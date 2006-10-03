@@ -675,7 +675,7 @@ static size_t string_merge(char *buffer, size_t buffer_len, ...)
   va_list ap;
   va_start(ap, buffer_len);
 
-  if (buffer_len) { *buffer = 0; }
+  if (buffer && buffer_len) { *buffer = 0; }
 
   while ((s = va_arg(ap, char *)))
   {
