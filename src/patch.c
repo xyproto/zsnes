@@ -225,8 +225,7 @@ bool PatchUsingIPS(const char *ext)
   //Adjust size values if the ROM was expanded
   if (last > curromspace)
   {
-    curromspace = last;
-    NumofBytes = last;
+    NumofBytes = curromspace = last+1;
     NumofBanks = NumofBytes/32768;
   }
 
@@ -234,8 +233,8 @@ bool PatchUsingIPS(const char *ext)
   //Write out patched ROM
   {
     FILE *fp = 0;
-    fp = fopen("zsnes.rom", "wb");
-    if (!fp) { perror(0); asm volatile("int $3"); }
+    fp = fopen_dir(ZCfgPath, "zsnes.rom", "wb");
+    if (!fp) { perror("zsnes.rom"); asm volatile("int $3"); }
     fwrite(ROM, 1, curromspace, fp);
     fclose(fp);
   }
