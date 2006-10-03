@@ -1737,7 +1737,7 @@ DisplayGUIVideo:
   GUIDisplayTextG 5,11,30+8*16,[GUITemp]
   add dword[GUITemp],18
   GUIDisplayTextG 5,11,30+8*17,[GUITemp]
-  
+
   xor eax,eax                      ; Mode Value
   mov al,[cvidmode]
   mov ebx,eax
@@ -1748,7 +1748,7 @@ DisplayGUIVideo:
   mov [GUITemp],eax
   GUIDisplayTextY 5,7,194,GUIVideoTextE
   GUIDisplayTextY 5,91,194,[GUITemp] ; (5,61,194)
-.notmodestab 
+.notmodestab
                                                ; Filters tab
   cmp dword[GUIVideoTabs],2
   jne near .notfilterstab

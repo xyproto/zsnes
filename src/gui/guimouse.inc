@@ -1888,14 +1888,14 @@ DisplayGUIChoseSaveClick:
   add edx,[statefileloc]
   cmp al,'t'
   je .maybet
-  mov byte[edx],al
+  mov [edx],al
   ret
 .maybet
   dec edx
   cmp byte[edx],'s'
   jne .nots
   inc edx
-  mov byte[edx],al
+  mov [edx],al
   ret
 .nots
   inc edx
