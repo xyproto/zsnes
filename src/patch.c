@@ -223,7 +223,7 @@ bool PatchUsingIPS(const char *ext)
   IPSPatched = true;
 
   //Adjust size values if the ROM was expanded
-  if (last > curromspace)
+  if (last >= curromspace)
   {
     NumofBytes = curromspace = last+1;
     NumofBanks = NumofBytes/32768;
