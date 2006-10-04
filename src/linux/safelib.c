@@ -25,6 +25,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <signal.h>
 #include <paths.h>
 #include <grp.h>
+#include <pwd.h>
 
 #ifndef OPEN_MAX
 #define OPEN_MAX 256
@@ -43,52 +44,79 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //Introducing secure forking ;) -Nach
 
 //Taken from the secure programming cookbook, somewhat modified
-static bool spc_drop_privileges() {
+static bool spc_drop_privileges()
+{
   gid_t newgid = getgid(), oldgid = getegid();
   uid_t newuid = getuid(), olduid = geteuid();
 
-  /* If root privileges are to be dropped, be sure to pare down the ancillary
-   * groups for the process before doing anything else because the setgroups()
-   * system call requires root privileges.  Drop ancillary groups regardless of
-   * whether privileges are being dropped temporarily or permanently.
-   */
-  if (!olduid) setgroups(1, &newgid);
+  char *name =  getlogin();
+  struct passwd *userinfo;
 
-  if (newgid != oldgid) {
+  if (!olduid && name && (userinfo = getpwnam(name)) && userinfo->pw_uid)
+  {
+    setgroups(1, &userinfo->pw_gid);
+
 #if !defined(linux)
-    setegid(newgid);
-    if (setgid(newgid) == -1) return(false);
+    setegid(userinfo->pw_gid);
+    if (setgid(userinfo->pw_gid) == -1) { return(false); }
 #else
-    if (setregid(newgid, newgid) == -1) return(false);
+    if (setregid(userinfo->pw_gid, userinfo->pw_gid) == -1) { return(false); }
 #endif
-  }
 
-  if (newuid != olduid) {
 #if !defined(linux)
-    seteuid(newuid);
-    if (setuid(newuid) == -1) return(false);
+    seteuid(userinfo->pw_uid);
+    if (setuid(userinfo->pw_uid) == -1) { return(false); }
 #else
-    if (setreuid(newuid, newuid) == -1) return(false);
+    if (setreuid(userinfo->pw_uid, userinfo->pw_uid) == -1) { return(false); }
 #endif
+
+    if ((setegid(oldgid) != -1) || (getegid() != userinfo->pw_gid)) { return(false); }
+    if ((seteuid(olduid) != -1) || (geteuid() != userinfo->pw_uid)) { return(false); }
   }
+  else
+  {
+    //If root privileges are to be dropped, be sure to pare down the ancillary
+    //groups for the process before doing anything else because the setgroups()
+    //system call requires root privileges.  Drop ancillary groups regardless of
+    //whether privileges are being dropped temporarily or permanently.
 
-  /* verify that the changes were successful */
+    if (!olduid) setgroups(1, &newgid);
 
-  if (newgid != oldgid && (setegid(oldgid) != -1 || getegid() != newgid))
-    return(false);
-  if (newuid != olduid && (seteuid(olduid) != -1 || geteuid() != newuid))
-    return(false);
+    if (newgid != oldgid)
+    {
+#if !defined(linux)
+      setegid(newgid);
+      if (setgid(newgid) == -1) { return(false); }
+#else
+      if (setregid(newgid, newgid) == -1) { return(false); }
+#endif
+    }
 
+    if (newuid != olduid)
+    {
+#if !defined(linux)
+      seteuid(newuid);
+      if (setuid(newuid) == -1) { return(false); }
+#else
+      if (setreuid(newuid, newuid) == -1) { return(false); }
+#endif
+    }
+
+    //verify that the changes were successful
+    if (newgid != oldgid && (setegid(oldgid) != -1 || getegid() != newgid)) { return(false); }
+    if (newuid != olduid && (seteuid(olduid) != -1 || geteuid() != newuid)) { return(false); }
+  }
   return(true);
 }
 
-static int open_devnull(int fd) {
+static int open_devnull(int fd)
+{
   FILE *f = 0;
 
-  if (!fd) f = freopen(_PATH_DEVNULL, "rb", stdin);
-  else if (fd == 1) f = freopen(_PATH_DEVNULL, "wb", stdout);
-  else if (fd == 2) f = freopen(_PATH_DEVNULL, "wb", stderr);
-  return (f && fileno(f) == fd);
+  if (!fd) { f = freopen(_PATH_DEVNULL, "rb", stdin); }
+  else if (fd == 1) { f = freopen(_PATH_DEVNULL, "wb", stdout); }
+  else if (fd == 2) { f = freopen(_PATH_DEVNULL, "wb", stderr); }
+  return(f && fileno(f) == fd);
 }
 
 static bool array_contains(int *a, size_t size, int key)
