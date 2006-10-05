@@ -904,7 +904,7 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   pop ebx
   jne near %%fixreg
   inc byte[GUIBlinkCursorLoop]
-  cmp byte[GUIBlinkCursorLoop],20
+  cmp byte[GUIBlinkCursorLoop],30
   jne %%four
   mov byte[GUIBlinkCursorLoop],0
   cmp byte[GUIBlinkCursor],' '
