@@ -705,25 +705,20 @@ NEWSYM SetInputDevice
     ret
 .no2buttons
     cmp bl,3
-    je .4buttons
-    cmp bl,4
     jne near .no4buttons
-.4buttons
     SetDefaultKey 0,0,0CCh,0CDh,0CEh,0CFh,84h,85h,0,82h,83h,0
     ret
 .no4buttons
-    cmp bl,18
-    je .6buttons
-    cmp bl,5
+    cmp bl,4
     jne near .no6buttons
-.6buttons
     SetDefaultKey 0,0,0CCh,0CDh,0CEh,0CFh,84h,85h,86h,82h,83h,87h
-    cmp bl,5
-    je .skip8b
-    SetDefaultKey 081h,080h,0CCh,0CDh,0CEh,0CFh,84h,85h,87h,82h,83h,86h
-.skip8b
     ret
 .no6buttons
+    cmp bl,5
+    jne near .skip8b
+    SetDefaultKey 081h,080h,0CCh,0CDh,0CEh,0CFh,84h,85h,87h,82h,83h,86h
+    ret
+.skip8b
     cmp bl,6
     jne near .nosw1
     SetDefaultKey 0C9h,0C8h,0D4h,0D5h,0D6h,0D7h,08Ch,089h,08Eh,08Bh,088h,08Fh
@@ -754,22 +749,22 @@ NEWSYM SetInputDevice
     SetDefaultKey 0CAh+8,0CBh+8,0F0h+4,0F1h+4,0F2h+4,0F3h+4,0A9h+8,0ABh+8,0ACh+8,0A8h+8,0AAh+8,0AEh+8
     ret
 .nogrip1
-    cmp bl,14
+    cmp bl,12
     jne near .nopp1
     SetDefaultKey 182h,183h,184h,185h,186h,187h,189h,188h,18Ah,181h,180h,18Bh
     ret
 .nopp1
-    cmp bl,15
+    cmp bl,13
     jne near .nopp2
     SetDefaultKey 192h,193h,194h,195h,196h,197h,199h,198h,19Ah,191h,190h,19Bh
     ret
 .nopp2
-    cmp bl,16
+    cmp bl,14
     jne near .nopp3
     SetDefaultKey 1A2h,1A3h,1A4h,1A5h,1A6h,1A7h,1A9h,1A8h,1AAh,1A1h,1A0h,1ABh
     ret
 .nopp3
-    cmp bl,17
+    cmp bl,15
     jne near .nopp4
     SetDefaultKey 1B2h,1B3h,1B4h,1B5h,1B6h,1B7h,1B9h,1B8h,1BAh,1B1h,1B0h,1BBh
     ret
