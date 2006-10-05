@@ -436,8 +436,12 @@ NEWSYM AdjustFrequency
       je near .cubicspline
       ja near .fir_mmx
       ; Copy from Gaussian to DSPInterP
+%ifndef __MSDOS__
+      ; this ifndef is needed the workaround the "snow" in the DOS port
+      ; used only for Gaussian though
       test ah,ah
       jne .gaussian_mmx
+%endif
       mov ebx,DSPInterP+1024
       mov edx,DSPInterP+1022
       mov esi,Gaussian
