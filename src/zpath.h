@@ -101,7 +101,8 @@ int system_dir(const char *path, const char *command);
 FILE *popen_dir(const char *path, char *command, const char *type);
 
 void natify_slashes(char *str);
-void strcatslash(char *str);
+char *strcutslash(char *str);
+char *strcatslash(char *str);
 void setextension(char *base, const char *ext);
 bool isextension(const char *fname, const char *ext);
 void strdirname(char *str);

@@ -207,7 +207,7 @@ bool init_paths(char *launch_command)
 
               GUIRestoreVars();
 
-              if (*LoadDir && !access(LoadDir, DIR_R_ACCESS))
+              if (*LoadDir && !access(strcutslash(LoadDir), DIR_R_ACCESS))
               {
                 strcpy(ZRomPath, LoadDir);
               }
@@ -495,13 +495,26 @@ void natify_slashes(char *str)
   }
 }
 
-void strcatslash(char *str)
+char *strcutslash(char *str)
+{
+  char *last_char = str+(strlen(str)-1);
+
+  natify_slashes(str);
+  if (*last_char == DIR_SLASH_C)
+  {
+    *last_char = 0;
+  }
+  return(str);
+}
+
+char *strcatslash(char *str)
 {
   natify_slashes(str);
   if (str[strlen(str)-1] != DIR_SLASH_C)
   {
     strcat(str, DIR_SLASH);
   }
+  return(str);
 }
 
 void setextension(char *base, const char *ext)
