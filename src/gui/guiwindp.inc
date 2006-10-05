@@ -766,6 +766,193 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   GUIDisplayTextG %1,%2+%3+6,%4-1,[GUITemp]
 %endmacro
 
+%macro DrawBorderedBox 6;
+  ; draw borders
+  mov dl,[GUIWincol]
+  DrawGUIWinBox %1,%2,%6,%4,%3,dl   ; freezes if you replace %6 with %3-1
+  mov dl,[GUIWincol]
+  inc dl
+  DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
+  mov dl,[GUIWincol]
+  add dl,4
+  DrawGUIWinBox %1,%2,%5,%4,%5+1,dl
+  mov dl,[GUIWincol]
+  add dl,3
+  DrawGUIWinBox %1,%4,%3,%4+1,%5,dl
+  DrawGUIWinBox %1,%2,%3,%4,%5,167
+%endmacro
+
+%macro DrawBorderedBoxB 7       ; Special function for combo displays
+  ; draw borders
+  mov dl,[GUIWincol]
+  DrawGUIWinBox %1,%2,%6,%4,%3,dl
+  mov dl,[GUIWincol]
+  inc dl
+  DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
+  mov dl,[GUIWincol]
+  add dl,4
+  DrawGUIWinBox %1,%2,%5,%4,%5+1,dl
+  mov dl,[GUIWincol]
+  add dl,3
+  DrawGUIWinBox %1,%4,%3,%4+1,%5,dl
+  DrawGUIWinBox %1,%2,%3,%4,%5,167
+  mov byte[GUIComboText3],%7
+  mov byte[GUItextcolor],223
+  GUIOuttextwin2 %1,%2+5,%3+2,GUIComboText3
+  mov byte[GUItextcolor],221
+  cmp byte[GUIWincoladd],0
+  je %%zero
+  mov byte[GUItextcolor],222
+%%zero
+  GUIOuttextwin2 %1,%2+4,%3+1,GUIComboText3
+%endmacro
+
+%macro DrawBorderedBoxB2 7       ; Special function for combo displays
+  ; draw borders
+  mov dl,[GUIWincol]
+  DrawGUIWinBox %1,%2,%6,%4,%3,dl
+  mov dl,[GUIWincol]
+  inc dl
+  DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
+  mov dl,[GUIWincol]
+  add dl,4
+  DrawGUIWinBox %1,%2,%5,%4,%5+1,dl
+  mov dl,[GUIWincol]
+  add dl,3
+  DrawGUIWinBox %1,%4,%3,%4+1,%5,dl
+  DrawGUIWinBox %1,%2,%3,%4,%5,167
+  mov byte[GUIComboText3b+1],%7
+  mov byte[GUItextcolor],223
+  GUIOuttextwin2 %1,%2+2,%3+2,GUIComboText3b
+  mov byte[GUItextcolor],221
+  cmp byte[GUIWincoladd],0
+  je %%zero
+  mov byte[GUItextcolor],222
+%%zero
+  GUIOuttextwin2 %1,%2+1,%3+1,GUIComboText3b
+%endmacro
+
+%macro InitTextColor 0
+  mov al,217
+  cmp byte[GUIWincoladd],0
+  je .zero3
+  mov al,211
+.zero3
+  sub al,15
+  mov [TextColorSp+2],al
+  mov al,[GUIWincol]
+  mov [TextColorSp],al
+  mov al,163
+  cmp byte[GUIWincoladd],0
+  je .zero
+  mov al,164
+  mov byte[GUItextcolor],164
+.zero
+  mov [TextColorSp+1],al
+%endmacro
+
+%macro GUIOuttextwin2b 4        ; Special, yellow text
+  mov al,[TextColorSp]
+  mov [GUItextcolor],al
+  GUIOuttextwin2 %1,%2,%3,%4
+  mov al,[TextColorSp+1]
+  mov [GUItextcolor],al
+  GUIOuttextwin2 %1,%2-1,%3-1,%4
+%endmacro
+
+%macro GUIOuttextwin2c 4        ; Boxed, green text
+  mov byte[GUItextcolor],223
+  push ecx                    ;Needed for the macro below
+  GUIOuttextwin2 %1,%2,%3,%4
+  pop ecx
+  mov byte[GUItextcolor],221
+  cmp byte[GUIWincoladd],0
+  je %%zero
+  mov byte[GUItextcolor],222
+%%zero
+  push esi
+  mov esi,%2
+  dec esi
+  GUIOuttextwin2 %1,esi,%3-1,%4
+  pop esi
+%endmacro
+
+%macro GUIOuttextwin2d 5        ; Boxed, green text, limited to 5th param
+  push ecx
+  mov ecx,%4                  ;Move pointer to text into ecx
+%%zero
+  cmp byte[ecx],0 ; Check for null in string
+  je %%one
+  inc ecx
+  jmp %%zero
+%%one
+  push eax
+  mov eax,ecx ; Move pointer to null into eax
+  sub ecx,%5  ; Move ecx pointer back by length to display
+  cmp ecx,%4
+  jae %%two
+  mov ecx,%4  ; If pointer is before beginning, reset pointer to beginning
+%%two
+  sub eax,ecx ; Subtract pointer from \0 pointer gives us string length
+  push eax
+  GUIOuttextwin2c %1,%2,%3,ecx
+  pop eax
+  push ebx
+  pop ecx
+  call BlinkCursorCheck
+  cmp ebx,%4
+  pop ebx
+  jne near %%fixreg
+  cmp byte[GUIBlinkCursor],' '
+  je %%three
+  mov byte[GUIBlinkCursor],' '
+  jmp %%four
+%%three
+  mov byte[GUIBlinkCursor],'_'
+%%four
+  imul eax,6 ; 6 pixels
+  add eax,%2
+  push ecx
+  mov ecx,eax
+  GUIOuttextwin2c %1,ecx,%3,GUIBlinkCursor
+  pop ecx
+%%fixreg
+  pop eax
+%endmacro
+
+%macro DrawSlideBar 10
+  DrawSlideBarWin %1,%2,%3+8,%4,%5,%6,%7-16,%8
+  mov al,[TextColorSp+2]
+  mov [GUItextcolor],al
+  cmp byte[GUICHold],%9
+  jne .noholda
+  add byte[GUIWincoladd],3
+.noholda
+  GUIDisplayIconWin %1,%2,%3,GUIIconDataUpArrow
+  cmp byte[GUICHold],%9
+  jne .noholda2
+  sub byte[GUIWincoladd],3
+.noholda2
+  mov al,[TextColorSp+2]
+  mov [GUItextcolor],al
+  cmp byte[GUICHold],%10
+  jne .noholdb
+  add byte[GUIWincoladd],3
+.noholdb
+  GUIDisplayIconWin %1,%2,%3+%7-8,GUIIconDataDownArrow
+  cmp byte[GUICHold],%10
+  jne .noholdb2
+  sub byte[GUIWincoladd],3
+.noholdb2
+%endmacro
+
+%macro DetermineChar 2
+  cmp al,%1
+  jne %%control
+  mov al,%2
+%%control
+%endmacro
+
 ; DGUIDisplay
 DisplayGUILoad:
   GUIDrawWindowBox 1,GUILoadDisp
@@ -1653,7 +1840,7 @@ DisplayGUIVideo:
 
   cmp dword[GUIVideoTabs],1
   jne near .notmodestab
-  DrawGUIButton 5,128,30,164,41,GUIVideoText8,4,0,0        ; Set Button
+  DrawGUIButton 5,128,30,164,41,GUIVideoText8,4,0,0        ; Mode Set Button
 
 %ifndef __MSDOS__                              ; Legend
   GUIDisplayText 5,130,50,GUIVideoTextB
@@ -1662,9 +1849,24 @@ DisplayGUIVideo:
   GUIDisplayText 5,130,74,GUIVideoTextB3
   GUIDisplayText 5,130,82,GUIVideoTextB4
   GUIDisplayText 5,130,90,GUIVideoTextB5
-%endif
 %ifdef __UNIXSDL__
   GUIDisplayText 5,130,98,GUIVideoTextB6
+%endif
+
+
+  DrawGUIButton 5,180,115,216,126,GUIVideoText8,12,0,0        ; Custom Set Button
+
+  GUIDisplayText 5,130,120,GUIVideoTextB7
+  GUIDisplayText 5,180,135,GUIVideoTextB8
+  GUIDisplayBBox 5,130,130,170,140,167
+  GUIDisplayBBox 5,191,130,231,140,167
+
+  pushad
+  call GetCustomXY
+  popad
+
+  GUIOuttextwin2d 5,138,133,GUICustomX,4
+  GUIOuttextwin2d 5,199,133,GUICustomY,4
 %endif
 
   GUIDisplayBBoxS 5,5,26,115,179,167           ; Video Modes Box (5,5,26,115,109,167)
@@ -1930,6 +2132,7 @@ GUIVideoTabs dd 1,2
 GUIVntscTab dd 0,1
   db 'NTSC',0
 
+%ifndef __MSDOS__
 GUIVideoTextB  db 'LEGEND:',0
 GUIVideoTextB1 db 'S = STRETCH',0
 GUIVideoTextB2 db 'R = KEEP 8:7 RATIO',0
@@ -1937,6 +2140,9 @@ GUIVideoTextB3 db 'D = ALLOW FILTERS',0
 GUIVideoTextB4 db 'W = WIN',0
 GUIVideoTextB5 db 'F = FULL',0
 GUIVideoTextB6 db 'O = USES OPENGL',0
+GUIVideoTextB7 db 'CUSTOM:',0
+GUIVideoTextB8 db 'X',0
+%endif
 
 GUIVideoTextC db 'SCANLINES:',0
 GUIVideoTextC1 db 'FULL',0
@@ -3487,193 +3693,6 @@ NEWSYM CMovieExt, db 'v'
 
 SECTION .text
 
-%macro DrawBorderedBox 6;
-  ; draw borders
-  mov dl,[GUIWincol]
-  DrawGUIWinBox %1,%2,%6,%4,%3,dl   ; freezes if you replace %6 with %3-1
-  mov dl,[GUIWincol]
-  inc dl
-  DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
-  mov dl,[GUIWincol]
-  add dl,4
-  DrawGUIWinBox %1,%2,%5,%4,%5+1,dl
-  mov dl,[GUIWincol]
-  add dl,3
-  DrawGUIWinBox %1,%4,%3,%4+1,%5,dl
-  DrawGUIWinBox %1,%2,%3,%4,%5,167
-%endmacro
-
-%macro DrawBorderedBoxB 7       ; Special function for combo displays
-  ; draw borders
-  mov dl,[GUIWincol]
-  DrawGUIWinBox %1,%2,%6,%4,%3,dl
-  mov dl,[GUIWincol]
-  inc dl
-  DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
-  mov dl,[GUIWincol]
-  add dl,4
-  DrawGUIWinBox %1,%2,%5,%4,%5+1,dl
-  mov dl,[GUIWincol]
-  add dl,3
-  DrawGUIWinBox %1,%4,%3,%4+1,%5,dl
-  DrawGUIWinBox %1,%2,%3,%4,%5,167
-  mov byte[GUIComboText3],%7
-  mov byte[GUItextcolor],223
-  GUIOuttextwin2 %1,%2+5,%3+2,GUIComboText3
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je %%zero
-  mov byte[GUItextcolor],222
-%%zero
-  GUIOuttextwin2 %1,%2+4,%3+1,GUIComboText3
-%endmacro
-
-%macro DrawBorderedBoxB2 7       ; Special function for combo displays
-  ; draw borders
-  mov dl,[GUIWincol]
-  DrawGUIWinBox %1,%2,%6,%4,%3,dl
-  mov dl,[GUIWincol]
-  inc dl
-  DrawGUIWinBox %1,%2-1,%3,%2,%5,dl
-  mov dl,[GUIWincol]
-  add dl,4
-  DrawGUIWinBox %1,%2,%5,%4,%5+1,dl
-  mov dl,[GUIWincol]
-  add dl,3
-  DrawGUIWinBox %1,%4,%3,%4+1,%5,dl
-  DrawGUIWinBox %1,%2,%3,%4,%5,167
-  mov byte[GUIComboText3b+1],%7
-  mov byte[GUItextcolor],223
-  GUIOuttextwin2 %1,%2+2,%3+2,GUIComboText3b
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je %%zero
-  mov byte[GUItextcolor],222
-%%zero
-  GUIOuttextwin2 %1,%2+1,%3+1,GUIComboText3b
-%endmacro
-
-%macro InitTextColor 0
-  mov al,217
-  cmp byte[GUIWincoladd],0
-  je .zero3
-  mov al,211
-.zero3
-  sub al,15
-  mov [TextColorSp+2],al
-  mov al,[GUIWincol]
-  mov [TextColorSp],al
-  mov al,163
-  cmp byte[GUIWincoladd],0
-  je .zero
-  mov al,164
-  mov byte[GUItextcolor],164
-.zero
-  mov [TextColorSp+1],al
-%endmacro
-
-%macro GUIOuttextwin2b 4        ; Special, yellow text
-  mov al,[TextColorSp]
-  mov [GUItextcolor],al
-  GUIOuttextwin2 %1,%2,%3,%4
-  mov al,[TextColorSp+1]
-  mov [GUItextcolor],al
-  GUIOuttextwin2 %1,%2-1,%3-1,%4
-%endmacro
-
-%macro GUIOuttextwin2c 4        ; Boxed, green text
-  mov byte[GUItextcolor],223
-  push ecx                    ;Needed for the macro below
-  GUIOuttextwin2 %1,%2,%3,%4
-  pop ecx
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je %%zero
-  mov byte[GUItextcolor],222
-%%zero
-  push esi
-  mov esi,%2
-  dec esi
-  GUIOuttextwin2 %1,esi,%3-1,%4
-  pop esi
-%endmacro
-
-%macro GUIOuttextwin2d 5        ; Boxed, green text, limited to 5th param
-  push ecx
-  mov ecx,%4                  ;Move pointer to text into ecx
-%%zero
-  cmp byte[ecx],0 ; Check for null in string
-  je %%one
-  inc ecx
-  jmp %%zero
-%%one
-  push eax
-  mov eax,ecx ; Move pointer to null into eax
-  sub ecx,%5  ; Move ecx pointer back by length to display
-  cmp ecx,%4
-  jae %%two
-  mov ecx,%4  ; If pointer is before beginning, reset pointer to beginning
-%%two
-  sub eax,ecx ; Subtract pointer from \0 pointer gives us string length
-  push eax
-  GUIOuttextwin2c %1,%2,%3,ecx
-  pop eax
-  push ebx
-  pop ecx
-  call BlinkCursorCheck
-  cmp ebx,%4
-  pop ebx
-  jne near %%fixreg
-  cmp byte[GUIBlinkCursor],' '
-  je %%three
-  mov byte[GUIBlinkCursor],' '
-  jmp %%four
-%%three
-  mov byte[GUIBlinkCursor],'_'
-%%four
-  imul eax,6
-  add eax,%2
-  push ecx
-  mov ecx,eax
-  GUIOuttextwin2c %1,ecx,%3,GUIBlinkCursor
-  pop ecx
-%%fixreg
-  pop eax
-%endmacro
-
-%macro DrawSlideBar 10
-  DrawSlideBarWin %1,%2,%3+8,%4,%5,%6,%7-16,%8
-  mov al,[TextColorSp+2]
-  mov [GUItextcolor],al
-  cmp byte[GUICHold],%9
-  jne .noholda
-  add byte[GUIWincoladd],3
-.noholda
-  GUIDisplayIconWin %1,%2,%3,GUIIconDataUpArrow
-  cmp byte[GUICHold],%9
-  jne .noholda2
-  sub byte[GUIWincoladd],3
-.noholda2
-  mov al,[TextColorSp+2]
-  mov [GUItextcolor],al
-  cmp byte[GUICHold],%10
-  jne .noholdb
-  add byte[GUIWincoladd],3
-.noholdb
-  GUIDisplayIconWin %1,%2,%3+%7-8,GUIIconDataDownArrow
-  cmp byte[GUICHold],%10
-  jne .noholdb2
-  sub byte[GUIWincoladd],3
-.noholdb2
-%endmacro
-
-%macro DetermineChar 2
-  cmp al,%1
-  jne %%control
-  mov al,%2
-%%control
-%endmacro
-
 ; Key types: Up, Down, Left, Right, A, B, X, Y, L, R (Press/Relase/P+R)
 ; Frame delays: 1 frame, 2, 3, 4, 5, 1 sec., 2, 3 ,4 ,5
 
@@ -4417,6 +4436,17 @@ BlinkCursorCheck:
   jne .notBox11
   mov ebx,SPL4Path
 .notBox11
+%ifndef __MSDOS__
+  cmp dword[GUIInputBox],12
+  jne .notBox12
+  mov ebx,GUICustomX
+  ret
+.notBox12
+  cmp dword[GUIInputBox],13
+  jne .notBox13
+  mov ebx,GUICustomY
+.notBox13
+%endif
   ret
 
 DisplayGUIPaths:

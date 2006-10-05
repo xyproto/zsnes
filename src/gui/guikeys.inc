@@ -973,6 +973,9 @@ GUIVideoKeys:
   xor eax,eax
   cmp dword[GUIVideoTabs],1
   jne near .notmodestab
+%ifndef __MSDOS__
+  call GUIPathKeys
+%endif
 ;   "Home"
 %ifdef __UNIXSDL__
   cmp dl,89
@@ -1532,6 +1535,18 @@ GUIPathKeys:
   mov eax,SPL4Path
   jmp .boxselected
 .notBox11
+%ifndef __MSDOS__
+  cmp dword[GUIInputBox],12
+  jne .notBox12
+  mov eax,GUICustomX
+  jmp .boxselected
+.notBox12
+  cmp dword[GUIInputBox],13
+  jne .notBox13
+  mov eax,GUICustomY
+  jmp .boxselected
+.notBox13
+%endif
 
 .boxselected
   mov ecx,eax
@@ -1550,6 +1565,7 @@ GUIPathKeys:
   je .cantback
   mov byte[eax-1],0
 .cantback
+  xor dx,dx
   ret
 .notbackspace
 
@@ -1559,6 +1575,7 @@ GUIPathKeys:
   pushad
   call init_save_paths
   popad
+  xor dx,dx
   ret
 .notenter
 
@@ -1566,10 +1583,12 @@ GUIPathKeys:
   add ecx,dword[GUIInputLimit]
   cmp eax,ecx
   jne .stillroom
+  xor dx,dx
   ret
 .stillroom
   mov [eax],dh
 
+  xor dx,dx
 .nokeypressed
   ret
 

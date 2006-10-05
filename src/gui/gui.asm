@@ -134,7 +134,7 @@ EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix
 %endif
 
 %ifndef __MSDOS__
-EXTSYM ZsnesPage,DocsPage
+EXTSYM ZsnesPage,DocsPage,GUICustomX,GUICustomY,GetCustomXY,SetCustomXY
 %endif
 
 %include "gui/guitools.inc"

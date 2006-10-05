@@ -1729,3 +1729,58 @@ void GUILoadKeysJumpTo()
     *currentcursloc = found;
   }
 }
+
+#ifndef __MSDOS__
+
+//Not entirely accurate pow, but good for most needs and very fast
+static unsigned int npow(register unsigned int base, register unsigned int exponent)
+{
+  register unsigned int total = 1;
+  if (exponent)
+  {
+    register unsigned int i;
+    for (i = 2, total = base; i < exponent; i += i)
+    {
+      total *= total;
+    }
+    for (i >>= 1; i < exponent; i++)
+    {
+      total *= base;
+    }
+  }
+  return(total);
+}
+
+static void int_to_str(char *dest, unsigned int len, unsigned int num)
+{
+  *dest = 0;
+  if (len && (num < npow(10, len)))
+  {
+    int i;
+    for (i = 1; num; i++)
+    {
+      memmove(dest+1, dest, i);
+      *dest = (num%10)+'0';
+      num /= 10;
+    }
+  }
+}
+
+char GUICustomX[5], GUICustomY[5];
+void GetCustomXY()
+{
+  static bool first_time = true;
+  if (first_time)
+  {
+    int_to_str(GUICustomX, 4, CustomResX);
+    int_to_str(GUICustomY, 4, CustomResY);
+    first_time = false;
+  }
+}
+
+void SetCustomXY()
+{
+ CustomResX = atoi(GUICustomX);
+ CustomResY = atoi(GUICustomY);
+}
+#endif

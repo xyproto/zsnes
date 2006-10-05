@@ -597,6 +597,10 @@ ProcessMouseButtons:
   je near GUIProcReset
   cmp byte[GUICBHold],4  ; set video mode
   je near GUIProcVideo
+%ifndef __MSDOS__
+  cmp byte[GUICBHold],12  ; set custom video mode
+  je near GUIProcCustomVideo
+%endif
   cmp byte[GUICBHold],37 ; reset ntsc options
   je near GUIProcVideo
   cmp byte[GUICBHold],10
@@ -935,6 +939,15 @@ GUIProcVideo:
 SECTION .bss
 .prevvid resb 1
 SECTION .text
+
+%ifndef __MSDOS__
+GUIProcCustomVideo:
+  mov byte[GUICBHold],0
+  pushad
+  call SetCustomXY
+  popad
+  ret
+%endif
 
 NEWSYM SwitchFullScreen
   pushad
@@ -2133,7 +2146,16 @@ DisplayGUIVideoClick:
   GUISlidebarImpl 117,33,124,172,GUIVStA,18,GUIcurrentvideoviewloc,GUIcurrentvideocursloc,GUINumValue,5
 .skipscrol
   GUIWinControl 5,27,115,27+18*8,GUIBlankVar,GUIcurrentvideoviewloc,GUINumValue,27,8,GUIcurrentvideocursloc,2,5,0
+
   GUIPHoldbutton 130,31,166,41,4
+
+%ifndef __MSDOS__
+  GUIPHoldbutton 182,116,218,126,12
+
+  GUITextBoxInputNach 130,130,178,140,12,5
+  GUITextBoxInputNach 191,130,239,140,13,5
+%endif
+
 .notmodestab
 
   cmp dword[GUIVideoTabs],2  ; filters
