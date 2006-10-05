@@ -903,6 +903,10 @@ GUIOuttextwin2 %1,%2-1,%3-1,%4
   cmp ebx,%4
   pop ebx
   jne near %%fixreg
+  inc byte[GUIBlinkCursorLoop]
+  cmp byte[GUIBlinkCursorLoop],20
+  jne %%four
+  mov byte[GUIBlinkCursorLoop],0
   cmp byte[GUIBlinkCursor],' '
   je %%three
   mov byte[GUIBlinkCursor],' '
@@ -4505,7 +4509,8 @@ GUIPathsTextA db 'FEOEZ:',0
 GUIPathsTextB db 'FEOEZ - SJNS:',0
 GUIPathsTextC db 'MDH:',0
 GUIPathsTextD db 'SPL4:',0
-NEWSYM GUIBlinkCursor, db 0,0
+GUIBlinkCursor db 0,0
+GUIBlinkCursorLoop db 0
 
 SECTION .text
 
