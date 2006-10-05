@@ -952,6 +952,9 @@ GUIGUIOptnsKeys:
 ret
 
 GUIVideoKeys:
+%ifndef __MSDOS__
+  call GUIPathKeys
+%endif
   cmp dh,9
   jne near .tabdone
   cmp byte[NTSCFilter],0
@@ -973,9 +976,6 @@ GUIVideoKeys:
   xor eax,eax
   cmp dword[GUIVideoTabs],1
   jne near .notmodestab
-%ifndef __MSDOS__
-  call GUIPathKeys
-%endif
 ;   "Home"
 %ifdef __UNIXSDL__
   cmp dl,89
