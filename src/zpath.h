@@ -57,7 +57,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #define DIR_SLASH_C '\\'
 #define DIR_SLASH_C_OTHER '/'
 #define ROOT_LEN 3 //"A:\"
-#define DIR_R_ACCESS (R_OK)
+#define DIR_R_ACCESS (F_OK)
 #define IS_ABSOLUTE(path) ((*(path) == '\\') || (*(path) && ((path)[1] == ':')))
 #endif
 
