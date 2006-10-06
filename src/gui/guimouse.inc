@@ -2158,7 +2158,7 @@ DisplayGUIVideoClick:
 
 .notmodestab
 
-  cmp dword[GUIVideoTabs],2  ; filters
+  cmp dword[GUIVideoTabs],2  ; filters tab
   jne near .notfilterstab
   pushad
   call Clear2xSaIBuffer
@@ -2241,7 +2241,7 @@ DisplayGUIVideoClick:
   GUIClickCButton 11,83,byte[BilinearFilter]
 .nocheckbox1bf
 %endif
-;---------------------------------------------------------
+
 
   xor ebx,ebx                             ; hires m7
   mov bl,[cvidmode]

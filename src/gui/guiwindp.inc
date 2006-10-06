@@ -1823,7 +1823,7 @@ DisplayGUIVideo:
   mov byte[antienab],0
 .nohqen
 
-  GUIDrawWindowBox 5,GUIVideoDisp      ; Video Modes List/Options
+  GUIDrawWindowBox 5,GUIVideoDisp      ; Video Modes List/Options Tab
 
   xor eax,eax
   mov al,[cvidmode]
@@ -1873,8 +1873,8 @@ DisplayGUIVideo:
   GUIOuttextwin2d 5,199,133,GUICustomY,4
 %endif
 
-  GUIDisplayBBoxS 5,5,26,115,179,167           ; Video Modes Box (5,5,26,115,109,167)
-  DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],18,138,GUIVStA ; (5,117,34,10,68)
+  GUIDisplayBBoxS 5,5,26,115,179,167           ; Video Modes Box
+  DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],18,138,GUIVStA
   cmp byte[GUICHold],5                        ; Scrollbar
   jne .noholda
   add byte[GUIWincoladd],3
@@ -1965,11 +1965,11 @@ DisplayGUIVideo:
   GUIDisplayText 5,13,31,GUIVideoTextC
 .notext2
 
-  xor eax,eax                                    ; scanlines
+  xor eax,eax                                    ; Scanlines
   mov al,[cvidmode]
   cmp byte[GUISLVID+eax],0
   je near .nocheckboxb
-  GUIDisplayCheckboxun 5,21,34,scanlines,1,GUIVideoTextC1,0 ;Full
+  GUIDisplayCheckboxun 5,21,34,scanlines,1,GUIVideoTextC1,0 ; Full
 .nocheckboxb
   xor eax,eax
   mov al,[cvidmode]
@@ -1978,7 +1978,6 @@ DisplayGUIVideo:
   GUIDisplayCheckboxun 5,61,34,scanlines,3,GUIVideoTextC2,0 ; 50%
   GUIDisplayCheckboxun 5,101,34,scanlines,2,GUIVideoTextC3,0 ; 25%
 .nocheckboxw
-
 
   xor eax,eax                                  ; 2xSaI & Supers
   mov al,[cvidmode]
@@ -2003,7 +2002,7 @@ DisplayGUIVideo:
   je near .nocheckboxi2
   GUIDisplayCheckboxu 5,121,63,antienab,GUIVideoText3,0
 .nocheckboxi2
-  xor eax,eax                                  ; Eagle Interp.
+  xor eax,eax
   mov al,[cvidmode]
   cmp byte[GUIEAVID+eax],0
   je near .notext4
@@ -2044,8 +2043,6 @@ DisplayGUIVideo:
 .nocheckboxe
 
 
-; ----------------------------------------------------------------
-
   xor eax,eax                                    ; Hires Mode7
   mov al,[cvidmode]
   cmp byte[GUIM7VID+eax],0
@@ -2077,8 +2074,6 @@ DisplayGUIVideo:
 .nocheckboxtbb
   
 
-; --------------------------------------------------------------
-
   xor eax,eax                                  ; Full/Widescreen
   mov al,[cvidmode]
   cmp byte[GUIFSVID+eax],0
@@ -2091,14 +2086,12 @@ DisplayGUIVideo:
   GUIDisplayCheckboxu 5,11,123,ScreenScale,GUIVideoText5,6
 .notext5
 
-
   xor eax,eax                                   ; Small Screen
   mov al,[cvidmode]
   cmp byte[GUISSVID+eax],0
   je near .nocheckbox3b
   GUIDisplayCheckboxu 5,121,123,smallscreenon,GUIVideoText6,1
 .nocheckbox3b
-
 
   %ifdef __WIN32__
   xor eax,eax                                    ; Keep 4:3 Ratio
