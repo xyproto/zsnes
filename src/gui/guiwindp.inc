@@ -1962,96 +1962,23 @@ DisplayGUIVideo:
   mov al,[cvidmode]
   cmp byte[GUISLVID+eax],0
   je near .notext2
-  GUIDisplayText 5,13,111,GUIVideoTextC
+  GUIDisplayText 5,13,31,GUIVideoTextC
 .notext2
-
-;Checkboxes
-  xor eax,eax                                  ; Interpolations
-  mov al,[cvidmode]
-  cmp byte[GUIINVID+eax],0
-  je near .notext3
-  GUIDisplayCheckboxu 5,11,153,antienab,GUIVideoText3,0
-.notext3
-  xor eax,eax
-  mov al,[cvidmode]
-  cmp byte[GUII2VID+eax],0
-  je near .nocheckboxi2
-  GUIDisplayCheckboxu 5,11,153,antienab,GUIVideoText3,0
-.nocheckboxi2
-
-  xor eax,eax                                  ; Eagle Interp.
-  mov al,[cvidmode]
-  cmp byte[GUIEAVID+eax],0
-  je near .notext4
-  GUIDisplayCheckboxu 5,11,153,antienab,GUIVideoText4,9
-.notext4
-
-  xor eax,eax                                  ; Full/Widescreen
-  mov al,[cvidmode]
-  cmp byte[GUIFSVID+eax],0
-  je near .notext5
-  cmp byte[GUIWSVID+eax],0
-  je near .notext4a
-  GUIDisplayCheckboxu 5,11,88,ScreenScale,GUIVideoText5b,6
-  jmp .notext5
-.notext4a
-  GUIDisplayCheckboxu 5,11,88,ScreenScale,GUIVideoText5,6
-.notext5
-
-  xor eax,eax                                   ; Small Screen
-  mov al,[cvidmode]
-  cmp byte[GUISSVID+eax],0
-  je near .nocheckbox3b
-  GUIDisplayCheckboxu 5,11,98,smallscreenon,GUIVideoText6,1
-.nocheckbox3b
-
-  xor eax,eax                                        ; hq*x
-  mov al,[cvidmode]
-  cmp byte[MMXSupport],0
-  je near .notexthq4xa
-  cmp byte[GUIHQ2X+eax],0
-  je near .notexthq2xa
-  GUIDisplayCheckboxu 5,125,163,hqFilter,GUIVideoTexthq2x,1
-  jmp .notexthq4xa
-.notexthq2xa
-  cmp byte[GUIHQ3X+eax],0
-  je near .notexthq3xa
-  GUIDisplayCheckboxu 5,125,163,hqFilter,GUIVideoTexthq3x,1
-  jmp .notexthq4xa
-.notexthq3xa
-  cmp byte[GUIHQ4X+eax],0
-  je near .notexthq4xa
-  GUIDisplayCheckboxu 5,125,163,hqFilter,GUIVideoTexthq4x,1
-.notexthq4xa
 
   xor eax,eax                                    ; scanlines
   mov al,[cvidmode]
   cmp byte[GUISLVID+eax],0
   je near .nocheckboxb
-  GUIDisplayCheckboxun 5,21,114,scanlines,1,GUIVideoTextC1,0
+  GUIDisplayCheckboxun 5,21,34,scanlines,1,GUIVideoTextC1,0 ;Full
 .nocheckboxb
   xor eax,eax
   mov al,[cvidmode]
   cmp byte[GUIHSVID+eax],0
   je near .nocheckboxw
-  GUIDisplayCheckboxun 5,61,114,scanlines,3,GUIVideoTextC2,0
-  GUIDisplayCheckboxun 5,101,114,scanlines,2,GUIVideoTextC3,0
+  GUIDisplayCheckboxun 5,61,34,scanlines,3,GUIVideoTextC2,0 ; 50%
+  GUIDisplayCheckboxun 5,101,34,scanlines,2,GUIVideoTextC3,0 ; 25%
 .nocheckboxw
 
-  xor eax,eax                                  ; triple buffs
-  mov al,[cvidmode]
-  cmp byte[GUITBWVID+eax],0
-  je near .nocheckboxslw2
-  GUIDisplayCheckboxu 5,11,183,TripleBufferWin,GUIVideoText7,0
-.nocheckboxslw2
-  xor eax,eax
-  mov al,[cvidmode]
-  cmp byte[GUITBVID+eax],0
-  je near .nocheckboxtbb
-  cmp byte[TripBufAvail],0
-  je near .nocheckboxtbb
-  GUIDisplayCheckboxu 5,11,183,Triplebufen,GUIVideoText7,0
-.nocheckboxtbb
 
   xor eax,eax                                  ; 2xSaI & Supers
   mov al,[cvidmode]
@@ -2059,24 +1986,65 @@ DisplayGUIVideo:
   je near .nocheckboxx
   cmp byte[MMXSupport],0
   je near .nocheckboxx
-  GUIDisplayCheckboxun 5,11,123,En2xSaI,1,GUIVideoTextc,1
-  GUIDisplayCheckboxun 5,11,133,En2xSaI,2,GUIVideoTextd,6
-  GUIDisplayCheckboxun 5,11,143,En2xSaI,3,GUIVideoTextd2,0
+  GUIDisplayCheckboxun 5,11,53,En2xSaI,1,GUIVideoTextc,1 ;2x
+  GUIDisplayCheckboxun 5,11,63,En2xSaI,2,GUIVideoTextd,6 ;Seagle
+  GUIDisplayCheckboxun 5,121,53,En2xSaI,3,GUIVideoTextd2,0 ;S2x
 .nocheckboxx
 
-  xor eax,eax                                   ; Bilinear
+  xor eax,eax                                  ; Interpolations
   mov al,[cvidmode]
-  cmp byte[GUIBIFIL+eax],0
-  je near .nocheckboxe
-  GUIDisplayCheckboxu 5,11,153,BilinearFilter,GUIVideoTextbf,0
-.nocheckboxe
+  cmp byte[GUIINVID+eax],0
+  je near .notext3
+  GUIDisplayCheckboxu 5,121,63,antienab,GUIVideoText3,0
+.notext3
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUII2VID+eax],0
+  je near .nocheckboxi2
+  GUIDisplayCheckboxu 5,121,63,antienab,GUIVideoText3,0
+.nocheckboxi2
+  xor eax,eax                                  ; Eagle Interp.
+  mov al,[cvidmode]
+  cmp byte[GUIEAVID+eax],0
+  je near .notext4
+  GUIDisplayCheckboxu 5,121,63,antienab,GUIVideoText4,9
+.notext4
+
+  xor eax,eax                                        ; hq*x
+  mov al,[cvidmode]
+  cmp byte[MMXSupport],0
+  je near .notexthq4xa
+  cmp byte[GUIHQ2X+eax],0
+  je near .notexthq2xa
+  GUIDisplayCheckboxu 5,11,73,hqFilter,GUIVideoTexthq2x,1
+  jmp .notexthq4xa
+.notexthq2xa
+  cmp byte[GUIHQ3X+eax],0
+  je near .notexthq3xa
+  GUIDisplayCheckboxu 5,11,73,hqFilter,GUIVideoTexthq3x,1
+  jmp .notexthq4xa
+.notexthq3xa
+  cmp byte[GUIHQ4X+eax],0
+  je near .notexthq4xa
+  GUIDisplayCheckboxu 5,11,73,hqFilter,GUIVideoTexthq4x,1
+.notexthq4xa
 
   xor eax,eax                                    ; NTSC filter
   mov al,[cvidmode]
   cmp byte[GUINTVID+eax],0
   je near .nocheckboxbf
-  GUIDisplayCheckboxu 5,125,173,NTSCFilter,GUIVideoTexte,0
+  GUIDisplayCheckboxu 5,121,73,NTSCFilter,GUIVideoTexte,0
 .nocheckboxbf
+
+  xor eax,eax                                   ; Bilinear
+  mov al,[cvidmode]
+  cmp byte[GUIBIFIL+eax],0
+  je near .nocheckboxe
+  GUIDisplayCheckboxu 5,11,83,BilinearFilter,GUIVideoTextbf,0
+.nocheckboxe
+
+
+; ----------------------------------------------------------------
 
   xor eax,eax                                    ; Hires Mode7
   mov al,[cvidmode]
@@ -2084,10 +2052,55 @@ DisplayGUIVideo:
   je near .nocheckboxm72
   cmp byte[newengen],0
   je near .nocheckboxm72
-  GUIDisplayCheckboxu 5,11,163,Mode7HiRes16b,GUIVideoText8b,0
+  GUIDisplayCheckboxu 5,11,103,Mode7HiRes16b,GUIVideoText8b,0
 .nocheckboxm72
 
-%ifdef __WIN32__
+  GUIDisplayCheckboxu 5,121,103,GrayscaleMode,GUIVideoText8c,0 ; Grayscale
+  
+  %ifndef __UNIXSDL__                             ; vsync
+  GUIDisplayCheckboxu 5,11,113,vsyncon,GUIVideoText9,0
+%endif
+  
+  xor eax,eax                                  ; triple buffs
+  mov al,[cvidmode]
+  cmp byte[GUITBWVID+eax],0
+  je near .nocheckboxslw2
+  GUIDisplayCheckboxu 5,121,113,TripleBufferWin,GUIVideoText7,0
+.nocheckboxslw2
+  xor eax,eax
+  mov al,[cvidmode]
+  cmp byte[GUITBVID+eax],0
+  je near .nocheckboxtbb
+  cmp byte[TripBufAvail],0
+  je near .nocheckboxtbb
+  GUIDisplayCheckboxu 5,121,113,Triplebufen,GUIVideoText7,0
+.nocheckboxtbb
+  
+
+; --------------------------------------------------------------
+
+  xor eax,eax                                  ; Full/Widescreen
+  mov al,[cvidmode]
+  cmp byte[GUIFSVID+eax],0
+  je near .notext5
+  cmp byte[GUIWSVID+eax],0
+  je near .notext4a
+  GUIDisplayCheckboxu 5,11,123,ScreenScale,GUIVideoText5b,6
+  jmp .notext5
+.notext4a
+  GUIDisplayCheckboxu 5,11,123,ScreenScale,GUIVideoText5,6
+.notext5
+
+
+  xor eax,eax                                   ; Small Screen
+  mov al,[cvidmode]
+  cmp byte[GUISSVID+eax],0
+  je near .nocheckbox3b
+  GUIDisplayCheckboxu 5,121,123,smallscreenon,GUIVideoText6,1
+.nocheckbox3b
+
+
+  %ifdef __WIN32__
   xor eax,eax                                    ; Keep 4:3 Ratio
   mov al,[cvidmode]
   cmp byte[GUIDSMODE+eax],0
@@ -2096,17 +2109,12 @@ DisplayGUIVideo:
   jne near .checkboxk43
   jmp .nocheckboxk43
 .checkboxk43
-  GUIDisplayCheckboxu 5,125,153,Keep4_3Ratio,GUIVideoTextK43,8
+  GUIDisplayCheckboxu 5,11,133,Keep4_3Ratio,GUIVideoTextK43,8
 .nocheckboxk43
-%endif
-
-  GUIDisplayCheckboxu 5,11,173,GrayscaleMode,GUIVideoText8c,0
-%ifndef __UNIXSDL__
-  GUIDisplayCheckboxu 5,125,183,vsyncon,GUIVideoText9,0
 %endif
 .notfilterstab
 
-  cmp dword[GUIVntscTab],1
+  cmp dword[GUIVntscTab],1                                 ; NTSC Tab
   jne near .notntsctab
   DrawGUIButton 5,5,166,42,177,GUIVideoTextG8,37,0,0        ; Button
 
