@@ -1674,7 +1674,7 @@ GUIInputTabs dd 1,5
   db '#4',0
   db '#5',0
 
-GUIInputRefF db 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+GUIInputRefF db 0,1,2,3,4,5,18,6,7,8,9,10,11,14,15,16,17
 GUIInputRefB db 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
 GUIInputRefP dd pl1contrl,pl2contrl,pl3contrl,pl4contrl,pl5contrl
 
