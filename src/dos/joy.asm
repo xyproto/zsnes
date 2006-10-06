@@ -365,11 +365,10 @@ NEWSYM DosUpdateDevices
 .nocalib209
     ret
 .checkdevice
-    ; 1 = keyboard, 2 = 2b joystick, 3,4 = 4b joystick, 5 = 6b joystick
+    ; 1 = keyboard, 2 = 2b joystick, 3 = 4b joystick, 4 = 6b joystick, 5 = 8b joystick
     ; 6 = Sidewinder1, 7 = Sidewinder2, 8 = Sidewinder3, 9 = Sidewiner4
     ; 10 = Grip0, 11 = Grip1, 12 = Grip2, 13 = Grip3, 14 = Parallel pad0
-    ; 15 = Parallel pad1, 16 = Parallel pad2, 17 = Parallel pad3
-    ; 19 = Parallel pad4, 18 = 8b joystick
+    ; 15 = Parallel pad1, 16 = Parallel pad2, 17 = Parallel pad3, 18 = Parallel pad4
 
     cmp al,1
     ja .joyokay
@@ -395,7 +394,7 @@ NEWSYM DosUpdateDevices
     or byte[PPad],8
     ret
 .nopp3
-    cmp al,19
+    cmp al,18
     jne .nopp4
     or byte[PPad],16
     ret
@@ -409,22 +408,19 @@ NEWSYM DosUpdateDevices
     ret
 .nojoy2b
     cmp al,3
-    je .joy4b
-    cmp al,4
     jne .nojoy4b
-.joy4b
     mov byte[JoyQuant],1
     mov byte[JoyBQuant],4
     ret
 .nojoy4b
-    cmp al,5
+    cmp al,4
     jne .nojoy6b
     mov byte[JoyQuant],2
     mov byte[JoyBQuant],6
     mov byte[Buttons6],1
     ret
 .nojoy6b
-    cmp al,18
+    cmp al,5
     jne .nojoy8b
     mov byte[JoyQuant],2
     mov byte[JoyBQuant],8
@@ -457,22 +453,20 @@ NEWSYM DosUpdateDevices
     ret
 .nojoy2b2
     cmp al,3
-    je .joy4b2
-    cmp al,4
     jne .nojoy4b2
 .joy4b2
     mov byte[JoyQuant209],1
     mov byte[JoyBQuant209],4
     ret
 .nojoy4b2
-    cmp al,5
+    cmp al,4
     jne .nojoy6b2
     mov byte[JoyQuant209],2
     mov byte[JoyBQuant209],6
     mov byte[Buttons6209],1
     ret
 .nojoy6b2
-    cmp al,18
+    cmp al,5
     jne .nojoy8b2
     mov byte[JoyQuant209],2
     mov byte[JoyBQuant209],8
