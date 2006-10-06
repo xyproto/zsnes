@@ -6,6 +6,7 @@
 #include <string.h>
 #include <fcntl.h>
 
+#include "safelib.h"
 #include "../argv.h"
 
 //These are here because I don't believe in MSVC's prefixing affixation
