@@ -2266,10 +2266,11 @@ DisplayGUIVideoClick:
   cmp byte[GUITBWVID+ebx],0
   je near .notriplebufferwin
   GUIClickCButtonf 121,113,byte[TripleBufferWin],initDirectDraw
-.notriplebufferwin1
+.notriplebufferwin
   GUIClickCButtonf 11,113,byte[vsyncon],initDirectDraw
 %endif
-.notriplebufferwin
+
+
 
 %ifdef __MSDOS__
   xor ebx,ebx                             ; small/fullscreen
