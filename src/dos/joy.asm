@@ -20,14 +20,22 @@
 
 %include "macros.mac"
 
-EXTSYM WhichSW,delay,pl1contrl
-EXTSYM pl2contrl,pl3contrl,pl4contrl,pressed
-EXTSYM pl5contrl,CalibXmin,CalibYmin,CalibXmax,CalibYmax
-EXTSYM CalibXmin209,CalibYmin209,CalibXmax209,CalibYmax209
-
 %ifdef __MSDOS__
+EXTSYM pl1contrl,pl2contrl,pl3contrl,pl4contrl,pl5contrl
+EXTSYM pressed,CalibXmin,CalibYmin,CalibXmax,CalibYmax
+EXTSYM CalibXmin209,CalibYmin209,CalibXmax209,CalibYmax209
 EXTSYM read_gpp,_readSideWinder,_SW1,_SW2,_SW3,_SW4,_SWCount
-EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209
+EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,WhichSW,delay
+EXTSYM pl1upk,pl1downk,pl1leftk,pl1rightk,pl1startk,pl1selk
+EXTSYM pl1Ak,pl1Bk,pl1Xk,pl1Yk,pl1Lk,pl1Rk
+EXTSYM pl2upk,pl2downk,pl2leftk,pl2rightk,pl2startk,pl2selk
+EXTSYM pl2Ak,pl2Bk,pl2Xk,pl2Yk,pl2Lk,pl2Rk
+EXTSYM pl3upk,pl3downk,pl3leftk,pl3rightk,pl3startk,pl3selk
+EXTSYM pl3Ak,pl3Bk,pl3Xk,pl3Yk,pl3Lk,pl3Rk
+EXTSYM pl4upk,pl4downk,pl4leftk,pl4rightk,pl4startk,pl4selk
+EXTSYM pl4Ak,pl4Bk,pl4Xk,pl4Yk,pl4Lk,pl4Rk
+EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5startk,pl5selk
+EXTSYM pl5Ak,pl5Bk,pl5Xk,pl5Yk,pl5Lk,pl5Rk
 %endif
 
 SECTION .data
@@ -1357,23 +1365,50 @@ GetParallelPlayer5:
     PPortHelpInv 0F9h, 80h, 1cBh
     ret
 
+%macro SetDefaultKey2 13
+  mov dword[%1upk],%4    ; Up
+  mov dword[%1downk],%5  ; Down
+  mov dword[%1leftk],%6  ; Left
+  mov dword[%1rightk],%7 ; Right
+  mov dword[%1startk],%3 ; Start
+  mov dword[%1selk],%2   ; Select
+  mov dword[%1Ak],%9     ; A
+  mov dword[%1Bk],%12    ; B
+  mov dword[%1Xk],%8     ; X
+  mov dword[%1Yk],%11    ; Y
+  mov dword[%1Lk],%10    ; L
+  mov dword[%1Rk],%13    ; R
+%endmacro
+
+%macro SetDefaultKey 12
+  cmp bh,0
+  jne %%nopl1
+  SetDefaultKey2 pl1,%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12
+%%nopl1
+  cmp bh,1
+  jne %%nopl2
+  SetDefaultKey2 pl2,%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12
+%%nopl2
+  cmp bh,2
+  jne %%nopl3
+  SetDefaultKey2 pl3,%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12
+%%nopl3
+  cmp bh,3
+  jne %%nopl4
+  SetDefaultKey2 pl4,%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12
+%%nopl4
+  cmp bh,4
+  jne %%nopl5
+  SetDefaultKey2 pl5,%1,%2,%3,%4,%5,%6,%7,%8,%9,%10,%11,%12
+%%nopl5
+%endmacro
+
 NEWSYM SetInputDevice209
-    ; eax = pointer to devices, bl = device #, bh = player # (0-3)
+    ; bl = device #, bh = player # (0-4)
     ; Sets keys according to input device selected
     cmp bl,0
     jne near .nozero
-    mov dword[eax],0
-    mov dword[eax+4],0
-    mov dword[eax+8],0
-    mov dword[eax+12],0
-    mov dword[eax+16],0
-    mov dword[eax+20],0
-    mov dword[eax+24],0
-    mov dword[eax+28],0
-    mov dword[eax+32],0
-    mov dword[eax+36],0
-    mov dword[eax+40],0
-    mov dword[eax+44],0
+    SetDefaultKey 0,0,0,0,0,0,0,0,0,0,0,0
     ret
 .nozero
     cmp bl,1
@@ -1382,32 +1417,10 @@ NEWSYM SetInputDevice209
     ja near .exit
     cmp bh,1
     je near .input2
-    mov dword[eax],54
-    mov dword[eax+4],28
-    mov dword[eax+8],72
-    mov dword[eax+12],80
-    mov dword[eax+16],75
-    mov dword[eax+20],77
-    mov dword[eax+24],82
-    mov dword[eax+28],71
-    mov dword[eax+32],73
-    mov dword[eax+36],83
-    mov dword[eax+40],79
-    mov dword[eax+44],81
+    SetDefaultKey 54,28,72,80,75,77,31,45,32,30,44,46
     ret
 .input2
-    mov dword[eax],56
-    mov dword[eax+4],29
-    mov dword[eax+8],37
-    mov dword[eax+12],50
-    mov dword[eax+16],49
-    mov dword[eax+20],51
-    mov dword[eax+24],31
-    mov dword[eax+28],32
-    mov dword[eax+32],33
-    mov dword[eax+36],44
-    mov dword[eax+40],45
-    mov dword[eax+44],46
+    SetDefaultKey 56,29,37,50,49,51,82,71,73,83,79,81
     ret
 .nokeyb
     cmp bl,2
@@ -1435,237 +1448,77 @@ NEWSYM SetInputDevice209
 .nopl2e
     cmp bl,2
     jae .2ndjoyst
-    mov dword[eax+40],103h
-    mov dword[eax+36],102h
-    mov dword[eax+8],14Ch
-    mov dword[eax+12],14Dh
-    mov dword[eax+16],14Eh
-    mov dword[eax+20],14Fh
+    SetDefaultKey 0,0,14Ch,14Dh,14Eh,14Fh,0,0,0,102h,103h,0
     ret
 .2ndjoyst
-    mov dword[eax+40],105h
-    mov dword[eax+36],104h
-    mov dword[eax+8],168h
-    mov dword[eax+12],169h
-    mov dword[eax+16],16Ah
-    mov dword[eax+20],16Bh
+    SetDefaultKey 0,0,168h,169h,16Ah,16Bh,0,0,0,104h,105h,0
     ret
 .no2buttons
     cmp bl,3
-    je .4buttons
-    cmp bl,4
     jne near .no4buttons
-.4buttons
-    mov dword[eax+40],103h
-    mov dword[eax+36],102h
-    mov dword[eax+28],105h
-    mov dword[eax+24],104h
-    mov dword[eax+8],14Ch
-    mov dword[eax+12],14Dh
-    mov dword[eax+16],14Eh
-    mov dword[eax+20],14Fh
+    SetDefaultKey 0,0,14Ch,14Dh,14Eh,14Fh,104h,105h,0,102h,103h,0
     ret
 .no4buttons
-    cmp bl,18
-    je .6buttons
-    cmp bl,5
+    cmp bl,4
     jne near .no6buttons
-.6buttons
-    mov dword[eax+40],103h
-    mov dword[eax+36],102h
-    mov dword[eax+28],105h
-    mov dword[eax+24],104h
-    mov dword[eax+32],106h
-    mov dword[eax+44],107h
-    mov dword[eax+8],14Ch
-    mov dword[eax+12],14Dh
-    mov dword[eax+16],14Eh
-    mov dword[eax+20],14Fh
-    cmp bl,5
-    je .skip8b
-    mov dword[eax+4],100h
-    mov dword[eax],101h
-    mov dword[eax+44],106h
-    mov dword[eax+32],107h
-.skip8b
+    SetDefaultKey 0,0,14Ch,14Dh,14Eh,14Fh,104h,105h,106h,102h,103h,107h
     ret
 .no6buttons
+    cmp bl,5
+    jne near .skip8b
+    SetDefaultKey 101h,100h,14Ch,14Dh,14Eh,14Fh,104h,105h,107h,102h,103h,106h
+    ret
+.skip8b
     cmp bl,6
     jne near .nosw1
-    mov dword[eax+0],149h
-    mov dword[eax+4],148h
-    mov dword[eax+8],154h
-    mov dword[eax+12],155h
-    mov dword[eax+16],156h
-    mov dword[eax+20],157h
-    mov dword[eax+24],10Ch
-    mov dword[eax+28],109h
-    mov dword[eax+32],10Eh
-    mov dword[eax+36],10Bh
-    mov dword[eax+40],108h
-    mov dword[eax+44],10Fh
+    SetDefaultKey 149h,148h,154h,155h,156h,157h,10Ch,109h,10Eh,10Bh,108h,10Fh
     ret
 .nosw1
     cmp bl,7
     jne near .nosw2
-    mov dword[eax+0],149h+8
-    mov dword[eax+4],148h+8
-    mov dword[eax+8],154h+8
-    mov dword[eax+12],155h+8
-    mov dword[eax+16],156h+8
-    mov dword[eax+20],157h+8
-    mov dword[eax+24],10Ch+8
-    mov dword[eax+28],109h+8
-    mov dword[eax+32],10Eh+8
-    mov dword[eax+36],10Bh+8
-    mov dword[eax+40],108h+8
-    mov dword[eax+44],10Fh+8
+    SetDefaultKey 149h+8,148h+8,154h+8,155h+8,156h+8,157h+8,10Ch+8,109h+8,10Eh+8,10Bh+8,108h+8,10Fh+8
     ret
 .nosw2
     cmp bl,8
     jne near .nosw3
-    mov dword[eax+0],149h+8*2
-    mov dword[eax+4],148h+8*2
-    mov dword[eax+8],154h+8*2
-    mov dword[eax+12],155h+8*2
-    mov dword[eax+16],156h+8*2
-    mov dword[eax+20],157h+8*2
-    mov dword[eax+24],10Ch+8*2
-    mov dword[eax+28],109h+8*2
-    mov dword[eax+32],10Eh+8*2
-    mov dword[eax+36],10Bh+8*2
-    mov dword[eax+40],108h+8*2
-    mov dword[eax+44],10Fh+8*2
+    SetDefaultKey 149h+8*2,148h+8*2,154h+8*2,155h+8*2,156h+8*2,157h+8*2,10Ch+8*2,109h+8*2,10Eh+8*2,10Bh+8*2,108h+8*2,10Fh+8*2
     ret
 .nosw3
     cmp bl,9
     jne near .nosw4
-    mov dword[eax+0],149h+8*3
-    mov dword[eax+4],148h+8*3
-    mov dword[eax+8],154h+8*3
-    mov dword[eax+12],155h+8*3
-    mov dword[eax+16],156h+8*3
-    mov dword[eax+20],157h+8*3
-    mov dword[eax+24],10Ch+8*3
-    mov dword[eax+28],109h+8*3
-    mov dword[eax+32],10Eh+8*3
-    mov dword[eax+36],10Bh+8*3
-    mov dword[eax+40],108h+8*3
-    mov dword[eax+44],10Fh+8*3
+    SetDefaultKey 149h+8*3,148h+8*3,154h+8*3,155h+8*3,156h+8*3,157h+8*3,10Ch+8*3,109h+8*3,10Eh+8*3,10Bh+8*3,108h+8*3,10Fh+8*3
     ret
 .nosw4
     cmp bl,10
     jne near .nogrip0
-    mov dword[eax+0],14Ah
-    mov dword[eax+4],14Bh
-    mov dword[eax+8],170h
-    mov dword[eax+12],171h
-    mov dword[eax+16],172h
-    mov dword[eax+20],173h
-    mov dword[eax+24],129h
-    mov dword[eax+28],12Bh
-    mov dword[eax+32],12Ch
-    mov dword[eax+36],128h
-    mov dword[eax+40],12Ah
-    mov dword[eax+44],12Eh
+    SetDefaultKey 14Ah,14Bh,170h,171h,172h,173h,129h,12Bh,12Ch,128h,12Ah,12Eh
     ret
 .nogrip0
     cmp bl,11
     jne near .nogrip1
-    mov dword[eax+0],14Ah+8
-    mov dword[eax+4],14Bh+8
-    mov dword[eax+8],170h+4
-    mov dword[eax+12],171h+4
-    mov dword[eax+16],172h+4
-    mov dword[eax+20],173h+4
-    mov dword[eax+24],129h+8
-    mov dword[eax+28],12Bh+8
-    mov dword[eax+32],12Ch+8
-    mov dword[eax+36],128h+8
-    mov dword[eax+40],12Ah+8
-    mov dword[eax+44],12Eh+8
+    SetDefaultKey 14Ah+8,14Bh+8,170h+4,171h+4,172h+4,173h+4,129h+8,12Bh+8,12Ch+8,128h+8,12Ah+8,12Eh+8
     ret
 .nogrip1
     cmp bl,14
     jne near .nopp1
-    mov dword[eax+40],180h
-    mov dword[eax+36],181h
-    mov dword[eax+0],182h
-    mov dword[eax+4],183h
-    mov dword[eax+8],184h
-    mov dword[eax+12],185h
-    mov dword[eax+16],186h
-    mov dword[eax+20],187h
-    mov dword[eax+28],188h
-    mov dword[eax+24],189h
-    mov dword[eax+32],18Ah
-    mov dword[eax+44],18Bh
+    SetDefaultKey 182h,183h,184h,185h,186h,187h,189h,188h,18Ah,181h,180h,18Bh
     ret
 .nopp1
     cmp bl,15
     jne near .nopp2
-    mov dword[eax+40],190h
-    mov dword[eax+36],191h
-    mov dword[eax+0],192h
-    mov dword[eax+4],193h
-    mov dword[eax+8],194h
-    mov dword[eax+12],195h
-    mov dword[eax+16],196h
-    mov dword[eax+20],197h
-    mov dword[eax+28],198h
-    mov dword[eax+24],199h
-    mov dword[eax+32],19Ah
-    mov dword[eax+44],19Bh
+    SetDefaultKey 192h,193h,194h,195h,196h,197h,199h,198h,19Ah,191h,190h,19Bh
     ret
 .nopp2
     cmp bl,16
     jne near .nopp3
-    mov dword[eax+40],1A0h
-    mov dword[eax+36],1A1h
-    mov dword[eax+0],1A2h
-    mov dword[eax+4],1A3h
-    mov dword[eax+8],1A4h
-    mov dword[eax+12],1A5h
-    mov dword[eax+16],1A6h
-    mov dword[eax+20],1A7h
-    mov dword[eax+28],1A8h
-    mov dword[eax+24],1A9h
-    mov dword[eax+32],1AAh
-    mov dword[eax+44],1ABh
+    SetDefaultKey 1A2h,1A3h,1A4h,1A5h,1A6h,1A7h,1A9h,1A8h,1AAh,1A1h,1A0h,1ABh
     ret
 .nopp3
     cmp bl,17
     jne near .nopp4
-    mov dword[eax+40],1B0h
-    mov dword[eax+36],1B1h
-    mov dword[eax+0],1B2h
-    mov dword[eax+4],1B3h
-    mov dword[eax+8],1B4h
-    mov dword[eax+12],1B5h
-    mov dword[eax+16],1B6h
-    mov dword[eax+20],1B7h
-    mov dword[eax+28],1B8h
-    mov dword[eax+24],1B9h
-    mov dword[eax+32],1BAh
-    mov dword[eax+44],1BBh
+    SetDefaultKey 1B2h,1B3h,1B4h,1B5h,1B6h,1B7h,1B9h,1B8h,1BAh,1B1h,1B0h,1BBh
     ret
 .nopp4
-    cmp bl,19
-    jne near .nopp5
-    mov dword[eax+40],1c0h
-    mov dword[eax+36],1c1h
-    mov dword[eax+0],1c2h
-    mov dword[eax+4],1c3h
-    mov dword[eax+8],1c4h
-    mov dword[eax+12],1c5h
-    mov dword[eax+16],1c6h
-    mov dword[eax+20],1c7h
-    mov dword[eax+28],1c8h
-    mov dword[eax+24],1c9h
-    mov dword[eax+32],1cAh
-    mov dword[eax+44],1cBh
-    ret
-.nopp5
 .exit
     ret
 %endif
