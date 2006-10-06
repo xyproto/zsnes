@@ -1847,7 +1847,7 @@ DisplayGUIVideo:
   DrawGUIButton 5,128,30,164,41,GUIVideoText8,4,0,0        ; Mode Set Button
 
 %ifndef __MSDOS__                              ; Legend
-  GUIDisplayText 5,130,50,GUIVideoTextB
+  GUIDisplayTextY 5,130,50,GUIVideoTextB
   GUIDisplayText 5,130,58,GUIVideoTextB1
   GUIDisplayText 5,130,66,GUIVideoTextB2
   GUIDisplayText 5,130,74,GUIVideoTextB3
@@ -1962,7 +1962,7 @@ DisplayGUIVideo:
   mov al,[cvidmode]
   cmp byte[GUISLVID+eax],0
   je near .notext2
-  GUIDisplayText 5,13,31,GUIVideoTextC
+  GUIDisplayTextY 5,13,31,GUIVideoTextC
 .notext2
 
   xor eax,eax                                    ; Scanlines
@@ -1979,6 +1979,8 @@ DisplayGUIVideo:
   GUIDisplayCheckboxun 5,101,34,scanlines,2,GUIVideoTextC3,0 ; 25%
 .nocheckboxw
 
+
+  GUIDisplayTextY 5,13,50,GUIVideoTextA       ; Video Filters
   xor eax,eax                                  ; 2xSaI & Supers
   mov al,[cvidmode]
   cmp byte[GUI2xVID+eax],0
@@ -2043,7 +2045,8 @@ DisplayGUIVideo:
 .nocheckboxe
 
 
-  xor eax,eax                                    ; Hires Mode7
+  GUIDisplayTextY 5,13,100,GUIVideoTextA1            ; Hires Mode7
+  xor eax,eax
   mov al,[cvidmode]
   cmp byte[GUIM7VID+eax],0
   je near .nocheckboxm72
@@ -2137,7 +2140,7 @@ GUIVideoTabs dd 1,2
 GUIVntscTab dd 0,1
   db 'NTSC',0
 
-%ifndef __MSDOS__
+%ifndef __MSDOS__                     ; Modes Tab
 GUIVideoTextB  db 'LEGEND:',0
 GUIVideoTextB1 db 'S = STRETCH',0
 GUIVideoTextB2 db 'R = KEEP 8:7 RATIO',0
@@ -2148,36 +2151,38 @@ GUIVideoTextB6 db 'O = USES OPENGL',0
 GUIVideoTextB7 db 'CUSTOM:',0
 GUIVideoTextB8 db 'X',0
 %endif
+GUIVideoTextE db 'CURRENT:',0
+GUIVideoText8 db 'SET',0                ; set button
 
-GUIVideoTextC db 'SCANLINES:',0
+GUIVideoTextC db 'SCANLINES:',0        ; Filters.Scanlines
 GUIVideoTextC1 db 'FULL',0
 GUIVideoTextC2 db '50%',0
 GUIVideoTextC3 db '25%',0
 
-GUIVideoTextE db 'CURRENT:',0
-
-GUIVideoTextc db '2XSAI ENGINE',0
-GUIVideoTextd db 'SUPER EAGLE',0
+GUIVideoTextA db 'VIDEO FILTERS:',0
+GUIVideoTextc db '2XSAI ENGINE',0      ; Filters.Exclusive
 GUIVideoTextd2 db 'SUPER 2XSAI',0
-GUIVideoTextbf db 'BILINEAR FILTER',0
+GUIVideoTextd db 'SUPER EAGLE',0
 GUIVideoText3 db 'INTERPOLATION',0      ; -y
 GUIVideoText4 db 'EAGLE ENGINE',0       ; -y
-GUIVideoTextscale2x db 'SCALE2X',0
 GUIVideoTexthq2x db 'HQ2X',0
 GUIVideoTexthq3x db 'HQ3X',0
 GUIVideoTexthq4x db 'HQ4X',0
+GUIVideoTexte db 'NTSC',0
+GUIVideoTextbf db 'BILINEAR FILTER',0
+GUIVideoTextscale2x db 'SCALE2X',0     ; Does this even exist anymore?
+
+GUIVideoTextA1 db 'MISC OPTIONS:',0
+GUIVideoText8b db 'HI-RES MODE 7',0     ; -c Filters.Other
+GUIVideoText8c db 'GRAYSCALE MODE',0    ; -c
+GUIVideoText9 db 'VSYNC',0              ; -c
+GUIVideoText7 db 'TRIPLE BUFFERING',0   ; -c
 GUIVideoText5 db 'FULL SCREEN',0        ; -c
 GUIVideoText5b db 'WIDE SCREEN',0       ; -c
 GUIVideoText6 db 'SMALL SCREEN',0       ; -c
-GUIVideoText7 db 'TRIPLE BUFFERING',0   ; -c
-GUIVideoText8b db 'HI-RES MODE 7',0     ; -c
-GUIVideoText8c db 'GRAYSCALE MODE',0    ; -c
-GUIVideoText8 db 'SET',0                ; set button
-GUIVideoText9 db 'VSYNC',0              ; -c
-GUIVideoTexte db 'NTSC',0
 GUIVideoTextK43 db 'USE 4:3 RATIO',0
 
-GUIVideoTextG db '----%',0
+GUIVideoTextG db '----%',0             ; NTSC Tab
 GUIVideoTextG1 db 'BLEND FRAMES',0
 GUIVideoTextG2 db 'HUE:',0
 GUIVideoTextG3 db 'SATURATION:',0
@@ -2187,6 +2192,8 @@ GUIVideoTextG6 db 'SHARPNESS:',0
 GUIVideoTextG7 db 'HUE WARPING:',0
 GUIVideoTextG8 db 'RESET',0
 GUIVideoTextG9 db 'REFRESH',0
+
+
 
 SECTION .bss
 GUIVStA resd 3
