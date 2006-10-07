@@ -2572,8 +2572,8 @@ GUIStateSelKeys:
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
     je .try1
-    test byte[pressed+04Fh],1
-    jz .try1
+    cmp al,04Fh
+    jne .try1
     jmp .yes1
 .try1
 %endif
@@ -2586,8 +2586,8 @@ GUIStateSelKeys:
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
     je .try2
-    test byte[pressed+050h],1
-    jz .try2
+    cmp al,050h
+    jne .try2
     jmp .yes2
 .try2
 %endif
@@ -2600,8 +2600,8 @@ GUIStateSelKeys:
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
     je .try3
-    test byte[pressed+051h],1
-    jz .try3
+    cmp al,051h
+    jne .try3
     jmp .yes3
 .try3
 %endif
@@ -2614,8 +2614,8 @@ GUIStateSelKeys:
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
     je .try4
-    test byte[pressed+04Bh],1
-    jz .try4
+    cmp al,04Bh
+    jne .try4
     jmp .yes4
 .try4
 %endif
@@ -2642,8 +2642,8 @@ GUIStateSelKeys:
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
     je .try6
-    test byte[pressed+04Dh],1
-    jz .try6
+    cmp al,04Dh
+    jne .try6
     jmp .yes6
 .try6
 %endif
@@ -2656,8 +2656,8 @@ GUIStateSelKeys:
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
     je .try7
-    test byte[pressed+047h],1
-    jz .try7
+    cmp al,047h
+    jne .try7
     jmp .yes7
 .try7
 %endif
@@ -2670,8 +2670,8 @@ GUIStateSelKeys:
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
     je .try8
-    test byte[pressed+048h],1
-    jz .try8
+    cmp al,048h
+    jne .try8
     jmp .yes8
 .try8
 %endif
@@ -2684,8 +2684,8 @@ GUIStateSelKeys:
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
     je .try9
-    test byte[pressed+049h],1
-    jz .try9
+    cmp al,049h
+    jne .try9
     jmp .yes9
 .try9
 %endif
