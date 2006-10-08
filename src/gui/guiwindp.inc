@@ -1988,8 +1988,8 @@ DisplayGUIVideo:
   cmp byte[MMXSupport],0
   je near .nocheckboxx
   GUIDisplayCheckboxun 5,11,53,En2xSaI,1,GUIVideoTextB2a,1 ;2x
-  GUIDisplayCheckboxun 5,11,63,En2xSaI,2,GUIVideoTextB2b,6 ;Seagle
-  GUIDisplayCheckboxun 5,121,53,En2xSaI,3,GUIVideoTextB2c,0 ;S2x
+  GUIDisplayCheckboxun 5,121,53,En2xSaI,2,GUIVideoTextB2b,6 ;Seagle
+  GUIDisplayCheckboxun 5,11,63,En2xSaI,3,GUIVideoTextB2c,0 ;S2x
 .nocheckboxx
 
   xor eax,eax                                     ; Interpolations
@@ -2164,8 +2164,8 @@ GUIVideoTextB1c db '25%',0
 
 GUIVideoTextB2   db 'VIDEO FILTERS:',0
 GUIVideoTextB2a  db '2XSAI ENGINE',0     ; Filters.Exclusive
-GUIVideoTextB2b  db 'SUPER 2XSAI',0
-GUIVideoTextB2c  db 'SUPER EAGLE',0
+GUIVideoTextB2b  db 'SUPER EAGLE',0
+GUIVideoTextB2c  db 'SUPER 2XSAI',0
 GUIVideoTextB2d db 'INTERPOLATION',0     ; -y
 GUIVideoTextB2e db 'EAGLE ENGINE',0      ; same loc at interpolation   -y
 GUIVideoTextB2f2 db 'HQ2X',0
