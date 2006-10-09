@@ -2188,8 +2188,8 @@ DisplayGUIVideoClick:
   FilterExcl 11,63,hqFilter,scanlines,antienab,NTSCFilter
   FilterExcl 121,53,hqFilter,scanlines,antienab,NTSCFilter
   GUIClickCButton6 11,53,byte[En2xSaI],1
-  GUIClickCButton6 11,63,byte[En2xSaI],2
-  GUIClickCButton6 121,53,byte[En2xSaI],3
+  GUIClickCButton6 121,53,byte[En2xSaI],2
+  GUIClickCButton6 11,63,byte[En2xSaI],3
 .no2xSaI
 
   xor ebx,ebx                             ; interpolations
