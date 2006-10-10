@@ -2082,7 +2082,7 @@ DisplayGUIVideo:
   cmp byte[GUIFSVID+eax],0
   je near .notext5
   cmp byte[GUIWSVID+eax],0
-  je near .notext4a
+  jne near .notext4a
   GUIDisplayCheckboxu 5,11,123,ScreenScale,GUIVideoTextB3e,6
   jmp .notext5
 .notext4a

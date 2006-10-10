@@ -1240,6 +1240,7 @@ GUIVideoKeys:
   je .nofullscreen
   call ClearScreen
   xor byte[ScreenScale],1
+  mov byte[smallscreenon],0
   push eax
   push ecx
   mov eax,[vidbufferofsb]
@@ -1260,6 +1261,7 @@ GUIVideoKeys:
   je .nosmallscreen
   call ClearScreen
   xor byte[smallscreenon],1
+  mov byte[ScreenScale],0
   push eax
   push ecx
   mov eax,[vidbufferofsb]

@@ -2277,12 +2277,14 @@ DisplayGUIVideoClick:
   mov bl,[cvidmode]
   cmp byte[GUIFSVID+ebx],0
   je .nocheckbox2b
+  FilterExcl 11,123,smallscreenon
   GUIClickCButton3 11,123,byte[ScreenScale],byte[ScreenScale],1
 .nocheckbox2b
   xor ebx,ebx
   mov bl,[cvidmode]
   cmp byte[GUISSVID+ebx],0
   je .nocheckbox3b
+  FilterExcl 121,123,ScreenScale
   GUIClickCButton3 121,123,byte[smallscreenon],byte[smallscreenon],1
 .nocheckbox3b
 %endif
