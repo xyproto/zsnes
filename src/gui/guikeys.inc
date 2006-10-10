@@ -1307,7 +1307,7 @@ GUIVideoKeys:
   popad
 .nontscfilter
 %ifdef __UNIXSDL__
-  cmp dh,'B'
+  cmp dh,'I'
   jne .nobilinearfilter
   xor ebx,ebx
   mov bl,[cvidmode]
@@ -1362,6 +1362,19 @@ GUIVideoKeys:
 %ifndef __MSDOS__
   cmp dh,'R'
   jne .nokeep4_3
+  xor ebx,ebx
+  mov bl,[cvidmode]
+%ifdef __WIN32__
+  cmp byte[GUIDSMODE+ebx],1
+  je near .allowk43
+  cmp byte[GUISMODE+ebx],1
+  je near .allowk43
+  jmp .nokeep4_3
+%else
+  cmp bl,20
+  jl .nokeep4_3
+%endif
+.allowk43
   xor byte[Keep4_3Ratio],1
   pushad
   call initwinvideo

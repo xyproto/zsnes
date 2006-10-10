@@ -2,7 +2,7 @@
 @
 @ Note, if you're worried you messed up a setting, removing the line will have
 @ ZSNES use the default settings for that option.
-@ The next time ZSNES is ran, the line will reappear with the default settings.
+@ The next time ZSNES is run, the line will reappear with the default settings.
 @
 @
 @  ----
