@@ -2055,11 +2055,11 @@ DisplayGUIVideo:
 .nocheckboxm72
 
   GUIDisplayCheckboxu 5,121,113,GrayscaleMode,GUIVideoTextB3b,0 ; Grayscale
-  
+
   %ifndef __UNIXSDL__                            ; vsync
   GUIDisplayCheckboxu 5,11,123,vsyncon,GUIVideoTextB3c,0
 %endif
-  
+
   xor eax,eax                                    ; triple buffs
   mov al,[cvidmode]
   cmp byte[GUITBWVID+eax],0
@@ -2074,7 +2074,13 @@ DisplayGUIVideo:
   je near .nocheckboxtbb
   GUIDisplayCheckboxu 5,121,123,Triplebufen,GUIVideoTextB3d,0
 .nocheckboxtbb
-  
+
+  xor eax,eax                                   ; Small Screen
+  mov al,[cvidmode]
+  cmp byte[GUISSVID+eax],0
+  je near .nocheckbox3b
+  GUIDisplayCheckboxu 5,11,133,smallscreenon,GUIVideoTextB3g,1
+.nocheckbox3b
 
   xor eax,eax                                    ; Full/Widescreen
   mov al,[cvidmode]
@@ -2082,18 +2088,11 @@ DisplayGUIVideo:
   je near .notext5
   cmp byte[GUIWSVID+eax],0
   jne near .notext4a
-  GUIDisplayCheckboxu 5,11,133,ScreenScale,GUIVideoTextB3e,6
+  GUIDisplayCheckboxu 5,121,133,ScreenScale,GUIVideoTextB3e,6
   jmp .notext5
 .notext4a
-  GUIDisplayCheckboxu 5,11,133,ScreenScale,GUIVideoTextB3f,6
+  GUIDisplayCheckboxu 5,121,133,ScreenScale,GUIVideoTextB3f,6
 .notext5
-
-  xor eax,eax                                   ; Small Screen
-  mov al,[cvidmode]
-  cmp byte[GUISSVID+eax],0
-  je near .nocheckbox3b
-  GUIDisplayCheckboxu 5,121,133,smallscreenon,GUIVideoTextB3g,1
-.nocheckbox3b
 
 %ifndef __MSDOS__
   xor eax,eax                                   ; Keep 4:3 Ratio

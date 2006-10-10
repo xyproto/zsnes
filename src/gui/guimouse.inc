@@ -2288,22 +2288,20 @@ DisplayGUIVideoClick:
   GUIClickCButtonf 11,123,byte[vsyncon],initDirectDraw
 %endif
 
-
-
 %ifdef __MSDOS__
-  xor ebx,ebx                             ; small/fullscreen
+  xor ebx,ebx                            ; small/fullscreen
   mov bl,[cvidmode]
-  cmp byte[GUIFSVID+ebx],0
+  cmp byte[GUISSVID+ebx],0
   je .nocheckbox2b
-  FilterExcl 11,133,smallscreenon
-  GUIClickCButton3 11,133,byte[ScreenScale],byte[ScreenScale],1
+  FilterExcl 11,133,ScreenScale
+  GUIClickCButton3 11,133,byte[smallscreenon],byte[smallscreenon],1
 .nocheckbox2b
   xor ebx,ebx
   mov bl,[cvidmode]
-  cmp byte[GUISSVID+ebx],0
+  cmp byte[GUIFSVID+ebx],0
   je .nocheckbox3b
-  FilterExcl 121,133,ScreenScale
-  GUIClickCButton3 121,133,byte[smallscreenon],byte[smallscreenon],1
+  FilterExcl 121,133,smallscreenon
+  GUIClickCButton3 121,133,byte[ScreenScale],byte[ScreenScale],1
 .nocheckbox3b
 %endif
 
