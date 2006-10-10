@@ -2096,14 +2096,17 @@ DisplayGUIVideo:
 .nocheckbox3b
 
 %ifndef __MSDOS__
-%ifdef __WIN32__
   xor eax,eax                                   ; Keep 4:3 Ratio
   mov al,[cvidmode]
+%ifdef __WIN32__
   cmp byte[GUIDSMODE+eax],0
   jne near .checkboxk43
   cmp byte[GUISMODE+eax],0
   jne near .checkboxk43
   jmp .nocheckboxk43
+%else
+  cmp al,20
+  jl .nocheckboxk43
 %endif
 .checkboxk43
   GUIDisplayCheckboxu 5,11,143,Keep4_3Ratio,GUIVideoTextB3h,8

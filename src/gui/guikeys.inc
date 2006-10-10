@@ -1297,8 +1297,8 @@ GUIVideoKeys:
   mov byte[antienab],0
   mov byte[BilinearFilter],0
 %ifdef __WIN32__
-  cmp byte[NTSCFilter],1
-  jne .noforce4_3
+  cmp byte[NTSCFilter],0
+  je .noforce4_3
   mov byte[Keep4_3Ratio],1
 .noforce4_3
 %endif
@@ -1365,10 +1365,10 @@ GUIVideoKeys:
   xor ebx,ebx
   mov bl,[cvidmode]
 %ifdef __WIN32__
-  cmp byte[GUIDSMODE+ebx],1
-  je near .allowk43
-  cmp byte[GUISMODE+ebx],1
-  je near .allowk43
+  cmp byte[GUIDSMODE+ebx],0
+  jne near .allowk43
+  cmp byte[GUISMODE+ebx],0
+  jne near .allowk43
   jmp .nokeep4_3
 %else
   cmp bl,20

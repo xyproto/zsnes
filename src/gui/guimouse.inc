@@ -2311,10 +2311,10 @@ DisplayGUIVideoClick:
   xor ebx,ebx                             ; Keep 4:3 Ratio
   mov bl,[cvidmode]
 %ifdef __WIN32__
-  cmp byte[GUIDSMODE+ebx],1
-  je near .checkboxk43
-  cmp byte[GUISMODE+ebx],1
-  je near .checkboxk43
+  cmp byte[GUIDSMODE+ebx],0
+  jne near .checkboxk43
+  cmp byte[GUISMODE+ebx],0
+  jne near .checkboxk43
   jmp .nocheckboxk43
 %else
   cmp bl,20
