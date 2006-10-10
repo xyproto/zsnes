@@ -943,6 +943,7 @@ SECTION .text
 %ifndef __MSDOS__
 GUIProcCustomVideo:
   mov byte[GUICBHold],0
+  mov dword[GUIInputBox],0
   pushad
   call SetCustomXY
   popad
