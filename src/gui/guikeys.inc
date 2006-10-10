@@ -1371,7 +1371,7 @@ GUIVideoKeys:
   jne near .allowk43
   jmp .nokeep4_3
 %else
-  cmp bl,20
+  cmp bl,21
   jl .nokeep4_3
 %endif
 .allowk43

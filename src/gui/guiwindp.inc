@@ -2105,7 +2105,7 @@ DisplayGUIVideo:
   jne near .checkboxk43
   jmp .nocheckboxk43
 %else
-  cmp al,20
+  cmp al,21
   jl .nocheckboxk43
 %endif
 .checkboxk43
