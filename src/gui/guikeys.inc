@@ -1484,7 +1484,7 @@ GUIPathKeys:
 
   cmp dword[GUIInputBox],1
   jne .notBox1
-  mov eax,SRAMDir
+  mov eax,SRAMPath
   jmp .boxselected
 .notBox1
   cmp dword[GUIInputBox],2

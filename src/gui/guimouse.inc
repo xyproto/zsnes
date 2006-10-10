@@ -3098,7 +3098,7 @@ DisplayGUIChipClick:
 %endif
 
 DisplayGUIPathsClick:
-  GUITextBoxInputNach 75,15,230,25,1,path_length       ;SRAMDir
+  GUITextBoxInputNach 75,15,230,25,1,path_length       ;SRAMPath
   GUITextBoxInputNach 75,35,230,45,2,path_length       ;SnapPath
   GUITextBoxInputNach 75,55,230,65,3,path_length       ;SPCPath
   GUITextBoxInputNach 8,95,100,105,4,path_length       ;BSXPath

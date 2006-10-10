@@ -151,7 +151,7 @@ void deinit_paths()
   void SaveSramData();
   void GUISaveVars();
 
-  strcpy(LoadDir, ZRomPath);
+  strcpy(ROMPath, ZRomPath);
 
   SaveSramData();
   GUISaveVars();
@@ -207,9 +207,9 @@ bool init_paths(char *launch_command)
 
               GUIRestoreVars();
 
-              if (*LoadDir && !access(strcutslash(LoadDir), DIR_R_ACCESS))
+              if (*ROMPath && !access(strcutslash(ROMPath), DIR_R_ACCESS))
               {
-                strcpy(ZRomPath, LoadDir);
+                strcpy(ZRomPath, ROMPath);
               }
               else
               {
@@ -244,9 +244,9 @@ bool init_paths(char *launch_command)
 
 void init_save_paths()
 {
-  if (*SRAMDir)
+  if (*SRAMPath)
   {
-    ZSramPath = SRAMDir;
+    ZSramPath = SRAMPath;
   }
   else
   {

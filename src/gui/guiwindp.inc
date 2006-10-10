@@ -4398,7 +4398,7 @@ BlinkCursorCheck:
 .checkboxes
   cmp dword[GUIInputBox],1
   jne .notBox1
-  mov ebx,SRAMDir
+  mov ebx,SRAMPath
   ret
 .notBox1
   cmp dword[GUIInputBox],2
@@ -4492,7 +4492,7 @@ DisplayGUIPaths:
   GUIDisplayBBox  19,135,155,235,165,167
   GUIDisplayBBox  19,135,180,235,190,167
 
-  GUIOuttextwin2d 19,77,19,SRAMDir,25            ; Green Text
+  GUIOuttextwin2d 19,77,19,SRAMPath,25            ; Green Text
   GUIOuttextwin2d 19,77,39,SnapPath,25
   GUIOuttextwin2d 19,77,59,SPCPath,25
   GUIOuttextwin2d 19,10,99,BSXPath,15

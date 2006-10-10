@@ -706,9 +706,9 @@ RewindFrames db 15
 @ ROMs directory
 %endif
 %ifdef __MSDOS__
-LoadDir times 256 db ""
+ROMPath times 256 db ""
 @ Save states & SRAMs, snapshots, SPCs
-SRAMDir times 256 db ""
+SRAMPath times 256 db ""
 SnapPath times 256 db ""
 SPCPath times 256 db ""
 @ BIOS/base carts (BS-X, Sufami Turbo, Same Game & SD Gundam G-Next)
@@ -722,9 +722,9 @@ SJNSPath times 256 db ""
 MDHPath times 256 db ""
 SPL4Path times 256 db ""
 %else
-LoadDir times 1024 db ""
+ROMPath times 1024 db ""
 @ Save states & SRAMs, snapshots, SPCs
-SRAMDir times 1024 db ""
+SRAMPath times 1024 db ""
 SnapPath times 1024 db ""
 SPCPath times 1024 db ""
 @ BIOS/base carts (BS-X, Sufami Turbo, Same Game & SD Gundam G-Next)
