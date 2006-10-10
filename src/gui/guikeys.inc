@@ -1359,12 +1359,12 @@ GUIVideoKeys:
   jne .nograyscale
   xor byte[GrayscaleMode],1
 .nograyscale
-%ifdef __WIN32__
+%ifndef __MSDOS__
   cmp dh,'R'
   jne .nokeep4_3
   xor byte[Keep4_3Ratio],1
-  call initDirectDraw
   pushad
+  call initwinvideo
   call Clear2xSaIBuffer
   popad
 .nokeep4_3

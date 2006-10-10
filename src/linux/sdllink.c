@@ -962,6 +962,9 @@ void SetHiresOpt()
 }
 
 unsigned char prevNTSCMode = 0;
+unsigned int prevCustomResX = 0;
+unsigned int prevCustomResY = 0;
+unsigned char prevKeep4_3Ratio = 0;
 
 bool OGLModeCheck()
 {
@@ -974,13 +977,17 @@ void initwinvideo(void)
 
   init_hqNx();
 
-  if (CurMode != cvidmode || (prevNTSCMode != NTSCFilter))
+  if ((CurMode != cvidmode) || (prevNTSCMode != NTSCFilter) ||
+      (prevCustomResX != CustomResX) || (prevCustomResY != CustomResY) || (prevKeep4_3Ratio != Keep4_3Ratio))
   {
     CurMode = cvidmode;
     newmode = 1;
     WindowWidth = 256;
     WindowHeight = 224;
     prevNTSCMode = NTSCFilter;
+    prevCustomResX = CustomResX;
+    prevCustomResY = CustomResY;
+    prevKeep4_3Ratio = Keep4_3Ratio;
 
     FullScreen = GUIWFVID[cvidmode];
 #ifdef __OPENGL__
@@ -988,7 +995,7 @@ void initwinvideo(void)
     if (OGLModeCheck())
        UseOpenGL = 1;
 
-    if (cvidmode == 22)
+    if ((cvidmode == 20) || (cvidmode == 21) || (cvidmode == 22))
     {
        SetHQx();
        SetHiresOpt();

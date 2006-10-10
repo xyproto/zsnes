@@ -127,14 +127,14 @@ EXTSYM numlockptr
 EXTSYM initDirectDraw,reInitSound,CheckAlwaysOnTop,CheckPriority,AlwaysOnTop
 EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst
 EXTSYM HighPriority,DisableScreenSaver,SaveMainWindowPos,PrimaryBuffer
-EXTSYM Keep4_3Ratio,GUIDSMODE,GUISMODE
+EXTSYM GUIDSMODE,GUISMODE
 %elifdef __MSDOS__
 EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix
 %endif
 
 %ifndef __MSDOS__
-EXTSYM ZsnesPage,DocsPage,GUICustomX,GUICustomY,GetCustomXY,SetCustomXY
+EXTSYM ZsnesPage,DocsPage,GUICustomX,GUICustomY,GetCustomXY,SetCustomXY,initwinvideo,Keep4_3Ratio
 %endif
 
 %include "gui/guitools.inc"

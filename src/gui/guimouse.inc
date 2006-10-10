@@ -945,9 +945,7 @@ GUIProcCustomVideo:
   mov byte[GUICBHold],0
   pushad
   call SetCustomXY
-%ifdef __WIN32__
-  call initDirectDraw
-%endif
+  call initwinvideo
   popad
   ret
 %endif
@@ -1103,6 +1101,15 @@ GUIWinClicked:
   call %4
   popad
 %endif
+%%noclick
+%endmacro
+
+%macro GUIClickCButtonK 4
+  GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
+  xor %3,1
+  pushad
+  call %4
+  popad
 %%noclick
 %endmacro
 
@@ -2292,6 +2299,7 @@ DisplayGUIVideoClick:
 .nocheckbox3b
 %endif
 
+%ifndef __MSDOS__
 %ifdef __WIN32__
   xor ebx,ebx                             ; Keep 4:3 Ratio
   mov bl,[cvidmode]
@@ -2300,8 +2308,9 @@ DisplayGUIVideoClick:
   cmp byte[GUISMODE+ebx],1
   je near .checkboxk43
   jmp .nocheckboxk43
+%endif
 .checkboxk43
-  GUIClickCButtonf 11,133,byte[Keep4_3Ratio],initDirectDraw
+  GUIClickCButtonK 11,133,byte[Keep4_3Ratio],initwinvideo
 .nocheckboxk43
 %endif
 

@@ -133,6 +133,12 @@ void sw_clearwin()
 
 extern unsigned char prevNTSCMode;
 extern unsigned char NTSCFilter;
+extern unsigned int CustomResX;
+extern unsigned int CustomResY;
+extern unsigned int prevCustomResX;
+extern unsigned int prevCustomResY;
+extern unsigned char Keep4_3Ratio;
+extern unsigned char prevKeep4_3Ratio;
 
 void sw_drawwin()
 {
@@ -156,6 +162,10 @@ void sw_drawwin()
   LockSurface();
 
   if (NTSCFilter != prevNTSCMode) initwinvideo();
+
+  if ((prevCustomResX != CustomResX) || (prevCustomResY != CustomResY)) initwinvideo();
+
+  if (prevKeep4_3Ratio != Keep4_3Ratio) initwinvideo();
 
   ScreenPtr = vidbuffer;
   ScreenPtr += 16*2+32*2+256*2;
