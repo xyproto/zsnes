@@ -174,13 +174,13 @@ static void adjustMouseYScale(void)
   MouseYScale = (MouseMaxY - MouseMinY) / ((float) WindowHeight);
 }
 
-void SetHQx2()
+void SetHQx(unsigned int ResX, unsigned int ResY)
 {
   int maxHQ;
-  if(WindowWidth/256 < WindowHeight/224)
-    maxHQ = WindowWidth/256;
+  if(ResX/256 < ResY/224)
+    maxHQ = ResX/256;
   else
-    maxHQ = WindowHeight/224;
+    maxHQ = ResY/224;
 
   if(maxHQ >= 2)
   {
@@ -197,9 +197,9 @@ void SetHQx2()
   }
 }
 
-void SetHiresOpt2()
+void SetHiresOpt(unsigned int ResX, unsigned int ResY)
 {
-  if(WindowWidth >= 512 && WindowHeight >= 448)
+  if(ResX >= 512 && ResY >= 448)
     GUIM7VID[cvidmode] = 1;
   else
     GUIM7VID[cvidmode] = 0;
@@ -443,8 +443,8 @@ int Main_Proc(void)
         }
         WindowWidth = SurfaceX = event.resize.w;
         WindowHeight = SurfaceY = event.resize.h;
-        SetHQx2();
-        SetHiresOpt2();
+        SetHQx(SurfaceX,SurfaceY);
+        SetHiresOpt(SurfaceX,SurfaceY);
         surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags);
         adjustMouseXScale();
         adjustMouseYScale();
@@ -963,37 +963,6 @@ void init_hqNx(void)
   }
 }
 
-void SetHQx()
-{
-  int maxHQ;
-  if(CustomResX/256 < CustomResY/224)
-    maxHQ = CustomResX/256;
-  else
-    maxHQ = CustomResY/224;
-
-  if(maxHQ >= 2)
-  {
-    GUIHQ2X[cvidmode] = 1;
-    GUIHQ3X[cvidmode] = 0;
-    GUIHQ4X[cvidmode] = 0;
-  }
-
-  else
-  {
-    GUIHQ2X[cvidmode] = 0;
-    GUIHQ3X[cvidmode] = 0;
-    GUIHQ4X[cvidmode] = 0;
-  }
-}
-
-void SetHiresOpt()
-{
-  if(CustomResX >= 512 && CustomResY >= 448)
-    GUIM7VID[cvidmode] = 1;
-  else
-    GUIM7VID[cvidmode] = 0;
-}
-
 unsigned char prevNTSCMode = 0;
 unsigned int prevCustomResX = 0;
 unsigned int prevCustomResY = 0;
@@ -1030,8 +999,8 @@ void initwinvideo(void)
 
     if ((cvidmode == 20) || (cvidmode == 21) || (cvidmode == 22))
     {
-       SetHQx();
-       SetHiresOpt();
+       SetHQx(CustomResX,CustomResY);
+       SetHiresOpt(CustomResX,CustomResY);
     }
 #else
     if (OGLModeCheck())
