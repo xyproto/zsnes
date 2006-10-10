@@ -174,6 +174,37 @@ static void adjustMouseYScale(void)
   MouseYScale = (MouseMaxY - MouseMinY) / ((float) WindowHeight);
 }
 
+void SetHQx2()
+{
+  int maxHQ;
+  if(WindowWidth/256 < WindowHeight/224)
+    maxHQ = WindowWidth/256;
+  else
+    maxHQ = WindowHeight/224;
+
+  if(maxHQ >= 2)
+  {
+    GUIHQ2X[cvidmode] = 1;
+    GUIHQ3X[cvidmode] = 0;
+    GUIHQ4X[cvidmode] = 0;
+  }
+
+  else
+  {
+    GUIHQ2X[cvidmode] = 0;
+    GUIHQ3X[cvidmode] = 0;
+    GUIHQ4X[cvidmode] = 0;
+  }
+}
+
+void SetHiresOpt2()
+{
+  if(WindowWidth >= 512 && WindowHeight >= 448)
+    GUIM7VID[cvidmode] = 1;
+  else
+    GUIM7VID[cvidmode] = 0;
+}
+
 int Main_Proc(void)
 {
   SDL_Event event;
@@ -412,6 +443,8 @@ int Main_Proc(void)
         }
         WindowWidth = SurfaceX = event.resize.w;
         WindowHeight = SurfaceY = event.resize.h;
+        SetHQx2();
+        SetHiresOpt2();
         surface = SDL_SetVideoMode(WindowWidth, WindowHeight, BitDepth, surface->flags);
         adjustMouseXScale();
         adjustMouseYScale();
