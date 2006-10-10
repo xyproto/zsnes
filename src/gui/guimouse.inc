@@ -945,6 +945,9 @@ GUIProcCustomVideo:
   mov byte[GUICBHold],0
   pushad
   call SetCustomXY
+%ifdef __WIN32__
+  call initDirectDraw
+%endif
   popad
   ret
 %endif

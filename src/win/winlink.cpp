@@ -1393,6 +1393,8 @@ DWORD NTSCMode=0;
 DWORD prevHQMode=~0;
 DWORD prevNTSCMode=0;
 DWORD prevScanlines=~0;
+DWORD prevCustomResX=0;
+DWORD prevCustomResY=0;
 WORD Refresh = 0;
 extern "C" BYTE GUIWFVID[];
 extern "C" BYTE GUIDSIZE[];
@@ -1960,11 +1962,13 @@ void initwinvideo(void)
      if ( GUIHQ4X[cvidmode] != 0 ) HQMode=4;
    }
 
-   if ((CurMode!=cvidmode) || (prevHQMode!=HQMode) || (prevNTSCMode!=NTSCFilter))
+   if ((CurMode!=cvidmode) || (prevHQMode!=HQMode) || (prevNTSCMode!=NTSCFilter) || (prevCustomResX != CustomResX) || (prevCustomResY != CustomResY))
    {
       CurMode=cvidmode;
       prevHQMode=HQMode;
       prevNTSCMode=NTSCFilter;
+      prevCustomResX=CustomResX;
+      prevCustomResY=CustomResY;
       newmode=1;
       SurfaceX=256;
       SurfaceY=240;
@@ -2507,6 +2511,9 @@ extern "C"
 {
    void initDirectDraw()
    {
+      SetHQx();
+      SetNTSCFOpt();
+      SetHiresOpt();
       InitDirectDraw();
       if (CheckTVRatioReq())
         KeepTVRatio();
@@ -2620,8 +2627,7 @@ void drawscreenwin(void)
      PrevRes = resolutn;
    }
 
-   if (prevHQMode!=HQMode)
-     initwinvideo();
+   if (prevHQMode!=HQMode) initwinvideo();
 
    if (prevNTSCMode != NTSCFilter) initwinvideo();
 
@@ -2630,6 +2636,8 @@ void drawscreenwin(void)
      initwinvideo();
      prevScanlines = scanlines;
    }
+
+   if ((prevCustomResX != CustomResX) || (prevCustomResY != CustomResY)) initwinvideo();
 
    SurfBufD=(DWORD) &SurfBuf[0];
    SURFDW=(DWORD *) &SurfBuf[0];
