@@ -424,7 +424,7 @@ void zstart()
 
 extern unsigned int statefileloc;
 void GetFilename();
-extern unsigned char firstsaveinc,LatestSave,newestfileloc,newestfileloc10,slotlevelnum;
+extern unsigned char firstsaveinc,LatestSave,newestfileloc,newestfileloc10;
 void DetermineNew();
 
 extern time_t newestfiledate;
@@ -472,12 +472,10 @@ void zst_init()
     if (!newestfileloc10)
     {
       ZStateName[statefileloc-1] = 's';
-      slotlevelnum = '0';
     }
     else
     {
       ZStateName[statefileloc-1] = newestfileloc10+'0';
-      slotlevelnum = newestfileloc10+'0';
     }
 
     if (!newestfileloc)

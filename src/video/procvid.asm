@@ -1214,7 +1214,6 @@ NEWSYM drawbox16b
 %endmacro
 
 %macro testpressed 1
-    push eax
     push ecx
     mov ecx,[ZStateName]
     add ecx,[statefileloc]
@@ -1403,13 +1402,13 @@ NEWSYM drawbox16b
     add byte[ecx],'0'
     mov byte[pressed+77],2
 %%noright
-    dec ecx
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],1 ; if numlock on, disregard numpad
     je %%noup
 %endif
     test byte[pressed+72],1
     jz %%noup
+    dec ecx
     cmp byte[ecx],'s'
     je %%goneup
     cmp byte[ecx],'1'
@@ -1420,18 +1419,12 @@ NEWSYM drawbox16b
     jne %%noaddt
     mov byte[ecx],'t'
 %%noaddt
-    dec ecx
-    mov al,'0'
-    mov [slotlevelnum],al
     jmp %%goneup
 %%goup
     dec byte[ecx]
-    mov al,[ecx]
-    mov [slotlevelnum],al
 %%goneup
     mov byte[pressed+72],2
     pop ecx
-    pop eax
     jmp .updatescreen%1
 %%noup
 %ifdef __UNIXSDL__
@@ -1440,6 +1433,7 @@ NEWSYM drawbox16b
 %endif
     test byte[pressed+80],1
     jz %%nodown
+    dec ecx
     cmp byte[ecx],'9'
     je %%gonedown
     cmp byte[ecx],'s'
@@ -1453,21 +1447,12 @@ NEWSYM drawbox16b
     dec ecx
 %%godown
     inc byte[ecx]
-    mov al,[ecx]
-    mov [slotlevelnum],al
 %%gonedown
     mov byte[pressed+80],2
     pop ecx
-    pop eax
     jmp .updatescreen%1
 %%nodown
-    pop ecx
-    pop eax
 %ifndef __MSDOS__
-    push eax
-    push ecx
-    mov ecx,[ZStateName]
-    add ecx,[statefileloc]
 %ifdef __UNIXSDL__
     test byte[pressed+92],1
 %else
@@ -1513,13 +1498,13 @@ NEWSYM drawbox16b
     mov byte[pressed+0CDh],2
 %endif
 %%noright2
-    dec ecx
 %ifdef __UNIXSDL__
     test byte[pressed+90],1
 %else
     test byte[pressed+0C8h],1
 %endif
     jz %%noup2
+    dec ecx
     cmp byte[ecx],'s'
     je %%goneup2
     cmp byte[ecx],'1'
@@ -1530,14 +1515,9 @@ NEWSYM drawbox16b
     jne %%noaddt2
     mov byte[ecx],'t'
 %%noaddt2
-    dec ecx
-    mov al,'0'
-    mov [slotlevelnum],al
     jmp %%goneup2
 %%goup2
     dec byte[ecx]
-    mov al,[ecx]
-    mov [slotlevelnum],al
 %%goneup2
 %ifdef __UNIXSDL__
     mov byte[pressed+90],2
@@ -1545,7 +1525,6 @@ NEWSYM drawbox16b
     mov byte[pressed+0C8h],2
 %endif
     pop ecx
-    pop eax
     jmp .updatescreen%1
 %%noup2
 %ifdef __UNIXSDL__
@@ -1554,6 +1533,7 @@ NEWSYM drawbox16b
     test byte[pressed+0D0h],1
 %endif
     jz %%nodown2
+    dec ecx
     cmp byte[ecx],'9'
     je %%gonedown2
     cmp byte[ecx],'s'
@@ -1567,8 +1547,6 @@ NEWSYM drawbox16b
     dec ecx
 %%godown2
     inc byte[ecx]
-    mov al,[ecx]
-    mov [slotlevelnum],al
 %%gonedown2
 %ifdef __UNIXSDL__
     mov byte[pressed+96],2
@@ -1576,12 +1554,10 @@ NEWSYM drawbox16b
     mov byte[pressed+0D0h],2
 %endif
     pop ecx
-    pop eax
     jmp .updatescreen%1
 %%nodown2
-    pop ecx
-    pop eax
 %endif
+    pop ecx
 %endmacro
 
 NEWSYM saveselect
