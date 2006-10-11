@@ -3523,7 +3523,7 @@ GUIGUIAboutTextC1 db '    PHAROS        STATMAT',0
 GUIGUIAboutTextC2 db '    TEUF          HPSOLO',0
 GUIGUIAboutTextC3 db '    THEODDONE33   SILOH',0
 GUIGUIAboutTextC4 db '    IPHER         GRINVADER',0
-GUIGUIAboutTextC5 db '    JONAS QUINN',0
+GUIGUIAboutTextC5 db '    JONAS QUINN   DEATHLIKE',0
 
 GUIGUIAboutTextD1 db 'ZSNES comes with ABSOLUTELY',0
 GUIGUIAboutTextD2 db 'NO WARRANTY.  This is free',0
