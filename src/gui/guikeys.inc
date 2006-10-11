@@ -1566,6 +1566,23 @@ GUIPathKeys:
 .boxselected
   mov ecx,eax
 
+%ifdef __WIN32__
+  ;Look for paste request
+  cmp byte[ctrlptr],0
+  je .nopaste
+  cmp dh,56h ;V
+  jne .nopaste
+  mov dword[CBBuffer],ecx
+  mov eax,dword[GUIInputLimit]
+  mov dword[CBLength],eax
+  pushad
+  call PasteClipBoard
+  popad
+  xor dx,dx
+  ret
+.nopaste
+%endif
+
   ;Find end of string
 .findend
   cmp byte[eax],0

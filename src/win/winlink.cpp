@@ -24,6 +24,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 extern "C" {
    #include <windows.h>
    #include <stdio.h>
+   #include <ctype.h>
    #include <ddraw.h>
    #include <mmsystem.h>
    #include <time.h>
@@ -536,6 +537,8 @@ void ExitFunction()
    DestroyWindow(hMainWindow);
 }
 
+extern "C" { bool ctrlptr = false; }
+
 LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
    static bool shiftpr;
@@ -551,6 +554,8 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
             if (wParam==16)
               shiftpr=true;
+            else if (wParam==17)
+              ctrlptr=true;
             if (((wParam>='A') && (wParam<='Z')) ||
                 ((wParam>='a') && (wParam<='z')) || (wParam==27) ||
                 (wParam==32) || (wParam==8) || (wParam==13) || (wParam==9)) {
@@ -630,6 +635,7 @@ LRESULT CALLBACK Main_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
          break;
       case WM_KEYUP:          // sent when user releases a key
          if (wParam==16) shiftpr=false;
+         else if (wParam==17) ctrlptr=false;
          break;
       case WM_MOUSEMOVE:
          if (MouseInput && GUIOn2) MouseInput->Acquire();
@@ -3265,6 +3271,34 @@ void DocsPage()
    ShellExecute(NULL, NULL, "http://zsnes-docs.sourceforge.net/", NULL, NULL, 0);
    MouseX = 0;
    MouseY = 0;
+}
+
+extern "C" {
+char *CBBuffer;
+unsigned int CBLength;
+void PasteClipBoard()
+{
+  if (OpenClipboard(0))
+  {
+    char *p = (char *)GetClipboardData(CF_TEXT);
+    if (p)
+    {
+      strncpy(CBBuffer, p, CBLength);
+      CBBuffer[CBLength-1] = 0;
+      
+      for (p = CBBuffer; *p; p++)
+      {
+        if (isspace(*p)) { *p = ' '; }
+      }
+      for (p--; p >= CBBuffer; p--)
+      {
+        if (isspace(*p)) { *p = 0; }
+        else { break; }
+      }
+    }
+    CloseClipboard();
+  }  
+}
 }
 
 extern "C" signed int NumberOfOpcodes;
