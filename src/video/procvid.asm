@@ -1645,7 +1645,7 @@ NEWSYM saveselect
     dec edx
     cmp byte[edx],'s'
     jne .isnott2
-    mov byte[slotlevelnum],0
+    mov byte[slotlevelnum],'0'
     pop edx
     drawfillboxhelp 0,'t'
     jmp .isnext2
@@ -1963,7 +1963,7 @@ SECTION .text
     cmp byte[edx],'s'
     jne .isnott2b
     pop edx
-    mov byte[slotlevelnum],0
+    mov byte[slotlevelnum],'0'
     drawfillboxhelp16b 0,'t'
     jmp .isnext2b
 .isnott2b
