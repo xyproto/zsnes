@@ -1641,14 +1641,17 @@ NEWSYM saveselect
     call DetermineNewest
     push edx
     mov edx,[ZStateName]
-    add edx,[statefileloc]
+    add edx,eax
     dec edx
-    cmp byte[edx+eax-1],'s'
+    cmp byte[edx],'s'
     jne .isnott2
+    mov byte[slotlevelnum],0
     pop edx
     drawfillboxhelp 0,'t'
     jmp .isnext2
 .isnott2
+    mov dl,byte[edx]
+    mov [slotlevelnum],dl
     pop edx
     drawfillboxhelp 0,'0'
 .isnext2
@@ -1955,14 +1958,17 @@ SECTION .text
     call DetermineNewest
     push edx
     mov edx,[ZStateName]
-    add edx,[statefileloc]
+    add edx,eax
     dec edx
     cmp byte[edx],'s'
     jne .isnott2b
     pop edx
+    mov byte[slotlevelnum],0
     drawfillboxhelp16b 0,'t'
     jmp .isnext2b
 .isnott2b
+    mov dl,byte[edx]
+    mov [slotlevelnum],dl
     pop edx
     drawfillboxhelp16b 0,'0'
 .isnext2b
