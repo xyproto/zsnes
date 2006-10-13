@@ -2105,7 +2105,7 @@ DisplayGUIVideo:
   jmp .nocheckboxk43
 %else
   cmp al,21
-  jl .nocheckboxk43
+  jl near .nocheckboxk43
 %endif
 .checkboxk43
   GUIDisplayCheckboxu 5,11,143,Keep4_3Ratio,GUIVideoTextB3h,8
