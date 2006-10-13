@@ -1942,7 +1942,7 @@ void KeepTVRatio()
 
 bool CheckTVRatioReq()
 {
-  return((Keep4_3Ratio) && ((DSMode == 1)||(SMode == 1)) && (WindowWidth >= 320) && (WindowHeight >= 240));
+  return(((DSMode == 1 || SMode == 1)) && (Keep4_3Ratio));
 }
 
 void initwinvideo(void)

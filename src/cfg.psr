@@ -376,10 +376,10 @@ CustomResY dd 480
 @ This is particularly handy for those that use laptops/LCDs+non 4:3 resolutions.
 %ifdef __WIN32__
 @ This can be used for any S/DS mode and any Custom Windowed mode.
-@ Minimum res required is 320x240
 %elifdef __UNIXSDL__
 @ This can be used for Variable ODS Windowed and Custom Res OD Fullscreen.
 %endif
+@ It is not recommended to enable this while under 298x224.
 @ Disable this if you want to use the non-standard ratio instead.
 Keep4_3Ratio db 1
 %endif

@@ -1780,7 +1780,12 @@ void GetCustomXY()
 
 void SetCustomXY()
 {
- CustomResX = atoi(GUICustomX);
- CustomResY = atoi(GUICustomY);
+  if(!((atoi(GUICustomX) < 256) || (atoi(GUICustomX) > 2048) || (atoi(GUICustomY) < 224) || (atoi(GUICustomY) > 1536)))
+  {
+    CustomResX = atoi(GUICustomX);
+    CustomResY = atoi(GUICustomY);
+    if(CustomResX < 298)
+      Keep4_3Ratio = 0;
+  }
 }
 #endif
