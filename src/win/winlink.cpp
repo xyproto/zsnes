@@ -2512,9 +2512,6 @@ extern "C"
 {
    void initDirectDraw()
    {
-      SetHQx();
-      SetNTSCFOpt();
-      SetHiresOpt();
       InitDirectDraw();
       if (CheckTVRatioReq())
         KeepTVRatio();
