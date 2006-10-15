@@ -2749,8 +2749,70 @@ GUIStateSelKeys:
   jmp .nochange
 .done
   mov [edx+ebx],cl
-.nochange
   ret
+.nochange
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je .trypgup
+    cmp al,91
+    jne .trypgup
+    jmp .yespgup
+.trypgup
+%endif
+    cmp al,73
+    jne .nopgup
+.yespgup
+    cmp byte[edx+ebx-1],'9'
+    je .nochange2
+    cmp byte[edx+ebx-1],'s'
+    jne .insertpgup
+    mov cl,'1'
+    mov [GUIChoseSlotTextX],cl
+    cmp byte[edx+ebx],'t'
+    jne .done2
+    mov byte[edx+ebx],'0'
+    jmp .done2
+.insertpgup
+    mov cl,byte[edx+ebx-1]
+    inc cl
+    mov [GUIChoseSlotTextX],cl
+    jmp .done2
+.nopgup
+%ifdef __UNIXSDL__
+    cmp dword[numlockptr],0 ; if numlock on, let's try this first
+    je .trypgdn
+    cmp al,97
+    jne .trypgdn
+    jmp .yespgdn
+.trypgdn
+%endif
+    cmp al,81
+    jne .nopgdn
+.yespgdn
+    cmp byte[edx+ebx-1],'s'
+    je .nochange2
+    cmp byte[edx+ebx-1],'1'
+    jne .insertpgdn
+    mov byte[GUIChoseSlotTextX],'0'
+    mov cl,'s'
+    cmp byte[edx+ebx],'0'
+    jne .done2
+    mov byte[edx+ebx],'t'
+    jmp .done2
+.insertpgdn
+    mov cl,byte[edx+ebx-1]
+    dec cl
+    mov [GUIChoseSlotTextX],cl
+    cmp cl,'0'
+    jne .done2
+    mov byte[edx+ebx-1],'s'
+    jmp .done2
+.nopgdn
+    jmp .nochange2
+.done2
+    mov [edx+ebx-1],cl
+.nochange2
+    ret
 
 ; Allows you to select boxes with the arrow keys, Enter to choose
 GUIResetKeys:
