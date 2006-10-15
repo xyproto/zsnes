@@ -1315,6 +1315,7 @@ DisplayGUIChoseSave:                    ; Pick Save State
   GUIDisplayText 2,81,46,GUIChoseSaveText2
   mov byte[GUIChoseSaveText2],'9'
   GUIDisplayText 2,101,46,GUIChoseSaveText2
+  GUIDisplayTextY 2,6,61,GUIChoseSlotText1
 
   mov dword[GUITemp],GUIIconDataButtonHole           ; Radio Buttons
   mov ebx,[statefileloc]
@@ -1337,11 +1338,43 @@ DisplayGUIChoseSave:                    ; Pick Save State
   GUIDisplayButtonHole 2,50,43,byte[GUIChoseSaveText2],'7'
   GUIDisplayButtonHole 2,70,43,byte[GUIChoseSaveText2],'8'
   GUIDisplayButtonHole 2,90,43,byte[GUIChoseSaveText2],'9'
+
+  GUIDisplayBBox 2,72,59,90,66,167                  ; Save Slot Frameskip +/- Box
+
+  mov ebx,[statefileloc]
+  mov edx,[ZStateName]
+  cmp byte[edx+ebx-1],'s'
+  jne .notans
+  mov byte[GUIChoseSlotTextX],'0'
+  jmp .isdone
+.notans
+  mov al,byte[edx+ebx-1]
+  mov [GUIChoseSlotTextX],al
+.isdone
+  mov byte[GUItextcolor],223
+  GUIOuttextwin2 2,83,61,GUIChoseSlotTextX
+  mov byte[GUItextcolor],221
+  cmp byte[GUIWincoladd],0
+  je .slotzero5
+  mov byte[GUItextcolor],222
+.slotzero5
+  GUIOuttextwin2 2,82,60,GUIChoseSlotTextX
+  mov byte[GUItextcolor],217
+  cmp byte[GUIWincoladd],0
+  je .slotzero7
+  mov byte[GUItextcolor],211
+.slotzero7
+  DrawGUIButton 2,94,59,102,67,GUIChoseSlotTextY,12,-2,-1
+  DrawGUIButton 2,105,59,113,67,GUIChoseSlotTextZ,13,-2,-1
   ret
 
 SECTION .data
 GUIChoseSaveText1 db 'SELECT SAVE SLOT:',0
 GUIChoseSaveText2 db '-',0
+GUIChoseSlotText1 db 'SLOT LEVEL:',0
+GUIChoseSlotTextX db '-',0
+GUIChoseSlotTextY db '+',0
+GUIChoseSlotTextZ db '-',0
 
 SECTION .text
 
@@ -2134,7 +2167,6 @@ DisplayGUIVideo:
   GUIDrawSlider 5,8,200,116,NTSCBright,GUIVideoTextC3,NTSCslidSet,NTSCslidText
   GUIDrawSlider 5,8,200,136,NTSCSharp,GUIVideoTextC3,NTSCslidSet,NTSCslidText
   GUIDrawSlider 5,8,200,156,NTSCWarp,GUIVideoTextC3,NTSCslidSet,NTSCslidText
-
 
 .notntsctab
   ret

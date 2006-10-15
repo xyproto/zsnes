@@ -2220,7 +2220,7 @@ SECTION .data
 .stringc db 'USE CURSOR KEYS',0
 .stringd db 'TO MOVE AND',0
 .stringe db 'ENTER TO SELECT',0
-NEWSYM slotlevelnum , db '0',0
+slotlevelnum db '-',0
 
 SECTION .bss
 NEWSYM ForceNonTransp, resb 1
