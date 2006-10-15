@@ -2115,7 +2115,7 @@ DisplayGUIVideo:
 
   cmp dword[GUIVntscTab],1                      ; NTSC Tab
   jne near .notntsctab
-  
+
   GUIDisplayCheckboxu 5,5,25,NTSCBlend,GUIVideoTextC1a,0
   GUIDisplayCheckboxu 5,135,25,NTSCRef,GUIVideoTextC1b,0
 
@@ -2134,7 +2134,7 @@ DisplayGUIVideo:
   GUIDrawSlider 5,8,200,116,NTSCBright,GUIVideoTextC3,NTSCslidSet,NTSCslidText
   GUIDrawSlider 5,8,200,136,NTSCSharp,GUIVideoTextC3,NTSCslidSet,NTSCslidText
   GUIDrawSlider 5,8,200,156,NTSCWarp,GUIVideoTextC3,NTSCslidSet,NTSCslidText
-  
+
 
 .notntsctab
   ret

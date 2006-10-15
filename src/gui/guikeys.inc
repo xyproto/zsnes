@@ -1572,9 +1572,9 @@ GUIPathKeys:
   je .nopaste
   cmp dh,56h ;V
   jne .nopaste
-  mov dword[CBBuffer],ecx
-  mov eax,dword[GUIInputLimit]
-  mov dword[CBLength],eax
+  mov [CBBuffer],ecx
+  mov eax,[GUIInputLimit]
+  mov [CBLength],eax
   pushad
   call PasteClipBoard
   popad

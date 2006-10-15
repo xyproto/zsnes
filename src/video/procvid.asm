@@ -1626,7 +1626,7 @@ NEWSYM saveselect
     drawfillboxhelp 0,'t'
     jmp .isnext2
 .isnott2
-    mov dl,byte[edx]
+    mov dl,[edx]
     mov [slotlevelnum],dl
     pop edx
     drawfillboxhelp 0,'0'
@@ -1943,7 +1943,7 @@ SECTION .text
     drawfillboxhelp16b 0,'t'
     jmp .isnext2b
 .isnott2b
-    mov dl,byte[edx]
+    mov dl,[edx]
     mov [slotlevelnum],dl
     pop edx
     drawfillboxhelp16b 0,'0'

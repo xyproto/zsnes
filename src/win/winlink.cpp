@@ -3277,7 +3277,7 @@ void PasteClipBoard()
     {
       strncpy(CBBuffer, p, CBLength);
       CBBuffer[CBLength-1] = 0;
-      
+
       for (p = CBBuffer; *p; p++)
       {
         if (isspace(*p)) { *p = ' '; }
@@ -3289,7 +3289,7 @@ void PasteClipBoard()
       }
     }
     CloseClipboard();
-  }  
+  }
 }
 }
 
