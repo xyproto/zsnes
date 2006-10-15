@@ -1348,7 +1348,7 @@ DisplayGUIChoseSave:                    ; Pick Save State
   mov byte[GUIChoseSlotTextX],'0'
   jmp .isdone
 .notans
-  mov al,byte[edx+ebx-1]
+  mov al,[edx+ebx-1]
   mov [GUIChoseSlotTextX],al
 .isdone
   mov byte[GUItextcolor],223

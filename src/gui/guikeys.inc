@@ -2763,7 +2763,7 @@ GUIStateSelKeys:
     jne .nopgup
 .yespgup
     cmp byte[edx+ebx-1],'9'
-    je .nochange2
+    je near .nochange2
     cmp byte[edx+ebx-1],'s'
     jne .insertpgup
     mov cl,'1'
@@ -2773,7 +2773,7 @@ GUIStateSelKeys:
     mov byte[edx+ebx],'0'
     jmp .done2
 .insertpgup
-    mov cl,byte[edx+ebx-1]
+    mov cl,[edx+ebx-1]
     inc cl
     mov [GUIChoseSlotTextX],cl
     jmp .done2
@@ -2800,7 +2800,7 @@ GUIStateSelKeys:
     mov byte[edx+ebx],'t'
     jmp .done2
 .insertpgdn
-    mov cl,byte[edx+ebx-1]
+    mov cl,[edx+ebx-1]
     dec cl
     mov [GUIChoseSlotTextX],cl
     cmp cl,'0'
