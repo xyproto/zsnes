@@ -2767,7 +2767,6 @@ GUIStateSelKeys:
     cmp byte[edx+ebx-1],'s'
     jne .insertpgup
     mov cl,'1'
-    mov [GUIChoseSlotTextX],cl
     cmp byte[edx+ebx],'t'
     jne .done2
     mov byte[edx+ebx],'0'
@@ -2775,7 +2774,6 @@ GUIStateSelKeys:
 .insertpgup
     mov cl,[edx+ebx-1]
     inc cl
-    mov [GUIChoseSlotTextX],cl
     jmp .done2
 .nopgup
 %ifdef __UNIXSDL__
@@ -2793,7 +2791,6 @@ GUIStateSelKeys:
     je .nochange2
     cmp byte[edx+ebx-1],'1'
     jne .insertpgdn
-    mov byte[GUIChoseSlotTextX],'0'
     mov cl,'s'
     cmp byte[edx+ebx],'0'
     jne .done2
@@ -2802,7 +2799,6 @@ GUIStateSelKeys:
 .insertpgdn
     mov cl,[edx+ebx-1]
     dec cl
-    mov [GUIChoseSlotTextX],cl
     cmp cl,'0'
     jne .done2
     mov byte[edx+ebx-1],'s'
