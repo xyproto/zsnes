@@ -1528,7 +1528,25 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
   GUIDisplayTextY 3,6,26,GUIInputTextA
   movzx eax,byte[cplayernum]
   mov ebx,[GUIInputRefP+eax*4]
-  mov al,[ebx]
+  mov ebx,[ebx]
+%ifndef __MSDOS__
+  cmp byte[GUIFreshInputSelect],0
+  je .notfreshinput
+  pushad
+  mov byte[GUIFreshInputSelect],0
+  mov dword[GUIJT_viewable],5
+  mov eax,[NumInputDevices]
+  mov [GUIJT_entries],eax
+  mov [GUIJT_offset],ebx
+  mov eax,GUIcurrentinputviewloc
+  mov [GUIJT_currentviewloc],eax
+  mov eax,GUIcurrentinputcursloc
+  mov [GUIJT_currentcursloc],eax
+  call GUIGenericJumpTo
+  popad
+.notfreshinput
+%endif
+  mov al,bl
   mov al,[GUIInputRefB+eax]
   mov ebx,eax
   shl eax,4
@@ -1741,6 +1759,8 @@ GUIInputTextE1 db 'SET',0
 GUIInputTextE2 db 'SET KEYS',0
 GUIInputTextE3 db 'CALIBRATE',0
 GUIInputTextE4 db 'USE JOYSTICK PORT 209H',0
+
+GUIFreshInputSelect db 1
 
 SECTION .bss
 GUIIStA resd 3

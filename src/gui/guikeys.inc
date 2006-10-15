@@ -732,6 +732,7 @@ GUIInputKeys:
   cmp dh,9
   jne .notab
   KeyTabInc GUIInputTabs
+  mov byte[GUIFreshInputSelect],1
 .notab
   ret
 

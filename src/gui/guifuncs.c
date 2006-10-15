@@ -1657,39 +1657,48 @@ static unsigned int DriveCount()
 }
 #endif
 
+int *GUIJT_currentviewloc, *GUIJT_currentcursloc, GUIJT_entries, GUIJT_offset, GUIJT_viewable;
+
+void GUIGenericJumpTo()
+{
+  int mid = GUIJT_viewable>>1; 
+  *GUIJT_currentviewloc = (GUIJT_offset < GUIJT_entries-mid) ? GUIJT_offset-mid : GUIJT_entries-GUIJT_viewable;
+  if (*GUIJT_currentviewloc < 0) { *GUIJT_currentviewloc = 0; }
+  *GUIJT_currentcursloc = GUIJT_offset;
+}
+
 void GUILoadKeysJumpTo()
 {
-  int *currentviewloc, *currentcursloc, entries;
   char **base;
-  int start, end, found;
+  int start, end;
 
   GUILoadTextA[GUILoadPos] = 0;
 
   if (GUIcurrentfilewin == 1)
   {
-    currentviewloc = &GUIcurrentdirviewloc;
-    currentcursloc = &GUIcurrentdircursloc;
-    entries = GUIdirentries;
+    GUIJT_currentviewloc = &GUIcurrentdirviewloc;
+    GUIJT_currentcursloc = &GUIcurrentdircursloc;
+    GUIJT_entries = GUIdirentries;
     base = d_names+2;
     if (!strcmp(*base, ".."))
     {
       base++;
-      entries--;
+      GUIJT_entries--;
     }
 
-    entries -= DriveCount();
+    GUIJT_entries -= DriveCount();
   }
   else
   {
-    currentviewloc = &GUIcurrentviewloc;
-    currentcursloc = &GUIcurrentcursloc;
-    entries = GUIfileentries;
+    GUIJT_currentviewloc = &GUIcurrentviewloc;
+    GUIJT_currentcursloc = &GUIcurrentcursloc;
+    GUIJT_entries = GUIfileentries;
     base = selected_names;
   }
 
   start = 0;
-  end = entries-1;
-  found = entries;
+  end = GUIJT_entries-1;
+  GUIJT_offset = GUIJT_entries;
   while (start <= end)
   {
     int mid = (start+end)>>1;
@@ -1698,7 +1707,7 @@ void GUILoadKeysJumpTo()
     {
       do
       {
-        found = mid--;
+        GUIJT_offset = mid--;
       } while ((mid >= 0) && !strncasecmp(base[mid], GUILoadTextA, GUILoadPos));
       break;
     }
@@ -1712,21 +1721,20 @@ void GUILoadKeysJumpTo()
     }
   }
 
-  if (found < entries)
+  if (GUIJT_offset < GUIJT_entries)
   {
     if (GUIcurrentfilewin == 1)
     {
-      entries += DriveCount();
+      GUIJT_entries += DriveCount();
       if (base > d_names+2)
       {
-        found++;
-        entries++;
+        GUIJT_offset++;
+        GUIJT_entries++;
       }
     }
 
-    *currentviewloc = (found<entries-7)?found-7:entries-15;
-    if (*currentviewloc < 0) { *currentviewloc = 0; }
-    *currentcursloc = found;
+    GUIJT_viewable = 15;
+    GUIGenericJumpTo();
   }
 }
 

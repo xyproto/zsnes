@@ -1840,6 +1840,7 @@ SECTION .text
   %rotate 1
 %endrep
 %endif
+  mov byte[GUIFreshInputSelect],1
 %%noclick
 %endmacro
 
