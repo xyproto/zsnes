@@ -1689,23 +1689,24 @@ void mzt_chdir_down()
 }
 
 //Currently this doesn't work right in playback
-bool mzt_save(char *statename, bool thumb, bool playback)
+bool mzt_save(int position, bool thumb, bool playback)
 {
   struct stat stat_buffer;
   FILE *fp;
   bool mzt_saved = false;
+  char name_buf[7];
 
-  size_t filename_len = mzt_filename_generate();
+  mzt_filename_generate();
   if (stat_dir(ZSramPath, zmv_vars.filename, &stat_buffer))
   {
     mkdir_dir(ZSramPath, zmv_vars.filename);
   }
-
   mzt_chdir_up();
 
-  if ((fp = fopen_dir(ZSramPath, statename, "wb")))
+  sprintf(name_buf, "%.2d.zst", position);
+
+  if ((fp = fopen_dir(ZSramPath, name_buf, "wb")))
   {
-    char FileExt[3];
     gzFile gzp = 0;
     size_t rewind_point;
 
@@ -1716,14 +1717,8 @@ bool mzt_save(char *statename, bool thumb, bool playback)
     rewind_point = ftell(zmv_vars.fp);
     internal_chapter_write(&zmv_vars.internal_chapters, zmv_vars.fp);
 
-    memcpy(FileExt, statename+filename_len-3, 3);
-    memcpy(statename+filename_len-3, "zm", 2);
-    if (!isdigit(statename[filename_len-1]))
-    {
-      statename[filename_len-1] = 'v';
-    }
-
-    if ((gzp = gzopen_dir(ZSramPath, statename, "wb9")))
+    setextension(name_buf, "zmv");
+    if ((gzp = gzopen_dir(ZSramPath, name_buf, "wb9")))
     {
       rewind(zmv_vars.fp);
       zmv_header_write(&zmv_vars.header, zmv_vars.fp);
@@ -1736,13 +1731,8 @@ bool mzt_save(char *statename, bool thumb, bool playback)
       }
       gzclose(gzp);
 
-      memcpy(statename+filename_len-3, "mz", 2);
-      if (!isdigit(statename[filename_len-1]))
-      {
-        statename[filename_len-1] = 'i';
-      }
-
-      if ((fp = fopen_dir(ZSramPath, statename,"wb")))
+      setextension(name_buf, "mzi");
+      if ((fp = fopen_dir(ZSramPath, name_buf,"wb")))
       {
         fwrite4((playback) ? zmv_open_vars.frames_replayed : zmv_vars.header.frames, fp);
         write_last_joy_state(fp);
@@ -1751,39 +1741,31 @@ bool mzt_save(char *statename, bool thumb, bool playback)
 
         mzt_saved = true;
       }
-
       fseek(zmv_vars.fp, rewind_point, SEEK_SET);
     }
-    memcpy(statename+filename_len-3, FileExt, 3);
   }
   mzt_chdir_down();
   return(mzt_saved);
 }
 
-bool mzt_load(char *statename, bool playback)
+bool mzt_load(int position, bool playback)
 {
   FILE *fp;
   bool mzt_saved = false;
+  char name_buf[7];
 
-  size_t filename_len = mzt_filename_generate();
-
+  mzt_filename_generate();
   mzt_chdir_up();
 
-  if ((fp = fopen_dir(ZSramPath, statename,"rb")))
-  {
-    char FileExt[3];
+  sprintf(name_buf, "%.2d.zst", position);
 
+  if ((fp = fopen_dir(ZSramPath, name_buf, "rb")))
+  {
     zst_load(fp, 0);
     fclose(fp);
 
-    memcpy(FileExt, statename+filename_len-3, 3);
-    memcpy(statename+filename_len-3, "mz", 2);
-    if (!isdigit(statename[filename_len-1]))
-    {
-      statename[filename_len-1] = 'i';
-    }
-
-    if ((fp = fopen_dir(ZSramPath, statename,"rb")))
+    setextension(name_buf, "mzi");
+    if ((fp = fopen_dir(ZSramPath, name_buf, "rb")))
     {
       size_t rewind_point;
 
@@ -1798,13 +1780,8 @@ bool mzt_load(char *statename, bool playback)
       {
         gzFile gzp = 0;
 
-        memcpy(statename+filename_len-3, "zm", 2);
-        if (!isdigit(statename[filename_len-1]))
-        {
-          statename[filename_len-1] = 'v';
-        }
-
-        if ((gzp = gzopen_dir(ZSramPath, statename, "rb")))
+        setextension(name_buf, "zmv");
+        if ((gzp = gzopen_dir(ZSramPath, name_buf, "rb")))
         {
           size_t rerecords = zmv_vars.header.rerecords+1;
           size_t removed_frames = zmv_vars.header.removed_frames + (zmv_vars.header.frames - current_frame);
@@ -1842,7 +1819,6 @@ bool mzt_load(char *statename, bool playback)
 
       mzt_saved = true;
     }
-    memcpy(statename+filename_len-3, FileExt, 3);
   }
   mzt_chdir_down();
   return(mzt_saved);

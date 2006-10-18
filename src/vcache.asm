@@ -24,12 +24,12 @@ EXTSYM MessageOn,MsgCount,Msgptr,Voice0Disable,Voice0Status,Voice1Disable
 EXTSYM Voice1Status,Voice2Disable,Voice2Status,Voice3Disable,Voice3Status
 EXTSYM Voice4Disable,Voice4Status,Voice5Disable,Voice5Status,Voice6Disable
 EXTSYM Voice6Status,Voice7Disable,Voice7Status,bgcmsung,bgmode,cbackofsaddr
-EXTSYM cgmod,disableeffects,frameskip,frskipper
+EXTSYM cgmod,disableeffects,frameskip,frskipper,current_zst,zst_name
 EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen
 EXTSYM nextdrawallng,oamaddr,pal16b,pal16bxcl,pressed,prevbright,prevpal
 EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,sprprdrn,t1cc
 EXTSYM vidbright,vidbuffer,vidbufferm,vidbufferofsa,vidbufferofsb,vidmemch2
-EXTSYM statefileloc,ZStateName,GUIClick,MousePRClick,ngmsdraw,cvidmode
+EXTSYM GUIClick,MousePRClick,ngmsdraw,cvidmode
 EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyDisableSC4
 EXTSYM KeyDisableSC5,KeyDisableSC6,KeyDisableSC7,KeyFastFrwrd,SRAMSave5Sec
 EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
@@ -80,19 +80,25 @@ NEWSYM overalltimer, dd 0
 
 SECTION .text
 
-%macro stateselcomp 3
+%macro stateselcomp 2
     mov eax,[%1]
     test byte[pressed+eax],1
     je %%nostsl
     mov byte[pressed+eax],2
-    mov byte[sselm+12],%2
-    mov eax,[statefileloc]
-    mov ecx,[ZStateName]
-    add ecx,[statefileloc]
-    mov byte[ecx],%3
-    dec ecx
-    mov cl,[ecx]
-    mov [sselm+11],cl
+    mov eax,[current_zst]
+    mov cl,10
+    div cl
+    mov ah,%2
+    add al,'0'
+    add ah,'0'
+    mov [sselm+11],ax
+    sub al,'0'
+    mul cl
+    add al,%2
+    mov [current_zst],eax
+    pushad
+    call zst_name
+    popad
     mov dword[Msgptr],sselm
     mov eax,[MsgCount]
     mov [MessageOn],eax
@@ -735,32 +741,21 @@ NEWSYM cachevideo
 .nodisplayfps
 
     ; do state selects
-    push edx
-    mov edx,[ZStateName]
-    add edx,[statefileloc]
-    dec edx
-    cmp byte[edx],'s'
-    jne .nots
-    stateselcomp KeyStateSlc0,'0','t'
-    jmp .next1
-.nots
-    stateselcomp KeyStateSlc0,'0','0'
-.next1
-    stateselcomp KeyStateSlc1,'1','1'
-    stateselcomp KeyStateSlc2,'2','2'
-    stateselcomp KeyStateSlc3,'3','3'
-    stateselcomp KeyStateSlc4,'4','4'
-    stateselcomp KeyStateSlc5,'5','5'
-    stateselcomp KeyStateSlc6,'6','6'
-    stateselcomp KeyStateSlc7,'7','7'
-    stateselcomp KeyStateSlc8,'8','8'
-    stateselcomp KeyStateSlc9,'9','9'
-    pop edx
+    stateselcomp KeyStateSlc0,0
+    stateselcomp KeyStateSlc1,1
+    stateselcomp KeyStateSlc2,2
+    stateselcomp KeyStateSlc3,3
+    stateselcomp KeyStateSlc4,4
+    stateselcomp KeyStateSlc5,5
+    stateselcomp KeyStateSlc6,6
+    stateselcomp KeyStateSlc7,7
+    stateselcomp KeyStateSlc8,8
+    stateselcomp KeyStateSlc9,9
     mov eax,[KeyStateSlc0]
     test byte[pressed+eax],1
     je .nostsl0
     mov byte[pressed+eax],2
-    mov byte[sselm+12],'0'
+    mov byte[sselm+11],'0'
     mov dword[Msgptr],sselm
     mov eax,[MsgCount]
     mov [MessageOn],eax
@@ -770,45 +765,18 @@ NEWSYM cachevideo
     test byte[pressed+eax],1
     je near .noincstateslot
     mov byte[pressed+eax],2
-    mov eax,[statefileloc]
-    mov ecx,[ZStateName]
-    mov dh, [ecx+eax]
-    mov dl, [ecx+eax-1]
-    cmp dh,'t'
-    je .secondstate
-    cmp dh,'9'
-    je .jumptofirststate
-    inc dh
-    jmp .donextstate
-.secondstate
-    mov dh,'1'
-    jmp .donextstate
-.jumptofirststate
-    cmp dl,'9'
-    je .jumptoveryfirststate
-    mov dh,'0'
-    cmp dl,'s'
-    je .jumptotenthstate
-    inc dl
-    jmp .donextstate
-.jumptotenthstate
-    mov dl,'1'
-    jmp .donextstate
-.jumptoveryfirststate
-    mov dl,'s'
-    mov dh,'t'
-.donextstate
-    mov ecx,[ZStateName]
-    mov [ecx+eax],dh
-    mov [ecx+eax-1],dl
-    cmp dh,'t'
-    je .firststatemsg
-    mov [sselm+12],dh
-    jmp .incstatemsg
-.firststatemsg
-    mov byte[sselm+12],'0'
-.incstatemsg
-    mov [sselm+11],dl
+    mov eax,[current_zst]
+    inc eax
+    cmp eax,100
+    jne .notend
+    xor eax,eax
+.notend
+    mov [current_zst],eax
+    mov dl,10
+    div dl
+    add ah,'0'
+    add al,'0'
+    mov [sselm+11],ax
     mov dword[Msgptr],sselm
     mov eax,[MsgCount]
     mov [MessageOn],eax
@@ -819,52 +787,24 @@ NEWSYM cachevideo
     test byte[pressed+eax],1
     je near .nodecstateslot
     mov byte[pressed+eax],2
-    mov eax,[statefileloc]
-    mov ecx,[ZStateName]
-    mov dh, [ecx+eax]
-    mov dl, [ecx+eax-1]
-    cmp dh,'t'
-    je .jumptoverylaststate
-    cmp dh,'0'
-    je .doninthstate
-    dec dh
-    cmp dh,'0'
-    jne .doprevstate
-    cmp dl,'s'
-    jne .doprevstate
-.firststate
-    mov dh,'t'
-    jmp .doprevstate
-.doninthstate
-    cmp dl,'1'
-    jne .doninthstate2
-    mov dl,'s'
-    jmp .settonine
-.doninthstate2
-    dec dl
-.settonine
-    mov dh,'9'
-    jmp .doprevstate
-.jumptoverylaststate
-    mov dh,'9'
-    mov dl,'9'
-.doprevstate
-    mov ecx,[ZStateName]
-    mov [ecx+eax],dh
-    mov [ecx+eax-1],dl
-    cmp dh,'t'
-    je .firststatemsg2
-    mov [sselm+12],dh
-    jmp .decstatemsg
-.firststatemsg2
-    mov byte[sselm+12],'0'
-.decstatemsg
-    mov [sselm+11],dl
+    mov eax,[current_zst]
+    cmp eax,0
+    jne .notstart
+    mov eax,100
+.notstart
+    dec eax
+    mov [current_zst],eax
+    mov dl,10
+    div dl
+    add ah,'0'
+    add al,'0'
+    mov [sselm+11],ax
     mov dword[Msgptr],sselm
     mov eax,[MsgCount]
     mov [MessageOn],eax
     xor dx,dx
 .nodecstateslot
+
     mov eax,[KeyUsePlayer1234]
     test byte[pressed+eax],1
     je .nousepl1234

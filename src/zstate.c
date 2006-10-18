@@ -548,9 +548,7 @@ void ResetState()
   ResState(Voice7BufPtr);
 }
 
-unsigned char firstsaveinc = 0;
-
-extern unsigned int statefileloc, CurrentHandle, SfxRomBuffer, SfxCROM;
+extern unsigned int SfxRomBuffer, SfxCROM;
 extern unsigned int SfxLastRamAdr, SfxRAMMem, MsgCount, MessageOn;
 extern unsigned char AutoIncSaveSlot, cbitmode, NoPictureSave;
 extern char *Msgptr;
@@ -577,6 +575,72 @@ void calculate_state_sizes()
   copy_state_data(0, state_size_tally, csm_load_zst_old);
   old_zst_size = state_size + sizeof(zst_header_old)-1;
 }
+
+unsigned int current_zst = 0;
+unsigned int newest_zst = 0;
+time_t newestfiledate;
+
+char *zst_name()
+{
+  static char buffer[7];
+  if (MovieProcessing)
+  {
+    sprintf(buffer, "%.2d.zst", current_zst);
+    return(buffer);
+  }
+  strcpy(buffer, "zst");
+  if (current_zst)
+  {
+    buffer[2] = (current_zst%10)+'0';
+    if (current_zst > 9)
+    {
+      buffer[1] = (current_zst/10)+'0';
+    }
+  }
+  setextension(ZStateName, buffer);
+  return(ZStateName);
+}
+
+void mzt_chdir_up();
+void mzt_chdir_down();
+
+void zst_determine_newest()
+{
+  struct stat filestat;
+
+  if (MovieProcessing) { mzt_chdir_up(); }
+  if (!stat_dir(ZSramPath, zst_name(), &filestat) && filestat.st_mtime > newestfiledate)
+  {
+    newestfiledate = filestat.st_mtime;
+    newest_zst = current_zst;
+  }
+  if (MovieProcessing) { mzt_chdir_down(); }
+}
+
+void zst_init()
+{
+  if (LatestSave)
+  {
+    for (current_zst = 0; current_zst < 100; current_zst++)
+    {
+      zst_determine_newest();
+    }
+    current_zst = newest_zst;
+    zst_name();
+  }
+}
+
+int zst_exists()
+{
+  int ret;
+
+  if (MovieProcessing) { mzt_chdir_up(); }
+  ret = access_dir(ZSramPath, zst_name(), F_OK) ? 0 : 1;
+  if (MovieProcessing) { mzt_chdir_down(); }
+
+  return(ret);
+}
+
 
 static bool zst_save_compressed(FILE *fp)
 {
@@ -697,19 +761,7 @@ static char txtmsg[25];
 void set_state_message(char *prefix, char *suffix)
 {
   char num[3];
-
-  if (tolower(ZStateName[statefileloc-1]) == 's')
-  {
-    num[0] = (tolower(ZStateName[statefileloc]) == 't') ? '0' : ZStateName[statefileloc];
-    num[1] = 0;
-  }
-  else
-  {
-    num[0] = ZStateName[statefileloc-1];
-    num[1] = ZStateName[statefileloc];
-    num[2] = 0;
-  }
-
+  sprintf(num, "%d", current_zst);
   string_merge(txtmsg, sizeof(txtmsg), prefix, num, suffix, 0);
 
   Msgptr = txtmsg;
@@ -718,78 +770,40 @@ void set_state_message(char *prefix, char *suffix)
 
 void statesaver()
 {
-  //'Auto increment savestate slot' code
-  if (AutoIncSaveSlot)
-  {
-    if (firstsaveinc) { firstsaveinc = 0; }
-    else
-    {
-      switch (ZStateName[statefileloc])
-      {
-        case 't': // ZST state
-        case 'v': // ZMV movie
-          ZStateName[statefileloc] = '1';
-          break;
-        case '9':
-          if (AutoIncSaveSlotBlock)
-          {
-            if (ZStateName[statefileloc-1] == 's')
-            {
-              ZStateName[statefileloc] = 't';
-            }
-            else
-            {
-              ZStateName[statefileloc] = '0';
-            }
-          }
-          else
-          {
-            if (ZStateName[statefileloc-1] == '9')
-            {
-              ZStateName[statefileloc-1] = 's';
-              ZStateName[statefileloc] = 't';
-            }
-
-            else
-            {
-              if (ZStateName[statefileloc-1] == 's')
-              {
-                ZStateName[statefileloc-1] = '1';
-              }
-              else
-              {
-                ZStateName[statefileloc-1]++;
-              }
-              ZStateName[statefileloc] = '0';
-            }
-          }
-        case 's': // ZSS state
-          break;
-        default:
-          ZStateName[statefileloc]++;
-      }
-    }
-  }
-
   if (MovieProcessing == 2)
   {
-    bool mzt_save(char *, bool, bool);
-    if (mzt_save(ZStateName, (cbitmode && !NoPictureSave) ? true : false, false))
+    bool mzt_save(int, bool, bool);
+    if (mzt_save(current_zst, (cbitmode && !NoPictureSave) ? true : false, false))
     {
       set_state_message("RR STATE ", " SAVED.");
+
+      //'Auto increment savestate slot' code
+      if (AutoIncSaveSlot)
+      {
+        current_zst++;
+        current_zst %= 100;
+      }
     }
     return;
   }
 
   clim();
 
-  if ((fhandle = fopen_dir(ZSramPath, ZStateName,"wb")))
+  if ((fhandle = fopen_dir(ZSramPath, ZStateName, "wb")))
   {
     zst_save(fhandle, (bool)(cbitmode && !NoPictureSave), false);
     fclose(fhandle);
 
     //Display message onscreen, 'STATE XX SAVED.'
     set_state_message("STATE ", " SAVED.");
+
+    //'Auto increment savestate slot' code
+    if (AutoIncSaveSlot && !isextension(ZStateName, "zss"))
+    {
+      current_zst++;
+      current_zst %= 100;
+      zst_name();
+    }
   }
   else
   {
@@ -1001,10 +1015,10 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
 
   switch (MovieProcessing)
   {
-    bool mzt_load(char *, bool);
+    bool mzt_load(int, bool);
 
     case 1:
-      if (mzt_load(statename, true))
+      if (mzt_load(current_zst, true))
       {
         Msgptr = "CHAPTER LOADED.";
         MessageOn = MsgCount;
@@ -1015,7 +1029,7 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
       }
       return;
     case 2:
-      if (mzt_load(statename, false))
+      if (mzt_load(current_zst, false))
       {
         set_state_message("RR STATE ", " LOADED.");
 
@@ -1034,7 +1048,7 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
   clim();
 
   //Actual state loading code
-  if ((fhandle = fopen_dir(ZSramPath, statename,"rb")))
+  if ((fhandle = fopen_dir(ZSramPath, statename, "rb")))
   {
     if (xfercheck) { Totalbyteloaded = 0; }
 
@@ -1079,30 +1093,18 @@ void loadstate2()
   stateloader(ZStateName, 0, 1);
 }
 
-void LoadSecondState() // direct port, need zpath
+void LoadSecondState()
 {
-  unsigned char backup = ZStateName[statefileloc];
-  unsigned char backup2 = ZStateName[statefileloc-1];
-  ZStateName[statefileloc] = 's';
-  ZStateName[statefileloc-1] = 's';
-
+  setextension(ZStateName, "zss");
   loadstate2();
-
-  ZStateName[statefileloc] = backup;
-  ZStateName[statefileloc-1] = backup2;
+  zst_name();
 }
 
 void SaveSecondState()
 {
-  unsigned char backup = ZStateName[statefileloc];
-  unsigned char backup2 = ZStateName[statefileloc-1];
-  ZStateName[statefileloc] = 's';
-  ZStateName[statefileloc-1] = 's';
-
+  setextension(ZStateName, "zss");
   statesaver();
-
-  ZStateName[statefileloc] = backup;
-  ZStateName[statefileloc-1] = backup2;
+  zst_name();
 }
 
 extern unsigned char CHIPBATT, sramsavedis;

@@ -2571,7 +2571,7 @@ void initsnes()
 }
 
 bool PatchUsingIPS(char *);
-void DosExit(), OpenSramFile();
+void DosExit(), OpenSramFile(), CheatCodeLoad(), LoadSecondState();
 extern unsigned char GUIOn, GUIOn2;
 
 bool loadfileGUI()
@@ -2589,7 +2589,10 @@ bool loadfileGUI()
     OpenSramFile();
     OpenCombFile();
 
-    if (!(GUIOn || GUIOn2)) { puts("File opened successfully !"); }
+    if (!(GUIOn || GUIOn2))
+    {
+      puts("File opened successfully !");
+    }
     if (!IPSPatched)
     {
       int i;
@@ -2618,7 +2621,7 @@ bool loadfileGUI()
 
 extern unsigned int CheatOn, NumCheats;
 extern unsigned char CheatWinMode, CheatSearchStatus;
-void GUIQuickLoadUpdate(), CheatCodeLoad(), LoadSecondState();
+void GUIQuickLoadUpdate();
 
 void powercycle(bool sramload, bool romload)
 {

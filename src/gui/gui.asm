@@ -44,11 +44,11 @@
 EXTSYM curblank,vidpastecopyscr,frameskip,newengen,vsyncon,cvidmode,antienab
 EXTSYM smallscreenon,soundon,StereoSound,SoundQuality,MusicRelVol,endprog
 EXTSYM continueprog,spcBuffera,cbitmode,makepal,t1cc
-EXTSYM romloadskip,romdata,init65816
+EXTSYM romloadskip,romdata,init65816,current_zst
 EXTSYM procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA,spcX,spcY,spcP,spcNZ
 EXTSYM Voice0Status,Voice1Status,Voice2Status,Voice3Status,Voice4Status
 EXTSYM Voice5Status,Voice6Status,Voice7Status,ClearScreen,statesaver,loadstate2
-EXTSYM vidbuffer,ASCII2Font,hirestiledat,showallext,scanlines,statefileloc
+EXTSYM vidbuffer,ASCII2Font,hirestiledat,showallext,scanlines
 EXTSYM ZStateName,sprlefttot,spritetablea
 EXTSYM cgram,tempco0,prevbright,maxbr,prevpal,coladdr,coladdg
 EXTSYM coladdb,scaddtype,ScreenScale,initvideo,pressed,UpdateDevices,memtabler8

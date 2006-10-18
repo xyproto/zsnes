@@ -1306,7 +1306,6 @@ GUIWinClicked:
 %macro GUIClickCButtonAS 3
   GUIClickArea %1+1,%2+3,%1+6,%2+8,%%noclick
   xor %3,1
-  mov byte[firstsaveinc],1
 %%noclick
 %endmacro
 
@@ -1909,46 +1908,22 @@ DisplayGUIConfirmClick:
 DisplayGUIChoseSaveClick:
   GUIPHoldbutton2 94,59,102,67,12,byte[GUIChoseSlotTextX],1,'9'
   GUIPHoldbutton2 105,59,113,67,13,byte[GUIChoseSlotTextX],-1,'0'
-  GUIPButtonHole 10,28,byte[GUIChoseSaveText2],'t'
-  GUIPButtonHole 30,28,byte[GUIChoseSaveText2],'1'
-  GUIPButtonHole 50,28,byte[GUIChoseSaveText2],'2'
-  GUIPButtonHole 70,28,byte[GUIChoseSaveText2],'3'
-  GUIPButtonHole 90,28,byte[GUIChoseSaveText2],'4'
-  GUIPButtonHole 10,43,byte[GUIChoseSaveText2],'5'
-  GUIPButtonHole 30,43,byte[GUIChoseSaveText2],'6'
-  GUIPButtonHole 50,43,byte[GUIChoseSaveText2],'7'
-  GUIPButtonHole 70,43,byte[GUIChoseSaveText2],'8'
-  GUIPButtonHole 90,43,byte[GUIChoseSaveText2],'9'
-  mov edx,[ZStateName]
-  add edx,[statefileloc]
-  dec edx
-  mov al,[GUIChoseSlotTextX]
-  cmp al,'0'
-  jne .noins0
-  mov byte[edx],'s'
-  cmp byte[GUIChoseSaveText2],'0'
-  jne .lastchr
-  mov byte[GUIChoseSaveText2],'t'
-  jmp .lastchr
-.noins0
-  mov [edx],al
-.lastchr
-  inc edx
-  mov al,[GUIChoseSaveText2]
-  cmp al,'t'
-  je .maybet
-  mov [edx],al
-  ret
-.maybet
-  dec edx
-  cmp byte[edx],'s'
-  jne .nots
-  inc edx
-  mov [edx],al
-  ret
-.nots
-  inc edx
-  mov byte[edx],'0'
+  GUIPButtonHole 10,28,byte[GUIChoseSaveText2],0
+  GUIPButtonHole 30,28,byte[GUIChoseSaveText2],1
+  GUIPButtonHole 50,28,byte[GUIChoseSaveText2],2
+  GUIPButtonHole 70,28,byte[GUIChoseSaveText2],3
+  GUIPButtonHole 90,28,byte[GUIChoseSaveText2],4
+  GUIPButtonHole 10,43,byte[GUIChoseSaveText2],5
+  GUIPButtonHole 30,43,byte[GUIChoseSaveText2],6
+  GUIPButtonHole 50,43,byte[GUIChoseSaveText2],7
+  GUIPButtonHole 70,43,byte[GUIChoseSaveText2],8
+  GUIPButtonHole 90,43,byte[GUIChoseSaveText2],9
+  movzx eax,byte[GUIChoseSlotTextX]
+  sub al,'0'
+  mov dl,10
+  mul dl
+  add al,byte[GUIChoseSaveText2]
+  mov [current_zst],eax
   ret
 
 DisplayGUIMovieClick:

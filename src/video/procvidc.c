@@ -86,6 +86,8 @@ extern unsigned int cur_zst_size, old_zst_size;
 void mzt_chdir_up();
 void mzt_chdir_down();
 
+char *zst_name();
+
 void LoadPicture()
 {
   const unsigned int pic_size = 64*56*2;
@@ -94,7 +96,7 @@ void LoadPicture()
   memset(PrevPicture, 0, pic_size);
 
   if (MovieProcessing) { mzt_chdir_up(); }
-  if ((fp = fopen_dir(ZSramPath, ZStateName, "rb")))
+  if ((fp = fopen_dir(ZSramPath, zst_name(), "rb")))
   {
     unsigned int file_size;
 
@@ -151,35 +153,4 @@ void NTSCFilterDraw(int SurfaceX, int SurfaceY, int pitch, unsigned char *buffer
   // Change phase on alternating frames
   ntsc_phase ^= 1;
 #endif
-}
-
-extern unsigned int statefileloc;
-
-unsigned char newestfileloc;
-unsigned char newestfileloc10;
-time_t newestfiledate;
-
-void DetermineNew()
-{
-  struct stat filestat;
-
-  if (MovieProcessing) { mzt_chdir_up(); }
-  if (!stat_dir(ZSramPath, ZStateName, &filestat) && filestat.st_mtime > newestfiledate)
-  {
-    newestfiledate = filestat.st_mtime;
-    newestfileloc = ZStateName[statefileloc] == 't' ? 0 : ZStateName[statefileloc]-'0';
-    newestfileloc10 = ZStateName[statefileloc-1] == 's' ? 0 : ZStateName[statefileloc-1]-'0';
-  }
-  if (MovieProcessing) { mzt_chdir_down(); }
-}
-
-int StateExists()
-{
-  int ret;
-
-  if (MovieProcessing) { mzt_chdir_up(); }
-  ret = access_dir(ZSramPath, ZStateName, F_OK) ? 0 : 1;
-  if (MovieProcessing) { mzt_chdir_down(); }
-
-  return(ret);
 }

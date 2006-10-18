@@ -829,7 +829,6 @@ GUISaveKeys:
   cmp dh,'I'             ; Checkboxes
   jne .noautoincsave
   xor byte[AutoIncSaveSlot],1
-  mov byte[firstsaveinc],1
 .noautoincsave
 
   GUIKeyCheckbox SRAMSave5Sec,'C'
@@ -2480,336 +2479,250 @@ GUIStateSelKeys:
   mov [GUIcmenupos],al
   ret
 .noenter
-  mov ebx,[statefileloc]
-  mov edx,[ZStateName]
+  mov bl,al
+  mov eax,[current_zst]
+  mov dl,10
+  div dl
+  movzx ecx,ah
 %ifdef __UNIXSDL__
-  cmp al,92               ; linux keypad left
+  cmp bl,92               ; linux keypad left
   je .yesleft
   cmp dword[numlockptr],1 ; if numlock on, disregard numpad
   je .noleft
 %endif
-  cmp al,75               ; linux numpad left, non-linux num/keypad left
+  cmp bl,75               ; linux numpad left, non-linux num/keypad left
   jne .noleft
 .yesleft
-  mov cl,[edx+ebx]
-  cmp cl,'t'
-  je .yes1st
-  cmp cl,'0'
-  je .yes1st
-  jmp .no1st
-.yes1st
-  mov cl,'4'
+  cmp cl,0
+  jne .no0th
+  mov cl,4
   jmp .done
-.no1st
-  cmp cl,'1'
-  jne .no2nd
-  cmp byte[edx+ebx-1],'s'
-  jne .nottl
-  mov cl,'t'
-  jmp .done
-.nottl
-  mov cl,'0'
-  jmp .done
-.no2nd
-  cmp cl,'5'
+.no0th
+  cmp cl,5
   jne .no5th
-  mov cl,'9'
+  mov cl,9
   jmp .done
 .no5th
   dec cl
   jmp .done
 .noleft
 %ifdef __UNIXSDL__
-  cmp al,94               ; linux keypad right
+  cmp bl,94               ; linux keypad right
   je .yesright
   cmp dword[numlockptr],1 ; if numlock on, disregard numpad
   je .noright
 %endif
-  cmp al,77               ; linux numpad right, non-linux num/keypad right
+  cmp bl,77               ; linux numpad right, non-linux num/keypad right
   jne .noright
 .yesright
-  mov cl,[edx+ebx]
-  cmp cl,'t'
-  je .yesT
-  cmp cl,'0'
-  je .yesT
-  jmp .noT
-.yesT
-  mov cl,'1'
-  jmp .done
-.noT
-  cmp cl,'4'
+  cmp cl,4
   jne .no4th
-  cmp byte[edx+ebx-1],'s'
-  jne .nottr
-  mov cl,'t'
-  jmp .done
-.nottr
-  mov cl,'0'
+  mov cl,0
   jmp .done
 .no4th
-  cmp cl,'9'
+  cmp cl,9
   jne .no9th
-  mov cl,'5'
+  mov cl,5
   jmp .done
 .no9th
   inc cl
   jmp .done
 .noright
 %ifdef __UNIXSDL__
-  cmp al,90               ; linux keypad up
+  cmp bl,90               ; linux keypad up
   je .yesvert
   cmp dword[numlockptr],1 ; if numlock on, disregard numpad
   je .noup
 %endif
-  cmp al,72               ; linux numpad up, non-linux num/keypad up
+  cmp bl,72               ; linux numpad up, non-linux num/keypad up
   je .yesvert
 .noup
 %ifdef __UNIXSDL__
-  cmp al,96               ; linux keypad down
+  cmp bl,96               ; linux keypad down
   je .yesvert
   cmp dword[numlockptr],1 ; if numlock on, disregard numpad
   je .novert
 %endif
-  cmp al,80               ; linux numpad down, non-linux num/keypad down
+  cmp bl,80               ; linux numpad down, non-linux num/keypad down
   jne .novert
 .yesvert
-  mov cl,[edx+ebx]
-  cmp cl,'t'
-  je .yesud
-  cmp cl,'0'
-  je .yesud
-  jmp .noTv
-.yesud
-  mov cl,'5'
-  jmp .done
-.noTv
-  cmp cl,'5'
-  jne .no5v
-  cmp byte[edx+ebx-1],'s'
-  jne .nottud
-  mov cl,'t'
-  jmp .done
-.nottud
-  mov cl,'0'
-  jmp .done
-.no5v
-  cmp cl,'5'
-  jb .noabove
-  sub cl,5
-  jmp .done
-.noabove
+  cmp cl,5
+  jge .subme
   add cl,5
+  jmp .done
+.subme
+  sub cl,5
   jmp .done
 .novert
 %ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try1
-    cmp al,04Fh
-    jne .try1
-    jmp .yes1
+  cmp dword[numlockptr],0 ; if numlock on, let's try this first
+  je .try1
+  cmp bl,04Fh
+  je .yes1
 .try1
 %endif
-    test byte[pressed+2],1
-    jz .no1
+  test byte[pressed+2],1
+  jz .no1
 .yes1
-    mov cl,'1'
-    jmp .done
+  mov cl,1
+  jmp .done
 .no1
 %ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try2
-    cmp al,050h
-    jne .try2
-    jmp .yes2
+  cmp dword[numlockptr],0 ; if numlock on, let's try this first
+  je .try2
+  cmp bl,050h
+  je .yes2
 .try2
 %endif
-    test byte[pressed+3],1
-    jz .no2
+  test byte[pressed+3],1
+  jz .no2
 .yes2
-    mov cl,'2'
-    jmp .done
+  mov cl,2
+  jmp .done
 .no2
 %ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try3
-    cmp al,051h
-    jne .try3
-    jmp .yes3
+  cmp dword[numlockptr],0 ; if numlock on, let's try this first
+  je .try3
+  cmp bl,051h
+  je .yes3
 .try3
 %endif
-    test byte[pressed+4],1
-    jz .no3
+  test byte[pressed+4],1
+  jz .no3
 .yes3
-    mov cl,'3'
-    jmp .done
+  mov cl,3
+  jmp .done
 .no3
 %ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try4
-    cmp al,04Bh
-    jne .try4
-    jmp .yes4
+  cmp dword[numlockptr],0 ; if numlock on, let's try this first
+  je .try4
+  cmp bl,04Bh
+  je .yes4
 .try4
 %endif
-    test byte[pressed+5],1
-    jz .no4
+  test byte[pressed+5],1
+  jz .no4
 .yes4
-    mov cl,'4'
-    jmp .done
+  mov cl,4
+  jmp .done
 .no4
 %ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try5
-    test byte[pressed+04Ch],1
-    jz .try5
-    jmp .yes5
+  cmp dword[numlockptr],0 ; if numlock on, let's try this first
+  je .try5
+  test byte[pressed+04Ch],1
+  jnz .yes5
 .try5
 %endif
-    test byte[pressed+6],1
-    jz .no5
+  test byte[pressed+6],1
+  jz .no5
 .yes5
-    mov cl,'5'
-    jmp .done
+  mov cl,5
+  jmp .done
 .no5
 %ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try6
-    cmp al,04Dh
-    jne .try6
-    jmp .yes6
+  cmp dword[numlockptr],0 ; if numlock on, let's try this first
+  je .try6
+  cmp bl,04Dh
+  je .yes6
 .try6
 %endif
-    test byte[pressed+7],1
-    jz .no6
+  test byte[pressed+7],1
+  jz .no6
 .yes6
-    mov cl,'6'
-    jmp .done
+  mov cl,6
+  jmp .done
 .no6
 %ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try7
-    cmp al,047h
-    jne .try7
-    jmp .yes7
+  cmp dword[numlockptr],0 ; if numlock on, let's try this first
+  je .try7
+  cmp bl,047h
+  je .yes7
 .try7
 %endif
-    test byte[pressed+8],1
-    jz .no7
+  test byte[pressed+8],1
+  jz .no7
 .yes7
-    mov cl,'7'
-    jmp .done
+  mov cl,7
+  jmp .done
 .no7
 %ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try8
-    cmp al,048h
-    jne .try8
-    jmp .yes8
+  cmp dword[numlockptr],0 ; if numlock on, let's try this first
+  je .try8
+  cmp bl,048h
+  je .yes8
 .try8
 %endif
-    test byte[pressed+9],1
-    jz .no8
+  test byte[pressed+9],1
+  jz .no8
 .yes8
-    mov cl,'8'
-    jmp .done
+  mov cl,8
+  jmp .done
 .no8
 %ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try9
-    cmp al,049h
-    jne .try9
-    jmp .yes9
+  cmp dword[numlockptr],0 ; if numlock on, let's try this first
+  je .try9
+  cmp bl,049h
+  je .yes9
 .try9
 %endif
-    test byte[pressed+10],1
-    jz .no9
+  test byte[pressed+10],1
+  jz .no9
 .yes9
-    mov cl,'9'
-    jmp .done
+  mov cl,9
+  jmp .done
 .no9
 %ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .try0
-    test byte[pressed+052h],1
-    jz .try0
-    jmp .yes0
+  cmp dword[numlockptr],0 ; if numlock on, let's try this first
+  je .try0
+  test byte[pressed+052h],1
+  jnz .yes0
 .try0
 %endif
-    test byte[pressed+11],1
-    jz .no0
+  test byte[pressed+11],1
+  jz .no0
 .yes0
-    cmp byte[edx+ebx-1],'s'
-    jne .insert0
-    mov cl,'t'
-    jmp .done
-.insert0
-    mov cl,'0'
-    jmp .done
+  mov cl,0
+  jmp .done
 .no0
   jmp .nochange
 .done
-  mov [edx+ebx],cl
+  mul dl
+  add al,cl
+  mov [current_zst],eax
   ret
 .nochange
 %ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .trypgup
-    cmp al,91
-    jne .trypgup
-    jmp .yespgup
+  cmp dword[numlockptr],0 ; if numlock on, let's try this first
+  je .trypgup
+  cmp bl,91
+  je .yespgup
 .trypgup
 %endif
-    cmp al,73
-    jne .nopgup
+  cmp bl,73
+  jne .nopgup
 .yespgup
-    cmp byte[edx+ebx-1],'9'
-    je near .nochange2
-    cmp byte[edx+ebx-1],'s'
-    jne .insertpgup
-    mov cl,'1'
-    cmp byte[edx+ebx],'t'
-    jne .done2
-    mov byte[edx+ebx],'0'
-    jmp .done2
-.insertpgup
-    mov cl,[edx+ebx-1]
-    inc cl
-    jmp .done2
+  cmp dword[current_zst],90
+  jge .nochange2
+  add dword[current_zst],10
+  ret
 .nopgup
 %ifdef __UNIXSDL__
-    cmp dword[numlockptr],0 ; if numlock on, let's try this first
-    je .trypgdn
-    cmp al,97
-    jne .trypgdn
-    jmp .yespgdn
+  cmp dword[numlockptr],0 ; if numlock on, let's try this first
+  je .trypgdn
+  cmp bl,97
+  je .yespgdn
 .trypgdn
 %endif
-    cmp al,81
-    jne .nopgdn
+  cmp bl,81
+  jne .nopgdn
 .yespgdn
-    cmp byte[edx+ebx-1],'s'
-    je .nochange2
-    cmp byte[edx+ebx-1],'1'
-    jne .insertpgdn
-    mov cl,'s'
-    cmp byte[edx+ebx],'0'
-    jne .done2
-    mov byte[edx+ebx],'t'
-    jmp .done2
-.insertpgdn
-    mov cl,[edx+ebx-1]
-    dec cl
-    cmp cl,'0'
-    jne .done2
-    mov byte[edx+ebx-1],'s'
-    jmp .done2
+  cmp dword[current_zst],10
+  jl .nochange2
+  sub dword[current_zst],10
+  ret
 .nopgdn
-    jmp .nochange2
-.done2
-    mov [edx+ebx-1],cl
 .nochange2
-    ret
+  ret
 
 ; Allows you to select boxes with the arrow keys, Enter to choose
 GUIResetKeys:

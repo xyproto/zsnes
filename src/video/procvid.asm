@@ -21,7 +21,7 @@
 %include "macros.mac"
 
 EXTSYM BGMA,V8Mode,antienab,cacheud,cbitmode,ccud,cfield,cgram,coladdb,coladdg
-EXTSYM coladdr,curblank,curfps,cvidmode,delay,extlatch,ZStateName,En2xSaI
+EXTSYM coladdr,curblank,curfps,cvidmode,delay,extlatch,En2xSaI
 EXTSYM gammalevel,hirestiledat,ignor512,latchx,latchy,maxbr,ForceNewGfxOff
 EXTSYM newengen,nextframe,objptr,pressed,prevpal,res512switch,resolutn
 EXTSYM romispal,scaddtype,scanlines,selcA000,t1cc,vcache4b,vesa2_bpos
@@ -30,7 +30,7 @@ EXTSYM vidbuffer,vram,KeyStateSelct,soundon,smallscreenon
 EXTSYM makepal,ScreenScale,bg1objptr,DecompAPtr,HalfTransB,HalfTransC
 EXTSYM changepal,saveselectpal,displayfpspal,superscopepal,DrawScreen,MMXSupport
 EXTSYM Get_MouseData,Get_MousePositionDisplacement,GUIEnableTransp,GUIFontData
-EXTSYM StopSound,StartSound,PrevPicture,nggposng
+EXTSYM StopSound,StartSound,PrevPicture,nggposng,current_zst,newest_zst
 EXTSYM GetTimeInSeconds,bg3ptr,bg3scroly,bg3scrolx,C4Ram
 EXTSYM genfulladdtab,genfulladdtabng,TimerEnable,ShowTimer,debugdisble,GUIOn
 EXTSYM FilteredGUI,HalfTrans,SmallMsgText,ClearScreen,Mode7HiRes,mosenng,mosszng
@@ -38,7 +38,7 @@ EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,CSStatus
 EXTSYM CSStatus2,CSStatus3,CSStatus4,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
 EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
-EXTSYM DetermineNew,newestfileloc,newestfiledate,StateExists,ClockBox
+EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -929,7 +929,6 @@ NEWSYM OutputGraphicString16b5x5
 
 SECTION .bss
 NEWSYM csounddisable, resb 1
-NEWSYM statefileloc,  resd 1
 f3menuen resb 1
 PrevPictureVal resb 1
 CurPictureVal resb 1
@@ -967,40 +966,27 @@ NEWSYM drawvline16b
     jnz .loop
     ret
 
-%macro determinenewhelp 1
-    push ecx
-    mov ecx,[ZStateName]
-    mov byte[ecx+eax],%1
-    pop ecx
-    pushad
-    call DetermineNew
-    popad
-%endmacro
-
 DetermineNewest:
+    pushad
     mov dword[newestfiledate],0
-    mov byte[newestfileloc],0
-    push edx
-    mov edx,[ZStateName]
-    add edx,[statefileloc]
-    dec edx
-    cmp byte[edx],'s'
-    jne .isnott
-    determinenewhelp 't'
-    jmp .isnext
-.isnott
-    determinenewhelp '0'
-.isnext
-    determinenewhelp '1'
-    determinenewhelp '2'
-    determinenewhelp '3'
-    determinenewhelp '4'
-    determinenewhelp '5'
-    determinenewhelp '6'
-    determinenewhelp '7'
-    determinenewhelp '8'
-    determinenewhelp '9'
-    pop edx
+    mov eax,[current_zst]
+    push eax
+    mov bl,10
+    div bl
+    mul bl
+    movzx ecx,al
+    add al,bl
+.again
+    mov [current_zst],ecx
+    pushad
+    call zst_determine_newest
+    popad
+    inc cl
+    cmp cl,al
+    jne .again
+    pop eax
+    mov [current_zst],eax
+    popad
     ret
 
 GetPicture:
@@ -1073,7 +1059,7 @@ GetPicture:
 
 NEWSYM drawfillboxsc
     pushad
-    call StateExists
+    call zst_exists
     cmp eax,1
     popad
     jne .nodraw
@@ -1088,7 +1074,10 @@ NEWSYM drawfillboxsc
     add esi,eax
     mov ecx,10
     mov al,176
-    cmp [newestfileloc],bl
+    push eax
+    mov eax,[current_zst]
+    cmp eax,[newest_zst]
+    pop eax
     jne .next
     mov al,208
 .next
@@ -1107,7 +1096,7 @@ NEWSYM drawfillboxsc
 
 NEWSYM drawfillboxsc16b
     pushad
-    call StateExists
+    call zst_exists
     cmp eax,1
     popad
     jne .nodraw
@@ -1123,7 +1112,10 @@ NEWSYM drawfillboxsc16b
     add esi,eax
     mov ecx,10
     mov ax,[saveselect.allgrn]
-    cmp [newestfileloc],bl
+    push eax
+    mov eax,[current_zst]
+    cmp eax,[newest_zst]
+    pop eax
     jne .next
     mov ax,[saveselect.allgrnb]
 .next
@@ -1195,28 +1187,36 @@ NEWSYM drawbox16b
     call drawhline16b
     ret
 
-%macro drawfillboxhelp 2
+%macro drawfillboxbase 2
+    push eax
+    mov eax,[current_zst]
+    mov bl,10
+    div bl
+    mul bl
     mov bl,%1
-    push ecx
-    mov ecx,[ZStateName]
-    mov byte[ecx+eax],%2
-    pop ecx
-    call drawfillboxsc
+    add al,bl
+    mov [current_zst],eax
+    pop eax
+    call %2
 %endmacro
 
-%macro drawfillboxhelp16b 2
-    mov bl,%1
-    push ecx
-    mov ecx,[ZStateName]
-    mov byte[ecx+eax],%2
-    pop ecx
-    call drawfillboxsc16b
+%macro drawfillboxhelp 1
+    drawfillboxbase %1,drawfillboxsc
+%endmacro
+
+%macro drawfillboxhelp16b 1
+    drawfillboxbase %1,drawfillboxsc16b
 %endmacro
 
 %macro testpressed 1
-    push ecx
-    mov ecx,[ZStateName]
-    add ecx,[statefileloc]
+    push eax
+    mov eax,[current_zst]
+    mov bl,10
+    div bl
+    mov bl,ah
+    mov ah,10
+    mul ah
+
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
     je %%try1
@@ -1229,7 +1229,6 @@ NEWSYM drawbox16b
     jz %%no1
 %%yes1
     mov bl,1
-    mov byte[ecx],'1'
 %%no1
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -1243,7 +1242,6 @@ NEWSYM drawbox16b
     jz %%no2
 %%yes2
     mov bl,2
-    mov byte[ecx],'2'
 %%no2
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -1257,7 +1255,6 @@ NEWSYM drawbox16b
     jz %%no3
 %%yes3
     mov bl,3
-    mov byte[ecx],'3'
 %%no3
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -1271,7 +1268,6 @@ NEWSYM drawbox16b
     jz %%no4
 %%yes4
     mov bl,4
-    mov byte[ecx],'4'
 %%no4
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -1285,7 +1281,6 @@ NEWSYM drawbox16b
     jz %%no5
 %%yes5
     mov bl,5
-    mov byte[ecx],'5'
 %%no5
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -1299,7 +1294,6 @@ NEWSYM drawbox16b
     jz %%no6
 %%yes6
     mov bl,6
-    mov byte[ecx],'6'
 %%no6
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -1313,7 +1307,6 @@ NEWSYM drawbox16b
     jz %%no7
 %%yes7
     mov bl,7
-    mov byte[ecx],'7'
 %%no7
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -1327,7 +1320,6 @@ NEWSYM drawbox16b
     jz %%no8
 %%yes8
     mov bl,8
-    mov byte[ecx],'8'
 %%no8
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -1341,7 +1333,6 @@ NEWSYM drawbox16b
     jz %%no9
 %%yes9
     mov bl,9
-    mov byte[ecx],'9'
 %%no9
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],0 ; if numlock on, let's try this first
@@ -1355,15 +1346,6 @@ NEWSYM drawbox16b
     jz %%no0
 %%yes0
     mov bl,0
-    dec ecx
-    cmp byte[ecx],'s'
-    jne %%insert0
-    inc ecx
-    mov byte[ecx],'t'
-    jmp %%no0
-%%insert0
-    inc ecx
-    mov byte[ecx],'0'
 %%no0
 %ifdef __UNIXSDL__
     cmp dword[numlockptr],1 ; if numlock on, disregard numpad
@@ -1374,18 +1356,6 @@ NEWSYM drawbox16b
     cmp bl,0
     je %%noleft
     dec bl
-    dec ecx
-    cmp bl,0
-    jne %%plznot
-    cmp byte[ecx],'s'
-    jne %%plznot
-    inc ecx
-    mov byte[ecx],'t'
-    jmp %%doneaddt
-%%plznot
-    inc ecx
-    mov [ecx],bl
-    add byte[ecx],'0'
 %%doneaddt
     mov byte[pressed+75],2
 %%noleft
@@ -1398,8 +1368,6 @@ NEWSYM drawbox16b
     cmp bl,9
     je %%noright
     inc bl
-    mov [ecx],bl
-    add byte[ecx],'0'
     mov byte[pressed+77],2
 %%noright
 %ifdef __UNIXSDL__
@@ -1408,23 +1376,14 @@ NEWSYM drawbox16b
 %endif
     test byte[pressed+72],1
     jz %%noup
-    dec ecx
-    cmp byte[ecx],'s'
+    cmp al,0
     je %%goneup
-    cmp byte[ecx],'1'
-    jne %%goup
-    mov byte[ecx],'s'
-    inc ecx
-    cmp byte[ecx],'0'
-    jne %%noaddt
-    mov byte[ecx],'t'
-%%noaddt
-    jmp %%goneup
-%%goup
-    dec byte[ecx]
+    sub al,10
 %%goneup
     mov byte[pressed+72],2
-    pop ecx
+    add al,bl
+    mov [current_zst],eax
+    pop eax
     jmp .updatescreen%1
 %%noup
 %ifdef __UNIXSDL__
@@ -1433,23 +1392,14 @@ NEWSYM drawbox16b
 %endif
     test byte[pressed+80],1
     jz %%nodown
-    dec ecx
-    cmp byte[ecx],'9'
+    cmp al,90
     je %%gonedown
-    cmp byte[ecx],'s'
-    jne %%godown
-    mov byte[ecx],'0'
-    inc ecx
-    cmp byte[ecx],'t'
-    jne %%noremt
-    mov byte[ecx],'0'
-%%noremt
-    dec ecx
-%%godown
-    inc byte[ecx]
+    add al,10
 %%gonedown
     mov byte[pressed+80],2
-    pop ecx
+    add al,bl
+    mov [current_zst],eax
+    pop eax
     jmp .updatescreen%1
 %%nodown
 %ifndef __MSDOS__
@@ -1462,19 +1412,6 @@ NEWSYM drawbox16b
     cmp bl,0
     je %%noleft2
     dec bl
-    dec ecx
-    cmp bl,0
-    jne %%plznot2
-    cmp byte[ecx],'s'
-    jne %%plznot2
-    inc ecx
-    mov byte[ecx],'t'
-    jmp %%doneaddt2
-%%plznot2
-    inc ecx
-    mov [ecx],bl
-    add byte[ecx],'0'
-%%doneaddt2
 %ifdef __UNIXSDL__
     mov byte[pressed+92],2
 %else
@@ -1490,8 +1427,6 @@ NEWSYM drawbox16b
     cmp bl,9
     je %%noright2
     inc bl
-    mov [ecx],bl
-    add byte[ecx],'0'
 %ifdef __UNIXSDL__
     mov byte[pressed+94],2
 %else
@@ -1504,27 +1439,18 @@ NEWSYM drawbox16b
     test byte[pressed+0C8h],1
 %endif
     jz %%noup2
-    dec ecx
-    cmp byte[ecx],'s'
+    cmp al,0
     je %%goneup2
-    cmp byte[ecx],'1'
-    jne %%goup2
-    mov byte[ecx],'s'
-    inc ecx
-    cmp byte[ecx],'0'
-    jne %%noaddt2
-    mov byte[ecx],'t'
-%%noaddt2
-    jmp %%goneup2
-%%goup2
-    dec byte[ecx]
+    sub al,10
 %%goneup2
 %ifdef __UNIXSDL__
     mov byte[pressed+90],2
 %else
     mov byte[pressed+0C8h],2
 %endif
-    pop ecx
+    add al,bl
+    mov [current_zst],eax
+    pop eax
     jmp .updatescreen%1
 %%noup2
 %ifdef __UNIXSDL__
@@ -1533,31 +1459,24 @@ NEWSYM drawbox16b
     test byte[pressed+0D0h],1
 %endif
     jz %%nodown2
-    dec ecx
-    cmp byte[ecx],'9'
+    cmp al,90
     je %%gonedown2
-    cmp byte[ecx],'s'
-    jne %%godown2
-    mov byte[ecx],'0'
-    inc ecx
-    cmp byte[ecx],'t'
-    jne %%noremt2
-    mov byte[ecx],'0'
-%%noremt2
-    dec ecx
-%%godown2
-    inc byte[ecx]
+    add al,10
 %%gonedown2
 %ifdef __UNIXSDL__
     mov byte[pressed+96],2
 %else
     mov byte[pressed+0D0h],2
 %endif
-    pop ecx
+    add al,bl
+    mov [current_zst],eax
+    pop eax
     jmp .updatescreen%1
 %%nodown2
 %endif
-    pop ecx
+    add al,bl
+    mov [current_zst],eax
+    pop eax
 %endmacro
 
 NEWSYM saveselect
@@ -1608,44 +1527,27 @@ NEWSYM saveselect
     mov ecx,150
     jnz .loop
     ; draw filled boxes for existing files
-    mov eax,[statefileloc]
-    push edx
-    mov edx,[ZStateName]
-    mov bl,[edx+eax]
-    pop edx
-    push ebx
     call DetermineNewest
-    push edx
-    mov edx,[ZStateName]
-    add edx,eax
-    dec edx
-    cmp byte[edx],'s'
-    jne .isnott2
-    mov byte[slotlevelnum],'0'
-    pop edx
-    drawfillboxhelp 0,'t'
-    jmp .isnext2
-.isnott2
-    mov dl,[edx]
-    mov [slotlevelnum],dl
-    pop edx
-    drawfillboxhelp 0,'0'
-.isnext2
-    drawfillboxhelp 1,'1'
-    drawfillboxhelp 2,'2'
-    drawfillboxhelp 3,'3'
-    drawfillboxhelp 4,'4'
-    drawfillboxhelp 5,'5'
-    drawfillboxhelp 6,'6'
-    drawfillboxhelp 7,'7'
-    drawfillboxhelp 8,'8'
-    drawfillboxhelp 9,'9'
+    push ebx
+    mov eax,[current_zst]
+    push eax
+    mov bl,10
+    div bl
+    add al,'0'
+    mov [slotlevelnum],al
+    drawfillboxhelp 0
+    drawfillboxhelp 1
+    drawfillboxhelp 2
+    drawfillboxhelp 3
+    drawfillboxhelp 4
+    drawfillboxhelp 5
+    drawfillboxhelp 6
+    drawfillboxhelp 7
+    drawfillboxhelp 8
+    drawfillboxhelp 9
+    pop eax
+    mov [current_zst],eax
     pop ebx
-    mov eax,[statefileloc]
-    push edx
-    mov edx,[ZStateName]
-    mov [edx+eax],bl
-    pop edx
 
     mov esi,75+73*288
     add esi,[vidbuffer]
@@ -1727,25 +1629,10 @@ NEWSYM saveselect
     dec bl
     jnz .nextnumchar
     mov byte[curblank],0h
-    mov bl,0
-    mov ebx,[statefileloc]
-    push edx
-    mov edx,[ZStateName]
-    mov al,[edx+ebx]
-    pop edx
-    cmp al,'t'
-    jne .noT
-    mov bl,0
-    jmp .nexter
-.noT
-    mov bl,al
-    sub bl,48
-.nexter
+
     mov dl,160
     call drawbox
-    push ebx
     call copyvid
-    pop ebx
     ; wait until esc/enter is pressed
 .noesc
     mov dl,128
@@ -1764,9 +1651,7 @@ NEWSYM saveselect
     jnz near .esc
     test byte[pressed+28],1
     jnz near .enter
-    push ebx
     call copyvid
-    pop ebx
     mov ecx,2500
     call delay
     testpressed 8b
@@ -1783,36 +1668,10 @@ NEWSYM saveselect
     jnz near .enter
     mov dl,160
     call drawbox
-    push ebx
     call copyvid
-    pop ebx
     jmp .noesc
 .enter
     mov byte[pressed+28],2
-    cmp bl,0
-    jne .nozero
-    push edx
-    mov edx,[ZStateName]
-    add edx,[statefileloc]
-    dec edx
-    cmp byte[edx],'s'
-    jne .plznot
-    mov al,'t'
-    jmp .addext
-.plznot
-    mov al,'0'
-.addext
-    pop edx
-    jmp .save
-.nozero
-    add bl,48
-    mov al,bl
-.save
-    mov ebx,[statefileloc]
-    push edx
-    mov edx,[ZStateName]
-    mov [edx+ebx],al
-    pop edx
 .esc
 
     mov eax,pressed
@@ -1925,44 +1784,27 @@ SECTION .text
     jnz .loop16b
 
     ; draw filled boxes for existing files
-    mov eax,[statefileloc]
-    push edx
-    mov edx,[ZStateName]
-    mov bl,[edx+eax]
-    pop edx
-    push ebx
     call DetermineNewest
-    push edx
-    mov edx,[ZStateName]
-    add edx,eax
-    dec edx
-    cmp byte[edx],'s'
-    jne .isnott2b
-    pop edx
-    mov byte[slotlevelnum],'0'
-    drawfillboxhelp16b 0,'t'
-    jmp .isnext2b
-.isnott2b
-    mov dl,[edx]
-    mov [slotlevelnum],dl
-    pop edx
-    drawfillboxhelp16b 0,'0'
-.isnext2b
-    drawfillboxhelp16b 1,'1'
-    drawfillboxhelp16b 2,'2'
-    drawfillboxhelp16b 3,'3'
-    drawfillboxhelp16b 4,'4'
-    drawfillboxhelp16b 5,'5'
-    drawfillboxhelp16b 6,'6'
-    drawfillboxhelp16b 7,'7'
-    drawfillboxhelp16b 8,'8'
-    drawfillboxhelp16b 9,'9'
+    push ebx
+    mov eax,[current_zst]
+    push eax
+    mov bl,10
+    div bl
+    add al,'0'
+    mov [slotlevelnum],al
+    drawfillboxhelp16b 0
+    drawfillboxhelp16b 1
+    drawfillboxhelp16b 2
+    drawfillboxhelp16b 3
+    drawfillboxhelp16b 4
+    drawfillboxhelp16b 5
+    drawfillboxhelp16b 6
+    drawfillboxhelp16b 7
+    drawfillboxhelp16b 8
+    drawfillboxhelp16b 9
+    pop eax
+    mov [current_zst],eax
     pop ebx
-    mov eax,[statefileloc]
-    push edx
-    mov edx,[ZStateName]
-    mov [edx+eax],bl
-    pop edx
 
     mov esi,75*2+73*288*2
     add esi,[vidbuffer]
@@ -2045,71 +1887,24 @@ SECTION .text
     jnz .nextnumchar16b
 
     mov byte[curblank],0h
-    mov bl,0
-    mov ebx,[statefileloc]
-    push edx
-    mov edx,[ZStateName]
-    mov al,[edx+ebx]
-    pop edx
-    cmp al,'t'
-    jne .noT16b
-    mov bl,0
-    jmp .nexter16b
-.noT16b
-    mov bl,al
-    sub bl,48
-.nexter16b
     mov dx,[.allred]
     call drawbox16b
-    push ebx
     mov al,[newengen]
     mov byte[newengen],0
     push eax
     call copyvid
     pop eax
     mov [newengen],al
-    pop ebx
     ; wait until esc/enter is pressed
 
     mov byte[PrevPictureVal],0FFh
 .noesc16b
-    mov [CurPictureVal],bl
+    push eax
+    mov eax,[current_zst]
+    mov [CurPictureVal],al
+    pop eax
     pushad
-    mov eax,[statefileloc]
-    push edx
-    mov edx,[ZStateName]
-    mov cl,[edx+eax]
-    pop edx
-    push ecx
-    cmp bl,0
-    jne .nozero16b2
-    push edx
-    mov edx,[ZStateName]
-    add edx,[statefileloc]
-    dec edx
-    cmp byte[edx],'s'
-    pop edx
-    jne .plznotpic
-    mov cl,'t'
-    jmp .save16b2
-.plznotpic
-    mov cl,'0'
-    jmp .save16b2
-.nozero16b2
-    mov cl,bl
-    add cl,48
-.save16b2
-    push edx
-    mov edx,[ZStateName]
-    mov [edx+eax],cl
-    pop edx
     call GetPicture
-    pop ecx
-    mov eax,[statefileloc]
-    push edx
-    mov edx,[ZStateName]
-    mov [edx+eax],cl
-    pop edx
     popad
 
     mov dx,0FFFFh
@@ -2128,14 +1923,12 @@ SECTION .text
     jnz near .esc16b
     test byte[pressed+28],1
     jnz near .enter16b
-    push ebx
     mov al,[newengen]
     mov byte[newengen],0
     push eax
     call copyvid
     pop eax
     mov [newengen],al
-    pop ebx
     mov ecx,2500
     call delay
     testpressed 16b
@@ -2152,41 +1945,15 @@ SECTION .text
     jnz near .enter16b
     mov dx,[.allred]
     call drawbox16b
-    push ebx
     mov al,[newengen]
     mov byte[newengen],0
     push eax
     call copyvid
     pop eax
     mov [newengen],al
-    pop ebx
     jmp .noesc16b
 .enter16b
     mov byte[pressed+28],2
-    cmp bl,0
-    jne .nozero16b
-    push edx
-    mov edx,[ZStateName]
-    add edx,[statefileloc]
-    dec edx
-    cmp byte[edx],'s'
-    jne .plznot16b
-    mov al,'t'
-    jmp .addext16b
-.plznot16b
-    mov al,'0'
-.addext16b
-    pop edx
-    jmp .save16b
-.nozero16b
-    add bl,48
-    mov al,bl
-.save16b
-    mov ebx,[statefileloc]
-    push edx
-    mov edx,[ZStateName]
-    mov [edx+ebx],al
-    pop edx
 .esc16b
     mov eax,pressed
     mov ecx,256

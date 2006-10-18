@@ -722,7 +722,7 @@ unsigned int *horizon_get(unsigned int distance)
   return(horizon[distance%21][0]);
 }
 
-extern unsigned int GUICBHold, NumCheats, statefileloc;
+extern unsigned int GUICBHold, NumCheats;
 extern unsigned char cheatdata[28*255+56];
 
 void CheatCodeSave()
@@ -1661,7 +1661,7 @@ int *GUIJT_currentviewloc, *GUIJT_currentcursloc, GUIJT_entries, GUIJT_offset, G
 
 void GUIGenericJumpTo()
 {
-  int mid = GUIJT_viewable>>1; 
+  int mid = GUIJT_viewable>>1;
   *GUIJT_currentviewloc = (GUIJT_offset < GUIJT_entries-mid) ? GUIJT_offset-mid : GUIJT_entries-GUIJT_viewable;
   if (*GUIJT_currentviewloc < 0) { *GUIJT_currentviewloc = 0; }
   *GUIJT_currentcursloc = GUIJT_offset;

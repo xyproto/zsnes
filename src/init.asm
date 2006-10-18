@@ -24,7 +24,7 @@ EXTSYM UpdateDevices,Makemode7Table,MusicRelVol,MusicVol,makesprprtable
 EXTSYM romloadskip,start65816,showinfogui,inittable,exit
 EXTSYM SA1inittable,MessageOn,Msgptr,MsgCount,sndrot,SnowTimer
 EXTSYM inittablec,newgfx16b,DisplayInfo,ssautosw,GUIDelayB,pl12s34
-EXTSYM Output_Text,Turbo30hz,CombinDataLocl
+EXTSYM Output_Text,Turbo30hz,CombinDataLocl,current_zst,zst_name
 EXTSYM BackupSystemVars,SnowData,SnowVelDist,Setper2exec
 EXTSYM JoyRead,pressed,mousebuttons,mousexdir,mouseydir,mousexpos,mouseypos
 EXTSYM pl1selk,pl1startk,pl1upk,pl1downk,pl1leftk,pl1rightk,pl1Xk
@@ -40,8 +40,8 @@ EXTSYM pl4Ltk,pl4Rtk,pl4ULk,pl4URk,pl4DLk,pl4DRk,pl5contrl,pl5selk,pl5startk
 EXTSYM pl5upk,pl5downk,pl5leftk,pl5rightk,pl5Xk,pl5Ak,pl5Lk,pl5Yk,pl5Bk,pl5Rk
 EXTSYM pl5Xtk,pl5Ytk,pl5Atk,pl5Btk,pl5Ltk,pl5Rtk,pl5ULk,pl5URk,pl5DLk,pl5DRk
 EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc,extlatch
-EXTSYM MMXSupport,MMXextSupport,romdata,procexecloop,wramdata,ZStateName
-EXTSYM romispal,initregr,initregw,statefileloc,loadfileGUI,loadstate2,CMovieExt
+EXTSYM MMXSupport,MMXextSupport,romdata,procexecloop,wramdata
+EXTSYM romispal,initregr,initregw,loadfileGUI,loadstate2,CMovieExt
 EXTSYM MoviePlay,MovieDumpRaw,AllowUDLR,device1,device2,processmouse1
 EXTSYM processmouse2,cpalval,init65816,clearmem,SetupROM,ZCartName,initsnes
 
@@ -176,42 +176,15 @@ NEWSYM init
     ; Here's the auto-load ZST file stuff
     cmp byte[autoloadstate],1
     jl .noautoloadstate
-    je .enddigits
-    mov ebx,[statefileloc]
-    dec byte[autoloadstate]
-    cmp byte[autoloadstate],10
-    jge .2digits
-    mov al,[autoloadstate]
-    add al,48
-    mov ecx,[ZStateName]
-    mov [ecx+ebx],al
-    jmp .enddigits
-.2digits
     movzx eax,byte[autoloadstate]
-    mov dl,10
-    div dl
-    add ax,3030h
-    mov ecx,[ZStateName]
-    mov [ecx+ebx-1],ax
-.enddigits
+    dec eax
+    mov [current_zst],eax
 
     ; Load the specified state file
     pushad
+    call zst_name
     call loadstate2
     popad
-
-    ; Just skip the extension re-setup below if we don't need to do it
-    cmp byte[autoloadstate],9
-    jbe .noautoloadstate
-
-    ; Put back the 'ST' on the end of the extension as we changed it
-    ; above (by placing two digits in the extension). This is so
-    ; as not to break any other code later on which depends
-    ; on it being present.
-    mov ebx,[statefileloc]
-    mov ecx,[ZStateName]
-    mov word[ecx+ebx-1], 'st'
-
 .noautoloadstate
 
     cmp byte[autoloadmovie],1

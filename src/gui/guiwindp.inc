@@ -1317,40 +1317,28 @@ DisplayGUIChoseSave:                    ; Pick Save State
   GUIDisplayText 2,101,46,GUIChoseSaveText2
   GUIDisplayTextY 2,6,61,GUIChoseSlotText1
 
+  mov eax,[current_zst]
+  mov dl,10
+  div dl
+  add al,'0'
+
+  mov [GUIChoseSaveText2],ah
+  mov [GUIChoseSlotTextX],al
+
   mov dword[GUITemp],GUIIconDataButtonHole           ; Radio Buttons
-  mov ebx,[statefileloc]
-  mov edx,[ZStateName]
-  mov al,[edx+ebx]
-  mov [GUIChoseSaveText2],al
-  cmp byte[edx+ebx-1],'s'
-  jne .nots
-  GUIDisplayButtonHole 2,10,28,byte[GUIChoseSaveText2],'t'
-  jmp .next1
-.nots
-  GUIDisplayButtonHole 2,10,28,byte[GUIChoseSaveText2],'0'
-.next1
-  GUIDisplayButtonHole 2,30,28,byte[GUIChoseSaveText2],'1'
-  GUIDisplayButtonHole 2,50,28,byte[GUIChoseSaveText2],'2'
-  GUIDisplayButtonHole 2,70,28,byte[GUIChoseSaveText2],'3'
-  GUIDisplayButtonHole 2,90,28,byte[GUIChoseSaveText2],'4'
-  GUIDisplayButtonHole 2,10,43,byte[GUIChoseSaveText2],'5'
-  GUIDisplayButtonHole 2,30,43,byte[GUIChoseSaveText2],'6'
-  GUIDisplayButtonHole 2,50,43,byte[GUIChoseSaveText2],'7'
-  GUIDisplayButtonHole 2,70,43,byte[GUIChoseSaveText2],'8'
-  GUIDisplayButtonHole 2,90,43,byte[GUIChoseSaveText2],'9'
+  GUIDisplayButtonHole 2,10,28,byte[GUIChoseSaveText2],0
+  GUIDisplayButtonHole 2,30,28,byte[GUIChoseSaveText2],1
+  GUIDisplayButtonHole 2,50,28,byte[GUIChoseSaveText2],2
+  GUIDisplayButtonHole 2,70,28,byte[GUIChoseSaveText2],3
+  GUIDisplayButtonHole 2,90,28,byte[GUIChoseSaveText2],4
+  GUIDisplayButtonHole 2,10,43,byte[GUIChoseSaveText2],5
+  GUIDisplayButtonHole 2,30,43,byte[GUIChoseSaveText2],6
+  GUIDisplayButtonHole 2,50,43,byte[GUIChoseSaveText2],7
+  GUIDisplayButtonHole 2,70,43,byte[GUIChoseSaveText2],8
+  GUIDisplayButtonHole 2,90,43,byte[GUIChoseSaveText2],9
 
   GUIDisplayBBox 2,72,59,90,66,167                  ; Save Slot Frameskip +/- Box
 
-  mov ebx,[statefileloc]
-  mov edx,[ZStateName]
-  cmp byte[edx+ebx-1],'s'
-  jne .notans
-  mov byte[GUIChoseSlotTextX],'0'
-  jmp .isdone
-.notans
-  mov al,[edx+ebx-1]
-  mov [GUIChoseSlotTextX],al
-.isdone
   mov byte[GUItextcolor],223
   GUIOuttextwin2 2,83,61,GUIChoseSlotTextX
   mov byte[GUItextcolor],221
