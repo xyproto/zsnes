@@ -1906,8 +1906,8 @@ DisplayGUIConfirmClick:
   ret
 
 DisplayGUIChoseSaveClick:
-  GUIPHoldbutton2 94,59,102,67,12,byte[GUIChoseSlotTextX],1,'9'
-  GUIPHoldbutton2 105,59,113,67,13,byte[GUIChoseSlotTextX],-1,'0'
+  GUIPHoldbutton2 94,59,102,67,80,byte[GUIChoseSlotTextX],1,'9'
+  GUIPHoldbutton2 105,59,113,67,81,byte[GUIChoseSlotTextX],-1,'0'
   GUIPButtonHole 10,28,byte[GUIChoseSaveText2],0
   GUIPButtonHole 30,28,byte[GUIChoseSaveText2],1
   GUIPButtonHole 50,28,byte[GUIChoseSaveText2],2
@@ -3173,13 +3173,13 @@ DisplayGUISpeedClick:
   GUIPHoldbutton2 129,35,137,43,77,byte[SDRatio],-1,0
   cmp byte[frameskip],0
   je near .autopress
-  GUIPHoldbutton2 118,13,126,21,12,byte[frameskip],1,10
-  GUIPHoldbutton2 129,13,137,21,13,byte[frameskip],-1,1
+  GUIPHoldbutton2 118,13,126,21,78,byte[frameskip],1,10
+  GUIPHoldbutton2 129,13,137,21,79,byte[frameskip],-1,1
   ret
 
 .autopress
-  GUIPHoldbutton2 118,13,126,21,12,byte[maxskip],1,9
-  GUIPHoldbutton2 129,13,137,21,13,byte[maxskip],-1,0
+  GUIPHoldbutton2 118,13,126,21,78,byte[maxskip],1,9
+  GUIPHoldbutton2 129,13,137,21,79,byte[maxskip],-1,0
 
   ; Speed Slider
   cmp eax,7                      ; X-Range for click-area

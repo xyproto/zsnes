@@ -1338,22 +1338,14 @@ DisplayGUIChoseSave:                    ; Pick Save State
   GUIDisplayButtonHole 2,90,43,byte[GUIChoseSaveText2],9
 
   GUIDisplayBBox 2,72,59,90,66,167                  ; Save Slot Frameskip +/- Box
-
-  mov byte[GUItextcolor],223
-  GUIOuttextwin2 2,83,61,GUIChoseSlotTextX
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je .slotzero5
-  mov byte[GUItextcolor],222
-.slotzero5
-  GUIOuttextwin2 2,82,60,GUIChoseSlotTextX
+  GUIDisplayTextG 2,83,61,GUIChoseSlotTextX
   mov byte[GUItextcolor],217
   cmp byte[GUIWincoladd],0
-  je .slotzero7
+  je .slotzero5
   mov byte[GUItextcolor],211
-.slotzero7
-  DrawGUIButton 2,94,59,102,67,GUIChoseSlotTextY,12,-2,-1
-  DrawGUIButton 2,105,59,113,67,GUIChoseSlotTextZ,13,-2,-1
+.slotzero5
+  DrawGUIButton 2,94,59,102,67,GUIChoseSlotTextY,80,-2,-1
+  DrawGUIButton 2,105,59,113,67,GUIChoseSlotTextZ,81,-2,-1
   ret
 
 SECTION .data
@@ -4834,8 +4826,8 @@ DisplayGUISpeed:                    ;Speed Options
   je .zero6
   mov byte[GUItextcolor],211
 .zero6
-  DrawGUIButton 21,118,13,126,21,GUISpeedTextY,12,-2,-1
-  DrawGUIButton 21,129,13,137,21,GUISpeedTextZ,13,-2,-1
+  DrawGUIButton 21,118,13,126,21,GUISpeedTextY,78,-2,-1
+  DrawGUIButton 21,129,13,137,21,GUISpeedTextZ,79,-2,-1
   jmp .ratioborders
 
 .auto                                          ; AFR Max Frameskip +/- Box
@@ -4843,21 +4835,15 @@ DisplayGUISpeed:                    ;Speed Options
   mov al,[maxskip]
   add al,48
   mov [GUISpeedTextX],al
-  mov byte[GUItextcolor],223
-  GUIOuttextwin2 21,107,15,GUISpeedTextX
-  mov byte[GUItextcolor],221
-  cmp byte[GUIWincoladd],0
-  je .zero5
-  mov byte[GUItextcolor],222
-.zero5
-  GUIOuttextwin2 21,106,14,GUISpeedTextX
+  GUIDisplayTextG 21,107,15,GUISpeedTextX
+
   mov byte[GUItextcolor],217
   cmp byte[GUIWincoladd],0
-  je .zero7
+  je .zero5
   mov byte[GUItextcolor],211
-.zero7
-  DrawGUIButton 21,118,13,126,21,GUISpeedTextY,12,-2,-1
-  DrawGUIButton 21,129,13,137,21,GUISpeedTextZ,13,-2,-1
+.zero5
+  DrawGUIButton 21,118,13,126,21,GUISpeedTextY,78,-2,-1
+  DrawGUIButton 21,129,13,137,21,GUISpeedTextZ,79,-2,-1
 .ratioborders
   ret
 
