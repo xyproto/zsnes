@@ -47,6 +47,8 @@ section .bss  align=4
 %endmacro
 %define EXTSYM EXTERN
 
+section .note.GNU-stack noalloc noexec nowrite progbits
+
 %else
 
 %imacro newsym 1
