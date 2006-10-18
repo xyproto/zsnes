@@ -1632,7 +1632,9 @@ NEWSYM saveselect
 
     mov dl,160
     call drawbox
+    push ebx
     call copyvid
+    pop ebx
     ; wait until esc/enter is pressed
 .noesc
     mov dl,128
@@ -1651,7 +1653,9 @@ NEWSYM saveselect
     jnz near .esc
     test byte[pressed+28],1
     jnz near .enter
+    push ebx
     call copyvid
+    pop ebx
     mov ecx,2500
     call delay
     testpressed 8b
@@ -1668,7 +1672,9 @@ NEWSYM saveselect
     jnz near .enter
     mov dl,160
     call drawbox
+    push ebx
     call copyvid
+    pop ebx
     jmp .noesc
 .enter
     mov byte[pressed+28],2
@@ -1889,12 +1895,14 @@ SECTION .text
     mov byte[curblank],0h
     mov dx,[.allred]
     call drawbox16b
+    push ebx
     mov al,[newengen]
     mov byte[newengen],0
     push eax
     call copyvid
     pop eax
     mov [newengen],al
+    pop ebx
     ; wait until esc/enter is pressed
 
     mov byte[PrevPictureVal],0FFh
@@ -1923,12 +1931,14 @@ SECTION .text
     jnz near .esc16b
     test byte[pressed+28],1
     jnz near .enter16b
+    push ebx
     mov al,[newengen]
     mov byte[newengen],0
     push eax
     call copyvid
     pop eax
     mov [newengen],al
+    pop ebx
     mov ecx,2500
     call delay
     testpressed 16b
@@ -1945,12 +1955,14 @@ SECTION .text
     jnz near .enter16b
     mov dx,[.allred]
     call drawbox16b
+    push ebx
     mov al,[newengen]
     mov byte[newengen],0
     push eax
     call copyvid
     pop eax
     mov [newengen],al
+    pop ebx
     jmp .noesc16b
 .enter16b
     mov byte[pressed+28],2
