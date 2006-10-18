@@ -756,13 +756,13 @@ static size_t string_merge(char *buffer, size_t buffer_len, ...)
   return(needed+1);
 }
 
-static char txtmsg[25];
+static char txtmsg[30];
 
 void set_state_message(char *prefix, char *suffix)
 {
   char num[3];
   sprintf(num, "%d", current_zst);
-  string_merge(txtmsg, sizeof(txtmsg), prefix, num, suffix, 0);
+  string_merge(txtmsg, sizeof(txtmsg), prefix, isextension(ZStateName, "zss") ? "AUTO" : num, suffix, 0);
 
   Msgptr = txtmsg;
   MessageOn = MsgCount;
