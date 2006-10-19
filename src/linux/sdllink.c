@@ -1477,7 +1477,7 @@ void DocsPage()
 
 
 /*
-Functions for battery power for Linux by Nach
+Functions for battery probing on Linux by Nach
 I believe Linux 2.4.x+ is needed for ACPI support
 but it'll compile fine for older versions too
 
@@ -1630,13 +1630,13 @@ int CheckBatteryPercent()
 }
 
 /*
-Functions for battery power for FreeBSD by Nach
+Functions for battery on FreeBSD/DragonFly by Nach
 
 It'd be nice if more laptop users could test this.
 It'd also be nice if we could get the other BSDs,
 Solaris, and Mac OS X supported.
 */
-#elif defined(__FreeBSD__)
+#elif (defined(__FreeBSD__) || defined(__DragonFly__))
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
