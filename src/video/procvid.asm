@@ -1893,8 +1893,8 @@ SECTION .text
     jnz .nextnumchar16b
 
     mov byte[curblank],0h
-    mov dx,[.allred]
-    call drawbox16b
+;    mov dx,[.allred]
+;    call drawbox16b
     push ebx
     mov al,[newengen]
     mov byte[newengen],0
