@@ -49,7 +49,7 @@ EXTSYM procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA,spcX,spcY,spcP,spcNZ
 EXTSYM Voice0Status,Voice1Status,Voice2Status,Voice3Status,Voice4Status
 EXTSYM Voice5Status,Voice6Status,Voice7Status,ClearScreen,statesaver,loadstate2
 EXTSYM vidbuffer,ASCII2Font,hirestiledat,showallext,scanlines
-EXTSYM ZStateName,sprlefttot,spritetablea
+EXTSYM sprlefttot,spritetablea
 EXTSYM cgram,tempco0,prevbright,maxbr,prevpal,coladdr,coladdg
 EXTSYM coladdb,scaddtype,ScreenScale,initvideo,pressed,UpdateDevices,memtabler8
 EXTSYM memtablew8,writeon,JoyRead,SetInputDevice,delay,FPSOn,RevStereo,WDSPReg0C
@@ -68,7 +68,7 @@ EXTSYM GUIFSVID,GUIWSVID,GUISSVID,GUITBVID,GUIHSVID,GUI2xVID,GUII2VID,GUIM7VID
 EXTSYM GUINTVID,device1,device2,TwelveHourClock,JoyX
 EXTSYM JoyY,JoyMinX,JoyMinY,JoyMaxX,JoyMaxY,JoyMinX209,JoyMaxX209,JoyMinY209
 EXTSYM JoyMaxY209,GetCoords,GetCoords3,MultiTap,SFXEnable,RestoreSystemVars
-EXTSYM GUIBIFIL,GUIHQ2X,GUIHQ3X,GUIHQ4X,firstsaveinc,nssdip1,nssdip2,nssdip3
+EXTSYM GUIBIFIL,GUIHQ2X,GUIHQ3X,GUIHQ4X,nssdip1,nssdip2,nssdip3
 EXTSYM nssdip4,nssdip5,nssdip6,SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
 EXTSYM MovieDumpRaw,AutoLoadCht,GUIQuickLoadUpdate,GUILoadData

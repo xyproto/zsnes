@@ -1629,7 +1629,59 @@ int CheckBatteryPercent()
   return(BatteryLifePercent);
 }
 
-#else //Non Linux OSs
+/*
+Functions for battery power for FreeBSD by Nach
+
+It'd be nice if more laptop users could test this.
+It'd also be nice if we could get the other BSDs,
+Solaris, and Mac OS X supported.
+*/
+#elif defined(__FreeBSD__)
+#include <sys/types.h>
+#include <sys/sysctl.h>
+
+int CheckBattery()
+{
+  int state;
+  size_t state_len = sizeof(state);
+  if (!sysctlbyname("hw.acpi.battery.state", &state, &state_len, 0, 0))
+  {
+    if ((state > -1) && (state < 7)) //7 == failure
+    {
+      if (!state || state&2)
+      {
+        return(0); //Plugged in
+      }
+      return(1); //Running off of battery
+    }
+  }
+  return(-1);
+}
+
+//Note that I have not yet gotten anyone to test if this function has correct info returned
+int CheckBatteryTime()
+{
+  int batt_time;
+  size_t batt_time_len = sizeof(batt_time);
+  if (!sysctlbyname("hw.acpi.battery.time", &batt_time, &batt_time_len, 0, 0))
+  {
+    if (batt_time > -1)
+    {
+      return(batt_time * 60);
+    }
+  }
+  return(-1);
+}
+
+int CheckBatteryPercent()
+{
+  int life = -1;
+  size_t life_len = sizeof(life);
+  sysctlbyname("hw.acpi.battery.life", &life, &life_len, 0, 0);
+  return(life);
+}
+
+#else //Not Linux or FreeBSD
 
 int CheckBattery()
 {
