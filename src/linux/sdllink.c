@@ -1632,9 +1632,8 @@ int CheckBatteryPercent()
 /*
 Functions for battery on FreeBSD/DragonFly by Nach
 
-It'd be nice if more laptop users could test this.
-It'd also be nice if we could get the other BSDs,
-Solaris, and Mac OS X supported.
+If there's another FreeBSD based OS that doesn't
+define one of these two, please let me know.
 */
 #elif (defined(__FreeBSD__) || defined(__DragonFly__))
 #include <sys/types.h>
@@ -1681,7 +1680,77 @@ int CheckBatteryPercent()
   return(life);
 }
 
-#else //Not Linux or FreeBSD
+/*
+Functions for battery on NetBSD/OpenBSD by Nach
+
+If there's another NetBSD based OS that uses
+the same API, please let me know.
+
+Note this was the least tested section for all
+the battery specific code.
+*/
+
+#elif (defined(__NetBSD__) || defined(__OpenBSD__))
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <machine/apmvar.h>
+
+#ifndef APM_BATT_ABSENT
+#define APM_BATT_ABSENT APM_BATTERY_ABSENT
+#endif
+
+int CheckBattery()
+{
+  int fd = open("/dev/apm", O_RDONLY);
+  if (fd != -1)
+  {
+    struct apm_power_info info;
+    if (!ioctl(fd, APM_IOC_GETPOWER, &info) &&
+        (info.battery_state != APM_BATT_UNKNOWN) && (info.battery_state != APM_BATT_ABSENT))
+    {
+      close(fd);
+      if ((info.battery_state == APM_BATT_CHARGING) || (info.ac_state == APM_AC_ON)) { return(0); } //Plugged in
+      return(1); //Running off of battery
+    }
+    close(fd);
+  }
+  return(-1);
+}
+
+int CheckBatteryTime()
+{
+  int fd = open("/dev/apm", O_RDONLY);
+  if (fd != -1)
+  {
+    struct apm_power_info info;
+    if (!ioctl(fd, APM_IOC_GETPOWER, &info) && (info.minutes_left > 0) && (info.minutes_left < 0xFFFF))
+    {
+      close(fd);
+      return(info.minutes_left*60);
+    }
+    close(fd);
+  }
+  return(-1);
+}
+
+int CheckBatteryPercent()
+{
+  int fd = open("/dev/apm", O_RDONLY);
+  if (fd != -1)
+  {
+    struct apm_power_info info;
+    if (!ioctl(fd, APM_IOC_GETPOWER, &info))
+    {
+      close(fd);
+      return((info.battery_life == 255) ? 100 : info.battery_life);
+    }
+    close(fd);
+  }
+  return(-1);
+}
+
+#else //Not Linux, FreeBSD/DragonFlyBSD, NetBSD/OpenBSD
 
 int CheckBattery()
 {
