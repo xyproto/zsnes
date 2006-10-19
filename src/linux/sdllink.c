@@ -1633,7 +1633,7 @@ int CheckBatteryPercent()
 Functions for battery on FreeBSD/DragonFly by Nach
 
 If there's another FreeBSD based OS that doesn't
-define one of these two, please let me know.
+define one of these three, please let me know.
 */
 #elif (defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__DragonFly__))
 #include <sys/types.h>
