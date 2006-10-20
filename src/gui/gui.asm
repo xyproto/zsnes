@@ -71,7 +71,7 @@ EXTSYM JoyMaxY209,GetCoords,GetCoords3,MultiTap,SFXEnable,RestoreSystemVars
 EXTSYM GUIBIFIL,GUIHQ2X,GUIHQ3X,GUIHQ4X,nssdip1,nssdip2,nssdip3
 EXTSYM nssdip4,nssdip5,nssdip6,SkipMovie,MovieStop,MoviePlay,MovieRecord
 EXTSYM MovieInsertChapter,MovieSeekAhead,MovieSeekBehind,ResetDuringMovie
-EXTSYM MovieDumpRaw,AutoLoadCht,GUIQuickLoadUpdate,GUILoadData
+EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUIQuickLoadUpdate,GUILoadData
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCWarp,NTSCRef

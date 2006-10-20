@@ -1119,7 +1119,9 @@ static void zmv_record_finish()
 
     if ((fp = fopen_dir(ZSramPath, "append.mzi","wb")))
     {
+      fwrite4(zmv_vars.header.frames, fp);
       write_last_joy_state(fp);
+      fwrite4(ftell(zmv_vars.fp), fp);
       fclose(fp);
     }
   }
@@ -1607,6 +1609,38 @@ static size_t zmv_frames_replayed()
   return(zmv_open_vars.frames_replayed);
 }
 
+static bool zmv_append(char *filename)
+{
+  if (zmv_open(filename))
+  {
+    FILE *fp;
+
+    mzt_chdir_up();
+    if ((fp = fopen_dir(ZSramPath, "append.zst", "rb")))
+    {
+      zst_load(fp, 0);
+      fclose(fp);
+
+      if ((fp = fopen_dir(ZSramPath, "append.mzi", "rb")))
+      {
+        zmv_open_vars.frames_replayed = fread4(fp);
+        read_last_joy_state(fp);
+        fseek(zmv_vars.fp, fread4(fp), SEEK_SET);
+        fclose(fp);
+
+        zmv_vars.rle_count = 0;
+        mzt_chdir_down();
+
+        zmv_replay_to_record();
+        zmv_vars.header.rerecords--; //Remove the rerecord count added by replay to record
+        return(true);
+      }
+    }
+    mzt_chdir_down();
+    zmv_replay_finished();
+  }
+  return(false);
+}
 /*
 
 Rewind related functions and vars
@@ -2676,13 +2710,12 @@ void MovieRecord()
   if (MovieProcessing == MOVIE_PLAYBACK)
   {
     zmv_replay_to_record();
-    MovieProcessing = 2;
+    MovieProcessing = MOVIE_RECORD;
   }
 
   if (!MovieProcessing)
   {
     size_t fname_len = strlen(ZSaveName);
-    FILE *tempfhandle;
 
     setextension(ZSaveName, "zmv");
     ZSaveName[fname_len-1] = CMovieExt;
@@ -2693,7 +2726,7 @@ void MovieRecord()
       MovieRecordWinVal = 0;
     }
 
-    if (!(tempfhandle = fopen_dir(ZSramPath, ZSaveName,"rb")))
+    if (access_dir(ZSramPath, ZSaveName, F_OK))
     {
       PrevSRAMState = SRAMState;
       SRAMState = true;
@@ -2711,8 +2744,34 @@ void MovieRecord()
     }
     else
     {
-      fclose(tempfhandle);
       MovieRecordWinVal = 1;
+    }
+  }
+}
+
+void MovieAppend()
+{
+  if (!MovieProcessing)
+  {
+    size_t fname_len = strlen(ZSaveName);
+
+    setextension(ZSaveName, "zmv");
+    ZSaveName[fname_len-1] = CMovieExt;
+
+    if (zmv_append(ZSaveName))
+    {
+      PrevSRAMState = SRAMState;
+      SRAMState = true;
+
+      SetMovieMode(MOVIE_RECORD);
+      zmv_alloc_rewind_buffer(AllocatedRewindStates);
+      Msgptr = "MOVIE APPENDING.";
+      MessageOn = MsgCount;
+
+      oldframeskip = frameskip;
+      oldmaxskip = maxskip;
+      frameskip = 0;
+      maxskip = 0;
     }
   }
 }

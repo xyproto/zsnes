@@ -693,9 +693,9 @@ ProcessMouseButtons:
   jne .noAppend
   mov byte[GUICBHold],0
   mov byte[GUIQuit],2
-  ;pushad
-  ;call MovieAppend
-  ;popad
+  pushad
+  call MovieAppend
+  popad
   ret
 .noAppend
   cmp byte[GUICBHold],34  ; dump raw
