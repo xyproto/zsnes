@@ -120,6 +120,8 @@ EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
 EXTSYM d_names,selected_names,GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
 EXTSYM GUIcurrentfilewin,GUIcurrentcursloc,GUIcurrentviewloc
 EXTSYM GUIcurrentdircursloc,GetLoadData,ZRomPath,SaveSecondState,ClockBox,DisplayInfo
+EXTSYM GUIJT_currentviewloc,GUIJT_currentcursloc,GUIJT_entries
+EXTSYM GUIJT_offset,GUIJT_viewable,GUIGenericJumpTo
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
@@ -135,8 +137,7 @@ EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix
 
 %ifndef __MSDOS__
 EXTSYM ZsnesPage,DocsPage,GUICustomX,GUICustomY,GetCustomXY,SetCustomXY,initwinvideo
-EXTSYM Keep4_3Ratio,GUIJT_currentviewloc,GUIJT_currentcursloc,GUIJT_entries
-EXTSYM GUIJT_offset,GUIJT_viewable,GUIGenericJumpTo
+EXTSYM Keep4_3Ratio
 %endif
 
 %include "gui/guitools.inc"

@@ -1508,14 +1508,19 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
   GUIDisplayTextY 3,6,26,GUIInputTextA
   movzx eax,byte[cplayernum]
   mov ebx,[GUIInputRefP+eax*4]
-  mov ebx,[ebx]
-%ifndef __MSDOS__
+  movzx ebx,byte[ebx]
   cmp byte[GUIFreshInputSelect],0
   je .notfreshinput
   pushad
   mov byte[GUIFreshInputSelect],0
   mov dword[GUIJT_viewable],5
   mov eax,[NumInputDevices]
+%ifdef __MSDOS__
+  cmp ebx,11
+  jbe .okay
+  sub ebx,2    ;12 and 13 aren't available, so we need to adjust the position
+.okay
+%endif
   mov [GUIJT_entries],eax
   mov [GUIJT_offset],ebx
   mov eax,GUIcurrentinputviewloc
@@ -1525,7 +1530,6 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
   call GUIGenericJumpTo
   popad
 .notfreshinput
-%endif
   mov al,bl
   mov al,[GUIInputRefB+eax]
   mov ebx,eax
