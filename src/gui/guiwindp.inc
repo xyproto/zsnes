@@ -1515,12 +1515,7 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
   mov byte[GUIFreshInputSelect],0
   mov dword[GUIJT_viewable],5
   mov eax,[NumInputDevices]
-%ifdef __MSDOS__
-  cmp ebx,11
-  jbe .okay
-  sub ebx,2    ;12 and 13 aren't available, so we need to adjust the position
-.okay
-%endif
+  mov bl,[GUIInputRefB+ebx]
   mov [GUIJT_entries],eax
   mov [GUIJT_offset],ebx
   mov eax,GUIcurrentinputviewloc
