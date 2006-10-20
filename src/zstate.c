@@ -42,6 +42,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "asm_call.h"
 #include "zpath.h"
 #include "cfg.h"
+#include "zmovie.h"
 
 #define NUMCONV_FR3
 #define NUMCONV_FW3
@@ -255,7 +256,7 @@ bool RewindPosPassed;
 
 size_t rewind_state_size, cur_zst_size, old_zst_size;
 
-extern unsigned char romispal, MovieProcessing;
+extern unsigned char romispal;
 void zmv_rewind_save(size_t, bool);
 void zmv_rewind_load(size_t, bool);
 
@@ -307,8 +308,8 @@ void BackupCVFrame()
 {
   unsigned char *RewindBufferPos = StateBackup + LatestRewindPos*rewind_state_size;
 
-  if (MovieProcessing == 1) { zmv_rewind_save(LatestRewindPos, true); }
-  else if (MovieProcessing == 2) { zmv_rewind_save(LatestRewindPos, false); }
+  if (MovieProcessing == MOVIE_PLAYBACK) { zmv_rewind_save(LatestRewindPos, true); }
+  else if (MovieProcessing == MOVIE_RECORD) { zmv_rewind_save(LatestRewindPos, false); }
   copy_state_data(RewindBufferPos, memcpyinc, csm_save_rewind);
 
   if (RewindPosPassed)
@@ -347,15 +348,15 @@ void RestoreCVFrame()
   else { LatestRewindPos = EarliestRewindPos; }
 
   RewindBufferPos = StateBackup + LatestRewindPos*rewind_state_size;
-//  printf("Restoring from #%u, earliest: #%u\n", LatestRewindPos, EarliestRewindPos);
+  //printf("Restoring from #%u, earliest: #%u\n", LatestRewindPos, EarliestRewindPos);
 
-  if (MovieProcessing == 2)
+  if (MovieProcessing == MOVIE_RECORD)
   {
     zmv_rewind_load(LatestRewindPos, false);
   }
   else
   {
-    if (MovieProcessing == 1)
+    if (MovieProcessing == MOVIE_PLAYBACK)
     {
       zmv_rewind_load(LatestRewindPos, true);
     }
@@ -601,9 +602,6 @@ char *zst_name()
   return(ZStateName);
 }
 
-void mzt_chdir_up();
-void mzt_chdir_down();
-
 void zst_determine_newest()
 {
   struct stat filestat;
@@ -770,9 +768,8 @@ void set_state_message(char *prefix, char *suffix)
 
 void statesaver()
 {
-  if (MovieProcessing == 2)
+  if (MovieProcessing == MOVIE_RECORD)
   {
-    bool mzt_save(int, bool, bool);
     if (mzt_save(current_zst, (cbitmode && !NoPictureSave) ? true : false, false))
     {
       set_state_message("RR STATE ", " SAVED.");
@@ -1015,9 +1012,7 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
 
   switch (MovieProcessing)
   {
-    bool mzt_load(int, bool);
-
-    case 1:
+    case MOVIE_PLAYBACK:
       if (mzt_load(current_zst, true))
       {
         Msgptr = "CHAPTER LOADED.";
@@ -1028,7 +1023,7 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
         set_state_message("UNABLE TO LOAD STATE ", ".");
       }
       return;
-    case 2:
+    case MOVIE_RECORD:
       if (mzt_load(current_zst, false))
       {
         set_state_message("RR STATE ", " LOADED.");

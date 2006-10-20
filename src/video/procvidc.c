@@ -35,6 +35,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #endif
 #endif
 #include "../zpath.h"
+#include "../zmovie.h"
 #ifndef __MSDOS__
 #include "ntsc.h"
 #endif
@@ -80,11 +81,7 @@ void CapturePicture()
   }
 }
 
-extern unsigned char MovieProcessing;
 extern unsigned int cur_zst_size, old_zst_size;
-
-void mzt_chdir_up();
-void mzt_chdir_down();
 
 char *zst_name();
 

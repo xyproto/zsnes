@@ -51,6 +51,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include "md.h"
 #include "zpath.h"
 #include "cfg.h"
+#include "zmovie.h"
 
 #define NUMCONV_FR2
 #define NUMCONV_FR3
@@ -70,13 +71,10 @@ typedef unsigned __int64 uint64;
 extern unsigned int versionNumber, CRC32, cur_zst_size, MsgCount, MessageOn;
 extern unsigned int JoyAOrig, JoyBOrig, JoyCOrig, JoyDOrig, JoyEOrig;
 extern unsigned char GUIReset, ReturnFromSPCStall, GUIQuit;
-extern unsigned char MovieProcessing, CMovieExt, mencoderExists;
+extern unsigned char CMovieExt, mencoderExists;
 extern char *Msgptr;
 extern bool romispal;
 bool MovieWaiting = false;
-
-enum MovieStatus { MOVIE_OFF = 0, MOVIE_PLAYBACK, MOVIE_RECORD, MOVIE_OLD_PLAY };
-#define SetMovieMode(mode) (MovieProcessing = (unsigned char)mode)
 
 extern unsigned char device1, device2;
 extern unsigned short latchx, latchy;
@@ -1108,8 +1106,26 @@ static bool zmv_insert_chapter()
 
 static void zmv_record_finish()
 {
+  FILE *fp;
+
   flush_input_buffer();
 
+  //Now write the save for append data
+  mzt_chdir_up();
+  if ((fp = fopen_dir(ZSramPath, "append.zst", "wb")))
+  {
+    zst_save(fp, false, false);
+    fclose(fp);
+
+    if ((fp = fopen_dir(ZSramPath, "append.mzi","wb")))
+    {
+      write_last_joy_state(fp);
+      fclose(fp);
+    }
+  }
+  mzt_chdir_down();
+
+  //Finish up writing the ZMV
   internal_chapter_write(&zmv_vars.internal_chapters, zmv_vars.fp);
   internal_chapter_free_chain(zmv_vars.internal_chapters.next);
 
@@ -1672,6 +1688,10 @@ size_t mzt_filename_generate()
   {
     zmv_vars.filename[filename_len-1] = 't';
   }
+  if (access_dir(ZSramPath, zmv_vars.filename, F_OK))
+  {
+    mkdir_dir(ZSramPath, zmv_vars.filename);
+  }
   return(filename_len);
 }
 
@@ -1691,16 +1711,10 @@ void mzt_chdir_down()
 //Currently this doesn't work right in playback
 bool mzt_save(int position, bool thumb, bool playback)
 {
-  struct stat stat_buffer;
   FILE *fp;
   bool mzt_saved = false;
   char name_buf[7];
 
-  mzt_filename_generate();
-  if (stat_dir(ZSramPath, zmv_vars.filename, &stat_buffer))
-  {
-    mkdir_dir(ZSramPath, zmv_vars.filename);
-  }
   mzt_chdir_up();
 
   sprintf(name_buf, "%.2d.zst", position);
@@ -1754,7 +1768,6 @@ bool mzt_load(int position, bool playback)
   bool mzt_saved = false;
   char name_buf[7];
 
-  mzt_filename_generate();
   mzt_chdir_up();
 
   sprintf(name_buf, "%.2d.zst", position);
