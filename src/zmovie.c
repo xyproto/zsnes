@@ -932,6 +932,7 @@ static void zmv_create(char *filename)
         powercycle(true, false);
         break;
       case zmv_sm_reset:
+        MovieWaiting = true;
         GUIReset = 1;
         asm_call(GUIDoReset);
         ReturnFromSPCStall = 0;
