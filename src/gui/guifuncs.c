@@ -348,15 +348,15 @@ void GUIRestoreVars()
   CheckValueBounds(&bgfixer, 0, 1, 0, UB);
 
 #ifdef __MSDOS__
-  CheckValueBounds(&pl1contrl, 0, 17, 1, UB);
+  CheckValueBounds(&pl1contrl, 0, 16, 1, UB);
   CheckValueBounds(&pl1p209, 0, 1, 0, UB);
-  CheckValueBounds(&pl2contrl, 0, 17, 0, UB);
+  CheckValueBounds(&pl2contrl, 0, 16, 0, UB);
   CheckValueBounds(&pl2p209, 0, 1, 0, UB);
-  CheckValueBounds(&pl3contrl, 0, 17, 0, UB);
+  CheckValueBounds(&pl3contrl, 0, 16, 0, UB);
   CheckValueBounds(&pl3p209, 0, 1, 0, UB);
-  CheckValueBounds(&pl4contrl, 0, 17, 0, UB);
+  CheckValueBounds(&pl4contrl, 0, 16, 0, UB);
   CheckValueBounds(&pl4p209, 0, 1, 0, UB);
-  CheckValueBounds(&pl5contrl, 0, 17, 0, UB);
+  CheckValueBounds(&pl5contrl, 0, 16, 0, UB);
   CheckValueBounds(&pl5p209, 0, 1, 0, UB);
 #else
   CheckValueBounds(&pl1contrl, 0, 1, 1, UB);

@@ -374,35 +374,35 @@ NEWSYM DosUpdateDevices
     ret
 .checkdevice
     ; 1 = keyboard, 2 = 2b joystick, 3 = 4b joystick, 4 = 6b joystick, 5 = 8b joystick
-    ; 6 = Sidewinder1, 7 = Sidewinder2, 8 = Sidewinder3, 9 = Sidewiner4
-    ; 10 = Grip0, 11 = Grip1, 12 = Grip2, 13 = Grip3, 14 = Parallel pad0
-    ; 15 = Parallel pad1, 16 = Parallel pad2, 17 = Parallel pad3, 18 = Parallel pad4
+    ; 6 = Sidewinder1, 7 = Sidewinder2, 8 = Sidewinder3, 9 = Sidewinder4
+    ; 10 = Grip0, 11 = Grip1, N/A = Grip2, N/A = Grip3, 12 = Parallel pad0
+    ; 13 = Parallel pad1, 14 = Parallel pad2, 15 = Parallel pad3, 16 = Parallel pad4
 
     cmp al,1
     ja .joyokay
     ret
 .joyokay
-    cmp al,14
+    cmp al,12
     jne .nopp0
     or byte[PPad],1
     ret
 .nopp0
-    cmp al,15
+    cmp al,13
     jne .nopp1
     or byte[PPad],2
     ret
 .nopp1
-    cmp al,16
+    cmp al,14
     jne .nopp2
     or byte[PPad],4
     ret
 .nopp2
-    cmp al,17
+    cmp al,15
     jne .nopp3
     or byte[PPad],8
     ret
 .nopp3
-    cmp al,18
+    cmp al,16
     jne .nopp4
     or byte[PPad],16
     ret
@@ -444,7 +444,7 @@ NEWSYM DosUpdateDevices
 .skipswc
     ret
 .grip
-    cmp al,13
+    cmp al,11
     ja .none
     sub al,9
     cmp byte[NumGRiPs],al
@@ -490,7 +490,7 @@ NEWSYM DosUpdateDevices
 .skipswc2
     ret
 .grip2
-    cmp al,13
+    cmp al,11
     ja .none2
     sub al,9
     cmp byte[NumGRiPs209],al
@@ -1499,26 +1499,31 @@ NEWSYM SetInputDevice209
     SetDefaultKey 14Ah+8,14Bh+8,170h+4,171h+4,172h+4,173h+4,129h+8,12Bh+8,12Ch+8,128h+8,12Ah+8,12Eh+8
     ret
 .nogrip1
-    cmp bl,14
+    cmp bl,12
     jne near .nopp1
     SetDefaultKey 182h,183h,184h,185h,186h,187h,189h,188h,18Ah,181h,180h,18Bh
     ret
 .nopp1
-    cmp bl,15
+    cmp bl,13
     jne near .nopp2
     SetDefaultKey 192h,193h,194h,195h,196h,197h,199h,198h,19Ah,191h,190h,19Bh
     ret
 .nopp2
-    cmp bl,16
+    cmp bl,14
     jne near .nopp3
     SetDefaultKey 1A2h,1A3h,1A4h,1A5h,1A6h,1A7h,1A9h,1A8h,1AAh,1A1h,1A0h,1ABh
     ret
 .nopp3
-    cmp bl,17
+    cmp bl,15
     jne near .nopp4
     SetDefaultKey 1B2h,1B3h,1B4h,1B5h,1B6h,1B7h,1B9h,1B8h,1BAh,1B1h,1B0h,1BBh
     ret
 .nopp4
+    cmp bl,16
+    jne near .nopp5
+    SetDefaultKey 1C2h,1C3h,1C4h,1C5h,1C6h,1C7h,1C9h,1C8h,1CAh,1C1h,1C0h,1CBh
+    ret
+.nopp5
 .exit
     ret
 %endif

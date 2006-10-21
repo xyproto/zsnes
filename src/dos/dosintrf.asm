@@ -749,33 +749,38 @@ NEWSYM SetInputDevice
     SetDefaultKey 0CAh+8,0CBh+8,0F0h+4,0F1h+4,0F2h+4,0F3h+4,0A9h+8,0ABh+8,0ACh+8,0A8h+8,0AAh+8,0AEh+8
     ret
 .nogrip1
-    cmp bl,14
+    cmp bl,12
     jne near .nopp1
     SetDefaultKey 182h,183h,184h,185h,186h,187h,189h,188h,18Ah,181h,180h,18Bh
     ret
 .nopp1
-    cmp bl,15
+    cmp bl,13
     jne near .nopp2
     SetDefaultKey 192h,193h,194h,195h,196h,197h,199h,198h,19Ah,191h,190h,19Bh
     ret
 .nopp2
-    cmp bl,16
+    cmp bl,14
     jne near .nopp3
     SetDefaultKey 1A2h,1A3h,1A4h,1A5h,1A6h,1A7h,1A9h,1A8h,1AAh,1A1h,1A0h,1ABh
     ret
 .nopp3
-    cmp bl,17
+    cmp bl,15
     jne near .nopp4
     SetDefaultKey 1B2h,1B3h,1B4h,1B5h,1B6h,1B7h,1B9h,1B8h,1BAh,1B1h,1B0h,1BBh
     ret
 .nopp4
+    cmp bl,16
+    jne near .nopp5
+    SetDefaultKey 1C2h,1C3h,1C4h,1C5h,1C6h,1C7h,1C9h,1C8h,1CAh,1C1h,1C0h,1CBh
+    ret
+.nopp5
 .exit
     ret
 
 SECTION .data
 
 ; Total Number of Input Devices
-NEWSYM NumInputDevices, dd 16
+NEWSYM NumInputDevices, dd 17
 
 ; Input Device Names
 NEWSYM GUIInputNames
@@ -793,8 +798,9 @@ db 'GAMEPAD PRO P0  ',0
 db 'GAMEPAD PRO P1  ',0
 db 'PARALLEL LPT1 P1',0
 db 'PARALLEL LPT1 P2',0
-db 'PARALLEL LPT2 P1',0
-db 'PARALLEL LPT2 P2',0
+db 'PARALLEL LPT1 P3',0
+db 'PARALLEL LPT1 P4',0
+db 'PARALLEL LPT1 P5',0
 
 ; GUI Description codes for each corresponding key pressed value
 NEWSYM ScanCodeListing
@@ -853,10 +859,12 @@ NEWSYM ScanCodeListing
         db 'PPA','PPX','PPL','PPR','   ','   ','   ','   '
         db 'P2B','P2Y','P2S','P2T','P2U','P2D','P2L','P2R'
         db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
-        db 'PPB','PPY','PSL','PST','PUP','PDN','PLT','PRT'
-        db 'PPA','PPX','PPL','PPR','   ','   ','   ','   '
-        db 'P2B','P2Y','P2S','P2T','P2U','P2D','P2L','P2R'
-        db 'P2A','P2X','P2L','P2R','   ','   ','   ','   '
+        db 'P3B','P3Y','P3S','P3T','P3U','P3D','P3L','P3R'
+        db 'P3A','P3X','P3L','P3R','   ','   ','   ','   '
+        db 'P4B','P4Y','P4S','P4T','P4U','P4D','P4L','P4R'
+        db 'P4A','P4X','P4L','P4R','   ','   ','   ','   '
+        db 'P5B','P5Y','P5S','P5T','P5U','P5D','P5L','P5R'
+        db 'P5A','P5X','P5L','P5R','   ','   ','   ','   '
 
 SECTION .bss
 
