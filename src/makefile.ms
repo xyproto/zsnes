@@ -317,11 +317,11 @@ version${OE}: version.c
 zloader${OE}: zloader.c asm_call.h cfg${OE} zloader.h zpath.h \
 	${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h
 zmovie${OE}: zmovie.c asm_call.h cfg${OE} gblvars.h md${OE} numconv.h zpath.h \
-	${JMADIR}/zsnesjma.h ${WINDIR}/safelib.h ${ZIPDIR}/zunzip.h
+	${JMADIR}/zsnesjma.h ${WINDIR}/safelib.h ${ZIPDIR}/zunzip.h zmovie.h
 zpath${OE}: zpath.c cfg${OE} zpath.h ${DOSDIR}/lib.h ${JMADIR}/zsnesjma.h \
 	${WINDIR}/lib.h ${WINDIR}/safelib.h ${ZIPDIR}/zunzip.h
 zstate${OE}: zstate.c asm_call.h cfg${OE} gblvars.h numconv.h zpath.h \
-	${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h
+	${JMADIR}/zsnesjma.h ${ZIPDIR}/zunzip.h zmovie.h
 ztime${OE}: ztime.asm
 ztimec${OE}: ztimec.c
 
@@ -467,7 +467,7 @@ ${VIDEODIR}/ntsc${OE}: ${VIDEODIR}/ntsc.c ${VIDEODIR}/ntsc.h
 ${VIDEODIR}/procvid${OE}: ${VIDEODIR}/procvid.asm macros.mac \
 	${VIDEODIR}/2xsaimmx.inc ${VIDEODIR}/copyvid.inc
 ${VIDEODIR}/procvidc${OE}: ${VIDEODIR}/procvidc.c zpath.h \
-	${JMADIR}/zsnesjma.h ${VIDEODIR}/ntsc.h ${ZIPDIR}/zunzip.h
+	${JMADIR}/zsnesjma.h ${VIDEODIR}/ntsc.h ${ZIPDIR}/zunzip.h zmovie.h
 ${VIDEODIR}/sw_draw${OE}: ${VIDEODIR}/sw_draw.asm macros.mac
 
 ${WINDIR}/copyvwin${OE}: ${WINDIR}/copyvwin.asm macros.mac
