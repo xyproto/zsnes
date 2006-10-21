@@ -2726,32 +2726,6 @@ void MovieRecord()
 
     if (MovieRecordWinVal == 1)
     {
-      //Cleanup old MZTs
-      DIR *dir;
-
-      setextension(ZSaveName, "mzt");
-      if (CMovieExt != 'v') { ZSaveName[fname_len-1] = CMovieExt; }
-      strcat(ZSramPath, ZSaveName);
-
-      if ((dir = opendir(ZSramPath)))
-      {
-        struct dirent *entry;
-
-        strcatslash(ZSramPath);
-        while ((entry = readdir(dir)))
-        {
-          if (*entry->d_name != '.')
-          {
-            remove_dir(ZSramPath, entry->d_name);
-          }
-        }
-        closedir(dir);
-      }
-      strdirname(ZSramPath);
-      strcatslash(ZSramPath);
-      setextension(ZSaveName, "zmv");
-      ZSaveName[fname_len-1] = CMovieExt;
-
       //Erase old ZMV
       remove_dir(ZSramPath, ZSaveName);
       MovieRecordWinVal = 0;
@@ -2759,6 +2733,8 @@ void MovieRecord()
 
     if (access_dir(ZSramPath, ZSaveName, F_OK))
     {
+      DIR *dir;
+
       PrevSRAMState = SRAMState;
       SRAMState = true;
 
@@ -2772,6 +2748,22 @@ void MovieRecord()
       oldmaxskip = maxskip;
       frameskip = 0;
       maxskip = 0;
+
+      //Cleanup old MZTs
+      mzt_chdir_up();
+      if ((dir = opendir(ZSramPath)))
+      {
+        struct dirent *entry;
+        while ((entry = readdir(dir)))
+        {
+          if (*entry->d_name != '.')
+          {
+            remove_dir(ZSramPath, entry->d_name);
+          }
+        }
+        closedir(dir);
+      }
+      mzt_chdir_down();
     }
     else
     {
