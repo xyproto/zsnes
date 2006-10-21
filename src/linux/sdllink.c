@@ -1485,6 +1485,8 @@ Special thanks David Lee Lambert for most of the code here
 */
 
 #ifdef linux
+#include <math.h>
+
 int CheckBattery()
 {
   int battery = -1; //No battery / Can't get info
@@ -1750,7 +1752,131 @@ int CheckBatteryPercent()
   return(-1);
 }
 
-#else //Not Linux, FreeBSD/DragonFlyBSD, NetBSD/OpenBSD
+/*
+Functions for battery on Mac OS X by drizztbsd, Nach
+
+If you have issues, please report.
+*/
+
+#elif defined(__APPLE__)
+#include <sys/types.h>
+#include <math.h>
+#include <CoreFoundation/CoreFoundation.h>
+#include <IOKit/ps/IOPowerSources.h>
+#include <IOKit/ps/IOPSkeys.h>
+
+static int stringsAreEqual(CFStringRef a, CFStringRef b)
+{
+  if (!a || !b)
+  {
+    return(0);
+  }
+  return(CFStringCompare(a, b, 0) == kCFCompareEqualTo);
+}
+
+static int BatteryLifeTime;
+static int BatteryLifePercent;
+static int HasBattery;
+
+static void update_battery_info()
+{
+  CFTypeRef    powerBlob = IOPSCopyPowerSourcesInfo();
+  CFArrayRef   powerSourcesList = IOPSCopyPowerSourcesList(powerBlob);
+  unsigned int count = CFArrayGetCount(powerSourcesList);
+  unsigned int i;
+  unsigned int tmp;
+  char         ret;
+
+  int totalCurrentCapacity = 0, totalMaxCapacity = 0;
+
+  BatteryLifeTime = -1;
+  BatteryLifePercent = -1;
+  HasBattery = -1;
+
+  for (i = 0; i < count; ++i)
+  {
+    CFTypeRef       powerSource;
+    CFDictionaryRef description;
+
+    powerSource = CFArrayGetValueAtIndex(powerSourcesList, i);
+    description = IOPSGetPowerSourceDescription(powerBlob, powerSource);
+
+    //continue if one battery is not present
+    if (CFDictionaryGetValue(description, CFSTR(kIOPSIsPresentKey)) == kCFBooleanFalse)
+    {
+      continue;
+    }
+
+    if (stringsAreEqual(CFDictionaryGetValue(description, CFSTR(kIOPSTransportTypeKey)), CFSTR(kIOPSInternalType)))
+    {
+      int currentCapacity, maxCapacity;
+
+      CFStringRef currentState = CFDictionaryGetValue(description, CFSTR(kIOPSPowerSourceStateKey));
+      CFNumberRef timeToEmptyNum = CFDictionaryGetValue(description, CFSTR(kIOPSTimeToEmptyKey));
+
+      if (CFEqual(currentState, CFSTR(kIOPSACPowerValue)) && (HasBattery != 1))
+      {
+        HasBattery = 0;
+      }
+      else if (CFEqual(currentState, CFSTR(kIOPSBatteryPowerValue)))
+      {
+        CFNumberRef timeToEmptyNum = CFDictionaryGetValue(description, CFSTR(kIOPSTimeToEmptyKey));
+        if(CFNumberGetValue(timeToEmptyNum, kCFNumberIntType, &tmp))
+        {
+          if (BatteryLifeTime > -1)
+          {
+            BatteryLifeTime += tmp;
+          }
+          else
+          {
+            BatteryLifeTime = tmp;
+          }
+        }
+        HasBattery = 1;
+      }
+      CFNumberRef currentCapacityNum = CFDictionaryGetValue(description, CFSTR(kIOPSCurrentCapacityKey));
+      CFNumberRef maxCapacityNum = CFDictionaryGetValue(description, CFSTR(kIOPSMaxCapacityKey));
+
+      if (CFNumberGetValue(currentCapacityNum, kCFNumberIntType, &currentCapacity) && CFNumberGetValue(maxCapacityNum, kCFNumberIntType, &maxCapacity))
+      {
+        totalCurrentCapacity += currentCapacity;
+        totalMaxCapacity += maxCapacity;
+      }
+    }
+  }
+
+  CFRelease(powerSourcesList);
+  CFRelease(powerBlob);
+
+  if (totalCurrentCapacity && totalMaxCapacity)
+  {
+    BatteryLifePercent = (int)roundf((totalCurrentCapacity / (float)totalMaxCapacity) * 100.0f);
+  }
+}
+
+int CheckBattery()
+{
+  update_battery_info();
+  return(HasBattery);
+}
+
+int CheckBatteryTime()
+{
+  update_battery_info();
+  if (BatteryLifeTime > -1)
+  {
+    return(BatteryLifeTime * 60);
+  }
+  return(-1);
+}
+
+int CheckBatteryPercent()
+{
+  update_battery_info();
+  return(BatteryLifePercent);
+}
+
+#else //Not Linux, FreeBSD/DragonFlyBSD, NetBSD/OpenBSD, Mac OS X
 
 int CheckBattery()
 {
