@@ -50,6 +50,7 @@ extern unsigned char romtype, MouseDis, ZMVZClose, ZMVRawDump, debugger, debugdi
 extern unsigned char gammalevel, spcon, ForcePal, DSPDisable, V8Mode;
 extern unsigned char autoloadstate, autoloadmovie;
 extern char *STCart2;
+extern unsigned int NumInputDevices;
 void zstart();
 #ifdef __WIN32__
 void InitDebugger();
@@ -78,8 +79,12 @@ static void display_help()
 #endif
   put_line("  -1 #/-2 #   Select Player 1/2 Input :");
 #ifdef __MSDOS__
-  put_line("                0 = None       1 = Keyboard   2 = 2-buttons   3 = 4-buttons");
-  put_line("                4 = 6-buttons  5 = 8-buttons  6 = Sidewinder");
+  put_line("                0 = None             1 = Keyboard         2 = 2 button pad");
+  put_line("                3 = 4 button pad     4 = 6 button pad     5 = 8 button pad");
+  put_line("                6 = Sidewinder #1    7 = Sidewinder #2    8 = Sidewinder #3");
+  put_line("                9 = Sidewinder #4   10 = Gamepad Pro #0  11 = Gamepad Pro #1");
+  put_line("               12 = LPT1 #1         13 = LPT1 #2         14 = LPT1 #3");
+  put_line("               15 = LPT1 #4         16 = LPT1 #5");
 #else
   put_line("                0 = None       1 = Keyboard/Gamepad");
 #endif
@@ -506,19 +511,11 @@ static void handle_params(int argc, char *argv[])
           case '1': //Player 1 Input
             i++;
 
-            #ifdef __MSDOS__
-            if ((pl1contrl = zatoi(argv[i])) > 6)
+            if ((pl1contrl = zatoi(argv[i])) >= NumInputDevices)
             {
-              puts("Player 1 Input must be a value from 0 to 6!");
+              printf("Player 1 Input must be a value from 0 to %u!\n", NumInputDevices);
               exit(1);
             }
-            #else
-            if ((pl1contrl = zatoi(argv[i])) > 1)
-            {
-              puts("Player 1 Input must be a value from 0 to 1!");
-              exit(1);
-            }
-            #endif
 
             ConvertJoyMap1();
             break;
@@ -526,19 +523,11 @@ static void handle_params(int argc, char *argv[])
           case '2': //Player 2 Input
             i++;
 
-            #ifdef __MSDOS__
-            if ((pl2contrl = zatoi(argv[i])) > 6)
+            if ((pl2contrl = zatoi(argv[i])) > NumInputDevices)
             {
-              puts("Player 2 Input must be a value from 0 to 6!");
+              printf("Player 2 Input must be a value from 0 to %u!\n", NumInputDevices);
               exit(1);
             }
-            #else
-            if ((pl2contrl = zatoi(argv[i])) > 1)
-            {
-              puts("Player 2 Input must be a value from 0 to 1!");
-              exit(1);
-            }
-            #endif
 
             ConvertJoyMap2();
             break;
@@ -566,7 +555,9 @@ static void handle_params(int argc, char *argv[])
               exit(1);
             }
             else
+            {
               ForceRefreshRate = 1;
+            }
             break;
           #endif
 
