@@ -40,11 +40,14 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <io.h>
 #define ftruncate chsize
 #include "win/safelib.h"
-#else
-#include <unistd.h>
+#include "win/lib.h"
 #endif
 #define DIR_SLASH "\\"
 #define WRITE_BINARY "wb"
+#endif
+#ifndef _MSC_VER
+#include <dirent.h>
+#include <unistd.h>
 #endif
 #include "gblvars.h"
 #include "asm_call.h"
@@ -2723,6 +2726,33 @@ void MovieRecord()
 
     if (MovieRecordWinVal == 1)
     {
+      //Cleanup old MZTs
+      DIR *dir;
+
+      setextension(ZSaveName, "mzt");
+      if (CMovieExt != 'v') { ZSaveName[fname_len-1] = CMovieExt; }
+      strcat(ZSramPath, ZSaveName);
+
+      if ((dir = opendir(ZSramPath)))
+      {
+        struct dirent *entry;
+
+        strcatslash(ZSramPath);
+        while ((entry = readdir(dir)))
+        {
+          if (*entry->d_name != '.')
+          {
+            remove_dir(ZSramPath, entry->d_name);
+          }
+        }
+        closedir(dir);
+      }
+      strdirname(ZSramPath);
+      strcatslash(ZSramPath);
+      setextension(ZSaveName, "zmv");
+      ZSaveName[fname_len-1] = CMovieExt;
+
+      //Erase old ZMV
       remove_dir(ZSramPath, ZSaveName);
       MovieRecordWinVal = 0;
     }
