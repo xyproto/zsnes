@@ -34,6 +34,7 @@ CFLAGS="$CFLAGS -D__UNIXSDL__"
 NFLAGS="$NFLAGS -w-orphan-labels -D__UNIXSDL__"
 PSRFLAGS="$PSRFLAGS -D__UNIXSDL__"
 MMLIB_FILES="\$(MMLIB_D)/mm.o"
+STRIP="-s"
 case x$target in
   *-*-linux*)
     NFLAGS="$NFLAGS -f elf -DELF"
@@ -52,6 +53,7 @@ case x$target in
     NFLAGS="$NFLAGS -D__MACOSX__ -D__OPENGL__ -f macho -DMACHO"
     PSRFLAGS="$PSRFLAGS -D__OPENGL__"
     MMLIB_FILES="$MMLIB_FILES \$(MMLIB_D)/osx.o"
+    STRIP=""
     LDFLAGS="$LDFLAGS -framework Carbon -framework IOKit -framework Foundation -framework OpenGL -mdynamic-no-pic -read_only_relocs suppress"
     GL_DRAW="\$(PORT_D)/gl_draw.o"
     found_opengl=yes
@@ -227,10 +229,10 @@ else
     if test x$force_arch = x; then
       AC_MSG_WARN([If you intend to distribute this binary, make sure you use force_arch and set to i586 (or whichever CPU Arch you intend for)])
     fi
-    CFLAGS="$CFLAGS -O3 -fomit-frame-pointer -fprefetch-loop-arrays -fforce-addr -s -D__RELEASE__"
+    CFLAGS="$CFLAGS -O3 -fomit-frame-pointer -fprefetch-loop-arrays -fforce-addr $STRIP -D__RELEASE__"
     NFLAGS="$NFLAGS -O99999999 -D__RELEASE__"
   else
-    CFLAGS="$CFLAGS -O3 -fomit-frame-pointer -s"
+    CFLAGS="$CFLAGS -O3 -fomit-frame-pointer $STRIP"
     NFLAGS="$NFLAGS -O1"
   fi
 fi
