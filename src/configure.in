@@ -71,7 +71,7 @@ dnl - libsdl stuff
 AM_PATH_SDL(1.2.0,,[AC_MSG_ERROR(SDL >= 1.2.0 is required)])
 
 dnl - zlib stuff
-AM_PATH_ZLIB(1.1.0,,[AC_MSG_ERROR(zlib >= 1.1.0 is required)])
+AM_PATH_ZLIB(1.2.3,,[AC_MSG_ERROR(zlib >= 1.2.3 is required)])
 CFLAGS="$CFLAGS $ZLIB_CFLAGS"
 LDFLAGS="$LDFLAGS $ZLIB_LIBS"
 
@@ -267,7 +267,7 @@ AC_SUBST(DEBUGGER_FILES)
 AC_SUBST(PSR_TEMP)
 
 AC_CONFIG_FILES(Makefile)
-touch --date="Jan 1 1980" makefile.dep
+touch -t 198001010000 makefile.dep
 
 AC_OUTPUT
 
