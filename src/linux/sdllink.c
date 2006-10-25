@@ -1607,6 +1607,7 @@ static void update_battery_info()
     if (design_capacity > 0.0f)
     {
       BatteryLifePercent = (int)floorf(remaining_capacity / ((full_capacity > 0.0f) ? full_capacity : design_capacity) * 100.0);
+      if (BatteryLifePercent > 100) { BatteryLifePercent = 100; }
       if (present_rate < 0.0f)
       {
         // Linux specifies rates in mWh or mAh
