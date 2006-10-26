@@ -178,7 +178,7 @@ CHIPSOBJ=${CHIPDIR}/dsp1emu${OE} ${CHIPDIR}/fxemu2${OE} ${CHIPDIR}/sfxproc${OE}\
 	${CHIPDIR}/sdd1emu${OE} ${CHIPDIR}/c4emu${OE} ${CHIPDIR}/dsp4proc${OE}\
 	${CHIPDIR}/dsp4emu${OE} ${CHIPDIR}/dsp3proc${OE} ${CHIPDIR}/dsp3emu${OE}\
 	${CHIPDIR}/obc1emu${OE} ${CHIPDIR}/obc1proc${OE} ${CHIPDIR}/c4proc${OE}\
-	${CHIPDIR}/7110proc${OE}
+	${CHIPDIR}/7110proc${OE} ${CHIPDIR}/st11proc${OE} ${CHIPDIR}/seta11${OE}
 
 CPUOBJ=${CPUDIR}/dma${OE} ${CPUDIR}/dsp${OE} ${CPUDIR}/dspproc${OE}\
 	${CPUDIR}/execute${OE} ${CPUDIR}/executec${OE} ${CPUDIR}/irq${OE}\
@@ -349,9 +349,11 @@ ${CHIPDIR}/sa1regs${OE}: ${CHIPDIR}/sa1regs.asm macros.mac ${CPUDIR}/regs.mac \
 	${CPUDIR}/regsw.mac
 ${CHIPDIR}/sdd1emu${OE}: ${CHIPDIR}/sdd1emu.c
 ${CHIPDIR}/seta10${OE}: ${CHIPDIR}/seta10.c
+${CHIPDIR}/seta11${OE}: ${CHIPDIR}/seta11.c
 ${CHIPDIR}/sfxproc${OE}: ${CHIPDIR}/sfxproc.asm macros.mac ${CPUDIR}/regs.mac \
 	${CPUDIR}/regsw.mac
 ${CHIPDIR}/st10proc${OE}: ${CHIPDIR}/st10proc.asm macros.mac
+${CHIPDIR}/st11proc${OE}: ${CHIPDIR}/st11proc.asm macros.mac
 
 ${CPUDIR}/dma${OE}: ${CPUDIR}/dma.asm macros.mac
 ${CPUDIR}/dsp${OE}: ${CPUDIR}/dsp.asm macros.mac

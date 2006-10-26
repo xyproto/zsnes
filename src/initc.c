@@ -2058,16 +2058,26 @@ void CheckROMType()
 
   if (SETAEnable)
   {
-    // Setup SETA 010/011 stuff
+    if (strncmp((char *)ROM+Lo, "2DAN MORITA SHOUGI", 18))
+    {
+      //Setup Seta 10 stuff
 
-    // Really banks 68h-6Fh:0000-7FFF are all mapped the same by the chip but
-    // F1 ROC II only uses bank 68h
-    map_mem(0x68, &setabank, 1);
+      //Really banks 68h-6Fh:0000-7FFF are all mapped the same by the chip but
+      //F1 ROC II only uses bank 68h
+      map_mem(0x68, &setabank, 1);
 
-    // Control register (and some status?) is in banks 60h-67h:0000-3FFF
-    map_mem(0x60, &setabanka, 1);
+      //Control register (and some status?) is in banks 60h-67h:0000-3FFF
+      map_mem(0x60, &setabanka, 1);
 
-    SetaCmdEnable = 0x00000080; // 60:0000
+      SetaCmdEnable = 0x00000080; // 60:0000
+    }
+    else
+    {
+      void ST011_Reset();
+      ST011_Reset();
+      map_mem(0x68, &seta11bank, 1);
+      map_mem(0x60, &seta11banka, 1);
+    }
     memset(setaramdata, 0, 4096); // clear 4kB SETA ram
 
     // proper SETA sram area

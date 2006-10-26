@@ -37,7 +37,7 @@ typedef struct
 extern mrwp regbank, membank, wrambank, srambank, erambank, sramsbank;
 extern mrwp sa1regbank, sa1rambank, sa1rambankb;
 extern mrwp dsp1bank, dsp2bank, dsp3bank, dsp4bank;
-extern mrwp setabank, setabanka;
+extern mrwp setabank, setabanka, seta11bank, seta11banka;
 extern mrwp sfxbank, sfxbankb, sfxbankc, sfxbankd;
 extern mrwp obc1bank, c4bank, SPC7110bank, SPC7110SRAMBank;
 
