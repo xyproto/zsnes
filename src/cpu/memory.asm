@@ -1445,6 +1445,8 @@ NEWSYM memaccessbankr1648mb
 ;*******************************************************
 
 %macro SRAMAccess 1
+    cmp bl,70h
+    jb .notlarge        ;Sufami Turbo
     cmp dword[curromspace],0x200000
     ja .large
     cmp  dword[ramsize],0x8000
