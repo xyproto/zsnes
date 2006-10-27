@@ -758,7 +758,14 @@ void SetupSramSize()
   }
   else
   {
-    ramsize = ((ROM[infoloc+SRAMSizeOffset]) ? (8 << ((unsigned int)ROM[infoloc+SRAMSizeOffset])) : 0);
+    if (!strncmp((char *)ROM, "BANDAI SFC-ADX", 14))
+    {  // For the Sufami Turbo
+      ramsize = 64;
+    }
+    else
+    {
+      ramsize = ((ROM[infoloc+SRAMSizeOffset]) ? (8 << ((unsigned int)ROM[infoloc+SRAMSizeOffset])) : 0);
+    }
   }
 
   //Fix if some ROM goes nuts on size
@@ -1957,6 +1964,11 @@ void CheckROMType()
   if (romtype == 1)
   {  // banks 70 - 77
     map_mem(0x70, &srambank, 0x08);
+
+    if (!strncmp((char *)ROM, "BANDAI SFC-ADX", 14))
+    {  //Sufami Turbo maps to $60 - $67
+      map_mem(0x60, &srambank, 0x08);
+    }
 
     if (!BSEnable)
     {  // banks 78 - 7D (not for BS)
