@@ -756,16 +756,13 @@ void SetupSramSize()
   {
     ramsize = 32;
   }
+  else if (!strncmp((char *)ROM, "BANDAI SFC-ADX", 14))
+  {  // For the Sufami Turbo
+    ramsize = 64;
+  }
   else
   {
-    if (!strncmp((char *)ROM, "BANDAI SFC-ADX", 14))
-    {  // For the Sufami Turbo
-      ramsize = 64;
-    }
-    else
-    {
-      ramsize = ((ROM[infoloc+SRAMSizeOffset]) ? (8 << ((unsigned int)ROM[infoloc+SRAMSizeOffset])) : 0);
-    }
+    ramsize = ((ROM[infoloc+SRAMSizeOffset]) ? (8 << ((unsigned int)ROM[infoloc+SRAMSizeOffset])) : 0);
   }
 
   //Fix if some ROM goes nuts on size
