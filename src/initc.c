@@ -156,12 +156,12 @@ bool EHiHeader(unsigned char *ROM, int BankLoc)
 
 void SwapData(unsigned int *loc1, unsigned int *loc2, unsigned int amount)
 {
-  unsigned int temp, i;
-  for (i = 0; i < amount; i++)
+  unsigned int temp;
+  while (amount--)
   {
-    temp = loc1[i];
-    loc1[i] = loc2[i];
-    loc2[i] = temp;
+    temp = *loc1;
+    *loc1++ = *loc2;
+    *loc2++ = temp;
   }
 }
 
@@ -1064,16 +1064,7 @@ void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
 
   curromspace = 0;
   if (maxromspace < addOnStart+addOnSize) { return; }
-  memcpy(ROM+addOnStart, ROM, addOnSize);
-
-  if (STCart2)
-  {
-    if (maxromspace < 0x300000) { return; }
-    curromspace = 0;
-    load_file_fs(STCart2);
-    memcpy(ROM+0x200000, ROM, addOnSize);
-    curromspace = 0;
-  }
+  memmove(ROM+addOnStart, ROM, addOnSize);
 
   if (!*basepath)
   {
@@ -1101,19 +1092,10 @@ void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
     case 3:
       memcpy(ROM+0x40000, ROM, 0x40000);
       memcpy(ROM+0x80000, ROM, 0x80000);
-      if (STCart2 && addOnSize < 0x100000)
-      {
-        memcpy(ROM+0x180000, ROM+0x100000, 0x80000);
-        memcpy(ROM+0x280000, ROM+0x200000, 0x80000);
-      }
       break;
   }
 
   curromspace = addOnStart+addOnSize;
-  if (STCart2)
-  {
-    curromspace = 0x300000;
-  }
   SplittedROM = true;
 }
 
@@ -1138,15 +1120,31 @@ void SplitSupport()
     addOnStart = 0x400000;
     addOnSize = 0x80000;
     SplitSetup(GNextPath, "G-NEXT.ZIP", 2);
-    addOnStart = 0x200000;
+    addOnStart = 0x200000; //Correct for checksum calc
   }
 
   //Sufami Turbo
   if (!strncmp(ROM, "BANDAI SFC-ADX", 14))
   {
-    addOnStart = 0x100000;
-    addOnSize = curromspace;
-    SplitSetup(STPath, "STBIOS.ZIP", 3);
+    if (!STCart2)
+    {
+      addOnStart = 0x100000;
+      addOnSize = curromspace;
+      SplitSetup(STPath, "STBIOS.ZIP", 3);
+    }
+    else if (maxromspace >= curromspace+curromspace+0x80000)
+    {
+      memcpy(ROM+curromspace+curromspace, ROM, curromspace);
+      memcpy(ROM+curromspace*3, ROM, curromspace);
+      curromspace = 0;
+      load_file_fs(STCart2);
+      memcpy(ROM+curromspace, ROM, curromspace);
+      SwapData(romdata, romdata+(curromspace>>1), curromspace>>1);
+      addOnSize = curromspace<<2;
+      addOnStart = 0x100000;
+      SplitSetup(STPath, "STBIOS.ZIP", 3);
+      addOnSize = (curromspace-addOnStart) >> 2; //Correct for checksum calc
+    }
   }
 }
 
