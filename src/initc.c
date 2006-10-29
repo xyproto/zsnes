@@ -758,7 +758,7 @@ void SetupSramSize()
   }
   else if (!strncmp((char *)ROM, "BANDAI SFC-ADX", 14))
   {  // For the Sufami Turbo
-    ramsize = 16;
+    ramsize = 8 << ((unsigned int)ROM[0x100032]);
   }
   else
   {
