@@ -1132,7 +1132,7 @@ void SplitSupport()
       addOnSize = curromspace;
       SplitSetup(STPath, "STBIOS.ZIP", 3);
     }
-    else if (maxromspace >= curromspace+curromspace+0x80000)
+    else if (maxromspace >= (curromspace<<2)+0x100000)
     {
       memcpy(ROM+curromspace+curromspace, ROM, curromspace);
       memcpy(ROM+curromspace*3, ROM, curromspace);
