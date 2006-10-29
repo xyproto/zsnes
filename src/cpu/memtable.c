@@ -297,8 +297,8 @@ mrwp obc1bank = { OBC1Read8b, OBC1Write8b, OBC1Read16b, OBC1Write16b };
 mrwp c4bank = { C4Read8b, C4Write8b, C4Read16b, C4Write16b };
 mrwp SPC7110bank = { memaccessspc7110r8, memaccessspc7110w8, memaccessspc7110r16, memaccessspc7110w16 };
 mrwp SPC7110SRAMBank = { SPC7110ReadSRAM8b, SPC7110WriteSRAM8b, SPC7110ReadSRAM16b, SPC7110WriteSRAM16b };
-mrwp stbanka = { stsramr8, stsramr16, stsramw8, stsramw16 };
-mrwp stbankb = { stsramr8b, stsramr16b, stsramw8b, stsramw16b };
+mrwp stbanka = { stsramr8, stsramw8, stsramr16, stsramw16 };
+mrwp stbankb = { stsramr8b, stsramw8b, stsramr16b, stsramw16b };
 
 
 void SetAddressingModes()
