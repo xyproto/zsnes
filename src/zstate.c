@@ -1102,7 +1102,7 @@ void SaveSecondState()
   zst_name();
 }
 
-extern unsigned char CHIPBATT, sramsavedis;
+extern unsigned char CHIPBATT, sramsavedis, *sram2;
 void SaveCombFile();
 
 // Sram saving
@@ -1136,9 +1136,14 @@ void SaveSramData()
     if (!special || CHIPBATT)
     {
       clim();
-      if (*ZSaveName && (fp = fopen_dir(ZSramPath,ZSaveName,"wb")))
+      if (*ZSaveName && (fp = fopen_dir(ZSramPath, ZSaveName,"wb")))
       {
         fwrite(data_to_save, 1, ramsize, fp);
+        fclose(fp);
+      }
+      if (*ZSaveST2Name && (fp = fopen_dir(ZSramPath, ZSaveST2Name, "wb")))
+      {
+        fwrite(sram2, 1, ramsize, fp);
         fclose(fp);
       }
       stim();
@@ -1153,13 +1158,18 @@ void OpenSramFile()
   FILE *fp;
 
   setextension(ZSaveName, "srm");
-  fp = fopen_dir(ZSramPath, ZSaveName, "rb");
-  if (fp)
+  if ((fp = fopen_dir(ZSramPath, ZSaveName, "rb")))
   {
     fread(sram, 1, ramsize, fp);
     fclose(fp);
 
     SramExists = true;
+
+    if (*ZSaveST2Name && (fp = fopen_dir(ZSramPath, ZSaveST2Name, "rb")))
+    {
+      fread(sram2, 1, ramsize, fp);
+      fclose(fp);
+    }
   }
   else
   {

@@ -56,10 +56,10 @@ char ZCfgFile[] = "zsnesl.cfg";
 
 char *ZStartPath = 0, *ZCfgPath = 0, *ZSramPath = 0, *ZRomPath = 0;
 char *ZSnapPath = 0, *ZSpcPath = 0;
-char *ZCartName = 0, *ZSaveName = 0, *ZStateName = 0;
+char *ZCartName = 0, *ZSaveName = 0, *ZStateName = 0, *ZSaveST2Name = 0;
 
 static bool ZStartAlloc = false, ZCfgAlloc = false, ZSramAlloc = false, ZRomAlloc = false;
-static bool ZCartAlloc = false, ZSaveAlloc = false, ZStateAlloc = false;
+static bool ZCartAlloc = false, ZSaveAlloc = false, ZStateAlloc = false, ZSaveST2Alloc = false;
 
 #ifdef __UNIXSDL__
 
@@ -165,6 +165,7 @@ void deinit_paths()
   if (ZCartAlloc && ZCartName) { free(ZCartName); }
   if (ZSaveAlloc && ZSaveName) { free(ZSaveName); }
   if (ZStateAlloc && ZStateName) { free(ZStateName); }
+  if (ZSaveST2Alloc && ZSaveST2Name) { free(ZSaveST2Name); }
 }
 
 #define INIT_PATH_HELPER(x) if ((x##Path = malloc(PATH_SIZE))) { x##Alloc = true; } else { return(false); }
@@ -179,6 +180,7 @@ bool init_paths(char *launch_command)
   INIT_NAME_HELPER(ZCart);
   INIT_NAME_HELPER(ZSave);
   INIT_NAME_HELPER(ZState);
+  INIT_NAME_HELPER(ZSaveST2);
 
   if (getcwd(ZStartPath, PATH_SIZE))
   {

@@ -1147,16 +1147,6 @@ void SplitSupport()
       SplitSetup(STPath, "STBIOS.ZIP", 3);
       addOnSize = (curromspace-addOnStart) >> 2; //Correct for checksum calc
       sram2 = sram+65536;
-
-      char *p = strrchr(STCart2, '/');
-      strcpy(STCart2, p+1);
-      setextension(STCart2, "srm");
-      FILE *fp = fopen_dir(ZSramPath, STCart2, "rb");
-      if (fp)
-      {
-        fread(sram2, 1, 2048, fp);
-        fclose(fp);
-      }
     }
   }
 }

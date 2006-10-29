@@ -822,7 +822,17 @@ static void handle_params(int argc, char *argv[])
         printf("Could not load: %s\n", argv[i]);
       }
 
-      STCart2 = argv[i+1]; //Sufami Turbo second cart
+      if ((STCart2 = argv[i+1])) //Sufami Turbo second cart
+      {
+        char *p;
+
+        natify_slashes(STCart2);
+        p = strrchr(STCart2, DIR_SLASH_C);
+        if (!p) { p = STCart2; }
+        else { p++; }
+        strcpy(ZSaveST2Name, p);
+        setextension(ZSaveST2Name, "srm");
+      }
       break;
     }
   }
