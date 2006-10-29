@@ -167,77 +167,53 @@ void deinit_paths()
   if (ZStateAlloc && ZStateName) { free(ZStateName); }
 }
 
+#define INIT_PATH_HELPER(x) if ((x##Path = malloc(PATH_SIZE))) { x##Alloc = true; } else { return(false); }
+#define INIT_NAME_HELPER(x) if ((x##Name = malloc(NAME_SIZE))) { x##Alloc = true; *x##Name = 0; } else { return(false); }
+
 bool init_paths(char *launch_command)
 {
   void GUIRestoreVars();
 
-  ZStartPath = malloc(PATH_SIZE);
-  if (ZStartPath)
+  INIT_PATH_HELPER(ZStart);
+  INIT_PATH_HELPER(ZRom);
+  INIT_NAME_HELPER(ZCart);
+  INIT_NAME_HELPER(ZSave);
+  INIT_NAME_HELPER(ZState);
+
+  if (getcwd(ZStartPath, PATH_SIZE))
   {
-    ZStartAlloc = true;
+    strcatslash(ZStartPath);
 
-    ZRomPath = malloc(PATH_SIZE);
-    if (ZRomPath)
+    cfgpath_ensure(launch_command);
+
+    GUIRestoreVars();
+
+    if (*ROMPath && !access(strcutslash(ROMPath), DIR_R_ACCESS))
     {
-      ZRomAlloc = true;
+      strcpy(ZRomPath, ROMPath);
+    }
+    else
+    {
+      strcpy(ZRomPath, ZStartPath);
+    }
+    strcatslash(ZRomPath);
 
-      ZCartName = malloc(NAME_SIZE);
-      if (ZCartName)
-      {
-        ZCartAlloc = true;
-        *ZCartName = 0;
-
-        ZSaveName = malloc(NAME_SIZE);
-        if (ZSaveName)
-        {
-          ZSaveAlloc = true;
-          *ZSaveName = 0;
-
-          ZStateName = malloc(NAME_SIZE);
-          if(ZStateName)
-          {
-            ZStateAlloc = true;
-            *ZStateName = 0;
-
-            if (getcwd(ZStartPath, PATH_SIZE))
-            {
-              strcatslash(ZStartPath);
-
-              cfgpath_ensure(launch_command);
-
-              GUIRestoreVars();
-
-              if (*ROMPath && !access(strcutslash(ROMPath), DIR_R_ACCESS))
-              {
-                strcpy(ZRomPath, ROMPath);
-              }
-              else
-              {
-                strcpy(ZRomPath, ZStartPath);
-              }
-              strcatslash(ZRomPath);
-
-              init_save_paths();
+    init_save_paths();
 
 #ifdef DEBUG
 #ifndef __UNIXSDL__
-              fdreopen_dir(ZCfgPath, "stderr.txt", "w", STDERR_FILENO);
-              fdreopen_dir(ZCfgPath, "stdout.txt", "w", STDOUT_FILENO);
+    fdreopen_dir(ZCfgPath, "stderr.txt", "w", STDERR_FILENO);
+    fdreopen_dir(ZCfgPath, "stdout.txt", "w", STDOUT_FILENO);
 #endif
 
-              printf("ZStartPath: %s\n", ZStartPath);
-              printf("ZCfgPath: %s\n", ZCfgPath);
-              printf("ZRomPath: %s\n", ZRomPath);
-              printf("ZSramPath: %s\n", ZSramPath);
-              printf("ZSnapPath: %s\n", ZSnapPath);
-              printf("ZSpcPath: %s\n", ZSpcPath);
+    printf("ZStartPath: %s\n", ZStartPath);
+    printf("ZCfgPath: %s\n", ZCfgPath);
+    printf("ZRomPath: %s\n", ZRomPath);
+    printf("ZSramPath: %s\n", ZSramPath);
+    printf("ZSnapPath: %s\n", ZSnapPath);
+    printf("ZSpcPath: %s\n", ZSpcPath);
 #endif
-              return(true);
-            }
-          }
-        }
-      }
-    }
+    return(true);
   }
   return(false);
 }
