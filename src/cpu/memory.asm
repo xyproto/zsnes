@@ -24,7 +24,7 @@ EXTSYM snesmap2
 EXTSYM DSP1Write8b,regptwa,writeon,DSP1Read16b
 EXTSYM Bank0datr8,Bank0datw8,Bank0datr16,Bank0datw16,xd,SA1xd
 EXTSYM DSP1Read8b,DSP1Type,SA1Enable,DSP1Write16b
-EXTSYM ramsize,ramsizeand,sram,ram7fa
+EXTSYM ramsize,ramsizeand,sram,sram2,ram7fa
 EXTSYM SA1Status,IRAM,CurBWPtr,SA1RAMArea
 EXTSYM SA1Overflow
 EXTSYM Sdd1Mode,Sdd1Bank,Sdd1Addr,Sdd1NewAddr,memtabler8,AddrNoIncr,SDD1BankA
@@ -1445,8 +1445,6 @@ NEWSYM memaccessbankr1648mb
 ;*******************************************************
 
 %macro SRAMAccess 1
-    cmp bl,70h
-    jb .notlarge        ;Sufami Turbo
     cmp dword[curromspace],0x200000
     ja .large
     cmp  dword[ramsize],0x8000
@@ -1595,6 +1593,131 @@ NEWSYM sramaccessbankw16b
     pop ecx
     mov dword[sramb4save],5*60
 .noaccess
+    xor ebx,ebx
+    ret
+
+%macro STsramaccess 1
+    test ecx,8000h
+    jz %1
+%endmacro
+
+NEWSYM stsramr8
+    STsramaccess memaccessbankr8
+    push ecx
+    sub bl,60h
+    shl ebx,15
+    add ecx,ebx
+    mov ebx,[sram]
+    and ecx,[ramsizeand]
+    mov al,[ebx+ecx]
+    pop ecx
+    xor ebx,ebx
+    ret
+
+NEWSYM stsramr16
+    STsramaccess memaccessbankr16
+    push ecx
+    sub bl,60h
+    shl ebx,15
+    add ecx,ebx
+    mov ebx,[sram]
+    and ecx,[ramsizeand]
+    mov al,[ebx+ecx]
+    inc ecx
+    and ecx,[ramsizeand]
+    mov ah,[ebx+ecx]
+    pop ecx
+    xor ebx,ebx
+    ret
+
+NEWSYM stsramw8
+    STsramaccess memaccessbankw8
+    push ecx
+    sub bl,60h
+    shl ebx,15
+    add ecx,ebx
+    mov ebx,[sram]
+    and ecx,[ramsizeand]
+    mov [ebx+ecx],al
+    pop ecx
+    mov dword[sramb4save],5*60
+    xor ebx,ebx
+    ret
+
+NEWSYM stsramw16
+    STsramaccess memaccessbankw16
+    push ecx
+    sub bl,60h
+    shl ebx,15
+    add ecx,ebx
+    mov ebx,[sram]
+    and ecx,[ramsizeand]
+    mov [ebx+ecx],al
+    inc ecx
+    and ecx,[ramsizeand]
+    mov [ebx+ecx],ah
+    pop ecx
+    mov dword[sramb4save],5*60
+    xor ebx,ebx
+    ret
+
+NEWSYM stsramr8b
+    STsramaccess memaccessbankr8
+    push ecx
+    sub bl,70h
+    shl ebx,15
+    add ecx,ebx
+    mov ebx,[sram2]
+    and ecx,[ramsizeand]
+    mov al,[ebx+ecx]
+    pop ecx
+    xor ebx,ebx
+    ret
+
+NEWSYM stsramr16b
+    STsramaccess memaccessbankr16
+    push ecx
+    sub bl,70h
+    shl ebx,15
+    add ecx,ebx
+    mov ebx,[sram2]
+    and ecx,[ramsizeand]
+    mov al,[ebx+ecx]
+    inc ecx
+    and ecx,[ramsizeand]
+    mov ah,[ebx+ecx]
+    pop ecx
+    xor ebx,ebx
+    ret
+
+NEWSYM stsramw8b
+    STsramaccess memaccessbankw8
+    push ecx
+    sub bl,70h
+    shl ebx,15
+    add ecx,ebx
+    mov ebx,[sram2]
+    and ecx,[ramsizeand]
+    mov [ebx+ecx],al
+    pop ecx
+    mov dword[sramb4save],5*60
+    xor ebx,ebx
+    ret
+
+NEWSYM stsramw16b
+    STsramaccess memaccessbankw16
+    push ecx
+    sub bl,70h
+    shl ebx,15
+    add ecx,ebx
+    mov ebx,[sram2]
+    and ecx,[ramsizeand]
+    mov [ebx+ecx],al
+    inc ecx
+    and ecx,[ramsizeand]
+    mov [ebx+ecx],ah
+    pop ecx
+    mov dword[sramb4save],5*60
     xor ebx,ebx
     ret
 

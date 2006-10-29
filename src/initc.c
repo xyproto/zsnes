@@ -758,7 +758,7 @@ void SetupSramSize()
   }
   else if (!strncmp((char *)ROM, "BANDAI SFC-ADX", 14))
   {  // For the Sufami Turbo
-    ramsize = 64;
+    ramsize = 16;
   }
   else
   {
@@ -1057,6 +1057,8 @@ void load_file_fs(char *path)
 }
 
 char *STCart2 = 0;
+unsigned char *sram2;
+extern unsigned char *sram;
 
 void SplitSetup(char *basepath, char *basefile, unsigned int MirrorSystem)
 {
@@ -1144,6 +1146,17 @@ void SplitSupport()
       addOnStart = 0x100000;
       SplitSetup(STPath, "STBIOS.ZIP", 3);
       addOnSize = (curromspace-addOnStart) >> 2; //Correct for checksum calc
+      sram2 = sram+65536;
+
+      char *p = strrchr(STCart2, '/');
+      strcpy(STCart2, p+1);
+      setextension(STCart2, "srm");
+      FILE *fp = fopen_dir(ZSramPath, STCart2, "rb");
+      if (fp)
+      {
+        fread(sram2, 1, 2048, fp);
+        fclose(fp);
+      }
     }
   }
 }
@@ -1955,15 +1968,17 @@ void CheckROMType()
 
   disablespcclr = (memcmp(ROM+Hi, "BS Z", 4)) ? 0 : 1;
 
-  // LoROM SRAM mapping
-  if (romtype == 1)
+  if (!strncmp((char *)ROM, "BANDAI SFC-ADX", 14))
+  {
+    map_mem(0x60, &stbanka, 0x08);
+    if (STCart2)
+    {
+      map_mem(0x70, &stbankb, 0x08);
+    }
+  }
+  else if (romtype == 1)   // LoROM SRAM mapping
   {  // banks 70 - 77
     map_mem(0x70, &srambank, 0x08);
-
-    if (!strncmp((char *)ROM, "BANDAI SFC-ADX", 14))
-    {  //Sufami Turbo maps to $60 - $67
-      map_mem(0x60, &srambank, 0x08);
-    }
 
     if (!BSEnable)
     {  // banks 78 - 7D (not for BS)

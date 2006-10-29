@@ -40,6 +40,7 @@ extern mrwp dsp1bank, dsp2bank, dsp3bank, dsp4bank;
 extern mrwp setabank, setabanka, seta11bank, seta11banka;
 extern mrwp sfxbank, sfxbankb, sfxbankc, sfxbankd;
 extern mrwp obc1bank, c4bank, SPC7110bank, SPC7110SRAMBank;
+extern mrwp stbanka, stbankb;
 
 /*
 rep_stosd is my name for a 'copy <num> times a function pointer <func_ptr> into
