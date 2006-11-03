@@ -952,7 +952,7 @@ reg4017r:
     cmp byte[device2],1
     je .mouse2
     test byte[JoyBNow],0FFh
-    jnz .reset
+    jz .reset
 .mouse2
     test dword[JoyBNow],80000000h
     jz .noal
