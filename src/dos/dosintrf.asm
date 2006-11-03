@@ -670,7 +670,7 @@ NEWSYM SetInputDevice
     SetDefaultKey 54,28,72,80,75,77,31,45,32,30,44,46
     ret
 .input2
-    SetDefaultKey 56,29,37,50,49,51,82,71,73,83,79,81
+    SetDefaultKey 56,29,36,50,49,51,82,71,73,83,79,81
     ret
 .nokeyb
     cmp bl,2

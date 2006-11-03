@@ -450,7 +450,7 @@ NEWSYM NumInputDevices, dd 2
 ; Input Device Names
 NEWSYM GUIInputNames
 db 'NONE            ',0
-db 'KEYB/GAMEPAD    ',0
+db 'KEYBOARD/GAMEPAD',0
 db '                ',0
 db '                ',0
 db '                ',0
@@ -817,9 +817,9 @@ NEWSYM SetInputDevice
     ret
 .input2
 %ifdef __UNIXSDL__
-    SetDefaultKey 56,29,37,50,49,51,98,89,91,99,95,97
+    SetDefaultKey 56,29,36,50,49,51,98,89,91,99,95,97
 %else
-    SetDefaultKey 56,29,37,50,49,51,210,199,201,211,207,209
+    SetDefaultKey 56,29,36,50,49,51,210,199,201,211,207,209
 %endif
     ret
 
