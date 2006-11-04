@@ -949,14 +949,14 @@ reg4017r:
     cmp byte[MultiTap],1
     je .multitap
 .nomultitap
-    cmp byte[device2],1
-    je .mouse2
-    test byte[JoyBNow],0FFh
-    jz .reset
-.mouse2
+;    cmp byte[device2],1
+;    je .mouse2
+;    test byte[JoyBNow],0FFh
+;    jnz .reset
+;.mouse2
     test dword[JoyBNow],80000000h
     jz .noal
-.reset
+;.reset
     or al,1
 .noal
     rol dword[JoyBNow],1
