@@ -672,7 +672,7 @@ NEWSYM bg1scrolx_m7, dw 0
 NEWSYM bg1scroly_m7, dw 0
 
 section .text
-%macro UpdateScrollReg 1
+%macro UpdateScrollRegX 1
     mov bh,al
     mov bl,[bgscrolPrev]
     mov [bgscrolPrev],al
@@ -683,9 +683,16 @@ section .text
     mov [%1],bx
 %endmacro
 
+%macro UpdateScrollRegY 1
+    mov bl,[bgscrolPrev]
+    mov [%1],bl
+    mov [%1+1],al
+    mov [bgscrolPrev],al
+%endmacro
+
 ; BG1 horizontal scroll register
 reg210Dw:
-    UpdateScrollReg bg1scrolx
+    UpdateScrollRegX bg1scrolx
 ;    mov bl,[m7byte]
     mov [bg1scrolx_m7],bx
 ;    mov [m7byte],al
@@ -693,40 +700,41 @@ reg210Dw:
 
 ; BG1 vertical scroll register
 reg210Ew:
-    UpdateScrollReg bg1scroly
+    UpdateScrollRegY bg1scroly
 ;    mov bl,[m7byte]
-    mov [bg1scroly_m7],bx
+    mov [bg1scroly_m7],bl
+    mov [bg1scroly_m7+1],al
 ;    mov [m7byte],al
     ret
 
 ; BG2 horizontal scroll register
 reg210Fw:
-    UpdateScrollReg bg2scrolx
+    UpdateScrollRegX bg2scrolx
     ret
 
 ; BG2 vertical scroll register
 reg2110w:
-    UpdateScrollReg bg2scroly
+    UpdateScrollRegY bg2scroly
     ret
 
 ; BG3 horizontal scroll register
 reg2111w:
-    UpdateScrollReg bg3scrolx
+    UpdateScrollRegX bg3scrolx
     ret
 
 ; BG3 vertical scroll register
 reg2112w:
-    UpdateScrollReg bg3scroly
+    UpdateScrollRegY bg3scroly
     ret
 
 ; BG4 horizontal scroll register
 reg2113w:
-    UpdateScrollReg bg4scrolx
+    UpdateScrollRegX bg4scrolx
     ret
 
 ; BG4 vertical scroll register
 reg2114w:
-    UpdateScrollReg bg4scroly
+    UpdateScrollRegY bg4scroly
     ret
 
 ; Video port control
