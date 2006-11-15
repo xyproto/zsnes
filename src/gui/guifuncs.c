@@ -1699,25 +1699,32 @@ void GUILoadKeysJumpTo()
   start = 0;
   end = GUIJT_entries-1;
   GUIJT_offset = GUIJT_entries;
-  while (start <= end)
+  if (!strcmp(GUILoadTextA, " ")) //Exactly a space picks a game randomely
   {
-    int mid = (start+end)>>1;
-    int pos = strncasecmp(base[mid], GUILoadTextA, GUILoadPos);
-    if (!pos)
+    GUIJT_offset = rand()%GUIJT_entries;
+  }
+  else
+  {
+    while (start <= end)
     {
-      do
+      int mid = (start+end)>>1;
+      int pos = strncasecmp(base[mid], GUILoadTextA, GUILoadPos);
+      if (!pos)
       {
-        GUIJT_offset = mid--;
-      } while ((mid >= 0) && !strncasecmp(base[mid], GUILoadTextA, GUILoadPos));
-      break;
-    }
-    if (pos > 0)
-    {
-      end = mid-1;
-    }
-    else
-    {
-      start = mid+1;
+        do
+        {
+          GUIJT_offset = mid--;
+        } while ((mid >= 0) && !strncasecmp(base[mid], GUILoadTextA, GUILoadPos));
+        break;
+      }
+      if (pos > 0)
+      {
+        end = mid-1;
+      }
+      else
+      {
+        start = mid+1;
+      }
     }
   }
 
