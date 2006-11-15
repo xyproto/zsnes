@@ -26,7 +26,6 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <ctype.h>
 #include <math.h>
 #include <memory.h>
-#include <time.h>
 #include <string.h>
 #endif
 
@@ -141,7 +140,6 @@ void DrawWater(void)
 		if(mode&4)
 		{
             int x,y;
-            srand((unsigned int)time(0));
             if(rand()%14 == 7)
 			{
 /*

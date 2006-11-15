@@ -27,6 +27,7 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
+#include <time.h>
 #ifdef __WIN32__
 #include <windows.h>
 #include <direct.h>
@@ -874,6 +875,7 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine,
     handle_params(__argc, __argv);
 
     atexit(ZCleanup);
+    srand(time(0));
     zstart();
   }
   return(0);
@@ -888,6 +890,7 @@ int main(int zargc, char *zargv[])
     handle_params(zargc, zargv);
 
     atexit(ZCleanup);
+    srand(time(0));
     zstart();
   }
   return(0);

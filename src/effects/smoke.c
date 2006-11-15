@@ -1,18 +1,10 @@
-
-
-#   include <stdlib.h>
-#   include <string.h>
-#   include <time.h>
-
+#include <stdlib.h>
+#include <string.h>
 
 /*
-
 Ripped from an Allegro example (exflame.c). :)
-
 Should be fire, but looks more like smoke in ZSNES.
-
 */
-
 
 #define MIN(x, y)    \
     (((x) < (y)) ? (x) : (y))
@@ -20,35 +12,24 @@ Should be fire, but looks more like smoke in ZSNES.
 #define ABS(x)      \
     (((x) >= 0) ? (x) : ( - (x)))
 
-
 #define FIRE_HOTSPOTS   80
 
 static int fire_hotspot [FIRE_HOTSPOTS];
-
-
 extern char * vidbuffer;
 
-
 #define SCRW    288
-
 #define SCRH    224
 
-
 static unsigned char fire_line [SCRW];
-
 static unsigned char fire_buffer [SCRW * SCRH];
 
-
 static int fire_init_flag;
-
 
 static void draw_bottom_line_of_fire (void)
 {
     int count, count2;
 
-
     memset ((& fire_line), 0, SCRW);
-
 
     for (count = 0; count < FIRE_HOTSPOTS; count ++)
     {
@@ -63,9 +44,7 @@ static void draw_bottom_line_of_fire (void)
             }
         }
 
-
         fire_hotspot [count] += ((rand () & 7) - 3);
-
 
         if (fire_hotspot [count] < 0)
         {
@@ -76,7 +55,6 @@ static void draw_bottom_line_of_fire (void)
             fire_hotspot [count] -= SCRW;
         }
     }
-
 
     for (count = 0; count < SCRW; count ++)
     {
@@ -90,10 +68,6 @@ static void init_fire (void)
 {
     int x, y, pixel, count;
 
-
-    srand ((unsigned int)time (0));
-
-
     for (count = 0; count < FIRE_HOTSPOTS; count ++)
     {
         fire_hotspot [count] = (rand () % SCRW);
@@ -104,25 +78,21 @@ static void init_fire (void)
     {
         draw_bottom_line_of_fire ();
 
-
         for (y = 0; y < (SCRH - 1); y ++)
         {
             for (x = 0; x < SCRW; x ++)
             {
                 pixel = fire_buffer [((y + 1) * SCRW) + x];
 
-
                 if (pixel > 0)
                 {
                     pixel --;
                 }
 
-
                 fire_buffer [(y * SCRW) + x] = pixel;
             }
         }
     }
-
 
     fire_init_flag = 1;
 }
@@ -134,15 +104,12 @@ void DrawSmoke (void)
 {
     int x, y, pixel, pixel2;
 
-
     if (! fire_init_flag)
     {
         init_fire ();
     }
 
-
     draw_bottom_line_of_fire ();
-
 
     for (y = 0; y < (SCRH - 1); y ++)
     {
@@ -150,26 +117,21 @@ void DrawSmoke (void)
         {
             pixel = fire_buffer [((y + 1) * SCRW) + x];
 
-
             if (pixel > 0)
             {
                 pixel --;
             }
 
-
             fire_buffer [(y * SCRW) + x] = pixel;
         }
     }
-
 
     for (y = 0; y < SCRH; y ++)
     {
         for (x = 0; x < SCRW; x ++)
         {
             pixel = vidbuffer [(y * SCRW) + x];
-
             pixel2 = (fire_buffer [(y * SCRW) + x] / 8);
-
 
             if (pixel2 > pixel)
             {
