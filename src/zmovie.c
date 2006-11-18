@@ -1803,7 +1803,7 @@ bool mzt_save(int position, bool thumb, bool playback)
 bool mzt_load(int position, bool playback)
 {
   FILE *fp;
-  bool mzt_saved = false;
+  bool mzt_loaded = false;
   char name_buf[7];
 
   mzt_chdir_up();
@@ -1868,11 +1868,11 @@ bool mzt_load(int position, bool playback)
         fseek(zmv_vars.fp, rewind_point, SEEK_SET);
       }
 
-      mzt_saved = true;
+      mzt_loaded = true;
     }
   }
   mzt_chdir_down();
-  return(mzt_saved);
+  return(mzt_loaded);
 }
 
 /////////////////////////////////////////////////////////
