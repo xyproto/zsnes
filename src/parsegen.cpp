@@ -543,6 +543,17 @@ namespace variable
       return(false);
     }
 
+    bool quoted_used()
+    {
+      for (config_data_array::iterator i = data_array.begin(); i != data_array.end(); i++)
+      {
+        if (i->format == quoted)
+        {
+          return(true);
+        }
+      }
+      return(false);
+    }
     config_data_array::iterator begin() { return(data_array.begin()); }
     config_data_array::iterator end() { return(data_array.end()); }
   } config_data;
@@ -624,52 +635,55 @@ void output_parser_start(ostream& c_stream, string& cheader_file)
            << "\n"
            << "#define LINE_LENGTH " << LINE_LENGTH << "\n"
            << "static char line[LINE_LENGTH];\n"
-           << "\n"
-           << "\n"
-           << "static char *encode_string(const char *str)\n"
-           << "{\n"
-           << "  size_t i = 0;\n"
-           << "  line[i++] = '\\\"';\n"
-           << "  while (*str)\n"
-           << "  {\n"
-           << "    if ((*str == '\\\\') ||\n"
-           << "        (*str == '\\\"') ||\n"
-           << "        (*str == '\\\'') ||\n"
-           << "        (*str == '\\n') ||\n"
-           << "        (*str == '\\t'))\n"
-           << "    {\n"
-           << "      line[i++] = '\\\\';\n"
-           << "    }\n"
-           << "    line[i++] = *str++;\n"
-           << "  }\n"
-           << "  line[i++] = '\\\"';\n"
-           << "  line[i] = 0;\n"
-           << "  return(line);\n"
-           << "}\n"
-           << "\n"
-           << "static char *decode_string(char *str)\n"
-           << "{\n"
-           << "  size_t str_len = strlen(str), i = 0;\n"
-           << "  char *dest = str;\n"
-           << "\n"
-           << "  if ((str_len > 1) && (*str == '\\\"') && (str[str_len-1] == '\\\"'))\n"
-           << "  {\n"
-           << "    memmove(str, str+1, str_len-2);\n"
-           << "    str[str_len-2] = 0;\n"
-           << "\n"
-           << "    while (*str)\n"
-           << "    {\n"
-           << "      if (*str == '\\\\')\n"
-           << "      {\n"
-           << "        str++;\n"
-           << "      }\n"
-           << "      dest[i++] = *str++;\n"
-           << "    }\n"
-           << "  }\n"
-           << "  dest[i] = 0;\n"
-           << "  return(dest);\n"
-           << "}\n"
-           << "\n"
+           << "\n";
+  if (variable::config_data.quoted_used() || variable::config_data.packed_used())
+  {
+    c_stream << "\n"
+             << "static char *encode_string(const char *str)\n"
+             << "{\n"
+             << "  size_t i = 0;\n"
+             << "  line[i++] = '\\\"';\n"
+             << "  while (*str)\n"
+             << "  {\n"
+             << "    if ((*str == '\\\\') ||\n"
+             << "        (*str == '\\\"') ||\n"
+             << "        (*str == '\\\'') ||\n"
+             << "        (*str == '\\n') ||\n"
+             << "        (*str == '\\t'))\n"
+             << "    {\n"
+             << "      line[i++] = '\\\\';\n"
+             << "    }\n"
+             << "    line[i++] = *str++;\n"
+             << "  }\n"
+             << "  line[i++] = '\\\"';\n"
+             << "  line[i] = 0;\n"
+             << "  return(line);\n"
+             << "}\n"
+             << "\n"
+             << "static char *decode_string(char *str)\n"
+             << "{\n"
+             << "  size_t str_len = strlen(str), i = 0;\n"
+             << "  char *dest = str;\n"
+             << "\n"
+             << "  if ((str_len > 1) && (*str == '\\\"') && (str[str_len-1] == '\\\"'))\n"
+             << "  {\n"
+             << "    memmove(str, str+1, str_len-2);\n"
+             << "    str[str_len-2] = 0;\n"
+             << "\n"
+             << "    while (*str)\n"
+             << "    {\n"
+             << "      if (*str == '\\\\')\n"
+             << "      {\n"
+             << "        str++;\n"
+             << "      }\n"
+             << "      dest[i++] = *str++;\n"
+             << "    }\n"
+             << "  }\n"
+             << "  dest[i] = 0;\n"
+             << "  return(dest);\n"
+             << "}\n";
+  }
+  c_stream << "\n"
            << "static char *find_next_match(char *str, char match_char)\n"
            << "{\n"
            << "  char *pos = 0;\n"
