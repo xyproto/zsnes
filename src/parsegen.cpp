@@ -743,8 +743,8 @@ void output_cheader_start(ostream& cheader_stream)
   }
   if (defines.find("PSR_MEMCPY") != defines.end())
   {
-    cheader_stream << "void read_" << family_name << "_vars_memory(const char *);\n"
-                   << "void write_" << family_name << "_vars_memory(const char *);\n"
+    cheader_stream << "void read_" << family_name << "_vars_memory(unsigned char *);\n"
+                   << "void write_" << family_name << "_vars_memory(unsigned char *);\n"
                    << "unsigned int size_" << family_name << "_vars_memory();\n";
   }
   cheader_stream << "\n";
@@ -924,10 +924,13 @@ void output_write_var(ostream& c_stream)
            << "unsigned char write_" << family_name << "_vars(const char *file)\n"
            << "{\n"
            << "  FILE *fp = 0;\n"
-           << "\n"
-           << "  init_" << family_name << "_vars();\n"
-           << "\n"
-           << "  if ((fp = fopen(file, \"w\")))\n"
+           << "\n";
+  if (defines.find("PSR_EXTERN") == defines.end())
+  {
+    c_stream << "  init_" << family_name << "_vars();\n"
+             << "\n";
+  }
+  c_stream << "  if ((fp = fopen(file, \"w\")))\n"
            << "  {\n"
            << "    write_" << family_name << "_vars_internal(fp, (int (*)(void *, const char *, ...))fprintf);\n"
            << "    fclose(fp);\n"
@@ -943,10 +946,13 @@ void output_write_var(ostream& c_stream)
              << "unsigned char write_" << family_name << "_vars_compressed(const char *file)\n"
              << "{\n"
              << "  gzFile gzfp;\n"
-             << "\n"
-             << "  init_cfg_vars();\n"
-             << "\n"
-             << "  if ((gzfp = gzopen(file, \"wb9\")))\n"
+             << "\n";
+    if (defines.find("PSR_EXTERN") == defines.end())
+    {
+      c_stream << "  init_" << family_name << "_vars();\n"
+               << "\n";
+    }
+    c_stream << "  if ((gzfp = gzopen(file, \"wb9\")))\n"
              << "  {\n"
              << "    write_cfg_vars_internal(gzfp, gzprintf);\n"
              << "    gzclose(gzfp);\n"
@@ -981,7 +987,7 @@ void output_write_var(ostream& c_stream)
     c_stream << "  return(p-buffer);\n"
              << "}\n"
              << "\n"
-             << "static void *cpynull(void *, void *, size_t){ return(0); }\n"
+             << "static void *cpynull(void *l, void *r, size_t len){ return(0); }\n"
              << "\n"
              << "unsigned int size_" << family_name << "_vars_memory()\n"
              << "{\n"
@@ -1191,10 +1197,13 @@ void output_read_var(ostream& c_stream)
            << "unsigned char read_" << family_name << "_vars(const char *file)\n"
            << "{\n"
            << "  FILE *fp = 0;\n"
-           << "\n"
-           << "  init_" << family_name << "_vars();\n"
-           << "\n"
-           << "  if ((fp = fopen(file, \"r\")))\n"
+           << "\n";
+  if (defines.find("PSR_EXTERN") == defines.end())
+  {
+    c_stream << "  init_" << family_name << "_vars();\n"
+             << "\n";
+  }
+  c_stream << "  if ((fp = fopen(file, \"r\")))\n"
            << "  {\n"
            << "    read_" << family_name << "_vars_internal(fp, (char *(*)(char *, int, void *))fgets, (int (*)(void *))feof);\n"
            << "    fclose(fp);\n";
@@ -1223,10 +1232,13 @@ void output_read_var(ostream& c_stream)
              << "unsigned char read_" << family_name << "_vars_compressed(const char *file)\n"
              << "{\n"
              << "  gzFile gzfp;\n"
-             << "\n"
-             << "  init_cfg_vars();\n"
-             << "\n"
-             << "  if ((gzfp = gzopen(file, \"rb\")))\n"
+             << "\n";
+    if (defines.find("PSR_EXTERN") == defines.end())
+    {
+      c_stream << "  init_" << family_name << "_vars();\n"
+               << "\n";
+    }
+    c_stream << "  if ((gzfp = gzopen(file, \"rb\")))\n"
              << "  {\n"
              << "    read_cfg_vars_internal(gzfp, gzgets_fix, gzeof);\n"
              << "    gzclose(gzfp);\n";
@@ -1675,8 +1687,15 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
 
   output_parser_start(c_stream, cheader_file);
   output_extsym_dependancies(c_stream);
-  c_stream << cvars.str();
-  output_init_var(c_stream);
+  if (defines.find("PSR_EXTERN") == defines.end())
+  {
+    c_stream << cvars.str();
+    output_init_var(c_stream);
+  }
+  else if (!cheader_file.length())
+  {
+    cerr << "Error: Requested PSR_EXTERN yet no header file specified." << endl;
+  }
   output_write_var(c_stream);
   output_read_var(c_stream);
   c_stream << "\n";
