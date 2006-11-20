@@ -1796,6 +1796,7 @@ bool mzt_save(int position, bool thumb, bool playback)
         if (playback)
         {
           size_t amount_written,
+                 int_chap_seek_point = INT_CHAP_END_DIST,
                  internal_chapter_count = internal_chapter_count_until(&zmv_vars.internal_chapters, rewind_point),
                  internal_chapters_size = internal_chapter_count << 2,
                  frames = zmv_vars.header.frames,
@@ -1821,7 +1822,7 @@ bool mzt_save(int position, bool thumb, bool playback)
             gzwrite(gzp, zmv_vars.write_buffer, amount);
             amount_written += amount;
           }
-          fseek(zmv_vars.fp, -((signed)INT_CHAP_END_DIST), SEEK_END);
+          fseek(zmv_vars.fp, -((signed)int_chap_seek_point), SEEK_END);
           for (amount_written = 0; amount_written < internal_chapters_size;)
           {
             size_t amount = internal_chapters_size-amount_written;

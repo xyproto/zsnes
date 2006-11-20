@@ -784,6 +784,22 @@ void statesaver()
     return;
   }
 
+  if (MovieProcessing == MOVIE_PLAYBACK)
+  {
+    if (mzt_save(current_zst, (cbitmode && !NoPictureSave) ? true : false, true))
+    {
+      set_state_message("RR STATE ", " SAVED.");
+
+      //'Auto increment savestate slot' code
+      if (AutoIncSaveSlot)
+      {
+        current_zst++;
+        current_zst %= 100;
+      }
+    }
+    return;
+  }
+
   clim();
 
   if ((fhandle = fopen_dir(ZSramPath, ZStateName, "wb")))
