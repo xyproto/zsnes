@@ -968,7 +968,7 @@ void output_write_var(ostream& c_stream)
     }
     c_stream << "  if ((gzfp = gzopen(file, \"wb9\")))\n"
              << "  {\n"
-             << "    write_cfg_vars_internal(gzfp, gzprintf);\n"
+             << "    write_" << family_name << "_vars_internal(gzfp, gzprintf);\n"
              << "    gzclose(gzfp);\n"
              << "\n"
              << "    return(1);\n"
@@ -1254,7 +1254,7 @@ void output_read_var(ostream& c_stream)
     }
     c_stream << "  if ((gzfp = gzopen(file, \"rb\")))\n"
              << "  {\n"
-             << "    read_cfg_vars_internal(gzfp, gzgets_fix, gzeof);\n"
+             << "    read_" << family_name << "_vars_internal(gzfp, gzgets_fix, gzeof);\n"
              << "    gzclose(gzfp);\n";
     if (defines.find("PSR_NOUPDATE") == defines.end())
     {
