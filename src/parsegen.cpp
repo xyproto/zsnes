@@ -932,10 +932,10 @@ void output_write_var(ostream& c_stream)
   {
     c_stream << "\n"
              << "static unsigned int " << family_name << "_vars_memory(unsigned char *buffer, void *(*cpy)(void *, void *, size_t))\n"
-			 << "{\n"
-			 << "  unsigned char *p = buffer;\n";
-	  for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)
-	  {
+             << "{\n"
+             << "  unsigned char *p = buffer;\n";
+    for (variable::config_data_array::iterator i = variable::config_data.begin(); i != variable::config_data.end(); i++)
+    {
       string dependancy_prefix, dependancy_suffix;
       if (i->dependancy != "")
       {
@@ -951,17 +951,17 @@ void output_write_var(ostream& c_stream)
     c_stream << "  return(p-buffer);\n"
              << "}\n"
              << "\n"
-		         << "static void *cpynull(void *, void *, size_t){ return(0); }\n"
+             << "static void *cpynull(void *, void *, size_t){ return(0); }\n"
              << "\n"
-		         << "unsigned int size_" << family_name << "_vars_memory()\n"
+             << "unsigned int size_" << family_name << "_vars_memory()\n"
              << "{\n"
-		         << "  return(" << family_name << "_vars_memory(0, cpynull));\n"
+             << "  return(" << family_name << "_vars_memory(0, cpynull));\n"
              << "}\n"
-		         << "\n"
-		         << "void write_" << family_name << "_vars_memory(unsigned char *buffer)\n"
-		         << "{\n"
-		         << "  " << family_name << "_vars_memory(buffer, (void *(*)(void *, void *, size_t))memcpy);\n"
-		         << "}\n";
+             << "\n"
+             << "void write_" << family_name << "_vars_memory(unsigned char *buffer)\n"
+             << "{\n"
+             << "  " << family_name << "_vars_memory(buffer, (void *(*)(void *, void *, size_t))memcpy);\n"
+             << "}\n";
   }
 }
 
@@ -1177,7 +1177,7 @@ void output_read_var(ostream& c_stream)
            << "\n";
   if (defines.find("PSR_NOUPDATE") == defines.end())
   {
-	  c_stream << "  write_" << family_name << "_vars(file);\n";
+    c_stream << "  write_" << family_name << "_vars(file);\n";
   }
   c_stream << "  return(0);\n"
            << "}\n";
@@ -1202,14 +1202,14 @@ void output_read_var(ostream& c_stream)
              << "    gzclose(gzfp);\n";
     if (defines.find("PSR_NOUPDATE") == defines.end())
     {
-	    c_stream << "    write_" << family_name << "_vars_compressed(file);\n";
+      c_stream << "    write_" << family_name << "_vars_compressed(file);\n";
     }
     c_stream << "    return(1);\n"
              << "  }\n"
              << "\n";
     if (defines.find("PSR_NOUPDATE") == defines.end())
     {
-	    c_stream << "  write_" << family_name << "_vars_compressed(file);\n";
+      c_stream << "  write_" << family_name << "_vars_compressed(file);\n";
     }
     c_stream << "  return(0);\n"
              << "}\n";
@@ -1218,16 +1218,16 @@ void output_read_var(ostream& c_stream)
   if (defines.find("PSR_MEMCPY") != defines.end())
   {
     c_stream << "\n"
-		         << "static void *cpyright(void *src, void *dest, size_t len)\n"
-			       << "{\n"
-		      	 << "  memcpy(dest, src, len);\n"
-			       << "  return(0);\n"
-			       << "}\n"
-		         << "\n"
-		         << "void read_" << family_name << "_vars_memory(unsigned char *buffer)\n"
-		         << "{\n"
-		         << "  " << family_name << "_vars_memory(buffer, cpyright);\n"
-		         << "}\n";
+             << "static void *cpyright(void *src, void *dest, size_t len)\n"
+             << "{\n"
+             << "  memcpy(dest, src, len);\n"
+             << "  return(0);\n"
+             << "}\n"
+             << "\n"
+             << "void read_" << family_name << "_vars_memory(unsigned char *buffer)\n"
+             << "{\n"
+             << "  " << family_name << "_vars_memory(buffer, cpyright);\n"
+             << "}\n";
   }
 }
 
