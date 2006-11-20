@@ -190,42 +190,62 @@ char *find_chr(char *str, char match_char)
   return(pos);
 }
 
-
 //Convert $AB12 and 0AB12h style hex to 0xAB12 hex
-string hex_convert(string str)
+string asm2c_hex_convert(string str)
 {
   size_t dollar_pos;
-  while ((dollar_pos = str.find("$")) != string::npos)
+  int start = -1;
+  while ((dollar_pos = str.find("$", start+1)) != string::npos)
   {
-    str.replace(dollar_pos, 1, "0x");
+    if ((str.length()-dollar_pos > 1) && isxdigit(str[dollar_pos+1]))
+    {
+      str.replace(dollar_pos, 1, "0x");
+      dollar_pos++;
+    }
+    start = dollar_pos;
   }
 
-  while (tolower(str[0]) == 'h')
+  start = -1;
+  int h_pos;
+  while ((string::size_type)(h_pos = str.find_first_of("hH", start+1)) != string::npos)
   {
-    str.erase(0, 1);
-  }
-
-  size_t h_pos;
-  while ((h_pos = str.find_first_of("hH")) != string::npos)
-  {
-    size_t h_len = 1;
-    while ((h_pos-h_len) && isxdigit(str[h_pos-h_len]))
+    int h_len = 1;
+    while ((h_pos-h_len > start) && isxdigit(str[h_pos-h_len]))
     {
       h_len++;
     }
-    str.erase(h_pos, 1);
-    str.insert(h_pos-h_len+1, "0x");
-  }
+    h_len--;
 
-  for (size_t i = 0; i < str.size(); i++)
-  {
-    if ((!i || !isxdigit(str[i-1])) && (str[i] == '0') && (str[i+1] != 'x'))
+    if (isdigit(str[h_pos-h_len]))
     {
-      str.erase(i, 1);
-      i--;
+      str.erase(h_pos, 1);
+      str.insert(h_pos-h_len, "0x");
+      h_pos++;
     }
+    start = h_pos;
   }
 
+  return(str);
+}
+
+//Convert 2EF to 751
+string c_hex_convert(string str)
+{
+  size_t hex_pos;
+  while ((hex_pos = str.find("0x")) != string::npos)
+  {
+    size_t len = 2, total = 0;
+    while (isxdigit(str[hex_pos+len]) && !(str[hex_pos+len] == '0' && str[hex_pos+len+1] == 'x'))
+    {
+      total *= 16;
+      total += isdigit(str[hex_pos+len]) ? str[hex_pos+len]-'0' : (toupper(str[hex_pos+len])-'A')+10;
+      len++;
+    }
+
+    ostringstream converter;
+    converter << total;
+    str.replace(hex_pos, len, converter.str());
+  }
   return(str);
 }
 
@@ -290,7 +310,7 @@ ssize_t enhanced_atoi(char *&s, int level = 0)
 }
 
 //Standard atoi(), but shows error if string isn't all a number
-ssize_t safe_atoi(string& str)
+ssize_t safe_atoi(string str)
 {
   if (!str.length()) { str = "X"; } //Force error
 
@@ -1518,7 +1538,7 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
             }
             else
             {
-              ssize_t init_value_num = safe_atoi(initial_value);
+              ssize_t init_value_num = safe_atoi(c_hex_convert(asm2c_hex_convert(initial_value)));
 
               if ((init_value_num < 0) && !strncmp(var_type, "unsigned ", strlen("unsigned ")))
               {
