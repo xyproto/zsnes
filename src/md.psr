@@ -11,7 +11,7 @@ md_raw times 100 db "-demuxer rawvideo -rawvideo format=0x42475218:w=256:h=224:s
 md_other times 75 db "-aspect 4:3 -mc 0"
 md_no_sound times 25 db "-nosound"
 md_sound times 50 db "-oac mp3lame -lameopts aq=0:preset=64:mode=1"
-md_x264 times 100 db "-ovc x264 -x264encopts qp_constant=0:frameref=15"
+md_x264 times 100 db "-ovc x264 -x264encopts qp=0:frameref=15"
 md_ffv1 times 100 db "-ovc lavc -lavcopts vcodec=ffv1:vstrict=-2:aspect=4/3"
 md_xvid times 100 db "-ovc xvid -xvidencopts fixed_quant=2"
 @
