@@ -412,7 +412,7 @@ Internal chapter types, vars, and functions
 
 */
 
-#define INTERNAL_CHAPTER_BUF_LIM 10
+#define INTERNAL_CHAPTER_BUF_LIM 16
 struct internal_chapter_buf
 {
   size_t offsets[INTERNAL_CHAPTER_BUF_LIM];
@@ -564,6 +564,22 @@ static size_t internal_chapter_delete_after(struct internal_chapter_buf *icb, si
     }
   }
   return(0);
+}
+
+static size_t internal_chapter_count_until(struct internal_chapter_buf *icb, size_t offset)
+{
+  size_t chapter_count = 0;
+  unsigned char i;
+
+  do
+  {
+    for (i = 0; i < icb->used; i++)
+    {
+      if (icb->offsets[i] >= offset) { break; }
+      chapter_count++;
+    }
+  } while ((i == icb->used) && (icb = icb->next));
+  return(chapter_count);
 }
 
 /*
@@ -1595,6 +1611,7 @@ static void zmv_replay_to_record()
   zmv_vars.header.rerecords++;
   zmv_vars.header.removed_frames += zmv_vars.header.frames - zmv_open_vars.frames_replayed;
   zmv_vars.header.frames = zmv_open_vars.frames_replayed;
+  zmv_vars.header.author_len = 0;
   zmv_vars.header.internal_chapters = internal_chapter_delete_after(&zmv_vars.internal_chapters, ftell(zmv_vars.fp));
   zmv_vars.last_internal_chapter_offset = internal_chapter_lesser(&zmv_vars.internal_chapters, ~0);
 
@@ -1746,51 +1763,104 @@ void mzt_chdir_down()
   strcatslash(ZSramPath);
 }
 
-//Currently this doesn't work right in playback
 bool mzt_save(int position, bool thumb, bool playback)
 {
   FILE *fp;
   bool mzt_saved = false;
   char name_buf[7];
 
+  if (!playback) { flush_input_buffer(); }
   mzt_chdir_up();
 
   sprintf(name_buf, "%.2d.zst", position);
 
   if ((fp = fopen_dir(ZSramPath, name_buf, "wb")))
   {
-    gzFile gzp = 0;
-    size_t rewind_point;
-
     zst_save(fp, thumb, false);
     fclose(fp);
 
-    flush_input_buffer();
-    rewind_point = ftell(zmv_vars.fp);
-    internal_chapter_write(&zmv_vars.internal_chapters, zmv_vars.fp);
-
-    setextension(name_buf, "zmv");
-    if ((gzp = gzopen_dir(ZSramPath, name_buf, "wb9")))
+    setextension(name_buf, "mzi");
+    if ((fp = fopen_dir(ZSramPath, name_buf,"wb")))
     {
-      rewind(zmv_vars.fp);
-      zmv_header_write(&zmv_vars.header, zmv_vars.fp);
-      rewind(zmv_vars.fp);
+      gzFile gzp = 0;
+      size_t rewind_point = ftell(zmv_vars.fp);;
 
-      while (!feof(zmv_vars.fp))
+      fwrite4((playback) ? zmv_open_vars.frames_replayed : zmv_vars.header.frames, fp);
+      write_last_joy_state(fp);
+      fwrite4(rewind_point, fp);
+      fclose(fp);
+
+      setextension(name_buf, "zmv");
+      if ((gzp = gzopen_dir(ZSramPath, name_buf, "wb9")))
       {
-        size_t amount_read = fread(zmv_vars.write_buffer, 1, WRITE_BUFFER_SIZE, zmv_vars.fp);
-        gzwrite(gzp, zmv_vars.write_buffer, amount_read);
-      }
-      gzclose(gzp);
+        if (playback)
+        {
+          size_t amount_written,
+                 internal_chapter_count = internal_chapter_count_until(&zmv_vars.internal_chapters, rewind_point),
+                 internal_chapters_size = internal_chapter_count << 2,
+                 frames = zmv_vars.header.frames,
+                 internal_chapters = zmv_vars.header.internal_chapters,
+                 author_len = zmv_vars.header.author_len;
 
-      setextension(name_buf, "mzi");
-      if ((fp = fopen_dir(ZSramPath, name_buf,"wb")))
-      {
-        fwrite4((playback) ? zmv_open_vars.frames_replayed : zmv_vars.header.frames, fp);
-        write_last_joy_state(fp);
-        fwrite4(rewind_point, fp);
-        fclose(fp);
+          //*Correct* the header for the MZT ZMV file
+          zmv_vars.header.frames = zmv_open_vars.frames_replayed;
+          zmv_vars.header.internal_chapters = internal_chapter_count;
+          zmv_vars.header.author_len = 0;
 
+          rewind(zmv_vars.fp);
+          zmv_header_write(&zmv_vars.header, zmv_vars.fp);
+          rewind(zmv_vars.fp);
+
+          //Copy the real ZMV to the MZT GZipped ZMV
+          for (amount_written = 0; amount_written < rewind_point;)
+          {
+            size_t amount = rewind_point-amount_written;
+            if (amount > WRITE_BUFFER_SIZE) { amount = WRITE_BUFFER_SIZE; }
+
+            amount = fread(zmv_vars.write_buffer, 1, amount, zmv_vars.fp);
+            gzwrite(gzp, zmv_vars.write_buffer, amount);
+            amount_written += amount;
+          }
+          fseek(zmv_vars.fp, -((signed)INT_CHAP_END_DIST), SEEK_END);
+          for (amount_written = 0; amount_written < internal_chapters_size;)
+          {
+            size_t amount = internal_chapters_size-amount_written;
+            if (amount > WRITE_BUFFER_SIZE) { amount = WRITE_BUFFER_SIZE; }
+
+            amount = fread(zmv_vars.write_buffer, 1, amount, zmv_vars.fp);
+            gzwrite(gzp, zmv_vars.write_buffer, amount);
+            amount_written += amount;
+          }
+          //External chapter count
+          gzputc(gzp, 0);
+          gzputc(gzp, 0);
+          //Done
+          gzclose(gzp);
+
+          //Now fix data for the real ZMV file's header since we destroyed it
+          zmv_vars.header.frames = frames;
+          zmv_vars.header.internal_chapters = internal_chapters;
+          zmv_vars.header.author_len = author_len;
+
+          rewind(zmv_vars.fp);
+          zmv_header_write(&zmv_vars.header, zmv_vars.fp);
+        }
+        else //During record is much simpler
+        {
+          internal_chapter_write(&zmv_vars.internal_chapters, zmv_vars.fp);
+          fwrite2(0, zmv_vars.fp); //External chapter count
+
+          rewind(zmv_vars.fp);
+          zmv_header_write(&zmv_vars.header, zmv_vars.fp);
+          rewind(zmv_vars.fp);
+
+          while (!feof(zmv_vars.fp))
+          {
+            size_t amount_read = fread(zmv_vars.write_buffer, 1, WRITE_BUFFER_SIZE, zmv_vars.fp);
+            gzwrite(gzp, zmv_vars.write_buffer, amount_read);
+          }
+          gzclose(gzp);
+        }
         mzt_saved = true;
       }
       fseek(zmv_vars.fp, rewind_point, SEEK_SET);
@@ -1852,6 +1922,7 @@ bool mzt_load(int position, bool playback)
           zmv_header_read(&zmv_vars.header, zmv_vars.fp);
           zmv_vars.header.removed_frames = removed_frames;
           zmv_vars.header.rerecords = rerecords;
+          zmv_vars.header.author_len = 0;
           zmv_vars.write_buffer_loc = 0;
 
           fseek(zmv_vars.fp, rewind_point, SEEK_SET);
