@@ -2575,7 +2575,6 @@ void DrawWin320x240x16();
 volatile __int64 copymaskRB = 0x001FF800001FF800LL;
 volatile __int64 copymaskG = 0x0000FC000000FC00LL;
 volatile __int64 copymagic = 0x0008010000080100LL;
-volatile __int64 coef = 0x0066009a0066009aLL;
 
 void drawscreenwin(void)
 {

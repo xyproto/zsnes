@@ -159,7 +159,6 @@ void Game60hzcall(void);
 _int64 copymaskRB = 0x001FF800001FF800LL;
 _int64 copymaskG = 0x0000FC000000FC00LL;
 _int64 copymagic = 0x0008010000080100LL;
-_int64 coef = 0x0066009a0066009aLL;
 #ifdef __OPENGL__
 void gl_clearwin(void);
 #endif
