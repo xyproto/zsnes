@@ -1043,7 +1043,7 @@ static void sort(intptr_t *array, int begin, int end, void (*swapfunc)(size_t, s
     int r = end;
     while (l < r)
     {
-      if (strcasecmp((void *)*(array+l), (void *)*pivot) <= 0)
+      if (strcasecmp((const char *)*(array+l), (const char *)*pivot) <= 0)
       {
         l++;
       }
