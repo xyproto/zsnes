@@ -2930,3 +2930,9 @@ void init65816()
         memset(ram7fa+65528, 0x01, 8);
     }
 }
+
+void zexit()
+{
+  exit(0);
+}
+
