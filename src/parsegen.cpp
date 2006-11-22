@@ -437,7 +437,7 @@ namespace variable
     return((ctype)i);
   }
 
-  enum storage_format { none, single, quoted, mult, mult_packed };
+  enum storage_format { none, single, quoted, mult, mult_packed, ptr };
 
   struct config_data_element
   {
@@ -519,11 +519,37 @@ namespace variable
       }
     }
 
+    void add_var_ptr(string& name, ctype type, size_t length, string dependancy, string comment = "")
+    {
+      if (!duplicate_name(name))
+      {
+        config_data_element new_element = { name, ptr, type, length, dependancy, comment };
+        data_array.push_back(new_element);
+      }
+    }
+    void add_var_ptr(string& name, const char *type, size_t length, string dependancy, string comment = "")
+    {
+      add_var_ptr(name, GetCType(type), length, dependancy, comment);
+    }
+
+
     bool ctype_mult_used(ctype type)
     {
       for (config_data_array::iterator i = data_array.begin(); i != data_array.end(); i++)
       {
         if ((i->format == mult) && (i->type == type))
+        {
+          return(true);
+        }
+      }
+      return(false);
+    }
+
+    bool ctype_ptr_used(ctype type)
+    {
+      for (config_data_array::iterator i = data_array.begin(); i != data_array.end(); i++)
+      {
+        if ((i->format == ptr) && (i->type == type))
         {
           return(true);
         }
@@ -554,6 +580,7 @@ namespace variable
       }
       return(false);
     }
+
     config_data_array::iterator begin() { return(data_array.begin()); }
     config_data_array::iterator end() { return(data_array.end()); }
   } config_data;
@@ -856,7 +883,7 @@ void output_packed_write(ostream& c_stream)
 
 void output_array_write(ostream& c_stream, variable::ctype type)
 {
-  if (variable::config_data.ctype_mult_used(type))
+  if (variable::config_data.ctype_mult_used(type) || variable::config_data.ctype_ptr_used(type))
   {
     c_stream << "\n"
              << "static void write_" << variable::info[type].CTypeUnderscore << "_array(int (*outf)(void *, const char *, ...), void *fp, const char *var_name, " << variable::info[type].CTypeSpace << " *var, size_t size, const char *comment)\n"
@@ -909,7 +936,7 @@ void output_write_var(ostream& c_stream)
         c_stream << "  outf(fp, \"\\n\");\n";
       }
     }
-    else if (i->format == variable::mult)
+    else if ((i->format == variable::mult) || (i->format == variable::ptr))
     {
       c_stream << "  " << dependancy_prefix << "write_" << variable::info[i->type].CTypeUnderscore
                << "_array(outf, fp, \"" << i->dependancy << i->name << "\", " << i->name << ", " << i->length << ", " << ((i->comment != "") ? encode_string(i->comment) : "0") << ");" << dependancy_suffix << "\n";
@@ -993,7 +1020,11 @@ void output_write_var(ostream& c_stream)
         dependancy_suffix = " }";
       }
 
-      if (i->format != variable::none)
+      if (i->format == variable::ptr)
+      {
+        c_stream << "  " << dependancy_prefix << "cpy(p, " << i->name << ", sizeof(" <<variable::info[i->type].CTypeSpace << ")*" << i->length << "); p += sizeof(" << variable::info[i->type].CTypeSpace << ")*" << i->length << ";" << dependancy_suffix << "\n";
+      }
+      else if (i->format != variable::none)
       {
         c_stream << "  " << dependancy_prefix << "cpy(p, " << ((i->format == variable::single) ? "&" : "") << i->name << ", sizeof(" << i->name << ")); p += sizeof(" << i->name << ");" << dependancy_suffix << "\n";
       }
@@ -1114,7 +1145,7 @@ void output_packed_read(ostream& c_stream)
 
 void output_array_read(ostream& c_stream, variable::ctype type)
 {
-  if (variable::config_data.ctype_mult_used(type))
+  if (variable::config_data.ctype_mult_used(type) || variable::config_data.ctype_ptr_used(type))
   {
     c_stream << "\n"
              << "static void read_" << variable::info[type].CTypeUnderscore << "_array(char *line, " << variable::info[type].CTypeSpace << " *var, size_t size)\n"
@@ -1188,7 +1219,7 @@ void output_read_var(ostream& c_stream)
       {
         c_stream << i->name << " = (" << variable::info[i->type].CTypeSpace << ")atoi(value);";
       }
-      else if (i->format == variable::mult)
+      else if ((i->format == variable::mult) || (i->format == variable::ptr))
       {
         c_stream << "read_" << variable::info[i->type].CTypeUnderscore
                  << "_array(value, " << i->name << ", " << i->length << ");";
@@ -1530,7 +1561,8 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
         size_t array = 0;
         bool is_array = !strcasecmp(token, "times");
         bool is_packed = !strcasecmp(token, "packed");
-        if ((!is_array && !is_packed) ||
+        bool is_ptr = !strcasecmp(token, "ptr");
+        if ((!is_array && !is_packed && !is_ptr) ||
             ((token = get_token(0, " ")) && (array = enhanced_atoi(token)) && (token = get_token(0, " "))))
         {
           char *asm_type = token;
@@ -1570,6 +1602,14 @@ void parser_generate(istream& psr_stream, ostream& c_stream, ostream& cheader_st
                 }
                 memsets.push_back(memset_line.str());
                 variable::config_data.add_var_quoted(varname, dependancy, CONFIG_COMMENT);
+              }
+            }
+            else if (is_ptr)
+            {
+              var_init << var_type << " *" << varname << ";";
+              if (ifs.all_true())
+              {
+                variable::config_data.add_var_ptr(varname, var_type, array, dependancy, CONFIG_COMMENT);
               }
             }
             else
