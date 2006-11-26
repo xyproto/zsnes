@@ -770,37 +770,46 @@ void statesaver()
 {
   if (MovieProcessing == MOVIE_RECORD)
   {
+    //'Auto increment savestate slot' code
+    current_zst += AutoIncSaveSlot;
+    current_zst %= 100;
+
     if (mzt_save(current_zst, (cbitmode && !NoPictureSave) ? true : false, false))
     {
       set_state_message("RR STATE ", " SAVED.");
-
-      //'Auto increment savestate slot' code
-      if (AutoIncSaveSlot)
-      {
-        current_zst++;
-        current_zst %= 100;
-      }
+    }
+    else
+    {
+      current_zst += 100-AutoIncSaveSlot;
+      current_zst %= 100;
     }
     return;
   }
 
   if (MovieProcessing == MOVIE_PLAYBACK)
   {
+    //'Auto increment savestate slot' code
+    current_zst += AutoIncSaveSlot;
+    current_zst %= 100;
+
     if (mzt_save(current_zst, (cbitmode && !NoPictureSave) ? true : false, true))
     {
       set_state_message("RR STATE ", " SAVED.");
-
-      //'Auto increment savestate slot' code
-      if (AutoIncSaveSlot)
-      {
-        current_zst++;
-        current_zst %= 100;
-      }
+    }
+    else
+    {
+      current_zst += 100-AutoIncSaveSlot;
+      current_zst %= 100;
     }
     return;
   }
 
   clim();
+
+  //'Auto increment savestate slot' code
+  current_zst += (char)(AutoIncSaveSlot && !isextension(ZStateName, "zss"));
+  current_zst %= 100;
+  zst_name();
 
   if ((fhandle = fopen_dir(ZSramPath, ZStateName, "wb")))
   {
@@ -809,20 +818,16 @@ void statesaver()
 
     //Display message onscreen, 'STATE XX SAVED.'
     set_state_message("STATE ", " SAVED.");
-
-    //'Auto increment savestate slot' code
-    if (AutoIncSaveSlot && !isextension(ZStateName, "zss"))
-    {
-      current_zst++;
-      current_zst %= 100;
-      zst_name();
-    }
   }
   else
   {
     //Display message onscreen, 'UNABLE TO SAVE.'
     Msgptr = "UNABLE TO SAVE.";
     MessageOn = MsgCount;
+
+    current_zst += 100-(char)(AutoIncSaveSlot && !isextension(ZStateName, "zss"));
+    current_zst %= 100;
+    zst_name();
   }
 
   stim();
