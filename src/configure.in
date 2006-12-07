@@ -5,7 +5,7 @@ AC_PREREQ(2.50)
 AC_CONFIG_SRCDIR(init.asm)
 AC_CONFIG_HEADER(config.h)
 
-VERSION=pre1.43
+VERSION=1.50
 
 CFLAGS="$CFLAGS -pipe -I. -I/usr/local/include -I/usr/include"
 dnl - You might wanna change -I/usr/include if you're trying to do this with
