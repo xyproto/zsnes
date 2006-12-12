@@ -47,6 +47,7 @@ typedef int ssize_t;
 #define SLASH_STR "/"
 #endif
 
+string gcc = "gcc";
 string cflags;
 
 #ifdef _MSC_VER //MSVC
@@ -57,7 +58,7 @@ static inline string COMPILE_OBJ(string obj, string c)
 #else
 static inline string COMPILE_OBJ(string obj, string c)
 {
-  return(string(string("gcc ")+cflags+(" -o ")+obj+string(" -c ")+c));
+  return(string(gcc+(" ")+cflags+(" -o ")+obj+string(" -c ")+c));
 }
 #endif
 
@@ -1799,6 +1800,11 @@ int main(size_t argc, const char **argv)
       param_pos++;
       family_name = argv[param_pos];
     }
+    else if (!strcmp(argv[param_pos], "-gcc"))
+    {
+      param_pos++;
+      gcc = argv[param_pos];
+    }
     else
     {
       break;
@@ -1827,6 +1833,10 @@ int main(size_t argc, const char **argv)
          << "             happens to write_cfg_vars and read_cfg_vars.\n"
          << "\n"
          << "  -compile   Compiles output instead of outputting C file.\n"
+         << "\n"
+         << "  -gcc       Use with -compile. Parameter passed in the name of\n"
+         << "             the C compiler to use, it should be GCC based.\n"
+         << "             It will not work with MSVC based compilers.\n"
          << "\n"
          << "  -flags     Use with -compile. Flags passed as next parameter\n"
          << "             are passed to the C compiler.\n"
