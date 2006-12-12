@@ -809,7 +809,8 @@ void statesaver()
   //'Auto increment savestate slot' code
   current_zst += (char)(AutoIncSaveSlot && !isextension(ZStateName, "zss"));
   current_zst %= 100;
-  zst_name();
+  if(!isextension(ZStateName, "zss"))
+    zst_name();
 
   if ((fhandle = fopen_dir(ZSramPath, ZStateName, "wb")))
   {
@@ -827,7 +828,8 @@ void statesaver()
 
     current_zst += 100-(char)(AutoIncSaveSlot && !isextension(ZStateName, "zss"));
     current_zst %= 100;
-    zst_name();
+    if(!isextension(ZStateName, "zss"))
+      zst_name();
   }
 
   stim();
