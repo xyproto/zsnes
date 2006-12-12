@@ -105,8 +105,24 @@ if test x$enable_debugger != xyes; then
   DEBUGGER_FILES=""
 else
   DEBUGGER_FILES="debugasm.o debugger.o"
-  # can't figure out how to locate curses, so:
-  LDFLAGS="$LDFLAGS -lcurses"
+
+  AC_CHECK_LIB(curses, initscr, found_curses=yes,found_curses=no)
+  AC_CHECK_LIB(ncurses, initscr, found_ncurses=yes,found_ncurses=no)
+  AC_CHECK_LIB(pdcurses, initscr, found_pdcurses=yes,found_pdcurses=no)
+
+  if test x$found_curses = xyes; then
+    LDFLAGS="$LDFLAGS -lcurses"
+  else
+    if test x$found_ncurses = xyes; then
+      LDFLAGS="$LDFLAGS -lncurses"
+    else
+      if test x$found_pdcurses = xyes; then
+        LDFLAGS="$LDFLAGS -lpdcurses"
+      else
+        AC_MSG_ERROR(A curses library is required to use the debugger)
+      fi
+    fi
+  fi
 fi
 
 dnl - opengl stuff
