@@ -114,6 +114,7 @@ else
     LDFLAGS="$LDFLAGS -lcurses"
   else
     if test x$found_ncurses = xyes; then
+      CFLAGS="$CFLAGS -DNCURSES"
       LDFLAGS="$LDFLAGS -lncurses"
     else
       if test x$found_pdcurses = xyes; then

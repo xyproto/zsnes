@@ -20,7 +20,11 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 #include <string.h>
 #include <ctype.h>
+#ifndef NCURSES
 #include <curses.h>
+#else
+#include <ncurses.h>
+#endif
 #include "zpath.h"
 
 #ifdef __MSDOS__
