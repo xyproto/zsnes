@@ -95,7 +95,7 @@ Z_OBJS=$(MAIN_O) $(CHIP_O) $(CPU_O) $(DEBUG_O) $(GUI_O) $(EFF_O) $(JMA_O)\
 %.o: %.cpp
 	@CXX@ @CXXFLAGS@ -o $@ -c $<
 %.o %.h: %.psr $(PSR)
-	./$(PSR) @PSRFLAGS@ -compile -flags "@CFLAGS@ -O1" -cheader $*.h -fname $* $*.o $<
+	./$(PSR) @PSRFLAGS@ -gcc @CC@ -compile -flags "@CFLAGS@ -O1" -cheader $*.h -fname $* $*.o $<
 
 default: main
 all: main tools
