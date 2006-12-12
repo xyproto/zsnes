@@ -106,7 +106,7 @@ if test x$enable_debugger != xyes; then
 else
   DEBUGGER_FILES="debugasm.o debugger.o"
   # can't figure out how to locate curses, so:
-  LDFLAGS="$LDFLAGS -lcurses"
+  LDFLAGS="$LDFLAGS -lncurses"
 fi
 
 dnl - opengl stuff
