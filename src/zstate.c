@@ -807,10 +807,12 @@ void statesaver()
   clim();
 
   //'Auto increment savestate slot' code
-  current_zst += (char)(AutoIncSaveSlot && !isextension(ZStateName, "zss"));
-  current_zst %= 100;
   if(!isextension(ZStateName, "zss"))
+  {
+    current_zst += (char) AutoIncSaveSlot;
+    current_zst %= 100;
     zst_name();
+  }
 
   if ((fhandle = fopen_dir(ZSramPath, ZStateName, "wb")))
   {
@@ -826,10 +828,12 @@ void statesaver()
     Msgptr = "UNABLE TO SAVE.";
     MessageOn = MsgCount;
 
-    current_zst += 100-(char)(AutoIncSaveSlot && !isextension(ZStateName, "zss"));
-    current_zst %= 100;
     if(!isextension(ZStateName, "zss"))
+    {
+      current_zst += 100-(char) AutoIncSaveSlot;
+      current_zst %= 100;
       zst_name();
+    }
   }
 
   stim();
