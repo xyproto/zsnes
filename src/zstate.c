@@ -1136,7 +1136,7 @@ void SaveCombFile();
 void SaveSramData()
 {
   extern unsigned int sramb4save;
-  if (!SRAMSave5Sec || (SRAMSave5Sec && sramb4save))
+  if (!SRAMSave5Sec || sramb4save)
   {
     FILE *fp = 0;
     unsigned char special = 0;
