@@ -1135,48 +1135,53 @@ void SaveCombFile();
 // Sram saving
 void SaveSramData()
 {
-  FILE *fp = 0;
-  unsigned char special = 0;
-  unsigned int *data_to_save;
-
-  setextension(ZSaveName, "srm");
-
-  if (ramsize && !sramsavedis)
+  extern unsigned int sramb4save;
+  if (!SRAMSave5Sec || (SRAMSave5Sec && sramb4save))
   {
-    if (SFXEnable)
-    {
-      data_to_save=sfxramdata;
-      special=1;
-    }
-    else if (SA1Enable)
-    {
-      data_to_save=(unsigned int *)SA1RAMArea;
-      special=1;
-    }
-    else if (SETAEnable)
-    {
-      data_to_save=setaramdata;
-      special=1;
-    }
-    else data_to_save=sram;
+    FILE *fp = 0;
+    unsigned char special = 0;
+    unsigned int *data_to_save;
 
-    if (!special || CHIPBATT)
+    setextension(ZSaveName, "srm");
+
+    if (ramsize && !sramsavedis)
     {
-      clim();
-      if (*ZSaveName && (fp = fopen_dir(ZSramPath, ZSaveName,"wb")))
+      if (SFXEnable)
       {
-        fwrite(data_to_save, 1, ramsize, fp);
-        fclose(fp);
+        data_to_save=sfxramdata;
+        special = 1;
       }
-      if (*ZSaveST2Name && (fp = fopen_dir(ZSramPath, ZSaveST2Name, "wb")))
+      else if (SA1Enable)
       {
-        fwrite(sram2, 1, ramsize, fp);
-        fclose(fp);
+        data_to_save = (unsigned int *)SA1RAMArea;
+        special=1;
       }
-      stim();
+      else if (SETAEnable)
+      {
+        data_to_save = setaramdata;
+        special=1;
+      }
+      else { data_to_save = sram; }
+
+      if (!special || CHIPBATT)
+      {
+        clim();
+        if (*ZSaveName && (fp = fopen_dir(ZSramPath, ZSaveName,"wb")))
+        {
+          fwrite(data_to_save, 1, ramsize, fp);
+          fclose(fp);
+        }
+        if (*ZSaveST2Name && (fp = fopen_dir(ZSramPath, ZSaveST2Name, "wb")))
+        {
+          fwrite(sram2, 1, ramsize, fp);
+          fclose(fp);
+        }
+        stim();
+      }
     }
+    sramb4save = 0;
+    SaveCombFile();
   }
-  SaveCombFile();
 }
 
 extern bool SramExists;

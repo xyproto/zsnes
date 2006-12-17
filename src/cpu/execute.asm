@@ -20,7 +20,7 @@
 
 EXTSYM KeyRewind,statesaver,Voice0Status,UpdateDPage
 EXTSYM StartGUI,romdata,initvideo,DosExit,sfxramdata,deinitvideo
-EXTSYM vidbufferofsa,GUISaveVars,device2
+EXTSYM vidbufferofsa,device2
 EXTSYM KeySaveState,KeyLoadState,KeyQuickExit,KeyQuickLoad,KeyQuickRst
 EXTSYM GUIDoReset,GUIReset,KeyOnStA,KeyOnStB,ProcessKeyOn,C4Enable,KeyQuickClock
 EXTSYM KeyQuickSaveSPC,TimerEnable,splitflags,joinflags
@@ -48,7 +48,7 @@ EXTSYM sfx192lineloc,sfxobjlineloc,sfxclineloc,PLOTJmpa,PLOTJmpb,FxTable
 EXTSYM FxTableb,FxTablec,FxTabled,SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,SFXCounter
 EXTSYM fxbit01,fxbit01pcal,fxbit23,fxbit23pcal,fxbit45,fxbit45pcal,fxbit67
 EXTSYM fxbit67pcal,SfxSFR,nosprincr,cpucycle,switchtovirqdeb,switchtonmideb
-EXTSYM MovieSeekBehind,SaveSramData,BackupCVFrame,RestoreCVFrame,loadstate
+EXTSYM MovieSeekBehind,BackupCVFrame,RestoreCVFrame,loadstate
 EXTSYM KeyInsrtChap,KeyNextChap,KeyPrevChap,MovieInsertChapter,MovieSeekAhead
 EXTSYM ResetDuringMovie,EMUPauseKey,INCRFrameKey,MovieWaiting,NoInputRead
 EXTSYM AllocatedRewindStates,PauseFrameMode,RestorePauseFrame,BackupPauseFrame
@@ -488,12 +488,6 @@ reexecuteb2:
 
 NEWSYM endprog
     call deinitvideo
-
-    pushad
-    call SaveSramData
-    call GUISaveVars
-    popad
-
     pushad
     call MovieStop
     popad

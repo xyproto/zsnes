@@ -308,7 +308,7 @@ NEWSYM cachevideo
     cmp byte[SRAMSave5Sec],0
     je .nofocussaveb
     dec dword[sramb4save]
-    cmp dword[sramb4save],0
+    cmp dword[sramb4save],1
     jne .nofocussave
     pushad
     call SaveSramData
