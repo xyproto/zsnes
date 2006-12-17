@@ -3182,9 +3182,9 @@ int GetMouseMoveY(void)
 
 int GetMouseButton(void)
 {
-   if (MouseButton == 1) MouseButtonPressed = 1;
+   if (MouseButton == (lhguimouse?2:1)) MouseButtonPressed = 1;
       else MouseButtonPressed = 0;
-   if (MouseButton&2)
+   if (MouseButton&(lhguimouse?1:2))
    {
       while (MouseButton != 0 && T36HZEnabled && FullScreen == 0)
       {
