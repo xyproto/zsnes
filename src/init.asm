@@ -43,7 +43,7 @@ EXTSYM CombinDataGlob,NumCombo,GUIComboGameSpec,mousexloc,mouseyloc,extlatch
 EXTSYM MMXSupport,MMXextSupport,romdata,procexecloop,wramdata
 EXTSYM romispal,initregr,initregw,loadfileGUI,loadstate2,CMovieExt
 EXTSYM MoviePlay,MovieDumpRaw,AllowUDLR,device1,device2,processmouse1
-EXTSYM processmouse2,cpalval,init65816,clearmem,SetupROM,ZCartName,initsnes
+EXTSYM processmouse2,cpalval,init65816,clearmem,SetupROM,ZCartName,initsnes,SSPause
 
 %ifdef __MSDOS__
 EXTSYM init18_2hz
@@ -622,7 +622,10 @@ NEWSYM ReadInputDevice
     jz .nobutton1
     or al,80h
 .nobutton1
-    cmp byte[pressed+14],0
+    push eax
+    mov eax,[SSPause]
+    cmp byte[pressed+eax],0
+    pop eax
     jz .nobutton3
     or al,10h
 .nobutton3
@@ -661,7 +664,10 @@ NEWSYM ReadInputDevice
 ;    or dword[LethEnData+2],10h
     or byte[JoyAOrig+3],80h
 .nobutton1b
-    cmp byte[pressed+14],0
+    push eax
+    mov eax,[SSPause]
+    cmp byte[pressed+eax],0
+    pop eax
     jz .nobutton3b
 ;    or byte[LethEnData+2],40h
 .nobutton3b

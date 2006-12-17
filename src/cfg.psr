@@ -1160,5 +1160,10 @@ KeyQuickClock dd 0
 KeyDisplayBatt dd 0
 
 @
+@ Super Scope buttons
+SSAutoFire dd 13
+SSPause dd 14
+
+@
 @ - EOF -
 

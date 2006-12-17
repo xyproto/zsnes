@@ -38,7 +38,7 @@ EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,CSStatus
 EXTSYM CSStatus2,CSStatus3,CSStatus4,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
 EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
-EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox
+EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
 
 %ifndef __MSDOS__
 EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
@@ -160,7 +160,10 @@ NEWSYM processmouse2
     mov [mousebuttons],bx
     cmp byte[device2],2
     jne .ss
-    cmp byte[pressed+13],0
+    push eax
+    mov eax,[SSAutoFire]
+    cmp byte[pressed+eax],0
+    pop eax
     je .noautosw
     cmp byte[ssautoswb],1
     je .ss
