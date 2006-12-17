@@ -3092,7 +3092,8 @@ DisplayGUIAddOnClick:
   DGOptnsProcBox 74,76,[KeyExtraEnab1]
   DGOptnsProcBox 165,76,[KeyExtraEnab2]
 
-  GUIClickCButton 9,83,byte[lhguimouse]
+  GUIClickCButton 9,83,byte[mouse1lh]
+  GUIClickCButton 100,83,byte[mouse2lh]
 
   DGOptnsProcBox 74,108,[SSAutoFire]
   DGOptnsProcBox 165,108,[SSPause]
