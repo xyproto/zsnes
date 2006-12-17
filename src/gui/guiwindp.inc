@@ -1901,8 +1901,8 @@ DisplayGUIVideo:
   GUIOuttextwin2d 5,199,133,GUICustomY,4
 %endif
 
-  GUIDisplayBBoxS 5,5,26,115,179,167           ; Video Modes Box
-  DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],18,138,GUIVStA
+  GUIDisplayBBoxS 5,5,26,115,189,167           ; Video Modes Box
+  DrawSlideBarWin 5,117,34,[GUIcurrentvideoviewloc],[NumVideoModes],20,148,GUIVStA
   cmp byte[GUICHold],5                        ; Scrollbar
   jne .noholda
   add byte[GUIWincoladd],3
@@ -1916,7 +1916,7 @@ DisplayGUIVideo:
   jne .noholdc
   add byte[GUIWincoladd],3
 .noholdc
-  GUIDisplayIconWin 5,117,172,GUIIconDataDownArrow
+  GUIDisplayIconWin 5,117,182,GUIIconDataDownArrow
   cmp byte[GUICHold],6
   jne .noholdd
   sub byte[GUIWincoladd],3
@@ -1971,6 +1971,10 @@ DisplayGUIVideo:
   GUIDisplayTextG 5,11,30+8*16,[GUITemp]
   add dword[GUITemp],18
   GUIDisplayTextG 5,11,30+8*17,[GUITemp]
+  add dword[GUITemp],18
+  GUIDisplayTextG 5,11,30+8*18,[GUITemp]
+  add dword[GUITemp],18
+  GUIDisplayTextG 5,11,30+8*19,[GUITemp]
 
   xor eax,eax                      ; Mode Value
   mov al,[cvidmode]

@@ -1008,7 +1008,7 @@ GUIVideoKeys:
   mov eax,[NumVideoModes]
   dec eax
   mov [GUIcurrentvideocursloc],eax
-  sub eax,17
+  sub eax,19
   mov [GUIcurrentvideoviewloc],eax
   test dword[GUIcurrentvideoviewloc],8000000h
   jz .noendp
@@ -1054,7 +1054,7 @@ GUIVideoKeys:
   cmp ebx,[NumVideoModes]
   je .nodown
   inc dword[GUIcurrentvideocursloc]
-  sub ebx,18
+  sub ebx,20
   cmp ebx,[GUIcurrentvideoviewloc]
   jne .nodown
   inc dword[GUIcurrentvideoviewloc]
@@ -1072,8 +1072,8 @@ GUIVideoKeys:
   cmp dl,73
   jne .nopageup
 %endif
-  sub dword[GUIcurrentvideoviewloc],18
-  sub dword[GUIcurrentvideocursloc],18
+  sub dword[GUIcurrentvideoviewloc],20
+  sub dword[GUIcurrentvideocursloc],20
   test dword[GUIcurrentvideoviewloc],8000000h
   jz .posv
   mov dword[GUIcurrentvideoviewloc],0
@@ -1096,15 +1096,15 @@ GUIVideoKeys:
   cmp dl,81
   jne .nopagedown
 %endif
-  add dword[GUIcurrentvideoviewloc],18
-  add dword[GUIcurrentvideocursloc],18
+  add dword[GUIcurrentvideoviewloc],20
+  add dword[GUIcurrentvideocursloc],20
   mov ebx,[NumVideoModes]
   dec ebx
   cmp dword[GUIcurrentvideocursloc],ebx
   jb .poscd
   mov [GUIcurrentvideocursloc],ebx
 .poscd
-  sub ebx,17
+  sub ebx,19
   cmp dword[GUIcurrentvideoviewloc],ebx
   jl .posvd
   test ebx,8000000h
