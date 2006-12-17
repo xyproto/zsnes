@@ -881,9 +881,9 @@ prevlfreeze db 0
 @
 @ GUI palette mods:
 @ Background RGB tint [0..31]
-GUIRAdd db 15
-GUIGAdd db 10
-GUIBAdd db 31
+GUIRAdd db 0
+GUIGAdd db 0
+GUIBAdd db 0
 @ Titlebar RGB tint [0..31]
 GUITRAdd db 0
 GUITGAdd db 10
@@ -895,7 +895,7 @@ GUIWBAdd db 25
 
 @
 @ GUI background effect (0 = NONE, 1 = Snow, 2 = Water A, 3 = Water B, 4 = Burn)
-GUIEffect db 0
+GUIEffect db 1
 
 @
 @ Filter GUI display (0 = No, 1 = YES)

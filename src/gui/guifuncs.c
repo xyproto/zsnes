@@ -551,7 +551,7 @@ void GUIRestoreVars()
 #endif
   CheckValueBounds(&ClockBox, 0, 1, 1, UB);
 
-  if (TimeChecker == CalcCfgChecksum())
+  //if (TimeChecker == CalcCfgChecksum()) //What does this do?
   {
     ShowTimer = 1;
     NumSnow = 200;
