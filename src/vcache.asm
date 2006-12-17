@@ -47,7 +47,7 @@ EXTSYM oamram,objhipr,objptr,objptrn,objsize1,objsize2,spritetablea,sprleftpr
 EXTSYM sprlefttot,vcache4b,objadds1,objadds2,objmovs1,objmovs2,tltype4b
 EXTSYM vidmemch4,vram,bgptr,bgptrc,bgptrd,curtileptr,vcache2b,vcache8b,vidmemch8
 EXTSYM offsetmshl,NextLineCache,tltype2b,tltype8b,objwlrpos
-EXTSYM EmuSpeed,SDRatio,FFRatio,DisplayBatteryStatus
+EXTSYM EmuSpeed,SDRatio,FFRatio,DisplayBatteryStatus,lhguimouse,SwapMouseButtons
 EXTSYM KeyResetSpeed,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyDisplayBatt,EMUPause
 EXTSYM device1,device2,snesinputdefault1,snesinputdefault2
 EXTSYM KeyExtraEnab1,KeyExtraEnab2,cycleinputdevice1,cycleinputdevice2,MouseDis
@@ -435,6 +435,10 @@ NEWSYM cachevideo
     cmp byte[device2],0
     jne .noclick
     call Get_MouseData
+    cmp byte[lhguimouse],1
+    jne .notlefthanded
+    call SwapMouseButtons
+.notlefthanded
     test bx,02h
     jz .norclick
     cmp byte[MousePRClick],0

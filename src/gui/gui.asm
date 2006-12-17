@@ -108,7 +108,7 @@ EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
 EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
 EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths,loadquickfname
-EXTSYM mousewrap,GUIClick,PrevFSMode,PrevWinMode,SaveSramData
+EXTSYM mousewrap,GUIClick,PrevFSMode,PrevWinMode,SaveSramData,SwapMouseButtons
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,SmallMsgText,mouse1lh,mouse2lh
 EXTSYM AutoPatch,RomInfo,AllowUDLR,Triplebufen,GrayscaleMode
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,TripleBufferWin
@@ -1325,6 +1325,10 @@ guiprevideo:
   cmp byte[MouseDis],1
   je .again
   call Get_MouseData
+  cmp byte[lhguimouse],1
+  jne .notlefthanded
+  call SwapMouseButtons
+.notlefthanded
   test bx,01h
   jnz .pressedokay
   jmp .again
@@ -1531,6 +1535,10 @@ NEWSYM guicheaterror
     cmp byte[MouseDis],1
     je .mousedis
     call Get_MouseData
+    cmp byte[lhguimouse],1
+    jne .notlefthanded
+    call SwapMouseButtons
+.notlefthanded
     test bx,01h
     jnz .pressedokay
 .mousedis

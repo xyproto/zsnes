@@ -94,6 +94,10 @@ ProcessMouse:
 .noholdnecessary
   mov byte[MouseMoveOkay],0
   call Get_MouseData
+  cmp byte[lhguimouse],1
+  jne .notlefthanded
+  call SwapMouseButtons
+.notlefthanded
   mov [mousebuttonstat],bx
   cmp byte[lastmouseholded],0
   je .noprevhold
@@ -107,6 +111,10 @@ ProcessMouse:
   cmp byte[mousewrap],1
   je near ProcessMouseWrap
   call Get_MouseData
+  cmp byte[lhguimouse],1
+  jne .notlefthanded2
+  call SwapMouseButtons
+.notlefthanded2
   cmp word[GUImouseposx],cx
   je .zero2
   mov byte[MouseMoveOkay],1

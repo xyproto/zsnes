@@ -87,7 +87,7 @@ NEWSYM showvideo
     pop esi
     ret
 
-SwapMouseButtons:
+NEWSYM SwapMouseButtons
     mov bh,bl
     shl bh,1
     and bh,2
