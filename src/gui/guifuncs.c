@@ -550,6 +550,10 @@ void GUIRestoreVars()
   CheckValueBounds(&MouseSensitivity, 1, 255, 1, UB);
 #endif
   CheckValueBounds(&ClockBox, 0, 1, 1, UB);
+  CheckValueBounds(&mouse1lh, 0, 1, 0, UB);
+  CheckValueBounds(&mouse2lh, 0, 1, 0, UB);
+  CheckValueBounds(&mouse1gui, 0, 1, 0, UB);
+  CheckValueBounds(&mouse2gui, 0, 1, 0, UB);
 
   //if (TimeChecker == CalcCfgChecksum()) //What does this do?
   {

@@ -3432,6 +3432,10 @@ DisplayGUIOptns:              ; GUI Options
   GUIDisplayCheckboxu 10,12,83,MouseWheel,GUIGUIOptnsTextA2g,1
   GUIDisplayCheckboxu 10,124,83,TrapMouseCursor,GUIGUIOptnsTextA2h,3
 %endif
+
+  GUIDisplayCheckboxu 10,12,93,mouse1gui,GUIGUIOptnsTextA2i,15
+  GUIDisplayCheckboxu 10,124,93,mouse2gui,GUIGUIOptnsTextA2j,15
+
   GUIDisplayTextY 10,6,111,GUIGUIOptnsTextB
   GUIDisplayText 10,60,111,GUIGUIOptnsTextB1
   GUIDisplayText 10,100,111,GUIGUIOptnsTextB2
@@ -3472,6 +3476,8 @@ GUIGUIOptnsTextA2e dd 'WATER EFFECT B',0
 GUIGUIOptnsTextA2f dd 'BURNING EFFECT',0
 GUIGUIOptnsTextA2g db 'WHEEL MOUSE',0
 GUIGUIOptnsTextA2h db 'TRAP MOUSE CURSOR',0
+GUIGUIOptnsTextA2i db 'L-HANDED MOUSE 1',0
+GUIGUIOptnsTextA2j db 'L-HANDED MOUSE 2',0
 
 GUIGUIOptnsTextB db 'COLOR:',0
 GUIGUIOptnsTextB1 db 'BACK',0

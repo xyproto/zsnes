@@ -280,9 +280,15 @@ SidewinderFix db 0
 %endif
 
 @
-@ Mouse device left handed (swap left and right buttons) (0 = No Swap, 1 = Swap)
+@ Mouse device left handed for Super Scope
+@ (swap left and right buttons) (0 = NO SWAP, 1 = Swap)
 mouse1lh db 0
 mouse2lh db 0
+
+@
+@ Super Scope buttons
+SSAutoFire dd 13
+SSPause dd 14
 
 @
 @  ----
@@ -676,7 +682,7 @@ SRAMState db 1
 @ savestate.
 AutoIncSaveSlot db 0
 @ Save in 10 save block (0 = NO, 1 = Yes)
-@ This may be handy if you want to save within a block (0-9, 11-19, etc.)
+@ This may be handy if you want to save within a block (0-9, 10-19, etc.)
 AutoIncSaveSlotBlock db 0
 
 @
@@ -982,6 +988,12 @@ JoyPad1Move db 0
 newfont db 0
 
 @
+@ Mouse device left handed for GUI
+@ (swap left and right buttons) (0 = NO SWAP, 1 = Swap)
+mouse1gui db 0
+mouse2gui db 0
+
+@
 @  ----
 @ -- Cheats
 @  ----
@@ -1163,11 +1175,6 @@ KeyQuickClock dd 0
 @
 @ Laptop battery display toggle
 KeyDisplayBatt dd 0
-
-@
-@ Super Scope buttons
-SSAutoFire dd 13
-SSPause dd 14
 
 @
 @ - EOF -

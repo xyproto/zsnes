@@ -2750,6 +2750,9 @@ DisplayGUIOptnsClick:
   GUIClickCButton 12,188,byte[AllowMultipleInst]
 %endif
 
+  GUIClickCButton 12,93,byte[mouse1gui]
+  GUIClickCButton 124,93,byte[mouse2gui]
+
   GUIPButtonHole 48,108,byte[CurPalSelect],0    ; Radio Buttons
   GUIPButtonHole 88,108,byte[CurPalSelect],1
   GUIPButtonHole 135,108,byte[CurPalSelect],2
