@@ -280,6 +280,11 @@ SidewinderFix db 0
 %endif
 
 @
+@ Mouse device left handed (swap left and right buttons) (0 = No Swap, 1 = Swap)
+mouse1lh db 0
+mouse2lh db 0
+
+@
 @  ----
 @ -- Video --
 @  ----

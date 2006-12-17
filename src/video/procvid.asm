@@ -41,7 +41,7 @@ EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
 
 %ifndef __MSDOS__
-EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
+EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse,mouse1lh,mouse2lh
 %else
 EXTSYM SB_blank,vsyncon,Triplebufen,granadd,Palette0
 %endif
@@ -100,6 +100,15 @@ NEWSYM processmouse1
     call MultiMouseProcess
     popad
     mov bx,[MouseButtons]
+    cmp byte[mouse1lh],1
+    jne .notlefthanded1
+    mov bh,bl
+    shl bh,1
+    and bh,2
+    shr bl,1
+    or bl,bh
+    xor bh,bh
+.notlefthanded1
     mov [mousebuttons],bx
     mov cx,[MouseMoveX]
     mov dx,[MouseMoveY]
@@ -107,6 +116,15 @@ NEWSYM processmouse1
 .nomultimouse
 %endif
     call Get_MouseData
+    cmp byte[mouse1lh],1
+    jne .notlefthanded2
+    mov bh,bl
+    shl bh,1
+    and bh,2
+    shr bl,1
+    or bl,bh
+    xor bh,bh
+.notlefthanded2
     mov [mousebuttons],bx
     call Get_MousePositionDisplacement
 .mousestuff
@@ -157,6 +175,15 @@ NEWSYM processmouse2
 %endif
     call Get_MouseData
 .mousestuff
+    cmp byte[mouse2lh],1
+    jne .notlefthanded
+    mov bh,bl
+    shl bh,1
+    and bh,2
+    shr bl,1
+    or bl,bh
+    xor bh,bh
+.notlefthanded
     mov [mousebuttons],bx
     cmp byte[device2],2
     jne .ss
