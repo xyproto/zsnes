@@ -36,12 +36,12 @@ EXTSYM genfulladdtab,genfulladdtabng,TimerEnable,ShowTimer,debugdisble,GUIOn
 EXTSYM FilteredGUI,HalfTrans,SmallMsgText,ClearScreen,Mode7HiRes,mosenng,mosszng
 EXTSYM intrlng,mode7hr,newgfx16b,vesa2_clbitng,vesa2_clbitng2,CSStatus
 EXTSYM CSStatus2,CSStatus3,CSStatus4,SpecialLine,Clear2xSaIBuffer,vidbufferofsb,bg1scroly
-EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr
+EXTSYM MovieProcessing,MovieFrameStr,GetMovieFrameStr,mouse1lh,mouse2lh
 EXTSYM MovieDisplayFrame,SloMo,MouseCount,device2,LoadPicture
 EXTSYM zst_determine_newest,newestfiledate,zst_exists,ClockBox,SSAutoFire
 
 %ifndef __MSDOS__
-EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse,mouse1lh,mouse2lh
+EXTSYM MouseMoveX,MouseMoveY,MouseButtons,MultiMouseProcess,mouse
 %else
 EXTSYM SB_blank,vsyncon,Triplebufen,granadd,Palette0
 %endif
