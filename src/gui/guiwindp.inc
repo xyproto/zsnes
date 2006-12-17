@@ -4348,8 +4348,16 @@ DisplayGUIAddOns:                   ;Select Special Controllers
   GUIDisplayButtonHoleTu 17,100,63,byte[device2],4,GUIAddOnText7,0
 .endEE
 
-  DDrawBox 17,18,75,[KeyExtraEnab1]
-  DDrawBox 17,109,75,[KeyExtraEnab2]
+  GUIDisplayText 17,12,78,GUIAddOnText8
+  GUIDisplayText 17,103,78,GUIAddOnText9
+  DDrawBox 17,73,75,[KeyExtraEnab1]
+  DDrawBox 17,164,75,[KeyExtraEnab2]
+
+  GUIDisplayTextY 17,12,88,GUIAddOnTextA
+  GUIDisplayText 17,12,98,GUIAddOnTextB
+  GUIDisplayText 17,103,98,GUIAddOnTextC
+  DDrawBox 17,73,95,[SSAutoFire]
+  DDrawBox 17,164,95,[SSPause]
   ret
 
 SECTION .data
@@ -4360,6 +4368,11 @@ GUIAddOnText4 db 'MOUSE',0
 GUIAddOnText5 db 'SUPER SCOPE',0
 GUIAddOnText6 db '1 JUSTIFIER',0
 GUIAddOnText7 db '2 JUSTIFIERS',0
+GUIAddOnText8 db 'CYCLE P1:',0
+GUIAddOnText9 db 'CYCLE P2:',0
+GUIAddOnTextA db 'SUPER SCOPE KEYS:',0
+GUIAddOnTextB db 'AUTO-FIRE',0
+GUIAddOnTextC db 'SS PAUSE',0
 
 ;EE
 GUIAddOnText1Alt db 83,76,79,84,32,49,58,0

@@ -121,7 +121,7 @@ EXTSYM d_names,selected_names,GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
 EXTSYM GUIcurrentfilewin,GUIcurrentcursloc,GUIcurrentviewloc
 EXTSYM GUIcurrentdircursloc,GetLoadData,ZRomPath,SaveSecondState,ClockBox,DisplayInfo
 EXTSYM GUIJT_currentviewloc,GUIJT_currentcursloc,GUIJT_entries
-EXTSYM GUIJT_offset,GUIJT_viewable,GUIGenericJumpTo
+EXTSYM GUIJT_offset,GUIJT_viewable,GUIGenericJumpTo,SSAutoFire,SSPause
 
 %ifdef __UNIXSDL__
 EXTSYM numlockptr
