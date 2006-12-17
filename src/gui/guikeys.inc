@@ -952,8 +952,7 @@ GUIGUIOptnsKeys:
   GUIKeyCheckbox SaveMainWindowPos,'V'
   GUIKeyCheckbox AllowMultipleInst,'L'
 %endif
-  GUIKeyCheckbox mouse1gui,'1'
-  GUIKeyCheckbox mouse2gui,'2'
+  GUIKeyCheckbox lhguimouse,'D'
 ret
 
 GUIVideoKeys:

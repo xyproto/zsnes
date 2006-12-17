@@ -2750,8 +2750,7 @@ DisplayGUIOptnsClick:
   GUIClickCButton 12,188,byte[AllowMultipleInst]
 %endif
 
-  GUIClickCButton 12,93,byte[mouse1gui]
-  GUIClickCButton 124,93,byte[mouse2gui]
+  GUIClickCButton 12,93,byte[lhguimouse]
 
   GUIPButtonHole 48,108,byte[CurPalSelect],0    ; Radio Buttons
   GUIPButtonHole 88,108,byte[CurPalSelect],1
@@ -3085,8 +3084,7 @@ DisplayGUIAddOnClick:
   DGOptnsProcBox 74,76,[KeyExtraEnab1]
   DGOptnsProcBox 165,76,[KeyExtraEnab2]
 
-  GUIClickCButton 9,83,byte[mouse1lh]
-  GUIClickCButton 100,83,byte[mouse2lh]
+  GUIClickCButton 9,83,byte[lhguimouse]
 
   DGOptnsProcBox 74,108,[SSAutoFire]
   DGOptnsProcBox 165,108,[SSPause]

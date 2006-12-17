@@ -990,8 +990,7 @@ newfont db 0
 @
 @ Mouse device left handed for GUI
 @ (swap left and right buttons) (0 = NO SWAP, 1 = Swap)
-mouse1gui db 0
-mouse2gui db 0
+lhguimouse db 0
 
 @
 @  ----
