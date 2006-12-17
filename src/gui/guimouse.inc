@@ -3079,10 +3079,14 @@ DisplayGUIAddOnClick:
   GUIPButtonHole 100,53,byte[device2],3
   GUIPButtonHole 100,63,byte[device2],4
 
-  DGOptnsProcBox 74,79,[KeyExtraEnab1]
-  DGOptnsProcBox 165,79,[KeyExtraEnab2]
-  DGOptnsProcBox 74,96,[SSAutoFire]
-  DGOptnsProcBox 165,96,[SSPause]
+  DGOptnsProcBox 74,76,[KeyExtraEnab1]
+  DGOptnsProcBox 165,76,[KeyExtraEnab2]
+
+  GUIClickCButton 9,83,byte[mouse1lh]
+  GUIClickCButton 100,83,byte[mouse2lh]
+
+  DGOptnsProcBox 74,108,[SSAutoFire]
+  DGOptnsProcBox 165,108,[SSPause]
   ret
 
 DisplayGUIChipClick:

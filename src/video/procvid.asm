@@ -87,6 +87,15 @@ NEWSYM showvideo
     pop esi
     ret
 
+SwapMouseButtons:
+    mov bh,bl
+    shl bh,1
+    and bh,2
+    shr bl,1
+    or bl,bh
+    xor bh,bh
+    ret
+
 NEWSYM processmouse1
     push esi
     push edi
@@ -102,12 +111,7 @@ NEWSYM processmouse1
     mov bx,[MouseButtons]
     cmp byte[mouse1lh],1
     jne .notlefthanded1
-    mov bh,bl
-    shl bh,1
-    and bh,2
-    shr bl,1
-    or bl,bh
-    xor bh,bh
+    call SwapMouseButtons
 .notlefthanded1
     mov [mousebuttons],bx
     mov cx,[MouseMoveX]
@@ -118,12 +122,7 @@ NEWSYM processmouse1
     call Get_MouseData
     cmp byte[mouse1lh],1
     jne .notlefthanded2
-    mov bh,bl
-    shl bh,1
-    and bh,2
-    shr bl,1
-    or bl,bh
-    xor bh,bh
+    call SwapMouseButtons
 .notlefthanded2
     mov [mousebuttons],bx
     call Get_MousePositionDisplacement
@@ -177,12 +176,7 @@ NEWSYM processmouse2
 .mousestuff
     cmp byte[mouse2lh],1
     jne .notlefthanded
-    mov bh,bl
-    shl bh,1
-    and bh,2
-    shr bl,1
-    or bl,bh
-    xor bh,bh
+    call SwapMouseButtons
 .notlefthanded
     mov [mousebuttons],bx
     cmp byte[device2],2

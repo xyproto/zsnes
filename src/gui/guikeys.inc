@@ -875,6 +875,9 @@ GUIAddonKeys:
   GUIKeyButtonHole device2,2,'S'
   GUIKeyButtonHole device2,3,'1'
   GUIKeyButtonHole device2,4,'2'
+
+  GUIKeyCheckbox mouse1lh,'L'             ; Checkboxes
+  GUIKeyCheckbox mouse2lh,'E'
   ret
 
 GUIChipKeys:

@@ -4357,11 +4357,14 @@ DisplayGUIAddOns:                   ;Select Special Controllers
   DDrawBox 17,73,75,[KeyExtraEnab1]
   DDrawBox 17,164,75,[KeyExtraEnab2]
 
-  GUIDisplayTextY 17,12,88,GUIAddOnTextA
-  GUIDisplayText 17,12,98,GUIAddOnTextB
-  GUIDisplayText 17,103,98,GUIAddOnTextC
-  DDrawBox 17,73,95,[SSAutoFire]
-  DDrawBox 17,164,95,[SSPause]
+  GUIDisplayCheckboxu 17,9,83,mouse1lh,GUIAddOnTextD,0
+  GUIDisplayCheckboxu 17,100,83,mouse2lh,GUIAddOnTextD,1
+
+  GUIDisplayTextY 17,12,100,GUIAddOnTextA
+  GUIDisplayText 17,12,110,GUIAddOnTextB
+  GUIDisplayText 17,103,110,GUIAddOnTextC
+  DDrawBox 17,73,107,[SSAutoFire]
+  DDrawBox 17,164,107,[SSPause]
   ret
 
 SECTION .data
@@ -4377,6 +4380,7 @@ GUIAddOnText9 db 'CYCLE P2:',0
 GUIAddOnTextA db 'SUPER SCOPE KEYS:',0
 GUIAddOnTextB db 'AUTO-FIRE',0
 GUIAddOnTextC db 'SS PAUSE',0
+GUIAddOnTextD db 'LEFT HANDED',0
 
 ;EE
 GUIAddOnText1Alt db 83,76,79,84,32,49,58,0
