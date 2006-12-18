@@ -1278,7 +1278,7 @@ void savespcdata()
 
       //Assemble N/Z flags into P
       spcP &= 0xFD;
-      if (!(spcNZ & 0xFF))
+      if (!spcNZ)
       {
         spcP |= 2;
       }
