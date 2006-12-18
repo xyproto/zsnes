@@ -19,16 +19,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #include <string.h>
+#include "dsp4emu.h"
 
-typedef unsigned char bool8;
-typedef unsigned char uint8;
-typedef unsigned short uint16;
-typedef unsigned int uint32;
-typedef char int8;
-typedef short int16;
-typedef long int32;
-#define FALSE 0
-#define TRUE 1
 
 /*
 Due recognition and credit are given on Overload's DSP website.
@@ -48,18 +40,7 @@ Fixed-point math reminder:
 #define WRITE_WORD(s, d) (*(uint16 *) (s)) = (d)
 #define WRITE_DWORD(s, d) (*(uint32 *) (s)) = (d)
 
-struct
-{
-  bool8 waiting4command;
-  bool8 half_command;
-  uint16 command;
-  uint32 in_count;
-  uint32 in_index;
-  uint32 out_count;
-  uint32 out_index;
-  uint8 parameters[512];
-  uint8 output[512];
-} DSP4;
+struct DSP4_t DSP4;
 
 //Todo: get all of this into a struct for easy save stating
 
