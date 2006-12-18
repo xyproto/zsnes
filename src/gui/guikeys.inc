@@ -787,32 +787,29 @@ GUIOptionKeys:
   xor byte[MMXSupport],1
   call MMXCheck
 .nommxcopy
-%ifdef __MSDOS__
-%elifdef __WIN32__
-  GUIKeyCheckbox HighPriority,'H'
-  pushad
-  call CheckPriority
-  popad
-%endif
   GUIKeyCheckbox FPSAtStart,'F'
   GUIKeyCheckbox TimerEnable,'C'
   GUIKeyCheckbox ClockBox,'X'
   GUIKeyCheckbox TwelveHourClock,'1'
-  GUIKeyCheckbox bgfixer,'O'
+  GUIKeyCheckbox bgfixer,'A'
   GUIKeyCheckbox SmallMsgText,'S'
-  GUIKeyCheckbox AutoPatch,'P'
-  GUIKeyCheckbox RomInfo,'T'
-  GUIKeyCheckbox DisplayInfo,'L'
+  GUIKeyCheckbox AutoPatch,'I'
+  GUIKeyCheckbox RomInfo,'G'
+  GUIKeyCheckbox DisplayInfo,'W'
+  GUIKeyCheckbox GUIEnableTransp,'T'
 %ifndef __MSDOS__
   GUIKeyCheckbox PauseFocusChange,'B'
 %endif
 %ifdef __WIN32__
-  GUIKeyCheckbox DisableScreenSaver,'I'
+  GUIKeyCheckbox HighPriority,'H'
+  pushad
+  call CheckPriority
+  popad
+  GUIKeyCheckbox DisableScreenSaver,'D'
   pushad
   call CheckScreenSaver
   popad
 %endif
-  ;GUIKeyCheckbox GUIEnableTransp,'T'
   ret
 
 GUIAboutKeys:
@@ -915,7 +912,7 @@ GUIGUIOptnsKeys:
   GUIKeyCheckbox mouseshad,'S'
   GUIKeyCheckbox esctomenu,'G'
   GUIKeyCheckbox resetposn,'W'
-  GUIKeyCheckbox GUIClick,'C'
+  GUIKeyCheckbox GUIRClick,'C'
   GUIKeyCheckbox JoyPad1Move,'U'
   GUIKeyCheckbox newfont,'O'
   GUIKeyCheckbox lhguimouse,'D'

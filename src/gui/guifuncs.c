@@ -523,7 +523,7 @@ void GUIRestoreVars()
   CheckValueBounds(&AlwaysOnTop, 0, 1, 0, UB);
 #endif
   CheckValueBounds(&GUIComboGameSpec, 0, 1, 0, UB);
-  CheckValueBounds(&GUIClick, 0, 1, 0, UB);
+  CheckValueBounds(&GUIRClick, 0, 1, 0, UB);
   CheckValueBounds(&JoyPad1Move, 0, 1, 0, UB);
 
   CheckValueBounds(&CheatSrcByteSize, 0, 3, 0, UB);

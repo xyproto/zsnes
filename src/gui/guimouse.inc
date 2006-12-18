@@ -210,7 +210,7 @@ ProcessMouseButtons:
 .zero
   ; Check if mouse is clicked on menu
   mov bx,[mousebuttonstat]
-  cmp byte[GUIClick],1
+  cmp byte[GUIRClick],1
   jne .norclick2
   test bx,02h
   jz .norclick
@@ -2107,39 +2107,36 @@ DisplayGUIInputClick:
   ret
 
 DisplayGUIOptionClick:
-  xor ebx,ebx
-  mov bl,[cvidmode]
-  cmp byte[GUINGVID+ebx],1
-  jne near .invalidng
-  GUIClickCButton2 11,11,byte[newengen],byte[newengen],1
-.invalidng
-  GUIClickCButtonMMX 11,21,byte[MMXSupport]
-%ifdef __MSDOS__
-%else
-  GUIClickCButton 11,41,byte[PauseFocusChange]
+  GUIClickCButtonMMX 11,18,byte[MMXSupport]
+%ifndef __MSDOS__
+  GUIClickCButton 11,28,byte[PauseFocusChange]
 %endif
-  GUIClickCButton 11,51,byte[FPSAtStart]
-
-  GUIClickCButton 11,71,byte[TimerEnable]
-  GUIClickCButton 11,81,byte[TwelveHourClock]
-  GUIClickCButton 11,91,byte[ClockBox]
-  GUIClickCButton 11,101,byte[bgfixer]
-  GUIClickCButton 11,111,byte[SmallMsgText]
-  GUIClickCButton 11,121,byte[AutoPatch]
-  GUIClickCButton 11,131,byte[RomInfo]
-  GUIClickCButton 11,141,byte[DisplayInfo]
-  ;GUIClickCButton 124,23,byte[GUIEnableTransp]
-
 %ifdef __WIN32__
-  GUIClickCButton 11,161,byte[HighPriority]
+  GUIClickCButton 11,38,byte[HighPriority]
   pushad
   call CheckPriority
   popad
-  GUIClickCButton 11,171,byte[DisableScreenSaver]
+  GUIClickCButton 11,48,byte[DisableScreenSaver]
   pushad
   call CheckScreenSaver
   popad
 %endif
+  xor ebx,ebx
+  mov bl,[cvidmode]
+  cmp byte[GUINGVID+ebx],1
+  jne near .invalidng
+  GUIClickCButton2 11,68,byte[newengen],byte[newengen],1
+.invalidng
+  GUIClickCButton 11,78,byte[bgfixer]
+  GUIClickCButton 11,98,byte[AutoPatch]
+  GUIClickCButton 11,108,byte[RomInfo]
+  GUIClickCButton 11,118,byte[DisplayInfo]
+  GUIClickCButton 11,138,byte[FPSAtStart]
+  GUIClickCButton 11,148,byte[TimerEnable]
+  GUIClickCButton 89,148,byte[TwelveHourClock]
+  GUIClickCButton 11,158,byte[ClockBox]
+  GUIClickCButton 11,178,byte[SmallMsgText]  
+  GUIClickCButton 11,188,byte[GUIEnableTransp]
   ret
 
 DisplayGUIVideoClick2:
@@ -2742,7 +2739,7 @@ DisplayGUIOptnsClick:
   sub eax,[GUIwinposx+10*4]
   mov edx,[GUImouseposy]
   sub edx,[GUIwinposy+10*4]
-  GUIClickCButton 12,23,byte[GUIClick]      ; Checkboxes
+  GUIClickCButton 12,23,byte[GUIRClick]      ; Checkboxes
   GUIClickCButton 12,33,byte[lhguimouse]
   GUIClickCButton 12,43,byte[mouseshad]
   GUIClickCButton 12,53,byte[mousewrap]

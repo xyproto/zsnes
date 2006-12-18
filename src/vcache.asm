@@ -29,7 +29,7 @@ EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen
 EXTSYM nextdrawallng,pal16b,pal16bxcl,pressed,prevbright,prevpal
 EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,sprprdrn,t1cc
 EXTSYM vidbright,vidbuffer,vidbufferm,vidbufferofsa,vidbufferofsb,vidmemch2
-EXTSYM GUIClick,MousePRClick,ngmsdraw,cvidmode
+EXTSYM GUIRClick,MousePRClick,ngmsdraw,cvidmode
 EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyDisableSC4
 EXTSYM KeyDisableSC5,KeyDisableSC6,KeyDisableSC7,KeyFastFrwrd,SRAMSave5Sec
 EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
@@ -366,7 +366,7 @@ NEWSYM cachevideo
     push edx
     cmp byte[MouseDis],1
     je .noclick
-    cmp byte[GUIClick],0
+    cmp byte[GUIRClick],0
     je .noclick
     cmp byte[device1],0
     jne .noclick

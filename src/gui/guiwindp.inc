@@ -1757,44 +1757,61 @@ SECTION .text
 DisplayGUIOption:       ; Emu Options
   GUIDrawWindowBox 4,GUIOptionDisp
 
-  GUIDisplayCheckboxu 4,11,11,newengen,GUIOptionText3,0
-  GUIDisplayCheckboxu 4,11,21,MMXSupport,GUIOptionText4,0
-%ifdef __MSDOS__
-%else
-  GUIDisplayCheckboxu 4,11,41,PauseFocusChange,GUIOptionText6b,13
+  GUIDisplayTextY 4,11,13,GUIOptionTextA
+  GUIDisplayCheckboxu 4,11,18,MMXSupport,GUIOptionTextA1,0
+%ifndef __MSDOS__
+  GUIDisplayCheckboxu 4,11,28,PauseFocusChange,GUIOptionTextA2,13
 %endif
-  GUIDisplayCheckboxu 4,11,51,FPSAtStart,GUIOptionText7,0
-  GUIDisplayCheckboxu 4,11,71,TimerEnable,GUIOptionText9,7
-  GUIDisplayCheckboxu 4,11,81,TwelveHourClock,GUIOptionText9a,0
-  GUIDisplayCheckboxu 4,11,91,ClockBox,GUIOptionText9b,13
-  GUIDisplayCheckboxu 4,11,101,bgfixer,GUIOptionTextA,0
-  GUIDisplayCheckboxu 4,11,111,SmallMsgText,GUIOptionTextB,1
-  GUIDisplayCheckboxu 4,11,121,AutoPatch,GUIOptionTextC,12
-  GUIDisplayCheckboxu 4,11,131,RomInfo,GUIOptionTextD,15
-  GUIDisplayCheckboxu 4,11,141,DisplayInfo,GUIOptionTextDa,17
 %ifdef __WIN32__
-  GUIDisplayCheckboxu 4,11,161,HighPriority,GUIOptionTextF,6
-  GUIDisplayCheckboxu 4,11,171,DisableScreenSaver,GUIOptionTextZ,1
+  GUIDisplayCheckboxu 4,11,38,HighPriority,GUIOptionTextA3,6
+  GUIDisplayCheckboxu 4,11,48,DisableScreenSaver,GUIOptionTextA4,0
 %endif
-  ;GUIDisplayCheckboxu 10,124,23,GUIEnableTransp,GUIGUIOptnsTextA2a,0
+
+  GUIDisplayTextY 4,11,63,GUIOptionTextB
+  GUIDisplayCheckboxu 4,11,68,newengen,GUIOptionTextB1,4
+  GUIDisplayCheckboxu 4,11,78,bgfixer,GUIOptionTextB2,4
+
+  GUIDisplayTextY 4,11,93,GUIOptionTextC
+  GUIDisplayCheckboxu 4,11,98,AutoPatch,GUIOptionTextC1,7
+  GUIDisplayCheckboxu 4,11,108,RomInfo,GUIOptionTextC2,2
+  GUIDisplayCheckboxu 4,11,118,DisplayInfo,GUIOptionTextC3,3
+
+  GUIDisplayTextY 4,11,133,GUIOptionTextD
+  GUIDisplayCheckboxu 4,11,138,FPSAtStart,GUIOptionTextD1,0
+  GUIDisplayCheckboxu 4,11,148,TimerEnable,GUIOptionTextD2,5
+  GUIDisplayCheckboxu 4,89,148,TwelveHourClock,GUIOptionTextD3,0
+  GUIDisplayCheckboxu 4,11,158,ClockBox,GUIOptionTextD4,13
+
+  GUIDisplayTextY 4,11,173,GUIOptionTextE
+  GUIDisplayCheckboxu 4,11,178,SmallMsgText,GUIOptionTextE1,4
+  GUIDisplayCheckboxu 4,11,188,GUIEnableTransp,GUIOptionTextE2,4
   ret
 
 SECTION .data
-GUIOptionText3 db 'NEW GFX ENGINE',0
-GUIOptionText4 db 'MMX SUPPORT',0
-GUIOptionText6b db 'PAUSE EMU IN BACKGROUND',0
-GUIOptionText7 db 'FPS AT PROGRAM START',0
-GUIOptionText9 db 'ENABLE CLOCK',0
-GUIOptionText9a db '12 HOUR MODE',0
-GUIOptionText9b db 'SHOW CLOCK BOX',0
-GUIOptionTextA db 'OLD GFX MODE 2',0
-GUIOptionTextB db 'USE SMALL MESSAGE TEXT',0
-GUIOptionTextC db 'ENABLE AUTO-PATCH',0
-GUIOptionTextD db 'ENABLE ROMINFO.TXT',0
-GUIOptionTextDa db 'SHOW ROM INFO ON LOAD',0
-GUIOptionTextF db 'USE A HIGHER PRIORITY',0
-GUIOptionTextZ db 'DISABLE POWER MANAGEMENT',0 ; keep as last option, Win Only
-;GUIGUIOptnsTextA2a db 'TRANSPARENT MSGS',0
+GUIOptionTextA db 'SYSTEM:',0
+GUIOptionTextA1 db 'MMX SUPPORT',0
+GUIOptionTextA2 db 'PAUSE EMU IN BACKGROUND',0
+GUIOptionTextA3 db 'USE A HIGHER PRIORITY',0
+GUIOptionTextA4 db 'DISABLE POWER MANAGEMENT',0
+
+GUIOptionTextB db 'GRAPHIC ENGINES:',0
+GUIOptionTextB1 db 'USE NEW GFX ENG',0
+GUIOptionTextB2 db 'USE ALT OLD GFX ENG',0
+
+GUIOptionTextC db 'ROM:',0
+GUIOptionTextC1 db 'ENABLE IPS AUTO-PATCHING',0
+GUIOptionTextC2 db 'LOG ROM INFO',0
+GUIOptionTextC3 db 'SHOW ROM INFO ON LOAD',0
+
+GUIOptionTextD db 'OVERLAY:',0
+GUIOptionTextD1 db 'FPS AT PROGRAM START',0
+GUIOptionTextD2 db 'SHOW CLOCK',0
+GUIOptionTextD3 db '12 HOUR MODE',0
+GUIOptionTextD4 db 'SHOW CLOCK BOX',0
+
+GUIOptionTextE db 'MESSAGES:',0
+GUIOptionTextE1 db 'USE SMALL MESSAGE TEXT',0
+GUIOptionTextE2 db 'USE TRANSPARENT TEXT',0
 
 SECTION .text
 
@@ -3417,7 +3434,7 @@ DisplayGUIOptns:              ; GUI Options
 
   GUIDisplayTextY 10,6,16,GUIGUIOptnsTextA
                                                                  ;Checkboxes
-  GUIDisplayCheckboxu 10,12,23,GUIClick,GUIGUIOptnsTextA1a,1
+  GUIDisplayCheckboxu 10,12,23,GUIRClick,GUIGUIOptnsTextA1a,1
   GUIDisplayCheckboxu 10,12,33,lhguimouse,GUIGUIOptnsTextA1b,8
   GUIDisplayCheckboxu 10,12,43,mouseshad,GUIGUIOptnsTextA1c,6
   GUIDisplayCheckboxu 10,12,53,mousewrap,GUIGUIOptnsTextA1d,0

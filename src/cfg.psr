@@ -976,7 +976,7 @@ GUIComboGameSpec db 0
 
 @
 @ Right mouse click enters/exits GUI (0 = NO, 1 = Yes)
-GUIClick db 0
+GUIRClick db 0
 
 @
 @ Move in GUI using gamepad 1 (0 = NO, 1 = Yes)
