@@ -812,6 +812,7 @@ GUIOptionKeys:
   call CheckScreenSaver
   popad
 %endif
+  ;GUIKeyCheckbox GUIEnableTransp,'T'
   ret
 
 GUIAboutKeys:
@@ -916,8 +917,8 @@ GUIGUIOptnsKeys:
   GUIKeyCheckbox resetposn,'W'
   GUIKeyCheckbox GUIClick,'C'
   GUIKeyCheckbox JoyPad1Move,'U'
-  GUIKeyCheckbox GUIEnableTransp,'T'
   GUIKeyCheckbox newfont,'O'
+  GUIKeyCheckbox lhguimouse,'D'
 
   cmp dh,'F'
   jne .guioptn8
@@ -937,30 +938,19 @@ GUIGUIOptnsKeys:
   popad
 .guioptn9
 
-  cmp dh,'N'
-  jne .guioptn10
-  GUIkeystoggleoptn byte[GUIEffect],1
-.guioptn10
-  cmp dh,'R'
-  jne .guioptn11
-  GUIkeystoggleoptn byte[GUIEffect],4
-.guioptn11
-  cmp dh,'E'
-  jne .guioptn12
-  GUIkeystoggleoptn byte[GUIEffect],2
-.guioptn12
-  cmp dh,'B'
-  jne .guioptn13
-  GUIkeystoggleoptn byte[GUIEffect],3
-.guioptn13
+  GUIKeyButtonHole GUIEffect,0,'E'   ; Start From Radio Buttons
+  GUIKeyButtonHole GUIEffect,1,'N'
+  GUIKeyButtonHole GUIEffect,2,'A'
+  GUIKeyButtonHole GUIEffect,3,'B'
+  GUIKeyButtonHole GUIEffect,4,'R'
+
 %ifdef __WIN32__
   GUIKeyCheckbox MouseWheel,'H'
   GUIKeyCheckbox TrapMouseCursor,'P'
-  GUIKeyCheckbox AlwaysOnTop,'A'
+  GUIKeyCheckbox AlwaysOnTop,'T'
   GUIKeyCheckbox SaveMainWindowPos,'V'
   GUIKeyCheckbox AllowMultipleInst,'L'
 %endif
-  GUIKeyCheckbox lhguimouse,'D'
 ret
 
 GUIVideoKeys:

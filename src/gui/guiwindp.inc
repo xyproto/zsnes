@@ -1776,6 +1776,7 @@ DisplayGUIOption:       ; Emu Options
   GUIDisplayCheckboxu 4,11,161,HighPriority,GUIOptionTextF,6
   GUIDisplayCheckboxu 4,11,171,DisableScreenSaver,GUIOptionTextZ,1
 %endif
+  ;GUIDisplayCheckboxu 10,124,23,GUIEnableTransp,GUIGUIOptnsTextA2a,0
   ret
 
 SECTION .data
@@ -1791,9 +1792,9 @@ GUIOptionTextB db 'USE SMALL MESSAGE TEXT',0
 GUIOptionTextC db 'ENABLE AUTO-PATCH',0
 GUIOptionTextD db 'ENABLE ROMINFO.TXT',0
 GUIOptionTextDa db 'SHOW ROM INFO ON LOAD',0
-
 GUIOptionTextF db 'USE A HIGHER PRIORITY',0
 GUIOptionTextZ db 'DISABLE POWER MANAGEMENT',0 ; keep as last option, Win Only
+;GUIGUIOptnsTextA2a db 'TRANSPARENT MSGS',0
 
 SECTION .text
 
@@ -3415,36 +3416,39 @@ DisplayGUIOptns:              ; GUI Options
   GUIDrawSlider 10,25,127,148,TBVal2,GUIGUIOptnsTextD2,GUICslidSet,GUICslidText
 
   GUIDisplayTextY 10,6,16,GUIGUIOptnsTextA
+                                                                 ;Checkboxes
+  GUIDisplayCheckboxu 10,12,23,GUIClick,GUIGUIOptnsTextA1a,1
+  GUIDisplayCheckboxu 10,12,33,lhguimouse,GUIGUIOptnsTextA1b,7
+  GUIDisplayCheckboxu 10,12,43,mouseshad,GUIGUIOptnsTextA1c,6
+  GUIDisplayCheckboxu 10,12,53,mousewrap,GUIGUIOptnsTextA1d,0
 
-  GUIDisplayCheckboxu 10,124,13,newfont,GUIGUIOptnsTextFont,12
-
-  GUIDisplayCheckboxu 10,12,23,mousewrap,GUIGUIOptnsTextA1a,0     ; Checkboxes
-  GUIDisplayCheckboxu 10,12,33,mouseshad,GUIGUIOptnsTextA1b,6
-  GUIDisplayCheckboxu 10,12,43,esctomenu,GUIGUIOptnsTextA1c,7
-  GUIDisplayCheckboxun 10,12,53,resetposn,0,GUIGUIOptnsTextA1d,5
-  ; ^ "Save Win Pos", but the option is really for Reset Pos
-  GUIDisplayCheckboxu 10,12,63,GUIClick,GUIGUIOptnsTextA1e,1
-  GUIDisplayCheckboxu 10,12,73,JoyPad1Move,GUIGUIOptnsTextA1f,6
-  GUIDisplayCheckboxu 10,124,23,GUIEnableTransp,GUIGUIOptnsTextA2a,0
-  GUIDisplayCheckboxu 10,124,33,FilteredGUI,GUIGUIOptnsTextA2b,0
-  GUIDisplayCheckboxun 10,124,43,GUIEffect,1,GUIGUIOptnsTextA2c,1
-  GUIDisplayCheckboxun 10,124,53,GUIEffect,2,GUIGUIOptnsTextA2d,3
-  GUIDisplayCheckboxun 10,124,63,GUIEffect,3,GUIGUIOptnsTextA2e,13
-  GUIDisplayCheckboxun 10,124,73,GUIEffect,4,GUIGUIOptnsTextA2f,2
 %ifdef __WIN32__
-  GUIDisplayCheckboxu 10,12,83,MouseWheel,GUIGUIOptnsTextA2g,1
-  GUIDisplayCheckboxu 10,124,83,TrapMouseCursor,GUIGUIOptnsTextA2h,3
+  GUIDisplayCheckboxu 10,12,63,TrapMouseCursor,GUIGUIOptnsTextA1e,3
+  GUIDisplayCheckboxu 10,12,73,MouseWheel,GUIGUIOptnsTextA1f,1
 %endif
 
-  GUIDisplayCheckboxu 10,12,93,lhguimouse,GUIGUIOptnsTextA2i,7
+  GUIDisplayCheckboxu 10,129,23,JoyPad1Move,GUIGUIOptnsTextA2a,6
+  GUIDisplayCheckboxu 10,129,33,newfont,GUIGUIOptnsTextA2b,12
+  GUIDisplayCheckboxu 10,129,43,FilteredGUI,GUIGUIOptnsTextA2c,0
+  GUIDisplayCheckboxu 10,129,53,esctomenu,GUIGUIOptnsTextA2d,7
+  GUIDisplayCheckboxun 10,129,63,resetposn,0,GUIGUIOptnsTextA2e,10
+  ; ^ "Save Win Pos", but the option is really for Reset Pos
+
+  GUIDisplayTextY 10,6,91,GUIGUIOptnsTextE
+  GUIDisplayButtonHoleTu 10,82,88,byte[GUIEffect],0,GUIGUIOptnsTextE1,3
+  GUIDisplayButtonHoleTu 10,122,88,byte[GUIEffect],1,GUIGUIOptnsTextE2,1
+  GUIDisplayButtonHoleTu 10,182,88,byte[GUIEffect],4,GUIGUIOptnsTextE5,2
+  GUIDisplayButtonHoleTu 10,122,98,byte[GUIEffect],2,GUIGUIOptnsTextE3,6
+  GUIDisplayButtonHoleTu 10,182,98,byte[GUIEffect],3,GUIGUIOptnsTextE4,6
 
   GUIDisplayTextY 10,6,111,GUIGUIOptnsTextB
   GUIDisplayText 10,60,111,GUIGUIOptnsTextB1
   GUIDisplayText 10,100,111,GUIGUIOptnsTextB2
-  GUIDisplayText 10,147,111,GUIGUIOptnsTextB3
+  GUIDisplayText 10,148,111,GUIGUIOptnsTextB3
+
 %ifdef __WIN32__
   GUIDisplayTextY 10,6,161,GUIGUIOptnsTextC
-  GUIDisplayCheckboxu 10,12,168,AlwaysOnTop,GUIGUIOptnsTextC1,0
+  GUIDisplayCheckboxu 10,12,168,AlwaysOnTop,GUIGUIOptnsTextC1,10
   GUIDisplayCheckboxu 10,12,178,SaveMainWindowPos,GUIGUIOptnsTextC2,2
   GUIDisplayCheckboxu 10,12,188,AllowMultipleInst,GUIGUIOptnsTextC3,1
 %endif
@@ -3455,45 +3459,46 @@ DisplayGUIOptns:              ; GUI Options
   GUIDisplayText 10,16,135,GUIGUIOptnsTextD1
   mov byte[GUIGUIOptnsTextD1],'B'
   GUIDisplayText 10,16,147,GUIGUIOptnsTextD1
-
-  GUIDisplayButtonHole 10,48,108,byte[CurPalSelect],0    ; Radio Buttons
+                                                         ; Radio Buttons
+  GUIDisplayButtonHole 10,48,108,byte[CurPalSelect],0
   GUIDisplayButtonHole 10,88,108,byte[CurPalSelect],1
-  GUIDisplayButtonHole 10,135,108,byte[CurPalSelect],2
+  GUIDisplayButtonHole 10,136,108,byte[CurPalSelect],2
   ret
 
 SECTION .data
 GUIGUIOptnsTextA db 'GUI SWITCHES:',0
-GUIGUIOptnsTextA1a db 'MOUSE WRAP',0
-GUIGUIOptnsTextA1b db 'MOUSE SHADOW',0
-GUIGUIOptnsTextA1c db 'ESC TO GAME MENU',0
-GUIGUIOptnsTextA1d db 'SAVE WIN POSITNS',0
-GUIGUIOptnsTextA1e db 'RCLICK OPENS GUI',0
-GUIGUIOptnsTextA1f db 'CTRL GUI W/GPAD1',0
+GUIGUIOptnsTextA1a db 'RCLICK OPENS GUI',0
+GUIGUIOptnsTextA1b db 'LEFTHANDED MOUSE',0
+GUIGUIOptnsTextA1c db 'MOUSE SHADOW',0
+GUIGUIOptnsTextA1d db 'MOUSE WRAP',0
+GUIGUIOptnsTextA1e db 'TRAP MOUSE CURSOR',0
+GUIGUIOptnsTextA1f db 'WHEEL MICE SCROLL',0
 
-GUIGUIOptnsTextA2a db 'TRANSPARENT MSGS',0
-GUIGUIOptnsTextA2b db 'FILTERED GUI',0
-GUIGUIOptnsTextA2c dd 'SNOW EFFECT',0
-GUIGUIOptnsTextA2d dd 'WATER EFFECT A',0
-GUIGUIOptnsTextA2e dd 'WATER EFFECT B',0
-GUIGUIOptnsTextA2f dd 'BURNING EFFECT',0
-GUIGUIOptnsTextA2g db 'WHEEL MOUSE',0
-GUIGUIOptnsTextA2h db 'TRAP MOUSE CURSOR',0
-GUIGUIOptnsTextA2i db 'LEFTHANDED MOUSE',0
+GUIGUIOptnsTextA2a db 'CTRL GUI W/GPAD1',0
+GUIGUIOptnsTextA2b db 'USE CUSTOM FONT',0
+GUIGUIOptnsTextA2c db 'FILTERED GUI',0
+GUIGUIOptnsTextA2d db 'ESC TO GAME MENU',0
+GUIGUIOptnsTextA2e db 'SAVE GUI WIN POS',0
 
 GUIGUIOptnsTextB db 'COLOR:',0
 GUIGUIOptnsTextB1 db 'BACK',0
 GUIGUIOptnsTextB2 db 'TITLE',0
 GUIGUIOptnsTextB3 db 'WIN',0
 
-GUIGUIOptnsTextC dd 'MAIN WINDOW OPTIONS:',0
-GUIGUIOptnsTextC1 dd 'ALWAYS ON TOP',0
+GUIGUIOptnsTextC db 'MAIN WINDOW OPTIONS:',0
+GUIGUIOptnsTextC1 db 'ALWAYS ON TOP',0
 GUIGUIOptnsTextC2 db 'SAVE MAIN WINDOW POSITION',0
 GUIGUIOptnsTextC3 db 'ALLOW MULTIPLE INSTANCES',0
 
 GUIGUIOptnsTextD1 db '@',0
 GUIGUIOptnsTextD2 db '  ',0
 
-GUIGUIOptnsTextFont db 'USE CUSTOM FONT',0
+GUIGUIOptnsTextE db 'BG EFFECTS:',0
+GUIGUIOptnsTextE1 db 'NONE',0
+GUIGUIOptnsTextE2 db 'SNOW',0
+GUIGUIOptnsTextE3 db 'WATER A',0
+GUIGUIOptnsTextE4 db 'WATER B',0
+GUIGUIOptnsTextE5 db 'BURNING',0
 
 SECTION .text
 

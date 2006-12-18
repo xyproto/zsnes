@@ -2128,6 +2128,7 @@ DisplayGUIOptionClick:
   GUIClickCButton 11,121,byte[AutoPatch]
   GUIClickCButton 11,131,byte[RomInfo]
   GUIClickCButton 11,141,byte[DisplayInfo]
+  ;GUIClickCButton 124,23,byte[GUIEnableTransp]
 
 %ifdef __WIN32__
   GUIClickCButton 11,161,byte[HighPriority]
@@ -2741,30 +2742,32 @@ DisplayGUIOptnsClick:
   sub eax,[GUIwinposx+10*4]
   mov edx,[GUImouseposy]
   sub edx,[GUIwinposy+10*4]
-  GUIClickCButton 124,13,byte[newfont]
-  GUIClickCButton 12,23,byte[mousewrap]     ; Checkboxes
-  GUIClickCButton 12,33,byte[mouseshad]
-  GUIClickCButton 12,43,byte[esctomenu]
-  GUIClickCButton 12,53,byte[resetposn]
-  GUIClickCButton 12,63,byte[GUIClick]
-  GUIClickCButton 12,73,byte[JoyPad1Move]
-  GUIClickCButton 124,23,byte[GUIEnableTransp]
-  GUIClickCButtonI 124,33,byte[FilteredGUI]
-  GUIClickCButton6 124,43,byte[GUIEffect],1
-  GUIClickCButton6 124,53,byte[GUIEffect],2
-  GUIClickCButton6 124,63,byte[GUIEffect],3
-  GUIClickCButton6 124,73,byte[GUIEffect],4
+  GUIClickCButton 12,23,byte[GUIClick]      ; Checkboxes
+  GUIClickCButton 12,33,byte[lhguimouse]
+  GUIClickCButton 12,43,byte[mouseshad]
+  GUIClickCButton 12,53,byte[mousewrap]
+
+  GUIClickCButton 129,23,byte[JoyPad1Move]
+  GUIClickCButton 129,33,byte[newfont]
+  GUIClickCButtonI 129,43,byte[FilteredGUI]
+  GUIClickCButton 129,53,byte[esctomenu]
+  GUIClickCButton 129,63,byte[resetposn]
+
 %ifdef __WIN32__
-  GUIClickCButton 12,83,byte[MouseWheel]
-  GUIClickCButton 124,83,byte[TrapMouseCursor]
+  GUIClickCButton 12,63,byte[TrapMouseCursor]
+  GUIClickCButton 12,73,byte[MouseWheel]
   GUIClickCButton 12,168,byte[AlwaysOnTop]
   GUIClickCButton 12,178,byte[SaveMainWindowPos]
   GUIClickCButton 12,188,byte[AllowMultipleInst]
 %endif
 
-  GUIClickCButton 12,93,byte[lhguimouse]
+  GUIPButtonHole 82,88,byte[GUIEffect],0    ; Radio Buttons
+  GUIPButtonHole 122,88,byte[GUIEffect],1
+  GUIPButtonHole 182,88,byte[GUIEffect],4
+  GUIPButtonHole 122,98,byte[GUIEffect],2
+  GUIPButtonHole 182,98,byte[GUIEffect],3
 
-  GUIPButtonHole 48,108,byte[CurPalSelect],0    ; Radio Buttons
+  GUIPButtonHole 48,108,byte[CurPalSelect],0
   GUIPButtonHole 88,108,byte[CurPalSelect],1
   GUIPButtonHole 135,108,byte[CurPalSelect],2
 
