@@ -218,7 +218,15 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
 
   if (DSP4Enable)
   {
-    copy_func(&buffer, &DSP4, sizeof(struct DSP4_t));
+    copy_func(&buffer, &DSP4.waiting4command, sizeof(DSP4.waiting4command));
+    copy_func(&buffer, &DSP4.half_command, sizeof(DSP4.half_command));
+    copy_func(&buffer, &DSP4.command, sizeof(DSP4.command));
+    copy_func(&buffer, &DSP4.in_count, sizeof(DSP4.in_count));
+    copy_func(&buffer, &DSP4.in_index, sizeof(DSP4.in_index));
+    copy_func(&buffer, &DSP4.out_count, sizeof(DSP4.out_count));
+    copy_func(&buffer, &DSP4.out_index, sizeof(DSP4.out_index));
+    copy_func(&buffer, &DSP4.parameters, sizeof(DSP4.parameters));
+    copy_func(&buffer, &DSP4.output, sizeof(DSP4.output));
   }
 
   if (method != csm_load_zst_old)
@@ -1017,7 +1025,7 @@ void zst_sram_load_compressed(FILE *fp)
           if (DSP1Enable) { data += 2874; }
           if (SETAEnable) { memcpyrinc(&data, setaramdata, 4096); } // SETA sram
           if (SPC7110Enable)  { data += PHnum2writespc7110reg + 65536; }
-          if (DSP4Enable) { data += sizeof(struct DSP4_t); }
+          if (DSP4Enable) { data += 1044; }
           data += 227;
           if (ramsize)  { memcpyrinc(&data, sram, ramsize); } // normal sram
         }
