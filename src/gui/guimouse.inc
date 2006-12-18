@@ -2761,7 +2761,7 @@ DisplayGUIOptnsClick:
   GUIClickCButton 12,188,byte[AllowMultipleInst]
 %endif
 
-  GUIPButtonHole 82,88,byte[GUIEffect],0    ; Radio Buttons
+  GUIPButtonHole 72,88,byte[GUIEffect],0    ; Radio Buttons
   GUIPButtonHole 122,88,byte[GUIEffect],1
   GUIPButtonHole 182,88,byte[GUIEffect],4
   GUIPButtonHole 122,98,byte[GUIEffect],2
@@ -2769,7 +2769,7 @@ DisplayGUIOptnsClick:
 
   GUIPButtonHole 48,108,byte[CurPalSelect],0
   GUIPButtonHole 88,108,byte[CurPalSelect],1
-  GUIPButtonHole 135,108,byte[CurPalSelect],2
+  GUIPButtonHole 133,108,byte[CurPalSelect],2
 
   push eax                          ; Sliders
   cmp byte[CurPalSelect],1

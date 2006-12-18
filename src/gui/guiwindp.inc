@@ -3418,7 +3418,7 @@ DisplayGUIOptns:              ; GUI Options
   GUIDisplayTextY 10,6,16,GUIGUIOptnsTextA
                                                                  ;Checkboxes
   GUIDisplayCheckboxu 10,12,23,GUIClick,GUIGUIOptnsTextA1a,1
-  GUIDisplayCheckboxu 10,12,33,lhguimouse,GUIGUIOptnsTextA1b,7
+  GUIDisplayCheckboxu 10,12,33,lhguimouse,GUIGUIOptnsTextA1b,8
   GUIDisplayCheckboxu 10,12,43,mouseshad,GUIGUIOptnsTextA1c,6
   GUIDisplayCheckboxu 10,12,53,mousewrap,GUIGUIOptnsTextA1d,0
 
@@ -3435,7 +3435,7 @@ DisplayGUIOptns:              ; GUI Options
   ; ^ "Save Win Pos", but the option is really for Reset Pos
 
   GUIDisplayTextY 10,6,91,GUIGUIOptnsTextE
-  GUIDisplayButtonHoleTu 10,82,88,byte[GUIEffect],0,GUIGUIOptnsTextE1,3
+  GUIDisplayButtonHoleTu 10,72,88,byte[GUIEffect],0,GUIGUIOptnsTextE1,3
   GUIDisplayButtonHoleTu 10,122,88,byte[GUIEffect],1,GUIGUIOptnsTextE2,1
   GUIDisplayButtonHoleTu 10,182,88,byte[GUIEffect],4,GUIGUIOptnsTextE5,2
   GUIDisplayButtonHoleTu 10,122,98,byte[GUIEffect],2,GUIGUIOptnsTextE3,6
@@ -3444,7 +3444,7 @@ DisplayGUIOptns:              ; GUI Options
   GUIDisplayTextY 10,6,111,GUIGUIOptnsTextB
   GUIDisplayText 10,60,111,GUIGUIOptnsTextB1
   GUIDisplayText 10,100,111,GUIGUIOptnsTextB2
-  GUIDisplayText 10,148,111,GUIGUIOptnsTextB3
+  GUIDisplayText 10,145,111,GUIGUIOptnsTextB3
 
 %ifdef __WIN32__
   GUIDisplayTextY 10,6,161,GUIGUIOptnsTextC
@@ -3462,13 +3462,13 @@ DisplayGUIOptns:              ; GUI Options
                                                          ; Radio Buttons
   GUIDisplayButtonHole 10,48,108,byte[CurPalSelect],0
   GUIDisplayButtonHole 10,88,108,byte[CurPalSelect],1
-  GUIDisplayButtonHole 10,136,108,byte[CurPalSelect],2
+  GUIDisplayButtonHole 10,133,108,byte[CurPalSelect],2
   ret
 
 SECTION .data
 GUIGUIOptnsTextA db 'GUI SWITCHES:',0
 GUIGUIOptnsTextA1a db 'RCLICK OPENS GUI',0
-GUIGUIOptnsTextA1b db 'LEFTHANDED MOUSE',0
+GUIGUIOptnsTextA1b db 'LEFT HANDED MOUSE',0
 GUIGUIOptnsTextA1c db 'MOUSE SHADOW',0
 GUIGUIOptnsTextA1d db 'MOUSE WRAP',0
 GUIGUIOptnsTextA1e db 'TRAP MOUSE CURSOR',0
