@@ -88,12 +88,10 @@ NEWSYM showvideo
     ret
 
 NEWSYM SwapMouseButtons
-    mov bh,bl
-    shl bh,1
-    and bh,2
-    shr bl,1
-    or bl,bh
-    xor bh,bh
+    test bl,3
+    jpe .noswap
+    xor bl,3
+.noswap
     ret
 
 NEWSYM processmouse1
