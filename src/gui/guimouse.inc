@@ -2098,7 +2098,7 @@ DisplayGUIInputClick:
   GUIClickCButtonID 5,160,byte[pl5p209]
 .notpl5
 
-  GUIClickCButton 11,190,byte[SidewinderFix]
+  GUIClickCButton 5,190,byte[SidewinderFix]
 %endif
 
   GUIClickCButtonM 5,170,byte[pl12s34]
