@@ -3427,10 +3427,10 @@ DisplayGUIOptns:              ; GUI Options
   GUIDisplayCheckboxu 10,12,73,MouseWheel,GUIGUIOptnsTextA1f,1
 %endif
 
-  GUIDisplayCheckboxu 10,129,23,JoyPad1Move,GUIGUIOptnsTextA2a,6
-  GUIDisplayCheckboxu 10,129,33,newfont,GUIGUIOptnsTextA2b,12
+  GUIDisplayCheckboxu 10,129,23,esctomenu,GUIGUIOptnsTextA2a,7
+  GUIDisplayCheckboxu 10,129,33,JoyPad1Move,GUIGUIOptnsTextA2b,6
   GUIDisplayCheckboxu 10,129,43,FilteredGUI,GUIGUIOptnsTextA2c,0
-  GUIDisplayCheckboxu 10,129,53,esctomenu,GUIGUIOptnsTextA2d,7
+  GUIDisplayCheckboxu 10,129,53,newfont,GUIGUIOptnsTextA2d,12
   GUIDisplayCheckboxun 10,129,63,resetposn,0,GUIGUIOptnsTextA2e,9
   ; ^ "Save Win Pos", but the option is really for Reset Pos
 
@@ -3474,10 +3474,10 @@ GUIGUIOptnsTextA1d db 'MOUSE WRAP',0
 GUIGUIOptnsTextA1e db 'TRAP MOUSE CURSOR',0
 GUIGUIOptnsTextA1f db 'WHEEL MICE SCROLL',0
 
-GUIGUIOptnsTextA2a db 'CTRL GUI W/GPAD1',0
-GUIGUIOptnsTextA2b db 'USE CUSTOM FONT',0
+GUIGUIOptnsTextA2a db 'ESC TO GAME MENU',0
+GUIGUIOptnsTextA2b db 'CTRL GUI W/GPAD1',0
 GUIGUIOptnsTextA2c db 'FILTERED GUI',0
-GUIGUIOptnsTextA2d db 'ESC TO GAME MENU',0
+GUIGUIOptnsTextA2d db 'USE CUSTOM FONT',0
 GUIGUIOptnsTextA2e db 'SAVE GUI WIN POS',0
 
 GUIGUIOptnsTextB db 'COLOR:',0

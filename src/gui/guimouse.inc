@@ -2747,10 +2747,10 @@ DisplayGUIOptnsClick:
   GUIClickCButton 12,43,byte[mouseshad]
   GUIClickCButton 12,53,byte[mousewrap]
 
-  GUIClickCButton 129,23,byte[JoyPad1Move]
-  GUIClickCButton 129,33,byte[newfont]
+  GUIClickCButton 129,23,byte[esctomenu]
+  GUIClickCButton 129,33,byte[JoyPad1Move]
   GUIClickCButtonI 129,43,byte[FilteredGUI]
-  GUIClickCButton 129,53,byte[esctomenu]
+  GUIClickCButton 129,53,byte[newfont]
   GUIClickCButton 129,63,byte[resetposn]
 
 %ifdef __WIN32__
