@@ -132,12 +132,8 @@ void sw_clearwin()
 }
 
 extern unsigned char prevNTSCMode;
-extern unsigned char NTSCFilter;
-extern unsigned int CustomResX;
-extern unsigned int CustomResY;
 extern unsigned int prevCustomResX;
 extern unsigned int prevCustomResY;
-extern unsigned char Keep4_3Ratio;
 extern unsigned char prevKeep4_3Ratio;
 
 void sw_drawwin()

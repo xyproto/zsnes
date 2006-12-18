@@ -19,8 +19,7 @@
 %include "macros.mac"
 
 EXTSYM seta11_address,seta11_byte,setaramdata,ST011_DR
-EXTSYM ST011_MapR_60,ST011_MapW_60,ST011_MapR_68,ST011_MapW_68
-EXTSYM memaccessbankr16,memaccessbankr8,memaccessbankw16,memaccessbankw8
+EXTSYM ST011_MapR_60,ST011_MapW_60,ST011_MapW_68;ST011_MapR_68
 
 SECTION .text
 

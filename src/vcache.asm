@@ -26,7 +26,7 @@ EXTSYM Voice4Disable,Voice4Status,Voice5Disable,Voice5Status,Voice6Disable
 EXTSYM Voice6Status,Voice7Disable,Voice7Status,bgcmsung,bgmode,cbackofsaddr
 EXTSYM cgmod,disableeffects,frameskip,frskipper,current_zst,zst_name
 EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen
-EXTSYM nextdrawallng,oamaddr,pal16b,pal16bxcl,pressed,prevbright,prevpal
+EXTSYM nextdrawallng,pal16b,pal16bxcl,pressed,prevbright,prevpal
 EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,sprprdrn,t1cc
 EXTSYM vidbright,vidbuffer,vidbufferm,vidbufferofsa,vidbufferofsb,vidmemch2
 EXTSYM GUIClick,MousePRClick,ngmsdraw,cvidmode
@@ -36,11 +36,10 @@ EXTSYM KeyBGDisble0,KeyBGDisble1,KeyBGDisble2,KeyBGDisble3,KeySprDisble
 EXTSYM KeyResetAll,KeyWinDisble,KeyNewGfxSwt,KeyOffsetMSw
 EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
-EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeyUsePlayer1234,maxskip,DSPMem,dsp1ptr
-EXTSYM dsp1array,FastFwdToggle,SaveSramData,ngextbg,Mode7HiRes,Check60hz
+EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeyUsePlayer1234,maxskip,DSPMem
+EXTSYM FastFwdToggle,SaveSramData,ngextbg,Mode7HiRes,Check60hz
 EXTSYM Get_MouseData,Get_MousePositionDisplacement,scanlines
-EXTSYM romispal,MusicRelVol,MusicVol,WDSPReg0C,WDSPReg1C,Op02AAS,Op02AZS,Op02CX
-EXTSYM Op02CY,Op02FX,Op02FY,Op02FZ,Op02LES,Op02LFE,Op02VOF,Op02VVA,KeySlowDown
+EXTSYM romispal,MusicRelVol,MusicVol,WDSPReg0C,WDSPReg1C,KeySlowDown
 EXTSYM genfulladdtab,KeyFRateDown,KeyFRateUp,KeyVolUp,KeyVolDown,KeyDisplayFPS
 EXTSYM FPSOn,pl12s34,bg1ptr,bg2ptr,bg3ptr,bg4ptr,cachebg1,resolutn,curypos
 EXTSYM oamram,objhipr,objptr,objptrn,objsize1,objsize2,spritetablea,sprleftpr
@@ -64,8 +63,6 @@ SECTION .data
 ALIGN32
 
 NEWSYM fskipped,     db 0
-NEWSYM objvramadder, dd 0
-NEWSYM pobjvram,     dw 0
 NEWSYM sprprifix,    db 1
 NEWSYM OMBGTestVal, dd 0
 NEWSYM ngptrdat2, dd 0
@@ -73,9 +70,7 @@ NEWSYM ofshvaladd, dd 0
 NEWSYM ofsmtptrs, dd 0
 NEWSYM ofsmcptr2, dd 0
 NEWSYM sramb4save, dd 0
-NEWSYM mode7hiresen, dd 1
 NEWSYM hiresstuff, dd 0
-NEWSYM cmovietimeint, dd 0
 NEWSYM overalltimer, dd 0
 
 SECTION .text
@@ -176,72 +171,18 @@ ClockCounter:
     jne .dopal
     cmp dword[overalltimer],60
     jne .notimer
-    inc dword[cmovietimeint]
     sub dword[overalltimer],60
     jmp .notimer
 .dopal
     cmp dword[overalltimer],50
     jne .notimer
-    inc dword[cmovietimeint]
     sub dword[overalltimer],50
 .notimer
     test byte[pressed+2Eh],1
     jz .noclear
-    mov dword[cmovietimeint],0
     mov dword[overalltimer],0
 .noclear
     ret
-
-NEWSYM dsp1teststuff
-    ; /////////////////////////////
-    mov dword[dsp1ptr],0
-    push eax
-    push ecx
-    mov ecx,4096
-    mov eax,dsp1array
-.cvloop
-    mov byte[eax],0
-    inc eax
-    dec ecx
-    jnz .cvloop
-    pop ecx
-    pop eax
-    ret
-    mov eax,dsp1array
-    add eax,[dsp1ptr]
-    push ebx
-    mov byte[eax],02h
-    mov bx,[Op02FX]
-    mov [eax+1],bx
-    mov bx,[Op02FY]
-    mov [eax+3],bx
-    mov bx,[Op02FZ]
-    mov [eax+5],bx
-    mov bx,[Op02LFE]
-    mov [eax+7],bx
-    mov bx,[Op02LES]
-    mov [eax+9],bx
-    mov bx,[Op02AAS]
-    mov [eax+11],bx
-    mov bx,[Op02AZS]
-    mov [eax+13],bx
-    mov bx,[Op02VOF]
-    mov [eax+15],bx
-    mov bx,[Op02VVA]
-    mov [eax+17],bx
-    mov bx,[Op02CX]
-    mov [eax+19],bx
-    mov bx,[Op02CY]
-    mov [eax+21],bx
-    pop ebx
-    add dword[dsp1ptr],23
-    pop ecx
-    pop eax
-    ; /////////////////////////////
-    ret
-
-SECTION .data
-SaveRamSaved db 'SAVED SRAM DATA',0
 
 SECTION .bss
 NEWSYM FastForwardLock, resb 1
@@ -255,7 +196,6 @@ NEWSYM cachevideo
     mov dword[objwlrpos],0FFFFFFFFh
     mov dword[CSprWinPtr],0
     mov byte[pressed],0
-    mov dword[objvramadder],0
     mov dword[bgcmsung],0
     mov dword[modeused],0
     mov dword[modeused+4],0
@@ -270,8 +210,6 @@ NEWSYM cachevideo
 
     call ClockCounter
 
-    cmp byte[mode7hiresen],0
-    je .nohires
     cmp byte[scanlines],1
     je .nohires
     cmp byte[cvidmode],9
@@ -447,11 +385,6 @@ NEWSYM cachevideo
 .norclick
     mov byte[MousePRClick],0
 .noclick
-    mov ax,[oamaddr]
-    mov cl,[bgmode]
-    mov al,01h
-    shl al,cl
-    mov [cachedmode],al
     ; disable all necessary backgrounds
     mov eax,[KeyBGDisble0]
     test byte[pressed+eax],1
@@ -919,13 +852,8 @@ NEWSYM yesblank
 
 SECTION .data
 NEWSYM osm2dis,      db 0
-NEWSYM cachedmode,   db 0
-NEWSYM tempfname,    db 'vram.bin',0
-NEWSYM scrnsizebyte, dw 1024,2048,2048,4096
 NEWSYM colormodedef, db 1,1,1,1, 2,2,1,0, 2,2,0,0, 3,2,0,0,
                db 3,1,0,0, 2,1,0,0, 2,0,0,0, 0,0,0,0
-NEWSYM colormoded2,  db 4,4,4,4, 5,5,4,0, 5,5,0,0, 6,5,0,0,
-               db 6,4,0,0, 5,4,0,0, 5,0,0,0, 0,0,0,0
 NEWSYM colormodeofs, dd 0
 NEWSYM curblank,     db 80h             ; current blank state (40h = skip fill)
 NEWSYM addr2add,     dd 0
