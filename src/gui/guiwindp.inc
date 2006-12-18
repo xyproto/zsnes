@@ -3431,7 +3431,7 @@ DisplayGUIOptns:              ; GUI Options
   GUIDisplayCheckboxu 10,129,33,newfont,GUIGUIOptnsTextA2b,12
   GUIDisplayCheckboxu 10,129,43,FilteredGUI,GUIGUIOptnsTextA2c,0
   GUIDisplayCheckboxu 10,129,53,esctomenu,GUIGUIOptnsTextA2d,7
-  GUIDisplayCheckboxun 10,129,63,resetposn,0,GUIGUIOptnsTextA2e,10
+  GUIDisplayCheckboxun 10,129,63,resetposn,0,GUIGUIOptnsTextA2e,9
   ; ^ "Save Win Pos", but the option is really for Reset Pos
 
   GUIDisplayTextY 10,6,91,GUIGUIOptnsTextE
