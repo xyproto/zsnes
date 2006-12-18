@@ -729,6 +729,12 @@ GUIgetcurrentinput:
 %endmacro
 
 GUIInputKeys:
+  cmp dh,'a'
+  jb .nocap
+  cmp dh,'z'
+  ja .nocap
+  sub dh,'z'-'Z'
+.nocap
   cmp dh,9
   jne .notab
   KeyTabInc GUIInputTabs
