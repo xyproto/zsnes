@@ -73,8 +73,8 @@ void handle_c_file(const char *filename)
     {
       for (vector<string>::iterator i = variables.begin(); i != variables.end(); i++)
       {
-        char *p = strstr(line, i->c_str());
-        if (p)
+        char *start = line, *p;
+        while ((p = strstr(start, i->c_str())))
         {
           if (((p == line) || !is_cidentifier(p[-1])) && (!is_cidentifier(p[i->length()])))
           {
@@ -91,8 +91,14 @@ void handle_c_file(const char *filename)
               size_t len = strlen(variable_suffix);
               memmove(end_ident+len, end_ident, strlen(end_ident)+1);
               memcpy(end_ident, variable_suffix, len);
+              end_ident += len;
             }
+            start = end_ident;
             file_modified = true;
+          }
+          else
+          {
+            start += i->length();
           }
         }
       }
