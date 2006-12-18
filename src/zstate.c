@@ -227,6 +227,59 @@ static void copy_state_data(unsigned char *buffer, void (*copy_func)(unsigned ch
     copy_func(&buffer, &DSP4.out_index, sizeof(DSP4.out_index));
     copy_func(&buffer, &DSP4.parameters, sizeof(DSP4.parameters));
     copy_func(&buffer, &DSP4.output, sizeof(DSP4.output));
+
+    copy_func(&buffer, &DSP4_vars.DSP4_Logic, sizeof(DSP4_vars.DSP4_Logic));
+    copy_func(&buffer, &DSP4_vars.lcv, sizeof(DSP4_vars.lcv));
+    copy_func(&buffer, &DSP4_vars.distance, sizeof(DSP4_vars.distance));
+    copy_func(&buffer, &DSP4_vars.raster, sizeof(DSP4_vars.raster));
+    copy_func(&buffer, &DSP4_vars.segments, sizeof(DSP4_vars.segments));
+    copy_func(&buffer, &DSP4_vars.world_x, sizeof(DSP4_vars.world_x));
+    copy_func(&buffer, &DSP4_vars.world_y, sizeof(DSP4_vars.world_y));
+    copy_func(&buffer, &DSP4_vars.world_dx, sizeof(DSP4_vars.world_dx));
+    copy_func(&buffer, &DSP4_vars.world_dy, sizeof(DSP4_vars.world_dy));
+    copy_func(&buffer, &DSP4_vars.world_ddx, sizeof(DSP4_vars.world_ddx));
+    copy_func(&buffer, &DSP4_vars.world_ddy, sizeof(DSP4_vars.world_ddy));
+    copy_func(&buffer, &DSP4_vars.world_xenv, sizeof(DSP4_vars.world_xenv));
+    copy_func(&buffer, &DSP4_vars.world_yofs, sizeof(DSP4_vars.world_yofs));
+    copy_func(&buffer, &DSP4_vars.view_x1, sizeof(DSP4_vars.view_x1));
+    copy_func(&buffer, &DSP4_vars.view_y1, sizeof(DSP4_vars.view_y1));
+    copy_func(&buffer, &DSP4_vars.view_x2, sizeof(DSP4_vars.view_x2));
+    copy_func(&buffer, &DSP4_vars.view_y2, sizeof(DSP4_vars.view_y2));
+    copy_func(&buffer, &DSP4_vars.view_dx, sizeof(DSP4_vars.view_dx));
+    copy_func(&buffer, &DSP4_vars.view_dy, sizeof(DSP4_vars.view_dy));
+    copy_func(&buffer, &DSP4_vars.view_xofs1, sizeof(DSP4_vars.view_xofs1));
+    copy_func(&buffer, &DSP4_vars.view_yofs1, sizeof(DSP4_vars.view_yofs1));
+    copy_func(&buffer, &DSP4_vars.view_xofs2, sizeof(DSP4_vars.view_xofs2));
+    copy_func(&buffer, &DSP4_vars.view_yofs2, sizeof(DSP4_vars.view_yofs2));
+    copy_func(&buffer, &DSP4_vars.view_yofsenv, sizeof(DSP4_vars.view_yofsenv));
+    copy_func(&buffer, &DSP4_vars.view_turnoff_x, sizeof(DSP4_vars.view_turnoff_x));
+    copy_func(&buffer, &DSP4_vars.view_turnoff_dx, sizeof(DSP4_vars.view_turnoff_dx));
+    copy_func(&buffer, &DSP4_vars.viewport_cx, sizeof(DSP4_vars.viewport_cx));
+    copy_func(&buffer, &DSP4_vars.viewport_cy, sizeof(DSP4_vars.viewport_cy));
+    copy_func(&buffer, &DSP4_vars.viewport_left, sizeof(DSP4_vars.viewport_left));
+    copy_func(&buffer, &DSP4_vars.viewport_right, sizeof(DSP4_vars.viewport_right));
+    copy_func(&buffer, &DSP4_vars.viewport_top, sizeof(DSP4_vars.viewport_top));
+    copy_func(&buffer, &DSP4_vars.viewport_bottom, sizeof(DSP4_vars.viewport_bottom));
+    copy_func(&buffer, &DSP4_vars.sprite_x, sizeof(DSP4_vars.sprite_x));
+    copy_func(&buffer, &DSP4_vars.sprite_y, sizeof(DSP4_vars.sprite_y));
+    copy_func(&buffer, &DSP4_vars.sprite_attr, sizeof(DSP4_vars.sprite_attr));
+    copy_func(&buffer, &DSP4_vars.sprite_size, sizeof(DSP4_vars.sprite_size));
+    copy_func(&buffer, &DSP4_vars.sprite_clipy, sizeof(DSP4_vars.sprite_clipy));
+    copy_func(&buffer, &DSP4_vars.sprite_count, sizeof(DSP4_vars.sprite_count));
+    copy_func(&buffer, &DSP4_vars.poly_clipLf, sizeof(DSP4_vars.poly_clipLf));
+    copy_func(&buffer, &DSP4_vars.poly_clipRt, sizeof(DSP4_vars.poly_clipRt));
+    copy_func(&buffer, &DSP4_vars.poly_ptr, sizeof(DSP4_vars.poly_ptr));
+    copy_func(&buffer, &DSP4_vars.poly_raster, sizeof(DSP4_vars.poly_raster));
+    copy_func(&buffer, &DSP4_vars.poly_top, sizeof(DSP4_vars.poly_top));
+    copy_func(&buffer, &DSP4_vars.poly_bottom, sizeof(DSP4_vars.poly_bottom));
+    copy_func(&buffer, &DSP4_vars.poly_cx, sizeof(DSP4_vars.poly_cx));
+    copy_func(&buffer, &DSP4_vars.poly_start, sizeof(DSP4_vars.poly_start));
+    copy_func(&buffer, &DSP4_vars.poly_plane, sizeof(DSP4_vars.poly_plane));
+    copy_func(&buffer, &DSP4_vars.OAM_attr, sizeof(DSP4_vars.OAM_attr));
+    copy_func(&buffer, &DSP4_vars.OAM_index, sizeof(DSP4_vars.OAM_index));
+    copy_func(&buffer, &DSP4_vars.OAM_bits, sizeof(DSP4_vars.OAM_bits));
+    copy_func(&buffer, &DSP4_vars.OAM_RowMax, sizeof(DSP4_vars.OAM_RowMax));
+    copy_func(&buffer, &DSP4_vars.OAM_Row, sizeof(DSP4_vars.OAM_Row));
   }
 
   if (method != csm_load_zst_old)
@@ -1025,7 +1078,7 @@ void zst_sram_load_compressed(FILE *fp)
           if (DSP1Enable) { data += 2874; }
           if (SETAEnable) { memcpyrinc(&data, setaramdata, 4096); } // SETA sram
           if (SPC7110Enable)  { data += PHnum2writespc7110reg + 65536; }
-          if (DSP4Enable) { data += 1044; }
+          if (DSP4Enable) { data += 1294; }
           data += 227;
           if (ramsize)  { memcpyrinc(&data, sram, ramsize); } // normal sram
         }
