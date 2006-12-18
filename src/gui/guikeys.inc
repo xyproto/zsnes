@@ -734,6 +734,27 @@ GUIInputKeys:
   KeyTabInc GUIInputTabs
   mov byte[GUIFreshInputSelect],1
 .notab
+  GUIKeyCheckbox AllowUDLR,'L'
+  GUIKeyCheckbox Turbo30hz,'A'
+  cmp dh,'U'
+  jne .nousepl34
+  xor byte[pl12s34],1
+  mov byte[MultiTap],1
+  cmp byte[pl12s34],1
+  je .nomtap
+  cmp byte[pl3contrl],0
+  jne .mtap
+  cmp byte[pl4contrl],0
+  jne .mtap
+  cmp byte[pl5contrl],0
+  jne .mtap
+.nomtap
+  mov byte[MultiTap],0
+.mtap
+.nousepl34
+%ifdef __MSDOS__
+  GUIKeyCheckbox SidewinderFix,'I'
+%endif
   ret
 
 GUITCPIPKeys:
@@ -760,24 +781,7 @@ GUIOptionKeys:
   xor byte[MMXSupport],1
   call MMXCheck
 .nommxcopy
-  cmp dh,'U'
-  jne .nousepl34
-  xor byte[pl12s34],1
-  mov byte[MultiTap],1
-  cmp byte[pl12s34],1
-  je .nomtap
-  cmp byte[pl3contrl],0
-  jne .mtap
-  cmp byte[pl4contrl],0
-  jne .mtap
-  cmp byte[pl5contrl],0
-  jne .mtap
-.nomtap
-  mov byte[MultiTap],0
-.mtap
-.nousepl34
 %ifdef __MSDOS__
-  GUIKeyCheckbox SidewinderFix,'I'
 %elifdef __WIN32__
   GUIKeyCheckbox HighPriority,'H'
   pushad
@@ -785,7 +789,6 @@ GUIOptionKeys:
   popad
 %endif
   GUIKeyCheckbox FPSAtStart,'F'
-  GUIKeyCheckbox Turbo30hz,'E'
   GUIKeyCheckbox TimerEnable,'C'
   GUIKeyCheckbox ClockBox,'X'
   GUIKeyCheckbox TwelveHourClock,'1'
@@ -794,7 +797,6 @@ GUIOptionKeys:
   GUIKeyCheckbox AutoPatch,'P'
   GUIKeyCheckbox RomInfo,'T'
   GUIKeyCheckbox DisplayInfo,'L'
-  GUIKeyCheckbox AllowUDLR,'A'
 %ifndef __MSDOS__
   GUIKeyCheckbox PauseFocusChange,'B'
 %endif

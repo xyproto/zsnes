@@ -2079,25 +2079,31 @@ DisplayGUIInputClick:
 %ifdef __MSDOS__
   cmp byte[cplayernum],0
   jne .notpl1
-  GUIClickCButtonID 5,163,byte[pl1p209]
+  GUIClickCButtonID 5,160,byte[pl1p209]
 .notpl1
   cmp byte[cplayernum],1
   jne .notpl2
-  GUIClickCButtonID 5,163,byte[pl2p209]
+  GUIClickCButtonID 5,160,byte[pl2p209]
 .notpl2
   cmp byte[cplayernum],2
   jne .notpl3
-  GUIClickCButtonID 5,163,byte[pl3p209]
+  GUIClickCButtonID 5,160,byte[pl3p209]
 .notpl3
   cmp byte[cplayernum],3
   jne .notpl4
-  GUIClickCButtonID 5,163,byte[pl4p209]
+  GUIClickCButtonID 5,160,byte[pl4p209]
 .notpl4
   cmp byte[cplayernum],4
   jne .notpl5
-  GUIClickCButtonID 5,163,byte[pl5p209]
+  GUIClickCButtonID 5,160,byte[pl5p209]
 .notpl5
+
+  GUIClickCButton 11,190,byte[SidewinderFix]
 %endif
+
+  GUIClickCButtonM 5,170,byte[pl12s34]
+  GUIClickCButton 5,180,byte[AllowUDLR]
+  GUIClickCButton 105,180,byte[Turbo30hz]
   ret
 
 DisplayGUIOptionClick:
@@ -2108,14 +2114,12 @@ DisplayGUIOptionClick:
   GUIClickCButton2 11,11,byte[newengen],byte[newengen],1
 .invalidng
   GUIClickCButtonMMX 11,21,byte[MMXSupport]
-  GUIClickCButtonM 11,31,byte[pl12s34]
 %ifdef __MSDOS__
-  GUIClickCButton 11,41,byte[SidewinderFix]
 %else
   GUIClickCButton 11,41,byte[PauseFocusChange]
 %endif
   GUIClickCButton 11,51,byte[FPSAtStart]
-  GUIClickCButton 11,61,byte[Turbo30hz]
+
   GUIClickCButton 11,71,byte[TimerEnable]
   GUIClickCButton 11,81,byte[TwelveHourClock]
   GUIClickCButton 11,91,byte[ClockBox]
@@ -2124,7 +2128,7 @@ DisplayGUIOptionClick:
   GUIClickCButton 11,121,byte[AutoPatch]
   GUIClickCButton 11,131,byte[RomInfo]
   GUIClickCButton 11,141,byte[DisplayInfo]
-  GUIClickCButton 11,151,byte[AllowUDLR]
+
 %ifdef __WIN32__
   GUIClickCButton 11,161,byte[HighPriority]
   pushad

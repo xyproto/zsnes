@@ -1464,30 +1464,30 @@ SECTION .text
 %endmacro
 
 %macro GUIInputDispAll 1
-  GUIInputDispKey 45,105,%1upk    ; Up
-  GUIInputDispKey 45,115,%1downk  ; Down
-  GUIInputDispKey 45,125,%1leftk  ; Left
-  GUIInputDispKey 45,135,%1rightk ; Right
-  GUIInputDispKey 45,145,%1startk ; Start
-  GUIInputDispKey 45,155,%1selk   ; Select
-  GUIInputDispKey 85,105,%1Ak     ; A
-  GUIInputDispKey 85,115,%1Bk     ; B
-  GUIInputDispKey 85,125,%1Xk     ; X
-  GUIInputDispKey 85,135,%1Yk     ; Y
-  GUIInputDispKey 85,145,%1Lk     ; L
-  GUIInputDispKey 85,155,%1Rk     ; R
+  GUIInputDispKey 45,102,%1upk    ; Up
+  GUIInputDispKey 45,112,%1downk  ; Down
+  GUIInputDispKey 45,122,%1leftk  ; Left
+  GUIInputDispKey 45,132,%1rightk ; Right
+  GUIInputDispKey 45,142,%1startk ; Start
+  GUIInputDispKey 45,152,%1selk   ; Select
+  GUIInputDispKey 85,102,%1Ak     ; A
+  GUIInputDispKey 85,112,%1Bk     ; B
+  GUIInputDispKey 85,122,%1Xk     ; X
+  GUIInputDispKey 85,132,%1Yk     ; Y
+  GUIInputDispKey 85,142,%1Lk     ; L
+  GUIInputDispKey 85,152,%1Rk     ; R
 
-  GUIInputDispKey 125,105,%1Xtk   ; X Turbo
-  GUIInputDispKey 125,115,%1Ytk   ; Y Turbo
-  GUIInputDispKey 125,125,%1Ltk   ; L Turbo
-  GUIInputDispKey 165,105,%1Atk   ; A Turbo
-  GUIInputDispKey 165,115,%1Btk   ; B Turbo
-  GUIInputDispKey 165,125,%1Rtk   ; R Turbo
+  GUIInputDispKey 125,102,%1Xtk   ; X Turbo
+  GUIInputDispKey 125,112,%1Ytk   ; Y Turbo
+  GUIInputDispKey 125,122,%1Ltk   ; L Turbo
+  GUIInputDispKey 165,102,%1Atk   ; A Turbo
+  GUIInputDispKey 165,112,%1Btk   ; B Turbo
+  GUIInputDispKey 165,122,%1Rtk   ; R Turbo
 
-  GUIInputDispKey 125,145,%1DLk   ; Down-Left
-  GUIInputDispKey 125,155,%1DRk   ; Down-Right
-  GUIInputDispKey 165,145,%1ULk   ; Up-Left
-  GUIInputDispKey 165,155,%1URk   ; Up-Right
+  GUIInputDispKey 125,142,%1DLk   ; Down-Left
+  GUIInputDispKey 125,152,%1DRk   ; Down-Right
+  GUIInputDispKey 165,142,%1ULk   ; Up-Left
+  GUIInputDispKey 165,152,%1URk   ; Up-Right
 %endmacro
 
 %macro GUIInputDispKey 3
@@ -1533,37 +1533,37 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
   GUIDisplayTextY 3,6+54,83,[GUITemp]   ; CDV
   GUIDisplayTextY 3,6,83,GUIInputTextA1
 
-  GUIDisplayTextY 3,6,97,GUIInputTextB
-  GUIDisplayText 3,6,107,GUIInputTextB1
-  GUIDisplayText 3,6,117,GUIInputTextB2
-  GUIDisplayText 3,6,127,GUIInputTextB3
-  GUIDisplayText 3,6,137,GUIInputTextB4
-  GUIDisplayText 3,6,147,GUIInputTextB5
-  GUIDisplayText 3,6,157,GUIInputTextB6
+  GUIDisplayTextY 3,6,94,GUIInputTextB
+  GUIDisplayText 3,6,104,GUIInputTextB1
+  GUIDisplayText 3,6,114,GUIInputTextB2
+  GUIDisplayText 3,6,124,GUIInputTextB3
+  GUIDisplayText 3,6,134,GUIInputTextB4
+  GUIDisplayText 3,6,144,GUIInputTextB5
+  GUIDisplayText 3,6,154,GUIInputTextB6
 
-  GUIDisplayText 3,76,107,GUIInputTextC1
-  GUIDisplayText 3,76,117,GUIInputTextC2
-  GUIDisplayText 3,76,127,GUIInputTextC3
-  GUIDisplayText 3,76,137,GUIInputTextC4
-  GUIDisplayText 3,76,147,GUIInputTextC5
-  GUIDisplayText 3,76,157,GUIInputTextC6
+  GUIDisplayText 3,76,104,GUIInputTextC1
+  GUIDisplayText 3,76,114,GUIInputTextC2
+  GUIDisplayText 3,76,124,GUIInputTextC3
+  GUIDisplayText 3,76,134,GUIInputTextC4
+  GUIDisplayText 3,76,144,GUIInputTextC5
+  GUIDisplayText 3,76,154,GUIInputTextC6
 
-  GUIDisplayTextY 3,116,97,GUIInputTextC
-  GUIDisplayText 3,156,107,GUIInputTextC1
-  GUIDisplayText 3,156,117,GUIInputTextC2
-  GUIDisplayText 3,156,127,GUIInputTextC6
-  GUIDisplayText 3,116,107,GUIInputTextC3
-  GUIDisplayText 3,116,117,GUIInputTextC4
-  GUIDisplayText 3,116,127,GUIInputTextC5
+  GUIDisplayTextY 3,116,94,GUIInputTextC
+  GUIDisplayText 3,156,104,GUIInputTextC1
+  GUIDisplayText 3,156,114,GUIInputTextC2
+  GUIDisplayText 3,156,124,GUIInputTextC6
+  GUIDisplayText 3,116,104,GUIInputTextC3
+  GUIDisplayText 3,116,114,GUIInputTextC4
+  GUIDisplayText 3,116,124,GUIInputTextC5
 
-  GUIDisplayTextY 3,113,137,GUIInputTextD
-  GUIDisplayText 3,153,147,GUIInputTextD1
-  GUIDisplayText 3,153,157,GUIInputTextD2
-  GUIDisplayText 3,113,147,GUIInputTextD3
-  GUIDisplayText 3,113,157,GUIInputTextD4
+  GUIDisplayTextY 3,113,134,GUIInputTextD
+  GUIDisplayText 3,153,144,GUIInputTextD1
+  GUIDisplayText 3,153,154,GUIInputTextD2
+  GUIDisplayText 3,113,144,GUIInputTextD3
+  GUIDisplayText 3,113,154,GUIInputTextD4
 
 %ifdef __MSDOS__
-  GUIDisplayText 3,20,167,GUIInputTextE4
+  GUIDisplayText 3,20,165,GUIInputTextE4
 
   mov dword[GUITemp],GUIIconDataCheckBoxUC              ; Checkbox
   cmp byte[cplayernum],0
@@ -1595,8 +1595,14 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
 .checkbox2
   mov dword[GUITemp],GUIIconDataCheckBoxC
 .nocheckbox2
-  GUIDisplayIconWin 3,5,162,[GUITemp]
+  GUIDisplayIconWin 3,5,160,[GUITemp]
+
+  GUIDisplayCheckboxu 3,5,190,SidewinderFix,GUIInputTextE5,1
 %endif
+
+  GUIDisplayCheckboxu 3,5,170,pl12s34,GUIInputTextE6,0
+  GUIDisplayCheckboxu 3,5,180,AllowUDLR,GUIInputTextE7,1
+  GUIDisplayCheckboxu 3,105,180,Turbo30hz,GUIInputTextE8,6
 
   DrawGUIButton 3,123,34,153,45,GUIInputTextE1,14,0,0   ; Buttons
   DrawGUIButton 3,123,50,177,61,GUIInputTextE2,40,0,0
@@ -1670,28 +1676,28 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
   GUIInputDispAll pl5
 .notpl5
 
-  DGOptnsBorderBox 3,44,104    ; Box borders, keep them at bottom
-  DGOptnsBorderBox 3,44,114
-  DGOptnsBorderBox 3,44,124
-  DGOptnsBorderBox 3,44,134
-  DGOptnsBorderBox 3,44,144
-  DGOptnsBorderBox 3,44,154
-  DGOptnsBorderBox 3,84,104
-  DGOptnsBorderBox 3,84,114
-  DGOptnsBorderBox 3,84,124
-  DGOptnsBorderBox 3,84,134
-  DGOptnsBorderBox 3,84,144
-  DGOptnsBorderBox 3,84,154
-  DGOptnsBorderBox 3,124,104
-  DGOptnsBorderBox 3,124,114
-  DGOptnsBorderBox 3,124,124
-  DGOptnsBorderBox 3,124,144
-  DGOptnsBorderBox 3,124,154
-  DGOptnsBorderBox 3,164,104
-  DGOptnsBorderBox 3,164,114
-  DGOptnsBorderBox 3,164,124
-  DGOptnsBorderBox 3,164,144
-  DGOptnsBorderBox 3,164,154
+  DGOptnsBorderBox 3,44,101    ; Box borders, keep them at bottom
+  DGOptnsBorderBox 3,44,111
+  DGOptnsBorderBox 3,44,121
+  DGOptnsBorderBox 3,44,131
+  DGOptnsBorderBox 3,44,141
+  DGOptnsBorderBox 3,44,151
+  DGOptnsBorderBox 3,84,101
+  DGOptnsBorderBox 3,84,111
+  DGOptnsBorderBox 3,84,121
+  DGOptnsBorderBox 3,84,131
+  DGOptnsBorderBox 3,84,141
+  DGOptnsBorderBox 3,84,151
+  DGOptnsBorderBox 3,124,101
+  DGOptnsBorderBox 3,124,111
+  DGOptnsBorderBox 3,124,121
+  DGOptnsBorderBox 3,124,141
+  DGOptnsBorderBox 3,124,151
+  DGOptnsBorderBox 3,164,101
+  DGOptnsBorderBox 3,164,111
+  DGOptnsBorderBox 3,164,121
+  DGOptnsBorderBox 3,164,141
+  DGOptnsBorderBox 3,164,151
   ret
 
 SECTION .data
@@ -1734,6 +1740,10 @@ GUIInputTextE1 db 'SET',0
 GUIInputTextE2 db 'SET KEYS',0
 GUIInputTextE3 db 'CALIBRATE',0
 GUIInputTextE4 db 'USE JOYSTICK PORT 209H',0
+GUIInputTextE6 db 'USE PL3/4 AS PL1/2',0
+GUIInputTextE7 db 'ALLOW U+D/L+R',0
+GUIInputTextE8 db 'TURBO AT 30HZ',0
+GUIInputTextE5 db 'SIDEWINDER FIX',0
 
 GUIFreshInputSelect db 1
 
@@ -1749,14 +1759,11 @@ DisplayGUIOption:       ; Emu Options
 
   GUIDisplayCheckboxu 4,11,11,newengen,GUIOptionText3,0
   GUIDisplayCheckboxu 4,11,21,MMXSupport,GUIOptionText4,0
-  GUIDisplayCheckboxu 4,11,31,pl12s34,GUIOptionText5,0
 %ifdef __MSDOS__
-  GUIDisplayCheckboxu 4,11,41,SidewinderFix,GUIOptionText6,1
 %else
   GUIDisplayCheckboxu 4,11,41,PauseFocusChange,GUIOptionText6b,13
 %endif
   GUIDisplayCheckboxu 4,11,51,FPSAtStart,GUIOptionText7,0
-  GUIDisplayCheckboxu 4,11,61,Turbo30hz,GUIOptionText8,2
   GUIDisplayCheckboxu 4,11,71,TimerEnable,GUIOptionText9,7
   GUIDisplayCheckboxu 4,11,81,TwelveHourClock,GUIOptionText9a,0
   GUIDisplayCheckboxu 4,11,91,ClockBox,GUIOptionText9b,13
@@ -1765,7 +1772,6 @@ DisplayGUIOption:       ; Emu Options
   GUIDisplayCheckboxu 4,11,121,AutoPatch,GUIOptionTextC,12
   GUIDisplayCheckboxu 4,11,131,RomInfo,GUIOptionTextD,15
   GUIDisplayCheckboxu 4,11,141,DisplayInfo,GUIOptionTextDa,17
-  GUIDisplayCheckboxu 4,11,151,AllowUDLR,GUIOptionTextE,0
 %ifdef __WIN32__
   GUIDisplayCheckboxu 4,11,161,HighPriority,GUIOptionTextF,6
   GUIDisplayCheckboxu 4,11,171,DisableScreenSaver,GUIOptionTextZ,1
@@ -1775,11 +1781,8 @@ DisplayGUIOption:       ; Emu Options
 SECTION .data
 GUIOptionText3 db 'NEW GFX ENGINE',0
 GUIOptionText4 db 'MMX SUPPORT',0
-GUIOptionText5 db 'USE PL3/4 AS PL1/2',0
-GUIOptionText6 db 'SIDEWINDER FIX',0
 GUIOptionText6b db 'PAUSE EMU IN BACKGROUND',0
 GUIOptionText7 db 'FPS AT PROGRAM START',0
-GUIOptionText8 db 'USE 30HZ FOR TURBO',0
 GUIOptionText9 db 'ENABLE CLOCK',0
 GUIOptionText9a db '12 HOUR MODE',0
 GUIOptionText9b db 'SHOW CLOCK BOX',0
@@ -1788,7 +1791,7 @@ GUIOptionTextB db 'USE SMALL MESSAGE TEXT',0
 GUIOptionTextC db 'ENABLE AUTO-PATCH',0
 GUIOptionTextD db 'ENABLE ROMINFO.TXT',0
 GUIOptionTextDa db 'SHOW ROM INFO ON LOAD',0
-GUIOptionTextE db 'ALLOW U+D/L+R',0
+
 GUIOptionTextF db 'USE A HIGHER PRIORITY',0
 GUIOptionTextZ db 'DISABLE POWER MANAGEMENT',0 ; keep as last option, Win Only
 

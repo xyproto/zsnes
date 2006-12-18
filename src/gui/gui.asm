@@ -268,9 +268,9 @@ GUIMiscMenuData:
 ; Window sizes and positions
 ;                LOAD STAT INPT OPT  VID  SND  CHT  NET  GMKEY GUIOP ABT  RSET SRC  STCN MOVE CMBO ADDO CHIP PATH SAVE SPED
 GUIwinposxo dd 0,6   ,65  ,33  ,42  ,5   ,34  ,6   ,64  ,8    ,8    ,33  ,56  ,64  ,56  ,5   ,3   ,28  ,48  ,6    ,28  ,53
-GUIwinposyo dd 0,20  ,70  ,30  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,60  ,20  ,20  ,60  ,60  ,20   ,30  ,20
-GUIwinsizex dd 0,244 ,126 ,189 ,172 ,245 ,188 ,244 ,128 ,240  ,240  ,190 ,144 ,128 ,144 ,246 ,250 ,200 ,160 ,244  ,200 ,150
-GUIwinsizey dd 0,190 ,68  ,166 ,190 ,190 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,120 ,100 ,190  ,160 ,180
+GUIwinposyo dd 0,20  ,70  ,20  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,60  ,20  ,20  ,60  ,60  ,20   ,30  ,20
+GUIwinsizex dd 0,244 ,126 ,200 ,172 ,245 ,188 ,244 ,128 ,240  ,240  ,190 ,144 ,128 ,144 ,246 ,250 ,200 ,160 ,244  ,200 ,150
+GUIwinsizey dd 0,190 ,68  ,192 ,190 ,190 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,120 ,100 ,190  ,160 ,180
 NEWSYM GUIwinptr, db 0
 
 NEWSYM WaterOn,  db 1
