@@ -740,8 +740,8 @@ GUIInputKeys:
   KeyTabInc GUIInputTabs
   mov byte[GUIFreshInputSelect],1
 .notab
-  GUIKeyCheckbox AllowUDLR,'L'
-  GUIKeyCheckbox Turbo30hz,'A'
+  GUIKeyCheckbox AllowUDLR,'A'
+  GUIKeyCheckbox Turbo30hz,'T'
   cmp dh,'U'
   jne .nousepl34
   xor byte[pl12s34],1
@@ -759,7 +759,7 @@ GUIInputKeys:
 .mtap
 .nousepl34
 %ifdef __MSDOS__
-  GUIKeyCheckbox SidewinderFix,'I'
+  GUIKeyCheckbox SidewinderFix,'S'
 %endif
   ret
 
@@ -1433,40 +1433,21 @@ GUISoundKeys:
   mov [SoundQuality],al
 .notsrate
 
-  cmp dh,'G'
-  jne .nogausseninterp
-  GUIkeystoggleoptn byte[SoundInterpType],1
-.nogausseninterp
-
-  cmp dh,'C'
-  jne .nocubicinterp
-  GUIkeystoggleoptn byte[SoundInterpType],2
-.nocubicinterp
-
-  cmp dh,'8'
-  jne .no8ptinterp
+  GUIKeyButtonHole SoundInterpType,0,'N'
+  GUIKeyButtonHole SoundInterpType,1,'G'
+  GUIKeyButtonHole SoundInterpType,2,'C'
   cmp byte[MMXSupport],0
   je .no8ptinterp
-  GUIkeystoggleoptn byte[SoundInterpType],3
+  GUIKeyButtonHole SoundInterpType,3,'8'
 .no8ptinterp
 
-  cmp dh,'I'
-  jne .nosimplefilter
-  GUIkeystoggleoptn byte[LowPassFilterType],1
-.nosimplefilter
-
-  cmp dh,'Y'
-  jne .nodynamicfilter
-  GUIkeystoggleoptn byte[LowPassFilterType],2
-.nodynamicfilter
-
-  cmp dh,'H'
-  jne .nohiqualityfilter
+  GUIKeyButtonHole LowPassFilterType,0,'O'
+  GUIKeyButtonHole LowPassFilterType,1,'I'
+  GUIKeyButtonHole LowPassFilterType,2,'Y'
   cmp byte[MMXSupport],0
   je .nohiqualityfilter
-  GUIkeystoggleoptn byte[LowPassFilterType],3
+  GUIKeyButtonHole LowPassFilterType,3,'H'
 .nohiqualityfilter
-
   ret
 
 SECTION .data

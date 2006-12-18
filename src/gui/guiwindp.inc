@@ -1597,12 +1597,12 @@ DisplayGUIInput:    ; Player Select, Joystick/keyboard Type List, Button Assignm
 .nocheckbox2
   GUIDisplayIconWin 3,5,160,[GUITemp]
 
-  GUIDisplayCheckboxu 3,5,190,SidewinderFix,GUIInputTextE5,1
+  GUIDisplayCheckboxu 3,5,190,SidewinderFix,GUIInputTextE5,0
 %endif
 
   GUIDisplayCheckboxu 3,5,170,pl12s34,GUIInputTextE6,0
-  GUIDisplayCheckboxu 3,5,180,AllowUDLR,GUIInputTextE7,1
-  GUIDisplayCheckboxu 3,105,180,Turbo30hz,GUIInputTextE8,6
+  GUIDisplayCheckboxu 3,5,180,AllowUDLR,GUIInputTextE7,0
+  GUIDisplayCheckboxu 3,105,180,Turbo30hz,GUIInputTextE8,0
 
   DrawGUIButton 3,123,34,153,45,GUIInputTextE1,14,0,0   ; Buttons
   DrawGUIButton 3,123,50,177,61,GUIInputTextE2,40,0,0
@@ -1779,8 +1779,11 @@ DisplayGUIOption:       ; Emu Options
   GUIDisplayTextY 4,11,133,GUIOptionTextD
   GUIDisplayCheckboxu 4,11,138,FPSAtStart,GUIOptionTextD1,0
   GUIDisplayCheckboxu 4,11,148,TimerEnable,GUIOptionTextD2,5
+  cmp byte[TimerEnable],1
+  jne .noclock
   GUIDisplayCheckboxu 4,89,148,TwelveHourClock,GUIOptionTextD3,0
   GUIDisplayCheckboxu 4,11,158,ClockBox,GUIOptionTextD4,13
+.noclock
 
   GUIDisplayTextY 4,11,173,GUIOptionTextE
   GUIDisplayCheckboxu 4,11,178,SmallMsgText,GUIOptionTextE1,4
@@ -2289,27 +2292,29 @@ DisplayGUISound:                     ; Sound Related Options
   GUIDisplayTextY 6,6,53,GUISoundTextB
   GUIDisplayTextY 6,6,76,GUISoundTextC
 %ifdef __WIN32__
-  GUIDisplayCheckboxu 6,11,101,PrimaryBuffer,GUISoundTextD1,4
+  GUIDisplayCheckboxu 6,11,95,PrimaryBuffer,GUISoundTextD1,4
 %endif
-  GUIDisplayCheckboxu 6,11,111,RevStereo,GUISoundTextD2,2
-  GUIDisplayCheckboxu 6,11,121,Surround,GUISoundTextD3,1
-  GUIDisplayCheckboxu 6,11,131,SoundBufEn,GUISoundTextD4,6
-  GUIDisplayCheckboxu 6,11,141,SPCDisable,GUISoundTextD5,0
+  GUIDisplayCheckboxu 6,11,105,RevStereo,GUISoundTextD2,2
+  GUIDisplayCheckboxu 6,11,115,Surround,GUISoundTextD3,1
+  GUIDisplayCheckboxu 6,11,125,SoundBufEn,GUISoundTextD4,6
+  GUIDisplayCheckboxu 6,11,135,SPCDisable,GUISoundTextD5,0
 
-  GUIDisplayTextY 6,6,158,GUISoundTextE
-  GUIDisplayCheckboxun 6,11,163,SoundInterpType,1,GUISoundTextE1,0
-  GUIDisplayCheckboxun 6,11,173,SoundInterpType,2,GUISoundTextE2,0
+  GUIDisplayTextY 6,6,152,GUISoundTextE
+  GUIDisplayButtonHoleTu 6,11,157,byte[SoundInterpType],0,GUISoundTextE1,0
+  GUIDisplayButtonHoleTu 6,11,167,byte[SoundInterpType],1,GUISoundTextE2,0
+  GUIDisplayButtonHoleTu 6,11,177,byte[SoundInterpType],2,GUISoundTextE3,0
   cmp byte[MMXSupport],0
   je near .no8ptinterp
-  GUIDisplayCheckboxun 6,11,183,SoundInterpType,3,GUISoundTextE3,0
+  GUIDisplayButtonHoleTu 6,11,187,byte[SoundInterpType],3,GUISoundTextE4,0
 .no8ptinterp
 
-  GUIDisplayTextY 6,106,158,GUISoundTextF
-  GUIDisplayCheckboxun 6,111,163,LowPassFilterType,1,GUISoundTextF1,1
-  GUIDisplayCheckboxun 6,111,173,LowPassFilterType,2,GUISoundTextF2,1
+  GUIDisplayTextY 6,106,152,GUISoundTextF
+  GUIDisplayButtonHoleTu 6,111,157,byte[LowPassFilterType],0,GUISoundTextF1,1
+  GUIDisplayButtonHoleTu 6,111,167,byte[LowPassFilterType],1,GUISoundTextF2,1
+  GUIDisplayButtonHoleTu 6,111,177,byte[LowPassFilterType],2,GUISoundTextF3,1
   cmp byte[MMXSupport],0
   je near .nohiqualityfilter
-  GUIDisplayCheckboxun 6,111,183,LowPassFilterType,3,GUISoundTextF3,0
+  GUIDisplayButtonHoleTu 6,111,187,byte[LowPassFilterType],3,GUISoundTextF4,0
 .nohiqualityfilter
 
 %ifdef __MSDOS__
@@ -2364,14 +2369,16 @@ GUISoundTextD4 db 'SOUND BUFFERING',0
 GUISoundTextD5 db 'DISABLE SPC EMULATION',0
 
 GUISoundTextE db 'INTERPOLATION:',0
-GUISoundTextE1 db 'GAUSSIAN',0
-GUISoundTextE2 db 'CUBIC SPLINE',0
-GUISoundTextE3 db '8-POINT',0
+GUISoundTextE1 db 'NONE',0
+GUISoundTextE2 db 'GAUSSIAN',0
+GUISoundTextE3 db 'CUBIC SPLINE',0
+GUISoundTextE4 db '8-POINT',0
 
 GUISoundTextF db 'LOWPASS:',0
-GUISoundTextF1 db 'SIMPLE',0
-GUISoundTextF2 db 'DYNAMIC',0
-GUISoundTextF3 db 'HI QUALITY',0
+GUISoundTextF1 db 'NONE',0
+GUISoundTextF2 db 'SIMPLE',0
+GUISoundTextF3 db 'DYNAMIC',0
+GUISoundTextF4 db 'HI QUALITY',0
 
 SECTION .text
 

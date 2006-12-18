@@ -2459,12 +2459,23 @@ DisplayGUISoundClick:
   GUIClickCButton 11,121,byte[Surround]
   GUIClickCButton 11,131,byte[SoundBufEn]
   GUIClickCButton 11,141,byte[SPCDisable]
-  GUIClickCButton5 11,163,byte[SoundInterpType],1
-  GUIClickCButton5 11,173,byte[SoundInterpType],2
-  GUIClickCButton5MMXC 11,183,byte[SoundInterpType],3
-  GUIClickCButton5 111,163,byte[LowPassFilterType],1
-  GUIClickCButton5 111,173,byte[LowPassFilterType],2
-  GUIClickCButton5MMXC 111,183,byte[LowPassFilterType],3
+
+  GUIPButtonHole 11,157,byte[SoundInterpType],0
+  GUIPButtonHole 11,167,byte[SoundInterpType],1
+  GUIPButtonHole 11,177,byte[SoundInterpType],2
+  cmp byte[MMXSupport],0
+  je near .no8ptintrp
+  GUIPButtonHole 11,187,byte[SoundInterpType],3
+.no8ptintrp
+ 
+  GUIPButtonHole 111,157,byte[LowPassFilterType],0
+  GUIPButtonHole 111,167,byte[LowPassFilterType],1
+  GUIPButtonHole 111,177,byte[LowPassFilterType],2
+  cmp byte[MMXSupport],0
+  je near .nohiqualityfilter
+  GUIPButtonHole 111,187,byte[LowPassFilterType],3
+.nohiqualityfilter
+  
 %ifdef __WIN32__
   GUIClickCButton 11,101,byte[PrimaryBuffer]
 %endif
