@@ -33,6 +33,9 @@ g++ -Wall -O3 -o srccount.exe srccount.cpp fileutil.o
 Macro Unroller:
 g++ -Wall -O3 -o macroll.exe macroll.cpp fileutil.o strutil.o
 
+Variable Replacer:
+g++ -Wall -O3 -o varrep.exe varrep.cpp fileutil.o strutil.o
+
 All the tools scan every compatible file they find from the directory they are
 in. It also scans all sub directories recursively.
 
@@ -49,3 +52,7 @@ Example: depbuild gcc "-I/usr/include -D__UNIXSDL__  -O3 -march=athlon64" nasm
 Macro Unroller has the macro as parameter passed to it.
 Example: macroll DiffOrNot w4,w2,PIXEL00_0,PIXEL00_100
 
+Variable Replacer requires parameters for variable file, variable prefix 
+and suffix. It can also optionally take a file list. Variable file should
+contain each variable on a line by itself.
+Example: varrep vf.txt "DSP4_vars." "" chips/dsp4emu.c

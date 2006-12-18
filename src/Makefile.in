@@ -107,7 +107,7 @@ $(PSR): parsegen.cpp
 
 TOOLSEXE=$(TOOL_D)/archopt $(TOOL_D)/cutrtype $(TOOL_D)/extraext\
 	$(TOOL_D)/macroll $(TOOL_D)/minwhite $(TOOL_D)/nreplace\
-	$(TOOL_D)/sec-test $(TOOL_D)/srccount
+	$(TOOL_D)/sec-test $(TOOL_D)/srccount $(TOOL_D)/varrep
 tools: $(TOOLSEXE) $(TOOL_D)/depbuild
 $(TOOL_D)/archopt: $(TOOL_D)/archopt.c
 	@CC@ @CFLAGS@ -m32 -o $@ $@.c
@@ -127,6 +127,8 @@ $(TOOL_D)/sec-test: $(TOOL_D)/sec-test.cpp $(TOOL_O)
 	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_O)
 $(TOOL_D)/srccount: $(TOOL_D)/srccount.cpp $(TOOL_O)
 	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_D)/fileutil.o
+$(TOOL_D)/varrep: $(TOOL_D)/varrep.cpp $(TOOL_O)
+	@CXX@ @CXXFLAGS@ -o $@ $@.cpp $(TOOL_O)
 
 include makefile.dep
 makefile.dep: $(TOOL_D)/depbuild Makefile
