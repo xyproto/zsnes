@@ -887,9 +887,9 @@ prevlfreeze db 0
 @
 @ GUI palette mods:
 @ Background RGB tint [0..31]
-GUIRAdd db 0
-GUIGAdd db 0
-GUIBAdd db 0
+GUIRAdd db 4
+GUIGAdd db 4
+GUIBAdd db 8
 @ Titlebar RGB tint [0..31]
 GUITRAdd db 0
 GUITGAdd db 10
