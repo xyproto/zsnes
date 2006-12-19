@@ -92,7 +92,7 @@ void LoadPicture()
 
   memset(PrevPicture, 0, pic_size);
 
-  if (MovieProcessing) { mzt_chdir_up(); }
+  if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD)) { mzt_chdir_up(); }
   if ((fp = fopen_dir(ZSramPath, zst_name(), "rb")))
   {
     unsigned int file_size;
@@ -108,7 +108,7 @@ void LoadPicture()
 
     fclose(fp);
   }
-  if (MovieProcessing) { mzt_chdir_down(); }
+  if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD)) { mzt_chdir_down(); }
 }
 
 void Clear2xSaIBuffer()

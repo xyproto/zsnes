@@ -651,7 +651,7 @@ time_t newestfiledate;
 char *zst_name()
 {
   static char buffer[7];
-  if (MovieProcessing)
+  if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD))
   {
     sprintf(buffer, "%.2d.zst", current_zst);
     return(buffer);
@@ -673,13 +673,13 @@ void zst_determine_newest()
 {
   struct stat filestat;
 
-  if (MovieProcessing) { mzt_chdir_up(); }
+  if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD)) { mzt_chdir_up(); }
   if (!stat_dir(ZSramPath, zst_name(), &filestat) && filestat.st_mtime > newestfiledate)
   {
     newestfiledate = filestat.st_mtime;
     newest_zst = current_zst;
   }
-  if (MovieProcessing) { mzt_chdir_down(); }
+  if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD)) { mzt_chdir_down(); }
 }
 
 void zst_init()
@@ -699,9 +699,9 @@ int zst_exists()
 {
   int ret;
 
-  if (MovieProcessing) { mzt_chdir_up(); }
+  if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD)) { mzt_chdir_up(); }
   ret = access_dir(ZSramPath, zst_name(), F_OK) ? 0 : 1;
-  if (MovieProcessing) { mzt_chdir_down(); }
+  if ((MovieProcessing == MOVIE_PLAYBACK) || (MovieProcessing == MOVIE_RECORD)){ mzt_chdir_down(); }
 
   return(ret);
 }
