@@ -135,6 +135,15 @@
 %%nohotkey
 %endmacro
 
+%macro ToUpperASM 0
+  cmp dh,'a'
+  jb %%notlcase
+  cmp dh,'z'
+  ja %%notlcase
+  sub dh,'a'-'A'
+%%notlcase
+%endmacro
+
 SECTION .bss
 GUIfirstkey resd 1
 GUIlastkey resd 1
@@ -394,12 +403,7 @@ GUIgetcurrentinput:
 .nowinopen
   ret
 .processmenu
-  cmp dh,'a'
-  jb .nolower
-  cmp dh,'z'
-  ja .nolower
-  sub dh,'a'-'A'
-.nolower
+  ToUpperASM
   cmp dh,'X'                 ; Main Menu Hotkeys
   jne .noclose
   mov byte[GUIcmenupos],0
@@ -729,12 +733,7 @@ GUIgetcurrentinput:
 %endmacro
 
 GUIInputKeys:
-  cmp dh,'a'
-  jb .nocap
-  cmp dh,'z'
-  ja .nocap
-  sub dh,'z'-'Z'
-.nocap
+  ToUpperASM
   cmp dh,9
   jne .notab
   KeyTabInc GUIInputTabs
@@ -767,12 +766,7 @@ GUITCPIPKeys:
   ret
 
 GUIOptionKeys:
-  cmp dh,'a'
-  jb .nocap
-  cmp dh,'z'
-  ja .nocap
-  sub dh,'z'-'Z'
-.nocap
+  ToUpperASM
   cmp dh,'N'                             ; Checkboxes
   jne .nonewgfx
   xor eax,eax
@@ -813,12 +807,7 @@ GUIOptionKeys:
   ret
 
 GUIAboutKeys:
-  cmp dh,'a'             ; Setup
-  jb .nocap
-  cmp dh,'z'
-  ja .nocap
-  sub dh,'z'-'Z'
-.nocap
+  ToUpperASM
   cmp dh,'E'
   jne .noeegg
   xor byte[EEgg],1
@@ -826,12 +815,7 @@ GUIAboutKeys:
   ret
 
 GUISaveKeys:
-  cmp dh,'a'             ; Setup
-  jb .nocap
-  cmp dh,'z'
-  ja .nocap
-  sub dh,'z'-'Z'
-.nocap
+  ToUpperASM
   cmp dh,'I'             ; Checkboxes
   jne .noautoincsave
   xor byte[AutoIncSaveSlot],1
@@ -846,12 +830,7 @@ GUISaveKeys:
   ret
 
 GUISpeedKeys:
-  cmp dh,'a'             ; Setup
-  jb .nocap
-  cmp dh,'z'
-  ja .nocap
-  sub dh,'z'-'Z'
-.nocap
+  ToUpperASM
   GUIKeyCheckbox FastFwdToggle,'T'   ; Checkbox
 
   cmp dh,'A'                 ; Framerate Checkboxes
@@ -868,12 +847,7 @@ GUISpeedKeys:
   ret
 
 GUIAddonKeys:
-  cmp dh,'a'             ;Setup
-  jb .nocap
-  cmp dh,'z'
-  ja .nocap
-  sub dh,'z'-'Z'
-.nocap
+  ToUpperASM
   GUIKeyButtonHole device1,0,'G'             ;Radio Buttons
   GUIKeyButtonHole device1,1,'M'
   GUIKeyButtonHole device2,0,'A'
@@ -887,12 +861,7 @@ GUIAddonKeys:
   ret
 
 GUIChipKeys:
-  cmp dh,'a'             ;Setup
-  jb .nocap
-  cmp dh,'z'
-  ja .nocap
-  sub dh,'z'-'Z'
-.nocap
+  ToUpperASM
   GUIKeyCheckbox nssdip1,'1'             ; Checkboxes
   GUIKeyCheckbox nssdip2,'2'
   GUIKeyCheckbox nssdip3,'3'
@@ -902,12 +871,7 @@ GUIChipKeys:
   ret
 
 GUIGUIOptnsKeys:
-  cmp dh,'a'
-  jb .nocap
-  cmp dh,'z'
-  ja .nocap
-  sub dh,'z'-'Z'
-.nocap
+  ToUpperASM
   GUIKeyCheckbox mousewrap,'M'            ; Checkboxes
   GUIKeyCheckbox mouseshad,'S'
   GUIKeyCheckbox esctomenu,'G'
@@ -966,12 +930,7 @@ GUIVideoKeys:
 .nontsc
   KeyTabInc GUIVideoTabs
 .tabdone
-  cmp dh,'a'
-  jb .nocap
-  cmp dh,'z'
-  ja .nocap
-  sub dh,'z'-'Z'
-.nocap
+  ToUpperASM
   xor eax,eax
   cmp dword[GUIVideoTabs],1
   jne near .notmodestab
@@ -1397,13 +1356,7 @@ GUIVideoKeys:
   ret
 
 GUISoundKeys:
-  cmp dh,'a'
-  jb .nocap
-  cmp dh,'z'
-  ja .nocap
-  sub dh,'z'-'Z'
-.nocap
-
+  ToUpperASM
   cmp dh,'E'
   jne .notenablesound
   xor byte[soundon],1
@@ -1610,13 +1563,7 @@ GUIInputLimit resd 1
 SECTION .text
 
 GUIMovieKeys:
-  cmp dh,'a'             ;Setup
-  jb .nocap
-  cmp dh,'z'
-  ja .nocap
-  sub dh,'z'-'Z'
-.nocap
-
+  ToUpperASM
   GUIKeyButtonHole CMovieExt,'v','0'         ; Select Radio Buttons
   GUIKeyButtonHole CMovieExt,'1','1'
   GUIKeyButtonHole CMovieExt,'2','2'
@@ -1686,13 +1633,7 @@ GUICheatKeys:
   je near .textboxa
   cmp dword[GUIcurrentcheatwin],2
   je near .textboxb
-  cmp dh,'a'
-  jb .nocap
-  cmp dh,'z'
-  ja .nocap
-  sub dh,'z'-'Z'
-.nocap
-
+  ToUpperASM
   cmp dh,'R'               ; Hotkeys
   jne .noremocheat
   jmp CheatCodeRemove
@@ -2117,12 +2058,7 @@ InsertSearchDescription:
   ret
 
 GUICheatSearchKeys:
-  cmp dh,'a'
-  jb .nocap
-  cmp dh,'z'
-  ja .nocap
-  sub dh,'z'-'Z'
-.nocap
+  ToUpperASM
   cmp byte[CheatWinMode],3
   je near .add
   cmp byte[CheatWinMode],2
@@ -2740,17 +2676,14 @@ GUIResetKeys:
   je .yesreset
   jmp .noreset
 .noconf
+  ToUpperASM
   cmp dh,'Y'
-  je .yesreset
-  cmp dh,'y'
   jne .notyesreset
 .yesreset
   mov byte[GUICBHold],2
   jmp GUIProcReset
 .notyesreset
   cmp dh,'N'
-  je .noreset
-  cmp dh,'n'
   jne .notnoreset
 .noreset
   xor eax,eax
@@ -2800,17 +2733,14 @@ GUIStateKeys:
   je .yesreset
   jmp .noreset
 .noconf
+  ToUpperASM
   cmp dh,'Y'
-  je .yesreset
-  cmp dh,'y'
   jne .notyesreset
 .yesreset
   mov byte[GUICBHold],10
   jmp GUIProcStates
 .notyesreset
   cmp dh,'N'
-  je .noreset
-  cmp dh,'n'
   jne .notnoreset
 .noreset
   xor eax,eax
