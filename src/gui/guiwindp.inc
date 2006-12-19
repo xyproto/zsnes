@@ -1780,7 +1780,7 @@ DisplayGUIOption:       ; Emu Options
   GUIDisplayCheckboxu 4,11,138,FPSAtStart,GUIOptionTextD1,0
   GUIDisplayCheckboxu 4,11,148,TimerEnable,GUIOptionTextD2,5
   cmp byte[TimerEnable],1
-  jne .noclock
+  jne near .noclock
   GUIDisplayCheckboxu 4,89,148,TwelveHourClock,GUIOptionTextD3,0
   GUIDisplayCheckboxu 4,11,158,ClockBox,GUIOptionTextD4,13
 .noclock
