@@ -2486,7 +2486,9 @@ static void OldMoviePlay(FILE *fp)
   memset(&old_movie, 0, sizeof(old_movie));
   old_movie.fp = fp;
 
+  SetMovieMode(MOVIE_OLD_PLAY);
   loadstate2();
+  SetMovieMode(MOVIE_OFF);
 
   fseek(fp, Totalbyteloaded, SEEK_SET);
   fread(RecData, 1, 16, fp);

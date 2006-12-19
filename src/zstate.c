@@ -1133,6 +1133,14 @@ void stateloader(char *statename, bool keycheck, bool xfercheck)
         set_state_message("UNABLE TO LOAD STATE ", ".");
       }
       return;
+
+    case MOVIE_OLD_PLAY:
+    {
+      extern unsigned char CMovieExt;
+      size_t fname_len = strlen(statename);
+      setextension(statename, "zmv");
+      if (isdigit(CMovieExt)) { statename[fname_len-1] = CMovieExt; }
+    }
   }
 
   clim();
