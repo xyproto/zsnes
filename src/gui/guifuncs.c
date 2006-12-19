@@ -440,7 +440,6 @@ void GUIRestoreVars()
 #endif
   CheckValueBounds(&SPCDisable, 0, 1, 0, UB);
   CheckValueBounds(&EchoDis, 0, 1, 0, UB);
-  CheckValueBounds(&SoundBufEn, 0, 1, 0, UB);
   CheckValueBounds(&Surround, 0, 1, 0, UB);
   CheckValueBounds(&SoundInterpType, 0, 3, 1, UB);
   CheckValueBounds(&LowPassFilterType, 0, 3, 0, UB);

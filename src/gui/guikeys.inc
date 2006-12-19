@@ -1376,7 +1376,6 @@ GUISoundKeys:
 %endif
   GUIKeyCheckbox RevStereo,'V'
   GUIKeyCheckbox Surround,'U'
-  GUIKeyCheckbox SoundBufEn,'B'
   GUIKeyCheckbox SPCDisable,'D'
 
   cmp dh,'R'                 ; Sampling Rate

@@ -617,12 +617,6 @@ DisplayS db 0
 EchoDis db 0
 
 @
-@ Increase Sound buffering (0 = NO, 1 = Yes)
-@ Enabling this will increase the sound buffer size to reduce/prevent static
-@ on certain sound cards.
-SoundBufEn db 0
-
-@
 @ Simulate Surround sound (0 = NO, 1 = Yes)
 @ Enable a simulated 2 speaker surround sound effect.
 @ Do not enable if playing a game that has its own surround sound effects.

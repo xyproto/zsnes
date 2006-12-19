@@ -2138,7 +2138,7 @@ DisplayGUIOptionClick:
   GUIClickCButton 11,148,byte[TimerEnable]
   GUIClickCButton 89,148,byte[TwelveHourClock]
   GUIClickCButton 11,158,byte[ClockBox]
-  GUIClickCButton 11,178,byte[SmallMsgText]  
+  GUIClickCButton 11,178,byte[SmallMsgText]
   GUIClickCButton 11,188,byte[GUIEnableTransp]
   ret
 
@@ -2458,10 +2458,9 @@ DisplayGUISoundClick:
   GUIClickCButton 102,21,byte[Force8b]
 %endif
   GUIClickCButton 11,30,byte[StereoSound]
-  GUIClickCButton 11,105,byte[RevStereo]
-  GUIClickCButton 11,115,byte[Surround]
-  GUIClickCButton 11,125,byte[SoundBufEn]
-  GUIClickCButton 11,135,byte[SPCDisable]
+  GUIClickCButton 11,40,byte[RevStereo]
+  GUIClickCButton 11,50,byte[Surround]
+  GUIClickCButton 11,60,byte[SPCDisable]
 
   GUIPButtonHole 11,157,byte[SoundInterpType],0
   GUIPButtonHole 11,167,byte[SoundInterpType],1
@@ -2470,7 +2469,7 @@ DisplayGUISoundClick:
   je near .no8ptintrp
   GUIPButtonHole 11,187,byte[SoundInterpType],3
 .no8ptintrp
- 
+
   GUIPButtonHole 111,157,byte[LowPassFilterType],0
   GUIPButtonHole 111,167,byte[LowPassFilterType],1
   GUIPButtonHole 111,177,byte[LowPassFilterType],2
@@ -2478,21 +2477,21 @@ DisplayGUISoundClick:
   je near .nohiqualityfilter
   GUIPButtonHole 111,187,byte[LowPassFilterType],3
 .nohiqualityfilter
-  
+
 %ifdef __WIN32__
-  GUIClickCButton 11,95,byte[PrimaryBuffer]
+  GUIClickCButton 11,70,byte[PrimaryBuffer]
 %endif
-  GUIClickArea 15,61,69,69,.nosrate
+  GUIClickArea 15,101,69,109,.nosrate
   mov eax,[SoundQuality]
   mov al,[sampratenext+eax]
   mov [SoundQuality],al
 .nosrate
-  GUIClickArea 15,89,115,93,{near .nomovebar}
+  GUIClickArea 15,129,115,133,{near .nomovebar}
   sub eax,15
   mov [MusicRelVol],al
   mov byte[GUIHold],5
   mov eax,[GUIwinposy+6*4]
-  add eax,91
+  add eax,131
   mov [GUIHoldYlim],eax
   xor eax,eax
   xor edx,edx

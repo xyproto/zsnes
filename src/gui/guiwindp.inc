@@ -2289,15 +2289,14 @@ DisplayGUISound:                     ; Sound Related Options
   GUIDisplayCheckboxu 6,102,21,Force8b,GUISoundTextA4,0
 %endif
   GUIDisplayCheckboxu 6,11,30,StereoSound,GUISoundTextA2,0
-  GUIDisplayTextY 6,6,53,GUISoundTextB
-  GUIDisplayTextY 6,6,76,GUISoundTextC
+  GUIDisplayTextY 6,6,93,GUISoundTextB
+  GUIDisplayTextY 6,6,116,GUISoundTextC
 %ifdef __WIN32__
-  GUIDisplayCheckboxu 6,11,95,PrimaryBuffer,GUISoundTextD1,4
+  GUIDisplayCheckboxu 6,11,70,PrimaryBuffer,GUISoundTextD1,4
 %endif
-  GUIDisplayCheckboxu 6,11,105,RevStereo,GUISoundTextD2,2
-  GUIDisplayCheckboxu 6,11,115,Surround,GUISoundTextD3,10
-  GUIDisplayCheckboxu 6,11,125,SoundBufEn,GUISoundTextD4,15
-  GUIDisplayCheckboxu 6,11,135,SPCDisable,GUISoundTextD5,0
+  GUIDisplayCheckboxu 6,11,40,RevStereo,GUISoundTextD2,2
+  GUIDisplayCheckboxu 6,11,50,Surround,GUISoundTextD3,10
+  GUIDisplayCheckboxu 6,11,60,SPCDisable,GUISoundTextD4,0
 
   GUIDisplayTextY 6,6,152,GUISoundTextE
   GUIDisplayButtonHoleTu 6,11,157,byte[SoundInterpType],0,GUISoundTextE1,0
@@ -2328,19 +2327,19 @@ DisplayGUISound:                     ; Sound Related Options
   jne .okay
   cmp byte[vibracard], 1
   je .okay
-  GUIDisplayBBox 6,15,61,69,69,167
-  GUIDisplayTextG 6,23,64,GUISoundTextB0
+  GUIDisplayBBox 6,15,101,69,109,167
+  GUIDisplayTextG 6,23,104,GUISoundTextB0
   jmp .nosrate
 .okay
 %endif
-  GUIDisplayBBox 6,15,61,69,69,167            ;Sampling Rate Box
+  GUIDisplayBBox 6,15,101,69,109,167            ;Sampling Rate Box
   mov eax,[SoundQuality]
   lea eax,[eax*8+GUISoundTextB1]
   mov [GUITemp],eax
-  GUIDisplayTextG 6,23,64,[GUITemp]
+  GUIDisplayTextG 6,23,104,[GUITemp]
 .nosrate
 
-  GUIDrawSlider 6,15,100,91,MusicRelVol,GUISoundTextC1,VolslidSet,VolslidText
+  GUIDrawSlider 6,15,100,131,MusicRelVol,GUISoundTextC1,VolslidSet,VolslidText
   ret
 
 SECTION .data
@@ -2365,8 +2364,7 @@ GUISoundTextC1 db '---%',0
 GUISoundTextD1 db 'USE PRIMARY BUFFER',0 ; Win Only
 GUISoundTextD2 db 'REVERSE STEREO',0
 GUISoundTextD3 db 'SIMULATE SURROUND SOUND',0
-GUISoundTextD4 db 'INCREASE SOUND BUFFERING',0
-GUISoundTextD5 db 'DISABLE SPC EMULATION',0
+GUISoundTextD4 db 'DISABLE SPC EMULATION',0
 
 GUISoundTextE db 'INTERPOLATION:',0
 GUISoundTextE1 db 'NONE',0
