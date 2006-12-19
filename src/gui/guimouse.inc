@@ -1932,6 +1932,9 @@ DisplayGUIChoseSaveClick:
   mul dl
   add al,byte[GUIChoseSaveText2]
   mov [current_zst],eax
+  pushad
+  call zst_name
+  popad
   ret
 
 DisplayGUIMovieClick:

@@ -112,7 +112,7 @@ EXTSYM mousewrap,GUIRClick,PrevFSMode,PrevWinMode,SaveSramData,SwapMouseButtons
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,SmallMsgText,mouse1lh,mouse2lh
 EXTSYM AutoPatch,RomInfo,AllowUDLR,Triplebufen,GrayscaleMode
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,TripleBufferWin
-EXTSYM BilinearFilter,esctomenu,GUILoadKeysJumpTo,lhguimouse
+EXTSYM BilinearFilter,esctomenu,GUILoadKeysJumpTo,lhguimouse,zst_name
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SoundBufEn,SPCDisable
 EXTSYM FastFwdToggle,gui_key,gui_key_extended,GUILoadKeysNavigate
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
