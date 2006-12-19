@@ -2296,7 +2296,7 @@ DisplayGUISound:                     ; Sound Related Options
 %endif
   GUIDisplayCheckboxu 6,11,105,RevStereo,GUISoundTextD2,2
   GUIDisplayCheckboxu 6,11,115,Surround,GUISoundTextD3,10
-  GUIDisplayCheckboxu 6,11,125,SoundBufEn,GUISoundTextD4,10
+  GUIDisplayCheckboxu 6,11,125,SoundBufEn,GUISoundTextD4,15
   GUIDisplayCheckboxu 6,11,135,SPCDisable,GUISoundTextD5,0
 
   GUIDisplayTextY 6,6,152,GUISoundTextE
@@ -2365,7 +2365,7 @@ GUISoundTextC1 db '---%',0
 GUISoundTextD1 db 'USE PRIMARY BUFFER',0 ; Win Only
 GUISoundTextD2 db 'REVERSE STEREO',0
 GUISoundTextD3 db 'SIMULATE SURROUND SOUND',0
-GUISoundTextD4 db 'USE SOUND BUFFERING',0
+GUISoundTextD4 db 'INCREASE SOUND BUFFERING',0
 GUISoundTextD5 db 'DISABLE SPC EMULATION',0
 
 GUISoundTextE db 'INTERPOLATION:',0
