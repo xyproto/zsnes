@@ -903,12 +903,18 @@ NEWSYM StartGUI
   mov al,[cvidmode]
   mov [GUIcurrentvideocursloc],eax
   mov ebx,[NumVideoModes]
+  cmp ebx,20
+  ja .viewloc
+  mov dword[GUIcurrentvideoviewloc],0
+  jmp .skip
+.viewloc
   sub ebx,20
   cmp eax,ebx
   jbe .noof
   mov eax,ebx
 .noof
   mov [GUIcurrentvideoviewloc],eax
+.skip
 
   pushad
   call SaveSramData
@@ -1742,12 +1748,18 @@ GUITryMenuItem:                     ; Defines which menu item calls what window 
   mov al,[cvidmode]
   mov [GUIcurrentvideocursloc],eax
   mov edx,[NumVideoModes]
+  cmp edx,20
+  ja .viewloc
+  mov dword[GUIcurrentvideoviewloc],0
+  jmp .skip
+.viewloc
   sub edx,20
   cmp eax,edx
   jbe .noof
   mov eax,edx
 .noof
   mov [GUIcurrentvideoviewloc],eax
+.skip
   mov edx,5
   call CheckMenuItemHelp
 .novideo

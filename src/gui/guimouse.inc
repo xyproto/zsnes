@@ -2455,10 +2455,10 @@ DisplayGUISoundClick:
   GUIClickCButton 102,21,byte[Force8b]
 %endif
   GUIClickCButton 11,30,byte[StereoSound]
-  GUIClickCButton 11,111,byte[RevStereo]
-  GUIClickCButton 11,121,byte[Surround]
-  GUIClickCButton 11,131,byte[SoundBufEn]
-  GUIClickCButton 11,141,byte[SPCDisable]
+  GUIClickCButton 11,105,byte[RevStereo]
+  GUIClickCButton 11,115,byte[Surround]
+  GUIClickCButton 11,125,byte[SoundBufEn]
+  GUIClickCButton 11,135,byte[SPCDisable]
 
   GUIPButtonHole 11,157,byte[SoundInterpType],0
   GUIPButtonHole 11,167,byte[SoundInterpType],1
@@ -2477,7 +2477,7 @@ DisplayGUISoundClick:
 .nohiqualityfilter
   
 %ifdef __WIN32__
-  GUIClickCButton 11,101,byte[PrimaryBuffer]
+  GUIClickCButton 11,95,byte[PrimaryBuffer]
 %endif
   GUIClickArea 15,61,69,69,.nosrate
   mov eax,[SoundQuality]
