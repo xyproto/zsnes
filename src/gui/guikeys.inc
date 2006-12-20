@@ -1367,16 +1367,16 @@ GUISoundKeys:
 %endif
 .notenablesound
 
+  GUIKeyCheckbox StereoSound,'S'
+  GUIKeyCheckbox RevStereo,'V'
+  GUIKeyCheckbox Surround,'M'
+  GUIKeyCheckbox SPCDisable,'D'
 %ifdef __MSDOS__
   GUIKeyCheckbox Force8b,'F'
 %endif
-  GUIKeyCheckbox StereoSound,'S'
 %ifdef __WIN32__
   GUIKeyCheckbox PrimaryBuffer,'P'
 %endif
-  GUIKeyCheckbox RevStereo,'V'
-  GUIKeyCheckbox Surround,'U'
-  GUIKeyCheckbox SPCDisable,'D'
 
   cmp dh,'R'                 ; Sampling Rate
   jne .notsrate

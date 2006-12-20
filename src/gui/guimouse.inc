@@ -2453,14 +2453,18 @@ DisplayGUISoundClick:
   sub eax,[GUIwinposx+6*4]
   mov edx,[GUImouseposy]
   sub edx,[GUIwinposy+6*4]
-  GUIClickCButtonf 11,21,byte[soundon],reInitSound
+  
+  GUIClickCButton 11,21,byte[SPCDisable]
+  GUIClickCButtonf 11,31,byte[soundon],reInitSound
+  GUIClickCButton 11,41,byte[StereoSound]
+  GUIClickCButton 11,51,byte[RevStereo]
+  GUIClickCButton 11,61,byte[Surround]
 %ifdef __MSDOS__
-  GUIClickCButton 102,21,byte[Force8b]
+  GUIClickCButton 11,71,byte[Force8b]
 %endif
-  GUIClickCButton 11,30,byte[StereoSound]
-  GUIClickCButton 11,40,byte[RevStereo]
-  GUIClickCButton 11,50,byte[Surround]
-  GUIClickCButton 11,60,byte[SPCDisable]
+%ifdef __WIN32__
+  GUIClickCButton 11,71,byte[PrimaryBuffer]
+%endif
 
   GUIPButtonHole 11,157,byte[SoundInterpType],0
   GUIPButtonHole 11,167,byte[SoundInterpType],1
@@ -2478,9 +2482,6 @@ DisplayGUISoundClick:
   GUIPButtonHole 111,187,byte[LowPassFilterType],3
 .nohiqualityfilter
 
-%ifdef __WIN32__
-  GUIClickCButton 11,70,byte[PrimaryBuffer]
-%endif
   GUIClickArea 15,101,69,109,.nosrate
   mov eax,[SoundQuality]
   mov al,[sampratenext+eax]

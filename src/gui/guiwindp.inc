@@ -2284,36 +2284,46 @@ DisplayGUISound:                     ; Sound Related Options
   GUIDrawWindowBox 6,GUISoundDisp
 
   GUIDisplayTextY 6,6,16,GUISoundTextA
-  GUIDisplayCheckboxu 6,11,21,soundon,GUISoundTextA1,0
+  GUIDisplayCheckboxu 6,11,21,SPCDisable,GUISoundTextA1,0
+  cmp byte[SPCDisable],0
+  jne .nosound
+  GUIDisplayCheckboxu 6,11,31,soundon,GUISoundTextA2,0
+  cmp byte[soundon],1
+  jne .nosound
+  GUIDisplayCheckboxu 6,11,41,StereoSound,GUISoundTextA3,7
+  cmp byte[StereoSound],1
+  jne .nostereo
+  GUIDisplayCheckboxu 6,11,51,RevStereo,GUISoundTextA4,2
 %ifdef __MSDOS__
-  GUIDisplayCheckboxu 6,102,21,Force8b,GUISoundTextA4,0
+.nostereo
 %endif
-  GUIDisplayCheckboxu 6,11,30,StereoSound,GUISoundTextA2,0
-  GUIDisplayTextY 6,6,93,GUISoundTextB
-  GUIDisplayTextY 6,6,116,GUISoundTextC
+  GUIDisplayCheckboxu 6,11,61,Surround,GUISoundTextA5,2
+%ifndef __MSDOS__
+.nostereo
+%else
+  GUIDisplayCheckboxu 6,11,71,Force8b,GUISoundTextA6,0
+%endif
 %ifdef __WIN32__
-  GUIDisplayCheckboxu 6,11,70,PrimaryBuffer,GUISoundTextD1,4
+  GUIDisplayCheckboxu 6,11,71,PrimaryBuffer,GUISoundTextA7,4
 %endif
-  GUIDisplayCheckboxu 6,11,40,RevStereo,GUISoundTextD2,2
-  GUIDisplayCheckboxu 6,11,50,Surround,GUISoundTextD3,10
-  GUIDisplayCheckboxu 6,11,60,SPCDisable,GUISoundTextD4,0
+.nosound
 
-  GUIDisplayTextY 6,6,152,GUISoundTextE
-  GUIDisplayButtonHoleTu 6,11,157,byte[SoundInterpType],0,GUISoundTextE1,0
-  GUIDisplayButtonHoleTu 6,11,167,byte[SoundInterpType],1,GUISoundTextE2,0
-  GUIDisplayButtonHoleTu 6,11,177,byte[SoundInterpType],2,GUISoundTextE3,0
+  GUIDisplayTextY 6,6,152,GUISoundTextD
+  GUIDisplayButtonHoleTu 6,11,157,byte[SoundInterpType],0,GUISoundTextD1,0
+  GUIDisplayButtonHoleTu 6,11,167,byte[SoundInterpType],1,GUISoundTextD2,0
+  GUIDisplayButtonHoleTu 6,11,177,byte[SoundInterpType],2,GUISoundTextD3,0
   cmp byte[MMXSupport],0
   je near .no8ptinterp
-  GUIDisplayButtonHoleTu 6,11,187,byte[SoundInterpType],3,GUISoundTextE4,0
+  GUIDisplayButtonHoleTu 6,11,187,byte[SoundInterpType],3,GUISoundTextD4,0
 .no8ptinterp
 
-  GUIDisplayTextY 6,106,152,GUISoundTextF
-  GUIDisplayButtonHoleTu 6,111,157,byte[LowPassFilterType],0,GUISoundTextF1,1
-  GUIDisplayButtonHoleTu 6,111,167,byte[LowPassFilterType],1,GUISoundTextF2,1
-  GUIDisplayButtonHoleTu 6,111,177,byte[LowPassFilterType],2,GUISoundTextF3,1
+  GUIDisplayTextY 6,106,152,GUISoundTextE
+  GUIDisplayButtonHoleTu 6,111,157,byte[LowPassFilterType],0,GUISoundTextE1,1
+  GUIDisplayButtonHoleTu 6,111,167,byte[LowPassFilterType],1,GUISoundTextE2,1
+  GUIDisplayButtonHoleTu 6,111,177,byte[LowPassFilterType],2,GUISoundTextE3,1
   cmp byte[MMXSupport],0
   je near .nohiqualityfilter
-  GUIDisplayButtonHoleTu 6,111,187,byte[LowPassFilterType],3,GUISoundTextF4,0
+  GUIDisplayButtonHoleTu 6,111,187,byte[LowPassFilterType],3,GUISoundTextE4,0
 .nohiqualityfilter
 
 %ifdef __MSDOS__
@@ -2332,6 +2342,8 @@ DisplayGUISound:                     ; Sound Related Options
   jmp .nosrate
 .okay
 %endif
+
+  GUIDisplayTextY 6,6,93,GUISoundTextB
   GUIDisplayBBox 6,15,101,69,109,167            ;Sampling Rate Box
   mov eax,[SoundQuality]
   lea eax,[eax*8+GUISoundTextB1]
@@ -2339,14 +2351,19 @@ DisplayGUISound:                     ; Sound Related Options
   GUIDisplayTextG 6,23,104,[GUITemp]
 .nosrate
 
+  GUIDisplayTextY 6,6,116,GUISoundTextC
   GUIDrawSlider 6,15,100,131,MusicRelVol,GUISoundTextC1,VolslidSet,VolslidText
   ret
 
 SECTION .data
 GUISoundTextA db 'SOUND SWITCHES:',0
-GUISoundTextA1 db 'ENABLE SOUND',0
-GUISoundTextA2 db 'STEREO SOUND',0
-GUISoundTextA4 db 'FORCE 8-BIT',0        ; DOS Only
+GUISoundTextA1 db 'DISABLE SPC EMULATION',0
+GUISoundTextA2 db 'ENABLE SOUND',0
+GUISoundTextA3 db 'ENABLE STEREO SOUND',0
+GUISoundTextA4 db 'REVERSE STEREO CHANNELS',0
+GUISoundTextA5 db 'SIMULATE SURROUND SOUND',0
+GUISoundTextA6 db 'FORCE 8-BIT OUTPUT',0        ; DOS Only
+GUISoundTextA7 db 'USE PRIMARY BUFFER',0 ; Win Only
 
 GUISoundTextB db 'SAMPLING RATE:',0
 GUISoundTextB0 db 'N/A',0
@@ -2361,22 +2378,17 @@ GUISoundTextB7 db '48000HZ',0
 GUISoundTextC db 'VOLUME LEVEL:',0
 GUISoundTextC1 db '---%',0
 
-GUISoundTextD1 db 'USE PRIMARY BUFFER',0 ; Win Only
-GUISoundTextD2 db 'REVERSE STEREO',0
-GUISoundTextD3 db 'SIMULATE SURROUND SOUND',0
-GUISoundTextD4 db 'DISABLE SPC EMULATION',0
+GUISoundTextD db 'INTERPOLATION:',0
+GUISoundTextD1 db 'NONE',0
+GUISoundTextD2 db 'GAUSSIAN',0
+GUISoundTextD3 db 'CUBIC SPLINE',0
+GUISoundTextD4 db '8-POINT',0
 
-GUISoundTextE db 'INTERPOLATION:',0
+GUISoundTextE db 'LOWPASS:',0
 GUISoundTextE1 db 'NONE',0
-GUISoundTextE2 db 'GAUSSIAN',0
-GUISoundTextE3 db 'CUBIC SPLINE',0
-GUISoundTextE4 db '8-POINT',0
-
-GUISoundTextF db 'LOWPASS:',0
-GUISoundTextF1 db 'NONE',0
-GUISoundTextF2 db 'SIMPLE',0
-GUISoundTextF3 db 'DYNAMIC',0
-GUISoundTextF4 db 'HI QUALITY',0
+GUISoundTextE2 db 'SIMPLE',0
+GUISoundTextE3 db 'DYNAMIC',0
+GUISoundTextE4 db 'HI QUALITY',0
 
 SECTION .text
 
