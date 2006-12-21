@@ -1414,32 +1414,6 @@ NEWSYM memaccessbankw16
     xor ebx,ebx
     ret
 
-NEWSYM memaccessbankr848mb
-    test ecx,8000h
-    jz .map2
-    mov ebx,[snesmmap+ebx*4]
-    mov al,[ebx+ecx]
-    xor ebx,ebx
-    ret
-.map2
-    mov ebx,[snesmap2+ebx*4]
-    mov al,[ebx+ecx]
-    xor ebx,ebx
-    ret
-
-NEWSYM memaccessbankr1648mb
-    test ecx,8000h
-    jz .map2
-    mov ebx,[snesmmap+ebx*4]
-    mov ax,[ebx+ecx]
-    xor ebx,ebx
-    ret
-.map2
-    mov ebx,[snesmap2+ebx*4]
-    mov ax,[ebx+ecx]
-    xor ebx,ebx
-    ret
-
 ;*******************************************************
 ; SRAM Access Bank (70h)
 ;*******************************************************

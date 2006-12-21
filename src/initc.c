@@ -249,30 +249,6 @@ void CheckIntlEHi(unsigned char *ROM)
   }
 }
 
-//These two functions interleave, yes interleave, because ZSNES has it's large ROM map backwards
-void intlv1()
-{
-  char blocks[256];
-  int i, numblocks = NumofBanks/2;
-  for (i = 0; i < numblocks; i++)
-  {
-    blocks[i + numblocks] = i * 2;
-    blocks[i] = i * 2 + 1;
-  }
-  swapBlocks(blocks);
-}
-
-//This is a mess, I wish we didn't need this, but it kicks the old asm code
-void IntlEHi()
-{
-  SwapData(romdata, romdata + 0x100000, 0x80000);
-  SwapData(romdata + 0x80000, romdata + 0x100000, 0x80000);
-
-  NumofBanks = 64;
-  intlv1();
-  NumofBanks = 192;
-}
-
 //ROM loading functions, which some strangly enough were in guiload.inc
 bool AllASCII(unsigned char *b, int size)
 {
@@ -2129,13 +2105,6 @@ void SetIRQVectors()
 { // get vectors (NMI & reset)
   unsigned char *ROM = (unsigned char *)romdata;
 
-  if (!(ROM[infoloc+BankOffset] & 0xF0)) // if not fastrom
-  {
-    opexec358 = opexec268;
-    opexec358cph = opexec268cph;
-    cycpb358 = cycpb268;
-  }
-
   if (!memcmp(ROM+infoloc+36+24, "\0xFF\0xFF", 2)) // if reset error
   {
     memcpy(ROM+infoloc+36+6, "\0x9C\0xFF", 2);
@@ -2285,9 +2254,7 @@ extern unsigned int SfxR0, SfxR1, SfxR2, SfxR3, SfxR4, SfxR5, SfxR6, SfxR7,
                    SfxR8, SfxR9, SfxR10, SfxR11, SfxR12, SfxR13, SfxR14, SfxR15;
 extern void *ram7f;
 
-extern void (*memtabler8[256])();
-extern void (*memtabler16[256])();
-void memaccessbankr848mb(), memaccessbankr1648mb(), preparesfx();
+void preparesfx();
 
 void map_lorom()
 {
@@ -2374,34 +2341,31 @@ void map_ehirom()
   unsigned char *ROM = (unsigned char *)romdata;
   int x;
 
-  rep_stosd(memtabler8+0x40, memaccessbankr848mb, 0x30);
-  rep_stosd(memtabler16+0x40, memaccessbankr1648mb, 0x30);
-
   // set addresses 8000-FFFF
-  // set banks 00-3F (40h x 32KB ROM banks @ 8000h)
-  map_set(snesmmap,ROM-0x8000,0x40,0x8000);
+  // set banks 00-3F (40h x 32KB ROM banks @ 10000h)
+  map_set(snesmmap,ROM+0x400000,0x40,0x10000);
 
-  // set banks 40-7F (40h x 32KB ROM banks @ 8000h)
-  map_set(snesmmap+0x40,ROM-0x8000,0x40,0x8000);
+  // set banks 40-7F (40h x 32KB ROM banks @ 10000h)
+  map_set(snesmmap+0x40,ROM+0x400000,0x40,0x10000);
 
-  // set banks 80-BF (40h x 32KB ROM banks @ 8000h)
-  map_set(snesmmap+0x80,ROM-0x8000,0x40,0x8000);
+  // set banks 80-BF (40h x 32KB ROM banks @10000h)
+  map_set(snesmmap+0x80,ROM+0x400000,0x40,0x10000);
 
   // set banks C0-FF (40h x 64KB ROM banks @10000h)
-  map_set(snesmmap+0xC0,ROM+0x200000,0x40,0x10000);
+  map_set(snesmmap+0xC0,ROM,0x40,0x10000);
 
   // set addresses 0000-7FFF
   // set banks 00-3F (40h x WRAM)
   map_set(snesmap2,wramdata,0x40,0);
 
   // set banks 40-7F (40h x 32KB ROM banks @ 8000h)
-  map_set(snesmap2+0x40,ROM+0x100000,0x40,0x8000);
+  map_set(snesmap2+0x40,ROM+0x400000,0x40,0x10000);
 
   // set banks 80-BF (40h x WRAM)
   map_set(snesmap2+0x80,wramdata,0x40,0);
 
   // set banks C0-FF (40h x 64KB ROM banks @10000h)
-  map_set(snesmap2+0xC0,ROM+0x200000,0x40,0x10000);
+  map_set(snesmap2+0xC0,ROM,0x40,0x10000);
 
   // set banks 70-77 (07h x SRAM)
   for(x = 0x70; x <= 0x77; x++) { snesmap2[x] = sram; }
@@ -2409,8 +2373,6 @@ void map_ehirom()
   // set banks 7E/7F (WRAM)
   snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
   snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
-
-  IntlEHi();    //Interleave 48Mb ROM, because the map is broken
 }
 
 void map_sfx()
@@ -2829,6 +2791,13 @@ void init65816()
     opexec268cph = opexec268cphb;
     opexec358cph = opexec358cphb;
 
+    if (!(((unsigned char *)romdata)[infoloc+BankOffset] & 0xF0)) // if not fastrom
+    {
+      opexec358 = opexec268;
+      opexec358cph = opexec268cph;
+      cycpb358 = cycpb268;
+    }
+
     FIRTAPVal0 = 0x7F;
     FIRTAPVal1 = 0;
     FIRTAPVal2 = 0;
@@ -2882,16 +2851,11 @@ void init65816()
     xpc = resetv;
 
     intrset = 0;
-    if(romtype != 1)
-    {
-      xpb = 0;
-      xirqb = 0;
-    }
 
-    if(xpc < 0x8000)
+    if (xpc < 0x8000)
     {
       xpc += 0x8000;
-//    xpb = 0x40;
+      //xpb = 0x40;
     }
 
     // 2.68 Mhz  / 3.58 Mhz = 228
