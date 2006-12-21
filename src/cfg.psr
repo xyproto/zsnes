@@ -229,7 +229,7 @@ pl5p209 db 0
 
 %ifndef __MSDOS__
 @
-@ Joystick Sensitivity
+@ Joystick Sensitivity [0..32767]
 @ Change this value if you have input issues. Higher value = less sensitive.
 @ If your joystick is not being read at all, try 128 or other low values.
 joy_sensitivity dw 16384
@@ -244,9 +244,9 @@ MouseSensitivity db 1
 %endif
 
 @
-@ Share Player 3 & 4 Control Inputs w/Player 1 & 2 - allow 2 devices to be
-@ used for one player (enabling this disables Multiplayer 5 support).
-@ (0 = DISABLE, 1 = Enable)
+@ Share Player 3 & 4 Control Inputs w/Player 1 & 2 (0 = DISABLE, 1 = Enable)
+@ Allow 2 devices to be  used for one player
+@ (enabling this disables Multiplayer 5 support).
 pl12s34 db 0
 
 @
@@ -265,8 +265,8 @@ SidewinderFix db 0
 %endif
 
 @
-@ Left Handed Mouse Behavior for SNES devices
-@ (swap left and right buttons) (0 = NO SWAP, 1 = Swap)
+@ Left Handed Mouse Behavior for SNES Devices (0 = NO SWAP, 1 = Swap)
+@ (swap left and right mouse buttons)
 mouse1lh db 0 @First device
 mouse2lh db 0 @Second device
 
@@ -285,8 +285,7 @@ GUIComboGameSpec db 0
 @  ----
 
 @
-@ Snapshot Format
-@ (0 = BMP, 1 = PNG)
+@ Snapshot Format (0 = BMP, 1 = PNG)
 @ Note: in 8 bit video modes PNG is not selectable
 ScreenShotFormat db 0
 
@@ -304,7 +303,7 @@ SmallMsgText db 0
 GUIEnableTransp db 0
 
 @
-@ Display FPS Counter when a Game is Loaded (0 = NO, 1 = Yes)
+@ Enable FPS Counter when ZSNES is Started (0 = NO, 1 = Yes)
 @ This option is disabled when manual frameskip is in use.
 FPSAtStart db 0
 
@@ -313,7 +312,7 @@ FPSAtStart db 0
 TimerEnable db 0
 
 @
-@ Change Clock mode (0 = 24 HOUR, 1 = 12 Hour)
+@ Change Clock Mode (0 = 24 HOUR, 1 = 12 Hour)
 TwelveHourClock db 0
 
 @
@@ -328,7 +327,7 @@ ClockBox db 1
 AutoPatch db 1
 
 @
-@ Pause Emulation when Emu is Out of Focus (0 = NO, 1 = Yes)
+@ Pause Emulation when ZSNES is Out of Focus (0 = NO, 1 = Yes)
 PauseFocusChange db 0
 
 @
@@ -382,7 +381,7 @@ Palette0 db 0
 
 @
 #ifdef __WIN32__
-@ Video Mode, 0 - 41
+@ Video Mode [0..41]
 @   0 = 256x224   R  WIN      1 = 256x224   R  FULL
 @   2 = 512x448   R  WIN      3 = 512x448   DR WIN
 @   4 = 640x480   S  WIN      5 = 640x480   DS WIN
@@ -416,9 +415,9 @@ PrevFSMode db 6
 #elifdef __UNIXSDL__
 
 %ifndef __OPENGL__
-@ Video Mode, 0 - 4
+@ Video Mode [0..4]
 %else
-@ Video Mode, 0 - 22
+@ Video Mode [0..22]
 %endif
 @   0 = 256x224   R  WIN      1 = 256x224   R  FULL
 @   2 = 512x448   DR WIN      3 = 512x448   DR FULL
@@ -443,7 +442,7 @@ PrevFSMode db 3
 
 #elifdef __MSDOS__
 
-@ Video Mode, 0 - 18
+@ Video Mode [0..18]
 @   0 = 256x224x8B  (MODEQ)   1 = 256x240x8B (MODEQ)
 @   2 = 256x256x8B  (MODEQ)   3 = 320x224x8B (MODEX)
 @   4 = 320x240x8B  (MODEX)   5 = 320x256x8B (MODEX)
@@ -491,7 +490,7 @@ vsyncon db 0
 
 @
 %ifdef __WIN32__
-@ Use Triple Buffering - replaces vsync (0 = NO, 1 = Yes)
+@ Use Triple Buffering (0 = NO, 1 = Yes) - replaces vsync 
 %else
 @ Win port only, don't edit
 %endif
@@ -631,12 +630,12 @@ Mode7HiRes16b dd 0
 SPCDisable db 0
 
 @
-@ Enable Sound Emulation (0 = off, 1 = ON) - disable if you need the performance
+@ Enable Sound Emulation (0 = Off, 1 = ON) - disable if you need the performance
 @ If SPC emulation is disabled, there will be no sound output.
 soundon db 1
 
 @
-@ Enable Stereo Sound (0 = off, 1 = ON) - disable if you need the performance
+@ Enable Stereo Sound (0 = Off, 1 = ON) - disable if you need the performance
 StereoSound db 1
 
 @
@@ -667,8 +666,8 @@ PrimaryBuffer db 0
 Force8b db 0
 
 @
-@ Sampling Rate: 0 = 8000Hz, 1 = 11025Hz, 2 = 22050Hz, 3 = 44100Hz,
-@                            4 = 16000Hz, 5 = 32000Hz, 6 = 48000Hz
+@ Sampling Rate: (0 = 8000Hz, 1 = 11025Hz, 2 = 22050Hz, 3 = 44100Hz,
+@                            4 = 16000Hz, 5 = 32000Hz, 6 = 48000Hz)
 @ Using any other sound frequencies other than the default 32000Hz
 @ is COMPLETELY UNACCEPTABLE in use for sound bug reports.
 #ifdef __MSDOS__
@@ -738,7 +737,7 @@ SRAMState db 1
 LatestSave db 0
 
 @
-@ Auto Increment State Slot First, then Saves (0 = NO, 1 = Yes)
+@ Auto Increment State Slot First, then Save State (0 = NO, 1 = Yes)
 @ Enable this if you have a tendency in saving accidentally to an existing
 @ savestate.
 AutoIncSaveSlot db 0
@@ -747,7 +746,7 @@ AutoIncSaveSlot db 0
 AutoIncSaveSlotBlock db 0
 
 @
-@ Auto State Save/Load - uses a special state (0 = NO, 1 = Yes)
+@ Auto State Save/Load (0 = NO, 1 = Yes) - uses a special state
 @ Enable this if you wish a special state to be saved on a visit to the GUI.
 @ This state will automatically be loaded when you load a game.
 AutoState db 0
@@ -861,12 +860,12 @@ showallext db 0
 @ Filename Display Mode (0 = Long filename, 1 = Internal header name, 2 = 8.3)
 GUIloadfntype db 2
 %else
-@ Filename Display Mode (0 = Long filename, 1 = Internal header name)
+@ Filename Display Mode (0 = LONG FILENAME, 1 = Internal header name)
 GUIloadfntype db 0
 %endif
 
 @
-@ Recent games played, you shouldn't edit this manually (8.3 / paths / LFN)
+@ Recent games played, you shouldn't edit this manually (8.3 / Paths / LFN)
 prevloadiname packed 280 db 0
 prevloaddnamel packed 5120 db 0
 prevloadfnamel packed 5120 db 0
@@ -880,8 +879,8 @@ prevlfreeze db 0
 GUIRClick db 0
 
 @
-@ Left Handed Mouse Behavior for GUI
-@ (swap left and right buttons) (0 = NO SWAP, 1 = Swap)
+@ Left Handed Mouse Behavior for GUI (0 = NO SWAP, 1 = Swap)
+@ (swap left and right buttons) 
 lhguimouse db 0
 
 @
@@ -996,19 +995,19 @@ AllowMultipleInst db 1
 AutoLoadCht db 0
 
 @
-@ Selected size search (0 = 1 BYTE, 1 = 2B, 2 = 3B, 3 = 4B)
+@ Selected Size Search (0 = 1 BYTE, 1 = 2B, 2 = 3B, 3 = 4B)
 CheatSrcByteSize db 0
 
 @
-@ Selected data base (0 = DECIMAL, 1 = Hexadecimal)
+@ Selected Numerical Base (0 = DECIMAL, 1 = Hexadecimal)
 CheatSrcByteBase db 0
 
 @
-@ Search type (0 = EXACT VALUE, 1 = Comparative)
+@ Search Type (0 = EXACT VALUE, 1 = Comparative)
 CheatSrcSearchType db 0
 
 @
-@ Add code for most significant byte only (0 = NO, 1 = Yes)
+@ Add Code for Most Significant Byte Only (0 = NO, 1 = Yes)
 CheatUpperByteOnly db 0
 
 @
@@ -1017,33 +1016,33 @@ CheatUpperByteOnly db 0
 @  ----
 
 @
-@ Display movie frame # during record/replay (0 = NO, 1 = Yes)
+@ Display Movie Frame # During Record/Replay (0 = NO, 1 = Yes)
 MovieDisplayFrame db 0
 
 @
-@ Movie default start method
-@ (0 = NOW, 1 = Power-on, 2 = Reset, 3 = Power-on without SRAM)
+@ Movie Default Start Method (0 = NOW, 1 = Power-On,
+@                             2 = Reset, 3 = Power-On without SRAM)
 MovieStartMethod db 0
 
 @
-@ ZMV -> AVI conversion mode: 0 = No video, 1 = Raw video, 2 = ffv1, 3 = x264,
-@                             4 = XVID, 5 = custom (not functional yet)
+@ ZMV -> AVI Conversion Mode: (0 = No Video, 1 = Raw Video, 2 = Ffv1, 3 = x264,
+@                              4 = XVID, 5 = Custom (not functional yet))
 @ The compression codecs can only be used if you provide them yourself.
 @ See zmovie.cfg for details.
 MovieVideoMode db 4
 
 @
-@ Dump audio along with video (0 = No, 1 = YES)
+@ Dump Audio Along w/Video (0 = No, 1 = YES)
 MovieAudio db 1
 
 @
-@ Compress audio stream on-the-fly (0 = No, 1 = YES)
+@ Compress Audio Stream On-The-Fly (0 = No, 1 = YES)
 @ The compression codecs can only be used if you provide them yourself.
 @ See zmovie.cfg for details.
 MovieAudioCompress db 1
 
 @
-@ Merge audio and video streams upon conversion end (0 = No, 1 = YES)
+@ Merge Audio and Video Streams Upon Conversion End (0 = No, 1 = YES)
 MovieVideoAudio db 1
 
 @
@@ -1053,18 +1052,18 @@ MovieVideoAudio db 1
 @ (you shouldn't edit these directly unless you know what you're doing)
 
 @
-@ Super Scope keys:
-@ Extra device in port 1/2 cycle
+@ Super Scope Keys:
+@ Extra Device in Port 1/2 Cycle
 KeyExtraEnab1 dd 0
 KeyExtraEnab2 dd 0
 
 @
-@ State keys:
-@ Save state / Select slot menu / Load state
+@ State Keys:
+@ Save State / Select Slot Menu / Load State
 KeySaveState dd 60
 KeyStateSelct dd 61
 KeyLoadState dd 62
-@ Increase / Decrease slot # / Direct slot # select
+@ Increase / Decrease Slot # / Direct Slot # Select
 KeyIncStateSlot dd 0
 KeyDecStateSlot dd 0
 KeyStateSlc0 dd 0
@@ -1081,26 +1080,26 @@ KeyStateSlc9 dd 0
 KeyRewind dd 0
 
 @
-@ Speed keys:
-@ Fast-forward, Slow-motion
+@ Speed Keys:
+@ Fast-Forward, Slow-Motion
 KeyFastFrwrd dd 41
 KeySlowDown dd 0
-@ Frame rate up/down (manual frameskip)
+@ Frame Rate Up/Down (Manual Frameskip)
 KeyFRateUp dd 0
 KeyFRateDown dd 0
-@ Speed throttle up/down/reset to normal (auto frameskip)
+@ Speed Throttle Up/Down/Reset to Normal (Auto Frameskip)
 KeyEmuSpeedUp dd 0
 KeyEmuSpeedDown dd 0
 KeyResetSpeed dd 0
 
 @
-@ Pause emulation, frame advance keys
+@ Pause Emulation, Frame Advance Keys
 EMUPauseKey dd 25
 INCRFrameKey dd 0
 
 @
 @ Shortcuts:
-@ BG 0-3, sprite layer display toggles
+@ BG 0-3, Sprite Layer Display Toggles
 KeyBGDisble0 dd 2
 KeyBGDisble1 dd 3
 KeyBGDisble2 dd 4
@@ -1108,7 +1107,7 @@ KeyBGDisble3 dd 5
 KeySprDisble dd 6
 
 @
-@ Sound channel 0-7 output toggles
+@ Sound Channel 0-7 Output Toggles
 KeyDisableSC0 dd 63
 KeyDisableSC1 dd 64
 KeyDisableSC2 dd 65
@@ -1119,58 +1118,58 @@ KeyDisableSC6 dd 87
 KeyDisableSC7 dd 88
 
 @
-@ Sound volume up/down
+@ Sound Volume Up/Down
 KeyVolUp dd 0
 KeyVolDown dd 0
 
 @
-@ Quit ZSNES / Load menu / Reset game / Panic key
+@ Quit ZSNES / Load Menu / Reset Game / Panic Key
 KeyQuickExit dd 0
 KeyQuickLoad dd 0
 KeyQuickRst dd 0
 KeyResetAll dd 7
 
 @
-@ Clock display toggle
+@ Clock Display Toggle
 KeyQuickClock dd 0
 
 @
-@ Netplay in-game chat
+@ Netplay In-Game Chat
 KeyQuickChat dd 20
 
 @
-@ Screenshot hotkey
+@ Screenshot Hotkey
 KeyQuickSnapShot dd 0
 
 @
-@ Capture SPC hotkey
+@ Capture SPC Hotkey
 KeyQuickSaveSPC dd 0
 
 @
-@ Use player3/4 input as player1/2's toggle
+@ Use Player 3/4 Input as Player 1/2's Toggle
 KeyUsePlayer1234 dd 0
 
 @
-@ FPS display toggle
+@ FPS Display Toggle
 KeyDisplayFPS dd 0
 
 @
-@ Laptop battery display toggle
+@ Laptop Battery Display Toggle
 KeyDisplayBatt dd 0
 
 @
-@ Video engine: Old/new graphic engine | Windowing | Offset effects toggles
+@ Video Engine: Old/New Graphic Engine | Windowing | Offset Effects Toggles
 KeyNewGfxSwt dd 9
 KeyWinDisble dd 10
 KeyOffsetMSw dd 11
 
 @
-@ Gamma correction up/down
+@ Gamma Correction Up/Down
 KeyIncreaseGamma dd 0
 KeyDecreaseGamma dd 0
 
 @
-@ Movie chapters: insert / go to previous / go to next
+@ Movie Chapters: Insert / Go to Previous / Go to Next
 KeyInsrtChap dd 0
 KeyPrevChap dd 0
 KeyNextChap dd 0
@@ -1181,12 +1180,12 @@ KeyNextChap dd 0
 @  ----
 
 @
-@ Calculated checksum & hash: don't edit by hand !
+@ Calculated Checksum & Hash: Don't Edit by Hand !
 TimeChecker db 0
 PrevBuildNum dd 0
 
 @
-@ Display first-time use reminder (0 = YES, 1 = No)
+@ Display First-Time Use Reminder (0 = YES, 1 = No)
 FirstTimeData db 0
 
 @
