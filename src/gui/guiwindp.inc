@@ -4655,11 +4655,11 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
   mov byte[GUISaveTextC1+2],'-'
   GUIDisplayText 20,9+45*3,141,GUISaveTextC1
 
-  GUIDisplayCheckboxu 20,11,40,AutoIncSaveSlot,GUISaveTextB1,5 ;Checkboxes
-  GUIDisplayCheckboxu 20,11,50,SRAMSave5Sec,GUISaveTextB2,5
+  GUIDisplayCheckboxu 20,11,40,SRAMSave5Sec,GUISaveTextB1,5 ;Checkboxes
+  GUIDisplayCheckboxu 20,11,50,SRAMState,GUISaveTextB2,0
   GUIDisplayCheckboxu 20,11,60,LatestSave,GUISaveTextB3,0
-  GUIDisplayCheckboxu 20,11,70,AutoState,GUISaveTextB4,0
-  GUIDisplayCheckboxu 20,11,80,SRAMState,GUISaveTextB5,0
+  GUIDisplayCheckboxu 20,11,70,AutoIncSaveSlot,GUISaveTextB4,5
+  GUIDisplayCheckboxu 20,11,80,AutoState,GUISaveTextB5,0
   GUIDisplayCheckboxu 20,11,90,PauseLoad,GUISaveTextB6,0
   GUIDisplayCheckboxu 20,11,100,PauseRewind,GUISaveTextB7,12
 
@@ -4723,11 +4723,11 @@ SECTION .data
 GUISaveTextA1 db '# OF REWIND STATES',0
 GUISaveTextA2 db '1/5 SECONDS PER REWIND',0
 
-GUISaveTextB1 db 'AUTO INCREMENT SAVE SLOT',0
-GUISaveTextB2 db 'SRAM CHECK+SAVE',0
+GUISaveTextB1 db 'SRAM CHECK+SAVE',0
+GUISaveTextB2 db 'LOAD SAVESTATE W/SRAM',0
 GUISaveTextB3 db 'START AT LATEST SAVE',0
-GUISaveTextB4 db 'AUTO STATE SAVE/LOAD',0
-GUISaveTextB5 db 'LOAD SAVESTATE W/SRAM',0
+GUISaveTextB4 db 'AUTO INCREMENT SAVE SLOT',0
+GUISaveTextB5 db 'AUTO STATE SAVE/LOAD',0
 GUISaveTextB6 db 'PAUSE AFTER LOADING STATE',0
 GUISaveTextB7 db 'PAUSE AFTER REWIND',0
 
