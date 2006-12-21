@@ -265,10 +265,10 @@ SidewinderFix db 0
 %endif
 
 @
-@ Left Handed Mouse Behavior for Super Scope
+@ Left Handed Mouse Behavior for SNES devices
 @ (swap left and right buttons) (0 = NO SWAP, 1 = Swap)
-mouse1lh db 0
-mouse2lh db 0
+mouse1lh db 0 @First device
+mouse2lh db 0 @Second device
 
 @
 @ Super Scope Buttons
