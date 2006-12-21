@@ -2453,7 +2453,7 @@ DisplayGUISoundClick:
   sub eax,[GUIwinposx+6*4]
   mov edx,[GUImouseposy]
   sub edx,[GUIwinposy+6*4]
-  
+
   GUIClickCButton 11,21,byte[SPCDisable]
   GUIClickCButtonf 11,31,byte[soundon],reInitSound
   GUIClickCButton 11,41,byte[StereoSound]

@@ -18,15 +18,13 @@
 
 %include "macros.mac"
 
-EXTSYM romdata,sramb4save,curromspace
+EXTSYM romdata,sramb4save,curromspace,SA1Overflow
 EXTSYM SFXEnable,regptra,sfxramdata,snesmmap,wramdataa
-EXTSYM snesmap2
 EXTSYM DSP1Write8b,regptwa,writeon,DSP1Read16b
 EXTSYM Bank0datr8,Bank0datw8,Bank0datr16,Bank0datw16,xd,SA1xd
 EXTSYM DSP1Read8b,DSP1Type,SA1Enable,DSP1Write16b
 EXTSYM ramsize,ramsizeand,sram,sram2,ram7fa
 EXTSYM SA1Status,IRAM,CurBWPtr,SA1RAMArea
-EXTSYM SA1Overflow
 EXTSYM Sdd1Mode,Sdd1Bank,Sdd1Addr,Sdd1NewAddr,memtabler8,AddrNoIncr,SDD1BankA
 EXTSYM SDD1_init,SDD1_get_byte,BWShift,SA1BWPtr
 
