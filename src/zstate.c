@@ -1381,7 +1381,7 @@ void savespcdata()
 
       memset(ssdatst+0x2E, 0, 32); //0002Eh-0004Dh - SubTitle/Song Name
       memset(ssdatst+0x4E, 0, 32); //0004Eh-0006Dh - Title of Game
-      memcpy(ssdatst+0x4E, ((unsigned char *)romdata)+infoloc-((infoloc == 0x40ffc0) ? 0x408000 : 0), 21);
+      memcpy(ssdatst+0x4E, ((unsigned char *)romdata)+infoloc, 21);
       memset(ssdatst+0x6E, 0, 16); //0006Eh-0007Dh - Name of Dumper
       memset(ssdatst+0x7E, 0, 32); //0007Eh-0009Dh - Comments
 
