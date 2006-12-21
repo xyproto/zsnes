@@ -2286,13 +2286,13 @@ DisplayGUISound:                     ; Sound Related Options
   GUIDisplayTextY 6,6,16,GUISoundTextA
   GUIDisplayCheckboxu 6,11,21,SPCDisable,GUISoundTextA1,0
   cmp byte[SPCDisable],0
-  jne .nosound
+  jne near .nosound
   GUIDisplayCheckboxu 6,11,31,soundon,GUISoundTextA2,0
   cmp byte[soundon],1
-  jne .nosound
+  jne near .nosound
   GUIDisplayCheckboxu 6,11,41,StereoSound,GUISoundTextA3,7
   cmp byte[StereoSound],1
-  jne .nostereo
+  jne near .nostereo
   GUIDisplayCheckboxu 6,11,51,RevStereo,GUISoundTextA4,2
 %ifdef __MSDOS__
 .nostereo
