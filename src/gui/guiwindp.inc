@@ -2309,21 +2309,21 @@ DisplayGUISound:                     ; Sound Related Options
 .nosound
 
   GUIDisplayTextY 6,6,152,GUISoundTextD
-  GUIDisplayButtonHoleTu 6,11,157,byte[SoundInterpType],0,GUISoundTextD1,0
-  GUIDisplayButtonHoleTu 6,11,167,byte[SoundInterpType],1,GUISoundTextD2,0
-  GUIDisplayButtonHoleTu 6,11,177,byte[SoundInterpType],2,GUISoundTextD3,0
+  GUIDisplayButtonHoleTu 6,11,157,byte[SoundInterpType],0,GUISoundTextF,0
+  GUIDisplayButtonHoleTu 6,11,167,byte[SoundInterpType],1,GUISoundTextD1,0
+  GUIDisplayButtonHoleTu 6,11,177,byte[SoundInterpType],2,GUISoundTextD2,0
   cmp byte[MMXSupport],0
   je near .no8ptinterp
-  GUIDisplayButtonHoleTu 6,11,187,byte[SoundInterpType],3,GUISoundTextD4,0
+  GUIDisplayButtonHoleTu 6,11,187,byte[SoundInterpType],3,GUISoundTextD3,0
 .no8ptinterp
 
   GUIDisplayTextY 6,106,152,GUISoundTextE
-  GUIDisplayButtonHoleTu 6,111,157,byte[LowPassFilterType],0,GUISoundTextE1,1
-  GUIDisplayButtonHoleTu 6,111,167,byte[LowPassFilterType],1,GUISoundTextE2,1
-  GUIDisplayButtonHoleTu 6,111,177,byte[LowPassFilterType],2,GUISoundTextE3,1
+  GUIDisplayButtonHoleTu 6,111,157,byte[LowPassFilterType],0,GUISoundTextF,1
+  GUIDisplayButtonHoleTu 6,111,167,byte[LowPassFilterType],1,GUISoundTextE1,1
+  GUIDisplayButtonHoleTu 6,111,177,byte[LowPassFilterType],2,GUISoundTextE2,1
   cmp byte[MMXSupport],0
   je near .nohiqualityfilter
-  GUIDisplayButtonHoleTu 6,111,187,byte[LowPassFilterType],3,GUISoundTextE4,0
+  GUIDisplayButtonHoleTu 6,111,187,byte[LowPassFilterType],3,GUISoundTextE3,0
 .nohiqualityfilter
 
 %ifdef __MSDOS__
@@ -2379,16 +2379,16 @@ GUISoundTextC db 'VOLUME LEVEL:',0
 GUISoundTextC1 db '---%',0
 
 GUISoundTextD db 'INTERPOLATION:',0
-GUISoundTextD1 db 'NONE',0
-GUISoundTextD2 db 'GAUSSIAN',0
-GUISoundTextD3 db 'CUBIC SPLINE',0
-GUISoundTextD4 db '8-POINT',0
+GUISoundTextD1 db 'GAUSSIAN',0
+GUISoundTextD2 db 'CUBIC SPLINE',0
+GUISoundTextD3 db '8-POINT',0
 
 GUISoundTextE db 'LOWPASS:',0
-GUISoundTextE1 db 'NONE',0
-GUISoundTextE2 db 'SIMPLE',0
-GUISoundTextE3 db 'DYNAMIC',0
-GUISoundTextE4 db 'HI QUALITY',0
+GUISoundTextE1 db 'SIMPLE',0
+GUISoundTextE2 db 'DYNAMIC',0
+GUISoundTextE3 db 'HI QUALITY',0
+
+GUISoundTextF db 'NONE',0
 
 SECTION .text
 
@@ -4366,6 +4366,16 @@ DisplayGUIAddOns:                   ;Select Special Controllers
   GUIDisplayButtonHoleTu 17,100,43,byte[device2],2,GUIAddOnText5Alt,0
   GUIDisplayButtonHoleTu 17,100,53,byte[device2],3,GUIAddOnText6Alt,0
   GUIDisplayButtonHoleTu 17,100,63,byte[device2],4,GUIAddOnText7Alt,0
+
+  GUIDisplayText 17,12,78,GUIAddOnText8Alt
+  GUIDisplayText 17,103,78,GUIAddOnText9Alt
+
+  GUIDisplayCheckboxu 17,9,83,mouse1lh,GUIAddOnTextDAlt,0
+  GUIDisplayCheckboxu 17,100,83,mouse2lh,GUIAddOnTextDAlt,1
+
+  GUIDisplayTextY 17,12,100,GUIAddOnTextAAlt
+  GUIDisplayText 17,12,110,GUIAddOnTextBAlt
+  GUIDisplayText 17,103,110,GUIAddOnTextCAlt
   jmp .endEE
 .noEE                                ;Regular
 
@@ -4396,12 +4406,9 @@ DisplayGUIAddOns:                   ;Select Special Controllers
   GUIDisplayButtonHoleTu 17,100,43,byte[device2],2,GUIAddOnText5,0
   GUIDisplayButtonHoleTu 17,100,53,byte[device2],3,GUIAddOnText6,0
   GUIDisplayButtonHoleTu 17,100,63,byte[device2],4,GUIAddOnText7,0
-.endEE
 
   GUIDisplayText 17,12,78,GUIAddOnText8
   GUIDisplayText 17,103,78,GUIAddOnText9
-  DDrawBox 17,73,75,[KeyExtraEnab1]
-  DDrawBox 17,164,75,[KeyExtraEnab2]
 
   GUIDisplayCheckboxu 17,9,83,mouse1lh,GUIAddOnTextD,0
   GUIDisplayCheckboxu 17,100,83,mouse2lh,GUIAddOnTextD,1
@@ -4409,6 +4416,10 @@ DisplayGUIAddOns:                   ;Select Special Controllers
   GUIDisplayTextY 17,12,100,GUIAddOnTextA
   GUIDisplayText 17,12,110,GUIAddOnTextB
   GUIDisplayText 17,103,110,GUIAddOnTextC
+.endEE
+  DDrawBox 17,73,75,[KeyExtraEnab1]
+  DDrawBox 17,164,75,[KeyExtraEnab2]
+
   DDrawBox 17,73,107,[SSAutoFire]
   DDrawBox 17,164,107,[SSPause]
   ret
@@ -4434,8 +4445,14 @@ GUIAddOnText2Alt db 83,76,79,84,32,50,58,0
 GUIAddOnText3Alt db 79,70,70,0
 GUIAddOnText4Alt db 87,72,73,84,69,32,66,82,69,65,68,0
 GUIAddOnText5Alt db 82,89,69,32,66,82,69,65,68,0
-GUIAddOnText6Alt db 69,78,71,76,73,83,72,32,77,85,70,70,73,78,0
-GUIAddOnText7Alt db 87,65,70,70,76,69,0
+GUIAddOnText6Alt db 87,72,69,65,84,32,66,82,69,65,68,0
+GUIAddOnText7Alt db 69,78,71,76,73,83,72,32,77,85,70,70,73,78,0
+GUIAddOnText8Alt db 80,79,80,32,84,65,82,84,0
+GUIAddOnText9Alt db 87,65,70,70,76,69,0
+GUIAddOnTextAAlt db 67,79,70,70,69,69,63,0
+GUIAddOnTextBAlt db 67,82,69,65,77,0
+GUIAddOnTextCAlt db 77,73,76,75,0
+GUIAddOnTextDAlt db 81,85,73,67,75,32,84,79,65,83,84,0
 GUIAddOnEETopBar db 84,79,65,83,84,69,82,32,79,80,84,73,79,78,83,0
 
 SECTION .text
