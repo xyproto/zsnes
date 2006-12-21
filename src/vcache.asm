@@ -28,7 +28,7 @@ EXTSYM cgmod,disableeffects,frameskip,frskipper,current_zst,zst_name
 EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen
 EXTSYM nextdrawallng,pal16b,pal16bxcl,pressed,prevbright,prevpal
 EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,sprprdrn,t1cc
-EXTSYM vidbright,vidbuffer,vidbufferm,vidbufferofsa,vidbufferofsb,vidmemch2
+EXTSYM vidbright,vidbuffer,vidbufferofsa,vidbufferofsb,vidmemch2
 EXTSYM GUIRClick,MousePRClick,ngmsdraw,cvidmode
 EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyDisableSC4
 EXTSYM KeyDisableSC5,KeyDisableSC6,KeyDisableSC7,KeyFastFrwrd,SRAMSave5Sec
@@ -774,19 +774,6 @@ NEWSYM cachevideo
 ;    je .useb
     mov ebx,[vidbufferofsa]
     mov [vidbuffer],ebx
-    add ebx,75036+16
-    mov [cbackofsaddr],ebx
-    mov ebx,[vidbufferofsb]
-    mov [vidbufferm],ebx
-;    jmp .nouseb
-;.useb
-;    mov ebx,[vidbufferofsb]
-;    mov [vidbuffer],ebx
-;    add ebx,75036+16
-;    mov [cbackofsaddr],ebx
-;    mov ebx,[vidbufferofsa]
-;    mov [vidbufferm],ebx
-;.nouseb
 
 NEWSYM docache
     xor ebx,ebx

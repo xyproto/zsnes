@@ -1350,9 +1350,6 @@ NEWSYM cdrawmeth,   dd 0
 NEWSYM cpalptrng,   dd 0
 NEWSYM prevcoladdrng, dd 0
 NEWSYM prevcolvalng,  dd 0
-NEWSYM cbackofsaddr,  dd 0
-NEWSYM cbackofsaddrs, dd 0
-NEWSYM cbackofsaddrm, dd 0
 NEWSYM subscrng,      dd 0
 NEWSYM ngmsdraw,      dd 0
 NEWSYM CMainWinScr,   dd 0

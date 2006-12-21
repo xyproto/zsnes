@@ -47,7 +47,6 @@ unsigned short selc0040, selcA000, selcB800;
 
 unsigned char *vidbuffer;           //  video buffer (1024x239 = 244736)
 unsigned char *ngwinptr;
-unsigned char *vidbufferm;          // video buffer mirror
 unsigned char *vidbufferofsa;       // offset 1
 unsigned char *vidbufferofsb;       // offset 2
 unsigned char *headdata;
