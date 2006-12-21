@@ -685,8 +685,8 @@ section .text
 
 %macro UpdateScrollRegY 1
     mov bl,[bgscrolPrev]
-    mov [%1],bl
-    mov [%1+1],al
+    mov bh,al
+    mov [%1],bx
     mov [bgscrolPrev],al
 %endmacro
 
@@ -702,8 +702,7 @@ reg210Dw:
 reg210Ew:
     UpdateScrollRegY bg1scroly
 ;    mov bl,[m7byte]
-    mov [bg1scroly_m7],bl
-    mov [bg1scroly_m7+1],al
+    mov [bg1scroly_m7],bx
 ;    mov [m7byte],al
     ret
 
