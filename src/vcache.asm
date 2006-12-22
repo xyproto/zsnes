@@ -23,7 +23,7 @@
 EXTSYM MessageOn,MsgCount,Msgptr,Voice0Disable,Voice0Status,Voice1Disable
 EXTSYM Voice1Status,Voice2Disable,Voice2Status,Voice3Disable,Voice3Status
 EXTSYM Voice4Disable,Voice4Status,Voice5Disable,Voice5Status,Voice6Disable
-EXTSYM Voice6Status,Voice7Disable,Voice7Status,bgcmsung,bgmode,cbackofsaddr
+EXTSYM Voice6Status,Voice7Disable,Voice7Status,bgcmsung,bgmode
 EXTSYM cgmod,disableeffects,frameskip,frskipper,current_zst,zst_name
 EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen
 EXTSYM nextdrawallng,pal16b,pal16bxcl,pressed,prevbright,prevpal
