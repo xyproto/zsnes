@@ -86,6 +86,7 @@ ifeq (${ENV},win32)
 endif
 
 ifeq (${ENV},msvc)
+  CFLAGSORIG=/nologo /Ox /G6 /c /EHsc /D__WIN32__
   MSVCLIBS=zlib.lib libpng.lib wsock32.lib user32.lib gdi32.lib shell32.lib winmm.lib dinput8.lib dxguid.lib pdcurses.lib
   DRESOBJ=${WINDIR}/zsnes.res
   OS=__WIN32__
@@ -135,11 +136,13 @@ ifeq (${OS},__WIN32__)
 endif
 
 ifeq (${DEBUG},yes)
-  CFLAGSORIG=-fno-omit-frame-pointer -ggdb3 -DDEBUG
-  COPT=-O0
-  ASMFLAGSORIG=-DDEBUG -g
-  EXE=zsnesd.exe
-  STRIP=
+  ifneq (${ENV},msvc)
+    CFLAGSORIG=-fno-omit-frame-pointer -ggdb3 -DDEBUG
+    COPT=-O0
+    ASMFLAGSORIG=-DDEBUG -g
+    EXE=zsnesd.exe
+    STRIP=
+  endif
 endif
 
 ifeq (${RELEASE},yes)
@@ -269,13 +272,13 @@ ifeq (${OS},__WIN32__)
 endif
 else
 %.obj : %.c
-	cl /nologo /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ $<
+	cl ${CFLAGSORIG} /Fo$@ $<
 
 %.obj: %.cpp
-	cl /nologo /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ $<
+	cl ${CFLAGSORIG} /Fo$@ $<
 
 %.obj: %.asm
-	${ASM} ${ASMOPT} -f win32 -D__WIN32__ -o $@ $<
+	${ASM} ${ASMOPT} ${ASMFLAGS} -o $@ $<
 endif
 
 %${OE}: %.psr
@@ -283,7 +286,7 @@ endif
 ifneq (${ENV},msvc)
 	${CC} ${CFLAGS} -O1 -o $@ -c temppsr.c
 else
-	cl /nologo /Ox /G6 /c /EHsc /D__WIN32__ /Fo$@ temppsr.c
+	cl ${CFLAGSORIG} /Fo$@ temppsr.c
 endif
 	${DELETECOMMAND} temppsr.c
 
