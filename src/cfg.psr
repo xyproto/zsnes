@@ -333,7 +333,7 @@ PauseFocusChange db 0
 @
 @ Display ROM Info on Load (0 = No, 1 = YES)
 DisplayInfo db 1
-@ Output rominfo.txt file about last ROM loaded (0 = No, 1 = YES)
+@ Log Info to rominfo.txt About Last ROM that was Loaded (0 = No, 1 = YES)
 RomInfo db 1
 
 %ifdef __WIN32__
