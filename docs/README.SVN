@@ -1,0 +1,9 @@
+If you are using the SVN version of ZSNES, you will need to run the following
+command directly after checkout out the repository:
+
+sh autogen.sh
+
+This will create the ./configure file that you need to run before compiling
+ZSNES.
+
+If you are not sure if you are using the SVN version, you are probably not.
