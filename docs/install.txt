@@ -6,8 +6,8 @@ is a quick guide (based on my own experience and on a doc written by zsKnight)
 explaining how to compile zsnes. With these tools, I can build both dos and
 win version, I hope it will also work for you
 
-(slightly updated by stainless)
-
+Note to see the bottom of this document if you are compiling releases for
+distribution as opposed to CVS/SVN/WIP for personal use.
 
 First, you need the following software:
 
@@ -159,3 +159,22 @@ Also Note: libpng (optional) needs to be recent, or zsnes will not use it
 You may also want to compress the zsnes executable with upx
 (http://upx.sourceforge.net), it will divide its size by 10.
 
+
+Compiling for official builds:
+Windows - MSVC: make -f makefile.ms PLATFORM=msvc RELEASE=yes
+Windows - MinGW: make -f makefile.ms PLATFORM=win32 RELEASE=yes
+DOS: make -f makefile.ms PLATFORM=dos RELEASE=yes
+SDL: ./configure --enable-release --disable-cpucheck force_arch=i586
+
+Note this is important to remove certain debug messages, as well
+as provide heavy optimization (which could take up to an hour
+to compile). It also ensures the builds will work with CPUs
+matching i586 or higher.
+If compiling for personal use, on DOS and Windows-MinGW, add
+CPU=your_cpu, where your_cpu matches a GCC -march option.
+You can use the archopt utility in tools/ to tell you what is
+best. For SDL, remove --disable-cpucheck force_arch=i586.
+
+If you are providing an SDL package for a particular arch
+greater than i586, replace force_arch=i586 with the proper
+one.
