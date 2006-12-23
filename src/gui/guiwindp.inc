@@ -1769,8 +1769,10 @@ DisplayGUIOption:       ; Emu Options
 
   GUIDisplayTextY 4,11,63,GUIOptionTextB
   GUIDisplayCheckboxu 4,11,68,newengen,GUIOptionTextB1,4
+  cmp byte[newengen],0
+  jne .newengen
   GUIDisplayCheckboxu 4,11,78,bgfixer,GUIOptionTextB2,4
-
+.newengen
   GUIDisplayTextY 4,11,93,GUIOptionTextC
   GUIDisplayCheckboxu 4,11,98,AutoPatch,GUIOptionTextC1,7
   GUIDisplayCheckboxu 4,11,108,RomInfo,GUIOptionTextC2,2

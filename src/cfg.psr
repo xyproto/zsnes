@@ -299,6 +299,8 @@ MMXSupport db 1
 @
 @ Use Small Font for Messages (0 = NO, 1 = Yes)
 SmallMsgText db 0
+
+@
 @ Transparent Messages - doesn't work with small font (0 = NO, 1 = Yes)
 GUIEnableTransp db 0
 
@@ -333,7 +335,9 @@ PauseFocusChange db 0
 @
 @ Display ROM Info on Load (0 = No, 1 = YES)
 DisplayInfo db 1
-@ Log Info to rominfo.txt About Last ROM that was Loaded (0 = No, 1 = YES)
+
+@
+@ Log Info About the Last ROM Loaded to rominfo.txt (0 = No, 1 = YES)
 RomInfo db 1
 
 %ifdef __WIN32__
@@ -349,10 +353,6 @@ HighPriority db 0
 @ This is very necessary for gamepad users.
 DisableScreenSaver db 1
 %endif
-
-@
-@ Prevent ZSNES from Saving the Configuration on Exit (0 = NO, 1 = Yes)
-cfgdontsave db 0
 
 @
 @  ----
@@ -741,6 +741,8 @@ LatestSave db 0
 @ Enable this if you have a tendency in saving accidentally to an existing
 @ savestate.
 AutoIncSaveSlot db 0
+
+@
 @ Save in 10 save block (0 = NO, 1 = Yes)
 @ This may be handy if you want to save within a block (0-9, 10-19, etc.)
 AutoIncSaveSlotBlock db 0
@@ -1187,6 +1189,10 @@ PrevBuildNum dd 0
 @
 @ Display First-Time Use Reminder (0 = YES, 1 = No)
 FirstTimeData db 0
+
+@
+@ Prevent ZSNES from Saving the Configuration on Exit (0 = NO, 1 = Yes)
+cfgdontsave db 0
 
 @
 @ - EOF -
