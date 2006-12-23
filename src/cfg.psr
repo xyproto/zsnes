@@ -718,6 +718,7 @@ RewindFrames db 15
 @
 @ Don't Save SRAM (0 = NO, 1 = Yes)
 @ Only enable this if you don't want to Save SRAM at any given time.
+@ This option will make Update SRAM in Real-Time useless.
 nosaveSRAM db 0
 
 @
@@ -725,6 +726,7 @@ nosaveSRAM db 0
 @ This is useful if you fear something will prevent ZSNES from exiting normally.
 @ It is required to play games that store important values directly to SRAM.
 @ ZSNES normally updates SRAM on exit.
+@ If Don't Save SRAM is enabled, this option is useless.
 SRAMSave5Sec db 0
 
 @
