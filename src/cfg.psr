@@ -490,7 +490,7 @@ vsyncon db 0
 
 @
 %ifdef __WIN32__
-@ Use Triple Buffering (0 = NO, 1 = Yes) - replaces vsync 
+@ Use Triple Buffering (0 = NO, 1 = Yes) - replaces vsync
 %else
 @ Win port only, don't edit
 %endif
@@ -889,7 +889,7 @@ GUIRClick db 0
 
 @
 @ Left Handed Mouse Behavior for GUI (0 = NO SWAP, 1 = Swap)
-@ (swap left and right buttons) 
+@ (swap left and right buttons)
 lhguimouse db 0
 
 @

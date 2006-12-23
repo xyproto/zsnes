@@ -28,7 +28,7 @@ EXTSYM cgmod,disableeffects,frameskip,frskipper,current_zst,zst_name
 EXTSYM maxbr,modeused,mousexloc,mouseyloc,newengen
 EXTSYM nextdrawallng,pal16b,pal16bxcl,pressed,prevbright,prevpal
 EXTSYM scaddsngb,scaddtngb,scaddtngbx,scfbl,scrndis,sprprdrn,t1cc
-EXTSYM vidbright,vidbuffer,vidbufferofsa,vidbufferofsb,vidmemch2
+EXTSYM vidbright,vidbuffer,vidbufferofsa,vidmemch2
 EXTSYM GUIRClick,MousePRClick,ngmsdraw,cvidmode
 EXTSYM KeyDisableSC0,KeyDisableSC1,KeyDisableSC2,KeyDisableSC3,KeyDisableSC4
 EXTSYM KeyDisableSC5,KeyDisableSC6,KeyDisableSC7,KeyFastFrwrd,SRAMSave5Sec

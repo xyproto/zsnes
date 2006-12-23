@@ -52,7 +52,7 @@ Example: depbuild gcc "-I/usr/include -D__UNIXSDL__  -O3 -march=athlon64" nasm
 Macro Unroller has the macro as parameter passed to it.
 Example: macroll DiffOrNot w4,w2,PIXEL00_0,PIXEL00_100
 
-Variable Replacer requires parameters for variable file, variable prefix 
+Variable Replacer requires parameters for variable file, variable prefix
 and suffix. It can also optionally take a file list. Variable file should
 contain each variable on a line by itself.
 Example: varrep vf.txt "DSP4_vars." "" chips/dsp4emu.c

@@ -1770,7 +1770,7 @@ DisplayGUIOption:       ; Emu Options
   GUIDisplayTextY 4,11,63,GUIOptionTextB
   GUIDisplayCheckboxu 4,11,68,newengen,GUIOptionTextB1,4
   cmp byte[newengen],0
-  jne .newengen
+  jne near .newengen
   GUIDisplayCheckboxu 4,11,78,bgfixer,GUIOptionTextB2,4
 .newengen
   GUIDisplayTextY 4,11,93,GUIOptionTextC
@@ -4671,7 +4671,7 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
 
   GUIDisplayCheckboxu 20,11,38,nosaveSRAM,GUISaveTextB1,0
   cmp byte[nosaveSRAM],0
-  jne .nosavesram
+  jne near .nosavesram
   GUIDisplayCheckboxu 20,11,48,SRAMSave5Sec,GUISaveTextB2,5 ;Checkboxes
 .nosavesram
   GUIDisplayCheckboxu 20,11,58,SRAMState,GUISaveTextB3,0
