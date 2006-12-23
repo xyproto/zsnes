@@ -931,8 +931,8 @@ FilteredGUI db 1
 newfont db 0
 
 @
-@ Remember Window Positions (0 = Yes, 1 = NO)
-resetposn db 1
+@ Save GUI Window Positions (0 = NO, 1 = Yes)
+savewinpos db 0
 
 @
 @ GUI windows X/Y coordinates - GUI setup showing windows #

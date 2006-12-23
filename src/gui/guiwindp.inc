@@ -3463,8 +3463,7 @@ DisplayGUIOptns:              ; GUI Options
   GUIDisplayCheckboxu 10,129,33,JoyPad1Move,GUIGUIOptnsTextA2b,6
   GUIDisplayCheckboxu 10,129,43,FilteredGUI,GUIGUIOptnsTextA2c,0
   GUIDisplayCheckboxu 10,129,53,newfont,GUIGUIOptnsTextA2d,12
-  GUIDisplayCheckboxun 10,129,63,resetposn,0,GUIGUIOptnsTextA2e,9
-  ; ^ "Save Win Pos", but the option is really for Reset Pos
+  GUIDisplayCheckboxu 10,129,63,savewinpos,GUIGUIOptnsTextA2e,9
 
   GUIDisplayTextY 10,6,91,GUIGUIOptnsTextE
   GUIDisplayButtonHoleTu 10,72,88,byte[GUIEffect],0,GUIGUIOptnsTextE1,3

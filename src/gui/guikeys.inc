@@ -872,7 +872,7 @@ GUIGUIOptnsKeys:
   GUIKeyCheckbox mousewrap,'M'            ; Checkboxes
   GUIKeyCheckbox mouseshad,'S'
   GUIKeyCheckbox esctomenu,'G'
-  GUIKeyCheckbox resetposn,'W'
+  GUIKeyCheckbox savewinpos,'W'
   GUIKeyCheckbox GUIRClick,'C'
   GUIKeyCheckbox JoyPad1Move,'U'
   GUIKeyCheckbox newfont,'O'

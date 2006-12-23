@@ -2756,7 +2756,7 @@ DisplayGUIOptnsClick:
   GUIClickCButton 129,33,byte[JoyPad1Move]
   GUIClickCButtonI 129,43,byte[FilteredGUI]
   GUIClickCButton 129,53,byte[newfont]
-  GUIClickCButton 129,63,byte[resetposn]
+  GUIClickCButton 129,63,byte[savewinpos]
 
 %ifdef __WIN32__
   GUIClickCButton 12,63,byte[TrapMouseCursor]

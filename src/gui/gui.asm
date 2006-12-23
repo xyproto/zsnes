@@ -75,7 +75,7 @@ EXTSYM MovieDumpRaw,MovieAppend,AutoLoadCht,GUIQuickLoadUpdate,GUILoadData
 
 EXTSYM GUIwinposx,GUIwinposy,maxskip,GUIEffect,hqFilter,En2xSaI,NTSCFilter
 EXTSYM NTSCBlend,NTSCHue,NTSCSat,NTSCCont,NTSCBright,NTSCSharp,NTSCWarp,NTSCRef
-EXTSYM LowPassFilterType,MovieStartMethod,MovieDisplayFrame,resetposn
+EXTSYM LowPassFilterType,MovieStartMethod,MovieDisplayFrame,savewinpos
 EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath,FEOEZPath,SJNSPath
 EXTSYM MDHPath,SPL4Path,SRAMPath,CheatSrcByteSize,prevloadfnamel,NTSCFilterInit
 EXTSYM prevloadiname,prevloaddnamel,prevlfreeze,FirstTimeData,MMXSupport
@@ -548,7 +548,7 @@ NEWSYM GUIhandler9h
   inc byte[GUIwinptr]
   mov byte[GUIwinorder+eax],%1
   mov byte[GUIwinactiv+%1],1
-  cmp byte[resetposn],1
+  cmp byte[savewinpos],0
   jne %%nomenuitem
   mov eax,[GUIwinposxo+%1*4]
   mov [GUIwinposx+%1*4],eax
@@ -1597,7 +1597,7 @@ CheckMenuItemHelp:
   inc byte[GUIwinptr]
   mov [GUIwinorder+eax],dl
   mov byte[GUIwinactiv+edx],1
-  cmp byte[resetposn],1
+  cmp byte[savewinpos],0
   jne .nomenuitem
   mov eax,[GUIwinposxo+edx*4]
   mov [GUIwinposx+edx*4],eax

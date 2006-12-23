@@ -510,7 +510,7 @@ void GUIRestoreVars()
   CheckValueBounds(&mousewrap, 0, 1, 0, UB);
   CheckValueBounds(&mouseshad, 0, 1, 1, UB);
   CheckValueBounds(&esctomenu, 0, 1, 1, UB);
-  CheckValueBounds(&resetposn, 0, 1, 1, UB);
+  CheckValueBounds(&savewinpos, 0, 1, 0, UB);
   for (i=1 ; i<22 ; i++)
   {
     CheckValueBounds(GUIwinposx+i, -233, 254, 10, SD);
