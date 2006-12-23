@@ -113,7 +113,7 @@ EXTSYM FPSAtStart,Turbo30hz,TimerEnable,SmallMsgText,mouse1lh,mouse2lh
 EXTSYM AutoPatch,RomInfo,AllowUDLR,Triplebufen,GrayscaleMode
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,TripleBufferWin
 EXTSYM BilinearFilter,esctomenu,GUILoadKeysJumpTo,lhguimouse,zst_name
-EXTSYM GUIEnableTransp,FilteredGUI,Surround,SPCDisable
+EXTSYM GUIEnableTransp,FilteredGUI,Surround,SPCDisable,nosaveSRAM
 EXTSYM FastFwdToggle,gui_key,gui_key_extended,GUILoadKeysNavigate
 EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
@@ -270,7 +270,7 @@ GUIMiscMenuData:
 GUIwinposxo dd 0,6   ,65  ,33  ,42  ,5   ,34  ,6   ,64  ,8    ,5    ,33  ,56  ,64  ,56  ,5   ,3   ,28  ,48  ,6    ,28  ,53
 GUIwinposyo dd 0,20  ,70  ,20  ,20  ,20  ,20  ,20  ,30  ,30   ,20   ,20  ,60  ,30  ,60  ,20  ,20  ,60  ,60  ,20   ,30  ,20
 GUIwinsizex dd 0,244 ,126 ,200 ,180 ,245 ,188 ,244 ,128 ,240  ,245  ,190 ,144 ,128 ,144 ,246 ,250 ,200 ,160 ,244  ,200 ,150
-GUIwinsizey dd 0,190 ,68  ,192 ,190 ,190 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,120 ,100 ,190  ,160 ,180
+GUIwinsizey dd 0,190 ,68  ,192 ,190 ,190 ,188 ,191 ,40  ,170  ,150  ,190 ,42  ,40  ,42  ,190 ,190 ,120 ,100 ,190  ,168 ,180
 NEWSYM GUIwinptr, db 0
 
 NEWSYM WaterOn,  db 1

@@ -4639,44 +4639,48 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
 
   GUIDisplayText 20,8,19,GUISaveTextA1           ; Text
   GUIDisplayText 20,8,31,GUISaveTextA2
-  GUIDisplayText 20,9,150,GUISaveTextC2
-  GUIDisplayText 20,9+57,150,GUISaveTextC3
-  GUIDisplayText 20,9+114,150,GUISaveTextC4
-  GUIDisplayText 20,9,159,GUISaveTextC5
+  GUIDisplayText 20,9,159,GUISaveTextC2
+  GUIDisplayText 20,9+57,159,GUISaveTextC3
+  GUIDisplayText 20,9+114,159,GUISaveTextC4
+  GUIDisplayText 20,9,168,GUISaveTextC5
 
-  GUIDisplayTextY 20,6,114,GUISaveTextC
+  GUIDisplayTextY 20,6,123,GUISaveTextC
   mov byte[GUISaveTextC1+2],'0'
-  GUIDisplayText 20,9,123,GUISaveTextC1
-  mov byte[GUISaveTextC1+2],'1'
-  GUIDisplayText 20,9+45,123,GUISaveTextC1
-  mov byte[GUISaveTextC1+2],'2'
-  GUIDisplayText 20,9+45*2,123,GUISaveTextC1
-  mov byte[GUISaveTextC1+2],'3'
-  GUIDisplayText 20,9+45*3,123,GUISaveTextC1
-  mov byte[GUISaveTextC1+2],'4'
   GUIDisplayText 20,9,132,GUISaveTextC1
-  mov byte[GUISaveTextC1+2],'5'
+  mov byte[GUISaveTextC1+2],'1'
   GUIDisplayText 20,9+45,132,GUISaveTextC1
-  mov byte[GUISaveTextC1+2],'6'
+  mov byte[GUISaveTextC1+2],'2'
   GUIDisplayText 20,9+45*2,132,GUISaveTextC1
-  mov byte[GUISaveTextC1+2],'7'
+  mov byte[GUISaveTextC1+2],'3'
   GUIDisplayText 20,9+45*3,132,GUISaveTextC1
-  mov byte[GUISaveTextC1+2],'8'
+  mov byte[GUISaveTextC1+2],'4'
   GUIDisplayText 20,9,141,GUISaveTextC1
-  mov byte[GUISaveTextC1+2],'9'
+  mov byte[GUISaveTextC1+2],'5'
   GUIDisplayText 20,9+45,141,GUISaveTextC1
-  mov byte[GUISaveTextC1+2],'+'
+  mov byte[GUISaveTextC1+2],'6'
   GUIDisplayText 20,9+45*2,141,GUISaveTextC1
-  mov byte[GUISaveTextC1+2],'-'
+  mov byte[GUISaveTextC1+2],'7'
   GUIDisplayText 20,9+45*3,141,GUISaveTextC1
+  mov byte[GUISaveTextC1+2],'8'
+  GUIDisplayText 20,9,150,GUISaveTextC1
+  mov byte[GUISaveTextC1+2],'9'
+  GUIDisplayText 20,9+45,150,GUISaveTextC1
+  mov byte[GUISaveTextC1+2],'+'
+  GUIDisplayText 20,9+45*2,150,GUISaveTextC1
+  mov byte[GUISaveTextC1+2],'-'
+  GUIDisplayText 20,9+45*3,150,GUISaveTextC1
 
-  GUIDisplayCheckboxu 20,11,40,SRAMSave5Sec,GUISaveTextB1,5 ;Checkboxes
-  GUIDisplayCheckboxu 20,11,50,SRAMState,GUISaveTextB2,0
-  GUIDisplayCheckboxu 20,11,60,LatestSave,GUISaveTextB3,0
-  GUIDisplayCheckboxu 20,11,70,AutoIncSaveSlot,GUISaveTextB4,5
-  GUIDisplayCheckboxu 20,11,80,AutoState,GUISaveTextB5,0
-  GUIDisplayCheckboxu 20,11,90,PauseLoad,GUISaveTextB6,0
-  GUIDisplayCheckboxu 20,11,100,PauseRewind,GUISaveTextB7,12
+  GUIDisplayCheckboxu 20,11,38,nosaveSRAM,GUISaveTextB1,0
+  cmp byte[nosaveSRAM],0
+  jne .nosavesram
+  GUIDisplayCheckboxu 20,11,48,SRAMSave5Sec,GUISaveTextB2,5 ;Checkboxes
+.nosavesram
+  GUIDisplayCheckboxu 20,11,58,SRAMState,GUISaveTextB3,0
+  GUIDisplayCheckboxu 20,11,68,LatestSave,GUISaveTextB4,0
+  GUIDisplayCheckboxu 20,11,78,AutoIncSaveSlot,GUISaveTextB5,5
+  GUIDisplayCheckboxu 20,11,88,AutoState,GUISaveTextB6,0
+  GUIDisplayCheckboxu 20,11,98,PauseLoad,GUISaveTextB7,0
+  GUIDisplayCheckboxu 20,11,108,PauseRewind,GUISaveTextB8,12
 
   GUIDisplayBBox 20,150,17,165,24,167     ; Rewind States Box
   mov ah,[RewindStates]
@@ -4706,22 +4710,22 @@ DisplayGUISave:                    ;Save & Rewind options/Hotkeys
   mov [GUISaveTextZ3],ax
   GUIDisplayTextG 20,154,31,GUISaveTextZ3
 
-  DDrawBox 20,26,120,[KeyStateSlc0]           ; Boxes for State section
-  DDrawBox 20,71,120,[KeyStateSlc1]
-  DDrawBox 20,116,120,[KeyStateSlc2]
-  DDrawBox 20,161,120,[KeyStateSlc3]
-  DDrawBox 20,26,129,[KeyStateSlc4]
-  DDrawBox 20,71,129,[KeyStateSlc5]
-  DDrawBox 20,116,129,[KeyStateSlc6]
-  DDrawBox 20,161,129,[KeyStateSlc7]
-  DDrawBox 20,26,138,[KeyStateSlc8]
-  DDrawBox 20,71,138,[KeyStateSlc9]
-  DDrawBox 20,116,138,[KeyIncStateSlot]
-  DDrawBox 20,161,138,[KeyDecStateSlot]
-  DDrawBox 20,32,147,[KeySaveState]
-  DDrawBox 20,89,147,[KeyLoadState]
-  DDrawBox 20,146,147,[KeyStateSelct]
-  DDrawBox 20,45,156,[KeyRewind]
+  DDrawBox 20,26,129,[KeyStateSlc0]           ; Boxes for State section
+  DDrawBox 20,71,129,[KeyStateSlc1]
+  DDrawBox 20,116,129,[KeyStateSlc2]
+  DDrawBox 20,161,129,[KeyStateSlc3]
+  DDrawBox 20,26,138,[KeyStateSlc4]
+  DDrawBox 20,71,138,[KeyStateSlc5]
+  DDrawBox 20,116,138,[KeyStateSlc6]
+  DDrawBox 20,161,138,[KeyStateSlc7]
+  DDrawBox 20,26,147,[KeyStateSlc8]
+  DDrawBox 20,71,147,[KeyStateSlc9]
+  DDrawBox 20,116,147,[KeyIncStateSlot]
+  DDrawBox 20,161,147,[KeyDecStateSlot]
+  DDrawBox 20,32,156,[KeySaveState]
+  DDrawBox 20,89,156,[KeyLoadState]
+  DDrawBox 20,146,156,[KeyStateSelct]
+  DDrawBox 20,45,165,[KeyRewind]
 
   mov byte[GUItextcolor],217               ;Buttons
   cmp byte[GUIWincoladd],0
@@ -4738,13 +4742,14 @@ SECTION .data
 GUISaveTextA1 db '# OF REWIND STATES',0
 GUISaveTextA2 db '1/5 SECONDS PER REWIND',0
 
-GUISaveTextB1 db 'SRAM CHECK+SAVE',0
-GUISaveTextB2 db 'LOAD SAVESTATE W/SRAM',0
-GUISaveTextB3 db 'START AT LATEST SAVE',0
-GUISaveTextB4 db 'AUTO INCREMENT SAVE SLOT',0
-GUISaveTextB5 db 'AUTO STATE SAVE/LOAD',0
-GUISaveTextB6 db 'PAUSE AFTER LOADING STATE',0
-GUISaveTextB7 db 'PAUSE AFTER REWIND',0
+GUISaveTextB1 db 'DO NOT SAVE SRAM',0
+GUISaveTextB2 db 'SRAM CHECK+SAVE',0
+GUISaveTextB3 db 'LOAD SAVESTATE W/SRAM',0
+GUISaveTextB4 db 'START AT LATEST SAVE',0
+GUISaveTextB5 db 'AUTO INCREMENT SAVE SLOT',0
+GUISaveTextB6 db 'AUTO STATE SAVE/LOAD',0
+GUISaveTextB7 db 'PAUSE AFTER LOADING STATE',0
+GUISaveTextB8 db 'PAUSE AFTER REWIND',0
 
 GUISaveTextC db 'STATE SHORTCUTS:',0
 GUISaveTextC1 db 'ST#',0 ; Used for numbers 0-9 and +/-

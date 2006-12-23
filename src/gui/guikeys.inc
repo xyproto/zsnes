@@ -816,11 +816,8 @@ GUIAboutKeys:
 
 GUISaveKeys:
   ToUpperASM
-  cmp dh,'I'             ; Checkboxes
-  jne .noautoincsave
-  xor byte[AutoIncSaveSlot],1
-.noautoincsave
-
+  GUIKeyCheckbox AutoIncSaveSlot,'I' ; Checkboxes
+  GUIKeyCheckbox nosaveSRAM,'D'
   GUIKeyCheckbox SRAMSave5Sec,'C'
   GUIKeyCheckbox LatestSave,'S'
   GUIKeyCheckbox AutoState,'A'
