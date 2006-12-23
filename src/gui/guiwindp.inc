@@ -2294,13 +2294,9 @@ DisplayGUISound:                     ; Sound Related Options
   cmp byte[StereoSound],1
   jne near .nostereo
   GUIDisplayCheckboxu 6,11,51,RevStereo,GUISoundTextA4,2
-%ifdef __MSDOS__
-.nostereo
-%endif
   GUIDisplayCheckboxu 6,11,61,Surround,GUISoundTextA5,2
-%ifndef __MSDOS__
 .nostereo
-%else
+%ifdef __MSDOS__
   GUIDisplayCheckboxu 6,11,71,Force8b,GUISoundTextA6,0
 %endif
 %ifdef __WIN32__

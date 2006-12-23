@@ -20,7 +20,7 @@
 
 EXTSYM ProcessSoundBuffer,DosExit,getenv,PrintStr,printhex,WaitForKey
 EXTSYM SBHDMA,soundon,csounddisable,DisplayS,SPCRAM,DSPMem
-EXTSYM Surround,StereoSound,SoundQuality,SoundSpeeds,SBToSPCSpeeds2
+EXTSYM StereoSound,SoundQuality,SoundSpeeds,SBToSPCSpeeds2
 EXTSYM SoundSpeedt,DSPBuffer,BufferSize,BufferSizes,BufferSizeB
 EXTSYM BufferSizeW,dssel,PrintChar
 
@@ -306,11 +306,6 @@ NEWSYM handlersbseg
 
     mov esi,DSPBuffer
     mov ecx,[BufferSizeB]
-    cmp byte[Surround],0
-    je .nosurround
-    cmp byte[StereoSound],0
-    je .surroundmono
-.nosurround
 .loopb
     mov eax,[esi]
     cmp eax,-32768
@@ -328,31 +323,6 @@ NEWSYM handlersbseg
     dec ecx
     jnz .loopb
     jmp .sbend
-.surroundmono
-    cmp byte[SBswitch],0
-    je .1stblock
-    add edi,[BufferSizeB]
-.1stblock
-.loopbm
-    mov eax,[esi]
-    cmp eax,-32768
-    jge .noneg3m
-    mov eax,-32768
-.noneg3m
-    cmp eax,32767
-    jle .noneg4m
-    mov eax,32767
-.noneg4m
-    xor ah,80h
-    mov [es:edi],ah
-    xor ah,80h
-    neg ah
-    xor ah,80h
-    mov [es:edi+1],ah
-    add esi,4
-    add edi,2
-    dec ecx
-    jnz .loopbm
 .sbend
     xor byte[SBswitch],1
 
@@ -483,11 +453,6 @@ NEWSYM SBHandler16
 .doneblock
     mov esi,DSPBuffer
     mov ecx,[BufferSizeB]
-    cmp byte[Surround],0
-    je .nosurround
-    cmp byte[StereoSound],0
-    je .surroundmono
-.nosurround
 .loopb
     mov eax,[esi]
     cmp eax,-32768
@@ -504,28 +469,6 @@ NEWSYM SBHandler16
     dec ecx
     jnz .loopb
     jmp .sbend
-.surroundmono
-    cmp byte[SBswitch],0
-    je .1stblock
-    add edi,[BufferSizeW]
-.1stblock
-.loopbm
-    mov eax,[esi]
-    cmp eax,-32768
-    jge .noneg5m
-    mov eax,-32768
-.noneg5m
-    cmp eax,32767
-    jle .noneg6m
-    mov eax,32767
-.noneg6m
-    mov [es:edi],ax
-    neg ax
-    mov [es:edi+2],ax
-    add esi,4
-    add edi,4
-    dec ecx
-    jnz .loopbm
 .sbend
     xor byte[SBswitch],1
 
@@ -686,8 +629,6 @@ NEWSYM InitSB
     mov al,40h
     call SB_dsp_write
 
-;    cmp byte[Surround],0
-;    jne .surround8b
     cmp byte[StereoSound],1
     jne .nostereo8b
 .surround8b
@@ -971,8 +912,6 @@ SECTION .text
     ; 16-bit auto-init, mono, unsigned
     mov al,0B6h   ; Sb 16 version (DSP 4)
     call SB_dsp_write
-;    cmp byte[Surround],0
-;    jne .surroundl
     cmp byte[StereoSound],1
     jne .Monol
 .surroundl
@@ -1078,8 +1017,6 @@ SECTION .text
     ; 16-bit auto-init, mono, unsigned
     mov al,0B6h   ; Sb 16 version (DSP 4)
     call SB_dsp_write
-;    cmp byte[Surround],0
-;    jne .surround
     cmp byte[StereoSound],1
     jne .Mono
 .surround
