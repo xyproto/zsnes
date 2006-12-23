@@ -1376,9 +1376,12 @@ NEWSYM drawbox16b
     test byte[pressed+75],1
     jz %%noleft
     cmp bl,0
-    je %%noleft
+    jne %%plzsub
+    add bl,9
+    jmp %%donesub
+%%plzsub
     dec bl
-%%doneaddt
+%%donesub
     mov byte[pressed+75],2
 %%noleft
 %ifdef __UNIXSDL__
@@ -1388,8 +1391,12 @@ NEWSYM drawbox16b
     test byte[pressed+77],1
     jz %%noright
     cmp bl,9
-    je %%noright
+    jne %%plzadd
+    sub bl,9
+    jmp %%doneadd
+%%plzadd
     inc bl
+%%doneadd
     mov byte[pressed+77],2
 %%noright
 %ifdef __UNIXSDL__
@@ -1399,7 +1406,10 @@ NEWSYM drawbox16b
     test byte[pressed+72],1
     jz %%noup
     cmp al,0
-    je %%goneup
+    jne %%plzsubten
+    add al,90
+    jmp %%goneup
+%%plzsubten
     sub al,10
 %%goneup
     mov byte[pressed+72],2
@@ -1415,7 +1425,10 @@ NEWSYM drawbox16b
     test byte[pressed+80],1
     jz %%nodown
     cmp al,90
-    je %%gonedown
+    jne %%plzaddten
+    sub al,90
+    jmp %%gonedown
+%%plzaddten
     add al,10
 %%gonedown
     mov byte[pressed+80],2
@@ -1432,8 +1445,12 @@ NEWSYM drawbox16b
 %endif
     jz %%noleft2
     cmp bl,0
-    je %%noleft2
+    jne %%plzsub2
+    add bl,9
+    jmp %%donesub2
+%%plzsub2
     dec bl
+%%donesub2
 %ifdef __UNIXSDL__
     mov byte[pressed+92],2
 %else
@@ -1447,8 +1464,12 @@ NEWSYM drawbox16b
 %endif
     jz %%noright2
     cmp bl,9
-    je %%noright2
+    jne %%plzadd2
+    sub bl,9
+    jmp %%doneadd2
+%%plzadd2
     inc bl
+%%doneadd2
 %ifdef __UNIXSDL__
     mov byte[pressed+94],2
 %else
@@ -1462,7 +1483,10 @@ NEWSYM drawbox16b
 %endif
     jz %%noup2
     cmp al,0
-    je %%goneup2
+    jne %%plzsubten2
+    add al,90
+    jmp %%goneup2
+%%plzsubten2
     sub al,10
 %%goneup2
 %ifdef __UNIXSDL__
@@ -1482,7 +1506,10 @@ NEWSYM drawbox16b
 %endif
     jz %%nodown2
     cmp al,90
-    je %%gonedown2
+    jne %%plzaddten2
+    sub al,90
+    jmp %%gonedown2
+%%plzaddten2
     add al,10
 %%gonedown2
 %ifdef __UNIXSDL__
