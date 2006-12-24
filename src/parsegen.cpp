@@ -1245,10 +1245,30 @@ void output_read_var(ostream& c_stream)
   }
   if (defines.find("PSR_HASH") != defines.end())
   {
-    c_stream << "    if (!strcmp(var, \"PSR_HASH\")) { if ((unsigned int)atoi(value) != PSR_HASH) { psr_init_done = 0; init_" << family_name << "_vars(); break; } continue; }\n";
+    c_stream << "    if (!strcmp(var, \"PSR_HASH\"))\n"
+             << "    {\n"
+             << "       if ((unsigned int)atoi(value) == PSR_HASH)\n"
+             << "       {\n"
+             << "         psr_init_done = 2;\n"
+             << "         break;\n"
+             << "       }\n"
+             << "       continue;\n"
+             << "    }\n";
   }
-  c_stream << "  }\n"
-           << "}\n"
+  c_stream << "  }\n";
+  if (defines.find("PSR_HASH") != defines.end())
+  {
+    c_stream << "  if (psr_init_done == 2)\n"
+             << "  {\n"
+             << "    psr_init_done = 1;\n"
+             << "  }\n"
+             << "  else\n"
+             << "  {\n"
+             << "    psr_init_done = 0;\n"
+             << "    init_" << family_name << "_vars();\n"
+             << "  }\n";
+  }
+  c_stream << "}\n"
            << "\n"
            << "unsigned char read_" << family_name << "_vars(const char *file)\n"
            << "{\n"
