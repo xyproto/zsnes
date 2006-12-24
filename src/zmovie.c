@@ -1957,6 +1957,7 @@ Code for dumping raw video
 
 #define RAW_WIDTH 256
 #define RAW_HEIGHT 224
+#define RAW_FRAME_SIZE (RAW_WIDTH*RAW_HEIGHT*3)
 
 //NTSC FPS is  59.948743718592964824120603015060 in AVI that's a fraction of 59649/995
 //which equals 59.948743718592964824120603015075, so videos should not desync for several millenia
@@ -2069,6 +2070,34 @@ struct
   uint64 sample_balance;
 } raw_vid;
 
+static void raw_embed_logo(bool audio)
+{
+  gzFile gzp;
+  if ((gzp = gzopen_dir(ZCfgPath, md_logo, "rb")))
+  {
+    unsigned char logo_buffer[RAW_FRAME_SIZE];
+    while (!gzeof(gzp))
+    {
+      if (RAW_FRAME_SIZE == gzread(gzp, logo_buffer, RAW_FRAME_SIZE))
+      {
+        fwrite(logo_buffer, RAW_FRAME_SIZE, 1, raw_vid.vp);
+
+        if (audio)
+        {
+          //Thanks Bisqwit for this algorithm
+          unsigned int samples = (unsigned int)((raw_vid.sample_balance/raw_vid.sample_lo) << StereoSound);
+          raw_vid.sample_balance %= raw_vid.sample_lo;
+          raw_vid.sample_balance += raw_vid.sample_hi;
+          while (samples--)
+          {
+            fwrite2(0, raw_vid.ap);
+          }
+        }
+      }
+    }
+  }
+}
+
 static void raw_video_close()
 {
   bool audio_and_video = raw_vid.vp && raw_vid.ap;
@@ -2159,6 +2188,7 @@ static bool raw_video_open()
 
   if (!MovieAudio && raw_vid.vp)
   {
+    if (*md_logo) { raw_embed_logo(false); }
     return(true);
   }
 
@@ -2203,6 +2233,7 @@ static bool raw_video_open()
       raw_vid.sample_balance = raw_vid.sample_hi;
 
       AudioLogging = 1;
+      if (*md_logo) { raw_embed_logo(true); }
       return(true);
     }
   }
