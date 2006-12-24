@@ -2870,6 +2870,10 @@ void MovieRecord()
         }
         mzt_chdir_down();
       }
+      else
+      {
+        SetMovieMode(MOVIE_OFF);
+      }
     }
     else
     {
