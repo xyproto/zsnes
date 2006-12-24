@@ -494,16 +494,14 @@ TripleBufferWin db 0
 Triplebufen db 0
 #endif
 
-@
 %ifdef __MSDOS__
+@
 @ Small Screen, Stretch Screen (0 = NO, 1 = Yes)
 @ Enabling small screen will render in 256x224 res (probably not a good idea).
 @ Enabling stretch screen will stretch the image to fill the screen.
-%else
-@ DOS-only options, don't edit them
-%endif
 smallscreenon dd 0
 ScreenScale db 0
+%endif
 
 %ifdef __WIN32__
 @
@@ -515,9 +513,7 @@ ScreenScale db 0
 @ by your system! This option is only useful in fullscreen modes.
 ForceRefreshRate db 0
 SetRefreshRate db 60
-%endif
 
-%ifdef __WIN32__
 @
 @ Enable KitchenSync/KitchenSyncPAL (0 = NO, 1 = Yes)
 @ When enabled, ZSNES will use double the refresh rate of the game and use

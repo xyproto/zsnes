@@ -2148,6 +2148,7 @@ DisplayGUIVideo:
 .nocheckboxtbb
 %endif
 
+%ifdef __MSDOS__
   xor eax,eax                                   ; Small Screen
   mov al,[cvidmode]
   cmp byte[GUISSVID+eax],0
@@ -2166,6 +2167,7 @@ DisplayGUIVideo:
 .notext4a
   GUIDisplayCheckboxu 5,121,133,ScreenScale,GUIVideoTextB3f,6
 .notext5
+%endif
 
 %ifndef __MSDOS__
   xor eax,eax                                   ; Keep 4:3 Ratio

@@ -51,11 +51,15 @@ EXTSYM drawlineng16x84b16b,drawlineng16x82b16b,ofsmcyps,vram,ofsmcptr,ofsmady
 EXTSYM ofsmadx,ofsmtptr,yposngom,flipyposngom,ofsmmptr,ofsmval,ofsmvalh,V8Mode
 EXTSYM cbgval,drawlinengom4b16b,ignor512,winbg1envals,m7starty
 EXTSYM FillSubScr,scanlines,drawmode7win16bd,SpecialLine,vidmemch2s,dovegrest
-EXTSYM smallscreenon,ScreenScale,drawlinengom16x164b16b,bgallchange
+EXTSYM drawlinengom16x164b16b,bgallchange
 EXTSYM bg1change,bg2change,bg3change,bg4change,ngwinptr,objwlrpos,objwen
 EXTSYM objclineptr,CSprWinPtr,BuildWindow2,NGNumSpr,fulladdtab,MMXSupport
 EXTSYM bgtxadd2,gammalevel16b,drawmode7ngextbg16b,processmode7hires16b
 EXTSYM processmode7hires16bd,drawmode7ngextbg216b,osm2dis,ofsmtptrs,ofsmcptr2
+
+%ifdef __MSDOS__
+EXTSYM smallscreenon,ScreenScale
+%endif
 
 %include "video/vidmacro.mac"
 %include "video/newgfx16.mac"
@@ -1249,10 +1253,12 @@ NEWSYM newengine16b
     pop ecx
 
     mov byte[SpecialLine+eax],0
+%ifdef __MSDOS__
     cmp byte[smallscreenon],1
     je .nomode7hr
     cmp byte[ScreenScale],1
     je .nomode7hr
+%endif
     cmp byte[scanlines],0
     jne .nomode7hr
     cmp byte[bgmode],7

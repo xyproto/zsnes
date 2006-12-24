@@ -42,7 +42,7 @@
 %include "macros.mac"
 
 EXTSYM curblank,vidpastecopyscr,frameskip,newengen,cvidmode,antienab
-EXTSYM smallscreenon,soundon,StereoSound,SoundQuality,MusicRelVol,endprog
+EXTSYM soundon,StereoSound,SoundQuality,MusicRelVol,endprog
 EXTSYM continueprog,spcBuffera,cbitmode,makepal,t1cc
 EXTSYM romloadskip,romdata,init65816,current_zst
 EXTSYM procexecloop,SPCRAM,spcPCRam,spcS,spcRamDP,spcA,spcX,spcY,spcP,spcNZ
@@ -51,7 +51,7 @@ EXTSYM Voice5Status,Voice6Status,Voice7Status,ClearScreen,statesaver,loadstate2
 EXTSYM vidbuffer,ASCII2Font,hirestiledat,showallext,scanlines
 EXTSYM sprlefttot,spritetablea
 EXTSYM cgram,tempco0,prevbright,maxbr,prevpal,coladdr,coladdg
-EXTSYM coladdb,scaddtype,ScreenScale,initvideo,pressed,UpdateDevices,memtabler8
+EXTSYM coladdb,scaddtype,initvideo,pressed,UpdateDevices,memtabler8
 EXTSYM memtablew8,writeon,JoyRead,SetInputDevice,delay,FPSOn,RevStereo,WDSPReg0C
 EXTSYM WDSPReg1C,pl12s34,resolutn,Makemode7Table,vidbufferofsb,wramdata,bgfixer
 EXTSYM videotroub,CheatCodeSave,CheatCodeLoad,LoadCheatSearchFile
@@ -131,8 +131,8 @@ EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst,TripleBuffe
 EXTSYM HighPriority,DisableScreenSaver,SaveMainWindowPos,PrimaryBuffer
 EXTSYM GUIDSMODE,GUISMODE,CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
 %elifdef __MSDOS__
-EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard
-EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen
+EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard,smallscreenon
+EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix,Triplebufen,ScreenScale
 %endif
 
 %ifndef __MSDOS__

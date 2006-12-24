@@ -42,7 +42,7 @@ EXTSYM SA1Message,MultiTapStat,idledetectspc,SA1Control,SA1Enable,SA1IRQEnable
 EXTSYM SPC700read,SPC700write,numspcvblleft,spc700idle,SA1IRQExec,ForceNewGfxOff
 EXTSYM LethEnData,GUIQuit,IRAM,SA1Ptr,SA1BWPtr,scrnon,scaddset,outofmemfix
 EXTSYM yesoutofmemory,ProcessMovies,MovieStop,ppustatus,C4VBlank
-EXTSYM ReturnFromSPCStall,scanlines,smallscreenon,ScreenScale,MainLoop
+EXTSYM ReturnFromSPCStall,scanlines,MainLoop
 EXTSYM NumberOfOpcodes,SfxCLSR,SfxSCMR,SfxPOR,sfx128lineloc,sfx160lineloc
 EXTSYM sfx192lineloc,sfxobjlineloc,sfxclineloc,PLOTJmpa,PLOTJmpb,FxTable
 EXTSYM FxTableb,FxTablec,FxTabled,SfxPBR,SCBRrel,SfxSCBR,SfxCOLR,SFXCounter
@@ -58,7 +58,7 @@ EXTSYM debuggeron,startdebugger
 %endif
 
 %ifdef __MSDOS__
-EXTSYM dssel,Game60hzcall,NextLineStart,FlipWait,LastLineStart
+EXTSYM dssel,Game60hzcall,NextLineStart,FlipWait,LastLineStart,smallscreenon,ScreenScale
 %endif
 
 SECTION .data
@@ -1446,10 +1446,12 @@ NEWSYM cpuover
 
 .overy
     mov dh,42
+%ifdef __MSDOS__
     cmp byte[smallscreenon],1
     je .nocfield
     cmp byte[ScreenScale],1
     je .nocfield
+%endif
     cmp byte[scanlines],0
     jne .nocfield
     xor byte[cfield],1
