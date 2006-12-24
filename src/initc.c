@@ -2226,7 +2226,7 @@ void OpenCombFile()
 
     if (NumComboLocl)
     {
-      fread(CombinDataLocl, 1, (NumComboLocl*2)+(NumComboLocl << 6), fp);
+      fread(CombinDataLocl, 1, NumComboLocl*66, fp);
     }
 
     fclose(fp);
