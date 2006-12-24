@@ -80,7 +80,7 @@ EXTSYM SnapPath,SPCPath,BSXPath,SGPath,STPath,GNextPath,FEOEZPath,SJNSPath
 EXTSYM MDHPath,SPL4Path,SRAMPath,CheatSrcByteSize,prevloadfnamel,NTSCFilterInit
 EXTSYM prevloadiname,prevloaddnamel,prevlfreeze,FirstTimeData,MMXSupport
 EXTSYM GUIRAdd,GUIGAdd,GUIBAdd,GUITRAdd,GUITGAdd,GUITBAdd,GUIWRAdd
-EXTSYM GUIWGAdd,GUIWBAdd,GUIloadfntype,SoundInterpType
+EXTSYM GUIWGAdd,GUIWBAdd,GUIloadfntype,SoundInterpType,PrevFSMode,PrevWinMode
 EXTSYM CheatSrcByteBase,CheatSrcSearchType,CheatUpperByteOnly,GUIComboGameSpec
 EXTSYM KeyStateSlc0,KeyStateSlc1,KeyStateSlc2,KeyStateSlc3,KeyStateSlc4
 EXTSYM KeyStateSlc5,KeyStateSlc6,KeyStateSlc7,KeyStateSlc8,KeyStateSlc9
@@ -108,19 +108,19 @@ EXTSYM KeyIncStateSlot,KeyDecStateSlot,KeySaveState,KeyLoadState,KeyStateSelct
 EXTSYM KeyRewind,KeyEmuSpeedUp,KeyEmuSpeedDown,KeyFRateUp,KeyFRateDown
 EXTSYM KeyFastFrwrd,KeySlowDown,KeyResetSpeed,EMUPauseKey,INCRFrameKey
 EXTSYM KeyWinDisble,KeyOffsetMSw,JoyPad1Move,init_save_paths,loadquickfname
-EXTSYM mousewrap,GUIRClick,PrevFSMode,PrevWinMode,SaveSramData,SwapMouseButtons
+EXTSYM mousewrap,GUIRClick,SaveSramData,SwapMouseButtons
 EXTSYM FPSAtStart,Turbo30hz,TimerEnable,SmallMsgText,mouse1lh,mouse2lh
 EXTSYM AutoPatch,RomInfo,AllowUDLR,Triplebufen,GrayscaleMode
 EXTSYM Mode7HiRes16b,FFRatio,SDRatio,EmuSpeed,mouseshad,TripleBufferWin
 EXTSYM BilinearFilter,esctomenu,GUILoadKeysJumpTo,lhguimouse,zst_name
 EXTSYM GUIEnableTransp,FilteredGUI,Surround,SPCDisable,nosaveSRAM
 EXTSYM FastFwdToggle,gui_key,gui_key_extended,GUILoadKeysNavigate
-EXTSYM KeyDisplayBatt,PauseFocusChange,KeyIncreaseGamma,KeyDecreaseGamma
+EXTSYM KeyDisplayBatt,KeyIncreaseGamma,KeyDecreaseGamma
 EXTSYM MovieVideoMode,MovieAudio,MovieVideoAudio,MovieAudioCompress,newfont
 EXTSYM d_names,selected_names,GUIfileentries,GUIdirentries,GUIcurrentdirviewloc
 EXTSYM GUIcurrentfilewin,GUIcurrentcursloc,GUIcurrentviewloc
 EXTSYM GUIcurrentdircursloc,GetLoadData,ZRomPath,SaveSecondState,ClockBox,DisplayInfo
-EXTSYM GUIJT_currentviewloc,GUIJT_currentcursloc,GUIJT_entries
+EXTSYM GUIJT_currentviewloc,GUIJT_currentcursloc,GUIJT_entries,ScreenShotFormat
 EXTSYM GUIJT_offset,GUIJT_viewable,GUIGenericJumpTo,SSAutoFire,SSPause
 
 %ifdef __UNIXSDL__
@@ -129,7 +129,7 @@ EXTSYM numlockptr
 EXTSYM initDirectDraw,reInitSound,CheckAlwaysOnTop,CheckPriority,AlwaysOnTop
 EXTSYM CheckScreenSaver,MouseWheel,TrapMouseCursor,AllowMultipleInst
 EXTSYM HighPriority,DisableScreenSaver,SaveMainWindowPos,PrimaryBuffer
-EXTSYM GUIDSMODE,GUISMODE,CBBuffer,CBLength,PasteClipBoard,ctrlptr
+EXTSYM GUIDSMODE,GUISMODE,CBBuffer,CBLength,PasteClipBoard,ctrlptr,PauseFocusChange
 %elifdef __MSDOS__
 EXTSYM dssel,SetInputDevice209,initvideo2,Force8b,SBHDMA,vibracard
 EXTSYM pl1p209,pl2p209,pl3p209,pl4p209,pl5p209,SidewinderFix

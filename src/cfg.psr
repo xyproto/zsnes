@@ -285,24 +285,59 @@ GUIComboGameSpec db 0
 @  ----
 
 @
-@ Snapshot Format (0 = BMP, 1 = PNG)
-@ Note: in 8 bit video modes PNG is not selectable
-ScreenShotFormat db 0
-
-@
 @ Enable MMX Support (0 = No, 1 = YES)
 @ Disable this only if you actually do NOT have a processor that supports MMX.
 @ Disabling this option will prevent you from using some of the more advanced
 @ video/sound filters.
 MMXSupport db 1
 
+%ifdef __WIN32__
 @
-@ Use Small Font for Messages (0 = NO, 1 = Yes)
-SmallMsgText db 0
+@ Pause Emulation when ZSNES is Out of Focus (0 = NO, 1 = Yes)
+PauseFocusChange db 0
 
 @
-@ Transparent Messages - doesn't work with small font (0 = NO, 1 = Yes)
-GUIEnableTransp db 0
+@ Increase Priority of ZSNES (0 = NO, 1 = Yes)
+@ Enable this if it improves performance. This option is not for everyone.
+@ This may cause other background apps to be sluggish.
+@ The priority in Win9x will be High, Win2k will be Above Normal.
+HighPriority db 0
+
+@
+@ Disable Power Management while ZSNES Runs (0 = No, 1 = YES)
+@ This is very necessary for gamepad users.
+DisableScreenSaver db 1
+%endif
+
+@
+@ Enable New Graphics Engine (0 = No, 1 = YES)
+@ Toggle off when there are graphical problems in the new graphics engine
+newengen db 1
+
+@
+@ Enable Older Graphics Engine Tweak for Mode 2 (0 = NO, 1 = Yes)
+@ Enable this to see if it helps with rendering problems
+@ Only works with old graphic engine
+bgfixer db 0
+
+@
+@ Snapshot Format (0 = BMP, 1 = PNG)
+%ifdef __MSDOS__
+@ Note: in 8 bit video modes PNG is not selectable
+%endif
+ScreenShotFormat db 0
+
+@
+@ Auto-Patch ROM with IPS (0 = No, 1 = YES)
+AutoPatch db 1
+
+@
+@ Display ROM Info on Load (0 = No, 1 = YES)
+DisplayInfo db 1
+
+@
+@ Log Info About the Last ROM Loaded to rominfo.txt (0 = No, 1 = YES)
+RomInfo db 1
 
 @
 @ Enable FPS Counter when ZSNES is Started (0 = NO, 1 = Yes)
@@ -325,50 +360,17 @@ TwelveHourClock db 0
 ClockBox db 1
 
 @
-@ Auto-Patch ROM with IPS (0 = No, 1 = YES)
-AutoPatch db 1
+@ Use Small Font for Messages (0 = NO, 1 = Yes)
+SmallMsgText db 0
 
 @
-@ Pause Emulation when ZSNES is Out of Focus (0 = NO, 1 = Yes)
-PauseFocusChange db 0
-
-@
-@ Display ROM Info on Load (0 = No, 1 = YES)
-DisplayInfo db 1
-
-@
-@ Log Info About the Last ROM Loaded to rominfo.txt (0 = No, 1 = YES)
-RomInfo db 1
-
-%ifdef __WIN32__
-@
-@ Increase Priority of ZSNES (0 = NO, 1 = Yes)
-@ Enable this if it improves performance. This option is not for everyone.
-@ This may cause other background apps to be sluggish.
-@ The priority in Win9x will be High, Win2k will be Above Normal.
-HighPriority db 0
-
-@
-@ Disable Power Management while ZSNES Runs (0 = No, 1 = YES)
-@ This is very necessary for gamepad users.
-DisableScreenSaver db 1
-%endif
+@ Transparent Messages - doesn't work with small font (0 = NO, 1 = Yes)
+GUIEnableTransp db 0
 
 @
 @  ----
 @ -- Video --
 @  ----
-
-@
-@ Enable New Graphics Engine (0 = No, 1 = YES)
-@ Toggle off when there are graphical problems in the new graphics engine
-newengen db 1
-
-@
-@ Enable Older Graphics Engine Tweak for Mode 2 (0 = NO, 1 = Yes)
-@ Enable this to see if it helps with rendering problems
-@ Only works with old graphic engine
-bgfixer db 0
 
 %ifdef __MSDOS__
 @
@@ -441,7 +443,6 @@ PrevWinMode db 2
 PrevFSMode db 3
 
 #elifdef __MSDOS__
-
 @ Video Mode [0..18]
 @   0 = 256x224x8B  (MODEQ)   1 = 256x240x8B (MODEQ)
 @   2 = 256x256x8B  (MODEQ)   3 = 320x224x8B (MODEX)
@@ -459,13 +460,12 @@ PrevWinMode db 0
 PrevFSMode db 0
 #endif
 
+%ifndef __MSDOS__
 @
 @ Custom Resolution X and Y for Custom Video Modes [256x224..2048x1536]
-@ Variables are only used for Windows or OpenGL
 CustomResX dd 640
 CustomResY dd 480
 
-%ifndef __MSDOS__
 @
 @ Keep 4:3 Ratio (0 = No, 1 = YES)
 @ This is particularly handy for those that use laptops/LCDs+non 4:3 resolutions.
@@ -646,6 +646,7 @@ RevStereo db 0
 @ Simulate Surround Sound (0 = NO, 1 = Yes)
 @ Enable a simulated 2 speaker surround sound effect.
 @ Do not enable if playing a game that has its own surround sound effects.
+@ Stereo Sound must be enabled for this to work.
 Surround db 0
 
 %ifdef __WIN32__

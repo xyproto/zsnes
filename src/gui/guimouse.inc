@@ -2105,10 +2105,8 @@ DisplayGUIInputClick:
 
 DisplayGUIOptionClick:
   GUIClickCButtonMMX 11,18,byte[MMXSupport]
-%ifndef __MSDOS__
-  GUIClickCButton 11,28,byte[PauseFocusChange]
-%endif
 %ifdef __WIN32__
+  GUIClickCButton 11,28,byte[PauseFocusChange]
   GUIClickCButton 11,38,byte[HighPriority]
   pushad
   call CheckPriority
@@ -2125,9 +2123,11 @@ DisplayGUIOptionClick:
   GUIClickCButton2 11,68,byte[newengen],byte[newengen],1
 .invalidng
   GUIClickCButton 11,78,byte[bgfixer]
+  GUIPButtonHole 143,70,byte[ScreenShotFormat],0
+  GUIPButtonHole 143,80,byte[ScreenShotFormat],1
   GUIClickCButton 11,98,byte[AutoPatch]
-  GUIClickCButton 11,108,byte[RomInfo]
-  GUIClickCButton 11,118,byte[DisplayInfo]
+  GUIClickCButton 11,108,byte[DisplayInfo]
+  GUIClickCButton 11,118,byte[RomInfo]
   GUIClickCButton 11,138,byte[FPSAtStart]
   GUIClickCButton 11,148,byte[TimerEnable]
   GUIClickCButton 89,148,byte[TwelveHourClock]

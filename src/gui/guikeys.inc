@@ -781,6 +781,8 @@ GUIOptionKeys:
   xor byte[MMXSupport],1
   call MMXCheck
 .nommxcopy
+  GUIKeyButtonHole ScreenShotFormat,0,'P'
+  GUIKeyButtonHole ScreenShotFormat,1,'G'
   GUIKeyCheckbox FPSAtStart,'F'
   GUIKeyCheckbox TimerEnable,'C'
   GUIKeyCheckbox ClockBox,'X'
@@ -788,13 +790,11 @@ GUIOptionKeys:
   GUIKeyCheckbox bgfixer,'A'
   GUIKeyCheckbox SmallMsgText,'S'
   GUIKeyCheckbox AutoPatch,'I'
-  GUIKeyCheckbox RomInfo,'G'
+  GUIKeyCheckbox RomInfo,'R'
   GUIKeyCheckbox DisplayInfo,'W'
   GUIKeyCheckbox GUIEnableTransp,'T'
-%ifndef __MSDOS__
-  GUIKeyCheckbox PauseFocusChange,'B'
-%endif
 %ifdef __WIN32__
+  GUIKeyCheckbox PauseFocusChange,'B'
   GUIKeyCheckbox HighPriority,'H'
   pushad
   call CheckPriority

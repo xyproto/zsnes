@@ -1773,10 +1773,15 @@ DisplayGUIOption:       ; Emu Options
   jne near .newengen
   GUIDisplayCheckboxu 4,11,78,bgfixer,GUIOptionTextB2,4
 .newengen
+
+  GUIDisplayTextY 4,140,63,GUIOptionTextF
+  GUIDisplayButtonHoleTu 4,143,70,byte[ScreenShotFormat],0,GUIOptionTextF1,2
+  GUIDisplayButtonHoleTu 4,143,80,byte[ScreenShotFormat],1,GUIOptionTextF2,2
+
   GUIDisplayTextY 4,11,93,GUIOptionTextC
   GUIDisplayCheckboxu 4,11,98,AutoPatch,GUIOptionTextC1,7
-  GUIDisplayCheckboxu 4,11,108,RomInfo,GUIOptionTextC2,2
-  GUIDisplayCheckboxu 4,11,118,DisplayInfo,GUIOptionTextC3,3
+  GUIDisplayCheckboxu 4,11,108,DisplayInfo,GUIOptionTextC2,3
+  GUIDisplayCheckboxu 4,11,118,RomInfo,GUIOptionTextC3,4
 
   GUIDisplayTextY 4,11,133,GUIOptionTextD
   GUIDisplayCheckboxu 4,11,138,FPSAtStart,GUIOptionTextD1,0
@@ -1799,14 +1804,14 @@ GUIOptionTextA2 db 'PAUSE EMU IN BACKGROUND',0
 GUIOptionTextA3 db 'USE A HIGHER PRIORITY',0
 GUIOptionTextA4 db 'DISABLE POWER MANAGEMENT',0
 
-GUIOptionTextB db 'GRAPHIC ENGINES:',0
+GUIOptionTextB db 'GFX ENGINES:',0
 GUIOptionTextB1 db 'USE NEW GFX ENG',0
 GUIOptionTextB2 db 'USE ALT OLD GFX ENG',0
 
 GUIOptionTextC db 'ROM:',0
 GUIOptionTextC1 db 'ENABLE IPS AUTO-PATCHING',0
-GUIOptionTextC2 db 'LOG ROM INFO',0
-GUIOptionTextC3 db 'SHOW ROM INFO ON LOAD',0
+GUIOptionTextC2 db 'SHOW ROM INFO ON LOAD',0
+GUIOptionTextC3 db 'LOG ROM INFO',0
 
 GUIOptionTextD db 'OVERLAY:',0
 GUIOptionTextD1 db 'FPS AT PROGRAM START',0
@@ -1817,6 +1822,10 @@ GUIOptionTextD4 db 'SHOW CLOCK BOX',0
 GUIOptionTextE db 'MESSAGES:',0
 GUIOptionTextE1 db 'USE SMALL MESSAGE TEXT',0
 GUIOptionTextE2 db 'USE TRANSPARENT TEXT',0
+
+GUIOptionTextF db 'SSHOTS:',0
+GUIOptionTextF1 db 'BMP',0
+GUIOptionTextF2 db 'PNG',0
 
 SECTION .text
 

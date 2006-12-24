@@ -395,8 +395,11 @@ void GUIRestoreVars()
 #ifdef __MSDOS__
   CheckValueBounds(&cvidmode, 0, 18, 4, UB);
 #endif
+#ifndef __MSDOS__
   CheckValueBounds(&CustomResX, 256, 2048, 640, UD);
   CheckValueBounds(&CustomResY, 224, 1536, 480, UD);
+  CheckValueBounds(&Keep4_3Ratio, 0, 1, 1, UB);
+#endif
   CheckValueBounds(&newengen, 0, 1, 1, UB);
   CheckValueBounds(&scanlines, 0, 3, 0, UB);
   CheckValueBounds(&antienab, 0, 1, 0, UB);
@@ -476,10 +479,10 @@ void GUIRestoreVars()
   CheckValueBounds(&TwelveHourClock, 0, 1, 0, UB);
   CheckValueBounds(&AutoLoadCht, 0, 1, 0, UB);
   CheckValueBounds(&AutoPatch, 0, 1, 1, UB);
-  CheckValueBounds(&PauseFocusChange, 0, 1, 0, UB);
   CheckValueBounds(&DisplayInfo, 0, 1, 1, UB);
   CheckValueBounds(&RomInfo, 0, 1, 1, UB);
 #ifdef __WIN32__
+  CheckValueBounds(&PauseFocusChange, 0, 1, 0, UB);
   CheckValueBounds(&HighPriority, 0, 1, 0, UB);
   CheckValueBounds(&SaveMainWindowPos, 0, 1, 1, UB);
   CheckValueBounds(&AllowMultipleInst, 0, 1, 1, UB);
@@ -545,7 +548,6 @@ void GUIRestoreVars()
   CheckValueBounds(&KitchenSyncPAL, 0, 1, 0, UB);
   CheckValueBounds(&ForceRefreshRate, 0, 1, 0, UB);
   CheckValueBounds(&SetRefreshRate, 50, 180, 60, UB);
-  CheckValueBounds(&Keep4_3Ratio, 0, 1, 1, UB);
   CheckValueBounds(&MouseSensitivity, 1, 255, 1, UB);
 #endif
   CheckValueBounds(&ClockBox, 0, 1, 1, UB);
