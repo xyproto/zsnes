@@ -1,6 +1,6 @@
 %define PSR_HASH
 
-md_raw_file times 50 db "rawvideo.bin" @ Only for Raw Video
+md_raw_file times 50 db "rawvideo.bin" @ Only for Raw Videos
 md_pcm_audio times 50 db "audio.wav" @ AVI dumping always dumps audio seperatly
 md_compressed_audio times 50 db "audio.mp3" @ For when selecting compressed
 md_logo times 50 db "" @If you want a logo. It should be a series of frames 256x224x24.
