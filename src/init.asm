@@ -64,8 +64,6 @@ EXTSYM Start60HZ
 SECTION .data
 NEWSYM regsbackup, times 3019 db 0
 NEWSYM forceromtype, db 0
-NEWSYM ForceNewGfxOff, dd 0
-NEWSYM SfxAC, db 0
 ; FIX STATMAT
 NEWSYM autoloadstate, db 0        ; auto load state slot number
 NEWSYM autoloadmovie, db 0
@@ -859,67 +857,7 @@ SECTION .data
 SECTION .bss
 NEWSYM ReturnFromSPCStall, resb 1
 NEWSYM SPCStallSetting, resb 1
-
-SECTION .data
-NEWSYM SFXCounter, dd 0
-
 SECTION .text
-
-NEWSYM preparesfx
-    mov byte[SFXCounter],0
-    mov esi,[romdata]
-    add esi,07FC0h
-    cmp dword[esi],'FX S'
-    je .yessfxcounter
-    cmp dword[esi],'DIRT'
-    je .yessfxcounter
-    cmp dword[esi],'Stun'
-    jne .nosfxcounter
-    mov byte[ForceNewGfxOff],1
-.yessfxcounter
-    mov byte[SFXCounter],1
-.nosfxcounter
-
-    ; make table
-    mov byte[SfxAC],0
-    mov eax,[romdata]
-
-    ; duplicate sfx data
-    mov esi,[romdata]
-    mov edi,[romdata]
-    add esi,1F8000h
-    add edi,3F0000h
-    mov dl,40h
-.swaploopb
-    mov ecx,32768
-.swaploop
-    mov al,[esi]
-    mov [edi],al
-    mov [edi+32768],al
-    inc esi
-    inc edi
-    dec ecx
-    jnz .swaploop
-    sub edi,65536+32768
-    sub esi,65536
-    dec dl
-    jnz .swaploopb
-    ret
-
-    ; copy  address 0 to 200000h
-    ; make table 1 (0 .. 127)
-    mov esi,[romdata]
-    mov edi,[romdata]
-    add edi,200000h
-    mov ecx,200000h
-.n
-    mov al,[esi]
-    mov [edi],al
-    inc esi
-    inc edi
-    dec ecx
-    jnz .n
-    ret
 
 ;*******************************************************
 ; Print Hexadecimal (16-bit/8-bit)

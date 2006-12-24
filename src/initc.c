@@ -2233,6 +2233,31 @@ void OpenCombFile()
   }
 }
 
+unsigned char SFXCounter, SfxAC, ForceNewGfxOff;
+
+void preparesfx()
+{
+  char *ROM = (char *)romdata, i;
+
+  SFXCounter = SfxAC = 0;
+
+  if (!strncmp(ROM+Lo, "FX S", 4) ||
+      !strncmp(ROM+Lo, "DIRT", 4))
+  {
+    SFXCounter = 1;
+  }
+  else if (!strncmp(ROM+Lo, "Stun", 4))
+  {
+    ForceNewGfxOff=1;
+  }
+
+  for (i=63;i>=0;i--)
+  {
+    memcpy(romdata+i*0x4000       ,romdata+i*0x2000,0x8000);
+    memcpy(romdata+i*0x4000+0x2000,romdata+i*0x2000,0x8000);
+  }
+}
+
 void map_set(void **dest, unsigned char *src, size_t count, size_t step)
 {
   while (count--)
@@ -2243,7 +2268,6 @@ void map_set(void **dest, unsigned char *src, size_t count, size_t step)
   }
 }
 
-extern unsigned int ForceNewGfxOff;
 extern unsigned char MultiType;
 extern void *snesmmap[256];
 extern void *snesmap2[256];
@@ -2253,8 +2277,6 @@ extern unsigned char MultiTap;
 extern unsigned int SfxR0, SfxR1, SfxR2, SfxR3, SfxR4, SfxR5, SfxR6, SfxR7,
                    SfxR8, SfxR9, SfxR10, SfxR11, SfxR12, SfxR13, SfxR14, SfxR15;
 extern void *ram7f;
-
-void preparesfx();
 
 void map_lorom()
 {
@@ -2417,7 +2439,7 @@ void map_sfx()
   snesmmap[0x7E] = snesmap2[0x7E] = wramdata;
   snesmmap[0x7F] = snesmap2[0x7F] = ram7f;
 
-  asm_call(preparesfx);
+  preparesfx();
 }
 
 void map_sa1()
