@@ -815,12 +815,12 @@ void output_extsym_dependancies(ostream& c_stream)
 void output_init_var(ostream& c_stream)
 {
   c_stream << "\n"
+           << "static unsigned char psr_init_done = 0;\n"
            << "static void init_" << family_name << "_vars()\n"
            << "{\n"
-           << "  static unsigned char init_done = 0;\n"
-           << "  if (!init_done)\n"
+           << "  if (!psr_init_done)\n"
            << "  {\n"
-           << "    init_done = 1;\n"
+           << "    psr_init_done = 1;\n"
            << "\n";
   for (str_array::iterator i = memsets.begin(); i != memsets.end(); i++)
   {
@@ -1245,7 +1245,7 @@ void output_read_var(ostream& c_stream)
   }
   if (defines.find("PSR_HASH") != defines.end())
   {
-    c_stream << "    if (!strcmp(var, \"PSR_HASH\")) { if ((unsigned int)atoi(value) != PSR_HASH) { init_" << family_name << "_vars(); break; } continue; }\n";
+    c_stream << "    if (!strcmp(var, \"PSR_HASH\")) { if ((unsigned int)atoi(value) != PSR_HASH) { psr_init_done = 0; init_" << family_name << "_vars(); break; } continue; }\n";
   }
   c_stream << "  }\n"
            << "}\n"
